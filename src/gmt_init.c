@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.256 2006-11-10 04:16:38 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.257 2006-11-10 18:49:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3925,8 +3925,11 @@ int GMT_parse_J_option (char *args)
 	 			if (strchr ("DdGg", (int)args[j])) d_pos[id] = j;
 	 		}
 
-			if (n_slashes && k >= 0) error = TRUE;	/* Cannot have 1:xxx separately for x/y */
-
+			if (k > 0) {	/* For 1:xxxxx  we cannot have /LlTtDdGg modifiers */
+				if (n_slashes) error = TRUE;	/* Cannot have 1:xxx separately for x/y */
+				if (l_pos[0] || l_pos[1] || p_pos[0] || p_pos[1] || t_pos[0] || t_pos[1] || d_pos[0] || d_pos[1]) error = TRUE;
+			}
+			
 			/* Distinguish between p for points and p<power> for scaling */
 
 			n = strlen (args);
@@ -3951,7 +3954,7 @@ int GMT_parse_J_option (char *args)
 				args_cp[d_pos[0]] = 0;
 	 		if (!skip) {
 	 			if (k >= 0)	/* Scale entered as 1:mmmmm - this implies -R is in meters */
-					project_info.pars[0] = GMT_u2u[GMT_M][GMT_INCH] / GMT_convert_units (&args_cp[2], GMT_INCH);
+					project_info.pars[0] = GMT_u2u[GMT_M][GMT_INCH] / atof (&args_cp[2]);
 				else
 					project_info.pars[0] = GMT_convert_units (args_cp, GMT_INCH);	/* x-scale */
 	 		}
