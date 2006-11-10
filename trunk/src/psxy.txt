@@ -44,12 +44,12 @@ Suppress drawing line segments as great circle Arcs.  [Default draws great circl
 #include "explain_-B_short.txt"
 .TP
 .B \-C
-Give a color palette file.  When used with \fB\-S\fP, lets symbol fill color be determined by the z-value in the
+Give a color palette file.  When used with OPT(S), lets symbol fill color be determined by the z-value in the
 third column.  Additional fields are
 shifted over by one column (optional size would be 4th rather than 3rd field, etc.).
-If \fB\-S\fP is not set, \fBpsxy\fP expects the user to supply a multisegment line or polygon file
-(requires \fB\-M\fP) and will look for \fB\-Z\fP\fIval\fP strings in each multisegment header.  The \fIval\fP
-will control the color of either the line or polygon (if \fB\-L\fP is set) via the cpt file.
+If OPT(S) is not set, \fBpsxy\fP expects the user to supply a multisegment line or polygon file
+(requires OPT(M)) and will look for \fB\-Z\fP\fIval\fP strings in each multisegment header.  The \fIval\fP
+will control the color of either the line or polygon (if OPT(L) is set) via the cpt file.
 .TP
 .B \-D
 Offset the plot symbol locations by the given amounts \fIdx/dy\fP [Default is no offset].  Only applies to symbols.
@@ -68,14 +68,18 @@ Select color for filling of symbols or select color or pattern for filling of po
 .br
 #include "explain_-G.txt"
 .br
-Note when \fB\-M\fP is chosen, \fBpsxy\fP will search for \fB\-G\fP and \fB\-W\fP
+Note when \fB\-M\fP is chosen, \fBpsxy\fP will search for OPT(G) and OPT(W)
 strings in all the subheaders and let any values thus found over-ride the command line settings.
+The following special settings are also supported: \fB\-G\-\fP turns fill off and \fB\-G+\fP resets
+fill to the command line setting (or none if command line OPT(G) not set); likewise \fB\-W\-\fP turns outlines off
+and \fB\-W+\fP resets outline to the command line setting (or none if \command line OPT(W) not set).
+Also see OPT(C) for color look-up via OPT(Z) strings in the subheaders.
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
 .B \-L
 Force closed polygons: connect the endpoints of the line-segment(s) and draw polygons.  Also, in
-concert with \fB\-C\fP, \fB\-M\fP, and \fB\-Z\fP settings in the headers will use the implied
+concert with OPT(C), OPT(M), and OPT(Z) settings in the headers will use the implied
 color for polygon fill [Default is polygon pen color].
 .TP
 .B \-M
