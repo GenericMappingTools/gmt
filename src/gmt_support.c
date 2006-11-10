@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.267 2006-11-10 04:16:38 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.268 2006-11-10 06:21:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -208,13 +208,13 @@ int GMT_parse_multisegment_header (char *header, BOOLEAN use_cpt, BOOLEAN *use_f
 	}
 	if (use_cpt && ((p = strstr (header, " -Z")) || (p = strstr (header, "\t-Z")))) {	/* Set symbol r/g/b via cpt-lookup */
 		if(!strncmp (&p[3], "NaN", 3))	{	/* Got -ZNaN */
-			GMT_get_rgb_from_z (GMT_d_NaN, fill->rgb);
+			GMT_get_fill_from_z (GMT_d_NaN, fill);
 			*use_fill = TRUE;
 			change |= 2;
 			processed++;	/* Processed one option */
 		}
 		else if (sscanf (&p[3], "%lg", &z) == 1) {
-			GMT_get_rgb_from_z (z, fill->rgb);
+			GMT_get_fill_from_z (z, fill);
 			*use_fill = TRUE;
 			change |= 2;
 			processed++;	/* Processed one option */
@@ -1791,8 +1791,10 @@ int GMT_get_fill_from_z (double value, struct GMT_FILL *fill)
 		memcpy ((void *)fill, (void *)f, sizeof (struct GMT_FILL));
 	else if (index < 0 && (f = GMT_bfn[index+3].fill))
 		memcpy ((void *)fill, (void *)f, sizeof (struct GMT_FILL));
-	else
+	else {
 		get_rgb_lookup (index, value, fill->rgb);
+		fill->use_pattern = FALSE;
+	}
 	return (index);
 }
 
