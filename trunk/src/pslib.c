@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.129 2006-10-28 23:51:45 pwessel Exp $
+ *	$Id: pslib.c,v 1.130 2006-11-10 04:16:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1300,6 +1300,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps.font_no = 0;
 	ps.linewidth = -1;	/* Will be changed by ps_setline */
 	ps.rgb[0] = ps.rgb[1] = ps.rgb[2] = -1;	/* Will be changed by ps_setpaint */
+	memset ((void *)ps.pattern, 0, 512);	ps.offset = 0;	/* Default solid line */
 	ps.scale = (double)dpi;	/* Dots pr. unit resolution of output device */
 	ps.points_pr_unit = 72.0;
 	if (unit == 0) ps.points_pr_unit /= 2.54;
@@ -1704,6 +1705,9 @@ void ps_setdash (char *pattern, int offset)
 	 *    2 units from curr. point.
 	 */
 
+	if (offset == ps.offset && ((pattern && !strcmp (pattern, ps.pattern)) || (!pattern && ps.pattern[0] == '\0'))) return;
+	ps.offset = offset;
+	(pattern) ? strncpy (ps.pattern, pattern, 512) : memset (ps.pattern, 0, 512);
 	fputs ("S ", ps.fp);
 	ps_place_setdash (pattern, offset);
 	fputs ("\n", ps.fp);

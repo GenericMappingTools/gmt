@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.266 2006-10-30 18:09:29 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.267 2006-11-10 04:16:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,7 +52,7 @@
  *	GMT_get_bcr_xy		 	    "
  *	GMT_get_index		Return color table entry for given z
  *	GMT_get_format		Find # of decimals and create format string
- *	GMT_get_rgb24		Return rgb for given z
+ *	GMT_get_rgb_from_z		Return rgb for given z
  *	GMT_get_plot_array	Allocate memory for plotting arrays
  *	GMT_getfill		Decipher and check fill argument
  *	GMT_getinc		Decipher and check increment argument
@@ -147,9 +147,103 @@ void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis);
 #endif
 int GMT_gethsv (char *line, double hsv[]);
 void GMT_cmyk_to_hsv (double hsv[], double cmyk[]);
+void get_rgb_lookup (int index, double value, int *rgb);
 
 double *GMT_x2sys_Y;
 
+
+int GMT_parse_multisegment_header (char *header, BOOLEAN use_cpt, BOOLEAN *use_fill, struct GMT_FILL *fill, struct GMT_FILL *def_fill,  BOOLEAN *use_pen, struct GMT_PEN *pen, struct GMT_PEN *def_pen, int def_outline)
+{
+	/* Scan header for occurences of -W, -G, -Z as they affect pens and fills.
+	 * The possibilities are:
+	 * Fill:  -G<fill>	Use the new fill and turn filling on
+	 *	 -G-		Turn filling OFF
+	 *	 -G+		Revert to default fill [none if not set on command line]
+	 * Pens: -W<pen> 	Use the new pen and turn outline on
+	 *	 -W-		Turn outline OFF
+	 *	 -W+		Revert to default pen [none if not set on command line]
+	 * z:	-Z<zval>	Obtain fill via cpt lookup using this z value
+	 *	-ZNaN		Get the NaN color from the cpt file
+	 *
+	 * header is the text string to process
+	 * use_fill is set to TRUE, FALSE or left alone if no change
+	 * fill is the fill structure to use after this function returns
+	 * def_fill holds the default fill (if any) to use if -G+ is found
+	 * use_pen is set to TRUE, FALSE or left alone if no change
+	 * pen is the pen structure to use after this function returns
+	 * def_pen holds the default pen (if any) to use if -W+ is found
+	 * def_outline holds the default outline setting (TRUE/FALSE)
+	 *
+	 * Function returns TRUE if the pen parameters have changed.
+	 */
+
+	char *p, line[BUFSIZ];
+	int i, processed = 0, change = 0;
+	double z;
+	struct GMT_FILL test_fill;
+	struct GMT_PEN test_pen;
+	
+	if ((p = strstr (header, " -G")) || (p = strstr (header, "\t-G"))) {	/* Found a potential -G option */
+		strcpy (line, &p[3]);
+		for (i = 0; line[i]; i++) if (line[i] == ' ' || line[i] == '\t') line[i] = '\0';
+		if (line[0] == '-') {	/* turn fill OFF */
+			fill->rgb[0] = fill->rgb[1] = fill->rgb[2] = -1;
+			*use_fill = FALSE;
+			fill->use_pattern = FALSE;
+			processed++;	/* Processed one option */
+		}
+		else if (line[0] == '+') {	/* Revert to default fill */
+			memcpy ((void *)fill, (void *)def_fill, sizeof (struct GMT_FILL));
+			*use_fill = (def_fill->use_pattern || def_fill->rgb[0] != -1);
+			if (*use_fill) change = 1;
+			processed++;	/* Processed one option */
+		}
+		else if (!GMT_getfill (line, &test_fill)) {	/* Successfully processed a -G<fill> option */
+			memcpy ((void *)fill, (void *)&test_fill, sizeof (struct GMT_FILL));
+			*use_fill = TRUE;
+			change = 1;
+			processed++;	/* Processed one option */
+		}
+		/* Failure is OK since -Gjunk may appear in text strings - we then do nothing (hence no else clause) */
+	}
+	if (use_cpt && ((p = strstr (header, " -Z")) || (p = strstr (header, "\t-Z")))) {	/* Set symbol r/g/b via cpt-lookup */
+		if(!strncmp (&p[3], "NaN", 3))	{	/* Got -ZNaN */
+			GMT_get_rgb_from_z (GMT_d_NaN, fill->rgb);
+			*use_fill = TRUE;
+			change |= 2;
+			processed++;	/* Processed one option */
+		}
+		else if (sscanf (&p[3], "%lg", &z) == 1) {
+			GMT_get_rgb_from_z (z, fill->rgb);
+			*use_fill = TRUE;
+			change |= 2;
+			processed++;	/* Processed one option */
+		}
+		/* Failure is OK since -Zjunk may appear in text strings - we then do nothing (hence no else clause) */
+	}
+
+	if (processed == 2) fprintf (stderr, "%s: Warning: multisegment header has both -G and -Z options\n", GMT_program);	/* Giving both -G and -Z is a problem */
+	
+	if ((p = strstr (header, " -W")) || (p = strstr (header, "\t-W"))) {	/* Found a potential -W option */
+		strcpy (line, &p[3]);
+		for (i = 0; line[i]; i++) if (line[i] == ' ' || line[i] == '\t') line[i] = '\0';
+		if (line[0] == '-') {	/* turn outline OFF */
+			*use_pen = FALSE;
+		}
+		else if (line[0] == '+') {	/* Revert to default pen/outline */
+			*use_pen = def_outline;
+			memcpy ((void *)pen, (void *)def_pen, sizeof (struct GMT_PEN));
+			if (def_outline) change |= 4;
+		}
+		else if (!GMT_getpen (line, &test_pen)) {	/* Successfully processed a -W<pen> option */
+			memcpy ((void *)pen, (void *)&test_pen, sizeof (struct GMT_PEN));
+			*use_pen = TRUE;
+			change |= 4;
+		}
+		/* Failure is OK since -W may appear in text strings (hence no else clause) */
+	}
+	return (change);
+}
 
 int GMT_check_rgb (int rgb[])
 {
@@ -1320,12 +1414,12 @@ void GMT_read_cpt (char *cpt_file)
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_low[0]))  GMT_b_and_w = FALSE;
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_high[0])) GMT_b_and_w = FALSE;
 			for (i = 0; !GMT_continuous && i < 3; i++) if (GMT_lut[n].rgb_low[i] != GMT_lut[n].rgb_high[i]) GMT_continuous = TRUE;
-			for (i = 0; i < 3; i++) GMT_lut[n].rgb_diff[i] = GMT_lut[n].rgb_high[i] - GMT_lut[n].rgb_low[i];	/* Used in GMT_get_rgb24 */
+			for (i = 0; i < 3; i++) GMT_lut[n].rgb_diff[i] = GMT_lut[n].rgb_high[i] - GMT_lut[n].rgb_low[i];	/* Used in GMT_get_rgb_from_z */
 			if (! (gmtdefs.color_model & GMT_READ_HSV)) {
 				GMT_rgb_to_hsv (GMT_lut[n].rgb_low, &GMT_lut[n].hsv_low[0], &GMT_lut[n].hsv_low[1], &GMT_lut[n].hsv_low[2]);
 				GMT_rgb_to_hsv (GMT_lut[n].rgb_high, &GMT_lut[n].hsv_high[0], &GMT_lut[n].hsv_high[1], &GMT_lut[n].hsv_high[2]);
 			}
-			for (i = 0; i < 3; i++) GMT_lut[n].hsv_diff[i] = GMT_lut[n].hsv_high[i] - GMT_lut[n].hsv_low[i];	/* Used in GMT_get_rgb24 */
+			for (i = 0; i < 3; i++) GMT_lut[n].hsv_diff[i] = GMT_lut[n].hsv_high[i] - GMT_lut[n].hsv_low[i];	/* Used in GMT_get_rgb_from_z */
 		}
 
 		n++;
@@ -1641,12 +1735,18 @@ int GMT_get_index (double value)
 	return (index);
 }
 
-int GMT_get_rgb24 (double value, int *rgb)
+int GMT_get_rgb_from_z (double value, int *rgb)
 {
-	int index, i;
-	double rel;
-
+	int index;
 	index = GMT_get_index (value);
+	get_rgb_lookup (index, value, rgb);
+	return (index);
+}
+
+void get_rgb_lookup (int index, double value, int *rgb)
+{
+	int i;
+	double rel;
 
 	if (index == -1) {	/* Nan */
 		memcpy ((void *)rgb, (void *)GMT_bfn[GMT_NAN].rgb, 3 * sizeof (int));
@@ -1676,6 +1776,23 @@ int GMT_get_rgb24 (double value, int *rgb)
 		}
 		GMT_cpt_skip = FALSE;
 	}
+}
+
+int GMT_get_fill_from_z (double value, struct GMT_FILL *fill)
+{
+	int index;
+	struct GMT_FILL *f;
+	
+	index = GMT_get_index (value);
+
+	/* Check if pattern */
+
+	if (index >= 0 && (f = GMT_lut[index].fill))
+		memcpy ((void *)fill, (void *)f, sizeof (struct GMT_FILL));
+	else if (index < 0 && (f = GMT_bfn[index+3].fill))
+		memcpy ((void *)fill, (void *)f, sizeof (struct GMT_FILL));
+	else
+		get_rgb_lookup (index, value, fill->rgb);
 	return (index);
 }
 
@@ -7733,6 +7850,8 @@ char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, int rgb[])
 		texture = (char *) GMT_memory ((void *)texture, n, sizeof (char), "GMT_convertpen");
 		*offset = irint (pen->offset * pt_to_dpi);
 	}
+	else
+		*offset = 0;
 
 	memcpy ((void *)rgb, (void *)pen->rgb, (size_t)(3 * sizeof (int)));
 	return (texture);

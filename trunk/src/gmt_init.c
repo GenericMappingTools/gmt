@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.255 2006-11-08 20:03:30 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.256 2006-11-10 04:16:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3950,8 +3950,8 @@ int GMT_parse_J_option (char *args)
 			else if (d_pos[0] > 0)	/* Chop of trailing 'd' */
 				args_cp[d_pos[0]] = 0;
 	 		if (!skip) {
-	 			if (k >= 0)	/* Scale entered as 1:mmmmm */
-					project_info.pars[0] = 1.0 / GMT_convert_units (&args_cp[2], GMT_INCH);
+	 			if (k >= 0)	/* Scale entered as 1:mmmmm - this implies -R is in meters */
+					project_info.pars[0] = GMT_u2u[GMT_M][GMT_INCH] / GMT_convert_units (&args_cp[2], GMT_INCH);
 				else
 					project_info.pars[0] = GMT_convert_units (args_cp, GMT_INCH);	/* x-scale */
 	 		}
