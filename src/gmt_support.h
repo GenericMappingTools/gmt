@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.10 2006-10-30 18:09:29 pwessel Exp $
+ *	$Id: gmt_support.h,v 1.11 2006-11-10 04:16:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -19,6 +19,7 @@
 #ifndef _GMT_SUPPORT_H
 #define _GMT_SUPPORT_H
 
+EXTERN_MSC int GMT_parse_multisegment_header (char *header, BOOLEAN use_cpt, BOOLEAN *use_fill, struct GMT_FILL *fill, struct GMT_FILL *def_fill,  BOOLEAN *use_pen, struct GMT_PEN *pen, struct GMT_PEN *def_pen, int def_outline);
 EXTERN_MSC BOOLEAN GMT_polygon_is_open (double x[], double y[], int n);
 EXTERN_MSC double GMT_cartesian_dist (double x0, double y0, double x1, double y1);
 EXTERN_MSC double GMT_dist_to_point (double lon, double lat, struct GMT_TABLE *T, int *id);
@@ -41,7 +42,8 @@ EXTERN_MSC int GMT_delaunay (double *x_in, double *y_in, int n, int **link);
 EXTERN_MSC int GMT_flip_justify (int justify);
 EXTERN_MSC int GMT_get_dist_scale (char c, double *d_scale, int *proj_type, PFD *distance_func);
 EXTERN_MSC int GMT_get_format (double interval, char *unit, char *prefix, char *format);
-EXTERN_MSC int GMT_get_rgb24 (double value, int *rgb);
+EXTERN_MSC int GMT_get_rgb_from_z (double value, int *rgb);
+EXTERN_MSC int GMT_get_fill_from_z (double value, struct GMT_FILL *fill);
 EXTERN_MSC int GMT_getfill (char *line, struct GMT_FILL *fill);
 EXTERN_MSC int GMT_getinc (char *line, double *dx, double *dy);
 EXTERN_MSC int GMT_getincn (char *line, double inc[], int n);
