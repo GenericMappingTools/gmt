@@ -1,14 +1,14 @@
 .TH MAPPROJECT GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 #define	LEN1	0.5
-#define SCALE1	\fB\-Jm\fP0.5\fBc\fP
+#define SCALE1	OPT(Jm)0.5\fBc\fP
 .SH NAME
 mapproject \- Forward and Inverse map transformation of 2-D coordinates 
 .SH SYNOPSIS
 \fBmapproject\fP \fIinfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(Ab)|\fBB\fP|\fBf\fP|\fBF\fP\fIlon0\fP/\fIlat0\fP ] [ OPT(C)[\fIdx\fP/\fIdy\fP] ] [ OPT(Dc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(E)[\fIdatum\fP] ] 
 [ OPT(F)[\fBk\fP|\fBm\fP|\fBn\fP|\fBi\fP|\fBc\fP|\fBp\fP] ] [ OPT(G)[\fIx0\fP/\fIy0\fP][/\fIunit\fP] ] [ GMT_H_OPT ] [ OPT(I) ] 
-[ OPT(L)line.xy\fP[/\fIunit\fP] ] [ GMT_M_OPT ] [ OPT(Q)[\fBd\fP|\fBe\fP] [ OPT(S) ] [ OPT(T)[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
+[ OPT(L)\fIline.xy\fP[/\fIunit\fP] ] [ GMT_M_OPT ] [ OPT(Q)[\fBd\fP|\fBe\fP] [ OPT(S) ] [ OPT(T)[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
 [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBmapproject\fP reads (longitude, latitude) positions from \fIinfiles\fP [or standard input] and
@@ -19,7 +19,7 @@ obtained by digitizing a map of known projection to geographical coordinates.  M
 calculate distances along track, to a fixed point, or closest approach to a line.
 Finally, can be used to perform various datum conversions.
 Additional data fields are permitted after the first 2 columns which must have (longitude,latitude) or (x,y).
-See option \fB\-:\fP on how to read (latitude,longitude) files.
+See option OPT(:) on how to read (latitude,longitude) files.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
@@ -33,38 +33,38 @@ Data file(s) to be transformed.  If not given, standard input is read.
 \fIinfile(s)\fP
 input file(s) with 2 or more columns. If no file(s) is given, \fBmapproject\fP will read the standard input.
 .TP
-\fB\-A\fP[\fBf\fP|\fBb\fP]
-\fB\-Af\fP calculates the (forward) azimuth from fixed point \fIlon/lat\fP to each data point.  Use \fB\-Ab\fP to get
+OPT(A)[\fBf\fP|\fBb\fP]
+OPT(A) calculates the (forward) azimuth from fixed point \fIlon/lat\fP to each data point.  Use OPT(Ab) to get
 back-azimuth from data points to fixed point.  Upper case \fBF\fP or \fBB\fP will convert from geodetic to
 geocentric latitudes and estimate azimuth of geodesics (assuming the current ellipsoid is not a sphere).
 .TP
 .B \-C
 Set center of projected coordinates to be at map projection center [Default is lower left corner].
-Optionally, add offsets in the projected units to be added (or subtracted when \fB\-I\fP is set) to (from)
+Optionally, add offsets in the projected units to be added (or subtracted when OPT(I) is set) to (from)
 the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
-The unit used for the offsets is the plot distance unit in effect (see \fBMEASURE_UNIT\fP) unless \fB\-F\fP is used,
+The unit used for the offsets is the plot distance unit in effect (see \fBMEASURE_UNIT\fP) unless OPT(F) is used,
 in which case the offsets are in meters.
 .TP
 .B \-D
 Temporarily override \fBMEASURE_UNIT\fP and use \fBc\fP (cm), \fBi\fP (inch),
-\fBm\fP (meter), or \fBp\fP (points) instead.  Cannot be used with \fB\-F\fP.
+\fBm\fP (meter), or \fBp\fP (points) instead.  Cannot be used with OPT(F).
 .TP
 .B \-E
-Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates (add \fB\-I\fP for the
-inverse conversion).  Append datum ID (see \fB\-Qd\fP) or give \fIellipsoid\fP:\fIdx,dy,dz\fP
-where \fIellipsoid\fP may be an ellipsoid ID (see \fB\-Qe\fP) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not
+Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates (add OPT(I) for the
+inverse conversion).  Append datum ID (see OPT(Qd)) or give \fIellipsoid\fP:\fIdx,dy,dz\fP
+where \fIellipsoid\fP may be an ellipsoid ID (see OPT(Qe)) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not
 given we assume WGS-84.
 .TP
 .B \-F
-Force 1:1 scaling, i.e., output (or input, see \fB\-I\fP) data are in actual projected meters.  To specify other units,
+Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projected meters.  To specify other units,
 append \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBi\fP (inch), \fBc\fP (cm), or \fBp\fP (points).
-Without \fB\-F\fP, the output (or input, see \fB\-I\fP) are in the units specified by \fBMEASURE_UNIT\fP (but see \fB\-D\fP).
+Without OPT(F), the output (or input, see OPT(I)) are in the units specified by \fBMEASURE_UNIT\fP (but see OPT(D)).
 .TP
 .B \-G
-Calculate distances along track OR to the optional point set with \fB\-G\fP\fIx0/y0\fP.  Append the distance unit;
+Calculate distances along track OR to the optional point set with OPT(G)\fIx0/y0\fP.  Append the distance unit;
 choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
 \fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
-last unit requires \fB\-R\fP and \fB\-J\fP to be set.  Upper case  \fBE\fP, \fBK\fP, \fBM\fP, \fBN\fP, or \fBD\fP
+last unit requires OPT(R) and OPT(J) to be set.  Upper case  \fBE\fP, \fBK\fP, \fBM\fP, \fBN\fP, or \fBD\fP
 will use exact methods for geodesic distances (Rudoe's method for distances in length units and emplying geocentric\"'
 latitudes in degree calculations, assuming the current ellipsoid is not a sphere).
 #include "explain_-H.txt"
@@ -77,22 +77,22 @@ Determine the shortest distance from the input data points to the line(s) given 
 The distance and the coordinates of the nearest point will be appended to the output as three new columns.
 Append the distance unit; choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
 \fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
-last unit requires \fB\-R\fP and \fB\-J\fP to be set.  A spherical approximation is used for geographic data.
+last unit requires OPT(R) and OPT(J) to be set.  A spherical approximation is used for geographic data.
 #include "explain_-M.txt"
 .TP
 .B \-Q
-List all projection parameters.  To only list datums, use \fB\-Qd\fP.  To only list ellipsoids, use \fB\-Qe\fP.
+List all projection parameters.  To only list datums, use OPT(Qd).  To only list ellipsoids, use OPT(Qe).
 .TP
 .B \-S
 Suppress points that fall outside the region.
 .TP
 .B \-T
-Coordinate conversions between datums \fIfrom\fP and \fIto\fP.  Use \fB\-Th\fP if 3rd input column has
+Coordinate conversions between datums \fIfrom\fP and \fIto\fP.  Use OPT(Th) if 3rd input column has
 height above ellipsoid [Default assumes height = 0, i.e., on the ellipsoid].  Specify datums using the
-ID (see \fB\-Qd\fP) or give \fIellipsoid\fP:\fIdx,dy,dz\fP, where \fIellipsoid\fP may be an ellipsoid
-ID (see \fB\-Qe\fP) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not given we use WGS-84.
-\fB\-T\fP may be used in conjunction with \fB\-R \-J\fP to change the datum before coordinate projection
-(add \fB\-I\fP to apply the datum conversion after the inverse projection).  Make sure that the
+ID (see OPT(Qd)) or give \fIellipsoid\fP:\fIdx,dy,dz\fP, where \fIellipsoid\fP may be an ellipsoid
+ID (see OPT(Qe)) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not given we use WGS-84.
+OPT(T) may be used in conjunction with OPT(R) OPT(J) to change the datum before coordinate projection
+(add OPT(I) to apply the datum conversion after the inverse projection).  Make sure that the
 \fBELLIPSOID\fP setting is correct for your case.
 #include "explain_-V.txt"
 #include "explain_-t.txt"
@@ -108,7 +108,7 @@ To transform a file with (longitude,latitude) into (x,y) positions in cm on
 a Mercator grid for a given scale of LEN1 cm per degree, run
 .br
 .sp
-\fBmapproject\fP lonlatfile \fB\-R\fP20/50/12/25 SCALE1 > xyfile
+\fBmapproject\fP lonlatfile OPT(R)20/50/12/25 SCALE1 > xyfile
 .br
 .sp
 To transform several 2-column, binary, double precision files with (latitude,longitude) into (x,y) positions in inch on
@@ -116,24 +116,24 @@ a Transverse Mercator grid (central longitude 75W) for scale = 1:500000 and supp
 that would fall outside the map area, run
 .br
 .sp
-\fBmapproject\fP tracks.* \fB\-R\fP-80/-70/20/40 \fB\-Jt\fP-75/1:500000 \fB\-:\fP \fB\-S \-Di \-bo \-bi\fP\fI2\fP > tmfile.b
+\fBmapproject\fP tracks.* OPT(R)-80/-70/20/40 OPT(Jt)-75/1:500000 \fB\-: \-S \-Di \-bo \-bi\fP\fI2\fP > tmfile.b
 .br
 .sp
 To convert the geodetic coordinates (lon, lat, height) in the file old.dat from the NAD27 CONUS datum
 (Datum ID 131 which uses the Clarke-1866 ellipsoid) to WGS 84, run
 .br
 .sp
-\fBmapproject\fP old.dat \fB\-Th\fP131 > new.dat
+\fBmapproject\fP old.dat OPT(Th)131 > new.dat
 .br
 .sp
 To compute the closest distance (in km) between each point in the input file quakes.dat and the
 line segments given in the multi-segment ASCII file coastline.xy, run
 .br
 .sp
-\fBmapproject\fP quakes.dat \fB\-L\fPcoastline.xy/k > quake_dist.dat
+\fBmapproject\fP quakes.dat OPT(L)coastline.xy/k > quake_dist.dat
 .SH RESTRICTIONS
-The rectangular input region set with \fB\-R\fP will in general be mapped into a
-non-rectangular grid.  Unless \fB\-C\fP is set, the leftmost point on this grid has xvalue = 0.0, and the
+The rectangular input region set with OPT(R) will in general be mapped into a
+non-rectangular grid.  Unless OPT(C) is set, the leftmost point on this grid has xvalue = 0.0, and the
 lowermost point will have yvalue = 0.0. Thus, before you digitize a map, run the
 extreme map coordinates through \fBmapproject\fP using the appropriate scale and see
 what  (x,y) values they are mapped onto.  Use these values when setting up for
