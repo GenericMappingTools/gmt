@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.30 2006-10-25 15:19:16 remko Exp $
+#	$Id: Makefile,v 1.31 2006-11-12 14:48:47 remko Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -81,19 +81,13 @@ update:
 		bin/gmtpatch.sh 4
 
 gmt:		gmtmacros
-		cd src; \
-		$(MAKE) all; \
-		cd ..
+		cd src; $(MAKE) all
 
 install-gmt:	gmt
-		cd src; \
-		$(MAKE) install; \
-		cd ..
+		cd src; $(MAKE) install
 
 uninstall-gmt:
-		cd src; \
-		$(MAKE) uninstall; \
-		cd ..
+		cd src; $(MAKE) uninstall
 
 suppl:		gmtmacros mex_config xgrid_config
 		set -e ; for d in $(SUPPL); do \
@@ -205,18 +199,7 @@ install-man:	install-manl-suppl
 			rm -f $(rootdir)/manjob.sh sed.tmp; \
 			cd $(rootdir); \
 		else \
-			echo "Install man directory the same as distribution man directory - man section ID updated"; \
-			cd man/manl; \
-			echo "s/(l)/($(mansection))/g" > sed.tmp; \
-			echo "s/ l / $(mansection) /g" >> sed.tmp; \
-			echo "s/GMTMANSECTION/$(mansection)/g" >> sed.tmp; \
-			for f in *.l; do \
-				echo "sed -f sed.tmp $$f > $$f.new" >> $(rootdir)/manjob.sh; \
-				echo "mv -f $$f.new $$f" >> $(rootdir)/manjob.sh; \
-			done; \
-			$(SHELL) $(rootdir)/manjob.sh; \
-			rm -f $(rootdir)/manjob.sh sed.tmp; \
-			cd $(rootdir); \
+			echo "Install man directory the same as distribution man directory - nothing copied"; \
 		fi
 
 
@@ -275,28 +258,18 @@ run-examples:
 			echo "examples directory not installed"; \
 		fi
 
-clean:		clean-suppl
-		cd src; $(MAKE) clean
-
-suppl-clean:	clean-suppl
-
-clean-suppl:
-		set -e ; for d in $(SUPPL); do \
+clean:
+		set -e ; for d in $(SUPPL) .; do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				cd src/$$d; \
-				$(MAKE) clean; \
-				cd ../..; \
+				$(MAKE) -C src/$$d clean; \
 			fi; \
 		done
 
 spotless:	clean
-		rm -f config.cache config.status config.log
-		cd src; $(MAKE) spotless; \
-		set -e ; for d in $(SUPPL); do \
+		rm -f config.cache config.status config.log configure
+		set -e ; for d in $(SUPPL) .; do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				cd src/$$d; \
-				$(MAKE) spotless; \
-				cd ../..; \
+				$(MAKE) -C src/$$d spotless; \
 			fi; \
 		done
 
