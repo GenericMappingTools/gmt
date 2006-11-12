@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.9 2006-05-04 00:06:11 pwessel Exp $
+/*	$Id: gshhs.c,v 1.10 2006-11-12 04:54:49 pwessel Exp $
  *
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 			h.area  = swabi4 ((unsigned int)h.area);
 			h.flag  = swabi4 ((unsigned int)h.flag);
 		}
-		level = h.flag && 255;
+		level = h.flag & 255;
 		version = (h.flag >> 8) & 255;
 		greenwich = (h.flag >> 16) & 255;
 		src = (h.flag >> 24) & 255;

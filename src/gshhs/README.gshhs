@@ -3,6 +3,12 @@
 Global Self-consistant Hierarchical High-resolution Shorelines
 
 --------------------------------------------------------------
+Version 1.7 Nov 11, 2006
+
+Minor bug fix: gshhs.c used && instead of & in one of the bit
+manipulations, thus always yielding 1 as the level.
+
+--------------------------------------------------------------
 Version 1.6 May 13, 2006
 
 Minor update to handle the latest GSHHS v1.4 database. Once again
