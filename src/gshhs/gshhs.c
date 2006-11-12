@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.10 2006-11-12 04:54:49 pwessel Exp $
+/*	$Id: gshhs.c,v 1.11 2006-11-12 04:57:13 pwessel Exp $
  *
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
@@ -13,6 +13,7 @@
  *		1.4 05-SEPT-2000: Made a GMT supplement; FLIP no longer needed
  *		1.5 14-SEPT-2004: Updated to deal with latest GSHHS database (1.3)
  *		1.6 02-MAY-2006: Updated to deal with latest GSHHS database (1.4)
+ *		1.7 11-NOV-2006: Fixed bug in computing level (&& vs &)
  *
  *	Copyright (c) 1996-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -40,7 +41,7 @@ int main (int argc, char **argv)
 	struct GSHHS h;
         
 	if (argc < 2 || argc > 3) {
-		fprintf (stderr, "gshhs v. 1.6 ASCII export tool\n");
+		fprintf (stderr, "gshhs v. %s ASCII export tool\n", GSHHS_PROG_VERSION);
 		fprintf (stderr, "usage:  gshhs gshhs_[f|h|i|l|c].b [-L] > ascii.dat\n");
 		fprintf (stderr, "-L will only list headers (no data output)\n");
 		exit (EXIT_FAILURE);
