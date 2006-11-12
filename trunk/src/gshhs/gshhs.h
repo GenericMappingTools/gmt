@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.10 2006-05-08 00:24:15 pwessel Exp $
+/*	$Id: gshhs.h,v 1.11 2006-11-12 04:57:13 pwessel Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -41,6 +41,7 @@
 #endif
 
 #define GSHHS_DATA_VERSION	4	/* For v1.4 */
+#define GSHHS_PROG_VERSION	"1.7"
 
 /* For byte swapping on little-endian systems (GSHHS is defined to be bigendian) */
 
