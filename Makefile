@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.31 2006-11-12 14:48:47 remko Exp $
+#	$Id: Makefile,v 1.32 2006-11-12 15:23:25 remko Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -81,20 +81,18 @@ update:
 		bin/gmtpatch.sh 4
 
 gmt:		gmtmacros
-		cd src; $(MAKE) all
+		$(MAKE) -C src all
 
 install-gmt:	gmt
-		cd src; $(MAKE) install
+		$(MAKE) -C src install
 
 uninstall-gmt:
-		cd src; $(MAKE) uninstall
+		$(MAKE) -C src uninstall
 
 suppl:		gmtmacros mex_config xgrid_config
 		set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				cd src/$$d; \
-				$(MAKE) all; \
-				cd ../..; \
+				$(MAKE) -C src/$$d all; \
 			fi; \
 		done
 
@@ -103,9 +101,7 @@ suppl-install:	install-suppl
 install-suppl:	suppl
 		set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				cd src/$$d; \
-				$(MAKE) install; \
-				cd ../..; \
+				$(MAKE) -C src/$$d install; \
 			fi; \
 		done
 
@@ -135,9 +131,7 @@ gmtmacros:
 uninstall-suppl:
 		set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				cd src/$$d; \
-				$(MAKE) uninstall; \
-				cd ../..; \
+				$(MAKE) -C src/$$d uninstall; \
 			fi; \
 		done
 
