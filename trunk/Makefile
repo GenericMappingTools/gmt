@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.33 2006-11-13 16:46:27 remko Exp $
+#	$Id: Makefile,v 1.34 2006-11-13 17:12:18 remko Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -89,39 +89,22 @@ install-gmt:	gmt
 uninstall-gmt:
 		$(MAKE) -C src uninstall
 
-suppl:		gmtmacros mex_config xgrid_config
-		$(MAKE) -s TARGET=all insuppl
+suppl:		gmtmacros
+		$(MAKE) TARGET=all insuppl
 
 suppl-install:	install-suppl
 
 install-suppl:	suppl
-		$(MAKE) -s TARGET=install insuppl
+		$(MAKE) TARGET=install insuppl
 
-mex_config:	
-		if [ -d src/mex ] && [ ! -f src/mex/.skip ]; then \
-			if [ ! -f src/mex/makefile ]; then \
-				cd src/mex; \
-				\rm -f config.{cache,log,status}; \
-				./configure; \
-			fi \
-		fi
-		
-xgrid_config:	
-		if [ -d src/xgrid ] && [ ! -f src/xgrid/.skip ]; then \
-			if [ ! -f src/xgrid/makefile ]; then \
-				cd src/xgrid; \
-				\rm -f config.{cache,log,status}; \
-				./configure; \
-			fi \
-		fi
 gmtmacros:	
-		if [ ! -s src/makegmt.macros ]; then \
+		@if [ ! -s src/makegmt.macros ]; then \
 			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
 			exit; \
 		fi
 
 uninstall-suppl:
-		$(MAKE) -s TARGET=uninstall insuppl
+		$(MAKE) TARGET=uninstall insuppl
 
 install-data:
 		if [ ! $(rootdir)/share = $(datadir) ]; then \
@@ -164,13 +147,13 @@ install-man:	install-manl-suppl
 			echo "s/(l)/($(mansection))/g" >> sed.tmp; \
 			echo "s/ l / $(mansection) /g" >> sed.tmp; \
 			for f in *.l; do \
-				mv -f $$f man.tmp
+				mv -f $$f man.tmp; \
 				sed -f sed.tmp man.tmp > `basename $$f .l`.$(mansection); \
 				echo "rm -f $$f" | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manuninstall.sh; \
 			done; \
 			rm -f sed.tmp man.tmp; \
 		else \
-			echo "Install man directory the same as distribution man directory - nothing moved"; \
+			echo "Install man directory the same as distribution man directory - nothing copied"; \
 		fi
 
 
@@ -231,20 +214,26 @@ run-examples:
 		fi
 
 clean:
-		$(MAKE) -s TARGET=$@ insuppl
+		$(MAKE) TARGET=$@ insuppl
 		$(MAKE) -C src $@
 
 spotless:
 		rm -f config.cache config.status config.log configure
-		$(MAKE) -s TARGET=$@ insuppl
+		$(MAKE) TARGET=$@ insuppl
 		$(MAKE) -C src $@
 
 distclean:	spotless
 
 insuppl:
-		set -e ; for d in $(SUPPL); do \
+		@set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
 				echo "Making $(TARGET) in src/$$d"; \
-				$(MAKE) -C src/$$d $(TARGET); \
+				cd src/$$d; \
+				if [ ! -f makefile ]; then \
+					\rm -f config.{cache,log,status}; \
+					./configure; \
+				fi; \
+				$(MAKE) $(TARGET); \
+				cd ../..; \
 			fi; \
 		done
