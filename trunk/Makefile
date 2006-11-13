@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.32 2006-11-12 15:23:25 remko Exp $
+#	$Id: Makefile,v 1.33 2006-11-13 16:46:27 remko Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -90,20 +90,12 @@ uninstall-gmt:
 		$(MAKE) -C src uninstall
 
 suppl:		gmtmacros mex_config xgrid_config
-		set -e ; for d in $(SUPPL); do \
-			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				$(MAKE) -C src/$$d all; \
-			fi; \
-		done
+		$(MAKE) -s TARGET=all insuppl
 
 suppl-install:	install-suppl
 
 install-suppl:	suppl
-		set -e ; for d in $(SUPPL); do \
-			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				$(MAKE) -C src/$$d install; \
-			fi; \
-		done
+		$(MAKE) -s TARGET=install insuppl
 
 mex_config:	
 		if [ -d src/mex ] && [ ! -f src/mex/.skip ]; then \
@@ -129,11 +121,7 @@ gmtmacros:
 		fi
 
 uninstall-suppl:
-		set -e ; for d in $(SUPPL); do \
-			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				$(MAKE) -C src/$$d uninstall; \
-			fi; \
-		done
+		$(MAKE) -s TARGET=uninstall insuppl
 
 install-data:
 		if [ ! $(rootdir)/share = $(datadir) ]; then \
@@ -151,54 +139,44 @@ uninstall-data:
 			echo "Install share directory the same as distribution share directory - nothing removed"; \
 		fi
 
-
 install-manl-suppl:
 #		First create suppl *.l from *.man in the local installation tree (regular gmt *.l is already there)
-		\rm -f manjob.sh
-		set -e ; for d in $(SUPPL_M); do \
+		@rm -f manjob.sh
+		@set -e ; for d in $(SUPPL_M); do \
 			if [ -d src/$$d ] ; then \
 				cd src/$$d; \
 				for f in *.man; do \
-					\cp $$f $(rootdir)/man/manl; \
-					echo "mv $$f $$f" | sed -e 's/.man$$/.l/g' >> $(rootdir)/manjob.sh; \
+					\cp $$f $(rootdir)/man/manl/`basename $$f .man`.l; \
 				done; \
 				cd ../..; \
 			fi; \
 		done
-		if [ -f manjob.sh ]; then \
-			cd man/manl; \
-			$(SHELL) $(rootdir)/manjob.sh; \
-			rm -f $(rootdir)/manjob.sh; \
-		fi
 
 install-man:	install-manl-suppl
-		if [ -f manuninstall.sh ]; then \
-			rm -f $(rootdir)/manuninstall.sh; \
-		fi
+		@rm -f manuninstall.sh
 #		If the install man/manl dir is not where we want things (or it is the wrong section), move/rename files
-		if [ ! $(rootdir)/man/manl = $(mandir)/man$(mansection) ]; then \
+		@if [ ! $(rootdir)/man/manl = $(mandir)/man$(mansection) ]; then \
+			echo "Copying GMT manpages to $(mandir)/man$(mansection)"; \
 			mkdir -p $(mandir)/man$(mansection); \
-			cp man/manl/*.l $(mandir)/man$(mansection); \
+			cp -f man/manl/*.l $(mandir)/man$(mansection); \
 			cd $(mandir)/man$(mansection); \
 			echo "s/GMTMANSECTION/$(mansection)/g" > sed.tmp; \
 			echo "s/(l)/($(mansection))/g" >> sed.tmp; \
 			echo "s/ l / $(mansection) /g" >> sed.tmp; \
 			for f in *.l; do \
-				echo "sed -f sed.tmp $$f > tmp" >> $(rootdir)/manjob.sh; \
-				echo "rm -f $$f" >> $(rootdir)/manjob.sh; \
-				echo "mv tmp $$f" | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manjob.sh; \
-				echo "rm -f $$f"  | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manuninstall.sh; \
+				mv -f $$f man.tmp
+				sed -f sed.tmp man.tmp > `basename $$f .l`.$(mansection); \
+				echo "rm -f $$f" | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manuninstall.sh; \
 			done; \
-			$(SHELL) $(rootdir)/manjob.sh; \
-			rm -f $(rootdir)/manjob.sh sed.tmp; \
-			cd $(rootdir); \
+			rm -f sed.tmp man.tmp; \
 		else \
-			echo "Install man directory the same as distribution man directory - nothing copied"; \
+			echo "Install man directory the same as distribution man directory - nothing moved"; \
 		fi
 
 
 uninstall-man:
-		if [ ! $(rootdir)/man/manl = $(mandir)/man$(mansection) ]; then \
+		@if [ ! $(rootdir)/man/manl = $(mandir)/man$(mansection) ]; then \
+			echo "Removing GMT manpages from $(mandir)/man$(mansection)"; \
 			cd $(mandir)/man$(mansection); \
 			$(SHELL) $(rootdir)/manuninstall.sh; \
 			rm -f $(rootdir)/manuninstall.sh; \
@@ -209,13 +187,13 @@ uninstall-man:
 
 
 install-www:
-		set -e ; for d in $(SUPPL_M); do \
+		@set -e ; for d in $(SUPPL_M); do \
 			if [ -d src/$$d ] ; then \
 				mkdir -p $(rootdir)/www/gmt/doc/html; \
 				cp src/$$d/*.html $(rootdir)/www/gmt/doc/html; \
 			fi; \
 		done
-		if [ ! $(rootdir)/www = $(wwwdir) ]; then \
+		@if [ ! $(rootdir)/www = $(wwwdir) ]; then \
 			mkdir -p $(wwwdir); \
 			cp -r www/gmt $(wwwdir); \
 		else \
@@ -244,7 +222,7 @@ install-wrapper:
 		fi
 		
 run-examples:
-		if [ -d examples ]; then \
+		@if [ -d examples ]; then \
 			cd examples; \
 			$(CSH) do_examples.$(CSH) $(bindir) $(libdir); \
 			cd ..; \
@@ -253,18 +231,20 @@ run-examples:
 		fi
 
 clean:
-		set -e ; for d in $(SUPPL) .; do \
-			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				$(MAKE) -C src/$$d clean; \
-			fi; \
-		done
+		$(MAKE) -s TARGET=$@ insuppl
+		$(MAKE) -C src $@
 
-spotless:	clean
+spotless:
 		rm -f config.cache config.status config.log configure
-		set -e ; for d in $(SUPPL) .; do \
-			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				$(MAKE) -C src/$$d spotless; \
-			fi; \
-		done
+		$(MAKE) -s TARGET=$@ insuppl
+		$(MAKE) -C src $@
 
 distclean:	spotless
+
+insuppl:
+		set -e ; for d in $(SUPPL); do \
+			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
+				echo "Making $(TARGET) in src/$$d"; \
+				$(MAKE) -C src/$$d $(TARGET); \
+			fi; \
+		done
