@@ -1,5 +1,5 @@
 /************************ segy_io.h *******************************/
-/*  $Id: segy_io.h,v 1.6 2002-03-17 19:58:58 pwessel Exp $  */
+/*  $Id: segy_io.h,v 1.7 2006-11-14 22:39:51 pwessel Exp $  */
 /* segy_io.h:	Include file for segy_io.c, a suite of functions to */
 /* help reading and writing those annoying, redundant SEGY header */
 /* variables and for reading/writing to/from SEGY files.          */
@@ -16,12 +16,12 @@
 #define FALSE 0
 #endif
 
-#if defined(_WIN32) || defined(__OPENNT)
+#if defined(WIN32)
 typedef short int16_t;
 typedef int int32_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
-#elif  !defined(_INTTYPES_H)
+#elif  !defined(_INTTYPES_H) && !defined(__OPENNT)
 #include <inttypes.h>
 #endif
 
