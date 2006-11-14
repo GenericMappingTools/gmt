@@ -23,7 +23,7 @@ of data and provide great detail; for maps of larger geographical extent it is m
 one of the other resolutions.  If the user selects to paint the land-areas and does not specify fill of
 water-areas then the latter will be transparent (i.e., earlier graphics drawn in those areas will not
 be overwritten).  Likewise, if the water-areas are painted and no land fill is set then the land-areas
-will be transparent.  The \fIPostScript\fP code is written to standard output.
+will be transparent.  A map projection must be supplied.  The \fIPostScript\fP code is written to standard output.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.

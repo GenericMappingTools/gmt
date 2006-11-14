@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.257 2006-11-10 18:49:30 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.258 2006-11-14 22:57:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -922,7 +922,7 @@ int GMT_sort_options (int argc, char **argv, char *order)
 }
 
 int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
-{
+{	/* Just for backwards compatibility */
 	return (GMT_parse_common_options (item, w, e, s, n));
 }
 
