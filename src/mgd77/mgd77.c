@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.137 2006-10-06 21:21:22 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.138 2006-11-14 23:19:57 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4203,7 +4203,7 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 #define gh ((double *)&equiv_22)
 
 	int i, j, k, l, m, n, ll, lm, kmx, nmx, nc;
-	double cd, cl[13], tc, ct, sd, fn, gn, fm, sl[13];
+	double cd, cl[13], tc, ct, sd, fn = 0.0, gn = 0.0, fm, sl[13];
 	double rr, st, one, gmm, rho, two, three, ratio;
 	double p[105], q[105], r, t, a2, b2, colat;
 	double H, F, X = 0, Y = 0, Z = 0, dec, dip;
