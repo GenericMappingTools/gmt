@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.34 2006-11-13 17:12:18 remko Exp $
+#	$Id: Makefile,v 1.35 2006-11-14 01:31:35 remko Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -90,6 +90,7 @@ uninstall-gmt:
 		$(MAKE) -C src uninstall
 
 suppl:		gmtmacros
+		$(MAKE) -C src libs
 		$(MAKE) TARGET=all insuppl
 
 suppl-install:	install-suppl
