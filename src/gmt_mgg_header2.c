@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.14 2006-11-15 05:11:14 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.15 2006-11-15 17:12:48 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -131,7 +131,6 @@ static void MGG2_2GMT(MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 	gmt->y_inc          = dms2degrees(0, 0, mgg->latSpacing);
 	gmt->y_min          = gmt->y_max - (gmt->y_inc * (gmt->ny - one_or_zero));
  
-	gmt->node_offset    = 0;
 	gmt->z_min          = (double)mgg->minValue / (double)mgg->precision;
 	gmt->z_max          = (double)mgg->maxValue / (double)mgg->precision;
 	gmt->z_scale_factor = 1.0;
