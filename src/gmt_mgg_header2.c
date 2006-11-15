@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.13 2006-10-23 03:35:57 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.14 2006-11-15 05:11:14 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -78,6 +78,7 @@ static void GMT2MGG2(struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	mgg->length      = sizeof(MGG_GRID_HEADER_2);
     mgg->dataType    = 1;
 	
+	mgg->cellRegistration = gmt->node_offset;
 	mgg->lonNumCells = gmt->nx;
 	mgg->lonSpacing  = (int)rint(gmt->x_inc * SEC_PER_DEG);
 	degrees2dms(gmt->x_min, &mgg->lonDeg, &mgg->lonMin, &mgg->lonSec);
@@ -113,17 +114,22 @@ static void GMT2MGG2(struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 
 static void MGG2_2GMT(MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 {
+	int one_or_zero;
+	
 	memset(gmt, 0, sizeof(struct GRD_HEADER));
-
+	
+	gmt->type = GMT_grd_format_decoder ("rf");
+	gmt->node_offset    = mgg->cellRegistration;
+	one_or_zero	    = 1 - gmt->node_offset;
 	gmt->nx             = mgg->lonNumCells;
 	gmt->x_min          = dms2degrees(mgg->lonDeg, mgg->lonMin, mgg->lonSec);
 	gmt->x_inc          = dms2degrees(0, 0, mgg->lonSpacing);
-	gmt->x_max          = gmt->x_min + (gmt->x_inc * (gmt->nx - 1));
+	gmt->x_max          = gmt->x_min + (gmt->x_inc * (gmt->nx - one_or_zero));
 
 	gmt->ny             = mgg->latNumCells;
 	gmt->y_max          = dms2degrees(mgg->latDeg, mgg->latMin, mgg->latSec);
 	gmt->y_inc          = dms2degrees(0, 0, mgg->latSpacing);
-	gmt->y_min          = gmt->y_max - (gmt->y_inc * (gmt->ny - 1));
+	gmt->y_min          = gmt->y_max - (gmt->y_inc * (gmt->ny - one_or_zero));
  
 	gmt->node_offset    = 0;
 	gmt->z_min          = (double)mgg->minValue / (double)mgg->precision;
@@ -158,6 +164,7 @@ static void swap_long(void *ptr)
 
 static void swap_header(MGG_GRID_HEADER_2 *header)
 {
+   int i;
    swap_long(&header->version);
    swap_long(&header->length);
    swap_long(&header->dataType);
@@ -179,21 +186,12 @@ static void swap_header(MGG_GRID_HEADER_2 *header)
    swap_long(&header->numType);
    swap_long(&header->waterDatum);
    swap_long(&header->dataLimit);
-   swap_long(&header->unused1);
-   swap_long(&header->unused2);
-   swap_long(&header->unused3);
-   swap_long(&header->unused4);
-   swap_long(&header->unused5);
-   swap_long(&header->unused6);
-   swap_long(&header->unused7);
-   swap_long(&header->unused8);
-   swap_long(&header->unused9);
-   swap_long(&header->unused10);
-   swap_long(&header->unused11);
+   swap_long(&header->cellRegistration);
+   for (i = 0; i < GRD98_N_UNUSED; i++) swap_long(&header->unused[i]);
 }
 
 int GMT_is_mgg2_grid (char *file)
-{	/* Determine if file is a Sun rasterfile */
+{	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
 
