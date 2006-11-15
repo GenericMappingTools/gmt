@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.h,v 1.3 2005-09-29 19:32:44 remko Exp $	*/
+/*	$Id: gmt_mgg_header2.h,v 1.4 2006-11-15 05:11:14 pwessel Exp $	*/
 
 #ifndef _H_MGG_HEADER_2
 #define _H_MGG_HEADER_2
@@ -7,6 +7,7 @@
 #define VERSION			1
 #define MGG_NAN_VALUE	999999
 #define DEFAULT_PREC	10
+#define GRD98_N_UNUSED	10
 
 typedef struct {
 	int	version;		/* 1,000,000,001 Magic_Num + Version */
@@ -25,22 +26,13 @@ typedef struct {
 	int	minValue;		/* Whole meters */
 	int	maxValue;		/* Whole meters */
 	int	gridRadius;		/* -1 for grid radius not performed */
-	int	precision;      /* 1 = whole meters, 10 = tenths of meters */
+	int	precision;     	 /* 1 = whole meters, 10 = tenths of meters */
 	int	nanValue;
 	int     numType;        /* bytesize, pos=int, neg=float */
 	int     waterDatum;     /* Vertical datum 0 = Mean Sea Level, 1 = local */
 	int	dataLimit;		/* 2-byte, 4-byte -1 = float */
-	int    unused1;
-	int    unused2;
-	int    unused3;
-	int    unused4;
-	int    unused5;
-	int    unused6;
-	int    unused7;
-	int    unused8;
-	int    unused9;
-	int    unused10;
-	int    unused11;
+	int	cellRegistration;	/* 1 for pixel (cell centered), 0 for gridline */
+	int    unused[GRD98_N_UNUSED];	/* Unused 4byte ints */
 } MGG_GRID_HEADER_2;
 
 int mgg2_read_grd_info (struct GRD_HEADER *header);
