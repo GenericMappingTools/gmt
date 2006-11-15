@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.11 2006-11-14 20:22:09 remko Exp $
+#	$Id: todo.txt,v 1.12 2006-11-15 16:59:49 remko Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -31,10 +31,6 @@ psbasemap.c	Looks like the magnetic rose needs some alignment work(?)
 pshistogram.c:	Bug using -W with time data
 
 psxy[z]:	-Sb -So etc with time data; what is size; how to specify months etc.
-
-segy_io.h:	Need to figure out a proper way to determine whether int32_t etc
-		are already typedeffed. Doesn't go right on Windows and/or Cygwin:
-		they are already typedeffed, but segy_io.h doesn't know.
 
 ------------------------------------------------------------------------
 ENHANCEMENTS:
@@ -83,3 +79,6 @@ geotiff:	Kurt Feigl has contributed a grd2geotiff.c program but it is mostly
 
 grd*.c:		Need to understand when a COARDS-compliant netCDF grid is truly global
 		even though the longitude range runs just short of 360 degrees.
+
+pslib.c:	Is there a way to make layers partially transparent? I tried "setoverprint"
+		in a PostScript test file but it didn't work.
