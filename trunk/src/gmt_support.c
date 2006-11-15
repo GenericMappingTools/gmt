@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.268 2006-11-10 06:21:55 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.269 2006-11-15 17:12:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -107,6 +107,7 @@ int GMT_start_trace(float first, float second, int *edge, int edge_word, int edg
 int GMT_trace_contour(float *grd, struct GRD_HEADER *header, double x0, double y0, int *edge, double **x_array, double **y_array, int i, int j, int kk, int offset, int *i_off, int *j_off, int *k_off, int *p, unsigned int *bit, int *nan_flag);
 int GMT_smooth_contour(double **x_in, double **y_in, int n, int sfactor, int stype);
 int GMT_splice_contour(double **x, double **y, int n, double **x2, double **y2, int n2);
+void GMT_orient_contour (float *grd, struct GRD_HEADER *header, double *x, double *y, int n, int orient);
 void GMT_setcontjump (float *z, int nz);
 void GMT_rgb_to_hsv(int rgb[], double *h, double *s, double *v);
 void GMT_hsv_to_rgb(int rgb[], double h, double s, double v);
@@ -2893,11 +2894,13 @@ void GMT_get_radii_of_curvature (double x[], double y[], int n, double r[])
 
 #define CONTOUR_IJ(i,j) ((i) + (j) * nx)
 
-int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int int_scheme, int *side, int *edge, int first, double **x_array, double **y_array)
+int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int int_scheme, int orient, int *side, int *edge, int first, double **x_array, double **y_array)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
-	 * GMT_trace_contour will try to allocate more memory in blocks of GMT_CHUNK points
+	 * GMT_trace_contour will try to allocate more memory in blocks of GMT_CHUNK points.
+	 * orient arranges the contour so that the values to the left of the contour is higher (orient = 1)
+	 * or lower (orient = -1) than the contour value.
 	 */
 	 
 	static int i0, j0;
@@ -2945,6 +2948,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 					y0 = south + yinc2;
 					edge[edge_word] |= bit[edge_bit];
 					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 0, offset, i_off, j_off, k_off, p, bit, &nans);
+					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
 					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 					go_on = FALSE;
 					i0 = i + 1;	j0 = j;
@@ -2971,6 +2975,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 					y0 = north - (j - z[1]/r) * dy - yinc2;
 					edge[edge_word] |= bit[edge_bit];
 					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 1, offset, i_off, j_off, k_off, p, bit, &nans);
+					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
 					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 					go_on = FALSE;
 					i0 = i;	j0 = j - 1;
@@ -2997,6 +3002,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 					y0 = north - yinc2;
 					edge[edge_word] |= bit[edge_bit];
 					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 2, offset, i_off, j_off, k_off, p, bit, &nans);
+					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
 					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 					go_on = FALSE;
 					i0 = i - 1;	j0 = j;
@@ -3023,6 +3029,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 					y0 = north - (j - z[0] / r) * dy - yinc2;
 					edge[edge_word] |= bit[edge_bit];
 					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 3, offset, i_off, j_off, k_off, p, bit, &nans);
+					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
 					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 					go_on = FALSE;
 					i0 = i;	j0 = j + 1;
@@ -3057,9 +3064,9 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 							n = GMT_splice_contour (&x, &y, n, &x2, &y2, n2);
 							GMT_free ((void *)x2);
 							GMT_free ((void *)y2);
-
-							n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 						}
+						n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
+						if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
 						i0 = i + 1;
 						go_on = FALSE;
 						j0 = j;
@@ -3129,6 +3136,11 @@ int GMT_splice_contour (double **x, double **y, int n, double **x2, double **y2,
 	*y = ya;
 
 	return (m);
+}
+
+void GMT_orient_contour (float *grd, struct GRD_HEADER *header, double *x, double *y, int n, int orient)
+{	/* Dummy at the moment */
+	/* Determine handedness of the contour and if opposite of orient reverse the contour */
 }
 
 int GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, double y0, int *edge, double **x_array, double **y_array, int i, int j, int kk, int offset, int *i_off, int *j_off, int *k_off, int *p, unsigned int *bit, int *nan_flag)
