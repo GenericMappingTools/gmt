@@ -1,4 +1,4 @@
-# $Id: GMT.spec,v 1.22 2006-11-16 11:58:17 remko Exp $
+# $Id: GMT.spec,v 1.23 2006-11-16 16:46:20 pwessel Exp $
 # spec file for package GMT (Version 4)
 #
 # Copyright (c) 2004-2006 Dirk Stoecker <gmt@dstoecker.de>.
@@ -14,6 +14,7 @@
 BuildRequires: autoconf,automake,gcc,netcdf
 
 Name:         GMT
+%define coastlineversion 4.1
 %define coastlineversion 4.1
 %define prefix /opt/gmt
 %define sourcepath ftp://ftp.soest.hawaii.edu/gmt/4/
