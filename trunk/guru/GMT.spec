@@ -1,4 +1,4 @@
-# $Id: GMT.spec,v 1.21 2006-08-19 01:21:31 pwessel Exp $
+# $Id: GMT.spec,v 1.22 2006-11-16 11:58:17 remko Exp $
 # spec file for package GMT (Version 4)
 #
 # Copyright (c) 2004-2006 Dirk Stoecker <gmt@dstoecker.de>.
@@ -14,6 +14,7 @@
 BuildRequires: autoconf,automake,gcc,netcdf
 
 Name:         GMT
+%define coastlineversion 4.1
 %define prefix /opt/gmt
 %define sourcepath ftp://ftp.soest.hawaii.edu/gmt/4/
 %define incdir %{prefix}/include
@@ -22,7 +23,7 @@ Group:        Productivity/Graphics/Visualization/Graph
 Provides:     GMT 
 Autoreqprov:  on
 Requires:     netcdf >= 3.4
-Version:      4.1.3
+Version:      4.1.4
 Release:      1
 Summary:      Generic Mapping Tools
 Summary(de):  Generic Mapping Tools - Karten- und Grafikerzeugung
@@ -32,9 +33,9 @@ Source2:      %{sourcepath}GMT%{version}_share.tar.bz2
 Source3:      %{sourcepath}GMT%{version}_src.tar.bz2
 Source4:      %{sourcepath}GMT%{version}_suppl.tar.bz2
 Source5:      %{sourcepath}GMT%{version}_web.tar.bz2
-Source6:      %{sourcepath}GMT4.1_coast.tar.bz2
-Source7:      %{sourcepath}GMT4.1_full.tar.bz2
-Source8:      %{sourcepath}GMT4.1_high.tar.bz2
+Source6:      %{sourcepath}GMT%{coastlineversion}_coast.tar.bz2
+Source7:      %{sourcepath}GMT%{coastlineversion}_full.tar.bz2
+Source8:      %{sourcepath}GMT%{coastlineversion}_high.tar.bz2
 #Source9:      %{sourcepath}GMT%{version}_tut.tar.bz2
 #Source10:     %{sourcepath}GMT%{version}_pdf.tar.bz2
 #Patch0:       config.patch
@@ -42,7 +43,7 @@ Source8:      %{sourcepath}GMT4.1_high.tar.bz2
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build/
 
 %description
-GMT is a free, public-domain collection of ~60 UNIX tools
+GMT is a free, public-domain collection of about 60 UNIX tools
 that allow users to manipulate (x,y) and (x,y,z) data sets
 (including filtering, trend fitting, gridding, projecting,
 etc.) and produce [Encapsulated] PostScript File (EPS)
@@ -101,13 +102,12 @@ Requires:     %{name}
 
 %description doc
 Documentation of the Generic Mapping Tools including documentation and
-tutorial in HTML format. The documentation is additionally available in pdf
-and ps as well.
-See ftp://ftp.soest.hawaii.edu/gmt/4/ or http://gmt.soest.hawaii.edu/.
+tutorial in HTML format. The documentation is additionally available in PDF
+(see ftp://ftp.soest.hawaii.edu/gmt/4/ or http://gmt.soest.hawaii.edu/).
 
 %description doc -l de
 Die englische HTML-Dokumentation der Generic Mapping Tools inklusive Tutorial.
-Die Dateien sind auch im PDF- und PostScript-Format erhaeltlich (siehe dazu
+Die Dateien sind auch im PDF-Format erhaeltlich (siehe dazu
 ftp://ftp.soest.hawaii.edu/gmt/4/ oder http://gmt.soest.hawaii.edu/).
 
 %package examples
@@ -155,8 +155,8 @@ make suppl
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install install-all
 #make install-wrapper
-cp -r ../share/coast/*.cdf $RPM_BUILD_ROOT/%{prefix}/share
-cp -r examples $RPM_BUILD_ROOT/%{prefix}
+cp -pr ../share/coast $RPM_BUILD_ROOT/%{prefix}/share
+cp -pr examples $RPM_BUILD_ROOT/%{prefix}
 #cp -r www/gmt $RPM_BUILD_ROOT/%{prefix}/share/doc
 gzip -9 $RPM_BUILD_ROOT/%{prefix}/man/manl/*
 mkdir -p $RPM_BUILD_ROOT/usr/local/man/manl
