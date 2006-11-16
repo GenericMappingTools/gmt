@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.83 2006-11-02 04:59:12 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.84 2006-11-16 16:46:20 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -77,7 +77,7 @@ cat << EOF > gmt_install.ftp_site
 2. NOAA, Lab for Satellite Altimetry, Silver Spring, Maryland, USA
 3. IRIS, Incorporated Research Institutions for Seismology, Seattle, Washington, USA
 4. IAG-USP, Dept of Geophysics, U. of Sao Paulo, BRAZIL
-5. Inst for Geologi, U of Oslo, NORWAY
+5. Dept of Geosciences, U of Oslo, NORWAY
 6. Goodie Domain Service, Vienna U of Techology, AUSTRIA
 7. Tokai U, Shimizu, JAPAN
 8. Charles Sturt U, Albury, AUSTRALIA
