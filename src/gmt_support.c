@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.269 2006-11-15 17:12:48 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.270 2006-11-16 04:40:48 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3065,8 +3065,8 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 							GMT_free ((void *)x2);
 							GMT_free ((void *)y2);
 						}
-						n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 						if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
+						n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 						i0 = i + 1;
 						go_on = FALSE;
 						j0 = j;
@@ -3138,9 +3138,68 @@ int GMT_splice_contour (double **x, double **y, int n, double **x2, double **y2,
 	return (m);
 }
 
-void GMT_orient_contour (float *grd, struct GRD_HEADER *header, double *x, double *y, int n, int orient)
-{	/* Dummy at the moment */
+void GMT_orient_contour (float *grd, struct GRD_HEADER *h, double *x, double *y, int n, int orient)
+{
 	/* Determine handedness of the contour and if opposite of orient reverse the contour */
+	BOOLEAN reverse;
+	int i, j, k, ii[2], jj[2], side[2], z_dir;
+	double fx[2], fy[2], slop = 1.0e-12;
+	
+	
+	for (k = 0; k < 2; k++) {	/* Calculate fractional node numbers from left/top */
+		fx[k] = (x[k] - h->x_min) / h->x_inc - h->xy_off;
+		fy[k] = (h->y_max - y[k]) / h->y_inc - h->xy_off;
+		ii[k] = (int) floor (fx[k]+slop);
+		jj[k] = (int) ceil  (fy[k]-slop);
+	}
+	
+	i = MIN (ii[0], ii[1]);	/* This is (i,j) of the lower left node in the rectangle defined by 4 nodes */
+	j = MAX (jj[0], jj[1]);
+	
+	z_dir = (grd[j*h->nx+i] > 0.0) ? +1 : -1;	/* +1 if lower-left node is higher than contour value, else -1 */
+	
+	for (k = 0; k < 2; k++) {	/* Determine which edge the contour points lie on (0-3) */
+		if (fmod (fx[k], 1.0) < GMT_CONV_LIMIT)		/* Point is on a vertical grid line (left [3] or right [1]) */
+			side[k] = (ii[k] == i) ? 3 : 1;
+		else						/* Point must be on horizontal grid line (top [2] or bottom [0]) */
+			side[k] = (jj[k] == j) ? 0 : 2;
+	}
+	
+	switch (side[0]) {	/* Entry side */
+		case 0:	/* Bottom: Regardless of exit the LL node is to the left of line vector */
+			reverse = (z_dir == orient);
+			break;
+		case 1:	/* right: Must check exit */
+			switch (side[1]) {
+				case  0:	/* Bottom: LL Node is the the right of vector */
+					reverse = (z_dir != orient);
+					break;
+				default:	/* left and top it is to the left */
+					reverse = (z_dir == orient);
+					break;
+			}
+			break;
+		case 2:	/* Top: Must check exit */
+			switch (side[1]) {
+				case 3:	/* Left: LL node is to the left of vector */
+					reverse = (z_dir == orient);
+					break;
+				default:	/* Bottom and right: LL node is to the right of vector */
+					reverse = (z_dir != orient);
+					break;
+			}
+			break;
+		case 3:	/* Left: LL node is always to the right of line vector */
+			reverse = (z_dir != orient);
+			break;
+	}
+	
+	if (reverse) {	/* Must reverse order of contour */
+		for (i = 0, j = n-1; i < n/2; i++, j--) {
+			d_swap (x[i], x[j]);
+			d_swap (y[i], y[j]);
+		}
+	}
 }
 
 int GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, double y0, int *edge, double **x_array, double **y_array, int i, int j, int kk, int offset, int *i_off, int *j_off, int *k_off, int *p, unsigned int *bit, int *nan_flag)
