@@ -1,28 +1,28 @@
 # GMT Time language file for NL (Dutch/Netherlands) mode [NL]
 #
-#       $Id: nl.d,v 1.1 2002-02-25 01:44:40 pwessel Exp $
+#       $Id: nl.d,v 1.2 2006-11-17 01:42:00 remko Exp $
 #-------------------------------------------------
 # Monthnames, with 3-char and 1-char abbreviations
-M	1	Januari		Jan	J
-M	2	Februari	Feb	F
-M	3	Maart		Mar	M
-M	4	April		Apr	A
-M	5	Mei		Mei	M
-M	6	Juni		Jun	J
-M	7	Juli		Jul	J
-M	8	Augustus	Aug	A
-M	9	September	Sep	S
-M	10	Oktober		Okt	O
-M	11	November	Nov	N
-M	12	December	Dec	D
+M	1	januari		jan	J
+M	2	februari	feb	F
+M	3	maart		mar	M
+M	4	april		apr	A
+M	5	mei		mei	M
+M	6	juni		jun	J
+M	7	juli		jul	J
+M	8	augustus	aug	A
+M	9	september	sep	S
+M	10	oktober		okt	O
+M	11	november	nov	N
+M	12	december	dec	D
 # Name and abbreviations for the word Week in this language
-U	1	Week		Wk	W
+U	1	week		wk	W
 # Weeknames, with 3-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
-W	1	Zondag		Zo	Z
-W	2	Maandag		Ma	M
-W	3	Dinsdag		Di	D
-W	4	Woensdag	Wo	W
-W	5	Donderdag	Do	D
-W	6	Vrijdag		Vr	V
-W	7	Zaterdag	Za	Z
+W	1	zondag		zo	Z
+W	2	maandag		ma	M
+W	3	dinsdag		di	D
+W	4	woensdag	wo	W
+W	5	donderdag	do	D
+W	6	vrijdag		vr	V
+W	7	zaterdag	za	Z
