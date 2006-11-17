@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.270 2006-11-16 04:40:48 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.271 2006-11-17 19:58:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2624,7 +2624,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 		G->f_xy[1] = (double *) GMT_memory ((void *)VNULL, n_alloc, sizeof (double), GMT_program);
 		if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)VNULL, n_alloc, sizeof (char *), GMT_program);
 		G->f_n = 0;
-		while (fgets (buffer, BUFSIZ, fp)) {
+		while (GMT_fgets (buffer, BUFSIZ, fp)) {
 			if (buffer[0] == '#' || buffer[0] == '>' || buffer[0] == '\n') continue;
 			len = strlen (buffer);
 			for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)buffer[i]); i--);
