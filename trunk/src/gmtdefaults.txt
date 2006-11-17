@@ -677,11 +677,11 @@ Custom language files can be placed in directories \fB$GMTHOME\fP/share/time or 
 Determines which time epoch the relative time refers to and what the units are.  Choose from one of the preset systems below
 (epoch and units are indicated):
 .br
-JD	Julian Date, -4713-11-25T12:00:00 d
+JD	-4713-11-25T12:00:00 d	(Julian Date)
 .br
-MJD	Modified Julian Date, 1858-11-27T00:00:00 d
+MJD	1858-11-27T00:00:00 d	(Modified Julian Date)
 .br
-J2000	2000-01-01T00:00:00 d
+J2000	2000-01-01T12:00:00 d
 .br
 S1985	1985-01-01T00:00:00 c
 .br
