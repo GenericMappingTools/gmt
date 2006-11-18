@@ -10,7 +10,7 @@
 psrose \- Plot (length, azimuth) as windrose diagram or polar histogram (sector or rose diagram).
 .SH SYNOPSIS
 \fBpsrose\fP \fIfile\fP [ OPT(A)\fIsector_width\fP[\fBr\fP] ] 
-[ GMT_B_OPT ] [ OPT(C)[\fImode_file\fP] ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] 
+[ GMT_B_OPT ] [ OPT(C)[\fImode_file\fP] ] [ OPT(D) ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] 
 [ GMT_H_OPT ] [ OPT(I) ] [ GMT_K_OPT ] [ OPT(M)[\fIparameters\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(R)\fIr0\fP/\fIr1\fP/\fIaz_0\fP/\fIaz_1\fP ] [ OPT(S)\fIradial_scale\fP[\fBn\fP] ] [ OPT(T) ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
@@ -36,6 +36,9 @@ Remember that "x" here is radial distance and
 .B \-C
 Plot vectors showing the principal directions given in the \fImodes\fP file.  If no file is
 given, compute and plot mean direction.
+.TP
+.B \-D
+Shift sectors so that they are centered on the bin interval (e.g., first sector is centered on 0 degrees).
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation [180/90]\"'
