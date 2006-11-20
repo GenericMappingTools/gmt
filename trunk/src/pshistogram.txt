@@ -1,13 +1,13 @@
 .TH PSHISTOGRAM GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 #define LEN 0.75
-#define SCALE \fB\-Jx\fP0.75\fBc\fP/0.01\fBc\fP
+#define SCALE OPT(Jx)LEN\fBc\fP/0.01\fBc\fP
 .SH NAME
 pshistogram \- Bin data and plot histograms
 .SH SYNOPSIS
-\fBpshistogram\fB \fIfile\fP GMT_Jx_OPT OPT(W)\fIbin_width\fP [ OPT(A) ] [ GMT_B_OPT ] 
+\fBpshistogram\fP \fIfile\fP GMT_Jx_OPT OPT(W)\fIbin_width\fP [ OPT(A) ] [ GMT_B_OPT ] 
 [ OPT(C) ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
-[ OPT(I)[\fBo\fP|\fBO\fP] ] [ GMT_K_OPT ] [ OPT(L)\fIpen\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ \fB\-Q\fP ] 
+[ OPT(I)[\fBo\fP|\fBO\fP] ] [ GMT_K_OPT ] [ OPT(L)\fIpen\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
 [ GMT_Rx_OPT ] [ OPT(S) ] [ OPT(T)\fIcol\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ]  
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fItype\fP ] [ GMT_c_OPT ] 
 [ GMT_bi_OPT ] [ GMT_f_OPT ]
@@ -18,7 +18,7 @@ scaling, and optional range parameters it will generate \fIPostScript\fP code th
 A cumulative histogram may also be specified.  
 .TP
 \fIfile\fP
-ASCII [or binary, see \fB\-b\fP] datafile. If no file is given, \fBpshistogram\fP will read standard input.
+ASCII [or binary, see OPT(b)] datafile. If no file is given, \fBpshistogram\fP will read standard input.
 .TP
 .B \-Jx
 \fIxscale[/yscale]\fP (Linear scale(s) in distance unit/data unit).
@@ -83,7 +83,7 @@ To draw a histogram of the data v3206.t containing seafloor depths, using a 250 
 bin width, center bars, and draw bar outline, use:
 .br
 .sp
-\fBpshistogram\fP v3206.t \fB\-JX\fPh \fB\-W\fP250 \fB\-C \-L\fP0.5\fBp\fP \fB\-V\fP > plot.ps
+\fBpshistogram\fP v3206.t OPT(JX)h OPT(W)250 OPT(C) OPT(L)P0.5\fBp\fP OPT(V) > plot.ps
 .br
 .sp
 If you know the distribution of your data, you may explicitly specify range and scales.  E.g.,
@@ -92,13 +92,13 @@ bin width, plot from -10 to +10 meters @ LEN cm/m, annotate every 2 m and 100 co
 and use black bars, run:
 .br
 .sp
-\fBpshistogram\fP errors.xy \fB\-W\fP1 \fB\-R\fP-10/10/0/0 SCALE
-\fB\-B\fP2:Error:/100:Counts: \fB\-G\fPblack \fB\-T\fP1 \fB\-V\fP > plot.ps
+\fBpshistogram\fP errors.xy OPT(W)1 OPT(R)-10/10/0/0 SCALE
+OPT(B)2:Error:/100:Counts: OPT(G)black OPT(T)1 OPT(V) > plot.ps
 .br
 .sp
 Since no y-range was specified, pshistogram will calculate ymax in even increments of 100.
 .SH BUGS
-The \fB\-W\fP option does not yet work properly with time series data (e.g., \fB\-f\fP0T).  Thus, such
+The OPT(W) option does not yet work properly with time series data (e.g., OPT(f)0T).  Thus, such
 variable intervals as months and years are not calculated.  Instead, specify your interval in the
 same units as the current setting of \fBTIME_UNIT\fP.
 .SH "SEE ALSO"
