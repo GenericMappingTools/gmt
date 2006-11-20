@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 03
 #
-#		$Id: job03.sh,v 1.12 2006-10-22 14:26:49 remko Exp $
+#		$Id: job03.sh,v 1.13 2006-11-20 01:10:31 pwessel Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, gmtset, minmax, project, sample1d
@@ -113,7 +113,7 @@ paste samp_ship.pg samp_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C > /dev/n
 # Note the extended use of pstext and psxy to put labels and legends directly on the plots.  
 # For that purpose we often use -Jx1i and specify positions in inches directly:
 #
-psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack -Ey/2 -Y1.5i > example_03.ps
+psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack -Ey/0.5p -Y1.5i > example_03.ps
 echo "3.85 3.6 18 0.0 1 TR Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -O -K >> example_03.ps
 cat << END > box.d
 2.375	3.75
@@ -121,8 +121,8 @@ cat << END > box.d
 4	3.25
 END
 psxy -R -Jx -O -K -Wthicker box.d >> example_03.ps
-psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/2 >> example_03.ps
-psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/2 >> example_03.ps
+psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03.ps
+psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> example_03.ps
 echo "3.9 3.6 18 0.0 1 TR Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03.ps
 psxy -R -Jx -O -K -Wthicker box.d >> example_03.ps
 psxy -R -Jx -O -K -Glightgray -L -Wthicker << END >> example_03.ps
@@ -169,7 +169,7 @@ psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 #
 paste samp2_ship.pg samp2_sat.pg | cut -f2,4 | spectrum1d -S256 -D1 -W -C > /dev/null
 # 
-psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack -Ey/2 -Y1.5i > example_03f.ps
+psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack -Ey/0.5p -Y1.5i > example_03f.ps
 echo "3.85 3.6 18 0.0 1 TR Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03f.ps
 cat << END > box.d
 2.375	3.75
@@ -177,8 +177,8 @@ cat << END > box.d
 4	3.25
 END
 psxy -R -Jx -O -K -Wthicker box.d >> example_03f.ps
-psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/2 >> example_03f.ps
-psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/2 >> example_03f.ps
+psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03f.ps
+psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> example_03f.ps
 echo "3.9 3.6 18 0.0 1 TR Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03f.ps
 psxy -R -Jx -O -K -Wthicker box.d >> example_03f.ps
 psxy -R -Jx -O -K -Glightgray -L -Wthicker << END >> example_03f.ps

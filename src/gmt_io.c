@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.122 2006-10-30 02:47:50 remko Exp $
+ *	$Id: gmt_io.c,v 1.123 2006-11-20 01:10:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -162,7 +162,7 @@ BOOLEAN GMT_getuserpath (const char *stem, char *path)
 	return (FALSE);	/* No file found, give up */
 }
 
-BOOLEAN GMT_getdatapath (const char *stem, char *path)
+char * GMT_getdatapath (const char *stem, char *path)
 {
 	/* stem is the name of the file, e.g., grid.img
 	 * path is the full path to the file in question
@@ -174,29 +174,29 @@ BOOLEAN GMT_getdatapath (const char *stem, char *path)
 
 	if (!access (stem, R_OK)) {	/* Yes, found it */
 		strcpy (path, stem);
-		return (TRUE);
+		return (path);
 	}
 
 	/* Not found, see if there is a file in the GMT_*DIR directories */
 
 	if (GMT_USERDIR) {
 		sprintf (path, "%s%c%s", GMT_USERDIR, DIR_DELIM, stem);
-		if (!access (path, R_OK)) return (TRUE);
+		if (!access (path, R_OK)) return (path);
 	}
 	if (GMT_DATADIR) {
 		sprintf (path, "%s%c%s", GMT_DATADIR, DIR_DELIM, stem);
-		if (!access (path, R_OK)) return (TRUE);
+		if (!access (path, R_OK)) return (path);
 	}
 	if (GMT_GRIDDIR) {
 		sprintf (path, "%s%c%s", GMT_GRIDDIR, DIR_DELIM, stem);
-		if (!access (path, R_OK)) return (TRUE);
+		if (!access (path, R_OK)) return (path);
 	}
 	if (GMT_IMGDIR) {
 		sprintf (path, "%s%c%s", GMT_IMGDIR, DIR_DELIM, stem);
-		if (!access (path, R_OK)) return (TRUE);
+		if (!access (path, R_OK)) return (path);
 	}
 
-	return (FALSE);	/* No file found, give up */
+	return (NULL);	/* No file found, give up */
 }
 
 BOOLEAN GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
@@ -235,6 +235,7 @@ BOOLEAN GMT_getsharepath (const char *subdir, const char *stem, const char *suff
 	return (FALSE);	/* No file found, give up */
 }
 
+#ifdef DONOTUSE
 FILE *GMT_fopen (const char* filename, const char *mode)
 {	/* Like fopen, but checks GMT_*DIR places */
 	FILE *fp;
@@ -251,6 +252,7 @@ FILE *GMT_fopen (const char* filename, const char *mode)
 	}
 	return (NULL);
 }
+#endif
 
 int GMT_access (const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
@@ -275,10 +277,12 @@ FILE *GMT_fdopen (int handle, const char *mode)
 	return (NULL);
 }
 
+#ifdef DONOTUSE
 int GMT_fclose (FILE *stream)
 {
         return (fclose (stream));
 }
+#endif
 
 void GMT_io_init (void)
 {
@@ -505,11 +509,12 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	return (col_no);
 }
 
+#ifdef DONOTUSE
 char *GMT_fgets (char *record, int maxlength, FILE *fp)
 {
 	return (fgets (record, maxlength, fp));
 }
-
+#endif
 
 int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 {
@@ -2636,6 +2641,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 	/* Reads an entire multisegment data set into memory */
 
 	char open_mode[4], file[BUFSIZ];
+	char GMT_fopen_path[BUFSIZ];
 	BOOLEAN save, ascii, close_file = FALSE, no_segments;
 	size_t n_seg_alloc = GMT_CHUNK, n_row_alloc = GMT_CHUNK, row = 0;
 	int seg = -1, k, n, n_read = 0, n_fields, n_expected_fields;
@@ -2842,6 +2848,7 @@ int GMT_export_table (void *dest, int dest_type, struct GMT_TABLE *table, BOOLEA
 	/* Writes an entire multisegment data set to file or wherever */
 
 	char open_mode[4], file[BUFSIZ];
+	char GMT_fopen_path[BUFSIZ];
 	BOOLEAN ascii, close_file = FALSE;
 	size_t row = 0;
 	int seg, col;

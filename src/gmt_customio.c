@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.52 2006-10-30 16:17:50 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.53 2006-11-20 01:10:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -307,6 +307,7 @@ void GMT_grdio_init (void) {
 int GMT_is_ras_grid (char *file)
 {	/* Determine if file is a Sun rasterfile */
 	FILE *fp;
+	char GMT_fopen_path[BUFSIZ];
 	struct rasterfile h;
 	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
 		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
@@ -330,6 +331,7 @@ int GMT_ras_read_grd_info (struct GRD_HEADER *header)
 	FILE *fp;
 	struct rasterfile h;
 	unsigned char u;
+	char GMT_fopen_path[BUFSIZ];
 	int i;
 
 	if (!strcmp (header->name, "=")) {
@@ -376,6 +378,7 @@ int GMT_ras_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE *fp;
 	struct rasterfile h;
+	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "="))
 	{
@@ -424,6 +427,7 @@ int GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	unsigned char *tmp;
 	struct rasterfile h;
 	int *k;
+	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -512,6 +516,7 @@ int GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	BOOLEAN check, do_header = TRUE;
 
 	unsigned char *tmp;
+	char GMT_fopen_path[BUFSIZ];
 
 	FILE *fp;
 
@@ -783,6 +788,7 @@ int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	FILE *fp;
 	BOOLEAN piping = FALSE, check = FALSE;
 	unsigned int *tmp, ival;
+	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -875,8 +881,7 @@ int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	int j, ij, j2, width_in, width_out, height_out, mx, word, bit, inc = 1;
 	int first_col, last_col, first_row, last_row;
 	BOOLEAN check = FALSE, do_header = TRUE;
-
-
+	char GMT_fopen_path[BUFSIZ];
 	unsigned int *tmp, ival;
 
 	FILE *fp;
@@ -1028,6 +1033,7 @@ int GMT_native_read_grd_info (struct GRD_HEADER *header)
 	 * all the native binary formats in GMT */
 
 	FILE *fp;
+	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -1053,6 +1059,7 @@ int GMT_native_write_grd_info (struct GRD_HEADER *header)
 	 * all the native binary formats in GMT */
 
 	FILE *fp;
+	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -1095,6 +1102,7 @@ int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	void *tmp;			/* Array pointer for reading in rows of data */
+	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -1203,6 +1211,7 @@ int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, doub
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	BOOLEAN do_header = TRUE;	/* TRUE if we should write the header first */
 	void *tmp;			/* Array pointer for writing in rows of data */
+	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -1411,6 +1420,7 @@ int GMT_is_srf_grid (char *file)
 {
 	FILE *fp;
 	char id[5];
+	char GMT_fopen_path[BUFSIZ];
 	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
 		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
 		exit (EXIT_FAILURE);
@@ -1434,6 +1444,7 @@ int GMT_srf_read_grd_info (struct GRD_HEADER *header)
 	int GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h);
 	int GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h);
 	char id[5];
+	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -1504,6 +1515,7 @@ int GMT_srf_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE *fp;
 	struct srf_header6 h;
+	char GMT_fopen_path[BUFSIZ];
 	int GMT_write_srfheader (FILE *fp, struct srf_header6 *h);
 
 	if (!strcmp (header->name, "="))
@@ -1585,6 +1597,7 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	void *tmp;			/* Array pointer for reading in rows of data */
+	char GMT_fopen_path[BUFSIZ];
 	header->nan_value = 0.1701410e39;	/* Test value in Surfer grids */
 
 	if (!strcmp (header->name, "=")) {
@@ -1696,6 +1709,7 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	FILE *fp;			/* File pointer to data or pipe */
 	void *tmp;			/* Array pointer for writing in rows of data */
 	struct srf_header6 h;
+	char GMT_fopen_path[BUFSIZ];
 
 	header->nan_value = 0.1701410e39;	/* Test value in Surfer grids */
 

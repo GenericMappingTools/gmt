@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.271 2006-11-17 19:58:43 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.272 2006-11-20 01:10:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2614,6 +2614,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 		int n_col, len;
 		BOOLEAN bad_record = FALSE;
 		double xy[2];
+		char GMT_fopen_path[BUFSIZ];
 
 		if ((fp = GMT_fopen (G->file, "r")) == NULL) {
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -%c:  Could not open file %s\n", GMT_program, G->flag, G->file);
@@ -3460,11 +3461,11 @@ void GMT_dump_contour (double *xx, double *yy, int nn, double cval, int id, BOOL
 	sprintf (format, "%s\t%s\t%s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 	if (!GMT_io.binary[1] && GMT_io.multi_segments[GMT_OUT]) {
 		if (GMT_io.multi_segments[GMT_OUT] == 2) {	/* Must create file the first time around */
-			fp = GMT_fopen (file, "w");
+			fp = fopen (file, "w");
 			GMT_io.multi_segments[GMT_OUT] = TRUE;
 		}
 		else	/* Later we append to it */
-			fp = GMT_fopen (file, "a+");
+			fp = fopen (file, "a+");
 		sprintf (GMT_io.segment_header, "%c %g contour\n", GMT_io.EOF_flag[GMT_OUT], cval);
 		GMT_write_segmentheader (fp, 3);
 	}
@@ -3481,7 +3482,7 @@ void GMT_dump_contour (double *xx, double *yy, int nn, double cval, int id, BOOL
 			else
 				sprintf (fname, "%s_%g_%d.%s", file, cval, id, suffix);
 		}
-		fp = GMT_fopen (fname, GMT_io.w_mode);
+		fp = fopen (fname, GMT_io.w_mode);
 	}
 	for (i = 0; i < nn; i++) {
 		out[0] = xx[i];	out[1] = yy[i];
