@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.258 2006-11-14 22:57:08 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.259 2006-11-20 20:43:39 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2478,21 +2478,18 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults4 file and ini
 	 /* Default is to draw AND annotate all sides */
 	for (i = 0; i < 5; i++) frame_info.side[i] = 2;
 
-	if (!this_file) {	/* Must figure out if there is a .gmtdefaults[4] file to use */
-
-		if (! (GMT_getuserpath (".gmtdefaults4", file) || GMT_getuserpath (".gmtdefaults", file))) {
-			/* No .gmtdefaults[4] files in sight; Must use GMT system defaults */
-			char *path;
-			path = GMT_getdefpath (0);
-			strcpy (file, path);
-			GMT_free ((void *)path);
-		}
+	if (this_file)	/* Defaults file is specified */
+		(void) GMT_loaddefaults (this_file);
+	else if (GMT_getuserpath (".gmtdefaults4", file))
+		(void) GMT_loaddefaults (file);
+	else if (GMT_getuserpath (".gmtdefaults", file))
+		(void) GMT_loaddefaults (file);
+	else {		/* No .gmtdefaults[4] files in sight; Must use GMT system defaults */
+		char *path;
+		path = GMT_getdefpath (0);
+		(void) GMT_loaddefaults (path);
+		GMT_free ((void *)path);
 	}
-	else
-		strcpy (file, this_file);
-
-	(void) GMT_loaddefaults (file);
-
 }
 
 char *GMT_getdefpath (int get)

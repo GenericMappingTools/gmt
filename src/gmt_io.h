@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.52 2006-11-20 01:10:31 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.53 2006-11-20 20:43:39 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -69,9 +69,9 @@
 #define GMT_fclose(fp) fclose(fp)
 #define GMT_fgets(line,buf,fp) fgets(line,buf,fp)
 
-EXTERN_MSC BOOLEAN GMT_getuserpath (const char *stem, char *path);		/* Look for user file */
+EXTERN_MSC char *GMT_getuserpath (const char *stem, char *path);		/* Look for user file */
 EXTERN_MSC char *GMT_getdatapath (const char *stem, char *path);		/* Look for data file */
-EXTERN_MSC BOOLEAN GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);		/* Look for shared file */
+EXTERN_MSC char *GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);	/* Look for shared file */
 EXTERN_MSC int GMT_access (const char *filename, int mode);		/* access wrapper */
 EXTERN_MSC FILE *GMT_fdopen (int handle, const char *mode);		/* fdopen wrapper */
 EXTERN_MSC void GMT_io_init (void);					/* Initialize pointers */

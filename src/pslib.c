@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.130 2006-11-10 04:16:38 pwessel Exp $
+ *	$Id: pslib.c,v 1.131 2006-11-20 20:43:39 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -218,7 +218,7 @@ void ps_colorimage_cmap (double x, double y, double xsize, double ysize, indexed
 unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header);
 unsigned char *ps_load_eps (FILE *fp, struct imageinfo *header);
 int ps_get_boundingbox (FILE *fp, int *llx, int *lly, int *trx, int *try);
-BOOLEAN ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);
+char *ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);
 
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
@@ -4559,38 +4559,35 @@ int ps_get_boundingbox(FILE *fp, int *llx, int *lly, int *trx, int *try)
 	return 0;
 }
 
-BOOLEAN ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
+char * ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
 {
 	/* stem is the name of the file, e.g., CUSTOM_font_info.d
 	 * subdir is an optional subdirectory name in the $GMTHOME/share directory.
 	 * suffix is an optional suffix to append to name
 	 * path is the full path to the file in question
-	 * Returns TRUE if a workable path was found (sets path as well)
+	 * Returns the full pathname if a workable path was found
 	 * Looks for file stem in current directory, ~/.gmt and $GMTHOME/share/subdir
 	 */
 
 	/* First look in the current working directory */
 
 	sprintf (path, "%s%s", stem, suffix);
-	if (!access (path, R_OK)) return (TRUE);	/* Yes, found it in current directory */
+	if (!access (path, R_OK)) return (path);	/* Yes, found it in current directory */
 
-	/* Not found, see if there is a file in the user's .gmt directory */
+	/* Not found, see if there is a file in the user's GMT_USERDIR (~/.gmt) directory */
 
 	if (PSL_USERDIR) {
 		sprintf (path, "%s%c%s%s", PSL_USERDIR, DIR_DELIM, stem, suffix);
-		if (!access (path, R_OK)) return (TRUE);	/* Yes, use the file in $PSL_USERDIR */
+		if (!access (path, R_OK)) return (path);
 	}
 
 	/* Finally try to get file from $GMTHOME/share[/subdirname] */
 
-	if (subdir) {
+	if (subdir)
 		sprintf (path, "%s%cshare%c%s%c%s%s", PSL_HOME, DIR_DELIM, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
-
-	}
-	else {
+	else
 		sprintf (path, "%s%cshare%c%s%s", PSL_HOME, DIR_DELIM, DIR_DELIM, stem, suffix);
-	}
-	if (!access (path, R_OK)) return (TRUE);	/* Yes, use the file in $GMTHOME/share/subdir */
+	if (!access (path, R_OK)) return (path);	/* Yes, use the file in $GMTHOME/share/subdir */
 
-	return (FALSE);	/* No file found, give up */
+	return (NULL);	/* No file found, give up */
 }
