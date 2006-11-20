@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.54 2006-10-26 00:12:01 remko Exp $
+ *	$Id: gmt_nc.c,v 1.55 2006-11-20 16:06:05 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -64,11 +64,15 @@ int GMT_is_nc_grid (char *file)
 	nc_type z_type;
 	char filename[GMT_LONG_TEXT];
 
-	/* Strip off '?' suffix */
+	/* Extract variable name from filename */
 	strcpy (filename, file);
 	while (filename[i] && filename[i] != '?') i++;
-	if (filename[i])
+	if (filename[i]) {
 		filename[i] = '\0';
+		j = i + 1;
+		while (filename[j] && filename[j] != '[' && filename[j] != '(') j++;
+		if (filename[j]) filename[j] = '\0';
+	}
 	else
 		i = -1;
 	nc_nopipe (filename);
@@ -198,7 +202,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 			exit (EXIT_FAILURE);
 		}
 		if (z_id < 0) {
-			fprintf (stderr, "%s: Could not find 2-dimensional variable [%s]\n", GMT_program, header->name);
+			fprintf (stderr, "%s: no 2-D variable in file [%s]\n", GMT_program, header->name);
 			exit (EXIT_FAILURE);
 		}
 
