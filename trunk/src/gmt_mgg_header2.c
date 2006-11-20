@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.15 2006-11-15 17:12:48 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.16 2006-11-20 01:10:31 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -193,6 +193,7 @@ int GMT_is_mgg2_grid (char *file)
 {	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
+	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
 		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
@@ -221,6 +222,7 @@ int mgg2_read_grd_info (struct GRD_HEADER *header)
 {
 	FILE			*fp = NULL;
 	MGG_GRID_HEADER_2	mggHeader;
+	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp(header->name, "=")) {
 		fp = stdin;
@@ -263,7 +265,7 @@ int mgg2_write_grd_info (struct GRD_HEADER *header)
 	
 	if (!strcmp(header->name, "=")) {
 		fp = stdout;
-	} else if ((fp = GMT_fopen(header->name, GMT_io.w_mode)) == NULL) {
+	} else if ((fp = fopen(header->name, GMT_io.w_mode)) == NULL) {
 		fprintf(stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (-1);
 	}
@@ -295,6 +297,7 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 	BOOLEAN piping = FALSE, geo = FALSE;
 	double half_or_zero, x, small;
 	long long_offset;	/* For fseek only */
+	char GMT_fopen_path[BUFSIZ];
 	
 	if (complex) {
 		fprintf (stderr, "GMT Fatal Error: MGG grdfile %s cannot hold complex data!\n", header->name);
@@ -305,7 +308,6 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 		fp = stdin;
 		piping = TRUE;
 	}
-/*	else if ((fp = fopen (header->name, "rb")) != NULL) {  */
 	else if ((fp = GMT_fopen (header->name, GMT_io.r_mode)) != NULL) {
 		fread(&mggHeader, 1, sizeof(MGG_GRID_HEADER_2), fp);
         swap_header(&mggHeader);
@@ -571,8 +573,7 @@ int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, 
 	if (!strcmp (header->name, "=")) {
 		fp = stdout;
 	}
-/*	else if ((fp = fopen (header->name, "wb")) == NULL) {      */
-	else if ((fp = GMT_fopen (header->name, GMT_io.w_mode)) == NULL) {
+	else if ((fp = fopen (header->name, GMT_io.w_mode)) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (-1);
 	}

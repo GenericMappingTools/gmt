@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.57 2006-10-17 20:26:46 remko Exp $
+ *	$Id: x2sys.c,v 1.58 2006-11-20 01:10:32 pwessel Exp $
  *
  *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -929,7 +929,7 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode)
 	sprintf (track_file, "%s_tracks.d", TAG);
 	x2sys_path (track_file, track_path);
 
-	if ((ftrack = GMT_fopen (track_path, "r")) == NULL) {
+	if ((ftrack = fopen (track_path, "r")) == NULL) {
 		fprintf (stderr, "%s: Could not find %s\n", X2SYS_program, track_file);
 		exit (EXIT_FAILURE);
 	}
@@ -976,7 +976,7 @@ void x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B)
 	sprintf (index_file, "%s_index.b",  TAG);
 	x2sys_path (index_file, index_path);
 
-	if ((fbin = GMT_fopen (index_path, "rb")) == NULL) {
+	if ((fbin = fopen (index_path, "rb")) == NULL) {
 		fprintf (stderr,"%s: Could not open %s\n", X2SYS_program, index_path);
 		exit (EXIT_FAILURE);
 	}

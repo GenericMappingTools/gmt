@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.10 2006-10-24 20:19:25 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.11 2006-11-20 01:10:31 pwessel Exp $
  *
  * Based on original code from Robert Helie.  That code was hard-wired
  * in two applications (gmt2agcgrd.c and agc2gmtgrd.c) based on GMT 3.4.
@@ -34,6 +34,7 @@
 int GMT_is_agc_grid (char *file)
 {	/* Determine if file is a AGC grid file NOT FINISHED YET!!!! */
 	FILE *fp = NULL;
+	char GMT_fopen_path[BUFSIZ];
 	int nx, ny, predicted_size;
 	float recdata[RECORDLENGTH], x_min, x_max, y_min, y_max, x_inc, y_inc;
 	struct STAT buf;
@@ -73,6 +74,7 @@ int GMT_is_agc_grid (char *file)
 int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 {	/* All AGC files are assumed to be gridline-registered */
 	FILE *fp;
+	char GMT_fopen_path[BUFSIZ];
 	int i;
 	float recdata[RECORDLENGTH];
 	float agchead[BUFFHEADSIZE];
@@ -116,6 +118,7 @@ int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 int GMT_agc_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE *fp;
+	char GMT_fopen_path[BUFSIZ];
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
 	void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header);
 
@@ -161,6 +164,7 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
+	char GMT_fopen_path[BUFSIZ];
 	void ReadRecord (FILE *fpi, int recnum, float *z);
 	
 	if (!strcmp (header->name, "=")) {
@@ -272,6 +276,7 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	int rowstart, rowend, colstart, colend = 0, datablockcol, datablockrow;
 	int j_gmt, row, col;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
+	char GMT_fopen_path[BUFSIZ];
 	void WriteRecord (FILE *file, float *rec, float *prerec, float *postrec);
 	void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header);
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.84 2006-10-30 21:18:19 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.85 2006-11-20 01:10:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -520,6 +520,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	int r_w;
 	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
+	char GMT_fopen_path[BUFSIZ];
 	BOOLEAN header = TRUE, magic = TRUE;
 	EXTERN_MSC int GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 
@@ -555,7 +556,11 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		G->start[1] = 0;
 	}
 	else {				/* Regular binary file with/w.o standard GMT header */
-		if ((G->fp = GMT_fopen (G->header.name, bin_mode[r_w])) == NULL) {
+		if (r_w == 0 && (G->fp = GMT_fopen (G->header.name, bin_mode[0])) == NULL) {
+			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->header.name);
+			exit (EXIT_FAILURE);
+		}
+		else if ((G->fp = fopen (G->header.name, bin_mode[r_w])) == NULL) {
 			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->header.name);
 			exit (EXIT_FAILURE);
 		}
@@ -1071,6 +1076,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	int min, i, j, k, ij, mx, my, first_i, n_skip, n_cols;
 	short int *i2;
 	char file[BUFSIZ];
+	char GMT_fopen_path[BUFSIZ];
 	struct STAT buf;
 	FILE *fp;
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.51 2006-10-27 23:45:23 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.52 2006-11-20 01:10:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -65,19 +65,20 @@
 #define GMT_IS_ARGTIME		32	/* To invoke GMT_scanf_argtime()  */
 #define GMT_IS_UNKNOWN		128	/* Input type is not knowable without -f */
 
+#define GMT_fopen(filename,mode)  fopen(GMT_getdatapath(filename, GMT_fopen_path),mode)
+#define GMT_fclose(fp) fclose(fp)
+#define GMT_fgets(line,buf,fp) fgets(line,buf,fp)
+
 EXTERN_MSC BOOLEAN GMT_getuserpath (const char *stem, char *path);		/* Look for user file */
-EXTERN_MSC BOOLEAN GMT_getdatapath (const char *stem, char *path);		/* Look for data file */
+EXTERN_MSC char *GMT_getdatapath (const char *stem, char *path);		/* Look for data file */
 EXTERN_MSC BOOLEAN GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);		/* Look for shared file */
 EXTERN_MSC int GMT_access (const char *filename, int mode);		/* access wrapper */
-EXTERN_MSC FILE *GMT_fopen (const char *filename, const char *mode);	/* fopen wrapper */
 EXTERN_MSC FILE *GMT_fdopen (int handle, const char *mode);		/* fdopen wrapper */
-EXTERN_MSC int GMT_fclose (FILE *stream);				/* fclose wrapper */
 EXTERN_MSC void GMT_io_init (void);					/* Initialize pointers */
 EXTERN_MSC int GMT_parse_b_option (char *text);				/* Decode -b option and set parameters */
 EXTERN_MSC int GMT_parse_f_option (char *text);				/* Decode -i option and set parameters */
 EXTERN_MSC void GMT_multisegment (char *text);				/* Decode -M option */
 EXTERN_MSC void GMT_write_segmentheader (FILE *fp, int n);		/* Write multisegment header back out */
-EXTERN_MSC char *GMT_fgets (char *record, int maxlength, FILE *fp);	/* Does a fscanf from inside gmt_io to keep DLLs working */
 EXTERN_MSC int GMT_scanf (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats [Data records only ] */
 EXTERN_MSC int GMT_scanf_arg (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats [ command line only ] */
 EXTERN_MSC int	GMT_scanf_argtime (char *s, double *val);		/* Convert an argument token to a time  */

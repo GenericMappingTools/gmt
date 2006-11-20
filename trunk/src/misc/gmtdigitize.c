@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.7 2006-04-10 05:47:30 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.8 2006-11-20 01:10:32 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -537,7 +537,7 @@ FILE *next_file (char *name, int n_segments, char *this_file) {
 		else {
 			strncpy (this_file, name, BUFSIZ);
 		}
-		if ((fp = GMT_fopen (this_file, "w")) == NULL) {
+		if ((fp = fopen (this_file, "w")) == NULL) {
 			fprintf (stderr, "%s: Could not create file %s\n", GMT_program, this_file);
 			exit (EXIT_FAILURE);
 		}
