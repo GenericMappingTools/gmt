@@ -1,7 +1,7 @@
 REM
 REM		GMT EXAMPLE 03
 REM
-REM		$Id: job03.bat,v 1.9 2006-11-20 01:10:31 pwessel Exp $
+REM		$Id: job03.bat,v 1.10 2006-11-21 03:25:28 pwessel Exp $
 REM
 echo GMT EXAMPLE 03
 set master=y
@@ -21,7 +21,7 @@ REM
 project  sat.xyg -C330.169/-18.4207 -T52.7452/21.204 -S -Fpz -Q > sat.pg
 project ship.xyg -C330.169/-18.4207 -T52.7452/21.204 -S -Fpz -Q > ship.pg
 REM Now we can use sampr in gawk to make a sampling points file for sample1d:
-gmtmath -T-1167/1169/1 -N1/0 -T = samp.x
+gmtmath -T-1167/1169/1 -N1/0 = samp.x
 REM
 REM Now we can resample the projected satellite data:
 REM
