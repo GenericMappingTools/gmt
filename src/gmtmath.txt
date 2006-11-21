@@ -165,7 +165,7 @@ The calculation becomes
 .sp
 Note we use the \fB\-C\fP option to select which columns we are working on, then make active all the
 columns we need (here all of them, with \fB\-Ca\fP) before calling \fBLSQFIT\fP.  The second and fourth
-columns are preloaded with t and y(t), respectively, the other columns are zero.  If you already have
+columns (col numbers 1 and 3) are preloaded with t and y(t), respectively, the other columns are zero.  If you already have
 a precalculated table with the augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
 solution is simply
 .br
