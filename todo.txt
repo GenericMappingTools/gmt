@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.12 2006-11-15 16:59:49 remko Exp $
+#	$Id: todo.txt,v 1.13 2006-11-21 22:11:05 remko Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -13,6 +13,12 @@ gmt_init.c	The whole .gmtcommands4 history thing. Under Pauls OSX there
 		(1) GMT5 will need to deactivate this mechanism when used as API
 		(2) Order of access to .gmtcommands4 cannot be guaranteed. How
 		    do we work around that?
+		Probably should close the .gmtcommands4 file after GMT_get_history
+		and open it again in GMT_put_history (now it is kept open) and
+		move GMT_put_history to GMT_close.
+
+gmt_init.c	GMT still has trouble parsing color names. Those ending in "ta"
+		(magenta) and a number (green2) don't work.
 		    
 gmt_plot.c: 	- Treatment of tick lengths and offsets not consistent.
 		- time or geo not supported for z-axis
