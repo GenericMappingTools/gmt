@@ -3,7 +3,7 @@
 #include "common_options.txt"
 grdmath \- Reverse Polish Notation calculator for grd files
 .SH SYNOPSIS
-\fBgrdmath\fP [ OPT(F) ] [ GMT_I_OPT ] [ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] 
+\fBgrdmath\fP [ OPT(F) ] [ GMT_I_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP \fIoutgrdfile\fP
 .SH DESCRIPTION
 \fBgrdmath\fP will perform operations like add, subtract, multiply, and divide on one or more grd files or constants using
@@ -49,6 +49,12 @@ The following symbols have special meaning:
 .B \-F
 Select pixel registration (used with \fB\-R, \-I\fP).  [Default is grid registration].
 #include "explain_-I.txt"
+.TP
+.B \-M
+By default any derivatives calculated are in z_units/ x(or y)_units.
+However, the user may choose this option to convert dx,dy in degrees of
+longitude,latitude into meters using a falt Earth approximation, so that
+gradients are in z_units/meter.
 .TP
 .B \-N
 Turn off strict domain match checking when multiple grids are manipulated [Default will insist
