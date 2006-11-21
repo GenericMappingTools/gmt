@@ -102,8 +102,7 @@ derivative normal to edge is zero).]
 By default the units of \fBgrdgradient\fP are in units_of_z/ 
 units_of_dx_and_dy.
 However, the user may choose this option to convert dx,dy in degrees of
-longitude,latitude into meters, so that the units of \fBgrdgradient 
-\fP are in
+longitude,latitude into meters, so that the units of \fBgrdgradient\fP are in
 z_units/meter.
 .TP
 .B \-N
