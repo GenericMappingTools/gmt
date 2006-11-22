@@ -5,7 +5,7 @@ gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
 \fBgmtmath\fP [ OPT(A)\fIt_f(t).d\fP ] [ OPT(C)\fIcols\fP ] [ OPT(F)\fIcols\fP ] [ GMT_H_OPT ] [ OPT(I) ] 
 [ GMT_M_OPT ] [ OPT(N)\fIn_col\fP/\fIt_col\fP ] [ OPT(Q) ] [ OPT(S)[\fBf\fP|\fBl\fP] ] 
-[ OPT(T)\fIt_min\fP/\fIt_max\fP/\fIt_inc\fP|\fItfile\fP ] [ GMT_V_OPT ] [ GMT_b_OPT ] 
+[ OPT(T)\fIt_min\fP/\fIt_max\fP/\fIt_inc\fP[\fB+\fP]|\fItfile\fP ] [ GMT_V_OPT ] [ GMT_b_OPT ] 
 [ GMT_f_OPT ] \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] 
 \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
 .SH DESCRIPTION
@@ -86,6 +86,7 @@ Append \fBl\fP to get the last row and \fBf\fP to get the first row only
 .B \-T
 Required when no input files are given.  Sets the t-coordinates of the first
 and last point and the equidistant sampling interval for the "time" column (see \fB\-N\fP).
+Append \fB+\fP if you are specifying the number of equidistant points instead.
 If there is no time column (only data columns), give \fB\-T\fP with no arguments; this
 also implies \fB\-Ca\fP.  Alternatively, give the name of a file whose first column
 contains the desired t-coordinates which may be irregular.
