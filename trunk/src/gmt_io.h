@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.54 2006-11-22 01:24:24 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.55 2006-11-22 04:24:40 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -89,7 +89,6 @@ EXTERN_MSC void GMT_ascii_format_one (char *text, double x, int type);
 EXTERN_MSC void GMT_lon_range_adjust (int range, double *lon);		/* Adjust the longitude given the desired range */
 EXTERN_MSC BOOLEAN GMT_points_are_antipodal (double lonA, double latA, double lonB, double latB);
 EXTERN_MSC BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix);
-EXTERN_MSC void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
 
 struct GMT_CLOCK_IO {
 	int order[3];			/* The relative order of hour, mn, sec in input clock string */
