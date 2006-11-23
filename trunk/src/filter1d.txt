@@ -4,7 +4,7 @@
 filter1d \- Time domain filtering of 1-D time series
 .SH SYNOPSIS
 \fBfilter1d\fP [ \fIinfile\fP ] OPT(F)\fI<type><width>\fP[\fImode\fP] [ OPT(D)\fIincrement\fP ]  
-[ OPT(D) ] [ GMT_H_OPT ] [ OPT(I)\fIignore_val\fP ] [ OPT(L)\fIlack_width\fP ] 
+[ OPT(E) ] [ GMT_H_OPT ] [ OPT(I)\fIignore_val\fP ] [ OPT(L)\fIlack_width\fP ] 
 [ OPT(N)\fIn_cols/t_col\fP ] [ OPT(Q)\fIq_factor\fP ] [ OPT(S)\fIsymmetry_factor\fP ] 
 [ OPT(T)\fIstart/stop/int\fP ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
