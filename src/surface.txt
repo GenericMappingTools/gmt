@@ -5,8 +5,8 @@ surface \- adjustable tension continuous curvature surface gridding algorithm
 .SH SYNOPSIS
 \fBsurface\fP [ \fIxyzfile\fP ] OPT(G)\fIoutputfile.grd\fP GMT_I_OPT GMT_Rgeo_OPT [ OPT(A)\fIaspect_ratio\fP ] 
 [ OPT(C)\fIconvergence_limit\fP ] [ GMT_H_OPT ] [ OPT(Ll)\fIlower\fP ] [ OPT(Lu)\fIupper\fP ] [ OPT(N)\fImax_iterations\fP ] [ OPT(Q) ] 
-[ OPT(S)\fIsearch_radius\fP[\fBm\fP] ] [ OPT(T)\fItension_factor\fP[\fBi\fB|\fBb\fP] ] [ GMT_V_OPT ] 
-[ \fB\-Z\fP\fIover-relaxation_factor\fP ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
+[ OPT(S)\fIsearch_radius\fP[\fBm\fP] ] [ OPT(T)\fItension_factor\fP[\fBi\fP|\fBb\fP] ] [ GMT_V_OPT[\fBl\fP] ] 
+[ OPT(Z)\fIover-relaxation_factor\fP ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBsurface\fP reads randomly-spaced (x,y,z) triples from standard input [or \fIxyzfile\fP] and produces
 a binary grdfile of gridded values z(x,y) by solving:
@@ -25,7 +25,7 @@ You may impose lower and/or upper bounds on the solution.  These may be entered 
 a fixed value, a grdfile with values, or simply be the minimum/maximum input data values.
 .TP
 \fIxyzfile\fP
-3 column ASCII file [or binary, see \fB\-b\fP] holding (x,y,z) data values.  If no file is specified, \fBsurface\fP will read from
+3 column ASCII file [or binary, see OPT(b)] holding (x,y,z) data values.  If no file is specified, \fBsurface\fP will read from
 standard input.
 .TP
 .B \-G
@@ -85,7 +85,7 @@ Over-relaxation factor.  This parameter is used to accelerate the convergence; i
 1 and 2.  A value of 1 iterates the equations exactly, and will always assure stable convergence.  Larger
 values overestimate the incremental changes during convergence, and will reach a solution more rapidly but may
 become unstable.  If you use a large value for this factor, it is a good idea to monitor each iteration
-with the \fB\-Vl\fP option.  [Default = 1.4 converges quickly and is almost always stable.]
+with the OPT(Vl) option.  [Default = 1.4 converges quickly and is almost always stable.]
 #include "explain_-t.txt"
 #include "explain_-i_binary.txt"
 #include "explain_-n.txt"
@@ -98,7 +98,7 @@ To grid 5 by 5 minute gravity block means from the ASCII data in hawaii_5x5.xyg,
 a \fIconvergence_limit\fP = 0.1 milligal, writing the result to a file called hawaii_grd.grd, 
 and monitoring each iteration, try:
 .sp
-\fBsurface\fP hawaii_5x5.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-G\fPhawaii_grd.grd \fB\-T\fP0.25 \fB\-C\fP0.1 \fB\-VL\fP
+\fBsurface\fP hawaii_5x5.xyg OPT(R)198/208/18/25 OPT(I)5\fBm\fP OPT(G)hawaii_grd.grd OPT(T)0.25 OPT(C)0.1 OPT(Vl)
 .SH BUGS
 \fBsurface\fP will complain when more than one data point is found for
 any node and suggest that you run \fBblockmean\fP, \fBblockmedian\fP, or \fBblockmode\fP first.  If you
