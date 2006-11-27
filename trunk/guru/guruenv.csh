@@ -1,6 +1,6 @@
 #!/bin/csh
 #
-#	$Id: guruenv.csh,v 1.8 2005-09-28 23:06:52 pwessel Exp $
+#	$Id: guruenv.csh,v 1.9 2006-11-27 19:30:38 remko Exp $
 #
 #	Environmental variables needed by GMT gurus
 #	Stick these in your environment before making GMT
@@ -48,4 +48,4 @@ setenv NETCDFHOME  /usr/local						# Set this to where netcdf lives
 #   This parameter needs to be set so you dont have to use the -d option on every
 #   cvs command.
 
-setenv CVSROOT :pserver:anonymous@gmt.soest.hawaii.edu:/home/gmt/cvs	# anonymous for reading; writers need a specific account
+setenv CVSROOT :pserver:anonymous@aa.soest.hawaii.edu:/home/gmt/gmt/cvs	# anonymous for reading; writers need a specific account
