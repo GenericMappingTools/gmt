@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: img2grd,v 1.7 2006-11-29 04:54:51 pwessel Exp $
+#	$Id: img2grd,v 1.8 2006-11-29 04:55:50 pwessel Exp $
 #
 #      Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
 #      See COPYING file for copying and redistribution conditions.
@@ -117,6 +117,7 @@ done
 if [ $abs -eq 1 ] && [ $merc -eq 0 ]; then
 	echo 'img2grd: ERROR: -C requires -M option' 1>&2
 	exit 1
+fi
 
 # Got all the options, now try if it works and let the programs deal with error messages
 
