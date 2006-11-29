@@ -18,7 +18,7 @@ MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF for
 .TP
 .B \-T
 Specifies the format of the output (To) files.  Choose from \fBa\fP for standard
-MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF format
+MGD77 ASCII table (with extension .mgd77), \fBc\fP for the new MGD77+ netCDF format
 (with extension .nc), and \fBt\fP for a plain ASCII tab-separated table dump
 (with extension .dat).  We will refuse to create the file(s) if they already
 exist in the current directory.  Prepend \fB+\fP to override this policy.
