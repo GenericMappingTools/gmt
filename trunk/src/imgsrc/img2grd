@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: img2grd,v 1.6 2006-11-29 04:48:56 pwessel Exp $
+#	$Id: img2grd,v 1.7 2006-11-29 04:54:51 pwessel Exp $
 #
 #      Copyright (c) 1991-2005 by P. Wessel and W. H. F. Smith
 #      See COPYING file for copying and redistribution conditions.
@@ -37,6 +37,7 @@ if [ $# = 0 ] ; then	# No arguments, give full usage message
 	echo "	   Default gives the exact -R of the Mercator grid"  1>&2
 	echo "	-L List all available *.img files [Ignored if other options are given]"  1>&2
 	echo "	-M Write a Mercator grid [Default writes a geographic grid]"  1>&2
+	echo "	   Note that -C requires -M"  1>&2
 	\rm -f $$
 	exit 1
 fi
@@ -59,6 +60,7 @@ fi
 
 # First initialize all variables to blanks
 
+abs=0
 merc=0
 exact=0
 R=""
@@ -86,7 +88,8 @@ while [ ! x"$1" = x ]; do
 			shift;;
 		-M)	merc=1;		# Want Mercator grid output
 			shift;;
-		-C)	C=$1;		# Want absolute Merc coordinates
+		-C)	abs=1;		# Want absolute Merc coordinates
+			C=$1;
 			shift;;
 		-E)	exact=1;	# Want given -R grid output
 			shift;;
@@ -110,6 +113,10 @@ while [ ! x"$1" = x ]; do
 			shift;;
 	esac
 done
+
+if [ $abs -eq 1 ] && [ $merc -eq 0 ]; then
+	echo 'img2grd: ERROR: -C requires -M option' 1>&2
+	exit 1
 
 # Got all the options, now try if it works and let the programs deal with error messages
 
