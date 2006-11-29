@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.85 2006-11-20 01:10:31 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.86 2006-11-29 15:25:23 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -972,13 +972,13 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 	   When "Time": transform the data scale and offset to match the current time system.
 	*/
 	int i;
-	char *string[3], cal[GRD_UNIT_LEN], *l;
+	char string[3][GRD_UNIT_LEN], *cal, *l;
 	double scale = 1.0, offset = 0.0;
 
-	/* Copy pointers to unit strings */
-	string[0] = header->x_units;
-	string[1] = header->y_units;
-	string[2] = header->z_units;
+	/* Copy unit strings */
+	strcpy (string[0], header->x_units);
+	strcpy (string[1], header->y_units);
+	strcpy (string[2], header->z_units);
 
 	/* Parse the unit strings one by one */
 	for (i = 0; i < 3; i++) {
@@ -1026,8 +1026,7 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 				fprintf (stderr, "%s: Warning: Time unit in grid not recognised; assumed %c.\n", GMT_program, GMT_time_system[gmtdefs.time_system].unit);
 			/* Determine relative time epoch */
 			if ((l = strstr (string[i], "since"))) {
-				l += 6;
-				strcpy (cal, l);
+				cal = l + 6;
 				if ((l = strchr (cal, ' '))) *l = 'T';
 				if (GMT_scanf (cal, GMT_IS_ABSTIME, &offset) == GMT_IS_NAN) fprintf (stderr, "%s: Warning: Epoch in grid not recognised; assumed %s.\n", GMT_program, GMT_time_system[gmtdefs.time_system].epoch);
 			}
