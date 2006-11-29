@@ -4,7 +4,8 @@
 img2grd \- Extract region of img in Mercator or geographic form 
 .SH SYNOPSIS
 \fBimg2grd\fP \fIimgfile\fP OPT(G)\fIgrdfile\fP GMT_Rgeo_OPT 
-OPT(T)\fItype\fP  [ OPT(D)\fIminlat/maxlat\fP ] [ OPT(E) ] [ OPT(L) ] [ OPT(M) ] [ OPT(N)\fInavg\fP ] [ OPT(S)\fIscale\fP ] 
+OPT(T)\fItype\fP  [ OPT(C) ] [ OPT(D)\fIminlat/maxlat\fP ] [ OPT(E) ] [ OPT(L) ] 
+[ OPT(M) ] [ OPT(N)\fInavg\fP ] [ OPT(S)\fIscale\fP ] 
 [ GMT_V_OPT ] [ OPT(W)\fImaxlon\fP ] [ OPT(m)\fIminutes\fP ]
 .SH DESCRIPTION
 \fBimg2grd\fP is a front-end to \fBimg2mercgrd\fP which reads an img format file and creates a grdfile.
@@ -31,6 +32,13 @@ constrained points and NaN at interpolated points; OPT(T)\fI3\fP gets 1 at const
 points and 0 at interpolated points. 
 .SH OPTIONS
 .TP
+.B \-C
+Set the x and y Mercator coordinates relative to projection center [Default is relative to
+lower left corner of grid].
+.TP
+.B \-D
+Use the extended latitude range -80.738/+80.738.  Alternatively, append \fIminlat/maxlat\fP
+as the latitude extent of the input img file.  [Default is -72.006/72.006].
 .B \-E
 Can be used when OPT(M) is not set to force the final grid to have the exact same region
 as requested with OPT(R).  By default, the final region is a direct projection of the
@@ -72,10 +80,6 @@ Indicate \fIminutes\fP as the width of an input img pixel in minutes of longitud
 Indicate \fImaxlon\fP as the maximum longitude extent of the input img file.  Versions 
 since 1995 have had \fImaxlon\fP = 360.0, while some earlier files had \fImaxlon\fP = 
 390.0.  [Default is 360.0].
-.TP
-.B \-D
-Use the extended latitude range -80.738/+80.738.  Alternatively, append \fIminlat/maxlat\fP
-as the latitude extent of the input img file.  [Default is -72.006/72.006].
 .SH EXAMPLES
 To extract data in the region \fB\-R\fP-40/40/-70/-30 from \fIworld_grav.img.7.2\fP and preserve
 the Mercator gridding:
