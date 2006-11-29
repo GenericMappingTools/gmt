@@ -34,7 +34,7 @@ points and 0 at interpolated points.
 .TP
 .B \-C
 Set the x and y Mercator coordinates relative to projection center [Default is relative to
-lower left corner of grid].
+lower left corner of grid].  Requires OPT(M).
 .TP
 .B \-D
 Use the extended latitude range -80.738/+80.738.  Alternatively, append \fIminlat/maxlat\fP
