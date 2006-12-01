@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.259 2006-11-20 20:43:39 remko Exp $
+ *	$Id: gmt_init.c,v 1.260 2006-12-01 18:05:17 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3830,7 +3830,7 @@ int GMT_parse_B_option (char *in) {
 	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit - if so set degree symbol as unit */
 	if (project_info.projection == GMT_LINEAR && gmtdefs.degree_symbol != gmt_none) {
 		for (i = 0; i < 2; i++) {
-			if (GMT_io.in_col_type[0] & GMT_IS_GEO && frame_info.axis[i].unit[0] == 0) {
+			if (GMT_io.in_col_type[i] & GMT_IS_GEO && frame_info.axis[i].unit[0] == 0) {
 				frame_info.axis[i].unit[0] = '-';
 				frame_info.axis[i].unit[1] = gmtdefs.encoding.code[gmtdefs.degree_symbol];
 				frame_info.axis[i].unit[2] = '\0';
