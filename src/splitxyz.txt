@@ -56,8 +56,9 @@ segments.  [Default ignores gaps].
 Not used with binary data.
 .TP
 .B \-M
-Use Map units.  Then x,y are in degrees of longitude, latitude, and distances 
-in kilometers.  [Default:  distances are cartesian in same units as x,y].
+Use Map units.  Then x,y are in degrees of longitude, latitude, distances are
+in kilometers, and angles are azimuths.  [Default:  distances are cartesian in same
+units as x,y adn angles are counter-clockwise from horizontal].
 .TP
 .B \-N
 Create Named output files, writing each segment to a separate file in the working directory 
