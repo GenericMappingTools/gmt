@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.136 2006-10-29 07:18:54 pwessel Exp $
+ *	$Id: gmt.h,v 1.137 2006-12-02 23:54:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -188,6 +188,7 @@
 #define sind(x) sin ((x) * D2R)
 #define cosd(x) cos ((x) * D2R)
 #define tand(x) tan ((x) * D2R)
+#define sincosd(x,s,c) sincos((x) * D2R,s,c)
 
 /* Macros for swapping misc data types */
 
