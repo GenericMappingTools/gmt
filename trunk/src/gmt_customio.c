@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.53 2006-11-20 01:10:31 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.54 2006-12-02 01:47:02 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -516,7 +516,6 @@ int GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	BOOLEAN check, do_header = TRUE;
 
 	unsigned char *tmp;
-	char GMT_fopen_path[BUFSIZ];
 
 	FILE *fp;
 
@@ -528,7 +527,7 @@ int GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
+	else if ((fp = fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -881,7 +880,6 @@ int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	int j, ij, j2, width_in, width_out, height_out, mx, word, bit, inc = 1;
 	int first_col, last_col, first_row, last_row;
 	BOOLEAN check = FALSE, do_header = TRUE;
-	char GMT_fopen_path[BUFSIZ];
 	unsigned int *tmp, ival;
 
 	FILE *fp;
@@ -892,7 +890,7 @@ int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
+	else if ((fp = fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -1211,7 +1209,6 @@ int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, doub
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	BOOLEAN do_header = TRUE;	/* TRUE if we should write the header first */
 	void *tmp;			/* Array pointer for writing in rows of data */
-	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -1219,7 +1216,7 @@ int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, doub
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
+	else if ((fp = fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -1709,7 +1706,6 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	FILE *fp;			/* File pointer to data or pipe */
 	void *tmp;			/* Array pointer for writing in rows of data */
 	struct srf_header6 h;
-	char GMT_fopen_path[BUFSIZ];
 
 	header->nan_value = 0.1701410e39;	/* Test value in Surfer grids */
 
@@ -1719,7 +1715,7 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
+	else if ((fp = fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
