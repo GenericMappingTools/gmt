@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.13 2006-11-21 22:11:05 remko Exp $
+#	$Id: todo.txt,v 1.14 2006-12-04 16:25:50 remko Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -19,18 +19,6 @@ gmt_init.c	The whole .gmtcommands4 history thing. Under Pauls OSX there
 
 gmt_init.c	GMT still has trouble parsing color names. Those ending in "ta"
 		(magenta) and a number (green2) don't work.
-		    
-gmt_plot.c: 	- Treatment of tick lengths and offsets not consistent.
-		- time or geo not supported for z-axis
-		- 3D time axis not properly annotated.
-		- No annotations for Gnomonic projection
-		
-minmax.c:	Bug using -I with time data.  The -I option does not offer
-		any time-intervals such as month, year, weeks etc.  At the
-		moment you must use -I30.4167 to get an average month interval.
-		Some of the necessary machinery for this exist in the context
-		of plot annotations but the GMT_getinc parser is not used
-		for that.
 
 psbasemap.c	Looks like the magnetic rose needs some alignment work(?)
 
@@ -47,6 +35,26 @@ GIS supplement:	In src/gis, finalize grd2geotiff.c donated from K. Feigl.  Needs
 		
 *.c:		Use Chunk = GMT_CHUNK; n_alloc += Chunk, Chunk *= 2; to rachet up
 		allocation for large data sets.
+
+gmt_init.c	May need to move all share to share/gmt, or at least provide a
+		better way to allow distros to place things in /sw/share/gmt (or
+		similar). This can be done by adding a variable GMT_SHAREDIR to
+		be determined by gmt_begin.
+		At the same time all the share directory stuff in the supplements
+		should be brought in-line with the rest of the code as well.
+		(See mail from Kurt on 4 Dec 2006).
+		    
+gmt_plot.c: 	- Treatment of tick lengths and offsets not consistent.
+		- time or geo not supported for z-axis
+		- 3D time axis not properly annotated.
+		- No annotations for Gnomonic projection
+		
+minmax.c:	Bug using -I with time data.  The -I option does not offer
+		any time-intervals such as month, year, weeks etc.  At the
+		moment you must use -I30.4167 to get an average month interval.
+		Some of the necessary machinery for this exist in the context
+		of plot annotations but the GMT_getinc parser is not used
+		for that.
 
 grd|gmtmath.c	1) Add macro support; macros defined in .gmtmath or passed via -D
 		2) Add variable support:  _var will assign stack content to variable
