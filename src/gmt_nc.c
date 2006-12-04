@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.55 2006-11-20 16:06:05 remko Exp $
+ *	$Id: gmt_nc.c,v 1.56 2006-12-04 02:58:08 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -133,14 +133,13 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	char varname[GRD_UNIT_LEN];
 	nc_type z_type;
 	float *tmp = VNULL;
-	double t_value[2];
+	double t_value[3];
 
 	/* Dimension ids, variable ids, etc.. */
-	int ncid, z_id = -1, ids[4] = {-1,-1,-1,-1}, dims[4], nvars, ndims;
-	size_t lens[4], item[2];
+	int ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars, ndims;
+	size_t lens[5], item[2];
 
-	header->t_index[0] = -1, header->t_index[1] = -1;
-	t_value[0] = GMT_d_NaN, t_value[1] = GMT_d_NaN;
+	for (i = 0; i < 3; i++) header->t_index[i] = -1, t_value[i] = GMT_d_NaN;
 
 	/* If the file name contains a ?, extract the name of the variable following it */
 
@@ -153,11 +152,11 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		i = 0;
 		while (varname[i] && varname[i] != '(' && varname[i] != '[') i++;
 		if (varname[i] == '(') {
-			sscanf (&varname[i+1], "%lf,%lf)", &t_value[0], &t_value[1]);
+			sscanf (&varname[i+1], "%lf,%lf,%lf)", &t_value[0], &t_value[1], &t_value[2]);
 			varname[i] = '\0';
 		}
 		else if (varname[i] == '[') {
-			sscanf (&varname[i+1], "%d,%d]", &header->t_index[0], &header->t_index[1]);
+			sscanf (&varname[i+1], "%d,%d,%d]", &header->t_index[0], &header->t_index[1], &header->t_index[2]);
 			varname[i] = '\0';
 		}
 	}
@@ -192,8 +191,8 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		}
 		else if (nc_inq_varid (ncid, varname, &z_id) == NC_NOERR) {
 			check_nc_status (nc_inq_varndims (ncid, z_id, &ndims));
-			if (ndims < 2 || ndims > 4) {
-				fprintf (stderr, "%s: named variable (%s) is %d-D, not 2-D, 3-D or 4-D [%s]\n", GMT_program, varname, ndims, header->name);
+			if (ndims < 2 || ndims > 5) {
+				fprintf (stderr, "%s: named variable (%s) is %d-D, not 2-, 3-, 4- or 5-D [%s]\n", GMT_program, varname, ndims, header->name);
 				exit (EXIT_FAILURE);
 			}
 		}
@@ -401,7 +400,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	 */
 	 
 	int  ncid;
-	size_t start[4] = {0,0,0,0}, edge[4] = {1,1,1,1};
+	size_t start[5] = {0,0,0,0,0}, edge[5] = {1,1,1,1,1};
 	int first_col, last_col, first_row, last_row;
 	int i, j, width_in, width_out, height_in, i_0_out, inc = 1;
 	int *k, ndims;

@@ -117,13 +117,18 @@ to specify the requested variable \fIvarname\fP.
 Since \fB?\fP has special meaning as a wildcard, escape this meaning by placing the full filename and suffix
 between quotes.
 .PP
-\fB3-Dimensional grids\fP
+\fBMulti-dimensional grids\fP
 .br
 To extract one \fIlayer\fP or \fIlevel\fP from a 3-dimensional grid stored in a COARDS-compliant netCDF file,
 append both the name of the variable and the index associated with the layer (starting at zero) in the form:
 \fIingrdfile\fP\fB?\fP\fIvarname\fP\fB[\fP\fIlayer\fP\fB]\fP.
 Alternatively, specify the value associated with that layer using parentheses in stead of brackets:
 \fIingridfile\fP\fB?\fP\fIvarname\fP\fB(\fP\fIlevel\fP\fB)\fP.
+.br
+In a similar way layers can be extracted from 4- or even 5-dimensional grids. For example, if a grid has the
+dimensions (parameter, time, depth, latitude, longitude), a map can be selected by using:
+\fIingridfile\fP\fB?\fP\fIvarname\fP\fB(\fP\fIparameter,time,depth\fP\fB)\fP.
+.br
 Since question marks, brackets and parentheses have special meanings on the command line, escape these meanings
 by placing the full filename and suffix between quotes.
 .SH NATIVE BINARY FILES
