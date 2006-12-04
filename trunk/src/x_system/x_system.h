@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x_system.h,v 1.3 2002-08-02 02:23:58 pwessel Exp $
+ *	$Id: x_system.h,v 1.4 2006-12-04 17:59:18 pwessel Exp $
  *
  * xsystem.h contains the declaration for the LEG and XOVER structures
  * used in the XSYSTEM programs
@@ -56,3 +56,10 @@ struct CORR {	/* Structure with the corrections for each leg */
 #define REC_SIZE 40	/* Rec size for xx_base.b file xover-records and struct XOVERS */
 #define NODATA (-32000)
 
+#ifdef WIN32	/* Start of Windows setup */
+/* fileno and setmode have leading _ under WIN32 */
+#include <io.h>
+
+#define fileno(stream) _fileno(stream)
+#define setmode(fd,mode) _setmode(fd,mode)
+#endif
