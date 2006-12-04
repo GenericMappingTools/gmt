@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.274 2006-11-28 16:07:58 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.275 2006-12-04 20:29:26 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1164,52 +1164,26 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 
 int GMT_set_cpt_path (char *CPT_file, char *table)
 {
-	int ok = FALSE;
+	char stem[GMT_TEXT_LEN];
+	char *l, *ok;
 
-	/* First try current directory */
+	/* Try table[.cpt] */
+	strcpy (stem, table);
+	if ((l = strstr (stem, ".cpt"))) *l = 0;
+	ok = GMT_getsharepath ("cpt", stem, ".cpt", CPT_file);
 
-	if (table) {
-		if (strstr (table, ".cpt"))
-			strcpy (CPT_file, table);
-		else
-			sprintf (CPT_file, "%s.cpt", table);
-
-		ok = !access (CPT_file, R_OK);
-		if (ok && gmtdefs.verbose) fprintf (stderr, "%s: Reading %s in current directory\n", GMT_program, CPT_file);
+	/* Alternatively, look for GMT_table[.cpt] */
+	if (!ok) {
+		sprintf (stem, "GMT_%s", table);
+		if ((l = strstr (stem, ".cpt"))) *l = 0;
+		ok = GMT_getsharepath ("cpt", stem, ".cpt", CPT_file);
 	}
 
-	if (!ok && GMT_USERDIR) {	/* Now try $GMT_USERDIR if set */
-		if (strstr (table, ".cpt"))
-			sprintf (CPT_file, "%s%cGMT_%s", GMT_USERDIR, DIR_DELIM, table);
-		else
-			sprintf (CPT_file, "%s%cGMT_%s.cpt", GMT_USERDIR, DIR_DELIM, table);
-
-		ok = !access (CPT_file, R_OK);
-		if (ok && gmtdefs.verbose) fprintf (stderr, "%s: Reading %s in %s\n", GMT_program, CPT_file, GMT_USERDIR);
-	}
-
-	if (!ok && GMT_CPTDIR) {	/* Now try $GMT_CPTDIR if set */
-		if (strstr (table, ".cpt"))
-			sprintf (CPT_file, "%s%cGMT_%s", GMT_CPTDIR, DIR_DELIM, table);
-		else
-			sprintf (CPT_file, "%s%cGMT_%s.cpt", GMT_CPTDIR, DIR_DELIM, table);
-
-		ok = !access (CPT_file, R_OK);
-		if (ok && gmtdefs.verbose) fprintf (stderr, "%s: Reading %s in %s\n", GMT_program, CPT_file, GMT_CPTDIR);
-	}
-
-	if (!ok) {	/* Finally try $GMTHOME/share/cpt */
-		if (table)
-			sprintf (CPT_file, "%s%cshare%ccpt%cGMT_%s.cpt", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM, table);
-		else	/* Default to rainbow colors */
-			sprintf (CPT_file, "%s%cshare%ccpt%cGMT_rainbow.cpt", GMTHOME, DIR_DELIM, DIR_DELIM, DIR_DELIM);
-
-		ok = !access (CPT_file, R_OK);
-		if (!ok)
-			fprintf (stderr, "%s: ERROR: Cannot find colortable %s\n", GMT_program, CPT_file);
-		else if (gmtdefs.verbose)
-			fprintf (stderr, "%s: Reading %s\n", GMT_program, CPT_file);
-	}
+	/* Have we found something? */
+	if (!ok)
+		fprintf (stderr, "%s: ERROR: Cannot find colortable %s\n", GMT_program, table);
+	else
+		if (gmtdefs.verbose) fprintf (stderr, "%s: Reading colortable %s\n", GMT_program, CPT_file);
 	return (!ok);
 }
 

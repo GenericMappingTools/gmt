@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.131 2006-11-20 20:43:39 remko Exp $
+ *	$Id: pslib.c,v 1.132 2006-12-04 20:29:26 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -926,7 +926,7 @@ int ps_imagefill_init (int image_no, char *imagefile)
 			if (!access (imagefile, R_OK))
 				strcpy (file, imagefile);
 			else
-				ps_getsharepath (CNULL, imagefile, CNULL, file);
+				ps_getsharepath (CNULL, imagefile, "", file);
 		}
 		psl_user_image[psl_n_userimages] = (char *) ps_memory (VNULL, (size_t)(strlen (imagefile)+1), sizeof (char));
 		strcpy (psl_user_image[psl_n_userimages], imagefile);
@@ -4559,14 +4559,14 @@ int ps_get_boundingbox(FILE *fp, int *llx, int *lly, int *trx, int *try)
 	return 0;
 }
 
-char * ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
+char *ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
 {
 	/* stem is the name of the file, e.g., CUSTOM_font_info.d
 	 * subdir is an optional subdirectory name in the $GMTHOME/share directory.
 	 * suffix is an optional suffix to append to name
 	 * path is the full path to the file in question
 	 * Returns the full pathname if a workable path was found
-	 * Looks for file stem in current directory, ~/.gmt and $GMTHOME/share/subdir
+	 * Looks for file stem in current directory, ~/.gmt and $GMTHOME/share[/subdir]
 	 */
 
 	/* First look in the current working directory */
@@ -4581,13 +4581,18 @@ char * ps_getsharepath (const char *subdir, const char *stem, const char *suffix
 		if (!access (path, R_OK)) return (path);
 	}
 
-	/* Finally try to get file from $GMTHOME/share[/subdirname] */
+	/* Try to get file from $PSL_HOME/share/subdir */
 
-	if (subdir)
+	if (subdir) {
 		sprintf (path, "%s%cshare%c%s%c%s%s", PSL_HOME, DIR_DELIM, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
+		if (!access (path, R_OK)) return (path);
+	}
 	else
-		sprintf (path, "%s%cshare%c%s%s", PSL_HOME, DIR_DELIM, DIR_DELIM, stem, suffix);
-	if (!access (path, R_OK)) return (path);	/* Yes, use the file in $GMTHOME/share/subdir */
+
+	/* Finally try file in $GMTHOME/share (for backward compatibility) */
+
+	sprintf (path, "%s%cshare%c%s%s", PSL_HOME, DIR_DELIM, DIR_DELIM, stem, suffix);
+	if (!access (path, R_OK)) return (path);
 
 	return (NULL);	/* No file found, give up */
 }

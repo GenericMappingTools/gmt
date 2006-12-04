@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.124 2006-11-20 20:43:39 remko Exp $
+ *	$Id: gmt_io.c,v 1.125 2006-12-04 20:29:26 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -119,18 +119,18 @@ void GMT_decode_calclock_formats ();
 void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode);
 void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S);
 
-int	GMT_scanf_clock (char *s, double *val);
-int	GMT_scanf_calendar (char *s, GMT_cal_rd *rd);
-int	GMT_scanf_ISO_calendar (char *s, GMT_cal_rd *rd);
-int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd);
-int	GMT_scanf_geo (char *s, double *val);
-int	GMT_scanf_float (char *s, double *val);
+int GMT_scanf_clock (char *s, double *val);
+int GMT_scanf_calendar (char *s, GMT_cal_rd *rd);
+int GMT_scanf_ISO_calendar (char *s, GMT_cal_rd *rd);
+int GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd);
+int GMT_scanf_geo (char *s, double *val);
+int GMT_scanf_float (char *s, double *val);
 int GMT_n_segment_points (struct GMT_LINE_SEGMENT *S, int n_segments);
 
 
 /* Table I/O routines for ascii and binary io */
 
-char * GMT_getuserpath (const char *stem, char *path)
+char *GMT_getuserpath (const char *stem, char *path)
 {
 	/* stem is the name of the file, e.g., .gmtdefaults4 or .gmtdefaults
 	 * path is the full path to the file in question
@@ -159,7 +159,7 @@ char * GMT_getuserpath (const char *stem, char *path)
 	return (NULL);	/* No file found, give up */
 }
 
-char * GMT_getdatapath (const char *stem, char *path)
+char *GMT_getdatapath (const char *stem, char *path)
 {
 	/* stem is the name of the file, e.g., grid.img
 	 * path is the full path to the file in question
@@ -196,14 +196,14 @@ char * GMT_getdatapath (const char *stem, char *path)
 	return (NULL);	/* No file found, give up */
 }
 
-char * GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
+char *GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
 {
 	/* stem is the name of the file, e.g., GMT_CPT.lis
 	 * subdir is an optional subdirectory name in the $GMTHOME/share directory.
 	 * suffix is an optional suffix to append to name
 	 * path is the full path to the file in question
 	 * Returns full pathname if a workable path was found
-	 * Looks for file stem in current directory, $GMT_USERDIR (default ~/.gmt) and $GMTHOME/share/subdir
+	 * Looks for file stem in current directory, $GMT_USERDIR (default ~/.gmt) and $GMTHOME/share[/subdir]
 	 */
 
 	/* First look in the current working directory */
@@ -218,35 +218,20 @@ char * GMT_getsharepath (const char *subdir, const char *stem, const char *suffi
 		if (!access (path, R_OK)) return (path);
 	}
 
-	/* Finally try to get file from $GMTHOME/share[/subdirname] */
+	/* Try to get file from $GMTHOME/share/subdir */
 
-	if (subdir)
+	if (subdir) {
 		sprintf (path, "%s%cshare%c%s%c%s%s", GMTHOME, DIR_DELIM, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
-	else
-		sprintf (path, "%s%cshare%c%s%s", GMTHOME, DIR_DELIM, DIR_DELIM, stem, suffix);
+		if (!access (path, R_OK)) return (path);
+	}
+	
+	/* Finally try file in $GMTHOME/share (for backward compatibility) */
+
+	sprintf (path, "%s%cshare%c%s%s", GMTHOME, DIR_DELIM, DIR_DELIM, stem, suffix);
 	if (!access (path, R_OK)) return (path);
 
 	return (NULL);	/* No file found, give up */
 }
-
-#ifdef DONOTUSE
-FILE *GMT_fopen (const char* filename, const char *mode)
-{	/* Like fopen, but checks GMT_*DIR places */
-	FILE *fp;
-	char path[BUFSIZ];
-
-	if (mode[0] == 'r') {
-		/* Look in special directories when reading */
-		if (!GMT_getdatapath (filename, path)) return (NULL);
-		if ((fp = fopen (path, mode))) return (fp);
-	}
-	else {
-		/* When writing, only look in current directory */
-		if ((fp = fopen (filename, mode))) return (fp);
-	}
-	return (NULL);
-}
-#endif
 
 int GMT_access (const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
