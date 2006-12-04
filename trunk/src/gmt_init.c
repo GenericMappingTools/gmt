@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.260 2006-12-01 18:05:17 remko Exp $
+ *	$Id: gmt_init.c,v 1.261 2006-12-04 20:29:26 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2637,7 +2637,7 @@ int GMT_get_ellipsoid (char *name)
 		char line[BUFSIZ], path[BUFSIZ];
 		double slop;
 
-		GMT_getsharepath (CNULL, name, CNULL, path);
+		GMT_getsharepath (CNULL, name, "", path);
 
 		if (!strcmp ("Sphere", name)) {
 			/* Special case where previous setting in .gmtdefaults4 is a custom ellipse which
