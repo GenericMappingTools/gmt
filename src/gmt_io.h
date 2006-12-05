@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.55 2006-11-22 04:24:40 remko Exp $
+ *	$Id: gmt_io.h,v 1.56 2006-12-05 16:46:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -115,7 +115,7 @@ struct GMT_DATE_IO {
 };
 
 struct GMT_GEO_IO {	/* For geographic output and plotting */
-	int order[3];			/* The relative order of degree, minute, seconds in template */
+	int order[3];			/* The relative order of degree, minute, seconds in form */
 	int range;			/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
 	BOOLEAN decimal;		/* TRUE if we want to use the D_FORMAT for decimal degrees only */
 	BOOLEAN wesn;			/* TRUE if we want sign encoded with suffix W, E, S, N */
@@ -235,7 +235,7 @@ EXTERN_MSC void GMT_alloc_segment (struct GMT_LINE_SEGMENT *S, int n_rows, int n
 EXTERN_MSC void GMT_free_segment (struct GMT_LINE_SEGMENT *segment);
 EXTERN_MSC void GMT_free_table (struct GMT_TABLE *table);
 EXTERN_MSC void GMT_free_dataset (struct GMT_DATASET *data);
-EXTERN_MSC void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode);
-EXTERN_MSC void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode);
-EXTERN_MSC void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S);
-EXTERN_MSC void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S);
+EXTERN_MSC void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, int mode);
+EXTERN_MSC void GMT_clock_C_format (char *form, struct GMT_CLOCK_IO *S, int mode);
+EXTERN_MSC void GMT_geo_C_format (char *form, struct GMT_GEO_IO *S);
+EXTERN_MSC void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S);

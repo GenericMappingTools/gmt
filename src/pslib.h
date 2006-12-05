@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.37 2006-09-06 21:02:39 pwessel Exp $
+ *	$Id: pslib.h,v 1.38 2006-12-05 16:46:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -23,6 +23,10 @@
  * Version:	4.1
  * Date:	02-JUN-2004
  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifndef _PSLIB_INC_H	/* User calling */
 
@@ -168,3 +172,6 @@ EXTERN_MSC int ps_write_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1
      font[3] must point to strings with the correct name; font[4] = NULL.
 */
 
+#ifdef __cplusplus
+}
+#endif

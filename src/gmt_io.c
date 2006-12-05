@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.126 2006-12-05 02:44:42 remko Exp $
+ *	$Id: gmt_io.c,v 1.127 2006-12-05 16:46:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1647,7 +1647,7 @@ void GMT_decode_calclock_formats ()
 	GMT_plot_C_format (gmtdefs.plot_degree_format, &GMT_plot_calclock.geo);
 }
 
-void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
+void GMT_clock_C_format (char *form, struct GMT_CLOCK_IO *S, int mode)
 {
 	/* Determine the order of H, M, S in input and output clock strings,
 	 * as well as the number of decimals in output seconds (if any), and
@@ -1657,7 +1657,7 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 
-	GMT_get_hms_order (template, S);
+	GMT_get_hms_order (form, S);
 
 	/* Craft the actual C-format to use for input/output clock strings */
 
@@ -1694,7 +1694,7 @@ void GMT_clock_C_format (char *template, struct GMT_CLOCK_IO *S, int mode)
 	}
 }
 
-void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
+void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, int mode)
 {
 	/* Determine the order of Y, M, D, J in input and output date strings.
 	* mode is 0 for input, 1 for output, and 2 for plot output.
@@ -1705,7 +1705,7 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 
-	GMT_get_ymdj_order (template, S, mode);
+	GMT_get_ymdj_order (form, S, mode);
 
 	/* Craft the actual C-format to use for i/o date strings */
 
@@ -1772,14 +1772,14 @@ void GMT_date_C_format (char *template, struct GMT_DATE_IO *S, int mode)
 	}
 }
 
-void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S)
+void GMT_geo_C_format (char *form, struct GMT_GEO_IO *S)
 {
 	/* Determine the output of geographic location formats. */
 
-	GMT_get_dms_order (template, S);	/* Get the order of degree, min, sec in output formats */
+	GMT_get_dms_order (form, S);	/* Get the order of degree, min, sec in output formats */
 
 	if (S->no_sign) {
-		fprintf (stderr, "%s: ERROR: Unacceptable PLOT_DEGREE_FORMAT template %s. A not allowed\n", GMT_program, template);
+		fprintf (stderr, "%s: ERROR: Unacceptable PLOT_DEGREE_FORMAT template %s. A not allowed\n", GMT_program, form);
 		exit (EXIT_FAILURE);
 	}
 
@@ -1817,7 +1817,7 @@ void GMT_geo_C_format (char *template, struct GMT_GEO_IO *S)
 	}
 }
 
-void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
+void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S)
 {
 	int i, j;
 
@@ -1825,7 +1825,7 @@ void GMT_plot_C_format (char *template, struct GMT_GEO_IO *S)
 
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) GMT_plot_format[i][j] = CNULL;
 
-	GMT_get_dms_order (template, S);	/* Get the order of degree, min, sec in output formats */
+	GMT_get_dms_order (form, S);	/* Get the order of degree, min, sec in output formats */
 
 	if (S->decimal) {	/* Plain decimal degrees */
 		int len;
