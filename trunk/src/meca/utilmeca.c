@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.5 2005-03-04 21:00:54 remko Exp $	*/
+/*	$Id: utilmeca.c,v 1.6 2006-12-05 04:30:53 pwessel Exp $	*/
 #include "gmt.h"	/* to have gmt environment */
 #include "pslib.h"	/* to have pslib environment */
 #include "meca.h"
@@ -101,7 +101,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         while(str <= meca.NP1.str + 180.) {
             i++;
             radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + radius * si;
             y[i] = y0 + radius * co;
             str += increment;
@@ -111,7 +111,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
             str = meca.NP1.str + 180.; 
             while(str >= meca.NP1.str) {
                 i++;
-                sincos (str*D2R, &si, &co);
+                sincosd (str, &si, &co);
                 x[i] = x0 + si * radius_size;
                 y[i] = y0 + co * radius_size;
                 str -= increment;
@@ -125,7 +125,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         while(str <= meca.NP2.str + 180.) {
             i++;
             radius = proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + radius * si;
             y[i] = y0 + radius * co;
             str += increment;
@@ -140,7 +140,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
             str = meca.NP2.str + 180.;
             while(str >= meca.NP2.str) {
                 i++;
-                sincos (str*D2R, &si, &co);
+                sincosd (str, &si, &co);
                 x[i] = x0 + si * radius_size;
                 y[i] = y0 + co * radius_size;
                 str -= increment;
@@ -156,7 +156,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         i = 0; 
         str = meca.NP1.str;
         while(increment == 1 ? str <= meca.NP1.str + 90. : str >= meca.NP1.str - 90.) {
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
             y[i] = y0 + co * radius_size;
             str += increment;
@@ -170,7 +170,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         i = 0;
         str = meca.NP1.str + 180.;
         while(increment == 1 ? str <= meca.NP1.str + 270. : str >= meca.NP1.str + 90.) {
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
             y[i] = y0 + co * radius_size;
             str += increment;
@@ -192,7 +192,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         while(fabs(90. - meca.NP1.dip) < EPSIL ? str <= meca.NP1.str : str <= N_axis.str) {
             i++;
             radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + radius * si;
             y[i] = y0 + radius * co;
             str += increment;
@@ -209,7 +209,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         while(increment == 1. ? str <= meca.NP2.str : str >= meca.NP2.str) {
             i++;
             radius = proj_radius(meca.NP2.str - (1. + fault) * 90., meca.NP2.dip, str) * radius_size;
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + radius * si;
             y[i] = y0 + radius * co;
             str += increment;
@@ -224,7 +224,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         str = meca.NP2.str;
         while(increment == 1. ? str <= meca.NP1.str : str >= meca.NP1.str) {
             i++;
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
             y[i] = y0 + co * radius_size;
             str += increment;
@@ -243,7 +243,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         while(fabs(90. - meca.NP1.dip) < EPSIL ? str >= meca.NP1.str : str >= N_axis.str) {
             i++;
             radius = proj_radius(meca.NP1.str - 180., meca.NP1.dip, str) * radius_size;
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + radius * si;
             y[i] = y0 + radius * co;
             str += increment;
@@ -258,7 +258,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         while(increment == 1. ? str <= meca.NP2.str : str >= meca.NP2.str) {
             i++;
             radius = proj_radius(meca.NP2.str - (1. - fault) * 90., meca.NP2.dip, str) * radius_size;
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + radius * si;
             y[i] = y0 + radius * co;
             str += increment;
@@ -273,7 +273,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         str = meca.NP2.str;
         while(increment == 1. ? str <= meca.NP1.str : str >= meca.NP1.str) {
             i++;
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
             y[i] = y0 + co * radius_size;
             str += increment;
@@ -323,7 +323,7 @@ double ps_meca(double x0,double y0,st_me meca,double size)
         while(str <= meca.NP1.str + 180.) {
             i++;
             radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;   
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + radius * si;
             y[i] = y0 + radius * co;
             str += increment;
@@ -337,7 +337,7 @@ double ps_meca(double x0,double y0,st_me meca,double size)
         while(str <= meca.NP2.str + 180.) {
             i++;
             radius = proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
-            sincos (str*D2R, &si, &co);
+            sincosd (str, &si, &co);
             x[i] = x0 + radius * si;
             y[i] = y0 + radius * co;
             str += increment;
@@ -386,7 +386,7 @@ double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
                while(str <= meca.NP1.str + 180.) {
                    i++;
                    radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
-                   sincos (str*D2R, &si, &co);
+                   sincosd (str, &si, &co);
                    x[i] = x0 + radius * si;
                    y[i] = y0 + radius * co;
                    str += increment;
@@ -402,7 +402,7 @@ double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
                while(str <= meca.NP2.str + 180.) {
                    i++;
                    radius = proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
-                   sincos (str*D2R, &si, &co);
+                   sincosd (str, &si, &co);
                    x[i] = x0 + radius * si;
                    y[i] = y0 + radius * co;
                    str += increment;
@@ -504,8 +504,8 @@ double computed_strike1(struct nodal_plane NP1)
     double am = NP1.rake == 0 ? 1. : NP1.rake /fabs(NP1.rake); 
     double ss, cs, sr, cr;
 
-    sincos (NP1.rake*D2R, &sr, &cr);
-    sincos (NP1.str*D2R, &ss, &cs);
+    sincosd (NP1.rake, &sr, &cr);
+    sincosd (NP1.str, &ss, &cs);
     if(cd1 < EPSIL && fabs(cr) < EPSIL) {
 /*
         fprintf(stderr, "\nThe second plane is horizontal;");
@@ -570,8 +570,8 @@ double computed_rake1(struct nodal_plane NP1)
     double dip2 = computed_dip1(NP1);
     double am = NP1.rake == 0. ? 1. : NP1.rake / fabs(NP1.rake);
     double sd, cd, ss, cs;
-    sincos (NP1.dip*D2R, &sd, &cd);
-    sincos ((NP1.str - str2)*D2R, &ss, &cs);
+    sincosd (NP1.dip, &sd, &cd);
+    sincosd (NP1.str - str2, &ss, &cs);
 
     if(fabs(dip2 - 90.) < EPSIL)
         sinrake2 = am * cd;
@@ -630,7 +630,7 @@ double computed_rake2(double str1,double dip1,double str2,double dip2,double fau
     double rake2, sinrake2;
     double sd, cd, ss, cs;
 
-    sincos ((str1 - str2)*D2R, &ss, &cs);
+    sincosd (str1 - str2, &ss, &cs);
 
     sd = sind(dip1);        cd = cosd(dip2);
     if(fabs(dip2 - 90.) < EPSIL)
@@ -694,10 +694,10 @@ double null_axis_strike(double str1,double dip1,double str2,double dip2)
     double phn, cosphn, sinphn;
     double sd1, cd1, sd2, cd2, ss1, cs1, ss2, cs2;
     
-    sincos (dip1*D2R, &sd1, &cd1);
-    sincos (dip2*D2R, &sd2, &cd2);
-    sincos (str1*D2R, &ss1, &cs1);
-    sincos (str2*D2R, &ss2, &cs2);
+    sincosd (dip1, &sd1, &cd1);
+    sincosd (dip2, &sd2, &cd2);
+    sincosd (str1, &ss1, &cs1);
+    sincosd (str2, &ss2, &cs2);
 
     cosphn = sd1 * cs1 * cd2 - sd2 * cs2 * cd1;
     sinphn = sd1 * ss1 * cd2 - sd2 * ss2 * cd1;
@@ -966,12 +966,12 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
         return(radius_size*2.);
     }
 
-    sincos (p[d]*D2R, &spd, &cpd);
-    sincos (p[b]*D2R, &spb, &cpb);
-    sincos (p[m]*D2R, &spm, &cpm);
-    sincos (a[d]*D2R, &sad, &cad);
-    sincos (a[b]*D2R, &sab, &cab);
-    sincos (a[m]*D2R, &sam, &cam);
+    sincosd (p[d], &spd, &cpd);
+    sincosd (p[b], &spb, &cpb);
+    sincosd (p[m], &spm, &cpm);
+    sincosd (a[d], &sad, &cad);
+    sincosd (a[b], &sab, &cab);
+    sincosd (a[m], &sam, &cam);
 
     for(i=0; i<360; i++) {
         fir = (double) i * D2R;
@@ -1389,8 +1389,8 @@ void axis2xy(double x0,double y0,double size,double pp,double dp,double pt,doubl
             double radius;
             double spp, cpp, spt, cpt;
 
-            sincos (pp*D2R, &spp, &cpp);
-            sincos (pt*D2R, &spt, &cpt);
+            sincosd (pp, &spp, &cpp);
+            sincosd (pt, &spt, &cpt);
 
             size *= 0.5;
             radius = sqrt(1. - sind(dp));

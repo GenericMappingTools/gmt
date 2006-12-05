@@ -1,4 +1,4 @@
-/*	$Id: submeca.c,v 1.4 2006-10-24 20:01:09 pwessel Exp $	*/
+/*	$Id: submeca.c,v 1.5 2006-12-05 04:30:53 pwessel Exp $	*/
 #include "gmt.h"
 #include "meca.h"
 
@@ -97,10 +97,10 @@ void rot_nodal_plane(struct nodal_plane PLAN,struct nodal_plane PREF,struct noda
      double cdr, sdr;
      double sr, cr;
 
-    sincos (PLAN.dip*D2R, &sd, &cd);
-    sincos (dfi*D2R, &sdfi, &cdfi);
-    sincos (PREF.dip*D2R, &srd, &crd);
-    sincos (PLAN.rake*D2R, &sir, &cor);
+    sincosd (PLAN.dip, &sd, &cd);
+    sincosd (dfi, &sdfi, &cdfi);
+    sincosd (PREF.dip, &srd, &crd);
+    sincosd (PLAN.rake, &sir, &cor);
 
      cdr = cd * crd + cdfi * sd * srd;
      sdr = sqrt(1. - cdr * cdr);
@@ -236,8 +236,8 @@ int dans_coupe(double lon,double lat,double depth,double xlonref,double ylatref,
          xlon = lon;
          ylat = lat;
      }
-     sincos (dip*D2R, &sd, &cd);
-     sincos (str*D2R, &ss, &cs);
+     sincosd (dip, &sd, &cd);
+     sincosd (str, &ss, &cs);
      largeur = (xlon - xlonref) * cs - (ylat - ylatref) * ss;
      *n_dep = depth * sd + largeur * cosd(dip);
      largeur = depth * cosd(dip) - largeur * sd;

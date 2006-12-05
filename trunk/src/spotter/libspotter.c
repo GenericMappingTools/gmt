@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.34 2006-11-20 01:10:32 pwessel Exp $
+ *	$Id: libspotter.c,v 1.35 2006-12-05 04:30:53 pwessel Exp $
  *
  *   Copyright (c) 1999-2006 by P. Wessel
  *
@@ -136,7 +136,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 		e[i].omega /= e[i].duration;	/* Convert to opening rate */
 
 		e[i].omega_r = e[i].omega * D2R;
-		sincos (e[i].lat * D2R, &e[i].sin_lat, &e[i].cos_lat);
+		sincosd (e[i].lat, &e[i].sin_lat, &e[i].cos_lat);
 		e[i].lon_r = e[i].lon * D2R;
 		e[i].lat_r = e[i].lat * D2R;
 		i++;
@@ -864,7 +864,7 @@ void make_rot_matrix_sub (double E[3], double w, double R[3][3])
 
 	double sin_w, cos_w, c, E_x, E_y, E_z, E_12c, E_13c, E_23c;
 
-	sincos (w * D2R, &sin_w, &cos_w);
+	sincosd (w, &sin_w, &cos_w);
 	c = 1 - cos_w;
 
 	E_x = E[0] * sin_w;
