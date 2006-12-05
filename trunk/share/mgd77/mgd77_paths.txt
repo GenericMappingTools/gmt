@@ -1,0 +1,8 @@
+#	$Id: mgd77_paths.txt,v 1.1 2006-12-05 16:04:57 remko Exp $
+#
+#	Directories with MGD77 files
+#	Currently set for P Wessel data library
+#	Paul Wessel, Sept-2005
+#
+/Users/pwessel/UH/RESOURCES/DATA/NGDC/latest
+/Users/pwessel/UH/RESOURCES/DATA/NGDC/DVD
