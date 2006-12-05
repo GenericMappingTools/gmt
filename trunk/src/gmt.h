@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.138 2006-12-05 02:44:42 remko Exp $
+ *	$Id: gmt.h,v 1.139 2006-12-05 16:46:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -24,6 +24,10 @@
  * Revised:	22-MAR-2006
  * Version:	4.x
  */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifndef _GMT_H
 #define _GMT_H
@@ -608,3 +612,6 @@ EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts time
 #include "gmt_vector.h"      	/* extern functions defined in gmt_vector.c */
 
 #endif  /* _GMT_H */
+#ifdef __cplusplus
+}
+#endif
