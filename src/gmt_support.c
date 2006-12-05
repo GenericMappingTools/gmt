@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.276 2006-12-05 02:44:42 remko Exp $
+ *	$Id: gmt_support.c,v 1.277 2006-12-05 04:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6091,7 +6091,7 @@ int GMT_just_decode (char *key, int i, int j)
 void GMT_smart_justify (int just, double angle, double dx, double dy, double *x_shift, double *y_shift)
 {
 	double s, c, xx, yy;
-	sincos (angle *D2R, &s, &c);
+	sincosd (angle, &s, &c);
 	xx = (2 - (just%4)) * dx;	/* Smart shift in x */
 	yy = (1 - (just/4)) * dy;	/* Smart shift in x */
 	*x_shift += c * xx - s * yy;	/* Must account for angle of label */
@@ -6474,7 +6474,7 @@ void GMT_rotate2D (double x[], double y[], int n, double x0, double y0, double a
 	int i;
 	double s, c;
 
-	sincos (angle * D2R, &s, &c);
+	sincosd (angle, &s, &c);
 	for (i = 0; i < n; i++) {	/* Coordinate transformation: Rotate and add new (x0, y0) offset */
 		xp[i] = x0 + x[i] * c - y[i] * s;
 		yp[i] = y0 + x[i] * s + y[i] * c;

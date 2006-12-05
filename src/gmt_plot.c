@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.185 2006-10-28 23:51:45 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.186 2006-12-05 04:30:53 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -725,7 +725,7 @@ void GMT_fancy_frame_extension (double angle, double extend[2])
 	 * allow for a possible extension of the line (extend[0|1] */
 	 
 	double s, c;
-	sincos (angle * D2R, &s, &c);
+	sincosd (angle, &s, &c);
 	extend[0] = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : gmtdefs.frame_width * c;
 	extend[1] = (gmtdefs.basemap_type == GMT_IS_ROUNDED) ? 0.0 : gmtdefs.frame_width * s;
 }
@@ -736,7 +736,7 @@ void GMT_fancy_frame_offset (double angle, double shift[2])
 	 * shift in order to plot the outer 1-2 parallell frame lines (shift[0|1] */
 	 
 	double s, c;
-	sincos (angle * D2R, &s, &c);
+	sincosd (angle, &s, &c);
 	shift[0] =  gmtdefs.frame_width * s;
 	shift[1] = -gmtdefs.frame_width * c;
 }
@@ -1429,7 +1429,7 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 			double xshrink, yshrink, tilt, baseline_shift, cb, sb, a;
 
 			upside = (z_project.quadrant == 1 || z_project.quadrant == 4);
-			sincos (text_angle * D2R, &sb, &cb);
+			sincosd (text_angle, &sb, &cb);
 			if (sides[i]%2 == 0 && (justify%2 == 0)) {
 				if (upside) {
 					k = (sides[i] == 0) ? 2 : 10;
@@ -2529,7 +2529,7 @@ void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *t
 		justify = abs (justify);
 		del_y = 0.5 * fsize * 0.732 * (justify / 4) * GMT_u2u[GMT_PT][GMT_INCH];
 		justify %= 4;
-		sincos (angle * D2R, &sa, &ca);
+		sincosd (angle, &sa, &ca);
 		x += del_y * sa;	/* Move anchor point down on baseline */
 		y -= del_y * ca;
 		xb = x + ca;		/* Point a distance of 1.0 along baseline */
@@ -2917,14 +2917,14 @@ void GMT_draw_map_rose (struct GMT_MAP_ROSE *mr)
 			tx[1] = xp[5];	ty[1] = yp[5];	tx[2] = xp[6];	ty[2] = yp[6];
 			ps_patch (tx, ty, 3, gmtdefs.background_rgb, TRUE);	/* South */
 		}
-		sincos (D2R * angle, &s, &c);
+		sincosd (angle, &s, &c);
 		x[0] = x[2] = 0.0;	x[1] = L[0] + gmtdefs.label_offset; x[3] = -x[1];
 		y[1] = y[3] = 0.0;	y[2] = L[0] + gmtdefs.label_offset; y[0] = -y[2];
 		GMT_rotate2D (x, y, 4, mr->x0, mr->y0, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 		for (i = 0; i < 4; i++) GMT_text3D (xp[i], yp[i], project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[i], angle, just[i], 0);
 	}
 	else {			/* Plain North arrow w/circle */
-		sincos (D2R * angle, &s, &c);
+		sincosd (angle, &s, &c);
 		x[0] = x[1] = x[4] = 0.0;	x[2] = -0.25 * mr->size;	x[3] = -x[2];
 		y[0] = -0.5 * mr->size;	y[1] = -y[0];	 y[2] = y[3] = 0.0; y[4] = y[1] + gmtdefs.annot_offset[0];
 		GMT_rotate2D (x, y, 5, mr->x0, mr->y0, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
@@ -2964,7 +2964,7 @@ void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr)
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of fine tickmarks (-1 to avoid repeating 360) */
 			angle = offset + val[i];
 			k = (fabs (fmod (val[i], mr->a_int[level])) < GMT_CONV_LIMIT) ? 2 : ((fabs (fmod (val[i], mr->f_int[level])) < GMT_CONV_LIMIT) ? 1 : 0);
-			sincos ((ew_angle + angle) * D2R, &s, &c);
+			sincosd (ew_angle + angle, &s, &c);
 			x[0] = mr->x0 + R[level] * c;	y[0] = mr->y0 + R[level] * s;
 			x[1] = mr->x0 + (R[level] - scale[level]*tlen[k]) * c;	y[1] = mr->y0 + (R[level] - scale[level]*tlen[k]) * s;
 			GMT_2D_to_3D (x, y, project_info.z_level, 2);
@@ -2975,7 +2975,7 @@ void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr)
 		n_tick = GMT_linear_array (0.0, 360.0, mr->a_int[level], 0.0, &val);
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of annotations (-1 to avoid repeating 360) */
 			angle = 90.0 - (offset + val[i]);	/* Since val is azimuth */
-			sincos ((ew_angle + angle) * D2R, &s, &c);
+			sincosd (ew_angle + angle, &s, &c);
 			x[0] = mr->x0 + (R[level] + gmtdefs.annot_offset[level]) * c;	y[0] = mr->y0 + (R[level] + gmtdefs.annot_offset[level]) * s;
 			sprintf (label, "%d", irint (val[i]));
 			t_angle = fmod ((double)(-val[i] - offset) + 360.0, 360.0);	/* Now in 0-360 range */
@@ -2993,7 +2993,7 @@ void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr)
 	base = R[1] + gmtdefs.annot_offset[1] + gmtdefs.annot_font_size[1] / 72.0;
 	for (i = 0, k = 1; i < 360; i += 90, k++) {	/* 90-degree increments of tickmarks */
 		angle = (double)i;
-		sincos ((ew_angle + angle) * D2R, &s, &c);
+		sincosd (ew_angle + angle, &s, &c);
 		x[0] = mr->x0 + R[1] * c;	y[0] = mr->y0 + R[1] * s;
 		x[1] = mr->x0 + (R[1] + tlen[0]) * c;	y[1] = mr->y0 + (R[1] + tlen[0]) * s;
 		GMT_2D_to_3D (x, y, project_info.z_level, 2);
@@ -3017,14 +3017,14 @@ void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr)
 	}
 
 	if (mr->kind == 2) {	/* Compass needle and label */
-		sincos ((ew_angle + (90.0 - mr->declination)) * D2R, &s, &c);
+		sincosd (ew_angle + (90.0 - mr->declination), &s, &c);
 		L = R[0] - 2.0 * tlen[2];
 		x[0] = mr->x0 - L * c;	y[0] = mr->y0 - L * s;
 		x[1] = mr->x0 + L * c;	y[1] = mr->y0 + L * s;
 		GMT_vector3D (x[0], y[0], x[1], y[1], project_info.z_level, M_VW * mr->size, M_HL * mr->size, M_HW * mr->size, gmtdefs.vector_shape, gmtdefs.background_rgb, TRUE);
 		t_angle = fmod (ew_angle + 90.0 - mr->declination + 360.0, 360.0);	/* Now in 0-360 range */
 		if (fabs (t_angle) > 90.0) t_angle -= copysign (180.0, t_angle);
-		sincos (t_angle * D2R, &s, &c);
+		sincosd (t_angle, &s, &c);
 		x[0] = mr->x0 - 2.0 * M_VW * mr->size * s;	y[0] = mr->y0 + 2.0 * M_VW * mr->size * c;
 		ps_setpaint (gmtdefs.background_rgb);
 		if (!strcmp(mr->dlabel, "-")) GMT_get_annot_label (mr->declination, mr->dlabel, TRUE, FALSE, 0, GMT_world_map);
@@ -3052,22 +3052,22 @@ void GMT_Nstar (double x0, double y0, double r)
 		/* Solid half */
 		x[0] = x[3] = x0;	y[0] = y[3] = y0;
 		dir = 90.0 - (double)a;
-		sincos (dir * D2R, &s, &c);
+		sincosd (dir, &s, &c);
 		x[1] = x0 + r * c;
 		y[1] = y0 + r * s;
 		dir2 = dir - 36.0;
-		sincos (dir2 * D2R, &s, &c);
+		sincosd (dir2, &s, &c);
 		x[2] = x0 + r2 * c;
 		y[2] = y0 + r2 * s;
 		GMT_2D_to_3D (x, y, project_info.z_level, 4);
 		ps_patch (x, y, 4, gmtdefs.background_rgb, TRUE);
 		/* Hollow half */
 		x[0] = x[3] = x0;	y[0] = y[3] = y0;
-		sincos (dir * D2R, &s, &c);
+		sincosd (dir, &s, &c);
 		x[1] = x0 + r * c;
 		y[1] = y0 + r * s;
 		dir2 = dir + 36.0;
-		sincos (dir2 * D2R, &s, &c);
+		sincosd (dir2, &s, &c);
 		x[2] = x0 + r2 * c;
 		y[2] = y0 + r2 * s;
 		GMT_2D_to_3D (x, y, project_info.z_level, 4);
@@ -3398,7 +3398,7 @@ void GMT_rotrect3D (double x, double y, double z, double direction, double xsize
 	double xx[4], yy[4], plot_x[4], plot_y[4], x_prime, y_prime, sin_azimuth, cos_azimuth;
 
 	xsize *= 0.5;	ysize *= 0.5;
-	sincos (direction * D2R, &sin_azimuth, &cos_azimuth);
+	sincosd (direction, &sin_azimuth, &cos_azimuth);
 	xx[0] = xx[3] = -xsize;	xx[1] = xx[2] = xsize;
 	yy[0] = yy[1] = -ysize;	yy[2] = yy[3] = ysize;
 	for (i = 0; i < 4; i++) {
@@ -3433,7 +3433,7 @@ void GMT_ellipse3D (double x, double y, double z, double direction, double major
 	int i;
 	double dx, dy, a, da, s, c, sin_direction, cos_direction, x_prime, y_prime, plot_x[51], plot_y[51];
 
-	sincos (direction * D2R, &sin_direction, &cos_direction);
+	sincosd (direction, &sin_direction, &cos_direction);
 	da = TWO_PI / 50.0;
 	for (i = 0; i <= 50; i++) {
 		a = i * da;
@@ -3530,7 +3530,7 @@ void GMT_pentagon3D (double x, double y, double z, double size, int rgb[], int o
 
 	size *= 0.5;
 	for (i = 0; i < 5; i++) {
-		sincos ((90.0 + i * 72.0) * D2R, &s, &c);
+		sincosd (90.0 + i * 72.0, &s, &c);
 		GMT_xyz_to_xy (x + size * c, y + size * s, z, &plot_x[i], &plot_y[i]);
 	}
 	ps_patch (plot_x, plot_y, 5, rgb, outline);
@@ -3543,7 +3543,7 @@ void GMT_octagon3D (double x, double y, double z, double size, int rgb[], int ou
 
 	size *= 0.5;
 	for (i = 0; i < 8; i++) {
-		sincos ((22.5 + i * 45.0) * D2R, &s, &c);
+		sincosd (22.5 + i * 45.0, &s, &c);
 		GMT_xyz_to_xy (x + size * c, y + size * s, z, &plot_x[i], &plot_y[i]);
 	}
 	ps_patch (plot_x, plot_y, 8, rgb, outline);
@@ -4202,7 +4202,7 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 	azimuth = 90.0 - azimuth;	/* Because the code below originally used directions instead */
 	azimuth *= D2R;
 	sincos (azimuth, &sin_azimuth, &cos_azimuth);
-	sincos (lat * D2R, &sinp, &cosp);	/* Set up azimuthal equidistant projection */
+	sincosd (lat, &sinp, &cosp);	/* Set up azimuthal equidistant projection */
 
 	center = (project_info.central_meridian < project_info.w || project_info.central_meridian > project_info.e) ? 0.5 * (project_info.w + project_info.e) :  project_info.central_meridian;
 
@@ -4263,7 +4263,7 @@ void GMT_plot_rectangle (double lon, double lat, double z, double width, double 
 	A = azimuth;
 	azimuth *= D2R;
 	sincos (azimuth, &sin_azimuth, &cos_azimuth);
-	sincos (lat * D2R, &sinp, &cosp);		/* Set up azimuthal equidistant projection */
+	sincosd (lat, &sinp, &cosp);		/* Set up azimuthal equidistant projection */
 
 	center = (project_info.central_meridian < project_info.w || project_info.central_meridian > project_info.e) ? 0.5 * (project_info.w + project_info.e) :  project_info.central_meridian;
 
