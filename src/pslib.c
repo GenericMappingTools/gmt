@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.132 2006-12-04 20:29:26 remko Exp $
+ *	$Id: pslib.c,v 1.133 2006-12-05 02:44:42 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -128,8 +128,8 @@
  * Date:	02-JUN-2004
  * Version:	4.1
  *
- * The environmental variable GMTHOME must be set to the directory that holds the subdirectory
- *   share/pattern where all the pattern Sun raster files are stored
+ * The environmental variable GMTHOME must be set to the directory that holds the shared
+ *   data directory where all the Sun raster pattern files and PS preambles are stored
  */
 
 #include "pslib_inc.h"
@@ -915,19 +915,7 @@ int ps_imagefill_init (int image_no, char *imagefile)
 
 		for (i = 0, found = FALSE; !found && i < psl_n_userimages; i++) found = !strcmp (psl_user_image[i], imagefile);
 		if (found) return (PSL_N_PATTERNS + i - 1);
-#ifdef WIN32
-		if (imagefile[0] == '\\' || imagefile[1] == ':')	/* Full path name, use it as is */
-#else
-		if (imagefile[0] == '/')	/* Full path name, use it as is */
-#endif
-			strcpy (file, imagefile);
-		else {
-			/* First look in user's current directory */
-			if (!access (imagefile, R_OK))
-				strcpy (file, imagefile);
-			else
-				ps_getsharepath (CNULL, imagefile, "", file);
-		}
+		ps_getsharepath (CNULL, imagefile, "", file);
 		psl_user_image[psl_n_userimages] = (char *) ps_memory (VNULL, (size_t)(strlen (imagefile)+1), sizeof (char));
 		strcpy (psl_user_image[psl_n_userimages], imagefile);
 		image_no = PSL_N_PATTERNS + psl_n_userimages;
@@ -1255,21 +1243,39 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	char openmode[2], *this;
 	double scl;
 
-	if ((this = getenv ("GMTHOME")) != NULL) {	/* GMTHOME was set */
-		PSL_HOME = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char));
-		strcpy (PSL_HOME, this);
+	/* Determine PSL_SHAREDIR (directory containing pslib and pattern subdirectories) */
+
+	if ((this = getenv ("GMT_SHAREDIR")) != CNULL) {	/* GMT_SHAREDIR was set */
+		PSL_SHAREDIR = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char));
+		strcpy (PSL_SHAREDIR, this);
 	}
-	else {	/* Use default path for GMT installation */
-		PSL_HOME = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), sizeof (char));
-		strcpy (PSL_HOME, GMT_DEFAULT_PATH);
+	else if ((this = getenv ("GMTHOME")) != NULL) {	/* GMTHOME was set: use GMTHOME/share */
+		PSL_SHAREDIR = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 7), sizeof (char));
+		sprintf (PSL_SHAREDIR, "%s%c%s", this, DIR_DELIM, "share");
 	}
-	if ((this = getenv ("GMT_USERDIR")) != NULL) {	/* GMT_USERDIR was set */
+	else {	/* Default is GMT_DEFAULT_PATH/share */
+		PSL_SHAREDIR = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 7), sizeof (char));
+		sprintf (PSL_SHAREDIR, "%s%c%s", GMT_DEFAULT_PATH, DIR_DELIM, "share");
+	}
+
+	/* Determine PSL_USERDIR (directory containing user replacements contents in PSL_SHAREDIR) */
+
+	if ((this = getenv ("GMT_USERDIR")) != CNULL) {	/* GMT_USERDIR was set */
 		PSL_USERDIR = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char));
 		strcpy (PSL_USERDIR, this);
 	}
-	else if ((this = getenv ("HOME")) != NULL) {	/* HOME was set: use default path for GMT_USERDIR (~/.gmt) */
+	else if ((this = getenv ("HOME")) != CNULL) {	/* HOME was set: use HOME/.gmt */
 		PSL_USERDIR = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 6), sizeof (char));
 		sprintf (PSL_USERDIR, "%s%c%s", this, DIR_DELIM, ".gmt");
+	}
+	else {
+#ifdef WIN32
+		/* Set PSL_USERDIR to C:\.gmt under Windows */
+		PSL_USERDIR = (char *) ps_memory (VNULL, (size_t)8, sizeof (char), "GMT");
+		sprintf (PSL_USERDIR, "C:%c%s", DIR_DELIM, ".gmt");
+#else
+		fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
+#endif
 	}
 	if (access(PSL_USERDIR,R_OK)) PSL_USERDIR = CNULL;
 
@@ -1564,7 +1570,7 @@ void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 		if (outline == -1) {
 			fprintf (ps.fp, "\nN U\n");
 			if (ps.comments) fprintf (ps.fp, "%% Clipping is currently OFF\n");
-		} 
+		}
 		ps.clip_path_length = 0;
 	}
 }
@@ -3265,7 +3271,7 @@ char *ps_prepare_text (char *text)
 				case ')':
 				case '<':
 				case '>':
-					if (j > 0 && string[MAX(j-1,0)] == '\\')        /* ALREADY ESCAPED... */
+					if (j > 0 && string[MAX(j-1,0)] == '\\')	/* ALREADY ESCAPED... */
 						string[j++] = text[i++];
 					else {
 						strcat(string, "\\"); j++;
@@ -4255,7 +4261,7 @@ int ps_comp_int_asc (const void *p1, const void *p2)
 		return (0);
 }
 
-/* This function copies a file called $GMTHOME/share/pslib/<fname>.ps
+/* This function copies a file called $GMT_SHAREDIR/pslib/<fname>.ps
  * to the postscript output verbatim.
  */
 static void ps_bulkcopy (const char *fname)
@@ -4562,17 +4568,25 @@ int ps_get_boundingbox(FILE *fp, int *llx, int *lly, int *trx, int *try)
 char *ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
 {
 	/* stem is the name of the file, e.g., CUSTOM_font_info.d
-	 * subdir is an optional subdirectory name in the $GMTHOME/share directory.
+	 * subdir is an optional subdirectory name in the $GMT_SHAREDIR directory.
 	 * suffix is an optional suffix to append to name
 	 * path is the full path to the file in question
 	 * Returns the full pathname if a workable path was found
-	 * Looks for file stem in current directory, ~/.gmt and $GMTHOME/share[/subdir]
+	 * Looks for file stem in current directory, ~/.gmt and $GMT_SHAREDIR[/subdir]
 	 */
 
 	/* First look in the current working directory */
 
 	sprintf (path, "%s%s", stem, suffix);
 	if (!access (path, R_OK)) return (path);	/* Yes, found it in current directory */
+
+	/* Do not continue when full pathname is given */
+
+#ifdef WIN32
+	if (stem[0] == '\\' || stem[1] == ':') return (NULL);
+#else
+	if (stem[0] == '/') return (NULL);
+#endif
 
 	/* Not found, see if there is a file in the user's GMT_USERDIR (~/.gmt) directory */
 
@@ -4581,17 +4595,16 @@ char *ps_getsharepath (const char *subdir, const char *stem, const char *suffix,
 		if (!access (path, R_OK)) return (path);
 	}
 
-	/* Try to get file from $PSL_HOME/share/subdir */
+	/* Try to get file from $GMT_SHAREDIR/subdir */
 
 	if (subdir) {
-		sprintf (path, "%s%cshare%c%s%c%s%s", PSL_HOME, DIR_DELIM, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
+		sprintf (path, "%s%c%s%c%s%s", PSL_SHAREDIR, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
-	else
 
-	/* Finally try file in $GMTHOME/share (for backward compatibility) */
+	/* Finally try file in $GMT_SHAREDIR (for backward compatibility) */
 
-	sprintf (path, "%s%cshare%c%s%s", PSL_HOME, DIR_DELIM, DIR_DELIM, stem, suffix);
+	sprintf (path, "%s%c%s%s", PSL_SHAREDIR, DIR_DELIM, stem, suffix);
 	if (!access (path, R_OK)) return (path);
 
 	return (NULL);	/* No file found, give up */

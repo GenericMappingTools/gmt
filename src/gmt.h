@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.137 2006-12-02 23:54:35 pwessel Exp $
+ *	$Id: gmt.h,v 1.138 2006-12-05 02:44:42 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -482,11 +482,10 @@ EXTERN_MSC struct GMT_COMMON *GMT;
 
 EXTERN_MSC struct GMT_DEFAULTS gmtdefs;
 
-EXTERN_MSC int GMT_N_FONTS;				/* Number of fonts loaded from share/pslib */
-EXTERN_MSC char *GMTHOME;			/* Points to the GMT home directory with lib subdir */
+EXTERN_MSC int GMT_N_FONTS;			/* Number of fonts loaded from $GMT_SHAREDIR/pslib */
+EXTERN_MSC char *GMT_SHAREDIR;			/* Points to the GMT the shared data files */
 EXTERN_MSC char *GMT_HOMEDIR;			/* Points to the GMT user home directory [~] */
 EXTERN_MSC char *GMT_USERDIR;			/* Points to the GMT user .gmt directory [~/.gmt] */
-EXTERN_MSC char *GMT_CPTDIR;			/* Points to the GMT cpt directory [if set] */
 EXTERN_MSC char *GMT_DATADIR;			/* Points to the GMT misc directory [if set] */
 EXTERN_MSC char *GMT_GRIDDIR;			/* Points to the GMT grids directory [if set] */
 EXTERN_MSC char *GMT_IMGDIR;			/* Points to the GMT img directory [if set] */

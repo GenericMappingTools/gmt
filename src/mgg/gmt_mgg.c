@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.10 2005-12-27 04:28:12 pwessel Exp $
+ *	$Id: gmt_mgg.c,v 1.11 2006-12-05 02:44:42 remko Exp $
  *
  *    Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -158,21 +158,16 @@ int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, 
 	return (*time);
 }
 	
-/* gmtmggpath_init reads the SHAREDIR/share/mgg/gmtfile_paths file and gets all
+/* gmtmggpath_init reads the SHAREDIR/mgg/gmtfile_paths file and gets all
  * the gmtfile directories.
  */
  
 void gmtmggpath_init (void) {
 	int i;
-	char file[BUFSIZ], line[BUFSIZ], *SHAREDIR;
+	char file[BUFSIZ], line[BUFSIZ];
 	FILE *fp;
-	
-	if ((SHAREDIR = getenv ("GMTHOME")) == (char *)NULL) {
-		fprintf (stderr, "gmtmggpath_init: Environment variable GMTHOME not set!\n");
-		exit (EXIT_FAILURE);
-	}
 
-	sprintf (file, "%s%cshare%cmgg%cgmtfile_paths", SHAREDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+	sprintf (file, "%s%cmgg%cgmtfile_paths", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
 	
 	n_gmtmgg_paths = 0;
 
@@ -373,19 +368,14 @@ int carter_setup (void)
 	and returns 0.  If failure occurs, it returns -1.  */
 
 	FILE *fp = NULL;
-	char buffer [BUFSIZ], *SHAREDIR;
+	char buffer [BUFSIZ];
 	int  i;
 
 	carter_not_initialized = TRUE;
 
 	/* Read the correction table:  */
 
-	if ((SHAREDIR = getenv ("GMTHOME")) == (char *)NULL) {
-		fprintf (stderr, "carter_setup: Environment variable GMTHOME not set!\n");
-                return (-1);
-	}
-
-	sprintf (buffer, "%s%cshare%cmgg%ccarter.d", SHAREDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+	sprintf (buffer, "%s%cmgg%ccarter.d", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
 	if ( (fp = fopen (buffer, "r")) == NULL) {
                 fprintf (stderr,"carter_setup:  Cannot open r %s\n", buffer);
                 return (-1);

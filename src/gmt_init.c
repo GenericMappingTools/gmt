@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.261 2006-12-04 20:29:26 remko Exp $
+ *	$Id: gmt_init.c,v 1.262 2006-12-05 02:44:42 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2529,7 +2529,7 @@ char *GMT_getdefpath (int get)
 	id--;	/* Get 0 or 1 */
 	GMT_getsharepath (CNULL, ".gmtdefaults_", suffix[id], line);
 
-	path = (char *) GMT_memory (VNULL, (size_t)(strlen (line) + 1), (size_t)1, GMT_program);
+	path = (char *) GMT_memory (VNULL, (size_t)(strlen (line) + 1), sizeof (char), GMT_program);
 
 	strcpy (path, line);
 
@@ -2621,9 +2621,9 @@ void GMT_hash_init (struct GMT_HASH *hashnode, char **keys, int n_hash, int n_ke
 
 int GMT_hash (char *v, int n_hash)
 {
-        int h;
-        for (h = 0; *v != '\0'; v++) h = (64 * h + (*v)) % n_hash;
-        return (h);
+	int h;
+	for (h = 0; *v != '\0'; v++) h = (64 * h + (*v)) % n_hash;
+	return (h);
 }
 
 int GMT_get_ellipsoid (char *name)
@@ -2632,7 +2632,7 @@ int GMT_get_ellipsoid (char *name)
 
 	for (i = 0; i < GMT_N_ELLIPSOIDS && strcmp (name, gmtdefs.ref_ellipsoid[i].name); i++);
 
-	if (i == GMT_N_ELLIPSOIDS) {	/* Try to open as file first in (1) current dir, then in (2) $GMTHOME/share */
+	if (i == GMT_N_ELLIPSOIDS) {	/* Try to open as file first in (1) current dir, then in (2) $GMT_SHAREDIR */
 		FILE *fp;
 		char line[BUFSIZ], path[BUFSIZ];
 		double slop;
@@ -2923,7 +2923,7 @@ int GMT_begin (int argc, char **argv)
 
 	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults4 (if any) */
 
-        /* See if user specified +optional_defaults_file.  If so, assign filename to this and remove option from argv */
+	/* See if user specified +optional_defaults_file.  If so, assign filename to this and remove option from argv */
 
 	for (i = j = 1; i < argc; i++) {
 		argv[j] = argv[i];
@@ -3051,57 +3051,71 @@ void GMT_set_home (void)
 {
 	char *this;
 
-	if (GMTHOME) {
-		/* GMTHOME was already set elsewhere */
+	/* Determine GMT_SHAREDIR (directory containing coast, cpt, etc. subdirectories) */
+
+	if ((this = getenv ("GMT_SHAREDIR")) != CNULL) {	/* GMT_SHAREDIR was set */
+		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
+		strcpy (GMT_SHAREDIR, this);
 	}
-	else if ((this = getenv ("GMTHOME")) != CNULL) {	/* GMTHOME was set */
-		GMTHOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
-		strcpy (GMTHOME, this);
+	else if ((this = getenv ("GMTHOME")) != CNULL) {	/* GMTHOME was set: use GMTHOME/share */
+		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 7), sizeof (char), "GMT");
+		sprintf (GMT_SHAREDIR, "%s%c%s", this, DIR_DELIM, "share");
 	}
-	else {	/* Use default path for GMT installation */
-		GMTHOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 1), (size_t)1, "GMT");
- 		strcpy (GMTHOME, GMT_DEFAULT_PATH);
+	else {	/* Default is GMT_DEFAULT_PATH/share */
+		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 7), sizeof (char), "GMT");
+		sprintf (GMT_SHAREDIR, "%s%c%s", GMT_DEFAULT_PATH, DIR_DELIM, "share");
 	}
+
+	/* Determine GMT_HOMEDIR (user home directory) */
+
 	if ((this = getenv ("HOME")) != CNULL) {	/* HOME was set */
-		GMT_HOMEDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+		GMT_HOMEDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
  		strcpy (GMT_HOMEDIR, this);
 	}
 	else {
 #ifdef WIN32
 		/* Set HOME to C:\ under Windows */
-		GMT_HOMEDIR = (char *) GMT_memory (VNULL, 4, (size_t)1, "GMT");
+		GMT_HOMEDIR = (char *) GMT_memory (VNULL, 4, sizeof (char), "GMT");
 		sprintf (GMT_HOMEDIR, "C:%c", DIR_DELIM);
 #else
-
 		fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
 #endif
 	}
+
+	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
+
 	if ((this = getenv ("GMT_USERDIR")) != CNULL) {	/* GMT_USERDIR was set */
-		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
 		strcpy (GMT_USERDIR, this);
 	}
 	else if (GMT_HOMEDIR) {	/* Use default path for GMT_USERDIR (~/.gmt) */
-		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_HOMEDIR) + 6), (size_t)1, "GMT");
+		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_HOMEDIR) + 6), sizeof (char), "GMT");
 		sprintf (GMT_USERDIR, "%s%c%s", GMT_HOMEDIR, DIR_DELIM, ".gmt");
 	}
 	if (access(GMT_USERDIR,R_OK)) GMT_USERDIR = CNULL;
+
+	/* Check if obsolete GMT_CPTDIR was specified */
+
 	if ((this = getenv ("GMT_CPTDIR")) != CNULL) {	/* GMT_CPTDIR was set */
-		GMT_CPTDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
-		strcpy (GMT_CPTDIR, this);
-		if (access(GMT_CPTDIR,R_OK)) GMT_CPTDIR = CNULL;
+		fprintf (stderr, "GMT WARNING: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
+		fprintf (stderr, "GMT WARNING: System-wide color tables are in %s/cpt.\n", GMT_SHAREDIR);
+		fprintf (stderr, "GMT WARNING: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", GMT_USERDIR);
 	}
+
+	/* Determine GMT_DATADIR, GMT_GRIDDIR, GMT_IMGDIR (data directories) */
+
 	if ((this = getenv ("GMT_DATADIR")) != CNULL) {	/* GMT_DATADIR was set */
-		GMT_DATADIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+		GMT_DATADIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
 		strcpy (GMT_DATADIR, this);
 		if (access(GMT_DATADIR,R_OK)) GMT_DATADIR = CNULL;
 	}
 	if ((this = getenv ("GMT_GRIDDIR")) != CNULL) {	/* GMT_GRIDDIR was set */
-		GMT_GRIDDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+		GMT_GRIDDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
 		strcpy (GMT_GRIDDIR, this);
 		if (access(GMT_GRIDDIR,R_OK)) GMT_GRIDDIR = CNULL;
 	}
 	if ((this = getenv ("GMT_IMGDIR")) != CNULL) {	/* GMT_IMGDIR was set */
-		GMT_IMGDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "GMT");
+		GMT_IMGDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
 		strcpy (GMT_IMGDIR, this);
 		if (access(GMT_IMGDIR,R_OK)) GMT_IMGDIR = CNULL;
 	}
@@ -3137,7 +3151,7 @@ void GMT_put_history (int argc, char **argv)
 
 	fprintf (GMT_fp_history, "# GMT common arguments shelf\n");
 
-	for (i = 0; i < GMT_N_UNIQUE; i++) {        /* Loop over GMT_unique_option parameters */
+	for (i = 0; i < GMT_N_UNIQUE; i++) {	/* Loop over GMT_unique_option parameters */
 
 		/* First see if an updated value exist for this common parameter */
 
@@ -3926,7 +3940,7 @@ int GMT_parse_J_option (char *args)
 				if (n_slashes) error = TRUE;	/* Cannot have 1:xxx separately for x/y */
 				if (l_pos[0] || l_pos[1] || p_pos[0] || p_pos[1] || t_pos[0] || t_pos[1] || d_pos[0] || d_pos[1]) error = TRUE;
 			}
-			
+
 			/* Distinguish between p for points and p<power> for scaling */
 
 			n = strlen (args);
@@ -4972,7 +4986,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 		case 'j':
 			p->symbol = GMT_SYMBOL_ROTATERECT;
 			p->n_required = 3;
-                        check = FALSE;
+			check = FALSE;
 			break;
 		case 'l':
 			p->symbol = GMT_SYMBOL_TEXT;
