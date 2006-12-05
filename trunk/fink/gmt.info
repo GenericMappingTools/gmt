@@ -1,0 +1,82 @@
+Package: gmt
+Version: 4.1.4
+Revision: 1001
+Source: ftp://ftp.soest.hawaii.edu/gmt/4/GMT%v_src.tar.bz2
+Source2: ftp://ftp.soest.hawaii.edu/gmt/4/GMT%v_man.tar.bz2
+Source3: ftp://ftp.soest.hawaii.edu/gmt/4/GMT%v_share.tar.bz2
+Source4: ftp://ftp.soest.hawaii.edu/gmt/4/GMT%v_suppl.tar.bz2
+Source5: ftp://ftp.soest.hawaii.edu/gmt/4/GMT4.1_coast.tar.bz2
+Source-MD5:  679bfb7b73a70fa4e77731afc75352b1
+Source2-MD5: 4931a770b95f2f096e689f8e4d0203ab
+Source3-MD5: 27960716546b8d5454a2bf605290f6ec
+Source4-MD5: 9ee5e07db137b2aa99ad29e5fb33fa52
+Source5-MD5: 2ab56bb6dd2baf7299143a6cb46fbea4
+SourceDirectory: GMT%v
+Source5ExtractDir: GMT%v
+BuildDepends: netcdf (>= 3.6.0-1002)
+Depends: netcdf-shlibs (>= 3.6.0-1002)
+NoSetCPPFLAGS: true
+SetCFLAGS: -O2 -ansi -pedantic -funroll-loops -fexpensive-optimizations
+SetLDFLAGS: -L%p/lib 
+
+# don't build xgrid to avoid x11 dependency.
+# don't build mex (won't work unless matlab installed).
+ConfigureParams: --mandir='${prefix}/share/man' --disable-shared --datadir='${prefix}/share/%n' --enable-netcdf=%p --disable-xgrid
+
+Patch: %n.patch
+CompileScript: <<
+ #!/bin/sh -ev
+ export NETCDFHOME=%p
+ ./configure %c
+ make gmt suppl
+<<
+InstallScript: <<
+ make install install-data install-man install-suppl prefix=%i mandir=%i/share/man datadir=%i/share/%n
+ mv %i/bin/GMT %i/bin/GMT.orig
+ sed 's|%b|%p|g' < %i/bin/GMT.orig > %i/bin/GMT
+ chmod 755 %i/bin/GMT
+ /bin/rm -f %i/bin/GMT.orig
+ ranlib %i/lib/libgmt.a
+ ranlib %i/lib/libgmt_mgg.a
+ ranlib %i/lib/libgmtps.a
+ ranlib %i/lib/libmgd77.a
+ ranlib %i/lib/libpsl.a
+ ranlib %i/lib/libx2sys.a
+ echo
+ echo NOTE: make sure NOT to set the GMTHOME variable
+<<
+Description: Tools to plot data sets
+DescDetail: <<
+ GMT is a free, open source collection of ~60 UNIX tools that allow
+ users to manipulate (x,y) and (x,y,z) data sets (including filtering,
+ trend fitting, gridding, projecting, etc.) and produce Encapsulated
+ PostScript File (EPS) illustrations ranging from simple x-y plots
+ through contour maps to artificially illuminated surfaces and 3-D
+ perspective views in black and white, gray tone, hachure patterns,
+ and 24-bit color. GMT supports 25 common map projections plus linear,
+ log, and power scaling, and comes with support data such as
+ coastlines, rivers, and political boundaries.
+
+ When using the fink install of GMT, make sure not to have GMTHOME set.
+<<
+DescPort: <<
+ Remove xgrid suppl package so x11 not required.
+
+ Tweaks by Kurt Schwehr to jump from 4.0 to 4.1.1.  Trying to not use
+ the patch from before.  Also trying to optimize gmt so that things run
+ much faster.
+
+ Is no-cpp-precomp still needed?  Maybe just 10.3
+
+ Would probably better to just ranlib *.a
+<<
+License: GPL
+SplitOff: <<
+  Package: %N-dev
+  BuildDependsOnly: True
+  Files: include lib/*.a
+  DocFiles: CHANGES COPYING README
+<<
+DocFiles: CHANGES COPYING README
+Maintainer: Jeffrey Whitaker <jswhit@fastmail.fm>
+Homepage: http://gmt.soest.hawaii.edu/
