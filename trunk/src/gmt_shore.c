@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.25 2006-12-04 20:29:26 remko Exp $
+ *	$Id: gmt_shore.c,v 1.26 2006-12-05 02:44:42 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -955,9 +955,9 @@ char *GMT_shore_getpathname (char *stem, char *path) {
 	char dir[BUFSIZ];
 
 	/* This is the order of checking:
-	 * 1. Is there a file coastline.conf in current directory, GMT_USERDIR or GMT_HOME/share[/coast]?
+	 * 1. Is there a file coastline.conf in current directory, GMT_USERDIR or GMT_SHAREDIR[/coast]?
 	 *    If so, use its information
-	 * 2. Look in current directory, GMT_USERDIR or GMTHOME/share[/coast] for file "name".
+	 * 2. Look in current directory, GMT_USERDIR or GMT_SHAREDIR[/coast] for file "name".
 	 */
 	 
 	/* 1. First check for coastline.conf */

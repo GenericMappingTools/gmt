@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.54 2006-12-02 01:47:02 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.55 2006-12-05 02:44:42 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -30,7 +30,7 @@
  *	1. Write the five required routines (see below).
  *	2. increment parameter GMT_N_GRD_FORMATS in file gmt_grdio.h
  *	3. Append another entry in the gmt_customio.h file.
- *	4. Provide another entry in the share/gmtformats.d file
+ *	4. Provide another entry in the $GMT_SHAREDIR/gmtformats.d file
  *
  * Author:	Paul Wessel
  * Date:	9-SEP-1992

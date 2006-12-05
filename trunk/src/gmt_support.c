@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.275 2006-12-04 20:29:26 remko Exp $
+ *	$Id: gmt_support.c,v 1.276 2006-12-05 02:44:42 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6180,7 +6180,7 @@ void GMT_list_custom_symbols (void)
 	FILE *fp;
 	char list[GMT_LONG_TEXT], buffer[GMT_LONG_TEXT];
 
-	/* Open the list in $GMTHOME/share */
+	/* Open the list in $GMT_SHAREDIR */
 
 	GMT_getsharepath (CNULL, "GMT_CustomSymbols", ".lis", list);
 	if ((fp = fopen (list, "r")) == NULL) {

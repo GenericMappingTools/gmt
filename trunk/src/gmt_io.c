@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.125 2006-12-04 20:29:26 remko Exp $
+ *	$Id: gmt_io.c,v 1.126 2006-12-05 02:44:42 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,7 +28,7 @@
  *
  *	GMT_getuserpath		Get pathname of file in "user directories" (CWD, HOME, GMT_USERDIR)
  *	GMT_getdatapath		Get pathname of file in "data directories" (CWD, GMT_{USER,DATA,GRID,IMG}DIR)
- *	GMT_getsharepath	Get pathname of file in "share directries" (CWD, GMT_USERDIR, GMTHOME/share tree)
+ *	GMT_getsharepath	Get pathname of file in "share directries" (CWD, GMT_USERDIR, GMT_SHAREDIR tree)
  *	GMT_fopen:		Open a file using GMT_getdatapath
  *	GMT_fclose:		Close a file
  *	GMT_io_init:		Init GMT_IO structure
@@ -199,17 +199,25 @@ char *GMT_getdatapath (const char *stem, char *path)
 char *GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
 {
 	/* stem is the name of the file, e.g., GMT_CPT.lis
-	 * subdir is an optional subdirectory name in the $GMTHOME/share directory.
+	 * subdir is an optional subdirectory name in the $GMT_SHAREDIR directory.
 	 * suffix is an optional suffix to append to name
 	 * path is the full path to the file in question
 	 * Returns full pathname if a workable path was found
-	 * Looks for file stem in current directory, $GMT_USERDIR (default ~/.gmt) and $GMTHOME/share[/subdir]
+	 * Looks for file stem in current directory, $GMT_USERDIR (default ~/.gmt) and $GMT_SHAREDIR[/subdir]
 	 */
 
 	/* First look in the current working directory */
 
 	sprintf (path, "%s%s", stem, suffix);
 	if (!access (path, R_OK)) return (path);	/* Yes, found it in current directory */
+
+	/* Do not continue when full pathname is given */
+
+#ifdef WIN32
+	if (stem[0] == '\\' || stem[1] == ':') return (NULL);
+#else
+	if (stem[0] == '/') return (NULL);
+#endif
 
 	/* Not found, see if there is a file in the user's GMT_USERDIR (~/.gmt) directory */
 
@@ -218,16 +226,16 @@ char *GMT_getsharepath (const char *subdir, const char *stem, const char *suffix
 		if (!access (path, R_OK)) return (path);
 	}
 
-	/* Try to get file from $GMTHOME/share/subdir */
+	/* Try to get file from $GMT_SHAREDIR/subdir */
 
 	if (subdir) {
-		sprintf (path, "%s%cshare%c%s%c%s%s", GMTHOME, DIR_DELIM, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
+		sprintf (path, "%s%c%s%c%s%s", GMT_SHAREDIR, DIR_DELIM, subdir, DIR_DELIM, stem, suffix);
 		if (!access (path, R_OK)) return (path);
 	}
-	
-	/* Finally try file in $GMTHOME/share (for backward compatibility) */
 
-	sprintf (path, "%s%cshare%c%s%s", GMTHOME, DIR_DELIM, DIR_DELIM, stem, suffix);
+	/* Finally try file in $GMT_SHAREDIR (for backward compatibility) */
+
+	sprintf (path, "%s%c%s%s", GMT_SHAREDIR, DIR_DELIM, stem, suffix);
 	if (!access (path, R_OK)) return (path);
 
 	return (NULL);	/* No file found, give up */
@@ -255,13 +263,6 @@ FILE *GMT_fdopen (int handle, const char *mode)
 	if ((fp = fdopen (handle, mode))) return (fp);
 	return (NULL);
 }
-
-#ifdef DONOTUSE
-int GMT_fclose (FILE *stream)
-{
-        return (fclose (stream));
-}
-#endif
 
 void GMT_io_init (void)
 {

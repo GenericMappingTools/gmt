@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.139 2006-11-20 01:10:31 pwessel Exp $
+ *	$Id: mgd77.c,v 1.140 2006-12-05 02:44:42 remko Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2380,20 +2380,14 @@ void MGD77_Set_Home (struct MGD77_CONTROL *F)
 
 	if (F->MGD77_HOME) return;	/* Already set elsewhere */
 
-	if ((this = getenv ("MGD77_HOME")) == CNULL) {
-		if ((this = getenv ("GMTHOME")) != CNULL) {
-			fprintf (stderr, "mgd77: Warning: MGD77_HOME not defined, set to $GMTHOME/share/mgd77\n");
-			F->MGD77_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 13), 1, "MGD77_Set_Home");
-			sprintf (F->MGD77_HOME, "%s/share/mgd77", this);
-		}
-		else {
-			fprintf (stderr, "mgd77: ERROR: Neither MGD77_HOME or GMTHOME defined - give up\n");
-			exit (EXIT_FAILURE);
-		}
-	}
-	else {	/* Set default path */
+	if ((this = getenv ("MGD77_HOME")) != CNULL) {	/* MGD77_HOME was set */
 		F->MGD77_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), 1, "MGD77_Set_Home");
 		strcpy (F->MGD77_HOME, this);
+	}
+	else {	/* Set default path */
+		fprintf (stderr, "mgd77: Warning: MGD77_HOME not defined, set to %s/mgd77\n", GMT_SHAREDIR);
+		F->MGD77_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_SHAREDIR) + 7), 1, "MGD77_Set_Home");
+		sprintf (F->MGD77_HOME, "%s%cmgd77", GMT_SHAREDIR, DIR_DELIM);
 	}
 }
 
@@ -3485,19 +3479,14 @@ int MGD77_carter_init (struct MGD77_CARTER *C)
 	and returns 0.  If failure occurs, it returns -1.  */
 
 	FILE *fp = NULL;
-	char buffer [BUFSIZ], *SHAREDIR;
+	char buffer [BUFSIZ];
 	int  i;
 
 	memset ((void *)C, 0, sizeof (struct MGD77_CARTER));
 	
 	/* Read the correction table:  */
 
-	if ((SHAREDIR = getenv ("GMTHOME")) == (char *)NULL) {
-		fprintf (stderr, "MGD77_carter_init: Environment variable GMTHOME not set!\n");
-                return (-1);
-	}
-
-	sprintf (buffer, "%s%cshare%cmgg%ccarter.d", SHAREDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+	sprintf (buffer, "%s%cmgg%ccarter.d", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
 	if ( (fp = fopen (buffer, "r")) == NULL) {
                 fprintf (stderr,"MGD77_carter_init:  Cannot open r %s\n", buffer);
                 return (-1);

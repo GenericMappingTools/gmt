@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.4 2005-03-06 16:04:00 remko Exp $
+/*	$Id: x_setup.c,v 1.5 2006-12-05 02:44:42 remko Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -15,8 +15,7 @@
  * 		15-FEB-1990	PW: Fixed bug when -L is used
  * 		27-MAR-1992	PW: Updated to new indexfile format
  * 		06-MAR-2000	PW: POSIX
- *				gmt_legs.d and gmt_index.b are now
- *				in $(GMTHOME)/share/mgg
+ *				gmt_legs.d and gmt_index.b are now in GMT_SHAREDIR/mgg
  *		17-JUL-2000	Replace MAX by MAXLEGS and use gmt.h
  *
  */
@@ -54,10 +53,12 @@ int main (int argc, char *argv[])
 	int bin, no;
 	int nlegs, n_tot_legs;
 	double w, e, s, n;
-	char lname[8], line[BUFSIZ], *LIBDIR;
+	char lname[8], line[BUFSIZ];
 	unsigned char turn_on[8];
 	FILE *fleg, *fbin, *fpl = NULL;
 	BOOLEAN error = FALSE, skip;
+
+	argc = GMT_begin (argc, argv);
 
 	for (i = 1; i < argc; i++) {
   		if (argv[i][0] == '-') {
@@ -89,18 +90,13 @@ int main (int argc, char *argv[])
   		fprintf(stderr, "	-R defines the region of interest. [Default is world]\n");
   		exit (EXIT_FAILURE);
   	}
-  
-	if ((LIBDIR = getenv ("GMTHOME")) == (char *)NULL) {
-		fprintf (stderr, "x_setup: Environment variable GMTHOME not set!\n");
-		exit (EXIT_FAILURE);
-	}
 
-   	sprintf (line, "%s%cshare%cmgg%cgmt_legs.d", LIBDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+   	sprintf (line, "%s%cmgg%cgmt_legs.d", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
  	if ((fleg = fopen (line, "r")) == NULL) {
 		fprintf(stderr,"Could not open %s\n", line);
 		exit (EXIT_FAILURE);
 	}
-   	sprintf (line, "%s%cshare%cmgg%cgmt_index.b", LIBDIR, DIR_DELIM, DIR_DELIM, DIR_DELIM);
+   	sprintf (line, "%s%cmgg%cgmt_index.b", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
 	if ((fbin = fopen (line, "rb")) == NULL) {
 		fprintf(stderr,"Could not open %sb\n", line);
 		exit (EXIT_FAILURE);
@@ -199,6 +195,8 @@ int main (int argc, char *argv[])
 			}
 		}
 	}
+
+	GMT_end (argc, argv);
 
 	exit (EXIT_SUCCESS);
 }

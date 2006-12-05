@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.58 2006-11-20 01:10:32 pwessel Exp $
+ *	$Id: x2sys.c,v 1.59 2006-12-05 02:44:42 remko Exp $
  *
  *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -493,18 +493,9 @@ void x2sys_set_home (void)
 		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), 1, "x2sys_set_home");
 		strcpy (X2SYS_HOME, this);
 	}
-	else if ((this = getenv ("GMTHOME")) != CNULL) {	/* Assume GMT path */
-		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 13), 1, "x2sys_set_home");
-		sprintf (X2SYS_HOME, "%s%cshare%cx2sys", this, DIR_DELIM, DIR_DELIM);
-	}
-	else {	/* Set default path */
-#ifdef _WIN32
-		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)23, 1, "x2sys_set_home");
-		strcpy (X2SYS_HOME, "C:\\usr\\local\\gmt\\x2sys");
-#else
-		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)21, 1, "x2sys_set_home");
-		strcpy (X2SYS_HOME, "/usr/local/gmt/x2sys");
-#endif
+	else {
+		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_SHAREDIR) + 7), 1, "x2sys_set_home");
+		sprintf (X2SYS_HOME, "%s%cx2sys", GMT_SHAREDIR, DIR_DELIM);
 	}
 }
 
@@ -1024,7 +1015,7 @@ int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B)
 	return (index);
 }
 
-/* gmtmggpath_init reads the SHAREDIR/share/mgg/gmtfile_paths file and gets all
+/* gmtmggpath_init reads the SHAREDIR/mgg/gmtfile_paths file and gets all
  * the gmtfile directories.
  */
  
