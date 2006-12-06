@@ -3,7 +3,7 @@
 .SH NAME
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
-\fBgmtconvert\fP [ \fIinputfiles\fP ] [ OPT(A) ] [ OPT(D)[\fItemplate\fP] ] [ OPT(E) ] 
+\fBgmtconvert\fP [ \fIinputfiles\fP ] [ OPT(A) ] [ OPT(D)[\fItemplate\fP] ] [ OPT(E)[\fBf\fP|\fBl\fP] ] 
 [ OPT(F)\fIcols\fP ] [ GMT_H_OPT ] [ OPT(L) ] [ OPT(I) ] [ GMT_M_OPT ] [ OPT(N) ] 
 [ OPT(S)\fI"search string"\fP) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] 
 [ GMT_f_OPT ]
@@ -34,7 +34,8 @@ be %8.8d which gives leading zeros, etc. [Default is gmtconvert_segment_%d.d].
 .TP
 .B \-E
 Only extract the first and last record for each segment of interest [Default extracts
-all records].
+all records].  Optionally, append \fBf\fP or \fBl\fP to only extract the first or last
+record of each segment, respectively.
 .TP
 .B \-F
 Give a comma-separated list of desired columns or ranges (0 is first column) [Default outputs all columns].
