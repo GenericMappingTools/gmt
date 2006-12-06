@@ -151,8 +151,8 @@ be found in the separate manual pages.
 \fBxyz2grd\fP		Convert equidistant xyz data to a 2-D grd file
 .br
 .SH "SEE ALSO"
-Look up the individual man pages for details.  By default, these pages are
-in \fB$GMTHOME\fP/man/manl, depending on your installation settings.
+Look up the individual man pages for more details and full syntax.
+Run \fBGMT\fP without options
+to list all GMT programs and to show all installation directories.
 Information is also available on the \fBGMT\fP home page gmt.soest.hawaii.edu
-or locally under \fB$GMTHOME\fP/www/gmt/gmt_services.html
 #include "refs.i"

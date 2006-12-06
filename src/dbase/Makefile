@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.9 2006-11-11 15:07:16 remko Exp $
+#	$Id: Makefile,v 1.10 2006-12-06 18:13:50 remko Exp $
 #
 #	makefile for dbase directory
 #
@@ -6,9 +6,9 @@
 #SWAP	= -DSWAP_ME
 #----------------- stop here - nothing to edit ------------------
 
-include ../makegmt.macros
-GMTSRCDIR	= ..
-include ../gmtalldeps.macros
+GMTSRCDIR = ../
+include $(GMTSRCDIR)makegmt.macros
+include $(GMTSRCDIR)gmtalldeps.macros
 
 CDF		= -L$(NETCDF)/lib -lnetcdf
 CFLAGS		= $(CC_OPT) $(WIN32) $(SWAP) -I$(srcdir) -I$(NETCDF)/include

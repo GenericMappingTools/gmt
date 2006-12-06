@@ -1,16 +1,15 @@
-#	$Id: Makefile,v 1.16 2006-11-11 15:07:16 remko Exp $
+#	$Id: Makefile,v 1.17 2006-12-06 18:13:51 remko Exp $
 #	makefile for misc directory
 #
 
 #----------------- stop here - nothing to edit--------------------
 
-include ../makegmt.macros
-GMTSRCDIR	= ..
-include ../gmtalldeps.macros
-
-CDF		= -L$(NETCDF)/lib -lnetcdf
+GMTSRCDIR = ../
+include $(GMTSRCDIR)makegmt.macros
+include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include 
+CDF		= -L$(NETCDF)/lib -lnetcdf
 
 MISC_H		=
 

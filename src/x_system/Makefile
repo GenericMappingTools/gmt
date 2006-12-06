@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.10 2006-11-11 15:07:16 remko Exp $
+#	$Id: Makefile,v 1.11 2006-12-06 18:13:51 remko Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -17,10 +17,10 @@
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
-include ../makegmt.macros
-GMTSRCDIR	= ..
-include ../gmtalldeps.macros
-#
+
+GMTSRCDIR = ../
+include $(GMTSRCDIR)makegmt.macros
+include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I$(NETCDF)/include
 ALLLIB  = -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.21 2006-05-29 01:50:03 pwessel Exp $
+#       $Id: install_gmt_form.pl,v 1.22 2006-12-06 18:13:51 remko Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -65,7 +65,7 @@ $gmt_share	= $gmt_form{'gmt_share'};
 $gmt_man	= $gmt_form{'gmt_man'};
 $gmt_mansect	= $gmt_form{'gmt_mansect'};
 $gmt_web	= $gmt_form{'gmt_web'};
-$gmt_def	= $gmt_form{'gmt_def'};
+$gmt_sharedir	= $gmt_form{'gmt_sharedir'};
 $gmt_coast	= $gmt_form{'radio_coast'};
 $gmt_cli_dir	= $gmt_form{'gmt_cli_dir'};
 $gmt_h_dir	= $gmt_form{'gmt_h_dir'};
@@ -103,7 +103,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.21 $, on
+# Processed by install_gmt_form.pl $Revision: 1.22 $, on
 #
 #	$now
 #
@@ -354,17 +354,21 @@ else {
 	print FILE "GMT_ps=n\n";
 }
 
-if ($gmt_def eq "" && $gmt_share ne "") {
-	$gmt_def =$gmt_share;
-	$gmt_def =~ s#/share$##;	# Remove trailing /share
+if ($gmt_sharedir eq "" && $gmt_share ne "") {
+	$gmt_sharedir =$gmt_share;
 }
-print FILE "GMT_def=", $gmt_def, "\n";
-print FILE "GMT_share=", $gmt_share, "\n";
+if ($gmt_prefix eq "" && $gmt_bin ne "") {
+	$gmt_prefix =~ s#/bin$##;	# Remove trailing /bin
+}
+
+print FILE "GMT_prefix=", $gmt_prefix, "\n";
 print FILE "GMT_bin=", $gmt_bin, "\n";
 print FILE "GMT_lib=", $gmt_lib, "\n";
+print FILE "GMT_share=", $gmt_share, "\n";
 print FILE "GMT_include=", $gmt_include, "\n";
 print FILE "GMT_man=", $gmt_man, "\n";
 print FILE "GMT_web=", $gmt_web, "\n";
+print FILE "GMT_sharedir=", $gmt_sharedir, "\n";
 
 if ($gmt_coast eq "all") {
 	print FILE "GMT_dir_full=\nGMT_dir_high=\nGMT_dir_cli=\n";

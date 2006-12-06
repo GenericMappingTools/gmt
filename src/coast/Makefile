@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.13 2006-10-31 20:57:19 remko Exp $
+#	$Id: Makefile,v 1.14 2006-12-06 18:13:50 remko Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -22,9 +22,10 @@
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
-include $(GMTHOME)/src/makegmt.macros
-GMTSRCDIR	= ..
-include ../gmtalldeps.macros
+
+GMTSRCDIR = ../
+include $(GMTSRCDIR)makegmt.macros
+include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
@@ -81,12 +82,12 @@ spotless:	clean
 		rm -f *.a
 
 set_new:
-		cp -f res_?/binned_GSHHS_?.cdf $(GMTHOME)/share
+		cp -f res_?/binned_GSHHS_?.cdf $(rootdir)/share
 		
 set_old:
-		cd $(GMTHOME); tar xvjf  $(GMTHOME)/ftp/GMT_share.tar.bz2
-		cd $(GMTHOME); tar xvjf  $(GMTHOME)/ftp/GMT_high.tar.bz2
-		cd $(GMTHOME); tar xvjf  $(GMTHOME)/ftp/GMT_full.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GMT_share.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GMT_high.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GMT_full.tar.bz2
 		
 shrinkb: 	shrinkb_h shrinkb_i shrinkb_l shrinkb_c
 
@@ -233,12 +234,12 @@ gshhs:
 
 tar-gshhs:
 		tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs_[clihf].b
-		cd $(GMTHOME)/src; \
+		cd $(rootdir)/src; \
 		tar cvjf gshhs_$(GSHHS_PROG_VERSION)_src.tbz gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
 zip-gshhs:
 		zip -r -9 -q gshhs_$(GSHHS_DATA_VERSION).zip gshhs_[clihf].b
-		cd $(GMTHOME)/src; \
+		cd $(rootdir)/src; \
 		zip -r -9 -q -l gshhs_$(GSHHS_PROG_VERSION)_src.zip gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
 #-------------------------------------------------------------------------------

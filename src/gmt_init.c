@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.262 2006-12-05 02:44:42 remko Exp $
+ *	$Id: gmt_init.c,v 1.263 2006-12-06 18:13:50 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3057,13 +3057,9 @@ void GMT_set_home (void)
 		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
 		strcpy (GMT_SHAREDIR, this);
 	}
-	else if ((this = getenv ("GMTHOME")) != CNULL) {	/* GMTHOME was set: use GMTHOME/share */
-		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 7), sizeof (char), "GMT");
-		sprintf (GMT_SHAREDIR, "%s%c%s", this, DIR_DELIM, "share");
-	}
-	else {	/* Default is GMT_DEFAULT_PATH/share */
-		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 7), sizeof (char), "GMT");
-		sprintf (GMT_SHAREDIR, "%s%c%s", GMT_DEFAULT_PATH, DIR_DELIM, "share");
+	else {	/* Default is GMT_SHARE_PATH */
+		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_SHARE_PATH) + 1), sizeof (char), "GMT");
+		strcpy (GMT_SHAREDIR, GMT_SHARE_PATH);
 	}
 
 	/* Determine GMT_HOMEDIR (user home directory) */

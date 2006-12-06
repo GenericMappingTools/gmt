@@ -171,9 +171,9 @@ that of the WDBII.  See the \fBGMT\fP Cookbook and Technical Reference Appendix 
 further details.
 .br
 .sp
-\fBpscoast\fP will first look for coastline files in directory \fB$GMTHOME\fP/share/coast (where \fB$GMTHOME\fP is
-an environmental variable).  If the desired file is not found, it will look for the file
-\fB$GMTHOME\fP/share/coastline.conf.  This file may contain any number of records that
+\fBpscoast\fP will first look for coastline files in directory \fB$GMT_SHAREDIR\fP/coast
+If the desired file is not found, it will look for the file
+\fB$GMT_SHAREDIR\fP/coastline.conf.  This file may contain any number of records that
 each holds the full pathname of an alternative directory.  Comment lines (#) and blank lines
 are allowed.  The desired file is then sought for in the alternate directories.
 .SH BUGS

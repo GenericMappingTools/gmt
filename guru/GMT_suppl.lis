@@ -265,8 +265,6 @@ src/x_system/x_update.man
 src/x_system/x_update.html
 src/xgrid/README.xgrid
 src/xgrid/makefile.in
-src/xgrid/configure
-src/xgrid/configure.in
 src/xgrid/xGridEdit.c
 src/xgrid/xgrid_Canvas.c
 src/xgrid/xgrid_Canvas.h

@@ -28,8 +28,8 @@ awk '{ x0=$1+0.5;y0=$2+0.5;c=$3; \
 	printf "%g %g 7 0 1 BR p%s\n",x0,y0,c ; \
 	printf "%g %g 7 0 1 TL P%s\n",x0,y0,c}' < t.in \
 	| pstext -Gpurple -R -J -O -K >> $ps
-psimage -E80 -C3i/3i/BL $GMTHOME/share/pattern/ps_pattern_10.ras -Gfred -Gb- -O -K >> $ps
-psimage -E80 -C3i/3i/TL $GMTHOME/share/pattern/ps_pattern_10.ras -O >> $ps
+psimage -E80 -C3i/3i/BL ../../share/pattern/ps_pattern_10.ras -Gfred -Gb- -O -K >> $ps
+psimage -E80 -C3i/3i/TL ../../share/pattern/ps_pattern_10.ras -O >> $ps
 rm -f t.in .gmtcommands4
 
 echo -n "Comparing psimage_orig.ps and $ps: "

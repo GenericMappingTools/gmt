@@ -1,7 +1,7 @@
 .TP
 .B \-B
 Sets map boundary annotation and tickmark intervals. The format of \fItickinfo\fP is
-[\fBp|s\fP]\fIxinfo\fP[/\fIyinfo\fP[/\fIzinfo\fP]][:."Title":][\fBW|w\fP][\fBE|e\fP][\fBS|s\fP][\fBN|n\fP][\fBZ|z\fP[\fB+\fP]].
+[\fBp\fP|\fBs\fP]\fIxinfo\fP[/\fIyinfo\fP[/\fIzinfo\fP]][:."Title":][\fBW\fP|\fBw\fP][\fBE\fP|\fBe\fP][\fBS\fP|\fBs\fP][\fBN\fP|\fBn\fP][\fBZ\fP|\fBz\fP[\fB+\fP]].
 The leading \fBp\fP [Default] or \fBs\fP selects the primary or secondary annotation information.
 Each of the \fI?info\fP segments are textstrings of the form \fIinfo\fP[:"Axis label":][:="prefix":][:,"unit label":].
 The \fIinfo\fP string is made up of one or more concatenated substrings of the form [\fBwhich\fP]\fIstride\fP[+-\fIphase\fP][\fBu\fP].
@@ -19,7 +19,7 @@ interval by that amount.  The optional \fBu\fP indicates the unit of the \fIstri
 \fBm\fP and \fBc\fP instead mean arc minutes and arc seconds.  All entities that are language-specific are under control
 by \fBTIME_LANGUAGE\fP.  To specify separate x and y ticks, separate the substrings that apply to the x and y
 axes with a slash [/] (If a 3-D basemap is selected with \fB\-E\fP and \fB\-Jz\fP, a third substring pertaining
-to the vertical axis may be appended.)  For linear/log/power projections (\fB\-Jx|X\fP): Labels
+to the vertical axis may be appended.)  For linear/log/power projections (\fB\-Jx\fP|\fBX\fP): Labels
 for each axis can be added by surrounding them with colons.  If the first character in the
 label is a period, then the label is used as plot title; if it is a comma then the label is
 appended to each annotation; if it is an equal sign (=) the the prefix is prepended to each annotation (start label/prefix

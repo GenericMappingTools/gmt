@@ -1,6 +1,6 @@
 #!/bin/csh
 #
-#	$Id: guruenv.csh,v 1.9 2006-11-27 19:30:38 remko Exp $
+#	$Id: guruenv.csh,v 1.10 2006-12-06 18:13:50 remko Exp $
 #
 #	Environmental variables needed by GMT gurus
 #	Stick these in your environment before making GMT
@@ -35,13 +35,13 @@ alias gurumake 'make -f guru/Makefile.guru'				# Simple shorthand for guru makin
 # 4. The GMT Environment
 #   Before you start issuing make commands, you should have these set properly
 #
-setenv GMTHOME <fullpathtoyour>/GMTdev/GMT
-setenv MANPATH $GMTHOME/man						# Or add this part if MANPATH exists for other reasons
+setenv GMTROOT <fullpathtoyour>/GMTdev/GMT
+setenv MANPATH $GMTROOT/man						# Or add this part if MANPATH exists for other reasons
 setenv NETCDFHOME  /usr/local						# Set this to where netcdf lives
 
 #
 # 5. Searchable path
-#   Make sure you add $GMTHOME/bin to your path.
+#   Make sure you add $GMTROOT/bin to your path.
 
 #
 # 6. Authentication of CVS access

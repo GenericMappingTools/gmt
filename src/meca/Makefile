@@ -1,18 +1,17 @@
-#       $Id: Makefile,v 1.11 2006-11-11 15:07:16 remko Exp $
+#       $Id: Makefile,v 1.12 2006-12-06 18:13:50 remko Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
 #	you must fix the -L -I for the gmt-dependencies.
 #
 #-----------------stop here-------------------------------
-include ../makegmt.macros
-GMTSRCDIR	= ..
-include ../gmtalldeps.macros
 
-NETCDFLIB	= $(NETCDF)/lib
-NETCDFINC	= $(NETCDF)/include
-CDF		= -L$(NETCDFLIB) -lnetcdf
-CFLAGS		= $(CC_OPT) -I$(srcdir) -I$(NETCDFINC)
+GMTSRCDIR = ../
+include $(GMTSRCDIR)makegmt.macros
+include $(GMTSRCDIR)gmtalldeps.macros
+
+CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
+CDF		= -L$(NETCDF)/lib -lnetcdf
 ALLLIB		= -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) $(LDFLAGS)
 #
 #

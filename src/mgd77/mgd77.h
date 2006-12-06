@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.74 2006-10-23 03:38:30 pwessel Exp $
+ *	$Id: mgd77.h,v 1.75 2006-12-06 18:13:51 remko Exp $
  * 
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -377,7 +377,7 @@ struct MGD77_CONTROL {
 	 */
 	
 	/* File path information */
-	char *MGD77_HOME;				/* Directory where paths are stored [$GMTHOME/share/mgd77] */
+	char *MGD77_HOME;				/* Directory where paths are stored [$GMT_SHAREDIR/mgd77] */
 	char **MGD77_datadir;				/* Directories where MGD77 data may live */
 	int n_MGD77_paths;				/* Number of such directories */
 	char user[MGD77_COL_ABBREV_LEN];		/* Current user id */
