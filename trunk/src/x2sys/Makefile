@@ -1,12 +1,13 @@
-#	$Id: Makefile,v 1.20 2006-11-11 15:07:16 remko Exp $
+#	$Id: Makefile,v 1.21 2006-12-06 18:13:51 remko Exp $
 #
 # makefile for x2sys directory
 #
-include ../makegmt.macros
-GMTSRCDIR	= ..
-include ../gmtalldeps.macros
 
 #------------------------- stop here --------------------------
+
+GMTSRCDIR = ../
+include $(GMTSRCDIR)makegmt.macros
+include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I../mgd77 -I$(NETCDF)/include
 ALLLIB	= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)

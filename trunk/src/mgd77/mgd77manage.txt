@@ -177,7 +177,7 @@ option which will fill in the depth column using the two-way traveltimes and the
 if twt is present.  This step yields ~5000 individual cruise files.  Place these in one or
 more sub-directories of your choice, list these sub-directories (one per line) in the file
 mgd77_paths.txt, and place that file in the directory pointed to by \fB$MGD77_HOME\fP; if not set
-this variable defaults to \fB$GMTHOME\fP/share/mgd77.
+this variable defaults to \fB$GMT_SHAREDIR\fP/mgd77.
 .br
 .sp
 \fB3. Conversion\fP

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.31 2006-11-08 02:08:00 pwessel Exp $
+#	$Id: Makefile,v 1.32 2006-12-06 18:13:51 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -16,9 +16,10 @@
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
-include ../makegmt.macros
-GMTSRCDIR	= ..
-include ../gmtalldeps.macros
+
+GMTSRCDIR = ../
+include $(GMTSRCDIR)makegmt.macros
+include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf

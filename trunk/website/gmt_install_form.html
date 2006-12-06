@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.37 2006-11-16 16:46:20 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.38 2006-12-06 18:13:51 remko Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.37 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.38 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -272,8 +272,8 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 <TR><TD>Place GMT web pages in:</TD><TD><INPUT NAME="gmt_web" TYPE="text" SIZE="45"></TD></TR>
 </TABLE>
 
-<P>
-<I>Note: The GMT archives will first be uncompressed, untarred, and compiled in the current working
+<P><I>
+Note: The GMT archives will first be uncompressed, untarred, and compiled in the current working
 directory where install_gmt is run.  After those steps are successful you may want to copy
 the files to more traditional directories like /usr/local/bin, etc.  The default locations are
 subdirectories bin, lib, include, share, man, and www under GMT4.1.4 in the current install directory.
@@ -282,36 +282,39 @@ above, e.g. "l", giving man/manl, is the default.  Do NOT specify the man dir as
 section directory will automatically be appended based on the chosen section unit.
 Only specify alternative directories if you want
 to place the files elsewhere.  Make sure the users' search path contains the directory where you
-place the executables.  The directory chosen for GMT data resources is accessed by all GMT users
-via the environmental variable $GMTHOME - all users must set this parameter in their .login file.
+place the executables.  
 The man utility will find the GMT man pages if the chosen man directory is included in the
 users' MANPATH environmental variable.  Finally, advise users to add a browser bookmark for the
 file gmt/gmt_services.html in the web directory you chose above; that page provides links to online
 GMT documentation and man pages (assuming you selected the web archive in Section C.3).</I><BR>
 
-<!--  GMTHOME DEFAULT DIRECTORY SELECTION  -->
+<!--  GMT_SHAREDIR DIRECTORY SELECTION  -->
 
-<HR><B>8. Select default GMTHOME directory</B><BR>
+<HR><B>8. Select alternative GMT_SHAREDIR directory</B><BR>
 
-Default GMTHOME directory: <INPUT NAME="gmt_def" TYPE="text" SIZE="30"><BR>
+Alternative GMT_SHAREDIR directory: <INPUT NAME="gmt_sharedir" TYPE="text" SIZE="30"><BR>
 
-<P>
-<I>Note: While the GMT data files will be placed in the local directory indicated in the previous
-section (C.7), that directory may appear with a different name to remote users if a different mount point
-is used or a symbolic link is set.  If so, you may want to specify a different value for the
-default GMTHOME.  This is the directory where GMT will look for the share directory with coastline files if users have
-not set this environmental variable explicitly.  Leave blank to select the parent directory
-of the data resources directory given in C.7 [Default].</I><BR>
+<P><I>
+Note: At run-time GMT will look in the shared data directory (specified in section C.7) to
+find configuration and data files.
+That directory may appear with a different name to remote users if a different mount point
+is used or a symbolic link is set.
+GMT can use the environment variable $GMT_SHAREDIR to point to the right place.
+If users see a different location for the shared data files, specify it here.
+(It will be used only to remind you at the end of the installation to set
+the enronment variable $GMT_SHAREDIR).
+Leave blank to select the shared data directory of the data resources directory given in
+C.7 [Default].</I><BR>
 
 <!--  GMT COASTLINE ALTERNATE DIRECORIES SELECTION  -->
 
 <HR><B>9. Alternative coastline directories</B><BR>
 
-<INPUT TYPE="radio" VALUE="all" NAME="radio_coast" CHECKED> Install all selected coastline files in $GMTHOME/share/coast<BR>
+<INPUT TYPE="radio" VALUE="all" NAME="radio_coast" CHECKED> Install all selected coastline files in $GMT_SHAREDIR/coast<BR>
 <INPUT TYPE="radio" VALUE="dir" NAME="radio_coast"> Place coastline files in several directories<BR>
 
 <P>
-<I>Note: Normally, all coastline files reside in $GMTHOME/share/coast.  However, if your disk resources are limited
+<I>Note: Normally, all coastline files reside in $GMT_SHAREDIR/coast.  However, if your disk resources are limited
 or you are sharing files via NFS or similar mounts, you may want to place the larger files in places
 separate from where the smaller files reside.  The selections below are only used if you chose that way.</I><BR>
 <P>

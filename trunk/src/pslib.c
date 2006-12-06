@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.133 2006-12-05 02:44:42 remko Exp $
+ *	$Id: pslib.c,v 1.134 2006-12-06 18:13:50 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -128,8 +128,6 @@
  * Date:	02-JUN-2004
  * Version:	4.1
  *
- * The environmental variable GMTHOME must be set to the directory that holds the shared
- *   data directory where all the Sun raster pattern files and PS preambles are stored
  */
 
 #include "pslib_inc.h"
@@ -1249,13 +1247,9 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		PSL_SHAREDIR = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char));
 		strcpy (PSL_SHAREDIR, this);
 	}
-	else if ((this = getenv ("GMTHOME")) != NULL) {	/* GMTHOME was set: use GMTHOME/share */
-		PSL_SHAREDIR = (char *) ps_memory (VNULL, (size_t)(strlen (this) + 7), sizeof (char));
-		sprintf (PSL_SHAREDIR, "%s%c%s", this, DIR_DELIM, "share");
-	}
-	else {	/* Default is GMT_DEFAULT_PATH/share */
-		PSL_SHAREDIR = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_DEFAULT_PATH) + 7), sizeof (char));
-		sprintf (PSL_SHAREDIR, "%s%c%s", GMT_DEFAULT_PATH, DIR_DELIM, "share");
+	else {	/* Default is GMT_SHARE_PATH */
+		PSL_SHAREDIR = (char *) ps_memory (VNULL, (size_t)(strlen (GMT_SHARE_PATH) + 1), sizeof (char));
+		strcpy (PSL_SHAREDIR, GMT_SHARE_PATH);
 	}
 
 	/* Determine PSL_USERDIR (directory containing user replacements contents in PSL_SHAREDIR) */

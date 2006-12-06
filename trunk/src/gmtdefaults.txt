@@ -439,7 +439,7 @@ Give a red/green/blue triplet, with each element in the 0\-255 range. [255/255/2
 Sets the physical format of the current plot paper [MY_PAPER].  The following
 formats (and their widths and heights in points) are recognized (Additional
 site-specific formats may be specified in
-the gmtmedia.d file in \fB$GMTHOME\fP/share or ~/.gmt; see that file for details):
+the gmtmedia.d file in \fB$GMT_SHAREDIR\fP or ~/.gmt; see that file for details):
 .br
 .sp
 Media	width	height
@@ -670,9 +670,9 @@ UK	British English
 US	US English
 .br
 .sp
-If your language is not supported, please examine the \fB$GMTHOME\fP/share/time/us.d file and
+If your language is not supported, please examine the \fB$GMT_SHAREDIR\fP/time/us.d file and
 make a similar file.  Please submit it to the \fBGMT\fP Developers for official inclusion. 
-Custom language files can be placed in directories \fB$GMTHOME\fP/share/time or ~/.gmt.
+Custom language files can be placed in directories \fB$GMT_SHAREDIR\fP/time or ~/.gmt.
 .TP
 .B TIME_SYSTEM
 Determines which time epoch the relative time refers to and what the units are.  Choose from one of the preset systems below

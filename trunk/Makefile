@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.35 2006-11-14 01:31:35 remko Exp $
+#	$Id: Makefile,v 1.36 2006-12-06 18:13:50 remko Exp $
 #
 #	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -58,7 +58,6 @@
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------
-#
 
 include src/makegmt.macros	# GMT-specific settings determined by user & install_gmt
 
@@ -110,8 +109,7 @@ uninstall-suppl:
 install-data:
 		if [ ! $(rootdir)/share = $(datadir) ]; then \
 			mkdir -p $(datadir); \
-			cp -r share/* $(datadir); \
-			cp -f share/.gmtdefaults_* $(datadir); \
+			cp -r share/* share/.gmtdefaults_* $(datadir); \
 		else \
 			echo "Install share directory the same as distribution share directory - nothing copied"; \
 		fi
@@ -219,7 +217,7 @@ clean:
 		$(MAKE) -C src $@
 
 spotless:
-		rm -f config.cache config.status config.log configure
+		rm -f config.cache config.status config.log
 		$(MAKE) TARGET=$@ insuppl
 		$(MAKE) -C src $@
 

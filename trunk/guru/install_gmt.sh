@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.85 2006-11-23 03:14:54 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.86 2006-12-06 18:13:50 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -356,36 +356,45 @@ else
 	GMT_triangle=`get_def_answer "Use optional Shewchuk's triangulation routine (y/n)?" "y"`
 fi
 	
-GMT_def="$topdir/GMT${VERSION}"
-echo " " >&2
-GMT_share=`get_def_answer "Directory for GMT data?" "$GMT_def/share"`
-GMT_bin=`get_def_answer "Directory for GMT executables?" "$GMT_def/bin"`
-GMT_lib=`get_def_answer "Directory for GMT linkable libraries?" "$GMT_def/lib"`
-GMT_include=`get_def_answer "Directory for GMT include files?" "$GMT_def/include"`
+cat << EOF >&2
+
+The installation will install all GMT components in several subdirectories
+under one root directory. On most Unix systems this root directory will be
+something like /usr/local or /sw, under which the installation will add
+bin, lib, share, etc.  Below you are asked to select to location of each
+of the subdirectories.
+
+EOF
+GMT_bin=`get_def_answer "Directory for GMT executables?" "$topdir/GMT${VERSION}/bin"`
+GMT_prefix=`echo $GMT_bin | sed 's!/bin!!'`
+GMT_lib=`get_def_answer "Directory for GMT linkable libraries?" "$GMT_prefix/lib"`
+GMT_include=`get_def_answer "Directory for GMT include files?" "$GMT_prefix/include"`
+GMT_share=`get_def_answer "Directory for GMT data resources?" "$GMT_prefix/share"`
 
 cat << EOF >&2
 
 Unix man pages are usually stored in /usr/man/manX, where X is
 the relevant man section.  This is usually l for local.  Below,
 you will be asked for X and the /usr/man part; the /manX will be
-appended automatically, so do not answer /usr/man/manl
+appended automatically, so do not answer /usr/man/manl.
 
 EOF
-GMT_man=`get_def_answer "Directory for GMT man pages?" "$GMT_def/man"`
+GMT_man=`get_def_answer "Directory for GMT man pages?" "$GMT_prefix/man"`
 GMT_mansect=`get_def_answer "Enter Man page section for GMT man pages (1-9,l)" "l"`
-GMT_web=`get_def_answer "Directory for GMT www pages?" "$GMT_def/www"`
+GMT_web=`get_def_answer "Directory for GMT www pages?" "$GMT_prefix/www"`
 
 cat << EOF >&2
 
-At run-time, GMT uses the \$GMTHOME environmental parameter to
-find the directory $GMT_share.
-The name must NOT contain the trailing /share.
-You may want to override the default if users will see a different
-mount point or a symbolic link instead of the local directory.
+At run-time GMT will look in the directory $GMT_share to find configuration
+and data files.  That directory may appear with a different name to remote users
+if a different mount point or a symbolic link is set.
+GMT can use the environment variable \$GMT_SHAREDIR to point to the right place.
+If users see a different location for the shared data files, specify it here.
+(It will be used only to remind you at the end of the installation to set
+the enronment variable \$GMT_SHAREDIR).
 
 EOF
-def=`echo $GMT_share | sed -e 'sB/shareBBg'`
-GMT_def=`get_def_answer "Enter default GMTHOME selection" "$def"`
+GMT_sharedir=`get_def_answer "Enter value of GMT_SHAREDIR selection" "$GMT_share"`
 
 cat << EOF >&2
 
@@ -464,24 +473,23 @@ GMT_delete=`get_def_answer "Delete all tar files after install? (y/n)" "n"`
 
 cat << EOF >&2
 
-Normally, all coastline files are installed in ./GMT${VERSION}/share/coast.
+Normally, all coastline files are installed in $GMT_share/coast.
 However, you can also place some of them in separate directories.
 These dirs must exist or you must have write permission to make them.
 If alternate directories are specified then a coastline.conf file will
-be kept in ./GMT${VERSION}/share to contain the names of these directories.
-NOTE:  Do not append the final /share/coast as that is done automatically!
+be kept in $GMT_share to contain the names of these directories.
+NOTE:  Enter full pathname of directory were coastline files are to be stored.
 
 EOF
 
-dir=${topdir}/GMT${VERSION}
-GMT_dir_cli=`get_def_answer "Directory for int, low, and crude coastline files (without /share/coast)" "$dir"`
+GMT_dir_cli=`get_def_answer "Directory for int, low, and crude coastline files?" "$GMT_share/coast"`
 if [ ! $GMT_get_high = n ]; then
-	GMT_dir_high=`get_def_answer "Directory for high coastline files (without /share/coast)" "$GMT_dir_cli"`
+	GMT_dir_high=`get_def_answer "Directory for high coastline files?" "$GMT_dir_cli"`
 else
 	GMT_dir_high=$GMT_dir_cli
 fi
 if [ ! $GMT_get_full = n ]; then
-	GMT_dir_full=`get_def_answer "Directory for full coastline files (without /share/coast)" "$GMT_dir_high"`
+	GMT_dir_full=`get_def_answer "Directory for full coastline files?" "$GMT_dir_high"`
 else
 	GMT_dir_full=$GMT_dir_high
 fi
@@ -653,13 +661,14 @@ GMT_suppl_xgrid=$GMT_suppl_xgrid
 #---------------------------------------------
 GMT_si=$GMT_si
 GMT_ps=$GMT_ps
-GMT_def=$GMT_def
-GMT_share=$GMT_share
+GMT_prefix=$GMT_prefix
 GMT_bin=$GMT_bin
 GMT_lib=$GMT_lib
+GMT_share=$GMT_share
 GMT_include=$GMT_include
 GMT_man=$GMT_man
 GMT_web=$GMT_web
+GMT_sharedir=$GMT_sharedir
 GMT_dir_full=$GMT_dir_full
 GMT_dir_high=$GMT_dir_high
 GMT_dir_cli=$GMT_dir_cli
@@ -743,11 +752,11 @@ install_coast()
 		else
 			t=`echo $file | awk '{print substr($1,1,1)}'`
 			echo "share/binned_GSHHS_${t}.cdf"
-			$expand $here/GMT${file}c.bz2 > $dir/share/coast/binned_GSHHS_${t}.cdf
+			$expand $here/GMT${file}c.bz2 > $dir/binned_GSHHS_${t}.cdf
 			echo "share/binned_binned_${t}.cdf"
-			$expand $here/GMT${file}r.bz2 > $dir/share/coast/binned_river_${t}.cdf
+			$expand $here/GMT${file}r.bz2 > $dir/binned_river_${t}.cdf
 			echo "share/binned_river_${t}.cdf"
-			$expand $here/GMT${file}b.bz2 > $dir/share/coast/binned_border_${t}.cdf
+			$expand $here/GMT${file}b.bz2 > $dir/binned_border_${t}.cdf
 		fi
 	fi
 		
@@ -1167,20 +1176,15 @@ install_this_gmt $GMT_get_tut tut
 # Now do coastline archives
 #--------------------------------------------------------------------------------
 
-dir=${topdir}/GMT${VERSION}
+dir=$GMT_share/coast
 GMT_dir_full=${GMT_dir_full:-$dir}
-if [ $GMT_dir_full != $dir ]; then
-	echo $GMT_dir_full >> $$.coast
-fi
+[[ $GMT_dir_full != $dir ]] && echo $GMT_dir_full >> $$.coast
 
 GMT_dir_high=${GMT_dir_high:-$dir}
-if [ $GMT_dir_high != $dir ]; then
-	echo $GMT_dir_high >> $$.coast
-fi
+[[ $GMT_dir_high != $dir ]] && echo $GMT_dir_high >> $$.coast
+
 GMT_dir_cli=${GMT_dir_cli:-$dir}
-if [ $GMT_dir_cli != $dir ]; then
-	echo $GMT_dir_cli >> $$.coast
-fi
+[[ $GMT_dir_cli != $dir ]] && echo $GMT_dir_cli >> $$.coast
 
 if [ $source = "src" ]; then
 	install_coast $GMT_get_coast coast $GMT_dir_cli
@@ -1192,7 +1196,6 @@ install_coast $GMT_get_full  full  $GMT_dir_full
 
 if [ -f $$.coast ]; then	# Install coastline.conf file
 	echo "# GMT Coastline Path Configuration File" > $topdir/GMT${VERSION}/share/coastline.conf
-	echo "" >> $topdir/GMT${VERSION}/share/coastline.conf
 	sort -u $$.coast >> $topdir/GMT${VERSION}/share/coastline.conf
 	echo "$topdir/GMT${VERSION}/share/coastline.conf initialized" >&2
 	rm -f $$.coast
@@ -1217,47 +1220,46 @@ here=`pwd`
 # If we got here via a parameter file that had blank answers
 # we need to provide the default values here
 
-GMT_share=${GMT_share:-$here/share}
-dir=`echo $GMT_share | sed -e 'sB/shareBBg'`
-GMT_def=${GMT_def:-$dir}
+GMT_prefix=${GMT_prefix:-$topdir/GMT${VERSION}}
+GMT_bin=${GMT_bin:-$GMT_prefix/bin}
+GMT_lib=${GMT_lib:-$GMT_prefix/lib}
+GMT_share=${GMT_share:-$GMT_prefix/share}
+GMT_include=${GMT_include:-$GMT_prefix/include}
+GMT_man=${GMT_man:-$GMT_prefix/man}
+GMT_web=${GMT_web:-$GMT_prefix/www}
+GMT_sharedir=${GMT_sharedir:-$GMT_share}
 
 # Are we allowed to write in $GMT_share?
 
-if [ -w $dir ]; then
+mkdir -p $GMT_share
+if [ -w $GMT_share ]; then
 	write_share=1
 else
 	write_share=0
 fi
 
-GMT_bin=${GMT_bin:-$here/bin}
-GMT_lib=${GMT_lib:-$here/lib}
-GMT_include=${GMT_include:-$here/include}
-
 # Are we allowed to write in $GMT_bin?
 
-dir=`echo $GMT_bin | sed -e 'sB/binBBg'`
-if [ -w $dir ]; then
+mkdir -p $GMT_bin
+if [ -w $GMT_bin ]; then
 	write_bin=1
 else
 	write_bin=0
 fi
 
-GMT_man=${GMT_man:-$here/man}
-
 # Are we allowed to write in $GMT_man?
 
-dir=`echo $GMT_man | sed -e 'sB/manBBg'`
-if [ -w $dir ]; then
+mkdir -p $GMT_man
+if [ -w $GMT_man ]; then
 	write_man=1
 else
 	write_man=0
 fi
-GMT_web=${GMT_web:-$here/www}
 
 # Are we allowed to write in $GMT_web?
 
-dir=`echo $GMT_web | sed -e 'sB/wwwBBg'`
-if [ -w $dir ]; then
+mkdir -p $GMT_web
+if [ -w $GMT_web ]; then
 	write_web=1
 else
 	write_web=0
@@ -1333,7 +1335,7 @@ if [ -f src/makegmt.macros ]; then
 	$GMT_make spotless || exit
 fi
 	
-./configure --prefix=$GMT_def --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
+./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle \
   --mandir=$GMT_man --enable-mansect=$GMT_mansect --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip \
   $disable_mex $disable_xgrid 
@@ -1365,8 +1367,8 @@ cd ..
 # RUN EXAMPLES
 #--------------------------------------------------------------------------------
 
-# Run examples with /src as binary path and /share as GMTHOME in case the user did
-# not have permission to place files in GMT_share and GMT_bin
+# Run examples with /src as binary path in case the user did
+# not have permission to place files in GMT_bin
 
 if [ -d examples ]; then
 	if [ $GMT_run_examples = "y" ]; then
@@ -1467,19 +1469,26 @@ if [ $GMT_delete = "y" ]; then
 	fi
 fi
 
-dir=`echo $GMT_share | sed -e 'sB/shareBBg'`
 cat << EOF >&2
 GMT installation complete. Remember to set these:
 
 -----------------------------------------------------------------------
 For csh or tcsh users:
 setenv NETCDFHOME $NETCDFHOME
-setenv GMTHOME $dir
 set path=($GMT_bin \$path)
+EOF
+if [ "$GMT_sharedir" != "$GMT_share" ]; then
+	echo setenv GMT_SHAREDIR $GMT_sharedir >&2
+fi
+cat << EOF >&2
+
 For sh or bash users:
 export NETCDFHOME=$NETCDFHOME
-export GMTHOME=$dir
 export PATH=$GMT_bin:\$PATH
+EOF
+[[ "$GMT_sharedir" != "$GMT_share" ]] && echo export GMT_SHAREDIR=$GMT_sharedir >&2
+cat << EOF >&2
+
 For all users:
 EOF
 if [ ! x"$GMT_man" = x ]; then

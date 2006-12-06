@@ -42,8 +42,6 @@ InstallScript: <<
  ranlib %i/lib/libmgd77.a
  ranlib %i/lib/libpsl.a
  ranlib %i/lib/libx2sys.a
- echo
- echo NOTE: make sure NOT to set the GMTHOME variable
 <<
 Description: Tools to plot data sets
 DescDetail: <<
@@ -56,8 +54,6 @@ DescDetail: <<
  and 24-bit color. GMT supports 25 common map projections plus linear,
  log, and power scaling, and comes with support data such as
  coastlines, rivers, and political boundaries.
-
- When using the fink install of GMT, make sure not to have GMTHOME set.
 <<
 DescPort: <<
  Remove xgrid suppl package so x11 not required.

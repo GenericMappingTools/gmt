@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.14 2006-11-11 15:07:16 remko Exp $
+#	$Id: Makefile,v 1.15 2006-12-06 18:13:51 remko Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -16,9 +16,10 @@
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
-include ../makegmt.macros
-GMTSRCDIR	= ..
-include ../gmtalldeps.macros
+
+GMTSRCDIR = ../
+include $(GMTSRCDIR)makegmt.macros
+include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf

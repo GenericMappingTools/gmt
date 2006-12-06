@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_P.tex,v 1.8 2005-12-17 05:59:21 pwessel Exp $
+%	$Id: GMT_Appendix_P.tex,v 1.9 2006-12-06 18:13:50 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2006.
@@ -32,11 +32,9 @@ is the full path to a \GMT\ root directory (e.g., /usr/local/GMT3.4.2).  You may
 manually add or remove entries there at any time.  You are then instructed to make two
 changes to your environment (the details are shell-dependent but explained by \progname{gmtswitch}):
 \begin{enumerate}
-\item Define the environmental variable {\bf GMTHOME} to point to {\bf \$HOME}/this\_gmt,
-where {\bf \$HOME} is the full path to your home directory.
-Here, \filename{this\_gmt} is a symbolic link that will be created and maintained by \progname{gmtswitch}
-to point to a directory with one of the installed versions. 
-\item Make sure {\bf \$GMTHOME}/bin is in your executable {\bf PATH}.
+\item \progname{gmtswitch} creates and maintains a symbolic link \filename{this\_gmt} in your home
+directory that will point to a directory with one of the installed GMT versions.
+\item Make sure {\bf \$HOME}/this\_gmt/bin is in your executable {\bf PATH}.
 \end{enumerate}
 Make those edits, logout, and log and back in again.  The next time you run \progname{gmtswitch}
 you will be able to switch between versions.  Typing \progname{gmtswitch} with no argument will list the

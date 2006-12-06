@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.23 2006-05-08 09:50:39 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.24 2006-12-06 18:13:50 remko Exp $
 REM
 REM
 REM	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
@@ -43,7 +43,7 @@ REM	    C:\MSVC\DEVSTUDIO\VC\BIN\VCVARS32.BAT
 REM	    (your MSVC directory may be different)
 REM
 REM STEP c: Modify GMTENV.BAT.  Later, you may want to run it
-REM	    from inside autoexec.bat so GMTHOME and PATH are set.
+REM	    from inside autoexec.bat so that the proper PATH is set.
 REM	    Here, we call it directly:
 CALL GMTENV.BAT
 REM
@@ -52,13 +52,12 @@ REM	    Make sure BINDIR below points to a valid directory
 REM	    where you want executables to be installed. Either
 REM	    edit BINDIR or create the ..\bin directory.
 REM	    Same goes for LIBDIR where GMT libraries will be kept.
-REM	    GMT_PATH is where GMT expects to find the
-REM	    subdir share.  It is ONLY used if the user does not
-REM	    set %GMTHOME%.
+REM	    GMT_PATH is where GMT expects to find the shared data.
+REM	    It is ONLY used if the user does not set %GMT_SHAREDIR%.
 REM
 SET BINDIR="..\bin"
 SET LIBDIR="..\lib"
-SET GMT_PATH="\"C:\\gmt\""
+SET GMT_PATH=%GMTROOT%/share
 REM
 REM STEP e: If you WANT TO  use Shewchuk's triangulation
 REM	    routine, you must set TRIANGLE to "yes" :
@@ -89,15 +88,15 @@ IF %TRIANGLE%=="yes" SET TROBJ=triangle.obj
 REM ----------------------------------------------------
 ECHO STEP 1: Make PS library
 REM ----------------------------------------------------
-CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% pslib.c
+CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_PATH% pslib.c
 IF %CHOICE%=="dynamic" link %LOPT% /out:psl.dll /implib:psl.lib pslib.obj
 IF %CHOICE%=="static" lib /out:psl.lib pslib.obj
 REM ----------------------------------------------------
 ECHO STEP 2: Make GMT library
 REM ----------------------------------------------------
-CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_init.c
-CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
-CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_DEFAULT_PATH=%GMT_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
+CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_PATH% gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_init.c
+CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
+CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
 IF %TRIANGLE%=="yes" CL %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
 IF %CHOICE%=="dynamic" link %LOPT% /out:gmt.dll /implib:gmt.lib gmt_*.obj %TROBJ% psl.lib netcdf.lib setargv.obj
 IF %CHOICE%=="static" lib /out:gmt.lib gmt_*.obj %TROBJ%

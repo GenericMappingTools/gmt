@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.6 2006-01-09 21:51:46 remko Exp $
+#	$Id: do_examples.csh,v 1.7 2006-12-06 18:13:50 remko Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -53,12 +53,6 @@ if ($#argv >= 1) then
 		endif
 		setenv LD_LIBRARY_PATH ${2}:${oldld}
 	endif
-	if ($?GMTHOME) then
-		set old_GMTHOME = $GMTHOME
-	else
-		set old_GMTHOME = $top
-	endif
-	setenv GMTHOME $top
 endif
 
 # Loop over all examples and run each job
@@ -80,7 +74,6 @@ if ($#argv >= 1) then
 	if ($#argv == 2) then
 		setenv LD_LIBRARY_PATH $oldld
 	endif
-	setenv GMTHOME $old_GMTHOME
 endif
 if ("X$OLDLANG" == "X") then
 	unsetenv LANG

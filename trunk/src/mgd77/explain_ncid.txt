@@ -16,6 +16,6 @@ Can be one or more of five kinds of specifiers:
 The ".mgd77" or ".nc" extensions will automatically be appended, if needed (use \fB\-I\fP
 to ignore certain file types).  Cruise files will be looked for first in the current directory
 and second in all directories listed in \fB$MGD77_HOME\fP/mgd77_paths.txt [If \fB$MGD77_HOME\fP
-is not set it will default to \fB$GMTHOME\fP/share/mgd77].
+is not set it will default to \fB$GMT_SHAREDIR\fP/mgd77].
 .br
 NOTE: Under Windows, only (1) and (4) are currently supported.
