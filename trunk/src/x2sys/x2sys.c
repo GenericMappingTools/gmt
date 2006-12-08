@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.59 2006-12-05 02:44:42 remko Exp $
+ *	$Id: x2sys.c,v 1.60 2006-12-08 19:34:02 pwessel Exp $
  *
  *      Copyright (c) 1999-2006 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -679,8 +679,8 @@ int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct
 	struct MGD77_DATASET *S;
 	struct MGD77_CONTROL M;
 
-	MGD77_Init (&M, TRUE);		/* Initialize MGD77 Machinery */
-	M.format  = 1;			/* Set input file's format to netCDF */
+	MGD77_Init (&M, TRUE);			/* Initialize MGD77 Machinery */
+	M.format  = MGD77_FORMAT_CDF;		/* Set input file's format to netCDF */
 	for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? TRUE : FALSE;	/* Only allow the specified input format */
 
 	for (i = 0; i < s->n_out_columns; i++) strcpy (M.desired_column[i], s->info[s->out_order[i]].name);	/* Set all the required fields */
