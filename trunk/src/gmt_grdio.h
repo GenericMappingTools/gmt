@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.32 2006-10-24 21:03:28 remko Exp $
+ *	$Id: gmt_grdio.h,v 1.33 2006-12-10 01:15:52 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -40,7 +40,10 @@ EXTERN_MSC int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid
 EXTERN_MSC int GMT_grd_data_size (int format, double *nan_value);
 EXTERN_MSC int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, int *width, int *height, int *first_col, int *last_col, int *first_row, int *last_row);
 EXTERN_MSC void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax);
 EXTERN_MSC int GMT_grd_format_decoder (const char *code);
+EXTERN_MSC void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN update);
+EXTERN_MSC void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift);
 EXTERN_MSC void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode);
 EXTERN_MSC void GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic);

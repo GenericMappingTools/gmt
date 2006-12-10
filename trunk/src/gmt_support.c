@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.277 2006-12-05 04:30:53 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.278 2006-12-10 01:15:52 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -60,9 +60,6 @@
  *	GMT_getrgb		Decipher and check color argument
  *	GMT_init_fill		Initialize fill attributes
  *	GMT_init_pen		Initialize pen attributes
- *	GMT_grd_init 		Initialize grd header structure
- *	GMT_grd_shift 		Rotates grdfiles in x-direction
- *	GMT_grd_setregion 	Determines subset coordinates for grdfiles
  *	GMT_hsv_to_rgb		Convert HSV to RGB
  *	GMT_illuminate		Add illumination effects to rgb
  *	GMT_intpol		1-D interpolation
@@ -5855,99 +5852,6 @@ int GMT_minmaxinc_verify (double min, double max, double inc, double slop)
 	checkval = (fmod (max - min, inc)) / inc;
 	if (checkval > slop && checkval < (1.0 - slop)) return 1;
 	return 0;
-}
-
-void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header)
-{
-	/* used to ensure that sloppy w,e,s,n values are rounded to proper multiples */
-	
-	int i;
-	BOOLEAN global;
-	double half_or_zero, val, start, dx, small, i_d;
-	
-	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
-
-	switch (GMT_minmaxinc_verify (*w, *e, header->x_inc, GMT_SMALL)) {	/* Check if range is compatible with x_inc */
-		case 3:
-			(void) fprintf (stderr, "%s: GMT ERROR: grid x increment <= 0.0\n", GMT_program);
-			exit (EXIT_FAILURE);
-			break;
-		case 2:
-			(void) fprintf (stderr, "%s: GMT ERROR: subset x range <= 0.0\n", GMT_program);
-			exit (EXIT_FAILURE);
-			break;
-		default:
-			/* Everything is seemingly OK */
-			break;
-	}
-	global = (GMT_io.in_col_type[0] == GMT_IS_LON && fabs (fabs (header->x_max - header->x_min) - 360.0) < GMT_CONV_LIMIT);
-	if (GMT_io.in_col_type[0] != GMT_IS_LON || fabs (fabs (*e - *w) - 360.0) > GMT_CONV_LIMIT) {	/* Do this unless a 360 longitude wrap */
-		small = GMT_SMALL * header->x_inc;
-		start = (GMT_io.in_col_type[0] == GMT_IS_LON && fabs (fabs (header->x_min - *w) - 360.0) < GMT_CONV_LIMIT) ? *w : header->x_min;
-
-		i_d = (*w - header->x_min) / header->x_inc;
-		if (i_d < 0 && !global) i_d = 0;
-		i = irint(i_d);
-		val = header->x_min + i * header->x_inc;
-
-		dx = fabs (*w - val);
-		if (GMT_io.in_col_type[0] == GMT_IS_LON) dx = fmod (dx, 360.0);
-		if (dx > small) {
-			*w = val;
-			(void) fprintf (stderr, "%s: GMT WARNING: (w-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
-			(void) fprintf (stderr, "%s: GMT WARNING: w reset to %g\n", GMT_program, *w);
-		}
-
-		i_d = (*e - header->x_min) / header->x_inc;
-		i = irint(i_d);
-		val = header->x_min + i * header->x_inc;
-
-		dx = fabs (*e - val);
-		if (GMT_io.in_col_type[0] == GMT_IS_LON) dx = fmod (dx, 360.0);
-		if (dx > GMT_SMALL) {
-			*e = val;
-			(void) fprintf (stderr, "%s: GMT WARNING: (e-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
-			(void) fprintf (stderr, "%s: GMT WARNING: e reset to %g\n", GMT_program, *e);
-		}
-	}
-	
-	switch (GMT_minmaxinc_verify (*s, *n, header->y_inc, GMT_SMALL)) {	/* Check if range is compatible with y_inc */
-		case 3:
-			(void) fprintf (stderr, "%s: GMT ERROR: grid y increment <= 0.0\n", GMT_program);
-			exit (EXIT_FAILURE);
-			break;
-		case 2:
-			(void) fprintf (stderr, "%s: GMT ERROR: subset y range <= 0.0\n", GMT_program);
-			exit (EXIT_FAILURE);
-			break;
-		default:
-			/* Everything is OK */
-			break;
-	}
-	/* Check if s,n are a multiple of y_inc offset from y_min - if not adjust s, n */
-	small = GMT_SMALL * header->y_inc;
-
-	i_d = (*s - header->y_min) / header->y_inc;
-	if (i_d < 0) i_d = 0;
-	i = irint(i_d);
-	val = header->y_min + i * header->y_inc;
-
-
-	if (fabs (*s - val) > small) {
-		*s = val;
-		(void) fprintf (stderr, "%s: GMT WARNING: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
-		(void) fprintf (stderr, "%s: GMT WARNING: s reset to %g\n", GMT_program, *s);
-	}
-
-	i_d = (*n - header->y_min) / header->y_inc;
-	i = irint(i_d);
-	val = header->y_min + i * header->y_inc;
-
-	if (fabs (*n - val) > small) {
-		*n = val;
-		(void) fprintf (stderr, "%s: GMT WARNING: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
-		(void) fprintf (stderr, "%s: GMT WARNING: n reset to %g\n", GMT_program, *n);
-	}
 }
 
 void GMT_str_tolower (char *value)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.124 2006-05-11 04:40:08 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.125 2006-12-10 01:15:52 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,6 +51,7 @@
  *	GMT_geoz_to_xy :	Generic 3-D lon/lat/z to x/y
  *	GMT_grd_forward :	Forward map-transform grid matrix from lon/lat to x/y
  *	GMT_grd_inverse :	Inversely transform grid matrix from x/y to lon/lat
+ *	GMT_grd_project :	Generalized grid projection with interpolation
  *	GMT_grdproject_init :	Initialize parameters for grid transformations
  *	GMT_great_circle_dist :	Returns great circle distance in degrees
  *	GMT_map_outside :	Generic function determines if we're outside map boundary
@@ -3530,8 +3531,8 @@ int GMT_great_circle_intersection (double A[], double B[], double C[], double X[
 	return (0);				/* Return zero if intersection is between A and B */
 }
 
-/* The *_outside routines returns the status of the current point.  Status is
- * the sum of x_status and y_status. x_status may be
+/* The *_outside routines return the status of the current point.
+ * Status is the sum of x_status and y_status. x_status may be
  *	0	w < lon < e
  *	-1	lon == w
  *	1	lon == e
@@ -3577,7 +3578,6 @@ int GMT_wesn_outside (double lon, double lat)
 		GMT_y_status_new = 0;
 
 	return ( !(GMT_x_status_new == 0 && GMT_y_status_new == 0));
-
 }
 
 int GMT_wesn_outside_np (double lon, double lat)
@@ -3759,7 +3759,6 @@ int GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, doubl
 		while (lon1 > project_info.e) lon1 -= 360.0;
 	}
 
-
 	/* Then set 'almost'-corners to corners */
 
 	dlon0 = lon0 - lon1;
@@ -3768,7 +3767,6 @@ int GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, doubl
 	GMT_x_wesn_corner (&lon1);
 	GMT_y_wesn_corner (&lat0);
 	GMT_y_wesn_corner (&lat1);
-
 
 	if ((lat0 >= project_info.s && lat1 <= project_info.s) || (lat1 >= project_info.s && lat0 <= project_info.s)) {
 		sides[n] = 0;
@@ -5013,8 +5011,7 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 {	/* Forward projection from geographical to rectangular grid */
 	int i, j, k, ij, ii, jj, i_r, j_r, nm, di, dj, not_used = 0;
 	float *weight_sum;
-	double dr, x_0, y_0, *x, *y, *lon, lat, delta, weight, g_off, r_off;
-	double dx2, dy2, xinc2, yinc2, i_max_3r, idx, idy;
+	double dr, x_0, y_0, *x, *y, *lon, lat, delta, weight, g_off, r_off, i_max_3r;
 
 	if (project_info.projection == GMT_LINEAR && (project_info.xyz_projection[0] != GMT_LINEAR && g_head->ny == r_head->ny) && (project_info.xyz_projection[1] != GMT_LINEAR && g_head->nx == r_head->nx)) {
 		GMT_transx_forward (geo, g_head, rect, r_head);						/* First transform the rows */
@@ -5050,18 +5047,15 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 
 	g_off = (g_head->node_offset) ? 0.5 : 0.0;
 	r_off = (r_head->node_offset) ? 0.5 : 0.0;
-	dx2 = g_off * g_head->x_inc;
-	dy2 = g_off * g_head->y_inc;
-	xinc2 = r_off * r_head->x_inc;
-	yinc2 = r_off * r_head->y_inc;
 	i_max_3r = 3.0 / max_radius;
-	idx = 1.0 / r_head->x_inc;
-	idy = 1.0 / r_head->y_inc;
+
 	lon = (double *) GMT_memory (VNULL, (size_t)g_head->nx, sizeof (double), "GMT_grd_forward");
 	for (i = 0; i < g_head->nx; i++) {
 		lon[i] = GMT_i_to_x (i, g_head->x_min, g_head->x_max, g_head->x_inc, g_off, g_head->nx);
-		if (lon[i] < project_info.w && (lon[i] + 360.0) <= project_info.e) lon[i] += 360.0;
-		if (lon[i] > project_info.e && (lon[i] - 360.0) >= project_info.w) lon[i] -= 360.0;
+		if (GMT_io.in_col_type[0] == GMT_IS_LON) {
+			if (lon[i] < project_info.w && (lon[i] + 360.0) <= project_info.e) lon[i] += 360.0;
+			if (lon[i] > project_info.e && (lon[i] - 360.0) >= project_info.w) lon[i] -= 360.0;
+		}
 	}
 	x = (double *) GMT_memory (VNULL, (size_t)r_head->nx, sizeof (double), "GMT_grd_forward");
 	y = (double *) GMT_memory (VNULL, (size_t)r_head->ny, sizeof (double), "GMT_grd_forward");
@@ -5076,14 +5070,9 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 
 			if (GMT_map_outside (lon[i], lat)) continue;
 			GMT_geo_to_xy (lon[i], lat, &x_0, &y_0);
-			if (r_head->node_offset) {
-				ii = (fabs (x_0 - r_head->x_max) < GMT_CONV_LIMIT) ? r_head->nx - 1 : (int)floor ( (x_0 - r_head->x_min) * idx);
-				jj = (fabs (y_0 - r_head->y_min) < GMT_CONV_LIMIT) ? r_head->ny - 1 : (int)floor ( (r_head->y_max - y_0) * idy);
-			}
-			else {
-				ii = irint ( (x_0 - r_head->x_min) * idx);
-				jj = irint ( (r_head->y_max - y_0) * idy);
-			}
+
+			ii = GMT_x_to_i (x_0, r_head->x_min, r_head->x_inc, r_off, r_head->nx);
+			jj = GMT_y_to_j (y_0, r_head->y_min, r_head->y_inc, r_off, r_head->ny);
 
 			for (j_r = jj - dj; j_r <= (jj + dj); j_r++) {
 				if (j_r < 0 || j_r >= r_head->ny) continue;
@@ -5126,8 +5115,7 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	int i, j, k, ij, ii, jj, i_r, j_r, nm, di, dj, not_used = 0;
 	BOOLEAN greenwich;
 	float *weight_sum;
-	double dr, lat_0, lon_0, *x_0, y_0, *lon, *lat, dlon, x, y, delta, weight, g_off, r_off;
-	double dx2, dy2, xinc2, yinc2, i_max_3r, idx, idy;
+	double dr, lat_0, lon_0, *x_0, y_0, *lon, *lat, x, y, delta, weight, g_off, r_off, i_max_3r;
 
 	if (project_info.projection == GMT_MERCATOR && g_head->nx == r_head->nx) {
 		GMT_merc_inverse (geo, g_head, rect, r_head);
@@ -5150,13 +5138,7 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 
 	g_off = (g_head->node_offset) ? 0.5 : 0.0;
 	r_off = (r_head->node_offset) ? 0.5 : 0.0;
-	dx2 = g_off * g_head->x_inc;
-	dy2 = g_off * g_head->y_inc;
-	xinc2 = r_off * r_head->x_inc;
-	yinc2 = r_off * r_head->y_inc;
 	i_max_3r = 3.0 / max_radius;
-	idx = 1.0 / g_head->x_inc;
-	idy = 1.0 / g_head->y_inc;
 
 	lon = (double *) GMT_memory (VNULL, (size_t)g_head->nx, sizeof (double), "GMT_grd_inverse");
 	lat = (double *) GMT_memory (VNULL, (size_t)g_head->ny, sizeof (double), "GMT_grd_inverse");
@@ -5164,7 +5146,7 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	for (j = 0; j < g_head->ny; j++) lat[j] = GMT_j_to_y (j, g_head->y_min, g_head->y_max, g_head->y_inc, g_off, g_head->ny);
 	x_0 = (double *) GMT_memory (VNULL, (size_t)r_head->nx, sizeof (double), "GMT_grd_inverse");
 	for (i = 0; i < r_head->nx; i++) x_0[i] = GMT_i_to_x (i, r_head->x_min, r_head->x_max, r_head->x_inc, r_off, r_head->nx);
-	greenwich = (g_head->x_min < 0.0);
+	greenwich = (g_head->x_min < 0.0);	/* ??? DO WE NEED && GMT_io.out_col_type[0] HERE ??? */
 
 	for (j = ij = 0; j < r_head->ny; j++) {
 		y_0 = GMT_j_to_y (j, r_head->y_min, r_head->y_max, r_head->y_inc, r_off, r_head->ny);
@@ -5173,16 +5155,9 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 
 			GMT_xy_to_geo (&lon_0, &lat_0, x_0[i], y_0);
 			if (greenwich && lon_0 > 180.0) lon_0 -= 360.0;
-			dlon = lon_0 - g_head->x_min;
 
-			if (g_head->node_offset) {
-				ii = (fabs (lon_0 - g_head->x_max) < GMT_CONV_LIMIT) ? g_head->nx - 1 : (int)floor (dlon * idx);
-				jj = (fabs (lat_0 - g_head->y_min) < GMT_CONV_LIMIT) ? g_head->ny - 1 : (int)floor ( (g_head->y_max - lat_0) * idy);
-			}
-			else {
-				ii = irint (dlon * idx);
-				jj = irint ( (g_head->y_max - lat_0) * idy);
-			}
+			ii = GMT_x_to_i (lon_0, g_head->x_min, g_head->x_inc, g_off, g_head->nx);
+			jj = GMT_y_to_j (lat_0, g_head->y_min, g_head->y_inc, g_off, g_head->ny);
 
 			for (j_r = jj - dj; j_r <= (jj + dj); j_r++) {
 				if (j_r < 0 || j_r >= g_head->ny) continue;
@@ -5223,7 +5198,6 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 
 int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN bilinear, BOOLEAN inverse)
 {
-
 	/* Generalized grid projection that deals with both interpolation and averaging effects.
 	 * It assumes that the incoming grid was read with 2 boundary rows/cols so that the bcr functions can be used.
 	 * Therefore, we need to add these rows/cols when accessing the grid directly.  The I and z_in represents
@@ -5259,11 +5233,11 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 	GMT_boundcond_set (I, edgeinfo, GMT_pad, z_in);
 
-	nz = (short int *) GMT_memory (VNULL, (size_t)(O->nx * O->ny), sizeof (short int), "GMT_grd_forward");
-	x_in = (double *) GMT_memory (VNULL, (size_t)I->nx, sizeof (double), "GMT_grd_forward");
-	y_in = (double *) GMT_memory (VNULL, (size_t)I->ny, sizeof (double), "GMT_grd_forward");
-	x_out = (double *) GMT_memory (VNULL, (size_t)O->nx, sizeof (double), "GMT_grd_forward");
-	y_out = (double *) GMT_memory (VNULL, (size_t)O->ny, sizeof (double), "GMT_grd_forward");
+	nz = (short int *) GMT_memory (VNULL, (size_t)(O->nx * O->ny), sizeof (short int), "GMT_grd_project");
+	x_in = (double *) GMT_memory (VNULL, (size_t)I->nx, sizeof (double), "GMT_grd_project");
+	y_in = (double *) GMT_memory (VNULL, (size_t)I->ny, sizeof (double), "GMT_grd_project");
+	x_out = (double *) GMT_memory (VNULL, (size_t)O->nx, sizeof (double), "GMT_grd_project");
+	y_out = (double *) GMT_memory (VNULL, (size_t)O->ny, sizeof (double), "GMT_grd_project");
 
 	I_off = (I->node_offset) ? 0.5 : 0.0;
 	O_off = (O->node_offset) ? 0.5 : 0.0;
@@ -5276,10 +5250,10 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 	for (j_out = 0; j_out < O->ny; j_out++) y_out[j_out] = GMT_j_to_y (j_out, O->y_min, O->y_max, O->y_inc, O_off, O->ny);
 
 	if (GMT_IS_RECT_GRATICULE) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
-		x_in_proj = (double *) GMT_memory (VNULL, (size_t)I->nx, sizeof (double), "GMT_grd_forward");
-		y_in_proj = (double *) GMT_memory (VNULL, (size_t)I->ny, sizeof (double), "GMT_grd_forward");
-		x_out_proj = (double *) GMT_memory (VNULL, (size_t)O->nx, sizeof (double), "GMT_grd_forward");
-		y_out_proj = (double *) GMT_memory (VNULL, (size_t)O->ny, sizeof (double), "GMT_grd_forward");
+		x_in_proj = (double *) GMT_memory (VNULL, (size_t)I->nx, sizeof (double), "GMT_grd_project");
+		y_in_proj = (double *) GMT_memory (VNULL, (size_t)I->ny, sizeof (double), "GMT_grd_project");
+		x_out_proj = (double *) GMT_memory (VNULL, (size_t)O->nx, sizeof (double), "GMT_grd_project");
+		y_out_proj = (double *) GMT_memory (VNULL, (size_t)O->ny, sizeof (double), "GMT_grd_project");
 		if (inverse) {
 			for (i_in = 0; i_in < I->nx; i_in++) GMT_xy_to_geo (&x_in_proj[i_in], &y_proj, x_in[i_in], I->y_min);
 			for (j_in = 0; j_in < I->ny; j_in++) GMT_xy_to_geo (&x_proj, &y_in_proj[j_in], I->x_min, y_in[j_in]);
@@ -5631,18 +5605,14 @@ void GMT_map_setinfo (double xmin, double xmax, double ymin, double ymax, double
 	w = (xmax - xmin) * project_info.x_scale;
 	h = (ymax - ymin) * project_info.y_scale;
 
-	if (project_info.gave_map_width == 1) {		/* Must rescale to given width */
+	if (project_info.gave_map_width == 1)		/* Must rescale to given width */
 		factor = scl / w;
-	}
-	else if (project_info.gave_map_width == 2) {	/* Must rescale to given height */
+	else if (project_info.gave_map_width == 2)	/* Must rescale to given height */
 		factor = scl / h;
-	}
-	else if (project_info.gave_map_width == 3) {	/* Must rescale to max dimension */
+	else if (project_info.gave_map_width == 3)	/* Must rescale to max dimension */
 		factor = scl / MAX (w, h);
-	}
-	else if (project_info.gave_map_width == 4) {	/* Must rescale to min dimension */
+	else if (project_info.gave_map_width == 4)	/* Must rescale to min dimension */
 		factor = scl / MIN (w, h);
-	}
 	project_info.x_scale *= factor;
 	project_info.y_scale *= factor;
 	project_info.w_r *= factor;
