@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.13 2006-11-27 16:41:11 pwessel Exp $
+ *	$Id: gmt_support.h,v 1.14 2006-12-10 01:15:52 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,7 +51,6 @@ EXTERN_MSC int GMT_getpen (char *line, struct GMT_PEN *pen);
 EXTERN_MSC int GMT_getrgb (char *line, int *rgb);
 EXTERN_MSC int GMT_getrose (char *text, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms);
-EXTERN_MSC int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax);
 EXTERN_MSC int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINE_SEGMENT *P);
 EXTERN_MSC int GMT_intpol (double *x, double *y, int n, int m, double *u, double *v, int mode);
 EXTERN_MSC int GMT_just_decode (char *key, int i, int j);
@@ -71,8 +70,6 @@ EXTERN_MSC void GMT_dump_contour (double *xx, double *yy, int nn, double cval, i
 EXTERN_MSC void GMT_free (void *addr);
 EXTERN_MSC void GMT_get_plot_array (void);
 EXTERN_MSC void GMT_get_primary_annot (struct GMT_PLOT_AXIS *A, int *primary, int *secondary);
-EXTERN_MSC void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN update);
-EXTERN_MSC void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift);
 EXTERN_MSC void GMT_illuminate (double intensity, int *rgb);
 EXTERN_MSC void GMT_init_fill (struct GMT_FILL *fill, int r, int g, int b);
 EXTERN_MSC void GMT_init_pen (struct GMT_PEN *pen, double width);

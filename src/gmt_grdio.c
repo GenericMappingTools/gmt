@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.86 2006-11-29 15:25:23 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.87 2006-12-10 01:15:52 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,6 +42,12 @@
  *	GMT_read_grd_row :	Reads a single row of data from grdfile
  *	GMT_write_grd_row :	Writes a single row of data from grdfile
  *	GMT_close_grd :		Close the grdfile
+ *
+ * Additional supporting grid routines:
+ *
+ *	GMT_grd_init 		Initialize grd header structure
+ *	GMT_grd_shift 		Rotates grdfiles in x-direction
+ *	GMT_grd_setregion 	Determines subset coordinates for grdfiles
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
@@ -390,7 +396,7 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 
 	int one_or_zero, i, *k;
 	BOOLEAN geo = FALSE;
-	double small, half_or_zero, x;
+	double small = 0.1, half_or_zero, x;
 
 	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
 
@@ -404,9 +410,10 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 		*s = header->y_min;	*n = header->y_max;
 	}
 	else {				/* Must deal with a subregion */
-
-		if (GMT_io.in_col_type[0] == GMT_IS_LON) geo = TRUE;			/* Geographic data for sure */
-		if (!geo && (*w < header->x_min || *e > header->x_max)) geo = TRUE;	/* Probably dealing with periodic grid */
+		if (GMT_io.in_col_type[0] == GMT_IS_LON)
+			geo = TRUE;	/* Geographic data for sure */
+		else if (*w < header->x_min || *e > header->x_max)
+			geo = TRUE;	/* Probably dealing with periodic grid */
 
 		if (*s < header->y_min || *n > header->y_max) {	/* Calling program goofed... */
 			fprintf (stderr, "%s: GMT ERROR: Trying to read beyond grid domain - abort!!\n", GMT_program);
@@ -425,12 +432,10 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 
 		/* Get first and last row and column numbers */
 
-		small = 0.1 * header->x_inc;
-		*first_col = (int)floor ((*w - header->x_min + small) / header->x_inc);
-		*last_col  = (int)ceil  ((*e - header->x_min - small) / header->x_inc) - 1 + one_or_zero;
-		small = 0.1 * header->y_inc;
-		*first_row = (int)floor ((header->y_max - *n + small) / header->y_inc);
-		*last_row  = (int)ceil  ((header->y_max - *s - small) / header->y_inc) - 1 + one_or_zero;
+		*first_col = (int)floor ((*w - header->x_min) / header->x_inc + small);
+		*last_col  = (int)ceil  ((*e - header->x_min) / header->x_inc - small) - 1 + one_or_zero;
+		*first_row = (int)floor ((header->y_max - *n) / header->y_inc + small);
+		*last_row  = (int)ceil  ((header->y_max - *s) / header->y_inc - small) - 1 + one_or_zero;
 
 		if ((*last_col - *first_col + 1) > *width) (*last_col)--;
 		if ((*last_row - *first_row + 1) > *height) (*last_row)--;
@@ -438,14 +443,13 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 		if ((*last_row - *first_row + 1) > *height) (*first_row)++;
 	}
 
-	k = (int *) GMT_memory (VNULL, (size_t)(*width), sizeof (int), "GMT_bin_write_grd");
+	k = (int *) GMT_memory (VNULL, (size_t)(*width), sizeof (int), "GMT_grd_prep_io");
 	if (geo) {
-		small = 0.1 * header->x_inc;	/* Anything smaller than 0.5 dx will do */
 		for (i = 0; i < (*width); i++) {
 			x = *w + (i + half_or_zero) * header->x_inc;
-			if ((header->x_min - x) > small)
+			if ((header->x_min - x) / header->x_inc > small)
 				x += 360.0;
-			else if ((x - header->x_max) > small)
+			else if ((x - header->x_max) / header->x_inc > small)
 				x -= 360.0;
 			k[i] = GMT_x_to_i (x, header->x_min, header->x_inc, half_or_zero, header->nx);
 		}
@@ -669,13 +673,11 @@ void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	 GMT_free (tmp);
 }
 
-/*
- * GMT_grd_init initializes a grd header to default values and copies the
- * command line to the header variable command
- */
 
 void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN update)
-{	/* TRUE if we only want to update command line */
+{	/* GMT_grd_init initializes a grd header to default values and copies the
+	 * command line to the header variable command.
+	 * update = TRUE if we only want to update command line */
 	int i, len;
 
 	/* Always update command line history */
@@ -725,8 +727,8 @@ void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN upd
 
 void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 {
-	/* Rotate geographical, global grid in e-w direction */
-	/* This function will shift a grid by shift degrees */
+	/* Rotate geographical, global grid in e-w direction
+	 * This function will shift a grid by shift degrees */
 
 	int i, j, k, ij, nc, nx1, n_shift, width, n_warn = 0;
 	float *tmp;
@@ -767,18 +769,56 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 	GMT_free ((void *) tmp);
 }
 
-/* GMT_grd_setregion determines what wesn should be passed to grd_read.  It
-  does so by using project_info.w,e,s,n which have been set correctly
-  by map_setup. */
+BOOLEAN GMT_grd_is_global (struct GRD_HEADER *h)
+{	/* Determine if grid could be global */
+
+	if (GMT_io.in_col_type[0] == GMT_IS_LON || project_info.degree[0]) {
+		if (fabs (h->x_max - h->x_min - 360.0) < GMT_SMALL) {
+			if (gmtdefs.verbose) fprintf (stderr, "GMT_grd_is_global: yes, longitudes span exactly 360\n");
+			return (TRUE);
+		}
+		else if (fabs (h->nx * h->x_inc - 360.0) < GMT_SMALL) {
+			if (gmtdefs.verbose) fprintf (stderr, "GMT_grd_is_global: yes, longitude cells span exactly 360\n");
+			return (TRUE);
+		}
+		else if (h->x_max - h->x_min > 360.0) {
+			if (gmtdefs.verbose) fprintf (stderr, "GMT_grd_is_global: yes, longitudes span more than 360\n");
+			return (TRUE);
+		}
+	}
+	else if (h->y_min >= -90.0 && h->y_max <= 90.0) {
+		if (fabs (h->x_max - h->x_min - 360.0) < GMT_SMALL) {
+			fprintf (stderr, "GMT_grd_is_global: probably, x spans exactly 360 and -90 <= y <= 90\n");
+			fprintf (stderr, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			return (FALSE);
+		}
+		else if (fabs (h->nx * h->x_inc - 360.0) < GMT_SMALL) {
+			fprintf (stderr, "GMT_grd_is_global: probably, x cells span exactly 360 and -90 <= y <= 90\n");
+			fprintf (stderr, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			return (FALSE);
+		}
+	}
+	if (gmtdefs.verbose) fprintf (stderr, "GMT_grd_is_global: no!\n");
+	return (FALSE);
+}
+
+#define GMT_region_is_global ((fabs (project_info.e - project_info.w - 360.0) < GMT_SMALL && project_info.degree[0]))
 
 int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
 {
-	BOOLEAN region_straddle, grid_straddle, global;
-	double shift_x = 0.0;
+	/* GMT_grd_setregion determines what wesn should be passed to GMT_read_grd.
+	 * It does so by using project_info.w,e,s,n which have been set correctly
+	 * by map_setup. */
+
+	BOOLEAN region_global, grid_global;
+	double shift_x = 0.0, x_range;
+
+	/* First make an educated guess whether the grid and region are geographical and global */
+	grid_global = GMT_grd_is_global (h);
+	region_global = GMT_region_is_global;
 
 	if (!project_info.region && !GMT_IS_RECT_GRATICULE) {	/* Used -R... with oblique boundaries - return entire grid */
 		BOOLEAN N_outside, S_outside;
-		global = (fabs (h->x_max - h->x_min - 360.0) < GMT_SMALL);	/* A global grid */
 		N_outside = GMT_outside (0.0, +90.0);	/* North pole outside map boundary? */
 		S_outside = GMT_outside (0.0, -90.0);	/* South pole outside map boundary? */
 		/* Note: while h->xy_off might be 0.5 (pixel) or 0 (gridline), the w/e boundaries are always "gridline" hence we pass 0 as xy_off */
@@ -792,50 +832,39 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
 			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
 			/* Make sure we dont exceed grid domain (which can happen if project_info.w|e exceeds the grid limits) */
-			if ((*xmin) < h->x_min && !global) *xmin = h->x_min;
-			if ((*xmax) > h->x_max && !global) *xmax = h->x_max;
-			if ((*ymin) < h->y_min) *ymin = h->y_min;
-			if ((*ymax) > h->y_max) *ymax = h->y_max;
+			if (*xmin < h->x_min && !grid_global) *xmin = h->x_min;
+			if (*xmax > h->x_max && !grid_global) *xmax = h->x_max;
+			if (*ymin < h->y_min) *ymin = h->y_min;
+			if (*ymax > h->y_max) *ymax = h->y_max;
 		}
 		else if (!N_outside) {	/* North pole included, need all longitudes but restrict latitudes */
 			*xmin = h->x_min;	*xmax = h->x_max;
 			*ymin = GMT_j_to_y (GMT_y_to_j (project_info.s, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
 			*ymax = h->y_max;
-			if ((*ymin) < h->y_min) *ymin = h->y_min;
+			if (*ymin < h->y_min) *ymin = h->y_min;
 		}
 		else {			/* South pole included, need all longitudes but restrict latitudes */
 			*xmin = h->x_min;	*xmax = h->x_max;
 			*ymin = h->y_min;
 			*ymax = GMT_j_to_y (GMT_y_to_j (project_info.n, h->y_min, h->y_inc, 0.0, h->ny), h->y_min, h->y_max, h->y_inc, 0.0, h->ny);
-			if ((*ymax) > h->y_max) *ymax = h->y_max;
+			if (*ymax > h->y_max) *ymax = h->y_max;
 		}
 		return (0);
 	}
 
-	/* Weakness in the logic below is that there is no flag in the grid to tell us it is lon/lat data.
-	 * We infer the grid is global (in longitude) and geographic if w-e == 360 && |s,n| <= 90 */
-
 	/* First set and check latitudes since they have no complications */
-#ifdef SHIT
-	*ymin = MAX (h->y_min, floor (project_info.s / h->y_inc) * h->y_inc);
-	*ymax = MIN (h->y_max,  ceil (project_info.n / h->y_inc) * h->y_inc);
-#endif
-	*ymin = MAX (h->y_min, h->y_min + floor ((project_info.s - h->y_min) / h->y_inc) * h->y_inc);
-	*ymax = MIN (h->y_max, h->y_min + ceil  ((project_info.n - h->y_min) / h->y_inc) * h->y_inc);
+	*ymin = MAX (h->y_min, h->y_min + floor ((project_info.s - h->y_min) / h->y_inc + GMT_SMALL) * h->y_inc);
+	*ymax = MIN (h->y_max, h->y_min + ceil  ((project_info.n - h->y_min) / h->y_inc - GMT_SMALL) * h->y_inc);
 
-	if ((*ymax) <= (*ymin)) {	/* Grid must be outside chosen -R */
+	if (*ymax <= *ymin) {	/* Grid must be outside chosen -R */
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid y's or latitudes appear to be outside the map region and will be skipped.\n", GMT_program);
 		return (1);
 	}
 
 	if (GMT_io.in_col_type[0] != GMT_IS_LON) {	/* Regular Cartesian stuff is easy... */
-#ifdef SHIT
-		*xmin = MAX (h->x_min, floor (project_info.w / h->x_inc) * h->x_inc);
-		*xmax = MIN (h->x_max,  ceil (project_info.e / h->x_inc) * h->x_inc);
-#endif
-		*xmin = MAX (h->x_min, h->x_min + floor ((project_info.w - h->x_min) / h->x_inc) * h->x_inc);
-		*xmax = MIN (h->x_max, h->x_min + ceil  ((project_info.e - h->x_min) / h->x_inc) * h->x_inc);
-		if ((*xmax) <= (*xmin)) {	/* Grid is outside chosen -R */
+		*xmin = MAX (h->x_min, h->x_min + floor ((project_info.w - h->x_min) / h->x_inc + GMT_SMALL) * h->x_inc);
+		*xmax = MIN (h->x_max, h->x_min + ceil  ((project_info.e - h->x_min) / h->x_inc - GMT_SMALL) * h->x_inc);
+		if (*xmax <= *xmin) {	/* Grid is outside chosen -R */
 			if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid x-range appear to be outside the plot region and will be skipped.\n", GMT_program);
 			return (1);
 		}
@@ -844,64 +873,127 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 
 	/* OK, longitudes are trickier and we must make sure grid and region is on the same page as far as +-360 degrees go */
 
-	global = (fabs (h->x_max - h->x_min - 360.0) < GMT_SMALL && h->y_min >= -90.0 && h->y_max <= +90.0);	/* We believe this indicates a global (in longitude), geographic grid */
-	if (global) {	/* Periodic grid with 360 degree range is easy */
-		*xmin = project_info.w;
-		*xmax = project_info.e;
+	if (grid_global) {	/* Periodic grid with 360 degree range is easy */
+		*xmin = (h->x_min + (ceil  ((project_info.w - h->x_min) / h->x_inc - GMT_SMALL)) * h->x_inc);
+		*xmax = (h->x_min + (floor ((project_info.e - h->x_min) / h->x_inc + GMT_SMALL)) * h->x_inc);
 		return (0);
 	}
 
-	global = (fabs (project_info.e - project_info.w - 360.0) < GMT_SMALL && project_info.s >= -90.0 && project_info.n <= +90.0);	/* A global -R selected */
-	if (global) {	/* Global map with full 360 degree range is easy */
-		*xmin = h->x_min;
-		*xmax = h->x_max;
-		return (0);
-	}
+	/* Shift the grid 360 degrees up or down to maximize the amount of longitude range */
 
-	/* There are 4 cases depending on whether the chosen region or the grid straddles Greenwich */
+	x_range = MIN (project_info.e, h->x_max) - MAX (project_info.w, h->x_min);
 
-	region_straddle = (project_info.w < 0.0 && project_info.e >= 0.0) ? TRUE : FALSE;
-	grid_straddle   = (h->x_min < 0.0 && h->x_max >= 0.0) ? TRUE : FALSE;
-
-	if (! (region_straddle || grid_straddle)) {	/* Case 1: Neither -R nor grid straddles Greenwich */
-		/* Here we KNOW that w/e has already been forced to be positive (0-360 range).
-		 * Just make sure the grid w/e is positive too when we compare range.
-		 */
-		 shift_x = (h->x_min < 0.0 && h->x_max <= 0.0) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
-	}
-	else if (region_straddle && grid_straddle) {	/* Case 2: Both straddle Greenwich */
-		/* Here we know both mins are -ve and both max are +ve, so there should be no complications */
+	if (MIN (project_info.e, h->x_max + 360.0) - MAX (project_info.w, h->x_min + 360.0) > x_range)
+		shift_x = 360.0;
+	else if (MIN (project_info.e, h->x_max - 360.0) - MAX (project_info.w, h->x_min - 360.0) > x_range)
+		shift_x = -360.0;
+	else
 		shift_x = 0.0;
-	}
-	else if (region_straddle && !grid_straddle) {	/* Case 3a: Region straddles Greenwich but grid doesnt */
-		/* Here we know w is -ve and e is +ve.
-		 * Must make sure the grid w/e is in same range when comparing.
-		 */
-		 shift_x = (h->x_max < project_info.w) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
-	}
-	else {	/* Case 3b: Grid straddles Greenwich but region doesnt */
-		/* Here we KNOW that w/e has been forced to be positive (0-360 range).
-		 * Make sure the grid w/e is in same range
-		 */
-		 shift_x = (h->x_max < project_info.w) ? 360.0 : 0.0;	/* Shift to SUBTRACT from w/e ... when comparing */
-	}
 
 	h->x_min += shift_x;
 	h->x_max += shift_x;
-#ifdef SHIT
-	*xmin = MAX (h->x_min, floor (project_info.w / h->x_inc) * h->x_inc);
-	*xmax = MIN (h->x_max, ceil  (project_info.e / h->x_inc) * h->x_inc);
-#endif
-	*xmin = MAX (h->x_min, h->x_min + floor ((project_info.w - h->x_min) / h->x_inc) * h->x_inc);
-	*xmax = MIN (h->x_max, h->x_min + ceil  ((project_info.e - h->x_min) / h->x_inc) * h->x_inc);
-	while (*xmin <= -360) (*xmin) += 360.0;
-	while (*xmax <= -360) (*xmax) += 360.0;
+	*xmin = MAX (h->x_min, h->x_min + ceil  ((project_info.w - h->x_min) / h->x_inc - GMT_SMALL) * h->x_inc);
+	*xmax = MIN (h->x_max, h->x_min + floor ((project_info.e - h->x_min) / h->x_inc + GMT_SMALL) * h->x_inc);
+	while (*xmin <= -360) *xmin += 360.0;
+	while (*xmax <= -360) *xmax += 360.0;
 
-	if ((*xmax) <= (*xmin)) {	/* Grid is outside chosen -R in longitude */
+	if (*xmax <= *xmin) {	/* Grid is outside chosen -R in longitude */
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Your grid longitudes appear to be outside the map region and will be skipped.\n", GMT_program);
 		return (1);
 	}
 	return (0);
+}
+
+void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header)
+{
+	/* used to ensure that sloppy w,e,s,n values are rounded to proper multiples */
+	
+	int i;
+	BOOLEAN global;
+	double half_or_zero, val, start, dx, small, i_d;
+	
+	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
+
+	switch (GMT_minmaxinc_verify (*w, *e, header->x_inc, GMT_SMALL)) {	/* Check if range is compatible with x_inc */
+		case 3:
+			(void) fprintf (stderr, "%s: GMT ERROR: grid x increment <= 0.0\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+		case 2:
+			(void) fprintf (stderr, "%s: GMT ERROR: subset x range <= 0.0\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+		default:
+			/* Everything is seemingly OK */
+			break;
+	}
+	global = GMT_grd_is_global (header);
+	if (GMT_io.in_col_type[0] != GMT_IS_LON || fabs (fabs (*e - *w) - 360.0) > GMT_CONV_LIMIT) {	/* Do this unless a 360 longitude wrap */
+		small = GMT_SMALL * header->x_inc;
+		start = (GMT_io.in_col_type[0] == GMT_IS_LON && fabs (fabs (header->x_min - *w) - 360.0) < GMT_CONV_LIMIT) ? *w : header->x_min;
+
+		i_d = (*w - header->x_min) / header->x_inc;
+		if (i_d < 0 && !global) i_d = 0;
+		i = irint(i_d);
+		val = header->x_min + i * header->x_inc;
+
+		dx = fabs (*w - val);
+		if (GMT_io.in_col_type[0] == GMT_IS_LON) dx = fmod (dx, 360.0);
+		if (dx > small) {
+			*w = val;
+			(void) fprintf (stderr, "%s: GMT WARNING: (w-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
+			(void) fprintf (stderr, "%s: GMT WARNING: w reset to %g\n", GMT_program, *w);
+		}
+
+		i_d = (*e - header->x_min) / header->x_inc;
+		i = irint(i_d);
+		val = header->x_min + i * header->x_inc;
+
+		dx = fabs (*e - val);
+		if (GMT_io.in_col_type[0] == GMT_IS_LON) dx = fmod (dx, 360.0);
+		if (dx > GMT_SMALL) {
+			*e = val;
+			(void) fprintf (stderr, "%s: GMT WARNING: (e-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
+			(void) fprintf (stderr, "%s: GMT WARNING: e reset to %g\n", GMT_program, *e);
+		}
+	}
+	
+	switch (GMT_minmaxinc_verify (*s, *n, header->y_inc, GMT_SMALL)) {	/* Check if range is compatible with y_inc */
+		case 3:
+			(void) fprintf (stderr, "%s: GMT ERROR: grid y increment <= 0.0\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+		case 2:
+			(void) fprintf (stderr, "%s: GMT ERROR: subset y range <= 0.0\n", GMT_program);
+			exit (EXIT_FAILURE);
+			break;
+		default:
+			/* Everything is OK */
+			break;
+	}
+	/* Check if s,n are a multiple of y_inc offset from y_min - if not adjust s, n */
+	small = GMT_SMALL * header->y_inc;
+
+	i_d = (*s - header->y_min) / header->y_inc;
+	if (i_d < 0) i_d = 0;
+	i = irint(i_d);
+	val = header->y_min + i * header->y_inc;
+
+	if (fabs (*s - val) > small) {
+		*s = val;
+		(void) fprintf (stderr, "%s: GMT WARNING: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
+		(void) fprintf (stderr, "%s: GMT WARNING: s reset to %g\n", GMT_program, *s);
+	}
+
+	i_d = (*n - header->y_min) / header->y_inc;
+	i = irint(i_d);
+	val = header->y_min + i * header->y_inc;
+
+	if (fabs (*n - val) > small) {
+		*n = val;
+		(void) fprintf (stderr, "%s: GMT WARNING: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
+		(void) fprintf (stderr, "%s: GMT WARNING: n reset to %g\n", GMT_program, *n);
+	}
 }
 
 void GMT_grd_set_units (struct GRD_HEADER *header)
