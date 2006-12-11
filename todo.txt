@@ -1,10 +1,18 @@
-#	$Id: todo.txt,v 1.15 2006-12-06 20:47:21 remko Exp $
+#	$Id: todo.txt,v 1.16 2006-12-11 02:59:08 remko Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
 remember to add an entry in CHANGES.
 ------------------------------------------------------------------------
 BUGS or "FEATURES":
+
+gmt_map.c	When a map is drawn using grdview, the grid adjacent the boundary of
+		the map is filled with undefined value (for example "gray color"), 
+		while the value in the area is defined. 
+		See e-mail from Shinya Kouketsu of 8 Dec 2006.
+
+gmtmath.c	GMT_scanf in decode_argument does not recognise file names when
+		they start with a digit [0-9].
 
 gmt_init.c	The whole .gmtcommands4 history thing. Under Paul's OSX there
 		were issues in job08.csh where the order misfired. Long term:
@@ -65,9 +73,6 @@ geotiff:	Kurt Feigl has contributed a grd2geotiff.c program but it is mostly
 		feature as an option to grdimage.  There is also some shapefile
 		support that Lloyd wrote that needs to be finalized; perhaps these
 		two things could go into a "gis" supplement.
-
-grd*.c:		Need to understand when a COARDS-compliant netCDF grid is truly global
-		even though the longitude range runs just short of 360 degrees.
 
 pslib.c:	Is there a way to make layers partially transparent? I tried "setoverprint"
 		in a PostScript test file but it didn't work.
