@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.33 2006-12-10 01:15:52 remko Exp $
+ *	$Id: gmt_grdio.h,v 1.34 2006-12-12 16:47:29 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,6 +47,7 @@ EXTERN_MSC void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shi
 EXTERN_MSC void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode);
 EXTERN_MSC void GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic);
+EXTERN_MSC BOOLEAN GMT_grd_is_global (struct GRD_HEADER *h);
 
 /* These are pointers to the various functions and are set in GMT_grdio_init() */
 
