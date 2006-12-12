@@ -4,8 +4,6 @@
 #define LEN_1 1.25
 #define OPT_1	\fB\-Jx\fP1.25\fBc \-Jz\fP0.125\fBc \-So\fP1.25\fBc\fP
 #define PARAMS_US 0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP
-#define G_OPT_SI 10\fBc\fP10
-#define G_OPT_US 4\fBi\fP10
 .SH NAME
 psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS

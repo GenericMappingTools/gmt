@@ -10,8 +10,6 @@
 #define OPT_2	\fB\-JX\fP6\fBi\fP
 #define LEN_3 0.8
 #define OPT_3	\fB\-Jm\fP0.15\fBi \-Sf\fP0.8\fBi\fP/0.1\fBilt\fP
-#define G_OPT_SI 10\fBc\fP10
-#define G_OPT_US 4\fBi\fP10
 .SH NAME
 psxy \- Plot lines, polygons, and symbols on maps
 .SH SYNOPSIS
