@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.87 2006-12-10 01:15:52 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.88 2006-12-12 16:47:29 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,6 +48,7 @@
  *	GMT_grd_init 		Initialize grd header structure
  *	GMT_grd_shift 		Rotates grdfiles in x-direction
  *	GMT_grd_setregion 	Determines subset coordinates for grdfiles
+ *	GMT_grd_is_global	Determine whether grid is "global", i.e. longitudes are periodic
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
