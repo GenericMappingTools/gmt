@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.11 2006-05-04 02:18:47 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.12 2006-12-23 02:05:06 mtchandl Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -27,7 +27,7 @@
 #define MGD77_MEDIAN_SPEED          4.7                   /* m/s */
 #define MGD77_MAX_DT                900                   /* sec */
 #define MGD77_MAX_DS                5                     /* km */
-#define MGD77_MAX_DUPLICATES        50
+#define MGD77_MAX_DUPLICATES        100
 #define MGD77_METERS_PER_FATHOM     (6 * 12 * 2.54 * 0.01)
 #define MGD77_FATHOMS_PER_METER     (1.0 / MGD77_METERS_PER_FATHOM)
 #define MGD77_MIN_RLS_BINS          20
