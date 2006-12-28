@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.10 2006-04-10 07:35:09 pwessel Exp $
+ *	$Id: gmt_map.h,v 1.11 2006-12-28 03:19:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,6 +42,9 @@ EXTERN_MSC int GMT_great_circle_intersection (double A[], double B[], double C[]
 EXTERN_MSC int GMT_latpath (double lat, double lon1, double lon2, double **x, double **y);
 EXTERN_MSC int GMT_lonpath (double lon, double lat1, double lat2, double **x, double **y);
 EXTERN_MSC int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut);
+#ifdef _GENPER
+EXTERN_MSC int GMT_genper_map_clip_path (int np, double *work_x, double *work_y);
+#endif
 EXTERN_MSC int GMT_map_outside (double lon, double lat);
 EXTERN_MSC int GMT_map_path (double lon1, double lat1, double lon2, double lat2, double **x, double **y);
 EXTERN_MSC int GMT_wesn_outside_np (double lon, double lat);

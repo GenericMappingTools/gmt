@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.45 2006-10-29 02:06:21 remko Exp $
+ *	$Id: gmt_project.h,v 1.46 2006-12-28 03:19:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,6 +47,9 @@
 #define GMT_ORTHO		102
 #define GMT_AZ_EQDIST		103
 #define GMT_GNOMONIC		104
+#ifdef _GENPER
+#define GMT_GENPER              105     /* General Perspective Projection */
+#endif
 #define GMT_POLAR		110
 #define GMT_LAMBERT		1000	/* Conic projections tagged 1000-9999 */
 #define GMT_ALBERS		1001
@@ -244,6 +247,57 @@ struct GMT_MAP_PROJECTIONS {
 	/* Van der Grinten parameters. */
 	
 	double v_r, v_ir;
+
+#ifdef _GENPER
+        /* General Perspective parameters */
+        double g_H, g_R;
+        double g_P, g_P_inverse;
+
+        double g_e2;
+        double g_eccen;
+        double g_one_m_e2;
+
+        double g_h0;
+        double g_lon0;
+        double g_phi1, g_sphi1, g_cphi1;
+
+        double g_phig, g_sphig, g_cphig;
+        double g_dphi, g_sdphi, g_cdphi;
+
+        double g_B, g_D, g_L, g_G, g_J;
+        double g_BLH, g_DG, g_BJ, g_DHJ, g_LH2;
+        double g_HJ;
+
+        double g_rho;
+        double g_tilt, g_sin_tilt, g_cos_tilt;
+        double g_azimuth, g_sin_azimuth, g_cos_azimuth;
+        double g_twist, g_sin_twist, g_cos_twist;
+        double g_lonvp, g_latvp;
+
+        double g_width, g_height;
+
+        double g_yt_max;
+        double g_yt_min;
+        double g_yoffset;
+        double g_roff;
+        double g_rmax;
+        double g_rpmax;
+        double g_max_yt;
+        double g_tilt_max;
+        double g_omega_max;
+        double g_distmax;
+        double g_Rp;
+        double g_gamma_max;
+        double g_xmin, g_xmax;
+        double g_ymin, g_ymax;
+
+        int g_debug;
+        int g_box;
+        int g_outside;
+        int g_longlat_set;
+        int g_sphere;
+        int g_ellipsoid;
+#endif  /* end of _GENPER */
 
 	/* Gnomonic horizon */
 
