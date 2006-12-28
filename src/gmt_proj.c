@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.5 2006-09-06 21:02:39 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.6 2006-12-28 03:19:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -976,6 +976,1319 @@ void GMT_ilambeq (double *lon, double *lat, double x, double y)
 		if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 	}
 }
+
+#ifdef _GENPER  
+
+/* Set up General Perspective projection */
+
+void
+genper_to_xtyt( double angle, double x, double y, double offset, double *xt, double *yt)
+{
+
+  double tilt, sin_tilt, cos_tilt;
+  double azimuth, sin_azimuth, cos_azimuth;
+  double twist, sin_twist, cos_twist;
+  double max_yt;
+
+  double theta, xp, yp;
+
+  double A, rmax;
+  double R;
+  double H, P, P_inv;
+
+  H = project_info.g_H;
+  R = project_info.g_R;
+  P = project_info.g_P;
+  P_inv = project_info.g_P_inverse;
+
+  tilt = project_info.g_tilt;
+  sin_tilt = project_info.g_sin_tilt;
+  cos_tilt = project_info.g_cos_tilt;
+
+  max_yt = project_info.g_max_yt;
+
+  azimuth = project_info.g_azimuth;
+  sin_azimuth = project_info.g_sin_azimuth;
+  cos_azimuth = project_info.g_cos_azimuth;
+
+  twist = project_info.g_twist;
+  sin_twist = project_info.g_sin_twist;
+  cos_twist = project_info.g_cos_twist;
+
+  rmax = project_info.g_rmax;
+
+  theta = azimuth - angle;
+
+  while( theta < 0 ) theta += 360.0;
+
+  while( theta >= 360.0 ) theta -=360.0;
+
+  if( theta > 180.0 ) theta -= 360.0;
+
+  A = (((y * cos_azimuth + x * sin_azimuth)*sin_tilt/H)) + cos_tilt;
+
+  if( A > 0.0 ) {
+
+    xp = (x * cos_azimuth - y * sin_azimuth)*cos_tilt/A;
+    yp = (y * cos_azimuth + x * sin_azimuth)/A;
+
+    if( fabs(yp) > fabs(max_yt) ) {
+      yp = -max_yt;
+      xp = -yp*tan(theta*D2R);
+    }
+  } else {
+    yp = -max_yt;
+    xp = -yp*tan(theta*D2R);
+  }
+
+  yp -= offset;
+
+  *xt = (xp * cos_twist - yp * sin_twist);
+  *yt = (yp * cos_twist + xp * sin_twist);
+
+  return;
+}
+
+/* conversion from geodetic latitude to geocentric latitude */
+
+double
+genper_getgeocentric( double phi, double h)
+{
+  double R, e2, phig, sphi, cphi, N1;
+
+  R = project_info.EQ_RAD;
+  e2 = project_info.ECC2;
+
+  sphi = sin(phi*D2R);
+  cphi = cos(phi*D2R);
+
+  N1 = R/sqrt(1.0 - (e2*sphi*sphi));
+
+  phig = phi - asin(N1*e2*sphi*cphi/((h/R+1.0)*R))*R2D;
+
+  return phig;
+}
+
+void 
+genper_toxy( double lat, double lon, double h, double *x, double *y)
+{
+  
+  double angle, rmax;
+  double xp, yp, rp;
+  double P, H;
+  double N, C, S, K;
+  double phi, sphi, cphi;
+  double dphi, sdphi, cdphi;
+  double sphi1, cphi1;
+  double e2, R, one_m_e2;
+  double dlong, sdlong, cdlong;
+    
+  rmax = project_info.g_rmax;
+
+  e2 = project_info.g_e2;
+  one_m_e2 = project_info.g_one_m_e2;
+
+  dphi = project_info.g_dphi;
+  cdphi = project_info.g_cdphi;
+  sdphi = project_info.g_sdphi;
+
+  cphi1 = project_info.g_cphi1;
+  sphi1 = project_info.g_sphi1;
+
+  R = project_info.g_R;
+  H = project_info.g_H;
+  P = project_info.g_P;
+  h *= 1e3;
+
+  phi = lat;
+  sphi = sin(phi*D2R);
+  cphi = cos(phi*D2R);
+
+  N = R/sqrt(1.0 - (e2*sphi*sphi));
+  C = ((N+h)/R)*cphi;
+  S = ((N*one_m_e2 + h)/R)*sphi;
+
+  dlong = lon - project_info.g_lon0;
+  cdlong = cos(dlong*D2R);
+  sdlong = sin(dlong*D2R);
+
+  K = H/(P*cdphi - S*sphi1 - C*cphi1*cdlong);
+
+  xp = K*C*sdlong;
+  yp = K*(P*sdphi + S*cphi1 - C*sphi1*cdlong);
+
+  rp = sqrt(xp*xp + yp*yp);
+
+  if( rp > rmax ) {
+    angle = atan2(xp, yp);
+    xp = sin(angle) * rmax;
+    yp = cos(angle) * rmax;
+    angle *=R2D;
+  } 
+  *x = xp;
+  *y = yp;
+
+  if( project_info.g_debug > 1 ) {
+    fprintf(stderr,"\n");
+    fprintf(stderr,"lat  %12.3f\n", phi);
+    fprintf(stderr,"lon  %12.3f\n", lon);
+    fprintf(stderr,"h    %12.3f\n", h);
+    fprintf(stderr,"N    %12.1f\n", N);
+    fprintf(stderr,"C    %12.7f\n", C);
+    fprintf(stderr,"S    %12.7f\n", S);
+    fprintf(stderr,"K    %12.1f\n", K);
+    fprintf(stderr,"x    %12.1f\n", *x);
+    fprintf(stderr,"y    %12.1f\n", *y);
+  }
+
+}
+void
+genper_tolatlong( double x, double y, double h, double *lat, double *lon)
+{
+  double P, H;
+  double B, D, BLH, DG, BJ, HJ, DHJ, LH2;
+  double L, G, J;
+
+  double u, v, t, Kp, X, Y, dlambda, lambda;
+  double E;
+  double phi_last;
+
+  double S;
+  double Kp2;
+  double phi, sphi;
+  double cphig;
+  double e2, R, one_m_e2;
+  double cphi1, sphi1;
+  double lon0;
+
+  int niter;
+  int set_exit = 0;
+
+  h *= 1e3;
+
+  H = project_info.g_H;
+  P = project_info.g_P;
+  R = project_info.g_R;
+  lon0 = project_info.g_lon0;
+
+  one_m_e2 = project_info.g_one_m_e2;
+  e2 = project_info.g_e2;
+
+  cphig = project_info.g_cphig;
+  cphi1 = project_info.g_cphi1;
+  sphi1 = project_info.g_sphi1;
+
+  B = project_info.g_B;
+  D = project_info.g_D;
+
+  L = project_info.g_L;
+  G = project_info.g_G;
+  J = project_info.g_J;
+
+  BLH = project_info.g_BLH;
+  DG = project_info.g_DG;
+  BJ = project_info.g_BJ;
+  HJ = project_info.g_HJ;
+  DHJ = project_info.g_DHJ;
+  LH2 = project_info.g_LH2;
+
+  u = BLH - DG*y + BJ*y + DHJ;
+  v = LH2 + G*y*y - HJ*y + one_m_e2*x*x;
+
+  if( project_info.g_debug > 1 ) {
+    fprintf(stderr,"\n");
+    fprintf(stderr,"genper_tolatlong - 1 \n");
+    fprintf(stderr,"x    %12.1f\n", x);
+    fprintf(stderr,"y    %12.1f\n", y);
+    fprintf(stderr,"\n");
+    fprintf(stderr,"P    %12.7f\n", P);
+    fprintf(stderr,"phig %12.7f\n", project_info.g_phig);
+    fprintf(stderr,"\n");
+    fprintf(stderr,"B    %12.7f\n", B);
+    fprintf(stderr,"D    %12.7f\n", D);
+    fprintf(stderr,"L    %12.7f\n", L);
+    fprintf(stderr,"G    %12.7f\n", G);
+    fprintf(stderr,"J    %12.7f\n", J);
+    fprintf(stderr,"u    %12.1f\n", u);
+    fprintf(stderr,"v    %12.6e\n", v);
+
+  }
+  E = 1;
+
+  t = P*P*(1.0 - e2*cphig*cphig) - E*one_m_e2;
+  Kp2 = (1.0 - 4.0*(t/u)*(v/u));
+  if( Kp2 < 0.0 ) {
+    Kp = -u/(2.0*t);
+  } else {
+    Kp = (-u + sqrt(u*u-4.0*t*v))/(2.0*t);
+  } 
+  X = R*((B-H/Kp)*cphi1 - (y/Kp - D)*sphi1);
+  Y = R*x/Kp;
+  S = (y/Kp-D)*cphi1 + (B-H/Kp)*sphi1;
+
+  dlambda = atan(Y/X);
+  lambda = lon0 + R2D*dlambda;
+  
+  if( GMT_is_dnan(Kp) || 
+      GMT_is_dnan(X)  || 
+      GMT_is_dnan(Y)  ||
+      GMT_is_dnan(S)  ||
+      GMT_is_dnan(dlambda) ) {
+    set_exit ++;
+  }
+  
+  if( set_exit || project_info.g_debug > 1 ) {
+    if( set_exit == 1 ) {
+      fprintf(stderr,"\n");
+      fprintf(stderr,"genper_tolatlong - 2\n");
+      fprintf(stderr,"x    %12.1f\n", x);
+      fprintf(stderr,"y    %12.1f\n", y);
+      fprintf(stderr,"\n");
+      fprintf(stderr,"P    %12.7f\n", P);
+      fprintf(stderr,"phig %12.7f\n", project_info.g_phig);
+      fprintf(stderr,"\n");
+      fprintf(stderr,"B    %12.7f\n", B);
+      fprintf(stderr,"D    %12.7f\n", D);
+      fprintf(stderr,"L    %12.7f\n", L);
+      fprintf(stderr,"G    %12.7f\n", G);
+      fprintf(stderr,"J    %12.7f\n", J);
+      fprintf(stderr,"u    %12.1f\n", u);
+      fprintf(stderr,"v    %12.6e\n", v);
+    } 
+    fprintf(stderr,"t    %12.7f\n", t);
+    fprintf(stderr,"Kp   %12.1f\n", Kp);
+    fprintf(stderr,"Kp2  %12.1f\n", Kp2);
+    fprintf(stderr,"X    %12.1f\n", X);
+    fprintf(stderr,"Y    %12.1f\n", Y);
+    fprintf(stderr,"S    %12.7f\n", S);
+    fprintf(stderr,"lam  %12.7f\n", lambda);
+    fprintf(stderr,"dlambda  %12.7f\n", dlambda);
+  }
+
+  if( h == 0 ) {
+    phi = R2D*atan(S/sqrt(one_m_e2*(1.0 - e2 - S*S)));
+    if( GMT_is_dnan(phi) ) {
+      set_exit ++;
+    }
+
+  } else {
+    double t1, t2;
+    niter = 0;
+    t2 = h*h/(R*R - R*R*e2);
+
+    phi = asin(S);
+    sphi = sin(phi);
+
+    phi = asin(S/(one_m_e2/sqrt(1.0 - e2*sphi*sphi) + h/R));
+
+    sphi = sin(phi);
+
+    t1 = (1.0/sqrt(1.0 - e2*sphi*sphi) + h/R);
+    E = t1 * t1 - e2*sphi*sphi*(1.0/(1.0 - e2*sphi*sphi) - t2);
+
+    if( GMT_is_dnan(E)) {
+      set_exit ++;
+    }
+
+    if( project_info.g_debug > 1 || set_exit) {
+      if( set_exit == 1 ) {
+        fprintf(stderr,"genper_tolatlong - 3\n");
+      }
+      fprintf(stderr,"asinS %12.7f\n", R2D*asin(S));
+      fprintf(stderr,"phi   %12.7f\n", R2D*phi);
+      fprintf(stderr,"E     %12.7f\n", E);
+    }
+
+    do {
+      niter ++;
+      phi_last = phi;
+      t = P*P*(1.0 - e2*cphig*cphig) - E*one_m_e2;
+      Kp2 = (1.0 - 4.0*(t/u)*(v/u));
+      if( Kp2 < 0.0 ) {
+        Kp = -u/(2.0*t);
+      } else {
+        Kp = (-u + sqrt(u*u-4.0*t*v))/(2.0*t);
+      } 
+      X = R*((B-H/Kp)*cphi1 - (y/Kp - D)*sphi1);
+      Y = R*x/Kp;
+      S = (y/Kp-D)*cphi1 + (B-H/Kp)*sphi1;
+      dlambda = atan(Y/X);
+      lambda = lon0 + R2D*dlambda;
+      phi = asin(S/(one_m_e2/sqrt(1.0 - e2*sphi*sphi) + h/R));
+      sphi = sin(phi);
+      t1 = (1.0/sqrt(1.0 - e2*sphi*sphi) + h/R);
+      E = t1 * t1 - e2*sphi*sphi*(1.0/(1.0 - e2*sphi*sphi) - t2);
+
+      if( GMT_is_dnan(Kp) ||
+          GMT_is_dnan(X)  ||
+          GMT_is_dnan(Y)  ||
+          GMT_is_dnan(S)  ||
+          GMT_is_dnan(dlambda) ||
+          GMT_is_dnan(phi) ||
+          GMT_is_dnan(E)) {
+        set_exit ++;
+      }
+      if( set_exit || project_info.g_debug > 1 ) {
+        if( set_exit == 1 ) {
+          fprintf(stderr,"genper_tolatlong - 4 \n");
+        }
+        fprintf(stderr,"\niter %d\n", niter);
+        fprintf(stderr,"t    %12.7f\n", t);
+        fprintf(stderr,"Kp   %12.1f\n", Kp);
+        fprintf(stderr,"X    %12.1f\n", X);
+        fprintf(stderr,"Y    %12.1f\n", Y);
+        fprintf(stderr,"S    %12.7f\n", S);
+        fprintf(stderr,"phi  %12.7f\n", phi*R2D);
+        fprintf(stderr,"lam  %12.7f\n", lambda);
+        fprintf(stderr,"E    %12.7f\n", E);
+      }
+     } while( fabs(phi - phi_last) > 1e-7) ;
+     phi *=R2D;
+  }
+  if( set_exit || project_info.g_debug > 1 ) {
+    if( set_exit == 1 ) {
+      fprintf(stderr,"genper_tolatlong - 5\n");
+    }
+    fprintf(stderr,"lam    %12.7f\n", lambda);
+    fprintf(stderr,"phi    %12.7f\n", phi);
+    exit(1);
+  }
+
+  *lat = phi;
+  *lon = lambda;
+  return;
+}
+
+void
+genper_setup( double h0, double altitude, double lat, double lon0)
+{
+
+/* if ellipsoid lat0 is geodetic latitude and must convert to geocentric latitude */
+
+    double N1, phig_last;
+
+    double one_m_e2;
+
+    double a;
+    double R, H, P;
+    double B, D, L, G, J;
+    double BLH, DG, BJ, HJ, DHJ, LH2;
+
+    double sphi1, cphi1, sphig, cphig;
+    double e2, phi1, phig;
+
+    int niter;
+
+    a = project_info.EQ_RAD;
+    e2 = project_info.ECC2;
+    one_m_e2 = 1.0 - e2;
+
+    h0 *= 1e3;
+
+    project_info.g_h0 = h0;
+
+    phi1 = lat;
+    sphi1 = sin(phi1*D2R);
+    cphi1 = cos(phi1*D2R);
+
+    N1 = a/sqrt(1.0 - (e2*sphi1*sphi1));
+    niter = 0;
+
+    if( altitude < 0  ) {
+/* setup altitude of geosynchronous viewpoint n*/
+      double temp = 86164.1/TWO_PI;
+      H = pow(3.98603e14*temp*temp, 0.3333) - a;
+      P = H/a + 1.0;
+      phig = phi1 - asin(N1*e2*sphi1*cphi1/(P*a))*R2D;
+      sphig = sin(phig*D2R);
+      cphig = cos(phig*D2R);
+      if( cphi1 != 0.0 ) {
+        H = P*a*cphig/cphi1 - N1 - h0;
+      } else {
+        H = P*a - N1 - h0;
+      }
+    } else if( altitude < 10 ) {
+      P = altitude;
+/* need to setup H from P equation */
+      phig = phi1 - asin(N1*e2*sphi1*cphi1/(P*a))*R2D;
+      sphig = sin(phig*D2R);
+      cphig = cos(phig*D2R);
+      if( cphi1 != 0.0 ) {
+        H = P*a*cphig/cphi1 - N1 - h0;
+      } else {
+        H = P*a - N1 - h0;
+      }
+    } else {
+/*      fprintf(stderr,"altitude %f\n", altitude); */
+      H = altitude*1e3;
+/* need to setup P from iterating phig */
+      phig = phi1;
+      phig_last = 100.0;
+      while( fabs(phig - phig_last) > 1e-9 ) {
+        niter ++;
+        sphig = sin(phig*D2R);
+        cphig = cos(phig*D2R);
+        P = (cphi1/cphig) * (H + N1 + h0)/a;
+        phig_last = phig;
+        phig = phi1 - asin(N1*e2*sphi1*cphi1/(P*a))*R2D;
+/*      fprintf(stderr,"%2d P %12.7f phig %12.7f\n", niter, P, phig); */
+      }
+
+      sphig = sin(phig*D2R);
+      cphig = cos(phig*D2R);
+      P = (cphi1/cphig)*(H + N1 + h0)/a;
+    }
+
+    R = H/(P-1.0);
+
+    R = a;
+
+    project_info.g_e2 = e2;
+    project_info.g_H = H;
+    project_info.g_P = P;
+    project_info.g_R = R;
+    project_info.g_one_m_e2 = one_m_e2;
+    project_info.g_phi1 = lat;
+
+    project_info.g_lon0 = lon0;
+
+    project_info.g_phi1 = phi1;
+    project_info.g_sphi1 = sphi1;
+    project_info.g_cphi1 = cphi1;
+
+    project_info.g_phig = phig;
+    project_info.g_sphig = sphig;
+    project_info.g_cphig = cphig;
+
+    project_info.g_dphi = phi1 - phig;
+    project_info.g_cdphi = cos(project_info.g_dphi*D2R);
+    project_info.g_sdphi = sin(project_info.g_dphi*D2R);
+
+    L = 1.0 - e2*cphi1*cphi1;
+    project_info.g_L = L;
+
+    G = 1.0 - e2*sphi1*sphi1;
+    project_info.g_G = G;
+
+    J = 2.0*e2*sphi1*cphi1;
+    project_info.g_J = J;
+
+    B = P*project_info.g_cdphi;
+    project_info.g_B = B;
+    D = P*project_info.g_sdphi;
+    project_info.g_D = D;
+
+    BLH = -2.0*B*L*H;
+    project_info.g_BLH = BLH;
+
+    DG = 2.0*D*G;
+    project_info.g_DG = DG;
+
+    BJ = B*J;
+    project_info.g_BJ = BJ;
+
+    HJ = H*J;
+    project_info.g_HJ = HJ;
+
+    DHJ = D*HJ;
+    project_info.g_DHJ = DHJ;
+
+    LH2 = L*H*H;
+    project_info.g_LH2 = LH2;
+
+    if( project_info.g_debug > 0 ) {
+      fprintf(stderr,"a    %12.4f\n", a);
+      fprintf(stderr,"R    %12.4f\n", R);
+      fprintf(stderr,"e^2  %12.7f\n", e2);
+      fprintf(stderr,"H    %12.4f\n", H);
+      fprintf(stderr,"phi1 %12.4f\n", phi1);
+      fprintf(stderr,"lon0 %12.4f\n", lon0);
+      fprintf(stderr,"h0   %12.4f\n", h0);
+
+      fprintf(stderr,"N1   %12.1f\n", N1);
+      fprintf(stderr,"P    %12.7f\n", P);
+      fprintf(stderr,"phig %12.7f\n", phig);
+    }
+
+  return;
+}
+
+void GMT_vgenper( double lon0, double lat0,
+        double altitude, double azimuth, double tilt,
+        double twist, double width, double height)
+{
+
+  double R, f, Req, Rpolar, Rlat0;
+  double H, P, P_inv;
+  double rho, rho2;
+
+  double eca, cos_eca, sin_eca ;
+  double omega_max, yoffset, roff;
+
+  double yt_min, yt_max;
+  double xt_min, xt_max;
+
+  double A, rmax;
+  double rmax_at_lat0, rmax_min, rmax_max;
+  double t1, t2, t12, t22;
+  double kp;
+  double xt, yt;
+  double x, y;
+
+  double etilt, eazimuth;
+  double sin_tilt, cos_tilt;
+  double sin_azimuth, cos_azimuth;
+  double sin_twist, cos_twist;
+
+  double az;
+  double gamma, Omega, sinOmega, cosOmega;
+  double sinlatvp, coslatvp, latvp, lonvp;
+  double xt_vp, yt_vp;
+  double sinp, cosp;
+
+  double h0;
+  double tilt_max, eccen;
+  double rpmax, max_yt;
+  double rlat0, rlat1, dlong0, dlong;
+  double lat0_save;
+
+  int ellipsoid;
+
+  if( project_info.ECC == 0.0 ) {
+    ellipsoid = 0;
+    f = 0.0;
+  } else {
+    ellipsoid = 1;
+    f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
+  }
+
+  project_info.g_ellipsoid = ellipsoid;
+
+  project_info.central_meridian = lon0;
+
+  lat0_save = lat0;
+
+  h0 = 0.0;
+
+  R = project_info.EQ_RAD;
+
+  sinp = sin(lat0 * D2R);
+  cosp = cos(lat0 * D2R);
+
+  Req = R;
+  Rpolar = R*(1.0 - f);
+
+  t1 = R*cosp;
+  t12 = R*t1;
+  t2 = Rpolar*sinp;
+  t22 = Rpolar*t2;
+
+  Rlat0 = sqrt((t12*t12 + t22*t22)/(t1*t1 + t2*t2));
+
+  lat0 = genper_getgeocentric(lat0, h0);
+
+  sinp = sin(lat0 * D2R);
+  cosp = cos(lat0 * D2R);
+
+  project_info.sinp = sinp;
+  project_info.cosp = cosp;
+
+  if( ellipsoid ) {
+    genper_setup( h0, altitude, lat0_save, lon0);
+
+    project_info.central_meridian = lon0;
+    project_info.pole = project_info.g_phig;
+  } else {
+    project_info.pole = lat0;
+
+    if( altitude <= 0  ) {
+/* compute altitude of geosynchronous viewpoint n*/
+      double temp = 86164.1/TWO_PI;
+      H = pow(3.98603e14*temp*temp, 0.3333) - R;
+      P = H/R + 1.0;
+    } else if( altitude < 10 ) {
+      P = altitude;
+      H = R * ( P - 1.0);
+    } else {
+      H = altitude*1e3;
+      P = H/R + 1.0;
+    }
+    project_info.g_R = R;
+    project_info.g_H = H;
+    project_info.g_P = P;
+  }
+
+  H = project_info.g_H;
+  P = project_info.g_P;
+  R = project_info.g_R;
+
+  P_inv = P > 0.0 ? 1.0/P : 1.0;
+
+  project_info.g_P_inverse = P_inv;
+
+  if( project_info.g_longlat_set ) {
+    double norm_long = lon0;
+
+    if( project_info.g_debug > 1 ) {
+      fprintf(stderr," sensor point long %7.4f lat  %7.4f\n", lon0, lat0);
+      fprintf(stderr," input view point long %7.4f lat %7.4f\n", azimuth, tilt);
+      fprintf(stderr," input twist %7.4f\n", twist);
+      fprintf(stderr," H %f R %f\n", H/1000.0, R/1000.0);
+    }
+
+    rlat0 = (90.0 - lat0)*D2R;
+    rlat1 = (90.0 - tilt)*D2R;
+
+    while( azimuth < 0 ) azimuth += 360.0;
+
+    while( norm_long < 0 ) norm_long += 360.0;
+
+    dlong0  = azimuth - norm_long;
+
+    if( dlong0 < -180.0 ) dlong0 = 360 + dlong0;
+
+    dlong = dlong0 * D2R;
+
+    cos_eca = cos(rlat0)*cos(rlat1) + sin(rlat0)*sin(rlat1)*cos(dlong);
+
+    eca = d_acos(cos_eca);
+    sin_eca = sin(eca);
+
+    rho2 = P*P + 1.0 - 2.0*P*cos_eca;
+    rho = sqrt(rho2);
+
+    cos_tilt = (rho2 + P*P - 1.0)/(2.0*rho*P);
+
+    etilt = d_acos(cos_tilt)*R2D;
+
+    cos_azimuth = (cos(rlat1) - cos(rlat0)*cos_eca)/(sin(rlat0)*sin_eca); 
+
+    eazimuth = d_acos(cos_azimuth)*R2D;
+
+    if( dlong < 0 ) {
+      eazimuth = 360.0 - eazimuth;
+    } 
+
+    if( project_info.g_debug > 1 ) {
+      fprintf(stderr,"vgenper: pointing at longitude %10.4f latitude %10.4f\n "
+    		   "          wit h computed tilt %5.2f azimuth %6.2f\n",
+		   azimuth, tilt, etilt, eazimuth);
+    }
+    tilt = etilt;
+    azimuth = eazimuth;
+  } else { 
+
+    if( project_info.g_debug > 1 ) {
+      fprintf(stderr," sensor point long %6.3f lat  %6.3f\n", lon0, lat0);
+      fprintf(stderr," input azimuth   %6.3f tilt %6.3f\n", azimuth, tilt);
+      fprintf(stderr," input twist %6.3f\n", twist);
+    }
+  }
+
+  if( tilt < 0.0 ) {
+    tilt = d_asin( project_info.g_P_inverse )*R2D;
+  }
+
+  project_info.g_tilt = tilt;
+  project_info.g_sin_tilt = sin_tilt = sin(tilt * D2R);
+  project_info.g_cos_tilt = cos_tilt = cos(tilt * D2R);
+
+  project_info.g_twist = twist;
+  project_info.g_sin_twist = sin_twist = sin(twist * D2R);
+  project_info.g_cos_twist = cos_twist = cos(twist * D2R);
+
+  if( fabs(width) < GMT_SMALL ) {
+   project_info.g_box = 0;
+  } else {
+   project_info.g_box = 1;
+  }
+
+  if( width != 0.0 && height == 0 ) {
+    height = width;
+  }
+
+  if( height != 0.0 && width == 0 ) {
+    width = height;
+  }
+  project_info.g_width = width/2.0;
+  project_info.g_height = height/2.0;
+
+  project_info.g_azimuth = azimuth;
+  project_info.g_sin_azimuth = sin_azimuth = sin(azimuth*D2R);
+  project_info.g_cos_azimuth = cos_azimuth = cos(azimuth*D2R);
+
+  rmax = R*sqrt((P-1.0)/(P+1.0));
+
+  rmax_min = Rpolar*sqrt((P-1.0)/(P+1.0));
+  rmax_max = Req*sqrt((P-1.0)/(P+1.0));
+  rmax_at_lat0 = Rlat0*sqrt((P-1.0)/(P+1.0));
+
+  if(ellipsoid ) {
+    rmax = rmax_at_lat0;
+  }
+    
+  kp = R*(P - 1.0) / (P - P_inv);
+
+  project_info.g_rmax = rmax;
+  project_info.g_distmax = d_acos(P_inv)* R2D;
+
+  project_info.f_horizon = P_inv;
+  project_info.f_horizon = project_info.g_distmax;
+
+  omega_max = d_acos(P_inv)*R2D;
+  tilt_max = d_asin(P_inv)*R2D;
+  project_info.g_tilt_max = tilt_max;
+
+  rpmax = 2.0*R*sin(omega_max/2.0*D2R);
+
+  project_info.g_rpmax = rpmax;
+
+  max_yt = rpmax;
+  rpmax = rmax;
+
+  project_info.g_max_yt = max_yt;
+
+  eccen = sin(tilt*D2R)/sqrt(1.0 - 1.0/(P*P));
+  project_info.g_eccen = eccen;
+
+  project_info.f_horizon = omega_max;
+  project_info.g_omega_max = omega_max;
+
+  gamma = 180.0 - d_asin( sin_tilt * P)*R2D;
+  Omega = 180.0 - tilt - gamma;
+
+  if( project_info.g_debug > 0 ) {
+    fprintf(stderr,"vgenper: tilt %6.3f sin_tilt %10.6f P %6.4f gamma %6.4f "
+        "\n   Omega %6.4f tilt_max %10.4f eccen %10.4f\n", 
+  	tilt, sin_tilt, P, gamma, Omega, tilt_max, eccen);
+  }
+
+  if( eccen == 1.0 ) {
+    if( max_yt > rmax *2.0 ) {
+      max_yt = rmax * 2.0; 
+    }
+    fprintf(stderr,"Genper: Projected map is a parabola with requested tilt %6.3f" 
+        "\n max ECA is %6.3f degrees."
+	"\n Plot truncated for projected distances > rpmax %8.2f\n"
+	, tilt, omega_max, rpmax/1000.0);
+  } else if( eccen > 1.0 ) {
+    if( width != 0.0 ) {
+      fprintf(stderr,"Genper: Projected map is a hyperbola with requested tilt %6.3f" 
+        "\n max ECA is %6.3f degrees.\n",
+	tilt, omega_max);
+    } else {
+      if( max_yt > rmax *2.0 ) {
+        max_yt = rmax * 2.0; 
+      }
+      fprintf(stderr,"Genper: Projected map is a hyperbola with requested tilt %6.3f" 
+        "\n max ECA is %6.3f degrees."
+	"\n Plot truncated for projected distances > rpmax %8.2f\n"
+	, tilt, omega_max, rpmax/1000.0);
+      project_info.g_max_yt = max_yt;
+    }
+  } else if( eccen > 0.5 ) {
+    if( width != 0.0 ) {
+      double t = sin(tilt*D2R);
+      double Pecc;
+      double maxecc = 0.5;
+      Pecc = sqrt(1.0/(1.0 - (t*t/maxecc)));
+      max_yt = R*sqrt((Pecc-1.0)/(Pecc+1.0));
+      fprintf(stderr,"Genper: Projected map is an enlongated ellipse (eccentricity of %6.4f)"
+      	"with requested tilt %6.3f\n" " will truncate plot at rpmax %8.2f\n",
+        eccen, tilt, max_yt);
+      project_info.g_max_yt = max_yt;
+    } else {
+      if( max_yt > rmax *2.0 ) {
+        max_yt = rmax * 2.0; 
+      }
+      fprintf(stderr,"Genper: Projected map is an enlongated ellipse with requested tilt %6.3f" 
+        "\n eccentricity %6.3f"
+	"\n Plot truncated for projected distances > rpmax %8.2f\n"
+	, tilt, eccen, rpmax/1000.0);
+      project_info.g_max_yt = max_yt;
+    }
+  }
+
+  sinOmega = sin(Omega*D2R);
+  cosOmega = cos(Omega*D2R);
+
+  rho2 = P*P + 1.0 - 2.0*P*cosOmega;
+  rho = sqrt(rho2);
+  project_info.g_rho = rho;
+
+  coslatvp = sinp*cosOmega + cosp*sinOmega*cos_azimuth;
+
+  latvp = 90.0 - d_acos(coslatvp)*R2D;
+  sinlatvp = sin((90.0 - latvp)*D2R);
+
+  lonvp = d_asin( sin_azimuth * sinOmega/sinlatvp) * R2D + lon0;
+
+  if( gmtdefs.verbose ) {
+    fprintf(stderr,"vgenper: pointing at longitude %10.4f latitude %10.4f\n "
+    		   "         with tilt %5.2f azimuth %6.2f at distance %6.4f\n", 
+		   lonvp, latvp, tilt, azimuth, rho);
+  }
+
+  project_info.g_lonvp = lonvp;
+  project_info.g_latvp = latvp;
+
+  project_info.g_Rp = project_info.g_cos_tilt * H ;
+
+  project_info.g_yoffset = 0.0;
+
+  yoffset = project_info.g_sin_tilt * H ;
+
+  roff = project_info.g_cos_tilt * H ;
+
+  project_info.g_roff = roff;
+
+  if( height != 0.0 ) {
+    project_info.g_yoffset = yoffset ;
+    xt_min = -R*rho*sin(width/2.0*D2R); 
+    xt_max = -xt_min; 
+    yt_min = -R*rho*sin(height/2.0*D2R); 
+    yt_max = -yt_min; 
+  } else {
+    FILE *fp;
+    xt_min = 1e20;
+    xt_max = -xt_min;
+
+    yt_min = 1e20;
+    yt_max = -yt_min;
+
+    if( project_info.g_debug > 2 ) {
+      fp = fopen("g_border.txt", "w");
+
+      fprintf(stderr,"tilt %10.4f sin_tilt %10.4f cos_tilt %10.4f\n", tilt, sin_tilt, cos_tilt);
+      fprintf(stderr,"azimuth %10.4f sin_azimuth %10.4f cos_azimuth %10.4f\n", azimuth, sin_azimuth, cos_azimuth);
+    }
+
+    for( az = 0 ; az < 360.0 ; az += 1) {
+      x = sin(az*D2R)*rmax;
+      y = cos(az*D2R)*rmax;
+
+      genper_to_xtyt( az, x, y, project_info.g_yoffset, &xt, &yt);
+
+      if( project_info.g_debug > 2 ) {
+        fprintf(fp,"%6.1f x %10.2f y %10.2f A %10.4f xt %10.3f yt %10.3f\n", 
+      	az, x/1000, y/1000, A, xt/1000, yt/1000);
+      }
+
+      xt_min = xt < xt_min ? xt : xt_min;
+      xt_max = xt > xt_max ? xt : xt_max;
+      yt_min = yt < yt_min ? yt : yt_min;
+      yt_max = yt > yt_max ? yt : yt_max;
+    }
+    if( project_info.g_debug > 2 ) {
+      fclose(fp);
+    }
+    if( project_info.g_eccen > 0.5 ) {
+      width = 2.0*atan(2.0*rmax/H)*R2D;
+      height = width;
+      xt_min = -R*rho*sin(width/2.0*D2R); 
+      xt_max = -xt_min; 
+      yt_min = -R*rho*sin(height/2.0*D2R); 
+      yt_max = -yt_min; 
+      project_info.g_width = width/2.0;
+      project_info.g_height = height/2.0;
+    }
+  }
+  if( project_info.g_debug > 1 ) {
+    fprintf(stderr,"vgenper: xt max %7.1f km\n", xt_max/1000.0);
+    fprintf(stderr,"vgenper: xt min %7.1f km\n", xt_min/1000.0);
+    fprintf(stderr,"vgenper: yt max %7.1f km\n", yt_max/1000.0);
+    fprintf(stderr,"vgenper: yt min %7.1f km\n", yt_min/1000.0);
+  }
+
+  if( fabs(xt_min) > fabs(rmax_at_lat0) ) {
+    xt_min = -rmax_at_lat0;
+    xt_max = -xt_min;
+  }
+  if( fabs(yt_min) > fabs(rmax_at_lat0) ) {
+    yt_min = -rmax_at_lat0;
+    yt_max = -yt_min;
+  }
+  
+  project_info.g_ymax = yt_max;
+  project_info.g_ymin = yt_min;
+  project_info.g_xmax = xt_max;
+  project_info.g_xmin = xt_min;
+
+  if( width != 0.0 ) {
+    project_info.y_scale = project_info.x_scale/width*height;
+  }
+
+  if (project_info.g_debug > 0) {
+    GMT_genper( lonvp, latvp, &xt_vp, &yt_vp);
+    fprintf(stderr,"\nvgenper: polar %d north %d south %d\n", project_info.polar, project_info.n_polar,
+                project_info.s_polar);
+    fprintf(stderr,"vgenper: altitude H %7.1f km P %7.4f\n", H/1000.0, P);
+    fprintf(stderr,"vgenper: azimuth %5.1f tilt %5.1f\n", azimuth, tilt);
+    fprintf(stderr,"vgenper: viewpoint width %5.1f height %5.1f degrees\n",
+        width, height);
+    fprintf(stderr,"vgenper: radius max %7.1f km\n", project_info.g_rmax/1000.0);
+
+    fprintf(stderr,"vgenper: eccentricty %7.4f km\n", project_info.g_eccen);
+    fprintf(stderr,"vgenper: eq radius max %7.1f km\n", rmax_max/1000.0);
+    fprintf(stderr,"vgenper: polar radius max %7.1f km\n", rmax_min/1000.0);
+    fprintf(stderr,"vgenper: lat0 radius max %7.1f km\n", rmax_at_lat0/1000.0);
+    fprintf(stderr,"vgenper: kp %7.1f \n", kp/1000.0);
+
+    fprintf(stderr,"vgenper: angular dist max %5.2f degrees\n", project_info.g_distmax);
+    fprintf(stderr,"vgenper: y offset %7.1f km\n", project_info.g_yoffset/1000.0);
+    fprintf(stderr,"vgenper: yt max %7.1f km\n", yt_max/1000.0);
+    fprintf(stderr,"vgenper: yt min %7.1f km\n", yt_min/1000.0);
+    fprintf(stderr,"vgenper: roff %7.1f km\n", roff/1000.0);
+    fprintf(stderr,"vgenper: y max %7.1f km\n", project_info.g_ymax/1000.0);
+    fprintf(stderr,"vgenper: y min %7.1f km\n", project_info.g_ymin/1000.0);
+    fprintf(stderr,"vgenper: x max %7.1f km\n", project_info.g_xmax/1000.0);
+    fprintf(stderr,"vgenper: x min %7.1f km\n", project_info.g_xmin/1000.0);
+    fprintf(stderr,"vgenper: omega max %6.2f degrees\n", project_info.g_omega_max);
+    fprintf(stderr,"vgenper: gamma %6.3f Omega %6.3f \n", gamma, Omega);
+    fprintf(stderr,"vgenper: viewpoint lon %6.3f lat %6.3f \n", lonvp, latvp);
+    fprintf(stderr,"vgenper: viewpoint xt %6.3f yt %6.3f \n", xt_vp/1000.0, yt_vp/1000.0);
+    fprintf(stderr,"vgenper:  usr viewpoint %d\n", project_info.g_box);
+  }
+
+}
+
+
+/* Convert lon/lat to General Perspective x/y */
+
+void GMT_genper (double lon, double lat, double *xt, double *yt)
+{
+
+  double H, P, P_inv, R, rmax;
+  double lon0, sinlat0, coslat0;
+  double tilt, sin_tilt, cos_tilt;
+  double azimuth, sin_azimuth, cos_azimuth;
+  double twist, sin_twist, cos_twist;
+  double width, height;
+
+  double h;
+  double phig, lat_save;
+  double dlon, sin_lat, cos_lat, sin_dlon, cos_dlon;
+  double cosc, sinc;
+  double x, y, r, kp;
+  double max_yt;
+  double angle;
+
+  H = project_info.g_H;
+  R = project_info.g_R;
+  P = project_info.g_P;
+  P_inv = project_info.g_P_inverse;
+
+  lon0 = project_info.central_meridian;
+
+  sinlat0 = project_info.sinp;
+  coslat0 = project_info.cosp;
+
+  tilt = project_info.g_tilt;
+  sin_tilt = project_info.g_sin_tilt;
+  cos_tilt = project_info.g_cos_tilt;
+
+  width = project_info.g_width;
+  height = project_info.g_height;
+
+  max_yt = project_info.g_max_yt;
+
+  azimuth = project_info.g_azimuth;
+  sin_azimuth = project_info.g_sin_azimuth;
+  cos_azimuth = project_info.g_cos_azimuth;
+
+  twist = project_info.g_twist;
+  sin_twist = project_info.g_sin_twist;
+  cos_twist = project_info.g_cos_twist;
+
+  rmax = project_info.g_rmax;
+
+  dlon = lon - lon0;
+
+  while (dlon < -180.0) dlon += 360.0;
+  while (dlon > 180.0) dlon -= 360.0;
+
+  dlon *= D2R;
+
+  lat_save = lat;
+
+  h = 0.0;
+
+  phig = genper_getgeocentric(lat, h);
+
+  lat = phig;
+
+  lat *= D2R;
+
+  sincos (lat, &sin_lat, &cos_lat);
+  sincos (dlon, &sin_dlon, &cos_dlon);
+
+  cosc = sinlat0 * sin_lat + coslat0 * cos_lat * cos_dlon;
+  sinc = d_sqrt( 1.0 - cosc*cosc);
+
+  project_info.g_outside = 0;
+
+  if( project_info.g_ellipsoid ) {
+    genper_toxy( phig, lon, h, &x, &y);
+    angle = azimuth;
+    angle = atan2(y, x);
+  } else if( cosc >=  P_inv ) {
+/* within field of view */
+    kp = (P - 1.0) / (P - cosc);
+
+    x = R * kp * cos_lat * sin_dlon;
+    y = R * kp * (coslat0 * sin_lat - sinlat0 * cos_lat * cos_dlon);
+    angle = azimuth;
+    angle = atan2(y, x);
+  } else {
+
+/* over the horizon */
+
+    project_info.g_outside = 1;
+
+    if( project_info.polar ) {
+      angle = M_PI - dlon;
+    } else {
+      if( coslat0*sinc != 0.0 ) {
+        angle = d_acos( (sin_lat - sinlat0*cosc)/(coslat0*sinc));
+      } else {
+        angle = 0.0;
+      }
+      if( dlon < 0.0 ) {
+        angle = -angle;
+      }
+    }
+
+    x = sin(angle) * rmax;
+    y = cos(angle) * rmax;
+    angle *=R2D;
+
+  }
+
+  if( project_info.g_debug > 2 ) {
+    double xt1, yt1;
+    xt1 = *xt * project_info.x_scale + project_info.x0;
+    yt1 = *yt * project_info.y_scale + project_info.y0;
+    r = d_sqrt(xt1*xt1 + yt1*yt1);
+
+    if( r > 5.0 ) {
+      fprintf(stderr,"genper: point outside lon %6.3f lat %6.3f\n", lon, lat);
+    }
+  }
+
+  genper_to_xtyt( angle, x, y, project_info.g_yoffset, xt, yt);
+
+  if( GMT_is_dnan(*yt) || GMT_is_dnan(*xt) ) {
+    fprintf(stderr,"genper: yt or xt nan\n");
+    fprintf(stderr,"genper: lon %6.3f lat %6.3f\n", lon, lat);
+    fprintf(stderr,"genper: xt %10.3e yt %10.3e\n", *xt, *yt);
+    exit(1);
+  }
+
+}
+
+/* Convert General Perspective x/y to lon/lat */
+
+void GMT_igenper (double *lon, double *lat, double xt, double yt)
+{
+  double lat0;
+  double lon0, sinlat0, coslat0;
+  double H, P, P_inv, R, rmax;
+  double yoffset;
+  double sin_tilt, cos_tilt;
+  double azimuth, sin_azimuth, cos_azimuth;
+  double twist, sin_twist, cos_twist;
+  double width, height;
+  double max_yt, xtp, ytp;
+
+  double phi, sinc, cosc;
+
+  double h, x, y;
+
+  double M, Q;
+
+  double con, com, rho;
+  double dlon;
+
+  H = project_info.g_H;
+  R = project_info.g_R;
+  P = project_info.g_P;
+  P_inv = project_info.g_P_inverse;
+
+  lat0 = project_info.pole;
+  lon0 = project_info.central_meridian;
+
+  sinlat0 = project_info.sinp;
+  coslat0 = project_info.cosp;
+
+  sin_tilt = project_info.g_sin_tilt;
+  cos_tilt = project_info.g_cos_tilt;
+
+  width = project_info.g_width;
+  height = project_info.g_height;
+
+  twist = project_info.g_twist;
+  sin_twist = project_info.g_sin_twist;
+  cos_twist = project_info.g_cos_twist;
+
+  azimuth = project_info.g_azimuth;
+  sin_azimuth = project_info.g_sin_azimuth;
+  cos_azimuth = project_info.g_cos_azimuth;
+
+  rmax = project_info.g_rmax;
+  max_yt = project_info.g_max_yt;
+  yoffset = project_info.g_yoffset;
+
+  xtp = xt;
+  ytp = yt;
+
+  xt = (xtp * cos_twist + ytp * sin_twist);
+  yt = (ytp * cos_twist - xtp * sin_twist);
+
+  yt += yoffset;
+
+  M = H * xt / ( H - yt * sin_tilt);
+  Q = H * yt * cos_tilt /(H - yt * sin_tilt);
+  x = M * cos_azimuth + Q * sin_azimuth;
+  y = Q * cos_azimuth - M * sin_azimuth;
+
+  rho = hypot(x, y);
+
+  project_info.g_outside = 0;
+
+  if( rho < GMT_SMALL ) {
+    *lat = lat0;
+    *lon = lon0;
+    return;
+  }
+
+  if( rho > rmax ) {
+    x *= rmax/rho;
+    y *= rmax/rho;
+    rho = rmax;
+    project_info.g_outside = 1;
+  }
+
+  con = P - 1.0;
+  com = P + 1.0;
+
+  if( project_info.g_ellipsoid ) {
+    h = 0.0;
+    genper_tolatlong( x, y, h, lat, lon);
+  } else {
+    sinc = ( P - d_sqrt( 1.0 - ( rho * rho * com)/(R*R*con)))
+                / ( (R * con / rho) + (rho/(R*con)));
+
+    cosc = d_sqrt(1.0 - sinc*sinc);
+    phi = d_asin( cosc * sinlat0 + (y*sinc * coslat0/rho));
+
+    *lat = phi*R2D;
+
+    dlon = d_atan2((x * sinc),(rho * coslat0 * cosc - y * sinlat0 * sinc));
+
+    *lon = dlon*R2D + lon0;
+  }
+
+  if( GMT_is_dnan(*lat) || GMT_is_dnan(*lon) ) {
+    fprintf(stderr,"igenper: lat or lon nan\n");
+    fprintf(stderr,"igenper: xt %10.3e yt %10.3e\n", xt, yt);
+    fprintf(stderr,"igenper: lon %6.3f lat %6.3f\n", *lon, *lat);
+  }
+  return;
+
+}
+
+int GMT_genper_overlap (double lon0, double lat0, double lon1, double lat1)
+{
+/* Dummy routine */
+  if( project_info.g_debug > 0 ) {
+    fprintf(stderr,"genper_overlap: overlap called\n");
+  }
+  return (TRUE);
+}
+
+int GMT_genper_map_clip_path( int np, double *work_x, double *work_y)
+{
+  int i;
+  double da, angle;
+  double x, y, xt, yt;
+
+  double sin_ang, cos_ang;
+  double xmin, xmax, ymin, ymax;
+  double rmax;
+
+  if( project_info.g_debug > 0 ) {
+    fprintf(stderr,"\n\ngenper_map_clip_path: np %d\n", np);
+    fprintf(stderr," x_scale %e y_scale %e, x0 %e y0 %e\n",
+                   project_info.x_scale, project_info.y_scale,
+                   project_info.x0, project_info.y0);
+  }
+
+  rmax = project_info.g_rmax;
+
+  xmin = project_info.g_xmin;
+  xmax = project_info.g_xmax;
+  ymin = project_info.g_ymin;
+  ymax = project_info.g_ymax;
+
+  da = TWO_PI/np;
+
+  for (i = 0; i < np; i++) {
+    angle = i * da;
+    sincos (angle, &sin_ang, &cos_ang);
+
+    x = rmax * sin_ang;
+    y = rmax * cos_ang;
+
+    genper_to_xtyt( angle, x, y, project_info.g_yoffset, &xt, &yt);
+
+    if( project_info.g_width ) {
+      if( xt < xmin ) {
+        xt = xmin;
+      }
+      if( xt > xmax ) {
+        xt = xmax;
+      }
+      if( yt < ymin ) {
+        yt = ymin;
+      }
+      if( yt > ymax ) {
+        yt = ymax;
+      }
+    }
+    work_x[i] = xt * project_info.x_scale + project_info.x0;
+    work_y[i] = yt * project_info.y_scale + project_info.y0;
+  }
+  return 0;
+}
+
+#if 0
+double GMT_genper_left_circle (double y)
+{
+  double x ;
+
+  y -= project_info.r;
+
+  x = GMT_half_map_size -
+                d_sqrt (project_info.r * project_info.r - y * y);
+
+/*        fprintf(stderr,"genper_left_circle\n"); */
+  return x;
+}
+
+double GMT_genper_right_circle (double y)
+{
+  double x ;
+
+  y -= project_info.r;
+
+  x = GMT_half_map_size +
+                d_sqrt (project_info.r * project_info.r - y * y);
+/*        fprintf(stderr,"genper_right_circle\n"); */
+
+  return x;
+}
+#endif
+#endif   /* END of _GENPER */
 
 /* -JG ORTHOGRAPHIC PROJECTION */
 

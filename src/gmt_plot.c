@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.186 2006-12-05 04:30:53 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.187 2006-12-28 03:19:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1198,6 +1198,44 @@ void GMT_rect_map_boundary (double x0, double y0, double x1, double y1)
 	if (frame_info.side[2]) ps_segment (xt[3], yt[3], xt[2], yt[2]);	/* North */
 }
 
+#ifdef _GENPER
+int GMT_genper_map_clip_path( int np, double *work_x, double *work_y);
+  
+int GMT_genper_map_boundary( double w, double e, double s, double n)
+{   
+  int nr;
+
+#if 0
+  int i, nr;
+  double x0, y0, a, da, S, C;
+  double angle, cos_ang, sin_ang;
+  double x, y, xt, yt;
+#endif  
+
+  if (!project_info.region) {   /* Draw rectangular boundary and return */
+    GMT_rect_map_boundary(0.0, 0.0, project_info.xmax, project_info.ymax);
+    return 0;
+  }
+
+  GMT_setpen(&gmtdefs.frame_pen);
+
+  nr = GMT_n_lon_nodes + GMT_n_lat_nodes; 
+  if (nr >= GMT_n_alloc)
+    GMT_get_plot_array();
+
+  if( project_info.g_debug > 1 ) {
+    fprintf(stderr,"genper_map_boundary nr = %d\n", nr);
+  }
+
+  GMT_genper_map_clip_path( nr, GMT_x_plot, GMT_y_plot);
+
+  ps_line(GMT_x_plot, GMT_y_plot, nr, 3, FALSE, TRUE);
+
+  return 0;
+}
+/* _GENPER */
+#endif
+
 void GMT_circle_map_boundary (double w, double e, double s, double n)
 {
 	int i, nr;
@@ -1945,6 +1983,11 @@ void GMT_map_boundary (double w, double e, double s, double n)
 		case GMT_OBLIQUE_MERC:
 			GMT_oblmrc_map_boundary (w, e, s, n);
 			break;
+#ifdef _GENPER
+		case GMT_GENPER:
+			GMT_genper_map_boundary(w, e, s, n);
+			break;
+#endif
 		case GMT_STEREO:
 		case GMT_ORTHO:
 		case GMT_LAMB_AZ_EQ:

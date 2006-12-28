@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.278 2006-12-10 01:15:52 remko Exp $
+ *	$Id: gmt_support.c,v 1.279 2006-12-28 03:19:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7447,6 +7447,9 @@ BOOLEAN GMT_is_fancy_boundary (void)
 			break;
 		case GMT_STEREO:
 		case GMT_ORTHO:
+#ifdef _GENPER
+		case GMT_GENPER:
+#endif
 		case GMT_LAMB_AZ_EQ:
 		case GMT_AZ_EQDIST:
 		case GMT_GNOMONIC:
