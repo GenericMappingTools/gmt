@@ -41,7 +41,7 @@ and output this in the form \fB\-R\fP\fIw/e/s/n\fP (unless \fB\-C\fP is set).
 Report median and L1 scale of z (L1 scale = 1.4826 * Median Absolute Deviation (MAD)).
 .TP
 .B \-L2
-Report mean and standard deviation of z.
+Report mean, standard deviation, and rms of z.
 .TP
 .B \-M
 Find and report the location of min/max z-values, and count and report the number of nodes
