@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.265 2006-12-28 03:19:07 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.266 2006-12-31 23:12:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2593,6 +2593,12 @@ int GMT_unit_lookup (int c)
 {
 	int unit;
 
+	if (!isalpha (c)) {	/* Not a unit modifier - just return the current default unit */
+		return (gmtdefs.measure_unit);
+	}
+	
+	/* Now we check for the c-i-m-p units and barf otherwise */
+	
 	switch (c) {
 		case 'C':	/* Centimeters */
 		case 'c':
@@ -2612,6 +2618,7 @@ int GMT_unit_lookup (int c)
 			break;
 		default:
 			unit = gmtdefs.measure_unit;
+			fprintf (stderr, "%s: Warning: Length unit %c not supported - revert to default unit [%s]\n", GMT_program, c, GMT_unit_names[unit]);
 			break;
 	}
 
