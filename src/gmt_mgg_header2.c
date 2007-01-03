@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.16 2006-11-20 01:10:31 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.17 2007-01-03 18:02:37 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	This is the README file:
@@ -38,6 +38,13 @@ Test format by checking a grid:
 > grdinfo gnaXXXXX.g03=N
 --------------------------------------------------------------------*/
 
+/* Comments added by P. Wessel:
+ *
+ * 1) GRD98 can now support pixel grids since 11/24/2006.
+ * 2) Learned that 1/x_inc and 1/y_inc are stored as integers.  This means
+ *    GRD98 imposes restrictions on x_inc & y_inc.
+ */
+
 #include "gmt_mgg_header2.h"
 
 #define MIN_PER_DEG		60.0
@@ -72,19 +79,30 @@ static void degrees2dms(double degrees, int *deg, int *min, int *sec)
 
 static void GMT2MGG2(struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 {
+	double f;
 	memset(mgg, 0, sizeof(MGG_GRID_HEADER_2));
 	
 	mgg->version     = MGG_MAGIC_NUM + VERSION;
 	mgg->length      = sizeof(MGG_GRID_HEADER_2);
-    mgg->dataType    = 1;
+	mgg->dataType    = 1;
 	
 	mgg->cellRegistration = gmt->node_offset;
 	mgg->lonNumCells = gmt->nx;
-	mgg->lonSpacing  = (int)rint(gmt->x_inc * SEC_PER_DEG);
+	f  = gmt->x_inc * SEC_PER_DEG;
+	mgg->lonSpacing  = (int)rint(f);
+	if (fabs (f - (double)mgg->lonSpacing) > GMT_CONV_LIMIT) {
+		fprintf (stderr, "%s: GRD98 format requires n = 1/x_inc to be an integer! Your n = %g (aborting)\n", GMT_program, f);
+		exit (EXIT_FAILURE);
+	}
 	degrees2dms(gmt->x_min, &mgg->lonDeg, &mgg->lonMin, &mgg->lonSec);
 	
 	mgg->latNumCells = gmt->ny;
+	f  = gmt->y_inc * SEC_PER_DEG;
 	mgg->latSpacing  = (int)rint(gmt->y_inc * SEC_PER_DEG);
+	if (fabs (f - (double)mgg->latSpacing) > GMT_CONV_LIMIT) {
+		fprintf (stderr, "%s: GRD98 format requires n = 1/y_inc to be an integer! Your n = %g (aborting)\n", GMT_program, f);
+		exit (EXIT_FAILURE);
+	}
 	degrees2dms(gmt->y_max, &mgg->latDeg, &mgg->latMin, &mgg->latSec);
 
 	/* Default values */
