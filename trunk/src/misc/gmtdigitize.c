@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.8 2006-11-20 01:10:32 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.9 2007-01-03 02:01:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -36,7 +36,7 @@
 #endif
 
 /* Default port and line density in lines per inch (only tested on RedHat Linux 9)*/
-#define DIG_PORT	"/dev/ttyS0"
+#define DIG_PORT	"/dev/ttyS1"
 #define DIG_LPI		2540
 
 /*===========================================================================*/
