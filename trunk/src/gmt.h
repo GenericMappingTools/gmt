@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.139 2006-12-05 16:46:08 pwessel Exp $
+ *	$Id: gmt.h,v 1.140 2007-01-04 22:43:05 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -504,9 +504,9 @@ EXTERN_MSC float GMT_f_NaN;		/* Holds IEEE not-a-number float */
 EXTERN_MSC double GMT_d_NaN;		/* Holds IEEE not-a-number double */
 EXTERN_MSC BOOLEAN GMT_give_synopsis_and_exit;		/* TRUE if short usage message is desired (must say program - ) */
 EXTERN_MSC char *GMT_program;		/* Name of current GMT program */
-EXTERN_MSC int GMT_no_rgb[];
 EXTERN_MSC int GMT_oldargc;
 EXTERN_MSC char *GMT_oldargv[];		/* Pointers to old common arguments */
+EXTERN_MSC int GMT_no_rgb[];
 EXTERN_MSC char *GMT_degree_symbol[4][3];	/* Contains the two octal codes for small and large degree symbols, for each char encoding */
 EXTERN_MSC char *GMT_minute_symbol[4][2];	/* Standard encoding minute symbol */
 EXTERN_MSC char *GMT_second_symbol[4][2];	/* Standard encoding second symbol */
@@ -523,8 +523,9 @@ EXTERN_MSC int GMT_n_file_suffix;
 EXTERN_MSC int *GMT_file_id;
 EXTERN_MSC double *GMT_file_scale, *GMT_file_offset, *GMT_file_nan;
 EXTERN_MSC char **GMT_file_suffix;
+#ifdef OLD_HISTORY
 EXTERN_MSC int GMT_fd_history;	/* File descriptor for .gmtcommands4 */
-EXTERN_MSC BOOLEAN GMT_lock;	/*T/F for advisory file locking */
+#endif
 EXTERN_MSC int GMT_pad[4];
 EXTERN_MSC int GMT_inc_code[2];	/* For adjusting -R -I */
 EXTERN_MSC void check_nc_status (int status);
