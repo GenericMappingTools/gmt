@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.266 2006-12-31 23:12:01 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.267 2007-01-04 02:54:58 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -292,11 +292,12 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
 
 #ifdef _GENPER                  
-			fprintf (stderr, "\t   -Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<width>/<height>/<scale> \n OR\t   -JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<width>/<height>/<mapwidth>\n");
+			fprintf (stderr, "\t   -Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<width>/<height>/<scale> \n OR\t   -JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<width>/<height>/<mapwidth> (Vertical Perspective)\n");
 			fprintf (stderr, "\t     lon0/lat0 is the center or the projection.\n");
 			fprintf (stderr, "\t     Altitude is the height of the viewpoint above local sea level\n");
 			fprintf (stderr, "\t        altitude is in Kilometers\n");
-			fprintf (stderr, "\t        if altitude less than 10 then it is the distance \n");                                      fprintf (stderr, "\t        from center of earth to viewpoint divided by the radius of the Earth\n");
+			fprintf (stderr, "\t        if altitude less than 10 then it is the distance \n");
+			fprintf (stderr, "\t        from center of earth to viewpoint divided by the radius of the Earth\n");
 			fprintf (stderr, "\t     Azimuth is azimuth east of North of view\n");
 			fprintf (stderr, "\t     Tilt is the upward tilt of the plane of projection\n");
 			fprintf (stderr, "\t       if tilt < 0 then viewpoint is centered on the horizon\n");
@@ -415,9 +416,8 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jg|G<lon0>/<lat0>/<scale (or radius/lat)|width>  (Orthographic)\n");
 
-
 #ifdef _GENPER                  
-			fprintf (stderr, "\t   -Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<width>/<height>/<scale> \n OR\t   -JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<width>/<height>/<mapwidth>\n");
+			fprintf (stderr, "\t   -Jg|G<lon0>/<lat0>[/<altitude>/<azimuth>/<tilt>/<twist>/<width>/<height>]/<scale|width> (Vertical Perspective)\n");
 #endif  /* End of _GENPER */
 
 			fprintf (stderr, "\t   -Jh|H<lon0>/<scale|width> (Hammer-Aitoff)\n");
