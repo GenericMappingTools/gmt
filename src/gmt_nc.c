@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.56 2006-12-04 02:58:08 remko Exp $
+ *	$Id: gmt_nc.c,v 1.57 2007-01-04 22:35:49 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -705,7 +705,7 @@ void GMT_nc_check_step (int n, double *x, char *varname)
 		if (step < step_min) step_min = step;
 		if (step > step_max) step_max = step;
 	}
-	if (fabs(step_min-step_max)/(fabs(step_min)+fabs(step_max)) > 0.01) {
+	if (fabs(step_min-step_max)/(fabs(step_min)+fabs(step_max)) > 0.05) {
 		fprintf (stderr, "%s: WARNING: The step size of coordinate (%s) in grid %s is not constant.\n", GMT_program, varname, nc_file);
 		fprintf (stderr, "%s: WARNING: GMT will use a constant step size of %g; the original ranges from %g to %g.\n", GMT_program, (x[n-1]-x[0])/(n-1), step_min, step_max);
 	}
