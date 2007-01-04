@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.17 2006-04-04 02:38:27 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.18 2007-01-04 17:11:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1024,7 +1024,7 @@ void ** GMTAPI_duplicate_string (char *string)
 	len = strlen (string);
 	t_ptr = (char **) GMT_memory (VNULL, 1, sizeof (char *), "GMTAPI_duplicate_string");
 	*t_ptr = (char *) GMT_memory (VNULL, len+1, sizeof (char), "GMTAPI_duplicate_string");
-	strncpy (*t_ptr, string, len);
+	strncpy (*t_ptr, string, len+1);
 	return ((void **)t_ptr);
 }
 

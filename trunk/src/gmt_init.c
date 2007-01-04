@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.267 2007-01-04 02:54:58 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.268 2007-01-04 17:11:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5580,8 +5580,10 @@ void GMT_extract_label (char *line, char *label)
 	}
 	if ((p = strchr (&line[i], '\"'))) {	/* Gave several words as label */
 		for (j0 = i, j = i + 1; line[j] != '\"'; j++);
-		if (line[j] == '\"')	/* Found the matching quote */
+		if (line[j] == '\"') {	/* Found the matching quote */
 			strncpy (label, &line[j0], j-j0);
+			label[j-j0] = '\0';
+		}
 		else {			/* Missing the matching quote */
 			sscanf (&line[i], "%s", label);
 			fprintf (stderr, "%s: Warning: Label (%s) not terminated by matching quote\n", GMT_program, label);

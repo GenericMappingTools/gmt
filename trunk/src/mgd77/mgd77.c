@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.140 2006-12-05 02:44:42 remko Exp $
+ *	$Id: mgd77.c,v 1.141 2007-01-04 17:11:11 pwessel Exp $
  *
  *    Copyright (c) 2005-2006 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -322,6 +322,7 @@ int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD
 	while (start >= 0 && F->path[start] != '/') start--;
 	start++;
 	strncpy (F->NGDC_id, &F->path[start], stop - start);
+	F->NGDC_id[stop - start] = '\0';
 	
 	return (MGD77_NO_ERROR);
 }
@@ -2517,7 +2518,8 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 				if (k < 8) continue;	/* Not a NGDC 8-char ID */
 				if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
 				L[n] = (char *)GMT_memory (VNULL, k + 1, sizeof (char), "MGD77_Path_Expand");
-				strncpy (L[n++], entry->d_name, k);
+				strncpy (L[n], entry->d_name, k);
+				L[n++][k] = '\0';
 			}
 			closedir (dir);
 		}

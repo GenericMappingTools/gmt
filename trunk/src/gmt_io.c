@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.127 2006-12-05 16:46:08 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.128 2007-01-04 17:11:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1947,6 +1947,7 @@ int GMT_parse_f_option (char *arg)
 		k = 0;
 	}
 
+	memset ((void *)copy, 0, BUFSIZ);	/* Clean the copy */
 	strncpy (copy, &arg[k], BUFSIZ);	/* arg should NOT have a leading i|o part */
 
 	if (copy[0] == 'g') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y */
@@ -2238,7 +2239,7 @@ int	GMT_scanf_geo (char *s, double *val)
 		k--;
 	}
 	if (k >= GMT_TEXT_LEN) return (GMT_IS_NAN);
-	strncpy (scopy, s, k);	/* Copy all but the suffix  */
+	strncpy (scopy, s, k);				/* Copy all but the suffix  */
 	scopy[k] = 0;
 	ncolons = 0;
 	if ( (p = strpbrk (scopy, "dD")) ) {
@@ -2406,6 +2407,7 @@ int	GMT_scanf (char *s, int expectation, double *val)
 			clocklen = strlen(p);
 			callen -= clocklen;
 			strncpy (calstring, s, callen);
+			calstring[callen] = 0;
 			strcpy (clockstring, &p[1]);
 			clocklen--;
 		}
