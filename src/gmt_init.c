@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.269 2007-01-04 17:44:22 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.270 2007-01-04 18:10:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2752,7 +2752,7 @@ int GMT_font_lookup (char *name, struct GMT_FONT *list, int n)
 
 int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 	int n, n_alloc, w, h;
-	char line[BUFSIZ], media[80];
+	char line[BUFSIZ], media[GMT_TEXT_LEN];
 	FILE *fp;
 
 	GMT_getsharepath (CNULL, "gmtmedia", ".d", line);
@@ -4024,7 +4024,7 @@ int GMT_parse_B_option (char *in) {
 	 */
 
 	char out1[BUFSIZ], out2[BUFSIZ], out3[BUFSIZ], *info[3];
-	char one[80], two[80], three[80];
+	char one[GMT_TEXT_LEN], two[GMT_TEXT_LEN], three[GMT_TEXT_LEN];
 	struct GMT_PLOT_AXIS *A;
 	int i, j, k;
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.280 2007-01-04 00:31:12 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.281 2007-01-04 18:10:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3421,7 +3421,7 @@ void GMT_dump_contour (double *xx, double *yy, int nn, double cval, int id, BOOL
 {
 	int i;
 	static int int_cont_count = 0, ext_cont_count = 0;
-	char fname[BUFSIZ], format[80], suffix[4];
+	char fname[BUFSIZ], format[GMT_TEXT_LEN], suffix[4];
 	double out[3];
 	FILE *fp;
 
