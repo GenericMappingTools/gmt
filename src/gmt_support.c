@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.279 2006-12-28 03:19:07 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.280 2007-01-04 00:31:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8184,7 +8184,7 @@ int fourt_ (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work
 
     static int j1rg2, idiv, irem, ipar, kmin, imin, jmin, lmax, mmax, imax, jmax;
     static int ntwo, j1cnj, np1hf, np2hf, j1min, i1max, i1rng, j1rng, j2min, j3max;
-    static int j1max, j2max, i2max, non2t, j2stp, i, j, k, l, m, n, icase, ifact[1];
+    static int j1max, j2max, i2max, non2t, j2stp, i, j, k, l, m, n, icase, ifact[32];
     static int nhalf, krang, kconj, kdif, idim, ntot, kstep, k2, k3, k4, nprev, iquot;
     static int i2, i1, i3, j3, k1, j2, j1, if_, np0, np1, np2, ifp1, ifp2, non2;
     
