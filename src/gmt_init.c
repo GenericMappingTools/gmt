@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.268 2007-01-04 17:11:11 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.269 2007-01-04 17:44:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2154,6 +2154,9 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_TIME_UNIT:
 			gmtdefs.time_unit = GMT_time_system[GMT_N_SYSTEMS-1].unit = value[0];
+#ifndef OLDCAL
+			gmtdefs.time_system = GMT_N_SYSTEMS-1;
+#endif
 			break;
 		case GMTCASE_TIME_SYSTEM:
 			gmtdefs.time_system = GMT_get_time_system (lower_value);
