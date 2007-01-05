@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.13 2006-12-23 02:12:42 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.14 2007-01-05 10:04:58 mtchandl Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -139,3 +139,4 @@ void regress_lms (double *x, double *y, int nvalues, double *stat, int gridField
 void regresslms_sub (double *x, double *y, double angle0, double angle1, int nvalues, int n_angle, double *stat, int gridField);
 double lms (double *x, int n);
 double median (double *x, int n);
+double compute_rms (double *new, double *old, int n);
