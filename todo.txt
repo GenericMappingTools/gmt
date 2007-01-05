@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.17 2006-12-17 02:02:05 remko Exp $
+#	$Id: todo.txt,v 1.18 2007-01-05 03:49:34 remko Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -11,8 +11,7 @@ gmt_map.c	When a map is drawn using grdview, the grid adjacent the boundary of
 		while the value in the area is defined. 
 		See e-mail from Shinya Kouketsu of 8 Dec 2006.
 
-gmtmath.c	GMT_scanf in decode_argument does not recognise file names when
-		they start with a digit [0-9].
+gmt_grdio.c	Should use GMT_getdatapath to find full pathname.
 
 gmt_init.c	The whole .gmtcommands4 history thing. Under Paul's OSX there
 		were issues in job08.csh where the order misfired. Long term:
