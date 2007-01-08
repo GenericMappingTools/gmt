@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.134 2006-12-06 18:13:50 remko Exp $
+ *	$Id: pslib.c,v 1.135 2007-01-08 02:24:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -365,6 +365,9 @@ void ps_clipoff (void) {
 	fprintf (ps.fp, "S U\n");
 	if (ps.comments) fprintf (ps.fp, "%% Clipping is currently OFF\n");
 	ps.npath = ps.clip_path_length = 0;
+	ps.rgb[0] = ps.rgb[1] = ps.rgb[2] = -1;	/* Reset to -1 so ps_setpaint will update the current paint */
+	ps.linewidth = -1;			/* Reset to -1 so ps_setline will update the current width */
+	ps.offset = -1;				/* Reset to -1 so ps_setdash will update the current pattern */
 }
 
 /* fortran interface */
