@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.187 2006-12-28 03:19:07 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.188 2007-01-10 19:43:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1864,7 +1864,13 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	if (project_info.region) {
 		GMT_world_map = FALSE;
 		GMT_outside_save = GMT_outside;
-		GMT_outside = GMT_wesn_outside_np;
+#ifdef _GENPER
+		if( project_info.projection != GMT_GENPER ) {
+#endif
+			GMT_outside = GMT_wesn_outside_np;
+#ifdef _GENPER
+		}
+#endif
 	}
 
 	w2 = (dx[1] > 0.0) ? floor (w / dx[1]) * dx[1] : 0.0;
