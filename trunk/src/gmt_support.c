@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.281 2007-01-04 18:10:34 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.282 2007-01-12 18:00:35 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2908,6 +2908,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 
 	switch (*side) {
 		case 0:	/* Southern boundary */
+			y0 = GMT_j_to_y (header->ny-1, header->y_min, header->y_max, header->y_inc, header->xy_off, header->ny);
 			for (i = i0, j = j0, ij = (ny - 1) * nx + i0; go_on && i < nx-1; i++, ij++) {
 				edge_word = ij / 32;
 				edge_bit = ij % 32;
@@ -2917,7 +2918,6 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
 					r = z[0] - z[1];
 					x0 = west + (i - z[1]/r)*dx + xinc2;
-					y0 = south + yinc2;
 					edge[edge_word] |= bit[edge_bit];
 					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 0, offset, i_off, j_off, k_off, p, bit, &nans);
 					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
@@ -2935,6 +2935,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 
 		case 1:		/* Eastern boundary */
 
+			x0 = GMT_i_to_x (0, header->x_min, header->x_max, header->x_inc, header->xy_off, header->nx);
 			for (j = j0, ij = nx * (j0 + 1) - 1, i = i0; go_on && j > 0; j--, ij -= nx) {
 				edge_word = ij / 32 + offset;
 				edge_bit = ij % 32;
@@ -2943,7 +2944,6 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 				if (GMT_z_periodic) GMT_setcontjump (z, 2);
 				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
 					r = z[1] - z[0];
-					x0 = east - xinc2;
 					y0 = north - (j - z[1]/r) * dy - yinc2;
 					edge[edge_word] |= bit[edge_bit];
 					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 1, offset, i_off, j_off, k_off, p, bit, &nans);
@@ -2962,6 +2962,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 
 		case 2:		/* Northern boundary */
 
+			y0 = GMT_j_to_y (0, header->y_min, header->y_max, header->y_inc, header->xy_off, header->ny);
 			for (i = i0, j = j0, ij = i0; go_on && i >= 0; i--, ij--) {
 				edge_word = ij / 32;
 				edge_bit = ij % 32;
@@ -2971,7 +2972,6 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
 					r = z[1] - z[0];
 					x0 = west + (i - z[0]/r)*dx + xinc2;
-					y0 = north - yinc2;
 					edge[edge_word] |= bit[edge_bit];
 					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 2, offset, i_off, j_off, k_off, p, bit, &nans);
 					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
@@ -2989,6 +2989,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 
 		case 3:		/* Western boundary */
 
+			x0 = GMT_i_to_x (header->nx-1, header->x_min, header->x_max, header->x_inc, header->xy_off, header->nx);
 			for (j = j0, ij = j * nx, i = i0; go_on && j < ny; j++, ij += nx) {
 				edge_word = ij / 32 + offset;
 				edge_bit = ij % 32;
@@ -2997,7 +2998,6 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 				if (GMT_z_periodic) GMT_setcontjump (z, 2);
 				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
 					r = z[0] - z[1];
-					x0 = west + xinc2;
 					y0 = north - (j - z[0] / r) * dy - yinc2;
 					edge[edge_word] |= bit[edge_bit];
 					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 3, offset, i_off, j_off, k_off, p, bit, &nans);
@@ -3014,7 +3014,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 			}
 			break;
 
-		case 4:	/* Then loop over interior boxes */
+		case 4:	/* Then loop over interior boxes (vertical edges) */
 
 			for (j = j0; go_on && j < ny; j++) {
 				ij = i0 + j * nx;
@@ -3046,8 +3046,48 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 				}
 				if (go_on) i0 = 1;
 			}
+			if (n == 0) {
+				i0 = 0;
+				j0 = 1;
+				(*side)++;
+			}
+			break;
+
+		case 5:	/* Then loop over interior boxes (horizontal edges) */
+
+			for (j = j0; go_on && j < ny; j++) {
+				ij = i0 + j * nx;
+				for (i = i0; go_on && i < nx-1; i++, ij++) {
+					edge_word = ij / 32 + offset;
+					z[0] = grd[ij];
+					z[1] = grd[ij+1];
+					edge_bit = ij % 32;
+					if (GMT_z_periodic) GMT_setcontjump (z, 2);
+					if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
+						r = z[1] - z[0];
+						x0 = west + (i - z[0]/r)*dx + xinc2;
+						y0 = north - j * dy - yinc2;
+						edge[edge_word] |= bit[edge_bit];
+						nans = 0;
+						n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 2, offset, i_off, j_off, k_off, p, bit, &nans);
+						if (nans) {	/* Must trace in other direction, then splice */
+							n2 = GMT_trace_contour (grd, header, x0, y0, edge, &x2, &y2, i-1, j, 0, offset, i_off, j_off, k_off, p, bit, &nans);
+							n = GMT_splice_contour (&x, &y, n, &x2, &y2, n2);
+							GMT_free ((void *)x2);
+							GMT_free ((void *)y2);
+						}
+						if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
+						n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
+						i0 = i + 1;
+						go_on = FALSE;
+						j0 = j;
+					}
+				}
+				if (go_on) i0 = 1;
+			}
 			if (n == 0) (*side)++;
 			break;
+			
 		default:
 			break;
 	}
@@ -3607,7 +3647,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 				else	/* Go to next point in line */
 					i++;
 			}
-			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gd|D option produced no contour labels\n", GMT_program);
+			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gd|D option produced no contour labels for z = %g\n", GMT_program, zval);
 
 		}
 		if (G->number) {	/* Place prescribed number of labels evenly along contours */
@@ -3665,7 +3705,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 				else	/* All in vain... */
 					GMT_free ((void *)new_label);
 			}
-			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gn|N option produced no contour labels\n", GMT_program);
+			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gn|N option produced no contour labels for z = %g\n", GMT_program, zval);
 		}
 		if (G->crossing) {	/* Determine label positions based on crossing lines */
 			int left, right, line_no;
@@ -3711,7 +3751,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 				GMT_x_free (&G->XC);
 			}
 			GMT_free ((void *)G->ylist);
-			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gx|X|l|L option produced no contour labels\n", GMT_program);
+			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gx|X|l|L option produced no contour labels for z = %g\n", GMT_program, zval);
 		}
 		if (G->fixed) {	/* Prescribed point locations for labels that match points in input records */
 			double dist, min_dist;
@@ -3744,7 +3784,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 				}
 			}
 
-			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gf option produced no contour labels\n", GMT_program);
+			if (G->n_label == 0 && gmtdefs.verbose) fprintf (stderr, "%s: Warning: Your -Gf option produced no contour labels for z = %g\n", GMT_program, zval);
 		}
 		GMT_contlabel_fixpath (&xx, &yy, map_dist, &nn, G);	/* Inserts the label x,y into path */
 		GMT_contlabel_addpath (xx, yy, nn, zval, label, TRUE, G);		/* Appends this path and the labels to list */
