@@ -3,7 +3,7 @@
 #define LEN 15
 #define SCALE \fB\-JM\fP15\fBc\fP
 .SH NAME
-triangulate \- Perform optimal Delauney triangulation and gridding
+triangulate \- Perform optimal Delauney triangulation and gridding of Cartesian data
 .SH SYNOPSIS
 \fBtriangulate\fP \fIinfiles\fP [ OPT(Dx)|\fBy\fP ] [ OPT(E)\fIempty\fP ] [ OPT(G)\fIgrdfile\fP ] 
 [ GMT_H_OPT ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ GMT_M_OPT ] 
