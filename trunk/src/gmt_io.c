@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.128 2007-01-04 17:11:11 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.129 2007-01-15 02:22:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2952,4 +2952,34 @@ void GMT_free_segment (struct GMT_LINE_SEGMENT *segment)
 	if (segment->label) GMT_free ((void *) segment->label);
 	if (segment->header) GMT_free ((void *) segment->header);
 	GMT_free ((void *)segment);
+}
+
+BOOLEAN GMT_not_numeric (char *text)
+{
+	/* TRUE if text does not represent a valid number  However, 
+	 * FALSE does not therefore mean we have a valid number because
+	 * <date>T<clock> representations may use all kinds
+	 * of punctuations or letters according to the various format
+	 * settings in .gmtdefaults4.  Here we just rule out things
+	 * that we are sure of. */
+	 
+	int i, n_digits = 0, n_period = 0, n_plus = 0, n_minus = 0;
+	
+	for (i = 0; text[i]; i++) {	/* Check each character */
+		/* First check for ASCII values that never appear in any number */
+		if (text[i] < 43) return (TRUE);	/* ASCII 0-42 */
+		if (text[i] == '\'' || text[i] == '/') return (TRUE);
+		if (text[i] > ':' && text[i] < 'D') return (TRUE);
+		if (text[i] > 'E' && text[i] < 'N') return (TRUE);
+		if (text[i] > 'N' && text[i] < 'S') return (TRUE);
+		if (text[i] > 'S' && text[i] < 'W') return (TRUE);
+		if (text[i] > 'W' && text[i] < 'd') return (TRUE);
+		if (text[i] > 'e') return (TRUE);
+		if (isdigit ((int)text[i])) n_digits++;
+		if (text[i] == '.') n_period++;
+		if (text[i] == '+') n_plus++;
+		if (text[i] == '-') n_minus++;
+	}
+	if (n_digits == 0 || n_period > 1 || (n_plus + n_minus) > 2) return (TRUE);
+	return (FALSE);	/* THis may in fact be numeric */
 }
