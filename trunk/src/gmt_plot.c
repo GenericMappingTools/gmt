@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.188 2007-01-10 19:43:52 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.189 2007-01-17 02:07:59 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -139,6 +139,7 @@ void GMT_define_PS_items (struct GMT_PLOT_AXIS *A, int below, int annotate);
 void GMT_define_baselines ();
 void GMT_geoplot (double lon, double lat, int pen);
 void GMT_geosegment (double lon1, double lat1, double lon2, double lat2);
+BOOLEAN set_do_seconds (double inc);
 
 /* Local variables to this file */
 
@@ -1884,7 +1885,8 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		if (dx[k] > 0.0 && (project_info.degree[0] || project_info.projection == GMT_POLAR)) {	/* Annotate the S and N boundaries */
 			done_Greenwich = done_Dateline = FALSE;
 			do_minutes = (fabs (fmod (dx[k], 1.0)) > GMT_SMALL);
-			do_seconds = (fabs (60.0 * fmod (fmod (dx[k], 1.0) * 60.0, 1.0)) >= 1.0);
+			do_seconds = set_do_seconds (dx[k]);
+			
 			nx = GMT_linear_array (w, e, dx[k], frame_info.axis[0].phase, &val);
 			for (i = 0; i < nx; i++) {	/* Worry that we do not try to plot 0 and 360 OR -180 and +180 on top of each other */
 				if (fabs (val[i]) < GMT_CONV_LIMIT) done_Greenwich = TRUE;		/* OK, want to plot 0 */
@@ -1915,7 +1917,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 
 			if (project_info.degree[1]) {
 				do_minutes = (fabs (fmod (dy[k], 1.0)) > GMT_SMALL);
-				do_seconds = (fabs (60.0 * fmod (fmod (dy[k], 1.0) * 60.0, 1.0)) >= 1.0);
+				do_seconds = set_do_seconds (dy[k]);
 				lonlat = 1;
 			}
 			else {	/* Also, we know that gmtdefs.degree_format = -1 in this case */
@@ -4572,4 +4574,11 @@ void GMT_draw_fence (double x[], double y[], double z, int n, struct GMT_FRONTLI
 		i++;
 	}
 	GMT_free ((void *)s);
+}
+
+BOOLEAN set_do_seconds (double inc)
+{	/* Determines if seconds are to be labelled based on size of increment */
+	if (GMT_plot_calclock.geo.n_sec_decimals > 0) return (TRUE);			/* If asked for ss.xxx annotations */
+	if (fabs (60.0 * fmod (fmod (inc, 1.0) * 60.0, 1.0)) >= 1.0) return (TRUE);	/* Multiples of >= 1 sec intervals */
+	return (FALSE);
 }
