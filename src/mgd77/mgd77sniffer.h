@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.15 2007-01-05 22:35:32 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.16 2007-01-29 21:11:17 mtchandl Exp $	
  *
  *	File:	mgd77sniffer.h
  *
@@ -24,6 +24,7 @@
 #define MGD77_DEG_TO_KM             (6371.0087714 * D2R)
 #define MGD77_NAV_PRECISION_KM		0.00111               /* km */
 #define MGD77_MAX_SPEED             10                    /* m/s */
+#define MGD77_MIN_SPEED             .01                   /* m/s */
 #define MGD77_MEDIAN_SPEED          4.7                   /* m/s */
 #define MGD77_MAX_DT                900                   /* sec */
 #define MGD77_MAX_DS                5                     /* km */
