@@ -1,5 +1,6 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77magref.h,v 1.4 2006-05-02 05:10:20 mtchandl Exp $	
+ *	$Id: mgd77magref.h,v 1.5 2007-01-30 18:32:34 pwessel Exp $	
+ *      See COPYING file for copying and redistribution conditions.
  *
  *	File:	mgd77magref.h
  *

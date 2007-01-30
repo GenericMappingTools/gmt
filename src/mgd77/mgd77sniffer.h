@@ -1,5 +1,6 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.16 2007-01-29 21:11:17 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.17 2007-01-30 18:32:34 pwessel Exp $	
+ *      See COPYING file for copying and redistribution conditions.
  *
  *	File:	mgd77sniffer.h
  *

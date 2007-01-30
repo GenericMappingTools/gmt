@@ -1,6 +1,7 @@
-	$Id: README.mgd77,v 1.12 2006-12-06 18:13:51 remko Exp $
+	$Id: README.mgd77,v 1.13 2007-01-30 18:32:34 pwessel Exp $
 
-README file for GMT supplemental mgd77 programs
+README file for GMT supplemental mgd77 programs.  The mgd77 supplement
+and all its files are distributed under the Gnu Public License.
 
 AUTHORS:	Paul Wessel and Michael Chandler
 DATE:		15-MAR-2006

@@ -1,5 +1,6 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77snifferdefaults.h,v 1.7 2006-04-30 07:16:37 mtchandl Exp $	
+ *	$Id: mgd77snifferdefaults.h,v 1.8 2007-01-30 18:32:34 pwessel Exp $	
+ *      See COPYING file for copying and redistribution conditions.
  *
  *	File:	mgd77snifferdefaults.h
  *
