@@ -1,7 +1,8 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77snifferdefaults.h,v 1.8 2007-01-30 18:32:34 pwessel Exp $	
+ *	$Id: mgd77snifferdefaults.h,v 1.9 2007-01-30 20:37:09 pwessel Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
+ *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
  *	File:	mgd77snifferdefaults.h
  *
  *	Include file for mgd77sniffer

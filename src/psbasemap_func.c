@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.6 2006-10-11 02:52:17 remko Exp $
+ *	$Id: psbasemap_func.c,v 1.7 2007-01-30 20:37:09 pwessel Exp $
  *
- *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.35 2006-12-05 04:30:53 pwessel Exp $
+ *	$Id: libspotter.c,v 1.36 2007-01-30 20:37:09 pwessel Exp $
  *
- *   Copyright (c) 1999-2006 by P. Wessel
+ *   Copyright (c) 1999-2007 by P. Wessel
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
