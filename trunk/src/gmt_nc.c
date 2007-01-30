@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.57 2007-01-04 22:35:49 remko Exp $
+ *	$Id: gmt_nc.c,v 1.58 2007-01-30 20:37:08 pwessel Exp $
  *
- *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

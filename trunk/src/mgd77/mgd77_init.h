@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77_init.h,v 1.1 2006-01-01 09:05:04 pwessel Exp $
+ *	$Id: mgd77_init.h,v 1.2 2007-01-30 20:37:09 pwessel Exp $
  *
- *    Copyright (c) 2005-2006 by P. Wessel
+ *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
  *
  *  File:	mgd77_init.h
