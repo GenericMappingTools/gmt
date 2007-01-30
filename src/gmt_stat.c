@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.42 2006-10-27 23:45:23 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.43 2007-01-30 20:37:08 pwessel Exp $
  *
- *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

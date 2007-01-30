@@ -1,4 +1,7 @@
-/*	$Id: gshhs.c,v 1.11 2006-11-12 04:57:13 pwessel Exp $
+/*	$Id: gshhs.c,v 1.12 2007-01-30 20:37:09 pwessel Exp $
+ *
+ *	Copyright (c) 1996-2007 by P. Wessel and W. H. F. Smith
+ *	See COPYING file for copying and redistribution conditions.
  *
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
@@ -14,9 +17,6 @@
  *		1.5 14-SEPT-2004: Updated to deal with latest GSHHS database (1.3)
  *		1.6 02-MAY-2006: Updated to deal with latest GSHHS database (1.4)
  *		1.7 11-NOV-2006: Fixed bug in computing level (&& vs &)
- *
- *	Copyright (c) 1996-2006 by P. Wessel and W. H. F. Smith
- *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
-/* $Id: gmt_imgsubs.c,v 1.2 2007-01-30 18:57:06 pwessel Exp $
+/* $Id: gmt_imgsubs.c,v 1.3 2007-01-30 20:37:09 pwessel Exp $
  *
- * Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
+ * Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  * See COPYING file for copying and redistribution conditions.
  *
  * gmt_imgsubs.c -- subroutines supporting the GMT supplement imgsrc,
