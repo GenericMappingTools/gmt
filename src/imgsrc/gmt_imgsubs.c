@@ -1,4 +1,7 @@
-/* $Id: gmt_imgsubs.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+/* $Id: gmt_imgsubs.c,v 1.2 2007-01-30 18:57:06 pwessel Exp $
+ *
+ * Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
+ * See COPYING file for copying and redistribution conditions.
  *
  * gmt_imgsubs.c -- subroutines supporting the GMT supplement imgsrc,
  * handling coordinate conversions for the "img" files created by

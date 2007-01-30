@@ -1,6 +1,8 @@
-	$Id: README.imgsrc,v 1.5 2006-04-11 22:33:41 pwessel Exp $
+	$Id: README.imgsrc,v 1.6 2007-01-30 18:57:06 pwessel Exp $
 
 Maintained by: W H F Smith
+All code files are explicitly distributed under the
+GNU Public License, see file COPYING for more details.
 
 ==> CHANGES IN GMT 4.1.2 <==
 
