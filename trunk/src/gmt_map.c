@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.127 2007-01-10 19:43:52 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.128 2007-01-30 03:13:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1425,11 +1425,17 @@ int GMT_map_init_stereo (void) {
 	else {
 		if (project_info.polar) {	/* Polar aspect */
 			if (project_info.north_pole) {
-				if (project_info.s < 0.0) project_info.s = 0.0;
+				if (project_info.s <= -90.0) {
+					fprintf (stderr, "%s: Error: South boundary cannot be -90.0 for north polar stereographic projection\n", GMT_program);
+					exit (EXIT_FAILURE);
+				}
 				if (project_info.n >= 90.0) project_info.edge[2] = FALSE;
 			}
 			else {
-				if (project_info.n > 0.0) project_info.n = 0.0;
+				if (project_info.n >= 90.0) {
+					fprintf (stderr, "%s: Error: North boundary cannot be +90.0 for south polar stereographic projection\n", GMT_program);
+					exit (EXIT_FAILURE);
+				}
 				if (project_info.s <= -90.0) project_info.edge[0] = FALSE;
 			}
 			if (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_CONV_LIMIT || fabs (project_info.e - project_info.w) < GMT_CONV_LIMIT) project_info.edge[1] = project_info.edge[3] = FALSE;
@@ -1933,11 +1939,17 @@ int GMT_map_init_lambeq (void) {
 	else {
 		if (project_info.polar) {	/* Polar aspect */
 			if (project_info.north_pole) {
-				if (project_info.s < 0.0) project_info.s = 0.0;
+				if (project_info.s <= -90.0){
+					fprintf (stderr, "%s: Error: South boundary cannot be -90.0 for north polar Lambert azimuthal projection\n", GMT_program);
+					exit (EXIT_FAILURE);
+				}
 				if (project_info.n >= 90.0) project_info.edge[2] = FALSE;
 			}
 			else {
-				if (project_info.n > 0.0) project_info.n = 0.0;
+				if (project_info.n >= 90.0) {
+					fprintf (stderr, "%s: Error: North boundary cannot be +90.0 for south polar Lambert azimuthal projection\n", GMT_program);
+					exit (EXIT_FAILURE);
+				}
 				if (project_info.s <= -90.0) project_info.edge[0] = FALSE;
 			}
 			if (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_CONV_LIMIT || fabs (project_info.e - project_info.w) < GMT_CONV_LIMIT) project_info.edge[1] = project_info.edge[3] = FALSE;
@@ -2017,11 +2029,17 @@ int GMT_map_init_ortho (void) {
 	else {
 		if (project_info.polar) {	/* Polar aspect */
 			if (project_info.north_pole) {
-				if (project_info.s < 0.0) project_info.s = 0.0;
+				if (project_info.s < 0.0) {
+					fprintf (stderr, "%s: Warning: South boundary cannot be < 0 for north polar orthographic projection (reset to 0)\n", GMT_program);
+					project_info.s = 0.0;
+				}
 				if (project_info.n >= 90.0) project_info.edge[2] = FALSE;
 			}
 			else {
-				if (project_info.n > 0.0) project_info.n = 0.0;
+				if (project_info.n > 0.0) {
+					fprintf (stderr, "%s: Warning: North boundary cannot be > 0 for south polar orthographic projection (reset to 0)\n", GMT_program);
+					project_info.n = 0.0;
+				}
 				if (project_info.s <= -90.0) project_info.edge[0] = FALSE;
 			}
 			if (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_CONV_LIMIT || fabs (project_info.e - project_info.w) < GMT_CONV_LIMIT) project_info.edge[1] = project_info.edge[3] = FALSE;
