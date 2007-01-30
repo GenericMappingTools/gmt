@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.11 2006-12-05 02:44:42 remko Exp $
+ *	$Id: gmt_mgg.c,v 1.12 2007-01-30 20:37:09 pwessel Exp $
  *
- *    Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
+ *    Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /*
