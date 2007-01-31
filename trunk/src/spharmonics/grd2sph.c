@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2sph.c,v 1.1 2006-05-26 01:45:44 pwessel Exp $
+ *	$Id: grd2sph.c,v 1.2 2007-01-31 21:51:04 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -141,8 +141,6 @@ int main (int argc, char **argv)
 	}
 
 	if (error) exit (EXIT_FAILURE);
-
-	GMT_put_history (argc, argv);	/* Update .gmtcommands4 */
 
 #ifdef SET_IO_MODE
 	GMT_setmode (GMT_OUT);

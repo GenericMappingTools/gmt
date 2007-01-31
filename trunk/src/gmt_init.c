@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.273 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.274 2007-01-31 21:51:03 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -36,9 +36,8 @@
  *	GMT_hash			Key - id lookup using hashing
  *	GMT_begin			Gets history and init parameters
  *	GMT_end				Cleans up and exits
- *	GMT_get_history			Read the .gmtcommands4 file
+ *	GMT_history			Read and update the .gmtcommands4 file
  *	GMT_putpen			Encode pen argument into textstring
- *	GMT_put_history			Writes updates to the .gmtcommands file
  *	GMT_parse_J_option		Scans the -Jstring to set projection
  *
  * The INTERNAL functions are:
@@ -118,7 +117,7 @@ EXTERN_MSC void GMT_grdio_init (void);	/* Defined in gmt_customio.c and only use
 
 int GMT_load_user_media (void);
 BOOLEAN true_false_or_error (char *value, int *answer);
-void GMT_get_history (int argc, char **argv);
+void GMT_history (int argc, char **argv);
 void GMT_prepare_3D (void);
 void GMT_free_plot_array(void);
 char *GMT_putpen (struct GMT_PEN *pen);
@@ -153,9 +152,6 @@ int GMT_parse_t_option (char *item);
 struct GMT_HASH hashnode[GMT_HASH_SIZE];
 BOOLEAN GMT_x_abs = FALSE, GMT_y_abs = FALSE;
 BOOLEAN GMT_got_frame_rgb;
-#ifdef OLD_HISTORY
-FILE *GMT_fp_history;	/* For .gmtcommands4 file */
-#endif
 struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
 	BOOLEAN got_old_plot_format;		/* TRUE if DEGREE_FORMAT was decoded */
 	BOOLEAN got_old_degree_symbol;		/* TRUE if DEGREE_FORMAT was decoded */
@@ -2982,7 +2978,7 @@ int GMT_begin (int argc, char **argv)
 	}
 	argc = j;
 
-	GMT_get_history (argc, argv);	/* Replace command shorthands */
+	GMT_history (argc, argv);	/* Process and store command shorthands */
 
 	GMT_getdefaults (this);
 
@@ -3165,13 +3161,7 @@ void GMT_set_home (void)
 	}
 }
 
-#ifndef OLD_HISTORY
-
-void GMT_put_history (int argc, char **argv)
-/* Temporary dummy routine */
-	{ return; }
-
-void GMT_get_history (int argc, char ** argv)
+void GMT_history (int argc, char ** argv)
 {
 	int i, j, k;
 	BOOLEAN need_xy = FALSE, overlay = FALSE, found_old, found_new, done = FALSE, new_unique = FALSE;
@@ -3195,8 +3185,8 @@ void GMT_get_history (int argc, char ** argv)
 	 * as possible so that commands down the pipe will see the new options
 	 * already have taken effect.
 	 *
-	 * In GMT 4.1.5 GMT_get_history and GMT_put_history got consolidated in an
-	 * attempt to lower the chances that in a pipe one program writes to .gmtcommands4
+	 * In GMT 4.1.5 GMT_get_history and GMT_put_history got consolidated into GMT_history
+	 * in an attempt to lower the chances that in a pipe one program writes to .gmtcommands4
 	 * while another is reading from it (despite the lock).
 	 */
 
@@ -3389,234 +3379,6 @@ void GMT_get_history (int argc, char ** argv)
 
 	fclose (fp);
 }
-#else
-void GMT_put_history (int argc, char **argv)
-{
-	/* GMT_put_history will update the .gmtcommands4
-	 * file and write out the common parameters.
-	 */
-
-	int i, j, k, found_new, found_old, old_k = -1;
-	BOOLEAN no_new_j = TRUE;
-#ifndef NO_LOCK
-	struct flock lock;
-#endif
-
-	if (!gmtdefs.history) return;	/* .gmtcommands4 mechanism has been disabled */
-
-	/* First check that -X -Y was done correctly */
-
-	if ((project_info.x_off_supplied && project_info.y_off_supplied) && GMT_x_abs != GMT_y_abs) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR: -X -Y must both be absolute or relative\n", GMT_program);
-		exit (EXIT_FAILURE);
-	}
-	if (GMT_x_abs && GMT_y_abs) GMT_ps.absolute = TRUE;
-
-	/* Ok, now update history, first rewind file pointer */
-
-	if (!GMT_fp_history) return;	/* There was no such file after all */
-
-	rewind (GMT_fp_history);
-
-	fprintf (GMT_fp_history, "# GMT common arguments shelf\n");
-
-	for (i = 0; i < GMT_N_UNIQUE; i++) {	/* Loop over GMT_unique_option parameters */
-
-		/* First see if an updated value exist for this common parameter */
-
-		for (j = 1, found_new = FALSE; !found_new && j < argc; j++) {
-			if (argv[j][0] != '-') continue;
-			if (GMT_unique_option[i][0] == 'J') /* Range of -J? options */
-				found_new = !strncmp (&argv[j][1], GMT_unique_option[i], 2);
-			else
-				found_new = (argv[j][1] == GMT_unique_option[i][0]);
-		}
-
-		if (found_new) { /* Need to store this updated value */
-			fprintf (GMT_fp_history, "%s\n", argv[j-1]);
-			if (GMT_unique_option[i][0] == 'J' && toupper((int)GMT_unique_option[i][1]) != 'Z') {	/* Make this the last -J? of any kind (except -JZ), identified by lower-case -j */
-				fprintf (GMT_fp_history, "-j%s\n", &argv[j-1][2]);
-				no_new_j = FALSE;
-			}
-		}
-		else  {	 	/* Need to find and store the old value if any */
-			for (k = 0, found_old = FALSE; !found_old && k < GMT_oldargc; k++) {
-				if (GMT_oldargv[k][0] != '-') continue;
-				if (no_new_j && GMT_oldargv[k][1] == 'j')	/* Old -j option*/
-					old_k = k;
-				else if (GMT_unique_option[i][0] == 'J') /* Range of -J? options */
-					found_old = !strncmp (&GMT_oldargv[k][1], GMT_unique_option[i], 2);
-				else
-					found_old = (GMT_oldargv[k][1] == GMT_unique_option[i][0]);
-			}
-
-			if (found_old)  /* Keep old value */
-				fprintf (GMT_fp_history, "%s\n", GMT_oldargv[k-1]);
-		}
-	}
-	if (no_new_j && old_k >= 0) fprintf (GMT_fp_history, "%s\n", GMT_oldargv[old_k]);	/* Write out old -j */
-	fprintf (GMT_fp_history, "EOF\n");	/* Logical end of file marker (since old file may be longer) */
-	fflush (GMT_fp_history);		/* To ensure all is written when lock is released */
-
-#ifndef NO_LOCK
-	lock.l_type = F_UNLCK;		/* Release lock and close file */
-	lock.l_whence = SEEK_SET;	/* These three apply lock to entire file */
-	lock.l_start = lock.l_len = 0;
-
-	if (fcntl (GMT_fd_history, F_SETLK, &lock)) {
-		fprintf (stderr, "%s: Error returned by fcntl [F_UNLCK]\n", GMT_program);
-		exit (EXIT_FAILURE);
-	}
-#endif
-
-	fclose (GMT_fp_history);
-}
-
-void GMT_get_history (int argc, char ** argv)
-{
-	int i, j;
-	BOOLEAN nothing_to_do = FALSE, need_xy = FALSE, overlay = FALSE, found, done;
-	char line[BUFSIZ], hfile[BUFSIZ], cwd[BUFSIZ];
-#ifndef NO_LOCK
-	struct flock lock;
-#endif
-
-	if (!gmtdefs.history) return;	/* .gmtcommands4 mechanism has been disabled */
-
-	/* Open .gmtcommands4 file and retreive old argv (if any)
-	 * This is tricky since GMT programs are often hooked together
-	 * with pipes so it actually has happened that the first program
-	 * is updating the .gmtdefaults4 file while the second tries to
-	 * read.  The result is that the second program often cannot expand
-	 * the shorthand and fails with error message.  In GMT 3.1 we introduced
-	 * Advisory File Locking and also update the .gmtcommands4 file as soon
-	 * as possible so that commands down the pipe will see the new options
-	 * already have taken effect.
-	 */
-
-	GMT_oldargc = 0;
-	for (i = 0; i < GMT_N_UNIQUE; i++) GMT_oldargv[i] = CNULL;
-
-	/* If current directory is writable, use it; else use the home directory */
-
-	(void) getcwd (cwd, BUFSIZ);
-	if (!access (cwd, W_OK)) 	/* Current directory is writable */
-		sprintf (hfile, ".gmtcommands4");
-	else 	/* Try home directory instead */
-		sprintf (hfile, "%s%c.gmtcommands4", GMT_HOMEDIR, DIR_DELIM);
-
-	if (access (hfile, R_OK)) {    /* No .gmtcommands4 file in chosen directory, try to make one */
-		if ((GMT_fp_history = fopen (hfile, "w")) == NULL) {
-			fprintf (stderr, "GMT Warning: Could not create %s [permission problem?]\n", hfile);
-			return;
-		}
-		nothing_to_do = TRUE;
-	}
-	else if ((GMT_fp_history = fopen (hfile, "r+")) == NULL) {
-		fprintf (stderr, "GMT Warning: Could not update %s [permission problem?]\n", hfile);
-		return;
-	}
-
-	/* When we get here the file exists */
-
-#ifndef NO_LOCK
-	/* now set exclusive lock */
-
-	lock.l_type = F_WRLCK;		/* Lock for [exclusive] reading/writing */
-	lock.l_whence = SEEK_SET;	/* These three apply lock to entire file */
-	lock.l_start = lock.l_len = 0;
-
-	GMT_fd_history = fileno (GMT_fp_history);	/* Get file descriptor */
-
-	if (fcntl (GMT_fd_history, F_SETLKW, &lock)) {	/* Will wait for file to be ready for reading */
-		fprintf (stderr, "%s: Error returned by fcntl [F_WRLCK]\n", GMT_program);
-		exit (EXIT_FAILURE);
-	}
-
-#endif
-
-	if (nothing_to_do) return;	/* No processing, use original args */
-
-	/* If we get here there is an old file to process */
-	/* Get the common arguments and copy them to array GMT_oldargv */
-
-	done = FALSE;
-	while (!done && fgets (line, BUFSIZ, GMT_fp_history)) {
-
-		if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments or blank lines */
-		if (!strncmp (line, "EOF", 3)) {	/* Logical end of .gmtcommands4 file */
-			done = TRUE;
-			continue;
-		}
-		if (line[0] != '-') continue;	/* Possibly reading old .gmtcommands4 format or junk */
-		line[strlen(line)-1] = 0;
-		GMT_oldargv[GMT_oldargc] = (char *) GMT_memory (VNULL, (size_t)(strlen (line) + 1), 1, "GMT");
-		strcpy (GMT_oldargv[GMT_oldargc], line);
-		GMT_oldargc++;
-		if (GMT_oldargc > GMT_N_UNIQUE) {
-			fprintf (stderr, "GMT Fatal Error: Failed while decoding common arguments\n");
-			exit (EXIT_FAILURE);
-		}
-	}
-
-	/* See if (1) We need abs/rel shift and (2) if we have an overlay */
-
-	for (i = 1; i < argc; i++) {
-		if (argv[i][0] != '-') continue;
-		if (argv[i][1] == 'X' || argv[i][1] == 'Y' || argv[i][1] == 'x' || argv[i][1] == 'y') need_xy = TRUE;
-		if (argv[i][1] == 'O' || argv[i][1] == 'o') overlay = TRUE;
-	}
-
-	overlay = (need_xy && overlay); /* -O means overlay only if -X or -Y has been specified */
-
-	/* Change x/y to upper case if no overlay and change X/Y to lower case if overlay */
-
-	for (i = 1; i < argc; i++) {
-		if (argv[i][0] != '-') continue;
-		if (overlay) {
-			if (argv[i][1] == 'X') argv[i][1] = 'x';
-			if (argv[i][1] == 'Y') argv[i][1] = 'y';
-		}
-		else {
-			if (argv[i][1] == 'x') argv[i][1] = 'X';
-			if (argv[i][1] == 'y') argv[i][1] = 'Y';
-		}
-	}
-
-	/* Loop over argv and merge argv and GMT_oldargv */
-
-	for (i = 1; i < argc; i++) {
-
-		/* Skip if filename or option has modifiers */
-
-		if (argv[i][0] != '-') continue;			/* Not an option argument */
-		if (argv[i][1] != 'J' && argv[i][2] != 0) continue;	/* 1-char option with modifier */
-		if (argv[i][1] == 'J' && argv[i][2] != 0 && argv[i][3] != 0) continue;	/* 2-char option with modifier */
-
-		for (j = 0, found = FALSE; !found && j < GMT_oldargc; j++) {
-			if (argv[i][1] == 'J' && argv[i][2] == '\0')	/* Given -J only, match with -j */
-				found = (GMT_oldargv[j][1] == 'j');
-			else if (argv[i][1] == 'J')			/* Given -J? */
-				found = (GMT_oldargv[j][1] == argv[i][1] && GMT_oldargv[j][2] == argv[i][2]);
-			else						/* All other options */
-				found = (GMT_oldargv[j][1] == argv[i][1]);
-		}
-		j--;
-
-		/* Skip if not found or GMT_oldargv has no modifiers */
-
-		if (!found) continue;
-
-		if (argv[i][1] != 'J' && GMT_oldargv[j][2] == 0) continue;
-		if (argv[i][1] == 'J' && GMT_oldargv[j][3] == 0) continue;
-
-		/* Here, GMT_oldargv has modifiers and argv don't, set pointer */
-
-		argv[i] = GMT_oldargv[j];
-		if (argv[i][1] == 'j') argv[i][1] = 'J';	/* Reset to upper case */
-	}
-}
-#endif
 
 void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
 
