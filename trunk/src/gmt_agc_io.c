@@ -1,4 +1,8 @@
-/*      $Id: gmt_agc_io.c,v 1.11 2006-11-20 01:10:31 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.12 2007-01-31 17:00:03 pwessel Exp $
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; version 2 of the License.
  *
  * Based on original code from Robert Helie.  That code was hard-wired
  * in two applications (gmt2agcgrd.c and agc2gmtgrd.c) based on GMT 3.4.

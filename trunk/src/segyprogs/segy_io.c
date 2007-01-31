@@ -4,10 +4,11 @@
 
 
 /*
- *	$Id: segy_io.c,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+ *	$Id: segy_io.c,v 1.2 2007-01-31 17:00:03 pwessel Exp $
  * segy_io.c:  A suite of functions to cover reading SEGY header variables.
  *
  * modified by T. Henstock from the PASSCAL software suite.
+ * From PASSCAL code base which is in the public domain
  *
  */
 

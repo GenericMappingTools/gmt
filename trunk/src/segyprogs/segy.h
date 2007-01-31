@@ -1,8 +1,9 @@
-/*	$Id: segy.h,v 1.2 2001-04-11 19:58:09 pwessel Exp $	*/
+/*	$Id: segy.h,v 1.3 2007-01-31 17:00:03 pwessel Exp $	*/
 #ifndef SEGY_H
 #define SEGY_H
 
 /* This is the header for the PASSCAL SEGY trace data.  
+ * From PASSCAL code base which is in the public domain
  *
  * The PASSCAL SEGY trace format is a modified form of the SEG-Y
  * trace format.  The modification comes is because we use some of
