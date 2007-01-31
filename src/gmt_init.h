@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.64 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.65 2007-01-31 21:51:03 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,7 +55,6 @@ EXTERN_MSC void GMT_init_fonts (int *n_fonts);
 EXTERN_MSC void GMT_init_scales (int unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name);
 EXTERN_MSC void GMT_label_syntax (int indent, int kind);
 EXTERN_MSC void GMT_pen_syntax (char option, char *string);
-EXTERN_MSC void GMT_put_history (int argc, char **argv);
 EXTERN_MSC void GMT_rgb_syntax (char option, char *string);
 EXTERN_MSC void GMT_set_home (void);
 EXTERN_MSC void GMT_set_measure_unit (char option, char unit);

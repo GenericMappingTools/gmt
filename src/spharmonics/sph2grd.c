@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.1 2006-05-26 01:45:44 pwessel Exp $
+ *    $Id: sph2grd.c,v 1.2 2007-01-31 21:51:04 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -198,8 +198,6 @@ int main (int argc, char **argv)
 	}
 
 	if (error) exit (EXIT_FAILURE);
-
-	GMT_put_history (argc, argv);	/* Update .gmtcommands4 */
 
 	if (n_files == 1 && (fp = GMT_fopen (argv[f_arg], GMT_io.r_mode)) == NULL) {
 		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, argv[f_arg]);

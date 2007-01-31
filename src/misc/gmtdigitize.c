@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.10 2007-01-30 20:37:09 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.11 2007-01-31 21:51:04 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -204,8 +204,6 @@ int main (int argc, char **argv)
 #endif
 	tcflush (digunit, TCIFLUSH);	/* Clean the muzzle */
 	
-	GMT_put_history (argc, argv);	/* Update .gmtcommands */
-
 #ifdef SET_IO_MODE
 	GMT_setmode (1);
 #endif
