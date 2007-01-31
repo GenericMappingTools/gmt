@@ -1,4 +1,6 @@
-	$Id: README.misc,v 1.5 2006-03-22 07:08:53 pwessel Exp $
+	$Id: README.misc,v 1.6 2007-01-31 17:00:03 pwessel Exp $
+
+Distributed under the GNU Public License (see file ../COPYING)
 
 This directory contains some miscellaneous programs
 that may come in handy for some users.

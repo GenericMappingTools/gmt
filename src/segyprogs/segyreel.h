@@ -1,5 +1,8 @@
-/* $Id: segyreel.h,v 1.2 2001-04-11 19:58:09 pwessel Exp $ */
-/* SEGY REEL HEADER VARIABLES */
+/* $Id: segyreel.h,v 1.3 2007-01-31 17:00:03 pwessel Exp $
+ *
+ * From PASSCAL code base which is in the public domain
+ * SEGY REEL HEADER VARIABLES
+ */
 typedef struct SEGYReel_header {
     int32_t        job;
     int32_t        line;

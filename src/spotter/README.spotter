@@ -1,6 +1,7 @@
-	$Id: README.spotter,v 1.4 2002-01-10 18:36:27 pwessel Exp $
+	$Id: README.spotter,v 1.5 2007-01-31 17:00:03 pwessel Exp $
 
 SPOTTER Supplemental Package
+Distributed under the GNU Public License (see file ../COPYING)
 
 ------------------------------------------------------
 Author:		Paul Wessel (pwessel@hawaii.edu)
