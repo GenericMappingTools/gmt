@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.19 2007-01-31 00:41:18 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.20 2007-01-31 01:40:43 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
@@ -29,6 +29,7 @@
 #define MGD77_MIN_SPEED             1                     /* m/s */
 #define MGD77_MEDIAN_SPEED          4.7                   /* m/s */
 #define MGD77_MAX_DT                900                   /* sec */
+#define MGD77_MIN_DS                0.1                   /* km */
 #define MGD77_MAX_DS                5                     /* km */
 #define MGD77_MAX_DUPLICATES        250
 #define MGD77_METERS_PER_FATHOM     (6 * 12 * 2.54 * 0.01)
