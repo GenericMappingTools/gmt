@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.18 2007-01-30 20:37:09 pwessel Exp $	
+ *	$Id: mgd77sniffer.h,v 1.19 2007-01-31 00:41:18 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
@@ -26,7 +26,7 @@
 #define MGD77_DEG_TO_KM             (6371.0087714 * D2R)
 #define MGD77_NAV_PRECISION_KM		0.00111               /* km */
 #define MGD77_MAX_SPEED             10                    /* m/s */
-#define MGD77_MIN_SPEED             .01                   /* m/s */
+#define MGD77_MIN_SPEED             1                     /* m/s */
 #define MGD77_MEDIAN_SPEED          4.7                   /* m/s */
 #define MGD77_MAX_DT                900                   /* sec */
 #define MGD77_MAX_DS                5                     /* km */
