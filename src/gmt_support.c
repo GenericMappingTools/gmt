@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.285 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.286 2007-01-31 23:45:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2989,7 +2989,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 
 		case 3:		/* Western boundary */
 
-			x0 = GMT_i_to_x (header->nx-1, header->x_min, header->x_max, header->x_inc, header->xy_off, header->nx);
+			x0 = GMT_i_to_x (0, header->x_min, header->x_max, header->x_inc, header->xy_off, header->nx);
 			for (j = j0, ij = j * nx, i = i0; go_on && j < ny; j++, ij += nx) {
 				edge_word = ij / 32 + offset;
 				edge_bit = ij % 32;
