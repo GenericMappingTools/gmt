@@ -1,4 +1,4 @@
-/*	$Id: utilstrain.c,v 1.4 2007-02-02 16:23:20 pwessel Exp $	*/
+/*	$Id: utilstrain.c,v 1.5 2007-02-02 16:25:38 pwessel Exp $
  *    Copyright (c) 1996-2007 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
