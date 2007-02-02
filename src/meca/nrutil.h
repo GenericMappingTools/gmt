@@ -1,4 +1,6 @@
-/*	$Id: nrutil.h,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
+/*	$Id: nrutil.h,v 1.3 2007-02-02 16:23:20 pwessel Exp $
+ *    Public Domain NR stuff.
+ */
 #ifndef _NR_UTILS_H_
 #define _NR_UTILS_H_
 

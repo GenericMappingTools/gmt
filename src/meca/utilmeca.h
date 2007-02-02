@@ -1,4 +1,9 @@
-/*	$Id: utilmeca.h,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
+/*	$Id: utilmeca.h,v 1.3 2007-02-02 16:23:20 pwessel Exp $
+ *    Copyright (c) 1996-2007 by G. Patau
+ *    Distributed under the GNU Public Licence
+ *    See README file for copying and redistribution conditions.
+ */
+
 void get_trans (double slon,double slat,double *t11,double *t12,double *t21,double *t22);
 double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], int ergb[3], BOOLEAN outline);
 double ps_meca(double x0,double y0,st_me meca,double size);

@@ -1,4 +1,9 @@
-/*	$Id: utilmeca.c,v 1.6 2006-12-05 04:30:53 pwessel Exp $	*/
+/*	$Id: utilmeca.c,v 1.7 2007-02-02 16:23:20 pwessel Exp $
+ *    Copyright (c) 1996-2007 by G. Patau
+ *    Distributed under the GNU Public Licence
+ *    See README file for copying and redistribution conditions.
+ */
+
 #include "gmt.h"	/* to have gmt environment */
 #include "pslib.h"	/* to have pslib environment */
 #include "meca.h"

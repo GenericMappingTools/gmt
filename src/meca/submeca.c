@@ -1,4 +1,9 @@
-/*	$Id: submeca.c,v 1.5 2006-12-05 04:30:53 pwessel Exp $	*/
+/*	$Id: submeca.c,v 1.6 2007-02-02 16:23:20 pwessel Exp $
+ *    Copyright (c) 1996-2007 by G. Patau
+ *    Distributed under the GNU Public Licence
+ *    See README file for copying and redistribution conditions.
+ */
+
 #include "gmt.h"
 #include "meca.h"
 
