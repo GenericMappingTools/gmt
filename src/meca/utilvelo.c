@@ -1,4 +1,9 @@
-/*	$Id: utilvelo.c,v 1.4 2005-03-04 21:00:54 remko Exp $	*/
+/*	$Id: utilvelo.c,v 1.5 2007-02-02 16:23:20 pwessel Exp $
+ *    Copyright (c) 1996-2007 by G. Patau
+ *    Distributed under the GNU Public Licence
+ *    See README file for copying and redistribution conditions.
+ */
+
 #include "gmt.h"	/* to have gmt environment */
 #include "pslib.h"	/* to have pslib environment */
 #include <math.h>
