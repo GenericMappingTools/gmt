@@ -1,6 +1,7 @@
-/*	$Id: gmt_mgg_header2.c,v 1.17 2007-01-03 18:02:37 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.18 2007-02-02 04:14:03 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
+ *	Distributed under the GNU Public License (see COPYING for details)
  *	This is the README file:
  ------------------------------------------------------------------------
  Adding MGG file format to GMT

@@ -1,10 +1,10 @@
-/*      $Id: gmt_agc_io.c,v 1.12 2007-01-31 17:00:03 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.13 2007-02-02 04:14:03 pwessel Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; version 2 of the License.
  *
- * Based on original code from Robert Helie.  That code was hard-wired
+ * Rewritten from original code from Robert Helie.  That code was hard-wired
  * in two applications (gmt2agcgrd.c and agc2gmtgrd.c) based on GMT 3.4.
  * The following code is modified to fit within the gmt_customio style
  * and argument passing.  Note that AGC files are assumed to be gridline-
