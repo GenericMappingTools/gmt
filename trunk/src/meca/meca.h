@@ -1,4 +1,9 @@
-/*	$Id: meca.h,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
+/*	$Id: meca.h,v 1.3 2007-02-02 16:23:20 pwessel Exp $
+ *    Copyright (c) 1996-2001 by G. Patau
+ *    Distributed under the GNU Public Licence
+ *    See README file for copying and redistribution conditions.
+ */
+
 #include <stdio.h>
 #include <math.h>
 

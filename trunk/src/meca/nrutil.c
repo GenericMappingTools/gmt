@@ -1,4 +1,7 @@
-/*	$Id: nrutil.c,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
+/*	$Id: nrutil.c,v 1.3 2007-02-02 16:23:20 pwessel Exp $
+ *    Public Domain NR stuff.
+ */
+ 
 #define _POSIX_SOURCE 1
 
 #include <stdio.h>

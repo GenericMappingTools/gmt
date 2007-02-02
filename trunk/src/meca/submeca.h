@@ -1,4 +1,9 @@
-/*	$Id: submeca.h,v 1.2 2000-12-29 22:10:37 pwessel Exp $	*/
+/*	$Id: submeca.h,v 1.3 2007-02-02 16:23:20 pwessel Exp $
+ *    Copyright (c) 1996-2007 by G. Patau
+ *    Distributed under the GNU Public Licence
+ *    See README file for copying and redistribution conditions.
+ */
+
 void rot_axis(struct AXIS A,struct nodal_plane PREF,struct AXIS *Ar);
 void rot_tensor(struct M_TENSOR mt,struct nodal_plane PREF,struct M_TENSOR *mtr);
 void rot_meca(st_me meca,struct nodal_plane PREF,st_me *mecar);
