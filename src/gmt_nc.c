@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.58 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_nc.c,v 1.59 2007-02-03 22:48:23 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -132,7 +132,6 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	double dummy[2], *xy = VNULL;
 	char varname[GRD_UNIT_LEN];
 	nc_type z_type;
-	float *tmp = VNULL;
 	double t_value[3];
 
 	/* Dimension ids, variable ids, etc.. */
@@ -220,11 +219,12 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	}
 	else {
 		/* Define dimensions of z variable */
+#define NC_FLOAT_OR_DOUBLE(xmin, xmax, dx) ((dx) < GMT_SMALL * MAX(abs(xmin),abs(xmax)) ? NC_DOUBLE : NC_FLOAT)
 		ndims = 2;
 		check_nc_status (nc_def_dim (ncid, "x", (size_t) header->nx, &dims[1]));
-		check_nc_status (nc_def_var (ncid, "x", NC_FLOAT, 1, &dims[1], &ids[1]));
+		check_nc_status (nc_def_var (ncid, "x", NC_FLOAT_OR_DOUBLE(header->x_min, header->x_max, header->x_inc), 1, &dims[1], &ids[1]));
 		check_nc_status (nc_def_dim (ncid, "y", (size_t) header->ny, &dims[0]));
-		check_nc_status (nc_def_var (ncid, "y", NC_FLOAT, 1, &dims[0], &ids[0]));
+		check_nc_status (nc_def_var (ncid, "y", NC_FLOAT_OR_DOUBLE(header->y_min, header->y_max, header->y_inc), 1, &dims[0], &ids[0]));
 
 		switch (GMT_grdformats[header->type][1]) {
 			case 'b':
@@ -366,17 +366,17 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 
 		/* Store values along x and y axes */
 		check_nc_status (nc_enddef (ncid));
-		tmp = (float *) GMT_memory (VNULL, (size_t) MAX (header->nx,header->ny), sizeof (float), "GMT_nc_grd_info");
-		for (i = 0; i < header->nx; i++) tmp[i] = (float) GMT_i_to_x (i, header->x_min, header->x_max, header->x_inc, 0.5 * header->node_offset, header->nx);
-		check_nc_status (nc_put_var_float (ncid, ids[ndims-1], tmp));
+		xy = (double *) GMT_memory (VNULL, (size_t) MAX (header->nx,header->ny), sizeof (double), "GMT_nc_grd_info");
+		for (i = 0; i < header->nx; i++) xy[i] = (double) GMT_i_to_x (i, header->x_min, header->x_max, header->x_inc, 0.5 * header->node_offset, header->nx);
+		check_nc_status (nc_put_var_double (ncid, ids[ndims-1], xy));
 		if (header->y_order > 0) {
-			for (i = 0; i < header->ny; i++) tmp[i] = (float) GMT_i_to_x (i, header->y_min, header->y_max, header->y_inc, 0.5 * header->node_offset, header->ny);
+			for (i = 0; i < header->ny; i++) xy[i] = (double) GMT_i_to_x (i, header->y_min, header->y_max, header->y_inc, 0.5 * header->node_offset, header->ny);
 		}
 		else {
-			for (i = 0; i < header->ny; i++) tmp[i] = (float) GMT_j_to_y (i, header->y_min, header->y_max, header->y_inc, 0.5 * header->node_offset, header->ny);
+			for (i = 0; i < header->ny; i++) xy[i] = (double) GMT_j_to_y (i, header->y_min, header->y_max, header->y_inc, 0.5 * header->node_offset, header->ny);
 		}
-		check_nc_status (nc_put_var_float (ncid, ids[ndims-2], tmp));
-		GMT_free ((void *)tmp);
+		check_nc_status (nc_put_var_double (ncid, ids[ndims-2], xy));
+		GMT_free ((void *)xy);
 	}
 
 	/* Close NetCDF file, unless job == 'W' */
