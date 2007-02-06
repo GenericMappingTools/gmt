@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.275 2007-02-06 17:56:25 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.276 2007-02-06 18:05:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5029,14 +5029,18 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 		char s_upper;
 		n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 		s_upper = (char)toupper ((int)symbol_type);
-		if (!(s_upper == 'V' || s_upper == 'Q'))
+		if (s_upper == 'F' || s_upper == 'V' || s_upper == 'Q') {	/* "Symbols" that dont take normal symbol size */
+			p->size_y = p->given_size_y = 0.0;
+		}
+		else {
 			p->size_x = p->given_size_x = GMT_convert_units (txt_a, GMT_INCH);
-		if (n == 3)
-			p->size_y = p->given_size_y = GMT_convert_units (txt_b, GMT_INCH);
-		else if (n == 2)
-			p->size_y = p->given_size_y = p->size_x;
-		else
-			decode_error = TRUE;
+			if (n == 3)
+				p->size_y = p->given_size_y = GMT_convert_units (txt_b, GMT_INCH);
+			else if (n == 2)
+				p->size_y = p->given_size_y = p->size_x;
+			else
+				decode_error = TRUE;
+		}
 		p->equal_area = FALSE;
 	}
 
