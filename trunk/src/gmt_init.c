@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.276 2007-02-06 18:05:15 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.277 2007-02-07 15:50:08 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4907,7 +4907,7 @@ void GMT_prepare_3D (void) {	/* Initialize 3-D parameters */
 int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN cmd)
 {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz) */
-	int decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon, nz;
+	int decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon;
 	BOOLEAN check, old_style;
 	char symbol_type, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], text_cp[GMT_LONG_TEXT], *c;
 	static char *allowed_symbols[2] = {"-aAbCcDdeEfGgHhIijJNnpqrSsTtVvwWxy", "-aAbCcDdeEfGgHhIijJNnoOpqrSsTtuUVvwWxy"};
@@ -5256,14 +5256,12 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 			p->convert_angles = 1;
 		case 'v':
 			p->symbol = GMT_SYMBOL_VECTOR;
-			nz = 0;
 			switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
 				case 'S':	/* Input (x,y) refers to vector head (the tip), double heads */
 					p->v_double_heads = TRUE;
 				case 's':	/* Input (x,y) refers to vector head (the tip), single head  */
 					p->v_just = 3;
 					one = 2;
-					nz = 1;
 					break;
 				case 'H':	/* Input (x,y) refers to vector head (the tip), double heads */
 					p->v_double_heads = TRUE;
@@ -5320,7 +5318,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 			}
 			if (p->symbol == GMT_SYMBOL_VECTOR2) text[j] = 'n';	/* Put back the n<shrink> part */
 			p->read_vector = TRUE;
-			p->n_required = 2 + nz;
+			p->n_required = 2;
 			check = FALSE;
 			break;
 		case 'W':
