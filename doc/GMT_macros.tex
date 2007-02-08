@@ -1,44 +1,97 @@
+\usepackage{ifpdf}
+\usepackage{graphicx}
+\usepackage{makeidx}
+\usepackage{a4wide}
+\usepackage{float}
+\usepackage{GMT}
+\usepackage{times}
+\usepackage{color}
+\usepackage{mathptmx}
+\usepackage{verbatim}
+\usepackage{tocbibind}
+\usepackage{html}% Implies \usepackage{hyperref}
 
 \input{GMT_version}
 
 \ifpdf
-%  \usepackage[pdftex, linkbordercolor={1 1 0}, bookmarksnumbered=true,
-%  boolmarksopenlevel=3, urlbordercolor={1 0 0}]{hyperref}
-  \usepackage[pdftex]{hyperref}
-  \pdfcompresslevel=9
-  \DeclareGraphicsExtensions{.pdf}
-
- \hypersetup{%
-    pdftitle={The Generic Mapping Tools Version \GMTDOCVERSION---\GMTTITLE},
-    pdfauthor={Paul Wessel,  Walter H. F. Smith},
-    pdfkeywords={GMT, projections, mapping},
-    bookmarksopen=true,
-    bookmarksnumbered,
-    %pdfstartview={FitH},
-    %linkbordercolor={1 1 0},
-    %urlbordercolor={1 0 0},
-  }%
-
+   % Here for creating PDF output with pdfLaTeX
+   \pdfcompresslevel=9
+   \DeclareGraphicsExtensions{.pdf}
+   \hypersetup{%
+      pdfauthor={Paul Wessel, Walter H. F. Smith},
+      pdftitle={The Generic Mapping Tools Version \GMTDOCVERSION---\GMTTITLE},
+      pdfsubject={GMT: Generic Mapping Tools},
+      pdfkeywords={GMT, projections, mapping},
+      pdfcreator={pdfLaTeX},
+      bookmarksopen=true,
+      bookmarksnumbered=true,
+      hypertexnames=true,
+      breaklinks=true,
+      %pdfstartview={FitH},
+      %linkbordercolor={1 1 0},
+      %urlbordercolor={1 0 0},
+   }%
+   \newcommand{\GMT}{\textit{GMT}}
+   \newcommand{\GMTprogi}[1]{\htmladdnormallink{\textsfbf{#1}}{../html/#1.html}}
 \else
+   % Here for creating PS or HTML output with LaTeX
    \DeclareGraphicsExtensions{.eps}
+   \newcommand{\GMT}{\htmladdnormallink{\includegraphics{eps/GMT_glyph10.eps}}{http://gmt.soest.hawaii.edu}}
+   \newcommand{\GMTprogi}[1]{\htmladdnormallink{\textsfbf{#1}}{../#1.html}}
 \fi
 
-\input{GMT_device}
+\pagecolor{white}
 
 % GMTfig will insert an eps file, add a label, and set a caption
-\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1] \centering \includegraphics{eps/#2} \caption{#3} \label{fig:#2}  \end{figure}}
+\newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1]\centering\includegraphics{scripts/#2}\caption{#3}\label{fig:#2}\end{figure}}
+% Same for examples (scales by 50% by default)
+\newcommand{\GMTexample}[3][scale=0.5]{\begin{figure}[ht]\centering\includegraphics[#1]{scripts/example_#2}\caption{#3}\label{fig:GMT_example_#2}\end{figure}}
 
 \newcommand{\PS}{\textit{PostScript}}
 \newcommand{\UNIX}{\textit{UNIX}}
+\newcommand{\id}[1]{#1\index{#1}}
 
-\ifpdf
-\newcommand{\GMTprog}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../html/#1.html}\index{#1@{\textsf{\textbf{#1}}}}}
-\newcommand{\GMTprogi}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../html/#1.html}}
-\else
-\newcommand{\GMTprog}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../#1.html}\index{#1@{\textsf{\textbf{#1}}}}}
-\newcommand{\GMTprogi}[1]{\htmladdnormallink{{\textsf{\textbf{#1}}}}{../#1.html}}
-\fi
+\newcommand{\textsfbf}[1]{{\sffamily\bfseries #1\/}}
+\newcommand{\textslbf}[1]{{\slshape\bfseries #1\/}}
 
-\newcommand{\GMTfunc}[1]{{\tt {#1}}}
+\newcommand{\GMTprog}[1]{\GMTprogi{#1}\index{#1@\textsfbf{#1}}}
+
+\newcommand{\script}[1]{%
+   \begingroup
+   \scriptsize\vspace{0.25\baselineskip}\noindent\hrulefill\vspace{-0.75\baselineskip}%
+   \verbatiminput{scripts/#1.tex}%
+   \vspace{-1.25\baselineskip}\noindent\hrulefill\vspace{0.25\baselineskip}%
+   \endgroup
+}
+
+\newcommand{\GMTfunc}[1]{\texttt{#1}}
 \newcommand{\filename}[1]{\underline{#1}}
-\newcommand{\gmt}{\htmladdnormallink{\textbf{GMT}}{http://gmt.soest.hawaii.edu}}
+
+\setcounter{topnumber}{2}
+\renewcommand{\topfraction}{.8}
+\setcounter{bottomnumber}{1}
+\renewcommand{\bottomfraction}{.7}
+\setcounter{totalnumber}{3}
+\renewcommand{\textfraction}{.2}
+\renewcommand{\floatpagefraction}{.7}
+
+\sloppy
+
+\newcommand{\DS}{$^{\circ}$}
+\newcommand{\PM}{$\pm$}
+\newcommand{\progname}[1]{\textslbf{#1}\index{#1@\textslbf{#1}}}
+\newcommand{\Opt}[1]{\textbf{--#1}}
+\newcommand{\gmt}{\href{http://gmt.soest.hawaii.edu}{\textbf{GMT}}}
+
+% Now overrule a few things for running LaTeX2HTML.
+% Note that we need \gdef because they are inside an environment and would otherwise be local to
+% that.
+\begin{htmlonly}
+   \gdef\GMT{\htmladdnormallink{\textbf{GMT}}{http://gmt.soest.hawaii.edu}}
+   \gdef\gmt{\GMT}
+   \gdef\script#1{\htmlrule\verbatiminput{scripts/#1.tex}\htmlrule}
+   \gdef\DS{°}
+   \gdef\Opt#1{\textbf{-#1}}
+   \gdef\PM{±}
+   \gdef\progname#1{\textit{#1}\index{#1@\textit{#1}}}
+\end{htmlonly}
