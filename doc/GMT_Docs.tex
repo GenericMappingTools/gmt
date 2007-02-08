@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Docs.tex,v 1.5 2007-01-30 20:37:08 pwessel Exp $
+%       $Id: GMT_Docs.tex,v 1.6 2007-02-08 22:26:55 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2007.
@@ -10,44 +10,26 @@
 % files with GMT documentation.  It is the master
 % file that sets up the general layout of the book
 
-
 \documentclass{report}
-
-\usepackage{ifpdf}
-\usepackage{graphicx}
-\usepackage{makeidx}
-\usepackage{a4wide}
-\usepackage{float}
-\usepackage{html}
-\usepackage{GMT}
-\usepackage{times}
-\usepackage{color}
-\usepackage{mathptm}
 \newcommand{\GMTTITLE}{Technical Reference and Cookbook}
 \input{GMT_macros}
-
-%--------------------------------------------------------------------------
-
-\pagecolor{white}
-
 \makeindex
 
+%--------------------------------------------------------------------------
 \begin{document}
-\pagenumbering{roman}
 
+\pagenumbering{roman}
 \input{GMT_Cover}
+\addcontentsline{toc}{chapter}{Front page}
 \clearpage
 
 \pagestyle{plain}
-\addcontentsline{toc}{chapter}{Contents}
 \tableofcontents
 
 \clearpage
-\addcontentsline{toc}{chapter}{List of tables}
 \listoftables
 
 \clearpage
-\addcontentsline{toc}{chapter}{List of figures}
 \listoffigures
 
 \include{GMT_Frontmatter}
@@ -82,6 +64,8 @@
 \include{GMT_Appendix_O}
 \include{GMT_Appendix_P}
 
+\clearpage
+\thispagestyle{headings}
 \printindex
 
 \end{document}
