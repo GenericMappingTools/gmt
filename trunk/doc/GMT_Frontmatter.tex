@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Frontmatter.tex,v 1.31 2007-01-30 20:37:08 pwessel Exp $
+%       $Id: GMT_Frontmatter.tex,v 1.32 2007-02-08 22:36:16 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2007.
@@ -70,74 +70,21 @@ Honolulu, HI and Silver Spring, MD, \GMTDOCDATE
 \end{flushright}
 \vspace{\baselineskip}
 
-\begin{center}
-\small
-\begin{tabular}{lr}
-%\epsfig{figure=eps/Wessel.eps} &       \epsfig{figure=eps/Smith.eps} \\
+
+\begin{center}\small
+\begin{tabular}{l@{\hspace{0.5in}}r}
 \includegraphics{eps/Wessel}    &       \includegraphics{eps/Smith} \\
-\normalsize \htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/pwessel} & \normalsize \htmladdnormallink{{\textbf {Dr. Walter H. F. Smith}}}{mailto:walter@raptor.grdl.noaa.gov} \\
+\normalsize \htmladdnormallink{\textbf{Dr. P\aa{}l (Paul) Wessel}}{http://www.soest.hawaii.edu/pwessel} &
+\normalsize \htmladdnormallink{\textbf{Dr. Walter H. F. Smith}}{mailto:walter.hf.smith@noaa.gov} \\
 Professor & Geophysicist \\
-\htmladdnormallink{Department of Geology and Geophysics}{http://www.soest.hawaii.edu/GG} & \htmladdnormallink{Laboratory for Satellite Altimetry}{http://www.grdl.noaa.gov} \\
-\htmladdnormallink{School of Ocean and Earth Science and Technology}{http://www.soest.hawaii.edu} & \htmladdnormallink{National Oceanographic Data Center}{http://www.nodc.noaa.gov} \\
-\htmladdnormallink{University of Hawaii at Manoa}{http://www.hawaii.edu} & \htmladdnormallink{National Oceanic and Atmospheric Administration}{http://www.noaa.gov} \\
-\normalsize
+\htmladdnormallink{Department of Geology and Geophysics}{http://www.soest.hawaii.edu/GG} &
+\htmladdnormallink{Laboratory for Satellite Altimetry}{http://www.grdl.noaa.gov} \\
+\htmladdnormallink{School of Ocean and Earth Science and Technology}{http://www.soest.hawaii.edu} &
+\htmladdnormallink{National Oceanographic Data Center}{http://www.nodc.noaa.gov} \\
+\htmladdnormallink{University of Hawaii at Manoa}{http://www.hawaii.edu} & \htmladdnormallink{National Oceanic and
+Atmospheric Administration}{http://www.noaa.gov} \\
 \end{tabular}
 \end{center}
-
-% HORIZONTAL MUGSHOTS FOR LATEX
-
-%\begin{latexonly}
-%\noindent
-%\frame{\epsfig{figure=eps/Wessel.eps}}
-%\hfill
-%\frame{\epsfig{figure=eps/Smith.eps}}
-%\par
-%\vspace{0.5\baselineskip}
-%\noindent
-%\htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/pwessel}
-%\hfill \htmladdnormallink{{\textbf {Dr. Walter H. F. Smith}}}{mailto:walter@raptor.grdl.noaa.gov} \\
-%\small
-%\noindent
-%Professor \hfill Geophysicist \\
-%Department of Geology and Geophysics \hfill Laboratory for Satellite Altimetry \\
-%School of Ocean and Earth Science and Technology \hfill National Oceanographic Data Center \\
-%University of Hawaii at Manoa \hfill National Oceanic and Atmospheric Administration \\
-%\normalsize
-%\end{latexonly}
-
-% VERTICAL MUGSHOTS FOR HTML
-
-%\begin{htmlonly}
-%\noindent
-%\epsfig{figure=eps/Wessel.eps}
-%\par
-%\vspace{0.5\baselineskip}
-%\noindent
-%\htmladdnormallink{{\textbf {Dr. P\aa l (Paul) Wessel}}}{http://www.soest.hawaii.edu/pwessel} \\
-%\small
-%\noindent
-%Professor \\
-%\htmladdnormallink{Department of Geology and Geophysics}{http://www.soest.hawaii.edu/GG} \\
-%\htmladdnormallink{School of Ocean and Earth Science and Technology}{http://www.soest.hawaii.edu} \\
-%\htmladdnormallink{University of Hawaii at Manoa}{http://www.hawaii.edu} \\
-%\normalsize
-
-%\noindent
-%\frame{\epsfig{figure=eps/Smith.eps}}
-%\par
-%\vspace{0.5\baselineskip}
-%\noindent
-%\htmladdnormallink{{\textbf {Dr. Walter H. F. Smith}}}{mailto:walter@raptor.grdl.noaa.gov} \\
-%\small
-%\noindent
-%Geophysicist \\
-%\htmladdnormallink{Laboratory for Satellite Altimetry}{http://www.grdl.noaa.gov} \\
-%\htmladdnormallink{National Oceanographic Data Center}{http://www.nodc.noaa.gov} \\
-%\htmladdnormallink{National Oceanic and Atmospheric Administration}{http://www.noaa.gov} \\
-%\normalsize
-
-%\end{htmlonly}
-
 
 %------------------------GMT DOCUMENTATION PROJECT---------------------------
 
@@ -289,17 +236,14 @@ the typographic conventions used in this document.
 \begin{enumerate}
 
 \item User input and \GMT\ or \UNIX\ commands are indicated by
-using the \texttt{typewriter} type style, e.g.,
-\texttt{chmod +x job03.csh}.
+using the \texttt{typewriter} type style, e.g., \texttt{chmod +x job03.csh}.
 
 \item The names of \GMT\ programs are indicated by the
-\textsf{\textbf{bold, sans serif}} type style, e.g.,
-we plot text with \textsf{\textbf{pstext}}.
+\textsfbf{bold, sans serif} type style, e.g., we plot text with \textsfbf{pstext}.
 
 \begin{latexonly}
 \item The names of other programs are indicated by the
-\textsl{\textbf{bold, slanted}} type style, e.g.,
-\textsl{\textbf{grep}}.
+\textslbf{bold, slanted} type style, e.g., \textslbf{grep}.
 \end{latexonly}
 \begin{htmlonly}
 \item The names of other programs are indicated by the
