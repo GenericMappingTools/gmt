@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_C.tex,v 1.13 2007-01-30 20:37:07 pwessel Exp $
+%	$Id: GMT_Appendix_C.tex,v 1.14 2007-02-08 22:29:06 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -7,11 +7,25 @@
 %------------------------------------------
 %
 
-\chapter{Making \gmt\ Encapsulated \PS\ Files}
-\label{app:C}
-\index{PostScript@\PS!encapsulated (EPS)}
-\index{EPS file}
+\chapter{Including \gmt\ graphics into your documents}
 \thispagestyle{headings}
+\label{app:C}
+\index{GMT@\GMT!graphics in documents}
+\index{documents!include GMT@\GMT graphics}
+
+Now that you made some nice graphics with \GMT, it is time to add them to a document, an article, a report, your dissertation, a poster, a web page, or a presentation. Of course, you could try the old-fashioned scissors and glue stick. More likely, you want to incorporate your graphics electronically into the document. Depending on the application, the \GMT\ \PS\ file will need to be converted to Encapsulated \PS\ (EPS), PDF, or some raster format in order to incorporate them into the document.
+\begin{itemize}
+\item When creating a document intended for printing (article, dissertation, or poster) it is best to preserve the scalable vector characteristics of the \PS\ file. Many applications can directly incorporate \PS\ in the form of EPS files. Modern programs will often allow the inclusion of PDF files. Either way, the sharpness of lines and fonts will be preserved and can be scaled up or down as required.
+\item When the aim is to display the graphics on a computer screen or project it using a computer projector, it is wise to convert the \PS\ into a raster format (e.g., JPG, PNG, TIFF). Although applications like \progname{PowerPoint} can do this for you, you can best take the conversion into your own hands for the best results.
+\end{itemize} 
+This Chapter will give some examples of incorporation of \GMT\ graphics into documents and how to achieve the best quality results.
+
+\section{Making \gmt\ Encapsulated \PS\ and PDF Files}
+\index{PostScript@\PS!encapsulated (EPS)}
+\index{PostScript@\PS!convert to PDF}
+\index{PostScript@\PS!BoundingBox}
+\index{EPS file}
+\index{PDF file}
 
 \GMT\ can produce both freeform \PS\ files and the more
 restricted Encapsulated \PS\ files (EPS).  The former is
@@ -24,73 +38,95 @@ page for how this is accomplished).  Note that a freeform \PS\
 file may contain special operators (such as \texttt{Setpagedevice})
 that is specific to printers (e.g., selection of paper tray).
 Some previewers (among them, Sun's \progname{pageview}) do not
-understand these valid instructions and may fail to image the file.
-If this is your situation you should choose another viewer (we
-recommend \progname{ghostview}) or select EPS output instead.
+understand these valid instructions and may fail to image the file. Also, embedding freeform \PS\ with such instructions in it into a larger document can create printing to fail.
+While you could choose another viewer (we recommend \progname{ghostview}) to view single plots prepared by \GMT, it is generally wiser to select EPS output when you are creating a plot intended for inclusion into a larger document. Some programs (and some publishers as well) do not allow the use of instructions like \texttt{Setpagedevice} as part of embedded graphics.
 
-However, there is much confusion over what an EPS file is
-and if other programs can read it.  Much of this has to do
-with the claim by some software manufacturers that their
-programs can read and edit EPS files.  We used to get much
-mail from people asking us to let \GMT\ produce EPS files
-that can be read, e.g., by Adobe \progname{Illustrator}.
-This was a limitation of early versions of Adobe \progname{Illustrator} and
-similar programs, not \GMT!  Since then, Adobe
-\progname{Illustrator} and other programs have
-improved their abilities to parse freeform \PS\ such as that produced
-by \GMT, but problems seem to occasionally reappear.
-
-An EPS file that is to be placed into another application
-(such as a text document) need to have correct bounding-box
+An EPS file that is to be placed into another document
+needs to have correct bounding box
 parameters.  These are found in the \PS\ Document
 Comment \%\%BoundingBox.  Applications that generate EPS
 files should set these parameters correctly.  Because \GMT\
 makes the \PS\ files on the fly, often with several
 overlays, it is not possible to do so accurately.  However,
-\GMT\ does make an effort to ensure that the boundingbox is
+\GMT\ does make an effort to ensure that the BoundingBox is
 large enough to contain the entire composite plot\footnote{In contrast,
 regular \GMT\ \PS\ files simply have
 a \%\%BoundingBox that equal the size of the chosen paper.}.
-Therefore, if you need a ``tight'' boundingbox you need to post-process
+Therefore, if you need a ``tight'' BoundingBox you need to post-process
 your \PS\ file.  There are several ways in which this
 can be accomplished.
 
 \begin{itemize}
-
 \item Programs such as Adobe \progname{Illustrator}, Aldus
 \progname{Freehand}, and Corel \progname{Draw} will allow you
 to edit the boundingbox graphically.
 
 \item A command-line alternative is to use freely-available
 program \progname{epstool} from the makers of Aladdin
-\progname{ghostscript}.  Running \\ 
-
-\indent \texttt{epstool -c -b yourplot.ps} \\ 
-
+\progname{ghostscript}.  Running
+\begin{verbatim}
+epstool -c -b myplot.ps
+\end{verbatim}
 should give a tight BoundingBox; \progname{epstool} assumes the plot
 is page size and not a huge poster.
 
 \item Another option is to use \progname{ps2epsi} which also comes
-with the \progname{ghostscript} package.  Running \\ 
+with the \progname{ghostscript} package.  Running
+\begin{verbatim}
+ps2epsi myplot.ps myplot.eps
+\end{verbatim}
+should also do the trick. The downside is that this program adds an "image" of the plot in the preamble of the EPS file, thus increasing the file size significantly. On the other hand, some programs rely on the presence of this image to show the plot while editing your document.
 
-\indent \texttt{ps2epsi myplot.ps myplot.eps} \\
-
-should also do the trick.
-
+\item If you also intend to convert the document into PDF or raster image, we suggest you use the \GMT\ supplementary program \GMTprog{ps2raster} instead. The \Opt{A} option will first figure out the tight BoundingBox. For example, running
+\begin{verbatim}
+ps2raster -A -Tf myplot.ps
+\end{verbatim}
+will convert the \PS\ file \filename{myplot.ps} into a PDF file \filename{myplot.pdf} which is exactly cropped to the tightest possible BoundingBox.
 \end{itemize}
 
-If you do not want to modify the illustration but just
-include it in a text document: Many word processors (such
-as Microsoft \progname{Word} and Corel \progname{WordPerfect})
-will let you include
-a \PS\ file that you may place but not edit.  You will not
-be able to view the figure on-screen, but it will print
-correctly.  All illustrations in this \GMT\ documentation were
-\GMT-produced \PS\ files that were converted to EPS files
-using \progname{ps2epsi} and then included into a \LaTeX\ document. 
+If you do not want to modify your illustration but just include it in a text document: many word processors (such
+as Microsoft \progname{Word}, Corel \progname{WordPerfect}, and Apple \progname{Pages})
+will let you include a \PS\ file that you may place but not edit. Newer versions of those programs also allow you to include PDF versions of your graphics. Except for \progname{Pages}, 
+you will not be able to view the figure on-screen, but it will print correctly.
 
-These examples do not constitute endorsements of the products
-mentioned above; they only represent our limited experience
-with the problem.  For other solutions and further help,
-please post messages to
+\section{Example: Including \gmt\ graphics into \LaTeX}
+\index{LaTeX@\LaTeX}
+
+All illustrations in this \GMT\ documentation were \GMT-produced \PS\ files. They were converted to PDF files using \GMTprog{ps2raster} and then included into a \LaTeX\ document that was processed with \progname{pdflatex} to create the PDF document you are reading.
+
+Conversion from \PS\ to PDF can best be performed with the \GMT\ supplementary program \GMTprog{ps2raster}. It is tailored to providing the best quality PDF files using \progname{ghostscript}. It avoids anti-aliasing and lossy compression techniques that are default to \progname{ghostscript} and includes the fonts to ensure portability. By default the fonts are rendered at 720 dots-per-inch, but that can be changed with the \Opt{E} option. Simply run
+\begin{verbatim}
+ps2raster -A -Tf *.ps
+\end{verbatim}
+to convert all \PS\ files to PDF while cropping it to the smallest possible BoundingBox.
+
+Next, add the graphics into the \LaTeX\ document using the \verb|\includegraphics| command supplied by the \textsf{graphicx} package. In the preamble of your \LaTeX\ document you will need to include the line
+\begin{verbatim}
+\usepackage{graphicx}
+\end{verbatim}
+The inclusion of the graphics will probably be inside a floating figure environment; something like this
+\begin{verbatim}
+\begin{figure}
+   \includegraphics{myplot}
+   \caption{This is my first plot in \LaTeX.}
+   \label{fig:myplot}
+\end{figure}
+\end{verbatim}
+Note that the \verb|\includegraphics| command does not require you to add the suffix \verb|.pdf| to the file name. If you run \progname{pdflatex}, it will look automatically for \filename{myplot.pdf}. If you run \progname{latex}, it will use \filename{myplot.eps} instead.
+
+You can scale your plot using the options \verb|width=| or \verb|height=|. In addition, if your original graphics was produced in landscape mode (i.e., you did not use \GMT's \Opt{P} option), you will need to rotate the plot as well. For example,
+\begin{verbatim}
+\includegraphics[angle=-90,width=0.8\textwidth]{myplot}
+\end{verbatim}
+will rotate the image 90\DS\ clockwise and scale it such that its width will be 80\% of the width of the text column.
+
+\section{Converting \gmt\ graphics to raster image}
+\index{PostScript@\PS!convert to raster image}
+\index{PNG file}
+
+\section{Example: Including \gmt\ graphics into \progname{PowerPoint}}
+
+\section{Concluding remarks}
+
+These examples do not constitute endorsements of the products mentioned above; they only represent our limited experience with the adding \PS\ to various types of documents.  For other solutions and further help, please post messages to
 \htmladdnormallink{gmt-help@hawaii.edu}{mailto:gmt-help@hawaii.edu}.
