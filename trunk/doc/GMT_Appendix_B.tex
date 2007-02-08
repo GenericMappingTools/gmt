@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.23 2007-01-30 20:37:07 pwessel Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.24 2007-02-08 22:32:31 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2007.
@@ -82,6 +82,7 @@ to swap the byte-order on either input or output you must use upper case
 
 \subsection{NetCDF files}
 \index{grdfile!formats!netCDF|(}
+\index{grdfile!formats!COARDS|(}
 
 By default, \GMT\ stores 2-D grids as COARDS-compliant netCDF files.
 COARDS (which stands for Cooperative Ocean/Atmosphere Research Data Service) is a convention used by
@@ -130,8 +131,6 @@ data storage are handled appropriately.
 For more information on the use of COARDS-compliant netCDF files, and on how to load
 multi-dimensional grids, read Section~\ref{sec:netcdf}.
 
-\index{grdfile!formats!netCDF|)}
-
 \GMT\ also allows other formats to be read.  In addition to
 the default netCDF format it can use binary floating points, short
 integers, bytes, and bits, as well as 8-bit Sun rasterfiles (colormap
@@ -142,6 +141,9 @@ programmers will need to augment \GMT\ to read custom grdfiles.  We
 anticipate that the number of pre-programmed formats will increase as
 enterprising users implement what they need.  See Section~\ref{sec:grdformats}
 for more information.
+
+\index{grdfile!formats!netCDF|)}
+\index{grdfile!formats!COARDS|)}
 
 \subsection{Grid line and Pixel registration} 
 \index{grdfile!registration|(}
@@ -169,7 +171,7 @@ and convert a pixel- to a gridline-registred grid, or \emph{vice versa}.
 In this registration, the nodes are centered on the grid line
 intersections and the data points represent the average value
 in a cell of dimensions ($x_{inc} \cdot y_{inc}$) centered on the
-nodes (Figure~\ref{fig:GMT_gridreg}).
+nodes (Figure~\ref{fig:GMT_App_B_1}).
 In the case of grid line registration the number of nodes are
 related to region and grid spacing by \\
 
@@ -178,9 +180,9 @@ nx & =  &       (x_{max} - x_{min}) / x_{inc} + 1       \\
 ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
 \end{array} \]
 
-which for the example in Figure~\ref{fig:GMT_gridreg} yields $nx = ny = 4$.
+which for the example in Figure~\ref{fig:GMT_App_B_1} yields $nx = ny = 4$.
 
-\GMTfig[h]{GMT_gridreg}{Grid line registration of data nodes.}
+\GMTfig[h]{GMT_App_B_1}{Grid line registration of data nodes.}
 
 \index{grdfile!registration!grid line|)}
 
@@ -189,7 +191,7 @@ which for the example in Figure~\ref{fig:GMT_gridreg} yields $nx = ny = 4$.
 
 Here, the nodes are centered in the grid cells, i.e., the areas
 between grid lines, and the data points represent the average
-values within each cell (Figure~\ref{fig:GMT_pixelreg}.
+values within each cell (Figure~\ref{fig:GMT_App_B_2}.
 In the case of pixel registration the number of nodes are related
 to region and grid spacing by \\
 
@@ -202,7 +204,7 @@ Thus, given the same region (\Opt{R}), the pixel registered grids have one less
 column and one less row than the grid line registered grids; here we
 find $nx = ny = 3$.
 
-\GMTfig[H]{GMT_pixelreg}{Pixel registration of data nodes.}
+\GMTfig[H]{GMT_App_B_2}{Pixel registration of data nodes.}
 
 \index{grdfile!registration!pixel|)}
 \index{grdfile!registration|)}
@@ -283,7 +285,7 @@ is the two-dimensional Laplacian operator.
 \index{grdfile!native binary|(}
 
 The old style native grid file format that was common in earlier version of \GMT\ is still
-supported, although the use of netCDF files is strongly recommended.
+supported, although the use of netCDF\index{grdfile!formats!netCDF} files is strongly recommended.
 The file starts with a header containing a number of attributes defining the content.
 The \GMTprog{grdedit} utility program will allow you to edit parts of
 the header of an existing grdfile.  The attributes listed in Table~\ref{tbl:grdheader}
