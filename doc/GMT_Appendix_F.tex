@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_F.tex,v 1.11 2007-01-30 20:37:07 pwessel Exp $
+%	$Id: GMT_Appendix_F.tex,v 1.12 2007-02-08 22:30:06 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -8,33 +8,43 @@
 %
 \chapter{Chart of octal codes for characters}
 \label{app:F}
+\thispagestyle{headings}
 \index{Characters!octal}
 \index{Octal characters}
-\thispagestyle{headings}
+\index{Font!standard}
+\index{Font!ISOLatin1}
 
-\GMTfig[h]{GMT_App_F_stand+}{Octal codes and corresponding symbols for StandardEncoding fonts.}
-
-The characters and their octal codes in the Standard encoded fonts
-are shown in Figure~\ref{fig:GMT_App_F_stand+}, while the characters and their octal codes in the ISOLatin1
-encoded fonts are shown in Figure~\ref{fig:GMT_App_F_iso+}.   Dark gray areas signify codes reserved for
+The characters and their octal codes in the Standard and ISOLatin1 encoded fonts
+are shown in Figure~\ref{fig:GMT_App_F_text}.  Dark gray areas signify codes reserved for
 control characters.  In order to use all the extended characters (shown in the light gray boxes) you need to
 set {\bf CHAR\_ENCODING} to Standard+ or ISOLatin1+ in your \filename{.gmtdefaults4} file\footnote{If you chose
 SI units during the installation then the default encoding is ISOLatin1+, otherwise it is Standard+.}.
-The chart for the Symbol (\GMT\ font number 12) character
-sets are presented in Figure~\ref{fig:GMT_App_F_symbol} below. The octal code is obtained by appending the
+
+\begin{figure}[h]
+   \includegraphics[scale=0.92]{scripts/GMT_App_F_stand+}\hfill
+   \includegraphics[scale=0.92]{scripts/GMT_App_F_iso+}
+   \caption{Octal codes and corresponding symbols for StandardEncoding (left)
+   and ISOLatin1Encoding (right) fonts.}
+   \label{fig:GMT_App_F_text}
+\end{figure}
+
+\clearpage
+
+\index{Symbol font}
+\index{Font!symbol}
+\index{Font!ZapfDingbats}
+
+The chart for the Symbol character set (\GMT\ font number 12) and Pifont ZapfDingbats character set
+(font number 34)
+are presented in Figure~\ref{fig:GMT_App_F_symbol} below. The octal code is obtained by appending the
 column value to the $\backslash$?? value, e.g., $\partial$ is
 $\backslash$266 in the Symbol font.  The euro currency symbol is $\backslash$240 in the Symbol font and will
 print if your printer supports it (older printer's firmware will not know about the euro).
 
-\GMTfig[h]{GMT_App_F_iso+}{Octal codes and corresponding symbols for ISOLatin1Encoding fonts.}
-
-\index{Symbol font}
-\index{Font!symbol}
-
-\GMTfig[h]{GMT_App_F_symbol}{Octal codes and corresponding symbols for the Symbol font.}
-
-The Pifont ZapfDingbats is available as \GMT\ font number 34 and
-can be used for special symbols not listed above.  The various
-symbols are illustrated in Figure~\ref{fig:GMT_App_F_dingbats}.
-
-\GMTfig[h]{GMT_App_F_dingbats}{Octal codes and corresponding symbols for ZapfDingbats font.}
+\begin{figure}[h]
+   \includegraphics[scale=0.92]{scripts/GMT_App_F_symbol}\hfill
+   \includegraphics[scale=0.92]{scripts/GMT_App_F_dingbats}
+   \caption{Octal codes and corresponding symbols for Symbol (left)
+   and ZapfDingbats (right) fonts.}
+   \label{fig:GMT_App_F_symbol}
+\end{figure}
