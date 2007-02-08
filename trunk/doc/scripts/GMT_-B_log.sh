@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-B_log.sh,v 1.4 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_-B_log.sh,v 1.5 2007-02-08 21:46:27 remko Exp $
 #
 
 gmtset GRID_PEN_PRIMARY thinnest,.
@@ -17,4 +17,3 @@ S 0 -255 T 4.16667 4.16667 scale showpage
 end
 EOF
 mv -f $$.ps GMT_-B_log.ps
-gmtset GRID_PEN_PRIMARY thinnest

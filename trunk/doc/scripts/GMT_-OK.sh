@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-OK.sh,v 1.7 2006-10-30 02:59:36 remko Exp $
+#	$Id: GMT_-OK.sh,v 1.8 2007-02-08 21:46:27 remko Exp $
 #
 
 psxy -R0/2.7/0/2.5 -Jx1i -K -L -M -N -P << EOF > GMT_-OK.ps
@@ -61,7 +61,7 @@ pstext -R -J -O -K -N << EOF >> GMT_-OK.ps
 0.5	0.7	10	0	1	CM	TRAILER
 EOF
 
-psxy -R -J -X2.35i -O -K -M -L -N << EOF >> GMT_-OK.ps
+psxy -R -J -X2.3i -O -K -M -L -N << EOF >> GMT_-OK.ps
 > -G200
 0	0.2
 1	0.2

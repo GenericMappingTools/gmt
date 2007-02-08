@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: GMT_App_O.sh,v 1.6 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_App_O.sh,v 1.7 2007-02-08 21:46:27 remko Exp $
 #
 #	Makes the inserts for Appendix O (labeled lines)
-#	This first script just gets the data ready
+#	This first script just gets the data ready and run the various scripts
 #
 
 gmtset FRAME_WIDTH 0.04i PLOT_DEGREE_FORMAT ddd:mm:ssF ANNOT_FONT_SIZE_PRIMARY +9p
@@ -45,3 +45,9 @@ R=`minmax -I1 $$.d`
 echo "# Geoid Extrema Separation is $dist km" > transect.d
 grdtrack $$.d -Ggeoid.grd | grdtrack -GApp_O.nc >> transect.d
 rm -f $$.d
+
+for n in 1 2 3 4 5 6 7 8 9; do
+	sh GMT_App_O_$n.sh
+done
+
+rm -f fix.d fix2.d cross.d geoid.grd transect.d great_NY_*.d ttt.cpt topo5_int.grd
