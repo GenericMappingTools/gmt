@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.136 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: pslib.c,v 1.137 2007-02-08 18:18:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -522,12 +522,12 @@ void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned c
 	dy = ysize / ny;
 
 	ps_transrotate (x0, y0, 0.0);
-	y2 = (ny - 0.5) * dy + 0.5 * noise;
+	y2 = ny * dy + 0.5 * noise;
 	for (j = k = 0; j < ny; j++) {
-		y1 = (ny - j - 1.5) * dy - 0.5 * noise;
-		x1 = -0.5 * (dx + noise);
+		y1 = (ny - j - 1) * dy - 0.5 * noise;
+		x1 = -noise;
 		for (i = 0; i < nx; i++) {
-			x2 = (i + 0.5) * dx + noise;
+			x2 = (i + 1) * dx + noise;
 			rgb[0] = image[k++];
 			rgb[1] = image[k++];
 			rgb[2] = image[k++];
