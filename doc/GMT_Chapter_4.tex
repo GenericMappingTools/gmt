@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.92 2007-01-30 20:37:07 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.93 2007-02-08 22:34:26 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -151,6 +151,13 @@ all the available parameters at least once so that you know what is
 available to change via one of the described mechanisms.
 
 \GMTfig[h]{GMT_Defaults_1c}{Even more \gmt\ parameters that affect plot appearance.}
+
+\textbf{Note:} All examples presented in this document started by copying the file
+\filename{.gmtdefaults4.doc} from the directory \filename{doc/scripts} to \filename{.gmtdefaults4}.
+As a result the commands \GMTprog{gmtset} of other scripts were overall, reverting to a
+"virgin" of parameters set in \filename{.gmtdefaults4.doc}. The graphs in Chapter~\ref{ch:7} were created
+using \filename{.gmtdefaults4.doc} from the directory \filename{examples} after which the graphs were
+scaled down by 50\%.
 
 \index{GMT@\GMT!defaults|)}
 \index{Default settings|)}
@@ -390,12 +397,13 @@ interpreted as arc minutes and arc seconds, respectively, when a map projection 
 \textbf{o}	&	month		& Plot as 2-digit integer (1--12) \\ \hline
 \textbf{U}	&	ISO week	& Format annotation using \textbf{PLOT\_DATE\_FORMAT} \\ \hline
 \textbf{u}	&	ISO week	& Plot as 2-digit integer (1--53) \\ \hline
-\textbf{r}	&	Gregorian week	& 7-day stride from start of week (\textbf{TIME\_WEEK\_START}) \\ \hline
+\textbf{r}	&	Gregorian week	& 7-day stride from start of week (see \textbf{TIME\_WEEK\_START}) \\ \hline
 \textbf{K}	&	ISO weekday	& Plot name of weekday in selected language \\ \hline
-\textbf{k}	&	weekday		& Plot number of day in the week (1-7)  {see \bf TIME\_WEEK\_START}\\ \hline
+\textbf{k}	&	weekday		& Plot number of day in the week (1-7)  (see \textbf{TIME\_WEEK\_START})\\ \hline
 \textbf{D}	&	date		& Format annotation using \textbf{PLOT\_DATE\_FORMAT} \\ \hline
-\textbf{d}	&	day		& Plot day of month (1--31) or day of year (1--366) {see \bf PLOT\_DATE\_FORMAT} \\ \hline
-\textbf{R}	&	day		& Same as \textbf{d}; annotations aligned with week (\textbf{TIME\_WEEK\_START})\\ \hline
+\textbf{d}	&	day		& Plot day of month (1--31) or day of year (1--366) \\
+		&			& (see \bf{PLOT\_DATE\_FORMAT} \\ \hline
+\textbf{R}	&	day		& Same as \textbf{d}; annotations aligned with week (see \textbf{TIME\_WEEK\_START})\\ \hline
 \textbf{H}	&	hour		& Format annotation using \textbf{PLOT\_CLOCK\_FORMAT} \\ \hline
 \textbf{h}	&	hour		& Plot as 2-digit integer (0--24) \\ \hline
 \textbf{M}	&	minute		& Format annotation using \textbf{PLOT\_CLOCK\_FORMAT} \\ \hline
@@ -516,7 +524,7 @@ series of examples.  While all our examples will only show a single $x$-axis, ti
 Our first example shows a time period of almost two months in Spring 2000.  We want to annotate the month
 intervals as well as the date at the start of each week:
 
-\input{scripts/GMT_-B_time1}
+\script{GMT_-B_time1}
 
 These commands result in Figure~\ref{fig:GMT_-B_time1}.  Note the leading hyphen in the \textbf{PLOT\_DATE\_FORMAT}
 removes leading zeros from calender items (e.g., 02 becomes 2).
@@ -524,7 +532,7 @@ removes leading zeros from calender items (e.g., 02 becomes 2).
 
 The next example shows two different ways to annotate an axis portraying 2 days in July 1969:
 
-\input{scripts/GMT_-B_time2}
+\script{GMT_-B_time2}
 
 The lower example (Figure~\ref{fig:GMT_-B_time2}) chooses to annotate the weekdays (by specifying
 \textbf{a}1\textbf{K}) while the upper
@@ -535,7 +543,7 @@ the date format selects a month name, followed by one space and a two-digit day-
 
 The third example presents two years, annotating both the years and every 3rd month.
 
-\input{scripts/GMT_-B_time3}
+\script{GMT_-B_time3}
 
 Note that while the year annotation is centered on the 1-year interval, the month annotations must be centered
 on the corresponding month and \emph{not} the 3-month interval.  The \textbf{PLOT\_DATE\_FORMAT} selects month
@@ -548,18 +556,18 @@ specifying \textbf{t} in the \Opt{R} option while the \textbf{TIME\_UNIT} is \te
 We select both primary and
 secondary annotations, ask for a 12-hour clock, and let time go from right to left:
 
-\input{scripts/GMT_-B_time4}
+\script{GMT_-B_time4}
 \GMTfig[h!]{GMT_-B_time4}{Cartesian time axis, example 4.}
 
 The fifth example shows a few weeks of time (Figure~\ref{fig:GMT_-B_time5}).  The lower axis shows ISO weeks with
 week numbers and abbreviated names of the weekdays.   The upper uses Gregorian weeks (which start at the day chosen
 by \textbf{TIME\_WEEK\_START}); they do not have numbers.
-\input{scripts/GMT_-B_time5}
+\script{GMT_-B_time5}
 \GMTfig[h!]{GMT_-B_time5}{Cartesian time axis, example 5.}
 
 Our sixth example shows the first five months of 1996, and we have annotated each month with an abbreviated, upper case
 name and 2-digit year.  Only the primary axes information is specified.
-\input{scripts/GMT_-B_time6}
+\script{GMT_-B_time6}
 
 \GMTfig[h!]{GMT_-B_time6}{Cartesian time axis, example 6.}
 
@@ -567,7 +575,7 @@ Our seventh and final example illustrates annotation of year-days.  Unless we sp
 in  \textbf{PLOT\_DATE\_FORMAT} we get 3-digit integer days.  Note that in order to have the two years
 annotated we need to allow for the annotation of small fractional intervals; normally such truncated interval must
 be at least half of a full interval.
-\input{scripts/GMT_-B_time7}
+\script{GMT_-B_time7}
 
 \GMTfig[h!]{GMT_-B_time7}{Cartesian time axis, example 7.}
 
@@ -867,6 +875,7 @@ verbose talk remains separate from your data output.
 \section{Output}
 \index{Output!standard}
 \index{Output!error}
+\index{grdfile!formats!netCDF}
 
 Most programs write their results, including \PS\
 plots, to standard output.  The exceptions are those which may
@@ -1281,7 +1290,7 @@ topography by using the former for colors and the latter for shading.
 \index{Superscripts}
 \index{Characters!composite}
 \index{Composite characters}
-\index{Font!switching to a}
+\index{Font!switching}
 \index{Font!symbol}
 \index{Symbol font}
 \index{"@, printing}
@@ -1364,6 +1373,7 @@ and their octal codes is given in Appendix~\ref{app:F}.
 \section{Grdfile format specifications}
 \index{grdfile!formats|(}
 \index{grdfile!formats!netCDF}
+\index{grdfile!formats!COARDS}
 \index{grdfile!formats!floats}
 \index{grdfile!formats!shorts}
 \index{grdfile!formats!unsigned char}
@@ -1382,13 +1392,13 @@ this behavior can be overridden by setting the \textbf{GRID\_FORMAT} defaults pa
 to any of the other recognized values (or by appending \emph{=ID}).
 
 \GMT\ can also read netCDF gridfiles produced by other software packages, provided the grid files
-satisfy the COARDS and Hadley Centre conventions for NetCDF grids. Thus, products created under
+satisfy the COARDS and Hadley Centre conventions for netCDF grids. Thus, products created under
 those conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be read directly by \GMT\ and the netCDF grids
 written by \GMT\ can be read by other programs that conform to those conventions. Two such programs are
 \htmladdnormallink{\progname{ncview}}{http://meteora.ucsd.edu/~pierce/ncview_home_page.html}
 and
 \htmladdnormallink{\progname{ncBrowse}}{http://www.epic.noaa.gov/java/ncBrowse/}; others can be found
-on the \htmladdnormallink{NetCDF website}{http://www.unidata.ucar.edu/software/netcdf/software.html}.
+on the \htmladdnormallink{netCDF website}{http://www.unidata.ucar.edu/software/netcdf/software.html}.
 
 In addition, users with some C-programming experience may add
 their own read/write functions and link them with the \GMT\ library
@@ -1532,6 +1542,7 @@ corresponding grd float format file.
 \section{Options for COARDS-compliant netCDF files}
 \label{sec:netcdf}
 \index{grdfile!formats!netCDF|(}
+\index{grdfile!formats!COARDS|(}
 
 When the netCDF file contains more than one 2-dimensional variable, \GMT\ programs
 will load the first such variable in the file and ignore all others. Alternatively,
@@ -1577,7 +1588,7 @@ or (only in case the coordinates increase linearly):
 The COARDS conventions set restrictions on the names that can be used for the units of the variables
 and coordinates. For example, the units of longitude and latitude are "degrees\_east" and "degrees\_north",
 respectively. Here is an example of the header of a COARDS compliant netCDF file (to be obtained using
-\prog{ncdump}:
+\progname{ncdump}):
 \begin{verbatim}
 netcdf M2_fes2004 {
 dimensions:
@@ -1609,10 +1620,11 @@ and \filename{M2\_fes2004.nc?pha}. The attributes \verb|long_name| and \verb|uni
 combined in \GMT\ to a single unit string. For example, after reading the grid \verb|y_unit| equals
 \verb|latitude [degrees_north]|. The same method can be used in reverse to set the proper variable names
 and units when writing a grid. However, when the coordinates are set properly as geographical or time axes,
-\GMT\ will take case of this. The user is, however, still responsible for setting the variable name and
+\GMT\ will take care of this. The user is, however, still responsible for setting the variable name and
 unit of the z-coordinate. The default is simply "z".
 
 \index{grdfile!formats!netCDF|)}
+\index{grdfile!formats!COARDS|)}
 
 \section{The NaN data value}
 \index{NaN}
