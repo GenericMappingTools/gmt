@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_encoding.sh,v 1.5 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_encoding.sh,v 1.6 2007-02-08 21:46:28 remko Exp $
 #
 #	This plots the given encoding vector to stdout
 #
@@ -63,5 +63,4 @@ psxy -R -J -O -M -Wthick << EOF
 1	0
 1	32
 EOF
-gmtset CHAR_ENCODING Standard+
 rm -f $$.*

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_E.sh,v 1.6 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_App_E.sh,v 1.7 2007-02-08 21:46:27 remko Exp $
 #
 #	This script makes the documentation in Appendix E.
 #
@@ -11,11 +11,11 @@ trap 'rm -f $$.*; exit 1' 1 2 3 15
 xwidth=0.45	# Width of each box (all units are in inches)
 ywidth=0.45	# Height of each box
 w=0.9		# Width of two adjacent boxes
-dx=0.55		# Amont to translate to the right
+dx=0.50		# Amont to translate to the right
 dy=0.50		# Amount to translate up
 y=0.05		# Initial offset in x
 x=0.05		# Initial offset in y
-back=-5.45	# Amount to translate to left after 1 row
+back=-5.20	# Amount to translate to left after 1 row
 
 cat << END > $$.App_E.d
 0	0
@@ -24,7 +24,7 @@ $xwidth	$ywidth
 0	$ywidth
 END
 
-psbasemap -R0/6.0/0/7.55 -Jx1i -P -B0 -K > GMT_App_E.ps
+psbasemap -R0/5.75/0/7.55 -Jx1i -P -B0 -K > GMT_App_E.ps
 for iy in 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
 do
 	for ix in 1 2 3 4 5 6

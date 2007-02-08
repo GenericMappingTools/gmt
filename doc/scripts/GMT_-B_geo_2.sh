@@ -1,10 +1,11 @@
 #!/bin/sh
-#	$Id: GMT_-B_geo_2.sh,v 1.2 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_-B_geo_2.sh,v 1.3 2007-02-08 21:46:27 remko Exp $
 #
 
 gmtset PLOT_DEGREE_FORMAT ddd:mm:ssF ANNOT_FONT_SIZE_PRIMARY +9p
 psbasemap -R-2/1/0/0.35 -JM4 -Bpa15mf5mg5mwSe -Bs1f30mg15m -K -P --BASEMAP_TYPE=fancy+ \
-  --GRID_PEN_PRIMARY=thinnest,black,. --GRID_CROSS_SIZE_SECONDARY=0.1i --FRAME_WIDTH=0.075i --TICK_LENGTH=0.1i > GMT_-B_geo_2.ps
+	--GRID_PEN_PRIMARY=thinnest,black,. --GRID_CROSS_SIZE_SECONDARY=0.1i \
+	--FRAME_WIDTH=0.075i --TICK_LENGTH=0.1i > GMT_-B_geo_2.ps
 psxy -R -J -O -K -SvB0.005/0.02/0.015 -Gblack -Y-0.5i -N -V << EOF >> GMT_-B_geo_2.ps
 -1.875 0 0 0.33333
 -0.45833 0 0 0.11111

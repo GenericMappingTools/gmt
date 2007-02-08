@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_pstext_justify.sh,v 1.2 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_pstext_justify.sh,v 1.3 2007-02-08 21:46:28 remko Exp $
 #
 
 B=0.2
@@ -58,7 +58,6 @@ psxy -R -J -O -Sc0.05 << EOF >> GMT_pstext_justify.ps
 1.945	$M
 1.945	$T
 EOF
-gmtset GLOBAL_X_SCALE 1 GLOBAL_Y_SCALE 1
 
 sed '/%%Trailer/q' GMT_pstext_justify.ps > $$.ps
 cat << EOF >> $$.ps
