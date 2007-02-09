@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.286 2007-01-31 23:45:55 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.287 2007-02-09 20:02:12 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3157,6 +3157,7 @@ void GMT_orient_contour (float *grd, struct GRD_HEADER *h, double *x, double *y,
 	int i, j, k, ii[2], jj[2], side[2], z_dir;
 	double fx[2], fy[2], slop = 1.0e-12;
 	
+	if (n < 2) return;	/* Cannot work on a single point */
 	
 	for (k = 0; k < 2; k++) {	/* Calculate fractional node numbers from left/top */
 		fx[k] = (x[k] - h->x_min) / h->x_inc - h->xy_off;
@@ -3171,7 +3172,7 @@ void GMT_orient_contour (float *grd, struct GRD_HEADER *h, double *x, double *y,
 	z_dir = (grd[j*h->nx+i] > 0.0) ? +1 : -1;	/* +1 if lower-left node is higher than contour value, else -1 */
 	
 	for (k = 0; k < 2; k++) {	/* Determine which edge the contour points lie on (0-3) */
-		if (fmod (fx[k], 1.0) < GMT_CONV_LIMIT)		/* Point is on a vertical grid line (left [3] or right [1]) */
+		if (fmod (fx[k]+slop, 1.0) < GMT_CONV_LIMIT)		/* Point is on a vertical grid line (left [3] or right [1]) */
 			side[k] = (ii[k] == i) ? 3 : 1;
 		else						/* Point must be on horizontal grid line (top [2] or bottom [0]) */
 			side[k] = (jj[k] == j) ? 0 : 2;
