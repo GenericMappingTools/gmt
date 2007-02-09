@@ -192,8 +192,9 @@ Give a red/green/blue triplet, with each element in the 0\-255 range. [255/255/2
 .TP
 .B COLOR_IMAGE
 Selects which operator to use when rendering bit-mapped color images.  Due to the
-lack of the colorimage operator in some \fIPostScript\fP implementations, \fBGMT\fP offers 2 different
-options:
+lack of the colorimage operator in some \fIPostScript\fP implementations, as well as
+some \fIPostScript\fP editors inability to handle color gradations, \fBGMT\fP offers
+two different options:
 .br
 .sp
 	adobe (Adobe's colorimage definition)  [Default].\"'
