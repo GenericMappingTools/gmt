@@ -32,11 +32,13 @@
       %urlbordercolor={1 0 0},
    }%
    \newcommand{\GMT}{\textit{GMT}}
+   \newcommand{\gmt}{\href{http://\GMTSITE}{\textbf{GMT}}}
    \newcommand{\GMTprogi}[1]{\htmladdnormallink{\textsfbf{#1}}{../html/#1.html}}
 \else
    % Here for creating PS or HTML output with LaTeX
    \DeclareGraphicsExtensions{.eps}
-   \newcommand{\GMT}{\htmladdnormallink{\includegraphics{eps/GMT_glyph10.eps}}{http://gmt.soest.hawaii.edu}}
+   \newcommand{\GMT}{\htmladdnormallink{\includegraphics{eps/GMT_glyph10.eps}}{http://\GMTSITE}}
+   \newcommand{\gmt}{\htmladdnormallink{GMT}{http://\GMTSITE}}
    \newcommand{\GMTprogi}[1]{\htmladdnormallink{\textsfbf{#1}}{../#1.html}}
 \fi
 
@@ -81,13 +83,12 @@
 \newcommand{\PM}{$\pm$}
 \newcommand{\progname}[1]{\textslbf{#1}\index{#1@\textslbf{#1}}}
 \newcommand{\Opt}[1]{\textbf{--#1}}
-\newcommand{\gmt}{\href{http://gmt.soest.hawaii.edu}{\textbf{GMT}}}
 
 % Now overrule a few things for running LaTeX2HTML.
 % Note that we need \gdef because they are inside an environment and would otherwise be local to
 % that.
 \begin{htmlonly}
-   \gdef\GMT{\htmladdnormallink{\textbf{GMT}}{http://gmt.soest.hawaii.edu}}
+   \gdef\GMT{\htmladdnormallink{\textbf{GMT}}{http://\GMTSITE}}
    \gdef\gmt{\GMT}
    \gdef\script#1{\htmlrule\verbatiminput{scripts/#1.tex}\htmlrule}
    \gdef\DS{°}
