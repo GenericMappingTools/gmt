@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.129 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.130 2007-02-13 17:04:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -87,10 +87,10 @@
  *	GMT_itranspowx :		Inverse pow x projection
  *	GMT_itranspowy :		Inverse pow y projection
  *	GMT_itranspowz :		Inverse pow z projection
- *	GMT_itm :			Inverse GMT_TM projection
- *	GMT_itm_sph :			Inverse GMT_TM projection (Spherical)
- *	GMT_iutm :			Inverse GMT_UTM projection
- *	GMT_iutm_sph :			Inverse GMT_UTM projection (Spherical)
+ *	GMT_itm :			Inverse TM projection
+ *	GMT_itm_sph :			Inverse TM projection (Spherical)
+ *	GMT_iutm :			Inverse UTM projection
+ *	GMT_iutm_sph :			Inverse UTM projection (Spherical)
  *	GMT_lamb :			Lambert conformal conic projection
  *	GMT_lambeq :			Lambert azimuthal equal area projection
  *	GMT_latpath :			Return path between 2 points of equal latitide
@@ -123,7 +123,7 @@
  *	GMT_transpowx :			Linear pow x projection
  *	GMT_transpowy :			Linear pow y projection
  *	GMT_transpowz :			Linear pow z projection
- *	GMT_tm :			GMT_TM projection
+ *	GMT_tm :			TM projection
  *	GMT_xy_search :			Find xy map boundary
  *	GMT_valbers :			Initialize Albers conic equal area projection
  *	GMT_veconic :			Initialize Equidistant conic projection
@@ -135,7 +135,7 @@
  *	GMT_vortho :			Initialize Orthographic projection
  *	GMT_vgrinten :			Initialize Van der Grinten projection
  *	GMT_vstereo :			Initialize Stereographic projection
- *	GMT_vtm :			Initialize GMT_TM projection
+ *	GMT_vtm :			Initialize TM projection
  *	GMT_wesn_clip:			Clip polygon to wesn boundaries
  *	GMT_wesn_crossing :		Find crossing between line and lon/lat rectangle
  *	GMT_wesn_outside :		Determine if a point is outside a lon/lat rectangle
@@ -290,7 +290,7 @@ PFI GMT_radial_clip;
  * The user must pass:
  *   w,e,s,n,parameters[0] - parameters[np-1] (np = number of parameters), and project:
  *   w,e,s,n defines the area in degrees.
- *   project == GMT_LINEAR, GMT_POLAR, GMT_MERCATOR, GMT_STEREO, GMT_LAMBERT, GMT_OBLIQUE_MERC,
+ *   project == GMT_LINEAR, GMT_POLAR, GMT_MERCATOR, GMT_STEREO, GMT_LAMBERT, GMT_OBLIQUE_MERC, GMT_UTM,
  *	GMT_TM, GMT_ORTHO, GMT_AZ_EQDIST, GMT_LAMB_AZ_EQ, GMT_WINKEL, GMT_ROBINSON, GMT_CASSINI, GMT_ALBERS, GMT_ECONIC,
  *	GMT_ECKERT4, GMT_ECKERT6, GMT_CYL_EQ, GMT_CYL_EQDIST, GMT_MILLER, GMT_VANGRINTEN
  *	For GMT_LINEAR, we may have GMT_LINEAR, GMT_LOG10, or GMT_POW
@@ -336,12 +336,12 @@ PFI GMT_radial_clip;
  *		parameters[3] is latitude of pole of projection
  *		parameters[4] is scale in inch (cm)/degree along oblique equator OR 1:xxxxx OR map-width
  *
- * TRANSVERSE GMT_MERCATOR (GMT_TM) projection
+ * TRANSVERSE GMT_MERCATOR (TM) projection
  *	parameters[0] is central meridian
  *	parameters[1] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
  *
- * UNIVERSAL TRANSVERSE GMT_MERCATOR (GMT_UTM) projection
- *	parameters[0] is GMT_UTM zone (0-60, use negative for S hemisphere)
+ * UNIVERSAL TRANSVERSE GMT_MERCATOR (UTM) projection
+ *	parameters[0] is UTM zone (0-60, use negative for S hemisphere)
  *	parameters[1] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
  *
  * GMT_LAMBERT GMT_IS_AZIMUTHAL EQUAL AREA projection:
@@ -1716,14 +1716,14 @@ void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, doubl
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE TRANSVERSE GMT_MERCATOR PROJECTION (GMT_TM)
+ *	TRANSFORMATION ROUTINES FOR THE TRANSVERSE GMT_MERCATOR PROJECTION (TM)
  */
 
 int GMT_map_init_tm (void) {
 	BOOLEAN search = FALSE;
 	double xmin, xmax, ymin, ymax, w, e, dummy;
 
-	/* Wrap and truncations are in y, not x for GMT_TM */
+	/* Wrap and truncations are in y, not x for TM */
 
 	GMT_wrap_around_check = (PFI) GMT_wrap_around_check_tm;
 	GMT_map_jump = (PFI) GMT_map_jump_tm;
@@ -1732,7 +1732,7 @@ int GMT_map_init_tm (void) {
 	GMT_get_crossings = (PFV) GMT_get_crossings_tm;
 	GMT_truncate = (PFI) GMT_truncate_tm;
 
-	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 1.0;	/* Select default map scale for GMT_TM */
+	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 1.0;	/* Select default map scale for TM */
 	project_info.GMT_convert_latitudes = GMT_quicktm (project_info.pars[0], 10.0);
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 	GMT_vtm (project_info.pars[0], project_info.pars[1]);
@@ -1809,15 +1809,15 @@ int GMT_map_init_tm (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE UNIVERSAL TRANSVERSE GMT_MERCATOR PROJECTION (GMT_UTM)
+ *	TRANSFORMATION ROUTINES FOR THE UNIVERSAL TRANSVERSE GMT_MERCATOR PROJECTION (UTM)
  */
  
 int GMT_map_init_utm (void) {
 	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, lon0;
 
-	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 0.9996;	/* Select default map scale for GMT_UTM */
-	lon0 = 180.0 + 6.0 * project_info.pars[0] - 3.0;	/* Central meridian for this GMT_UTM zone */
+	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 0.9996;	/* Select default map scale for UTM */
+	lon0 = 180.0 + 6.0 * project_info.pars[0] - 3.0;	/* Central meridian for this UTM zone */
 	if (lon0 >= 360.0) lon0 -= 360.0;
 	project_info.GMT_convert_latitudes = GMT_quicktm (lon0, 10.0);
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
@@ -1844,7 +1844,7 @@ int GMT_map_init_utm (void) {
 		GMT_inverse = (PFI)GMT_iutm;
 	}
 
-	if (fabs (project_info.w - project_info.e) > 360.0) {	/* -R in GMT_UTM meters */
+	if (fabs (project_info.w - project_info.e) > 360.0) {	/* -R in UTM meters */
 		(*GMT_inverse) (&project_info.w, &project_info.s, project_info.w, project_info.s);
 		(*GMT_inverse) (&project_info.e, &project_info.n, project_info.e, project_info.n);
 		project_info.region = FALSE;
@@ -3270,7 +3270,7 @@ int GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double
 	return (wrap);
 }
 
-/* For global GMT_TM maps */
+/* For global TM maps */
 
 int GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, int *sides, int *nx)
 {
@@ -3419,7 +3419,7 @@ int GMT_map_jump_x (double x0, double y0, double x1, double y1)
 int GMT_map_jump_tm (double x0, double y0, double x1, double y1)
 {
 	/* TRUE if y-distance between points exceeds 1/2 map height at this x value */
-	/* Only used for GMT_TM world maps */
+	/* Only used for TM world maps */
 
 	double dy;
 
@@ -3455,7 +3455,7 @@ void GMT_get_crossings_x (double *xc, double *yc, double x0, double y0, double x
 }
 
 void GMT_get_crossings_tm (double *xc, double *yc, double x0, double y0, double x1, double y1)
-{	/* Finds crossings for wrap-arounds for global GMT_TM maps */
+{	/* Finds crossings for wrap-arounds for global TM maps */
 	double xa, xb, ya, yb, dy, c;
 
 	xa = x0;	xb = x1;
@@ -3542,7 +3542,7 @@ BOOLEAN GMT_will_it_wrap_x (double *x, double *y, int n, int *start)
 }
 
 BOOLEAN GMT_will_it_wrap_tm (double *x, double *y, int n, int *start)
-{	/* Determines if a polygon will wrap at edges for GMT_TM global projection */
+{	/* Determines if a polygon will wrap at edges for TM global projection */
 	int i;
 	BOOLEAN wrap;
 
@@ -3578,7 +3578,7 @@ BOOLEAN GMT_this_point_wraps_x (double x0, double x1, double w_last, double w_th
 
 BOOLEAN GMT_this_point_wraps_tm (double y0, double y1)
 {
-	/* Returns TRUE if the 2 y-points implies a jump at this x-level of the GMT_TM map */
+	/* Returns TRUE if the 2 y-points implies a jump at this x-level of the TM map */
 
 	double dy;
 
@@ -3635,7 +3635,7 @@ int GMT_truncate_x (double *x, double *y, int n, int start, int l_or_r)
 }
 
 int GMT_truncate_tm (double *x, double *y, int n, int start, int b_or_t)
-{	/* Truncates a wrapping polygon agains bottom or top edge for global GMT_TM maps */
+{	/* Truncates a wrapping polygon agains bottom or top edge for global TM maps */
 
 	int i, i1, j, k;
 	double xc[4], yc[4], trunc_y;
