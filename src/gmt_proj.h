@@ -117,14 +117,14 @@ void GMT_gnomonic(double lon, double lat, double *x, double *y);	/*	Convert lon/
 void GMT_ignomonic(double *lon, double *lat, double x, double y);	/*	Convert x/y (GMT_GNOMONIC) to lon/lat 	*/
 void GMT_sinusoidal(double lon, double lat, double *x, double *y);	/*	Convert lon/lat to x/y (GMT_SINUSOIDAL)	*/
 void GMT_isinusoidal(double *lon, double *lat, double x, double y);	/*	Convert x/y (GMT_SINUSOIDAL) to lon/lat 	*/
-void GMT_tm(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (GMT_TM)	*/
-void GMT_itm(double *lon, double *lat, double x, double y);		/*	Convert x/y (GMT_TM) to lon/lat 	*/
+void GMT_tm(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (TM)	*/
+void GMT_itm(double *lon, double *lat, double x, double y);		/*	Convert x/y (TM) to lon/lat 	*/
 void GMT_tm_sph(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (GMT_TM Spherical)	*/
 void GMT_itm_sph(double *lon, double *lat, double x, double y);		/*	Convert x/y (GMT_TM Spherical) to lon/lat 	*/
-void GMT_utm(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (GMT_UTM)	*/
-void GMT_iutm(double *lon, double *lat, double x, double y);		/*	Convert x/y (GMT_UTM) to lon/lat 	*/
-void GMT_utm_sph(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (GMT_UTM Spherical)	*/
-void GMT_iutm_sph(double *lon, double *lat, double x, double y);	/*	Convert x/y (GMT_UTM Spherical) to lon/lat 	*/
+void GMT_utm(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (UTM)	*/
+void GMT_iutm(double *lon, double *lat, double x, double y);		/*	Convert x/y (UTM) to lon/lat 	*/
+void GMT_utm_sph(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (UTM Spherical)	*/
+void GMT_iutm_sph(double *lon, double *lat, double x, double y);	/*	Convert x/y (UTM Spherical) to lon/lat 	*/
 void GMT_winkel(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Winkel)	*/
 void GMT_iwinkel(double *lon, double *lat, double x, double y);		/*	Convert x/y (Winkel) to lon/lat	*/
 void GMT_iwinkel_sub (double y, double *phi);				/*	Used by GMT_iwinkel */

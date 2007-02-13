@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.277 2007-02-07 15:50:08 remko Exp $
+ *	$Id: gmt_init.c,v 1.278 2007-02-13 17:04:39 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -360,7 +360,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t         Give lon/lat of origin, and scale as 1:xxxx or %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
 
-			fprintf (stderr, "\t   -Ju<zone>/<scale> OR -JU<zone>/<width> (GMT_UTM)\n");
+			fprintf (stderr, "\t   -Ju<zone>/<scale> OR -JU<zone>/<width> (UTM)\n");
 			fprintf (stderr, "\t     Give zone (1-60, negative for S hemisphere) and scale as 1:xxxx or %s/degree\n",
 				GMT_unit_names[gmtdefs.measure_unit]);
 
@@ -447,7 +447,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t      -Jt|T<lon0>/<scale|width>\n");
 			fprintf (stderr, "\t      -Jt|T<lon0>/<lat0>/<scale|width>\n");
 
-			fprintf (stderr, "\t   -Ju|U<zone>/<scale|width> (GMT_UTM)\n");
+			fprintf (stderr, "\t   -Ju|U<zone>/<scale|width> (UTM)\n");
 
 			fprintf (stderr, "\t   -Jv|V<lon0>/<scale/width> (van der Grinten)\n");
 

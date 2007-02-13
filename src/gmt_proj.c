@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.8 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.9 2007-02-13 17:04:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,8 +43,8 @@
  *	Cassini Cylindrical
  *	Miller Cylindrical
  *	Oblique Mercator
- *	GMT_TM Transverse Mercator (Ellipsoidal and Spherical)
- *	GMT_UTM Universal Transverse Mercator
+ *	TM Transverse Mercator (Ellipsoidal and Spherical)
+ *	UTM Universal Transverse Mercator
  *	Cylindrical Equal-area (e.g., Peters, Gall, Behrmann)
  *	Cylindrical Equidistant (Plate Carree)
  *  Azimuthal
@@ -699,7 +699,7 @@ void GMT_iobl (double *lon, double *lat, double olon, double olat)
 
 void GMT_vtm (double lon0, double lat0)
 {
-	/* Set up an GMT_TM projection */
+	/* Set up an TM projection */
 	double e1, lat2, s2, c2;
 
 	/* GMT_check_R_J (&lon0); */
@@ -724,11 +724,11 @@ void GMT_vtm (double lon0, double lat0)
 	project_info.t_ir = 1.0 / project_info.t_r;
 }
 
-/* Ellipsoidal GMT_TM functions */
+/* Ellipsoidal TM functions */
 
 void GMT_tm (double lon, double lat, double *x, double *y)
 {
-	/* Convert lon/lat to GMT_TM x/y */
+	/* Convert lon/lat to TM x/y */
 	double N, T, T2, C, A, M, dlon, tan_lat, A2, A3, A5, lat2, s, c, s2, c2;
 
 	if (fabs (fabs (lat) - 90.0) < GMT_CONV_LIMIT) {
@@ -762,7 +762,7 @@ void GMT_tm (double lon, double lat, double *x, double *y)
 
 void GMT_itm (double *lon, double *lat, double x, double y)
 {
-	/* Convert GMT_TM x/y to lon/lat */
+	/* Convert TM x/y to lon/lat */
 	double M, mu, u2, s, c, phi1, C1, C12, T1, T12, tmp, tmp2, N1, R_1, D, D2, D3, D5, tan_phi1, cp2;
 
 	M = y / gmtdefs.map_scale_factor + project_info.t_M0;
@@ -796,11 +796,11 @@ void GMT_itm (double *lon, double *lat, double x, double y)
 	(*lat) *= R2D;
 }
 
-/*Spherical GMT_TM functions */
+/*Spherical TM functions */
 
 void GMT_tm_sph (double lon, double lat, double *x, double *y)
 {
-	/* Convert lon/lat to GMT_TM x/y by spherical formula */
+	/* Convert lon/lat to TM x/y by spherical formula */
 	double dlon, b, clat, slat, clon, slon, xx, yy;
 
 	dlon = lon - project_info.central_meridian;
@@ -842,7 +842,7 @@ void GMT_tm_sph (double lon, double lat, double *x, double *y)
 
 void GMT_itm_sph (double *lon, double *lat, double x, double y)
 {
-	/* Convert GMT_TM x/y to lon/lat by spherical approximation.  */
+	/* Convert TM x/y to lon/lat by spherical approximation.  */
 
 	double xx, yy, sinhxx, coshxx, sind, cosd, lambda, phi;
 
@@ -863,11 +863,11 @@ void GMT_itm_sph (double *lon, double *lat, double x, double y)
 
 /* -JU UNIVERSAL TRANSVERSE GMT_MERCATOR PROJECTION */
 
-/* Ellipsoidal GMT_UTM */
+/* Ellipsoidal UTM */
 
 void GMT_utm (double lon, double lat, double *x, double *y)
 {
-	/* Convert lon/lat to GMT_UTM x/y */
+	/* Convert lon/lat to UTM x/y */
 
 	if (lon < 0.0) lon += 360.0;
 	GMT_tm (lon, lat, x, y);
@@ -877,18 +877,18 @@ void GMT_utm (double lon, double lat, double *x, double *y)
 
 void GMT_iutm (double *lon, double *lat, double x, double y)
 {
-	/* Convert GMT_UTM x/y to lon/lat */
+	/* Convert UTM x/y to lon/lat */
 
 	x -= GMT_FALSE_EASTING;
 	if (!project_info.north_pole) y -= GMT_FALSE_NORTHING;
 	GMT_itm (lon, lat, x, y);
 }
 
-/* Spherical GMT_UTM */
+/* Spherical UTM */
 
 void GMT_utm_sph (double lon, double lat, double *x, double *y)
 {
-	/* Convert lon/lat to GMT_UTM x/y */
+	/* Convert lon/lat to UTM x/y */
 
 	if (lon < 0.0) lon += 360.0;
 	GMT_tm_sph (lon, lat, x, y);
@@ -898,7 +898,7 @@ void GMT_utm_sph (double lon, double lat, double *x, double *y)
 
 void GMT_iutm_sph (double *lon, double *lat, double x, double y)
 {
-	/* Convert GMT_UTM x/y to lon/lat */
+	/* Convert UTM x/y to lon/lat */
 
 	x -= GMT_FALSE_EASTING;
 	if (!project_info.north_pole) y -= GMT_FALSE_NORTHING;

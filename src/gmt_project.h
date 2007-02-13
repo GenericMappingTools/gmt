@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.47 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.48 2007-02-13 17:04:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -75,7 +75,7 @@
 #define D2R (M_PI / 180.0)
 #define R2D (180.0 / M_PI)
 
-/* GMT_UTM offsets */
+/* UTM offsets */
 
 #define GMT_FALSE_EASTING    500000.0
 #define GMT_FALSE_NORTHING 10000000.0
@@ -166,7 +166,7 @@ struct GMT_MAP_PROJECTIONS {
 	double o_beta;		/* lon' = beta for central_meridian (In Radians) */
 	double o_FP[3], o_FC[3], o_IP[3], o_IC[3];
 	
-	/* GMT_TM and GMT_UTM Projections */
+	/* TM and UTM Projections */
 
 	double t_lat0;
 	double t_e2, t_M0;
