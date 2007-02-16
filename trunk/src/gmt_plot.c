@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.190 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.191 2007-02-16 02:45:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2969,8 +2969,8 @@ void GMT_draw_map_rose (struct GMT_MAP_ROSE *mr)
 			ps_patch (tx, ty, 3, gmtdefs.background_rgb, TRUE);	/* South */
 		}
 		sincosd (angle, &s, &c);
-		x[0] = x[2] = 0.0;	x[1] = L[0] + gmtdefs.label_offset; x[3] = -x[1];
-		y[1] = y[3] = 0.0;	y[2] = L[0] + gmtdefs.label_offset; y[0] = -y[2];
+		x[0] = x[2] = 0.0;	x[1] = L[0] + gmtdefs.header_offset; x[3] = -x[1];
+		y[1] = y[3] = 0.0;	y[2] = L[0] + gmtdefs.header_offset; y[0] = -y[2];
 		GMT_rotate2D (x, y, 4, mr->x0, mr->y0, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 		for (i = 0; i < 4; i++) GMT_text3D (xp[i], yp[i], project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[i], angle, just[i], 0);
 	}
@@ -3056,12 +3056,12 @@ void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr)
 		ps_segment (x[0], y[0], x[1], y[1]);
 		if (k == 4) k = 0; 
 		if (k == 2 && mr->label[2][0] == '*') {
-			x[0] = mr->x0 + (base + 2.0*tlen[2] + gmtdefs.label_offset+ 0.025*mr->size) * c;	y[0] = mr->y0 + (base + 2.0*tlen[2] + gmtdefs.label_offset + 0.025*mr->size) * s;
+			x[0] = mr->x0 + (base + 2.0*tlen[2] + gmtdefs.header_offset+ 0.025*mr->size) * c;	y[0] = mr->y0 + (base + 2.0*tlen[2] + gmtdefs.header_offset + 0.025*mr->size) * s;
 			GMT_Nstar (x[0], y[0], 0.1*mr->size);
 		}
 		else {
 			ps_setpaint (gmtdefs.background_rgb);
-			x[0] = mr->x0 + (base + 2.0*tlen[2] + gmtdefs.label_offset) * c;	y[0] = mr->y0 + (base + 2.0*tlen[2] + gmtdefs.label_offset) * s;
+			x[0] = mr->x0 + (base + 2.0*tlen[2] + gmtdefs.header_offset) * c;	y[0] = mr->y0 + (base + 2.0*tlen[2] + gmtdefs.header_offset) * s;
 			GMT_text3D (x[0], y[0], project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[k], ew_angle, ljust[k], 0);
 			GMT_setpen (&gmtdefs.tick_pen);
 		}
