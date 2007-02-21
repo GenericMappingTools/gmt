@@ -65,7 +65,9 @@ that each grid domain is within 1e-4 * grid_spacing of the domain of the first g
 .SH BEWARE
 (1) The operator \fBSDIST\fP calculates spherical distances bewteen the (lon, lat)
 point on the stack and all node positions in the grid.  The grid domain
-and the (lon, lat) point are expected to be in degrees.
+and the (lon, lat) point are expected to be in degrees.  Similarly, the \fBSAZ\fP and \fBSBAZ\fP
+operators calculate spherical azimuth and backazimuths in degrees, respectively.
+Note: If the current \fBELLIPSOID\fP is not Sphere then geodesics are used in the calculations.
 .br
 (2) The operator \fBYLM\fP calculates the fully normalized spherical harmonics for degree L and
 order M for all positions in the grid, which is assumed to be in degrees.
