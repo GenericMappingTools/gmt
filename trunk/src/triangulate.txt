@@ -15,7 +15,7 @@ performs Delauney triangulation, i.e., it find how the points should be connecte
 the most equilateral triangulation possible.  If a map projection is chosen then it is applied before
 the triangulation is calculated.  By default, the output is triplets of point id numbers
 that make up each triangle and is written to standard output.
-The id numbers refer to the points position in the input file.
+The id numbers refer to the points position (line number, starting at 0 for the first line) in the input file.
 As an option, you may choose to create a multiple segment file that can be piped through
 \fBpsxy\fP to draw the triangulation network.  If \fB\-G \-I\fP are set a grid will be calculated based
 on the surface defined by the planar triangles.  The actual algorithm used
