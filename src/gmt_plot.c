@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.191 2007-02-16 02:45:09 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.192 2007-02-22 17:51:50 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3745,8 +3745,6 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, int mode)
 		return;
 	}
 
-	ps_setfont (G->label_font);
-	ps_setpaint (G->font_rgb);
 	if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
 		just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
 	else
@@ -3858,7 +3856,6 @@ void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G)
 
 	if (G->transparent) return;	/* Transparent boxes */
 
-	ps_setfont (G->label_font);
 	outline = (G->box & 4) + (G->box & 1);		/* This will give outline as (4|0) + (1|0) = {0, 1, 4, or 5} */
 	if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
 		just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
@@ -3882,6 +3879,8 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 	int i;
 	struct GMT_CONTOUR_LINE *C;
 
+	ps_setfont (G->label_font);
+	ps_setpaint (G->font_rgb);
 	if (G->debug) GMT_contlabel_debug (G);		/* Debugging lines and points */
 	if (G->transparent) {		/* Transparent boxes */
 		GMT_contlabel_clippath (G, 1);		/* Lays down clippath based on ALL labels */
