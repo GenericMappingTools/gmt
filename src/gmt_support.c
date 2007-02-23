@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.287 2007-02-09 20:02:12 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.288 2007-02-23 18:05:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3154,28 +3154,40 @@ void GMT_orient_contour (float *grd, struct GRD_HEADER *h, double *x, double *y,
 {
 	/* Determine handedness of the contour and if opposite of orient reverse the contour */
 	BOOLEAN reverse;
-	int i, j, k, ii[2], jj[2], side[2], z_dir;
-	double fx[2], fy[2], slop = 1.0e-12;
+	int i, j, k, k2, side[2], z_dir;
+	double fx[2], fy[2], dx, dy;
 	
 	if (n < 2) return;	/* Cannot work on a single point */
 	
 	for (k = 0; k < 2; k++) {	/* Calculate fractional node numbers from left/top */
 		fx[k] = (x[k] - h->x_min) / h->x_inc - h->xy_off;
 		fy[k] = (h->y_max - y[k]) / h->y_inc - h->xy_off;
-		ii[k] = (int) floor (fx[k]+slop);
-		jj[k] = (int) ceil  (fy[k]-slop);
 	}
 	
-	i = MIN (ii[0], ii[1]);	/* This is (i,j) of the lower left node in the rectangle defined by 4 nodes */
-	j = MAX (jj[0], jj[1]);
+	/* Get(i,j) of the lower left node in the rectangle containing this contour segment.
+	   We use the average x and y coordinate for this to avoid any round-off involved in
+	   working on a single coordinate. The average coordinate should always be inside the
+	   rectangle and hence the floor/ceil operators will yield the LL node. */
+	   
+	i = (int) floor (0.5 * (fx[0] + fx[1]));
+	j = (int) ceil  (0.5 * (fy[0] + fy[1]));
 	
 	z_dir = (grd[j*h->nx+i] > 0.0) ? +1 : -1;	/* +1 if lower-left node is higher than contour value, else -1 */
 	
 	for (k = 0; k < 2; k++) {	/* Determine which edge the contour points lie on (0-3) */
-		if (fmod (fx[k]+slop, 1.0) < GMT_CONV_LIMIT)		/* Point is on a vertical grid line (left [3] or right [1]) */
-			side[k] = (ii[k] == i) ? 3 : 1;
+		/* We KNOW that for each k, either x[k] or y[k] lies EXACTLY on a gridline.  This is used
+		 * to deal with the inevitable round-off that places points slightly off the gridline.  We
+		 * pick the coordinate closest to the gridline as the one that should be exactly on the gridline */
+		
+		k2 = 1 - k;	/* The other point */
+		dx = fmod (fx[k], 1.0);
+		if (dx > 0.5) dx = 1.0 - dx;	/* Fraction to closest vertical gridline */
+		dy = fmod (fy[k], 1.0);
+		if (dy > 0.5) dy = 1.0 - dy;	/* Fraction to closest horizontal gridline */
+		if (dx < dy)		/* Point is on a vertical grid line (left [3] or right [1]) */
+			side[k] = (fx[k] < fx[k2]) ? 3 : 1;	/* Simply check order of fx to determine which it is */
 		else						/* Point must be on horizontal grid line (top [2] or bottom [0]) */
-			side[k] = (jj[k] == j) ? 0 : 2;
+			side[k] = (fy[k] > fy[k2]) ? 0 : 2;	/* Same for fy */
 	}
 	
 	switch (side[0]) {	/* Entry side */
