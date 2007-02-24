@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.137 2007-02-08 18:18:14 pwessel Exp $
+ *	$Id: pslib.c,v 1.138 2007-02-24 00:09:28 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1268,7 +1268,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	else {
 #ifdef WIN32
 		/* Set PSL_USERDIR to C:\.gmt under Windows */
-		PSL_USERDIR = (char *) ps_memory (VNULL, (size_t)8, sizeof (char), "GMT");
+		PSL_USERDIR = (char *) ps_memory (VNULL, (size_t)8, sizeof (char));
 		sprintf (PSL_USERDIR, "C:%c%s", DIR_DELIM, ".gmt");
 #else
 		fprintf (stderr, "GMT Warning: Could not determine home directory!\n");
