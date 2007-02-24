@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.59 2007-02-03 22:48:23 remko Exp $
+ *	$Id: gmt_nc.c,v 1.60 2007-02-24 00:10:05 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -219,7 +219,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	}
 	else {
 		/* Define dimensions of z variable */
-#define NC_FLOAT_OR_DOUBLE(xmin, xmax, dx) ((dx) < GMT_SMALL * MAX(abs(xmin),abs(xmax)) ? NC_DOUBLE : NC_FLOAT)
+#define NC_FLOAT_OR_DOUBLE(xmin, xmax, dx) ((dx) < GMT_SMALL * MAX(fabs(xmin),fabs(xmax)) ? NC_DOUBLE : NC_FLOAT)
 		ndims = 2;
 		check_nc_status (nc_def_dim (ncid, "x", (size_t) header->nx, &dims[1]));
 		check_nc_status (nc_def_var (ncid, "x", NC_FLOAT_OR_DOUBLE(header->x_min, header->x_max, header->x_inc), 1, &dims[1], &ids[1]));
