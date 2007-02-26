@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.13 2007-02-02 04:14:03 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.14 2007-02-26 03:29:14 pwessel Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 int GMT_is_agc_grid (char *file)
 {	/* Determine if file is a AGC grid file NOT FINISHED YET!!!! */
 	FILE *fp = NULL;
-	char GMT_fopen_path[BUFSIZ];
 	int nx, ny, predicted_size;
 	float recdata[RECORDLENGTH], x_min, x_max, y_min, y_max, x_inc, y_inc;
 	struct STAT buf;
@@ -55,7 +54,7 @@ int GMT_is_agc_grid (char *file)
 		fprintf(stderr, "GMT Fatal Error: Could not open file %s!\n", file);
 		exit (-1);
 	}
-	fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp);
+	GMT_fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp);
 	
 	y_min = recdata[0];
 	y_max = recdata[1];
@@ -78,7 +77,6 @@ int GMT_is_agc_grid (char *file)
 int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 {	/* All AGC files are assumed to be gridline-registered */
 	FILE *fp;
-	char GMT_fopen_path[BUFSIZ];
 	int i;
 	float recdata[RECORDLENGTH];
 	float agchead[BUFFHEADSIZE];
@@ -95,7 +93,7 @@ int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp);
+	GMT_fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp);
 	
 	header->node_offset = 0;	/* Hardwired since no info about this in the header */
 	header->y_min = recdata[0];
@@ -122,7 +120,6 @@ int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 int GMT_agc_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE *fp;
-	char GMT_fopen_path[BUFSIZ];
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
 	void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header);
 
@@ -139,7 +136,7 @@ int GMT_agc_write_grd_info (struct GRD_HEADER *header)
 	
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	fwrite ((void *)prez, sizeof(float), PREHEADSIZE, fp);
+	GMT_fwrite ((void *)prez, sizeof(float), PREHEADSIZE, fp);
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
 
@@ -168,7 +165,6 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
-	char GMT_fopen_path[BUFSIZ];
 	void ReadRecord (FILE *fpi, int recnum, float *z);
 	
 	if (!strcmp (header->name, "=")) {
@@ -280,7 +276,6 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	int rowstart, rowend, colstart, colend = 0, datablockcol, datablockrow;
 	int j_gmt, row, col;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
-	char GMT_fopen_path[BUFSIZ];
 	void WriteRecord (FILE *file, float *rec, float *prerec, float *postrec);
 	void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header);
 
@@ -402,17 +397,17 @@ void ReadRecord (FILE *fpi, int recnum, float *z)
 	int nitems;
 	float garbage[FIRSTZ];
 
-	fread ((void *)garbage, sizeof(float), FIRSTZ, fpi);
-	nitems = fread ((void *)z, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, fpi);
+	GMT_fread ((void *)garbage, sizeof(float), FIRSTZ, fpi);
+	nitems = GMT_fread ((void *)z, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, fpi);
 
 	if (nitems != (ZBLOCKWIDTH * ZBLOCKHEIGHT) && !feof(fpi)) 	/* Bad stuff */
 		fprintf(stderr, "Bad at rec # %d\n", recnum);
-	fread ((void *)garbage, sizeof(float), RECORDLENGTH - (ZBLOCKWIDTH * ZBLOCKHEIGHT + FIRSTZ), fpi);
+	GMT_fread ((void *)garbage, sizeof(float), RECORDLENGTH - (ZBLOCKWIDTH * ZBLOCKHEIGHT + FIRSTZ), fpi);
 }
 
 void WriteRecord (FILE *file, float *rec, float *prerec, float *postrec)
 {
-	fwrite ((void *)prerec, sizeof(float), PREHEADSIZE, file);
-	fwrite ((void *)rec, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, file);
-	fwrite( (void *)postrec, sizeof(float), POSTHEADSIZE, file); 
+	GMT_fwrite ((void *)prerec, sizeof(float), PREHEADSIZE, file);
+	GMT_fwrite ((void *)rec, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, file);
+	GMT_fwrite( (void *)postrec, sizeof(float), POSTHEADSIZE, file); 
 }

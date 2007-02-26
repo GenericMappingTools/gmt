@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.56 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.57 2007-02-26 03:29:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -307,7 +307,6 @@ void GMT_grdio_init (void) {
 int GMT_is_ras_grid (char *file)
 {	/* Determine if file is a Sun rasterfile */
 	FILE *fp;
-	char GMT_fopen_path[BUFSIZ];
 	struct rasterfile h;
 	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
 		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
@@ -331,7 +330,6 @@ int GMT_ras_read_grd_info (struct GRD_HEADER *header)
 	FILE *fp;
 	struct rasterfile h;
 	unsigned char u;
-	char GMT_fopen_path[BUFSIZ];
 	int i;
 
 	if (!strcmp (header->name, "=")) {
@@ -358,7 +356,7 @@ int GMT_ras_read_grd_info (struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	for (i = 0; i < h.maplength; i++) fread ((void *)&u, sizeof (unsigned char *), (size_t)1, fp);	/* Skip colormap by reading since fp could be stdin */
+	for (i = 0; i < h.maplength; i++) GMT_fread ((void *)&u, sizeof (unsigned char *), (size_t)1, fp);	/* Skip colormap by reading since fp could be stdin */
 
 	if (fp != GMT_stdin) GMT_fclose (fp);
 
@@ -378,7 +376,6 @@ int GMT_ras_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE *fp;
 	struct rasterfile h;
-	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "="))
 	{
@@ -387,7 +384,7 @@ int GMT_ras_write_grd_info (struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = fopen (header->name, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -427,7 +424,6 @@ int GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	unsigned char *tmp;
 	struct rasterfile h;
 	int *k;
-	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -441,7 +437,7 @@ int GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 			fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
 			exit (EXIT_FAILURE);
 		}
-		if (h.maplength) fseek (fp, (long) h.maplength, SEEK_CUR);
+		if (h.maplength) GMT_fseek (fp, (long) h.maplength, SEEK_CUR);
 	}
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
@@ -469,12 +465,12 @@ int GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	}
 
 	if (piping)	/* Skip data by reading it */
-		for (j = 0; j < first_row; j++) fread ((void *) tmp, sizeof (unsigned char), (size_t)n2, fp);
+		for (j = 0; j < first_row; j++) GMT_fread ((void *) tmp, sizeof (unsigned char), (size_t)n2, fp);
 	else /* Simply seek by it */
-		fseek (fp, (long) (first_row * n2 * sizeof (unsigned char)), SEEK_CUR);
+		GMT_fseek (fp, (long) (first_row * n2 * sizeof (unsigned char)), SEEK_CUR);
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
-		fread ((void *) tmp, sizeof (unsigned char), (size_t)n2, fp);
+		GMT_fread ((void *) tmp, sizeof (unsigned char), (size_t)n2, fp);
 		for (i = 0; i < width_in; i++) {
 			kk = ij + inc * i;
 			grid[kk] = (float) tmp[k[i]];
@@ -485,7 +481,7 @@ int GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		}
 	}
 	if (piping)	/* Skip data by reading it */
-		for (j = last_row + 1; j < header->ny; j++) fread ((void *) tmp, sizeof (unsigned char), (size_t)n2, fp);
+		for (j = last_row + 1; j < header->ny; j++) GMT_fread ((void *) tmp, sizeof (unsigned char), (size_t)n2, fp);
 
 	header->nx = width_in;
 	header->ny = height_in;
@@ -527,7 +523,7 @@ int GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (header->name, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -582,7 +578,7 @@ int GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 			if (check && GMT_is_fnan (grid[kk])) grid[kk] = (float)header->nan_value;
 			tmp[i] = (unsigned char) grid[kk];
 		}
-		fwrite ((void *)tmp, sizeof (unsigned char), (size_t)width_out, fp);
+		GMT_fwrite ((void *)tmp, sizeof (unsigned char), (size_t)width_out, fp);
 	}
 	if (fp != GMT_stdout) GMT_fclose (fp);
 
@@ -605,7 +601,7 @@ int GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 
 	for (i = 0; i < 8; i++) {
 
-		if (fread ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (-1);
+		if (GMT_fread ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (-1);
 
 		for (j = 0; j < 4; j++) in[j] = (int)byte[j];
 
@@ -692,7 +688,7 @@ int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 		byte[2] = (unsigned char)((value >> 8) & 0xFF);
 		byte[3] = (unsigned char)(value & 0xFF);
 
-		if (fwrite ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (-1);
+		if (GMT_fwrite ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (-1);
 	}
 
 	return (0);
@@ -787,7 +783,6 @@ int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	FILE *fp;
 	BOOLEAN piping = FALSE, check = FALSE;
 	unsigned int *tmp, ival;
-	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -823,13 +818,13 @@ int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	tmp = (unsigned int *) GMT_memory (VNULL, (size_t)mx, sizeof (unsigned int), "GMT_bit_read_grd");
 
 	if (piping) {	/* Skip data by reading it */
-		for (j = 0; j < first_row; j++) fread ((void *) tmp, sizeof (unsigned int), (size_t)mx, fp);
+		for (j = 0; j < first_row; j++) GMT_fread ((void *) tmp, sizeof (unsigned int), (size_t)mx, fp);
 	}
 	else {		/* Simply seek by it */
-		fseek (fp, (long) (first_row * mx * sizeof (unsigned int)), SEEK_CUR);
+		GMT_fseek (fp, (long) (first_row * mx * sizeof (unsigned int)), SEEK_CUR);
 	}
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		fread ((void *) tmp, sizeof (unsigned int), (size_t)mx, fp);	/* Get one row */
+		GMT_fread ((void *) tmp, sizeof (unsigned int), (size_t)mx, fp);	/* Get one row */
 		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
 		for (i = 0; i < width_in; i++) {
 			kk = ij + inc * i;
@@ -841,7 +836,7 @@ int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		}
 	}
 	if (piping) {	/* Skip data by reading it */
-		for (j = last_row + 1; j < header->ny; j++) fread ((void *) tmp, sizeof (unsigned int), (size_t)mx, fp);
+		for (j = last_row + 1; j < header->ny; j++) GMT_fread ((void *) tmp, sizeof (unsigned int), (size_t)mx, fp);
 	}
 
 	header->nx = width_in;
@@ -890,7 +885,7 @@ int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (header->name, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -951,7 +946,7 @@ int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 			if (ival > 1) ival = 1;	/* Truncate to 1 */
 			tmp[word] |= (ival << bit);
 		}
-		fwrite ((void *)tmp, sizeof (unsigned int), (size_t)mx, fp);
+		GMT_fwrite ((void *)tmp, sizeof (unsigned int), (size_t)mx, fp);
 	}
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
@@ -999,7 +994,7 @@ void GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header)
 {
 	/* Because GRD_HEADER is not 64-bit aligned we must read it in parts */
 	
-	if (fread ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || fread ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
+	if (GMT_fread ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fread ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
                 fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
                 exit (EXIT_FAILURE);
         }
@@ -1009,7 +1004,7 @@ void GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header)
 {
 	/* Because GRD_HEADER is not 64-bit aligned we must write it in parts */
 
-	if (fwrite ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || fwrite ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
+	if (GMT_fwrite ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fwrite ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
                 fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
                 exit (EXIT_FAILURE);
         }
@@ -1019,7 +1014,7 @@ void GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header)
 {
 	/* Because GRD_HEADER is not 64-bit aligned we must estimate the # of bytes in parts */
 	
-	if (fseek (fp, (long)(3*sizeof (int) + sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx)), SEEK_SET)) {
+	if (GMT_fseek (fp, (long)(3*sizeof (int) + sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx)), SEEK_SET)) {
 		fprintf (stderr, "GMT Fatal Error: Error seeking past header file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -1031,7 +1026,6 @@ int GMT_native_read_grd_info (struct GRD_HEADER *header)
 	 * all the native binary formats in GMT */
 
 	FILE *fp;
-	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -1057,7 +1051,6 @@ int GMT_native_write_grd_info (struct GRD_HEADER *header)
 	 * all the native binary formats in GMT */
 
 	FILE *fp;
-	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -1065,7 +1058,7 @@ int GMT_native_write_grd_info (struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = fopen (header->name, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -1100,7 +1093,6 @@ int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	void *tmp;			/* Array pointer for reading in rows of data */
-	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -1141,14 +1133,14 @@ int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 	/* Now deal with skipping */
 
 	if (piping) {	/* Skip data by reading it */
-		for (j = 0; j < first_row; j++) fread (tmp, size, (size_t)header->nx, fp);
+		for (j = 0; j < first_row; j++) GMT_fread (tmp, size, (size_t)header->nx, fp);
 	}
 	else {		/* Simply seek over it */
-		fseek (fp, (long) (first_row * header->nx * size), SEEK_CUR);
+		GMT_fseek (fp, (long) (first_row * header->nx * size), SEEK_CUR);
 	}
 
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		fread (tmp, (size_t)size, (size_t)header->nx, fp);	/* Get one row */
+		GMT_fread (tmp, (size_t)size, (size_t)header->nx, fp);	/* Get one row */
 		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
 		for (i = 0; i < width_in; i++) {
 			kk = ij + inc * i;
@@ -1157,7 +1149,7 @@ int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 		}
 	}
 	if (piping) {	/* Skip remaining data by reading it */
-		for (j = last_row + 1; j < header->ny; j++) fread (tmp, (size_t)size, (size_t)header->nx, fp);
+		for (j = last_row + 1; j < header->ny; j++) GMT_fread (tmp, (size_t)size, (size_t)header->nx, fp);
 	}
 
 	header->nx = width_in;
@@ -1216,7 +1208,7 @@ int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, doub
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (header->name, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -1276,7 +1268,7 @@ int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, doub
 	for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, j2++) {
 		ij = j2 * width_in + i2;
 		for (i = 0; i < width_out; i++) GMT_encode (tmp, i, grid[inc*(ij+k[i])], type);
-		fwrite ((void *)tmp, (size_t)size, (size_t)header->nx, fp);
+		GMT_fwrite ((void *)tmp, (size_t)size, (size_t)header->nx, fp);
 	}
 
 	GMT_free ((void *)k);
@@ -1417,7 +1409,6 @@ int GMT_is_srf_grid (char *file)
 {
 	FILE *fp;
 	char id[5];
-	char GMT_fopen_path[BUFSIZ];
 	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
 		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
 		exit (EXIT_FAILURE);
@@ -1426,7 +1417,7 @@ int GMT_is_srf_grid (char *file)
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
-	fread (id, sizeof (char), (size_t)4, fp);
+	GMT_fread (id, sizeof (char), (size_t)4, fp);
 	GMT_fclose (fp); 
 	if (!strncmp (id, "DSBB",4)) return (GMT_grd_format_decoder ("sf"));
 	if (!strncmp (id, "DSRB",4)) return (GMT_grd_format_decoder ("sd"));
@@ -1441,7 +1432,6 @@ int GMT_srf_read_grd_info (struct GRD_HEADER *header)
 	int GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h);
 	int GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h);
 	char id[5];
-	char GMT_fopen_path[BUFSIZ];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -1454,8 +1444,8 @@ int GMT_srf_read_grd_info (struct GRD_HEADER *header)
 		exit (EXIT_FAILURE);
 	}
 
-	fread (id, sizeof (char), (size_t)4, fp); 
-	rewind(fp);
+	GMT_fread (id, sizeof (char), (size_t)4, fp); 
+	GMT_fseek(fp, 0L, SEEK_SET);
 	if (strncmp (id, "DSBB",4) && strncmp (id, "DSRB",4)) {
 		fprintf (stderr, "GMT Fatal Error: %s is not a valid Surfer 6|7 grid\n", header->name);
 		exit (EXIT_FAILURE);
@@ -1512,7 +1502,6 @@ int GMT_srf_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE *fp;
 	struct srf_header6 h;
-	char GMT_fopen_path[BUFSIZ];
 	int GMT_write_srfheader (FILE *fp, struct srf_header6 *h);
 
 	if (!strcmp (header->name, "="))
@@ -1522,7 +1511,7 @@ int GMT_srf_write_grd_info (struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = fopen (header->name, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -1553,7 +1542,7 @@ int GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h)
 {
 	/* Reads the header of a Surfer 6 gridfile */
 
-	fread ((void *)h, sizeof (struct srf_header6), (size_t)1, fp); 
+	GMT_fread ((void *)h, sizeof (struct srf_header6), (size_t)1, fp); 
 	return (0);
 }
 
@@ -1561,14 +1550,14 @@ int GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
 {
 	/* Reads the header of a Surfer 7 gridfile */
 
-	fseek (fp, 3*sizeof(int), SEEK_SET);	/* skip the first 12 bytes */
-	fread ((void *)h, sizeof (struct srf_header7), (size_t)1, fp);
+	GMT_fseek (fp, 3*sizeof(int), SEEK_SET);	/* skip the first 12 bytes */
+	GMT_fread ((void *)h, sizeof (struct srf_header7), (size_t)1, fp);
 	return (0);
 }
 
 int GMT_write_srfheader (FILE *fp, struct srf_header6 *h)
 {
-	fwrite ((void *)h, sizeof (struct srf_header6), (size_t)1, fp); 
+	GMT_fwrite ((void *)h, sizeof (struct srf_header6), (size_t)1, fp); 
 	return (0);
 }
 
@@ -1594,7 +1583,6 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	void *tmp;			/* Array pointer for reading in rows of data */
-	char GMT_fopen_path[BUFSIZ];
 	header->nan_value = 0.1701410e39;	/* Test value in Surfer grids */
 
 	if (!strcmp (header->name, "=")) {
@@ -1606,9 +1594,9 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	}
 	else if ((fp = GMT_fopen (header->name, "rb")) != NULL)	/* Skip header */
 		if (header->type == 6)	/* Version 6 */
-			fseek (fp, (long) sizeof (struct srf_header6), SEEK_SET);
+			GMT_fseek (fp, (long) sizeof (struct srf_header6), SEEK_SET);
 		else 			/* Version 7  (skip also the first 12 bytes) */
-			fseek (fp, (long) (3*sizeof(int) + sizeof (struct srf_header7)), SEEK_SET);
+			GMT_fseek (fp, (long) (3*sizeof(int) + sizeof (struct srf_header7)), SEEK_SET);
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
 		exit (EXIT_FAILURE);
@@ -1638,14 +1626,14 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	/* Now deal with skipping */
 
 	if (piping) {	/* Skip data by reading it */
-		for (j = 0; j < first_row; j++) fread (tmp, size, (size_t)header->nx, fp);
+		for (j = 0; j < first_row; j++) GMT_fread (tmp, size, (size_t)header->nx, fp);
 	}
 	else {		/* Simply seek over it */
-		fseek (fp, (long) (first_row * header->nx * size), SEEK_CUR);
+		GMT_fseek (fp, (long) (first_row * header->nx * size), SEEK_CUR);
 	}
 
 	for (j = first_row, j2 = height_in-1; j <= last_row; j++, j2--) {
-		fread (tmp, size, (size_t)header->nx, fp);	/* Get one row */
+		GMT_fread (tmp, size, (size_t)header->nx, fp);	/* Get one row */
 		ij = (j2 + pad[3]) * width_out + i_0_out;
 		for (i = 0; i < width_in; i++) {
 			kk = ij + inc * i;
@@ -1654,7 +1642,7 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		}
 	}
 	if (piping) {	/* Skip remaining data by reading it */
-		for (j = last_row + 1; j < header->ny; j++) fread (tmp, size, (size_t)header->nx, fp);
+		for (j = last_row + 1; j < header->ny; j++) GMT_fread (tmp, size, (size_t)header->nx, fp);
 	}
 
 	header->nx = width_in;
@@ -1715,7 +1703,7 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = fopen (header->name, "wb")) == NULL) {
+	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -1765,7 +1753,7 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	}
 	h.z_min = header->z_min;	 h.z_max = header->z_max;
 
-	if (fwrite ((void *)&h, sizeof (struct srf_header6), (size_t)1, fp) != 1) {
+	if (GMT_fwrite ((void *)&h, sizeof (struct srf_header6), (size_t)1, fp) != 1) {
 		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
 		exit (EXIT_FAILURE);
 	}
@@ -1778,7 +1766,7 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	for (j = 0, j2 = last_row + pad[3]; j < height_out; j++, j2--) {
 		ij = j2 * width_in + i2;
 		for (i = 0; i < width_out; i++) GMT_encode (tmp, i, grid[inc*(ij+k[i])], type);
-		fwrite ((void *)tmp, (size_t)size, (size_t)header->nx, fp);
+		GMT_fwrite ((void *)tmp, (size_t)size, (size_t)header->nx, fp);
 	}
 
 	GMT_free ((void *)k);

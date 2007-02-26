@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.89 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.90 2007-02-26 03:29:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -525,7 +525,6 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	int r_w;
 	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
-	char GMT_fopen_path[BUFSIZ];
 	BOOLEAN header = TRUE, magic = TRUE;
 	EXTERN_MSC int GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 
@@ -569,7 +568,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->header.name);
 			exit (EXIT_FAILURE);
 		}
-		if (header) fseek (G->fp, (long)GRD_HEADER_SIZE, SEEK_SET);
+		if (header) GMT_fseek (G->fp, (long)GRD_HEADER_SIZE, SEEK_SET);
 	}
 
 	G->size = GMT_grd_data_size (G->header.type, &G->header.nan_value);
@@ -626,12 +625,12 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	else {			/* Get a binary row */
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
-			fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
+			GMT_fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
 			return;
 		}
-		if (!G->auto_advance) fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
+		if (!G->auto_advance) GMT_fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
 
-		if (fread (G->v_row, G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx) {	/* Get one row */
+		if (GMT_fread (G->v_row, G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx) {	/* Get one row */
 			fprintf (stderr, "%s: Read error for file %s near row %d\n", GMT_program, G->header.name, G->row);
 			exit (EXIT_FAILURE);
 		}
@@ -668,7 +667,7 @@ void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 			break;
 		default:
 			for (i = 0; i < G->header.nx; i++) GMT_encode (tmp, i, row[i], GMT_grdformats[G->header.type][1]);
-			fwrite (tmp, (size_t)size, (size_t)G->header.nx, G->fp);
+			GMT_fwrite (tmp, (size_t)size, (size_t)G->header.nx, G->fp);
 	}
 
 	 GMT_free (tmp);
@@ -1168,7 +1167,6 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	int min, i, j, k, ij, mx, my, first_i, n_skip, n_cols;
 	short int *i2;
 	char file[BUFSIZ];
-	char GMT_fopen_path[BUFSIZ];
 	struct STAT buf;
 	FILE *fp;
 
@@ -1251,7 +1249,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	first_i = (int)floor (grd->x_min / grd->x_inc);				/* first tile partly or fully inside region */
 	if (first_i < 0) first_i += n_cols;
 	n_skip = (int)floor ((project_info.ymax - grd->y_max) / grd->y_inc);	/* Number of rows clearly above y_max */
-	if (fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) {
+	if (GMT_fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) {
 		fprintf (stderr, "%s: Unable to seek ahead in file %s\n", GMT_program, imgfile);
 		exit (EXIT_FAILURE);
 	}
@@ -1259,7 +1257,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	i2 = (short int *) GMT_memory (VNULL, (size_t)n_cols, sizeof (short int), GMT_program);
 	for (j = 0; j < grd->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */
 		ij = (j + GMT_pad[3]) * mx + GMT_pad[0];
-		fread ((void *)i2, sizeof (short int), n_cols, fp);
+		GMT_fread ((void *)i2, sizeof (short int), n_cols, fp);
 		for (i = 0, k = first_i; i < grd->nx; i++) {	/* Process this row's values */
 			switch (mode) {
 				case 0:	/* No encoded track flags, do nothing */

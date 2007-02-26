@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.130 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.131 2007-02-26 03:29:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -127,6 +127,65 @@ int GMT_scanf_geo (char *s, double *val);
 int GMT_scanf_float (char *s, double *val);
 int GMT_n_segment_points (struct GMT_LINE_SEGMENT *S, int n_segments);
 
+/* Library functions needed for WIndows DLL to work properly.
+ * THese are only compiled under Windows - under other OS the
+ * macros in gmt_io.h will kick in instead.
+ */
+
+#ifdef WIN32
+FILE *GMT_fdopen (int handle, const char *mode)
+{	/* Wrapper for fdopen */
+	FILE *fp;
+
+	if ((fp = fdopen (handle, mode))) return (fp);
+	return (NULL);
+}
+
+char *GMT_fgets (char *str, int size, FILE *stream)
+{
+	return (fgets (str, size, stream));
+}
+
+int GMT_fputs (const char *str, FILE *stream)
+{
+	return (fputs (str, stream));
+}
+
+int GMT_fseek (FILE *stream, long offset, int whence)
+{
+	return (fseek(stream, offset, whence));
+}
+
+long GMT_ftell (FILE *stream)
+{
+	return (ftell(stream));
+}
+
+size_t GMT_fread (void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream)
+{
+	return (fread (ptr, size, nmemb, stream));
+}
+
+size_t GMT_fwrite (const void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream)
+{
+	return (fwrite (ptr, size, nmemb, stream));
+}
+
+int GMT_fclose (FILE *stream)
+{
+        return (fclose (stream));
+}
+#endif
+
+FILE *GMT_fopen (const char* filename, const char *mode)
+{
+	char path[BUFSIZ];
+	
+	if (mode[0] == 'r')
+		return (fopen (GMT_getdatapath(filename, path),mode));
+	else
+		return (fopen (filename, mode));
+}
 
 /* Table I/O routines for ascii and binary io */
 
@@ -254,14 +313,6 @@ int GMT_access (const char* filename, int mode)
 		if (!(access (filename, mode))) return (0);
 	}
 	return (-1);
-}
-
-FILE *GMT_fdopen (int handle, const char *mode)
-{	/* Wrapper for fdopen */
-	FILE *fp;
-
-	if ((fp = fdopen (handle, mode))) return (fp);
-	return (NULL);
 }
 
 void GMT_io_init (void)
@@ -501,7 +552,7 @@ int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 	int n_read, i;
 
 	GMT_io.status = 0;
-	if ((n_read = fread ((void *) GMT_data, sizeof (double), (size_t)(*n), fp)) != (*n)) {
+	if ((n_read = GMT_fread ((void *) GMT_data, sizeof (double), (size_t)(*n), fp)) != (*n)) {
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 	}
 
@@ -532,7 +583,7 @@ int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr)
 	unsigned int *ii, jj;
 
 	GMT_io.status = 0;
-	if ((n_read = fread ((void *) GMT_data, sizeof (double), (size_t)(*n), fp)) != (*n)) {
+	if ((n_read = GMT_fread ((void *) GMT_data, sizeof (double), (size_t)(*n), fp)) != (*n)) {
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 	}
 
@@ -570,7 +621,7 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 	static float GMT_f[BUFSIZ];
 
 	GMT_io.status = 0;
-	if ((n_read = fread ((void *) GMT_f, sizeof (float), (size_t)(*n), fp)) != (*n)) {
+	if ((n_read = GMT_fread ((void *) GMT_f, sizeof (float), (size_t)(*n), fp)) != (*n)) {
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 	}
 	else {
@@ -603,7 +654,7 @@ int GMT_bin_float_input_swab (FILE *fp, int *n, double **ptr)
 	static float GMT_f[BUFSIZ];
 
 	GMT_io.status = 0;
-	if ((n_read = fread ((void *) GMT_f, sizeof (float), (size_t)(*n), fp)) != (*n)) {
+	if ((n_read = GMT_fread ((void *) GMT_f, sizeof (float), (size_t)(*n), fp)) != (*n)) {
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 	}
 	else {
@@ -825,7 +876,7 @@ int GMT_bin_double_output (FILE *fp, int n, double *ptr)
 		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
 	}
 
-	return (fwrite ((void *) ptr, sizeof (double), (size_t)n, fp));
+	return (GMT_fwrite ((void *) ptr, sizeof (double), (size_t)n, fp));
 }
 
 int GMT_bin_double_output_swab (FILE *fp, int n, double *ptr)
@@ -844,7 +895,7 @@ int GMT_bin_double_output_swab (FILE *fp, int n, double *ptr)
 		jj = GMT_swab4 (ii[0]);
 		ii[0] = GMT_swab4 (ii[1]);
 		ii[1] = jj;
-		k += fwrite ((void *) &d, sizeof (double), (size_t)1, fp);
+		k += GMT_fwrite ((void *) &d, sizeof (double), (size_t)1, fp);
 	}
 
 	return (k);
@@ -866,7 +917,7 @@ int GMT_bin_float_output (FILE *fp, int n, double *ptr)
 		else
 			GMT_f[i] = (float) ptr[i];
 	}
-	return (fwrite ((void *) GMT_f, sizeof (float), (size_t)n, fp));
+	return (GMT_fwrite ((void *) GMT_f, sizeof (float), (size_t)n, fp));
 }
 
 int GMT_bin_float_output_swab (FILE *fp, int n, double *ptr)
@@ -887,7 +938,7 @@ int GMT_bin_float_output_swab (FILE *fp, int n, double *ptr)
 			GMT_f[i] = (float) ptr[i];
 		ii = (unsigned int *)&GMT_f[i];
 		*ii = GMT_swab4 (*ii);
-		k += fwrite ((void *) &GMT_f[i], sizeof (float), (size_t)1, fp);
+		k += GMT_fwrite ((void *) &GMT_f[i], sizeof (float), (size_t)1, fp);
 	}
 	return (k);
 }
@@ -1071,7 +1122,7 @@ int GMT_a_read (FILE *fp, double *d)
 int GMT_c_read (FILE *fp, double *d)
 {
 	char c;
-	if (fread ((void *)&c, sizeof (char), 1, fp)) {
+	if (GMT_fread ((void *)&c, sizeof (char), 1, fp)) {
 		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) c) : (double) c;
 		return (1);
 	}
@@ -1081,7 +1132,7 @@ int GMT_c_read (FILE *fp, double *d)
 int GMT_u_read (FILE *fp, double *d)
 {
 	unsigned char u;
-	if (fread ((void *)&u, sizeof (unsigned char), 1, fp)) {
+	if (GMT_fread ((void *)&u, sizeof (unsigned char), 1, fp)) {
 		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) u) : (double) u;
 		return (1);
 	}
@@ -1091,7 +1142,7 @@ int GMT_u_read (FILE *fp, double *d)
 int GMT_h_read (FILE *fp, double *d)
 {
 	short int h;
-	if (fread ((void *)&h, sizeof (short int), 1, fp)) {
+	if (GMT_fread ((void *)&h, sizeof (short int), 1, fp)) {
 		if (GMT_do_swab) h = GMT_swab2 (h);
 		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) h) : (double) h;
 		return (1);
@@ -1102,7 +1153,7 @@ int GMT_h_read (FILE *fp, double *d)
 int GMT_H_read (FILE *fp, double *d)
 {
 	unsigned short int h;
-	if (fread ((void *)&h, sizeof (unsigned short int), 1, fp)) {
+	if (GMT_fread ((void *)&h, sizeof (unsigned short int), 1, fp)) {
 		if (GMT_do_swab) h = GMT_swab2 (h);
 		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) h) : (double) h;
 		return (1);
@@ -1113,7 +1164,7 @@ int GMT_H_read (FILE *fp, double *d)
 int GMT_i_read (FILE *fp, double *d)
 {
 	int i;
-	if (fread ((void *)&i, sizeof (int), 1, fp)) {
+	if (GMT_fread ((void *)&i, sizeof (int), 1, fp)) {
 		if (GMT_do_swab) i = GMT_swab4 (i);
 		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) i) : (double) i;
 		return (1);
@@ -1124,7 +1175,7 @@ int GMT_i_read (FILE *fp, double *d)
 int GMT_I_read (FILE *fp, double *d)
 {
 	unsigned int i;
-	if (fread ((void *)&i, sizeof (unsigned int), 1, fp)) {
+	if (GMT_fread ((void *)&i, sizeof (unsigned int), 1, fp)) {
 		if (GMT_do_swab) i = GMT_swab4 (i);
 		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) i) : (double) i;
 		return (1);
@@ -1135,7 +1186,7 @@ int GMT_I_read (FILE *fp, double *d)
 int GMT_l_read (FILE *fp, double *d)
 {
 	long int l;
-	if (fread ((void *)&l, sizeof (long int), 1, fp)) {
+	if (GMT_fread ((void *)&l, sizeof (long int), 1, fp)) {
 		if (GMT_do_swab) {
 			unsigned int *i, k;
 			i = (unsigned int *)&l;
@@ -1150,7 +1201,7 @@ int GMT_l_read (FILE *fp, double *d)
 int GMT_f_read (FILE *fp, double *d)
 {
 	float f;
-	if (fread ((void *)&f, sizeof (float), 1, fp)) {
+	if (GMT_fread ((void *)&f, sizeof (float), 1, fp)) {
 		if (GMT_do_swab) {
 			unsigned int *i;
 			i = (unsigned int *)&f;
@@ -1164,7 +1215,7 @@ int GMT_f_read (FILE *fp, double *d)
 
 int GMT_d_read (FILE *fp, double *d)
 {
-	if (fread ((void *)d, sizeof (double), 1, fp)) {
+	if (GMT_fread ((void *)d, sizeof (double), 1, fp)) {
 		if (GMT_do_swab) {
 			unsigned int *i, j;
 			i = (unsigned int *)d;
@@ -1191,7 +1242,7 @@ int GMT_c_write (FILE *fp, double d)
 	char c;
 	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	c = (char) d;
-	return (fwrite ((void *)&c, sizeof (char), (size_t)1, fp));
+	return (GMT_fwrite ((void *)&c, sizeof (char), (size_t)1, fp));
 }
 
 int GMT_u_write (FILE *fp, double d)
@@ -1199,7 +1250,7 @@ int GMT_u_write (FILE *fp, double d)
 	unsigned char u;
 	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	u = (unsigned char) d;
-	return (fwrite ((void *)&u, sizeof (unsigned char), (size_t)1, fp));
+	return (GMT_fwrite ((void *)&u, sizeof (unsigned char), (size_t)1, fp));
 }
 
 int GMT_h_write (FILE *fp, double d)
@@ -1207,7 +1258,7 @@ int GMT_h_write (FILE *fp, double d)
 	short int h;
 	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	h = (short int) d;
-	return (fwrite ((void *)&h, sizeof (short int), (size_t)1, fp));
+	return (GMT_fwrite ((void *)&h, sizeof (short int), (size_t)1, fp));
 }
 
 int GMT_H_write (FILE *fp, double d)
@@ -1215,7 +1266,7 @@ int GMT_H_write (FILE *fp, double d)
 	unsigned short int h;
 	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	h = (unsigned short int) d;
-	return (fwrite ((void *)&h, sizeof (unsigned short int), (size_t)1, fp));
+	return (GMT_fwrite ((void *)&h, sizeof (unsigned short int), (size_t)1, fp));
 }
 
 int GMT_i_write (FILE *fp, double d)
@@ -1223,7 +1274,7 @@ int GMT_i_write (FILE *fp, double d)
 	int i;
 	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	i = (int) d;
-	return (fwrite ((void *)&i, sizeof (int), (size_t)1, fp));
+	return (GMT_fwrite ((void *)&i, sizeof (int), (size_t)1, fp));
 }
 
 int GMT_I_write (FILE *fp, double d)
@@ -1231,7 +1282,7 @@ int GMT_I_write (FILE *fp, double d)
 	unsigned int i;
 	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	i = (unsigned int) d;
-	return (fwrite ((void *)&i, sizeof (unsigned int), (size_t)1, fp));
+	return (GMT_fwrite ((void *)&i, sizeof (unsigned int), (size_t)1, fp));
 }
 
 int GMT_l_write (FILE *fp, double d)
@@ -1239,7 +1290,7 @@ int GMT_l_write (FILE *fp, double d)
 	long int l;
 	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	l = (long int) d;
-	return (fwrite ((void *)&l, sizeof (long int), (size_t)1, fp));
+	return (GMT_fwrite ((void *)&l, sizeof (long int), (size_t)1, fp));
 }
 
 int GMT_f_write (FILE *fp, double d)
@@ -1247,13 +1298,13 @@ int GMT_f_write (FILE *fp, double d)
 	float f;
 	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	f = (float) d;
-	return (fwrite ((void *)&f, sizeof (float), (size_t)1, fp));
+	return (GMT_fwrite ((void *)&f, sizeof (float), (size_t)1, fp));
 }
 
 int GMT_d_write (FILE *fp, double d)
 {
 	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
-	return (fwrite ((void *)&d, sizeof (double), (size_t)1, fp));
+	return (GMT_fwrite ((void *)&d, sizeof (double), (size_t)1, fp));
 }
 
 void GMT_col_ij (struct GMT_Z_IO *r, int ij, int *gmt_ij)
@@ -2623,7 +2674,6 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 	/* Reads an entire multisegment data set into memory */
 
 	char open_mode[4], file[BUFSIZ];
-	char GMT_fopen_path[BUFSIZ];
 	BOOLEAN save, ascii, close_file = FALSE, no_segments;
 	size_t n_seg_alloc = GMT_CHUNK, n_row_alloc = GMT_CHUNK, row = 0;
 	int seg = -1, k, n, n_read = 0, n_fields, n_expected_fields;
@@ -2830,7 +2880,6 @@ int GMT_export_table (void *dest, int dest_type, struct GMT_TABLE *table, BOOLEA
 	/* Writes an entire multisegment data set to file or wherever */
 
 	char open_mode[4], file[BUFSIZ];
-	char GMT_fopen_path[BUFSIZ];
 	BOOLEAN ascii, close_file = FALSE;
 	size_t row = 0;
 	int seg, col;

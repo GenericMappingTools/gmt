@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.142 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: mgd77.c,v 1.143 2007-02-26 03:29:15 pwessel Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -279,7 +279,6 @@ int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD
 	
 	int start, stop;
 	char mode[2];
-	char GMT_fopen_path[BUFSIZ];
 	
 	mode[1] = '\0';	/* Thus mode will be a 1-char string */
 	
@@ -2397,7 +2396,6 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 	int i;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	char file[BUFSIZ], line[BUFSIZ];
-	char GMT_fopen_path[BUFSIZ];
 	FILE *fp;
 	
 	MGD77_Set_Home (F);
@@ -2459,7 +2457,6 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	BOOLEAN all;
 	size_t n_alloc = 0;
 	char **L = NULL, line[BUFSIZ];
-	char GMT_fopen_path[BUFSIZ];
 #ifndef WIN32
 	int k;
 	DIR *dir;
@@ -4449,14 +4446,13 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 	BOOLEAN skip;
 	char line[BUFSIZ], name[GMT_TEXT_LEN], factor[GMT_TEXT_LEN], origin[GMT_TEXT_LEN], basis[BUFSIZ];
 	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN], word[BUFSIZ], *p, *f;
-	char GMT_fopen_path[BUFSIZ];
 	struct MGD77_CORRTABLE **C_table;
 	struct MGD77_CORRECTION *c, **previous;
 	FILE *fp;
 	
 	if (!tablefile) {	/* Try default correction table */
 		sprintf (line, "%s%cmgd77_corrections.d" , F->MGD77_HOME, DIR_DELIM);
-		if ((fp = fopen (line, "r")) == NULL) {
+		if ((fp = GMT_fopen (line, "r")) == NULL) {
 			fprintf (stderr, "%s: No default MGD77 Correction table (%s) found!\n", GMT_program, line);
 			exit (EXIT_FAILURE);
 		}
@@ -4471,7 +4467,7 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 	C_table = (struct MGD77_CORRTABLE **)GMT_memory (VNULL, n_cruises, sizeof (struct MGD77_CORRTABLE *), "MGD77_parse_corrtable");
 	for (cruise_id = 0; cruise_id < n_cruises; cruise_id++) C_table[cruise_id] = (struct MGD77_CORRTABLE *)GMT_memory (VNULL, MGD77_SET_COLS, sizeof (struct MGD77_CORRTABLE), "MGD77_parse_corrtable");
 
-	while (fgets (line, BUFSIZ, fp)) {
+	while (GMT_fgets (line, BUFSIZ, fp)) {
 		rec++;
 		if (line[0] == '#' || line[0] == '\0') continue;
 		if (line[0] == '>') {	/* Cruise specified, get ID */
