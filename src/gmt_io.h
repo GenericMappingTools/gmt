@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.59 2007-02-26 03:29:14 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.60 2007-02-26 22:49:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,8 +71,8 @@ EXTERN_MSC char *GMT_fgets (char *line, int buf, FILE *fp);
 EXTERN_MSC int GMT_fputs (const char *line, FILE *fp);
 EXTERN_MSC int GMT_fseek (FILE *stream, long offset, int whence);
 EXTERN_MSC long GMT_ftell (FILE *stream);
-EXTERN_MSC size_t GMT_fread (void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream);
-EXTERN_MSC size_t GMT_fwrite (const void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream);
+EXTERN_MSC size_t GMT_fread (void * ptr, size_t size, size_t nmemb, FILE * stream);
+EXTERN_MSC size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE * stream);
 EXTERN_MSC int GMT_fclose (FILE *stream);
 #else
 #define GMT_fdopen(handle, mode) fdopen(handle, mode)
