@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.131 2007-02-26 03:29:14 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.132 2007-02-26 22:49:47 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -161,12 +161,12 @@ long GMT_ftell (FILE *stream)
 	return (ftell(stream));
 }
 
-size_t GMT_fread (void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream)
+size_t GMT_fread (void * ptr, size_t size, size_t nmemb, FILE * stream)
 {
 	return (fread (ptr, size, nmemb, stream));
 }
 
-size_t GMT_fwrite (const void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream)
+size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE * stream)
 {
 	return (fwrite (ptr, size, nmemb, stream));
 }
