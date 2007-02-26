@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.26 2007-02-26 03:29:14 pwessel Exp $
+REM	$Id: gmtinstall.bat,v 1.27 2007-02-26 04:00:52 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
@@ -57,7 +57,7 @@ REM	    It is ONLY used if the user does not set %GMT_SHAREDIR%.
 REM
 SET BINDIR="..\bin"
 SET LIBDIR="..\lib"
-SET GMT_SHARE_PATH=%GMTROOT%/share
+SET GMT_SHARE_PATH="\"C:\\GMT\\share\""
 REM
 REM STEP e: If you WANT TO  use Shewchuk's triangulation
 REM	    routine, you must set TRIANGLE to "yes" :
