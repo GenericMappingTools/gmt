@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.58 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.59 2007-02-26 03:29:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -65,15 +65,31 @@
 #define GMT_IS_ARGTIME		32	/* To invoke GMT_scanf_argtime()  */
 #define GMT_IS_UNKNOWN		128	/* Input type is not knowable without -f */
 
-#define GMT_fopen(filename,mode)  fopen(GMT_getdatapath(filename, GMT_fopen_path),mode)
-#define GMT_fclose(fp) fclose(fp)
+#ifdef WIN32
+EXTERN_MSC FILE *GMT_fdopen (int handle, const char *mode);
+EXTERN_MSC char *GMT_fgets (char *line, int buf, FILE *fp);
+EXTERN_MSC int GMT_fputs (const char *line, FILE *fp);
+EXTERN_MSC int GMT_fseek (FILE *stream, long offset, int whence);
+EXTERN_MSC long GMT_ftell (FILE *stream);
+EXTERN_MSC size_t GMT_fread (void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream);
+EXTERN_MSC size_t GMT_fwrite (const void * restrict ptr, size_t size, size_t nmemb, FILE * restrict stream);
+EXTERN_MSC int GMT_fclose (FILE *stream);
+#else
+#define GMT_fdopen(handle, mode) fdopen(handle, mode)
 #define GMT_fgets(line,buf,fp) fgets(line,buf,fp)
+#define GMT_fputs(line,fp) fputs(line,fp)
+#define GMT_fseek(stream,offset,whence) fseek(stream,offset,whence)
+#define GMT_ftell(stream) ftell(stream)
+#define GMT_fread(ptr,size,nmemb,stream) fread(ptr,size,nmemb,stream)
+#define GMT_fwrite(ptr,size,nmemb,stream) fwrite(ptr,size,nmemb,stream)
+#define GMT_fclose(fp) fclose(fp)
+#endif
 
+EXTERN_MSC FILE *GMT_fopen (const char* filename, const char *mode);
 EXTERN_MSC char *GMT_getuserpath (const char *stem, char *path);		/* Look for user file */
 EXTERN_MSC char *GMT_getdatapath (const char *stem, char *path);		/* Look for data file */
 EXTERN_MSC char *GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);	/* Look for shared file */
 EXTERN_MSC int GMT_access (const char *filename, int mode);		/* access wrapper */
-EXTERN_MSC FILE *GMT_fdopen (int handle, const char *mode);		/* fdopen wrapper */
 EXTERN_MSC void GMT_io_init (void);					/* Initialize pointers */
 EXTERN_MSC int GMT_parse_b_option (char *text);				/* Decode -b option and set parameters */
 EXTERN_MSC int GMT_parse_f_option (char *text);				/* Decode -i option and set parameters */

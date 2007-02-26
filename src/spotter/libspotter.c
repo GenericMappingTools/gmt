@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.36 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: libspotter.c,v 1.37 2007-02-26 03:29:15 pwessel Exp $
  *
  *   Copyright (c) 1999-2007 by P. Wessel
  *
@@ -72,7 +72,6 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	FILE *fp;
 	struct EULER *e;
 	char  buffer[BUFSIZ];
-	char GMT_fopen_path[BUFSIZ];
 	int n, nf, i = 0, j, k, n_alloc = GMT_SMALL_CHUNK;
 	double last_t, K[8];
 
