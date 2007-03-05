@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract.c,v 1.5 2006-05-12 04:15:12 pwessel Exp $
+ *	$Id: polygon_extract.c,v 1.6 2007-03-05 21:38:15 pwessel Exp $
  */
 /* 
  *
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
 		for (k = 0; k < poly[j].h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
 				fprintf(stderr,"polygon_extract:  ERROR  reading file.\n");
-				exit(EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			if (p.x < 0) fprintf (stderr, "x < 0\n");
 			if (bin)
