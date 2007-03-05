@@ -114,9 +114,14 @@ x-dash.  \fIsize\fP is the length of a short horizontal line segment.
 st\fBa\fPr.  \fIsize\fP is diameter of circumscribing circle.
 .TP
 .B \-Sb
-\fBb\fPar extending from \fIbase\fP to y.  \fIsize\fP is bar width. Append \fBu\fP
+Vertical \fBb\fPar extending from \fIbase\fP to y.  \fIsize\fP is bar width. Append \fBu\fP
 if \fIsize\fP is in x-units [Default is plot-distance units]. By default,
-\fIbase\fP = 0.  Append \fBb\fP\fIbase\fP to change this value.  
+\fIbase\fP = ymin.  Append \fBb\fP\fIbase\fP to change this value.  
+.TP
+.B \-SB
+Horizontal \fBb\fPar extending from \fIbase\fP to x.  \fIsize\fP is bar width. Append \fBu\fP
+if \fIsize\fP is in y-units [Default is plot-distance units]. By default,
+\fIbase\fP = xmin.  Append \fBb\fP\fIbase\fP to change this value.  
 .TP
 .B \-Sc
 \fBc\fPircle.  \fIsize\fP is diameter of circle.
