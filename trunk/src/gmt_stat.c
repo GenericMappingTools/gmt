@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.43 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.44 2007-03-05 21:47:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2267,7 +2267,7 @@ int GMT_median (double *x, size_t n, double xmin, double xmax, double m_initial,
 		}
 		else {	/* If we get here, I made a mistake!  */
 			fprintf (stderr,"%s: GMT Fatal Error: Internal goof - please report to developers!\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 
 	} while (!finished);
@@ -2584,11 +2584,11 @@ double GMT_chebyshev (double x, int n)
 	
 	if (n < 0) {
 		fprintf (stderr, "GMT: ERROR.  GMT_chebyshev given negative degree (%d)\n", n);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (fabs (x) > 1.0) {
 		fprintf (stderr, "GMT: ERROR.  GMT_chebyshev given |x| > 1 (%f)\n", x);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	switch (n) {	/* Testing the order of the polynomial */

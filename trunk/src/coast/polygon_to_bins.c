@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.7 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: polygon_to_bins.c,v 1.8 2007-03-05 21:47:11 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -605,5 +605,5 @@ void give_bad_message_and_exit (int id, int kind, int pt)
 	fprintf (stderr, "polygon_to_bins: Incremental %s exceeds short int range for polygon %d near point %d\n",
 		type[kind], id, pt);
 	fprintf (stderr, "polygon_to_bins: Most likely cause is a point separation that exceeds the bin spacing\n");
-	exit (EXIT_FAILURE);
+	GMT_exit (EXIT_FAILURE);
 }

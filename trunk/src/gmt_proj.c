@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.9 2007-02-13 17:04:40 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.10 2007-03-05 21:47:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3015,7 +3015,7 @@ void GMT_vrobinson (double lon0)
 	}
 	if (err_flag != 0) {
 		fprintf (stderr, "GMT ERROR: -JN initialization of spline failed - report to GMT gurus\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 }

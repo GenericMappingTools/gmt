@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.60 2007-02-24 00:10:05 remko Exp $
+ *	$Id: gmt_nc.c,v 1.61 2007-03-05 21:47:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ int GMT_is_nc_grid (char *file)
 			fprintf (stderr, "%s: no 2-D variable in file [%s]\n", GMT_program, filename);
 		else
 			fprintf (stderr, "%s: named variable (%s) does not exist in file [%s]\n", GMT_program, &filename[i+1], filename);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
 	id += ((z_type == NC_BYTE) ? 2 : z_type);
@@ -192,16 +192,16 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 			check_nc_status (nc_inq_varndims (ncid, z_id, &ndims));
 			if (ndims < 2 || ndims > 5) {
 				fprintf (stderr, "%s: named variable (%s) is %d-D, not 2-, 3-, 4- or 5-D [%s]\n", GMT_program, varname, ndims, header->name);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 		}
 		else {
 			fprintf (stderr, "%s: named variable (%s) does not exist in file [%s]\n", GMT_program, varname, header->name);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		if (z_id < 0) {
 			fprintf (stderr, "%s: no 2-D variable in file [%s]\n", GMT_program, header->name);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 
 		/* Get the z data type and determine its dimensions */
@@ -414,7 +414,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 		return (GMT_cdf_read_grd (header, grid, w, e, s, n, pad, complex));
 	else if (GMT_grdformats[header->type][0] != 'n') {
 		fprintf (stderr, "%s: File is not in NetCDF format [%s]\n", GMT_program, header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
@@ -628,7 +628,7 @@ void check_nc_status (int status)
 	 */
 	if (status != NC_NOERR) {
 		fprintf (stderr, "%s: %s [%s]\n", GMT_program, nc_strerror (status), nc_file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -636,7 +636,7 @@ void nc_nopipe (char *file)
 {	/* This function checks if file was called as a pipe */
 	if (!strcmp (file,"=")) {
 		fprintf (stderr, "%s: GMT Fatal Error: NetCDF-based I/O does not support piping - Exiting\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	strcpy (nc_file, file);
 }

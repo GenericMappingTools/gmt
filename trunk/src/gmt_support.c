@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.289 2007-02-26 03:29:14 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.290 2007-03-05 21:47:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -312,7 +312,7 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 					word[end - pos] = '\0';
 					if (GMT_getrgb (word, fb_rgb)) {
 						fprintf (stderr, "%s: Colorizing value %s not recognized!\n", GMT_program, word);
-						exit (EXIT_FAILURE);
+						GMT_exit (EXIT_FAILURE);
 					}
 				}
 				if (f == 'f' || f == 'F')
@@ -321,7 +321,7 @@ int GMT_getfill (char *line, struct GMT_FILL *fill)
 					memcpy ((void *)fill->b_rgb, (void *)fb_rgb, (size_t)(3 * sizeof (int)));
 				else {
 					fprintf (stderr, "%s: Colorizing argument %c not recognized!\n", GMT_program, f);
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 				}
 				while (line[pos] && !(line[pos] == 'F' || line[pos] == 'B')) pos++;
 			}
@@ -389,7 +389,7 @@ int GMT_getrgb (char *line, int rgb[])
 		else {
 			if ((n = GMT_colorname2index (line)) < 0) {
 				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			for (i = 0; i < 3; i++) rgb[i] = GMT_color_rgb[n][i];
 		}
@@ -447,7 +447,7 @@ int GMT_gethsv (char *line, double hsv[])
 		else {
 			if ((n = GMT_colorname2index (line)) < 0) {
 				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			for (i = 0; i < 3; i++) rgb[i] = GMT_color_rgb[n][i];
 			GMT_rgb_to_hsv (rgb, &hsv[0], &hsv[1], &hsv[2]);
@@ -667,7 +667,7 @@ void GMT_getpenwidth (char *line, int *pen_unit, double *pen_scale, struct GMT_P
 	else {	/* Pen name was given - these refer to fixed widths in points */
 		if ((n = GMT_name2pen (line)) < 0) {
 			fprintf (stderr, "%s: Pen name %s not recognized!\n", GMT_program, line);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		P->width = GMT_penname[n].width;
 		*pen_unit = GMT_PT;
@@ -869,7 +869,7 @@ void GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
 		string[strlen (string) - 1] = 0;
 		if (strlen (string) >= GMT_PEN_LEN) {
 			fprintf (stderr, "%s: GMT Error: Pen attributes too long!\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		strcpy (P->texture, string);
 		P->offset *= GMT_u2u[unit][GMT_PT] * scale;
@@ -925,11 +925,11 @@ int GMT_getinc (char *line, double *dx, double *dy)
 
 	if (GMT_inc_code[0] & GMT_INC_IS_NNODES && GMT_inc_code[0] & GMT_INC_UNITS) {
 		fprintf (stderr, "%s: ERROR: number of x nodes cannot have units\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (GMT_inc_code[1] & GMT_INC_IS_NNODES && GMT_inc_code[1] & GMT_INC_UNITS) {
 		fprintf (stderr, "%s: ERROR: number of y nodes cannot have units\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	return (0);
 }
@@ -995,7 +995,7 @@ int GMT_getincn (char *line, double inc[], int n)
 		}
 		if ( (sscanf(p, "%lf", &inc[i])) != 1) {
 			fprintf (stderr, "%s: ERROR: Unable to decode %s as a floating point number\n", GMT_program, p);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		inc[i] *= scale;
 		i++;	/* Goto next increment */
@@ -1031,7 +1031,7 @@ double GMT_getradius (char *line)
 	}
 	if ( (sscanf(line, "%lf", &radius)) != 1) {
 		fprintf (stderr, "%s: ERROR: Unable to decode %s as a floating point number\n", GMT_program, line);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (save) line[last] = save;
 
@@ -1201,7 +1201,7 @@ void GMT_read_cpt (char *cpt_file)
 		fp = GMT_stdin;
 	else if ((fp = fopen (cpt_file, "r")) == NULL) {
 		fprintf (stderr, "%s: GMT Fatal Error: Cannot open color palette table %s\n", GMT_program, cpt_file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	GMT_lut = (struct GMT_LUT *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LUT), "GMT_read_cpt");
@@ -1227,7 +1227,7 @@ void GMT_read_cpt (char *cpt_file)
 				gmtdefs.color_model = GMT_READ_CMYK;
 			else {
 				fprintf (stderr, "%s: GMT Fatal Error: unrecognized COLOR_MODEL in color palette table %s\n", GMT_program, cpt_file);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 		}
 
@@ -1257,7 +1257,7 @@ void GMT_read_cpt (char *cpt_file)
 				GMT_bfn[id].fill = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
 				if (GMT_getfill (T1, GMT_bfn[id].fill)) {
 					fprintf (stderr, "%s: GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", GMT_program, T1);
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 				}
 				GMT_cpt_pattern = TRUE;
 			}
@@ -1325,7 +1325,7 @@ void GMT_read_cpt (char *cpt_file)
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {
 				fprintf (stderr, "%s: GMT Fatal Error: z-slice to skip not in [z0 - z1 -] format!\n", GMT_program);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			GMT_scanf_arg (T2, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 			GMT_lut[n].skip = TRUE;		/* Don't paint this slice if possible*/
@@ -1335,11 +1335,11 @@ void GMT_read_cpt (char *cpt_file)
 			GMT_lut[n].fill = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
 			if (GMT_getfill (T1, GMT_lut[n].fill)) {
 				fprintf (stderr, "%s: GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", GMT_program, T1);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			else if (nread != 4) {
 				fprintf (stderr, "%s: GMT Fatal Error: z-slice with pattern fill not in [z0 pattern z1 -] format!\n", GMT_program);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			GMT_scanf_arg (T2, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 			GMT_cpt_pattern = TRUE;
@@ -1377,7 +1377,7 @@ void GMT_read_cpt (char *cpt_file)
 			dz = GMT_lut[n].z_high - GMT_lut[n].z_low;
 			if (dz == 0.0) {
 				fprintf (stderr, "%s: GMT Fatal Error: Z-slice with dz = 0\n", GMT_program);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			GMT_lut[n].i_dz = 1.0 / dz;
 
@@ -1407,11 +1407,11 @@ void GMT_read_cpt (char *cpt_file)
 
 	if (error) {
 		fprintf (stderr, "%s: GMT Fatal Error: Error when decoding %s - aborts!\n", GMT_program, cpt_file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (n == 0) {
 		fprintf (stderr, "%s: GMT Fatal Error: CPT file %s has no z-slices!\n", GMT_program, cpt_file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	GMT_lut = (struct GMT_LUT *) GMT_memory ((void *)GMT_lut, (size_t)n, sizeof (struct GMT_LUT), "GMT_read_cpt");
@@ -1423,7 +1423,7 @@ void GMT_read_cpt (char *cpt_file)
 	annot += GMT_lut[i].annot;
 	if (gap) {
 		fprintf (stderr, "%s: GMT Fatal Error: Color palette table %s has gaps - aborts!\n", GMT_program, cpt_file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (!annot) {	/* Must set default annotation flags */
 		for (i = 0; i < GMT_n_colors; i++) GMT_lut[i].annot = 1;
@@ -2136,7 +2136,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			fprintf (stderr, "GMT Fatal Error: %s could not reallocate memory [%.2f %s, n_items = %d]\n", progname, mem, m_unit[k], (int)nelem);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 	else {
@@ -2145,7 +2145,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			fprintf (stderr, "GMT Fatal Error: %s could not allocate memory [%.2f %s, n_items = %d]\n", progname, mem, m_unit[k], (int)nelem);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 	return (tmp);
@@ -3900,7 +3900,7 @@ int GMT_label_is_OK (char *this_label, char *label, double this_dist, double thi
 
 		default:	/* Should not happen... */
 			fprintf (stderr, "%s: ERROR in GMT_label_is_OK. Notify gmt-team@hawaii.edu\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 
@@ -4078,7 +4078,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path
 
 	if (!(x[n_path-1] == x[0] && y[n_path-1] == y[0])) {
 		fprintf (stderr, "%s: GMT_non_zero_winding given non-closed polygon\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	above = FALSE;
@@ -5978,7 +5978,7 @@ double GMT_get_map_interval (int axis, int item) {
 
 	if (item < GMT_ANNOT_UPPER || item > GMT_GRID_LOWER) {
 		fprintf (stderr, "GMT ERROR in GMT_get_map_interval (wrong item %d)\n", item);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	switch (frame_info.axis[axis].item[item].unit) {
@@ -6141,7 +6141,7 @@ void GMT_list_custom_symbols (void)
 	GMT_getsharepath (CNULL, "GMT_CustomSymbols", ".lis", list);
 	if ((fp = fopen (list, "r")) == NULL) {
 		fprintf (stderr, "%s: ERROR: Cannot open file %s\n", GMT_program, list);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	fprintf (stderr, "\t   Available custom symbols (See Appendix N):\n");
@@ -6452,7 +6452,7 @@ struct GMT_XSEGMENT *GMT_init_track (double y[], int n)
 
 	if (nl <= 0) {
 		fprintf (stderr, "GMT: ERROR in GMT_init_track; nl = %d\n", (int)nl);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	L = (struct GMT_XSEGMENT *) GMT_memory (VNULL, nl, sizeof (struct GMT_XSEGMENT), "GMT_init_track");
@@ -7155,7 +7155,7 @@ int GMT_coordinate_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, 
 			break;
 		default:
 			fprintf (stderr, "GMT ERROR: Invalid projection type (%d) passed to GMT_coordinate_array!\n", project_info.xyz_projection[T->parent]);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 	return (n);
@@ -7293,7 +7293,7 @@ void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *
 			break;
 		default:
 			fprintf (stderr, "%s: GMT ERROR: Wrong type (%d) passed to GMT_get_coordinate_label!\n", GMT_program, frame_info.axis[T->parent].type);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 }
@@ -7990,7 +7990,7 @@ struct GMT_CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 	GMT_getsharepath ("custom", name, ".def", file);
 	if ((fp = fopen (file, "r")) == NULL) {
 		fprintf (stderr, "GMT ERROR: %s : Could not find custom symbol %s\n", GMT_program, name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	head = (struct GMT_CUSTOM_SYMBOL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_CUSTOM_SYMBOL), GMT_program);
@@ -8139,7 +8139,7 @@ struct GMT_CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 		if (error) {
 			fprintf (stderr, "GMT ERROR: %s : Error in parsing symbol commands in file %s\n", GMT_program, file);
 			fprintf (stderr, "GMT ERROR: %s : Offending line: %s\n", GMT_program, buffer);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 
 		if (do_fill) {
@@ -8148,7 +8148,7 @@ struct GMT_CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 				s->fill->rgb[0] = -1;
 			else if (GMT_getfill (fill_p, s->fill)) {
 				GMT_fill_syntax ('G', " ");
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 		}
 		else
@@ -8159,7 +8159,7 @@ struct GMT_CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name) {
 				s->pen->rgb[0] = -1;
 			else if (GMT_getpen (pen_p, s->pen)) {
 				GMT_pen_syntax ('W', " ");
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 		}
 		else

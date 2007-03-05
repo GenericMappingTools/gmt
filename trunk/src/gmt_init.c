@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.279 2007-03-05 17:46:46 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.280 2007-03-05 21:47:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2546,7 +2546,7 @@ char *GMT_getdefpath (int get)
 		GMT_getsharepath (CNULL, "gmt", ".conf", line);
 		if ((fp = fopen (line, "r")) == NULL) {
 			fprintf (stderr, "GMT Fatal Error: Cannot open/find GMT configuration file %s\n", line);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 
 		while (fgets (line, BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));	/* Scan to first real line */
@@ -2557,7 +2557,7 @@ char *GMT_getdefpath (int get)
 			id = 1;
 		else {
 			fprintf (stderr, "GMT Fatal Error: No SI/US keyword in GMT configuration file (%s)\n", line);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 	else
@@ -2706,7 +2706,7 @@ int GMT_get_ellipsoid (char *name)
 				&gmtdefs.ref_ellipsoid[i].pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
 			if (n != 5) {
 				fprintf (stderr, "GMT: Error decoding user ellipsoid parameters (%s)\n", line);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 
 			if (gmtdefs.ref_ellipsoid[i].pol_radius > 0.0 && gmtdefs.ref_ellipsoid[i].flattening < 0.0) {
@@ -2720,7 +2720,7 @@ int GMT_get_ellipsoid (char *name)
 			/* else check consistency: */
 			else if (gmtdefs.ref_ellipsoid[i].pol_radius > 0.0 && (slop = fabs(gmtdefs.ref_ellipsoid[i].flattening - 1.0 + (gmtdefs.ref_ellipsoid[i].pol_radius/gmtdefs.ref_ellipsoid[i].eq_radius))) > 1.0e-8) {
 				fprintf (stderr, "GMT Warning: Possible inconsistency in user ellipsoid parameters (%s) [off by %g]\n", line, slop);
-				/* exit (EXIT_FAILURE); */
+				/* GMT_exit (EXIT_FAILURE); */
 			}
 		}
 	}
@@ -2822,7 +2822,7 @@ void GMT_get_time_language (char *name)
 		GMT_getsharepath ("time", "us", ".d", file);
 		if ((fp = fopen (file, "r")) == NULL) {
 			fprintf (stderr, "GMT Error: Could not find %s!\n", file);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		strcpy (gmtdefs.time_language, "us");
 	}
@@ -2852,7 +2852,7 @@ void GMT_get_time_language (char *name)
 	fclose (fp);
 	if (! (nm == 78 && nw == 28 && nu == 1)) {	/* Sums of 1-12, 1-7, and 1, respectively */
 		fprintf (stderr, "GMT Error: Mismatch between expected and actual contents in %s!\n", file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	for (i = 0; i < 12; i++) {	/* Get upper-case abbreviated month names for i/o */
@@ -3088,7 +3088,7 @@ void GMT_end (int argc, char **argv)
 
 	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
 
-	exit (EXIT_SUCCESS);
+	GMT_exit (EXIT_SUCCESS);
 }
 
 void GMT_set_home (void)
@@ -3225,7 +3225,7 @@ void GMT_history (int argc, char ** argv)
 
 	if (fcntl (fd, F_SETLKW, &lock)) {	/* Will wait for file to be ready for reading */
 		fprintf (stderr, "%s: Error returned by fcntl [F_WRLCK]\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 #endif
 
@@ -3246,7 +3246,7 @@ void GMT_history (int argc, char ** argv)
 		GMT_oldargc++;
 		if (GMT_oldargc > GMT_N_UNIQUE) {
 			fprintf (stderr, "GMT Fatal Error: Failed while decoding common arguments\n");
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 
@@ -3373,7 +3373,7 @@ void GMT_history (int argc, char ** argv)
 
 	if (fcntl (fd, F_SETLK, &lock)) {
 		fprintf (stderr, "%s: Error returned by fcntl [F_UNLCK]\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 #endif
 
@@ -3442,23 +3442,23 @@ void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char 
 
 	if (error) {	/* Problems with decoding */
 		fprintf (stderr, "%s: ERROR: Missing terminating colon in -B string %s\n", GMT_program, in);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (strstr (out, pattern) && !strcmp (pattern, ":.")) {	/* Problems with decoding title */
 		fprintf (stderr, "%s: ERROR: More than one title in  -B string %s\n", GMT_program, in);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (strstr (out, pattern) && !strcmp (pattern, ":,")) {	/* Problems with decoding unit */
 		fprintf (stderr, "%s: ERROR: More than one unit string in  -B component %s\n", GMT_program, in);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (strstr (out, pattern) && !strcmp (pattern, ":=")) {	/* Problems with decoding prefix */
 		fprintf (stderr, "%s: ERROR: More than one prefix string in  -B component %s\n", GMT_program, in);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (strstr (out, pattern)) {	/* Problems with decoding label */
 		fprintf (stderr, "%s: ERROR: More than one label string in  -B component %s\n", GMT_program, in);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -3539,7 +3539,7 @@ void GMT_split_info (const char *in, char *info[]) {
 
 	if (n_slash == 3) {
 		fprintf (stderr, "%s: Error splitting -B string %s\n", GMT_program, in);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (n_slash == 2) {	/* Got x/y/z */
@@ -3664,7 +3664,7 @@ void GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
 			default:
 				break;
 		}
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -3676,10 +3676,10 @@ void GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char flag
 	char item_flag[8] = {'a', 'A', 'i', 'I', 'f', 'F', 'g', 'G'}, *format;
 
 	if (A->type == GMT_TIME) {	/* Strict check on time intervals */
-		if (GMT_verify_time_step (irint (val), unit)) exit (EXIT_FAILURE);
+		if (GMT_verify_time_step (irint (val), unit)) GMT_exit (EXIT_FAILURE);
 		if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
 			fprintf (stderr, "%s: ERROR: Time step interval (%g) must be an integer\n", GMT_program, val);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 
@@ -3730,7 +3730,7 @@ void GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char flag
 			break;
 		default:	/* Bad flag should never get here */
 			fprintf (stderr, "%s: Bad flag passed to GMT_set_titem\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 
@@ -5158,7 +5158,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 						p->f.f_sense = GMT_FRONT_CENTERED;
 						if (p->f.f_symbol == GMT_FRONT_SLIP) {
 							fprintf (stderr, "%s: Error in Option -Sf: Must specify (GMTMANSECTION)eft-lateral or (r)ight-lateral slip\n", GMT_program);
-							exit (EXIT_FAILURE);
+							GMT_exit (EXIT_FAILURE);
 						}
 						break;
 				}
@@ -5551,7 +5551,7 @@ int GMT_check_scalingopt (char option, char unit, char *unit_name) {
 			break;
 		default:
 			fprintf (stderr, "%s: GMT ERROR Option -%c: Only append one of cimpkn\n", GMT_program, option);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 	}
 
 	return (mode);
@@ -5579,7 +5579,7 @@ void GMT_set_measure_unit (char option, char unit) {
 			break;
 		default:
 			fprintf (stderr, "%s: GMT ERROR Option -%c: Only append one of cimp\n", GMT_program, option);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -5626,7 +5626,7 @@ void	GMT_init_time_system_structure () {
 			fprintf (stderr, "    Choose one only from y o d h m s\n");
 			fprintf (stderr, "    Corresponding to year month day hour minute second\n");
 			fprintf (stderr, "    Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 	/* Set inverse scale and store it to avoid divisions later */
@@ -5644,7 +5644,7 @@ void	GMT_init_time_system_structure () {
 		fprintf (stderr, "   A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
 		fprintf (stderr, "   or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
 		fprintf (stderr, "   An example of a correct format is:  %s\n", GMT_time_system[0].epoch);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -5710,7 +5710,7 @@ static void load_encoding (struct gmt_encoding *enc)
 	GMT_getsharepath ("pslib", enc->name, ".ps", line);
 	if ((in = fopen (line, "r")) == NULL) {
 		perror (line);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	while (fgets (line, sizeof line, in))
@@ -5785,7 +5785,7 @@ void GMT_init_fonts (int *n_fonts)
 	if ((in = fopen (fullname, "r")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: ");
 		perror (fullname);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	GMT_font = (struct GMT_FONT *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_FONT), GMT_program);
@@ -5794,7 +5794,7 @@ void GMT_init_fonts (int *n_fonts)
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (sscanf (buf, "%s %lf %*d", fullname, &GMT_font[i].height) != 2) {
 			fprintf (stderr, "GMT Fatal Error: Trouble decoding font info for font %d\n", i);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		GMT_font[i].name = (char *)GMT_memory (VNULL, (size_t)(strlen (fullname)+1), sizeof (char), GMT_program);
 		strcpy (GMT_font[i].name, fullname);
@@ -5813,7 +5813,7 @@ void GMT_init_fonts (int *n_fonts)
 		if ((in = fopen (fullname, "r")) == NULL) {
 			fprintf (stderr, "GMT Fatal Error: ");
 			perror (fullname);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 
 		while (fgets (buf, BUFSIZ, in)) {
@@ -5821,7 +5821,7 @@ void GMT_init_fonts (int *n_fonts)
 			GMT_font[i].name = (char *)GMT_memory (VNULL, strlen (buf), sizeof (char), GMT_program);
 			if (sscanf (buf, "%s %lf %*d", GMT_font[i].name, &GMT_font[i].height) != 2) {
 				fprintf (stderr, "GMT Fatal Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			i++;
 			if (i == n_alloc) {

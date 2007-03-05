@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.91 2007-02-26 22:49:47 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.92 2007-03-05 21:47:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -249,7 +249,7 @@ void GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		if ((header->type = GMT_is_agc_grid (header->name)) >= 0) return;
 
 		fprintf (stderr, "Could not determine grid type of file %s\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	else {			/* Get format type, scale, offset and missing value from gmtdefs.grid_format */
 		sscanf (gmtdefs.grid_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
@@ -283,7 +283,7 @@ int GMT_grd_data_size (int format, double *nan_value)
 			break;
 		default:
 			fprintf (stderr, "Unknown grid data type: %c\n", GMT_grdformats[format][1]);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -297,7 +297,7 @@ int GMT_grd_format_decoder (const char *code)
 		id = atoi (code);
  		if (id < 0 || id >= GMT_N_GRD_FORMATS) {
 			fprintf (stderr, "%s: GMT ERROR: grdfile format number (%d) unknown!\n", GMT_program, id);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 	else {	/* Character code given */
@@ -312,7 +312,7 @@ int GMT_grd_format_decoder (const char *code)
 		if (id == -1) {
 			if (group) fprintf (stderr, "%s: GMT ERROR: grdfile format type (%c) for group %c is unknown!\n", GMT_program, code[1], code[0]);
 			else fprintf (stderr, "%s: GMT ERROR: grdfile format code %s unknown!\n", GMT_program, code);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 
@@ -386,7 +386,7 @@ void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
 			(void) fprintf (stderr, "%s: GMT ERROR: Use grdedit -A on your gridfile to make it compatible.\n", GMT_program);
 		else
 			(void) fprintf (stderr, "%s: GMT ERROR: Please select compatible -R and -I values.\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -418,7 +418,7 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 
 		if (*s < header->y_min || *n > header->y_max) {	/* Calling program goofed... */
 			fprintf (stderr, "%s: GMT ERROR: Trying to read beyond grid domain - abort!!\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		one_or_zero = (header->node_offset) ? 0 : 1;
 
@@ -562,11 +562,11 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	else {				/* Regular binary file with/w.o standard GMT header */
 		if (r_w == 0 && (G->fp = GMT_fopen (G->header.name, bin_mode[0])) == NULL) {
 			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->header.name);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		else if ((G->fp = GMT_fopen (G->header.name, bin_mode[r_w])) == NULL) {
 			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->header.name);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		if (header) GMT_fseek (G->fp, (long)GRD_HEADER_SIZE, SEEK_SET);
 	}
@@ -632,7 +632,7 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 
 		if (GMT_fread (G->v_row, G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx) {	/* Get one row */
 			fprintf (stderr, "%s: Read error for file %s near row %d\n", GMT_program, G->header.name, G->row);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		for (i = 0; i < G->header.nx; i++) {
 			row[i] = GMT_decode (G->v_row, i, GMT_grdformats[G->header.type][1]);	/* Convert whatever to float */
@@ -917,11 +917,11 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 	switch (GMT_minmaxinc_verify (*w, *e, header->x_inc, GMT_SMALL)) {	/* Check if range is compatible with x_inc */
 		case 3:
 			(void) fprintf (stderr, "%s: GMT ERROR: grid x increment <= 0.0\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 		case 2:
 			(void) fprintf (stderr, "%s: GMT ERROR: subset x range <= 0.0\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 		default:
 			/* Everything is seemingly OK */
@@ -961,11 +961,11 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 	switch (GMT_minmaxinc_verify (*s, *n, header->y_inc, GMT_SMALL)) {	/* Check if range is compatible with y_inc */
 		case 3:
 			(void) fprintf (stderr, "%s: GMT ERROR: grid y increment <= 0.0\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 		case 2:
 			(void) fprintf (stderr, "%s: GMT ERROR: subset y range <= 0.0\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 		default:
 			/* Everything is OK */
@@ -1172,11 +1172,11 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 
 	if (!GMT_getdatapath (imgfile, file)) {
 		fprintf (stderr, "%s: Unable to find file %s\n", GMT_program, imgfile);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (STAT (file, &buf)) {	/* Inquiry about file failed somehow */
 		fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, imgfile);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = 72 or 80 */
@@ -1195,7 +1195,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 		default:
 			if (lat == 0.0) {
 				fprintf (stderr, "%s: Must specify max latitude for img file %s\n", GMT_program, file);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			min = (buf.st_size > GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE) ? 1 : 2;
 			fprintf (stderr, "%s: img file %s has unusual size - grid increment defaults to %d min\n", GMT_program, file, min);
@@ -1212,7 +1212,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 
 	if ((fp = GMT_fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "%s: Error opening img file %s\n", GMT_program, file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (init) {
 		/* Select plain Mercator on a sphere with -Jm1 -R0/360/-lat/+lat */
@@ -1251,7 +1251,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	n_skip = (int)floor ((project_info.ymax - grd->y_max) / grd->y_inc);	/* Number of rows clearly above y_max */
 	if (GMT_fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) {
 		fprintf (stderr, "%s: Unable to seek ahead in file %s\n", GMT_program, imgfile);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	i2 = (short int *) GMT_memory (VNULL, (size_t)n_cols, sizeof (short int), GMT_program);

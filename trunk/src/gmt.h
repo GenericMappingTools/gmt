@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.142 2007-01-31 21:51:03 remko Exp $
+ *	$Id: gmt.h,v 1.143 2007-03-05 21:47:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -220,6 +220,14 @@ extern "C" {
  * unsigned long.
  */
 #define PRINT_SIZE_T(fp,u) fprintf(fp, "%lu", (unsigned long)u)
+#endif
+
+/* Macro for exit since this should be returned when called from Matlab */
+
+#ifdef DO_NOT_EXIT
+#define GMT_exit(code) return(code)
+#else
+#define GMT_exit(code) exit(code)
 #endif
 
 /*--------------------------------------------------------------------

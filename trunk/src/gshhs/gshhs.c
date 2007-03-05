@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.12 2007-01-30 20:37:09 pwessel Exp $
+/*	$Id: gshhs.c,v 1.13 2007-03-05 21:47:11 pwessel Exp $
  *
  *	Copyright (c) 1996-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -44,13 +44,13 @@ int main (int argc, char **argv)
 		fprintf (stderr, "gshhs v. %s ASCII export tool\n", GSHHS_PROG_VERSION);
 		fprintf (stderr, "usage:  gshhs gshhs_[f|h|i|l|c].b [-L] > ascii.dat\n");
 		fprintf (stderr, "-L will only list headers (no data output)\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	info = (argc == 3);
 	if ((fp = fopen (argv[1], "rb")) == NULL ) {
 		fprintf (stderr, "gshhs:  Could not find file %s.\n", argv[1]);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 		
 	n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
@@ -89,7 +89,7 @@ int main (int argc, char **argv)
 
 				if (fread ((void *)&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
 					fprintf (stderr, "gshhs:  Error reading file %s for polygon %d, point %d.\n", argv[1], h.id, k);
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 				}
 				if (flip) {
 					p.x = swabi4 ((unsigned int)p.x);
@@ -106,5 +106,5 @@ int main (int argc, char **argv)
 		
 	fclose (fp);
 
-	exit (EXIT_SUCCESS);
+	GMT_exit (EXIT_SUCCESS);
 }

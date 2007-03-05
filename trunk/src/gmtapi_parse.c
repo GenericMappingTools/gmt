@@ -229,22 +229,22 @@ int main (int argc, char *argv[]) {	/* This is compiled and linked to give us th
 	if ((error = GMTAPI_Create_Session (&GMT_ctrl, 0))) {	
 		/* Initializing new session failed */
 		GMTAPI_Report_Error (GMT_ctrl, error);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	if ((error = GMT_program_cmd (GMT_ctrl, argc, argv))) {
 		/* An run-error occured in the program */
 		GMTAPI_Report_Error (GMT_ctrl, error);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	if ((error = GMTAPI_Destroy_Session (GMT_ctrl))) {
 		/* Destroying the session failed */
 		GMTAPI_Report_Error (GMT_ctrl, error);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
-	exit (EXIT_SUCCESS);	/* No worries! */
+	GMT_exit (EXIT_SUCCESS);	/* No worries! */
 }
 	
 int GMT_program_cmd (struct GMTAPI_CTRL *API, int n_args, char *args[])

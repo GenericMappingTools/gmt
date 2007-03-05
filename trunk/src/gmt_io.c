@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.132 2007-02-26 22:49:47 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.133 2007-03-05 21:47:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -493,7 +493,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 #ifndef _WIN32
 		if (len >= (BUFSIZ-1)) {
 			fprintf (stderr, "%s: This file appears to be in DOS format - reformat with dos2unix\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 #endif
 
@@ -995,7 +995,7 @@ int GMT_init_z_io (char format[], BOOLEAN repeat[], BOOLEAN swab, int skip, char
 				break;
 			default:
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -Z: %c not a valid format specifier!\n", GMT_program, format[k]);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 				break;
 
 		}
@@ -1060,7 +1060,7 @@ int GMT_init_z_io (char format[], BOOLEAN repeat[], BOOLEAN swab, int skip, char
 
 		default:
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -Z: %c not a valid data type!\n", GMT_program, type);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 
@@ -1077,7 +1077,7 @@ void GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h)
 {
 	if ((r->x_missing || r->y_missing) && h->node_offset == 1) {
 		fprintf (stderr, "%s: Pixel format grids do not have repeating rows or columns!\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	r->start_col = (r->x_step == 1) ? 0 : h->nx - 1 - r->x_missing;
@@ -1442,7 +1442,7 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 	}
 	if (error) {
 		fprintf (stderr, "%s: ERROR: Unacceptable date template %s\n", GMT_program, text);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -1566,7 +1566,7 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fractional seconds to an integer form */
 	if (error) {
 		fprintf (stderr, "%s: ERROR: Unacceptable clock template %s\n", GMT_program, text);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -1682,7 +1682,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fractional seconds to an integer form */
 	if (error) {
 		fprintf (stderr, "%s: ERROR: Unacceptable dmmss template %s\n", GMT_program, text);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -1831,7 +1831,7 @@ void GMT_geo_C_format (char *form, struct GMT_GEO_IO *S)
 
 	if (S->no_sign) {
 		fprintf (stderr, "%s: ERROR: Unacceptable PLOT_DEGREE_FORMAT template %s. A not allowed\n", GMT_program, form);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (S->decimal) {	/* Plain decimal degrees */
@@ -2699,7 +2699,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 		strcpy (file, (char *)source);
 		if ((fp = GMT_fopen (file, open_mode)) == NULL) {
 			fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		close_file = TRUE;	/* We only close files we have opened here */
 	}
@@ -2715,7 +2715,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 		fd = (int *)source;
 		if ((fp = fdopen (*fd, open_mode)) == NULL) {
 			fprintf (stderr, "%s: Cannot convert file descriptor %d to stream in GMT_import_table\n", GMT_program, *fd);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		if (fp == GMT_stdin)
 			strcpy (file, "<stdin>");
@@ -2724,7 +2724,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 	}
 	else {
 		fprintf (stderr, "%s: Unrecognized source type %d in GMT_import_table\n", GMT_program, source_type);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	/* Allocate the Table structure */
@@ -2738,7 +2738,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 	n_fields = GMT_input (fp, &n_expected_fields, &in);
 	if (GMT_io.status & GMT_IO_EOF) {
 		fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	no_segments = (!(GMT_io.status & GMT_IO_SEGMENT_HEADER));	/* Not a multi-segment file.  We then assume file has only one segment */
 
@@ -2780,7 +2780,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 
 		if (poly && T->segment[seg]->n_columns < 2) {
 			fprintf (stderr, "%s: File %s does not have at least 2 columns required for polygons (found %d)\n", GMT_program, file, T->segment[seg]->n_columns);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 
 		GMT_alloc_segment (T->segment[seg], n_row_alloc, T->segment[seg]->n_columns, TRUE);
@@ -2788,13 +2788,13 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 		while (! (GMT_io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
 			if (GMT_io.status & GMT_IO_MISMATCH) {
 				fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %d\n", GMT_program, n_fields, n_expected_fields, seg);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 
 			n_read++;
 			if (n_expected_fields < 2) {
 				fprintf (stderr, "%s: Failure to read file %s near line %d\n", GMT_program, file, n_read);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) {
 				if (greenwich && T->segment[seg]->coord[GMT_X][row] > 180.0) T->segment[seg]->coord[GMT_X][row] -= 360.0;
@@ -2902,7 +2902,7 @@ int GMT_export_table (void *dest, int dest_type, struct GMT_TABLE *table, BOOLEA
 		strcpy (file, (char *)dest);
 		if ((fp = GMT_fopen (file, open_mode)) == NULL) {
 			fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, file);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		close_file = TRUE;	/* We only close files we have opened here */
 	}
@@ -2918,7 +2918,7 @@ int GMT_export_table (void *dest, int dest_type, struct GMT_TABLE *table, BOOLEA
 		fd = (int *)dest;
 		if ((fp = fdopen (*fd, open_mode)) == NULL) {
 			fprintf (stderr, "%s: Cannot convert file descriptor %d to stream in GMT_export_table\n", GMT_program, *fd);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		if (fp == GMT_stdout)
 			strcpy (file, "<stdout>");
@@ -2927,7 +2927,7 @@ int GMT_export_table (void *dest, int dest_type, struct GMT_TABLE *table, BOOLEA
 	}
 	else {
 		fprintf (stderr, "%s: Unrecognized source type %d in GMT_export_table\n", GMT_program, dest_type);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	out = (double *) GMT_memory (VNULL, table->n_columns, sizeof (double), "GMT_export_table");
