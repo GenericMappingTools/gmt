@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.9 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_plot.h,v 1.10 2007-03-05 17:46:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -25,31 +25,32 @@
 #define GMT_SYMBOL_NOT_SET	999
 
 #define GMT_SYMBOL_LINE		0
-#define GMT_SYMBOL_BAR		1
-#define GMT_SYMBOL_CROSS	2
-#define GMT_SYMBOL_POINT	3
-#define GMT_SYMBOL_CIRCLE	4
-#define GMT_SYMBOL_SQUARE	5
-#define GMT_SYMBOL_TRIANGLE	6
-#define GMT_SYMBOL_DIAMOND	7
-#define GMT_SYMBOL_STAR		8
-#define GMT_SYMBOL_HEXAGON	9
-#define GMT_SYMBOL_ITRIANGLE	10
-#define GMT_SYMBOL_CUBE		11
-#define GMT_SYMBOL_COLUMN	12
-#define GMT_SYMBOL_ELLIPSE	13
-#define GMT_SYMBOL_VECTOR	14
-#define GMT_SYMBOL_VECTOR2	15
-#define GMT_SYMBOL_PIE		16
-#define GMT_SYMBOL_RECT		17
-#define GMT_SYMBOL_XDASH	18
-#define GMT_SYMBOL_YDASH	19
-#define GMT_SYMBOL_ZDASH	20
-#define GMT_SYMBOL_TEXT		21
-#define GMT_SYMBOL_PENTAGON	22
-#define GMT_SYMBOL_OCTAGON	23
-#define GMT_SYMBOL_CUSTOM	24
-#define GMT_SYMBOL_ROTATERECT	25
+#define GMT_SYMBOL_BARX		1
+#define GMT_SYMBOL_BARY		2
+#define GMT_SYMBOL_CROSS	3
+#define GMT_SYMBOL_POINT	4
+#define GMT_SYMBOL_CIRCLE	5
+#define GMT_SYMBOL_SQUARE	6
+#define GMT_SYMBOL_TRIANGLE	7
+#define GMT_SYMBOL_DIAMOND	8
+#define GMT_SYMBOL_STAR		9
+#define GMT_SYMBOL_HEXAGON	10
+#define GMT_SYMBOL_ITRIANGLE	11
+#define GMT_SYMBOL_CUBE		12
+#define GMT_SYMBOL_COLUMN	13
+#define GMT_SYMBOL_ELLIPSE	14
+#define GMT_SYMBOL_VECTOR	15
+#define GMT_SYMBOL_VECTOR2	16
+#define GMT_SYMBOL_PIE		17
+#define GMT_SYMBOL_RECT		18
+#define GMT_SYMBOL_XDASH	19
+#define GMT_SYMBOL_YDASH	20
+#define GMT_SYMBOL_ZDASH	21
+#define GMT_SYMBOL_TEXT		22
+#define GMT_SYMBOL_PENTAGON	23
+#define GMT_SYMBOL_OCTAGON	24
+#define GMT_SYMBOL_CUSTOM	25
+#define GMT_SYMBOL_ROTATERECT	26
 
 #define GMT_SYMBOL_FRONT	-100
 #define GMT_SYMBOL_QUOTED_LINE	-200

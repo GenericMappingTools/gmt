@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.278 2007-02-13 17:04:39 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.279 2007-03-05 17:46:46 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4910,8 +4910,8 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 	int decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon;
 	BOOLEAN check, old_style;
 	char symbol_type, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], text_cp[GMT_LONG_TEXT], *c;
-	static char *allowed_symbols[2] = {"-aAbCcDdeEfGgHhIijJNnpqrSsTtVvwWxy", "-aAbCcDdeEfGgHhIijJNnoOpqrSsTtuUVvwWxy"};
-	static char *bar_symbols[2] = {"b", "-boOuU"};
+	static char *allowed_symbols[2] = {"-aAbBCcDdeEfGgHhIijJNnpqrSsTtVvwWxy", "-aAbCcDdeEfGgHhIijJNnoOpqrSsTtuUVvwWxy"};
+	static char *bar_symbols[2] = {"bB", "-bBoOuU"};
 
 	p->n_required = p->convert_angles = 0;
 	p->user_unit = p->shrink = p->read_vector = p->base_set = FALSE;
@@ -4984,13 +4984,13 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
-		/* Bar:		-Sb<size_x>[c|i|m|p|u][b<base>]				*/
+		/* Bar:		-Sb|B<size_x|y>[c|i|m|p|u][b<base>]				*/
 		/* Column:	-So|O<size_x>[c|i|m|p][/<ysize>[c|i|m|p]][u][b<base>]	*/
 		/* Cube:	-Su|U<size_x>[c|i|m|p|u]	*/
 
 		for (j = 0; text[j]; j++) {
 			if (text[j] == '/') slash = j;
-			if (text[j] == 'b') bset = j;
+			if (text[j] == 'b' || text[j] == 'B') bset = j;
 		}
 		strcpy (text_cp, text);
 		if (bset) text_cp[bset] = 0;	/* Chop off the b<base> from copy */
@@ -5058,8 +5058,16 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 		case 'a':
 			p->symbol = GMT_SYMBOL_STAR;
 			break;
+		case 'B':
+			p->symbol = GMT_SYMBOL_BARX;
+			p->size_x *= 0.5;		/* We will use +- to get full width */
+			if (bset) {
+				p->base = atof (&text[bset+1]);
+				p->base_set = TRUE;
+			}
+			break;
 		case 'b':
-			p->symbol = GMT_SYMBOL_BAR;
+			p->symbol = GMT_SYMBOL_BARY;
 			p->size_x *= 0.5;		/* We will use +- to get full width */
 			if (bset) {
 				p->base = atof (&text[bset+1]);
@@ -5361,8 +5369,11 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 	if (!cmd && p->symbol == GMT_SYMBOL_COLUMN) {
 		if (!bset) p->base = (project_info.xyz_projection[2] == GMT_LOG10) ? 1.0 : 0.0;
 	}
-	if (!cmd && p->symbol == GMT_SYMBOL_BAR) {
-		if (!bset) p->base = (project_info.xyz_projection[1] == GMT_LOG10) ? 1.0 : 0.0;
+	if (!cmd && p->symbol == GMT_SYMBOL_BARX) {
+		if (!bset) p->base = (project_info.xyz_projection[GMT_X] == GMT_LOG10) ? 1.0 : 0.0;
+	}
+	if (!cmd && p->symbol == GMT_SYMBOL_BARY) {
+		if (!bset) p->base = (project_info.xyz_projection[GMT_Y] == GMT_LOG10) ? 1.0 : 0.0;
 	}
 
 	return (decode_error);
