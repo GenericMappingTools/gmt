@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.131 2007-03-05 21:38:15 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.132 2007-03-05 21:47:10 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -450,7 +450,7 @@ void GMT_map_setup (double west, double east, double south, double north)
 
 	if (west == east && south == north) {
 		fprintf (stderr, "%s: GMT Fatal Error: No region selected - Aborts!\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	GMT_init_ellipsoid ();	/* Set parameters depending on the ellipsoid since the latter could have been set explicitly */
@@ -465,27 +465,27 @@ void GMT_map_setup (double west, double east, double south, double north)
 
 		if ((fabs (east - west) - 360.0) > GMT_SMALL) {
 			fprintf (stderr, "%s: GMT Fatal Error: Region exceeds 360 degrees!\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 	if (project_info.got_elevations) {
 		if (south < 0.0 || south >= 90.0) {
 			fprintf (stderr, "%s: GMT Fatal Error: \"South\" (min elevation) (%g) outside 0-90 degree range!\n", GMT_program, south);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		if (north <= 0.0 || north > 90.0) {
 			fprintf (stderr, "%s: GMT Fatal Error: \"North\" (max elevation) (%g) outside 0-90 degree range!\n", GMT_program, north);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 	if (project_info.degree[1]) {
 		if (south < -90.0 || south > 90.0) {
 			fprintf (stderr, "%s: GMT Fatal Error: South (%g) outside +-90 degree range!\n", GMT_program, south);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		if (north < -90.0 || north > 90.0) {
 			fprintf (stderr, "%s: GMT Fatal Error: North (%g) outside +-90 degree range!\n", GMT_program, north);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 
@@ -647,7 +647,7 @@ void GMT_map_setup (double west, double east, double south, double north)
 		default:	/* No projection selected, die a horrible death */
 
 			fprintf (stderr, "%s: GMT Fatal Error: No projection selected - Aborts!\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 
@@ -711,7 +711,7 @@ void GMT_init_three_D (void) {
 		case GMT_LOG10:	/* Log10 transformation */
 			if (project_info.z_bottom <= 0.0 || project_info.z_top <= 0.0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR for -Jz -JZ option: limits must be positive for log10 projection\n", GMT_program);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			zmin = (project_info.xyz_pos[2]) ? d_log10 (project_info.z_bottom) : d_log10 (project_info.z_top);
 			zmax = (project_info.xyz_pos[2]) ? d_log10 (project_info.z_top) : d_log10 (project_info.z_bottom);
@@ -1041,7 +1041,7 @@ int GMT_map_init_linear (void) {
 		case GMT_LOG10:	/* Log10 transformation */
 			if (project_info.w <= 0.0 || project_info.e <= 0.0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -Jx option:  Limits must be positive for log10 option\n", GMT_program);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			xmin = (project_info.xyz_pos[0]) ? d_log10 (project_info.w) : d_log10 (project_info.e);
 			xmax = (project_info.xyz_pos[0]) ? d_log10 (project_info.e) : d_log10 (project_info.w);
@@ -1068,7 +1068,7 @@ int GMT_map_init_linear (void) {
 		case GMT_LOG10:	/* Log10 transformation */
 			if (project_info.s <= 0.0 || project_info.n <= 0.0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -Jx option:  Limits must be positive for log10 option\n", GMT_program);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			ymin = (project_info.xyz_pos[1]) ? d_log10 (project_info.s) : d_log10 (project_info.n);
 			ymax = (project_info.xyz_pos[1]) ? d_log10 (project_info.n) : d_log10 (project_info.s);
@@ -1142,7 +1142,7 @@ int GMT_map_init_polar (void)
 	if (project_info.got_elevations) {	/* Requires s >=0 and n <= 90 */
 		if (project_info.s < 0.0 || project_info.n > 90.0) {
 			fprintf (stderr, "%s: ERROR: -JP...r for elevation plots requires s >= 0 and n <= 90!\n", GMT_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		if (fabs (90.0 - project_info.n) < GMT_CONV_LIMIT) project_info.edge[2] = FALSE;
 	}
@@ -1191,7 +1191,7 @@ int GMT_map_init_merc (void) {
 	}
 	if (project_info.s <= -90.0 || project_info.n >= 90.0) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -R option:  Cannot include south/north poles with Mercator projection!\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	GMT_vmerc (0.5 * (project_info.w + project_info.e));
 	project_info.m_m *= D;
@@ -1427,14 +1427,14 @@ int GMT_map_init_stereo (void) {
 			if (project_info.north_pole) {
 				if (project_info.s <= -90.0) {
 					fprintf (stderr, "%s: Error: South boundary cannot be -90.0 for north polar stereographic projection\n", GMT_program);
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 				}
 				if (project_info.n >= 90.0) project_info.edge[2] = FALSE;
 			}
 			else {
 				if (project_info.n >= 90.0) {
 					fprintf (stderr, "%s: Error: North boundary cannot be +90.0 for south polar stereographic projection\n", GMT_program);
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 				}
 				if (project_info.s <= -90.0) project_info.edge[0] = FALSE;
 			}
@@ -1941,14 +1941,14 @@ int GMT_map_init_lambeq (void) {
 			if (project_info.north_pole) {
 				if (project_info.s <= -90.0){
 					fprintf (stderr, "%s: Error: South boundary cannot be -90.0 for north polar Lambert azimuthal projection\n", GMT_program);
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 				}
 				if (project_info.n >= 90.0) project_info.edge[2] = FALSE;
 			}
 			else {
 				if (project_info.n >= 90.0) {
 					fprintf (stderr, "%s: Error: North boundary cannot be +90.0 for south polar Lambert azimuthal projection\n", GMT_program);
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 				}
 				if (project_info.s <= -90.0) project_info.edge[0] = FALSE;
 			}
@@ -3077,7 +3077,7 @@ void GMT_horizon_search (double w, double e, double s, double n, double xmin, do
 	if (beyond) {
 		fprintf (stderr, "%s: ERROR: Rectangular region for azimuthal projection extends beyond the horizon\n", GMT_program);
 		fprintf (stderr, "%s: ERROR: Please select a region that is completely within the visible hemisphere\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -5175,7 +5175,7 @@ void GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, i
 	}
 	else {
 		fprintf (stderr, "GMT_grdproject_init: Necessary arguments not set\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	head->node_offset = offset;
 
@@ -5279,7 +5279,7 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
 
   if (fabs(max_radius) < GMT_CONV_LIMIT) {      /* Must pass non-zero radius */
     fprintf(stderr, "%s: Search-radius not initialized\n", GMT_program);
-    exit (EXIT_FAILURE);
+    GMT_exit (EXIT_FAILURE);
   }
 
   nm = r_head->nx * r_head->ny;
@@ -5487,7 +5487,7 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 
 	if (fabs (max_radius) < GMT_CONV_LIMIT) {	/* Must pass non-zero radius */
 		fprintf (stderr, "%s: Search-radius not initialized\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	/* All internal parameters related to projected values MUST be in GMT inches for this logic */
@@ -5577,7 +5577,7 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 
 	if (fabs (max_radius) < GMT_CONV_LIMIT) {	/* Must pass non-zero radius */
 		fprintf (stderr, "%s: Search-radius not initialized\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	nm = g_head->nx * g_head->ny;
@@ -5750,7 +5750,7 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 			if (nz[ij_out] == SHRT_MAX) {			/* This bin is getting way to many points... */
 				fprintf (stderr, "%s: ERROR: Number of projected points inside a bin exceeds %d\n", GMT_program, SHRT_MAX);
 				fprintf (stderr, "%s: ERROR: Incorrect -R -I -J or insanely large grid?\n", GMT_program);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 		}
 	}
@@ -7186,7 +7186,7 @@ double *GMT_distances (double x[], double y[], int n, double scale, int dist_fla
 	
 	if (dist_flag < 0 || dist_flag > 3) {
 		fprintf (stderr, "%s: Error: Wrong flag passed to GMT_distances (%d)\n", GMT_program, dist_flag);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	do_scale = (scale != 1.0);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.57 2007-02-26 03:29:14 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.58 2007-03-05 21:47:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -310,15 +310,15 @@ int GMT_is_ras_grid (char *file)
 	struct rasterfile h;
 	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
 		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if ((fp = GMT_fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (GMT_read_rasheader (fp, &h)) {
 		fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (h.magic != RAS_MAGIC) return (-1);
 	if (h.type != 1 || h.depth != 8) return (-1);
@@ -340,20 +340,20 @@ int GMT_ras_read_grd_info (struct GRD_HEADER *header)
 	}
 	else if ((fp = GMT_fopen (header->name, "rb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (GMT_read_rasheader (fp, &h)) {
 		fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (h.magic != RAS_MAGIC) {
 		fprintf (stderr, "GMT Fatal Error: file %s not a Sun rasterfile!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (h.type != 1 || h.depth != 8) {
 		fprintf (stderr, "GMT Fatal Error: file %s not 8-bit standard Sun rasterfile!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	for (i = 0; i < h.maplength; i++) GMT_fread ((void *)&u, sizeof (unsigned char *), (size_t)1, fp);	/* Skip colormap by reading since fp could be stdin */
@@ -386,7 +386,7 @@ int GMT_ras_write_grd_info (struct GRD_HEADER *header)
 	}
 	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	h.magic = RAS_MAGIC;
@@ -400,7 +400,7 @@ int GMT_ras_write_grd_info (struct GRD_HEADER *header)
 
 	if (GMT_write_rasheader (fp, &h)) {
 		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
@@ -435,13 +435,13 @@ int GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	else if ((fp = GMT_fopen (header->name, "rb")) != NULL) {	/* Skip header */
 		if (GMT_read_rasheader (fp, &h)) {
 			fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		if (h.maplength) GMT_fseek (fp, (long) h.maplength, SEEK_CUR);
 	}
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	n2 = (int) ceil (header->nx / 2.0) * 2;	/* Sun 8-bit rasters are stored using 16-bit words */
@@ -525,7 +525,7 @@ int GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	}
 	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	h.magic = RAS_MAGIC;
@@ -567,7 +567,7 @@ int GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	if (do_header && GMT_write_rasheader (fp, &h)) {
 		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	i2 = first_col + pad[0];
@@ -721,11 +721,11 @@ int GMT_is_native_grid (char *file)
 	
 	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
 		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (STAT (file, &buf)) {	/* Inquiry about file failed somehow */
 		fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	strcpy (header.name, file);
 	if ((status = GMT_native_read_grd_info (&header))) return (-1);	/* Failed to read header */
@@ -797,7 +797,7 @@ int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	}
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	check = !GMT_is_dnan (header->nan_value);
@@ -887,7 +887,7 @@ int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	}
 	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	check = !GMT_is_dnan (header->nan_value);
@@ -996,7 +996,7 @@ void GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header)
 	
 	if (GMT_fread ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fread ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
                 fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
-                exit (EXIT_FAILURE);
+                GMT_exit (EXIT_FAILURE);
         }
 }
 
@@ -1006,7 +1006,7 @@ void GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header)
 
 	if (GMT_fwrite ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fwrite ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1) {
                 fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
-                exit (EXIT_FAILURE);
+                GMT_exit (EXIT_FAILURE);
         }
 }
 
@@ -1016,7 +1016,7 @@ void GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header)
 	
 	if (GMT_fseek (fp, (long)(3*sizeof (int) + sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx)), SEEK_SET)) {
 		fprintf (stderr, "GMT Fatal Error: Error seeking past header file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -1035,7 +1035,7 @@ int GMT_native_read_grd_info (struct GRD_HEADER *header)
 	}
 	else if ((fp = GMT_fopen (header->name, "rb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	GMT_native_read_grd_header (fp, header);
@@ -1060,7 +1060,7 @@ int GMT_native_write_grd_info (struct GRD_HEADER *header)
 	}
 	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	GMT_native_write_grd_header (fp, header);
@@ -1105,7 +1105,7 @@ int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 		GMT_native_skip_grd_header (fp, header);
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	type = GMT_grdformats[header->type][1];
@@ -1210,7 +1210,7 @@ int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, doub
 	}
 	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	type = GMT_grdformats[header->type][1];
@@ -1411,11 +1411,11 @@ int GMT_is_srf_grid (char *file)
 	char id[5];
 	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
 		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if ((fp = GMT_fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	GMT_fread (id, sizeof (char), (size_t)4, fp);
 	GMT_fclose (fp); 
@@ -1441,33 +1441,33 @@ int GMT_srf_read_grd_info (struct GRD_HEADER *header)
 	}
 	else if ((fp = GMT_fopen (header->name, "rb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	GMT_fread (id, sizeof (char), (size_t)4, fp); 
 	GMT_fseek(fp, 0L, SEEK_SET);
 	if (strncmp (id, "DSBB",4) && strncmp (id, "DSRB",4)) {
 		fprintf (stderr, "GMT Fatal Error: %s is not a valid Surfer 6|7 grid\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (!strncmp (id, "DSBB",4)) {		/* Version 6 format */
 		if (GMT_read_srfheader6 (fp, &h6)) {
 			fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		header->type = 6;
 	}
 	else {					/* Version 7 format */
 		if (GMT_read_srfheader7 (fp, &h7)) {
 			fprintf (stderr, "GMT Fatal Error: Error reading file %s!\n", header->name);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		if ( (h7.len_d != (h7.nx * h7.ny * 8)) || (!strcmp (h7.id2, "GRID")) ) {
 			fprintf (stderr, "GMT Fatal Error: The %s Surfer 7 grid appears\n", header->name);
 			fprintf (stderr, "to have break lines or otherwise it uses the full\n");
 			fprintf (stderr, "extent of version 7 format. That is not supported.\n");
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		header->type = 20;
 	}
@@ -1513,7 +1513,7 @@ int GMT_srf_write_grd_info (struct GRD_HEADER *header)
 	}
 	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	strcpy (h.id,"DSBB");
@@ -1530,7 +1530,7 @@ int GMT_srf_write_grd_info (struct GRD_HEADER *header)
 
 	if (GMT_write_srfheader (fp, &h)) {
 		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
@@ -1599,7 +1599,7 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 			GMT_fseek (fp, (long) (3*sizeof(int) + sizeof (struct srf_header7)), SEEK_SET);
 	else {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	type = GMT_grdformats[header->type][1];
@@ -1705,7 +1705,7 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	}
 	else if ((fp = GMT_fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	type = GMT_grdformats[header->type][1];
@@ -1755,7 +1755,7 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	if (GMT_fwrite ((void *)&h, sizeof (struct srf_header6), (size_t)1, fp) != 1) {
 		fprintf (stderr, "GMT Fatal Error: Error writing file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	/* Allocate memory for one row of data (for writing purposes) */

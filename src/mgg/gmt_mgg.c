@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.12 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: gmt_mgg.c,v 1.13 2007-03-05 21:47:11 pwessel Exp $
  *
  *    Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -58,13 +58,13 @@ int gmtmgg_date (int time, int *year, int *month, int *day, int *hour, int *minu
 
 	if ((*month) < 0 || (*month) >= GMTMGG_TIME_MAXMONTH) {
 		fprintf (stderr, "GMT ERROR: in gmtmgg_date: Month outside valid range [0-%d>: %d\n", GMTMGG_TIME_MAXMONTH, *month);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	while (gmt_struct->daymon[*month +1] <= day_time) {
 		(*month)++;
 		if ((*month) < 0 || (*month) > GMTMGG_TIME_MAXMONTH) {
 			fprintf (stderr, "GMT ERROR: in gmtmgg_date: Month outside valid range [0-%d>: %d\n", GMTMGG_TIME_MAXMONTH, *month);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 	*year = (*month  - 1) / 12 + gmt_struct->first_year;

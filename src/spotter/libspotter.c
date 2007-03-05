@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.37 2007-02-26 03:29:15 pwessel Exp $
+ *	$Id: libspotter.c,v 1.38 2007-03-05 21:47:11 pwessel Exp $
  *
  *   Copyright (c) 1999-2007 by P. Wessel
  *
@@ -79,7 +79,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 
 	if ((fp = GMT_fopen (file, "r")) == NULL) {
 		fprintf (stderr, "libspotter: ERROR: Cannot open stage pole file: %s\n", file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (flowline) finite_out = TRUE;	/* Override so we get finite poles for conversion to forward stage poles at the end */
@@ -115,20 +115,20 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 
 		if (e[i].t_stop >= e[i].t_start) {
 			fprintf (stderr, "libspotter: ERROR: Stage rotation %d has start time younger than stop time\n", i);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		e[i].duration = e[i].t_start - e[i].t_stop;
 		if (finite_in) {
 			if (e[i].t_start < last_t) {
 				fprintf (stderr, "libspotter: ERROR: Finite rotations must go from youngest to oldest\n");
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			last_t = e[i].t_start;
 		}
 		else {
 			if (e[i].t_stop > last_t) {
 				fprintf (stderr, "libspotter: ERROR: Stage rotations must go from oldest to youngest\n");
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			last_t = e[i].t_stop;
 		}
@@ -234,7 +234,7 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 			while (j < ns && t <= p[j].t_stop) j++;	/* Find first applicable stage pole */
 			if (j == ns) {
 				fprintf (stderr, "libspotter: (spotter_backtrack) Ran out of stage poles for t = %g\n", t);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			dt = MIN (p[j].duration, t - MAX(p[j].t_stop, t_zero));
 			d_lon = p[j].omega_r * dt;
@@ -448,7 +448,7 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 			/* while (j < ns && (t + GMT_CONV_LIMIT) < p[j].t_stop) j++; */	/* Find first applicable stage pole */
 			if (j == ns) {
 				fprintf (stderr, "libspotter: (spotter_forthtrack) Ran out of stage poles for t = %g\n", t);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			dt = MIN (tp[i], p[j].t_start) - t;	/* Time interval to rotate */
 			d_lon = p[j].omega_r * dt;		/* Rotation angle (radians) */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.19 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.20 2007-03-05 21:47:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -153,7 +153,7 @@ int GMT_Destroy_Session_ ()
 int GMTAPI_Report_Error (struct GMTAPI_CTRL *API, int error)
 {
 	fprintf (stderr, "GMT: Error returned from GMT API: %d\n",error);
-	exit (EXIT_FAILURE);
+	GMT_exit (EXIT_FAILURE);
 }
 
 void GMTAPI_Report_Error_ (int *error)
@@ -869,7 +869,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, struct GMTAPI_IO *IO, int di
 		case GMT_IS_FILE:
 			if ((IO->fp = GMT_fopen ((char *)(*API->data[item]->ptr), mode)) == NULL) {
 				fprintf (stderr, "%s: Unable to open file %s for %s\n", GMT_program, (char *)(*API->data[item]->ptr), name[direction]);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			IO->close_file = TRUE;	/* We do want to close files we are opening */
 			break;
@@ -880,7 +880,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, struct GMTAPI_IO *IO, int di
 			fd = (int *)(*API->data[item]->ptr);
 			if ((IO->fp = GMT_fdopen (*fd, mode)) == NULL) {
 				fprintf (stderr, "%s: Unable to open file descriptor %d for %s\n", GMT_program, *fd, name[direction]);
-				exit (EXIT_FAILURE);
+				GMT_exit (EXIT_FAILURE);
 			}
 			break;
 	 	case GMT_IS_ARRAY:

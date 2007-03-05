@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.52 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.53 2007-03-05 21:47:09 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1079,7 +1079,7 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_P
 			break;
 		default:
 			fprintf (stderr, "ERROR: wrong unit passed to GMT_get_time_label\n");
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 }

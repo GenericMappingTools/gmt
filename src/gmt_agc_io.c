@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.14 2007-02-26 03:29:14 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.15 2007-03-05 21:47:09 pwessel Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -44,11 +44,11 @@ int GMT_is_agc_grid (char *file)
 
 	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
 		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (STAT (file, &buf)) {	/* Inquiry about file failed somehow */
 		fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if ((fp = GMT_fopen(file, "rb")) == NULL) {
 		fprintf(stderr, "GMT Fatal Error: Could not open file %s!\n", file);
@@ -90,7 +90,7 @@ int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 	}
 	else if ((fp = GMT_fopen (header->name, "rb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	GMT_fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp);
@@ -131,7 +131,7 @@ int GMT_agc_write_grd_info (struct GRD_HEADER *header)
 	}
 	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
@@ -175,7 +175,7 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	}
 	else if ((fp = GMT_fopen (header->name, "rb")) == NULL)	{
 		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	size = GMT_grd_data_size (header->type, &header->nan_value);
@@ -287,7 +287,7 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	}
 	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = fopen (header->name, "wb")) == NULL) {
 		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	size = GMT_grd_data_size (header->type, &header->nan_value);

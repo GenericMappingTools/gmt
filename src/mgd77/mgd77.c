@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.143 2007-02-26 03:29:15 pwessel Exp $
+ *	$Id: mgd77.c,v 1.144 2007-03-05 21:47:11 pwessel Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -209,7 +209,7 @@ int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET 
 			break;
 		default:
 			fprintf (stderr, "%s: Bad format (%d)!\n", GMT_program, F->format);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 	}
 	return (err);
 }
@@ -462,7 +462,7 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 	if (F->format == MGD77_FORMAT_M77) {			/* Can compute # records from file size because format is fixed */
 		if (STAT (F->path, &buf)) {	/* Inquiry about file failed somehow */
 			fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, F->path);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		/* Not tested under Windoze: Do we use +2 because of \r\n ? */
 		H->n_records = irint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + 1))) / (double)(MGD77_RECORD_LENGTH + 1));
@@ -690,7 +690,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	
 	if (!H->meta.verified) {
 		fprintf (stderr, "%s: ERROR: MGD77_Verify_Header called before MGD77_Verify_Prep\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	(void) time (&now);
@@ -2031,7 +2031,7 @@ void MGD77_Process_Ignore (char code, char format)
 			break;
 		default:
 			fprintf (stderr, "%s: Option -%c Bad format (%c)!\n", GMT_program, code, format);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 }
@@ -2346,7 +2346,7 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 			F->Bit_test[i].match = 0;
 		else {
 			fprintf (stderr, "%s: Error: Bit-test flag (%s) is not in +<col> or -<col> format.\n", GMT_program, p);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		strcpy (F->Bit_test[i].name, &p[1]);
 		i++;
@@ -2479,7 +2479,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 		FILE *fp;
 		if ((fp = GMT_fopen (&argv[flist][1], "r")) == NULL) {
 			fprintf (stderr, "%s: WARNING: Unable to open file list %s\n", GMT_program, &argv[flist][1]);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		while (fgets (line, BUFSIZ, fp)) {
 			GMT_chop (line);	/* Get rid of CR/LF issues */
@@ -2603,7 +2603,7 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 			break;
 		default:	/* Bad */
 			fprintf (stderr, "%s: Bad file format specified given (%d)\n", GMT_program, F->format);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 	
@@ -2900,7 +2900,7 @@ void MGD77_Fatal_Error (int error)
 			break;
 	}
 		
-	exit (EXIT_FAILURE);
+	GMT_exit (EXIT_FAILURE);
 }
 
 /* MGD77+ functions will be added down here */
@@ -2934,7 +2934,7 @@ void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 	entry = MGD77_Info_from_Abbrev ("lon", &S->H, &t_set, &t_id);
 	if (entry == MGD77_NOT_SET) {	/* Not good */
 		fprintf (stderr, "%s: Longitude not present!\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	/* Determine if there is a longitude jump and if so shift longitudes to avoid it.
@@ -3463,7 +3463,7 @@ void MGD77_nc_status (int status)
 	 */
 	if (status != NC_NOERR) {
 		fprintf (stderr, "%s: %s\n", GMT_program, nc_strerror (status));
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -4454,12 +4454,12 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 		sprintf (line, "%s%cmgd77_corrections.d" , F->MGD77_HOME, DIR_DELIM);
 		if ((fp = GMT_fopen (line, "r")) == NULL) {
 			fprintf (stderr, "%s: No default MGD77 Correction table (%s) found!\n", GMT_program, line);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 	else if ((fp = GMT_fopen (tablefile, "r")) == NULL) {
 		fprintf (stderr, "%s: Correction table %s not found!\n", GMT_program, tablefile);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	/* Allocate empty correction table */
@@ -4481,7 +4481,7 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 		if ((cruise_id = MGD77_Find_Cruise_ID (cruise, cruises, n_cruises)) == -1) continue; /* Not a cruise we are interested in at the moment */
 		if ((id = MGD77_Get_Column (name, F)) == MGD77_NOT_SET) {
 			fprintf (stderr, "%s: Column %s not found - requested by the correction table %s!\n", GMT_program, name, tablefile);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		pos = 0;
 		previous = &C_table[cruise_id][id].term;
@@ -4515,14 +4515,14 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 					c->modifier = (PFD) MGD77_Copy;
 				if (p[0] != '(') {
 					fprintf (stderr, "%s: Correction table format error line %d, term = %s: Expected 1st opening parenthesis!\n", GMT_program, rec, arguments);
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 				}
 				p++;
 				c->scale = (p[0] == '(') ? 1.0 : atof (p);
 				while (p && *p != '(') p++;	/* Skip the opening parentheses */
 				if (p[0] != '(') {
 					fprintf (stderr, "%s: Correction table format error line %d, term = %s: Expected 2nd opening parenthesis!\n", GMT_program, rec, arguments);
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 				}
 				p++;
 				if (strchr (p, '-')) {	/* Have (value-origin) */
@@ -4537,7 +4537,7 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 					for (i = 0; i < N_AUX; i++) if (!strcmp (name, aux_names[i])) c->id = i;
 					if (c->id == MGD77_NOT_SET) { /* Not an auxilliary column either */
 						fprintf (stderr, "%s: Column %s not found - requested by the correction table %s!\n", GMT_program, name, tablefile);
-						exit (EXIT_FAILURE);
+						GMT_exit (EXIT_FAILURE);
 					}
 					c->id += MGD77_MAX_COLS;	/* To flag this is an aux column */
 				}

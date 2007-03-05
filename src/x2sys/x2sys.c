@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.61 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: x2sys.c,v 1.62 2007-03-05 21:47:11 pwessel Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -114,7 +114,7 @@ void x2sys_fclose (char *fname, FILE *fp)
 
 	if (fclose (fp)) {
 		fprintf (stderr, "x2sys: Error from fclose on %s\n", fname);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 }
 
@@ -325,7 +325,7 @@ struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G)
 
 	if ((fp = x2sys_fopen (line, "r")) == NULL) {
   		fprintf (stderr, "x2sys_initialize : Cannot find format definition file %s in either current or X2SYS_HOME directories\n", line);
-     		exit (EXIT_FAILURE);
+     		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (!strcmp (fname, "gmt")) {
@@ -475,7 +475,7 @@ void x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 		}
 		else {
 			fprintf (stderr, "X2SYS: ERROR: Unknown column name %s\n", p);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		i++;
 	}
@@ -585,7 +585,7 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 
 		if (fread ((void *)&record, (size_t)18, (size_t)1, fp) != 1) {
 			fprintf (stderr, "x2sys_read_gmtfile: Could not read record %d from %s\n", j, gmtfile);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 
 		z[0][j] = record.time;
@@ -636,7 +636,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 
 	if (MGD77_Read_Header_Record (fname, &M, &H)) {
 		fprintf (stderr, "%s: Error reading header sequence for cruise %s\n", X2SYS_program, fname);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	for (i = 0; i < MGD77_N_STRING_FIELDS; i++) tvals[i] = (char *) GMT_memory (VNULL, 9, sizeof (char), "x2sys_read_mgd77file");
@@ -736,7 +736,7 @@ int x2sys_read_list (char *file, char ***list)
 
 	if ((fp = x2sys_fopen (file, "r")) == NULL) {
   		fprintf (stderr, "x2sys_initialize : Cannot find track list file %s in either current or X2SYS_HOME directories\n", line);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	p = (char **) GMT_memory (VNULL, n_alloc, sizeof (char *), "x2sys_read_list");
@@ -771,7 +771,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 
 	if (!TAG) {
 		fprintf (stderr,"%s: TAG not set\n", X2SYS_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	x2sys_set_home ();
@@ -785,7 +785,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	sprintf (tag_file, "%s.tag", TAG);
 	if ((fp = x2sys_fopen (tag_file, "r")) == NULL) {	/* Not in current directory */
 		fprintf (stderr,"%s: Could not find/open file %s either in current of X2SYS_HOME directories\n", X2SYS_program, tag_file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	while (fgets (line, BUFSIZ, fp) && line[0] == '#');	/* Skip comment records */
@@ -800,7 +800,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 				case 'R':
 					if (GMT_parse_common_options (p, &B->x_min, &B->x_max, &B->y_min, &B->y_max)) {
 						fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
-						exit (EXIT_FAILURE);
+						GMT_exit (EXIT_FAILURE);
 					}
 					break;
 
@@ -820,7 +820,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 				case 'I':
 					if (GMT_getinc (&p[2], &B->bin_x, &B->bin_y)) {
 						fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
-						exit (EXIT_FAILURE);
+						GMT_exit (EXIT_FAILURE);
 					}
 					break;
 				case 'M':	/* Multisegment files */
@@ -842,7 +842,7 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 					break;
 				default:
 					fprintf (stderr, "%s: Bad arg in x2sys_set_system! (%s)\n", X2SYS_program, p);
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 					break;
 			}
 		}
@@ -854,11 +854,11 @@ void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, st
 	if (geographic) {
 		if (geodetic == 0 && (B->x_min < 0 || B->x_max < 0)) {
 			fprintf (stderr, "%s: Your -R and -G settings are contradicting each other!\n", X2SYS_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		else if  (geodetic == 2 && (B->x_min > 0 && B->x_max > 0)) {
 			fprintf (stderr, "%s: Your -R and -G settings are contradicting each other!\n", X2SYS_program);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		(*s)->geographic = TRUE;
 		(*s)->geodetic = geodetic;	/* Override setting */
@@ -922,7 +922,7 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode)
 
 	if ((ftrack = fopen (track_path, "r")) == NULL) {
 		fprintf (stderr, "%s: Could not find %s\n", X2SYS_program, track_file);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 
@@ -969,7 +969,7 @@ void x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B)
 
 	if ((fbin = fopen (index_path, "rb")) == NULL) {
 		fprintf (stderr,"%s: Could not open %s\n", X2SYS_program, index_path);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	B->base = (struct X2SYS_BIX_DATABASE *) GMT_memory (VNULL, (size_t)B->nm_bin, sizeof (struct X2SYS_BIX_DATABASE), X2SYS_program);
@@ -995,7 +995,7 @@ int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B)
 	*j = (y == B->y_max) ? B->ny_bin - 1 : (int)floor ((y - B->y_min) * B->i_bin_y);
 	if ((*j) < 0 || (*j) >= B->ny_bin) {
 		fprintf (stderr, "x2sys_binlist: j (%d) outside range implied by -R -I! [0-%d>\n", *j, B->ny_bin);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	*i = (x == B->x_max) ? B->nx_bin - 1 : (int)floor ((x - B->x_min)  * B->i_bin_x);
 	if (B->periodic) {
@@ -1004,12 +1004,12 @@ int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B)
 	}
 	if ((*i) < 0 || (*i) >= B->nx_bin) {
 		fprintf (stderr, "x2sys_binlist: i (%d) outside range implied by -R -I! [0-%d>\n", *i, B->nx_bin);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	index = (*j) * B->nx_bin + (*i);
 	if (index < 0 || index >= B->nm_bin) {
 		fprintf (stderr, "x2sys_binlist: Index (%d) outside range implied by -R -I! [0-%d>\n", index, B->nm_bin);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	return (index);

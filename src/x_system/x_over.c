@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.6 2006-04-10 04:43:31 pwessel Exp $
+/*	$Id: x_over.c,v 1.7 2007-03-05 21:47:11 pwessel Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -201,7 +201,7 @@ int main (int argc, char *argv[])
     fprintf(stderr,"         -M[factor]   multiply magnetic values by factor [Default = 1]\n");
     fprintf(stderr,"         -T[factor]   multiply bathymetric values by factor [Default = 1]\n");
     fprintf(stderr,"         -V           Verbose, report no of crossovers found.\n");
-    exit (EXIT_FAILURE);
+    GMT_exit (EXIT_FAILURE);
   }
 
   leg_no[0] = 0;
@@ -229,28 +229,28 @@ int main (int argc, char *argv[])
     if (leg == 1) offset[1] = npoints[0];
     if (gmtmggpath_func(legfile,legname[leg])) {
       fprintf(stderr,"x_over : No path for leg %s\n", legname[leg]);
-      exit (EXIT_FAILURE);
+      GMT_exit (EXIT_FAILURE);
     }
     if ((fp = fopen(legfile,"rb")) == NULL) {
       fprintf(stderr,"x_over : Could not find/open %s\n",legfile);
-      exit (EXIT_FAILURE);
+      GMT_exit (EXIT_FAILURE);
     }
     if (fread((void *)(&year[leg]), (size_t)4, (size_t)1, fp) != (size_t)1) {
       fprintf(stderr,"x_over: Read error 1. record(year)\n");
-      exit (EXIT_FAILURE);
+      GMT_exit (EXIT_FAILURE);
     }
     if (fread((void *)(&npoints[leg]), (size_t)4, (size_t)1, fp) != (size_t)1) {
       fprintf(stderr,"x_over: Read error 1. record(npoints)\n");
-      exit (EXIT_FAILURE);
+      GMT_exit (EXIT_FAILURE);
     }
     if (fread(info, (size_t)10, (size_t)1, fp) != (size_t)1) {
       fprintf(stderr,"x_over: Read error 1. record(info)\n");
-      exit (EXIT_FAILURE);
+      GMT_exit (EXIT_FAILURE);
     }
     ntot += npoints[leg];
     if (ntot > MAXPOINTS) {
       fprintf(stderr,"x_over : ntot = %d, must allocate more memory\n",ntot);
-      exit (EXIT_FAILURE);
+      GMT_exit (EXIT_FAILURE);
     }
     n_pts_pr_sect[leg] = NPPS;
     n_sect_pr_blk[leg] = NSPB;
@@ -361,7 +361,7 @@ int main (int argc, char *argv[])
     if ((xm[1][1]-xm[0][1]) > 180.0) {	/* Area crosses both Greenwich and datumline */
       fprintf(stderr,"x_over: Legs %s and %s have more than 180 degrees longitude in common! Aborts\n",
         legname[0], legname[leg_no[1]]);
-      exit (EXIT_FAILURE);
+      GMT_exit (EXIT_FAILURE);
     }
     for (leg = 0; !internal && leg < 2; leg++) {
       for (mode = 0; mode < 2; mode++) {
@@ -570,7 +570,7 @@ int main (int argc, char *argv[])
   }
   if (verbose)
     fprintf(stderr,"x_over: Found %5d cross-overs between %s and %s\n",nxovers,legname[0],legname[1]);
-  exit (EXIT_SUCCESS);
+  GMT_exit (EXIT_SUCCESS);
 }
 
 BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, double *xvalues, int *pt, float xx[2][2], float yy[2][2])

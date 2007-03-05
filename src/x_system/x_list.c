@@ -1,5 +1,5 @@
 /*
- *	$Id: x_list.c,v 1.5 2006-04-06 05:25:17 pwessel Exp $
+ *	$Id: x_list.c,v 1.6 2007-03-05 21:47:11 pwessel Exp $
  *
  * XLIST produces ASCII listings of cross-over info. The xx_base.b-file
  * contains longitude(x), latitude(y), time1(t1), time2(t2),  heading1(h),
@@ -205,13 +205,13 @@ int main (int argc, char *argv[])
 		fprintf(stderr,"	-V means verbose\n");
 		fprintf(stderr,"	Default is -txygmbGMBhl\n");
 		fprintf(stderr,"	The data is written out in the sequence specified.\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (correct) {	/* Read correction table */
 		if ((fpc = fopen (corrfile,"rb")) == NULL) {
 			fprintf(stderr, "Could not read correction file %s\n", corrfile);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		bin = (struct CORR **) malloc(sizeof(struct CORR *)*MAXLEGS);
 		i = 0;
@@ -245,7 +245,7 @@ int main (int argc, char *argv[])
 
 	if (fp == NULL && (fp = fopen ("xx_base.b","rb")) == NULL) {
 		fprintf(stderr,"Could not open xx_base.b\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	/* Read first record of file containing n_records */
@@ -333,7 +333,7 @@ int main (int argc, char *argv[])
 			for (j = 0; j < n_x; j++) {
 				if ((ok = fread ((void *)&crossover, REC_SIZE, (size_t)1, fp)) != (size_t)1) {
 					fprintf (stderr, "Read error on xx_base.b\n");
-					exit (EXIT_FAILURE);
+					GMT_exit (EXIT_FAILURE);
 				}
 				strike = 0;
 				if (!g || (g && crossover.x_val[0] == NODATA)) strike++;
@@ -448,14 +448,14 @@ int main (int argc, char *argv[])
           		}
           		if (once) {	/* done */
           			fclose (fp);
-          			exit (EXIT_FAILURE);
+          			GMT_exit (EXIT_FAILURE);
           		}
           	}
 		ok = fread ((void *)header, REC_SIZE, (size_t)1, fp);
 	}
 	fclose (fp);
 
-	exit (EXIT_SUCCESS);
+	GMT_exit (EXIT_SUCCESS);
 
 }
 
