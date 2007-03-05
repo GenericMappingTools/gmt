@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.130 2007-02-13 17:04:39 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.131 2007-03-05 21:38:15 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5279,7 +5279,7 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
 
   if (fabs(max_radius) < GMT_CONV_LIMIT) {      /* Must pass non-zero radius */
     fprintf(stderr, "%s: Search-radius not initialized\n", GMT_program);
-    exit(EXIT_FAILURE);
+    exit (EXIT_FAILURE);
   }
 
   nm = r_head->nx * r_head->ny;

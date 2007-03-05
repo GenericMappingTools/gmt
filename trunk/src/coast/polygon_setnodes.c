@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_setnodes.c,v 1.4 2007-03-05 21:38:15 pwessel Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -79,7 +79,7 @@ int main (int argc, char **argv)
 		blob[n_id].start = pos;
 		if (pol_fread (&p, 1, fp) != 1) {
 			fprintf(stderr,"polygon_setnodes:  ERROR  reading file.\n");
-			exit(EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		fseek (fp, (long) (blob[n_id].h.n - 1) * sizeof(struct LONGPAIR), 1);
 		pos += blob[n_id].h.n * sizeof(struct LONGPAIR);
@@ -109,7 +109,7 @@ int main (int argc, char **argv)
 		for (k = 0; k < blob[id].h.n; k++) {
 			if (pol_fread (&p, 1, fp) != 1) {
 				fprintf(stderr,"polygon_setnodes:  ERROR  reading file.\n");
-				exit(EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			if (blob[id].h.greenwich && p.x > blob[id].h.datelon) p.x -= M360;
 			lon[k] = p.x;
