@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.139 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: pslib.c,v 1.140 2007-03-07 12:56:21 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1443,7 +1443,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		}
 		else {
 			fprintf (stderr, "pslib: Measure unit not valid!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 
 		xscl *= scl;
@@ -2788,7 +2788,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			break;
 		default:
 			fprintf (stderr, "%s: Bad paragraph justification (%c) - Exiting\n", "pslib", par_just);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 	}
 
 	/* Time to write out to PS file */
@@ -3299,14 +3299,14 @@ unsigned char *ps_load_image (char *file, struct imageinfo *h)
 
 	if ((fp = fopen (file, "rb")) == NULL) {
 		fprintf (stderr, "pslib: Cannot open image file %s!\n", file);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	/* Read magic number to determine image type */
 
 	if (ps_read_rasheader (fp, h, 0, 0)) {
 		fprintf (stderr, "pslib: Error reading magic number of image file %s!\n", file);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	if (ps.verbose) fprintf (stderr, "pslib: Loading image file %s of type 0x%x\n", file, h->magic);
 	fseek (fp, 0, SEEK_SET);
@@ -3319,7 +3319,7 @@ unsigned char *ps_load_image (char *file, struct imageinfo *h)
 		return (ps_load_eps (fp, h));
 	} else {
 		fprintf (stderr, "pslib: Unrecognised magic number 0x%x in file %s!\n", h->magic, file);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 }
 
@@ -3374,16 +3374,16 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 
 	if (ps_read_rasheader (fp, header, 0, 7)) {
 		fprintf (stderr, "pslib: Trouble reading Sun rasterfile header!\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	if (header->magic != RAS_MAGIC) {	/* Not a Sun rasterfile */
 		fprintf (stderr, "pslib: Raster is not a Sun rasterfile (Magic # = 0x%x)!\n", header->magic);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	if (header->type < RT_OLD || header->type > RT_FORMAT_RGB) {
 		fprintf (stderr, "pslib: Can only read Sun rasterfiles types %d - %d (your type = %d)!\n", RT_OLD, RT_FORMAT_RGB, header->type);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	buffer = entry = red = green = blue = (unsigned char *)NULL;
@@ -3395,7 +3395,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 1-bit Sun rasterfile!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
 
@@ -3410,7 +3410,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
 	}
@@ -3430,7 +3430,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 		entry = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)entry, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &entry);
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)(3 * header->width * header->height), sizeof (unsigned char));
@@ -3461,7 +3461,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 24-bit Sun rasterfile!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
 		oddlength = 3 * header->width;
@@ -3482,7 +3482,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 24-bit Sun rasterfile!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
 		oddlength = 3 * header->width;
@@ -3514,7 +3514,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 32-bit Sun rasterfile!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
 		r_off = (header->type == RT_FORMAT_RGB) ? 1 : 3;
@@ -3535,7 +3535,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 32-bit Sun rasterfile!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
 		r_off = (header->type == RT_FORMAT_RGB) ? 1 : 3;
@@ -4224,13 +4224,13 @@ void *ps_memory (void *prev_addr, size_t nelem, size_t size)
 	if (prev_addr) {
 		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == VNULL) {
 			fprintf (stderr, "PSL Fatal Error: Could not reallocate more memory, n = %d\n", (int)nelem);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	else {
 		if ((tmp = calloc ((size_t) nelem, (unsigned) size)) == VNULL) {
 			fprintf (stderr, "PSL Fatal Error: Could not allocate memory, n = %d\n", (int)nelem);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	return (tmp);
@@ -4272,7 +4272,7 @@ static void ps_bulkcopy (const char *fname)
 	if ((in = fopen (fullname, "r")) == NULL) {
 		fprintf (stderr, "PSL Fatal Error: ");
 		perror (fullname);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	while (fgets (buf, BUFSIZ, in)) {
@@ -4312,7 +4312,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 	if ((in = fopen (fullname, "r")) == NULL) {
 		fprintf (stderr, "PSL Fatal Error: ");
 		perror (fullname);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	ps.font = (struct PSL_FONT *) ps_memory (VNULL, (size_t)n_alloc, sizeof (struct PSL_FONT));
@@ -4321,7 +4321,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (sscanf (buf, "%s %lf %d", fullname, &ps.font[i].height, &ps.font[i].encoded) != 3) {
 			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %d\n", i);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		ps.font[i].name = (char *)ps_memory (VNULL, (size_t)(strlen (fullname)+1), sizeof (char));
 		strcpy (ps.font[i].name, fullname);
@@ -4343,7 +4343,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 		{
 			fprintf (stderr, "PSL Fatal Error: ");
 			perror (fullname);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 
 		while (fgets (buf, BUFSIZ, in)) {
@@ -4351,7 +4351,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 			ps.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
 			if (sscanf (buf, "%s %lf %d", ps.font[i].name, &ps.font[i].height, &ps.font[i].encoded) != 3) {
 				fprintf (stderr, "PSL Fatal Error: Trouble decoding custom font info for font %d\n", i - *n_GMT_fonts);
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			i++;
 			if (i == n_alloc) {
