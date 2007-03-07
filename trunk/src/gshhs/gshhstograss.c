@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.9 2007-03-05 21:47:11 pwessel Exp $
+/*	$Id: gshhstograss.c,v 1.10 2007-03-07 13:07:04 remko Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -191,5 +191,5 @@ char **argv;
 	fprintf(dig_cats,"# %6d categories\n", max_id);
 	fclose(dig_cats);
 
-	GMT_exit (EXIT_SUCCSESS);
+	exit (EXIT_SUCCSESS);
 }

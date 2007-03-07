@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.12 2007-03-05 21:47:11 pwessel Exp $
+/*	$Id: gshhs_dp.c,v 1.13 2007-03-07 13:07:04 remko Exp $
  *
  *	Copyright (c) 1996-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,7 +59,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "usage:  gshhs_dp input.b tolerance output.b [-v]\n");
 		fprintf (stderr, "\ttolerance is maximum mismatch in km\n");
 		fprintf (stderr, "\t-v will run in verbose mode and report shrinkage\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	verbose = (argc == 5);
@@ -105,7 +105,7 @@ int main (int argc, char **argv)
 		for (k = 0; k < h.n; k++) {
 			if (fread ((void *)&p, sizeof(struct POINT), (size_t)1, fp_in) != 1) {
 				fprintf (stderr,"gshhs_dp:  ERROR reading data point.\n");
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			if (flip) {
 				p.x = swabi4 ((unsigned int)p.x);
@@ -128,14 +128,14 @@ int main (int argc, char **argv)
 			h.n = n;
 			if (fwrite ((void *)&h, sizeof (struct GSHHS), (size_t)1, fp_out) != 1) {
 				fprintf(stderr,"gshhs_dp:  ERROR  writing file header.\n");
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			for (k = 0; k < n; k++) {
 				p.x = x[index[k]];
 				p.y = y[index[k]];
 				if (fwrite((void *)&p, sizeof(struct POINT), (size_t)1, fp_out) != 1) {
 					fprintf(stderr,"gshhs_dp:  ERROR  writing data point.\n");
-					GMT_exit (EXIT_FAILURE);
+					exit (EXIT_FAILURE);
 				}
 			}
 			n_out++;
@@ -161,7 +161,7 @@ int main (int argc, char **argv)
 	redux2 = 100.0 * (1.0 - (double) n_out / (double) n_id);
 	printf ("gshhs_dp at %g km:\n# of points reduced by %.1f%% (out %d, in %d)\n# of polygons reduced by %.1f%% out (%d, in %d)\n", tolerance, redux, n_tot_out, n_tot_in, redux2, n_out, n_id);
 
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
 
 /* Stack-based Douglas Peucker line simplification routine */
@@ -306,13 +306,13 @@ void *get_memory (void *prev_addr, int n, size_t size, char *progname)
 	if (prev_addr) {
 		if ((tmp = realloc ((void *) prev_addr, (size_t) (n * size))) == VNULL) {
 			fprintf (stderr, "gshhs Fatal Error: %s could not reallocate more memory, n = %d\n", progname, n);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	else {
 		if ((tmp = calloc ((size_t) n, (size_t) size)) == VNULL) {
 			fprintf (stderr, "gshhs Fatal Error: %s could not allocate memory, n = %d\n", progname, n);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	return (tmp);
