@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.193 2007-03-05 21:47:10 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.194 2007-03-07 12:56:20 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3375,7 +3375,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 
 			default:
 				fprintf (stderr, "GMT ERROR: %s : Unrecognized symbol code (%d) passed to GMT_draw_custom_symbol\n", GMT_program, s->action);
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 				break;
 
 		}
