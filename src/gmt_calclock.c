@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.53 2007-03-05 21:47:09 pwessel Exp $
+ *	$Id: gmt_calclock.c,v 1.54 2007-03-08 02:24:20 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1078,8 +1078,8 @@ void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_P
 			(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%2.2d", irint(calendar.sec));
 			break;
 		default:
-			fprintf (stderr, "ERROR: wrong unit passed to GMT_get_time_label\n");
-			GMT_exit (EXIT_FAILURE);
+			fprintf (stderr, "%s: INTERNAL ERROR: wrong unit passed to GMT_get_time_label\n", GMT_program);
+			sprintf (string, "NaN");
 			break;
 	}
 }
