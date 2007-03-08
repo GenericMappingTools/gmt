@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.61 2007-03-05 21:47:10 pwessel Exp $
+ *	$Id: gmt_nc.c,v 1.62 2007-03-08 01:29:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -41,7 +41,6 @@
  *	GMT_nc_write_grd :		Write header and data set to new file
  *
  *	void check_nc_status (int status)	Used for misc checks
- *	void nc_nopipe (char *file)		---"---
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
@@ -75,10 +74,10 @@ int GMT_is_nc_grid (char *file)
 	}
 	else
 		i = -1;
-	nc_nopipe (filename);
+	if (!strcmp (filename,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 
 	/* Open the file and look for the required variable */
-	if (nc_open (filename, NC_NOWRITE, &ncid)) return (-1);
+	if (nc_open (filename, NC_NOWRITE, &ncid)) return (GMT_GRDIO_OPEN_FAILED);
 	if (!nc_inq_dimid (ncid, "xysize", &z_id)) {
 		id = 5;
 		nc_inq_varid (ncid, "z", &z_id);
@@ -95,13 +94,8 @@ int GMT_is_nc_grid (char *file)
 		nc_inq_varid (ncid, &filename[i+1], &z_id);
 
 	/* When variable can not be found */
-	if (z_id < 0) {
-		if (i < 0)
-			fprintf (stderr, "%s: no 2-D variable in file [%s]\n", GMT_program, filename);
-		else
-			fprintf (stderr, "%s: named variable (%s) does not exist in file [%s]\n", GMT_program, &filename[i+1], filename);
-		GMT_exit (EXIT_FAILURE);
-	}
+	if (z_id < 0) return ((i < 0) ? GMT_GRDIO_NO_2DVAR : GMT_GRDIO_NO_VAR);
+
 	check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
 	id += ((z_type == NC_BYTE) ? 2 : z_type);
 	nc_close (ncid);
@@ -111,19 +105,19 @@ int GMT_is_nc_grid (char *file)
 int GMT_nc_read_grd_info (struct GRD_HEADER *header)
 {
 	GMT_nc_grd_info (header, 'r');
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int GMT_nc_update_grd_info (struct GRD_HEADER *header)
 {
 	GMT_nc_grd_info (header, 'u');
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int GMT_nc_write_grd_info (struct GRD_HEADER *header)
 {
 	GMT_nc_grd_info (header, 'w');
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
@@ -162,7 +156,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 
 	/* Open NetCDF file */
 
-	nc_nopipe (header->name);
+	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	switch (job) {
 		case 'r':
 			check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid)); break;
@@ -190,19 +184,11 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		}
 		else if (nc_inq_varid (ncid, varname, &z_id) == NC_NOERR) {
 			check_nc_status (nc_inq_varndims (ncid, z_id, &ndims));
-			if (ndims < 2 || ndims > 5) {
-				fprintf (stderr, "%s: named variable (%s) is %d-D, not 2-, 3-, 4- or 5-D [%s]\n", GMT_program, varname, ndims, header->name);
-				GMT_exit (EXIT_FAILURE);
-			}
+			if (ndims < 2 || ndims > 5) return (GMT_GRDIO_BAD_DIM);
 		}
-		else {
-			fprintf (stderr, "%s: named variable (%s) does not exist in file [%s]\n", GMT_program, varname, header->name);
-			GMT_exit (EXIT_FAILURE);
-		}
-		if (z_id < 0) {
-			fprintf (stderr, "%s: no 2-D variable in file [%s]\n", GMT_program, header->name);
-			GMT_exit (EXIT_FAILURE);
-		}
+		else
+			return (GMT_GRDIO_NO_VAR);
+		if (z_id < 0) return (GMT_GRDIO_NO_2DVAR);
 
 		/* Get the z data type and determine its dimensions */
 		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
@@ -382,7 +368,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	/* Close NetCDF file, unless job == 'W' */
 
 	if (job != 'W') check_nc_status (nc_close (ncid));
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
@@ -412,10 +398,8 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 
 	if (GMT_grdformats[header->type][0] == 'c')
 		return (GMT_cdf_read_grd (header, grid, w, e, s, n, pad, complex));
-	else if (GMT_grdformats[header->type][0] != 'n') {
-		fprintf (stderr, "%s: File is not in NetCDF format [%s]\n", GMT_program, header->name);
-		GMT_exit (EXIT_FAILURE);
-	}
+	else if (GMT_grdformats[header->type][0] != 'n')
+		return (NC_ENOTNC);
 
 	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
 
@@ -432,7 +416,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 
 	/* Open the NetCDF file */
 
-	nc_nopipe (header->name);
+	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
  	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
 	check = !GMT_is_dnan (header->nan_value);
 	check_nc_status (nc_inq_varndims (ncid, header->z_id, &ndims));
@@ -482,7 +466,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 
 	GMT_free ((void *)k);
 	GMT_free ((void *)tmp);
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
@@ -619,7 +603,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	check_nc_status (nc_close (header->ncid));
 
-	return (0);
+	return (GMT_NOERROR);
 }
 
 void check_nc_status (int status)
@@ -630,15 +614,6 @@ void check_nc_status (int status)
 		fprintf (stderr, "%s: %s [%s]\n", GMT_program, nc_strerror (status), nc_file);
 		GMT_exit (EXIT_FAILURE);
 	}
-}
-
-void nc_nopipe (char *file)
-{	/* This function checks if file was called as a pipe */
-	if (!strcmp (file,"=")) {
-		fprintf (stderr, "%s: GMT Fatal Error: NetCDF-based I/O does not support piping - Exiting\n", GMT_program);
-		GMT_exit (EXIT_FAILURE);
-	}
-	strcpy (nc_file, file);
 }
 
 int GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen)
@@ -656,7 +631,7 @@ int GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t tex
 	strncpy (text, tmp, textlen);
 	if (attlen < textlen) text[attlen] = 0;
 	GMT_free (tmp);
-	return (0);
+	return (GMT_NOERROR);
 }
 
 void GMT_nc_get_units (int ncid, int varid, char *name_units)

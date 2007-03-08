@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.43 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.44 2007-03-08 01:29:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,31 +47,31 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
 int GMT_cdf_read_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
-	nc_nopipe (header->name);
+	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'r');
 	check_nc_status (nc_close (ncid));
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int GMT_cdf_update_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
-	nc_nopipe (header->name);
+	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	check_nc_status (nc_open (header->name, NC_WRITE + NC_NOFILL, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'u');
 	check_nc_status (nc_close (ncid));
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int GMT_cdf_write_grd_info (struct GRD_HEADER *header)
 {
 	int ncid;
-	nc_nopipe (header->name);
+	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	check_nc_status (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'w');
 	check_nc_status (nc_close (ncid));
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
@@ -203,7 +203,7 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		}
 		check_nc_status (nc_put_var_double (ncid, z_range_id, dummy));
 	}
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
@@ -243,7 +243,7 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	/* Open the NetCDF file */
 
-	nc_nopipe (header->name);
+	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
  	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
 	check = !GMT_is_dnan (header->nan_value);
 
@@ -281,7 +281,7 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	GMT_free ((void *)k);
 	GMT_free ((void *)tmp);
-	return (0);
+	return (GMT_NOERROR);
 }
 
 int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
@@ -345,7 +345,7 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	/* Write grid header */
 
-	nc_nopipe (header->name);
+	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	check_nc_status (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
 	GMT_cdf_grd_info (ncid, header, 'w');
 
@@ -421,5 +421,5 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	check_nc_status (nc_close (ncid));
 
-	return (0);
+	return (GMT_NOERROR);
 }

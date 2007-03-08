@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.15 2007-03-05 21:47:09 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.16 2007-03-08 01:29:45 pwessel Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -42,36 +42,27 @@ int GMT_is_agc_grid (char *file)
 	float recdata[RECORDLENGTH], x_min, x_max, y_min, y_max, x_inc, y_inc;
 	struct STAT buf;
 
-	if (!strcmp(file, "=")) {	/* Cannot check on pipes */
-		fprintf (stderr, "GMT Fatal Error: Cannot guess grid format type if grid is passed via pipe!\n");
-		GMT_exit (EXIT_FAILURE);
-	}
-	if (STAT (file, &buf)) {	/* Inquiry about file failed somehow */
-		fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, file);
-		GMT_exit (EXIT_FAILURE);
-	}
-	if ((fp = GMT_fopen(file, "rb")) == NULL) {
-		fprintf(stderr, "GMT Fatal Error: Could not open file %s!\n", file);
-		exit (-1);
-	}
-	GMT_fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp);
+	if (!strcmp(file, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
+	if (STAT (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
+	if ((fp = GMT_fopen(file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
+	if (GMT_fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
 	
 	y_min = recdata[0];
 	y_max = recdata[1];
-	if (y_min >= y_max) return (-1);
+	if (y_min >= y_max) return (GMT_GRDIO_BAD_VAL);
 	x_min = recdata[2];
 	x_max = recdata[3];
-	if (x_min >= x_max) return (-1);
+	if (x_min >= x_max) return (GMT_GRDIO_BAD_VAL);
 	y_inc = recdata[4];
 	x_inc = recdata[5];
-	if (x_inc <= 0.0 || y_inc <= 0.0) return (-1);
+	if (x_inc <= 0.0 || y_inc <= 0.0) return (GMT_GRDIO_BAD_VAL);
 	nx = GMT_get_n (x_min, x_max, x_inc, 0);
-	if (nx <= 0) return (-1);
+	if (nx <= 0) return (GMT_GRDIO_BAD_VAL);
 	ny = GMT_get_n (y_min, y_max, y_inc, 0);
-	if (ny <= 0) return (-1);
+	if (ny <= 0) return (GMT_GRDIO_BAD_VAL);
 	predicted_size = irint (ceil ((double)ny /ZBLOCKHEIGHT) * ceil ((double)nx / ZBLOCKWIDTH)) * (ZBLOCKHEIGHT * ZBLOCKWIDTH + PREHEADSIZE + POSTHEADSIZE) * sizeof (float);
 	if (predicted_size == buf.st_size) return (GMT_grd_format_decoder ("af"));
-	return (-1);
+	return (GMT_GRDIO_BAD_VAL);
 }
 
 int GMT_agc_read_grd_info (struct GRD_HEADER *header)
@@ -88,12 +79,10 @@ int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdin;
 	}
-	else if ((fp = GMT_fopen (header->name, "rb")) == NULL) {
-		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		GMT_exit (EXIT_FAILURE);
-	}
+	else if ((fp = GMT_fopen (header->name, "rb")) == NULL)
+		return (GMT_GRDIO_OPEN_FAILED);
 
-	GMT_fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp);
+	if (GMT_fread ((void *)recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
 	
 	header->node_offset = 0;	/* Hardwired since no info about this in the header */
 	header->y_min = recdata[0];
@@ -114,7 +103,7 @@ int GMT_agc_read_grd_info (struct GRD_HEADER *header)
 	
 	if (fp != GMT_stdin) GMT_fclose (fp);
 
-	return (FALSE);
+	return (GMT_NOERROR);
 }
 
 int GMT_agc_write_grd_info (struct GRD_HEADER *header)
@@ -129,18 +118,16 @@ int GMT_agc_write_grd_info (struct GRD_HEADER *header)
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = fopen (header->name, "wb")) == NULL) {
-		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		GMT_exit (EXIT_FAILURE);
-	}
+	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = fopen (header->name, "wb")) == NULL)
+		return (GMT_GRDIO_CREATE_FAILED);
 	
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	GMT_fwrite ((void *)prez, sizeof(float), PREHEADSIZE, fp);
+	if (GMT_fwrite ((void *)prez, sizeof(float), PREHEADSIZE, fp) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
 
-	return (FALSE);
+	return (GMT_NOERROR);
 }
 
 int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
@@ -165,7 +152,7 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
-	void ReadRecord (FILE *fpi, int recnum, float *z);
+	int ReadRecord (FILE *fpi, int recnum, float *z);
 	
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -173,10 +160,8 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 #endif
 		fp = GMT_stdin;
 	}
-	else if ((fp = GMT_fopen (header->name, "rb")) == NULL)	{
-		fprintf (stderr, "GMT Fatal Error: Could not open file %s!\n", header->name);
-		GMT_exit (EXIT_FAILURE);
-	}
+	else if ((fp = GMT_fopen (header->name, "rb")) == NULL)
+		return (GMT_GRDIO_OPEN_FAILED);
 
 	size = GMT_grd_data_size (header->type, &header->nan_value);
 	check = !GMT_is_dnan (header->nan_value);
@@ -204,7 +189,7 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	
 	datablockcol = datablockrow = 0;
 	while ( !feof(fp) ) {
-		ReadRecord(fp, n_read, (float *)z);
+		if (ReadRecord(fp, n_read, (float *)z)) return (GMT_GRDIO_READ_FAILED);
   		n_read++;
 		rowstart = datablockrow * ZBLOCKHEIGHT;
 		rowend = MIN(rowstart + ZBLOCKHEIGHT, header->ny);
@@ -248,7 +233,7 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	
 	GMT_free ((void *)k);
 
-	return (FALSE);
+	return (GMT_NOERROR);
 }
 
 int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
@@ -276,7 +261,7 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	int rowstart, rowend, colstart, colend = 0, datablockcol, datablockrow;
 	int j_gmt, row, col;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
-	void WriteRecord (FILE *file, float *rec, float *prerec, float *postrec);
+	int WriteRecord (FILE *file, float *rec, float *prerec, float *postrec);
 	void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header);
 
 	if (!strcmp (header->name, "=")) {
@@ -285,10 +270,8 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 #endif
 		fp = GMT_stdout;
 	}
-	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = fopen (header->name, "wb")) == NULL) {
-		fprintf (stderr, "GMT Fatal Error: Could not create file %s!\n", header->name);
-		GMT_exit (EXIT_FAILURE);
-	}
+	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = fopen (header->name, "wb")) == NULL)
+		return (GMT_GRDIO_CREATE_FAILED);
 	
 	size = GMT_grd_data_size (header->type, &header->nan_value);
 	check = !GMT_is_dnan (header->nan_value);
@@ -349,7 +332,7 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 			}
 		} 
 
-		WriteRecord (fp, (float*)outz, prez, postz);
+		if (WriteRecord (fp, (float*)outz, prez, postz)) return (GMT_GRDIO_WRITE_FAILED);
 
 		if (++datablockrow >= header->y_order) {
 			datablockrow = 0;
@@ -361,7 +344,7 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	GMT_free ((void *)k);
 
-	return (FALSE);
+	return (GMT_NOERROR);
 }
 
 void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header)
@@ -392,22 +375,23 @@ void SaveAGCHeader (char *remark, float *agchead)
 	}
 }
 
-void ReadRecord (FILE *fpi, int recnum, float *z)
+int ReadRecord (FILE *fpi, int recnum, float *z)
 { 
 	int nitems;
 	float garbage[FIRSTZ];
 
-	GMT_fread ((void *)garbage, sizeof(float), FIRSTZ, fpi);
+	if (GMT_fread ((void *)garbage, sizeof(float), FIRSTZ, fpi) < FIRSTZ) return (GMT_GRDIO_READ_FAILED);
 	nitems = GMT_fread ((void *)z, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, fpi);
 
-	if (nitems != (ZBLOCKWIDTH * ZBLOCKHEIGHT) && !feof(fpi)) 	/* Bad stuff */
-		fprintf(stderr, "Bad at rec # %d\n", recnum);
-	GMT_fread ((void *)garbage, sizeof(float), RECORDLENGTH - (ZBLOCKWIDTH * ZBLOCKHEIGHT + FIRSTZ), fpi);
+	if (nitems != (ZBLOCKWIDTH * ZBLOCKHEIGHT) && !feof(fpi)) return (GMT_GRDIO_READ_FAILED);	/* Bad stuff */
+	if (GMT_fread ((void *)garbage, sizeof(float), RECORDLENGTH - (ZBLOCKWIDTH * ZBLOCKHEIGHT + FIRSTZ), fpi) < (RECORDLENGTH - (ZBLOCKWIDTH * ZBLOCKHEIGHT + FIRSTZ))) return (GMT_GRDIO_READ_FAILED);
+	return (GMT_NOERROR);
 }
 
-void WriteRecord (FILE *file, float *rec, float *prerec, float *postrec)
+int WriteRecord (FILE *file, float *rec, float *prerec, float *postrec)
 {
-	GMT_fwrite ((void *)prerec, sizeof(float), PREHEADSIZE, file);
-	GMT_fwrite ((void *)rec, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, file);
-	GMT_fwrite( (void *)postrec, sizeof(float), POSTHEADSIZE, file); 
+	if (GMT_fwrite ((void *)prerec, sizeof(float), PREHEADSIZE, file) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite ((void *)rec, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, file) < (ZBLOCKWIDTH * ZBLOCKHEIGHT)) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite( (void *)postrec, sizeof(float), POSTHEADSIZE, file) < POSTHEADSIZE)  return (GMT_GRDIO_WRITE_FAILED); 
+	return (GMT_NOERROR);
 }
