@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.92 2007-03-05 21:47:09 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.93 2007-03-08 01:29:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -83,14 +83,14 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 	 * header:	grid structure header
 	 */
 
-	int status;
+	int status, err;
 	double scale, offset, nan_value;
 
 	/* Initialize grid information */
 	GMT_grd_init (header, 0, (char **)VNULL, FALSE);
 
 	/* Save parameters on file name suffix before issuing GMT_io_readinfo */
-	GMT_grd_get_format (file, header, TRUE);
+ 	if ((err = GMT_grd_get_format (file, header, TRUE)) != GMT_NOERROR) return (err);
 	scale = header->z_scale_factor, offset = header->z_add_offset, nan_value = header->nan_value;
 
 	status = (*GMT_io_readinfo[header->type]) (header);
@@ -112,9 +112,10 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 	 * header:	grid structure header
 	 */
 
-	int status;
+	int status, err;
 
-	GMT_grd_get_format (file, header, FALSE);
+ 	if ((err = GMT_grd_get_format (file, header, FALSE)) != GMT_NOERROR) return (err);
+
 	if (GMT_is_dnan(header->z_scale_factor))
 		header->z_scale_factor = 1.0;
 	else if (header->z_scale_factor == 0.0) {
@@ -175,9 +176,9 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	int status;
+	int status, err;
 
-	GMT_grd_get_format (file, header, FALSE);
+	if ((err = GMT_grd_get_format (file, header, FALSE)) != GMT_NOERROR) return (err);
 	if (GMT_is_dnan(header->z_scale_factor))
 		header->z_scale_factor = 1.0;
 	else if (header->z_scale_factor == 0.0) {
@@ -214,9 +215,9 @@ void GMT_expand_filename (char *file, char *fname)
 		strcpy (fname, file);
 }
 
-void GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
+int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 {
-	int i = 0, j;
+	int i = 0, val, j;
 	char code[GMT_TEXT_LEN];
 
 	GMT_expand_filename (file, header->name);
@@ -229,32 +230,36 @@ void GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 	if (header->name[i]) {	/* Get format type, scale, offset and missing value from suffix */
 		i++;
 		sscanf (&header->name[i], "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
-		header->type = GMT_grd_format_decoder (code);
+		val = GMT_grd_format_decoder (code);
+		if (val < 0) return (val);
+		header->type = val;
 		j = (i == 1) ? i : i - 1;
 		header->name[j] = 0;
 	}
 	else if (magic) {	/* Determine file format automatically based on grid content */
-
+		/* First check that the file exists */
+		if (GMT_access (header->name, F_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
 		/* First check if we have a netCDF grid */
-		if ((header->type = GMT_is_nc_grid (header->name)) >= 0) return;
+		if ((header->type = GMT_is_nc_grid (header->name)) >= 0) return (GMT_NOERROR);
 		/* Then check for native GMT grid */
-		if ((header->type = GMT_is_native_grid (header->name)) >= 0) return;
+		if ((header->type = GMT_is_native_grid (header->name)) >= 0) return (GMT_NOERROR);
 		/* Next check for Sun raster GMT grid */
-		if ((header->type = GMT_is_ras_grid (header->name)) >= 0) return;
+		if ((header->type = GMT_is_ras_grid (header->name)) >= 0) return (GMT_NOERROR);
 		/* Then check for Golden Software surfer grid */
-		if ((header->type = GMT_is_srf_grid (header->name)) >= 0) return;
+		if ((header->type = GMT_is_srf_grid (header->name)) >= 0) return (GMT_NOERROR);
 		/* Then check for NGDC GRD98 GMT grid */
-		if ((header->type = GMT_is_mgg2_grid (header->name)) >= 0) return;
+		if ((header->type = GMT_is_mgg2_grid (header->name)) >= 0) return (GMT_NOERROR);
 		/* Then check for AGC GMT grid */
-		if ((header->type = GMT_is_agc_grid (header->name)) >= 0) return;
-
-		fprintf (stderr, "Could not determine grid type of file %s\n", header->name);
-		GMT_exit (EXIT_FAILURE);
+		if ((header->type = GMT_is_agc_grid (header->name)) >= 0) return (GMT_NOERROR);
+		return (GMT_GRDIO_UNKNOWN_FORMAT);	/* No supported format found */
 	}
 	else {			/* Get format type, scale, offset and missing value from gmtdefs.grid_format */
 		sscanf (gmtdefs.grid_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
-		header->type = GMT_grd_format_decoder (code);
+		val = GMT_grd_format_decoder (code);
+		if (val < 0) return (val);
+		header->type = val;
 	}
+	return (GMT_NOERROR);
 }
 
 int GMT_grd_data_size (int format, double *nan_value)
@@ -283,7 +288,7 @@ int GMT_grd_data_size (int format, double *nan_value)
 			break;
 		default:
 			fprintf (stderr, "Unknown grid data type: %c\n", GMT_grdformats[format][1]);
-			GMT_exit (EXIT_FAILURE);
+			return (GMT_GRDIO_UNKNOWN_TYPE);
 	}
 }
 
@@ -295,10 +300,7 @@ int GMT_grd_format_decoder (const char *code)
 
 	if (isdigit ((int)code[0])) {	/* File format number given, convert directly */
 		id = atoi (code);
- 		if (id < 0 || id >= GMT_N_GRD_FORMATS) {
-			fprintf (stderr, "%s: GMT ERROR: grdfile format number (%d) unknown!\n", GMT_program, id);
-			GMT_exit (EXIT_FAILURE);
-		}
+ 		if (id < 0 || id >= GMT_N_GRD_FORMATS) return (GMT_GRDIO_UNKNOWN_ID);
 	}
 	else {	/* Character code given */
 		int i, group;
@@ -309,11 +311,7 @@ int GMT_grd_format_decoder (const char *code)
 			}
 		}
 
-		if (id == -1) {
-			if (group) fprintf (stderr, "%s: GMT ERROR: grdfile format type (%c) for group %c is unknown!\n", GMT_program, code[1], code[0]);
-			else fprintf (stderr, "%s: GMT ERROR: grdfile format code %s unknown!\n", GMT_program, code);
-			GMT_exit (EXIT_FAILURE);
-		}
+		if (id == -1) return (GMT_GRDIO_UNKNOWN_ID);
 	}
 
 	return (id);
@@ -513,7 +511,7 @@ void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 	return;
 }
 
-void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
+int GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 {
 	/* Assumes header contents is already known.  For writing we
 	 * assume that the header has already been written.  We fill
@@ -522,7 +520,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	 * grdraster-type files.
 	 */
 
-	int r_w;
+	int r_w, err;
 	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
 	BOOLEAN header = TRUE, magic = TRUE;
@@ -538,7 +536,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	}
 	else
 		r_w = 1;
- 	GMT_grd_get_format (file, &G->header, magic);
+ 	if ((err = GMT_grd_get_format (file, &G->header, magic)) != GMT_NOERROR) return (err);
 	if (GMT_is_dnan(G->header.z_scale_factor))
 		G->header.z_scale_factor = 1.0;
 	else if (G->header.z_scale_factor == 0.0) {
@@ -560,15 +558,11 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		G->start[1] = 0;
 	}
 	else {				/* Regular binary file with/w.o standard GMT header */
-		if (r_w == 0 && (G->fp = GMT_fopen (G->header.name, bin_mode[0])) == NULL) {
-			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->header.name);
-			GMT_exit (EXIT_FAILURE);
-		}
-		else if ((G->fp = GMT_fopen (G->header.name, bin_mode[r_w])) == NULL) {
-			fprintf (stderr, "%s: Error opening file %s\n", GMT_program, G->header.name);
-			GMT_exit (EXIT_FAILURE);
-		}
-		if (header) GMT_fseek (G->fp, (long)GRD_HEADER_SIZE, SEEK_SET);
+		if (r_w == 0 && (G->fp = GMT_fopen (G->header.name, bin_mode[0])) == NULL)
+			return (GMT_GRDIO_OPEN_FAILED);
+		else if ((G->fp = GMT_fopen (G->header.name, bin_mode[r_w])) == NULL)
+			return (GMT_GRDIO_CREATE_FAILED);
+		if (header && GMT_fseek (G->fp, (long)GRD_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
 	G->size = GMT_grd_data_size (G->header.type, &G->header.nan_value);
@@ -586,6 +580,7 @@ void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 
 	G->row = 0;
 	G->auto_advance = TRUE;	/* Default is to read sequential rows */
+	return (GMT_NOERROR);
 }
 
 void GMT_close_grd (struct GMT_GRDFILE *G)
@@ -596,7 +591,7 @@ void GMT_close_grd (struct GMT_GRDFILE *G)
 		GMT_fclose (G->fp);
 }
 
-void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
+int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 {	/* Reads the entire row vector form the grdfile
 	 * If row_no is negative it is interpreted to mean that we want to
 	 * fseek to the start of the abs(row_no) record and no reading takes place.
@@ -608,7 +603,7 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
 			G->start[0] = G->row * G->edge[0];
-			return;
+			return (GMT_NOERROR);
 		}
 		check_nc_status (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 		if (G->auto_advance) G->start[0] += G->edge[0];
@@ -617,7 +612,7 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
 			G->start[0] = G->header.ny - 1 - G->row;
-			return;
+			return (GMT_NOERROR);
 		}
 		check_nc_status (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 		if (G->auto_advance) G->start[0] --;
@@ -625,15 +620,12 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	else {			/* Get a binary row */
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
-			GMT_fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
-			return;
+			if (GMT_fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+			return (GMT_NOERROR);
 		}
-		if (!G->auto_advance) GMT_fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET);
+		if (!G->auto_advance && GMT_fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
-		if (GMT_fread (G->v_row, G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx) {	/* Get one row */
-			fprintf (stderr, "%s: Read error for file %s near row %d\n", GMT_program, G->header.name, G->row);
-			GMT_exit (EXIT_FAILURE);
-		}
+		if (GMT_fread (G->v_row, G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		for (i = 0; i < G->header.nx; i++) {
 			row[i] = GMT_decode (G->v_row, i, GMT_grdformats[G->header.type][1]);	/* Convert whatever to float */
 			if (G->check && row[i] == G->header.nan_value) row[i] = GMT_f_NaN;
@@ -641,9 +633,10 @@ void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	}
 	GMT_grd_do_scaling (row, G->header.nx, G->scale, G->offset);
 	G->row++;
+	return (GMT_NOERROR);
 }
 
-void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
+int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 {	/* Writes the entire row vector to the grdfile */
 
 	int i, size;
@@ -667,10 +660,11 @@ void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 			break;
 		default:
 			for (i = 0; i < G->header.nx; i++) GMT_encode (tmp, i, row[i], GMT_grdformats[G->header.type][1]);
-			GMT_fwrite (tmp, (size_t)size, (size_t)G->header.nx, G->fp);
+			if (GMT_fwrite (tmp, (size_t)size, (size_t)G->header.nx, G->fp) < (size_t)G->header.nx) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
-	 GMT_free (tmp);
+	GMT_free (tmp);
+	return (GMT_NOERROR);
 }
 
 
@@ -1157,7 +1151,7 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 #define GMT_IMG_NLAT_2M_80	8640	/* At 1 min resolution */
 #define GMT_IMG_ITEMSIZE	2	/* Size of 2 byte short ints */
 
-void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w, double e, double s, double n, double scale, int mode, double lat, BOOLEAN init)
+int GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w, double e, double s, double n, double scale, int mode, double lat, BOOLEAN init)
 {
 	/* Function that reads an entire Sandwell/Smith Mercator grid and stores it like a regular
 	 * GMT grid.  If init is TRUE we also initialize the Mercator projection.  Lat should be 0.0
@@ -1170,14 +1164,8 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	struct STAT buf;
 	FILE *fp;
 
-	if (!GMT_getdatapath (imgfile, file)) {
-		fprintf (stderr, "%s: Unable to find file %s\n", GMT_program, imgfile);
-		GMT_exit (EXIT_FAILURE);
-	}
-	if (STAT (file, &buf)) {	/* Inquiry about file failed somehow */
-		fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, imgfile);
-		GMT_exit (EXIT_FAILURE);
-	}
+	if (!GMT_getdatapath (imgfile, file)) return (GMT_GRDIO_FILE_NOT_FOUND);
+	if (STAT (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 
 	switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = 72 or 80 */
 		case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_80*GMT_IMG_ITEMSIZE:
@@ -1193,10 +1181,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 			min = 2;
 			break;
 		default:
-			if (lat == 0.0) {
-				fprintf (stderr, "%s: Must specify max latitude for img file %s\n", GMT_program, file);
-				GMT_exit (EXIT_FAILURE);
-			}
+			if (lat == 0.0) return (GMT_GRDIO_BAD_IMG_LAT);
 			min = (buf.st_size > GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE) ? 1 : 2;
 			fprintf (stderr, "%s: img file %s has unusual size - grid increment defaults to %d min\n", GMT_program, file, min);
 			break;
@@ -1210,10 +1195,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	GMT_grd_init (grd, 0, NULL, FALSE);
 	grd->x_inc = grd->y_inc = min / 60.0;
 
-	if ((fp = GMT_fopen (file, "rb")) == NULL) {
-		fprintf (stderr, "%s: Error opening img file %s\n", GMT_program, file);
-		GMT_exit (EXIT_FAILURE);
-	}
+	if ((fp = GMT_fopen (file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 	if (init) {
 		/* Select plain Mercator on a sphere with -Jm1 -R0/360/-lat/+lat */
 		gmtdefs.ellipsoid = GMT_N_ELLIPSOIDS - 1;
@@ -1249,10 +1231,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	first_i = (int)floor (grd->x_min / grd->x_inc);				/* first tile partly or fully inside region */
 	if (first_i < 0) first_i += n_cols;
 	n_skip = (int)floor ((project_info.ymax - grd->y_max) / grd->y_inc);	/* Number of rows clearly above y_max */
-	if (GMT_fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) {
-		fprintf (stderr, "%s: Unable to seek ahead in file %s\n", GMT_program, imgfile);
-		GMT_exit (EXIT_FAILURE);
-	}
+	if (GMT_fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
 	i2 = (short int *) GMT_memory (VNULL, (size_t)n_cols, sizeof (short int), GMT_program);
 	for (j = 0; j < grd->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */
@@ -1279,6 +1258,7 @@ void GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w
 	}
 	GMT_free ((void *)i2);
 	GMT_fclose (fp);
+	return (GMT_NOERROR);
 }
 
 struct GMT_GRID *GMT_create_grid (char *arg)

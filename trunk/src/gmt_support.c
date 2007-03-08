@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.290 2007-03-05 21:47:10 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.291 2007-03-08 01:29:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -149,6 +149,63 @@ void get_rgb_lookup (int index, double value, int *rgb);
 
 double *GMT_x2sys_Y;
 
+const char * GMT_strerror (int err)
+{
+	switch (err) {
+		case GMT_GRDIO_FILE_NOT_FOUND:
+			return "Could not find file";
+		case GMT_GRDIO_OPEN_FAILED:
+			return "Could not open file";
+		case GMT_GRDIO_CREATE_FAILED:
+			return "Could not create file";
+		case GMT_GRDIO_STAT_FAILED:
+			return "Could not stat file";
+		case GMT_GRDIO_READ_FAILED:
+			return "Could not read from file";
+		case GMT_GRDIO_WRITE_FAILED:
+			return "Could not write to file";
+		case GMT_GRDIO_SEEK_FAILED:
+			return "Failed to fseek on file";
+		case GMT_GRDIO_NOT_RAS:
+			return "Not a Sun raster file";
+		case GMT_GRDIO_NOT_8BIT_RAS:
+			return "Not a standard 8-bit Sun raster file";
+		case GMT_GRDIO_PIPE_CODECHECK:
+			return "Cannot guess grid format type if grid is passed via pipe";
+		case GMT_GRDIO_UNKNOWN_FORMAT:
+			return "Not a supported grid format";
+		case GMT_GRDIO_UNKNOWN_ID:
+			return "Unknown grid format id number";
+		case GMT_GRDIO_UNKNOWN_TYPE:
+			return "Unknown grid data type";
+		case GMT_GRDIO_NOT_SURFER:
+			return "Not a valid Surfer 6|7 grid file";
+		case GMT_GRDIO_SURF7_UNSUPPORTED:
+			return "This Surfer 7 format (full extent or with break lines) is not supported";
+		case GMT_GRDIO_BAD_IMG_LAT:
+			return "Must specify max latitude for img file";
+		case GMT_GRDIO_DOMAIN_VIOLATION:
+			return "Tried to read beyond grid domain";
+		case GMT_GRDIO_NO_2DVAR:
+			return "No 2-D variable in file";
+		case GMT_GRDIO_NO_VAR:
+			return "Named variable does not exist in file";
+		case GMT_GRDIO_BAD_DIM:
+			return "Named variable is not 2-, 3-, 4- or 5-D";
+		case GMT_GRDIO_NC_NO_PIPE:
+			return "NetCDF-based I/O does not support piping";
+		case GMT_GRDIO_GRD98_XINC:
+			return "GRD98 format requires n = 1/x_inc to be an integer";
+		case GMT_GRDIO_GRD98_BADMAGIC:
+			return "GRD98 grdfile has wrong magic number";
+		case GMT_GRDIO_GRD98_BADLENGTH:
+			return "GRD98 grdfile has wrong length";
+		case GMT_GRDIO_GRD98_COMPLEX:
+			return "GRD98 grdfile cannot hold complex data";
+		default:	/* default passes through to NC error */
+			return nc_strerror(err);
+	}
+}
 
 int GMT_parse_multisegment_header (char *header, BOOLEAN use_cpt, BOOLEAN *use_fill, struct GMT_FILL *fill, struct GMT_FILL *def_fill,  BOOLEAN *use_pen, struct GMT_PEN *pen, struct GMT_PEN *def_pen, int def_outline)
 {

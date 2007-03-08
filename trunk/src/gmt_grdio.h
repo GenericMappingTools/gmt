@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.35 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_grdio.h,v 1.36 2007-03-08 01:29:45 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,7 +46,7 @@ EXTERN_MSC void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, 
 EXTERN_MSC void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift);
 EXTERN_MSC void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode);
-EXTERN_MSC void GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic);
+EXTERN_MSC int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic);
 EXTERN_MSC BOOLEAN GMT_grd_is_global (struct GRD_HEADER *h);
 
 /* These are pointers to the various functions and are set in GMT_grdio_init() */
@@ -87,14 +87,14 @@ struct GMT_GRDFILE {
 	
 /* Row i/o functions */
 
-EXTERN_MSC void GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode);
+EXTERN_MSC int GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode);
 EXTERN_MSC void GMT_close_grd (struct GMT_GRDFILE *G);
-EXTERN_MSC void GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
-EXTERN_MSC void GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
+EXTERN_MSC int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
+EXTERN_MSC int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
 
 /* IMG read function */
 
-EXTERN_MSC void GMT_read_img (char *imgfile, struct GRD_HEADER *h, float **grid, double w, double e, double s, double n, double scale, int mode, double lat, BOOLEAN init);
+EXTERN_MSC int GMT_read_img (char *imgfile, struct GRD_HEADER *h, float **grid, double w, double e, double s, double n, double scale, int mode, double lat, BOOLEAN init);
 
 /* Grid container allocation/deallocation routines */
 
