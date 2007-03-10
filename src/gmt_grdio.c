@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.94 2007-03-09 18:20:52 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.95 2007-03-10 20:36:45 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -237,10 +237,10 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		header->name[j] = 0;
 	}
 	else if (magic) {	/* Determine file format automatically based on grid content */
-		/* First check that the file exists */
-		if (GMT_access (header->name, F_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
-		/* First check if we have a netCDF grid */
+		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
 		if ((header->type = GMT_is_nc_grid (header->name)) >= 0) return (GMT_NOERROR);
+		/* Second check that the file exists */
+		if (GMT_access (header->name, F_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
 		/* Then check for native GMT grid */
 		if ((header->type = GMT_is_native_grid (header->name)) >= 0) return (GMT_NOERROR);
 		/* Next check for Sun raster GMT grid */
