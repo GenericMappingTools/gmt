@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.44 2007-03-08 01:29:45 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.45 2007-03-12 12:18:12 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,37 +46,37 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
 
 int GMT_cdf_read_grd_info (struct GRD_HEADER *header)
 {
-	int ncid;
+	int ncid, err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
-	GMT_cdf_grd_info (ncid, header, 'r');
-	check_nc_status (nc_close (ncid));
+	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
+	GMT_err_trap (GMT_cdf_grd_info (ncid, header, 'r'));
+	GMT_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
 }
 
 int GMT_cdf_update_grd_info (struct GRD_HEADER *header)
 {
-	int ncid;
+	int ncid, err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	check_nc_status (nc_open (header->name, NC_WRITE + NC_NOFILL, &ncid));
-	GMT_cdf_grd_info (ncid, header, 'u');
-	check_nc_status (nc_close (ncid));
+	GMT_err_trap (nc_open (header->name, NC_WRITE + NC_NOFILL, &ncid));
+	GMT_err_trap (GMT_cdf_grd_info (ncid, header, 'u'));
+	GMT_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
 }
 
 int GMT_cdf_write_grd_info (struct GRD_HEADER *header)
 {
-	int ncid;
+	int ncid, err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	check_nc_status (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
-	GMT_cdf_grd_info (ncid, header, 'w');
-	check_nc_status (nc_close (ncid));
+	GMT_err_trap (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
+	GMT_err_trap (GMT_cdf_grd_info (ncid, header, 'w'));
+	GMT_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
 }
 
 int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 {
-	int nm[2], i;
+	int nm[2], i, err;
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
 	nc_type z_type;
@@ -87,15 +87,15 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 	/* Define and get dimensions and variables */
 
 	if (job == 'w') {
-		check_nc_status (nc_def_dim (ncid, "side", 2, &side_dim));
-		check_nc_status (nc_def_dim (ncid, "xysize", (int) (header->nx * header->ny), &xysize_dim));
+		GMT_err_trap (nc_def_dim (ncid, "side", 2, &side_dim));
+		GMT_err_trap (nc_def_dim (ncid, "xysize", (int) (header->nx * header->ny), &xysize_dim));
 
 		dims[0]	= side_dim;
-		check_nc_status (nc_def_var (ncid, "x_range", NC_DOUBLE, 1, dims, &x_range_id));
-		check_nc_status (nc_def_var (ncid, "y_range", NC_DOUBLE, 1, dims, &y_range_id));
-		check_nc_status (nc_def_var (ncid, "z_range", NC_DOUBLE, 1, dims, &z_range_id));
-		check_nc_status (nc_def_var (ncid, "spacing", NC_DOUBLE, 1, dims, &inc_id));
-		check_nc_status (nc_def_var (ncid, "dimension", NC_LONG, 1, dims, &nm_id));
+		GMT_err_trap (nc_def_var (ncid, "x_range", NC_DOUBLE, 1, dims, &x_range_id));
+		GMT_err_trap (nc_def_var (ncid, "y_range", NC_DOUBLE, 1, dims, &y_range_id));
+		GMT_err_trap (nc_def_var (ncid, "z_range", NC_DOUBLE, 1, dims, &z_range_id));
+		GMT_err_trap (nc_def_var (ncid, "spacing", NC_DOUBLE, 1, dims, &inc_id));
+		GMT_err_trap (nc_def_var (ncid, "dimension", NC_LONG, 1, dims, &nm_id));
 
 		switch (GMT_grdformats[header->type][1]) {
 			case 'b':
@@ -113,16 +113,16 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 		}
 
 		dims[0]	= xysize_dim;
-		check_nc_status (nc_def_var (ncid, "z", z_type, 1, dims, &z_id));
+		GMT_err_trap (nc_def_var (ncid, "z", z_type, 1, dims, &z_id));
 	}
 	else {
-		check_nc_status (nc_inq_varid (ncid, "x_range", &x_range_id));
-		check_nc_status (nc_inq_varid (ncid, "y_range", &y_range_id));
-		check_nc_status (nc_inq_varid (ncid, "z_range", &z_range_id));
-        	check_nc_status (nc_inq_varid (ncid, "spacing", &inc_id));
-        	check_nc_status (nc_inq_varid (ncid, "dimension", &nm_id));
-        	check_nc_status (nc_inq_varid (ncid, "z", &z_id));
-		check_nc_status (nc_inq_vartype (ncid, z_id, &z_type));
+		GMT_err_trap (nc_inq_varid (ncid, "x_range", &x_range_id));
+		GMT_err_trap (nc_inq_varid (ncid, "y_range", &y_range_id));
+		GMT_err_trap (nc_inq_varid (ncid, "z_range", &z_range_id));
+        	GMT_err_trap (nc_inq_varid (ncid, "spacing", &inc_id));
+        	GMT_err_trap (nc_inq_varid (ncid, "dimension", &nm_id));
+        	GMT_err_trap (nc_inq_varid (ncid, "z", &z_id));
+		GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 5;
 	}
 	header->z_id = z_id;
@@ -131,34 +131,34 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 
 	memset ((void *)text, 0, (size_t)(GRD_COMMAND_LEN+GRD_REMARK_LEN));
 
-	if (job == 'u') check_nc_status (nc_redef (ncid));
+	if (job == 'u') GMT_err_trap (nc_redef (ncid));
 
 	if (job == 'r') {
-		check_nc_status (nc_get_att_text (ncid, x_range_id, "units", header->x_units));
-        	check_nc_status (nc_get_att_text (ncid, y_range_id, "units", header->y_units));
-		check_nc_status (nc_get_att_text (ncid, z_range_id, "units", header->z_units));
-        	check_nc_status (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor));
-        	check_nc_status (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset));
-        	check_nc_status (nc_get_att_int (ncid, z_id, "node_offset", &header->node_offset));
+		GMT_err_trap (nc_get_att_text (ncid, x_range_id, "units", header->x_units));
+        	GMT_err_trap (nc_get_att_text (ncid, y_range_id, "units", header->y_units));
+		GMT_err_trap (nc_get_att_text (ncid, z_range_id, "units", header->z_units));
+        	GMT_err_trap (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor));
+        	GMT_err_trap (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset));
+        	GMT_err_trap (nc_get_att_int (ncid, z_id, "node_offset", &header->node_offset));
         	nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value);
-        	check_nc_status (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
-        	check_nc_status (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
+        	GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
+        	GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
 		strncpy (header->command, text, GRD_COMMAND_LEN);
 		strncpy (header->remark, &text[GRD_COMMAND_LEN], GRD_REMARK_LEN);
 
-		check_nc_status (nc_get_var_double (ncid, x_range_id, dummy));
+		GMT_err_trap (nc_get_var_double (ncid, x_range_id, dummy));
 		header->x_min = dummy[0];
 		header->x_max = dummy[1];
-		check_nc_status (nc_get_var_double (ncid, y_range_id, dummy));
+		GMT_err_trap (nc_get_var_double (ncid, y_range_id, dummy));
 		header->y_min = dummy[0];
 		header->y_max = dummy[1];
-		check_nc_status (nc_get_var_double (ncid, inc_id, dummy));
+		GMT_err_trap (nc_get_var_double (ncid, inc_id, dummy));
 		header->x_inc = dummy[0];
 		header->y_inc = dummy[1];
-		check_nc_status (nc_get_var_int (ncid, nm_id, nm));
+		GMT_err_trap (nc_get_var_int (ncid, nm_id, nm));
 		header->nx = nm[0];
 		header->ny = nm[1];
-		check_nc_status (nc_get_var_double (ncid, z_range_id, dummy));
+		GMT_err_trap (nc_get_var_double (ncid, z_range_id, dummy));
 		header->z_min = dummy[0];
 		header->z_max = dummy[1];
 		header->y_order = -1;
@@ -166,42 +166,43 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 	else {
 		strcpy (text, header->command);
 		strcpy (&text[GRD_COMMAND_LEN], header->remark);
-		check_nc_status (nc_put_att_text (ncid, x_range_id, "units", GRD_UNIT_LEN, header->x_units));
-		check_nc_status (nc_put_att_text (ncid, y_range_id, "units", GRD_UNIT_LEN, header->y_units));
-		check_nc_status (nc_put_att_text (ncid, z_range_id, "units", GRD_UNIT_LEN, header->z_units));
-		check_nc_status (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
-		check_nc_status (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
-		if (z_type == NC_FLOAT || z_type == NC_DOUBLE)
-			check_nc_status (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &header->nan_value));
+		GMT_err_trap (nc_put_att_text (ncid, x_range_id, "units", GRD_UNIT_LEN, header->x_units));
+		GMT_err_trap (nc_put_att_text (ncid, y_range_id, "units", GRD_UNIT_LEN, header->y_units));
+		GMT_err_trap (nc_put_att_text (ncid, z_range_id, "units", GRD_UNIT_LEN, header->z_units));
+		GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
+		GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
+		if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
+			GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &header->nan_value));
+		}
 		else {
 			i = irint (header->nan_value);
-			check_nc_status (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1, &i));
+			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1, &i));
 		}
-		check_nc_status (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
-		check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
-		check_nc_status (nc_put_att_text (ncid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
+		GMT_err_trap (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1, &header->node_offset));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "source", (GRD_COMMAND_LEN+GRD_REMARK_LEN), text));
 
-		check_nc_status (nc_enddef (ncid));
+		GMT_err_trap (nc_enddef (ncid));
 
 		dummy[0] = header->x_min;
 		dummy[1] = header->x_max;
-		check_nc_status (nc_put_var_double (ncid, x_range_id, dummy));
+		GMT_err_trap (nc_put_var_double (ncid, x_range_id, dummy));
 		dummy[0] = header->y_min;
 		dummy[1] = header->y_max;
-		check_nc_status (nc_put_var_double (ncid, y_range_id, dummy));
+		GMT_err_trap (nc_put_var_double (ncid, y_range_id, dummy));
 		dummy[0] = header->x_inc;
 		dummy[1] = header->y_inc;
-		check_nc_status (nc_put_var_double (ncid, inc_id, dummy));
+		GMT_err_trap (nc_put_var_double (ncid, inc_id, dummy));
 		nm[0] = header->nx;
 		nm[1] = header->ny;
-		check_nc_status (nc_put_var_int (ncid, nm_id, nm));
+		GMT_err_trap (nc_put_var_int (ncid, nm_id, nm));
 		if (header->z_min <= header->z_max) {
 			dummy[0] = header->z_min; dummy[1] = header->z_max;
 		}
 		else {
 			dummy[0] = 0.0; dummy[1] = 0.0;
 		}
-		check_nc_status (nc_put_var_double (ncid, z_range_id, dummy));
+		GMT_err_trap (nc_put_var_double (ncid, z_range_id, dummy));
 	}
 	return (GMT_NOERROR);
 }
@@ -220,7 +221,7 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	 * not the physical size (i.e., the padding is not counted in nx and ny)
 	 */
 	 
-	int  ncid;
+	int  ncid, err;
 	size_t start[1], edge[1];
 	int first_col, last_col, first_row, last_row;
 	int i, j, ij, width_in, width_out, height_in, i_0_out, kk, inc = 1;
@@ -244,7 +245,7 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	/* Open the NetCDF file */
 
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
- 	check_nc_status (nc_open (header->name, NC_NOWRITE, &ncid));
+ 	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
 	check = !GMT_is_dnan (header->nan_value);
 
 	/* Load data row by row. The data in the file is stored in the same
@@ -259,7 +260,7 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	for (j = first_row; j <= last_row; j++, ij += width_out) {
 		start[0] = j * header->nx;
-		check_nc_status (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
+		GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
 			grid[kk] = tmp[k[i]];
@@ -277,7 +278,7 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	header->y_min = s;
 	header->y_max = n;
 
-	check_nc_status (nc_close (ncid));
+	GMT_err_trap (nc_close (ncid));
 
 	GMT_free ((void *)k);
 	GMT_free ((void *)tmp);
@@ -295,7 +296,7 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	 */
 
 	size_t start[1], edge[1];
-	int ncid;
+	int ncid, err;
 	int i, inc = 1, *k, nr_oor = 0;
 	int j, ij, width_in, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
@@ -346,8 +347,8 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	/* Write grid header */
 
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	check_nc_status (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
-	GMT_cdf_grd_info (ncid, header, 'w');
+	GMT_err_trap (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
+	GMT_err_trap (GMT_cdf_grd_info (ncid, header, 'w'));
 
 	/* Set start position for writing grid */
 
@@ -376,7 +377,7 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
 				}
 			}
-			check_nc_status (nc_put_vara_float (ncid, header->z_id, start, edge, tmp_f));
+			GMT_err_trap (nc_put_vara_float (ncid, header->z_id, start, edge, tmp_f));
 		}
 		GMT_free ((void *)tmp_f);
 	}
@@ -399,7 +400,7 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 					header->z_max = MAX (header->z_max, (double)tmp_i[i]);
 				}
 			}
-			check_nc_status (nc_put_vara_int (ncid, header->z_id, start, edge, tmp_i));
+			GMT_err_trap (nc_put_vara_int (ncid, header->z_id, start, edge, tmp_i));
 		}
 		GMT_free ((void *)tmp_i);
 	}
@@ -415,11 +416,11 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, header->name);
 		limit[0] = 0.0; limit[1] = 0.0;
 	}
-	check_nc_status (nc_put_var_double (ncid, header->z_id - 3, limit));
+	GMT_err_trap (nc_put_var_double (ncid, header->z_id - 3, limit));
 
 	/* Close grid */
 
-	check_nc_status (nc_close (ncid));
+	GMT_err_trap (nc_close (ncid));
 
 	return (GMT_NOERROR);
 }
