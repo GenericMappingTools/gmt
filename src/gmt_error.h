@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_error.h,v 1.1 2007-03-08 01:29:45 pwessel Exp $
+ *	$Id: gmt_error.h,v 1.2 2007-03-12 12:18:56 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -66,6 +66,8 @@
 #define GMT_GRDIO_GRD98_BADLENGTH	-161
 #define GMT_GRDIO_GRD98_COMPLEX		-162
 
+/* Definition for an error trap */
+#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 
 EXTERN_MSC const char * GMT_strerror (int err);
 
