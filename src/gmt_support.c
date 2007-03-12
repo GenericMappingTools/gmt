@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.291 2007-03-08 01:29:45 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.292 2007-03-12 12:26:38 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -151,6 +151,8 @@ double *GMT_x2sys_Y;
 
 const char * GMT_strerror (int err)
 {
+/* Returns the error string for a given error code "err"
+   Passes "err" on to nc_strerror if the error code is not one we defined */
 	switch (err) {
 		case GMT_GRDIO_FILE_NOT_FOUND:
 			return "Could not find file";
@@ -204,6 +206,22 @@ const char * GMT_strerror (int err)
 			return "GRD98 grdfile cannot hold complex data";
 		default:	/* default passes through to NC error */
 			return nc_strerror(err);
+	}
+}
+
+int GMT_err_pass (int err, char *file)
+{
+	/* When error code is non-zero: print error message and pass error code on */
+	if (err != GMT_NOERROR) fprintf (stderr, "%s: %s [%s]\n", GMT_program, GMT_strerror(err), file);
+	return (err);
+}
+
+void GMT_err_fail (int err, char *file)
+{
+	/* When error code is non-zero: print error message and exit */
+	if (err != GMT_NOERROR) {
+		fprintf (stderr, "%s: %s [%s]\n", GMT_program, GMT_strerror(err), file);
+		exit (EXIT_FAILURE);
 	}
 }
 

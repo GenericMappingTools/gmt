@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.15 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_support.h,v 1.16 2007-03-12 12:26:38 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -19,6 +19,8 @@
 #ifndef _GMT_SUPPORT_H
 #define _GMT_SUPPORT_H
 
+EXTERN_MSC int GMT_err_pass (int err, char *file);
+EXTERN_MSC void GMT_err_fail (int err, char *file);
 EXTERN_MSC int GMT_parse_multisegment_header (char *header, BOOLEAN use_cpt, BOOLEAN *use_fill, struct GMT_FILL *fill, struct GMT_FILL *def_fill,  BOOLEAN *use_pen, struct GMT_PEN *pen, struct GMT_PEN *def_pen, int def_outline);
 EXTERN_MSC BOOLEAN GMT_polygon_is_open (double x[], double y[], int n);
 EXTERN_MSC double GMT_cartesian_dist (double x0, double y0, double x1, double y1);
