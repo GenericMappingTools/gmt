@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.59 2007-03-08 01:29:45 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.60 2007-03-12 12:23:32 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -756,7 +756,7 @@ int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		piping = TRUE;
 	}
 	else if ((fp = GMT_fopen (header->name, "rb")) != NULL) {	/* Skip header */
-		if ((err = GMT_native_skip_grd_header (fp, header)) != GMT_NOERROR) return (err);
+		GMT_err_trap (GMT_native_skip_grd_header (fp, header));
 	}
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
@@ -888,7 +888,9 @@ int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	/* Store header information and array */
 
-	if (do_header && (err = GMT_native_write_grd_header (fp, header)) != GMT_NOERROR) return (err);
+	if (do_header) {
+		GMT_err_trap (GMT_native_write_grd_header (fp, header));
+	}
 
 	mx = (int) ceil (width_out / 32.0);
 	tmp = (unsigned int *) GMT_memory (VNULL, (size_t)mx, sizeof (unsigned int), "GMT_bit_write_grd");
@@ -995,7 +997,7 @@ int GMT_native_read_grd_info (struct GRD_HEADER *header)
 	else if ((fp = GMT_fopen (header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 	
-	if ((err = GMT_native_read_grd_header (fp, header)) != GMT_NOERROR) return (err);
+	GMT_err_trap (GMT_native_read_grd_header (fp, header));
 
 	if (fp != GMT_stdin) GMT_fclose (fp);
 
@@ -1019,7 +1021,7 @@ int GMT_native_write_grd_info (struct GRD_HEADER *header)
 	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = GMT_fopen (header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	
-	if ((err = GMT_native_write_grd_header (fp, header)) != GMT_NOERROR) return (err);
+	GMT_err_trap (GMT_native_write_grd_header (fp, header));
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
 
@@ -1058,7 +1060,7 @@ int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 		piping = TRUE;
 	}
 	else if ((fp = GMT_fopen (header->name, "rb")) != NULL)	{	/* Skip header */
-		if ((err = GMT_native_skip_grd_header (fp, header)) != GMT_NOERROR) return (err);
+		GMT_err_trap (GMT_native_skip_grd_header (fp, header));
 	}
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
@@ -1211,7 +1213,9 @@ int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, doub
 
 	/* Store header information and array */
 
-	if (do_header && (err = GMT_native_write_grd_header (fp, header)) != GMT_NOERROR) return (err);
+	if (do_header) {
+		GMT_err_trap (GMT_native_write_grd_header (fp, header));
+	}
 
 	/* Allocate memory for one row of data (for writing purposes) */
 
