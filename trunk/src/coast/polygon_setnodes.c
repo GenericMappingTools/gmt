@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.5 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: polygon_setnodes.c,v 1.6 2007-03-12 19:52:26 remko Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -36,7 +36,7 @@ int main (int argc, char **argv)
 	
 	if (argc < 4 || argc > 5) {
 		fprintf (stderr, "usage: polygon_setnodes final_dbase.b bin_width nodegrdfile [-s]\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	full = (argc != 4);
 
@@ -79,7 +79,7 @@ int main (int argc, char **argv)
 		blob[n_id].start = pos;
 		if (pol_fread (&p, 1, fp) != 1) {
 			fprintf(stderr,"polygon_setnodes:  ERROR  reading file.\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		fseek (fp, (long) (blob[n_id].h.n - 1) * sizeof(struct LONGPAIR), 1);
 		pos += blob[n_id].h.n * sizeof(struct LONGPAIR);
@@ -109,7 +109,7 @@ int main (int argc, char **argv)
 		for (k = 0; k < blob[id].h.n; k++) {
 			if (pol_fread (&p, 1, fp) != 1) {
 				fprintf(stderr,"polygon_setnodes:  ERROR  reading file.\n");
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			if (blob[id].h.greenwich && p.x > blob[id].h.datelon) p.x -= M360;
 			lon[k] = p.x;
@@ -271,9 +271,9 @@ int main (int argc, char **argv)
 	free ((void *)lon);
 	free ((void *)lat);
 
-	GMT_write_grd (argv[3], &grdh, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE);
+	GMT_err_fail (GMT_write_grd (argv[3], &grdh, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), argv[3]);
 	
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }	
 
 int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)

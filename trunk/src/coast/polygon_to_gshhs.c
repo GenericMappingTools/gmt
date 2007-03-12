@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.11 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.12 2007-03-12 19:52:26 remko Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
@@ -19,7 +19,7 @@ int main (int argc, char **argv)
         
 	if (argc != 2) {
 		fprintf (stderr,"usage:  polygon_to_gshhs file_res.b > gshhs_res.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	
 	fp_in = fopen(argv[1], "r");
@@ -48,17 +48,17 @@ int main (int argc, char **argv)
 		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
 				fprintf (stderr,"polygon_to_gshhs:  ERROR  reading file %s.\n", argv[1]);
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			if (p.x < 0) p.x += M360;
 			if (pol_fwrite (&p, 1, stdout) != 1) {
 				fprintf (stderr,"polygon_to_gshhs:  ERROR  writing to stdout.\n");
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 		}
 	}
 		
 	fclose (fp_in);
 
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }

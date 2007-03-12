@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.8 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: polygon_to_bins.c,v 1.9 2007-03-12 19:52:26 remko Exp $
  */
 #include "wvs.h"
 
@@ -484,9 +484,9 @@ int main (int argc, char **argv) {
 	
 	bin_head = (struct GMT3_BIN_HEADER *) GMT_memory (VNULL, nbins, sizeof (struct GMT3_BIN_HEADER), "polygon_to_bins");
 	
-	GMT_read_grd_info (node_file, &n_head);
+	GMT_err_fail (GMT_read_grd_info (node_file, &n_head), node_file);
 	node = (float *) GMT_memory (VNULL, n_head.nx * n_head.ny, sizeof (float), "polygon_to_bins");
-	GMT_read_grd (node_file, &n_head, node, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE);
+	GMT_err_fail (GMT_read_grd (node_file, &n_head, node, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), node_file);
 	se = 1;	ne = 1 - n_head.nx;	nw = -n_head.nx;
 	
 	for (b = file_head.n_segments = 0; b < nbins; b++) {
@@ -605,5 +605,5 @@ void give_bad_message_and_exit (int id, int kind, int pt)
 	fprintf (stderr, "polygon_to_bins: Incremental %s exceeds short int range for polygon %d near point %d\n",
 		type[kind], id, pt);
 	fprintf (stderr, "polygon_to_bins: Most likely cause is a point separation that exceeds the bin spacing\n");
-	GMT_exit (EXIT_FAILURE);
+	exit (EXIT_FAILURE);
 }

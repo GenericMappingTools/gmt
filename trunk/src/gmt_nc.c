@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.63 2007-03-12 12:18:12 remko Exp $
+ *	$Id: gmt_nc.c,v 1.64 2007-03-12 19:52:26 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -40,8 +40,6 @@
  *	GMT_nc_write_grd_info :		Write header to new file
  *	GMT_nc_write_grd :		Write header and data set to new file
  *
- *	void check_nc_status (int status)	Used for misc checks
- *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #define GMT_WITH_NO_PS
@@ -49,12 +47,11 @@
 #include "gmt.h"
 
 EXTERN_MSC int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
-char nc_file[BUFSIZ];
 int GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 int GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen);
 void GMT_nc_get_units (int ncid, int varid, char *name_units);
 void GMT_nc_put_units (int ncid, int varid, char *name_units);
-void GMT_nc_check_step (int n, double *x, char *varname);
+void GMT_nc_check_step (int n, double *x, char *varname, char *file);
 
 int GMT_is_nc_grid (char *file)
 {	/* Returns type 18 (=nf) for new NetCDF grid,
@@ -248,7 +245,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 
 		/* Get information about x variable */
 		GMT_nc_get_units (ncid, ids[ndims-1], header->x_units);
-		if (!(j = nc_get_var_double (ncid, ids[ndims-1], xy))) GMT_nc_check_step (header->nx, xy, header->x_units);
+		if (!(j = nc_get_var_double (ncid, ids[ndims-1], xy))) GMT_nc_check_step (header->nx, xy, header->x_units, header->name);
 		if (!nc_get_att_double (ncid, ids[ndims-1], "actual_range", dummy))
 			header->x_min = dummy[0], header->x_max = dummy[1];
 		else if (!j) {
@@ -264,7 +261,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 
 		/* Get information about y variable */
 		GMT_nc_get_units (ncid, ids[ndims-2], header->y_units);
-		if (!(j = nc_get_var_double (ncid, ids[ndims-2], xy))) GMT_nc_check_step (header->ny, xy, header->y_units);
+		if (!(j = nc_get_var_double (ncid, ids[ndims-2], xy))) GMT_nc_check_step (header->ny, xy, header->y_units, header->name);
 		if (!nc_get_att_double (ncid, ids[ndims-2], "actual_range", dummy))
 			header->y_min = dummy[0], header->y_max = dummy[1];
 		else if (!j) {
@@ -603,16 +600,6 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	return (GMT_NOERROR);
 }
 
-void check_nc_status (int status)
-{	/* This function checks the return status of a netcdf function and takes
-	 * appropriate action if the status != NC_NOERR
-	 */
-	if (status != NC_NOERR) {
-		fprintf (stderr, "%s: %s [%s]\n", GMT_program, nc_strerror (status), nc_file);
-		GMT_exit (EXIT_FAILURE);
-	}
-}
-
 int GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen)
 {	/* This function is a replacement for nc_get_att_text that avoids overflow of text
 	 * ncid, varid, name, text	: as in nc_get_att_text
@@ -666,7 +653,7 @@ void GMT_nc_put_units (int ncid, int varid, char *name_units)
 	if (units[0]) nc_put_att_text (ncid, varid, "units", strlen(units), units);
 }
 
-void GMT_nc_check_step (int n, double *x, char *varname)
+void GMT_nc_check_step (int n, double *x, char *varname, char *file)
 {	/* Check if all steps in range are the same (within 2%) */
 	double step, step_min, step_max;
 	int i;
@@ -678,7 +665,7 @@ void GMT_nc_check_step (int n, double *x, char *varname)
 		if (step > step_max) step_max = step;
 	}
 	if (fabs(step_min-step_max)/(fabs(step_min)+fabs(step_max)) > 0.05) {
-		fprintf (stderr, "%s: WARNING: The step size of coordinate (%s) in grid %s is not constant.\n", GMT_program, varname, nc_file);
+		fprintf (stderr, "%s: WARNING: The step size of coordinate (%s) in grid %s is not constant.\n", GMT_program, varname, file);
 		fprintf (stderr, "%s: WARNING: GMT will use a constant step size of %g; the original ranges from %g to %g.\n", GMT_program, (x[n-1]-x[0])/(n-1), step_min, step_max);
 	}
 }

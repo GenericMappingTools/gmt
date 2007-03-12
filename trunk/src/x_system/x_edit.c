@@ -1,4 +1,4 @@
-/* $Id: x_edit.c,v 1.4 2007-03-05 21:47:11 pwessel Exp $
+/* $Id: x_edit.c,v 1.5 2007-03-12 19:52:27 remko Exp $
  *
  * X E D I T  will allow you to convert crossover tables ascii <--> binary
  *
@@ -68,7 +68,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "	-A give ASCII filename, convert to binary (-O)\n");
 		fprintf (stderr, "	-O name of output file\n");
 		fprintf (stderr, "	-X give binary filename, convert to ASCII (-O)\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	if (ascii) {
@@ -108,5 +108,5 @@ int main (int argc, char **argv)
 			leg[i].drift_rate_gmt[2]);
 		if (fpo != stdout) fclose (fpo);
 	}
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.20 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: gmtapi_util.c,v 1.21 2007-03-12 19:52:26 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -534,15 +534,9 @@ int GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int inarg, struct GMT_GRID **gr
 				return (GMTAPI_FILE_NOT_FOUND);
 			}
 			GMT_grd_init (G->header, 1, argv, FALSE);
-			if (GMT_read_grd_info ((char *)(*API->data[inarg]->ptr), G->header)) {
-				fprintf (stderr, "%s: Error opening grid file %s\n", GMT_program, (char *)(*API->data[inarg]->ptr));
-				return (GMTAPI_BAD_PERMISSION);
-			}
+			if (GMT_err_pass (GMT_read_grd_info ((char *)(*API->data[inarg]->ptr), G->header), (char *)(*API->data[inarg]->ptr))) return (GMTAPI_BAD_PERMISSION);
 			G->data = (float *) GMT_memory (VNULL, (size_t)G->header->nx * G->header->ny, sizeof (float), GMT_program);
-			if (GMT_read_grd ((char *)(*API->data[inarg]->ptr), G->header, G->data, 0.0, 0.0, 0.0, 0.0, pad, FALSE)) {
-				fprintf (stderr, "%s: Error reading grid file %s\n", GMT_program, (char *)(*API->data[inarg]->ptr));
-				return (GMTAPI_GRID_READ_ERROR);
-			}
+			if (GMT_err_pass (GMT_read_grd ((char *)(*API->data[inarg]->ptr), G->header, G->data, 0.0, 0.0, 0.0, 0.0, pad, FALSE), (char *)(*API->data[inarg]->ptr))) return (GMTAPI_GRID_READ_ERROR);
 			break;
 	 	case GMT_IS_GRID:	/* The user's 2-D grid array of some sort, + info in the args */
 			G = GMT_create_grid ("GMTAPI_Import_Grid");
@@ -584,10 +578,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int outarg, struct GMT_GRID *G)
 	
 	switch (API->data[outarg]->method) {
 		case GMT_IS_GRIDFILE:	/* Name of a grid file on disk */
-			if (GMT_write_grd ((char *)(*API->data[outarg]->ptr), G->header, G->data, 0.0, 0.0, 0.0, 0.0, pad, FALSE)) {
-				fprintf (stderr, "%s: Error writing file %s\n", GMT_program, (char *)(*API->data[outarg]->ptr));
-				return (GMTAPI_GRID_WRITE_ERROR);
-			}
+			if (GMT_err_pass (GMT_write_grd ((char *)(*API->data[outarg]->ptr), G->header, G->data, 0.0, 0.0, 0.0, 0.0, pad, FALSE), (char *)(*API->data[outarg]->ptr))) return (GMTAPI_GRID_WRITE_ERROR);
 			break;
 	 	case GMT_IS_GRID:	/* The user's 2-D grid array of some sort, + info in the args */
 			GMTAPI_grdheader_to_info (G->header, API->data[outarg]->arg);	/* Populate an array with GRD header information */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.13 2007-03-05 21:47:11 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.14 2007-03-12 19:52:27 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -153,7 +153,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "\t[-A] [-C<device>] [-D<limit>] [-F] [-H] [-L<lpi>] [%s] [-N<namestem>] [-S]\n", GMT_Mo_OPT);
 		fprintf (stderr, "\t[-V] [-Zk|v] [%s] [%s]\n\n", GMT_bo_OPT, GMT_f_OPT);
 		
-		if (GMT_give_synopsis_and_exit) GMT_exit (EXIT_FAILURE);
+		if (GMT_give_synopsis_and_exit) exit (EXIT_FAILURE);
 		
 		GMT_explain_option ('j');
 		fprintf (stderr, "\tScale or width is arbitrary as %s solves for it based on calibration points\n", GMT_program);
@@ -179,7 +179,7 @@ int main (int argc, char **argv)
 		GMT_explain_option ('o');
 		GMT_explain_option ('f');
 		GMT_explain_option ('.');
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	
 	if (!project_info.region_supplied) {
@@ -187,7 +187,7 @@ int main (int argc, char **argv)
 		error++;
 	}
 
-	if (error) GMT_exit (EXIT_FAILURE);
+	if (error) exit (EXIT_FAILURE);
 
 	/* OK, time to connect to digitizer */
 
@@ -199,7 +199,7 @@ int main (int argc, char **argv)
 #else
 	if ((digunit = open (device, O_RDONLY | O_NOCTTY)) < 0) {
 		fprintf (stderr, "%s: failed to open port %s\n", GMT_program, device);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 #endif
 	tcflush (digunit, TCIFLUSH);	/* Clean the muzzle */
@@ -267,14 +267,14 @@ int main (int argc, char **argv)
 				GMT_chop (line);
 				if (!(GMT_scanf (line, GMT_io.in_col_type[0], &LON[i]))) {
 					fprintf (stderr, "%s: Conversion error for %sx [%s]\n", GMT_program, xname[type], line);
-					GMT_exit (EXIT_FAILURE);
+					exit (EXIT_FAILURE);
 				}
 				fprintf (stderr, "Please Enter %s of %s point: ", yname[type], control[i]);
 				GMT_fgets (line, BUFSIZ, GMT_stdin);
 				GMT_chop (line);
 				if (!(GMT_scanf (line, GMT_io.in_col_type[1], &LAT[i]))) {
 					fprintf (stderr, "%s: Conversion error for %s [%s]\n", GMT_program, yname[type], line);
-					GMT_exit (EXIT_FAILURE);
+					exit (EXIT_FAILURE);
 				}
 				GMT_geo_to_xy (LON[i], LAT[i], &X_MAP[i], &Y_MAP[i]);
 			}
@@ -487,7 +487,7 @@ int main (int argc, char **argv)
 
 	GMT_end (argc, argv);
 	
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
 
 int get_digitize_raw (int digunit, double *xdig, double *ydig, struct GMTDIGITIZE_CTRL *C) {
@@ -537,7 +537,7 @@ FILE *next_file (char *name, int n_segments, char *this_file) {
 		}
 		if ((fp = GMT_fopen (this_file, "w")) == NULL) {
 			fprintf (stderr, "%s: Could not create file %s\n", GMT_program, this_file);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	else {

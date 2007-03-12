@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract.c,v 1.7 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: polygon_extract.c,v 1.8 2007-03-12 19:52:26 remko Exp $
  */
 /* 
  *
@@ -23,7 +23,7 @@ int main (int argc, char **argv)
 		fprintf(stderr,"usage:  polygon_extract final_polygons.b [-M|b] id1 id2 id3 ... idn\n");
 		fprintf(stderr,"	-M will write a multiseg ascii file to stdout\n");
 		fprintf(stderr,"	-b will write binary polygon file to stdout\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	fp_in = fopen (argv[1], "rb");
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
 		for (k = 0; k < poly[j].h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
 				fprintf(stderr,"polygon_extract:  ERROR  reading file.\n");
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			if (p.x < 0) fprintf (stderr, "x < 0\n");
 			if (bin)
@@ -96,5 +96,5 @@ int main (int argc, char **argv)
 		
 	fclose (fp_in);
 
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }

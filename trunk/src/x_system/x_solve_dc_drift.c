@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.7 2007-03-05 21:47:11 pwessel Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.8 2007-03-12 19:52:27 remko Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -116,12 +116,12 @@ int main (int argc, char **argv)
 	}
 	if (fpb == NULL && (fpb = fopen ("xx_base.b", "rb")) == NULL) {
 		fprintf (stderr, "Could not find file xx_base.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	if (fpl == NULL) { /* Try default file */
 		if ((fpl = fopen ("xx_legs.b", "rb")) == NULL) {
 			fprintf (stderr, "Could not find file xx_legs.b\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		strcpy (lfile, "xx_legs.b");
 	}
@@ -159,7 +159,7 @@ int main (int argc, char **argv)
 		fprintf(stderr, "	  Specify at least one of -A and -B\n");
 		fprintf(stderr, "	-V means verbose\n");
 
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	/* Read the ignore-legs file if needed */
 	if (fpi != NULL) {
@@ -168,7 +168,7 @@ int main (int argc, char **argv)
 			nbadlegs++;
 			if (nbadlegs >= MLEGS) {
 				fprintf (stderr, "x_solve_dc_drift: Too many legs to ignore! (> %d), recompile\n", MLEGS);
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 		}
 		fclose (fpi);
@@ -181,7 +181,7 @@ int main (int argc, char **argv)
 			nuselegs++;
 			if (nuselegs >= MLEGS) {
 				fprintf (stderr, "x_solve_dc_drift: Too many legs to use! (> %d), recompile\n", MLEGS);
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 		}
 		fclose (fpu);
@@ -253,11 +253,11 @@ int main (int argc, char **argv)
 
 			if ((id_1 = get_id (lega)) == -1) {
 				fprintf(stderr, "xsolve_dc_shift: Leg %s not found!\n", lega);
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			if ((id_2 = get_id (legb)) == -1) {
 				fprintf(stderr, "xsolve_dc_shift: Leg %s not found!\n", legb);
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 
 			for (j = 0; j < 3; j++) {	/* Set this pairs tmp-counters to zero */
@@ -425,7 +425,7 @@ int main (int argc, char **argv)
 	if (bin_on) fclose (fpbin);
 	if (asc_on) fclose (fpasc);
 	if (verbose) fprintf (stderr, "x_solve_dc_drift: Done!\n");
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
 
 int get_id (char *name)

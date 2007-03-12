@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.6 2007-03-05 21:47:11 pwessel Exp $
+/*	$Id: x_setup.c,v 1.7 2007-03-12 19:52:27 remko Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -88,18 +88,18 @@ int main (int argc, char *argv[])
   		fprintf(stderr,"usage: xsetup [-L<legfile> -R<west>/<east>/<south>/<north>]\n");
   		fprintf(stderr, "	legfile is an optional list of legs to check\n");
   		fprintf(stderr, "	-R defines the region of interest. [Default is world]\n");
-  		GMT_exit (EXIT_FAILURE);
+  		exit (EXIT_FAILURE);
   	}
 
    	sprintf (line, "%s%cmgg%cgmt_legs.d", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
  	if ((fleg = fopen (line, "r")) == NULL) {
 		fprintf(stderr,"Could not open %s\n", line);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
    	sprintf (line, "%s%cmgg%cgmt_index.b", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
 	if ((fbin = fopen (line, "rb")) == NULL) {
 		fprintf(stderr,"Could not open %sb\n", line);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	if (fpl != NULL) {
@@ -109,7 +109,7 @@ int main (int argc, char *argv[])
 		}
 		if (nlegs_used > MAXNEW) {
 			fprintf(stderr, "Too many new legs, recompile!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		fclose(fpl);
 	}
@@ -134,7 +134,7 @@ int main (int argc, char *argv[])
 		if (ptr[i]) {
 			if ((ptr[i]->leglist = (unsigned char *) malloc (n_alloc)) == NULL) {
 				fprintf (stderr, "xsetup: Out of memory!\n");
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			for (j = 0; j < n_alloc; j++)
 				ptr[i]->leglist[j] = 0;
@@ -198,7 +198,7 @@ int main (int argc, char *argv[])
 
 	GMT_end (argc, argv);
 
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
 
 struct INFO *make_info (char *name, int id_no)
@@ -206,7 +206,7 @@ struct INFO *make_info (char *name, int id_no)
 	struct INFO *new;
 	if ((new = (struct INFO *) malloc(sizeof(struct INFO))) == NULL) {
 		fprintf(stderr,"malloc returned NULL for make_info\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	strcpy(new->legname,name);
 	new->leg_id = id_no;
