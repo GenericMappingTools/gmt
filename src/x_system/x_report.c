@@ -1,4 +1,4 @@
-/*	$Id: x_report.c,v 1.5 2007-03-05 21:47:11 pwessel Exp $
+/*	$Id: x_report.c,v 1.6 2007-03-12 19:52:27 remko Exp $
  *
  * XREPORT reads the xx_legs.b file and reports statistics for one or
  * all or the legs. The information reported are legname, year-of-cruise,
@@ -58,11 +58,11 @@ int main (int argc, char *argv[])
 		fprintf(stderr,"	<leg> is the desired legs id. [Default is all legs]\n");
 		fprintf(stderr,"	-X to specify alternate xx_legs.b file\n");
 		fprintf(stderr,"	-G -M -T to report on gravity/magnetics/topography [Default is G, M, and T]\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	if (fp == NULL && (fp = fopen ("xx_legs.b", "rb")) == NULL) {
 		fprintf (stderr, "Could not find file xx_legs.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
   
   	/* If none selected, the default is all 3 data types */
@@ -91,6 +91,6 @@ int main (int argc, char *argv[])
 		}
 	}
 	fclose (fp);
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
 

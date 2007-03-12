@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.27 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_shore.c,v 1.28 2007-03-12 19:52:26 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -94,7 +94,7 @@ int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s,
 /* res: Resolution (f, h, i, l, c */
                 
 {
-	int i, nb, idiv, iw, ie, is, in, this_south, this_west;
+	int i, nb, idiv, iw, ie, is, in, this_south, this_west, err;
 	short *stmp;
 	int *itmp;
 	size_t start[1], count[1];
@@ -102,41 +102,41 @@ int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s,
 	
 	sprintf (stem, "binned_GSHHS_%c", res);
 	
-        if (!GMT_shore_getpathname (stem, path)) return (-1);	/* Failed to find file */
+        if (!GMT_shore_getpathname (stem, path)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Failed to find file */
         
-	check_nc_status (nc_open (path, NC_NOWRITE,&c->cdfid));
+	GMT_err_trap (nc_open (path, NC_NOWRITE,&c->cdfid));
                 
 	/* Get all id tags */
-	check_nc_status (nc_inq_varid (c->cdfid, "Bin_size_in_minutes", &c->bin_size_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_bins_in_360_longitude_range", &c->bin_nx_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_bins_in_180_degree_latitude_range", &c->bin_ny_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_bins_in_file", &c->n_bin_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_segments_in_file", &c->n_seg_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_points_in_file", &c->n_pt_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Id_of_first_segment_in_a_bin", &c->bin_firstseg_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin", &c->bin_info_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", &c->seg_info_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_the_parent_polygon_of_a_segment", &c->seg_area_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
+	GMT_err_trap (nc_inq_varid (c->cdfid, "Bin_size_in_minutes", &c->bin_size_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_360_longitude_range", &c->bin_nx_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_180_degree_latitude_range", &c->bin_ny_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_file", &c->n_bin_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_file", &c->n_seg_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_points_in_file", &c->n_pt_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_segment_in_a_bin", &c->bin_firstseg_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin", &c->bin_info_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", &c->seg_info_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_the_parent_polygon_of_a_segment", &c->seg_area_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
 
 	/* Get attributes */
-	check_nc_status (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
-        check_nc_status (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
-        check_nc_status (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
+	GMT_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
+        GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
+        GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
 
 	/* Get global variables */
 
 	start[0] = 0;
 
-	check_nc_status (nc_get_var1_int (c->cdfid, c->bin_size_id, start, &c->bin_size));
-        check_nc_status (nc_get_var1_int (c->cdfid, c->bin_nx_id, start, &c->bin_nx));
-        check_nc_status (nc_get_var1_int (c->cdfid, c->bin_ny_id, start, &c->bin_ny));
-        check_nc_status (nc_get_var1_int (c->cdfid, c->n_bin_id, start, &c->n_bin));
-        check_nc_status (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
-        check_nc_status (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
+	GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_size_id, start, &c->bin_size));
+        GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_nx_id, start, &c->bin_nx));
+        GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_ny_id, start, &c->bin_ny));
+        GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_bin_id, start, &c->n_bin));
+        GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
+        GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
 
 
 	c->scale = (c->bin_size / 60.0) / 65535.0;
@@ -175,23 +175,23 @@ int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s,
 	count[0] = c->n_bin;
 	stmp = (short *) GMT_memory (VNULL, (size_t)c->n_bin, sizeof (short), "GMT_init_shore");
 	
-	check_nc_status (nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp));
+	GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp));
 	for (i = 0; i < c->nb; i++) c->bin_info[i] = stmp[c->bins[i]];
 	
-        check_nc_status (nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp));
+        GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp));
 	for (i = 0; i < c->nb; i++) c->bin_nseg[i] = stmp[c->bins[i]];
 	GMT_free ((void *)stmp);
 	
 	itmp = (int *) GMT_memory (VNULL, (size_t)c->n_bin, sizeof (int), "GMT_init_shore");
-        check_nc_status (nc_get_vara_int (c->cdfid, c->bin_firstseg_id, start, count, itmp));
+        GMT_err_trap (nc_get_vara_int (c->cdfid, c->bin_firstseg_id, start, count, itmp));
 	for (i = 0; i < c->nb; i++) c->bin_firstseg[i] = itmp[c->bins[i]];
 	
 	GMT_free ((void *)itmp);
 	
-	return (0);
+	return (GMT_NOERROR);
 }
 
-void GMT_get_shore_bin (int b, struct GMT_SHORE *c, double min_area, int min_level, int max_level)
+int GMT_get_shore_bin (int b, struct GMT_SHORE *c, double min_area, int min_level, int max_level)
 /* b: index number into c->bins */
 /* min_area: Polygons with area less than this are ignored */
 /* min_level: Polygons with lower levels are ignored */
@@ -199,7 +199,7 @@ void GMT_get_shore_bin (int b, struct GMT_SHORE *c, double min_area, int min_lev
 {
 	size_t start[1], count[1];
 	int cut_area, *seg_area, *seg_info, *seg_start;
-	int s, i;
+	int s, i, err;
 	double w, e, dx;
 	
 	c->node_level[0] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 9) & 7, max_level);
@@ -218,7 +218,7 @@ void GMT_get_shore_bin (int b, struct GMT_SHORE *c, double min_area, int min_lev
 	e = w + dx;
 	c->leftmost_bin = ((w <= project_info.w) && (e > project_info.w));
 
-	if (c->bin_nseg[b] == 0) return;
+	if (c->bin_nseg[b] == 0) return (GMT_NOERROR);
 	
 	cut_area = irint (10.0 * min_area);
 	start[0] = c->bin_firstseg[b];
@@ -227,13 +227,13 @@ void GMT_get_shore_bin (int b, struct GMT_SHORE *c, double min_area, int min_lev
 	seg_area = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
 	seg_info = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
 	seg_start = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
-	
-	check_nc_status (nc_get_vara_int (c->cdfid, c->seg_area_id, start, count, seg_area));
-        check_nc_status (nc_get_vara_int (c->cdfid, c->seg_info_id, start, count, seg_info));
-        check_nc_status (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
-	
+
+	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_area_id, start, count, seg_area));
+        GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_info_id, start, count, seg_info));
+        GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
+
 	/* First tally how many useful segments */
-	
+
 	for (s = i = 0; i < c->bin_nseg[b]; i++) {
 		if (cut_area > 0 && seg_area[i] < cut_area) continue;
 		if (((seg_info[i] >> 6) & 7) < min_level) continue;
@@ -244,16 +244,16 @@ void GMT_get_shore_bin (int b, struct GMT_SHORE *c, double min_area, int min_lev
 		s++;
 	}
 	c->ns = s;
-	
+
 	if (c->ns == 0) {	/* No useful segments in this bin */
 		GMT_free ((void *) seg_info);	
 		GMT_free ((void *) seg_area);	
 		GMT_free ((void *) seg_start);
-		return;
+		return (GMT_NOERROR);
 	}
-	
+
 	c->seg = (struct GMT_SHORE_SEGMENT *) GMT_memory (VNULL, (size_t)c->ns, sizeof (struct GMT_SHORE_SEGMENT), "GMT_get_shore_bin");
-	
+
 	for (s = 0; s < c->ns; s++) {
 		c->seg[s].level = (seg_info[s] >> 6) & 7;
 		c->seg[s].n = (seg_info[s] >> 9);
@@ -263,21 +263,22 @@ void GMT_get_shore_bin (int b, struct GMT_SHORE *c, double min_area, int min_lev
 		c->seg[s].dy = (short *) GMT_memory (VNULL, (size_t)c->seg[s].n, sizeof (short), "GMT_get_shore_bin");
 		start[0] = seg_start[s];
 		count[0] = c->seg[s].n;
-		check_nc_status (nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx));
-                check_nc_status (nc_get_vara_short (c->cdfid, c->pt_dy_id, start, count, c->seg[s].dy));	
+		GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx));
+                GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dy_id, start, count, c->seg[s].dy));	
 	}
-		
+
 	GMT_free ((void *) seg_info);	
 	GMT_free ((void *) seg_area);	
 	GMT_free ((void *) seg_start);	
-	
+
+	return (GMT_NOERROR);
 }
 
 int GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, double s, double n)
 /* which: r(iver) or b(order) */
 /* res: Resolution (f, h, i, l, c */
 {
-	int i, nb, idiv, iw, ie, is, in, this_south, this_west;
+	int i, nb, idiv, iw, ie, is, in, this_south, this_west, err;
 	short *stmp;
 	int *itmp;
 	size_t start[1], count[1];
@@ -290,41 +291,41 @@ int GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, dou
 	
         if (!GMT_shore_getpathname (stem, path)) return (-1);	/* Failed to find file */
 
-	check_nc_status (nc_open (path, NC_NOWRITE, &c->cdfid));
+	GMT_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
         
 	/* Get all id tags */
-	check_nc_status (nc_inq_varid (c->cdfid, "Bin_size_in_minutes", &c->bin_size_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_bins_in_360_longitude_range", &c->bin_nx_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_bins_in_180_degree_latitude_range", &c->bin_ny_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_bins_in_file", &c->n_bin_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_segments_in_file", &c->n_seg_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_points_in_file", &c->n_pt_id));
+	GMT_err_trap (nc_inq_varid (c->cdfid, "Bin_size_in_minutes", &c->bin_size_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_360_longitude_range", &c->bin_nx_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_180_degree_latitude_range", &c->bin_ny_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_bins_in_file", &c->n_bin_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_file", &c->n_seg_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_points_in_file", &c->n_pt_id));
          
-        check_nc_status (nc_inq_varid (c->cdfid, "Id_of_first_segment_in_a_bin", &c->bin_firstseg_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_segment_in_a_bin", &c->bin_firstseg_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
          
-        check_nc_status (nc_inq_varid (c->cdfid, "N_points_for_a_segment", &c->seg_n_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Hierarchial_level_of_a_segment", &c->seg_level_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "N_points_for_a_segment", &c->seg_n_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Hierarchial_level_of_a_segment", &c->seg_level_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
  
-        check_nc_status (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
-        check_nc_status (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
 
 	/* Get attributes */
-	check_nc_status (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
-        check_nc_status (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
-        check_nc_status (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
+	GMT_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
+        GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
+        GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
 
 	/* Get global variables */
 
 	start[0] = 0;
 	
-	check_nc_status (nc_get_var1_int (c->cdfid, c->bin_size_id, start, &c->bin_size));
-        check_nc_status (nc_get_var1_int (c->cdfid, c->bin_nx_id, start, &c->bin_nx));
-        check_nc_status (nc_get_var1_int (c->cdfid, c->bin_ny_id, start, &c->bin_ny));
-        check_nc_status (nc_get_var1_int (c->cdfid, c->n_bin_id, start, &c->n_bin));
-        check_nc_status (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
-        check_nc_status (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
+	GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_size_id, start, &c->bin_size));
+        GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_nx_id, start, &c->bin_nx));
+        GMT_err_trap (nc_get_var1_int (c->cdfid, c->bin_ny_id, start, &c->bin_ny));
+        GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_bin_id, start, &c->n_bin));
+        GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
+        GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
  
 
 	c->scale = (c->bin_size / 60.0) / 65535.0;
@@ -362,12 +363,12 @@ int GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, dou
 	count[0] = c->n_bin;
 	stmp = (short *) GMT_memory (VNULL, (size_t)c->n_bin, sizeof (short), "GMT_init_br");
 	
-	check_nc_status (nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp));
+	GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp));
 	for (i = 0; i < c->nb; i++) c->bin_nseg[i] = stmp[c->bins[i]];
 	GMT_free ((void *)stmp);
 	
 	itmp = (int *) GMT_memory (VNULL, (size_t)c->n_bin, sizeof (int), "GMT_init_br");
-	check_nc_status (nc_get_vara_int (c->cdfid, c->bin_firstseg_id, start, count, itmp));
+	GMT_err_trap (nc_get_vara_int (c->cdfid, c->bin_firstseg_id, start, count, itmp));
 	for (i = 0; i < c->nb; i++) c->bin_firstseg[i] = itmp[c->bins[i]];
 	
 	GMT_free ((void *)itmp);
@@ -375,7 +376,7 @@ int GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, dou
 	return (0);
 }
 
-void GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels)
+int GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels)
 /* b: index number into c->bins */
 /* level: Levels of features to extract */
 /* n_levels: # of such levels. 0 means use all levels */
@@ -383,13 +384,13 @@ void GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels)
 	size_t start[1], count[1];
 	int *seg_start;
 	short *seg_n, *seg_level;
-	int s, i, k, skip;
+	int s, i, k, skip, err;
 	
 	c->lon_sw = (c->bins[b] % c->bin_nx) * c->bin_size / 60.0;
 	c->lat_sw = 90.0 - ((c->bins[b] / c->bin_nx) + 1) * c->bin_size / 60.0;
 	c->ns = c->bin_nseg[b];
 	
-	if (c->ns == 0) return;
+	if (c->ns == 0) return (GMT_NOERROR);
 	
 	start[0] = c->bin_firstseg[b];
 	count[0] = c->bin_nseg[b];
@@ -398,9 +399,9 @@ void GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels)
 	seg_level = (short *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (short), "GMT_get_br_bin");
 	seg_start = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_br_bin");
 	
-	check_nc_status (nc_get_vara_short (c->cdfid, c->seg_n_id, start, count, seg_n));
-        check_nc_status (nc_get_vara_short (c->cdfid, c->seg_level_id, start, count, seg_level));
-        check_nc_status (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
+	GMT_err_trap (nc_get_vara_short (c->cdfid, c->seg_n_id, start, count, seg_n));
+        GMT_err_trap (nc_get_vara_short (c->cdfid, c->seg_level_id, start, count, seg_level));
+        GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
 
 
 	c->seg = (struct GMT_BR_SEGMENT *) GMT_memory (VNULL, (size_t)c->ns, sizeof (struct GMT_BR_SEGMENT), "GMT_get_br_bin");
@@ -420,8 +421,8 @@ void GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels)
 		c->seg[s].dy = (short *) GMT_memory (VNULL, (size_t)c->seg[s].n, sizeof (short), "GMT_get_br_bin");
 		start[0] = seg_start[i];
 		count[0] = c->seg[s].n;
-		check_nc_status (nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx));
-                check_nc_status (nc_get_vara_short (c->cdfid, c->pt_dy_id, start, count, c->seg[s].dy));
+		GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx));
+                GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dy_id, start, count, c->seg[s].dy));
 
 		s++;
 	}
@@ -432,6 +433,7 @@ void GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels)
 	GMT_free ((void *) seg_level);	
 	GMT_free ((void *) seg_start);	
 	
+	return (GMT_NOERROR);
 }
 
 int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN assemble, BOOLEAN shift, double west, double east, struct GMT_GSHHS_POL **pol)
@@ -647,7 +649,7 @@ void GMT_shore_cleanup (struct GMT_SHORE *c)
 	GMT_free ((void *)c->bin_info);
 	GMT_free ((void *)c->bin_nseg);
 	GMT_free ((void *)c->bin_firstseg);
-	check_nc_status (nc_close (c->cdfid));
+	nc_close (c->cdfid);
 }
 
 void GMT_br_cleanup (struct GMT_BR *c)
@@ -655,7 +657,7 @@ void GMT_br_cleanup (struct GMT_BR *c)
 	GMT_free ((void *)c->bins);
 	GMT_free ((void *)c->bin_nseg);
 	GMT_free ((void *)c->bin_firstseg);
-        check_nc_status (nc_close (c->cdfid)); 
+        nc_close (c->cdfid);
 	
 }
 

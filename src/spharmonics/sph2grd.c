@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.3 2007-03-05 21:47:11 pwessel Exp $
+ *    $Id: sph2grd.c,v 1.4 2007-03-12 19:52:27 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -140,7 +140,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "sph2grd %s - Evaluate spherical harmonic models on a grid\n\n", GMT_VERSION);
 		fprintf (stderr, "usage: sph2grd [coeff_file] %s %s [-Dg|n]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 		fprintf (stderr, "\t[-E] [-F] [-G<grdfile>] [-L[d]<filter>] [-N<norm>] [-Q] [-V] [%s]\n\n", GMT_bi_OPT);
-		if (GMT_give_synopsis_and_exit) GMT_exit (EXIT_FAILURE);
+		if (GMT_give_synopsis_and_exit) exit (EXIT_FAILURE);
 		fprintf (stderr, "	coeff_file (or stdin) contains records of degree, order, cos, sin\n");
 		GMT_explain_option ('R');
 		GMT_inc_syntax ('I', 0);
@@ -169,7 +169,7 @@ int main (int argc, char **argv)
 		fprintf(stderr, "\t   Default is 4 columns\n");
 		GMT_explain_option ('.');
 
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	
 	if (n_files > 1) {
@@ -197,11 +197,11 @@ int main (int argc, char **argv)
 		error++;
 	}
 
-	if (error) GMT_exit (EXIT_FAILURE);
+	if (error) exit (EXIT_FAILURE);
 
 	if (n_files == 1 && (fp = GMT_fopen (argv[f_arg], GMT_io.r_mode)) == NULL) {
 		fprintf (stderr, "%s: Cannot open file %s\n", GMT_program, argv[f_arg]);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	else {
 		fp = GMT_stdin;
@@ -214,7 +214,7 @@ int main (int argc, char **argv)
 		n_read++;
 		if (GMT_io.status & GMT_IO_MISMATCH) {
 			fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %d\n", GMT_program, n_fields, n_expected_fields, n_read);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		/* Store coefficients somewhere */
 	}
@@ -243,10 +243,7 @@ int main (int argc, char **argv)
 		for (i = 0; i < header.nx; i++, ij++) grd[ij] = 0.0;
 	}
 	
-	if (GMT_write_grd (Ctrl->G.file, &header, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE)) {
-		fprintf (stderr, "%s: Error writing file %s\n", GMT_program, Ctrl->G.file);
-		GMT_exit (EXIT_FAILURE);
-	}
+	GMT_err_fail (GMT_write_grd (Ctrl->G.file, &header, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), Ctrl->G.file);
 	
 	GMT_free ((void *)grd);
 	GMT_free ((void *)lon);
@@ -255,7 +252,7 @@ int main (int argc, char **argv)
 
 	GMT_end (argc, argv);
 
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
 
 void *New_Sph2grd_Ctrl () {	/* Allocate and initialize a new control structure */

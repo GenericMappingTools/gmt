@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2sph.c,v 1.3 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: grd2sph.c,v 1.4 2007-03-12 19:52:27 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "grd2sph %s - Convert a global grdfile to a table of spherical harmonic coefficients\n\n", GMT_VERSION);
 		fprintf( stderr, "usage: grd2sph <grdfile> -D<degree> [%s] [-N<norm>] [-Q] [-V] [%s] > coeff_file\n\n", GMT_Ho_OPT, GMT_bo_OPT);
 
-		if (GMT_give_synopsis_and_exit) GMT_exit (EXIT_FAILURE);
+		if (GMT_give_synopsis_and_exit) exit (EXIT_FAILURE);
 
 		fprintf (stderr, "\n\t<grdfile> is the global grd file to convert\n");
 		fprintf (stderr, "\t-D The highest degree term to include in the conversion\n");
@@ -116,7 +116,7 @@ int main (int argc, char **argv)
 		GMT_explain_option ('n');
 		fprintf (stderr, "\t  [Default is 4]\n");
 		GMT_explain_option ('.');
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	if (n_files == 0) {
@@ -140,20 +140,17 @@ int main (int argc, char **argv)
 		error++;
 	}
 
-	if (error) GMT_exit (EXIT_FAILURE);
+	if (error) exit (EXIT_FAILURE);
 
 #ifdef SET_IO_MODE
 	GMT_setmode (GMT_OUT);
 #endif
 
-	if (GMT_read_grd_info (argv[f_arg], &header)) {
-		fprintf (stderr, "%s: Error opening file %s\n", GMT_program, argv[f_arg]);
-		GMT_exit (EXIT_FAILURE);
-	}
+	GMT_err_fail (GMT_read_grd_info (argv[f_arg], &header), argv[f_arg]);
 
 	if (fabs (header.x_max - header.x_min - 360.0) > GMT_CONV_LIMIT || fabs (header.y_max - header.y_min - 180.0) > GMT_CONV_LIMIT) {
 		fprintf (stderr, "%s: File %s is not a global grid (it has -R%g/%g/%g/%g)\n", GMT_program, argv[f_arg], header.x_min, header.x_max, header.y_min, header.y_max);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	
 	if (gmtdefs.verbose) fprintf (stderr, "%s: Working on file %s\n", GMT_program, argv[f_arg]);
@@ -162,11 +159,7 @@ int main (int argc, char **argv)
 
 	grd = (float *) GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT_program);
 
-	if (GMT_read_grd (argv[f_arg], &header, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE)) {
-		fprintf (stderr, "%s: Error reading file %s\n", GMT_program, argv[f_arg]);
-		GMT_exit (EXIT_FAILURE);
-	}
-
+	GMT_err_fail (GMT_read_grd (argv[f_arg], &header, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), argv[f_arg]);
 	/* Do conversion to spherical harmonic coefficients */
 	
 	/* Write out coefficients in the form degree order cos sin */
@@ -192,7 +185,7 @@ int main (int argc, char **argv)
 
 	GMT_end (argc, argv);
 
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
 
 void *New_grd2sph_Ctrl () {	/* Allocate and initialize a new control structure */

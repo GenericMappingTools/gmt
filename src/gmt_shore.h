@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.14 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_shore.h,v 1.15 2007-03-12 19:52:26 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -184,8 +184,8 @@ struct GMT_GSHHS_POL {
 
 /* Public functions */
 
-EXTERN_MSC void GMT_get_shore_bin (int b, struct GMT_SHORE *c, double min_area, int min_level, int max_level);
-EXTERN_MSC void GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels);
+EXTERN_MSC int GMT_get_shore_bin (int b, struct GMT_SHORE *c, double min_area, int min_level, int max_level);
+EXTERN_MSC int GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels);
 EXTERN_MSC void GMT_free_polygons (struct GMT_GSHHS_POL *p, int n);
 EXTERN_MSC void GMT_free_shore (struct GMT_SHORE *c);
 EXTERN_MSC void GMT_free_br (struct GMT_BR *c);

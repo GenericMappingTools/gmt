@@ -1,4 +1,4 @@
-/*	$Id: x_remove.c,v 1.4 2007-03-05 21:47:11 pwessel Exp $
+/*	$Id: x_remove.c,v 1.5 2007-03-12 19:52:27 remko Exp $
  *
  * XREMOVE will read a list of bad legs from a file, and then remove all
  * trace of these files from the x_system data base files. New x_system files
@@ -67,16 +67,16 @@ int main (int argc, char **argv)
 		fprintf(stderr, "	-X to select alternate xx_base.b file\n");
 		fprintf(stderr, "	-L to select alternate xx_legs.b file\n");
 		fprintf(stderr, "	-V Verbose, report when removing a leg\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	if (fpb == NULL && (fpb = fopen("xx_base.b","rb")) == NULL) {
 		fprintf (stderr, "Could not find xx_base.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	if (fpl == NULL && (fpl = fopen("xx_legs.b","rb")) == NULL) {
 		fprintf (stderr, "Could not find xx_legs.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	/* Read all the leg info into memory */
@@ -94,7 +94,7 @@ int main (int argc, char **argv)
 		nlegs++;
 		if (nlegs == MAXLEGS) {
 			fprintf (stderr, "xremove: nlegs > MAXLEGS, recompile!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	fclose (fpl);
@@ -104,28 +104,28 @@ int main (int argc, char **argv)
 		nbadlegs++;
 		if (nbadlegs == MAXBADLEGS) {
 			fprintf (stderr, "xremove: nbadlegs > MAXBADLEGS, recompile!\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	fclose (fpr);
 
 	if ((fpb2 = fopen("xx_base.b_new", "wb")) == NULL) {
 		fprintf (stderr, "Could not create xx_base.b_new\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	if ((fpl2 = fopen("xx_legs.b_new","wb")) == NULL) {
 		fprintf (stderr, "Could not create xx_legs.b_new\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	if (fread((void *)header, REC_SIZE, (size_t)1, fpb) != (size_t)1) {
 		fprintf (stderr, "xremove: Read error on xx_base.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	if (fwrite ((void *)header, REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
 		fprintf (stderr, "xremove: Write error on xx_base.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	ok = fread ((void *)header, REC_SIZE, (size_t)1, fpb);
 	while (ok) {
@@ -140,15 +140,15 @@ int main (int argc, char **argv)
 			id2 = (internal) ? id1 : get_id (legb);
 			if (n_x > MAX_X) {
 				fprintf (stderr, "xremove: nx (= %d) > MAX_X, recompile!\n", n_x);
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			if (fread ((void *)crossover, REC_SIZE, (size_t)n_x, fpb) != (size_t)n_x) {
           			fprintf (stderr, "xremove: Read error on xx_base.b\n");
-          			GMT_exit (EXIT_FAILURE);
+          			exit (EXIT_FAILURE);
           		}
           		if (fwrite ((void *)header, REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
           			fprintf (stderr, "xremove: Write error on xx_base.b\n");
-          			GMT_exit (EXIT_FAILURE);
+          			exit (EXIT_FAILURE);
           		}
           		for (i = 0; i < n_x; i++) {
           			if (internal) {
@@ -173,7 +173,7 @@ int main (int argc, char **argv)
           		}
            		if (fwrite ((void *)crossover, REC_SIZE, (size_t)n_x, fpb2) != (size_t)n_x) {
            			fprintf (stderr, "xremove: Write error on xx_base.b\n");
-           			GMT_exit (EXIT_FAILURE);
+           			exit (EXIT_FAILURE);
            		}
          		if (internal)
           			leg[id1].n_x_int = n_x;
@@ -190,7 +190,7 @@ int main (int argc, char **argv)
 	fseek (fpb2, 0L, SEEK_SET);
 	if (fwrite ((void *)header, REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
 		fprintf (stderr, "xremove: Write error on xx_base.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	fclose (fpb2);
 
@@ -217,11 +217,11 @@ int main (int argc, char **argv)
 	}
 	if (fwrite ((void *)leg, legsize, (size_t)nlegs, fpl2) != (size_t)nlegs) {
 		fprintf (stderr, "xremove: Write error for xx_legs.b file\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	fclose (fpl2);
 	if (verbose) fprintf (stderr, "xremove: New xx_legs.b-file created successfully\n");
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
           
 int findleg (char *name)

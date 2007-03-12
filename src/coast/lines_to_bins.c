@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.8 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: lines_to_bins.c,v 1.9 2007-03-12 19:52:26 remko Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -77,7 +77,7 @@ int main (int argc, char **argv)
 	if (argc != 4) {
 		fprintf (stderr, "usage: lines_to_bins lines.b bsize binned_prefix\n");
 		fprintf (stderr, "bsize must be 1, 2, 5, 10, or 20 degrees\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	
 	BSIZE = atoi (argv[2]);
@@ -123,7 +123,7 @@ int main (int argc, char **argv)
 			n_seg = 0;
 		if (pol_fread (&p, 1, fp_in) != 1) {
 			fprintf(stderr,"lines_to_bins:  ERROR  reading file.\n");
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		if (p.x == M360) p.x -= M360;
 		p.y += M90;
@@ -134,7 +134,7 @@ int main (int argc, char **argv)
 		for (k = kk = 1; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
 				fprintf(stderr,"lines_to_bins:  ERROR  reading file.\n");
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			if (p.x == M360) p.x -= M360;
 			p.y += M90;
@@ -504,7 +504,7 @@ int main (int argc, char **argv)
 	
 	if (fwrite ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
 		fprintf (stderr, "lines_to_bins: Error writing file header\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	
 	for (b = np = 0; b < nbins; b++) {
@@ -513,7 +513,7 @@ int main (int argc, char **argv)
 		
 		if (fwrite ((void *)&bin_head[b], sizeof (struct GMT3_BIN_HEADER), (size_t)1, fp_bin) != 1) {
 			fprintf (stderr, "lines_to_bins: Error writing bin header for bin # %d\n", b);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		
 		if (!bin[b].first_seg) continue;
@@ -524,11 +524,11 @@ int main (int argc, char **argv)
 			seg_head.level = s->level;
 			if (fwrite ((void *)&seg_head, sizeof (struct SEGMENT_HEADER), (size_t)1, fp_seg) != 1) {
 				fprintf (stderr, "lines_to_bins: Error writing a string header for bin # %d\n", b);
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			if (fwrite ((void *)(s->p), sizeof (struct SHORT_PAIR), (size_t) s->n, fp_pt) != s->n) {
 				fprintf (stderr, "lines_to_bins: Error writing a string for bin # %d\n", b);
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			free ((void *)s->p);
 			np += s->n;
@@ -555,12 +555,12 @@ int main (int argc, char **argv)
 	if (ns != file_head.n_segments)
 		fprintf (stderr, "lines_to_bins: # segments written (%d) differ from actual segments (%d)!\n", ns, file_head.n_segments);
 
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
 
 int die (int id)
 {
 	fprintf(stderr,"IDIOT.  SNAFU IN SHORT INTEGER MATH. id = %d\n", id);
-	GMT_exit (EXIT_FAILURE);
+	exit (EXIT_FAILURE);
 }
 

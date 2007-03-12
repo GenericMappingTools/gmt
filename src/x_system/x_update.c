@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.6 2007-03-05 21:47:11 pwessel Exp $
+/*	$Id: x_update.c,v 1.7 2007-03-12 19:52:27 remko Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -99,7 +99,7 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 		}
 		else if ((fp = fopen(argv[i],"r")) == NULL) {
 			fprintf(stderr,"x_update : Could not find/open %s\n",argv[i]);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	if (fp == NULL) error = TRUE;
@@ -110,19 +110,19 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 		fprintf(stderr,"	-L to specify alternative xx_legs.b file\n");
 		fprintf(stderr,"	-V means verbose\n");
 		fprintf(stderr,"	-W prints a message if two legs generate more than nxovers\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
   
 	/* First open (if possible) the 2 key files */
 
 	if (fxb == NULL && (fxb = fopen("xx_base.b","rb+")) == NULL) {
 		fprintf(stderr,"x_update : Could not find/open xx_base.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	if (fxl == NULL && (fxl = fopen("xx_legs.b","rb")) == NULL) {
 		fprintf(stderr,"x_update : Could not find/open xx_legs.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	for (i = 0; i < REC_SIZE; i++) header[i] = ' ';
@@ -132,7 +132,7 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 	fseek (fxb, 0L, SEEK_SET);		/* Go to start of file */
 	if (fread ((void *)header,REC_SIZE, 1, fxb) != 1) {	/* Get next recno to write */
 		fprintf(stderr,"x_update : Read error on xx_base.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	sscanf (header,"%d", &n_rec);
 	fseek (fxb, 0L, SEEK_END);		/* Go to end of file */
@@ -189,7 +189,7 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 			n_x++;
 			if (n_x == MAX_NR) {
 				fprintf(stderr, "x_update: Out of memory for crossover[] structures! recompile\n");
-				GMT_exit (EXIT_FAILURE);
+				exit (EXIT_FAILURE);
 			}
 			nread = fgets (buffer, BUFSIZ, fp);
 			ok = (nread == NULL) ? FALSE : (strlen(buffer) > 30);
@@ -200,11 +200,11 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 		sprintf (header,"%s %s %10d", lega, legb, n_x);
 		if (fwrite ((void *)header, REC_SIZE, (size_t)1, fxb) != (size_t)1) {
 			fprintf(stderr,"x_update : Write header error at rec %d\n", n_rec);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 		if (fwrite((void *)crossover, REC_SIZE, (size_t)n_x, fxb) != (size_t)n_x) {
 			fprintf(stderr,"x_update : Write data error at rec % d\n", n_rec);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
       
 		/* Update leg-structure(s) */
@@ -263,7 +263,7 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 	sprintf(header,"%10d xx_base.b header",n_rec);
 	if (fwrite((void *)header,REC_SIZE, (size_t)1, fxb) != (size_t)1) {
 		fprintf(stderr,"x_update : Write header error for n_rec = %d\n",n_rec);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	fclose(fxb);
 
@@ -272,18 +272,18 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 	fclose(fxl);
 	if (rename("xx_legs.b","xx_legs_old.b")) {
 		fprintf(stderr,"x_update: Could not rename -> xx_legs.b to xx_legs_old.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	fxl = fopen("xx_legs.b","wb");
 
 	for (leg1 = leg_head->next_leg; leg1; leg1 = leg1->next_leg) {
 		if (fwrite((void *)leg1, sizeof(struct LEG), (size_t)1, fxl) != (size_t)1) {
 			fprintf(stderr, "x_update: Write error for leg %s\n",leg1->name);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	fclose(fxl);
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
 
 void append_leg (struct LEG *leg, struct LEG*leg_head)
@@ -321,7 +321,7 @@ struct LEG *make_leg (char *text)
 	struct LEG *new_leg;
 	if ((new_leg = (struct LEG *) malloc(sizeof(struct LEG))) == NULL) {
 		fprintf(stderr,"x_update : Could not allocate memory for leg %s\n",text);
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	strcpy(new_leg->name,text);
 	strcpy(new_leg->agency,"--------");

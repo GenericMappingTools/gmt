@@ -1,5 +1,5 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *	$Id: x_init.c,v 1.4 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: x_init.c,v 1.5 2007-03-12 19:52:27 remko Exp $
  *
  * XINIT will create the xx_base.b and xx_legs.b files and write out
  * the first header record (in xx_base.b) that tells which record number
@@ -23,7 +23,7 @@ int main (int argc, char **argv)
 	if (!(argc == 2 && argv[1][1] == 'I')) {
 		fprintf (stderr, "xinit - Initialization of new xover databases\n\n");
 		fprintf (stderr, "usage: xinit -I\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 
 	for (i = 0; i < REC_SIZE; i++) buffer[i] = ' ';
@@ -32,7 +32,7 @@ int main (int argc, char **argv)
 
 	if ((fhandle = fopen ("xx_base.b","wb")) == NULL) {
 		fprintf (stderr,"xinit : Could not create xx_base.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	else
 		fprintf(stderr,"xinit : Successfully created xx_base.b\n");
@@ -40,7 +40,7 @@ int main (int argc, char **argv)
 	sprintf (buffer,"%10ld xx_base.b header",1L);
 	if ((i = fwrite ((void *)buffer, REC_SIZE, 1, fhandle)) != 1) {
 		fprintf (stderr,"write error on xx_base.b!");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	else
 		fprintf (stderr,"xinit : Successfully initialized xx_base.b\n");
@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 
 	if ((fp = fopen ("xx_legs.b", "w")) == NULL) {
 		fprintf (stderr,"xinit : Could not create xx_legs.b\n");
-		GMT_exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	else
 		fprintf (stderr,"xinit : Successfully created xx_legs.b\n");
@@ -60,7 +60,7 @@ int main (int argc, char **argv)
 
 	printf ("xinit: done!\n");
 
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 
 }
 

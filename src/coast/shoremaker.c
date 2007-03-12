@@ -1,5 +1,5 @@
 /*
- *	$Id: shoremaker.c,v 1.4 2006-05-03 04:22:16 pwessel Exp $
+ *	$Id: shoremaker.c,v 1.5 2007-03-12 19:52:26 remko Exp $
  */
 /*
  *
@@ -53,7 +53,7 @@ int main (int argc, char **argv) {
 	}
 		
 	sprintf (file, "%s.cdf", prefix);
-	check_nc_status (nc_create (file, NC_CLOBBER, &s.cdfid));
+	GMT_err_fail (nc_create (file, NC_CLOBBER, &s.cdfid), file);
 	
 	fprintf (stderr, "shoremaker:  Process header file\n");
 
@@ -134,69 +134,69 @@ int main (int argc, char **argv) {
 
 	/* define variables */
 
-	check_nc_status (nc_def_dim (s.cdfid, "Dimension_of_scalar", 1, &dims));
-	check_nc_status (nc_def_var (s.cdfid, "Bin_size_in_minutes", NC_INT, (size_t)1, &dims, &s.bin_size_id));
-	check_nc_status (nc_def_var (s.cdfid, "N_bins_in_360_longitude_range", NC_INT, (size_t)1, &dims, &s.bin_nx_id));
-	check_nc_status (nc_def_var (s.cdfid, "N_bins_in_180_degree_latitude_range", NC_INT, (size_t)1, &dims, &s.bin_ny_id));
-	check_nc_status (nc_def_var (s.cdfid, "N_bins_in_file", NC_INT, (size_t)1, &dims, &s.n_bin_id));
-	check_nc_status (nc_def_var (s.cdfid, "N_segments_in_file", NC_INT, (size_t)1, &dims, &s.n_seg_id));
-	check_nc_status (nc_def_var (s.cdfid, "N_points_in_file", NC_INT, (size_t)1, &dims, &s.n_pt_id));
+	GMT_err_fail (nc_def_dim (s.cdfid, "Dimension_of_scalar", 1, &dims), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Bin_size_in_minutes", NC_INT, (size_t)1, &dims, &s.bin_size_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "N_bins_in_360_longitude_range", NC_INT, (size_t)1, &dims, &s.bin_nx_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "N_bins_in_180_degree_latitude_range", NC_INT, (size_t)1, &dims, &s.bin_ny_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "N_bins_in_file", NC_INT, (size_t)1, &dims, &s.n_bin_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "N_segments_in_file", NC_INT, (size_t)1, &dims, &s.n_seg_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "N_points_in_file", NC_INT, (size_t)1, &dims, &s.n_pt_id), file);
 			
-	check_nc_status (nc_def_dim (s.cdfid, "Dimension_of_bin_arrays", s.n_bin, &dims));
-	check_nc_status (nc_def_var (s.cdfid, "Id_of_first_segment_in_a_bin", NC_INT, (size_t)1, &dims, &s.bin_firstseg_id));
-	check_nc_status (nc_def_var (s.cdfid, "Embedded_node_levels_in_a_bin", NC_SHORT, (size_t)1, &dims, &s.bin_info_id));
-	check_nc_status (nc_def_var (s.cdfid, "N_segments_in_a_bin", NC_SHORT, (size_t)1, &dims, &s.bin_nseg_id));
+	GMT_err_fail (nc_def_dim (s.cdfid, "Dimension_of_bin_arrays", s.n_bin, &dims), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Id_of_first_segment_in_a_bin", NC_INT, (size_t)1, &dims, &s.bin_firstseg_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Embedded_node_levels_in_a_bin", NC_SHORT, (size_t)1, &dims, &s.bin_info_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "N_segments_in_a_bin", NC_SHORT, (size_t)1, &dims, &s.bin_nseg_id), file);
 			
-	check_nc_status (nc_def_dim (s.cdfid, "Dimension_of_segment_arrays", s.n_seg, &dims));
-	check_nc_status (nc_def_var (s.cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", NC_INT, (size_t)1, &dims, &s.seg_info_id));
-	check_nc_status (nc_def_var (s.cdfid, "Ten_times_the_km_squared_area_of_the_parent_polygon_of_a_segment", NC_INT, (size_t)1, &dims, &s.seg_area_id));
-	check_nc_status (nc_def_var (s.cdfid, "Id_of_first_point_in_a_segment", NC_INT, (size_t)1, &dims, &s.seg_start_id));
+	GMT_err_fail (nc_def_dim (s.cdfid, "Dimension_of_segment_arrays", s.n_seg, &dims), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", NC_INT, (size_t)1, &dims, &s.seg_info_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Ten_times_the_km_squared_area_of_the_parent_polygon_of_a_segment", NC_INT, (size_t)1, &dims, &s.seg_area_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Id_of_first_point_in_a_segment", NC_INT, (size_t)1, &dims, &s.seg_start_id), file);
 
-	check_nc_status (nc_def_dim (s.cdfid, "Dimension_of_point_arrays", s.n_pt, &dims));
-	check_nc_status (nc_def_var (s.cdfid, "Relative_longitude_from_SW_corner_of_bin", NC_SHORT, (size_t)1, &dims, &s.pt_dx_id));
-	check_nc_status (nc_def_var (s.cdfid, "Relative_latitude_from_SW_corner_of_bin", NC_SHORT, (size_t)1, &dims, &s.pt_dy_id));
+	GMT_err_fail (nc_def_dim (s.cdfid, "Dimension_of_point_arrays", s.n_pt, &dims), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Relative_longitude_from_SW_corner_of_bin", NC_SHORT, (size_t)1, &dims, &s.pt_dx_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Relative_latitude_from_SW_corner_of_bin", NC_SHORT, (size_t)1, &dims, &s.pt_dy_id), file);
 
 	/* assign attributes */
 	
 	strcpy (s.title, "Derived from World Vector Shoreline and CIA WDB-II data");
 	strcpy (s.source, "Processed by Paul Wessel and Walter H. F. Smith, 1994-2006, GSHHS v1.4");
 
-	check_nc_status (nc_put_att_text (s.cdfid, s.pt_dx_id, "units", strlen(s.units), s.units));
-	check_nc_status (nc_put_att_text (s.cdfid, s.pt_dy_id, "units", strlen(s.units), s.units));
-	check_nc_status (nc_put_att_text (s.cdfid, NC_GLOBAL, "title", strlen(s.title), s.title));
-	check_nc_status (nc_put_att_text (s.cdfid, NC_GLOBAL, "source", strlen(s.source), s.source));
+	GMT_err_fail (nc_put_att_text (s.cdfid, s.pt_dx_id, "units", strlen(s.units), s.units), file);
+	GMT_err_fail (nc_put_att_text (s.cdfid, s.pt_dy_id, "units", strlen(s.units), s.units), file);
+	GMT_err_fail (nc_put_att_text (s.cdfid, NC_GLOBAL, "title", strlen(s.title), s.title), file);
+	GMT_err_fail (nc_put_att_text (s.cdfid, NC_GLOBAL, "source", strlen(s.source), s.source), file);
 
 	/* leave define mode */
 	
-        check_nc_status (nc_enddef (s.cdfid));
+        GMT_err_fail (nc_enddef (s.cdfid), file);
 
 	start = 0;
 			
-        check_nc_status (nc_put_var1_int (s.cdfid, s.bin_size_id, &start, &s.bin_size));
-        check_nc_status (nc_put_var1_int (s.cdfid, s.bin_nx_id, &start, &s.bin_nx));
-        check_nc_status (nc_put_var1_int (s.cdfid, s.bin_ny_id, &start, &s.bin_ny));
-        check_nc_status (nc_put_var1_int (s.cdfid, s.n_bin_id, &start, &s.n_bin));
-        check_nc_status (nc_put_var1_int (s.cdfid, s.n_seg_id, &start, &s.n_seg));
-        check_nc_status (nc_put_var1_int (s.cdfid, s.n_pt_id, &start, &s.n_pt));
+        GMT_err_fail (nc_put_var1_int (s.cdfid, s.bin_size_id, &start, &s.bin_size), file);
+        GMT_err_fail (nc_put_var1_int (s.cdfid, s.bin_nx_id, &start, &s.bin_nx), file);
+        GMT_err_fail (nc_put_var1_int (s.cdfid, s.bin_ny_id, &start, &s.bin_ny), file);
+        GMT_err_fail (nc_put_var1_int (s.cdfid, s.n_bin_id, &start, &s.n_bin), file);
+        GMT_err_fail (nc_put_var1_int (s.cdfid, s.n_seg_id, &start, &s.n_seg), file);
+        GMT_err_fail (nc_put_var1_int (s.cdfid, s.n_pt_id, &start, &s.n_pt), file);
 			
 	count = s.n_bin;
 
-        check_nc_status (nc_put_vara_short(s.cdfid, s.bin_info_id, &start, &count, bin_info));
-        check_nc_status (nc_put_vara_int(s.cdfid, s.bin_firstseg_id, &start, &count, bin_firstseg));
-        check_nc_status (nc_put_vara_short(s.cdfid, s.bin_nseg_id, &start, &count, bin_nseg));
+        GMT_err_fail (nc_put_vara_short(s.cdfid, s.bin_info_id, &start, &count, bin_info), file);
+        GMT_err_fail (nc_put_vara_int(s.cdfid, s.bin_firstseg_id, &start, &count, bin_firstseg), file);
+        GMT_err_fail (nc_put_vara_short(s.cdfid, s.bin_nseg_id, &start, &count, bin_nseg), file);
 			
 	count = s.n_seg;
 				
-        check_nc_status (nc_put_vara_int(s.cdfid, s.seg_info_id, &start, &count, seg_info));
-        check_nc_status (nc_put_vara_int(s.cdfid, s.seg_area_id, &start, &count, seg_area));
-        check_nc_status (nc_put_vara_int(s.cdfid, s.seg_start_id, &start, &count, seg_start));
+        GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_info_id, &start, &count, seg_info), file);
+        GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_area_id, &start, &count, seg_area), file);
+        GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_start_id, &start, &count, seg_start), file);
 				
 	count = s.n_pt;
 				
-        check_nc_status (nc_put_vara_short(s.cdfid, s.pt_dx_id, &start, &count, pt_dx));
-        check_nc_status (nc_put_vara_short(s.cdfid, s.pt_dy_id, &start, &count, pt_dy));
+        GMT_err_fail (nc_put_vara_short(s.cdfid, s.pt_dx_id, &start, &count, pt_dx), file);
+        GMT_err_fail (nc_put_vara_short(s.cdfid, s.pt_dy_id, &start, &count, pt_dy), file);
 				
-        check_nc_status (nc_close (s.cdfid));
+        GMT_err_fail (nc_close (s.cdfid), file);
 	
 	free ((void *)bin_firstseg);
 	free ((void *)bin_info);
