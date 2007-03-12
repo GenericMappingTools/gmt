@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.280 2007-03-05 21:47:09 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.281 2007-03-12 21:45:19 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5171,6 +5171,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 			sscanf (&text_cp[1], "%[^/]/%s", txt_a, txt_b);
 			p->f.f_gap = GMT_convert_units (txt_a, GMT_INCH);
 			p->f.f_len = GMT_convert_units (txt_b, GMT_INCH);
+			check = FALSE;
 			break;
 		case 'G':
 			p->equal_area = TRUE;	/* To equal area of circle with same size */
