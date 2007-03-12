@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.95 2007-03-10 20:36:45 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.96 2007-03-12 12:21:07 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -83,17 +83,17 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 	 * header:	grid structure header
 	 */
 
-	int status, err;
+	int err;
 	double scale, offset, nan_value;
 
 	/* Initialize grid information */
 	GMT_grd_init (header, 0, (char **)VNULL, FALSE);
 
 	/* Save parameters on file name suffix before issuing GMT_io_readinfo */
- 	if ((err = GMT_grd_get_format (file, header, TRUE)) != GMT_NOERROR) return (err);
+ 	GMT_err_trap (GMT_grd_get_format (file, header, TRUE));
 	scale = header->z_scale_factor, offset = header->z_add_offset, nan_value = header->nan_value;
 
-	status = (*GMT_io_readinfo[header->type]) (header);
+	GMT_err_trap ((*GMT_io_readinfo[header->type]) (header));
 	GMT_grd_get_units (header);
 	if (!GMT_is_dnan(scale)) header->z_scale_factor = scale, header->z_add_offset = offset;
 	if (!GMT_is_dnan(nan_value)) header->nan_value = nan_value;
@@ -104,7 +104,7 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
 	header->xy_off = 0.5 * header->node_offset;
 
-	return (status);
+	return (GMT_NOERROR);
 }
 
 int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
@@ -112,9 +112,9 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 	 * header:	grid structure header
 	 */
 
-	int status, err;
+	int err;
 
- 	if ((err = GMT_grd_get_format (file, header, FALSE)) != GMT_NOERROR) return (err);
+ 	GMT_err_trap (GMT_grd_get_format (file, header, FALSE));
 
 	if (GMT_is_dnan(header->z_scale_factor))
 		header->z_scale_factor = 1.0;
@@ -125,8 +125,7 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
 	GMT_grd_set_units (header);
-	status = (*GMT_io_writeinfo[header->type]) (header);
-	return (status);
+	return ((*GMT_io_writeinfo[header->type]) (header));
 }
 
 int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
@@ -134,13 +133,10 @@ int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
 	 * header:	grid structure header
 	 */
 
-	int status;
-
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
 	GMT_grd_set_units (header);
-	status = (*GMT_io_updateinfo[header->type]) (header);
-	return (status);
+	return ((*GMT_io_updateinfo[header->type]) (header));
 }
 
 int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
@@ -154,15 +150,15 @@ int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, 
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	int status;
+	int err;
 
-	status = (*GMT_io_readgrd[header->type]) (header, grid, w, e, s, n, pad, complex);
+	GMT_err_trap ((*GMT_io_readgrd[header->type]) (header, grid, w, e, s, n, pad, complex));
 	if (header->z_scale_factor == 0.0) fprintf (stderr, "GMT Warning: scale_factor should not be 0.\n");
 	GMT_grd_do_scaling (grid, ((header->nx + pad[0] + pad[1]) * (header->ny + pad[2] + pad[3])), header->z_scale_factor, header->z_add_offset);
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
 	header->xy_off = 0.5 * header->node_offset;
-	return (status);
+	return (GMT_NOERROR);
 }
 
 int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
@@ -176,9 +172,9 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	int status, err;
+	int err;
 
-	if ((err = GMT_grd_get_format (file, header, FALSE)) != GMT_NOERROR) return (err);
+	GMT_err_trap (GMT_grd_get_format (file, header, FALSE));
 	if (GMT_is_dnan(header->z_scale_factor))
 		header->z_scale_factor = 1.0;
 	else if (header->z_scale_factor == 0.0) {
@@ -187,8 +183,7 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 	}
 	GMT_grd_set_units (header);
 	GMT_grd_do_scaling (grid, (header->nx * header->ny), 1.0/header->z_scale_factor, -header->z_add_offset/header->z_scale_factor);
-	status = (*GMT_io_writegrd[header->type]) (header, grid, w, e, s, n, pad, complex);
-	return (status);
+	return ((*GMT_io_writegrd[header->type]) (header, grid, w, e, s, n, pad, complex));
 }
 
 /* Routines to see if a particular grd file format is specified as part of filename. */
@@ -239,8 +234,8 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 	else if (magic) {	/* Determine file format automatically based on grid content */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
 		if ((header->type = GMT_is_nc_grid (header->name)) >= 0) return (GMT_NOERROR);
-		/* Second check that the file exists */
-		if (GMT_access (header->name, F_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
+		/* Continue only when file was a pipe or when nc_open didn't like the file. */
+		if (header->type != GMT_GRDIO_NC_NO_PIPE && header->type != GMT_GRDIO_OPEN_FAILED) return (header->type);
 		/* Then check for native GMT grid */
 		if ((header->type = GMT_is_native_grid (header->name)) >= 0) return (GMT_NOERROR);
 		/* Next check for Sun raster GMT grid */
@@ -549,7 +544,7 @@ int GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	}
 	else
 		r_w = 1;
- 	if ((err = GMT_grd_get_format (file, &G->header, magic)) != GMT_NOERROR) return (err);
+ 	GMT_err_trap (GMT_grd_get_format (file, &G->header, magic));
 	if (GMT_is_dnan(G->header.z_scale_factor))
 		G->header.z_scale_factor = 1.0;
 	else if (G->header.z_scale_factor == 0.0) {
@@ -557,13 +552,13 @@ int GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 		fprintf (stderr, "GMT Warning: scale_factor should not be 0. Reset to 1.\n");
 	}
 	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Open netCDF file, old format */
-		check_nc_status (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
+		GMT_err_trap (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
 		if (header) GMT_nc_grd_info (&G->header, mode);
 		G->edge[0] = G->header.nx;
 		G->start[0] = G->start[1] = G->edge[1] = 0;
 	}
 	else if (GMT_grdformats[G->header.type][0] == 'n') {		/* Open netCDF file, COARDS-compliant format */
-		check_nc_status (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
+		GMT_err_trap (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
 		if (header) GMT_nc_grd_info (&G->header, mode);
 		G->edge[0] = 1;
 		G->edge[1] = G->header.nx;
@@ -599,7 +594,7 @@ int GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 void GMT_close_grd (struct GMT_GRDFILE *G)
 {
 	if (GMT_grdformats[G->header.type][0] == 'c' || GMT_grdformats[G->header.type][0] == 'n')
-		check_nc_status (nc_close (G->fid));
+		nc_close (G->fid);
 	else
 		GMT_fclose (G->fp);
 }
@@ -610,7 +605,7 @@ int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	 * fseek to the start of the abs(row_no) record and no reading takes place.
 	 */
 
-	int i;
+	int i, err;
 
 	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Get one NetCDF row, old format */
 		if (row_no < 0) {	/* Special seek instruction */
@@ -618,7 +613,7 @@ int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 			G->start[0] = G->row * G->edge[0];
 			return (GMT_NOERROR);
 		}
-		check_nc_status (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
+		GMT_err_trap (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 		if (G->auto_advance) G->start[0] += G->edge[0];
 	}
 	else if (GMT_grdformats[G->header.type][0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
@@ -627,7 +622,7 @@ int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 			G->start[0] = G->header.ny - 1 - G->row;
 			return (GMT_NOERROR);
 		}
-		check_nc_status (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
+		GMT_err_trap (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 		if (G->auto_advance) G->start[0] --;
 	}
 	else {			/* Get a binary row */
@@ -652,7 +647,7 @@ int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 {	/* Writes the entire row vector to the grdfile */
 
-	int i, size;
+	int i, size, err;
 	void *tmp;
 
 	size = GMT_grd_data_size (G->header.type, &G->header.nan_value);
@@ -664,11 +659,11 @@ int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 
 	switch (GMT_grdformats[G->header.type][0]) {
 		case 'c':
-			check_nc_status (nc_put_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
+			GMT_err_trap (nc_put_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 			if (G->auto_advance) G->start[0] += G->edge[0];
 			break;
 		case 'n':
-			check_nc_status (nc_put_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
+			GMT_err_trap (nc_put_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
 			if (G->auto_advance) G->start[0] --;
 			break;
 		default:
