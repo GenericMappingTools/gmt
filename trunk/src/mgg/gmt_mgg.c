@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.13 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: gmt_mgg.c,v 1.14 2007-03-14 23:11:11 pwessel Exp $
  *
  *    Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -40,6 +40,7 @@
 
 char *gmtmgg_path[10];	/* Max 10 directories for now */
 int n_gmtmgg_paths = 0;	/* Number of these directories */
+char *MGG_SHAREDIR;	/* Copy of GMT_SHAREDIR (for DLL purposes) */
 
 BOOLEAN MGD77_first_1900 = FALSE, MGD77_first_2000 = FALSE;
 
@@ -162,12 +163,14 @@ int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, 
  * the gmtfile directories.
  */
  
-void gmtmggpath_init (void) {
+void gmtmggpath_init (char *dir) {
 	int i;
 	char file[BUFSIZ], line[BUFSIZ];
 	FILE *fp;
 
-	sprintf (file, "%s%cmgg%cgmtfile_paths", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
+	sprintf (file, "%s%cmgg%cgmtfile_paths", dir, DIR_DELIM, DIR_DELIM);
+	MGG_SHAREDIR = GMT_memory (VNULL, (size_t)1, (size_t)(strlen (dir)+1), "gmtmggpath_init");
+	strcpy (MGG_SHAREDIR, dir);
 	
 	n_gmtmgg_paths = 0;
 
@@ -359,7 +362,6 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 }
 
 /* CARTER TABLE ROUTINES */
-
 int carter_setup (void)
 {
 	/* This routine must be called once before using carter table stuff.
@@ -375,7 +377,7 @@ int carter_setup (void)
 
 	/* Read the correction table:  */
 
-	sprintf (buffer, "%s%cmgg%ccarter.d", GMT_SHAREDIR, DIR_DELIM, DIR_DELIM);
+	sprintf (buffer, "%s%cmgg%ccarter.d", MGG_SHAREDIR, DIR_DELIM, DIR_DELIM);
 	if ( (fp = fopen (buffer, "r")) == NULL) {
                 fprintf (stderr,"carter_setup:  Cannot open r %s\n", buffer);
                 return (-1);
@@ -599,4 +601,3 @@ int carter_twt_from_depth (int zone, short int depth_in_corr_m, short int *twt_i
 	*twt_in_msec = (short int)irint (133.333 * (guess - min + fraction) );
 	return (0);
 }
-
