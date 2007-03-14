@@ -1,5 +1,5 @@
 /*
- *	$Id: grdread.c,v 1.5 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: grdread.c,v 1.6 2007-03-14 16:56:56 pwessel Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -89,8 +89,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	char *filein, *argv = "grdread-mex";
 	int error, ns, ssz, pz, i;
  
-	GMT_lock = FALSE;       /* Override since Matlab would own the lock */
-
 	GMT_begin (0, &argv);
 
 	GMT_grdio_init ();
