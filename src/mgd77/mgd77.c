@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.145 2007-03-15 00:30:10 pwessel Exp $
+ *	$Id: mgd77.c,v 1.146 2007-03-15 01:38:14 pwessel Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2498,7 +2498,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 		for (i = 0; i < F->n_MGD77_paths; i++) {	/* Examine all directories */
 #ifdef WIN32
 			/* We simulate Unix opendir/readdir/closedir by listing the directory to a temp file */
-			sprintf (line, "dir /b %s > .tmpdir", F->MGD77_datadir[i])
+			sprintf (line, "dir /b %s > .tmpdir", F->MGD77_datadir[i]);
 			system (line);
 			fp = fopen (".tmpdir", "r");
 			while (fgets (line, BUFSIZ, fp)) {
