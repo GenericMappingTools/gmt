@@ -18,4 +18,3 @@ to ignore certain file types).  Cruise files will be looked for first in the cur
 and second in all directories listed in \fB$MGD77_HOME\fP/mgd77_paths.txt [If \fB$MGD77_HOME\fP
 is not set it will default to \fB$GMT_SHAREDIR\fP/mgd77].
 .br
-NOTE: Under Windows, only (1) and (4) are currently supported.
