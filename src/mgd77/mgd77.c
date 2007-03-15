@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.144 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: mgd77.c,v 1.145 2007-03-15 00:30:10 pwessel Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -20,7 +20,6 @@
 #include "mgd77_IGF_coeffs.h"
 #include "mgd77_init.h"
 #ifndef WIN32
-/* We might be able to support dirent.h on Windows in the future but for now it has problems */
 #include <dirent.h>
 #endif
 
@@ -2434,7 +2433,6 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 
 void MGD77_Cruise_Explain (void)
 {
-#ifndef WIN32
 	fprintf (stderr, "\t<cruises> can be one of five kinds of specifiers:\n");
 	fprintf (stderr, "\t1) 8-character NGDC IDs, e.g., 01010083, JA010010, etc., etc.\n");
 	fprintf (stderr, "\t2) 2-character <agency> codes which will return all cruises from each agency.\n");
@@ -2442,23 +2440,19 @@ void MGD77_Cruise_Explain (void)
 	fprintf (stderr, "\t4) A single =<list>, where <list> is a table with NGDC IDs, one per line.\n");
 	fprintf (stderr, "\t5) If nothing is specified we return all cruises in the data base.\n");
 	fprintf (stderr, "\t   [See the documentation for agency and vessel codes].\n");
-#else
-	fprintf (stderr, "\t<cruises> can be one of two kinds of specifiers:\n");
-	fprintf (stderr, "\t1) 8-character NGDC IDs, e.g., 01010083, JA010010 etc., etc.\n");
-	fprintf (stderr, "\t2) A single =<list>, where <list> is a table with NGDC IDs, one per line.\n");
-#endif
 }
 
 int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***list)
 {
 	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
 	
-	int i, j, n = 0, flist = 0, length, compare_L (const void *p1, const void *p2);
+	int i, j, k, n = 0, flist = 0, length, compare_L (const void *p1, const void *p2);
 	BOOLEAN all;
 	size_t n_alloc = 0;
-	char **L = NULL, line[BUFSIZ];
-#ifndef WIN32
-	int k;
+	char **L = NULL, *d_name, line[BUFSIZ];
+#ifdef WIN32
+	FILE *fp;
+#else
 	DIR *dir;
 	struct dirent *entry;
 #endif
@@ -2500,28 +2494,43 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 			strcpy (L[n++], argv[j]);
 			continue;
 		}
-#ifndef WIN32
-		/* The directory search is only supported on Unix-like systems for now */
 		/* Here we have either <agency> or <agency><vessel> code or blank for all */	
 		for (i = 0; i < F->n_MGD77_paths; i++) {	/* Examine all directories */
+#ifdef WIN32
+			/* We simulate Unix opendir/readdir/closedir by listing the directory to a temp file */
+			sprintf (line, "dir /b %s > .tmpdir", F->MGD77_datadir[i])
+			system (line);
+			fp = fopen (".tmpdir", "r");
+			while (fgets (line, BUFSIZ, fp)) {
+				GMT_chop (line);	/* Get rid of CR/LF issues */
+				d_name = line;
+#else
+			/* The directory search is only supported on Unix-like systems for now */
+			/* Here we have either <agency> or <agency><vessel> code or blank for all */	
 			if ((dir = opendir (F->MGD77_datadir[i])) == NULL) {
 				fprintf (stderr, "%s: WARNING: Unable to open directory %s\n", GMT_program, F->MGD77_datadir[i]);
 				continue;
 			}
 			while ((entry = readdir (dir)) != NULL) {
-				if (length && strncmp (entry->d_name, argv[j], length)) continue;
-				k = strlen (entry->d_name) - 1;
-				while (k && entry->d_name[k] != '.') k--;	/* Strip off file extension */
+				d_name = entry->d_name;
+#endif
+				if (length && strncmp (d_name, argv[j], length)) continue;
+				k = strlen (d_name) - 1;
+				while (k && d_name[k] != '.') k--;	/* Strip off file extension */
 				if (k < 8) continue;	/* Not a NGDC 8-char ID */
 				if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
 				L[n] = (char *)GMT_memory (VNULL, k + 1, sizeof (char), "MGD77_Path_Expand");
-				strncpy (L[n], entry->d_name, k);
+				strncpy (L[n], d_name, k);
 				L[n++][k] = '\0';
 			}
+#ifdef WIN32
+			fclose (fp);
+			remove (".tmpdir");
+#else
 			closedir (dir);
+#endif
 		}
 		all = FALSE;	/* all is only TRUE once (or never) inside this loop */
-#endif
 	}
 	
 	if (n) {	/* Avoid duplicates by sorting and removing them */
