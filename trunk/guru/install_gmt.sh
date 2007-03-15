@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.87 2007-03-15 01:45:03 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.88 2007-03-15 18:41:43 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1000,55 +1000,15 @@ if [ $netcdf_install = "y" ]; then
 	
 	cd netcdf-${NETCDF_VERSION}
 
-	FC=${FC=}
 	if [ $os = "Interix" ]; then	# Windows SFU
 		CC=${CC=gcc}
 	fi
 	netcdf_path=${netcdf_path:-$topdir/netcdf-${NETCDF_VERSION}}
-	if [ $os = "Linux" ]; then
-		DEFINES="-Df2cFortran"
-		export DEFINES
-	elif [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then	# Special treatment to make shared lib on Mac OSX
-		echo "Mac OSX: Make shared netCDF-library"
-		chip=`arch`
-		arch="-arch $chip"
-		CXX=g++-4.0
-		export CXX
-		CXXFLAGS="-O2 -fno-common $arch"
-		export CXXFLAGS
-		CFLAGS="-O2 -fno-common $arch"
-		export CFLAGS
-		F90='' 
-		export F90
-		AR=libtool
-		export AR
-		ARFLAGS="-static -o"
-		export ARFLAGS
-	fi
 	rm -f config.{cache,log,status}
-	./configure --prefix=$netcdf_path
-	$GMT_make || exit
+	./configure --prefix=$netcdf_path --enable-c-only --enable-shared
+	$GMT_make check   || exit
 	$GMT_make install || exit
-	if [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then	# Special treatment for shared lib on Mac OSX
-		objs="libsrc/*.o"
-		libtool -static -o $netcdf_path/lib/libnetcdf.a $objs
-		gcc $arch -dynamiclib -flat_namespace -undefined suppress -o $netcdf_path/lib/libnetcdf.3.6.dylib -install_name $netcdf_path/lib/libnetcdf.3.dylib -current_version 3.6 -compatibility_version 3.5 $objs
-		objs="cxx/netcdf.o cxx/ncvalues.o"
-		libtool -static -o $netcdf_path/lib/libnetcdf_c++.a $objs
-		g++ $arch -dynamiclib -flat_namespace -undefined suppress -o $netcdf_path/lib/libnetcdf_c++.3.6.dylib -install_name $netcdf_path/lib/libnetcdf_c++.3.dylib -current_version 3.6 -compatibility_version 3.5 $objs
-		cd $netcdf_path/lib
-		ln -s libnetcdf.3.6.dylib libnetcdf.3.dylib
-		ln -s libnetcdf.3.dylib libnetcdf.dylib
-		ln -s libnetcdf.3.6.dylib libnetcdf.3.5.0.dylib
-		ln -s libnetcdf_c++.3.6.dylib libnetcdf_c++.3.dylib
-		ln -s libnetcdf_c++.3.dylib libnetcdf_c++.dylib
-		cd $topdir/netcdf-${NETCDF_VERSION}
-		AR=ar
-		export AR
-		ARFLAGS=
-		export ARFLAGS
-	fi
-	$GMT_make clean || exit
+	$GMT_make clean   || exit
 	cd $topdir
 	if [ $GMT_delete = "y" ]; then
 		rm -f netcdf*.tar.Z
