@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.86 2006-12-06 18:13:50 remko Exp $
+#	$Id: install_gmt.sh,v 1.87 2007-03-15 01:45:03 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -67,6 +67,7 @@ echo $use
 prep_gmt()
 {
 #--------------------------------------------------------------------------------
+NETCDF_VERSION=3.6.2
 LATESTGMT4=4.1.4
 LATESTGMT3=3.4.6
 LATESTGSHHS4=4.1
@@ -202,7 +203,7 @@ if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 	if [ $do_ftp_qa -eq 1 ]; then
 		answer=`get_def_answer "Do you want me to ftp it for you? (y/n)" "y"`
 		if [ $answer = "n" ]; then
-			answer=`get_def_answer "Do you have netcdf-beta.tar.Z or netcdf.tar.{Z,bz2,gz} in $topdir? (y/n)" "y"`
+			answer=`get_def_answer "Do you have netcdf.tar.{Z,bz2,gz} in $topdir? (y/n)" "y"`
 			if [ $answer = "n" ]; then
 				echo "Please ftp or install netcdf and then rerun install_gmt" >&2
 				exit
@@ -214,13 +215,7 @@ if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 	netcdf_install=y
 	if [ $netcdf_ftp = "n" ]; then	# Check that the files are actually there
 		ok=0
-		if [ -f netcdf-beta.tar.Z ]; then
-			ok=1
-		elif [ -f netcdf.tar.Z ]; then
-			ok=1
-		elif [ -f netcdf-beta.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
-			ok=1
-		elif [ -f netcdf-beta.tar.gz ] && [ $GMT_expand = "gzip" ]; then
+		if [ -f netcdf.tar.Z ]; then
 			ok=1
 		elif [ -f netcdf.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
 			ok=1
@@ -228,7 +223,7 @@ if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 			ok=1
 		fi
 		if [ $ok -eq 0 ]; then
-			echo "netcdf-beta.tar.{Z,bz2,gz} or netcdf.tar.{Z,bz2,gz} not in $topdir" >&2
+			echo "netcdf.tar.{Z,bz2,gz} not in $topdir" >&2
 			echo "Please ftp netcdf or have me do it" >&2
 			exit
 		fi
@@ -992,37 +987,24 @@ if [ $netcdf_install = "y" ]; then
 		rm -f $$
 	fi
 
-	if [ -f netcdf-beta.tar.Z ]; then
-		zcat netcdf-beta.tar.Z | tar xvf -
-	elif [ -f netcdf-beta.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
-		$expand netcdf-beta.tar.$suffix | tar xvf -
-	elif [ -f netcdf-beta.tar.gz ] && [ $GMT_expand = "gzip" ]; then
-		$expand netcdf-beta.tar.$suffix | tar xvf -
-	elif [ -f netcdf.tar.Z ]; then
+	if [ -f netcdf.tar.Z ]; then
 		zcat netcdf.tar.Z | tar xvf -
 	elif [ -f netcdf.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
 		$expand netcdf.tar.$suffix | tar xvf -
 	elif [ -f netcdf.tar.gz ] && [ $GMT_expand = "gzip" ]; then
 		$expand netcdf.tar.$suffix | tar xvf -
 	else
-		echo "?? netcdf[-beta].tar.{Z,bz2,gz} not found - must abort !!"
+		echo "?? netcdf.tar.{Z,bz2,gz} not found - must abort !!"
 		exit
 	fi
 	
-	n_version=`cat netcdf*/src/VERSION | sort -r | head -1`
-	cd netcdf-${n_version}/src
+	cd netcdf-${NETCDF_VERSION}
 
-#	Interix/MacOS fix for bad lex which creates an #include statement for values.h which
-#	which does not exist.  We create an empty values.h file in the ncgen directory:
-
-	if [ $os = "Windows_NT" ] || [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then
-		touch ncgen/values.h
-	fi
 	FC=${FC=}
 	if [ $os = "Interix" ]; then	# Windows SFU
 		CC=${CC=gcc}
 	fi
-	netcdf_path=${netcdf_path:-$topdir/netcdf-${n_version}}
+	netcdf_path=${netcdf_path:-$topdir/netcdf-${NETCDF_VERSION}}
 	if [ $os = "Linux" ]; then
 		DEFINES="-Df2cFortran"
 		export DEFINES
@@ -1060,17 +1042,14 @@ if [ $netcdf_install = "y" ]; then
 		ln -s libnetcdf.3.6.dylib libnetcdf.3.5.0.dylib
 		ln -s libnetcdf_c++.3.6.dylib libnetcdf_c++.3.dylib
 		ln -s libnetcdf_c++.3.dylib libnetcdf_c++.dylib
-		cd $topdir/netcdf-${n_version}/src
+		cd $topdir/netcdf-${NETCDF_VERSION}
 		AR=ar
 		export AR
 		ARFLAGS=
 		export ARFLAGS
 	fi
-	if [ $os = "Windows_NT" ] || [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then
-		rm -f ncgen/values.h
-	fi
 	$GMT_make clean || exit
-	cd ../..
+	cd $topdir
 	if [ $GMT_delete = "y" ]; then
 		rm -f netcdf*.tar.Z
 	fi
@@ -1080,8 +1059,7 @@ if [ x"$netcdf_path" = x ]; then	# Not explicitly set, must assign it
 	if [ ! x"$NETCDFHOME" = x ]; then	# Good, used an environmental variable for it
                 netcdf_path=$NETCDFHOME
         elif [ $netcdf_ftp = "n" ]; then	# Next, see if it was already installed in $topdir
-		n_version=`cat netcdf*/src/VERSION | sort -r | head -1`
- 		netcdf_path=$topdir/netcdf-${n_version}
+ 		netcdf_path=$topdir/netcdf-${NETCDF_VERSION}
 		if [ -d $netcdf_path ]; then	# OK, it was there
 			p=	# Dummy for empty branch
 		elif [ -d /usr/local/netcdf/lib ]; then	# No, try some standard places
