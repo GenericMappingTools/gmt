@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.10 2007-03-07 13:07:04 remko Exp $
+/*	$Id: gshhstograss.c,v 1.11 2007-03-16 03:13:39 pwessel Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include "gshhs.h"
 #include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
+#include <pwd.h>
 #include <time.h>
 
 int main (argc, argv)
@@ -31,7 +33,7 @@ char **argv;
 {
 	double w, e, s, n, area, lon, lat;
 	double minx = -360., maxx = 360., miny = -90., maxy = 90.;
-	char buf[64], source, *progname, *dataname, dig_name[24], att_name[24], cats_name[24];
+	char source, *progname, *dataname, dig_name[24], att_name[24], cats_name[24];
 	static char *slevel[] = { "null" , "land" , "lake" , "island_in_lake" , "pond_in_island_in_lake" };
 	FILE    *fp,*dig_ascii,*dig_att,*dig_cats;
 	int     k, max = 270000000, flip, n_read, level, version, greenwich, src;
@@ -39,6 +41,7 @@ char **argv;
 	struct GSHHS h;
 	int c, max_id=0;
 	time_t tloc;
+	struct passwd *pw;
 
 	optarg = NULL;
 	progname = argv[0];
@@ -108,7 +111,10 @@ char **argv;
 	fprintf(dig_ascii,"ORGANIZATION: \n");
 	time(&tloc);
 	fprintf(dig_ascii,"DIGIT DATE:   %s",ctime(&tloc));
-	fprintf(dig_ascii,"DIGIT NAME:   %s\n",cuserid(buf));
+	if ((pw = getpwuid (getuid ())) != NULL)
+		fprintf(dig_ascii,"DIGIT NAME:   %s\n",pw->pw_name);
+	else
+		fprintf(dig_ascii,"DIGIT NAME:   unknown\n");
 	fprintf(dig_ascii,"MAP NAME:     Global Shorelines\n");
 	fprintf(dig_ascii,"MAP DATE:     2004\n");
 	fprintf(dig_ascii,"MAP SCALE:    1\n");
@@ -152,13 +158,13 @@ char **argv;
 		e = h.east  * 1.0e-6;
 		s = h.south * 1.0e-6;
 		n = h.north * 1.0e-6;
-		source = (h.source == 1) ? 'W' : 'C';
+		source = (src == 1) ? 'W' : 'C';
 		area = 0.1 * h.area;
 
 		if( ( w < maxx && e > minx ) && ( s < maxy && n > miny ) ){
 			fprintf(dig_ascii,"L %d\n",h.n);
 			if( h.id > max_id )     max_id= h.id;
-			fprintf(dig_cats,"%d:%s\n",h.id,slevel[h.level]);
+			fprintf(dig_cats,"%d:%s\n",h.id,slevel[level]);
 		}
 
 		for (k = 0; k < h.n; k++) {
@@ -191,5 +197,5 @@ char **argv;
 	fprintf(dig_cats,"# %6d categories\n", max_id);
 	fclose(dig_cats);
 
-	exit (EXIT_SUCCSESS);
+	exit (EXIT_SUCCESS);
 }

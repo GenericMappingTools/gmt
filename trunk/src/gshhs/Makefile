@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.5 2006-10-25 01:35:06 pwessel Exp $
+#	$Id: Makefile,v 1.6 2007-03-16 03:13:39 pwessel Exp $
 #
 #	makefile for gshhs directory
 #	Does not depend on GMT src or libraries
@@ -10,7 +10,7 @@ include ../makegmt.macros
 CFLAGS		= $(CC_OPT) $(WIN32)
 
 
-all:		gshhs gshhs_dp
+all:		gshhs gshhs_dp gshhstograss
 
 install:	all
 		$(INSTALL) gshhs$(EXE) $(bindir)
