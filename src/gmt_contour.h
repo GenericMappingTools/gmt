@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.32 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.33 2007-03-17 00:42:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -73,6 +73,8 @@ struct GMT_CONTOUR {
 	int current_file_no;		/* Number (0->) of current input data file */
 	int current_seg_no;		/* Number (0->) of current segment in current data file */
 	BOOLEAN annot;			/* TRUE if we want labels */
+	BOOLEAN isolate;		/* TRUE if we have a limit on how close labels may appear (see below) */
+	double label_isolation;		/* Only have one label inside a circle of this radius */
 	BOOLEAN spacing;		/* TRUE if we have spacing constraints to apply */
 	double label_dist_spacing;	/* Min distance between labels */
 	double label_dist_frac;		/* Fraction of Min distance between labels offset for closed labels [0.25] */
