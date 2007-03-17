@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.292 2007-03-12 12:26:38 remko Exp $
+ *	$Id: gmt_support.c,v 1.293 2007-03-17 00:42:22 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -135,7 +135,7 @@ void GMT_contlabel_fixpath (double **xin, double **yin, double d[], int *n, stru
 void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *label, BOOLEAN annot, struct GMT_CONTOUR *G);
 void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char *label, char ctype, double cangle, int closed, struct GMT_CONTOUR *G);
 void GMT_get_radii_of_curvature (double x[], double y[], int n, double r[]);
-int GMT_label_is_OK (char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G);
+int GMT_label_is_OK (struct GMT_LABEL *L, char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G);
 int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
 struct GMT_CUSTOM_SYMBOL * GMT_init_custom_symbol (char *name);
 int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
@@ -2451,11 +2451,18 @@ int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G)
 int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 {
 	/* Interpret the contour-label information string and set structure items */
-	int k, j = 0, error = 0;
+	int k, j = 0, colon = 0, error = 0;
 	char txt_a[GMT_LONG_TEXT], c;
 
 	L->spacing = FALSE;	/* Turn off the default since we gave an option */
 	strcpy (L->option, &txt[1]);	 /* May need to process L->option later after -R,-J have been set */
+	for (colon = 0; txt[colon] && txt[colon] != ':'; colon++);	/* Search for :<isolate_radius>[unit] setting */
+	if (txt[colon] == ':') {	/* Want to isolate labels by given radius */
+		txt[colon] = '\0';	/* Temporarily chop off the :<radius> part */
+		L->isolate = TRUE;
+		L->label_isolation = GMT_convert_units (&txt[colon+1], GMT_INCH);
+	}
+	
 	L->flag = flag;
 	switch (txt[0]) {
 		case 'L':	/* Quick straight lines for intersections */
@@ -2529,6 +2536,8 @@ int GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			}
 			break;
 	}
+	if (L->isolate) txt[colon] = ':';	/* Replace the : from earlier */
+	
 	return (error);
 }
 
@@ -3718,7 +3727,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						this_value_dist = value_dist[i-1] + f * (value_dist[i] - value_dist[i-1]);
 					}
 					this_dist = G->label_dist_spacing - dist_offset + last_label_dist;
-					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, -1, -1, G)) {
+					if (GMT_label_is_OK (new_label, this_label, label, this_dist, this_value_dist, -1, -1, G)) {
 						GMT_place_label (new_label, this_label, G, !(G->label_type == 0 || G->label_type == 3));
 						new_label->node = i - 1;
 						GMT_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
@@ -3777,7 +3786,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 				}
 				if ((new_label->dist - last_dist) >= G->min_dist) {	/* OK to accept this label */
 					this_dist = dist;
-					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, -1, -1, G)) {
+					if (GMT_label_is_OK (new_label, this_label, label, this_dist, this_value_dist, -1, -1, G)) {
 						GMT_place_label (new_label, this_label, G, !(G->label_type == 0));
 						new_label->node = (j == 0) ? 0 : j - 1;
 						GMT_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
@@ -3825,7 +3834,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						new_label->dist = map_dist[right] - f * (map_dist[right] - map_dist[left]);
 						this_value_dist = value_dist[right] - f * (value_dist[right] - value_dist[left]);
 					}
-					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, line_no, -1, G)) {
+					if (GMT_label_is_OK (new_label, this_label, label, this_dist, this_value_dist, line_no, -1, G)) {
 						GMT_place_label (new_label, this_label, G, !(G->label_type == 0));
 						GMT_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -3859,7 +3868,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 					this_dist = track_dist[start];
 					new_label->dist = map_dist[start];
 					this_value_dist = value_dist[start];
-					if (GMT_label_is_OK (this_label, label, this_dist, this_value_dist, -1, j, G)) {
+					if (GMT_label_is_OK (new_label, this_label, label, this_dist, this_value_dist, -1, j, G)) {
 						GMT_place_label (new_label, this_label, G, !(G->label_type == 0));
 						GMT_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -3891,7 +3900,6 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G, BOOLEAN use_unit)
 {	/* Allocates needed space and copies in the label */
 	int n, m = 0;
-
 	if (use_unit && G->unit && G->unit[0]) m = strlen (G->unit) + (G->unit[0] != '-');	/* Must allow extra space for a unit string */
 	n = strlen (txt) + 1 + m;
 	if (G->prefix && G->prefix[0]) {	/* Must prepend the prefix string */
@@ -3916,11 +3924,21 @@ void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G, BOO
 	}
 }
 
-int GMT_label_is_OK (char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G)
+int GMT_label_is_OK (struct GMT_LABEL *L, char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G)
 {
-	int label_OK = TRUE;
+	int label_OK = TRUE, i, k;
 	char format[GMT_LONG_TEXT];
+	struct GMT_CONTOUR_LINE *C = VNULL;
 
+	if (G->isolate) {	/* Must determine if the proposed label is withing radius distance of any other label already accepted */
+		for (i = 0; i < G->n_segments; i++) {	/* Previously processed labels */
+			C = G->segment[i];	/* Pointer to current segment */
+			for (k = 0; k < C->n_labels; k++) if (hypot (L->x - C->L[k].x, L->y - C->L[k].y) < G->label_isolation) return (FALSE);
+		}
+		/* Also check labels for current segment */
+		for (k = 0; k < G->n_label; k++) if (hypot (L->x - G->L[k]->x, L->y - G->L[k]->y) < G->label_isolation) return (FALSE);
+	}
+	
 	switch (G->label_type) {
 		case 0:
 			if (label && label[0])
