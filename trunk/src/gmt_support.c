@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.293 2007-03-17 00:42:22 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.294 2007-03-22 16:38:11 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2727,7 +2727,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 
 void GMT_contlabel_angle (double x[], double y[], int start, int stop, double cangle, int n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
 {
-	int j;
+	int j, this_angle_type;
 	double sum_x2 = 0.0, sum_xy = 0.0, sum_y2 = 0.0, dx, dy;
 
 	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
@@ -2750,11 +2750,15 @@ void GMT_contlabel_angle (double x[], double y[], int start, int stop, double ca
 		L->line_angle = 90.0;
 	else
 		L->line_angle = (fabs(sum_xy) < GMT_CONV_LIMIT) ? 90.0 : d_atan2 (sum_xy, sum_x2) * R2D;
-	if (G->angle_type == 2) { 	/* Just returned the fixed angle given */
-		L->angle = cangle;
+	this_angle_type = G->angle_type;
+	if (this_angle_type == 2) { 	/* Just return the fixed angle given (unless NaN) */
+		if (GMT_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
+			this_angle_type = 0;
+		else
+			L->angle = cangle;
 	}
-	else {
-		L->angle = L->line_angle + G->angle_type * 90.0;	/* May add 90 to get normal */
+	if (this_angle_type != 2) { 	/* Must base label angle on the contour angle */
+		L->angle = L->line_angle + this_angle_type * 90.0;	/* May add 90 to get normal */
 		if (L->angle < 0.0) L->angle += 360.0;
 		if (L->angle > 90.0 && L->angle < 270) L->angle -= 180.0;
 	}
