@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.24 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: x2sys.h,v 1.25 2007-03-24 01:42:07 pwessel Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -223,30 +223,45 @@ extern void x2sys_path (char *fname, char *path);
 
 extern int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);
 extern int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
-extern int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
-extern int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
-extern int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G);
+extern int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, int *n_rec);
+extern int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, int *n_rec);
+extern int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, int *n_rec);
 extern int x2sys_xover_output (FILE *fp, int n, double out[]);
 extern int x2sys_n_data_cols (struct X2SYS_INFO *s);
-extern int x2sys_read_list (char *file, char ***list);
+extern int x2sys_read_list (char *file, char ***list, int *n);
 
 extern double *x2sys_dummytimes (int n);
 
 extern void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s);
-extern void x2sys_fclose (char *fname, FILE *fp);
+extern int x2sys_fclose (char *fname, FILE *fp);
 extern void x2sys_free_info (struct X2SYS_INFO *s);
 extern void x2sys_free_data (double **data, int n);
-extern void x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
+extern int x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
 
-extern struct X2SYS_INFO *x2sys_initialize (char *fname, struct GMT_IO *G);
+extern int x2sys_initialize (char *fname, struct GMT_IO *G, struct X2SYS_INFO *I);
 
-extern void x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
+extern int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
 extern void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc);
 extern struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, int id_no, int flag);
 extern struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag);
-extern int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode);
-extern void x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B);
-extern int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B);
+extern int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID);
+extern int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B);
+extern int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B, int *ID);
 
 extern void x2sys_path_init (char *TAG);
 extern int x2sys_get_data_path (char *track_path, char *track, char *suffix);
+extern int x2sys_err_pass (int err, char *file);
+extern void x2sys_err_fail (int err, char *file);
+extern const char * x2sys_strerror (int err);
+
+
+#define X2SYS_NOERROR		0
+#define X2SYS_FCLOSE_ERR	-1
+#define X2SYS_BAD_DEF		-2
+#define X2SYS_BAD_COL		-3
+#define X2SYS_TAG_NOT_SET	-4
+#define X2SYS_BAD_ARG		-5
+#define X2SYS_CONFLICTING_ARGS	-6
+#define X2SYS_BIX_BAD_J		-7
+#define X2SYS_BIX_BAD_I		-8
+#define X2SYS_BIX_BAD_IJ	-9

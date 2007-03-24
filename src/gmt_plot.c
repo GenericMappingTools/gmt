@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.194 2007-03-07 12:56:20 remko Exp $
+ *	$Id: gmt_plot.c,v 1.195 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -110,7 +110,6 @@ void GMT_coordinate_to_y (double coord, double *y);
 int GMT_time_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array);
 void GMT_timex_grid (double w, double e, double s, double n, int item);
 void GMT_timey_grid (double w, double e, double s, double n, int item);
-void GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 BOOLEAN GMT_skip_second_annot (int item, double x, double x2[], int n, int primary, int secondary);
 BOOLEAN GMT_fill_is_image (char *fill);
 double GMT_set_label_offsets (int axis, double val0, double val1, struct GMT_PLOT_AXIS *A, int below, double annot_off[], double *label_off, int *annot_justify, int *label_justify, char *format);

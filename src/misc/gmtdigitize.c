@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.14 2007-03-12 19:52:27 remko Exp $
+ *    $Id: gmtdigitize.c,v 1.15 2007-03-24 01:42:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -212,7 +212,7 @@ int main (int argc, char **argv)
 
 	u_scale = inv_scale;
 
-	GMT_map_setup (west, east, south, north);
+	GMT_err_fail (GMT_map_setup (west, east, south, north), "");
 
 	fprintf (stderr, "\n==>   %s version %s  Paul Wessel, SOEST, Apr 22, 2004   <==\n\n", GMT_program, GMT_VERSION);
 	fprintf (stderr, "================  HOW TO DIGITIZE ================\n\n");

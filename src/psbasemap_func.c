@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.8 2007-01-31 21:51:04 remko Exp $
+ *	$Id: psbasemap_func.c,v 1.9 2007-03-24 01:42:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -238,7 +238,7 @@ int psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	
 	if (gmtdefs.verbose) fprintf (stderr, "psbasemap: Constructing basemap\n");
 
-	GMT_map_setup (CTRL.w, CTRL.e, CTRL.s, CTRL.n);
+	GMT_err_fail (GMT_map_setup (CTRL.w, CTRL.e, CTRL.s, CTRL.n), "");
 
 	GMT_plotinit (argc, argv);
 

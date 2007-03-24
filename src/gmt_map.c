@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.132 2007-03-05 21:47:10 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.133 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -222,9 +222,9 @@ int GMT_map_init_grinten (void);
 int GMT_map_init_econic (void);
 
 void GMT_wesn_search (double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north);
-void GMT_horizon_search (double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax);
+int GMT_horizon_search (double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax);
 void GMT_xy_search (double *x0, double *x1, double *y0, double *y1, double w0, double e0, double s0, double n0);
-void GMT_init_three_D (void);
+int GMT_init_three_D (void);
 void GMT_map_setxy (double xmin, double xmax, double ymin, double ymax);
 void GMT_map_setinfo (double xmin, double xmax, double ymin, double ymax, double scl);
 void GMT_set_spherical (void);
@@ -442,16 +442,13 @@ PFI GMT_radial_clip;
  *
  */
 
-void GMT_map_setup (double west, double east, double south, double north)
+int GMT_map_setup (double west, double east, double south, double north)
 {
 	int search, k;
 
 	/* if (!project_info.region) d_swap (south, east); */  /* Got w/s/e/n, make into w/e/s/n */
 
-	if (west == east && south == north) {
-		fprintf (stderr, "%s: GMT Fatal Error: No region selected - Aborts!\n", GMT_program);
-		GMT_exit (EXIT_FAILURE);
-	}
+	if (west == east && south == north) return (GMT_MAP_NO_REGION);
 
 	GMT_init_ellipsoid ();	/* Set parameters depending on the ellipsoid since the latter could have been set explicitly */
 
@@ -463,30 +460,15 @@ void GMT_map_setup (double west, double east, double south, double north)
 		else if (east < west)
 			east += 360.0;
 
-		if ((fabs (east - west) - 360.0) > GMT_SMALL) {
-			fprintf (stderr, "%s: GMT Fatal Error: Region exceeds 360 degrees!\n", GMT_program);
-			GMT_exit (EXIT_FAILURE);
-		}
+		if ((fabs (east - west) - 360.0) > GMT_SMALL) return (GMT_MAP_EXCEEDS_360);
 	}
 	if (project_info.got_elevations) {
-		if (south < 0.0 || south >= 90.0) {
-			fprintf (stderr, "%s: GMT Fatal Error: \"South\" (min elevation) (%g) outside 0-90 degree range!\n", GMT_program, south);
-			GMT_exit (EXIT_FAILURE);
-		}
-		if (north <= 0.0 || north > 90.0) {
-			fprintf (stderr, "%s: GMT Fatal Error: \"North\" (max elevation) (%g) outside 0-90 degree range!\n", GMT_program, north);
-			GMT_exit (EXIT_FAILURE);
-		}
+		if (south < 0.0 || south >= 90.0) return (GMT_MAP_BAD_ELEVATION_MIN);
+		if (north <= 0.0 || north > 90.0) return (GMT_MAP_BAD_ELEVATION_MAX);
 	}
 	if (project_info.degree[1]) {
-		if (south < -90.0 || south > 90.0) {
-			fprintf (stderr, "%s: GMT Fatal Error: South (%g) outside +-90 degree range!\n", GMT_program, south);
-			GMT_exit (EXIT_FAILURE);
-		}
-		if (north < -90.0 || north > 90.0) {
-			fprintf (stderr, "%s: GMT Fatal Error: North (%g) outside +-90 degree range!\n", GMT_program, north);
-			GMT_exit (EXIT_FAILURE);
-		}
+		if (south < -90.0 || south > 90.0) return (GMT_MAP_BAD_LAT_MIN);
+		if (north < -90.0 || north > 90.0) return (GMT_MAP_BAD_LAT_MAX);
 	}
 
 	project_info.w = west;	project_info.e = east;	project_info.s = south;	project_info.n = north;
@@ -644,10 +626,8 @@ void GMT_map_setup (double west, double east, double south, double north)
 			search = GMT_map_init_econic ();
 			break;
 
-		default:	/* No projection selected, die a horrible death */
-
-			fprintf (stderr, "%s: GMT Fatal Error: No projection selected - Aborts!\n", GMT_program);
-			GMT_exit (EXIT_FAILURE);
+		default:	/* No projection selected, return to a horrible death */
+			return (GMT_MAP_NO_PROJECTION);
 			break;
 	}
 
@@ -687,9 +667,11 @@ void GMT_map_setup (double west, double east, double south, double north)
 	k = GMT_ps.portrait;	/* k and !k gives 0,1 or 1,0 depending on -P */
 	if (project_info.x_off_supplied == 2) GMT_ps.x_origin = 0.5 * (fabs(GMT_ps.paper_width[!k]/72.0) - GMT_map_width);	/* Want to x center plot on current page size */
 	if (project_info.y_off_supplied == 2) GMT_ps.y_origin = 0.5 * (fabs(GMT_ps.paper_width[k]/72.0) - GMT_map_height);	/* Want to y center plot on current page size */
+	
+	return (GMT_NOERROR);
 }
 
-void GMT_init_three_D (void) {
+int GMT_init_three_D (void) {
 	int i, easy;
 	double tilt_angle, x, y, x0, x1, x2, y0, y1, y2, zmin = 0.0, zmax = 0.0;
 	BOOLEAN positive;
@@ -898,6 +880,8 @@ void GMT_init_three_D (void) {
 	z_project.sign[0] = z_project.sign[3] = -1.0;
 	z_project.sign[1] = z_project.sign[2] = 1.0;
 	z_project.z_axis = (z_project.quadrant%2) ? z_project.quadrant : z_project.quadrant - 2;
+	
+	return (GMT_NOERROR);
 }
 
 /*
@@ -3049,7 +3033,7 @@ void GMT_wesn_search (double xmin, double xmax, double ymin, double ymax, double
 	*north = n;
 }
 
-void GMT_horizon_search (double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax) {
+int GMT_horizon_search (double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax) {
 	double dx, dy, d, x, y, lon, lat;
 	int i, j;
 	BOOLEAN beyond = FALSE;
@@ -3079,6 +3063,7 @@ void GMT_horizon_search (double w, double e, double s, double n, double xmin, do
 		fprintf (stderr, "%s: ERROR: Please select a region that is completely within the visible hemisphere\n", GMT_program);
 		GMT_exit (EXIT_FAILURE);
 	}
+	return (GMT_NOERROR);
 }
 
 void GMT_xy_search (double *x0, double *x1, double *y0, double *y1, double w0, double e0, double s0, double n0)
@@ -5154,7 +5139,7 @@ int GMT_compact_line (double *x, double *y, int n, BOOLEAN pen_flag, int *pen)
 
 /* Routines to transform grdfiles to/from map projections */
 
-void GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, int nx, int ny, int dpi, int offset)
+int GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, int nx, int ny, int dpi, int offset)
 {
 	if (x_inc > 0.0 && y_inc > 0.0) {
 		head->nx = GMT_get_n (head->x_min, head->x_max, x_inc, offset);
@@ -5180,7 +5165,7 @@ void GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, i
 	head->node_offset = offset;
 
 	GMT_RI_prepare (head);	/* Ensure -R -I consistency and set nx, ny */
-	GMT_grd_RI_verify (head, 1);
+	GMT_err_pass (GMT_grd_RI_verify (head, 1), "");
 
 #ifdef _GENPER
 	if (gmtdefs.verbose) {
@@ -5195,6 +5180,7 @@ void GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, i
 #else
 	if (gmtdefs.verbose) fprintf (stderr, "%s: New grid size (nx,ny) %d by %d\n", GMT_program, head->nx, head->ny);
 #endif /* _GENPER */
+	return (GMT_NOERROR);
 }
 
 void GMT_init_search_radius (double *radius, struct GRD_HEADER *r_head, struct GRD_HEADER *g_head, BOOLEAN inverse) {
@@ -5235,7 +5221,7 @@ projection. While we are forward mapping here unless we cycle through the final 
 initial image "holes" are created. This routine cycles throught the final imaging ensuring all pixels
 are filled.
 */
-void
+int
 genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
                 struct GRD_HEADER *r_head, double max_radius)
 {                               /* Forward projection from geographical to rectangular grid */
@@ -5258,23 +5244,23 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
     GMT_transx_forward(geo, g_head, rect, r_head);      /* First transform the rows */
     memcpy((void *) geo, (void *) rect, (size_t) (g_head->ny * g_head->nx * sizeof(float)));    /* Then store intermediate result back in geo */
     GMT_transy_forward(geo, g_head, rect, r_head);      /* And finally transform the columns */
-    return;
+    return (GMT_NOERROR);
   }
   if (project_info.projection == GMT_LINEAR
       && project_info.xyz_projection[0] != GMT_LINEAR
       && g_head->ny == r_head->ny) {
     GMT_transx_forward(geo, g_head, rect, r_head);
-    return;
+    return (GMT_NOERROR);
   }
   if (project_info.projection == GMT_LINEAR
       && project_info.xyz_projection[1] != GMT_LINEAR
       && g_head->nx == r_head->nx) {
     GMT_transy_forward(geo, g_head, rect, r_head);
-    return;
+    return (GMT_NOERROR);
   }
   if (project_info.projection == GMT_MERCATOR && g_head->nx == r_head->nx) {
     GMT_merc_forward(geo, g_head, rect, r_head);
-    return;
+    return (GMT_NOERROR);
   }
 
   if (fabs(max_radius) < GMT_CONV_LIMIT) {      /* Must pass non-zero radius */
@@ -5449,11 +5435,12 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
     fprintf(stderr, "%s: number of nan implanted (%d)\n",
             GMT_program, num_nan);
   }
+  return (GMT_NOERROR);
 }
 
 #endif  /* _GENPER */
 
-void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius)
+int GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius)
 {	/* Forward projection from geographical to rectangular grid */
 	int i, j, k, ij, ii, jj, i_r, j_r, nm, di, dj, not_used = 0;
 	float *weight_sum;
@@ -5462,7 +5449,7 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 #if _GENPER
         if(project_info.projection == GMT_GENPER ) {
           genper_grd_forward (geo, g_head, rect, r_head, max_radius);
-	  return;
+	  return (GMT_NOERROR);
         }
 #endif  /* _GENPER */
 
@@ -5470,19 +5457,19 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 		GMT_transx_forward (geo, g_head, rect, r_head);						/* First transform the rows */
 		memcpy ((void *)geo, (void *)rect, (size_t)(g_head->ny * g_head->nx * sizeof (float)));	/* Then store intermediate result back in geo */
 		GMT_transy_forward (geo, g_head, rect, r_head);						/* And finally transform the columns */
-		return;
+		return (GMT_NOERROR);
 	}
 	if (project_info.projection == GMT_LINEAR && project_info.xyz_projection[0] != GMT_LINEAR && g_head->ny == r_head->ny) {
 		GMT_transx_forward (geo, g_head, rect, r_head);
-		return;
+		return (GMT_NOERROR);
 	}
 	if (project_info.projection == GMT_LINEAR && project_info.xyz_projection[1] != GMT_LINEAR && g_head->nx == r_head->nx) {
 		GMT_transy_forward (geo, g_head, rect, r_head);
-		return;
+		return (GMT_NOERROR);
 	}
 	if (project_info.projection == GMT_MERCATOR && g_head->nx == r_head->nx) {
 		GMT_merc_forward (geo, g_head, rect, r_head);
-		return;
+		return (GMT_NOERROR);
 	}
 
 	if (fabs (max_radius) < GMT_CONV_LIMIT) {	/* Must pass non-zero radius */
@@ -5561,9 +5548,10 @@ void GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	GMT_free ((void *)y);
 
 	if (gmtdefs.verbose && not_used) fprintf (stderr, "GMT_grd_forward: some projected nodes not loaded (%d)\n", not_used);
+	return (GMT_NOERROR);
 }
 
-void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius)
+int GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius)
 {	/* Transforming from rectangular projection to geographical */
 	int i, j, k, ij, ii, jj, i_r, j_r, nm, di, dj, not_used = 0;
 	BOOLEAN greenwich;
@@ -5572,7 +5560,7 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 
 	if (project_info.projection == GMT_MERCATOR && g_head->nx == r_head->nx) {
 		GMT_merc_inverse (geo, g_head, rect, r_head);
-		return;
+		return (GMT_NOERROR);
 	}
 
 	if (fabs (max_radius) < GMT_CONV_LIMIT) {	/* Must pass non-zero radius */
@@ -5647,6 +5635,7 @@ void GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct
 	GMT_free ((void *)x_0);
 
 	if (gmtdefs.verbose && not_used) fprintf (stderr, "%s: Some geographical nodes not loaded (%d)\n", GMT_program, not_used);
+	return (GMT_NOERROR);
 }
 
 int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN bilinear, BOOLEAN inverse)
@@ -7173,7 +7162,7 @@ double GMT_geodesic_dist_km (double lonS, double latS, double lonE, double latE)
 	return (0.001 * GMT_geodesic_dist_meter (lonS, latS, lonE, latE));
 }
 
-double *GMT_distances (double x[], double y[], int n, double scale, int dist_flag)
+int GMT_distances (double x[], double y[], int n, double scale, int dist_flag, double *dist)
 {	/* Returns distances in meter; use scale to get other units */
 	int this, prev;
 	BOOLEAN cumulative = TRUE, do_scale, xy_not_NaN;
@@ -7184,10 +7173,7 @@ double *GMT_distances (double x[], double y[], int n, double scale, int dist_fla
 		cumulative = FALSE;
 	}
 	
-	if (dist_flag < 0 || dist_flag > 3) {
-		fprintf (stderr, "%s: Error: Wrong flag passed to GMT_distances (%d)\n", GMT_program, dist_flag);
-		GMT_exit (EXIT_FAILURE);
-	}
+	if (dist_flag < 0 || dist_flag > 3) return (GMT_MAP_BAD_DIST_FLAG);
 	
 	do_scale = (scale != 1.0);
 	d = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), "GMT_distances");
@@ -7227,8 +7213,8 @@ double *GMT_distances (double x[], double y[], int n, double scale, int dist_fla
 
 		if (xy_not_NaN) prev = this;	/* This was a record with OK x,y; make it the previous point for distance calculations */
 	}
-
-	return (d);
+	dist = d;
+	return (GMT_NOERROR);
 }
 
 int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **xings)

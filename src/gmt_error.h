@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_error.h,v 1.2 2007-03-12 12:18:56 remko Exp $
+ *	$Id: gmt_error.h,v 1.3 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -65,6 +65,21 @@
 #define GMT_GRDIO_GRD98_BADMAGIC	-160
 #define GMT_GRDIO_GRD98_BADLENGTH	-161
 #define GMT_GRDIO_GRD98_COMPLEX		-162
+#define GMT_GRDIO_RI_OLDBAD		-163
+#define GMT_GRDIO_RI_NEWBAD		-164
+#define GMT_GRDIO_RI_NOREPEAT		-165
+#define GMT_IO_BAD_PLOT_DEGREE_FORMAT	-166
+#define GMT_CHEBYSHEV_NEG_ORDER		-167
+#define GMT_CHEBYSHEV_BAD_DOMAIN	-168
+#define GMT_MAP_EXCEEDS_360		-169
+#define GMT_MAP_BAD_ELEVATION_MIN	-170
+#define GMT_MAP_BAD_ELEVATION_MAX	-171
+#define GMT_MAP_BAD_LAT_MIN		-172
+#define GMT_MAP_BAD_LAT_MAX		-173
+#define GMT_MAP_NO_REGION		-174
+#define GMT_MAP_NO_PROJECTION		-175
+#define GMT_MAP_BAD_DIST_FLAG		-176
+#define GMT_MAP_BAD_MEASURE_UNIT	-177
 
 /* Definition for an error trap */
 #define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)

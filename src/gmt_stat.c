@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.44 2007-03-05 21:47:10 pwessel Exp $
+ *	$Id: gmt_stat.c,v 1.45 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2576,44 +2576,40 @@ double GMT_extreme (double x[], size_t n, double x_default, int kind, int way)
 	return ((k) ? x_select : x_default);
 }
 
-double GMT_chebyshev (double x, int n)
+int GMT_chebyshev (double x, int n, double *t)
 {
 	/* Calculates the n'th Chebyshev polynomial at x */
 
-	double t, x2;
+	double x2, a, b;
 	
-	if (n < 0) {
-		fprintf (stderr, "GMT: ERROR.  GMT_chebyshev given negative degree (%d)\n", n);
-		GMT_exit (EXIT_FAILURE);
-	}
-	if (fabs (x) > 1.0) {
-		fprintf (stderr, "GMT: ERROR.  GMT_chebyshev given |x| > 1 (%f)\n", x);
-		GMT_exit (EXIT_FAILURE);
-	}
+	if (n < 0) GMT_err_pass (GMT_CHEBYSHEV_NEG_ORDER, "");
+	if (fabs (x) > 1.0) GMT_err_pass (GMT_CHEBYSHEV_BAD_DOMAIN, "");
 	
 	switch (n) {	/* Testing the order of the polynomial */
 		case 0:
-			t = 1.0;
+			*t = 1.0;
 			break;
 		case 1:
-			t = x;
+			*t = x;
 			break;
 		case 2:
-			t = 2.0 * x * x - 1.0;
+			*t = 2.0 * x * x - 1.0;
 			break;
 		case 3:
-			t = x * (4.0 * x * x - 3.0);
+			*t = x * (4.0 * x * x - 3.0);
 			break;
 		case 4:
 			x2 = x * x;
-			t = 8.0 * x2 * (x2 - 1.0) + 1.0;
+			*t = 8.0 * x2 * (x2 - 1.0) + 1.0;
 			break;
 		default:	/* For higher degrees we do the recursion */
-			t = 2.0 * x * GMT_chebyshev (x, n-1) - GMT_chebyshev (x, n-2);
+			GMT_chebyshev (x, n-1, &a);
+			GMT_chebyshev (x, n-2, &b);
+			*t = 2.0 * x * a - b;
 			break;
 	}
 	
-	return (t);
+	return (GMT_NOERROR);
 }
 
 double GMT_corrcoeff (double *x, double *y, size_t n, int mode)
