@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.4 2007-03-12 19:52:27 remko Exp $
+ *    $Id: sph2grd.c,v 1.5 2007-03-24 01:42:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -224,7 +224,7 @@ int main (int argc, char **argv)
 	header.y_inc = Ctrl->I.yinc;
 	header.node_offset = Ctrl->F.active;
 	GMT_RI_prepare (&header);	/* Ensure -R -I consistency and set nx, ny */
-	GMT_grd_RI_verify (&header, 1);
+	GMT_err_fail (GMT_grd_RI_verify (&header, 1), Ctrl->G.file);
 
 	grd = (float *) GMT_memory (VNULL, (size_t)(header.nx * header.ny), sizeof (float), GMT_program);
 	lon = (double *) GMT_memory (VNULL, (size_t)header.nx, sizeof (double), GMT_program);

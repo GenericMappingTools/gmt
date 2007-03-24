@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.60 2007-02-26 22:49:47 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.61 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -245,7 +245,7 @@ EXTERN_MSC struct GMT_IO GMT_io;
 EXTERN_MSC struct GMT_PLOT_CALCLOCK GMT_plot_calclock;	/* Formatting information for time axis plotting */
 
 EXTERN_MSC int GMT_init_z_io (char format[], BOOLEAN repeat[], BOOLEAN swab, int skip, char type, struct GMT_Z_IO *r);
-EXTERN_MSC void GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h);
+EXTERN_MSC int GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_check_z_io (struct GMT_Z_IO *r, float *a);
 EXTERN_MSC int GMT_import_table (void *source, int source_type, struct GMT_TABLE **T, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io);
 EXTERN_MSC int GMT_export_table (void *dest, int dest_type, struct GMT_TABLE *T, BOOLEAN use_GMT_io);
@@ -255,5 +255,5 @@ EXTERN_MSC void GMT_free_table (struct GMT_TABLE *table);
 EXTERN_MSC void GMT_free_dataset (struct GMT_DATASET *data);
 EXTERN_MSC void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, int mode);
 EXTERN_MSC void GMT_clock_C_format (char *form, struct GMT_CLOCK_IO *S, int mode);
-EXTERN_MSC void GMT_geo_C_format (char *form, struct GMT_GEO_IO *S);
+EXTERN_MSC int GMT_geo_C_format (char *form, struct GMT_GEO_IO *S);
 EXTERN_MSC void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S);

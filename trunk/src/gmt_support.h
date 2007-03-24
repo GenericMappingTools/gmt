@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.16 2007-03-12 12:26:38 remko Exp $
+ *	$Id: gmt_support.h,v 1.17 2007-03-24 01:42:07 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -77,7 +77,7 @@ EXTERN_MSC void GMT_init_fill (struct GMT_FILL *fill, int r, int g, int b);
 EXTERN_MSC void GMT_init_pen (struct GMT_PEN *pen, double width);
 EXTERN_MSC int GMT_colorname2index (char *name);
 EXTERN_MSC void GMT_list_custom_symbols (void);
-EXTERN_MSC void GMT_read_cpt (char *cpt_file);
+EXTERN_MSC int GMT_read_cpt (char *cpt_file);
 EXTERN_MSC void GMT_rotate2D (double x[], double y[], int n, double x0, double y0, double angle, double xp[], double yp[]);
 EXTERN_MSC void GMT_smart_justify (int just, double angle, double dx, double dy, double *x_shift, double *y_shift);
 EXTERN_MSC void GMT_str_tolower (char *string);
@@ -85,6 +85,7 @@ EXTERN_MSC void GMT_str_toupper (char *string);
 EXTERN_MSC void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname);
 EXTERN_MSC char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, int rgb[]);
 EXTERN_MSC void GMT_fourt (float *data, int *nn, int ndim, int ksign, int iform, float *work);
+EXTERN_MSC int GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 
 /* Backwards macro for MB-system support */
 #define GMT_get_rgb24(z,rgb) GMT_get_rgb_from_z(z,rgb)

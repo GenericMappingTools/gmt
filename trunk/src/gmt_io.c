@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.133 2007-03-05 21:47:09 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.134 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -116,8 +116,9 @@ int GMT_bin_float_output_swab (FILE *fp, int n, double *ptr);	/* Write binary fl
 int GMT_ascii_output_one (FILE *fp, double x, int col);		/* Writes one item to output in ascii format */
 void GMT_adjust_periodic ();					/* Add/sub 360 as appropriate */
 void GMT_decode_calclock_formats ();
-void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode);
-void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S);
+int GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode);
+int GMT_get_dms_order (char *text, struct GMT_GEO_IO *S);
+int GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S);
 
 int GMT_scanf_clock (char *s, double *val);
 int GMT_scanf_calendar (char *s, GMT_cal_rd *rd);
@@ -1070,15 +1071,12 @@ int GMT_init_z_io (char format[], BOOLEAN repeat[], BOOLEAN swab, int skip, char
 		strcpy (GMT_io.a_mode, "ab+");
 	}
 
-	return (FALSE);
+	return (GMT_NOERROR);
 }
 
-void GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h)
+int GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h)
 {
-	if ((r->x_missing || r->y_missing) && h->node_offset == 1) {
-		fprintf (stderr, "%s: Pixel format grids do not have repeating rows or columns!\n", GMT_program);
-		GMT_exit (EXIT_FAILURE);
-	}
+	if ((r->x_missing || r->y_missing) && h->node_offset == 1) return (GMT_GRDIO_RI_NOREPEAT);
 
 	r->start_col = (r->x_step == 1) ? 0 : h->nx - 1 - r->x_missing;
 	r->start_row = (r->y_step == 1) ? r->y_missing : h->ny - 1;
@@ -1089,6 +1087,7 @@ void GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h)
 	r->y_period = h->ny - r->y_missing;
 	r->n_expected = r->x_period * r->y_period;
 	GMT_do_swab = r->swab;
+	return (GMT_NOERROR);
 }
 
 void GMT_check_z_io (struct GMT_Z_IO *r, float *a)
@@ -1328,7 +1327,7 @@ void GMT_row_ij (struct GMT_Z_IO *r, int ij, int *gmt_ij)
 	*gmt_ij = r->gmt_j * r->nx + r->gmt_i;
 }
 
-void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
+int GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 {	/* Reads a YYYY-MM-DD or YYYYMMDD-like string and determines order.
 	 * order[0] is the order of the year, [1] is month, etc.
 	 * Items not encountered are left as -1. mode is 0 for text i/o
@@ -1444,9 +1443,10 @@ void GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode)
 		fprintf (stderr, "%s: ERROR: Unacceptable date template %s\n", GMT_program, text);
 		GMT_exit (EXIT_FAILURE);
 	}
+	return (GMT_NOERROR);
 }
 
-void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
+int GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 {	/* Reads a HH:MM:SS or HHMMSS-like string and determines order.
 	 * hms_order[0] is the order of the hour, [1] is min, etc.
 	 * Items not encountered are left as -1.
@@ -1568,9 +1568,10 @@ void GMT_get_hms_order (char *text, struct GMT_CLOCK_IO *S)
 		fprintf (stderr, "%s: ERROR: Unacceptable clock template %s\n", GMT_program, text);
 		GMT_exit (EXIT_FAILURE);
 	}
+	return (GMT_NOERROR);
 }
 
-void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
+int GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 {	/* Reads a ddd:mm:ss-like string and determines order.
 	 * order[0] is the order of the degree, [1] is minutes, etc.
 	 * Order is checked since we only allow d, m, s in that order.
@@ -1658,7 +1659,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 		}
 	}
 
-	if (S->decimal) return;	/* Easy formatting choice */
+	if (S->decimal) return (GMT_NOERROR);	/* Easy formatting choice */
 
 	/* Then get the actual order by inverting table */
 
@@ -1684,6 +1685,7 @@ void GMT_get_dms_order (char *text, struct GMT_GEO_IO *S)
 		fprintf (stderr, "%s: ERROR: Unacceptable dmmss template %s\n", GMT_program, text);
 		GMT_exit (EXIT_FAILURE);
 	}
+	return (GMT_NOERROR);
 }
 
 void GMT_decode_calclock_formats ()
@@ -1823,16 +1825,13 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, int mode)
 	}
 }
 
-void GMT_geo_C_format (char *form, struct GMT_GEO_IO *S)
+int GMT_geo_C_format (char *form, struct GMT_GEO_IO *S)
 {
 	/* Determine the output of geographic location formats. */
 
 	GMT_get_dms_order (form, S);	/* Get the order of degree, min, sec in output formats */
 
-	if (S->no_sign) {
-		fprintf (stderr, "%s: ERROR: Unacceptable PLOT_DEGREE_FORMAT template %s. A not allowed\n", GMT_program, form);
-		GMT_exit (EXIT_FAILURE);
-	}
+	if (S->no_sign) return (GMT_IO_BAD_PLOT_DEGREE_FORMAT);
 
 	if (S->decimal) {	/* Plain decimal degrees */
 		sprintf (S->x_format, "%s", gmtdefs.d_format);
@@ -1866,6 +1865,7 @@ void GMT_geo_C_format (char *form, struct GMT_GEO_IO *S)
 		strcat (S->x_format, fmt);
 		strcat (S->y_format, fmt);
 	}
+	return (GMT_NOERROR);
 }
 
 void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S)

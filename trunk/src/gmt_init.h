@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.65 2007-01-31 21:51:03 remko Exp $
+ *	$Id: gmt_init.h,v 1.66 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,16 +51,16 @@ EXTERN_MSC void GMT_fill_syntax (char option, char *string);
 EXTERN_MSC void GMT_getdefaults (char *this_file);
 EXTERN_MSC void GMT_hash_init (struct GMT_HASH *hashnode , char **keys, int n_hash, int n_keys);
 EXTERN_MSC void GMT_inc_syntax (char option, int error);
-EXTERN_MSC void GMT_init_fonts (int *n_fonts);
+EXTERN_MSC int GMT_init_fonts (int *n_fonts);
 EXTERN_MSC void GMT_init_scales (int unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name);
 EXTERN_MSC void GMT_label_syntax (int indent, int kind);
 EXTERN_MSC void GMT_pen_syntax (char option, char *string);
 EXTERN_MSC void GMT_rgb_syntax (char option, char *string);
 EXTERN_MSC void GMT_set_home (void);
-EXTERN_MSC void GMT_set_measure_unit (char option, char unit);
+EXTERN_MSC int GMT_set_measure_unit (char unit);
 EXTERN_MSC void GMT_setdefaults (int argc, char **argv);
 EXTERN_MSC void GMT_syntax (char option);
-EXTERN_MSC char *GMT_getdefpath (int get);
+EXTERN_MSC int GMT_getdefpath (int get, char **path);
 EXTERN_MSC int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN cmd);
 EXTERN_MSC void GMT_extract_label (char *line, char *label);
 EXTERN_MSC int GMT_setparameter(char *keyword, char *value);

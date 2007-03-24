@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.282 2007-03-17 00:42:22 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.283 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -117,26 +117,25 @@ EXTERN_MSC void GMT_grdio_init (void);	/* Defined in gmt_customio.c and only use
 
 int GMT_load_user_media (void);
 BOOLEAN true_false_or_error (char *value, int *answer);
-void GMT_history (int argc, char **argv);
+int GMT_history (int argc, char **argv);
 void GMT_prepare_3D (void);
 void GMT_free_plot_array(void);
 char *GMT_putpen (struct GMT_PEN *pen);
-char *GMT_getdefpath (int get);
-void GMT_get_time_language (char *name);
-void GMT_init_time_system_structure ();
+int GMT_get_time_language (char *name);
+int GMT_init_time_system_structure ();
 #ifndef OLDCAL
 int GMT_scanf_epoch (char *s, int *day, double *t0);
 #else
 int GMT_scanf_epoch (char *s, double *t0);
 #endif
 void GMT_backwards_compatibility ();
-void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out);
+int GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out);
 void GMT_strip_wesnz (const char *in, int side[], BOOLEAN *draw_box, char *out);
-void GMT_split_info (const char *in, char *info[]);
-void GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A);
-void GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char flag, char unit);
+int GMT_split_info (const char *in, char *info[]);
+int GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A);
+int GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char flag, char unit);
 int GMT_parse_B_option (char *in);
-static void load_encoding (struct gmt_encoding *);
+static int load_encoding (struct gmt_encoding *);
 void GMT_verify_encodings ();
 int GMT_key_lookup (char *name, char **list, int n);
 void GMT_PS_init (void);
@@ -2524,13 +2523,13 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults4 file and ini
 		(void) GMT_loaddefaults (file);
 	else {		/* No .gmtdefaults[4] files in sight; Must use GMT system defaults */
 		char *path;
-		path = GMT_getdefpath (0);
+		GMT_getdefpath (0, &path);
 		(void) GMT_loaddefaults (path);
 		GMT_free ((void *)path);
 	}
 }
 
-char *GMT_getdefpath (int get)
+int GMT_getdefpath (int get, char **P)
 {
 	/* Return the full path to the chosen .gmtdefaults4 system file
 	 * depending on the value of get:
@@ -2571,7 +2570,9 @@ char *GMT_getdefpath (int get)
 
 	strcpy (path, line);
 
-	return (path);
+	*P = path;
+	
+	return (GMT_NOERROR);
 }
 
 double GMT_convert_units (char *from, int new_format)
@@ -2811,7 +2812,7 @@ int GMT_get_char_encoding (char *name)
 	return (i);
 }
 
-void GMT_get_time_language (char *name)
+int GMT_get_time_language (char *name)
 {
 	FILE *fp;
 	char file[BUFSIZ], line[BUFSIZ], full[16], abbrev[16], c[16], dwu;
@@ -2862,6 +2863,7 @@ void GMT_get_time_language (char *name)
 		months[i] = month_names[i];
 	}
 	GMT_hash_init (GMT_month_hashnode, months, 12, 12);
+	return (GMT_NOERROR);
 }
 
 void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shorthand notation */
@@ -3089,7 +3091,7 @@ void GMT_end (int argc, char **argv)
 
 	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
 
-	GMT_exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
 
 void GMT_set_home (void)
@@ -3162,7 +3164,7 @@ void GMT_set_home (void)
 	}
 }
 
-void GMT_history (int argc, char ** argv)
+int GMT_history (int argc, char ** argv)
 {
 	int i, j, k;
 	BOOLEAN need_xy = FALSE, overlay = FALSE, found_old, found_new, done = FALSE, new_unique = FALSE;
@@ -3174,7 +3176,7 @@ void GMT_history (int argc, char ** argv)
 	int fd;
 #endif
 
-	if (!gmtdefs.history) return;	/* .gmtcommands4 mechanism has been disabled */
+	if (!gmtdefs.history) return (GMT_NOERROR);	/* .gmtcommands4 mechanism has been disabled */
 
 	/* Open .gmtcommands4 file and retrive old argv (if any)
 	 * This is tricky since GMT programs are often hooked together
@@ -3204,13 +3206,13 @@ void GMT_history (int argc, char ** argv)
 	if (access (hfile, R_OK)) {    /* No .gmtcommands4 file in chosen directory, try to make one */
 		if ((fp = fopen (hfile, "w")) == NULL) {
 			fprintf (stderr, "GMT Warning: Could not create %s [permission problem?]\n", hfile);
-			return;
+			return (GMT_NOERROR);
 		}
 		done = TRUE;
 	}
 	else if ((fp = fopen (hfile, "r+")) == NULL) {
 		fprintf (stderr, "GMT Warning: Could not update %s [permission problem?]\n", hfile);
-		return;
+		return (GMT_NOERROR);
 	}
 
 	/* When we get here the file exists */
@@ -3379,6 +3381,8 @@ void GMT_history (int argc, char ** argv)
 #endif
 
 	fclose (fp);
+	
+	return (GMT_NOERROR);
 }
 
 void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
@@ -3415,7 +3419,7 @@ void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
 
 /* Here is the new -B parser with all its sub-functions */
 
-void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out) {
+int GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out) {
 	/* Removes the searched-for item from in, returns it in item, with the rest in out.
 	 * pattern is usually ":." for title, ":," for unit, and ":" for label.
 	 * ASSUMPTION: Only pass ":" after first removing titles and units
@@ -3461,6 +3465,7 @@ void GMT_strip_colonitem (const char *in, const char *pattern, char *item, char 
 		fprintf (stderr, "%s: ERROR: More than one label string in  -B component %s\n", GMT_program, in);
 		GMT_exit (EXIT_FAILURE);
 	}
+	return (GMT_NOERROR);
 }
 
 void GMT_strip_wesnz (const char *in, int t_side[], BOOLEAN *draw_box, char *out) {
@@ -3524,7 +3529,7 @@ void GMT_strip_wesnz (const char *in, int t_side[], BOOLEAN *draw_box, char *out
 	if (set_sides) for (i = 0; i < 5; i++) t_side[i] = side[i];	/* Only changes these if WESN was provided */
 }
 
-void GMT_split_info (const char *in, char *info[]) {
+int GMT_split_info (const char *in, char *info[]) {
 	/* Take the -B string (minus the leading -B) and chop into 3 strings for x, y, and z */
 
 	BOOLEAN mute = FALSE;
@@ -3560,9 +3565,10 @@ void GMT_split_info (const char *in, char *info[]) {
 		strcpy (info[1], in);
 		info[2][0] = '\0';			/* Zero out the z info */
 	}
+	return (GMT_NOERROR);
 }
 
-void GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
+int GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
 	/* Decode the annot/tick segments of the clean -B string pieces */
 
 	char *t, *s, flag, orig_flag = 0, unit;
@@ -3570,7 +3576,7 @@ void GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
 	BOOLEAN time_interval_unit;
 	double val, phase = 0.0;
 
-	if (!in) return;	/* NULL pointer passed */
+	if (!in) return (GMT_NOERROR);	/* NULL pointer passed */
 
 	t = in;
 	while (t[0] && !error) {	/* As long as there are more segments to decode and no trouble so far */
@@ -3667,9 +3673,10 @@ void GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
 		}
 		GMT_exit (EXIT_FAILURE);
 	}
+	return (GMT_NOERROR);
 }
 
-void GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char flag, char unit) {
+int GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char flag, char unit) {
 	/* Load the values into the appropriate GMT_PLOT_AXIS_ITEM structure */
 
 	int i, n = 1;
@@ -3780,6 +3787,7 @@ void GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char flag
 				break;
 		}
 	}
+	return (GMT_NOERROR);
 }
 
 int GMT_parse_B_option (char *in) {
@@ -5559,7 +5567,7 @@ int GMT_check_scalingopt (char option, char unit, char *unit_name) {
 	return (mode);
 }
 
-void GMT_set_measure_unit (char option, char unit) {
+int GMT_set_measure_unit (char unit) {
 	/* Option to override the GMT measure unit default */
 
 	switch (unit) {
@@ -5580,16 +5588,16 @@ void GMT_set_measure_unit (char option, char unit) {
 			gmtdefs.measure_unit = GMT_PT;
 			break;
 		default:
-			fprintf (stderr, "%s: GMT ERROR Option -%c: Only append one of cimp\n", GMT_program, option);
-			GMT_exit (EXIT_FAILURE);
+			return (GMT_MAP_BAD_MEASURE_UNIT);
 	}
+	return (GMT_NOERROR);
 }
 
-void	GMT_init_time_system_structure () {
+int	GMT_init_time_system_structure () {
 
 	/* The last time system is user-defined and set up here.
 		All others are known and already complete.  */
-	if (gmtdefs.time_system < (GMT_N_SYSTEMS - 1) ) return;
+	if (gmtdefs.time_system < (GMT_N_SYSTEMS - 1) ) return (GMT_NOERROR);
 
 	/* Check the unit sanity:  */
 	switch (GMT_time_system[gmtdefs.time_system].unit) {
@@ -5648,6 +5656,7 @@ void	GMT_init_time_system_structure () {
 		fprintf (stderr, "   An example of a correct format is:  %s\n", GMT_time_system[0].epoch);
 		GMT_exit (EXIT_FAILURE);
 	}
+	return (GMT_NOERROR);
 }
 
 #ifndef OLDCAL
@@ -5703,7 +5712,7 @@ int	GMT_scanf_epoch (char *s, double *t0) {
 /* Load a PostScript encoding from a file, given the filename.
  * Use Brute Force and Ignorance.
  */
-static void load_encoding (struct gmt_encoding *enc)
+static int load_encoding (struct gmt_encoding *enc)
 {
 	char line[GMT_LONG_TEXT], symbol[GMT_LONG_TEXT];
 	int code = 0, pos;
@@ -5740,6 +5749,7 @@ static void load_encoding (struct gmt_encoding *enc)
 	}
 
 	GMT_fclose (in);
+	return (GMT_NOERROR);
 }
 
 void GMT_verify_encodings () {
@@ -5772,7 +5782,7 @@ void GMT_verify_encodings () {
 	}
 }
 
-void GMT_init_fonts (int *n_fonts)
+int GMT_init_fonts (int *n_fonts)
 {
 	FILE *in;
 	int i = 0, n_GMT_fonts, n_alloc = 50;
@@ -5835,6 +5845,7 @@ void GMT_init_fonts (int *n_fonts)
 		*n_fonts = i;
 	}
 	GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)(*n_fonts), sizeof (struct GMT_FONT), GMT_program);
+	return (GMT_NOERROR);
 }
 
 void *New_GMT_Ctrl () {	/* Allocate and initialize a new common control structure */

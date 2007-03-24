@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.96 2007-03-12 12:21:07 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.97 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -98,7 +98,7 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 	if (!GMT_is_dnan(scale)) header->z_scale_factor = scale, header->z_add_offset = offset;
 	if (!GMT_is_dnan(nan_value)) header->nan_value = nan_value;
 	if (header->z_scale_factor == 0.0) fprintf (stderr, "GMT Warning: scale_factor should not be 0.\n");
-	GMT_grd_RI_verify (header, 0);
+	GMT_err_pass (GMT_grd_RI_verify (header, 0), file);
 
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
@@ -333,13 +333,13 @@ void GMT_grd_do_scaling (float *grid, int nm, double scale, double offset)
  * Date:	20 April 1998
  */
 
-void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
+int GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
 {
 	/* mode - 0 means we are checking an existing grid, mode = 1 means we test a new -R -I combination */
 
 	int error = 0;
 
-	if (!strcmp (GMT_program, "grdedit")) return;	/* Separate handling in grdedit to allow grdedit -A */
+	if (!strcmp (GMT_program, "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
 
 	switch (GMT_minmaxinc_verify (h->x_min, h->x_max, h->x_inc, GMT_SMALL)) {
 		case 3:
@@ -374,16 +374,11 @@ void GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
 			/* Everything is OK */
 			break;
 	}
-	if (error) {
-		if (mode == 0)
-			(void) fprintf (stderr, "%s: GMT ERROR: Use grdedit -A on your gridfile to make it compatible.\n", GMT_program);
-		else
-			(void) fprintf (stderr, "%s: GMT ERROR: Please select compatible -R and -I values.\n", GMT_program);
-		GMT_exit (EXIT_FAILURE);
-	}
+	if (error) return ((mode == 0) ? GMT_GRDIO_RI_OLDBAD : GMT_GRDIO_RI_NEWBAD);
+	return (GMT_NOERROR);
 }
 
-int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, int *width, int *height, int *first_col, int *last_col, int *first_row, int *last_row)
+int GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, int *width, int *height, int *first_col, int *last_col, int *first_row, int *last_row, int **index)
 {
 	/* Determines which rows and columns to extract, and if it is
 	 * a grid that is periodic and wraps around and returns indices. */
@@ -409,15 +404,13 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 		else if (*w < header->x_min || *e > header->x_max)
 			geo = TRUE;	/* Probably dealing with periodic grid */
 
-		if (*s < header->y_min || *n > header->y_max) {	/* Calling program goofed... */
-			fprintf (stderr, "%s: GMT ERROR: Trying to read beyond grid domain - abort!!\n", GMT_program);
-			GMT_exit (EXIT_FAILURE);
-		}
+		if (*s < header->y_min || *n > header->y_max) return (GMT_GRDIO_DOMAIN_VIOLATION);	/* Calling program goofed... */
+
 		one_or_zero = (header->node_offset) ? 0 : 1;
 
 		/* Make sure w,e,s,n are proper multiples of dx,dy away from w, s */
 
-		GMT_adjust_loose_wesn (w, e, s, n, header);
+		GMT_err_pass (GMT_adjust_loose_wesn (w, e, s, n, header), header->name);
 
 		/* Get dimension of subregion */
 
@@ -452,7 +445,9 @@ int *GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s
 		for (i = 0; i < (*width); i++) k[i] = (*first_col) + i;
 	}
 
-	return (k);
+	*index = k;
+	
+	return (GMT_NOERROR);
 }
 
 void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
@@ -906,7 +901,7 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	return (0);
 }
 
-void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header)
+int GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header)
 {
 	/* used to ensure that sloppy w,e,s,n values are rounded to proper multiples */
 	
@@ -918,12 +913,10 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 
 	switch (GMT_minmaxinc_verify (*w, *e, header->x_inc, GMT_SMALL)) {	/* Check if range is compatible with x_inc */
 		case 3:
-			(void) fprintf (stderr, "%s: GMT ERROR: grid x increment <= 0.0\n", GMT_program);
-			GMT_exit (EXIT_FAILURE);
+			return (GMT_GRDIO_BAD_XINC);
 			break;
 		case 2:
-			(void) fprintf (stderr, "%s: GMT ERROR: subset x range <= 0.0\n", GMT_program);
-			GMT_exit (EXIT_FAILURE);
+			return (GMT_GRDIO_BAD_XRANGE);
 			break;
 		default:
 			/* Everything is seemingly OK */
@@ -962,12 +955,10 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 	
 	switch (GMT_minmaxinc_verify (*s, *n, header->y_inc, GMT_SMALL)) {	/* Check if range is compatible with y_inc */
 		case 3:
-			(void) fprintf (stderr, "%s: GMT ERROR: grid y increment <= 0.0\n", GMT_program);
-			GMT_exit (EXIT_FAILURE);
+			return (GMT_GRDIO_BAD_YINC);
 			break;
 		case 2:
-			(void) fprintf (stderr, "%s: GMT ERROR: subset y range <= 0.0\n", GMT_program);
-			GMT_exit (EXIT_FAILURE);
+			return (GMT_GRDIO_BAD_YRANGE);
 			break;
 		default:
 			/* Everything is OK */
@@ -996,6 +987,7 @@ void GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct G
 		(void) fprintf (stderr, "%s: GMT WARNING: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_program, GMT_SMALL);
 		(void) fprintf (stderr, "%s: GMT WARNING: n reset to %g\n", GMT_program, *n);
 	}
+	return (GMT_NOERROR);
 }
 
 void GMT_grd_set_units (struct GRD_HEADER *header)
@@ -1213,7 +1205,7 @@ int GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w,
 		project_info.projection = GMT_MERCATOR;
 		project_info.degree[0] = project_info.degree[1] = TRUE;
 
-		GMT_map_setup (GMT_IMG_MINLON, GMT_IMG_MAXLON, -lat, +lat);
+		GMT_err_pass (GMT_map_setup (GMT_IMG_MINLON, GMT_IMG_MAXLON, -lat, +lat), file);
 	}
 
 	if (w < 0.0 && e < 0.0) w += 360.0, e += 360.0;

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel2.c,v 1.5 2006-04-10 04:53:48 pwessel Exp $
+ *	$Id: polygon_findlevel2.c,v 1.6 2007-03-24 01:42:07 pwessel Exp $
  */
 #include "wvs.h"
 
@@ -432,7 +432,7 @@ double area_size (double x[], double y[], int n, int *sign) {
 		
 	project_info.pars[0] = lon;
 	project_info.pars[1] = lat;
-	GMT_map_setup (west, east, south, north);
+	GMT_err_fail (GMT_map_setup (west, east, south, north), "");
 	
 	ix = 1.0 / project_info.x_scale;
 	iy = 1.0 / project_info.y_scale;

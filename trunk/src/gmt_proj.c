@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.10 2007-03-05 21:47:10 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.11 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3013,11 +3013,6 @@ void GMT_vrobinson (double lon0)
 		err_flag = GMT_akima (project_info.n_phi, project_info.n_Y, GMT_N_ROBINSON, project_info.n_y_coeff);
 		err_flag = GMT_akima (project_info.n_Y, project_info.n_phi, GMT_N_ROBINSON, project_info.n_iy_coeff);
 	}
-	if (err_flag != 0) {
-		fprintf (stderr, "GMT ERROR: -JN initialization of spline failed - report to GMT gurus\n");
-		GMT_exit (EXIT_FAILURE);
-	}
-
 }
 
 void GMT_robinson (double lon, double lat, double *x, double *y)

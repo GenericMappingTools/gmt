@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.64 2007-03-12 19:52:26 remko Exp $
+ *	$Id: gmt_nc.c,v 1.65 2007-03-24 01:42:06 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -396,7 +396,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	else if (GMT_grdformats[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
-	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row);
+	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[0] > 0) width_out += pad[0];
@@ -506,7 +506,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 			z_type = NC_NAT;
 	}
 
-	k = GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row);
+	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[0] > 0) width_in += pad[0];
