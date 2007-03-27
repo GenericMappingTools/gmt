@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.6 2006-05-01 07:52:39 pwessel Exp $
+ *	$Id: polygon_xover.c,v 1.7 2007-03-27 20:52:18 pwessel Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -41,6 +41,10 @@ int main (int argc, char **argv)
 		P[n_id].lon = (double *) GMT_memory (VNULL, P[n_id].h.n, sizeof (double), "polygon_xover");
 		P[n_id].lat = (double *) GMT_memory (VNULL, P[n_id].h.n, sizeof (double), "polygon_xover");
 		if (fabs (P[n_id].h.east - P[n_id].h.west) == 360.0) ANTARCTICA = n_id;
+		if (P[n_id].h.east < 0.0 && P[n_id].h.west< 0.0) {
+			fprintf (stderr, "Pol %d has negative w/e values.  Run polygon_fixnegwesn\n", P[n_id].h.id);
+			exit(-1);
+		}
 
 		for (i = 0; i < P[n_id].h.n; i++) {
 			if (pol_fread (&p, 1, fp) != 1) {
@@ -64,7 +68,7 @@ int main (int argc, char **argv)
 	nx_tot = 0;
 	for (id1 = 0; id1 < n_id; id1++) {
 		if (id1 == ANTARCTICA) continue;	/* Skip Antarctica */
-		ylist1 = GMT_init_track (P[id1].lat, P[id1].h.n);
+		GMT_init_track (P[id1].lat, P[id1].h.n, &ylist1);
 		if (full && id1 == 0) {	/* Eurafrica */
 			for (i = 0; i < N_EUR_O; i++) lon_o[i] = ieur_o[0][i] - 360.0;
 			for (i = 0; i < N_EUR_O; i++) lat_o[i] = ieur_o[1][i];
@@ -140,7 +144,7 @@ int main (int argc, char **argv)
 			if (verbose) fprintf (stderr, "polygon_xover: %6d vs %6d [T = %6d]\r", P[id1].h.id, P[id2].h.id, nx_tot);
 			if (fabs (x_shift) > GMT_CONV_LIMIT) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] += x_shift;
 			
-			ylist2 = GMT_init_track (P[id2].lat, P[id2].h.n);
+			GMT_init_track (P[id2].lat, P[id2].h.n, &ylist2);
 
 			nx = GMT_crossover (P[id1].lon, P[id1].lat, NULL, ylist1, P[id1].h.n, P[id2].lon, P[id2].lat, NULL, ylist2, P[id2].h.n, FALSE, &XC);
 			GMT_free ((void *)ylist2);

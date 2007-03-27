@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.9 2006-05-10 04:34:49 pwessel Exp $
+ *	$Id: polygon_consistency.c,v 1.10 2007-03-27 20:52:18 pwessel Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -13,7 +13,7 @@ double lon[N_LONGEST], lat[N_LONGEST];
 int main (int argc, char **argv)
 {
 	FILE	*fp;
-	int	i, n_id, this_n, nd, nx, n_x_problems, n_c_problems, n_r_problems, n_d_problems, ix0, iy0, report_mismatch;
+	int	i, n_id, this_n, nd, nx, n_x_problems, n_s_problems, n_c_problems, n_r_problems, n_d_problems, ix0, iy0, report_mismatch;
 	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x, last_y, ant_trouble = 0, found, A, B, end;
 	struct GMT_XSEGMENT *ylist;
 	struct GMT_XOVER XC;
@@ -27,9 +27,12 @@ int main (int argc, char **argv)
 
 	fp = fopen(argv[1], "r");
 	
-	n_id = n_c_problems = n_x_problems = n_r_problems = n_d_problems = 0;
+	n_id = n_c_problems = n_x_problems = n_r_problems = n_d_problems = n_s_problems = 0;
 	while (pol_readheader (&h, fp) == 1) {
 		if (n_id == 0 && h.n > 1000000) report_mismatch = 1;
+		if (h.id == 3817)
+			w = 0;
+	
 		ANTARCTICA = (fabs (h.east - h.west) == 360.0);
 		if (ANTARCTICA) {
 			if (h.south > -90.0) ant_trouble = TRUE;
@@ -70,13 +73,12 @@ int main (int argc, char **argv)
 			printf ("%d\tnot closed\n", h.id);
 			n_c_problems++;
 		}
-		else
 		if (report_mismatch && !(ixmin == w && ixmax == e && iymin == s && iymax == n)) {
 			printf ("%d\twesn mismatch\n", h.id);
 			n_r_problems++;
 		}
 		this_n = (ANTARCTICA) ? h.n - 1 : h.n;
-		ylist = GMT_init_track (lat, this_n);
+		GMT_init_track (lat, this_n, &ylist);
 		if (fabs (h.east - h.west) > GMT_CONV_LIMIT) {
 			nx = found = GMT_crossover (lon, lat, NULL, ylist, this_n, lon, lat, NULL, ylist, this_n, TRUE, &XC);
 			GMT_free ((void *)ylist);
@@ -96,11 +98,19 @@ int main (int argc, char **argv)
 			}
 			if (found) GMT_x_free (&XC);
 		}
+		/* Look for duplicate points separated by a single outlier (a non-area peninsula) */
+		
+		for (i = 1; i < (h.n-1); i++) {
+			if (fabs (lon[i-1]-lon[i+1]) <  GMT_CONV_LIMIT && fabs (lat[i-1]-lat[i+1]) < GMT_CONV_LIMIT) {
+				printf ("%d\tNon-area excursion on lines %d-%d\n", h.id, i-1, i+1);
+				n_s_problems++;
+			}
+		}
 		n_id++;
 	}
 	
-	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s. %d has closure problems. %d has crossing problems. %d has region problems. %d has duplicate points\n",
-		n_id, argv[1], n_c_problems, n_x_problems, n_r_problems, n_d_problems);
+	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s. %d has closure problems. %d has crossing problems. %d has region problems. %d has duplicate points. %d has non-area excursions\n",
+		n_id, argv[1], n_c_problems, n_x_problems, n_r_problems, n_d_problems, n_s_problems);
 	if (ant_trouble) fprintf (stderr, "polygon_consistency: Antarctica polygon has wrong south border\n");
 	
 	fclose(fp);
