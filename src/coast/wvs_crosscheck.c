@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_crosscheck.c,v 1.5 2006-05-01 07:02:13 pwessel Exp $
+ *	$Id: wvs_crosscheck.c,v 1.6 2007-03-27 20:52:18 pwessel Exp $
  */
 /*  */
    
@@ -57,7 +57,7 @@ int main (int argc, char **argv) {
 		
 		report = FALSE;
 		
-		ylist = GMT_init_track (y, h.n);
+		GMT_init_track (y, h.n, &ylist);
 		nx = n_found = GMT_crossover (x, y, NULL, ylist, h.n, x, y, NULL, ylist, h.n, TRUE, &c);
 		
 		for (i = end = 0; i < nx; i++) {
