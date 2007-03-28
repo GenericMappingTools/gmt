@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_fixlevel.c,v 1.3 2006-05-12 04:15:12 pwessel Exp $
+ *	$Id: polygon_fixlevel.c,v 1.4 2007-03-28 18:29:39 pwessel Exp $
  */
 /* 
  */
@@ -9,8 +9,7 @@
 int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	k, new_level = 0, id = 0, old_level;
-	struct	LONGPAIR *p;
+	int	new_level = 0, id = 0, old_level;
 	struct GMT3_POLY h;
         
 	if (argc != 4) {
