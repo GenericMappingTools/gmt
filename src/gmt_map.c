@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.134 2007-03-28 03:10:38 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.135 2007-03-28 03:13:05 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5215,7 +5215,7 @@ void GMT_init_search_radius (double *radius, struct GRD_HEADER *r_head, struct G
 	}
 }
 
-#if _GENPER 
+#ifdef _GENPER 
 /* this version of grd_forward was developed in order to resolve issues with the general perspective
 projection. While we are forward mapping here unless we cycle through the final image rather than the
 initial image "holes" are created. This routine cycles throught the final imaging ensuring all pixels
@@ -5446,7 +5446,7 @@ int GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct 
 	float *weight_sum;
 	double dr, x_0, y_0, *x, *y, *lon, lat, delta, weight, g_off, r_off, i_max_3r;
 
-#if _GENPER
+#ifdef _GENPER
         if(project_info.projection == GMT_GENPER ) {
           genper_grd_forward (geo, g_head, rect, r_head, max_radius);
 	  return (GMT_NOERROR);
