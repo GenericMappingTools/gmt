@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.145 2007-03-12 19:52:26 remko Exp $
+ *	$Id: gmt.h,v 1.146 2007-03-28 03:10:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -37,6 +37,10 @@ extern "C" {
 #ifndef _POSIX_SOURCE
 #define _POSIX_SOURCE 1
 #endif
+
+/* Activate the extended -JG option */
+
+#define _GENPER
 
 /* Declaration modifiers for DLL support (MSC et al) */
 
