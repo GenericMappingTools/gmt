@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.90 2007-03-28 21:02:40 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.91 2007-03-28 21:25:31 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -815,7 +815,7 @@ DIR=pub/gmt
 N_FTP_SITES=8
 cat << EOF > gmt_install.ftp_ip
 ftp.soest.hawaii.edu
-falcon.grdl.noaa.gov
+ibis.grdl.noaa.gov
 ftp.iris.washington.edu
 ftp.iag.usp.br
 ftp.geologi.uio.no

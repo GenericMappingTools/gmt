@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.35 2007-03-28 03:02:12 pwessel Exp $ 
+#		$Id: README,v 1.36 2007-03-28 21:25:31 pwessel Exp $ 
 #
 #	Copyright (c) 1991-2007, P. Wessel & W. H. F. Smith
 #
@@ -153,7 +153,7 @@ the site that is closest to you to minimize transmission times:
 	Site				FTP address
 --------------------------------------------------------------
 SOEST, U. of Hawaii			gmt.soest.hawaii.edu
-Lab for Satellite Altimetry, NOAA	falcon.grdl.noaa.gov
+Lab for Satellite Altimetry, NOAA	ibis.grdl.noaa.gov
 IRIS, Washington, US			ftp.iris.washington.edu
 IAG-USP, U. of Sao Paulo, BRAZIL	ftp.iag.usp.br
 Dep. Geology, U. in Oslo, NORWAY	ftp.geologi.uio.no
