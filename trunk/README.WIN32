@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.14 2006-12-06 18:13:50 remko Exp $
+	$Id: README.WIN32,v 1.15 2007-03-28 03:02:12 pwessel Exp $
 
 README file for GMT 4 Distribution for Win32
 This version contains dynamic executables with the DLL support.
@@ -19,7 +19,7 @@ To use GMT on your system you must
    Execute gmtenv.bat or place it in autoexec.bat so it is run each
    time you reboot your machine.
 
-2b WinNT/2000/XP:
+2b WinNT/2000/XP/Vista:
    Add GMTROOT, HOME, and NETCDF, and modify PATH, LIB, INCLUDE in the
    environmental parameters via the system settings.  See the gmtenv.bat
    file for what the definitions should be.

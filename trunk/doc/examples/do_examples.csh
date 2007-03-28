@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.8 2007-02-07 16:20:19 remko Exp $
+#	$Id: do_examples.csh,v 1.9 2007-03-28 03:02:12 pwessel Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -49,7 +49,7 @@ endif
 
 # Loop over all examples and run each job
 
-foreach dir (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25)
+foreach dir (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26)
 	if (-e ex${dir}/job${dir}.csh ) then
 		echo -n "Doing example ${dir}..."
 		cd ex${dir}

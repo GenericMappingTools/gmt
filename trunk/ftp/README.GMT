@@ -1,8 +1,8 @@
-	$Id: README.GMT,v 1.15 2006-10-25 21:56:22 pwessel Exp $
+	$Id: README.GMT,v 1.16 2007-03-28 03:02:12 pwessel Exp $
 
 Dear potential GMT users-
 
-Version 4.1.4 of GMT has recently been released.
+Version 4.2.0 of GMT has recently been released.
 GMT can be installed under Unix or Windows.
 
 For new installers of GMT under a Unix-like OS:

@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.88 2007-03-15 18:41:43 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.89 2007-03-28 03:02:12 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	01-NOV-2006
+#	27-MAR-2007
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -68,11 +68,11 @@ prep_gmt()
 {
 #--------------------------------------------------------------------------------
 NETCDF_VERSION=3.6.2
-LATESTGMT4=4.1.4
+LATESTGMT4=4.2.0
 LATESTGMT3=3.4.6
-LATESTGSHHS4=4.1
+LATESTGSHHS4=4.2
 LATESTGSHHS3=3
-GSHHS=4.1
+GSHHS=4.2
 cat << EOF > gmt_install.ftp_site
 1. SOEST, U of Hawaii [GMT Home], Honolulu, Hawaii, USA
 2. NOAA, Lab for Satellite Altimetry, Silver Spring, Maryland, USA
@@ -133,7 +133,7 @@ while [ ! $answer = "1" ] && [ ! $answer = "2" ]; do
 done
 if [ $answer = "1" ]; then
 	VERSION=$LATESTGMT4
-	N_EXAMPLES=25
+	N_EXAMPLES=26
 	GSHHS=$LATESTGSHHS4
 elif [ $answer = "2" ]; then
 	VERSION=$LATESTGMT3

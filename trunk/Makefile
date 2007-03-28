@@ -1,6 +1,6 @@
-#	$Id: Makefile,v 1.36 2006-12-06 18:13:50 remko Exp $
+#	$Id: Makefile,v 1.37 2007-03-28 03:02:12 pwessel Exp $
 #
-#	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
+#	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		25-OCT-2006
+#	Date:		27-MAR-2007
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------

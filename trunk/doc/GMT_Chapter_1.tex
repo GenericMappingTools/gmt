@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.60 2007-03-20 00:18:17 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.61 2007-03-28 03:02:12 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -38,8 +38,10 @@ history of the development milestones in the 4.x series.
 
 Changes in \GMT\ 4.2.0 are again relatively minor and predominantly bug fixes.  One imporant
 new feature is that \GMTprog{grdimage} and \GMTprog{pscoast} now can use the general perspective
-projection with arbitrary elevation (\Opt{JG} has been enhanced to handle the extra arguments required).
-Additionally, a few enhancements have been made to these programs:
+projection with arbitrary elevation (\Opt{JG} has been enhanced to handle the extra arguments required
+-- see the new example 26 for details).
+Also, the coastline files have been updated to use GSHHS version 1.5 which fixes minor inconsistencies
+in the coastline database.  Additionally, a few enhancements have been made to these programs:
 
 \begin{enumerate}
 \item The GRD98 format has been updated to handle both gridline and pixel registrations.
@@ -83,9 +85,10 @@ and not always to stdout. Option \Opt{C} now works (used to deselect all columns
 Fixed {\bf LSQFIT} (used wrong columns when some were skipped).
 \item [\GMTprog{grdcontour.c}]: Interior contours not smoothed unless NaNs were involved.  Also the
 labeling of closed highs/lows were insensitive to pixel versus gridline grids and could get the wrong result.
-\Opt{C} need to check for``.cpt'' at END of file name.
+\Opt{C} need to check for``.cpt'' at END of file name.  Fixed contour label angles were always ignored.
 \item [\GMTprog{pscoast.c}]: Did not list \Opt{Z} in synopsis/usage.
 \item [\GMTprog{pscontour.c}]: For 3-D views, \Opt{E} projected contours (\Opt{W}) twice and mesh lines (\Opt{L}) not at all.
+Fixed contour label angles were always ignored.
 \item [\GMTprog{psrose.c}]: Failed to skip pie-slice filling when no fill was selected.  \Opt{C} lead to
 SEGV as it tried to read from a non-existent file.
 \item [\GMTprog{psxy.c}]: When used with \Opt{S} but no \Opt{W} or \Opt{G} given, only set default \Opt{W} if \Opt{M} not used.
