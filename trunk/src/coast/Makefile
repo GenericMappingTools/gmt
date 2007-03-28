@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.16 2007-03-28 00:03:11 pwessel Exp $
+#	$Id: Makefile,v 1.17 2007-03-28 00:10:03 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -82,7 +82,7 @@ spotless:	clean
 		rm -f *.a
 
 set_new:
-		cp -f res_?/binned_GSHHS_?.cdf $(rootdir)/share
+		cp -f res_?/binned_GSHHS_?.cdf $(rootdir)/share/coast
 		
 set_old:
 		cd $(rootdir); tar xvjf ftp/GMT_share.tar.bz2
