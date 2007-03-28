@@ -4,6 +4,13 @@ Global Self-consistant Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../COPYING)
 
 --------------------------------------------------------------
+Version 1.8 March 31, 2007
+
+Minor fix to ensure gshhstograss.c will compile.  Version 1.5
+of the GSHHS data released, fixing a few crossings and dupli-
+cate points.  No data format change so 1.7 can read as well.
+
+--------------------------------------------------------------
 Version 1.7 Nov 11, 2006
 
 Minor bug fix: gshhs.c used && instead of & in one of the bit
