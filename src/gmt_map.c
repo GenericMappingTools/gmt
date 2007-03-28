@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.133 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.134 2007-03-28 03:10:38 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -151,8 +151,8 @@
  */
  
 #define GMT_WITH_NO_PS
-#include "gmt_proj.h"
 #include "gmt.h"
+#include "gmt_proj.h"
 
 
 /* ANSI-C Prototypes for functions internal to gmt_map.c */
