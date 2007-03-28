@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.12 2007-03-28 03:10:38 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.13 2007-03-28 21:02:40 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1866,7 +1866,7 @@ void GMT_vgenper( double lon0, double lat0,
     yt_min = -R*rho*sin(height/2.0*D2R); 
     yt_max = -yt_min; 
   } else {
-    FILE *fp;
+    FILE *fp = NULL;
     xt_min = 1e20;
     xt_max = -xt_min;
 

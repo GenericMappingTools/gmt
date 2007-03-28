@@ -1,12 +1,16 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.89 2007-03-28 03:02:12 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.90 2007-03-28 21:02:40 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
 #	27-MAR-2007
+#--------------------------------------------------------------------------------
+# GLOBAL VARIABLES
+NETCDF_VERSION=3.6.2
+#--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
 #--------------------------------------------------------------------------------
@@ -67,7 +71,6 @@ echo $use
 prep_gmt()
 {
 #--------------------------------------------------------------------------------
-NETCDF_VERSION=3.6.2
 LATESTGMT4=4.2.0
 LATESTGMT3=3.4.6
 LATESTGSHHS4=4.2
@@ -723,6 +726,7 @@ install_coast()
 	else
 		ok=0
 	fi
+	cd GMT${VERSION}
 	if [ $ok -eq 1 ] && [ $get_this != "n" ]; then	# File is present and wanted
 		if [ ! -d $dir ]; then
 			mkdir -p $dir
@@ -730,12 +734,11 @@ install_coast()
 		if [ ! -d $dir ]; then
 			echo "Could not make the directory $dir - $this not untarred"
 		else
-			cd $dir
 			$expand $here/$this | tar xvf -
-			cd $here
 			done=1
 		fi
 	fi
+	cd $here
 #	Special treatment for Companion CD-ROM with individual bzip2 files for high and full
 #	that facilitates cross-platform install with Win32
 	if [ -f GMT${file}c.bz2 ] && [ $get_this != "n" ] && [ $done -eq 0 ]; then	# File is present and wanted
@@ -941,7 +944,7 @@ if [ `echo $VERSION | awk '{print substr($1,1,1)}'` = "3" ]; then
 	GSHHS=3
 	source=progs
 else
-	GSHHS=4.1
+	GSHHS=4.2
 	source=src
 fi
 
