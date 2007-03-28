@@ -1,4 +1,4 @@
-	$Id: HOWTO.fix,v 1.5 2007-03-27 20:52:18 pwessel Exp $
+	$Id: HOWTO.fix,v 1.6 2007-03-28 00:03:11 pwessel Exp $
 	
 How to fix mistakes in the GSHHS database
 
@@ -91,7 +91,23 @@ to 4.1
 
 MARCH 27, 2007
 
-Tom Krazte found several instances of non-area peninsulas (i.e., an isolated point
+Updated version 4.2 has been made, just in time for GMT 4.2.0.
+1) Tom Krazte found several instances of non-area peninsulas (i.e., an isolated point
 connected to a duplicated point).  There were 5 such instances in high and one in
 intermediate.  The outlier and one of the duplicate points have been removed.
+2) Several polygon headers had negative west and west.  This caused polygon_xover
+to make shifts in lon by +-360 and thus missing obvious crossovers.  New tool
+polygon_fixnegwesn corrects these headers and polygon_xover has been rerun which
+found a few previoulsy-missed crossovers.  These have now been fixed:
+res_f: No problems found. 4.1 copied to 4.2
+res_h: 8 headers with negative w/e corrected.  No new crossovers generated.
+res_i: 23 headers with negative w/e corrected.  Once fixed some crossovers were found:
+	Pol 2825 vs 6098 nx = 4
+	Pol 13570 37470 nx = 4
+	Manually modified coordinates in 6098 to prevent crossings.  Deleted pol
+	37470.  Reran check and no new crossings found.
+res_l: 5 headers with negative w/e corrected.  No new crossovers generated.
+res_c: 1 header with negative w/e corrected.  No new crossovers generated.
+New gshhs_?.b files generated as well.
+
 

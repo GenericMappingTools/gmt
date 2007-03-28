@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.15 2007-03-27 20:52:18 pwessel Exp $
+#	$Id: Makefile,v 1.16 2007-03-28 00:03:11 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -29,9 +29,9 @@ include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
-VERSION = v4.1
-GSHHS_DATA_VERSION	= 1.4
-GSHHS_PROG_VERSION	= 1.6
+VERSION = v4.2
+GSHHS_DATA_VERSION	= 1.5
+GSHHS_PROG_VERSION	= 1.8
 
 COAST_H	= shore.h wvs.h
 
