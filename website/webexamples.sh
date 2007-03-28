@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.12 2004-09-24 22:59:26 pwessel Exp $
+#	 $Id: webexamples.sh,v 1.13 2007-03-28 03:02:12 pwessel Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -20,7 +20,7 @@
 #	gmt/examples/example_??_100dpi.gif (using convert)
 #-----------------------------------------------------------------------------
 
-n_examples=25
+n_examples=26
 
 GMT050dpi="convert -density 50x50"
 GMT100dpi="convert -density 100x100"
@@ -133,6 +133,9 @@ surfaces.</A></LI>
 
 <LI>
 <A HREF="examples/ex25/gmt_example_25.html">Global distribution of antipodes.</A></LI>
+
+<LI>
+<A HREF="examples/ex26/gmt_example_26.html">General vertical perspective projection.</A></LI>
 </OL>
 </BODY>
 </HTML>

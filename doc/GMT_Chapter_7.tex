@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.32 2007-02-08 22:21:40 remko Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.33 2007-03-28 03:02:12 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -903,3 +903,23 @@ few minutes).
 \GMTexample{25}{Global distribution of antipodes.}
 
 \index{Example!distribution of antipodes|)}
+
+\section{General vertical perspective projection}
+\index{Example!vertical perspective projection|(}
+
+Finally, we present a recent extension to the \Opt{JG} projection option which allows the user
+to specify a particular altitude (this was always at infinity before), as well as several
+further parameters to limit the view from the chosen vantage point.  In this example we show
+a view of the eastern continental US from a height of 160 km.  Below we add a view with a specific tilt of
+55\DS and azimuth 210\DS; here we have chosen a boresight twist of 45\DS.
+
+\script{example_26}
+
+At this point the full projection has not been properly optimized and the map annotations will need
+additional work.  Also, note that the projection is only implemented in \GMTprog{pscoast} and \GMTprog{grdimage}.
+We hope to refine this further and extend the availability of the full projection to all of the
+\GMT\ mapping programs.
+
+\GMTexample{26}{General vertical perspective projection.}
+ 
+\index{Example!vertical perspective projection|)}

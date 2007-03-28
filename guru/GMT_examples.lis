@@ -163,3 +163,6 @@ examples/ex24/oz_quakes.d
 examples/ex25/job25.sh
 examples/ex25/job25.csh
 examples/ex25/job25.bat
+examples/ex26/job26.sh
+examples/ex26/job26.csh
+examples/ex26/job26.bat
