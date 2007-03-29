@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.62 2007-03-28 03:35:14 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.63 2007-03-29 01:37:08 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -36,31 +36,33 @@ history of the development milestones in the 4.x series.
 
 \subsection{Overview of \gmt\ 4.2.0 [April-1, 2007]}
 
-Changes in \GMT\ 4.2.0 are again relatively minor and predominantly bug fixes.  One imporant
-new feature is that \GMTprog{grdimage} and \GMTprog{pscoast} now can use the general perspective
+Changes in \GMT\ 4.2.0 address many structural issues as well as many bug fixes.  We have consolidated
+user initialization files in the ~/.gmt directory, continued to replace tiling with bitmaps,
+and have performed a myriad of under-the-hood changes. One imporant and more visible
+new feature is the fact that \GMTprog{grdimage} and \GMTprog{pscoast} now can use the general perspective
 projection with arbitrary elevation (\Opt{JG} has been enhanced to handle the extra arguments required
 -- see the new example 26 for details).
 Also, the coastline files have been updated to use GSHHS version 1.5 which fixes minor inconsistencies
-in the coastline database.  We have also corrected issues that made the Windows DLL explode.
+in the coastline database.  We have also corrected issues that made the Windows DLL explode in 4.1.4.
 Finally, a few enhancements have been made to these programs:
 
 \begin{enumerate}
-\item The GRD98 format has been updated to handle both gridline and pixel registrations.
-\item We have relaxed the restriction on latitude for \Opt{JA}, \Opt{JS} for polar aspect; now more
+\item NGDC's GRD98 format has been updated to handle both gridline and pixel registrations.
+\item We have relaxed the restriction on latitude for \Opt{JA}, \Opt{JS} for polar aspects; now more
 than one hemisphere may be displayed.  Better warning/error messages.
-\item \GMTprog{grdcontour.c} has new option \Opt{F} to orient dumped contours.
+\item \GMTprog{grdcontour.c} has a new option \Opt{F} to orient dumped contours.
 Can now append :{\it radius} to the \Opt{G} option in order to specify a minimum
 spacing (measured in the x/y plane) between contour labels.
 \item \GMTprog{gmtconvert.c} has an enhanced \Opt{E} option; append {\bf f} or {\bf l}  to only get first or last record per segment.
 \item \GMTprog{gmtmath.c} \Opt{T} can now have {\bf +} appended to indicate number of points instead of increment.
 \item \GMTprog{grdmath.c} has new option \Opt{M} for using map units in gradients and new {\bf D2DXY} operator.
-Also added {\bf SBAZ} for backazimuths and now allow {\bf ELLIPSOID} to control if great
+Also added {\bf SBAZ} for back-azimuths and now allow {\bf ELLIPSOID} to control if great
 circles or geodesics should be used (Sphere selects great circles)
 \item \GMTprog{sample1d.c} now allows absolute time in \Opt{S} option.
 \item \GMTprog{psrose.c} has new \Opt{D} option to center the sector bins (like \GMTprog{pshistogram} \Opt{C}).
-\item \GMTprog{psxy.c} understand \Opt{W-} and \Opt{W+} which will turn off outline or reset to default, respectively.
-Similarly, \Opt{G-} and \Opt{G+} will turn off fill or reset to default (in \Opt{M}).
-Also added \Opt{SB} for horizontal bar (\Opt{Sb} is vertical).
+\item \GMTprog{psxy.c} understand \Opt{W-} and \Opt{W+} in multisegment headers which will turn off outline or reset to default, respectively.
+Similarly, \Opt{G-} and \Opt{G+} will turn off fill or reset to default (with \Opt{M}).
+Also added new option \Opt{SB} for horizontal bar (\Opt{Sb} is vertical).
 \item \GMTprog{psxyz.c} also has \Opt{SB} for horizontal bar (\Opt{Sb} is vertical).
 \item \GMTprog{imgsrc/img2mercgrd.c} can take \Opt{C} to let the Mercator x/y use the global origin of img file.
 \end{enumerate}
@@ -84,9 +86,9 @@ for fractional seconds annotation (the .xxx part).
 Now works correctly with multisegment headers.  Multisegment headers now written to the output file
 and not always to stdout. Option \Opt{C} now works (used to deselect all columns).
 Fixed {\bf LSQFIT} (used wrong columns when some were skipped).
-\item [\GMTprog{grdcontour.c}]: Interior contours not smoothed unless NaNs were involved.  Also the
+\item [\GMTprog{grdcontour.c}]: Interior contours were not smoothed unless NaNs were involved.  Also the
 labeling of closed highs/lows were insensitive to pixel versus gridline grids and could get the wrong result.
-\Opt{C} need to check for``.cpt'' at END of file name.  Fixed contour label angles were always ignored.
+\Opt{C} need to check for``.cpt'' at END of file name.  Fixed contour label angle specifications were always ignored.
 \item [\GMTprog{pscoast.c}]: Did not list \Opt{Z} in synopsis/usage.
 \item [\GMTprog{pscontour.c}]: For 3-D views, \Opt{E} projected contours (\Opt{W}) twice and mesh lines (\Opt{L}) not at all.
 Fixed contour label angles were always ignored.
@@ -108,7 +110,7 @@ Also did not accept { \bf z} as an output choice.
 \item [\GMTprog{splitxyz.c}]: Reported headings in radians instead of degrees.
 \item [\GMTprog{grdfft.c}]: \Opt{D} and \Opt{I} options could have junk in the parameter arrays if given more than once.
 \item [\GMTprog{gshhs/gshhs.c}]: Had \&\& instead of \& in bit-arithmetic that reported level.
-\item [\GMTprog{x2sys/x2sys\_cross.c}]: Failed to check for crossovers exacly on data nodes.
+\item [\GMTprog{x2sys/x2sys\_cross.c}]: Failed to check for crossovers falling exacly on data nodes.
 \end{description}
 
 %-----------------------------------------
