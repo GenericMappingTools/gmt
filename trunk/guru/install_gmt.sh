@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.92 2007-03-29 20:19:17 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.93 2007-03-29 21:12:19 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -964,12 +964,8 @@ if [ $netcdf_install = "y" ]; then
 	
 #		Determine if client's ftp is set to active or passive mode by default
 
-		ftp <<- END > $$.ftp_state
-		passive
-		END
-		grep -q off $$.ftp_state
-		active=$status
-		rm -f $$.ftp_state
+		echo passive | \ftp | grep -q off
+		active=$?
 
 #		Set-up ftp command
 
@@ -1064,12 +1060,8 @@ if [ $GMT_ftp = "y" ]; then
 
 #	Determine if client's ftp is set to active or passive mode by default
 
-	ftp <<- END > $$.ftp_state
-	passive
-	END
-	grep -q off $$.ftp_state
-	active=$status
-	rm -f $$.ftp_state
+	echo passive | \ftp | grep -q off
+	active=$?
 
 #	Set-up ftp command
 	sub=`echo $VERSION | awk '{print substr($1,1,1)}'`
