@@ -1,5 +1,5 @@
 #!/bin/sh
-#		$Id: job26.sh,v 1.1 2007-03-28 03:02:12 pwessel Exp $
+#		$Id: job26.sh,v 1.2 2007-03-29 03:00:18 pwessel Exp $
 #		GMT EXAMPLE 26
 #
 # Purpose:	Demonstrate general vertical perspective projection
@@ -10,7 +10,7 @@
 
 latitude=41.5
 longitude=-74.0
-altitude= 160.0
+altitude=160.0
 tilt=0
 azimuth=0
 twist=0
