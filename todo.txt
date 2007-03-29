@@ -1,15 +1,10 @@
-#	$Id: todo.txt,v 1.20 2007-02-02 16:41:38 remko Exp $
+#	$Id: todo.txt,v 1.21 2007-03-29 01:16:49 pwessel Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
 remember to add an entry in CHANGES.
 ------------------------------------------------------------------------
 BUGS or "FEATURES":
-
-gmt_map.c	When a map is drawn using grdview, the grid adjacent the boundary of
-		the map is filled with undefined value (for example "gray color"), 
-		while the value in the area is defined. 
-		See e-mail from Shinya Kouketsu of 8 Dec 2006.
 
 gmt_grdio.c	Should use GMT_getdatapath to find full pathname.
 
