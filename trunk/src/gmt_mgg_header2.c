@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.21 2007-03-08 01:29:45 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.22 2007-03-29 02:51:54 pwessel Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -488,7 +488,7 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 
 		if (piping)	{/* Skip data by reading it */
 			for (j = last_row + 1; j < header->ny; j++) {
-				if (GMT_fread ((void *) tLong, mggHeader.numType, header->nx, fp) < header->nx) return (GMT_GRDIO_READ_FAILED);
+				if (GMT_fread ((void *) tLong, mggHeader.numType, header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 			}
 		}
 	}
