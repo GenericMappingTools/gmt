@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.93 2007-03-29 21:12:19 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.94 2007-03-29 22:17:56 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -305,7 +305,7 @@ EOF
 	GMT_get_coast=`get_def_answer "Want the basic support data (coastlines) [$size Mb] (y/n)?" "y"`
 
 	echo " " >&2
-	echo " The next seven archives are optional but recommended for a typical GMT install" >&2
+	echo " The next six archives are optional but recommended for a typical GMT install" >&2
 	echo " " >&2
 
 	size=`sed -n 6p $sizes`
