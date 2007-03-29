@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.63 2007-03-29 01:37:08 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.64 2007-03-29 20:19:17 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -50,31 +50,32 @@ Finally, a few enhancements have been made to these programs:
 \item NGDC's GRD98 format has been updated to handle both gridline and pixel registrations.
 \item We have relaxed the restriction on latitude for \Opt{JA}, \Opt{JS} for polar aspects; now more
 than one hemisphere may be displayed.  Better warning/error messages.
+\item \GMTprog{gmtconvert.c} has an enhanced \Opt{E} option; append {\bf f} or {\bf l}  to only get first or last record per segment.
+\item \GMTprog{gmtmath.c} \Opt{T} can now have {\bf +} appended to indicate number of points instead of increment.
 \item \GMTprog{grdcontour.c} has a new option \Opt{F} to orient dumped contours.
 Can now append :{\it radius} to the \Opt{G} option in order to specify a minimum
 spacing (measured in the x/y plane) between contour labels.
-\item \GMTprog{gmtconvert.c} has an enhanced \Opt{E} option; append {\bf f} or {\bf l}  to only get first or last record per segment.
-\item \GMTprog{gmtmath.c} \Opt{T} can now have {\bf +} appended to indicate number of points instead of increment.
+\item \GMTprog{grdinfo.c} has an enhanced \Opt{I} option.  With no arguments we return the grid's \Opt{I}{\it dx/dy} string
+whereas \Opt{I}- will return the grid's \Opt{R}{\it w/e/s/n} string.
 \item \GMTprog{grdmath.c} has new option \Opt{M} for using map units in gradients and new {\bf D2DXY} operator.
 Also added {\bf SBAZ} for back-azimuths and now allow {\bf ELLIPSOID} to control if great
 circles or geodesics should be used (Sphere selects great circles)
-\item \GMTprog{sample1d.c} now allows absolute time in \Opt{S} option.
 \item \GMTprog{psrose.c} has new \Opt{D} option to center the sector bins (like \GMTprog{pshistogram} \Opt{C}).
 \item \GMTprog{psxy.c} understand \Opt{W-} and \Opt{W+} in multisegment headers which will turn off outline or reset to default, respectively.
 Similarly, \Opt{G-} and \Opt{G+} will turn off fill or reset to default (with \Opt{M}).
 Also added new option \Opt{SB} for horizontal bar (\Opt{Sb} is vertical).
 \item \GMTprog{psxyz.c} also has \Opt{SB} for horizontal bar (\Opt{Sb} is vertical).
+\item \GMTprog{sample1d.c} now allows absolute time in \Opt{S} option.
 \item \GMTprog{imgsrc/img2mercgrd.c} can take \Opt{C} to let the Mercator x/y use the global origin of img file.
 \end{enumerate}
 
 Below is a list of previous problems that we have identified and corrected in the current release:
 
 \begin{description}
-\item [\GMTprog{gmt\_time\_systems.h}]: J2000 epoch was 1.0 Jan 2000, instead of 1.5 Jan 2000.
-\item [\GMTprog{gmt\_io.c}]: Did not terminate a calendar string after copying it.
 \item [\GMTprog{gmt\_init.c}]: Fixed unit problem with\Opt{Jx}1:xxxxx.  Erroneously added degree symbol
 to both coordinates in case of \Opt{JX}..d/.. (single d). Now properly adds only degree symbol on specified axis.
 Did not change time-system when only {\bf TIME\_UNIT} was specified.
+\item [\GMTprog{gmt\_io.c}]: Did not terminate a calendar string after copying it.
 \item [\GMTprog{gmt\_plot.c}]: The logic to check for seconds annotations failed if inc $< 1$ arc sec.
 Did not set the contour annotation font before writing labels.
 \item [\GMTprog{gmt\_support.c}]: Parsing old-style pens did not set offset to 0 when no texture was given.
@@ -82,6 +83,7 @@ Fixed IFACT size in the old Brenner FORTRAN FFT -- bug undetected since GMT 1!
 Contouring of grids with NaNs need to check both vertical AND horizontal interior gridcell boundaries
 for possible crossings.  The label machinery for ddd:mm:ss.xx used the wrong parameter to check
 for fractional seconds annotation (the .xxx part).
+\item [\GMTprog{gmt\_time\_systems.h}]: J2000 epoch was 1.0 Jan 2000, instead of 1.5 Jan 2000.
 \item [\GMTprog{gmtmath.c}]: Fixed memory allocation bug for files with more than BUFSIZ records.
 Now works correctly with multisegment headers.  Multisegment headers now written to the output file
 and not always to stdout. Option \Opt{C} now works (used to deselect all columns).
@@ -89,9 +91,16 @@ Fixed {\bf LSQFIT} (used wrong columns when some were skipped).
 \item [\GMTprog{grdcontour.c}]: Interior contours were not smoothed unless NaNs were involved.  Also the
 labeling of closed highs/lows were insensitive to pixel versus gridline grids and could get the wrong result.
 \Opt{C} need to check for``.cpt'' at END of file name.  Fixed contour label angle specifications were always ignored.
+\item [\GMTprog{grdfft.c}]: \Opt{D} and \Opt{I} options could have junk in the parameter arrays if given more than once.
+\item [\GMTprog{grdimage.c}]: \Opt{JX} with a negative scale/length and \Opt{E}{\it dpi} failed to flip the image.
+\item [\GMTprog{grdinfo.c}]: Would not take both \Opt{L}1 and \Opt{L}2.
+\item [\GMTprog{grdview.c}]: Plot no mesh when \Opt{T} is used.
+\item [\GMTprog{mapproject.c}]: \Opt{L} option did not allocate enough output memory for extra columns.
 \item [\GMTprog{pscoast.c}]: Did not list \Opt{Z} in synopsis/usage.
 \item [\GMTprog{pscontour.c}]: For 3-D views, \Opt{E} projected contours (\Opt{W}) twice and mesh lines (\Opt{L}) not at all.
 Fixed contour label angles were always ignored.
+\item [\GMTprog{pslib.c}]: Only issue setdash \PS\ commands if texture has changed.  \GMTfunc{ps\_clipoff} needed to
+reset memory of last pen width/color/pattern.  \GMTfunc{ps\_color\_tiles} used wrong registration.
 \item [\GMTprog{psrose.c}]: Failed to skip pie-slice filling when no fill was selected.  \Opt{C} lead to
 SEGV as it tried to read from a non-existent file.
 \item [\GMTprog{psxy.c}]: When used with \Opt{S} but no \Opt{W} or \Opt{G} given, only set default \Opt{W} if \Opt{M} not used.
@@ -99,16 +108,9 @@ Erroneously turned symbol outlines on if just \Opt{C} was given.  Incorrectly su
 \Opt{Sf} option was parsed to require 3 instead of 2 coordinates.
 \item [\GMTprog{psxyz.c}]: \Opt{Svs} could fail to plot by confusing y-coordinate and y-size.
 Also need 6 rather than 5 input columns.  Bar width has only half of what was requested
-\item [\GMTprog{grdinfo.c}]: Would not take both \Opt{L}1 and \Opt{L}2.
-\item [\GMTprog{grdimage.c}]: \Opt{JX} with a negative scale/length and \Opt{E}{\it dpi} failed to flip the image.
-\item [\GMTprog{grdview.c}]: Plot no mesh when \Opt{T} is used.
-\item [\GMTprog{pslib.c}]: Only issue setdash \PS\ commands if texture has changed.  \GMTfunc{ps\_clipoff} needed to
-reset memory of last pen width/color/pattern.  \GMTfunc{ps\_color\_tiles} used wrong registration.
-\item [\GMTprog{mapproject.c}]: \Opt{L} option did not allocate enough output memory for extra columns.
+\item [\GMTprog{splitxyz.c}]: Reported headings in radians instead of degrees.
 \item [\GMTprog{trend2d.c}]: Failed to pass the new variable with column choices.
 Also did not accept { \bf z} as an output choice.
-\item [\GMTprog{splitxyz.c}]: Reported headings in radians instead of degrees.
-\item [\GMTprog{grdfft.c}]: \Opt{D} and \Opt{I} options could have junk in the parameter arrays if given more than once.
 \item [\GMTprog{gshhs/gshhs.c}]: Had \&\& instead of \& in bit-arithmetic that reported level.
 \item [\GMTprog{x2sys/x2sys\_cross.c}]: Failed to check for crossovers falling exacly on data nodes.
 \end{description}
