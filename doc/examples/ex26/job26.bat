@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 26
 REM
-REM             $Id: job26.bat,v 1.1 2007-03-28 03:02:12 pwessel Exp $
+REM             $Id: job26.bat,v 1.2 2007-03-29 03:00:18 pwessel Exp $
 REM
 REM Purpose:    Demonstrate general vertical perspective projection
 REM
@@ -17,7 +17,7 @@ REM first do an overhead of the east coast from 160 km altitude point straight d
 
 set latitude=41.5
 set longitude=-74.0
-set altitude= 160.0
+set altitude=160.0
 set tilt=0
 set azimuth=0
 set twist=0
