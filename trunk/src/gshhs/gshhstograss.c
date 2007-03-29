@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.11 2007-03-16 03:13:39 pwessel Exp $
+/*	$Id: gshhstograss.c,v 1.12 2007-03-29 01:09:32 pwessel Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ char **argv;
 {
 	double w, e, s, n, area, lon, lat;
 	double minx = -360., maxx = 360., miny = -90., maxy = 90.;
-	char source, *progname, *dataname, dig_name[24], att_name[24], cats_name[24];
+	char source, *progname, *dataname = NULL, dig_name[24], att_name[24], cats_name[24];
 	static char *slevel[] = { "null" , "land" , "lake" , "island_in_lake" , "pond_in_island_in_lake" };
 	FILE    *fp,*dig_ascii,*dig_att,*dig_cats;
 	int     k, max = 270000000, flip, n_read, level, version, greenwich, src;
