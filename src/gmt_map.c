@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.135 2007-03-28 03:13:05 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.136 2007-03-29 19:32:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5226,8 +5226,10 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
                 struct GRD_HEADER *r_head, double max_radius)
 {                               /* Forward projection from geographical to rectangular grid */
   int ik, i, j, k, ij, ii, jj, i_r, j_r, nm, di, dj, not_used = 0;
-  int ii_r, num_nan = 0;
+  int ii_r, number_nan = 0;
   int *num_sum;
+  int *num_nan;
+  int g_periodic = -1;
   BOOLEAN greenwich;
   float *weight_sum;
   double dr, lat_0, lon_0, *x_0, y_0, *lon, *lat, dlon, x, y, delta,
@@ -5276,6 +5278,9 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
    num_sum =
     (int *) GMT_memory(VNULL, (size_t) nm, sizeof(int),
 			 "genper_grd_forward");
+  num_nan =
+    (int *) GMT_memory(VNULL, (size_t) nm, sizeof(int),
+			 "genper_grd_forward");
   di = (int) ceil(max_radius / r_head->x_inc);
   dj = (int) ceil(max_radius / r_head->y_inc);
 
@@ -5290,6 +5295,10 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
   i_max_3r = 3.0 / max_radius;
   idx = 1.0 / g_head->x_inc;
   idy = 1.0 / g_head->y_inc;
+
+  if( fabs(g_head->x_max - g_head->x_min) > 120.0 ) {
+    g_periodic = 1;
+  }
 
   lon =
     (double *) GMT_memory(VNULL, (size_t) g_head->nx, sizeof(double),
@@ -5373,7 +5382,9 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
           continue;
         for (i_r = ii - di; i_r <= (ii + di); i_r++) {
           ii_r = i_r;
-          ii_r %= g_head->nx;
+          if( g_periodic ) {
+            ii_r %= g_head->nx;
+          }
           if (ii_r < 0 || ii_r >= g_head->nx)
             continue;
           k = j * r_head->nx + i;
@@ -5394,9 +5405,13 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
 
           delta = dr * i_max_3r;
           weight = 1.0 / (1.0 + delta * delta);
-          rect[ij] += (float) (weight * geo[ik]);
-          weight_sum[ij] += (float) weight;
- 	  num_sum[ij]++;
+          if( GMT_is_fnan(geo[ik]) ) {
+            num_nan[ij] ++;
+          } else {
+            rect[ij] += (float) (weight * geo[ik]);
+            weight_sum[ij] += (float) weight;
+ 	    num_sum[ij]++;
+	  }
         }
       }
     }
@@ -5411,18 +5426,23 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
       r_head->z_min = MIN(r_head->z_min, rect[k]);
       r_head->z_max = MAX(r_head->z_max, rect[k]);
     } else {
-        if( num_sum[k] <= 0 ) {
-  	  not_used++;
-  	  rect[k] = 0;
-        } else {
- 	  num_nan ++;
+      if( num_sum[k] <= 0 ) {
+       if( num_nan[k] ) {
           rect[k] = GMT_f_NaN;
-        }
+       } else {
+         not_used++;
+  	  rect[k] = 0;
+	}
+      } else {
+ 	number_nan ++;
+        rect[k] = GMT_f_NaN;
+      }
     }
   }
 
   GMT_free((void *) weight_sum);
   GMT_free((void *) num_sum);
+  GMT_free((void *) num_nan);
   GMT_free((void *) lon);
   GMT_free((void *) lat);
   GMT_free((void *) x_0);
@@ -5433,7 +5453,7 @@ genper_grd_forward(float *geo, struct GRD_HEADER *g_head, float *rect,
     fprintf(stderr, "%s: Some geographical nodes not loaded (%d)\n",
             GMT_program, not_used);
     fprintf(stderr, "%s: number of nan implanted (%d)\n",
-            GMT_program, num_nan);
+            GMT_program, number_nan);
   }
   return (GMT_NOERROR);
 }

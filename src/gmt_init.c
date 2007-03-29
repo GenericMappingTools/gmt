@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.283 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.284 2007-03-29 19:32:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -292,6 +292,8 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t        altitude is in Kilometers\n");
 			fprintf (stderr, "\t        if altitude less than 10 then it is the distance \n");
 			fprintf (stderr, "\t        from center of earth to viewpoint divided by the radius of the Earth\n");
+			fprintf (stderr, "\t        if altitude has a suffix of 'r' then it is the radius \n");
+			fprintf (stderr, "\t        from the center of earth in kilometers\n");
 			fprintf (stderr, "\t     Azimuth is azimuth east of North of view\n");
 			fprintf (stderr, "\t     Tilt is the upward tilt of the plane of projection\n");
 			fprintf (stderr, "\t       if tilt < 0 then viewpoint is centered on the horizon\n");
@@ -4325,6 +4327,8 @@ int GMT_parse_J_option (char *args)
 				/* force spherical as default */
 				project_info.g_sphere = 1;
 
+				/* set radius flag to 0 */
+				project_info.g_radius = 0;
 				ip_arg = 0;
 
 				for( ip = 0 ; ip < 2 ; ip++) {
@@ -4395,8 +4399,13 @@ int GMT_parse_J_option (char *args)
 				if( error ) fprintf(stderr,"error reading latitude '%s'\n", &(txt_arr[1][0]));
 
 				/* g_alt    project_info.pars[4] = atof(txt_c); */
+		                nlen = strlen(&(txt_arr[2][0]));
+		                if( txt_arr[2][nlen-1] == 'r' ) {
+					project_info.g_radius = 1;
+					txt_arr[2][nlen-1] = 0;
+		                }
 				error += GMT_verify_expectations (GMT_IS_FLOAT, GMT_scanf (&(txt_arr[2][0]), GMT_IS_FLOAT, &project_info.pars[4]), &(txt_arr[2][0]));
-				if( error ) fprintf(stderr,"error reading altitude '%s'\n", &(txt_arr[4][0]));
+				if( error ) fprintf(stderr,"error reading altitude '%s'\n", &(txt_arr[2][0]));
 
 				/* g_az    project_info.pars[5] = atof(txt_d); */
 				nlen = strlen(&(txt_arr[3][0]));
@@ -4405,7 +4414,7 @@ int GMT_parse_J_option (char *args)
 					txt_arr[3][nlen-1] = 0;
 				}
 				error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[3][0]), GMT_IS_GEO, &project_info.pars[5]), &(txt_arr[3][0]));
-				if( error ) fprintf(stderr,"error reading azimuth '%s'\n", &(txt_arr[5][0]));
+				if( error ) fprintf(stderr,"error reading azimuth '%s'\n", &(txt_arr[3][0]));
 
 				/*g_tilt    project_info.pars[6] = atof(txt_e); */
 				nlen = strlen(&(txt_arr[4][0]));
@@ -4414,22 +4423,27 @@ int GMT_parse_J_option (char *args)
 					txt_arr[4][nlen-1] = 0;
 				}
 				error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[4][0]), GMT_IS_GEO, &project_info.pars[6]), &(txt_arr[4][0]));
-				if( error ) fprintf(stderr,"error reading tilt '%s'\n", &(txt_arr[6][0]));
+				if( error ) fprintf(stderr,"error reading tilt '%s'\n", &(txt_arr[4][0]));
 
 				if( nlast > 6 ) {
 					/*g_twist   project_info.pars[7] = atof(txt_f); */
+			                    nlen = strlen(&(txt_arr[5][0]));
+			                    if( txt_arr[5][nlen-1] == 'n' ) {
+			                        project_info.g_auto_twist = 1;
+			                        txt_arr[5][nlen-1] = 0;
+			                    }
 					error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[5][0]), GMT_IS_GEO, &project_info.pars[7]), &(txt_arr[5][0]));
-					if( error ) fprintf(stderr,"error reading twist '%s'\n", &(txt_arr[7][0]));
+					if( error ) fprintf(stderr,"error reading twist '%s'\n", &(txt_arr[5][0]));
 
 					/*g_width   project_info.pars[8] = atof(txt_f); */
 					if( nlast > 7 ) {
 						error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[6][0]), GMT_IS_GEO, &project_info.pars[8]), &(txt_arr[6][0]));
-						if( error ) fprintf(stderr,"error reading width '%s'\n", &(txt_arr[8][0]));
+						if( error ) fprintf(stderr,"error reading width '%s'\n", &(txt_arr[6][0]));
 
 						if( nlast > 8 ) {
 							/*g_height  project_info.pars[9] = atof(txt_g); */
 							error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[7][0]), GMT_IS_GEO, &project_info.pars[9]), &(txt_arr[7][0]));
-							if( error ) fprintf(stderr,"error height '%s'\n", &(txt_arr[9][0]));
+							if( error ) fprintf(stderr,"error height '%s'\n", &(txt_arr[7][0]));
 						}
 					}
 				}
