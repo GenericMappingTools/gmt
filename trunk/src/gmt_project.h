@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.48 2007-02-13 17:04:40 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.49 2007-03-29 19:32:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -297,6 +297,8 @@ struct GMT_MAP_PROJECTIONS {
         int g_longlat_set;
         int g_sphere;
         int g_ellipsoid;
+	int g_radius;
+	int g_auto_twist;
 #endif  /* end of _GENPER */
 
 	/* Gnomonic horizon */

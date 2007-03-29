@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.13 2007-03-28 21:02:40 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.14 2007-03-29 19:32:30 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1394,10 +1394,14 @@ genper_setup( double h0, double altitude, double lat, double lon0)
     N1 = a/sqrt(1.0 - (e2*sphi1*sphi1));
     niter = 0;
 
-    if( altitude < -10.0  ) {
+    phig = phi1;
+    sphig = sin(phig*D2R);
+    cphig = cos(phig*D2R);
+
+    if( project_info.g_radius || (altitude < -10.0)  ) {
 /* use altitude as the radial distance from the center of the earth*/
-      H = fabs(altitude*1e3) - R;
-      P = H/R + 1.0;
+      H = fabs(altitude*1e3) - a;
+      P = H/a + 1.0;
     } else if( altitude <= 0  ) {
 /* setup altitude of geosynchronous viewpoint n*/
       double temp = 86164.1/TWO_PI;
@@ -1532,7 +1536,7 @@ void GMT_vgenper( double lon0, double lat0,
   double yt_min, yt_max;
   double xt_min, xt_max;
 
-  double A, rmax;
+  double rmax;
   double rmax_at_lat0, rmax_min, rmax_max;
   double t1, t2, t12, t22;
   double kp;
@@ -1605,7 +1609,7 @@ void GMT_vgenper( double lon0, double lat0,
   } else {
     project_info.pole = lat0;
 
-    if( altitude < -10.0  ) {
+    if( project_info.g_radius || (altitude < -10.0)  ) {
 /* use altitude as the radial distance from the center of the earth*/
       H = fabs(altitude*1e3) - R;
       P = H/R + 1.0;
@@ -1641,46 +1645,52 @@ void GMT_vgenper( double lon0, double lat0,
     vp_lat = tilt;
     vp_long = azimuth;
 
-    if( project_info.g_debug > 0 ) {
-      fprintf(stderr," sensor point long %7.4f lat  %7.4f\n", lon0, lat0);
-      fprintf(stderr," input view point long %7.4f lat %7.4f\n", vp_long, vp_lat);
-      fprintf(stderr," input twist %7.4f\n", twist);
-      fprintf(stderr," altitude %f H %f R %f P %7.4f\n", altitude, H/1000.0, R/1000.0,P);
+    if( (vp_lat == lat0_save) && ( vp_long == lon0)){
+      tilt = 0.0;
+      azimuth = 0.0;
+    } else {
+
+      if( project_info.g_debug > 0 ) {
+        fprintf(stderr," sensor point long %7.4f lat  %7.4f\n", lon0, lat0);
+        fprintf(stderr," input view point long %7.4f lat %7.4f\n", vp_long, vp_lat);
+        fprintf(stderr," input twist %7.4f\n", twist);
+        fprintf(stderr," altitude %f H %f R %f P %7.4f\n", altitude, H/1000.0, R/1000.0,P);
+      }
+
+      rlat0 = (90.0 - lat0)*D2R;
+      rlat1 = (90.0 - vp_lat)*D2R;
+
+      while( vp_long < 0 ) vp_long += 360.0;
+
+      while( norm_long < 0 ) norm_long += 360.0;
+
+      dlong0  = vp_long - norm_long;
+
+      if( dlong0 < -180.0 ) dlong0 = 360 + dlong0;
+
+      dlong = dlong0 * D2R;
+
+      cos_eca = cos(rlat0)*cos(rlat1) + sin(rlat0)*sin(rlat1)*cos(dlong);
+
+      eca = d_acos(cos_eca);
+      sin_eca = sin(eca);
+
+      rho2 = P*P + 1.0 - 2.0*P*cos_eca;
+      rho = sqrt(rho2);
+
+      cos_tilt = (rho2 + P*P - 1.0)/(2.0*rho*P);
+
+      tilt = d_acos(cos_tilt)*R2D;
+
+      cos_azimuth = (cos(rlat1) - cos(rlat0)*cos_eca)/(sin(rlat0)*sin_eca); 
+
+      azimuth = d_acos(cos_azimuth)*R2D;
+
+      if( dlong < 0 ) {
+        azimuth = 360.0 - azimuth;
+      } 
+
     }
-
-    rlat0 = (90.0 - lat0)*D2R;
-    rlat1 = (90.0 - vp_lat)*D2R;
-
-    while( vp_long < 0 ) vp_long += 360.0;
-
-    while( norm_long < 0 ) norm_long += 360.0;
-
-    dlong0  = vp_long - norm_long;
-
-    if( dlong0 < -180.0 ) dlong0 = 360 + dlong0;
-
-    dlong = dlong0 * D2R;
-
-    cos_eca = cos(rlat0)*cos(rlat1) + sin(rlat0)*sin(rlat1)*cos(dlong);
-
-    eca = d_acos(cos_eca);
-    sin_eca = sin(eca);
-
-    rho2 = P*P + 1.0 - 2.0*P*cos_eca;
-    rho = sqrt(rho2);
-
-    cos_tilt = (rho2 + P*P - 1.0)/(2.0*rho*P);
-
-    tilt = d_acos(cos_tilt)*R2D;
-
-    cos_azimuth = (cos(rlat1) - cos(rlat0)*cos_eca)/(sin(rlat0)*sin_eca); 
-
-    azimuth = d_acos(cos_azimuth)*R2D;
-
-    if( dlong < 0 ) {
-      azimuth = 360.0 - azimuth;
-    } 
-
     if( project_info.g_debug > 0 ) {
       fprintf(stderr,"vgenper: pointing at longitude %10.4f latitude %10.4f\n "
                    "          wit h computed tilt %5.2f azimuth %6.2f\n",
@@ -1887,8 +1897,8 @@ void GMT_vgenper( double lon0, double lat0,
       genper_to_xtyt( az, x, y, project_info.g_yoffset, &xt, &yt);
 
       if( project_info.g_debug > 2 ) {
-        fprintf(fp,"%6.1f x %10.2f y %10.2f A %10.4f xt %10.3f yt %10.3f\n", 
-      	az, x/1000, y/1000, A, xt/1000, yt/1000);
+        fprintf(fp,"%6.1f x %10.2f y %10.2f xt %10.3f yt %10.3f\n", 
+      	az, x/1000, y/1000, xt/1000, yt/1000);
       }
 
       xt_min = xt < xt_min ? xt : xt_min;
@@ -1917,15 +1927,6 @@ void GMT_vgenper( double lon0, double lat0,
     fprintf(stderr,"vgenper: yt min %7.1f km\n", yt_min/1000.0);
   }
 
-  if( fabs(xt_min) > fabs(rmax_at_lat0) ) {
-    xt_min = -rmax_at_lat0;
-    xt_max = -xt_min;
-  }
-  if( fabs(yt_min) > fabs(rmax_at_lat0) ) {
-    yt_min = -rmax_at_lat0;
-    yt_max = -yt_min;
-  }
-  
   project_info.g_ymax = yt_max;
   project_info.g_ymin = yt_min;
   project_info.g_xmax = xt_max;
@@ -2044,6 +2045,7 @@ void GMT_genper (double lon, double lat, double *xt, double *yt)
 
   project_info.g_outside = 0;
 
+  angle = M_PI - dlon;
   if( cosc < P_inv ) {
 
 /* over the horizon */
