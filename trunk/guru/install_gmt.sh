@@ -1,15 +1,20 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.91 2007-03-28 21:25:31 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.92 2007-03-29 20:19:17 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	27-MAR-2007
+#	29-MAR-2007
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.2
+LATESTGMT4=4.2.0
+LATESTGMT3=3.4.6
+LATESTGSHHS4=4.2
+LATESTGSHHS3=3
+GSHHS=4.2
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
@@ -71,11 +76,6 @@ echo $use
 prep_gmt()
 {
 #--------------------------------------------------------------------------------
-LATESTGMT4=4.2.0
-LATESTGMT3=3.4.6
-LATESTGSHHS4=4.2
-LATESTGSHHS3=3
-GSHHS=4.2
 cat << EOF > gmt_install.ftp_site
 1. SOEST, U of Hawaii [GMT Home], Honolulu, Hawaii, USA
 2. NOAA, Lab for Satellite Altimetry, Silver Spring, Maryland, USA
@@ -962,16 +962,21 @@ if [ $netcdf_install = "y" ]; then
 
 		cd $topdir
 	
+#		Determine if client's ftp is set to active or passive mode by default
+
+		ftp <<- END > $$.ftp_state
+		passive
+		END
+		grep -q off $$.ftp_state
+		active=$status
+		rm -f $$.ftp_state
+
 #		Set-up ftp command
 
-		p=
 		echo "user anonymous $USER@" > $$
-		if [ $passive_ftp = "y" ]; then
+		if [ $passive_ftp = "y" ] && [ $active -eq 1 ]; then
 			echo "passive" >> $$
 			echo "quote pasv" >> $$
-			if [ $os = "IRIX64" ]; then
-				p=p
-			fi
 		fi
 		echo "cd pub/netcdf" >> $$
 		echo "binary" >> $$
@@ -983,7 +988,7 @@ if [ $netcdf_install = "y" ]; then
 
 		echo "Getting netcdf by anonymous ftp (be patient)..." >&2
 		before=`du -sk . | cut -f1`
-		ftp -dn$p ftp.unidata.ucar.edu < $$ || ( echo "ftp failed - try again later" >&2; exit )
+		ftp -dn ftp.unidata.ucar.edu < $$ || ( echo "ftp failed - try again later" >&2; exit )
 		after=`du -sk . | cut -f1`
 		newstuff=`echo $before $after | awk '{print $2 - $1}'`
 		echo "Got $newstuff kb ... done" >&2
@@ -1057,16 +1062,21 @@ if [ $GMT_ftp = "y" ]; then
 	ftp_ip=`sed -n ${GMT_ftpsite}p gmt_install.ftp_ip`
 	is_dns=`sed -n ${GMT_ftpsite}p gmt_install.ftp_dns`
 
+#	Determine if client's ftp is set to active or passive mode by default
+
+	ftp <<- END > $$.ftp_state
+	passive
+	END
+	grep -q off $$.ftp_state
+	active=$status
+	rm -f $$.ftp_state
+
 #	Set-up ftp command
-	p=
 	sub=`echo $VERSION | awk '{print substr($1,1,1)}'`
 	echo "user anonymous $USER@" > gmt_install.ftp_list
-	if [ $passive_ftp = "y" ]; then
+	if [ $passive_ftp = "y" ] && [ $active -eq 1 ]; then
 		echo "passive" >> gmt_install.ftp_list
 		echo "quote pasv" >> gmt_install.ftp_list
-		if [ $os = "IRIX64" ]; then
-			p=p
-		fi
 	fi
 	echo "cd $DIR/$sub" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
@@ -1091,7 +1101,7 @@ if [ $GMT_ftp = "y" ]; then
 	echo "Getting GMT by anonymous ftp from $ftp_ip (be patient)..." >&2
 
 	before=`du -sk . | cut -f1`
-	ftp -dn$p $ftp_ip < gmt_install.ftp_list || ( echo "fpt failed - try again later >&2"; exit )
+	ftp -dn $ftp_ip < gmt_install.ftp_list || ( echo "fpt failed - try again later >&2"; exit )
 	after=`du -sk . | cut -f1`
 	rm -f gmt_install.ftp_list
 	newstuff=`echo $before $after | awk '{print $2 - $1}'`
