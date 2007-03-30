@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.2 2007-01-30 20:37:09 pwessel Exp $
+#	$Id: Makefile,v 1.3 2007-03-30 03:24:54 pwessel Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -260,6 +260,3 @@ $(PROGSPS):	$(GMTLIB) $(PROGSPS_O)
 
 gmtmath.o:	gmtmath.c gmtmath.h
 grdmath.o:	grdmath.c grdmath.h
-
-#---------------------------- CVS GURU EXTENSIONS-------------------------------
-sinclude makefile.guru

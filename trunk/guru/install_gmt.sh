@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.95 2007-03-30 02:57:36 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.96 2007-03-30 03:24:54 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1307,20 +1307,6 @@ fi
 cd ..
 
 #--------------------------------------------------------------------------------
-# RUN EXAMPLES
-#--------------------------------------------------------------------------------
-
-# Run examples with /src as binary path in case the user did
-# not have permission to place files in GMT_bin
-
-if [ -d examples ]; then
-	if [ $GMT_run_examples = "y" ]; then
-		$GMT_make run-examples || exit
-	fi
-fi
-
-
-#--------------------------------------------------------------------------------
 # INSTALL SUPPLEMENTAL PROGRAMS
 #--------------------------------------------------------------------------------
 
@@ -1379,6 +1365,20 @@ if [ $write_web -eq 1 ]; then
 else
 	echo "You do not have write permission to create $GMT_web" >&2
 fi
+
+#--------------------------------------------------------------------------------
+# RUN EXAMPLES
+#--------------------------------------------------------------------------------
+
+# Run examples with /src as binary path in case the user did
+# not have permission to place files in GMT_bin
+
+if [ -d examples ]; then
+	if [ $GMT_run_examples = "y" ]; then
+		$GMT_make run-examples || exit
+	fi
+fi
+
 
 cd $here/src
 if [ $write_bin -eq 1 ]; then
