@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.35 2007-03-30 03:24:54 pwessel Exp $
+#	$Id: Makefile,v 1.36 2007-03-30 19:09:30 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -122,3 +122,6 @@ $(MGD77PS):	$(MGD77PS_O) libmgd77.a $(GMTLIB)
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<
+
+#---------------------------- CVS GURU EXTENSIONS-------------------------------
+sinclude makefile.guru

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.12 2007-03-30 03:24:54 pwessel Exp $
+#	$Id: Makefile,v 1.13 2007-03-30 19:09:30 remko Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -64,3 +64,6 @@ $(ALL):		$(ALL_O) $(GMTLIB)
 		$(CC) -c $(CFLAGS) $<
 
 $(ALL_O):	x_system.h $(GMT_H)
+
+#---------------------------- CVS GURU EXTENSIONS-------------------------------
+sinclude makefile.guru
