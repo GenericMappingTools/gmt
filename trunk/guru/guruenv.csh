@@ -1,6 +1,6 @@
 #!/bin/csh
 #
-#	$Id: guruenv.csh,v 1.10 2006-12-06 18:13:50 remko Exp $
+#	$Id: guruenv.csh,v 1.11 2007-03-30 03:34:24 pwessel Exp $
 #
 #	Environmental variables needed by GMT gurus
 #	Stick these in your environment before making GMT
@@ -28,7 +28,7 @@ setenv MATLAB /usr/local/matlab						# Set to NONE if you do not have Matlab
 #   those make commands from the main GMT directory, the following alias is very
 #   handy as it fails unless you are in the GMT directory:
 
-alias gurumake 'make -f guru/Makefile.guru'				# Simple shorthand for guru making
+alias gurumake 'make -f makefile.guru'				# Simple shorthand for guru making
 
 
 #
