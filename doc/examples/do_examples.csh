@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.10 2007-03-30 02:57:36 pwessel Exp $
+#	$Id: do_examples.csh,v 1.11 2007-03-30 04:08:21 pwessel Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -38,7 +38,7 @@ if ($#argv >= 1) then
 	set top = `pwd`
 	cd examples
 	set path = ($1 $path)
-	if ($#argv == 2) then
+	if ($#argv >= 2) then
 		if ($?LD_LIBRARY_PATH) then
 			setenv LD_LIBRARY_PATH ${2}:$LD_LIBRARY_PATH
 		else
