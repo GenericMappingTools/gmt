@@ -1,11 +1,11 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.9 2007-03-28 03:02:12 pwessel Exp $
+#	$Id: do_examples.csh,v 1.10 2007-03-30 02:57:36 pwessel Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
-# bin directory where the executables are.  If a second
-# argument is passed it is assumed to be dir of shared libs
+# bin directory where the executables are.  If a second (and/or 3rd)
+# argument is passed it is assumed to dir(s) of shared libs
 
 unalias cd
 
@@ -44,6 +44,9 @@ if ($#argv >= 1) then
 		else
 			setenv LD_LIBRARY_PATH ${2}:/usr/lib
 		endif
+	endif
+	if ($#argv == 3) then
+		setenv LD_LIBRARY_PATH ${3}:$LD_LIBRARY_PATH
 	endif
 endif
 

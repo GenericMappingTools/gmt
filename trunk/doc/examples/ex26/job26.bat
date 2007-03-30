@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 26
 REM
-REM             $Id: job26.bat,v 1.2 2007-03-29 03:00:18 pwessel Exp $
+REM             $Id: job26.bat,v 1.3 2007-03-30 02:57:36 pwessel Exp $
 REM
 REM Purpose:    Demonstrate general vertical perspective projection
 REM
@@ -39,7 +39,7 @@ set Height=30.0
 
 set PROJ=-JG%longitude%/%latitude%/%altitude%/%azimuth%/%tilt%/%twist%/%Width%/%Height%/5i
 
-pscoast -R %PROJ% -B5g5/5g5 -Glightbrown -Slightblue -W0.25p -Ia -Dh -Na -O -X1i -Y-4i -U/-1.75i/-0.75i/"Example 26 in Cookbook" >> example_26.ps
+pscoast -R %PROJ% -B5g5/5g5 -Glightbrown -Slightblue -W0.25p -Ia -Dl -Na -O -X1i -Y-4i -U/-1.75i/-0.75i/"Example 26 in Cookbook" >> example_26.ps
 if %master%==n echo on
 del .gmt*
 if %master%==y cd ..

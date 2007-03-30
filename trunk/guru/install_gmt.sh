@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.94 2007-03-29 22:17:56 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.95 2007-03-30 02:57:36 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -533,7 +533,7 @@ meca:      Plotting special symbols in seismology and geodesy
 mex:       Matlab interface for reading/writing GMT grdfiles (REQUIRES MATLAB)
 mgd77:     Programs for handling MGD77 data files
 mgg:       Programs for making, managing, and plotting .gmt files
-misc:      Make posters on laserwriters and create bit-patterns
+misc:      Convert PS to PDF or images, digitize or stitch line segments, and more
 segyprogs: Plot SEGY seismic data files
 spotter:   Plate tectonic backtracking and hotspotting
 x2sys:     New (Generic) Track intersection (crossover) tools
