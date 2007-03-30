@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.23 2007-03-30 19:09:30 remko Exp $
+#	$Id: Makefile,v 1.24 2007-03-30 20:52:50 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -76,4 +76,4 @@ $(XSYSTEM):		$(XSYSTEM_O) libx2sys.a $(GMTLIB)
 			$(CC) -c $(CFLAGS) $<
 
 #---------------------------- CVS GURU EXTENSIONS-------------------------------
-sinclude makefile.guru
+include $(MAKEGURU)

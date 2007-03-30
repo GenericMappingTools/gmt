@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2007-03-30 19:09:30 remko Exp $
+#	$Id: Makefile,v 1.5 2007-03-30 20:52:50 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -262,4 +262,4 @@ gmtmath.o:	gmtmath.c gmtmath.h
 grdmath.o:	grdmath.c grdmath.h
 
 #---------------------------- CVS GURU EXTENSIONS-------------------------------
-sinclude makefile.guru
+include $(MAKEGURU)
