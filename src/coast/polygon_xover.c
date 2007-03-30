@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.7 2007-03-27 20:52:18 pwessel Exp $
+ *	$Id: polygon_xover.c,v 1.8 2007-03-30 20:41:45 pwessel Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -22,7 +22,7 @@ int main (int argc, char **argv)
 	int	i, n_id, id1, id2, nx, nx_tot, ANTARCTICA, verbose, full;
 	int np_o, np_i1, np_i2, in;
 	double x_shift = 0.0, lon_o[N_EUR_O+1], lat_o[N_EUR_O+1], lon_i1[N_EUR_I+1], lat_i1[N_EUR_I+1];
-	double lon_i2[N_EUR_I+1], lat_i2[N_EUR_I+1];
+	double lon_i2[N_EUR_I+1], lat_i2[N_EUR_I+1], r, theta, c, s, *X, *Y;
 	struct GMT_XSEGMENT *ylist1, *ylist2;
 	struct GMT_XOVER XC;
 	struct LONGPAIR p;
@@ -55,6 +55,15 @@ int main (int argc, char **argv)
 			P[n_id].lon[i] = p.x * 1e-6;
 			P[n_id].lat[i] = p.y * 1e-6;
 		}
+		if (n_id == ANTARCTICA){	/* Special r,theta conversion */
+			for (i = 0; i < P[n_id].h.n; i++) {
+				sincosd (P[n_id].lon[i], &s, &c);
+				r = P[n_id].lat[i] + 90.0;	/* So r = 0 is S pole */
+				P[n_id].lon[i] = r * c;
+				P[n_id].lat[i] = r * s;
+			}
+		}
+
 		n_id++;
 	}
 	fclose(fp);
@@ -67,7 +76,6 @@ int main (int argc, char **argv)
 	
 	nx_tot = 0;
 	for (id1 = 0; id1 < n_id; id1++) {
-		if (id1 == ANTARCTICA) continue;	/* Skip Antarctica */
 		GMT_init_track (P[id1].lat, P[id1].h.n, &ylist1);
 		if (full && id1 == 0) {	/* Eurafrica */
 			for (i = 0; i < N_EUR_O; i++) lon_o[i] = ieur_o[0][i] - 360.0;
@@ -120,35 +128,62 @@ int main (int argc, char **argv)
 			np_o = np_i1 = np_i2 = 0;
 			
 		for (id2 = MAX (4, id1 + 1); id2 < n_id; id2++) {	/* Dont start earlier than 4 since no point comparing Eur to Americas */
-			if (id2 == ANTARCTICA) continue;	/* Skip Antarctica */
+			if (id1 == ANTARCTICA) {	/* Must compare using r,theta */
+				if (P[id2].h.south > P[id1].h.north) continue;	/* Too far north */
+				X = (double *) GMT_memory (VNULL, P[id2].h.n, sizeof (double), "polygon_xover");
+				Y = (double *) GMT_memory (VNULL, P[id2].h.n, sizeof (double), "polygon_xover");
+				for (i = 0; i < P[id2].h.n; i++) {
+					sincosd (P[id2].lon[i], &s, &c);
+					r = P[id2].lat[i] + 90.0;	/* So r = 0 is S pole */
+					X[i] = r * c;
+					Y[i] = r * s;
+				}
+			}
+			else {	/* Regular Cartesian testing */
 		
-			if (nothing_in_common (&P[id1].h, &P[id2].h, &x_shift)) continue;	/* No area in common */
+				if (nothing_in_common (&P[id1].h, &P[id2].h, &x_shift)) continue;	/* No area in common */
 
-			/* GMT_non_zero_winding returns 2 if inside, 1 if on line, and 0 if outside */
+				/* GMT_non_zero_winding returns 2 if inside, 1 if on line, and 0 if outside */
 			
-			if (np_o) {	/* Check if outside the current crude polgon first */
-				for (i = in = 0; i < P[id2].h.n; i++) in += GMT_non_zero_winding (P[id2].lon[i] + x_shift, P[id2].lat[i], lon_o, lat_o, np_o);
-				if (in == 0) continue;	/* Polygon id2 completely outside the "outside" polygon */
-			}
-			if (np_i1) {	/* Check if inside the first of possibly two crude polgons */
-				for (i = in = 0; i < P[id2].h.n; i++) in += GMT_non_zero_winding (P[id2].lon[i] + x_shift, P[id2].lat[i], lon_i1, lat_i1, np_i1);
-				if (in == (2 * P[id2].h.n)) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
-			}
-			if (np_i2) {	/* Check if inside the 2nd crude polgon */
-				for (i = in = 0; i < P[id2].h.n; i++) in += GMT_non_zero_winding (P[id2].lon[i] + x_shift, P[id2].lat[i], lon_i2, lat_i2, np_i2);
-				if (in == (2 * P[id2].h.n)) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
+				if (np_o) {	/* Check if outside the current crude polgon first */
+					for (i = in = 0; i < P[id2].h.n; i++) in += GMT_non_zero_winding (P[id2].lon[i] + x_shift, P[id2].lat[i], lon_o, lat_o, np_o);
+					if (in == 0) continue;	/* Polygon id2 completely outside the "outside" polygon */
+				}
+				if (np_i1) {	/* Check if inside the first of possibly two crude polgons */
+					for (i = in = 0; i < P[id2].h.n; i++) in += GMT_non_zero_winding (P[id2].lon[i] + x_shift, P[id2].lat[i], lon_i1, lat_i1, np_i1);
+					if (in == (2 * P[id2].h.n)) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
+				}
+				if (np_i2) {	/* Check if inside the 2nd crude polgon */
+					for (i = in = 0; i < P[id2].h.n; i++) in += GMT_non_zero_winding (P[id2].lon[i] + x_shift, P[id2].lat[i], lon_i2, lat_i2, np_i2);
+					if (in == (2 * P[id2].h.n)) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
+				}
+				X = P[id2].lon;
+				Y = P[id2].lat;
+				if (fabs (x_shift) > GMT_CONV_LIMIT) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] += x_shift;
 			}
 			
 			/* Get here when no cheap determination worked and we must do full crossover calculation */
 			
 			if (verbose) fprintf (stderr, "polygon_xover: %6d vs %6d [T = %6d]\r", P[id1].h.id, P[id2].h.id, nx_tot);
-			if (fabs (x_shift) > GMT_CONV_LIMIT) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] += x_shift;
 			
-			GMT_init_track (P[id2].lat, P[id2].h.n, &ylist2);
+			GMT_init_track (Y, P[id2].h.n, &ylist2);
 
-			nx = GMT_crossover (P[id1].lon, P[id1].lat, NULL, ylist1, P[id1].h.n, P[id2].lon, P[id2].lat, NULL, ylist2, P[id2].h.n, FALSE, &XC);
+			nx = GMT_crossover (P[id1].lon, P[id1].lat, NULL, ylist1, P[id1].h.n, X, Y, NULL, ylist2, P[id2].h.n, FALSE, &XC);
 			GMT_free ((void *)ylist2);
-			if (fabs (x_shift) > GMT_CONV_LIMIT) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] -= x_shift;
+			if (id1 == ANTARCTICA) {	/* Undo projection for crossover results */
+				for (i = 0; i < nx; i++) {
+					r = hypot (XC.x[i], XC.y[i]);
+					theta = R2D * atan2 (XC.y[i], XC.x[i]);
+					if (theta < 0.0) theta += 360.0;
+					XC.x[i] = theta;
+					XC.y[i] = r - 90.0;
+				}
+				GMT_free ((void *)X);
+				GMT_free ((void *)Y);
+			}
+			else if (fabs (x_shift) > GMT_CONV_LIMIT) {
+				for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] -= x_shift;
+			}
 			if (nx) {
 				for (i = 0; i < nx; i++) printf ("%d\t%d\t%d\t%d\t%f\t%f\n", P[id1].h.id, P[id2].h.id, (int)floor(XC.xnode[0][i]), (int)floor(XC.xnode[1][i]), XC.x[i], XC.y[i]);
 				GMT_x_free (&XC);
