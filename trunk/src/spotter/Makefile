@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.17 2007-03-30 19:09:30 remko Exp $
+#	$Id: Makefile,v 1.18 2007-03-30 20:52:50 remko Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -82,4 +82,4 @@ $(SPOT):	libspotter.a $(SPOT_O) $(GMTLIB)
 		$(CC) -c $(CFLAGS) $<
 
 #---------------------------- CVS GURU EXTENSIONS-------------------------------
-sinclude makefile.guru
+include $(MAKEGURU)
