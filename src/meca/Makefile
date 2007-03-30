@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.12 2006-12-06 18:13:50 remko Exp $
+#       $Id: Makefile,v 1.13 2007-03-30 03:24:54 pwessel Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -54,6 +54,3 @@ clean:
 		for i in $(MECA); do \
 			rm -f $$i$(EXE); \
 		done
-
-#---------------------------- CVS GURU EXTENSIONS-------------------------------
-sinclude makefile.guru
