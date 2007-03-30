@@ -1,30 +1,36 @@
-	$Id: README.WIN32,v 1.16 2007-03-29 01:09:32 pwessel Exp $
+	$Id: README.WIN32,v 1.17 2007-03-30 02:57:36 pwessel Exp $
 
 README file for GMT 4 Distribution for Win32
 This version contains dynamic executables with the DLL support.
+We assume you only want to run GMT and not compile from scratch.
+To compile, see information in src/gmtinstall.bat and gmtsuppl.bat
 
 INSTALLATION:
 =============
 
-To use GMT on your system you must
+To use the precompiled GMT executables on your system you must
 
-1. Install netCDF.  You can either compile from source or get
-   precompiled binaries.  See www.unidata.ucar.edu's netcdf page
+1. Install netCDF DLL.  See www.unidata.ucar.edu's netcdf page
    for details and ftp links.  There is also a .zip file on the
    GMT ftp sites.
 
 2a Win95/98/Me:
-   Edit src/gmtenv.bat and change the values for GMTROOT, HOME, and NETCDF
-   if your setup differs from what these defaults values indicate.
+   Edit src/gmtenv.bat and change the values for HOME, GMTROOT, and
+   NETCDF if your setup differs from what these defaults values indicate.
    Execute gmtenv.bat or place it in autoexec.bat so it is run each
    time you reboot your machine.
 
 2b WinNT/2000/XP/Vista:
-   Add GMTROOT, HOME, and NETCDF, and modify PATH, LIB, INCLUDE in the
-   environmental parameters via the system settings.  See the gmtenv.bat
+   Add HOME, GMTROOT and NETCDF and modify PATH in the environmental
+   parameters via the system settings.  See the gmtenv.bat
    file for what the definitions should be.
 
-3. To test that all is well, try some of the commands in the cookbook.
+3  By default GMT is installed in C:\GMT, hence the run-time share
+   files live in C:\GMT\share.  If you move these files elsewhere
+   you must defined the environment variable GMT_SHAREDIR to point
+   to your new directlry.
+   
+4. To test that all is well, try some of the commands in the cookbook.
    You are strongly urged to install the free Services For Unix from
    Microsoft or Cygwin from RedHat to take full advantage of GMT.
 

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.37 2007-03-28 03:02:12 pwessel Exp $
+#	$Id: Makefile,v 1.38 2007-03-30 02:57:36 pwessel Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -206,7 +206,7 @@ install-wrapper:
 run-examples:
 		@if [ -d examples ]; then \
 			cd examples; \
-			$(CSH) do_examples.$(CSH) $(bindir) $(libdir); \
+			$(CSH) do_examples.$(CSH) $(bindir) $(libdir) $(NETCDF)/lib; \
 			cd ..; \
 		else \
 			echo "examples directory not installed"; \
