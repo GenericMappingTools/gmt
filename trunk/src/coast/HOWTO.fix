@@ -1,4 +1,4 @@
-	$Id: HOWTO.fix,v 1.7 2007-03-28 18:29:39 pwessel Exp $
+	$Id: HOWTO.fix,v 1.8 2007-03-30 21:40:49 pwessel Exp $
 	
 How to fix mistakes in the GSHHS database
 
@@ -114,5 +114,8 @@ involve duplicate points.  Instead, three points formed a triangle of no area.
 I added tests in polygon_consistency.c to check for these case and found (6, 3, 0, 0, 0)
 cases in (f, h, i, l, c), respectively.  The middle offending points were removed
 and new zips made.
+Finally, 1 crossover involving Antarctica and a small island was found in intermediate.
+This lead me to add crossover chechecking for Antarctica by doing a simple r,theta
+transformation first.  Now all are fixed.
 
 
