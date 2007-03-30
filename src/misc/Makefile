@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.18 2007-03-30 03:24:54 pwessel Exp $
+#	$Id: Makefile,v 1.19 2007-03-30 19:09:30 remko Exp $
 #	makefile for misc directory
 #
 
@@ -66,3 +66,6 @@ $(MISCPS):	$(MISCPS_O) $(GMTLIB)
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<
+
+#---------------------------- CVS GURU EXTENSIONS-------------------------------
+sinclude makefile.guru
