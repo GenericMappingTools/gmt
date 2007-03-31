@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.13 2007-03-30 02:21:36 remko Exp $
+/*	$Id: gshhstograss.c,v 1.14 2007-03-31 17:43:21 pwessel Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,7 +19,9 @@
 
 #include "gshhs.h"
 #include <unistd.h>
+#ifndef __INTERIX
 #include <getopt.h>
+#endif
 #include <string.h>
 #include <sys/types.h>
 #include <pwd.h>
