@@ -129,7 +129,6 @@ src/mgg/makefile
 src/mgg/mgd77togmt.c
 src/mgg/mgd77togmt.man
 src/mgg/mgd77togmt.html
-src/mgg/x_system.h
 share/mgg/carter.d
 share/mgg/gmtfile_paths
 src/misc/README.misc

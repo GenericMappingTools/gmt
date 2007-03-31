@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.96 2007-03-30 03:24:54 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.97 2007-03-31 00:25:12 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -199,7 +199,7 @@ fi
 #	NETCDF SETUP
 #--------------------------------------------------------------------------------
 
-answer=`get_def_answer "Have you installed netcdf (version 3.4 or later)? (y/n)" "y"`
+answer=`get_def_answer "Have you installed netcdf (version 3.6 or later)? (y/n)" "y"`
 if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 	netcdf_path=""
 	netcdf_ftp=n
@@ -232,7 +232,7 @@ if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 		fi
 	fi
 else
-	def=${NETCDFHOME:-/usr/local/netcdf-3.6.1}
+	def=${NETCDFHOME:-/usr/local/netcdf-$NETCDF_VERSION}
 	netcdf_path=`get_def_answer "Enter directory with netcdf lib and include" "$def"`
 	netcdf_ftp=n
 	netcdf_install=n
@@ -759,31 +759,7 @@ install_coast()
 	fi
 		
 }
-make_suppl()
-# arg1=install? arg2=package
-{
-	get=$1
-	pkg=$2
-	if [ -d $pkg ] && [ $get != "n" ]; then
-		echo "Installing the $pkg package."
-		cd $pkg
-		if [ $pkg = "mex" ] || [ $pkg = "xgrid" ]; then # Save makefiles from extermination
-			\cp -f makefile makefile.copy
-		fi
-		$GMT_make spotless || exit
-		if [ $pkg = "mex" ] || [ $pkg = "xgrid" ]; then # Restore makefiles
-			\mv -f makefile.copy makefile
-		fi
-		$GMT_make all || ( echo "Problems during make all for $pgk - check manually later" )
-		if [ $write_bin -eq 1 ]; then
-			$GMT_make install || ( echo "Problems during make install for $pgk - check manually later" )
-			$GMT_make clean
-		else
-			echo "You do not have write permission to install binaries in $GMT_bin"
-		fi
-		cd ..
-	fi
-}
+
 make_ftp_list()
 {
 # arg1=get arg2=file
@@ -1311,21 +1287,15 @@ cd ..
 #--------------------------------------------------------------------------------
 
 if [ -d src/dbase ]; then
-	cd src
-	make_suppl $GMT_suppl_dbase dbase
-	make_suppl $GMT_suppl_gshhs gshhs
-	make_suppl $GMT_suppl_imgsrc imgsrc
-	make_suppl $GMT_suppl_meca meca
-	make_suppl $GMT_suppl_mex mex
-	make_suppl $GMT_suppl_mgd77 mgd77
-	make_suppl $GMT_suppl_mgg mgg
-	make_suppl $GMT_suppl_misc misc
-	make_suppl $GMT_suppl_segyprogs segyprogs
-	make_suppl $GMT_suppl_spotter spotter
-	make_suppl $GMT_suppl_x2sys x2sys
-	make_suppl $GMT_suppl_x_system x_system
-	make_suppl $GMT_suppl_xgrid xgrid
-	cd ..
+	echo "---> Make Supplements" >&2
+	$GMT_make suppl || exit
+	if [ $write_bin -eq 1 ]; then
+		echo "---> Make install Supplements" >&2
+
+		$GMT_make install || exit
+	else
+		echo "You do not have write permission to make $GMT_bin" >&2
+	fi
 fi
 
 #--------------------------------------------------------------------------------
