@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.97 2007-03-31 00:25:12 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.98 2007-03-31 03:03:50 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -15,6 +15,7 @@ LATESTGMT3=3.4.6
 LATESTGSHHS4=4.2
 LATESTGSHHS3=3
 GSHHS=4.2
+GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
 #	FUNCTIONS
@@ -143,7 +144,7 @@ elif [ $answer = "2" ]; then
 	N_EXAMPLES=20
 	GSHHS=$LATESTGSHHS3
 fi
-echo "You chose to install verion $VERSION" >&2
+echo "You chose to install version $VERSION" >&2
 
 topdir=`pwd`
 os=`uname -s`
@@ -259,6 +260,7 @@ GMT_ftp=n
 if [ $do_ftp_qa -eq 1 ]; then
 	GMT_ftp=`get_def_answer "Get any of the GMT version $VERSION archives via ftp? (y/n)" "y"`
 fi
+
 if [ $GMT_ftp = "y" ]; then
 	cat << EOF >&2
 
@@ -270,7 +272,11 @@ EOF
 	cat gmt_install.ftp_site >&2
 	echo " " >&2
 	GMT_ftpsite=`get_def_answer "Enter your choice" "1"`
-	if [ $GMT_ftpsite -le 0 ] || [ $GMT_ftpsite -gt $N_FTP_SITES ]; then
+	if [ $GMT_ftpsite -eq 0 ]; then
+		echo " [Special GMT guru testing site selected]" >&2
+		GMT_ftpsite=1
+		GMT_FTP_TEST=1
+	elif [ $GMT_ftpsite -lt 0 ] || [ $GMT_ftpsite -gt $N_FTP_SITES ]; then
 		GMT_ftpsite=1
 		echo " Error in assigning site, using default site." >&2
 	else
@@ -585,6 +591,10 @@ EOF
 fi
 
 file=`get_def_answer "Enter name of the parameter file that will now be created" "GMTparam.txt"`
+
+if [ $GMT_FTP_TEST -eq 1 ]; then
+	GMT_ftpsite=0
+fi
 
 #--------------------------------------------------------------------------------
 # SAVE SESSION SETTINGS TO INSTALL.PAR
@@ -1024,12 +1034,21 @@ export NETCDFHOME
 cd $topdir
 if [ $GMT_ftp = "y" ]; then
 
-	if [ $GMT_ftpsite -le 0 ] || [ $GMT_ftpsite -gt $N_FTP_SITES ]; then
+	if [ $GMT_ftpsite -eq 0 ]; then
+		GMT_ftpsite=1
+		echo " [Special GMT guru ftp site selected]" >&2
+		GMT_FTP_TEST=1
+	fi
+	if [ $GMT_ftpsite -lt 0 ] || [ $GMT_ftpsite -gt $N_FTP_SITES ]; then
 		GMT_ftpsite=1
 		echo " Error in assigning site, use default site $GMT_ftpsite" >&2
 	fi
 	if [ $GMT_ftpsite -eq 1 ]; then	# SOEST's server starts at / and there is no pub
-		DIR=gmt
+		if [ $GMT_FTP_TEST -eq 1 ]; then	# Special dir for guru testing
+			DIR=gmttest
+		else
+			DIR=gmt
+		fi
 	fi
 	ftp_ip=`sed -n ${GMT_ftpsite}p gmt_install.ftp_ip`
 	is_dns=`sed -n ${GMT_ftpsite}p gmt_install.ftp_dns`
