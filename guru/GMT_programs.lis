@@ -1,4 +1,4 @@
-#	$Id: GMT_programs.lis,v 1.1 2002-02-26 19:55:21 pwessel Exp $
+#	$Id: GMT_programs.lis,v 1.2 2007-04-01 21:30:08 remko Exp $
 #
 # GMT_programs.lis contains a list of actual GMT programs written in C
 # It excludes scripts (such as GMT) and libraries (pslib etc).  We can
@@ -45,6 +45,7 @@ mapproject
 minmax
 nearneighbor
 project
+ps2raster
 psbasemap
 psclip
 pscoast
