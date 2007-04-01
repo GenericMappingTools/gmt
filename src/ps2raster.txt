@@ -1,0 +1,72 @@
+.TH PS2RASTER GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
+.SH NAME
+ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats using GhostScript
+.SH SYNOPSIS
+\fBps2raster\fP \fIpsfile(s)\fP [ OPT(A) ] [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] 
+[ OPT(L)\fIlistfile\fP]  [ OPT(N) ] [ OPT(Te)|\fBf\fP|\fBj\fP|\fBg\fP|\fBm\fP|\fBt\fP ]
+.SH DESCRIPTION
+\fBps2raster\fP reads one or more \fIPostScript\fP files (or a file with a list of \fIPostScript\fP filenames) and modifies the
+page size in order that the resulting image will have a size determined by the BoundingBox.
+As an option, a tight BoundingBox may be computed first.
+.TP
+\fIpsfiles\fP
+Names of \fIPostScript\fP files to be converted. The output files will have the same name but with the
+conventional extension name associated to the raster format (e.g. .jpg for the jpeg format).
+.SH OPTIONS
+.TP
+.B \-A
+Adjust the BoundingBox to the minimum required by the image content.
+.TP
+.B \-E
+Set raster resolution in dpi [default = 720 for PDF, 300 for others].
+.TP
+.B \-G
+Full path to your ghostscript executable.
+NOTE: For Unix systems this is generally not necessary.
+However, under Windows, GhostScript is not added to the system's path. So either you do it yourself,\"'
+or give the full path here. (e.g., \fB\-G\fPc:\\programs\\gs\\gs7.05\\bin\\gswin32c).
+.TP
+.B \-L
+The \fIlistfile\fP is an ASCII file with the names of the \fIPostScript\fP files to be converted.
+.TP
+.B \-N
+Do \fInot\fP remove auxiliary files (by default it does). Auxiliary files are built using as base the input
+\fIPostScript\fP files and consist of:
+psfile_tmpxx.eps -> \fIPostScript\fP with a modified BoundingBox
+psTOraster.sc|bat -> script (or batch) with the ghostscript command that does the job.
+Use this option to save the script and run it later with different settings.
+.TP
+.B \-T
+Sets the output format, where \fBe\fP means EPS, \fBf\fP means PDF, \fBj\fP means JPEG, \fBg\fP means PNG,
+\fBm\fP means PPM, and \fBt\fP means TIF [default is JPEG].
+.SH NOTES
+The conversion to raster images (JPEG, PNG, PPM or TIF) inherently results in loss of details that are
+available in the original PostScript file. Choose a resolution that is large enough for the application that
+the image will be used for. For web pages, smaller dpi values suffice, for Word documents and PowerPoint presentations
+a higher dpi value is recommended. \fBps2raster\fP uses the loss-less Flate compression technique when
+creating JPEG, PNG and TIF images.
+.br
+.sp
+EPS is a vector, not a raster format. Therefore, the \fB-E\fP option has no effect on the creation
+of EPS files. Using the option \fB-Te\fP will remove PageSize commands from the \fIPostScipt\fP file and will
+adjust the BoundingBox when the \fB-A\fP option is used.
+.br
+.sp
+Although PDF is also a vector format, the \fB-E\fP option has an effect on the resolution of pattern fills
+and fonts that are stored as bitmaps in the document. \fBps2raster\fP therefore uses a larger default
+resolution when creating PDF files. In order to obtain high-quality PDF files, the \fI/prepress\fP options in effect,
+allowing only loss-less compression of raster images embedded in the PostScript file.
+.br
+.sp
+See Appendix C of the \fBTechnical Reference and Cookbook\fI for more information on how to use
+\fBps2raster\fP on graphics that needs to be loaded into other documents (articles, presentations,
+posters, etc.).
+.SH EXAMPLE
+To convert a the file psfile.ps to PNG using a tight BoundingBox and assuming that gs can be found in
+your system's path:\"'
+.br
+.sp
+\fBps2raster\fP psfile.ps \fB\-A \-Tg\fP
+.SH "SEE ALSO"
+.IR GMT (GMTMANSECTION)

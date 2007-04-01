@@ -1,4 +1,4 @@
-	$Id: README.misc,v 1.6 2007-01-31 17:00:03 pwessel Exp $
+	$Id: README.misc,v 1.7 2007-04-01 19:59:46 remko Exp $
 
 Distributed under the GNU Public License (see file ../COPYING)
 
@@ -10,7 +10,6 @@ that may come in handy for some users.
 	makepattern - create Sun rasterfiles from patterns
 	psmageplot - blow up plots over several pages
 	nc2xy - convert 1-D netCDF files to ASCII
-	ps2raster - convert PostScript files to raster images
 
 gmtdigitize works with a Calcomp Digiboard III digitizer and will
 read coordinates from the selected port and apply inverse map projection
@@ -32,8 +31,3 @@ tiling. [P Wessel]
 
 nc2xy lists the contents of 1-D netCDF files as columns
 in ASCII format. Output is send to standard output. [R Scharroo]
-
-ps2raster will convert GMT (and other) PostScript files to
-images in either JPG, TIFF, PNG, or PPM format, or simply
-convert the PostScript to a PDF file.  It allows recomputation
-of the bounding box to ensure a tight fit. [J Luis]

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_C.tex,v 1.18 2007-03-29 02:14:48 remko Exp $
+%	$Id: GMT_Appendix_C.tex,v 1.19 2007-04-01 19:59:46 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -76,7 +76,7 @@ ps2epsi myplot.ps myplot.eps
 \normalsize
 should also do the trick. The downside is that this program adds an ``image'' of the plot in the preamble of the EPS file, thus increasing the file size significantly. This image is a rough rendering of your \PS\ graphics that some programs will show on screen while you are editing your document. This image is basically a placeholder for the \PS\ graphics that will actually be printed.
 
-\item The preferred option is to use the \GMT\ supplementary program \GMTprog{ps2raster}. Its \Opt{A} option will figure out the tightest BoundingBox, again using \progname{ghostscript} in the background. For example, running
+\item The preferred option is to use the \GMT\ utility \GMTprog{ps2raster}. Its \Opt{A} option will figure out the tightest BoundingBox, again using \progname{ghostscript} in the background. For example, running
 \small
 \begin{verbatim}
 ps2raster -A -Te myplot.ps
@@ -126,7 +126,7 @@ It is therefore wise to overrule the default anti-aliasing option and oversample
 \item[Including fonts.] When you are producing print-ready copy to publishers, they will often (and justifiably) ask that you include all fonts in your PDF document. Again, \progname{ghostscript} (and all converters relying on that engine) will not do so by default.
 \end{description}
 
-The remedy to all these programs is readily available to you in the form of the \GMT\ supplementary program \GMTprog{ps2raster}. It is designed to provide the best quality PDF and raster files using \progname{ghostscript} as a rendering engine. The program \GMTprog{ps2raster} avoids anti-aliasing and lossy compression techniques that are default to \progname{ghostscript} and includes the fonts into the resulting PDF file to ensure portability. By default the fonts are rendered at 720 dots-per-inch in a PDF file and images are sampled to 300 dpi, but that can be changed with the \Opt{E} option. Simply run
+The remedy to all these programs is readily available to you in the form of the \GMT\ utility \GMTprog{ps2raster}. It is designed to provide the best quality PDF and raster files using \progname{ghostscript} as a rendering engine. The program \GMTprog{ps2raster} avoids anti-aliasing and lossy compression techniques that are default to \progname{ghostscript} and includes the fonts into the resulting PDF file to ensure portability. By default the fonts are rendered at 720 dots-per-inch in a PDF file and images are sampled to 300 dpi, but that can be changed with the \Opt{E} option. Simply run
 \small
 \begin{verbatim}
 ps2raster -A -Tf *.ps

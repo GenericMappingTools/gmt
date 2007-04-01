@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.5 2007-03-30 20:52:50 remko Exp $
+#	$Id: Makefile,v 1.6 2007-04-01 19:59:46 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -76,8 +76,8 @@ PROGS_C	= blockmean.c blockmedian.c blockmode.c filter1d.c fitcircle.c grdfilter
 	  gmtdefaults.c gmtmath.c gmtselect.c gmtset.c grd2cpt.c grd2xyz.c grdblend.c grdcut.c \
 	  grdclip.c grdedit.c grdfft.c grdgradient.c grdhisteq.c grdinfo.c grdlandmask.c grdmask.c \
 	  grdtrack.c grdreformat.c grdmath.c grdpaste.c grdproject.c grdsample.c grdtrend.c grdvolume.c \
-	  makecpt.c mapproject.c minmax.c nearneighbor.c project.c sample1d.c spectrum1d.c splitxyz.c \
-	  surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c
+	  makecpt.c mapproject.c minmax.c nearneighbor.c project.c ps2raster.c sample1d.c spectrum1d.c \
+	  splitxyz.c surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c
 
 PROGSPS_C	= gmt2rgb.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c \
 	  pscoast.c pshistogram.c psimage.c pslegend.c psmask.c psrose.c psscale.c pstext.c pscontour.c \
