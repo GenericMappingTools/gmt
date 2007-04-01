@@ -59,11 +59,11 @@ resolution when creating PDF files. In order to obtain high-quality PDF files, t
 allowing only loss-less compression of raster images embedded in the PostScript file.
 .br
 .sp
-See Appendix C of the \fBTechnical Reference and Cookbook\fI for more information on how to use
-\fBps2raster\fP on graphics that needs to be loaded into other documents (articles, presentations,
+See Appendix C of the \fBTechnical Reference and Cookbook\fP for more information on how
+\fBps2raster\fP is used to produce graphics that can be inserted into other documents (articles, presentations,
 posters, etc.).
 .SH EXAMPLE
-To convert a the file psfile.ps to PNG using a tight BoundingBox and assuming that gs can be found in
+To convert a the file psfile.ps to PNG using a tight BoundingBox and assuming that ghostscript can be found in
 your system's path:\"'
 .br
 .sp
