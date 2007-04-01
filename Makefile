@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.39 2007-04-01 21:28:48 remko Exp $
+#	$Id: Makefile,v 1.40 2007-04-01 22:14:29 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -35,7 +35,7 @@
 #	make install-data
 #	make install-man
 #	make install-www
-#	
+#
 #	When done, clean out directory with "make clean".  To clean
 #	the entire build distribution, do "make cleandist"
 #
@@ -80,16 +80,16 @@ update:
 		bin/gmtpatch.sh 4
 
 gmt:		gmtmacros
-		cd src && $(MAKE) all
+		cd src ; $(MAKE) all
 
 install-gmt:	gmt
-		cd src && $(MAKE) install
+		cd src ; $(MAKE) install
 
 uninstall-gmt:
-		cd src && $(MAKE) uninstall
+		cd src ; $(MAKE) uninstall
 
 suppl:		gmtmacros
-		cd src && $(MAKE) libs
+		cd src ; $(MAKE) libs
 		$(MAKE) TARGET=all insuppl
 
 suppl-install:	install-suppl
@@ -97,7 +97,7 @@ suppl-install:	install-suppl
 install-suppl:	suppl
 		$(MAKE) TARGET=install insuppl
 
-gmtmacros:	
+gmtmacros:
 		@if [ ! -s src/makegmt.macros ]; then \
 			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
 			exit; \
@@ -202,7 +202,7 @@ install-wrapper:
 		else \
 			echo "Install wrapper man directory the same as distribution man directory - nothing installed"; \
 		fi
-		
+
 run-examples:
 		@if [ -d examples ]; then \
 			cd examples; \
@@ -214,12 +214,12 @@ run-examples:
 
 clean:
 		$(MAKE) TARGET=$@ insuppl
-		cd src && $(MAKE) $@
+		cd src ; $(MAKE) $@
 
 spotless:
 		rm -f config.cache config.status config.log
 		$(MAKE) TARGET=$@ insuppl
-		cd src && $(MAKE) $@
+		cd src ; $(MAKE) $@
 
 distclean:	spotless
 
