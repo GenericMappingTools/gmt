@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.41 2006-10-26 16:28:00 remko Exp $
+#	 $Id: webman.sh,v 1.42 2007-04-01 19:59:46 remko Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -198,6 +198,10 @@ For alphabetical order, click <A HREF="#anchor_alpha">here</A>.
 <LI><A HREF="doc/html/grdmath.html"> grdmath</A> Reverse Polish calculator for grdfiles
 <LI><A HREF="doc/html/grdvolume.html"> grdvolume</A> Calculating volume under a surface within a contour
 </UL>
+<H3>MANIPULATION OF GMT POSTSCRIPT FILES:</H3>
+<UL>
+<LI><A HREF="doc/html/ps2raster.html"> ps2raster</A> Crop and convert PostScript to raster image, EPS and PDF
+</UL>
 <H3>POSTSCRIPT LIBRARY FUNCTION CALLS (for developers):</H3>
 <UL>
 <LI><A HREF="doc/html/pslib.html"> pslib</A> Reference manual for libpsl.a
@@ -284,7 +288,6 @@ packages actually installed on your system will be accessible.
 <LI><A HREF="doc/html/gmtdigitize.html"> gmtdigitize</A> Digitize map features using a large-format digitizer
 <LI><A HREF="doc/html/gmtstitch.html"> gmtstitch</A> Combine line segments that share end-points
 <LI><A HREF="doc/html/makepattern.html"> makepattern</A> Make GMT color pattern from b/w pattern
-<LI><A HREF="doc/html/ps2raster.html"> ps2raster</A> Convert PostScript to raster image
 <LI><A HREF="doc/html/psmegaplot.html"> psmegaplot</A> Make poster-size plot using tiling
 <LI><A HREF="doc/html/nc2xy.html"> nc2xy</A> Convert netCDF column file to ASCII xy data
 </UL>

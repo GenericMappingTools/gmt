@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.37 2007-03-29 01:09:32 pwessel Exp $ 
+#		$Id: README,v 1.38 2007-04-01 19:59:46 remko Exp $ 
 #
 #	Copyright (c) 1991-2007, P. Wessel & W. H. F. Smith
 #
@@ -422,7 +422,7 @@ Currently, the supplemental archive include the directories:
 	mex	  - Matlab mex files for grdfile i/o.
 	mgg	  - Programs for MGD-77 data in .gmt format.
 	mgd77	  - Programs for handling of native MGD77 files.
-	misc	  - psmegaplot, ps2raster, makepattern, gmtdigitize,
+	misc	  - psmegaplot, makepattern, gmtdigitize,
 		    gmtstitch, and nc2xy
 	segyprogs - Plotting SEGY seismic data sets.
 	spotter	  - Plate tectonic & kinematics applications.

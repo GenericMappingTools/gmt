@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.20 2007-03-30 20:52:50 remko Exp $
+#	$Id: Makefile,v 1.21 2007-04-01 19:59:46 remko Exp $
 #	makefile for misc directory
 #
 
@@ -13,7 +13,7 @@ CDF		= -L$(NETCDF)/lib -lnetcdf
 
 MISC_H		=
 
-MISC_C		= gmtdigitize.c gmtstitch.c nc2xy.c ps2raster.c psmegaplot.c
+MISC_C		= gmtdigitize.c gmtstitch.c nc2xy.c psmegaplot.c
 MISCPS_C	= makepattern.c
 
 #-------------------------------------------------------------------------------

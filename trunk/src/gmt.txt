@@ -106,6 +106,8 @@ be found in the separate manual pages.
 .br
 \fBproject\fP		Project data onto lines/great circles
 .br
+\fBps2raster\fP		Crop and convert PostScript files to raster images, EPS and PDF
+.br
 \fBpsbasemap\fP		Create a basemap plot
 .br
 \fBpsclip\fP		Use polygon files to define clipping paths

@@ -148,9 +148,6 @@ src/misc/nc2xy.html
 src/misc/psmegaplot.c
 src/misc/psmegaplot.man
 src/misc/psmegaplot.html
-src/misc/ps2raster.c
-src/misc/ps2raster.man
-src/misc/ps2raster.html
 src/segyprogs/README.segyprogs
 src/segyprogs/makefile
 src/segyprogs/makefile
