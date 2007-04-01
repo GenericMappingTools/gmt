@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.38 2007-03-30 02:57:36 pwessel Exp $
+#	$Id: Makefile,v 1.39 2007-04-01 21:28:48 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -80,16 +80,16 @@ update:
 		bin/gmtpatch.sh 4
 
 gmt:		gmtmacros
-		$(MAKE) -C src all
+		cd src && $(MAKE) all
 
 install-gmt:	gmt
-		$(MAKE) -C src install
+		cd src && $(MAKE) install
 
 uninstall-gmt:
-		$(MAKE) -C src uninstall
+		cd src && $(MAKE) uninstall
 
 suppl:		gmtmacros
-		$(MAKE) -C src libs
+		cd src && $(MAKE) libs
 		$(MAKE) TARGET=all insuppl
 
 suppl-install:	install-suppl
@@ -214,12 +214,12 @@ run-examples:
 
 clean:
 		$(MAKE) TARGET=$@ insuppl
-		$(MAKE) -C src $@
+		cd src && $(MAKE) $@
 
 spotless:
 		rm -f config.cache config.status config.log
 		$(MAKE) TARGET=$@ insuppl
-		$(MAKE) -C src $@
+		cd src && $(MAKE) $@
 
 distclean:	spotless
 
