@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.46 2007-04-02 15:25:57 remko Exp $
+ *	$Id: gmt_stat.c,v 1.47 2007-04-02 22:25:29 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1252,9 +1252,6 @@ int     GMT_f_q (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 		I decided to go back to the GMT_inc_beta way of doing things.
 
 	*/
-		double	t, p, x, y, theta, term, sum, c, s, csq, ssq;
-		int	kt, kb, k, kstop;
-
 
 	/* Check range of arguments:  */
 
