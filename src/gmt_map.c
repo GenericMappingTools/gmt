@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.136 2007-03-29 19:32:30 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.137 2007-04-02 15:25:57 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -628,7 +628,6 @@ int GMT_map_setup (double west, double east, double south, double north)
 
 		default:	/* No projection selected, return to a horrible death */
 			return (GMT_MAP_NO_PROJECTION);
-			break;
 	}
 
 	project_info.i_x_scale = (project_info.x_scale != 0.0) ? 1.0 / project_info.x_scale : 1.0;

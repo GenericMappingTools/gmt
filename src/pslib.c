@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.140 2007-03-07 12:56:21 remko Exp $
+ *	$Id: pslib.c,v 1.141 2007-04-02 15:25:57 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1710,7 +1710,10 @@ void ps_setdash (char *pattern, int offset)
 
 	if (offset == ps.offset && ((pattern && !strcmp (pattern, ps.pattern)) || (!pattern && ps.pattern[0] == '\0'))) return;
 	ps.offset = offset;
-	(pattern) ? strncpy (ps.pattern, pattern, 512) : memset (ps.pattern, 0, 512);
+	if (pattern)
+		strncpy (ps.pattern, pattern, 512);
+	else
+		memset (ps.pattern, 0, 512);
 	fputs ("S ", ps.fp);
 	ps_place_setdash (pattern, offset);
 	fputs ("\n", ps.fp);
@@ -3321,6 +3324,8 @@ unsigned char *ps_load_image (char *file, struct imageinfo *h)
 		fprintf (stderr, "pslib: Unrecognised magic number 0x%x in file %s!\n", h->magic, file);
 		exit (EXIT_FAILURE);
 	}
+
+	return (0);	/* Dummy return to satisfy some compilers */
 }
 
 unsigned char *ps_load_eps (FILE *fp, struct imageinfo *h)
