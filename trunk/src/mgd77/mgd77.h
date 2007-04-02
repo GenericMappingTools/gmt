@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.76 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: mgd77.h,v 1.77 2007-04-02 15:25:57 remko Exp $
  * 
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -297,7 +297,7 @@ struct MGD77_META {	/* Information about a cruise as derived from navigation dat
 	int w, e, s, n;		/* Whole degree left/right/bottom/top coordinates */
 	int Departure[3];	/* yyyy, mm, dd of departure */
 	int Arrival[3];		/* yyyy, mm, dd of arrival */
-	char ten_box[20][38];	/* Set to 1 for each box visited */
+	signed char ten_box[20][38];	/* Set to 1 for each box visited */
 };
 
 struct MGD77_HEADER {	

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.146 2007-03-15 01:38:14 pwessel Exp $
+ *	$Id: mgd77.c,v 1.147 2007-04-02 15:25:57 remko Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1357,7 +1357,7 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 	H->info[MGD77_M77_SET].col[k].offset = mgd77cdf[MGD77_TIME].offset;
 	H->info[MGD77_M77_SET].col[k].corr_factor = 1.0;
 	H->info[MGD77_M77_SET].col[k].corr_offset = 0.0;
-	H->info[MGD77_M77_SET].col[k].type = mgd77cdf[MGD77_TIME].type;
+	H->info[MGD77_M77_SET].col[k].type = (nc_type) mgd77cdf[MGD77_TIME].type;
 	H->info[MGD77_M77_SET].col[k].text = 0;
 	H->info[MGD77_M77_SET].col[k].pos = MGD77_TIME;
 	H->info[MGD77_M77_SET].col[k].present = TRUE;
@@ -1373,7 +1373,7 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 		H->info[MGD77_M77_SET].col[k].offset = mgd77cdf[i].offset;
 		H->info[MGD77_M77_SET].col[k].corr_factor = 1.0;
 		H->info[MGD77_M77_SET].col[k].corr_offset = 0.0;
-		H->info[MGD77_M77_SET].col[k].type = mgd77cdf[i].type;
+		H->info[MGD77_M77_SET].col[k].type = (nc_type) mgd77cdf[i].type;
 		H->info[MGD77_M77_SET].col[k].text = 0;
 		H->info[MGD77_M77_SET].col[k].pos = i;
 		H->info[MGD77_M77_SET].col[k].present = TRUE;
@@ -1388,7 +1388,7 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 		H->info[MGD77_M77_SET].col[k].offset = 0.0;
 		H->info[MGD77_M77_SET].col[k].corr_factor = 1.0;
 		H->info[MGD77_M77_SET].col[k].corr_offset = 0.0;
-		H->info[MGD77_M77_SET].col[k].type = mgd77cdf[i].type;
+		H->info[MGD77_M77_SET].col[k].type = (nc_type) mgd77cdf[i].type;
 		H->info[MGD77_M77_SET].col[k].text = mgd77cdf[i].len;
 		H->info[MGD77_M77_SET].col[k].pos = i;
 		H->info[MGD77_M77_SET].col[k].present = TRUE;
