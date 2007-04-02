@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.295 2007-03-24 01:42:07 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.296 2007-04-02 22:28:08 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2259,7 +2259,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			fprintf (stderr, "GMT Fatal Error: %s could not reallocate memory [%.2f %s, n_items = %d]\n", progname, mem, m_unit[k], (int)nelem);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	else {
@@ -2268,7 +2268,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			fprintf (stderr, "GMT Fatal Error: %s could not allocate memory [%.2f %s, n_items = %d]\n", progname, mem, m_unit[k], (int)nelem);
-			GMT_exit (EXIT_FAILURE);
+			exit (EXIT_FAILURE);
 		}
 	}
 	return (tmp);
@@ -6286,7 +6286,7 @@ void GMT_list_custom_symbols (void)
 	GMT_getsharepath (CNULL, "GMT_CustomSymbols", ".lis", list);
 	if ((fp = fopen (list, "r")) == NULL) {
 		fprintf (stderr, "%s: ERROR: Cannot open file %s\n", GMT_program, list);
-		GMT_exit (EXIT_FAILURE);
+		return;
 	}
 
 	fprintf (stderr, "\t   Available custom symbols (See Appendix N):\n");
