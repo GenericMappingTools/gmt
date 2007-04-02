@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.147 2007-04-02 15:25:57 remko Exp $
+ *	$Id: mgd77.c,v 1.148 2007-04-02 15:30:58 remko Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1451,7 +1451,7 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 		H->info[MGD77_M77_SET].col[0].offset = mgd77cdf[MGD77_TIME].offset;
 		H->info[MGD77_M77_SET].col[0].corr_factor = 1.0;
 		H->info[MGD77_M77_SET].col[0].corr_offset = 0.0;
-		H->info[MGD77_M77_SET].col[0].type = mgd77cdf[MGD77_TIME].type;
+		H->info[MGD77_M77_SET].col[0].type = (nc_type) mgd77cdf[MGD77_TIME].type;
 		H->info[MGD77_M77_SET].col[0].text = 0;
 		H->info[MGD77_M77_SET].col[0].pos = MGD77_TIME;
 		H->info[MGD77_M77_SET].col[0].present = TRUE;
