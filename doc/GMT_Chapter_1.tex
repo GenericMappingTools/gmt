@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.65 2007-04-01 19:59:46 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.66 2007-04-03 03:19:10 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -77,7 +77,8 @@ Below is a list of previous problems that we have identified and corrected in th
 \begin{description}
 \item [\GMTprog{gmt\_init.c}]: Fixed unit problem with\Opt{Jx}1:xxxxx.  Erroneously added degree symbol
 to both coordinates in case of \Opt{JX}..d/.. (single d). Now properly adds only degree symbol on specified axis.
-Did not change time-system when only {\bf TIME\_UNIT} was specified.
+Did not change time-system when only {\bf TIME\_UNIT} was specified.  Failed to properly parse a single PAR=ARG
+(one word) argument given  to \GMTprog{gmtset}.
 \item [\GMTprog{gmt\_io.c}]: Did not terminate a calendar string after copying it.
 \item [\GMTprog{gmt\_plot.c}]: The logic to check for seconds annotations failed if inc $<$1 arc second.
 Did not set the contour annotation font before writing labels.
@@ -87,6 +88,7 @@ Contouring of grids with NaNs need to check both vertical AND horizontal interio
 for possible crossings.  The label machinery for ddd:mm:ss.xx used the wrong parameter to check
 for fractional seconds annotation (the .xxx part).
 \item [\GMTprog{gmt\_time\_systems.h}]: J2000 epoch was 1.0 Jan 2000, instead of 1.5 Jan 2000.
+\item [\GMTprog{filter1d}]: The \Opt{T} option can now parse datestrings for the min/max fields.
 \item [\GMTprog{gmtmath}]: Fixed memory allocation bug for files with more than BUFSIZ records.
 Now works correctly with multisegment headers.  Multisegment headers now written to the output file
 and not always to stdout. Option \Opt{C} now works (used to deselect all columns).
@@ -115,6 +117,7 @@ Also need 6 rather than 5 input columns.  Bar width has only half of what was re
 \item [\GMTprog{trend2d}]: Failed to pass the new variable with column choices.
 Also did not accept { \bf z} as an output choice.
 \item [\GMTprog{gshhs/gshhs.c}]: Had \&\& instead of \& in bit-arithmetic that reported level.
+\item [\GMTprog{mgd77.mgd77manage}]: Failed to enforce that a new column abbreviation must be in lower case.
 \item [\GMTprog{x2sys/x2sys\_cross}]: Failed to check for crossovers falling exacly on data nodes.
 \end{description}
 

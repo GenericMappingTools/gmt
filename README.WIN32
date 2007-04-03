@@ -1,6 +1,6 @@
-	$Id: README.WIN32,v 1.17 2007-03-30 02:57:36 pwessel Exp $
+	$Id: README.WIN32,v 1.18 2007-04-03 03:19:10 pwessel Exp $
 
-README file for GMT 4 Distribution for Win32
+README file for GMT 4 Run-Time Distribution for Win32
 This version contains dynamic executables with the DLL support.
 We assume you only want to run GMT and not compile from scratch.
 To compile, see information in src/gmtinstall.bat and gmtsuppl.bat
@@ -10,27 +10,22 @@ INSTALLATION:
 
 To use the precompiled GMT executables on your system you must
 
-1. Install netCDF DLL.  See www.unidata.ucar.edu's netcdf page
-   for details and ftp links.  There is also a .zip file on the
-   GMT ftp sites.
-
-2a Win95/98/Me:
-   Edit src/gmtenv.bat and change the values for HOME, GMTROOT, and
-   NETCDF if your setup differs from what these defaults values indicate.
+1a Win95/98/Me:
+   Edit src/gmtenv.bat and change the values for HOME and GMTROOT.
    Execute gmtenv.bat or place it in autoexec.bat so it is run each
    time you reboot your machine.
 
-2b WinNT/2000/XP/Vista:
-   Add HOME, GMTROOT and NETCDF and modify PATH in the environmental
+1b WinNT/2000/XP/Vista:
+   Add HOME and GMTROOT and modify PATH in the environmental
    parameters via the system settings.  See the gmtenv.bat
    file for what the definitions should be.
 
-3  By default GMT is installed in C:\GMT, hence the run-time share
+2  By default GMT is installed in C:\GMT, hence the run-time share
    files live in C:\GMT\share.  If you move these files elsewhere
    you must defined the environment variable GMT_SHAREDIR to point
-   to your new directlry.
+   to your new directory.
    
-4. To test that all is well, try some of the commands in the cookbook.
+3. To test that all is well, try some of the commands in the cookbook.
    You are strongly urged to install the free Services For Unix from
    Microsoft or Cygwin from RedHat to take full advantage of GMT.
 
@@ -44,7 +39,6 @@ and a PDF version of all UNIX man pages, get the GMT_pdf.zip archive.
 For the HTML-only versions, get GMT_web.zip.  After installing, make
 a bookmark for the file GMT/www/gmt/gmt_sevices.html.  Should you
 want to try the tutorial examples you will need GMT_tut.zip.
-PostScript version of the documentation is in GMT_ps.zip and the
 UNIX man pages are in GMT_man.zip.  Most Windows users will only
 need the HTML or PDF versions.
 
