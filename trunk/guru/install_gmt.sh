@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.100 2007-04-03 05:22:01 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.101 2007-04-03 05:53:51 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1095,6 +1095,18 @@ if [ $GMT_ftp = "y" ]; then
 	echo "Got $newstuff kb ... done" >&2
 fi
 
+# If we got here via a parameter file that had blank answers
+# we need to provide the default values here
+
+GMT_prefix=${GMT_prefix:-$topdir/GMT${VERSION}}
+GMT_bin=${GMT_bin:-$GMT_prefix/bin}
+GMT_lib=${GMT_lib:-$GMT_prefix/lib}
+GMT_share=${GMT_share:-$GMT_prefix/share}
+GMT_include=${GMT_include:-$GMT_prefix/include}
+GMT_man=${GMT_man:-$GMT_prefix/man}
+GMT_web=${GMT_web:-$GMT_prefix/www}
+GMT_sharedir=${GMT_sharedir:-$GMT_share}
+
 #--------------------------------------------------------------------------------
 # First install source code and documentation
 #--------------------------------------------------------------------------------
@@ -1154,18 +1166,6 @@ echo " " >&2
 cd $topdir
 cd GMT${VERSION}
 here=`pwd`
-
-# If we got here via a parameter file that had blank answers
-# we need to provide the default values here
-
-GMT_prefix=${GMT_prefix:-$topdir/GMT${VERSION}}
-GMT_bin=${GMT_bin:-$GMT_prefix/bin}
-GMT_lib=${GMT_lib:-$GMT_prefix/lib}
-GMT_share=${GMT_share:-$GMT_prefix/share}
-GMT_include=${GMT_include:-$GMT_prefix/include}
-GMT_man=${GMT_man:-$GMT_prefix/man}
-GMT_web=${GMT_web:-$GMT_prefix/www}
-GMT_sharedir=${GMT_sharedir:-$GMT_share}
 
 # Are we allowed to write in $GMT_share?
 
