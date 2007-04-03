@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.99 2007-04-03 03:26:13 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.100 2007-04-03 05:22:01 pwessel Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1362,10 +1362,10 @@ fi
 # Run examples with /src as binary path in case the user did
 # not have permission to place files in GMT_bin
 
-if [ -d examples ]; then
-	if [ $GMT_run_examples = "y" ]; then
-		$GMT_make run-examples || exit
-	fi
+if [ -d examples ] && [ $GMT_run_examples = "y" ]; then
+	GMT_SHAREDIR=$GMT_sharedir
+	export GMT_SHAREDIR
+	$GMT_make run-examples || exit
 fi
 
 
