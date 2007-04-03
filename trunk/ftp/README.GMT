@@ -1,4 +1,4 @@
-	$Id: README.GMT,v 1.17 2007-03-28 21:25:31 pwessel Exp $
+	$Id: README.GMT,v 1.18 2007-04-03 03:53:43 pwessel Exp $
 
 Dear potential GMT users-
 
@@ -43,12 +43,10 @@ You need to ftp several zip files; some are optional:
 GMT_exe.zip	All executables
 GMT_share.zip	Support run-time files (patterns, cpt) 
 GMT_coast.zip	Basic GSHHS coastlines
-netcdf-3.6.1-win32.zip	netcdf library if you don't have it.
 
 In addition, you may want
 
 GMT_suppl_exe.zip  Supplemental executables
-GMT_ps.zip	   PS version of documentation
 GMT_pdf.zip	   PDF documentation and Unix man pages
 GMT_man.zip	   Unix man pages for GMT
 GMT_web.zip	   HTML versions of all documentation
@@ -75,6 +73,4 @@ life.csu.edu.au			Albury, Australia
 ftp.eos.hokudai.ac.jp.		Sapporo. Japan
 ----------------------------------------------------------------
 
-Paul Wessel
-Walter H. F. Smith
 The GMT Team
