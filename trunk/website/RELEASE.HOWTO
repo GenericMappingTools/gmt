@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.12 2007-03-29 01:09:32 pwessel Exp $
+#	$Id: RELEASE.HOWTO,v 1.13 2007-04-03 04:25:00 pwessel Exp $
 #
 #		FOR 4.x SERIES
 
@@ -31,7 +31,7 @@ must ensure you do all the steps listed below:
     gurumake site
    
 4.  Tag the release(s), e.g.
-    cvs -q tag Release_2004_10_01_GMT_-4_0_0
+    cvs -q tag Release_2007_10_01_GMT_-4_2_1
 
 5.  Prepare the archives:
     gurumake archive >& log
