@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.32 2007-03-14 23:11:11 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.33 2007-04-04 23:17:43 pwessel Exp $
 REM
 REM
 REM	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
@@ -103,20 +103,16 @@ echo Follow Matlab instructions on how to make mex files
 REM ----------------------------------------------------
 ECHO STEP 6: Make mgd77
 REM ----------------------------------------------------
-REM opendir, readdir etc not active under Windows yet
-SET DIRENTLIB=
-REM SET DIRENTLIB=dirent.lib
-REM copy dirent.lib %LIBDIR%
 cd mgd77
 CL %COPT2% /c mgd77.c
 lib /out:mgd77.lib mgd77.obj
-CL %COPT% mgd77convert.c mgd77.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% mgd77info.c	 mgd77.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% mgd77list.c	 mgd77.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% mgd77manage.c	 mgd77.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% mgd77path.c	 mgd77.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% mgd77sniffer.c mgd77.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% mgd77track.c	 mgd77.lib %GMTLIB% %DIRENTLIB%
+CL %COPT% mgd77convert.c mgd77.lib %GMTLIB%
+CL %COPT% mgd77info.c	 mgd77.lib %GMTLIB%
+CL %COPT% mgd77list.c	 mgd77.lib %GMTLIB%
+CL %COPT% mgd77manage.c	 mgd77.lib %GMTLIB%
+CL %COPT% mgd77path.c	 mgd77.lib %GMTLIB%
+CL %COPT% mgd77sniffer.c mgd77.lib %GMTLIB%
+CL %COPT% mgd77track.c	 mgd77.lib %GMTLIB%
 del *.obj
 move mgd77.lib %LIBDIR%
 move *.exe %BINDIR%
@@ -152,7 +148,6 @@ cd misc
 REM CL %COPT% gmtdigitize.c %GMTLIB%
 CL %COPT% gmtstitch.c %GMTLIB%
 CL %COPT% psmegaplot.c %GMTLIB%
-CL %COPT% ps2raster.c %GMTLIB%
 CL %COPT% makepattern.c %GMTLIB%
 CL %COPT% nc2xy.c %GMTLIB%
 del *.obj
@@ -196,12 +191,12 @@ REM ----------------------------------------------------
 cd x2sys
 CL %COPT2% /I..\mgd77 /I..\mgg /c x2sys.c
 lib /out:x2sys.lib x2sys.obj
-CL %COPT% /I..\mgd77 /I..\mgg x2sys_binlist.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% /I..\mgd77 /I..\mgg x2sys_cross.c x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% /I..\mgd77 /I..\mgg x2sys_datalist.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% /I..\mgd77 /I..\mgg x2sys_get.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% /I..\mgd77 /I..\mgg x2sys_init.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB% %DIRENTLIB%
-CL %COPT% /I..\mgd77 /I..\mgg x2sys_put.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB% %DIRENTLIB%
+CL %COPT% /I..\mgd77 /I..\mgg x2sys_binlist.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+CL %COPT% /I..\mgd77 /I..\mgg x2sys_cross.c x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+CL %COPT% /I..\mgd77 /I..\mgg x2sys_datalist.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+CL %COPT% /I..\mgd77 /I..\mgg x2sys_get.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+CL %COPT% /I..\mgd77 /I..\mgg x2sys_init.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+CL %COPT% /I..\mgd77 /I..\mgg x2sys_put.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
 del *.obj
 move x2sys.lib %LIBDIR%
 move *.exe %BINDIR%
