@@ -1,5 +1,5 @@
 /*
- *	$Id: string_check_subs.c,v 1.3 2006-04-10 04:53:48 pwessel Exp $
+ *	$Id: string_check_subs.c,v 1.4 2007-04-04 22:51:39 pwessel Exp $
  */
 /* string_check_subs.c
  * Subroutines for testing WVS string quality.
@@ -26,7 +26,8 @@ int stringcheck (struct LONGPAIR p[], struct FLAGPAIR work[], int *n)
 
 	int i, spike, ntrivial, spike_total;
 	int	remove_spikes();
-	int	compare_xy(), compare_k(), compare_absk();
+	int	compare_xy(const void *p1, const void *p2);
+	int	compare_k(const void *p1, const void *p2), compare_absk(const void *p1, const void *p2);
 
 	for (i = 0; i < *n; i++) {
 		work[i].x = p[i].x;
@@ -89,8 +90,12 @@ int look_for_crossings (struct FLAGPAIR p[], int n)
 	return(0);
 }
 
-int compare_xy (struct FLAGPAIR *p1, struct FLAGPAIR *p2)
+int compare_xy (const void *P1, const void *P2)
 {
+	struct FLAGPAIR *p1, *p2;
+
+	p1 = (struct FLAGPAIR *)P1;
+	p2 = (struct FLAGPAIR *)P2;
 	/* Ignore k values  */
 	if (p1->x > p2->x) return(1);
 	if (p1->x < p2->x) return(-1);
@@ -99,16 +104,24 @@ int compare_xy (struct FLAGPAIR *p1, struct FLAGPAIR *p2)
 	return(0);
 }
 
-int compare_k (struct FLAGPAIR *p1, struct FLAGPAIR *p2)
+int compare_k (const void *P1, const void *P2)
 {
+	struct FLAGPAIR *p1, *p2;
+
+	p1 = (struct FLAGPAIR *)P1;
+	p2 = (struct FLAGPAIR *)P2;
 	/* Here, k's magnitude and sign are both important:  */
 	if (p1->k < p2->k) return(-1);
 	if (p1->k > p2->k) return(1);
 	return(0);
 }
 
-int compare_absk (struct FLAGPAIR *p1, struct FLAGPAIR *p2)
+int compare_absk (const void *P1, const void *P2)
 {
+	struct FLAGPAIR *p1, *p2;
+
+	p1 = (struct FLAGPAIR *)P1;
+	p2 = (struct FLAGPAIR *)P2;
 	/* Here, k's magnitude only, not sign, is important:  */
 	if (abs(p1->k) < abs(p2->k)) return(-1);
 	if (abs(p1->k) > abs(p2->k)) return(1);
@@ -122,7 +135,7 @@ int remove_spikes (struct FLAGPAIR p[], int *n)
 		it returns 0.  String version.  */
 
 	int	i, j, spike;
-	int	compare_k();
+	int	compare_k(const void *p1, const void *p2);
 	
 	for (j = 0; j < *n; j++) p[j].k = j + 1;
 
@@ -381,7 +394,7 @@ int new_stringcheck (struct LONGPAIR p[], int *n, double x[], double y[], int id
 		if (p[i].x == 360000000) p[i].x = 0;
 	}
 
-	ylist = GMT_init_track (y, *n);
+	GMT_init_track (y, *n, &ylist);
 	nx = GMT_crossover (x, y, NULL, ylist, *n, x, y, NULL, ylist, *n, TRUE, &c);
 
 	if (nx == 1 && p[0].x == p[*n-1].x && p[0].x == irint(c.x[0]) && p[0].y == p[*n-1].y && p[0].y == irint(c.y[0]) ) {
