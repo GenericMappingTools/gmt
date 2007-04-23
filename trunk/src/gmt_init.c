@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.285 2007-03-31 21:16:35 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.286 2007-04-23 00:49:52 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5180,7 +5180,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 						len++;
 						p->f.f_sense = GMT_FRONT_CENTERED;
 						if (p->f.f_symbol == GMT_FRONT_SLIP) {
-							fprintf (stderr, "%s: Error in Option -Sf: Must specify (GMTMANSECTION)eft-lateral or (r)ight-lateral slip\n", GMT_program);
+							fprintf (stderr, "%s: Error in Option -Sf: Must specify (l)eft-lateral or (r)ight-lateral slip\n", GMT_program);
 							GMT_exit (EXIT_FAILURE);
 						}
 						break;
