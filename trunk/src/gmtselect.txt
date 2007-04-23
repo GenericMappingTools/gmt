@@ -5,7 +5,7 @@ gmtselect \- Select data subsets based on multiple spatial criteria
 .SH SYNOPSIS
 \fBgmtselect\fP [ \fIinfiles\fP ] [ OPT(A)\fImin_area\fP[/\fImin_level/max_level\fP] ] 
 [ OPT(C)[\fBf\fP]\fIdist/ptfile\fP ] [ OPT(D)\fIresolution\fP ] [ OPT(F)\fIpolygonfile\fP ] 
-[ GMT_H_OPT ] [ OPT(I)[\fBcflrs\fP] ] [ GMT_J_OPT ] [ OPT(L)\fIdist/linefile\fP ] [ GMT_M_OPT ] 
+[ GMT_H_OPT ] [ OPT(I)[\fBcflrs\fP] ] [ GMT_J_OPT ] [ OPT(L)[\fBp\fP]\fIdist/linefile\fP ] [ GMT_M_OPT ] 
 [ OPT(N)\fImaskvalues\fP[\fBo\fP] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z)\fImin/max\fP] ] 
 [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
@@ -72,6 +72,8 @@ file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each
 sub-header in the \fIptfile\fP must have each lines's individual distance value.\"'
 Distances are in user units; specify \fB\-fg\fP or a map projection to indicate distances in km.
 Note that \fIlinefile\fP must be in ASCII regardless of whether \fB\-b\fP is used.
+Use \fB\-Lp\fP to ensure only points whose orthogonal projections onto the nearest linesegment
+fall within the segments endpoints [Default considers points "beyond" the line\"'s endpoints.
 #include "explain_-M.txt"
 .TP
 .B \-N
