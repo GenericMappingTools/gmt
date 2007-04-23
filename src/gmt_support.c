@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.296 2007-04-02 22:28:08 remko Exp $
+ *	$Id: gmt_support.c,v 1.297 2007-04-23 17:00:31 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6421,8 +6421,15 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOL
 {
 	int seg, j0, j1;
 	double edge, dx, dy, xc, yc, s, s_inv, d, dist_AB, fraction;
-	/* return_mindist is 1, 2, or 3.  All return the minimum distance. 2 also returns the coordinate of nearest point, 3 instead returns segment number and point number (fractional) of that point */
+	BOOLEAN perpendicular_only = FALSE, interior;
+	/* return_mindist is 1, 2, or 3.  All return the minimum distance. 2 also returns the coordinate of nearest point,
+	   3 instead returns segment number and point number (fractional) of that point.  If 10 is added we exclude point
+	   that are withing distance of the linesegment endpoints but project onto the extension of the line.  */
 
+	if (return_mindist >= 10) {	/* Exclude circular region surrounding line endpoints */
+		perpendicular_only = TRUE;
+		return_mindist -= 10;
+	}
 	if (return_mindist) *dist_min = DBL_MAX;
 	for (seg = 0; seg < T->n_segments; seg++) {	/* Loop over each line segment */
 
@@ -6439,7 +6446,8 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOL
 				if (return_mindist == 2) *x_near = T->segment[seg]->coord[GMT_X][j0], *y_near = T->segment[seg]->coord[GMT_Y][j0];	/* Also update (x,y) of nearest point on the line */
 				if (return_mindist == 3) *x_near = (double)seg, *y_near = (double)j0;		/* Instead update (seg, pt) of nearest point on the line */
 			}
-			if (d <= T->segment[seg]->dist) return (TRUE);		/* Node inside the critical distance; we are done */
+			interior = (j0 > 0 && j0 < (T->segment[seg]->n_rows - 1));	/* Only FALSE if we are processing one of the end points */
+			if (d <= T->segment[seg]->dist && (interior || !perpendicular_only)) return (TRUE);		/* Node inside the critical distance; we are done */
 		}
 
 		if (T->segment[seg]->n_rows < 2) continue;	/* 1-point "line" is a point; skip segment check */
@@ -6469,8 +6477,8 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOL
 				if (dy == 0.0) continue;	/* Dummy segment with no length */
 				xc = T->segment[seg]->coord[GMT_X][j0];
 				yc = lat;
-				if (T->segment[seg]->coord[GMT_Y][j0] <= yc && T->segment[seg]->coord[GMT_Y][j1] <= yc ) continue;	/* Cross point is on extension */
-				if (T->segment[seg]->coord[GMT_Y][j0] >= yc && T->segment[seg]->coord[GMT_Y][j1] >= yc ) continue;	/* Cross point is on extension */
+				if (T->segment[seg]->coord[GMT_Y][j0] < yc && T->segment[seg]->coord[GMT_Y][j1] < yc ) continue;	/* Cross point is on extension */
+				if (T->segment[seg]->coord[GMT_Y][j0] > yc && T->segment[seg]->coord[GMT_Y][j1] > yc ) continue;	/* Cross point is on extension */
 			}
 			else {	/* Line segment is not vertical */
 				if (dy == 0.0) {	/* Line segment is horizontal, our normal is thus vertical */
@@ -6486,8 +6494,8 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOL
 				}
 				/* To be inside, (xc, yc) must (1) be on the line segment and not its extension and (2) be within dist of our point */
 
-				if (T->segment[seg]->coord[GMT_X][j0] <= xc && T->segment[seg]->coord[GMT_X][j1] <= xc ) continue;	/* Cross point is on extension */
-				if (T->segment[seg]->coord[GMT_X][j0] >= xc && T->segment[seg]->coord[GMT_X][j1] >= xc ) continue;	/* Cross point is on extension */
+				if (T->segment[seg]->coord[GMT_X][j0] < xc && T->segment[seg]->coord[GMT_X][j1] < xc ) continue;	/* Cross point is on extension */
+				if (T->segment[seg]->coord[GMT_X][j0] > xc && T->segment[seg]->coord[GMT_X][j1] > xc ) continue;	/* Cross point is on extension */
 			}
 
 			/* OK, here we must check how close the crossing point is */
@@ -6513,7 +6521,16 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, BOOL
 {
 	int seg, row, j0;
 	double d, A[3], B[3], C[3], X[3], plon, plat, xlon, xlat, cx_dist, cos_dist, dist_AB, fraction;
+	BOOLEAN perpendicular_only = FALSE, interior;
 
+	/* return_mindist is 1, 2, or 3.  All return the minimum distance. 2 also returns the coordinate of nearest point,
+	   3 instead returns segment number and point number (fractional) of that point.  If 10 is added we exclude point
+	   that are withing distance of the linesegment endpoints but project onto the extension of the line.  */
+
+	if (return_mindist >= 10) {	/* Exclude circular region surrounding line endpoints */
+		perpendicular_only = TRUE;
+		return_mindist -= 10;
+	}
 	plon = lon;	plat = lat;
 	GMT_geo_to_cart (&plat, &plon, C, TRUE);	/* Our point to test is now C */
 	if (return_mindist) *dist_min = DBL_MAX;
@@ -6533,7 +6550,8 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, BOOL
 				if (return_mindist == 2) *x_near = T->segment[seg]->coord[GMT_X][row], *y_near = T->segment[seg]->coord[GMT_Y][row];	/* Also update (x,y) of nearest point on the line */
 				if (return_mindist == 3) *x_near = (double)seg, *y_near = (double)row;	/* Also update (seg, pt) of nearest point on the line */
 			}
-			if (d <= T->segment[seg]->dist) return (TRUE);			/* Node inside the critical distance; we are done */
+			interior = (row > 0 && row < (T->segment[seg]->n_rows - 1));	/* Only FALSE if we are processing one of the end points */
+			if (d <= T->segment[seg]->dist && (interior || !perpendicular_only)) return (TRUE);			/* Node inside the critical distance; we are done */
 		}
 
 		if (T->segment[seg]->n_rows < 2) continue;	/* 1-point "line" is a point; skip segment check */
@@ -6564,7 +6582,7 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, BOOL
 					}
 				}
 			}
-			if (cx_dist > cos_dist) return (TRUE);	/* X is on the A-B extension AND within specified distance */
+			if (cx_dist >= cos_dist) return (TRUE);	/* X is on the A-B extension AND within specified distance */
 		}
 	}
 	return (FALSE);	/* All tests failed, we are not close to the line(s) */
