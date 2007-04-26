@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.25 2007-03-24 01:42:07 pwessel Exp $
+ *	$Id: x2sys.h,v 1.26 2007-04-26 00:27:57 pwessel Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -238,7 +238,7 @@ extern void x2sys_free_info (struct X2SYS_INFO *s);
 extern void x2sys_free_data (double **data, int n);
 extern int x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
 
-extern int x2sys_initialize (char *fname, struct GMT_IO *G, struct X2SYS_INFO *I);
+extern int x2sys_initialize (char *fname, struct GMT_IO *G, struct X2SYS_INFO **I);
 
 extern int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
 extern void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc);
