@@ -11,7 +11,8 @@ psrose \- Plot (length, azimuth) as windrose diagram or polar histogram (sector 
 .SH SYNOPSIS
 \fBpsrose\fP \fIfile\fP [ OPT(A)\fIsector_width\fP[\fBr\fP] ] 
 [ GMT_B_OPT ] [ OPT(C)[\fImode_file\fP] ] [ OPT(D) ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] 
-[ GMT_H_OPT ] [ OPT(I) ] [ GMT_K_OPT ] [ OPT(M)[\fIparameters\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ GMT_H_OPT ] [ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)[\fIwlabel\fP/\fIelabel\fP/\fIslabel\fP/\fInlabel\fP] ] 
+[ OPT(M)[\fIparameters\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(R)\fIr0\fP/\fIr1\fP/\fIaz_0\fP/\fIaz_1\fP ] [ OPT(S)\fIradial_scale\fP[\fBn\fP] ] [ OPT(T) ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ OPT(Z)\fIscale\fP ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ]
@@ -51,6 +52,11 @@ Selects shade or color for sector infill [Default is no fill].
 .B \-I
 Inquire.  Computes statistics needed to specify useful \fB\-R\fP.  No plot is generated.
 #include "explain_-K.txt"
+.TP
+.B \-L
+Specify labels for the 0, 90, 180, and 270 degree marks.  For full-circle plot the default
+is WEST/EAST/SOUTH/NORTH and for half-circle the default is 90W/90E/-/0.  A - in any entry
+disables that label.  Use OPT(L) with no argument to disable all four labels
 .TP
 .B \-M
 Specify new arrow attributes tailwidth/headlength/headwidth/r/g/b to change
