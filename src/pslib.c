@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.141 2007-04-02 15:25:57 remko Exp $
+ *	$Id: pslib.c,v 1.142 2007-04-26 03:14:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1861,6 +1861,8 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	char *string, align[3][10] = {"0", "2 div neg", "neg"};
 	int i = 0, pmode, j, h_just, v_just, rounded;
 
+	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
+	
 	if (strlen (text) >= (BUFSIZ-1)) {
 		fprintf (stderr, "pslib: text_item > %d long!\n", BUFSIZ);
 		return;
@@ -2095,6 +2097,8 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	int sub, super, small, old_font;
 	double height, small_size, size, scap_size, ustep, dstep;
 
+	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
+	
 	if (strlen (text) >= (BUFSIZ-1)) {	/* We gotta have some limit on how long a single string can be... */
 		fprintf (stderr, "pslib: text_item > %d long - text not plotted!\n", BUFSIZ);
 		return;
@@ -2274,6 +2278,8 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 
 	int i = 0, j, k, first;
 
+	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
+	
 	if (form & 8) {		/* If 8 bit is set we already have placed the info */
 		form -= 8;		/* Knock off the 8 flag */
 		fprintf (ps.fp, "%d PSL_curved_text_labels\n", form);
@@ -2347,6 +2353,8 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 
 	int i = 0, j, k;
 
+	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
+	
 	if (key & 2) {	/* Flag to terminate clipping */
 		if (ps.comments)
 			fprintf (ps.fp, "PSL_clip_on\t\t%% If clipping is active, terminate it\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");
@@ -2521,6 +2529,8 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	struct GMT_WORD **word;
 	struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, int space, int rgb[]);
 
+	if (font_size == 0.0) return;	/* Nothing to do if text has zero size */
+	
 	sub = super = small = under = FALSE;
 	if (draw_box & 64) {	/* Smart offsets follow justification */
 		if ((justify & 3) == 3)  x_off = -x_off;
