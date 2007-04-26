@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.64 2007-03-24 01:42:07 pwessel Exp $
+ *	$Id: x2sys.c,v 1.65 2007-04-26 00:27:57 pwessel Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -274,7 +274,7 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "x2sys_read_file");
 	p->ms_rec = (int *) GMT_memory (VNULL, n_alloc, sizeof (int), "x2sys_read_file");
 	x2sys_skip_header (fp, s);
-	if (s->multi_segment) p->n_segments = -1;	/* So that first increment sets it to 0 */
+	p->n_segments = (s->multi_segment) ? -1 : 0;	/* So that first increment sets it to 0 */
 
 	j = 0;
 	while (!x2sys_read_record (fp, rec, s, G)) {	/* Gets the next data record */
@@ -299,10 +299,10 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	p->year = 0;
 	strncpy (p->name, fname, 32);
 
-	return (j);
+	return (X2SYS_NOERROR);
 }
 
-int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO *init)
+int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
 {
 	/* Reads the format definition file and sets all information variables */
 
@@ -396,7 +396,7 @@ int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO *init)
 	X->n_data_cols = x2sys_n_data_cols (X);
 	X->rec_size = (8 + X->n_data_cols) * sizeof (double);
 
-	init = X;
+	*I = X;
 	return (X2SYS_NOERROR);
 }
 
@@ -719,7 +719,7 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 	FILE *fp;
 
 	if ((fp = x2sys_fopen (file, "r")) == NULL) {
-  		fprintf (stderr, "x2sys_initialize : Cannot find track list file %s in either current or X2SYS_HOME directories\n", line);
+  		fprintf (stderr, "x2sys_read_list : Cannot find track list file %s in either current or X2SYS_HOME directories\n", line);
 		return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 	
@@ -746,14 +746,15 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G)
+int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
 	char tag_file[BUFSIZ], line[BUFSIZ], p[BUFSIZ], sfile[BUFSIZ], suffix[16];
 	int geodetic = 0, pos = 0, n;
 	double dist;
 	BOOLEAN geographic = FALSE;
 	FILE *fp;
-
+	struct X2SYS_INFO *s;
+	
 	if (!TAG) return (X2SYS_TAG_NOT_SET);
 	
 	x2sys_set_home ();
@@ -831,7 +832,7 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, str
 	}
 	x2sys_err_pass (x2sys_fclose (tag_file, fp), tag_file);
 	
-	x2sys_err_pass (x2sys_initialize (sfile, G, *s), sfile);	/* Initialize X2SYS and info structure */
+	x2sys_err_pass (x2sys_initialize (sfile, G, &s), sfile);	/* Initialize X2SYS and info structure */
 
 	if (geographic) {
 		if (geodetic == 0 && (B->x_min < 0 || B->x_max < 0)) {
@@ -842,21 +843,22 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, str
 			fprintf (stderr, "%s: Your -R and -G settings are contradicting each other!\n", X2SYS_program);
 			return (X2SYS_CONFLICTING_ARGS);
 		}
-		(*s)->geographic = TRUE;
-		(*s)->geodetic = geodetic;	/* Override setting */
+		s->geographic = TRUE;
+		s->geodetic = geodetic;	/* Override setting */
 		if (fabs (fabs (B->x_max - B->x_min) - 360.0) <= GMT_CONV_LIMIT) B->periodic = 1;
 	}
 	if (GMT_io.multi_segments[GMT_IN]) {	/* Files have multiple segments; make sure this is also set in s */
-		(*s)->multi_segment = TRUE;
-		(*s)->ms_flag = GMT_io.EOF_flag[GMT_IN];
+		s->multi_segment = TRUE;
+		s->ms_flag = GMT_io.EOF_flag[GMT_IN];
 	}
 	if (suffix[0])
-		strcpy ((*s)->suffix, suffix);
+		strcpy (s->suffix, suffix);
 	else
-		strcpy ((*s)->suffix, sfile);
+		strcpy (s->suffix, sfile);
 		
 	x2sys_path_init (TAG);		/* Prepare directory paths to data */
 	
+	*S = s;
 	return (X2SYS_NOERROR);
 }
 
