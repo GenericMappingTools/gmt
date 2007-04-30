@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.97 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_grdio.c,v 1.98 2007-04-30 19:45:23 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -254,6 +254,7 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		if (val < 0) return (val);
 		header->type = val;
 	}
+	if (val == GMT_grd_format_decoder ("af")) header->nan_value = 0.0;	/* 0 is NaN in the AGC format */
 	return (GMT_NOERROR);
 }
 
