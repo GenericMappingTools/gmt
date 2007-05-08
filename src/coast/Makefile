@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.17 2007-03-28 00:10:03 pwessel Exp $
+#	$Id: Makefile,v 1.18 2007-05-08 20:51:45 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -36,7 +36,7 @@ GSHHS_PROG_VERSION	= 1.8
 COAST_H	= shore.h wvs.h
 
 COAST_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c \
-	  lines_to_bins.c man_fix.c man_fix2.c polygon_bincount.c \
+	  lines_to_bins.c man_fix.c man_fix2.c polygon_bincount.c gshhs_to_polygon.c \
 	  polygon_checkarea.c polygon_consistency.c polygon_deldups.c \
 	  polygon_dump.c polygon_extract.c polygon_extract2.c polygon_fixnegwesn.c \
 	  polygon_extract_all.c polygon_final_info.c polygon_findlevel.c \
