@@ -1,5 +1,5 @@
 /*
- *	$Id: gshhs_to_polygon.c,v 1.3 2007-03-12 19:52:26 remko Exp $
+ *	$Id: gshhs_to_polygon.c,v 1.4 2007-05-08 20:51:45 pwessel Exp $
  * 
  *	read a GSHHS file and and write a polygon.b format file to stdout
  * UNTESTED but should work. (-pw)
@@ -8,7 +8,7 @@
 #include "wvs.h"
 #include "gshhs/gshhs.h"
 
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	FILE	*fp_in;
 	int	k;
@@ -28,15 +28,12 @@ main (int argc, char **argv)
 		/* Must swap header explicitly on little-endian machines */
 		gshhs_header.id = swabi4 ((unsigned int)gshhs_header.id);
 		gshhs_header.n  = swabi4 ((unsigned int)gshhs_header.n);
-		gshhs_header.level = swabi4 ((unsigned int)gshhs_header.level);
+		gshhs_header.flag = swabi4 ((unsigned int)gshhs_header.flag);
 		gshhs_header.west  = swabi4 ((unsigned int)gshhs_header.west);
 		gshhs_header.east  = swabi4 ((unsigned int)gshhs_header.east);
 		gshhs_header.south = swabi4 ((unsigned int)gshhs_header.south);
 		gshhs_header.north = swabi4 ((unsigned int)gshhs_header.north);
 		gshhs_header.area  = swabi4 ((unsigned int)gshhs_header.area);
-		gshhs_header.version  = swabi4 ((unsigned int)gshhs_header.version);
-		gshhs_header.greenwich = swabi2 ((unsigned int)gshhs_header.greenwich);
-		gshhs_header.source = swabi2 ((unsigned int)gshhs_header.source);
 #endif
 		h.west = (double) gshhs_header.west * 1.0e-6;
 		h.east = (double) gshhs_header.east * 1.0e-6;
@@ -44,9 +41,9 @@ main (int argc, char **argv)
 		h.north = (double) gshhs_header.north * 1.0e-6;
 		h.id = gshhs_header.id;
 		h.n = gshhs_header.n;
-		h.greenwich = gshhs_header.greenwich;
-		h.level = gshhs_header.level;
-		h.source = gshhs_header.source;
+		h.greenwich = (gshhs_header.flag >> 16) & 255;
+		h.level = gshhs_header.flag & 255;
+		h.source = (gshhs_header.flag >> 24) & 255;
 		h.area = gshhs_header.area * 0.1;
 		pol_writeheader (&h, stdout);
 		for (k = 0; k < h.n; k++) {
