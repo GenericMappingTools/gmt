@@ -1,4 +1,4 @@
-<!--  $Id: GSHHS_updating.html,v 1.1 2007-05-09 01:40:59 pwessel Exp $  -->
+<!--  $Id: GSHHS_updating.html,v 1.2 2007-05-09 18:53:03 pwessel Exp $  -->
 <HEAD>
 <TITLE>Updating the GSHHS data set</TITLE>
 </HEAD>
@@ -70,7 +70,21 @@ Polygons will be written to files called polygon.ID. Place these in a subdirecto
 <LI>Make the changes.  This could simply mean replacing the relevant polygon.ID
 file with the new data (obviously in the same file format), or it could mean manually
 changing some of the points to address the problem.  The Matlab function fixcoast.m
-may be of use to you.
+may be of use to you.  If you need to replace a segment of the polygon, you should
+identify the starting point on the line segment you want to insert into the
+coastline (note it must also be oriented correctly first; as the line number increases
+the "left" side of the line must be oriented towards land - if not use tac or tail -r to reverse
+the segment) and write down the lon, lat.  Now find the line number in the coastline that is
+closest to that point using, e.g. for the point (237.59,47.6745) on polygon.1, do
+<P>
+mapproject polygon.1 -G237.59/47.6745 | awk '{if ($3 < 200) print NR, $0}'
+<P>
+This will echo out all points within 200 m of the given coordinate in -G.
+Edit polygon.1, goto the line in question.  Then, use zoom.sh to make a
+plot of the area that shows each point as a dot.  Visually identify which
+points to replace and where to insert the new segment, and then identify
+those points in the polygon.1 file.  Remove and insert accordingly, and save
+polygon.1.  Now move polygon.1 to the sub-directory pol.
 <LI>Update the binary data base.  You will need the tool <U>polygon_update</U> which takes
 four arguments: Name of old data base, an ascii list of  polygon IDs that should be
 removed completely, an ascii list of IDs for polygons that have been modified, and
