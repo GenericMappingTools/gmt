@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: wvs.h,v 1.3 2007-05-09 00:30:57 pwessel Exp $
  */
 /* wvs.h
  *
@@ -71,6 +71,9 @@ extern int pol_readheader (struct GMT3_POLY *h, FILE *fp);
 extern int pol_writeheader (struct GMT3_POLY *h, FILE *fp);
 extern int pol_fread (struct LONGPAIR *p, size_t n_items, FILE *fp);
 extern int pol_fwrite (struct LONGPAIR *p, size_t n_items, FILE *fp);
+extern double area_size (double x[], double y[], int n, int *sign);
+extern int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path);
+extern void area_init ();
 
 #ifndef COASTLIB
 int ieur_o[2][N_EUR_O] = {
