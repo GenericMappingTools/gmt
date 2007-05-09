@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.18 2007-05-08 20:51:45 pwessel Exp $
+#	$Id: Makefile,v 1.19 2007-05-09 00:30:57 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -39,9 +39,9 @@ COAST_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c \
 	  lines_to_bins.c man_fix.c man_fix2.c polygon_bincount.c gshhs_to_polygon.c \
 	  polygon_checkarea.c polygon_consistency.c polygon_deldups.c \
 	  polygon_dump.c polygon_extract.c polygon_extract2.c polygon_fixnegwesn.c \
-	  polygon_extract_all.c polygon_final_info.c polygon_findlevel.c \
+	  polygon_extract_all.c polygon_final_info.c polygon_findarea.c polygon_findlevel.c \
 	  polygon_findlevel2.c polygon_fix.c polygon_fixlevel.c polygon_get.c \
-	  polygon_id.c polygon_merge.c polygon_report.c polygon_restore.c \
+	  polygon_id.c polygon_merge.c polygon_report.c segment_restore.c \
 	  polygon_set.c polygon_setnodes.c polygon_setwesn.c polygon_shrink.c \
 	  polygon_sort.c polygon_stats.c polygon_to_bins.c polygon_to_gshhs.c \
 	  polygon_update.c polygon_xover.c read_wvs.c river_fix.c segment_clean.c \
@@ -248,7 +248,7 @@ zip-gshhs:
 
 lib:		libcoast.a
 
-libcoast.a:	poly_check_subs.o string_check_subs.o douglas_peucker.o coast_io.o
+libcoast.a:	poly_check_subs.o string_check_subs.o douglas_peucker.o coast_io.o poly_misc_subs.o
 		$(AR) cvr libcoast.a $?
 		$(RANLIB) libcoast.a
 
