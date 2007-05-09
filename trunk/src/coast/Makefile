@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.20 2007-05-09 01:40:59 pwessel Exp $
+#	$Id: Makefile,v 1.21 2007-05-09 04:19:37 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -35,7 +35,7 @@ GSHHS_PROG_VERSION	= 1.8
 
 COAST_H	= shore.h wvs.h
 
-COAST_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c \
+COAST_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c swap.c \
 	  lines_to_bins.c man_fix.c man_fix2.c polygon_bincount.c gshhs_to_polygon.c \
 	  polygon_checkarea.c polygon_consistency.c polygon_deldups.c \
 	  polygon_dump.c polygon_extract.c polygon_extract2.c polygon_fixnegwesn.c \
@@ -83,6 +83,7 @@ spotless:	clean
 
 set_new:
 		cp -f res_?/binned_GSHHS_?.cdf $(rootdir)/share/coast
+		cp -f res_?/binned_border_?.cdf $(rootdir)/share/coast
 		
 set_old:
 		cd $(rootdir); tar xvjf ftp/GMT_share.tar.bz2

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_restore.c,v 1.5 2007-05-09 03:18:23 pwessel Exp $
+ *	$Id: polygon_restore.c,v 1.6 2007-05-09 04:19:37 pwessel Exp $
  */
 /* 
  *
@@ -65,6 +65,7 @@ int main (int argc, char **argv)
 		}
 		fclose (fp);
 		h.n = k;
+		h.id = i;
 		h.level = level;
 		h.area = 1.0e-6 * area_size (flon, flat, h.n, &sign); /* in km^2 */
 		if ( (h.level%2) && sign == -1)		/* Land and negative area -> must reverse order */
