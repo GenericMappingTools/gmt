@@ -1,4 +1,4 @@
-#	$Id: README.txt,v 1.3 2006-12-06 18:13:50 remko Exp $
+#	$Id: README.txt,v 1.4 2007-05-09 03:17:26 pwessel Exp $
 
 README for coast supplement:
 
@@ -92,6 +92,8 @@ polygon_extract_all.c:
 	OLD, seems to have restriction on w/e/s/n for extraction?
 polygon_final_info.c:
 	Generates the one-line-per-polygon information table
+polygon_findarea.c:
+	Computes the area of all polygons
 polygon_findlevel.c:
 	Determines which hierarchical level each polygons belong to.
 polygon_fix.c:
@@ -150,6 +152,8 @@ segment_dump.c:
 	Converts segment database to multisegment ascii table.
 segment_final_dump.c:
 	Converts polygons in segment binary form to polygon binary form.
+segment_restore.c:
+	Creates a segment database by converting individual ASCII segment files. 
 segment_report.c:
 	Reports statistics on how many segment of each level
 shoremaker.c:
@@ -170,8 +174,10 @@ coast_io.c:
 	Set of subroutines used by other programs
 string_check_subs.c:
 	Subroutines for checking segments.
+poly_misc_subs.c:
+	Subroutines for misc polygon operations.
 
-The makefile will create a libcoast.a out of those three files.
+The makefile will create a libcoast.a out of those four files.
 The makefile will do alot of the steps.  One should study the makefile
 and see what the options are.  For instance, to bin all the polygons
 after the cleaning is completed one can do "make bin".

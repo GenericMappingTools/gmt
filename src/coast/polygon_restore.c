@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_restore.c,v 1.4 2007-05-09 00:31:16 pwessel Exp $
+ *	$Id: polygon_restore.c,v 1.5 2007-05-09 03:18:23 pwessel Exp $
  */
 /* 
  *
@@ -13,9 +13,9 @@ struct GMT3_POLY h;
 int main (int argc, char **argv)
 {
 	FILE	*fp_out, *fp_new, *fp;
-	int	i, j, k, n_id, n_new, n_pol_out = 0, reverse = 0;
+	int	i, j, k, n_pol_out = 0, level, reverse = 0;
 	int	n_alloc, n_pt_out = 0, sign;
-	double x, y, size;
+	double x, y;
 	double *flon = NULL, *flat = NULL;
 	char file[80], line[BUFSIZ];
         
