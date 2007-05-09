@@ -1,5 +1,7 @@
 /*
- *	$Id: polygon_fix.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_fix.c,v 1.3 2007-05-09 04:19:37 pwessel Exp $
+ *
+ * Used to make minor fixes - check src to see what it actually is doing!
  */
 /* 
  */
@@ -14,16 +16,14 @@ int main (int argc, char **argv)
 	struct GMT3_POLY h;
         
 	if (argc == 1) {
-		fprintf(stderr,"usage:  polygon_fix file.b level first_id > new.b\n");
+		fprintf(stderr,"usage:  polygon_fix file.b > new.b\n");
 		exit(-1);
 	}
-	level = atoi (argv[2]);
-	first_id = atoi (argv[3]);
 	
 	fp_in = fopen(argv[1], "r");
 		
 	while (pol_readheader (&h, fp_in) == 1) {
-		h.level = level;
+		h.area = 0.0;
 		h.id = first_id++;
 		pol_writeheader (&h, stdout);
 		for (k = 0; k < h.n; k++) {
