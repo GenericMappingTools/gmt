@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.142 2007-04-26 03:14:14 pwessel Exp $
+ *	$Id: pslib.c,v 1.143 2007-05-11 19:37:56 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2278,7 +2278,6 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 
 	int i = 0, j, k, first;
 
-	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
 	
 	if (form & 8) {		/* If 8 bit is set we already have placed the info */
 		form -= 8;		/* Knock off the 8 flag */
@@ -2287,6 +2286,7 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	}
 
 	if (m <= 0) return;	/* Nothing to do yet */
+	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
 
 	first = (form & 32);
 
@@ -2353,8 +2353,6 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 
 	int i = 0, j, k;
 
-	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
-	
 	if (key & 2) {	/* Flag to terminate clipping */
 		if (ps.comments)
 			fprintf (ps.fp, "PSL_clip_on\t\t%% If clipping is active, terminate it\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");
@@ -2370,7 +2368,8 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	/* Here key == 0 (or 4) which means we plan to create labeltext clip paths (and paint them) */
 
 	if (m <= 0) return;	/* Nothing to do yet */
-
+	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
+	
 	for (i = 0; i < m; i++) {
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
 			for (k = 0; label[i][k] == ' '; k++);	/* Count # of leading blanks */
