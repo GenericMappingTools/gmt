@@ -1,103 +1,67 @@
 #!/bin/sh
+#		$Id: job11.sh,v 1.9 2007-05-14 21:35:33 remko Exp $
 #		GMT EXAMPLE 11
-#
-#		$Id: job11.sh,v 1.8 2006-10-22 14:26:49 remko Exp $
 #
 # Purpose:	Create a 3-D RGB Cube
 # GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
-# Unix progs:	$AWK, rm
-#
-# First create a Plane from (0,0,0) to (255,255,255).
-# Only needs to be done once, and is used on each of the 6 faces of the cube.
-#
+# Unix progs:	rm
 
-grdmath -I1 -R0/255/0/255 Y 256 MUL X ADD = rgb_cube.grd
+# Use psxy to plot "cut-along-the-dotted" lines.
 
-#
-# For each of the 6 faces, create a color palette with one color (r,g,b) fixed
-# at either the min. of 0 or max. of 255, and the other two components
-# varying smoothly across the face from 0 to 255.
-#
-# This uses $AWK script "rgb_cube.awk", with arguments specifying which color
-# (r,g,b) is held constant at 0 or 255, which color varies in the x-direction
-# of the face, and which color varies in the y-direction.  If the color is to
-# increase in x (y), a lower case x (y) is indicated; if the color is to 
-# decrease in the x (y) direction, an upper case X (Y) is used.
-#
-# Use grdimage to paint the faces and psxy to add "cut-along-the-dotted" lines.
-#
+gmtset TICK_LENGTH 0 COLOR_MODEL rgb CHAR_ENCODING Standard+
 
-gmtset TICK_LENGTH 0 COLOR_MODEL rgb
+psxy cut-here.dat -Wthinnest,. -M -R-51/306/0/1071 -JX3.5i/10.5i -X2.5i -Y0.5i \
+	-P -U/-2.0i/-0.2i/"Example 11 in Cookbook" -K > example_11.ps
 
-pstext -R0/8/0/11 -Jx1i < /dev/null -P -U"Example 11 in Cookbook" -K > example_11.ps
-$AWK -f rgb_cube.awk r=x g=y b=255 < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -JX2.5i/2.5i -R0/255/0/255 -K -O -X2i -Y4.5i -B256wesn >> example_11.ps
+# First, create grids of ascending X and Y and constant 0.
+# These are to be used to represent R, G and B values of the darker 3 faces of the cube.
 
-$AWK -f rgb_cube.awk r=255 g=y b=X < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -B256wesn >> example_11.ps
+grdmath -I1 -R0/255/0/255 X = x.grd
+grdmath -I1 -R Y = y.grd
+grdmath -I1 -R 0 = c.grd
 
-$AWK -f rgb_cube.awk r=x g=255 b=Y < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X-2.5i -Y2.5i -B256wesn >> example_11.ps
+grdimage x.grd y.grd c.grd -JX2.5i/-2.5i -R -K -O -X0.5i >> example_11.ps
+psxy -M rays.dat -J -R -K -O -Bwesn >> example_11.ps
+echo 128 128 12 -45 1 MC "60\217" | pstext -Gwhite -J -R -K -O >> example_11.ps
+echo 102  26 12 -90 1 MC 0.4 | pstext -Gwhite -J -R -K -O >> example_11.ps
+echo 204  26 12 -90 1 MC 0.8 | pstext -Gwhite -J -R -K -O >> example_11.ps
 
-psxy -Wthinnest,. -J -R -K -O -X2.5i << END >> example_11.ps
-0 0
-20 20
-20 235
-0 255
-END
+grdimage x.grd c.grd y.grd -JX2.5i/2.5i -R -K -O -Y2.5i >> example_11.ps
+psxy -M rays.dat -J -R -K -O -Bwesn >> example_11.ps
+echo 128 128 12 45 1 MC "300\217" | pstext -Gwhite -J -R -K -O >> example_11.ps
+echo 26 102 12 0 1 MC 0.4 | pstext -Gwhite -J -R -K -O >> example_11.ps
+echo 26 204 12 0 1 MC 0.8 | pstext -Gwhite -J -R -K -O >> example_11.ps
 
-psxy -Wthinnest,. -J -R -K -O -X-2.5i -Y2.5i << END >> example_11.ps
-0 0
-20 20
-235 20
-255 0
-END
+grdimage c.grd x.grd y.grd -JX-2.5i/2.5i -R -K -O -X-2.5i >> example_11.ps
+psxy -M rays.dat -J -R -K -O -Bwesn >> example_11.ps
+echo 128 128 12 135 1 MC "180\217" | pstext -Gwhite -J -R -K -O >> example_11.ps
+echo 102 26 12 90 1 MC 0.4 | pstext -Gwhite -J -R -K -O >> example_11.ps
+echo 204 26 12 90 1 MC 0.8 | pstext -Gwhite -J -R -K -O >> example_11.ps
 
-psxy -Wthinnest,. -J -R -K -O -X-2.5i -Y-2.5i << END >> example_11.ps
-255 0
-235 20
-235 235
-255 255
-END
+# Second, create grids of descending X and Y and constant 255.
+# These are to be used to represent R, G and B values of the lighter 3 faces of the cube.
 
-$AWK -f rgb_cube.awk r=0 g=y b=x < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -Y-2.5i -B256wesn >> example_11.ps
+grdmath -I1 -R 255 X SUB = x.grd
+grdmath -I1 -R 255 Y SUB = y.grd
+grdmath -I1 -R 255       = c.grd
 
-$AWK -f rgb_cube.awk r=x g=0 b=y < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
+grdimage x.grd y.grd c.grd -JX-2.5i/-2.5i -R -K -O -X2.5i -Y2.5i >> example_11.ps
+psxy -M rays.dat -J -R -K -O -Bwesn >> example_11.ps
+echo 128 128 12 225 1 MC "240\217" | pstext -J -R -K -O >> example_11.ps
+echo 102 26 12 270 1 MC 0.4 | pstext -J -R -K -O >> example_11.ps
+echo 204 26 12 270 1 MC 0.8 | pstext -J -R -K -O >> example_11.ps
 
+grdimage c.grd y.grd x.grd -JX2.5i/-2.5i -R -K -O -X2.5i >> example_11.ps
+psxy -M rays.dat -J -R -K -O -Bwesn >> example_11.ps
+echo 128 128 12 -45 1 MC "0\217" | pstext -J -R -K -O >> example_11.ps
+echo 26 102 12 0 1 MC 0.4 | pstext -J -R -K -O >> example_11.ps
+echo 26 204 12 0 1 MC 0.8 | pstext -J -R -K -O >> example_11.ps
 
-echo "10 10 14 0 Times-BoldItalic BL GMT 4" | pstext -J -R -Gwhite -K -O >> example_11.ps
+grdimage x.grd c.grd y.grd -JX-2.5i/2.5i -R -K -O -X-2.5i -Y2.5i >> example_11.ps
+psxy -M rays.dat -J -R -K -O -Bwesn >> example_11.ps
+echo 128 128 12 135 1 MC "120\217" | pstext -J -R -K -O >> example_11.ps
+echo 26 102 12 180 1 MC 0.4 | pstext -J -R -K -O >> example_11.ps
+echo 26 204 12 180 1 MC 0.8 | pstext -J -R -K -O >> example_11.ps
+echo 200 200 16 225 1 MC GMT 4 | pstext -J -R -O >> example_11.ps
 
-psxy -Wthinnest,. -J -R -K -O -X2.5i << END >> example_11.ps
-0 0
-20 20
-20 235
-0 255
-END
-
-psxy -Wthinnest,. -J -R -K -O -X-5i << END >> example_11.ps
-255 0
-235 20
-235 235
-255 255
-END
-
-$AWK -f rgb_cube.awk r=x g=Y b=0 < /dev/null > rgb_cube.cpt
-grdimage rgb_cube.grd -Crgb_cube.cpt -J -K -O -X2.5i -Y-2.5i -B256wesn >> example_11.ps
-
-psxy -Wthinnest,. -J -R -K -O -X2.5i << END >> example_11.ps
-0 0
-20 20
-20 235
-0 255
-END
-
-psxy -Wthinnest,. -J -R -O -X-5i << END >> example_11.ps
-255 0
-235 20
-235 235
-255 255
-END
-
-rm -f rgb_cube.cpt rgb_cube.grd .gmtcommands4 .gmtdefaults4
+rm -f *.grd .gmtcommands4 .gmtdefaults4
