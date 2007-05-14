@@ -103,8 +103,6 @@ examples/ex10/agu.d
 examples/ex10/job10.csh
 examples/ex10/job10.sh
 examples/ex10/job10.bat
-examples/ex11/rgb_cube.awk
-examples/ex11/contoured_cube.ps.bz2
 examples/ex11/job11.sh
 examples/ex11/job11.csh
 examples/ex11/job11.bat
