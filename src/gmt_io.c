@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.134 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.135 2007-05-16 01:46:43 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1754,7 +1754,8 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, int mode)
 	 */
 
 	char fmt[GMT_LONG_TEXT];
-	int k;
+	int k, ywidth;
+	BOOLEAN no_delim;
 
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 
@@ -1762,8 +1763,10 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, int mode)
 
 	/* Craft the actual C-format to use for i/o date strings */
 
+	no_delim = !(S->delimiter[0][0] || S->delimiter[1][0]);	/* TRUE for things like yyyymmdd */
+	ywidth = (no_delim) ? 4 : 4+(!mode);			/* 4 or 5, depending on values */
 	if (S->item_order[0] >= 0 && S->iso_calendar) {	/* ISO Calendar string: At least Ione item is needed */
-		k = (S->item_order[0] == 0 && !S->Y2K_year) ? 4+(!mode) : 2;
+		k = (S->item_order[0] == 0 && !S->Y2K_year) ? ywidth : 2;
 		if (S->mw_text && S->item_order[0] == 1)	/* Prepare for "Week ##" format */
 			sprintf (S->format, "%%s %%2.2d");
 		else if (S->compact)			/* Numerical formatting of week or year without leading zeros */
@@ -1791,7 +1794,7 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, int mode)
 		}
 	}
 	else if (S->item_order[0] >= 0) {			/* Gregorian Calendar string: At least one item is needed */
-		k = (S->item_order[0] == 0 && !S->Y2K_year) ? 4+(!mode) : 2;
+		k = (S->item_order[0] == 0 && !S->Y2K_year) ? ywidth : 2;
 		if (S->item_order[0] == 3) k = 3;	/* Day of year */
 		if (S->mw_text && S->item_order[0] == 1)	/* Prepare for "Monthname" format */
 			(mode == 0) ? sprintf (S->format, "%%[^%s]", S->delimiter[0]) : sprintf (S->format, "%%s");
@@ -1801,7 +1804,7 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, int mode)
 			(mode) ? sprintf (S->format, "%%%d.%dd", k, k) : sprintf (S->format, "%%%dd", k);
 		if (S->item_order[1] >= 0) {	/* Need more items */
 			if (S->delimiter[0][0]) strcat (S->format, S->delimiter[0]);
-			k = (S->item_order[1] == 0 && !S->Y2K_year) ? 4+(!mode) : 2;
+			k = (S->item_order[1] == 0 && !S->Y2K_year) ? ywidth : 2;
 			if (S->item_order[1] == 3) k = 3;	/* Day of year */
 			if (S->mw_text && S->item_order[1] == 1)	/* Prepare for "Monthname" format */
 				(mode == 0) ? sprintf (fmt, "%%[^%s]", S->delimiter[1]) : sprintf (fmt, "%%s");
@@ -1812,7 +1815,7 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, int mode)
 			strcat (S->format, fmt);
 			if (S->item_order[2] >= 0) {	/* .. and even more */
 				if (S->delimiter[1][0]) strcat (S->format, S->delimiter[1]);
-				k = (S->item_order[2] == 0 && !S->Y2K_year) ? 4+(!mode) : 2;
+				k = (S->item_order[2] == 0 && !S->Y2K_year) ? ywidth : 2;
 				if (S->mw_text && S->item_order[2] == 1)	/* Prepare for "Monthname" format */
 					sprintf (fmt, "%%s");
 				else if (S->compact)			/* Numerical formatting of month or year w/o leading zeros */
