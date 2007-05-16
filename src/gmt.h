@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.146 2007-03-28 03:10:38 pwessel Exp $
+ *	$Id: gmt.h,v 1.147 2007-05-16 04:50:25 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -494,7 +494,7 @@ struct GMT_FONT {		/* Information for each font */
 /*	External variables for misc purposes */
 /*--------------------------------------------------------------------*/
 
-EXTERN_MSC struct GMT_COMMON *GMT;
+EXTERN_MSC struct GMT_CTRL *GMT;
 
 EXTERN_MSC struct GMT_DEFAULTS gmtdefs;
 
@@ -519,9 +519,6 @@ EXTERN_MSC char *GMT_program;		/* Name of current GMT program */
 EXTERN_MSC int GMT_oldargc;
 EXTERN_MSC char *GMT_oldargv[];		/* Pointers to old common arguments */
 EXTERN_MSC int GMT_no_rgb[];
-EXTERN_MSC char *GMT_degree_symbol[4][3];	/* Contains the two octal codes for small and large degree symbols, for each char encoding */
-EXTERN_MSC char *GMT_minute_symbol[4][2];	/* Standard encoding minute symbol */
-EXTERN_MSC char *GMT_second_symbol[4][2];	/* Standard encoding second symbol */
 
 /*--------------------------------------------------------------------*/
 /*	For i/o purposes */

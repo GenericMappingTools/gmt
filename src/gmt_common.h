@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.5 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_common.h,v 1.6 2007-05-16 04:50:25 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,88 +28,87 @@
 #define _GMT_COMMON_H
 
 struct GMT_COMMON {
-	struct GMT_z_OPT {	/* [0]	\0 (zero) */
+	/* Structure with all information given via the 16 common GMT command-line options -R -J .. */
+	struct synopsis {	/* [0]	\0 (zero) */
 		BOOLEAN active;
-		short int processed;
-	} z;
-	struct GMT_B_OPT {	/* [1]  -B<params> */
+	} synopsis;
+	struct B {	/* [1]  -B<params> */
 		BOOLEAN active;
-		short int processed;
 	} B;	
-	struct GMT_H_OPT {	/* [2]  -H[i][<nrecs>] */
+	struct H {	/* [2]  -H[i][<nrecs>] */
 		BOOLEAN active[2];
-		short int processed;
 		int n_recs;
 	} H;	
-	struct GMT_J_OPT {	/* [3-4]  -J<params> */
+	struct J {	/* [3-4]  -J<params> */
 		BOOLEAN active;
-		short int processed;
 		int id;
 		double par[6];
 	} J;		
-	struct GMT_K_OPT {	/* [5]  -K */
+	struct K {	/* [5]  -K */
 		BOOLEAN active;
-		short int processed;
 	} K;	
-	struct GMT_O_OPT {	/* [6]  -O */
+	struct O {	/* [6]  -O */
 		BOOLEAN active;
-		short int processed;
 	} O;
-	struct GMT_P_OPT {	/* [7]  -P */
+	struct P {	/* [7]  -P */
 		BOOLEAN active;
-		short int processed;
 	} P;
-	struct GMT_R_OPT {	/* [8]  -Rw/e/s/n[/z0/z1][r] */
+	struct R {	/* [8]  -Rw/e/s/n[/z0/z1][r] */
 		BOOLEAN active;
 		BOOLEAN corners;
-		short int processed;
 		double x_min, x_max, y_min, y_max, z_min, z_max;
 	} R;
-	struct GMT_U_OPT {	/* [9]  -U */
+	struct U {	/* [9]  -U */
 		BOOLEAN active;
-		short int processed;
 		double x, y;
 		char *label;	
 	} U;
-	struct GMT_V_OPT {	/* [10]  -V */
+	struct V {	/* [10]  -V */
 		BOOLEAN active;
-		short int processed;
 	} V;
-	struct GMT_X_OPT {	/* [11]  -X */
+	struct X {	/* [11]  -X */
 		BOOLEAN active;
-		short int processed;
 		double off;
 		char mode;	/* r, a, or c */
 	} X;
-	struct GMT_Y_OPT {	/* [12] -Y */
+	struct Y {	/* [12] -Y */
 		BOOLEAN active;
-		short int processed;
 		double off;
 		char mode;	/* r, a, or c */
 	} Y;
-	struct GMT_c_OPT {	/* [13]  -c */
+	struct c {	/* [13]  -c */
 		BOOLEAN active;
-		short int processed;
 		int copies;
 	} c;
-	struct GMT_t_OPT {	/* [14]  -:[i|o] */
+	struct t {	/* [14]  -:[i|o] */
 		BOOLEAN active;
 		BOOLEAN toggle[2];
-		short int processed;
 	} t;
-	struct GMT_b_OPT {	/* -b[i|o][<n>][s|S|d|D] */
+	struct b {	/* -b[i|o][<n>][s|S|d|D] */
 		BOOLEAN active;
 		BOOLEAN binary[2];
 		BOOLEAN sincle[2];
 		BOOLEAN swab[2];
-		short int processed;
 		int ncol[2];
 	} b;
-	struct GMT_f_OPT {	/* [15]  -f[i|o]<col>|<colrange>[t|T|g],.. */
+	struct f {	/* [15]  -f[i|o]<col>|<colrange>[t|T|g],.. */
 		BOOLEAN active;
-		short int processed;
 		char col_type[2][BUFSIZ];
 	} f;
+};
+
+struct GMT_HIDDEN {
+	/* These are internal parameters that need to be passed around between
+	 * many GMT functions.  Eliminating global variables means passing a
+	 * pointer to this structure instead. */
+	int workinprogress;
+};
+
+struct GMT_CTRL {
+	/* Master structure for a GMT invokation.  All internal settings for GMT is accessed here */
+	struct GMT_COMMON *common;	/* Structure with all the common GMT command settings (-R -J ..) */
+	struct GMT_DEFAULTS *gmtdefs;	/* Structure with all the GMT defaults settings (pens, colors, fonts.. ) */
+	struct GMT_HIDDEN *hidden;	/* Internal global variables that should never be messed with by users */
 };
 
 #endif /* _GMT_COMMON_H */
