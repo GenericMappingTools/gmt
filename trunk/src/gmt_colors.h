@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.23 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_colors.h,v 1.24 2007-05-17 02:54:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,7 +71,7 @@ struct GMT_LUT {
 struct GMT_BFN_COLOR {	/* For back-, fore-, and nan-colors */
 	int rgb[3];
 	double hsv[3];
-	int skip;
+	BOOLEAN skip;
 	struct GMT_FILL *fill;
 };
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.297 2007-04-23 17:00:31 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.298 2007-05-17 02:54:01 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1167,7 +1167,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 	/* May have to adjust -R -I depending on how GMT_inc_code was set */
 	
 	one_or_zero = !h->node_offset;
-	m_pr_degree = 2.0 * M_PI * gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / 360.0;
+	m_pr_degree = project_info.M_PR_DEG;
 	h->xy_off = 0.5 * h->node_offset;	/* Use to calculate mean location of block */
 	
 	/* XINC AND XMIN/XMAX CHECK FIRST */
@@ -1254,7 +1254,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 			m_pr_degree = 1.0;
 
 		else	/* m_pr_degree might have been reset to 1 in the XINC ... case */
-			m_pr_degree = 2.0 * M_PI * gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / 360.0;
+			m_pr_degree = project_info.M_PR_DEG;
 
 		h->y_inc = (h->y_inc == 0.0) ? h->x_inc : h->y_inc * s / m_pr_degree;
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies y_inc = %g\n", GMT_program, h->y_inc);
