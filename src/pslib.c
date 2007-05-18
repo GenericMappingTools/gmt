@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.143 2007-05-11 19:37:56 pwessel Exp $
+ *	$Id: pslib.c,v 1.144 2007-05-18 23:12:55 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,6 +49,7 @@
  * Updated June 2, 2004 by P. Wessel to add contour/line clipping & labeling machinery (PSL_label.ps).
  * Updated October 25, 2004 by R. Scharroo and L. Parkes to add image compression tricks.
  * Updated March 6, 2006 by P. Wessel to skip output of PS comments unless ps.commens is TRUE.
+ * Updated May 18, 2007 by P. Wessel to allow @;, @:, and @_ also for ps_text.
  *
  * FORTRAN considerations:
  *	All floating point data are assumed to be DOUBLE PRECISION
@@ -2049,6 +2050,28 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 			ptr++;
 			(small) ? get_uppercase (piece, ptr) : (void) strcpy (piece, ptr);
 		}
+		else if (ptr[0] == ':') {	/* Font size change */
+			ptr++;
+			if (ptr[0] == ':')
+				size = height;
+			else {
+				i = atoi (ptr);
+				size = (double)i / ps.points_pr_unit;
+				while (*ptr != ':') ptr++;
+			}
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == ';') {	/* Color change */
+			ptr++;
+			while (*ptr != ';') ptr++;
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '_') {	/* Small caps toggle */
+			ptr++;
+			strcpy (piece, ptr);
+		}
 		else	/* Not recognized or @@ for a single @ */
 			strcpy (piece, ptr);
 		if (strlen (piece) > 0) fprintf (ps.fp, "%d F%d (%s) tcf ", irint (size*ps.scale), font, piece);
@@ -2093,8 +2116,8 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	*/
 
 	char *piece, *piece2, *ptr, *string, op[16], align[3][10] = {"0", "2 div neg", "neg"};
-	int dy, i = 0, j, font, v_just, h_just;
-	int sub, super, small, old_font;
+	int dy, i = 0, j, font, v_just, h_just, upen, ugap;
+	int sub, super, small, old_font, n_uline, start_uline, stop_uline;
 	double height, small_size, size, scap_size, ustep, dstep;
 
 	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
@@ -2168,7 +2191,10 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	scap_size = height * 0.85;
 	ustep = 0.35 * height;
 	dstep = 0.25 * height;
-
+	upen = irint (0.025 * height * ps.scale);	/* Underline pen thickness */
+	ugap = irint (0.075 * height * ps.scale);	/* Underline shift */
+	start_uline = stop_uline = n_uline = 0;
+	
 	ptr = strtok (string, "@");
 	if(string[0] != '@') {	/* String has @ but not at start - must deal with first piece explicitly */
 		fprintf (ps.fp, "%d F%d (%s) %s\n", irint (size*ps.scale), font, ptr, op);
@@ -2240,10 +2266,69 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 			ptr++;
 			(small) ? get_uppercase (piece, ptr) : (void) strcpy (piece, ptr);
 		}
+		else if (ptr[0] == ':') {	/* Font size change */
+			ptr++;
+			if (ptr[0] == ':')	/* Reset size */
+				size = height;
+			else {
+				i = atoi (ptr);
+				size = (double)i / ps.points_pr_unit;
+				while (*ptr != ':') ptr++;
+			}
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == ';') {	/* Font color change */
+			int pmode, n_scan, rgb[3], error = FALSE;
+			ptr++;
+			if (ptr[0] == ';') {	/* Reset color */
+				pmode = ps_place_color (ps.rgb);
+				fprintf (ps.fp, "%c ", psl_paint_code[pmode]);
+			}
+			else {
+				j = 0;
+				while (ptr[j] != ';') j++;
+				ptr[j] = 0;
+				n_scan = sscanf (ptr, "%d/%d/%d", &rgb[0], &rgb[1], &rgb[2]);
+				if (n_scan == 1) {	/* Got gray shade */
+					rgb[1] = rgb[2] = rgb[0];
+					if (rgb[0] < 0 || rgb[0] > 255) error++;
+				}
+				else if (n_scan == 3) {	/* Got r/g/b */
+					if (rgb[0] < 0 || rgb[0] > 255) error++;
+					if (rgb[1] < 0 || rgb[1] > 255) error++;
+					if (rgb[2] < 0 || rgb[2] > 255) error++;
+				}
+				else {	/* Got crap */
+					fprintf (stderr, "%s: Bad color change (%s) - ignored\n", "pslib", ptr);
+					error = TRUE;
+				}
+
+				ptr[j] = ';';
+				while (*ptr != ';') ptr++;
+				if (!error) {
+					pmode = ps_place_color (rgb);
+					fprintf (ps.fp, "%c ", psl_paint_code[pmode]);
+				}
+			}
+			ptr++;
+			strcpy (piece, ptr);
+		}
+		else if (ptr[0] == '_') {	/* Toggle underline */
+			n_uline++;
+			if (n_uline%2)
+				start_uline = TRUE;
+			else
+				stop_uline = TRUE;
+			ptr++;
+			strcpy (piece, ptr);
+		}
 		else
 			strcpy (piece, ptr);
-		if (strlen (piece) > 0)
-			fprintf (ps.fp, "%d F%d (%s) %s\n", irint (size*ps.scale), font, piece, op);
+		if (start_uline) fprintf (ps.fp, "currentpoint /y0_u exch def /x0_u exch def\n");
+		if (stop_uline) fprintf (ps.fp, "V %d W currentpoint pop /x1_u exch def x0_u y0_u %d sub m x1_u x0_u sub 0 D S x1_u y0_u m U\n", upen, ugap);
+		start_uline = stop_uline = FALSE;
+		if (strlen (piece) > 0) fprintf (ps.fp, "%d F%d (%s) %s\n", irint (size*ps.scale), font, piece, op);
 		ptr = strtok ((char *)NULL, "@");
 	}
 	if (form == 1) fprintf (ps.fp, "S\n");
