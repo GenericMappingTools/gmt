@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.21 2007-05-09 04:19:37 pwessel Exp $
+#	$Id: Makefile,v 1.22 2007-05-18 20:38:39 pwessel Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -8,6 +8,8 @@
 #	part of GMT but is used to prepare coastline data.
 #	To compile/link them, try "make all", then "make install".
 #	When done, clean out directory with "make clean".
+#	Note that to work with GSHHS Master Files (which are in CVS) you
+#	must also check out the GSHHS_master supplement from the coast dir.
 #
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, NOAA
@@ -37,7 +39,7 @@ COAST_H	= shore.h wvs.h
 
 COAST_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c swap.c \
 	  lines_to_bins.c man_fix.c man_fix2.c polygon_bincount.c gshhs_to_polygon.c \
-	  polygon_checkarea.c polygon_consistency.c polygon_deldups.c \
+	  polygon_checkarea.c polygon_consistency.c polygon_deldups.c polygon_compare.c \
 	  polygon_dump.c polygon_extract.c polygon_extract2.c polygon_fixnegwesn.c \
 	  polygon_extract_all.c polygon_final_info.c polygon_findarea.c polygon_findlevel.c \
 	  polygon_findlevel2.c polygon_fix.c polygon_fixlevel.c polygon_get.c \

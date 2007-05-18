@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.12 2007-01-30 20:37:09 pwessel Exp $
+/*	$Id: gshhs.h,v 1.13 2007-05-18 20:38:39 pwessel Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -22,6 +22,8 @@
  *			  For use with version 1.3 of GSHHS
  *	2-MAY-2006.  PW: Version 1.4.  Header is now 32 bytes (all int 4)
  *			  For use with version 1.4 of GSHHS
+*	31-MAR-2007.  PW: Version 1.5.  no format change
+ *			  For use with version 1.5 of GSHHS
  */
 
 #ifndef _GSHHS
@@ -40,7 +42,7 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHS_DATA_VERSION	4	/* For v1.4 */
+#define GSHHS_DATA_VERSION	5	/* For v1.5 */
 #define GSHHS_PROG_VERSION	"1.7"
 
 /* For byte swapping on little-endian systems (GSHHS is defined to be bigendian) */
