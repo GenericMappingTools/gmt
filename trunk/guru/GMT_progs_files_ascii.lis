@@ -1,9 +1,9 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.37 2007-04-01 19:59:46 remko Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.38 2007-05-18 00:05:12 remko Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_progs tar/zip files.  See GMT_progs_files_bin.lis for binary files
 #
-CHANGES
+ChangeLog
 README
 README.WIN32
 COPYING
