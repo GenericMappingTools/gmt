@@ -484,6 +484,7 @@ void \fBps_segment\fR (\fIx0, y0, x1, y1\fP)
 \fBdouble\fR \fIx0, y0, x1, y1;\fP
 .RS 10
 Draws a line segment between the two points using current pen attributes.
+.RE
 .IP
 void \fBps_setdash\fR (\fIpattern, offset\fP)
 .br
@@ -620,6 +621,8 @@ meaning to ps_text. @~ toggles between current font and the Mathematical Symbols
 @%\fIno\fP% sets font to \fIno\fP; @%% resets to starting font.
 @- turns subscript on/off, @+ turns superscript on/off, @# turns small caps
 on/off, and @\\ will make a composite character of the following two character.
+@;\fIr/g/b\fP; changes the font color (@;; resets it), @:\fIsize\fP: changes the font size (@:: resets it),
+and @_ toggles underline on/off.
 Give fontsize in points (72 points = 1 inch).  Normally, the text is typed using solid characters.
 To draw outline characters, set \fIform\fP == 1.  If \fIpointsize\fP is negative it means
 that the current point has already been set before \fBps_text\fP was called and that
@@ -691,9 +694,7 @@ is justified left, centered, right, or justified as governed by \fIpar_just\fP (
 (lowest) bit draws the box outline.  The second bit fills the box interior.  The third bit
 makes the outline box have rounded corners (unless \fIx_gap, y_gap\fP, which specifies the
 padding between the text and the box, are zero), while the forth bit draws a line from the original
-\fIx, y\fP point to the shifted position.  The escape sequences described for ps_text applies
-here, as well as two additional commands: @;\fIr/g/b\fP; changes the font color (@;; resets it),
-and @:\fIsize\fP: changes the font size (@:: resets it).
+\fIx, y\fP point to the shifted position.  The escape sequences described for ps_text applies as well.
 .RE
 .SH AUTHOR
 Paul Wessel, School of Ocean and Earth Science and Technology, 1680 East-West Road, Honolulu,
