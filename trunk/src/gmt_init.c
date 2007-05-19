@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.287 2007-05-16 04:50:25 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.288 2007-05-19 00:29:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3868,6 +3868,7 @@ int GMT_parse_B_option (char *in) {
 	}
 
 	GMT_strip_colonitem (&in[k], ":.", frame_info.header, out1);			/* Extract header string, if any */
+	GMT_enforce_rgb_triplets (frame_info.header, GMT_LONG_TEXT);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
 	GMT_strip_wesnz (out1, frame_info.side, &frame_info.draw_box, out2);		/* Decode WESNZwesnz+ flags, if any */
 
@@ -3877,6 +3878,7 @@ int GMT_parse_B_option (char *in) {
 
 		if (!info[i][0]) continue;
 
+		GMT_enforce_rgb_triplets (info[i], BUFSIZ);				/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 		GMT_strip_colonitem (info[i], ":,", frame_info.axis[i].unit, out1);	/* Pull out annotation unit, if any */
 		GMT_strip_colonitem (out1, ":=", frame_info.axis[i].prefix, out2);	/* Pull out annotation prefix, if any */
 		GMT_strip_colonitem (out2, ":", frame_info.axis[i].label, out3);	/* Pull out axis label, if any */

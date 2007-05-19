@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.93 2007-02-08 22:34:26 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.94 2007-05-19 00:29:26 pwessel Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -1310,10 +1310,13 @@ The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}.
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Code}}	&	\multicolumn{1}{c|}{\emph{Effect}} \\ \hline
 @\~	&	Turns symbol font on or off \\ \hline 
-@\%\emph{fontno}\%	&	Switches to another font; @\%\% resets to previous font \\ \hline 
 @+	&	Turns superscript on or off \\ \hline 
 @-	&	Turns subscript on or off \\ \hline 
 @\#	&	Turns small caps on or off \\ \hline 
+@\_	&	Turns underline on or off \\ \hline 
+@\%\emph{fontno}\%	&	Switches to another font; @\%\% resets to previous font \\ \hline 
+@:\emph{size}:	&	Switches to another font size; @:: resets to previous size \\ \hline 
+@;\emph{color};	&	Switches to another font color; @;; resets to previous color \\ \hline 
 @!	&	Creates one composite character of the next two characters \\ \hline 
 @@	&	Prints the @ sign itself \\ \hline 
 \end{tabular}
