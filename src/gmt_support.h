@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.17 2007-03-24 01:42:07 pwessel Exp $
+ *	$Id: gmt_support.h,v 1.18 2007-05-19 00:29:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,6 +51,7 @@ EXTERN_MSC int GMT_getinc (char *line, double *dx, double *dy);
 EXTERN_MSC int GMT_getincn (char *line, double inc[], int n);
 EXTERN_MSC int GMT_getpen (char *line, struct GMT_PEN *pen);
 EXTERN_MSC int GMT_getrgb (char *line, int *rgb);
+EXTERN_MSC void GMT_enforce_rgb_triplets (char *text, int size);
 EXTERN_MSC int GMT_getrose (char *text, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms);
 EXTERN_MSC int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINE_SEGMENT *P);

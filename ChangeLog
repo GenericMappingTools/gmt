@@ -1,14 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.3 2007-05-18 23:15:59 pwessel Exp $
+	$Id: ChangeLog,v 1.4 2007-05-19 00:29:26 pwessel Exp $
 -----------------------------------------------------------------------------------------
 
 2007-05-18	pwessel
       * pslib.c:		ps_text can now use @_, @: and @; sequences
       * pslib.txt:		Updated the documentation
-      * pstext.c		Revised help message accordingly.  Also added a function
-      				to scan for @;color; and replace color with a r/g/b triplet
-				if it was given by name, gray, h-s-v etc.
+      * gmt_support.c		Added function GMT_enforce_rgb_triplets to scan for @;color;
+      				and replace it with r/g/b if given by name, gray, h-s-v etc.
+      * gmt_init.c		Applies GMT_enforce_rgb_triplets to header and axes labels
+      * pstext.c		Revised help message accordingly.  Applies GMT_enforce_rgb_triplets
       * pstext.txt		Updated accordingly
+      * GMT_Chapter_4.tex	Updated table of escape sequences
+      * GMT_Tutorial.tex	Same
       
 2007-05-17:	remko
       * ChangeLog:		Replaced CHANGES by ChangeLog (GNU requirement)

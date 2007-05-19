@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Tutorial.tex,v 1.48 2007-03-29 01:09:32 pwessel Exp $
+%       $Id: GMT_Tutorial.tex,v 1.49 2007-05-19 00:29:26 pwessel Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2007.
@@ -992,7 +992,8 @@ the relevant two-character codes used for justification.
 
 The text string can be one or several words and may include octal codes for
 special characters and escape-sequences used to select subscripts or symbol
-fonts.  The escape sequences that are recognized by \GMT\ are given in Table~\ref{tbl:escape}.
+fonts.  The escape sequences that are recognized by \GMT\ are given in Tables~\ref{tbl:escape}
+and ~\ref{tbl:scand}.
 \index{Escape sequences}
 \index{Special characters}
 \index{Superscript}
@@ -1006,16 +1007,16 @@ fonts.  The escape sequences that are recognized by \GMT\ are given in Table~\re
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Code}}       &       \multicolumn{1}{c|}{\emph{Effect}} \\ \hline
-@\~     &       Turns symbol font on or off \\ \hline 
-@\%{\it fontno}\%       &       Switches to another font; @\%\% resets to previous font \\ \hline 
-@+      &       Turns superscript on or off \\ \hline 
-@-      &       Turns subscript on or off \\ \hline 
-@\#     &       Turns small caps on or off \\ \hline 
-@!      &       Creates one composite character of the next two characters \\ \hline 
-@@      &       Prints the @ sign itself \\ \hline 
-@E @e   &  \AE\ \ae \\  \hline
-@O @o   &  \O\ \o \\  \hline
-@A @a   &  \AA\ \aa \\ \hline
+@\~	&	Turns symbol font on or off \\ \hline 
+@+	&	Turns superscript on or off \\ \hline 
+@-	&	Turns subscript on or off \\ \hline 
+@\#	&	Turns small caps on or off \\ \hline 
+@\_	&	Turns underline on or off \\ \hline 
+@\%\emph{fontno}\%	&	Switches to another font; @\%\% resets to previous font \\ \hline 
+@:\emph{size}:	&	Switches to another font size; @:: resets to previous size \\ \hline 
+@;\emph{color};	&	Switches to another font color; @;; resets to previous color \\ \hline 
+@!	&	Creates one composite character of the next two characters \\ \hline 
+@@	&	Prints the @ sign itself \\ \hline 
 \end{tabular}
 \caption{\gmt\ text escape sequences.}
 \label{tbl:escape}
@@ -1045,6 +1046,22 @@ Here we have used the ``here document'' notation in \UNIX: The $<$$<$ EOF
 will treat the following lines as the input file until it detects the
 word EOF.  We pipe the \PS\ directly through \progname{ghostview} (the -- tells
 \progname{ghostview} that piping is happening).
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l||l|l|} \hline
+\emph{Code} & \emph{Effect}  & \emph{Code} & \emph{Effect} \\ \hline
+@E &  \AE   & @e &  \ae   \\ \hline
+@O &  \O    & @o &  \o    \\ \hline
+@A &  \AA   & @a &  \aa   \\ \hline
+@C &  \c{C} & @c &  \c{c} \\ \hline
+@N &  \~{N} & @n &  \~{n} \\ \hline
+@U &  \"{U} & @u &  \"{u} \\ \hline
+@s &  \ss   &    &        \\ \hline
+\end{tabular}
+\caption{Shortcuts for some European characters.}
+\label{tbl:scand}
+\end{table}
 
 \section{Exercises}
 \index{Exercises|(}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.298 2007-05-17 02:54:01 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.299 2007-05-19 00:29:26 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -577,6 +577,48 @@ int GMT_gethsv (char *line, double hsv[])
 	/* Get here if there is a problem */
 
 	return (TRUE);
+}
+
+void GMT_enforce_rgb_triplets (char *text, int size)
+{
+	/* Purpose is to replace things like @;lightgreen; with @r/g/b; which ps_text understands */
+	
+	int i, j, k = 0, n, last = 0, n_slash, rgb[3];
+	char buffer[BUFSIZ], color[16], *p;
+	
+	if (!strchr (text, '@')) return;	/* Nothing to do since no espace sequence in string */
+	
+	while ((p = strstr (text, "@;"))) {	/* Found a @; sequence */
+		i = (int)(p - text) + 2;	/* Position of first character after @; */
+		for (j = last; j < i; j++, k++) buffer[k] = text[j];	/* Copy everything from last stop up to the color specification */
+		text[i-1] = 'X';	/* Wipe the ; so that @; wont be found a 2nd time */
+		if (text[i] != ';') {	/* Color info now follows */
+			n = i;
+			n_slash = 0;
+			while (text[n] && text[n] != ';') {	/* Find end of the color info and also count slashes */
+				if (text[n] == '/') n_slash++;
+				n++;
+			}
+			if (n_slash != 2) {	/* r/g/b not given, must replace whatever it was with a r/g/b triplet */
+				text[n] = '\0';	/* Temporarily terminate strong so getrgb can work */
+				GMT_getrgb (&text[i], rgb);
+				text[n] = ';';	/* Undo damage */
+				sprintf (color, "%d/%d/%d", rgb[0], rgb[1], rgb[2]);	/* Format triplet */
+				for (j = 0; color[j]; j++, k++) buffer[k] = color[j];	/* Copy over triplet and update buffer pointer k */
+			}
+			else	/* Already in r/g/b format, just copy */
+				for (j = i; j < n; j++, k++) buffer[k] = text[j];
+			i = n;	/* Position of terminating ; */
+		}
+		buffer[k++] = ';';	/* Finish the specification */
+		last = i + 1;	/* Start of next part to copy */
+	}
+	i = last;	/* Finish copying everything left in the text string */
+	while (text[i]) buffer[k++] = text[i++];
+	buffer[k++] = '\0';	/* Properly terminate buffer */
+	
+	if (k > size) fprintf (stderr, "GMT_enforce_rgb_triplets: Replacement string too long - truncated\n");
+	strncpy (text, buffer, k);	/* Copy back the revised string */
 }
 
 int GMT_colorname2index (char *name)
