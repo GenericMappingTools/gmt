@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.4 2007-05-19 00:29:26 pwessel Exp $
+	$Id: ChangeLog,v 1.5 2007-05-19 00:37:04 pwessel Exp $
 -----------------------------------------------------------------------------------------
 
 2007-05-18	pwessel
@@ -26,7 +26,7 @@
       * GMT_Chapter_7.tex:	Changed accordingly.
 
 2007-05-08
-      * coast/binned_borders*.b:	Added Australia state boundaries
+      * coast/binned_borders*.b:	Added Australia state boundaries, fixed Yemen and Lebanon
 
 2007-05-06
       * project.c:		Wrong azimuth for -N -G generating lines
