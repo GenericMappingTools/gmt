@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.21 2007-03-29 01:16:49 pwessel Exp $
+#	$Id: todo.txt,v 1.22 2007-05-22 22:17:59 remko Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -18,11 +18,10 @@ psxy[z]:	-Sb -So etc with time data; what is size; how to specify months etc.
 ------------------------------------------------------------------------
 ENHANCEMENTS:
 
-Appendix C:	Add information on how to render Postscript into raster images.
-		Show examples of:
-		- Bad anti-aliasing (lines in land masses using pscoast)
-		- How to include images into Powerpoint
-		[ Item assigned to Remko. ]
+psxy.c:		Suggestion to add -Am and -Ap to draw lines from point A to B not by
+		following the great circle. Instead follow:
+		-Am: first the meridian through A, then the parallel through B
+		-Ap: first the parallel through A, then the meridian through B
 
 GIS supplement:	In src/gis, finalize grd2geotiff.c donated from K. Feigl.  Needs work
 		on configure and finding libs.  This supplement should also have Lloyd's
