@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.5 2007-05-19 00:37:04 pwessel Exp $
+	$Id: ChangeLog,v 1.6 2007-05-23 05:29:34 pwessel Exp $
 -----------------------------------------------------------------------------------------
+
+2007-05-22	pwessel
+      * psxy.c:			More careful setting of the "greenwich" variable to prevent polygon wrap
+      * gmt_map.c:		New function GMT_set_greenwich() which returns TRUE or FALSE.
 
 2007-05-18	pwessel
       * pslib.c:		ps_text can now use @_, @: and @; sequences
