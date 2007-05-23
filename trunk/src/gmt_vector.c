@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.11 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_vector.c,v 1.12 2007-05-23 16:33:16 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -541,21 +541,25 @@ void GMT_cart_to_geo (double *alat, double *alon, double *a, int rads)
 }
 
 int GMT_fix_up_path (double **a_lon, double **a_lat, int n, BOOLEAN greenwich, double step)
-                          
-      
-                  	/* TRUE if we cross Greenwich */
-            		/* Add points when step degrees are exceeded */
 {
-	
 	/* Takes pointers to a list of lon/lat pairs and adds auxiliary points if
 	 * the great circle distance between two given points exceeds
-	 * <step> spherical degree [ 1 degree].
+	 * <step> spherical degree [1 degree].
+	 *
+	 * In fact, two issues in this routine need still to be fixed:
+	 * 1) The "greenwich" argument has become superfluous (yippee!) and should be removed.
+	 * 2) The "step" argument is suggested to be spherical degrees, but it is set as
+	 *    projected distance (in inches) in at least one main program (psxy).
+	 *
+	 * "greenwich" became superfluous when the algorithm for wrapping the inserted points
+	 * was altered on 23-May-2007. That was also when the "step" issue was discovered.
+	 * Will be fixed soon.
 	 */
-	 
-	int i, j, n_tmp, n_insert = 0, n_alloc;
+      
+	int i, j, n_tmp, n_step = 0, n_alloc;
 	double *lon_tmp, *lat_tmp, *old;
 	double a[3], b[3], x[3], *lon, *lat;
-	double c, d, fraction, theta, i_step;
+	double c, d, fraction, theta, minlon, maxlon;
 	
 	lon = *a_lon;
 	lat = *a_lat;
@@ -565,10 +569,9 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, BOOLEAN greenwich, d
 	lat_tmp = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 	
 	GMT_geo_to_cart (&lat[0], &lon[0], a, TRUE);
-	lon_tmp[0] = (lon[0] >= M_PI) ? lon[0] - 2.0*M_PI : lon[0];	lat_tmp[0] = lat[0];
+	lon_tmp[0] = lon[0];	lat_tmp[0] = lat[0];
 	n_tmp = 1;
 	if (step <= 0.0) step = 1.0;
-	i_step = 1.0 / step;
 	
 	for (i = 1; i < n; i++) {
 		
@@ -577,9 +580,11 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, BOOLEAN greenwich, d
 		if ((theta = d_acos (GMT_dot3v (a, b))) == M_PI) {	/* trouble, no unique great circle */
 			if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Two points in input list are antipodal - no resampling taken place!\n", GMT_program);
 		}
-		else if ((n_insert = (int)floor (theta * R2D * i_step))) {	/* Must insert n_insert points */
-			fraction = step * D2R / theta;
-			for (j = 1; j <= n_insert; j++) {
+		else if ((n_step = irint (theta * R2D / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+			fraction = 1.0 / (float) n_step;
+			minlon = MIN(lon[i-1],lon[i]);
+			maxlon = MAX(lon[i-1],lon[i]);
+			for (j = 1; j < n_step; j++) {
 				c = j * fraction;
 				d = 1 - c;
 				x[0] = a[0] * d + b[0] * c;
@@ -587,6 +592,10 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, BOOLEAN greenwich, d
 				x[2] = a[2] * d + b[2] * c;
 				GMT_normalize3v (x);
 				GMT_cart_to_geo (&lat_tmp[n_tmp], &lon_tmp[n_tmp], x, FALSE);
+				if (lon_tmp[n_tmp] < minlon)
+					lon_tmp[n_tmp] += TWO_PI;
+				else if (lon_tmp[n_tmp] > maxlon)
+					lon_tmp[n_tmp] -= TWO_PI;
 				n_tmp++;
 				if (n_tmp == n_alloc) {
 					n_alloc += GMT_CHUNK;
@@ -595,7 +604,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, BOOLEAN greenwich, d
 				}
 			}
 		}
-		lon_tmp[n_tmp] = (lon[i] >= M_PI) ? lon[i] - 2.0 * M_PI : lon[i];	lat_tmp[n_tmp] = lat[i];
+		lon_tmp[n_tmp] = lon[i];	lat_tmp[n_tmp] = lat[i];
 		n_tmp++;
 		if (n_tmp == n_alloc) {
 			n_alloc += GMT_CHUNK;
@@ -615,10 +624,6 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, BOOLEAN greenwich, d
 	GMT_free ((void *) old);
 	for (i = 0; i < n_tmp; i++) {
 		lon[i] *= R2D;
-		if (!greenwich && lon[i] < 0.0)
-			lon[i] += 360.0;
-		else if (greenwich && lon[i] > 180.0)
-			lon[i] -= 360.0;
 		lat[i] *= R2D;
 	}
 	*a_lon = lon;
