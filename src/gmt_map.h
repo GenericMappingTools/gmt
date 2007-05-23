@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.13 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_map.h,v 1.14 2007-05-23 05:29:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -75,5 +75,6 @@ EXTERN_MSC void GMT_zz_to_z (double *z, double zz);
 EXTERN_MSC int GMT_distances (double x[], double y[], int n, double scale, int dist_flag, double *dist);
 EXTERN_MSC int GMT_map_loncross (double lon, double south, double north, struct GMT_XINGS **xings);
 EXTERN_MSC int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **xings);
+EXTERN_MSC BOOLEAN GMT_set_greenwich (int mode);
 
 #endif /* _GMT_MAP_H */

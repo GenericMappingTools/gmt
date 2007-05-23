@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.138 2007-04-26 00:27:57 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.139 2007-05-23 05:29:34 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3507,6 +3507,30 @@ double GMT_half_map_width (double y)
 			break;
 	}
 	return (half_width);
+}
+
+BOOLEAN GMT_set_greenwich (int mode)
+{
+	BOOLEAN greenwich = FALSE;
+	
+	/* Sets the boolean choice greenwhich which should be FALSE
+	 * for Cartesian coordinates and TRUE if we have data crossing
+	 * Greenwich and it is not a global map
+	 */
+	 
+	if (mode) return (greenwich);	/* For testing; just return FALSE */
+
+	if (GMT_io.in_col_type[0] & GMT_IS_LON) {	/* Lon/lat data */
+		double lon;
+		if (project_info.w <= 0.0 || project_info.e <= 0.0)	/* Region straddles Greenwich */
+			greenwich = TRUE;
+		else if (!GMT_world_map) {	/* A regional map - see if we are closer to Greenwich than Dateline */
+			lon = project_info.central_meridian;
+			if (lon < 0.0) lon += 360.0;
+			greenwich = (lon < 90.0 || lon > 270.0);
+		}
+	}
+	return (greenwich);
 }
 
 BOOLEAN GMT_will_it_wrap_x (double *x, double *y, int n, int *start)
