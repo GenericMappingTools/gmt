@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.28 2007-03-12 19:52:26 remko Exp $
+ *	$Id: gmt_shore.c,v 1.29 2007-05-24 15:35:57 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -661,7 +661,7 @@ void GMT_br_cleanup (struct GMT_BR *c)
 	
 }
 
-int GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, int np, BOOLEAN greenwich, BOOLEAN sample, double step, int anti_bin)
+int GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, int np, BOOLEAN sample, double step, int anti_bin)
 {
 	/* This function will go through each of the polygons and determine
 	 * if the polygon is clipped by the map boundary, and if so if it
@@ -671,7 +671,6 @@ int GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, int np, BOOLEAN greenwich, 
 	 * Upon return the polygons are in x,y inches, not degrees.
 	 *
 	 * *p is the array of np polygons
-	 * greenwich is TRUE if area crosses Greenwich
 	 * sample is TRUE if we need to resample the polygons to reduce point spacing
 	 * step is the new maximum point separation in degrees
 	 * anti_bin, if >= 0, indicates a possible problem bin at the antipole using -JE only
@@ -689,7 +688,7 @@ int GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, int np, BOOLEAN greenwich, 
 		
 	for (k = 0; k < np; k++) {
 			
-		if (sample) p[k].n = GMT_fix_up_path (&p[k].lon, &p[k].lat, p[k].n, greenwich, step);
+		if (sample) p[k].n = GMT_fix_up_path (&p[k].lon, &p[k].lat, p[k].n, step);
 		
 		/* Clip polygon against map boundary if necessary and return plot x,y in inches */
 				
