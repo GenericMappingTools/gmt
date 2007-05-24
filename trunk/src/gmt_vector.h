@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.h,v 1.2 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_vector.h,v 1.3 2007-05-24 15:37:36 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -21,7 +21,7 @@
 
 EXTERN_MSC double GMT_dot3v (double *a, double *b);
 EXTERN_MSC int GMT_chol_dcmp (double *a, double *d, double *cond, int nr, int n);
-EXTERN_MSC int GMT_fix_up_path (double **a_lon, double **a_lat, int n, BOOLEAN greenwich, double step);
+EXTERN_MSC int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step);
 EXTERN_MSC int GMT_jacobi (double *a, int *n, int *m, double *d, double *v, double *b, double *z, int *nrots);
 EXTERN_MSC void GMT_cart_to_geo (double *alat, double *alon, double *a, int rads);
 EXTERN_MSC void GMT_chol_recover (double *a, double *d, int nr, int n, int nerr, int donly);
