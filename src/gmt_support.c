@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.299 2007-05-19 00:29:26 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.300 2007-05-24 15:41:36 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2641,9 +2641,11 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 
 	int i, k, n, error = 0, pos;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	BOOLEAN greenwich;
-	double x, y;
+	double x, y, step;
 	char buffer[BUFSIZ], p[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT];
+
+	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (if requested) */
+	step = gmtdefs.line_step / project_info.x_scale / project_info.M_PR_DEG;
 
 	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
 		G->clearance[0] = 0.01 * G->clearance[0] * G->label_font_size / 72.0;
@@ -2670,9 +2672,6 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 		G->no_gap = (G->just < 5 || G->just > 7);	/* Don't clip contour if label is not in the way */
 	else if (G->angle_type == 1)
 		G->no_gap = ((G->just + 2)%4);	/* Don't clip contour if label is not in the way */
-
-
-	greenwich = (project_info.w < 0.0 && project_info.e > 0.0);
 
 	if (G->crossing == GMT_CONTOUR_XLINE) {
 		strcpy (buffer, G->option);
@@ -2727,7 +2726,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 					}
 				}
 			}
-			if (G->do_interpolate) G->xp->segment[G->xp->n_segments]->n_rows = GMT_fix_up_path (&G->xp->segment[G->xp->n_segments]->coord[GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y], G->xp->segment[G->xp->n_segments]->n_rows, greenwich, gmtdefs.line_step);
+			if (G->do_interpolate) G->xp->segment[G->xp->n_segments]->n_rows = GMT_fix_up_path (&G->xp->segment[G->xp->n_segments]->coord[GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y], G->xp->segment[G->xp->n_segments]->n_rows, step);
 			for (i = 0; i < G->xp->segment[G->xp->n_segments]->n_rows; i++) {	/* Project */
 				GMT_geo_to_xy (G->xp->segment[G->xp->n_segments]->coord[GMT_X][i], G->xp->segment[G->xp->n_segments]->coord[GMT_Y][i], &x, &y);
 				G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] = x;
