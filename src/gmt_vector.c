@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.12 2007-05-23 16:33:16 remko Exp $
+ *	$Id: gmt_vector.c,v 1.13 2007-05-24 15:37:36 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -540,20 +540,17 @@ void GMT_cart_to_geo (double *alat, double *alon, double *a, int rads)
 	}
 }
 
-int GMT_fix_up_path (double **a_lon, double **a_lat, int n, BOOLEAN greenwich, double step)
+int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step)
 {
-	/* Takes pointers to a list of lon/lat pairs and adds auxiliary points if
-	 * the great circle distance between two given points exceeds
-	 * <step> spherical degree [1 degree].
+	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
+	 * auxiliary points if the great circle distance between two given points exceeds
+	 * <step> spherical degree.
+	 * Returns the new number of points (original plus auxiliary).
 	 *
-	 * In fact, two issues in this routine need still to be fixed:
-	 * 1) The "greenwich" argument has become superfluous (yippee!) and should be removed.
-	 * 2) The "step" argument is suggested to be spherical degrees, but it is set as
-	 *    projected distance (in inches) in at least one main program (psxy).
-	 *
-	 * "greenwich" became superfluous when the algorithm for wrapping the inserted points
-	 * was altered on 23-May-2007. That was also when the "step" issue was discovered.
-	 * Will be fixed soon.
+	 * The original argument "greenwich" became superfluous when the algorithm for
+	 * wrapping the inserted points was altered on 23-May-2007. This was also when
+	 * it was discovered that the calling programs sometimes defined "step" in
+	 * inches of map projection.
 	 */
       
 	int i, j, n_tmp, n_step = 0, n_alloc;
