@@ -9,10 +9,10 @@ cat > hexagone.dat <<%
 2.5 51
 %
 
-psxy hexagone.dat -R-5/9/42/52 -JM10c -P -L -Gpurple -K > $ps
+psxy hexagone.dat -R-5/9/42/52 -JM4i -P -L -Gpurple -K > $ps
 pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B2 -O -K >> $ps
 
-psxy hexagone.dat -R1/10/47/52 -JM15c -Y12c -L -Gpurple -O -K >> $ps
+psxy hexagone.dat -R1/10/47/52 -JM4i -Y5i -L -Gpurple -O -K >> $ps
 pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O >> $ps
 
 rm -f hexagone.dat .gmtcommands4
