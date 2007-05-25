@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.196 2007-05-25 19:39:14 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.197 2007-05-25 20:05:27 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3363,7 +3363,7 @@ void GMT_square (double x, double y, double z, double size[], struct GMT_FILL *f
 {
 	/* Plots the square symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[4], yp[4], S;
 		S = size[0] * 0.3535533906;
@@ -3380,7 +3380,7 @@ void GMT_circle (double x, double y, double z, double size[], struct GMT_FILL *f
 {
 	/* Plots the circle symbol */
 	
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double da, s, c, S, xp[GMT_ELLIPSE_APPROX], yp[GMT_ELLIPSE_APPROX];
 
@@ -3402,7 +3402,7 @@ void GMT_triangle (double x, double y, double z, double size[], struct GMT_FILL 
 {
 	/* Plots the triangle symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[3], yp[3];
 
@@ -3419,7 +3419,7 @@ void GMT_itriangle (double x, double y, double z, double size[], struct GMT_FILL
 {
 	/* Plots the inverted triangle symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[3], yp[3];
 
@@ -3436,7 +3436,7 @@ void GMT_diamond (double x, double y, double z, double size[], struct GMT_FILL *
 {
 	/* Plots the diamond symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[4], yp[4], S;
 
@@ -3454,7 +3454,7 @@ void GMT_hexagon (double x, double y, double z, double size[], struct GMT_FILL *
 {
 	/* Plots the hexagon symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[6], yp[6], S, sx, sy;
 
@@ -3477,7 +3477,7 @@ void GMT_pentagon (double x, double y, double z, double size[], struct GMT_FILL 
 {
 	/* Plots the pentagon symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double s, c, S, xp[5], yp[5];
 
@@ -3498,7 +3498,7 @@ void GMT_octagon (double x, double y, double z, double size[], struct GMT_FILL *
 {
 	/* Plots the octagon symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double s, c, S, xp[8], yp[8];
 
@@ -3519,7 +3519,7 @@ void GMT_star (double x, double y, double z, double size[], struct GMT_FILL *fil
 {
 	/* Plots the star symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i, k;
 		double xp[10], yp[10], S, s, c, s2;
 
@@ -3566,7 +3566,7 @@ void GMT_rect (double x, double y, double z, double size[], struct GMT_FILL *fil
 {
 	/* Plots the rect symbol [x,y is lower left corner] */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[4], yp[4];
 
@@ -3583,7 +3583,7 @@ void GMT_ellipse (double x, double y, double z, double size[], struct GMT_FILL *
 {
 	/* Plots the ellipse symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double dx, dy, da, s, c, sin_direction, cos_direction, xp[GMT_ELLIPSE_APPROX], yp[GMT_ELLIPSE_APPROX];
 
@@ -3607,7 +3607,7 @@ void GMT_pie (double x, double y, double z, double size[], struct GMT_FILL *fill
 {
 	/* Plots the pie symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i, j, n;
 		double *xp, *yp, *dx, *dy;
 
@@ -3636,7 +3636,7 @@ void GMT_rotrect (double x, double y, double z, double size[], struct GMT_FILL *
 {
 	/* Plots the rotated rectangle symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Must do polygon */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
 		int i;
 		double W, H, xp[4], yp[4], x_prime, y_prime, s, c;
 
@@ -3662,7 +3662,7 @@ void GMT_vector (double x0, double y0, double x1, double y1, double z, double ta
 {
 	/* Plots the vector symbol */
 
-	if (fill->use_pattern || project_info.three_D) {	/* Fill in local xp, yp cordinates for vector starting at (0,0) aligned horizontally */
+	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Fill in local xp, yp cordinates for vector starting at (0,0) aligned horizontally */
 		int i, n;
 		double xp[10], yp[10], angle, length, s, c, L, x, y;
 
