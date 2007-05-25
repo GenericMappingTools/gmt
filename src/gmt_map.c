@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.139 2007-05-23 05:29:34 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.140 2007-05-25 21:25:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4654,6 +4654,38 @@ int GMT_latpath (double lat, double lon1, double lon2, double **x, double **y)
 	*x = tlon;	*y = tlat;
 	return (n);
 }
+
+int GMT_rhumbline (double lon1, double lat1, double lon2, double lat2, double **x, double **y)
+{
+	/* Creates a path that follows the rhumbline between the two points [UNTESTED] */
+	
+	int i, n;
+	double x1, x2, y1, y2, dx, dy, L, dL, f, *xx, *yy;
+	
+	project_info.m_m = project_info.EQ_RAD;	/* Since we cannot assume the user is using -Jm */
+	project_info.m_im = 1.0 / project_info.m_m;
+	project_info.m_mx = project_info.m_m * D2R;
+	project_info.m_imx = project_info.m_im * R2D;
+
+	GMT_merc_sph (lon1, lat1, &x1, &y1);	/* Mercator coordinates of end points in projected meters */
+	GMT_merc_sph (lon2, lat2, &x2, &y2);
+	dx = x2 - x1;
+	dy = y2 - y1;
+	L = hypot (dx, dy);
+	n = irint (L * GMT_u2u[GMT_M][GMT_INCH]/ gmtdefs.line_step);
+	dL = L / n;
+	xx = (double *) GMT_memory (VNULL, (size_t)(n+1), sizeof (double), "GMT_rhumbline");
+	yy = (double *) GMT_memory (VNULL, (size_t)(n+1), sizeof (double), "GMT_rhumbline");
+	for (i = 0; i <= n; i++) {
+		f = (double)i / (double)n;
+		GMT_imerc_sph (&xx[i], &yy[i], x1 + dx * f, y1 + dy * f);
+	}
+	*x = xx;
+	*y = yy;
+	
+	return (n+1);
+}
+	
 
 /*  Routines to do with clipping */
 
