@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.300 2007-05-24 15:41:36 remko Exp $
+ *	$Id: gmt_support.c,v 1.301 2007-05-25 19:39:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6641,6 +6641,28 @@ void GMT_rotate2D (double x[], double y[], int n, double x0, double y0, double a
 	}
 }
 
+int GMT_get_arc (double x0, double y0, double r, double dir1, double dir2, double **x, double **y)
+{
+	/* Create an array with a circular arc. r in inches, angles in degrees */
+
+	int i, n;
+	double da, s, c, *xx, *yy;
+	
+	n = irint (D2R * fabs (dir2 - dir1) * r / gmtdefs.line_step);
+	xx = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
+	yy = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
+	da = (dir2 - dir1) / (n - 1);
+	for (i = 0; i < n; i++) {
+		sincosd (dir1 + i * da, &s, &c);
+		xx[i] = x0 + r * c;
+		yy[i] = y0 + r * s;
+	}
+	*x = xx;
+	*y = yy;
+	
+	return (n);
+}
+
 /* Here lies GMT Crossover core functions that previously was in X2SYS only */
 
 int GMT_init_track (double y[], int n, struct GMT_XSEGMENT **S)
@@ -8239,8 +8261,8 @@ int GMT_init_custom_symbol (char *name, struct GMT_CUSTOM_SYMBOL **S) {
 			case 'A':		/* Draw arc of a circle */
 				if (last != 5) error++;
 				s->p[0] = atof (col[2]);
-				s->p[1] = atof (col[3]) * D2R;	/* Convert to radians here */
-				s->p[2] = atof (col[4]) * D2R;
+				s->p[1] = atof (col[3]);
+				s->p[2] = atof (col[4]);
 				s->action = GMT_ACTION_ARC;
 				break;
 
