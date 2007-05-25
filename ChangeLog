@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.7 2007-05-24 15:51:53 remko Exp $
+	$Id: ChangeLog,v 1.8 2007-05-25 00:46:29 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-05-24	remko
@@ -14,6 +14,7 @@
 				GMT_prep_polygons and changed "step" from inches of map projection to spherical
 				degrees.
 	* test/psxy/hexagone*:	Test added to illustrate the complications with GMT_fix_up_path.
+	* psimage.c:		-I option had become always active
 
 2007-05-22	pwessel
 	* psxy.c:		More careful setting of the "greenwich" variable to prevent polygon wrap
