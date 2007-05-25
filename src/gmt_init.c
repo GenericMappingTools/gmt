@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.288 2007-05-19 00:29:26 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.289 2007-05-25 19:39:14 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5084,7 +5084,6 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 			break;
 		case '-':
 			p->symbol = GMT_SYMBOL_XDASH;
-			p->size_x *= 0.5;		/* We will use +- to get full width */
 			break;
 		case 'A':
 			p->equal_area = TRUE;	/* To equal area of circle with same size */
@@ -5093,7 +5092,6 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 			break;
 		case 'B':
 			p->symbol = GMT_SYMBOL_BARX;
-			p->size_x *= 0.5;		/* We will use +- to get full width */
 			if (bset) {
 				p->base = atof (&text[bset+1]);
 				p->base_set = TRUE;
@@ -5101,7 +5099,6 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 			break;
 		case 'b':
 			p->symbol = GMT_SYMBOL_BARY;
-			p->size_x *= 0.5;		/* We will use +- to get full width */
 			if (bset) {
 				p->base = atof (&text[bset+1]);
 				p->base_set = TRUE;
@@ -5379,11 +5376,9 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 			break;
 		case 'y':
 			p->symbol = GMT_SYMBOL_YDASH;
-			p->size_x *= 0.5;		/* We will use +- to get full width */
 			break;
 		case 'z':
 			p->symbol = GMT_SYMBOL_ZDASH;
-			p->size_x *= 0.5;		/* We will use +- to get full width */
 			break;
 		case 'k':
 			p->symbol = GMT_SYMBOL_CUSTOM;
@@ -5409,7 +5404,9 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 	if (!cmd && p->symbol == GMT_SYMBOL_BARY) {
 		if (!bset) p->base = (project_info.xyz_projection[GMT_Y] == GMT_LOG10) ? 1.0 : 0.0;
 	}
-
+	p->size_x2 = 0.5 * p->size_x;
+	if (mode) p->size_y2 = 0.5 * p->size_y;
+	
 	return (decode_error);
 }
 

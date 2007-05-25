@@ -21,7 +21,7 @@ input data as symbol size.  Symbols whose size is <= 0 are skipped.  If no symbo
 must be present as last column in the input.  Multiple segment files may be plotted using the OPT(M) option.
 If no symbols are selected, a line will be drawn.  To explicitly close polygons, use OPT(L).  Select a shade with \fB\-G\fP.  If \fB\-G\fP is set, \fB\-W\fP
 will control whether the polygon outline is drawn or not.  If a symbol is selected, OPT(G) and
-OPT(W) determines the fill color and outline/no outline, respectively.
+OPT(W) determines the fill and outline/no outline, respectively.
 The \fIPostScript\fP code is written to standard output. 
 .TP
 \fIfiles\fP
@@ -46,7 +46,7 @@ will control the color of the line or polygon (use \fB\-L\fP) via the cpt file.
 Sets the viewpoint's azimuth and elevation [180/90].\"'
 .TP
 .B \-G
-Select color for filling of symbols or select color or pattern for filling of polygons [Default is no fill].
+Select color or pattern for filling  symbols polygons [Default is no fill].
 .br
 #include "explain_-G.txt"
 .br
