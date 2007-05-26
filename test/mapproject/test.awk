@@ -13,6 +13,9 @@
 
 	dx = GMT_lon - true_lon
 	dy = GMT_lat - true_lat
+	if (dy < 0.0) dy = -dy;
+	if (dx < 0.0) dx = -dx;
+	if (dx > 350) dx -= 360.0;
 	if (! (dx == 0.0 || dx == -360.0 || dx = 360.0)) {
 		printf "%s: Bad longitude conversion, d = %lg\n", $9, dx
 	}
@@ -24,10 +27,12 @@
 
 	dx = GMT_x - true_x
 	dy = GMT_y - true_y
-	if (! (dx == 0.0)) {
+	if (dy < 0.0) dy = -dy;
+	if (dx < 0.0) dx = -dx;
+	if (! (dx <= 0.11)) {
 		printf "%s: Bad x conversion, d = %lg\n", $9, dx
 	}
-	if (! (dy == 0.0)) {
+	if (! (dy <= 0.11)) {
 		printf "%s: Bad y conversion, d = %lg\n", $9, dy
 	}
 }
