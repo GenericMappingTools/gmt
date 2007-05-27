@@ -6,5 +6,12 @@ $grdcontour -R-100/-60/3/20 -O -Y10c >> $ps
 
 rm -f .gmtcommands4
 
-echo -n "Comparing grdcontour_orig.ps and $ps: "
-compare -density 100 -metric PSNR grdcontour_orig.ps $ps grdcontour_diff.png
+echo -n "GMT: Test grdcontour for a problem on region selection:          "
+compare -density 100 -metric PSNR grdcontour_orig.ps $ps grdcontour_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail grdcontour_diff.png log
+fi

@@ -1,5 +1,6 @@
 #!/bin/sh
 ps=colormasking.ps
+echo -n "GMT: Test grdimage for use of color masking:          "
 #grdmath -R0/3/0/3 -I1 X Y DIV = t.grd
 xyz2grd -R-0.5/2.5/-0.5/2.5 -I1 -F -Gt.grd <<%
 0 0 0.0
@@ -24,5 +25,11 @@ psxy -R -J -Gp50/10:FwhiteB- -O >> $ps <<%
 %
 rm -f t.grd t.cpt .gmtcommands4
 
-echo -n "Comparing colormasking_orig.ps and $ps: "
-compare -density 100 -metric PSNR colormasking_orig.ps $ps colormasking_diff.png
+compare -density 100 -metric PSNR colormasking_orig.ps $ps colormasking_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail colormasking_diff.png log
+fi

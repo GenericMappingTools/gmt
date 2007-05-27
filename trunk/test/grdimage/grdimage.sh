@@ -3,6 +3,7 @@ ps=grdimage.ps
 grdimage=grdimage" t.grd -Ct.cpt -JX1i -B1/1"
 grdcontour=grdcontour" t.grd -Ct.cpt -J -R -O"
 
+echo -n "GMT: Test grdimage for grid and pixel plots:          "
 makegrd () {
 xyz2grd -I1 -Gt.grd $* <<%
 0 0 0.0
@@ -57,5 +58,11 @@ plots "-O -X-12c -Y-4c" " " -F >> $ps
 
 rm -f t.grd t.cpt .gmtcommands4
 
-echo -n "Comparing grdimage_orig.ps and $ps: "
-compare -density 100 -metric PSNR grdimage_orig.ps $ps grdimage_diff.png
+compare -density 100 -metric PSNR grdimage_orig.ps $ps grdimage_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail grdimage_diff.png log
+fi
