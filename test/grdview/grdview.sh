@@ -3,6 +3,7 @@ ps=grdview.ps
 grdview=grdview" t.grd -Ct.cpt -JX1i -B1/1"
 grdcontour=grdcontour" t.grd -Ct.cpt -J -R -O"
 
+echo -n "GMT: Test grdview for grid and pixel plots:          "
 makegrd () {
 xyz2grd -I1 -Gt.grd $* <<%
 0 0 0.0
@@ -61,5 +62,11 @@ plots "-O -X-12c -Y-4c" " " -F >> $ps
 
 rm -f t.grd t.cpt .gmtcommands4
 
-echo -n "Comparing grdview_orig.ps and $ps: "
-compare -density 100 -metric PSNR grdview_orig.ps $ps grdview_diff.png
+compare -density 100 -metric PSNR grdview_orig.ps $ps grdview_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail grdview_diff.png log
+fi

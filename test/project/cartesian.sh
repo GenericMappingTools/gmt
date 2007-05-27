@@ -1,8 +1,9 @@
 #!/bin/sh
-#	$Id: cartesian.sh,v 1.3 2006-05-04 00:06:11 pwessel Exp $
+#	$Id: cartesian.sh,v 1.4 2007-05-27 22:06:05 pwessel Exp $
 #
 # Tests project in Cartesian manipulations
 
+echo -n "GMT: Test project for rotating Cartesian data:          "
 cat << EOF > azim.$$
 30
 135
@@ -35,7 +36,9 @@ makeaxis () {
 project -N -C$2/$3 -A-$1 -Fpq $4 -M
 }
 
-psxy -R0/8.5/0/11 -Jx1i -P -Xa0 -Ya0 -K /dev/null -U/0.75i/0.5i/"[x,y] (black dot). 2nd pair is (p,q) and third is (r,s) [plotted as red dot]" --CHAR_ENCODING=ISOLatin1+ > cartesian.ps
+pstext -R0/8.5/0/11 -Jx1i -P -Xa0 -Ya0 -K  --CHAR_ENCODING=ISOLatin1+ --HEADER_FONT_SIZE=10 << EOF > cartesian.ps
+4.25 10.25 14 0 0 CB [x,y] (black dot). 2nd pair is (p,q) and third is (r,s) [plotted as red dot]
+EOF
 ypos=1.25
 By=Sn
 while read az; do
@@ -69,5 +72,12 @@ while read az; do
 	By=sn
 done < azim.$$
 psxy -R -J -O /dev/null >> cartesian.ps
-gv cartesian.ps &
+compare -density 100 -metric PSNR cartesian_orig.ps cartesian.ps cartesian_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail cartesian_diff.png log
+fi
 rm -f $$.* *.$$

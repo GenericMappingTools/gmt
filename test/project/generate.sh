@@ -1,7 +1,8 @@
 #!/bin/sh
-#	$Id: generate.sh,v 1.1 2007-05-07 01:42:18 pwessel Exp $
+#	$Id: generate.sh,v 1.2 2007-05-27 22:06:05 pwessel Exp $
 #
 # Tests project in generating lines
+echo -n "GMT: Test project's ability to generate lines:          "
 
 # First Cartesian lines
 
@@ -49,5 +50,12 @@ echo 15 15 | psxy -R -J -O -K -Sc0.1i -Gblack >> generate.ps
 echo 85 40 | psxy -R -J -O -K -Sa0.1i -Gblack >> generate.ps
 # The end
 psbasemap -R -J -O -B30g30 >> generate.ps
-gv generate.ps &
+compare -density 100 -metric PSNR generate_orig.ps generate.ps generate_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail generate_diff.png log
+fi
 rm -f $$.*
