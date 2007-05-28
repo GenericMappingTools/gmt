@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: headercheck.sh,v 1.2 2007-05-28 19:40:30 pwessel Exp $
+#	$Id: headercheck.sh,v 1.3 2007-05-28 22:21:04 pwessel Exp $
 # Test that symbols pick up correct -W -G from command line or header
 
-echo -n "GMT: Test psxyz and operation of -W -G in headers:		"
+echo -n "$0: Test psxyz and operation of -W -G in headers:		"
 
 psxyz -R-1/10/-1/10/0/1 -JX5/4 -JZ1 -E135/35 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -M -K << EOF > headercheck.ps
 > -Ggreen -W1p

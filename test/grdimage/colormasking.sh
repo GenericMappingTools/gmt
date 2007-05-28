@@ -1,6 +1,9 @@
 #!/bin/sh
+#
+#	$Id: colormasking.sh,v 1.4 2007-05-28 22:21:03 pwessel Exp $
+
 ps=colormasking.ps
-echo -n "GMT: Test grdimage for use of color masking:          "
+echo -n "$0: Test grdimage for use of color masking:          "
 #grdmath -R0/3/0/3 -I1 X Y DIV = t.grd
 xyz2grd -R-0.5/2.5/-0.5/2.5 -I1 -F -Gt.grd <<%
 0 0 0.0

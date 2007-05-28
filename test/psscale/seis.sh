@@ -1,7 +1,8 @@
 #!/bin/sh
-#	$Id: seis.sh,v 1.4 2007-05-28 19:40:30 pwessel Exp $
+#	$Id: seis.sh,v 1.5 2007-05-28 22:21:03 pwessel Exp $
 #
-echo -n "GMT: Test psscale and makecpt combinations:		"
+echo -n "$0: Test psscale and makecpt combinations:		"
+
 makecpt -T-6/6/1 -Cseis -D > tmp.cpt
 psscale -Ctmp.cpt -D00/04/8/0.5 -K           > seis.ps
 psscale -Ctmp.cpt -D00/13/8/0.5 -O -K -I -N100 >> seis.ps

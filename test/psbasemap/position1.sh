@@ -1,11 +1,13 @@
 #!/bin/sh
+#
+#	$Id: position1.sh,v 1.6 2007-05-28 22:21:03 pwessel Exp $
 
 ps=position1.ps
 font=0	# Helvetica
 #font=4	# Times-Roman
 #font=8	# Courier
 #font=15	# AvantGardeDemi
-echo -n "GMT: Test psbasemap's annotation alignment:		"
+echo -n "$0: Test psbasemap's annotation alignment:		"
 
 psbasemap="psbasemap --ANNOT_FONT_SIZE=24p --ANNOT_FONT=$font --BASEMAP_AXES=WESN"
 

@@ -1,12 +1,13 @@
 #!/bin/sh
-#	$Id: legend.sh,v 1.3 2007-05-28 19:40:30 pwessel Exp $
+#	$Id: legend.sh,v 1.4 2007-05-28 22:21:03 pwessel Exp $
 #
 # Testing pslegend capabilities
 
-echo -n "GMT: Test pslegend and its various items:		"
+echo -n "$0: Test pslegend and its various items:		"
+
 gmtset ANNOT_FONT_SIZE_PRIMARY 12p
 psbasemap -R0/10/0/15 -JM6i -P -B5f1 -K > legend.ps
-cat << EOF > t.d
+cat << EOF > $$.d
 # Legend test for pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
 # H is header, L is label, S is symbol, > & T is paragraph text
@@ -38,10 +39,10 @@ T Let us just try some simple text that can go on a few lines.
 T There is no way to predetermine how many lines may be required,
 T so we may have to adjust the height to get the right size box.
 EOF
-#pslegend t.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F -S > script.sh
+#pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F -S > script.sh
 #sh -xv script.sh >> legend.ps
 # rm -f script.sh
-pslegend t.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F >> legend.ps
+pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F >> legend.ps
 compare -density 100 -metric PSNR legend_orig.ps legend.ps legend_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
@@ -50,3 +51,4 @@ else
         echo "[OK"]
         rm -f fail legend_diff.png log
 fi
+rm -f $$.d

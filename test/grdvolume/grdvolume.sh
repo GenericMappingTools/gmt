@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+#	$Id: grdvolume.sh,v 1.3 2007-05-28 22:21:03 pwessel Exp $
 
 makegrd () {
 xyz2grd -I1 -Gt.grd -Za $1 <<%
@@ -29,7 +31,7 @@ makegrd "-R0/3/0/3 -F -N0"
 makegrd -R0/2/0/2 "-C0/0.8/0.4"
 }
 
-echo -n "GMT: Test grdvolume output for various grid registrations:	"
+echo -n "$0: Test grdvolume output for various grid registrations:	"
 
 testcase > grdvolume.log
 
