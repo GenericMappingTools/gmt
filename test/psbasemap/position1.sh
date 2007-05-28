@@ -5,6 +5,8 @@ font=0	# Helvetica
 #font=4	# Times-Roman
 #font=8	# Courier
 #font=15	# AvantGardeDemi
+echo -n "GMT: Test psbasemap's annotation alignment:		"
+
 psbasemap="psbasemap --ANNOT_FONT_SIZE=24p --ANNOT_FONT=$font --BASEMAP_AXES=WESN"
 
 $psbasemap -JX8i/5i -R0/12/0/12 -B1g1/1g1SW -K > $ps
@@ -61,5 +63,11 @@ $psbasemap -J -R0/1.2/0/1.2 -B0.1/0.1NE -O >> $ps
 
 rm -f .gmtcommands4
 
-echo -n "Comparing position1_orig.ps and position1.ps: "
-compare -density 100 -metric PSNR position1_orig.ps position1.ps position1_diff.png
+compare -density 100 -metric PSNR position1_orig.ps position1.ps position1_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail position1_diff.png log
+fi

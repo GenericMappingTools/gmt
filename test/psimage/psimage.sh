@@ -1,5 +1,6 @@
 #!/bin/sh
 ps=psimage.ps
+echo -n "GMT: Test psimage with different pattern options:		"
 cat > t.in <<%
 0 0
 1 0 :FwhiteBblack
@@ -32,5 +33,12 @@ psimage -E80 -C3i/3i/BL ../../share/pattern/ps_pattern_10.ras -Gfred -Gb- -O -K 
 psimage -E80 -C3i/3i/TL ../../share/pattern/ps_pattern_10.ras -O >> $ps
 rm -f t.in .gmtcommands4
 
-echo -n "Comparing psimage_orig.ps and $ps: "
-compare -density 100 -metric PSNR psimage_orig.ps $ps psimage_diff.png
+compare -density 100 -metric PSNR psimage_orig.ps $ps psimage_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail psimage_diff.png log
+fi
+

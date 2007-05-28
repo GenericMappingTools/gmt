@@ -20,6 +20,7 @@ annot () {
 %
 }
 
+echo -n "GMT: Test various specifications of -Jx w/wo trailing d:		"
 ps=test-JXd.ps
 psxy /dev/null -R-60/60/-60/60 -JX8c/8c -K -X4c -Y13c > $ps
 plot1 8c/8c >> $ps
@@ -30,5 +31,11 @@ psxy /dev/null -R -J -O >> $ps
 
 rm -f .gmtcommands4
 
-echo -n "Comparing test-JXd_orig.ps and test-JXd.ps: "
-compare -density 100 -metric PSNR test-JXd_orig.ps test-JXd.ps test-JXd_diff.png
+compare -density 100 -metric PSNR test-JXd_orig.ps test-JXd.ps test-JXd_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail test-JXd_diff.png log
+fi
