@@ -1,7 +1,10 @@
 #!/bin/sh
-#	$Id: rotrectangle.sh,v 1.1 2006-10-29 00:34:43 pwessel Exp $
+#	$Id: rotrectangle.sh,v 1.2 2007-05-28 19:40:30 pwessel Exp $
 #
 # Test that psxy properly plots rotatable rectangles -Sj and -SJ
+
+echo -n "GMT: Test psxy and the rotated rectangle option:		"
+
 # Bottom case tests -SJ with azimuths and dimensions in km
 cat << EOF > $$.rects.d
 -65 15 90 500 200
@@ -26,5 +29,12 @@ cat << EOF > $$.rects.d
 EOF
 psxy -R-10/25/-5/15 -Jx0.15 -O -K -B10g5WSne -SJ $$.rects.d -Gbrown -W0.25p,green -Y3i >> rect.ps
 psxy -R -J -O -Sc0.05 $$.rects.d -G0 >> rect.ps
-gv rect.ps &
+compare -density 100 -metric PSNR rect_orig.ps rect.ps rect_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail rect_diff.png log
+fi
 rm -f $$.*

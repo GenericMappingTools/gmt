@@ -1,7 +1,9 @@
 #!/bin/sh
-#	$Id: plot_symbols.sh,v 1.1 2007-05-25 22:08:17 pwessel Exp $
+#	$Id: plot_symbols.sh,v 1.2 2007-05-28 19:40:30 pwessel Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
+
+echo -n "GMT: Test psxy and all the symbols with fill:		"
 
 psxy -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -S1i -X2i -Y2i << EOF > plot_symbols.ps
 > Fat pen -W2p
@@ -32,3 +34,11 @@ psxy -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -S1i -X2i -Y2i << EOF > plot_symb
 1.5	1.5	x
 2.5	1.5	y
 EOF
+compare -density 100 -metric PSNR plot_symbols_orig.ps plot_symbols.ps plot_symbols_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail plot_symbols_diff.png log
+fi
