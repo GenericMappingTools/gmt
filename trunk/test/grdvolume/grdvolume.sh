@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: grdvolume.sh,v 1.4 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: grdvolume.sh,v 1.5 2007-05-28 23:34:09 pwessel Exp $
 
 makegrd () {
 xyz2grd -I1 -Gt.grd -Za $1 <<%
@@ -41,7 +41,7 @@ if [ $? == 0 ]; then
 	echo "[PASS]"
 	rm -f log
 else
-	echo "[FAILED]"
+	echo "[FAIL]"
 fi
 
 rm -f t.grd .gmtcommands4
