@@ -1,3 +1,10 @@
+#!/bin/sh
+#	$Id: hexagone.sh,v 1.3 2007-05-28 19:40:30 pwessel Exp $
+#
+# Check wrapping around Greenwich
+
+echo -n "GMT: Test psxy and -A resampling crossing Greenwich:		"
+
 ps=hexagone.ps
 
 cat > hexagone.dat <<%
@@ -15,7 +22,12 @@ pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B2 -O -K >> $ps
 psxy hexagone.dat -R1/10/47/52 -JM4i -Y5i -L -Gpurple -O -K >> $ps
 pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O >> $ps
 
+compare -density 100 -metric PSNR hexagone_orig.ps hexagone.ps hexagone_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail hexagone_diff.png log
+fi
 rm -f hexagone.dat .gmtcommands4
-
-echo -n "Comparing hexagone_orig.ps and hexagone.ps: "
-compare -density 100 -metric PSNR hexagone_orig.ps hexagone.ps hexagone_diff.png

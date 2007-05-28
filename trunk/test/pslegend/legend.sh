@@ -1,8 +1,9 @@
 #!/bin/sh
-#	$Id: legend.sh,v 1.2 2006-05-22 05:30:47 pwessel Exp $
+#	$Id: legend.sh,v 1.3 2007-05-28 19:40:30 pwessel Exp $
 #
 # Testing pslegend capabilities
 
+echo -n "GMT: Test pslegend and its various items:		"
 gmtset ANNOT_FONT_SIZE_PRIMARY 12p
 psbasemap -R0/10/0/15 -JM6i -P -B5f1 -K > legend.ps
 cat << EOF > t.d
@@ -26,7 +27,7 @@ S 0.1i i 0.15i 0/255/255 0.25p 0.3i This triangle is boring
 V 0 1p
 N 1
 D 0.2i 1p
-I /Users/pwessel/UH/RESOURCES/LOGOS/SOEST_block4.ras 3 CT
+I SOEST_block4.ras 3 CT
 G 0.05i
 M 5 5 600:km:u f
 G 0.1i
@@ -41,4 +42,11 @@ EOF
 #sh -xv script.sh >> legend.ps
 # rm -f script.sh
 pslegend t.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F >> legend.ps
-gv legend.ps &
+compare -density 100 -metric PSNR legend_orig.ps legend.ps legend_diff.png > log
+grep inf log > fail
+if [ ! -s fail ]; then
+        echo "[FAILED]"
+else
+        echo "[OK"]
+        rm -f fail legend_diff.png log
+fi
