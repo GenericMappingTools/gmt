@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: generate.sh,v 1.3 2007-05-28 22:21:03 pwessel Exp $
+#	$Id: generate.sh,v 1.4 2007-05-28 23:25:36 pwessel Exp $
 #
 # Tests project in generating lines
-echo -n "$0: Test project's ability to generate lines:          "
+echo -n "$0: Test project's ability to generate lines:			"
 
 # First Cartesian lines
 
@@ -53,9 +53,9 @@ psbasemap -R -J -O -B30g30 >> generate.ps
 compare -density 100 -metric PSNR generate_orig.ps generate.ps generate_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f fail generate_diff.png log
 fi
 rm -f $$.*

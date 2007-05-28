@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: test-JXd.sh,v 1.5 2007-05-28 22:21:03 pwessel Exp $
+#	$Id: test-JXd.sh,v 1.6 2007-05-28 23:25:36 pwessel Exp $
 
 psbasemap=psbasemap
 psxy=psxy
@@ -22,7 +22,7 @@ annot () {
 %
 }
 
-echo -n "$0: Test various specifications of -Jx w/wo trailing d:		"
+echo -n "$0: Test various specifications of -Jx w/wo trailing d:	"
 ps=test-JXd.ps
 psxy /dev/null -R-60/60/-60/60 -JX8c/8c -K -X4c -Y13c > $ps
 plot1 8c/8c >> $ps
@@ -36,8 +36,8 @@ rm -f .gmtcommands4
 compare -density 100 -metric PSNR test-JXd_orig.ps test-JXd.ps test-JXd_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f fail test-JXd_diff.png log
 fi

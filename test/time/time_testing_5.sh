@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: time_testing_5.sh,v 1.2 2007-05-28 22:21:04 pwessel Exp $
+#	$Id: time_testing_5.sh,v 1.3 2007-05-28 23:25:36 pwessel Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -11,7 +11,7 @@
 # users epoch.  We use the same data as before to generate the absolute
 # coordinates using the Apollo 11 epoch.
 
-echo -n "$0: Test time conversions, part 5 (plotting abs & rel time):		"
+echo -n "$0: Test time conversions (abs & rel time):		"
 sample1d -I0.5 << EOF > $$.d
 0	0
 4	1
@@ -22,9 +22,9 @@ psxy $$.d -R -JX9t/6 --TIME_EPOCH=1969-07-21T02:56:00 -Sx0.25 --TIME_UNIT=d --PL
 compare -density 100 -metric PSNR T5_orig.ps T5.ps T5_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f fail T5_diff.png log
 fi
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: hexagone.sh,v 1.4 2007-05-28 22:21:04 pwessel Exp $
+#	$Id: hexagone.sh,v 1.5 2007-05-28 23:25:36 pwessel Exp $
 #
 # Check wrapping around Greenwich
 
@@ -25,9 +25,9 @@ pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O >> $ps
 compare -density 100 -metric PSNR hexagone_orig.ps hexagone.ps hexagone_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f fail hexagone_diff.png log
 fi
 rm -f hexagone.dat .gmtcommands4

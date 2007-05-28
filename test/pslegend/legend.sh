@@ -1,9 +1,9 @@
 #!/bin/sh
-#	$Id: legend.sh,v 1.4 2007-05-28 22:21:03 pwessel Exp $
+#	$Id: legend.sh,v 1.5 2007-05-28 23:25:36 pwessel Exp $
 #
 # Testing pslegend capabilities
 
-echo -n "$0: Test pslegend and its various items:		"
+echo -n "$0: Test pslegend and its various items:				"
 
 gmtset ANNOT_FONT_SIZE_PRIMARY 12p
 psbasemap -R0/10/0/15 -JM6i -P -B5f1 -K > legend.ps
@@ -46,9 +46,9 @@ pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F 
 compare -density 100 -metric PSNR legend_orig.ps legend.ps legend_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f fail legend_diff.png log
 fi
 rm -f $$.d

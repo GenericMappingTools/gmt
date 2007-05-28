@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: plot_symbols.sh,v 1.3 2007-05-28 22:21:04 pwessel Exp $
+#	$Id: plot_symbols.sh,v 1.4 2007-05-28 23:25:36 pwessel Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
@@ -43,8 +43,8 @@ EOF
 compare -density 100 -metric PSNR plot_symbols_orig.ps plot_symbols.ps plot_symbols_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f fail plot_symbols_diff.png log
 fi

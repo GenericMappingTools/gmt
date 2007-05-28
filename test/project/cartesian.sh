@@ -1,9 +1,9 @@
 #!/bin/sh
-#	$Id: cartesian.sh,v 1.5 2007-05-28 22:21:03 pwessel Exp $
+#	$Id: cartesian.sh,v 1.6 2007-05-28 23:25:36 pwessel Exp $
 #
 # Tests project in Cartesian manipulations
 
-echo -n "$0: Test project for rotating Cartesian data:          "
+echo -n "$0: Test project for rotating Cartesian data:			"
 cat << EOF > azim.$$
 30
 135
@@ -75,9 +75,9 @@ psxy -R -J -O /dev/null >> cartesian.ps
 compare -density 100 -metric PSNR cartesian_orig.ps cartesian.ps cartesian_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f fail cartesian_diff.png log
 fi
 rm -f $$.* *.$$

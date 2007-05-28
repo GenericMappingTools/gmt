@@ -38,8 +38,8 @@ rm -f $$.in .gmtcommands4
 compare -density 100 -metric PSNR psimage_orig.ps $ps psimage_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f fail psimage_diff.png log
 fi
