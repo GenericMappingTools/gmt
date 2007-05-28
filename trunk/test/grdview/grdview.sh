@@ -1,9 +1,12 @@
 #!/bin/sh
+#
+#	$Id: grdview.sh,v 1.4 2007-05-28 22:21:03 pwessel Exp $
+
 ps=grdview.ps
 grdview=grdview" t.grd -Ct.cpt -JX1i -B1/1"
 grdcontour=grdcontour" t.grd -Ct.cpt -J -R -O"
 
-echo -n "GMT: Test grdview for grid and pixel plots:          "
+echo -n "$0: Test grdview for grid and pixel plots:          "
 makegrd () {
 xyz2grd -I1 -Gt.grd $* <<%
 0 0 0.0

@@ -1,9 +1,9 @@
 #!/bin/sh
-#	$Id: hexagone.sh,v 1.3 2007-05-28 19:40:30 pwessel Exp $
+#	$Id: hexagone.sh,v 1.4 2007-05-28 22:21:04 pwessel Exp $
 #
 # Check wrapping around Greenwich
 
-echo -n "GMT: Test psxy and -A resampling crossing Greenwich:		"
+echo -n "$0: Test psxy and -A resampling crossing Greenwich:		"
 
 ps=hexagone.ps
 

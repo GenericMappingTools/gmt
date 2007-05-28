@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+#	$Id: test-JXd.sh,v 1.5 2007-05-28 22:21:03 pwessel Exp $
 
 psbasemap=psbasemap
 psxy=psxy
@@ -20,7 +22,7 @@ annot () {
 %
 }
 
-echo -n "GMT: Test various specifications of -Jx w/wo trailing d:		"
+echo -n "$0: Test various specifications of -Jx w/wo trailing d:		"
 ps=test-JXd.ps
 psxy /dev/null -R-60/60/-60/60 -JX8c/8c -K -X4c -Y13c > $ps
 plot1 8c/8c >> $ps

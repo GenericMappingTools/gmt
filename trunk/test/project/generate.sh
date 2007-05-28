@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: generate.sh,v 1.2 2007-05-27 22:06:05 pwessel Exp $
+#	$Id: generate.sh,v 1.3 2007-05-28 22:21:03 pwessel Exp $
 #
 # Tests project in generating lines
-echo -n "GMT: Test project's ability to generate lines:          "
+echo -n "$0: Test project's ability to generate lines:          "
 
 # First Cartesian lines
 

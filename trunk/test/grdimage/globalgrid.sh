@@ -1,9 +1,12 @@
 #!/bin/sh
+#
+#	$Id: globalgrid.sh,v 1.3 2007-05-28 22:21:03 pwessel Exp $
+
 ps=globalgrid.ps
 #
 # Check if we can wrap global grids over longitude
 #
-echo -n "GMT: Test grdimage for wrapping global grids:          "
+echo -n "$0: Test grdimage for wrapping global grids:          "
 plot="grdimage -Ctmp.cpt tmp.nc -JX3i/1.5i -B60f10/30f10"
 #
 makegrid ()

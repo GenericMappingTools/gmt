@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: near_a_line.sh,v 1.2 2007-05-26 02:56:52 pwessel Exp $
+#	$Id: near_a_line.sh,v 1.3 2007-05-28 22:21:03 pwessel Exp $
 #
 # Making sure both forms of "near a line" works:
 # Default (old) behavior is to think of a line as
@@ -11,7 +11,7 @@
 # points near the line if they project inside the
 # line's endpoints
 
-echo -n "GMT: Test gmtselect's new -L[p] option on given data:		"
+echo -n "$0: Test gmtselect's new -L[p] option on given data:		"
 
 # Some test data
 grdmath -R0/5/0/5 -I0.1 0 = $$.grd
@@ -54,5 +54,3 @@ else
 	echo "[OK"]
 	rm -f fail nearline_diff.png log
 fi
-
-

@@ -1,9 +1,9 @@
 #!/bin/sh
-#	$Id: plot_symbols.sh,v 1.2 2007-05-28 19:40:30 pwessel Exp $
+#	$Id: plot_symbols.sh,v 1.3 2007-05-28 22:21:04 pwessel Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
-echo -n "GMT: Test psxy and all the symbols with fill:		"
+echo -n "$0: Test psxy and all the symbols with fill:		"
 
 psxy -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -S1i -X2i -Y2i << EOF > plot_symbols.ps
 > Fat pen -W2p

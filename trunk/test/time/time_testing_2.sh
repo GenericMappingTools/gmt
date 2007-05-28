@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: time_testing_2.sh,v 1.1 2007-05-28 19:40:30 pwessel Exp $
+#	$Id: time_testing_2.sh,v 1.2 2007-05-28 22:21:04 pwessel Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -11,6 +11,8 @@
 # 
 # First we use J2000 which uses days.  Hence the output should cover the
 # first 5 days in year 2000, starting at noon:
+
+echo -n "$0: Test time conversions, part 2 (relative time & j2000):		"
 
 cat << EOF > $$.answer
 2000-01-01T12:00:00
@@ -23,8 +25,6 @@ cat << EOF > $$.answer
 2000-01-05T00:00:00
 2000-01-05T12:00:00
 EOF
-
-echo -n "GMT: Test time conversions, part 2 (relative time & j2000):		"
 
 sample1d -I0.5 << EOF > $$.d
 0	0

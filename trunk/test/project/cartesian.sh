@@ -1,9 +1,9 @@
 #!/bin/sh
-#	$Id: cartesian.sh,v 1.4 2007-05-27 22:06:05 pwessel Exp $
+#	$Id: cartesian.sh,v 1.5 2007-05-28 22:21:03 pwessel Exp $
 #
 # Tests project in Cartesian manipulations
 
-echo -n "GMT: Test project for rotating Cartesian data:          "
+echo -n "$0: Test project for rotating Cartesian data:          "
 cat << EOF > azim.$$
 30
 135

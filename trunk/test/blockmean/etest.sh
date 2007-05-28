@@ -1,12 +1,12 @@
 #!/bin/sh
-#	$Id: etest.sh,v 1.3 2007-05-26 02:56:52 pwessel Exp $
+#	$Id: etest.sh,v 1.4 2007-05-28 22:21:02 pwessel Exp $
 #
 # Test to make sure the -E option works as advertised.
 # We have data that will fall in to 4 separate blocks
 # in a -R0/2/0/2 -I2 -F situation (2x2 blocks)
 # In all blocks mean = median = mode = 5.
 
-echo -n "GMT: Test blockmean's new -E option on given data:		"
+echo -n "$0: Test blockmean's new -E option on given data:		"
 
 cat << EOF > data.d
 # Block NW (1 value)
