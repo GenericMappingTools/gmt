@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: time_testing_4.sh,v 1.2 2007-05-28 22:21:04 pwessel Exp $
+#	$Id: time_testing_4.sh,v 1.3 2007-05-28 23:25:36 pwessel Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -10,7 +10,7 @@
 # the historic Apollo 11 moon-landing; these 24-hour periods crosses
 # normal day boundaries:
 
-echo -n "$0: Test time conversions, part 4 (relative time & custom):		"
+echo -n "$0: Test time conversions (rel time & custom):		"
 
 sample1d -I0.5 << EOF > $$.d
 0	0
@@ -32,9 +32,9 @@ gmtconvert $$.d -fi0t -fo0T --TIME_EPOCH=1969-07-21T02:56:00 --TIME_UNIT=d > $$.
 paste $$.result $$.answer | awk '{if ($1 != $3) print $0}' > log
 
 if [ -s log ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f log
 fi
 rm -f $$.*

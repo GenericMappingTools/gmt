@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: rotrectangle.sh,v 1.3 2007-05-28 22:21:04 pwessel Exp $
+#	$Id: rotrectangle.sh,v 1.4 2007-05-28 23:25:36 pwessel Exp $
 #
 # Test that psxyz properly plots rotatable rectangles -Sj and -SJ
 
@@ -32,9 +32,9 @@ psxyz -JZ -E135/30 -R -J -O -Sc0.05i $$.rects.d -Gblack >> rect.ps
 compare -density 100 -metric PSNR rect_orig.ps rect.ps rect_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f fail rect_diff.png log
 fi
 rm -f $$.*

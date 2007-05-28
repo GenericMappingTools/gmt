@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: time_testing_1.sh,v 1.2 2007-05-28 22:21:04 pwessel Exp $
+#	$Id: time_testing_1.sh,v 1.3 2007-05-28 23:25:36 pwessel Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -11,12 +11,12 @@
 # and convert to relative time using the new TIME_SYSTEM rata.  The values
 # should match the new rata die + day fraction for each epoch.
 
-echo -n "$0: Test time conversions, part 1 (rata die):		"
+echo -n "$0: Test time conversions (rata die):			"
 
 sed -e 's/"//g' ../../src/gmt_time_systems.h | awk -F, '{if (NR > 1 && NR < 9) print $2, 1, $4, $5 }' | gmtconvert --TIME_SYSTEM=rata -fi0T -fo0t --D_FORMAT=%.12g | awk '{if ($1 != ($3+$4)) print $0}' > log
 if [ -s log ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f log
 fi

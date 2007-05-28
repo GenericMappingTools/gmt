@@ -1,13 +1,13 @@
 #!/bin/sh
 #
-#	$Id: position1.sh,v 1.6 2007-05-28 22:21:03 pwessel Exp $
+#	$Id: position1.sh,v 1.7 2007-05-28 23:25:36 pwessel Exp $
 
 ps=position1.ps
 font=0	# Helvetica
 #font=4	# Times-Roman
 #font=8	# Courier
 #font=15	# AvantGardeDemi
-echo -n "$0: Test psbasemap's annotation alignment:		"
+echo -n "$0: Test psbasemap's annotation alignment:			"
 
 psbasemap="psbasemap --ANNOT_FONT_SIZE=24p --ANNOT_FONT=$font --BASEMAP_AXES=WESN"
 
@@ -68,8 +68,8 @@ rm -f .gmtcommands4
 compare -density 100 -metric PSNR position1_orig.ps position1.ps position1_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
-        echo "[FAILED]"
+        echo "[FAIL]"
 else
-        echo "[OK"]
+        echo "[PASS]"
         rm -f fail position1_diff.png log
 fi

@@ -1,12 +1,12 @@
 #!/bin/sh
-#	$Id: etest.sh,v 1.4 2007-05-28 22:21:02 pwessel Exp $
+#	$Id: etest.sh,v 1.5 2007-05-28 23:25:36 pwessel Exp $
 #
 # Test to make sure the -E option works as advertised.
 # We have data that will fall in to 4 separate blocks
 # in a -R0/2/0/2 -I2 -F situation (2x2 blocks)
 # In all blocks mean = median = mode = 5.
 
-echo -n "$0: Test blockmean's new -E option on given data:		"
+echo -n "$0: Test blockmean's new -E option on given data:			"
 
 cat << EOF > data.d
 # Block NW (1 value)
@@ -43,9 +43,9 @@ echo "Extended modes" >> log
 blockmode -R0/2/0/2 -I1 -F -E data.d >> log
 awk '{if (NF == 6 && $3 != 5) print $0}' log > fail
 if [ -s fail ]; then
-	echo "[FAILED]"
+	echo "[FAIL]"
 else
-	echo "[OK"]
+	echo "[PASS]"
 	rm -f log
 fi
 rm -f data.d fail

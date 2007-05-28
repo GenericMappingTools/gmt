@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.14 2007-03-29 19:32:30 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.15 2007-05-28 23:25:36 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1788,23 +1788,28 @@ void GMT_vgenper( double lon0, double lat0,
     if( max_yt > rmax *2.0 ) {
       max_yt = rmax * 2.0; 
     }
-    fprintf(stderr,"Genper: Projected map is a parabola with requested tilt %6.3f" 
-        "\n max ECA is %6.3f degrees."
-	"\n Plot truncated for projected distances > rpmax %8.2f\n"
-	, tilt, omega_max, rpmax/1000.0);
+    if( project_info.g_debug > 1 ) {
+      fprintf(stderr,"Genper: Projected map is a parabola with requested tilt %6.3f" 
+          "\n max ECA is %6.3f degrees."
+	  "\n Plot truncated for projected distances > rpmax %8.2f\n"
+	  , tilt, omega_max, rpmax/1000.0);
+    }
   } else if( eccen > 1.0 ) {
     if( width != 0.0 ) {
-      fprintf(stderr,"Genper: Projected map is a hyperbola with requested tilt %6.3f" 
-        "\n max ECA is %6.3f degrees.\n",
-	tilt, omega_max);
+    if( project_info.g_debug > 1 ) {
+        fprintf(stderr,"Genper: Projected map is a hyperbola with requested tilt %6.3f" 
+          "\n max ECA is %6.3f degrees.\n", tilt, omega_max);
+      }
     } else {
       if( max_yt > rmax *2.0 ) {
         max_yt = rmax * 2.0; 
       }
-      fprintf(stderr,"Genper: Projected map is a hyperbola with requested tilt %6.3f" 
-        "\n max ECA is %6.3f degrees."
-	"\n Plot truncated for projected distances > rpmax %8.2f\n"
-	, tilt, omega_max, rpmax/1000.0);
+      if( project_info.g_debug > 1 ) {
+        fprintf(stderr,"Genper: Projected map is a hyperbola with requested tilt %6.3f" 
+          "\n max ECA is %6.3f degrees."
+	  "\n Plot truncated for projected distances > rpmax %8.2f\n"
+	  , tilt, omega_max, rpmax/1000.0);
+      }
       project_info.g_max_yt = max_yt;
     }
   } else if( eccen > 0.5 ) {
@@ -1814,18 +1819,22 @@ void GMT_vgenper( double lon0, double lat0,
       double maxecc = 0.5;
       Pecc = sqrt(1.0/(1.0 - (t*t/maxecc)));
       max_yt = R*sqrt((Pecc-1.0)/(Pecc+1.0));
-      fprintf(stderr,"Genper: Projected map is an enlongated ellipse (eccentricity of %6.4f)"
-      	"with requested tilt %6.3f\n" " will truncate plot at rpmax %8.2f\n",
-        eccen, tilt, max_yt);
+      if( project_info.g_debug > 1 ) {
+        fprintf(stderr,"Genper: Projected map is an enlongated ellipse (eccentricity of %6.4f)"
+          "with requested tilt %6.3f\n" " will truncate plot at rpmax %8.2f\n",
+          eccen, tilt, max_yt);
+      }
       project_info.g_max_yt = max_yt;
     } else {
       if( max_yt > rmax *2.0 ) {
         max_yt = rmax * 2.0; 
       }
-      fprintf(stderr,"Genper: Projected map is an enlongated ellipse with requested tilt %6.3f" 
-        "\n eccentricity %6.3f"
-	"\n Plot truncated for projected distances > rpmax %8.2f\n"
-	, tilt, eccen, rpmax/1000.0);
+      if( project_info.g_debug > 1 ) {
+        fprintf(stderr,"Genper: Projected map is an enlongated ellipse with requested tilt %6.3f" 
+          "\n eccentricity %6.3f"
+	  "\n Plot truncated for projected distances > rpmax %8.2f\n"
+	  , tilt, eccen, rpmax/1000.0);
+      }
       project_info.g_max_yt = max_yt;
     }
   }
