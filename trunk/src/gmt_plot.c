@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.197 2007-05-25 20:05:27 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.198 2007-05-30 01:22:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4652,6 +4652,7 @@ void GMT_draw_fence (double x[], double y[], double z, int n, struct GMT_FRONTLI
 
 BOOLEAN set_do_seconds (double inc)
 {	/* Determines if seconds are to be labelled based on size of increment */
+	if (GMT_plot_calclock.geo.order[2] == -1) return (FALSE);			/* Seconds not requested by format */
 	if (GMT_plot_calclock.geo.n_sec_decimals > 0) return (TRUE);			/* If asked for ss.xxx annotations */
 	if (fabs (60.0 * fmod (fmod (inc, 1.0) * 60.0, 1.0)) >= 1.0) return (TRUE);	/* Multiples of >= 1 sec intervals */
 	return (FALSE);
