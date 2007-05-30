@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.15 2007-05-28 23:25:36 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.16 2007-05-30 04:03:57 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -463,7 +463,7 @@ void GMT_stereo1_sph (double lon, double lat, double *x, double *y)
 
 void GMT_istereo_sph (double *lon, double *lat, double x, double y)
 {
-	double rho, c, sin_c, cos_c;
+	double rho, c, sin_c, cos_c, denom;
 
 	if (x == 0.0 && y == 0.0) {
 		*lon = project_info.central_meridian;
@@ -478,8 +478,9 @@ void GMT_istereo_sph (double *lon, double *lat, double x, double y)
 		c = 2.0 * atan (rho * project_info.s_ic);
 		sincos (c, &sin_c, &cos_c);
 		*lat = d_asin (cos_c * project_info.sinp + (y * sin_c * project_info.cosp / rho)) * R2D;
-		*lon = R2D * atan (x * sin_c / (rho * project_info.cosp * cos_c - y * project_info.sinp * sin_c))
-		       + project_info.central_meridian;
+		denom = rho * project_info.cosp * cos_c - y * project_info.sinp * sin_c;
+		*lon = R2D * atan (x * sin_c / denom) + project_info.central_meridian;
+		if (denom < 0.0) *lon += 180.0;
 		if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 	}
 }
