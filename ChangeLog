@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.9 2007-05-25 19:39:14 pwessel Exp $
+	$Id: ChangeLog,v 1.10 2007-05-30 01:22:08 pwessel Exp $
 -----------------------------------------------------------------------------------------
+
+2007-05-29	pwessel
+      * gmt_plot.c:		Failed to activate ddd.mm.xxx format for maps
 
 2007-05-25	pwessel
       * psxy[z].c:		Now, both symbols and polygons can be filled with patterns

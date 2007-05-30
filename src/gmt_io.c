@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.135 2007-05-16 01:46:43 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.136 2007-05-30 01:22:08 pwessel Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1927,7 +1927,7 @@ void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S)
 		}
 		strcat (GMT_plot_format[1][0], "%2.2d");
 		if (S->order[2] == -1 && S->n_sec_decimals > 0) /* ddd:mm.xxx format */
-			sprintf (fmt, "%%d.%%%d.%dd", S->n_sec_decimals, S->n_sec_decimals);
+			sprintf (fmt, "%%2.2d.%%%d.%dd", S->n_sec_decimals, S->n_sec_decimals);
 		else						/* ddd:mm format */
 			sprintf (fmt, "%%2.2d");
 		strcat (GMT_plot_format[1][1], fmt);
