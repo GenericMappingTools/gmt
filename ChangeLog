@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.11 2007-05-30 17:48:19 pwessel Exp $
+	$Id: ChangeLog,v 1.12 2007-05-31 17:32:38 pwessel Exp $
 -----------------------------------------------------------------------------------------
+
+2007-05-31	pwessel
+      * psbasemap.c:		Check that -L is used with geographic coordinates only
 
 2007-05-29	pwessel
       * gmt_plot.c:		Failed to activate ddd.mm.xxx format for maps
