@@ -1,4 +1,4 @@
-#	$Id: README.tests,v 1.2 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: README.tests,v 1.3 2007-05-31 02:51:31 pwessel Exp $
 #
 # This is README for the test directory
 # Each program or theme should have a separate directory
@@ -6,5 +6,7 @@
 # scripts that tests one or more aspects of the program.
 # The script should report a PASS/FAIL grade so
 # that it is easy to tell which test failed.
+# In addition, each script that fails should add a single line
+# to the file ../fail_count.d so we may report a total.
 #
 # P. Wessel, May 2007

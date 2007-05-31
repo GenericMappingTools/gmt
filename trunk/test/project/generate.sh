@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: generate.sh,v 1.4 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: generate.sh,v 1.5 2007-05-31 02:51:31 pwessel Exp $
 #
 # Tests project in generating lines
 echo -n "$0: Test project's ability to generate lines:			"
@@ -54,6 +54,7 @@ compare -density 100 -metric PSNR generate_orig.ps generate.ps generate_diff.png
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
         echo "[PASS]"
         rm -f fail generate_diff.png log

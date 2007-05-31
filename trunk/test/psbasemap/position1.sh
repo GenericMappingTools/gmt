@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: position1.sh,v 1.7 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: position1.sh,v 1.8 2007-05-31 02:51:31 pwessel Exp $
 
 ps=position1.ps
 font=0	# Helvetica
@@ -69,6 +69,7 @@ compare -density 100 -metric PSNR position1_orig.ps position1.ps position1_diff.
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
         echo "[PASS]"
         rm -f fail position1_diff.png log

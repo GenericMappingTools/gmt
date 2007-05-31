@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: near_a_line.sh,v 1.4 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: near_a_line.sh,v 1.5 2007-05-31 02:51:31 pwessel Exp $
 #
 # Making sure both forms of "near a line" works:
 # Default (old) behavior is to think of a line as
@@ -50,6 +50,7 @@ compare -density 100 -metric PSNR nearline_orig.ps nearline.ps nearline_diff.png
 grep inf log > fail
 if [ ! -s fail ]; then
 	echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
 	echo "[PASS]"
 	rm -f fail nearline_diff.png log

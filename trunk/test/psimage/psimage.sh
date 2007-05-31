@@ -39,6 +39,7 @@ compare -density 100 -metric PSNR psimage_orig.ps $ps psimage_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
         echo "[PASS]"
         rm -f fail psimage_diff.png log

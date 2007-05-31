@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: etest.sh,v 1.5 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: etest.sh,v 1.6 2007-05-31 02:51:31 pwessel Exp $
 #
 # Test to make sure the -E option works as advertised.
 # We have data that will fall in to 4 separate blocks
@@ -44,6 +44,7 @@ blockmode -R0/2/0/2 -I1 -F -E data.d >> log
 awk '{if (NF == 6 && $3 != 5) print $0}' log > fail
 if [ -s fail ]; then
 	echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
 	echo "[PASS]"
 	rm -f log
