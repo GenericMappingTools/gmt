@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: time_testing_2.sh,v 1.3 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: time_testing_2.sh,v 1.4 2007-05-31 02:51:31 pwessel Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -35,6 +35,7 @@ paste $$.result $$.answer | awk '{if ($1 != $3) print $0}' > log
 
 if [ -s log ]; then
         echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
         echo "[PASS]"
         rm -f log
