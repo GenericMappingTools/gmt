@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: run_gmt_tests.sh,v 1.4 2007-05-31 02:51:31 pwessel Exp $
+#	$Id: run_gmt_tests.sh,v 1.5 2007-05-31 02:52:05 pwessel Exp $
 #
 #	test script for GMT/test directory
 #
@@ -29,4 +29,4 @@ while read dir; do
 done < /tmp/$$.dirs
 cd $here
 wc -l fail_count.d | awk '{printf "GMT test script failures: %d\n", $1}'
-rm -f /tmp/$$.* # fail_count.d
+rm -f /tmp/$$.* fail_count.d

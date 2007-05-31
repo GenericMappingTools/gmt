@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: time_testing_6.sh,v 1.3 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: time_testing_6.sh,v 1.4 2007-05-31 02:51:31 pwessel Exp $
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully
@@ -17,6 +17,7 @@ compare -density 100 -metric PSNR T6_orig.ps T6.ps T6_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
         echo "[PASS]"
         rm -f fail T6_diff.png log
