@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: headercheck.sh,v 1.4 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: headercheck.sh,v 1.5 2007-05-31 02:51:31 pwessel Exp $
 # Test that symbols pick up correct -W -G from command line or header
 
 echo -n "$0: Test psxy and operation of -W -G in headers:		"
@@ -58,6 +58,7 @@ compare -density 100 -metric PSNR headercheck_orig.ps headercheck.ps headercheck
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
         echo "[PASS]"
         rm -f fail headercheck_diff.png log

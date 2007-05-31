@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: grdview.sh,v 1.5 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: grdview.sh,v 1.6 2007-05-31 02:51:31 pwessel Exp $
 
 ps=grdview.ps
 grdview=grdview" t.grd -Ct.cpt -JX1i -B1/1"
@@ -69,6 +69,7 @@ compare -density 100 -metric PSNR grdview_orig.ps $ps grdview_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
         echo "[PASS]"
         rm -f fail grdview_diff.png log

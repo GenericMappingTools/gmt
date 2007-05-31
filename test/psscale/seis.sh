@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: seis.sh,v 1.6 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: seis.sh,v 1.7 2007-05-31 02:51:31 pwessel Exp $
 #
 echo -n "$0: Test psscale and makecpt combinations:				"
 
@@ -26,6 +26,7 @@ compare -density 100 -metric PSNR seis_orig.ps seis.ps seis_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
         echo "[PASS]"
         rm -f fail seis_diff.png log

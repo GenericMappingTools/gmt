@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: hovmuller.sh,v 1.4 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: hovmuller.sh,v 1.5 2007-05-31 02:51:31 pwessel Exp $
 
 ps=hovmuller.ps
 opt="--TIME_SYSTEM=other --TIME_EPOCH=2000-01-01T --TIME_UNIT=y"
@@ -18,6 +18,7 @@ compare -density 100 -metric PSNR hovmuller_orig.ps $ps hovmuller_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
         echo "[PASS]"
         rm -f fail hovmuller_diff.png log

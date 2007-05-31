@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: globalgrid.sh,v 1.4 2007-05-28 23:25:36 pwessel Exp $
+#	$Id: globalgrid.sh,v 1.5 2007-05-31 02:51:31 pwessel Exp $
 
 ps=globalgrid.ps
 #
@@ -35,6 +35,7 @@ compare -density 100 -metric PSNR globalgrid_orig.ps $ps globalgrid_diff.png > l
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
+	echo $0 >> ../fail_count.d
 else
         echo "[PASS]"
         rm -f fail globalgrid_diff.png log
