@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.16 2007-05-30 04:03:57 pwessel Exp $
+ *	$Id: gmt_proj.c,v 1.17 2007-06-03 01:41:31 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -109,12 +109,12 @@ void GMT_translind (double forw, double *inv)	/* Linear forward, but with degree
 {
 	while ((forw - project_info.central_meridian) < -180.0) forw += 360.0;
 	while ((forw - project_info.central_meridian) > 180.0) forw -= 360.0;
-	*inv = forw - project_info.central_meridian;
+	*inv = (forw - project_info.central_meridian) * project_info.M_PR_DEG;
 }
 
 void GMT_itranslind (double *forw, double inv)	/* Linear inverse, but with degrees*/
 {
-	*forw = inv + project_info.central_meridian;
+	*forw = inv / project_info.M_PR_DEG + project_info.central_meridian;
 	while ((*forw - project_info.central_meridian) < -180.0) *forw += 360.0;
 	while ((*forw - project_info.central_meridian) > 180.0) *forw -= 360.0;
 }
