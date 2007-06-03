@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_cvs.html,v 1.4 2006-04-01 23:18:41 pwessel Exp $  -->
+<!--  $Id: gmt_cvs.html,v 1.5 2007-06-03 23:18:58 guru Exp $  -->
 <title>GMT CVS Services</title>
 <body bgcolor="#ffffff">
 <center><h1>GMT CVS Services</center></h1><p>
@@ -54,7 +54,7 @@ mkdir GMTdev<br>
 Then cd into the GMTdev directory.<P>
 <LI><B>Login to the CVS Server in Hawaii.</B>  First, set the following environment parameter:<br>
 <p>
-setenv CVSROOT :pserver:anonymous@aa.soest.hawaii.edu:/home/gmt/gmt/cvs
+setenv CVSROOT :pserver:anonymous@pohaku.soest.hawaii.edu:/usr/local/cvs
 <p>
 This is the access method for anonymous (read-only) CVS access (Those who have been granted
 read-write access must replace anonymous with their given username).  You probably want
@@ -66,8 +66,8 @@ cvs login
 You will be asked for a password which for anonymous access is <B>gmt-team</B>. (Again,
 writers will have their own specific passwords).  Note that none of these methods grant
 you general system login to the gmt server: It only specifies how you interact with the
-CVS pserver running on aa.soest.hawaii.edu.  If you try a normal remote login or ssh to
-gmt you will not get in.<P>
+CVS pserver running on pohaku.soest.hawaii.edu.  If you try a normal remote login or ssh to
+pohaku you will not get in.<P>
 <LI><B>Checkout GMT.</B>  Once login is successful (i.e., no error messages) you will want to
 checkout the entire GMT tree.  Normally this is only done once; later you will instead
 ask for updates.  Type<BR>
