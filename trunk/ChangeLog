@@ -1,19 +1,25 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.12 2007-05-31 17:32:38 pwessel Exp $
+	$Id: ChangeLog,v 1.13 2007-06-03 01:41:31 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2007-06-02	remko
+	* run_gmt_tests.sh:	Use run_gmt_tests.sh <directories> to test only specified directories.
+	* tests/genper:		Remove grid file on success
+	* gmt_proj.c (GMT_[i]translind):	multiply/divide by project_info.M_PR_DEG to make
+				"step" work in GMT_fix_up_path (see 2007-05-24).
+
 2007-05-31	pwessel
-      * psbasemap.c:		Check that -L is used with geographic coordinates only
+	* psbasemap.c:		Check that -L is used with geographic coordinates only
 
 2007-05-29	pwessel
-      * gmt_plot.c:		Failed to activate ddd.mm.xxx format for maps
-      * gmt_proj.c:		-JS inverse did not apply quadrant check
+	* gmt_plot.c:		Failed to activate ddd.mm.xxx format for maps
+	* gmt_proj.c:		-JS inverse did not apply quadrant check
 
 2007-05-25	pwessel
-      * psxy[z].c:		Now, both symbols and polygons can be filled with patterns
+	* psxy[z].c:		Now, both symbols and polygons can be filled with patterns
       				Also, psxyz now honors -W+ etc in multisegment headers
-      * gmt_plot.[ch]:		New GMT_<symbol> () functions to help with this.
-      * mex/configure.in	FOr Intel Macs, must look in maci, not mac
+	* gmt_plot.[ch]:	New GMT_<symbol> () functions to help with this.
+	* mex/configure.in:	For Intel Macs, must look in maci, not mac
 
 2007-05-24	remko
 	* gmt_vector.[ch] (GMT_fix_up_path): Intermediate longitudes now wrapped based on segment end
