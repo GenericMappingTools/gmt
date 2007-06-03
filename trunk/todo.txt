@@ -1,8 +1,9 @@
-#	$Id: todo.txt,v 1.23 2007-05-30 01:22:08 pwessel Exp $
+#	$Id: todo.txt,v 1.24 2007-06-03 23:11:36 guru Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
 remember to add an entry in CHANGES.
+
 ------------------------------------------------------------------------
 BUGS or "FEATURES":
 
