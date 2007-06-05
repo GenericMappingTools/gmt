@@ -191,7 +191,8 @@ Input coordinates are absolute time.
 .PP
 Default axis lengths (see gmtdefaults) can be invoked
 using \fB\-JXh\fP (for landscape); \fB\-JXv\fP (for portrait) will swap the x- and y-axis lengths.
-The \fBGMT\fP default unit for this installation is UNIT. However, you may
+The \fBGMT\fP default unit for this installation is either cm or inch, as defined in the file
+share/gmt.conf. However, you may
 change this by editing your .gmtdefaults4 file(s) (run gmtdefaults to create one
 if you do not have it).
 .RE
