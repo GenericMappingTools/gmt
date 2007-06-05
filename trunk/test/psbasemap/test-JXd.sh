@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-#	$Id: test-JXd.sh,v 1.7 2007-05-31 02:51:31 pwessel Exp $
+#	$Id: test-JXd.sh,v 1.8 2007-06-05 14:02:36 remko Exp $
 
-psbasemap=psbasemap
+psbasemap="psbasemap --PLOT_DEGREE_FORMAT=dddF --LABEL_FONT_SIZE=16p --BASEMAP_AXES=WeSn"
 psxy=psxy
 
 plot1 () {
-   $psbasemap -R -JX$1 -B20f10g20:Longitude:/20f10g20:Latitude: --PLOT_DEGREE_FORMAT=dddF -O -K $2
+   $psbasemap -R -JX$1 -B20f10g20:Longitude:/20f10g20:Latitude: -O -K $2
    annot $1
 }
 
@@ -33,7 +33,7 @@ psxy /dev/null -R -J -O >> $ps
 
 rm -f .gmtcommands4
 
-compare -density 100 -metric PSNR test-JXd_orig.ps test-JXd.ps test-JXd_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps test-JXd_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
