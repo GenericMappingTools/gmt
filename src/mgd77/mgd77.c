@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.148 2007-04-02 15:30:58 remko Exp $
+ *	$Id: mgd77.c,v 1.149 2007-06-05 22:37:32 mtchandl Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -15,6 +15,8 @@
  *  Revised:	1-MAR-2006
  * 
  *-------------------------------------------------------------------------*/
+
+
 
 #include "mgd77.h"
 #include "mgd77_IGF_coeffs.h"
