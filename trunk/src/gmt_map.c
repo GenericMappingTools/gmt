@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.140 2007-05-25 21:25:08 pwessel Exp $
+ *	$Id: gmt_map.c,v 1.141 2007-06-05 14:10:25 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1009,7 +1009,6 @@ int GMT_map_init_linear (void) {
 	project_info.y_scale = project_info.pars[1];
 	if (project_info.x_scale < 0.0) project_info.xyz_pos[0] = FALSE;	/* User wants x to increase left */
 	if (project_info.y_scale < 0.0) project_info.xyz_pos[1] = FALSE;	/* User wants y to increase down */
-
 	switch ( (project_info.xyz_projection[0]%3) ) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
 			GMT_x_forward = (PFI) ((project_info.degree[0]) ? GMT_translind : GMT_translin);
@@ -1074,6 +1073,11 @@ int GMT_map_init_linear (void) {
 
 	if (project_info.compute_scale[0]) project_info.x_scale /= fabs (xmin - xmax);
 	if (project_info.compute_scale[1]) project_info.y_scale /= fabs (ymin - ymax);
+
+	/* This is to make sure that when using -J[x|X]...d degrees work as meters */
+
+	project_info.M_PR_DEG = 1.0;
+	project_info.KM_PR_DEG = 0.001;
 
 	GMT_map_setxy (xmin, xmax, ymin, ymax);
 	GMT_outside = (PFI) GMT_rect_outside;
@@ -1187,7 +1191,6 @@ int GMT_map_init_merc (void) {
 	GMT_inverse = (PFI)GMT_imerc_sph;
 	(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
 	(*GMT_forward) (project_info.e, project_info.n, &xmax, &ymax);
-	/* if (project_info.units_pr_degree) project_info.pars[0] /= project_info.M_PR_DEG; */
 	if (project_info.units_pr_degree) project_info.pars[0] /= (D * project_info.M_PR_DEG);
 	project_info.x_scale = project_info.y_scale = project_info.pars[0]; 
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[0]);
