@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: position1.sh,v 1.8 2007-05-31 02:51:31 pwessel Exp $
+#	$Id: position1.sh,v 1.9 2007-06-05 14:02:36 remko Exp $
 
 ps=position1.ps
 font=0	# Helvetica
@@ -65,7 +65,7 @@ $psbasemap -J -R0/1.2/0/1.2 -B0.1/0.1NE -O >> $ps
 
 rm -f .gmtcommands4
 
-compare -density 100 -metric PSNR position1_orig.ps position1.ps position1_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps position1_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

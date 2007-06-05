@@ -1,13 +1,13 @@
 #!/bin/sh
 #
-#	$Id: globalgrid.sh,v 1.5 2007-05-31 02:51:31 pwessel Exp $
+#	$Id: globalgrid.sh,v 1.6 2007-06-05 14:02:35 remko Exp $
 
 ps=globalgrid.ps
 #
 # Check if we can wrap global grids over longitude
 #
 echo -n "$0: Test grdimage for wrapping global grids:			"
-plot="grdimage -Ctmp.cpt tmp.nc -JX3i/1.5i -B60f10/30f10"
+plot="grdimage -Ctmp.cpt tmp.nc -JX3i/1.5i -B60f10/30f10WeSn --BASEMAP_TYPE=plain --ANNOT_FONT_SIZE_PRIMARY=10p --PLOT_DEGREE_FORMAT=DF"
 #
 makegrid ()
 {
@@ -31,7 +31,7 @@ $plot -Rd -Y-2i -O >> $ps
 
 rm -f tmp.cpt tmp.nc .gmtcommands4
 
-compare -density 100 -metric PSNR globalgrid_orig.ps $ps globalgrid_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps globalgrid_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

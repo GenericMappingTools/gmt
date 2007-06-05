@@ -1,12 +1,13 @@
 #!/bin/sh
-#	$Id: legend.sh,v 1.6 2007-05-31 02:51:31 pwessel Exp $
+#	$Id: legend.sh,v 1.7 2007-06-05 14:02:36 remko Exp $
 #
 # Testing pslegend capabilities
 
 echo -n "$0: Test pslegend and its various items:				"
 
+ps=legend.ps
 gmtset ANNOT_FONT_SIZE_PRIMARY 12p
-psbasemap -R0/10/0/15 -JM6i -P -B5f1 -K > legend.ps
+psbasemap -R0/10/0/15 -JM6i -P -B5f1 -K > $ps
 cat << EOF > $$.d
 # Legend test for pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
@@ -40,10 +41,10 @@ T There is no way to predetermine how many lines may be required,
 T so we may have to adjust the height to get the right size box.
 EOF
 #pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F -S > script.sh
-#sh -xv script.sh >> legend.ps
+#sh -xv script.sh >> $ps
 # rm -f script.sh
-pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F >> legend.ps
-compare -density 100 -metric PSNR legend_orig.ps legend.ps legend_diff.png > log
+pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F >> $ps
+compare -density 100 -metric PSNR {,orig/}$ps legend_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

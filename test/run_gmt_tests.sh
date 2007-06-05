@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: run_gmt_tests.sh,v 1.6 2007-06-02 13:11:28 remko Exp $
+#	$Id: run_gmt_tests.sh,v 1.7 2007-06-05 14:02:32 remko Exp $
 #
 #	test script for GMT/test directory
 #
@@ -8,7 +8,7 @@
 
 # Get all directories below GMT/test and filter out the CVS directories
 if [ $# -eq 0 ] ; then
-   dirs=`find . -mindepth 1 -type d -print | grep -v CVS`
+   dirs=`find . -mindepth 1 -maxdepth 1 -type d -print | grep -v CVS`
 else
    dirs=$*
 fi
@@ -27,7 +27,7 @@ for dir in $dirs; do
 	if [ -s /tmp/$$.lis ]; then	# Found Bourne shell scripts
 		rm -f /tmp/$$.lis
 		for script in *.sh; do
-			cd $here/$dir
+			cp -f $here/.gmtdefaults_test .gmtdefaults4
 			sh $script
 		done
 	fi

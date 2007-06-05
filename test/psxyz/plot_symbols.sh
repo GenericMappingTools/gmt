@@ -1,11 +1,12 @@
 #!/bin/sh
-#	$Id: plot_symbols.sh,v 1.5 2007-05-31 02:51:31 pwessel Exp $
+#	$Id: plot_symbols.sh,v 1.6 2007-06-05 14:02:37 remko Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
 echo -n "$0: Test psxyz and all the symbols with fill:		"
 
-psxyz -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -E155/35 -S1i -X1i -Y1i -K << EOF > plot_symbols.ps
+ps=plot_symbols.ps
+psxyz -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -E155/35 -S1i -X1i -Y1i -K << EOF > $ps
 > Fat pen -W2p
 0.5	5.5	0	-
 > Plain red symbols -W- -Gred
@@ -26,21 +27,23 @@ psxyz -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -E155/35 -S1i -X1i -Y1i -K << EO
 > Do yellowized pattern # 20 -Gp100/20:Fyellow
 0.5	2.5	0	1	0.5	r
 1.5	2.5	0	s
-2.5	2.5	t
+2.5	2.5	0	t
 > Blue arrow -Gblue
 0.5	1.5	0	30	80	w
 3.5	2.5	0	30	1	vb
 > Fat pen -W2p
 1.5	1.5	0	x
 2.5	1.5	0	y
+> Dual-colored pattern # 12 -Gp100/12:FredBgreen -W3p,orange
+3.5	1.5	0	a
 EOF
-psxyz -R0/4/1/6/0/3 -Jx1i -Jz1i -O -B0g1/0g1/0g1 -M -G0 -W0.25p -E155/35 -S1i -Y4i -Q << EOF >> plot_symbols.ps
+psxyz -R0/4/1/6/0/3 -Jx1i -Jz1i -O -B0g1/0g1/0g1 -M -G0 -W0.25p -E155/35 -S1i -Y4i -Q << EOF >> $ps
 > Blue column -Gblue
 2.5	2.5	2	o
 > Red cube -Gred
 2.5	2.5	3	u
 EOF
-compare -density 100 -metric PSNR plot_symbols_orig.ps plot_symbols.ps plot_symbols_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps plot_symbols_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

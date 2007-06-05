@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: near_a_line.sh,v 1.5 2007-05-31 02:51:31 pwessel Exp $
+#	$Id: near_a_line.sh,v 1.6 2007-06-05 14:02:35 remko Exp $
 #
 # Making sure both forms of "near a line" works:
 # Default (old) behavior is to think of a line as
@@ -46,7 +46,7 @@ gmtselect $$.xyz -Lp${D}/$$.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> nearline
 psxy -R -J -O $$.d -M -W1p >> nearline.ps
 # gv nearline.ps &
 rm -f $$.grd $$.xyz $$.d
-compare -density 100 -metric PSNR nearline_orig.ps nearline.ps nearline_diff.png > log
+compare -density 100 -metric PSNR {,orig/}nearline.ps nearline_diff.png > log
 grep inf log > fail
 if [ ! -s fail ]; then
 	echo "[FAIL]"

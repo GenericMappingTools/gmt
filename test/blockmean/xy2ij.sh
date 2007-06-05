@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: xy2ij.sh,v 1.6 2007-05-31 02:51:31 pwessel Exp $
+#	$Id: xy2ij.sh,v 1.7 2007-06-05 14:02:32 remko Exp $
 #
 # Test to make sure the (x,y) <--> (i,j) macros work correctly
 # We use -R0/5/0/5 -I1 for pixel and gridline registrations
@@ -55,11 +55,11 @@ psxy -R -J grid_ij.d -Sc0.15 -Gblack -O -K -N >> xy2ij.ps
 awk '{print $1, $2, 8, 0, 0, "CM", $3}' grid_ij.d | pstext -R -J -O -K -Gwhite -N >> xy2ij.ps
 psxy -R -J -O /dev/null >> xy2ij.ps
 
-diff pixel_xy.d pixel_xy.d.orig  > fail
-diff pixel_ij.d pixel_ij.d.orig >> fail
-diff grid_xy.d  grid_xy.d.orig  >> fail
-diff grid_ij.d  grid_ij.d.orig  >> fail
-compare -density 100 -metric PSNR xy2ij_orig.ps xy2ij.ps xy2ij_diff.png | grep -v inf >> fail
+diff pixel_xy.d orig/pixel_xy.d  > fail
+diff pixel_ij.d orig/pixel_ij.d >> fail
+diff grid_xy.d  orig/grid_xy.d  >> fail
+diff grid_ij.d  orig/grid_ij.d  >> fail
+compare -density 100 -metric PSNR {,orig/}xy2ij.ps xy2ij_diff.png | grep -v inf >> fail
 if [ -s fail ]; then
         echo "[FAIL]"
 	echo $0 >> ../fail_count.d
