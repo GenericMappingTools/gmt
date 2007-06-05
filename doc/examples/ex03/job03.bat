@@ -1,7 +1,7 @@
 REM
 REM		GMT EXAMPLE 03
 REM
-REM		$Id: job03.bat,v 1.10 2006-11-21 03:25:28 pwessel Exp $
+REM		$Id: job03.bat,v 1.11 2007-06-05 15:50:36 remko Exp $
 REM
 echo GMT EXAMPLE 03
 set master=y
@@ -48,7 +48,7 @@ echo 2.375 3.75 > box.d
 echo 2.375 3.25 >> box.d
 echo 4 3.25 >> box.d
 psxy -R -J -O -K -Wthicker box.d >> example_03.ps
-psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03.ps
+psxy -Gblack -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03.ps
 psxy spectrum.ypower -R -JX -O -K -G0 -Sc0.07i -Ey/0.5p >> example_03.ps
 echo 3.9 3.6 18 0.0 1 11 Input Power | pstext -R0/4/0/3.75 -Jx1 -O -K >> example_03.ps
 psxy -R -J -O -K -Wthicker box.d >> example_03.ps
