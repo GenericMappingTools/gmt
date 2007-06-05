@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.198 2007-05-30 01:22:08 pwessel Exp $
+ *	$Id: gmt_plot.c,v 1.199 2007-06-05 14:14:29 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,7 +47,7 @@
  *
  *	GMT_basemap_3D :		Plots 3-D basemap
  *	GMT_geoplot :			As ps_plot, but using lon/lat directly
- *	GMT_fill :			Convenience function for ps_imagefill
+ *	GMT_fill :			Convenience function for ps_polygon with or without fill
  *	GMT_conic_map_boundary :	Plot basemap for conic projections
  *	GMT_linear_map_boundary :	Plot basemap for Linear projections
  *	GMT_linearx_grid :		Draw linear x grid lines
@@ -113,7 +113,6 @@ int GMT_time_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double
 void GMT_timex_grid (double w, double e, double s, double n, int item);
 void GMT_timey_grid (double w, double e, double s, double n, int item);
 BOOLEAN GMT_skip_second_annot (int item, double x, double x2[], int n, int primary, int secondary);
-BOOLEAN GMT_fill_is_image (char *fill);
 double GMT_set_label_offsets (int axis, double val0, double val1, struct GMT_PLOT_AXIS *A, int below, double annot_off[], double *label_off, int *annot_justify, int *label_justify, char *format);
 
 void GMT_map_tickitem (double w, double e, double s, double n, int item);
@@ -2412,8 +2411,11 @@ void GMT_fill (double x[], double y[], int n, struct GMT_FILL *fill, BOOLEAN out
 {
 	if (!fill)	/* NO fill pointer = no fill */
 		ps_polygon (x, y, n, GMT_no_rgb, outline);
-	else if (fill->use_pattern)
-		ps_imagefill (x, y, n, fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+	else if (fill->use_pattern) {
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_polygon (x, y, n, rgb, outline);
+	}
 	else
 		ps_polygon (x, y, n, fill->rgb, outline);
 }
@@ -2937,7 +2939,8 @@ void GMT_draw_map_rose (struct GMT_MAP_ROSE *mr)
 		GMT_rotate2D (x, y, 5, mr->x0, mr->y0, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 		GMT_vector (xp[0], yp[0], xp[1], yp[1], project_info.z_level, F_VW * mr->size, F_HL * mr->size, F_HW * mr->size, gmtdefs.vector_shape, &f, TRUE);
 		s = 0.25 * mr->size;
-		GMT_circle (mr->x0, mr->y0, project_info.z_level, &s, NULL, TRUE);
+		GMT_init_fill (&f, -1, -1, -1);
+		GMT_circle (mr->x0, mr->y0, project_info.z_level, &s, &f, TRUE);
 		GMT_text3D (xp[4], yp[4], project_info.z_level, gmtdefs.header_font_size, gmtdefs.header_font, mr->label[2], angle, 2, 0);
 		GMT_2D_to_3D (xp, yp, project_info.z_level, 4);
 		ps_segment (xp[2], yp[2], xp[3], yp[3]);
@@ -2982,6 +2985,7 @@ void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr)
 			ps_segment (x[0], y[0], x[1], y[1]);
 		}
 		GMT_free ((void *)val);
+
 		ps_setpaint (gmtdefs.background_rgb);
 		n_tick = GMT_linear_array (0.0, 360.0, mr->a_int[level], 0.0, &val);
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of annotations (-1 to avoid repeating 360) */
@@ -3048,7 +3052,8 @@ void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr)
 		GMT_rotate2D (x, y, 5, mr->x0, mr->y0, ew_angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 		GMT_vector (xp[0], yp[0], xp[1], yp[1], project_info.z_level, F_VW * mr->size, F_HL * mr->size, F_HW * mr->size, gmtdefs.vector_shape, &f, TRUE);
 		s = 0.25 * mr->size;
-		GMT_circle (mr->x0, mr->y0, project_info.z_level, &s, NULL, TRUE);
+		GMT_init_fill (&f, -1, -1, -1);
+		GMT_circle (mr->x0, mr->y0, project_info.z_level, &s, &f, TRUE);
 		GMT_2D_to_3D (xp, yp, project_info.z_level, 4);
 		ps_segment (xp[2], yp[2], xp[3], yp[3]);
 	}
@@ -3363,7 +3368,7 @@ void GMT_square (double x, double y, double z, double size[], struct GMT_FILL *f
 {
 	/* Plots the square symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[4], yp[4], S;
 		S = size[0] * 0.3535533906;
@@ -3371,6 +3376,11 @@ void GMT_square (double x, double y, double z, double size[], struct GMT_FILL *f
 		yp[0] = yp[1] = y - S;	yp[2] = yp[3] = y + S;
 		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, 4, fill, outline);
+	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_square (x, y, size[0], rgb, outline);
 	}
 	else
 		ps_square (x, y, size[0], fill->rgb, outline);
@@ -3380,7 +3390,7 @@ void GMT_circle (double x, double y, double z, double size[], struct GMT_FILL *f
 {
 	/* Plots the circle symbol */
 	
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double da, s, c, S, xp[GMT_ELLIPSE_APPROX], yp[GMT_ELLIPSE_APPROX];
 
@@ -3394,6 +3404,11 @@ void GMT_circle (double x, double y, double z, double size[], struct GMT_FILL *f
 		}
 		GMT_fill (xp, yp, GMT_ELLIPSE_APPROX, fill, outline);
 	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_circle (x, y, size[0], rgb, outline);
+	}
 	else
 		ps_circle (x, y, size[0], fill->rgb, outline);
 }
@@ -3402,7 +3417,7 @@ void GMT_triangle (double x, double y, double z, double size[], struct GMT_FILL 
 {
 	/* Plots the triangle symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[3], yp[3];
 
@@ -3410,6 +3425,11 @@ void GMT_triangle (double x, double y, double z, double size[], struct GMT_FILL 
 		xp[1] = x + 0.433012701892*size[0];	xp[2] = x; 	yp[2] = y + 0.5 * size[0];
 		if (project_info.three_D) for (i = 0; i < 3; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, 3, fill, outline);
+	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_triangle (x, y, size[0], rgb, outline);
 	}
 	else
 		ps_triangle (x, y, size[0], fill->rgb, outline);
@@ -3419,7 +3439,7 @@ void GMT_itriangle (double x, double y, double z, double size[], struct GMT_FILL
 {
 	/* Plots the inverted triangle symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[3], yp[3];
 
@@ -3427,6 +3447,11 @@ void GMT_itriangle (double x, double y, double z, double size[], struct GMT_FILL
 		xp[1] = x + 0.433012701892*size[0];	xp[2] = x; 	yp[2] = y - 0.5 * size[0];
 		if (project_info.three_D) for (i = 0; i < 3; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, 3, fill, outline);
+	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_itriangle (x, y, size[0], rgb, outline);
 	}
 	else
 		ps_itriangle (x, y, size[0], fill->rgb, outline);
@@ -3436,7 +3461,7 @@ void GMT_diamond (double x, double y, double z, double size[], struct GMT_FILL *
 {
 	/* Plots the diamond symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[4], yp[4], S;
 
@@ -3446,6 +3471,11 @@ void GMT_diamond (double x, double y, double z, double size[], struct GMT_FILL *
 		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, 4, fill, outline);
 	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_diamond (x, y, size[0], rgb, outline);
+	}
 	else
 		ps_diamond (x, y, size[0], fill->rgb, outline);
 }
@@ -3454,7 +3484,7 @@ void GMT_hexagon (double x, double y, double z, double size[], struct GMT_FILL *
 {
 	/* Plots the hexagon symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[6], yp[6], S, sx, sy;
 
@@ -3469,6 +3499,11 @@ void GMT_hexagon (double x, double y, double z, double size[], struct GMT_FILL *
 		if (project_info.three_D) for (i = 0; i < 6; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, 6, fill, outline);
 	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_hexagon (x, y, size[0], rgb, outline);
+	}
 	else
 		ps_hexagon (x, y, size[0], fill->rgb, outline);
 }
@@ -3477,7 +3512,7 @@ void GMT_pentagon (double x, double y, double z, double size[], struct GMT_FILL 
 {
 	/* Plots the pentagon symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double s, c, S, xp[5], yp[5];
 
@@ -3490,6 +3525,11 @@ void GMT_pentagon (double x, double y, double z, double size[], struct GMT_FILL 
 		}
 		GMT_fill (xp, yp, 5, fill, outline);
 	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_pentagon (x, y, size[0], rgb, outline);
+	}
 	else
 		ps_pentagon (x, y, size[0], fill->rgb, outline);
 }
@@ -3498,7 +3538,7 @@ void GMT_octagon (double x, double y, double z, double size[], struct GMT_FILL *
 {
 	/* Plots the octagon symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double s, c, S, xp[8], yp[8];
 
@@ -3511,6 +3551,11 @@ void GMT_octagon (double x, double y, double z, double size[], struct GMT_FILL *
 		}
 		GMT_fill (xp, yp, 8, fill, outline);
 	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_octagon (x, y, size[0], rgb, outline);
+	}
 	else
 		ps_octagon (x, y, size[0], fill->rgb, outline);
 }
@@ -3519,7 +3564,7 @@ void GMT_star (double x, double y, double z, double size[], struct GMT_FILL *fil
 {
 	/* Plots the star symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i, k;
 		double xp[10], yp[10], S, s, c, s2;
 
@@ -3539,6 +3584,11 @@ void GMT_star (double x, double y, double z, double size[], struct GMT_FILL *fil
 		}
 		GMT_fill (xp, yp, 10, fill, outline);
 	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_star (x, y, size[0], rgb, outline);
+	}
 	else
 		ps_star (x, y, size[0], fill->rgb, outline);
 }
@@ -3552,8 +3602,8 @@ void GMT_cross (double x, double y, double z, double size[], struct GMT_FILL *fi
 		double S, xp[4], yp[4];
 
 		S = size[0] * 0.5;
-		xp[0] = xp[2] = x - S;	xp[1] = xp[3] = x + S;
-		yp[0] = yp[3] = y - S;	yp[1] = yp[2] = y + S;
+		xp[0] = xp[1] = x;	xp[2] = x - S;	xp[3] = x + S;
+		yp[2] = yp[3] = y;	yp[0] = y - S;	yp[1] = y + S;
 		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		ps_segment (xp[0], yp[0], xp[1], yp[1]);
 		ps_segment (xp[2], yp[2], xp[3], yp[3]);
@@ -3566,7 +3616,7 @@ void GMT_rect (double x, double y, double z, double size[], struct GMT_FILL *fil
 {
 	/* Plots the rect symbol [x,y is lower left corner] */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double xp[4], yp[4];
 
@@ -3574,6 +3624,11 @@ void GMT_rect (double x, double y, double z, double size[], struct GMT_FILL *fil
 		yp[0] = yp[1] = y;	yp[2] = yp[3] = y + size[1];
 		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, 4, fill, outline);
+	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_rect (x, y, x + size[0], y + size[1], rgb, outline);
 	}
 	else
 		ps_rect (x, y, x + size[0], y + size[1], fill->rgb, outline);
@@ -3583,7 +3638,7 @@ void GMT_ellipse (double x, double y, double z, double size[], struct GMT_FILL *
 {
 	/* Plots the ellipse symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double dx, dy, da, s, c, sin_direction, cos_direction, xp[GMT_ELLIPSE_APPROX], yp[GMT_ELLIPSE_APPROX];
 
@@ -3599,6 +3654,11 @@ void GMT_ellipse (double x, double y, double z, double size[], struct GMT_FILL *
 		}
 		GMT_fill (xp, yp, GMT_ELLIPSE_APPROX, fill, outline);
 	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_ellipse (x, y, size[0], size[1], size[2], rgb, outline);
+	}
 	else
 		ps_ellipse (x, y, size[0], size[1], size[2], fill->rgb, outline);
 }
@@ -3607,7 +3667,7 @@ void GMT_pie (double x, double y, double z, double size[], struct GMT_FILL *fill
 {
 	/* Plots the pie symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i, j, n;
 		double *xp, *yp, *dx, *dy;
 
@@ -3628,6 +3688,11 @@ void GMT_pie (double x, double y, double z, double size[], struct GMT_FILL *fill
 		GMT_free ((void *)dx);
 		GMT_free ((void *)dy);
 	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_pie (x, y, size[0], size[1], size[2], rgb, outline);
+	}
 	else
 		ps_pie (x, y, size[0], size[1], size[2], fill->rgb, outline);
 }
@@ -3636,7 +3701,7 @@ void GMT_rotrect (double x, double y, double z, double size[], struct GMT_FILL *
 {
 	/* Plots the rotated rectangle symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Must do polygon */
+	if (project_info.three_D) {	/* Must do polygon */
 		int i;
 		double W, H, xp[4], yp[4], x_prime, y_prime, s, c;
 
@@ -3652,6 +3717,11 @@ void GMT_rotrect (double x, double y, double z, double size[], struct GMT_FILL *
 		}
 		GMT_fill (xp, yp, 4, fill, outline);
 	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_rotaterect (x, y, size[0], size[1], size[2], rgb, outline);
+	}
 	else
 		ps_rotaterect (x, y, size[0], size[1], size[2], fill->rgb, outline);
 }
@@ -3662,7 +3732,7 @@ void GMT_vector (double x0, double y0, double x1, double y1, double z, double ta
 {
 	/* Plots the vector symbol */
 
-	if ((fill && fill->use_pattern) || project_info.three_D) {	/* Fill in local xp, yp cordinates for vector starting at (0,0) aligned horizontally */
+	if (project_info.three_D) {	/* Fill in local xp, yp cordinates for vector starting at (0,0) aligned horizontally */
 		int i, n;
 		double xp[10], yp[10], angle, length, s, c, L, x, y;
 
@@ -3704,6 +3774,11 @@ void GMT_vector (double x0, double y0, double x1, double y1, double z, double ta
 			if (project_info.three_D) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);	/* Then do 3-D projection */
 		}
 		GMT_fill (xp, yp, n, fill, outline);
+	}
+	else if (fill && fill->use_pattern) {	/* Setup pattern first */
+		int rgb[3] = {-3, -3, -3};
+		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		ps_vector (x0, y0, x1, y1, tailwidth, headlength, headwidth, shape, rgb, outline);
 	}
 	else
 		ps_vector (x0, y0, x1, y1, tailwidth, headlength, headwidth, shape, fill->rgb, outline);
