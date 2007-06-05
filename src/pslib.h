@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.39 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: pslib.h,v 1.40 2007-06-05 14:22:44 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -110,7 +110,7 @@ EXTERN_MSC void ps_flush (void);
 EXTERN_MSC void ps_free (void *addr);
 EXTERN_MSC void ps_hexagon (double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_image (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
-EXTERN_MSC void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[]);
+EXTERN_MSC int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int invert, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_itriangle (double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_octagon (double x, double y, double side, int rgb[], int outline);
