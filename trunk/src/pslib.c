@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.144 2007-05-18 23:12:55 pwessel Exp $
+ *	$Id: pslib.c,v 1.145 2007-06-05 14:22:43 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -82,8 +82,6 @@
  *	ps_flush		: Flushes the output buffer
  *	ps_hexagon		: Plots a hexagon and {optionally] fills it
  *	ps_image		: (depreciated: use ps_colorimage)
- *	ps_imagefill		: Fills a polygon with a repeating n x n image pattern
- *	ps_imagemask		: Uses a 1-bit image as mask to paint given color
  *	ps_itriangle		: Plots an inverted triangle and [optionally] fills it
  *	ps_line			: Plots a line
  *	ps_load_eps		: Read EPS 'image'
@@ -196,7 +194,7 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
 static void ps_bulkcopy (const char *);
 static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
-int ps_imagefill_init(int image_no, char *imagefile);
+int ps_pattern_init(int image_no, char *imagefile);
 void ps_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]);
 void ps_rgb_to_cmyk_int (int rgb[], int cmyk[]);
 void ps_rgb_to_cmyk (int rgb[], double cmyk[]);
@@ -218,6 +216,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header);
 unsigned char *ps_load_eps (FILE *fp, struct imageinfo *header);
 int ps_get_boundingbox (FILE *fp, int *llx, int *lly, int *trx, int *try);
 char *ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);
+int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[]);
 
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
@@ -326,9 +325,9 @@ void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char 
 	ly = irint (ysize * ps.scale);
 
 	if (ps.comments) fprintf (ps.fp, "\n%% Start of %s Adobe 1-bit image\n", kind[ps.hex_image]);
-	fprintf (ps.fp, "V N %g %g T %d %d scale\n", x * ps.scale, y * ps.scale, lx, ly);
+	fprintf (ps.fp, "V N %g %g T %d %d scale", x * ps.scale, y * ps.scale, lx, ly);
 	inv = (ps_bitimage_cmap (f_rgb, b_rgb) + invert) % 2;
-	fprintf (ps.fp, "<< /ImageType 1 /Decode [%d %d] ", inv, 1-inv);
+	fprintf (ps.fp, "\n<< /ImageType 1 /Decode [%d %d] ", inv, 1-inv);
 	ps_stream_dump (buffer, nx, ny, 1, ps.compress, ps.hex_image, f_rgb[0] < 0 || b_rgb[0] < 0);
 
 	fprintf (ps.fp, "U\n");
@@ -352,7 +351,7 @@ void ps_circle (double x, double y, double size, int rgb[], int outline)
 	ir = irint (0.5 * size * ps.scale);
 	fprintf (ps.fp, "N ");
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d C%d\n", ix, iy, ir, outline + psl_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d C%c\n", ix, iy, ir, psl_paint_code[pmode+outline]);
 	ps.npath = 0;
 }
 
@@ -463,11 +462,9 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		nbits = ps_bitreduce (image->buffer, nx, ny, image->colormap->ncolors);
 
 		if (ps.comments) fprintf (ps.fp, "\n%% Start of %s Adobe Indexed %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
-		fprintf (ps.fp, "V N %g %g T %d %d scale ", x * ps.scale, y * ps.scale, lx, ly);
-		fprintf (ps.fp, "[/Indexed /Device%s %d <\n", colorspace[id], image->colormap->ncolors - 1);
+		fprintf (ps.fp, "V N %g %g T %d %d scale [/Indexed /Device%s %d <\n", x * ps.scale, y * ps.scale, lx, ly, colorspace[id], image->colormap->ncolors - 1);
 		ps_stream_dump (&image->colormap->colors[0][0], image->colormap->ncolors, 1, 24, 0, 2, 2);
-		fprintf (ps.fp, ">] setcolorspace\n");
-		fprintf (ps.fp, "<< /ImageType %s /Decode [0 %d] ", type[it], (1<<nbits)-1);
+		fprintf (ps.fp, ">] setcolorspace\n<< /ImageType %s /Decode [0 %d] ", type[it], (1<<nbits)-1);
 		ps_stream_dump (image->buffer, nx, ny, nbits, ps.compress, ps.hex_image, 0);
 		fprintf (ps.fp, "U\n");
 		if (ps.comments) fprintf (ps.fp, "%% End of %s Adobe Indexed %s image\n", kind[ps.hex_image], colorspace[id]);
@@ -482,15 +479,14 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		nbits = abs(nbits);
 
 		if (ps.comments) fprintf (ps.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[ps.hex_image], colorspace[id], nbits);
-		fprintf (ps.fp, "V N %g %g T %d %d scale ", x * ps.scale, y * ps.scale, lx, ly);
-		fprintf (ps.fp, "/Device%s setcolorspace\n", colorspace[id]);
+		fprintf (ps.fp, "V N %g %g T %d %d scale /Device%s setcolorspace", x * ps.scale, y * ps.scale, lx, ly, colorspace[id]);
 
 		if (it == 1) {	/* Do PS Level 3 image type 4 with colormask */
-			fprintf (ps.fp, "<< /ImageType 4 /MaskColor[%d %d %d]", buffer[0], buffer[1], buffer[2]);
+			fprintf (ps.fp, "\n<< /ImageType 4 /MaskColor[%d %d %d]", buffer[0], buffer[1], buffer[2]);
 			buffer += 3;
 		}
 		else		/* Do PS Level 2 image, optionally with interpolation */
-			fprintf (ps.fp, "<< /ImageType %s", type[it]);
+			fprintf (ps.fp, "\n<< /ImageType %s", type[it]);
 
 		fprintf (ps.fp, " /Decode [%s] ", decode[id]);
 		ps_stream_dump (buffer, nx, ny, nbits, ps.compress, ps.hex_image, 0);
@@ -582,7 +578,7 @@ void ps_cross_ (double *x, double *y, double *diameter)
 
 void ps_point (double x, double y, double diameter)
 {     /* Fit inside circle of given diameter; draw using current color */
-	fprintf (ps.fp, "%d %d %d O\n", (int) irint (diameter * ps.scale), (int) irint (x * ps.scale), (int) irint (y * ps.scale));
+	fprintf (ps.fp, "%d %d %d O\n", irint (diameter * ps.scale), irint (x * ps.scale), irint (y * ps.scale));
 	ps.npath = 0;
 }
 
@@ -594,15 +590,10 @@ void ps_point_ (double *x, double *y, double *diameter)
 
 void ps_diamond (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
-	int ix, iy, ds, pmode;
-
-	diameter *= 0.5;
-	ds = irint (diameter * ps.scale);
-	ix = irint (x * ps.scale);
-	iy = irint ((y - diameter) * ps.scale);
+	int pmode;
 
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d D%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d D%c\n", irint(0.5 * diameter * ps.scale), irint(x * ps.scale), irint(y * ps.scale), psl_paint_code[pmode+outline]);
 	ps.npath = 0;
 }
 
@@ -632,14 +623,10 @@ void ps_segment_ (double *x0, double *y0, double *x1, double *y1)
 
 void ps_star (double x, double y, double diameter, int rgb[], int outline)
 {	/* Fit inside circle of given diameter */
-	int ix, iy, ds, pmode;
+	int pmode;
 
-	diameter *= 0.5;
-	ds = irint (diameter * ps.scale);
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d E%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d A%c\n", irint(0.5 * diameter * ps.scale), irint(x * ps.scale), irint(y * ps.scale), psl_paint_code[pmode+outline]);
 	ps.npath = 0;
 }
 
@@ -649,16 +636,57 @@ void ps_star_ (double *x, double *y, double *diameter, int *rgb, int *outline)
 	 ps_star (*x, *y, *diameter, rgb, *outline);
 }
 
+void ps_square (double x, double y, double diameter, int rgb[], int outline)
+{	/* give diameter of circumscribing circle */
+	int pmode;
+
+	pmode = ps_place_color (rgb);
+	fprintf (ps.fp, "%d %d %d S%c\n", irint(0.5 * diameter * ps.scale), irint(x * ps.scale), irint(y * ps.scale), psl_paint_code[pmode+outline]);
+	ps.npath = 0;
+}
+
+/* fortran interface */
+void ps_square_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+{
+	ps_square (*x, *y, *diameter, rgb, *outline);
+}
+
+void ps_triangle (double x, double y, double diameter, int rgb[], int outline)
+{	/* Give diameter of circumscribing circle */
+	int pmode;
+
+	pmode = ps_place_color (rgb);
+	fprintf (ps.fp, "%d %d %d T%c\n", irint(0.5 * diameter * ps.scale), irint(x * ps.scale), irint(y * ps.scale), psl_paint_code[pmode+outline]);
+	ps.npath = 0;
+}
+
+/* fortran interface */
+void ps_triangle_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+{
+	ps_triangle (*x, *y, *diameter, rgb, *outline);
+}
+
+void ps_itriangle (double x, double y, double diameter, int rgb[], int outline)	/* Inverted triangle */
+{	/* Give diameter of circumscribing circle */
+	int pmode;
+
+	pmode = ps_place_color (rgb);
+	fprintf (ps.fp, "%d %d %d I%c\n", irint(0.5 * diameter * ps.scale), irint(x * ps.scale), irint(y * ps.scale), psl_paint_code[pmode+outline]);
+	ps.npath = 0;
+}
+
+/* fortran interface */
+void ps_itriangle_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+{
+	ps_itriangle (*x, *y, *diameter, rgb, *outline);
+}
+
 void ps_hexagon (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
-	int ix, iy, ds, pmode;
+	int pmode;
 
-	diameter *= 0.5;
-	ds = irint (diameter * ps.scale);
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d H%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d H%c\n", irint(0.5 * diameter * ps.scale), irint(x * ps.scale), irint(y * ps.scale), psl_paint_code[pmode+outline]);
 	ps.npath = 0;
 }
 
@@ -670,14 +698,10 @@ void ps_hexagon_ (double *x, double *y, double *diameter, int *rgb, int *outline
 
 void ps_pentagon (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
-	int ix, iy, ds, pmode;
+	int pmode;
 
-	diameter *= 0.5;
-	ds = irint (diameter * ps.scale);
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d N%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d N%c\n", irint(0.5 * diameter * ps.scale), irint(x * ps.scale), irint(y * ps.scale), psl_paint_code[pmode+outline]);
 	ps.npath = 0;
 }
 
@@ -689,14 +713,10 @@ void ps_pentagon_ (double *x, double *y, double *diameter, int *rgb, int *outlin
 
 void ps_octagon (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
-	int ix, iy, ds, pmode;
+	int pmode;
 
-	diameter *= 0.5;
-	ds = irint (diameter * ps.scale);
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d O%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %d O%c\n", irint(0.5 * diameter * ps.scale), irint(x * ps.scale), irint(y * ps.scale), psl_paint_code[pmode+outline]);
 	ps.npath = 0;
 }
 
@@ -704,6 +724,25 @@ void ps_octagon (double x, double y, double diameter, int rgb[], int outline)
 void ps_octagon_ (double *x, double *y, double *diameter, int *rgb, int *outline)
 {
 	 ps_octagon (*x, *y, *diameter, rgb, *outline);
+}
+
+void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[], int outline)
+{
+	int ix, iy, ir, pmode;
+
+	ix = irint (x * ps.scale);
+	iy = irint (y * ps.scale);
+	ir = irint (radius * ps.scale);
+	fprintf (ps.fp, "%d %d M ", ix, iy);
+	pmode = ps_place_color (rgb);
+	fprintf (ps.fp, "%d %d %d %g %g W%c\n", ix, iy, ir, az1, az2, psl_paint_code[pmode+outline]);
+	ps.npath = 0;
+}
+
+/* fortran interface */
+void ps_pie_ (double *x, double *y, double *radius, double *az1, double *az2, int *rgb, int *outline)
+{
+	 ps_pie (*x, *y, *radius, *az1, *az2, rgb, *outline);
 }
 
 void ps_ellipse (double x, double y, double angle, double major, double minor, int rgb[], int outline)
@@ -720,9 +759,8 @@ void ps_ellipse (double x, double y, double angle, double major, double minor, i
 	aspect = minor / major;
 	fprintf (ps.fp, " 1 %g scale\n", aspect);
 	ir = irint (major * ps.scale);
-
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "0 0 %d C%d U\n", ir, outline + psl_outline_offset[pmode]);
+	fprintf (ps.fp, "0 0 %d C%c U\n", ir, psl_paint_code[pmode+outline]);
 }
 
 /* fortran interface */
@@ -754,51 +792,50 @@ void ps_image_ (double *x, double *y, double *xsize, double *ysize, unsigned cha
 	ps_image (*x, *y, *xsize, *ysize, buffer, *nx, *ny, *nbits);
 }
 
-void ps_imagefill_cleanup (void) {
+void ps_pattern_cleanup (void) {
 	int image_no;
 
 	for (image_no = 0; image_no < PSL_N_PATTERNS * 2; image_no++) {
 		if (psl_pattern[image_no].status) {
 			fprintf (ps.fp, "currentdict /image%d undef\n", image_no);
-			fprintf (ps.fp, "currentdict /fillimage%d undef\n", image_no);
+			fprintf (ps.fp, "currentdict /pattern%d undef\n", image_no);
 		}
 	}
 }
 
 /* fortran interface */
-void ps_imagefill_ (double *x, double *y, int *n, int *image_no, char *imagefile, int *invert, int *image_dpi, int *outline, int *f_rgb, int *b_rgb, int nlen)
+int ps_pattern_ (int *image_no, char *imagefile, int *invert, int *image_dpi, int *outline, int *f_rgb, int *b_rgb, int nlen)
 {
-	 ps_imagefill (x, y, *n, *image_no, imagefile, *invert, *image_dpi, *outline, f_rgb, b_rgb);
+	 return (ps_pattern (*image_no, imagefile, *invert, *image_dpi, *outline, f_rgb, b_rgb));
 }
 
-void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[])
+int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[])
 {
-	/* x,y:		Array of enclosing path
-	 * image_dpi:	Resolution of image on the page
-	 * n:		No of points in path
+	/* Set up pattern fill, either by using image number or imagefile name
+	 * image_no:	Number of the standard GMT fill pattern (use negative when file name used instead)
 	 * imagefile:	Name of image file
 	 * invert:	If TRUE exchange set and unset pixels (1-bit only)
+	 * image_dpi:	Resolution of image on the page
 	 * outline:	TRUE will draw outline, -1 means clippath already in place
 	 * f_rgb:	Foreground color used for set bits (1) (1-bit only)
 	 * b_rgb:	Background color used for unset bits (0) (1-bit only)
+	 * Returns image number
 	 */
 
 	BOOLEAN found;
-	int i, j, ix, iy, nx, ny, dx, dy, n_times = 0, id, inv, refresh;
-	double xx, yy, xmin, xmax, ymin, ymax, image_size_x, image_size_y;
+	int i, nx, ny, id, inv, refresh;
 	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
 	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
 	char *name;
 
 	/* Determine if image was used before */
 
-	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && !psl_pattern[image_no].status) {	/* Unused predefined */
-		image_no = ps_imagefill_init (image_no, imagefile);
-	}
+	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && !psl_pattern[image_no].status)	/* Unused predefined */
+		image_no = ps_pattern_init (image_no, imagefile);
 	else if (image_no < 0) {	/* User image, check if already used */
 		for (i = 0, found = FALSE; !found && i < psl_n_userimages; i++) found = !strcmp (psl_user_image[i], imagefile);
 		if (!found)	/* Not found or no previous user images loaded */
-			image_no = ps_imagefill_init (image_no, imagefile);
+			image_no = ps_pattern_init (image_no, imagefile);
 		else
 			image_no = PSL_N_PATTERNS + i - 1;
 	}
@@ -810,7 +847,7 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 
 	if (ps.comments) fprintf (ps.fp, "\n%% Start of %s fill pattern\n", name);
 
-	/* When DPI or colors have changed, the /fillimage procedure needs to be rewritten */
+	/* When DPI or colors have changed, the /pattern procedure needs to be rewritten */
 
 	refresh = 0;
 	if (psl_pattern[image_no].dpi != image_dpi) refresh++;
@@ -827,79 +864,34 @@ void ps_imagefill (double *x, double *y, int n, int image_no, char *imagefile, i
 
 	if (refresh) {
 		if (image_dpi) {	/* Use given DPI */
-			dx = irint (nx * ps.scale / image_dpi);
-			dy = irint (ny * ps.scale / image_dpi);
+			nx = irint (nx * ps.scale / image_dpi);
+			ny = irint (ny * ps.scale / image_dpi);
 		}
-		else {	/* Use device resolution */
-			dx = nx;
-			dy = ny;
-		}
-		fprintf (ps.fp, "/fillimage%d { V T %d %d scale ", image_no, dx, dy);
+		fprintf (ps.fp, "/pattern%d {V %d %d scale", image_no, nx, ny);
+		fprintf (ps.fp, "\n<< /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc\n   {begin");
 
 		if (psl_pattern[image_no].depth == 1) {	/* 1-bit bitmap basis */
 			inv = (ps_bitimage_cmap (f_rgb, b_rgb) + invert) % 2;
-			fprintf (ps.fp, "<< /ImageType 1 /Decode [%d %d] ", inv, 1-inv);
+			fprintf (ps.fp, "\n<< /ImageType 1 /Decode [%d %d]", inv, 1-inv);
 		}
 		else
-			fprintf (ps.fp, "/Device%s setcolorspace\n<< /ImageType 1 /Decode [%s] ", colorspace[id], decode[id]);
-		fprintf (ps.fp, "/Width %d /Height %d /BitsPerComponent %d\n", nx, ny, MIN(psl_pattern[image_no].depth,8));
-		fprintf (ps.fp, "   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource image%d\n>> %s U} def\n", nx, -ny, ny, image_no, name);
+			fprintf (ps.fp, " /Device%s setcolorspace\n<< /ImageType 1 /Decode [%s]", colorspace[id], decode[id]);
+		fprintf (ps.fp, " /Width %d /Height %d /BitsPerComponent %d", psl_pattern[image_no].nx, psl_pattern[image_no].ny, MIN(psl_pattern[image_no].depth,8));
+		fprintf (ps.fp, "\n   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource image%d\n>> %s end}\n>> matrix makepattern U} def\n", psl_pattern[image_no].nx, -psl_pattern[image_no].ny, psl_pattern[image_no].ny, image_no, name);
 
 		psl_pattern[image_no].dpi = image_dpi;
 		for (i = 0; i < 3; i++) {
-			if (invert) {
-				psl_pattern[image_no].f_rgb[i] = b_rgb[i];
-				psl_pattern[image_no].b_rgb[i] = f_rgb[i];
-			}
-			else {
-				psl_pattern[image_no].f_rgb[i] = f_rgb[i];
-				psl_pattern[image_no].b_rgb[i] = b_rgb[i];
-			}
+			psl_pattern[image_no].f_rgb[i] = (invert) ? b_rgb[i] : f_rgb[i];
+			psl_pattern[image_no].b_rgb[i] = (invert) ? f_rgb[i] : b_rgb[i];
 		}
 	}
 
-	/* Print out clip-path */
-
-	if (outline >= 0) ps_clipon (x, y, n, psl_no_rgb, 3);
-
-	/* Find extreme bounds for area */
-
-	xmin = xmax = x[0];
-	ymin = ymax = y[0];
-	for (i = 1; i < n; i++) {
-		xmin = MIN (xmin, x[i]);
-		ymin = MIN (ymin, y[i]);
-		xmax = MAX (xmax, x[i]);
-		ymax = MAX (ymax, y[i]);
-	}
-
-	image_size_x = (image_dpi) ? (double) nx / (double) image_dpi : nx / ps.scale;	/* Use device resolution if dpi is not set */
-	image_size_y = (image_dpi) ? (double) ny / (double) image_dpi : ny / ps.scale;	/* Use device resolution if dpi is not set */
-
-	for (j = (int) floor (ymin / image_size_y); j <= (int) ceil (ymax / image_size_y); j++) {
-		yy = j * image_size_y;
-		for (i = (int) floor (xmin / image_size_x); i <= (int) ceil (xmax / image_size_x); i++) {
-			xx = i * image_size_x;
-			ix = irint (xx * ps.scale);
-			iy = irint (yy * ps.scale);
-			fprintf (ps.fp, "%d %d", ix, iy);
-			n_times++;
-			(n_times%5) ? fputc (' ', ps.fp) : fputc ('\n', ps.fp);
-			/* Prevent stack from getting too full by flushing every 200 times */
-			if (!(n_times%200)) {
-				fprintf (ps.fp, "200 {fillimage%d} repeat\n", image_no);
-				n_times = 0;
-			}
-		}
-	}
-	if (n_times%5) fputc ('\n', ps.fp);
-	fprintf (ps.fp, "%d {fillimage%d} repeat\n", n_times, image_no);
-	if (outline > 0) fprintf (ps.fp, "clippath S\n");
-	ps_clipoff ();
 	if (ps.comments) fprintf (ps.fp, "%% End of %s fill pattern\n", name);
+
+	return (image_no);
 }
 
-int ps_imagefill_init (int image_no, char *imagefile)
+int ps_pattern_init (int image_no, char *imagefile)
 {
 	int i;
 	char name[BUFSIZ], file[BUFSIZ];
@@ -934,7 +926,7 @@ int ps_imagefill_init (int image_no, char *imagefile)
 	psl_pattern[image_no].depth = h.depth;
 	psl_pattern[image_no].dpi = -999;
 
-	ps_comment ("Start of imagefill pattern definition");
+	ps_comment ("Start of pattern definition");
 
 	fprintf (ps.fp, "/image%d {<~\n", image_no);
 	ps_stream_dump (picture, h.width, h.height, h.depth, ps.compress, 1, 2);
@@ -942,7 +934,7 @@ int ps_imagefill_init (int image_no, char *imagefile)
 
 	ps_free ((void *)picture);
 
-	ps_comment ("End of imagefill pattern definition");
+	ps_comment ("End of pattern definition");
 
 	return (image_no);
 }
@@ -1123,25 +1115,6 @@ void ps_shorten_path_ (double *x, double *y, int *n, int *ix, int *iy)
 	ps_shorten_path (x, y, *n, ix, iy);
 }
 
-void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[], int outline)
-{
-	int ix, iy, ir, pmode;
-
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
-	ir = irint (radius * ps.scale);
-	fprintf (ps.fp, "%d %d M ", ix, iy);
-	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d %g %g P%d\n", ix, iy, ir, az1, az2, outline + psl_outline_offset[pmode]);
-	ps.npath = 0;
-}
-
-/* fortran interface */
-void ps_pie_ (double *x, double *y, double *radius, double *az1, double *az2, int *rgb, int *outline)
-{
-	 ps_pie (*x, *y, *radius, *az1, *az2, rgb, *outline);
-}
-
 void ps_plot (double x, double y, int pen)
 {
 	int ix, iy, idx, idy;
@@ -1178,7 +1151,7 @@ void ps_plot_ (double *x, double *y, int *pen)
 
 void ps_plotend (int lastpage)
 {
-	ps_imagefill_cleanup ();
+	ps_pattern_cleanup ();
 	ps_setdash (CNULL, 0);
 
 	if (lastpage) {
@@ -1545,8 +1518,8 @@ void ps_plotr_ (double *x, double *y, int *pen)
 
 void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 {
+	/* Draw and optionally fill polygons. */
 	int split, pmode;
-	char mode;
 
 	split = (rgb[0] < 0);	/* Can only split if we need outline only */
 	if (outline >= 0) ps_line (x, y, n, 1, FALSE, split);	/* No stroke or close path yet */
@@ -1554,19 +1527,16 @@ void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 
 	ps.max_path_length = MAX ((n + ps.clip_path_length), ps.max_path_length);
 
-	if (split) {	/* Outline only */
-		mode = (ps.split == 1) ? 'S' : 'p';
-		outline = 0;
-	}
+	if (split && ps.split == 1)	/* Outline only */
+		fprintf (ps.fp, "S\n");
 	else {
 		pmode = ps_place_color (rgb);
-		mode = psl_paint_code[pmode] - 'A' + 'a';	/* Convert A, C, K, or H to a, c, k, or h */
+		if (outline > 0) pmode += outline;
+		fprintf (ps.fp, "Q%c\n", psl_paint_code[pmode]);
 	}
-	if (outline > 0) mode += outline;			/* Convert a, c, k, or h to b, d, l, or i */
-	fprintf (ps.fp, "%c\n", mode);
 	if (outline < 0) {
 		if (outline == -1) {
-			fprintf (ps.fp, "\nN U\n");
+			fprintf (ps.fp, "N U\n");
 			if (ps.comments) fprintf (ps.fp, "%% Clipping is currently OFF\n");
 		}
 		ps.clip_path_length = 0;
@@ -1588,15 +1558,15 @@ void ps_patch (double *x, double *y, int np, int rgb[], int outline)
 	 * the increment)
 	 * from point i to i+1, and r,g,b in the range 0.0-1.0.  Here, n = np-1.
 	 *
-	 *	        dx_n dy_n ... n x0 y0 w		(If r < 0 then outline only)
-	 *	      r dx_n dy_n ... n x0 y0 q		(gray shade; use r for outline)
-	 *	  r g b dx_n dy_n ... n x0 y0 s		(rgb; use t for outline)
-	 *	c m y k dx_n dy_n ... n x0 y0 u 	(cmyk; use v for outline)
-	 *	  h s v dx_n dy_n ... n x0 y0 x 	(hsv; use y for outline)
+	 *	        dx_n dy_n ... n x0 y0 qQ	(If rgb[0] < 0 then outline only)
+	 *	      r dx_n dy_n ... n x0 y0 qA	(gray shade; use qa for outline)
+	 *	  r g b dx_n dy_n ... n x0 y0 qC	(rgb; use qc for outline)
+	 *	c m y k dx_n dy_n ... n x0 y0 qK 	(cmyk; use qk for outline)
+	 *	  h s v dx_n dy_n ... n x0 y0 qH 	(hsv; use qh for outline)
+	 *	pattern dx_n dy_n ... n x0 y0 qI 	(pattern fill; use qi for outline)
 	 */
 
 	int i, n, pmode, n1, ix[20], iy[20];
-	char mode, codes[5] = {'q', 's', 'u', 'w', 'x'};
 
 	if (np > 20) {	/* Must call ps_polygon instead */
 		ps_polygon ( x, y, np, rgb, outline);
@@ -1615,14 +1585,12 @@ void ps_patch (double *x, double *y, int np, int rgb[], int outline)
 
 	if (n < 3) return;	/* 2 points or less don't make a polygon */
 
-	pmode = ps_place_color (rgb);	/* Returns 0-4 */
-	mode = codes[pmode];			/* Will give q, s, u, w, or x */
-	if (outline && pmode != 3) mode++;	/* Will turn q -> r, s -> t, u -> v, and x -> y but leave w as is */
+	pmode = ps_place_color (rgb) + outline;	/* Returns 0-11 */
 
 	n--;
 	n1 = n;
 	for (i = n - 1; i != -1; i--, n--) fprintf (ps.fp, "%d %d ", ix[n] - ix[i], iy[n] - iy[i]);
-	fprintf (ps.fp, "%d %d %d %c\n", n1, ix[0], iy[0], mode);
+	fprintf (ps.fp, "%d %d %d q%c\n", n1, ix[0], iy[0], psl_paint_code[pmode]);
 }
 
 /* fortran interface */
@@ -1634,15 +1602,7 @@ void ps_patch_ (double *x, double *y, int *n, int *rgb, int *outline)
 
 void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline)
 {
-	int ix, iy, idx, idy, pmode;
-
-	ix = irint (x1 * ps.scale);
-	iy = irint (y1 * ps.scale);
-	idx = irint (x2 * ps.scale) - ix;
-	idy = irint (y2 * ps.scale) - iy;
-	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d %d R%d\n", idy, idx, ix, iy, outline + psl_outline_offset[pmode]);
-	ps.npath = 0;
+	ps_rotaterect ((x1+x2)/2, (y1+y2)/2, 0.0, x2-x1, y2-y1, rgb, outline);
 }
 
 /* fortran interface */
@@ -1653,16 +1613,9 @@ void ps_rect_ (double *x1, double *y1, double *x2, double *y2, int *rgb, int *ou
 
 void ps_rotaterect (double x, double y, double angle, double x_len, double y_len, int rgb[], int outline)
 {
-	int ix, iy, idx, idy, pmode;
-	ix = irint (x * ps.scale);
-	iy = irint (y * ps.scale);
-	fprintf (ps.fp, "V %d %d T %g R\n", ix, iy, angle);
-	ix = irint (-0.5 * x_len * ps.scale);
-	iy = irint (-0.5 * y_len * ps.scale);
-	idx = irint (x_len * ps.scale);
-	idy = irint (y_len * ps.scale);
+	int pmode;
 	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d %d R%d U\n", idy, idx, ix, iy, outline + psl_outline_offset[pmode]);
+	fprintf (ps.fp, "%d %d %g %d %d R%c\n", irint(y_len * ps.scale), irint(x_len * ps.scale), angle, irint(x * ps.scale), irint(y * ps.scale), psl_paint_code[pmode+outline]);
 	ps.npath = 0;
 }
 
@@ -1819,26 +1772,6 @@ void ps_setpaint (int rgb[])
 void ps_setpaint_ (int *rgb)
 {
 	 ps_setpaint (rgb);
-}
-
-void ps_square (double x, double y, double diameter, int rgb[], int outline)
-{	/* give diameter of circumscribing circle */
-	int ds, ix, iy, pmode;
-
-	diameter *= 0.707106781187;
-	ds = irint (diameter * ps.scale);
-	diameter *= 0.5;
-	ix = irint ((x - diameter) * ps.scale);
-	iy = irint ((y - diameter) * ps.scale);
-	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d S%d\n", ds, ix, iy, outline + psl_outline_offset[pmode]);
-	ps.npath = 0;
-}
-
-/* fortran interface */
-void ps_square_ (double *x, double *y, double *diameter, int *rgb, int *outline)
-{
-	ps_square (*x, *y, *diameter, rgb, *outline);
 }
 
 void ps_textbox (double x, double y, double pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[])
@@ -2525,42 +2458,6 @@ void ps_transrotate_ (double *x, double *y, double *angle)
 	ps_transrotate (*x, *y, *angle);
 }
 
-void ps_triangle (double x, double y, double diameter, int rgb[], int outline)
-{	/* Give diameter of circumscribing circle */
-	int ix, iy, is, pmode;
-
-	ix = irint ((x-0.433012701892*diameter) * ps.scale);
-	iy = irint ((y-0.25*diameter) * ps.scale);
-	is = irint (0.866025403784 * diameter * ps.scale);
-	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d T%d\n", is, ix, iy, outline + psl_outline_offset[pmode]);
-	ps.npath = 0;
-}
-
-/* fortran interface */
-void ps_triangle_ (double *x, double *y, double *diameter, int *rgb, int *outline)
-{
-	ps_triangle (*x, *y, *diameter, rgb, *outline);
-}
-
-void ps_itriangle (double x, double y, double diameter, int rgb[], int outline)	/* Inverted triangle */
-{	/* Give diameter of circumscribing circle */
-	int ix, iy, is, pmode;
-
-	ix = irint ((x-0.433012701892*diameter) * ps.scale);
-	iy = irint ((y+0.25*diameter) * ps.scale);
-	is = irint (0.866025403784 * diameter * ps.scale);
-	pmode = ps_place_color (rgb);
-	fprintf (ps.fp, "%d %d %d I%d\n", is, ix, iy, outline + psl_outline_offset[pmode]);
-	ps.npath = 0;
-}
-
-/* fortran interface */
-void ps_itriangle_ (double *x, double *y, double *diameter, int *rgb, int *outline)
-{
-	ps_itriangle (*x, *y, *diameter, rgb, *outline);
-}
-
 void ps_vector (double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], int outline)
 {
 	/* Will make sure that arrow has a finite width in PS coordinates */
@@ -2583,14 +2480,14 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 		outline -= 8;	/* Remove the flag */
 		l2 = length - 2 * hl + 2 * hl2;							/* Inside length between start of heads */
 		pmode = ps_place_color (rgb);
-		fprintf (ps.fp, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d a%d U\n",
-				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, outline+psl_outline_offset[pmode]);
+		fprintf (ps.fp, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d v%c U\n",
+				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, psl_paint_code[pmode+outline]);
 	}
 	else {			/* Single-headed vector */
 		l2 = length - hl + hl2;								/* Length from tail to start of slanted head */
 		pmode = ps_place_color (rgb);
-		fprintf (ps.fp, "%d %d %d %d %d %d %d %d %d %d %d A%d U\n",
-			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, outline+psl_outline_offset[pmode]);
+		fprintf (ps.fp, "%d %d %d %d %d %d %d %d %d %d %d V%c U\n",
+			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, psl_paint_code[pmode+outline]);
 	}
 }
 
@@ -4180,10 +4077,10 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 			polarity = 4;
 		else if (ps.color_mode & PSL_CMYK) {
 			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
-			fprintf (ps.fp, "[/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace\n", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3]);
+			fprintf (ps.fp, " [/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3]);
 		}
 		else
-			fprintf (ps.fp, "[/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace\n", f_rgb[0], f_rgb[1], f_rgb[2]);
+			fprintf (ps.fp, " [/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace", f_rgb[0], f_rgb[1], f_rgb[2]);
 	}
 	else if (f_rgb[0] < 0) {
 		/* Foreground is transparent */
@@ -4192,19 +4089,17 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 			polarity = 5;
 		else if (ps.color_mode & PSL_CMYK) {
 			ps_rgb_to_cmyk_int (b_rgb, b_cmyk);
-			fprintf (ps.fp, "[/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace\n", b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
+			fprintf (ps.fp, " [/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace", b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
 		}
 		else
-			fprintf (ps.fp, "[/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace\n", b_rgb[0], b_rgb[1], b_rgb[2]);
+			fprintf (ps.fp, " [/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace", b_rgb[0], b_rgb[1], b_rgb[2]);
 	}
 	else if (b_rgb[0] == 0 && b_rgb[1] == 0 && b_rgb[2] == 0 && f_rgb[0] == 255 && f_rgb[1] == 255 && f_rgb[1] == 255) {
 		/* 0 = White; 1 = Black */
-		fprintf (ps.fp, "\n");
 		polarity = 3;
 	}
 	else if (f_rgb[0] == 0 && f_rgb[1] == 0 && f_rgb[2] == 0 && b_rgb[0] == 255 && b_rgb[1] == 255 && b_rgb[1] == 255) {
 		/* 0 = Black; 1 = White */
-		fprintf (ps.fp, "\n");
 		polarity = 6;
 	}
 	else {
@@ -4213,10 +4108,10 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 		if (ps.color_mode & PSL_CMYK) {
 			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
 			ps_rgb_to_cmyk_int (b_rgb, b_cmyk);
-			fprintf (ps.fp, "[/Indexed /DeviceCMYK 1 <%02X%02X%02X%02X%02X%02X%02X%02X>] setcolorspace\n", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3], b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
+			fprintf (ps.fp, " [/Indexed /DeviceCMYK 1 <%02X%02X%02X%02X%02X%02X%02X%02X>] setcolorspace", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3], b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
 		}
 		else
-			fprintf (ps.fp, "[/Indexed /DeviceRGB 1 <%02X%02X%02X%02X%02X%02X>] setcolorspace\n", f_rgb[0], f_rgb[1], f_rgb[2], b_rgb[0], b_rgb[1], b_rgb[2]);
+			fprintf (ps.fp, " [/Indexed /DeviceRGB 1 <%02X%02X%02X%02X%02X%02X>] setcolorspace", f_rgb[0], f_rgb[1], f_rgb[2], b_rgb[0], b_rgb[1], b_rgb[2]);
 	}
 
 	return (polarity);
@@ -4241,19 +4136,19 @@ void ps_define_pen (char *param, int width, char *texture, int offset, int rgb[]
 {
 	int k;
 	/* Function to set line pen attributes */
-	fprintf (ps.fp, "/%s { ", param);
+	fprintf (ps.fp, "/%s {", param);
 	k = ps_place_color (rgb);
 	fprintf (ps.fp, "%c %d W ", psl_paint_code[k], width);
 	ps_place_setdash (texture, offset);
-	fprintf (ps.fp, " } def\n");
+	fprintf (ps.fp, "} def\n");
 }
 
 void ps_define_rgb (char *param, int rgb[])
 {
 	int k;
-	fprintf (ps.fp, "/%s { ", param);
+	fprintf (ps.fp, "/%s {", param);
 	k = ps_place_color (rgb);
-	fprintf (ps.fp, "%c } def\n", psl_paint_code[k]);
+	fprintf (ps.fp, "%c} def\n", psl_paint_code[k]);
 }
 
 void ps_set_length_array (char *param, double *array, int n)
@@ -4378,8 +4273,8 @@ static void ps_bulkcopy (const char *fname)
 		if (ps.comments) {	/* We copy every line, including the comments */
 			fprintf (ps.fp, "%s", buf);
 		}
-		else
-		{	/* Here we remove the comments */
+		else {
+			/* Here we remove the comments */
 			i = 0;
 			while (buf[i] && (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')) i++;	/* Find first non-blank character */
 			if (!buf[i]) continue;								/* Blank line, skip */
@@ -4468,29 +4363,38 @@ int ps_place_color (int rgb[])
 {
 	int pmode;
 
-	if (rgb[0] < 0)	return (3);	/* Outline only, no color set */
-
-	if (PSL_iscolor (rgb)) {
-		if (ps.color_mode == PSL_RGB) {
-			fprintf (ps.fp, ps.rgb_format, rgb[0] * PSL_INV_255, rgb[1] * PSL_INV_255, rgb[2] * PSL_INV_255);
-			pmode = 1;
-		}
-		else if (ps.color_mode & PSL_CMYK) {
-			double cmyk[4];
-			ps_rgb_to_cmyk (rgb, cmyk);
-			fprintf (ps.fp, ps.cmyk_format, cmyk[0], cmyk[1], cmyk[2], cmyk[3]);
-			pmode = 2;
-		}
-		else {
-			double hsv[3];
-			ps_rgb_to_hsv (rgb, hsv);
-			fprintf (ps.fp, ps.hsv_format, hsv[0], hsv[1], hsv[2]);
-			pmode = 2;
-		}
+	if (rgb[0] == -1) {
+		/* Outline only, no color set */
+		pmode = 0;
+	}
+	else if (rgb[0] == -3) {
+		/* Pattern fill */
+		fprintf (ps.fp, "pattern%d ", rgb[1]);
+		pmode = 10;
+	}
+	else if (!PSL_iscolor (rgb)) {
+		/* Grey scale */
+		fprintf (ps.fp, ps.bw_format, rgb[0] * PSL_INV_255);
+		pmode = 2;
+	}
+	else if (ps.color_mode == PSL_RGB) {
+		/* Full color, RGB mode */
+		fprintf (ps.fp, ps.rgb_format, rgb[0] * PSL_INV_255, rgb[1] * PSL_INV_255, rgb[2] * PSL_INV_255);
+		pmode = 4;
+	}
+	else if (ps.color_mode & PSL_CMYK) {
+		/* CMYK mode */
+		double cmyk[4];
+		ps_rgb_to_cmyk (rgb, cmyk);
+		fprintf (ps.fp, ps.cmyk_format, cmyk[0], cmyk[1], cmyk[2], cmyk[3]);
+		pmode = 6;
 	}
 	else {
-		fprintf (ps.fp, ps.bw_format, rgb[0] * PSL_INV_255);
-		pmode = 0;
+		/* HSV mode */
+		double hsv[3];
+		ps_rgb_to_hsv (rgb, hsv);
+		fprintf (ps.fp, ps.hsv_format, hsv[0], hsv[1], hsv[2]);
+		pmode = 8;
 	}
 	return (pmode);
 }
