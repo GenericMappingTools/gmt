@@ -1,5 +1,6 @@
 #!/bin/sh
-#       $Id: getrect.sh,v 1.1 2006-10-26 18:03:07 remko Exp $
+#       $Id: getrect.sh,v 1.2 2007-06-05 15:44:51 remko Exp $
 #
-# Expects -Joption and xmin xmax ymin ymax in km relative to map center
-(echo $2 $4; echo $3 $4; echo $3 $5; echo $2 $5) | mapproject $1 -R0/360/-90/90 -I -Fk -C
+# Expects xmin xmax ymin ymax in km relative to map center
+# -R and -J are set by preceding GMT commands
+(echo -$1 -$1; echo -$1 $1; echo $1 $1; echo $1 -$1) | mapproject -R -J -I -Fk -C

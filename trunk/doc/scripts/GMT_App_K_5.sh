@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_K_5.sh,v 1.6 2007-02-08 21:46:27 remko Exp $
+#	$Id: GMT_App_K_5.sh,v 1.7 2007-06-05 15:44:51 remko Exp $
 #
-pscoast `./getbox.sh -JE130.35/-0.2/1i -20 20 -20 20` -JE130.35/-0.2/3.5i -P -Df \
+pscoast `./getbox.sh -JE130.35/-0.2/3.5i 20` -J -P -Df \
 	-Glightgray -Wthinnest -N1/thinnest,- -B10mg2mWSne > GMT_App_K_5.ps
