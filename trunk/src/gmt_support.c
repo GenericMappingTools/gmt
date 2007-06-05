@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.301 2007-05-25 19:39:14 pwessel Exp $
+ *	$Id: gmt_support.c,v 1.302 2007-06-05 14:18:04 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8400,11 +8400,6 @@ int GMT_init_custom_symbol (char *name, struct GMT_CUSTOM_SYMBOL **S) {
 	fclose (fp);
 	*S = head;
 	return (GMT_NOERROR);
-}
-
-BOOLEAN GMT_fill_is_image (char *fill) {
-	/* Returns TRUE if the fill arguments involves an image pattern */
-	return (fill[0] == 'P' || fill[0] == 'p');
 }
 
 void GMT_NaN_pen_up (double x[], double y[], int pen[], int n)
