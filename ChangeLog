@@ -1,6 +1,26 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.13 2007-06-03 01:41:31 remko Exp $
+	$Id: ChangeLog,v 1.14 2007-06-05 16:14:47 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-06-05	remko
+	* tests/*/orig:		Created subdirectories for originals
+	* tests/*/*.sh:		Changed accordingly
+	* doc/GMT_Appendix_K.tex:	Coastline data base sizes updated
+	* doc/scripts/get*.sh:	Made simpler. Fewer changes in -R and -J
+	* doc/scripts/GMT_App_K*.sh:	---"---
+	* doc/scripts/*/orig:	Created subdirectories for originals
+	* makefile.guru:	Changed accordingly
+	* gmt_proj.c (GMT_[i]translind):	Reverted change from 2007-06-02
+	* gmt_map.c:		Set project_info.M_PR_DEG to 1 in case of -J[x|X] to make "step" work
+				in GMT_fix_up_path
+	* gmt_plot.c:		Use "native" PS symbols also when filling in GMT_star, GMT_triangle, etc.
+	* gmt_support.c:	Removed function GMT_fill_is_image
+	* pslib.c:		Renamed ps_imagefill to ps_pattern.
+				Support new PS symbol definitions.
+				New PS Level 2 pattern fill mechanism.
+	* PSL_prologue.ps:	---"---
+	* psscale.c:		Use GMT_fill instead of ps_imagefill
+	* psxyz.c:		Fixed bug in painting outline of text symbols
 
 2007-06-02	remko
 	* run_gmt_tests.sh:	Use run_gmt_tests.sh <directories> to test only specified directories.
