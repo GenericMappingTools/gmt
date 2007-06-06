@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 03
 #
-#		$Id: job03.sh,v 1.14 2007-06-05 15:50:36 remko Exp $
+#		$Id: job03.sh,v 1.15 2007-06-06 19:12:35 remko Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, gmtset, minmax, project, sample1d
@@ -121,7 +121,7 @@ cat << END > box.d
 4	3.25
 END
 psxy -R -Jx -O -K -Wthicker box.d >> example_03.ps
-psxy -Gblack -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03.ps
+psxy -Gblack -ST0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03.ps
 psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> example_03.ps
 echo "3.9 3.6 18 0.0 1 TR Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03.ps
 psxy -R -Jx -O -K -Wthicker box.d >> example_03.ps
@@ -131,7 +131,7 @@ psxy -R -Jx -O -K -Glightgray -L -Wthicker << END >> example_03.ps
 1.4	0.9
 0.25	0.9
 END
-echo "0.4 0.7" | psxy -R -Jx -O -K -St0.07i -Gblack >> example_03.ps
+echo "0.4 0.7" | psxy -R -Jx -O -K -ST0.07i -Gblack >> example_03.ps
 echo "0.5 0.7 14 0.0 1 ML Ship" | pstext -R -Jx -O -K >> example_03.ps
 echo "0.4 0.4" | psxy -R -Jx -O -K -Sc0.07i -Gblack >> example_03.ps
 echo "0.5 0.4 14 0.0 1 ML Satellite" | pstext -R -Jx -O >> example_03.ps
@@ -177,7 +177,7 @@ cat << END > box.d
 4	3.25
 END
 psxy -R -Jx -O -K -Wthicker box.d >> example_03f.ps
-psxy -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03f.ps
+psxy -ST0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03f.ps
 psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> example_03f.ps
 echo "3.9 3.6 18 0.0 1 TR Input Power" | pstext -R0/4/0/3.75 -Jx -O -K >> example_03f.ps
 psxy -R -Jx -O -K -Wthicker box.d >> example_03f.ps
@@ -187,7 +187,7 @@ psxy -R -Jx -O -K -Glightgray -L -Wthicker << END >> example_03f.ps
 1.4	0.9
 0.25	0.9
 END
-echo "0.4 0.7" | psxy -R -Jx -O -K -St0.07i -Gblack >> example_03f.ps
+echo "0.4 0.7" | psxy -R -Jx -O -K -ST0.07i -Gblack >> example_03f.ps
 echo "0.5 0.7 14 0.0 1 ML Ship" | pstext -R -Jx -O -K >> example_03f.ps
 echo "0.4 0.4" | psxy -R -Jx -O -K -Sc0.07i -Gblack >> example_03f.ps
 echo "0.5 0.4 14 0.0 1 ML Satellite" | pstext -R -Jx -O >> example_03f.ps

@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.16 2007-06-06 18:56:59 remko Exp $
+	$Id: ChangeLog,v 1.17 2007-06-06 19:12:35 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-06-06	remko
 	* ps2raster.c:		Added -P option to force Portrait mode
 				Allow generation of EPS with other formats (e.g. -Tef)
 	* doc/makefile:		Use new -P and -Tef options of ps2raster
+	* ex03/job03.*:		Use filled and normalized triangles
 
 2007-06-05	remko
 	* tests/*/orig:		Created subdirectories for originals

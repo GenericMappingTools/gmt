@@ -1,7 +1,7 @@
 REM
 REM		GMT EXAMPLE 03
 REM
-REM		$Id: job03.bat,v 1.11 2007-06-05 15:50:36 remko Exp $
+REM		$Id: job03.bat,v 1.12 2007-06-06 19:12:35 remko Exp $
 REM
 echo GMT EXAMPLE 03
 set master=y
@@ -48,7 +48,7 @@ echo 2.375 3.75 > box.d
 echo 2.375 3.25 >> box.d
 echo 4 3.25 >> box.d
 psxy -R -J -O -K -Wthicker box.d >> example_03.ps
-psxy -Gblack -St0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03.ps
+psxy -Gblack -ST0.07i -O -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03.ps
 psxy spectrum.ypower -R -JX -O -K -G0 -Sc0.07i -Ey/0.5p >> example_03.ps
 echo 3.9 3.6 18 0.0 1 11 Input Power | pstext -R0/4/0/3.75 -Jx1 -O -K >> example_03.ps
 psxy -R -J -O -K -Wthicker box.d >> example_03.ps
@@ -57,7 +57,7 @@ echo 1.4 0.25 >> box.d
 echo 1.4 0.9 >> box.d
 echo 0.25 0.9 >> box.d
 psxy -R -J -O -K -G240 -L -Wthicker box.d >> example_03.ps
-echo 0.4 0.7 | psxy -R -J -O -K -St0.07i -G0 >> example_03.ps
+echo 0.4 0.7 | psxy -R -J -O -K -ST0.07i -G0 >> example_03.ps
 echo 0.5 0.7 14 0.0 1 5 Ship | pstext -R -J -O -K >> example_03.ps
 echo 0.4 0.4 | psxy -R -J -O -K -Sc0.07i -G0 >> example_03.ps
 echo 0.5 0.4 14 0.0 1 5 Satellite | pstext -R -J -O >> example_03.ps
