@@ -4,7 +4,7 @@
 ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats using GhostScript
 .SH SYNOPSIS
 \fBps2raster\fP \fIpsfile(s)\fP [ OPT(A) ] [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] 
-[ OPT(L)\fIlistfile\fP]  [ OPT(N) ] [ OPT(Te)|\fBf\fP|\fBj\fP|\fBg\fP|\fBm\fP|\fBt\fP ]
+[ OPT(L)\fIlistfile\fP]  [ OPT(N) ] [ OPT(P) ] [ OPT(Te)|\fBf\fP|\fBj\fP|\fBg\fP|\fBm\fP|\fBt\fP ]
 .SH DESCRIPTION
 \fBps2raster\fP reads one or more \fIPostScript\fP files (or a file with a list of \fIPostScript\fP filenames) and modifies the
 page size in order that the resulting image will have a size determined by the BoundingBox.
@@ -33,9 +33,17 @@ The \fIlistfile\fP is an ASCII file with the names of the \fIPostScript\fP files
 .B \-N
 Do \fInot\fP remove auxiliary files (by default it does). Auxiliary files are built using as base the input
 \fIPostScript\fP files and consist of:
-psfile_tmpxx.eps -> \fIPostScript\fP with a modified BoundingBox
+.br
+psfile_tmpxx.eps -> \fIPostScript\fP with a modified BoundingBox.
+.br
 psTOraster.bat -> script with the ghostscript command that does the job.
+.br
 Use this option to save the script and run it later with different settings.
+.TP
+.B \-P
+Force Portrait mode. All Landscape mode plots will be rotated back so that they show unrotated in
+Portrait mode. This is practical when converting to image formats or preparing EPS or PDF plots for
+inclusion in documents.
 .TP
 .B \-T
 Sets the output format, where \fBe\fP means EPS, \fBf\fP means PDF, \fBj\fP means JPEG, \fBg\fP means PNG,
@@ -55,18 +63,21 @@ adjust the BoundingBox when the \fB-A\fP option is used.
 .sp
 Although PDF is also a vector format, the \fB-E\fP option has an effect on the resolution of pattern fills
 and fonts that are stored as bitmaps in the document. \fBps2raster\fP therefore uses a larger default
-resolution when creating PDF files. In order to obtain high-quality PDF files, the \fI/prepress\fP options in effect,
-allowing only loss-less compression of raster images embedded in the PostScript file.
+resolution when creating PDF files. In order to obtain high-quality PDF files, the \fI/prepress\fP options
+are in effect, allowing only loss-less compression of raster images embedded in the PostScript file.
 .br
 .sp
-See Appendix C of the \fBTechnical Reference and Cookbook\fP for more information on how
+See Appendix C of the \fBGMT Technical Reference and Cookbook\fP for more information on how
 \fBps2raster\fP is used to produce graphics that can be inserted into other documents (articles, presentations,
 posters, etc.).
 .SH EXAMPLE
-To convert a the file psfile.ps to PNG using a tight BoundingBox and assuming that ghostscript can be found in
-your system's path:\"'
+To convert a the file psfile.ps to PNG using a tight BoundingBox and rotating it back to normal
+orientation in case it was in Landscape mode:
 .br
 .sp
-\fBps2raster\fP psfile.ps \fB\-A \-Tg\fP
+\fBps2raster\fP psfile.ps \fB\-A \-P \-Tg\fP
+.br
+.sp
+(This command assumes that ghostscript can be found in your system's path.)\"'
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION)

@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.14 2007-06-05 16:14:47 remko Exp $
+	$Id: ChangeLog,v 1.15 2007-06-06 15:35:28 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-06-06	remko
+	* ps2raster.c:		Added -P option to force Portrait mode
 
 2007-06-05	remko
 	* tests/*/orig:		Created subdirectories for originals
