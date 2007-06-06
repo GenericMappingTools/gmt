@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.15 2007-06-06 15:35:28 remko Exp $
+	$Id: ChangeLog,v 1.16 2007-06-06 18:56:59 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-06-06	remko
 	* ps2raster.c:		Added -P option to force Portrait mode
+				Allow generation of EPS with other formats (e.g. -Tef)
+	* doc/makefile:		Use new -P and -Tef options of ps2raster
 
 2007-06-05	remko
 	* tests/*/orig:		Created subdirectories for originals
@@ -13,10 +15,10 @@
 	* doc/scripts/GMT_App_K*.sh:	---"---
 	* doc/scripts/*/orig:	Created subdirectories for originals
 	* makefile.guru:	Changed accordingly
-	* gmt_proj.c (GMT_[i]translind):	Reverted change from 2007-06-02
+	* gmt_proj.c (GMT_[i]translind):	Reverted change from 2007-06-02 (see next entry)
 	* gmt_map.c:		Set project_info.M_PR_DEG to 1 in case of -J[x|X] to make "step" work
 				in GMT_fix_up_path
-	* gmt_plot.c:		Use "native" PS symbols also when filling in GMT_star, GMT_triangle, etc.
+	* gmt_plot.c (GMT_<symbol>):	Use "native" PS symbols also when filling with pattern.
 	* gmt_support.c:	Removed function GMT_fill_is_image
 	* pslib.c:		Renamed ps_imagefill to ps_pattern.
 				Support new PS symbol definitions.
