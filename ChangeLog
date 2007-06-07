@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.17 2007-06-06 19:12:35 remko Exp $
+	$Id: ChangeLog,v 1.18 2007-06-07 03:37:55 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-06-06	pwessel
+	* filter1d.c:		For -Ff<file>, set filter width to DBL_MAX until filter is read
 
 2007-06-06	remko
 	* ps2raster.c:		Added -P option to force Portrait mode

@@ -1,9 +1,10 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.14 2007-01-30 20:37:09 pwessel Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.15 2007-06-07 03:37:55 guru Exp $
 #
-#	Author:	P. Wessel
-#	Date:	2005-OCT-14
+#	Author:		P. Wessel
+#	Date:		2005-OCT-14
+#	Revised:	2007-JUN-06: Now store _REVISED attributes set by E77
 #
 # This script will automatically create three functions from info in mgd77.h:
 #
@@ -23,9 +24,14 @@ cat << EOF > mgd77_functions.h
  *    See README file for copying and redistribution conditions.
  */
 
+void MGD77_Get_Param (struct MGD77_CONTROL *F, char *name, char *value);
+void MGD77_Put_Param (struct MGD77_CONTROL *F, char *name, int length, char *value);
+
 void MGD77_Read_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P)
 {
-	/* Read the netCDF-encoded MGD77 header parameters as attributes of the data set */
+	/* Read the netCDF-encoded MGD77 header parameters as attributes of the data set.
+	 * If orig is TRUE we will recover the original MGD77 parameters; otherwise we first
+	 * look for revised parameters and fall back on the original if no revision is found. */
 	
 EOF
 # 1. strip out the structure members only (except Record_Type), then replace brackets and ; with space to simplify processing in the loop below */
@@ -48,15 +54,17 @@ while read type name L M; do		# We need a separate read/write statement for each
 		cast="(char *)"
 	fi
 	if [ $key -eq 10 ] || [ $key -eq 33 ] || [ $key -eq 54 ] || [ $key -eq 56 ]; then	# Special handling since these are single characters that may be \0 
-		echo "	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", ${cast}${pre}P->$name));" >> mgd77_functions.h
-		echo "	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", $length, ${cast}${pre}P->$name));" >> $$.2
+		echo "	MGD77_Get_Param (F, "\"$name\"", ${cast}${pre}P->$name);" >> mgd77_functions.h
+		echo "	MGD77_Put_Param (F, "\"$name\"", $length, ${cast}${pre}P->$name);" >> $$.2
+		echo "	(void) nc_del_att (F->nc_id, NC_GLOBAL, "\"${name}_REVISED\"");" >> $$.5
 		# The next line gives "      Parameter_Name :Value".  This format is deliberate in that we may want to
 		# use awk -F: to separate out the parameter ($1) and the value ($2). Remember Value could be a sentence with spaces!
 		echo "	word[0] = P->$name;" >> $$.3
 		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}%c\", F->NGDC_id, \"$name\", word, EOL);" >> $$.3
 	elif [ $n_item -ne 7 ]; then
-		echo "	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", ${cast}${pre}P->$name));" >> mgd77_functions.h
-		echo "	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "\"$name\"", $length, ${cast}${pre}P->$name));" >> $$.2
+		echo "	MGD77_Get_Param (F, "\"$name\"", ${cast}${pre}P->$name);" >> mgd77_functions.h
+		echo "	MGD77_Put_Param (F, "\"$name\"", $length, ${cast}${pre}P->$name);" >> $$.2
+		echo "	(void) nc_del_att (F->nc_id, NC_GLOBAL, "\"${name}_REVISED\"");" >> $$.5
 		# The next line gives "      Parameter_Name :Value".  This format is deliberate in that we may want to
 		# use awk -F: to separate out the parameter ($1) and the value ($2). Remember Value could be a sentence with spaces!
 		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}%c\", F->NGDC_id, \"$name\", P->$name, EOL);" >> $$.3
@@ -68,8 +76,9 @@ while read type name L M; do		# We need a separate read/write statement for each
 			k=$j
 			j=`expr $j + 1`
 			length="strlen (${pre}P->${name}[$k])"
-			echo "	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "\"${name}_$j\"", ${cast}${pre}P->$name[$k]));" >> mgd77_functions.h
-			echo "	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "\"${name}_$j\"", $length, ${cast}${pre}P->$name[$k]));" >> $$.2
+			echo "	MGD77_Get_Param (F, "\"${name}_$j\"", ${cast}${pre}P->$name[$k]);" >> mgd77_functions.h
+			echo "	MGD77_Put_Param (F, "\"${name}_$j\"", $length, ${cast}${pre}P->$name[$k]);" >> $$.2
+			echo "	(void) nc_del_att (F->nc_id, NC_GLOBAL, "\"${name}_${j}_REVISED\"");" >> $$.5
 			echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}%c\", F->NGDC_id, \"$name\", P->$name[$k], EOL);" >> $$.3
 		done
 	fi
@@ -98,6 +107,48 @@ void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARA
 EOF
 cat $$.3 >> mgd77_functions.h
 cat << EOF >> mgd77_functions.h
+}
+
+void MGD77_Reset_Header_Params (struct MGD77_CONTROL *F)
+{
+	/* Remove the revised MGD77 header attributes so we return to the original values.
+	 * Here we simply ignore return values since many of these are presumably unknown attributes */
+	
+	MGD77_nc_status (nc_redef (F->nc_id));
+
+EOF
+cat $$.5 >> mgd77_functions.h
+cat << EOF >> mgd77_functions.h
+
+	MGD77_nc_status (nc_enddef (F->nc_id));
+}
+
+void MGD77_Get_Param (struct MGD77_CONTROL *F, char *name, char *value)
+{	/* Get a single parameter: original if requested, otherwise check for revised value first */
+
+	if (!F->original) {	/* Must look for revised attribute first */
+		char Att[64];
+		sprintf (Att, "%s_REVISED", name);	/* Revised attributes have _REVISED at the end of their names */
+		if (nc_get_att_text (F->nc_id, NC_GLOBAL, Att, value) == NC_NOERR)	return;	/* Found a revised attribute */
+	}
+	
+	/* We get here if we want the original or could not find a revised value */
+	
+	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, name, value));
+}
+
+void MGD77_Put_Param (struct MGD77_CONTROL *F, char *name, int length, char *value)
+{	/* Place a single revised parameter: use original attribute if requested;
+	 * otherwise use a revised attribute name.
+	 * FUnction assumes we are in define mode. */
+
+	if (F->original)	/* Use original attribute name */
+		MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, name, length, value));
+	else {	/* Create revised attribute first */
+		char Att[64];
+		sprintf (Att, "%s_REVISED", name);	/* Revised attributes have _REVISED at the end of their names */
+		MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, Att, length, value));
+	}
 }
 
 char *MGD77_Header_Item[$n_names] = {

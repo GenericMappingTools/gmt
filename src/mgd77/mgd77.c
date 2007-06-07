@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.149 2007-06-05 22:37:32 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.150 2007-06-07 03:37:55 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -666,10 +666,14 @@ int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 #define AND_FALSE
 #endif
 
+#define ERR   2
+#define WARN  1
+#define TOTAL 0
+
 void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE *ufp)
 {
 	int i, k, pos, ix, iy, w, e, s, n, n_block, kind, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
-	char copy[151], p[GMT_TEXT_LEN], text[GMT_TEXT_LEN], we[3] = {' ', 'W', 'E'};
+	char copy[151], p[GMT_TEXT_LEN], text[GMT_TEXT_LEN];
 	char *pscode[5] = {"Bathy", "Magnetics", "Gravity", "3.5 kHz", "Seismics"};
 	time_t now;
 	struct tm *T;
@@ -685,7 +689,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		fp_err = (F->verbose_dest == 1) ? GMT_stdout : stderr;
 	}
 	
-	H->errors[0] = H->errors[1] = H->errors[2] = 0;
+	H->errors[TOTAL] = H->errors[WARN] = H->errors[ERR] = 0;
 	
 	P = H->mgd77;
 	
@@ -701,20 +705,20 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	/* Verify Sequence No 01: */
 	
 	if ((!(P->Record_Type == '1' || P->Record_Type == '4')) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-01-E: Invalid Record Type: (%c) [4]\n", F->NGDC_id, P->Record_Type);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "Y-E-%s-H01-01: Invalid Record Type: (%c) [4]\n", F->NGDC_id, P->Record_Type);
+		H->errors[ERR]++;
 	}
 	if (!P->Survey_Identifier[0] OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-02-E: Survey Identifier missing\n", F->NGDC_id);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H01-02: Survey Identifier missing: () [        ]\n", F->NGDC_id);
+		H->errors[ERR]++;
 	}
 	if (strcmp (P->Format_Acronym, "MGD77") OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-03-E: Invalid Format Acronym: (%s) [MGD77]\n", F->NGDC_id, P->Format_Acronym);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "Y-E-%s-H01-03: Invalid Format Acronym: (%s) [MGD77]\n", F->NGDC_id, P->Format_Acronym);
+		H->errors[ERR]++;
 	}
 	if (strcmp (P->Data_Center_File_Number, F->NGDC_id) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-04-E: Invalid Data Center File Number: (%s) [%s]\n", F->NGDC_id, P->Data_Center_File_Number, F->NGDC_id);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H01-04: Invalid Data Center File Number: (%s) [%s]\n", F->NGDC_id, P->Data_Center_File_Number, F->NGDC_id);
+		H->errors[ERR]++;
 	}
 	for (i = 0; i < 5; i++) {
 		if (P->Paramaters_Surveyed_Code[i] == '\0' AND_FALSE) continue;	/* A string might get terminated if there are trailing blanks */
@@ -723,28 +727,27 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		if (P->Paramaters_Surveyed_Code[i] == '1'  AND_FALSE) continue;
 		if (P->Paramaters_Surveyed_Code[i] == '3'  AND_FALSE) continue;
 		if (P->Paramaters_Surveyed_Code[i] == '5'  AND_FALSE) continue;
-		kind = (P->Paramaters_Surveyed_Code[i] == '9') ? 1 : 2;
-		if (F->verbose_level & kind) fprintf (fp_err, "N-H-%s-01-%2.2d-%c: Invalid Parameter Survey Code (%s): (%c) [ ]\n", F->NGDC_id, 5 + i, we[kind], pscode[i], P->Paramaters_Surveyed_Code[i]);
+		if (F->verbose_level & kind) fprintf (fp_err, "?-E-%s-H01-%2.2d: Invalid Parameter Survey Code (%s): (%c) [ ]\n", F->NGDC_id, 5 + i, pscode[i], P->Paramaters_Surveyed_Code[i]);
 		H->errors[kind]++;
 	}
 	if ((P->File_Creation_Year[0] && ((i = atoi (P->File_Creation_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year))) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-10-E: Invalid File Creation Year: (%s)\n", F->NGDC_id, P->File_Creation_Year);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H01-10: Invalid File Creation Year: (%s) [    ]\n", F->NGDC_id, P->File_Creation_Year);
+		H->errors[ERR]++;
 	}
 	if ((P->File_Creation_Month[0] && ((i = atoi (P->File_Creation_Month)) < 1 || i > 12)) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-11-E: Invalid File Creation Month: (%s)\n", F->NGDC_id, P->File_Creation_Month);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H01-11: Invalid File Creation Month: (%s) [  ]\n", F->NGDC_id, P->File_Creation_Month);
+		H->errors[ERR]++;
 	}
 	if ((P->File_Creation_Day[0] && ((i = atoi (P->File_Creation_Day)) < 1 || i > 31)) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-01-12-E: Invalid File Creation Day: (%s)\n", F->NGDC_id, P->File_Creation_Day);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H01-12: Invalid File Creation Day: (%s) [  ]\n", F->NGDC_id, P->File_Creation_Day);
+		H->errors[ERR]++;
 	}
 
 	/* Verify Sequence No 02: */
 
 	if ((P->Platform_Type_Code < '0' || P->Platform_Type_Code > '9') OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-02-03-E: Invalid Platform Type Code: (%c)\n", F->NGDC_id, P->Platform_Type_Code);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H02-03: Invalid Platform Type Code: (%c) [0]\n", F->NGDC_id, P->Platform_Type_Code);
+		H->errors[ERR]++;
 	}
 
 	/* Verify Sequence No 04: */
@@ -754,176 +757,175 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 			sprintf (text, "%4.4d", H->meta.Departure[0]);
 		else
 			strcpy (text, "    ");
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-01-E: Invalid Survey Departure Year: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Year, text);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-01: Invalid Survey Departure Year: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Year, text);
+		H->errors[ERR]++;
 	}
 	if ((P->Survey_Departure_Month[0] && ((i = atoi (P->Survey_Departure_Month)) < 1 || i > 12 || (H->meta.Departure[1] && i != H->meta.Departure[1]))) OR_TRUE) {
 		if (H->meta.Departure[1])
 			sprintf (text, "%2.2d", H->meta.Departure[1]);
 		else
 			strcpy (text, "  ");
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-02-E: Invalid Survey Departure Month: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Month, text);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-02: Invalid Survey Departure Month: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Month, text);
+		H->errors[ERR]++;
 	}
 	if ((P->Survey_Departure_Day[0] && ((i = atoi (P->Survey_Departure_Day)) < 1 || i > 31 || (H->meta.Departure[2] && i != H->meta.Departure[2]))) OR_TRUE) {
 		if (H->meta.Departure[2])
 			sprintf (text, "%2.2d", H->meta.Departure[2]);
 		else
 			strcpy (text, "  ");
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-03-E: Invalid Survey Departure Day: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Day, text);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-03: Invalid Survey Departure Day: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Day, text);
+		H->errors[ERR]++;
 	}
 	if ((P->Survey_Arrival_Year[0] && ((i = atoi (P->Survey_Arrival_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year) || (H->meta.Arrival[0] && i != H->meta.Arrival[0]))) OR_TRUE) {
 		if (H->meta.Arrival[0])
 			sprintf (text, "%4.4d", H->meta.Arrival[0]);
 		else
 			strcpy (text, "    ");
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-04-E: Invalid Survey Arrival Year: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Year, text);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-04: Invalid Survey Arrival Year: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Year, text);
+		H->errors[ERR]++;
 	}
 	if ((P->Survey_Arrival_Month[0] && ((i = atoi (P->Survey_Arrival_Month)) < 1 || i > 12 || (H->meta.Arrival[1] && i != H->meta.Arrival[1]))) OR_TRUE) {
 		if (H->meta.Arrival[1])
 			sprintf (text, "%2.2d", H->meta.Arrival[1]);
 		else
 			strcpy (text, "  ");
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-05-E: Invalid Survey Arrival Month: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Month, text);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-05: Invalid Survey Arrival Month: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Month, text);
+		H->errors[ERR]++;
 	}
 	if ((P->Survey_Arrival_Day[0] && ((i = atoi (P->Survey_Arrival_Day)) < 1 || i > 31 || (H->meta.Arrival[2] && i != H->meta.Arrival[2]))) OR_TRUE) {
 		if (H->meta.Arrival[2])
 			sprintf (text, "%2.2d", H->meta.Arrival[2]);
 		else
 			strcpy (text, "  ");
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-04-06-E: Invalid Survey Arrival Day: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Day, text);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-06: Invalid Survey Arrival Day: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Day, text);
+		H->errors[ERR]++;
 	}
 	/* Verify Sequence No 10: */
 
 	if (P->Format_Type != 'A' OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-10-01-E: Invalid Format Type: (%c) [A]\n", F->NGDC_id, P->Format_Type);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "Y-E-%s-H10-01: Invalid Format Type: (%c) [A]\n", F->NGDC_id, P->Format_Type);
+		H->errors[ERR]++;
 	}
 	strcpy (copy, P->Format_Description);
 	GMT_str_toupper (copy);
 	if (strcmp (copy, "(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)") OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-10-02-E: Invalid Format Description: (%s) [(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)]\n", F->NGDC_id, P->Format_Description);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "Y-E-%s-H10-02: Invalid Format Description: (%s) [(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)]\n", F->NGDC_id, P->Format_Description);
+		H->errors[ERR]++;
 	}
 
 	/* Process Sequence No 11: */
 
 	w = e = s = n = 9999;
 	if ((P->Topmost_Latitude[0] && (((n = atoi (P->Topmost_Latitude)) < -90 || n > +90) || n != H->meta.n)) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-11-02-E: Invalid Topmost Latitude : (%s) [%+2.2d]\n", F->NGDC_id, P->Topmost_Latitude, H->meta.n);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H11-02: Invalid Topmost Latitude : (%s) [%+2.2d]\n", F->NGDC_id, P->Topmost_Latitude, H->meta.n);
+		H->errors[ERR]++;
 	}
 	if ((P->Bottommost_Latitude[0] && (((s = atoi (P->Bottommost_Latitude)) < -90 || s > +90) || s != H->meta.s)) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-11-03-E: Invalid Bottommost Latitude: (%s) [%+2.2d]\n", F->NGDC_id, P->Bottommost_Latitude, H->meta.s);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H11-03: Invalid Bottommost Latitude: (%s) [%+2.2d]\n", F->NGDC_id, P->Bottommost_Latitude, H->meta.s);
+		H->errors[ERR]++;
 	}
 	if ((!(s == 9999 || n == 9999) && s > n) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-11-04-E: Bottommost Latitude %d exceeds Topmost Latitude %d\n", F->NGDC_id, s, n);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H11-04: Bottommost Latitude %d exceeds Topmost Latitude %d\n", F->NGDC_id, s, n);
+		H->errors[ERR]++;
 	}
 	if ((P->Leftmost_Longitude[0] && (((w = atoi (P->Leftmost_Longitude)) < -180 || w > +180) || w != H->meta.w)) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-11-05-E: Invalid Leftmost Longitude: (%s) [%+3.3d]\n", F->NGDC_id, P->Leftmost_Longitude, H->meta.w);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H11-05: Invalid Leftmost Longitude: (%s) [%+3.3d]\n", F->NGDC_id, P->Leftmost_Longitude, H->meta.w);
+		H->errors[ERR]++;
 	}
 	if ((P->Rightmost_Longitude[0] && (((e = atoi (P->Rightmost_Longitude)) < -180 || e > +180) || e != H->meta.e)) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-11-06-E: Invalid Rightmost Longitude: (%s) [%+3.3d]\n", F->NGDC_id, P->Rightmost_Longitude, H->meta.e);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H11-06: Invalid Rightmost Longitude: (%s) [%+3.3d]\n", F->NGDC_id, P->Rightmost_Longitude, H->meta.e);
+		H->errors[ERR]++;
 	}
 
 	/* Process Sequence No 12: */
 
 	if ((P->Bathymetry_Digitizing_Rate[0] && ((i = atoi (P->Bathymetry_Digitizing_Rate)) <= 0 || i >= 300)) OR_TRUE) {	/* 30 min */
-		kind = (wrong_filler (P->Bathymetry_Digitizing_Rate, 3)) ? 1 : 2;
+		kind = (wrong_filler (P->Bathymetry_Digitizing_Rate, 3)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
-			if (kind == 1)
-				fprintf (fp_err, "N-H-%s-12-01-%c: Invalid Bathymetry Digitizing Rate: (%s) [   ]\n", F->NGDC_id, we[kind], P->Bathymetry_Digitizing_Rate);
+			if (kind == ERR)
+				fprintf (fp_err, "Y-E-%s-H12-01: Invalid Bathymetry Digitizing Rate: (%s) [   ]\n", F->NGDC_id, P->Bathymetry_Digitizing_Rate);
 			else
-				fprintf (fp_err, "N-H-%s-12-01-%c: Suspect Bathymetry Digitizing Rate: (%s)\n", F->NGDC_id, we[kind], P->Bathymetry_Digitizing_Rate);
+				fprintf (fp_err, "?-E-%s-H12-01: Invalid Bathymetry Digitizing Rate: (%s) [%3s]\n", F->NGDC_id, P->Bathymetry_Digitizing_Rate, P->Bathymetry_Digitizing_Rate);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Bathymetry_Assumed_Sound_Velocity[0] && !((i = atoi (P->Bathymetry_Assumed_Sound_Velocity)) < 140000 || i > 15500)) OR_TRUE) {
-		kind = (wrong_filler (P->Bathymetry_Assumed_Sound_Velocity, 5)) ? 1 : 2;
+		kind = (wrong_filler (P->Bathymetry_Assumed_Sound_Velocity, 5)) ? ERR : WARN;
 		if (i > 1400 && i < 1550) {
-			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-12-03-E: Suspect Bathymetry Assumed Sound Velocity: (%s) [%d0]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity, i);
+			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H12-03: Invalid Bathymetry Assumed Sound Velocity: (%s) [%d0]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity, i);
 		}
 		else if (i == 8000 OR_TRUE) {
-			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-12-03-E: Suspect Bathymetry Assumed Sound Velocity: (%s) [14630]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
+			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H12-03: Invalid Bathymetry Assumed Sound Velocity: (%s) [14630]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
 		}
-		else if (kind == 1 OR_TRUE) {
-			if (F->verbose_level | 1) fprintf (fp_err, "N-H-%s-12-03-%c: Invalid Bathymetry Assumed Sound Velocity: (%s) [     ]\n", F->NGDC_id, we[kind], P->Bathymetry_Assumed_Sound_Velocity);
+		else if (kind == ERR OR_TRUE) {
+			if (F->verbose_level | 1) fprintf (fp_err, "Y-E-%s-H12-03: Invalid Bathymetry Assumed Sound Velocity: (%s) [     ]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity);
 		}
 		else if (F->verbose_level & kind)
-			fprintf (fp_err, "N-H-%s-12-03-%c: Suspect Bathymetry Assumed Sound Velocity: (%s)\n", F->NGDC_id, we[kind], P->Bathymetry_Assumed_Sound_Velocity);
+			fprintf (fp_err, "?-E-%s-H12-03: Invalid Bathymetry Assumed Sound Velocity: (%s) [%5s]\n", F->NGDC_id, P->Bathymetry_Assumed_Sound_Velocity, P->Bathymetry_Assumed_Sound_Velocity);
 		H->errors[kind]++;
 	}
 	if (P->Bathymetry_Datum_Code[0] OR_TRUE) {
 		i = atoi (P->Bathymetry_Datum_Code);
 		if (!((i >= 0 && i <= 11) || i == 88)) {
-			kind = (i == 99) ? 1 : 2;
 			if (i == 99) {
-				if (F->verbose_level & kind) fprintf (fp_err, "N-H-%s-12-04-%c: Invalid Bathymetry Datum Code: (%s) [  ]\n", F->NGDC_id, we[kind], P->Bathymetry_Datum_Code);
+				if (F->verbose_level & kind) fprintf (fp_err, "Y-E-%s-H12-04: Invalid Bathymetry Datum Code: (%s) [  ]\n", F->NGDC_id, P->Bathymetry_Datum_Code);
 			}
 			else {
-				if (F->verbose_level & kind) fprintf (fp_err, "N-H-%s-12-04-%c: Invalid Bathymetry Datum Code: (%s)\n", F->NGDC_id, we[kind], P->Bathymetry_Datum_Code);
+				if (F->verbose_level & kind) fprintf (fp_err, "?-E-%s-H12-04: Invalid Bathymetry Datum Code: (%s) [%2s]\n", F->NGDC_id, P->Bathymetry_Datum_Code, P->Bathymetry_Datum_Code);
 			}
-			H->errors[kind]++;
+			H->errors[ERR]++;
 		}
 	}
 
 	/* Process Sequence No 13: */
 
 	if ((P->Magnetics_Digitizing_Rate[0] && ((i = atoi (P->Magnetics_Digitizing_Rate)) < 0 || i >= 300)) OR_TRUE) {	/* 30 m */
-		kind = (wrong_filler (P->Magnetics_Digitizing_Rate, 3)) ? 1 : 2;
+		kind = (wrong_filler (P->Magnetics_Digitizing_Rate, 3)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
-			if (kind == 1)
-				fprintf (fp_err, "N-H-%s-13-01-%c: Invalid Magnetics Digitizing Rate: (%s) [   ]\n", F->NGDC_id, we[kind], P->Magnetics_Digitizing_Rate);
+			if (kind == ERR)
+				fprintf (fp_err, "Y-E-%s-H13-01: Invalid Magnetics Digitizing Rate: (%s) [   ]\n", F->NGDC_id, P->Magnetics_Digitizing_Rate);
 			else
-				fprintf (fp_err, "N-H-%s-13-01-%c: Suspect Magnetics Digitizing Rate: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Digitizing_Rate);
+				fprintf (fp_err, "?-E-%s-H13-01: Invalid Magnetics Digitizing Rate: (%s) [%3s]\n", F->NGDC_id, P->Magnetics_Digitizing_Rate, P->Magnetics_Digitizing_Rate);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Magnetics_Sampling_Rate[0] && ((i = atoi (P->Magnetics_Sampling_Rate)) < 0 || i > 60)) OR_TRUE) {
-		kind = (wrong_filler (P->Magnetics_Sampling_Rate, 2)) ? 1 : 2;
+		kind = (wrong_filler (P->Magnetics_Sampling_Rate, 2)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
-			if (kind == 1)
-				fprintf (fp_err, "N-H-%s-13-02-%c: Invalid Magnetics Sampling Rate: (%s) [  ]\n", F->NGDC_id, we[kind], P->Magnetics_Sampling_Rate);
+			if (kind == ERR)
+				fprintf (fp_err, "Y-E-%s-H13-02: Invalid Magnetics Sampling Rate: (%s) [  ]\n", F->NGDC_id, P->Magnetics_Sampling_Rate);
 			else
-				fprintf (fp_err, "N-H-%s-13-02-%c: Suspect Magnetics Sampling Rate: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sampling_Rate);
+				fprintf (fp_err, "?-E-%s-H13-02: Invalid Magnetics Sampling Rate: (%s) [%2s]\n", F->NGDC_id, P->Magnetics_Sampling_Rate, P->Magnetics_Sampling_Rate);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Magnetics_Sensor_Tow_Distance[0] && ((i = atoi (P->Magnetics_Sensor_Tow_Distance)) < 0)) OR_TRUE) {
-		kind = (wrong_filler (P->Magnetics_Sensor_Tow_Distance, 4)) ? 1 : 2;
+		kind = (wrong_filler (P->Magnetics_Sensor_Tow_Distance, 4)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
-			if (kind == 1)
-				fprintf (fp_err, "N-H-%s-13-03-%c: Invalid Magnetics Sensor Tow Distance: (%s) [    ]\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Tow_Distance);
+			if (kind == ERR)
+				fprintf (fp_err, "Y-E-%s-H13-03: Invalid Magnetics Sensor Tow Distance: (%s) [    ]\n", F->NGDC_id, P->Magnetics_Sensor_Tow_Distance);
 			else
-				fprintf (fp_err, "N-H-%s-13-03-%c: Suspect Magnetics Sensor Tow Distance: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Tow_Distance);
+				fprintf (fp_err, "?-E-%s-H13-03: Invalid Magnetics Sensor Tow Distance: (%s) [%4s]\n", F->NGDC_id, P->Magnetics_Sensor_Tow_Distance, P->Magnetics_Sensor_Tow_Distance);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Magnetics_Sensor_Depth[0] && ((i = atoi (P->Magnetics_Sensor_Depth)) < 0)) OR_TRUE) {
-		kind = (wrong_filler (P->Magnetics_Sensor_Depth, 5)) ? 1 : 2;
+		kind = (wrong_filler (P->Magnetics_Sensor_Depth, 5)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
-			if (kind == 1)
-				fprintf (fp_err, "N-H-%s-13-04-%c: Invalid Magnetics Sensor Depth: (%s) [     ]\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Depth);
+			if (kind == ERR)
+				fprintf (fp_err, "Y-E-%s-H13-04: Invalid Magnetics Sensor Depth: (%s) [     ]\n", F->NGDC_id, P->Magnetics_Sensor_Depth);
 			else
-				fprintf (fp_err, "N-H-%s-13-04-%c: Suspect Magnetics Sensor Depth: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Depth);
+				fprintf (fp_err, "?-E-%s-H13-04: Invalid Magnetics Sensor Depth: (%s) [%5s]\n", F->NGDC_id, P->Magnetics_Sensor_Depth, P->Magnetics_Sensor_Depth);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Magnetics_Sensor_Separation[0] && ((i = atoi (P->Magnetics_Sensor_Separation)) < 0)) OR_TRUE) {
-		kind = (wrong_filler (P->Magnetics_Sensor_Separation, 3)) ? 1 : 2;
+		kind = (wrong_filler (P->Magnetics_Sensor_Separation, 3)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
-			if (kind == 1)
-				fprintf (fp_err, "N-H-%s-13-05-%c: Invalid Magnetics Sensor Separation: (%s) [   ]\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Separation);
+			if (kind == ERR)
+				fprintf (fp_err, "Y-E-%s-H13-05: Invalid Magnetics Sensor Separation: (%s) [   ]\n", F->NGDC_id, P->Magnetics_Sensor_Separation);
 			else
-				fprintf (fp_err, "N-H-%s-13-05-%c: Suspect Magnetics Sensor Separation: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Sensor_Separation);
+				fprintf (fp_err, "?-E-%s-H13-05: Invalid Magnetics Sensor Separation: (%s) [%3s]\n", F->NGDC_id, P->Magnetics_Sensor_Separation, P->Magnetics_Sensor_Separation);
 		}
 		H->errors[kind]++;
 	}
@@ -931,12 +933,12 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	if (P->Magnetics_Ref_Field_Code[0] OR_TRUE) {
 		i = atoi (P->Magnetics_Ref_Field_Code);
 		if ((!((i >= 0 && i <= 13) || i == 88)) OR_TRUE) {
-			kind = (i == 99) ? 1 : 2;
+			kind = (i == 99) ? ERR : WARN;
 			if (F->verbose_level & kind) {
 				if (i == 99)
-					fprintf (fp_err, "N-H-%s-13-06-%c: Invalid Magnetics Reference Field Code: (%s) [00]\n", F->NGDC_id, we[kind], P->Magnetics_Ref_Field_Code);
+					fprintf (fp_err, "Y-E-%s-H13-06: Invalid Magnetics Reference Field Code: (%s) [00]\n", F->NGDC_id, P->Magnetics_Ref_Field_Code);
 				else {
-					fprintf (fp_err, "N-H-%s-13-06-%c: Invalid Magnetics Reference Field Code: (%s)\n", F->NGDC_id, we[kind], P->Magnetics_Ref_Field_Code);
+					fprintf (fp_err, "?-E-%s-H13-06: Invalid Magnetics Reference Field Code: (%s) [%2s]\n", F->NGDC_id, P->Magnetics_Ref_Field_Code, P->Magnetics_Ref_Field_Code);
 					i = 99;	/* To skip the test on time range below */
 				}
 			}
@@ -944,19 +946,18 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		}
 	}
 	if ((!P->Magnetics_Ref_Field[0] && i == 88) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-13-07-E: Invalid Magnetics Ref Code == 88 but no Ref Field specified\n", F->NGDC_id);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H13-07: Invalid Magnetics Ref Code == 88 but no Ref Field specified [00]\n", F->NGDC_id);
+		H->errors[ERR]++;
 	}
 	ref_field_code = i;
 	if (!strcmp (P->Magnetics_Ref_Field, "IGRF") OR_TRUE) {	/* Check IGRF  number if 88 was given */
-		n = i;
 		i = 0;
 		while (P->Magnetics_Ref_Field[i] && P->Magnetics_Ref_Field[i] != 'F') i++;
 		if (P->Magnetics_Ref_Field[i] == '-') i++;
-		i = atoi (&P->Magnetics_Ref_Field[i]);
-		if (((i == 3 || i == 4 || (i >= 11 && i < 88)) && n != i) OR_TRUE) {
-			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-13-08-W: %s Ref Field code found (%d) [%d]\n", F->NGDC_id, P->Magnetics_Ref_Field, n, i);
-			H->errors[1]++;
+		n = atoi (&P->Magnetics_Ref_Field[i]);
+		if (((n == 3 || n == 4 || (n >= 11 && n < 88)) && ref_field_code != n) OR_TRUE) {
+			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H13-08: %s Ref Field code found (%d) do not match given ref field (%d) [%d]\n", F->NGDC_id, P->Magnetics_Ref_Field, n, ref_field_code, n);
+			H->errors[ERR]++;
 		}
 	}
 
@@ -977,7 +978,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 			else {
 				rfStart = 0;
 				rfEnd = INT_MAX;
-				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-13-09-E: Unknown IGRF specified (%s)\n", F->NGDC_id, P->Magnetics_Ref_Field);
+				if (F->verbose_level | 2) fprintf (fp_err, "Y-W-%s-H13-09: Unknown IGRF specified (%s)\n", F->NGDC_id, P->Magnetics_Ref_Field);
 			}
 		}
 		else {
@@ -986,79 +987,79 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		}
 		(yr1 == yr2) ? sprintf (text, "%d", yr1) : sprintf (text, "%d-%d", yr1, yr2);
 		if (yr1 < rfStart || yr2 > rfEnd) {
-			if (F->verbose_level | 1) fprintf (fp_err, "N-H-%s-13-10-W: Survey year (%s) outside magnetic reference field %s time range (%d-%d)\n", F->NGDC_id, text, P->Magnetics_Ref_Field, rfStart, rfEnd);
+			if (F->verbose_level | 1) fprintf (fp_err, "Y-W-%s-H13-10: Survey year (%s) outside magnetic reference field %s time range (%d-%d)\n", F->NGDC_id, text, P->Magnetics_Ref_Field, rfStart, rfEnd);
+			H->errors[WARN]++;
 		}
 	}
 
 	/* Process Sequence No 14: */
 
 	if ((P->Gravity_Digitizing_Rate[0] && ((i = atoi (P->Gravity_Digitizing_Rate)) < 0 || i > 300)) OR_TRUE) {	/* 30 m */
-		kind = (wrong_filler (P->Gravity_Digitizing_Rate, 3)) ? 1 : 2;
+		kind = (wrong_filler (P->Gravity_Digitizing_Rate, 3)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
-			if (kind == 1)
-				fprintf (fp_err, "N-H-%s-14-01-%c: Invalid Gravity Digitizing Rate: (%s) [   ]\n", F->NGDC_id, we[kind], P->Gravity_Digitizing_Rate);
+			if (kind == ERR)
+				fprintf (fp_err, "Y-E-%s-H14-01: Invalid Gravity Digitizing Rate: (%s) [   ]\n", F->NGDC_id, P->Gravity_Digitizing_Rate);
 			else
-				fprintf (fp_err, "N-H-%s-14-01-%c: Suspect Gravity Digitizing Rate: (%s)\n", F->NGDC_id, we[kind], P->Gravity_Digitizing_Rate);
+				fprintf (fp_err, "?-E-%s-H14-01: Invalid Gravity Digitizing Rate: (%s) [%3s]\n", F->NGDC_id, P->Gravity_Digitizing_Rate, P->Gravity_Digitizing_Rate);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Gravity_Sampling_Rate[0] && ((i = atoi (P->Gravity_Sampling_Rate)) < 0 || i > 98)) OR_TRUE) {
-		kind = (wrong_filler (P->Gravity_Sampling_Rate, 2)) ? 1 : 2;
+		kind = (wrong_filler (P->Gravity_Sampling_Rate, 2)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
-			if (kind == 1)
-				fprintf (fp_err, "N-H-%s-14-02-%c: Invalid Gravity Sampling Rate: (%s) [  ]\n", F->NGDC_id, we[kind], P->Gravity_Sampling_Rate);
+			if (kind == ERR)
+				fprintf (fp_err, "Y-E-%s-H14-02: Invalid Gravity Sampling Rate: (%s) [  ]\n", F->NGDC_id, P->Gravity_Sampling_Rate);
 			else
-				fprintf (fp_err, "N-H-%s-14-02-%c: Suspect Gravity Sampling Rate: (%s)\n", F->NGDC_id, we[kind], P->Gravity_Sampling_Rate);
+				fprintf (fp_err, "?-E-%s-H14-02: Invalid Gravity Sampling Rate: (%s) [%2s]\n", F->NGDC_id, P->Gravity_Sampling_Rate, P->Gravity_Sampling_Rate);
 		}
 		H->errors[kind]++;
 	}
 	i = P->Gravity_Theoretical_Formula_Code - '0';
 	if ((P->Gravity_Theoretical_Formula_Code && !((i >= 1 && i <= 4) || i == 8)) OR_TRUE) {
-		kind = (i == 9) ? 1 : 2;
 		if (F->verbose_level & kind) {
 			if (i == 9)
-				fprintf (fp_err, "N-H-%s-14-03-%c: Invalid Gravity Theoretical Formula Code: (%c) [ ]\n", F->NGDC_id, we[kind], P->Gravity_Theoretical_Formula_Code);
+				fprintf (fp_err, "Y-E-%s-H14-03: Invalid Gravity Theoretical Formula Code: (%c) [ ]\n", F->NGDC_id, P->Gravity_Theoretical_Formula_Code);
 			else
-				fprintf (fp_err, "N-H-%s-14-03-%c: Invalid Gravity Theoretical Formula Code: (%c)\n", F->NGDC_id, we[kind], P->Gravity_Theoretical_Formula_Code);
+				fprintf (fp_err, "?-E-%s-H14-03: Invalid Gravity Theoretical Formula Code: (%c) [%c]\n", F->NGDC_id, P->Gravity_Theoretical_Formula_Code, P->Gravity_Theoretical_Formula_Code);
 		}
-		H->errors[kind]++;
+		H->errors[ERR]++;
 	}
 	i = P->Gravity_Reference_System_Code - '0';
 	if ((P->Gravity_Reference_System_Code && !((i >= 1 && i <= 3) || i == 9)) OR_TRUE) {
 		if (F->verbose_level | 2) {
 			if (i == 9)
-				fprintf (fp_err, "N-H-%s-14-05-E: Invalid Gravity Reference System Code: (%c) [ ]\n", F->NGDC_id, P->Gravity_Reference_System_Code);
+				fprintf (fp_err, "Y-E-%s-H14-05: Invalid Gravity Reference System Code: (%c) [ ]\n", F->NGDC_id, P->Gravity_Reference_System_Code);
 			else
-				fprintf (fp_err, "N-H-%s-14-05-E: Invalid Gravity Reference System Code: (%c)\n", F->NGDC_id, P->Gravity_Reference_System_Code);
+				fprintf (fp_err, "?-E-%s-H14-05: Invalid Gravity Reference System Code: (%c) [%c]\n", F->NGDC_id, P->Gravity_Reference_System_Code, P->Gravity_Reference_System_Code);
 		}
-		H->errors[2]++;
+		H->errors[ERR]++;
 	}
 
 	/* Process Sequence No 15: */
 
 	if ((P->Gravity_Departure_Base_Station[0] && ((i = atoi (P->Gravity_Departure_Base_Station)) < 9750000 || i > 9850000)) OR_TRUE) {
-		kind = (wrong_filler (P->Gravity_Departure_Base_Station, 7)) ? 1 : 2;
+		kind = (wrong_filler (P->Gravity_Departure_Base_Station, 7)) ? ERR : WARN;
 		if ((i > 975000 && i < 985000) OR_TRUE) {	/* Off by factor of 10? */
-			if (F->verbose_level & kind) fprintf (fp_err, "N-H-%s-15-01-%c: Invalid Gravity Departure Base Station Value: (%s) [%d0]\n", F->NGDC_id, we[kind], P->Gravity_Departure_Base_Station, i);
+			if (F->verbose_level & kind) fprintf (fp_err, "?-E-%s-H15-01: Invalid Gravity Departure Base Station Value: (%s) [%d0]\n", F->NGDC_id, P->Gravity_Departure_Base_Station, i);
 		}
 		else if (F->verbose_level & kind) {
-			if (kind == 1)
-				fprintf (fp_err, "N-H-%s-15-01-%c: Invalid Gravity Departure Base Station Value: (%s) [       ]\n", F->NGDC_id, we[kind], P->Gravity_Departure_Base_Station);
+			if (kind == ERR)
+				fprintf (fp_err, "Y-E-%s-H15-01: Invalid Gravity Departure Base Station Value: (%s) [       ]\n", F->NGDC_id, P->Gravity_Departure_Base_Station);
 			else
-				fprintf (fp_err, "N-H-%s-15-01-%c: Invalid Gravity Departure Base Station Value: (%s)\n", F->NGDC_id, we[kind], P->Gravity_Departure_Base_Station);
+				fprintf (fp_err, "?-E-%s-H15-01: Invalid Gravity Departure Base Station Value: (%s) [%7s]\n", F->NGDC_id, P->Gravity_Departure_Base_Station, P->Gravity_Departure_Base_Station);
 		}
 		H->errors[kind]++;
 	}
 	if ((P->Gravity_Arrival_Base_Station[0] && ((i = atoi (P->Gravity_Arrival_Base_Station)) < 9750000 || i > 9850000))) {
-		kind = (wrong_filler (P->Gravity_Departure_Base_Station, 7)) ? 1 : 2;
+		kind = (wrong_filler (P->Gravity_Departure_Base_Station, 7)) ? ERR : WARN;
 		if (i > 975000 && i < 985000) {	/* Off by factor of 10? */
-			if (F->verbose_level & kind) fprintf (fp_err, "N-H-%s-15-03-%c: Invalid Gravity Arrival Base Station Value: (%s) [%d0]\n", F->NGDC_id, we[kind], P->Gravity_Arrival_Base_Station, i);
+			if (F->verbose_level & kind) fprintf (fp_err, "?-E-%s-H15-03: Invalid Gravity Arrival Base Station Value: (%s) [%d0]\n", F->NGDC_id, P->Gravity_Arrival_Base_Station, i);
 		}
 		else if (F->verbose_level & kind) {
-			if (kind == 1)
-				fprintf (fp_err, "N-H-%s-15-03-%c: Invalid Gravity Arrival Base Station Value: (%s) [       ]\n", F->NGDC_id, we[kind], P->Gravity_Arrival_Base_Station);
+			if (kind == ERR)
+				fprintf (fp_err, "Y-E-%s-H15-03: Invalid Gravity Arrival Base Station Value: (%s) [       ]\n", F->NGDC_id, P->Gravity_Arrival_Base_Station);
 			else
-				fprintf (fp_err, "N-H-%s-15-03-%c: Invalid Gravity Arrival Base Station Value: (%s)\n", F->NGDC_id, we[kind], P->Gravity_Arrival_Base_Station);
+				fprintf (fp_err, "?-E-%s-H15-03: Invalid Gravity Arrival Base Station Value: (%s) [%7s]\n", F->NGDC_id, P->Gravity_Arrival_Base_Station, P->Gravity_Arrival_Base_Station);
 		}
 		H->errors[kind]++;
 	}
@@ -1067,15 +1068,15 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 
 	n = 0;
 	if ((P->Number_of_Ten_Degree_Identifiers[0] && (((n = atoi (P->Number_of_Ten_Degree_Identifiers)) < 1 || n > 30) || n != H->meta.n_ten_box)) OR_TRUE) {
-		if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-01-E: Invalid Number of Ten Degree Identifiers: (%s) [%d]\n", F->NGDC_id, P->Number_of_Ten_Degree_Identifiers, H->meta.n_ten_box);
-		H->errors[2]++;
+		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-01: Invalid Number of Ten Degree Identifiers: (%s) [%d]\n", F->NGDC_id, P->Number_of_Ten_Degree_Identifiers, H->meta.n_ten_box);
+		H->errors[ERR]++;
 	}
 	pos = n_block = 0;
 	strcpy (copy, P->Ten_Degree_Identifier);
 	while (GMT_strtok (copy,",", &pos, p)) {
 		if (!strcmp (p, "9999")) {
 			if ((n && n_block != n) OR_TRUE) {
-				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-02-E: Invalid Number of Ten Degree Identifiers: (%d) [%d]\n", F->NGDC_id, n_block, n);
+				if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-02: Invalid Number of Ten Degree Identifiers: (%d) [%d]\n", F->NGDC_id, n_block, n);
 				n = 0;
 			}
 			continue;
@@ -1084,19 +1085,19 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		if (!strcmp (p, "    ")) continue;
 		k = 0;
 		if ((!(p[0] == '1' || p[0] == '3' || p[0] == '5' || p[0] == '7')) OR_TRUE) {
-			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-03-%2.2d-E: Invalid Ten Degree Identifier quadrant: (%s)\n", F->NGDC_id, n_block+1, p);
+			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-03-%2.2d: Invalid Ten Degree Identifier quadrant: (%s)\n", F->NGDC_id, n_block+1, p);
 			k++;
 		}
 		if ((!(p[1] >= '0' && p[1] <= '9')) OR_TRUE) {
-			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-04-%2.2d-E: Invalid Ten Degree Identifier latitude: (%s)\n", F->NGDC_id, n_block+1, p);
+			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-04-%2.2d: Invalid Ten Degree Identifier latitude: (%s)\n", F->NGDC_id, n_block+1, p);
 			k++;
 		}
 		if (((ix = atoi (&p[2])) < 0 || ix > 18) OR_TRUE) {
-			if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-05-%2.2d-E: Invalid Ten Degree Identifier longitude: (%s)\n", F->NGDC_id, n_block+1, p);
+			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-05-%2.2d: Invalid Ten Degree Identifier longitude: (%s)\n", F->NGDC_id, n_block+1, p);
 			k++;
 		}
-		if (k && (F->verbose_level | 2)) fprintf (fp_err, "N-H-%s-16-06-%2.2d-E: Invalid Ten Degree Identifier: (%s)\n", F->NGDC_id, n_block+1, p);
-		H->errors[2] += k;
+		if (k && (F->verbose_level | 2)) fprintf (fp_err, "?-E-%s-H16-06-%2.2d: Invalid Ten Degree Identifier: (%s)\n", F->NGDC_id, n_block+1, p);
+		H->errors[ERR] += k;
 		n_block++;
 		if (p[0] == '1' || p[0] == '3') ix += 19;
 		iy = (p[1] - '0');
@@ -1108,15 +1109,15 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 			if (!H->meta.ten_box[iy][ix]) continue;
 			i = get_quadrant (ix, iy);
 			if (H->meta.ten_box[iy][ix] == 1) {
-				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-06-E: Ten Degree Identifier %d not marked in header but block was crossed\n", F->NGDC_id, i);
+				if (F->verbose_level | 2) fprintf (fp_err, "Y-W-%s-H16-06: Ten Degree Identifier %d not marked in header but block was crossed\n", F->NGDC_id, i);
 			}
 			else if (H->meta.ten_box[iy][ix] == -1) {
-				if (F->verbose_level | 2) fprintf (fp_err, "N-H-%s-16-06-E: Ten Degree Identifier %d marked in header but was not crossed\n", F->NGDC_id, i);
+				if (F->verbose_level | 2) fprintf (fp_err, "Y-W-%s-H16-06: Ten Degree Identifier %d marked in header but was not crossed\n", F->NGDC_id, i);
 			}
 		}
 	}
 
-	H->errors[0] = H->errors[1] + H->errors[2];	/* Sum of warnings and errors */
+	H->errors[TOTAL] = H->errors[WARN] + H->errors[ERR];	/* Sum of warnings and errors */
 }
 
 int wrong_filler (char *field, int length) {
