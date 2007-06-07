@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.77 2007-04-02 15:25:57 remko Exp $
+ *	$Id: mgd77.h,v 1.78 2007-06-07 03:37:55 guru Exp $
  * 
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -393,6 +393,7 @@ struct MGD77_CONTROL {
 	/* Format-related issues */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
 	/* Data use information */
+	BOOLEAN original;				/* TRUE means we want original not revised header attributes */
 	BOOLEAN Want_Header_Item[MGD77_N_HEADER_ITEMS];	/* TRUE means print this header item if dump is selected */
 	BOOLEAN use_flags[MGD77_N_SETS];		/* TRUE means programs will use error bitflags (if present) when returning data */
 	BOOLEAN use_corrections[MGD77_N_SETS];		/* TRUE means we will apply correction factors (if present) when reading data */
