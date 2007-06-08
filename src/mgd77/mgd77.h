@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.78 2007-06-07 03:37:55 guru Exp $
+ *	$Id: mgd77.h,v 1.79 2007-06-08 03:23:14 guru Exp $
  * 
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -106,6 +106,9 @@
 #define GMT_IMG_MINLAT -72.0059773539
 #define GMT_IMG_MAXLAT +72.0059773539
 
+#define MGD77_BAD_HEADER_RECNO		-1
+#define MGD77_BAD_HEADER_ITEM		-2
+
 /* Return error numbers */
 
 #define MGD77_NO_ERROR			0
@@ -172,95 +175,6 @@ typedef char* Text;	/* Used to indicate character strings */
  * in the structure MGD77_HEADER.  The two i/o functions MGD77_read_header and
  * MGD77_write_header will do exactly what they say.
  */
-
-struct MGD77_HEADER_PARAMS {		/* See MGD-77 Documentation from NGDC for details */
-/* START OF MGD77_HEADER_PARAMS */
-	/* Sequence No 01: */
-	char	Record_Type;
-	char	Survey_Identifier[9];
-	char	Format_Acronym[6];
-	char	Data_Center_File_Number[9];
-	char	Paramaters_Surveyed_Code[6];
-	char	File_Creation_Year[5];
-	char	File_Creation_Month[3];
-	char	File_Creation_Day[3];
-	char	Source_Institution[40];
-	/* Sequence No 02: */
-	char	Country[19];
-	char	Platform_Name[22];
-	char	Platform_Type_Code;
-	char	Platform_Type[7];
-	char	Chief_Scientist[33];
-	/* Sequence No 03: */
-	char	Project_Cruise_Leg[59];
-	char	Funding[21];
-	/* Sequence No 04: */
-	char	Survey_Departure_Year[5];
-	char	Survey_Departure_Month[3];
-	char	Survey_Departure_Day[3];
-	char	Port_of_Departure[33];
-	char	Survey_Arrival_Year[5];
-	char	Survey_Arrival_Month[3];
-	char	Survey_Arrival_Day[3];
-	char	Port_of_Arrival[31];
-	/* Sequence No 05: */
-	char	Navigation_Instrumentation[41];
-	char	Geodetic_Datum_Position_Determination_Method[39];
-	/* Sequence No 06: */
-	char	Bathymetry_Instrumentation[41];
-	char	Bathymetry_Add_Forms_of_Data[39];
-	/* Sequence No 07: */
-	char	Magnetics_Instrumentation[41];
-	char	Magnetics_Add_Forms_of_Data[39];
-	/* Sequence No 08: */
-	char	Gravity_Instrumentation[41];
-	char	Gravity_Add_Forms_of_Data[39];
-	/* Sequence No 09: */
-	char	Seismic_Instrumentation[41];
-	char	Seismic_Add_Forms_of_Data[39];
-	/* Sequence No 10: (Format_Description is split across 10 and 11 */
-	char	Format_Type;
-	char	Format_Description[95];
-	/* Sequence No 11: */
-	char	Topmost_Latitude[4];
-	char	Bottommost_Latitude[4];
-	char	Leftmost_Longitude[5];
-	char	Rightmost_Longitude[5];
-	/* Sequence No 12: */
-	char	Bathymetry_Digitizing_Rate[4];
-	char	Bathymetry_Sampling_Rate[13];
-	char	Bathymetry_Assumed_Sound_Velocity[6];
-	char	Bathymetry_Datum_Code[3];
-	char	Bathymetry_Interpolation_Scheme[57];
-	/* Sequence No 13: */
-	char	Magnetics_Digitizing_Rate[4];
-	char	Magnetics_Sampling_Rate[3];
-	char	Magnetics_Sensor_Tow_Distance[5];
-	char	Magnetics_Sensor_Depth[6];
-	char	Magnetics_Sensor_Separation[4];
-	char	Magnetics_Ref_Field_Code[3];
-	char	Magnetics_Ref_Field[13];
-	char	Magnetics_Method_Applying_Res_Field[48];
-	/* Sequence No 14: */
-	char	Gravity_Digitizing_Rate[4];
-	char	Gravity_Sampling_Rate[3];
-	char	Gravity_Theoretical_Formula_Code;
-	char	Gravity_Theoretical_Formula[18];
-	char	Gravity_Reference_System_Code;
-	char	Gravity_Reference_System[17];
-	char	Gravity_Corrections_Applied[39];
-	/* Sequence No 15: */
-	char	Gravity_Departure_Base_Station[8];
-	char	Gravity_Departure_Base_Station_Name[34];
-	char	Gravity_Arrival_Base_Station[8];
-	char	Gravity_Arrival_Base_Station_Name[32];
-	/* Sequence No 16+17: */
-	char	Number_of_Ten_Degree_Identifiers[3];
-	char	Ten_Degree_Identifier[151];
-	/* Sequence No 18-24: */
-	char	Additional_Documentation[7][79];
-/* END OF MGD77_HEADER_PARAMS */
-};
 
 #define MGD77_COL_ABBREV_LEN	16
 #define MGD77_COL_NAME_LEN	64
@@ -523,5 +437,7 @@ extern int MGD77_pos[MGD77_N_DATA_EXTENDED];
 void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cruises, int n_cruises, struct MGD77_CORRTABLE ***CORR);
 void MGD77_Init_Correction (struct MGD77_CORRTABLE *CORR, double **value);
 double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux, int rec);
+
+#include "mgd77_functions.h"	/* These were created by mgd77netcdfhelper.sh */
 
 #endif	/* _MGD77_H */
