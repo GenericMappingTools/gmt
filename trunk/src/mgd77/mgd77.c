@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.150 2007-06-07 03:37:55 guru Exp $
+ *	$Id: mgd77.c,v 1.151 2007-06-08 03:23:14 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -178,7 +178,21 @@ void MGD77_Write_Sequence (FILE *fp, int seq);
 int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *set, int *item);
 int get_quadrant (int x, int y);
 
-#include "mgd77_functions.h"	/* Get netCDF MGD77 header attribute i/o functions */
+#include "mgd77_functions.c"	/* Get netCDF MGD77 header attribute i/o functions */
+
+int MGD77_Param_Key (int record, int item) {
+	int i, status = MGD77_BAD_HEADER_RECNO;
+	/* Given record and item, return the structure array key that matches these two values.
+	 * If not found return BAD_HEADER if record is outside range, or BAD_ITEM if no such item */
+	 
+	for (i = 0; status < 0 && i < MGD77_N_HEADER_PARAMS; i++) {
+		if (MGD77_Header_Lookup[i].record != record) continue;
+		status = MGD77_BAD_HEADER_ITEM;
+		if (MGD77_Header_Lookup[i].item != item) continue;
+		status = i;
+	}
+	return (status);
+}
 
 void MGD77_select_high_resolution ()
 {
@@ -518,7 +532,7 @@ int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 	MGD77_Place_Text (dir, P->Survey_Identifier, record[k], 2, 8);
 	MGD77_Place_Text (dir, P->Format_Acronym, record[k], 10, 5);
 	MGD77_Place_Text (dir, P->Data_Center_File_Number, record[k], 15, 8);
-	MGD77_Place_Text (dir, P->Paramaters_Surveyed_Code, record[k], 27, 5);
+	MGD77_Place_Text (dir, P->Parameters_Surveyed_Code, record[k], 27, 5);
 	MGD77_Place_Text (dir, P->File_Creation_Year, record[k], 32, 4);
 	MGD77_Place_Text (dir, P->File_Creation_Month, record[k], 36, 2);
 	MGD77_Place_Text (dir, P->File_Creation_Day, record[k], 38, 2);
@@ -721,13 +735,13 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		H->errors[ERR]++;
 	}
 	for (i = 0; i < 5; i++) {
-		if (P->Paramaters_Surveyed_Code[i] == '\0' AND_FALSE) continue;	/* A string might get terminated if there are trailing blanks */
-		if (P->Paramaters_Surveyed_Code[i] == ' '  AND_FALSE) continue;	/* Skip the OK codes */
-		if (P->Paramaters_Surveyed_Code[i] == '0'  AND_FALSE) continue;
-		if (P->Paramaters_Surveyed_Code[i] == '1'  AND_FALSE) continue;
-		if (P->Paramaters_Surveyed_Code[i] == '3'  AND_FALSE) continue;
-		if (P->Paramaters_Surveyed_Code[i] == '5'  AND_FALSE) continue;
-		if (F->verbose_level & kind) fprintf (fp_err, "?-E-%s-H01-%2.2d: Invalid Parameter Survey Code (%s): (%c) [ ]\n", F->NGDC_id, 5 + i, pscode[i], P->Paramaters_Surveyed_Code[i]);
+		if (P->Parameters_Surveyed_Code[i] == '\0' AND_FALSE) continue;	/* A string might get terminated if there are trailing blanks */
+		if (P->Parameters_Surveyed_Code[i] == ' '  AND_FALSE) continue;	/* Skip the OK codes */
+		if (P->Parameters_Surveyed_Code[i] == '0'  AND_FALSE) continue;
+		if (P->Parameters_Surveyed_Code[i] == '1'  AND_FALSE) continue;
+		if (P->Parameters_Surveyed_Code[i] == '3'  AND_FALSE) continue;
+		if (P->Parameters_Surveyed_Code[i] == '5'  AND_FALSE) continue;
+		if (F->verbose_level & kind) fprintf (fp_err, "?-E-%s-H01-%2.2d: Invalid Parameter Survey Code (%s): (%c) [ ]\n", F->NGDC_id, 5 + i, pscode[i], P->Parameters_Surveyed_Code[i]);
 		H->errors[kind]++;
 	}
 	if ((P->File_Creation_Year[0] && ((i = atoi (P->File_Creation_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year))) OR_TRUE) {
@@ -1562,7 +1576,7 @@ void MGD77_List_Header_Items (struct MGD77_CONTROL *F)
 {
 	int i;
 	
-	for (i = 0; i < MGD77_N_HEADER_ITEMS; i++) fprintf (stderr, "\t\t%2d. %s\n", i+1, MGD77_Header_Item[i]);
+	for (i = 0; i < MGD77_N_HEADER_ITEMS; i++) fprintf (stderr, "\t\t%2d. %s\n", i+1, MGD77_Header_Lookup[i].name);
 }
 	
 int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
@@ -1591,7 +1605,7 @@ int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
 	/* Now search for matching text strings.  We only look for the first n characters where n is length of item */
 	
 	for (i = match = 0; i < MGD77_N_HEADER_ITEMS; i++) {
-		if (!strncmp (MGD77_Header_Item[i], item, length)) {
+		if (!strncmp (MGD77_Header_Lookup[i].name, item, length)) {
 			pick[match] = id = i;
 			match++;
 		}
@@ -1604,7 +1618,7 @@ int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
 	if (match > 1) {	/* More than one.  See if any of the multiple matches is a full name */
 		int n_exact;
 		for (i = n_exact = 0; i < match; i++) {
-			if (strlen (MGD77_Header_Item[pick[i]]) == (size_t)length) {
+			if (strlen (MGD77_Header_Lookup[pick[i]].name) == (size_t)length) {
 				id = pick[i];
 				n_exact++;
 			}
@@ -1615,7 +1629,7 @@ int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
 		}
 		else {
 			fprintf (stderr, "%s: ERROR: More than one item matched your string %s:\n", GMT_program, item);
-			for (i = 0; i < match; i++) fprintf (stderr, "	-> %s\n", MGD77_Header_Item[pick[i]]);
+			for (i = 0; i < match; i++) fprintf (stderr, "	-> %s\n", MGD77_Header_Lookup[pick[i]].name);
 			return -2;
 		}
 	}
