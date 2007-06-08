@@ -1,6 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.18 2007-06-07 03:37:55 guru Exp $
+	$Id: ChangeLog,v 1.19 2007-06-08 18:54:28 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-06-08	remko
+	* GMT_Appendix_C.tex:	Added mention of ps2raster -P.
+	* GMT_Appendix_N.tex:	Changed wording about using pattern fills in symbols.
+				No longer created out of GMT_Appendix_N_main.tex, instead include
+				GMT_Appendix_N_inc.tex created by scripts/GMT_App_N.sh
+	* scripts/GMT_App_N.sh:	Created GMT_Appendix_N_inc.tex instead of altering GMT_Appendix_N.tex
+	* doc/eps/GMT_usage_3.0.eps:	Removed.
+	* doc/fig:		Renamed from doc/eps
+	* doc/fig/GMT_Environment.eps:	Created anew using xfig.
+	* doc/fig/*.png:	Pictures now in PNG instead of EPS.
+	* doc/makefile:		Use new -P and -Tef options of ps2raster. Changed rules for GMT_Appendix_N.tex.
 
 2007-06-06	pwessel
 	* filter1d.c:		For -Ff<file>, set filter width to DBL_MAX until filter is read
@@ -8,20 +20,18 @@
 2007-06-06	remko
 	* ps2raster.c:		Added -P option to force Portrait mode
 				Allow generation of EPS with other formats (e.g. -Tef)
-	* doc/makefile:		Use new -P and -Tef options of ps2raster
 	* ex03/job03.*:		Use filled and normalized triangles
 
 2007-06-05	remko
 	* tests/*/orig:		Created subdirectories for originals
 	* tests/*/*.sh:		Changed accordingly
-	* doc/GMT_Appendix_K.tex:	Coastline data base sizes updated
+	* GMT_Appendix_K.tex:	Coastline data base sizes updated
 	* doc/scripts/get*.sh:	Made simpler. Fewer changes in -R and -J
 	* doc/scripts/GMT_App_K*.sh:	---"---
-	* doc/scripts/*/orig:	Created subdirectories for originals
+	* doc/scripts/orig:	Created subdirectory for originals
 	* makefile.guru:	Changed accordingly
-	* gmt_proj.c (GMT_[i]translind):	Reverted change from 2007-06-02 (see next entry)
 	* gmt_map.c:		Set project_info.M_PR_DEG to 1 in case of -J[x|X] to make "step" work
-				in GMT_fix_up_path
+				in GMT_fix_up_path when using -J[x|X]...d.
 	* gmt_plot.c (GMT_<symbol>):	Use "native" PS symbols also when filling with pattern.
 	* gmt_support.c:	Removed function GMT_fill_is_image
 	* pslib.c:		Renamed ps_imagefill to ps_pattern.
@@ -34,8 +44,6 @@
 2007-06-02	remko
 	* run_gmt_tests.sh:	Use run_gmt_tests.sh <directories> to test only specified directories.
 	* tests/genper:		Remove grid file on success
-	* gmt_proj.c (GMT_[i]translind):	multiply/divide by project_info.M_PR_DEG to make
-				"step" work in GMT_fix_up_path (see 2007-05-24).
 
 2007-05-31	pwessel
 	* psbasemap.c:		Check that -L is used with geographic coordinates only
@@ -51,7 +59,7 @@
 	* mex/configure.in:	For Intel Macs, must look in maci, not mac
 
 2007-05-24	remko
-	* gmt_vector.[ch] (GMT_fix_up_path): Intermediate longitudes now wrapped based on segment end
+	* gmt_vector.[ch] (GMT_fix_up_path): Intermediate longitudes now wrapped based on segment,
 				not on map extent. "greenwich" argument became superfluous and was
 				removed. Argument "step" was found to be in degrees, not in inches as
 				some calling programs assumed.
@@ -475,7 +483,7 @@
 -----------------------------------------------------------------------------------------
 
 2006-11-01
-	* GMT.in:			Now use "more" or "less" depending on what is avaialble (via autoconf)
+	* GMT.in:		Now use "more" or "less" depending on what is avaialble (via autoconf)
 	* gmt_init.c:		Use -j mechanism in .gmtcommands4 for x/y projections only (no -JZ|z)
 
 2006-10-31
@@ -614,7 +622,7 @@
 	* pscontour.c:		The -D dump option wrote projected values.  Should be original like grdcontour
 
 2006-08-27
-	* dbase/grdraster.c:	Fixed bug introduced on 08/24.
+	* dbase/grdraster.c:	Fixed bug introduced on 2006-08-24.
 
 2006-08-24
 	* gmt_io.[ch]:		Added GMT_get{user,data,share}path to scan for user & data files and files in the
@@ -3783,7 +3791,7 @@
 	* pslib.c:		Missed final linefeed when -K and absolute
 				positioning (-Xa? -Ya?) were used.
 	* grdimage.c:		Shit! Somehow, MAPPING was replaced by
-				!RECT_GRATICULE on 12/8/98, i.e. after 3.1.1
+				!RECT_GRATICULE on 1998-12-08, i.e. after 3.1.1
 				Now fixed (again). All grdimage plots made since
 				3.2 came out have problems if they use a map
 				projection that had rectangular graticules, like
@@ -4483,7 +4491,7 @@
 1998-03-03
 	* grdclip.c:		Used -B also; now uses -Sa and -Sb.
 
-1998-03-/1
+1998-03-01
 	* block*.c:		Now quietly eats -M subheaders
 	* grdpaste:		used -B which is reserved; now uses neither
 				-A or -B but -Sa and -Sb.
