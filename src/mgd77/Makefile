@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.37 2007-03-30 20:52:50 remko Exp $
+#	$Id: Makefile,v 1.38 2007-06-11 01:20:34 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -31,7 +31,7 @@ MGD77_C	= mgd77convert.c mgd77info.c mgd77list.c mgd77path.c mgd77manage.c mgd77
 MGD77PS_C	= mgd77track.c
 
 LIB_C	= mgd77.c
-LIB_H	= mgd77.h mgd77_functions.h mgd77defaults.h
+LIB_H	= mgd77.h mgd77_functions.c mgd77_functions.h mgd77defaults.h
 LIB_O	= $(LIB_C:.c=.o)
 
 #-------------------------------------------------------------------------------
