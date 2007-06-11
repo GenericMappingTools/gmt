@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.145 2007-06-05 14:22:43 remko Exp $
+ *	$Id: pslib.c,v 1.146 2007-06-11 01:10:18 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -845,8 +845,6 @@ int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int ou
 	id = (ps.color_mode & PSL_CMYK) ? 2 : 1;
 	name = (psl_pattern[image_no].depth == 1 && (f_rgb[0] < 0 || b_rgb[0] < 0)) ? "imagemask" : "image";
 
-	if (ps.comments) fprintf (ps.fp, "\n%% Start of %s fill pattern\n", name);
-
 	/* When DPI or colors have changed, the /pattern procedure needs to be rewritten */
 
 	refresh = 0;
@@ -863,6 +861,8 @@ int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int ou
 	}
 
 	if (refresh) {
+
+		if (ps.comments) fprintf (ps.fp, "%% Setup %s fill using pattern %d\n", name, image_no);
 		if (image_dpi) {	/* Use given DPI */
 			nx = irint (nx * ps.scale / image_dpi);
 			ny = irint (ny * ps.scale / image_dpi);
@@ -885,8 +885,6 @@ int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int ou
 			psl_pattern[image_no].b_rgb[i] = (invert) ? f_rgb[i] : b_rgb[i];
 		}
 	}
-
-	if (ps.comments) fprintf (ps.fp, "%% End of %s fill pattern\n", name);
 
 	return (image_no);
 }
@@ -926,15 +924,13 @@ int ps_pattern_init (int image_no, char *imagefile)
 	psl_pattern[image_no].depth = h.depth;
 	psl_pattern[image_no].dpi = -999;
 
-	ps_comment ("Start of pattern definition");
+	if (ps.comments) fprintf (ps.fp, "%%\n%% Define pattern %d\n%%\n", image_no);
 
 	fprintf (ps.fp, "/image%d {<~\n", image_no);
 	ps_stream_dump (picture, h.width, h.height, h.depth, ps.compress, 1, 2);
 	fprintf (ps.fp, "} def\n");
 
 	ps_free ((void *)picture);
-
-	ps_comment ("End of pattern definition");
 
 	return (image_no);
 }
