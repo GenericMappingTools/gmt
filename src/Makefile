@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.6 2007-04-01 19:59:46 remko Exp $
+#	$Id: Makefile,v 1.7 2007-06-11 12:32:52 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -130,7 +130,7 @@ alpha-sincos.o:	alpha-sincos.s
 
 all:		init libs $(ALLPROGS)
 
-init:		gmtmacros gmt_notposix.h
+init:		gmtmacros gmt_notposix.h GMT
 		
 gmtmacros:
 		@if [ ! -s makegmt.macros ]; then \
