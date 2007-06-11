@@ -27,7 +27,7 @@ CompileScript: <<
  #!/bin/sh -ev
  export NETCDFHOME=%p
  ./configure %c
- make all suppl
+ make all
 <<
 InstallScript: <<
  #!/bin/sh -ev
