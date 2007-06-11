@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.16 2007-06-08 03:23:14 guru Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.17 2007-06-11 01:26:24 guru Exp $
 #
 #	Author:		P. Wessel
 #	Date:		2005-OCT-14
@@ -102,6 +102,7 @@ while read name rec item size check; do
 		# use awk -F: to separate out the parameter ($1) and the value ($2). Remember Value could be a sentence with spaces!
 		echo "	word[0] = P->$name;" >> $$.3
 		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}%c\", F->NGDC_id, \"$name\", word, EOL);" >> $$.3
+		echo "	H[$key].ptr = ${cast}${pre}P->$name;" >> $$.7
 	elif [ $n_item -ne 7 ]; then
 		echo "	MGD77_Get_Param (F, "\"$name\"", ${cast}${pre}P->$name);" >> mgd77_functions.c
 		echo "	MGD77_Put_Param (F, "\"$name\"", $length, ${cast}${pre}P->$name);" >> $$.2
@@ -109,6 +110,7 @@ while read name rec item size check; do
 		# The next line gives "      Parameter_Name :Value".  This format is deliberate in that we may want to
 		# use awk -F: to separate out the parameter ($1) and the value ($2). Remember Value could be a sentence with spaces!
 		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}%c\", F->NGDC_id, \"$name\", P->$name, EOL);" >> $$.3
+		echo "	H[$key].ptr = ${cast}${pre}P->$name;" >> $$.7
 	else
 		cast=""
 		length=`echo $M | awk '{print $1-1}'`
@@ -122,10 +124,10 @@ while read name rec item size check; do
 			echo "	(void) nc_del_att (F->nc_id, NC_GLOBAL, "\"${name}_${j}_REVISED\"");" >> $$.5
 			echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}%c\", F->NGDC_id, \"$name\", P->$name[$k], EOL);" >> $$.3
 		done
+		echo "	H[$key].ptr = (char *)${pre}P->$name;" >> $$.7
 	fi
 	if [ $check = "Y" ]; then
 		echo "	\"$name\" $L $rec $item TRUE NULL" >> $$.6
-		echo "	H[$key].ptr = ${cast}${pre}P->$name;" >> $$.7
 	else
 		echo "	\"$name\" $L $rec $item FALSE NULL" >> $$.6
 	fi
