@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.152 2007-06-09 00:29:45 guru Exp $
+ *	$Id: mgd77.c,v 1.153 2007-06-11 01:26:23 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -185,6 +185,9 @@ int MGD77_Param_Key (int record, int item) {
 	/* Given record and item, return the structure array key that matches these two values.
 	 * If not found return BAD_HEADER if record is outside range, or BAD_ITEM if no such item */
 	 
+	if (record < 0 || record > 24) return (MGD77_BAD_HEADER_RECNO);	/* Outside range */
+	if (record >= 18) record = 18;	/* Special processing for 18-24 */
+	
 	for (i = 0; status < 0 && i < MGD77_N_HEADER_PARAMS; i++) {
 		if (MGD77_Header_Lookup[i].record != record) continue;
 		status = MGD77_BAD_HEADER_ITEM;
@@ -379,6 +382,8 @@ int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_
 			error = MGD77_UNKNOWN_FORMAT;
 			break;
 	}
+	
+	MGD77_Init_Ptr (MGD77_Header_Lookup, H->mgd77);	/* set pointers */
 	
 	return (error);
 }
@@ -1438,7 +1443,7 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	H->history[count[0]] = '\0';
 	
 	/* GET MGD77 HEADER INFORMATION */
-	
+		
 	H->mgd77 = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, 1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
 	MGD77_Read_Header_Params (F, H->mgd77);	/* Get all the MGD77 header attributes */
 
@@ -1734,9 +1739,9 @@ int MGD77_Write_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	}
 	
 	for (id = 0; id < MGD77_N_DATA_FIELDS; id++) {	/* See which columns correspond to our standard MGD77 columns */
-		for (k = 0, col[id] = MGD77_NOT_SET; k < F->n_out_columns; k++) if (!strcmp (S->H.info[MGD77_M77_SET].col[k].abbrev, mgd77defs[id].abbrev)) col[id] = k;
+		for (k = 0, col[id] = MGD77_NOT_SET; k < F->n_out_columns; k++) if (S->H.info[MGD77_M77_SET].col[k].abbrev && !strcmp (S->H.info[MGD77_M77_SET].col[k].abbrev, mgd77defs[id].abbrev)) col[id] = k;
 	}
-	for (k = 0, col[MGD77_TIME] = MGD77_NOT_SET; k < F->n_out_columns; k++) if (!strcmp (S->H.info[MGD77_M77_SET].col[k].abbrev, "time")) col[MGD77_TIME] = k;
+	for (k = 0, col[MGD77_TIME] = MGD77_NOT_SET; k < F->n_out_columns; k++) if (S->H.info[MGD77_M77_SET].col[k].abbrev && !strcmp (S->H.info[MGD77_M77_SET].col[k].abbrev, "time")) col[MGD77_TIME] = k;
 	make_ymdhm = (col[MGD77_TIME] >= 0 && (col[MGD77_YEAR] == MGD77_NOT_SET && col[MGD77_MONTH] == MGD77_NOT_SET && col[MGD77_DAY] == MGD77_NOT_SET && col[MGD77_HOUR] == MGD77_NOT_SET && col[MGD77_MIN] == MGD77_NOT_SET));
 	
 	memset ((void *)&MGD77Record, 0, sizeof (struct MGD77_DATA_RECORD));
@@ -2074,7 +2079,7 @@ void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 	F->verbose_level = 0;
 	F->verbose_dest = 2;
 	F->format = MGD77_FORMAT_ANY;
-	F->original = TRUE;
+	F->original = FALSE;	/* Default is to get the latest value for any attribute */
 	MGD77_NaN_val[NC_BYTE] = MGD77_NaN_val[NC_CHAR] = CHAR_MIN;
 	MGD77_NaN_val[NC_SHORT] = SHRT_MIN;
 	MGD77_NaN_val[NC_INT] = INT_MIN;
