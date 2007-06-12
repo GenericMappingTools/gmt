@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.153 2007-06-11 01:26:23 guru Exp $
+ *	$Id: mgd77.c,v 1.154 2007-06-12 21:55:52 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1826,13 +1826,11 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 		if (may_convert) {		/* Turn on this data bit */
 			MGD77Record->bit_pattern |= MGD77_this_bit[i];
 		}
-		if (MGD77_Strip_Blanks) {	/* Remove leading and trailing blanks - may lead to empty string */
+		if (MGD77_Strip_Blanks) {	/* Remove trailing blanks - may lead to empty string */
 			k = strlen (currentField) - 1;
 			while (k >= 0 && currentField[k] == ' ') k--;
 			currentField[++k] = '\0';	/* No longer any trailing blanks */
-			k = 0;
-			while (currentField[k] && currentField[k] == ' ') k++;	/* Wind past any leading blanks */
-			strcpy (MGD77Record->word[nwords], &currentField[k]);	/* Just copy text without changing it at all */
+			strcpy (MGD77Record->word[nwords], currentField);	/* Just copy text without changing it at all */
 		}
 		else
 			strcpy (MGD77Record->word[nwords], currentField);	/* Just copy text without changing it at all */
@@ -1867,7 +1865,7 @@ int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 
 	MGD77Record->bit_pattern = 0;
 	for (i = pos = k = nwords = 0; i < MGD77_N_DATA_FIELDS; i++) {
-		if (!GMT_strtok (line, ", \t", &pos, p)) return (MGD77_ERROR_READ_ASC_DATA);	/* Premature record end */
+		if (!GMT_strtok (line, "\t", &pos, p)) return (MGD77_ERROR_READ_ASC_DATA);	/* Premature record end */
 		if (i >= MGD77_ID && i <= MGD77_SSPN) {
 			strcpy (MGD77Record->word[nwords++], p);		/* Just copy text without changing it at all */
 			for (j = n9 = 0; p[j]; j++) if (p[j] == '9') n9++;
