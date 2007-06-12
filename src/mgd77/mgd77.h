@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.79 2007-06-08 03:23:14 guru Exp $
+ *	$Id: mgd77.h,v 1.80 2007-06-12 22:02:13 guru Exp $
  * 
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -354,7 +354,7 @@ struct MGD77_CORRTABLE {
 
 /* Primary user functions */
 
-extern void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks);						/* Initialize the MGD77 machinery */
+extern void MGD77_Init (struct MGD77_CONTROL *F);						/* Initialize the MGD77 machinery */
 extern void MGD77_Reset (struct MGD77_CONTROL *F);									/* Reset after finishing a file */
 extern int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***list);				/* Returns the full list of IDs */
 extern void MGD77_Cruise_Explain (void);										/* Explains how to specify IDs */

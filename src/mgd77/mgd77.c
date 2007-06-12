@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.154 2007-06-12 21:55:52 guru Exp $
+ *	$Id: mgd77.c,v 1.155 2007-06-12 22:02:13 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -159,8 +159,6 @@ char *aux_names[N_AUX] = {
 	"ngrav",
 	"ngdcid",
 };
-
-BOOLEAN MGD77_Strip_Blanks = FALSE;
 
 PFB MGD77_column_test_double[9];
 PFB MGD77_column_test_string[9];
@@ -1826,14 +1824,11 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 		if (may_convert) {		/* Turn on this data bit */
 			MGD77Record->bit_pattern |= MGD77_this_bit[i];
 		}
-		if (MGD77_Strip_Blanks) {	/* Remove trailing blanks - may lead to empty string */
-			k = strlen (currentField) - 1;
-			while (k >= 0 && currentField[k] == ' ') k--;
-			currentField[++k] = '\0';	/* No longer any trailing blanks */
-			strcpy (MGD77Record->word[nwords], currentField);	/* Just copy text without changing it at all */
-		}
-		else
-			strcpy (MGD77Record->word[nwords], currentField);	/* Just copy text without changing it at all */
+		/* Remove trailing blanks - may lead to empty string */
+		k = strlen (currentField) - 1;
+		while (k >= 0 && currentField[k] == ' ') k--;
+		currentField[++k] = '\0';	/* No longer any trailing blanks */
+		strcpy (MGD77Record->word[nwords], currentField);	/* Just copy text without changing it at all */
 	}
 
 	/* Get absolute time, if all the pieces are there */
@@ -2055,7 +2050,7 @@ void MGD77_Process_Ignore (char code, char format)
 	}
 }
 
-void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
+void MGD77_Init (struct MGD77_CONTROL *F)
 {
 	/* Initialize MGD77 control system */
 	int i, k;
@@ -2069,7 +2064,6 @@ void MGD77_Init (struct MGD77_CONTROL *F, BOOLEAN remove_blanks)
 	GMT_get_time_system ("unix");							/* MGD77+ uses GMT's Unix time epoch */
 	memset ((void *)mgd77_range, 0, (size_t)(MGD77_N_DATA_EXTENDED * sizeof (struct MGD77_LIMITS)));
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
-	MGD77_Strip_Blanks = remove_blanks;
 	gmtdefs.time_system = 4;	/* Use UNIX time as rtime */
 	if ((pw = getpwuid (getuid ())) != NULL) {
 		strcpy (F->user, pw->pw_name);
