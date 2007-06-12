@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: convert.sh,v 1.1 2007-06-12 07:20:11 guru Exp $
+#	$Id: convert.sh,v 1.2 2007-06-12 22:52:38 guru Exp $
 #
 # Tests mgd77convert
 
@@ -25,7 +25,7 @@ diff 12345678.mgd77 $$.mgd77 > $$.log
 cat $$.log >> log
 cat $$.log >> fail
 echo "Test if mgd77 from nc matches original:" >> log
-diff 12345678.mgd77 dummy.mgd77 > $$
+diff 12345678.mgd77 dummy.mgd77 > $$.log
 cat $$.log >> log
 cat $$.log >> fail
 echo "Test if mgd77 from dat matches original:" >> log
