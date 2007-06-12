@@ -57,13 +57,12 @@ standard MGD77 data set.  Any fixed correction terms found (such as needing to s
 agency used incorrect units) will be written as attributes to the netCDF MGD77+ file and applied when the
 data are read by \fBmgd77list\fP.  Emphemeral corrections such as those determined by crossover analysis are
 not kept in the data files but reside in correction tables (see \fBmgd77list\fP for details).  By default, the
-first character of each line in the e77 file (which is Y or N) will be consulted to see if the corresponding
-adjustment should be applied.  You can override this behavior by appending one or more modifiers to the \fB\-Ae\fP command:
-\fBH\fP will apply all header corrections regardless of Y/N, whereas \fBh\fP will ignore all header corrections,
-\fBF\fP will apply all fixed systematic trend corrections regardless of Y/N, whereas \fBf\fP will ignore them,
-\fBn\fP, \fBv\fP, \fBs\fP, and \fBg\fP will ignore bitflags pertaining to navigation, data values, data slopes,
-and grid comparisons, respectively.  For the bitflags, \fB\-Ae\fP means we will replace any existing bitflags
-in the file with the new values whereas \fB\-A+e\fP means we will merge new flags and existing flags.
+first character of each header line in the e77 file (which is ?, Y or N) will be consulted to see if the corresponding
+adjustment should be applied.  If any undecided settings are found (i.i, ?) we will abort and make no changes.
+Only records marked Y will be porcessed.  You can override this behavior by appending one or more modifiers to the \fB\-Ae\fP command:
+\fBh\fP will ignore all header corrections, \fBf\fP will ignore all fixed systematic trend corrections, 
+\fBn\fP, \fBv\fP, and \fBs\fP will ignore bitflags pertaining to navigation, data values, and data slopes,
+respectively.  All E77 information will replace any existing E77 corrections in the file with the new values.
 .br
 .sp
 \fBg\fP Sample a GMT geographic (lon, lat) grid along the track given by the MGD77+ file using
@@ -246,9 +245,9 @@ valid (we only want to correct truly obvious unit errors), edit these error logs
 modify such correction terms and activate them by changing the relevant code key (see
 \fBmgd77sniffer\fP for more details).
 \fBmgd77manage\fP can ingest these error logs and (1) correct bad header records given
-the suggestions in the log, (2) insert fixed correction terms to be used when reading
-certain columns, and (3) insert the bit-flags found.  Rerun this step if you later find
-other problems as all flags will be recreated.
+the suggestions in the log, (2) insert scale/offset correction terms to be used when reading
+certain columns, and (3) insert any bit-flags found.  Rerun this step if you later find
+other problems as all E77 settings or flags will be recreated based on the latest E77 log.
 .br
 .sp
 \fB7. Error corrections\fP
