@@ -27,5 +27,5 @@
 		{ "Gravity Free-Air Anomaly",              "faa",       104,	   5,       "real",       10,      "%05d",      24,      "%+05d",     "%6.1f",       "+9999" },
 		{ "Navigation Quality Code",               "nqc",       120,	   1,        "int",        1,       "%1d",      27,        "%1d",        NULL,           "9" },
 		{ "Survey ID",                              "id",         2,	   8,       "char",    FALSE,       "%8s",       2,        "%-8s",       NULL,    "99999999" },
-		{ "Seismic Line Number",                   "sln",       109,	   5,       "char",    FALSE,       "%5s",      25,        "%5s",        NULL,       "99999" },
-		{ "Seismic Shot-Point Number",            "sspn",       114,	   6,       "char",    FALSE,       "%6s",      26,        "%6s",        NULL,      "999999" }
+		{ "Seismic Line Number",                   "sln",       109,	   5,       "char",    FALSE,       "%5s",      25,        "%-5s",       NULL,       "99999" },
+		{ "Seismic Shot-Point Number",            "sspn",       114,	   6,       "char",    FALSE,       "%6s",      26,        "%-6s",       NULL,      "999999" }
