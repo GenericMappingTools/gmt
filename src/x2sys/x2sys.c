@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.66 2007-05-16 04:50:25 pwessel Exp $
+ *	$Id: x2sys.c,v 1.67 2007-06-13 00:58:36 remko Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -332,13 +332,13 @@ int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
 		X->read_file = (PFI) x2sys_read_ncfile;
 		X->geographic = TRUE;
 		X->geodetic = 0;
-		MGD77_Init (&M, TRUE);			/* Initialize MGD77 Machinery */
+		MGD77_Init (&M);			/* Initialize MGD77 Machinery */
 	}
 	else if (!strcmp (fname, "mgd77")) {
 		X->read_file = (PFI) x2sys_read_mgd77file;
 		X->geographic = TRUE;
 		X->geodetic = 0;
-		MGD77_Init (&M, TRUE);			/* Initialize MGD77 Machinery */
+		MGD77_Init (&M);			/* Initialize MGD77 Machinery */
 	}
 	else
 		X->read_file = (PFI) x2sys_read_file;
@@ -610,7 +610,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	double NaN;
 
 	GMT_make_dnan(NaN);
-	MGD77_Init (&M, TRUE);			/* Initialize MGD77 Machinery */
+	MGD77_Init (&M);			/* Initialize MGD77 Machinery */
 
   	if (n_x2sys_paths) {
   		if (x2sys_get_data_path (path, fname, s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -665,7 +665,7 @@ int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct
 	struct MGD77_DATASET *S;
 	struct MGD77_CONTROL M;
 
-	MGD77_Init (&M, TRUE);			/* Initialize MGD77 Machinery */
+	MGD77_Init (&M);			/* Initialize MGD77 Machinery */
 	M.format  = MGD77_FORMAT_CDF;		/* Set input file's format to netCDF */
 	for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? TRUE : FALSE;	/* Only allow the specified input format */
 
