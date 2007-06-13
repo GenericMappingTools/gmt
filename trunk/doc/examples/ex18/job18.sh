@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 18
 #
-#		$Id: job18.sh,v 1.7 2006-10-23 18:14:12 remko Exp $
+#		$Id: job18.sh,v 1.8 2007-06-13 00:10:40 remko Exp $
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
@@ -37,32 +37,12 @@ $AWK '{print $1, $2, 0, 200, 200}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> 
 # Now determine centers of each enclosed seamount > 50 mGal but only plot
 # the ones within 200 km of Pratt seamount.
 
-# First make a simple $AWK script that returns the average position
-# of a file with coordinates x, y (remember to escape the $ sign)
-
-cat << EOF > center.awk
-BEGIN {
-	x = 0
-	y = 0
-	n = 0
-}
-{
-	x += \$1
-	y += \$2
-	n++
-}
-END {
-	print x/n, y/n
-}
-EOF
-
-# Now determine mean location of each closed contour and
+# First determine mean location of each closed contour and
 # add it to the file centers.d
 
 \rm -f centers.d
-for file in sm_*.xyz
-do
-	$AWK -f center.awk $file >> centers.d
+for file in sm_*.xyz; do
+	$AWK 'BEGIN{x=0;y=0;n=0};{x+=$1;y+=$2;n++};END{print x/n,y/n}' $file >> centers.d
 done
 
 # Only plot the ones within 200 km
@@ -74,22 +54,22 @@ psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.d >> example_18.ps
 # by masking out data outside the 200 km-radius circle
 # and then evaluate area/volume for the 50 mGal contour
 
-grdmath -R -I2m -F -142.65 56.25 GDIST = mask.grd
+grdmath -R -I2m -F `cat pratt.d` GDIST = mask.grd
 grdclip mask.grd -Sa200/NaN -Sb200/1 -Gmask.grd
 grdmath AK_gulf_grav.nc mask.grd MUL = tmp.grd
 area=`grdvolume tmp.grd -C50 -Sk | cut -f2`
 volume=`grdvolume tmp.grd -C50 -Sk | cut -f3`
 
-psxy -R -J -A -O -K -L -Wthin -Gwhite << EOF >> example_18.ps
--148.5 52.75
+psxy -R -J -A -O -K -L -Wthin -Gwhite << END >> example_18.ps
+-148.5	52.75
 -140.5	52.75
 -140.5	53.75
 -148.5	53.75
-EOF
-pstext -R -J -O << EOF >> example_18.ps
+END
+pstext -R -J -O << END >> example_18.ps
 -148 53.08 14 0 1 LM Areas: $area km@+2@+
 -148 53.42 14 0 1 LM Volumes: $volume mGal\264km@+2@+
-EOF
+END
 
 # Clean up
 

@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 18
 REM
-REM		$Id: job18.bat,v 1.8 2006-10-23 18:14:12 remko Exp $
+REM		$Id: job18.bat,v 1.9 2007-06-13 00:10:40 remko Exp $
 REM
 REM Purpose:	Illustrates volumes of grids inside contours and spatial
 REM		selection of data
@@ -39,29 +39,13 @@ gawk "{print $1, $2, 0, 200, 200}" pratt.d | psxy -R -J -O -K -SE -Wthinnest >> 
 REM Only consider closed contours
 del C*_e.xyz
 
-REM Make simple gawk script to calculate average position of locations
-
-echo BEGIN { > center.awk
-echo 	x = 0 >> center.awk
-echo 	y = 0 >> center.awk
-echo 	n = 0 >> center.awk
-echo } >> center.awk
-echo { >> center.awk
-echo 	x += $1 >> center.awk
-echo 	y += $2 >> center.awk
-echo 	n++ >> center.awk
-echo } >> center.awk
-echo END { >> center.awk
-echo 	print x/n, y/n >> center.awk
-echo } >> center.awk
-
 REM Now determine centers of each enclosed seamount exceeding 50 mGal but
 REM only plot the ones within 200 km of Pratt seamount.
 
-REM Now determine mean location of each closed contour and
+REM First determine mean location of each closed contour and
 REM add it to the file centers.d using center.awk script
 
-for %%f in (C*.xyz) do gawk -f center.awk %%f >> centers.d
+for %%f in (C*.xyz) do gawk "BEGIN{x=0;y=0;n=0};{x+=$1;y+=$2;n++};END{print x/n,y/n}" %%f >> centers.d
 
 REM Only plot the ones within 200 km
 
@@ -75,7 +59,7 @@ REM and then evaluate area/volume for the 50 mGal contour
 grdmath -R -I2m -F -142.65 56.25 GDIST = mask.grd
 grdclip mask.grd -Sa200/NaN -Sb200/1 -Gmask.grd
 grdmath AK_gulf_grav.nc mask.grd MUL = tmp.grd
-echo -148.5 52.75 > tmp
+echo -148.5	52.75 > tmp
 echo -140.5	52.75 >> tmp
 echo -140.5	53.75 >> tmp
 echo -148.5	53.75 >> tmp
