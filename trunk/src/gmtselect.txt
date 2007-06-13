@@ -31,13 +31,14 @@ in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher th
 will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the \fBpscoast\fP man-pages for more details.
 .TP
 .B \-C
-Pass all records whose location is within \fIdist\fP of any of the points in the file \fIptfile\fP.  If \fIdist\fP
-is zero then the 3rd column of \fIptfile\fP must have each point's\"'
-individual radius of influence.  Distances are in user units; specify
-\fB\-fg\fP or a map projection to indicate distances in km.  Prepend \fBf\fP to indicate you want approximate flat
-earth distance calculations (faster) rather than exact geodesic distances (slower).  However, if the current \fBELLIPSOID\fP
-is set to Sphere then spherical great circle calculations are used.  Note that \fIptfile\fP must be in ASCII regardless
-of whether \fB\-b\fP is used.
+Pass all records whose location is within \fIdist\fP of any of the points in the ASCII file \fIptfile\fP.
+If \fIdist\fP is zero then the 3rd column of \fIptfile\fP must have each point's\"' individual radius of influence.
+Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical distances in km.
+Use OPT(Cf) to indicate you want flat Earth distances (quicker but approximate) rather than
+geodesic distances (slower but exact).
+If \fBELLIPSOID\fP is Sphere then geodesics become great circles (faster to compute than geodesic).
+Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
+(in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \Fidist\fP.
 .TP
 .B \-D
 Ignored unless \fB\-N\fP is set.  Selects the resolution of the coastline data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The
@@ -67,12 +68,13 @@ Reverses the sense of the test for each of the criteria specified:
 #include "explain_-J_short.txt"
 .TP
 .B \-L
-Pass all records whose location is within \fIdist\fP of any of the line segments in the multiple-segment
+Pass all records whose location is within \fIdist\fP of any of the line segments in the ASCII multiple-segment
 file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each
 sub-header in the \fIptfile\fP must have each lines's individual distance value.\"'
-Distances are in user units; specify \fB\-fg\fP or a map projection to indicate distances in km.
-Note that \fIlinefile\fP must be in ASCII regardless of whether \fB\-b\fP is used.
-Use \fB\-Lp\fP to ensure only points whose orthogonal projections onto the nearest linesegment
+Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical distances in km.
+Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
+(in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \Fidist\fP.
+Use \fB\-Lp\fP to ensure only points whose orthogonal projections onto the nearest line-segment
 fall within the segments endpoints [Default considers points "beyond" the line\"'s endpoints.
 #include "explain_-M.txt"
 .TP
@@ -100,7 +102,12 @@ If no map projection is supplied we implicitly set \fB\-Jx\fP1.
 [Default is same as input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
-.SH NOTE
+.SH NOTE ON DISTANCES
+If options OPT(C) or OPT(L) are selected then distances are Cartesian and in user units;
+use OPT(fg) to imply spherical distances in km and geographical (lon, lat) coordinates.
+Alternatively, specify OPT(R) and OPT(J) to measure projected Cartesian distances in map units
+(cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP).
+.br
 This program has evolved over the years.  Originally, the OPT(R) and OPT(J) were mandatory in order
 to handle geographic data, but now there is full support for spherical calculations.  Thus, OPT(J)
 should only be used if you want the tests to be applied on projected data and not the original
@@ -110,10 +117,10 @@ To extract the subset of data set that is within 300 km of any of the points in 
 100 km away from the lines in lines.d, run
 .br
 .sp
-\fBgmtselect\fP lonlatfile \fB\-Jd\fP1d \fB\-C\fP300/pts.d \fB\-L\fP100/lines.d \fB\-Il\fP > subset
+\fBgmtselect\fP lonlatfile \fB\-fg\fP \fB\-C\fP300/pts.d \fB\-L\fP100/lines.d \fB\-Il\fP > subset
 .br
 .sp
-Here, you must specify a map projection so that knows you are giving it geographical data (otherwise
+Here, you must specify \fB\-fg\fP so the program knows you are processing geographical data (otherwise
 300 would be interpreted as Cartesian distance in x-y units instead of km).
 .br
 .sp
@@ -127,7 +134,13 @@ coastlines), use
 To return all points in quakes.d that are inside the spherical polygon lonlatpath.d, try
 .br
 .sp
-\fBgmtselect\fP quakes.d \fB\-F\fPlonlatpath.d \fB\-fg\fP > subset
+\fBgmtselect\fP quakes.d \fB\-F\fPlonlatpath.d \fB\-fg\fP > subset1
+.br
+.sp
+To return all points in stations.d that are within 5 cm of the point in origin.d for a certain projection, try
+.br
+.sp
+\fBgmtselect\fP stations.d \fB\-F\fPorigin.d OPT(R)20/50/-10/20 OPT(JM)20c > subset2
 .br
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),

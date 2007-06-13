@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.302 2007-06-05 14:18:04 remko Exp $
+ *	$Id: gmt_support.c,v 1.303 2007-06-13 03:52:11 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6358,7 +6358,7 @@ double GMT_dist_to_point (double lon, double lat, struct GMT_TABLE *T, int *id)
 	return (d_min);
 }
 
-int GMT_near_a_point (double x, double y, struct GMT_TABLE *T, double dist)
+int GMT_near_a_point_spherical (double x, double y, struct GMT_TABLE *T, double dist)
 {
 	int i, j;
 	BOOLEAN inside = FALSE, each_point_has_distance;
@@ -6375,7 +6375,7 @@ int GMT_near_a_point (double x, double y, struct GMT_TABLE *T, double dist)
 	return (inside);
 }
 
-int GMT_near_a_point_cart (double x, double y, struct GMT_TABLE *T, double dist)
+int GMT_near_a_point_cartesian (double x, double y, struct GMT_TABLE *T, double dist)
 {
 	int i, j;
 	BOOLEAN inside = FALSE, each_point_has_distance;
