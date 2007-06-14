@@ -62,7 +62,7 @@ adjustment should be applied.  If any undecided settings are found (i.i, ?) we w
 Only records marked Y will be porcessed.  You can override this behavior by appending one or more modifiers to the \fB\-Ae\fP command:
 \fBh\fP will ignore all header corrections, \fBf\fP will ignore all fixed systematic trend corrections, 
 \fBn\fP, \fBv\fP, and \fBs\fP will ignore bitflags pertaining to navigation, data values, and data slopes,
-respectively.  All E77 information will replace any existing E77 corrections in the file with the new values.
+respectively.  Use \fB\-A+e\fP to replace any existing E77 corrections in the file with the new values.
 .br
 .sp
 \fBg\fP Sample a GMT geographic (lon, lat) grid along the track given by the MGD77+ file using
