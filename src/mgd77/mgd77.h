@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.80 2007-06-12 22:02:13 guru Exp $
+ *	$Id: mgd77.h,v 1.81 2007-06-14 04:23:05 guru Exp $
  * 
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -219,6 +219,7 @@ struct MGD77_HEADER {
 	struct MGD77_META meta;				/* Holds some meta-data derived directly from data records */
 	char *author;					/* Name of author of last creation/modification */
 	char *history;					/* History of creation/modifications */
+	char *E77;					/* Statement of E77 information encoded */
 	int n_records;					/* Number of MGD77 data records found */
 	int n_fields;					/* Number of columns returned */
 	int errors[3];					/* Number of total errors, (warnings, errors) found when reading this header */
@@ -389,6 +390,7 @@ extern void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEAD
 extern void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE *ufp);				/* Verify content of header per MGD77 docs */
 extern void MGD77_Verify_Prep (struct MGD77_CONTROL *F, struct MGD77_DATASET *D);
 extern void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struct MGD77_DATA_RECORD *D, int nrec);
+extern int MGD77_Remove_E77 (struct MGD77_CONTROL *F);
 
 /* Secondary user functions */
 

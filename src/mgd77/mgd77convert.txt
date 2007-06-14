@@ -14,7 +14,8 @@ data in (probably) another format to a new file in the current directory.
 Specifies the format of the input (From) files.  Choose from \fBa\fP for standard
 MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF format
 (with extension .nc), and \fBt\fP for a plain ASCII tab-separated table dump
-(with extension .dat).
+(with extension .dat).  Use OPT(FC) to recover the original MGD77 setting from
+the MGD77+ file [Default will apply any E77 corrections encoded in the file].
 .TP
 .B \-T
 Specifies the format of the output (To) files.  Choose from \fBa\fP for standard
@@ -61,6 +62,13 @@ To convert 01010047.nc to a plain ASCII table for manual editing, overwriting an
 .br
 .sp
 \fBmgd77convert\fP 01010047 \fB\-Fc \-T+t \-V\fP
+.br
+.sp
+To recover the original NGDC MGD77 version of 01020051.nc and ignore any E77 corrections,
+use
+.br
+\fBmgd77convert\fP 01020051 \fB\-FC \-Ta \-V\fP
+.br
 .SH FILE FORMATS
 \fBmgd77convert\fP handles three different formats. (1) The MGD77 ASCII tables are
 the established standard for distribution of underway geophysical data to and from the

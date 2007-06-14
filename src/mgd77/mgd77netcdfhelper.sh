@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.17 2007-06-11 01:26:24 guru Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.18 2007-06-14 04:23:06 guru Exp $
 #
 #	Author:		P. Wessel
 #	Date:		2005-OCT-14
@@ -168,6 +168,7 @@ void MGD77_Reset_Header_Params (struct MGD77_CONTROL *F)
 EOF
 cat $$.5 >> mgd77_functions.c
 cat << EOF >> mgd77_functions.c
+	(void) nc_del_att (F->nc_id, NC_GLOBAL, "E77");
 }
 
 void MGD77_Get_Param (struct MGD77_CONTROL *F, char *name, char *value)

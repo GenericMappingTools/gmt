@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.155 2007-06-12 22:02:13 guru Exp $
+ *	$Id: mgd77.c,v 1.156 2007-06-14 04:23:05 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1440,6 +1440,14 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "history", H->history));
 	H->history[count[0]] = '\0';
 	
+	/* GET E77 INFORMATION (IF PRESENT) */
+	
+	if (nc_inq_attlen (F->nc_id, NC_GLOBAL, "E77", count) == NC_NOERR) {	/* Get length of E77 if present */
+		H->E77 = (char *) GMT_memory (VNULL, count[0] + 1, sizeof (char), "MGD77_Read_Header_Record_cdf");	/* Get memory for E77 */
+		MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, "E77",  H->E77));
+		H->E77[count[0]] = '\0';
+	}
+
 	/* GET MGD77 HEADER INFORMATION */
 		
 	H->mgd77 = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, 1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
@@ -3043,6 +3051,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	}
 	/* else, history already filled out, use as is */
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "history", strlen (H->history), H->history));
+	if (H->E77 && strlen(H->E77) > 0) MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "E77", strlen (H->E77), H->E77));
 	MGD77_Write_Header_Params (F, H->mgd77);	/* Write all the MGD77 header attributes */
 	
 	/* It is assumed that MGD77_Prep_Header_cdf has been called */
@@ -3335,6 +3344,23 @@ int MGD77_Write_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H
 		}
 	}
 	return (MGD77_NO_ERROR);
+}
+
+int MGD77_Remove_E77 (struct MGD77_CONTROL *F)
+{
+	/* Will remove all traces of E77 attributes in this file (in redef mode) */
+	
+	int var_id, n_vars;
+	
+	MGD77_Reset_Header_Params (F);				/* Remove any previously revised header parameters */
+
+	MGD77_nc_status (nc_inq_nvars (F->nc_id, &n_vars));
+	for (var_id = 0; var_id < n_vars; var_id++) {		/* For all variables, try to remove factor & offset attributes */
+		nc_del_att (F->nc_id, var_id, "corr_factor");
+		nc_del_att (F->nc_id, var_id, "corr_offset");
+	}
+	
+	return (nc_inq_varid (F->nc_id, "MGD77_flags", &var_id) == NC_NOERR);	/* TRUE if there are old E77 bitflags */
 }
 
 void MGD77_Free (struct MGD77_DATASET *S)
