@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.81 2007-06-14 04:23:05 guru Exp $
+ *	$Id: mgd77.h,v 1.82 2007-06-14 20:19:28 guru Exp $
  * 
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -382,7 +382,7 @@ extern BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET 
 extern void MGD77_Apply_Bitflags (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, int rec, BOOLEAN apply_bits[]);	/* Replaces values whose flags are ON with NaNs */
 extern void MGD77_Set_Unit (char *dist, double *scale, int way);							/* Convert appended distance unit to a numerical scale to give meters */
 extern void MGD77_nc_status (int status);										/* Checks for netCDF errors and aborts with error message */
-extern void MGD77_Process_Ignore (char code, char format);								/* Process the ignre-format option */
+extern void MGD77_Process_Ignore (char code, char *format);								/* Process the ignre-format option */
 extern void MGD77_Ignore_Format (int format);										/* Dissallow some formats for consideration */
 extern struct MGD77_DATASET *MGD77_Create_Dataset ();									/* Create an empty data set structure */
 extern void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.156 2007-06-14 04:23:05 guru Exp $
+ *	$Id: mgd77.c,v 1.157 2007-06-14 20:19:28 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1453,7 +1453,7 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	H->mgd77 = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, 1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
 	MGD77_Read_Header_Params (F, H->mgd77);	/* Get all the MGD77 header attributes */
 
-	/* DTERMINE DIMENSION OF GMT_TIME-SERIES */
+	/* DETERMINE DIMENSION OF GMT_TIME-SERIES */
 	
 	MGD77_nc_status (nc_inq_unlimdim (F->nc_id, &F->nc_recid));		/* Get id of unlimited dimension */
 	if (F->nc_recid == -1) {	/* We are in deep trouble */
@@ -1489,6 +1489,7 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	for (id = 0; id < n_vars && c_id[MGD77_M77_SET] < MGD77_SET_COLS && c_id[MGD77_CDF_SET] < MGD77_SET_COLS; id++) {	/* Keep checking for extra columns until all are found */
 		
 		MGD77_nc_status (nc_inq_varname    (F->nc_id, id, name));	/* Get column abbreviation */
+		if (!strcmp (name, "MGD77_flags") || !strcmp (name, "CDF_flags")) continue;	/* Flags are dealt with separately later */
 		c = MGD77_Get_Set (name);					/* Determine which set this column belongs to */
 		H->info[c].col[c_id[c]].abbrev = MGD77_cp_txt (name);
 		MGD77_nc_status (nc_inq_vartype    (F->nc_id, id, &H->info[c].col[c_id[c]].type));	/* Get data type */
@@ -2036,25 +2037,29 @@ void MGD77_Ignore_Format (int format)
 		MGD77_format_allowed[format] = FALSE;
 }
 
-void MGD77_Process_Ignore (char code, char format)
+void MGD77_Process_Ignore (char code, char *format)
 {
-	switch (format) {									
-		case 'a':		/* Ignore any files in Standard ASCII MGD-77 format */
-		case 'A':
-			MGD77_Ignore_Format (MGD77_FORMAT_M77);
-			break;
-		case 'c':		/* Ignore any files in Enhanced MGD77+ netCDF format */
-		case 'C':
-			MGD77_Ignore_Format (MGD77_FORMAT_CDF);
-			break;
-		case 't':		/* Ignore any files in Plain ASCII dat table format */
-		case 'T':
-			MGD77_Ignore_Format (MGD77_FORMAT_TBL);
-			break;
-		default:
-			fprintf (stderr, "%s: Option -%c Bad format (%c)!\n", GMT_program, code, format);
-			GMT_exit (EXIT_FAILURE);
-			break;
+	int i;
+
+	for (i = 0; i < strlen(format); i++) {
+		switch (format[i]) {									
+			case 'a':		/* Ignore any files in Standard ASCII MGD-77 format */
+			case 'A':
+				MGD77_Ignore_Format (MGD77_FORMAT_M77);
+				break;
+			case 'c':		/* Ignore any files in Enhanced MGD77+ netCDF format */
+			case 'C':
+				MGD77_Ignore_Format (MGD77_FORMAT_CDF);
+				break;
+			case 't':		/* Ignore any files in Plain ASCII dat table format */
+			case 'T':
+				MGD77_Ignore_Format (MGD77_FORMAT_TBL);
+				break;
+			default:
+				fprintf (stderr, "%s: Option -%c Bad format (%c)!\n", GMT_program, code, format[i]);
+				GMT_exit (EXIT_FAILURE);
+				break;
+		}
 	}
 }
 
@@ -3042,7 +3047,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "title", strlen (string), string));
 	if (!H->history) {	/* Blank history, set initial message */
 		(void) time (&now);
-		sprintf (string, "%s Conversion from MGD77 ASCII to MGD77+ netCDF format", ctime(&now));
+		sprintf (string, "%s [%s] Conversion from MGD77 ASCII to MGD77+ netCDF format", ctime(&now), H->author);
 		k = strlen (string);
 		for (j = 0; j < k; j++) if (string[j] == '\n') string[j] = ' ';	/* Remove the \n returned by ctime() */
 		string[k++] = '\n';	string[k] = '\0';	/* Add LF at end of line */
