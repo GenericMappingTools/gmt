@@ -4,7 +4,7 @@
 mgd77info \- Get information about MGD77[+] files
 .SH SYNOPSIS
 \fBmgd77info\fP \fINGDC-ids\fP [ OPT(C)[\fBm\fP|\fBe\fP] ] [ OPT(E)[\fBm\fP|\fBe\fP] ] 
-[ OPT(I)\fIignore\fP ] [ OPT(Mf)[\fIitem\fP]|\fBr\fP ] [ OPT(L)[\fBv\fP] [ GMT_V_OPT ]
+[ OPT(I)\fIignore\fP ] [ OPT(Mf)[\fIitem\fP]|\fBr\fP|\fBe\fP ] [ OPT(L)[\fBv\fP] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBmgd77info\fP reads <legid>.[mgd77|nc] files and produces a single record of information
 about each cruise specified.  The information includes beginning and end times, total
@@ -34,6 +34,7 @@ that can be searched using standard UNIX text tools.  Alternatively, append the 
 parameter (you only need to give enough characters - starting at the beginning - to uniquely identify
 the item).  Give - to display the list of all parameter names.  You may also specify the number of a parameter.
 For the raw, punchcard-formatted MGD77 original header block, append \fBr\fP instead. 
+Finally, for the MGD77+ E77 status, append \fBe\fP instead. 
 .TP
 .B \-I
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
@@ -75,7 +76,13 @@ To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run
 To see all the columns that the MGD77+ cruise 01010047.nc contains, run
 .br
 .sp
-\fBmgd77info\fP 01010047.nc \fB\-C\fP
+\fBmgd77info\fP 01010047 \fB\-C\fP
+.br
+.sp
+To see the E77 status of all MGD77+ cruises collected by the University of Hawaii, run
+.br
+.sp
+\fBmgd77info\fP 08 \fB\-Ia \-Me\fP
 .SH "SEE ALSO"
 .IR mgd77list (GMTMANSECTION),
 .IR mgd77manage (GMTMANSECTION),
