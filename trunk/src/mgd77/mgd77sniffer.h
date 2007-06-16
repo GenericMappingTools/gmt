@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.22 2007-06-09 01:15:48 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.23 2007-06-16 04:28:46 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
@@ -19,6 +19,7 @@
  #include "gmt.h"
  #include "mgd77.h"
  #include "mgd77_e77.h"
+ #include "mgd77_rls_coeffs.h"
  
 /* Constants */
 #define MGD77_N_DATA_FIELDS         27
