@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.20 2007-06-11 12:33:51 remko Exp $
+	$Id: ChangeLog,v 1.21 2007-06-17 01:47:50 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-06-16	pwessel
+	* src/grdmath.c		Added CBAZ as Cartesian complement to SBAZ
 
 2007-06-11	remko
 	* configure.in:		Changed LESS to PAGER as recommended by SAITO Fuyuki
