@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.199 2007-06-05 14:14:29 remko Exp $
+ *	$Id: gmt_plot.c,v 1.200 2007-06-22 21:36:20 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2436,7 +2436,7 @@ void GMT_timestamp (double x, double y, char *U_label)
 	time_string[19] = 0;					/* Terminate the string just after the seconds */
 	sprintf (label, "%s %s", year, &time_string[4]);	/* [4] means we skip the weekday name */
 	
-	ps_comment ("Begin GMT time-stamp");
+	ps_command ("% Begin GMT time-stamp");
 	ps_transrotate (x, y, 0.0);
 	ps_setline (1);
 	ps_rect (0.0, 0.0, dim[0]+dim[1], dim[2], gmtdefs.foreground_rgb, TRUE);
@@ -2447,7 +2447,7 @@ void GMT_timestamp (double x, double y, char *U_label)
 
 	if (U_label && U_label[0]) ps_text (dim[0]+dim[1]+dim[4], dim[3], 7.0, U_label, 0.0, 5, 0);
 	ps_rotatetrans  (-x, -y, 0.0);
-	ps_comment ("End GMT time-stamp");
+	ps_command ("% End GMT time-stamp");
 }
 
 void GMT_echo_command (int argc, char **argv)
