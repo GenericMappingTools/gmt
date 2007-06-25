@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.22 2007-06-17 23:59:56 remko Exp $
+	$Id: ChangeLog,v 1.23 2007-06-25 00:24:22 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-06-24	pwessel
+	* src/grdlandmask.c:	Failed to set rightmost, empty bin if 360-periodicity in effect
 
 2007-06-16	pwessel
 	* src/grdmath.c:	Added CBAZ as Cartesian complement to SBAZ
