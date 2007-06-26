@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.23 2007-06-16 04:28:46 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.24 2007-06-26 01:21:23 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
@@ -40,6 +40,17 @@
 #define MGD77_MIN_RLS_PTS           100
 #define MGD77_N_MAG_RF              13
 #define MGD77_MAX_SEARCH            50
+
+/* RLS statistic array cell names */
+#define MGD77_RLS_SLOPE             0
+#define MGD77_RLS_ICEPT             1
+#define MGD77_RLS_STD               2
+#define MGD77_RLS_SXX               3
+#define MGD77_RLS_CORR              4
+#define MGD77_RLS_SIG               5
+#define MGD77_RLS_RMS               6
+#define MGD77_RLS_SUMX2             7
+#define MGD77_N_STATS               8
 
 /* LMS Limits - Obtained from 4616 bathy and 1657 gravity cruises */
 #define MGD77_MIN_DEPTH_SLOPE       0.900404              /* Q2.5 */
@@ -113,8 +124,8 @@ struct MGD77_MAG_RF {
 /* Local functions */
 void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n, BOOLEAN bilinear, double threshold);
 int sample_grid (struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, float *grid, int n_grid, int n);
-void regress_ls (double *x, double *y, int n, double *stat, int col, double S_xx);
-void regress_rls (double *x, double *y, int nvalues, double *stat, int col, double S_xx);
+void regress_ls (double *x, double *y, int n, double *stat, int col);
+void regress_rls (double *x, double *y, int nvalues, double *stat, int col);
 void regress_lms (double *x, double *y, int nvalues, double *stat, int gridField);
 void regresslms_sub (double *x, double *y, double angle0, double angle1, int nvalues, int n_angle, double *stat, int gridField);
 double lms (double *x, int n);
