@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.24 2007-06-25 01:18:09 guru Exp $
+	$Id: ChangeLog,v 1.25 2007-06-26 20:41:36 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-06-26	pwessel
+	* src/grdmask.c:	SEGV error when GMT_fix_up_path returned fewer points
+				than originally allocated (n_alloc) and n_alloc was not reduced.
 
 2007-06-24	pwessel
 	* src/grdlandmask.c:	Failed to set rightmost, empty bin if 360-periodicity in effect;
