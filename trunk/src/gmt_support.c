@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.303 2007-06-13 03:52:11 guru Exp $
+ *	$Id: gmt_support.c,v 1.304 2007-06-27 03:18:40 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2360,8 +2360,14 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 
 	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
 
-	for (k = 0; txt[k] && txt[k] != '+'; k++);
-	if (!txt[k]) return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
+	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
+	if (!txt[k]) {	/* Does not contain new-style settings, look for old-style (v3.4) syntax */
+		if (strchr (txt, 'a') || strchr (txt, 'f') || strchr (txt, 'o') || strchr (txt, 't') || strchr (txt, '/'))
+			/* Decode <val>a<angle>f<font>o/r/g/b strings */
+			return (GMT_contlabel_specs_old (txt, G));	/* Old-style info strings */
+		else
+			return (0);	/* Nothing to do */
+	}
 
 	/* Decode new-style +separated substrings */
 
