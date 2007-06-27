@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.26 2007-06-27 03:18:40 guru Exp $
+	$Id: ChangeLog,v 1.27 2007-06-27 17:24:11 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-06-27	remko
+	* src/grdlandmask.c:	Fixed bug introduced on 2007-06-24 in determining wrapped grid index
 
 2007-06-26	pwessel
 	* src/grdmask.c:	SEGV error when GMT_fix_up_path returned fewer points
@@ -16,7 +19,7 @@
 
 2007-06-11	remko
 	* configure.in:		Changed LESS to PAGER as recommended by SAITO Fuyuki
-	* GMT.in:		Use ${PAGER:-@PAGER} for pager
+	* GMT.in:		Use ${PAGER:-@PAGER@} for pager
 	* src/makefile:		Make GMT also target of init:
 
 2007-06-08	remko
