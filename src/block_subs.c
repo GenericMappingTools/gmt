@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.c,v 1.3 2007-01-30 20:37:08 pwessel Exp $
+ *    $Id: block_subs.c,v 1.4 2007-06-27 23:00:11 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -20,6 +20,7 @@
  * thus defined in an include file to avoid duplication of code.
  * They are not used anywhere else.  Prototypes are listed in both
  * main programs. [PW, 25-MAR-2006].
+ * 64-bit Ready.
  */
  
 /* Sort on index, then x */

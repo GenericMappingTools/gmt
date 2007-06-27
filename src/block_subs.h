@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.h,v 1.4 2007-01-30 20:37:08 pwessel Exp $
+ *    $Id: block_subs.h,v 1.5 2007-06-27 23:00:11 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -20,6 +20,7 @@
  * thus defined in an include file to avoid duplication of code.
  * They are not used anywhere else.  Prototypes are listed in both
  * main programs. [PW, 25-MAR-2006].
+ * 64-bit Ready.
  */
 
 /* Function prototypes for comparison functions used by both blockmedian
@@ -85,8 +86,8 @@ void *New_Blockmode_Ctrl (), Free_Blockmode_Ctrl (struct BLOCKMODE_CTRL *C);
 #endif
 
 struct BLK_DATA {
-	double	a[4];	/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
-       	size_t     i;	/* Index to data value */
+	double		a[4];	/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
+       	GMT_LONG	i;	/* Index to data value */
 };
 
 int BLK_compare_x (const void *point_1, const void *point_2);
