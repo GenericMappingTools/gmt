@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.27 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_grd.h,v 1.28 2007-06-27 23:00:11 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -106,6 +106,13 @@ struct GRD_HEADER {
 
 #define GMT_get_n(min,max,inc,off) (irint (((max) - (min)) / (inc)) + 1 - (off))
 #define GMT_get_inc(min,max,n,off) (((max) - (min)) / ((n) + (off) - 1))
+
+/* Calculate 1-D index a[ij] corresponding to 2-D array a[row][col], with 64-bit precision.
+ * Use GMT_IJbc when array is padded by BC rows/cols, else use GMT_IJ */
+
+typedef long GMT_LONG;		/* The signed 4 or 8-byte integer */
+#define GMT_IJbc(row,col,nx,pad) (((GMT_LONG)(row)+(GMT_LONG)(pad))*((GMT_LONG)(nx))+(GMT_LONG)(col)+(GMT_LONG)(pad))
+#define GMT_IJ(row,col,nx) (((GMT_LONG)(row))*((GMT_LONG)(nx))+(GMT_LONG)(col))
 
 /* The GMT_y_is_outside macro returns TRUE if y is outside the given domain.
  * For GMT_x_is_outside, see the function in gmt_support.c
