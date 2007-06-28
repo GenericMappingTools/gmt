@@ -34,9 +34,9 @@ The \fIlistfile\fP is an ASCII file with the names of the \fIPostScript\fP files
 Do \fInot\fP remove auxiliary files (by default it does). Auxiliary files are built using as base the input
 \fIPostScript\fP files and consist of:
 .br
-psfile_tmpxx.eps -> \fIPostScript\fP with a modified BoundingBox.
+\fIpsfile\fP\fB_tmp.eps\fP -> \fIPostScript\fP with a modified BoundingBox.
 .br
-psTOraster.bat -> script with the ghostscript command that does the job.
+\fIpsfile\fP\fB_tmp.bat\fP -> script with the ghostscript command that does the job.
 .br
 Use this option to save the script and run it later with different settings.
 .TP
