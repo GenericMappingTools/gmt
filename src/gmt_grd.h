@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.28 2007-06-27 23:00:11 guru Exp $
+ *	$Id: gmt_grd.h,v 1.29 2007-06-29 03:21:29 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -110,7 +110,6 @@ struct GRD_HEADER {
 /* Calculate 1-D index a[ij] corresponding to 2-D array a[row][col], with 64-bit precision.
  * Use GMT_IJbc when array is padded by BC rows/cols, else use GMT_IJ */
 
-typedef long GMT_LONG;		/* The signed 4 or 8-byte integer */
 #define GMT_IJbc(row,col,nx,pad) (((GMT_LONG)(row)+(GMT_LONG)(pad))*((GMT_LONG)(nx))+(GMT_LONG)(col)+(GMT_LONG)(pad))
 #define GMT_IJ(row,col,nx) (((GMT_LONG)(row))*((GMT_LONG)(nx))+(GMT_LONG)(col))
 
