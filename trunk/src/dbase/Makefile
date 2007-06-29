@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.13 2007-03-30 20:52:50 remko Exp $
+#	$Id: Makefile,v 1.14 2007-06-29 18:40:30 remko Exp $
 #
 #	makefile for dbase directory
 #
@@ -32,6 +32,3 @@ clean:
 
 .c.o:		$(GMT_H)
 		$(CC) -c $(CFLAGS) $<
-
-#---------------------------- CVS GURU EXTENSIONS-------------------------------
-include $(MAKEGURU)

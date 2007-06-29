@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.30 2007-06-29 08:07:44 guru Exp $
+	$Id: ChangeLog,v 1.31 2007-06-29 18:40:30 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-06-29	remko
+	* makefile.guru:	New system to make manpages
+	* guru/{pdf,web}man.sh:	---"---
+	* www/gmt/gmt_{man,suppl,services}.html:	No longer made from shell scripts
+				or makefiles. Now part of CVS.
 
 2007-06-28	pwessel
 	* src/gredit.c:		-N did not take into account -fg if given

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.40 2007-04-01 22:14:29 remko Exp $
+#	$Id: Makefile,v 1.41 2007-06-29 18:40:30 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -21,8 +21,8 @@
 #	Commands marked *** are optional
 #	1. run configure in the main GMT directory.
 #	2. make all
-#	3. make suppl   ***
-#	4. make run-examples ***
+#	3. make suppl    ***
+#	4. make examples ***
 #
 #	Then, if you have the necessary directory permissions:
 #
@@ -64,6 +64,10 @@ include src/makegmt.macros	# GMT-specific settings determined by user & install_
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
+.PHONY:		all gmt suppl update gmtmacros \
+		install uninstall install-all uninstall-all install-gmt uninstall-gmt \
+		install-suppl uninstall-suppl install-data uninstall-data install-man uninstall-man \
+		install-www uninstall-www examples run-examples clean spotless distclean insuppl
 
 SUPPL	=	dbase gshhs imgsrc meca mex mgd77 mgg misc segyprogs spotter x2sys x_system xgrid
 SUPPL_M	=	dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
@@ -121,56 +125,26 @@ uninstall-data:
 			echo "Install share directory the same as distribution share directory - nothing removed"; \
 		fi
 
-install-manl-suppl:
-#		First create suppl *.l from *.man in the local installation tree (regular gmt *.l is already there)
-		@rm -f manjob.sh
-		@set -e ; for d in $(SUPPL_M); do \
-			if [ -d src/$$d ] ; then \
-				cd src/$$d; \
+install-man:
+		@echo "Installing GMT manpages in $(mandir)/man$(mansection)"
+		@mkdir -p $(mandir)/man$(mansection)
+		@set -e ; for d in . $(SUPPL_M); do \
+			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ] ; then \
+				( cd src/$$d; \
 				for f in *.man; do \
-					\cp $$f $(rootdir)/man/manl/`basename $$f .man`.l; \
-				done; \
-				cd ../..; \
+					sed "s/GMTMANSECTION/$(mansection)/g" $$f > $(mandir)/man$(mansection)/`basename $$f .man`.l; \
+				done ); \
 			fi; \
 		done
 
-install-man:	install-manl-suppl
-		@rm -f manuninstall.sh
-#		If the install man/manl dir is not where we want things (or it is the wrong section), move/rename files
-		@if [ ! $(rootdir)/man/manl = $(mandir)/man$(mansection) ]; then \
-			echo "Copying GMT manpages to $(mandir)/man$(mansection)"; \
-			mkdir -p $(mandir)/man$(mansection); \
-			cp -f man/manl/*.l $(mandir)/man$(mansection); \
-			cd $(mandir)/man$(mansection); \
-			echo "s/GMTMANSECTION/$(mansection)/g" > sed.tmp; \
-			echo "s/(l)/($(mansection))/g" >> sed.tmp; \
-			echo "s/ l / $(mansection) /g" >> sed.tmp; \
-			for f in *.l; do \
-				mv -f $$f man.tmp; \
-				sed -f sed.tmp man.tmp > `basename $$f .l`.$(mansection); \
-				echo "rm -f $$f" | sed -e 's/.l$$/.$(mansection)/g' >> $(rootdir)/manuninstall.sh; \
-			done; \
-			rm -f sed.tmp man.tmp; \
-		else \
-			echo "Install man directory the same as distribution man directory - nothing copied"; \
-		fi
-
-
 uninstall-man:
-		@if [ ! $(rootdir)/man/manl = $(mandir)/man$(mansection) ]; then \
-			echo "Removing GMT manpages from $(mandir)/man$(mansection)"; \
-			cd $(mandir)/man$(mansection); \
-			$(SHELL) $(rootdir)/manuninstall.sh; \
-			rm -f $(rootdir)/manuninstall.sh; \
-			cd $(rootdir); \
-		else \
-			echo "Install man directory the same as distribution man directory - nothing deleted"; \
-		fi
+		@echo "Removing GMT manpages from $(mandir)/man$(mansection)"; \
+		rm -r -f $(mandir)/man$(mansection)
 
 
 install-www:
 		@set -e ; for d in $(SUPPL_M); do \
-			if [ -d src/$$d ] ; then \
+			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ] ; then \
 				mkdir -p $(rootdir)/www/gmt/doc/html; \
 				cp src/$$d/*.html $(rootdir)/www/gmt/doc/html; \
 			fi; \
@@ -189,21 +163,8 @@ uninstall-www:
 			echo "Install www directory the same as distribution www directory - nothing deleted"; \
 		fi
 
-install-wrapper:
-		if [ ! $(rootdir)/bin = $(wrapbindir) ]; then \
-			mkdir -p $(wrapbindir); \
-			$(INSTALL) src/GMT $(wrapbindir); \
-		else \
-			echo "Install wrapper bin directory the same as distribution bin directory - nothing installed"; \
-		fi
-		if [ ! $(rootdir)/man = $(wrapmandir) ]; then \
-			mkdir -p $(wrapmandir)/man$(mansection); \
-			cp man/manl/GMT.l $(wrapmandir)/man$(mansection); \
-		else \
-			echo "Install wrapper man directory the same as distribution man directory - nothing installed"; \
-		fi
-
-run-examples:
+run-examples:	examples
+examples:
 		@if [ -d examples ]; then \
 			cd examples; \
 			$(CSH) do_examples.$(CSH) $(bindir) $(libdir) $(NETCDF)/lib; \
@@ -227,12 +188,11 @@ insuppl:
 		@set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
 				echo "Making $(TARGET) in src/$$d"; \
-				cd src/$$d; \
+				( cd src/$$d; \
 				if [ ! -f makefile ]; then \
 					\rm -f config.{cache,log,status}; \
 					./configure; \
 				fi; \
-				$(MAKE) $(TARGET); \
-				cd ../..; \
+				$(MAKE) $(TARGET) ); \
 			fi; \
 		done

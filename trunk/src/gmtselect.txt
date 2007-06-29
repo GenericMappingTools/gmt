@@ -38,7 +38,7 @@ Use OPT(Cf) to indicate you want flat Earth distances (quicker but approximate) 
 geodesic distances (slower but exact).
 If \fBELLIPSOID\fP is Sphere then geodesics become great circles (faster to compute than geodesic).
 Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
-(in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \Fidist\fP.
+(in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \fIdist\fP.
 .TP
 .B \-D
 Ignored unless \fB\-N\fP is set.  Selects the resolution of the coastline data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The
@@ -73,7 +73,7 @@ file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each
 sub-header in the \fIptfile\fP must have each lines's individual distance value.\"'
 Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical distances in km.
 Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
-(in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \Fidist\fP.
+(in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \fIdist\fP.
 Use \fB\-Lp\fP to ensure only points whose orthogonal projections onto the nearest line-segment
 fall within the segments endpoints [Default considers points "beyond" the line\"'s endpoints.
 #include "explain_-M.txt"
