@@ -1,11 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.28 2007-06-28 19:19:13 remko Exp $
+	$Id: ChangeLog,v 1.29 2007-06-29 03:21:29 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-06-28	pwessel
+	* src/gredit.c:		-N did not take into account -fg if given
 
 2007-06-28	remko
 	* src/ps2raster.c:	Save temporary script with unique file name (<psfile>_tmp.bat) so
 				that several ps2raster jobs can run concurrently.
-
 2007-06-27	remko
 	* src/grdlandmask.c:	Fixed bug introduced on 2007-06-24 in determining wrapped grid index
 

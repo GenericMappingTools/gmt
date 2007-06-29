@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.147 2007-05-16 04:50:25 pwessel Exp $
+ *	$Id: gmt.h,v 1.148 2007-06-29 03:21:29 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -244,6 +244,7 @@ typedef int (*PFI) ();		/* PFI declares a pointer to a function returning an int
 typedef BOOLEAN (*PFB) ();	/* PFB declares a pointer to a function returning a BOOLEAN */
 typedef double (*PFD) ();	/* PFD declares a pointer to a function returning a double */
 typedef double GMT_dtime;	/* GMT internal time representation */
+typedef long GMT_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 
 /*--------------------------------------------------------------------
  *			GMT PARAMETERS DEFINITIONS
