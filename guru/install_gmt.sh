@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.101 2007-04-03 05:53:51 pwessel Exp $
+#	$Id: install_gmt.sh,v 1.102 2007-06-29 18:40:30 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1330,13 +1330,8 @@ fi
 #--------------------------------------------------------------------------------
 
 if [ $write_man -eq 1 ]; then
-	if [ -d man/manl ]; then
-		$GMT_make install-man || exit
-		echo "All users must include $GMT_man in their MANPATH" >&2
-	else
-		echo "GMT Man pages not installed" >&2
-		GMT_man=n
-	fi
+	$GMT_make install-man || exit
+	echo "All users must include $GMT_man in their MANPATH" >&2
 else
 	echo "You do not have write permission to make $GMT_man" >&2
 fi

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.17 2007-03-30 20:52:50 remko Exp $
+#	$Id: Makefile,v 1.18 2007-06-29 18:40:30 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -109,6 +109,3 @@ $(MGGPS):	libgmt_mgg.a $(MGGPS_O) $(GMTLIB)
 
 .c.o:
 		$(CC) -c $(CFLAGS) $<
-
-#---------------------------- CVS GURU EXTENSIONS-------------------------------
-include $(MAKEGURU)

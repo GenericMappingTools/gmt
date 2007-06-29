@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.12 2007-03-30 20:52:50 remko Exp $
+
 #
 #	makefile for imgsrc directory
 #
@@ -31,6 +31,3 @@ clean:
 
 .c.o:		gmt_imgsubs.h $(GMT_H)
 		$(CC) -c $(CFLAGS) $<
-
-#---------------------------- CVS GURU EXTENSIONS-------------------------------
-include $(MAKEGURU)
