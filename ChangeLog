@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.29 2007-06-29 03:21:29 guru Exp $
+	$Id: ChangeLog,v 1.30 2007-06-29 08:07:44 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-06-28	pwessel
 	* src/gredit.c:		-N did not take into account -fg if given
+	* src/gmt_map.c:	Great circle intersection did not select correct vector sign so
+				points 180 degrees from a line could pass as close in gmtselect
 
 2007-06-28	remko
 	* src/ps2raster.c:	Save temporary script with unique file name (<psfile>_tmp.bat) so

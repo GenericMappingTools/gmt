@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.141 2007-06-05 14:10:25 remko Exp $
+ *	$Id: gmt_map.c,v 1.142 2007-06-29 08:07:44 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3725,18 +3725,26 @@ int GMT_great_circle_intersection (double A[], double B[], double C[], double X[
 	 * X is the point on (A,B) closest to C.  We must test if X is
 	 * between A,B or outside.
 	 */
-
-	double P[3], E[3], cos_AB, cos_test;
+	int i;
+	double P[3], E[3], M[3], Xneg[3], cos_AB, cos_MX1, cos_MX2, cos_test;
 
 	GMT_cross3v (A, B, P);			/* Get pole position of plane through A and B (and origin O) */
 	GMT_normalize3v (P);			/* Make sure P has unit length */
 	GMT_cross3v (C, P, E);			/* Get pole E to plane through C (and origin) but normal to A,B (hence going through P) */
-	GMT_normalize3v (E);			/* Make sure X has unit length */
-	GMT_cross3v (P, E, X);			/* Intersection point between the two planes */
+	GMT_normalize3v (E);			/* Make sure E has unit length */
+	GMT_cross3v (P, E, X);			/* Intersection between the two planes is oriented line*/
 	GMT_normalize3v (X);			/* Make sure X has unit length */
-
+	/* The X we want could be +x or -X; must determine which might be closest to A-B midpoint M */
+	for (i = 0; i < 3; i++) {
+		M[i] = A[i] + B[i];
+		Xneg[i] = -X[i];
+	}
+	GMT_normalize3v (M);			/* Make sure M has unit length */
 	/* Must first check if X is along the (A,B) segment and not on its extension */
 
+	cos_MX1 = GMT_dot3v (M, X);		/* Cos of spherical distance between M and +X */
+	cos_MX2 = GMT_dot3v (M, Xneg);		/* Cos of spherical distance between M and -X */
+	if (cos_MX2 > cos_MX1) memcpy ((void *)X, (void *)Xneg, 3*sizeof(double));;		/* -X is closest to A-B midpoint */
 	cos_AB = fabs (GMT_dot3v (A, B));	/* Cos of spherical distance between A,B */
 	cos_test = fabs (GMT_dot3v (A, X));	/* Cos of spherical distance between A and X */
 	if (cos_test < cos_AB) return 1;	/* X must be on the A-B extension if its distance to A exceeds the A-B length */
@@ -3745,7 +3753,7 @@ int GMT_great_circle_intersection (double A[], double B[], double C[], double X[
 
 	/* X is between A and B.  Now calculate distance between C and X */
 
-	*CX_dist = fabs (GMT_dot3v (C, X));	/* Cos of spherical distance between C and X */
+	*CX_dist = GMT_dot3v (C, X);		/* Cos of spherical distance between C and X */
 	return (0);				/* Return zero if intersection is between A and B */
 }
 
