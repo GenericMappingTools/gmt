@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.31 2007-06-29 18:40:30 remko Exp $
+	$Id: ChangeLog,v 1.32 2007-07-03 03:40:20 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-06-29	remko
@@ -169,7 +169,7 @@
 2007-03-31
 	* filter1d.c:		-T option can now parse datestrings for min/max.
 	* gmt_init.c:		Did not properly parse a single PAR=ARG (one word) argument in gmtset
-	* mgd77.mgd77manage.c:	Need to enforce that a new column abbreviation is lower case
+	* mgd77/mgd77manage.c:	Need to enforce that a new column abbreviation is lower case
 	* ps2raster.*:		Moved from src/misc to src
 
 2007-03-30
