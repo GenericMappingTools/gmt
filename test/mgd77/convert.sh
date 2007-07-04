@@ -1,9 +1,9 @@
 #!/bin/sh
-#	$Id: convert.sh,v 1.3 2007-06-13 01:15:03 remko Exp $
+#	$Id: convert.sh,v 1.4 2007-07-04 14:05:44 remko Exp $
 #
 # Tests mgd77convert
 
-echo -n "$0: Test mgd77convert conversions between mgd77-dat-nc:	"
+echo -n "$0: Test mgd77convert conversions between mgd77-dat-nc:		"
 MGD77_HOME=${MGD77_HOME:-$GMTHOME/share/mgd77}
 export MGD77_HOME
 cp dummy.mgd77 12345678.mgd77
