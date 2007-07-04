@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.43 2007-06-21 03:22:00 guru Exp $
+#	$Id: gmtguru.macros.orig,v 1.44 2007-07-04 07:05:30 guru Exp $
 #
 #	Original GMT Guru Makefile Macro for Makefile.guru
 #	Gurus should make a file gmtguru.macros to overrule any setting below.
@@ -48,6 +48,8 @@ GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
 GMT_NETCDF	= --enable-netcdf=$(NETCDFHOME)		# Change if your netcdf is elsewhere
 GMT_SITE	= --enable-update=gmt.soest.hawaii.edu	# Specify your nearest GMT ftp mirror
 GMT_MATLAB	= --enable-matlab=$(MATLAB)	# To compile the mex supplement
+GMT_64		=# --enable-64		# Compile for 64-bit platforms
+GMT_UNIVERSAL	=# --enable-universal	# Make universal binaries under OS X
 
 # The following two will let you tailor where GMT will install (1) machine-specific executables/libraries and
 # (2) machine-independent files such as the stuff in share, man pages etc.  By default they are all installed
