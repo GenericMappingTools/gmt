@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.102 2007-06-29 18:40:30 remko Exp $
+#	$Id: install_gmt.sh,v 1.103 2007-07-04 07:05:30 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1244,6 +1244,12 @@ else
 	enable_shared=
 fi
 
+if [ $GMT_64 = "y" ]; then
+	enable_64=--enable-64
+else
+	enable_64=
+fi
+
 if [ ! x"$MATDIR" = x ]; then	# MATDIR is set
 	enable_matlab=--enable-matlab=$MATDIR
 else
@@ -1274,7 +1280,7 @@ if [ -f src/makegmt.macros ]; then
 fi
 	
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
-  --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle \
+  --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   --mandir=$GMT_man --enable-mansect=$GMT_mansect --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip \
   $disable_mex $disable_xgrid 
 
