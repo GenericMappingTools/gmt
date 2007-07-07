@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.h,v 1.3 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_stat.h,v 1.4 2007-07-07 03:29:11 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -35,5 +35,7 @@ EXTERN_MSC void GMT_chi2 (double chi2, double nu, double *prob);
 EXTERN_MSC void GMT_cumpoisson (double k, double mu, double *prob);
 EXTERN_MSC void GMT_getmad (double *x, size_t n, double location, double *scale);
 EXTERN_MSC void GMT_getmad_f (float *x, size_t n, double location, double *scale);
+EXTERN_MSC double GMT_psi (double z[], double p[]);
+EXTERN_MSC void GMT_PvQv (double x, double v_ri[], double pq[], int *iter);
 
 #endif /* _GMT_STAT_H */

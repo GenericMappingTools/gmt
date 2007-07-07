@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.47 2007-04-02 22:25:29 remko Exp $
+ *	$Id: gmt_stat.c,v 1.48 2007-07-07 03:29:11 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,6 +49,7 @@
  *		27-JUL-2005 P. Wessel: Added Chebyshev polynomials Tn(x)
  *		07-SEP-2005 P. Wessel: Added GMT_corrcoeff (x,y)
  *		24-MAR-2006 P. Wessel: Added GMT_zdist (x)
+ *		06-JUL-2007 P. Wessel: Added GMT_psi () and GMT_PvQv()
  *
  * PUBLIC functions:
  *
@@ -79,6 +80,8 @@
  *	GMT_rand:	Uniformly distributed random numbers 0 < x < 1
  *	GMT_nrand:	Normally distributed random numbers from N(0,1)
  *	GMT_corrcoeff:	Correlation coefficient.
+ *	GMT_psi:	Digamma (psi) function.
+ *	GMT_PvQv:	Lenedre functions Pv and Qv for imaginary v and real x (-1/+1).
  */
 
 #define GMT_WITH_NO_PS
@@ -109,6 +112,8 @@ double GMT_gammq (double a, double x);
 void GMT_gamma_cf (double *gammcf, double a, double x, double *gln);
 void GMT_gamma_ser (double *gamser, double a, double x, double *gln);
 void GMT_cumpoisson (double k, double mu, double *prob);
+void Cmul (double A[], double B[], double C[]);
+void Cdiv (double A[], double B[], double C[]);
 
 #if HAVE_J0 == 0
 double GMT_j0 (double x);
@@ -2524,4 +2529,185 @@ double GMT_corrcoeff_f (float *x, float *y, size_t n, int mode)
 	
 	r = vxy / sqrt (vx * vy);
 	return (r);
+}
+
+double GMT_psi (double zz[], double p[])
+{
+/* Psi     Psi (or Digamma) function for complex arguments z.
+*
+*                 d
+*        Psi(z) = --log(Gamma(z))
+*                 dz
+*
+* zz[0] is real and zz[1] is imaginary component; same for p on output (only if p != NULL).
+* We also return the real component as function result.
+*/
+	static double c[15] = { 0.99999999999999709182, 57.156235665862923517, -59.597960355475491248,
+			14.136097974741747174, -0.49191381609762019978, 0.33994649984811888699e-4,
+			0.46523628927048575665e-4, -0.98374475304879564677e-4, 0.15808870322491248884e-3,
+			-0.21026444172410488319e-3, 0.21743961811521264320e-3, -0.16431810653676389022e-3,
+			0.84418223983852743293e-4, -0.26190838401581408670e-4, 0.36899182659531622704e-5};
+	double z[2], g[2], dx[2], dd[2], d[2], n[2], gg[2], f[2], x0, A[2], B[2], C[2], sx, cx, e;
+	int k;
+
+	if (zz[1] == 0.0 && rint(zz[0]) == zz[0] && zz[0] <= 0.0) {
+		if (p) { p[0] = GMT_d_NaN; p[1] = 0.0;}
+		return (GMT_d_NaN);	/* Singular points */
+	}
+	
+	z[0] = zz[0];	z[1] = zz[1];
+	if ((x0 = z[0]) < 0.5) {	/* reflection point */
+		z[0] = 1.0 - z[0];
+		z[1] = -z[1];
+	}
+
+	/* Lanczos approximation */
+ 
+	g[0] = 607.0/128.0;	g[1] = 0.0; /* best results when 4<=g<=5 */
+	n[0] = d[0] = n[1] = d[1] = 0.0;
+	for (k = 14; k > 0; k--) {
+		A[0] = 1.0;	A[1] = 0.0;
+		B[0] = z[0] + k - 1.0;	B[1] = z[1];
+		Cdiv (A, B, dx);
+		dd[0] = c[k] * dx[0];	dd[1] = c[k] * dx[1];
+		d[0] += dd[0];	d[1] += dd[1];
+		Cmul (dd, dx, B);
+		n[0] -= B[0];	n[1] -= B[1];
+	}
+	d[0] += c[0];
+	gg[0] = z[0] + g[0] - 0.5;	gg[1] = z[1];
+	Cdiv (n, d, A);
+	Cdiv (g, gg, B);
+	f[0] = log (hypot(gg[0], gg[1])) + A[0] - B[0];
+	f[1] = atan2 (gg[1], gg[0])  + A[1] - B[1];
+	if (x0 < 0.5) {
+		C[0] = M_PI * zz[0];	C[1] = M_PI * zz[1];
+		e = exp (-2*C[1]);	sx = sin (2*C[0]);	cx = cos (2*C[0]);
+		A[0] = -e * sx;	A[1] = e * cx + 1.0;
+		B[0] = e * cx - 1.0;	B[1] = e * sx;
+		Cdiv (A, B, C);
+		f[0] -= M_PI * C[0];	f[1] -= M_PI * C[1];
+	}
+	if (p) {
+		p[0] = f[0];
+		p[1] = f[1];
+	}
+	return (f[0]);
+}
+
+void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
+{
+	/* Here, -1 <= x <= +1, v_ri is an imaginary number [r,i], and we return
+	 * both Pv(x) and Qv(x) in the pq array since no savings in doing it separately.
+	 * Based on recipe in An Atlas of Functions */
+
+	double v[2], a, R[2], r[2], z[2], tmp[2], X[2], ep, em, s[2], c[2], sx, cx, w;
+	double M, L, K, vp1[2], G[2], P[2], Q[2], Xn, x2, g, u, t, f, k, k1, inf;
+	
+	*iter = 0;
+	if (x == -1) {
+    		pq[0] = pq[1] = GMT_d_NaN;
+		return;
+	}
+	else if (x == +1) {
+		pq[0] = 1;
+		pq[1] = GMT_d_NaN;
+		return;
+	}
+
+	a = R[0] = 1.0;	R[1] = 0.0;
+	v[0] = v_ri[0];	v[1] = v_ri[1];
+	Cmul (v, v, z);
+	z[0] = v[0] - z[0];	z[1] = v[1] - z[1];
+	K = 4.0 * sqrt (hypot(z[0], z[1]));
+	vp1[0] = v[0] + 1.0;	vp1[1] = v[1];
+	if ((hypot(vp1[0], vp1[1]) + floor(vp1[1])) == 0.0) {
+		a = 1.0e99;
+		v[0] = -1 - v[0];
+		v[1] = -v[1];
+	}
+	z[0] = 0.5 * M_PI * v[0];	z[1] = 0.5 * M_PI * v[1];
+	ep = exp (z[1]);	em = exp (-z[1]);
+	sincos (z[0], &sx, &cx);
+	s[0] = 0.5 * sx * (em + ep); 
+	s[1] = -0.5 * cx * (em - ep); 
+	c[0] = 0.5 * cx * (em + ep); 
+	c[1] = 0.5 * sx * (em - ep);
+	w = (0.5 + v[0])*(0.5 + v[0]) - v[1] * v[1];
+	z[1] = v[1];
+	while (v[0] <= 6.0) {
+		v[0] = v[0] + 2.0;
+		z[0] = v[0] - 1.0;
+		Cdiv (z, v, tmp);
+		Cmul (R,tmp,r);
+		R[0] = r[0];	R[1] = r[1];
+	}
+	z[0] = v[0] + 1.0;
+	tmp[0] = 0.25;	tmp[1] = 0.0;
+	Cdiv (tmp, z, X);
+	tmp[0] = 0.35 + 6.1 * X[0];	tmp[1] = 6.1*X[1];
+	Cmul (X, tmp, z);
+	z[0] = 1.0 - 3.0*z[0];	z[1] = -3.0*z[1];
+	Cmul (X, z, tmp);
+	G[0] = 1.0 + 5.0 * tmp[0];	G[1] = 5.0 * tmp[1];
+	z[0] = 8.0 * X[0];	z[1] = 8.0 * X[1];
+	M = sqrt(hypot(z[0], z[1]));
+	L = 0.5 * atan2 (z[1], z[0]);
+	tmp[0] = M * cos(L);	tmp[1] = M * sin(L);
+	Cmul (G, X, z);
+	z[0] = 1.0 - 0.5*z[0];	z[1] = -0.5*z[1];
+	Cmul (X, z, r);
+	r[0] = 1.0 - r[0];	r[1] = -r[1];
+	Cmul (R, r, z);
+	Cdiv (z, tmp, R);
+	u = g = 2.0 * x;
+	f = t = 1.0;
+	k = 0.5;
+	x2 = x * x;
+	Xn = 1.0 + (1e8/(1 - x2));
+	k1 = k + 1.0;
+	t = t * x2 * (k*k - w) / (k1*k1 - 0.25);
+	k += 1.0;
+	f += t;
+	k1 = k + 1.0;
+	u = u * x2 * (k*k - w) / (k1*k1 - 0.25);
+	k += 1;
+	g += u;
+	while (k < K || fabs (Xn*t) > fabs(f)) {
+		(*iter)++;
+		k1 = k + 1.0;
+		t = t * x2 * (k*k - w) / (k1*k1 - 0.25);
+		k += 1.0;
+		k1 = k + 1.0;
+		f += t;
+		u = u * x2 * (k*k - w) / (k1*k1 - 0.25);
+		k += 1.0;
+		g += u;
+	}
+	f += (x2*t / (1 - x2));
+	g += (x2*u / (1 - x2));
+	Cmul(s,R,z);
+	Cdiv(c,R,tmp);
+	P[0] = (g*z[0] + f*tmp[0])/sqrt(M_PI);
+	P[1] = (g*z[1] + f*tmp[1])/sqrt(M_PI);
+	Cmul(c,R,z);
+	Cdiv(s,R,tmp);
+	Q[0] = a*sqrt(M_PI)*(g*z[0] - f*tmp[0])/2.0;
+	Q[1] = a*sqrt(M_PI)*(g*z[1] - f*tmp[1])/2.0;
+	pq[0] = P[0];
+	pq[1] = Q[0];
+}
+
+void Cmul (double A[], double B[], double C[])
+{	/* Complex multiplication */
+	C[0] = A[0]*B[0] - A[1]*B[1];
+	C[1] = A[0]*B[1] + A[1]*B[0];
+}
+
+void Cdiv (double A[], double B[], double C[])
+{	/* Complex division */
+	double denom;
+	denom = B[0]*B[0] + B[1]*B[1];
+	C[0] = (A[0]*B[0] + A[1]*B[1])/denom;
+	C[1] = (A[1]*B[0] - A[0]*B[1])/denom;
 }
