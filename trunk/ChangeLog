@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.32 2007-07-03 03:40:20 guru Exp $
+	$Id: ChangeLog,v 1.33 2007-07-07 03:29:11 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-07-06	pwessel
+	* gmt_stat.c		Added Digamma (Psi), P_nu and Q_nu Legendre functions (complex nu)
+	* g{mt,rd}math.c	Added PSI, PV, QV, COT, COTD, ACOT, SEC, SECD, ASEC, CSC, CSCD, ACSC
 
 2007-06-29	remko
 	* makefile.guru:	New system to make manpages
