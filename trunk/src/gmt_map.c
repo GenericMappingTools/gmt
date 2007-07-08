@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.142 2007-06-29 08:07:44 guru Exp $
+ *	$Id: gmt_map.c,v 1.143 2007-07-08 23:22:09 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3695,25 +3695,31 @@ double GMT_great_circle_dist (double lon1, double lat1, double lon2, double lat2
 {
 	/* great circle distance on a sphere in degrees */
 
-	double C, a, b, c;
-	double cosC, cosa, cosb, cosc;
-	double sina, sinb;
+	double cos_c;
+	
+	cos_c = GMT_great_circle_dist_cos (lon1, lat1, lon2, lat2);
+	
+	if (cos_c <= -1.0) return (180.0);
+	if (cos_c >= +1.0) return (0.0);
+	return (R2D * acos (cos_c));
+}
 
-	if ((lat1==lat2) && (lon1==lon2)) return ((double)0.0);
+double GMT_great_circle_dist_cos (double lon1, double lat1, double lon2, double lat2)
+{
+	/* great circle distance on a sphere in cos (angle) */
+
+	double a, b, cosC, cosa, cosb, sina, sinb;
+
+	if ((lat1==lat2) && (lon1==lon2)) return (1.0);
 
 	a=D2R*(90.0-lat2);
 	b=D2R*(90.0-lat1);
-
-	C = D2R*( lon2 - lon1 );
+	cosC = cosd (lon2 - lon1);
 
 	sincos (a, &sina, &cosa);
 	sincos (b, &sinb, &cosb);
-	cosC = cos(C);
 
-	cosc = cosa*cosb + sina*sinb*cosC;
-	if (cosc<-1.0) c=M_PI; else if (cosc>1.0) c=0.0; else c=d_acos(cosc);
-
-	return( c * R2D);
+	return (cosa*cosb + sina*sinb*cosC);
 }
 
 int GMT_great_circle_intersection (double A[], double B[], double C[], double X[], double *CX_dist)

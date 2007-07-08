@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.136 2007-05-30 01:22:08 pwessel Exp $
+ *	$Id: gmt_io.c,v 1.137 2007-07-08 23:22:09 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -468,7 +468,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		/* First read until we get a non-blank, non-comment record, or reach EOF */
 
 		GMT_io.rec_no++;
-		while ((p = fgets (line, BUFSIZ, fp)) && (line[0] == '\n' || (line[0] == '#' && GMT_io.EOF_flag[GMT_IN] != '#'))) GMT_io.rec_no++;
+		while ((p = fgets (line, BUFSIZ, fp)) && (line[0] == '\n' || line[0] == '\r' || (line[0] == '#' && GMT_io.EOF_flag[GMT_IN] != '#'))) GMT_io.rec_no++;
 
 		if (!p) {
 			GMT_io.status = GMT_IO_EOF;

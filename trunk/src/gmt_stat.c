@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.48 2007-07-07 03:29:11 guru Exp $
+ *	$Id: gmt_stat.c,v 1.49 2007-07-08 23:22:09 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -81,7 +81,7 @@
  *	GMT_nrand:	Normally distributed random numbers from N(0,1)
  *	GMT_corrcoeff:	Correlation coefficient.
  *	GMT_psi:	Digamma (psi) function.
- *	GMT_PvQv:	Lenedre functions Pv and Qv for imaginary v and real x (-1/+1).
+ *	GMT_PvQv:	Legedre functions Pv and Qv for imaginary v and real x (-1/+1).
  */
 
 #define GMT_WITH_NO_PS
@@ -2599,19 +2599,24 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 {
 	/* Here, -1 <= x <= +1, v_ri is an imaginary number [r,i], and we return
 	 * both Pv(x) and Qv(x) in the pq array since no savings in doing it separately.
-	 * Based on recipe in An Atlas of Functions */
+	 * Based on recipe in An Atlas of Functions.
+	 * pq[0-1] is real/imag Pv
+	 * pq[2-3] is real/imag Qv
+	 */
 
-	double v[2], a, R[2], r[2], z[2], tmp[2], X[2], ep, em, s[2], c[2], sx, cx, w;
-	double M, L, K, vp1[2], G[2], P[2], Q[2], Xn, x2, g, u, t, f, k, k1, inf;
+	double v[2], a, R[2], r[2], z[2], tmp[2], X[2], ep, em, s[2], c[2];
+	double M, L, K, vp1[2], G[2], Xn, x2, g, u, t, f, k, k1, sx, cx, w;
 	
 	*iter = 0;
 	if (x == -1) {
-    		pq[0] = pq[1] = GMT_d_NaN;
+    		pq[0] = pq[2] = GMT_d_NaN;
+    		pq[1] = pq[3] = 0.0;
 		return;
 	}
 	else if (x == +1) {
 		pq[0] = 1;
-		pq[1] = GMT_d_NaN;
+		pq[2] = GMT_d_NaN;
+    		pq[1] = pq[3] = 0.0;
 		return;
 	}
 
@@ -2688,14 +2693,12 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 	g += (x2*u / (1 - x2));
 	Cmul(s,R,z);
 	Cdiv(c,R,tmp);
-	P[0] = (g*z[0] + f*tmp[0])/sqrt(M_PI);
-	P[1] = (g*z[1] + f*tmp[1])/sqrt(M_PI);
+	pq[0] = (g*z[0] + f*tmp[0])/sqrt(M_PI);
+	pq[1] = (g*z[1] + f*tmp[1])/sqrt(M_PI);
 	Cmul(c,R,z);
 	Cdiv(s,R,tmp);
-	Q[0] = a*sqrt(M_PI)*(g*z[0] - f*tmp[0])/2.0;
-	Q[1] = a*sqrt(M_PI)*(g*z[1] - f*tmp[1])/2.0;
-	pq[0] = P[0];
-	pq[1] = Q[0];
+	pq[2] = a*sqrt(M_PI)*(g*z[0] - f*tmp[0])/2.0;
+	pq[3] = a*sqrt(M_PI)*(g*z[1] - f*tmp[1])/2.0;
 }
 
 void Cmul (double A[], double B[], double C[])
@@ -2711,3 +2714,4 @@ void Cdiv (double A[], double B[], double C[])
 	C[0] = (A[0]*B[0] + A[1]*B[1])/denom;
 	C[1] = (A[1]*B[0] - A[0]*B[1])/denom;
 }
+
