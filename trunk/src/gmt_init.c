@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.289 2007-05-25 19:39:14 pwessel Exp $
+ *	$Id: gmt_init.c,v 1.290 2007-07-08 20:03:41 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3918,11 +3918,13 @@ int GMT_parse_J_option (char *args)
 	 * project_info structure.  The function returns TRUE if an error is encountered.
 	 */
 
-	int i, j, k = 9, n, slash, l_pos[2], p_pos[2], t_pos[2], d_pos[2], id, project = -1, n_slashes = 0, width_given;
+	int i, j, k = 9, n, slash, l_pos[2], p_pos[2], t_pos[2], d_pos[2], id, project = -1;
+	int n_slashes = 0, width_given, keep_pos;
 	BOOLEAN error = FALSE, skip = FALSE;
 	double o_x, o_y, b_x, b_y, c, az;
 	double GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
-	char type, args_cp[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], txt_d[GMT_LONG_TEXT], txt_e[GMT_LONG_TEXT];
+	char type, args_cp[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
+	char txt_d[GMT_LONG_TEXT], txt_e[GMT_LONG_TEXT], keep_char;
 
 	l_pos[0] = l_pos[1] = p_pos[0] = p_pos[1] = t_pos[0] = t_pos[1] = d_pos[0] = d_pos[1] = 0;
 	type = args[0];
@@ -3941,9 +3943,15 @@ int GMT_parse_J_option (char *args)
 			width_given = 1;
 			break;
 	}
-
+	
 	if (strchr ("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz", (int)type) == NULL) return (TRUE);	/* NO valid projection specified */
-	args++;
+	if (width_given > 1) {	/* Temporarily chop off modifier */
+		keep_char = args[i];
+		args[i] = '\0';
+		keep_pos = i;
+	}
+	args++;		/* Skip pass projection flag */
+	keep_pos--;	/* Adjust accordingly */
 
 	for (j = 0; args[j]; j++) if (args[j] == '/') n_slashes++;
 
@@ -4909,13 +4917,15 @@ int GMT_parse_J_option (char *args)
 	 		break;
 	 }
 
-	 if (!project_info.units_pr_degree && project_info.gave_map_width) {
-	 	fprintf (stderr, "%s: GMT SYNTAX ERROR -J%c option: Cannot specify map width with 1:xxxx format\n", GMT_program, type);
-	 	error++;
-	 }
+	if (!project_info.units_pr_degree && project_info.gave_map_width) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -J%c option: Cannot specify map width with 1:xxxx format\n", GMT_program, type);
+		error++;
+	}
 
-	 if (!(type == 'z' || type == 'Z')) project_info.projection = project;
-	 return (error);
+	if (!(type == 'z' || type == 'Z')) project_info.projection = project;
+	if (width_given > 1) args[keep_pos] = keep_char;	/* Restore modifier */
+
+	return (error);
 }
 
 void GMT_free_plot_array (void) {
