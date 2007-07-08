@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.33 2007-07-07 03:29:11 guru Exp $
+	$Id: ChangeLog,v 1.34 2007-07-08 20:03:41 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-07-08	pwessel
+	* gmt_init.c		Suffices h|+|- in -J were mistaken for units
+	 
 2007-07-06	pwessel
 	* gmt_stat.c		Added Digamma (Psi), P_nu and Q_nu Legendre functions (complex nu)
 	* g{mt,rd}math.c	Added PSI, PV, QV, COT, COTD, ACOT, SEC, SECD, ASEC, CSC, CSCD, ACSC
