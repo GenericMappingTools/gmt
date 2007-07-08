@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.34 2007-07-08 20:03:41 guru Exp $
+	$Id: ChangeLog,v 1.35 2007-07-08 23:22:09 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-07-08	pwessel
 	* gmt_init.c		Suffices h|+|- in -J were mistaken for units
+	* gmt_io.c		Blank lines were not recognized under cygwin/SFU
 	 
 2007-07-06	pwessel
 	* gmt_stat.c		Added Digamma (Psi), P_nu and Q_nu Legendre functions (complex nu)
