@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.49 2007-07-08 23:22:09 guru Exp $
+ *	$Id: gmt_stat.c,v 1.50 2007-07-09 23:35:59 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2604,7 +2604,7 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 	 * pq[2-3] is real/imag Qv
 	 */
 
-	double v[2], a, R[2], r[2], z[2], tmp[2], X[2], ep, em, s[2], c[2];
+	double v[2], a[2], R[2], r[2], z[2], tmp[2], X[2], ep, em, s[2], c[2];
 	double M, L, K, vp1[2], G[2], Xn, x2, g, u, t, f, k, k1, sx, cx, w;
 	
 	*iter = 0;
@@ -2620,14 +2620,15 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 		return;
 	}
 
-	a = R[0] = 1.0;	R[1] = 0.0;
+	a[0] = a[1] = R[0] = 1.0;	R[1] = 0.0;
 	v[0] = v_ri[0];	v[1] = v_ri[1];
 	Cmul (v, v, z);
 	z[0] = v[0] - z[0];	z[1] = v[1] - z[1];
 	K = 4.0 * sqrt (hypot(z[0], z[1]));
 	vp1[0] = v[0] + 1.0;	vp1[1] = v[1];
 	if ((hypot(vp1[0], vp1[1]) + floor(vp1[1])) == 0.0) {
-		a = 1.0e99;
+		a[0] = GMT_d_NaN;
+		a[1] = 0.0;
 		v[0] = -1 - v[0];
 		v[1] = -v[1];
 	}
@@ -2697,8 +2698,8 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 	pq[1] = (g*z[1] + f*tmp[1])/sqrt(M_PI);
 	Cmul(c,R,z);
 	Cdiv(s,R,tmp);
-	pq[2] = a*sqrt(M_PI)*(g*z[0] - f*tmp[0])/2.0;
-	pq[3] = a*sqrt(M_PI)*(g*z[1] - f*tmp[1])/2.0;
+	pq[2] = a[0]*sqrt(M_PI)*(g*z[0] - f*tmp[0])/2.0;
+	pq[3] = a[1]*sqrt(M_PI)*(g*z[1] - f*tmp[1])/2.0;
 }
 
 void Cmul (double A[], double B[], double C[])
