@@ -75,7 +75,7 @@ Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical
 Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
 (in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \fIdist\fP.
 Use \fB\-Lp\fP to ensure only points whose orthogonal projections onto the nearest line-segment
-fall within the segments endpoints [Default considers points "beyond" the line\"'s endpoints.
+fall within the segments endpoints [Default considers points "beyond" the line's endpoints.\"'
 #include "explain_-M.txt"
 .TP
 .B \-N

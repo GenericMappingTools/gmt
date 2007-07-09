@@ -1,14 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.35 2007-07-08 23:22:09 guru Exp $
+	$Id: ChangeLog,v 1.36 2007-07-09 01:58:52 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-07-08	pwessel
-	* gmt_init.c		Suffices h|+|- in -J were mistaken for units
-	* gmt_io.c		Blank lines were not recognized under cygwin/SFU
+	* gmt_init.c:		Suffices h|+|- in -J were mistaken for units
+	* gmt_io.c:		Blank lines were not recognized under cygwin/SFU
 	 
 2007-07-06	pwessel
-	* gmt_stat.c		Added Digamma (Psi), P_nu and Q_nu Legendre functions (complex nu)
-	* g{mt,rd}math.c	Added PSI, PV, QV, COT, COTD, ACOT, SEC, SECD, ASEC, CSC, CSCD, ACSC
+	* gmt_stat.c:		Added Digamma (Psi), P_nu and Q_nu Legendre functions (complex nu)
+	* g{mt,rd}math.c:	Added PSI, PV, QV, COT, COTD, ACOT, SEC, SECD, ASEC, CSC, CSCD, ACSC
 
 2007-06-29	remko
 	* makefile.guru:	New system to make manpages
