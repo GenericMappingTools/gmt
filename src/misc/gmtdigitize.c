@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.15 2007-03-24 01:42:07 pwessel Exp $
+ *    $Id: gmtdigitize.c,v 1.16 2007-07-10 03:34:57 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -214,7 +214,7 @@ int main (int argc, char **argv)
 
 	GMT_err_fail (GMT_map_setup (west, east, south, north), "");
 
-	fprintf (stderr, "\n==>   %s version %s  Paul Wessel, SOEST, Apr 22, 2004   <==\n\n", GMT_program, GMT_VERSION);
+	fprintf (stderr, "\n==>   %s version %s  Paul Wessel, SOEST, July 9, 2007   <==\n\n", GMT_program, GMT_VERSION);
 	fprintf (stderr, "================  HOW TO DIGITIZE ================\n\n");
 	fprintf (stderr, "To exit, click the %c button.\n", END_BUTTON_CHAR);
 	if (GMT_io.multi_segments[GMT_OUT]) {
@@ -316,9 +316,9 @@ int main (int argc, char **argv)
 		
 		sincos (rotation, &C.sin_theta, &C.cos_theta);
 		for (i = 0, rms = 0.0; i < 4; i++) {
-			new_x = (X_DIG[i] * C.cos_theta - Y_DIG[i] * C.sin_theta + mean_map_x) * C.map_scale;
-			new_y = (X_DIG[i] * C.sin_theta + Y_DIG[i] * C.cos_theta + mean_map_y) * C.map_scale;
-			dist = hypot (X_MAP[i] - new_x, Y_MAP[i] - new_y);
+			new_x = X_DIG[i] * C.cos_theta - Y_DIG[i] * C.sin_theta;
+			new_y = X_DIG[i] * C.sin_theta + Y_DIG[i] * C.cos_theta;
+			dist = hypot (XP[i] - new_x, YP[i] - new_y);
 			rms += dist * dist;
 		}
 		rms = sqrt (rms / 4.0);
