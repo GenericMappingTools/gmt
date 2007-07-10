@@ -1,9 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.37 2007-07-10 03:34:57 guru Exp $
+	$Id: ChangeLog,v 1.38 2007-07-10 20:06:55 wsmith Exp $
 -----------------------------------------------------------------------------------------
 
+2007-07-10	wsmith
+	* img2mercgrd.c:	Fixed &&/|| logic in lat bounds check when -D set.
+	
 2007-07-09	pwessel
-	* misc/gmtdigitize.c	Wrong coordinates used to calculate rms misfit
+	* misc/gmtdigitize.c:	Wrong coordinates used to calculate rms misfit
 	
 2007-07-08	pwessel
 	* gmt_init.c:		Suffices h|+|- in -J were mistaken for units
