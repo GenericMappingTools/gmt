@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.38 2007-07-10 20:06:55 wsmith Exp $
+	$Id: ChangeLog,v 1.39 2007-07-11 17:55:12 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-07-11	remko
+	* grd2cpt.c:		Bug fix: -E flag did not work unless -T was used.
 
 2007-07-10	wsmith
 	* img2mercgrd.c:	Fixed &&/|| logic in lat bounds check when -D set.
