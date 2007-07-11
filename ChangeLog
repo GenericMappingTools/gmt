@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.39 2007-07-11 17:55:12 remko Exp $
+	$Id: ChangeLog,v 1.40 2007-07-11 20:51:47 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-07-11	remko
 	* grd2cpt.c:		Bug fix: -E flag did not work unless -T was used.
+	* gmt_init.c		Parsing of psxy's -Sf incorrecly scaled a count to inches.
 
 2007-07-10	wsmith
 	* img2mercgrd.c:	Fixed &&/|| logic in lat bounds check when -D set.
