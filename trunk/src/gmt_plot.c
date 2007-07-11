@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.200 2007-06-22 21:36:20 guru Exp $
+ *	$Id: gmt_plot.c,v 1.201 2007-07-11 20:51:48 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4549,6 +4549,10 @@ void GMT_draw_fence (double x[], double y[], double z, int n, struct GMT_FRONTLI
 	}
 	else {
 		ngap = (int) fabs (f->f_gap);
+		if (ngap == 0) {
+			fprintf (stderr, "%s: Warning: Number of front ticks reset from 0 to 1 (check your arguments)\n", GMT_program);
+			ngap = 1;
+		}
 		gap = s[n-1] / (ngap - 1);
 		if (ngap == 1) dist = 0.5 * s[n-1];
 	}
