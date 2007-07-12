@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.291 2007-07-11 20:51:48 guru Exp $
+ *	$Id: gmt_init.c,v 1.292 2007-07-12 13:00:43 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3919,17 +3919,18 @@ int GMT_parse_J_option (char *args)
 	 */
 
 	int i, j, k = 9, n, slash, l_pos[2], p_pos[2], t_pos[2], d_pos[2], id, project = -1;
-	int n_slashes = 0, width_given, keep_pos;
+	int n_slashes = 0, width_given, last_pos;
 	BOOLEAN error = FALSE, skip = FALSE;
 	double o_x, o_y, b_x, b_y, c, az;
 	double GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char type, args_cp[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
-	char txt_d[GMT_LONG_TEXT], txt_e[GMT_LONG_TEXT], keep_char;
+	char txt_d[GMT_LONG_TEXT], txt_e[GMT_LONG_TEXT], last_char;
 
 	l_pos[0] = l_pos[1] = p_pos[0] = p_pos[1] = t_pos[0] = t_pos[1] = d_pos[0] = d_pos[1] = 0;
 	type = args[0];
-	i = strlen (args) - 1;	/* Position of last character in this string */
-	switch (args[i]) {	/* Check for what kind of width is given (only used if upper case is given below */
+	last_pos = strlen (args) - 1;	/* Position of last character in this string */
+	last_char = args[last_pos];
+	switch (last_char) {	/* Check for what kind of width is given (only used if upper case is given below */
 		case 'h':	/* Want map HEIGHT instead */
 			width_given = 2;
 			break;
@@ -3945,13 +3946,9 @@ int GMT_parse_J_option (char *args)
 	}
 	
 	if (strchr ("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz", (int)type) == NULL) return (TRUE);	/* NO valid projection specified */
-	if (width_given > 1) {	/* Temporarily chop off modifier */
-		keep_char = args[i];
-		args[i] = '\0';
-		keep_pos = i;
-	}
+	if (width_given > 1) args[last_pos] = '\0';	/* Temporarily chop off modifier */
 	args++;		/* Skip pass projection flag */
-	keep_pos--;	/* Adjust accordingly */
+	last_pos--;	/* Adjust accordingly */
 
 	for (j = 0; args[j]; j++) if (args[j] == '/') n_slashes++;
 
@@ -4923,7 +4920,7 @@ int GMT_parse_J_option (char *args)
 	}
 
 	if (!(type == 'z' || type == 'Z')) project_info.projection = project;
-	if (width_given > 1) args[keep_pos] = keep_char;	/* Restore modifier */
+	if (width_given > 1) args[last_pos] = last_char;	/* Restore modifier */
 
 	return (error);
 }
