@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.50 2007-07-09 23:35:59 guru Exp $
+ *	$Id: gmt_stat.c,v 1.51 2007-07-16 21:06:33 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -112,8 +112,6 @@ double GMT_gammq (double a, double x);
 void GMT_gamma_cf (double *gammcf, double a, double x, double *gln);
 void GMT_gamma_ser (double *gamser, double a, double x, double *gln);
 void GMT_cumpoisson (double k, double mu, double *prob);
-void Cmul (double A[], double B[], double C[]);
-void Cdiv (double A[], double B[], double C[]);
 
 #if HAVE_J0 == 0
 double GMT_j0 (double x);
@@ -2531,6 +2529,21 @@ double GMT_corrcoeff_f (float *x, float *y, size_t n, int mode)
 	return (r);
 }
 
+
+static void Cmul (double A[], double B[], double C[])
+{	/* Complex multiplication */
+	C[0] = A[0]*B[0] - A[1]*B[1];
+	C[1] = A[0]*B[1] + A[1]*B[0];
+}
+
+static void Cdiv (double A[], double B[], double C[])
+{	/* Complex division */
+	double denom;
+	denom = B[0]*B[0] + B[1]*B[1];
+	C[0] = (A[0]*B[0] + A[1]*B[1])/denom;
+	C[1] = (A[1]*B[0] - A[0]*B[1])/denom;
+}
+
 double GMT_psi (double zz[], double p[])
 {
 /* Psi     Psi (or Digamma) function for complex arguments z.
@@ -2595,31 +2608,35 @@ double GMT_psi (double zz[], double p[])
 	return (f[0]);
 }
 
+#ifndef M_SQRT_PI
+#define M_SQRT_PI 1.772453850905516
+#endif
+
 void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 {
 	/* Here, -1 <= x <= +1, v_ri is an imaginary number [r,i], and we return
 	 * both Pv(x) and Qv(x) in the pq array since no savings in doing it separately.
-	 * Based on recipe in An Atlas of Functions.
+	 * Based on recipe in Spanier/Oldham: An Atlas of Functions.
 	 * pq[0-1] is real/imag Pv
 	 * pq[2-3] is real/imag Qv
 	 */
 
 	double v[2], a[2], R[2], r[2], z[2], tmp[2], X[2], ep, em, s[2], c[2];
-	double M, L, K, vp1[2], G[2], Xn, x2, g, u, t, f, k, k1, sx, cx, w;
+	double M, L, K, vp1[2], G[2], Xn, x2, g, u, t, f, k, k1, sx, cx, w, sL, cL;
 	
 	*iter = 0;
-	if (x == -1) {
+	if (x == -1) {	/* Both blow up */
     		pq[0] = pq[2] = GMT_d_NaN;
     		pq[1] = pq[3] = 0.0;
 		return;
 	}
-	else if (x == +1) {
+	else if (x == +1) {	/* Pv = 1, Qv = inf */
 		pq[0] = 1;
 		pq[2] = GMT_d_NaN;
     		pq[1] = pq[3] = 0.0;
 		return;
 	}
-
+	/* General case of |x| < 1 */
 	a[0] = a[1] = R[0] = 1.0;	R[1] = 0.0;
 	v[0] = v_ri[0];	v[1] = v_ri[1];
 	Cmul (v, v, z);
@@ -2629,20 +2646,20 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 	if ((hypot(vp1[0], vp1[1]) + floor(vp1[1])) == 0.0) {
 		a[0] = GMT_d_NaN;
 		a[1] = 0.0;
-		v[0] = -1 - v[0];
+		v[0] = -1.0 - v[0];
 		v[1] = -v[1];
 	}
 	z[0] = 0.5 * M_PI * v[0];	z[1] = 0.5 * M_PI * v[1];
 	ep = exp (z[1]);	em = exp (-z[1]);
 	sincos (z[0], &sx, &cx);
-	s[0] = 0.5 * sx * (em + ep); 
+	s[0] = +0.5 * sx * (em + ep); 
 	s[1] = -0.5 * cx * (em - ep); 
-	c[0] = 0.5 * cx * (em + ep); 
-	c[1] = 0.5 * sx * (em - ep);
+	c[0] = +0.5 * cx * (em + ep); 
+	c[1] = +0.5 * sx * (em - ep);
 	w = (0.5 + v[0])*(0.5 + v[0]) - v[1] * v[1];
 	z[1] = v[1];
 	while (v[0] <= 6.0) {
-		v[0] = v[0] + 2.0;
+		v[0] += 2.0;
 		z[0] = v[0] - 1.0;
 		Cdiv (z, v, tmp);
 		Cmul (R,tmp,r);
@@ -2659,7 +2676,8 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 	z[0] = 8.0 * X[0];	z[1] = 8.0 * X[1];
 	M = sqrt(hypot(z[0], z[1]));
 	L = 0.5 * atan2 (z[1], z[0]);
-	tmp[0] = M * cos(L);	tmp[1] = M * sin(L);
+	sincos (L, &sL, &cL);
+	tmp[0] = M * cL;	tmp[1] = M * sL;
 	Cmul (G, X, z);
 	z[0] = 1.0 - 0.5*z[0];	z[1] = -0.5*z[1];
 	Cmul (X, z, r);
@@ -2670,14 +2688,14 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 	f = t = 1.0;
 	k = 0.5;
 	x2 = x * x;
-	Xn = 1.0 + (1e8/(1 - x2));
+	Xn = 1.0 + (1e8/(1.0 - x2));
 	k1 = k + 1.0;
 	t = t * x2 * (k*k - w) / (k1*k1 - 0.25);
 	k += 1.0;
 	f += t;
 	k1 = k + 1.0;
 	u = u * x2 * (k*k - w) / (k1*k1 - 0.25);
-	k += 1;
+	k += 1.0;
 	g += u;
 	while (k < K || fabs (Xn*t) > fabs(f)) {
 		(*iter)++;
@@ -2690,29 +2708,15 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 		k += 1.0;
 		g += u;
 	}
-	f += (x2*t / (1 - x2));
-	g += (x2*u / (1 - x2));
+	L = x2 / (1.0 - x2);
+	f += (t * L);
+	g += (u * L);
 	Cmul(s,R,z);
 	Cdiv(c,R,tmp);
-	pq[0] = (g*z[0] + f*tmp[0])/sqrt(M_PI);
-	pq[1] = (g*z[1] + f*tmp[1])/sqrt(M_PI);
+	pq[0] = (g*z[0] + f*tmp[0])/M_SQRT_PI;
+	pq[1] = (g*z[1] + f*tmp[1])/M_SQRT_PI;
 	Cmul(c,R,z);
 	Cdiv(s,R,tmp);
-	pq[2] = a[0]*sqrt(M_PI)*(g*z[0] - f*tmp[0])/2.0;
-	pq[3] = a[1]*sqrt(M_PI)*(g*z[1] - f*tmp[1])/2.0;
+	pq[2] = a[0]*M_SQRT_PI*(g*z[0] - f*tmp[0])/2.0;
+	pq[3] = a[1]*M_SQRT_PI*(g*z[1] - f*tmp[1])/2.0;
 }
-
-void Cmul (double A[], double B[], double C[])
-{	/* Complex multiplication */
-	C[0] = A[0]*B[0] - A[1]*B[1];
-	C[1] = A[0]*B[1] + A[1]*B[0];
-}
-
-void Cdiv (double A[], double B[], double C[])
-{	/* Complex division */
-	double denom;
-	denom = B[0]*B[0] + B[1]*B[1];
-	C[0] = (A[0]*B[0] + A[1]*B[1])/denom;
-	C[1] = (A[1]*B[0] - A[0]*B[1])/denom;
-}
-
