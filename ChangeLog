@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.41 2007-07-16 21:06:33 guru Exp $
+	$Id: ChangeLog,v 1.42 2007-07-17 19:50:43 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-07-17	pwessel
+	* grdedit.c:		Disallow -T for Surfer grids since they dont support two
+				kinds of registration.
+				
 2007-07-16	pwessel
 	* grd2xyz.c:		Bug fix (Windows only): Did not switch to binary mode when
 				-Z specified binary output.
