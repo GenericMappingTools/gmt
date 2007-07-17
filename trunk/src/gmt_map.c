@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.143 2007-07-08 23:22:09 guru Exp $
+ *	$Id: gmt_map.c,v 1.144 2007-07-17 19:50:43 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7163,6 +7163,11 @@ double GMT_geodesic_dist_degree (double lonS, double latS, double lonE, double l
 	if (dist < 0.0) dist += 360.0;
 
 	return (dist);
+}
+
+double GMT_geodesic_dist_cos (double lonS, double latS, double lonE, double latE)
+{	/* Convenience function to get cosine instead */
+	return (cosd (GMT_geodesic_dist_degree (lonS, latS, lonE, latE)));
 }
 
 double GMT_geodesic_dist_meter (double lonS, double latS, double lonE, double latE)

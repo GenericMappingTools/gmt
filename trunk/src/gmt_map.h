@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.15 2007-07-08 23:22:09 guru Exp $
+ *	$Id: gmt_map.h,v 1.16 2007-07-17 19:50:43 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,6 +26,7 @@ EXTERN_MSC double GMT_az_backaz_sphere (double lonE, double latE, double lonS, d
 EXTERN_MSC double GMT_geodesic_dist_degree (double lonS, double latS, double lonE, double latE);
 EXTERN_MSC double GMT_geodesic_dist_km (double lonS, double latS, double lonE, double latE);
 EXTERN_MSC double GMT_geodesic_dist_meter (double lonS, double latS, double lonE, double latE);
+EXTERN_MSC double GMT_geodesic_dist_cos (double lonS, double latS, double lonE, double latE);
 EXTERN_MSC double GMT_great_circle_dist (double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC double GMT_great_circle_dist_cos (double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC double GMT_half_map_width (double y);
