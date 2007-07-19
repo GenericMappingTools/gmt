@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.7 2007-02-02 16:23:20 pwessel Exp $
+/*	$Id: utilmeca.c,v 1.8 2007-07-19 01:41:58 remko Exp $
  *    Copyright (c) 1996-2007 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -103,7 +103,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         i = -1;
         increment = 1;
         str = meca.NP1.str;
-        while(str <= meca.NP1.str + 180.) {
+        while(str <= meca.NP1.str + 180. + EPSIL) {
             i++;
             radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -114,7 +114,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         if(fabs(fault + 1.) < EPSIL) {
             /* normal fault, close first compressing part */
             str = meca.NP1.str + 180.; 
-            while(str >= meca.NP1.str) {
+            while(str >= meca.NP1.str - EPSIL) {
                 i++;
                 sincosd (str, &si, &co);
                 x[i] = x0 + si * radius_size;
@@ -127,7 +127,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         }
         /* second nodal plane part */
         str = meca.NP2.str;
-        while(str <= meca.NP2.str + 180.) {
+        while(str <= meca.NP2.str + 180. + EPSIL) {
             i++;
             radius = proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -143,7 +143,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         else {
             /* normal fault, close second compressing part */
             str = meca.NP2.str + 180.;
-            while(str >= meca.NP2.str) {
+            while(str >= meca.NP2.str - EPSIL) {
                 i++;
                 sincosd (str, &si, &co);
                 x[i] = x0 + si * radius_size;
@@ -174,7 +174,9 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         /* second compressing part */
         i = 0;
         str = meca.NP1.str + 180.;
-        while(increment == 1 ? str <= meca.NP1.str + 270. : str >= meca.NP1.str + 90.) {
+        while(increment == 1 ? 
+	      str <= meca.NP1.str + 270. + EPSIL : 
+	      str >= meca.NP1.str + 90. - EPSIL) {
             sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
             y[i] = y0 + co * radius_size;
@@ -194,7 +196,8 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         if(meca.NP1.str > N_axis.str)
             meca.NP1.str -= 360.;
         str = meca.NP1.str;
-        while(fabs(90. - meca.NP1.dip) < EPSIL ? str <= meca.NP1.str : str <= N_axis.str) {
+        while(fabs(90. - meca.NP1.dip) < EPSIL ? 
+	      str <= meca.NP1.str + EPSIL : str <= N_axis.str + EPSIL) {
             i++;
             radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -211,7 +214,8 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         if(fault * (meca.NP2.str - N_axis.str) < -EPSIL)
             meca.NP2.str += fault * 360.;
         str = fabs(90. - meca.NP2.dip) < EPSIL ? meca.NP2.str : N_axis.str;
-        while(increment == 1. ? str <= meca.NP2.str : str >= meca.NP2.str) {
+        while(increment == 1. ? 
+	      str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
             i++;
             radius = proj_radius(meca.NP2.str - (1. + fault) * 90., meca.NP2.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -227,7 +231,8 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         if(increment * (meca.NP1.str - meca.NP2.str) < - EPSIL)
             meca.NP1.str += increment * 360.;
         str = meca.NP2.str;
-        while(increment == 1. ? str <= meca.NP1.str : str >= meca.NP1.str) {
+        while(increment == 1. ? 
+	      str <= meca.NP1.str + EPSIL : str >= meca.NP1.str - EPSIL) {
             i++;
             sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
@@ -245,7 +250,8 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
             meca.NP1.str += 360.;
         increment = -1.;
         str = meca.NP1.str;
-        while(fabs(90. - meca.NP1.dip) < EPSIL ? str >= meca.NP1.str : str >= N_axis.str) {
+        while(fabs(90. - meca.NP1.dip) < EPSIL ? 
+	      str >= meca.NP1.str -EPSIL : str >= N_axis.str - EPSIL) {
             i++;
             radius = proj_radius(meca.NP1.str - 180., meca.NP1.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -260,7 +266,8 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         if(fault * (N_axis.str - meca.NP2.str) < - EPSIL)
             meca.NP2.str -= fault * 360.; 
         str = fabs(90. - meca.NP2.dip) < EPSIL ? meca.NP2.str : N_axis.str;
-        while(increment == 1. ? str <= meca.NP2.str : str >= meca.NP2.str) {
+        while(increment == 1. ? 
+	      str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
             i++;
             radius = proj_radius(meca.NP2.str - (1. - fault) * 90., meca.NP2.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -276,7 +283,8 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         if(increment * (meca.NP1.str - meca.NP2.str) < - EPSIL)
             meca.NP1.str += increment * 360.;
         str = meca.NP2.str;
-        while(increment == 1. ? str <= meca.NP1.str : str >= meca.NP1.str) {
+        while(increment == 1. ? 
+	      str <= meca.NP1.str + EPSIL : str >= meca.NP1.str - EPSIL) {
             i++;
             sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
@@ -325,7 +333,7 @@ double ps_meca(double x0,double y0,st_me meca,double size)
         i = -1;
         increment = 1;
         str = meca.NP1.str;
-        while(str <= meca.NP1.str + 180.) {
+        while(str <= meca.NP1.str + 180. + EPSIL) {
             i++;
             radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;   
             sincosd (str, &si, &co);
@@ -339,7 +347,7 @@ double ps_meca(double x0,double y0,st_me meca,double size)
         i = -1;
         increment = 1;
         str = meca.NP2.str;
-        while(str <= meca.NP2.str + 180.) {
+        while(str <= meca.NP2.str + 180. + EPSIL) {
             i++;
             radius = proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -388,7 +396,7 @@ double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
                i = -1;
                increment = 1;
                str = meca.NP1.str;
-               while(str <= meca.NP1.str + 180.) {
+               while(str <= meca.NP1.str + 180. + EPSIL) {
                    i++;
                    radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
                    sincosd (str, &si, &co);
@@ -404,7 +412,7 @@ double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
                i = -1;
                increment = 1;
                str = meca.NP2.str;
-               while(str <= meca.NP2.str + 180.) {
+               while(str <= meca.NP2.str + 180. + EPSIL) {
                    i++;
                    radius = proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
                    sincosd (str, &si, &co);
@@ -736,7 +744,7 @@ double proj_radius(double str1,double dip1,double str)
         printf("\nFor ps_mechanism r == 1 for str = str1");
         printf("\n            else r == 0. is used.");
 */
-        r = (str == str1 || str == str1 + 180) ? 1. : 0.;
+        r = (fabs(str - str1) < EPSIL || fabs(str - str1 - 180) < EPSIL) ? 1. : 0.;
     }
     else {
         dip = atan(tand(dip1) * sind(str - str1));
