@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.42 2007-07-17 19:50:43 guru Exp $
+	$Id: ChangeLog,v 1.43 2007-07-19 01:41:57 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-07-18	remko
+	* meca/utilmeca.c:	Make sure that checks on floating point numbers work well, even
+				in case of small round off errors. Thanks to Peter Lombard.
 
 2007-07-17	pwessel
 	* grdedit.c:		Disallow -T for Surfer grids since they dont support two
@@ -9,10 +13,9 @@
 2007-07-16	pwessel
 	* grd2xyz.c:		Bug fix (Windows only): Did not switch to binary mode when
 				-Z specified binary output.
-	.
 2007-07-11	remko
 	* grd2cpt.c:		Bug fix: -E flag did not work unless -T was used.
-	* gmt_init.c		Parsing of psxy's -Sf incorrecly scaled a count to inches.
+	* gmt_init.c:		Parsing of psxy's -Sf incorrecly scaled a count to inches.
 
 2007-07-10	wsmith
 	* img2mercgrd.c:	Fixed &&/|| logic in lat bounds check when -D set.
