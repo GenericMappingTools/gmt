@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.16 2007-07-10 03:34:57 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.17 2007-07-30 22:26:20 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -25,7 +25,9 @@
  *
  * Author:	Paul Wessel
  * Date:	19-MAY-2000
- * Version:	1.1,
+ * Version:	1.1
+ *
+ * Updated:	7/30/2007 PW: Also handle -Jx scaling where scaling is not 1:1
  *
  */
  
@@ -55,7 +57,7 @@
 /*===========================================================================*/
 
 struct GMTDIGITIZE_CTRL {	/* Things needed while digitizing */
-	double sin_theta, cos_theta, map_x0, map_y0, map_scale, INV_LPI;
+	double sin_theta, cos_theta, map_x0, map_y0, map_scale[2], INV_LPI;
 };
 
 int main (int argc, char **argv)
@@ -282,19 +284,28 @@ int main (int argc, char **argv)
 	
 		/* First calculate map scale */
 
-		sum_dig_distance = sum_map_distance = 0.0;
-		for (i = 0; i < 4; i++) for (j = i + 1; j < 4; j++) {	/* Calculate all interpoint distances */
-			sum_dig_distance += hypot ((X_DIG[i] - X_DIG[j]), (Y_DIG[i] - Y_DIG[j]));
-			sum_map_distance += hypot ((X_MAP[i] - X_MAP[j]), (Y_MAP[i] - Y_MAP[j]));
+		if (GMT_IS_MAPPING) {	/* x and y scale is the same */
+			sum_dig_distance = sum_map_distance = 0.0;
+			for (i = 0; i < 4; i++) for (j = i + 1; j < 4; j++) {	/* Calculate all interpoint distances */
+				sum_dig_distance += hypot ((X_DIG[i] - X_DIG[j]), (Y_DIG[i] - Y_DIG[j]));
+				sum_map_distance += hypot ((X_MAP[i] - X_MAP[j]), (Y_MAP[i] - Y_MAP[j]));
+			}
+			C.map_scale[0] = C.map_scale[1] = sum_map_distance / sum_dig_distance;	/* Get average scale */
 		}
-		C.map_scale = sum_map_distance / sum_dig_distance;	/* Get average scale */
-		
+		else {	/* Linear scale may differ in x/y */
+			sum_dig_distance = hypot ((X_DIG[1] - X_DIG[0]), (Y_DIG[1] - Y_DIG[0])) + hypot ((X_DIG[2] - X_DIG[3]), (Y_DIG[2] - Y_DIG[3]));
+			sum_map_distance = hypot ((X_MAP[1] - X_MAP[0]), (Y_MAP[1] - Y_MAP[0])) + hypot ((X_MAP[2] - X_MAP[3]), (Y_MAP[2] - Y_MAP[3]));
+			C.map_scale[0] = sum_map_distance / sum_dig_distance;	/* Get average x scale based on ~horizontal line */
+			sum_dig_distance = hypot ((X_DIG[3] - X_DIG[0]), (Y_DIG[3] - Y_DIG[0])) + hypot ((X_DIG[2] - X_DIG[1]), (Y_DIG[2] - Y_DIG[1]));
+			sum_map_distance = hypot ((X_MAP[3] - X_MAP[0]), (Y_MAP[3] - Y_MAP[0])) + hypot ((X_MAP[2] - X_MAP[1]), (Y_MAP[2] - Y_MAP[1]));
+			C.map_scale[1] = sum_map_distance / sum_dig_distance;	/* Get average y scale based on ~vertictal line */
+		}
 		/* Then undo the scale and find mean positions */
 
 		mean_map_x = mean_map_y = mean_dig_x = mean_dig_y = 0.0;
 		for (i = 0; i < 4; i++) {
-			XP[i] = X_MAP[i] / C.map_scale;
-			YP[i] = Y_MAP[i] / C.map_scale;
+			XP[i] = X_MAP[i] / C.map_scale[0];
+			YP[i] = Y_MAP[i] / C.map_scale[1];
 			mean_map_x += XP[i];
 			mean_map_y += YP[i];
 			mean_dig_x += X_DIG[i];
@@ -330,10 +341,10 @@ int main (int argc, char **argv)
 			ok = FALSE;
 		}
 	}
-	if (gmtdefs.verbose) fprintf (stderr, "\nFound: rotation = %.3f, map_scale = %g, rms = %g\n\n", rotation * R2D, C.map_scale, rms);
+	if (gmtdefs.verbose) fprintf (stderr, "\nFound: rotation = %.3f, map_scale = %g/%g, rms = %g\n\n", rotation * R2D, C.map_scale[0], C.map_scale[1], rms);
 	
-	C.map_x0 = (mean_map_x - mean_dig_x * C.cos_theta + mean_dig_y * C.sin_theta) * C.map_scale;
-	C.map_y0 = (mean_map_y - mean_dig_x * C.sin_theta - mean_dig_y * C.cos_theta) * C.map_scale;
+	C.map_x0 = (mean_map_x - mean_dig_x * C.cos_theta + mean_dig_y * C.sin_theta) * C.map_scale[0];
+	C.map_y0 = (mean_map_y - mean_dig_x * C.sin_theta - mean_dig_y * C.cos_theta) * C.map_scale[1];
 	
 	utm_correct = (project_info.projection == GMT_UTM && !project_info.north_pole) ? GMT_FALSE_NORTHING : 0.0;
 	
@@ -346,8 +357,8 @@ int main (int argc, char **argv)
 	
 		/* Set correct GMT min/max values in light of actual scale */
 	
-		xmin /= C.map_scale;	xmax /= C.map_scale;
-		ymin /= C.map_scale;	ymax /= C.map_scale;
+		xmin /= C.map_scale[0];	xmax /= C.map_scale[0];
+		ymin /= C.map_scale[1];	ymax /= C.map_scale[1];
 	
 		/* Convert inches to chosen MEASURE */
 		xmin *= inch_to_unit;
@@ -519,8 +530,8 @@ int get_digitize_xy (int digunit, double *xmap, double *ymap, struct GMTDIGITIZE
 
 	/* Undo rotation and scaling to give map inches */
 	
-	*xmap = (x_raw * C->cos_theta - y_raw * C->sin_theta) * C->map_scale + C->map_x0;
-	*ymap = (x_raw * C->sin_theta + y_raw * C->cos_theta) * C->map_scale + C->map_y0;
+	*xmap = (x_raw * C->cos_theta - y_raw * C->sin_theta) * C->map_scale[0] + C->map_x0;
+	*ymap = (x_raw * C->sin_theta + y_raw * C->cos_theta) * C->map_scale[1] + C->map_y0;
 	
 	return (button);
 }

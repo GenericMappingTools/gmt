@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.44 2007-07-30 20:25:38 guru Exp $
+	$Id: ChangeLog,v 1.45 2007-07-30 22:26:20 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-07-30	pwessel
 	* psxy.c:		For -Sb|B, clip bars extending outside -R (unless -N is on)
 	* psxyz.c		Same
+	* misc/gmtdigitize.c:	Must use separate x- and y-scales if -Jx is specified
 	
 2007-07-18	remko
 	* meca/utilmeca.c:	Make sure that checks on floating point numbers work well, even
