@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.43 2007-07-19 01:41:57 remko Exp $
+	$Id: ChangeLog,v 1.44 2007-07-30 20:25:38 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-07-30	pwessel
+	* psxy.c:		For -Sb|B, clip bars extending outside -R (unless -N is on)
+	* psxyz.c		Same
+	
 2007-07-18	remko
 	* meca/utilmeca.c:	Make sure that checks on floating point numbers work well, even
 				in case of small round off errors. Thanks to Peter Lombard.
