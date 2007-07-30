@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.45 2007-07-30 22:26:20 guru Exp $
+	$Id: ChangeLog,v 1.46 2007-07-30 22:29:28 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-07-30	pwessel
@@ -12,7 +12,7 @@
 				in case of small round off errors. Thanks to Peter Lombard.
 
 2007-07-17	pwessel
-	* grdedit.c:		Disallow -T for Surfer grids since they dont support two
+	* grdedit.c:		Disallow -T for Surfer grids since they don't support two
 				kinds of registration.
 				
 2007-07-16	pwessel
@@ -20,7 +20,7 @@
 				-Z specified binary output.
 2007-07-11	remko
 	* grd2cpt.c:		Bug fix: -E flag did not work unless -T was used.
-	* gmt_init.c:		Parsing of psxy's -Sf incorrecly scaled a count to inches.
+	* gmt_init.c:		Parsing of psxy's -Sf incorrectly scaled a count to inches.
 
 2007-07-10	wsmith
 	* img2mercgrd.c:	Fixed &&/|| logic in lat bounds check when -D set.
