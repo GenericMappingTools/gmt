@@ -11,7 +11,7 @@ psxyz \- Plot lines, polygons, and symbols in 3-D
 [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] 
 [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ] 
 [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ] 
-[ GMT_V_OPT ] [ OPT(W)[\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_t_OPT ] [ GMT_c_OPT ] 
+[ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_t_OPT ] [ GMT_c_OPT ] 
 [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBpsxyz\fP reads (x,y,z) triplets from \fIfiles\fP [or standard input] and
@@ -231,6 +231,8 @@ zdash.  \fIsize\fP is the length of a short vertical (z-dir) line segment.
 .B \-W
 Set pen attributes for lines or the outline of symbols.  [Defaults: width = 1, color = black, texture = solid].
 #include "explain_pen.txt"
+A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
+\fB-\fP will set outline pen color and turn off symbol fill.
 #include "explain_-XY.txt"
 .TP
 .B \-Z

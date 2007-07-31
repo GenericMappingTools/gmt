@@ -1,7 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.46 2007-07-30 22:29:28 guru Exp $
+	$Id: ChangeLog,v 1.47 2007-07-31 19:02:04 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-07-31	pwessel
+	* psxy.c:		-E.../[-|+]<pen> where + means apply cpt color (-C) to symbol & bar
+					- means apply to bar only (no fill).  Likewise, -W[+|-]<pen> controls
+					if -C sets outline (-) or both fill and outline (+)
+	* psxyz.c		-W[+|-]<pen> controls if -C sets outline (-) or both fill and outline (+)
+	
 2007-07-30	pwessel
 	* psxy.c:		For -Sb|B, clip bars extending outside -R (unless -N is on)
 	* psxyz.c		Same
