@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.304 2007-06-27 03:18:40 guru Exp $
+ *	$Id: gmt_support.c,v 1.305 2007-08-02 04:08:09 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7842,7 +7842,7 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 	sign = (val < 0.0) ? -1 : 1;
 
 	level = do_minutes + do_seconds;		/* 0, 1, or 2 */
-	type = GMT_plot_calclock.geo.n_sec_decimals;
+	type = (GMT_plot_calclock.geo.n_sec_decimals > 0) ? 1 : 0;
 
 	if (fmt == -1 && lonlat) {	/* the r in r-theta */
 		sprintf (format, "%s", gmtdefs.d_format);

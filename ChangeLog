@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.47 2007-07-31 19:02:04 guru Exp $
+	$Id: ChangeLog,v 1.48 2007-08-02 04:08:08 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-08-01	pwessel
+	* gmt_support.c:	ddd:mm.xx (2 or more x) failed.
+	
 2007-07-31	pwessel
 	* psxy.c:		-E.../[-|+]<pen> where + means apply cpt color (-C) to symbol & bar
 					- means apply to bar only (no fill).  Likewise, -W[+|-]<pen> controls
