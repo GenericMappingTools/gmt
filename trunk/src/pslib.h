@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.40 2007-06-05 14:22:44 remko Exp $
+ *	$Id: pslib.h,v 1.41 2007-08-03 02:52:35 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -20,8 +20,8 @@
  * This include file must be included by all programs using pslib.a
  *
  * Author:	Paul Wessel
- * Version:	4.1
- * Date:	02-JUN-2004
+ * Version:	4.2
+ * Date:	02-AUG-2007
  */
 
 #ifdef __cplusplus
@@ -57,13 +57,30 @@ extern "C" {
 #define PSL_ARC_END		2
 #define PSL_ARC_DRAW		3
 
+#define PSL_MAX_EPS_FONTS	6
+
 struct EPS {    /* Holds info for eps files */
-        int x0, x1, y0, y1;	/* Bounding box values in points */
-	int portrait;		/* TRUE if start of plot was portrait */
-	int clip_level;		/* Add/sub 1 as we clip/unclip - should end at 0 */
-        int fontno[6];		/* Array with font ids used (skip if -1). 6 is max fonts used in GMT anot/labels */
-        char *name;		/* User name */
-        char *title;		/* Plot title */
+/* For Encapsulated PostScript Headers:
+
+	You will need to supply a pointer to an EPS structure in order to
+	get correct information in the EPS header.  If you pass a NULL pointer
+	instead you will get default values for the BoundingBox plus no
+	info is provided about the users name, document title, and fonts used.
+	To fill in the structure you must:
+
+	- Determine the extreme dimensions of your plot in points (1/72 inch).
+	- Supply the user's name (or NULL)
+	- Supply the document's title (or NULL)
+	- Set the font values to the ids of the fonts used  First unused font must be set
+ 	  to -1.  E.g., if 4 fonts are used, font[0], font[1], font[2], and
+	  font[3] must contain the integer ID of these fonts; font[4] = -1
+*/
+        int x0, x1, y0, y1;		/* Bounding box values in points */
+	int portrait;			/* TRUE if start of plot was portrait */
+	int clip_level;			/* Add/sub 1 as we clip/unclip - should end at 0 */
+        int fontno[PSL_MAX_EPS_FONTS];	/* Array with font ids used (skip if -1). 6 is max fonts used in GMT anot/labels */
+        char *name;			/* User name */
+        char *title;			/* Plot title */
 };
 
 struct imageinfo {
@@ -82,12 +99,14 @@ struct imageinfo {
 
 #define	RAS_MAGIC	0x59a66a95	/* Magic number for Sun rasterfile */
 #define EPS_MAGIC	0x25215053	/* Magic number for EPS file */
-#define RT_OLD		0	/* Old-style, unencoded Sun rasterfile */
-#define RT_STANDARD	1	/* Standard, unencoded Sun rasterfile */
-#define RT_BYTE_ENCODED	2	/* Run-length-encoded Sun rasterfile */
-#define RT_FORMAT_RGB	3	/* [X]RGB instead of [X]BGR Sun rasterfile */
-#define RMT_NONE	0	/* maplength is expected to be 0 */
-#define RMT_EQUAL_RGB	1	/* red[maplength/3], green[], blue[] follow */
+#define RT_OLD		0		/* Old-style, unencoded Sun rasterfile */
+#define RT_STANDARD	1		/* Standard, unencoded Sun rasterfile */
+#define RT_BYTE_ENCODED	2		/* Run-length-encoded Sun rasterfile */
+#define RT_FORMAT_RGB	3		/* [X]RGB instead of [X]BGR Sun rasterfile */
+#define RMT_NONE	0		/* maplength is expected to be 0 */
+#define RMT_EQUAL_RGB	1		/* red[maplength/3], green[], blue[] follow */
+
+/* Public functions */
 
 EXTERN_MSC int ps_line (double *x, double *y, int n, int type, int close, int split);
 EXTERN_MSC int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_width, int *rgb, const char *encoding, struct EPS *eps);
@@ -143,7 +162,7 @@ EXTERN_MSC void ps_textclip (double x[], double y[], int m, double angle[], char
 EXTERN_MSC void ps_transrotate (double x, double y, double angle);
 EXTERN_MSC void ps_triangle (double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_vector (double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], int outline);
-EXTERN_MSC unsigned char *ps_load_image (char *file, struct imageinfo *header);
+EXTERN_MSC unsigned char *ps_load_image (char *file, struct imageinfo *header, BOOLEAN verbose);
 EXTERN_MSC void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, double font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3]);
 EXTERN_MSC void ps_setline (int linewidth);
 EXTERN_MSC void ps_textdim (char *xdim, char *ydim, double pointsize, int font, char *text, int key);
@@ -154,23 +173,6 @@ EXTERN_MSC void ps_define_pen (char *param, int width, char *texture, int offset
 EXTERN_MSC void ps_rgb_to_mono (unsigned char *buffer, struct imageinfo *h);
 EXTERN_MSC int ps_read_rasheader  (FILE *fp, struct imageinfo *h, int i0, int i1);
 EXTERN_MSC int ps_write_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1);
-
-/* For Encapsulated PostScript Headers:
-
-   You will need to supply a pointer to an EPS structure in order to
-   get correct information in the EPS header.  If you pass a NULL pointer
-   instead you will get default values for the BoundingBox plus no
-   info is provided about the users name, document title, and fonts used.
-   To fill in the structure you must:
-
-   - Determine the extreme dimensions of your plot in points (1/72 inch).
-   - Supply the user's name (or NULL)
-   - Supply the document's title (or NULL)
-   - Set the font pointers to point to character arrays that has the full
-     font name (e.g. Helvetica-Bold).  First unused pointed must be set
-     to NULL.  E.g., if 4 fonts are used, font[0], font[1], font[2], and
-     font[3] must point to strings with the correct name; font[4] = NULL.
-*/
 
 #ifdef __cplusplus
 }
