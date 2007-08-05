@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.147 2007-08-03 02:52:35 guru Exp $
+ *	$Id: pslib.c,v 1.148 2007-08-05 23:43:31 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -210,7 +210,7 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[]);
 void ps_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
 void ps_colorimage_cmap (double x, double y, double xsize, double ysize, indexed_image_t image, int nx, int ny, int nbits);
 unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header);
-unsigned char *ps_load_eps (FILE *fp, struct imageinfo *header, BOOLEAN verbose);
+unsigned char *ps_load_eps (FILE *fp, struct imageinfo *header);
 int ps_get_boundingbox (FILE *fp, int *llx, int *lly, int *trx, int *try);
 char *ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);
 int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[]);
@@ -913,7 +913,7 @@ int ps_pattern_init (int image_no, char *imagefile)
 
 	/* Load image file. Store size, depth and bogus DPI setting */
 
-	picture = ps_load_image (file, &h, PSL->internal.verbose);
+	picture = ps_load_image (file, &h);
 
 	PSL->internal.pattern[image_no].status = 1;
 	PSL->internal.pattern[image_no].nx = h.width;
@@ -3318,7 +3318,7 @@ char *ps_prepare_text (char *text)
 	return (string);
 }
 
-unsigned char *ps_load_image (char *file, struct imageinfo *h, BOOLEAN verbose)
+unsigned char *ps_load_image (char *file, struct imageinfo *h)
 {
 	/* ps_load_image loads an image of any recognised type into memory
 	 *
@@ -3342,7 +3342,6 @@ unsigned char *ps_load_image (char *file, struct imageinfo *h, BOOLEAN verbose)
 		fprintf (stderr, "pslib: Error reading magic number of image file %s!\n", file);
 		exit (EXIT_FAILURE);
 	}
-	if (verbose) fprintf (stderr, "pslib: Loading image file %s of type 0x%x\n", file, h->magic);
 	fseek (fp, 0, SEEK_SET);
 
 	/* Which file type */
@@ -3350,7 +3349,7 @@ unsigned char *ps_load_image (char *file, struct imageinfo *h, BOOLEAN verbose)
 	if (h->magic == RAS_MAGIC) {
 		return (ps_load_raster (fp, h));
 	} else if (h->magic == EPS_MAGIC) {
-		return (ps_load_eps (fp, h, verbose));
+		return (ps_load_eps (fp, h));
 	} else {
 		fprintf (stderr, "pslib: Unrecognised magic number 0x%x in file %s!\n", h->magic, file);
 		exit (EXIT_FAILURE);
@@ -3359,7 +3358,7 @@ unsigned char *ps_load_image (char *file, struct imageinfo *h, BOOLEAN verbose)
 	return (0);	/* Dummy return to satisfy some compilers */
 }
 
-unsigned char *ps_load_eps (FILE *fp, struct imageinfo *h, BOOLEAN verbose)
+unsigned char *ps_load_eps (FILE *fp, struct imageinfo *h)
 {
 	/* ps_load_eps reads an Encapsulated PostScript file */
 
@@ -3372,7 +3371,6 @@ unsigned char *ps_load_eps (FILE *fp, struct imageinfo *h, BOOLEAN verbose)
 	/* Scan for BoundingBox */
 
 	ps_get_boundingbox (fp, &llx, &lly, &trx, &try);
-	if (verbose) fprintf (stderr, "ps_load_eps: BoundingBox: %d %d %d %d\n", llx, lly, trx, try);
 
 	/* Rewind and load into buffer */
 

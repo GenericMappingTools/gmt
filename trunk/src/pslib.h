@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.41 2007-08-03 02:52:35 guru Exp $
+ *	$Id: pslib.h,v 1.42 2007-08-05 23:43:31 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -162,7 +162,7 @@ EXTERN_MSC void ps_textclip (double x[], double y[], int m, double angle[], char
 EXTERN_MSC void ps_transrotate (double x, double y, double angle);
 EXTERN_MSC void ps_triangle (double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_vector (double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], int outline);
-EXTERN_MSC unsigned char *ps_load_image (char *file, struct imageinfo *header, BOOLEAN verbose);
+EXTERN_MSC unsigned char *ps_load_image (char *file, struct imageinfo *header);
 EXTERN_MSC void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, double font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3]);
 EXTERN_MSC void ps_setline (int linewidth);
 EXTERN_MSC void ps_textdim (char *xdim, char *ydim, double pointsize, int font, char *text, int key);
