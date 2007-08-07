@@ -1,6 +1,6 @@
 Package: gmt
 Version: 4.2.0
-Revision: 1
+Revision: 2
 Source:  ftp://ftp.soest.hawaii.edu/gmt/4/GMT%v_src.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/4/GMT%v_man.tar.bz2
 Source3: ftp://ftp.soest.hawaii.edu/gmt/4/GMT%v_share.tar.bz2
@@ -27,7 +27,7 @@ CompileScript: <<
  #!/bin/sh -ev
  export NETCDFHOME=%p
  ./configure %c
- make all
+ make all suppl
 <<
 InstallScript: <<
  #!/bin/sh -ev
@@ -43,6 +43,7 @@ InstallScript: <<
  ln -s libpsl{.4,}.dylib
  ln -s libgmt{.4,}.dylib
  ln -s libgmtps{.4,}.dylib
+ ranlib *.a
 <<
 SplitOff: <<
   Package: %N-shlibs
