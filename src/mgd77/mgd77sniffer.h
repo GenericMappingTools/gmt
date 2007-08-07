@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.24 2007-06-26 01:21:23 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.25 2007-08-07 06:15:53 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
@@ -128,5 +128,6 @@ void regress_ls (double *x, double *y, int n, double *stat, int col);
 void regress_rls (double *x, double *y, int nvalues, double *stat, int col);
 void regress_lms (double *x, double *y, int nvalues, double *stat, int gridField);
 void regresslms_sub (double *x, double *y, double angle0, double angle1, int nvalues, int n_angle, double *stat, int gridField);
+int decimate (double *x, double *y, int nclean, double min, double max, double delta, double **dec_new, double **dec_orig);
 double lms (double *x, int n);
 double median (double *x, int n);
