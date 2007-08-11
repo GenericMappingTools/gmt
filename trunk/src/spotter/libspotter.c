@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.38 2007-03-05 21:47:11 pwessel Exp $
+ *	$Id: libspotter.c,v 1.39 2007-08-11 04:22:07 guru Exp $
  *
  *   Copyright (c) 1999-2007 by P. Wessel
  *
@@ -1049,7 +1049,7 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, int
 
 	/* Find the unique rotation in question */
 
-	for (i = 0, k = -1; k < 0 && i < np; i++) if (fabs (p[i].t_start - t) < GMT_CONV_LIMIT) k = i;
+	for (i = 0, k = -1; k < 0 && i < np; i++) if (GMT_IS_ZERO (p[i].t_start - t)) k = i;
 	if (k == -1) return (1);	/* Did not match finite rotation time */
 
 	/* Generate R, the rotation matrix.  This is actually R^t since w is -ve */

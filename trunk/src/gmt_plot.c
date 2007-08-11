@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.201 2007-07-11 20:51:48 guru Exp $
+ *	$Id: gmt_plot.c,v 1.202 2007-08-11 04:22:07 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -575,7 +575,7 @@ void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 	if (GMT_POLE_IS_POINT) {	/* Might have two separate domains of gridlines */
 		ys = MAX (s, -gmtdefs.polar_cap[0]);
 		yn = MIN (n, gmtdefs.polar_cap[0]);
-		cap = (fabs (gmtdefs.polar_cap[0] - 90.0) > GMT_CONV_LIMIT);
+		cap = !GMT_IS_ZERO (gmtdefs.polar_cap[0] - 90.0);
 	}
 	else {
 		ys = s;
@@ -933,7 +933,7 @@ double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, do
 	dr = 0.5 * width;
 	s = ((project_info.north_pole && side == 2) || (!project_info.north_pole && side == 0)) ? -1.0 : +1.0;	/* North: needs shorter radius.  South: Needs longer radius (opposite in S hemi) */
 	r_inc = s*scale[0] * width;
-	if (fabs (360.0 - fabs (lonA - lonB)) < GMT_CONV_LIMIT) {	/* Full 360-degree cirle */
+	if (GMT_360_RANGE (lonA, lonB)) {	/* Full 360-degree cirle */
 		ps_arc (project_info.c_x0, project_info.c_y0, radius, 0.0, 360.0, PSL_ARC_DRAW);
 		ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, 0.0, 360.0, PSL_ARC_DRAW);
 		if (secondary_too)  ps_arc (project_info.c_x0, project_info.c_y0, radius + 2.0 * r_inc, 0.0, 360.0, PSL_ARC_DRAW);
@@ -983,11 +983,11 @@ void GMT_rounded_framecorners (double w, double e, double s, double n, double an
 			ps_arc (x, y, (k+1)*width, 270.0+anglew, 360.0+anglew, PSL_ARC_DRAW);
 		}
 		if ((GMT_IS_AZIMUTHAL || GMT_IS_CONICAL) && frame_info.side[3] && frame_info.side[1]) {	/* Round off the pointy head? */
-			if (fabs (project_info.n - 90.0) < GMT_CONV_LIMIT) {
+			if (GMT_IS_ZERO (project_info.n - 90.0)) {
 				GMT_geo_to_xy (w, n, &x, &y);
 				ps_arc (x, y, (k+1)*width, anglee, 180.0+anglew, PSL_ARC_DRAW);
 			}
-			else if (fabs (project_info.s + 90.0) < GMT_CONV_LIMIT) {
+			else if (GMT_IS_ZERO (project_info.s + 90.0)) {
 				GMT_geo_to_xy (w, s, &x, &y);
 				ps_arc (x, y, (k+1)*width, anglew-90.0, anglee-90.0, PSL_ARC_DRAW);
 			}
@@ -1012,7 +1012,7 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 		frame_info.side[0] = FALSE;
 	if (project_info.north_pole && n >= 90.0) /* Cannot have northern boundary */
 		frame_info.side[2] = FALSE;
-	if (fabs (fabs (e-w) - 360.0) < GMT_CONV_LIMIT || fabs (e - w) < GMT_CONV_LIMIT) {
+	if (GMT_360_RANGE (w,e) || GMT_IS_ZERO (e - w)) {
 		frame_info.side[1] = FALSE;
 		frame_info.side[3] = FALSE;
 	}
@@ -1069,7 +1069,7 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 		frame_info.side[0] = FALSE;
 	if (project_info.north_pole && n >= 90.0) /* Cannot have northern boundary */
 		frame_info.side[2] = FALSE;
-	if (fabs (fabs (e-w) - 360.0) < GMT_CONV_LIMIT || fabs (e - w) < GMT_CONV_LIMIT) {
+	if (GMT_360_RANGE (w,e) || GMT_IS_ZERO (e - w)) {
 		frame_info.side[1] = FALSE;
 		frame_info.side[3] = FALSE;
 	}
@@ -1279,12 +1279,12 @@ void GMT_theta_r_map_boundary (double w, double e, double s, double n)
 	GMT_setpen (&gmtdefs.frame_pen);
 
 	if (project_info.got_elevations) {
-		if (fabs (n - 90.0) < GMT_CONV_LIMIT) frame_info.side[2] = 0;	/* No donuts, please */
+		if (GMT_IS_ZERO (n - 90.0)) frame_info.side[2] = 0;	/* No donuts, please */
 	}
 	else {
-		if (fabs (s) < GMT_CONV_LIMIT) frame_info.side[0] = 0;		/* No donuts, please */
+		if (GMT_IS_ZERO (s)) frame_info.side[0] = 0;		/* No donuts, please */
 	}
-	if (fabs (fabs (e-w) - 360.0) < GMT_CONV_LIMIT || fabs (e - w) < GMT_CONV_LIMIT) {
+	if (GMT_360_RANGE (w,e) || GMT_IS_ZERO (e - w)) {
 		frame_info.side[1] = FALSE;
 		frame_info.side[3] = FALSE;
 	}
@@ -1630,7 +1630,7 @@ void GMT_map_gridcross (double w, double e, double s, double n)
 
 				if (!GMT_map_outside (x[i], y[j])) {	/* Inside map */
 					yj = y[j];
-					if (GMT_POLE_IS_POINT && fabs (fabs (yj) - 90.0) < GMT_CONV_LIMIT) {	/* Only place one grid cross at the poles for maps where the poles are points */
+					if (GMT_POLE_IS_POINT && GMT_IS_ZERO (fabs (yj) - 90.0)) {	/* Only place one grid cross at the poles for maps where the poles are points */
 						xi = project_info.central_meridian;
 						i = nx;	/* This ends the loop for this particular latitude */
 					}
@@ -1786,7 +1786,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	GMT_world_map_save = GMT_world_map;
 
 	if (frame_info.header[0] && !frame_info.plotted_header) {	/* Make plot header for geographic maps*/
-		if (project_info.three_D && fabs (project_info.z_scale) < GMT_CONV_LIMIT) {	/* Only do this if flat 2-D plot */
+		if (project_info.three_D && GMT_IS_ZERO (project_info.z_scale)) {	/* Only do this if flat 2-D plot */
 
 			move_up = (GMT_IS_MAPPING || frame_info.side[2] == 2);
 			ps_setfont (0);
@@ -1889,8 +1889,8 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			
 			nx = GMT_linear_array (w, e, dx[k], frame_info.axis[0].phase, &val);
 			for (i = 0; i < nx; i++) {	/* Worry that we do not try to plot 0 and 360 OR -180 and +180 on top of each other */
-				if (fabs (val[i]) < GMT_CONV_LIMIT) done_Greenwich = TRUE;		/* OK, want to plot 0 */
-				if (fabs (180.0 + val[i]) < GMT_CONV_LIMIT) done_Dateline = TRUE;	/* OK, want to plot -180 */
+				if (GMT_IS_ZERO (val[i])) done_Greenwich = TRUE;		/* OK, want to plot 0 */
+				if (GMT_IS_ZERO (180.0 + val[i])) done_Dateline = TRUE;	/* OK, want to plot -180 */
 				GMT_get_annot_label (val[i], label, do_minutes, do_seconds, 0, GMT_world_map_save);
 				/* Only annotate val[i] if
 				 *	(1) projection is such that 0/360 or -180/180 are in different x/y locations, OR
@@ -1898,10 +1898,10 @@ void GMT_map_annotate (double w, double e, double s, double n)
 				 *	(3) plot +180 if -180 hasn't been plotted
 				 */
 
-				annot = annot_0_and_360 || !((done_Greenwich && fabs (val[i] - 360.0) < GMT_CONV_LIMIT) || (done_Dateline && fabs (val[i] - 180.0) < GMT_CONV_LIMIT));
+				annot = annot_0_and_360 || !((done_Greenwich && GMT_IS_ZERO (val[i] - 360.0)) || (done_Dateline && GMT_IS_ZERO (val[i] - 180.0)));
 				if (dual && k == 0) {
 					del = fmod (val[i] - w2, dx[1]);
-					if (fabs (del) < GMT_CONV_LIMIT || fabs (del - dx[1]) < GMT_CONV_LIMIT)
+					if (GMT_IS_ZERO (del) || GMT_IS_ZERO (del - dx[1]))
 						annot = FALSE;
 					else
 						GMT_label_trim (label, remove[0]);
@@ -1934,12 +1934,12 @@ void GMT_map_annotate (double w, double e, double s, double n)
 				tval = val;	/* Same thing */
 			}
 			for (i = 0; i < ny; i++) {
-				if ((project_info.polar || project_info.projection == GMT_VANGRINTEN) && fabs (fabs (val[i]) - 90.0) < GMT_CONV_LIMIT) continue;
+				if ((project_info.polar || project_info.projection == GMT_VANGRINTEN) && GMT_IS_ZERO (fabs (val[i]) - 90.0)) continue;
 				GMT_get_annot_label (tval[i], label, do_minutes, do_seconds, lonlat, GMT_world_map_save);
 				annot = TRUE;
 				if (dual && k == 0) {
 					del = fmod (val[i] - s2, dy[1]);
-					if (fabs (del) < GMT_CONV_LIMIT || fabs (del - dy[1]) < GMT_CONV_LIMIT)
+					if (GMT_IS_ZERO (del) || GMT_IS_ZERO (del - dy[1]))
 						annot = FALSE;
 					else
 						GMT_label_trim (label, remove[1]);
@@ -2977,7 +2977,7 @@ void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr)
 		n_tick = GMT_linear_array (0.0, 360.0, mr->g_int[level], 0.0, &val);
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of fine tickmarks (-1 to avoid repeating 360) */
 			angle = offset + val[i];
-			k = (fabs (fmod (val[i], mr->a_int[level])) < GMT_CONV_LIMIT) ? 2 : ((fabs (fmod (val[i], mr->f_int[level])) < GMT_CONV_LIMIT) ? 1 : 0);
+			k = (GMT_IS_ZERO (fmod (val[i], mr->a_int[level]))) ? 2 : ((GMT_IS_ZERO (fmod (val[i], mr->f_int[level]))) ? 1 : 0);
 			sincosd (ew_angle + angle, &s, &c);
 			x[0] = mr->x0 + R[level] * c;	y[0] = mr->y0 + R[level] * s;
 			x[1] = mr->x0 + (R[level] - scale[level]*tlen[k]) * c;	y[1] = mr->y0 + (R[level] - scale[level]*tlen[k]) * s;
@@ -2997,8 +2997,8 @@ void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr)
 			if (t_angle > 180.0) t_angle -= 180.0;	/* Now in -180/180 range */
 			if (t_angle > 90.0 || t_angle < -90.0) t_angle -= copysign (180.0, t_angle);
 			just = (y[0] <= mr->y0) ? 10 : 2;
-			if (level == 1 && fabs (val[i]-90.0) < GMT_CONV_LIMIT) t_angle = -90.0, just = 2;
-			if (level == 1 && fabs (val[i]-270.0) < GMT_CONV_LIMIT) t_angle = 90.0, just = 2;
+			if (level == 1 && GMT_IS_ZERO (val[i]-90.0))  t_angle = -90.0, just = 2;
+			if (level == 1 && GMT_IS_ZERO (val[i]-270.0)) t_angle =  90.0, just = 2;
 			GMT_text3D (x[0], y[0], project_info.z_level, gmtdefs.annot_font_size[level], gmtdefs.annot_font[level], label, t_angle, just, 0);
 		}
 		GMT_free ((void *)val);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2sph.c,v 1.4 2007-03-12 19:52:27 remko Exp $
+ *	$Id: grd2sph.c,v 1.5 2007-08-11 04:22:07 guru Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -148,7 +148,7 @@ int main (int argc, char **argv)
 
 	GMT_err_fail (GMT_read_grd_info (argv[f_arg], &header), argv[f_arg]);
 
-	if (fabs (header.x_max - header.x_min - 360.0) > GMT_CONV_LIMIT || fabs (header.y_max - header.y_min - 180.0) > GMT_CONV_LIMIT) {
+	if (!(GMT_360_RANGE (header.x_min, header.x_max) && GMT_180_RANGE (header.y_min, header.y_max))) {
 		fprintf (stderr, "%s: File %s is not a global grid (it has -R%g/%g/%g/%g)\n", GMT_program, argv[f_arg], header.x_min, header.x_max, header.y_min, header.y_max);
 		exit (EXIT_FAILURE);
 	}

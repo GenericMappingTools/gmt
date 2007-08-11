@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.305 2007-08-02 04:08:09 guru Exp $
+ *	$Id: gmt_support.c,v 1.306 2007-08-11 04:22:07 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2844,7 +2844,7 @@ void GMT_contlabel_angle (double x[], double y[], int start, int stop, double ca
 	else if (sum_x2 < GMT_CONV_LIMIT)	/* Line is vertical */
 		L->line_angle = 90.0;
 	else
-		L->line_angle = (fabs(sum_xy) < GMT_CONV_LIMIT) ? 90.0 : d_atan2 (sum_xy, sum_x2) * R2D;
+		L->line_angle = (GMT_IS_ZERO (sum_xy)) ? 90.0 : d_atan2 (sum_xy, sum_x2) * R2D;
 	this_angle_type = G->angle_type;
 	if (this_angle_type == 2) { 	/* Just return the fixed angle given (unless NaN) */
 		if (GMT_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
@@ -4528,7 +4528,7 @@ int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SE
 		}
 		/* Calculate latitude at intersection */
 		x_lat = P->coord[GMT_Y][i] + ((P->coord[GMT_Y][in] - P->coord[GMT_Y][i]) / (lon2 - lon1)) * (lon - lon1);
-		if (fabs (x_lat - plat) < GMT_CONV_LIMIT) return (1);	/* P is on S boundary */
+		if (GMT_IS_ZERO (x_lat - plat)) return (1);	/* P is on S boundary */
 		
 		if (lon == lon1 || lon == lon2) {	/* Special checking for cutting through a node */
 			double dlon_a, dlon_b;
@@ -5795,7 +5795,7 @@ void GMT_set_xy_domain (double wesn_extended[], struct GRD_HEADER *h)
 	 */
 	 
 	off = 0.5 - h->xy_off;
-	if (GMT_io.in_col_type[0] == GMT_IS_LON && fabs ((h->x_max - h->x_min) - 360.0) < GMT_CONV_LIMIT) {	/* Global longitude range */
+	if (GMT_io.in_col_type[0] == GMT_IS_LON && GMT_360_RANGE (h->x_max, h->x_min)) {	/* Global longitude range */
 		wesn_extended[0] = h->x_min;	wesn_extended[1] = h->x_max;
 	}
 	else {
@@ -7554,7 +7554,7 @@ void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis)
 			GMT_z_to_zz (0.0, &exact_zero_proj);
 			break;
 	}
-	if (fabs (*ww) < GMT_CONV_LIMIT && fabs (almost_zero_proj - exact_zero_proj) < GMT_CONV_LIMIT) *ww = 0.0;
+	if (GMT_IS_ZERO (*ww) && GMT_IS_ZERO (almost_zero_proj - exact_zero_proj)) *ww = 0.0;
 }
 #endif
 
@@ -7813,8 +7813,8 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 	}
 
 	if (lonlat < 2) {	/* i.e., for geographical data */
-		if (fabs (val - 360.0) < GMT_CONV_LIMIT && !worldmap) val = 0.0;
-		if (fabs (val - 360.0) < GMT_CONV_LIMIT && worldmap && project_info.projection == GMT_OBLIQUE_MERC) val = 0.0;
+		if (GMT_IS_ZERO (val - 360.0) && !worldmap) val = 0.0;
+		if (GMT_IS_ZERO (val - 360.0) && worldmap && project_info.projection == GMT_OBLIQUE_MERC) val = 0.0;
 	}
 
 	fmt = gmtdefs.degree_format % 100;	/* take out the optional 100 or 1000 */
@@ -7822,18 +7822,18 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 		if (lonlat == 0) {
 			switch (GMT_plot_calclock.geo.range) {
 				case 0:
-					letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : 'E';
+					letter = (GMT_IS_ZERO (val)) ? 0 : 'E';
 					break;
 				case 1:
-					letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : 'W';
+					letter = (GMT_IS_ZERO (val)) ? 0 : 'W';
 					break;
 				default:
-					letter = (fabs (val) < GMT_CONV_LIMIT || fabs (val - 180.0) < GMT_CONV_LIMIT || fabs (val + 180.0) < GMT_CONV_LIMIT) ? 0 : ((val < 0.0) ? 'W' : 'E');
+					letter = (GMT_IS_ZERO (val) || GMT_IS_ZERO (val - 180.0) || GMT_IS_ZERO (val + 180.0)) ? 0 : ((val < 0.0) ? 'W' : 'E');
 					break;
 			}
 		}
 		else 
-			letter = (fabs (val) < GMT_CONV_LIMIT) ? 0 : ((val < 0.0) ? 'S' : 'N');
+			letter = (GMT_IS_ZERO (val)) ? 0 : ((val < 0.0) ? 'S' : 'N');
 		val = fabs (val);
 	}
 	else
@@ -7936,10 +7936,10 @@ int GMT_polar_adjust (int side, double angle, double x, double y)
 	else {
 		if (frame_info.horizontal) {
 			if (side == low)
-				justify = (fabs (angle - 180.0) < GMT_CONV_LIMIT) ? bottom : top;
+				justify = (GMT_IS_ZERO (angle - 180.0)) ? bottom : top;
 			else
-				justify = (fabs (angle) < GMT_CONV_LIMIT) ? top : bottom;
-			if (project_info.got_elevations && (fabs (angle - 180.0) < GMT_CONV_LIMIT || fabs (angle) < GMT_CONV_LIMIT)) justify = (justify + 8) % 16;
+				justify = (GMT_IS_ZERO (angle)) ? top : bottom;
+			if (project_info.got_elevations && (GMT_IS_ZERO (angle - 180.0) || GMT_IS_ZERO (angle))) justify = (justify + 8) % 16;
 		}
 		else {
 			if (x >= x0)
@@ -7959,7 +7959,7 @@ double GMT_get_angle (double lon1, double lat1, double lon2, double lat2)
 	GMT_geo_to_xy (lon2, lat2, &x2, &y2);
 	dx = x2 - x1;
 	dy = y2 - y1;
-	if (fabs (dy) <= GMT_CONV_LIMIT && fabs (dx) <= GMT_CONV_LIMIT) {	/* Special case that only(?) occurs at N or S pole or r=0 for GMT_POLAR */
+	if (GMT_IS_ZERO (dy) && GMT_IS_ZERO (dx)) {	/* Special case that only(?) occurs at N or S pole or r=0 for GMT_POLAR */
 		if (fabs (fmod (lon1 - project_info.w + 360.0, 360.0)) > fabs (fmod (lon1 - project_info.e + 360.0, 360.0))) {	/* East */
 			GMT_geo_to_xy (project_info.e, project_info.s, &x1, &y1);
 			GMT_geo_to_xy (project_info.e, project_info.n, &x2, &y2);

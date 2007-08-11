@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.11 2007-03-28 18:29:39 pwessel Exp $
+ *	$Id: polygon_consistency.c,v 1.12 2007-08-11 04:22:07 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
 		}
 		this_n = (ANTARCTICA) ? h.n - 1 : h.n;
 		GMT_init_track (lat, this_n, &ylist);
-		if (fabs (h.east - h.west) > GMT_CONV_LIMIT) {
+		if (!GMT_IS_ZERO (h.east - h.west)) {
 			nx = found = GMT_crossover (lon, lat, NULL, ylist, this_n, lon, lat, NULL, ylist, this_n, TRUE, &XC);
 			GMT_free ((void *)ylist);
 			for (i = end = 0; i < nx; i++) {
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 		/* Look for duplicate points separated by a single outlier (a non-area peninsula) */
 		
 		for (i = 1; i < (h.n-1); i++) {
-			if (fabs (lon[i-1]-lon[i+1]) <  GMT_CONV_LIMIT && fabs (lat[i-1]-lat[i+1]) < GMT_CONV_LIMIT) {
+			if (GMT_IS_ZERO (lon[i-1]-lon[i+1]) && GMT_IS_ZERO (lat[i-1]-lat[i+1])) {
 				printf ("%d\tNon-area excursion on lines %d-%d\n", h.id, i-1, i+1);
 				n_s_problems++;
 			}

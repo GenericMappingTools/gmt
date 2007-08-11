@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.8 2007-03-30 20:41:45 pwessel Exp $
+ *	$Id: polygon_xover.c,v 1.9 2007-08-11 04:22:07 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -159,7 +159,7 @@ int main (int argc, char **argv)
 				}
 				X = P[id2].lon;
 				Y = P[id2].lat;
-				if (fabs (x_shift) > GMT_CONV_LIMIT) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] += x_shift;
+				if (!GMT_IS_ZERO (x_shift)) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] += x_shift;
 			}
 			
 			/* Get here when no cheap determination worked and we must do full crossover calculation */
@@ -181,7 +181,7 @@ int main (int argc, char **argv)
 				GMT_free ((void *)X);
 				GMT_free ((void *)Y);
 			}
-			else if (fabs (x_shift) > GMT_CONV_LIMIT) {
+			else if (!GMT_IS_ZERO (x_shift)) {
 				for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] -= x_shift;
 			}
 			if (nx) {

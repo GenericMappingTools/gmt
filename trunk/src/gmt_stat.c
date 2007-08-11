@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.51 2007-07-16 21:06:33 guru Exp $
+ *	$Id: gmt_stat.c,v 1.52 2007-08-11 04:22:07 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -955,7 +955,7 @@ double GMT_erfinv (double y)
 
 	if (fy > 1.0) return (GMT_d_NaN);	/* Outside domain */
 
-	if (fabs (1.0 - fy) < GMT_CONV_LIMIT) {	/* Close to +- Inf */
+	if (GMT_IS_ZERO (1.0 - fy)) {	/* Close to +- Inf */
 		return (copysign (DBL_MAX, y));
 	}
 
@@ -1495,7 +1495,7 @@ double GMT_tcrit (double alpha, double nu)
 	while (!done) {
 		t_mid = 0.5 * (t_low + t_high);
 		GMT_student_t_a (t_mid, NU, &p_mid);
-		if (fabs (p_mid - p) < GMT_CONV_LIMIT) {
+		if (GMT_IS_ZERO (p_mid - p)) {
 			done = TRUE;
 		}
 		else if (p_mid > p) {	/* Too high */
@@ -1530,7 +1530,7 @@ double GMT_chi2crit (double alpha, double nu)
 	while (!done) {
 		chi2_mid = 0.5 * (chi2_low + chi2_high);
 		GMT_chi2 (chi2_mid, nu, &p_mid);
-		if (fabs (p_mid - p) < GMT_CONV_LIMIT) {
+		if (GMT_IS_ZERO (p_mid - p)) {
 			done = TRUE;
 		}
 		else if (p_mid < p) {	/* Too high */
@@ -1572,7 +1572,7 @@ double GMT_Fcrit (double alpha, double nu1, double nu2)
 		F_mid = 0.5 * (F_low + F_high);
 		F_to_ch1_ch2 (F_mid, nu1, nu2, &chisq1, &chisq2);
 		GMT_f_q (chisq1, NU1, chisq2, NU2, &p_mid);
-		if (fabs (p_mid - p) < GMT_CONV_LIMIT) {
+		if (GMT_IS_ZERO (p_mid - p)) {
 			done = TRUE;
 		}
 		else if (p_mid < p) {	/* Too high */
@@ -1667,7 +1667,7 @@ double GMT_jn (int n, double x)
 	if (n == 1) return (GMT_j1 (x));
 
 	ax = fabs (x);
-	if (ax <= GMT_CONV_LIMIT) return (0.0);
+	if (GMT_IS_ZERO (ax)) return (0.0);
 
 	if (ax > (double)n) {	/* Upwards recurrence */
 		tox = 2.0 / ax;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.292 2007-07-12 13:00:43 remko Exp $
+ *	$Id: gmt_init.c,v 1.293 2007-08-11 04:22:06 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2358,7 +2358,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "GRID_PEN_SECONDARY	= %s\n", GMT_putpen (&gmtdefs.grid_pen[1]));
 	fprintf (fp, "MAP_SCALE_HEIGHT	= %g%c\n", gmtdefs.map_scale_height * s, u);
 	(GMT_force_resize) ? fprintf (fp, "TICK_LENGTH		= %g%c\n", save_tick_length * s, u) :  fprintf (fp, "TICK_LENGTH		= %g%c\n", gmtdefs.tick_length * s, u);
-	if (fabs (gmtdefs.polar_cap[0] - 90.0) < GMT_CONV_LIMIT)
+	if (GMT_IS_ZERO (gmtdefs.polar_cap[0] - 90.0))
 		fprintf (fp, "POLAR_CAP		= none\n");
 	else
 		fprintf (fp, "POLAR_CAP		= %g/%g\n", gmtdefs.polar_cap[0], gmtdefs.polar_cap[1]);
