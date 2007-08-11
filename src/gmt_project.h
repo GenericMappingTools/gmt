@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.49 2007-03-29 19:32:30 pwessel Exp $
+ *	$Id: gmt_project.h,v 1.50 2007-08-11 04:22:07 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,6 +71,10 @@
 #define GMT_GRID_CLIP_OK (project_info.projection < 10000 && project_info.projection != GMT_OBLIQUE_MERC && !GMT_IS_AZIMUTHAL)
 #define GMT_IS_SPHERICAL (gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening < 1.0e-10)
 #define GMT_POLE_IS_POINT (GMT_IS_AZIMUTHAL || project_info.projection == GMT_LAMBERT || (project_info.projection >= GMT_MOLLWEIDE && project_info.projection <= GMT_SINUSOIDAL) || project_info.projection == GMT_VANGRINTEN)
+
+#define GMT_360_RANGE(w,e) (fabs (fabs((e) - (w)) - 360.0) < GMT_CONV_LIMIT)
+#define GMT_180_RANGE(s,n) (fabs (fabs((n) - (s)) - 180.0) < GMT_CONV_LIMIT)
+#define GMT_IS_ZERO(x) (fabs (x) < GMT_CONV_LIMIT)
 
 #define D2R (M_PI / 180.0)
 #define R2D (180.0 / M_PI)

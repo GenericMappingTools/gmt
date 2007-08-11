@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.137 2007-07-08 23:22:09 guru Exp $
+ *	$Id: gmt_io.c,v 1.138 2007-08-11 04:22:06 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -797,9 +797,9 @@ void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text)
 
 	if (GMT_io.geo.wesn) {	/* Trailing WESN */
 		if (is_lat)
-			letter = (fabs (geo) < GMT_CONV_LIMIT) ? 0 : ((geo < 0.0) ? 'S' : 'N');
+			letter = (GMT_IS_ZERO (geo)) ? 0 : ((geo < 0.0) ? 'S' : 'N');
 		else
-			letter = (fabs (geo) < GMT_CONV_LIMIT || fabs (geo - 180.0) < GMT_CONV_LIMIT) ? 0 : ((geo < 0.0) ? 'W' : 'E');
+			letter = (GMT_IS_ZERO (geo) || GMT_IS_ZERO (geo - 180.0)) ? 0 : ((geo < 0.0) ? 'W' : 'E');
 		geo = fabs (geo);
 	}
 	else	/* No letter means we print the NULL character */
@@ -2836,7 +2836,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 					lon_sum += dlon;
 					lat_sum += T->segment[seg]->coord[GMT_Y][row];
 				}
-				if (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* TRUE if contains a pole */
+				if (GMT_360_RANGE (lon_sum, 0.0)) {	/* TRUE if contains a pole */
 					T->segment[seg]->pole = irint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
 				}
 			}

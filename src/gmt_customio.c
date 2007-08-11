@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.61 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_customio.c,v 1.62 2007-08-11 04:22:06 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -698,7 +698,7 @@ int GMT_is_native_grid (char *file)
 	if (nm <= 0) return (GMT_GRDIO_BAD_VAL);		/* Overflow for nx * ny */
 	item_size = (buf.st_size - GRD_HEADER_SIZE) / nm;	/* Estimate size of elements */
 	size = irint (item_size);
-	if (fabs(item_size - (double)size) > GMT_CONV_LIMIT) return (GMT_GRDIO_BAD_VAL);	/* Size not an integer */
+	if (!GMT_IS_ZERO(item_size - (double)size)) return (GMT_GRDIO_BAD_VAL);	/* Size not an integer */
 	
 	switch (size) {
 		case 0:	/* Possibly bit map; check some more */

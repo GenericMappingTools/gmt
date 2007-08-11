@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.18 2007-06-05 14:12:12 remko Exp $
+ *	$Id: gmt_proj.c,v 1.19 2007-08-11 04:22:07 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -494,7 +494,7 @@ void GMT_stereo2_sph (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to x/y using stereographic projection, equatorial view */
 
 	dlon = lon - project_info.central_meridian;
-	if (fabs (dlon - 180.0) < GMT_CONV_LIMIT) {
+	if (GMT_IS_ZERO (dlon - 180.0)) {
 		*x = *y = 0.0;
 	}
 	else {
@@ -566,7 +566,7 @@ void GMT_lamb (double lon, double lat, double *x, double *y)
 	es = project_info.ECC * sin (lat);
 	hold2 = pow (((1.0 - es) / (1.0 + es)), project_info.half_ECC);
 	hold3 = tan (M_PI_4 - 0.5 * lat);
-	if (fabs (hold3) < GMT_CONV_LIMIT)
+	if (GMT_IS_ZERO (hold3))
 		hold1 = 0.0;
 	else
 		hold1 = pow (hold3 / hold2, project_info.l_N);
@@ -612,7 +612,7 @@ void GMT_lamb_sph (double lon, double lat, double *x, double *y)
 
 	lat *= D2R;
 	t = tan (M_PI_4 - 0.5 * lat);
-	A = (fabs (t) < GMT_CONV_LIMIT) ? 0.0 : pow (t, project_info.l_N);
+	A = (GMT_IS_ZERO (t)) ? 0.0 : pow (t, project_info.l_N);
 	rho = project_info.l_rF * A;
 	theta = project_info.l_Nr * lon;
 
@@ -732,7 +732,7 @@ void GMT_tm (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to TM x/y */
 	double N, T, T2, C, A, M, dlon, tan_lat, A2, A3, A5, lat2, s, c, s2, c2;
 
-	if (fabs (fabs (lat) - 90.0) < GMT_CONV_LIMIT) {
+	if (GMT_IS_ZERO (fabs (lat) - 90.0)) {
 		M = project_info.EQ_RAD * project_info.t_c1 * M_PI_2;
 		*x = 0.0;
 		*y = gmtdefs.map_scale_factor * M;
@@ -959,7 +959,7 @@ void GMT_ilambeq (double *lon, double *lat, double x, double y)
 
 	rho = hypot (x, y);
 
-	if (fabs (rho) < GMT_CONV_LIMIT) {
+	if (GMT_IS_ZERO (rho)) {
 		*lat = project_info.pole;
 		*lon = project_info.central_meridian;
 	}
@@ -2357,7 +2357,7 @@ void GMT_iortho (double *lon, double *lat, double x, double y)
 
 	rho = hypot (x, y);
 
-	if (fabs (rho) < GMT_CONV_LIMIT) {
+	if (GMT_IS_ZERO (rho)) {
 		*lat = project_info.pole;
 		*lon = project_info.central_meridian;
 	}
@@ -2417,7 +2417,7 @@ void GMT_ignomonic (double *lon, double *lat, double x, double y)
 
 	rho = hypot (x, y);
 
-	if (fabs (rho) < GMT_CONV_LIMIT) {
+	if (GMT_IS_ZERO (rho)) {
 		*lat = project_info.pole;
 		*lon = project_info.central_meridian;
 	}
@@ -2480,7 +2480,7 @@ void GMT_iazeqdist (double *lon, double *lat, double x, double y)
 
 	rho = hypot (x, y);
 
-	if (fabs (rho) < GMT_CONV_LIMIT) {
+	if (GMT_IS_ZERO (rho)) {
 		*lat = project_info.pole;
 		*lon = project_info.central_meridian;
 	}
@@ -2519,7 +2519,7 @@ void GMT_mollweide (double lon, double lat, double *x, double *y)
 	int i;
 	double phi, delta, psin_lat, c, s;
 
-	if (fabs (fabs (lat) - 90.0) < GMT_CONV_LIMIT) {	/* Special case */
+	if (GMT_IS_ZERO (fabs (lat) - 90.0)) {	/* Special case */
 		*x = 0.0;
 		*y = copysign (project_info.w_y, lat);
 		return;
@@ -2575,7 +2575,7 @@ void GMT_hammer (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to Hammer-Aitoff Equal-Area x/y */
 	double slat, clat, slon, clon, D;
 
-	if (fabs (fabs (lat) - 90.0) < GMT_CONV_LIMIT) {	/* Save time */
+	if (GMT_IS_ZERO (fabs (lat) - 90.0)) {	/* Save time */
 		*x = 0.0;
 		*y = M_SQRT2 * copysign (project_info.EQ_RAD, lat);
 		return;
@@ -2603,15 +2603,15 @@ void GMT_ihammer (double *lon, double *lat, double x, double y)
 	x *= 0.5;
 	rho = hypot (x, y);
 
-	if (fabs (rho) < GMT_CONV_LIMIT) {
+	if (GMT_IS_ZERO (rho)) {
 		*lat = 0.0;
 		*lon = project_info.central_meridian;
 	}
 	else {
 		c = 2.0 * d_asin (0.5 * rho * project_info.i_EQ_RAD);
 		*lat = d_asin (y * sin (c) / rho) * R2D;
-		if (fabs (c - M_PI_2) < GMT_CONV_LIMIT)
-			angle = (fabs (x) < GMT_CONV_LIMIT) ? 0.0 : copysign (180.0, x);
+		if (GMT_IS_ZERO (c - M_PI_2))
+			angle = (GMT_IS_ZERO (x)) ? 0.0 : copysign (180.0, x);
 		else
 			angle = 2.0 * R2D * atan (x * tan (c) / rho);
 		*lon = project_info.central_meridian + angle;
@@ -2642,7 +2642,7 @@ void GMT_grinten (double lon, double lat, double *x, double *y)
 		*y = M_PI * copysign (project_info.EQ_RAD, lat);
 		return;
 	}
-	if (fabs (lon - project_info.central_meridian) < GMT_CONV_LIMIT) {	/* Save time */
+	if (GMT_IS_ZERO (lon - project_info.central_meridian)) {	/* Save time */
 		theta = d_asin (2.0 * fabs (lat) / 180.0);
 		*x = 0.0;
 		*y = M_PI * copysign (project_info.EQ_RAD, lat) * tan (0.5 * theta);
@@ -2653,7 +2653,7 @@ void GMT_grinten (double lon, double lat, double *x, double *y)
 	while (lon < -180.0) lon += 360.0;
 	while (lon > 180.0) lon -= 360.0;
 
-	if (flat < GMT_CONV_LIMIT) {	/* Save time */
+	if (GMT_IS_ZERO (flat)) {	/* Save time */
 		*x = project_info.EQ_RAD * D2R * lon;
 		*y = 0.0;
 		return;
@@ -2726,7 +2726,7 @@ void GMT_winkel (double lon, double lat, double *x, double *y)
 
 	sincos (lat, &s, &c);
 	D = d_acos (c * cos (lon));
-	if (fabs (D) < GMT_CONV_LIMIT)
+	if (GMT_IS_ZERO (D))
 		x1 = y1 = 0.0;
 	else {
 		C = s / sin (D);
@@ -3145,7 +3145,7 @@ void GMT_isinusoidal (double *lon, double *lat, double x, double y)
 	/* Convert Sinusoidal Equal-Area x/y to lon/lat */
 
 	*lat = y * project_info.i_EQ_RAD;
-	*lon = ((fabs (fabs (*lat) - M_PI) < GMT_CONV_LIMIT) ? 0.0 : R2D * x / (project_info.EQ_RAD * cos (*lat))) + project_info.central_meridian;
+	*lon = ((GMT_IS_ZERO (fabs (*lat) - M_PI)) ? 0.0 : R2D * x / (project_info.EQ_RAD * cos (*lat))) + project_info.central_meridian;
 	*lat *= R2D;
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
@@ -3211,7 +3211,7 @@ void GMT_cassini (double lon, double lat, double *x, double *y)
 	while (lon > 180.0) lon -= 360.0;
 	lon *= D2R;
 
-	if (fabs (lat) < GMT_CONV_LIMIT) {	/* Quick when lat is zero */
+	if (GMT_IS_ZERO (lat)) {	/* Quick when lat is zero */
 		*x = project_info.EQ_RAD * lon;
 		*y = -project_info.c_M0;
 		return;
@@ -3244,7 +3244,7 @@ void GMT_icassini (double *lon, double *lat, double x, double y)
 	u2 = 2.0 * u1;
 	sincos (u2, &s, &c);
 	phi1 = u1 + s * (project_info.c_i2 + c * (project_info.c_i3 + c * (project_info.c_i4 + c * project_info.c_i5)));
-	if (fabs (fabs (phi1) - M_PI_2) < GMT_CONV_LIMIT) {
+	if (GMT_IS_ZERO (fabs (phi1) - M_PI_2)) {
 		*lat = copysign (M_PI_2, phi1);
 		*lon = project_info.central_meridian;
 	}
@@ -3316,11 +3316,11 @@ void GMT_valbers (double lon0, double lat0, double ph1, double ph2)
 	s0 = sin (lat0);	s1 = sin (ph1);		s2 = sin (ph2);
 	m1 = cos (ph1) * cos (ph1) / (1.0 - project_info.ECC2 * s1 * s1);	/* Actually m1 and m2 squared */
 	m2 = cos (ph2) * cos (ph2) / (1.0 - project_info.ECC2 * s2 * s2);
-	q0 = (fabs (project_info.ECC) < GMT_CONV_LIMIT) ? 2.0 * s0 : project_info.one_m_ECC2 * (s0 / (1.0 - project_info.ECC2 * s0 * s0) - project_info.i_half_ECC * log ((1.0 - project_info.ECC * s0) / (1.0 + project_info.ECC * s0)));
-	q1 = (fabs (project_info.ECC) < GMT_CONV_LIMIT) ? 2.0 * s1 : project_info.one_m_ECC2 * (s1 / (1.0 - project_info.ECC2 * s1 * s1) - project_info.i_half_ECC * log ((1.0 - project_info.ECC * s1) / (1.0 + project_info.ECC * s1)));
-	q2 = (fabs (project_info.ECC) < GMT_CONV_LIMIT) ? 2.0 * s2 : project_info.one_m_ECC2 * (s2 / (1.0 - project_info.ECC2 * s2 * s2) - project_info.i_half_ECC * log ((1.0 - project_info.ECC * s2) / (1.0 + project_info.ECC * s2)));
+	q0 = (GMT_IS_ZERO (project_info.ECC)) ? 2.0 * s0 : project_info.one_m_ECC2 * (s0 / (1.0 - project_info.ECC2 * s0 * s0) - project_info.i_half_ECC * log ((1.0 - project_info.ECC * s0) / (1.0 + project_info.ECC * s0)));
+	q1 = (GMT_IS_ZERO (project_info.ECC)) ? 2.0 * s1 : project_info.one_m_ECC2 * (s1 / (1.0 - project_info.ECC2 * s1 * s1) - project_info.i_half_ECC * log ((1.0 - project_info.ECC * s1) / (1.0 + project_info.ECC * s1)));
+	q2 = (GMT_IS_ZERO (project_info.ECC)) ? 2.0 * s2 : project_info.one_m_ECC2 * (s2 / (1.0 - project_info.ECC2 * s2 * s2) - project_info.i_half_ECC * log ((1.0 - project_info.ECC * s2) / (1.0 + project_info.ECC * s2)));
 
-	project_info.a_n = (fabs (ph1 - ph2) < GMT_CONV_LIMIT) ? s1 : (m1 - m2) / (q2 - q1);
+	project_info.a_n = (GMT_IS_ZERO (ph1 - ph2)) ? s1 : (m1 - m2) / (q2 - q1);
 	project_info.a_i_n = 1.0 / project_info.a_n;
 	project_info.a_C = m1 + project_info.a_n * q1;
 	project_info.a_rho0 = project_info.EQ_RAD * sqrt (project_info.a_C - project_info.a_n * q0) * project_info.a_i_n;
@@ -3344,7 +3344,7 @@ void GMT_valbers_sph (double lon0, double lat0, double ph1, double ph2)
 
 	s1 = sin (ph1);		c1 = cos (ph1);
 
-	project_info.a_n = (fabs (ph1 - ph2) < GMT_CONV_LIMIT) ? s1 : 0.5 * (s1 + sind (ph2));
+	project_info.a_n = (GMT_IS_ZERO (ph1 - ph2)) ? s1 : 0.5 * (s1 + sind (ph2));
 	project_info.a_i_n = 1.0 / project_info.a_n;
 	project_info.a_C = c1 * c1 + 2.0 * project_info.a_n * s1;
 	project_info.a_rho0 = project_info.EQ_RAD * sqrt (project_info.a_C - 2.0 * project_info.a_n * sind (lat0)) * project_info.a_i_n;
@@ -3366,7 +3366,7 @@ void GMT_albers (double lon, double lat, double *x, double *y)
 	lat *= D2R;
 
 	s = sin (lat);
-	if (fabs (project_info.ECC) < GMT_CONV_LIMIT)
+	if (GMT_IS_ZERO (project_info.ECC))
 		q = 2.0 * s;
 	else {
 		r = project_info.ECC * s;
@@ -3391,7 +3391,7 @@ void GMT_ialbers (double *lon, double *lat, double x, double y)
 	rho = hypot (x, project_info.a_rho0 - y);
 	q = (project_info.a_C - rho * rho * project_info.a_n2ir2) * project_info.a_i_n;
 
-	if (fabs (fabs (q) - project_info.a_test) < GMT_CONV_LIMIT)
+	if (GMT_IS_ZERO (fabs (q) - project_info.a_test))
 		*lat = copysign (90.0, q);
 	else {
 		phi = d_asin (0.5 * q);
@@ -3462,7 +3462,7 @@ void GMT_veconic (double lon0, double lat0, double lat1, double lat2)
 	GMT_check_R_J (&lon0);
 	project_info.north_pole = (lat0 > 0.0);
 	c1 = cosd (lat1);
-	project_info.d_n = (fabs (lat1 - lat2) < GMT_CONV_LIMIT) ? sind (lat1) : (c1 - cosd (lat2)) / (D2R * (lat2 - lat1));
+	project_info.d_n = (GMT_IS_ZERO (lat1 - lat2)) ? sind (lat1) : (c1 - cosd (lat2)) / (D2R * (lat2 - lat1));
 	project_info.d_i_n = R2D / project_info.d_n;	/* R2D put here instead of in lon for ieconic */
 	project_info.d_G = (c1 / project_info.d_n) + lat1 * D2R;
 	project_info.d_rho0 = project_info.EQ_RAD * (project_info.d_G - lat0 * D2R);

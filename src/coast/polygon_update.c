@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_update.c,v 1.3 2007-05-09 00:30:57 pwessel Exp $
+ *	$Id: polygon_update.c,v 1.4 2007-08-11 04:22:07 guru Exp $
  */
 /* 
  *
@@ -115,7 +115,7 @@ int main (int argc, char **argv)
 					reverse = 1;
 				else
 					reverse = 0;
-				if (fabs (size - h.area) > GMT_CONV_LIMIT) {
+				if (!GMT_IS_ZERO (size - h.area)) {
 					fprintf (stderr, "polygon_update: Area revised for polygon %d [From %g to %g]\n", h.id, h.area, size);
 					h.area = size;
 				}
