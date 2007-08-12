@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.49 2007-08-09 02:46:24 guru Exp $
+	$Id: ChangeLog,v 1.50 2007-08-12 20:09:28 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-08-12	pwessel
+	* grdcut.c:		Domain check failed for geographic 360-degree grid w/ -fg
+.
 2007-08-08	pwessel
 	* grdfilter.c:		-I<nx>+/<ny>+ not propagated to output setup
 .
