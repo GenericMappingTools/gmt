@@ -229,6 +229,9 @@ balls are shaded.  Set the shade (0\-255) or color (r/g/b) [Default is
 \fB\-L\fP[\fIpen\fP]
 Draws the "beach ball" outline with \fIpen\fP attributes.
 [Defaults width = 1, color = 0/0/0, texture = solid].
+.TP
+\fB\-M
+Use the same size for any magnitude. Size is given with OPT(S).
 .br
 .TP
 \fB\-N
