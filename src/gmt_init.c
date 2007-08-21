@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.293 2007-08-11 04:22:06 guru Exp $
+ *	$Id: gmt_init.c,v 1.294 2007-08-21 19:37:39 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -825,6 +825,7 @@ void GMT_syntax (char option)
 					fprintf (stderr, "\t-Ju<zone>/<scale> OR -JU<zone>/<width>\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <zone is A, B, 1-60[w/ optional C-X except I, O], Y, Z\n");
 					break;
 				case GMT_VANGRINTEN:
 					fprintf (stderr, "\t-Jv<lon0>/<scale> OR -JV<lon0>/<width>\n");
@@ -3923,7 +3924,7 @@ int GMT_parse_J_option (char *args)
 	BOOLEAN error = FALSE, skip = FALSE;
 	double o_x, o_y, b_x, b_y, c, az;
 	double GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
-	char type, args_cp[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
+	char type, mod, args_cp[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
 	char txt_d[GMT_LONG_TEXT], txt_e[GMT_LONG_TEXT], last_char;
 
 	l_pos[0] = l_pos[1] = p_pos[0] = p_pos[1] = t_pos[0] = t_pos[1] = d_pos[0] = d_pos[1] = 0;
@@ -4830,13 +4831,14 @@ int GMT_parse_J_option (char *args)
 	 		project_info.gave_map_width = width_given;
 	 	case 'u':
 	 		if (k >= 0) {
-	 			n = sscanf (args, "%lf/1:%lf", &project_info.pars[0], &project_info.pars[1]);
+	 			n = sscanf (args, "%[^/]/1:%lf", txt_a, &project_info.pars[1]);
 	 			if (project_info.pars[1] != 0.0) project_info.pars[1] = 1.0 / (project_info.pars[1] * project_info.unit);
 	 		}
 	 		else {
-	 			n = sscanf (args, "%lf/%s", &project_info.pars[0], txt_b);
+	 			n = sscanf (args, "%[^/]/%s", txt_a, txt_b);
 				project_info.pars[1] = GMT_convert_units (txt_b, GMT_INCH);
 			}
+	 		project_info.pars[0] = atof (txt_a);
 			switch (args[0]) {
 				case '-':	/* Enforce Southern hemisphere convention for y */
 	 				project_info.utm_hemisphere = -1;
@@ -4848,10 +4850,19 @@ int GMT_parse_J_option (char *args)
 	 				project_info.utm_hemisphere = 0;
 					break;
 			}
+			mod = toupper ((int)txt_a[strlen(txt_a)-1]);	/* Check if UTM zone has a valid latitude modifier */
+			error = 0;
+			if (mod >= 'A' && mod <= 'Z') {	/* Got fully qualified UTM zone, e.g., 33N */
+				project_info.utm_zoney = (int)mod;
+				project_info.utm_hemisphere = -1;
+				if (mod >= 'N') project_info.utm_hemisphere = +1;
+				if (mod == 'I' || mod == 'O') error++;	/* No such zones */
+			}
 	 		project_info.pars[0] = fabs (project_info.pars[0]);
-			error = !(n_slashes == 1 && n == 2);
+	 		project_info.utm_zonex = irint (project_info.pars[0]);
+			error += !(n_slashes == 1 && n == 2);
 			error += (project_info.pars[1] <= 0.0 || (k >= 0 && project_info.gave_map_width));
-			error += (project_info.pars[0] < 1 || project_info.pars[0] > 60);	/* Zones must be 1-60 */
+			error += (project_info.utm_zonex < 1 || project_info.utm_zonex > 60);	/* Zones must be 1-60 */
 	 		project = GMT_UTM;
 	 		break;
 	 	case 'V':	/* Van der Grinten */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.145 2007-08-11 04:22:06 guru Exp $
+ *	$Id: gmt_map.c,v 1.146 2007-08-21 19:37:39 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1867,6 +1867,58 @@ int GMT_map_init_utm (void) {
 	gmtdefs.basemap_type = GMT_IS_PLAIN;
 
 	return (search);
+}
+
+/* Setting w/e/s/n for a fully qualified UTM zone */
+
+int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e, double *s, double *n)
+{	/* Given the full UTM zone specification, return w/e/s/n */
+
+	int error = 0;
+	
+	*e = 180.0 + 6.0 * zone_x;	*w = *e - 6.0;
+	if (zone_y <= 'B') {
+		*s = -90.0;	*n = -84.0;
+		*w = 180.0 * (zone_y - 'A' - 1);
+		*e = *w + 180.0;
+	}
+	else if (zone_y <= 'J') {
+		*s = -80.0 + 8.0 * (zone_y - 'C');	*n = *s + 8.0;
+	}
+	else if (project_info.utm_zoney <= 'N') {
+		*s = -80.0 + 8.0 * (zone_y - 'C' - 1);	*n = *s + 8.0;
+	}
+	else if (project_info.utm_zoney < 'U') {
+		*s = -80.0 + 8.0 * (zone_y - 'C' - 2);	*n = *s + 8.0;
+	}
+	else if (project_info.utm_zoney == 'V') {
+		*s = -80.0 + 8.0 * (zone_y - 'C' - 2);	*n = *s + 8.0;
+		if (zone_x == 31) *e = 3.0;
+		if (zone_x == 32) *w = 3.0;
+	}
+	else if (zone_y == 'X') {
+		*s = 72.0;	*n = 84.0;
+		if (zone_x == 31) *e = 9.0;
+		if (zone_x == 33) {*w = 9.0; *e = 21.0;}
+		if (zone_x == 35) {*w = 21.0; *e = 33.0;}
+		if (zone_x == 37) *w = 33.0;
+		if (zone_x == 32 || zone_x == 34 || zone_x == 36) error = TRUE;
+	}
+	else if (zone_y >= 'Y') {
+		*s = 84.0;	*n = 90.0;
+		*w = 180.0 * (zone_y - 'Y' - 1);
+		*e = *w + 180.0;
+	}
+	else if (hemi == -1) {
+		*s = -90.0;	*n = 0.0;
+	}
+	else if (hemi == +1) {
+		*s = 0.0;	*n = 90.0;
+	}
+	else
+		error = TRUE;
+	
+	return (error);
 }
 
 /*
