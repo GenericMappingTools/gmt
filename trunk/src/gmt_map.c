@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.146 2007-08-21 19:37:39 guru Exp $
+ *	$Id: gmt_map.c,v 1.147 2007-08-21 19:47:13 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1910,10 +1910,10 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 		*e = *w + 180.0;
 	}
 	else if (hemi == -1) {
-		*s = -90.0;	*n = 0.0;
+		*s = -80.0;	*n = 0.0;
 	}
 	else if (hemi == +1) {
-		*s = 0.0;	*n = 90.0;
+		*s = 0.0;	*n = 84.0;
 	}
 	else
 		error = TRUE;
