@@ -28,6 +28,8 @@ option flags and lower case for modifiers.
 Data file(s) to be transformed.  If not given, standard input is read.
 #include "explain_-J.txt"
 #include "explain_-R.txt"
+Special case for inverse UTM projection: If OPT(R) is not given then it is created to coincide with
+the given UTM zone so as to preserve the full ellipsoidal solution (See RESTRICTIONS for more information).
 .SH OPTIONS
 .TP
 \fIinfile(s)\fP
@@ -139,6 +141,16 @@ extreme map coordinates through \fBmapproject\fP using the appropriate scale and
 what  (x,y) values they are mapped onto.  Use these values when setting up for
 digitizing in order to have the inverse transformation work correctly, or alternatively,
 use \fBawk\fP to scale and shift the (x,y) values before transforming.
+.br
+FOr some projection, a spherical solution may be used despite the user having
+selected an ellipsoid.  This occurs when the users OPT(R) setting implies a
+region that exceeds the domain in which the ellipsoidal series expansions are
+valid.  These are the conditions: (1) Lambert Conformal Conic (OPT(JL))and Albers
+Equal-Area (OPT(JB)) will use the spherical solution when the map scale exceeds
+1.0E7.  (2) Transverse Mercator (OPT(JT)) and UTM (OPT(JU)) will will use the
+spherical solution when either the west or east boundary given in OPT(R) is
+more than 10 degrees from the central meridian, and (3) same for Cassini (OPT(JC))
+but with a limit of only 4 degrees.
 .SH ELLIPSOIDS AND SPHEROIDS
 \fBGMT\fP will use ellipsoidal formulae if they are implemented and the user have
 selected an ellipsoid as the reference shape (see \fBELLIPSOID\fP in \fBgmtdefaults\fP).  The user
