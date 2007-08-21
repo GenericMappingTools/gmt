@@ -1,9 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.50 2007-08-12 20:09:28 guru Exp $
+	$Id: ChangeLog,v 1.51 2007-08-21 17:17:20 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-08-21	pwessel
+	* gmt_io.c:		Combinations of OUTPUT_DEGREE_FORMAT=ddd:mm:ss.xxxF and -:
+				would add W|E to lat and S|N to lon for formatted output
+	
 2007-08-12	pwessel
 	* grdcut.c:		Domain check failed for geographic 360-degree grid w/ -fg
+
 .
 2007-08-08	pwessel
 	* grdfilter.c:		-I<nx>+/<ny>+ not propagated to output setup

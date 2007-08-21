@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.138 2007-08-11 04:22:06 guru Exp $
+ *	$Id: gmt_io.c,v 1.139 2007-08-21 17:17:20 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -696,13 +696,13 @@ void GMT_adjust_periodic (void) {
 
 int GMT_ascii_output (FILE *fp, int n, double *ptr)
 {
-	int i, last, e = 0, wn = 0;
+	int i, col, last, e = 0, wn = 0;
 
-	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	last = n - 1;						/* Last record, need to output linefeed instead of delimiter */
 
 	for (i = 0; i < n && e >= 0; i++) {			/* Keep writing all fields unless there is a read error (e == -1) */
-		e = GMT_ascii_output_one (fp, ptr[i], i);	/* Write one item without any separator at the end */
+		col = (gmtdefs.xy_toggle[GMT_OUT] && i < 2) ? 1 - i : i;	/* Write lat/lon instead of lon/lat */
+		e = GMT_ascii_output_one (fp, ptr[col], col);	/* Write one item without any separator at the end */
 
 		if (i == last)					/* This is the last field, must add newline */
 			putc ('\n', fp);
