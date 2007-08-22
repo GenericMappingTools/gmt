@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.306 2007-08-11 04:22:07 guru Exp $
+ *	$Id: gmt_support.c,v 1.307 2007-08-22 18:57:35 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2358,7 +2358,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	BOOLEAN g_set = FALSE;
 	char txt_cpy[BUFSIZ], p[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], c;
 
-	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+n|N<dx>[/<dy>]][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
 
 	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
 	if (!txt[k]) {	/* Does not contain new-style settings, look for old-style (v3.4) syntax */
@@ -2371,6 +2371,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 
 	/* Decode new-style +separated substrings */
 
+	G->nudge_flag = 0;	
 	strcpy (txt_cpy, &txt[k+1]);
 	while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 		switch (p[0]) {
@@ -2394,8 +2395,8 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 
 			case 'c':	/* Clearance specification */
 				k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
-				G->clearance[0] = GMT_convert_units (txt_a, GMT_INCH);
-				G->clearance[1] = (k == 2 ) ? GMT_convert_units (txt_b, GMT_INCH) : G->clearance[0];
+				G->clearance[GMT_X] = GMT_convert_units (txt_a, GMT_INCH);
+				G->clearance[GMT_Y] = (k == 2 ) ? GMT_convert_units (txt_b, GMT_INCH) : G->clearance[GMT_X];
 				G->clearance_flag = ((strchr (txt_a, '%')) ? 1 : 0);
 				if (k == 0) bad++;
 				break;
@@ -2476,6 +2477,15 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				}
 				break;
 
+			case 'n':	/* Nudge specification; dx/dy are increments along local line axes */
+				G->nudge_flag = 1;	
+			case 'N':	/* Nudge specification; dx/dy are increments along plot axes */
+				G->nudge_flag++;	
+				k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
+				G->nudge[GMT_X] = GMT_convert_units (txt_a, GMT_INCH);
+				G->nudge[GMT_Y] = (k == 2 ) ? GMT_convert_units (txt_b, GMT_INCH) : G->nudge[GMT_X];
+				if (k == 0) bad++;
+				break;
 			case 'o':	/* Use rounded rectangle textbox shape */
 				G->box = 4 + (G->box & 1);
 				break;
@@ -2918,6 +2928,7 @@ void GMT_contlabel_fixpath (double **xin, double **yin, double d[], int *n, stru
 void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *label, BOOLEAN annot, struct GMT_CONTOUR *G)
 {
 	int i;
+	double s = 0.0, c = 1.0;
 	struct GMT_CONTOUR_LINE *C;
 	/* Adds this segment to the list of contour lines */
 
@@ -2945,6 +2956,11 @@ void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *la
 			C->L[i].x = G->L[i]->x;
 			C->L[i].y = G->L[i]->y;
 			C->L[i].line_angle = G->L[i]->line_angle;
+			if (G->nudge_flag) {	/* Must adjust point a bit */
+				if (G->nudge_flag == 2) sincosd (C->L[i].line_angle, &s, &c);
+				C->L[i].x += (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
+				C->L[i].y += (G->nudge[GMT_X] * s + G->nudge[GMT_Y] * c);
+			}
 			C->L[i].angle = G->L[i]->angle;
 			C->L[i].dist = G->L[i]->dist;
 			C->L[i].node = G->L[i]->node;

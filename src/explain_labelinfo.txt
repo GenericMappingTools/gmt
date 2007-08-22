@@ -10,6 +10,9 @@ By appending the \fBu\fP or \fBd\fP we get annotations whose top face the next u
 Sets the clearance between label and optional text box.  Append \fBc|i|m|p\fP to specify
 the unit or % to indicate a percentage of the label font size [15%].
 .TP
+\fB+d\fP
+Turns on debug which will draw helper points and lines to illustrate the workings of the quoted line setup.
+.TP
 \fB+f\fP\fIfont\fP
 Sets the desired font [Default \fBANNOT_FONT_PRIMARY\fP].
 .TP
@@ -17,7 +20,7 @@ Sets the desired font [Default \fBANNOT_FONT_PRIMARY\fP].
 Selects opaque text boxes [Default is transparent]; optionally specify the color [Default is \fBPAGE_COLOR\fP].
 .TP
 \fB+j\fP\fIjust\fP
-Sets label justification [Default is CM].
+Sets label justification [Default is CM].  Ignored when -SqN|n+|-1 is used.
 .TP
 \fB+k\fP\fIcolor\fP
 Sets color of text labels [Default is \fBCOLOR_BACKGROUND\fP].
@@ -33,6 +36,7 @@ Sets the label text according to the specified flag:
 \fB+Lh\fP
 Take the label from the current multisegment header (first scan for an embedded
 \fB\-L\fP\fIlabel\fP option, if not use the first word following the segment flag).
+For multiple-word labels, enclose entire label in double quotes.
 .TP
 \fB+Ld\fP
 Take the Cartesian plot distances along the line as the label; append \fBc|i|m|p\fP
@@ -51,6 +55,11 @@ location setting.
 As \fB+Lh\fP but use the headers in the \fIxfile.d\fP instead.  Requires the crossing file option.
 .RE
 #endif
+.TP
+\fB+n\fP\fIdx\fP[/\fIdy\fP]
+Nudges the placement of labels by the specified amount (append \fBc|i|m|p\fP to specify the units).
+Increments are considered in the coordinate system defined by the orientation of the line; use
+\fB+N\fP to force increments in the plot x/y coordinates system [no nudging].
 .TP
 \fB+o\fP
 Selects rounded rectangular text box [Default is rectangular].  Not applicable for curved text (\fB+v\fP) and

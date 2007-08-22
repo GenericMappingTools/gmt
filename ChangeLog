@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.53 2007-08-22 00:15:30 guru Exp $
+	$Id: ChangeLog,v 1.54 2007-08-22 18:57:35 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-08-22	pwessel
+	* gmt_init.c:		For quoted lines, the :Lh modifier did not reset label if
+				a segment header had no label specified.  Also, label would
+				include the leading " in a multi-word label.
+	* gmt_support.c:	Added +n<dx/dy> to nudge placement of quoted line labels.
 
 2007-08-21	pwessel
 	* gmt_io.c:		Combinations of OUTPUT_DEGREE_FORMAT=ddd:mm:ss.xxxF and -:

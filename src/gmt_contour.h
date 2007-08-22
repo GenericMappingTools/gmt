@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.34 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_contour.h,v 1.35 2007-08-22 18:57:35 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -111,6 +111,8 @@ struct GMT_CONTOUR {
 	double label_angle;		/* For fixed-angle labels only */
 	double clearance[2];		/* Spacing between text and textbox */
 	int clearance_flag;		/* 1 if spacing given in % of labelfont size, 0 otherwise */
+	double nudge[2];		/* Shift between calculated and desired text placement */
+	int nudge_flag;			/* 0 if off, 1 if nudging relative to x/y axis, 2 if following local line coordinate system */
 	BOOLEAN transparent;		/* TRUE for transparent textbox, FALSE for opaque */
 	int box;			/* Textbox bits [1 = outline, 2 = rect box shape, 4 = rounded rect shape] */
 	BOOLEAN curved_text;		/* TRUE for text to follow curved lines */
