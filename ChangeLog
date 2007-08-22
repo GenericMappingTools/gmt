@@ -1,15 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.52 2007-08-21 19:37:39 guru Exp $
+	$Id: ChangeLog,v 1.53 2007-08-22 00:15:30 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-08-21	pwessel
 	* gmt_io.c:		Combinations of OUTPUT_DEGREE_FORMAT=ddd:mm:ss.xxxF and -:
 				would add W|E to lat and S|N to lon for formatted output
-	* mapproject.c		For inverse UTM projections, -R is now optional.  If not set
+	* mapproject.c		For UTM projections with -C, the -R is now optional.  If not set
 				then UTM zone specification must have some latitude info in it.
 				If a unique zone is specified then -R is set accordingly.
 	* gmt_init.c		Now, UTM zones may be A,B,Y,Z or 1-60 with modifiers C-X
-				except I and O.  
+				(except I and O).  
 	
 2007-08-12	pwessel
 	* grdcut.c:		Domain check failed for geographic 360-degree grid w/ -fg
