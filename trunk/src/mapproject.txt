@@ -28,7 +28,7 @@ option flags and lower case for modifiers.
 Data file(s) to be transformed.  If not given, standard input is read.
 #include "explain_-J.txt"
 #include "explain_-R.txt"
-Special case for inverse UTM projection: If OPT(R) is not given then it is created to coincide with
+Special case for the UTM projection: If OPT(C) is used and OPT(R) is not given then the region is set to coincide with
 the given UTM zone so as to preserve the full ellipsoidal solution (See RESTRICTIONS for more information).
 .SH OPTIONS
 .TP
