@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.307 2007-08-22 18:57:35 guru Exp $
+ *	$Id: gmt_support.c,v 1.308 2007-08-23 19:31:45 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2928,7 +2928,7 @@ void GMT_contlabel_fixpath (double **xin, double **yin, double d[], int *n, stru
 void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *label, BOOLEAN annot, struct GMT_CONTOUR *G)
 {
 	int i;
-	double s = 0.0, c = 1.0;
+	double s = 0.0, c = 1.0, sign = 1.0;
 	struct GMT_CONTOUR_LINE *C;
 	/* Adds this segment to the list of contour lines */
 
@@ -2958,8 +2958,10 @@ void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *la
 			C->L[i].line_angle = G->L[i]->line_angle;
 			if (G->nudge_flag) {	/* Must adjust point a bit */
 				if (G->nudge_flag == 2) sincosd (C->L[i].line_angle, &s, &c);
-				C->L[i].x += (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
-				C->L[i].y += (G->nudge[GMT_X] * s + G->nudge[GMT_Y] * c);
+				/* If N+1 or N-1 is used we want positive x nudge to extend away from end point */
+				if (abs(G->number_placement) == 1 && G->n_cont == 1) sign = (G->end_just[(G->number_placement + 1)/2] == 7) ? +1.0 : -1.0;
+				C->L[i].x += sign * (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
+				C->L[i].y += sign * (G->nudge[GMT_X] * s + G->nudge[GMT_Y] * c);
 			}
 			C->L[i].angle = G->L[i]->angle;
 			C->L[i].dist = G->L[i]->dist;
