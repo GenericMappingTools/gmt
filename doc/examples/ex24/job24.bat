@@ -1,11 +1,11 @@
 REM
 REM             GMT EXAMPLE 24
 REM
-REM             $Id: job24.bat,v 1.9 2006-05-08 01:35:12 pwessel Exp $
+REM             $Id: job24.bat,v 1.10 2007-08-23 02:34:44 remko Exp $
 REM
 REM Purpose:    Extract subsets of data based on geospatial criteria
 REM
-REM GMT progs:  gmtselect, pscoast, psxy, minmax
+REM GMT progs:  gmtselect, pscoast, psxy
 REM DOS calls:  del
 REM
 echo GMT EXAMPLE 24

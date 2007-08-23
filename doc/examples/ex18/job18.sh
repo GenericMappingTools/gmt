@@ -1,11 +1,12 @@
 #!/bin/sh
 #		GMT EXAMPLE 18
 #
-#		$Id: job18.sh,v 1.9 2007-06-13 00:27:05 guru Exp $
+#		$Id: job18.sh,v 1.10 2007-08-23 02:34:44 remko Exp $
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
-# GMT progs:	gmtset, gmtselect, grdclip, grdcontour, grdgradient, grdimage, grdvolume
+# GMT progs:	gmtset, gmtselect, grdclip, grdcontour, grdgradient, grdimage
+# GMT progs:	grdmath, grdvolume, makecpt, pscoast, psscale, pstext, psxy
 # Unix progs:	$AWK, cat, rm
 #
 

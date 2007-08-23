@@ -1,11 +1,11 @@
 REM
 REM             GMT EXAMPLE 21
 REM
-REM             $Id: job21.bat,v 1.11 2006-10-30 03:00:43 remko Exp $
+REM             $Id: job21.bat,v 1.12 2007-08-23 02:34:44 remko Exp $
 REM
 REM Purpose:    Plot a time-series
 REM
-REM GMT progs:  gmtset
+REM GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
 REM DOS calls:  del
 REM
 echo GMT EXAMPLE 21

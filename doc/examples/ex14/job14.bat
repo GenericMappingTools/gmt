@@ -1,10 +1,10 @@
 REM		GMT EXAMPLE 14
 REM
-REM		$Id: job14.bat,v 1.10 2006-10-30 19:09:11 remko Exp $
+REM		$Id: job14.bat,v 1.11 2007-08-23 02:34:44 remko Exp $
 REM
 REM Purpose:	Showing simple gridding, contouring, and resampling along tracks
 REM GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project, pstext
-REM		psbasemap, psxy, surface
+REM GMT progs:	psbasemap, psxy, surface
 REM DOS calls:	del, gawk
 REM
 REM First draw network and label the nodes

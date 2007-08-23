@@ -1,10 +1,9 @@
 REM
 REM             GMT EXAMPLE 26
 REM
-REM             $Id: job26.bat,v 1.3 2007-03-30 02:57:36 pwessel Exp $
+REM             $Id: job26.bat,v 1.4 2007-08-23 02:34:44 remko Exp $
 REM
 REM Purpose:    Demonstrate general vertical perspective projection
-REM
 REM GMT progs:  pscoast
 REM DOS calls:  none
 REM
