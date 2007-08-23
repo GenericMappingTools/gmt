@@ -7,7 +7,7 @@ pstext \- To plot text on maps
 .SH SYNOPSIS
 \fBpstext\fP \fItextfile\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ GMT_B_OPT ] [ OPT(C)\fIdx/dy\fP ]  
-[ OPT(D)[\fBj\fP]\fIdx\fP/\fIdy\fP[\fBv\fP[\fIcolor\fP] ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] 
+[ OPT(D)[\fBj\fP]\fIdx\fP/\fIdy\fP[\fBv\fP[\fIpen\fP] ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] 
 [ OPT(G)\fIcolor\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(S)\fIpen\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fIcolor\fP,][\fBo\fP|\fBO\fP|\fBc\fP|\fBC\fP[\fIpen\fP]] ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_t_OPT ]
@@ -58,13 +58,15 @@ Offsets the text from the projected (\fIx,y\fP) point by \fIdx,dy\fP [0/0].
 Use \fB-Dj\fP to offset the text away from the point instead (i.e. the text's justification\"'
 will determine the direction of the shift).  Optionally, append \fBv\fP which will draw a line
 from the original point to the shifted point; append a \fIpen\fP to change the attributes for this line.
+(See SPECIFYING PENS below).
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 (Not implemented for paragraph mode).
 .TP
 .B \-G
-Sets the gray-shade (0-255) or color (r/g/b, each 0-255) used for drawing the text.  [Default is BASEMAP_FRAME_RGB, the current frame color (by default black)]
+Sets the shade or color used for drawing the text  [Default is BASEMAP_FRAME_RGB, the current frame color (by default black)]
+(See SPECIFYING COLOR below).
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
@@ -102,6 +104,7 @@ texture = solid].  use a comma to separate the fill information from the outline
 Choose upper case \fBO\fP to get a rounded rectangle.
 Choose lower case \fBc\fP to get a concave rectangle (only in paragraph mode).
 Choose upper case \fBC\fP to get a convex rectangle (only in paragraph mode).
+(See also SPECIFYING PENS and SPECIFYING COLOR below).
 #include "explain_-XY.txt"
 .TP
 .B \-Z
@@ -109,6 +112,8 @@ For 3-D projections:  Sets the z-level of the basemap [0].
 (Not implemented for paragraph mode).
 #include "explain_-t.txt"
 #include "explain_-c.txt"
+#include "explain_pen.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To plot the outlines of the textstrings stored in the file text.d on a Mercator plot with
 the given specifications, use

@@ -56,7 +56,7 @@ Offset the plot symbol locations by the given amounts \fIdx/dy\fP [Default is no
 Draw error bars.  Append \fBx\fP and/or \fBy\fP to indicate which bars you want to draw (Default is both x and y).  The x and/or
 y errors must be stored in the columns after the (x,y) pair [or (x,y,size) triplet].  The
 \fIcap\fP parameter indicates the length of the end-cap on the error bars [CAP_SI (or CAP_US)].  Pen
-attributes for error bars may also be set.  [Defaults: width = 1, color = black, texture = solid].
+attributes for error bars may also be set (see SPECIFYING PENS below) [Defaults: width = 1, color = black, texture = solid].
 A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill and error pen color, while a leading
 \fB-\fP will set error pen color and turn off symbol fill.
 If upper case \fBX\fP and/or \fBY\fP is used we will instead draw "box-and-whisker" (or "stem-and-leaf") symbols.  The x (or y)
@@ -65,8 +65,7 @@ quartile, the 75% quartile, and the maximum (100% quartile) values.  The 25-75% 
 .TP
 .B \-G
 Select color or pattern for filling of symbols or polygons [Default is no fill].
-.br
-#include "explain_-G.txt"
+(See SPECIFYING FILL below).
 .br
 Note when \fB\-M\fP is chosen, \fBpsxy\fP will search for OPT(G) and OPT(W)
 strings in all the subheaders and let any values thus found over-ride the command line settings.
@@ -236,9 +235,9 @@ y-dash.  \fIsize\fP is the length of a short vertical line segment.
 .TP
 .B \-W
 Set pen attributes for lines or the outline of symbols.  [Defaults: width = 1, color = black, texture = solid].
-#include "explain_pen.txt"
 A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
 \fB-\fP will set outline pen color and turn off symbol fill.
+(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
 #include "explain_-i_binary.txt"
@@ -246,6 +245,9 @@ A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill an
 [Default is the required number of columns given the chosen settings].
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+#include "explain_pen.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To plot solid red circles (diameter = LEN_1 cm) at the positions listed in the file DSDP.xy on a
 Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickmarks every 1 degree
@@ -274,14 +276,6 @@ by the magnitude in the 4th column, and color based on the third column via the 
 .br
 .sp
 \fBpsxy\fP misc.d \fB\-R\fP0/100/-50/100 OPT_2 \fB\-S\fP \fB\-C\fPcpt \fB\-B\fP20 > t.ps
-.SH BUGS
-The \fB\-N\fP option does not adjust the BoundingBox information so you may
-have to post-process the PostScript outout with epstool or ps2epsi to obtain
-a correct BoundingBox.
-.br
-\fBpsxy\fP cannot handle filling of polygons that contain the south or north pole.  For such a polygon,
-make a copy and split it into two and make each explicitly contain the polar point.  The two polygons
-will combine to give the desired effect when filled; to draw outline use the original polygon.
 .SH CUSTOM SYMBOLS
 \fBpsxy\fP and \fBpsxyz\fP allows users to define and plot their own custom symbols.
 This is done by encoding the symbol using a simple plotting code described below.  Put
@@ -347,6 +341,14 @@ dimensions will be scaled by the actual symbol size chosen at run-time.  To desi
 with \fBpsbasemap \-R\fP-0.5/0.5/-0.5/0.5 \fB\-JX\fP4\fBi\fP \fB\-Ba\fP0.1\gBg\gP0.05 \fB\-P\fP > grid.ps and
 draw your symbol, centering it on (0,0).  For examples of symbols, see the set supplied with \fBGMT\fP in
 \fB$GMT_SHAREDIR\fP/custom.
+.SH BUGS
+The \fB\-N\fP option does not adjust the BoundingBox information so you may
+have to post-process the PostScript outout with epstool or ps2epsi to obtain
+a correct BoundingBox.
+.br
+\fBpsxy\fP cannot handle filling of polygons that contain the south or north pole.  For such a polygon,
+make a copy and split it into two and make each explicitly contain the polar point.  The two polygons
+will combine to give the desired effect when filled; to draw outline use the original polygon.
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION),
 .IR psbasemap (GMTMANSECTION),

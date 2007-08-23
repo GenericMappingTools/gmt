@@ -43,11 +43,11 @@ If no dumpprefix is given we use mask (Files will be called mask_*.d).
 Sets the viewpoint's azimuth and elevation for perspective plots [180/90].\"'
 .TP
 .B \-F
-Force pixel registration.  [Default is grid registration].
+Force pixel registration [Default is grid registration].
 .TP
 .B \-G
-Paint the clip polygons [or tiles] with selected fill [Default is no fill].
-#include "explain_-G.txt"
+Paint the clip polygons (or tiles) with a selected fill [Default is no fill].
+(See SPECIFYING FILL below).
 #include "explain_-H.txt"
 Not used with binary data.
 #include "explain_-K.txt"
@@ -76,6 +76,8 @@ Plot tiles instead of clip polygons.  Use \fB\-G\fP to set tile color or pattern
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-c.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To make an overlay \fIPostScript\fP file that will mask out the regions of a contour map
 where there is no control data using clip polygons, use:

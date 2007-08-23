@@ -63,8 +63,8 @@ option flags and lower case for modifiers.
 Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 .TP
 .B \-G
-Paint inside of basemap. [Default is no fill].
-#include "explain_-G_nopattern.txt"
+Select fill shade, color or pattern for the inside of the basemap [Default is no fill color].
+(See SPECIFYING FILL below).
 #include "explain_-Jz.txt"
 #include "explain_-K.txt"
 #include "explain_-L_scale.txt"
@@ -78,6 +78,9 @@ Paint inside of basemap. [Default is no fill].
 .B \-Z
 For 3-D projections:  Sets the z-level of the basemap [0].
 #include "explain_-c.txt"
+#include "explain_pen.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 The following section illustrates the use of the options by giving some examples for the
 available map projections.  Note how scales may be given in several different ways

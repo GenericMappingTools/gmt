@@ -1,8 +1,12 @@
-#include "explain_-G_nopattern.txt"
-Alternatively, specify \fB\-Gp\fP\fIdpi/pattern\fP, where \fIpattern\fP gives
+.SH SPECIFYING FILL
+.TP
+\fIfill\fP
+The attribute \fIfill\fP specifies the solid shade or solid \fIcolor\fP
+(see SPECIFYING COLOR below) or the pattern used for filling polygons.
+Patterns are specified as \fBp\fP\fIdpi/pattern\fP, where \fIpattern\fP gives
 the number of the built-in pattern (1-90) \fIor\fP the name of a Sun 1-, 8-,
 or 24-bit raster file. The \fIdpi\fP sets the resolution of the image. For
-1-bit rasters: use \fB\-GP\fP for inverse video, or append
+1-bit rasters: use \fBP\fP\fIdpi/pattern\fP for inverse video, or append
 \fB:F\fP\fIcolor\fP[\fBB\fP[\fIcolor\fP]] to specify fore- and background
 colors (use \fIcolor\fP = - for transparency).
 See \fBGMT\fP Cookbook & Technical Reference Appendix E for information

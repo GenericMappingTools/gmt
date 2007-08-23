@@ -754,6 +754,9 @@ should be (y,x).  IN means only input has (y,x), while OUT means only output sho
 .B Y_AXIS_TYPE
 Determines if the annotations for a y-axis (for linear projections) should be plotted horizontally (hor_text)
 or vertically (ver_text)  [hor_text].
+#include "explain_pen.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To get a copy of the \fBGMT\fP parameter defaults in your home directory, run
 .br

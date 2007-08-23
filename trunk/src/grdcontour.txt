@@ -112,7 +112,7 @@ then only contours marked with upper case C or A will have tickmarks [and annota
 \fItype\fP, if present, can be \fBa\fP for annotated contours or \fBc\fP for regular contours [Default].
 \fIpen\fP sets the attributes for the particular line.  Default values for annotated contours:
 width = 3, color = black, texture = solid.  Regular contours have default width = 1.
-#include "explain_pen.txt"
+(See SPECIFYING PENS below).
 If the
 \fB+\fP flag is specified then the color of the contour lines are taken from the cpt file (see \fB\-C\fP).
 #include "explain_-XY.txt"
@@ -128,6 +128,8 @@ special precautions must be taken when determining 0-contours.
 #include "explain_-f.txt"
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
+#include "explain_pen.txt"
+#include "explain_color.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
 To contour the file hawaii_grav.grd every 25 mGal on a Mercator map at 0.5 inch/degree, annotate
