@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.54 2007-08-22 18:57:35 guru Exp $
+	$Id: ChangeLog,v 1.55 2007-08-23 02:40:02 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-08-23	remko
+	* ex??/job??.sh:	Properly identified GMT programs used in example scripts.
 
 2007-08-22	pwessel
 	* gmt_init.c:		For quoted lines, the :Lh modifier did not reset label if
@@ -11,11 +14,11 @@
 2007-08-21	pwessel
 	* gmt_io.c:		Combinations of OUTPUT_DEGREE_FORMAT=ddd:mm:ss.xxxF and -:
 				would add W|E to lat and S|N to lon for formatted output
-	* mapproject.c		For UTM projections with -C, the -R is now optional.  If not set
+	* mapproject.c:		For UTM projections with -C, the -R is now optional.  If not set
 				then UTM zone specification must have some latitude info in it.
 				If a unique zone is specified then -R is set accordingly.
-	* gmt_init.c		Now, UTM zones may be A,B,Y,Z or 1-60 with modifiers C-X
-				(except I and O).  
+	* gmt_init.c:		Now, UTM zones may be A,B,Y,Z or 1-60 with modifiers
+				C-X (except I and O).  
 	
 2007-08-12	pwessel
 	* grdcut.c:		Domain check failed for geographic 360-degree grid w/ -fg
@@ -31,11 +34,11 @@
 	* psxy.c:		-E.../[-|+]<pen> where + means apply cpt color (-C) to symbol & bar
 					- means apply to bar only (no fill).  Likewise, -W[+|-]<pen> controls
 					if -C sets outline (-) or both fill and outline (+)
-	* psxyz.c		-W[+|-]<pen> controls if -C sets outline (-) or both fill and outline (+)
+	* psxyz.c:		-W[+|-]<pen> controls if -C sets outline (-) or both fill and outline (+)
 	
 2007-07-30	pwessel
 	* psxy.c:		For -Sb|B, clip bars extending outside -R (unless -N is on)
-	* psxyz.c		Same
+	* psxyz.c:		Same
 	* misc/gmtdigitize.c:	Must use separate x- and y-scales if -Jx is specified
 	
 2007-07-18	remko
