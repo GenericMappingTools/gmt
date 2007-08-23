@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.55 2007-08-23 02:40:02 remko Exp $
+	$Id: ChangeLog,v 1.56 2007-08-23 19:40:41 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-08-23	pwessel
+	* pslegend.c:		Added @ECHO OFF to avoid commands being echoed into PS under WIN32
+	
 2007-08-23	remko
 	* ex??/job??.sh:	Properly identified GMT programs used in example scripts.
 
