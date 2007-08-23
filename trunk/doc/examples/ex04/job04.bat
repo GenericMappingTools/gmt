@@ -1,9 +1,9 @@
 REM		GMT EXAMPLE 04
 REM
-REM		$Id: job04.bat,v 1.8 2006-10-23 18:14:12 remko Exp $
+REM		$Id: job04.bat,v 1.9 2007-08-23 02:34:44 remko Exp $
 REM
 REM Purpose:	3-D mesh plot of Hawaiian topography and geoid
-REM GMT progs:	grdcontour, grdview, pscoast, pstext, psxyz
+REM GMT progs:	grdcontour, grdview, pscoast, pstext
 REM DOS calls:	echo, del, call
 REM
 REM CPS: topo.cpt

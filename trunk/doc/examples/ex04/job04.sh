@@ -1,10 +1,10 @@
 #!/bin/sh
 #		GMT EXAMPLE 04
 #
-#		$Id: job04.sh,v 1.8 2006-10-23 18:14:12 remko Exp $
+#		$Id: job04.sh,v 1.9 2007-08-23 02:34:44 remko Exp $
 #
 # Purpose:	3-D mesh plot of Hawaiian topography and geoid
-# GMT progs:	grdcontour, grdview, pscoast, pstext, psxyz
+# GMT progs:	grdcontour, grdview, pscoast, pstext
 # Unix progs:	echo, rm
 #
 echo '-10     255     0       255' > zero.cpt

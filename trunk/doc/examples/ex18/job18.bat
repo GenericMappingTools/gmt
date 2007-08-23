@@ -1,10 +1,11 @@
 REM		GMT EXAMPLE 18
 REM
-REM		$Id: job18.bat,v 1.10 2007-06-13 00:27:05 guru Exp $
+REM		$Id: job18.bat,v 1.11 2007-08-23 02:34:44 remko Exp $
 REM
 REM Purpose:	Illustrates volumes of grids inside contours and spatial
 REM		selection of data
-REM GMT progs:	gmtset, gmtselect, grdclip, grdcontour, grdgradient, grdimage, grdvolume
+REM GMT progs:	gmtset, gmtselect, grdclip, grdcontour, grdgradient, grdimage
+REM GMT progs:	grdmath, grdvolume, makecpt, pscoast, psscale, pstext, psxy
 REM DOS calls:	gawk, echo, del
 REM
 echo GMT EXAMPLE 18

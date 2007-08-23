@@ -1,11 +1,11 @@
 REM
 REM             GMT EXAMPLE 23
 REM
-REM             $Id: job23.bat,v 1.12 2006-10-30 19:09:11 remko Exp $
+REM             $Id: job23.bat,v 1.13 2007-08-23 02:34:44 remko Exp $
 REM
 REM Purpose:    Plot distances from Rome and draw shortest paths
 REM
-REM GMT progs:  gmtset, grdmath, grdcontour, psxy, pstext, grdtrack
+REM GMT progs:  gmtset, grdmath, grdcontour, pscoast, psxy, pstext, grdtrack
 REM DOS calls:  del
 REM
 echo GMT EXAMPLE 23

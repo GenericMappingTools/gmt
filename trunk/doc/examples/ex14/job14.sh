@@ -1,11 +1,11 @@
 #!/bin/sh
 #		GMT EXAMPLE 14
 #
-#		$Id: job14.sh,v 1.12 2006-10-30 19:09:11 remko Exp $
+#		$Id: job14.sh,v 1.13 2007-08-23 02:34:44 remko Exp $
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
-# GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project,
-#		pstext, psbasemap, psxy, surface
+# GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project
+# GMT progs:	pstext, psbasemap, psxy, surface
 # Unix progs:	$AWK, rm
 #
 # First draw network and label the nodes
