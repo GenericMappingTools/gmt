@@ -47,8 +47,7 @@ Sets the viewpoint's azimuth and elevation [180/90].\"'
 .TP
 .B \-G
 Select color or pattern for filling  symbols polygons [Default is no fill].
-.br
-#include "explain_-G.txt"
+(See SPECIFYING FILL below).
 .br
 Note when OPT(M) is chosen, \fBpsxyz\fP will search for OPT(G) and OPT(W)
 strings in all the subheaders and let any found values over-ride the command line settings.
@@ -229,10 +228,10 @@ zdash.  \fIsize\fP is the length of a short vertical (z-dir) line segment.
 #include "explain_-V.txt"
 .TP
 .B \-W
-Set pen attributes for lines or the outline of symbols.  [Defaults: width = 1, color = black, texture = solid].
-#include "explain_pen.txt"
+Set pen attributes for lines or the outline of symbols [Defaults: width = 1, color = black, texture = solid].
 A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
 \fB-\fP will set outline pen color and turn off symbol fill.
+(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
 .B \-Z
@@ -243,6 +242,9 @@ For 3-D projections:  Sets the z-level of the basemap [0].
 [Default is the required number of columns given the settings].
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+#include "explain_pen.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To plot blue columns (width = LEN_1 cm) at the positions listed in the file heights.xyz on a
 3-D projection of the space (0\-10), (0\-10), (0\-100),  with tickmarks every 2, 2, and 10,

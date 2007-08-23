@@ -40,6 +40,7 @@ The C record specifies the color with which the remaining text is to be printed.
 \fBD\fP \fIoffset pen\fP
 The D record results in a horizontal line across the legend.  The line starts and stops \fIoffset\fP
 units from the frame sides, and is drawn using the specified \fIpen\fP.
+(See SPECIFYING PENS below).
 .TP
 \fBG\fP \fIgap\fP
 The G record specifies a vertical gap of the given length.  In addition to the standard units (\fBi, c, p\fP) you
@@ -85,8 +86,9 @@ at their default value to -.
 One or more of these T records with text must follow after the \fB>\fP record.
 .TP
 \fBV\fP \fIoffset pen\fP
-The V record draws a vertical line between columns (if more than one) using the selected pen.  \fIoffset\fP is
-analogous to the offset for the D records but in the vertical direction.
+The V record draws a vertical line between columns (if more than one) using the selected \fIpen\fP
+(See SPECIFYING PENS below).
+\fIoffset\fP is analogous to the offset for the D records but in the vertical direction.
 .TP
 .B \-D
 Positions the legend and specifies its size.  The \fIjust\fP is a 2-char justification string (see \fBpstext\fP)
@@ -104,7 +106,8 @@ Sets the clearance between the legend frame and the internal items [CLEARENCE_SI
 Draws a border around the legend using \fBFRAME_PEN\fP.
 .TP
 .B \-G
-#include "explain_-G.txt"
+Select fill shade, color or pattern of the legend box [Default is no fill].
+(See SPECIFYING FILL below).
 #include "explain_-K.txt"
 .TP
 .B \-L
@@ -119,6 +122,9 @@ to standard output, or optionally to the file \fIscript\fP.
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
+#include "explain_pen.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br
@@ -181,6 +187,8 @@ M 5 5 1000:km:l f
 .br
 EOF
 .br
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH WINDOWS REMARKS
 Note that under Windows, the percent sign (%) is a variable indicator (like $ under Unix).
 To indicate a plain percentage sign in a batch script you need to repeat it (%%);

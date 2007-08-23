@@ -7,10 +7,10 @@ pswiggle \- Plot anomaly along track on a map
 .SH SYNOPSIS
 \fBpswiggle\fP \fIxyz_files\fP GMT_J_OPT GMT_Rgeo_OPT 
 OPT(Z)\fIscale\fP [ OPT(A)\fIazimuth\fP ] [ GMT_B_OPT ] [ OPT(C)\fIcenter\fP ] [ OPT(D)\fIgap\fP ] 
-[ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIcolor\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
+[ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
 [ OPT(I)\fIfix_az\fP ] [ GMT_K_OPT ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(S)[\fBx\fP]\fIlon0\fP/\fIlat0\fP/\fIlength\fP[\fIunits\fP] ] [ OPT(T)\fItrack_pen\fP ] 
-[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIwiggle_pen\fP ] [ GMT_X_OPT ] 
+[ OPT(S)[\fBx\fP]\fIlon0\fP/\fIlat0\fP/\fIlength\fP[\fIunits\fP] ] [ OPT(T)\fIpen\fP ] 
+[ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBpswiggle\fP reads (\fIx\fP,\fIy\fP,\fIz\fP) triplets from files [or standard input] and plots z as a function of
@@ -48,8 +48,8 @@ user's units.\"'
 Sets the viewpoint's azimuth and elevation [180/90].\"'
 .TP
 .B \-G
-Set fill of positive wiggles. [Default is black]
-#include "explain_-G.txt"
+Set fill shade, color or pattern of positive wiggles [Default is black]
+(See SPECIFYING FILL below).
 #include "explain_-H.txt"
 .TP
 .B \-I
@@ -71,13 +71,14 @@ Draws a simple vertical scale centered on \fIlon0/lat0\fP.  Use \fB\-Sx\fP to sp
 .TP
 .B \-T
 Draw track  [Default is no track].  Append pen attributes to use [Defaults: width = 1, color = black, texture = solid].
-#include "explain_pen.txt"
+(See SPECIFYING PENS below).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
 .B \-W
 Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 [Defaults: width = 1, color = black, texture = solid].
+(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
 #include "explain_-i_binary.txt"
@@ -85,6 +86,9 @@ Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 [Default is 3 input columns].
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+#include "explain_pen.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To plot the magnetic anomaly stored in the file track.xym along track @ 1000 nTesla/cm (after removing a mean value of 32000 Tesla),
 using a LEN-cm-wide Polar Stereographic map ticked

@@ -9,10 +9,10 @@ pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 .SH SYNOPSIS
 \fBpscoast\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(A)\fImin_area\fP[\fI/min_level/max_level\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIfill\fP ] [ OPT(D)\fIresolution\fP ] 
-[ OPT(E)\fIazimuth/elevation\fP ] [ OPT(G)\fIfill\fP ] 
+[ OPT(E)\fIazimuth/elevation\fP ] [ OPT(G)\fIfill\fP|\fBc\fP ] 
 [ OPT(I)\fIriver\fP[/\fIpen\fP] ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
 [ GMT_SCALE ] [ GMT_O_OPT ] [ GMT_Mo_OPT ] [ OPT(N)\fIborder\fP[/\fIpen\fP] ] [ GMT_O_OPT ] 
-[ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)\fIfill\fP ] [ GMT_TROSE ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
+[ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)\fIfill\fP|\fBc\fP ] [ GMT_TROSE ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
 [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBpscoast\fP plots grayshaded, colored, or textured land-masses [or water-masses] on maps and [optionally]
@@ -37,23 +37,24 @@ will not be plotted [Default is 0/0/4 (all features)]. See DATABASE INFORMATION 
 #include "explain_-B_short.txt"
 .TP
 .B \-C
-Set the shade (0\-255), color (r/g/b), or pattern (\fBp|P\fP\fIdpi/pattern\fP; see \fB\-G\fP) for lakes  [Default is the fill chosen for "wet" areas (\fB\-S\fP)].
+Set the shade, color, or pattern for lakes  [Default is the fill chosen for "wet" areas (\fB\-S\fP)].
+(See SPECIFYING FILL below).
 .TP
 .B \-D
 Selects the resolution of the data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, and (\fBc\fP)rude).  The
-resolution drops off by 80% between data sets. [Default is \fBl\fP].
+resolution drops off by 80% between data sets  [Default is \fBl\fP].
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 .TP
 .B \-G
-Select painting or clipping of "dry" areas.  Append a shade, color, pattern, or \fBc\fP for clipping.
-#include "explain_-G.txt"
+Select filling or clipping of "wet" areas.  Append the shade, color, or pattern (see SPECIFYING FILL below);
+or use \fB\-Gc\fP for clipping [Default is no fill].
 .TP
 .B \-I
 Draw rivers.  Specify the type of rivers and [optionally] append pen attributes  [Default pen:
 width = 1, color = black, texture = solid].
-#include "explain_pen.txt"
+(See SPECIFYING PENS below).
 .br
 Choose from the list of river types below.
 Repeat option \fB\-I\fP as often as necessary.
@@ -97,8 +98,8 @@ Specify any combination of \fB\-W, \-I, \-N\fP.  Optionally, you may append the
 .TP
 .B \-N
 Draw political boundaries.  Specify the type of boundary and [optionally] append pen attributes  [Default pen:
-width = 1, color = black, texture = solid].
-#include "explain_pen.txt"
+width = 1, color = black, texture = solid]. (See SPECIFYING PENS below).
+(See SPECIFYING PENS below).
 .br
 Choose from the list of boundaries below.
 Repeat option \fB\-N\fP as often as necessary.
@@ -118,14 +119,16 @@ Repeat option \fB\-N\fP as often as necessary.
 Mark end of existing clip path.  No projection information is needed.
 .TP
 .B \-S
-Select painting or clipping of "wet" areas.  Append the shade (0\-255), color (r/g/b), pattern (see \fB\-G\fP), or \fBc\fP for clipping.
+Select filling or clipping of "wet" areas.  Append the shade, color, or pattern (see SPECIFYING FILL below);
+or use \fB\-Sc\fP for clipping [Default is no fill].
 #include "explain_-T_rose.txt"
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
 .B \-W
-Draw coastlines. [Default is no coastlines].  Append pen attributes  [Defaults:
+Draw coastlines [Default is no coastlines].  Append pen attributes  [Defaults:
 width = 1, color = black, texture = solid].
+(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
 .B \-Z
@@ -133,6 +136,9 @@ For 3-D projections:  Sets the z-level of the coastlines [0].
 #include "explain_-c.txt"
 #include "explain_-o_binary.txt"
 #include "explain_-n.txt"
+#include "explain_pen.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To plot a green Africa with white outline on blue background, with permanent major rivers in thick blue pen, additional major rivers in thin blue pen, and national borders as dashed lines
 on a Mercator map at scale LEN_1 inch/degree, use

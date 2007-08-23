@@ -45,8 +45,8 @@ Shift sectors so that they are centered on the bin interval (e.g., first sector 
 Sets the viewpoint's azimuth and elevation [180/90]\"'
 .TP
 .B \-G
-Selects shade or color for sector infill [Default is no fill].
-#include "explain_-G_nopattern.txt"
+Selects shade, color or pattern for filling the sectors [Default is no fill].
+(See SPECIFYING FILL below).
 #include "explain_-H.txt"
 .TP
 .B \-I
@@ -79,7 +79,7 @@ Specifies that the input data is orientation data (has a 180 degree ambiguity) i
 .TP
 .B \-W
 Set pen attributes for sector outline or rose plot.  [Default is no outline].
-#include "explain_pen.txt"
+(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
 .B \-Z
@@ -91,6 +91,9 @@ Input file has (azimuth,radius) pairs rather than the expected (radius,azimuth).
 #include "explain_-i_binary.txt"
 #include "explain_-n.txt"
 [Default is 2 input columns].
+#include "explain_pen.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To plot a half circle rose diagram of the data in the file fault_segments.az_r (containing
 pairs of (azimuth, length in meters), using a 10 degree bin sector width,

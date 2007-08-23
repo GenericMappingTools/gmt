@@ -59,7 +59,7 @@ Color the triangles using the color palette table.
 .TP
 .B \-L
 Draw the underlying triangular mesh using the specified pen attributes [Default is no mesh].
-#include "explain_pen.txt"
+(See SPECIFYING PENS below).
 .TP
 .B \-M
 When used in conjunction with \fB\-D\fP a single multisegment file is created, and
@@ -83,6 +83,7 @@ node numbers for a triangle [Default computes these using Delaunay triangulation
 .B \-W
 Select contouring and set contour pen attributes.  If the \fB+\fP flag is set then
 the contour lines are colored according to the cpt file (see \fB\-C\fP).
+(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 #include "explain_-t.txt"
@@ -92,6 +93,8 @@ the contour lines are colored according to the cpt file (see \fB\-C\fP).
 Use 4-byte integer triplets for node ids (\fB\-T\fP).
 #include "explain_-o_binary.txt"
 [Default is 3 output columns].
+#include "explain_pen.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To make a raw contour plot from the file topo.xyz and drawing the contours (pen = 2)
 given in the color palette file topo.cpt on a Lambert map

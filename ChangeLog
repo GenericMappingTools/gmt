@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.56 2007-08-23 19:40:41 guru Exp $
+	$Id: ChangeLog,v 1.57 2007-08-23 21:23:03 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-08-23	pwessel
@@ -7,6 +7,9 @@
 	
 2007-08-23	remko
 	* ex??/job??.sh:	Properly identified GMT programs used in example scripts.
+	* src/*.txt:		Moved explanation of pens, fill and color to separate sections.
+	* src/explain_{fill,color}.txt:	Newly intorduced sections.
+	* src/explain_-G*.txt:	Made superfluous. Removed.
 
 2007-08-22	pwessel
 	* gmt_init.c:		For quoted lines, the :Lh modifier did not reset label if

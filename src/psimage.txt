@@ -44,15 +44,17 @@ Sets position of lower left corner of image, and optionally append justification
 .TP
 .B \-F
 Draws a rectangular frame around the image with the given pen [no frame].
-#include "explain_pen.txt"
+(See SPECIFYING PENS below).
 .TP
 .B \-Gb
 Sets background color (replace white pixel) for 1-bit image templates.
 Use - for transparency (and set \fB\-Gf\fP to the desired color).
+(See SPECIFYING COLOR below).
 .TP
 .B \-Gf
 Sets foreground color (replace black pixel) for 1-bit image templates.
 Use - for transparency (and set \fB\-Gb\fP to the desired color).
+(See SPECIFYING COLOR below).
 .TP
 .B \-I
 Invert image before plotting (1-bit images only). This is what is done
@@ -70,6 +72,8 @@ Replicate the image \fInxrep\fP in x and \fInyrep\fP in y [Default is 1/1].
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
+#include "explain_pen.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To plot the image contained in the 8-bit rasterfile scanned_face.ras, scaling
 it to 8 by 10 cm, use

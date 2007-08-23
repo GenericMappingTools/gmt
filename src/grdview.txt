@@ -58,8 +58,9 @@ lon and lat).  [Default uses "natural" conditions (second partial derivative nor
 If no \fIflags\fP are set, use bilinear rather than the default bicubic resampling when draping is required.
 .TP
 .B \-N
-Draws a plane at this z-level.  If the optional r/g/b is provided, the frontal facade between
+Draws a plane at this z-level.  If the optional \fIcolor\fP is provided, the frontal facade between
 the plane and the data perimeter is colored.
+(See SPECIFYING COLOR below).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
@@ -87,22 +88,26 @@ nodes with z = NaN.  This option is useful for categorical data where
 interpolating between values is meaningless.  Optionally, append \fBo\fP to
 draw the tile outlines, and specify a custom pen if the default pen is not to
 your liking.
+(See SPECIFYING PENS below).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
 .B \-Wc
 Draw contour lines on top of surface or mesh (not image).  Append pen attributes used for the contours.
 [Default: width = 3, color = black, texture = solid].
-#include "explain_pen.txt"
+(See SPECIFYING PENS below).
 .TP
 .B \-Wm
 Sets the pen attributes used for the mesh. [Default: width = 1, color = black, texture = solid].
 You must also select \fB\-Qm\fP or \fB\-Qsm\fP for meshlines to be drawn.
+(See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
 .B \-Z
 Sets the z-level of the basemap [0].
 #include "explain_-c.txt"
+#include "explain_pen.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To make a mesh plot from the file hawaii_grav.grd and drawing the contours
 given in the color palette file hawaii.cpt on a Lambert map

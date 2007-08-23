@@ -39,8 +39,8 @@ Center bin on each value. [Default is left edge].
 Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 .TP
 .B \-G
-Select filling of bars.  [Default is no fill].
-#include "explain_-G.txt"
+Select filling of bars [Default is no fill].
+(See SPECIFYING FILL below).
 #include "explain_-H.txt"
 .TP
 .B \-I
@@ -51,7 +51,7 @@ to output an ASCII table of the resulting x,y data to stdout.  Alternatively, ap
 .TP
 .B \-L
 Draw bar outline using the specified pen thickness.  [Default is no outline].
-#include "explain_pen.txt"
+(See SPECIFYING PENS below).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
@@ -78,6 +78,9 @@ Choose between 6 types of histograms: 0 = counts [Default], 1 = frequency_percen
 #include "explain_-n.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"
+#include "explain_pen.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
 .SH EXAMPLES
 To draw a histogram of the data v3206.t containing seafloor depths, using a 250 meter
 bin width, center bars, and draw bar outline, use:
