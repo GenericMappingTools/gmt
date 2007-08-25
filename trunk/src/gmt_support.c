@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.308 2007-08-23 19:31:45 guru Exp $
+ *	$Id: gmt_support.c,v 1.309 2007-08-25 00:06:47 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2959,7 +2959,7 @@ void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *la
 			if (G->nudge_flag) {	/* Must adjust point a bit */
 				if (G->nudge_flag == 2) sincosd (C->L[i].line_angle, &s, &c);
 				/* If N+1 or N-1 is used we want positive x nudge to extend away from end point */
-				if (abs(G->number_placement) == 1 && G->n_cont == 1) sign = (G->end_just[(G->number_placement + 1)/2] == 7) ? +1.0 : -1.0;
+				sign = (G->number_placement) ? (double)C->L[i].end : 1.0;
 				C->L[i].x += sign * (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
 				C->L[i].y += sign * (G->nudge[GMT_X] * s + G->nudge[GMT_Y] * c);
 			}
@@ -3864,7 +3864,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 
 		}
 		if (G->number) {	/* Place prescribed number of labels evenly along contours */
-			int nc;
+			int nc, e_val = 0;
 			double dist, last_dist;
 
 			last_dist = (G->n_cont > 1) ? -map_dist[nn-1] / (G->n_cont - 1) : -0.5 * map_dist[nn-1];
@@ -3872,14 +3872,17 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 			for (i = j = 0; i < nc; i++) {
 				new_label = GMT_contlabel_new ();
 				if (G->number_placement && !closed) {
+					e_val = G->number_placement;
 					if (G->number_placement == -1 && G->n_cont == 1) {	/* Label justified with start of segment */
 						f = d_atan2 (xx[0] - xx[1], yy[0] - yy[1]) * R2D + 180.0;	/* 0-360 */
 						G->end_just[0] = (f >= 90.0 && f <= 270) ? 7 : 5;
 					}
-					else if (G->number_placement == +1 && G->n_cont == 1) {	/* Label justified with start of segment */
+					else if (G->number_placement == +1 && G->n_cont == 1) {	/* Label justified with end of segment */
 						f = d_atan2 (xx[nn-1] - xx[nn-2], yy[nn-1] - yy[nn-2]) * R2D + 180.0;	/* 0-360 */
 						G->end_just[1] = (f >= 90.0 && f <= 270) ? 7 : 5;
 					}
+					else if (G->number_placement && G->n_cont > 1)	/* One of the end labels */
+						e_val = (i == 0) ? -1 : +1;
 					dist = (G->n_cont > 1) ? i * track_dist[nn-1] / (G->n_cont - 1) : 0.5 * (G->number_placement + 1.0) * track_dist[nn-1];
 					this_value_dist = (G->n_cont > 1) ? i * value_dist[nn-1] / (G->n_cont - 1) : 0.5 * (G->number_placement + 1.0) * value_dist[nn-1];
 				}
@@ -3907,6 +3910,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						GMT_place_label (new_label, this_label, G, !(G->label_type == 0));
 						new_label->node = (j == 0) ? 0 : j - 1;
 						GMT_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
+						if (G->number_placement) new_label->end = e_val;
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
 							n_alloc += GMT_SMALL_CHUNK;
