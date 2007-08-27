@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.13 2007-05-18 20:38:39 pwessel Exp $
+/*	$Id: gshhs.h,v 1.14 2007-08-27 22:08:30 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -44,6 +44,8 @@
 
 #define GSHHS_DATA_VERSION	5	/* For v1.5 */
 #define GSHHS_PROG_VERSION	"1.7"
+
+#define GSHHS_SCL	1.0e-6	/* COnvert micro-degrees to degrees */
 
 /* For byte swapping on little-endian systems (GSHHS is defined to be bigendian) */
 
