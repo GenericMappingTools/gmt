@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.26 2007-08-27 20:50:57 guru Exp $
+#	$Id: Makefile,v 1.27 2007-08-27 21:36:33 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -101,6 +101,8 @@ spotless:	clean
 # Data targets:
 
 data:		full high int low crude
+
+info:		info_f info_h info_i info_l info_c
 
 set_new:
 		cp -f res_?/binned_GSHHS_?.cdf $(rootdir)/share/coast
