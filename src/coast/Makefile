@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.24 2007-08-27 19:02:26 guru Exp $
+#	$Id: Makefile,v 1.25 2007-08-27 19:24:42 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -31,7 +31,7 @@ include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
-VERSION = v4.2
+VERSION = 4.2
 GSHHS_DATA_VERSION	= 1.5
 GSHHS_PROG_VERSION	= 1.8
 
@@ -88,9 +88,9 @@ set_new:
 		cp -f res_?/binned_border_?.cdf $(rootdir)/share/coast
 		
 set_old:
-		cd $(rootdir); tar xvjf ftp/GMT_share.tar.bz2
-		cd $(rootdir); tar xvjf ftp/GMT_high.tar.bz2
-		cd $(rootdir); tar xvjf ftp/GMT_full.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GMT$(VERSION)_coast.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GMT$(VERSION)_high.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GMT$(VERSION)_full.tar.bz2
 		
 shrinkb: 	shrinkb_h shrinkb_i shrinkb_l shrinkb_c
 
@@ -113,16 +113,16 @@ rivers: 	river_f river_h river_i river_l river_c
 		rm res_?/binned_river_?.pt
 
 shrinkb_h:	
-#		polygon_shrink res_f/${VERSION}_final_dbase.b 0.2 res_h/${VERSION}_final_dbase_0.2km.b
+#		polygon_shrink res_f/v${VERSION}_final_dbase.b 0.2 res_h/v${VERSION}_final_dbase_0.2km.b
 		
 shrinkb_i:	
-#		polygon_shrink res_f/${VERSION}_final_dbase.b 1 res_i/${VERSION}_final_dbase_1km.b
+#		polygon_shrink res_f/v${VERSION}_final_dbase.b 1 res_i/v${VERSION}_final_dbase_1km.b
 		
 shrinkb_l:	
-#		polygon_shrink res_f/${VERSION}_final_dbase.b 5 res_l/${VERSION}_final_dbase_5km.b
+#		polygon_shrink res_f/v${VERSION}_final_dbase.b 5 res_l/v${VERSION}_final_dbase_5km.b
 		
 shrinkb_c:	
-#		polygon_shrink res_f/${VERSION}_final_dbase.b 25 res_c/${VERSION}_final_dbase_25km.b
+#		polygon_shrink res_f/v${VERSION}_final_dbase.b 25 res_c/v${VERSION}_final_dbase_25km.b
 
 shrinkl_h:	
 		line_shrink wdb/wdb_borders.b 0.2 wdb/wdb_borders_0.2km.b
@@ -149,44 +149,44 @@ shrinkr_c:
 		line_shrink wdb/wdb_rivers.b 25 wdb/wdb_rivers_25km.b
 
 bin_f:
-		polygon_to_bins res_f/${VERSION}_final_dbase.b 1 res_f/${VERSION}_final_nodes.grd res_f/binned_GSHHS_f
+		polygon_to_bins res_f/v${VERSION}_final_dbase.b 1 res_f/v${VERSION}_final_nodes.grd res_f/binned_GSHHS_f
 		shoremaker res_f/binned_GSHHS_f
 		rm res_f/binned_GSHHS_f.bin res_f/binned_GSHHS_f.seg res_f/binned_GSHHS_f.pt
 
 bin_h:
-		polygon_to_bins res_h/${VERSION}_final_dbase_0.2km.b 2 res_h/${VERSION}_final_nodes_0.2km.grd res_h/binned_GSHHS_h
+		polygon_to_bins res_h/v${VERSION}_final_dbase_0.2km.b 2 res_h/v${VERSION}_final_nodes_0.2km.grd res_h/binned_GSHHS_h
 		shoremaker res_h/binned_GSHHS_h
 		rm res_h/binned_GSHHS_h.bin res_h/binned_GSHHS_h.seg res_h/binned_GSHHS_h.pt
 
 bin_i:
-		polygon_to_bins res_i/${VERSION}_final_dbase_1km.b 5 res_i/${VERSION}_final_nodes_1km.grd res_i/binned_GSHHS_i
+		polygon_to_bins res_i/v${VERSION}_final_dbase_1km.b 5 res_i/v${VERSION}_final_nodes_1km.grd res_i/binned_GSHHS_i
 		shoremaker res_i/binned_GSHHS_i
 		rm res_i/binned_GSHHS_i.bin res_i/binned_GSHHS_i.seg res_i/binned_GSHHS_i.pt
 
 bin_l:
-		polygon_to_bins res_l/${VERSION}_final_dbase_5km.b 10 res_l/${VERSION}_final_nodes_5km.grd res_l/binned_GSHHS_l
+		polygon_to_bins res_l/v${VERSION}_final_dbase_5km.b 10 res_l/v${VERSION}_final_nodes_5km.grd res_l/binned_GSHHS_l
 		shoremaker res_l/binned_GSHHS_l
 		rm res_l/binned_GSHHS_l.bin res_l/binned_GSHHS_l.seg res_l/binned_GSHHS_l.pt
 
 bin_c:
-		polygon_to_bins res_c/${VERSION}_final_dbase_25km.b 20 res_c/${VERSION}_final_nodes_25km.grd res_c/binned_GSHHS_c
+		polygon_to_bins res_c/v${VERSION}_final_dbase_25km.b 20 res_c/v${VERSION}_final_nodes_25km.grd res_c/binned_GSHHS_c
 		shoremaker res_c/binned_GSHHS_c
 		rm res_c/binned_GSHHS_c.bin res_c/binned_GSHHS_c.seg res_c/binned_GSHHS_c.pt
 
 nodes_f:
-		polygon_setnodes res_f/${VERSION}_final_dbase.b 1 res_f/${VERSION}_final_nodes.grd
+		polygon_setnodes res_f/v${VERSION}_final_dbase.b 1 res_f/v${VERSION}_final_nodes.grd
 
 nodes_h:
-		polygon_setnodes res_h/${VERSION}_final_dbase_0.2km.b 2 res_h/${VERSION}_final_nodes_0.2km.grd
+		polygon_setnodes res_h/v${VERSION}_final_dbase_0.2km.b 2 res_h/v${VERSION}_final_nodes_0.2km.grd
 
 nodes_i:
-		polygon_setnodes res_i/${VERSION}_final_dbase_1km.b 5 res_i/${VERSION}_final_nodes_1km.grd
+		polygon_setnodes res_i/v${VERSION}_final_dbase_1km.b 5 res_i/v${VERSION}_final_nodes_1km.grd
 
 nodes_l:
-		polygon_setnodes res_l/${VERSION}_final_dbase_5km.b 10 res_l/${VERSION}_final_nodes_5km.grd
+		polygon_setnodes res_l/v${VERSION}_final_dbase_5km.b 10 res_l/v${VERSION}_final_nodes_5km.grd
 
 nodes_c:
-		polygon_setnodes res_c/${VERSION}_final_dbase_25km.b 20 res_c/${VERSION}_final_nodes_25km.grd
+		polygon_setnodes res_c/v${VERSION}_final_dbase_25km.b 20 res_c/v${VERSION}_final_nodes_25km.grd
 
 lines_f:
 		lines_to_bins wdb/wdb_borders.b 1 res_f/binned_border_f
@@ -229,11 +229,11 @@ river_c:
 		linemaker res_c/binned_river_c
 
 gshhs:
-		polygon_to_gshhs res_f/${VERSION}_final_dbase.b > gshhs_f.b
-		polygon_to_gshhs res_h/${VERSION}_final_dbase_0.2km.b > gshhs_h.b
-		polygon_to_gshhs res_i/${VERSION}_final_dbase_1km.b > gshhs_i.b
-		polygon_to_gshhs res_l/${VERSION}_final_dbase_5km.b > gshhs_l.b
-		polygon_to_gshhs res_c/${VERSION}_final_dbase_25km.b > gshhs_c.b
+		polygon_to_gshhs res_f/v${VERSION}_final_dbase.b > gshhs_f.b
+		polygon_to_gshhs res_h/v${VERSION}_final_dbase_0.2km.b > gshhs_h.b
+		polygon_to_gshhs res_i/v${VERSION}_final_dbase_1km.b > gshhs_i.b
+		polygon_to_gshhs res_l/v${VERSION}_final_dbase_5km.b > gshhs_l.b
+		polygon_to_gshhs res_c/v${VERSION}_final_dbase_25km.b > gshhs_c.b
 
 tar-gshhs:
 		tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs_[clihf].b
@@ -247,23 +247,23 @@ zip-gshhs:
 
 # Dependencies of data on CVS-produces originals
 
-update: 	res_f/${VERSION}_final_dbase.b res_h/${VERSION}_final_dbase_0.2km.b res_i/${VERSION}_final_dbase_1km.b \
-		res_l/${VERSION}_final_dbase_5km.b res_l/${VERSION}_final_dbase_5km.b wdb/wdb_borders.b wdb/wdb_rivers.b
+update: 	res_f/v${VERSION}_final_dbase.b res_h/v${VERSION}_final_dbase_0.2km.b res_i/v${VERSION}_final_dbase_1km.b \
+		res_l/v${VERSION}_final_dbase_5km.b res_l/v${VERSION}_final_dbase_5km.b wdb/wdb_borders.b wdb/wdb_rivers.b
 
-res_f/${VERSION}_final_dbase.b: GSHHS+WDBII/GSHHS/res_f/GSHHS_f_polygons.b
-		cp -f GSHHS+WDBII/GSHHS/res_f/GSHHS_f_polygons.b res_f/${VERSION}_final_dbase.b
+res_f/v${VERSION}_final_dbase.b: GSHHS+WDBII/GSHHS/res_f/GSHHS_f_polygons.b
+		cp -f GSHHS+WDBII/GSHHS/res_f/GSHHS_f_polygons.b res_f/v${VERSION}_final_dbase.b
 
-res_h/${VERSION}_final_dbase_0.2km.b: GSHHS+WDBII/GSHHS/res_h/GSHHS_h_polygons.b
-		cp -f GSHHS+WDBII/GSHHS/res_h/GSHHS_h_polygons.b res_h/${VERSION}_final_dbase_0.2km.b
+res_h/v${VERSION}_final_dbase_0.2km.b: GSHHS+WDBII/GSHHS/res_h/GSHHS_h_polygons.b
+		cp -f GSHHS+WDBII/GSHHS/res_h/GSHHS_h_polygons.b res_h/v${VERSION}_final_dbase_0.2km.b
 
-res_i/${VERSION}_final_dbase_1km.b: GSHHS+WDBII/GSHHS/res_i/GSHHS_i_polygons.b
-		cp -f GSHHS+WDBII/GSHHS/res_i/GSHHS_i_polygons.b res_i/${VERSION}_final_dbase_1km.b
+res_i/v${VERSION}_final_dbase_1km.b: GSHHS+WDBII/GSHHS/res_i/GSHHS_i_polygons.b
+		cp -f GSHHS+WDBII/GSHHS/res_i/GSHHS_i_polygons.b res_i/v${VERSION}_final_dbase_1km.b
 
-res_l/${VERSION}_final_dbase_5km.b: GSHHS+WDBII/GSHHS/res_l/GSHHS_l_polygons.b
-		cp -f GSHHS+WDBII/GSHHS/res_l/GSHHS_l_polygons.b res_l/${VERSION}_final_dbase_5km.b
+res_l/v${VERSION}_final_dbase_5km.b: GSHHS+WDBII/GSHHS/res_l/GSHHS_l_polygons.b
+		cp -f GSHHS+WDBII/GSHHS/res_l/GSHHS_l_polygons.b res_l/v${VERSION}_final_dbase_5km.b
 
-res_c/${VERSION}_final_dbase_25km.b: GSHHS+WDBII/GSHHS/res_c/GSHHS_c_polygons.b
-		cp -f GSHHS+WDBII/GSHHS/res_c/GSHHS_c_polygons.b res_c/${VERSION}_final_dbase_25km.b
+res_c/v${VERSION}_final_dbase_25km.b: GSHHS+WDBII/GSHHS/res_c/GSHHS_c_polygons.b
+		cp -f GSHHS+WDBII/GSHHS/res_c/GSHHS_c_polygons.b res_c/v${VERSION}_final_dbase_25km.b
 
 wdb/wdb_borders.b:	GSHHS+WDBII/WDBII/borders/WDBII_Borders_segments.b
 		cp -f GSHHS+WDBII/WDBII/borders/WDBII_Borders_segments.b wdb/wdb_borders.b
@@ -291,4 +291,4 @@ $(COAST):	libcoast.a $(COAST_O) $(GMTLIB)
 		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lcoast -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
 
 .c.o:
-		$(CC) -c $(CFLAGS) $<
+		$(CC) -c $(CFLAGS) -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y` $<

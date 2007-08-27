@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.10 2007-08-27 19:02:26 guru Exp $
+ *	$Id: lines_to_bins.c,v 1.11 2007-08-27 19:24:42 guru Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -98,6 +98,7 @@ int main (int argc, char **argv)
 	noise = (int)ceil (1.0 / SHORT_FACTOR);	/* Add to corner points so they dont fall exactly on corner */
 
 	nbins = BIN_NX * BIN_NY;
+	for (i = 0; i < 16; i++) count[i] = 0;
 	
 	/* Allocate bin array  */
 	
