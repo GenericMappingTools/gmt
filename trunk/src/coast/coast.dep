@@ -1,4 +1,4 @@
-#	$Id: coast.dep,v 1.1 2007-08-27 20:50:57 guru Exp $
+#	$Id: coast.dep,v 1.2 2007-08-27 21:36:33 guru Exp $
 #-------------------------------------------------------------------------------
 # Dependencies of data on CVS-produces originals
 
@@ -30,6 +30,7 @@ wdb/wdb_f_rivers.b:	GSHHS+WDBII/WDBII/rivers/WDBII_Rivers_segments.b
 # full Dependencies:
 #-------------------------------------------------------------------------------
 full:					res_f/binned_GSHHS_f.cdf res_f/binned_border_f.cdf res_f/binned_river_f.cdf
+info_f:					res_f/v$(VERSION)_final_f_info.lis
 
 res_f/binned_GSHHS_f.cdf: 		res_f/binned_GSHHS_f.pt
 					shoremaker res_f/binned_GSHHS_f
@@ -58,6 +59,7 @@ res_f/binned_river_f.pt:		wdb/wdb_f_rivers.b
 # high Dependencies:
 #-------------------------------------------------------------------------------
 high:					res_h/binned_GSHHS_h.cdf res_h/binned_border_h.cdf res_h/binned_river_h.cdf
+info_h:					res_h/v$(VERSION)_final_h_info.lis
 
 res_h/binned_GSHHS_h.cdf: 		res_h/binned_GSHHS_h.pt
 					shoremaker res_h/binned_GSHHS_h
@@ -92,6 +94,7 @@ res_h/binned_river_h.pt:		wdb/wdb_h_rivers.b
 # int Dependencies:
 #-------------------------------------------------------------------------------
 int:					res_i/binned_GSHHS_i.cdf res_i/binned_border_i.cdf res_i/binned_river_i.cdf
+info_i:					res_i/v$(VERSION)_final_i_info.lis
 
 res_i/binned_GSHHS_i.cdf: 		res_i/binned_GSHHS_i.pt
 					shoremaker res_i/binned_GSHHS_i
@@ -126,6 +129,7 @@ res_i/binned_river_i.pt:		wdb/wdb_i_rivers.b
 # low Dependencies:
 #-------------------------------------------------------------------------------
 low:					res_l/binned_GSHHS_l.cdf res_l/binned_border_l.cdf res_l/binned_river_l.cdf
+info_l:					res_l/v$(VERSION)_final_l_info.lis
 
 res_l/binned_GSHHS_l.cdf: 		res_l/binned_GSHHS_l.pt
 					shoremaker res_l/binned_GSHHS_l
@@ -160,6 +164,7 @@ res_l/binned_river_l.pt:		wdb/wdb_l_rivers.b
 # crude Dependencies:
 #-------------------------------------------------------------------------------
 crude:					res_c/binned_GSHHS_c.cdf res_c/binned_border_c.cdf res_c/binned_river_c.cdf
+info_c:					res_c/v$(VERSION)_final_c_info.lis
 
 res_c/binned_GSHHS_c.cdf: 		res_c/binned_GSHHS_c.pt
 					shoremaker res_c/binned_GSHHS_c
