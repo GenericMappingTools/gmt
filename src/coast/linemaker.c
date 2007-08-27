@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.5 2007-03-12 19:52:26 remko Exp $
+ *	$Id: linemaker.c,v 1.6 2007-08-27 19:02:26 guru Exp $
  */
 /*
  *
@@ -7,6 +7,7 @@
  * Date:	18-FEB-98
  * Version:	3.0	Reads/writes netCDF 3.0 files
  *		3.1	Use GMT3.3 + POSIX
+ *		3.2	use GMT 4
  */
  
 #include "gmt.h"
@@ -40,7 +41,7 @@ struct GMT3_BIN_HEADER {
 
 int main (int argc, char **argv)
 {
-	int i, dims;
+	int i, dims, counts[16];
 	int *bin_firstseg, *seg_start;
 	short *bin_nseg, *seg_n, *seg_level, *pt_dx, *pt_dy;
 	
@@ -78,6 +79,8 @@ int main (int argc, char **argv)
 		
 	sprintf (file, "%s.cdf", prefix);
 	GMT_err_fail (nc_create (file, NC_CLOBBER, &s.cdfid), file);
+	
+	for (i = 0; i < 16; i++) counts[i] = 0;
 	
 	fprintf (stderr, "linemaker:  Process header file\n");
 
@@ -124,6 +127,7 @@ int main (int argc, char **argv)
 		
 		seg_n[i] = seg_head.n;
 		seg_level[i] = seg_head.level;
+		counts[seg_head.level]++;
 		if (seg_level[i] > 7) seg_level[i]--;	/* Account for the fact that there is no #8 */
 		seg_start[i] = seg_head.first_p;
 	}
@@ -181,7 +185,7 @@ int main (int argc, char **argv)
 	/* assign attributes */
 	
 	strcpy (s.title, "Political boundaries derived from CIA WDB-II data");
-	strcpy (s.source, "Processed by Paul Wessel and Walter H. F. Smith, 1994-1999, v1.2");
+	strcpy (s.source, "Processed by Paul Wessel and Walter H. F. Smith, 1994-2007, v1.3");
 
 	GMT_err_fail (nc_put_att_text (s.cdfid, s.pt_dx_id, "units", strlen(s.units), s.units), file);
 	GMT_err_fail (nc_put_att_text (s.cdfid, s.pt_dy_id, "units", strlen(s.units), s.units), file);
@@ -225,6 +229,10 @@ int main (int argc, char **argv)
 	free ((void *)pt_dx);
 	free ((void *)pt_dy);
 
+	for (i = 0; i < 16; i++) {
+		if (counts[i]) fprintf (stderr, "linemaker: Level %2d: %d items\n", i, counts[i]);
+	}
+	
 	GMT_end (argc, argv);
 	
 	exit (0);

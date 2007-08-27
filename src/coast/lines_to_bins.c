@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.9 2007-03-12 19:52:26 remko Exp $
+ *	$Id: lines_to_bins.c,v 1.10 2007-08-27 19:02:26 guru Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -61,7 +61,7 @@ int main (int argc, char **argv)
 	int i, k, kk, test_long, nn, np, j, i_x_1, i_x_2, i_y_1, i_y_2, nbins, b, BSIZE, BIN_NX, BIN_NY, B_WIDTH;
 	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod, new = 0;
 	int x_x_c, x_y_c, y_x_c, y_y_c, last_x_bin, x_x_index, i_x_3, i_y_3, x_origin, y_origin;
-	int noise, n, n_id = 0, n_corner = 0, nx, ny, jump = 0, n_seg = 0, add = 0, n_int, ns = 0;
+	int noise, n, n_id = 0, n_corner = 0, nx, ny, jump = 0, n_seg = 0, add = 0, n_int, ns = 0, count[16];
 	
 	size_t n_alloc;
 	
@@ -356,8 +356,7 @@ int main (int argc, char **argv)
 			
 			s->n = nn;
 			s->level = h.level;
-			if (h.level == 3)
-				h.level = 3;
+			count[h.level]++;
 			s->p = (struct SHORT_PAIR *)GMT_memory(VNULL, (size_t)s->n, sizeof(struct SHORT_PAIR), "lines_to_bins");
 			for (k = 0; k < s->n; k++) {
 				/* Don't forget that this modulo calculation for DX doesn't work when you have a right/top edge (this wont happen for this polygon though !!!   */
@@ -555,6 +554,9 @@ int main (int argc, char **argv)
 	if (ns != file_head.n_segments)
 		fprintf (stderr, "lines_to_bins: # segments written (%d) differ from actual segments (%d)!\n", ns, file_head.n_segments);
 
+	for (i = 0; i < 16; i++) {
+		if (count[i]) fprintf (stderr, "lines_to_bins: Level %2d: %d items\n", i, count[i]);
+	}
 	exit (EXIT_SUCCESS);
 }
 
