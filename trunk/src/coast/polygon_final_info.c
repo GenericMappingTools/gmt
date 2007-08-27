@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_final_info.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_final_info.c,v 1.4 2007-08-27 19:02:26 guru Exp $
  */
 /* polygon_final_info wvs_polygon_file.b
  *
@@ -24,7 +24,7 @@ int main (int argc, char **argv)
 	fp = fopen(argv[1], "r");
 	
 	id = 0;
-	printf ("ID\tN\tlevel\tsource\twest\t\teast\t\tsouth\t\tnorth\t\tarea\n");
+	printf ("#ID\tN\tlevel\tsource\twest\t\teast\t\tsouth\t\tnorth\t\tarea\n");
 	while (pol_readheader (&h, fp) == 1) {
 		if (fseek (fp, (long) (h.n * sizeof (struct LONGPAIR)), SEEK_CUR)) {
 			fprintf (stderr, "polygon_final_info: Failed seeking ahead\n");

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.23 2007-08-27 18:23:09 guru Exp $
+#	$Id: Makefile,v 1.24 2007-08-27 19:02:26 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -137,16 +137,16 @@ shrinkl_c:
 		line_shrink wdb/wdb_borders.b 25 wdb/wdb_borders_25km.b
 
 shrinkr_h:	
-		line_shrink res_f/wdb_rivers.b 0.2 res_h/wdb_rivers_0.2km.b
+		line_shrink wdb/wdb_rivers.b 0.2 wdb/wdb_rivers_0.2km.b
 		
 shrinkr_i:	
-		line_shrink res_f/wdb_rivers.b 1 res_i/wdb_rivers_1km.b
+		line_shrink wdb/wdb_rivers.b 1 wdb/wdb_rivers_1km.b
 		
 shrinkr_l:	
-		line_shrink res_f/wdb_rivers.b 5 res_l/wdb_rivers_5km.b
+		line_shrink wdb/wdb_rivers.b 5 wdb/wdb_rivers_5km.b
 		
 shrinkr_c:	
-		line_shrink res_f/wdb_rivers.b 25 res_c/wdb_rivers_25km.b
+		line_shrink wdb/wdb_rivers.b 25 wdb/wdb_rivers_25km.b
 
 bin_f:
 		polygon_to_bins res_f/${VERSION}_final_dbase.b 1 res_f/${VERSION}_final_nodes.grd res_f/binned_GSHHS_f
@@ -209,23 +209,23 @@ lines_c:
 		linemaker res_c/binned_border_c
 
 river_f:
-		lines_to_bins res_f/wdb_rivers.b 1 res_f/binned_river_f
+		lines_to_bins wdb/wdb_rivers.b 1 res_f/binned_river_f
 		linemaker res_f/binned_river_f
 
 river_h:
-		lines_to_bins res_h/wdb_rivers_0.2km.b 2 res_h/binned_river_h
+		lines_to_bins wdb/wdb_rivers_0.2km.b 2 res_h/binned_river_h
 		linemaker res_h/binned_river_h
 
 river_i:
-		lines_to_bins res_i/wdb_rivers_1km.b 5 res_i/binned_river_i
+		lines_to_bins wdb/wdb_rivers_1km.b 5 res_i/binned_river_i
 		linemaker res_i/binned_river_i
 
 river_l:
-		lines_to_bins res_l/wdb_rivers_5km.b 10 res_l/binned_river_l
+		lines_to_bins wdb/wdb_rivers_5km.b 10 res_l/binned_river_l
 		linemaker res_l/binned_river_l
 
 river_c:
-		lines_to_bins res_c/wdb_rivers_25km.b 20 res_c/binned_river_c
+		lines_to_bins wdb/wdb_rivers_25km.b 20 res_c/binned_river_c
 		linemaker res_c/binned_river_c
 
 gshhs:
