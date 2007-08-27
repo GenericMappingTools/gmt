@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.22 2007-05-18 20:38:39 pwessel Exp $
+#	$Id: Makefile,v 1.23 2007-08-27 18:23:09 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -113,16 +113,16 @@ rivers: 	river_f river_h river_i river_l river_c
 		rm res_?/binned_river_?.pt
 
 shrinkb_h:	
-		polygon_shrink res_f/${VERSION}_final_dbase.b 0.2 res_h/${VERSION}_final_dbase_0.2km.b
+#		polygon_shrink res_f/${VERSION}_final_dbase.b 0.2 res_h/${VERSION}_final_dbase_0.2km.b
 		
 shrinkb_i:	
-		polygon_shrink res_f/${VERSION}_final_dbase.b 1 res_i/${VERSION}_final_dbase_1km.b
+#		polygon_shrink res_f/${VERSION}_final_dbase.b 1 res_i/${VERSION}_final_dbase_1km.b
 		
 shrinkb_l:	
-		polygon_shrink res_f/${VERSION}_final_dbase.b 5 res_l/${VERSION}_final_dbase_5km.b
+#		polygon_shrink res_f/${VERSION}_final_dbase.b 5 res_l/${VERSION}_final_dbase_5km.b
 		
 shrinkb_c:	
-		polygon_shrink res_f/${VERSION}_final_dbase.b 25 res_c/${VERSION}_final_dbase_25km.b
+#		polygon_shrink res_f/${VERSION}_final_dbase.b 25 res_c/${VERSION}_final_dbase_25km.b
 
 shrinkl_h:	
 		line_shrink wdb/wdb_borders.b 0.2 wdb/wdb_borders_0.2km.b
@@ -137,16 +137,16 @@ shrinkl_c:
 		line_shrink wdb/wdb_borders.b 25 wdb/wdb_borders_25km.b
 
 shrinkr_h:	
-		line_shrink res_f/new_cia_rivers.b 0.2 res_h/new_cia_rivers_0.2km.b
+		line_shrink res_f/wdb_rivers.b 0.2 res_h/wdb_rivers_0.2km.b
 		
 shrinkr_i:	
-		line_shrink res_f/new_cia_rivers.b 1 res_i/new_cia_rivers_1km.b
+		line_shrink res_f/wdb_rivers.b 1 res_i/wdb_rivers_1km.b
 		
 shrinkr_l:	
-		line_shrink res_f/new_cia_rivers.b 5 res_l/new_cia_rivers_5km.b
+		line_shrink res_f/wdb_rivers.b 5 res_l/wdb_rivers_5km.b
 		
 shrinkr_c:	
-		line_shrink res_f/new_cia_rivers.b 25 res_c/new_cia_rivers_25km.b
+		line_shrink res_f/wdb_rivers.b 25 res_c/wdb_rivers_25km.b
 
 bin_f:
 		polygon_to_bins res_f/${VERSION}_final_dbase.b 1 res_f/${VERSION}_final_nodes.grd res_f/binned_GSHHS_f
@@ -209,23 +209,23 @@ lines_c:
 		linemaker res_c/binned_border_c
 
 river_f:
-		lines_to_bins res_f/new_cia_rivers.b 1 res_f/binned_river_f
+		lines_to_bins res_f/wdb_rivers.b 1 res_f/binned_river_f
 		linemaker res_f/binned_river_f
 
 river_h:
-		lines_to_bins res_h/new_cia_rivers_0.2km.b 2 res_h/binned_river_h
+		lines_to_bins res_h/wdb_rivers_0.2km.b 2 res_h/binned_river_h
 		linemaker res_h/binned_river_h
 
 river_i:
-		lines_to_bins res_i/new_cia_rivers_1km.b 5 res_i/binned_river_i
+		lines_to_bins res_i/wdb_rivers_1km.b 5 res_i/binned_river_i
 		linemaker res_i/binned_river_i
 
 river_l:
-		lines_to_bins res_l/new_cia_rivers_5km.b 10 res_l/binned_river_l
+		lines_to_bins res_l/wdb_rivers_5km.b 10 res_l/binned_river_l
 		linemaker res_l/binned_river_l
 
 river_c:
-		lines_to_bins res_c/new_cia_rivers_25km.b 20 res_c/binned_river_c
+		lines_to_bins res_c/wdb_rivers_25km.b 20 res_c/binned_river_c
 		linemaker res_c/binned_river_c
 
 gshhs:
@@ -244,6 +244,32 @@ zip-gshhs:
 		zip -r -9 -q gshhs_$(GSHHS_DATA_VERSION).zip gshhs_[clihf].b
 		cd $(rootdir)/src; \
 		zip -r -9 -q -l gshhs_$(GSHHS_PROG_VERSION)_src.zip gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
+
+# Dependencies of data on CVS-produces originals
+
+update: 	res_f/${VERSION}_final_dbase.b res_h/${VERSION}_final_dbase_0.2km.b res_i/${VERSION}_final_dbase_1km.b \
+		res_l/${VERSION}_final_dbase_5km.b res_l/${VERSION}_final_dbase_5km.b wdb/wdb_borders.b wdb/wdb_rivers.b
+
+res_f/${VERSION}_final_dbase.b: GSHHS+WDBII/GSHHS/res_f/GSHHS_f_polygons.b
+		cp -f GSHHS+WDBII/GSHHS/res_f/GSHHS_f_polygons.b res_f/${VERSION}_final_dbase.b
+
+res_h/${VERSION}_final_dbase_0.2km.b: GSHHS+WDBII/GSHHS/res_h/GSHHS_h_polygons.b
+		cp -f GSHHS+WDBII/GSHHS/res_h/GSHHS_h_polygons.b res_h/${VERSION}_final_dbase_0.2km.b
+
+res_i/${VERSION}_final_dbase_1km.b: GSHHS+WDBII/GSHHS/res_i/GSHHS_i_polygons.b
+		cp -f GSHHS+WDBII/GSHHS/res_i/GSHHS_i_polygons.b res_i/${VERSION}_final_dbase_1km.b
+
+res_l/${VERSION}_final_dbase_5km.b: GSHHS+WDBII/GSHHS/res_l/GSHHS_l_polygons.b
+		cp -f GSHHS+WDBII/GSHHS/res_l/GSHHS_l_polygons.b res_l/${VERSION}_final_dbase_5km.b
+
+res_c/${VERSION}_final_dbase_25km.b: GSHHS+WDBII/GSHHS/res_c/GSHHS_c_polygons.b
+		cp -f GSHHS+WDBII/GSHHS/res_c/GSHHS_c_polygons.b res_c/${VERSION}_final_dbase_25km.b
+
+wdb/wdb_borders.b:	GSHHS+WDBII/WDBII/borders/WDBII_Borders_segments.b
+		cp -f GSHHS+WDBII/WDBII/borders/WDBII_Borders_segments.b wdb/wdb_borders.b
+
+wdb/wdb_rivers.b:	GSHHS+WDBII/WDBII/rivers/WDBII_Rivers_segments.b
+		cp -f GSHHS+WDBII/WDBII/rivers/WDBII_Rivers_segments.b wdb/wdb_rivers.b
 
 #-------------------------------------------------------------------------------
 #	library

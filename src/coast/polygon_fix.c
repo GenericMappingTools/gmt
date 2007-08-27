@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_fix.c,v 1.3 2007-05-09 04:19:37 pwessel Exp $
+ *	$Id: polygon_fix.c,v 1.4 2007-08-27 18:23:09 guru Exp $
  *
  * Used to make minor fixes - check src to see what it actually is doing!
  */
@@ -11,7 +11,7 @@
 int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	k, level = 0, first_id = 0;
+	int	k, first_id = 0;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
         
