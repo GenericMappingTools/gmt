@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.12 2007-03-12 19:52:26 remko Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.13 2007-08-27 22:08:30 guru Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
@@ -8,30 +8,32 @@
 
 #include "wvs.h"
 #include "gshhs/gshhs.h"
+#define GSHHS_INV_SCL	1.0e6	/* Convert degrees to micro-degrees */
 
 int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	k, version = GSHHS_DATA_VERSION;
+	int	k, version = GSHHS_DATA_VERSION, lines = 0;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
 	struct GSHHS gshhs_header;
         
-	if (argc != 2) {
-		fprintf (stderr,"usage:  polygon_to_gshhs file_res.b > gshhs_res.b\n");
+	if (argc < 2 || argc > 3) {
+		fprintf (stderr,"usage:  polygon_to_gshhs [-l] file_res.b > gshhs_res.b\n");
+		fprintf (stderr,"	-l indicates data are lines (rivers, borders) and not polygons\n");
 		exit (EXIT_FAILURE);
 	}
-	
-	fp_in = fopen(argv[1], "r");
+	if (argc == 3 && !strcmp (argv[2], "-l")) lines = 1;
+	fp_in = fopen(argv[1+lines], "r");
 		
 	while (pol_readheader (&h, fp_in) == 1) {
-		gshhs_header.west	= irint (h.west * 1.0e6);
-		gshhs_header.east	= irint (h.east * 1.0e6);
-		gshhs_header.south	= irint (h.south * 1.0e6);
-		gshhs_header.north	= irint (h.north * 1.0e6);
+		gshhs_header.west	= irint (h.west * GSHHS_INV_SCL);
+		gshhs_header.east	= irint (h.east * GSHHS_INV_SCL);
+		gshhs_header.south	= irint (h.south * GSHHS_INV_SCL);
+		gshhs_header.north	= irint (h.north * GSHHS_INV_SCL);
 		gshhs_header.id		= h.id;
 		gshhs_header.n		= h.n;
-		gshhs_header.area	= irint (10.0 * h.area);
+		gshhs_header.area	= (lines) ? 0 : irint (10.0 * h.area);
 		gshhs_header.flag	= h.level + (version << 8) + (h.greenwich << 16) + (h.source << 24);
 #if WORDS_BIGENDIAN == 0
 		/* Must swap header explicitly on little-endian machines */

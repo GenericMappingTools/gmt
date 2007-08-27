@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.15 2007-04-23 00:23:57 pwessel Exp $
+/*	$Id: gshhs.c,v 1.16 2007-08-27 22:08:30 guru Exp $
  *
  *	Copyright (c) 1996-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -17,6 +17,7 @@
  *		1.5 14-SEPT-2004: Updated to deal with latest GSHHS database (1.3)
  *		1.6 02-MAY-2006: Updated to deal with latest GSHHS database (1.4)
  *		1.7 11-NOV-2006: Fixed bug in computing level (&& vs &)
+ *		1.8 27-AUG-2007: Handle line data as well as polygon data
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,9 +35,9 @@
 int main (int argc, char **argv)
 {
 	double w, e, s, n, area, lon, lat;
-	char source;
+	char source, kind[2] = {'P', 'L'}, *name[2] = {"polygon", "line"};
 	FILE	*fp;
-	int	k, max_east = 270000000, info, n_read, flip, level, version, greenwich, src;
+	int	k, line, max_east = 270000000, info, n_read, flip, level, version, greenwich, src;
 	struct	POINT p;
 	struct GSHHS h;
         
@@ -72,14 +73,15 @@ int main (int argc, char **argv)
 		version = (h.flag >> 8) & 255;
 		greenwich = (h.flag >> 16) & 255;
 		src = (h.flag >> 24) & 255;
-		w = h.west  * 1.0e-6;	/* Convert from microdegrees to degrees */
-		e = h.east  * 1.0e-6;
-		s = h.south * 1.0e-6;
-		n = h.north * 1.0e-6;
+		w = h.west  * GSHHS_SCL;	/* Convert from microdegrees to degrees */
+		e = h.east  * GSHHS_SCL;
+		s = h.south * GSHHS_SCL;
+		n = h.north * GSHHS_SCL;
 		source = (src == 1) ? 'W' : 'C';	/* Either WVS or CIA (WDBII) pedigree */
+		line = (h.area) ? 0 : 1;		/* Either Polygon (0) or Line (1) (if no area) */
 		area = 0.1 * h.area;			/* Now im km^2 */
 
-		printf ("P %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", h.id, h.n, level, source, area, w, e, s, n);
+		printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", kind[line], h.id, h.n, level, source, area, w, e, s, n);
 
 		if (info) {	/* Skip data, only want headers */
 			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
@@ -88,15 +90,16 @@ int main (int argc, char **argv)
 			for (k = 0; k < h.n; k++) {
 
 				if (fread ((void *)&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
-					fprintf (stderr, "gshhs:  Error reading file %s for polygon %d, point %d.\n", argv[1], h.id, k);
+					fprintf (stderr, "gshhs:  Error reading file %s for %s %d, point %d.\n", argv[1], name[line], h.id, k);
 					exit (EXIT_FAILURE);
 				}
 				if (flip) {
 					p.x = swabi4 ((unsigned int)p.x);
 					p.y = swabi4 ((unsigned int)p.y);
 				}
-				lon = (greenwich && p.x > max_east) ? p.x * 1.0e-6 - 360.0 : p.x * 1.0e-6;
-				lat = p.y * 1.0e-6;
+				lon = p.x * GSHHS_SCL;
+				if (greenwich && p.x > max_east) lon -= 360.0;
+				lat = p.y * GSHHS_SCL;
 				printf ("%10.5f%10.5f\n", lon, lat);
 			}
 		}
