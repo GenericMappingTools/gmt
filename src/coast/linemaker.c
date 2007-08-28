@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.8 2007-08-28 17:12:35 guru Exp $
+ *	$Id: linemaker.c,v 1.9 2007-08-28 18:29:12 guru Exp $
  */
 /*
  *
@@ -57,7 +57,6 @@ int main (int argc, char **argv)
 		fprintf (stderr, "usage: linemaker shore_prefix\n");
 		exit (-1);
 	}
-	/* fprintf (stderr, "linemaker will subtract 1 from levels > 7!\n"); */
 	
 	prefix = argv[1];
 	
@@ -127,10 +126,7 @@ int main (int argc, char **argv)
 		
 		seg_n[i] = seg_head.n;
 		counts[seg_head.level]++;
-#ifdef OLDSTUFF
-		seg_level[i] = seg_head.level;
-		if (seg_level[i] > 7) seg_level[i]--;	/* Account for the fact that there is no #8 */
-#endif
+		/* Note: levels 5 have already been reset to 1 by lines_to_bins */
 		switch (seg_head.level) {	/* Reset level info to go 1-10 */
 			case 1:
 			case 2:
