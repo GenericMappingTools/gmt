@@ -1,0 +1,42 @@
+.TH GSHHS2GRASS GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
+.SH NAME
+gshhs2grass \- Extracting GSHHS and WDBII data in GRASS-compatible ASCII format
+.SH SYNOPSIS
+\fBgshhs2grass\fP OPT(i) gshhs_[f|h|i|l|c].b [ \fB\-x\fP \fIminx\fP ] [\fB\-X\fP \fImaxx\fP ] 
+[ \fB\-y\fP \fIminy\fP ] [ \fB\-Y\fP \fImaxy\fP ]
+.SH DESCRIPTION
+\fBgshhs2grass\fP reads the binary coastline (GSHHS) and
+and translates it into an ASCII format suitable for import into GRASS.  It automatically
+handles byte-swabbing between different architectures.
+.TP
+\fIgshhs_[f|h|i|l|c].b\fP
+One of the GSHHS binary data file as distributed with the GSHHS data supplement.  Any of the
+5 standard resolutions (full, high, intermediate, low, crude) can be used.
+The resulting files are called dig_[ascii|att|cats].gshhs_[f|h|i|l|c].
+.SH OPTIONS
+.TP
+.B x
+Specify a minimum (west) longitude.
+.TP
+.B X
+Specify a maximum (east) longitude.
+.TP
+.B y
+Specify a minimum (south) latitude.
+.TP
+.B Y
+Specify a maximum (north) latitude.
+.SH EXAMPLES
+.sp
+To convert the full GSHHS data set , try
+.sp
+\fBgshhs2grass\fP \fIgshhs_f.b\fP
+.SH BUGS
+Not updated to handle the WDBII line data (borders or rivers).
+.SH AUTHOR
+Simon Cox (simon@ned.dem.csiro.au) and Paul Wessel (pwessel@hawaii.edu)
+.SH "SEE ALSO"
+.IR GMT (GMTMANSECTION),
+.IR gshhs (GMTMANSECTION)
+.IR gshhs_dp (GMTMANSECTION)

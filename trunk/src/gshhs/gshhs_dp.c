@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.13 2007-03-07 13:07:04 remko Exp $
+/*	$Id: gshhs_dp.c,v 1.14 2007-08-28 01:00:40 guru Exp $
  *
  *	Copyright (c) 1996-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -19,6 +19,7 @@
  *	    1.4 05-SEPT-2000: Made a GMT supplement; FLIP no longer needed
  *	    1.5 11-SEPT-2004: Updated to work with GSHHS v1.3 data format
  *	    1.6 02-MAY-2006: Updated to work with GSHHS v1.4 data format
+ *	    1.8 02-MAR-2007: Updated to work with GSHHS v1.5 data format
  *
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,7 +56,7 @@ int main (int argc, char **argv)
 	int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[]);
 	
 	if (argc < 2 || !(argc == 4 || argc == 5)) {
-		fprintf (stderr, "gshhs_dp v. 1.5 Line reduction using the Douglas-Peucker algorithm\n\n");
+		fprintf (stderr, "gshhs_dp v. %s Line reduction using the Douglas-Peucker algorithm\n\n", GSHHS_PROG_VERSION);
 		fprintf (stderr, "usage:  gshhs_dp input.b tolerance output.b [-v]\n");
 		fprintf (stderr, "\ttolerance is maximum mismatch in km\n");
 		fprintf (stderr, "\t-v will run in verbose mode and report shrinkage\n");

@@ -7,8 +7,14 @@ share/dbase/grdraster.info
 src/gshhs/README.gshhs
 src/gshhs/gshhs.c
 src/gshhs/gshhs.h
+src/gshhs/gshhs.man
+src/gshhs/gshhs.html
 src/gshhs/gshhs_dp.c
+src/gshhs/gshhs_dp.man
+src/gshhs/gshhs_dp.html
 src/gshhs/gshhstograss.c
+src/gshhs/gshhstograss.man
+src/gshhs/gshhstograss.html
 src/gshhs/makefile
 src/imgsrc/README.imgsrc
 src/imgsrc/gmt_imgsubs.c
