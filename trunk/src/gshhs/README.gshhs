@@ -8,7 +8,8 @@ Version 1.9 Sept 1, 2007
 
 Now distributing the WDB borders and rivers with GSHHS, hence
 gshhs.c needed a few tweaks to recognize the difference.  No
-data format change.
+data format change, but we increment version number to 1.6 do
+indicate a change in composition (river+borders added).
 --------------------------------------------------------------
 Version 1.8 March 31, 2007
 

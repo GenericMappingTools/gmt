@@ -1,7 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.58 2007-08-28 01:13:39 remko Exp $
+	$Id: ChangeLog,v 1.59 2007-08-28 18:40:26 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-08-28	pwessel
+	* mapproject.c:		Enhancement: -G-[unit] will calculate incremental distance rather
+				than the default cumulative distances.
+	* gshhs/*		Can now deal with the updated GSHHS+WDBII data base (now with
+				rivers and borders). Added man pages for the three programs.
+	* rivers:		Added double-lined rivers to river database to improve rendering
+				of major permanent rivers.
+						
 2007-08-27	remko
 	* ps2raster.c:		Added -P to and removed -V from the commandline description
 	* configure.in:		On Linux: Use "gcc -shared", not "ld -shared"
