@@ -4,6 +4,12 @@ Global Self-consistant Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../COPYING)
 
 --------------------------------------------------------------
+Version 1.9 Sept 1, 2007
+
+Now distributing the WDB borders and rivers with GSHHS, hence
+gshhs.c needed a few tweaks to recognize the difference.  No
+data format change.
+--------------------------------------------------------------
 Version 1.8 March 31, 2007
 
 Minor fix to ensure gshhstograss.c will compile.  Version 1.5

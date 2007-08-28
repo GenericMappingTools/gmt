@@ -1,0 +1,41 @@
+.TH GSHHS_DP GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
+.SH NAME
+gshhs_dp \- Line reduction using the Douglas-Peucker algorithm
+.SH SYNOPSIS
+\fBgshhs_dp\fP \fIinput.b tolerance output.b\fP [OPT(v)]
+.SH DESCRIPTION
+\fBgshhs_dp\fP reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
+and reduces the complexity of the line by applying the Douglas-Peucker algorithm.  It automatically
+handles byte-swabbing between different architectures.
+.TP
+\fIinput.b\fP
+GSHHS or WDBII binary data file as distributed with the GSHHS data supplement.  Any of the
+5 standard resolutions (full, high, intermediate, low, crude) can be used.
+.TP
+\fItolerance\fP
+tolerance is maximum mismatch in km.  The larger the value the more reduction will take place.
+.TP
+\fIoutput.b\fP
+The reducted data set.
+.SH OPTIONS
+.TP
+.B v
+Reports progress and statistics while running.
+.SH EXAMPLES
+.sp
+To simplify the full GSHHS data set with a custom tolerance of 2 km, try
+.sp
+\fBgshhs_dp\fP \fIgshhs_f.b 2 gshhs_2km.b\fP
+.SH REFERENCES
+Douglas, D. H., and T. K. Peucker, Algorithms for the reduction
+of the number of points required to represent a digitized line
+of its caricature, \fICan. Cartogr., 10\fP, 112-122, 1973.
+.SU AUTHOR
+This implementation of the D-P algorithm has been kindly provided by
+Dr. Gary J. Robinson, Environmental Systems Science Centre,
+University of Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk).
+.SH "SEE ALSO"
+.IR GMT (GMTMANSECTION),
+.IR gshhs (GMTMANSECTION)
+.IR gshhstograss (GMTMANSECTION)

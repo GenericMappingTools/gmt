@@ -1,0 +1,34 @@
+.TH GSHHS GMTMANSECTION DATE VERSION VERSION
+#include "common_options.txt"
+.SH NAME
+gshhs \- Extract ASCII listings from binary GSHHS or WDBII data files
+.SH SYNOPSIS
+\fBgshhs\fP \fIbinaryfile.b\fP [ OPT(L) ] > \fIasciifile.txt\fP
+.SH DESCRIPTION
+\fBgshhs\fP reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
+extracts an ASCII listing.  It automatically handles byte-swabbing between different
+architectures.  Optionally, only segment header info can be displayed
+.TP
+\fIbinaryfile.b\fP
+GSHHS or WDBII binary data file as distributed with the GSHHS data supplement.  Any of the
+5 standard resolutions (full, high, intermediate, low, crude) can be used.
+.TP
+.B \-L
+Only outlut a listing of polygon or line segment headers [default outputs headers and data records].
+.SH EXAMPLES
+.sp
+To convert the entire intermediate GSHHS binary data to ASCII, run
+.sp
+\fBgshhs\fP gshhs_i.b > gshhs_i.txt
+.sp
+To only get a listing of the headers for the river data set at full resolution, try
+.sp
+\fBgshhs\fP wdb_rivers_f.b OPT(L) > riverlisting.txt
+.SH BUGS
+While the GSHHS data is organized as a set of closed polygons, the rivers and boundary
+data are just a set of line segments in no particular order.  Thus, it is not possible
+to extract information pertaining to just one river or one country.
+.SH "SEE ALSO"
+.IR GMT (GMTMANSECTION),
+.IR gshhs_dp (GMTMANSECTION)
+.IR gshhstograss (GMTMANSECTION)

@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.14 2007-08-27 22:08:30 guru Exp $
+/*	$Id: gshhs.h,v 1.15 2007-08-28 01:00:40 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -42,8 +42,8 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHS_DATA_VERSION	5	/* For v1.5 */
-#define GSHHS_PROG_VERSION	"1.7"
+#define GSHHS_DATA_VERSION	5	/* For v1.5 data set */
+#define GSHHS_PROG_VERSION	"1.9"
 
 #define GSHHS_SCL	1.0e-6	/* COnvert micro-degrees to degrees */
 

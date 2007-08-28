@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.27 2007-08-27 21:36:33 guru Exp $
+#	$Id: Makefile,v 1.28 2007-08-28 01:00:40 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -33,7 +33,7 @@ CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
 VERSION = 4.2
 GSHHS_DATA_VERSION	= 1.5
-GSHHS_PROG_VERSION	= 1.8
+GSHHS_PROG_VERSION	= 1.9
 
 # Douglas-Peucker parameters:
 DP_h 	= 0.2
@@ -117,21 +117,32 @@ delete:
 		rm res_?/binned_*_?.bin res_?/binned_*_?.seg res_?/binned_*_?.pt
 
 gshhs:
-		polygon_to_gshhs res_f/v${VERSION}_final_f_dbase.b > gshhs_f.b
-		polygon_to_gshhs res_h/v${VERSION}_final_h_dbase.b > gshhs_h.b
-		polygon_to_gshhs res_i/v${VERSION}_final_i_dbase.b > gshhs_i.b
-		polygon_to_gshhs res_l/v${VERSION}_final_l_dbase.b > gshhs_l.b
-		polygon_to_gshhs res_c/v${VERSION}_final_c_dbase.b > gshhs_c.b
+		mkdir -p gshhs
+		polygon_to_gshhs res_f/v${VERSION}_final_f_dbase.b > gshhs/gshhs_f.b
+		polygon_to_gshhs res_h/v${VERSION}_final_h_dbase.b > gshhs/gshhs_h.b
+		polygon_to_gshhs res_i/v${VERSION}_final_i_dbase.b > gshhs/gshhs_i.b
+		polygon_to_gshhs res_l/v${VERSION}_final_l_dbase.b > gshhs/gshhs_l.b
+		polygon_to_gshhs res_c/v${VERSION}_final_c_dbase.b > gshhs/gshhs_c.b
+		polygon_to_gshhs -l wdb/wdb_f_borders.b > gshhs/wdb_borders_f.b
+		polygon_to_gshhs -l wdb/wdb_h_borders.b > gshhs/wdb_borders_h.b
+		polygon_to_gshhs -l wdb/wdb_i_borders.b > gshhs/wdb_borders_i.b
+		polygon_to_gshhs -l wdb/wdb_l_borders.b > gshhs/wdb_borders_l.b
+		polygon_to_gshhs -l wdb/wdb_c_borders.b > gshhs/wdb_borders_c.b
+		polygon_to_gshhs -l wdb/wdb_f_rivers.b > gshhs/wdb_rivers_f.b
+		polygon_to_gshhs -l wdb/wdb_h_rivers.b > gshhs/wdb_rivers_h.b
+		polygon_to_gshhs -l wdb/wdb_i_rivers.b > gshhs/wdb_rivers_i.b
+		polygon_to_gshhs -l wdb/wdb_l_rivers.b > gshhs/wdb_rivers_l.b
+		polygon_to_gshhs -l wdb/wdb_c_rivers.b > gshhs/wdb_rivers_c.b
 
 # Make archive targets:
 
 tar-gshhs:
-		tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs_[clihf].b
+		tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs/*_[clihf].b
 		cd $(rootdir)/src; \
 		tar cvjf gshhs_$(GSHHS_PROG_VERSION)_src.tbz gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
 zip-gshhs:
-		zip -r -9 -q gshhs_$(GSHHS_DATA_VERSION).zip gshhs_[clihf].b
+		zip -r -9 -q gshhs_$(GSHHS_DATA_VERSION).zip gshhs/*_[clihf].b
 		cd $(rootdir)/src; \
 		zip -r -9 -q -l gshhs_$(GSHHS_PROG_VERSION)_src.zip gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
