@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.28 2007-08-28 01:00:40 guru Exp $
+#	$Id: Makefile,v 1.29 2007-08-28 18:09:08 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -105,8 +105,7 @@ data:		full high int low crude
 info:		info_f info_h info_i info_l info_c
 
 set_new:
-		cp -f res_?/binned_GSHHS_?.cdf $(rootdir)/share/coast
-		cp -f res_?/binned_border_?.cdf $(rootdir)/share/coast
+		cp -f res_?/binned_*_?.cdf $(rootdir)/share/coast
 		
 set_old:
 		cd $(rootdir); tar xvjf ftp/GMT$(VERSION)_coast.tar.bz2
