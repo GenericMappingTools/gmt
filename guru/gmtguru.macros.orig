@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.44 2007-07-04 07:05:30 guru Exp $
+#	$Id: gmtguru.macros.orig,v 1.45 2007-08-28 22:24:36 guru Exp $
 #
 #	Original GMT Guru Makefile Macro for Makefile.guru
 #	Gurus should make a file gmtguru.macros to overrule any setting below.
@@ -31,10 +31,10 @@
 # in GMT/ftp.  Also, you may want to change the DATE value.
 #
 VERSION		= GMT4.2.1
-GSHHS_VERSION	= GMT4.2
+GSHHS_VERSION	= GMT4.3
 GMTBRANCH	= 4
-MANDATE		= 1 Aug 2007
-DOCDATE		= August 2007
+MANDATE		= 1 Oct 2007
+DOCDATE		= October 2007
 CPFLAGS		= -I. -DDATE="\"$(MANDATE)\"" -DVERSION="\"$(VERSION)\""
 #-------------------------------------------------------------------------------
 # SECTION B
