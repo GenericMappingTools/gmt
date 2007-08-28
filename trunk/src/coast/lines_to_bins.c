@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.11 2007-08-27 19:24:42 guru Exp $
+ *	$Id: lines_to_bins.c,v 1.12 2007-08-28 17:12:35 guru Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -10,6 +10,7 @@
 #include "wvs.h"
 
 #define GSHHS_MAX_DELTA 65535		/* Largest value to store in a ushort, used as largest dx or dy in bin  */
+#define DOUBLE_RIVER 5
 
 struct GMT3_POLY h;
 
@@ -108,6 +109,14 @@ int main (int argc, char **argv)
 	
 	while (pol_readheader (&h, fp_in) == 1) {
 		
+		if (h.level == DOUBLE_RIVER) {	/* Must skip these guys as they are in the coastline database */
+			if (fseek (fp_in, h.n * sizeof (struct LONGPAIR), SEEK_CUR)) {
+				fprintf (stderr, "lines_to_bins: Error seeking past a segment!\n");
+				exit (EXIT_FAILURE);
+			}
+			continue;
+		}
+
 		h.id = n_id;
 		n_id++;
 		n_init += h.n;

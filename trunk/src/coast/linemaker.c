@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.7 2007-08-27 19:24:42 guru Exp $
+ *	$Id: linemaker.c,v 1.8 2007-08-28 17:12:35 guru Exp $
  */
 /*
  *
@@ -57,7 +57,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "usage: linemaker shore_prefix\n");
 		exit (-1);
 	}
-	fprintf (stderr, "linemaker will subtract 1 from levels > 7!\n");
+	/* fprintf (stderr, "linemaker will subtract 1 from levels > 7!\n"); */
 	
 	prefix = argv[1];
 	
@@ -126,9 +126,37 @@ int main (int argc, char **argv)
 		}
 		
 		seg_n[i] = seg_head.n;
-		seg_level[i] = seg_head.level;
 		counts[seg_head.level]++;
+#ifdef OLDSTUFF
+		seg_level[i] = seg_head.level;
 		if (seg_level[i] > 7) seg_level[i]--;	/* Account for the fact that there is no #8 */
+#endif
+		switch (seg_head.level) {	/* Reset level info to go 1-10 */
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+				seg_level[i] = seg_head.level;
+				break;
+			case 6:
+			case 7:
+			case 8:
+				seg_level[i] = seg_head.level - 1;
+				break;
+			case 10:
+			case 11:
+				seg_level[i] = seg_head.level - 2;
+				break;
+			case 13:
+				seg_level[i] = seg_head.level - 3;
+				break;
+			default:
+				fprintf (stderr, "linemaker: ERROR: found level == %d for segment!\n", seg_head.level);
+				exit (EXIT_FAILURE);
+				break;
+		}
+			
+				
 		seg_start[i] = seg_head.first_p;
 	}
 	
