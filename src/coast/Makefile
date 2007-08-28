@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.29 2007-08-28 18:09:08 guru Exp $
+#	$Id: Makefile,v 1.30 2007-08-28 18:40:26 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -31,8 +31,9 @@ include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
-VERSION = 4.2
-GSHHS_DATA_VERSION	= 1.5
+PREV_VERSION = 4.2
+VERSION = 4.3
+GSHHS_DATA_VERSION	= 1.6
 GSHHS_PROG_VERSION	= 1.9
 
 # Douglas-Peucker parameters:
@@ -108,9 +109,9 @@ set_new:
 		cp -f res_?/binned_*_?.cdf $(rootdir)/share/coast
 		
 set_old:
-		cd $(rootdir); tar xvjf ftp/GMT$(VERSION)_coast.tar.bz2
-		cd $(rootdir); tar xvjf ftp/GMT$(VERSION)_high.tar.bz2
-		cd $(rootdir); tar xvjf ftp/GMT$(VERSION)_full.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GMT$(PREV_VERSION)_coast.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GMT$(PREV_VERSION)_high.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GMT$(PREV_VERSION)_full.tar.bz2
 		
 delete:		
 		rm res_?/binned_*_?.bin res_?/binned_*_?.seg res_?/binned_*_?.pt

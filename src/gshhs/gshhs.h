@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.15 2007-08-28 01:00:40 guru Exp $
+/*	$Id: gshhs.h,v 1.16 2007-08-28 18:40:26 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -22,8 +22,11 @@
  *			  For use with version 1.3 of GSHHS
  *	2-MAY-2006.  PW: Version 1.4.  Header is now 32 bytes (all int 4)
  *			  For use with version 1.4 of GSHHS
-*	31-MAR-2007.  PW: Version 1.5.  no format change
+ *	31-MAR-2007.  PW: Version 1.5.  no format change
  *			  For use with version 1.5 of GSHHS
+ *	28-AUG-2007.  PW: Version 1.6.  no format change
+ *			  For use with version 1.6 of GSHHS which now has WDBII
+ *			  borders and rivers.
  */
 
 #ifndef _GSHHS
@@ -42,7 +45,7 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHS_DATA_VERSION	5	/* For v1.5 data set */
+#define GSHHS_DATA_VERSION	6	/* For v1.5 data set */
 #define GSHHS_PROG_VERSION	"1.9"
 
 #define GSHHS_SCL	1.0e-6	/* COnvert micro-degrees to degrees */

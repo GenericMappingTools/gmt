@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.16 2007-08-27 22:08:30 guru Exp $
+/*	$Id: gshhs.c,v 1.17 2007-08-28 18:40:26 guru Exp $
  *
  *	Copyright (c) 1996-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -17,7 +17,8 @@
  *		1.5 14-SEPT-2004: Updated to deal with latest GSHHS database (1.3)
  *		1.6 02-MAY-2006: Updated to deal with latest GSHHS database (1.4)
  *		1.7 11-NOV-2006: Fixed bug in computing level (&& vs &)
- *		1.8 27-AUG-2007: Handle line data as well as polygon data
+ *		1.8 31-MAR-2007: Updated to deal with latest GSHHS database (1.5)
+ *		1.9 27-AUG-2007: Handle line data as well as polygon data
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
