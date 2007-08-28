@@ -1,10 +1,13 @@
 /*
- *	$Id: lines_to_bins.c,v 1.12 2007-08-28 17:12:35 guru Exp $
+ *	$Id: lines_to_bins.c,v 1.13 2007-08-28 18:29:12 guru Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
  * worry about connectivity and levels so we just store the segments
- * in the order received
+ * in the order received.
+ * New as of Aug-2007: We now lump level 5 (double rivers) into category
+ * 1 (permanent major river) to achieve better consistency on maps.
+ * (Many double rivers were converted into skinny lakes in the 1990ies...)
  */
  
 #include "wvs.h"
@@ -108,15 +111,7 @@ int main (int argc, char **argv)
 	last_x_bin = BIN_NX - 1;
 	
 	while (pol_readheader (&h, fp_in) == 1) {
-		
-		if (h.level == DOUBLE_RIVER) {	/* Must skip these guys as they are in the coastline database */
-			if (fseek (fp_in, h.n * sizeof (struct LONGPAIR), SEEK_CUR)) {
-				fprintf (stderr, "lines_to_bins: Error seeking past a segment!\n");
-				exit (EXIT_FAILURE);
-			}
-			continue;
-		}
-
+		if (h.level == DOUBLE_RIVER) h.level = 1;	/* Large double-rivers are permanent major rivers here */
 		h.id = n_id;
 		n_id++;
 		n_init += h.n;
