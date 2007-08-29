@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.94 2007-05-19 00:29:26 pwessel Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.95 2007-08-29 17:28:40 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -1165,6 +1165,43 @@ range, or use \GMTprog{grd2cpt} to build a cpt-file based on the data distributi
 in a given grid file.  However, in some situations you will need to make a cpt-file by
 hand or using text tools like \progname{awk} or \progname{perl}.
 
+Color palette tables (CPT) comes in two flavors: Ones designed to work with
+categorical data (e.g., data where interpolation of values is undefined) and
+regular, continuously-varying data.
+
+\subsection{Categorical tables}
+
+Categorical data are information on which normal numerical operations are not
+defined. As an example, consider various land classifications (desert, forest, glacier, etc.)
+and it is clear that even if we assigned a numerical value to these categories (e.g.,
+desert = 1, forest = 2, etc) it would be meaningless to compute average values (what would
+1.5 mean?).  For such data a special format of the CPT files are provided.  Here,
+each category is assigned a unique integer key, a color or pattern, and an optional
+label (usually the category name).  Keys must be monotonically increasing but do not
+need to be consequtive.  The format is
+
+\begin{center}
+\begin{tabular}{lll}
+key$_1$ &  {\it fill} &  \emph{label}] \\ 
+\ldots & & \\ 
+key$_n$ &  {\it fill} &  \emph{label}] \\ 
+\end{tabular} 
+\end{center}
+
+While not always applicable to categorical data, the background color (for
+\emph{key}-values $<$ \emph{key$_1$}), foreground color
+(for \emph{key}-values $>$ \emph{key$_{n}$}), and not-a-number (NaN) color (for
+\emph{key}-values = NaN) are all defined in the \filename{.gmtdefaults4}
+file, but can be overridden by the statements
+
+\begin{center}
+\begin{tabular}{llll}
+B &  R$_{back}$ &  G$_{back}$ &  B$_{back}$ \\ 
+F &  R$_{fore}$ &  G$_{fore}$ &  B$_{fore}$ \\ 
+N &  R$_{nan}$ &  G$_{nan}$ &  B$_{nan}$ \\
+
+\subsection{Regular tables}
+
 The colors may be specified either in the RGB- (red, green, blue), CMYK- (cyan,
 magenta, yellow, black), or in the HSV-system (hue, saturation, value, and
 here the comment \# COLOR\_MODEL = HSV must be present in the cpt file since there
@@ -1193,7 +1230,7 @@ by \GMTprog{psscale} to affect annotation and ticking of colorscales.  The optio
 semicolon followed by a text label will make \GMTprog{psscale}, when used with the \Opt{L} option,
 place the supplied label instead of formatted \emph{z}-values.
 
-The background color (for \emph{z}-values $<$ \emph{z$_0$}), foreground color
+As for categorical tables, the background color (for \emph{z}-values $<$ \emph{z$_0$}), foreground color
 (for \emph{z}-values $>$ \emph{z$_{n-1}$}), and not-a-number (NaN) color (for
 \emph{z}-values = NaN) are all defined in the \filename{.gmtdefaults4}
 file, but can be overridden by the statements
