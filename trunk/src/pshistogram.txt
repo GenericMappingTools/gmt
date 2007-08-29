@@ -6,7 +6,7 @@
 pshistogram \- Bin data and plot histograms
 .SH SYNOPSIS
 \fBpshistogram\fP \fIfile\fP GMT_Jx_OPT OPT(W)\fIbin_width\fP [ OPT(A) ] [ GMT_B_OPT ] 
-[ OPT(C) ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
+[ [ OPT(C)\fIcptfile\fP ] ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(F) ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
 [ OPT(I)[\fBo\fP|\fBO\fP] ] [ GMT_K_OPT ] [ OPT(L)\fIpen\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
 [ GMT_Rx_OPT ] [ OPT(S) ] [ OPT(T)\fIcol\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ]  
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fItype\fP ] [ GMT_c_OPT ] 
@@ -33,10 +33,13 @@ Plot the histogram horizontally from x = 0 [Default is vertically from y = 0].
 #include "explain_-B_short.txt"
 .TP
 .B \-C
-Center bin on each value. [Default is left edge].
+Give a color palette file.  The mid x-value for each bar is used to look-up the bar color.
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
+.TP
+.B \-F
+Center bin on each value. [Default is left edge].
 .TP
 .B \-G
 Select filling of bars [Default is no fill].
@@ -86,7 +89,7 @@ To draw a histogram of the data v3206.t containing seafloor depths, using a 250 
 bin width, center bars, and draw bar outline, use:
 .br
 .sp
-\fBpshistogram\fP v3206.t OPT(JX)h OPT(W)250 OPT(C) OPT(L)P0.5\fBp\fP OPT(V) > plot.ps
+\fBpshistogram\fP v3206.t OPT(JX)h OPT(W)250 OPT(F) OPT(L)P0.5\fBp\fP OPT(V) > plot.ps
 .br
 .sp
 If you know the distribution of your data, you may explicitly specify range and scales.  E.g.,

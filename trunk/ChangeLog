@@ -1,8 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.60 2007-08-29 17:28:40 guru Exp $
+	$Id: ChangeLog,v 1.61 2007-08-29 19:39:15 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-08-29	pwessel
+	* pshistogram.c		-C for center bins now -F (-C still works for backwardness)
+				Now takes -C<cpt> to color bars based on mid x-value.
 	* gmt_support.c:	Enhancement: CPT files may now be setup for categorical data
 				e.g, records are <key>	<fill> <label>, where <key> is an
 				integer that is monotonically increasing but not necessarily
