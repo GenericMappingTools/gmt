@@ -1,7 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.59 2007-08-28 18:40:26 guru Exp $
+	$Id: ChangeLog,v 1.60 2007-08-29 17:28:40 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-08-29	pwessel
+	* gmt_support.c:	Enhancement: CPT files may now be setup for categorical data
+				e.g, records are <key>	<fill> <label>, where <key> is an
+				integer that is monotonically increasing but not necessarily
+				continuous.  Used to support plotting of categorical data
+				on which interpolation is not defined.
 2007-08-28	pwessel
 	* mapproject.c:		Enhancement: -G-[unit] will calculate incremental distance rather
 				than the default cumulative distances.

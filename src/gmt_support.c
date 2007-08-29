@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.309 2007-08-25 00:06:47 guru Exp $
+ *	$Id: gmt_support.c,v 1.310 2007-08-29 17:28:40 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -126,6 +126,7 @@ void GMT_old2newpen (char *line);
 BOOLEAN GMT_is_texture (char *word);
 BOOLEAN GMT_is_penwidth (char *word);
 BOOLEAN GMT_is_color (char *word, int max_slashes);
+BOOLEAN GMT_is_pattern (char *word);
 int GMT_ysort (const void *p1, const void *p2);
 void GMT_x_alloc (struct GMT_XOVER *X, int nx_alloc);
 int sort_label_struct (const void *p_1, const void *p_2);
@@ -984,6 +985,16 @@ BOOLEAN GMT_is_color (char *word, int max_slashes)
 	return (n == -1 && n_hyphen == 2);	/* TRUE if we only found h-s-v and FALSE otherwise */
 }
 
+BOOLEAN GMT_is_pattern (char *word) {
+	/* Returns TRUE if the word is a pattern specification P|p<dpi>/<pattern>[:B<color>[F<color>]] */
+	
+	if (strchr (word, ':')) return (TRUE);			/* Only patterns may have a colon */
+	if (!(word[0] == 'P' || word[0] == 'p')) return FALSE;	/* Patterns must start with P or p */
+	if (!strchr (word, '/')) return (FALSE);		/* Patterns separate dpi and pattern with a slash */
+	/* Here we know we start with P|p and there is a slash - this can only be a pattern specification */
+	return (TRUE);
+}
+
 int GMT_gettexture (char *line, int unit, double scale, struct GMT_PEN *P) {
 	int i, n, pos;
 	double width, pen_scale;
@@ -1351,7 +1362,7 @@ int GMT_read_cpt (char *cpt_file)
 {
 	/* Opens and reads a color palette file in RGB, HSV, or CMYK of arbitrary length */
 
-	int n = 0, i, nread, annot, n_alloc = GMT_SMALL_CHUNK, color_model, id;
+	int n = 0, i, nread, annot, n_alloc = GMT_SMALL_CHUNK, color_model, id, n_cat_records = 0;
 	long k;
 	double dz;
 	BOOLEAN gap, error = FALSE;
@@ -1370,7 +1381,7 @@ int GMT_read_cpt (char *cpt_file)
 	GMT_lut = (struct GMT_LUT *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LUT), "GMT_read_cpt");
 
 	GMT_b_and_w = GMT_gray = TRUE;
-	GMT_continuous = GMT_cpt_pattern = FALSE;
+	GMT_continuous = GMT_cpt_pattern = GMT_categorical = FALSE;
 	color_model = gmtdefs.color_model;		/* Save the original setting since it may be modified by settings in the CPT file */
 
 	while (!error && fgets (line, BUFSIZ, fp)) {
@@ -1446,6 +1457,7 @@ int GMT_read_cpt (char *cpt_file)
 
 		/* Here we have regular z-slices.  Allowable formats are
 		 *
+		 * kei <fill> <label>	for categorical data
 		 * z0 - z1 - [LUB] ;<label>
 		 * z0 pattern z1 - [LUB] ;<label>
 		 * z0 r0 z1 r1 [LUB] ;<label>
@@ -1482,8 +1494,8 @@ int GMT_read_cpt (char *cpt_file)
 		if (nread <= 0) continue;								/* Probably a line with spaces - skip */
 		if (gmtdefs.color_model & GMT_READ_CMYK && nread != 10) error = TRUE;			/* CMYK should results in 10 fields */
 		if (!(gmtdefs.color_model & GMT_READ_CMYK) && !(nread == 4 || nread == 8)) error = TRUE;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
-
 		GMT_scanf_arg (T0, GMT_IS_UNKNOWN, &GMT_lut[n].z_low);
+		if (nread == 3 && GMT_IS_ZERO (GMT_lut[n].z_low - irint (GMT_lut[n].z_low))) error = FALSE;	/* Categorical CPT record with integer key */
 		GMT_lut[n].skip = FALSE;
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {
@@ -1494,7 +1506,7 @@ int GMT_read_cpt (char *cpt_file)
 			GMT_lut[n].skip = TRUE;		/* Don't paint this slice if possible*/
 			for (i = 0; i < 3; i++) GMT_lut[n].rgb_low[i] = GMT_lut[n].rgb_high[i] = gmtdefs.page_rgb[i];	/* If you must, use page color */
 		}
-		else if (T1[0] == 'p' || T1[0] == 'P') {	/* Gave pattern fill */
+		else if (nread != 3 && GMT_is_pattern (T1)) {	/* Gave pattern fill */
 			GMT_lut[n].fill = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
 			if (GMT_getfill (T1, GMT_lut[n].fill)) {
 				fprintf (stderr, "%s: GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", GMT_program, T1);
@@ -1508,7 +1520,25 @@ int GMT_read_cpt (char *cpt_file)
 			GMT_cpt_pattern = TRUE;
 		}
 		else {							/* Shades, RGB, HSV, or CMYK */
-			if (nread == 4) {	/* gray shades */
+			if (nread == 3) {	/* Categorical cpt records with key color label */
+				GMT_lut[n].label = (char *)GMT_memory (VNULL, strlen (T2) + 1, sizeof (char), GMT_program);
+				strcpy (GMT_lut[n].label, T2);
+				GMT_lut[n].z_high = GMT_lut[n].z_low;
+				if (GMT_is_pattern (T1)) {	/* Gave pattern fill */
+					GMT_lut[n].fill = (struct GMT_FILL *) GMT_memory (VNULL, 1, sizeof (struct GMT_FILL), GMT_program);
+					if (GMT_getfill (T1, GMT_lut[n].fill)) {
+						fprintf (stderr, "%s: GMT Fatal Error: CPT Pattern fill (%s) not understood!\n", GMT_program, T1);
+						GMT_exit (EXIT_FAILURE);
+					}
+				}
+				else {
+					if (GMT_getrgb (T1, GMT_lut[n].rgb_low)) error++;
+					if (GMT_getrgb (T1, GMT_lut[n].rgb_high)) error++;
+				}
+				n_cat_records++;
+				GMT_categorical = TRUE;
+			}
+			else if (nread == 4) {	/* gray shades */
 				GMT_scanf_arg (T2, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 				if (GMT_getrgb (T1, GMT_lut[n].rgb_low)) error++;
 				if (GMT_getrgb (T3, GMT_lut[n].rgb_high)) error++;
@@ -1537,13 +1567,14 @@ int GMT_read_cpt (char *cpt_file)
 				if (GMT_getrgb (option, GMT_lut[n].rgb_high)) error++;
 			}
 
-			dz = GMT_lut[n].z_high - GMT_lut[n].z_low;
-			if (dz == 0.0) {
-				fprintf (stderr, "%s: GMT Fatal Error: Z-slice with dz = 0\n", GMT_program);
-				GMT_exit (EXIT_FAILURE);
+			if (!GMT_categorical) {
+				dz = GMT_lut[n].z_high - GMT_lut[n].z_low;
+				if (dz == 0.0) {
+					fprintf (stderr, "%s: GMT Fatal Error: Z-slice with dz = 0\n", GMT_program);
+					GMT_exit (EXIT_FAILURE);
+				}
+				GMT_lut[n].i_dz = 1.0 / dz;
 			}
-			GMT_lut[n].i_dz = 1.0 / dz;
-
 			if (!GMT_is_gray (GMT_lut[n].rgb_low[0],  GMT_lut[n].rgb_low[1],  GMT_lut[n].rgb_low[2]))  GMT_gray = FALSE;
 			if (!GMT_is_gray (GMT_lut[n].rgb_high[0], GMT_lut[n].rgb_high[1], GMT_lut[n].rgb_high[2])) GMT_gray = FALSE;
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_low[0]))  GMT_b_and_w = FALSE;
@@ -1568,6 +1599,11 @@ int GMT_read_cpt (char *cpt_file)
 
 	if (fp != GMT_stdin) fclose (fp);
 
+	if (GMT_categorical && n_cat_records != n) {
+		fprintf (stderr, "%s: GMT Fatal Error: Error when decoding %s as categorical cpt file - aborts!\n", GMT_program, cpt_file);
+		GMT_exit (EXIT_FAILURE);
+	}
+	
 	if (error) {
 		fprintf (stderr, "%s: GMT Fatal Error: Error when decoding %s - aborts!\n", GMT_program, cpt_file);
 		GMT_exit (EXIT_FAILURE);
@@ -1579,6 +1615,24 @@ int GMT_read_cpt (char *cpt_file)
 
 	GMT_lut = (struct GMT_LUT *) GMT_memory ((void *)GMT_lut, (size_t)n, sizeof (struct GMT_LUT), "GMT_read_cpt");
 	GMT_n_colors = n;
+
+	if (GMT_categorical) {	/* Set up fake ranges so CPT is continuous */
+		for (i = 0; i < GMT_n_colors; i++) {
+			if (i == (GMT_n_colors-1)) {
+				GMT_lut[i].z_high += 1.0;	/* Upper limit is one up */
+			}
+			else {
+				GMT_lut[i].z_high = GMT_lut[i+1].z_low;
+			}
+			dz = GMT_lut[i].z_high - GMT_lut[i].z_low;
+			if (dz == 0.0) {
+				fprintf (stderr, "%s: GMT Fatal Error: Z-slice with dz = 0\n", GMT_program);
+				GMT_exit (EXIT_FAILURE);
+			}
+			GMT_lut[i].i_dz = 1.0 / dz;
+		}
+	}
+	
 	for (i = annot = 0, gap = FALSE; i < GMT_n_colors - 1; i++) {
 		if (GMT_lut[i].z_high != GMT_lut[i+1].z_low) gap = TRUE;
 		annot += GMT_lut[i].annot;
