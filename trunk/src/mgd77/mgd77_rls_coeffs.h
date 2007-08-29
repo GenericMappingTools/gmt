@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77_rls_coeffs.h,v 1.4 2007-08-27 22:21:26 mtchandl Exp $
+ *	$Id: mgd77_rls_coeffs.h,v 1.5 2007-08-29 20:07:53 mtchandl Exp $
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
@@ -32,7 +32,7 @@
  * ------------------------------------------------------------------*/
 
 #define RLS_N_DEPTH         4490
-#define RLS_N_DEPTH_ROWS    38
+#define RLS_N_DEPTH_ROWS    39
 #define RLS_N_FAA           1614
 #define RLS_N_FAA_ROWS      43
 #define RLS_N_RECOMPUTE_FAA 663
