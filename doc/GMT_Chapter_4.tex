@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.96 2007-08-29 18:10:06 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.97 2007-08-30 01:16:50 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -1165,29 +1165,30 @@ range, or use \GMTprog{grd2cpt} to build a cpt-file based on the data distributi
 in a given grid file.  However, in some situations you will need to make a cpt-file by
 hand or using text tools like \progname{awk} or \progname{perl}.
 
-Color palette tables (CPT) comes in two flavors: Ones designed to work with
+Color palette tables (CPT) comes in two flavors: (1) Those designed to work with
 categorical data (e.g., data where interpolation of values is undefined) and
-regular, continuously-varying data.
+(2) those designed for regular, continuously-varying data.
 
-\subsection{Categorical tables}
+\subsection{Categorical CPT files}
 
 Categorical data are information on which normal numerical operations are not
 defined. As an example, consider various land classifications (desert, forest, glacier, etc.)
 and it is clear that even if we assigned a numerical value to these categories (e.g.,
 desert = 1, forest = 2, etc) it would be meaningless to compute average values (what would
 1.5 mean?).  For such data a special format of the CPT files are provided.  Here,
-each category is assigned a unique integer key, a color or pattern, and an optional
+each category is assigned a unique key, a color or pattern, and an optional
 label (usually the category name).  Keys must be monotonically increasing but do not
 need to be consequtive.  The format is
 
 \begin{center}
 \begin{tabular}{lll}
-key$_1$ &  {\it fill} &  \emph{label}] \\ 
+key$_1$ &  {\it fill} &  \emph{label} \\ 
 \ldots & & \\ 
-key$_n$ &  {\it fill} &  \emph{label}] \\ 
+key$_n$ &  {\it fill} &  \emph{label} \\ 
 \end{tabular} 
 \end{center}
 
+The {\it fill} information follows the format given in Section \ref{sec:fill}.
 While not always applicable to categorical data, the background color (for
 \emph{key}-values $<$ \emph{key$_1$}), foreground color
 (for \emph{key}-values $>$ \emph{key$_{n}$}), and not-a-number (NaN) color (for
@@ -1202,9 +1203,9 @@ N &  R$_{nan}$ &  G$_{nan}$ &  B$_{nan}$ \\
 \end{tabular}
 \end{center}
 
-\subsection{Regular tables}
+\subsection{Regular CPT files}
 
-The colors may be specified either in the RGB- (red, green, blue), CMYK- (cyan,
+Here, the colors may be specified either in the RGB- (red, green, blue), CMYK- (cyan,
 magenta, yellow, black), or in the HSV-system (hue, saturation, value, and
 here the comment \# COLOR\_MODEL = HSV must be present in the cpt file since there
 are no other way to distinguish between HSV and RGB).  Color names can also be used.
