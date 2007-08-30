@@ -1,0 +1,20 @@
+Types of records:
+
+VARIABLE	Slices with continuously varying colors
+CONSTANT	Slices with constant color or pattern for normal data
+CATEGORY	Slices with constant color or pattern for categorical data
+BACKGRND
+FOREGRND
+NANVALUE
+
+Types of annotations:
+
+L	Annotate lower z-value
+U	Annotate upper z-value
+B	Annotate both lower and lower z-value
+I	Annotate the interval (psscale only)
+
+Source of annotation content:
+
+Z	The z-values
+L	Text label
