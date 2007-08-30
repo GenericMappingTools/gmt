@@ -1,9 +1,9 @@
 #!/bin/sh
-#	$Id: GMT_utm_zones.sh,v 1.1 2007-08-30 01:19:31 guru Exp $
+#	$Id: GMT_utm_zones.sh,v 1.2 2007-08-30 16:46:47 guru Exp $
 #
 # Makes a plot of the global UTM zone grid including the exceptions near Norway/Spitsbergen
 
-pscoast -Rd -JQ0/9i -G200 -Dl -A2000 -K -B60f6/0wsNe -K \
+pscoast -Rd -JQ0/9i -G200 -Dl -A2000 -K -B60f6/0wsNe -K --BASEMAP_TYPE=plain \
   --PLOT_DEGREE_FORMAT=dddF --HEADER_OFFSET=0.25i --ANNOT_OFFSET=0.15i --HEADER_FONT_SIZE=24 --ANNOT_FONT_SIZE=10 > GMT_utm_zones.ps
 cat << EOF > $$.z.d
 >  Do S pole zone
@@ -87,8 +87,8 @@ awk '{printf "%s %s 10 0 1 CM %s\n", $1, $2, $3}' << EOF | pstext -R -J -O -K -N
 -90	87	Y
 +90	87	Z
 EOF
-gmtmath -T-180/174/6 T 3 ADD = | awk '{printf "%s -90 8 0 1 CT %d\n", $2, NR}' | pstext -R -J -O -K -N -D0/-0.07i >> GMT_utm_zones.ps
-gmtmath -T-180/174/6 T 3 ADD = | awk '{printf "%s 90 8 0 1 CB %d\n", $2, NR}' | pstext -R -J -O -K -N -D0/0.07i >> GMT_utm_zones.ps
+gmtmath -T-180/174/6 T 3 ADD = | awk '{printf "%s -90 8 0 6 CT %d\n", $2, NR}' | pstext -R -J -O -K -N -D0/-0.07i >> GMT_utm_zones.ps
+gmtmath -T-180/174/6 T 3 ADD = | awk '{printf "%s 90 8 0 6 CB %d\n", $2, NR}' | pstext -R -J -O -K -N -D0/0.07i >> GMT_utm_zones.ps
 awk '{printf "%s %s 8 0 6 CB %s\n", $1, $2, $3}' << EOF | pstext -R -J -O -K -D0/0.025i >> GMT_utm_zones.ps
 4.5	72	31X
 15	72	33X
