@@ -20,7 +20,7 @@ tolerance is maximum mismatch in km.  The larger the value the more reduction wi
 The reducted data set.
 .SH OPTIONS
 .TP
-.B v
+.B \-v
 Reports progress and statistics while running.
 .SH EXAMPLES
 .sp
@@ -31,10 +31,11 @@ To simplify the full GSHHS data set with a custom tolerance of 2 km, try
 Douglas, D. H., and T. K. Peucker, Algorithms for the reduction
 of the number of points required to represent a digitized line
 of its caricature, \fICan. Cartogr., 10\fP, 112-122, 1973.
-.SU AUTHOR
+.SH AUTHOR
 This implementation of the D-P algorithm has been kindly provided by
 Dr. Gary J. Robinson, Environmental Systems Science Centre,
-University of Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk).
+University of Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk); his
+ssubroutine forms the basis for this program.
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION),
 .IR gshhs (GMTMANSECTION)
