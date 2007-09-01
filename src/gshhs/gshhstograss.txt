@@ -16,16 +16,16 @@ One of the GSHHS binary data file as distributed with the GSHHS data supplement.
 The resulting files are called dig_[ascii|att|cats].gshhs_[f|h|i|l|c].
 .SH OPTIONS
 .TP
-.B x
+.B \-x
 Specify a minimum (west) longitude.
 .TP
-.B X
+.B \-X
 Specify a maximum (east) longitude.
 .TP
-.B y
+.B \-y
 Specify a minimum (south) latitude.
 .TP
-.B Y
+.B \-Y
 Specify a maximum (north) latitude.
 .SH EXAMPLES
 .sp
@@ -35,7 +35,8 @@ To convert the full GSHHS data set , try
 .SH BUGS
 Not updated to handle the WDBII line data (borders or rivers).
 .SH AUTHOR
-Simon Cox (simon@ned.dem.csiro.au) and Paul Wessel (pwessel@hawaii.edu)
+Original version by Simon Cox (simon@ned.dem.csiro.au) with
+some maintenance by Paul Wessel (pwessel@hawaii.edu).
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION),
 .IR gshhs (GMTMANSECTION)
