@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.7 2007-06-11 12:32:52 remko Exp $
+#	$Id: Makefile,v 1.8 2007-09-04 15:14:34 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -89,27 +89,26 @@ first:	all
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-LIB_O	= ${LIB_C:.c=.o}
+LIB_O		= $(LIB_C:.c=.o)
+LIBPS_O		= $(LIBPS_C:.c=.o)
+PROGS_O		= $(PROGS_C:.c=.o)
+PROGSPS_O	= $(PROGSPS_C:.c=.o)
 
-LIBPS_O	= ${LIBPS_C:.c=.o}
-
-PROGS_O	= ${PROGS_C:.c=.o}
-
-PROGS	= ${PROGS_C:.c=}
-
-PROGSPS_O	= ${PROGSPS_C:.c=.o}
-
-PROGSPS	= ${PROGSPS_C:.c=}
-
+PROGS		= $(PROGS_C:.c=$(EXE))
+PROGSPS		= $(PROGSPS_C:.c=$(EXE))
 ALLPROGS	= $(PROGS) $(PROGSPS)
 
 $(LIB_O):	$(GMT_H) $(GMT_I)
-
-$(LIBPS_O):	$(GMT_H) pslib.h $(GMT_I)
-
+$(LIBPS_O):	$(GMT_H) $(GMT_I) pslib.h
 $(PROGS_O):	$(GMT_H)
-
 $(PROGSPS_O):	$(GMT_H) pslib.h
+
+# Additional unusual dependancies
+
+blockmean.o blockmedian.o blockmode.o:	block_subs.c
+gmt_customio.o: gmt_mgg_header2.c gmt_agc_io.c
+gmtmath.o:	gmtmath.h
+grdmath.o:	grdmath.h
 
 # Jonathan Shewchuk's triangulation model (www.cs.cmu.edu/~quake)
 # Only used if TRIANGLE_D and TRIANGLE_O are set in makegmt.macros
@@ -117,8 +116,6 @@ $(PROGSPS_O):	$(GMT_H) pslib.h
 
 triangle.o:	triangle.c
 		$(CC) -c $(CFLAGS) -DNO_TIMER -DTRILIBRARY -DREDUCED -DCDT_ONLY $<
-
-gmt_customio.o: gmt_customio.c gmt_mgg_header2.c gmt_agc_io.c $(GMT_H)
 
 # Assembly wrapper for sincos on Dec Alphas
 # Only used if ALPHA_SINCOS_O are set in makegmt.macros
@@ -147,69 +144,53 @@ GMT:		GMT.in
 		cd ..; ./configure
 
 install:	all
-		if [ ! -d $(bindir) ]; then \
-			mkdir -p $(bindir); \
-		fi
-		for i in $(ALLPROGS); do \
-			$(INSTALL) $$i$(EXE) $(bindir); \
-		done
-		$(INSTALL) GMT $(bindir)
-		if [ ! -d $(libdir) ]; then \
-			mkdir -p $(libdir); \
-		fi
+		$(INSTALL) -d $(bindir)
+		$(INSTALL) GMT $(ALLPROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			rm -f $(libdir)/libpsl.* $(libdir)/libgmt.* $(libdir)/libgmtps.*; \
-			$(INSTALL) -m 444 libpsl.a $(libdir); \
-			$(INSTALL) -m 444 libgmt.a $(libdir); \
-			$(INSTALL) -m 444 libgmtps.a $(libdir); \
-			if [ -f libpsl.$(SL) ]; then \
-				$(INSTALL) -m 444 libpsl.$(SL) $(libdir); \
-				$(INSTALL) -m 444 libgmt.$(SL) $(libdir); \
-				$(INSTALL) -m 444 libgmtps.$(SL) $(libdir); \
-			fi; \
-		fi
-		if [ ! -d $(includedir) ]; then \
-			mkdir -p $(includedir); \
+			$(INSTALL) -d $(libdir) ; \
+			$(INSTALL) -m 444 $(GMTLIB) $(libdir); \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			for i in $(GMT_H); do \
-				$(INSTALL) -m 444 $$i $(includedir); \
-			done; \
-			for i in $(PS_H) $(PS_I); do \
-				$(INSTALL) -m 444 $$i $(includedir); \
-			done; \
+			$(INSTALL) -d $(includedir) ; \
+			$(INSTALL) -m 444 $(GMT_H) $(PS_H) $(PS_I) $(includedir); \
 		fi
 
 uninstall:
-		for i in $(ALLPROGS); do \
-			\rm -f $(bindir)/$$i$(EXE); \
+		for i in GMT $(ALLPROGS); do \
+			\rm -f $(bindir)/$$i; \
 		done
-		\rm -f $(bindir)/GMT
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			\rm -f $(libdir)/libgmt.a $(libdir)/libpsl.a $(libdir)/libgmtps.a ; \
-			if [ -f libpsl.$(SL) ]; then \
-				\rm -f $(libdir)/libpsl.$(SL); \
-				\rm -f $(libdir)/libgmt.$(SL); \
-				\rm -f $(libdir)/libgmtps.$(SL); \
-			fi; \
+			for i in $(GMTLIB); do \
+				\rm -f $(libdir)/$$i; \
+			done; \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			for i in $(GMT_H); do \
-				\rm -f $(includedir)/$$i; \
-			done; \
-			for i in $(PS_H) $(PS_I); do \
+			for i in $(GMT_H) $(PS_H) $(PS_I); do \
 				\rm -f $(includedir)/$$i; \
 			done; \
 		fi
 
-clean:
-		rm -f *.o *.a *.$(SL)
-		for i in $(ALLPROGS); do \
-			rm -f $$i$(EXE); \
+install-man:
+		@echo "Installing GMT manpages in $(mandir)/man$(mansection)"
+		@mkdir -p $(mandir)/man$(mansection)
+		@set -e ; for d in . $(SUPPL_M); do \
+			if [ -d $$d ] && [ ! -f $$d/.skip ] ; then \
+				( cd $$d; \
+				for f in *.man; do \
+					sed "s/GMTMANSECTION/$(mansection)/g" $$f > $(mandir)/man$(mansection)/`basename $$f .man`.l; \
+				done ); \
+			fi; \
 		done
 
+uninstall-man:
+		@echo "Removing GMT manpages from $(mandir)/man$(mansection)"; \
+		rm -rf $(mandir)/man$(mansection)
+
+clean:
+		rm -f *.o *.a *.$(SL) $(ALLPROGS)
+
 spotless:	clean
-		rm -f $(GMTLIB) gmt_notposix.h makegmt.macros *.man
+		rm -f gmt_notposix.h makegmt.macros *.man
 
 distclean:	spotless
 
@@ -219,8 +200,7 @@ distclean:	spotless
 
 libs:		$(GMTLIB)
 
-pslib.o:	pslib.c $(PS_H) $(PS_I) gmt_notunix.h gmt_notposix.h gmt_math.h
-		$(CC) $(CFLAGS) -c pslib.c
+pslib.o:	$(PS_H) $(PS_I) gmt_notunix.h gmt_notposix.h gmt_math.h
 
 libpsl.a:	pslib.o
 		$(AR) cvur libpsl.a $?
@@ -247,19 +227,59 @@ libgmtps.$(SL):	$(LIBPS_O)
 #	program dependencies
 #-------------------------------------------------------------------------------
 
-$(PROGS):	$(GMTLIB) $(PROGS_O)
-		$(CC) $(CFLAGS) $@.o -L. $(GMT) $(CDF) $(LIBS) $(LDFLAGS) -o $@
-		$(COMPRESS) $@$(EXE)
+blockmean$(EXE):	 blockmean.o
+blockmedian$(EXE):	 blockmedian.o
+blockmode$(EXE):	 blockmode.o
+filter1d$(EXE):		 filter1d.o
+fitcircle$(EXE):	 fitcircle.o
+grdfilter$(EXE):	 grdfilter.o
+gmtconvert$(EXE):	 gmtconvert.o
+gmtdefaults$(EXE):	 gmtdefaults.o
+gmtmath$(EXE):		 gmtmath.o
+gmtselect$(EXE):	 gmtselect.o
+gmtset$(EXE):		 gmtset.o
+grd2cpt$(EXE):		 grd2cpt.o
+grd2xyz$(EXE):		 grd2xyz.o
+grdblend$(EXE):		 grdblend.o
+grdcut$(EXE):		 grdcut.o
+grdclip$(EXE):		 grdclip.o
+grdedit$(EXE):		 grdedit.o
+grdfft$(EXE):		 grdfft.o
+grdgradient$(EXE):	 grdgradient.o
+grdhisteq$(EXE):	 grdhisteq.o
+grdinfo$(EXE):		 grdinfo.o
+grdlandmask$(EXE):	 grdlandmask.o
+grdmask$(EXE):		 grdmask.o
+grdtrack$(EXE):		 grdtrack.o
+grdreformat$(EXE):	 grdreformat.o
+grdmath$(EXE):		 grdmath.o
+grdpaste$(EXE):		 grdpaste.o
+grdproject$(EXE):	 grdproject.o
+grdsample$(EXE):	 grdsample.o
+grdtrend$(EXE):		 grdtrend.o
+grdvolume$(EXE):	 grdvolume.o
+makecpt$(EXE):		 makecpt.o
+mapproject$(EXE):	 mapproject.o
+minmax$(EXE):		 minmax.o
+nearneighbor$(EXE):	 nearneighbor.o
+project$(EXE):		 project.o
+ps2raster$(EXE):	 ps2raster.o
+sample1d$(EXE):		 sample1d.o
+spectrum1d$(EXE):	 spectrum1d.o
+splitxyz$(EXE):		 splitxyz.o
+surface$(EXE):		 surface.o
+trend1d$(EXE):		 trend1d.o
+trend2d$(EXE):		 trend2d.o
+triangulate$(EXE):	 triangulate.o
+xyz2grd$(EXE):		 xyz2grd.o
 
-$(PROGSPS):	$(GMTLIB) $(PROGSPS_O)
-		$(CC) $(CFLAGS) $@.o -L. $(GMT) $(GMTPS) $(PS) $(CDF) $(LIBS) $(LDFLAGS) -o $@
-		$(COMPRESS) $@$(EXE)
+$(PROGS):	$(GMTLIB)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(CDF) $(LIBS) -o $@
+		$(COMPRESS) $@
 
-.c.o:
-		$(CC) -c $(CFLAGS) $<
-
-gmtmath.o:	gmtmath.c gmtmath.h
-grdmath.o:	grdmath.c grdmath.h
+$(PROGSPS):	$(GMTLIB)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(GMTPS) $(PS) $(CDF) $(LIBS) -o $@
+		$(COMPRESS) $@
 
 #---------------------------- CVS GURU EXTENSIONS-------------------------------
 include $(MAKEGURU)
