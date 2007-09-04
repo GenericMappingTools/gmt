@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.8 2007-09-04 15:14:34 remko Exp $
+#	$Id: Makefile,v 1.9 2007-09-04 15:40:35 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -227,51 +227,70 @@ libgmtps.$(SL):	$(LIBPS_O)
 #	program dependencies
 #-------------------------------------------------------------------------------
 
-blockmean$(EXE):	 blockmean.o
-blockmedian$(EXE):	 blockmedian.o
-blockmode$(EXE):	 blockmode.o
-filter1d$(EXE):		 filter1d.o
-fitcircle$(EXE):	 fitcircle.o
-grdfilter$(EXE):	 grdfilter.o
-gmtconvert$(EXE):	 gmtconvert.o
-gmtdefaults$(EXE):	 gmtdefaults.o
-gmtmath$(EXE):		 gmtmath.o
-gmtselect$(EXE):	 gmtselect.o
-gmtset$(EXE):		 gmtset.o
-grd2cpt$(EXE):		 grd2cpt.o
-grd2xyz$(EXE):		 grd2xyz.o
-grdblend$(EXE):		 grdblend.o
-grdcut$(EXE):		 grdcut.o
-grdclip$(EXE):		 grdclip.o
-grdedit$(EXE):		 grdedit.o
-grdfft$(EXE):		 grdfft.o
-grdgradient$(EXE):	 grdgradient.o
-grdhisteq$(EXE):	 grdhisteq.o
-grdinfo$(EXE):		 grdinfo.o
-grdlandmask$(EXE):	 grdlandmask.o
-grdmask$(EXE):		 grdmask.o
-grdtrack$(EXE):		 grdtrack.o
-grdreformat$(EXE):	 grdreformat.o
-grdmath$(EXE):		 grdmath.o
-grdpaste$(EXE):		 grdpaste.o
-grdproject$(EXE):	 grdproject.o
-grdsample$(EXE):	 grdsample.o
-grdtrend$(EXE):		 grdtrend.o
-grdvolume$(EXE):	 grdvolume.o
-makecpt$(EXE):		 makecpt.o
-mapproject$(EXE):	 mapproject.o
-minmax$(EXE):		 minmax.o
-nearneighbor$(EXE):	 nearneighbor.o
-project$(EXE):		 project.o
-ps2raster$(EXE):	 ps2raster.o
-sample1d$(EXE):		 sample1d.o
-spectrum1d$(EXE):	 spectrum1d.o
-splitxyz$(EXE):		 splitxyz.o
-surface$(EXE):		 surface.o
-trend1d$(EXE):		 trend1d.o
-trend2d$(EXE):		 trend2d.o
-triangulate$(EXE):	 triangulate.o
-xyz2grd$(EXE):		 xyz2grd.o
+blockmean$(EXE):	blockmean.o
+blockmedian$(EXE):	blockmedian.o
+blockmode$(EXE):	blockmode.o
+filter1d$(EXE):		filter1d.o
+fitcircle$(EXE):	fitcircle.o
+gmt2rgb$(EXE):		gmt2rgb.o
+gmtconvert$(EXE):	gmtconvert.o
+gmtdefaults$(EXE):	gmtdefaults.o
+gmtmath$(EXE):		gmtmath.o
+gmtselect$(EXE):	gmtselect.o
+gmtset$(EXE):		gmtset.o
+grd2cpt$(EXE):		grd2cpt.o
+grd2xyz$(EXE):		grd2xyz.o
+grdblend$(EXE):		grdblend.o
+grdclip$(EXE):		grdclip.o
+grdcontour$(EXE):	grdcontour.o
+grdcut$(EXE):		grdcut.o
+grdedit$(EXE):		grdedit.o
+grdfft$(EXE):		grdfft.o
+grdfilter$(EXE):	grdfilter.o
+grdgradient$(EXE):	grdgradient.o
+grdhisteq$(EXE):	grdhisteq.o
+grdimage$(EXE):		grdimage.o
+grdinfo$(EXE):		grdinfo.o
+grdlandmask$(EXE):	grdlandmask.o
+grdmask$(EXE):		grdmask.o
+grdmath$(EXE):		grdmath.o
+grdpaste$(EXE):		grdpaste.o
+grdproject$(EXE):	grdproject.o
+grdreformat$(EXE):	grdreformat.o
+grdsample$(EXE):	grdsample.o
+grdtrack$(EXE):		grdtrack.o
+grdtrend$(EXE):		grdtrend.o
+grdvector$(EXE):	grdvector.o
+grdview$(EXE):		grdview.o
+grdvolume$(EXE):	grdvolume.o
+makecpt$(EXE):		makecpt.o
+mapproject$(EXE):	mapproject.o
+minmax$(EXE):		minmax.o
+nearneighbor$(EXE):	nearneighbor.o
+project$(EXE):		project.o
+ps2raster$(EXE):	ps2raster.o
+psbasemap$(EXE):	psbasemap.o
+psclip$(EXE):		psclip.o
+pscoast$(EXE):		pscoast.o
+pscontour$(EXE):	pscontour.o
+pshistogram$(EXE):	pshistogram.o
+psimage$(EXE):		psimage.o
+pslegend$(EXE):		pslegend.o
+psmask$(EXE):		psmask.o
+psrose$(EXE):		psrose.o
+psscale$(EXE):		psscale.o
+pstext$(EXE):		pstext.o
+pswiggle$(EXE):		pswiggle.o
+psxy$(EXE):		psxy.o
+psxyz$(EXE):		psxyz.o
+sample1d$(EXE):		sample1d.o
+spectrum1d$(EXE):	spectrum1d.o
+splitxyz$(EXE):		splitxyz.o
+surface$(EXE):		surface.o
+trend1d$(EXE):		trend1d.o
+trend2d$(EXE):		trend2d.o
+triangulate$(EXE):	triangulate.o
+xyz2grd$(EXE):		xyz2grd.o
 
 $(PROGS):	$(GMTLIB)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(CDF) $(LIBS) -o $@
