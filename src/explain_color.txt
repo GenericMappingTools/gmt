@@ -1,4 +1,4 @@
-.SH SPECIFYING COLOR
+.SS SPECIFYING COLOR
 .TP
 \fIcolor\fP
 The \fIcolor\fP of lines, areas and patterns can be specified by a valid color name

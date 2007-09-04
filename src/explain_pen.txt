@@ -1,4 +1,4 @@
-.SH SPECIFYING PENS
+.SS SPECIFYING PENS
 .TP
 \fIpen\fP
 The attributes of lines and symbol outlines as defined by \fIpen\fP is a comma delimetered list of

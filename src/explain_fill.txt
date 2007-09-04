@@ -1,4 +1,4 @@
-.SH SPECIFYING FILL
+.SS SPECIFYING FILL
 .TP
 \fIfill\fP
 The attribute \fIfill\fP specifies the solid shade or solid \fIcolor\fP
