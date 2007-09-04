@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.15 2007-06-29 18:40:30 remko Exp $
+#	$Id: Makefile,v 1.16 2007-09-04 15:22:27 remko Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -26,30 +26,23 @@ CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I$(NETCDF)/include
 ALLLIB  = -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
 
 ALL_C	= x_edit.c x_init.c x_list.c x_over.c x_report.c x_remove.c x_setup.c x_solve_dc_drift.c x_update.c
-
-ALL_O	= ${ALL_C:.c=.o}
-
-ALL	= ${ALL_C:.c=}
+ALL_O	= $(ALL_C:.c=.o)
+ALL	= $(ALL_C:.c=$(EXE))
 
 all:	$(ALL)
 
 #-------------------------------------------------------------------------------
 
 install:	all
-		for i in $(ALL); do \
-			$(INSTALL) $$i$(EXE) $(bindir); \
-		done
+		$(INSTALL) $(ALL) $(bindir)
 
 uninstall:
 		for i in $(ALL); do \
-			\rm -f $(bindir)/$$i$(EXE); \
+			\rm -f $(bindir)/$$i; \
 		done
 
 clean:
-		rm -f *.o
-		for i in $(ALL); do \
-			rm -f $$i$(EXE); \
-		done
+		rm -f *.o $(ALL)
 
 spotless:	clean
 
@@ -58,9 +51,6 @@ spotless:	clean
 #-------------------------------------------------------------------------------
 
 $(ALL):		$(ALL_O) $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o $(ALLLIB) -o $@
-
-.c.o:
-		$(CC) -c $(CFLAGS) $<
+		$(CC) $(CFLAGS) $(LDFLAGS) $(@:.exe=).o $(ALLLIB) -o $@
 
 $(ALL_O):	x_system.h $(GMT_H)

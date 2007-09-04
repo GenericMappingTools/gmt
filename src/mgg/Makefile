@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.18 2007-06-29 18:40:30 remko Exp $
+#	$Id: Makefile,v 1.19 2007-09-04 15:22:27 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -36,31 +36,21 @@ MGGPS_C	= gmttrack.c
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-MGG_O	= ${MGG_C:.c=.o}
-
-MGG	= ${MGG_C:.c=}
-
-MGGPS_O	= ${MGGPS_C:.c=.o}
-
-MGGPS	= ${MGGPS_C:.c=}
+MGG_O	= $(MGG_C:.c=.o)
+MGG	= $(MGG_C:.c=$(EXE))
+MGGPS_O	= $(MGGPS_C:.c=.o)
+MGGPS	= $(MGGPS_C:.c=$(EXE))
 
 all:		libgmt_mgg.a $(MGG) $(MGGPS)
 
 $(MGG_O):	$(GMT_H) $(MGG_H)
-
 $(MGGPS_O):	$(GMT_H) $(PS_H) $(MGG_H)
 
 #-------------------------------------------------------------------------------
 
 install:	all
-		for i in $(MGG) $(MGGPS); do \
-			$(INSTALL) $$i$(EXE) $(bindir); \
-		done
-		if [ ! -d $(libdir) ]; then \
-			mkdir -p $(libdir); \
-		fi
+		$(INSTALL) $(MGG) $(MGGPS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			rm -f $(libdir)/libgmt_mgg.*; \
 			$(INSTALL) -m 444 libgmt_mgg.a $(libdir); \
 			if [ -f libgmt_mgg.$(SL) ]; then \
 				$(INSTALL) -m 444 libgmt_mgg.$(SL) $(libdir); \
@@ -69,20 +59,14 @@ install:	all
 
 uninstall:
 		for i in $(MGG) $(MGGPS); do \
-			\rm -f $(bindir)/$$i$(EXE); \
+			\rm -f $(bindir)/$$i; \
 		done
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			\rm -f $(libdir)/libgmt_mgg.a; \
-			if [ -f libgmt_mgg.$(SL) ]; then \
-				\rm -f $(libdir)/libgmt_mgg.$(SL); \
-			fi; \
+			\rm -f $(libdir)/libgmt_mgg.a $(libdir)/libgmt_mgg.$(SL); \
 		fi
 
 clean:
-		rm -f *.o
-		for i in $(MGG) $(MGGPS); do \
-			rm -f $$i$(EXE); \
-		done
+		rm -f *.o $(MGG) $(MGGPS)
 
 spotless:	clean
 		rm -f *.a
@@ -102,10 +86,7 @@ gmt_mgg.o:	$(MGG_H)
 #-------------------------------------------------------------------------------
 
 $(MGG):		libgmt_mgg.a $(MGG_O) $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
 
 $(MGGPS):	libgmt_mgg.a $(MGGPS_O) $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
-
-.c.o:
-		$(CC) -c $(CFLAGS) $<
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@

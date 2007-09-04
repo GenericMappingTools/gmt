@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.19 2007-06-29 18:40:30 remko Exp $
+#	$Id: Makefile,v 1.20 2007-09-04 15:22:27 remko Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -25,16 +25,14 @@ CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF	= -L$(NETCDF)/lib -lnetcdf
 
 SPOT_H	= spotter.h
-
 SPOT_C	= backtracker.c grdrotater.c hotspotter.c originator.c rotconverter.c
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-SPOT_O	= ${SPOT_C:.c=.o}
-
-SPOT	= ${SPOT_C:.c=}
+SPOT_O	= $(SPOT_C:.c=.o)
+SPOT	= $(SPOT_C:.c=$(EXE))
 
 all:		libspotter.a $(SPOT)
 
@@ -43,20 +41,15 @@ $(SPOT_O):	$(GMT_H) $(SPOT_H)
 #-------------------------------------------------------------------------------
 
 install:	all
-		for i in $(SPOT); do \
-			$(INSTALL) $$i$(EXE) $(bindir); \
-		done
+		$(INSTALL) $(SPOT) $(bindir)
 
 uninstall:
 		for i in $(SPOT); do \
-			\rm -f $(bindir)/$$i$(EXE); \
+			\rm -f $(bindir)/$$i; \
 		done
 
 clean:
-		rm -f *.o
-		for i in $(SPOT); do \
-			rm -f $$i$(EXE); \
-		done
+		rm -f *.o $(SPOT)
 
 spotless:	clean
 		rm -f *.a
@@ -76,7 +69,4 @@ libspotter.o:	$(SPOT_H)
 #-------------------------------------------------------------------------------
 
 $(SPOT):	libspotter.a $(SPOT_O) $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lspotter -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
-
-.c.o:
-		$(CC) -c $(CFLAGS) $<
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lspotter -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
