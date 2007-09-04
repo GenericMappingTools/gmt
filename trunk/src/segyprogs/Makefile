@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.18 2007-06-29 18:40:30 remko Exp $
+#	$Id: Makefile,v 1.19 2007-09-04 15:22:27 remko Exp $
 #
 # makefile for segyprogs directory
 #
@@ -16,40 +16,30 @@ ALLLIB	= -L.. -L$(libdir) -lgmt -lgmtps -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
 SEGYPLOT_H	= segy_io.h segy.h segyreel.h
 SEGYPLOT_C	= pssegyz.c pssegy.c segy2grd.c
 
-SEGYPLOT_O	= ${SEGYPLOT_C:.c=.o}
-
-SEGYPLOT		= ${SEGYPLOT_C:.c=}
+SEGYPLOT_O	= $(SEGYPLOT_C:.c=.o)
+SEGYPLOT	= $(SEGYPLOT_C:.c=$(EXE))
 
 #---------------------------------------------------------------
 
 all:			$(SEGYPLOT) 
 
 install:		all
-			for i in $(SEGYPLOT); do \
-				$(INSTALL) $$i$(EXE) $(bindir); \
-			done
+			$(INSTALL) $(SEGYPLOT) $(bindir)
 
 uninstall:	
 			for i in $(SEGYPLOT); do \
-				\rm -f $(bindir)/$$i$(EXE); \
+				\rm -f $(bindir)/$$i; \
 			done
 
 clean:
-			\rm -f *.o *.ps
-			for i in $(SEGYPLOT); do \
-				\rm -f $$i$(EXE); \
-			done
+			\rm -f *.o *.ps $(SEGYPLOT)
 
 spotless:		clean
 			\rm -f *.a
 
-segy_io.o:		$(SEGYPLOT_H) segy_io.c
-			$(CC) -c $(CFLAGS) segy_io.c
+segy_io.o:		$(SEGYPLOT_H)
 
 $(SEGYPLOT):		$(SEGYPLOT_O) segy_io.o $(GMTLIB)
-			$(CC) $(CFLAGS) segy_io.o $@.o -o $@ $(ALLLIB) $(LDFLAGS)
+			$(CC) $(LDFLAGS) segy_io.o $(@:.exe=).o -o $@ $(ALLLIB)
 
 $(SEGYPLOT_O):		$(GMT_H) $(PS_H)
-
-.c.o:
-			$(CC) -c $(CFLAGS) $<

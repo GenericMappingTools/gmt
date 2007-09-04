@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.25 2007-06-29 18:40:30 remko Exp $
+#	$Id: Makefile,v 1.26 2007-09-04 15:22:27 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -14,63 +14,46 @@ ALLLIB	= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl -L$(
 
 XSYSTEM_H	= x2sys.h
 XSYSTEM_C	= x2sys_init.c x2sys_put.c x2sys_get.c x2sys_binlist.c x2sys_datalist.c x2sys_cross.c
-
-XSYSTEM_O	= ${XSYSTEM_C:.c=.o}
-
-XSYSTEM		= ${XSYSTEM_C:.c=}
+XSYSTEM_O	= $(XSYSTEM_C:.c=.o)
+XSYSTEM		= $(XSYSTEM_C:.c=$(EXE))
 
 #---------------------------------------------------------------
 
 all:			$(XSYSTEM) libx2sys.a
+
+$(XSYSTEM_O):		$(GMT_H) $(XSYSTEM_H)
 
 libx2sys.a:		x2sys.o
 			$(AR) cvr libx2sys.a $?
 			$(RANLIB) libx2sys.a
 
 install:		all
-			for i in $(XSYSTEM); do \
-				$(INSTALL) $$i$(EXE) $(bindir); \
-			done
-			if [ ! -d $(libdir) ]; then \
-				mkdir -p $(libdir); \
-			fi
+			$(INSTALL) $(XSYSTEM) $(bindir); \
 			if [ ! $(libdir) = $(srcdir) ]; then \
-				rm -f $(libdir)/libx2sys.*; \
 				$(INSTALL) -m 444 libx2sys.a $(libdir); \
 				if [ -f libx2sys.$(SL) ]; then \
 					$(INSTALL) -m 444 libx2sys.$(SL) $(libdir); \
 				fi; \
 			fi
-			if [ ! -d $(datadir)/x2sys ]; then \
-				mkdir -p $(datadir)/x2sys; \
-			fi
+			$(INSTALL) -d $(datadir)/x2sys
 			for i in *.def; do \
 				cp -f -p $$i $(datadir)/x2sys; \
 			done
 
 uninstall:	
 			for i in $(XSYSTEM); do \
-				\rm -f $(bindir)/$$i$(EXE); \
+				\rm -f $(bindir)/$$i; \
 			done
 			if [ ! $(libdir) = $(srcdir) ]; then \
-				\rm -f $(libdir)/libx2sys.a; \
-				if [ -f libx2sys.$(SL) ]; then \
-					\rm -f $(libdir)/libx2sys.$(SL); \
-				fi; \
+				\rm -f $(libdir)/libx2sys.a $(libdir)/libx2sys.$(SL); \
 			fi
 			rm -rf $(datadir)/x2sys
 
 clean:
-			\rm -f *.o
-			for i in $(XSYSTEM); do \
-				\rm -f $$i$(EXE); \
-			done
+			\rm -f *.o $(XSYSTEM)
 
 spotless:		clean
 			\rm -f *.a
 
 $(XSYSTEM):		$(XSYSTEM_O) libx2sys.a $(GMTLIB)
-			$(CC) $(CFLAGS) $@.o -o $@ -L. -lx2sys $(ALLLIB) $(LDFLAGS)
-
-.c.o:			$(XSYSTEM_H) $(GMT_H)
-			$(CC) -c $(CFLAGS) $<
+			$(CC) $(LDFLAGS) $(@:.exe=).o -o $@ -L. -lx2sys $(ALLLIB)

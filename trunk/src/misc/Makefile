@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.22 2007-06-29 18:40:30 remko Exp $
+#	$Id: Makefile,v 1.23 2007-09-04 15:22:27 remko Exp $
 #	makefile for misc directory
 #
 
@@ -20,49 +20,43 @@ MISCPS_C	= makepattern.c
 #       object file dependencies
 #-------------------------------------------------------------------------------
 
-MISC_O		= ${MISC_C:.c=.o}
-
-MISC		= ${MISC_C:.c=}
-
-MISCPS_O	= ${MISCPS_C:.c=.o}
-
-MISCPS		= ${MISCPS_C:.c=}
+MISC_O		= $(MISC_C:.c=.o)
+MISC		= $(MISC_C:.c=$(EXE))
+MISCPS_O	= $(MISCPS_C:.c=.o)
+MISCPS		= $(MISCPS_C:.c=$(EXE))
 
 all:            $(MISC) $(MISCPS)
 
 $(MISC_O):	$(GMT_H) $(MISC_H)
-
 $(MISCPS_O):	$(GMT_H) $(PS_H) $(MISC_H)
 
 #-------------------------------------------------------------------------------
 
 install:	all
-		for i in $(MISC); do \
-			$(INSTALL) $$i$(EXE) $(bindir); \
-		done
+		$(INSTALL) $(MISC) $(bindir)
 
 uninstall:
 		for i in $(MISC); do \
-			\rm -f $(bindir)/$$i$(EXE); \
+			\rm -f $(bindir)/$$i; \
 		done
 
 spotless:	clean
 
 clean:	
-		rm -f *.o
-		for i in $(MISC); do \
-			\rm -f $$i$(EXE); \
-		done
+		rm -f *.o $(MISC)
 
 #-------------------------------------------------------------------------------
 #       program dependencies
 #-------------------------------------------------------------------------------
 
-$(MISC):	$(MISC_O) $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+gmtdigitize$(EXE):	gmtdigitize.o
+gmtstitch$(EXE):	gmtstitch.o
+nc2xy$(EXE):		nc2xy.o
+psmegaplot$(EXE):	psmegaplot.o
+makepattern$(EXE):	makepattern.o
 
-$(MISCPS):	$(MISCPS_O) $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
+$(MISC):	$(GMTLIB)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
 
-.c.o:
-		$(CC) -c $(CFLAGS) $<
+$(MISCPS):	$(GMTLIB)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@

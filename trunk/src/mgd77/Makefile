@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.38 2007-06-11 01:20:34 remko Exp $
+#	$Id: Makefile,v 1.39 2007-09-04 15:22:27 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -39,12 +39,9 @@ LIB_O	= $(LIB_C:.c=.o)
 #-------------------------------------------------------------------------------
 
 MGD77_O		= $(MGD77_C:.c=.o)
-
-MGD77		= $(MGD77_C:.c=)
-
+MGD77		= $(MGD77_C:.c=$(EXE))
 MGD77PS_O	= $(MGD77PS_C:.c=.o)
-
-MGD77PS		= $(MGD77PS_C:.c=)
+MGD77PS		= $(MGD77PS_C:.c=$(EXE))
 
 all:		libmgd77.a $(MGD77) $(MGD77PS)
 $(MGD77_O):	$(MGD77_H) $(GMT_H)
@@ -54,19 +51,9 @@ $(LIB_O):	$(LIB_H)
 #-------------------------------------------------------------------------------
 
 install:	all
-		for i in $(MGD77) $(MGD77PS); do \
-			$(INSTALL) $$i$(EXE) $(bindir); \
-		done
-		if [ ! -d $(includedir) ]; then \
-			mkdir -p $(includedir); \
-		fi
+		$(INSTALL) $(MGD77) $(MGD77PS) $(bindir)
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			for i in $(LIB_H); do \
-				$(INSTALL) -m 444 $$i $(includedir); \
-			done; \
-		fi
-		if [ ! -d $(libdir) ]; then \
-			mkdir -p $(libdir); \
+			$(INSTALL) -m 444 $(LIB_H) $(includedir); \
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -m 444 libmgd77.a $(libdir); \
@@ -77,7 +64,7 @@ install:	all
 
 uninstall:
 		for i in $(MGD77) $(MGD77PS); do \
-			\rm -f $(bindir)/$$i$(EXE); \
+			\rm -f $(bindir)/$$i; \
 		done
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			for i in $(LIB_H); do \
@@ -85,17 +72,11 @@ uninstall:
 			done; \
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			\rm -f $(libdir)/libmgd77.a; \
-			if [ -f libmgd77.$(SL) ]; then \
-				\rm -f $(libdir)/libmgd77.$(SL); \
-			fi; \
+			\rm -f $(libdir)/libmgd77.a $(libdir)/libmgd77.$(SL); \
 		fi
 
 clean:
-		rm -f *.o
-		for i in $(MGD77) $(MGD77PS); do \
-			rm -f $$i$(EXE); \
-		done
+		rm -f *.o $(MGD77) $(MGD77PS)
 
 spotless:	clean
 		rm -f *.a
@@ -115,13 +96,10 @@ libmgd77.a:	$(LIB_O)
 #-------------------------------------------------------------------------------
 
 $(MGD77):	$(MGD77_O) libmgd77.a $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lmgd77 -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
 
 $(MGD77PS):	$(MGD77PS_O) libmgd77.a $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lmgd77 -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
-
-.c.o:
-		$(CC) -c $(CFLAGS) $<
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 
 #---------------------------- CVS GURU EXTENSIONS-------------------------------
 include $(MAKEGURU)

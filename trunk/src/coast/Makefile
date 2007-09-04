@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.30 2007-08-28 18:40:26 guru Exp $
+#	$Id: Makefile,v 1.31 2007-09-04 15:22:27 remko Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -30,6 +30,7 @@ include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
+CFLAGS	+= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
 CDF	= -L$(NETCDF)/lib -lnetcdf
 PREV_VERSION = 4.2
 VERSION = 4.3
@@ -69,9 +70,9 @@ COAST_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c swap.c \
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-COAST_O	= ${COAST_C:.c=.o}
+COAST_O	= $(COAST_C:.c=.o)
 
-COAST	= ${COAST_C:.c=}
+COAST	= $(COAST_C:.c=$(EXE))
 
 all:		libcoast.a $(COAST)
 
@@ -81,20 +82,15 @@ $(COAST_O):	$(GMT_H) $(COAST_H)
 # Software targets:
 
 install:	all
-		for i in $(COAST); do \
-			$(INSTALL) $$i$(EXE) $(bindir); \
-		done
+		$(INSTALL) $(COAST) $(bindir)
 
 uninstall:
 		for i in $(COAST); do \
-			\rm -f $(bindir)/$$i$(EXE); \
+			\rm -f $(bindir)/$$i$; \
 		done
 
 clean:
-		rm -f *.o
-		for i in $(COAST); do \
-			rm -f $$i$(EXE); \
-		done
+		rm -f *.o $(COAST)
 
 spotless:	clean
 		rm -f *.a
@@ -163,7 +159,4 @@ coast.o:	$(COAST_H)
 #-------------------------------------------------------------------------------
 
 $(COAST):	libcoast.a $(COAST_O) $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $@.o -L. -lcoast -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
-
-.c.o:
-		$(CC) -c $(CFLAGS) -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y` $<
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lcoast -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
