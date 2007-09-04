@@ -1,9 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.61 2007-08-29 19:39:15 guru Exp $
+	$Id: ChangeLog,v 1.62 2007-09-04 15:23:16 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-04	remko
+	* All makefiles:	Improved support for .exe extensions.
+				No longer compiles everything when one source changes.
+				Installation of manpages moved to src/makefile.
+				Closer to getting rid of gurumake.
+	* src/explain_{fill,pen,color}.txt:	Made sections into subsections.
+
 2007-08-29	pwessel
-	* pshistogram.c		-C for center bins now -F (-C still works for backwardness)
+	* pshistogram.c:	-C for center bins now -F (-C still works for backwardness)
 				Now takes -C<cpt> to color bars based on mid x-value.
 	* gmt_support.c:	Enhancement: CPT files may now be setup for categorical data
 				e.g, records are <key>	<fill> <label>, where <key> is an
@@ -13,7 +20,7 @@
 2007-08-28	pwessel
 	* mapproject.c:		Enhancement: -G-[unit] will calculate incremental distance rather
 				than the default cumulative distances.
-	* gshhs/*		Can now deal with the updated GSHHS+WDBII data base (now with
+	* gshhs/*:		Can now deal with the updated GSHHS+WDBII data base (now with
 				rivers and borders). Added man pages for the three programs.
 	* rivers:		Added double-lined rivers to river database to improve rendering
 				of major permanent rivers.
@@ -28,7 +35,7 @@
 2007-08-23	remko
 	* ex??/job??.sh:	Properly identified GMT programs used in example scripts.
 	* src/*.txt:		Moved explanation of pens, fill and color to separate sections.
-	* src/explain_{fill,color}.txt:	Newly intorduced sections.
+	* src/explain_{fill,color}.txt:	Newly introduced sections.
 	* src/explain_-G*.txt:	Made superfluous. Removed.
 
 2007-08-22	pwessel
