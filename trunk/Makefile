@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.41 2007-06-29 18:40:30 remko Exp $
+#	$Id: Makefile,v 1.42 2007-09-04 15:09:44 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -86,7 +86,7 @@ update:
 gmt:		gmtmacros
 		cd src ; $(MAKE) all
 
-install-gmt:	gmt
+install-gmt:	gmtmacros
 		cd src ; $(MAKE) install
 
 uninstall-gmt:
@@ -96,9 +96,7 @@ suppl:		gmtmacros
 		cd src ; $(MAKE) libs
 		$(MAKE) TARGET=all insuppl
 
-suppl-install:	install-suppl
-
-install-suppl:	suppl
+install-suppl suppl-install:	gmtmacros
 		$(MAKE) TARGET=install insuppl
 
 gmtmacros:
@@ -120,35 +118,15 @@ install-data:
 
 uninstall-data:
 		if [ ! $(rootdir)/share = $(datadir) ]; then \
-			\rm -r -f $(datadir); \
+			\rm -rf $(datadir); \
 		else \
 			echo "Install share directory the same as distribution share directory - nothing removed"; \
 		fi
 
-install-man:
-		@echo "Installing GMT manpages in $(mandir)/man$(mansection)"
-		@mkdir -p $(mandir)/man$(mansection)
-		@set -e ; for d in . $(SUPPL_M); do \
-			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ] ; then \
-				( cd src/$$d; \
-				for f in *.man; do \
-					sed "s/GMTMANSECTION/$(mansection)/g" $$f > $(mandir)/man$(mansection)/`basename $$f .man`.l; \
-				done ); \
-			fi; \
-		done
-
-uninstall-man:
-		@echo "Removing GMT manpages from $(mandir)/man$(mansection)"; \
-		rm -r -f $(mandir)/man$(mansection)
-
+install-man uninstall-man:
+		cd src ; $(MAKE) $@
 
 install-www:
-		@set -e ; for d in $(SUPPL_M); do \
-			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ] ; then \
-				mkdir -p $(rootdir)/www/gmt/doc/html; \
-				cp src/$$d/*.html $(rootdir)/www/gmt/doc/html; \
-			fi; \
-		done
 		@if [ ! $(rootdir)/www = $(wwwdir) ]; then \
 			mkdir -p $(wwwdir); \
 			cp -r www/gmt $(wwwdir); \
@@ -158,7 +136,7 @@ install-www:
 
 uninstall-www:
 		if [ ! $(rootdir)/www = $(wwwdir) ]; then \
-			rm -r -f $(wwwdir)/gmt; \
+			rm -rf $(wwwdir)/gmt; \
 		else \
 			echo "Install www directory the same as distribution www directory - nothing deleted"; \
 		fi
