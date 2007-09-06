@@ -3,7 +3,7 @@
 .SH NAME
 sample1d \- Resampling of 1-D data sets
 .SH SYNOPSIS
-\fBsample1d\fP \fIinfile\fP [ OPT(Fl)|\fBa\fP|\fBc\fP ] [ GMT_H_OPT ] [ OPT(I)\fIxinc\fP ] 
+\fBsample1d\fP \fIinfile\fP [ OPT(Fl)|\fBa\fP|\fBc\fP|\fBn\fP ] [ GMT_H_OPT ] [ OPT(I)\fIxinc\fP ] 
 [ GMT_M_OPT ] [ OPT(N)\fIknotfile\fP ] [ OPT(S)\fIxstart\fP ] [ OPT(T)\fIx_col\fP] 
 [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
@@ -21,7 +21,8 @@ If no file is provided, \fBsample1d\fP reads from standard input.
 No space between the option flag and the associated arguments.
 .TP
 .B \-F
-Choose from \fBl\fP (Linear), \fBa\fP (Akima spline), and \fBc\fP (natural cubic spline) [Default is \fB\-Fa\fP].
+Choose from \fBl\fP (Linear), \fBa\fP (Akima spline), \fBc\fP (natural cubic spline),
+and \fBn\fP (no interpolation: nearest point) [Default is \fB\-Fa\fP].
 You may change the default interpolant; see \fBINTERPOLANT\fP in your \.gmtdefaults4 file.
 #include "explain_-H.txt"
 .TP
