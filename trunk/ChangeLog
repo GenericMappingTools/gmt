@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.62 2007-09-04 15:23:16 remko Exp $
+	$Id: ChangeLog,v 1.63 2007-09-06 00:39:26 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-04	pwessel
+	* gshhs.gshhstograss.c:	Removed use of getopt so even the lamest systems can compile it.
+				Also made in possible to compile under Windows.
+				
 2007-09-04	remko
 	* All makefiles:	Improved support for .exe extensions.
 				No longer compiles everything when one source changes.

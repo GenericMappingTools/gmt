@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.14 2007-03-31 17:43:21 pwessel Exp $
+/*	$Id: gshhstograss.c,v 1.15 2007-09-06 00:39:26 guru Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -15,25 +15,32 @@
  * VERSION:	1.4 05-SEP-2000: Swab done automatically
  *		1.5 11-SEP-2004: Updated to work with GSHHS database v1.3
  *		1.6 02-MAY-2006: Updated to work with GSHHS database v1.4
+ *			05-SEP-2007: Removed reliance on getop and made changes
+ *				     so it will compile under Windows
  */
 
 #include "gshhs.h"
 #include <unistd.h>
-#ifndef __INTERIX
-#include <getopt.h>
-#endif
 #include <string.h>
 #include <sys/types.h>
+#ifdef WIN32
+struct passwd {
+        char    *pw_name;
+        int     pw_uid;
+        int     pw_gid;
+        char    *pw_dir;
+        char    *pw_shell;
+};
+struct passwd *getpwuid (const int uid);
+int getuid (void);
+#else
 #include <pwd.h>
+#endif
 #include <time.h>
 
-int main (argc, argv)
-int     argc;
-char **argv;
-
-#define ARGS  "i:x:X:y:Y:"
-
+int main (int argc, char **argv)
 {
+	int i = 1;
 	double w, e, s, n, area, lon, lat;
 	double minx = -360., maxx = 360., miny = -90., maxy = 90.;
 	char source, *progname, *dataname = NULL, dig_name[24], att_name[24], cats_name[24];
@@ -42,7 +49,7 @@ char **argv;
 	int     k, max = 270000000, flip, n_read, level, version, greenwich, src;
 	struct  POINT p;
 	struct GSHHS h;
-	int c, max_id=0;
+	int max_id=0;
 	time_t tloc;
 	struct passwd *pw;
 
@@ -58,38 +65,45 @@ char **argv;
 		exit(-1);
 	}
 
-	while ((c = getopt(argc, argv, ARGS)) != -1)
-	    switch (c) {
-		case 'i':
-			dataname= optarg;
-			break;
-		case 'x':
-			minx= atof(optarg);
-			break;
-		case 'X':
-			maxx= atof(optarg);
-			break;
-		case 'y':
-			miny= atof(optarg);
-			break;
-		case 'Y':
-			maxy= atof(optarg);
-			break;
-		case '?':
-		    fprintf (stderr, "%s:  Bad option %c.\n", progname, c);
-		    exit(-2);
-	    }
+	while (i < argc) {
+		if (argv[i][0] != '-') {
+			fprintf (stderr, "%s:  Unrecognized argument %s.\n", progname, argv[i]);
+			exit (EXIT_FAILURE);
+		}
+		switch (argv[i][1]) {
+			case 'i':
+				dataname = argv[++i];
+				break;
+			case 'x':
+				minx = atof (argv[++i]);
+				break;
+			case 'X':
+				maxx = atof (argv[++i]);
+				break;
+			case 'y':
+				miny = atof (argv[++i]);
+				break;
+			case 'Y':
+				maxy = atof(argv[++i]);
+				break;
+			default:
+		   		fprintf (stderr, "%s:  Bad option %c.\n", progname, argv[i][1]);
+				exit (EXIT_FAILURE);
+	   	}
+		i++;
+	}
+		
 	if ((fp = fopen (dataname, "rb")) == NULL ) {
 		fprintf (stderr, "%s:  Could not find file %s.\n", progname, dataname);
-		exit(-1);
+		exit (EXIT_FAILURE);
 	}
 	if( minx > maxx ){
 		fprintf (stderr, "%s:  minx %f > maxx %f.\n", progname, minx, maxx);
-		exit(-2);
+		exit (EXIT_FAILURE);
 	}
 	if( miny > maxy ){
 		fprintf (stderr, "%s:  miny %f > maxy %f.\n", progname, miny, maxy);
-		exit(-2);
+		exit (EXIT_FAILURE);
 	}
 
 /* now change the final . in the datafilename to a null ie a string terminator */
@@ -202,3 +216,18 @@ char **argv;
 
 	exit (EXIT_SUCCESS);
 }
+
+#ifdef WIN32
+
+/* Make dummy functions so gshhstograss will link under WIN32 */
+
+struct passwd *getpwuid (const int uid)
+{
+	return ((struct passwd *)NULL);
+}
+
+int getuid (void) {
+	return (0);
+}
+
+#endif

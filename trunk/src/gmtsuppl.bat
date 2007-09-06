@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.33 2007-04-04 23:17:43 pwessel Exp $
+REM	$Id: gmtsuppl.bat,v 1.34 2007-09-06 00:40:13 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
@@ -23,7 +23,7 @@ REM the GMT 4 supplemental programs under WIN32 using
 REM Microsoft Visual C/C++ tools.  Not yet set up for mex.
 REM Note: Optimizing all at /O2 except meca which seems unstable
 REM
-REM Author: Paul Wessel, 10-MAY-2006
+REM Author: Paul Wessel, 05-SEPT-2007
 REM ----------------------------------------------------
 REM
 REM How to make and install GMT under Win95/98/NT/2K/XP:
@@ -71,8 +71,7 @@ REM ----------------------------------------------------
 cd gshhs
 CL %COPT% gshhs.c %GMTLIB%
 CL %COPT% gshhs_dp.c %GMTLIB%
-REM CL %COPT% gshhstograss.c %GMTLIB%
-ECHO gshhstograss.c not ported to Windows
+CL %COPT% gshhstograss.c %GMTLIB%
 del *.obj
 move *.exe %BINDIR%
 cd ..
