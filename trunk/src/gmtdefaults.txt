@@ -331,8 +331,8 @@ day.  Either template must be consistent, e.g., you cannot specify months if you
 years.  Examples are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].
 .TP
 .B INTERPOLANT
-Determines if linear (linear), Akima's spline (akima), or natural cubic spline (cubic) should\"'
-be used for 1-D interpolations in various programs [akima].
+Determines if linear (linear), Akima's spline (akima), natural cubic spline (cubic) or\"'
+no interpolation (none) should be used for 1-D interpolations in various programs [akima].
 .TP
 .B IO_HEADER
 (\fB* \-H\fP) Specifies whether input/output ASCII files have header record(s) or not  [FALSE].
