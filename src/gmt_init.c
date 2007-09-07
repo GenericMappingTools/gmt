@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.296 2007-08-22 18:57:35 guru Exp $
+ *	$Id: gmt_init.c,v 1.297 2007-09-07 00:02:50 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1807,6 +1807,8 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.interpolant = 1;
 			else if (!strcmp (lower_value, "cubic"))
 				gmtdefs.interpolant = 2;
+			else if (!strcmp (lower_value, "none"))
+				gmtdefs.interpolant = 3;
 			else
 				error = TRUE;
 			break;
@@ -2503,6 +2505,8 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "akima\n");
 	else if (gmtdefs.interpolant == 2)
 		fprintf (fp, "cubic\n");
+	else if (gmtdefs.interpolant == 3)
+		fprintf (fp, "none\n");
 	fprintf (fp, "LINE_STEP		= %g%c\n", gmtdefs.line_step * s, u);
 	fprintf (fp, "VECTOR_SHAPE		= %g\n", gmtdefs.vector_shape);
 	(gmtdefs.verbose) ? fprintf (fp, "VERBOSE			= TRUE\n") : fprintf (fp, "VERBOSE			= FALSE\n");
@@ -4318,53 +4322,48 @@ int GMT_parse_J_option (char *args)
 			project_info.gave_map_width = width_given;
 		case 'g':               /* Orthographic or General Perspective */
      
-			project_info.g_outside = 0;
 			project_info.g_debug = 0;
+			project_info.g_box = project_info.g_outside = project_info.g_longlat_set = project_info.g_sphere = project_info.g_ellipsoid = project_info.g_radius = project_info.g_auto_twist = FALSE;
 
 			if( n_slashes >= 5 ) {
-			/* Definitly General Perspective */
-				int G_set, scale_set;
+			/* Definitely General Perspective */
+				BOOLEAN G_set, scale_set;
 				int nlast, m, nlen;
 				int ip_arg, ip;
 
 				char txt_arr[11][GMT_LONG_TEXT];
 
-				G_set = scale_set = project_info.g_longlat_set = 0;
+				G_set = scale_set = project_info.g_longlat_set = FALSE;
 
-				if( type == 'G' ) {
-					G_set = 1;
-				}
-
-				if( k >= 0 ) {
-					scale_set = 1;
-				}
+				if (type == 'G') G_set = TRUE;
+				if (k >= 0) scale_set = TRUE;
 
 				/* force no genper debug as default */
 				project_info.g_debug = 0;
 
 				/* force spherical as default */
-				project_info.g_sphere = 1;
+				project_info.g_sphere = TRUE;
 
-				/* set radius flag to 0 */
-				project_info.g_radius = 0;
+				/* set radius flag to FALSE */
+				project_info.g_radius = FALSE;
 				ip_arg = 0;
 
-				for( ip = 0 ; ip < 2 ; ip++) {
+				for (ip = 0 ; ip < 2 ; ip++) {
 					if( args[ip] == 'd' ) {         /* standard genper debugging */
 						project_info.g_debug = 1; 
-						ip_arg ++;
+						ip_arg++;
 					} else if( args[ip] == 'D' ) {  /* extensive genper debugging */
 						project_info.g_debug = 2;
-						ip_arg ++;
+						ip_arg++;
 					} else if( args[ip] == 'X' ) {  /* extreme genper debugging */
 						project_info.g_debug = 3;
-						ip_arg ++;
+						ip_arg++;
 					} else if( args[ip] == 's' ) {
-						project_info.g_sphere = 1;
-						ip_arg ++;
+						project_info.g_sphere = TRUE;
+						ip_arg++;
 					} else if( args[ip] == 'e' ) {
-						project_info.g_sphere = 0;
-						ip_arg ++;
+						project_info.g_sphere = FALSE;
+						ip_arg++;
 					}
 				}
 
@@ -4419,7 +4418,7 @@ int GMT_parse_J_option (char *args)
 				/* g_alt    project_info.pars[4] = atof(txt_c); */
 		                nlen = strlen(&(txt_arr[2][0]));
 		                if( txt_arr[2][nlen-1] == 'r' ) {
-					project_info.g_radius = 1;
+					project_info.g_radius = TRUE;
 					txt_arr[2][nlen-1] = 0;
 		                }
 				error += GMT_verify_expectations (GMT_IS_FLOAT, GMT_scanf (&(txt_arr[2][0]), GMT_IS_FLOAT, &project_info.pars[4]), &(txt_arr[2][0]));
@@ -4428,7 +4427,7 @@ int GMT_parse_J_option (char *args)
 				/* g_az    project_info.pars[5] = atof(txt_d); */
 				nlen = strlen(&(txt_arr[3][0]));
 				if( txt_arr[3][nlen-1] == 'l' || txt_arr[3][nlen-1] == 'L' ) {
-					project_info.g_longlat_set = 1;
+					project_info.g_longlat_set = TRUE;
 					txt_arr[3][nlen-1] = 0;
 				}
 				error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[3][0]), GMT_IS_GEO, &project_info.pars[5]), &(txt_arr[3][0]));
@@ -4437,7 +4436,7 @@ int GMT_parse_J_option (char *args)
 				/*g_tilt    project_info.pars[6] = atof(txt_e); */
 				nlen = strlen(&(txt_arr[4][0]));
 				if( txt_arr[4][nlen-1] == 'l' || txt_arr[4][nlen-1] == 'L' ) {
-					project_info.g_longlat_set = 1;
+					project_info.g_longlat_set = TRUE;
 					txt_arr[4][nlen-1] = 0;
 				}
 				error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[4][0]), GMT_IS_GEO, &project_info.pars[6]), &(txt_arr[4][0]));
@@ -4447,7 +4446,7 @@ int GMT_parse_J_option (char *args)
 					/*g_twist   project_info.pars[7] = atof(txt_f); */
 			                    nlen = strlen(&(txt_arr[5][0]));
 			                    if( txt_arr[5][nlen-1] == 'n' ) {
-			                        project_info.g_auto_twist = 1;
+			                        project_info.g_auto_twist = TRUE;
 			                        txt_arr[5][nlen-1] = 0;
 			                    }
 					error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[5][0]), GMT_IS_GEO, &project_info.pars[7]), &(txt_arr[5][0]));
