@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.297 2007-09-07 00:02:50 remko Exp $
+ *	$Id: gmt_init.c,v 1.298 2007-09-07 19:40:25 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2556,7 +2556,7 @@ int GMT_getdefpath (int get, char **P)
 
 	if (get == 0) {	/* Must use GMT system defaults via gmt.conf */
 
-		GMT_getsharepath (CNULL, "gmt", ".conf", line);
+		GMT_getsharepath ("conf", "gmt", ".conf", line);
 		if ((fp = fopen (line, "r")) == NULL) {
 			fprintf (stderr, "GMT Fatal Error: Cannot open/find GMT configuration file %s\n", line);
 			GMT_exit (EXIT_FAILURE);
@@ -2577,7 +2577,7 @@ int GMT_getdefpath (int get, char **P)
 		id = get;
 
 	id--;	/* Get 0 or 1 */
-	GMT_getsharepath (CNULL, ".gmtdefaults_", suffix[id], line);
+	GMT_getsharepath ("conf", ".gmtdefaults_", suffix[id], line);
 
 	path = (char *) GMT_memory (VNULL, (size_t)(strlen (line) + 1), sizeof (char), GMT_program);
 
@@ -2773,7 +2773,7 @@ int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 	char line[BUFSIZ], media[GMT_TEXT_LEN];
 	FILE *fp;
 
-	GMT_getsharepath (CNULL, "gmtmedia", ".d", line);
+	GMT_getsharepath ("conf", "gmtmedia", ".d", line);
 	if ((fp = fopen (line, "r")) == NULL) return (0);
 
 	n_alloc = GMT_TINY_CHUNK;
