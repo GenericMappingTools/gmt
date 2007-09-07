@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.51 2007-08-21 19:37:39 guru Exp $
+ *	$Id: gmt_project.h,v 1.52 2007-09-07 00:17:01 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -298,13 +298,7 @@ struct GMT_MAP_PROJECTIONS {
         double g_ymin, g_ymax;
 
         int g_debug;
-        int g_box;
-        int g_outside;
-        int g_longlat_set;
-        int g_sphere;
-        int g_ellipsoid;
-	int g_radius;
-	int g_auto_twist;
+        BOOLEAN g_box, g_outside, g_longlat_set, g_sphere, g_ellipsoid, g_radius, g_auto_twist;
 #endif  /* end of _GENPER */
 
 	/* Gnomonic horizon */

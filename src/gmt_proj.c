@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.19 2007-08-11 04:22:07 guru Exp $
+ *	$Id: gmt_proj.c,v 1.20 2007-09-07 00:17:01 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -280,7 +280,6 @@ void GMT_cyleq (double lon, double lat, double *x, double *y)
 
 void GMT_icyleq (double *lon, double *lat, double x, double y)
 {
-
 	/* Convert Cylindrical equal-area x/y to lon/lat */
 
 	if (project_info.GMT_convert_latitudes) {	/* Gotta fudge abit */
@@ -982,8 +981,7 @@ void GMT_ilambeq (double *lon, double *lat, double x, double y)
 
 /* Set up General Perspective projection */
 
-void
-genper_to_xtyt( double angle, double x, double y, double offset, double *xt, double *yt)
+void genper_to_xtyt( double angle, double x, double y, double offset, double *xt, double *yt)
 {
 
   double tilt, sin_tilt, cos_tilt;
@@ -1052,8 +1050,7 @@ genper_to_xtyt( double angle, double x, double y, double offset, double *xt, dou
 
 /* conversion from geodetic latitude to geocentric latitude */
 
-double
-genper_getgeocentric( double phi, double h)
+double genper_getgeocentric( double phi, double h)
 {
   double R, e2, phig, sphi, cphi, N1;
 
@@ -1070,8 +1067,7 @@ genper_getgeocentric( double phi, double h)
   return phig;
 }
 
-void 
-genper_toxy( double lat, double lon, double h, double *x, double *y)
+void genper_toxy( double lat, double lon, double h, double *x, double *y)
 {
   
   double angle, rmax;
@@ -1143,8 +1139,7 @@ genper_toxy( double lat, double lon, double h, double *x, double *y)
   }
 
 }
-void
-genper_tolatlong( double x, double y, double h, double *lat, double *lon)
+void genper_tolatlong( double x, double y, double h, double *lat, double *lon)
 {
   double P, H;
   double B, D, BLH, DG, BJ, HJ, DHJ, LH2;
@@ -1360,8 +1355,7 @@ genper_tolatlong( double x, double y, double h, double *lat, double *lon)
   return;
 }
 
-void
-genper_setup( double h0, double altitude, double lat, double lon0)
+void genper_setup( double h0, double altitude, double lat, double lon0)
 {
 
 /* if ellipsoid lat0 is geodetic latitude and must convert to geocentric latitude */
@@ -1707,9 +1701,7 @@ void GMT_vgenper( double lon0, double lat0,
     }
   }
 
-  if( tilt < 0.0 ) {
-    tilt = d_asin( project_info.g_P_inverse )*R2D;
-  }
+  if( tilt < 0.0 ) tilt = d_asin( project_info.g_P_inverse )*R2D;
 
   project_info.g_tilt = tilt;
   project_info.g_sin_tilt = sin_tilt = sin(tilt * D2R);
@@ -1720,18 +1712,13 @@ void GMT_vgenper( double lon0, double lat0,
   project_info.g_cos_twist = cos_twist = cos(twist * D2R);
 
   if( fabs(width) < GMT_SMALL ) {
-   project_info.g_box = 0;
+   project_info.g_box = FALSE;
   } else {
-   project_info.g_box = 1;
+   project_info.g_box = TRUE;
   }
 
-  if( width != 0.0 && height == 0 ) {
-    height = width;
-  }
-
-  if( height != 0.0 && width == 0 ) {
-    width = height;
-  }
+  if( width != 0.0 && height == 0 ) height = width;
+  if( height != 0.0 && width == 0 ) width = height;
   project_info.g_width = width/2.0;
   project_info.g_height = height/2.0;
 
@@ -1745,9 +1732,7 @@ void GMT_vgenper( double lon0, double lat0,
   rmax_max = Req*sqrt((P-1.0)/(P+1.0));
   rmax_at_lat0 = Rlat0*sqrt((P-1.0)/(P+1.0));
 
-  if(ellipsoid ) {
-    rmax = rmax_at_lat0;
-  }
+  if(ellipsoid ) rmax = rmax_at_lat0;
     
   kp = R*(P - 1.0) / (P - P_inv);
 
@@ -2053,14 +2038,14 @@ void GMT_genper (double lon, double lat, double *xt, double *yt)
   cosc = sinlat0 * sin_lat + coslat0 * cos_lat * cos_dlon;
   sinc = d_sqrt( 1.0 - cosc*cosc);
 
-  project_info.g_outside = 0;
+  project_info.g_outside = FALSE;
 
   angle = M_PI - dlon;
   if( cosc < P_inv ) {
 
 /* over the horizon */
 
-    project_info.g_outside = 1;
+    project_info.g_outside = TRUE;
 
     if( project_info.polar ) {
       angle = M_PI - dlon;
@@ -2183,7 +2168,7 @@ void GMT_igenper (double *lon, double *lat, double xt, double yt)
 
   rho = hypot(x, y);
 
-  project_info.g_outside = 0;
+  project_info.g_outside = FALSE;
 
   if( rho < GMT_SMALL ) {
     *lat = lat0;
@@ -2195,7 +2180,7 @@ void GMT_igenper (double *lon, double *lat, double xt, double yt)
     x *= rmax/rho;
     y *= rmax/rho;
     rho = rmax;
-    project_info.g_outside = 1;
+    project_info.g_outside = TRUE;
   }
 
   con = P - 1.0;
