@@ -1,9 +1,20 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.63 2007-09-06 00:39:26 guru Exp $
+	$Id: ChangeLog,v 1.64 2007-09-07 00:19:14 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-07	remko
+	* sample1d.c:		Added -Fn for no interpolation (return value of neareast point).
+	* gmtdefaults.txt, gmt_init.c:	Added support for INTERPOLANT=none (no interpolation).
+	* gmt_support.[ch]:	Added interpolant=3 (no interpolation) in GMT_intpol;
+				Added routine GMT_weighted_average.
+	* gmt_map.c:		Renamed genper_grd_forward to GMT_genper_forward, and removed some bugs.
+				Replaced some common code by GMT_weighted_average.
+				Added GMT_default_forward for default grid rendering (with smoothing).
+				Added GMT_tiles_forward for grid rendering without interpolation.
+	* gmt_proj.c, gmt_project.h:	Made some GENPER stuff more aesthetic.
+
 2007-09-04	pwessel
-	* gshhs.gshhstograss.c:	Removed use of getopt so even the lamest systems can compile it.
+	* gshhs/gshhstograss.c:	Removed use of getopt so even the lamest systems can compile it.
 				Also made in possible to compile under Windows.
 				
 2007-09-04	remko
