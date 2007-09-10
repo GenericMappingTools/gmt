@@ -1,7 +1,7 @@
-# $Id: GMT.spec,v 1.25 2007-01-29 17:08:33 pwessel Exp $
+# $Id: GMT.spec,v 1.26 2007-09-10 19:02:03 guru Exp $
 # spec file for package GMT (Version 4)
 #
-# Copyright (c) 2004-2006 Dirk Stoecker <gmt@dstoecker.de>.
+# Copyright (c) 2004-2007 Dirk Stoecker <gmt@dstoecker.de>.
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 #
@@ -190,6 +190,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %{prefix}/bin/*
 %{prefix}/share/cpt/
+%{prefix}/share/conf/
 %{prefix}/share/custom/
 %{prefix}/share/dbase/
 %{prefix}/share/mgd77/
