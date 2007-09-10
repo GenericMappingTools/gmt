@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: copyright.sh,v 1.4 2005-07-12 04:13:24 pwessel Exp $
+#	$Id: copyright.sh,v 1.5 2007-09-10 19:56:25 guru Exp $
 
 # Tool that replaces the 1991-$1 Copyright string with 1991-$2 where
 # $1 and $2 are the two year arguments passed to the script.
@@ -17,7 +17,11 @@ fi
 
 last=$1
 this=$2
-cat guru/GMT_all_files.lis guru/GMT_special.lis > $$
+cat guru/GMT_progs_files_ascii.lis > $$
+cat << EOF >> $$
+src/gmtmath.func
+src/grdmath.func
+EOF
 ls doc/*.tex >> $$
 
 n=`cat $$ | wc -l`
