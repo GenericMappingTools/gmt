@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.29 2007-05-24 15:35:57 remko Exp $
+ *	$Id: gmt_shore.c,v 1.30 2007-09-10 17:56:46 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -963,7 +963,7 @@ char *GMT_shore_getpathname (char *stem, char *path) {
 	 
 	/* 1. First check for coastline.conf */
 	
-	if (GMT_getsharepath ("coast", "coastline", ".conf", path)) {
+	if (GMT_getsharepath ("conf", "coastline", ".conf", path) || GMT_getsharepath ("coast", "coastline", ".conf", path)) {
 
 		/* We get here if coastline.conf exists - search among its directories for the named file */
 

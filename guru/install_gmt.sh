@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.103 2007-07-04 07:05:30 guru Exp $
+#	$Id: install_gmt.sh,v 1.104 2007-09-10 17:56:46 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -481,7 +481,7 @@ Normally, all coastline files are installed in $GMT_share/coast.
 However, you can also place some of them in separate directories.
 These dirs must exist or you must have write permission to make them.
 If alternate directories are specified then a coastline.conf file will
-be kept in $GMT_share to contain the names of these directories.
+be kept in $GMT_share/conf to contain the names of these directories.
 NOTE:  Enter full pathname of directory were coastline files are to be stored.
 
 EOF
@@ -1145,9 +1145,9 @@ install_coast $GMT_get_high  high  $GMT_dir_high
 install_coast $GMT_get_full  full  $GMT_dir_full
 
 if [ -f $$.coast ]; then	# Install coastline.conf file
-	echo "# GMT Coastline Path Configuration File" > $topdir/GMT${VERSION}/share/coastline.conf
-	sort -u $$.coast >> $topdir/GMT${VERSION}/share/coastline.conf
-	echo "$topdir/GMT${VERSION}/share/coastline.conf initialized" >&2
+	echo "# GMT Coastline Path Configuration File" > $topdir/GMT${VERSION}/share/conf/coastline.conf
+	sort -u $$.coast >> $topdir/GMT${VERSION}/share/conf/coastline.conf
+	echo "$topdir/GMT${VERSION}/share/conf/coastline.conf initialized" >&2
 	rm -f $$.coast
 fi
 
