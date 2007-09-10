@@ -1,11 +1,15 @@
-#	$Id: GMT_share_files_ascii.lis,v 1.1 2006-03-08 01:01:54 pwessel Exp $
+#	$Id: GMT_share_files_ascii.lis,v 1.2 2007-09-10 19:56:25 guru Exp $
 #
 # GMT_share_ascii.lis contains all the ascii files that should go into the
 # GMT_share tar/zip files.  See GMT_share_bin.lis for binary files
 #
 COPYING
-share/GMT_CustomSymbols.lis
-share/GMT_CPT.lis
+share/conf/gmt_custom_symbols.conf
+share/conf/gmt_cpt.conf
+share/conf/gmt.conf
+share/conf/gmt_custom_media.conf
+share/conf/.gmtdefaults_SI
+share/conf/.gmtdefaults_US
 share/cpt/GMT_cool.cpt
 share/cpt/GMT_copper.cpt
 share/cpt/GMT_drywet.cpt
@@ -109,8 +113,3 @@ share/custom/vlens.def
 share/custom/vlozenge.def
 share/custom/vneedle.def
 share/custom/volcano.def
-share/gmt.conf
-share/gmtmedia.d
-share/gmtformats.d
-share/.gmtdefaults_SI
-share/.gmtdefaults_US
