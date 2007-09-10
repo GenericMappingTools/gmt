@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.312 2007-09-07 19:40:25 guru Exp $
+ *	$Id: gmt_support.c,v 1.313 2007-09-10 19:14:18 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6426,7 +6426,7 @@ void GMT_list_custom_symbols (void)
 
 	/* Open the list in $GMT_SHAREDIR */
 
-	GMT_getsharepath ("conf", "GMT_CustomSymbols", ".lis", list);
+	GMT_getsharepath ("conf", "gmt_custom_symbols", ".conf", list);
 	if ((fp = fopen (list, "r")) == NULL) {
 		fprintf (stderr, "%s: ERROR: Cannot open file %s\n", GMT_program, list);
 		return;

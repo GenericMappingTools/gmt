@@ -440,7 +440,7 @@ Give a red/green/blue triplet, with each element in the 0\-255 range. [255/255/2
 Sets the physical format of the current plot paper [MY_PAPER].  The following
 formats (and their widths and heights in points) are recognized (Additional
 site-specific formats may be specified in
-the gmtmedia.d file in \fB$GMT_SHAREDIR\fP or ~/.gmt; see that file for details):
+the gmt_custom_media.conf file in \fB$GMT_SHAREDIR\fP/conf or ~/.gmt; see that file for details):
 .br
 .sp
 Media	width	height
