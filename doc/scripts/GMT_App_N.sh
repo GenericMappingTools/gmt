@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_N.sh,v 1.9 2007-06-08 18:54:28 remko Exp $
+#	$Id: GMT_App_N.sh,v 1.10 2007-09-10 20:07:28 guru Exp $
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
@@ -8,7 +8,7 @@
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 
-grep -v '^#' ../../share/GMT_CustomSymbols.lis | awk '{print $1}' > $$.lis
+grep -v '^#' ../../share/conf/gmt_custom_symbols.conf | awk '{print $1}' > $$.lis
 n=`cat $$.lis | wc -l`
 
 # Because of text, the first page figure will contain less symbol rows than
