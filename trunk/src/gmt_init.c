@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.298 2007-09-07 19:40:25 guru Exp $
+ *	$Id: gmt_init.c,v 1.299 2007-09-10 19:14:18 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2773,7 +2773,7 @@ int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 	char line[BUFSIZ], media[GMT_TEXT_LEN];
 	FILE *fp;
 
-	GMT_getsharepath ("conf", "gmtmedia", ".d", line);
+	GMT_getsharepath ("conf", "gmt_custom_media", ".conf", line);
 	if ((fp = fopen (line, "r")) == NULL) return (0);
 
 	n_alloc = GMT_TINY_CHUNK;
