@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_boundcond.h,v 1.9 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_boundcond.h,v 1.10 2007-09-11 23:48:04 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -33,7 +33,7 @@ struct GMT_EDGEINFO {
 	int	nxp;	/* if X periodic, nxp > 0 is the period in pixels  */
 	int	nyp;	/* if Y periodic, nxp > 0 is the period in pixels  */
 	BOOLEAN	gn;	/* TRUE if top    edge will be set as N pole  */
-	BOOLEAN	gs;	/* TRUE if bottom edge will be set as N pole  */
+	BOOLEAN	gs;	/* TRUE if bottom edge will be set as S pole  */
 };
 
 

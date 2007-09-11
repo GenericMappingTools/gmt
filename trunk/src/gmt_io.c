@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.140 2007-09-10 19:14:18 guru Exp $
+ *	$Id: gmt_io.c,v 1.141 2007-09-11 23:48:04 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -357,11 +357,11 @@ int GMT_parse_b_option (char *text)
 		switch (text[i]) {
 
 			case 'i':	/* Settings apply to input */
-				id = 0;
+				id = GMT_IN;
 				GMT_io.binary[id] = i_or_o = TRUE;
 				break;
 			case 'o':	/* Settings apply to output */
-				id = 1;
+				id = GMT_OUT;
 				GMT_io.binary[id] = i_or_o = TRUE;
 				break;
 			case 'S':	/* Single Precision but needs byte swap */
