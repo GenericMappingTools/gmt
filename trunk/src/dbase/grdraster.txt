@@ -44,7 +44,7 @@ Name of output grid file.  If not set, the grid will be written as ASCII
 #include "explain_-I.txt"
 #include "explain_-J_short.txt"
 #include "explain_-V.txt"
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 This option applies only if no \fB\-G\fP option has been set.
 .SH EXAMPLES
 .sp

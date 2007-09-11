@@ -87,10 +87,9 @@ a particular finite rotation time, otherwise the point will be skipped.  Append
 lon, lat.  After these 2-3 items, we write azimuth, major, minor (in km) for the
 95% confidence ellipse.
 #include "explain_-t.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 3 input columns].
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 [Default depends on settings].
 .SH EXAMPLES
 To backtrack the (x,y,t) points in the file seamounts.d to their origin
