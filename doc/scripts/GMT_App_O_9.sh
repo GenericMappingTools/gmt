@@ -1,11 +1,11 @@
 #!/bin/sh
-#	$Id: GMT_App_O_9.sh,v 1.6 2007-02-08 21:46:28 remko Exp $
+#	$Id: GMT_App_O_9.sh,v 1.7 2007-09-11 22:48:49 remko Exp $
 #
 #	Makes Fig 9 for Appendix O (labeled lines)
 #
 
 R=-R-85/5/10/55
-grdgradient topo5.nc -Nt1 -A45 -Gtopo5_int.grd
+grdgradient topo5.nc -Nt1 -A45 -Gtopo5_int.nc
 gmtset PLOT_DEGREE_FORMAT ddd:mm:ssF ANNOT_FONT_SIZE_PRIMARY +9p
 project -E74W/41N -C17W/28N -G10 -Q > great_NY_Canaries.d
 project -E74W/41N -C2.33/48.87N -G100 -Q > great_NY_Paris.d
@@ -15,7 +15,7 @@ cat << EOF > ttt.cpt
 3	lightyellow	6	lightyellow
 6	lightgreen	100	lightgreen
 EOF
-grdimage ttt_atl.nc -Itopo5_int.grd -Cttt.cpt $R -JM5.3i -P -K > GMT_App_O_9.ps
+grdimage -Sc/1 ttt_atl.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -P -K > GMT_App_O_9.ps
 grdcontour ttt_atl.nc -R -J -O -K -C0.5 -A1+u"hour"+v+s8+f17 -GL80W/31N/17W/26N,17W/28N/17W/50N \
 	-S2 >> GMT_App_O_9.ps
 psxy -R -J -Wfatter,white great_NY_Canaries.d -O -K  >> GMT_App_O_9.ps
@@ -32,4 +32,4 @@ cat << EOF | pstext -R -J -O -K -Wwhite,Othin -Dj0.1i/0.1i >> GMT_App_O_9.ps
 17W	28N	8	0	17	CT	Canaries
 EOF
 psxy -R -J -O /dev/null >> GMT_App_O_9.ps
-rm -f great_NY_Canaries.d great_NY_Paris.d ttt.cpt
+rm -f great_NY_Canaries.d great_NY_Paris.d ttt.cpt topo5_int.nc

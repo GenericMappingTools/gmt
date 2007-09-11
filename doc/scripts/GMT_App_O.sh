@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_O.sh,v 1.7 2007-02-08 21:46:27 remko Exp $
+#	$Id: GMT_App_O.sh,v 1.8 2007-09-11 22:48:49 remko Exp $
 #
 #	Makes the inserts for Appendix O (labeled lines)
 #	This first script just gets the data ready and run the various scripts
@@ -50,4 +50,4 @@ for n in 1 2 3 4 5 6 7 8 9; do
 	sh GMT_App_O_$n.sh
 done
 
-rm -f fix.d fix2.d cross.d geoid.grd transect.d great_NY_*.d ttt.cpt topo5_int.grd
+rm -f fix.d fix2.d cross.d geoid.grd transect.d great_NY_*.d ttt.cpt
