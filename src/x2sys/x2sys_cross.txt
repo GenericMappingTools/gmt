@@ -86,7 +86,7 @@ either side to use in the interpolation [3].
 .TP
 .B \-2
 Report the values of each track at the crossover [Default reports the crossover value and the mean value].
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 .SH REMARKS
 The COEs found are printed out to standard output in ASCII format (unless
 \fB\-bo\fP is set).  When ASCII is chosen, the output format depends on

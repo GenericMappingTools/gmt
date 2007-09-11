@@ -30,7 +30,7 @@ imply anything about the input file; that information is conveyed via the system
 .B \-S
 Suppress output records where all the data columns are NaN [Default will output all records].
 #include "explain_-V.txt"
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 .SH EXAMPLES
 To extract all data from the old-style MGG supplement file c2104.gmt, recognized by the tag MGG:
 .br

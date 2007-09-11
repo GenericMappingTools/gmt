@@ -78,8 +78,7 @@ Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation
 Only report those seamounts whose flowlines came within \fImaxdist\fP to any hotspot
 [Default reports all seamounts].
 #include "explain_-t.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 5 input columns].
 .SH EXAMPLES
 To find the likely (hotspot) origins of the seamounts represented by the (x,y,z,r,tc) points

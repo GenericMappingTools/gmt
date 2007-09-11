@@ -63,7 +63,7 @@ The program will also duplicate data output to stderr for monitoring.
 Append \fBv\fP to prompt for a \fIz\fP-value and output it as a third data column.
 Append \fBk\fP to output the button key as the final data column.  Both \fB\-Zk\fP and
 \fB\-Zv\fP can be specified. [Default is just 2 column x,y output].
-#include "explain_-o.txt"
+#include "explain_-bo.txt"
 .SH EXAMPLES
 To digitize lines from a mercator map made for a given region, and
 save each line segment in individual files called segment_000.xy, segment_001.xy etc, try
