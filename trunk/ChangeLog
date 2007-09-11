@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.64 2007-09-07 00:19:14 remko Exp $
+	$Id: ChangeLog,v 1.65 2007-09-11 19:59:48 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-09-11	pwessel
+	* gmt_init.c:		Added GMT_is_invalid_number (char *t) to make sure t is of the
+				form [+|-][xxxx][.][yyyy][e|E[+|-]nnn] and warn if not.
 
 2007-09-07	remko
 	* sample1d.c:		Added -Fn for no interpolation (return value of neareast point).
@@ -15,7 +19,7 @@
 
 2007-09-04	pwessel
 	* gshhs/gshhstograss.c:	Removed use of getopt so even the lamest systems can compile it.
-				Also made in possible to compile under Windows.
+				This also made in possible to compile under Windows.
 				
 2007-09-04	remko
 	* All makefiles:	Improved support for .exe extensions.
