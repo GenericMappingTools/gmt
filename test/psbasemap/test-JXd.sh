@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: test-JXd.sh,v 1.8 2007-06-05 14:02:36 remko Exp $
+#	$Id: test-JXd.sh,v 1.9 2007-09-11 22:56:12 remko Exp $
 
 psbasemap="psbasemap --PLOT_DEGREE_FORMAT=dddF --LABEL_FONT_SIZE=16p --BASEMAP_AXES=WeSn"
 psxy=psxy
@@ -33,7 +33,7 @@ psxy /dev/null -R -J -O >> $ps
 
 rm -f .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps test-JXd_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps test-JXd_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

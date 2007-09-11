@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: colormasking.sh,v 1.7 2007-06-05 14:02:35 remko Exp $
+#	$Id: colormasking.sh,v 1.8 2007-09-11 22:56:12 remko Exp $
 
 ps=colormasking.ps
 echo -n "$0: Test grdimage for use of color masking:		"
@@ -28,7 +28,7 @@ psxy -R -J -Gp50/10:FwhiteB- -O >> $ps <<%
 %
 rm -f t.grd t.cpt .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps colormasking_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps colormasking_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
