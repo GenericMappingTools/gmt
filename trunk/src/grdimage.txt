@@ -8,9 +8,10 @@
 grdimage \- Create grayshaded or colored image from a 2-D netCDF grd file
 .SH SYNOPSIS
 \fBgrdimage\fP \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP OPT(C)\fIcptfile\fP GMT_J_OPT 
-[ GMT_B_OPT ] [ OPT(Ei)|\fIdpi\fP ] [ OPT(G)[\fBf|b\fP]\fIcolor\fP ] [ OPT(I)\fIintensfile\fP] 
+[ GMT_B_OPT ] [ OPT(Ei)|\fIdpi\fP ] [ OPT(G)[\fBf\fP|\fBb\fP]\fIcolor\fP ] [ OPT(I)\fIintensfile\fP] 
 [ GMT_K_OPT ] [ OPT(M) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] 
-[ OPT(S)\fIsearch_radius\fP ] [ OPT(T)[\fBs\fP][\fBo\fP[\fIpen\fP]] ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
+[ OPT(S)[\fB-\fP]\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP[\fB/\fP\fIthreshold\fP] ]
+[ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdimage\fP reads one 2-D gridded file and produces a gray-shaded (or colored) map by assigning
@@ -66,24 +67,18 @@ Mask out nodes with z = NaN using the colormasking feature in \fIPostScript\fP L
 You may ask for a larger \fIw/e/s/n\fP region to have more room between the image and the axes.
 A smaller region than specified in the grdfile will result in a subset of the grid [Default is
 region given by the grdfile].
-.TP
-.B \-S
-Set the search radius for the averaging procedure  [Default avoids aliasing].
+#include "explain_-S.txt"
 .TP
 .B \-T
-Plot image without any interpolation.  This involves converting each node-centered
-bin into a polygon which is then painted separately.  Append \fBs\fP to skip
-nodes with z = NaN.  This option is useful for categorical data where
-interpolating between values is meaningless.  Optionally, append \fBo\fP to
-draw the tile outlines, and specify a custom pen if the default pen is not to
-your liking. (See SPECIFYING PENS below).
+This option has become OBSOLETE. Use \fBgrdview -T\fP instead.
+Use OPT(Sn) to plot near-neighbor values only (use OPT(E) to increase the resolution).
+Use OPT(Sn) OPT(Q) to obtain something similar to the old option OPT(Ts).
+The option OPT(To) is no longer supported.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 #include "explain_-f.txt"
-#include "explain_pen.txt"
-#include "explain_color.txt"
 .SH EXAMPLES
 To gray-shade the file hawaii_grav.grd with shades given in shades.cpt on a Lambert map
 at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks:
