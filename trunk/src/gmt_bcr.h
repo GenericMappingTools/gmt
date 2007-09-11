@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.h,v 1.11 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_bcr.h,v 1.12 2007-09-11 23:22:54 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -15,18 +15,10 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
-/* bcr.h  --  stuff for implementing bicubic rectangle grid interpolation.
-   Has bilinear case as a subset.
-   The bilinear interpolation will give continuity of the function z only.
-   The bicubic interpolation will give continuity of z, dz/dx, dz/dy, and
-   d2z/dxdy.
-   Designed to operate with at least one spare row/column around each edge,
-   to allow derivative computations.
-   Follows the outline in Lancaster and Salkauskas, section 9.3
-   Meant to replace Taylor routines in GMT in version 3.0 of GMT.
+/* bcr.h  --  stuff for implementing bi-dimensional convolution interpolation.
 
-   Author:	Walter H F Smith
-   Date:	23 September, 1993
+   Authors:	Walter H F Smith and Remko Scharroo
+   Date:	23-SEP-1993 and 11-SEP-2007
    Version:	4.1.x
 
    This include file defines structures and functions used.
@@ -35,20 +27,32 @@
 #ifndef _GMT_BCR_H
 #define _GMT_BCR_H
 
+#define BCR_NEARNEIGHBOR	0
+#define BCR_BILINEAR		1
+#define BCR_BSPLINE		2
+#define BCR_BICUBIC		3
+
 struct GMT_BCR {	/* Used mostly in gmt_support.c */
+#if 0 /* OLD_BCR_CODE */
 	double	nodal_value[4][4];	/* z, dz/dx, dz/dy, d2z/dxdy at 4 corners  */
 	double	bcr_basis[4][4];	/* multiply on nodal vals, yields z at point */
 	double	bl_basis[4];		/* bilinear basis functions  */
+#endif /* OLD_BCR_CODE */
 	double	rx_inc;			/* 1.0 / grd.x_inc  */
 	double	ry_inc;			/* 1.0 / grd.y_inc  */
 	double	offset;			/* 0 or 0.5 for grid or pixel registration  */
 	double	threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
 /* If we later want to estimate of dz/dx or dz/dy, we will need [4][4] basis for these  */
+#if 0 /* OLD_BCR_CODE */
 	int	ij_move[4];		/* add to ij of zero vertex to get other vertex ij  */
 	int	i;			/* Location of current nodal_values  */
 	int	j;			/* Ditto.   */
 	int	bilinear;		/* T/F use bilinear instead of bicubic  */
 	int	nan_condition;		/* T/F we cannot evaluate; return z = NaN  */
+#else /* OLD_BCR_CODE */
+	int	interpolant;		/* Interpolation function used (0, 1, 2, 3) */
+	int	n;			/* Width of the interpolation function */
+#endif /* OLD_BCR_CODE */
 	int	ioff;			/* Padding on west side of array  */
 	int	joff;			/* Padding on north side of array  */
 	int	mx;			/* Padded array dimension  */
@@ -57,7 +61,7 @@ struct GMT_BCR {	/* Used mostly in gmt_support.c */
 
 EXTERN_MSC void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int bilinear, double threshold, struct GMT_BCR *bcr);
 EXTERN_MSC double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,  struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr);		/* Compute z(x,y) from bcr structure  */
-
+#if 0 /* OLD_BCR_CODE */
 /*----------------------------------------------------------------
 		Here are some more remarks:
 
@@ -111,4 +115,5 @@ we cannot continue.
 multiply-adds.  If x=0 or 1 or y = 0 or 1, there may be a trivial solution.
 
 */
+#endif /* OLD_BCR_CODE */
 #endif /* _GMT_BCR_H */
