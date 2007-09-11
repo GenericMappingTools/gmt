@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: cartesian.sh,v 1.8 2007-06-05 14:02:36 remko Exp $
+#	$Id: cartesian.sh,v 1.9 2007-09-11 22:56:12 remko Exp $
 #
 # Tests project in Cartesian manipulations
 
@@ -73,7 +73,7 @@ while read az; do
 	By=sn
 done < azim.$$
 psxy -R -J -O /dev/null >> $ps
-compare -density 100 -metric PSNR {,orig/}$ps cartesian_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps cartesian_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

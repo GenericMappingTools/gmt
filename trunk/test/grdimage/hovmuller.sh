@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: hovmuller.sh,v 1.6 2007-06-05 14:02:35 remko Exp $
+#	$Id: hovmuller.sh,v 1.7 2007-09-11 22:56:12 remko Exp $
 
 ps=hovmuller.ps
 opt="--TIME_SYSTEM=other --TIME_EPOCH=2000-01-01T --TIME_UNIT=y"
@@ -14,7 +14,7 @@ grdimage tmp.nc -Ctmp.cpt -JX12c/12cT -B30f10/1O -Bs/1Y $opt --PLOT_DATE_FORMAT=
 
 rm -f tmp.* .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps hovmuller_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps hovmuller_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

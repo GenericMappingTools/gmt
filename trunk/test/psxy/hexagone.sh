@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: hexagone.sh,v 1.7 2007-06-05 14:02:36 remko Exp $
+#	$Id: hexagone.sh,v 1.8 2007-09-11 22:56:12 remko Exp $
 #
 # Check wrapping around Greenwich
 
@@ -22,7 +22,7 @@ pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B2 -O -K --PLOT_DEGREE_FORMAT=D
 psxy hexagone.dat -R1/10/47/52 -JM4i -Y5i -L -Gpurple -O -K >> $ps
 pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O --PLOT_DEGREE_FORMAT=D >> $ps
 
-compare -density 100 -metric PSNR {,orig/}$ps hexagone_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps hexagone_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

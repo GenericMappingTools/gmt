@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-#       $Id: categorical.sh,v 1.1 2007-08-27 02:07:21 guru Exp $
+#       $Id: categorical.sh,v 1.2 2007-09-11 22:56:12 remko Exp $
 
 ps=categorical.ps
-echo -n "$0: Test grdview for categorical grid plots:                     "
+echo -n "$0: Test grdview for categorical grid plots:		"
 # The cpt
 cat << EOF > $$.cpt
 1	red	2	red	;A
@@ -16,7 +16,7 @@ F	white
 N	gray
 EOF
 # The categorical data grid
-cat << EOF | xyz2grd -V -R0/10/50/60 -I5 -G$$.grd
+cat << EOF | xyz2grd -R0/10/50/60 -I5 -G$$.grd
 0       60      1
 5       60      1
 10      60      2
@@ -37,11 +37,10 @@ psscale -C$$.cpt -D3/3/1.5/0.2 -O -K -L0.1i >> $ps
 grdview $$.grd -C$$.cpt -J -O -K -B5g5:."-Qi100":WSne -Qi100 -X-3.5 -Y5.0 --HEADER_OFFSET=-1i >> $ps
 # Finally plot as texture image -Qt100
 grdview $$.grd -C$$.cpt -J -O -B5g5:."-Qt100":WSne -Qt100 -X3.5 --HEADER_OFFSET=-1i >> $ps
-gv $ps &
-rm -f $$.* .gmtcommands4
-exit
 
-compare -density 100 -metric PSNR {,orig/}$ps categorical_diff.png > log
+rm -f $$.* .gmtcommands4
+
+compare -density 100 -metric PSNR {,orig/}$ps categorical_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

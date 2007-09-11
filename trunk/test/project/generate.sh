@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: generate.sh,v 1.6 2007-06-05 14:02:36 remko Exp $
+#	$Id: generate.sh,v 1.7 2007-09-11 22:56:12 remko Exp $
 #
 # Tests project in generating lines
 echo -n "$0: Test project's ability to generate lines:			"
@@ -51,7 +51,7 @@ echo 15 15 | psxy -R -J -O -K -Sc0.1i -Gblack >> $ps
 echo 85 40 | psxy -R -J -O -K -Sa0.1i -Gblack >> $ps
 # The end
 psbasemap -R -J -O -B30g30 >> $ps
-compare -density 100 -metric PSNR {,orig/}$ps generate_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps generate_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

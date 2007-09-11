@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: wrapping.sh,v 1.7 2007-06-05 14:02:37 remko Exp $
+#	$Id: wrapping.sh,v 1.8 2007-09-11 22:56:12 remko Exp $
 #
 # Test how psxy handles polygons that wrap around periodic boundaries
 # testpol.d is a nasty polygon that exceeds 360-degree range.
@@ -25,7 +25,7 @@ psxy -R -J -W0.25p testpol.d -O -K >> $ps
 psxy -R-220/220/-90/90 -JX6.5/1.75i -B60g30WSne -Gred testpol.d -O -K -X-4i -Y2.7i >> $ps
 psxy -R -J -W0.25p testpol.d -O -K >> $ps
 psxy -R -J /dev/null -O >> $ps
-compare -density 100 -metric PSNR {,orig/}$ps wrap_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps wrap_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

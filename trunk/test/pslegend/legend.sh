@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: legend.sh,v 1.7 2007-06-05 14:02:36 remko Exp $
+#	$Id: legend.sh,v 1.8 2007-09-11 22:56:12 remko Exp $
 #
 # Testing pslegend capabilities
 
@@ -44,7 +44,7 @@ EOF
 #sh -xv script.sh >> $ps
 # rm -f script.sh
 pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F >> $ps
-compare -density 100 -metric PSNR {,orig/}$ps legend_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps legend_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

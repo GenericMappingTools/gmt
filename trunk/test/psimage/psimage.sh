@@ -45,7 +45,7 @@ psimage -E80 -C3i/3i/BL ../../share/pattern/ps_pattern_10.ras -Gfred -Gb- -O -K 
 psimage -E80 -C3i/3i/TL ../../share/pattern/ps_pattern_10.ras -O >> $ps
 rm -f $$.in .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps psimage_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps psimage_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

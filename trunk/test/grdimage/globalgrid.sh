@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: globalgrid.sh,v 1.6 2007-06-05 14:02:35 remko Exp $
+#	$Id: globalgrid.sh,v 1.7 2007-09-11 22:56:12 remko Exp $
 
 ps=globalgrid.ps
 #
@@ -31,7 +31,7 @@ $plot -Rd -Y-2i -O >> $ps
 
 rm -f tmp.cpt tmp.nc .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps globalgrid_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps globalgrid_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"

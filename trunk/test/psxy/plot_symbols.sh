@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: plot_symbols.sh,v 1.6 2007-06-05 14:02:36 remko Exp $
+#	$Id: plot_symbols.sh,v 1.7 2007-09-11 22:56:12 remko Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
@@ -37,7 +37,7 @@ psxy -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 > Dual-colored pattern # 12 -Gp100/12:FredBgreen -W3p,orange
 3.5	1.5	a
 EOF
-compare -density 100 -metric PSNR {,orig/}$ps plot_symbols_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps plot_symbols_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
