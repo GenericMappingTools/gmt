@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-#	$Id: grdimage.sh,v 1.7 2007-06-05 14:02:35 remko Exp $
+#	$Id: grdimage.sh,v 1.8 2007-09-11 22:54:32 remko Exp $
 
 ps=grdimage.ps
-grdimage=grdimage" t.grd -Ct.cpt -JX1i -B1/1WeSn --ANNOT_FONT_SIZE=10p"
+grdimage=grdimage" $VERBOSE t.grd -Ct.cpt -JX1i -B1/1WeSn --ANNOT_FONT_SIZE=10p"
 grdcontour=grdcontour" t.grd -Ct.cpt -J -R -O"
 
 echo -n "$0: Test grdimage for grid and pixel plots:			"
@@ -30,24 +30,22 @@ pstext -R -J -N -O -K <<%
 
 plots () {
 $grdimage -K -R-0.5/2.5/-0.5/2.5 $1
-label $3 ""
+label "$3" ""
 $grdimage -O -K -R0/2/0/2 -X4c
 $grdimage -O -K -R-0.5/1.5/0/2 -X4c
 $grdimage -O -K -R-1/3/-1/3 -X4c
-$grdimage -O -K -Towhite -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c
-label $3 -T
-$grdimage -O -K -Towhite -R0/2/0/2 -X4c
-$grdimage -O -K -Towhite -R-0.5/1.5/0/2 -X4c
-$grdimage -O -K -Towhite -R-1/3/-1/3 -X4c
-$grdimage -E50 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c
-$grdcontour -K
-label $3 -E50
-$grdimage -E50 -O -K -R0/2/0/2 -X4c
-$grdcontour -K
-$grdimage -E50 -O -K -R-0.5/1.5/0/2 -X4c
-$grdcontour -K
-$grdimage -E50 -O -K -R-1/3/-1/3 -X4c
-$grdcontour $2
+
+$grdimage -E50 -Sl -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c ; $grdcontour -K
+label "$3" "-E50 -Sl"
+$grdimage -E50 -Sl -O -K -R0/2/0/2 -X4c ; $grdcontour -K
+$grdimage -E50 -Sl -O -K -R-0.5/1.5/0/2 -X4c ; $grdcontour -K
+$grdimage -E50 -Sl -O -K -R-1/3/-1/3 -X4c ; $grdcontour -K
+
+$grdimage -E50 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c ; $grdcontour -K
+label "$3" -E50
+$grdimage -E50 -O -K -R0/2/0/2 -X4c ; $grdcontour -K
+$grdimage -E50 -O -K -R-0.5/1.5/0/2 -X4c ; $grdcontour -K
+$grdimage -E50 -O -K -R-1/3/-1/3 -X4c ; $grdcontour $2
 }
 
 makecpt -Crainbow -T-0.1/2.5/0.2 > t.cpt
@@ -61,7 +59,7 @@ plots "-O -X-12c -Y-4c" " " -F >> $ps
 
 rm -f t.grd t.cpt .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps grdimage_diff.png > log
+compare -density 100 -metric PSNR {,orig/}$ps grdimage_diff.png > log 2>&1
 grep inf log > fail
 if [ ! -s fail ]; then
         echo "[FAIL]"
