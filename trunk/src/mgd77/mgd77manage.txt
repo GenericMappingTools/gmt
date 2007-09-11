@@ -6,7 +6,7 @@ mgd77manage \- Manage extra columns in MGD77+ files
 \fBmgd77manage\fP \fINGDC-ids\fP [ OPT(A)[\fB+\fP]\fBa\fP|\fBc\fP|\fBd\fP|\fBD\fP|\fBe\fP|\fBg\fP|\fBi\fP|\fBn\fP|\fBt\fP|\fBT\fP\fIfileinfo\fP ] 
 [ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(D)\fIabbrev1,abbrev2,...\fP ] [ OPT(E)\fIempty\fP ] 
 [ OPT(I)\fIabbrev\fP/\fIname\fP/\fIunit\fP/\fBt\fP/\fIscale\fP/\fIoffset\fP/\fIcomment\fP ] [ OPT(Ne)|\fBk\fP|\fBm\fP|\fBn\fP ] 
-[ OPT(Q)[\fIvalue\fP] ] [ GMT_V_OPT ] [ GMT_bi_OPT ]
+[ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ] [ GMT_V_OPT ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
 \fBmgd77manage\fP deals with maintaining extra custom columns in MGD77+ netCDF files.
 You can either delete one or more columns, add a new column, update an existing
@@ -126,7 +126,7 @@ Specify the distance unit used when using \fB\-Ad\fP|\fBD\fP by appending \fBe\f
 #include "explain_-Q.txt"
 Only relevant when \fB\-Ag\fP|\fBi\fP is selected.  
 #include "explain_-V.txt"
-#include "explain_-i_binary.txt"
+#include "explain_-bi.txt"
 This applies to the input 1- or 2-column data files specified under some of the \fB\-A\fP options.
 The binary input option is only available for numerical data columns.
 .SH EXAMPLES
