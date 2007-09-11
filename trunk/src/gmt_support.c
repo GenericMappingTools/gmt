@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.313 2007-09-10 19:14:18 guru Exp $
+ *	$Id: gmt_support.c,v 1.314 2007-09-11 23:30:36 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -40,16 +40,18 @@
  *	GMT_contours		Subroutine for contouring
  *	GMT_cspline		Natural cubic 1-D spline solver
  *	GMT_csplint		Natural cubic 1-D spline evaluator
- *	GMT_bcr_init		Initialize structure for bicubic interpolation
  *	GMT_delaunay		Performs a Delaunay triangulation
  *	GMT_epsinfo		Fill out info need for PostScript header
- *	GMT_get_annot_label 	Construct degree/minute label
+ *	GMT_get_annot_label	Construct degree/minute label
  *	GMT_get_annot_offset	Return offset in inches for text annotation
+ #if 0
+ *	GMT_bcr_init		Initialize structure for bicubic interpolation
  *	GMT_get_bcr_z		Get bicubic interpolated value
  *	GMT_get_bcr_nodal_values	Supports -"-
- *	GMT_get_bcr_cardinals	  	    "
- *	GMT_get_bcr_ij		  	    "
- *	GMT_get_bcr_xy		 	    "
+ *	GMT_get_bcr_cardinals		    "
+ *	GMT_get_bcr_ij			    "
+ *	GMT_get_bcr_xy			    "
+ #endif
  *	GMT_get_index		Return color table entry for given z
  *	GMT_get_format		Find # of decimals and create format string
  *	GMT_get_rgb_from_z		Return rgb for given z
@@ -73,7 +75,6 @@
  *	GMT_trace_contour	Function that trace the contours in GMT_contours
  *	GMT_polar_adjust	Adjust label justification for polar projection
  *	GMT_fourt		Fourier transform routine
- *	GMT_weighted_average	Compute weighted average from weighted sum and sum of weights
  */
 
 #define GMT_WITH_NO_PS
@@ -111,10 +112,12 @@ void GMT_rgb_to_hsv(int rgb[], double *h, double *s, double *v);
 void GMT_hsv_to_rgb(int rgb[], double h, double s, double v);
 void GMT_rgb_to_cmyk (int rgb[], double cmyk[]);
 void GMT_cmyk_to_rgb (int rgb[], double cmyk[]);
+#if 0
 void GMT_get_bcr_cardinals (double x, double y, struct GMT_BCR *bcr);
 void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int *jj, struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr);
 void GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, double *y, struct GMT_BCR *bcr);
 void GMT_get_bcr_nodal_values(float *z, int ii, int jj, struct GMT_BCR *bcr);
+#endif
 int GMT_check_hsv (double h, double s, double v);
 int GMT_check_cmyk (double cmyk[]);
 int GMT_char_count (char *txt, char c);
@@ -278,7 +281,7 @@ int GMT_parse_multisegment_header (char *header, BOOLEAN use_cpt, BOOLEAN *use_f
 	 * Fill:  -G<fill>	Use the new fill and turn filling on
 	 *	 -G-		Turn filling OFF
 	 *	 -G+		Revert to default fill [none if not set on command line]
-	 * Pens: -W<pen> 	Use the new pen and turn outline on
+	 * Pens: -W<pen>	Use the new pen and turn outline on
 	 *	 -W-		Turn outline OFF
 	 *	 -W+		Revert to default pen [none if not set on command line]
 	 * z:	-Z<zval>	Obtain fill via cpt lookup using this z value
@@ -1718,7 +1721,7 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	else
 		z_out = z;	/* Just point to the incoming z values */
 
-	if (nz < 2) 	/* Want a single color point, assume range 0-1 */
+	if (nz < 2)	/* Want a single color point, assume range 0-1 */
 		nz = 2;
 	else if (even) {
 		x_inc = 1.0 / (nz - 1);
@@ -2237,9 +2240,9 @@ double GMT_csplint (double *x, double *y, double *c, double xp, int klo)
  *	   m = number of desired interpolated values
  *	   u = x-values of these points
  *	mode = type of interpolation
- *   	  mode = 0 : Linear interpolation
- *   	  mode = 1 : Quasi-cubic hermite spline (GMT_akima)
- *   	  mode = 2 : Natural cubic spline (cubspl)
+ *	  mode = 0 : Linear interpolation
+ *	  mode = 1 : Quasi-cubic hermite spline (GMT_akima)
+ *	  mode = 2 : Natural cubic spline (cubspl)
  *        mode = 3 : No interpolation (closest point)
  * output: v = y-values at interpolated points
  * PS. v must have space allocated before calling GMT_intpol
@@ -2307,7 +2310,7 @@ int GMT_intpol (double *x, double *y, int n, int m, double *u, double *v, int mo
 
 	/* Allocate memory for spline factors */
 
-	if (mode == 1) { 	/* Akima's spline */
+	if (mode == 1) {	/* Akima's spline */
 		c = (double *) GMT_memory (VNULL, (size_t)(3*n), sizeof(double), "GMT_intpol");
 		err_flag = GMT_akima (x, y, n, c);
 	}
@@ -2930,13 +2933,13 @@ void GMT_contlabel_angle (double x[], double y[], int start, int stop, double ca
 	else
 		L->line_angle = (GMT_IS_ZERO (sum_xy)) ? 90.0 : d_atan2 (sum_xy, sum_x2) * R2D;
 	this_angle_type = G->angle_type;
-	if (this_angle_type == 2) { 	/* Just return the fixed angle given (unless NaN) */
+	if (this_angle_type == 2) {	/* Just return the fixed angle given (unless NaN) */
 		if (GMT_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
 			this_angle_type = 0;
 		else
 			L->angle = cangle;
 	}
-	if (this_angle_type != 2) { 	/* Must base label angle on the contour angle */
+	if (this_angle_type != 2) {	/* Must base label angle on the contour angle */
 		L->angle = L->line_angle + this_angle_type * 90.0;	/* May add 90 to get normal */
 		if (L->angle < 0.0) L->angle += 360.0;
 		if (L->angle > 90.0 && L->angle < 270) L->angle -= 180.0;
@@ -3646,10 +3649,11 @@ int GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, double 
 }
 
 int GMT_smooth_contour (double **x_in, double **y_in, int n, int sfactor, int stype)
-                        	/* Input (x,y) points */
-      		/* Number of input points */
-            	/* n_out = sfactor * n -1 */
-           {	/* Interpolation scheme used (0 = linear, 1 = Akima, 2 = Cubic spline, 3 = None */
+{
+	/* Input (x,y) points */
+	/* Number of input points */
+	/* n_out = sfactor * n -1 */
+        /* Interpolation scheme used (0 = linear, 1 = Akima, 2 = Cubic spline, 3 = None */
 	int i, j, k, n_out;
 	double ds, t_next, *x, *y;
 	double *t_in, *t_out, *x_tmp, *y_tmp, x0, x1, y0, y1;
@@ -4729,11 +4733,11 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
  */
 
 int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
-              	/* Input point x coordinates */
-              	/* Input point y coordinates */
-      		/* Number of input points */
-            	/* pointer to List of point ids per triangle.  Vertices for triangle no i
-		   is in link[i*3], link[i*3+1], link[i*3+2] */
+	/* Input point x coordinates */
+	/* Input point y coordinates */
+	/* Number of input points */
+	/* pointer to List of point ids per triangle.  Vertices for triangle no i
+	   is in link[i*3], link[i*3+1], link[i*3+2] */
 {
 	int ix[3], iy[3];
 	int i, j, ij, nuc, jt, km, id, isp, l1, l2, k, k1, jz, i2, kmt, kt, done, size;
@@ -4892,14 +4896,16 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 
 #endif
 
-/* code for bicubic rectangle and bilinear interpolation of grd files
+#if 0 /* OLD_BCR_CODE */
+/* Code for near-neighbor, bilinear, B-spline and bicubic interpolation of grids
  *
  * Author:	Walter H F Smith
  * Date:	23 September 1993
+ *
+ * Updated and moved to gmt_bcr.c by Remko Scharroo, 10-Sep-2007.
 */
 
-
-void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int bilinear, double threshold, struct GMT_BCR *bcr)
+void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, BOOLEAN bilinear, double threshold, struct GMT_BCR *bcr)
 {
 	/* Initialize i,j so that they cannot look like they have been used:  */
 	bcr->i = -10;
@@ -5002,14 +5008,10 @@ void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int 
 	int	i, j;
 
 	i = (int)floor((xx-grd->x_min)*bcr->rx_inc - bcr->offset);
-/*	if (i < 0) i = 0;  CHANGED:  */
 	if (i < 0 && edgeinfo->nxp <= 0) i = 0;
-/*	if (i > grd->nx-2) i = grd->nx-2;  CHANGED:  */
-	if (i > grd->nx-2  && edgeinfo->nxp <= 0) i = grd->nx-2;
+	if (i > grd->nx-2 && edgeinfo->nxp <= 0) i = grd->nx-2;
 	j = (int)ceil ((grd->y_max-yy)*bcr->ry_inc - bcr->offset);
-/*	if (j < 1) j = 1;  CHANGED:  */
 	if (j < 1 && !(edgeinfo->nyp > 0 || edgeinfo->gn) ) j = 1;
-/*	if (j > grd->ny-1) j = grd->ny-1;  CHANGED:  */
 	if (j > grd->ny-1 && !(edgeinfo->nyp > 0 || edgeinfo->gs) ) j = grd->ny-1;
 
 	*ii = i;
@@ -5048,12 +5050,12 @@ void GMT_get_bcr_nodal_values(float *z, int ii, int jj, struct GMT_BCR *bcr)
 
 	int	nnans;		/* WHFS 22 May 98  */
 
-	/* whattodo[vertex] says which vertices are previously known.  */
+	/* dontneed[vertex] says which vertices are previously known.  */
 	for (i = 0; i < 4; i++) dontneed[i] = FALSE;
 
 	valstop = (bcr->bilinear) ? 1 : 4;
 
-	if (!(bcr->nan_condition) && (abs(ii-bcr->i) < 2 && abs(jj-bcr->j) < 2) ) {
+	if (!(bcr->nan_condition) && abs(ii-bcr->i) < 2 && abs(jj-bcr->j) < 2 ) {
 		/* There was no nan-condition last time and we can use some
 			previously computed results.  */
 		switch (ii-bcr->i) {
@@ -5251,11 +5253,12 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
 
 	for (vertex = 0; vertex < 4; vertex++) {
 		for (value = 0; value < 4; value++) {
-			retval += (bcr->nodal_value[vertex][value]*bcr->bcr_basis[vertex][value]);
+			retval += (bcr->nodal_value[vertex][value] * bcr->bcr_basis[vertex][value]);
 		}
 	}
 	return (retval);
 }
+#endif /* OLD_BCR_CODE */
 
 /*
  * This section holds functions used for setting boundary  conditions in
@@ -5279,9 +5282,9 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
  * The new routines here allow the user to choose other specifications:
  *
  * Either
- * 	one or both of
- * 	data are periodic in (x_max - x_min)
- * 	data are periodic in (y_max - y_min)
+ *	one or both of
+ *	data are periodic in (x_max - x_min)
+ *	data are periodic in (y_max - y_min)
  *
  * Or
  *	data are a geographical grid.
@@ -5367,16 +5370,14 @@ int GMT_boundcond_parse (struct GMT_EDGEINFO *edgeinfo, char *edgestring)
 
 int GMT_boundcond_param_prep (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo)
 {
-	/* Called when edgeinfo holds user's choices.  Sets
-		edgeinfo according to choices and h.  */
+	/* Called when edgeinfo holds user's choices.  Sets edgeinfo according to choices and h.  */
 
 	double	xtest;
 
-	if (edgeinfo->gn) {
+	if (edgeinfo->gn || GMT_grd_is_global(h)) {
 		/* User has requested geographical conditions.  */
 		if ( (h->x_max - h->x_min) < (360.0 - GMT_SMALL * h->x_inc) ) {
-			(void) fprintf (stderr,
-				"GMT Warning:  x range too small; g boundary condition ignored.\n");
+			fprintf (stderr, "GMT Warning:  x range too small; g boundary condition ignored.\n");
 			edgeinfo->nxp = edgeinfo->nyp = 0;
 			edgeinfo->gn  = edgeinfo->gs = FALSE;
 			return (GMT_NOERROR);
@@ -5385,8 +5386,7 @@ int GMT_boundcond_param_prep (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinf
 		/* xtest should be within GMT_SMALL of zero or of one.  */
 		if ( xtest > GMT_SMALL && xtest < (1.0 - GMT_SMALL) ) {
 			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
-			(void) fprintf (stderr,
-				"GMT Warning:  x_inc does not divide 180; g boundary condition ignored.\n");
+			fprintf (stderr, "GMT Warning:  x_inc does not divide 180; g boundary condition ignored.\n");
 			edgeinfo->nxp = edgeinfo->nyp = 0;
 			edgeinfo->gn  = edgeinfo->gs = FALSE;
 			return (GMT_NOERROR);
@@ -5395,10 +5395,12 @@ int GMT_boundcond_param_prep (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinf
 		edgeinfo->nyp = 0;
 		edgeinfo->gn = ( (fabs(h->y_max - 90.0) ) < (GMT_SMALL * h->y_inc) );
 		edgeinfo->gs = ( (fabs(h->y_min + 90.0) ) < (GMT_SMALL * h->y_inc) );
-		return (GMT_NOERROR);
 	}
-	if (edgeinfo->nxp != 0) edgeinfo->nxp = (h->node_offset) ? h->nx : h->nx - 1;
-	if (edgeinfo->nyp != 0) edgeinfo->nyp = (h->node_offset) ? h->ny : h->ny - 1;
+	else {
+		if (edgeinfo->nxp != 0) edgeinfo->nxp = (h->node_offset) ? h->nx : h->nx - 1;
+		if (edgeinfo->nyp != 0) edgeinfo->nyp = (h->node_offset) ? h->ny : h->ny - 1;
+	}
+	if (gmtdefs.verbose) fprintf (stderr, "GMT_boundcond_param_prep determined edgeinfo: gn = %i, gs = %i, nxp = %i, nyp = %i\n", edgeinfo->gn, edgeinfo->gs, edgeinfo->nxp, edgeinfo->nyp);
 	return (GMT_NOERROR);
 }
 
@@ -7894,7 +7896,7 @@ int GMT_prepare_label (double angle, int side, double x, double y, int type, dou
 
 void GMT_get_annot_label (double val, char *label, int do_minutes, int do_seconds, int lonlat, BOOLEAN worldmap)
 /* val:		Degree value of annotation */
-/* label: 	String to hold the final annotation */
+/* label:	String to hold the final annotation */
 /* do_minutes:	TRUE if degree and minutes are desired, FALSE for just integer degrees */
 /* do_seconds:	TRUE if degree, minutes, and seconds are desired */
 /* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed */
@@ -8524,30 +8526,6 @@ BOOLEAN GMT_polygon_is_open (double x[], double y[], int n)
 	return (!(x[0] == x[n-1] && y[0] == y[n-1]));
 }
 
-void GMT_weighted_average (int n, float *z, float *w, double *zmin, double *zmax)
-{
-	/* Compute weighted average out of total weighted value and sum of weights
-	 * n = number of points in array
-	 * z = (in:) sum of weighted values, (out:) weighted average
-	 * w = sum of weights
-	 */
-	int k, not_used = 0;
-
-	*zmin = DBL_MAX;	*zmax = -DBL_MAX;
-	for (k = 0; k < n; k++) {
-		if (w[k] > 0.0) {
-			z[k] /= w[k];
-			*zmin = MIN (*zmin, z[k]);
-			*zmax = MAX (*zmax, z[k]);
-		}
-		else {
-			not_used++;
-			z[k] = GMT_f_NaN;
-		}
-	}
-	if (gmtdefs.verbose && not_used) fprintf (stderr, "GMT_weighted_average: %d weighted averages set to NaN\n", not_used);
-}
-
 /*--------------------------------------------------------------------
  *	Translation of old fourt.f FORTRAN code to C using the automatic
  *	translator f2c written by S.I. Feldman, David M. Gay, Mark W. Maimone,
@@ -8562,12 +8540,12 @@ void GMT_weighted_average (int n, float *z, float *w, double *zmin, double *zmax
 /* C-callable wrapper for fourt_ */
 
 void GMT_fourt (float *data, int *nn, int ndim, int ksign, int iform, float *work)
-            	/* Data array */
-         	/* Dimension array */
-         	/* Number of dimensions */
-          	/* Forward(-1) or Inverse(+1) */
-          	/* Real(0) or complex(1) data */
-            	/* Work array */
+	/* Data array */
+	/* Dimension array */
+	/* Number of dimensions */
+	/* Forward(-1) or Inverse(+1) */
+	/* Real(0) or complex(1) data */
+	/* Work array */
 {
 	int fourt_ (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work);
 	(void) fourt_ (data, nn, &ndim, &ksign, &iform, work);
@@ -8602,11 +8580,11 @@ int fourt_ (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work
 		NN - ARRAY OF NUMBER OF POINTS IN EACH DIMENSION
 		NDIM - NUMBER OF DIMENSIONS (FOR OUR PURPOSES, NDIM=1)
 		KSIGN - +1 FOR INVERSE TRANSFORM (FREQ TO GMT_TIME DOMAIN)
-		        -1 FOR FORWARD TRANSFORM (GMT_TIME TO FREQ DOMAIN)
+			-1 FOR FORWARD TRANSFORM (GMT_TIME TO FREQ DOMAIN)
 		IFORM - 0 REAL DATA
 			+1 COMPLEX DATA
 		WORK - 0 IF ALL DIMENSIONS ARE RADIX 2
-		       COMPLEX ARRAY, LARGE AS LARGEST NON-RADIX 2 DIMENSI0N
+		COMPLEX ARRAY, LARGE AS LARGEST NON-RADIX 2 DIMENSI0N
 
 	PROGRAM BY NORMAN BRENNER FROM THE BASIC PROGRAM BY CHARLES
 	RADER.  RALPH ALTER SUGGESTED THE IDEA FOR THE DIGIT REVERSAL.
@@ -8747,7 +8725,6 @@ L74:
 	i__2 = ntot;
 	for (j = 2; j <= i__2; ++j) {
 	    data[j] = data[i];
-/* L80: */
 	    i += 2;
 	}
 L90:
@@ -9009,7 +8986,6 @@ L560:
 L565:
 	    tempr = wr;
 	    wr = wr * wstpr - wi * wstpi + wr;
-/* L570: */
 	    wi = wi * wstpr + tempr * wstpi + wi;
 	}
 	ipar = 3 - ipar;
@@ -9085,7 +9061,6 @@ L625:
 		}
 		tempr = wr;
 		wr = wr * wstpr - wi * wstpi + wr;
-/* L635: */
 		wi = tempr * wstpi + wi * wstpr + wi;
 	    }
 	}
@@ -9294,7 +9269,6 @@ L710:
 	    data[i + 1] = difi + tempi;
 	    data[j] = sumr - tempr;
 	    data[j + 1] = -difi + tempi;
-/* L720: */
 	    j += np2;
 	}
 	imin += 2;
@@ -9320,7 +9294,6 @@ L731:
 	i__3 = ntot;
 	i__4 = np2;
 	for (i = imin; i__4 < 0 ? i >= i__3 : i <= i__3; i += i__4) {
-/* L735: */
 	    data[i + 1] = -data[i + 1];
 	}
 L740:
@@ -9416,7 +9389,6 @@ L850:
 		for (i = imin; i__8 < 0 ? i >= i__7 : i <= i__7; i += i__8) {
 		    data[i] = data[j];
 		    data[i + 1] = -data[j + 1];
-/* L860: */
 		    j -= np0;
 		}
 	    }
@@ -9424,7 +9396,6 @@ L850:
 L900:
 	np0 = np1;
 	np1 = np2;
-/* L910: */
 	nprev = n;
     }
 L920:
