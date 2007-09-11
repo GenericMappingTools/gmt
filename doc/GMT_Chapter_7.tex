@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.36 2007-06-06 19:12:35 remko Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.37 2007-09-11 23:38:24 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -581,7 +581,7 @@ on the errors in the data and the physical laws obeyed by {\it z}.
 \GMT\ cannot always do the ``best'' thing but it offers great
 flexibility through its combinations of tools.  We illustrate all
 four solutions using a cpt file that contains color fills,
-patterns, and a ``skip slice'' request for $700 < z < 725$.
+patterns for interval (900,925) and NaN, and a ``skip slice'' request for interval (700,725).
 
 \script{example_16} 
 \GMTexample{16}{More ways to grid data.}
@@ -891,6 +891,10 @@ Note that the script is set to evaluate a global 30 minute grid for expediency (
 several smaller landmasses that do have terrestrial antipodes do not show up.  If you want
 a more accurate map you can set the parameter $D$ to a smaller increment (try 5 and wait a
 few minutes).
+
+The call to \GMTprog{grdimage} includes the \Opt{-Sn} to suspend interpolation and only
+return the value of the nearest neighbor. This option is particularly practical for plotting
+categorical data, like these, that should not be interpolated.
 
 \GMTexample{25}{Global distribution of antipodes.}
 
