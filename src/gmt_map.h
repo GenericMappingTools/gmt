@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.17 2007-08-21 19:37:39 guru Exp $
+ *	$Id: gmt_map.h,v 1.18 2007-09-11 23:50:15 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -39,7 +39,7 @@ EXTERN_MSC int GMT_compact_line (double *x, double *y, int n, BOOLEAN pen_flag, 
 EXTERN_MSC void GMT_datum_init (struct GMT_DATUM *from, struct GMT_DATUM *to, BOOLEAN heights);
 EXTERN_MSC int GMT_geo_to_xy_line (double *lon, double *lat, int n);
 EXTERN_MSC int GMT_graticule_path (double **x, double **y, int dir, double w, double e, double s, double n);
-EXTERN_MSC int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN bilinear, BOOLEAN inverse);
+EXTERN_MSC int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN antialias, int interpolant, double threshold, BOOLEAN inverse);
 EXTERN_MSC int GMT_great_circle_intersection (double A[], double B[], double C[], double X[], double *CX_dist);
 EXTERN_MSC int GMT_latpath (double lat, double lon1, double lon2, double **x, double **y);
 EXTERN_MSC int GMT_lonpath (double lon, double lat1, double lat2, double **x, double **y);
@@ -58,8 +58,10 @@ EXTERN_MSC void GMT_azim_to_angle (double lon, double lat, double c, double azim
 EXTERN_MSC void GMT_conv_datum (double in[], double out[]);
 EXTERN_MSC void GMT_geo_to_xy (double lon, double lat, double *x, double *y);
 EXTERN_MSC void GMT_geoz_to_xy (double x, double y, double z, double *x_out, double *y_out);
+#if 0 /* OLD_GRD_FORWARD_CODE */
 EXTERN_MSC int GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius);
 EXTERN_MSC int GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius);
+#endif /* OLD_GRD_FORWARD_CODE */
 EXTERN_MSC int GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, int nx, int ny, int dpi, int offset);
 EXTERN_MSC void GMT_init_ellipsoid (void);
 EXTERN_MSC void GMT_init_search_radius (double *radius, struct GRD_HEADER *r_head, struct GRD_HEADER *g_head, BOOLEAN inverse);
