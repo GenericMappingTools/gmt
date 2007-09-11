@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.299 2007-09-10 19:14:18 guru Exp $
+ *	$Id: gmt_init.c,v 1.300 2007-09-11 19:59:48 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2590,10 +2590,10 @@ int GMT_getdefpath (int get, char **P)
 
 double GMT_convert_units (char *from, int new_format)
 {
-	/* Converts the input value to new units indicated by way */
+	/* Converts the input value to new units indicated by new_format */
 
 	int c = 0, len, old_format;
-	BOOLEAN have_unit = FALSE;
+	BOOLEAN have_unit = FALSE, GMT_is_invalid_number (char *t);
 	double value;
 
 	if ((len = strlen(from))) {
@@ -2601,8 +2601,14 @@ double GMT_convert_units (char *from, int new_format)
 		if ((have_unit = isalpha (c))) from[len-1] = '\0';	/* Temporarily remove unit */
 	}
 
-	old_format = GMT_unit_lookup (c);
+	/* So c is either 0 (meaing default unit) or any letter (even junk like z) */
+	
+	old_format = GMT_unit_lookup (c);	/* Will warn if c is not 0, 'c', 'i', 'm', 'p' */
 
+	if (GMT_is_invalid_number (from)) {
+		fprintf (stderr, "%s: Warning: %s not a valid number and may not be decoded properly.\n", GMT_program, from);
+	}
+	
 	value = atof (from) * GMT_u2u[old_format][new_format];
 	if (have_unit) from[len-1] = c;	/* Put back what we took out temporarily */
 
@@ -2644,6 +2650,30 @@ int GMT_unit_lookup (int c)
 	}
 
 	return (unit);
+}
+
+BOOLEAN GMT_is_invalid_number (char *t)
+{
+	int i, n;
+	
+	/* Checks if t fits the format [+|-][xxxx][.][yyyy][e|E[+|-]nn]. */
+	
+	if (!t) return (TRUE);				/* Cannot be NULL */
+	i = n = 0;
+	if (t[i] == '+' || t[i] == '-') i++;		/* OK to have leading sign */
+	while (isdigit ((int)t[i])) i++, n++;		/* OK to have numbers */
+	if (t[i] == '.') {				/* Found a decimal */
+		i++;	/* Go to next character */
+		while (isdigit ((int)t[i])) i++, n++;	/* OK to have numbers following the decimal */
+	}
+	/* Here n must be > 0.  Also, we might find exponential notation */
+	if (t[i] == 'e' || t[i] == 'E') {
+		i++;
+		if (t[i] == '+' || t[i] == '-') i++;	/* OK to have leading sign for exponent */
+		while (isdigit ((int)t[i])) i++;	/* OK to have numbers for the exponent */
+	}
+	/* If all is well we should now have run out of characters in t and n > 0 - otherwise it is an error */
+	return ((t[i] || n == 0) ? TRUE : FALSE);
 }
 
 int GMT_hash_lookup (char *key, struct GMT_HASH *hashnode, int n, int n_hash)
