@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.21 2007-09-07 00:08:33 remko Exp $
+ *	$Id: gmt_support.h,v 1.22 2007-09-11 23:30:36 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -88,7 +88,6 @@ EXTERN_MSC void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *p
 EXTERN_MSC char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, int rgb[]);
 EXTERN_MSC void GMT_fourt (float *data, int *nn, int ndim, int ksign, int iform, float *work);
 EXTERN_MSC int GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
-EXTERN_MSC void GMT_weighted_average (int n, float *z, float *w, double *zmin, double *zmax);
 
 /* Backwards macro for MB-system support */
 #define GMT_get_rgb24(z,rgb) GMT_get_rgb_from_z(z,rgb)
