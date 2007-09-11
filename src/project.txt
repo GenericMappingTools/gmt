@@ -118,10 +118,9 @@ Sort the output into increasing \fIp\fP order.  Useful when projecting random da
 .B \-W
 Width controls.  Project only those points whose \fIq\fP coordinate is within \fIw_min\fP < \fIq\fP < \fIw_max\fP.  
 #include "explain_-t.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 2 input columns].
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 [Default is given by OPT(F) or OPT(G)].
 #include "explain_-f.txt"
 #include "explain_precision.txt"

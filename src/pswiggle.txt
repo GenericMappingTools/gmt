@@ -81,8 +81,7 @@ Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 3 input columns].
 #include "explain_-c.txt"
 #include "explain_-f.txt"

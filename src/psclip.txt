@@ -52,10 +52,9 @@ Invert the sense of what is inside and outside, i.e., use the outside of the pol
 .B \-Z
 For 3-D projections:  Sets the z-level of the polygons [0].
 #include "explain_-t.txt"
-#include "explain_-c.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 2 input columns].
+#include "explain_-c.txt"
 #include "explain_-f.txt"
 .SH EXAMPLES
 To make an overlay \fIPostScript\fP file that will set up a complex clip area to which

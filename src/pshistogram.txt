@@ -76,10 +76,9 @@ Specify which column to use for the histogram data.  First column is 0 [0].
 Choose between 6 types of histograms: 0 = counts [Default], 1 = frequency_percent,
 2 = log (1.0 + count), 3 = log (1.0 + frequency_percent),
 4 = log10 (1.0 + count), 5 = log10 (1.0 + frequency_percent).
-#include "explain_-c.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 2 input columns].
+#include "explain_-c.txt"
 #include "explain_-f.txt"
 #include "explain_pen.txt"
 #include "explain_fill.txt"

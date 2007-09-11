@@ -69,7 +69,7 @@ one of several data types (all binary except \fBa\fP):
 Default format is scanline orientation of ASCII numbers: \fB\-ZTLa\fP.
 Note that \fB\-Z\fP only applies to 1-column output.
 .RE
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 [Default is 3].
 This option only applies to xyz output; see \fB\-Z\fP for z table output.
 #include "explain_-f.txt"

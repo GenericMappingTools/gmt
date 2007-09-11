@@ -133,9 +133,8 @@ width = 1, color = black, texture = solid].
 .TP
 .B \-Z
 For 3-D projections:  Sets the z-level of the coastlines [0].
+#include "explain_-bo.txt"
 #include "explain_-c.txt"
-#include "explain_-o_binary.txt"
-#include "explain_-n.txt"
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"

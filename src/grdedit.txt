@@ -55,8 +55,7 @@ grid, or vice-versa.  Basically, gridline-registered grids will have their domai
 half the x- and y-increments whereas pixel-registered grids will have their domain shrunk by
 the same amount.
 #include "explain_-V.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 3 input columns].
 #include "explain_-f.txt"
 .SH EXAMPLES
