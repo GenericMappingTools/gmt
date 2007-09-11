@@ -6,7 +6,9 @@ grdproject \- Forward and Inverse map transformation of 2-D grd files
 \fBgrdproject\fP \fIin_grdfile\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(A)[\fBk|m|n|i|c|p\fP] ] [ OPT(C)[\fIdx/dy\fP] ] [ OPT(D)GMT_inc_OPT ] 
 [ OPT(E)\fIdpi\fP ] [ OPT(F) ] [ OPT(G)\fIout_grdfile\fP ] [ OPT(I) ] 
-[ OPT(Mc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(N)\fInx/ny\fP ] [ OPT(S)\fIsearch_radius\fP ] [ GMT_V_OPT ]
+[ OPT(Mc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(N)\fInx/ny\fP ]
+[ OPT(S)[\fB-\fP]\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP[\fB/\fP\fIthreshold\fP] ]
+[ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdproject\fP will do one of two things depending whether OPT(I) has been set.  If set, it
 will transform a gridded data set from a rectangular coordinate system onto a geographical
@@ -16,7 +18,7 @@ average of nearby points.  Aliasing is avoided by using sensible values for the 
 The new node spacing may be determined in one of several ways by specifying the grid spacing,
 number of nodes, or resolution.  Nodes not constrained by input data are set to NaN.
 .br
-	No space between the option flag and the associated arguments.  Use upper case for the
+No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
 .TP
 \fIin_grdfile\fP
@@ -56,9 +58,7 @@ Append \fBc\fP, \fBi\fP, or \fBm\fP to indicate that cm, inch, or meter should b
 .TP
 .B \-N
 Set the number of grid nodes in the new grid.
-.TP
-.B \-S
-Set the search radius for the averaging procedure  [Default avoids aliasing].
+#include "explain_-S.txt"
 #include "explain_-V.txt"
 .SH EXAMPLES
 To transform the geographical grid dbdb5.grd onto a pixel Mercator grid at 300 dpi, run
