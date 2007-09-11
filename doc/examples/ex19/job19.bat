@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 19
 REM
-REM		$Id: job19.bat,v 1.9 2006-10-22 14:26:49 remko Exp $
+REM		$Id: job19.bat,v 1.10 2007-09-11 22:42:37 remko Exp $
 REM
 REM Purpose:	Illustrates various color pattern effects for maps
 REM GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext
@@ -13,13 +13,13 @@ if %master%==y cd ex19
 REM First make a worldmap with graded blue oceans and rainbow continents
 
 gmtset COLOR_MODEL rgb
-grdmath -R-180/180/-90/90 -I1 -F Y COSD 2 POW = lat.grd
-grdmath -R-180/180/-90/90 -I1 -F X = lon.grd
+grdmath -Rd -I1 Y COSD 2 POW = lat.grd
+grdmath -Rd -I1 X Y ABS 90 NEQ MUL = lon.grd
 echo 0 white 1 blue > lat.cpt
 makecpt -Crainbow -T-180/180/60 -Z > lon.cpt
-grdimage lat.grd -JI0/6.5i -Clat.cpt -P -K -Y7.5i -B0 > example_19.ps
+grdimage lat.grd -Sl -JI0/6.5i -Clat.cpt -P -K -Y7.5i -B0 > example_19.ps
 pscoast -R -J -O -K -Dc -A5000 -Gc >> example_19.ps
-grdimage lon.grd -J -Clon.cpt -O -K >> example_19.ps
+grdimage lon.grd -Sl -J -Clon.cpt -O -K >> example_19.ps
 pscoast -R -J -O -K -Q >> example_19.ps
 pscoast -R -J -O -K -Dc -A5000 -Wthinnest >> example_19.ps
 echo 0 20 32 0 1 CM 5TH INTERNATIONAL | pstext -R -J -O -K -Gred -Sthinner >> example_19.ps
@@ -34,9 +34,9 @@ echo 0 -15 32 0 1 CM GMT COLOR PATTERNS | pstext -R -J -O -K -Gmagenta -Sthinner
 
 REM Finally repeat 1st plot but exchange the patterns
 
-grdimage lon.grd -J -Clon.cpt -O -K -Y-3.25i -B0 -U"Example 19 in Cookbook" >> example_19.ps
+grdimage lon.grd -Sl -J -Clon.cpt -O -K -Y-3.25i -B0 -U"Example 19 in Cookbook" >> example_19.ps
 pscoast -R -J -O -K -Dc -A5000 -Gc >> example_19.ps
-grdimage lat.grd -J -Clat.cpt -O -K >> example_19.ps
+grdimage lat.grd -Sl -J -Clat.cpt -O -K >> example_19.ps
 pscoast -R -J -O -K -Q >> example_19.ps
 pscoast -R -J -O -K -Dc -A5000 -Wthinnest >> example_19.ps
 echo 0 20 32 0 1 CM 5TH INTERNATIONAL | pstext -R -J -O -K -Gred -Sthinner >> example_19.ps
