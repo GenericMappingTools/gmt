@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 25
 REM
-REM             $Id: job25.bat,v 1.8 2004-09-29 05:22:20 pwessel Exp $
+REM             $Id: job25.bat,v 1.9 2007-09-11 22:40:24 remko Exp $
 REM
 REM Purpose:    Display distribution of antipode types
 REM
@@ -33,12 +33,12 @@ grd2xyz tmp.grd -S -ZTLa > key.d
 echo { printf "set mixed=%%d\n", $1} > awk.txt
 gmtmath -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt >> script0.bat
 REM Generate corresponding color table
-echo -1	blue	0	blue > key.cpt
-echo 0	gray	1	gray >> key.cpt
-echo 1	red	2	red >> key.cpt
+echo -1.5	blue	-0.5	blue > key.cpt
+echo -0.5	gray	0.5	gray >> key.cpt
+echo 0.5	red	1.5	red >> key.cpt
 REM Create the final plot and overlay coastlines
 gmtset ANNOT_FONT_SIZE_PRIMARY +10p PLOT_DEGREE_FORMAT dddF
-grdimage key.grd -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i -U/-0.75i/-0.95i/"Example 25 in Cookbook" > example_25.ps
+grdimage key.grd -Sn -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i -U/-0.75i/-0.95i/"Example 25 in Cookbook" > example_25.ps
 pscoast -R -J -O -K -Wthinnest -Dc -A500 >> example_25.ps
 REM Place an explanatory legend below
 if %master%==n echo off
