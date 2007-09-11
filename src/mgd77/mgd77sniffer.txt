@@ -6,7 +6,9 @@ mgd77sniffer \- Scan for errors in MGD77 data
 \fBmgd77sniffer\fP \fINGDC-ids\fP [ OPT(A)\fIfieldabbrev\fP,\fIscale\fP,\fIoffset\fP ] [ OPT(C)\fImaxspd\fP ] 
 [ OPT(D)\fBd\fP|\fBe\fP|\fBf\fP|\fBl\fP|\fBm\fP|\fBs\fP|\fBv\fP ] [ OPT(g)\fIfieldabbrev\fP,\fIimggrid\fP,\fIscale\fP,\fImode\fP ] 
 [ OPT(G)\fIfieldabbrev\fP,\fIgrid\fP ] [ GMT_H_OPT ] [ OPT(I)\fIfieldabbrev\fP,\fIrec1\fP,\fIrecN\fP ] 
-[ OPT(N) ] [ OPT(L)\fIcustom limits file\fP ] [ OPT(Q)[\fIvalue\fP] [ GMT_Rgeo_OPT ] [ OPT(S)\fBd\fP|\fBs\fP|\fBt\fP ] 
+[ OPT(N) ] [ OPT(L)\fIcustom limits file\fP ]
+[ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ]
+[ GMT_Rgeo_OPT ] [ OPT(S)\fBd\fP|\fBs\fP|\fBt\fP ] 
 [ OPT(T)\fIgap\fP ] [ GMT_V_OPT ] [ OPT(W)\fBc\fP|\fBg\fP|\fBo\fP|\fBs\fP|\fBt\fP|\fBv\fP|\fBx\fP ] [ GMT_bo_OPT ]
 
 

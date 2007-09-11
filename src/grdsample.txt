@@ -4,11 +4,12 @@
 grdsample \- Resample a grd file onto a new grid
 .SH SYNOPSIS
 \fBgrdsample\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP [ OPT(F) ] [ GMT_I_OPT ] 
-[ OPT(L)\fIflag\fP ] [ OPT(Q)[\fIvalue\fP] ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_fi_OPT ]
+[ OPT(L)\fIflag\fP ] [ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ]
+[ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBgrdsample\fP reads a grdfile and interpolates it to create a new grdfile with either:  a different registration 
 (OPT(F) or OPT(T)); or, a new grid-spacing or number of nodes (OPT(I)), and perhaps also a new sub-region 
-(OPT(R)).  Interpolation is bicubic [Default] or bilinear (OPT(Q)) and uses boundary conditions (OPT(L)).  
+(OPT(R)).  A bicubic [Default], bilinear, B-spline or nearest-neighbor interpolation (OPT(Q)) is used, requiring boundary conditions (OPT(L)).  
 Note that using OPT(R) only is equivalent to \fBgrdcut\fP or \fBgrdedit \-S\fP.  \fBgrdsample\fP safely 
 creates a fine mesh from a coarse one; the converse may suffer aliasing unless the data are filtered using
 \fBgrdfft\fP or \fBgrdfilter\fP.
@@ -33,7 +34,8 @@ Force pixel registration on output grid.  [Default is same registration as input
 .B \-L
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
 x or y or both set by OPT(R), or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
-lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]  
+lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless the grid is
+automatically recognised as periodic.]  
 #include "explain_-Q.txt"
 #include "explain_-R.txt"
 .TP

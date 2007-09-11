@@ -4,17 +4,17 @@
 grdtrack \- Sampling of a 2-D grdfile along 1-D trackline (a sequence of x,y points)
 .SH SYNOPSIS
 \fBgrdtrack\fP \fIxyfile\fP OPT(G)\fIgrdfile\fP [ GMT_H_OPT ] [ OPT(L)\fIflag\fP ] [ GMT_M_OPT ] 
-[ OPT(Q)[\fIvalue\fP] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] 
-[ GMT_b_OPT ] [ GMT_f_OPT ]
+[ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ] [ GMT_Rgeo_OPT ] [ OPT(S) ]
+[ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdtrack\fP reads a grdfile (or a Sandwell/Smith IMG file) and a table (from file or standard input) with (x,y) positions 
 in the first two columns (more columns may be present). It interpolates the grid at the positions 
 in the table and writes out the table with the interpolated values added as a new column.  A bicubic 
-[Default] or bilinear [OPT(Q)] interpolation is used, requiring boundary conditions at the limits 
+[Default], bilinear, B-spline or nearest-neighbor (see OPT(Q)) interpolation is used, requiring boundary conditions at the limits 
 of the region (see OPT(L)).
 .TP
 \fIxyfile\fP
-This is an ASCII [or binary, see OPT(b)] file where the first 2 columns hold the (x,y) positions where the user wants to sample
+This is an ASCII (or binary, see OPT(b)) file where the first 2 columns hold the (x,y) positions where the user wants to sample
 the 2-D data set.
 .TP
 .B \-G
@@ -32,7 +32,8 @@ No space between the option flag and the associated arguments.
 .B \-L
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
 x or y or both set by \fB\-R\fP, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
-lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero).]
+lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless
+the grid is automatically recognised as periodic.]
 .TP
 .B \-M
 Multiple segment file.  Segment separator is a record beginning with \fIflag\fP.
@@ -49,19 +50,18 @@ Only write out the sampled z-values [Default writes all columns].
 .TP
 .B \-:
 Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [Default is (longitude,latitude)].
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 2 input columns].
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 [Default is one more than input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH HINTS
 If an interpolation point is not on a node of the input grid, then a NaN at any node in the neighborhood 
 surrounding the point will yield an interpolated NaN.  Bicubic interpolation [default] yields continuous 
-first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear interpolation [\fB\-Q\fP] 
+first derivatives but requires a neighborhood of 4 nodes by 4 nodes.  Bilinear interpolation [OPT(Q)] 
 uses only a 2 by 2 neighborhood, but yields only zeroth-order continuity.  Use bicubic when smoothness is 
-important.  Use bilinear to minimize the propagation of NaNs.
+important.  Use bilinear to minimize the propagation of NaNs, or lower \fIthreshold\fP.
 .SH EXAMPLES
 To sample the file hawaii_topo.grd along the SEASAT track track_4.xyg (An ASCII
 table containing longitude, latitude, and SEASAT-derived gravity, preceded by one header record):

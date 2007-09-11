@@ -5,8 +5,8 @@ grdrotater \- Rotate a grid using a finite rotation
 .SH SYNOPSIS
 \fBgrdrotate\fP \fIingrdfile\fP OPT(G)\fIoutgrdfile\fP OPT(T)\fIplon\fP/\fIplat\fP/\fIomega\fP 
 [ OPT(F)\fIpolygonfile\fP ] [ GMT_H_OPT ] [ GMT_Mo_OPT ] [ OPT(N) ] 
-[ OPT(Q)[\fIvalue\fP] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ GMT_V_OPT ] 
-[ GMT_t_OPT ] [ GMT_b_OPT ]
+[ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ] [ GMT_Rgeo_OPT ] [ OPT(S) ]
+[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
 .SH DESCRIPTION
 \fBgrdrotater\fP reads a geographical grid and reconstructs it given
 a total reconstruction rotation.  Optionally, the user may supply a clipping polygon
@@ -49,10 +49,9 @@ Skip the rotation of the grid, just rotate the polygon outline (requires \fB\-F\
 .TP
 .B \-:
 Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [Default is (longitude,latitude)].
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 2 input columns].
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 [Default is same as input].
 .SH EXAMPLES
 To rotate the data defined by grid topo.grd and the polygon outline clip_path.d, using a finite rotation
