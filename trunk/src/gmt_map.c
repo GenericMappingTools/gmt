@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.148 2007-09-07 00:14:02 remko Exp $
+ *	$Id: gmt_map.c,v 1.149 2007-09-11 23:33:13 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,8 +49,11 @@
  *	GMT_geo_to_xy :		Generic lon/lat to x/y
  *	GMT_geo_to_xy_line :	Same for polygons
  *	GMT_geoz_to_xy :	Generic 3-D lon/lat/z to x/y
+#if 0
+ * OLD_GRD_FORWARD_CODE
  *	GMT_grd_forward :	Forward map-transform grid matrix from lon/lat to x/y
  *	GMT_grd_inverse :	Inversely transform grid matrix from x/y to lon/lat
+#endif
  *	GMT_grd_project :	Generalized grid projection with interpolation
  *	GMT_grdproject_init :	Initialize parameters for grid transformations
  *	GMT_great_circle_dist :	Returns great circle distance in degrees
@@ -241,13 +244,16 @@ int GMT_is_wesn_corner (double x, double y);
 int GMT_is_rect_corner (double x, double y);
 int GMT_move_to_rect (double *x_edge, double *y_edge, int j, int nx);
 int GMT_move_to_wesn (double *x_edge, double *y_edge, double lon, double lat, double lon_old, double lat_old, int j, int nx);
+#if 0 /* OLD_GRD_FORWARD_CODE */
 int GMT_genper_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius);
 int GMT_default_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius);
 int GMT_tiles_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head);
+void GMT_weighted_average (int n, float *z, float *w, double *zmin, double *zmax);
 void GMT_merc_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head);
 void GMT_merc_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head);
 void GMT_transx_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head);
 void GMT_transy_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head);
+#endif /* OLD_GRD_FORWARD_CODE */
 int GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, int *sides, int *nx);
 int GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, int *sides, int *nx);
 BOOLEAN GMT_will_it_wrap_x (double *x, double *y, int n, int *start);
@@ -5342,6 +5348,7 @@ void GMT_init_search_radius (double *radius, struct GRD_HEADER *r_head, struct G
 	}
 }
 
+#if 0 /* OLD_GRD_FORWARD_CODE */
 int GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius)
 {	/* Forward projection from geographical to rectangular grid */
 	if (max_radius < 0)
@@ -5477,7 +5484,7 @@ int GMT_default_forward (float *geo, struct GRD_HEADER *g_head, float *rect, str
 	dj = (int)ceil (max_radius / r_head->y_inc);
 	i_max_3r = 3.0 / max_radius;
 
-	lon = (double *) GMT_memory (VNULL, (size_t)g_head->nx, sizeof (double), "GMT_grd_forward");
+	lon = (double *) GMT_memory (VNULL, (size_t)g_head->nx, sizeof (double), "GMT_default_forward");
 	for (i = 0; i < g_head->nx; i++) {
 		lon[i] = GMT_i_to_x (i, g_head->x_min, g_head->x_max, g_head->x_inc, g_off, g_head->nx);
 		if (GMT_io.in_col_type[0] == GMT_IS_LON) {
@@ -5486,12 +5493,12 @@ int GMT_default_forward (float *geo, struct GRD_HEADER *g_head, float *rect, str
 		}
 	}
 
-	x = (double *) GMT_memory (VNULL, (size_t)r_head->nx, sizeof (double), "GMT_grd_forward");
-	y = (double *) GMT_memory (VNULL, (size_t)r_head->ny, sizeof (double), "GMT_grd_forward");
+	x = (double *) GMT_memory (VNULL, (size_t)r_head->nx, sizeof (double), "GMT_default_forward");
+	y = (double *) GMT_memory (VNULL, (size_t)r_head->ny, sizeof (double), "GMT_default_forward");
 	for (i = 0; i < r_head->nx; i++) x[i] = GMT_i_to_x (i, r_head->x_min, r_head->x_max, r_head->x_inc, r_off, r_head->nx);
 	for (j = 0; j < r_head->ny; j++) y[j] = GMT_j_to_y (j, r_head->y_min, r_head->y_max, r_head->y_inc, r_off, r_head->ny);
 
-	weight_sum = (float *) GMT_memory (VNULL, (size_t)nm, sizeof (float), "GMT_grd_forward");
+	weight_sum = (float *) GMT_memory (VNULL, (size_t)nm, sizeof (float), "GMT_default_forward");
 	for (j = ij = 0; j < g_head->ny; j++) {
 		lat = GMT_j_to_y (j, g_head->y_min, g_head->y_max, g_head->y_inc, g_off, g_head->ny);
 		if (project_info.projection == GMT_MERCATOR && fabs (lat) >= 90.0) lat = copysign (89.99, lat);
@@ -5513,6 +5520,10 @@ int GMT_default_forward (float *geo, struct GRD_HEADER *g_head, float *rect, str
 					if (dr > max_radius) continue;
 					delta = dr * i_max_3r;
 					weight = 1.0 / (1.0 + delta * delta);
+					/*
+					delta = dr / max_radius;
+					weight = 1.0 + delta * delta * (2.0 * delta - 3.0);
+					*/
 					rect[k] += (float)(weight * geo[ij]);
 					weight_sum[k] += (float)weight;
 				}
@@ -5632,26 +5643,57 @@ int GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct 
 	return (GMT_NOERROR);
 }
 
-int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN bilinear, BOOLEAN inverse)
+void GMT_weighted_average (int n, float *z, float *w, double *zmin, double *zmax)
+{
+	/* Compute weighted average out of total weighted value and sum of weights
+	 * n = number of points in array
+	 * z = (in:) sum of weighted values, (out:) weighted average
+	 * w = sum of weights
+	 */
+	int k, not_used = 0;
+
+	*zmin = DBL_MAX;	*zmax = -DBL_MAX;
+	for (k = 0; k < n; k++) {
+		if (w[k] > 0.0) {
+			z[k] /= w[k];
+			*zmin = MIN (*zmin, z[k]);
+			*zmax = MAX (*zmax, z[k]);
+		}
+		else {
+			not_used++;
+			z[k] = GMT_f_NaN;
+		}
+	}
+	if (gmtdefs.verbose && not_used) fprintf (stderr, "GMT_weighted_average: %d weighted averages set to NaN\n", not_used);
+}
+#endif
+
+int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN antialias, int interpolant, double threshold, BOOLEAN inverse)
 {
 	/* Generalized grid projection that deals with both interpolation and averaging effects.
-	 * It assumes that the incoming grid was read with 2 boundary rows/cols so that the bcr functions can be used.
-	 * Therefore, we need to add these rows/cols when accessing the grid directly.  The I and z_in represents
-	 * the input grid which is either in original (i.e., lon/lat) coordinates or projected x/y (if inverse = TRUE).
+	 * It assumes that the incoming grid was read with 2 boundary rows/cols so that the bcr
+	 * functions can be used. Therefore, we need to add these rows/cols when accessing the
+	 * grid directly.  The I and z_in represents the input grid which is either in original
+	 * (i.e., lon/lat) coordinates or projected x/y (if inverse = TRUE).
 	 *
 	 * z_in:	Array with input grid on a padded grid with 2 extra rows/columns
 	 * I:		Grid header for input grid
 	 * z_out:	Array with output grid, no padding needed
 	 * O:		Grid header for output grid
 	 * edgeinfo:	Structure with information about boundary conditions on input grid
-	 * bilinear:	TRUE if we just want to use bilinear interpolation [Default is bicubic]
+	 * antialias:	TRUE if we need to do the antialiasing STEP 1 (below)
+	 * interpolant:	0 = nearest neighbor, 1 = bilinear, 2 = B-spline, 3 = bicubic
+	 * threshold:	minumum weight to be used. If weight < threshold interpolation yields NaN.
 	 * inverse:	TRUE if input is x/y and we want to invert for a lon/lat grid
 	 *
 	 * We assume the calling program has initialized the z_out array to any default empty value (NaN etc).
+	 *
+	 * Changed 10-Sep-07 to include the argument "antialias" and "threshold" and
+	 * made "interpolant" an integer (was BOOLEAN bilinear).
 	 */
 
 	int i_in, j_in, ij_in, i_out, j_out, ij_out, mx, my;
-	short int *nz;
+	short int *nz = VNULL;
 	double x_proj, y_proj, I_off, O_off, z_int, inv_nz;
 	double *x_in, *y_in, *x_in_proj = VNULL, *y_in_proj = VNULL, *x_out, *y_out, *x_out_proj = VNULL, *y_out_proj = VNULL;
 	struct GMT_BCR bcr;
@@ -5661,15 +5703,18 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 	GMT_boundcond_param_prep (I, edgeinfo);
 
-	/* Initialize bcr structure:  */
-
-	GMT_bcr_init (I, GMT_pad, bilinear, 1.0, &bcr);
+	/* Initialize bcr structure:
+	   Threshold changed 10 Sep 07 by RS from 1.0 to <threshold> to allow interpolation closer to
+	   a NaN value. In case of bilinear interpolation, using 1.0 creates a rectangular hole
+	   the size of 4 grid cells for a single NaN grid node. Using 0.25 will create a diamond
+	   shaped hole the size of one cell. */
+	GMT_bcr_init (I, GMT_pad, interpolant, threshold, &bcr);
 
 	/* Set boundary conditions  */
 
 	GMT_boundcond_set (I, edgeinfo, GMT_pad, z_in);
 
-	nz = (short int *) GMT_memory (VNULL, (size_t)(O->nx * O->ny), sizeof (short int), "GMT_grd_project");
+	if (antialias) nz = (short int *) GMT_memory (VNULL, (size_t)(O->nx * O->ny), sizeof (short int), "GMT_grd_project");
 	x_in = (double *) GMT_memory (VNULL, (size_t)I->nx, sizeof (double), "GMT_grd_project");
 	y_in = (double *) GMT_memory (VNULL, (size_t)I->ny, sizeof (double), "GMT_grd_project");
 	x_out = (double *) GMT_memory (VNULL, (size_t)O->nx, sizeof (double), "GMT_grd_project");
@@ -5706,7 +5751,8 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 	/* PART 1: Project input grid points and do a blockmean operation */
 
-	for (j_in = 0; j_in < I->ny; j_in++) {	/* Loop over the input grid coordinates */
+	if (antialias) {
+	    for (j_in = 0; j_in < I->ny; j_in++) {	/* Loop over the input grid coordinates */
 		if (GMT_IS_RECT_GRATICULE) y_proj = y_in_proj[j_in];
 		for (i_in = 0; i_in < I->nx; i_in++) {
 			if (GMT_IS_RECT_GRATICULE)
@@ -5727,15 +5773,16 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 			ij_in = (j_in + 2) * mx + i_in + 2;		/* ij allowing for boundary padding */
 			ij_out = j_out * O->nx + i_out;			/* The output node */
-			if (nz[ij_out] == 0) z_out[ij_out] = 0.0;	/* First time, override the NaN */
+			if (nz[ij_out] == 0) z_out[ij_out] = 0.0;	/* First time, override the initial value */
 			z_out[ij_out] += z_in[ij_in];			/* Add up the z-sum inside this rect... */
 			nz[ij_out]++;					/* ..and how many points there were */
-			if (nz[ij_out] == SHRT_MAX) {			/* This bin is getting way to many points... */
+			if (nz[ij_out] == SHRT_MAX) {			/* This bin is getting way too many points... */
 				fprintf (stderr, "%s: ERROR: Number of projected points inside a bin exceeds %d\n", GMT_program, SHRT_MAX);
 				fprintf (stderr, "%s: ERROR: Incorrect -R -I -J or insanely large grid?\n", GMT_program);
 				GMT_exit (EXIT_FAILURE);
 			}
 		}
+	    }
 	}
 
 	/* PART 2: Create weighted average of interpolated and observed points */
@@ -5755,14 +5802,15 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 				if (x_proj > I->x_max) x_proj -= 360.0;
 			}
 
-			if (i_out == (O->nx - 1))
-				i_in = 1;
+			if (i_out == (O->nx - 1)) i_in = 1;
 
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 
 			z_int = GMT_get_bcr_z (I, x_proj, y_proj, z_in, edgeinfo, &bcr);
 
-			if (nz[ij_out] == 0)
+			if (!antialias)
+				z_out[ij_out] = (float)z_int;
+			else if (nz[ij_out] < 2)	/* Changed 10-Sep-07 from ==0 to <2 */
 				z_out[ij_out] = (float)z_int;
 			else {
 				if (GMT_is_dnan (z_int))
@@ -5789,9 +5837,10 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 		GMT_free ((void *)y_out_proj);
 	}
 
-	return (FALSE);
+	return (GMT_NOERROR);
 }
 
+#if 0 /* OLD_GRD_FORWARD_CODE */
 void GMT_merc_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head)
 {	/* Forward projection from geographical to mercator grid */
 	int i, j, g_last, r_last;
@@ -5956,6 +6005,7 @@ void GMT_transy_forward (float *geo, struct GRD_HEADER *g_head, float *rect, str
 	GMT_free ((void *)value);
 	GMT_free ((void *)hold);
 }
+#endif /* OLD_GRD_FORWARD_CODE */
 
 void GMT_2D_to_3D (double *x, double *y, double z, int n)
 {
