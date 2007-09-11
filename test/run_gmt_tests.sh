@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: run_gmt_tests.sh,v 1.7 2007-06-05 14:02:32 remko Exp $
+#	$Id: run_gmt_tests.sh,v 1.8 2007-09-11 22:49:51 remko Exp $
 #
 #	test script for GMT/test directory
 #
@@ -22,6 +22,7 @@ touch fail_count.d
 here=`pwd`
 for dir in $dirs; do
 	cd $here/$dir
+	echo "=== Directory: $dir ==="
 	# Look for Bourne shell scripts
 	ls *.sh > /tmp/$$.lis
 	if [ -s /tmp/$$.lis ]; then	# Found Bourne shell scripts
