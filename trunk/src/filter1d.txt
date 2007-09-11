@@ -89,9 +89,8 @@ then no output will be given at this point [Default does not check Symmetry].
 .B \-T
 Make evenly spaced timesteps from \fIstart\fP to \fIstop\fP by \fIint\fP [Default uses input times].
 #include "explain_-V.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
-#include "explain_-o_binary.txt"
+#include "explain_-bi.txt"
+#include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"

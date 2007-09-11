@@ -99,10 +99,9 @@ OPT(T) may be used in conjunction with OPT(R) OPT(J) to change the datum before 
 \fBELLIPSOID\fP setting is correct for your case.
 #include "explain_-V.txt"
 #include "explain_-t.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 2 input columns].
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"

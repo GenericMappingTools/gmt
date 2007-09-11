@@ -72,8 +72,7 @@ Plot tiles instead of clip polygons.  Use \fB\-G\fP to set tile color or pattern
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-c.txt"
 #include "explain_fill.txt"

@@ -50,8 +50,7 @@ we will use a fast flat Earth approximation to calculate distance).  For more ac
 if distances should be calculated along geodesics.
 However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great circle calculations are used.
 #include "explain_-V.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"
 .SH EXAMPLES

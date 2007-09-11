@@ -91,9 +91,8 @@ If there is no time column (only data columns), give \fB\-T\fP with no arguments
 also implies \fB\-Ca\fP.  Alternatively, give the name of a file whose first column
 contains the desired t-coordinates which may be irregular.
 #include "explain_-V.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
-#include "explain_-o_binary.txt"
+#include "explain_-bi.txt"
+#include "explain_-bo.txt"
 [Default is same as input, but see OPT(F)]
 #include "explain_precision.txt"
 .SH BEWARE

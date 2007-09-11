@@ -56,9 +56,8 @@ Do not write records that only contain NaNs in every field [Default writes all r
 Only output those segments whose header record contains the specified text string [Default output all segments].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
-#include "explain_-o_binary.txt"
+#include "explain_-bi.txt"
+#include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"

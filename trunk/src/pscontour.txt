@@ -85,14 +85,13 @@ Select contouring and set contour pen attributes.  If the \fB+\fP flag is set th
 the contour lines are colored according to the cpt file (see \fB\-C\fP).
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
-#include "explain_-c.txt"
 #include "explain_-t.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 3 input columns].
 Use 4-byte integer triplets for node ids (\fB\-T\fP).
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 [Default is 3 output columns].
+#include "explain_-c.txt"
 #include "explain_pen.txt"
 #include "explain_color.txt"
 .SH EXAMPLES

@@ -84,13 +84,12 @@ Set pen attributes for sector outline or rose plot.  [Default is no outline].
 .TP
 .B \-Z
 Multiply the data radii by \fIscale\fP.  E.g., use \fB\-Z\fP0.001 to convert your data from m to km [Default is no scaling].
-#include "explain_-c.txt"
 .TP
 .B \-:
 Input file has (azimuth,radius) pairs rather than the expected (radius,azimuth).
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 2 input columns].
+#include "explain_-c.txt"
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"

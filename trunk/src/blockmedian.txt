@@ -61,10 +61,9 @@ mean values in blocks.  Weight sums can be reported in output for later combinin
 runs, etc.  Use OPT(W) for weighted i/o, OPT(Wi) for weighted inputonly, OPT(Wo) for
 weighted output only.  [Default uses unweighted i/o].
 #include "explain_-t.txt"
-#include "explain_-i_binary.txt"
-#include "explain_-n.txt"
+#include "explain_-bi.txt"
 [Default is 3 (or 4 if OPT(Wi) is set)].
-#include "explain_-o_binary.txt"
+#include "explain_-bo.txt"
 [Default is 3 (or 4 if OPT(Wo) is set)]. OPT(E) adds 3 additional columns.
 #include "explain_-f.txt"
 #include "explain_precision.txt"
