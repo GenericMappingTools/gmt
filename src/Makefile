@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.9 2007-09-04 15:40:35 remko Exp $
+#	$Id: Makefile,v 1.10 2007-09-11 23:47:07 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -46,29 +46,13 @@ PS	= -lpsl
 GMT	= -lgmt
 GMTPS	= -lgmtps
 
-LIB_C	= gmt_calclock.c \
-	  gmt_cdf.c \
-	  gmt_customio.c \
-	  gmt_grdio.c \
-	  gmt_init.c \
-	  gmt_io.c \
-	  gmt_map.c \
-	  gmt_nc.c \
-	  gmt_proj.c \
-	  gmt_shore.c \
-	  gmt_stat.c \
-	  gmt_support.c \
-	  gmt_vector.c
+LIB_C	= gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c gmt_grdio.c gmt_init.c gmt_io.c \
+	  gmt_map.c gmt_nc.c gmt_proj.c gmt_shore.c gmt_stat.c gmt_support.c gmt_vector.c
 
 LIBPS_C	= gmt_plot.c
 
-GMT_I	= gmt_globals.h \
-	  gmt_defaults.h \
-	  gmt_media_name.h \
-	  gmt_media_size.h \
-	  gmt_colornames.h \
-	  gmt_color_rgb.h \
-	  gmt_pennames.h
+GMT_I	= gmt_globals.h gmt_defaults.h gmt_media_name.h gmt_media_size.h gmt_colornames.h \
+	  gmt_color_rgb.h gmt_pennames.h
 
 PS_I	= pslib_inc.h
 
