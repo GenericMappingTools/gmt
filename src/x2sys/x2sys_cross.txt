@@ -6,7 +6,7 @@
 \fBx2sys_cross\fP \fItrack(s)\fP OPT(T)\fITAG\fP 
 [ OPT(Cc)|\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(F)\fIflags\fP ] [ OPT(Il)|\fBa\fP|\fBc\fP ] 
 [ GMT_J_OPT ] [ OPT(K)\fIcombi.lis\fP] [ OPT(O) ] 
-[ OPT(Nd)|\fBs\fP\fIunit\fP ] [ OPT(Qe)|\fBi\fP ] [ OPT(Sl)|\fBu\fP\fIspeed\fP ] 
+[ OPT(Nd)|\fBs\fP\fIunit\fP ] [ OPT(Qe)|\fBi\fP ] [ OPT(Sl)|\fBu\fP|\fBh\fP\fIspeed\fP ] 
 [ GMT_V_OPT ][ OPT(Wt)|\fBd\fP|\fBn\fP\fIsize\fP ] [ OPT(2) ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between ("external cross-overs") or within
@@ -36,7 +36,9 @@ Select procedure for along-track distance calculation:
 .B \-F
 Sets which columns to use.  Give a comma-separated list of column names;
 this list must include \fBx\fP, \fBy\fP or \fBlon\fP, \fBlat\fP and ideally
-\fBtime\fP [Default selects all columns].
+\fBtime\fP [Default selects all columns].  If \fBtime\fP is not selected
+(or selected but the cruises do not have time information), then we output
+proxy times (e.g., floating point record numbers) instead of \fBtime\fP.
 .TP
 .B \-I
 Sets the interpolation mode. Choose among:
@@ -75,6 +77,9 @@ calculate a crossover. Specify
 .br
 	\fB\-Su\fP sets upper speed [Default is Infinity].
 .br
+	\fB\-Sh\fP does not limit the speed but sets a lower speed below which headings
+will not be computed (i.e., set to NaN) [Default calculates headings regardless of speed].
+.br
 #include "explain_-V.txt"
 .TP
 .B \-W
@@ -100,7 +105,7 @@ the default format is chosen then the header record starts with "> ", and
 the output format for crossovers are first 10 columns that contain
 x, y, time along track #1 and #2, distance along track #1 and #2,
 heading along track #1 and #2, velocity along track #1 and #2, and
-then pairs of (COE, average value) for each data type (or track-values; see \fB\-2\fP).
+then pairs of (COE, average value) for each data type (or track-values #1 and #2; see \fB\-2\fP).
 It is recommended that the Akima spline is used
 instead of the natural cubic spline, since it is less sensitive to outliers
 that tend to introduce wild oscillations in the interpolation.

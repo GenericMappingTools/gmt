@@ -1,7 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.67 2007-09-12 17:36:26 remko Exp $
+	$Id: ChangeLog,v 1.68 2007-09-12 21:14:55 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-12	pwessel
+	* gmt_map.c		GMT_distances function did not work with correct pointer
+				(only used in x2sys supplement)
+	* x2sys_cross.c		Distances were bogus (see above), and wrong number of
+				arguments passed to read_file function pointer.
+	* x2sys.[ch]		Wrong number of arguments in the generic read_file function
+	
 2007-09-12	remko
 	* ex16/ex16.cpt:	Use a lower resolution in surface (-I0.2) to speed up ghostscript.
 				Add a nice image pattern to demonstrate that capability to do so.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.150 2007-09-12 03:36:25 remko Exp $
+ *	$Id: gmt_map.c,v 1.151 2007-09-12 21:14:55 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7192,7 +7192,7 @@ double GMT_geodesic_dist_km (double lonS, double latS, double lonE, double latE)
 	return (0.001 * GMT_geodesic_dist_meter (lonS, latS, lonE, latE));
 }
 
-int GMT_distances (double x[], double y[], int n, double scale, int dist_flag, double *dist)
+int GMT_distances (double x[], double y[], int n, double scale, int dist_flag, double **dist)
 {	/* Returns distances in meter; use scale to get other units */
 	int this, prev;
 	BOOLEAN cumulative = TRUE, do_scale, xy_not_NaN;
@@ -7243,7 +7243,7 @@ int GMT_distances (double x[], double y[], int n, double scale, int dist_flag, d
 
 		if (xy_not_NaN) prev = this;	/* This was a record with OK x,y; make it the previous point for distance calculations */
 	}
-	dist = d;
+	*dist = d;
 	return (GMT_NOERROR);
 }
 
