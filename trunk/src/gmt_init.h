@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.66 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_init.h,v 1.67 2007-09-12 01:30:58 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,6 +28,7 @@
 #ifndef GMT_INIT_H
 #define GMT_INIT_H
 EXTERN_MSC double GMT_convert_units (char *from, int new_format);
+EXTERN_MSC BOOLEAN GMT_is_invalid_number (char *t);
 EXTERN_MSC int GMT_begin (int argc, char **argv);
 EXTERN_MSC int GMT_check_region (double w, double e, double s, double n);
 EXTERN_MSC int GMT_check_scalingopt (char option, char unit, char *unit_name);

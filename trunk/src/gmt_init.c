@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.300 2007-09-11 19:59:48 guru Exp $
+ *	$Id: gmt_init.c,v 1.301 2007-09-12 01:30:58 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2336,10 +2336,10 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
 	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font[gmtdefs.header_font].name);
 	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %gp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %gp\n", gmtdefs.header_font_size);
-	(GMT_force_resize) ? fprintf (fp, "HEADER_OFFSET			= %g%cp\n", save_header_offset * s, u) : fprintf (fp, "HEADER_OFFSET		= %g%c\n", gmtdefs.header_offset * s, u);
+	(GMT_force_resize) ? fprintf (fp, "HEADER_OFFSET			= %g%c\n", save_header_offset * s, u) : fprintf (fp, "HEADER_OFFSET		= %g%c\n", gmtdefs.header_offset * s, u);
 	fprintf (fp, "LABEL_FONT		= %s\n", GMT_font[gmtdefs.label_font].name);
 	(GMT_force_resize) ? fprintf (fp, "LABEL_FONT_SIZE		= %gp\n", save_label_size) : fprintf (fp, "LABEL_FONT_SIZE		= %gp\n", gmtdefs.label_font_size);
-	(GMT_force_resize) ? fprintf (fp, "LABEL_OFFSET			= %g%cp\n", save_label_offset * s, u) : fprintf (fp, "LABEL_OFFSET		= %g%c\n", gmtdefs.label_offset * s, u);
+	(GMT_force_resize) ? fprintf (fp, "LABEL_OFFSET			= %g%c\n", save_label_offset * s, u) : fprintf (fp, "LABEL_OFFSET		= %g%c\n", gmtdefs.label_offset * s, u);
 	fprintf (fp, "OBLIQUE_ANNOTATION	= %d\n", gmtdefs.oblique_annotation);
 	fprintf (fp, "PLOT_CLOCK_FORMAT	= %s\n", gmtdefs.plot_clock_format);
 	fprintf (fp, "PLOT_DATE_FORMAT	= %s\n", gmtdefs.plot_date_format);
@@ -2593,7 +2593,7 @@ double GMT_convert_units (char *from, int new_format)
 	/* Converts the input value to new units indicated by new_format */
 
 	int c = 0, len, old_format;
-	BOOLEAN have_unit = FALSE, GMT_is_invalid_number (char *t);
+	BOOLEAN have_unit = FALSE;
 	double value;
 
 	if ((len = strlen(from))) {
