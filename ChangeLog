@@ -1,6 +1,36 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.65 2007-09-11 19:59:48 guru Exp $
+	$Id: ChangeLog,v 1.66 2007-09-12 00:00:08 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-09-11	remko
+	* explain_-b[io].txt:	Added to replace files linked to obsolete options.
+	* explain_-{n,i_binary,o_binary}.txt:	Replaced by the above.
+	* gmt_bcr.[ch]:		BCR (bi-dimensional convolution routines) code updated
+				and moved from gmt_support.c. Now includes B-spline and
+				nearneighbor. Now allows NaNs in bicubic.
+	* gmt_support.[ch]:	BCR code commented out since its move to gmt_bcr.c.
+	* gmt_map.[ch]:		GMT_grd_{forward,inverse} (and supporting routines) commented out
+				since their function has been taken over by GMT_grd_project.
+				Arguments "interpolant", "antialias" and "threshold" changed or
+				added to GMT_grd_project.
+	* grdproject.c:		-S<max_radius> changed to -S[-]b|c|l|n[/<threshold>].
+				Now uses GMT_grd_project instead of GMT_grd_forward.
+	* grdimage.c:		---"---
+				Removed -T option; no more polygon drawing.
+	* grdtrack.c, grdsample.c:	-Q<value> changed to -Q[b|c|l|n][[/]<threshold>] to
+				take advantage of new BCR code.
+	* mgd77/mgd77{manage,sniffer}.c, spotter/grdrotater.c:	---"---
+	* grdview.c:		Minor change to support new GMT_bcr_init.
+	* src/*.txt, src/*/*.txt:	Changed according to changes mentioned above.
+	* ex16/ex16.cpt:	Use fewer patterns to simplify plot.
+	* ex19/job19.*:		Use grdimage -Sl to avoid wrapping around 360 degrees.
+	* ex25/job25.*:		Use grdimage -Sn for categorical data.
+	* scripts/GMT_App_O_9.sh:	Use grdimage -Sc/1 to mask errors in ttt_atl.nc.
+	* test/*/*.sh:		Need to redirect standard error from "compare" to standard out.
+	* test/grdimage/grdimage.sh:	Changed because grdimage no longer has -T option.
+	* test/grdimage/rendering.sh:	First introduced to test out new grid interpolation routines.
+	* test/genper/*.nc:	Set up these grids instead of getting them trough grdraster.
+	* test/genper/genper_test_1?.sh:	---"---
 
 2007-09-11	pwessel
 	* gmt_init.c:		Added GMT_is_invalid_number (char *t) to make sure t is of the
