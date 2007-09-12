@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.68 2007-08-11 04:22:07 guru Exp $
+ *	$Id: x2sys.c,v 1.69 2007-09-12 21:14:55 guru Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -239,7 +239,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 	return ((error || n_read != s->n_fields) ? -1 : 0);
 }
  
-int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G)
+int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, int *n_rec)
 {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
@@ -290,6 +290,7 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	}
 
 	fclose (fp);
+	GMT_free ((void *)rec);
 	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)j, sizeof (double), "x2sys_read_file");
 	p->ms_rec = (int *) GMT_memory ((void *)p->ms_rec, (size_t)j, sizeof (int), "x2sys_read_file");
 
@@ -298,6 +299,7 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	p->n_rows = j;
 	p->year = 0;
 	strncpy (p->name, fname, 32);
+	*n_rec = p->n_rows;
 
 	return (X2SYS_NOERROR);
 }
