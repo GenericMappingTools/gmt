@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.38 2007-09-12 17:30:56 remko Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.39 2007-09-12 23:48:46 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -303,13 +303,13 @@ We create the final location map
 (Figure~\ref{fig:GMT_example_07}) with the following script:
 
 \script{example_07} 
+\GMTexample{07}{A typical location map.}
 
 The same figure could equally well be made in color, which
 could be rasterized and made into a slide for a meeting
 presentation.  The script is similar to the one outlined
 above, except we would choose a color for land and oceans,
 and select colored symbols and pens rather than black and white.
-\GMTexample{07}{A typical location map.}
 
 \index{Example!location map|)}
 
@@ -326,10 +326,10 @@ from 0 to 5 \DS E and 0 to 5 \DS N.  Depth ranges from
 -5000 meter to sea-level.  We produce the illustration by
 running this command:
 
-\script{example_08} 
+\GMTexample{08}{A 3-D histogram.}
 
 The output can be viewed in Figure~\ref{fig:GMT_example_08}.
-\GMTexample{08}{A 3-D histogram.}
+\script{example_08} 
 
 \index{Example!3-D histogram|)}
 
@@ -425,7 +425,7 @@ Here is the shell script to generate the RGB cube:
 
 The cube can be viewed in Figure~\ref{fig:GMT_example_11}.
 
-\GMTexample{11}{The RGB color cube.}
+\GMTexample[width=\textwidth]{11}{The RGB color cube.}
 
 \index{Example!3-D RGB color cube|)}
 
@@ -500,7 +500,7 @@ trend (dashed line) along the transect using \GMTprog{psxy}
 (Figure~\ref{fig:GMT_example_14}):
 
 \script{example_14} 
-\GMTexample{14}{Gridding of data and trend surfaces.}
+\GMTexample[scale=0.6]{14}{Gridding of data and trend surfaces.}
 
 \index{Example!gridding and trend surfaces|)}
 
@@ -528,7 +528,7 @@ plotting a star at the deepest point on the map with \GMTprog{psxy}.
 This point was extracted from the gridded files using \GMTprog{grdinfo}.
 
 \script{example_15} 
-\GMTexample{15}{Gridding, contouring, and masking of data.}
+\GMTexample[scale=0.6]{15}{Gridding, contouring, and masking of data.}
 
 \index{Example!gridding, contouring, and masking|)}
 
@@ -585,7 +585,7 @@ predefined patterns for interval (900,925) and NaN, an image pattern for interva
 and a ``skip slice'' request for interval (700,725).
 
 \script{example_16} 
-\GMTexample{16}{More ways to grid data.}
+\GMTexample[scale=0.6]{16}{More ways to grid data.}
 
 \index{Example!gridding|)}
 
@@ -638,6 +638,7 @@ Our illustration is presented in Figure~\ref{fig:GMT_example_18}.
 
 \section{Color patterns on maps}
 \index{Example!color patterns|(}
+\index{Example!PostScript inclusions|(}
 
 \GMT\ 3.1 introduced color patterns and this examples give
 a few cases of how to use this new feature.  We make a phony
@@ -648,13 +649,16 @@ and overlay \GMTprog{pscoast} clippaths to have the patterns
 change at the coastlines.  The middle panel demonstrates a
 simple \GMTprog{pscoast} call where the built-in pattern \# 86
 is drawn at 100 dpi but with the black and white pixels
-replaced with color combinations.  The final panel repeats
-the top panel except that the land and sea images have changed places
+replaced with color combinations. At the same time the ocean is filled with a repeating
+image of a circuit board (provides in Sun raster format).
+The text \GMT\ in the center is an off-line \PS\ file that was overlaid using \GMTprog{psimage}.
+The final panel repeats the top panel except that the land and sea images have changed places
 (Figure~\ref{fig:GMT_example_19}).
 
+\GMTexample[width=0.9\textwidth]{19}{Using color patterns and additional PostScript material in illustrations.}
 \script{example_19} 
-\GMTexample{19}{Using color patterns in illustrations.}
 
+\index{Example!PostScript inclusions|)}
 \index{Example!color patterns|)}
 
 \section{Custom plot symbols}
@@ -897,7 +901,7 @@ The call to \GMTprog{grdimage} includes the \Opt{-Sn} to suspend interpolation a
 return the value of the nearest neighbor. This option is particularly practical for plotting
 categorical data, like these, that should not be interpolated.
 
-\GMTexample{25}{Global distribution of antipodes.}
+\GMTexample[width=\textwidth]{25}{Global distribution of antipodes.}
 
 \index{Example!distribution of antipodes|)}
 
