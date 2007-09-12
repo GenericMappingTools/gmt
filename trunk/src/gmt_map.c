@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.149 2007-09-11 23:33:13 remko Exp $
+ *	$Id: gmt_map.c,v 1.150 2007-09-12 03:36:25 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5300,22 +5300,11 @@ int GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, in
 	GMT_RI_prepare (head);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_pass (GMT_grd_RI_verify (head, 1), "");
 
-#ifdef _GENPER
-	if (gmtdefs.verbose) {
-		fprintf (stderr, "%s: New grid size (nx,ny) %d by %d\n", GMT_program, head->nx, head->ny);
-		if( project_info.g_debug > 0 ) {
-			fprintf(stderr, "%s: x inc %6.3f y inc %6.3f\n", GMT_program, head->x_inc, head->y_inc);
-			fprintf(stderr, "%s: xmin %6.3f xmax %6.3f ymin %6.3f ymax %6.3f\n", GMT_program,
-			head->x_min, head->x_max, head->y_min, head->y_max);
-			fprintf(stderr, "%s: Old grid size (nx,ny) %d by %d\n", GMT_program, nx, ny);
-		}
-	}
-#else
-	if (gmtdefs.verbose) fprintf (stderr, "%s: New grid size (nx,ny) %d by %d\n", GMT_program, head->nx, head->ny);
-#endif /* _GENPER */
+	if (gmtdefs.verbose) fprintf (stderr, "%s: Grid projection from size %dx%d to %dx%d\n", GMT_program, nx, ny, head->nx, head->ny);
 	return (GMT_NOERROR);
 }
 
+#if 0 /* OLD_GRD_FORWARD_CODE */
 void GMT_init_search_radius (double *radius, struct GRD_HEADER *r_head, struct GRD_HEADER *g_head, BOOLEAN inverse) {
 	double dx, dy, r;
 
@@ -5348,7 +5337,6 @@ void GMT_init_search_radius (double *radius, struct GRD_HEADER *r_head, struct G
 	}
 }
 
-#if 0 /* OLD_GRD_FORWARD_CODE */
 int GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius)
 {	/* Forward projection from geographical to rectangular grid */
 	if (max_radius < 0)
