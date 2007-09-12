@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 16
 REM
-REM		$Id: job16.bat,v 1.7 2004-09-29 01:29:02 pwessel Exp $
+REM		$Id: job16.bat,v 1.8 2007-09-12 17:23:01 remko Exp $
 REM
 REM Purpose:	Illustrates interpolation methods using same data as Example 12.
 REM GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate
@@ -22,15 +22,15 @@ REM
 pscontour -R0/6.5/-0.2/6.5 -Jx0.45i -P -K -Y5.5i -Ba2f1WSne table_5.11 -Cex16.cpt -I > example_16.ps
 echo 3.25 7 18 0 4 CB pscontour (triangulate) | pstext -R -J -O -K -N >> example_16.ps
 REM
-surface table_5.11 -R -I0.1 -Graws0.grd
+surface table_5.11 -R -I0.2 -Graws0.grd
 grdview raws0.grd -R -J -Ba2f1WSne -Cex16.cpt -Qs -O -K -X3.5i >> example_16.ps
 echo 3.25 7 18 0 4 CB surface (tension = 0) | pstext -R -J -O -K -N >> example_16.ps
 REM
-surface table_5.11 -R -I0.1 -Graws5.grd -T0.5
+surface table_5.11 -R -I0.2 -Graws5.grd -T0.5
 grdview raws5.grd -R -J -Ba2f1WSne -Cex16.cpt -Qs -O -K -Y-3.75i -X-3.5i >> example_16.ps
 echo 3.25 7 18 0 4 CB surface (tension = 0.5) | pstext -R -J -O -K -N >> example_16.ps
 REM
-triangulate table_5.11 -Grawt.grd -R -I0.1 > NUL
+triangulate table_5.11 -Grawt.grd -R -I0.2 > NUL
 grdfilter rawt.grd -Gfiltered.grd -D0 -Fc1
 grdview filtered.grd -R -J -Ba2f1WSne -Cex16.cpt -Qs -O -K -X3.5i >> example_16.ps
 echo 3.25 7 18 0 4 CB triangulate @~\256@~ grdfilter | pstext -R -J -O -K -N >> example_16.ps
