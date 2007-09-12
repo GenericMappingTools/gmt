@@ -47,7 +47,7 @@
 % GMTfig will insert an eps file, add a label, and set a caption
 \newcommand{\GMTfig}[3][tbp]{\begin{figure}[#1]\centering\includegraphics{scripts/#2}\caption{#3}\label{fig:#2}\end{figure}}
 % Same for examples (scales by 50% by default)
-\newcommand{\GMTexample}[3][scale=0.5]{\begin{figure}[ht]\centering\includegraphics[#1]{scripts/example_#2}\caption{#3}\label{fig:GMT_example_#2}\end{figure}}
+\newcommand{\GMTexample}[3][scale=0.5]{\begin{figure}[hbtp]\centering\includegraphics[#1]{scripts/example_#2}\caption{#3}\label{fig:GMT_example_#2}\end{figure}}
 
 \newcommand{\PS}{\textit{PostScript}}
 \newcommand{\UNIX}{\textit{UNIX}}
