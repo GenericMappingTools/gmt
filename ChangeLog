@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.66 2007-09-12 00:00:08 remko Exp $
+	$Id: ChangeLog,v 1.67 2007-09-12 17:36:26 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-09-12	remko
+	* ex16/ex16.cpt:	Use a lower resolution in surface (-I0.2) to speed up ghostscript.
+				Add a nice image pattern to demonstrate that capability to do so.
+	* GMT_Chapter_7.tex:	Changed accordingly.
+	* test/psimage/psimage.sh:	Uses same image of a circuit board.
 
 2007-09-11	remko
 	* explain_-b[io].txt:	Added to replace files linked to obsolete options.
@@ -22,7 +28,6 @@
 	* mgd77/mgd77{manage,sniffer}.c, spotter/grdrotater.c:	---"---
 	* grdview.c:		Minor change to support new GMT_bcr_init.
 	* src/*.txt, src/*/*.txt:	Changed according to changes mentioned above.
-	* ex16/ex16.cpt:	Use fewer patterns to simplify plot.
 	* ex19/job19.*:		Use grdimage -Sl to avoid wrapping around 360 degrees.
 	* ex25/job25.*:		Use grdimage -Sn for categorical data.
 	* scripts/GMT_App_O_9.sh:	Use grdimage -Sc/1 to mask errors in ttt_atl.nc.
