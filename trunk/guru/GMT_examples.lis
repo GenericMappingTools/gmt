@@ -126,6 +126,7 @@ examples/ex16/job16.csh
 examples/ex16/job16.sh
 examples/ex16/job16.bat
 examples/ex16/ex16.cpt
+examples/ex16/circuit.ras
 examples/ex17/job17.csh
 examples/ex17/job17.sh
 examples/ex17/job17.bat
@@ -138,6 +139,8 @@ examples/ex18/AK_gulf_grav.nc
 examples/ex19/job19.sh
 examples/ex19/job19.csh
 examples/ex19/job19.bat
+examples/ex19/circuit.ras
+examples/ex19/GMT_covertext.eps
 examples/ex20/bullseye.def
 examples/ex20/job20.sh
 examples/ex20/job20.csh
