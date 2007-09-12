@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 19
 REM
-REM		$Id: job19.bat,v 1.10 2007-09-11 22:42:37 remko Exp $
+REM		$Id: job19.bat,v 1.11 2007-09-12 23:45:42 remko Exp $
 REM
 REM Purpose:	Illustrates various color pattern effects for maps
 REM GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext
@@ -26,11 +26,12 @@ echo 0 20 32 0 1 CM 5TH INTERNATIONAL | pstext -R -J -O -K -Gred -Sthinner >> ex
 echo 0 -10 32 0 1 CM GMT CONFERENCE | pstext -R -J -O -K -Gred -Sthinner >> example_19.ps
 echo 0 -30 18 0 1 CM Honolulu, Hawaii, April 1, 2007 | pstext -R -J -O -K -Ggreen -Sthinnest >> example_19.ps
 
-REM Then show example of color patterns
+REM Then show example of color patterns and placing a PostScript image
 
-pscoast -R -J -O -K -Dc -A5000 -Gp100/86:FredByellow -Sp100/7:FredBblack -B0 -Y-3.25i >> example_19.ps
-echo 0 15 32 0 1 CM SILLY USES OF | pstext -R -J -O -K -Glightgreen -Sthinner >> example_19.ps
-echo 0 -15 32 0 1 CM GMT COLOR PATTERNS | pstext -R -J -O -K -Gmagenta -Sthinner >> example_19.ps
+pscoast -R -J -O -K -Dc -A5000 -Gp100/86:FredByellow -Sp100/circuit.ras -B0 -Y-3.25i >> example_19.ps
+echo 0 30 32 0 1 CM SILLY USES OF | pstext -R -J -O -K -Glightgreen -Sthinner >> example_19.ps
+echo 0 -30 32 0 1 CM GMT COLOR PATTERNS | pstext -R -J -O -K -Gmagenta -Sthinner >> example_19.ps
+psimage -C3.25i/1.625i/CM -W3i GMT_covertext.eps -O -K >> example_19.ps
 
 REM Finally repeat 1st plot but exchange the patterns
 
