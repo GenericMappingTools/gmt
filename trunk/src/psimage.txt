@@ -27,11 +27,12 @@ RGB Sun rasterfiles are supported.  Other raster formats can be converted
 to Sun format via a variety of public-domain software (e.g., convert, xv).
 .TP
 .B \-E
-Sets the dpi of the image in dots pr inch, or use \fB\-W\fP.
+Sets the dpi of the image in dots per inch, or use \fB\-W\fP.
 .TP
 .B \-W
-Sets the size of the image.  If not given \fIylength\fP is set to \fIxlength\fP * (ny/nx).
-If \fIxlength\fP is negative we use the absolate value and interpolate image to the
+Sets the size of the image in plot coordinates (inches, cm, etc.).
+If not given \fIylength\fP is set to \fIxlength\fP * (ny/nx).
+If \fIxlength\fP is negative we use the absolute value and interpolate image to the
 device resolution using the PostScript image operator.
 Alternatively, use \fB\-E\fP.
 .br
@@ -40,7 +41,10 @@ Alternatively, use \fB\-E\fP.
 No space between the option flag and the associated arguments.
 .TP
 .B \-C
-Sets position of lower left corner of image, and optionally append justification [0/0/LB].
+Sets position of the image in plot coordinates (inches, cm, etc.) from the current origin
+of the plot.
+By default, this defines the position of the lower left corner
+of the image, but this can be changed by specifying justification [0/0/LB].
 .TP
 .B \-F
 Draws a rectangular frame around the image with the given pen [no frame].
