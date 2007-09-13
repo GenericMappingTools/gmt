@@ -1,10 +1,10 @@
 REM		GMT EXAMPLE 04
 REM
-REM		$Id: job04.bat,v 1.9 2007-08-23 02:34:44 remko Exp $
+REM		$Id: job04.bat,v 1.10 2007-09-13 17:21:40 remko Exp $
 REM
 REM Purpose:	3-D mesh plot of Hawaiian topography and geoid
 REM GMT progs:	grdcontour, grdview, pscoast, pstext
-REM DOS calls:	echo, del, call
+REM DOS calls:	echo, del
 REM
 REM CPS: topo.cpt
 REM CPS: geoid.cpt
@@ -19,5 +19,5 @@ pscoast -J -E60/30 -R -B2/2NEsw -Gblack -O -K -T209/19.5/1i >> example_04.ps
 grdview HI_topo4.nc -J -Jz0.34i -Czero.cpt -E60/30 -R195/210/18/25/-6/4 -N-6/200/200/200 -Qsm -O -K -B2/2/2:"Topo (km)":neswZ -Y2.2i >> example_04.ps
 echo 3.25 5.75 60 0.0 33 2 H@#awaiian@# R@#idge | pstext -R0/10/0/10 -Jx1i -O >> example_04.ps
 del zero.cpt
-call job4c
+del .gmt*
 if %master%==y cd ..
