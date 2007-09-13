@@ -1,10 +1,11 @@
 #!/bin/sh
 #
-#	$Id: do_view.sh,v 1.2 2005-06-27 07:12:06 pwessel Exp $
+#	$Id: do_view.sh,v 1.3 2007-09-13 17:35:56 remko Exp $
 #
 #	Simple driver to view all examples using ghostview
 #
+viewer=${1:-gv}
 for f in ex??/example_??.ps
 do
-	gv $f
+	$viewer $f
 done
