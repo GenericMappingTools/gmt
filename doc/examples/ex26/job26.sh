@@ -1,10 +1,10 @@
 #!/bin/sh
-#		$Id: job26.sh,v 1.3 2007-03-30 02:57:36 pwessel Exp $
+#		$Id: job26.sh,v 1.4 2007-09-13 17:31:23 remko Exp $
 #		GMT EXAMPLE 26
 #
 # Purpose:	Demonstrate general vertical perspective projection
 # GMT progs:	pscoast
-# Unix progs:	none
+# Unix progs:	rm
 
 # first do an overhead of the east coast from 160 km altitude point straight down
 
@@ -33,3 +33,4 @@ Height=30.0
 PROJ=-JG${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/5i
 
 pscoast -R $PROJ -B5g5/5g5 -Glightbrown -Slightblue -W0.25p -Ia -Dl -Na -O -X1i -Y-4i -U/-1.75i/-0.75i/"Example 26 in Cookbook" >> example_26.ps
+rm -f .gmt*

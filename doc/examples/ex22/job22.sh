@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 22  $Id: job22.sh,v 1.7 2006-04-12 07:51:23 pwessel Exp $
+#	GMT Example 22  $Id: job22.sh,v 1.8 2007-09-13 17:31:23 remko Exp $
 #
 # Purpose:	Automatic map of last 7 days of world-wide seismicity
 # GMT progs:	gmtset, pscoast, psxy, pslegend
@@ -93,4 +93,4 @@ pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -Jx1i -R0/8/0/8 -O -F neis.legend -Glightyello
 
 # Clean up after ourselves:
 
-rm -f neis.* .gmtcommands4 .gmtdefaults4
+rm -f neis.* .gmt*
