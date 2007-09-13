@@ -1,12 +1,17 @@
 #!/bin/sh
-#	$Id: run_gmt_tests.sh,v 1.8 2007-09-11 22:49:51 remko Exp $
+#	$Id: run_gmt_tests.sh,v 1.9 2007-09-13 17:42:36 remko Exp $
 #
 #	test script for GMT/test directory
 #
 # Will find all the subdirectories in GMT/test and run all the
-# Bourne scripts found in each directory
+# Bourne scripts found in each directory.
+# If directory/ies are specified as arguments: will only run scripts in those.
+
+echo "Script    :                  Purpose					STATUS"
+echo "------------------------------------------------------------------------------"
 
 # Get all directories below GMT/test and filter out the CVS directories
+
 if [ $# -eq 0 ] ; then
    dirs=`find . -mindepth 1 -maxdepth 1 -type d -print | grep -v CVS`
 else
@@ -14,7 +19,6 @@ else
 fi
 
 # Set here and use it to reset the dir in case a script fails to finish properly
-
 # Each script that fails will write a line to fail_count.d so we can tally errors
 
 rm -f fail_count.d
