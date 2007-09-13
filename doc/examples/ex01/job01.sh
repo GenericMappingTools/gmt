@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 01  $Id: job01.sh,v 1.12 2006-10-23 18:14:11 remko Exp $
+#	GMT Example 01  $Id: job01.sh,v 1.13 2007-09-13 17:23:59 remko Exp $
 #
 # Purpose:	Make two contour maps based on the data in the file osu91a1f_16.nc
 # GMT progs:	gmtset, grdcontour, psbasemap, pscoast
@@ -14,4 +14,4 @@ grdcontour -R osu91a1f_16.nc -J -C10 -A50+s7 -Gd4i -L-1/1000 -O -K -T0.1i/0.02i 
 pscoast -Rg -JH180/6i -Y4i -O -K -Bg30:."Low Order Geoid": -Dc -Glightgray >> example_01.ps
 grdcontour osu91a1f_16.nc -J -C10 -A50+s7 -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K -T0.1i/0.02i:-+ >> example_01.ps
 grdcontour osu91a1f_16.nc -J -C10 -A50+s7 -Gd4i -L-1/1000 -O -T0.1i/0.02i:-+ >> example_01.ps
-rm -f .gmtcommands4 .gmtdefaults4
+rm -f .gmt*
