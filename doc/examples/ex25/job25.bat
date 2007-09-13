@@ -1,11 +1,11 @@
 REM
 REM             GMT EXAMPLE 25
 REM
-REM             $Id: job25.bat,v 1.9 2007-09-11 22:40:24 remko Exp $
+REM             $Id: job25.bat,v 1.10 2007-09-13 17:30:25 remko Exp $
 REM
 REM Purpose:    Display distribution of antipode types
 REM
-REM GMT progs:  grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
+REM GMT progs:  gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
 REM DOS calls:  del
 REM
 echo GMT EXAMPLE 25

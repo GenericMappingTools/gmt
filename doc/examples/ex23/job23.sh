@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-#	GMT Example 23  $Id: job23.sh,v 1.12 2007-08-23 02:34:44 remko Exp $
+#	GMT Example 23  $Id: job23.sh,v 1.13 2007-09-13 17:31:01 remko Exp $
 #
 # Purpose:	Plot distances from Rome and draw shortest paths
-# GMT progs:	gmtset, grdmath, grdcontour, pscoast, psxy, pstext, grdtrack
+# GMT progs:	grdmath, grdcontour, pscoast, psxy, pstext, grdtrack
 # Unix progs:	echo, cat, awk
 
 # Position and name of central point:

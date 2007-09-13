@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-#	GMT Example 25  $Id: job25.sh,v 1.4 2007-09-11 22:40:24 remko Exp $
+#	GMT Example 25  $Id: job25.sh,v 1.5 2007-09-13 17:30:25 remko Exp $
 #
 # Purpose:	Display distribution of antipode types
-# GMT progs:	grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
+# GMT progs:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
 # Unix progs:	cat
 #
 # Create D minutes global grid with -1 over oceans and +1 over land
