@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.69 2007-09-12 23:54:32 remko Exp $
+	$Id: ChangeLog,v 1.70 2007-09-13 17:47:02 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-09-13	remko
+	* ex??/job??.sh:	Fixed some inconsistencies with job??.csh scripts
+	* do_examples.*sh:	Cycle through available scripts, instead of through directories.
+	* doc/makefile:		Added "make tests" here to test all scripts and results.
 
 2007-09-12	pwessel
 	* gmt_map.c:		GMT_distances function did not work with correct pointer
