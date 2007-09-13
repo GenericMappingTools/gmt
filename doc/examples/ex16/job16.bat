@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 16
 REM
-REM		$Id: job16.bat,v 1.8 2007-09-12 17:23:01 remko Exp $
+REM		$Id: job16.bat,v 1.9 2007-09-13 00:22:01 remko Exp $
 REM
 REM Purpose:	Illustrates interpolation methods using same data as Example 12.
 REM GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate
@@ -12,10 +12,8 @@ echo GMT EXAMPLE 16
 set master=y
 if exist job16.bat set master=n
 if %master%==y cd ex16
-REM makecpt -Crainbow -T675/975/25 to make raw ex16.cpt
-REM Hand edit to add patterns and skips
 REM
-REM Now illustrate various means of contouring, using triangulate and surface.
+REM Illustrate various means of contouring, using triangulate and surface.
 REM
 gmtset ANNOT_FONT_SIZE_PRIMARY 9
 REM
