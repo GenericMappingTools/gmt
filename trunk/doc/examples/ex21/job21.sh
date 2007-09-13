@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	GMT Example 21  $Id: job21.sh,v 1.10 2006-10-30 03:00:43 remko Exp $
+#	GMT Example 21  $Id: job21.sh,v 1.11 2007-09-13 17:31:23 remko Exp $
 #
 # Purpose:	Plot a time-series
 # GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
@@ -68,4 +68,4 @@ psxy -R -J RHAT.pw -Wthick,- -O >> example_21.ps
 
 # Clean up after ourselves:
 
-rm -f RHAT.* .gmtcommands4 .gmtdefaults4
+rm -f RHAT.* .gmt*
