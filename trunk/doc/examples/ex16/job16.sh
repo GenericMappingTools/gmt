@@ -1,20 +1,13 @@
 #!/bin/sh
 #		GMT EXAMPLE 16
 #
-#		$Id: job16.sh,v 1.9 2007-09-12 17:23:01 remko Exp $
+#		$Id: job16.sh,v 1.10 2007-09-13 00:22:01 remko Exp $
 #
 # Purpose:	Illustrates interpolation methods using same data as Example 12.
 # GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate
-# Unix progs:	$AWK, echo, rm
+# Unix progs:	echo, rm
 #
-# First make a cpt file as in example 12:
-#
-#z0=`minmax table_5.11 -C -I25 | $AWK '{print $5}'`
-#z1=`minmax table_5.11 -C -I25 | $AWK '{print $6}'`
-#makecpt -Crainbow -T$z0/$z1/25 > ex16.cpt
-#Hand edit to add patterns and skips
-#
-# Now illustrate various means of contouring, using triangulate and surface.
+# Illustrate various means of contouring, using triangulate and surface.
 #
 gmtset ANNOT_FONT_SIZE_PRIMARY 9
 #
