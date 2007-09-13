@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.11 2007-03-30 04:08:21 pwessel Exp $
+#	$Id: do_examples.csh,v 1.12 2007-09-13 17:36:35 remko Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -52,16 +52,14 @@ endif
 
 # Loop over all examples and run each job
 
-foreach dir (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26)
-	if (-e ex${dir}/job${dir}.csh ) then
-		echo -n "Doing example ${dir}..."
-		cd ex${dir}
-		\cp -f ../.gmtdefaults4.doc .gmtdefaults4
-		csh -f job${dir}.csh
-		\rm -f .gmtdefaults4
-		cd ..
-		echo "done"
-	endif
+foreach ex (ex??/job??.csh)
+	echo -n "Doing example $ex ... "
+	cd `dirname $ex`
+	\cp -f ../.gmtdefaults4.doc .gmtdefaults4
+	csh -f `basename $ex`
+	\rm -f .gmtdefaults4 .gmtcommands4
+	cd ..
+	echo "done"
 end
 
 echo "Completed all examples"
