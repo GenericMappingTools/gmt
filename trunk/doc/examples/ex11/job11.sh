@@ -1,5 +1,5 @@
 #!/bin/sh
-#		$Id: job11.sh,v 1.9 2007-05-14 21:35:33 remko Exp $
+#		$Id: job11.sh,v 1.10 2007-09-13 17:25:50 remko Exp $
 #		GMT EXAMPLE 11
 #
 # Purpose:	Create a 3-D RGB Cube
@@ -64,4 +64,4 @@ echo 26 102 12 180 1 MC 0.4 | pstext -J -R -K -O >> example_11.ps
 echo 26 204 12 180 1 MC 0.8 | pstext -J -R -K -O >> example_11.ps
 echo 200 200 16 225 1 MC GMT 4 | pstext -J -R -O >> example_11.ps
 
-rm -f *.grd .gmtcommands4 .gmtdefaults4
+rm -f *.grd .gmt*
