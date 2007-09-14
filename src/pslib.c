@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.148 2007-08-05 23:43:31 guru Exp $
+ *	$Id: pslib.c,v 1.149 2007-09-14 18:27:22 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -452,7 +452,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	lx = irint (xsize * PSL->internal.scale);
 	ly = irint (ysize * PSL->internal.scale);
 	id = ((PSL->internal.color_mode & PSL_CMYK) && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
-	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0); 	/* Colormask or interpolate */
+	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0);	/* Colormask or interpolate */
 
 	if ((image = ps_makecolormap (buffer, nx, ny, nbits))) {
 		/* Creation of colormap was successful */
@@ -1145,7 +1145,7 @@ void ps_plot_ (double *x, double *y, int *pen)
 void ps_plotend (int lastpage)
 {
 	int i;
-	
+
 	ps_pattern_cleanup ();
 	ps_setdash (CNULL, 0);
 
@@ -1176,9 +1176,9 @@ void ps_plotend (int lastpage)
 	else
 		fprintf (PSL->internal.fp, "S 0 A\n");
 	if (PSL->internal.fp != stdout) fclose (PSL->internal.fp);
-	
+
 	/* Free up memory used by the PSL control structure */
-	
+
 	for (i = 0; i < PSL->internal.N_FONTS; i++) if (PSL->internal.font[i].name) ps_free ((void *)PSL->internal.font[i].name);
 	ps_free ((void *)PSL->internal.font);
 	for (i = 0; i < PSL->internal.n_userimages; i++) if (PSL->internal.user_image[i]) ps_free (PSL->internal.user_image[i]);
@@ -1228,14 +1228,14 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	double scl;
 
 	/* Allocate PSL control structure */
-	
+
 	if ((PSL = (struct PSL *) ps_memory (VNULL, 1, sizeof (struct PSL))) == NULL) {
 		fprintf (stderr, "PSL Fatal Error: Could not allocate PSL control structure!\n");
 		exit (EXIT_FAILURE);
 	}
-	
+
 	/* Save original initialization settings */
-	
+
 	PSL->init.file = (plotfile == NULL || plotfile[0] == 0) ? NULL : strdup (plotfile);
 	PSL->init.encoding = strdup (encoding);
 	PSL->init.overlay = overlay;
@@ -1248,7 +1248,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	PSL->init.magnify[0] = xscl;	PSL->init.magnify[1] = yscl;
 	PSL->init.eps = (struct EPS *) ps_memory (VNULL, 1, sizeof (struct EPS));
 	memcpy ((void *)PSL->init.eps, (void *)eps,sizeof(struct EPS));
-	
+
 	/* Determine SHAREDIR (directory containing pslib and pattern subdirectories) */
 
 	if ((this = getenv ("GMT_SHAREDIR")) != CNULL) {	/* GMT_SHAREDIR was set */
@@ -1351,7 +1351,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 			PSL->internal.bb[2] = eps->x1;
 			PSL->internal.bb[3] = eps->y1;
 		}
-		else { 			/* Plot originated as Landscape */
+		else {			/* Plot originated as Landscape */
 			PSL->internal.bb[0] = PSL->internal.p_width - eps->y1;
 			PSL->internal.bb[1] = eps->x0;
 			PSL->internal.bb[2] = PSL->internal.p_width - eps->y0;
@@ -1404,7 +1404,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		if (!PSL->internal.eps_format) fprintf (PSL->internal.fp, "%%%%Pages: 1\n");
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
-	 	fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
+		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
 		ps_bulkcopy ("PSL_prologue");
 		ps_bulkcopy (PSL->init.encoding);
 
@@ -1415,7 +1415,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		for (i = 0; i < PSL->internal.N_FONTS; i++) fprintf (PSL->internal.fp, "/F%d {/%s Y} bind def\n", i, PSL->internal.font[i].name);
 
 		ps_bulkcopy ("PSL_label");		/* Place code for label line annotations and clipping */
-	 	fprintf (PSL->internal.fp, "%%%%EndProlog\n\n");
+		fprintf (PSL->internal.fp, "%%%%EndProlog\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginSetup\n");
 		fprintf (PSL->internal.fp, "/PSLevel /languagelevel where {pop languagelevel} {1} ifelse def\n");
@@ -1586,9 +1586,9 @@ void ps_patch (double *x, double *y, int np, int rgb[], int outline)
 	 *	        dx_n dy_n ... n x0 y0 qQ	(If rgb[0] < 0 then outline only)
 	 *	      r dx_n dy_n ... n x0 y0 qA	(gray shade; use qa for outline)
 	 *	  r g b dx_n dy_n ... n x0 y0 qC	(rgb; use qc for outline)
-	 *	c m y k dx_n dy_n ... n x0 y0 qK 	(cmyk; use qk for outline)
-	 *	  h s v dx_n dy_n ... n x0 y0 qH 	(hsv; use qh for outline)
-	 *	pattern dx_n dy_n ... n x0 y0 qI 	(pattern fill; use qi for outline)
+	 *	c m y k dx_n dy_n ... n x0 y0 qK	(cmyk; use qk for outline)
+	 *	  h s v dx_n dy_n ... n x0 y0 qH	(hsv; use qh for outline)
+	 *	pattern dx_n dy_n ... n x0 y0 qI	(pattern fill; use qi for outline)
 	 */
 
 	int i, n, pmode, n1, ix[20], iy[20];
@@ -1821,7 +1821,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	int i = 0, pmode, j, h_just, v_just, rounded;
 
 	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
-	
+
 	if (strlen (text) >= (BUFSIZ-1)) {
 		fprintf (stderr, "pslib: text_item > %d long!\n", BUFSIZ);
 		return;
@@ -2079,7 +2079,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	double height, small_size, size, scap_size, ustep, dstep;
 
 	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
-	
+
 	if (strlen (text) >= (BUFSIZ-1)) {	/* We gotta have some limit on how long a single string can be... */
 		fprintf (stderr, "pslib: text_item > %d long - text not plotted!\n", BUFSIZ);
 		return;
@@ -2152,7 +2152,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	upen = irint (0.025 * height * PSL->internal.scale);	/* Underline pen thickness */
 	ugap = irint (0.075 * height * PSL->internal.scale);	/* Underline shift */
 	start_uline = stop_uline = n_uline = 0;
-	
+
 	ptr = strtok (string, "@");
 	if(string[0] != '@') {	/* String has @ but not at start - must deal with first piece explicitly */
 		fprintf (PSL->internal.fp, "%d F%d (%s) %s\n", irint (size*PSL->internal.scale), font, ptr, op);
@@ -2321,7 +2321,7 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 
 	int i = 0, j, k, first;
 
-	
+
 	if (form & 8) {		/* If 8 bit is set we already have placed the info */
 		form -= 8;		/* Knock off the 8 flag */
 		fprintf (PSL->internal.fp, "%d PSL_curved_text_labels\n", form);
@@ -2412,7 +2412,7 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 
 	if (m <= 0) return;	/* Nothing to do yet */
 	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
-	
+
 	for (i = 0; i < m; i++) {
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
 			for (k = 0; label[i][k] == ' '; k++);	/* Count # of leading blanks */
@@ -2536,7 +2536,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, int space, int rgb[]);
 
 	if (font_size == 0.0) return;	/* Nothing to do if text has zero size */
-	
+
 	sub = super = small = under = FALSE;
 	if (draw_box & 64) {	/* Smart offsets follow justification */
 		if ((justify & 3) == 3)  x_off = -x_off;
@@ -3712,8 +3712,8 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbit
 	 * The image and colormap are returned as a struct indexed_image_t.
 	 *
 	 * It is important that the first RGB tuple is mapped to index 0.
- 	 * This is used for color masked images.
- 	 */
+	 * This is used for color masked images.
+	 */
 	int i, j, npixels;
 	colormap_t colormap;
 	indexed_image_t image;
@@ -4308,7 +4308,9 @@ static void ps_bulkcopy (const char *fname)
 	}
 
 	while (fgets (buf, BUFSIZ, in)) {
-		if (PSL->internal.comments) {	/* We copy every line, including the comments */
+		if (PSL->internal.comments) {
+			/* We copy every line, including the comments, except those starting '%-' */
+			if (buf[0] == '%' && buf[1] == '-') continue;
 			fprintf (PSL->internal.fp, "%s", buf);
 		}
 		else {
