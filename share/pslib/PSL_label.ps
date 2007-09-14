@@ -1,27 +1,27 @@
 %-------------------------------------------------------------------------------------------
-%	$Id: PSL_label.ps,v 1.11 2006-03-06 03:05:27 pwessel Exp $
-%
-%	P. Wessel, version 1
-%
-%	PS routines for handling contour labels and clipping of
-%	contour lines going through labels.
-%
-%	There are two parts.  First is something straight out of
-%	the Adobe Cookbook for placing text along a curved line.
-%	The second part is the functions that assist in finding
-%	out where labels are placed and setting clip paths etc.
-
-% Cookbook Example Program from First Printing, Revised 7 Jan 1985
-% Program: Placing Text Along an Arbitrary Path     Number: 17
-% Modified for use in GMT's pslib.
+%-	$Id: PSL_label.ps,v 1.12 2007-09-14 18:32:46 remko Exp $
+%-
+%-	P. Wessel, version 1
+%-
+%-	PS routines for handling contour labels and clipping of
+%-	contour lines going through labels.
+%-
+%-	There are two parts.  First is something straight out of
+%-	the Adobe Cookbook for placing text along a curved line.
+%-	The second part is the functions that assist in finding
+%-	out where labels are placed and setting clip paths etc.
+%-
+%- Cookbook Example Program from First Printing, Revised 7 Jan 1985
+%- Program: Placing Text Along an Arbitrary Path     Number: 17
+%- Modified for use in GMT's pslib.
 %-----------------------------------------------------------------------------
-%
+
 /PSL_pathtextdict 26 dict def			% Local storage for the procedure PSL_pathtext.
-							   
+
 /PSL_pathtext					% PSL_pathtext'' will place a string
   { PSL_pathtextdict begin			% of text along any path. It takes
-    /textheight exch def                        % a string and starting offset
-    /just exch def                              % a string and starting offset
+    /textheight exch def			% a string and starting offset
+    /just exch def				% a string and starting offset
     /offset exch def				% a string and starting offset
     /str exch def				% distance from the beginning of
 						% the path as its arguments. Note
@@ -43,7 +43,7 @@
 						% be more effective when a small
 						% point size font is used with
 						% sharp curves in the path.
-								       
+
     /pathdist 0 def				% Initialize the distance we have
 						% travelled along the path.
     /setdist offset def				% Initialize the distance we have
@@ -77,7 +77,7 @@
     newpath					% Clear the current path.
     end
   } def
-       
+
 PSL_pathtextdict begin
 /movetoproc					% ``movetoproc'' is executed when
   { /newy exch def /newx exch def		% a moveto component has been
@@ -93,7 +93,7 @@ PSL_pathtextdict begin
 						% current position in device
 						% space.
   } def
-       
+
 /linetoproc					% ``linetoproc'' is executed when
 						% a lineto component has been
 						% encountered in the pathforall
@@ -129,7 +129,7 @@ PSL_pathtextdict begin
       } loop
     } if
   } def
-       
+
 /curvetoproc					% ``curvetoproc'' is executed when
   { (ERROR: No curveto's after flattenpath!)	% a curveto component has been
     print					% encountered in the pathforall
@@ -138,7 +138,7 @@ PSL_pathtextdict begin
 						% any curveto's in a path after
 						% the flattenpath operator has
 						% been executed.
-							    
+
 /closepathproc					% ``closepathproc'' is executed
   { firstx firsty linetoproc			% when a closepath component has
     firstx firsty movetoproc			% been encountered in the
@@ -150,7 +150,7 @@ PSL_pathtextdict begin
 						% recent ``moveto'' and then
 						% executing ``movetoproc'' to the
 						% same point.
-							 
+
 /setchar					% ``setchar'' sets the next
   { /char str charcount 1 getinterval def	% character in the string along
 						% the path and then updates the
@@ -230,7 +230,7 @@ end
 % new array PSL_xp/yp to store the final points prior to use
 
   PSL_clippath PSL_firstcall and	% Want clipping and it is the first time called
-  {	
+  {
     gsave newpath clippath		% Bracket with gsave and start clip path the first time - later we append
   } if
   PSL_setlinepen			% Set line color
@@ -254,11 +254,11 @@ end
     {
       n 0 eq				% n is 0 so this is the strokable segment
       {
-        PSL_CT_drawline
+	PSL_CT_drawline
       }
       {					% here, n = 1 so this is the segment along which text should be placed
 	PSL_CT_reversepath		% Reverse path if needed to place text correctly
-        PSL_CT_textline
+	PSL_CT_textline
       } ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put		% Place new first point in array
@@ -266,10 +266,10 @@ end
     } if
   } for
   n 0 eq {PSL_CT_drawline} if	% Finish off the last line segment
-  
+
   PSL_lastcall			% After last call we execute the clip path
   {
-    PSL_clippath 
+    PSL_clippath
     {
       clip
       /PSL_clip_on true def
@@ -329,7 +329,7 @@ end
   % Initialize an array with all the original line points plus the set of 2*m
   % points at the transition from line to labelspace at each label
   % At the end of this section, the PSL_xx/yy array will be the array to use.
-  
+
   /k 0 def				% Current cut point
   /PSL_nc PSL_m 2 mul 1 add def		% 2*m points + one last acting as infinity
   /PSL_cuts PSL_nc array def		% The array of distances to each cut
@@ -364,14 +364,14 @@ end
       /this_cut PSL_cuts kk get def	% Distance to start of this label gap
       dist this_cut gt			% Oh, oh, we just stepped over a cut point
       {
-        /ds dist last_dist sub def	% Change in distance
-        /f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def	% Get fractional change in distance
+	/ds dist last_dist sub def	% Change in distance
+	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def	% Get fractional change in distance
 	/i1 i 0 eq { 0 } { i 1 sub } ifelse def
-        PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put	% Calc (x,y) at label start (or stop) point
-        PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
-        PSL_kind j 1 put		% Set PSL_kind to 1 since it is an added cut point
-        /j j 1 add def			% Go to next output point
-        /k k 1 add def			% Done with this cut point
+	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put	% Calc (x,y) at label start (or stop) point
+	PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
+	PSL_kind j 1 put		% Set PSL_kind to 1 since it is an added cut point
+	/j j 1 add def			% Go to next output point
+	/k k 1 add def			% Done with this cut point
       } if
     } for
     dist PSL_cuts k get le		% Having dealt with the cut, we may add the regular point
@@ -453,7 +453,7 @@ end
     xoff ii H cosa mul put
     yoff ii H sina mul put
   } for
-  
+
   % Lay down next clip segment
 
   PSL_xp 0 get xoff 0 get add PSL_yp 0 get yoff 0 get add moveto
@@ -472,7 +472,7 @@ end
 {
   /str 20 string def
   % PSL_strokeline PSL_seg 0 eq and			% If we asked to draw lines...
-  PSL_strokeline 			% If we asked to draw lines...
+  PSL_strokeline			% If we asked to draw lines...
   {
     PSL_CT_placeline PSL_setlinepen stroke			% Lay down the rest of the path and stroke it
   } if
@@ -502,7 +502,7 @@ end
   /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
   /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
   /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
-  
+
   PSL_clippath
   {
     PSL_ST_clippath
@@ -589,7 +589,7 @@ end
   /PSL_r PSL_gap_x PSL_gap_y lt { PSL_gap_x } { PSL_gap_y } ifelse def	% Smallest gap distance
   /PSL_dx PSL_gap_x PSL_r sub def
   /PSL_dy PSL_gap_y PSL_r sub def
-  /PSL_r2 PSL_r 2 mul def 
+  /PSL_r2 PSL_r 2 mul def
   /BoxH PSL_height PSL_dy 2 mul add def		% Height of inside rectangle
   /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
   PSL_usebox not { gsave clippath } if		% Set gsave and start clip path
