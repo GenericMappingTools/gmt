@@ -34,7 +34,7 @@ install:	all
 uninstall:
 		\rm -f $(bindir)/$(PROGS) $(bindir)/img2grd
 
-img2mercgrd:	img2mercgrd.o gmt_imgsubs.o $(GMTLIB)
+img2mercgrd$(EXE):	img2mercgrd.o gmt_imgsubs.o $(GMTLIB)
 		$(CC) $(LDFLAGS) img2mercgrd.o gmt_imgsubs.o $(GMT) $(CDF) $(LIBS) -o $@
 
 spotless:	clean

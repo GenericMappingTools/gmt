@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.7 2007-09-04 15:22:27 remko Exp $
+#	$Id: Makefile,v 1.8 2007-09-14 12:31:17 remko Exp $
 #
 #	makefile for gshhs directory
 #	Does not depend on GMT src or libraries
@@ -22,8 +22,6 @@ all:		$(PROGS)
 $(PROGS_O):	$(GMT_H) gshhs.h
 
 #-------------------------------------------------------------------------------
-#	program dependencies
-#-------------------------------------------------------------------------------
 
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
@@ -33,16 +31,18 @@ uninstall:
 			\rm -f $(bindir)/$$i; \
 		done
 
+spotless:	clean
+
 clean:	
 		\rm -f *.o *% $(PROGS)
 
-spotless:	clean
+#-------------------------------------------------------------------------------
+#	program dependencies
+#-------------------------------------------------------------------------------
 
-gshhs:		gshhs.o
-		$(CC) $(LDFLAGS) gshhs.o $(LIBS) -o $@
+gshhs$(EXE):		gshhs.o
+gshhs_dp$(EXE):		gshhs_dp.o
+gshhstograss$(EXE):	gshhstograss.o
 
-gshhs_dp:	gshhs_dp.o
-		$(CC) $(LDFLAGS) gshhs_dp.o $(LIBS) -o $@
-
-gshhstograss:	gshhstograss.o
-		$(CC) $(LDFLAGS) gshhstograss.o $(LIBS) -o $@
+$(PROGS):
+		$(CC) $(LDFLAGS) $(@:.exe=).o -o $@
