@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.72 2007-09-14 18:48:49 remko Exp $
+	$Id: ChangeLog,v 1.73 2007-09-14 23:33:33 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-14	remko
@@ -13,6 +13,10 @@
 	* pslib.c:		Skip lines from Prologues starting with %- (skips CVS tags).
 	* share/pslib/PSL*.ps:	Start CVS tag lines (and some others) with %- for skipping by pslib.
 	* doc/scripts/orig/*.ps:	Some files updated because of BBox changes.
+	* src/makegmt.macros.in:	Now sets the right X11 compiler and linker flags.
+	* xgrid/makefile.in:	Removed and replaced by xgrid/makefile, since X11 flags now come from
+				src/makegmt.macros.in
+	* configure.in:		Changed accordingly.
 
 2007-09-13	remko
 	* ex??/job??.sh:	Fixed some inconsistencies with job??.csh scripts
