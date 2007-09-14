@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_cvs.html,v 1.5 2007-06-03 23:18:58 guru Exp $  -->
+<!--  $Id: gmt_cvs.html,v 1.6 2007-09-14 01:13:39 remko Exp $  -->
 <title>GMT CVS Services</title>
 <body bgcolor="#ffffff">
 <center><h1>GMT CVS Services</center></h1><p>
@@ -23,6 +23,8 @@ either from source of from premade packages (Mac OS X user must first install
 the developer tools and X11 - the rest can be obtained via fink).  The tools are:
 <UL>
 <LI><U>CVS.</U>  You will not get far if you do not have CVS on your system.
+<LI><U>gnumake.</U>  You will need to be using a gnu-compatible version of make.
+This may be called <U>gnumake</U> or <U>gmake</U> on your system.
 <LI><U>ghostscript.</U>  Needed to generate bitmaps from PostScript files.
 The ghostscript package should also come with the scripts <U>ps2epsi</U>
 and <U>ps2pdf</U> which you also will use.
@@ -92,18 +94,22 @@ you can simply copy *.cdf from GMT4.1/share to your GMT/share/coast.  If not, yo
 coastlines by anonymous ftp simply by running.  Note that starting 4.1.2 the coastlines files
 live in share/coast, not share.<br>
 <P>
-gurumake get_coast
+make get_coast
 <P>
 <LI><B>Do the guru thing.</B>
 If you are with me so far, you are ready to compile GMT.  I recommend a full shake-down
 which is done by running
 <P>
-gurumake site
+make site
 <P>
 This command will run cvs update (in case something has changed on the server), create
 configure scripts, run them, compile and install GMT, make man pages and documentation,
 and convert to HTML.  It does everything short of creating a version link and tarring of
-the release.  You will need to look at guru/Makefile.guru for other things you can do.
+the release.  You will need to look at GNUmakefile for other things you can do. Or otherwise
+simply type
+<P>
+make
+<P>
 </OL>
 <h2>How to contribute changes</h2>
 If you make any changes (e.g., fix a bug or correct a typographical error) you will want to

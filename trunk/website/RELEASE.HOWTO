@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.13 2007-04-03 04:25:00 pwessel Exp $
+#	$Id: RELEASE.HOWTO,v 1.14 2007-09-14 01:13:39 remko Exp $
 #
 #		FOR 4.x SERIES
 
@@ -19,7 +19,7 @@ must ensure you do all the steps listed below:
     in the gmtsite.macros file points to the actual FTP and WWW dirs.
     Check VERSION number in guru/gmtguru.macros.orig
 
-1.  run gurumake latest-config
+1.  run make latest-config
     get the latest config.sub and config.guess.  Make sure this worked
     since sometimes we get blank files...
     cd website
@@ -28,19 +28,19 @@ must ensure you do all the steps listed below:
     uncommitted changes.
 
 3.  Compile and make all to make sure it all works (check examples)
-    gurumake site
+    make site
    
 4.  Tag the release(s), e.g.
     cvs -q tag Release_2007_10_01_GMT_-4_2_1
 
 5.  Prepare the archives:
-    gurumake archive >& log
+    make archive >& log
    
 6.  Goto Windows and get all *.zip files and install
     Copy *.exe *.dll to GMT/bin and *.exp *.lib to GMT/lib
    
 7.  Freshen the new zip files
-    gurumake zip_do zip_exe zip_suppl_exe zip_done
+    make zip_do zip_exe zip_suppl_exe zip_done
    
 8.  Determine file sizes of all archives and update these values
     in guru/install_gmt and website/gmt_install_form.html

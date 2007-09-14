@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.10 2007-09-11 23:47:07 remko Exp $
+#	$Id: Makefile,v 1.11 2007-09-14 01:13:39 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -36,7 +36,7 @@
 #-------------------------------------------------------------------------------
 
 GMTSRCDIR	=# Keep this empty, use ../ in supplements
-include makegmt.macros		# GMT-specific settings determined by user & install_gmt
+include makegmt.macros		# GMT-specific settings determined by user & configure
 include gmtalldeps.macros	# Dependencies
 
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(NETCDF)/include -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
@@ -173,8 +173,8 @@ uninstall-man:
 clean:
 		rm -f *.o *.a *.$(SL) $(ALLPROGS)
 
-spotless:	clean
-		rm -f gmt_notposix.h makegmt.macros *.man
+spotless::	clean
+		rm -f gmt_notposix.h makegmt.macros
 
 distclean:	spotless
 
@@ -283,6 +283,3 @@ $(PROGS):	$(GMTLIB)
 $(PROGSPS):	$(GMTLIB)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(GMTPS) $(PS) $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@
-
-#---------------------------- CVS GURU EXTENSIONS-------------------------------
-include $(MAKEGURU)
