@@ -1,6 +1,6 @@
 #!/bin/csh
 #
-#	$Id: guruenv.csh,v 1.11 2007-03-30 03:34:24 pwessel Exp $
+#	$Id: guruenv.csh,v 1.12 2007-09-14 01:13:39 remko Exp $
 #
 #	Environmental variables needed by GMT gurus
 #	Stick these in your environment before making GMT
@@ -22,17 +22,7 @@ setenv AWK gawk								# nawk, gawk, or compatible
 setenv MATLAB /usr/local/matlab						# Set to NONE if you do not have Matlab
 
 #
-# 3. Simplifying the life of the guru
-#   The Guru makefile contains numerous targets that only guru's will need to use,
-#   e.g., make tar_all will tar off all the archives.  Since you can only issue
-#   those make commands from the main GMT directory, the following alias is very
-#   handy as it fails unless you are in the GMT directory:
-
-alias gurumake 'make -f makefile.guru'				# Simple shorthand for guru making
-
-
-#
-# 4. The GMT Environment
+# 3. The GMT Environment
 #   Before you start issuing make commands, you should have these set properly
 #
 setenv GMTROOT <fullpathtoyour>/GMTdev/GMT
@@ -40,12 +30,12 @@ setenv MANPATH $GMTROOT/man						# Or add this part if MANPATH exists for other 
 setenv NETCDFHOME  /usr/local						# Set this to where netcdf lives
 
 #
-# 5. Searchable path
+# 4. Searchable path
 #   Make sure you add $GMTROOT/bin to your path.
 
 #
-# 6. Authentication of CVS access
+# 5. Authentication of CVS access
 #   This parameter needs to be set so you dont have to use the -d option on every
 #   cvs command.
 
-setenv CVSROOT :pserver:anonymous@aa.soest.hawaii.edu:/home/gmt/gmt/cvs	# anonymous for reading; writers need a specific account
+setenv CVSROOT :pserver:anonymous@pohaku.soest.hawaii.edu:/usr/local/cvs	# anonymous for reading; writers need a specific account

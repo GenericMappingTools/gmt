@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.42 2007-09-04 15:09:44 remko Exp $
+#	$Id: Makefile,v 1.43 2007-09-14 01:13:39 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -74,13 +74,30 @@ SUPPL_M	=	dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 
 all:		gmt suppl
 
+help::
+		@grep '^#!' Makefile | cut -c3-
+#!-------------------- MAKE HELP FOR GMT --------------------
+#!
+#!make <target>, where <target> can be:
+#!
+#!all           : Compile main source
+#!suppl         : Compile supplements
+#!install-gmt   : Compile & install main GMT programs
+#!install-suppl : Compile & install supplements
+#!install-data  : Install GMT data files
+#!install-man   : Install man pages
+#!install-all   : Compile & install everything, including data & man pages
+#!examples      : Run examples
+#!spotless      : Clean up and remove created files of all types
+#!
+
 install:	install-gmt install-suppl
 uninstall:	uninstall-gmt uninstall-suppl
 
 install-all:	install-gmt install-suppl install-data install-man install-www
 uninstall-all:	uninstall-gmt uninstall-suppl uninstall-data uninstall-man uninstall-www
 
-update:
+patch:
 		bin/gmtpatch.sh 4
 
 gmt:		gmtmacros
@@ -155,7 +172,7 @@ clean:
 		$(MAKE) TARGET=$@ insuppl
 		cd src ; $(MAKE) $@
 
-spotless:
+spotless::
 		rm -f config.cache config.status config.log
 		$(MAKE) TARGET=$@ insuppl
 		cd src ; $(MAKE) $@

@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.70 2007-09-13 17:47:02 remko Exp $
+	$Id: ChangeLog,v 1.71 2007-09-14 01:13:39 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-09-14	remko
+	* GNUmakefile, src/GNUmakefile, src/*/GNUmakefile:	Finally replacing the
+				whole gurumake system. All files makefile.guru deleted.
+				All references to gurumake and makefile.guru removed from
+				numerous other files.
 
 2007-09-13	remko
 	* ex??/job??.sh:	Fixed some inconsistencies with job??.csh scripts
