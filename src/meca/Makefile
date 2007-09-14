@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.17 2007-09-04 15:22:27 remko Exp $
+#       $Id: Makefile,v 1.18 2007-09-14 12:31:17 remko Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -32,16 +32,16 @@ uninstall:
 
 spotless:	clean
 
-psmeca: 	psmeca.o utilmeca.o nrutil.o $(GMTLIB)
+psmeca$(EXE): 	psmeca.o utilmeca.o nrutil.o $(GMTLIB)
 		$(CC) $(CFLAGS) psmeca.o utilmeca.o nrutil.o $(ALLLIB) -o $@
 
-pscoupe:	pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(GMTLIB)
+pscoupe$(EXE):	pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(GMTLIB)
 		$(CC) $(CFLAGS) pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(ALLLIB) -o $@
 
-pspolar: 	pspolar.o $(GMTLIB)
+pspolar$(EXE): 	pspolar.o $(GMTLIB)
 		$(CC) $(CFLAGS) pspolar.o $(ALLLIB) -o $@
 
-psvelo:		psvelo.o utilvelo.o utilstrain.o $(GMTLIB)
+psvelo$(EXE):	psvelo.o utilvelo.o utilstrain.o $(GMTLIB)
 		$(CC) $(CFLAGS) psvelo.o utilvelo.o utilstrain.o $(ALLLIB) -o $@
 
 clean:
