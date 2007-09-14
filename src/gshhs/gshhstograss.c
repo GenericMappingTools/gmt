@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.15 2007-09-06 00:39:26 guru Exp $
+/*	$Id: gshhstograss.c,v 1.16 2007-09-14 22:41:09 remko Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -53,7 +53,6 @@ int main (int argc, char **argv)
 	time_t tloc;
 	struct passwd *pw;
 
-	optarg = NULL;
 	progname = argv[0];
 
 	if (argc < 3) {
