@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.158 2007-07-14 02:56:36 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.159 2007-09-14 03:40:11 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -884,13 +884,14 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	if (P->Bathymetry_Datum_Code[0] OR_TRUE) {
 		i = atoi (P->Bathymetry_Datum_Code);
 		if (!((i >= 0 && i <= 11) || i == 88)) {
+			kind = (i == 99) ? ERR : WARN;
 			if (i == 99) {
 				if (F->verbose_level & kind) fprintf (fp_err, "Y-E-%s-H12-04: Invalid Bathymetry Datum Code: (%s) [  ]\n", F->NGDC_id, P->Bathymetry_Datum_Code);
 			}
 			else {
 				if (F->verbose_level & kind) fprintf (fp_err, "?-E-%s-H12-04: Invalid Bathymetry Datum Code: (%s) [%2s]\n", F->NGDC_id, P->Bathymetry_Datum_Code, P->Bathymetry_Datum_Code);
 			}
-			H->errors[ERR]++;
+			H->errors[kind]++;
 		}
 	}
 
