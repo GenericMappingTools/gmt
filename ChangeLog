@@ -1,6 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.74 2007-09-15 04:10:50 guru Exp $
+	$Id: ChangeLog,v 1.75 2007-09-15 05:06:07 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-09-15	remko
+	* src/makegmt.macros.in:	Now sets the right X11 and Matlab compiler and linker flags,
+				supplied by configure in the main directory.
+	* mex/makefile:		Created from mex/makefile.in with Matlab flags coming from
+				src/makegmt.macros.in.
+	* xgrid/makefile:	Created from xgrid/makefile.in with X11 flags coming from
+				src/makegmt.macros.in. Significantly improved (missing dependencies).
+	* xgrid/grdinfo.c:	Renamed from xgrid/grdinfo2.c (easier for compilation).
+	* configure.in:		Changed accordingly, absorbing mex/configure.in.
+	* mex/configure.in mex/makefile.in xgrid/makefile.in:	Removed
+	* guru/GMT_suppl.lis:	Changed accordingly.
 
 2007-09-14	remko
 	* GNUmakefile, src/GNUmakefile, src/*/GNUmakefile:	Finally replacing the
@@ -13,10 +25,6 @@
 	* pslib.c:		Skip lines from Prologues starting with %- (skips CVS tags).
 	* share/pslib/PSL*.ps:	Start CVS tag lines (and some others) with %- for skipping by pslib.
 	* doc/scripts/orig/*.ps:	Some files updated because of BBox changes.
-	* src/makegmt.macros.in:	Now sets the right X11 compiler and linker flags.
-	* xgrid/makefile.in:	Removed and replaced by xgrid/makefile, since X11 flags now come from
-				src/makegmt.macros.in
-	* configure.in:		Changed accordingly.
 
 2007-09-13	remko
 	* ex??/job??.sh:	Fixed some inconsistencies with job??.csh scripts
