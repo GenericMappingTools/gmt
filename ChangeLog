@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.73 2007-09-14 23:33:33 remko Exp $
+	$Id: ChangeLog,v 1.74 2007-09-15 04:10:50 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-14	remko
@@ -25,7 +25,7 @@
 
 2007-09-12	pwessel
 	* gmt_map.c:		GMT_distances function did not work with correct pointer
-				(only used in x2sys supplement)
+				(only used in x2sys & mgd77 supplements)
 	* x2sys_cross.c:	Distances were bogus (see above), and wrong number of
 				arguments passed to read_file function pointer.
 	* x2sys.[ch]:		Wrong number of arguments in the generic read_file function
