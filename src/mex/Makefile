@@ -1,0 +1,53 @@
+#		$Id: Makefile,v 1.1 2007-09-15 04:34:28 remko Exp $
+#
+#	Makefile for gmt <--> matlab conversion programs
+#	Use with GMT 4.x
+#
+# Note that if you have write permission in $MATLAB/toolbox/local
+# then that is where install will place the files.  Otherwise, it
+# will put them in $(bindir).
+
+#----------------------------------------------------------------------------
+#	The rest should should be ok. NO EDITING BEYOND HERE, unless your
+#	Matlab setup was not auto-detected by the configure file
+#	If so, please let us know what you needed to change.
+#----------------------------------------------------------------------------
+
+GMTSRCDIR	= ../
+include $(GMTSRCDIR)makegmt.macros
+include $(GMTSRCDIR)gmtalldeps.macros
+
+.SUFFIXES:	.c .m .$(MATLAB_EXT)
+
+MEX	= $(MATLAB)/bin/mex
+MEXLIB	= -L$(MATLAB)/extern/lib/$(MATLAB_MEX) -l$(MATLAB_LIB)
+GMT     = -L.. -L$(libdir) -lgmt
+CDF     = -L$(NETCDF)/lib -lnetcdf
+FLAGS	= -I$(srcdir) -I$(MATLAB)/extern/include -I$(NETCDF)/include -O
+
+PROG_C		= grdinfo.c grdread.c grdwrite.c
+PROG_H		= $(PROG_C:.c=.m)
+PROG_M		= $(PROG_C:.c=.$(MATLAB_EXT))
+
+all:		$(PROG_M)
+
+install:	all
+		if [ -w $(MATLAB)/toolbox/local ] ; then \
+			$(INSTALL) $(PROG_M) $(PROG_H) $(MATLAB)/toolbox/local; \
+		else \
+			$(INSTALL) $(PROG_M) $(PROG_H) $(bindir); \
+		fi \
+
+grdinfo.$(MATLAB_EXT):	$(GMT_H) $(GMTLIB) grdinfo.c grdinfo.m
+		$(MEX) $(FLAGS) grdinfo.c $(GMT) $(CDF) $(MEXLIB) 
+
+grdread.$(MATLAB_EXT):	$(GMT_H) $(GMTLIB) grdread.c grdread.m
+		$(MEX) $(FLAGS) grdread.c $(GMT) $(CDF) $(MEXLIB) 
+
+grdwrite.$(MATLAB_EXT):	$(GMT_H) $(GMTLIB) grdwrite.c grdwrite.m
+		$(MEX) $(FLAGS) grdwrite.c $(GMT) $(CDF) $(MEXLIB)
+
+spotless:	clean
+
+clean:
+		\rm -f .gmt* .mexrc.sh $(PROG_M)
