@@ -58,14 +58,12 @@ src/meca/meca_3.csh
 src/meca/meca_4.csh
 src/mex/README.mex
 src/mex/grdinfo.m
-src/mex/grdinfo2.c
+src/mex/grdinfo.c
 src/mex/grdread.c
 src/mex/grdread.m
 src/mex/grdwrite.c
 src/mex/grdwrite.m
-src/mex/makefile.in
-src/mex/configure
-src/mex/configure.in
+src/mex/makefile
 src/mgd77/README.mgd77
 src/mgd77/makefile
 src/mgd77/mgd77.c
@@ -267,7 +265,7 @@ src/x_system/x_update.c
 src/x_system/x_update.man
 src/x_system/x_update.html
 src/xgrid/README.xgrid
-src/xgrid/makefile.in
+src/xgrid/makefile
 src/xgrid/xGridEdit.c
 src/xgrid/xgrid_Canvas.c
 src/xgrid/xgrid_Canvas.h
