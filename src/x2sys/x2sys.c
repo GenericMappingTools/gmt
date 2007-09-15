@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.69 2007-09-12 21:14:55 guru Exp $
+ *	$Id: x2sys.c,v 1.70 2007-09-15 04:00:16 guru Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -70,6 +70,7 @@ struct MGD77_CONTROL M;
 
 void x2sys_set_home (void);
 int x2sys_record_length (struct X2SYS_INFO *s);
+int get_first_year (double t);
 
 #define MAX_DATA_PATHS 32
 char *x2sys_datadir[MAX_DATA_PATHS];	/* Directories where track data may live */
@@ -633,11 +634,12 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 		col[i] = MGD77_Get_Column (s->info[s->out_order[i]].name, &M);
 	}
 
+	p->year = 0;
 	j = 0;
 	while (!MGD77_Read_Data_Record (&M, &H, dvals, tvals)) {		/* While able to read a data record */
 		GMT_lon_range_adjust (s->geodetic, &dvals[MGD77_LONGITUDE]);
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = dvals[col[i]];
-
+		if (p->year == 0 && !GMT_is_fnan (dvals[0])) p->year = get_first_year (dvals[0]);
 		j++;
 		if (j == n_alloc) {
 			n_alloc += GMT_CHUNK;
@@ -658,6 +660,17 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	*n_rec = p->n_rows;
 	
 	return (X2SYS_NOERROR);
+}
+
+int get_first_year (double t)
+{
+	/* obtain yyyy/mm/dd and return year */
+	GMT_cal_rd rd;
+	double s;
+	struct GMT_gcal CAL;
+	GMT_dt2rdc (t, &rd, &s);
+	GMT_gcal_from_rd (rd, &CAL);
+	return (CAL.year);
 }
 
 int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, int *n_rec)
@@ -695,6 +708,7 @@ int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct
 	p->n_rows = S->H.n_records;
 	p->ms_rec = NULL;
 	p->n_segments = 0;
+	p->year = S->H.meta.Departure[0];
 	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free ((void *)S->flags[i]);
 	GMT_free ((void *)S->H.mgd77);
 
