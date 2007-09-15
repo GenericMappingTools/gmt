@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.43 2007-09-14 01:13:39 remko Exp $
+#	$Id: Makefile,v 1.44 2007-09-15 05:06:07 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -183,11 +183,6 @@ insuppl:
 		@set -e ; for d in $(SUPPL); do \
 			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
 				echo "Making $(TARGET) in src/$$d"; \
-				( cd src/$$d; \
-				if [ ! -f makefile ]; then \
-					\rm -f config.{cache,log,status}; \
-					./configure; \
-				fi; \
-				$(MAKE) $(TARGET) ); \
+				( cd src/$$d; $(MAKE) $(TARGET) ); \
 			fi; \
 		done

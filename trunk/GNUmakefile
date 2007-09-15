@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.1 2007-09-14 01:13:39 remko Exp $
+#  $Id: GNUmakefile,v 1.2 2007-09-15 05:06:07 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -145,9 +145,9 @@ cvsclean:
 
 spotless::
 		touch src/makegmt.macros
+		cd doc ; $(MAKE) clean
 		$(MAKE) -f Makefile $@
 		rm -f src/makegmt.macros
-		cd doc ; $(MAKE) clean
 
 #-------------------------------------------------------------------------------
 # For compatibility with previous versions
@@ -187,7 +187,7 @@ guru/gmtguru.macros:
 
 src/makegmt.macros:	guru/gmtguru.macros.orig guru/gmtguru.macros src/makegmt.macros.in src/gmt_version.h configure config.sub config.guess
 			rm -f config.cache config.log config.status
-			./configure --enable-guru $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) \
+			./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) \
 				$(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL)
 
 src/gmt_version.h:	guru/gmtguru.macros.orig guru/gmtguru.macros
@@ -196,7 +196,6 @@ src/gmt_version.h:	guru/gmtguru.macros.orig guru/gmtguru.macros
 configure:	configure.in
 		rm -f config.cache config.log config.status
 		$(AUTOCONF)
-		cd src/mex ; $(AUTOCONF)
 
 latest-config:
 		curl http://cvs.savannah.gnu.org/viewcvs/*checkout*/config/config/config.sub --remote-name --silent
@@ -212,7 +211,6 @@ docs:		FILES
 		cd doc ; $(MAKE) install
 
 prep_suppl:	clean config
-		cd src/mex ; $(AUTOCONF) ; configure ; $(MAKE) clean
 
 get_coast get_high get_full:
 #		Set-up ftp command & get coast file
