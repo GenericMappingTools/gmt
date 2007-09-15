@@ -1,4 +1,4 @@
-	$Id: README.mex,v 1.5 2007-01-31 17:00:03 pwessel Exp $
+	$Id: README.mex,v 1.6 2007-09-15 04:34:28 remko Exp $
 
 Distributed under the GNU Public License (see file ../COPYING)
 
@@ -53,3 +53,7 @@ configure looks for the environmental variable MATLAB to determine
 where matlab lives on your system.  If not set it defaults to
 /usr/local/matlab.
 
+Modified:	R Scharroo 15-SEP-07
+
+Configuring now done by configure in main directory.
+grdinfo2.c renamed back to grdinfo.c.
