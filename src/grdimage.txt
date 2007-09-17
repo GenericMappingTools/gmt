@@ -14,18 +14,27 @@ grdimage \- Create grayshaded or colored image from a 2-D netCDF grd file
 [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-\fBgrdimage\fP reads one 2-D gridded file and produces a gray-shaded (or colored) map by assigning
-each z-value a gray-shade (or color). 
+\fBgrdimage\fP reads one 2-D gridded file and produces a gray-shaded (or colored) map by plotting
+rectangles centered on each grid node and assigning them a gray-shade (or color) based on the z-value.
 Alternatively, \fBgrdimage\fP reads three 2-D gridded files with the red, green, and blue components
 directly (all must be in the 0-255 range). Optionally, illumination may be added by providing
 a file with intensities in the (-1,+1) range.  Values outside this range will be clipped.
 Such intensity files can be created from the
-grdfile using \fBgrdgradient\fP and modified by \fBgrdmath\fP or \fBgrdhisteq\fP.  Each grid-node
-in the grdfile is represented as a shaded (or colored) rectangle centered on the grid node.  When
-using map projections, the grid is first resampled on a new rectangular grid  (This can be a
-time-consuming process for large grid files; but see OPT(T)).  A 24-bit true color \fIPostScript\fP
-file is output.  The region option can be used to select a map region larger or smaller than that
+grdfile using \fBgrdgradient\fP and, optionally, modified by \fBgrdmath\fP or \fBgrdhisteq\fP.
+.br
+When using map projections, the grid is first resampled on a new rectangular grid with the same
+dimensions. Higher resolution images can be optained by using the OPT(E) option.
+To obtain the resampled value (and hence shade or color) of each map pixel, its location
+is inversely projected back onto the input grid after which a value is interpolated between the
+surrounding input grid values. By default bi-cubic interpolation is used.
+Aliasing is avoided by also forward projecting the input grid nodes. If two or more nodes are
+projected onto the same pixel, their average will dominate in the calculation of the pixel
+value. Interpolation and aliasing is controlled with the OPT(S) option.
+.br
+The OPT(R) option can be used to select a map region larger or smaller than that
 implied by the extent of the grdfile.
+.br
+A (color) \fIPostScript\fP file is output.
 .TP
 \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP
 2-D gridded data set (or red, green, blue grids) to be imaged
@@ -65,12 +74,12 @@ Mask out nodes with z = NaN using the colormasking feature in \fIPostScript\fP L
 (the PS device must support PS Level 3).
 #include "explain_-R.txt"
 You may ask for a larger \fIw/e/s/n\fP region to have more room between the image and the axes.
-A smaller region than specified in the grdfile will result in a subset of the grid [Default is
-region given by the grdfile].
+A smaller region than specified in the grdfile will result in a subset of the grid
+[Default is the region given by the grdfile].
 #include "explain_-S.txt"
 .TP
 .B \-T
-This option has become OBSOLETE. Use \fBgrdview -T\fP instead.
+This option has become OBSOLETE. Use \fBgrdview\fP OPT(T) instead.
 Use OPT(Sn) to plot near-neighbor values only (use OPT(E) to increase the resolution).
 Use OPT(Sn) OPT(Q) to obtain something similar to the old option OPT(Ts).
 The option OPT(To) is no longer supported.
