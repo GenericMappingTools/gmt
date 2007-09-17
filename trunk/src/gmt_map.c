@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.152 2007-09-17 03:11:40 remko Exp $
+ *	$Id: gmt_map.c,v 1.153 2007-09-17 22:33:26 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6051,6 +6051,7 @@ void GMT_set_spherical (void) {	/* Force spherical solution */
 	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
 	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
 	project_info.M_PR_DEG = TWO_PI * project_info.EQ_RAD / 360.0;
+	project_info.KM_PR_DEG = 0.001 * project_info.M_PR_DEG;
 	project_info.ECC = project_info.ECC2 = project_info.ECC4 = project_info.ECC6 = 0.0;
 	project_info.one_m_ECC2 = project_info.i_one_m_ECC2 = 1.0;
 	project_info.half_ECC = project_info.i_half_ECC = 0.0;
@@ -6728,9 +6729,9 @@ void GMT_init_ellipsoid (void)
 	/* We also need to set things that relate to spheres only.  If current ellipsoid is not a sphere
 	 * then we calculate the mean radius and derive spherical properties from it */
 
-	/* Must compute mean radius r = (2a + c)/3 = a - f * a /3  */
+	/* Must compute mean radius r = (2a + b)/3 = a (1 - f/3)  */
 
-	mean_r = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius - f * gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / 3.0;
+	mean_r = project_info.EQ_RAD * (1.0 - f / 3.0);
 	project_info.M_PR_DEG = TWO_PI * mean_r / 360.0;		/* Sphere degree -> m  */
 	project_info.KM_PR_DEG = 0.001 * project_info.M_PR_DEG;		/* Sphere degree -> km */
 }
