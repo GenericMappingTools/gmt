@@ -1,9 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.75 2007-09-15 05:06:07 remko Exp $
+	$Id: ChangeLog,v 1.76 2007-09-17 03:23:21 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-17	remko
+	* grdproject.c:		Added code by Joaquim Luis to make -R optional
+	* gmt_map.c:		Added slack to longitude limits check in GMT_grd_project
+	* gmt_bcr.c:		Added slack to longitude and latitude check
+				These last two changes avoids creating the occational NaN borders
+				in projected grids or in images of projected grids.
+
 2007-09-15	remko
-	* src/makegmt.macros.in:	Now sets the right X11 and Matlab compiler and linker flags,
+	* makegmt.macros.in:	Now sets the right X11 and Matlab compiler and linker flags,
 				supplied by configure in the main directory.
 	* mex/makefile:		Created from mex/makefile.in with Matlab flags coming from
 				src/makegmt.macros.in.
@@ -13,6 +20,7 @@
 	* configure.in:		Changed accordingly, absorbing mex/configure.in.
 	* mex/configure.in mex/makefile.in xgrid/makefile.in:	Removed
 	* guru/GMT_suppl.lis:	Changed accordingly.
+	* README:		Changed accordingly.
 
 2007-09-14	remko
 	* GNUmakefile, src/GNUmakefile, src/*/GNUmakefile:	Finally replacing the
