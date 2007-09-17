@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.38 2007-04-01 19:59:46 remko Exp $ 
+#		$Id: README,v 1.39 2007-09-17 03:21:48 remko Exp $ 
 #
 #	Copyright (c) 1991-2007, P. Wessel & W. H. F. Smith
 #
@@ -47,7 +47,7 @@ information gmt-group
 Or, see gmt.soest.hawaii.edu for how to get the script as well
 as filling out installation parameters via a web form]
 
-GMT has been installed successfully under Unix/Linux on workstations
+GMT has been installed successfully under Unix/Linux/OS X on workstations
 from Sun, Silicon Graphics, Cray, DEC, HP, Data General, IBM, Apple, NEXT,
 as well on any number of PC clones running Linux.  It also installs under
 WIN32 and in Unix emulators such as Cygwin on PCs and Machten on Macs.
@@ -107,15 +107,15 @@ taken care of by our install script:
      
 After install, place the line
 
-setenv NETCDFHOME /path_to_netcdf_directory
+	setenv NETCDFHOME /path_to_netcdf_directory
 
 in your .login file.  This path is usually something like
 /usr/local/netcdf-3.6.1 depending on where you put it.
 The GMT makefiles will use $NETCDFHOME to find the library.
 
 PS! On some newer platforms, in particular MacOS X, you may have
-to get the very latest beta version of netcdf and install that
-instead.
+to get a very recent version of netCDF. Version 3.6.2 available on the
+Unidata web site or through Fink (unstable) works well.
 
 2. Install support data
 -----------------------
@@ -221,12 +221,16 @@ in the main GMT directory.
 
 There are a few GMT-specific options in configure.  They are
 
+	--enable-netcdf=dir     Specify netCDF directory [/usr/local/netcdf]
+	--enable-matlab=dir     Specify Matlab directory [/usr/local/matlab]
 	--enable-shared		To make shared (dynamic) libraries
 	--enable-triangle	To use J. Shewchuk's fast triangulation
 	--enable-US		To use US (inch) instead of SI (cm) units
 	--enable-www=www-dir	Set www directory [PREFIX/www]
 	--enable-eps		Make Encapsulated PostScript by default [Freeform PS]
 	--disable-flock		Do NOT use file locking on .gmtcommands files
+	--disable-mex           Disable compilation of mex supplement which requires Matlab
+	--disable-xgrid         Disable compilation of xgrid supplement which requires X11
 
 By default, GMT will be made with static libraries.  If you system
 supports shared (dynamic) libraries you can select the option
@@ -301,7 +305,7 @@ problem, pls let us know so we may improve this processes further.
 gmt_math_win32.h to gmt_math.h instead; see Appendix L in the docs]
 
 4. Makefile preparation
---------------------------
+-----------------------
 
 	If you are one a system without IEEE floating point support (some
 Crays we know of) you must add -DNO_IEEE to the CC_OPT flags as well.
@@ -318,7 +322,7 @@ makegmt.macros file).  See the linker options for the GMT libraries on how
 to store the run-time path to the shared netCDF library in the executables.
 
 5. Compile/link
-----------------
+---------------
 
 From the main GMT directory (all make calls herein refers to the main
 GMT directory), type
@@ -329,7 +333,7 @@ which will compile/link all the programs.  After a successful
 compilation you may install the executables in the designated
 bin directory with the command
 
-	make install
+	make install-gmt
 
 Place the support data and coastline files in the correct
 directory by saying
@@ -350,10 +354,9 @@ PS.  Should you need to start from scratch again, for instance
 to reinstall under another OS from the same directory, you should
 first say
 
-make spotless
+	make spotless
 
-and then cd out of src, rm -f config.{cache,log,status}, and run
-configure again before returning to step 5.
+and run configure again before returning to step 5.
 	
 6. Man pages
 ------------
@@ -400,7 +403,7 @@ the gmt executables (BINDIR) if this is not a standard directory
 like /usr/local/bin.  You should now be able to run gmt programs.
 
 10. GMT supplemental Code
-------------------------
+-------------------------
 
 GMT users elsewhere have developed programs that utilize the GMT
 libraries and produce PostScript code compatible with the rest of
@@ -419,7 +422,7 @@ Currently, the supplemental archive include the directories:
 	imgsrc	  - Data extractor for Smith/Sandwell altimetry grids.
 	meca 	  - Plotting of focal mechanisms, velocity arrows,
 		    and error ellipses on maps.
-	mex	  - Matlab mex files for grdfile i/o.
+	mex	  - Matlab mex files for grid file I/O.
 	mgg	  - Programs for MGD-77 data in .gmt format.
 	mgd77	  - Programs for handling of native MGD77 files.
 	misc	  - psmegaplot, makepattern, gmtdigitize,
@@ -436,13 +439,15 @@ makefiles or start scripts.  Each subdirectory will contain *.man files
 (Unix man files) and *.html files (HTML-version of man pages).  To compile
 and install programs, type
 
-	make suppl
 	make install-suppl
-	
+
+To do all of the installations above, you can use the simple shortcut
+
+	make install-all
 
 
 11. Example Scripts
-------------------
+-------------------
 
 	A complete set of the example scripts used to create the
 26 example plots, including all necessary data files can be
@@ -451,7 +456,7 @@ Copy this to your gmt directory and install there if you would like
 these scripts.  After install, you can run all 26 examples from the
 src directory using
 
-	make run-examples.
+	make examples
 
 12. Misc
 --------
@@ -508,7 +513,7 @@ for us to inform users of bug fixes and upgrades.  The online registration
 also lets you subscribe to the two mailinglists.
 
 15. Ordering the GMT package on CD/DVD-Rs
--------------------------------------
+-----------------------------------------
 
 Should you or someone you know without net-access need to obtain GMT:
 Geoware makes and distributes CD/DVD-Rs with the GMT package and many
