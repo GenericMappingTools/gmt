@@ -24,12 +24,10 @@ one of the other resolutions.  If the user selects to paint the land-areas and d
 water-areas then the latter will be transparent (i.e., earlier graphics drawn in those areas will not
 be overwritten).  Likewise, if the water-areas are painted and no land fill is set then the land-areas
 will be transparent.  A map projection must be supplied.  The \fIPostScript\fP code is written to standard output.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 #include "explain_-J_short.txt"
 #include "explain_-Rgeo.txt"
 .SH OPTIONS
+No space between the option flag and the associated arguments.
 .TP
 .B \-A
 Features with an area smaller than \fImin_area\fP in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP

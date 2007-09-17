@@ -17,13 +17,11 @@ any line in \fIlinefile\fP, 4) inside one of the polygons in the \fIpolygonfile\
 geographical features (based on coastlines), or 6) has z-values within a given range.
 The sense of the tests can be reversed for each of these 6 criteria by using the OPT(I) option.
 See option \fB\-:\fP on how to read (latitude,longitude) files.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 .TP
 \fIinfiles\fP
 ASCII (or binary, see OPT(b)) data file(s) to be operated on.  If not given, standard input is read.
 .SH OPTIONS
+No space between the option flag and the associated arguments.
 .TP
 .B \-A
 Ignored unless \fB\-N\fP is set.  Geographical features with an area smaller than \fImin_area\fP
@@ -140,7 +138,6 @@ To return all points in stations.d that are within 5 cm of the point in origin.d
 .br
 .sp
 \fBgmtselect\fP stations.d \fB\-F\fPorigin.d OPT(R)20/50/-10/20 OPT(JM)20c > subset2
-.br
 .SH "SEE ALSO"
 .IR gmtdefaults (GMTMANSECTION),
 .IR GMT (GMTMANSECTION),

@@ -15,18 +15,14 @@ horizontal dimensions of the grdfiles are assumed to be in meters.  Geographical
 may be used by specifying the \fB\-M\fP option that scales degrees to meters.  If you
 have grdfiles with dimensions in km, you could change this to meters using \fBgrdedit\fP
 or scale the output with \fBgrdmath\fP.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 .TP
 \fIin_grdfile\fP
 2-D binary grd file to be operated on.
 .TP
 .B \-G
 Specify the name of the output grd file.
-.br
-.sp
 .SH OPTIONS
+No space between the option flag and the associated arguments.
 .TP
 .B \-A
 Take the directional derivative in the \fIazimuth\fP direction measured in degrees CW from north.
