@@ -3,29 +3,36 @@
 #include "common_options.txt"
 grdproject \- Forward and Inverse map transformation of 2-D grd files 
 .SH SYNOPSIS
-\fBgrdproject\fP \fIin_grdfile\fP GMT_J_OPT GMT_Rgeo_OPT 
+\fBgrdproject\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP GMT_J_OPT
 [ OPT(A)[\fBk|m|n|i|c|p\fP] ] [ OPT(C)[\fIdx/dy\fP] ] [ OPT(D)GMT_inc_OPT ] 
-[ OPT(E)\fIdpi\fP ] [ OPT(F) ] [ OPT(G)\fIout_grdfile\fP ] [ OPT(I) ] 
-[ OPT(Mc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(N)\fInx/ny\fP ]
+[ OPT(E)\fIdpi\fP ] [ OPT(F) ] [ OPT(I) ] 
+[ OPT(Mc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(N)\fInx/ny\fP ] [ GMT_Rgeo_OPT ]
 [ OPT(S)[\fB-\fP]\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP[\fB/\fP\fIthreshold\fP] ]
 [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdproject\fP will do one of two things depending whether OPT(I) has been set.  If set, it
 will transform a gridded data set from a rectangular coordinate system onto a geographical
 system by resampling the surface at the new nodes.  If not set, it will project a geographical
-gridded data set onto a rectangular grid.  The new nodes are filled based on a simple weighted
-average of nearby points.  Aliasing is avoided by using sensible values for the \fIsearch_radius\fP.
+gridded data set onto a rectangular grid.  To obtain the value at each new node, its location
+is inversely projected back onto the input grid after which a value is interpolated between the
+surrounding input grid values. By default bi-cubic interpolation is used.
+Aliasing is avoided by also forward projecting the input grid nodes. If two or more nodes are
+projected onto the same new node, their average will dominate in the calculation of the new
+node value. Interpolation and aliasing is controlled with the OPT(S) option.
 The new node spacing may be determined in one of several ways by specifying the grid spacing,
 number of nodes, or resolution.  Nodes not constrained by input data are set to NaN.
 .br
-No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
+The OPT(R) option can be used to select a map region larger or smaller than that
+implied by the extent of the grdfile.
 .TP
 \fIin_grdfile\fP
 2-D binary grd file to be transformed.
+.TP
+.B \-G
+Specify the name of the output netCDF grd file.
 #include "explain_-J_short.txt"
-#include "explain_-Rgeo.txt"
 .SH OPTIONS
+No space between the option flag and the associated arguments.
 .TP
 .B \-A
 Force 1:1 scaling, i.e., output (or input, see \fB\-I\fP) data are in actual projected meters.  To specify other units,
@@ -46,9 +53,6 @@ Set the resolution for the new grid in dots per inch.
 .B \-F
 Toggle between pixel and gridline registration [Default is same as input].
 .TP
-.B \-G
-Specify the name of the output netCDF grd file.
-.TP
 .B \-I
 Do the Inverse transformation, from rectangular to geographical.
 .TP
@@ -58,6 +62,9 @@ Append \fBc\fP, \fBi\fP, or \fBm\fP to indicate that cm, inch, or meter should b
 .TP
 .B \-N
 Set the number of grid nodes in the new grid.
+#include "explain_-R.txt"
+You may ask to project only a subset of the grid by specifying a smaller input \fIw/e/s/n\fP region
+[Default is the region given by the grdfile].
 #include "explain_-S.txt"
 #include "explain_-V.txt"
 .SH EXAMPLES
