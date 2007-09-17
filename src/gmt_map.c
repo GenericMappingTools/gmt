@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.151 2007-09-12 21:14:55 guru Exp $
+ *	$Id: gmt_map.c,v 1.152 2007-09-17 03:11:40 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -693,7 +693,7 @@ int GMT_init_three_D (void) {
 	if (project_info.z_scale < 0.0) project_info.xyz_pos[2] = FALSE;	/* User wants z to increase down */
 	if (project_info.z_level == DBL_MAX) project_info.z_level = (project_info.xyz_pos[2]) ? project_info.z_bottom : project_info.z_top;
 
-	switch (project_info.xyz_projection[2]%3 ) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
+	switch (project_info.xyz_projection[2]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
 			zmin = (project_info.xyz_pos[2]) ? project_info.z_bottom : project_info.z_top;
 			zmax = (project_info.xyz_pos[2]) ? project_info.z_top : project_info.z_bottom;
@@ -1018,7 +1018,7 @@ int GMT_map_init_linear (void) {
 	project_info.y_scale = project_info.pars[1];
 	if (project_info.x_scale < 0.0) project_info.xyz_pos[0] = FALSE;	/* User wants x to increase left */
 	if (project_info.y_scale < 0.0) project_info.xyz_pos[1] = FALSE;	/* User wants y to increase down */
-	switch ( (project_info.xyz_projection[0]%3) ) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
+	switch ( (project_info.xyz_projection[0]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
 			GMT_x_forward = (PFI) ((project_info.degree[0]) ? GMT_translind : GMT_translin);
 			GMT_x_inverse = (PFI) ((project_info.degree[0]) ? GMT_itranslind : GMT_itranslin);
@@ -2134,139 +2134,123 @@ int GMT_map_init_ortho (void) {
  */
 
 int GMT_map_init_genper (void) {
-  BOOLEAN search;
-  double xmin, xmax, ymin, ymax, dummy, radius;
+	BOOLEAN search;
+	double xmin, xmax, ymin, ymax, dummy, radius;
 
-  double alt, azimuth, tilt, width, height;
-  double twist, scale, units;
+	double alt, azimuth, tilt, width, height;
+	double twist, scale, units;
 
-  units = project_info.pars[2];
-  scale = project_info.pars[3];
-  alt = project_info.pars[4];
-  azimuth = project_info.pars[5];
-  tilt = project_info.pars[6];
-  twist = project_info.pars[7];
-  width = project_info.pars[8];
-  height = project_info.pars[9];
+	units = project_info.pars[2];
+	scale = project_info.pars[3];
+	alt = project_info.pars[4];
+	azimuth = project_info.pars[5];
+	tilt = project_info.pars[6];
+	twist = project_info.pars[7];
+	width = project_info.pars[8];
+	height = project_info.pars[9];
 
-  if( project_info.g_sphere > 0 ) {
-    GMT_set_spherical (); /* PW: Force spherical for now */
-  }
+	if (project_info.g_sphere) GMT_set_spherical (); /* PW: Force spherical for now */
 
-  GMT_set_polar (project_info.pars[1]);
+	GMT_set_polar (project_info.pars[1]);
 
-  if (project_info.units_pr_degree) {
-    GMT_vgenper (0.0, 90.0, alt, azimuth, tilt, twist, width, height);
-    GMT_genper (0.0, fabs(project_info.pars[3]), &dummy, &radius);
-    project_info.x_scale = project_info.y_scale = fabs (project_info.pars[2] / radius);
-  } else {
-    project_info.x_scale = project_info.y_scale = project_info.pars[2];
-  }
+	if (project_info.units_pr_degree) {
+		GMT_vgenper (0.0, 90.0, alt, azimuth, tilt, twist, width, height);
+		GMT_genper (0.0, fabs(project_info.pars[3]), &dummy, &radius);
+		project_info.x_scale = project_info.y_scale = fabs (project_info.pars[2] / radius);
+	}
+	else
+		project_info.x_scale = project_info.y_scale = project_info.pars[2];
 
-  if( project_info.g_debug > 1 ) {
-    fprintf(stderr,"genper: units_pr_degree %d\n", project_info.units_pr_degree);
-    fprintf(stderr,"genper: radius %f\n", radius);
-    fprintf(stderr,"genper: scale %f units %f\n", scale, units);
-    fprintf(stderr,"genper: x scale %f y scale %f\n", project_info.x_scale, project_info.y_scale);
-    fprintf(stderr,"genper: gave_map_width %d \n",project_info.gave_map_width);
-  }
+	if (project_info.g_debug > 1) {
+		fprintf (stderr, "genper: units_pr_degree %d\n", project_info.units_pr_degree);
+		fprintf (stderr, "genper: radius %f\n", radius);
+		fprintf (stderr, "genper: scale %f units %f\n", scale, units);
+		fprintf (stderr, "genper: x scale %f y scale %f\n", project_info.x_scale, project_info.y_scale);
+		fprintf (stderr, "genper: gave_map_width %d \n",project_info.gave_map_width);
+	}
 
-  GMT_vgenper (project_info.pars[0], project_info.pars[1],
-        alt, azimuth, tilt, twist, width, height);
-  GMT_forward = (PFI)GMT_genper;
-  GMT_inverse = (PFI)GMT_igenper;
+	GMT_vgenper (project_info.pars[0], project_info.pars[1], alt, azimuth, tilt, twist, width, height);
+	GMT_forward = (PFI) GMT_genper;
+	GMT_inverse = (PFI) GMT_igenper;
 
-  project_info.w = 0.0;
-  project_info.e = 360.0;
-  project_info.s = -90.0;
-  project_info.n = 90.0;
+	project_info.w = 0.0;
+	project_info.e = 360.0;
+	project_info.s = -90.0;
+	project_info.n = 90.0;
 
-  xmin = ymin = -project_info.g_rmax;
-  xmax = ymax = -xmin;
+	xmin = ymin = -project_info.g_rmax;
+	xmax = ymax = -xmin;
 
-  xmin = project_info.g_xmin;
-  xmax = project_info.g_xmax;
-  ymin = project_info.g_ymin;
-  ymax = project_info.g_ymax;
+	xmin = project_info.g_xmin;
+	xmax = project_info.g_xmax;
+	ymin = project_info.g_ymin;
+	ymax = project_info.g_ymax;
 
-  if(project_info.g_width ) {
-    project_info.region = 1;
-    if( project_info.g_debug > 0 ) {
-      fprintf(stderr,"using windowed region\n");
-    }
-    GMT_outside = (PFI) GMT_rect_outside2;
-    GMT_crossing = (PFI) GMT_rect_crossing;
-    GMT_overlap = (PFI) GMT_rect_overlap;
-    GMT_map_clip = (PFI) GMT_rect_clip;
-    GMT_left_edge = (PFD) GMT_left_rect;
-    GMT_right_edge = (PFD) GMT_right_rect;
-    frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
-    frame_info.horizontal = (fabs (project_info.pars[1]) < 30.0
-                          && fabs (project_info.n - project_info.s) < 30.0);
+	if (project_info.g_width) {
+		project_info.region = 1;
+		if (project_info.g_debug > 0) fprintf(stderr,"using windowed region\n");
+		GMT_outside = (PFI) GMT_rect_outside2;
+		GMT_crossing = (PFI) GMT_rect_crossing;
+		GMT_overlap = (PFI) GMT_rect_overlap;
+		GMT_map_clip = (PFI) GMT_rect_clip;
+		GMT_left_edge = (PFD) GMT_left_rect;
+		GMT_right_edge = (PFD) GMT_right_rect;
+		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
+		frame_info.horizontal = (fabs (project_info.pars[1]) < 30.0 && fabs (project_info.n - project_info.s) < 30.0);
+		search = TRUE;
+	}
+	else {
+		if (project_info.g_debug > 0) fprintf(stderr,"using global view\n");
 
-    search = TRUE;
-  } else {
-    if( project_info.g_debug > 0 ) {
-      fprintf(stderr,"using global view\n");
-    }
-/* No annotations for global mode */
-    frame_info.axis[0].item[0].interval = frame_info.axis[1].item[0].interval = 0.0;
-/* No tickmarks for global mode */
-    frame_info.axis[0].item[4].interval = frame_info.axis[1].item[4].interval = 0.0;
+		/* No annotations for global mode */
+		frame_info.axis[0].item[0].interval = frame_info.axis[1].item[0].interval = 0.0;
 
-    GMT_overlap = (PFI) GMT_genper_overlap;
+		/* No tickmarks for global mode */
+		frame_info.axis[0].item[4].interval = frame_info.axis[1].item[4].interval = 0.0;
 
-    GMT_crossing = (PFI) GMT_radial_crossing;
-    GMT_map_clip = (PFI) GMT_radial_clip;
-    GMT_outside = (PFI) GMT_radial_outside;
-    GMT_left_edge = (PFD) GMT_left_circle;
-    GMT_right_edge = (PFD) GMT_right_circle;
+		GMT_overlap = (PFI) GMT_genper_overlap;
 
-    gmtdefs.basemap_type = GMT_IS_PLAIN;
+		GMT_crossing = (PFI) GMT_radial_crossing;
+		GMT_map_clip = (PFI) GMT_radial_clip;
+		GMT_outside = (PFI) GMT_radial_outside;
+		GMT_left_edge = (PFD) GMT_left_circle;
+		GMT_right_edge = (PFD) GMT_right_circle;
 
-    search = FALSE;
-  }
+		gmtdefs.basemap_type = GMT_IS_PLAIN;
 
-  if( project_info.polar ) {
-    if (project_info.north_pole) {
-      if (project_info.s < (90.0 - project_info.f_horizon))
-                project_info.s = 90.0 - project_info.f_horizon;
-      if (project_info.n >= 90.0) project_info.edge[2] = FALSE;
-    } else {
-      if (project_info.n > -(90.0 - project_info.f_horizon))
-                project_info.n = -(90.0 - project_info.f_horizon);
-      if (project_info.s <= -90.0) project_info.edge[0] = FALSE;
-    }
-    if (GMT_360_RANGE (project_info.w, project_info.e)
-                || GMT_IS_ZERO (project_info.e - project_info.w)) {
-      project_info.edge[1] = project_info.edge[3] = FALSE;
-    }
-  }
+		search = FALSE;
+  	}
 
-  if( project_info.g_debug > 0 ) {
-    fprintf(stderr,"xmin %f xmax %f ymin %f ymax %f\n", xmin/1000, xmax/1000, ymin/1000, ymax/1000);
-  }
+	if (project_info.polar) {
+		if (project_info.north_pole) {
+			if (project_info.s < (90.0 - project_info.f_horizon)) project_info.s = 90.0 - project_info.f_horizon;
+			if (project_info.n >= 90.0) project_info.edge[2] = FALSE;
+		} else {
+			if (project_info.n > -(90.0 - project_info.f_horizon)) project_info.n = -(90.0 - project_info.f_horizon);
+			if (project_info.s <= -90.0) project_info.edge[0] = FALSE;
+		}
+		if (GMT_360_RANGE (project_info.w, project_info.e) || GMT_IS_ZERO (project_info.e - project_info.w)) project_info.edge[1] = project_info.edge[3] = FALSE;
+	}
 
-  GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
+	if (project_info.g_debug > 0) fprintf(stderr,"xmin %f xmax %f ymin %f ymax %f\n", xmin/1000, xmax/1000, ymin/1000, ymax/1000);
 
-  project_info.r = 0.5 * project_info.xmax;
+	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
 
-  GMT_geo_to_xy (project_info.central_meridian, project_info.pole,
-        &project_info.c_x0, &project_info.c_y0);
+	project_info.r = 0.5 * project_info.xmax;
 
-  if( project_info.g_debug > 0 ) {
-    fprintf(stderr,"x scale %e y scale %e\n", project_info.x_scale, project_info.y_scale);
-    fprintf(stderr,"x center %f y center %f\n", project_info.c_x0, project_info.c_y0);
-    fprintf(stderr,"x max %f y max %f\n", project_info.xmax, project_info.ymax);
-    fprintf(stderr,"x0 %f y0 %f\n", project_info.x0, project_info.y0);
-    fflush(NULL);
-  }
+	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 
-  if (gmtdefs.verbose) {
-    fprintf(stderr,"\n\n");
-  }
+	if (project_info.g_debug > 0) {
+		fprintf(stderr,"x scale %e y scale %e\n", project_info.x_scale, project_info.y_scale);
+		fprintf(stderr,"x center %f y center %f\n", project_info.c_x0, project_info.c_y0);
+		fprintf(stderr,"x max %f y max %f\n", project_info.xmax, project_info.ymax);
+		fprintf(stderr,"x0 %f y0 %f\n", project_info.x0, project_info.y0);
+		fflush(NULL);
+	}
 
-  return (search);
+	if (gmtdefs.verbose) fprintf(stderr,"\n\n");
+
+	return (search);
 
 }
 #endif  /* _GENPER */
@@ -3846,7 +3830,7 @@ int GMT_wesn_outside (double lon, double lat)
 	while (lon < project_info.w && (lon + 360.0) <= project_info.e) lon += 360.0;
 	while (lon > project_info.e && (lon - 360.0) >= project_info.w) lon -= 360.0;
 
-	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL )
+	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL)
 		GMT_x_status_new = -1;
 	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < GMT_SMALL)
 		GMT_x_status_new = 1;
@@ -3857,11 +3841,11 @@ int GMT_wesn_outside (double lon, double lat)
 	else
 		GMT_x_status_new = 0;
 
-	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL )
+	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL)
 		GMT_y_status_new = -1;
 	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < GMT_SMALL)
 		GMT_y_status_new = 1;
-	else if (lat < project_info.s )
+	else if (lat < project_info.s)
 		GMT_y_status_new = -2;
 	else if (lat > project_info.n)
 		GMT_y_status_new = 2;
@@ -3881,7 +3865,7 @@ int GMT_wesn_outside_np (double lon, double lat)
 	 * pointer will be temporarily set to point to this routine during the
 	 * construction of the basemap and then reset to GMT_wesn_outside */
 
-	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL )
+	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL)
 		GMT_x_status_new = -1;
 	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < GMT_SMALL)
 		GMT_x_status_new = 1;
@@ -3892,11 +3876,11 @@ int GMT_wesn_outside_np (double lon, double lat)
 	else
 		GMT_x_status_new = 0;
 
-	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL )
+	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL)
 		GMT_y_status_new = -1;
 	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < GMT_SMALL)
 		GMT_y_status_new = 1;
-	else if (lat < project_info.s )
+	else if (lat < project_info.s)
 		GMT_y_status_new = -2;
 	else if (lat > project_info.n)
 		GMT_y_status_new = 2;
@@ -3917,7 +3901,7 @@ int GMT_polar_outside (double lon, double lat)
 		while (lon > project_info.e && (lon - 360.0) > project_info.w) lon -= 360.0;
 	}
 
-	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL )
+	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL)
 		GMT_x_status_new = -1;
 	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < GMT_SMALL)
 		GMT_x_status_new = 1;
@@ -3929,11 +3913,11 @@ int GMT_polar_outside (double lon, double lat)
 		GMT_x_status_new = 0;
 	if (!project_info.edge[1]) GMT_x_status_new = 0;	/* 360 degrees, no edge */
 
-	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL )
+	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL)
 		GMT_y_status_new = -1;
 	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < GMT_SMALL)
 		GMT_y_status_new = 1;
-	else if (lat < project_info.s )
+	else if (lat < project_info.s)
 		GMT_y_status_new = -2;
 	else if (lat > project_info.n)
 		GMT_y_status_new = 2;
@@ -3989,7 +3973,7 @@ int GMT_rect_outside (double lon, double lat)
 
 	GMT_geo_to_xy (lon, lat, &x, &y);
 
-	if (GMT_on_border_is_outside && fabs (x - project_info.xmin) < GMT_SMALL )
+	if (GMT_on_border_is_outside && fabs (x - project_info.xmin) < GMT_SMALL)
 		GMT_x_status_new = -1;
 	else if (GMT_on_border_is_outside && fabs (x - project_info.xmax) < GMT_SMALL)
 		GMT_x_status_new = 1;
@@ -4000,7 +3984,7 @@ int GMT_rect_outside (double lon, double lat)
 	else
 		GMT_x_status_new = 0;
 
-	if (GMT_on_border_is_outside && fabs (y -project_info.ymin) < GMT_SMALL )
+	if (GMT_on_border_is_outside && fabs (y -project_info.ymin) < GMT_SMALL)
 		GMT_y_status_new = -1;
 	else if (GMT_on_border_is_outside && fabs (y - project_info.ymax) < GMT_SMALL)
 		GMT_y_status_new = 1;
@@ -5133,7 +5117,7 @@ int GMT_radial_clip_pscoast (double *lon, double *lat, int np, double **x, doubl
 		}
 		GMT_geo_to_xy (lon[i], lat[i], &xr, &yr);
 #ifdef _GENPER
-		if (this && (project_info.projection != GMT_GENPER) ) {                 /* Project point onto perimeter */
+		if (this && (project_info.projection != GMT_GENPER)) {                 /* Project point onto perimeter */
 			GMT_geo_to_xy(project_info.central_meridian, project_info.pole, &x0, &y0);
 #else
 		if (this) {	/* Project point onto perimeter */
@@ -5353,7 +5337,7 @@ int GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct 
 	else if (project_info.projection == GMT_MERCATOR && g_head->nx == r_head->nx)
 		GMT_merc_forward (geo, g_head, rect, r_head);
 #ifdef _GENPER
-	else if (project_info.projection == GMT_GENPER )
+	else if (project_info.projection == GMT_GENPER)
 		GMT_genper_forward (geo, g_head, rect, r_head, max_radius);
 #endif  /* _GENPER */
 	else
@@ -5392,7 +5376,7 @@ int GMT_genper_forward (float *geo, struct GRD_HEADER *g_head, float *rect, stru
 	x_0 = (double *) GMT_memory(VNULL, (size_t) r_head->nx, sizeof(double), "GMT_genper_forward");
 	for (i = 0; i < r_head->nx; i++) x_0[i] = GMT_i_to_x (i, r_head->x_min, r_head->x_max, r_head->x_inc, r_off, r_head->nx);
 
-	if (project_info.g_debug > 0 ) {
+	if (project_info.g_debug > 0) {
 		fprintf(stderr," g_head x_inc %10.3f x_inc %10.3f\n", g_head->x_inc, g_head->y_inc);
 		fprintf(stderr," g_head x_min %10.3f x_max %10.3f x_inc %10.3f\n", g_head->x_min, g_head->x_max, g_head->x_inc);
 		fprintf(stderr," g_head y_min %10.3f y_max %10.3f y_inc %10.3f\n", g_head->y_min, g_head->y_max, g_head->y_inc);
@@ -5785,9 +5769,12 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 			else
 				GMT_xy_to_geo (&x_proj, &y_proj, x_out[i_out], y_out[j_out]);
 
+			/* On 17-Sep-2007 the slack of GMT_SMALL was added to allow for round-off
+			   errors in the grid limits. */
+
 			if (GMT_io.in_col_type[0] == GMT_IS_LON) {
-				if (x_proj < I->x_min) x_proj += 360.0;
-				if (x_proj > I->x_max) x_proj -= 360.0;
+				if (x_proj < I->x_min - GMT_SMALL) x_proj += 360.0;
+				if (x_proj > I->x_max + GMT_SMALL) x_proj -= 360.0;
 			}
 
 			if (i_out == (O->nx - 1)) i_in = 1;
@@ -6068,7 +6055,6 @@ void GMT_set_spherical (void) {	/* Force spherical solution */
 	project_info.one_m_ECC2 = project_info.i_one_m_ECC2 = 1.0;
 	project_info.half_ECC = project_info.i_half_ECC = 0.0;
 
-
 	if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Spherical approximation used!\n", GMT_program);
 }
 
@@ -6092,11 +6078,9 @@ void GMT_map_setinfo (double xmin, double xmax, double ymin, double ymax, double
 	project_info.w_r *= factor;
 
 #ifdef _GENPER
-	if( project_info.g_debug > 1 ) {
-		fprintf(stderr,"xmin %7.3f xmax %7.3f ymin %7.4f ymax %7.3f scale %6.3f\n",
-			xmin/1000, xmax/1000, ymin/1000, ymax/1000, scl);
-		fprintf(stderr,"gave_map_width %d w %9.4e h %9.4e factor %9.4e\n",
-			project_info.gave_map_width, w, h, factor);
+	if (project_info.g_debug > 1) {
+		fprintf(stderr,"xmin %7.3f xmax %7.3f ymin %7.4f ymax %7.3f scale %6.3f\n", xmin/1000, xmax/1000, ymin/1000, ymax/1000, scl);
+		fprintf(stderr,"gave_map_width %d w %9.4e h %9.4e factor %9.4e\n", project_info.gave_map_width, w, h, factor);
 	}
 #endif  /* _GENPER */
 
@@ -6426,7 +6410,7 @@ double	GMT_lat_swap_quick (double lat, double c[])
 
 	sincos (rl2, &sin2phi, &cos2phi);
 
-	delta = sin2phi * (c[0] + cos2phi * (c[1] + cos2phi * (c[2] + cos2phi * c[3] ) ) );
+	delta = sin2phi * (c[0] + cos2phi * (c[1] + cos2phi * (c[2] + cos2phi * c[3])));
 
 	return (lat + R2D * delta);
 }
@@ -6459,7 +6443,7 @@ double	GMT_lat_swap (double lat, int itype)
 	delta = sin2phi * (project_info.GMT_lat_swap_vals.c[itype][0]
 		+ cos2phi * (project_info.GMT_lat_swap_vals.c[itype][1]
 		+ cos2phi * (project_info.GMT_lat_swap_vals.c[itype][2]
-		+ cos2phi * project_info.GMT_lat_swap_vals.c[itype][3] ) ) );
+		+ cos2phi * project_info.GMT_lat_swap_vals.c[itype][3])));
 
 
 	return (lat + R2D * delta);
@@ -6578,8 +6562,8 @@ void	GMT_lat_swap_init ()
 	xx[1] = 3.0 / 5.0;
 	xx[2] = 4.0 / 7.0;
 	xx[3] = 5.0 / 9.0;
-	x = xx[0] * e2 + ( xx[1] * e4 + ( xx[2] * e6 + xx[3] * e8) );
-	project_info.GMT_lat_swap_vals.ra = a * sqrt( (1.0 + x) * (1.0 - e2) );
+	x = xx[0] * e2 + ( xx[1] * e4 + ( xx[2] * e6 + xx[3] * e8));
+	project_info.GMT_lat_swap_vals.ra = a * sqrt( (1.0 + x) * (1.0 - e2));
 
 	/* This expression for the Meridional radius comes from Gradshteyn and Ryzhik, 8.114.1,
 	because Adams only gets the first two terms.  This can be worked out by expressing the
@@ -6590,12 +6574,12 @@ void	GMT_lat_swap_init ()
 	xx[1] = xx[0] * 3.0 / 16.0;
 	xx[2] = xx[1] * 3.0 * 5.0 / 36.0;
 	xx[3] = xx[2] * 5.0 * 7.0 / 64.0;
-	x = xx[0] * e2 + ( xx[1] * e4 + ( xx[2] * e6 + xx[3] * e8) );
+	x = xx[0] * e2 + ( xx[1] * e4 + ( xx[2] * e6 + xx[3] * e8));
 	project_info.GMT_lat_swap_vals.rm = a * (1.0 - x);
 
 
 	/* Geodetic to authalic:  */
-	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_G2A][0] = -(e2 / 3.0 + (31.0 * e4 / 180.0 + 59.0 * e6 / 560.0) );
+	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_G2A][0] = -(e2 / 3.0 + (31.0 * e4 / 180.0 + 59.0 * e6 / 560.0));
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_G2A][1] = 17.0 * e4 / 360.0 + 61.0 * e6 / 1260;
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_G2A][2] = -383.0 * e6 / 45360.0;
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_G2A][3] = 0.0;
@@ -6607,13 +6591,13 @@ void	GMT_lat_swap_init ()
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_A2G][3] = 0.0;
 
 	/* Geodetic to conformal:  */
-	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_G2C][0] = -(e2 / 2.0 + (5.0 * e4 / 24.0 + (3.0 * e6 / 32.0 + 281.0 * e8 / 5760.0) ) );
+	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_G2C][0] = -(e2 / 2.0 + (5.0 * e4 / 24.0 + (3.0 * e6 / 32.0 + 281.0 * e8 / 5760.0)));
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_G2C][1] = 5.0 * e4 / 48.0 + (7.0 * e6 / 80.0 + 697.0 * e8 / 11520.0);
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_G2C][2] = -(13.0 * e6 / 480.0 + 461.0 * e8 / 13440.0);
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_G2C][3] = 1237.0 * e8 / 161280.0;
 
 	/* Conformal to geodetic:  */
-	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G][0] = e2 / 2.0 + (5.0 * e4 / 24.0 + (e6 / 12.0 + 13.0 * e8 / 360.0) ) ;
+	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G][0] = e2 / 2.0 + (5.0 * e4 / 24.0 + (e6 / 12.0 + 13.0 * e8 / 360.0)) ;
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G][1] = 7.0 * e4 / 48.0 + (29.0 * e6 / 240.0 + 811.0 * e8 / 11520.0);
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G][2] = 81.0 * e6 / 1120.0;
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G][3] = 4279.0 * e8 / 161280.0;
@@ -7264,7 +7248,7 @@ int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **x
 		GMT_map_outside (lon, lat);
 		GMT_geo_to_xy (lon, lat, &this_x, &this_y);
 		nx = 0;
-		if ( GMT_break_through (lon_old, lat, lon, lat) ) {	/* Crossed map boundary */
+		if ( GMT_break_through (lon_old, lat, lon, lat)) {	/* Crossed map boundary */
 			nx = GMT_map_crossing (lon_old, lat, lon, lat, xlon, xlat, X[nc].xx, X[nc].yy, X[nc].sides);
 			if (nx == 1) X[nc].angle[0] = GMT_get_angle (lon_old, lat, lon, lat);
 			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;
@@ -7322,7 +7306,7 @@ int GMT_map_loncross (double lon, double south, double north, struct GMT_XINGS *
 		GMT_map_outside (lon, lat);
 		GMT_geo_to_xy (lon, lat, &this_x, &this_y);
 		nx = 0;
-		if ( GMT_break_through (lon, lat_old, lon, lat) ) {	/* Crossed map boundary */
+		if ( GMT_break_through (lon, lat_old, lon, lat)) {	/* Crossed map boundary */
 			nx = GMT_map_crossing (lon, lat_old, lon, lat, xlon, xlat, X[nc].xx, X[nc].yy, X[nc].sides);
 			if (nx == 1) X[nc].angle[0] = GMT_get_angle (lon, lat_old, lon, lat);
 			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;
