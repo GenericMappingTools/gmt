@@ -20,9 +20,6 @@ calculate distances along track, to a fixed point, or closest approach to a line
 Finally, can be used to perform various datum conversions.
 Additional data fields are permitted after the first 2 columns which must have (longitude,latitude) or (x,y).
 See option OPT(:) on how to read (latitude,longitude) files.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 .TP
 \fIinfiles\fP
 Data file(s) to be transformed.  If not given, standard input is read.
@@ -31,6 +28,7 @@ Data file(s) to be transformed.  If not given, standard input is read.
 Special case for the UTM projection: If OPT(C) is used and OPT(R) is not given then the region is set to coincide with
 the given UTM zone so as to preserve the full ellipsoidal solution (See RESTRICTIONS for more information).
 .SH OPTIONS
+No space between the option flag and the associated arguments.
 .TP
 \fIinfile(s)\fP
 input file(s) with 2 or more columns. If no file(s) is given, \fBmapproject\fP will read the standard input.

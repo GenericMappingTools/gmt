@@ -12,14 +12,11 @@ the information with values provided on the command line [if any].  As an option
 global, geographical grids (with 360 degrees longitude range) can be rotated in
 the east-west direction, and individual nodal values can be replaced from a
 table of \fIx, y, z\fP values.  \fBgrdedit\fP only operates on files containing a grdheader.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 .TP
 \fIgrdfile\fP
 Name of the 2-D grdfile to modify
-.sp
 .SH OPTIONS
+No space between the option flag and the associated arguments.
 .TP
 .B \-A
 If necessary, adjust the file's \fIx_inc, y_inc\fP to be compatible with\"'

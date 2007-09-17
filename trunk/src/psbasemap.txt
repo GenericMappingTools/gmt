@@ -51,13 +51,11 @@ psbasemap \- To plot \fIPostScript\fP basemaps
 \fBpsbasemap\fP creates PostScript code that will produce a basemap.  Several map projections
 are available, and the user may specify separate tickmark intervals for boundary annotation,
 ticking, and [optionally] gridlines.  A simple map scale or directional rose may also be plotted.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 #include "explain_-B.txt"
 #include "explain_-J.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
+No space between the option flag and the associated arguments.
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
@@ -86,7 +84,6 @@ The following section illustrates the use of the options by giving some examples
 available map projections.  Note how scales may be given in several different ways
 depending on the projection.  Also note the use of upper case letters to specify map width
 instead of map scale.
-.sp
 .SH NON-GEOGRAPHICAL PROJECTIONS
 .SS Linear x-y plot
 To make a linear x/y frame with all axes, but with only left and bottom axes annotated, using xscale = yscale = 1.0,

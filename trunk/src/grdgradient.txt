@@ -23,12 +23,8 @@ boundary conditions (see OPT(L)).
 .TP
 .B \-G
 Name of the output grdfile for the directional derivative.
-.br
-.sp
 .SH OPTIONS
-	No space between the option flag and the associated arguments.  Use  
-upper case for the
-option flags and lower case for modifiers.
+No space between the option flag and the associated arguments.
 .TP
 .B \-A
 Azimuthal direction for a directional derivative; \fIazim\fP is the  

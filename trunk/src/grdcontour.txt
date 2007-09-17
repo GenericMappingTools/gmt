@@ -17,9 +17,6 @@ grdcontour \- contouring of 2-D gridded data sets
 each contour through the grid.  As an option, the x/y/z positions of the contour lines may be dumped to
 a single multisegment file or many separate files.  \fIPostScript\fP code is generated and sent to standard output.  Various options
 that affect the plotting are available.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 .TP
 \fIgrdfile\fP
 2-D gridded data set to be contoured

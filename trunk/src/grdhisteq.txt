@@ -36,15 +36,11 @@ with zero mean and unit variance.  The locations of these values will
 correspond to the locations of the input; that is, the most negative
 output value will be in the (x,y) location of the most negative input
 value, and so on.
-.br
-	No space between the option flag and the associated arguments.  Use upper case for the
-option flags and lower case for modifiers.
 .TP
 \fIin_grdfile\fP
 2-D binary grd file to be equalized.
-.br
-.sp
 .SH OPTIONS
+No space between the option flag and the associated arguments.
 .TP
 .B \-C
 Sets how many cells (or divisions) of data range to make.
@@ -75,7 +71,6 @@ with \fBgrdimage\fP or \fBgrdview\fP, run
 .br
 .sp
 \fBgrdhisteq\fP raw_intens.grd \fB\-G\fPsmooth_intens.grd \fB\-N \-V\fP
-.br
 .SH RESTRICTIONS
 If you use \fBgrdhisteq\fP to make a gaussian output for gradient shading
 in \fBgrdimage\fP or \fBgrdview\fP, you should be aware of the following:  the output will be
