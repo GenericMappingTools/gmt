@@ -64,7 +64,6 @@ with the geometrical weight factor to determine the actual weights used in the c
 #include "explain_-f.txt"
 #include "explain_float.txt"
 .SH EXAMPLES
-.sp
 To create a gridded data set from the file seaMARCII_bathy.lon_lat_z using a 0.5 min grid,
 a 5 km search radius, using an octant search, and set empty nodes to -9999:
 .sp

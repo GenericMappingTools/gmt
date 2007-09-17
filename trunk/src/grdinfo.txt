@@ -16,8 +16,6 @@ nodes set to NaN.
 .TP
 \fIgrdfile\fP
 The name of one or several 2-D grd files.
-.br
-.sp
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP

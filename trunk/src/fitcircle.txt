@@ -34,7 +34,6 @@ not easily estimated by either method.
 .B \-L
 Specify the desired \fInorm\fP as 1 or 2, or use \fB\-L\fP or  \fB\-L3\fP to see both solutions.
 .SH OPTIONS
-.sp
 .TP
 \fIxyfile\fP
 ASCII [or binary, see \fB\-b\fP] file containing lon,lat [lat,lon] values in the first 2 columns.  If no file is specified, \fBfitcircle\fP 

@@ -24,7 +24,6 @@ data values.  [\fIw\fP] is an optional weight for the data.  If no file is speci
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
-.sp
 .TP
 .B \-C
 Use the center of the block as the output location [Default uses the modal xy location

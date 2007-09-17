@@ -29,7 +29,6 @@ is given, standard input is read.  For binary files, see OPT(b).
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-.sp
 #include "explain_-B_short.txt"
 .TP
 .B \-C
