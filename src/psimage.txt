@@ -35,8 +35,6 @@ If not given \fIylength\fP is set to \fIxlength\fP * (ny/nx).
 If \fIxlength\fP is negative we use the absolute value and interpolate image to the
 device resolution using the PostScript image operator.
 Alternatively, use \fB\-E\fP.
-.br
-.sp
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP

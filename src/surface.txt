@@ -33,7 +33,6 @@ Output file name.  Output is a binary 2-D \fI.grd\fP file.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
-.sp
 .TP
 .B \-A
 Aspect ratio.  If desired, grid anisotropy can be added to the equations.  Enter \fIaspect_ratio\fP,

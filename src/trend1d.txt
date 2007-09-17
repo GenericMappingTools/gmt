@@ -102,5 +102,3 @@ Huber, P. J., 1964, Robust estimation of a location parameter, \fIAnn. Math. Sta
 .br
 .sp
 Menke, W., 1989, Geophysical Data Analysis:  Discrete Inverse Theory, Revised Edition, Academic Press, San Diego.
-
-

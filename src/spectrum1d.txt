@@ -44,7 +44,6 @@ Admittance spectrum, or real part of the transfer function.  Units of (Y / X).
 (Squared) coherency spectrum, or linear correlation coefficient as a function of frequency.  
 Dimensionless number in [0, 1].  The Signal-to-Noise-Ratio (SNR) is coh / (1 - coh).  SNR = 1 when coh = 0.5.
 .SH REQUIRED ARGUMENTS
-.sp
 .TP
 \fIx[y]file\fP
 ASCII (or binary, see \fB\-bi\fP) file holding X(t) [Y(t)] samples in the first 1 [or 2] columns.
@@ -105,5 +104,3 @@ Bendat, J. S., and A. G. Piersol, 1986, Random Data, 2nd revised ed., John Wiley
 Welch, P. D., 1967, The use of Fast Fourier Transform for the estimation of power spectra:  a method 
 based on time averaging over short, modified periodograms, IEEE Transactions on Audio and Electroacoustics, 
 Vol AU-15, No 2.
-
-

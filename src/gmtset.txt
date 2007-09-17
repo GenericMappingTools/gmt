@@ -26,8 +26,6 @@ and set annotation offset to 0.2 cm:
 .br
 .sp
 \fBgmtset\fP \fBDOTS_PR_INCH\fP 600 \fBANNOT_FONT_PRIMARY\fP Helvetica \fBGRID_CROSS_SIZE_PRIMARY\fP 0.1\fBi\fP \fBANNOT_OFFSET_PRIMARY\fP 0.2\fBc\fP
-.br
-.sp
 .SH "SEE ALSO"
 .IR GMT (GMTMANSECTION),
 .IR gmtdefaults (GMTMANSECTION)

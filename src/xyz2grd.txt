@@ -24,7 +24,6 @@ have to be sorted (for binary triplets, see OPT(b)).  1-column z tables must be 
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
-.sp
 .TP
 .B \-A
 Add up multiple values that belong to the same node (same as \fB\-Az\fP).
