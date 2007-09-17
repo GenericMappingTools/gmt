@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.1 2007-09-11 23:22:24 remko Exp $
+ *	$Id: gmt_bcr.c,v 1.2 2007-09-17 03:13:51 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -110,12 +110,16 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
 	int	i, j, ij;
 	double	x, y, retval, wsum, wx[4], wy[4], w, wp, wq;
 
-	/* First check if the xx and yy are within the grid */
+	/* First check if the xx and yy are within the grid.
+	   16-Sep-2007: Added some slack (GMT_SMALL) here to avoid setting to NaN points
+	   that are really on the edge but because of rounding errors are regarded outside.
+	   Remember that we have padded the grid with 2 extra values, so this should not be
+	   a problem. */
 
-	if (xx < grd->x_min || xx > grd->x_max) return (GMT_d_NaN);
-	if (yy < grd->y_min || yy > grd->y_max) return (GMT_d_NaN);
+	if (xx < grd->x_min - GMT_SMALL || xx > grd->x_max + GMT_SMALL) return (GMT_d_NaN);
+	if (yy < grd->y_min - GMT_SMALL || yy > grd->y_max + GMT_SMALL) return (GMT_d_NaN);
 
-	/* First compute the normalized real indices (x,y) of the point (xx,yy) within the grid.
+	/* Compute the normalized real indices (x,y) of the point (xx,yy) within the grid.
 	   Note that the y axis points down from the upper left corner of the grid. */
 
 	x = (xx - grd->x_min) * bcr->rx_inc - bcr->offset;
@@ -132,12 +136,6 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
 		i = (int)floor(x);
 		j = (int)floor(y);
 
-		/* ... I don't see why these would be necessary ....
-		if (i < 0 && edgeinfo->nxp <= 0) i = 0;
-		if (i > grd->nx-2 && edgeinfo->nxp <= 0) i = grd->nx-2;
-		if (j < 1 && !(edgeinfo->nyp > 0 || edgeinfo->gn) ) j = 1;
-		if (j > grd->ny-1 && !(edgeinfo->nyp > 0 || edgeinfo->gs) ) j = grd->ny-1; */
-
 		/* Determine the offset of (x,y) with respect to (i,j). */
 		x -= (double)i;
 		y -= (double)j;
@@ -145,6 +143,15 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
 		/* For 4x4 interpolants, move over one more cell to the upper left corner */
 		if (bcr->n == 4) { i--; j--; }
 	}
+
+	/* Normally, one would expect here a check on the value (i,j) to make sure that the
+	   corners of the convolution kernel, (i,j) and (i+bcr->n-1,j+bcr->n-1), are both within
+	   the padded grid. However, the check on (xx, yy) above, even with the slack, ensures
+	   that the corner points are between (-2,-2) and (grd->nx+1,grd->ny+1), the corners
+	   of the padding.
+
+	if (i < -2 || j < -2 || i+bcr->n > grd_nx+2 || j+bcr->n > grd_ny+2) return (GMT_d_NaN);
+	*/
 
 	/* Save the location of the upper left corner point of the convolution kernel */
 	ij = (j + bcr->joff) * bcr->mx + (i + bcr->ioff);
