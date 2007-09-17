@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.301 2007-09-12 01:30:58 guru Exp $
+ *	$Id: gmt_init.c,v 1.302 2007-09-17 17:52:02 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -39,11 +39,12 @@
  *	GMT_history			Read and update the .gmtcommands4 file
  *	GMT_putpen			Encode pen argument into textstring
  *	GMT_parse_J_option		Scans the -Jstring to set projection
+ *	GMT_parse_R_option		Scans the -Rstring and returns map boundaries
  *
  * The INTERNAL functions are:
  *
  *	GMT_loaddefaults		Reads the GMT global parameters from .gmtdefaults4
- *	GMT_parse_?_option		Decode the -B, -R, -U, -t options
+ *	GMT_parse_?_option		Decode the -B, -H, -U, -: options
  *	GMT_setparameter		Sets a default value given keyword,value-pair
  *	GMT_setshorthand		Reads and initializes the suffix shorthands
  *	GMT_get_ellipsoid		Returns ellipsoid id based on name
@@ -134,15 +135,14 @@ void GMT_strip_wesnz (const char *in, int side[], BOOLEAN *draw_box, char *out);
 int GMT_split_info (const char *in, char *info[]);
 int GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A);
 int GMT_set_titem (struct GMT_PLOT_AXIS *A, double val, double phase, char flag, char unit);
-int GMT_parse_B_option (char *in);
 static int load_encoding (struct gmt_encoding *);
 void GMT_verify_encodings ();
 int GMT_key_lookup (char *name, char **list, int n);
 void GMT_PS_init (void);
 void *New_GMT_Ctrl ();
 void Free_GMT_Ctrl (struct GMT_CTRL *C);
+int GMT_parse_B_option (char *in);
 int GMT_parse_H_option (char *item);
-int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n);
 int GMT_parse_U_option (char *item);
 int GMT_parse_t_option (char *item);
 
