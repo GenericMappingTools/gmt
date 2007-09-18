@@ -1,0 +1,15 @@
+#	$Id: 64bit.status,v 1.1 2007-09-18 22:18:40 guru Exp $
+#
+# Udated information on how GMT currently supports 64-bit computing
+
+GMT is 64-bit safe" If compiled 64-bit it will still work as expected.
+
+Spring 2007: The block*.c programs now all use GMT_LONG for integers
+	that may exceed 2G for large data sets.
+	
+Fall 2007: The plan is to slowly migrate from using ints for counters
+	etc to GMT_LONG.  The simple part is to carefully replace some
+	ints in the main programs with GMT_LONGs; the other is to make
+	changes to library functions.  However, for 32-bit compiling a
+	GMT_LONG equals an int so no change will take place.
+	
