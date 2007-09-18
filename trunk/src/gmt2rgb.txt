@@ -1,25 +1,25 @@
 .TH GMT2RGB GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-gmt2rgb \- Converting a grdfile, a raw, or a Sun rasterfile to r/g/b grids
+gmt2rgb \- Converting a grid file, a raw, or a Sun raster file to r/g/b grids
 .SH SYNOPSIS
 \fBgmt2rgb\fP \fIinfile\fP OPT(G)\fItemplate\fP [ OPT(C)\fIcptfile\fP ] 
 [ OPT(F) ] [ GMT_Id_OPT ] [ OPT(L)\fIlayer\fP ] [ GMT_Rx_OPT ] [ GMT_V_OPT ] 
 [ OPT(W)\fIwidth\fP/\fIheight\fP[/\fIn_bytes\fP]
 .SH DESCRIPTION
-\fBgmt2rgb\fP reads one of three types of input files: (1) A Sun 8-, 24-, or 32-bit rasterfile; we the
-write out the red, green, and blue components (0-255 range) to separate grid files.  Since the rasterfile
+\fBgmt2rgb\fP reads one of three types of input files: (1) A Sun 8-, 24-, or 32-bit raster file; we the
+write out the red, green, and blue components (0-255 range) to separate grid files.  Since the raster file
 header is limited you may use the \fB\-R, \-F, \-I\fP options to set a complete header record [Default is
-simply based on the number of rows and columns]. (2) A binary 2-D grdfile; we then convert the z-values
+simply based on the number of rows and columns]. (2) A binary 2-D grid file; we then convert the z-values
 to red, green, blue via the provided cpt file.  Optionally, only write out one of the r, g, b, layers.
-(3) A RGB or RGBA raw rasterfile.  Since raw rastefiles have no header, you have to give the image
+(3) A RGB or RGBA raw raster file.  Since raw rastefiles have no header, you have to give the image
 dimensions via the \fB\-W\fP option.
 .TP
 \fIinfile\fP
-The (1) Sun rasterfile, (2) 2-D binary grdfile, or (3) raw rasterfile to be converted.
+The (1) Sun raster file, (2) 2-D binary grid file, or (3) raw raster file to be converted.
 .TP
 .B \-G
-Provide an output name template for the three output grids.  The template should be a regular gridfile name
+Provide an output name template for the three output grids.  The template should be a regular grid file name
 except it must contain the string %c which on output will be replaced by r, g, or b.
 .SH OPTIONS
 .TP

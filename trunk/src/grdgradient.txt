@@ -1,7 +1,7 @@
 .TH GRDGRADIENT GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdgradient \- Compute directional derivative or gradient from 2-D grd file representing z(x,y)
+grdgradient \- Compute directional derivative or gradient from 2-D grid file representing z(x,y)
 .SH SYNOPSIS
 \fBgrdgradient\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP 
 [ OPT(A)\fIazim\fP[/\fIazim2\fP] ] [ OPT(D)[\fBc\fP][\fBo\fP][\fBn\fP] ] 
@@ -19,10 +19,10 @@ boundary conditions (see OPT(L)).
 .br
 .TP
 \fIin_grdfile\fP
-2-D grd file from which to compute directional derivative.
+2-D grid file from which to compute directional derivative.
 .TP
 .B \-G
-Name of the output grdfile for the directional derivative.
+Name of the output grid file for the directional derivative.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -126,7 +126,7 @@ where \fIsigma\fP is estimated using the L2 norm of (\fIg\fP -
 not given.
 .TP
 .B \-S
-Name of output grdfile with scalar magnitudes of gradient vectors.   
+Name of output grid file with scalar magnitudes of gradient vectors.   
 Requires \fB\-D\fP.
 #include "explain_-V.txt"
 .SH HINTS

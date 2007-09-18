@@ -8,7 +8,7 @@
 #define SCALE2	\fB\-Jx\fP10.0\fBc\fP
 #define SCALE3 \fB\-JM\fP6\fBi\fP
 .SH NAME
-grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D grd file
+grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D grid file
 .SH SYNOPSIS
 \fBgrdview\fP \fIrelief_file\fP GMT_J_OPT 
 [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP] [ OPT(E)\fIview_az/view_el\fP ] 
@@ -21,7 +21,7 @@ grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D gr
 \fBgrdview\fP reads a 2-D gridded file and produces a 3-D perspective plot by 
 drawing a mesh, painting a colored/grayshaded surface made up of polygons, or by scanline conversion of these polygons
 to a rasterimage.  Options include draping a data set on top of a surface, plotting of contours on top of the
-surface, and apply artificial illumination based on intensities provided in a separate grd file.
+surface, and apply artificial illumination based on intensities provided in a separate grid file.
 .TP
 \fIrelief_file\fP
 2-D gridded data set to be imaged (the relief of the surface).
@@ -44,11 +44,11 @@ Sets the view point by specifying azimuth and elevation in degrees. [Default is 
 Drape the image in \fIdrapefile\fP on top of the relief provided by \fIrelief_file\fP. [Default is \fIrelief_file\fP].
 Note that \fB\-Jz\fP and \fB\-N\fP always refers to the \fIrelief_file\fP.  The \fIdrapefile\fP only provides
 the information pertaining to colors, which is looked-up via the cpt file (see \fB\-C\fP).  Alternatively, give
-three gridfiles separated by commas.  These files must contain the red, green, and blue colors directly (in 0-255 range)
+three grid files separated by commas.  These files must contain the red, green, and blue colors directly (in 0-255 range)
 and no cpt file is needed.  The \fIdrapefile\fP may be of higher resolution than the \fIrelief_file\fP.
 .TP
 .B \-I
-Gives the name of a grdfile with intensities in the (-1,+1) range. [Default is no illumination].
+Gives the name of a grid file with intensities in the (-1,+1) range. [Default is no illumination].
 #include "explain_-K.txt"
 .TP
 .B \-L
@@ -149,7 +149,7 @@ this image over the topography and shade the result for good measure.  The comma
 \fBgrdview\fP topo.grd SCALE3 \fB\-Qi \-E\fP140/30 \fB\-I\fPtopo_intens.grd \fB\-G\fPlayer_r.grd,layer_g.grd,layer_b.grd > image.ps
 .SH REMARKS
 For the \fB\-Qs\fP option:  \fIPostScript\fP provides no way of smoothly varying colors within a polygon, so colors can only
-vary from polygon to polygon.  To obtain smooth images this way you may resample the grdfile(s) using \fBgrdsample\fP or
+vary from polygon to polygon.  To obtain smooth images this way you may resample the grid file(s) using \fBgrdsample\fP or
 use a finer grid size when running gridding programs like \fBsurface\fP or \fBnearneighbor\fP.  Unfortunately,
 this produces huge \fIPostScript\fP files.  The alternative is to use the \fB\-Qi\fP option, which
 computes bilinear or bicubic continuous color variations within polygons by using scanline conversion to image the polygons.

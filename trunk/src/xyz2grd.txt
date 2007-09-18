@@ -1,7 +1,7 @@
 .TH XYZ2GRD GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-xyz2grd \- Converting an ASCII or binary table to grd file format
+xyz2grd \- Converting an ASCII or binary table to grid file format
 .SH SYNOPSIS
 \fBxyz2grd\fP \fIxyzfile\fP OPT(G)\fIgrdfile\fP GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(A)[\fBn|z|u|l\fP] ] [ GMT_GRDEDIT ] 
@@ -9,7 +9,7 @@ GMT_Rgeo_OPT [ OPT(A)[\fBn|z|u|l\fP] ] [ GMT_GRDEDIT ]
 [ OPT(Z)[\fIflags\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBxyz2grd\fP reads a z or xyz table and
-creates a binary grdfile.  \fBxyz2grd\fP will report if some of the nodes are not filled in with
+creates a binary grid file.  \fBxyz2grd\fP will report if some of the nodes are not filled in with
 data.  Such unconstrained nodes are set to a value specified by the user [Default is NaN].
 Nodes with more than one value will be set to the average value.  As an option (using OPT(Z)),
 a 1-column z-table may be read assuming all nodes are present (z-tables can be in organized in a
@@ -20,7 +20,7 @@ ASCII [or binary] file holding z or (x,y,z) values.  xyz triplets do not
 have to be sorted (for binary triplets, see OPT(b)).  1-column z tables must be sorted and the \fB\-Z\fP must be set). 
 .TP
 .B \-G
-\fIgrdfile\fP is the name of the binary output grdfile.
+\fIgrdfile\fP is the name of the binary output grid file.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
@@ -97,20 +97,20 @@ Note that \fB\-Z\fP only applies to 1-column input.
 #include "explain_-f.txt"
 #include "explain_float.txt"
 .SH EXAMPLES
-To create a grdfile from the ASCII data in hawaii_grv.xyz, use
+To create a grid file from the ASCII data in hawaii_grv.xyz, use
 .br
 .sp
 \fBxyz2grd\fP hawaii_grv.xyz \fB\-D\fPdegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
 \fB\-G\fPhawaii_grv_new.grd \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-V\fP
 .br
 .sp
-To create a grdfile from the raw binary (3-column, single-precision) scanline-oriented data raw.b, use
+To create a grid file from the raw binary (3-column, single-precision) scanline-oriented data raw.b, use
 .br
 .sp
 \fBxyz2grd\fP raw.b \fB\-D\fPm/m/m/1/0/=/= \fB\-G\fPraw.grd \fB\-R\fP0/100/0/100 \fB\-I\fP1 \fB\-V \-Z \-b\fP3
 .br
 .sp
-To make a grdfile from the raw binary USGS DEM (short integer) scanline-oriented data topo30. on the NGDC
+To make a grid file from the raw binary USGS DEM (short integer) scanline-oriented data topo30. on the NGDC
 global relief Data CD-ROM, with values of -9999 indicate missing data, one must on some machine reverse the byte-order.  On such machines (like Sun), use
 .br
 .sp

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.46 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_cdf.c,v 1.47 2007-09-18 01:32:32 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -216,7 +216,7 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	 *		Note: The file has only real values, we simply allow space in the array
 	 *		for imaginary parts when processed by grdfft etc.
 	 *
-	 * Reads a subset of a grdfile and optionally pads the array with extra rows and columns
+	 * Reads a subset of a grid file and optionally pads the array with extra rows and columns
 	 * header values for nx and ny are reset to reflect the dimensions of the logical array,
 	 * not the physical size (i.e., the padding is not counted in nx and ny)
 	 */

@@ -1,10 +1,10 @@
 .TH GRDRASTER GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdraster \- extract subregion from a binary raster and write a grd file
+grdraster \- extract subregion from a binary raster and write a grid file
 .SH SYNOPSIS
 \fBgrdraster\fP [ \fIfilenumber\fP | \fI"text pattern"\fP ] GMT_Rgeo_OPT 
-[ OPT(G)\fIgrdfilename\fP ] [ GMT_Id_OPT ] [ GMT_J_OPT ] [ GMT_V_OPT ] 
+[ OPT(G)\fIgrdfile\fP ] [ GMT_Id_OPT ] [ GMT_J_OPT ] [ GMT_V_OPT ] 
 [ GMT_bo_OPT ] 
 .SH DESCRIPTION
 \fBgrdraster\fP reads a file called \fIgrdraster.info\fP from the current
@@ -13,10 +13,10 @@ working directory, the directories pointed to by the environment variables
 (in that order).  The file \fIgrdraster.info\fP defines binary
 arrays of data stored in scan-line format in data files.  Each file is given
 a \fIfilenumber\fP in the info file.  \fBgrdraster\fP figures out how to
-load the raster data into a grd file spanning a region defined by \fB\-R\fP.
+load the raster data into a grid file spanning a region defined by \fB\-R\fP.
 By default the grid spacing equals the raster spacing.  The \fB\-I\fP option
 may be used to sub-sample the raster data.  No filtering or interpolating is
-done, however; the \fIx_inc\fP and \fIy_inc\fP of the grd file must be
+done, however; the \fIx_inc\fP and \fIy_inc\fP of the grid must be
 multiples of the increments of the raster file and \fBgrdraster\fP simply 
 takes every n'th point.  The output of \fBgrdraster\fP is either grid or\"'
 pixel registered depending on the registration of the raster used.  It is up

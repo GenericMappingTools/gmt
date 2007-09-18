@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.66 2007-04-03 03:19:10 pwessel Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.67 2007-09-18 01:32:32 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -125,7 +125,7 @@ Also did not accept { \bf z} as an output choice.
 \subsection{Overview of \gmt\ 4.1.4 [Nov-1, 2006]}
 
 Changes in \GMT\ 4.1.4 are again relatively minor and predominantly bug fixes.  One imporant
-new feature is that \GMT\ can now automatically recognize the format of the grd file given
+new feature is that \GMT\ can now automatically recognize the format of the grid file given
 to a program.  The use of the ``=id'' mechanism is now only needed when writing an output file in
 a grid format other than the netCDF default or when reading using custom scaline and translation
 is required.  We have also added
@@ -575,9 +575,9 @@ including the introduction of numerous new \GMTprog{gmtdefaults} parameters to m
 the time series support as ``generic'' as we need it to be.
 \item [New Tools.]  Three new tools have been added:
 \begin{enumerate}
-\item \GMTprog{gmt2rgb}: Makes red, green, and blue component gridfiles from an image (to be
+\item \GMTprog{gmt2rgb}: Makes red, green, and blue component grid files from an image (to be
 used with new options for false color imaging or image draping by \GMTprog{grdimage} or \GMTprog{grdview}).
-\item \GMTprog{grdblend}: Blends several partially over-lapping grdfiles into one combined grid.  Output
+\item \GMTprog{grdblend}: Blends several partially over-lapping grid files into one combined grid.  Output
 grid is written one row at the time so truly enormous grids can be created.
 \item \GMTprog{pslegend}: Designs and plots elaborate legends on maps.
 \end{enumerate}

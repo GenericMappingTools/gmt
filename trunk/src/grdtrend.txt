@@ -1,7 +1,7 @@
 .TH GRDTREND GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdtrend \- Fit and/or remove a polynomial trend in a grd file
+grdtrend \- Fit and/or remove a polynomial trend in a grid file
 .SH SYNOPSIS
 \fBgrdtrend\fP \fIgrdfile\fP OPT(N)\fIn_model\fP[\fBr\fP] 
 [ OPT(D)\fIdiff.grd\fP ] [ OPT(T)\fItrend.grd\fP ] [ GMT_V_OPT ] 
@@ -27,7 +27,7 @@ files are written, these will also have NaN in the same locations.
 No space between the option flag and the associated arguments.
 .TP
 \fIgrdfile\fP
-The name of a 2-D binary grd file.
+The name of a 2-D binary grid file.
 .TP
 .B \-N
 [\fBr\fP]\fIn_model\fP sets the number of model parameters to fit.  Append \fBr\fP for robust fit.

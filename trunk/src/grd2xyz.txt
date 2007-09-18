@@ -1,13 +1,13 @@
 .TH GRD2XYZ GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grd2xyz \- Converting grdfile(s) to ASCII or binary data
+grd2xyz \- Converting grid file(s) to ASCII or binary data
 .SH SYNOPSIS
 \fBgrd2xyz\fP \fIgrdfiles\fP [ OPT(E)[\fInodata\fP] ] [ GMT_H_OPT ] [ GMT_Rgeo_OPT ] 
 [ OPT(S)[\fBr\fP] ] [ GMT_V_OPT ] [ OPT(W)[\fIweight\fP] ] [ OPT(Z)[\fIflags\fP] ] 
 [ GMT_bo_OPT ] [ GMT_fo_OPT ]
 .SH DESCRIPTION
-\fBgrd2xyz\fP reads one or more binary 2-D grdfiles and writes out xyz-triplets in
+\fBgrd2xyz\fP reads one or more binary 2-D grid files and writes out xyz-triplets in
 ASCII [or binary] format to standard output.  Modify the precision of the ASCII
 output format by editing the \fBD_FORMAT\fP parameter in your \.gmtdefaults4 file or
 use \fB\-\-D_FORMAT=\fP\fIformat\fP on the command line, or choose binary output
@@ -15,7 +15,7 @@ using single or double precision storage.  As an option you may output z-values
 without the (x,y) in a number of formats, see OPT(E) or OPT(Z) below.
 .TP
 \fIgrdfiles\fP
-Names of 2-D binary grd files to be converted.
+Names of 2-D binary grid files to be converted.
 .SH OPTIONS
 .TP
 .B \-E
@@ -23,7 +23,7 @@ Output an ESRI ArcInfo ASCII interchange grid format file.  Append \fInodata\fP 
 the grid value equals NaN [-9999].  Note that all data values are written as integers.
 .TP
 .B \-H
-Output 1 header record based on information in the first grdfile header.
+Output 1 header record based on information in the first grid file header.
 Ignored if binary output is selected.  [Default is no header].
 #include "explain_-R.txt" 
 .TP

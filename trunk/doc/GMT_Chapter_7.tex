@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.39 2007-09-12 23:48:46 remko Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.40 2007-09-18 01:32:32 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -92,7 +92,7 @@ As our second example we will demonstrate how to make color
 images from gridded data sets (again, we will deferr the
 actual making of gridded files to later examples).  We will
 use the supplemental program \GMTprog{grdraster} to extract 2-D
-grdfiles of bathymetry and Geosat geoid heights and put the
+grid files of bathymetry and Geosat geoid heights and put the
 two images on the same page.  The region of interest is the
 Hawaiian islands, and due to the oblique trend of the island
 chain we prefer to rotate our geographical data sets using
@@ -118,9 +118,9 @@ meridians and parallels enclosing the oblique region is
 the area extracted by \GMTprog{grdraster}.  For your convenience
 we have commented out those lines and provided the two
 extracted files so you do not need \GMTprog{grdraster} to try
-this example.  By using the embedded grdfile format
+this example.  By using the embedded grid file format
 mechanism we saved the topography using kilometers as the
-data unit.  We now have two grdfiles with bathymetry and
+data unit.  We now have two grid files with bathymetry and
 geoid heights, respectively.  We use \GMTprog{makecpt} to generate
 a linear color palette file \filename{geoid.cpt} for the geoid and use
 \GMTprog{grd2cpt} to get a histogram-equalized cpt file \filename{topo.cpt}
@@ -237,10 +237,10 @@ output file.  The cpt files were taken from Example 2.
 
 Instead of a mesh plot we may choose to show 3-D surfaces using
 artificial illumination.  For this example we will use
-\GMTprog{grdmath} to make a grdfile that contains the surface given
+\GMTprog{grdmath} to make a grid file that contains the surface given
 by the function $z(x, y) = \cos (2\pi r/8)\cdot e^{-r/10}$, where
 $r^2 = (x^2 + y^2)$.  The illumination is obtained by passing
-two grdfiles to \GMTprog{grdview}: One with the {\it z}-values
+two grid files to \GMTprog{grdview}: One with the {\it z}-values
 (the surface) and another with intensity values (which should
 be in the \PM 1 range).  We use \GMTprog{grdgradient} to compute
 the horizontal gradients in the direction of the artificial
@@ -459,7 +459,7 @@ it is desirable to plot vector fields of various kinds.
 \GMT\ provides a way to illustrate 2-component vector fields
 using the \GMTprog{grdvector} utility.  The two components of
 the field (Cartesian or polar components) are stored in
-separate grdfiles.  In this example we use \GMTprog{grdmath}
+separate grid files.  In this example we use \GMTprog{grdmath}
 to generate a surface $z(x, y) = x \cdot \exp(-x^2 -y^2)$
 and to calculate $\nabla z$ by
 returning the {\it x}- and {\it y}-derivatives separately.

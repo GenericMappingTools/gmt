@@ -8,7 +8,7 @@ grdblend \- Blend several partially over-lapping grids into one large grid
 [ GMT_V_OPT ] [ OPT(W) ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBgrdblend\fP reads a listing of gridded files and blend parameters and
-creates a binary grdfile by blending the other grids using cosine-taper weights.
+creates a binary grid file by blending the other grids using cosine-taper weights.
 \fBgrdblend\fP will report if some of the nodes are not filled in with
 data.  Such unconstrained nodes are set to a value specified by the user [Default is NaN].
 Nodes with more than one value will be set to the weighted average value.
@@ -23,7 +23,7 @@ domain).
 If the ASCII file is not given \fBgrdblend\fP will read standard input.
 .TP
 .B \-G
-\fIgrdfile\fP is the name of the binary output grdfile.
+\fIgrdfile\fP is the name of the binary output grid file.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
@@ -32,7 +32,7 @@ If the ASCII file is not given \fBgrdblend\fP will read standard input.
 No data.  Set nodes with no input grid to this value [Default is NaN].
 .TP
 .B \-Q
-Create a header-less gridfile suitable for use with \fBgrdraster\fP.  Requires that the output gridfile
+Create a header-less grid file suitable for use with \fBgrdraster\fP.  Requires that the output grid file
 is a native format (i.e., not netCDF).
 #include "explain_-V.txt"
 .TP
@@ -44,7 +44,7 @@ input grid is provided [Default makes the blend].
 Scale output values by \fIscale\fP before writing to file. [1].
 #include "explain_-f.txt"
 .SH EXAMPLES
-To create a grdfile from the four gridded files piece_?.grd, make the blendfile like this
+To create a grid file from the four gridded files piece_?.grd, make the blendfile like this
 .br
 .sp
 piece_1.grd	-R<subregion_1> 1

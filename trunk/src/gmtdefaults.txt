@@ -284,7 +284,7 @@ When /scale/offset is omitted, /1.0/0.0 is used. [nf].
 Pen thickness used to draw grid lines in dpi units or points (append p) [0.5p].
 .TP
 .B GRIDFILE_SHORTHAND
-If TRUE, all gridfile names are examined to see if they use the file extension
+If TRUE, all grid file names are examined to see if they use the file extension
 shorthand discussed in Section 4.17 of the \fBGMT\fP Technical Reference and Cookbook.
 If FALSE, no filename expansion is done [FALSE].
 .TP

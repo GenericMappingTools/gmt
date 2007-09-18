@@ -81,7 +81,7 @@ Sets the desired font size in points [Default is 9].
 Appends \fIunit\fP to all line labels. If \fIunit\fP starts with a leading hypen (-) then there will be no space
 between label value and the unit.
 #ifdef GRID
-If no \fIunit\fP is appended we use the units listed in the gridfile.
+If no \fIunit\fP is appended we use the units listed in the grid file.
 #endif
 [Default is no unit].
 .TP

@@ -1,17 +1,17 @@
 .TH GRDREFORMAT GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 #include "common_options.txt"
-grdreformat \- Converting between different grdfile formats.
+grdreformat \- Converting between different grid file formats.
 .SH SYNOPSIS
 \fBgrdreformat\fP \fIingrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/NaNvalue\fP]]] 
 \fIoutgrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/NaNvalue\fP]]] 
 [ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_f_OPT ] [ GMT_V_OPT ]
 .SH DESCRIPTION
-\fBgrdreformat\fP reads a grdfile in one format and writes it out using another format.  As an option the
+\fBgrdreformat\fP reads a grid file in one format and writes it out using another format.  As an option the
 user may select a subset of the data to be written and to specify scaling, translation, and NaN-value.
 .TP
 \fIingrdfile\fP
-The grdfile to be read.  Append format =\fIid\fP code if not a standard COARDS-compliant netCDF grdfile.
+The grid file to be read.  Append format =\fIid\fP code if not a standard COARDS-compliant netCDF grid file.
 If =\fIid\fP is set (see below), you may optionally append \fIscale\fP and \fIoffset\fP.
 These options will scale the data and then offset them with the specified amounts after reading.
 .br
@@ -20,7 +20,8 @@ are supplied you may also append a value that represents 'Not-a-Number' (for flo
 is unnecessary since the IEEE NaN is used; however integers need a value which means no data available.)
 .TP
 \fIoutgrdfile\fP
-The grdfile to be written.  Append format =\fIid\fP code if not a standard COARDS-compliant netCDF grdfile.
+The grid file to be written.  Append format =\fIid\fP code if not a standard COARDS-compliant netCDF
+grid file.
 If =\fIid\fP is set (see below), you may optionally append \fIscale\fP and \fIoffset\fP.
 These options are particularly 
 practical when storing the data as integers, first removing an offset and then scaling down the values.
@@ -46,8 +47,8 @@ depreciated. To write other than floating point COARDS-compliant netCDF files, a
 to the filename \fIoutgrdfile\fP.
 .br
 When reading files, \fBgrdreformat\fP and other \fBGMT\fP programs will automatically recognize any type
-of netCDF grdfile. These can be in either COARDS-compliant or pre-4.1 format, and contain floating-point or
-integer data. To read other types of grdfiles, append the =\fIid\fP suffix to the filename \fIingrdfile\fP.
+of netCDF grid file. These can be in either COARDS-compliant or pre-4.1 format, and contain floating-point or
+integer data. To read other types of grid files, append the =\fIid\fP suffix to the filename \fIingrdfile\fP.
 .br
 .sp
 \fIid\fP	\fIGMT 4 netCDF standard formats\fP

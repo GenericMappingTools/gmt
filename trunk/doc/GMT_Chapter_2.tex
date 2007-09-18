@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_2.tex,v 1.20 2007-02-12 18:59:11 remko Exp $
+%	$Id: GMT_Chapter_2.tex,v 1.21 2007-09-18 01:32:32 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -144,7 +144,7 @@ straightforward and allows the user to perform almost any simple
 \UNIX\ utilities such as \progname{cut}, \progname{paste}, \progname{grep},
 \progname{sed} and \progname{awk}.
 Two-dimensional data that have been sampled on an equidistant grid are
-read and written by \GMT\ in a binary ``grdfile'' using the functions
+read and written by \GMT\ in a binary grid file using the functions
 provided with the netCDF\index{netCDF} library (a free, public-domain software
 library available separately from UCAR, the University Corporation
 of Atmospheric Research [{\it Treinish and Gough}, 1987]).  This XDR\index{XDR}
@@ -167,8 +167,8 @@ one of these types of output:\par
 \item{1-D ASCII Tables --- For example, a ($x,y$) series may be filtered and
 the filtered values output.  ASCII output is written to the standard output stream.} 
 
-\item{2-D binary (netCDF or user-defined) ``grdfiles'' -- Programs that grid
-ASCII ($x,y,z$) data or operate on existing grdfiles produce this type of output.} 
+\item{2-D binary (netCDF or user-defined) grid files -- Programs that grid
+ASCII ($x,y,z$) data or operate on existing grid files produce this type of output.} 
 
 \item{\PS\ -- The plotting programs all use the \PS\
 page description language to define plots.  These commands are stored as ASCII

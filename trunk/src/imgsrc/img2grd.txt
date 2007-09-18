@@ -8,7 +8,7 @@ OPT(T)\fItype\fP  [ OPT(C) ] [ OPT(D)\fIminlat/maxlat\fP ] [ OPT(E) ] [ OPT(L) ]
 [ OPT(M) ] [ OPT(N)\fInavg\fP ] [ OPT(S)\fIscale\fP ] 
 [ GMT_V_OPT ] [ OPT(W)\fImaxlon\fP ] [ OPT(m)\fIminutes\fP ]
 .SH DESCRIPTION
-\fBimg2grd\fP is a front-end to \fBimg2mercgrd\fP which reads an img format file and creates a grdfile.
+\fBimg2grd\fP is a front-end to \fBimg2mercgrd\fP which reads an img format file and creates a grid file.
 The OPT(M) option dictates whether or not the Spherical Mercator 
 projection of the img file is preserved.
 .TP
@@ -19,14 +19,14 @@ satellite altimeter data by Sandwell and Smith.  If the user has set an environm
 will try to open \fIimgfile\fP directly.
 .TP
 .B \-G
-\fIgrdfile\fP is the name of the output grdfile.
+\fIgrdfile\fP is the name of the output grid file.
 #include "explain_-Rgeo.txt"
 .TP
 .B \-T
 \fItype\fP handles the encoding of constraint information.  \fItype\fP = 0 indicates that no 
 such information is encoded in the img file (used for pre-1995 versions of the gravity data) 
 and gets all data.  \fItype\fP > 0 indicates that constraint information is encoded (1995 and 
-later (current) versions of the img files) so that one may produce a grd file as follows: 
+later (current) versions of the img files) so that one may produce a grid file as follows: 
 OPT(T)\fI1\fP gets data values at all points, OPT(T)\fI2\fP gets data values at 
 constrained points and NaN at interpolated points; OPT(T)\fI3\fP gets 1 at constrained 
 points and 0 at interpolated points. 
@@ -64,7 +64,7 @@ will be average data value or NaN according to whether average constraint is > 0
 [Default \fI1\fP does no averaging].
 .TP
 .B \-S
-Multiply the img file values by \fIscale\fP before storing in grd file.  [Default is 1.0].  
+Multiply the img file values by \fIscale\fP before storing in grid file.  [Default is 1.0].  
 (img topo files are stored in (corrected) meters; gravity files in mGal*10; vertical 
 deflection files in microradians*10, vertical gravity gradient files in Eotvos*10.)
 .TP

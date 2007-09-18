@@ -1,7 +1,7 @@
 .TH GRDPROJECT GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 #include "common_options.txt"
-grdproject \- Forward and Inverse map transformation of 2-D grd files 
+grdproject \- Forward and Inverse map transformation of 2-D grid files 
 .SH SYNOPSIS
 \fBgrdproject\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP GMT_J_OPT
 [ OPT(A)[\fBk|m|n|i|c|p\fP] ] [ OPT(C)[\fIdx/dy\fP] ] [ OPT(D)GMT_inc_OPT ] 
@@ -23,13 +23,13 @@ The new node spacing may be determined in one of several ways by specifying the 
 number of nodes, or resolution.  Nodes not constrained by input data are set to NaN.
 .br
 The OPT(R) option can be used to select a map region larger or smaller than that
-implied by the extent of the grdfile.
+implied by the extent of the grid file.
 .TP
 \fIin_grdfile\fP
-2-D binary grd file to be transformed.
+2-D binary grid file to be transformed.
 .TP
 .B \-G
-Specify the name of the output netCDF grd file.
+Specify the name of the output netCDF grid file.
 #include "explain_-J_short.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
@@ -64,7 +64,7 @@ Append \fBc\fP, \fBi\fP, or \fBm\fP to indicate that cm, inch, or meter should b
 Set the number of grid nodes in the new grid.
 #include "explain_-R.txt"
 You may ask to project only a subset of the grid by specifying a smaller input \fIw/e/s/n\fP region
-[Default is the region given by the grdfile].
+[Default is the region given by the grid file].
 #include "explain_-S.txt"
 #include "explain_-V.txt"
 .SH EXAMPLES

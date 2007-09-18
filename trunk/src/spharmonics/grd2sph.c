@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2sph.c,v 1.5 2007-08-11 04:22:07 guru Exp $
+ *	$Id: grd2sph.c,v 1.6 2007-09-18 01:32:39 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * grd2sph.c reads a grd file and outputs spherical harmonic coefficients.
+ * grd2sph.c reads a grid file and outputs spherical harmonic coefficients.
  *
  * Author:	Paul Wessel
  * Date:	1-JUN-2006
@@ -97,12 +97,12 @@ int main (int argc, char **argv)
 	}
 
 	if (argc == 1 || GMT_give_synopsis_and_exit) {
-		fprintf (stderr, "grd2sph %s - Convert a global grdfile to a table of spherical harmonic coefficients\n\n", GMT_VERSION);
+		fprintf (stderr, "grd2sph %s - Convert a global grid file to a table of spherical harmonic coefficients\n\n", GMT_VERSION);
 		fprintf( stderr, "usage: grd2sph <grdfile> -D<degree> [%s] [-N<norm>] [-Q] [-V] [%s] > coeff_file\n\n", GMT_Ho_OPT, GMT_bo_OPT);
 
 		if (GMT_give_synopsis_and_exit) exit (EXIT_FAILURE);
 
-		fprintf (stderr, "\n\t<grdfile> is the global grd file to convert\n");
+		fprintf (stderr, "\n\t<grdfile> is the global grid file to convert\n");
 		fprintf (stderr, "\t-D The highest degree term to include in the conversion\n");
 		fprintf (stderr, "\n\tOPTIONS:\n");
 		fprintf (stderr, "\t-H Write one ASCII header record [Default is no header]\n");

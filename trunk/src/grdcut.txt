@@ -1,7 +1,7 @@
 .TH GRDCUT GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdcut \- Extract a subregion out of a \fI.grd\fP file
+grdcut \- Extract a subregion out of a grid file
 .SH SYNOPSIS
 \fBgrdcut\fP \fIinput_file.grd\fP OPT(G)\fIoutput_file.grd\fP GMT_Rgeo_OPT 
 [ GMT_V_OPT ] [ GMT_f_OPT ]
@@ -10,7 +10,7 @@ grdcut \- Extract a subregion out of a \fI.grd\fP file
 The subregion is specified with OPT(R) as in other programs; the
 specified range must not exceed the range of \fIinput_file.grd\fP.  If in doubt, run \fBgrdinfo\fP
 to check range.  Complementary to \fBgrdcut\fP there is \fBgrdpaste\fP, which will join together two
-grdfiles along a common edge.
+grid files along a common edge.
 .TP
 \fIinput_file.grd\fP
 this is the input \fI.grd\fP format file.

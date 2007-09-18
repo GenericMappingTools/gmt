@@ -149,7 +149,7 @@ frame and placing the oblique zero meridian (\fIp\fP = 0 line) through Tahiti, r
 .sp
 \fBproject\fP pacific.lonlat \fB\-T\fP-75/68 \fB\-C\fP-149:26/-17:37 \fB\-F\fPpq > pacific.pq
 .sp
-Suppose that pacific_topo.grd is a grdfile of bathymetry, and you want to make a file of flowlines in the hotspot reference 
+Suppose that pacific_topo.grd is a grid file of bathymetry, and you want to make a file of flowlines in the hotspot reference 
 frame.  If you run:
 .sp
 \fBgrd2xyz\fP pacific_topo.grd | \fBproject\fP \fB\-T\fP-75/68 \fB\-C\fP0/-90 \fB\-F\fPxyq | \fBxyz2grd\fP 

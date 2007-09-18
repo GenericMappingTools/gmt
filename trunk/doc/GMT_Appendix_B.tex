@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.24 2007-02-08 22:32:31 remko Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.25 2007-09-18 01:32:32 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2007.
@@ -81,8 +81,8 @@ to swap the byte-order on either input or output you must use upper case
 \section{Grid files} 
 
 \subsection{NetCDF files}
-\index{grdfile!formats!netCDF|(}
-\index{grdfile!formats!COARDS|(}
+\index{grid file!formats!netCDF|(}
+\index{grid file!formats!COARDS|(}
 
 By default, \GMT\ stores 2-D grids as COARDS-compliant netCDF files.
 COARDS (which stands for Cooperative Ocean/Atmosphere Research Data Service) is a convention used by
@@ -91,9 +91,9 @@ this convention allows \GMT\ to read gridded data provided by other institutes
 and other programs. Conversely, other general domain programs
 will be able to read grids created by \GMT.
 
-The netCDF grdfile in \GMT\ has several attributes (See Table~\ref{tbl:netcdf-format})
+The netCDF grid file in \GMT\ has several attributes (See Table~\ref{tbl:netcdf-format})
 to describe the content. The routine
-that deals with netCDF grdfiles is sufficiently flexible so that grdfiles slightly deviating
+that deals with netCDF grid files is sufficiently flexible so that grid files slightly deviating
 from the standards used by \GMT\ can also be read.
 
 \begin{table}
@@ -137,16 +137,16 @@ integers, bytes, and bits, as well as 8-bit Sun rasterfiles (colormap
 ignored).   Additional formats may be used by supplying read/write
 functions and linking these with the \GMT\ libraries.
 The source file \filename{gmt\_customio.c} has the information that
-programmers will need to augment \GMT\ to read custom grdfiles.  We
+programmers will need to augment \GMT\ to read custom grid files.  We
 anticipate that the number of pre-programmed formats will increase as
 enterprising users implement what they need.  See Section~\ref{sec:grdformats}
 for more information.
 
-\index{grdfile!formats!netCDF|)}
-\index{grdfile!formats!COARDS|)}
+\index{grid file!formats!netCDF|)}
+\index{grid file!formats!COARDS|)}
 
 \subsection{Grid line and Pixel registration} 
-\index{grdfile!registration|(}
+\index{grid file!registration|(}
 
 Scanline format means that the data are stored in rows (\emph{y} = constant)
 going from the ``top'' ($y = y_{max}$ (north)) to the ``bottom''
@@ -166,7 +166,7 @@ from one format to the other; \GMTprog{grdedit} can make changes to the grid hea
 and convert a pixel- to a gridline-registred grid, or \emph{vice versa}.
 
 \subsubsection{Grid line registration}
-\index{grdfile!registration!grid line|(}
+\index{grid file!registration!grid line|(}
 
 In this registration, the nodes are centered on the grid line
 intersections and the data points represent the average value
@@ -184,10 +184,10 @@ which for the example in Figure~\ref{fig:GMT_App_B_1} yields $nx = ny = 4$.
 
 \GMTfig[h]{GMT_App_B_1}{Grid line registration of data nodes.}
 
-\index{grdfile!registration!grid line|)}
+\index{grid file!registration!grid line|)}
 
 \subsubsection{Pixel registration}
-\index{grdfile!registration!pixel|(}
+\index{grid file!registration!pixel|(}
 
 Here, the nodes are centered in the grid cells, i.e., the areas
 between grid lines, and the data points represent the average
@@ -206,11 +206,11 @@ find $nx = ny = 3$.
 
 \GMTfig[H]{GMT_App_B_2}{Pixel registration of data nodes.}
 
-\index{grdfile!registration!pixel|)}
-\index{grdfile!registration|)}
+\index{grid file!registration!pixel|)}
+\index{grid file!registration|)}
 
 \subsection{Boundary Conditions for operations on grids} 
-\index{grdfile!boundary conditions|(}
+\index{grid file!boundary conditions|(}
 
 \GMT\ has the option to specify boundary conditions in some programs
 that operate on grids (\GMTprog{grdsample} \Opt{L}; \GMTprog{grdgradient}
@@ -230,7 +230,7 @@ global spherical cases are specified using the \emph{g} (geographical)
 flag.  Behavior of these conditions is as follows:
 
 \begin{description}
-\index{grdfile!boundary conditions!periodic}
+\index{grid file!boundary conditions!periodic}
 
 \item[Periodic] conditions on $x$ indicate that the data are
 periodic in the distance ($x_{max} - x_{min}$) and thus repeat
@@ -244,7 +244,7 @@ $x_{min} + x_{inc}/2$ and $x_{max} - x_{inc}/2$.  If $y$ is
 periodic all the same holds for $y$.
 
 \item[Geographical] conditions indicate the following:
-\index{grdfile!boundary conditions!geographical}
+\index{grid file!boundary conditions!geographical}
 
 \begin{enumerate}
 
@@ -266,7 +266,7 @@ condition is used there.
 requiring 180 modulo $x_{inc} = 0$.
 
 \item[Default] boundary conditions are
-\index{grdfile!boundary conditions!default}
+\index{grid file!boundary conditions!default}
 
 \[ \nabla^2 f = \frac{\partial}{\partial n} \nabla^2 f = 0 \] 
 
@@ -279,16 +279,16 @@ boundary, and
 is the two-dimensional Laplacian operator.
 
 \end{description}
-\index{grdfile!boundary conditions|)}
+\index{grid file!boundary conditions|)}
 
 \subsection{Native binary grid files}
-\index{grdfile!native binary|(}
+\index{grid file!native binary|(}
 
 The old style native grid file format that was common in earlier version of \GMT\ is still
-supported, although the use of netCDF\index{grdfile!formats!netCDF} files is strongly recommended.
+supported, although the use of netCDF\index{grid file!formats!netCDF} files is strongly recommended.
 The file starts with a header containing a number of attributes defining the content.
 The \GMTprog{grdedit} utility program will allow you to edit parts of
-the header of an existing grdfile.  The attributes listed in Table~\ref{tbl:grdheader}
+the header of an existing grid file.  The attributes listed in Table~\ref{tbl:grdheader}
 are contained within the header record in the order given (except the $z$-array which
 is not part of the header structure, but makes up the rest of the file).
 
@@ -313,7 +313,7 @@ is not part of the header structure, but makes up the rest of the file).
 \textbf{char} \emph{y\_units}[80]   &       Units of the $y$-dimension      \\ \hline
 \textbf{char} \emph{z\_units}[80]   &       Units of the $z$-dimension      \\ \hline 
 \textbf{char} \emph{title}[80]      &       Descriptive title of the data set       \\ \hline
-\textbf{char} \emph{command}[320]   &       Command line that produced the grdfile  \\ \hline
+\textbf{char} \emph{command}[320]   &       Command line that produced the grid file  \\ \hline
 \textbf{char} \emph{remark}[160]    &       Any additional comments \\ \hline \hline
 \textbf{TYPE} \emph{z}[nx*ny]      &       1-D array with $z$-values in scanline format \\ \hline
 \end{tabular}
@@ -322,7 +322,7 @@ is not part of the header structure, but makes up the rest of the file).
 double}.}
 \label{tbl:grdheader}
 \end{table}
-\index{grdfile!native binary|)}
+\index{grid file!native binary|)}
 
 \section{Sun raster files}
 \index{Rasterfile!format}

@@ -1,26 +1,26 @@
 .TH GRDEDIT GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdedit \- Modifying the header or content of a 2-D grdfile
+grdedit \- Modifying the header or content of a 2-D grid file
 .SH SYNOPSIS
 \fBgrdedit\fP \fIgrdfile\fP [ OPT(A) ] [ GMT_GRDEDIT ] [ OPT(E) ] 
 [ OPT(N)\fIxyzfile\fP ] [ GMT_Rgeo_OPT ] [ OPT(S) ] [ OPT(T) ] [ GMT_V_OPT ] 
 [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-\fBgrdedit\fP reads the header information in a binary 2-D grdfile and replaces
+\fBgrdedit\fP reads the header information in a binary 2-D grid file and replaces
 the information with values provided on the command line [if any].  As an option,
 global, geographical grids (with 360 degrees longitude range) can be rotated in
 the east-west direction, and individual nodal values can be replaced from a
 table of \fIx, y, z\fP values.  \fBgrdedit\fP only operates on files containing a grdheader.
 .TP
 \fIgrdfile\fP
-Name of the 2-D grdfile to modify
+Name of the 2-D grid file to modify
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
 If necessary, adjust the file's \fIx_inc, y_inc\fP to be compatible with\"'
-its domain (or a new domain set with \fB\-R\fP).  Older gridfiles (i.e., created
+its domain (or a new domain set with \fB\-R\fP).  Older grid files (i.e., created
 prior to \fBGMT\fP 3.1) often had excessive slop in
 \fIx_inc, y_inc\fP and an adjustment is necessary.  Newer files are created correctly.
 .TP

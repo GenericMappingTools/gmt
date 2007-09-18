@@ -7,7 +7,7 @@
 #define LEN2	10
 #define SCL2	\fB\-S\fP10\fBi\fP
 .SH NAME
-grdvector \- Plot vector fields from grdfiles
+grdvector \- Plot vector fields from grid files
 .SH SYNOPSIS
 \fBgrdvector\fP \fIcompx.grd\fP \fIcompy.grd\fP GMT_J_OPT [ OPT(A) ] 
 [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(E) ]  
@@ -33,7 +33,7 @@ Contains the y-component of the vector field.
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
-Means grdfiles have polar (r, theta) components instead of Cartesian (x, y).
+Means grid files have polar (r, theta) components instead of Cartesian (x, y).
 #include "explain_-B_short.txt"
 .TP
 .B \-C
