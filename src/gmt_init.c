@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.302 2007-09-17 17:52:02 remko Exp $
+ *	$Id: gmt_init.c,v 1.303 2007-09-18 23:42:55 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4353,9 +4353,10 @@ int GMT_parse_J_option (char *args)
 		case 'g':               /* Orthographic or General Perspective */
      
 			project_info.g_debug = 0;
-			project_info.g_box = project_info.g_outside = project_info.g_longlat_set = project_info.g_sphere = project_info.g_ellipsoid = project_info.g_radius = project_info.g_auto_twist = FALSE;
+			project_info.g_box = project_info.g_outside = project_info.g_longlat_set = project_info.g_radius = project_info.g_auto_twist = FALSE;
+			project_info.g_sphere = TRUE; /* force spherical as default */
 
-			if( n_slashes >= 5 ) {
+			if (n_slashes >= 5) {
 			/* Definitely General Perspective */
 				BOOLEAN G_set, scale_set;
 				int nlast, m, nlen;
@@ -4363,35 +4364,27 @@ int GMT_parse_J_option (char *args)
 
 				char txt_arr[11][GMT_LONG_TEXT];
 
-				G_set = scale_set = project_info.g_longlat_set = FALSE;
+				G_set = scale_set = FALSE;
 
 				if (type == 'G') G_set = TRUE;
 				if (k >= 0) scale_set = TRUE;
 
-				/* force no genper debug as default */
-				project_info.g_debug = 0;
-
-				/* force spherical as default */
-				project_info.g_sphere = TRUE;
-
-				/* set radius flag to FALSE */
-				project_info.g_radius = FALSE;
 				ip_arg = 0;
 
 				for (ip = 0 ; ip < 2 ; ip++) {
-					if( args[ip] == 'd' ) {         /* standard genper debugging */
+					if (args[ip] == 'd') {         /* standard genper debugging */
 						project_info.g_debug = 1; 
 						ip_arg++;
-					} else if( args[ip] == 'D' ) {  /* extensive genper debugging */
+					} else if (args[ip] == 'D') {  /* extensive genper debugging */
 						project_info.g_debug = 2;
 						ip_arg++;
-					} else if( args[ip] == 'X' ) {  /* extreme genper debugging */
+					} else if (args[ip] == 'X') {  /* extreme genper debugging */
 						project_info.g_debug = 3;
 						ip_arg++;
-					} else if( args[ip] == 's' ) {
+					} else if (args[ip] == 's') {
 						project_info.g_sphere = TRUE;
 						ip_arg++;
-					} else if( args[ip] == 'e' ) {
+					} else if (args[ip] == 'e') {
 						project_info.g_sphere = FALSE;
 						ip_arg++;
 					}
@@ -4404,11 +4397,11 @@ int GMT_parse_J_option (char *args)
 				project_info.pars[8] = 0.0;
 				project_info.pars[9] = 0.0;
 
-				if( project_info.g_debug > 1 ) {
-					fprintf(stderr,"genper: arg '%s' n_slashes %d k %d\n", args, n_slashes, k);
-					fprintf(stderr,"initial error %d\n", error);
-					fprintf(stderr,"k = %d\n", k);
-					fprintf(stderr,"width_given %d\n", project_info.gave_map_width);
+				if (project_info.g_debug > 1) {
+					fprintf (stderr, "genper: arg '%s' n_slashes %d k %d\n", args, n_slashes, k);
+					fprintf (stderr, "initial error %d\n", error);
+					fprintf (stderr, "k = %d\n", k);
+					fprintf (stderr, "width_given %d\n", project_info.gave_map_width);
 				}
 
 				nlast = sscanf(args+ip_arg, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s",
@@ -4416,86 +4409,86 @@ int GMT_parse_J_option (char *args)
 					&(txt_arr[4][0]), &(txt_arr[5][0]), &(txt_arr[6][0]), &(txt_arr[7][0]),
 					&(txt_arr[8][0]), &(txt_arr[9][0]), &(txt_arr[10][0]));
 
-				if( project_info.g_debug > 1 ) {
+				if (project_info.g_debug > 1) {
 					int i;
-					for( i = 0 ; i < nlast ; i ++ ) {
-						fprintf(stderr,"txt_arr[%d] '%s'\n", i, &(txt_arr[i][0]));
+					for (i = 0 ; i < nlast ; i ++) {
+						fprintf (stderr, "txt_arr[%d] '%s'\n", i, &(txt_arr[i][0]));
 					}
 					fflush(NULL);
 				}
 
-				if( scale_set ) {
+				if (scale_set) {
 					/* Scale entered as 1:mmmmm */
 					m = sscanf(&(txt_arr[nlast-1][0]),"1:%lf", &project_info.pars[2]);
 					if (project_info.pars[2] != 0.0) {
 						project_info.pars[2] = 1.0 / (project_info.pars[2] * project_info.unit);
 					}
 					error += (m == 0) ? 1 : 0;
-					if( error ) fprintf(stderr,"scale entered but couldn't read\n");
+					if (error) fprintf (stderr, "scale entered but couldn't read\n");
 				} else  if (project_info.gave_map_width) {
 					project_info.pars[2] = GMT_convert_units(&(txt_arr[nlast-1][0]), GMT_INCH);
 				} else {
 					project_info.pars[2] = GMT_convert_units(&(txt_arr[nlast-2][0]), GMT_INCH);
 					/*            project_info.pars[3] = GMT_ddmmss_to_degree(txt_i); */
 					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (&(txt_arr[nlast-1][0]), GMT_IS_LAT, &project_info.pars[3]), &(txt_arr[nlast-1][0]));
-					if( error ) fprintf(stderr,"error in reading last lat value\n");
+					if (error) fprintf (stderr, "error in reading last lat value\n");
 				}
 				error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf(&(txt_arr[0][0]), GMT_IS_LON, &project_info.pars[0]), &(txt_arr[0][0]));
-				if( error ) fprintf(stderr,"error is reading longitude '%s'\n", &(txt_arr[0][0]));
+				if (error) fprintf (stderr, "error is reading longitude '%s'\n", &(txt_arr[0][0]));
 				error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (&(txt_arr[1][0]), GMT_IS_LAT, &project_info.pars[1]), &(txt_arr[1][0]));
-				if( error ) fprintf(stderr,"error reading latitude '%s'\n", &(txt_arr[1][0]));
+				if (error) fprintf (stderr, "error reading latitude '%s'\n", &(txt_arr[1][0]));
 
 				/* g_alt    project_info.pars[4] = atof(txt_c); */
 		                nlen = strlen(&(txt_arr[2][0]));
-		                if( txt_arr[2][nlen-1] == 'r' ) {
+		                if (txt_arr[2][nlen-1] == 'r') {
 					project_info.g_radius = TRUE;
 					txt_arr[2][nlen-1] = 0;
 		                }
 				error += GMT_verify_expectations (GMT_IS_FLOAT, GMT_scanf (&(txt_arr[2][0]), GMT_IS_FLOAT, &project_info.pars[4]), &(txt_arr[2][0]));
-				if( error ) fprintf(stderr,"error reading altitude '%s'\n", &(txt_arr[2][0]));
+				if (error) fprintf (stderr, "error reading altitude '%s'\n", &(txt_arr[2][0]));
 
 				/* g_az    project_info.pars[5] = atof(txt_d); */
 				nlen = strlen(&(txt_arr[3][0]));
-				if( txt_arr[3][nlen-1] == 'l' || txt_arr[3][nlen-1] == 'L' ) {
+				if (txt_arr[3][nlen-1] == 'l' || txt_arr[3][nlen-1] == 'L') {
 					project_info.g_longlat_set = TRUE;
 					txt_arr[3][nlen-1] = 0;
 				}
 				error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[3][0]), GMT_IS_GEO, &project_info.pars[5]), &(txt_arr[3][0]));
-				if( error ) fprintf(stderr,"error reading azimuth '%s'\n", &(txt_arr[3][0]));
+				if (error) fprintf (stderr, "error reading azimuth '%s'\n", &(txt_arr[3][0]));
 
 				/*g_tilt    project_info.pars[6] = atof(txt_e); */
 				nlen = strlen(&(txt_arr[4][0]));
-				if( txt_arr[4][nlen-1] == 'l' || txt_arr[4][nlen-1] == 'L' ) {
+				if (txt_arr[4][nlen-1] == 'l' || txt_arr[4][nlen-1] == 'L') {
 					project_info.g_longlat_set = TRUE;
 					txt_arr[4][nlen-1] = 0;
 				}
 				error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[4][0]), GMT_IS_GEO, &project_info.pars[6]), &(txt_arr[4][0]));
-				if( error ) fprintf(stderr,"error reading tilt '%s'\n", &(txt_arr[4][0]));
+				if (error) fprintf (stderr, "error reading tilt '%s'\n", &(txt_arr[4][0]));
 
-				if( nlast > 6 ) {
+				if (nlast > 6) {
 					/*g_twist   project_info.pars[7] = atof(txt_f); */
 			                    nlen = strlen(&(txt_arr[5][0]));
-			                    if( txt_arr[5][nlen-1] == 'n' ) {
+			                    if (txt_arr[5][nlen-1] == 'n') {
 			                        project_info.g_auto_twist = TRUE;
 			                        txt_arr[5][nlen-1] = 0;
 			                    }
 					error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[5][0]), GMT_IS_GEO, &project_info.pars[7]), &(txt_arr[5][0]));
-					if( error ) fprintf(stderr,"error reading twist '%s'\n", &(txt_arr[5][0]));
+					if (error) fprintf (stderr, "error reading twist '%s'\n", &(txt_arr[5][0]));
 
 					/*g_width   project_info.pars[8] = atof(txt_f); */
-					if( nlast > 7 ) {
+					if (nlast > 7) {
 						error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[6][0]), GMT_IS_GEO, &project_info.pars[8]), &(txt_arr[6][0]));
-						if( error ) fprintf(stderr,"error reading width '%s'\n", &(txt_arr[6][0]));
+						if (error) fprintf (stderr, "error reading width '%s'\n", &(txt_arr[6][0]));
 
-						if( nlast > 8 ) {
+						if (nlast > 8) {
 							/*g_height  project_info.pars[9] = atof(txt_g); */
 							error += GMT_verify_expectations (GMT_IS_GEO, GMT_scanf (&(txt_arr[7][0]), GMT_IS_GEO, &project_info.pars[9]), &(txt_arr[7][0]));
-							if( error ) fprintf(stderr,"error height '%s'\n", &(txt_arr[7][0]));
+							if (error) fprintf (stderr, "error height '%s'\n", &(txt_arr[7][0]));
 						}
 					}
 				}
 				error += (project_info.pars[2] <= 0.0 || (k >= 0 && project_info.gave_map_width));
-				if( error ) fprintf(stderr,"final error %d\n", error);
+				if (error) fprintf (stderr, "final error %d\n", error);
 
 				project = GMT_GENPER;
 
