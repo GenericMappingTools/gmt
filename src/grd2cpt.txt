@@ -1,20 +1,20 @@
 .TH GRD2CPT GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grd2cpt \- Read a grdfile and make a color palette file
+grd2cpt \- Read a grid file and make a color palette file
 .SH SYNOPSIS
 \fBgrd2cpt\fP \fIgrdfile\fP [ OPT(C)\fIcptmaster\fP ] [ OPT(D) ] [ OPT(E)\fInlevels\fP ] [ OPT(I) ] 
 [ OPT(L)\fIminlimit/maxlimit\fP ] [ OPT(M) ] [ OPT(N) ] [ OPT(Q)[\fBi|o\fP] ] [ GMT_Rgeo_OPT ] 
 [ OPT(S)\fIzstart/zstop/zinc\fP ] [ OPT(T)\fB-\fP|\fB+\fP|\fB_\fP|\fB=\fP ] [ GMT_V_OPT ] [ OPT(Z) ]
 .SH DESCRIPTION
-\fBgrd2cpt\fP reads a grdfile and writes a color palette (cpt) file to
+\fBgrd2cpt\fP reads a grid file and writes a color palette (cpt) file to
 standard output.  The cpt file is based on an existing master cpt file of
 your choice, and the mapping from data value to colors is through the
 data's cumulative distribution function (CDF), so that the colors are\"'
-histogram equalized.  Thus if the resulting cpt file is used with the
-grdfile and grdimage with a linear projection, the colors will be uniformly
-distributed in area on the plot.  Let z be the data values in the grdfile. 
-Define CDF(Z) = (# of z < Z) / (# of z in grdfile).  (NaNs are ignored).
+histogram equalized.  Thus if the grid and the resulting cpt file are used in
+\fBgrdimage\fP with a linear projection, the colors will be uniformly
+distributed in area on the plot.  Let z be the data values in the grid. 
+Define CDF(Z) = (# of z < Z) / (# of z in grid).  (NaNs are ignored).
 These z-values are then normalized to the master cpt file and colors are
 sampled at the desired intervals.
 .br
@@ -34,7 +34,7 @@ master cpt file, the \fBCOLOR_MODEL\fP specified in the .gmtdefaults4 file or on
 will be used.
 .TP
 \fIgrdfile\fP
-The 2-D binary grdfile used to derive the color palette table.
+The 2-D binary grid file used to derive the color palette table.
 .SH OPTIONS
 .TP
 .B \-C

@@ -1,7 +1,7 @@
 .TH GRDFFT GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdfft \- Perform mathematical operations on grdfiles in the wavenumber (or frequency) domain 
+grdfft \- Perform mathematical operations on grid files in the wavenumber (or frequency) domain 
 .SH SYNOPSIS
 \fBgrdfft\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP [ OPT(A)\fIazimuth\fP ] 
 [ OPT(C)\fIzlevel\fP ] [ OPT(D)[\fIscale\fP\fB|g\fP] ] [ OPT(E)[\fBx|y\fP][\fBw\fP] ] 
@@ -11,16 +11,16 @@ grdfft \- Perform mathematical operations on grdfiles in the wavenumber (or freq
 \fBgrdfft\fP will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
 operations in the frequency domain before transforming back to the space domain.  An option
 is provided to scale the data before writing the new values to an output file.  The
-horizontal dimensions of the grdfiles are assumed to be in meters.  Geographical grids
+horizontal dimensions of the grid are assumed to be in meters.  Geographical grids
 may be used by specifying the \fB\-M\fP option that scales degrees to meters.  If you
-have grdfiles with dimensions in km, you could change this to meters using \fBgrdedit\fP
+have grids with dimensions in km, you could change this to meters using \fBgrdedit\fP
 or scale the output with \fBgrdmath\fP.
 .TP
 \fIin_grdfile\fP
-2-D binary grd file to be operated on.
+2-D binary grid file to be operated on.
 .TP
 .B \-G
-Specify the name of the output grd file.
+Specify the name of the output grid file.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -38,7 +38,7 @@ append \fBg\fP to indicate that your data are geoid heights in meters and output
 .TP
 .B \-E
 Estimate power spectrum in the radial direction.  Place \fBx\fP or \fBy\fP immediately after \fB\-E\fP to
-compute the spectrum in the x or y direction instead.  No grdfile is created; f (i.e., frequency or wave number),
+compute the spectrum in the x or y direction instead.  No grid file is created; f (i.e., frequency or wave number),
 power[f], and 1 standard deviation in power[f] are written to stdout.
 Append \fBw\fP to write wavelength instead of frequency.
 .TP
@@ -66,24 +66,24 @@ heights in meters.  [Default is no scale].
 Leave trend alone.  By default, a linear trend will be removed prior to the transform.
 .TP
 .B \-M
-Map units.  Choose this option if your grdfile is a geographical grid and you want to convert
+Map units.  Choose this option if your grid file is a geographical grid and you want to convert
 degrees into meters.  If the data are close to either pole, you should consider
-projecting the grdfile onto a rectangular coordinate system using \fBgrdproject\fP.
+projecting the grid file onto a rectangular coordinate system using \fBgrdproject\fP.
 .TP
 .B \-N
 Choose or inquire about suitable grid dimensions for FFT.
 \fB\-Nf\fP will force the FFT to use the dimensions of the data.
 \fB\-Nq\fP will inQuire about more suitable dimensions.
-\fB\-N\fP\fInx/ny\fP will do FFT on array size \fInx/ny\fP (Must be >= grdfile size).
+\fB\-N\fP\fInx/ny\fP will do FFT on array size \fInx/ny\fP (Must be >= grid file size).
 Default chooses dimensions >= data which optimize speed, accuracy of FFT.
-If FFT dimensions > grdfile dimensions, data are extended and tapered to zero.
+If FFT dimensions > grid file dimensions, data are extended and tapered to zero.
 .TP
 .B \-S
 Multiply each element by \fIscale\fP in the space domain (after the frequency domain operations).
 [Default is 1.0].
 .TP
 .B \-T
-Compute the isostatic compensation from the topography load (input grdfile) on an elastic plate
+Compute the isostatic compensation from the topography load (input grid file) on an elastic plate
 of thickness \fIte\fP.  Also append densities for load, mantle, water, and infill in SI units.
 If \fIte\fP == 0 then the Airy response is returned.  \fB\-T\fP implicitly sets \fB\-L\fP.
 #include "explain_-V.txt" 

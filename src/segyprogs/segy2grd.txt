@@ -1,7 +1,7 @@
 .TH SEGY2GRD GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-segy2grd \- Converting SEGY file to grd file format
+segy2grd \- Converting SEGY file to grid file format
 .SH SYNOPSIS
 \fBsegy2grd\fP \fIsegyfile\fP OPT(G)\fIgrdfile\fP GMT_I_OPT
 GMT_Rgeo_OPT [ OPT(A)[\fBn\fP|\fBz\fP] ] [ GMT_GRDEDIT ]
@@ -9,7 +9,7 @@ GMT_Rgeo_OPT [ OPT(A)[\fBn\fP|\fBz\fP] ] [ GMT_GRDEDIT ]
 [ OPT(Z)[\fIflags\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
 \fBsegy2grd\fP reads an IEEE SEGY file and
-creates a binary grdfile. Either a simple mapping (equivalent to xyz2grd -Z) or a more complicated
+creates a binary grid file. Either a simple mapping (equivalent to xyz2grd -Z) or a more complicated
 averaging where a particular grid cell includes values from more than one sample in the SEGY file can be done.
 \fBsegy2grd\fP will report if some of the nodes are not filled in with
 data. Such unconstrained nodes are set to a value specified by the user [Default is NaN].
@@ -20,7 +20,7 @@ ASCII [or binary] file holding z or (x,y,z) values. xyz triplets do not
 have to be sorted (for binary triplets, see \fB\-b\fP). 1-column z tables must be sorted and the \fB\-Z\fP must be set).
 .TP
 .B \-G
-\fIgrdfile\fP is the name of the binary output grdfile.
+\fIgrdfile\fP is the name of the binary output grid file.
 .TP
 .B \-I
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to indicate minutes or \fBc\fP to indicate seconds.
@@ -61,7 +61,7 @@ Fix number of traces to read in. Default tries to read 10000 traces.
 #include "explain_-V.txt"
 .TP
 .SH EXAMPLES
-To create a grdfile from an even spaced SEGY file test.segy, try
+To create a grid file from an even spaced SEGY file test.segy, try
 .br
 .sp
 segy2grd test.segy \fB\-I\fP0.1/0.1
@@ -72,7 +72,7 @@ Note that this will read in 18-25s (or km) on each trace, but the first trace wi
 X=198
 .br
 .sp
-To create a grdfile from the SEGY file test.segy, locating traces according to the CDP number, where
+To create a grid file from the SEGY file test.segy, locating traces according to the CDP number, where
 there are 10 CDPs per km and the sample interval is 0.1, try
 .br
 .sp

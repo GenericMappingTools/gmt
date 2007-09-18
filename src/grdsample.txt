@@ -1,13 +1,13 @@
 .TH GRDSAMPLE GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdsample \- Resample a grd file onto a new grid
+grdsample \- Resample a grid file onto a new grid
 .SH SYNOPSIS
 \fBgrdsample\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP [ OPT(F) ] [ GMT_I_OPT ] 
 [ OPT(L)\fIflag\fP ] [ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ]
 [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
-\fBgrdsample\fP reads a grdfile and interpolates it to create a new grdfile with either:  a different registration 
+\fBgrdsample\fP reads a grid file and interpolates it to create a new grid file with either:  a different registration 
 (OPT(F) or OPT(T)); or, a new grid-spacing or number of nodes (OPT(I)), and perhaps also a new sub-region 
 (OPT(R)).  A bicubic [Default], bilinear, B-spline or nearest-neighbor interpolation (OPT(Q)) is used, requiring boundary conditions (OPT(L)).  
 Note that using OPT(R) only is equivalent to \fBgrdcut\fP or \fBgrdedit \-S\fP.  \fBgrdsample\fP safely 
@@ -21,10 +21,10 @@ Either OPT(F) or OPT(T) can be used to change the grid registration. When omitte
 have the same registration as the input grid.
 .TP
 \fIin_grdfile\fP
-The name of the input 2-D binary grd file.
+The name of the input 2-D binary grid file.
 .TP
 .B \-G
-The name of the output grd file.
+The name of the output grid file.
 .SH OPTIONS
 .TP
 .B \-F

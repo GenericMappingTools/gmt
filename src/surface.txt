@@ -9,7 +9,7 @@ surface \- adjustable tension continuous curvature surface gridding algorithm
 [ OPT(Z)\fIover-relaxation_factor\fP ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBsurface\fP reads randomly-spaced (x,y,z) triples from standard input [or \fIxyzfile\fP] and produces
-a binary grdfile of gridded values z(x,y) by solving:
+a binary grid file of gridded values z(x,y) by solving:
 .sp
 	(1 - T) * L (L (z)) + T * L (z) = 0
 .sp
@@ -22,7 +22,7 @@ Experience suggests T ~ 0.25 usually looks good for potential field data and T s
 possible except at control data points).  It is recommended that the user pre-process the data with
 \fBblockmean\fP, \fBblockmedian\fP, or \fBblockmode\fP to avoid spatial aliasing and eliminate redundant data.
 You may impose lower and/or upper bounds on the solution.  These may be entered in the form of
-a fixed value, a grdfile with values, or simply be the minimum/maximum input data values.
+a fixed value, a grid with values, or simply be the minimum/maximum input data values.
 .TP
 \fIxyzfile\fP
 3 column ASCII file [or binary, see OPT(b)] holding (x,y,z) data values.  If no file is specified, \fBsurface\fP will read from
@@ -47,9 +47,9 @@ Not used with binary data.
 .TP
 .B \-L
 Impose limits on the output solution.  \fBl\fP\fIlower\fP sets the lower bound.  \fIlower\fP can be the name of a
-grdfile with lower bound values, a fixed value, \fBd\fP to set to minimum input value, or \fBu\fP for unconstrained [Default].
+grid file with lower bound values, a fixed value, \fBd\fP to set to minimum input value, or \fBu\fP for unconstrained [Default].
 \fBu\fP\fIupper\fP sets the upper bound and can be the name of a
-grdfile with upper bound values, a fixed value, \fBd\fP to set to maximum input value, or \fBu\fP for unconstrained [Default].
+grid file with upper bound values, a fixed value, \fBd\fP to set to maximum input value, or \fBu\fP for unconstrained [Default].
 .TP
 .B \-N
 Number of iterations.  Iteration will cease when \fIconvergence_limit\fP is reached or when number of

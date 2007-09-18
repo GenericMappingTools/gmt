@@ -1,7 +1,7 @@
 .TH GRDCONTOUR GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdcontour \- contouring of 2-D gridded data sets
+grdcontour \- Contouring of 2-D gridded data sets
 .SH SYNOPSIS
 \fBgrdcontour\fP \fIgrdfile\fP OPT(C)\fIcont_int\fP GMT_J_OPT 
 [ OPT(A)[\fB-\fP|\fIannot_int\fP][\fIlabelinfo\fP] ] 
@@ -89,7 +89,7 @@ followed by the contour level.
 .B \-Q
 Do not draw contours with less than \fIcut\fP number of points [Draw all contours].
 #include "explain_-R.txt"
-[Default is region defined in the grd file].
+[Default is region defined in the grid file].
 .TP
 .B \-S
 Used to resample the contour lines at roughly every (gridbox_size/\fIsmoothfactor\fP) interval.

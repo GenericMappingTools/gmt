@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.314 2007-09-11 23:30:36 remko Exp $
+ *	$Id: gmt_support.c,v 1.315 2007-09-18 01:32:32 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -204,13 +204,13 @@ const char * GMT_strerror (int err)
 		case GMT_GRDIO_GRD98_XINC:
 			return "GRD98 format requires n = 1/x_inc to be an integer";
 		case GMT_GRDIO_GRD98_BADMAGIC:
-			return "GRD98 grdfile has wrong magic number";
+			return "GRD98 grid file has wrong magic number";
 		case GMT_GRDIO_GRD98_BADLENGTH:
-			return "GRD98 grdfile has wrong length";
+			return "GRD98 grid file has wrong length";
 		case GMT_GRDIO_GRD98_COMPLEX:
-			return "GRD98 grdfile cannot hold complex data";
+			return "GRD98 grid file cannot hold complex data";
 		case GMT_GRDIO_RI_OLDBAD:
-			return "Use grdedit -A on your gridfile to make region and increments compatible";
+			return "Use grdedit -A on your grid file to make region and increments compatible";
 		case GMT_GRDIO_RI_NEWBAD:
 			return "Please select compatible -R and -I values";
 		case GMT_GRDIO_BAD_XINC:

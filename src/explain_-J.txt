@@ -24,9 +24,6 @@ stands for Equal-Area and Conformal, respectively):
 \fB\-Jc\fP\fIlon0/lat0/scale\fP or \fB\-JC\fP\fIlon0/lat0/width\fP (Cassini).
 Give projection center and scale (1:xxxx or UNIT/degree).
 .TP
-\fB\-Jc\fP\fIlon0/lat0/scale\fP or \fB\-JC\fP\fIlon0/lat0/width\fP (Cassini).
-Give projection center and scale (1:xxxx or UNIT/degree).
-.TP
 \fB\-Jj\fP\fIlon0/scale\fP or \fB\-JJ\fP\fIlon0/width\fP (Miller Cylindrical Projection).
 Give the central meridian and scale (1:xxxx or UNIT/degree).
 .TP

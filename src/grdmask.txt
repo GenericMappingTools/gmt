@@ -1,7 +1,7 @@
 .TH GRDMASK GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdmask \- Create mask grdfiles from xy paths.
+grdmask \- Create mask grid files from xy paths.
 .SH SYNOPSIS
 \fBgrdmask\fP \fIpathfiles\fP OPT(G)\fImask_grd_file\fP] GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(A) ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_Mo_OPT ] 
@@ -11,7 +11,7 @@ GMT_Rgeo_OPT [ OPT(A) ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_Mo_OPT ]
 \fBgrdmask\fP can operate in two different modes. 1. It reads one or more xy-files that each define a closed polygon.
 The nodes defined by the specified region and lattice spacing will be set equal to one of three possible values
 depending on whether the node is outside, on the polygon perimeter, or inside the polygon.  The
-resulting mask grdfile may be used in subsequent operations involving \fBgrdmath\fP to mask out
+resulting mask may be used in subsequent operations involving \fBgrdmath\fP to mask out
 data from polygonal areas. 2. The xy-files simply represent data point locations and the mask is set to the
 inside or outside value depending on whether a node is within a maximum distance from the nearest data point.
 If the distance specified is zero then only the nodes nearest each data point are considered "inside".
@@ -20,7 +20,7 @@ If the distance specified is zero then only the nodes nearest each data point ar
 The name of 1 or more ASCII [or binary, see OPT(b)] files holding the polygon(s) or data points.
 .TP
 .B \-G
-Name of resulting output mask grd file.
+Name of resulting output mask grid file.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS

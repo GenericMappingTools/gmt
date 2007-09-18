@@ -48,49 +48,49 @@ be found in the separate manual pages.
 .br
 \fBgrdfilter\fP		Filter 2-D data sets in the space domain
 .br
-\fBgrd2cpt\fP		Make a color palette table from a grdfile
+\fBgrd2cpt\fP		Make a color palette table from a grid file
 .br
 \fBgrd2xyz\fP		Conversion from 2-D gridded file to table data
 .br
-\fBgrdblend\fP		Blend several partially over-lapping grdfiles onto one grid
+\fBgrdblend\fP		Blend several partially over-lapping grid files onto one grid
 .br
 \fBgrdclip\fP		Limit the z-range in gridded data
 .br
 \fBgrdcontour\fP	Contouring of 2-D gridded data
 .br
-\fBgrdcut\fP		Cut a sub-region from a grd file
+\fBgrdcut\fP		Cut a sub-region from a grid file
 .br
 \fBgrdedit\fP		Modify header information in a 2-D gridded file
 .br
-\fBgrdfft\fP		Operate on grdfiles in the frequency domain
+\fBgrdfft\fP		Operate on grid files in the frequency domain
 .br
-\fBgrdgradient\fP	Compute directional gradient from grdfiles
+\fBgrdgradient\fP	Compute directional gradient from grid files
 .br
-\fBgrdhisteq\fP		Histogram equalization for grdfiles
+\fBgrdhisteq\fP		Histogram equalization for grid files
 .br
 \fBgrdimage\fP		Produce images from 2-D gridded data
 .br
-\fBgrdinfo\fP		Get information about grd files
+\fBgrdinfo\fP		Get information about grid files
 .br
-\fBgrdlandmask\fP	Create mask grdfile from shoreline data base
+\fBgrdlandmask\fP	Create mask grid file from shoreline data base
 .br
 \fBgrdmask\fP		Reset nodes outside a clip path to a constant
 .br
-\fBgrdmath\fP		Mathematical operations on grdfiles
+\fBgrdmath\fP		Mathematical operations on grid files
 .br
-\fBgrdpaste\fP		Paste together grdfiles along a common edge
+\fBgrdpaste\fP		Paste together grid files along a common edge
 .br
 \fBgrdproject\fP	Project gridded data onto a new coordinate system
 .br
-\fBgrdreformat\fP	Converting between different grdfile formats
+\fBgrdreformat\fP	Converting between different grid file formats
 .br
 \fBgrdsample\fP		Resample a 2-D gridded data set onto a new grid
 .br
-\fBgrdtrend\fP		Fits polynomial trends to grdfiles
+\fBgrdtrend\fP		Fits polynomial trends to grid files
 .br
 \fBgrdtrack\fP		Sampling of 2-D data set along 1-D track
 .br
-\fBgrdvector\fP		Plot vector fields from grdfiles
+\fBgrdvector\fP		Plot vector fields from grid files
 .br
 \fBgrdview\fP		3-D perspective imaging of 2-D gridded data
 .br
@@ -150,7 +150,7 @@ be found in the separate manual pages.
 .br
 \fBtriangulate\fP	Perform optimal Delaunay triangulation and gridding
 .br
-\fBxyz2grd\fP		Convert equidistant xyz data to a 2-D grd file
+\fBxyz2grd\fP		Convert equidistant xyz data to a 2-D grid file
 .br
 .SH "SEE ALSO"
 Look up the individual man pages for more details and full syntax.

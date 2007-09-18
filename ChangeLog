@@ -1,10 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.76 2007-09-17 03:23:21 remko Exp $
+	$Id: ChangeLog,v 1.77 2007-09-18 01:32:32 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-09-18	remko
+	* *.c, *.txt, *.tex:	Changed "grdfile" (and alike) in text to "grid file".
 
 2007-09-17	remko
 	* grdproject.c:		Added code by Joaquim Luis to make -R optional
-	* gmt_map.c:		Added slack to longitude limits check in GMT_grd_project
+	* grdproject.txt:	Changed accordingly; also better described aliasing/interpolation
+	* grdimage.txt:		Better description of aliasing and interpolation.
+	* *.txt:		Removed metion that options/modifiers should be upper/lower case.
+	* gmt_map.c:		Added slack to longitude limits check in GMT_grd_project.
+				KM_PER_DEG was not reset in GMT_set_spherical. This may have caused
+				errors in scaling when ELLIPSOID != Sphere.
 	* gmt_bcr.c:		Added slack to longitude and latitude check
 				These last two changes avoids creating the occational NaN borders
 				in projected grids or in images of projected grids.

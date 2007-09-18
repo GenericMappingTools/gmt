@@ -20,7 +20,7 @@ distance from the node.  This weight is modulated by the observation points' wei
 will read from standard input.
 .TP
 .B \-G
-Give the name of the output grdfile.
+Give the name of the output grid file.
 #include "explain_-I.txt"
 .TP
 .B \-N

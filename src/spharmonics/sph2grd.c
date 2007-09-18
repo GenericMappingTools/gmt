@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.5 2007-03-24 01:42:07 pwessel Exp $
+ *    $Id: sph2grd.c,v 1.6 2007-09-18 01:32:39 remko Exp $
  *
  *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -150,7 +150,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "\t   -Dn will compute the geoid [Add -E for anomalies on ellipsoid]\n");
 		fprintf (stderr, "\t-E to evaluate expansion on the current ellipsoid [Default is sphere]\n");
 		fprintf (stderr, "\t-F Force pixel registration [Default is gridline registration].\n");
-		fprintf (stderr, "\t-G filename for output grdfile\n");
+		fprintf (stderr, "\t-G filename for output grid file\n");
 		fprintf (stderr, "\t-L Filter coefficients according to one of two kinds of filter specifications:.\n");
 		fprintf (stderr, "\t   Use -Ld if values are given in terms of coefficient degrees [Default is km]\n");
 		fprintf (stderr, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");

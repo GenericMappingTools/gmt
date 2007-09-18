@@ -1,21 +1,21 @@
 .TH GRDINFO GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdinfo \- Get information about the contents of a 2-D grd file
+grdinfo \- Get information about the contents of a 2-D grid file
 .SH SYNOPSIS
 \fBgrdinfo\fP \fIgrdfiles\fP [ OPT(C) ] [ OPT(F) ] 
 [ OPT(I)[\fIdx\fP[/\fIdy\fP]] ][ OPT(L)[\fB1\fP|\fP2\fP] ] 
 [ OPT(M) ] [ OPT(T)\fIdz\fP ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-\fBgrdinfo\fP reads a 2-D binary grd file and reports various statistics for
-the (\fIx,y,z\fP) data in the grdfile(s).  The output information contains the
+\fBgrdinfo\fP reads a 2-D binary grid file and reports various statistics for
+the (\fIx,y,z\fP) data in the grid file(s).  The output information contains the
 minimum/maximum values for \fIx\fP, \fIy\fP, and \fIz\fP, where the min/max of \fIz\fP occur, the
 \fIx\fP- and \fIy\fP-increments, and the number of \fIx\fP and \fIy\fP nodes, and [optionally] the
 mean, standard deviation, and/or the median, L1 scale of \fIz\fP, and number of
 nodes set to NaN.
 .TP
 \fIgrdfile\fP
-The name of one or several 2-D grd files.
+The name of one or several 2-D grid files.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP

@@ -1,7 +1,7 @@
 .TH GRDLANDMASK GMTMANSECTION DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-grdlandmask \- Create "wet-dry" mask grdfile from shoreline data base.
+grdlandmask \- Create "wet-dry" mask grid file from shoreline data base.
 .SH SYNOPSIS
 \fBgrdlandmask\fP OPT(G)\fImask_grd_file\fP] GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(A)\fImin_area\fP[/\fImin_level/max_level\fP] ] 
@@ -12,11 +12,11 @@ GMT_Rgeo_OPT [ OPT(A)\fImin_area\fP[/\fImin_level/max_level\fP] ]
 nodes in the specified grid are over land or over water.  The nodes defined by
 the selected region and lattice spacing will be set according to one of two criteria:
 (1) land vs water, or (2) the more detailed (hierarchical) ocean vs land vs lake vs island vs pond.  The
-resulting mask grdfile may be used in subsequent operations involving \fBgrdmath\fP to mask out
+resulting mask may be used in subsequent operations involving \fBgrdmath\fP to mask out
 data from land [or water] areas.
 .TP
 .B \-G
-Name of resulting output mask grd file.
+Name of resulting output mask grid file.
 #include "explain_-I.txt"
 #include "explain_-Rgeo.txt"
 .SH OPTIONS

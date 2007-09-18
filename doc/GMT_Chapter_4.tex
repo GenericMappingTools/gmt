@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.97 2007-08-30 01:16:50 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.98 2007-09-18 01:32:32 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -875,7 +875,7 @@ verbose talk remains separate from your data output.
 \section{Output}
 \index{Output!standard}
 \index{Output!error}
-\index{grdfile!formats!netCDF}
+\index{grid file!formats!netCDF}
 
 Most programs write their results, including \PS\
 plots, to standard output.  The exceptions are those which may
@@ -1299,9 +1299,9 @@ and the cpt-file.  An intensity of zero leaves the color unchanged.
 Higher values will brighten the color, lower values will darken it,
 all without changing the original hue of the color (see Appendix~\ref{app:I}
 for more details).  The illumination is decoupled from the data
-grd-file in that a separate grdfile holding intensities in the
+grid file in that a separate grid file holding intensities in the
 [-1,+1] range must be provided.  Such intensity files can be
-derived from the data grdfile using \GMTprog{grdgradient} and modified
+derived from the data grid using \GMTprog{grdgradient} and modified
 with \GMTprog{grdhisteq}, but could equally well be a separate data set.
 E.g., some side-scan sonar systems collect both bathymetry and
 backscatter intensities, and one may want to use the latter information
@@ -1412,28 +1412,28 @@ The option in \GMTprog{pstext} to draw a rectangle surrounding the text
 will not work for strings with escape sequences.  A chart of characters
 and their octal codes is given in Appendix~\ref{app:F}. 
 
-\section{Grdfile format specifications}
-\index{grdfile!formats|(}
-\index{grdfile!formats!netCDF}
-\index{grdfile!formats!COARDS}
-\index{grdfile!formats!floats}
-\index{grdfile!formats!shorts}
-\index{grdfile!formats!unsigned char}
-\index{grdfile!formats!bits}
-\index{grdfile!formats!rasterfile}
-\index{grdfile!formats!custom format}
+\section{Grid file format specifications}
+\index{grid file!formats|(}
+\index{grid file!formats!netCDF}
+\index{grid file!formats!COARDS}
+\index{grid file!formats!floats}
+\index{grid file!formats!shorts}
+\index{grid file!formats!unsigned char}
+\index{grid file!formats!bits}
+\index{grid file!formats!rasterfile}
+\index{grid file!formats!custom format}
 \label{sec:grdformats}
-\GMT\ has the ability to read and write grids using more than one gridfile
+\GMT\ has the ability to read and write grids using more than one grid file
 format (see Table \ref{tbl:grdformats} for supported format and their IDs).  For
 reading, \GMT\ will automatically determine the format of grid files, while for writing
 you will normally have to append \emph{=ID} to the filename if you want \GMT\ to use a different format
 than the default.
 
-By default, \GMT\ will create new gridfiles using the \textbf{nf} format; however,
+By default, \GMT\ will create new grid files using the \textbf{nf} format; however,
 this behavior can be overridden by setting the \textbf{GRID\_FORMAT} defaults parameter
 to any of the other recognized values (or by appending \emph{=ID}).
 
-\GMT\ can also read netCDF gridfiles produced by other software packages, provided the grid files
+\GMT\ can also read netCDF grid files produced by other software packages, provided the grid files
 satisfy the COARDS and Hadley Centre conventions for netCDF grids. Thus, products created under
 those conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be read directly by \GMT\ and the netCDF grids
 written by \GMT\ can be read by other programs that conform to those conventions. Two such programs are
@@ -1485,7 +1485,7 @@ it is sometimes necessary to provide more
 than simply the name of the file and its ID on the command line.  For instance,
 a native short integer file may use a unique value to signify an empty node
 or NaN, and the data may need translation and scaling prior to use.
-Therefore, all \GMT\ programs that read or write grdfiles will decode
+Therefore, all \GMT\ programs that read or write grid files will decode
 the given filename as follows:
 
 \vspace{\baselineskip} 
@@ -1497,7 +1497,7 @@ the given filename as follows:
 \noindent
 where everything in brackets is optional.  If you are reading a grid
 then no options are needed: just continue to pass
-the name of the grdfile.  However, if you write another format you must
+the name of the grid file.  However, if you write another format you must
 append the =\emph{ID} string, where \emph{ID} is the format code
 listed above.  In addition, should you want to (1) multiply the data by
 a scale factor, and (2) add a constant offset you must append the
@@ -1508,8 +1508,8 @@ go by itself; note the nesting of the brackets!).
 
 Some of the grid formats allow writing to standard output and reading
 from standard input which means you can connect \GMT\ programs that
-operate on grdfiles with pipes, thereby speeding up execution and
-eliminating the need for large, intermediate grdfiles.  You specify
+operate on grid files with pipes, thereby speeding up execution and
+eliminating the need for large, intermediate grid files.  You specify
 standard input/output by leaving out the filename entirely.
 That means the ``filename'' will begin with
 ``=\emph{ID}\,'' since no \GMT\  netCDF format 
@@ -1518,31 +1518,31 @@ allow piping (due to the design of netCDF).
 Everything looks more obvious after a few examples: 
 
 \begin{enumerate}
-\item To write a native binary float grd file, specify the name as \filename{my\_file.grd=bf}.
+\item To write a native binary float grid file, specify the name as \filename{my\_file.grd=bf}.
 
-\item To read a native short integer grd file, multiply the data by 10 and then
+\item To read a native short integer grid file, multiply the data by 10 and then
 add 32000, but first let values that equal 32767 be set to NaN,
 use the filename \filename{my\_file.grd=bs/10/32000/32767}. 
 
-\item To read a Golden Software ``surfer'' format 6 grd file, just pass the file name,
+\item To read a Golden Software ``surfer'' format 6 grid file, just pass the file name,
 e.g., \filename{my\_surferfile.grd}. 
 
 \item To read a 8-bit standard Sun rasterfile (with values in the 0--255 range)
 and convert it to a \PM 1 range, give the name as
 \filename{rasterfile=rb/7.84313725e-3/-1} (i.e., 1/127.5).
 
-\item To write a native binary short integer grd file to standard output after subtracting
+\item To write a native binary short integer grid file to standard output after subtracting
 32000 and dividing its values by 10, give filename as \filename{=bs/0.1/-3200}. 
 
 \end{enumerate} 
 
-Programs that both read and/or write more than one grdfile may
+Programs that both read and/or write more than one grid file may
 specify different formats and/or scaling for the files involved.
 The only restriction with the embedded grd specification mechanism
-is that no grdfiles may actually use the ``=''
+is that no grid files may actually use the ``=''
 character as part of their name (presumably, a small sacrifice). 
 
-\index{grdfile!suffix}
+\index{grid file!suffix}
 
 One can also define special file suffixes to imply a specific file
 format; this approach represents a more intuitive and user-friendly
@@ -1579,12 +1579,12 @@ and the filename \filename{wet.mask} means wet.mask=bm/1/0/0.  For a
 file intended for masking, i.e., the nodes are either 1 or NaN,
 the bit or mask format file may be as small as 1/32 the size of the
 corresponding grd float format file. 
-\index{grdfile!formats|)}
+\index{grid file!formats|)}
 
 \section{Options for COARDS-compliant netCDF files}
 \label{sec:netcdf}
-\index{grdfile!formats!netCDF|(}
-\index{grdfile!formats!COARDS|(}
+\index{grid file!formats!netCDF|(}
+\index{grid file!formats!COARDS|(}
 
 When the netCDF file contains more than one 2-dimensional variable, \GMT\ programs
 will load the first such variable in the file and ignore all others. Alternatively,
@@ -1665,8 +1665,8 @@ and units when writing a grid. However, when the coordinates are set properly as
 \GMT\ will take care of this. The user is, however, still responsible for setting the variable name and
 unit of the z-coordinate. The default is simply "z".
 
-\index{grdfile!formats!netCDF|)}
-\index{grdfile!formats!COARDS|)}
+\index{grid file!formats!netCDF|)}
+\index{grid file!formats!COARDS|)}
 
 \section{The NaN data value}
 \index{NaN}

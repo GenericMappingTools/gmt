@@ -1,24 +1,24 @@
 .TH GRDMATH GMTMANSECTION DATE VERSION VERSION
 .SH NAME
 #include "common_options.txt"
-grdmath \- Reverse Polish Notation calculator for grd files
+grdmath \- Reverse Polish Notation calculator for grid files
 .SH SYNOPSIS
 \fBgrdmath\fP [ OPT(F) ] [ GMT_I_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP \fIoutgrdfile\fP
 .SH DESCRIPTION
-\fBgrdmath\fP will perform operations like add, subtract, multiply, and divide on one or more grd files or constants using
+\fBgrdmath\fP will perform operations like add, subtract, multiply, and divide on one or more grid files or constants using
 Reverse Polish Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).  Arbitrarily complicated expressions may therefore
-be evaluated; the final result is written to an output grd file. When two grd files are
+be evaluated; the final result is written to an output grid file. When two grids are
 on the stack, each element in file A is modified by the corresponding element in file B.
-However, some operators only require one operand (see below).  If no grdfiles are used in the
+However, some operators only require one operand (see below).  If no grid files are used in the
 expression then options OPT(R), OPT(I) must be set (and optionally OPT(F)).  The expression
 \fB=\fP \fIoutgrdfile\fP can occur as many times as the depth of the stack allows.
 .TP
 \fIoperand\fP
-If \fIoperand\fP can be opened as a file it will be read as a grd file.  If not a file, it is interpreted
+If \fIoperand\fP can be opened as a file it will be read as a grid file.  If not a file, it is interpreted
 as a numerical constant or a special symbol (see below).
 .TP
-\fIoutgrdfile\fP is a 2-D grd file that will hold the final result.
+\fIoutgrdfile\fP is a 2-D grid file that will hold the final result.
 .TP
 .B OPERATORS
 Choose among the following operators:

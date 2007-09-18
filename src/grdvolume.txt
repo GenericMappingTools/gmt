@@ -7,7 +7,7 @@ grdvolume \- Calculating volume under a surface within a contour
 [ OPT(L)\fIbase\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)[\fBk\fP] ] [ OPT(T) ] [ GMT_V_OPT[\fBl\fP] ] 
 [ OPT(Z)\fIfact\fP[/\fIdelta\fP] ]
 .SH DESCRIPTION
-\fBgrdvolume\fP reads a 2-D binary grd file and calculates the volume contained
+\fBgrdvolume\fP reads a 2-D binary grid file and calculates the volume contained
 between the surface and the plane specified by the given contour (or zero if not given)
 and reports the area, volume, and maximum mean height (volume/area).
 Alternatively, specify a range of contours to be tried and \fBgrdvolume\fP will determine
@@ -16,7 +16,7 @@ the maximum mean height is reported as well.  This feature may be used with
 \fBgrdfilter\fP in designing an Optimal Robust Separator [\fIWessel\fP, 1998].
 .TP
 \fIgrdfile\fP
-The name of the input 2-D binary grd file.
+The name of the input 2-D binary grid file.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
