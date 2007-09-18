@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.52 2007-09-07 00:17:01 remko Exp $
+ *	$Id: gmt_project.h,v 1.53 2007-09-18 23:45:40 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -259,46 +259,29 @@ struct GMT_MAP_PROJECTIONS {
         double g_H, g_R;
         double g_P, g_P_inverse;
 
-        double g_e2;
-        double g_eccen;
-        double g_one_m_e2;
-
-        double g_h0;
         double g_lon0;
-        double g_phi1, g_sphi1, g_cphi1;
+        double g_sphi1, g_cphi1;
 
         double g_phig, g_sphig, g_cphig;
-        double g_dphi, g_sdphi, g_cdphi;
+        double g_sdphi, g_cdphi;
 
         double g_B, g_D, g_L, g_G, g_J;
-        double g_BLH, g_DG, g_BJ, g_DHJ, g_LH2;
-        double g_HJ;
+        double g_BLH, g_DG, g_BJ, g_DHJ, g_LH2, g_HJ;
 
-        double g_rho;
-        double g_tilt, g_sin_tilt, g_cos_tilt;
+        double g_sin_tilt, g_cos_tilt;
         double g_azimuth, g_sin_azimuth, g_cos_azimuth;
-        double g_twist, g_sin_twist, g_cos_twist;
-        double g_lonvp, g_latvp;
+        double g_sin_twist, g_cos_twist;
 
-        double g_width, g_height;
+        double g_width;
 
-        double g_yt_max;
-        double g_yt_min;
         double g_yoffset;
-        double g_roff;
         double g_rmax;
-        double g_rpmax;
         double g_max_yt;
-        double g_tilt_max;
-        double g_omega_max;
-        double g_distmax;
-        double g_Rp;
-        double g_gamma_max;
         double g_xmin, g_xmax;
         double g_ymin, g_ymax;
 
         int g_debug;
-        BOOLEAN g_box, g_outside, g_longlat_set, g_sphere, g_ellipsoid, g_radius, g_auto_twist;
+        BOOLEAN g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
 #endif  /* end of _GENPER */
 
 	/* Gnomonic horizon */
