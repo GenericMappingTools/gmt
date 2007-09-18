@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.20 2007-09-12 21:14:55 guru Exp $
+ *	$Id: gmt_map.h,v 1.21 2007-09-18 23:35:45 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -58,11 +58,6 @@ EXTERN_MSC void GMT_azim_to_angle (double lon, double lat, double c, double azim
 EXTERN_MSC void GMT_conv_datum (double in[], double out[]);
 EXTERN_MSC void GMT_geo_to_xy (double lon, double lat, double *x, double *y);
 EXTERN_MSC void GMT_geoz_to_xy (double x, double y, double z, double *x_out, double *y_out);
-#if 0 /* OLD_GRD_FORWARD_CODE */
-EXTERN_MSC int GMT_grd_forward (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius);
-EXTERN_MSC int GMT_grd_inverse (float *geo, struct GRD_HEADER *g_head, float *rect, struct GRD_HEADER *r_head, double max_radius);
-EXTERN_MSC void GMT_init_search_radius (double *radius, struct GRD_HEADER *r_head, struct GRD_HEADER *g_head, BOOLEAN inverse);
-#endif /* OLD_GRD_FORWARD_CODE */
 EXTERN_MSC int GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_inc, int nx, int ny, int dpi, int offset);
 EXTERN_MSC void GMT_init_ellipsoid (void);
 EXTERN_MSC int GMT_map_setup (double west, double east, double south, double north);
