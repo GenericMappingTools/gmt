@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.202 2007-08-11 04:22:07 guru Exp $
+ *	$Id: gmt_plot.c,v 1.203 2007-09-18 23:44:39 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1200,39 +1200,27 @@ void GMT_rect_map_boundary (double x0, double y0, double x1, double y1)
 }
 
 #ifdef _GENPER
-int GMT_genper_map_clip_path( int np, double *work_x, double *work_y);
-  
-int GMT_genper_map_boundary( double w, double e, double s, double n)
+int GMT_genper_map_boundary (double w, double e, double s, double n)
 {   
-  int nr;
-
-#if 0
-  int i, nr;
-  double x0, y0, a, da, S, C;
-  double angle, cos_ang, sin_ang;
-  double x, y, xt, yt;
-#endif  
-
-  if (!project_info.region) {   /* Draw rectangular boundary and return */
-    GMT_rect_map_boundary(0.0, 0.0, project_info.xmax, project_info.ymax);
-    return 0;
-  }
-
-  GMT_setpen(&gmtdefs.frame_pen);
-
-  nr = GMT_n_lon_nodes + GMT_n_lat_nodes; 
-  if (nr >= GMT_n_alloc)
-    GMT_get_plot_array();
-
-  if( project_info.g_debug > 1 ) {
-    fprintf(stderr,"genper_map_boundary nr = %d\n", nr);
-  }
-
-  GMT_genper_map_clip_path( nr, GMT_x_plot, GMT_y_plot);
-
-  ps_line(GMT_x_plot, GMT_y_plot, nr, 3, FALSE, TRUE);
-
-  return 0;
+	int nr;
+	
+	if (!project_info.region) {   /* Draw rectangular boundary and return */
+		GMT_rect_map_boundary (0.0, 0.0, project_info.xmax, project_info.ymax);
+		return 0;
+	}
+	
+	GMT_setpen(&gmtdefs.frame_pen);
+	
+	nr = GMT_n_lon_nodes + GMT_n_lat_nodes; 
+	if (nr >= GMT_n_alloc) GMT_get_plot_array();
+	
+	if (project_info.g_debug > 1) fprintf (stderr, "genper_map_boundary nr = %d\n", nr);
+	
+	GMT_genper_map_clip_path (nr, GMT_x_plot, GMT_y_plot);
+	
+	ps_line (GMT_x_plot, GMT_y_plot, nr, 3, FALSE, TRUE);
+	
+	return 0;
 }
 /* _GENPER */
 #endif
@@ -1866,7 +1854,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		GMT_world_map = FALSE;
 		GMT_outside_save = GMT_outside;
 #ifdef _GENPER
-		if( project_info.projection != GMT_GENPER ) {
+		if (project_info.projection != GMT_GENPER) {
 #endif
 			GMT_outside = GMT_wesn_outside_np;
 #ifdef _GENPER
@@ -1993,7 +1981,7 @@ void GMT_map_boundary (double w, double e, double s, double n)
 			break;
 #ifdef _GENPER
 		case GMT_GENPER:
-			GMT_genper_map_boundary(w, e, s, n);
+			GMT_genper_map_boundary (w, e, s, n);
 			break;
 #endif
 		case GMT_STEREO:
