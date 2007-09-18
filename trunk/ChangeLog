@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.77 2007-09-18 01:32:32 remko Exp $
+	$Id: ChangeLog,v 1.78 2007-09-18 23:54:24 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-18	pwessel
+	* x2sys/x2sys_cross.c	Skip duplicate files
+	
 2007-09-18	remko
 	* *.c, *.txt, *.tex:	Changed "grdfile" (and alike) in text to "grid file".
 
