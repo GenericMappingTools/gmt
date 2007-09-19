@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.2 2007-09-15 05:06:07 remko Exp $
+#  $Id: GNUmakefile,v 1.3 2007-09-19 02:25:06 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -115,7 +115,7 @@ $(VERSION):	archive
 
 newsite:	get_coast get_high get_full site
 
-usable:		install examples man
+usable:		install-all examples
 
 site:		usable webman pdfman docs
 
