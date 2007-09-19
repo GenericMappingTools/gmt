@@ -1,11 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.78 2007-09-18 23:54:24 guru Exp $
+	$Id: ChangeLog,v 1.79 2007-09-19 00:13:39 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-18	pwessel
-	* x2sys/x2sys_cross.c	Skip duplicate files
+	* x2sys/x2sys_cross.c:	Skip duplicate files
 	
 2007-09-18	remko
+	* gmt_proj.c, gmt_project.h:	Nicely reformatted all genper code and fixed
+				several bug, particularly inverse projection and projection out
+				of field of view.
+	* gmt_init.c, gmt_plot.c:	Small changes in genper code (reformatting mostly).
+	* gmt_map.[ch]:		Permanently removed old grd_forward code
+	* gmt_support.c, gmt_bcr.h:	Permanently removed old BCR code
 	* *.c, *.txt, *.tex:	Changed "grdfile" (and alike) in text to "grid file".
 
 2007-09-17	remko
