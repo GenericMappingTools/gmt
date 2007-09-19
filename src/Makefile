@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.12 2007-09-19 01:49:50 remko Exp $
+#	$Id: Makefile,v 1.13 2007-09-19 13:45:44 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -138,6 +138,15 @@ install:	all
 			$(INSTALL) -d $(includedir) ; \
 			$(INSTALL) -m 444 $(GMT_H) $(PS_H) $(PS_I) $(includedir); \
 		fi
+		if [ -f $(libdir)/libpsl.dylib ]; then \
+			cd $(libdir) ; \
+			\mv -f libpsl{,.4}.dylib ; \
+			\ln -s libpsl{.4,}.dylib ; \
+			\mv -f libgmt{,.4}.dylib ; \
+			\ln -s libgmt{.4,}.dylib ; \
+			\mv -f libgmtps{,.4}.dylib ; \
+			\ln -s libgmtps{.4,}.dylib ; \
+		fi
 
 uninstall:
 		for i in GMT $(ALLPROGS); do \
@@ -182,13 +191,15 @@ distclean:	spotless
 #	libraries
 #-------------------------------------------------------------------------------
 
+.SUFFIXES:	.$(SL)
+
 libs:		$(GMTLIB)
 
 pslib.o:	$(PS_H) $(PS_I) gmt_notunix.h gmt_notposix.h gmt_math.h
 
 libpsl.a:	pslib.o
-		$(AR) cvur libpsl.a $?
-		$(RANLIB) libpsl.a
+		$(AR) cvur $@ $?
+		$(RANLIB) $@
 
 libgmt.a:	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)
 		$(AR) cvur $@ $?
@@ -199,7 +210,7 @@ libgmtps.a:	$(LIBPS_O)
 		$(RANLIB) $@
 
 libpsl.$(SL):	pslib.o
-		$(LD) $(LD_OPT) $? -o $@
+		$(LD) $(LD_OPT) pslib.o -o $@
 
 libgmt.$(SL):	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)
 		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) -o $@

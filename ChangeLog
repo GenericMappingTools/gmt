@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.80 2007-09-19 01:52:53 remko Exp $
+	$Id: ChangeLog,v 1.81 2007-09-19 13:45:44 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-19	remko
-	* configure.in:		Made mansect=1 default
-	* src/makefile:		Actually always ended manpages in .l in stead of .$(mansect)
+	* configure.in:		Made mansect=1 default. Make versioned libraries on Darwin.
+	* src/makefile:		---"---. Actually always ended manpages in .l in stead of .$(mansect)
+	* src/makegmt.macros.in:	Added VERSION as variable.
 
 2007-09-18	pwessel
 	* x2sys/x2sys_cross.c:	Skip duplicate files
