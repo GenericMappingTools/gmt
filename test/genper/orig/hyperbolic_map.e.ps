@@ -1,10 +1,10 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%Title: GMT v4.2.0 Document from pscoast
+%%Title: GMT v4.2.1 Document from pscoast
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Jun  5 09:33:21 2007
+%%CreationDate: Tue Sep 18 19:52:25 2007
 %%LanguageLevel: 1
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -297,11 +297,11 @@ end
     {
       n 0 eq
       {
-        PSL_CT_drawline
+	PSL_CT_drawline
       }
       {
 	PSL_CT_reversepath
-        PSL_CT_textline
+	PSL_CT_textline
       } ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
@@ -397,14 +397,14 @@ end
       /this_cut PSL_cuts kk get def
       dist this_cut gt
       {
-        /ds dist last_dist sub def
-        /f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
+	/ds dist last_dist sub def
+	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
 	/i1 i 0 eq { 0 } { i 1 sub } ifelse def
-        PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
-        PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
-        PSL_kind j 1 put
-        /j j 1 add def
-        /k k 1 add def
+	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
+	PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
+	PSL_kind j 1 put
+	/j j 1 add def
+	/k k 1 add def
       } if
     } for
     dist PSL_cuts k get le
@@ -17087,16 +17087,16 @@ S
 914 267 M
 -162 -267 D
  S
-1102 0 M
--161 240 D
+959 0 M
+-18 240 D
 -26 28 D
 -47 888 D
 -24 28 D
 59 85 D
 -25 18 D
  S
-1102 0 M
--161 240 D
+959 0 M
+-18 240 D
 -26 28 D
 -47 888 D
 -24 28 D
