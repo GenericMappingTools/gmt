@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.98 2007-09-18 01:32:32 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.99 2007-09-19 01:51:30 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -1103,7 +1103,7 @@ The second form allows us to use a predefined bit-image pattern.
 8-, or 24-bit Sun raster file.  The former will result in one of the 90
 predefined 64 x 64 bit-patterns provided with \GMT\ and reproduced in Appendix~\ref{app:E}.
 The latter allows the user to create customized, repeating images using
-standard Sun rasterfiles\footnote{Convert other graphics formats to Sun ras format using
+standard Sun raster files\footnote{Convert other graphics formats to Sun ras format using
 ImageMagick's \progname{convert} program.}.  The \emph{dpi} parameter sets the resolution of
 this image on the page;  the area fill is thus made up of a series of these
 ``tiles''.  Specifying \emph{dpi} as 0 will result in highest resolution
@@ -1226,10 +1226,10 @@ Thus, for each ``\emph{z}-slice'', defined as the interval between two boundarie
 (e.g., \emph{z$_0$} to \emph{z$_1$}), the color can be constant (by letting R$_{min}$
 = R$_{max}$, G$_{min}$ = G$_{max}$, and B$_{min}$ = B$_{max}$) or a continuous,
 linear function of \emph{z}.  The optional flag \textbf{A} is used to indicate annotation
-of the colorscale when plotted using \GMTprog{psscale}.  The optional code \textbf{A} may be \textbf{L},
+of the color scale when plotted using \GMTprog{psscale}.  The optional code \textbf{A} may be \textbf{L},
 \textbf{U}, or \textbf{B} to select annotation of the lower, upper, or both limits
 of the particular $z$-slice.  However, the standard \Opt{B} option can be used
-by \GMTprog{psscale} to affect annotation and ticking of colorscales.  The optional
+by \GMTprog{psscale} to affect annotation and ticking of color scales.  The optional
 semicolon followed by a text label will make \GMTprog{psscale}, when used with the \Opt{L} option,
 place the supplied label instead of formatted \emph{z}-values.
 
@@ -1337,7 +1337,7 @@ topography by using the former for colors and the latter for shading.
 \index{Characters!octal}
 \index{Octal characters}
 
-For annotation labels or textstrings plotted with \GMTprog{pstext},
+For annotation labels or text strings plotted with \GMTprog{pstext},
 \GMT\ provides several escape sequences that allow the user to
 temporarily switch to the symbol font, turn on sub- or superscript,
 etc., within words.  These conditions are toggled on/off by the
@@ -1420,7 +1420,7 @@ and their octal codes is given in Appendix~\ref{app:F}.
 \index{grid file!formats!shorts}
 \index{grid file!formats!unsigned char}
 \index{grid file!formats!bits}
-\index{grid file!formats!rasterfile}
+\index{grid file!formats!raster file}
 \index{grid file!formats!custom format}
 \label{sec:grdformats}
 \GMT\ has the ability to read and write grids using more than one grid file
@@ -1470,7 +1470,7 @@ bi & GMT native, C-binary format (int)		\\ \hline
 bf & GMT native, C-binary format (float)	\\ \hline
 bd & GMT native, C-binary format (double)	\\ \hline \hline
 \multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{Miscellaneous gridformats}} \\ \hline \hline
-rb & SUN rasterfile format (8-bit standard)	\\ \hline
+rb & SUN raster file format (8-bit standard)	\\ \hline
 rf & GEODAS grid format GRD98 (NGDC)		\\ \hline
 sf & Golden Software Surfer format 6 (float)	\\ \hline
 sd & Golden Software Surfer format 7 (double)	\\ \hline
@@ -1527,7 +1527,7 @@ use the filename \filename{my\_file.grd=bs/10/32000/32767}.
 \item To read a Golden Software ``surfer'' format 6 grid file, just pass the file name,
 e.g., \filename{my\_surferfile.grd}. 
 
-\item To read a 8-bit standard Sun rasterfile (with values in the 0--255 range)
+\item To read a 8-bit standard Sun raster file (with values in the 0--255 range)
 and convert it to a \PM 1 range, give the name as
 \filename{rasterfile=rb/7.84313725e-3/-1} (i.e., 1/127.5).
 
@@ -1564,7 +1564,7 @@ MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill
 \>grd \> nf \> - \> - \> - \>Default format \\ 
 \>b \> bf \> - \> - \> - \> Native binary floats \\ 
 \>i2 \> bs \> - \> - \> 32767 \> 2-byte integers with NaN value \\ 
-\>ras \> rb \> - \> - \> - \> Sun rasterfiles \\ 
+\>ras \> rb \> - \> - \> - \> Sun raster files \\ 
 \>byte \> bb \> - \> - \> 255 \> Native binary 1-byte grids \\ 
 \>bit \> bm \> - \> - \> - \> Native binary 0 or 1 grids \\ 
 \>mask \> bm \> - \> - \> 0 \> Native binary 1 or NaN masks \\ 

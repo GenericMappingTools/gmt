@@ -3,7 +3,7 @@
 #define CLEARANCE_SI 0.1\fBc\fP/0.1\fBc\fP
 #define CLEARANCE_US 0.0254\fBi\fP/0.0254\fBi\fP
 .SH NAME
-pstext \- To plot text on maps
+pstext \- To plot text strings on maps
 .SH SYNOPSIS
 \fBpstext\fP \fItextfile\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ GMT_B_OPT ] [ OPT(C)\fIdx/dy\fP ]  
@@ -12,7 +12,7 @@ pstext \- To plot text on maps
 [ OPT(S)\fIpen\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fIcolor\fP,][\fBo\fP|\fBO\fP|\fBc\fP|\fBC\fP[\fIpen\fP]] ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
-\fBpstext\fP plots textstrings of variable size, font type, and orientation.
+\fBpstext\fP plots text strings of variable size, font type, and orientation.
 Various map projections are provided, with the option to draw and annotate the
 map boundaries. \fIPostScript\fP code is written to standard output.  Greek
 characters, subscript, superscript, and small caps are supported as follows:
@@ -37,9 +37,9 @@ This file contains 1 or more records with (\fIx, y, size, angle, fontno, justify
 If no file is given, \fBpstext\fP will read standard input.
 \fIsize\fP is text size in points, \fIangle\fP is measured in degrees counter-clockwise from horizontal, 
 \fIfontno\fP sets the font type, \fIjustify\fP sets the alignment. 
-If \fIfontno\fP is not an integer, then it is taken to be a textstring with the desired fontname.  See the \fBgmtdefaults\fP man page
+If \fIfontno\fP is not an integer, then it is taken to be a text string with the desired fontname.  See the \fBgmtdefaults\fP man page
 for names and numbers of available fonts (or run \fBpstext \-L\fP).  The alignment refers to the
-part of the textstring that will be mapped onto the (\fIx,y\fP) point.  Choose a 2 character combination
+part of the text string that will be mapped onto the (\fIx,y\fP) point.  Choose a 2 character combination
 of L, C, R (for left, center, or right) and T, M, B for top, middle, or bottom. e.g., BL for lower left.
 #include "explain_-J_short.txt"
 #include "explain_-Jz.txt"
@@ -115,7 +115,7 @@ For 3-D projections:  Sets the z-level of the basemap [0].
 #include "explain_pen.txt"
 #include "explain_color.txt"
 .SH EXAMPLES
-To plot the outlines of the textstrings stored in the file text.d on a Mercator plot with
+To plot the outlines of the text strings stored in the file text.d on a Mercator plot with
 the given specifications, use
 .br
 .sp

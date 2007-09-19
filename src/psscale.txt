@@ -6,7 +6,7 @@
 #define LEN_3	6
 #define LEN_4	4
 .SH NAME
-psscale \- Create grayscale or colorscale for maps
+psscale \- Plot gray scale or color scale on maps
 .SH SYNOPSIS
 \fBpsscale\fP OPT(D)\fIxpos\fP/\fIypos\fP/\fIlength\fP/\fIwidth\fP[\fBh\fP] [ OPT(A) ] [ GMT_B_OPT ] 
 [ OPT(C)\fIcpt_file\fP ] [ OPT(E)[\fBb\fP|\fBf\fP][\fIlength\fP] ] [ OPT(I)[\fImax_intens\fP|\fIlow_i\fP/\fIhigh_i\fP] ] 
@@ -15,7 +15,7 @@ psscale \- Create grayscale or colorscale for maps
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ OPT(Z)\fIzfile\fP ] [ GMT_c_OPT ]
 .SH DESCRIPTION
-\fBpsscale\fP plots grayscales or colorscales on maps.  Both horizontal and vertical scales
+\fBpsscale\fP plots gray scales or color scales on maps.  Both horizontal and vertical scales
 are supported.  For cpt_files with gradational colors (i.e., the lower and upper
 boundary of an interval have different r/g/b values) \fBpsscale\fP will interpolate to give
 a continuous scale.  Variations in intensity due to shading/illumination may be
@@ -97,7 +97,7 @@ File with colorbar-width per color entry.  By default, width of entry is scaled
 to color range, i.e., z = 0-100 gives twice the width as z = 100-150 (Also see \fB\-L\fP).
 #include "explain_-c.txt"
 .SH EXAMPLES
-To append a vertical colorscale (LEN_1 cm long; LEN_2 cm wide) to the right of a plot that is LEN_3 inch wide and LEN_4 inch
+To append a vertical color scale (LEN_1 cm long; LEN_2 cm wide) to the right of a plot that is LEN_3 inch wide and LEN_4 inch
 high, using illumination, and show back- and foreground colors, and annotating every 5 units, use
 .br
 .sp

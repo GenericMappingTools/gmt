@@ -2,13 +2,14 @@
 .SH NAME
 GMT \- The Generic Mapping Tools data processing and display software package
 .SH INTRODUCTION
-\fBGMT\fP is a collection of public-domain Unix tools that allows you to manipulate x,y
-and x,y,z data sets (filtering, trend fitting, gridding, projecting, etc.)
+\fBGMT\fP is a collection of public-domain Unix tools that allows you to manipulate
+x,y and x,y,z data sets (filtering, trend fitting, gridding, projecting, etc.)
 and produce \fIPostScript\fP illustrations ranging from simple x-y plots, via
-contour maps, to artificially illuminated surfaces and 3-d perspective
-views in black/white or 24bit color.  Linear, log10, and power scaling is supported in
-addition to 25 common map projections.  The processing and display routines within \fBGMT\fP
-are completely general and will handle any (x,y) or (x,y,z) data as input.
+contour maps, to artificially illuminated surfaces and 3-D perspective
+views in black/white or full color.  Linear, log10, and power scaling is supported in
+addition to 25 common map projections.  The processing and display routines
+within \fBGMT\fP are completely general and will handle any (x,y) or (x,y,z) data
+as input.
 .SH SYNOPSIS
 \fBGMT\fP is also a wrapper script that can start any of the programs:
 .br
@@ -20,8 +21,8 @@ where module is the name of a \fBGMT\fP program and the options are those that p
 that particular program.
 .SH GMT OVERVIEW
 The following is a summary of all the programs supplied with \fBGMT\fP and
-a very short description of their purpose. Detailed information about each program can
-be found in the separate manual pages.
+a very short description of their purpose. Detailed information about each program
+can be found in the separate manual pages.
 .br
 .sp
 \fBblockmean\fP		L2 (x,y,z) data filter/decimator
@@ -62,7 +63,7 @@ be found in the separate manual pages.
 .br
 \fBgrdedit\fP		Modify header information in a 2-D gridded file
 .br
-\fBgrdfft\fP		Operate on grid files in the frequency domain
+\fBgrdfft\fP		Operate on grid files in the wavenumber (or frequency) domain
 .br
 \fBgrdgradient\fP	Compute directional gradient from grid files
 .br
@@ -106,7 +107,7 @@ be found in the separate manual pages.
 .br
 \fBproject\fP		Project data onto lines/great circles
 .br
-\fBps2raster\fP		Crop and convert PostScript files to raster images, EPS and PDF
+\fBps2raster\fP		Crop and convert PostScript files to raster images, EPS, and PDF
 .br
 \fBpsbasemap\fP		Create a basemap plot
 .br
@@ -126,9 +127,9 @@ be found in the separate manual pages.
 .br
 \fBpsrose\fP		Plot sector or rose diagrams
 .br
-\fBpsscale\fP		Plot grayscale or colorscale on maps
+\fBpsscale\fP		Plot gray scale or color scale on maps
 .br
-\fBpstext\fP		Plot textstrings on maps
+\fBpstext\fP		Plot text strings on maps
 .br
 \fBpswiggle\fP		Draw time-series along track on maps
 .br

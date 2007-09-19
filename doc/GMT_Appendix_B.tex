@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.25 2007-09-18 01:32:32 remko Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.26 2007-09-19 01:51:30 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2007.
@@ -133,7 +133,7 @@ multi-dimensional grids, read Section~\ref{sec:netcdf}.
 
 \GMT\ also allows other formats to be read.  In addition to
 the default netCDF format it can use binary floating points, short
-integers, bytes, and bits, as well as 8-bit Sun rasterfiles (colormap
+integers, bytes, and bits, as well as 8-bit Sun raster files (colormap
 ignored).   Additional formats may be used by supplying read/write
 functions and linking these with the \GMT\ libraries.
 The source file \filename{gmt\_customio.c} has the information that
@@ -325,7 +325,7 @@ double}.}
 \index{grid file!native binary|)}
 
 \section{Sun raster files}
-\index{Rasterfile!format}
+\index{Raster file!format}
 
 The Sun raster file format consists of a header followed by a series
 of unsigned 1-byte integers that represents the bit-pattern.  Bits
@@ -350,7 +350,7 @@ is outline in Table~\ref{tbl:sunheader}.
 \textbf{int} \emph{ras\_maplength}  &       Length (bytes) of following map  \\ \hline
 \end{tabular}
 
-\caption{Structure of a Sun rasterfile.}
+\caption{Structure of a Sun raster file.}
 \label{tbl:sunheader}
 \end{table} 
 
@@ -359,7 +359,7 @@ follows for \emph{ras\_maplength} bytes, followed by an image of
 \emph{ras\_length} bytes.  Some related definitions are given in Table~\ref{tbl:sundef}.  
 
 \begin{table}[H]
-\index{Rasterfile!definitions}
+\index{Raster file!definitions}
 \centering
 \begin{tabular}{|l|l|}  \hline
 
@@ -373,13 +373,13 @@ RMT\_EQUAL\_RGB &       1 (red[ras\_maplength/3],green[],blue[])  \\ \hline
 
 \end{tabular}
 
-\caption{Sun macro definitions relevant to rasterfiles.}
+\caption{Sun macro definitions relevant to raster files.}
 \label{tbl:sundef}
 \end{table} 
 
 Numerous public-domain programs exist, such as \progname{xv} and
 \progname{convert} (in the ImageMagick package), that will translate
-between various rasterfile formats such as tiff, gif, jpeg, and
+between various raster file formats such as tiff, gif, jpeg, and
 Sun raster.  Raster patterns may be created with \GMT\ plotting
 tools by generating \PS\ plots that can be rasterized
 by \progname{ghostscript} and translated into the right raster format.
