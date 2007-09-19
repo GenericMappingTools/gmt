@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.81 2007-09-19 13:45:44 remko Exp $
+	$Id: ChangeLog,v 1.82 2007-09-19 19:13:40 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-09-19	pwessel
+	* triangulate.c, pscontour.c:	Synopsis now reports name of algorithm currently
+				compiled in [Shewchuk or Watson].
 
 2007-09-19	remko
 	* configure.in:		Made mansect=1 default. Make versioned libraries on Darwin.

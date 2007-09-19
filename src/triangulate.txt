@@ -3,7 +3,7 @@
 #define LEN 15
 #define SCALE \fB\-JM\fP15\fBc\fP
 .SH NAME
-triangulate \- Perform optimal Delauney triangulation and gridding of Cartesian data
+triangulate \- Perform optimal Delauney triangulation and gridding of Cartesian data [method]
 .SH SYNOPSIS
 \fBtriangulate\fP \fIinfiles\fP [ OPT(Dx)|\fBy\fP ] [ OPT(E)\fIempty\fP ] [ OPT(G)\fIgrdfile\fP ] 
 [ GMT_H_OPT ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ GMT_M_OPT ] 
@@ -19,7 +19,8 @@ The id numbers refer to the points position (line number, starting at 0 for the 
 As an option, you may choose to create a multiple segment file that can be piped through
 \fBpsxy\fP to draw the triangulation network.  If \fB\-G \-I\fP are set a grid will be calculated based
 on the surface defined by the planar triangles.  The actual algorithm used
-in the triangulations is either that of Watson [1982] [Default] or Shewchuk [1996] (if installed).
+in the triangulations is either that of Watson [1982] [Default] or Shewchuk [1996] (if installed; type
+\fBtriangulate \-\fP to see which method is selected).
 This choice is made during the \fBGMT\fP installation.
 .TP
 \fIinfiles\fP

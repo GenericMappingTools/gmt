@@ -3,7 +3,7 @@
 #define LEN_L 0.5
 #define SCALE_L \fB\-Jl\fP18/24/0.5\fBi\fP
 .SH NAME
-pscontour \- Contour xyz-data by direct triangulation
+pscontour \- Contour xyz-data by direct triangulation [method]
 .SH SYNOPSIS
 \fBpscontour\fP \fIxyzfile\fP OPT(C)\fIcptfile\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(A)[\fB-\fP][\fIlabelinfo\fP] ] [ GMT_B_OPT ] [ OPT(D)[\fIdumpfile\fP] ] [ OPT(E)\fIview_az\fP/\fIview_el\fP ] 
@@ -14,7 +14,8 @@ pscontour \- Contour xyz-data by direct triangulation
 .SH DESCRIPTION
 \fBpscontour\fP reads an ASCII [or binary] xyz-file and produces a raw contour plot by triangulation.  By default, the
 optimal Delaunay triangulation is performed (using either Shewchuk's [1996]\"'
-or Watson's [1982] method as selected during \fBGMT\fP installation), but the user\"'
+or Watson's [1982] method as selected during \fBGMT\fP installation; type
+\fBpscontour \-\fP to see which method is selected), but the user\"'
 may optionally provide a second file with
 network information, such as a triangular mesh used for finite element modeling.  In addition to contours, the area between contours may be painted according to
 the color palette file.
