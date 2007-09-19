@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.11 2007-09-14 01:13:39 remko Exp $
+#	$Id: Makefile,v 1.12 2007-09-19 01:49:50 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -161,7 +161,7 @@ install-man:
 			if [ -d $$d ] && [ ! -f $$d/.skip ] ; then \
 				( cd $$d; \
 				for f in *.man; do \
-					sed "s/GMTMANSECTION/$(mansection)/g" $$f > $(mandir)/man$(mansection)/`basename $$f .man`.l; \
+					sed "s/GMTMANSECTION/$(mansection)/g" $$f > $(mandir)/man$(mansection)/`basename $$f .man`.$(mansection); \
 				done ); \
 			fi; \
 		done
