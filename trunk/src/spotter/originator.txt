@@ -5,7 +5,7 @@ originator \- Associate seamounts with hotspot point sources
 .SH SYNOPSIS
 \fBoriginator\fP [\fIinfile(s)\fP] OPT(E)\fIstage_file\fP 
 OPT(F)\fIhs_file\fP 
-[ OPT(C) ] [ OPT(D)\fId_km\fP ] [ GMT_H_OPT ] [ OPT(N)\fIupper_age\fP ] 
+[ OPT(C) ] [ OPT(D)\fId_km\fP ] [ GMT_H_OPT ] [ OPT(N)\fIupper_age\fP ] [ OPT(Q)\fIr/t\fP ] 
 [ OPT(S)[\fIn_hs\fP] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)\fImaxdist\fP ] [ GMT_t_OPT ] 
 [ GMT_bi_OPT ]
 .SH DESCRIPTION
@@ -67,6 +67,10 @@ Sets the flowline sampling interval in km.  [Default is 5].
 .B \-N
 Set the maximum age to extend the oldest stage back in time [no extension].
 .TP
+.B \-Q
+.TP
+INput files only has (\fIx,y,z\fP); specify constant values for \fIr,t\fP that
+will be implied for each record.
 .B \-S
 Set the number of closest hotspots to report [Default is 1].
 .TP
