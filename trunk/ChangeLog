@@ -1,9 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.83 2007-09-21 19:09:09 guru Exp $
+	$Id: ChangeLog,v 1.84 2007-09-21 21:00:03 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-21	pwessel
-	* {gmt,grd}math.c	Added functions KURT, SKEW, and PQUART plus EULER's constant
+	* {gmt,grd}math.c	Added functions KURT, SKEW, and PQUANT plus EULER's constant
 	
 2007-09-19	pwessel
 	* triangulate.c, pscontour.c:	Synopsis now reports name of algorithm currently
