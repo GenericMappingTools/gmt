@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.82 2007-09-19 19:13:40 guru Exp $
+	$Id: ChangeLog,v 1.83 2007-09-21 19:09:09 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-21	pwessel
+	* {gmt,grd}math.c	Added functions KURT, SKEW, and PQUART plus EULER's constant
+	
 2007-09-19	pwessel
 	* triangulate.c, pscontour.c:	Synopsis now reports name of algorithm currently
 				compiled in [Shewchuk or Watson].
