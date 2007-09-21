@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.84 2007-09-21 21:00:03 guru Exp $
+	$Id: ChangeLog,v 1.85 2007-09-21 23:00:26 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-21	pwessel
 	* {gmt,grd}math.c	Added functions KURT, SKEW, and PQUANT plus EULER's constant
+	* grdmath.c		For -S..k, did not properly account for latitude effect on dx
 	
 2007-09-19	pwessel
 	* triangulate.c, pscontour.c:	Synopsis now reports name of algorithm currently
