@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.54 2007-09-24 01:45:15 guru Exp $
+ *	$Id: gmt_stat.c,v 1.55 2007-09-24 18:28:52 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2537,8 +2537,8 @@ double GMT_quantile_d (double *x, double q, size_t n)
 	int i_f;
 	double p, f, df;
 	
-	while (GMT_is_dnan (x[n-1]) && n > 1) n--;	/* Skip any NaNs at the end of x */
-	if (n < 1) return (GMT_d_NaN);			/* Need at least 2 points to do something */
+	while (n > 1 && GMT_is_dnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
+	if (n < 1) return (GMT_d_NaN);			/* Need at least 1 point to do something */
 	if (q == 0.0) return (x[0]);			/* 0% quantile == min(x) */
 	if (q == 100.0) return (x[n-1]);		/* 100% quantile == max(x) */
 	f = (n - 1) * q / 100.0;
@@ -2558,10 +2558,10 @@ double GMT_quantile_f (float *x, double q, size_t n)
 	int i_f;
 	double p, f, df;
 	
-	while (GMT_is_fnan (x[n-1]) && n > 1) n--;	/* Skip any NaNs at the end of x */
-	if (n < 1) return (GMT_d_NaN);			/* Need at least 2 points to do something */
-	if (q == 0.0) return ((double)x[0]);			/* 0% quantile == min(x) */
-	if (q == 100.0) return ((double)x[n-1]);		/* 100% quantile == max(x) */
+	while (n > 1 && GMT_is_fnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
+	if (n < 1) return (GMT_d_NaN);			/* Need at least 1 point to do something */
+	if (q == 0.0) return ((double)x[0]);		/* 0% quantile == min(x) */
+	if (q == 100.0) return ((double)x[n-1]);	/* 100% quantile == max(x) */
 	f = (n - 1) * q / 100.0;
 	i_f = (int)floor (f);
 	if ((df = (f - (double)i_f)) > 0.0)		/* Must interpolate between the two neighbors */
