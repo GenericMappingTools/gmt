@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.22 2007-09-24 01:26:51 remko Exp $
+#	$Id: Makefile,v 1.23 2007-09-24 01:41:03 remko Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -76,7 +76,7 @@ $(LIB):		libspotter.o
 
 backtracker$(EXE):	backtracker.o
 grdrotater$(EXE):	grdrotater.o
-hotspotter$(EXE):	horspotter.o
+hotspotter$(EXE):	hotspotter.o
 originator$(EXE):	originator.o
 rotconverter$(EXE):	rotconverter.o
 
