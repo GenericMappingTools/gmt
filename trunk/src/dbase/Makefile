@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.16 2007-09-24 00:38:01 remko Exp $
+#	$Id: Makefile,v 1.17 2007-09-24 01:26:51 remko Exp $
 #
 #	makefile for dbase directory
 #
@@ -56,5 +56,5 @@ $(PROGS_O):	$(GMT_H)
 grdraster$(EXE):	grdraster.o
 
 $(PROGS):
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@

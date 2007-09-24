@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.20 2007-09-24 00:38:02 remko Exp $
+#	$Id: Makefile,v 1.21 2007-09-24 01:26:51 remko Exp $
 #
 # makefile for segyprogs directory
 #
@@ -55,7 +55,7 @@ segy_io.o:	$(PROGS_H)
 
 pssegyz$(EXE):	pssegyz.o
 pssegy$(EXE):	pssegy.o
-segy2grd$(EXE):	pssegy2grd.o
+segy2grd$(EXE):	segy2grd.o
 
 $(PROGS):	segy_io.o $(GMTLIB)
 		$(CC) $(LDFLAGS) segy_io.o $(@:.exe=).o -o $@ $(ALLLIB)
