@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.53 2007-09-21 19:19:27 guru Exp $
+ *	$Id: gmt_stat.c,v 1.54 2007-09-24 01:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2530,6 +2530,48 @@ double GMT_corrcoeff_f (float *x, float *y, size_t n, int mode)
 }
 
 
+double GMT_quantile_d (double *x, double q, size_t n)
+{
+	/* Returns the q'th (q in percent) quantile of x (assumed sorted) */
+
+	int i_f;
+	double p, f, df;
+	
+	while (GMT_is_dnan (x[n-1]) && n > 1) n--;	/* Skip any NaNs at the end of x */
+	if (n < 1) return (GMT_d_NaN);			/* Need at least 2 points to do something */
+	if (q == 0.0) return (x[0]);			/* 0% quantile == min(x) */
+	if (q == 100.0) return (x[n-1]);		/* 100% quantile == max(x) */
+	f = (n - 1) * q / 100.0;
+	i_f = (int)floor (f);
+	if ((df = (f - (double)i_f)) > 0.0)		/* Must interpolate between the two neighbors */
+		p = x[i_f+1] * df + x[i_f] * (1.0 - df);
+	else						/* Exactly on a node */
+		p = x[i_f];
+		
+	return (p);
+}
+	
+double GMT_quantile_f (float *x, double q, size_t n)
+{
+	/* Returns the q'th (q in percent) quantile of x (assumed sorted) */
+
+	int i_f;
+	double p, f, df;
+	
+	while (GMT_is_fnan (x[n-1]) && n > 1) n--;	/* Skip any NaNs at the end of x */
+	if (n < 1) return (GMT_d_NaN);			/* Need at least 2 points to do something */
+	if (q == 0.0) return ((double)x[0]);			/* 0% quantile == min(x) */
+	if (q == 100.0) return ((double)x[n-1]);		/* 100% quantile == max(x) */
+	f = (n - 1) * q / 100.0;
+	i_f = (int)floor (f);
+	if ((df = (f - (double)i_f)) > 0.0)		/* Must interpolate between the two neighbors */
+		p = (double)(x[i_f+1] * df + x[i_f] * (1.0 - df));
+	else						/* Exactly on a node */
+		p = (double)x[i_f];
+		
+	return (p);
+}
+	
 static void Cmul (double A[], double B[], double C[])
 {	/* Complex multiplication */
 	C[0] = A[0]*B[0] - A[1]*B[1];
