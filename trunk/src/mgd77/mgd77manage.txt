@@ -1,4 +1,4 @@
-.TH MGD77MANAGE GMTMANSECTION DATE VERSION VERSION
+.TH MGD77MANAGE 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 mgd77manage \- Manage extra columns in MGD77+ files
@@ -264,12 +264,12 @@ The IGRF calculations are based on a Fortran program written by Susan Macmillan,
 British Geological Survey, translated to C via f2c by Joaquim Luis, and adapted to
 GMT style by Paul Wessel.
 .SH "SEE ALSO"
-.IR mgd77convert (GMTMANSECTION),
-.IR mgd77list (GMTMANSECTION),
-.IR mgd77info (GMTMANSECTION),
-.IR mgd77sniffer (GMTMANSECTION)
-.IR mgd77track (GMTMANSECTION)
-.IR x2sys_init (GMTMANSECTION)
+.IR mgd77convert (1),
+.IR mgd77list (1),
+.IR mgd77info (1),
+.IR mgd77sniffer (1)
+.IR mgd77track (1)
+.IR x2sys_init (1)
 #include "refs.i"
 The Marine Geophysical Data Exchange Format - "MGD77", see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP

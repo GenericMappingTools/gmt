@@ -1,4 +1,4 @@
-.TH GMTLEGS GMTMANSECTION DATE VERSION VERSION
+.TH GMTLEGS 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 gmtlegs \- Find cruises in a given region
@@ -36,7 +36,7 @@ To find all cruises with magnetics:
 .sp
 \fBgmtlegs\fP \fB\-R\fR0/360/-90/90 \fB\-M\fP > all_m.legs
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gmt2bin (GMTMANSECTION),
-.IR binlegs (GMTMANSECTION)
+.IR GMT (1),
+.IR gmt2bin (1),
+.IR binlegs (1)
 #include "refs.i"

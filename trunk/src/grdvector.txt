@@ -1,4 +1,4 @@
-.TH GRDVECTOR GMTMANSECTION DATE VERSION VERSION
+.TH GRDVECTOR 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define PARAMS_SI	0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
 #define LEN1	5
@@ -96,6 +96,6 @@ equal 1 inch, run
 .br
 .sp
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdcontour (GMTMANSECTION),
-.IR psxy (GMTMANSECTION)
+.IR GMT (1),
+.IR grdcontour (1),
+.IR psxy (1)

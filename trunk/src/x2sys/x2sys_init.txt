@@ -1,4 +1,4 @@
-.TH X2SYS_INIT GMTMANSECTION DATE VERSION VERSION
+.TH X2SYS_INIT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 x2sys_init \- Initialize data base for track data files
@@ -247,6 +247,6 @@ obs3	h	N	0	0.1	0	%6.1f
 .sp
 The rest of the steps are identical.  
 .SH "SEE ALSO"
-.IR x2sys_binlist (GMTMANSECTION)
-.IR x2sys_get (GMTMANSECTION)
-.IR x2sys_put (GMTMANSECTION)
+.IR x2sys_binlist (1)
+.IR x2sys_get (1)
+.IR x2sys_put (1)

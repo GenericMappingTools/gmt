@@ -1,4 +1,4 @@
-.TH X2SYS_DATALIST GMTMANSECTION DATE VERSION VERSION
+.TH X2SYS_DATALIST 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 x2sys_datalist \- A generic data-extractor for ASCII or binary files
@@ -45,7 +45,7 @@ area, and make output binary, run
 .sp
 \fBx2sys_datalist\fP `cat tracks.lis` \fB\-T\fPTRK \fB\-F\fPlon,lat,depth \fB\-R\fP-40/-30/25/35 \fB\-bo\fP > alltopo.xyz
 .SH "SEE ALSO"
-.IR blockmean (GMTMANSECTION),
-.IR GMT (GMTMANSECTION),
-.IR surface (GMTMANSECTION),
-.IR x2sys_cross (GMTMANSECTION)
+.IR blockmean (1),
+.IR GMT (1),
+.IR surface (1),
+.IR x2sys_cross (1)

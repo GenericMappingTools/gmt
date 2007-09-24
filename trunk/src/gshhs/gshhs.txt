@@ -1,4 +1,4 @@
-.TH GSHHS GMTMANSECTION DATE VERSION VERSION
+.TH GSHHS 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 gshhs \- Extract ASCII listings from binary GSHHS or WDBII data files
@@ -29,6 +29,6 @@ While the GSHHS data is organized as a set of closed polygons, the rivers and bo
 data are just a set of line segments in no particular order.  Thus, it is not possible
 to extract information pertaining to just one river or one country.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gshhs_dp (GMTMANSECTION)
-.IR gshhstograss (GMTMANSECTION)
+.IR GMT (1),
+.IR gshhs_dp (1)
+.IR gshhstograss (1)

@@ -1,4 +1,4 @@
-.TH TRIANGULATE GMTMANSECTION DATE VERSION VERSION
+.TH TRIANGULATE 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define LEN 15
 #define SCALE \fB\-JM\fP15\fBc\fP
@@ -80,8 +80,8 @@ LEN-cm-wide Mercator map, use
 \fBtriangulate\fP samples.xyz \fB\-M \-R\fP-100/-90/30/34 SCALE | psxy \fB\-M \-R\fP-100/-90/30/34 SCALE
 \fB\-W\fP0.5\fBp\fP \fB\-B\fP1 > network.ps
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR pscontour (GMTMANSECTION)
+.IR GMT (1),
+.IR pscontour (1)
 .SH REFERENCES
 Watson, D. F., 1982, Acord: Automatic contouring of raw data, \fIComp. & Geosci., 8\fP, 97\-101.
 .br

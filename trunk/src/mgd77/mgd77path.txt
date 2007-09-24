@@ -1,4 +1,4 @@
-.TH MGD77PATH GMTMANSECTION DATE VERSION VERSION
+.TH MGD77PATH 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 mgd77path \- Get full pathname for MGD77 files
@@ -39,11 +39,11 @@ To see the list of active directories where MGD77 files might be stored, run
 .sp
 \fBmgd77path\fP \fB\-D\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION)
-.IR mgd77info (GMTMANSECTION)
-.IR mgd77list (GMTMANSECTION)
-.IR mgd77manage (GMTMANSECTION)
-.IR mgd77track (GMTMANSECTION)
+.IR GMT (1)
+.IR mgd77info (1)
+.IR mgd77list (1)
+.IR mgd77manage (1)
+.IR mgd77track (1)
 #include "refs.i"
 The Marine Geophysical Data Exchange Format - "MGD77", see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP

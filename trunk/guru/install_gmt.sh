@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.104 2007-09-10 17:56:46 guru Exp $
+#	$Id: install_gmt.sh,v 1.105 2007-09-24 00:38:01 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -378,13 +378,11 @@ GMT_share=`get_def_answer "Directory for GMT data resources?" "$GMT_prefix/share
 cat << EOF >&2
 
 Unix man pages are usually stored in /usr/man/manX, where X is
-the relevant man section.  This is usually l for local.  Below,
-you will be asked for X and the /usr/man part; the /manX will be
-appended automatically, so do not answer /usr/man/manl.
+the relevant man section.  Below, you will be asked for the /usr/man part;
+the /manX will be appended automatically, so do not answer /usr/man/man1.
 
 EOF
 GMT_man=`get_def_answer "Directory for GMT man pages?" "$GMT_prefix/man"`
-GMT_mansect=`get_def_answer "Enter Man page section for GMT man pages (1-9,l)" "l"`
 GMT_web=`get_def_answer "Directory for GMT www pages?" "$GMT_prefix/www"`
 
 cat << EOF >&2
@@ -680,7 +678,6 @@ GMT_sharedir=$GMT_sharedir
 GMT_dir_full=$GMT_dir_full
 GMT_dir_high=$GMT_dir_high
 GMT_dir_cli=$GMT_dir_cli
-GMT_mansect=$GMT_mansect
 #---------------------------------------------
 #       COMPILING & LINKING SECTION
 #---------------------------------------------
@@ -1281,7 +1278,7 @@ fi
 	
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
-  --mandir=$GMT_man --enable-mansect=$GMT_mansect --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip \
+  --mandir=$GMT_man --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip \
   $disable_mex $disable_xgrid 
 
 if [ -f .gmtconfigure ]; then

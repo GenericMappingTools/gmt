@@ -1,4 +1,4 @@
-	$Id: README.mgg,v 1.4 2007-01-31 17:00:03 pwessel Exp $
+	$Id: README.mgg,v 1.5 2007-09-24 00:38:02 remko Exp $
 
 README file for GMT supplemental mgg programs
 Distributed under the GNU Public License (see file ../COPYING)
@@ -44,7 +44,9 @@ To install these programs, simply type
 
 	make install
 
-You may copy the manl/*.man files to /usr/man/manl/*.l if you wish.
+To install the manual pages, type
+
+	make install-man
 
 The gmtfiles are unformatted, binary, direct access files with a
 fixed record length of 18 bytes.  Each file has one header record

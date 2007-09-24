@@ -1,4 +1,4 @@
-.TH PSCONTOUR GMTMANSECTION DATE VERSION VERSION
+.TH PSCONTOUR 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define LEN_L 0.5
 #define SCALE_L \fB\-Jl\fP18/24/0.5\fBi\fP
@@ -115,14 +115,14 @@ Sometimes there will appear to be thin lines of the wrong color in the image.
 This is a round-off problem which may be remedied by using a higher value of
 \fBDOTS_PR_INCH\fP in the \.gmtdefaults4 file.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdcontour (GMTMANSECTION),
-.IR grdimage (GMTMANSECTION),
-.IR nearneighbor (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION),
-.IR psscale (GMTMANSECTION),
-.IR surface (GMTMANSECTION),
-.IR triangulate (GMTMANSECTION)
+.IR GMT (1),
+.IR grdcontour (1),
+.IR grdimage (1),
+.IR nearneighbor (1),
+.IR psbasemap (1),
+.IR psscale (1),
+.IR surface (1),
+.IR triangulate (1)
 .SH REFERENCES
 Watson, D. F., 1982, Acord: Automatic contouring of raw data, \fIComp. & Geosci., 8\fP, 97\-101.
 .br

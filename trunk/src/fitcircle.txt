@@ -1,4 +1,4 @@
-.TH FITCIRCLE GMTMANSECTION DATE VERSION VERSION
+.TH FITCIRCLE 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 fitcircle \- find mean position and pole of best-fit great [or small] circle to points on a sphere.
@@ -63,6 +63,6 @@ project this data onto a great circle and resample it in distance, in order to f
 Here, \fIox\fP/\fIoy\fP is the lon/lat of the mean from \fBfitcircle\fP, and \fIpx\fP/\fIpy\fP is the lon/lat 
 of the pole.  The file output.pg has distance, gravity data sampled every 1 km along the great circle which best fits ship.xyg
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR project (GMTMANSECTION),
-.IR sample1d (GMTMANSECTION)
+.IR GMT (1),
+.IR project (1),
+.IR sample1d (1)

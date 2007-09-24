@@ -1,4 +1,4 @@
-.TH BLOCKMODE GMTMANSECTION DATE VERSION VERSION
+.TH BLOCKMODE 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 blockmode \- filter to block average (\fIx,y,z\fP) data by mode estimation.
@@ -68,10 +68,10 @@ hawaii_b.xyg and output an ASCII table, run:
 .sp
 \fBblockmode\fP hawaii_b.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-bi\fP3 > hawaii_5x5.xyg
 .SH "SEE ALSO"
-.IR blockmean (GMTMANSECTION),
-.IR blockmedian (GMTMANSECTION),
-.IR GMT (GMTMANSECTION),
-.IR gmtdefaults (GMTMANSECTION),
-.IR nearneighbor (GMTMANSECTION),
-.IR surface (GMTMANSECTION),
-.IR triangulate (GMTMANSECTION)
+.IR blockmean (1),
+.IR blockmedian (1),
+.IR GMT (1),
+.IR gmtdefaults (1),
+.IR nearneighbor (1),
+.IR surface (1),
+.IR triangulate (1)

@@ -1,4 +1,4 @@
-.TH GRDROTATER GMTMANSECTION DATE VERSION VERSION
+.TH GRDROTATER 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdrotater \- Rotate a grid using a finite rotation
@@ -85,7 +85,7 @@ grdmath 1 rot_gridA.grd ISNAN SUB 1 rot_gridB.grd ISNAN SUB 2 EQ = overlap.grd
 The grid overlap.grd now has 1s in the regions of overlap and 0 elsewhere.  You can use it as a mask
 or use grdcontour to extract a polygon (contour).
 .SH "SEE ALSO"
-.IR backtracker (GMTMANSECTION),
-.IR hotspotter (GMTMANSECTION),
-.IR originator (GMTMANSECTION)
-.IR rotconverter (GMTMANSECTION)
+.IR backtracker (1),
+.IR hotspotter (1),
+.IR originator (1)
+.IR rotconverter (1)

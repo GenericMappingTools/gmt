@@ -1,4 +1,4 @@
-.TH ORIGINATOR GMTMANSECTION DATE VERSION VERSION
+.TH ORIGINATOR 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 originator \- Associate seamounts with hotspot point sources 
@@ -100,11 +100,11 @@ and report the 2 most likely hotspot candidates for each seamount, run
 .br
 .sp
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR project (GMTMANSECTION),
-.IR mapproject (GMTMANSECTION),
-.IR backtracker (GMTMANSECTION)
-.IR hotspotter (GMTMANSECTION)
+.IR GMT (1),
+.IR project (1),
+.IR mapproject (1),
+.IR backtracker (1)
+.IR hotspotter (1)
 .SH REFERENCES
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 .br

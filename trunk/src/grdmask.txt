@@ -1,4 +1,4 @@
-.TH GRDMASK GMTMANSECTION DATE VERSION VERSION
+.TH GRDMASK 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdmask \- Create mask grid files from xy paths.
@@ -64,9 +64,9 @@ To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 .sp
 \fBgrdmask\fP data.xyz \fB\-R\fP-60/-40/-40/-30 \fB\-I\fP5m \fB\-N\fPNaN/1/1 \fB\-S\fP50\fBk\fP \fB\-G\fPdata_mask.grd  \fB\-V\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdlandmask (GMTMANSECTION),
-.IR grdmath (GMTMANSECTION),
-.IR grdclip (GMTMANSECTION),
-.IR psmask (GMTMANSECTION),
-.IR psclip (GMTMANSECTION)
+.IR GMT (1),
+.IR grdlandmask (1),
+.IR grdmath (1),
+.IR grdclip (1),
+.IR psmask (1),
+.IR psclip (1)

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.16 2007-09-04 15:22:27 remko Exp $
+#	$Id: Makefile,v 1.17 2007-09-24 00:38:02 remko Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -13,7 +13,6 @@
 #
 #	Date:	07-MAR-2000
 #
-
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
@@ -25,32 +24,54 @@ include $(GMTSRCDIR)gmtalldeps.macros
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I$(NETCDF)/include
 ALLLIB  = -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
 
-ALL_C	= x_edit.c x_init.c x_list.c x_over.c x_report.c x_remove.c x_setup.c x_solve_dc_drift.c x_update.c
-ALL_O	= $(ALL_C:.c=.o)
-ALL	= $(ALL_C:.c=$(EXE))
-
-all:	$(ALL)
+PROGS_C	= x_edit.c x_init.c x_list.c x_over.c x_report.c x_remove.c x_setup.c x_solve_dc_drift.c x_update.c
+PROGS_O	= $(PROGS_C:.c=.o)
+PROGS	= $(PROGS_C:.c=$(EXE))
+MAN1	= $(PROGS_C:.c=.1)
 
 #-------------------------------------------------------------------------------
+#	software targets
+#-------------------------------------------------------------------------------
+
+all:	$(PROGS)
 
 install:	all
-		$(INSTALL) $(ALL) $(bindir)
+		$(INSTALL) $(PROGS) $(bindir)
 
 uninstall:
-		for i in $(ALL); do \
-			\rm -f $(bindir)/$$i; \
-		done
+		cd $(bindir); \rm -f $(PROGS)
+
+install-man:	$(MAN1)
+		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+
+uninstall-man:
+		cd $(mandir)/man1; \rm -f $(MAN1)
 
 clean:
-		rm -f *.o $(ALL)
+		rm -f *.o $(PROGS)
 
 spotless:	clean
 
 #-------------------------------------------------------------------------------
-#	program dependencies
+#	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(ALL):		$(ALL_O) $(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $(@:.exe=).o $(ALLLIB) -o $@
+$(PROGS_O):	x_system.h $(GMT_H)
 
-$(ALL_O):	x_system.h $(GMT_H)
+#-------------------------------------------------------------------------------
+#	program rules
+#-------------------------------------------------------------------------------
+
+x_edit$(EXE):		x_edit.o
+x_init$(EXE):		x_init.o
+x_list$(EXE):		x_list.o
+x_over$(EXE):		x_over.o
+x_report$(EXE):		x_report.o
+x_remove$(EXE):		x_remove.o
+x_setup$(EXE):		x_setup.o
+x_solve_dc_drift$(EXE):	x_solve_dc_drift.o
+x_update$(EXE):		x_update.o
+
+$(PROGS):	$(GMTLIB)
+		$(CC) $(CFLAGS) $(LDFLAGS) $(@:.exe=).o $(ALLLIB) -o $@
+		$(COMPRESS) $@

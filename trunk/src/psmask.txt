@@ -1,4 +1,4 @@
-.TH PSMASK GMTMANSECTION DATE VERSION VERSION
+.TH PSMASK 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 psmask \- To clip or mask areas of no data on a map
@@ -89,8 +89,8 @@ The same example but this time we use white tiling:
 .sp
 \fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-T \-O \-K \-G\fPwhite > mask.ps
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdmask (GMTMANSECTION),
-.IR surface (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION),
-.IR psclip (GMTMANSECTION)
+.IR GMT (1),
+.IR grdmask (1),
+.IR surface (1),
+.IR psbasemap (1),
+.IR psclip (1)

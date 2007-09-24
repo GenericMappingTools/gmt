@@ -1,4 +1,4 @@
-.TH GRDRASTER GMTMANSECTION DATE VERSION VERSION
+.TH GRDRASTER 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdraster \- extract subregion from a binary raster and write a grid file
@@ -73,8 +73,8 @@ standard output:
 .br
 .sp
 .SH "SEE ALSO"
-.IR gmtdefaults (GMTMANSECTION),
-.IR GMT (GMTMANSECTION),
-.IR grdsample (GMTMANSECTION),
-.IR grdfilter (GMTMANSECTION)
+.IR gmtdefaults (1),
+.IR GMT (1),
+.IR grdsample (1),
+.IR grdfilter (1)
 #include "refs.i"

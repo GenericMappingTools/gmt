@@ -1,4 +1,4 @@
-.TH BLOCKMEAN GMTMANSECTION DATE VERSION VERSION
+.TH BLOCKMEAN 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 blockmean \- filter to block average (\fIx,y,z\fP) data by L2 norm
@@ -69,10 +69,10 @@ To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, run
 .sp
 \fBblockmean\fP hawaii.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm\fP > hawaii_5x5.xyg
 .SH "SEE ALSO"
-.IR blockmedian (GMTMANSECTION),
-.IR blockmode (GMTMANSECTION),
-.IR gmtdefaults (GMTMANSECTION),
-.IR GMT (GMTMANSECTION),
-.IR nearneighbor (GMTMANSECTION),
-.IR surface (GMTMANSECTION),
-.IR triangulate (GMTMANSECTION)
+.IR blockmedian (1),
+.IR blockmode (1),
+.IR gmtdefaults (1),
+.IR GMT (1),
+.IR nearneighbor (1),
+.IR surface (1),
+.IR triangulate (1)

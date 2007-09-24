@@ -1,4 +1,4 @@
-.TH NEARNEIGHBOR GMTMANSECTION DATE VERSION VERSION
+.TH NEARNEIGHBOR 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 nearneighbor \- A "Nearest neighbor" gridding algorithm
@@ -78,9 +78,9 @@ only when fewer than two quadrants contain at least one value:
 \fBnearneighbor\fP geoid.xyz \fB\-R\fP0/360/-90/90 \fB\-I\fP1 \fB\-L\fPg \fB\-G\fPgeoid.grd
 \fB\-S\fP200K \fB\-N\fP4/2
 .SH "SEE ALSO"
-.IR blockmean (GMTMANSECTION),
-.IR blockmedian (GMTMANSECTION),
-.IR blockmode (GMTMANSECTION),
-.IR GMT (GMTMANSECTION),
-.IR surface (GMTMANSECTION),
-.IR triangulate (GMTMANSECTION)
+.IR blockmean (1),
+.IR blockmedian (1),
+.IR blockmode (1),
+.IR GMT (1),
+.IR surface (1),
+.IR triangulate (1)

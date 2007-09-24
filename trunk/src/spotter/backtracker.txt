@@ -1,4 +1,4 @@
-.TH BACKTRACKER GMTMANSECTION DATE VERSION VERSION
+.TH BACKTRACKER 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 backtracker \- Forward and Backward flowlines and hotspot tracks 
@@ -108,11 +108,11 @@ binary, double precision files, run
 .sp
 This file can then be plotted with \fBpsxy \-M\fP.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR project (GMTMANSECTION),
-.IR mapproject (GMTMANSECTION),
-.IR hotspotter (GMTMANSECTION),
-.IR originator (GMTMANSECTION)
+.IR GMT (1),
+.IR project (1),
+.IR mapproject (1),
+.IR hotspotter (1),
+.IR originator (1)
 .SH REFERENCES
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 .br

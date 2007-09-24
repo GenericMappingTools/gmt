@@ -1,4 +1,4 @@
-.TH X_REMOVE GMTMANSECTION DATE VERSION VERSION
+.TH X_REMOVE 1 DATE VERSION VERSION
 .SH NAME
 \fBx_remove\fP \- Remove COEs for Selected Cruises from the Data Base
 .SH SYNOPSIS
@@ -20,8 +20,8 @@ Indicates alternate legbase file [Default is \fIxx_legs.b\fP].
 .B \-V
 Means operate in verbose mode.
 .SH SEE ALSO
-.IR GMT (GMTMANSECTION),
-.IR x_system (GMTMANSECTION)
+.IR GMT (1),
+.IR x_system (1)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

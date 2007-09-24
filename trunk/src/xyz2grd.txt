@@ -1,4 +1,4 @@
-.TH XYZ2GRD GMTMANSECTION DATE VERSION VERSION
+.TH XYZ2GRD 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 xyz2grd \- Converting an ASCII or binary table to grid file format
@@ -124,6 +124,6 @@ byte-order with
 .sp
 \fBxyz2grd\fP floats.bin \fB\-S\fPnew_floats.bin \fB\-V \-Zf\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grd2xyz (GMTMANSECTION),
-.IR grdedit (GMTMANSECTION)
+.IR GMT (1),
+.IR grd2xyz (1),
+.IR grdedit (1)

@@ -1,4 +1,4 @@
-.TH GSHHS2GRASS GMTMANSECTION DATE VERSION VERSION
+.TH GSHHS2GRASS 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 gshhs2grass \- Extracting GSHHS and WDBII data in GRASS-compatible ASCII format
@@ -38,6 +38,6 @@ Not updated to handle the WDBII line data (borders or rivers).
 Original version by Simon Cox (simon@ned.dem.csiro.au) with
 some maintenance by Paul Wessel (pwessel@hawaii.edu).
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gshhs (GMTMANSECTION)
-.IR gshhs_dp (GMTMANSECTION)
+.IR GMT (1),
+.IR gshhs (1)
+.IR gshhs_dp (1)

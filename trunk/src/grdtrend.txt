@@ -1,4 +1,4 @@
-.TH GRDTREND GMTMANSECTION DATE VERSION VERSION
+.TH GRDTREND 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdtrend \- Fit and/or remove a polynomial trend in a grid file
@@ -69,6 +69,6 @@ hawaii_trend.grd and the weights used in hawaii_weight.grd, and reporting the pr
 \fBgrdtrend\fP hawaii_topo.grd \fB\-N\fP10\fBr \-T\fPhawaii_trend.grd 
 \fB\-W\fPhawaii_weight.grd \fB\-V\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdfft (GMTMANSECTION),
-.IR grdfilter (GMTMANSECTION)
+.IR GMT (1),
+.IR grdfft (1),
+.IR grdfilter (1)

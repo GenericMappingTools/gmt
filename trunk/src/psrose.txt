@@ -1,4 +1,4 @@
-.TH PSROSE GMTMANSECTION DATE VERSION VERSION
+.TH PSROSE 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define PARAM_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP/0/0/0
 #define PARAM_US 0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP/0/0/0
@@ -115,6 +115,6 @@ and shown in landscape [Default] orientation with UNIX timestamp and command lin
 No default radial scale and grid settings for polar histograms.  User must run \fBpsrose \-I\fP to find max length in
 binned data set.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gmtdefaults (GMTMANSECTION),
-.IR pshistogram (GMTMANSECTION)
+.IR GMT (1),
+.IR gmtdefaults (1),
+.IR pshistogram (1)

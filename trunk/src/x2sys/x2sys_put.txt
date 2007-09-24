@@ -1,4 +1,4 @@
-.TH X2SYS_PUT GMTMANSECTION DATE VERSION VERSION
+.TH X2SYS_PUT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 x2sys_put \- Update track data bases
@@ -25,5 +25,5 @@ associated with the tag MGD77, try
 .sp
 \fBx2sys_put\fP latest.tbf \fB\-V \-T\fPMGD77 
 .SH "SEE ALSO"
-.IR x2sys_binlist (GMTMANSECTION)
-.IR x2sys_get (GMTMANSECTION)
+.IR x2sys_binlist (1)
+.IR x2sys_get (1)

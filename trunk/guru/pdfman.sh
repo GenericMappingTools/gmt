@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.13 2007-06-29 18:40:30 remko Exp $
+#	 $Id: pdfman.sh,v 1.14 2007-09-24 00:38:01 remko Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT ps and pdf manual pages
 #
@@ -35,17 +35,17 @@ man2pdf () {
 		[ $gush = 1 ] && echo "Appending $f"
 		[ $add = 1 ] && echo "false 0 startjob pop" >> www/gmt/doc/ps/$1.ps
 		add=1
-		sed s/GMTMANSECTION/l/g $f | groff -man >> www/gmt/doc/ps/$1.ps
+		groff -man $f >> www/gmt/doc/ps/$1.ps
 	done
 	echo "Converting $1.ps to $1.pdf"
 	ps2pdf www/gmt/doc/ps/$1.ps www/gmt/doc/pdf/$1.pdf
 }
 
 # Convert all program manuals to PS and PDF
-grep -h .man\$ guru/GMT_progs_files_ascii.lis | man2pdf GMT_Manpages
+grep -h ".[135]\$" guru/GMT_progs_files_ascii.lis | man2pdf GMT_Manpages
 
 # Do the supplemental packages
-grep -h .man\$ guru/GMT_suppl.lis | man2pdf GMT_Manpages_suppl
+grep -h ".[135]\$" guru/GMT_suppl.lis | man2pdf GMT_Manpages_suppl
 
 # Gurus who have their own supplemental packages can have them processed too by
 # defining an environmental parameter MY_GMT_SUPPL which contains a list of these
@@ -53,7 +53,7 @@ grep -h .man\$ guru/GMT_suppl.lis | man2pdf GMT_Manpages_suppl
 
 rm -f $$.lis
 for package in ${MY_GMT_SUPPL}; do
-	ls src/$package/*.man >> $$.lis
+	ls src/$package/*.[135] >> $$.lis
 done
 [ -f $$.lis ] && man2pdf GMT_My_Manpages_suppl < $$.lis
 

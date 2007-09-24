@@ -1,4 +1,4 @@
-.TH GRDINFO GMTMANSECTION DATE VERSION VERSION
+.TH GRDINFO 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdinfo \- Get information about the contents of a 2-D grid file
@@ -58,7 +58,7 @@ To obtain all the information about the data set in file hawaii_topo.grd:
 .sp
 \fBgrdinfo\fP \fB\-L1 \-L2 \-M\fP hawaii_topo.grd
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grd2cpt (GMTMANSECTION),
-.IR grd2xyz (GMTMANSECTION),
-.IR grdedit (GMTMANSECTION)
+.IR GMT (1),
+.IR grd2cpt (1),
+.IR grd2xyz (1),
+.IR grdedit (1)

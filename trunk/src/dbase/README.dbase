@@ -1,4 +1,4 @@
-	$Id: README.dbase,v 1.4 2007-01-31 17:00:03 pwessel Exp $
+	$Id: README.dbase,v 1.5 2007-09-24 00:38:01 remko Exp $
 
 README for gmt/src/dbase directory.
 Distributed under the GNU Public License (see file ../COPYING)
@@ -109,7 +109,6 @@ grdraster will look for the file grdraster.info and all the files referred
 to in it (unless filename starts at /) in the directory indicated by the
 environmental variable GMT_GRIDDIR.  If this is not set, grdraster will
 default to $rootdir/lib.
-You may copy the manl/grdraster.man page to /usr/man/manl if you wish.
 
 ==> GMT 3.0 COMMENTS <==
 

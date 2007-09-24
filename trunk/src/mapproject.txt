@@ -1,4 +1,4 @@
-.TH MAPPROJECT GMTMANSECTION DATE VERSION VERSION
+.TH MAPPROJECT 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define	LEN1	0.5
 #define SCALE1	OPT(Jm)0.5\fBc\fP
@@ -177,9 +177,9 @@ tens to hundreds of meters. (3) Finally, be aware that \fBMAP_SCALE_FACTOR\fP
 have certain default values for some projections so you may have to override
 the setting in order to match results produced with other settings.
 .SH "SEE ALSO"
-.IR gmtdefaults (GMTMANSECTION),
-.IR GMT (GMTMANSECTION),
-.IR project (GMTMANSECTION)
+.IR gmtdefaults (1),
+.IR GMT (1),
+.IR project (1)
 .SH REFERENCES
 Bomford, G., 1952, Geodesy, Oxford U. Press.
 .br

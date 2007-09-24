@@ -1,4 +1,4 @@
-.TH PSTEXT GMTMANSECTION DATE VERSION VERSION
+.TH PSTEXT 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define CLEARANCE_SI 0.1\fBc\fP/0.1\fBc\fP
 #define CLEARANCE_US 0.0254\fBi\fP/0.0254\fBi\fP
@@ -154,5 +154,5 @@ The \fB\-N\fP option does not adjust the BoundingBox information so you may
 have to post-process the PostScript outout with epstool or ps2epsi to obtain
 a correct BoundingBox.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION)
+.IR GMT (1),
+.IR psbasemap (1)

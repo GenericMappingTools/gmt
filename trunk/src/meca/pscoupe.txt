@@ -1,4 +1,4 @@
-.TH PSCOUPE GMTMANSECTION DATE VERSION VERSION   
+.TH PSCOUPE 1 DATE VERSION VERSION   
 #include "common_options.txt"
 .SH NAME
 pscoupe \- Plot cross-sections of focal mechanisms. 
@@ -329,10 +329,10 @@ pen attributes.
 #include "explain_-t.txt"
 #include "explain_-c.txt"
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION),
-.IR psmeca (GMTMANSECTION),
-.IR psxy (GMTMANSECTION)
+.IR GMT (1),
+.IR psbasemap (1),
+.IR psmeca (1),
+.IR psxy (1)
 .sp
 .SH REFERENCES
 .br

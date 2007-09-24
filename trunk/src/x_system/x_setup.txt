@@ -1,4 +1,4 @@
-.TH X_SETUP GMTMANSECTION DATE VERSION VERSION
+.TH X_SETUP 1 DATE VERSION VERSION
 .SH NAME
 \fBx_setup\fP \- Determine Pairs of Legs that need Cross-Over Checking
 .SH SYNOPSIS
@@ -18,8 +18,8 @@ The \fB\-L\fP option is useful when one wants to check out a handful of new crui
 only need to compute COEs for the pairs that involve one or two of the new cruises, since all the
 other combinations have already been done.
 .SH SEE ALSO
-.IR GMT (GMTMANSECTION),
-.IR x_system (GMTMANSECTION)
+.IR GMT (1),
+.IR x_system (1)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

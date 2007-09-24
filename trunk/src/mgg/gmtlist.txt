@@ -1,4 +1,4 @@
-.TH GMTLIST GMTMANSECTION DATE VERSION VERSION
+.TH GMTLIST 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 gmtlist \- A data-extractor for <legid>.gmt files
@@ -73,6 +73,6 @@ but only the data that are inside the specified area, and make output binary:
 .sp
 \fBgmtlist\fP `cat gmt.list` \fB\-F\fPxyg \fB\-R\fP-40/-30/25/35 \fB\-b\fP > allgrav.xyg
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR x_system (GMTMANSECTION)
+.IR GMT (1),
+.IR x_system (1)
 #include "refs.i"

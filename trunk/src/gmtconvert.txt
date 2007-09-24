@@ -1,4 +1,4 @@
-.TH GMTCONVERT GMTMANSECTION DATE VERSION VERSION
+.TH GMTCONVERT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
@@ -99,5 +99,5 @@ To extract all segments in the file big_file.d whose headers contain the string 
 \fBgmtconvert\fP big_file.d \fB\-M \-S\fP"RIDGE AXIS" > subset.d
 .br
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR minmax (GMTMANSECTION)
+.IR GMT (1),
+.IR minmax (1)

@@ -1,4 +1,4 @@
-.TH GRDSAMPLE GMTMANSECTION DATE VERSION VERSION
+.TH GRDSAMPLE 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdsample \- Resample a grid file onto a new grid
@@ -64,7 +64,7 @@ keeping the same region and grid interval:
 .sp
 \fBgrdsample\fP surface.grd \fB\-T \-G\fPpixel.grd
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdedit (GMTMANSECTION),
-.IR grdfft (GMTMANSECTION),
-.IR grdfilter (GMTMANSECTION)
+.IR GMT (1),
+.IR grdedit (1),
+.IR grdfft (1),
+.IR grdfilter (1)

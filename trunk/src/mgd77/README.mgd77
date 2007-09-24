@@ -1,4 +1,4 @@
-	$Id: README.mgd77,v 1.13 2007-01-30 18:32:34 pwessel Exp $
+	$Id: README.mgd77,v 1.14 2007-09-24 00:38:02 remko Exp $
 
 README file for GMT supplemental mgd77 programs.  The mgd77 supplement
 and all its files are distributed under the Gnu Public License.
@@ -40,6 +40,8 @@ To install these programs, simply type
 
 	make install
 
-You may copy the manl/*.man files to /usr/man/manl/*.l if you wish.
+To install the manpages, type
+
+	make install-man
 
 * Available on CD-ROM from NGDC (www.ngdc.noaa.gov).

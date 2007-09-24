@@ -1,4 +1,4 @@
-.TH X_SOLVE_DC_DRIFT GMTMANSECTION DATE VERSION VERSION
+.TH X_SOLVE_DC_DRIFT 1 DATE VERSION VERSION
 .SH NAME
 \fBx_solve_dc_drift\fP \- Find Best-fitting D.C.-shift and Drift Estimates
 .SH SYNOPSIS
@@ -50,8 +50,8 @@ cases the bulk of the COEs do occur near the ports so that a drift estimate can 
 Conventional wisdom recommends plotting the time-series and the computed regression line to
 see if it makes sense.
 .SH SEE ALSO
-.IR GMT (GMTMANSECTION),
-.IR x_system (GMTMANSECTION)
+.IR GMT (1),
+.IR x_system (1)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

@@ -1,4 +1,4 @@
-.TH MGD77LIST GMTMANSECTION DATE VERSION VERSION
+.TH MGD77LIST 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 mgd77list \- A data-extractor for MGD77[+] files
@@ -452,10 +452,10 @@ trend removed, the magnetic anomaly (\fBmag\fP) should be corrected by a strange
 .br
 99999999 gobs	-10
 .SH "SEE ALSO"
-.IR mgd77convert (GMTMANSECTION),
-.IR mgd77info (GMTMANSECTION),
-.IR mgd77manage (GMTMANSECTION),
-.IR mgd77track (GMTMANSECTION)
+.IR mgd77convert (1),
+.IR mgd77info (1),
+.IR mgd77manage (1),
+.IR mgd77track (1)
 #include "refs.i"
 The Marine Geophysical Data Exchange Format - "MGD77", see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP

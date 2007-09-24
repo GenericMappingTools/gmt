@@ -1,4 +1,4 @@
-.TH MDG77TOGMT GMTMANSECTION DATE VERSION VERSION
+.TH MDG77TOGMT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 mgd77togmt \- Convert an MGD-77 ASCII file to a binary gmt file
@@ -42,8 +42,8 @@ To create new gmt files from all the mgd77 files listed in \fIlist.d\fP:
 .sp
 \fBmgd77togmt\fP \fB\-L\fPlist.d \fB\-V\fP
 .SH SEE ALSO
-.IR dat2gmt (GMTMANSECTION),
-.IR GMT (GMTMANSECTION)
+.IR dat2gmt (1),
+.IR GMT (1)
 #include "refs.i"
 .br
 .sp

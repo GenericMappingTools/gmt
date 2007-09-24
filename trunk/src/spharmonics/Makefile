@@ -1,8 +1,9 @@
-#	$Id: Makefile,v 1.2 2007-09-04 15:22:27 remko Exp $
+#	$Id: Makefile,v 1.3 2007-09-24 00:38:02 remko Exp $
 #	makefile for sph directory
 #
-
-#----------------- stop here - nothing to edit--------------------
+#-------------------------------------------------------------------------------
+#	!! STOP EDITING HERE, THE REST IS FIXED !!
+#-------------------------------------------------------------------------------
 
 include ../makegmt.macros
 
@@ -10,38 +11,44 @@ CDF		= -L$(NETCDF)/lib -lnetcdf
 
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include 
 
-MISC_H		=
-MISC_C		= grd2sph.c sph2grd.c
+PROGS_H		=
+PROGS_C		= grd2sph.c sph2grd.c
+PROGS_O		= $(PROGS_C:.c=.o$(EXE))
+PROGS		= $(PROGS_C:.c=)
+
+#-------------------------------------------------------------------------------
+#	software targets
+#-------------------------------------------------------------------------------
+
+all:            $(PROGS)
+
+install:	all
+		$(INSTALL) $(PROGS) $(bindir)
+
+uninstall:
+		cd $(bindir); \rm -f $(PROGS)
+
+install-man:	;
+uninstall-man:	;
+
+spotless:	clean
+
+clean:	
+		rm -f *.o *% $(PROGS)
 
 #-------------------------------------------------------------------------------
 #       object file dependencies
 #-------------------------------------------------------------------------------
 
-MISC_O		= $(MISC_C:.c=.o$(EXE))
-MISC		= $(MISC_C:.c=)
-
-all:            $(MISC)
-
-$(MISC_O):	$(GMT_H) $(MISC_H)
+$(PROGS_O):	$(GMT_H) $(PROGS_H)
 
 #-------------------------------------------------------------------------------
-
-install:	all
-		$(INSTALL) $(MISC) $(bindir)
-
-uninstall:
-		for i in $(MISC); do \
-			\rm -f $(bindir)/$$i; \
-		done
-
-spotless:	clean
-
-clean:	
-		rm -f *.o $(MISC)
-
-#-------------------------------------------------------------------------------
-#       program dependencies
+#       program rules
 #-------------------------------------------------------------------------------
 
-$(MISC):	$(MISC_O)
+grd2sph$(EXE):	grd2sph.o
+sph2grd$(EXE):	sph2grd.o
+
+$(PROGS):
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(COMPRESS) $@

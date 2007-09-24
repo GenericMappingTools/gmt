@@ -1,4 +1,4 @@
-.TH X_EDIT GMTMANSECTION DATE VERSION VERSION
+.TH X_EDIT 1 DATE VERSION VERSION
 .SH NAME
 \fBx_edit\fP \- convert between binary and ASCII crossover correction tables.
 .SH SYNOPSIS
@@ -22,8 +22,8 @@ To convert the binary file crossover_corr.b to ASCII and write to stdout, run
 \fBx_edit \-X\fPcrossover_corr.b > corrections.d
 .br
 .SH SEE ALSO
-.IR GMT (GMTMANSECTION),
-.IR x_system (GMTMANSECTION)
+.IR GMT (1),
+.IR x_system (1)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

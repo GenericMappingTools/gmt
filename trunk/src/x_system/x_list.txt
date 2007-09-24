@@ -1,4 +1,4 @@
-.TH X_LIST GMTMANSECTION DATE VERSION VERSION
+.TH X_LIST 1 DATE VERSION VERSION
 .SH NAME
 \fBx_list\fP \- Extract Cross-Over Information from the Data Base.
 .SH SYNOPSIS
@@ -71,8 +71,8 @@ Ignore those legs that appear in the \fIignorefile\fP.
 .B \-V
 Operate in verbose mode.
 .SH SEE ALSO
-.IR GMT (GMTMANSECTION),
-.IR x_system (GMTMANSECTION)
+.IR GMT (1),
+.IR x_system (1)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

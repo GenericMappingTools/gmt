@@ -1,4 +1,4 @@
-.TH GRDLANDMASK GMTMANSECTION DATE VERSION VERSION
+.TH GRDLANDMASK 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdlandmask \- Create "wet-dry" mask grid file from shoreline data base.
@@ -56,9 +56,9 @@ To make a 1x1 degree global grid with the hierarchical levels of the nodes based
 .sp
 \fBgrdlandmask\fP \fB\-R\fP0/360/-90/90 \fB\-Dl  \-I\fP1 \fB\-N\fP0/1/2/3/4 \fB\-G\fPlevels.grd \fB\-V\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdmath (GMTMANSECTION),
-.IR grdclip (GMTMANSECTION),
-.IR psmask (GMTMANSECTION),
-.IR psclip (GMTMANSECTION),
-.IR pscoast (GMTMANSECTION)
+.IR GMT (1),
+.IR grdmath (1),
+.IR grdclip (1),
+.IR psmask (1),
+.IR psclip (1),
+.IR pscoast (1)

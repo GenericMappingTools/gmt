@@ -1,4 +1,4 @@
-.TH SPLITXYZ GMTMANSECTION DATE VERSION VERSION
+.TH SPLITXYZ 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track segments.
@@ -106,6 +106,6 @@ and you want to split it into profiles named \fIsurvey\fP.profile\fI#\fP (when g
 .sp
 \fBsplitxyz\fP survey.bin \fB\-N\fPsurvey \fB\-V \-G\fP100 \fB\-D\fP100 \fB\-: \-M \-bi\fP3
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR mgd77list (GMTMANSECTION),
-.IR pswiggle (GMTMANSECTION)
+.IR GMT (1),
+.IR mgd77list (1),
+.IR pswiggle (1)

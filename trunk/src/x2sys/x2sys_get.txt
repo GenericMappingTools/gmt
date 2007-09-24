@@ -1,4 +1,4 @@
-.TH X2SYS_GET GMTMANSECTION DATE VERSION VERSION
+.TH X2SYS_GET 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 x2sys_get \- Get track listing from track index databases
@@ -60,8 +60,8 @@ other, but only those pairs which involves tracks in your list new.lis, try
 .sp
 \fBx2sys_get\fP \fB\-V \-T\fPmgd77 \fB\-L\fPnew.lis > xpairs.lis 
 .SH "SEE ALSO"
-.IR x2sys_binlist (GMTMANSECTION)
-.IR x2sys_cross (GMTMANSECTION)
-.IR x2sys_datalist (GMTMANSECTION)
-.IR x2sys_init (GMTMANSECTION)
-.IR x2sys_put (GMTMANSECTION)
+.IR x2sys_binlist (1)
+.IR x2sys_cross (1)
+.IR x2sys_datalist (1)
+.IR x2sys_init (1)
+.IR x2sys_put (1)

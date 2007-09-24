@@ -1,10 +1,10 @@
-#	$Id: Makefile,v 1.19 2007-09-04 15:22:27 remko Exp $
+#	$Id: Makefile,v 1.20 2007-09-24 00:38:02 remko Exp $
 #
 # makefile for segyprogs directory
 #
-#
-
-#------------------------- stop here --------------------------
+#-------------------------------------------------------------------------------
+#	!! STOP EDITING HERE, THE REST IS FIXED !!
+#-------------------------------------------------------------------------------
 
 GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
@@ -13,33 +13,50 @@ include $(GMTSRCDIR)gmtalldeps.macros
 CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include -I$(GMT_DEFAULT_PATH)/src
 ALLLIB	= -L.. -L$(libdir) -lgmt -lgmtps -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
 
-SEGYPLOT_H	= segy_io.h segy.h segyreel.h
-SEGYPLOT_C	= pssegyz.c pssegy.c segy2grd.c
-
-SEGYPLOT_O	= $(SEGYPLOT_C:.c=.o)
-SEGYPLOT	= $(SEGYPLOT_C:.c=$(EXE))
+PROGS_H	= segy_io.h segy.h segyreel.h
+PROGS_C	= pssegyz.c pssegy.c segy2grd.c
+PROGS_O	= $(PROGS_C:.c=.o)
+PROGS	= $(PROGS_C:.c=$(EXE))
+MAN1	= $(PROGS_C:.c=.1)
 
 #---------------------------------------------------------------
+#	software targets
+#---------------------------------------------------------------
 
-all:			$(SEGYPLOT) 
+all:		$(PROGS) 
 
-install:		all
-			$(INSTALL) $(SEGYPLOT) $(bindir)
+install:	all
+		$(INSTALL) $(PROGS) $(bindir)
 
 uninstall:	
-			for i in $(SEGYPLOT); do \
-				\rm -f $(bindir)/$$i; \
-			done
+		cd $(bindir); \rm -f $(PROGS)
 
 clean:
-			\rm -f *.o *.ps $(SEGYPLOT)
+		\rm -f *.o *% $(PROGS)
 
-spotless:		clean
-			\rm -f *.a
+install-man:	$(MAN1)
+		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
 
-segy_io.o:		$(SEGYPLOT_H)
+uninstall-man:
+		cd $(mandir)/man1; \rm -f $(MAN1)
 
-$(SEGYPLOT):		$(SEGYPLOT_O) segy_io.o $(GMTLIB)
-			$(CC) $(LDFLAGS) segy_io.o $(@:.exe=).o -o $@ $(ALLLIB)
+spotless:	clean
 
-$(SEGYPLOT_O):		$(GMT_H) $(PS_H)
+#-------------------------------------------------------------------------------
+#	object file dependencies
+#-------------------------------------------------------------------------------
+
+$(PROGS_O):	$(GMT_H) $(PS_H) $(PROGS_H)
+segy_io.o:	$(PROGS_H)
+
+#-------------------------------------------------------------------------------
+#	program rules
+#-------------------------------------------------------------------------------
+
+pssegyz$(EXE):	pssegyz.o
+pssegy$(EXE):	pssegy.o
+segy2grd$(EXE):	pssegy2grd.o
+
+$(PROGS):	segy_io.o $(GMTLIB)
+		$(CC) $(LDFLAGS) segy_io.o $(@:.exe=).o -o $@ $(ALLLIB)
+		$(COMPRESS) $@
