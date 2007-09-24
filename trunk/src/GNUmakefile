@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.63 2007-09-24 00:38:01 remko Exp $
+#  $Id: GNUmakefile,v 1.64 2007-09-24 16:22:43 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #	
@@ -100,12 +100,12 @@ gmt_grdformats.h:	gmtformats.d
 			awk '{if ($$1 != $$2) printf "\n\n>>>>>>>> GMT_N_GRD_FORMATS in gmt_grdio.h (%d) do not match entries in gmt_grdformats.h (%d)\n\n", $$1, $$2}' tmp.txt
 			rm -f tmp.txt
 
-# Must create g[rd|mt]math.h from g[rd|mt]math.c and g[rd|mt]math.func
+# Must create g[rd|mt]math.h from g[rd|mt]math.c
 
-gmtmath.h gmtmath_man.i:		make_math.sh gmtmath.c gmtmath.func
+gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i:	make_math.sh gmtmath.c
 			$(SHELL) make_math.sh gmt
 
-grdmath.h grdmath_man.i:		make_math.sh grdmath.c grdmath.func
+grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i:	make_math.sh grdmath.c
 			$(SHELL) make_math.sh grd
 
 makegmt.macros:		makegmt.macros.in
