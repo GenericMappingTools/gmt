@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.21 2007-09-24 00:38:02 remko Exp $
+#	$Id: Makefile,v 1.22 2007-09-24 01:26:51 remko Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -28,6 +28,7 @@ PROGS_C	= backtracker.c grdrotater.c hotspotter.c originator.c rotconverter.c
 PROGS_O	= $(PROGS_C:.c=.o)
 PROGS	= $(PROGS_C:.c=$(EXE))
 MAN1	= $(PROGS_C:.c=.1)
+LIB	= libspotter.a
 
 #-------------------------------------------------------------------------------
 #	software targets

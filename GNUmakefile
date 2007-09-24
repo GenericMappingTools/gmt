@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.3 2007-09-19 02:25:06 remko Exp $
+#  $Id: GNUmakefile,v 1.4 2007-09-24 01:26:51 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -108,10 +108,10 @@ update:
 		cvs -q update -Pd
 
 create:
-# We make the $(VERSION) link from scratch each time
-		cd ..; rm -f $(VERSION); ln -s GMT $(VERSION)
+# We make the GMT$(VERSION) link from scratch each time
+		cd ..; rm -f GMT$(VERSION); ln -s GMT GMT$(VERSION)
 
-$(VERSION):	archive
+GMT$(VERSION):	archive
 
 newsite:	get_coast get_high get_full site
 
@@ -191,7 +191,7 @@ src/makegmt.macros:	guru/gmtguru.macros.orig guru/gmtguru.macros src/makegmt.mac
 				$(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL)
 
 src/gmt_version.h:	guru/gmtguru.macros.orig guru/gmtguru.macros
-			echo '#define GMT_VERSION "$(subst GMT,,$(VERSION))"' > $@
+			echo '#define GMT_VERSION "$(VERSION)"' > $@
 
 configure:	configure.in
 		rm -f config.cache config.log config.status
@@ -214,15 +214,15 @@ prep_suppl:	clean config
 
 get_coast get_high get_full:
 #		Set-up ftp command & get coast file
-		echo "Getting coasts/rivers ($(GSHHS_VERSION)_$(subst get_,,$@)) by anonymous ftp (be patient)..."
+		echo "Getting coasts/rivers (GMT$(GSHHS_VERSION)_$(subst get_,,$@)) by anonymous ftp (be patient)..."
 		echo "user anonymous $(USER)@" > ftp.job
 		echo "cd gmt/$(GMTBRANCH)" >> ftp.job
 		echo "binary" >> ftp.job
-		echo "get $(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2" >> ftp.job
+		echo "get GMT$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2" >> ftp.job
 		echo "quit" >> ftp.job
 		ftp -dn $(FTPSITE) < ftp.job || ( echo "ftp failed - try again later"; exit )
-		bzip2 -dc $(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2 | tar xvf -
-		rm -f $(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2
+		bzip2 -dc GMT$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2 | tar xvf -
+		rm -f GMT$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2
 		rm -f ftp.job
 		echo "done"
 
@@ -246,13 +246,13 @@ ftpdir:
 		mkdir -p ftp
 
 tar_progs tar_src:	ftpdir
-		rm -f ftp/$(VERSION)_src.tar.{gz,bz2}
-		grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:$(VERSION)/:' > t.progs
-		echo "make $(VERSION)_src.tar.gz"
-		tar -cf ftp/$(VERSION)_src.tar -C .. -T t.progs
-		gzip -c9 ftp/$(VERSION)_src.tar > ftp/$(VERSION)_src.tar.gz
-		echo "make $(VERSION)_src.tar.bz2"
-		bzip2 -9 ftp/$(VERSION)_src.tar
+		rm -f ftp/GMT$(VERSION)_src.tar.{gz,bz2}
+		grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:GMT$(VERSION)/:' > t.progs
+		echo "make GMT$(VERSION)_src.tar.gz"
+		tar -cf ftp/GMT$(VERSION)_src.tar -C .. -T t.progs
+		gzip -c9 ftp/GMT$(VERSION)_src.tar > ftp/GMT$(VERSION)_src.tar.gz
+		echo "make GMT$(VERSION)_src.tar.bz2"
+		bzip2 -9 ftp/GMT$(VERSION)_src.tar
 		rm -f t.progs
 
 zip_progs:	ftpdir
@@ -265,13 +265,13 @@ zip_progs:	ftpdir
 		rm -f asc.lis bin.lis
 
 tar_share:	ftpdir
-		rm -f ftp/$(VERSION)_share.tar.{gz,bz2}
-		grep -vh '#' guru/GMT_share_files_{ascii,bin}.lis | sed -e 's:^:$(VERSION)/:' > t.share
-		echo "make $(VERSION)_share.tar.gz"
-		tar -cf ftp/$(VERSION)_share.tar -C .. -T t.share
-		gzip -c9 ftp/$(VERSION)_share.tar > ftp/$(VERSION)_share.tar.gz
-		echo "make $(VERSION)_share.tar.bz2"
-		bzip2 -9 ftp/$(VERSION)_share.tar
+		rm -f ftp/GMT$(VERSION)_share.tar.{gz,bz2}
+		grep -vh '#' guru/GMT_share_files_{ascii,bin}.lis | sed -e 's:^:GMT$(VERSION)/:' > t.share
+		echo "make GMT$(VERSION)_share.tar.gz"
+		tar -cf ftp/GMT$(VERSION)_share.tar -C .. -T t.share
+		gzip -c9 ftp/GMT$(VERSION)_share.tar > ftp/GMT$(VERSION)_share.tar.gz
+		echo "make GMT$(VERSION)_share.tar.bz2"
+		bzip2 -9 ftp/GMT$(VERSION)_share.tar
 		rm -f t.share
 
 zip_share:	ftpdir
@@ -298,14 +298,14 @@ zip_exe:	ftpdir
 		fi
 
 tar_tut:	ftpdir
-		rm -f ftp/$(VERSION)_tut.tar.{gz,bz2}
-		echo "make $(VERSION)_tut.tar.gz"
-		sed -e 's:^:$(VERSION)/:' guru/GMT_tutorial.lis > t.doc
-		echo $(VERSION)/COPYING >> t.doc
-		tar -cf ftp/$(VERSION)_tut.tar -C .. -T t.doc
-		gzip -c9 ftp/$(VERSION)_tut.tar > ftp/$(VERSION)_tut.tar.gz
-		echo "make $(VERSION)_tut.tar.bz2"
-		bzip2 -9 ftp/$(VERSION)_tut.tar
+		rm -f ftp/GMT$(VERSION)_tut.tar.{gz,bz2}
+		echo "make GMT$(VERSION)_tut.tar.gz"
+		sed -e 's:^:GMT$(VERSION)/:' guru/GMT_tutorial.lis > t.doc
+		echo GMT$(VERSION)/COPYING >> t.doc
+		tar -cf ftp/GMT$(VERSION)_tut.tar -C .. -T t.doc
+		gzip -c9 ftp/GMT$(VERSION)_tut.tar > ftp/GMT$(VERSION)_tut.tar.gz
+		echo "make GMT$(VERSION)_tut.tar.bz2"
+		bzip2 -9 ftp/GMT$(VERSION)_tut.tar
 		rm -f t.doc
 
 zip_tut:	ftpdir
@@ -318,15 +318,15 @@ zip_tut:	ftpdir
 		rm -f asc.lis bin.lis
 
 tar_web:	ftpdir
-		rm -f ftp/$(VERSION)_web.tar.{gz,bz2}
-		echo "make $(VERSION)_web.tar.gz"
-		sed -e 's:^:$(VERSION)/:' guru/GMT_www.lis > t.doc
-		echo $(VERSION)/COPYING >> t.doc
-		tar -cf ftp/$(VERSION)_web.tar -C .. -T t.doc \
-		   $(VERSION)/www/gmt/doc/html/GMT_{Docs,Tutorial}
-		gzip -c9 ftp/$(VERSION)_web.tar > ftp/$(VERSION)_web.tar.gz
-		echo "make $(VERSION)_web.tar.bz2"
-		bzip2 -9 ftp/$(VERSION)_web.tar
+		rm -f ftp/GMT$(VERSION)_web.tar.{gz,bz2}
+		echo "make GMT$(VERSION)_web.tar.gz"
+		sed -e 's:^:GMT$(VERSION)/:' guru/GMT_www.lis > t.doc
+		echo GMT$(VERSION)/COPYING >> t.doc
+		tar -cf ftp/GMT$(VERSION)_web.tar -C .. -T t.doc \
+		   GMT$(VERSION)/www/gmt/doc/html/GMT_{Docs,Tutorial}
+		gzip -c9 ftp/GMT$(VERSION)_web.tar > ftp/GMT$(VERSION)_web.tar.gz
+		echo "make GMT$(VERSION)_web.tar.bz2"
+		bzip2 -9 ftp/GMT$(VERSION)_web.tar
 		rm -f t.doc
 
 zip_web:	ftpdir
@@ -339,13 +339,13 @@ zip_web:	ftpdir
 		   GMT/www/gmt/doc/html/GMT_{Docs,Tutorial}/*.png)
 
 tar_pdf:	ftpdir
-		rm -f ftp/$(VERSION)_pdf.tar.{gz,bz2}
-		echo "make $(VERSION)_pdf.tar.gz"
-		tar -cf ftp/$(VERSION)_pdf.tar -C .. $(VERSION)/COPYING \
-		   $(VERSION)/www/gmt/doc/pdf/GMT_{Docs,Tutorial,Manpages,Manpages_suppl}.pdf
-		gzip -c9 ftp/$(VERSION)_pdf.tar > ftp/$(VERSION)_pdf.tar.gz
-		echo "make $(VERSION)_pdf.tar.bz2"
-		bzip2 -9 ftp/$(VERSION)_pdf.tar
+		rm -f ftp/GMT$(VERSION)_pdf.tar.{gz,bz2}
+		echo "make GMT$(VERSION)_pdf.tar.gz"
+		tar -cf ftp/GMT$(VERSION)_pdf.tar -C .. GMT$(VERSION)/COPYING \
+		   GMT$(VERSION)/www/gmt/doc/pdf/GMT_{Docs,Tutorial,Manpages,Manpages_suppl}.pdf
+		gzip -c9 ftp/GMT$(VERSION)_pdf.tar > ftp/GMT$(VERSION)_pdf.tar.gz
+		echo "make GMT$(VERSION)_pdf.tar.bz2"
+		bzip2 -9 ftp/GMT$(VERSION)_pdf.tar
 		rm -f t.doc
 
 zip_pdf:	ftpdir
@@ -356,15 +356,15 @@ zip_pdf:	ftpdir
 		   GMT/www/gmt/doc/pdf/GMT_{Docs,Tutorial,Manpages,Manpages_suppl}.pdf)
 
 tar_scripts:	ftpdir
-		rm -f ftp/$(VERSION)_scripts.tar.{gz,bz2}
+		rm -f ftp/GMT$(VERSION)_scripts.tar.{gz,bz2}
 		rm -f examples/ex??/*.ps examples/ex??/*.eps examples/ex??/*% examples/ex??/*.txt examples/ex??/.gmt*
-		sed -e 's:^:$(VERSION)/:' guru/GMT_examples.lis > t.scripts
-		echo $(VERSION)/COPYING >> t.scripts
-		echo "make $(VERSION)_scripts.tar.gz"
-		tar -cf ftp/$(VERSION)_scripts.tar -C .. -T t.scripts
-		gzip -c9 ftp/$(VERSION)_scripts.tar > ftp/$(VERSION)_scripts.tar.gz
-		echo "make $(VERSION)_scripts.tar.bz2"
-		bzip2 -9 ftp/$(VERSION)_scripts.tar
+		sed -e 's:^:GMT$(VERSION)/:' guru/GMT_examples.lis > t.scripts
+		echo GMT$(VERSION)/COPYING >> t.scripts
+		echo "make GMT$(VERSION)_scripts.tar.gz"
+		tar -cf ftp/GMT$(VERSION)_scripts.tar -C .. -T t.scripts
+		gzip -c9 ftp/GMT$(VERSION)_scripts.tar > ftp/GMT$(VERSION)_scripts.tar.gz
+		echo "make GMT$(VERSION)_scripts.tar.bz2"
+		bzip2 -9 ftp/GMT$(VERSION)_scripts.tar
 		rm -f t.scripts
 
 zip_scripts:	ftpdir
@@ -377,14 +377,14 @@ zip_scripts:	ftpdir
 		rm -f asc.lis bin.lis
 
 tar_suppl:	ftpdir prep_suppl
-		rm -f ftp/$(VERSION)_suppl.tar.{gz,bz2}
-		echo "make $(VERSION)_suppl.tar.gz"
-		sed -e 's:^:$(VERSION)/:' guru/GMT_suppl.lis > t.suppl
-		echo $(VERSION)/COPYING >> t.suppl
-		tar -cf ftp/$(VERSION)_suppl.tar -C .. -T t.suppl
-		gzip -c9 ftp/$(VERSION)_suppl.tar > ftp/$(VERSION)_suppl.tar.gz
-		echo "make $(VERSION)_suppl.tar.bz2"
-		bzip2 -9 ftp/$(VERSION)_suppl.tar
+		rm -f ftp/GMT$(VERSION)_suppl.tar.{gz,bz2}
+		echo "make GMT$(VERSION)_suppl.tar.gz"
+		sed -e 's:^:GMT$(VERSION)/:' guru/GMT_suppl.lis > t.suppl
+		echo GMT$(VERSION)/COPYING >> t.suppl
+		tar -cf ftp/GMT$(VERSION)_suppl.tar -C .. -T t.suppl
+		gzip -c9 ftp/GMT$(VERSION)_suppl.tar > ftp/GMT$(VERSION)_suppl.tar.gz
+		echo "make GMT$(VERSION)_suppl.tar.bz2"
+		bzip2 -9 ftp/GMT$(VERSION)_suppl.tar
 		rm -f t.suppl
 
 zip_suppl:	ftpdir
@@ -414,13 +414,13 @@ zip_suppl_exe:	ftpdir
 #	Note: coastline files now stored relative to share, instead of GMT/share
 
 tar_coast tar_high tar_full:	ftpdir
-		rm -f ftp/$(GSHHS_VERSION)_$(subst tar_,,$@).tar.{gz,bz2}
-		echo "make $(GSHHS_VERSION)_$(subst tar_,,$@).tar.gz"
+		rm -f ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.{gz,bz2}
+		echo "make GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.gz"
 		if [ "$(subst tar_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
-		   tar -cf ftp/$(GSHHS_VERSION)_$(subst tar_,,$@).tar COPYING share/coast/binned_*_[$$suf].cdf
-		gzip -c9 ftp/$(GSHHS_VERSION)_$(subst tar_,,$@).tar > ftp/$(GSHHS_VERSION)_$(subst tar_,,$@).tar.gz
-		echo "make $(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2"
-		bzip2 -9 ftp/$(GSHHS_VERSION)_$(subst tar_,,$@).tar
+		   tar -cf ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar COPYING share/coast/binned_*_[$$suf].cdf
+		gzip -c9 ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar > ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.gz
+		echo "make GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2"
+		bzip2 -9 ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar
 
 zip_coast zip_high zip_full:	ftpdir
 		rm -f ftp/GMT_$(subst zip_,,$@).zip
