@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.55 2007-09-24 18:28:52 guru Exp $
+ *	$Id: gmt_stat.c,v 1.56 2007-09-24 18:51:50 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2530,9 +2530,10 @@ double GMT_corrcoeff_f (float *x, float *y, size_t n, int mode)
 }
 
 
-double GMT_quantile_d (double *x, double q, size_t n)
+double GMT_quantile (double *x, double q, size_t n)
 {
-	/* Returns the q'th (q in percent) quantile of x (assumed sorted) */
+	/* Returns the q'th (q in percent) quantile of x (assumed sorted).
+	 * q is expected to be 0 < q < 100 */
 
 	int i_f;
 	double p, f, df;
@@ -2553,7 +2554,8 @@ double GMT_quantile_d (double *x, double q, size_t n)
 	
 double GMT_quantile_f (float *x, double q, size_t n)
 {
-	/* Returns the q'th (q in percent) quantile of x (assumed sorted) */
+	/* Returns the q'th (q in percent) quantile of x (assumed sorted).
+	 * q is expected to be 0 < q < 100 */
 
 	int i_f;
 	double p, f, df;
