@@ -1,4 +1,4 @@
-.TH GRDCLIP GMTMANSECTION DATE VERSION VERSION
+.TH GRDCLIP 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdclip \- Clipping of range in grid files.
@@ -29,9 +29,9 @@ To set all values > 70 to NaN and all values < 0 to 0 in file data.grd:
 .sp
 \fBgrdclip\fP data.grd \fB\-G\fPnew_data.grd \fB\-Sa\fP70/NaN \fB\-Sb\fP0/0 \fB\-V\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdlandmask (GMTMANSECTION),
-.IR grdmask (GMTMANSECTION),
-.IR grdmath (GMTMANSECTION),
-.IR grd2xyz (GMTMANSECTION),
-.IR xyz2grd (GMTMANSECTION)
+.IR GMT (1),
+.IR grdlandmask (1),
+.IR grdmask (1),
+.IR grdmath (1),
+.IR grd2xyz (1),
+.IR xyz2grd (1)

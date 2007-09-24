@@ -1,4 +1,4 @@
-.TH PROJECT GMTMANSECTION DATE VERSION VERSION
+.TH PROJECT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 project \- project data along a line or great circle, generate a profile track, or translate coordinates.
@@ -165,7 +165,7 @@ a file with two records: the north pole (0/90) and the origin (0/0), and find wh
 rotation pole.  Now, use the projected North pole and origin coordinates as the rotation pole and center, respectively,
 and project your file as in the pacific example above.  This gives coordinates for an oblique small circle.
 .SH "SEE ALSO"
-.IR fitcircle (GMTMANSECTION),
-.IR GMT (GMTMANSECTION),
-.IR mapproject (GMTMANSECTION),
-.IR grdproject (GMTMANSECTION)
+.IR fitcircle (1),
+.IR GMT (1),
+.IR mapproject (1),
+.IR grdproject (1)

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.22 2006-12-06 18:13:51 remko Exp $
+#       $Id: install_gmt_form.pl,v 1.23 2007-09-24 00:38:02 remko Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -63,7 +63,6 @@ $gmt_lib	= $gmt_form{'gmt_lib'};
 $gmt_include	= $gmt_form{'gmt_include'};
 $gmt_share	= $gmt_form{'gmt_share'};
 $gmt_man	= $gmt_form{'gmt_man'};
-$gmt_mansect	= $gmt_form{'gmt_mansect'};
 $gmt_web	= $gmt_form{'gmt_web'};
 $gmt_sharedir	= $gmt_form{'gmt_sharedir'};
 $gmt_coast	= $gmt_form{'radio_coast'};
@@ -103,7 +102,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.22 $, on
+# Processed by install_gmt_form.pl $Revision: 1.23 $, on
 #
 #	$now
 #
@@ -378,8 +377,6 @@ else {
 	print FILE "GMT_dir_high=", $gmt_high_dir, "\n";
 	print FILE "GMT_dir_cli=", $gmt_cli_dir, "\n";
 }
-
-print FILE "GMT_mansect=", $gmt_mansect, "\n";
 
 print FILE "#---------------------------------------------\n";
 print FILE "#	COMPILING & LINKING SECTION\n";

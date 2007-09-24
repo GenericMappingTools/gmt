@@ -1,4 +1,4 @@
-.TH X_INIT GMTMANSECTION DATE VERSION VERSION
+.TH X_INIT 1 DATE VERSION VERSION
 .SH NAME
 \fBx_init\fP \- Initialization of Cross-Over Data Bases.
 .SH SYNOPSIS
@@ -48,8 +48,8 @@ lines, i.e. the dc-shifts and drift-rates computed from the time/error data poin
 listing for complete description of record format.
 .br
 .SH SEE ALSO
-.IR GMT (GMTMANSECTION),
-.IR x_system (GMTMANSECTION)
+.IR GMT (1),
+.IR x_system (1)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

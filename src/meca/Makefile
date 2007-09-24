@@ -1,10 +1,12 @@
-#       $Id: Makefile,v 1.18 2007-09-14 12:31:17 remko Exp $
+#       $Id: Makefile,v 1.19 2007-09-24 00:38:02 remko Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
 #	you must fix the -L -I for the gmt-dependencies.
 #
-#-----------------stop here-------------------------------
+#-------------------------------------------------------------------------------
+#	!! STOP EDITING HERE, THE REST IS FIXED !!
+#-------------------------------------------------------------------------------
 
 GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
@@ -14,35 +16,56 @@ CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 CDF		= -L$(NETCDF)/lib -lnetcdf
 ALLLIB		= -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) $(LDFLAGS)
 
-MECA_C		= psmeca.c pscoupe.c pspolar.c psvelo.c
-MECA_O		= $(MECA_C:.c=.o)
-MECA		= $(MECA_C:.c=$(EXE))
+PROGS_C		= psmeca.c pscoupe.c pspolar.c psvelo.c
+PROGS_O		= $(PROGS_C:.c=.o)
+PROGS		= $(PROGS_C:.c=$(EXE))
+MAN1		= $(PROGS_C:.c=.1)
 
-all:		$(MECA)
+#-------------------------------------------------------------------------------
+#	software targets
+#-------------------------------------------------------------------------------
 
-$(MECA_O):	$(GMT_H) $(PS_H) meca.h nrutil.h submeca.h utilmeca.h utilstrain.h utilvelo.h
+all:		$(PROGS)
 
 install:	all
-		$(INSTALL) $(MECA) $(bindir)
+		$(INSTALL) $(PROGS) $(bindir)
 
 uninstall:
-		for i in $(MECA); do \
-        		\rm -f $(bindir)/$$i; \
-		done
+		cd $(bindir); \rm -f $(PROGS)
+
+install-man:	$(MAN1)
+		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+
+uninstall-man:
+		cd $(mandir)/man1; \rm -f $(MAN1)
 
 spotless:	clean
 
+clean:
+		\rm -f *.o *% $(PROGS)
+
+#-------------------------------------------------------------------------------
+#	object file dependencies
+#-------------------------------------------------------------------------------
+
+$(PROGS_O):	$(GMT_H) $(PS_H) meca.h nrutil.h submeca.h utilmeca.h utilstrain.h utilvelo.h
+
+#-------------------------------------------------------------------------------
+#	program rules
+#-------------------------------------------------------------------------------
+
 psmeca$(EXE): 	psmeca.o utilmeca.o nrutil.o $(GMTLIB)
 		$(CC) $(CFLAGS) psmeca.o utilmeca.o nrutil.o $(ALLLIB) -o $@
+		$(COMPRESS) $@
 
 pscoupe$(EXE):	pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(GMTLIB)
 		$(CC) $(CFLAGS) pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(ALLLIB) -o $@
+		$(COMPRESS) $@
 
 pspolar$(EXE): 	pspolar.o $(GMTLIB)
 		$(CC) $(CFLAGS) pspolar.o $(ALLLIB) -o $@
+		$(COMPRESS) $@
 
 psvelo$(EXE):	psvelo.o utilvelo.o utilstrain.o $(GMTLIB)
 		$(CC) $(CFLAGS) psvelo.o utilvelo.o utilstrain.o $(ALLLIB) -o $@
-
-clean:
-		rm -f *.o $(MECA)
+		$(COMPRESS) $@

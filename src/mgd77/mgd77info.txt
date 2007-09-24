@@ -1,4 +1,4 @@
-.TH MGD77INFO GMTMANSECTION DATE VERSION VERSION
+.TH MGD77INFO 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 mgd77info \- Get information about MGD77[+] files
@@ -85,11 +85,11 @@ To see the E77 status of all MGD77+ cruises collected by the University of Hawai
 .sp
 \fBmgd77info\fP 08 \fB\-Ia \-Me\fP
 .SH "SEE ALSO"
-.IR mgd77list (GMTMANSECTION),
-.IR mgd77manage (GMTMANSECTION),
-.IR mgd77path (GMTMANSECTION),
-.IR mgd77track (GMTMANSECTION)
-.IR x2sys_init (GMTMANSECTION)
+.IR mgd77list (1),
+.IR mgd77manage (1),
+.IR mgd77path (1),
+.IR mgd77track (1)
+.IR x2sys_init (1)
 #include "refs.i"
 The Marine Geophysical Data Exchange Format - "MGD77", see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP

@@ -1,4 +1,4 @@
-.TH GRDFFT GMTMANSECTION DATE VERSION VERSION
+.TH GRDFFT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdfft \- Perform mathematical operations on grid files in the wavenumber (or frequency) domain 
@@ -126,7 +126,7 @@ be 4 km beneath the observation level can be computed as
 where 0.022 is the scale needed for the first term in Parker's expansion for\"'
 computing gravity from topography (= 2 * PI * G * (rhom - rhol)).
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdedit (GMTMANSECTION),
-.IR grdmath (GMTMANSECTION),
-.IR grdproject (GMTMANSECTION)
+.IR GMT (1),
+.IR grdedit (1),
+.IR grdmath (1),
+.IR grdproject (1)

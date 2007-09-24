@@ -1,4 +1,4 @@
-.TH SURFACE GMTMANSECTION DATE VERSION VERSION
+.TH SURFACE 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 surface \- adjustable tension continuous curvature surface gridding algorithm
@@ -106,12 +106,12 @@ grid spacing is so small that you need more decimals in the output format used b
 parameter \fBD_FORMAT\fP in your \.gmtdefaults4 file prior to running \fBblockm*\fP,
 or choose binary input and/or output using single or double precision storage.
 .SH "SEE ALSO"
-.IR blockmean (GMTMANSECTION),
-.IR blockmedian (GMTMANSECTION),
-.IR blockmode (GMTMANSECTION),
-.IR GMT (GMTMANSECTION),
-.IR nearneighbor (GMTMANSECTION),
-.IR triangulate (GMTMANSECTION)
+.IR blockmean (1),
+.IR blockmedian (1),
+.IR blockmode (1),
+.IR GMT (1),
+.IR nearneighbor (1),
+.IR triangulate (1)
 .SH REFERENCES
 Smith, W. H. F, and P. Wessel, 1990, Gridding with continuous curvature splines in tension, \fIGeophysics\fP,
 55, 293\-305.

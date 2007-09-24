@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.44 2007-09-15 05:06:07 remko Exp $
+#	$Id: Makefile,v 1.45 2007-09-24 00:38:00 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -142,6 +142,7 @@ uninstall-data:
 
 install-man uninstall-man:
 		cd src ; $(MAKE) $@
+		$(MAKE) TARGET=$@ insuppl
 
 install-www:
 		@if [ ! $(rootdir)/www = $(wwwdir) ]; then \

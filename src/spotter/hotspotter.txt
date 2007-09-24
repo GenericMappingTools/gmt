@@ -1,4 +1,4 @@
-.TH HOTSPOTTER GMTMANSECTION DATE VERSION VERSION
+.TH HOTSPOTTER 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 hotspotter \- Create CVA image from seamount flowlines 
@@ -72,12 +72,12 @@ using the DC85.d Euler poles, run
 .sp
 This file can then be plotted with \fBgrdimage\fP.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdimage (GMTMANSECTION),
-.IR project (GMTMANSECTION),
-.IR mapproject (GMTMANSECTION),
-.IR backtracker (GMTMANSECTION),
-.IR originator (GMTMANSECTION)
+.IR GMT (1),
+.IR grdimage (1),
+.IR project (1),
+.IR mapproject (1),
+.IR backtracker (1),
+.IR originator (1)
 .SH REFERENCES
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 .br

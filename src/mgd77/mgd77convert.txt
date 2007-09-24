@@ -1,4 +1,4 @@
-.TH MGD77CONVERT GMTMANSECTION DATE VERSION VERSION
+.TH MGD77CONVERT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 mgd77convert \- Translate between different formats of MGD77 files
@@ -85,11 +85,11 @@ are tab-separated than when they are all crunched together in the MGD77 punch-ca
 The MGD77+ netCDF files are CF-1.0 and COARDS compliant and can be examined with general-purpose
 tools such as ncBrowse and ncView.
 .SH "SEE ALSO"
-.IR mgd77manage (GMTMANSECTION),
-.IR mgd77list (GMTMANSECTION),
-.IR mgd77sample (GMTMANSECTION),
-.IR mgd77track (GMTMANSECTION)
-.IR x2sys_init (GMTMANSECTION)
+.IR mgd77manage (1),
+.IR mgd77list (1),
+.IR mgd77sample (1),
+.IR mgd77track (1)
+.IR x2sys_init (1)
 #include "refs.i"
 ncBrowse, see \fIhttp://www.epic.noaa.gov/java/ncBrowse/\fP
 .br

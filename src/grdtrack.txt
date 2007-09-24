@@ -1,4 +1,4 @@
-.TH GRDTRACK GMTMANSECTION DATE VERSION VERSION
+.TH GRDTRACK 1 DATE VERSION VERSION
 .SH NAME
 #include "common_options.txt"
 grdtrack \- Sampling of a 2-D grid file along 1-D trackline (a sequence of x,y points)
@@ -76,6 +76,6 @@ grid) along the lon,lat coordinates given in the file cruise_track.xy, try
 .sp
 \fBgrdtrack\fP cruise_track.xy \fB\-G\fPtopo.8.2.img,1,1 > obs_and_predicted.d
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR surface (GMTMANSECTION),
-.IR sample1d (GMTMANSECTION)
+.IR GMT (1),
+.IR surface (1),
+.IR sample1d (1)

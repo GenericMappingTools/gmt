@@ -1,4 +1,4 @@
-.TH GMTSELECT GMTMANSECTION DATE VERSION VERSION
+.TH GMTSELECT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 gmtselect \- Select data subsets based on multiple spatial criteria 
@@ -139,7 +139,7 @@ To return all points in stations.d that are within 5 cm of the point in origin.d
 .sp
 \fBgmtselect\fP stations.d \fB\-F\fPorigin.d OPT(R)20/50/-10/20 OPT(JM)20c > subset2
 .SH "SEE ALSO"
-.IR gmtdefaults (GMTMANSECTION),
-.IR GMT (GMTMANSECTION),
-.IR grdlandmask (GMTMANSECTION),
-.IR pscoast (GMTMANSECTION)
+.IR gmtdefaults (1),
+.IR GMT (1),
+.IR grdlandmask (1),
+.IR pscoast (1)

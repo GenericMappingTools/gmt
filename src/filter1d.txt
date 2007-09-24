@@ -1,4 +1,4 @@
-.TH FILTER1D GMTMANSECTION DATE VERSION VERSION
+.TH FILTER1D 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 filter1d \- Time domain filtering of 1-D time series
@@ -110,5 +110,5 @@ checking for gaps of 10km and asymmetry of 0.3:
 .sp
 \fBfilter1d\fP v3312.dt \fB\-FM\fP50 \fB\-T\fP0/100000/25 \fB\-L\fP10 \fB\-S\fP0.3 > v3312_filt.dt
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR sample1d (GMTMANSECTION)
+.IR GMT (1),
+.IR sample1d (1)

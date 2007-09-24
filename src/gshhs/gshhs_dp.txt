@@ -1,4 +1,4 @@
-.TH GSHHS_DP GMTMANSECTION DATE VERSION VERSION
+.TH GSHHS_DP 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 gshhs_dp \- Line reduction using the Douglas-Peucker algorithm
@@ -37,6 +37,6 @@ Dr. Gary J. Robinson, Environmental Systems Science Centre,
 University of Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk); his
 ssubroutine forms the basis for this program.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gshhs (GMTMANSECTION)
-.IR gshhstograss (GMTMANSECTION)
+.IR GMT (1),
+.IR gshhs (1)
+.IR gshhstograss (1)

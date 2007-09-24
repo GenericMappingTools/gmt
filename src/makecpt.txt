@@ -1,4 +1,4 @@
-.TH MAKECPT GMTMANSECTION DATE VERSION VERSION
+.TH MAKECPT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 makecpt \- Make GMT color palette tables
@@ -91,5 +91,5 @@ Since \fBmakecpt\fP will also interpolate from any existing .cpt file you
 may have in your directory, you cannot use one of the listed cpt names
 as an output filename; hence the my_gebco.cpt in the example.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grd2cpt (GMTMANSECTION)
+.IR GMT (1),
+.IR grd2cpt (1)

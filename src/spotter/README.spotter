@@ -1,4 +1,4 @@
-	$Id: README.spotter,v 1.5 2007-01-31 17:00:03 pwessel Exp $
+	$Id: README.spotter,v 1.6 2007-09-24 00:38:02 remko Exp $
 
 SPOTTER Supplemental Package
 Distributed under the GNU Public License (see file ../COPYING)
@@ -22,13 +22,13 @@ spotter.h		: SPOTTER C include file
 makefile		: Unix makefile for SPOTTER package
 makespotter.bat		: DOS batch file for compiling SPOTTER
 backtracker.html	: backtracker Web documentation
-backtracker.man		: backtracker UNIX man file
+backtracker.1		: backtracker UNIX man file
 hotspotter.html		: hotspotter Web documentation
-hotspotter.man		: hotspotter UNIX man file
+hotspotter.1		: hotspotter UNIX man file
 originator.html		: originator Web documentation
-originator.man		: originator UNIX man file
+originator.1		: originator UNIX man file
 rotconverter.html	: rotconverter Web documentation
-rotconverter.man	: rotconverter UNIX man file
+rotconverter.1		: rotconverter UNIX man file
 spotter.sh		: UNIX example script
 spotter.bat		: DOS example batch job
 DC85.d			: Duncan and Clague [1985] stage poles

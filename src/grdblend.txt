@@ -1,4 +1,4 @@
-.TH GRDBLEND GMTMANSECTION DATE VERSION VERSION
+.TH GRDBLEND 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdblend \- Blend several partially over-lapping grids into one large grid
@@ -61,6 +61,6 @@ Then run
 .sp
 \fBgrdblend\fP blend.job \fB\-G\fPblend.grd \fB\-R\fP<full_region> \fB\-I\fP<dx/dy> \fB-V\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grd2xyz (GMTMANSECTION),
-.IR grdedit (GMTMANSECTION)
+.IR GMT (1),
+.IR grd2xyz (1),
+.IR grdedit (1)

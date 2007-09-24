@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.62 2007-09-14 01:13:39 remko Exp $
+#  $Id: GNUmakefile,v 1.63 2007-09-24 00:38:01 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #	
@@ -109,26 +109,36 @@ grdmath.h grdmath_man.i:		make_math.sh grdmath.c grdmath.func
 			$(SHELL) make_math.sh grd
 
 makegmt.macros:		makegmt.macros.in
-			(cd ..; sh -xv ./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) $(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) )
+			(cd ..; ./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) $(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) )
 
 # Must create manpages before install-man
 
-.SUFFIXES:	.txt .man .dep
+.SUFFIXES:	.txt .1 .3 .5 .dep
 
-MAN:=$(shell grep -h '.man$$' ../guru/*.lis | cut -c5-)
-DEP=$(MAN:.man=.dep)
+MMAN1:=$(shell grep -h '\.1$$' ../guru/*.lis | cut -c5-)
+MMAN3:=$(shell grep -h '\.3$$' ../guru/*.lis | cut -c5-)
+MMAN5:=$(shell grep -h '\.5$$' ../guru/*.lis | cut -c5-)
+DEP1=$(MMAN1:.1=.dep)
+DEP3=$(MMAN3:.3=.dep)
+DEP5=$(MMAN5:.5=.dep)
 
-manpages install-man:		$(FILES) $(MAN)
+manpages install-man:		$(MMAN1) $(MMAN3) $(MMAN5)
 
 ifneq "$(MAKECMDGOALS)" "spotless"
-    include $(MAN:.man=.dep)
+    include $(DEP1) $(DEP3) $(DEP5)
     include makefile
 endif
 
-.txt.dep:
-		$(TXT2MAN) -MM -MG $*.txt | sed s,.o:,.man:, > $@
+$(DEP1):	%.dep:	%.txt
+		$(TXT2MAN) -MM -MG $*.txt | sed s,.o:,.1:, > $@
 
-.txt.man:
+$(DEP3):	%.dep:	%.txt
+		$(TXT2MAN) -MM -MG $*.txt | sed s,.o:,.3:, > $@
+
+$(DEP5):	%.dep:	%.txt
+		$(TXT2MAN) -MM -MG $*.txt | sed s,.o:,.5:, > $@
+
+%.1 %.3 %.5:	%.txt
 		@echo "Making $@"
 		@cp -f $< junk.c
 		$(TXT2MAN) $(CPFLAGS) $(SI) junk.c | egrep -v '^#|^$$' > $@
@@ -138,6 +148,6 @@ endif
 
 spotless::
 		rm -f $(FILES)
-		rm -f *.{man,dep}
-		rm -f [abd-z]*/*.{man,dep}
+		rm -f $(MAN1) $(MAN3) $(MAN5)
+		rm -f $(DEP1) $(DEP3) $(DEP5)
 		$(MAKE) -f makefile $@

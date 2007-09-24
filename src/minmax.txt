@@ -1,4 +1,4 @@
-.TH MINMAX GMTMANSECTION DATE VERSION VERSION
+.TH MINMAX 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 minmax \- Find extreme values in data tables
@@ -75,4 +75,4 @@ The \fB\-I\fP option does not yet work properly with time series data (e.g., \fB
 variable intervals as months and years are not calculated.  Instead, specify your interval in the
 same units as the current setting of \fBTIME_UNIT\fP.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION)
+.IR GMT (1)

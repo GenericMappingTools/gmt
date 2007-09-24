@@ -1,4 +1,4 @@
-.TH PS2RASTER GMTMANSECTION DATE VERSION VERSION
+.TH PS2RASTER 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats using GhostScript
@@ -82,4 +82,4 @@ orientation in case it was in Landscape mode:
 .sp
 (This command assumes that ghostscript can be found in your system's path.)\"'
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION)
+.IR GMT (1)

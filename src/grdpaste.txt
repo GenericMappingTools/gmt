@@ -1,4 +1,4 @@
-.TH GRDPASTE GMTMANSECTION DATE VERSION VERSION
+.TH GRDPASTE 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdpaste \- Paste together two \fI.grd\fP files along a common edge.
@@ -26,7 +26,7 @@ make outfile.grd which will be 150 - 180 and -30S - 30N by:
 .sp
 \fBgrdpaste\fP file_a.grd file_b.grd \fB\-G\fPoutfile.grd \fB\-V\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdcut (GMTMANSECTION),
-.IR grdinfo (GMTMANSECTION),
-.IR grdsample (GMTMANSECTION)
+.IR GMT (1),
+.IR grdcut (1),
+.IR grdinfo (1),
+.IR grdsample (1)

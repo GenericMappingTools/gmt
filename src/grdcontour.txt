@@ -1,4 +1,4 @@
-.TH GRDCONTOUR GMTMANSECTION DATE VERSION VERSION
+.TH GRDCONTOUR 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdcontour \- Contouring of 2-D gridded data sets
@@ -146,9 +146,9 @@ plot-title, use a thick red pen for annotated contours, and a thin, dashed, blue
 The labeling of local highs and lows may plot outside the innermost contour since only the mean value
 of the contour coordinates is used to position the label.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gmtdefaults (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION),
-.IR grdimage (GMTMANSECTION),
-.IR grdview (GMTMANSECTION),
-.IR pscontour (GMTMANSECTION)
+.IR GMT (1),
+.IR gmtdefaults (1),
+.IR psbasemap (1),
+.IR grdimage (1),
+.IR grdview (1),
+.IR pscontour (1)

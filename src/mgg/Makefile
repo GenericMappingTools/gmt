@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.19 2007-09-04 15:22:27 remko Exp $
+#	$Id: Makefile,v 1.20 2007-09-24 00:38:02 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -13,7 +13,6 @@
 #
 #	Date:	05-NOV-2006
 #
-
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
@@ -22,71 +21,86 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../x_system -I$(NETCDF)/include
-CDF	= -L$(NETCDF)/lib -lnetcdf
+CDF		= -L$(NETCDF)/lib -lnetcdf
+CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I../x_system -I$(NETCDF)/include
 
-MGG_H	= gmt_mgg.h ../x_system/x_system.h
+PROGS_H		= gmt_mgg.h ../x_system/x_system.h
+PROGS_C		= binlegs.c gmt2bin.c gmt2dat.c dat2gmt.c gmtinfo.c gmtlegs.c gmtlist.c gmtpath.c mgd77togmt.c
+PROGSPS_C	= gmttrack.c
 
-MGG_C	= binlegs.c gmt2bin.c gmt2dat.c dat2gmt.c gmtinfo.c gmtlegs.c \
-	 	gmtlist.c gmtpath.c mgd77togmt.c
+PROGS_O		= $(PROGS_C:.c=.o)
+PROGS		= $(PROGS_C:.c=$(EXE))
+PROGSPS_O	= $(PROGSPS_C:.c=.o)
+PROGSPS		= $(PROGSPS_C:.c=$(EXE))
+MAN1		= $(PROGS_C:.c=.1) $(PROGSPS_C:.c=.1)
 
-MGGPS_C	= gmttrack.c
+LIB		= libgmt_mgg.a
+
+#-------------------------------------------------------------------------------
+#	software targets
+#-------------------------------------------------------------------------------
+
+all:		$(LIB) $(PROGS) $(PROGSPS)
+
+install:	all
+		$(INSTALL) $(PROGS) $(PROGSPS) $(bindir)
+		if [ ! $(libdir) = $(srcdir) ]; then \
+			$(INSTALL) -m 444 $(LIB) $(libdir); \
+		fi
+
+uninstall:
+		cd $(bindir); \rm -f $(PROGS) $(PROGSPS)
+		if [ ! $(libdir) = $(srcdir) ]; then \
+			cd $(libdir); \rf -f $(LIB)
+		fi
+
+install-man:	$(MAN1)
+		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+
+uninstall-man:
+		cd $(mandir)/man1; \rm -f $(MAN1)
+
+clean:
+		rm -f *.o *% $(PROGS) $(PROGSPS)
+
+spotless:	clean
+		rm -f $(LIB)
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-MGG_O	= $(MGG_C:.c=.o)
-MGG	= $(MGG_C:.c=$(EXE))
-MGGPS_O	= $(MGGPS_C:.c=.o)
-MGGPS	= $(MGGPS_C:.c=$(EXE))
-
-all:		libgmt_mgg.a $(MGG) $(MGGPS)
-
-$(MGG_O):	$(GMT_H) $(MGG_H)
-$(MGGPS_O):	$(GMT_H) $(PS_H) $(MGG_H)
-
-#-------------------------------------------------------------------------------
-
-install:	all
-		$(INSTALL) $(MGG) $(MGGPS) $(bindir)
-		if [ ! $(libdir) = $(srcdir) ]; then \
-			$(INSTALL) -m 444 libgmt_mgg.a $(libdir); \
-			if [ -f libgmt_mgg.$(SL) ]; then \
-				$(INSTALL) -m 444 libgmt_mgg.$(SL) $(libdir); \
-			fi; \
-		fi
-
-uninstall:
-		for i in $(MGG) $(MGGPS); do \
-			\rm -f $(bindir)/$$i; \
-		done
-		if [ ! $(libdir) = $(srcdir) ]; then \
-			\rm -f $(libdir)/libgmt_mgg.a $(libdir)/libgmt_mgg.$(SL); \
-		fi
-
-clean:
-		rm -f *.o $(MGG) $(MGGPS)
-
-spotless:	clean
-		rm -f *.a
+$(PROGS_O):	$(GMT_H) $(PROGS_H)
+$(PROGSPS_O):	$(GMT_H) $(PS_H) $(PROGS_H)
+gmt_mgg.o:	$(PROGS_H)
 
 #-------------------------------------------------------------------------------
 #	library
 #-------------------------------------------------------------------------------
 
-libgmt_mgg.a:	gmt_mgg.o
-		$(AR) cvr libgmt_mgg.a $?
-		$(RANLIB) libgmt_mgg.a
-
-gmt_mgg.o:	$(MGG_H)
+$(LIB):		gmt_mgg.o
+		$(AR) cvr $(LIB) $?
+		$(RANLIB) $(LIB)
 
 #-------------------------------------------------------------------------------
-#	program dependencies
+#	program rules
 #-------------------------------------------------------------------------------
 
-$(MGG):		libgmt_mgg.a $(MGG_O) $(GMTLIB)
+binlegs$(EXE):		binlegs.o
+gmt2bin$(EXE):		gmt2bin.o
+gmt2dat$(EXE):		gmt2dat.o
+dat2gmt$(EXE):		dat2gmt.o
+gmtinfo$(EXE):		gmtinfo.o
+gmtlegs$(EXE):		gmtlegs.o
+gmtlist$(EXE):		gmtlist.o
+gmtpath$(EXE):		gmtpath.o
+mgd77togmt$(EXE):	mgd77togmt.o
+gmttrack$(EXE):		gmttrack.o
+
+$(PROGS):	$(LIB) $(GMTLIB)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(COMPRESS) $@
 
-$(MGGPS):	libgmt_mgg.a $(MGGPS_O) $(GMTLIB)
+$(PROGSPS):	$(LIB) $(GMTLIB)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
+		$(COMPRESS) $@

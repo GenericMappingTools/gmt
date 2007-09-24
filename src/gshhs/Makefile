@@ -1,35 +1,40 @@
-#	$Id: Makefile,v 1.9 2007-09-14 22:23:42 remko Exp $
+#	$Id: Makefile,v 1.10 2007-09-24 00:38:01 remko Exp $
 #
 #	makefile for gshhs directory
 #	Does not depend on GMT src or libraries
 #
-#----------------- stop here - nothing more to edit--------------------
+#-------------------------------------------------------------------------------
+#	!! STOP EDITING HERE, THE REST IS FIXED !!
+#-------------------------------------------------------------------------------
 
-include ../makegmt.macros
+GMTSRCDIR = ../
+include $(GMTSRCDIR)makegmt.macros
+include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS		= $(CC_OPT) $(WIN32)
 
 PROGS_C		= gshhs.c gshhs_dp.c gshhstograss.c
 PROGS_O		= $(PROGS_C:.c=.o)
 PROGS		= $(PROGS_C:.c=$(EXE))
+MAN1		= $(PROGS_C:.c=.1)
 
 #-------------------------------------------------------------------------------
-#	object file dependencies
+#	software targets
 #-------------------------------------------------------------------------------
 
 all:		$(PROGS)
-
-$(PROGS_O):	$(GMT_H) gshhs.h
-
-#-------------------------------------------------------------------------------
 
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
 
 uninstall:
-		for i in $(PROGS); do \
-			\rm -f $(bindir)/$$i; \
-		done
+		cd $(bindir); \rm -f $(PROGS)
+
+install-man:	$(MAN1)
+		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+
+uninstall-man:
+		cd $(mandir)/man1; \rm -f $(MAN1)
 
 spotless:	clean
 
@@ -37,7 +42,13 @@ clean:
 		\rm -f *.o *% $(PROGS)
 
 #-------------------------------------------------------------------------------
-#	program dependencies
+#	object file dependencies
+#-------------------------------------------------------------------------------
+
+$(PROGS_O):	gshhs.h
+
+#-------------------------------------------------------------------------------
+#	program rules
 #-------------------------------------------------------------------------------
 
 gshhs$(EXE):		gshhs.o
@@ -46,3 +57,4 @@ gshhstograss$(EXE):	gshhstograss.o
 
 $(PROGS):
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBS) -o $@
+		$(COMPRESS) $@

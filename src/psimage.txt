@@ -1,4 +1,4 @@
-.TH PSIMAGE GMTMANSECTION DATE VERSION VERSION
+.TH PSIMAGE 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 psimage \- To plot images (EPS files or Sun raster files) on maps
@@ -97,4 +97,4 @@ red foreground), and setting each piece to be 1 by 1 cm, use
 .sp
 \fBpsimage\fP 1_bit.ras \fB\-Gb\fPbrown \fB\-Gf\fPred \fB\-N\fP5\fBi\fP/5\fBi\fP \fB\-W\fP1\fBc\fP > image.ps
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION)
+.IR GMT (1)

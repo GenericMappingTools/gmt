@@ -1,4 +1,4 @@
-.TH X2SYS_BINLIST GMTMANSECTION DATE VERSION VERSION
+.TH X2SYS_BINLIST 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 x2sys_binlist \- Create bin-index files from track data files
@@ -60,5 +60,5 @@ of 30 x 30 minutes, calculating the geodesic distance lengths for each bin in km
 .sp
 \fBx2sys_binlist\fP *.nc \fB\-T\fPMGD77+ \fB\-Ce \-D\fP > all.tbf
 .SH "SEE ALSO"
-.IR gmtdefaults (GMTMANSECTION)
-.IR x2sys_init (GMTMANSECTION)
+.IR gmtdefaults (1)
+.IR x2sys_init (1)

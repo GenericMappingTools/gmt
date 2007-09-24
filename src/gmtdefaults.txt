@@ -1,4 +1,4 @@
-.TH GMTDEFAULTS GMTMANSECTION DATE VERSION VERSION
+.TH GMTDEFAULTS 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define TOL_SI	0.025\fBc\fP
 #define LEN_1_SI	0.2\fBc\fP
@@ -770,5 +770,5 @@ use \fBgmtset\fP to change specified parameters on the command line.
 If you have typographical errors in your \.gmtdefaults4 file(s), a warning message will be
 issued, and the \fBGMT\fP defaults for the affected parameters will be used.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gmtset (GMTMANSECTION)
+.IR GMT (1),
+.IR gmtset (1)

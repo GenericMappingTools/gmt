@@ -1,4 +1,4 @@
-.TH PSXYZ GMTMANSECTION DATE VERSION VERSION
+.TH PSXYZ 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define PARAMS_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
 #define LEN_1 1.25
@@ -266,6 +266,6 @@ The OPT(N) option does not adjust the BoundingBox information so you may
 have to post-process the PostScript outout with epstool or ps2epsi to obtain
 a correct BoundingBox.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION),
-.IR psxy (GMTMANSECTION)
+.IR GMT (1),
+.IR psbasemap (1),
+.IR psxy (1)

@@ -1,4 +1,4 @@
-.TH X_OVER GMTMANSECTION DATE VERSION VERSION
+.TH X_OVER 1 DATE VERSION VERSION
 .SH NAME
 \fBx_over\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS
@@ -49,8 +49,8 @@ on the command line, then the COE value is Value (lega) - Value (legb).  It is r
 the Akima spline is used instead of the natural cubic spline, since it is less sensitive to
 outliers that tend to introduce wild oscillations in the interpolation.
 .SH SEE ALSO
-.IR GMT (GMTMANSECTION),
-.IR x_system (GMTMANSECTION)
+.IR GMT (1),
+.IR x_system (1)
 .SH REFERENCES
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.

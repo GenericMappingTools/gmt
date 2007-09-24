@@ -1,4 +1,4 @@
-.TH PSXY GMTMANSECTION DATE VERSION VERSION
+.TH PSXY 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define PARAMS_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
 #define CAP_SI 0.25c
@@ -349,6 +349,6 @@ a correct BoundingBox.
 make a copy and split it into two and make each explicitly contain the polar point.  The two polygons
 will combine to give the desired effect when filled; to draw outline use the original polygon.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION),
-.IR psxyz (GMTMANSECTION)
+.IR GMT (1),
+.IR psbasemap (1),
+.IR psxyz (1)

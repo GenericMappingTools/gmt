@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.43 2007-06-29 18:40:30 remko Exp $
+#	 $Id: webman.sh,v 1.44 2007-09-24 00:38:01 remko Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -28,21 +28,21 @@ echo "Creating HTML man pages ..."
 mkdir -p www/gmt/doc/html
 
 # Make a list of all manpages
-grep -h .man\$ guru/GMT_progs_files_ascii.lis guru/GMT_suppl.lis > $$.lis
+grep -h ".[135]\$" guru/GMT_progs_files_ascii.lis guru/GMT_suppl.lis > $$.lis
 
 # Gurus who have their own supplemental packages can have them processed too by
 # defining an environmental parameter MY_GMT_SUPPL which contains a list of these
 # supplements.  They must all be in src of course
 
 for package in ${MY_GMT_SUPPL}; do
-	ls src/$package/*.man >> $$.lis
+	ls src/$package/*.[135] >> $$.lis
 done
 
 # Now make sed script that will replace the bold and italic versions of GMT program names with
 # similarly formatted links.
 
 while read f; do
-	prog=`basename $f .man`
+	prog=`basename $f|cut -d. -f1`
 	echo $prog | awk '{printf "s%%<b>%s</b>%%<A HREF=%c%s.html%c><b>%s</b></A>%%g\n", $1, 34, $1, 34, $1}' >> $$.w0.sed
 	echo $prog | awk '{printf "s%%<i>%s</i>%%<A HREF=%c%s.html%c><i>%s</i></A>%%g\n", $1, 34, $1, 34, $1}' >> $$.w0.sed
 done < $$.lis
@@ -52,7 +52,6 @@ done < $$.lis
 # def.sed adds the anchors needed in gmtdefaults.html
 
 cat > $$.all.sed <<END
-s%GMTMANSECTION%l%g
 s%<body>%<body bgcolor="#ffffff">%g
 END
 grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%<b>%s</b>%%<A HREF=%cgmtdefaults.html#%s%c><b>%s</b></A>%%g\n", $1, 34, $1, 34, $1}' >> $$.all.sed
@@ -61,7 +60,7 @@ grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%<p><b>%s</b></p></td>%%<A NAM
 # Do all the manpage conversions
 
 while read f; do
-	prog=`basename $f .man`
+	prog=`basename $f|cut -d. -f1`
 	rm -f www/gmt/doc/html/$prog.html
 	[ $gush = 1 ] && echo "Making $prog.html"
 	grep -v "${prog}<" $$.w0.sed > $$.t0.sed

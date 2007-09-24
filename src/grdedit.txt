@@ -1,4 +1,4 @@
-.TH GRDEDIT GMTMANSECTION DATE VERSION VERSION
+.TH GRDEDIT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdedit \- Modifying the header or content of a 2-D grid file
@@ -85,6 +85,6 @@ information to indicate that the grid is geographic.  To add this information, r
 .sp
 \fBgrdedit\fP junk.grd \fB\-fg\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grd2xyz (GMTMANSECTION),
-.IR xyz2grd (GMTMANSECTION)
+.IR GMT (1),
+.IR grd2xyz (1),
+.IR xyz2grd (1)

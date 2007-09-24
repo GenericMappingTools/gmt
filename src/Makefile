@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.13 2007-09-19 13:45:44 remko Exp $
+#	$Id: Makefile,v 1.14 2007-09-24 00:38:01 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -67,46 +67,20 @@ PROGSPS_C	= gmt2rgb.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c 
 	  pscoast.c pshistogram.c psimage.c pslegend.c psmask.c psrose.c psscale.c pstext.c pscontour.c \
 	  pswiggle.c psxy.c psxyz.c
 
-first:	all
+LIB_O	= $(LIB_C:.c=.o)
+LIBPS_O	= $(LIBPS_C:.c=.o)
+PROGS_O	= $(PROGS_C:.c=.o)
+PROGSPS_O= $(PROGSPS_C:.c=.o)
+
+PROGS	= $(PROGS_C:.c=$(EXE))
+PROGSPS	= $(PROGSPS_C:.c=$(EXE))
+ALLPROGS= GMT $(PROGS) $(PROGSPS)
+
+MAN1	= GMT.1 $(PROGS_C:.c=.1) $(PROGSPS_C:.c=.1)
+MAN3	= pslib.3
 
 #-------------------------------------------------------------------------------
-#	object file dependencies
-#-------------------------------------------------------------------------------
-
-LIB_O		= $(LIB_C:.c=.o)
-LIBPS_O		= $(LIBPS_C:.c=.o)
-PROGS_O		= $(PROGS_C:.c=.o)
-PROGSPS_O	= $(PROGSPS_C:.c=.o)
-
-PROGS		= $(PROGS_C:.c=$(EXE))
-PROGSPS		= $(PROGSPS_C:.c=$(EXE))
-ALLPROGS	= $(PROGS) $(PROGSPS)
-
-$(LIB_O):	$(GMT_H) $(GMT_I)
-$(LIBPS_O):	$(GMT_H) $(GMT_I) pslib.h
-$(PROGS_O):	$(GMT_H)
-$(PROGSPS_O):	$(GMT_H) pslib.h
-
-# Additional unusual dependancies
-
-blockmean.o blockmedian.o blockmode.o:	block_subs.c
-gmt_customio.o: gmt_mgg_header2.c gmt_agc_io.c
-gmtmath.o:	gmtmath.h
-grdmath.o:	grdmath.h
-
-# Jonathan Shewchuk's triangulation model (www.cs.cmu.edu/~quake)
-# Only used if TRIANGLE_D and TRIANGLE_O are set in makegmt.macros
-# Please read README.TRIANGLE in this source directory.
-
-triangle.o:	triangle.c
-		$(CC) -c $(CFLAGS) -DNO_TIMER -DTRILIBRARY -DREDUCED -DCDT_ONLY $<
-
-# Assembly wrapper for sincos on Dec Alphas
-# Only used if ALPHA_SINCOS_O are set in makegmt.macros
-
-alpha-sincos.o:	alpha-sincos.s
-		$(AS) -o alpha-sincos.o $<
-
+#	software targets
 #-------------------------------------------------------------------------------
 
 all:		init libs $(ALLPROGS)
@@ -129,7 +103,7 @@ GMT:		GMT.in
 
 install:	all
 		$(INSTALL) -d $(bindir)
-		$(INSTALL) GMT $(ALLPROGS) $(bindir)
+		$(INSTALL) $(ALLPROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir) ; \
 			$(INSTALL) -m 444 $(GMTLIB) $(libdir); \
@@ -149,43 +123,60 @@ install:	all
 		fi
 
 uninstall:
-		for i in GMT $(ALLPROGS); do \
-			\rm -f $(bindir)/$$i; \
-		done
+		cd $(bindir); \rm -f $(ALLPROGS)
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			for i in $(GMTLIB); do \
-				\rm -f $(libdir)/$$i; \
-			done; \
+			cd $(libdir); \rm -f $(GMTLIB); \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			for i in $(GMT_H) $(PS_H) $(PS_I); do \
-				\rm -f $(includedir)/$$i; \
-			done; \
+			cd $(includedir); \rm -f  $(GMT_H) $(PS_H) $(PS_I); \
 		fi
 
-install-man:
-		@echo "Installing GMT manpages in $(mandir)/man$(mansection)"
-		@mkdir -p $(mandir)/man$(mansection)
-		@set -e ; for d in . $(SUPPL_M); do \
-			if [ -d $$d ] && [ ! -f $$d/.skip ] ; then \
-				( cd $$d; \
-				for f in *.man; do \
-					sed "s/GMTMANSECTION/$(mansection)/g" $$f > $(mandir)/man$(mansection)/`basename $$f .man`.$(mansection); \
-				done ); \
-			fi; \
-		done
+install-man:	$(MAN1) $(MAN3)
+		$(INSTALL) -d $(mandir)/man1 $(mandir)/man3
+		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+		$(INSTALL) -m 644 $(MAN3) $(mandir)/man3
 
 uninstall-man:
-		@echo "Removing GMT manpages from $(mandir)/man$(mansection)"; \
-		rm -rf $(mandir)/man$(mansection)
+		cd $(mandir)/man1; \rm -f $(MAN1)
+		cd $(mandir)/man3; \rm -f $(MAN3)
 
 clean:
-		rm -f *.o *.a *.$(SL) $(ALLPROGS)
+		\rm -f *.o *.a *.$(SL) $(ALLPROGS)
 
 spotless::	clean
-		rm -f gmt_notposix.h makegmt.macros
+		\rm -f gmt_notposix.h makegmt.macros
 
 distclean:	spotless
+
+#-------------------------------------------------------------------------------
+#	object file dependencies
+#-------------------------------------------------------------------------------
+
+$(LIB_O):	$(GMT_H) $(GMT_I)
+$(LIBPS_O):	$(GMT_H) $(GMT_I) pslib.h
+$(PROGS_O):	$(GMT_H)
+$(PROGSPS_O):	$(GMT_H) pslib.h
+pslib.o:	$(PS_H) $(PS_I) gmt_notunix.h gmt_notposix.h gmt_math.h
+
+# Additional unusual dependancies
+
+blockmean.o blockmedian.o blockmode.o:	block_subs.c
+gmt_customio.o: gmt_mgg_header2.c gmt_agc_io.c
+gmtmath.o:	gmtmath.h
+grdmath.o:	grdmath.h
+
+# Jonathan Shewchuk's triangulation model (www.cs.cmu.edu/~quake)
+# Only used if TRIANGLE_D and TRIANGLE_O are set in makegmt.macros
+# Please read README.TRIANGLE in this source directory.
+
+triangle.o:	triangle.c
+		$(CC) -c $(CFLAGS) -DNO_TIMER -DTRILIBRARY -DREDUCED -DCDT_ONLY $<
+
+# Assembly wrapper for sincos on Dec Alphas
+# Only used if ALPHA_SINCOS_O are set in makegmt.macros
+
+alpha-sincos.o:	alpha-sincos.s
+		$(AS) -o alpha-sincos.o $<
 
 #-------------------------------------------------------------------------------
 #	libraries
@@ -194,8 +185,6 @@ distclean:	spotless
 .SUFFIXES:	.$(SL)
 
 libs:		$(GMTLIB)
-
-pslib.o:	$(PS_H) $(PS_I) gmt_notunix.h gmt_notposix.h gmt_math.h
 
 libpsl.a:	pslib.o
 		$(AR) cvur $@ $?
@@ -219,7 +208,7 @@ libgmtps.$(SL):	$(LIBPS_O)
 		$(LD) $(LD_OPT) $(LIBPS_O) -o $@
 
 #-------------------------------------------------------------------------------
-#	program dependencies
+#	program rules
 #-------------------------------------------------------------------------------
 
 blockmean$(EXE):	blockmean.o

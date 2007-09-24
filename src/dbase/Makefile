@@ -1,10 +1,12 @@
-#	$Id: Makefile,v 1.15 2007-09-04 15:22:27 remko Exp $
+#	$Id: Makefile,v 1.16 2007-09-24 00:38:01 remko Exp $
 #
 #	makefile for dbase directory
 #
 # Uncomment SWAP to build in byte-order swapping of all data
 #SWAP	= -DSWAP_ME
-#----------------- stop here - nothing to edit ------------------
+#-------------------------------------------------------------------------------
+#	!! STOP EDITING HERE, THE REST IS FIXED !!
+#-------------------------------------------------------------------------------
 
 GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
@@ -13,21 +15,46 @@ include $(GMTSRCDIR)gmtalldeps.macros
 CDF		= -L$(NETCDF)/lib -lnetcdf
 CFLAGS		= $(CC_OPT) $(WIN32) $(SWAP) -I$(srcdir) -I$(NETCDF)/include
 
-all:		grdraster$(EXE)
+PROGS_C		= grdraster.c
+PROGS_O		= $(PROGS_C:.c=.o)
+PROGS		= $(PROGS_C:.c=$(EXE))
+MAN1		= $(PROGS_C:.c=.1)
+
+#-------------------------------------------------------------------------------
+#	software targets
+#-------------------------------------------------------------------------------
+
+all:		$(PROGS)
 
 install:	all
-		$(INSTALL) grdraster$(EXE) $(bindir)
+		$(INSTALL) $(PROGS) $(bindir)
 
 uninstall:
-		\rm -f $(bindir)/grdraster$(EXE)
+		cd $(bindir); \rm -f $(PROGS)
 
-grdraster.o:	$(GMT_H)
+install-man:	$(MAN1)
+		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
 
-grdraster$(EXE):	grdraster.o $(GMTLIB)
-		$(CC) $(LDFLAGS) grdraster.o -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
-		$(COMPRESS) $@
+uninstall-man:
+		cd $(mandir)/man1; \rm -f $(MAN1)
 
 spotless:	clean
 
 clean:	
-		rm -f *.o grdraster$(EXE)
+		\rm -f *.o *% $(PROGS)
+
+#-------------------------------------------------------------------------------
+#	object file dependencies
+#-------------------------------------------------------------------------------
+
+$(PROGS_O):	$(GMT_H)
+
+#-------------------------------------------------------------------------------
+#	program rules
+#-------------------------------------------------------------------------------
+
+grdraster$(EXE):	grdraster.o
+
+$(PROGS):
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBS) -o $@
+		$(COMPRESS) $@

@@ -1,4 +1,4 @@
-.TH GRDREFORMAT GMTMANSECTION DATE VERSION VERSION
+.TH GRDREFORMAT 1 DATE VERSION VERSION
 .SH NAME
 #include "common_options.txt"
 grdreformat \- Converting between different grid file formats.
@@ -175,5 +175,5 @@ To convert etopo2.grd to etopo2.i2 that can be used by \fBgrdraster\fP, try
 .sp
 \fBgrdreformat\fP etopo2.grd etopo2.i2=bs \fB\-N \-V\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdmath (GMTMANSECTION)
+.IR GMT (1),
+.IR grdmath (1)

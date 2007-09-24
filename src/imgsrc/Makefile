@@ -2,7 +2,9 @@
 #
 #	makefile for imgsrc directory
 #
-#----------------- stop here - nothing more to edit -------------------
+#-------------------------------------------------------------------------------
+#	!! STOP EDITING HERE, THE REST IS FIXED !!
+#-------------------------------------------------------------------------------
 
 GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
@@ -15,32 +17,41 @@ CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 PROGS_C		= img2mercgrd.c
 PROGS_O		= $(PROGS_C:.c=.o)
 PROGS		= $(PROGS_C:.c=$(EXE))
+MAN1		= $(PROGS_C:.c=.1) img2grd.1
 
 #-------------------------------------------------------------------------------
-#	object file dependencies
+#	software targets
 #-------------------------------------------------------------------------------
 
 all:		$(PROGS)
-
-$(PROGS_O):	$(GMT_H) gmt_imgsubs.h
-
-#-------------------------------------------------------------------------------
-#	program dependencies
-#-------------------------------------------------------------------------------
 
 install:	all
 		$(INSTALL) $(PROGS) img2grd $(bindir)
 
 uninstall:
-		\rm -f $(bindir)/$(PROGS) $(bindir)/img2grd
+		cd $(bindir); \rm -f $(PROGS) img2grd
 
-img2mercgrd$(EXE):	img2mercgrd.o gmt_imgsubs.o $(GMTLIB)
-		$(CC) $(LDFLAGS) img2mercgrd.o gmt_imgsubs.o $(GMT) $(CDF) $(LIBS) -o $@
+install-man:	$(MAN1)
+		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
+
+uninstall-man:
+		cd $(mandir)/man1; \rm -f $(MAN1)
 
 spotless:	clean
 
 clean:	
 		rm -f *.o $(PROGS)
 
-.c.o:		gmt_imgsubs.h $(GMT_H)
-		$(CC) -c $(CFLAGS) $<
+#-------------------------------------------------------------------------------
+#	object file dependencies
+#-------------------------------------------------------------------------------
+
+$(PROGS_O) gmt_imgsubs.o:	$(GMT_H) gmt_imgsubs.h
+
+#-------------------------------------------------------------------------------
+#	program rules
+#-------------------------------------------------------------------------------
+
+img2mercgrd$(EXE):	img2mercgrd.o gmt_imgsubs.o $(GMTLIB)
+		$(CC) $(LDFLAGS) img2mercgrd.o gmt_imgsubs.o $(GMT) $(CDF) $(LIBS) -o $@
+		$(COMPRESS) $@

@@ -1,4 +1,4 @@
-.TH GRDMATH GMTMANSECTION DATE VERSION VERSION
+.TH GRDMATH 1 DATE VERSION VERSION
 .SH NAME
 #include "common_options.txt"
 grdmath \- Reverse Polish Notation calculator for grid files
@@ -133,9 +133,9 @@ Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.
 Press, W. H.,  S. A. Teukolsky, W. T. Vetterling, B. P. Flannery, 1992, 
 \fINumerical Recipes\fP, 2nd edition, Cambridge Univ., New York.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gmtmath (GMTMANSECTION),
-.IR grd2xyz (GMTMANSECTION),
-.IR grdedit (GMTMANSECTION),
-.IR grdinfo (GMTMANSECTION),
-.IR xyz2grd (GMTMANSECTION)
+.IR GMT (1),
+.IR gmtmath (1),
+.IR grd2xyz (1),
+.IR grdedit (1),
+.IR grdinfo (1),
+.IR xyz2grd (1)

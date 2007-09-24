@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.31 2007-09-04 15:22:27 remko Exp $
+#	$Id: Makefile,v 1.32 2007-09-24 00:38:01 remko Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -20,7 +20,6 @@
 #	minor changes to make them compile have been performed.
 #	Several are probably obsolete.
 #
-
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
@@ -51,9 +50,9 @@ BIN_c		= 20
 # Get dependencies for data files:
 include coast.dep
 
-COAST_H	= shore.h wvs.h
+PROGS_H	= shore.h wvs.h
 
-COAST_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c swap.c \
+PROGS_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c swap.c \
 	  lines_to_bins.c man_fix.c man_fix2.c polygon_bincount.c gshhs_to_polygon.c \
 	  polygon_checkarea.c polygon_consistency.c polygon_deldups.c polygon_compare.c \
 	  polygon_dump.c polygon_extract.c polygon_extract2.c polygon_fixnegwesn.c \
@@ -66,34 +65,28 @@ COAST_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c swap.c \
 	  segment_connect.c segment_dump.c segment_final_dump.c segment_report.c \
 	  shoremaker.c wvs_crosscheck.c wvs_segment_dump.c wvs_segment_restore2.c
 
-#-------------------------------------------------------------------------------
-#	object file dependencies
-#-------------------------------------------------------------------------------
+PROGS_O	= $(PROGS_C:.c=.o)
+PROGS	= $(PROGS_C:.c=$(EXE))
 
-COAST_O	= $(COAST_C:.c=.o)
-
-COAST	= $(COAST_C:.c=$(EXE))
-
-all:		libcoast.a $(COAST)
-
-$(COAST_O):	$(GMT_H) $(COAST_H)
+LIB	= libcoast.a
 
 #-------------------------------------------------------------------------------
-# Software targets:
+#	software targets
+#-------------------------------------------------------------------------------
+
+all:		$(PROGS)
 
 install:	all
-		$(INSTALL) $(COAST) $(bindir)
+		$(INSTALL) $(PROGS) $(bindir)
 
 uninstall:
-		for i in $(COAST); do \
-			\rm -f $(bindir)/$$i$; \
-		done
+		cd $(bindir); \rm -f $(PROGS)
 
 clean:
-		rm -f *.o $(COAST)
+		rm -f *.o *% $(PROGS)
 
 spotless:	clean
-		rm -f *.a
+		rm -f $(LIB)
 
 # Data targets:
 
@@ -143,20 +136,26 @@ zip-gshhs:
 		zip -r -9 -q -l gshhs_$(GSHHS_PROG_VERSION)_src.zip gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
 #-------------------------------------------------------------------------------
+#	object file dependencies
+#-------------------------------------------------------------------------------
+
+$(PROGS_O):	$(GMT_H) $(PROGS_H)
+coast.o:	$(PROGS_H)
+
+#-------------------------------------------------------------------------------
 #	library
 #-------------------------------------------------------------------------------
 
-lib:		libcoast.a
+lib:		$(LIB)
 
-libcoast.a:	poly_check_subs.o string_check_subs.o douglas_peucker.o coast_io.o poly_misc_subs.o
-		$(AR) cvr libcoast.a $?
-		$(RANLIB) libcoast.a
-
-coast.o:	$(COAST_H)
+$(LIB):		poly_check_subs.o string_check_subs.o douglas_peucker.o coast_io.o poly_misc_subs.o
+		$(AR) cvr $(LIB) $?
+		$(RANLIB) $(LIB)
 
 #-------------------------------------------------------------------------------
-#	program dependencies
+#	program rules
 #-------------------------------------------------------------------------------
 
-$(COAST):	libcoast.a $(COAST_O) $(GMTLIB)
+$(PROGS):	$(LIB) $(PROGS_O) $(GMTLIB)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lcoast -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(COMPRESS) $@

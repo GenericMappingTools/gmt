@@ -1,4 +1,4 @@
-.TH GRDGRADIENT GMTMANSECTION DATE VERSION VERSION
+.TH GRDGRADIENT 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdgradient \- Compute directional derivative or gradient from 2-D grid file representing z(x,y)
@@ -171,9 +171,9 @@ the IEEE,
 Vol. 69, No. 1, January 1981, pp. 14-47. (http://people.csail.mit.edu/ 
 bkph/papers/Hill-Shading.pdf)
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gmtdefaults (GMTMANSECTION),
-.IR grdhisteq (GMTMANSECTION),
-.IR grdimage (GMTMANSECTION),
-.IR grdview (GMTMANSECTION),
-.IR grdvector (GMTMANSECTION)
+.IR GMT (1),
+.IR gmtdefaults (1),
+.IR grdhisteq (1),
+.IR grdimage (1),
+.IR grdview (1),
+.IR grdvector (1)

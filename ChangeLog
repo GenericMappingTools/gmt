@@ -1,11 +1,19 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.87 2007-09-22 00:07:28 guru Exp $
+	$Id: ChangeLog,v 1.88 2007-09-24 00:38:00 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-24	remko
+	* *.txt:		All manpages have become *.1 (except pslib.3)
+	* makefile:		All makefiles include install-man, uninstall-man
+	* configure.in:		--enable-mansect= removed.
+	* website/gmt_install_form.html website/install_gmt_form.pl:	Manpage section removed
+	* guru/install_gmt:	---"---
+	* guru/*man.sh:		Allow for manpages named *.[135]
+
 2007-09-21	pwessel
-	* {gmt,grd}math.c	Added functions KURT, SKEW, and PQUANT plus EULER's constant
-	* grdmath.c		For -S..k, did not properly account for latitude effect on dx
-	* spotter/originator.c	Added option -Q to specify constant r/t for (x,y,z) data only
+	* {gmt,grd}math.c:	Added functions KURT, SKEW, and PQUANT plus EULER's constant
+	* grdmath.c:		For -S..k, did not properly account for latitude effect on dx
+	* spotter/originator.c:	Added option -Q to specify constant r/t for (x,y,z) data only
 				Now lists -L option in both usage and man page
 	
 2007-09-19	pwessel

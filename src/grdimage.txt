@@ -1,4 +1,4 @@
-.TH GRDIMAGE GMTMANSECTION DATE VERSION VERSION
+.TH GRDIMAGE 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define LEN_L   1.5
 #define SCALE1	\fB\-Jl\fP18/24/1.5\fBc\fP
@@ -110,9 +110,9 @@ with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
 .sp
 \fBgrdimage\fP red.grd green.grd blue.grd SCALE2 \fB\-B\fP5 > rgbimage.ps
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gmt2rgb (GMTMANSECTION),
-.IR grdcontour (GMTMANSECTION),
-.IR grdview (GMTMANSECTION),
-.IR grdgradient (GMTMANSECTION),
-.IR grdhisteq (GMTMANSECTION)
+.IR GMT (1),
+.IR gmt2rgb (1),
+.IR grdcontour (1),
+.IR grdview (1),
+.IR grdgradient (1),
+.IR grdhisteq (1)

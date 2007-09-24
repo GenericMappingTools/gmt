@@ -1,4 +1,4 @@
-.TH PSHISTOGRAM GMTMANSECTION DATE VERSION VERSION
+.TH PSHISTOGRAM 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define LEN 0.75
 #define SCALE OPT(Jx)LEN\fBc\fP/0.01\fBc\fP
@@ -107,7 +107,7 @@ The OPT(W) option does not yet work properly with time series data (e.g., OPT(f)
 variable intervals as months and years are not calculated.  Instead, specify your interval in the
 same units as the current setting of \fBTIME_UNIT\fP.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION),
-.IR psrose (GMTMANSECTION),
-.IR psxy (GMTMANSECTION)
+.IR GMT (1),
+.IR psbasemap (1),
+.IR psrose (1),
+.IR psxy (1)

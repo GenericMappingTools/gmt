@@ -1,4 +1,4 @@
-.TH GRDFILTER GMTMANSECTION DATE VERSION VERSION
+.TH GRDFILTER 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdfilter \- Filter a 2-D gridded file in the space (or time) domain
@@ -100,6 +100,6 @@ filters you should project your data to an equal-area projection and run grdfilt
 To use the \fB\-D\fP5 option the input Mercator grid must be created by img2mercgrd using the \fB\-C\fP option so the origin of the
 y-values is the Equator (i.e., x = y = 0 correspond to lon = lat = 0).
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdfft (GMTMANSECTION)
-.IR img2mercgrd (GMTMANSECTION)
+.IR GMT (1),
+.IR grdfft (1)
+.IR img2mercgrd (1)

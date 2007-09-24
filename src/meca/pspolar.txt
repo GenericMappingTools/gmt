@@ -1,4 +1,4 @@
-.TH PSPOLAR GMTMANSECTION DATE VERSION VERSION
+.TH PSPOLAR 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 \fBpspolar\fP\ - Plot polarities on the inferior focal half\-sphere on maps
@@ -174,9 +174,9 @@ END
 .br
 .sp
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION),
-.IR psxy (GMTMANSECTION)
+.IR GMT (1),
+.IR psbasemap (1),
+.IR psxy (1)
 .SH REFERENCES
 .br
 \fRBomford, G., Geodesy, 4th ed., Oxford University Press, 1980.

@@ -1,4 +1,4 @@
-.TH GRDPROJECT GMTMANSECTION DATE VERSION VERSION
+.TH GRDPROJECT 1 DATE VERSION VERSION
 .SH NAME
 #include "common_options.txt"
 grdproject \- Forward and Inverse map transformation of 2-D grid files 
@@ -94,6 +94,6 @@ The boundaries of a projected (rectangular) data set will not necessarily give r
 geographical boundaries (Mercator is one exception).  In those cases some nodes may be unconstrained (set to NaN).
 To get a full grid back, your input grid may have to cover a larger area than you are interrested in.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gmtdefaults (GMTMANSECTION),
-.IR mapproject (GMTMANSECTION)
+.IR GMT (1),
+.IR gmtdefaults (1),
+.IR mapproject (1)

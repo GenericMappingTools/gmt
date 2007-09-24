@@ -1,4 +1,4 @@
-.TH PSCLIP GMTMANSECTION DATE VERSION VERSION
+.TH PSCLIP 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 psclip \- To set up polygonal clip paths
@@ -73,7 +73,7 @@ To deactivate the clipping in an existing plotfile, run:
 you should split them into two and make each explicitly contain the polar point.  The two
 clip polygons will combine to give the desired effect.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdmask (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION),
-.IR psmask (GMTMANSECTION)
+.IR GMT (1),
+.IR grdmask (1),
+.IR psbasemap (1),
+.IR psmask (1)

@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.40 2007-04-03 04:32:55 pwessel Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.41 2007-09-24 00:38:02 remko Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.40 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.41 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -264,11 +264,6 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 <TR><TD>Place GMT include files in:</TD><TD><INPUT NAME="gmt_include" TYPE="text" SIZE="45"></TD></TR>
 <TR><TD>Place GMT data resources in:</TD><TD><INPUT NAME="gmt_share" TYPE="text" SIZE="45"></TD></TR>
 <TR><TD>Place GMT man pages in:</TD><TD><INPUT NAME="gmt_man" TYPE="text" SIZE="30">
-&nbsp;Section: <SELECT NAME="gmt_mansect">
-<OPTION SELECTED>l
-<OPTION>1
-<OPTION>9
-</SELECT></TD></TR>
 <TR><TD>Place GMT web pages in:</TD><TD><INPUT NAME="gmt_web" TYPE="text" SIZE="45"></TD></TR>
 </TABLE>
 

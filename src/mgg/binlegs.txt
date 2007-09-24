@@ -1,4 +1,4 @@
-.TH BINLEGS GMTMANSECTION DATE VERSION VERSION
+.TH BINLEGS 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 binlegs \- Maintain the \fBGMT\fP index files for mgg supplement
@@ -36,7 +36,7 @@ To remove bad legs from the system:
 .sp
 \fBbinlegs\fP \fIbadlegs.lis\fP \fB\-D\fR \fB\-V\fR \fB\-P\fR\fI/usr/lib/gmt\fP
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gmtlegs (GMTMANSECTION),
-.IR gmt2bin (GMTMANSECTION)
+.IR GMT (1),
+.IR gmtlegs (1),
+.IR gmt2bin (1)
 #include "refs.i"

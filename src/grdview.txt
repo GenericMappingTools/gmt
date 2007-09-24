@@ -1,4 +1,4 @@
-.TH GRDVIEW GMTMANSECTION DATE VERSION VERSION
+.TH GRDVIEW 1 DATE VERSION VERSION
 #include "common_options.txt"
 #define LEN_1	1.5
 #define LEN_2	20
@@ -154,12 +154,12 @@ use a finer grid size when running gridding programs like \fBsurface\fP or \fBne
 this produces huge \fIPostScript\fP files.  The alternative is to use the \fB\-Qi\fP option, which
 computes bilinear or bicubic continuous color variations within polygons by using scanline conversion to image the polygons.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR gmt2rgb (GMTMANSECTION),
-.IR grdcontour (GMTMANSECTION),
-.IR grdimage (GMTMANSECTION),
-.IR nearneighbor (GMTMANSECTION),
-.IR psbasemap (GMTMANSECTION),
-.IR pscontour (GMTMANSECTION),
-.IR pstext (GMTMANSECTION),
-.IR surface (GMTMANSECTION)
+.IR GMT (1),
+.IR gmt2rgb (1),
+.IR grdcontour (1),
+.IR grdimage (1),
+.IR nearneighbor (1),
+.IR psbasemap (1),
+.IR pscontour (1),
+.IR pstext (1),
+.IR surface (1)

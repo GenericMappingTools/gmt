@@ -1,4 +1,4 @@
-.TH GRDVOLUME GMTMANSECTION DATE VERSION VERSION
+.TH GRDVOLUME 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
 grdvolume \- Calculating volume under a surface within a contour
@@ -74,8 +74,8 @@ are fully used. The exception is when the OPT(C) flag is used: since contours do
 the outermost gridpoint, both grid types are treated the same. That means the outer rim in gridcell
 oriented grids is ignored when using the OPT(C) flag.
 .SH "SEE ALSO"
-.IR GMT (GMTMANSECTION),
-.IR grdfilter (GMTMANSECTION)
+.IR GMT (1),
+.IR grdfilter (1)
 .SH REFERENCES
 Wessel, P., 1998, An empirical method for optimal robust regional-residual separation of geophysical data,
 \fIMath. Geol., 30(4)\fP, 391\-408.
