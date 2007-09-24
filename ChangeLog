@@ -1,8 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.88 2007-09-24 00:38:00 remko Exp $
+	$Id: ChangeLog,v 1.89 2007-09-24 16:22:43 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-24	remko
+	* ???math.c:		Made self-documenting.
+	* ???math.func:		Removed. Info is now in ???math.c.
+	* make_math.sh:		Changed accordingly.
 	* *.txt:		All manpages have become *.1 (except pslib.3)
 	* makefile:		All makefiles include install-man, uninstall-man
 	* configure.in:		--enable-mansect= removed.

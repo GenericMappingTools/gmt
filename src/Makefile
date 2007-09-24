@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.14 2007-09-24 00:38:01 remko Exp $
+#	$Id: Makefile,v 1.15 2007-09-24 16:22:43 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -162,8 +162,8 @@ pslib.o:	$(PS_H) $(PS_I) gmt_notunix.h gmt_notposix.h gmt_math.h
 
 blockmean.o blockmedian.o blockmode.o:	block_subs.c
 gmt_customio.o: gmt_mgg_header2.c gmt_agc_io.c
-gmtmath.o:	gmtmath.h
-grdmath.o:	grdmath.h
+gmtmath.o:	gmtmath.h gmtmath_def.h gmtmath_explain.h
+grdmath.o:	grdmath.h grdmath_def.h grdmath_explain.h
 
 # Jonathan Shewchuk's triangulation model (www.cs.cmu.edu/~quake)
 # Only used if TRIANGLE_D and TRIANGLE_O are set in makegmt.macros

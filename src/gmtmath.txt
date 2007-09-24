@@ -13,11 +13,11 @@ gmtmath \- Reverse Polish Notation calculator for data tables
 on one or more table data files or constants using Reverse Polish Notation (RPN)
 syntax (e.g., Hewlett-Packard calculator-style).  Arbitrarily complicated expressions
 may therefore be evaluated; the final result is written to an output file
-[or standard output].  When two data tables are on the stack, each element in file A
-is modified by the corresponding element in file B.  However, some operators only
-require one operand (see below).  If no data tables are used in the expression then options
-OPT(T), OPT(N) can be set (and optionally OPT(b) to indicate the data domain.  If STDIN
-is given, <stdin> will be read and placed on the stack as if a file with that content
+[or standard output].
+When two data tables are on the stack, each element in file A is modified by the corresponding element in file B.
+However, some operators only require one operand (see below).  If no data tables are used in the
+expression then options OPT(T), OPT(N) can be set (and optionally OPT(b) to indicate the data domain).
+If STDIN is given, <stdin> will be read and placed on the stack as if a file with that content
 had been given on the command line.  By default, all columns except the
 "time" column are operated on, but this can be changed (see OPT(C)).
 .TP
@@ -26,12 +26,14 @@ If \fIoperand\fP can be opened as a file it will be read as an ASCII (or binary,
 If not a file, it is interpreted as a numerical constant or a special symbol (see below).  The special argument
 STDIN means that \fIstdin\fP will be read and placed on the stack; STDIN can appear more than once if necessary.
 .TP
-\fIoutfile\fP is a table data file that will hold the final result.  If not given then the output is sent to stdout.
+\fIoutfile\fP
+The name of a table data file that will hold the final result.  If not given then the output is sent to stdout.
 .TP
 .B OPERATORS
-Choose among the following operators:
+Choose among the following operators. "args" are the number of input and output arguments.
 .br
-Operator	n_args	Returns
+.sp
+Operator	args	Returns
 .br
 .sp
 #include "gmtmath_man.i"
@@ -100,7 +102,6 @@ contains the desired t-coordinates which may be irregular.
 of degree L and order M, and its argument is the cosine of the colatitude
 which must satisfy -1 <= x <= +1. \fBPLM\fP is not normalized.
 .br
-.sp
 (2) All derivatives are based on central finite differences, with natural
 boundary conditions.
 .SH EXAMPLES
@@ -178,7 +179,8 @@ identified by prepending the current directory (i.e., ./LOG).
 (2) The stack depth limit is hard-wired to 100.
 .br
 (3) All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
-absolute value of their argument..br
+absolute value of their argument.
+.br
 (4) The \fBDDT\fP and \fBD2DT2\fP functions only work on regularly spaced data.
 .br
 (5) \fBROOTS\fP must be the last operator on the stack, only followed by \fB=\fP.

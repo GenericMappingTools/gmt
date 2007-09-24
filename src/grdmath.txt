@@ -1,15 +1,16 @@
 .TH GRDMATH 1 DATE VERSION VERSION
-.SH NAME
 #include "common_options.txt"
+.SH NAME
 grdmath \- Reverse Polish Notation calculator for grid files
 .SH SYNOPSIS
 \fBgrdmath\fP [ OPT(F) ] [ GMT_I_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] 
 \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] \fBOPERATOR\fP ... \fB=\fP \fIoutgrdfile\fP
 .SH DESCRIPTION
-\fBgrdmath\fP will perform operations like add, subtract, multiply, and divide on one or more grid files or constants using
-Reverse Polish Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).  Arbitrarily complicated expressions may therefore
-be evaluated; the final result is written to an output grid file. When two grids are
-on the stack, each element in file A is modified by the corresponding element in file B.
+\fBgrdmath\fP will perform operations like add, subtract, multiply, and divide
+on one or more grid files or constants using Reverse Polish Notation (RPN)
+syntax (e.g., Hewlett-Packard calculator-style).  Arbitrarily complicated expressions
+may therefore be evaluated; the final result is written to an output grid file.
+When two grids are on the stack, each element in file A is modified by the corresponding element in file B.
 However, some operators only require one operand (see below).  If no grid files are used in the
 expression then options OPT(R), OPT(I) must be set (and optionally OPT(F)).  The expression
 \fB=\fP \fIoutgrdfile\fP can occur as many times as the depth of the stack allows.
@@ -18,12 +19,14 @@ expression then options OPT(R), OPT(I) must be set (and optionally OPT(F)).  The
 If \fIoperand\fP can be opened as a file it will be read as a grid file.  If not a file, it is interpreted
 as a numerical constant or a special symbol (see below).
 .TP
-\fIoutgrdfile\fP is a 2-D grid file that will hold the final result.
+\fIoutgrdfile\fP
+The name of a 2-D grid file that will hold the final result.
 .TP
 .B OPERATORS
-Choose among the following operators:
+Choose among the following operators. "args" are the number of input and output arguments.
 .br
-Operator	n_args	Returns
+.sp
+Operator	args	Returns
 .br
 .sp
 #include "grdmath_man.i"
@@ -62,7 +65,7 @@ that each grid domain is within 1e-4 * grid_spacing of the domain of the first g
 #include "explain_-V.txt"
 #include "explain_-f.txt"
 .SH BEWARE
-(1) The operator \fBSDIST\fP calculates spherical distances bewteen the (lon, lat)
+(1) The operator \fBSDIST\fP calculates spherical distances between the (lon, lat)
 point on the stack and all node positions in the grid.  The grid domain
 and the (lon, lat) point are expected to be in degrees.  Similarly, the \fBSAZ\fP and \fBSBAZ\fP
 operators calculate spherical azimuth and backazimuths in degrees, respectively.
@@ -120,7 +123,7 @@ To extract the locations of local maxima that exceed 100 mGal in the file faa.gr
 (1) Files that have the same names as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. should be
 identified by prepending the current directory (i.e., ./LOG).
 .br
-(2) Piping of files are not allowed.
+(2) Piping of files is not allowed.
 .br
 (3) The stack depth limit is hard-wired to 100.
 .br
