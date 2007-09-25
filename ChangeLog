@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.91 2007-09-25 01:50:16 remko Exp $
+	$Id: ChangeLog,v 1.92 2007-09-25 22:25:04 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-25	pwessel
+	* pslegend.c:		Usage message did not explain the -L option
+	
 2007-09-25	remko
 	* src/*/GNUmakefile:	Added to build manpages within each directory
 	* src/manpages.mk:	Makefile included in src/*/GNUmakefile and src/GNUmakefile
