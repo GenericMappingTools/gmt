@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: make_math.sh,v 1.5 2007-09-24 16:22:43 remko Exp $
+#	$Id: make_math.sh,v 1.6 2007-09-25 23:22:52 remko Exp $
 
 # This script puts together Xmath.h, Xmath_def.h, Xmath_explain.h, and Xmath_man.i
 # from Xmath.c.  To be run from the GMT src directory.  X is either grd or gmt.
@@ -50,7 +50,6 @@ cat << EOF > ${prefix}math_def.h
  */
 
 #define ${PRE}MATH_N_OPERATORS	$n_op
-#define ${PRE}MATH_STACK_SIZE	$n_op
 
 /* For backward compatibility: */
 
@@ -163,6 +162,14 @@ echo "}" >> ${prefix}math.h
 if [ $gush = 1 ]; then
 	echo "Making ${prefix}math_man.i"
 fi
+cat <<EOF > ${prefix}math_man.i
+Choose among the following $n_op operators. "args" are the number of input and output arguments.
+.br
+.sp
+Operator	args	Returns
+.br
+.sp
+EOF
 awk '{ \
 	a = $2"         ";
 	printf "\\fB%s\\fP\t%d %d\t%s", substr(a, 0, 9), $3, $4, $5; \
@@ -174,6 +181,6 @@ awk '{ \
 	} \
 	if(a) printf "\\\"%c",39; \
 	printf "\n.br\n" \
-}' $$.txt > ${prefix}math_man.i
+}' $$.txt >> ${prefix}math_man.i
 
 rm -f $$.txt

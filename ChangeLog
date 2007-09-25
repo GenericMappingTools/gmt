@@ -1,13 +1,19 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.92 2007-09-25 22:25:04 guru Exp $
+	$Id: ChangeLog,v 1.93 2007-09-25 23:22:52 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-25	pwessel
 	* pslegend.c:		Usage message did not explain the -L option
 	
 2007-09-25	remko
-	* src/*/GNUmakefile:	Added to build manpages within each directory
-	* src/manpages.mk:	Makefile included in src/*/GNUmakefile and src/GNUmakefile
+	* gmtmath.c:		New operator PLMb (normalized as in geodesy).
+				Added check that 0 < M < L.
+	* grdmath.c:		New operators PLMb and YLMb (normalized as in geodesy).
+				Added check that 0 < M < L.
+				Set Imaginary component of YL0 = 0 (was same as real).
+	* ???math.c:		Set stack size to 100 (as mentioned in manual).
+	* src/*/GNUmakefile:	Added to build manpages within each directory.
+	* src/manpages.mk:	Makefile included in src/*/GNUmakefile and src/GNUmakefile.
 	* makefile:		All other makefiles updated.
 
 2007-09-24	pwessel
