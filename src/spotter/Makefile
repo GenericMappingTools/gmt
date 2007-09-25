@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.23 2007-09-24 01:41:03 remko Exp $
+#	$Id: Makefile,v 1.24 2007-09-25 01:50:16 remko Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -51,7 +51,7 @@ uninstall-man:
 clean:
 		\rm -f *.o *% $(PROGS)
 
-spotless:	clean
+spotless::	clean
 		\rm -f $(LIB)
 
 #-------------------------------------------------------------------------------

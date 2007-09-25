@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.10 2007-09-25 01:50:16 remko Exp $
+#  $Id: GNUmakefile,v 1.3 2007-09-25 01:50:16 remko Exp $
 #
-#	Guru Makefile for GMT Version 4.x mgd77 directory
+#	Guru Makefile for GMT Version 4.x segyprogs directory
 #	
 #	!!! THIS MAKEFILE IS FOR GMT DEVELOPERS ONLY !!!
 #
@@ -11,7 +11,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		07-MAY-2007
+#	Date:		24-SEP-2007
 #-------------------------------------------------------------------------------
 
 include ../../guru/gmtguru.macros.orig	# Overall default guru settings
@@ -19,9 +19,3 @@ sinclude ../../guru/gmtguru.macros	# Guru-specific settings determined by GURU
 
 include makefile
 include ../manpages.mk
-
-mgd77_functions.h mgd77_functions.c:	mgd77netcdfhelper.sh mgd77_header.txt
-		$(SHELL) mgd77netcdfhelper.sh
-
-mgd77_codes.h mgd77_codes.txt:		mgd77_codes.sh
-		$(SHELL) mgd77_codes.sh

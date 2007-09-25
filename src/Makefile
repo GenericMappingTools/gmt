@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.15 2007-09-24 16:22:43 remko Exp $
+#	$Id: Makefile,v 1.16 2007-09-25 01:50:16 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -141,7 +141,7 @@ uninstall-man:
 		cd $(mandir)/man3; \rm -f $(MAN3)
 
 clean:
-		\rm -f *.o *.a *.$(SL) $(ALLPROGS)
+		\rm -f *.o *.a *.so *.sa *.sl *.dylib *% $(ALLPROGS)
 
 spotless::	clean
 		\rm -f gmt_notposix.h makegmt.macros

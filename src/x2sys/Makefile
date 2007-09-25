@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.27 2007-09-24 00:38:02 remko Exp $
+#	$Id: Makefile,v 1.28 2007-09-25 01:50:16 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -41,7 +41,7 @@ uninstall:
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			cd $(libdir); \rm -f $(LIB)
 		fi
-		rm -rf $(datadir)/x2sys
+		\rm -rf $(datadir)/x2sys
 
 install-man:	$(MAN1)
 		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
@@ -49,11 +49,11 @@ install-man:	$(MAN1)
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
-spotless:	clean
+spotless::	clean
 		\rm -f $(LIB)
 
 clean:
-		\rm -f *.o $(PROGS)
+		\rm -f *.o *% $(PROGS)
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

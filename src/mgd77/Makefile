@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.41 2007-09-24 00:38:02 remko Exp $
+#	$Id: Makefile,v 1.42 2007-09-25 01:50:16 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -73,10 +73,10 @@ uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
 clean:
-		rm -f *.o *% $(PROGS) $(PROGSPS)
+		\rm -f *.o *% $(PROGS) $(PROGSPS)
 
-spotless:	clean
-		rm -f $(LIB)
+spotless::	clean
+		\rm -f $(LIB)
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

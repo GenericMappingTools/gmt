@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.45 2007-09-24 00:38:00 remko Exp $
+#	$Id: Makefile,v 1.46 2007-09-25 01:50:16 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -174,7 +174,7 @@ clean:
 		cd src ; $(MAKE) $@
 
 spotless::
-		rm -f config.cache config.status config.log
+		\rm -f config.cache config.status config.log
 		$(MAKE) TARGET=$@ insuppl
 		cd src ; $(MAKE) $@
 

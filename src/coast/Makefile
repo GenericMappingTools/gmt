@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.32 2007-09-24 00:38:01 remko Exp $
+#	$Id: Makefile,v 1.33 2007-09-25 01:50:16 remko Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -83,10 +83,10 @@ uninstall:
 		cd $(bindir); \rm -f $(PROGS)
 
 clean:
-		rm -f *.o *% $(PROGS)
+		\rm -f *.o *% $(PROGS)
 
 spotless:	clean
-		rm -f $(LIB)
+		\rm -f $(LIB)
 
 # Data targets:
 
@@ -103,7 +103,7 @@ set_old:
 		cd $(rootdir); tar xvjf ftp/GMT$(PREV_VERSION)_full.tar.bz2
 		
 delete:		
-		rm res_?/binned_*_?.bin res_?/binned_*_?.seg res_?/binned_*_?.pt
+		\rm res_?/binned_*_?.bin res_?/binned_*_?.seg res_?/binned_*_?.pt
 
 gshhs:
 		mkdir -p gshhs
