@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.17 2007-09-24 00:38:02 remko Exp $
+#	$Id: Makefile,v 1.18 2007-09-25 01:50:16 remko Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -48,9 +48,9 @@ uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
 clean:
-		rm -f *.o $(PROGS)
+		\rm -f *.o *% $(PROGS)
 
-spotless:	clean
+spotless::	clean
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

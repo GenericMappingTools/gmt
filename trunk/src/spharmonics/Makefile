@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2007-09-24 00:38:02 remko Exp $
+#	$Id: Makefile,v 1.4 2007-09-25 01:50:16 remko Exp $
 #	makefile for sph directory
 #
 #-------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ uninstall-man:	;
 spotless:	clean
 
 clean:	
-		rm -f *.o *% $(PROGS)
+		\rm -f *.o *% $(PROGS)
 
 #-------------------------------------------------------------------------------
 #       object file dependencies

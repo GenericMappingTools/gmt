@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.19 2007-09-24 00:38:02 remko Exp $
+#       $Id: Makefile,v 1.20 2007-09-25 01:50:16 remko Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -39,7 +39,7 @@ install-man:	$(MAN1)
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
-spotless:	clean
+spotless::	clean
 
 clean:
 		\rm -f *.o *% $(PROGS)

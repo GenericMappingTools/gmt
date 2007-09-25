@@ -37,10 +37,10 @@ install-man:	$(MAN1)
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
-spotless:	clean
+spotless::	clean
 
 clean:	
-		rm -f *.o $(PROGS)
+		\rm -f *.o *% $(PROGS)
 
 #-------------------------------------------------------------------------------
 #	object file dependencies

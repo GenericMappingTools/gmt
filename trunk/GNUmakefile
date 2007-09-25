@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.4 2007-09-24 01:26:51 remko Exp $
+#  $Id: GNUmakefile,v 1.5 2007-09-25 01:50:16 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -99,7 +99,6 @@ help::
 #!manpages      : Create manpages from text files
 #!usable        : Install-all and run examples
 #!site          : Complete install, incl documentation and web pages
-#!spotless      : Clean up and remove created files of all types
 #!cvsclean      : Cleanup the package to a nearly clean CVS checkout
 #!archive       : Build the release archives
 #!
@@ -144,10 +143,7 @@ cvsclean:
 		$(SHELL) guru/cvsclean.sh
 
 spotless::
-		touch src/makegmt.macros
 		cd doc ; $(MAKE) clean
-		$(MAKE) -f Makefile $@
-		rm -f src/makegmt.macros
 
 #-------------------------------------------------------------------------------
 # For compatibility with previous versions
@@ -185,16 +181,22 @@ share/conf/.gmtdefaults_US:	share/conf/.gmtdefaults_US.orig
 guru/gmtguru.macros:
 			touch $@
 
+# When doing spotless or TARGET=spotless, make sure a dummy src/makegmt.macros exists
+
+ifeq "$(findstring spotless,$(MAKECMDGOALS)$(TARGET))" "spotless"
+src/makegmt.macros:
+			touch $@
+else
 src/makegmt.macros:	guru/gmtguru.macros.orig guru/gmtguru.macros src/makegmt.macros.in src/gmt_version.h configure config.sub config.guess
 			rm -f config.cache config.log config.status
 			./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) \
 				$(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL)
+endif
 
 src/gmt_version.h:	guru/gmtguru.macros.orig guru/gmtguru.macros
 			echo '#define GMT_VERSION "$(VERSION)"' > $@
 
 configure:	configure.in
-		rm -f config.cache config.log config.status
 		$(AUTOCONF)
 
 latest-config:
@@ -437,6 +439,11 @@ zip_done:
 		@echo " "
 		@echo "Completed zipping off entire archive"
 
-ifneq "$(MAKECMDGOALS)" "spotless"
-    include Makefile
-endif
+include Makefile
+
+#-------------------------------------------------------------------------------
+# Final cleanup (needs to run last)
+#-------------------------------------------------------------------------------
+
+spotless::
+		\rm -rf src/makegmt.macros configure autom4te.cache

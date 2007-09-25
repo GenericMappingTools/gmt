@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.64 2007-09-24 16:22:43 remko Exp $
+#  $Id: GNUmakefile,v 1.65 2007-09-25 01:50:16 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #	
@@ -17,6 +17,8 @@
 include ../guru/gmtguru.macros.orig	# Overall default guru settings
 sinclude ../guru/gmtguru.macros		# Guru-specific settings determined by GURU
 
+include makefile
+
 # To retain binaries for more than one architecture you can 
 # say "make install2" instead of (or in addition to) "make install"
 # The resulting executables, libraries, and include files will then
@@ -27,8 +29,6 @@ libdir2		= $(rootdir)/`arch`/lib
 includedir2	= $(rootdir)/`arch`/include
 
 #-------------------------------------------------------------------------------
-default:	all
-
 install2:	all
 		$(MAKE) bindir=$(bindir2) libdir=$(libdir2) includedir=$(includedir2) install
 
@@ -51,8 +51,10 @@ uninstall2-suppl:
 
 # All the files that need to be build before compilation
 
-FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h \
-	gmt_keywords.h gmt_keycases.h grdmath.h gmtmath.h grdmath_man.i gmtmath_man.i
+FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h gmt_keywords.h gmt_keycases.h \
+	gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i \
+	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i
+	
 gmtmacros FILES:	$(FILES)
 
 # Must create gmt_key*.h from gmt_keywords.d
@@ -108,46 +110,21 @@ gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i:	make_math.sh gmtmath.c
 grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i:	make_math.sh grdmath.c
 			$(SHELL) make_math.sh grd
 
+# When doing "spotless" make sure at least a dummy makegmt.macros exists.
+
+ifeq "$(MAKECMDGOALS)" "spotless"
+makegmt.macros:
+			touch $@
+else
 makegmt.macros:		makegmt.macros.in
-			(cd ..; ./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) $(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) )
+			cd ..; $(MAKE) src/makegmt.macros
+endif
 
 # Must create manpages before install-man
 
-.SUFFIXES:	.txt .1 .3 .5 .dep
-
-MMAN1:=$(shell grep -h '\.1$$' ../guru/*.lis | cut -c5-)
-MMAN3:=$(shell grep -h '\.3$$' ../guru/*.lis | cut -c5-)
-MMAN5:=$(shell grep -h '\.5$$' ../guru/*.lis | cut -c5-)
-DEP1=$(MMAN1:.1=.dep)
-DEP3=$(MMAN3:.3=.dep)
-DEP5=$(MMAN5:.5=.dep)
-
-manpages install-man:		$(MMAN1) $(MMAN3) $(MMAN5)
-
-ifneq "$(MAKECMDGOALS)" "spotless"
-    include $(DEP1) $(DEP3) $(DEP5)
-    include makefile
-endif
-
-$(DEP1):	%.dep:	%.txt
-		$(TXT2MAN) -MM -MG $*.txt | sed s,.o:,.1:, > $@
-
-$(DEP3):	%.dep:	%.txt
-		$(TXT2MAN) -MM -MG $*.txt | sed s,.o:,.3:, > $@
-
-$(DEP5):	%.dep:	%.txt
-		$(TXT2MAN) -MM -MG $*.txt | sed s,.o:,.5:, > $@
-
-%.1 %.3 %.5:	%.txt
-		@echo "Making $@"
-		@cp -f $< junk.c
-		$(TXT2MAN) $(CPFLAGS) $(SI) junk.c | egrep -v '^#|^$$' > $@
-		@rm -f junk.c
+include manpages.mk
 
 # How to clean it all up
 
 spotless::
-		rm -f $(FILES)
-		rm -f $(MAN1) $(MAN3) $(MAN5)
-		rm -f $(DEP1) $(DEP3) $(DEP5)
-		$(MAKE) -f makefile $@
+		\rm -f $(FILES)

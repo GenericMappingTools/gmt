@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.17 2007-09-24 01:26:51 remko Exp $
+#	$Id: Makefile,v 1.18 2007-09-25 01:50:16 remko Exp $
 #
 #	makefile for dbase directory
 #
@@ -38,7 +38,7 @@ install-man:	$(MAN1)
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
-spotless:	clean
+spotless::	clean
 
 clean:	
 		\rm -f *.o *% $(PROGS)
