@@ -30,12 +30,6 @@ STDIN means that \fIstdin\fP will be read and placed on the stack; STDIN can app
 The name of a table data file that will hold the final result.  If not given then the output is sent to stdout.
 .TP
 .B OPERATORS
-Choose among the following operators. "args" are the number of input and output arguments.
-.br
-.sp
-Operator	args	Returns
-.br
-.sp
 #include "gmtmath_man.i"
 .TP
 .B SYMBOLS
@@ -97,13 +91,33 @@ contains the desired t-coordinates which may be irregular.
 #include "explain_-bo.txt"
 [Default is same as input, but see OPT(F)]
 #include "explain_precision.txt"
-.SH BEWARE
-(1) The operator \fBPLM\fP calculates the associated Legendre polynomial
-of degree L and order M, and its argument is the cosine of the colatitude
-which must satisfy -1 <= x <= +1. \fBPLM\fP is not normalized.
+.SH NOTES ON OPERATORS
+(1) The operators \fBPLM\fP and \fBPLMb\fP calculate the associated Legendre polynomial
+of degree L and order M in x which must satisfy -1 <= x <= +1.
+x, L, and M are the three arguments preceeding the operator.
+\fBPLM\fP is not normalized, \fBPLMb\fP is normalized in the way that is most commonly
+used in geodesy.
 .br
-(2) All derivatives are based on central finite differences, with natural
+.sp
+(2) Files that have the same names as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. should be
+identified by prepending the current directory (i.e., ./LOG).
+.br
+.sp
+(3) The stack depth limit is hard-wired to 100.
+.br
+.sp
+(4) All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
+absolute value of their argument.
+.br
+.sp
+(5) The \fBDDT\fP and \fBD2DT2\fP functions only work on regularly spaced data.
+.br
+.sp
+(6) All derivatives are based on central finite differences, with natural
 boundary conditions.
+.br
+.sp
+(7) \fBROOTS\fP must be the last operator on the stack, only followed by \fB=\fP.
 .SH EXAMPLES
 To take the square root of the content of the second data column being piped through \fBgmtmath\fP
 by process1 and pipe it through a 3rd process, use
@@ -172,18 +186,6 @@ solution is simply
 .br
 .sp
 \fBgmtmath\fP \fB\-T\fP lsqsys.d \fBLSQFIT \=\fP solution.d
-.SH BEWARE
-(1) Files that have the same names as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. should be
-identified by prepending the current directory (i.e., ./LOG).
-.br
-(2) The stack depth limit is hard-wired to 100.
-.br
-(3) All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
-absolute value of their argument.
-.br
-(4) The \fBDDT\fP and \fBD2DT2\fP functions only work on regularly spaced data.
-.br
-(5) \fBROOTS\fP must be the last operator on the stack, only followed by \fB=\fP.
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
 Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.

@@ -23,12 +23,6 @@ as a numerical constant or a special symbol (see below).
 The name of a 2-D grid file that will hold the final result.
 .TP
 .B OPERATORS
-Choose among the following operators. "args" are the number of input and output arguments.
-.br
-.sp
-Operator	args	Returns
-.br
-.sp
 #include "grdmath_man.i"
 .TP
 .B SYMBOLS
@@ -64,25 +58,45 @@ that each grid domain is within 1e-4 * grid_spacing of the domain of the first g
 #include "explain_-R.txt"
 #include "explain_-V.txt"
 #include "explain_-f.txt"
-.SH BEWARE
+.SH NOTES ON OPERATORS
 (1) The operator \fBSDIST\fP calculates spherical distances between the (lon, lat)
 point on the stack and all node positions in the grid.  The grid domain
 and the (lon, lat) point are expected to be in degrees.  Similarly, the \fBSAZ\fP and \fBSBAZ\fP
 operators calculate spherical azimuth and backazimuths in degrees, respectively.
 Note: If the current \fBELLIPSOID\fP is not Sphere then geodesics are used in the calculations.
 .br
-(2) The operator \fBYLM\fP calculates the fully normalized spherical harmonics for degree L and
+.sp
+(2) The operator \fBPLM\fP calculates the associated Legendre polynomial
+of degree L and order M, and its argument is the sine of the latitude.
+\fBPLM\fP is not normalized, \fBPLMb\fP is normalized in the way that is most commonly
+used in geodesy.
+.br
+.sp
+(3) The operators \fBYLM\fP and \fBYLMb\fP calculate normalized spherical harmonics for degree L and
 order M for all positions in the grid, which is assumed to be in degrees.
 \fBYLM\fP returns two grids, the Real (cosine) and Imaginary (sine) component
 of the complex spherical harmonic.  Use the \fBPOP\fP operator (and \fBEXCH\fP) to
 get rid of one of them, or save both by giving two consequtive = file.grd calls.
 .br
-(3) The operator \fBPLM\fP calculates the associated Legendre polynomial
-of degree L and order M, and its argument is the cosine of the colatitude
-which must satisfy -1 <= x <= +1. Unlike \fBYLM\fP, \fBPLM\fP is not normalized.
+The orthonormalized harmonics \fBYLM\fP are most commonly used in physics and seismology.
+In geodesy, \fBYLMb\fP is normalized to produce unit power when averaged over a sphere.
 .br
-(4) All the derivatives are based on central finite differences, with natural
-boundary conditions.
+.sp
+(4) All the derivatives are based on central finite differences, with natural boundary conditions.
+.br
+.sp
+(5) Files that have the same names as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. should be
+identified by prepending the current directory (i.e., ./LOG).
+.br
+.sp
+(6) Piping of files is not allowed.
+.br
+.sp
+(7) The stack depth limit is hard-wired to 100.
+.br
+.sp
+(8) All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
+absolute value of their argument.
 #include "explain_float.txt"
 .SH EXAMPLES
 To take log10 of the average of 2 files, use
@@ -119,16 +133,6 @@ To extract the locations of local maxima that exceed 100 mGal in the file faa.gr
 \fBgrdmath\fP faa.grd \fBDUP EXTREMA\fP 2 \fBEQ MUL DUP\fP 100 \fBGT MUL\fP 0 \fBNAN\fP = z.grd
 .br
 \fBgrd2xyz\fP z.grd \fB\-S\fP > max.xyz
-.SH REMARKS
-(1) Files that have the same names as some operators, e.g., \fBADD\fP, \fBSIGN\fP, \fB=\fP, etc. should be
-identified by prepending the current directory (i.e., ./LOG).
-.br
-(2) Piping of files is not allowed.
-.br
-(3) The stack depth limit is hard-wired to 100.
-.br
-(4) All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
-absolute value of their argument.
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
 Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.
