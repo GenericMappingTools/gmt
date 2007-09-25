@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.18 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.19 2007-09-25 02:03:16 remko Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -27,7 +27,7 @@ ALLLIB  = -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetc
 PROGS_C	= x_edit.c x_init.c x_list.c x_over.c x_report.c x_remove.c x_setup.c x_solve_dc_drift.c x_update.c
 PROGS_O	= $(PROGS_C:.c=.o)
 PROGS	= $(PROGS_C:.c=$(EXE))
-MAN1	= $(PROGS_C:.c=.1)
+MAN1	= $(PROGS_C:.c=.1) x_system.1
 
 #-------------------------------------------------------------------------------
 #	software targets
