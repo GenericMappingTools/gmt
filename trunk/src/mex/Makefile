@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.2 2007-09-24 00:38:02 remko Exp $
+#		$Id: Makefile,v 1.3 2007-09-26 16:14:24 remko Exp $
 #
 #	Makefile for gmt <--> matlab conversion programs
 #	Use with GMT 4.x
@@ -48,8 +48,7 @@ uninstall:
 			cd $(bindir); \
 		fi; \rm -f $(PROGS_M) $(PROGS_H)
 
-install-man:	;
-uninstall-man:	;
+install-man uninstall-man manpages:	;
 
 spotless:	clean
 
