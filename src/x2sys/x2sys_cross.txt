@@ -15,7 +15,7 @@ heading and speed along each tracksegment, and the crossover and mean values for
 The names of the tracks are passed on the command line.
 By default, \fBx2sys_cross\fP will look for both external and internal cross-overs.  As an option,
 you may choose to project all data using one of the map-projections prior to calculating the crossovers.
-#include "x2sys/explain_track.txt"
+#include "explain_track.txt"
 .TP
 .B \-T
 Sets the data set \fITAG\fP which, among other things, sets the definition file.

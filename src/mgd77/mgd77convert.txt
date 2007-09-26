@@ -8,7 +8,7 @@ mgd77convert \- Translate between different formats of MGD77 files
 .SH DESCRIPTION
 \fBmgd77convert\fP reads versions of MGD77 files and writes the same
 data in (probably) another format to a new file in the current directory.
-#include "mgd77/explain_ncid.txt"
+#include "explain_ncid.txt"
 .TP
 .B \-F
 Specifies the format of the input (From) files.  Choose from \fBa\fP for standard

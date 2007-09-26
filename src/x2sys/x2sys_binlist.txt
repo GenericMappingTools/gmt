@@ -18,7 +18,7 @@ the track goes and is used by the data archivist to build a track data base for
 track queries such as to determine which tracks
 need to be compared for crossover analysis.  You must run \fBx2ys_init\fP
 to initialize the tag before you can run the indexing.
-#include "x2sys/explain_track.txt"
+#include "explain_track.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP

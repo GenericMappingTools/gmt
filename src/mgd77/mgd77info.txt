@@ -15,7 +15,7 @@ section or its individual members.
 If you need to know which tracks are crossing through a given region and what kinds
 of geophysical observations are available, consider using the x2sys tools to set up
 a tracks index data base (see \fBx2sys_init\fP for more information).
-#include "mgd77/explain_ncid.txt"
+#include "explain_ncid.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -47,7 +47,7 @@ No cruise information is listed.  Instead, we just display a list of the GEODAS 
 and their names.  Optionally, append \fBv\fP to also display the vessels and their 4-character codes for each
 institution.  The following is the list of institutions:
 .br
-#include "mgd77/mgd77_codes.txt"
+#include "mgd77_codes.txt"
 #include "explain_-V.txt"
 .SH EXAMPLES
 To get one-line summary information about the cruises 01010047.mgd77 and 01010008.mgd77, try
