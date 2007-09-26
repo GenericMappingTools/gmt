@@ -1,4 +1,4 @@
-.TH GRDIMAGE 1 DATE VERSION VERSION
+.TH GRDIMAGE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define LEN_L   1.5
 #define SCALE1	\fB\-Jl\fP18/24/1.5\fBc\fP

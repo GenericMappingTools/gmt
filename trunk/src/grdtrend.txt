@@ -1,4 +1,4 @@
-.TH GRDTREND 1 DATE VERSION VERSION
+.TH GRDTREND 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdtrend \- Fit and/or remove a polynomial trend in a grid file

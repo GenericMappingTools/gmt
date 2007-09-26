@@ -1,4 +1,4 @@
-.TH X_LIST 1 DATE VERSION VERSION
+.TH X_LIST 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 \fBx_list\fP \- Extract Cross-Over Information from the Data Base.
 .SH SYNOPSIS

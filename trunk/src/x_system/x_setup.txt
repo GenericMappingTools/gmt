@@ -1,4 +1,4 @@
-.TH X_SETUP 1 DATE VERSION VERSION
+.TH X_SETUP 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 \fBx_setup\fP \- Determine Pairs of Legs that need Cross-Over Checking
 .SH SYNOPSIS

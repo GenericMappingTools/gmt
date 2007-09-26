@@ -1,4 +1,4 @@
-.TH GRDEDIT 1 DATE VERSION VERSION
+.TH GRDEDIT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdedit \- Modifying the header or content of a 2-D grid file

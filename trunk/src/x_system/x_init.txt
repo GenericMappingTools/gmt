@@ -1,4 +1,4 @@
-.TH X_INIT 1 DATE VERSION VERSION
+.TH X_INIT 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 \fBx_init\fP \- Initialization of Cross-Over Data Bases.
 .SH SYNOPSIS

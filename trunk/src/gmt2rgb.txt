@@ -1,4 +1,4 @@
-.TH GMT2RGB 1 DATE VERSION VERSION
+.TH GMT2RGB 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 gmt2rgb \- Converting a grid file, a raw, or a Sun raster file to r/g/b grids

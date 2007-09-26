@@ -1,4 +1,4 @@
-.TH GRDRASTER 1 DATE VERSION VERSION
+.TH GRDRASTER 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdraster \- extract subregion from a binary raster and write a grid file

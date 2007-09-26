@@ -1,4 +1,4 @@
-.TH GRDCUT 1 DATE VERSION VERSION
+.TH GRDCUT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdcut \- Extract a subregion out of a grid file

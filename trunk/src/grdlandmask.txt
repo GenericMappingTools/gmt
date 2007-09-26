@@ -1,4 +1,4 @@
-.TH GRDLANDMASK 1 DATE VERSION VERSION
+.TH GRDLANDMASK 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdlandmask \- Create "wet-dry" mask grid file from shoreline data base.

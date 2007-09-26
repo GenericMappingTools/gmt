@@ -1,4 +1,4 @@
-.TH X_SYSTEM 1 DATE VERSION VERSION
+.TH X_SYSTEM 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 \fBx_system\fP \- A Cross-Over Error Analysis Tool
 .SH INTRODUCTION

@@ -1,4 +1,4 @@
-.TH MAKECPT 1 DATE VERSION VERSION
+.TH MAKECPT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 makecpt \- Make GMT color palette tables

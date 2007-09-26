@@ -1,4 +1,4 @@
-.TH GRDGRADIENT 1 DATE VERSION VERSION
+.TH GRDGRADIENT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdgradient \- Compute directional derivative or gradient from 2-D grid file representing z(x,y)

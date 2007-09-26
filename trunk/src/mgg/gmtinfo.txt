@@ -1,4 +1,4 @@
-.TH GMTINFO 1 DATE VERSION VERSION
+.TH GMTINFO 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 gmtinfo \- Get information about individual cruises
 .SH SYNOPSIS

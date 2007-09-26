@@ -1,4 +1,4 @@
-.TH PSMASK 1 DATE VERSION VERSION
+.TH PSMASK 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 psmask \- To clip or mask areas of no data on a map

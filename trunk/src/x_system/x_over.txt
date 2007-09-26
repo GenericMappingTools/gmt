@@ -1,4 +1,4 @@
-.TH X_OVER 1 DATE VERSION VERSION
+.TH X_OVER 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 \fBx_over\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS

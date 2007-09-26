@@ -1,4 +1,4 @@
-.TH GMTCONVERT 1 DATE VERSION VERSION
+.TH GMTCONVERT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables

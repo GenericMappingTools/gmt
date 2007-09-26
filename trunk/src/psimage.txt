@@ -1,4 +1,4 @@
-.TH PSIMAGE 1 DATE VERSION VERSION
+.TH PSIMAGE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 psimage \- To plot images (EPS files or Sun raster files) on maps

@@ -1,4 +1,4 @@
-.TH PSCOUPE 1 DATE VERSION VERSION   
+.TH PSCOUPE 1 DATE VERSION "Generic Mapping Tools"   
 #include "common_options.txt"
 .SH NAME
 pscoupe \- Plot cross-sections of focal mechanisms. 

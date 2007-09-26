@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.96 2007-09-26 16:22:47 guru Exp $
+	$Id: ChangeLog,v 1.97 2007-09-26 19:12:28 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-26	pwessel
 	* meca/*.c:		Made Windows DLL workable by using the GMT_* i/o functions.
 	
 2007-09-26	remko
+	* *.txt:		Now print "Generic Mapping Tools" at top of man page.
 	* explain_-J.txt, psbasemap.txt:	Added info on general perspective view (-JG).
 	* gmt_{map,proj}.[ch]:	Permanently added genper code (stripped #ifdef _GENPER).
 	* gmt_{init,plot,support}.c:	---"---

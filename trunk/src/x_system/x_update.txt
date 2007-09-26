@@ -1,4 +1,4 @@
-.TH X_UPDATE 1 DATE VERSION VERSION
+.TH X_UPDATE 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 \fBx_update\fP \- Archiving of Cross-Over Information
 .SH SYNOPSIS

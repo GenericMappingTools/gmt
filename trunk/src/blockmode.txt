@@ -1,4 +1,4 @@
-.TH BLOCKMODE 1 DATE VERSION VERSION
+.TH BLOCKMODE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 blockmode \- filter to block average (\fIx,y,z\fP) data by mode estimation.

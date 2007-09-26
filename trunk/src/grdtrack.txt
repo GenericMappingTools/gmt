@@ -1,4 +1,4 @@
-.TH GRDTRACK 1 DATE VERSION VERSION
+.TH GRDTRACK 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 #include "common_options.txt"
 grdtrack \- Sampling of a 2-D grid file along 1-D trackline (a sequence of x,y points)

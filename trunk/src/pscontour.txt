@@ -1,4 +1,4 @@
-.TH PSCONTOUR 1 DATE VERSION VERSION
+.TH PSCONTOUR 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define LEN_L 0.5
 #define SCALE_L \fB\-Jl\fP18/24/0.5\fBi\fP

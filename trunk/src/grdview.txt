@@ -1,4 +1,4 @@
-.TH GRDVIEW 1 DATE VERSION VERSION
+.TH GRDVIEW 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define LEN_1	1.5
 #define LEN_2	20

@@ -1,4 +1,4 @@
-.TH GSHHS 1 DATE VERSION VERSION
+.TH GSHHS 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 gshhs \- Extract ASCII listings from binary GSHHS or WDBII data files

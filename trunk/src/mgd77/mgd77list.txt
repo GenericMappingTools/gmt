@@ -1,4 +1,4 @@
-.TH MGD77LIST 1 DATE VERSION VERSION
+.TH MGD77LIST 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 mgd77list \- A data-extractor for MGD77[+] files

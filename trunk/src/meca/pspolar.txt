@@ -1,4 +1,4 @@
-.TH PSPOLAR 1 DATE VERSION VERSION
+.TH PSPOLAR 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 \fBpspolar\fP\ - Plot polarities on the inferior focal half\-sphere on maps

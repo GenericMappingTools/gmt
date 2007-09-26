@@ -1,4 +1,4 @@
-.TH GMTSET 1 DATE VERSION VERSION
+.TH GMTSET 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 gmtset \- To change individual \fBGMT\fP default parameters

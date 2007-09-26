@@ -1,4 +1,4 @@
-.TH GRDMATH 1 DATE VERSION VERSION
+.TH GRDMATH 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdmath \- Reverse Polish Notation calculator for grid files

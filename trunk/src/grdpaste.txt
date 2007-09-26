@@ -1,4 +1,4 @@
-.TH GRDPASTE 1 DATE VERSION VERSION
+.TH GRDPASTE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdpaste \- Paste together two \fI.grd\fP files along a common edge.

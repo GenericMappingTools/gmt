@@ -1,4 +1,4 @@
-.TH GRDPROJECT 1 DATE VERSION VERSION
+.TH GRDPROJECT 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 #include "common_options.txt"
 grdproject \- Forward and Inverse map transformation of 2-D grid files 

@@ -1,4 +1,4 @@
-.TH PSCOAST 1 DATE VERSION VERSION
+.TH PSCOAST 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define LEN_1   0.1
 #define SCALE_M1   \fB\-Jm\fP0.1\fBi\fP

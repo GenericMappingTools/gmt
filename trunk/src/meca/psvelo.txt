@@ -1,4 +1,4 @@
-.TH PSVELO 1 DATE VERSION VERSION
+.TH PSVELO 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 psvelo \- Plot velocity vectors, crosses, and wedges on maps

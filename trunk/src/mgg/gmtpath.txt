@@ -1,4 +1,4 @@
-.TH GMTPATH 1 DATE VERSION VERSION
+.TH GMTPATH 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 gmtpath \- Get full pathname for gmt files
 .SH SYNOPSIS

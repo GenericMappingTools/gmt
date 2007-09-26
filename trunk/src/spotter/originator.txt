@@ -1,4 +1,4 @@
-.TH ORIGINATOR 1 DATE VERSION VERSION
+.TH ORIGINATOR 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 originator \- Associate seamounts with hotspot point sources 

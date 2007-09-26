@@ -1,4 +1,4 @@
-.TH PSWIGGLE 1 DATE VERSION VERSION
+.TH PSWIGGLE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define LEN 15
 #define SCALE_S \fB\-JS\fP0/90/15\fBc\fP
