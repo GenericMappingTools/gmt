@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: manpages.mk,v 1.1 2007-09-25 01:50:16 remko Exp $
+#  $Id: manpages.mk,v 1.2 2007-09-26 19:06:55 remko Exp $
 #
 #	GNUmakefile to create manpages for GMT Version 4.x
 #	
@@ -12,9 +12,6 @@
 #
 #	Date:		24-SEP-2007
 #-------------------------------------------------------------------------------
-
-include $(GMTSRCDIR)../guru/gmtguru.macros.orig	# Overall default guru settings
-sinclude $(GMTSRCDIR)../guru/gmtguru.macros		# Guru-specific settings determined by GURU
 
 SUFFIXES:	.1 .3 .5 .txt
 
@@ -29,17 +26,17 @@ endif
 %.1 %.3 %.5:		%.txt
 		@echo "Making $@"
 		@cp -f $< junk.c
-		$(TXT2MAN) $(CPFLAGS) -I$(GMTSRCDIR) $(SI) junk.c | egrep -v '^#|^$$' > $@
+		$(TXT2MAN) -I.. $(CPFLAGS) $(SI) junk.c | egrep -v '^#|^$$' > $@
 		@rm -f junk.c
 
 $(DEP1):	%.dep:	%.txt
-		$(TXT2MAN) -I$(GMTSRCDIR) -MM -MG $*.txt | sed s,.o:,.1:, > $@
+		$(TXT2MAN) -I.. -MM -MG $*.txt | sed s,.o:,.1:, > $@
 
 $(DEP3):	%.dep:	%.txt
-		$(TXT2MAN) -I$(GMTSRCDIR) -MM -MG $*.txt | sed s,.o:,.3:, > $@
+		$(TXT2MAN) -I.. -MM -MG $*.txt | sed s,.o:,.3:, > $@
 
 $(DEP5):	%.dep:	%.txt
-		$(TXT2MAN) -I$(GMTSRCDIR) -MM -MG $*.txt | sed s,.o:,.5:, > $@
+		$(TXT2MAN) -I.. -MM -MG $*.txt | sed s,.o:,.5:, > $@
 
 manpages:	$(MAN1) $(MAN3) $(MAN5)
 
