@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.53 2007-09-18 23:45:40 remko Exp $
+ *	$Id: gmt_project.h,v 1.54 2007-09-26 15:28:53 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,9 +47,7 @@
 #define GMT_ORTHO		102
 #define GMT_AZ_EQDIST		103
 #define GMT_GNOMONIC		104
-#ifdef _GENPER
 #define GMT_GENPER              105     /* General Perspective Projection */
-#endif
 #define GMT_POLAR		110
 #define GMT_LAMBERT		1000	/* Conic projections tagged 1000-9999 */
 #define GMT_ALBERS		1001
@@ -101,11 +99,11 @@ struct GMT_MAP_PROJECTIONS {
 
 	double pars[10];		/* Raw unprocessed map-projection parameters as passed on command line */
 	double z_pars[2];		/* Raw unprocessed z-projection parameters as passed on command line */
-	
+
 	/* Common projection parameters */
-	
+
 	int projection;			/* Gives the id number for the projection used */
-	
+
 	BOOLEAN x_off_supplied;		/* Used to set xorigin/yorigin for overlay/final plots */
 	BOOLEAN y_off_supplied;
 	BOOLEAN region_supplied;	/* TRUE when -R option has been given */
@@ -116,7 +114,7 @@ struct GMT_MAP_PROJECTIONS {
 	BOOLEAN three_D;		/* Parameters for 3-D projections */
 	BOOLEAN GMT_convert_latitudes;	/* TRUE if using spherical code with authalic/conformal latitudes */
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
-	
+
 	double x0, y0, z0;		/* Projected values of the logical origin for the projection */
 	double xmin, xmax, ymin, ymax, zmin, zmax;	/* Extreme projected values */
 	double w, e, s, n;		/* Bounding geographical region, if applicable */
@@ -135,20 +133,20 @@ struct GMT_MAP_PROJECTIONS {
 	double M_PR_DEG, KM_PR_DEG;	/* Current spherical approximations to convert degrees to dist */
 	double half_ECC, i_half_ECC;	/* 0.5 * ECC and 0.5 / ECC */
 	double one_m_ECC2, i_one_m_ECC2; /* 1.0 - ECC2 and inverse */
-	
+
 	int gave_map_width;		/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
 
 	/* Linear plot parameters */
-	
+
 	int xyz_projection[3];		/* For linear projection, 0 = linear, 1 = log10, 2 = pow */
 	BOOLEAN xyz_pos[3];		/* TRUE if x,y,z-axis increases in normal positive direction */
 	BOOLEAN compute_scale[3];	/* TRUE if axes lengths were set rather than scales */
 	BOOLEAN degree[3];		/* TRUE if we have linear projection with geographical data */
 	double xyz_pow[3];		/* For GMT_POW projection */
 	double xyz_ipow[3];
-	
+
 	/* Mercator parameters.  (See Snyder for details on all parameters) */
-	
+
 	double m_m, m_im, m_mx, m_imx;
 	BOOLEAN m_got_parallel;		/* TRUE if scale given at lat != 0 */
 
@@ -157,19 +155,19 @@ struct GMT_MAP_PROJECTIONS {
 	double c_x0, c_y0;
 
 	/* Lambert conformal conic parameters. */
-	
+
 	double l_N, l_i_N, l_Nr, l_i_Nr;
 	double l_F, l_rF, l_i_rF;
 	double l_rho0;
-	
+
 	/* Oblique Mercator Projection (Spherical version )*/
-	
+
 	double o_sin_pole_lat, o_cos_pole_lat;	/* Pole of rotation */
 	double o_pole_lon;	/* In Radians */
 	double o_pole_lat;	/* In Radians */
 	double o_beta;		/* lon' = beta for central_meridian (In Radians) */
 	double o_FP[3], o_FC[3], o_IP[3], o_IC[3];
-	
+
 	/* TM and UTM Projections */
 
 	double t_lat0;
@@ -180,81 +178,80 @@ struct GMT_MAP_PROJECTIONS {
 	int utm_hemisphere;	/* -1 for S, +1 for N, 0 if to be set by -R */
 	int utm_zonex;		/* The longitude component 1-60 */
 	int utm_zoney;		/* The latitude component A-Z */
-	
+
 	/* Lambert Azimuthal Equal-Area Projection */
-	
+
 	double sinp;
 	double cosp;
 	double Dx, Dy, iDx, iDy;	/* Fudge factors for projections w/authalic lats */
-	
+
 	/* Stereographic Projection */
-	
+
 	double s_c, s_ic;
 	double r;		/* Radius of projected sphere in plot units (inch or cm) */
 	BOOLEAN polar;		/* True if projection pole coincides with S or N pole */
 	BOOLEAN s_polar;	/* True if projection pole is S pole */
 	BOOLEAN n_polar;	/* True if projection pole is N pole */
-	
+
 	/* Mollweide Equal-Area Projection */
-	
+
 	double w_x;
 	double w_y;
 	double w_iy;
 	double w_r;	/* Also used by Hammer-Aitoff and Winkel Projections */
-	
+
 	/* Winkel Tripel Projection */
-	
+
 	double r_cosphi1;	/* = cos (50.467) */
-	
+
 	/* Robinson Projection */
-	
+
 	double n_cx, n_cy;	/* = = 0.8487R, 1.3523R */
 	double n_i_cy;
 	double n_phi[GMT_N_ROBINSON], n_X[GMT_N_ROBINSON], n_Y[GMT_N_ROBINSON];
 	double *n_x_coeff, *n_y_coeff, *n_iy_coeff;
-	
+
 	/* Eckert IV Projection */
-	
+
 	double k4_x, k4_y, k4_ix, k4_iy;
-	
+
 	/* Eckert VI Projection */
-	
+
 	double k6_r, k6_ir;
-	
+
 	/* Cassini Projection */
-	
+
 	double c_M0, c_c1, c_c2, c_c3, c_c4;
 	double c_i1, c_i2, c_i3, c_i4, c_i5, c_p;
-	
+
 	/* Miller Projection */
-	
+
 	double j_x, j_ix, j_y, j_iy;
-	
+
 	/* Cylindrical equidistant Projection */
-	
+
 	double q_r, q_ir;
-	
+
 	/* Cylindrical equal-area Projection(s) */
-	
+
 	double y_rx, y_ry;
 	double y_i_rx, y_i_ry;
-	
+
 	/* Albers Equal-area conic parameters. */
-	
+
 	double a_n, a_i_n;
 	double a_C, a_n2ir2, a_test, a_Cin;
 	double a_rho0;
 
 	/* Equidistant conic parameters. */
-	
+
 	double d_n, d_i_n;
 	double d_G, d_rho0;
 
 	/* Van der Grinten parameters. */
-	
+
 	double v_r, v_ir;
 
-#ifdef _GENPER
         /* General Perspective parameters */
         double g_H, g_R;
         double g_P, g_P_inverse;
@@ -282,17 +279,16 @@ struct GMT_MAP_PROJECTIONS {
 
         int g_debug;
         BOOLEAN g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
-#endif  /* end of _GENPER */
 
 	/* Gnomonic horizon */
 
 	double f_horizon;
-	
+
 	/* Polar (cylindrical) projection */
 
 	double p_base_angle;
 	BOOLEAN got_azimuths, got_elevations, z_down;
-	
+
 };
 
 #define GMT_IS_PLAIN	0	/* Plain baseframe */

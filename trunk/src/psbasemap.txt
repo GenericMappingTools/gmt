@@ -34,7 +34,8 @@
 #define SCALE_D \fB\-JD\fP45/20/32/45/6\fBi\fP
 #define SCALE_F \fB\-JF\fP-100/40/60/6\fBi\fP
 #define LEN_G   6
-#define SCALE_G \fB\-JG\fP125/10/6\fBi\fP
+#define SCALE_G1 \fB\-JG\fP125/10/6\fBi\fP
+#define SCALE_G2 \fB\-JG\fP-74/41.5/160/210/55/30/30/6\fBi\fP
 #define LEN_I   0.02
 #define SCALE_I \fB\-Ji\fP0/0.02\fBi\fP
 #define SCALE_N \fB\-JN\fP0/8\fBi\fP
@@ -109,8 +110,6 @@ to LEN_P inch and with gridlines and ticks every 30 degrees and 100 units, use
 .br
 .sp
 \fBpsbasemap\fP \fB\-R\fP0/360/0/1000 SCALE_P \fB\-B\fP30\fBp\fP/100 > polar.ps
-.br
-.sp
 .SH CYLINDRICAL MAP PROJECTIONS
 .SS Cassini
 A LEN_C-cm-wide basemap using the Cassini projection may be obtained by
@@ -127,7 +126,7 @@ A Mercator map with scale LEN_M inch/degree along equator, and showing the lengt
 A global Miller cylindrical map with scale 1:200,000,000 may be plotted as
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 \fB\-Jj\fP180/1:200000000 \fB\-B\fP30\fBg\fP30:.Miller: > miller.ps
+\fBpsbasemap\fP \fB\-Rg\fP \fB\-Jj\fP180/1:200000000 \fB\-B\fP30\fBg\fP30:.Miller: > miller.ps
 .SS Oblique Mercator [conformal]
 To create a page-size global oblique Mercator basemap for a pole at (90,30) with gridlines every 30 degrees, run
 .br
@@ -144,8 +143,6 @@ meridian is made by
 .br
 .sp
 \fBpsbasemap\fP \fB\-R\fP-50/310/-90/90 SCALE_Q \fB\-B\fP30\fBg\fP30:."Equidistant Cylindrical": > cyl_eqdist.ps
-.br
-.sp
 .SS Universal Transverse Mercator [conformal]
 To use this projection you must know the UTM zone number, which defines the central meridian.  A UTM
 basemap for Indo-China can be plotted as
@@ -158,9 +155,7 @@ Here we will use 45 degrees which gives the Peters projection.  A LEN_Y inch wid
 is made by
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 SCALE_Y \fB\-B\fP30\fBg\fP30:.Peters: > peters.ps
-.br
-.sp
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_Y \fB\-B\fP30\fBg\fP30:.Peters: > peters.ps
 .SH CONIC MAP PROJECTIONS
 .SS Albers [equal-area]
 A basemap for middle Europe may be created by
@@ -177,14 +172,12 @@ Yet another basemap of width LEN_D inch for middle Europe may be created by
 .br
 .sp
 \fBpsbasemap\fP \fB\-R\fP0/90/25/55 SCALE_D \fB\-B\fP10\fBg\fP10:."Equidistant conic": > econic.ps
-.br
-.sp
 .SH AZIMUTHAL MAP PROJECTIONS
 .SS Lambert [equal-area]
 A LEN_A-cm-wide global view of the world from the vantage point -80/-30 will give the following basemap:
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 SCALE_A \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Lambert Azimuthal": > lamberta.ps
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_A \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Lambert Azimuthal": > lamberta.ps
 .br
 .sp
 Follow the instructions for stereographic projection if you want to impose rectangular
@@ -193,24 +186,29 @@ boundaries on the azimuthal equal-area map but substitute \fB\-Ja\fP for \fB\-Js
 A LEN_E-cm-wide global map in which distances from the center (here 125/10) to any point is true can be obtained by:
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 SCALE_E \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Equidistant": > equi.ps
-.br
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_E \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Equidistant": > equi.ps
 .SS Gnomonic
 A view of the world from the vantage point -100/40 out to a horizon of 60 degrees from the center can be made using
 the Gnomonic projection:
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 SCALE_F \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Gnomonic": > gnomonic.ps
-.br
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_F \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Gnomonic": > gnomonic.ps
 .SS Orthographic
 A global perspective (from infinite distance) view of the world from the vantage point 125/10 will give
 the following LEN_G-inch-wide basemap:
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 SCALE_G \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Orthographic": > ortho.ps
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_G1 \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Orthographic": > ortho.ps
+.SS General Perspective
+The OPT(JG) option can be used in a more generalized form, specifying altitude above the surface,
+width and height of the view point, and twist and tilt.
+A view from 160 km above -74/41.5 with a tilt of 55 and azimuth of 210 degrees, and limitting the
+viewpoint to 30 degrees width and height will product a LEN_G-inch-wide basemap:
 .br
+.sp
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_G2 \fB\-B\fP5\fBg\fP1/5\fBg\fP1:."General Perspective": > genper.ps
 .SS Stereographic [conformal]
-To make a Polar stereographic projection basemap with radius = LEN_S cm to \-60 degree latitude, with plot title
+To make a polar stereographic projection basemap with radius = LEN_S cm to \-60 degree latitude, with plot title
 "Salinity measurements", using 5 degrees annotation/tick interval and 1 degree gridlines, run
 .br
 .sp
@@ -224,20 +222,18 @@ choose a pole at 130/-30 and use 100/-45 and 160/-5 as our corners.  The command
 .br
 .sp
 \fBpsbasemap\fP \fB\-R\fP100/-45/160/-5\fBr SCALE_S2 \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."General Stereographic View": > stereo2.ps
-.br
-.sp
 .SH MISCELLANEOUS MAP PROJECTIONS
 .SS Hammer [equal-area]
 The Hammer projection is mostly used for global maps and thus the spherical form is used.
 To get a world map centered on Greenwich at a scale of 1:200000000, use
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 \fB\-Jh\fP180/1:200000000 \fB\-B\fP30\fBg\fP30/15\fBg\fP15:.Hammer: > hammer.ps
+\fBpsbasemap\fP \fB\-Rg\fP \fB\-Jh\fP180/1:200000000 \fB\-B\fP30\fBg\fP30/15\fBg\fP15:.Hammer: > hammer.ps
 .SS Sinusoidal [equal-area]
 To make a sinusiodal world map centered on Greenwich, with a scale along the equator of LEN_I inch/degree, use
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP-180/180/-90/90 SCALE_I \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Sinusoidal": > sinus1.ps
+\fBpsbasemap\fP \fB\-Rd\fP SCALE_I \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Sinusoidal": > sinus1.ps
 .br
 .sp
 To make an interrupted sinusiodal world map with breaks at 160W, 20W, and 60E, with a scale along the equator of 0.02 inch/degree, run the following sequence of commands:
@@ -253,17 +249,17 @@ To make an interrupted sinusiodal world map with breaks at 160W, 20W, and 60E, w
 Pseudo-cylindrical projection typically used for global maps only.  Set the central longitude and scale, e.g.,
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 SCALE_K4 \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Eckert IV": > eckert4.ps
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_K4 \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Eckert IV": > eckert4.ps
 .SS Eckert VI [equal-area]
 Another pseudo-cylindrical projection typically used for global maps only.  Set the central longitude and scale, e.g.,
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 SCALE_K6 \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Eckert VI": > eckert6.ps
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_K6 \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Eckert VI": > eckert6.ps
 .SS Robinson
 Projection designed to make global maps "look right".  Set the central longitude and width, e.g.,
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP-180/180/-90/90 SCALE_N \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Robinson": > robinson.ps
+\fBpsbasemap\fP \fB\-Rd\fP SCALE_N \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Robinson": > robinson.ps
 .SS Winkel Tripel
 Yet another projection typically used for global maps only.  You can set the central longitude, e.g.,
 .br
@@ -274,13 +270,13 @@ The Mollweide projection is also mostly used for global maps and thus the spheri
 To get a LEN_W-cm-wide world map centered on the Dateline:
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 SCALE_W \fB\-B\fP30\fBg\fP30/15\fBg\fP15:.Mollweide: > mollweide.ps
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_W \fB\-B\fP30\fBg\fP30/15\fBg\fP15:.Mollweide: > mollweide.ps
 .SS Van der Grinten
 The Van der Grinten projection is also mostly used for global maps and thus the spherical form is used.
 To get a LEN_V-inch-wide world map centered on the Dateline:
 .br
 .sp
-\fBpsbasemap\fP \fB\-R\fP0/360/-90/90 SCALE_V \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Van der Grinten": > grinten.ps
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_V \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Van der Grinten": > grinten.ps
 .SH RESTRICTIONS
 For some projections, a spherical earth is implicitly assumed.  A warning will notify the user if \fB\-V\fP
 is set.
