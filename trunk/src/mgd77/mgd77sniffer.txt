@@ -22,7 +22,7 @@ scanned record. Data problems are optionally output (OPT(De) option) using a com
 (see E77 ERROR FORMAT description below). Default error thresholds are derived from histograms of
 all MGD77 geophysical data collected between 1952 and January, 2006. Thresholds are adjustable with
 the OPT(L) option.
-#include "mgd77/explain_ncid.txt"
+#include "explain_ncid.txt"
 
 .SH REQUIREMENTS
 The mgd77sniffer links with Generic Mapping Tools 4.0 or later along with the supplemental GMT

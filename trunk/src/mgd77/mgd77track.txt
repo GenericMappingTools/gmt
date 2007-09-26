@@ -18,7 +18,7 @@ mgd77track \- A shiptrack plotting program
 .SH DESCRIPTION
 \fBmgd77track\fP reads NGDC MGD77 cruises and creates \fIPostScript\fP code that will plot one or more ship tracks on a
 map using the specified projection.  The \fIPostScript\fP code is written to standard output.
-#include "mgd77/explain_ncid.txt"
+#include "explain_ncid.txt"
 #include "explain_-J_short.txt"
 #include "explain_-Rgeo.txt"
 .SH OPTIONS

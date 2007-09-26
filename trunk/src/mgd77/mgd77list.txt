@@ -23,8 +23,8 @@ calendar sub-units of time (year, month, day, hour, min, sec), the NGDC id, and 
 preset weight (see \fB\-W\fP).  A sub-section can be specified by passing time- or
 distance-intervals along track or by selecting a geographical region.  Finally, each output
 record may be required to pass any number of logical tests involving data values or bit flags.
-#include "mgd77/mgd77_IGF_coeffs.h"
-#include "mgd77/explain_ncid.txt"
+#include "mgd77_IGF_coeffs.h"
+#include "explain_ncid.txt"
 .TP
 .B \-F
 The required \fIcolumns\fP string must be a comma-separated list of parameter abbreviations

@@ -7,7 +7,7 @@ mgd77path \- Get full pathname for MGD77 files
 .SH DESCRIPTION
 \fBmgd77path\fP returns the full pathname to one or more MGD77 files. The pathname returned for a given
 cruise may change with time due to reshuffling of disks/subdirectories.
-#include "mgd77/explain_ncid.txt"
+#include "explain_ncid.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
