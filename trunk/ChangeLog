@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.93 2007-09-25 23:22:52 remko Exp $
+	$Id: ChangeLog,v 1.94 2007-09-26 03:17:12 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-25	pwessel
 	* pslegend.c:		Usage message did not explain the -L option
+	* gmt_map.c:		GMT_grdproject needed to skip points that
+				project beyond the horizon.
 	
 2007-09-25	remko
 	* gmtmath.c:		New operator PLMb (normalized as in geodesy).
