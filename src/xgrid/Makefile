@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.3 2007-09-24 00:38:02 remko Exp $
+#		$Id: Makefile,v 1.4 2007-09-26 16:14:24 remko Exp $
 #
 #	Makefile for xgrid directory
 #	X Windows application xgridedit
@@ -39,8 +39,7 @@ install:	all
 uninstall:
 		cd $(bindir); \rm -f $(PROGS)
 
-install-man:	;
-uninstall-man:	;
+install-man uninstall-man manpages:	;
 
 spotless:	clean
 
