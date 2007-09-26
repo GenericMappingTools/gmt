@@ -1,4 +1,4 @@
-.TH SURFACE 1 DATE VERSION VERSION
+.TH SURFACE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 surface \- adjustable tension continuous curvature surface gridding algorithm

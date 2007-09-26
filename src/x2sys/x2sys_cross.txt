@@ -1,4 +1,4 @@
-.TH X2SYS_CROSS 1 DATE VERSION VERSION
+.TH X2SYS_CROSS 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 \fBx2sys_cross\fP \- Find and compute Cross-Over Errors

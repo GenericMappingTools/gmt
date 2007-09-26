@@ -1,4 +1,4 @@
-.TH GRDROTATER 1 DATE VERSION VERSION
+.TH GRDROTATER 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdrotater \- Rotate a grid using a finite rotation

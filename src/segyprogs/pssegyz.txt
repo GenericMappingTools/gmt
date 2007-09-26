@@ -1,4 +1,4 @@
-.TH PSSEGYZ 1 DATE VERSION VERSION
+.TH PSSEGYZ 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 pssegyz \- Create imagemasked postscript from SEGY file

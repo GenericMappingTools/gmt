@@ -1,4 +1,4 @@
-.TH PSHISTOGRAM 1 DATE VERSION VERSION
+.TH PSHISTOGRAM 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define LEN 0.75
 #define SCALE OPT(Jx)LEN\fBc\fP/0.01\fBc\fP

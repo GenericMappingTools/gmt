@@ -1,4 +1,4 @@
-.TH GMTSELECT 1 DATE VERSION VERSION
+.TH GMTSELECT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 gmtselect \- Select data subsets based on multiple spatial criteria 

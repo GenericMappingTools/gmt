@@ -1,4 +1,4 @@
-.TH X_REMOVE 1 DATE VERSION VERSION
+.TH X_REMOVE 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 \fBx_remove\fP \- Remove COEs for Selected Cruises from the Data Base
 .SH SYNOPSIS

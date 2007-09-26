@@ -1,4 +1,4 @@
-.TH GRDSAMPLE 1 DATE VERSION VERSION
+.TH GRDSAMPLE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdsample \- Resample a grid file onto a new grid

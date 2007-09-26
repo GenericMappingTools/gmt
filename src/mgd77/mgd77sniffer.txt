@@ -1,4 +1,4 @@
-.TH MGD77SNIFFER 1 DATE VERSION VERSION
+.TH MGD77SNIFFER 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 mgd77sniffer \- Scan for errors in MGD77 data

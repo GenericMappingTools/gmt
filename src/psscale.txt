@@ -1,4 +1,4 @@
-.TH PSSCALE 1 DATE VERSION VERSION
+.TH PSSCALE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define LEN_1	7.5
 #define LEN_2	1.25

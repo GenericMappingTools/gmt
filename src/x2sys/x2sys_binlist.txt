@@ -1,4 +1,4 @@
-.TH X2SYS_BINLIST 1 DATE VERSION VERSION
+.TH X2SYS_BINLIST 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 x2sys_binlist \- Create bin-index files from track data files

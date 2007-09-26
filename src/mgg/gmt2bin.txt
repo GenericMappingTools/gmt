@@ -1,4 +1,4 @@
-.TH GMT2BIN 1 DATE VERSION VERSION
+.TH GMT2BIN 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 gmt2bin \- Create bin-index files from gmt files

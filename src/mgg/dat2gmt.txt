@@ -1,4 +1,4 @@
-.TH DAT2GMT 1 DATE VERSION VERSION
+.TH DAT2GMT 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 dat2gmt \- Convert an ASCII file to a binary gmt file
 .SH SYNOPSIS

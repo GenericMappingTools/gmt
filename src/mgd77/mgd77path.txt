@@ -1,4 +1,4 @@
-.TH MGD77PATH 1 DATE VERSION VERSION
+.TH MGD77PATH 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 mgd77path \- Get full pathname for MGD77 files

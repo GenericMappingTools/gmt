@@ -1,4 +1,4 @@
-.TH PROJECT 1 DATE VERSION VERSION
+.TH PROJECT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 project \- project data along a line or great circle, generate a profile track, or translate coordinates.

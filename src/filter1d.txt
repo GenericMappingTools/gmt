@@ -1,4 +1,4 @@
-.TH FILTER1D 1 DATE VERSION VERSION
+.TH FILTER1D 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 filter1d \- Time domain filtering of 1-D time series

@@ -1,4 +1,4 @@
-.TH PSBASEMAP 1 DATE VERSION VERSION
+.TH PSBASEMAP 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define LEN_1   25
 #define LEN_2   15

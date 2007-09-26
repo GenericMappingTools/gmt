@@ -1,4 +1,4 @@
-.TH MGD77TRACK 1 DATE VERSION VERSION
+.TH MGD77TRACK 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #ifdef SI
 #define SCALE1 0.25cm/degree

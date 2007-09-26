@@ -1,4 +1,4 @@
-.TH GMT 1 DATE VERSION VERSION
+.TH GMT 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 GMT \- The Generic Mapping Tools data processing and display software package
 .SH INTRODUCTION

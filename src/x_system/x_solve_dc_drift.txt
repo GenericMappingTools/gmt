@@ -1,4 +1,4 @@
-.TH X_SOLVE_DC_DRIFT 1 DATE VERSION VERSION
+.TH X_SOLVE_DC_DRIFT 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 \fBx_solve_dc_drift\fP \- Find Best-fitting D.C.-shift and Drift Estimates
 .SH SYNOPSIS

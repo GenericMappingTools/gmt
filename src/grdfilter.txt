@@ -1,4 +1,4 @@
-.TH GRDFILTER 1 DATE VERSION VERSION
+.TH GRDFILTER 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdfilter \- Filter a 2-D gridded file in the space (or time) domain

@@ -1,4 +1,4 @@
-.TH GRDVOLUME 1 DATE VERSION VERSION
+.TH GRDVOLUME 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdvolume \- Calculating volume under a surface within a contour

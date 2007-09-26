@@ -1,4 +1,4 @@
-.TH GRDFFT 1 DATE VERSION VERSION
+.TH GRDFFT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdfft \- Perform mathematical operations on grid files in the wavenumber (or frequency) domain 

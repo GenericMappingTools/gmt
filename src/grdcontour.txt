@@ -1,4 +1,4 @@
-.TH GRDCONTOUR 1 DATE VERSION VERSION
+.TH GRDCONTOUR 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdcontour \- Contouring of 2-D gridded data sets

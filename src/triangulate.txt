@@ -1,4 +1,4 @@
-.TH TRIANGULATE 1 DATE VERSION VERSION
+.TH TRIANGULATE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define LEN 15
 #define SCALE \fB\-JM\fP15\fBc\fP

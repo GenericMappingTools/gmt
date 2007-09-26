@@ -1,4 +1,4 @@
-.TH PSMECA 1 DATE VERSION VERSION
+.TH PSMECA 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 psmeca \- Plot focal mechanisms on maps

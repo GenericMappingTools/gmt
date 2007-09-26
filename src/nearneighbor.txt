@@ -1,4 +1,4 @@
-.TH NEARNEIGHBOR 1 DATE VERSION VERSION
+.TH NEARNEIGHBOR 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 nearneighbor \- A "Nearest neighbor" gridding algorithm

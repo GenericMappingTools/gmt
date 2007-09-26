@@ -1,4 +1,4 @@
-.TH SAMPLE1D 1 DATE VERSION VERSION
+.TH SAMPLE1D 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 sample1d \- Resampling of 1-D data sets

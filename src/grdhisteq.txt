@@ -1,4 +1,4 @@
-.TH GRDHISTEQ 1 DATE VERSION VERSION
+.TH GRDHISTEQ 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 grdhisteq \- Histogram equalization for grid files 

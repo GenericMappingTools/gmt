@@ -1,4 +1,4 @@
-.TH BLOCKMEAN 1 DATE VERSION VERSION
+.TH BLOCKMEAN 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 blockmean \- filter to block average (\fIx,y,z\fP) data by L2 norm

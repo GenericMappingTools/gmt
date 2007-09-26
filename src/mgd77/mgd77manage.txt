@@ -1,4 +1,4 @@
-.TH MGD77MANAGE 1 DATE VERSION VERSION
+.TH MGD77MANAGE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 mgd77manage \- Manage extra columns in MGD77+ files

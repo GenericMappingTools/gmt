@@ -1,4 +1,4 @@
-.TH X2SYS_INIT 1 DATE VERSION VERSION
+.TH X2SYS_INIT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 x2sys_init \- Initialize data base for track data files

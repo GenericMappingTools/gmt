@@ -1,4 +1,4 @@
-.TH pslib 3 DATE VERSION VERSION
+.TH PSLIB 3 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 pslib 4.0 \- A \fIPostScript\fP based plotting library
 .SH DESCRIPTION

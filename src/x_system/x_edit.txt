@@ -1,4 +1,4 @@
-.TH X_EDIT 1 DATE VERSION VERSION
+.TH X_EDIT 1 DATE VERSION "Generic Mapping Tools"
 .SH NAME
 \fBx_edit\fP \- convert between binary and ASCII crossover correction tables.
 .SH SYNOPSIS

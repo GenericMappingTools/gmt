@@ -1,4 +1,4 @@
-.TH MGD77CONVERT 1 DATE VERSION VERSION
+.TH MGD77CONVERT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
 mgd77convert \- Translate between different formats of MGD77 files

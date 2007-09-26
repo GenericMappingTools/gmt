@@ -1,4 +1,4 @@
-.TH MAPPROJECT 1 DATE VERSION VERSION
+.TH MAPPROJECT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define	LEN1	0.5
 #define SCALE1	OPT(Jm)0.5\fBc\fP

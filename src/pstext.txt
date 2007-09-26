@@ -1,4 +1,4 @@
-.TH PSTEXT 1 DATE VERSION VERSION
+.TH PSTEXT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 #define CLEARANCE_SI 0.1\fBc\fP/0.1\fBc\fP
 #define CLEARANCE_US 0.0254\fBi\fP/0.0254\fBi\fP
