@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.95 2007-09-26 15:28:53 remko Exp $
+	$Id: ChangeLog,v 1.96 2007-09-26 16:22:47 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-26	pwessel
+	* meca/*.c:		Made Windows DLL workable by using the GMT_* i/o functions.
+	
 2007-09-26	remko
 	* explain_-J.txt, psbasemap.txt:	Added info on general perspective view (-JG).
 	* gmt_{map,proj}.[ch]:	Permanently added genper code (stripped #ifdef _GENPER).
