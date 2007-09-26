@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.21 2007-09-18 23:45:40 remko Exp $
+ *	$Id: gmt_proj.c,v 1.22 2007-09-26 15:28:53 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -975,8 +975,6 @@ void GMT_ilambeq (double *lon, double *lat, double x, double y)
 	}
 }
 
-#ifdef _GENPER
-
 /* Set up General Perspective projection */
 
 void genper_to_xtyt (double angle, double x, double y, double offset, double *xt, double *yt)
@@ -1702,13 +1700,13 @@ void GMT_genper (double lon, double lat, double *xt, double *yt)
 		y *= project_info.g_rmax;
 		angle *= R2D;
 	}
-	else if (project_info.ECC2 != 0.0) {
+	else if (project_info.ECC2 != 0.0) { /* within field of view, ellipsoidal earth */
 		genper_toxy (lat, lon, 0.0, &x, &y);
 		/* angle = project_info.g_azimuth; */
 		angle = atan2(x, y) * R2D;
 		/* XXX Which one is it? Forgotten R2D. Switched x and y. */
 	}
-	else if (cosc >=  project_info.g_P_inverse) { /* within field of view */
+	else { /* within field of view, spherical earth */
 		kp = project_info.g_R * (project_info.g_P - 1.0) / (project_info.g_P - cosc);
 		x = kp * cos_lat * sin_dlon;
 		y = kp * (project_info.cosp * sin_lat - project_info.sinp * cos_lat * cos_dlon);
@@ -1826,28 +1824,6 @@ int GMT_genper_map_clip_path (int np, double *work_x, double *work_y)
 	}
 	return 0;
 }
-
-#if 0
-double GMT_genper_left_circle (double y)
-{
-	double x ;
-
-	y -= project_info.r;
-	x = GMT_half_map_size - d_sqrt (project_info.r * project_info.r - y * y);
-	return x;
-}
-
-double GMT_genper_right_circle (double y)
-{
-	double x ;
-
-	y -= project_info.r;
-	x = GMT_half_map_size + d_sqrt (project_info.r * project_info.r - y * y);
-
-	return x;
-}
-#endif
-#endif   /* END of _GENPER */
 
 /* -JG ORTHOGRAPHIC PROJECTION */
 

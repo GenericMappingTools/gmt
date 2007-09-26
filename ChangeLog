@@ -1,22 +1,28 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.94 2007-09-26 03:17:12 guru Exp $
+	$Id: ChangeLog,v 1.95 2007-09-26 15:28:53 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-09-26	remko
+	* explain_-J.txt, psbasemap.txt:	Added info on general perspective view (-JG).
+	* gmt_{map,proj}.[ch]:	Permanently added genper code (stripped #ifdef _GENPER).
+	* gmt_{init,plot,support}.c:	---"---
+	* gmt.h, gmt_project.h:		---"---
+	* grdimage.c, pscoast.c:	---"---
 
 2007-09-25	pwessel
 	* pslegend.c:		Usage message did not explain the -L option
-	* gmt_map.c:		GMT_grdproject needed to skip points that
-				project beyond the horizon.
-	
+	* gmt_map.c:		GMT_grdproject needed to skip points that project beyond the horizon.
+
 2007-09-25	remko
 	* gmtmath.c:		New operator PLMb (normalized as in geodesy).
 				Added check that 0 < M < L.
 	* grdmath.c:		New operators PLMb and YLMb (normalized as in geodesy).
 				Added check that 0 < M < L.
-				Set Imaginary component of YL0 = 0 (was same as real).
+				When M=0, set Imaginary component of YLM = 0 (was same as real).
 	* ???math.c:		Set stack size to 100 (as mentioned in manual).
 	* src/*/GNUmakefile:	Added to build manpages within each directory.
 	* src/manpages.mk:	Makefile included in src/*/GNUmakefile and src/GNUmakefile.
-	* makefile:		All other makefiles updated.
+	* */makefile:		All other makefiles updated.
 
 2007-09-24	pwessel
 	* psxy.c:		Box-and-whisker symbols can now optionally be of the notched
@@ -28,7 +34,7 @@
 	* ???math.func:		Removed. Info is now in ???math.c.
 	* make_math.sh:		Changed accordingly.
 	* *.txt:		All manpages have become *.1 (except pslib.3)
-	* makefile:		All makefiles include install-man, uninstall-man
+	* */makefile:		All makefiles include install-man, uninstall-man
 	* configure.in:		--enable-mansect= removed.
 	* website/gmt_install_form.html website/install_gmt_form.pl:	Manpage section removed
 	* guru/install_gmt:	---"---
@@ -39,7 +45,7 @@
 	* grdmath.c:		For -S..k, did not properly account for latitude effect on dx
 	* spotter/originator.c:	Added option -Q to specify constant r/t for (x,y,z) data only
 				Now lists -L option in both usage and man page
-	
+
 2007-09-19	pwessel
 	* triangulate.c, pscontour.c:	Synopsis now reports name of algorithm currently
 				compiled in [Shewchuk or Watson].
@@ -51,10 +57,10 @@
 
 2007-09-18	pwessel
 	* x2sys/x2sys_cross.c:	Skip duplicate files
-	
+
 2007-09-18	remko
 	* gmt_proj.c, gmt_project.h:	Nicely reformatted all genper code and fixed
-				several bug, particularly inverse projection and projection out
+				several bugs, particularly inverse projection and projection out
 				of field of view.
 	* gmt_init.c, gmt_plot.c:	Small changes in genper code (reformatting mostly).
 	* gmt_map.[ch]:		Permanently removed old grd_forward code
@@ -65,7 +71,7 @@
 	* grdproject.c:		Added code by Joaquim Luis to make -R optional
 	* grdproject.txt:	Changed accordingly; also better described aliasing/interpolation
 	* grdimage.txt:		Better description of aliasing and interpolation.
-	* *.txt:		Removed metion that options/modifiers should be upper/lower case.
+	* *.txt:		Removed mention that options/modifiers should be upper/lower case.
 	* gmt_map.c:		Added slack to longitude limits check in GMT_grd_project.
 				KM_PER_DEG was not reset in GMT_set_spherical. This may have caused
 				errors in scaling when ELLIPSOID != Sphere.
@@ -94,8 +100,8 @@
 	* */makefile:		Make sure all executables get .exe under Windows.
 	* ps2raster.c:		Limit resolution to 720 DPI while determining BBox (50% speed up).
 				Made it completely silent on Windows.
-	* pslib.c:		Skip lines from Prologues starting with %- (skips CVS tags).
 	* share/pslib/PSL*.ps:	Start CVS tag lines (and some others) with %- for skipping by pslib.
+	* pslib.c:		Skip lines from Prologues starting with %- (skips CVS tags).
 	* doc/scripts/orig/*.ps:	Some files updated because of BBox changes.
 
 2007-09-13	remko
@@ -109,7 +115,7 @@
 	* x2sys_cross.c:	Distances were bogus (see above), and wrong number of
 				arguments passed to read_file function pointer.
 	* x2sys.[ch]:		Wrong number of arguments in the generic read_file function
-	
+
 2007-09-12	remko
 	* ex16/ex16.cpt:	Use a lower resolution in surface (-I0.2) to speed up ghostscript.
 				Add a nice image pattern to demonstrate that capability to do so.
@@ -165,7 +171,7 @@
 2007-09-04	pwessel
 	* gshhs/gshhstograss.c:	Removed use of getopt so even the lamest systems can compile it.
 				This also made in possible to compile under Windows.
-				
+
 2007-09-04	remko
 	* All makefiles:	Improved support for .exe extensions.
 				No longer compiles everything when one source changes.
@@ -188,14 +194,14 @@
 				rivers and borders). Added man pages for the three programs.
 	* rivers:		Added double-lined rivers to river database to improve rendering
 				of major permanent rivers.
-						
+
 2007-08-27	remko
 	* ps2raster.c:		Added -P to and removed -V from the commandline description
 	* configure.in:		On Linux: Use "gcc -shared", not "ld -shared"
 
 2007-08-23	pwessel
 	* pslegend.c:		Added @ECHO OFF to avoid commands being echoed into PS under WIN32
-	
+
 2007-08-23	remko
 	* ex??/job??.sh:	Properly identified GMT programs used in example scripts.
 	* src/*.txt:		Moved explanation of pens, fill and color to separate sections.
@@ -215,8 +221,8 @@
 				then UTM zone specification must have some latitude info in it.
 				If a unique zone is specified then -R is set accordingly.
 	* gmt_init.c:		Now, UTM zones may be A,B,Y,Z or 1-60 with modifiers
-				C-X (except I and O).  
-	
+				C-X (except I and O).
+
 2007-08-12	pwessel
 	* grdcut.c:		Domain check failed for geographic 360-degree grid w/ -fg
 
@@ -226,18 +232,18 @@
 .
 2007-08-01	pwessel
 	* gmt_support.c:	ddd:mm.xx (2 or more x) failed.
-	
+
 2007-07-31	pwessel
 	* psxy.c:		-E.../[-|+]<pen> where + means apply cpt color (-C) to symbol & bar
 					- means apply to bar only (no fill).  Likewise, -W[+|-]<pen> controls
 					if -C sets outline (-) or both fill and outline (+)
 	* psxyz.c:		-W[+|-]<pen> controls if -C sets outline (-) or both fill and outline (+)
-	
+
 2007-07-30	pwessel
 	* psxy.c:		For -Sb|B, clip bars extending outside -R (unless -N is on)
 	* psxyz.c:		Same
 	* misc/gmtdigitize.c:	Must use separate x- and y-scales if -Jx is specified
-	
+
 2007-07-18	remko
 	* meca/utilmeca.c:	Make sure that checks on floating point numbers work well, even
 				in case of small round off errors. Thanks to Peter Lombard.
@@ -245,7 +251,7 @@
 2007-07-17	pwessel
 	* grdedit.c:		Disallow -T for Surfer grids since they don't support two
 				kinds of registration.
-				
+
 2007-07-16	pwessel
 	* grd2xyz.c:		Bug fix (Windows only): Did not switch to binary mode when
 				-Z specified binary output.
@@ -255,14 +261,14 @@
 
 2007-07-10	wsmith
 	* img2mercgrd.c:	Fixed &&/|| logic in lat bounds check when -D set.
-	
+
 2007-07-09	pwessel
 	* misc/gmtdigitize.c:	Wrong coordinates used to calculate rms misfit
-	
+
 2007-07-08	pwessel
 	* gmt_init.c:		Suffices h|+|- in -J were mistaken for units
 	* gmt_io.c:		Blank lines were not recognized under cygwin/SFU
-	 
+
 2007-07-06	pwessel
 	* gmt_stat.c:		Added Digamma (Psi), P_nu and Q_nu Legendre functions (complex nu)
 	* g{mt,rd}math.c:	Added PSI, PV, QV, COT, COTD, ACOT, SEC, SECD, ASEC, CSC, CSCD, ACSC
@@ -306,7 +312,7 @@
 	* GMT_Appendix_N.tex:	Changed wording about using pattern fills in symbols.
 				No longer created out of GMT_Appendix_N_main.tex, instead include
 				GMT_Appendix_N_inc.tex created by scripts/GMT_App_N.sh
-	* scripts/GMT_App_N.sh:	Created GMT_Appendix_N_inc.tex instead of altering GMT_Appendix_N.tex
+	* scripts/GMT_App_N.sh:	Creates GMT_Appendix_N_inc.tex instead of altering GMT_Appendix_N.tex
 	* doc/eps/GMT_usage_3.0.eps:	Removed.
 	* doc/fig:		Renamed from doc/eps
 	* doc/fig/GMT_Environment.eps:	Created anew using xfig.
@@ -385,7 +391,7 @@
 	* pstext.txt:		Updated accordingly
 	* GMT_Chapter_4.tex:	Updated table of escape sequences
 	* GMT_Tutorial.tex:	Same
-      
+
 2007-05-17:	remko
 	* ChangeLog:		Replaced CHANGES by ChangeLog (GNU requirement)
 
@@ -5633,7 +5639,6 @@
 1991-10-19
 	* gmt_plot.c:	log10 axes:  Only started at next 10^n, never e.g. 40
 			when 1-2-3-4.. ticks were specified and -R40/1000 ...
-			
 
 1991-10-18
 	* psto24:	Had unneccesary reference to gmt_home = /home/kiawe2

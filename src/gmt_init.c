@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.303 2007-09-18 23:42:55 remko Exp $
+ *	$Id: gmt_init.c,v 1.304 2007-09-26 15:28:53 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -285,14 +285,12 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     Scale is either <1:xxxx> or <radius>/<lat>, where <radius> is distance\n");
 			fprintf (stderr, "\t     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
 
-#ifdef _GENPER                  
-			fprintf (stderr, "\t   -Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<width>/<height>/<scale> \n OR\t   -JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<width>/<height>/<mapwidth> (Vertical Perspective)\n");
+			fprintf (stderr, "\t   -Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale>  OR\n\t   -JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<width> (General Perspective)\n");
 			fprintf (stderr, "\t     lon0/lat0 is the center or the projection.\n");
-			fprintf (stderr, "\t     Altitude is the height of the viewpoint above local sea level\n");
-			fprintf (stderr, "\t        altitude is in Kilometers\n");
-			fprintf (stderr, "\t        if altitude less than 10 then it is the distance \n");
-			fprintf (stderr, "\t        from center of earth to viewpoint divided by the radius of the Earth\n");
-			fprintf (stderr, "\t        if altitude has a suffix of 'r' then it is the radius \n");
+			fprintf (stderr, "\t     Altitude is the height (in km) of the viewpoint above local sea level\n");
+			fprintf (stderr, "\t        - if altitude less than 10 then it is the distance \n");
+			fprintf (stderr, "\t        from center of earth to viewpoint in earth radii\n");
+			fprintf (stderr, "\t        - if altitude has a suffix of 'r' then it is the radius \n");
 			fprintf (stderr, "\t        from the center of earth in kilometers\n");
 			fprintf (stderr, "\t     Azimuth is azimuth east of North of view\n");
 			fprintf (stderr, "\t     Tilt is the upward tilt of the plane of projection\n");
@@ -302,7 +300,6 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t     Height is the height of the viewpoint in degrees\n");
 			fprintf (stderr, "\t     Scale is either <1:xxxx> or <radius>/<lat>, where <radius> is distance\n");
 			fprintf (stderr, "\t     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
-#endif  /* End of _GENPER */ 
 
 			fprintf (stderr, "\t   -Jh<lon0>/<scale> OR -JH<lon0>/<width> (Hammer-Aitoff)\n");
 			fprintf (stderr, "\t     Give central meridian and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
@@ -412,9 +409,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jg|G<lon0>/<lat0>/<scale (or radius/lat)|width>  (Orthographic)\n");
 
-#ifdef _GENPER                  
-			fprintf (stderr, "\t   -Jg|G<lon0>/<lat0>[/<altitude>/<azimuth>/<tilt>/<twist>/<width>/<height>]/<scale|width> (Vertical Perspective)\n");
-#endif  /* End of _GENPER */
+			fprintf (stderr, "\t   -Jg|G<lon0>/<lat0>[/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>]/<scale|width> (General Perspective)\n");
 
 			fprintf (stderr, "\t   -Jh|H<lon0>/<scale|width> (Hammer-Aitoff)\n");
 
@@ -759,13 +754,11 @@ void GMT_syntax (char option)
 					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
-#ifdef _GENPER
 				case GMT_GENPER:
-					fprintf (stderr, "\t-Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<width>/<twist>/<height>/<scale> \n OR\t -JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<width>/<height>/<mapwidth>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <mapwidth> in %s\n",
+					fprintf (stderr, "\t-Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale> OR\n\t-JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<width>\n");
+					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
-#endif  /* end of _GENPER */
 				case GMT_HAMMER:
 					fprintf (stderr, "\t-Jh<lon0>/<scale> OR -JH<lon0>/<width\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
@@ -965,10 +958,10 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 
 	int i, error = 0, j_type, opt;
 	char processed[256];
-	
+
 	memset ((void *)processed, 0, 256);	/* All set to 0 for starters */
 	opt = (int)item[1];
-	
+
 	switch (opt) {
 		case '\0':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option - given more than once\n", GMT_program);
@@ -2584,7 +2577,7 @@ int GMT_getdefpath (int get, char **P)
 	strcpy (path, line);
 
 	*P = path;
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -2602,13 +2595,13 @@ double GMT_convert_units (char *from, int new_format)
 	}
 
 	/* So c is either 0 (meaing default unit) or any letter (even junk like z) */
-	
+
 	old_format = GMT_unit_lookup (c);	/* Will warn if c is not 0, 'c', 'i', 'm', 'p' */
 
 	if (GMT_is_invalid_number (from)) {
 		fprintf (stderr, "%s: Warning: %s not a valid number and may not be decoded properly.\n", GMT_program, from);
 	}
-	
+
 	value = atof (from) * GMT_u2u[old_format][new_format];
 	if (have_unit) from[len-1] = c;	/* Put back what we took out temporarily */
 
@@ -2623,9 +2616,9 @@ int GMT_unit_lookup (int c)
 	if (!isalpha (c)) {	/* Not a unit modifier - just return the current default unit */
 		return (gmtdefs.measure_unit);
 	}
-	
+
 	/* Now we check for the c-i-m-p units and barf otherwise */
-	
+
 	switch (c) {
 		case 'C':	/* Centimeters */
 		case 'c':
@@ -2655,9 +2648,9 @@ int GMT_unit_lookup (int c)
 BOOLEAN GMT_is_invalid_number (char *t)
 {
 	int i, n;
-	
+
 	/* Checks if t fits the format [+|-][xxxx][.][yyyy][e|E[+|-]nn]. */
-	
+
 	if (!t) return (TRUE);				/* Cannot be NULL */
 	i = n = 0;
 	if (t[i] == '+' || t[i] == '-') i++;		/* OK to have leading sign */
@@ -3276,7 +3269,7 @@ int GMT_history (int argc, char ** argv)
 	/* Get the common arguments and copy them to array GMT_oldargv */
 
 	/* PS!  GMT_oldarg? must remain global and not freed until GMT_end - otherwise argv will point to junk */
-	
+
 	GMT_oldargc = 0;
 	for (i = 0; i < GMT_N_UNIQUE; i++) GMT_oldargv[i] = CNULL;
 
@@ -3353,7 +3346,7 @@ int GMT_history (int argc, char ** argv)
 		/* Here, GMT_oldargv has modifiers and argv doesn't, set pointer */
 
 		argv[i] = GMT_oldargv[j];
-		
+
 		if (argv[i][1] == 'j') argv[i][1] = 'J';	/* Reset to upper case */
 	}
 
@@ -3428,7 +3421,7 @@ int GMT_history (int argc, char ** argv)
 #endif
 
 	fclose (fp);
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -3981,7 +3974,7 @@ int GMT_parse_J_option (char *args)
 			width_given = 1;
 			break;
 	}
-	
+
 	if (strchr ("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz", (int)type) == NULL) return (TRUE);	/* NO valid projection specified */
 	if (width_given > 1) args[last_pos] = '\0';	/* Temporarily chop off modifier */
 	args++;		/* Skip pass projection flag */
@@ -4343,15 +4336,9 @@ int GMT_parse_J_option (char *args)
 	 		project = GMT_GNOMONIC;
 	 		break;
 
-#ifndef _GENPER
-		case 'G':		/* Orthographic */
-	 		project_info.gave_map_width = width_given;
-	 	case 'g':		/* Orthographic */
-#else
 		case 'G':               /* Orthographic or General perspective */
 			project_info.gave_map_width = width_given;
 		case 'g':               /* Orthographic or General Perspective */
-     
 			project_info.g_debug = 0;
 			project_info.g_box = project_info.g_outside = project_info.g_longlat_set = project_info.g_radius = project_info.g_auto_twist = FALSE;
 			project_info.g_sphere = TRUE; /* force spherical as default */
@@ -4373,7 +4360,7 @@ int GMT_parse_J_option (char *args)
 
 				for (ip = 0 ; ip < 2 ; ip++) {
 					if (args[ip] == 'd') {         /* standard genper debugging */
-						project_info.g_debug = 1; 
+						project_info.g_debug = 1;
 						ip_arg++;
 					} else if (args[ip] == 'D') {  /* extensive genper debugging */
 						project_info.g_debug = 2;
@@ -4497,7 +4484,6 @@ int GMT_parse_J_option (char *args)
 				project_info.pars[5] = 0.0;
 				project_info.pars[6] = 0.0;
 				project_info.pars[7] = 0.0;
-#endif  /* End of _GENPER */
 
 	 			if (k >= 0) {	/* Scale entered as 1:mmmmm */
 	 				n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[2]);
@@ -4521,9 +4507,7 @@ int GMT_parse_J_option (char *args)
 				error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
 				error += (project_info.pars[2] <= 0.0 || (k >= 0 && project_info.gave_map_width));
 	 			project = GMT_ORTHO;
-#ifdef _GENPER
 			}
-#endif  /* end of _GENPER */
 	 		break;
 
 	 	case 'H':	/* Hammer-Aitoff Equal-Area */
@@ -5448,7 +5432,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 	}
 	p->size_x2 = 0.5 * p->size_x;
 	if (mode) p->size_y2 = 0.5 * p->size_y;
-	
+
 	return (decode_error);
 }
 

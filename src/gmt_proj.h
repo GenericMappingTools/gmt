@@ -45,11 +45,7 @@ void GMT_vlamb(double rlong0, double rlat0, double pha, double phb);
 void GMT_vtm(double lon0, double lat0);
 void GMT_vlambeq(double lon0, double lat0);
 void GMT_vortho(double lon0, double lat0);
-#ifdef _GENPER
-void GMT_vgenper( double lon0, double lat0,
-        double altitude, double azimuth, double tilt, double rotation, 
-	double width, double height );
-#endif
+void GMT_vgenper(double lon0, double lat0, double altitude, double azimuth, double tilt, double rotation, double width, double height);
 void GMT_vgnomonic(double lon0, double lat0, double horizon);
 void GMT_vazeqdist(double lon0, double lat0);
 void GMT_vmollweide(double lon0, double scale);
@@ -107,10 +103,8 @@ void GMT_lamb_sph(double lon, double lat, double *x, double *y);	/*	Convert lon/
 void GMT_ilamb_sph(double *lon, double *lat, double x, double y);	/*	Convert x/y (Lambert Spherical) to lon/lat 	*/
 void GMT_oblmrc(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Oblique Mercator)	*/
 void GMT_ioblmrc(double *lon, double *lat, double x, double y);		/*	Convert x/y (Oblique Mercator) to lon/lat 	*/
-#ifdef _GENPER
 void GMT_genper(double lon, double lat, double *x, double *y);          /*      Convert lon/lat to x/y (ORTHO)  */
 void GMT_igenper(double *lon, double *lat, double x, double y);         /*      Convert x/y (ORTHO) to lon/lat  */
-#endif
 void GMT_ortho(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (GMT_ORTHO)	*/
 void GMT_iortho(double *lon, double *lat, double x, double y);		/*	Convert x/y (GMT_ORTHO) to lon/lat 	*/
 void GMT_gnomonic(double lon, double lat, double *x, double *y);	/*	Convert lon/lat to x/y (GMT_GNOMONIC)	*/

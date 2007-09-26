@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.155 2007-09-26 03:17:12 guru Exp $
+ *	$Id: gmt_map.c,v 1.156 2007-09-26 15:28:53 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -180,12 +180,10 @@ int GMT_radial_clip_pscoast (double *lon, double *lat, int np, double **x, doubl
 int GMT_wesn_overlap (double lon0, double lat0, double lon1, double lat1);		/* Checks if two wesn regions overlap */
 int GMT_rect_overlap (double lon0, double lat0, double lon1, double lat1);		/* Checks if two xy regions overlap */
 int GMT_radial_overlap (double lon0, double lat0, double lon1, double lat1);		/* Currently a dummy routine */
-#ifdef _GENPER
 int GMT_genper_clip(double *lon, double *lat, int np, double **x, double **y, int *total_nx);	/* Clips to region based on spherical distance */
 int GMT_genper_outside(double lon, double lat);	/* Returns TRUE if a lon/lat point is outside the Lambert Azimuthal Eq. area boundaries */
 int GMT_genper_crossing(double lon1, double lat1, double lon2, double lat2, double *clon, double *clat, double *xx, double *yy, int *sides);	/* computes the crossing point between two lon/lat points and the circular map boundary between them */
 int GMT_genper_overlap(double lon0, double lat0, double lon1, double lat1);	/* Currently a dummy routine */
-#endif  /* _GENPER */
 int GMT_break_through  (double x0, double y0, double x1, double y1);
 int GMT_map_crossing  (double lon1, double lat1, double lon2, double lat2, double *xlon, double *xlat, double *xx, double *yy, int *sides);
 
@@ -200,9 +198,7 @@ int GMT_map_init_tm (void);
 int GMT_map_init_utm (void);
 int GMT_map_init_lambeq (void);
 int GMT_map_init_ortho (void);
-#ifdef _GENPER
 int GMT_map_init_genper(void);
-#endif  /* _GENPER */
 int GMT_map_init_gnomonic (void);
 int GMT_map_init_azeqdist (void);
 int GMT_map_init_mollweide (void);
@@ -262,10 +258,6 @@ double GMT_left_conic (double y);		/* For Conic wesn maps	*/
 double GMT_right_conic (double y);		/* For Conic wesn maps	*/
 double GMT_left_rect (double y);		/* For rectangular maps	*/
 double GMT_right_rect (double y);		/* For rectangular maps	*/
-#ifdef _GENPER
-double GMT_genper_left_circle(double y);	/* For circular maps	*/
-double GMT_genper_right_circle(double y);	/* For circular maps	*/
-#endif  /* _GENPER */
 double GMT_left_circle (double y);		/* For circular maps	*/
 double GMT_right_circle (double y);		/* For circular maps	*/
 double GMT_left_ellipse (double y);		/* For elliptical maps	*/
@@ -350,7 +342,6 @@ PFI GMT_radial_clip;
  *	parameters[2] is radius in inches (or cm) from pole to the latitude specified
  *	   by parameters[3] OR 1:xxxxx OR map-width.
  *
-#ifdef _GENPER
  * GENERAL PERSPECTIVE projection:
  *      parameters[0] is longitude of origin
  *      parameters[1] is latitude of origin
@@ -366,8 +357,6 @@ PFI GMT_radial_clip;
  *      parameters[8] is the height of the viewpoint in degrees
  *         if = 0, no viewpoint clipping
  *
- *  END of _GENPER
-#endif
  * GMT_IS_AZIMUTHAL EQUIDISTANCE projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
@@ -535,11 +524,11 @@ int GMT_map_setup (double west, double east, double south, double north)
 			search = GMT_map_init_ortho ();
 			break;
 
-#ifdef _GENPER
 		case GMT_GENPER:		/* General Perspective Projection */
+
 			search = GMT_map_init_genper ();
 			break;
-#endif  /* _GENPER */
+
 		case GMT_AZ_EQDIST:		/* Azimuthal Equal-Distance Projection */
 
 			search = GMT_map_init_azeqdist ();
@@ -762,9 +751,7 @@ int GMT_init_three_D (void) {
 		case GMT_ECONIC:
 		case GMT_LAMB_AZ_EQ:
 		case GMT_ORTHO:
-#ifdef _GENPER
 		case GMT_GENPER:
-#endif  /* _GENPER */
 		case GMT_GNOMONIC:
 		case GMT_AZ_EQDIST:
 		case GMT_SINUSOIDAL:
@@ -2113,7 +2100,6 @@ int GMT_map_init_ortho (void) {
 	return (search);
 }
 
-#ifdef _GENPER
 /*
  *	TRANSFORMATION ROUTINES FOR THE GENERAL PERSPECTIVE PROJECTION
  */
@@ -2238,7 +2224,6 @@ int GMT_map_init_genper (void) {
 	return (search);
 
 }
-#endif  /* _GENPER */
 
 /*
  *	TRANSFORMATION ROUTINES FOR THE GMT_GNOMONIC PROJECTION
@@ -3506,9 +3491,7 @@ double GMT_half_map_width (double y)
 		case GMT_STEREO:	/* Must compute width of circular map based on y value (ASSUMES FULL CIRCLE!!!) */
 		case GMT_LAMB_AZ_EQ:
 		case GMT_ORTHO:
-#ifdef _GENPER
 		case GMT_GENPER:
-#endif  /* _GENPER */
 		case GMT_GNOMONIC:
 		case GMT_AZ_EQDIST:
 		case GMT_VANGRINTEN:
@@ -5101,12 +5084,7 @@ int GMT_radial_clip_pscoast (double *lon, double *lat, int np, double **x, doubl
 			}
 		}
 		GMT_geo_to_xy (lon[i], lat[i], &xr, &yr);
-#ifdef _GENPER
 		if (this && (project_info.projection != GMT_GENPER)) {                 /* Project point onto perimeter */
-			GMT_geo_to_xy(project_info.central_meridian, project_info.pole, &x0, &y0);
-#else
-		if (this) {	/* Project point onto perimeter */
-#endif /* _GENPER */
 			GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &x0, &y0);
 			xr -= x0;	yr -= y0;
 			r = hypot (xr, yr);
@@ -5546,12 +5524,10 @@ void GMT_map_setinfo (double xmin, double xmax, double ymin, double ymax, double
 	project_info.y_scale *= factor;
 	project_info.w_r *= factor;
 
-#ifdef _GENPER
 	if (project_info.g_debug > 1) {
 		fprintf(stderr,"xmin %7.3f xmax %7.3f ymin %7.4f ymax %7.3f scale %6.3f\n", xmin/1000, xmax/1000, ymin/1000, ymax/1000, scl);
 		fprintf(stderr,"gave_map_width %d w %9.4e h %9.4e factor %9.4e\n", project_info.gave_map_width, w, h, factor);
 	}
-#endif  /* _GENPER */
 
 	GMT_map_setxy (xmin, xmax, ymin, ymax);
 }
@@ -5599,12 +5575,10 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 				else if (!GMT_world_map)	/* Need to include origin */
 					np++;
 				break;
-#ifdef _GENPER
 			case GMT_GENPER:
 				np = 2 * (GMT_n_lon_nodes + 1);
 				np = (project_info.polar && (project_info.s <= -90.0 || project_info.n >= 90.0)) ? GMT_n_lon_nodes + 2 : 2 * (GMT_n_lon_nodes + 1);
 				break;
-#endif   /* _GENPER */
 			case GMT_STEREO:
 			case GMT_LAMBERT:
 			case GMT_LAMB_AZ_EQ:
@@ -5719,11 +5693,9 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 					}
 				}
 				break;
-#ifdef _GENPER
 			case GMT_GENPER:
 				GMT_genper_map_clip_path( np, work_x, work_y);
 				break;
-#endif  /* _GENPER */
 			case GMT_LAMB_AZ_EQ:
 			case GMT_ORTHO:
 			case GMT_GNOMONIC:
