@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.5 2007-09-25 01:50:16 remko Exp $
+#  $Id: GNUmakefile,v 1.6 2007-09-26 16:15:43 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -83,7 +83,7 @@ SUPPL	= dbase gshhs imgsrc meca mex mgd77 mgg misc segyprogs spotter x2sys x_sys
 SUPPL_M	= dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 
 #-------------------------------------------------------------------------------
-.PHONY:		FILES man manpages webman webdoc pdfman docs prep_suppl get_coast get_high get_full
+.PHONY:		FILES all man manpages webman webdoc pdfman docs prep_suppl get_coast get_high get_full
 		latest-config help update create newsite usable site archive \
 		tar_all zip_all zip_bin zip_src \
 		full high tar_full zip_full tar_high zip_high installl suppl alltests \
@@ -120,7 +120,11 @@ site:		usable webman pdfman docs
 
 archive:	site create tar_all zip_all
 
-manpages all:	FILES
+manpages:	FILES
+		cd src ; $(MAKE) $@
+		$(MAKE) TARGET=$@ insuppl
+
+all:		FILES
 		cd src ; $(MAKE) $@
 
 #-------------------------------------------------------------------------------
@@ -203,10 +207,10 @@ latest-config:
 		curl http://cvs.savannah.gnu.org/viewcvs/*checkout*/config/config/config.sub --remote-name --silent
 		curl http://cvs.savannah.gnu.org/viewcvs/*checkout*/config/config/config.guess --remote-name --silent
 
-webman: 	manpages guru/webman.sh
+webman: 	guru/webman.sh
 		$(SHELL) guru/webman.sh -s
 
-pdfman: 	manpages guru/pdfman.sh
+pdfman: 	guru/pdfman.sh
 		$(SHELL) guru/pdfman.sh -s
 
 docs:		FILES
