@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.154 2007-09-18 23:35:45 remko Exp $
+ *	$Id: gmt_map.c,v 1.155 2007-09-26 03:17:12 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5364,8 +5364,10 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 				x_proj = x_in_proj[i_in];
 			else if (inverse)
 				GMT_xy_to_geo (&x_proj, &y_proj, x_in[i_in], y_in[j_in]);
-			else
+			else {
+				if (GMT_outside (x_in[i_in], y_in[j_in])) continue;	/* Quite possible we are beyond the horizon */
 				GMT_geo_to_xy (x_in[i_in], y_in[j_in], &x_proj, &y_proj);
+			}
 
 			/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 
