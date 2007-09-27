@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.97 2007-09-26 19:12:28 remko Exp $
+	$Id: ChangeLog,v 1.98 2007-09-27 16:40:36 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-09-26	pwessel
 	* meca/*.c:		Made Windows DLL workable by using the GMT_* i/o functions.
+	* grdblend.c		---"---
 	
 2007-09-26	remko
 	* *.txt:		Now print "Generic Mapping Tools" at top of man page.
