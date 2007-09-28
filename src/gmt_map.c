@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.156 2007-09-26 15:28:53 remko Exp $
+ *	$Id: gmt_map.c,v 1.157 2007-09-28 20:06:34 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1858,6 +1858,20 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 	int error = 0;
 
 	*e = 180.0 + 6.0 * zone_x;	*w = *e - 6.0;
+	if (zone_y == 0) {	/* Latitude range not specified */
+		if (hemi == -1) {
+			*s = -80.0;	*n = 0.0;
+		}
+		else if (hemi == +1) {
+			*s = 0.0;	*n = 84.0;
+		}
+		else
+			error = TRUE;
+		return (error);
+	}
+	
+	/* OK, here zone_y has a value */
+	
 	if (zone_y <= 'B') {
 		*s = -90.0;	*n = -84.0;
 		*w = 180.0 * (zone_y - 'A' - 1);
@@ -1889,12 +1903,6 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 		*s = 84.0;	*n = 90.0;
 		*w = 180.0 * (zone_y - 'Y' - 1);
 		*e = *w + 180.0;
-	}
-	else if (hemi == -1) {
-		*s = -80.0;	*n = 0.0;
-	}
-	else if (hemi == +1) {
-		*s = 0.0;	*n = 84.0;
 	}
 	else
 		error = TRUE;
