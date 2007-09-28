@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.56 2007-09-24 18:51:50 guru Exp $
+ *	$Id: gmt_stat.c,v 1.57 2007-09-28 17:37:54 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -819,12 +819,19 @@ double GMT_kn (int n, double x)
 
 double GMT_plm (int l, int m, double x)
 {
+	/* Unnormalized associated Legendre polynomial of degree l and order m, including
+	 * Condon-Shortley phase (-1)^m */
 	double fact, pll = 0, pmm, pmmp1, somx2;
 	int i, ll;
 
 	/* x is cosine of colatitude and must be -1 <= x <= +1 */
 	if (fabs(x) > 1.0) {
-		fprintf (stderr, "GMT DOMAIN ERROR:  fabs(x) > 1.0 in GMT_plm(x)\n");
+		fprintf (stderr, "%s: Error: |x| > 1.0 in GMT_plm_bar\n", GMT_program);
+		return (GMT_d_NaN);
+	}
+
+	if (m < 0 || m > l) {
+		fprintf (stderr, "%s: Error: GMT_plm requires 0 <= m <= l.\n", GMT_program);
 		return (GMT_d_NaN);
 	}
 
@@ -849,6 +856,115 @@ double GMT_plm (int l, int m, double x)
 		pmmp1 = pll;
 	}
 	return (pll);
+}
+
+double GMT_plm_bar (int l, int m, double x, BOOLEAN ortho)
+{
+	/* This function computes the normalized associated Legendre function of x for degree
+	 * l and order m. u must be in the range [-1;1] and 0 <= |m| <= l.
+	 * The routine is largely based on the second modified forward column method described in
+	 * Holmes and Featherstone (2002). It is stable up to very high degree and order
+	 * (at least 3000). This is achieved by individually computing the sectorials to P_m,m
+	 * and then iterate up to P_l,m divided by P_m,m and the scale factor 1e280.
+	 * Eventually, the result is multiplied again with these to terms.
+	 *
+	 * When ortho=FALSE, normalization is according to the geophysical convention.
+	 * - The Condon-Shortley phase (-1)^m is NOT included.
+	 * - The normalization factor is sqrt(k*(2l+1)*(l-m)!/(l+m)!) with k=2 except for m=0: k=1.
+	 * - The integral of Plm**2 over [-1;1] is 2*k.
+	 * - The integrals of (Plm*cos(m*lon))**2 and (Plm*sin(m*lon))**2 over a sphere are 4 pi.
+	 *
+	 * When ortho=TRUE, the results are orthonormalized.
+	 * - The Condon-Shortley phase (-1)^m is NOT included.
+	 * - The normalization factor is sqrt((2l+1)*(l-m)!/(l+m)!/(4*pi)).
+	 * - The integral of Plm**2 over [-1;1] is 1/(2*pi).
+	 * - The integral of (Plm*exp(i*m*lon))**2 over a sphere is 1.
+	 *
+	 * When called with -m, the Condon-Shortley phase will be included.
+	 *
+	 * Note that the orthonormalized form produces an integral of 1 when using imaginary terms
+	 * for longitude. In geophysics, the imaginary components are split into cosine and sine terms
+	 * EACH of which have an average power of 1 over the sphere (i.e. an integral of 4 pi).
+	 *
+	 * This routine could be further expanded to produce an array of P_m,m through P_l,m. This
+	 * would be practical if Legendre functions of various degrees are to be computed at the same
+	 * latitude. Also, differentials could be added.
+	 *
+	 * Reference:
+	 * S. A. Holmes and W. E. Featherstone. A unified approach to the Clenshaw summation and the
+	 * recursive computation of very high degree and order normalised associated Legendre functions.
+	 * Journal of Geodesy, 76, 279-299, 2002. doi:10.1007/s00190-002-0216-2.
+	 */
+	int i;
+	BOOLEAN csphase = FALSE;
+	double scalef=1.0e280, u, r, pmm, pmm0, pmm1, pmm2;
+
+	/* x is cosine of colatitude (sine of latitude) and must be -1 <= x <= +1 */
+
+	if (fabs(x) > 1.0) {
+		fprintf (stderr, "%s: Error: |x| > 1.0 in GMT_plm_bar\n", GMT_program);
+		return (GMT_d_NaN);
+	}
+
+	/* If m is negative, include Condon-Shortley phase */
+
+	if (m < 0) {
+		csphase = TRUE;
+		m = -m;
+	}
+
+	if (m > l) {
+		fprintf (stderr, "%s: Error: GMT_plm_bar requires 0 <= m <= l.\n", GMT_program);
+		return (GMT_d_NaN);
+	}
+
+	/* u is sine of colatitude (cosine of latitude) so that 0 <= s <= 1 */
+
+	u = d_sqrt ((1.0 - x)*(1.0 + x));
+
+	/* Initialize P_00=1 and compute up to P_mm using recurrence relation.
+	   The result is a normalisation factor: sqrt((2l+1)(l-m)!/(l+m)!) */
+
+	pmm = 1.0;
+	for (i = 1; i <= m; i++) pmm = d_sqrt (1.0 + 0.5/i) * u * pmm;
+	
+	/* If orthonormalization is requested: multiply by sqrt(1/4pi)
+	   In case of geophysical convertion : multiply by sqrt(2-delta_0m) */
+
+	if (ortho) {
+		pmm *= 0.5 / d_sqrt(M_PI);
+	}
+	else if (m != 0)
+		pmm *= d_sqrt(2.0);
+
+	/* If C-S phase is requested, apply it now */
+
+	if ((m & 1) && csphase) pmm = -pmm;
+
+	/* If l==m, we are done */
+
+	if (l == m) return (pmm);
+
+	/* In the next section all P_l,m are divided by P_m,m and scaled by factor scalef.
+	   First compute P_m+1,m / P_m,m */
+
+	pmm0 = 1.0/scalef;
+	pmm1 = pmm0 * x * d_sqrt (2*m + 3);
+
+	/* Use second modified column forward recurrence relation to compute P_m+2,m / P_m,m */
+
+	for (i = m+2; i <= l; i++) {
+		r = (2*i+1.0) / (i+m) / (i-m);
+		pmm2 = x * pmm1 * d_sqrt(r*(2*i-1)) - pmm0 * d_sqrt(r*(i-m-1)*(i+m-1)/(2*i-3));
+		pmm0 = pmm1;
+		pmm1 = pmm2;
+	}
+
+	/* Return P_l,m */
+
+	pmm1 *= pmm;
+	pmm1 *= scalef;
+	return (pmm1);
 }
 
 /* GMT_sinc (x) calculates the sinc function */
