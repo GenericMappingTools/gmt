@@ -1,10 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.98 2007-09-27 16:40:36 guru Exp $
+	$Id: ChangeLog,v 1.99 2007-09-28 17:42:26 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-08-28	remko
+	* gmt_stat.h, gmt_math.h:	Moved functions defined in gmt_stat.c from gmt_math.h to
+				gmt_stat.h.
+	* gmt_stat.c:		Added GMT_plm_bar to compute normalized Legendre functions to very
+				high degree and order.
+	* gmtmath.c:		Use GMT_plm_bar to determine PLMg.
+	* grdmath.c:		Use GMT_plm_bar to determine PLMg, YLM and YLMg.
 
 2007-09-26	pwessel
 	* meca/*.c:		Made Windows DLL workable by using the GMT_* i/o functions.
-	* grdblend.c		---"---
+	* grdblend.c:		---"---
 	
 2007-09-26	remko
 	* *.txt:		Now print "Generic Mapping Tools" at top of man page.
@@ -19,9 +27,9 @@
 	* gmt_map.c:		GMT_grdproject needed to skip points that project beyond the horizon.
 
 2007-09-25	remko
-	* gmtmath.c:		New operator PLMb (normalized as in geodesy).
+	* gmtmath.c:		New operator PLMg (normalized as in geodesy).
 				Added check that 0 < M < L.
-	* grdmath.c:		New operators PLMb and YLMb (normalized as in geodesy).
+	* grdmath.c:		New operators PLMg and YLMg (normalized as in geodesy).
 				Added check that 0 < M < L.
 				When M=0, set Imaginary component of YLM = 0 (was same as real).
 	* ???math.c:		Set stack size to 100 (as mentioned in manual).
