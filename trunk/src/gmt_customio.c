@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.62 2007-08-11 04:22:06 guru Exp $
+ *	$Id: gmt_customio.c,v 1.63 2007-09-28 18:06:28 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8,7 +8,7 @@
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; version 2 of the License.
  *
- *	This program is distributed in the hope that it will be useful,
+ *	This program is distributed in the hope that it wi1552ll be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
@@ -1548,6 +1548,12 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		width_out *= 2;
 		i_0_out *= 2;
 		inc = 2;
+	}
+	if ( (last_row - first_row + 1) != header->ny) {    /* We have a sub-region */
+		/* Surfer grids are stored starting from Lower Left, which is contrary to
+		   the rest of GMT grids that start at Top Left. So we must do a shift here */
+		first_row = header->ny - height_in;
+		last_row = first_row + height_in - 1;
 	}
 
 	/* Allocate memory for one row of data (for reading purposes) */
