@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.19 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_math.h,v 1.20 2007-09-28 17:37:06 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -191,30 +191,5 @@ extern void sincos (double x, double *s, double *c);
 #else
 EXTERN_MSC void sincos (double x, double *s, double *c);
 #endif
-
-/* These functions used by grdmath and gmtmath are declared in gmt_stat.c.
- * There are no ANSI-C equivalents so these prototypes are always set here */
-
-EXTERN_MSC double GMT_bei(double x);
-EXTERN_MSC double GMT_ber(double x);
-EXTERN_MSC double GMT_kei(double x);
-EXTERN_MSC double GMT_ker(double x);
-EXTERN_MSC double GMT_plm(int l, int m, double x);
-EXTERN_MSC double GMT_factorial(int n);
-EXTERN_MSC double GMT_i0(double x);
-EXTERN_MSC double GMT_i1(double x);
-EXTERN_MSC double GMT_in(int n, double x);
-EXTERN_MSC double GMT_k0(double x);
-EXTERN_MSC double GMT_k1(double x);
-EXTERN_MSC double GMT_kn(int n, double x);
-EXTERN_MSC double GMT_dilog(double x);
-EXTERN_MSC double GMT_sinc(double x);
-EXTERN_MSC double GMT_erfinv(double x);
-EXTERN_MSC double GMT_rand(void);
-EXTERN_MSC double GMT_nrand(void);
-EXTERN_MSC double GMT_lrand(void);
-EXTERN_MSC int GMT_chebyshev(double x, int n, double *t);
-EXTERN_MSC double GMT_corrcoeff (double *x, double *y, size_t n, int mode);
-EXTERN_MSC double GMT_corrcoeff_f (float *x, float *y, size_t n, int mode);
 
 #endif /* _GMT_MATH_H */
