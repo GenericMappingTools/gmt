@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.150 2007-09-28 03:53:49 guru Exp $
+ *	$Id: pslib.c,v 1.151 2007-09-28 18:25:11 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1045,7 +1045,7 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 	 * and still look exactly like the original path. */
 	 
 	double old_slope, new_slope, old_dir, new_dir;
-	int i, j, k, *xx, *yy, fixed, dx, dy;
+	int i, j, k, *xx, *yy, dx, dy;
 
 	if (n < 2) return (0);
 
@@ -1080,7 +1080,6 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 		dx = xx[i+1] - xx[i];
 		dy = yy[i+1] - yy[i];
 		new_slope = (dx == 0) ? copysign (1.0e100, (double)dy) : ((double)dy) / ((double)dx);
-		if (fixed) continue;	/* Didnt move */
 
 		new_dir = (dx >= 0) ? 1 : -1;
 		if (new_slope != old_slope || new_dir != old_dir) {
@@ -1091,10 +1090,8 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 			old_dir = new_dir;
 		}
 	}
-	dx = xx[n-1] - xx[n-2];
-	dy = yy[n-1] - yy[n-2];
-	fixed = (k > 1 && ix[k-1] == xx[n-1] && iy[k-1] == yy[n-1]);	/* Didnt move */
-	if (!fixed) {
+	/* Last point */
+	if (!(ix[k-1] == xx[n-1] && iy[k-1] == yy[n-1])) {
 		ix[k] = xx[n-1];
 		iy[k] = yy[n-1];
 		k++;
