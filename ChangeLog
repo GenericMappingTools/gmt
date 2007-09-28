@@ -1,14 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.99 2007-09-28 17:42:26 remko Exp $
+	$Id: ChangeLog,v 1.100 2007-09-28 19:49:43 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-08-28	remko
 	* gmt_stat.h, gmt_math.h:	Moved functions defined in gmt_stat.c from gmt_math.h to
 				gmt_stat.h.
 	* gmt_stat.c:		Added GMT_plm_bar to compute normalized Legendre functions to very
-				high degree and order.
-	* gmtmath.c:		Use GMT_plm_bar to determine PLMg.
-	* grdmath.c:		Use GMT_plm_bar to determine PLMg, YLM and YLMg.
+				high degree and order. Made GMT_factorial public.
+	* gmtmath.c:		Use GMT_plm_bar to determine PLMg. Added FACT (factorial).
+	* grdmath.c:		Use GMT_plm_bar to determine PLMg, YLM and YLMg. Added FACT (factorial).
 
 2007-09-26	pwessel
 	* meca/*.c:		Made Windows DLL workable by using the GMT_* i/o functions.
