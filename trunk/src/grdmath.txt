@@ -67,19 +67,26 @@ Note: If the current \fBELLIPSOID\fP is not Sphere then geodesics are used in th
 .br
 .sp
 (2) The operator \fBPLM\fP calculates the associated Legendre polynomial
-of degree L and order M, and its argument is the sine of the latitude.
-\fBPLM\fP is not normalized, \fBPLMb\fP is normalized in the way that is most commonly
-used in geodesy.
+of degree L and order M (0 <= M <= L), and its argument is the sine of the latitude.
+\fBPLM\fP is not normalized and includes the Condon-Shortley phase (-1)^M.
+\fBPLMg\fP is normalized in the way that is most commonly used in geophysics.
+The C-S phase can be added by using -M as argument.
+\fBPLM\fP will overflow at higher degrees, whereas \fBPLMg\fP is stable until ultra high degrees (at
+least 3000).
 .br
 .sp
-(3) The operators \fBYLM\fP and \fBYLMb\fP calculate normalized spherical harmonics for degree L and
-order M for all positions in the grid, which is assumed to be in degrees.
-\fBYLM\fP returns two grids, the Real (cosine) and Imaginary (sine) component
+(3) The operators \fBYLM\fP and \fBYLMg\fP calculate normalized spherical harmonics for degree L and
+order M (0 <= M <= L) for all positions in the grid, which is assumed to be in degrees.
+\fBYLM\fP and \fBYLMg\fP return two grids, the real (cosine) and imaginary (sine) component
 of the complex spherical harmonic.  Use the \fBPOP\fP operator (and \fBEXCH\fP) to
 get rid of one of them, or save both by giving two consequtive = file.grd calls.
 .br
-The orthonormalized harmonics \fBYLM\fP are most commonly used in physics and seismology.
-In geodesy, \fBYLMb\fP is normalized to produce unit power when averaged over a sphere.
+The orthonormalized complex harmonics \fBYLM\fP are most commonly used in physics and seismology.
+The square of \fBYLM\fP integrates to 1 over a sphere.
+In geophysics, \fBYLMg\fP is normalized to produce unit power when averaging the cosine and sine terms
+(separately!) over a sphere (i.e. their squares each integrate to 4 pi).
+The Condon-Shortley phase (-1)^M is not included in \fBYLM\fP or \fBYLMg\fP, but it can be added by using -M
+as argument.
 .br
 .sp
 (4) All the derivatives are based on central finite differences, with natural boundary conditions.
@@ -137,8 +144,15 @@ To extract the locations of local maxima that exceed 100 mGal in the file faa.gr
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
 Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.
 .br
-Press, W. H.,  S. A. Teukolsky, W. T. Vetterling, B. P. Flannery, 1992, 
+Holmes, S. A., and W. E. Featherstone, 2002, A unified approach to the Clenshaw summation and the
+recursive computation of very high degree and order normalised associated Legendre functions.
+\fIJournal of Geodesy\fP, 76, 279-299.
+.br
+Press, W. H.,  S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery, 1992, 
 \fINumerical Recipes\fP, 2nd edition, Cambridge Univ., New York.
+.br
+Spanier, J., and K. B. Oldman, 1987,
+\fIAn Atlas of Functions\fP, Hemisphere Publishing Corp.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmtmath (1),
