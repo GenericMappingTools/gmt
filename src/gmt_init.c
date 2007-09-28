@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.304 2007-09-26 15:28:53 remko Exp $
+ *	$Id: gmt_init.c,v 1.305 2007-09-28 18:39:23 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -656,6 +656,7 @@ void GMT_inc_syntax (char option, int error)
 	if (error) fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
 	fprintf (stderr, "\t-%c<xinc>[m|c|e|k|i|n|+][=][/<yinc>[m|c|e|k|i|n|+][=]]\n", option);
 	fprintf (stderr, "\t   Give increment and append unit (m)inute, se(c)ond, m(e)ter, (k)ilometer, m(i)les, (n)autical miles.\n");
+	fprintf (stderr, "\t   (Note: m,c,e,k,i,n only apply to geographic regions specified in degrees)\n");
 	fprintf (stderr, "\t   Append = to adjust the domain to fit the increment [Default adjusts increment to fit domain].\n");
 	fprintf (stderr, "\t   Alternatively, specify number of nodes by appending +. Then, the increments are calculated\n");
 	fprintf (stderr, "\t   from the given domain and grid-registration settings (see Appendix B for details).\n");
