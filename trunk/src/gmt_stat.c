@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.57 2007-09-28 17:37:54 remko Exp $
+ *	$Id: gmt_stat.c,v 1.58 2007-09-28 19:49:43 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -50,6 +50,7 @@
  *		07-SEP-2005 P. Wessel: Added GMT_corrcoeff (x,y)
  *		24-MAR-2006 P. Wessel: Added GMT_zdist (x)
  *		06-JUL-2007 P. Wessel: Added GMT_psi () and GMT_PvQv()
+ *		28-SEP-2007 R. Scharroo: Added GMT_plm_bar and made GMT_factorial public
  *
  * PUBLIC functions:
  *
@@ -81,7 +82,8 @@
  *	GMT_nrand:	Normally distributed random numbers from N(0,1)
  *	GMT_corrcoeff:	Correlation coefficient.
  *	GMT_psi:	Digamma (psi) function.
- *	GMT_PvQv:	Legedre functions Pv and Qv for imaginary v and real x (-1/+1).
+ *	GMT_PvQv:	Legendre functions Pv and Qv for imaginary v and real x (-1/+1).
+ *	GMT_factorial:	Factorials.
  */
 
 #define GMT_WITH_NO_PS
@@ -141,7 +143,7 @@ int	GMT_f_test_new (double chisq1, int nu1, double chisq2, int nu2, double *prob
 	/* Given chisq1 and chisq2, random variables distributed as chi-square
 		with nu1 and nu2 degrees of freedom, respectively, except that
 		chisq1 is scaled by var1, and chisq2 is scaled by var2, let
-		the null hypothesis, H0, be that var1 = var2.  This routine 
+		the null hypothesis, H0, be that var1 = var2.  This routine
 		assigns prob, the probability that we can reject H0 in favor
 		of a new hypothesis, H1, according to iside:
 			iside=+1 means H1 is that var1 > var2
@@ -159,7 +161,7 @@ int	GMT_f_test_new (double chisq1, int nu1, double chisq2, int nu2, double *prob
 	*/
 
 	double	q;	/* The probability from GMT_f_q(), which is the prob
-				that H0 should be retained even though 
+				that H0 should be retained even though
 				chisq1/nu1 > chisq2/nu2.  */
 
 	if (chisq1 <= 0.0 || chisq2 <= 0.0 || nu1 < 1 || nu2 < 1) {
@@ -196,7 +198,7 @@ int	GMT_f_test (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 		chisq2 and nu2.  If these are independent
 		and we form the ratio
 		F = max(chisq1,chisq2)/min(chisq1,chisq2)
-		then we can ask what is the probability 
+		then we can ask what is the probability
 		that an F greater than this would occur
 		by chance.  It is this probability that
 		is returned in prob.  When prob is small,
@@ -419,12 +421,12 @@ double	GMT_cf_beta (double a, double b, double x)
 void	GMT_gamma_ser (double *gamser, double a, double x, double *gln) {
 	/* Returns the incomplete gamma function P(a,x) by series rep.
 	 * Press et al, gser() */
-	 
+
 	int n;
 	double sum, del, ap;
-	 
+
 	GMT_ln_gamma_r (a, gln);
-	 
+
 	if (x < 0.0) {
 		fprintf (stderr, "GMT DOMAIN ERROR:  x < 0 in GMT_gamma_ser(x)\n");
 		*gamser = GMT_d_NaN;
@@ -499,12 +501,12 @@ double GMT_gammq (double a, double x) {
 
 /*
  * Kelvin-Bessel functions, ber, bei, ker, kei.  ber(x) and bei(x) are even;
- * ker(x) and kei(x) are defined only for x > 0 and x >=0, respectively.  
+ * ker(x) and kei(x) are defined only for x > 0 and x >=0, respectively.
  * For x <= 8 we use polynomial approximations in Abramowitz & Stegun.
  * For x > 8 we use asymptotic series of Russell, quoted in Watson (Theory
  * of Bessel Functions).
  */
- 
+
 double GMT_ber (double x)
 {
 	double t, rxsq, alpha, beta;
@@ -927,7 +929,7 @@ double GMT_plm_bar (int l, int m, double x, BOOLEAN ortho)
 
 	pmm = 1.0;
 	for (i = 1; i <= m; i++) pmm = d_sqrt (1.0 + 0.5/i) * u * pmm;
-	
+
 	/* If orthonormalization is requested: multiply by sqrt(1/4pi)
 	   In case of geophysical convertion : multiply by sqrt(2-delta_0m) */
 
@@ -1009,8 +1011,8 @@ double GMT_dilog (double x)
 	   between two points on a sphere such that their Gram
 	   matrix expression (see Parker) was different from 1; this
 	   is smallest epsilon such that dilog(epsilon) - dilog(0)
-	   != 0.0.  This turned out to be very much smaller than I 
-	   would have guessed from the apparent e-15 accuracy of 
+	   != 0.0.  This turned out to be very much smaller than I
+	   would have guessed from the apparent e-15 accuracy of
 	   Parker's polynomial.  So I think this is very accurate.
 
 	   If this is called with x < 0, it returns dilog(0) and
@@ -1031,23 +1033,23 @@ double GMT_dilog (double x)
 	if (x < 0.5) {
 		y = -log (1.0 - x);
 		ysq = y * y;
-		z = y * (1.0 + y * (-0.25 + y * (0.027777777777213 + 
-			ysq * (-2.7777776990e-04 + ysq * (4.724071696e-06 + 
+		z = y * (1.0 + y * (-0.25 + y * (0.027777777777213 +
+			ysq * (-2.7777776990e-04 + ysq * (4.724071696e-06 +
 			ysq * (-9.1764954e-08 + 1.798670e-09 * ysq))))));
 		return (pisqon6 - z + y * log (x));
 	}
 	if (x < 2.0) {
 		y = -log (x);
 		ysq = y * y;
-		z = y * (1.0 + y * (-0.25 + y * (0.027777777777213 + 
-			ysq * (-2.7777776990e-04 + ysq * (4.724071696e-06 + 
+		z = y * (1.0 + y * (-0.25 + y * (0.027777777777213 +
+			ysq * (-2.7777776990e-04 + ysq * (4.724071696e-06 +
 			ysq * (-9.1764954e-08 + 1.798670e-09 * ysq))))));
 		return (z);
 	}
 	y = log (x);
 	ysq = y * y;
-	z = y * (1.0 + y * (-0.25 + y * (0.027777777777213 + 
-		ysq * (-2.7777776990e-04 + ysq * (4.724071696e-06 + 
+	z = y * (1.0 + y * (-0.25 + y * (0.027777777777213 +
+		ysq * (-2.7777776990e-04 + ysq * (4.724071696e-06 +
 		ysq * (-9.1764954e-08 + 1.798670e-09 * ysq))))));
 	return (-z - 0.5 * ysq);
 }
@@ -1266,7 +1268,7 @@ double	GMT_strtod (const char *s, char **ends) {
 	routine.  If the library routine exists,
 	it should be used, as this one will probably
 	be slower.  Also, the library routine has
-	ways of dealing with LOCALE info on the 
+	ways of dealing with LOCALE info on the
 	radix character, and error setting for
 	over and underflows.  Here, I rely on atof()
 	to do that.
@@ -1419,14 +1421,14 @@ int	GMT_student_t_a(double t, int n, double *prob)
 	if t < 0.  Otherwise it sets *prob = the probability
 	fabs(tau) <= t and returns (0).
 
-	As n -> oo, we can replace this function with 
+	As n -> oo, we can replace this function with
 	erf (t / M_SQRT2).  However, it isn't clear how large
 	n has to be to make this a good approximation.  I
-	consulted six books; one of them suggested this 
+	consulted six books; one of them suggested this
 	approximation for n >= 30, but all the others did not
 	say when to use this approximation (A&S, in particular,
-	does not say).  I tried some numerical experiments 
-	which suggested that the relative error in this 
+	does not say).  I tried some numerical experiments
+	which suggested that the relative error in this
 	approximation would be < 0.01 for n > 30, all t, but
 	I also found that the expression here is stable to
 	large n and large t, so I decided to leave it as is.
@@ -1530,7 +1532,7 @@ double GMT_zcrit (double alpha)
  *
  * Function to invert the cumulative normal probability
  * function.  If z is a standardized normal random deviate,
- * and Q(z) = p is the cumulative Gaussian probability 
+ * and Q(z) = p is the cumulative Gaussian probability
  * function, then z = qsnorm(p).
  *
  * Note that 0.0 < p < 1.0.  Data values outside this range
@@ -1979,7 +1981,7 @@ double GMT_nrand (void) {
 	 * Press et al, Numerical Recipes, 2nd edition.  Will
 	 * return values that have zero mean and unit variance.
 	 */
-	 
+
 	static int iset = 0;
 	static double gset;
 	double fac, r, v1, v2;
@@ -1995,7 +1997,7 @@ double GMT_nrand (void) {
 
 		/* Now make Box-Muller transformation to get two normal deviates.  Return
 		 * one and save the other for the next time GMT_nrand is called */
-	 
+
 		gset = v1 * fac;
 		iset = 1;	/* Set flag for next time */
 		return (v2 * fac);
@@ -2010,7 +2012,7 @@ double GMT_lrand (void) {
 	/* Laplace random number generator.  As nrand, it will
 	 * return values that have zero mean and unit variance.
 	 */
-	 
+
 	double rand_0_to_1;
 
 	rand_0_to_1 = GMT_rand ();	/* Gives uniformly distributed random values in 0-1 range */
@@ -2020,7 +2022,7 @@ double GMT_lrand (void) {
 void GMT_chi2 (double chi2, double nu, double *prob) {
 	/* Evaluate probability that chi2 will exceed the
 	 * theoretical chi2 by chance. */
- 
+
  	*prob = GMT_gammq (0.5 * nu, 0.5 * chi2);
 }
 
@@ -2104,7 +2106,7 @@ double	GMT_log1p (double x) {
 
 	u = 1.0 + x;
 
-	if (u == 1.0) 
+	if (u == 1.0)
 		return (x);
 	else
 		return ( log(u) * (x/(u - 1.0) ) );
@@ -2544,10 +2546,10 @@ int GMT_chebyshev (double x, int n, double *t)
 	/* Calculates the n'th Chebyshev polynomial at x */
 
 	double x2, a, b;
-	
+
 	if (n < 0) GMT_err_pass (GMT_CHEBYSHEV_NEG_ORDER, "");
 	if (fabs (x) > 1.0) GMT_err_pass (GMT_CHEBYSHEV_BAD_DOMAIN, "");
-	
+
 	switch (n) {	/* Testing the order of the polynomial */
 		case 0:
 			*t = 1.0;
@@ -2571,7 +2573,7 @@ int GMT_chebyshev (double x, int n, double *t)
 			*t = 2.0 * x * a - b;
 			break;
 	}
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -2583,7 +2585,7 @@ double GMT_corrcoeff (double *x, double *y, size_t n, int mode)
 
 	size_t i, n_use;
 	double xmean = 0.0, ymean = 0.0, dx, dy, vx, vy, vxy, r;
-	
+
 	if (mode == 0) {
 		for (i = n_use = 0; i < n; i++) {
 			if (GMT_is_dnan (x[i]) || GMT_is_dnan (y[i])) continue;
@@ -2592,10 +2594,10 @@ double GMT_corrcoeff (double *x, double *y, size_t n, int mode)
 			n_use++;
 		}
 		if (n_use == 0) return (GMT_d_NaN);
-		xmean /= (double)n_use;	
+		xmean /= (double)n_use;
 		ymean /= (double)n_use;
 	}
-	
+
 	vx = vy = vxy = 0.0;
 	for (i = n_use = 0; i < n; i++) {
 		if (GMT_is_dnan (x[i]) || GMT_is_dnan (y[i])) continue;
@@ -2605,7 +2607,7 @@ double GMT_corrcoeff (double *x, double *y, size_t n, int mode)
 		vy += dy * dy;
 		vxy += dx * dy;
 	}
-	
+
 	r = vxy / sqrt (vx * vy);
 	return (r);
 }
@@ -2618,7 +2620,7 @@ double GMT_corrcoeff_f (float *x, float *y, size_t n, int mode)
 
 	size_t i, n_use;
 	double xmean = 0.0, ymean = 0.0, dx, dy, vx, vy, vxy, r;
-	
+
 	if (mode == 0) {
 		for (i = n_use = 0; i < n; i++) {
 			if (GMT_is_fnan (x[i]) || GMT_is_fnan (y[i])) continue;
@@ -2627,10 +2629,10 @@ double GMT_corrcoeff_f (float *x, float *y, size_t n, int mode)
 			n_use++;
 		}
 		if (n_use == 0) return (GMT_d_NaN);
-		xmean /= (double)n_use;	
+		xmean /= (double)n_use;
 		ymean /= (double)n_use;
 	}
-	
+
 	vx = vy = vxy = 0.0;
 	for (i = n_use = 0; i < n; i++) {
 		if (GMT_is_fnan (x[i]) || GMT_is_fnan (y[i])) continue;
@@ -2640,7 +2642,7 @@ double GMT_corrcoeff_f (float *x, float *y, size_t n, int mode)
 		vy += dy * dy;
 		vxy += dx * dy;
 	}
-	
+
 	r = vxy / sqrt (vx * vy);
 	return (r);
 }
@@ -2653,7 +2655,7 @@ double GMT_quantile (double *x, double q, size_t n)
 
 	int i_f;
 	double p, f, df;
-	
+
 	while (n > 1 && GMT_is_dnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
 	if (n < 1) return (GMT_d_NaN);			/* Need at least 1 point to do something */
 	if (q == 0.0) return (x[0]);			/* 0% quantile == min(x) */
@@ -2664,10 +2666,10 @@ double GMT_quantile (double *x, double q, size_t n)
 		p = x[i_f+1] * df + x[i_f] * (1.0 - df);
 	else						/* Exactly on a node */
 		p = x[i_f];
-		
+
 	return (p);
 }
-	
+
 double GMT_quantile_f (float *x, double q, size_t n)
 {
 	/* Returns the q'th (q in percent) quantile of x (assumed sorted).
@@ -2675,7 +2677,7 @@ double GMT_quantile_f (float *x, double q, size_t n)
 
 	int i_f;
 	double p, f, df;
-	
+
 	while (n > 1 && GMT_is_fnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
 	if (n < 1) return (GMT_d_NaN);			/* Need at least 1 point to do something */
 	if (q == 0.0) return ((double)x[0]);		/* 0% quantile == min(x) */
@@ -2686,10 +2688,10 @@ double GMT_quantile_f (float *x, double q, size_t n)
 		p = (double)(x[i_f+1] * df + x[i_f] * (1.0 - df));
 	else						/* Exactly on a node */
 		p = (double)x[i_f];
-		
+
 	return (p);
 }
-	
+
 static void Cmul (double A[], double B[], double C[])
 {	/* Complex multiplication */
 	C[0] = A[0]*B[0] - A[1]*B[1];
@@ -2727,7 +2729,7 @@ double GMT_psi (double zz[], double p[])
 		if (p) { p[0] = GMT_d_NaN; p[1] = 0.0;}
 		return (GMT_d_NaN);	/* Singular points */
 	}
-	
+
 	z[0] = zz[0];	z[1] = zz[1];
 	if ((x0 = z[0]) < 0.5) {	/* reflection point */
 		z[0] = 1.0 - z[0];
@@ -2735,7 +2737,7 @@ double GMT_psi (double zz[], double p[])
 	}
 
 	/* Lanczos approximation */
- 
+
 	g[0] = 607.0/128.0;	g[1] = 0.0; /* best results when 4<=g<=5 */
 	n[0] = d[0] = n[1] = d[1] = 0.0;
 	for (k = 14; k > 0; k--) {
@@ -2783,7 +2785,7 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 
 	double v[2], a[2], R[2], r[2], z[2], tmp[2], X[2], ep, em, s[2], c[2];
 	double M, L, K, vp1[2], G[2], Xn, x2, g, u, t, f, k, k1, sx, cx, w, sL, cL;
-	
+
 	*iter = 0;
 	if (x == -1) {	/* Both blow up */
     		pq[0] = pq[2] = GMT_d_NaN;
@@ -2812,9 +2814,9 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 	z[0] = 0.5 * M_PI * v[0];	z[1] = 0.5 * M_PI * v[1];
 	ep = exp (z[1]);	em = exp (-z[1]);
 	sincos (z[0], &sx, &cx);
-	s[0] = +0.5 * sx * (em + ep); 
-	s[1] = -0.5 * cx * (em - ep); 
-	c[0] = +0.5 * cx * (em + ep); 
+	s[0] = +0.5 * sx * (em + ep);
+	s[1] = -0.5 * cx * (em - ep);
+	c[0] = +0.5 * cx * (em + ep);
 	c[1] = +0.5 * sx * (em - ep);
 	w = (0.5 + v[0])*(0.5 + v[0]) - v[1] * v[1];
 	z[1] = v[1];
