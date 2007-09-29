@@ -4,7 +4,7 @@
 grdmask \- Create mask grid files from xy paths.
 .SH SYNOPSIS
 \fBgrdmask\fP \fIpathfiles\fP OPT(G)\fImask_grd_file\fP] GMT_I_OPT 
-GMT_Rgeo_OPT [ OPT(A) ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_Mo_OPT ] 
+GMT_Rgeo_OPT [ OPT(A)[\fBm\fP|\fBp\fP] ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_Mo_OPT ] 
 [ OPT(N)\fIout/edge/in\fP ] [ OPT(S)\fIsearch_radius\fP[\fBm|c|k|K\fP] ] 
 [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
@@ -27,7 +27,9 @@ Name of resulting output mask grid file.
 .TP
 .B \-A
 If the input data are geographic (as indicated by \fB\-fi\fP) then the sides in the polygons will be
-approximated by great circle arcs.  This can be turned off using the \fB\-A\fP switch.
+approximated by great circle arcs.  When using the \fB\-A\fP sides will be regarded as straight lines.
+Alternatively, append \fBm\fP to have sides first follow meridians, then parallels. Or append \fBp\FP
+to first follow parallels, then meridians.
 .TP
 .B \-F
 Force pixel registration.  [Default is grid registration].

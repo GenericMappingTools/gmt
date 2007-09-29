@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.13 2007-05-24 15:37:36 remko Exp $
+ *	$Id: gmt_vector.c,v 1.14 2007-09-29 23:44:14 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -540,11 +540,14 @@ void GMT_cart_to_geo (double *alat, double *alon, double *a, int rads)
 	}
 }
 
-int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step)
+int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
 	 * <step> spherical degree.
+	 * If mode=0: returns points along a great circle
+	 * If mode=1: first follows meridian, then parallel
+	 * If mode=2: first follows parallel, then meridian
 	 * Returns the new number of points (original plus auxiliary).
 	 *
 	 * The original argument "greenwich" became superfluous when the algorithm for
@@ -573,10 +576,70 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step)
 	for (i = 1; i < n; i++) {
 		
 		GMT_geo_to_cart (&lat[i],&lon[i], b, TRUE);
-		
-		if ((theta = d_acos (GMT_dot3v (a, b))) == M_PI) {	/* trouble, no unique great circle */
+
+		if (mode == 1) {	/* First follow meridian, then parallel */
+			theta = fabs(lon[i]-lon[i-1]) * cos(lat[i-1]);
+			n_step = irint (theta * R2D / step);
+			for (j = 1; j <= n_step; j++) {
+				c = j / (double)n_step;
+				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
+				lat_tmp[n_tmp] = lat[i-1];
+				n_tmp++;
+				if (n_tmp == n_alloc) {
+					n_alloc += GMT_CHUNK;
+					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
+					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
+				}
+			}
+			theta = fabs(lat[i]-lat[i-1]);
+			n_step = irint (theta * R2D / step);
+			for (j = 1; j < n_step; j++) {
+				c = j / (double)n_step;
+				lon_tmp[n_tmp] = lon[i];
+				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
+				n_tmp++;
+				if (n_tmp == n_alloc) {
+					n_alloc += GMT_CHUNK;
+					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
+					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
+				}
+			}
+		}
+
+		else if (mode == 2) {	/* First follow parallel, then meridian */
+			theta = fabs(lat[i]-lat[i-1]);
+			n_step = irint (theta * R2D / step);
+			for (j = 1; j <= n_step; j++) {
+				c = j / (double)n_step;
+				lon_tmp[n_tmp] = lon[i-1];
+				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
+				n_tmp++;
+				if (n_tmp == n_alloc) {
+					n_alloc += GMT_CHUNK;
+					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
+					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
+				}
+			}
+			theta = fabs(lon[i]-lon[i-1]) * cos(lat[i]);
+			n_step = irint (theta * R2D / step);
+			for (j = 1; j < n_step; j++) {
+				c = j / (double)n_step;
+				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
+				lat_tmp[n_tmp] = lat[i];
+				n_tmp++;
+				if (n_tmp == n_alloc) {
+					n_alloc += GMT_CHUNK;
+					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
+					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
+				}
+			}
+		}
+
+		/* Follow great circle */
+		else if ((theta = d_acos (GMT_dot3v (a, b))) == M_PI) {	/* trouble, no unique great circle */
 			if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Two points in input list are antipodal - no resampling taken place!\n", GMT_program);
 		}
+
 		else if ((n_step = irint (theta * R2D / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			fraction = 1.0 / (float) n_step;
 			minlon = MIN(lon[i-1],lon[i]);

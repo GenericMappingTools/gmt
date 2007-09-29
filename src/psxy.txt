@@ -14,7 +14,7 @@
 psxy \- Plot lines, polygons, and symbols on maps
 .SH SYNOPSIS
 \fBpsxy\fP \fIfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
-[ OPT(A) ] [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP ] [ OPT(E)[\fBx\fP|\fBy\fP|\fBX\fP|\fBY\fP][\fBn\fP][\fIcap\fP][/[\fB-\fP|\fB+\fP]\fIpen\fP] ] 
+[ OPT(A)[\fBm\fP|\fBp\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP ] [ OPT(E)[\fBx\fP|\fBy\fP|\fBX\fP|\fBY\fP][\fBn\fP][\fIcap\fP][/[\fB-\fP|\fB+\fP]\fIpen\fP] ] 
 [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_K_OPT ] [ OPT(L) ] 
 [ OPT(N) ] [ GMT_Mo_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_t_OPT ] [ GMT_c_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
@@ -38,7 +38,10 @@ List one or more file-names. If no files are given, \fBpsxy\fP will read standar
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
-Suppress drawing line segments as great circle Arcs.  [Default draws great circle arcs].
+By default line segments are drawn as great circle arcs. To draw them as straight lines,
+use the OPT(A) flag. Alternatively, add \fBm\fP to draw the line by first following a meridian,
+then a parallel. Or append \fBp\fP to start following a parallel, then a meridian.
+(This can be practical to draw a lines along parallels, for example).
 #include "explain_-B_short.txt"
 .TP
 .B \-C
