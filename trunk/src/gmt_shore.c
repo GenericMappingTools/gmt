@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.30 2007-09-10 17:56:46 guru Exp $
+ *	$Id: gmt_shore.c,v 1.31 2007-09-29 23:44:14 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -688,7 +688,7 @@ int GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, int np, BOOLEAN sample, dou
 		
 	for (k = 0; k < np; k++) {
 			
-		if (sample) p[k].n = GMT_fix_up_path (&p[k].lon, &p[k].lat, p[k].n, step);
+		if (sample) p[k].n = GMT_fix_up_path (&p[k].lon, &p[k].lat, p[k].n, step, 0);
 		
 		/* Clip polygon against map boundary if necessary and return plot x,y in inches */
 				
