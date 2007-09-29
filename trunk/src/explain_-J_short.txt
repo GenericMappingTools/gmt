@@ -48,6 +48,8 @@ More details can be found in the \fBpsbasemap\fP man pages.
 .br
 \fB\-Jg\fP\fIlon0/lat0/scale\fP (Orthographic)
 .br
+\fB\-Jg\fP\fIlon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale\fP (General Perspective).
+.br
 \fB\-Js\fP\fIlon0/lat0/\fP[\fIslat/\fP]\fIscale\fP (General Stereographic)
 .br
 .sp
