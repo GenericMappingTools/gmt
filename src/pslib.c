@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.151 2007-09-28 18:25:11 guru Exp $
+ *	$Id: pslib.c,v 1.152 2007-09-29 03:06:17 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1044,61 +1044,37 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 	 * line segments.  The result is the fewest points needed to draw the path
 	 * and still look exactly like the original path. */
 	 
-	double old_slope, new_slope, old_dir, new_dir;
-	int i, j, k, *xx, *yy, dx, dy;
+	double old_slope = 1.0e200, new_slope;
+	int i, k, dx, dy, old_dir = 0, new_dir;
+	/* These seeds for old_slope and old_dir make sure that first point gets saved */
 
 	if (n < 2) return (0);
 
-	xx = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
-	yy = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
-
-	xx[0] = irint (x[0] * PSL->internal.scale);
-	yy[0] = irint (y[0] * PSL->internal.scale);
-
-	for (i = j = 1; i < n; i++) {
-		xx[j] = irint (x[i] * PSL->internal.scale);
-		yy[j] = irint (y[i] * PSL->internal.scale);
-		if (!(xx[j] == xx[j-1] && yy[j] == yy[j-1])) j++;
+	for (i = 0; i < n; i++) {
+		ix[i] = irint (x[i] * PSL->internal.scale);
+		iy[i] = irint (y[i] * PSL->internal.scale);
 	}
-	n = j;
 
-	if (n < 2) {	/* Never made more than a single point - hence no line can be drawn */
-		ps_free ((void *)xx);
-		ps_free ((void *)yy);
-		return (0);
-	}
-	/* Here we know that no points repeats so dx and dy cannot BOTH be 0 */
-	
-	ix[0] = xx[0];	iy[0] = yy[0];	k = 1;
-
-	dx = xx[1] - xx[0];
-	dy = yy[1] - yy[0];
-	old_slope = (dx == 0) ? copysign (1.0e100, (double)dy) : ((double)dy) / ((double)dx);
-	old_dir = (dx >= 0) ? 1 : -1;
-
-	for (i = 1; i < n-1; i++) {
-		dx = xx[i+1] - xx[i];
-		dy = yy[i+1] - yy[i];
+	for (i = k = 0; i < n-1; i++) {
+		dx = ix[i+1] - ix[i];
+		dy = iy[i+1] - iy[i];
+		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
 		new_slope = (dx == 0) ? copysign (1.0e100, (double)dy) : ((double)dy) / ((double)dx);
-
 		new_dir = (dx >= 0) ? 1 : -1;
 		if (new_slope != old_slope || new_dir != old_dir) {
-			ix[k] = xx[i];
-			iy[k] = yy[i];
+			ix[k] = ix[i];
+			iy[k] = iy[i];
 			k++;
 			old_slope = new_slope;
 			old_dir = new_dir;
 		}
 	}
 	/* Last point */
-	if (!(ix[k-1] == xx[n-1] && iy[k-1] == yy[n-1])) {
-		ix[k] = xx[n-1];
-		iy[k] = yy[n-1];
+	if (!(ix[k-1] == ix[n-1] && iy[k-1] == iy[n-1])) {
+		ix[k] = ix[n-1];
+		iy[k] = iy[n-1];
 		k++;
 	}
-
-	ps_free ((void *)xx);
-	ps_free ((void *)yy);
 
 	return (k);
 }
