@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.101 2007-09-30 00:20:33 remko Exp $
+	$Id: ChangeLog,v 1.102 2007-09-30 00:30:40 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-08-29	remko
@@ -202,8 +202,8 @@
 	* pshistogram.c:	-C for center bins now -F (-C still works for backwardness)
 				Now takes -C<cpt> to color bars based on mid x-value.
 	* gmt_support.c:	Enhancement: CPT files may now be setup for categorical data
-				e.g, records are <key>	<fill> <label>, where <key> is an
-				integer that is monotonically increasing but not necessarily
+				e.g, records are <key>	<fill> <label>, where <key> is a
+				value that is monotonically increasing but not necessarily
 				continuous.  Used to support plotting of categorical data
 				on which interpolation is not defined.
 2007-08-28	pwessel
