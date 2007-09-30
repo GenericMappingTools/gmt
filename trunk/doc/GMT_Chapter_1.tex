@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.69 2007-09-30 22:12:08 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.70 2007-09-30 22:19:57 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -76,11 +76,9 @@ if \Opt{C} sets outline (-) or both fill and outline (+).
 or both fill and outline (+).
 \item \GMTprog{sample1d} now accepts \Opt{Fn} for no interpolation (returns nearest value).
 \item \GMTprog{spotter/originator} Added option \Opt{Q} to specify constant r/t for (x,y,z) data only.
-
 \end{enumerate}
 
 Below is a list of previous problems that we have identified and corrected in the current release:
-
 \begin{description}
 \item [\GMTprog{gmt\_agc\_io.c}]: Failed when nx and/or ny was multiple of 40 + 1.
 \item [\GMTprog{gmt\_custom\_io.c}]: Surfer grid start at lower, not upper left.
@@ -155,6 +153,10 @@ Wrong coordinates used to calculate rms misfit.
 \item \GMTprog{x2sys/x2sys\_cross.c} Skip duplicate files with a warning. Distance calculations
 were bogus (see \GMTprog{gmt\_map.c}), and wrong number of arguments passed to readfile function pointer.
 \end{description}
+
+Finally, as far as CVS users are concerned, the old "gurumake" system has gone. To compile from CVS, users need to use a GNU
+compatible make program. A combination of GNUmakefile and makefile files make sure that those components not in the
+tarballs are created from scratch. Type \progname{make} in the GMT directory to get a list of targets.
 
 %-----------------------------------------
 
