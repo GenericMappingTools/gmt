@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.305 2007-09-28 18:39:23 guru Exp $
+ *	$Id: gmt_init.c,v 1.306 2007-09-30 04:16:48 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3122,6 +3122,8 @@ void GMT_end (int argc, char **argv)
 
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) if (GMT_plot_format[i][j]) GMT_free ((void *)GMT_plot_format[i][j]);
 
+	if (gmtdefs.encoding.name) free (gmtdefs.encoding.name);
+	
 	fflush (GMT_stdout);	/* Make sure output buffer is flushed */
 
 	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */

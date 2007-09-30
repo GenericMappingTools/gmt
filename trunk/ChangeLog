@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.103 2007-09-30 03:17:41 guru Exp $
+	$Id: ChangeLog,v 1.104 2007-09-30 04:16:48 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-09-29	pwessel
+	* *.c:			Make sure memory allocated by strdup is freed by free (Windows only)
+	
 2007-09-29	remko
 	* gmt_vector.[ch]:	Added argument "mode" to GMT_fix_up_path to allow drawing lines
 				first following a meridian, then a parallel, or vice versa.
