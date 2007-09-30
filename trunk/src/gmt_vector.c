@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.14 2007-09-29 23:44:14 remko Exp $
+ *	$Id: gmt_vector.c,v 1.15 2007-09-30 13:12:09 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -580,7 +580,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 		if (mode == 1) {	/* First follow meridian, then parallel */
 			theta = fabs(lon[i]-lon[i-1]) * cos(lat[i-1]);
 			n_step = irint (theta * R2D / step);
-			for (j = 1; j <= n_step; j++) {
+			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
 				lat_tmp[n_tmp] = lat[i-1];
@@ -593,7 +593,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 			}
 			theta = fabs(lat[i]-lat[i-1]);
 			n_step = irint (theta * R2D / step);
-			for (j = 1; j < n_step; j++) {
+			for (j = 0; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
 				lon_tmp[n_tmp] = lon[i];
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
@@ -609,7 +609,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 		else if (mode == 2) {	/* First follow parallel, then meridian */
 			theta = fabs(lat[i]-lat[i-1]);
 			n_step = irint (theta * R2D / step);
-			for (j = 1; j <= n_step; j++) {
+			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
 				lon_tmp[n_tmp] = lon[i-1];
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
@@ -622,7 +622,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 			}
 			theta = fabs(lon[i]-lon[i-1]) * cos(lat[i]);
 			n_step = irint (theta * R2D / step);
-			for (j = 1; j < n_step; j++) {
+			for (j = 0; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
 				lat_tmp[n_tmp] = lat[i];
