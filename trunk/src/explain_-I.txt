@@ -2,8 +2,8 @@
 .B \-I
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Optionally, append a suffix
 modifier:  \fBGeographical (degrees) coordinates\fP: Append \fBm\fP to
-indicate minutes or \fBc\fP to indicate seconds.  If one of the units \fBe\fP, \fBk\fP, \fBi\fP,
-or \fBn\fP is appended instead, the increment will be assumed to be in meter, km, miles, or
+indicate arc minutes or \fBc\fP to indicate arc seconds.  If one of the units \fBe\fP, \fBk\fP, \fBi\fP,
+or \fBn\fP is appended instead, the increment will be assumed to be given in meter, km, miles, or
 nautical miles, respectively, and will be converted to the equivalent degrees longitude at
 the middle latitude of the region (the conversion depends on \fBELLIPSOID\fP).  If /\fIy_inc\fP is given but set to 0 it will be reset equal to
 \fIx_inc\fP; otherwise it will be converted to degrees latitude.  
