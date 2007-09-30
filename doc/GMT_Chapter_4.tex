@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.99 2007-09-19 01:51:30 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.100 2007-09-30 03:17:41 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -1343,6 +1343,8 @@ temporarily switch to the symbol font, turn on sub- or superscript,
 etc., within words.  These conditions are toggled on/off by the
 escape sequence @\textbf{x}, where \textbf{x} can be one of several types.
 The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}. 
+Note that under Windows the percent symbol indicates a batch variable,
+hence you must use two percent-signs for each one required in the escape sequence for font switching.
 
 \begin{table}[H]
 \centering
@@ -1359,8 +1361,7 @@ The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}.
 @!	&	Creates one composite character of the next two characters \\ \hline 
 @@	&	Prints the @ sign itself \\ \hline 
 \end{tabular}
-\caption{\gmt\ text escape sequences.  Note that under Windows the percent symbol indicates a variable,
-hence you must use two percent-signs for each one required in the escape sequence for font switching.}
+\caption{\gmt\ text escape sequences.}
 \label{tbl:escape}
 \end{table}
 

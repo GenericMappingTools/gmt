@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.67 2007-09-18 01:32:32 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.68 2007-09-30 03:17:41 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -33,6 +33,128 @@ reach a stable point from which we can initiate the \GMT\ 5 development branch. 
 will be distinguished by being completely restructured so as to allow developers to call
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
+
+\subsection{Overview of \gmt\ 4.2.1 [October-1, 2007]}
+
+Changes in \GMT\ 4.2.1 once again address many structural issues as well as numerous bug fixes.
+System-wide changes include a rewamping of the entire configure/make setup for both regular
+installations and CVS users, an improvement to how the BCR 2-D interpolations for images and grids
+are done by adding B-spline and nearest neighbor as optional interpolants, introduction of
+a new \PS\ Level 2 pattern machinery in \GMTprog{pslib.c}, an updated GSHHS 4.3 version which
+also includes Australia internal state
+boundaries, fixes to Yemen and Lebanon borders, and more river lines, and general
+improvements and corrections to the documentation, such as placing all man pages in section 1
+(except pslib which goes in section 3).
+
+Individual programs have also seen some new options or enhancements:
+% Enhancements:
+\begin{enumerate}
+\item \GMTprog{gmtselect} has enhancement \Opt{Lp} to limit points beyond a line's endpoints.
+\item \GMTprog{grdfilter} has new \Opt{D}5 to allow direct filtering of Mercator grids (img).
+\item \GMTprog{grdmask} has an enhanced \Opt{A} option; append {\bf m} or {\bf p} to design
+a mask polygon by first following a meridian, then a parallel, or vice versa.
+\item \GMTprog{gmtmath} has several new operators, such as {\bf PLMg} (geophysical normalization
+and suitable for high degree and order), {\bf FACT, SKEW, KURT, PQUANT, EULER, PSI, PV, QV, COT,
+COTD, ACOT, SEC, SECD, ASEC, CSC, CSCD}, and {\bf ACSC}.
+\item \GMTprog{grdmath} has the same new operator as \GMTprog{gmtmath}, plus {\bf YLMg} and {\bf CBAZ}.
+\item \GMTprog{grdproject} has considers \Opt{R} and optional setting.
+\item \GMTprog{mapproject} has an enhanced \Opt{G-} option where increments rather than 
+cumulative distances are returned.  Also, for UTM projections with \Opt{C}, the \Opt{R}
+option is now optional provided the UTM zone is properly specified.
+\item \GMTprog{ps2raster} now a new \Opt{P} option for forcing portrait orientation.
+\item \GMTprog{pshistogram} now a new \Opt{C} option for using a cpt file to paint the bars.
+\item \GMTprog{pstext} All text may now use the @\_, @: and @; escape sequences for underline,
+font size change, and font color change.
+\item \GMTprog{psrose} has a new option \Opt{L} to control the labels.
+\item \GMTprog{psxy} has an enhanced \Opt{A} option; append {\bf m} or {\bf p} to draw a
+line by first following a meridian, then a parallel, or vice versa. Can now plot a notched
+box-and-whisker symbol, and we added {\bf +n}{\it dx/dy} to nudge placement of quoted line labels.
+Encanced\Opt{E}.../[-$|$+]{\it pen} where + means apply cpt color (\Opt{C}) to symbol and bar
+- means apply to bar only (no fill).  Likewise, \Opt{W}[+$|$-]{\it pen} controls
+if \Opt{C} sets outline (-) or both fill and outline (+).
+\item \GMTprog{psxyz} Enhanced Opt{W}[+$|$-]{\it pen} controls if \Opt{C} sets outline (-)
+or both fill and outline (+).
+\item \GMTprog{sample1d} now accepts \Opt{Fn} for no interpolation (returns nearest value).
+\item \GMTprog{spotter/originator} Added option \Opt{Q} to specify constant r/t for (x,y,z) data only.
+
+\end{enumerate}
+
+Below is a list of previous problems that we have identified and corrected in the current release:
+
+\begin{description}
+\item [\GMTprog{gmt\_agc\_io.c}]: Failed when nx and/or ny was multiple of 40 + 1.
+\item [\GMTprog{gmt\_custom\_io.c}]: Surfer grid start at lower, not upper left.
+\item [\GMTprog{gmt\_io.c}]: Combinations of {\bf OUTPUT\_DEGREE\_FORMAT}=ddd:mm:ss.xxxF and \Opt{:}
+would add W$|$E to lat and S$|$N to lon for formatted output.
+Blank lines were not recognized under cygwin/SFU.
+When no delimiters are used for input date format (e.g., yyyymmdd) then yyyy \emph{must be} 4 characters
+and we must use \%4d.  Leading zeros are required if year $<$ 1000.
+\item [\GMTprog{gmt\_init.c}]: For quoted lines, the :Lh modifier did not reset label if
+a segment header had no label specified.  Also, label would include the leading \" in a multi-word label.
+Now, UTM zones may be A,B,Y,Z or 1-60 with modifiers C-X (except I and O).
+Parsing of psxy's \Opt{Sf} incorrectly scaled a count to inches.
+Suffices {\bf h$|$+$|$-} in \Opt{J} were mistaken for units.
+\item [\GMTprog{gmt\_map.c}]: KM\_PER\_DEG was not reset in \GMTfunc{GMT\_set\_spherical}. This may have caused
+errors in scaling when {\bf ELLIPSOID} was not set to Sphere.  \GMTfunc{GMT\_distances} function did not work with correct pointer.
+Great circle intersection did not select correct vector sign so
+points 180 degrees from a line could pass as close in \GMTprog{gmtselect}.
+\item [\GMTprog{gmt\_plot.c}]: Failed to activate ddd.mm.xxx format for maps.
+\item [\GMTprog{gmt\_proj.c}]: \Opt{JS} inverse did not apply quadrant check.
+\item [\GMTprog{gmt\_support.c}]: ddd:mm.xx (2 or more x) failed to format properly.
+\item [\GMTprog{gmt\_vector.c}]: Function \GMTfunc{GMT\_fix\_up\_path}: Intermediate longitudes now wrapped based on segment,
+not on map extent.``greenwich'' argument became superfluous and was
+removed. Argument "step" was found to be in degrees, not in inches as some calling programs assumed.
+\item [\GMTprog{filter1d.c}]: For \Opt{Ff}{\it file}, set filter width to DBL\_MAX until filter is read.
+\item [\GMTprog{grd2cpt.c}]: \Opt{E} flag did not work unless \Opt{T} was used.
+\item [\GMTprog{grd2xyz.c}]: Did not switch to binary i/o mode when
+\Opt{Z} specified binary output (Windows bug only).
+\item [\GMTprog{grdblend.c}]: Now works with Windows DLL by using the GMT i/o functions.
+\item [\GMTprog{grdcontour.c}]: \Opt{A}{\it value} would turn off the expected default transparency.
+\item [\GMTprog{grdcut.c}]: Domain check failed for geographic 360-degree grid with \Opt{fg}.
+\item [\GMTprog{grdedit.c}]: Disallow \Opt{T} for Surfer grids since they don't support two
+kinds of registration. \Opt{N} did not take into account if \Opt{fg} was given.
+\item [\GMTprog{grdfilter.c}]: \Opt{I}{\it nx+/ny+} was not propagated to the output grid setup.
+\item [\GMTprog{grdimage.c}]: Removed \Opt{T} option; no more polygon drawing (use \GMTprog{grdview}).
+\item [\GMTprog{grdlandmask.c}]: Failed to set rightmost, empty bin if 360-periodicity in effect;
+also needed to set repeating right column to left column.
+\item [\GMTprog{grdmask.c}]: For \Opt{S}..{\bf k}, did not properly account for latitude effect on dx.
+SEGV error when \GMTfunc{GMT\_fix\_up\_path} returned {\emph fewer} points
+than originally allocated and the n\_alloc variable was not reduced accordingly.
+\item [\GMTprog{grdmath.c}]: When M=0, set Imaginary component of {\bf YLM} to 0 (was same as real).
+\item [\GMTprog{grdproject.c}]: \Opt{S}{\it max\_radius} changed to \Opt{S}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
+take advantage of new and improved projection function \GMTfunc{GMT\_grd\_project}.
+\item [\GMTprog{grdreformat.c}]: Could not determine format of output file automatically since file
+does not yet exist (must append file-type code).
+\item [\GMTprog{grdsample.c}]: \Opt{Q}{\it value} changed to \Opt{Q}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
+take advantage of new BCR code.
+\item [\GMTprog{project.c}]: Wrong azimuth for \Opt{N} and \Opt{G} generating lines.
+\item [\GMTprog{pslegend.c}]: Usage message did not explain the \Opt{L} option.  Added @ECHO OFF to avoid
+commands being echoed into the \PS\ output under Windows.
+The color change (C) macro messed up \Opt{Xa} and \Opt{Ya} absolute settings.
+\item [\GMTprog{psbasemap.c}]: Check that \Opt{L} is used with geographic coordinates only.
+\item [\GMTprog{psimage.c}]: The \Opt{I} option had become always active.
+\item [\GMTprog{pslib.c}]: Now no text is written if font size equals 0.
+\item [\GMTprog{xyz2grd.c}]: \Opt{E} did not process pixel grids properly.
+\item [\GMTprog{psxyz.c}]: Fixed bug in painting outline of text symbols.
+\item [\GMTprog{gshhs/gshhstograss.c}]: Removed use of \GMTfunc{getopt} so even the lamest systems can compile it (incuding
+Windows).
+\item [\GMTprog{imgsrc/img2mercgrd.c}]: Fixed AND vs OR logic in lat bounds check when \Opt{D} was set.
+Used wrong origin when \Opt{C} was used.  Now relative to lon = lat = 0.
+\item [\GMTprog{meca/*.c}]: Now works with Windows DLL by using the GMT i/o functions.
+\item [\GMTprog{meca/utilmeca.c}]: Make sure that checks on floating point numbers work well, even
+in case of small round off errors. Thanks to Peter Lombard.
+\item [\GMTprog{mgd77/mgd77manage.c}]: \Opt{Q}{\it value} changed to \Opt{Q}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
+take advantage of new BCR code.
+\item [\GMTprog{mgd77/mgd77sniffer.c}]: Same.
+\item [\GMTprog{misc/gmtdigitize.c}]: Must use separate x and y-scales if \Opt{Jx} is specified.
+Wrong coordinates used to calculate rms misfit.
+\item \GMTprog{spotter/originator.c} Now lists option \Opt{L} in both usage and man page.
+\item \GMTprog{x2sys/x2sys.c} \GMTfunc{x2sys\_set\_system} did not initialize structures properly.
+\item \GMTprog{x2sys/x2sys\_cross.c} Skip duplicate files with a warning. Distance calculations
+were bogus (see \GMTprog{gmt\_map.c}), and wrong number of arguments passed to readfile function pointer.
+\end{description}
+
+%-----------------------------------------
 
 \subsection{Overview of \gmt\ 4.2.0 [April-1, 2007]}
 

@@ -1,14 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.102 2007-09-30 00:30:40 guru Exp $
+	$Id: ChangeLog,v 1.103 2007-09-30 03:17:41 guru Exp $
 -----------------------------------------------------------------------------------------
 
-2007-08-29	remko
+2007-09-29	remko
 	* gmt_vector.[ch]:	Added argument "mode" to GMT_fix_up_path to allow drawing lines
 				first following a meridian, then a parallel, or vice versa.
 	* psxy.c, grdmask.c:	Extended option -A with -Am and -Ap to use new GMT_fix_up_path modes.
 	* pscoast.c, gmt_support.c, gmt_shore.c:	Added mode=0 to GMT_fix_up_path arguments.
 
-2007-08-28	remko
+2007-09-28	remko
 	* gmt_stat.h, gmt_math.h:	Moved functions defined in gmt_stat.c from gmt_math.h to
 				gmt_stat.h.
 	* gmt_stat.c:		Added GMT_plm_bar to compute normalized Legendre functions to very
@@ -16,6 +16,10 @@
 	* gmtmath.c:		Use GMT_plm_bar to determine PLMg. Added FACT (factorial).
 	* grdmath.c:		Use GMT_plm_bar to determine PLMg, YLM and YLMg. Added FACT (factorial).
 
+2007-09-28	pwessel
+	* gmt_custom_io.c:	When reading Surfer subregions we must adjust as grids starts at
+				the lower left corner and not upper left.
+				
 2007-09-26	pwessel
 	* meca/*.c:		Made Windows DLL workable by using the GMT_* i/o functions.
 	* grdblend.c:		---"---
@@ -61,7 +65,7 @@
 
 2007-09-21	pwessel
 	* {gmt,grd}math.c:	Added functions KURT, SKEW, and PQUANT plus EULER's constant
-	* grdmath.c:		For -S..k, did not properly account for latitude effect on dx
+	* grdmask.c:		For -S..k, did not properly account for latitude effect on dx
 	* spotter/originator.c:	Added option -Q to specify constant r/t for (x,y,z) data only
 				Now lists -L option in both usage and man page
 
@@ -105,7 +109,7 @@
 				src/makegmt.macros.in.
 	* xgrid/makefile:	Created from xgrid/makefile.in with X11 flags coming from
 				src/makegmt.macros.in. Significantly improved (missing dependencies).
-	* xgrid/grdinfo.c:	Renamed from xgrid/grdinfo2.c (easier for compilation).
+	* mex/grdinfo.c:	Renamed from mex/grdinfo2.c (easier for compilation).
 	* configure.in:		Changed accordingly, absorbing mex/configure.in.
 	* mex/configure.in mex/makefile.in xgrid/makefile.in:	Removed
 	* guru/GMT_suppl.lis:	Changed accordingly.
@@ -279,7 +283,7 @@
 	* gmt_init.c:		Parsing of psxy's -Sf incorrectly scaled a count to inches.
 
 2007-07-10	wsmith
-	* img2mercgrd.c:	Fixed &&/|| logic in lat bounds check when -D set.
+	* imgsrc/img2mercgrd.c:	Fixed &&/|| logic in lat bounds check when -D set.
 
 2007-07-09	pwessel
 	* misc/gmtdigitize.c:	Wrong coordinates used to calculate rms misfit
@@ -312,7 +316,7 @@
 2007-06-26	pwessel
 	* src/grdmask.c:	SEGV error when GMT_fix_up_path returned fewer points
 				than originally allocated (n_alloc) and n_alloc was not reduced.
-	* src/gmt_support.c:	-A<value> would turn off the expected default transparency
+	* src/grdcontour.c:	-A<value> would turn off the expected default transparency
 
 2007-06-24	pwessel
 	* src/grdlandmask.c:	Failed to set rightmost, empty bin if 360-periodicity in effect;
