@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.100 2007-09-28 19:49:43 remko Exp $
+	$Id: ChangeLog,v 1.101 2007-09-30 00:20:33 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-08-29	remko
+	* gmt_vector.[ch]:	Added argument "mode" to GMT_fix_up_path to allow drawing lines
+				first following a meridian, then a parallel, or vice versa.
+	* psxy.c, grdmask.c:	Extended option -A with -Am and -Ap to use new GMT_fix_up_path modes.
+	* pscoast.c, gmt_support.c, gmt_shore.c:	Added mode=0 to GMT_fix_up_path arguments.
 
 2007-08-28	remko
 	* gmt_stat.h, gmt_math.h:	Moved functions defined in gmt_stat.c from gmt_math.h to
