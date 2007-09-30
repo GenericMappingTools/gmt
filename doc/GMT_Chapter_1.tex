@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.68 2007-09-30 03:17:41 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.69 2007-09-30 22:12:08 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -17,7 +17,7 @@ heralded by the first official release in {\it EOS Trans. AGU} in the fall of 19
 Development has at times been rapid, and numerous releases have seen the light of day since the early
 versions.  For a history of the changes from release to release, see the online
 \htmladdnormallink{Release Announcements}{http://\GMTSITE/gmt/gmt_releases.html}
-and the file \filename{CHANGES} in the main \GMT\ directory.
+and the file \filename{ChangeLog} in the main \GMT\ directory.
 
 The success of \GMT\ is to a large degree due to the input of the user community. In fact, most of the
 capabilities and options in \GMT\ programs originated as user requests.
@@ -57,12 +57,12 @@ a mask polygon by first following a meridian, then a parallel, or vice versa.
 and suitable for high degree and order), {\bf FACT, SKEW, KURT, PQUANT, EULER, PSI, PV, QV, COT,
 COTD, ACOT, SEC, SECD, ASEC, CSC, CSCD}, and {\bf ACSC}.
 \item \GMTprog{grdmath} has the same new operator as \GMTprog{gmtmath}, plus {\bf YLMg} and {\bf CBAZ}.
-\item \GMTprog{grdproject} has considers \Opt{R} and optional setting.
+\item \GMTprog{grdproject} now considers \Opt{R} an optional setting.
 \item \GMTprog{mapproject} has an enhanced \Opt{G-} option where increments rather than 
 cumulative distances are returned.  Also, for UTM projections with \Opt{C}, the \Opt{R}
 option is now optional provided the UTM zone is properly specified.
-\item \GMTprog{ps2raster} now a new \Opt{P} option for forcing portrait orientation.
-\item \GMTprog{pshistogram} now a new \Opt{C} option for using a cpt file to paint the bars.
+\item \GMTprog{ps2raster} has now a new \Opt{P} option for forcing portrait orientation.
+\item \GMTprog{pshistogram} has now a new \Opt{C} option for using a cpt file to paint the bars.
 \item \GMTprog{pstext} All text may now use the @\_, @: and @; escape sequences for underline,
 font size change, and font color change.
 \item \GMTprog{psrose} has a new option \Opt{L} to control the labels.
@@ -72,7 +72,7 @@ box-and-whisker symbol, and we added {\bf +n}{\it dx/dy} to nudge placement of q
 Encanced\Opt{E}.../[-$|$+]{\it pen} where + means apply cpt color (\Opt{C}) to symbol and bar
 - means apply to bar only (no fill).  Likewise, \Opt{W}[+$|$-]{\it pen} controls
 if \Opt{C} sets outline (-) or both fill and outline (+).
-\item \GMTprog{psxyz} Enhanced Opt{W}[+$|$-]{\it pen} controls if \Opt{C} sets outline (-)
+\item \GMTprog{psxyz} Enhanced \Opt{W}[+$|$-]{\it pen} controls if \Opt{C} sets outline (-)
 or both fill and outline (+).
 \item \GMTprog{sample1d} now accepts \Opt{Fn} for no interpolation (returns nearest value).
 \item \GMTprog{spotter/originator} Added option \Opt{Q} to specify constant r/t for (x,y,z) data only.
@@ -115,6 +115,8 @@ removed. Argument "step" was found to be in degrees, not in inches as some calli
 kinds of registration. \Opt{N} did not take into account if \Opt{fg} was given.
 \item [\GMTprog{grdfilter.c}]: \Opt{I}{\it nx+/ny+} was not propagated to the output grid setup.
 \item [\GMTprog{grdimage.c}]: Removed \Opt{T} option; no more polygon drawing (use \GMTprog{grdview}).
+\Opt{S}{\it max\_radius} changed to \Opt{S}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
+take advantage of new and improved projection function \GMTfunc{GMT\_grd\_project}.
 \item [\GMTprog{grdlandmask.c}]: Failed to set rightmost, empty bin if 360-periodicity in effect;
 also needed to set repeating right column to left column.
 \item [\GMTprog{grdmask.c}]: For \Opt{S}..{\bf k}, did not properly account for latitude effect on dx.
