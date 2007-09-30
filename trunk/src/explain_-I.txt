@@ -1,9 +1,9 @@
 .TP
 .B \-I
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Optionally, append a suffix
-modifier:  \fBGeographical (degrees) coordinates\fP: Append \fBm\fP to
+modifier.  \fBGeographical (degrees) coordinates\fP: Append \fBm\fP to
 indicate arc minutes or \fBc\fP to indicate arc seconds.  If one of the units \fBe\fP, \fBk\fP, \fBi\fP,
-or \fBn\fP is appended instead, the increment will be assumed to be given in meter, km, miles, or
+or \fBn\fP is appended instead, the increment is assumed to be given in meter, km, miles, or
 nautical miles, respectively, and will be converted to the equivalent degrees longitude at
 the middle latitude of the region (the conversion depends on \fBELLIPSOID\fP).  If /\fIy_inc\fP is given but set to 0 it will be reset equal to
 \fIx_inc\fP; otherwise it will be converted to degrees latitude.  
@@ -11,6 +11,6 @@ the middle latitude of the region (the conversion depends on \fBELLIPSOID\fP).  
 the corresponding max \fIx\fP (\fIeast\fP) or \fIy\fP (\fInorth\fP) may be slightly adjusted to fit exactly the given increment
 [by default the increment may be adjusted slightly to fit the given domain].  Finally, instead
 of giving an increment you may specify the \fInumber of nodes\fP desired by appending \fB+\fP to
-the supplied increment; the increment is then recalculated from the number of nodes and the domain.
+the supplied integer argument; the increment is then recalculated from the number of nodes and the domain.
 The resulting increment value depends on whether you have selected a gridline-registered
 or pixel-registered grid; see Appendix B for details.
