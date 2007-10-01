@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.318 2007-09-29 23:44:14 remko Exp $
+ *	$Id: gmt_support.c,v 1.319 2007-10-01 02:17:31 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -62,6 +62,7 @@
  *	GMT_non_zero_winding	Finds if a point is inside/outside a polygon
  *	GMT_read_cpt		Read color palette file
  *	GMT_rgb_to_hsv		Convert RGB to HSV
+ *	GMT_sample_cpt		Resamples the current cpt table based on new z-array
  *	GMT_smooth_contour	Use Akima's spline to smooth contour
  *	GMT_start_trace		Subfunction used by GMT_trace_contour
  *	GMT_trace_contour	Function that trace the contours in GMT_contours
@@ -1670,7 +1671,7 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 
 	if (!GMT_continuous && continuous) fprintf (stderr, "%s: Warning: Making a continous cpt from a discrete cpt may give unexpected results!\n", GMT_program);
 
-	if (nz < 0) {	/* Called from grd2cpt which want equal area colors */
+	if (nz < 0) {	/* Called from grd2cpt which wants equal area colors */
 		nz = -nz;
 		even = TRUE;
 	}
@@ -1683,10 +1684,10 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	a = -GMT_lut[0].z_low * b;
 
 	for (i = 0; i < GMT_n_colors; i++) {	/* Copy/normalize cpt file and reverse if needed */
-		lut[i].z_low = a + b * GMT_lut[i].z_low;
-		lut[i].z_high = a + b * GMT_lut[i].z_high;
 		if (reverse) {
 			j = GMT_n_colors - i - 1;
+			lut[i].z_low = 1.0 - a - b * GMT_lut[j].z_high;
+			lut[i].z_high = 1.0 - a - b * GMT_lut[j].z_low;
 			memcpy ((void *)lut[i].rgb_high, (void *)GMT_lut[j].rgb_low,  (size_t)(3 * sizeof (int)));
 			memcpy ((void *)lut[i].rgb_low,  (void *)GMT_lut[j].rgb_high, (size_t)(3 * sizeof (int)));
 			memcpy ((void *)lut[i].hsv_high, (void *)GMT_lut[j].hsv_low,  (size_t)(3 * sizeof (double)));
@@ -1694,6 +1695,8 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 		}
 		else {
 			j = i;
+			lut[i].z_low = a + b * GMT_lut[j].z_low;
+			lut[i].z_high = a + b * GMT_lut[j].z_high;
 			memcpy ((void *)lut[i].rgb_high, (void *)GMT_lut[j].rgb_high, (size_t)(3 * sizeof (int)));
 			memcpy ((void *)lut[i].rgb_low,  (void *)GMT_lut[j].rgb_low,  (size_t)(3 * sizeof (int)));
 			memcpy ((void *)lut[i].hsv_high, (void *)GMT_lut[j].hsv_high, (size_t)(3 * sizeof (double)));
