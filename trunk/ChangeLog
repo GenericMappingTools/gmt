@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.104 2007-09-30 04:16:48 guru Exp $
+	$Id: ChangeLog,v 1.105 2007-10-01 02:24:19 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-10-01	remko
+	* gmt_support.c (GMT_sample_cpt):	Needed to reverse z_low and z_high values as well as
+				rgb values when reversing color maps.
+	* makecpt.c:		Need to reverse colormap intervals when -I is given.
+				Both these fixes were needed to properly reverse colormaps with uneven
+				intervals.
 
 2007-09-29	pwessel
 	* *.c:			Make sure memory allocated by strdup is freed by free (Windows only)
