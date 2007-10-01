@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.70 2007-09-30 22:19:57 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.71 2007-10-01 02:20:15 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -127,6 +127,7 @@ take advantage of new and improved projection function \GMTfunc{GMT\_grd\_projec
 does not yet exist (must append file-type code).
 \item [\GMTprog{grdsample.c}]: \Opt{Q}{\it value} changed to \Opt{Q}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
 take advantage of new BCR code.
+\item [\GMTprog{makecpt.c}]: Colormaps with non-equidistant intervals can now be reversed properly.
 \item [\GMTprog{project.c}]: Wrong azimuth for \Opt{N} and \Opt{G} generating lines.
 \item [\GMTprog{pslegend.c}]: Usage message did not explain the \Opt{L} option.  Added @ECHO OFF to avoid
 commands being echoed into the \PS\ output under Windows.
