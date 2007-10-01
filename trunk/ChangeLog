@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.107 2007-10-01 15:36:21 remko Exp $
+	$Id: ChangeLog,v 1.108 2007-10-01 20:14:53 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-10-01	pwessel
+	* surface.c:		Make sure verbose starts with surface:
+	
 2007-10-01	remko
 	* gmt_support.c (GMT_sample_cpt):	Needed to reverse z_low and z_high values as well as
 				rgb values when reversing color maps.
