@@ -1,6 +1,7 @@
-#	$Id: panoply.cpt,v 1.1 2007-10-01 02:29:41 remko Exp $
+#	$Id: panoply.cpt,v 1.2 2007-10-01 14:20:03 remko Exp $
 #
 # Color map converted from Panoply PAL-1, the default color map in Panoply
+# http://www.giss.nasa.gov/tools/panoply/
 #
 # COLOR_MODEL = RGB
 0	4	14	216	1	4	14	216
