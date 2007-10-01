@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.6 2007-09-26 16:15:43 remko Exp $
+#  $Id: GNUmakefile,v 1.7 2007-10-01 16:44:09 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -364,6 +364,7 @@ zip_pdf:	ftpdir
 tar_scripts:	ftpdir
 		rm -f ftp/GMT$(VERSION)_scripts.tar.{gz,bz2}
 		rm -f examples/ex??/*.ps examples/ex??/*.eps examples/ex??/*% examples/ex??/*.txt examples/ex??/.gmt*
+		cp -f doc/fig/GMT_covertext.eps examples/ex19
 		sed -e 's:^:GMT$(VERSION)/:' guru/GMT_examples.lis > t.scripts
 		echo GMT$(VERSION)/COPYING >> t.scripts
 		echo "make GMT$(VERSION)_scripts.tar.gz"

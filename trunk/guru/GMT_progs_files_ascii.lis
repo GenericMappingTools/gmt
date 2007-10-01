@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.42 2007-09-24 00:38:01 remko Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.43 2007-10-01 16:44:09 guru Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_progs tar/zip files.  See GMT_progs_files_bin.lis for binary files
@@ -20,7 +20,6 @@ src/README.TRIANGLE
 src/triangle.c
 src/triangle.h
 src/makefile
-src/makefile.dummy
 src/makegmt.macros.in
 src/gmtalldeps.macros
 src/GMT.in
