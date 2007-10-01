@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.105 2007-10-01 02:24:19 remko Exp $
+	$Id: ChangeLog,v 1.106 2007-10-01 02:29:41 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-10-01	remko
@@ -8,6 +8,7 @@
 	* makecpt.c:		Need to reverse colormap intervals when -I is given.
 				Both these fixes were needed to properly reverse colormaps with uneven
 				intervals.
+	* share/cpt/GMT_panoply.cpt:	Added
 
 2007-09-29	pwessel
 	* *.c:			Make sure memory allocated by strdup is freed by free (Windows only)
