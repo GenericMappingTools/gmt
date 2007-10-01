@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.7 2007-10-01 16:44:09 guru Exp $
+#  $Id: GNUmakefile,v 1.8 2007-10-01 18:18:30 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -363,8 +363,7 @@ zip_pdf:	ftpdir
 
 tar_scripts:	ftpdir
 		rm -f ftp/GMT$(VERSION)_scripts.tar.{gz,bz2}
-		rm -f examples/ex??/*.ps examples/ex??/*.eps examples/ex??/*% examples/ex??/*.txt examples/ex??/.gmt*
-		cp -f doc/fig/GMT_covertext.eps examples/ex19
+		rm -f examples/ex??/*.ps examples/ex??/*% examples/ex??/*.txt examples/ex??/.gmt*
 		sed -e 's:^:GMT$(VERSION)/:' guru/GMT_examples.lis > t.scripts
 		echo GMT$(VERSION)/COPYING >> t.scripts
 		echo "make GMT$(VERSION)_scripts.tar.gz"
@@ -383,7 +382,7 @@ zip_scripts:	ftpdir
 		(cd ..; zip -r -9 -q    GMT/ftp/GMT_scripts.zip `cat GMT/bin.lis`)
 		rm -f asc.lis bin.lis
 
-tar_suppl:	ftpdir prep_suppl
+tar_suppl:	ftpdir
 		rm -f ftp/GMT$(VERSION)_suppl.tar.{gz,bz2}
 		echo "make GMT$(VERSION)_suppl.tar.gz"
 		sed -e 's:^:GMT$(VERSION)/:' guru/GMT_suppl.lis > t.suppl
