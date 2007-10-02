@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.74 2007-10-01 15:36:21 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.75 2007-10-02 18:43:18 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -40,11 +40,13 @@ Changes in \GMT\ 4.2.1 once again address many structural issues as well as nume
 System-wide changes include a rewamping of the entire configure/make setup for both regular
 installations and CVS users, an improvement to how the BCR 2-D interpolations for images and grids
 are done by adding B-spline and nearest neighbor as optional interpolants, introduction of
-a new \PS\ Level 2 pattern machinery in \GMTprog{pslib.c}, an updated GSHHS 4.3 version which
+a new \PS\ Level 2 pattern machinery in \GMTprog{pslib.c}, an updated GSHHS coastline version (which
 also includes Australia internal state
-boundaries, fixes to Yemen and Lebanon borders, and more river lines, and general
+boundaries, fixes to the Yemeni and Lebanese borders, more river lines), and general
 improvements and corrections to the documentation, such as placing all man pages in section 1
-(except pslib which goes in section 3).
+(except pslib which goes in section 3). Starting with \GMT\ 4.2.1 we will also begin naming
+the coastline-related archives by the GSHHS prefix and use the actual GSHHS version number (now
+1.9).
 
 Individual programs have also seen some new options or enhancements:
 % Enhancements:
@@ -99,9 +101,11 @@ Suffices {\bf h$|$+$|$-} in \Opt{J} were mistaken for units.
 errors in scaling when {\bf ELLIPSOID} was not set to Sphere.  \GMTfunc{GMT\_distances} function did not work with correct pointer.
 Great circle intersection did not select correct vector sign so
 points 180 degrees from a line could pass as close in \GMTprog{gmtselect}.
-\item [\GMTprog{gmt\_plot.c}]: Failed to activate ddd.mm.xxx format for maps.
+\item [\GMTprog{gmt\_plot.c}]: Failed to activate ddd.mm.xxx format for maps.  Oblique tickmarks sometimes
+were missing for latitudes.
 \item [\GMTprog{gmt\_proj.c}]: \Opt{JS} inverse did not apply quadrant check.
-\item [\GMTprog{gmt\_support.c}]: ddd:mm.xx (2 or more x) failed to format properly.
+\item [\GMTprog{gmt\_support.c}]: ddd:mm.xx (2 or more x) failed to format properly.  Needed to reverse z_low
+and z_high values as well as rgb values when reversing color maps.
 \item [\GMTprog{gmt\_vector.c}]: Function \GMTfunc{GMT\_fix\_up\_path}: Intermediate longitudes now wrapped based on segment,
 not on map extent.``greenwich'' argument became superfluous and was
 removed. Argument "step" was found to be in degrees, not in inches as some calling programs assumed.
