@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.14 2007-09-14 01:13:39 remko Exp $
+#	$Id: RELEASE.HOWTO,v 1.15 2007-10-02 19:36:55 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -14,7 +14,7 @@ RELEASE TASKS:
 When you are ready to officially release a new GMT version you
 must ensure you do all the steps listed below:
 
-0.  Make any changes to README, README.WIN32, and CHANGES.
+0.  Make any changes to README, README.WIN32, and Changelog.
     Finalize Announcements/Announce.4.*.  Make sure the macros
     in the gmtsite.macros file points to the actual FTP and WWW dirs.
     Check VERSION number in guru/gmtguru.macros.orig
