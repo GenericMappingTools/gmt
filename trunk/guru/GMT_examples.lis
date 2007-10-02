@@ -103,9 +103,11 @@ examples/ex10/agu.d
 examples/ex10/job10.csh
 examples/ex10/job10.sh
 examples/ex10/job10.bat
+examples/ex11/cut-here.dat
 examples/ex11/job11.sh
 examples/ex11/job11.csh
 examples/ex11/job11.bat
+examples/ex11/rays.dat
 examples/ex12/table_5.11
 examples/ex12/job12.sh
 examples/ex12/job12.csh
