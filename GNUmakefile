@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.9 2007-10-02 13:38:46 remko Exp $
+#  $Id: GNUmakefile,v 1.10 2007-10-02 19:36:55 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -204,8 +204,8 @@ configure:	configure.in
 		$(AUTOCONF)
 
 latest-config:
-		curl http://cvs.savannah.gnu.org/viewcvs/*checkout*/config/config/config.sub --remote-name --silent
-		curl http://cvs.savannah.gnu.org/viewcvs/*checkout*/config/config/config.guess --remote-name --silent
+		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.sub --remote-name --silent
+		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.guess --remote-name --silent
 
 webman: 	guru/webman.sh
 		$(SHELL) guru/webman.sh -s
