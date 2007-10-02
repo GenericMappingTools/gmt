@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.46 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.47 2007-10-02 02:49:44 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ uninstall-suppl:
 install-data:
 		if [ ! $(rootdir)/share = $(datadir) ]; then \
 			mkdir -p $(datadir); \
-			cp -r share/* share/.gmtdefaults_* $(datadir); \
+			cp -r share/* $(datadir); \
 		else \
 			echo "Install share directory the same as distribution share directory - nothing copied"; \
 		fi
