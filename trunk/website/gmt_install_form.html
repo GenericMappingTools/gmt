@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.41 2007-09-24 00:38:02 remko Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.42 2007-10-02 00:43:50 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.41 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.42 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -41,14 +41,14 @@ to a file named by you, and this file can be used for background installs as sho
 <HR><B>1. Select the GMT version you want to install:</B><BR>
 
 <SELECT NAME="gmt_version">
-<OPTION SELECTED>4.2.0
+<OPTION SELECTED>4.2.1
 <OPTION>3.4.6
 </SELECT><BR>
 
 <P>
-<I>Note: 4.2.0 and earlier versions can coexist on your system since they use
+<I>Note: 4.2.1 and earlier versions can coexist on your system since they use
 different default files.  In order to facilitate a simple way of switching from
-one version to another, GMT 4.2.0 comes with a Bourne shell utility called
+one version to another, GMT 4.2.1 comes with a Bourne shell utility called
 gmtswitch.  To simplify the maintenance of multiple versions we recommend that
 you install all your GMT versions you want under a parent directory called
 GMTdev.  After installing the required versions, run gmtswitch.  See the
@@ -271,7 +271,7 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 Note: The GMT archives will first be uncompressed, untarred, and compiled in the current working
 directory where install_gmt is run.  After those steps are successful you may want to copy
 the files to more traditional directories like /usr/local/bin, etc.  The default locations are
-subdirectories bin, lib, include, share, man, and www under GMT4.2.0 in the current install directory.
+subdirectories bin, lib, include, share, man, and www under GMT4.2.1 in the current install directory.
 Note that the man pages will be be placed in the man/man? subdirectory, where ? is the section specified
 above, e.g. "l", giving man/manl, is the default.  Do NOT specify the man dir as man/man?; the
 section directory will automatically be appended based on the chosen section unit.
