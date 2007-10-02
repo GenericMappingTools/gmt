@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.204 2007-09-26 15:28:53 remko Exp $
+ *	$Id: gmt_plot.c,v 1.205 2007-10-02 02:27:51 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1371,7 +1371,8 @@ void GMT_map_tick (double *xx, double *yy, int *sides, double *angles, int nx, i
 		tick_length = len;
 		if (gmtdefs.oblique_annotation & 8) {
 			if (sides[i] % 2) {
-				if (fabs (c) > cosd (gmtdefs.annot_min_angle)) continue;
+				/* if (fabs (c) > cosd (gmtdefs.annot_min_angle)) continue; */
+				if (fabs (c) < sind (gmtdefs.annot_min_angle)) continue;
 				tick_length /= fabs(c);
 			}
 			else {
