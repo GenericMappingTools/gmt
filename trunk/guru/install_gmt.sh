@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.105 2007-09-24 00:38:01 remko Exp $
+#	$Id: install_gmt.sh,v 1.106 2007-10-02 19:58:15 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -12,9 +12,9 @@
 NETCDF_VERSION=3.6.2
 LATESTGMT4=4.2.0
 LATESTGMT3=3.4.6
-LATESTGSHHS4=4.2
+LATESTGSHHS4=1.9
 LATESTGSHHS3=3
-GSHHS=4.2
+GSHHS=$LATESTGSHHS4
 GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
@@ -728,8 +728,12 @@ install_coast()
 		this=GMT${VERSION}_${file}.tar.$suffix
 	elif [ -f GMT${GSHHS}_${file}.tar.$suffix ]; then
 		this=GMT${GSHHS}_${file}.tar.$suffix
+	elif [ -f GSHHS${GSHHS}_${file}.tar.$suffix ]; then
+		this=GSHHS${GSHHS}_${file}.tar.$suffix
 	elif [ -f GMT_${file}.tar.$suffix ]; then
 		this=GMT_${file}.tar.$suffix
+	elif [ -f GSHHS_${file}.tar.$suffix ]; then
+		this=GSHHS_${file}.tar.$suffix
 	else
 		ok=0
 	fi
@@ -924,10 +928,10 @@ export CONFIG_SHELL
 # Which branch?
 
 if [ `echo $VERSION | awk '{print substr($1,1,1)}'` = "3" ]; then
-	GSHHS=3
+	GSHHS=$LATEST_GSHHS3
 	source=progs
 else
-	GSHHS=4.2
+	GSHHS=$LATEST_GSHHS4
 	source=src
 fi
 
