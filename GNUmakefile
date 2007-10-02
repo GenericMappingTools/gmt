@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.8 2007-10-01 18:18:30 guru Exp $
+#  $Id: GNUmakefile,v 1.9 2007-10-02 13:38:46 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -423,7 +423,7 @@ tar_coast tar_high tar_full:	ftpdir
 		rm -f ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.{gz,bz2}
 		echo "make GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.gz"
 		if [ "$(subst tar_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
-		   tar -cf ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar COPYING share/coast/binned_*_[$$suf].cdf
+		   tar -cf ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar COPYING share/coast/binned_*_[$$suf].cdf -C src/gshhs README.gshhs
 		gzip -c9 ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar > ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.gz
 		echo "make GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2"
 		bzip2 -9 ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar
