@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.10 2007-10-02 19:36:55 guru Exp $
+#  $Id: GNUmakefile,v 1.11 2007-10-02 20:02:03 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -108,7 +108,7 @@ update:
 
 create:
 # We make the GMT$(VERSION) link from scratch each time
-		cd ..; rm -f GMT$(VERSION); ln -s GMT GMT$(VERSION)
+		cd ..; rm -f GMT$(VERSION); ln -s `basename $(PWD)` GMT$(VERSION)
 
 GMT$(VERSION):	archive
 
@@ -220,15 +220,15 @@ prep_suppl:	clean config
 
 get_coast get_high get_full:
 #		Set-up ftp command & get coast file
-		echo "Getting coasts/rivers (GMT$(GSHHS_VERSION)_$(subst get_,,$@)) by anonymous ftp (be patient)..."
+		echo "Getting coasts/rivers (GSHHS$(GSHHS_VERSION)_$(subst get_,,$@)) by anonymous ftp (be patient)..."
 		echo "user anonymous $(USER)@" > ftp.job
 		echo "cd gmt/$(GMTBRANCH)" >> ftp.job
 		echo "binary" >> ftp.job
-		echo "get GMT$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2" >> ftp.job
+		echo "get GSHHS$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2" >> ftp.job
 		echo "quit" >> ftp.job
 		ftp -dn $(FTPSITE) < ftp.job || ( echo "ftp failed - try again later"; exit )
-		bzip2 -dc GMT$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2 | tar xvf -
-		rm -f GMT$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2
+		bzip2 -dc GSHHS$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2 | tar xvf -
+		rm -f GSHHS$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2
 		rm -f ftp.job
 		echo "done"
 
@@ -420,20 +420,20 @@ zip_suppl_exe:	ftpdir
 #	Note: coastline files now stored relative to share, instead of GMT/share
 
 tar_coast tar_high tar_full:	ftpdir
-		rm -f ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.{gz,bz2}
-		echo "make GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.gz"
+		rm -f ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.{gz,bz2}
+		echo "make GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.gz"
 		if [ "$(subst tar_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
-		   tar -cf ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar COPYING share/coast/binned_*_[$$suf].cdf -C src/gshhs README.gshhs
-		gzip -c9 ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar > ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.gz
-		echo "make GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2"
-		bzip2 -9 ftp/GMT$(GSHHS_VERSION)_$(subst tar_,,$@).tar
+		   tar -cf ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar COPYING share/coast/binned_*_[$$suf].cdf -C src/gshhs README.gshhs
+		gzip -c9 ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar > ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.gz
+		echo "make GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2"
+		bzip2 -9 ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar
 
 zip_coast zip_high zip_full:	ftpdir
-		rm -f ftp/GMT_$(subst zip_,,$@).zip
-		echo "make GMT_$(subst zip_,,$@).zip"
-		(cd ..; zip -r -9 -q -l GMT/ftp/GMT_$(subst zip_,,$@).zip GMT/COPYING)
+		rm -f ftp/GSHHS_$(subst zip_,,$@).zip
+		echo "make GSHHS_$(subst zip_,,$@).zip"
+		(cd ..; zip -r -9 -q -l GMT/ftp/GSHHS_$(subst zip_,,$@).zip GMT/COPYING)
 		if [ "$(subst zip_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
-		   (cd ..; zip -r -9 -q    GMT/ftp/GMT_$(subst zip_,,$@).zip GMT/share/coast/*_[$$suf].cdf)
+		   (cd ..; zip -r -9 -q    GMT/ftp/GSHHS_$(subst zip_,,$@).zip GMT/share/coast/*_[$$suf].cdf)
 
 tar_done:
 		@echo " "
