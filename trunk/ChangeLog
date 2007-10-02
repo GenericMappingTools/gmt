@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.110 2007-10-02 02:27:51 guru Exp $
+	$Id: ChangeLog,v 1.111 2007-10-02 18:43:18 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -237,6 +237,12 @@
 	* rivers:		Added double-lined rivers to river database to improve rendering
 				of major permanent rivers.
 
+2007/08/27 mtchandl
+	* mgd77sniffer.c	Adjusted anomaly recalculation code so that cruises with m=1
+				and b=0 are reported to be same as expected
+	* mgd77_rls_coeffs.h	Updated tables to include statistics only from decimated
+				regression found to be significant
+
 2007-08-27	remko
 	* ps2raster.c:		Added -P to and removed -V from the commandline description
 	* configure.in:		On Linux: Use "gcc -shared", not "ld -shared"
@@ -272,6 +278,11 @@
 2007-08-08	pwessel
 	* grdfilter.c:		-I<nx>+/<ny>+ not propagated to output setup
 .
+2007/08/02 mtchandl
+	* mgd77sniffer.c	Repaired 8 memory leaks. Fixed two regression bugs, one in grid
+				comparisons in which not all data were copied into the regression
+				arrays and the other in faa recomputation regression where eot
+				was being applied twice
 2007-08-01	pwessel
 	* gmt_support.c:	ddd:mm.xx (2 or more x) failed.
 
@@ -343,6 +354,8 @@
 
 2007-06-16	pwessel
 	* src/grdmath.c:	Added CBAZ as Cartesian complement to SBAZ
+	* mgd77manage.c		Added E77 status attribute to MGD77+ files
+	* mgd77sniffer.c	Added code to check if regression is outside a specified percent (-P)
 
 2007-06-11	remko
 	* configure.in:		Changed LESS to PAGER as recommended by SAITO Fuyuki
@@ -361,6 +374,10 @@
 	* doc/fig/*.png:	Pictures now in PNG instead of EPS.
 	* doc/makefile:		Use new -P and -Tef options of ps2raster. Changed rules for GMT_Appendix_N.tex.
 
+2007/06/07 mtchandl
+	* mgd77sniffer.c	Updated e77 messages and moved along-track grid offset errors to
+				e77 header rather than having its own error class
+				
 2007-06-06	pwessel
 	* filter1d.c:		For -Ff<file>, set filter width to DBL_MAX until filter is read
 
