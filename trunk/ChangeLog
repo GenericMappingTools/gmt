@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.109 2007-10-02 00:43:50 guru Exp $
+	$Id: ChangeLog,v 1.110 2007-10-02 02:27:51 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -8,6 +8,7 @@
 -----------------------------------------------------------------------------------------
 2007-10-01	pwessel
 	* surface.c:		Make sure verbose starts with surface:
+	* gmt_plot.c:		Oblique tickmarks sometimes were missing for latitudes
 	
 2007-10-01	remko
 	* gmt_support.c (GMT_sample_cpt):	Needed to reverse z_low and z_high values as well as
