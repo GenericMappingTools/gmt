@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.75 2007-10-02 18:43:18 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.76 2007-10-02 19:28:19 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -42,7 +42,7 @@ installations and CVS users, an improvement to how the BCR 2-D interpolations fo
 are done by adding B-spline and nearest neighbor as optional interpolants, introduction of
 a new \PS\ Level 2 pattern machinery in \GMTprog{pslib.c}, an updated GSHHS coastline version (which
 also includes Australia internal state
-boundaries, fixes to the Yemeni and Lebanese borders, more river lines), and general
+boundaries, fixes to the Yemeni and Lebanese borders, and more river lines), and general
 improvements and corrections to the documentation, such as placing all man pages in section 1
 (except pslib which goes in section 3). Starting with \GMT\ 4.2.1 we will also begin naming
 the coastline-related archives by the GSHHS prefix and use the actual GSHHS version number (now
@@ -52,7 +52,7 @@ Individual programs have also seen some new options or enhancements:
 % Enhancements:
 \begin{enumerate}
 \item \GMTprog{gmtselect} has enhancement \Opt{Lp} to limit points beyond a line's endpoints.
-\item \GMTprog{grdfilter} has new \Opt{D}5 to allow direct filtering of Mercator grids (img).
+\item \GMTprog{grdfilter} has new option \Opt{D}5 to allow direct filtering of Mercator grids (img).
 \item \GMTprog{grdmask} has an enhanced \Opt{A} option; append {\bf m} or {\bf p} to design
 a mask polygon by first following a meridian, then a parallel, or vice versa.
 \item \GMTprog{gmtmath} has several new operators, such as {\bf PLMg} (geophysical normalization
@@ -65,8 +65,8 @@ cumulative distances are returned.  Also, for UTM projections with \Opt{C}, the 
 option is now optional provided the UTM zone is properly specified.
 \item \GMTprog{ps2raster} has now a new \Opt{P} option for forcing portrait orientation.
 \item \GMTprog{pshistogram} has now a new \Opt{C} option for using a cpt file to paint the bars.
-\item \GMTprog{pstext} All text may now use the @\_, @: and @; escape sequences for underline,
-font size change, and font color change.
+\item \GMTprog{pstext} will now accept the @\_, @: and @; escape sequences for underline,
+font size change, and font color change regardless of mode.
 \item \GMTprog{psrose} has a new option \Opt{L} to control the labels.
 \item \GMTprog{psxy} has an enhanced \Opt{A} option; append {\bf m} or {\bf p} to draw a
 line by first following a meridian, then a parallel, or vice versa. Can now plot a notched
@@ -74,10 +74,10 @@ box-and-whisker symbol, and we added {\bf +n}{\it dx/dy} to nudge placement of q
 Encanced\Opt{E}.../[-$|$+]{\it pen} where + means apply cpt color (\Opt{C}) to symbol and bar
 - means apply to bar only (no fill).  Likewise, \Opt{W}[+$|$-]{\it pen} controls
 if \Opt{C} sets outline (-) or both fill and outline (+).
-\item \GMTprog{psxyz} Enhanced \Opt{W}[+$|$-]{\it pen} controls if \Opt{C} sets outline (-)
+\item \GMTprog{psxyz} hass enhanced \Opt{W}[+$|$-]{\it pen} that controls if \Opt{C} sets outline (-)
 or both fill and outline (+).
 \item \GMTprog{sample1d} now accepts \Opt{Fn} for no interpolation (returns nearest value).
-\item \GMTprog{spotter/originator} Added option \Opt{Q} to specify constant r/t for (x,y,z) data only.
+\item \GMTprog{spotter/originator} has new option \Opt{Q} to specify constant r/t for (x,y,z) data only.
 \item Two additional color maps have been added: \textbf{panoply} mimics the default colormap in
 the NetCDF viewing program \progname{Panoply}; \textbf{cyclic} provides a full spectrum of 360 degrees
 in hue.
@@ -152,8 +152,13 @@ Used wrong origin when \Opt{C} was used.  Now relative to lon = lat = 0.
 \item [\GMTprog{meca/utilmeca.c}]: Make sure that checks on floating point numbers work well, even
 in case of small round off errors. Thanks to Peter Lombard.
 \item [\GMTprog{mgd77/mgd77manage.c}]: \Opt{Q}{\it value} changed to \Opt{Q}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
-take advantage of new BCR code.
-\item [\GMTprog{mgd77/mgd77sniffer.c}]: Same.
+take advantage of new BCR code.  Added E77 status attribute to MGD77+ files.
+\item [\GMTprog{mgd77/mgd77sniffer.c}]: Same.  Adjusted anomaly recalculation code so that
+cruises with m=1 and b=0 are reported to be same as expected.  Repaired 8 memory leaks. Fixed
+two regression bugs, one in grid comparisons in which not all data were copied into the regression
+arrays and the other in faa recomputation regression where eot was being applied twice.
+Added code to check if regression is outside a specified percent (\Opt{P}).
+Updated e77 messages and moved along-track grid offset errors to e77 header rather than having its own error class.
 \item [\GMTprog{misc/gmtdigitize.c}]: Must use separate x and y-scales if \Opt{Jx} is specified.
 Wrong coordinates used to calculate rms misfit.
 \item \GMTprog{spotter/originator.c} Now lists option \Opt{L} in both usage and man page.
