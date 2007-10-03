@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.2 2007-10-03 00:35:13 guru Exp $
+#  $Id: Makefile,v 1.3 2007-10-03 04:18:44 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -12,10 +12,10 @@
 #	All configure changes are to be made in those files, not here.
 #
 #	To update FTP and WEB live sites with the new version:  make update-version-live
-#	To update FTP and WEB test sites with the new version:  make update-version-test
+#	To update FTP and WEB test sites with the new version:  make update-version-local
 #
-#	To place all in the test FTP directory:		make update-ftp-test
-#	To place all in the test WEB directory:		make update-www-test
+#	To place all in the test FTP directory:		make update-ftp-local
+#	To place all in the test WEB directory:		make update-www-local
 #	To place all in the actual FTP directory:	make update-ftp-live
 #	To place all in the actual WEB directory:	make update-www-live
 #
@@ -42,16 +42,19 @@ help::
 #!make <target>, where <target> can be:
 #!
 #!web			: Create the examples for the web site
-#!update-version-test	: Update the TEST ftp and www server
-#!update-version-live	: Update the LIVE ftp and www server
+#!update-version-local	: Update the local ftp and www test dirs
+#!update-version-test	: Update the remote TEST ftp and www server
+#!update-version-live	: Update the remote LIVE ftp and www server
 #!update-www-live		: Update the LIVE www server
+#!update-www-local		: Update the local www server
 #!update-www-test		: Update the TEST www server
 #!update-ftp-live		: Update the LIVE ftp server
-#!update-ftp-live2	: Update the LIVE ftp server test dir
-#!update-ftp-test		: Update the TEST ftp server
+#!update-ftp-test	: Update the LIVE ftp server test dir
+#!update-ftp-local		: Update the TEST ftp server
 #!update-bugs		: Update the errata pages
-#!clean-ftp		: Remove all local ftp archives
-#!clean-test		: Remove the test directories
+#!clean-ftp		: Empty all local ftp archives
+#!clean-local		: Remove the local site directories
+#!clean-test		: Empty the remote test directories
 #!hitmap			: Creates the GMT hit map for site links
 #!---------------------------------------------------------------
 		
@@ -66,6 +69,8 @@ web:		../examples/ex01/example_01.ps
 # GMT VERSION UPDATE
 #---------------------------------------------------------------------------
 
+update-version-local:	update-ftp-local update-www-local
+
 update-version-test:	update-ftp-test update-www-test
 
 update-version-live:	update-ftp-live update-www-live
@@ -73,7 +78,6 @@ update-version-live:	update-ftp-live update-www-live
 		echo "However, the following tasks must be done manually for now:"
 		echo "1. Manually remove old GMT4.* files from $(LIVEFTPDIR)/4"
 		echo "2. Send email notification to gmt-help, gmt-group, gmt-mirrors, and gmt-team"
-		echo "3. Install GMTxxx on the SOEST server"
 		echo "For more details, see RELEASE.HOWTO"
 
 #---------------------------------------------------------------------------
@@ -92,8 +96,11 @@ update-www-live:	../registration/gmt_usage.jpg
 		scp -r ../www/gmt/doc $(WEBSERVER):$(LIVEWWWDIR)/gmt
 		scp -r ../www/gmt/examples $(WEBSERVER):$(LIVEWWWDIR)/gmt
 
-update-www-live2:	../registration/gmt_usage.jpg	
-		scp install_gmt_form.pl $(WEBSERVER2):$(LIVECGIDIR2)/install_gmt_form_test.pl
+update-www-test:	../registration/gmt_usage.jpg	
+		cp install_gmt_form.pl save.pl
+		mv -f install_gmt_form.pl install_gmt_form_test.pl
+		scp install_gmt_form.pl $(WEBSERVER2):$(LIVECGIDIR2)
+		cp save.pl install_gmt_form.pl
 		ssh $(WEBSERVER2) mkdir -p $(LIVEWWWDIR2)/gmt
 		ssh $(WEBSERVER2) rm -f $(LIVEWWWDIR2)/index.html
 		scp gmt.html $(WEBSERVER2):$(LIVEWWWDIR2)/index.html
@@ -105,14 +112,14 @@ update-www-live2:	../registration/gmt_usage.jpg
 		scp -r ../www/gmt/doc $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		scp -r ../www/gmt/examples $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		echo "cd $(LIVEWWWDIR2)/gmt" > gmt_server_job.sh
-		echo "sed -e s/install_gmt_form.pl/install_gmt_form/g gmt_install_form.html > tmp" >> gmt_server_job.sh
+		echo "sed -e s/install_gmt_form.pl/install_gmt_form_test.pl/g gmt_install_form.html > tmp" >> gmt_server_job.sh
 		echo "mv -f tmp gmt_install_form.html" >> gmt_server_job.sh
 		echo "rm -f gmt_server_job.sh" >> gmt_server_job.sh
 		scp gmt_server_job.sh $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		ssh $(WEBSERVER2) sh $(LIVEWWWDIR2)/gmt/gmt_server_job.sh
-		rm -f gmt_server_job.sh
+#		rm -f gmt_server_job.sh
 
-update-www-test:../registration/gmt_usage.jpg
+update-www-local:../registration/gmt_usage.jpg
 		rm -rf $(TESTWWWDIR)
 		mkdir -p $(TESTWWWDIR)/gmt
 		cp -f gmt.html $(TESTWWWDIR)/index.html
@@ -152,7 +159,7 @@ update-ftp-live:
 		echo "ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
-		echo "rm -f $(LIVEFTPDIR)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz} >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
 		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
@@ -161,7 +168,7 @@ update-ftp-live:
 	ssh $(FTPSERVER) sh $(LIVEFTPDIR)/gmt_server_job.sh
 	rm -f gmt_server_job.sh
 
-update-ftp-live2:
+update-ftp-test:
 	echo -n "The .message file byte length is "; cat ../ftp/.message | wc -c
 	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/4
 	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)/4
@@ -169,12 +176,12 @@ update-ftp-live2:
 	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)/4
 	echo "cd $(LIVEFTPDIR2)/4" > gmt_server_job.sh
 	for p in pdf man web tut share src scripts suppl; do \
-		echo "rm -f $(LIVEFTPDIR2)/4/GMT_$$p.tar.{bz2,gz} >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR2)/4/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
 		echo "ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
-		echo "rm -f $(LIVEFTPDIR2)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz} >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR2)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
 		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
@@ -183,7 +190,7 @@ update-ftp-live2:
 	ssh $(FTPSERVER2) sh $(LIVEFTPDIR2)/gmt_server_job.sh
 	rm -f gmt_server_job.sh
 
-update-ftp-test:
+update-ftp-local:
 	echo -n "The .message file byte length is "; cat ../ftp/.message | wc -c
 	rm -rf $(TESTFTPDIR)/4
 	mkdir -p $(TESTFTPDIR)/4
@@ -203,10 +210,14 @@ update-ftp-test:
 clean-ftp:
 	rm -f ../ftp/G*.bz2 ../ftp/G*.gz ../ftp/G*.zip
 
-clean-test:
+clean-local:
 	rm -rf $(TESTFTPDIR)
 	rm -rf $(TESTWWWDIR)
 
+clean-test:
+	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/[43] install_gmt netcdf.tar.bz2
+	ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt gmt.html index.html
+	
 netcdf:
 	cd ../ftp; \
 	curl http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf.tar.gz --remote-name --silent; \
