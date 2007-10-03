@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.110 2007-10-03 18:57:36 remko Exp $
+#	$Id: install_gmt.sh,v 1.111 2007-10-03 20:01:17 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -136,12 +136,12 @@ netcdf_path=${NETCDFHOME:-}
 #--------------------------------------------------------------------------------
 
 GMT_expand=`which_zip`
-if [ $GMT_expand = "bzip2" ]; then	# Use bzip2
+if [ "$GMT_expand" = "bzip2" ]; then	# Use bzip2
 	suffix="bz2"
 	expand="bzip2 -dc"
 	sizes=gmt_install.ftp_bzsizes
 	echo "+++ Will expand *.bz2 files made with bzip2 +++" >&2
-elif [ $GMT_expand = "gzip" ]; then
+elif [ "$GMT_expand" = "gzip" ]; then
 	suffix="gz"
 	expand="gzip -dc"
 	sizes=gmt_install.ftp_gzsizes
@@ -178,14 +178,14 @@ fi
 #--------------------------------------------------------------------------------
 
 answer=`get_def_answer "Have you installed netcdf (version 3.6 or later)? (y/n)" "y"`
-if [ $answer = "n" ]; then	# Must install netcdf one way or the other
+if [ "$answer" = "n" ]; then	# Must install netcdf one way or the other
 	netcdf_path=""
 	netcdf_ftp=n
 	if [ $do_ftp_qa -eq 1 ]; then
 		answer=`get_def_answer "Do you want me to ftp it for you? (y/n)" "y"`
-		if [ $answer = "n" ]; then
+		if [ "$answer" = "n" ]; then
 			answer=`get_def_answer "Do you have netcdf.tar.{Z,bz2,gz} in $topdir? (y/n)" "y"`
-			if [ $answer = "n" ]; then
+			if [ "$answer" = "n" ]; then
 				echo "Please ftp or install netcdf and then rerun install_gmt" >&2
 				exit
 			fi
@@ -194,13 +194,13 @@ if [ $answer = "n" ]; then	# Must install netcdf one way or the other
 		fi
 	fi
 	netcdf_install=y
-	if [ $netcdf_ftp = "n" ]; then	# Check that the files are actually there
+	if [ "$netcdf_ftp" = "n" ]; then	# Check that the files are actually there
 		ok=0
 		if [ -f netcdf.tar.Z ]; then
 			ok=1
-		elif [ -f netcdf.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
+		elif [ -f netcdf.tar.bz2 ] && [ "$GMT_expand" = "bzip2" ]; then
 			ok=1
-		elif [ -f netcdf.tar.gz ] && [ $GMT_expand = "gzip" ]; then
+		elif [ -f netcdf.tar.gz ] && [ "$GMT_expand" = "gzip" ]; then
 			ok=1
 		fi
 		if [ $ok -eq 0 ]; then
@@ -238,7 +238,7 @@ if [ $do_ftp_qa -eq 1 ]; then
 	GMT_ftp=`get_def_answer "Get any of the GMT version $VERSION archives via ftp? (y/n)" "y"`
 fi
 
-if [ $GMT_ftp = "y" ]; then
+if [ "$GMT_ftp" = "y" ]; then
 	cat << EOF >&2
 
 We offer $N_FTP_SITES different ftp sites.  Choose the one nearest
@@ -380,7 +380,7 @@ The answer to the following question will modify the GMT defaults.
 
 EOF
 answer=`get_def_answer "Do you prefer SI or US default values for GMT (s/u)" "s"`
-if [ $answer = "s" ]; then
+if [ "$answer" = "s" ]; then
 	GMT_si=y
 else
 	GMT_si=n
@@ -399,7 +399,7 @@ on most previwers (out-of-date Sun pageview is an exception).
 
 EOF
 answer=`get_def_answer "Do you prefer PS or EPS as default PostScript output (p/e)" "p"`
-if [ $answer = "p" ]; then
+if [ "$answer" = "p" ]; then
 	GMT_ps=y
 else
 	GMT_ps=n
@@ -486,7 +486,7 @@ GMT_suppl_x_system=d
 GMT_suppl_xgrid=d
 if [ ! "X$MATLAB" = "X" ]; then
 	MATDIR=$MATLAB
-elif [ $os = "Rhapsody" ] || [ $os = "Darwin" ]; then	# Pick one from Applications folder
+elif [ "$os" = "Rhapsody" ] || [ "$os" = "Darwin" ]; then	# Pick one from Applications folder
 	(echo /Applications/MATLAB* | grep -v '\*' | head -1 > /tmp/$$.matlab) 2> /dev/null
 	if [ ! -s /tmp/$$.matlab ]; then
 		MATDIR=`cat /tmp/$$.matlab`
@@ -523,9 +523,9 @@ xgrid:     An X11-based graphical editor for netCDF-based .grd files
 EOF
 
 	answer=`get_def_answer "Install any of the supplemental programs? (y/n/a(ll))?" "a"`
-	if [ $answer = "a" ] || [ $answer = "n" ]; then
+	if [ "$answer" = "a" ] || [ "$answer" = "n" ]; then
 		y_or_n=n
-		if [ $answer = "a" ]; then
+		if [ "$answer" = "a" ]; then
 			y_or_n=y
 		fi
 		GMT_suppl_dbase=$y_or_n
@@ -541,7 +541,7 @@ EOF
 		GMT_suppl_x2sys=$y_or_n
 		GMT_suppl_x_system=$y_or_n
 		GMT_suppl_xgrid=$y_or_n
-	elif [ $answer = "y" ]; then
+	elif [ "$answer" = "y" ]; then
 		GMT_suppl_dbase=`get_def_answer "Install the dbase supplemental package? (y/n)?" "y"`
 		GMT_suppl_gshhs=`get_def_answer "Install the gshhs supplemental package? (y/n)?" "y"`
 		GMT_suppl_imgsrc=`get_def_answer "Install the imgsrc supplemental package? (y/n)?" "y"`
@@ -556,7 +556,7 @@ EOF
 		GMT_suppl_x_system=`get_def_answer "Install the x_system supplemental package? (y/n)?" "y"`
 		GMT_suppl_xgrid=`get_def_answer "Install the xgrid supplemental package? (y/n)?" "y"`
 	fi
-	if [ $GMT_suppl_mex = "y" ]; then
+	if [ "$GMT_suppl_mex" = "y" ]; then
 		echo " " >&2
 		echo "The mex supplement requires Matlab." >&2
 		MATDIR=`get_def_answer "Enter MATLAB system directory" "$MATDIR"`
@@ -686,7 +686,7 @@ install_this_gmt()
 	else
 		ok=0
 	fi
-	if [ $ok -eq 1 ] && [ $get_this != "n" ]; then	# File exists and we have not said no
+	if [ $ok -eq 1 ] && [ "$get_this" != "n" ]; then	# File exists and we have not said no
 		$expand $this | tar xvf -
 	fi
 }
@@ -711,7 +711,7 @@ install_coast()
 		ok=0
 	fi
 	cd GMT${VERSION}
-	if [ $ok -eq 1 ] && [ $get_this != "n" ]; then	# File is present and wanted
+	if [ $ok -eq 1 ] && [ "$get_this" != "n" ]; then	# File is present and wanted
 		if [ ! -d $dir ]; then
 			mkdir -p $dir
 		fi				
@@ -725,7 +725,7 @@ install_coast()
 	cd $here
 #	Special treatment for Companion CD-ROM with individual bzip2 files for high and full
 #	that facilitates cross-platform install with Win32
-	if [ -f GMT${file}c.bz2 ] && [ $get_this != "n" ] && [ $done -eq 0 ]; then	# File is present and wanted
+	if [ -f GMT${file}c.bz2 ] && [ "$get_this" != "n" ] && [ $done -eq 0 ]; then	# File is present and wanted
 		if [ ! -d $dir ]; then
 			mkdir -p $dir
 		fi				
@@ -749,7 +749,7 @@ make_ftp_list()
 # arg1=get arg2=file
 	get_this=$1
 	file=$2
-	if [ $get_this = "y" ]; then
+	if [ "$get_this" = "y" ]; then
 		echo "get GMT_${file}.tar.$suffix" >> gmt_install.ftp_list
 	fi
 }
@@ -758,7 +758,7 @@ make_ftp_list2()
 # arg1=get arg2=file
 	get_this=$1
 	file=$2
-	if [ $get_this = "y" ]; then
+	if [ "$get_this" = "y" ]; then
 		echo "get ${file}.tar.$suffix" >> gmt_install.ftp_list
 	fi
 }
@@ -841,16 +841,16 @@ fi
 
 do_install=1
 do_ftp_qa=1
-if [ $# -ge 1 ] && [ $1 = "-n" ]; then	# Do not want to install yet
+if [ $# -ge 1 ] && [ "$1" = "-n" ]; then	# Do not want to install yet
 	do_install=0
 	shift
 fi
-if [ $# -ge 1 ] && [ $1 = "-c" ]; then	# Local install from cwd - turn off ftp questions
+if [ $# -ge 1 ] && [ "$1" = "-c" ]; then	# Local install from cwd - turn off ftp questions
 	do_ftp_qa=0
 	shift
 fi
 
-if [ $# -eq 1 ] && [ $1 != "-h" ]; then	# User gave a parameter file
+if [ $# -eq 1 ] && [ "$1" != "-h" ]; then	# User gave a parameter file
 	parfile=$1
 	if [ ! -f $parfile ]; then
 		echo "install_gmt: Parameter file $parfile not found" >&2
@@ -871,7 +871,7 @@ fi
 # we must prepend ./ if the file is in the local directory since
 # the user may not have . in his PATH
 first=`echo $parfile | awk '{print substr($1,1,1)}'`
-if [ $first = "/" ]; then	# absolute path OK
+if [ "$first" = "/" ]; then	# absolute path OK
 	. $parfile
 else				# Local file, prepend ./
 	. ./$parfile
@@ -883,11 +883,11 @@ os=`uname -s`
 if [ x"$GMT_expand" = x ]; then	# Was never set by user
 	GMT_expand=`which_zip`
 fi
-if [ $GMT_expand = "bzip2" ]; then	# Use bzip2
+if [ "$GMT_expand" = "bzip2" ]; then	# Use bzip2
 	suffix="bz2"
 	expand="bzip2 -dc"
 	echo "+++ Will expand *.bz2 files made with bzip2 +++"
-elif [ $GMT_expand = "gzip" ]; then
+elif [ "$GMT_expand" = "gzip" ]; then
 	suffix="gz"
 	expand="gzip -dc"
 	echo "+++ Will expand *.gz files make with gzip +++" >&2
@@ -907,8 +907,8 @@ if [ ! x"$GMT_cc" = x ]; then
 	export CC
 fi
 
-if [ $netcdf_install = "y" ]; then
-	if [ $netcdf_ftp = "y" ]; then
+if [ "$netcdf_install" = "y" ]; then
+	if [ "$netcdf_ftp" = "y" ]; then
 
 		cd $topdir
 	
@@ -920,7 +920,7 @@ if [ $netcdf_install = "y" ]; then
 #		Set-up ftp command
 
 		echo "user anonymous $USER@" > $$
-		if [ $passive_ftp = "y" ] && [ $active -eq 1 ]; then
+		if [ "$passive_ftp" = "y" ] && [ $active -eq 1 ]; then
 			echo "passive" >> $$
 			echo "quote pasv" >> $$
 		fi
@@ -943,9 +943,9 @@ if [ $netcdf_install = "y" ]; then
 
 	if [ -f netcdf.tar.Z ]; then
 		zcat netcdf.tar.Z | tar xvf -
-	elif [ -f netcdf.tar.bz2 ] && [ $GMT_expand = "bzip2" ]; then
+	elif [ -f netcdf.tar.bz2 ] && [ "$GMT_expand" = "bzip2" ]; then
 		$expand netcdf.tar.$suffix | tar xvf -
-	elif [ -f netcdf.tar.gz ] && [ $GMT_expand = "gzip" ]; then
+	elif [ -f netcdf.tar.gz ] && [ "$GMT_expand" = "gzip" ]; then
 		$expand netcdf.tar.$suffix | tar xvf -
 	else
 		echo "?? netcdf.tar.{Z,bz2,gz} not found - must abort !!"
@@ -954,7 +954,7 @@ if [ $netcdf_install = "y" ]; then
 	
 	cd netcdf-${NETCDF_VERSION}
 
-	if [ $os = "Interix" ]; then	# Windows SFU
+	if [ "$os" = "Interix" ]; then	# Windows SFU
 		CC=${CC=gcc}
 	fi
 	netcdf_path=${netcdf_path:-$topdir/netcdf-${NETCDF_VERSION}}
@@ -964,7 +964,7 @@ if [ $netcdf_install = "y" ]; then
 	$GMT_make install || exit
 	$GMT_make clean   || exit
 	cd $topdir
-	if [ $GMT_delete = "y" ]; then
+	if [ "$GMT_delete" = "y" ]; then
 		rm -f netcdf*.tar.Z
 	fi
 fi
@@ -972,7 +972,7 @@ fi
 if [ x"$netcdf_path" = x ]; then	# Not explicitly set, must assign it
 	if [ ! x"$NETCDFHOME" = x ]; then	# Good, used an environmental variable for it
                 netcdf_path=$NETCDFHOME
-        elif [ $netcdf_ftp = "n" ]; then	# Next, see if it was already installed in $topdir
+        elif [ "$netcdf_ftp" = "n" ]; then	# Next, see if it was already installed in $topdir
  		netcdf_path=$topdir/netcdf-${NETCDF_VERSION}
 		if [ -d $netcdf_path ]; then	# OK, it was there
 			p=	# Dummy for empty branch
@@ -996,7 +996,7 @@ export NETCDFHOME
 #--------------------------------------------------------------------------------
 
 cd $topdir
-if [ $GMT_ftp = "y" ]; then
+if [ "$GMT_ftp" = "y" ]; then
 
 	if [ $GMT_ftpsite -eq 0 ]; then
 		GMT_ftpsite=1
@@ -1025,17 +1025,15 @@ if [ $GMT_ftp = "y" ]; then
 #	Set-up ftp command
 	sub=`echo $VERSION | awk '{print substr($1,1,1)}'`
 	echo "user anonymous $USER@" > gmt_install.ftp_list
-	if [ $passive_ftp = "y" ] && [ $active -eq 1 ]; then
+	if [ "$passive_ftp" = "y" ] && [ $active -eq 1 ]; then
 		echo "passive" >> gmt_install.ftp_list
 		echo "quote pasv" >> gmt_install.ftp_list
 	fi
 	echo "cd $DIR/$sub" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
-	make_ftp_list $GMT_get_src ${source}
+	make_ftp_list $GMT_get_src src
 	make_ftp_list $GMT_get_share share
-	if [ $source = "src" ]; then
-		make_ftp_list $GMT_get_coast coast
-	fi
+	make_ftp_list $GMT_get_coast coast
 	make_ftp_list $GMT_get_high high
 	make_ftp_list $GMT_get_full full
 	make_ftp_list $GMT_get_suppl suppl
@@ -1075,10 +1073,8 @@ GMT_sharedir=${GMT_sharedir:-$GMT_share}
 # First install source code and documentation
 #--------------------------------------------------------------------------------
 
-install_this_gmt $GMT_get_src ${source}
-if [ $source = "src" ]; then
-	install_this_gmt $GMT_get_share share
-fi
+install_this_gmt $GMT_get_src src
+install_this_gmt $GMT_get_share share
 install_this_gmt $GMT_get_suppl suppl
 install_this_gmt $GMT_get_scripts scripts
 install_this_gmt $GMT_get_pdf pdf
@@ -1092,25 +1088,21 @@ install_this_gmt $GMT_get_tut tut
 
 dir=$GMT_share/coast
 GMT_dir_full=${GMT_dir_full:-$dir}
-if [ $GMT_dir_full != $dir ]; then
+if [ "$GMT_dir_full" != "$dir" ]; then
 	echo $GMT_dir_full >> $$.coast
 fi
 
 GMT_dir_high=${GMT_dir_high:-$dir}
-if [ $GMT_dir_high != $dir ]; then
+if [ "$GMT_dir_high" != "$dir" ]; then
 	echo $GMT_dir_high >> $$.coast
 fi
 
 GMT_dir_cli=${GMT_dir_cli:-$dir}
-if [ $GMT_dir_cli != $dir ]; then
+if [ "$GMT_dir_cli" != "$dir" ]; then
 	echo $GMT_dir_cli >> $$.coast
 fi
 
-if [ $source = "src" ]; then
-	install_coast $GMT_get_coast coast $GMT_dir_cli
-else
-	install_coast $GMT_get_share share $GMT_dir_cli
-fi
+install_coast $GMT_get_coast coast $GMT_dir_cli
 install_coast $GMT_get_high  high  $GMT_dir_high
 install_coast $GMT_get_full  full  $GMT_dir_full
 
@@ -1177,44 +1169,44 @@ fi
 #	CONFIGURE PREPARATION
 #--------------------------------------------------------------------------------
 
-if [ $GMT_si = "y" ]; then
+if [ "$GMT_si" = "y" ]; then
 	enable_us=
 else
 	enable_us=--enable-US
 fi
-if [ $GMT_ps = "y" ]; then
+if [ "$GMT_ps" = "y" ]; then
 	enable_eps=
 else
 	enable_eps=--enable-eps
 fi
-if [ $GMT_flock = "y" ]; then
+if [ "$GMT_flock" = "y" ]; then
 	disable_flock=
 else
 	disable_flock=--disable-flock
 fi
-if [ $GMT_triangle = "y" ]; then
+if [ "$GMT_triangle" = "y" ]; then
 	enable_triangle=--enable-triangle
 else
 	enable_triangle=
 fi
-if [ $GMT_suppl_mex = "y" ]; then
+if [ "$GMT_suppl_mex" = "y" ]; then
 	disable_mex=
 else
 	disable_mex=--disable-mex
 fi
-if [ $GMT_suppl_xgrid = "y" ]; then
+if [ "$GMT_suppl_xgrid" = "y" ]; then
 	disable_xgrid=
 else
 	disable_xgrid=--disable-xgrid
 fi
 
-if [ $GMT_sharedlib = "y" ]; then
+if [ "$GMT_sharedlib" = "y" ]; then
 	enable_shared=--enable-shared
 else
 	enable_shared=
 fi
 
-if [ $GMT_64 = "y" ]; then
+if [ "$GMT_64" = "y" ]; then
 	enable_64=--enable-64
 else
 	enable_64=
@@ -1333,7 +1325,7 @@ fi
 # Run examples with /src as binary path in case the user did
 # not have permission to place files in GMT_bin
 
-if [ -d examples ] && [ $GMT_run_examples = "y" ]; then
+if [ -d examples ] && [ "$GMT_run_examples" = "y" ]; then
 	GMT_SHAREDIR=$GMT_sharedir
 	export GMT_SHAREDIR
 	$GMT_make run-examples || exit
@@ -1358,14 +1350,14 @@ if [ $write_man -eq 0 ]; then
 	echo "Go to the main GMT directory and say:" >&2
 	echo "make install-man" >&2
 fi
-if [ $write_web = 0 ]; then
+if [ $write_web -eq 0 ]; then
 	echo "Manually do the www page install as another user (root?)" >&2
 	echo "Go to the main GMT directory and say:" >&2
 	echo "make install-www" >&2
 fi
 
 cd $topdir
-if [ $GMT_delete = "y" ]; then
+if [ "$GMT_delete" = "y" ]; then
 	rm -f GMT*.tar.$suffix
 	if [ -f GMTfullc.bz2 ]; then	# Special files copied from CD-ROM
 		rm -f GMTfull?.bz2 GMThigh?.bz2
