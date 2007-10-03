@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.43 2007-10-02 18:43:18 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.44 2007-10-03 17:37:40 remko Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.43 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.44 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -172,17 +172,15 @@ are behind a firewall.  In that case you may want to select passive ftp mode.</I
 
 <HR><B>3. Select the components you want (gzip/bzip2 sizes indicated):</B><BR>
 
-<INPUT TYPE="checkbox" NAME="checkbox_src" CHECKED> GMT source code (1.1/0.9 Mb, the main GMT programs, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_share" CHECKED> GMT shared data (0.05/0.05 Mb, shared run-time files, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_coast" CHECKED> GMT support data  (4.0/3.6 Mb, Basic-resolution (CLI) GSHHS coastlines, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_pdf" CHECKED> GMT Documentation 1 (10.2/10.2 Mb, PDF versions of Cookbook, Tutorial and Man pages)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_man" CHECKED> GMT Documentation 2 (0.12/0.09 Mb, UNIX man pages)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_web" CHECKED> GMT Web Docs (2.6/2.5 Mb, HTML versions of Cookbook, Tutorial and Man pages)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_tut" CHECKED> GMT Tutorial (1.3/1.0 Mb, Tutorial data sets)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_scripts" CHECKED> GMT Example Scripts &amp; Data (3.7/3.1 Mb, required to run test examples)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED> GMT Supplemental Archive (0.9/0.7 Mb, see section C.10 below for details)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_high"> GSHHS High-resolution coastlines (10.7/8.6 Mb)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_full"> GSHHS full-resolution coastlines (47.1/28.8 Mb)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_src" CHECKED> GMT source code (1.3/1.0 Mb, the main GMT programs, REQUIRED)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_share" CHECKED> GMT Shared Data (0.05/0.05 Mb, shared run-time files, REQUIRED)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_pdf" CHECKED> GMT Documentation (9.7/9.7 Mb, PDF versions of Cookbook, Tutorial and Man pages)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_tut" CHECKED> GMT Tutorial (1.2/0.9 Mb, Tutorial data sets)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_scripts" CHECKED> GMT Example Scripts &amp; Data (3.4/2.8 Mb, required to run test examples)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED> GMT Supplemental Programs (1.0/0.8 Mb, see section C.10 below for details)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_coast" CHECKED> GSHHS Low-resolution Coastlines  (4.4/4.1 Mb, Basic-resolution (CLI) GSHHS coastlines, REQUIRED)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_high"> GSHHS High-resolution Coastlines (10.7/8.6 Mb)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_full"> GSHHS Full-resolution Coastlines (46.1/28.0 Mb)<BR>
 
 <P>
 <I>Note: The first three are required for a simple GMT install (in order to run all the examples in the cookbook).
