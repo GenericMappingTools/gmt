@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.44 2007-10-03 17:37:40 remko Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.45 2007-10-03 18:57:36 remko Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.44 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.45 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -42,11 +42,13 @@ to a file named by you, and this file can be used for background installs as sho
 
 <SELECT NAME="gmt_version">
 <OPTION SELECTED>4.2.1
-<OPTION>3.4.6
 </SELECT><BR>
-
 <P>
-<I>Note: 4.2.1 and earlier versions can coexist on your system since they use
+GMT version 4.2.1 is currently the only version supported by this web page. If you want to
+install an older version, you will need to grab the tarballs yourself, unpack and configure and
+make manually.
+<P>
+<I>Version 4.2.1 and earlier versions can coexist on your system since they use
 different default files.  In order to facilitate a simple way of switching from
 one version to another, GMT 4.2.1 comes with a Bourne shell utility called
 gmtswitch.  To simplify the maintenance of multiple versions we recommend that
