@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.28 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.29 2007-10-03 14:24:17 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -10,15 +10,13 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I../mgd77 -I$(NETCDF)/include
-ALLLIB	= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
+CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I../mgd77 -I$(NETCDF)/include
+ALLLIB		= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt $(CDF) $(LIBS)
 
-PROGS_H	= x2sys.h
-PROGS_C	= x2sys_init.c x2sys_put.c x2sys_get.c x2sys_binlist.c x2sys_datalist.c x2sys_cross.c
-PROGS_O	= $(PROGS_C:.c=.o)
-PROGS	= $(PROGS_C:.c=$(EXE))
-MAN1	= $(PROGS_C:.c=.1)
-LIB	= libx2sys.a
+PROGS_H		= x2sys.h
+PROGS_O		= x2sys_init.o x2sys_put.o x2sys_get.o x2sys_binlist.o x2sys_datalist.o x2sys_cross.o
+MAN1		= $(PROGS_O:.o=.1)
+LIB		= libx2sys.a
 
 #---------------------------------------------------------------
 #	software targets
@@ -66,9 +64,9 @@ libx2sys.o:	$(PROGS_H)
 #	library
 #-------------------------------------------------------------------------------
 
-libx2sys.a:	x2sys.o
-		$(AR) cvr libx2sys.a $?
-		$(RANLIB) libx2sys.a
+$(LIB):		x2sys.o
+		$(AR) cvr $@ $?
+		$(RANLIB) $@
 
 #-------------------------------------------------------------------------------
 #	program rules

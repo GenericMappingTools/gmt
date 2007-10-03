@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.42 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.43 2007-10-03 14:24:17 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -20,23 +20,17 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
-CDF	= -L$(NETCDF)/lib -lnetcdf
+CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 
-PROGS_H		= mgd77.h mgd77defaults.h mgd77_IGF_coeffs.h mgd77sniffer.h mgd77snifferdefaults.h mgd77magref.h mgd77_codes.h
-PROGS_C		= mgd77convert.c mgd77info.c mgd77list.c mgd77path.c mgd77manage.c mgd77sniffer.c 
-PROGSPS_C	= mgd77track.c
+PROGS_H		= mgd77.h mgd77defaults.h mgd77_IGF_coeffs.h mgd77sniffer.h mgd77snifferdefaults.h \
+		mgd77magref.h mgd77_codes.h
+PROGS_O		= mgd77convert.o mgd77info.o mgd77list.o mgd77path.o mgd77manage.o mgd77sniffer.o 
+PROGSPS_O	= mgd77track.o
+MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 
-LIB_C	= mgd77.c
-LIB_H	= mgd77.h mgd77_functions.c mgd77_functions.h mgd77defaults.h
-LIB_O	= $(LIB_C:.c=.o)
-LIB	= libmgd77.a
-
-PROGS_O		= $(PROGS_C:.c=.o)
-PROGS		= $(PROGS_C:.c=$(EXE))
-PROGSPS_O	= $(PROGSPS_C:.c=.o)
-PROGSPS		= $(PROGSPS_C:.c=$(EXE))
-MAN1		= $(PROGS_C:.c=.1) $(PROGSPS_C:.c=.1)
+LIB_O		= mgd77.o
+LIB_H		= mgd77.h mgd77_functions.h mgd77defaults.h
+LIB		= libmgd77.a
 
 #-------------------------------------------------------------------------------
 #	software targets
@@ -85,7 +79,6 @@ spotless::	clean
 $(PROGS_O):	$(PROGS_H) $(GMT_H)
 $(PROGSPS_O):	$(PROGS_H) $(GMT_H) $(PS_H)
 $(LIB_O):	$(LIB_H)
-
 
 #-------------------------------------------------------------------------------
 #	library

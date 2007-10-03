@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.25 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.26 2007-10-03 14:24:17 remko Exp $
 #	makefile for misc directory
 #
 #-------------------------------------------------------------------------------
@@ -10,17 +10,11 @@ include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include 
-CDF		= -L$(NETCDF)/lib -lnetcdf
 
 PROGS_H		=
-PROGS_C		= gmtdigitize.c gmtstitch.c nc2xy.c psmegaplot.c
-PROGSPS_C	= makepattern.c
-
-PROGS_O		= $(PROGS_C:.c=.o)
-PROGS		= $(PROGS_C:.c=$(EXE))
-PROGSPS_O	= $(PROGSPS_C:.c=.o)
-PROGSPS		= $(PROGSPS_C:.c=$(EXE))
-MAN1		= $(PROGS_C:.c=.1) $(PROGSPS_C:.c=.1)
+PROGS_O		= gmtdigitize.o gmtstitch.o nc2xy.o psmegaplot.o
+PROGSPS_O	= makepattern.o
+MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 
 #-------------------------------------------------------------------------------
 #	software targets

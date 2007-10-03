@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.16 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.17 2007-10-03 14:24:17 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -40,50 +40,42 @@ include makegmt.macros		# GMT-specific settings determined by user & configure
 include gmtalldeps.macros	# Dependencies
 
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(NETCDF)/include -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
-CDF		= -L$(NETCDF)/lib -lnetcdf
 
-PS	= -lpsl
-GMT	= -lgmt
-GMTPS	= -lgmtps
+PS		= -lpsl
+GMT		= -lgmt
+GMTPS		= -lgmtps
 
-LIB_C	= gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c gmt_grdio.c gmt_init.c gmt_io.c \
-	  gmt_map.c gmt_nc.c gmt_proj.c gmt_shore.c gmt_stat.c gmt_support.c gmt_vector.c
+LIB_O		= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_grdio.o gmt_init.o gmt_io.o \
+		gmt_map.o gmt_nc.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o gmt_vector.o
 
-LIBPS_C	= gmt_plot.c
+LIBPS_O		= gmt_plot.o
 
-GMT_I	= gmt_globals.h gmt_defaults.h gmt_media_name.h gmt_media_size.h gmt_colornames.h \
-	  gmt_color_rgb.h gmt_pennames.h
+GMT_I		= gmt_globals.h gmt_defaults.h gmt_media_name.h gmt_media_size.h gmt_colornames.h \
+		gmt_color_rgb.h gmt_pennames.h
 
-PS_I	= pslib_inc.h
+PS_I		= pslib_inc.h
 
-PROGS_C	= blockmean.c blockmedian.c blockmode.c filter1d.c fitcircle.c grdfilter.c gmtconvert.c \
-	  gmtdefaults.c gmtmath.c gmtselect.c gmtset.c grd2cpt.c grd2xyz.c grdblend.c grdcut.c \
-	  grdclip.c grdedit.c grdfft.c grdgradient.c grdhisteq.c grdinfo.c grdlandmask.c grdmask.c \
-	  grdtrack.c grdreformat.c grdmath.c grdpaste.c grdproject.c grdsample.c grdtrend.c grdvolume.c \
-	  makecpt.c mapproject.c minmax.c nearneighbor.c project.c ps2raster.c sample1d.c spectrum1d.c \
-	  splitxyz.c surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c
+PROGS_O		= blockmean.o blockmedian.o blockmode.o filter1d.o fitcircle.o gmtconvert.o \
+		gmtdefaults.o gmtmath.o gmtselect.o gmtset.o grd2cpt.o grd2xyz.o grdblend.o grdcut.o \
+		grdclip.o grdedit.o grdfft.o grdfilter.o grdgradient.o grdhisteq.o grdinfo.o grdlandmask.o \
+		grdmask.o grdtrack.o grdreformat.o grdmath.o grdpaste.o grdproject.o grdsample.o grdtrend.o \
+		grdvolume.o makecpt.o mapproject.o minmax.o nearneighbor.o project.o ps2raster.o \
+		sample1d.o spectrum1d.o splitxyz.o surface.o trend1d.o trend2d.o triangulate.o xyz2grd.o
 
-PROGSPS_C	= gmt2rgb.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c \
-	  pscoast.c pshistogram.c psimage.c pslegend.c psmask.c psrose.c psscale.c pstext.c pscontour.c \
-	  pswiggle.c psxy.c psxyz.c
+PROGSPS_O	= gmt2rgb.o grdcontour.o grdimage.o grdvector.o grdview.o psbasemap.o psclip.o \
+	  	pscoast.o pshistogram.o psimage.o pslegend.o psmask.o psrose.o psscale.o pstext.o \
+		pscontour.o pswiggle.o psxy.o psxyz.o
 
-LIB_O	= $(LIB_C:.c=.o)
-LIBPS_O	= $(LIBPS_C:.c=.o)
-PROGS_O	= $(PROGS_C:.c=.o)
-PROGSPS_O= $(PROGSPS_C:.c=.o)
+ALLPROGS	= GMT $(PROGS) $(PROGSPS)
 
-PROGS	= $(PROGS_C:.c=$(EXE))
-PROGSPS	= $(PROGSPS_C:.c=$(EXE))
-ALLPROGS= GMT $(PROGS) $(PROGSPS)
-
-MAN1	= GMT.1 $(PROGS_C:.c=.1) $(PROGSPS_C:.c=.1)
-MAN3	= pslib.3
+MAN1		= GMT.1 $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
+MAN3		= pslib.3
 
 #-------------------------------------------------------------------------------
 #	software targets
 #-------------------------------------------------------------------------------
 
-all:		init libs $(ALLPROGS)
+all:		init $(ALLPROGS)
 
 init:		gmtmacros gmt_notposix.h GMT
 		

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.5 2007-10-03 14:24:17 remko Exp $
 #	makefile for sph directory
 #
 #-------------------------------------------------------------------------------
@@ -7,14 +7,10 @@
 
 include ../makegmt.macros
 
-CDF		= -L$(NETCDF)/lib -lnetcdf
-
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include 
 
 PROGS_H		=
-PROGS_C		= grd2sph.c sph2grd.c
-PROGS_O		= $(PROGS_C:.c=.o$(EXE))
-PROGS		= $(PROGS_C:.c=)
+PROGS_O		= grd2sph.o sph2grd.o
 
 #-------------------------------------------------------------------------------
 #	software targets

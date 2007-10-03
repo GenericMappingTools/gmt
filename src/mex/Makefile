@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.3 2007-09-26 16:14:24 remko Exp $
+#		$Id: Makefile,v 1.4 2007-10-03 14:24:17 remko Exp $
 #
 #	Makefile for gmt <--> matlab conversion programs
 #	Use with GMT 4.x
@@ -16,17 +16,15 @@ GMTSRCDIR	= ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-.SUFFIXES:	.c .m .$(MATLAB_EXT)
+.SUFFIXES:	.m .$(MATLAB_EXT)
 
-MEX	= $(MATLAB)/bin/mex
-MEXLIB	= -L$(MATLAB)/extern/lib/$(MATLAB_MEX) -l$(MATLAB_LIB)
-GMT     = -L.. -L$(libdir) -lgmt
-CDF     = -L$(NETCDF)/lib -lnetcdf
-FLAGS	= -I$(srcdir) -I$(MATLAB)/extern/include -I$(NETCDF)/include -O
+MEX		= $(MATLAB)/bin/mex
+MEXLIB		= -L$(MATLAB)/extern/lib/$(MATLAB_MEX) -l$(MATLAB_LIB)
+GMT     	= -L.. -L$(libdir) -lgmt
+FLAGS		= -I$(srcdir) -I$(MATLAB)/extern/include -I$(NETCDF)/include -O
 
-PROGS_C		= grdinfo.c grdread.c grdwrite.c
-PROGS_H		= $(PROGS_C:.c=.m)
-PROGS_M		= $(PROGS_C:.c=.$(MATLAB_EXT))
+PROGS_H		= grdinfo.m grdread.m grdwrite.m
+PROGS_M		= grdinfo.$(MATLAB_EXT) grdread.$(MATLAB_EXT) grdwrite.$(MATLAB_EXT)
 
 #-------------------------------------------------------------------------------
 #	software targets

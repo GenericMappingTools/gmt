@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.33 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.34 2007-10-03 14:24:17 remko Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -28,9 +28,8 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
-CFLAGS	+= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
-CDF	= -L$(NETCDF)/lib -lnetcdf
+CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include \
+	-DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
 PREV_VERSION = 4.2
 VERSION = 4.3
 GSHHS_DATA_VERSION	= 1.6
@@ -52,21 +51,18 @@ include coast.dep
 
 PROGS_H	= shore.h wvs.h
 
-PROGS_C	= border_to_bins.c ciaman_fix.c line_shrink.c linemaker.c swap.c \
-	  lines_to_bins.c man_fix.c man_fix2.c polygon_bincount.c gshhs_to_polygon.c \
-	  polygon_checkarea.c polygon_consistency.c polygon_deldups.c polygon_compare.c \
-	  polygon_dump.c polygon_extract.c polygon_extract2.c polygon_fixnegwesn.c \
-	  polygon_extract_all.c polygon_final_info.c polygon_findarea.c polygon_findlevel.c \
-	  polygon_findlevel2.c polygon_fix.c polygon_fixlevel.c polygon_get.c \
-	  polygon_id.c polygon_merge.c polygon_report.c polygon_restore.c  segment_restore.c \
-	  polygon_set.c polygon_setnodes.c polygon_setwesn.c polygon_shrink.c \
-	  polygon_sort.c polygon_stats.c polygon_to_bins.c polygon_to_gshhs.c \
-	  polygon_update.c polygon_xover.c read_wvs.c river_fix.c segment_clean.c \
-	  segment_connect.c segment_dump.c segment_final_dump.c segment_report.c \
-	  shoremaker.c wvs_crosscheck.c wvs_segment_dump.c wvs_segment_restore2.c
-
-PROGS_O	= $(PROGS_C:.c=.o)
-PROGS	= $(PROGS_C:.c=$(EXE))
+PROGS_O	= border_to_bins.o ciaman_fix.o line_shrink.o linemaker.o swap.o \
+	  lines_to_bins.o man_fix.o man_fix2.o polygon_bincount.o gshhs_to_polygon.o \
+	  polygon_checkarea.o polygon_consistency.o polygon_deldups.o polygon_compare.o \
+	  polygon_dump.o polygon_extract.o polygon_extract2.o polygon_fixnegwesn.o \
+	  polygon_extract_all.o polygon_final_info.o polygon_findarea.o polygon_findlevel.o \
+	  polygon_findlevel2.o polygon_fix.o polygon_fixlevel.o polygon_get.o \
+	  polygon_id.o polygon_merge.o polygon_report.o polygon_restore.o  segment_restore.o \
+	  polygon_set.o polygon_setnodes.o polygon_setwesn.o polygon_shrink.o \
+	  polygon_sort.o polygon_stats.o polygon_to_bins.o polygon_to_gshhs.o \
+	  polygon_update.o polygon_xover.o read_wvs.o river_fix.o segment_clean.o \
+	  segment_connect.o segment_dump.o segment_final_dump.o segment_report.o \
+	  shoremaker.o wvs_crosscheck.o wvs_segment_dump.o wvs_segment_restore2.o
 
 LIB	= libcoast.a
 
@@ -149,8 +145,8 @@ coast.o:	$(PROGS_H)
 lib:		$(LIB)
 
 $(LIB):		poly_check_subs.o string_check_subs.o douglas_peucker.o coast_io.o poly_misc_subs.o
-		$(AR) cvr $(LIB) $?
-		$(RANLIB) $(LIB)
+		$(AR) cvr $@ $?
+		$(RANLIB) $@
 
 #-------------------------------------------------------------------------------
 #	program rules

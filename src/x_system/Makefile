@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.19 2007-09-25 02:03:16 remko Exp $
+#	$Id: Makefile,v 1.20 2007-10-03 14:24:17 remko Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -21,25 +21,24 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I$(NETCDF)/include
-ALLLIB  = -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
+CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I$(NETCDF)/include
 
-PROGS_C	= x_edit.c x_init.c x_list.c x_over.c x_report.c x_remove.c x_setup.c x_solve_dc_drift.c x_update.c
-PROGS_O	= $(PROGS_C:.c=.o)
-PROGS	= $(PROGS_C:.c=$(EXE))
-MAN1	= $(PROGS_C:.c=.1) x_system.1
+PROGS_H		= x_system.h
+PROGS_O		= x_edit.o x_init.o x_list.o x_report.o x_remove.o x_solve_dc_drift.o x_update.o
+PROGSPS_O	= x_setup.o x_over.o
+MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1) x_system.1
 
 #-------------------------------------------------------------------------------
 #	software targets
 #-------------------------------------------------------------------------------
 
-all:	$(PROGS)
+all:		$(PROGS) $(PROGSPS)
 
 install:	all
-		$(INSTALL) $(PROGS) $(bindir)
+		$(INSTALL) $(PROGS) $(PROGSPS) $(bindir)
 
 uninstall:
-		cd $(bindir); \rm -f $(PROGS)
+		cd $(bindir); \rm -f $(PROGS) $(PROGSPS)
 
 install-man:	$(MAN1)
 		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
@@ -48,7 +47,7 @@ uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
 clean:
-		\rm -f *.o *% $(PROGS)
+		\rm -f *.o *% $(PROGS) $(PROGSPS)
 
 spotless::	clean
 
@@ -56,7 +55,8 @@ spotless::	clean
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(PROGS_O):	x_system.h $(GMT_H)
+$(PROGS_O):	$(PROGS_H)
+$(PROGSPS_O):	$(GMT_H) $(PROGS_H)
 
 #-------------------------------------------------------------------------------
 #	program rules
@@ -73,5 +73,9 @@ x_solve_dc_drift$(EXE):	x_solve_dc_drift.o
 x_update$(EXE):		x_update.o
 
 $(PROGS):	$(GMTLIB)
-		$(CC) $(CFLAGS) $(LDFLAGS) $(@:.exe=).o $(ALLLIB) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(CDF) $(LIBS) -o $@
+		$(COMPRESS) $@
+
+$(PROGSPS):	$(GMTLIB)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@
