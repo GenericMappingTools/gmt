@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.26 2007-10-03 14:24:17 remko Exp $
+#	$Id: Makefile,v 1.27 2007-10-03 14:32:17 remko Exp $
 #	makefile for misc directory
 #
 #-------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ uninstall-man:
 spotless::	clean
 
 clean:	
-		\rm -f *.o *% $(PROGS)
+		\rm -f *.o *% $(PROGS) $(PROGSPS)
 
 #-------------------------------------------------------------------------------
 #       object file dependencies
