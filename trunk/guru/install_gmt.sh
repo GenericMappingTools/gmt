@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.109 2007-10-03 18:12:45 remko Exp $
+#	$Id: install_gmt.sh,v 1.110 2007-10-03 18:57:36 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -10,11 +10,8 @@
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.2
-LATESTGMT4=4.2.1
-LATESTGMT3=3.4.6
-LATESTGSHHS4=1.9
-LATESTGSHHS3=3
-GSHHS=$LATESTGSHHS4
+VERSION=4.2.1
+GSHHS=1.9
 GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
@@ -122,27 +119,9 @@ Then, when all parameters have been assembled,
 we will run the installation (unless you chose
 -n when starting this script).
 
-Choose among these GMT versions:
-
-1. GMT $LATESTGMT4 [Default]
-2. GMT $LATESTGMT3
+This script will install GMT version $VERSION.
 
 EOF
-answer=`get_def_answer "Enter GMT version to install (1-2)" "1"`
-while [ ! $answer = "1" ] && [ ! $answer = "2" ]; do
-	echo "Please enter a number from 1 to 2 [or hit return for the default]" >&2
-	answer=`get_def_answer "Enter GMT version to install (1-2)" "1"`
-done
-if [ $answer = "1" ]; then
-	VERSION=$LATESTGMT4
-	N_EXAMPLES=26
-	GSHHS=$LATESTGSHHS4
-elif [ $answer = "2" ]; then
-	VERSION=$LATESTGMT3
-	N_EXAMPLES=20
-	GSHHS=$LATESTGSHHS3
-fi
-echo "You chose to install version $VERSION" >&2
 
 topdir=`pwd`
 os=`uname -s`
@@ -722,8 +701,6 @@ install_coast()
 	done=0
 	if [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
 		this=GMT${VERSION}_${file}.tar.$suffix
-	elif [ -f GMT${GSHHS}_${file}.tar.$suffix ]; then
-		this=GMT${GSHHS}_${file}.tar.$suffix
 	elif [ -f GSHHS${GSHHS}_${file}.tar.$suffix ]; then
 		this=GSHHS${GSHHS}_${file}.tar.$suffix
 	elif [ -f GMT_${file}.tar.$suffix ]; then
@@ -920,16 +897,6 @@ fi
 
 CONFIG_SHELL=`type sh | awk '{print $NF}'`
 export CONFIG_SHELL
-
-# Which branch?
-
-if [ `echo $VERSION | awk '{print substr($1,1,1)}'` = "3" ]; then
-	GSHHS=$LATEST_GSHHS3
-	source=progs
-else
-	GSHHS=$LATEST_GSHHS4
-	source=src
-fi
 
 #--------------------------------------------------------------------------------
 #	NETCDF SECTION
