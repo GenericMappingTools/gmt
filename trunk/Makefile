@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.47 2007-10-02 02:49:44 remko Exp $
+#	$Id: Makefile,v 1.48 2007-10-03 20:00:35 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -159,12 +159,12 @@ uninstall-www:
 			echo "Install www directory the same as distribution www directory - nothing deleted"; \
 		fi
 
+# Run examples with the binaries from the src directory, not the installation directory.
+
 run-examples:	examples
 examples:
 		@if [ -d examples ]; then \
-			cd examples; \
-			$(CSH) do_examples.$(CSH) $(bindir) $(libdir) $(NETCDF)/lib; \
-			cd ..; \
+			cd examples; $(CSH) do_examples.$(CSH) src src $(NETCDF)/lib; \
 		else \
 			echo "examples directory not installed"; \
 		fi
