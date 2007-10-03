@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.107 2007-10-03 17:25:57 guru Exp $
+#	$Id: install_gmt.sh,v 1.108 2007-10-03 17:53:24 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -87,33 +87,31 @@ cat << EOF > gmt_install.ftp_site
 7. Tokai U, Shimizu, JAPAN
 8. Charles Sturt U, Albury, AUSTRALIA
 EOF
-# Order (1-11) is 1:src[progs for v3], 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:scripts
-#		  8:pdf, 9:man, 10:web, 11:tut
+# Order (1-10) is 1:src, 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:scripts
+#		  8:pdf, 9:web, 10:tut
 cat << EOF > gmt_install.ftp_bzsizes
-0.9
-0.05
-3.7
-8.6
-28.8
-0.76
-3.1
-10.2
-0.12
-2.5
 1.0
+0.05
+4.1
+8.6
+28.0
+0.8
+2.8
+9.7
+2.8
+0.9
 EOF
 cat << EOF > gmt_install.ftp_gzsizes
-1.1
-0.05
-4.0
-10.7
-47.1
-0.9
-3.7
-10.2
-0.16
-2.6
 1.3
+0.05
+4.4
+10.7
+46.1
+0.8
+3.4
+9.7
+3.0
+1.2
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
@@ -319,12 +317,10 @@ EOF
 	size=`sed -n 7p $sizes`
 	GMT_get_scripts=`get_def_answer "Want optional GMT example scripts and data [$size Mb] (y/n)?" "y"`
 	size=`sed -n 8p $sizes`
-	GMT_get_pdf=`get_def_answer "Want optional GMT Documentation 1 (PDF version) [$size Mb] (y/n)?" "y"`
+	GMT_get_pdf=`get_def_answer "Want optional GMT Documentation (PDF version) [$size Mb] (y/n)?" "y"`
 	size=`sed -n 9p $sizes`
-	GMT_get_man=`get_def_answer "Want optional GMT Documentation 2 (Unix MAN) [$size Mb] (y/n)?" "y"`
-	size=`sed -n 10p $sizes`
 	GMT_get_web=`get_def_answer "Want optional GMT Web Documentation (HTML of all Docs) [$size Mb] (y/n)?" "y"`
-	size=`sed -n 11p $sizes`
+	size=`sed -n 10p $sizes`
 	GMT_get_tut=`get_def_answer "Want optional GMT tutorial data sets [$size Mb] (y/n)?" "y"`
 
 	echo " " >&2
