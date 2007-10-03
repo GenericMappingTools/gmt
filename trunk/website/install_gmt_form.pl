@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.23 2007-09-24 00:38:02 remko Exp $
+#       $Id: install_gmt_form.pl,v 1.24 2007-10-03 17:37:40 remko Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -45,7 +45,6 @@ $get_src	= $gmt_form{'checkbox_src'};
 $get_share	= $gmt_form{'checkbox_share'};
 $get_coast	= $gmt_form{'checkbox_coast'};
 $get_pdf	= $gmt_form{'checkbox_pdf'};
-$get_man	= $gmt_form{'checkbox_man'};
 $get_tut	= $gmt_form{'checkbox_tut'};
 $get_web	= $gmt_form{'checkbox_web'};
 $get_scripts	= $gmt_form{'checkbox_scripts'};
@@ -102,7 +101,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.23 $, on
+# Processed by install_gmt_form.pl $Revision: 1.24 $, on
 #
 #	$now
 #
@@ -212,13 +211,6 @@ else {
 }
 print FILE "GMT_get_pdf=";
 if ($get_pdf eq "on") {
-	print FILE "y\n";
-}
-else {
-	print FILE "n\n";
-}
-print FILE "GMT_get_man=";
-if ($get_man eq "on") {
 	print FILE "y\n";
 }
 else {
