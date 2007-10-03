@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.108 2007-10-03 17:53:24 remko Exp $
+#	$Id: install_gmt.sh,v 1.109 2007-10-03 18:12:45 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1125,13 +1125,19 @@ install_this_gmt $GMT_get_tut tut
 
 dir=$GMT_share/coast
 GMT_dir_full=${GMT_dir_full:-$dir}
-[[ $GMT_dir_full != $dir ]] && echo $GMT_dir_full >> $$.coast
+if [ $GMT_dir_full != $dir ]; then
+	echo $GMT_dir_full >> $$.coast
+fi
 
 GMT_dir_high=${GMT_dir_high:-$dir}
-[[ $GMT_dir_high != $dir ]] && echo $GMT_dir_high >> $$.coast
+if [ $GMT_dir_high != $dir ]; then
+	echo $GMT_dir_high >> $$.coast
+fi
 
 GMT_dir_cli=${GMT_dir_cli:-$dir}
-[[ $GMT_dir_cli != $dir ]] && echo $GMT_dir_cli >> $$.coast
+if [ $GMT_dir_cli != $dir ]; then
+	echo $GMT_dir_cli >> $$.coast
+fi
 
 if [ $source = "src" ]; then
 	install_coast $GMT_get_coast coast $GMT_dir_cli
@@ -1416,7 +1422,9 @@ For sh or bash users:
 export NETCDFHOME=$NETCDFHOME
 export PATH=$GMT_bin:\$PATH
 EOF
-[[ "$GMT_sharedir" != "$GMT_share" ]] && echo export GMT_SHAREDIR=$GMT_sharedir >&2
+if [ "$GMT_sharedir" != "$GMT_share" ]; then
+	echo export GMT_SHAREDIR=$GMT_sharedir >&2
+fi
 cat << EOF >&2
 
 For all users:
