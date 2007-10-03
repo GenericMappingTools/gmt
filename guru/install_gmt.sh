@@ -1,16 +1,16 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.106 2007-10-02 19:58:15 remko Exp $
+#	$Id: install_gmt.sh,v 1.107 2007-10-03 17:25:57 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	29-MAR-2007
+#	02-OCT-2007
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.2
-LATESTGMT4=4.2.0
+LATESTGMT4=4.2.1
 LATESTGMT3=3.4.6
 LATESTGSHHS4=1.9
 LATESTGSHHS3=3
