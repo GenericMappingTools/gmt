@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.113 2007-10-03 14:24:17 remko Exp $
+	$Id: ChangeLog,v 1.114 2007-10-03 16:13:44 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -10,6 +10,8 @@
 2007-10-03	remko
 	* makegmt.macros.in, */makefile:	Found robust way of assigning .exe extension
 				to Cygwin programs
+	* configure.in, makegmt.macros.in:	Shared library extensions for IRIX and HP
+				are .so and .sl and not the other way around.
 
 2007-10-01	pwessel
 	* surface.c:		Make sure verbose starts with surface:
