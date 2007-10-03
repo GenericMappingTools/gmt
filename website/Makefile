@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.3 2007-10-03 04:18:44 guru Exp $
+#  $Id: Makefile,v 1.4 2007-10-03 17:01:54 remko Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -153,7 +153,7 @@ update-ftp-live:
 	scp ../guru/install_gmt $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)/4
 	echo "cd $(LIVEFTPDIR)/4" > gmt_server_job.sh
-	for p in pdf man web tut share src scripts suppl; do \
+	for p in pdf web tut share src scripts suppl; do \
 		echo "rm -f $(LIVEFTPDIR)/4/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
 		echo "ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
@@ -175,7 +175,7 @@ update-ftp-test:
 	scp ../guru/install_gmt $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)/4
 	echo "cd $(LIVEFTPDIR2)/4" > gmt_server_job.sh
-	for p in pdf man web tut share src scripts suppl; do \
+	for p in pdf web tut share src scripts suppl; do \
 		echo "rm -f $(LIVEFTPDIR2)/4/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
 		echo "ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
@@ -196,7 +196,7 @@ update-ftp-local:
 	mkdir -p $(TESTFTPDIR)/4
 	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > $(TESTFTPDIR)/install_gmt
 	cp -f ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)/4
-	for p in pdf man web tut share src scripts suppl; do \
+	for p in pdf web tut share src scripts suppl; do \
 		\rm -f $(TESTFTPDIR)/4/GMT_$$p.tar.{bz2,gz}; \
 		(cd $(TESTFTPDIR)/4; ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
 		(cd $(TESTFTPDIR)/4; ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz); \
