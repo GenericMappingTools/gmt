@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.1 2007-10-02 23:16:16 guru Exp $
+#  $Id: Makefile,v 1.2 2007-10-03 00:35:13 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -47,6 +47,7 @@ help::
 #!update-www-live		: Update the LIVE www server
 #!update-www-test		: Update the TEST www server
 #!update-ftp-live		: Update the LIVE ftp server
+#!update-ftp-live2	: Update the LIVE ftp server test dir
 #!update-ftp-test		: Update the TEST ftp server
 #!update-bugs		: Update the errata pages
 #!clean-ftp		: Remove all local ftp archives
@@ -79,7 +80,7 @@ update-version-live:	update-ftp-live update-www-live
 # GMT WEB PAGE MATERIALS
 #---------------------------------------------------------------------------
 
-update-www-live:		
+update-www-live:	../registration/gmt_usage.jpg	
 		scp install_gmt_form.pl $(WEBSERVER):$(LIVECGIDIR)/install_gmt_form.pl
 		ssh $(WEBSERVER) mkdir -p $(LIVEWWWDIR)/gmt
 		ssh $(WEBSERVER) rm -f $(LIVEWWWDIR)/index.html
@@ -91,7 +92,27 @@ update-www-live:
 		scp -r ../www/gmt/doc $(WEBSERVER):$(LIVEWWWDIR)/gmt
 		scp -r ../www/gmt/examples $(WEBSERVER):$(LIVEWWWDIR)/gmt
 
-update-www-test:
+update-www-live2:	../registration/gmt_usage.jpg	
+		scp install_gmt_form.pl $(WEBSERVER2):$(LIVECGIDIR2)/install_gmt_form_test.pl
+		ssh $(WEBSERVER2) mkdir -p $(LIVEWWWDIR2)/gmt
+		ssh $(WEBSERVER2) rm -f $(LIVEWWWDIR2)/index.html
+		scp gmt.html $(WEBSERVER2):$(LIVEWWWDIR2)/index.html
+		scp gmt_*.html gmt_hitmap.map newgmtguru gmt_*.gif GMT?.gif soest_logo_reduced2.gif gmt_*.png \
+		  ../src/README.TRIANGLE ../www/gmt/gmt_services.html ../www/gmt/gmt_man.html ../registration/gmt_usage.jpg \
+		  ../www/gmt/gmt_examples.html ../www/gmt/gmt_suppl.html ../www/gmt/gmt_back.gif $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
+		ssh $(WEBSERVER2) 'sed -e s/install_gmt_form.pl/install_gmt_form/g $(LIVEWWWDIR2)/gmt/gmt_install_form.html >'
+		ssh $(WEBSERVER2) rm -r -f $(LIVEWWWDIR2)/gmt/doc $(LIVEWWWDIR2)/gmt/examples
+		scp -r ../www/gmt/doc $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
+		scp -r ../www/gmt/examples $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
+		echo "cd $(LIVEWWWDIR2)/gmt" > gmt_server_job.sh
+		echo "sed -e s/install_gmt_form.pl/install_gmt_form/g gmt_install_form.html > tmp" >> gmt_server_job.sh
+		echo "mv -f tmp gmt_install_form.html" >> gmt_server_job.sh
+		echo "rm -f gmt_server_job.sh" >> gmt_server_job.sh
+		scp gmt_server_job.sh $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
+		ssh $(WEBSERVER2) sh $(LIVEWWWDIR2)/gmt/gmt_server_job.sh
+		rm -f gmt_server_job.sh
+
+update-www-test:../registration/gmt_usage.jpg
 		rm -rf $(TESTWWWDIR)
 		mkdir -p $(TESTWWWDIR)/gmt
 		cp -f gmt.html $(TESTWWWDIR)/index.html
@@ -124,42 +145,43 @@ update-ftp-live:
 	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/4
 	scp ../guru/install_gmt $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)/4
-	echo "cd $(LIVEFTPDIR)/4" > live2.sh
+	echo "cd $(LIVEFTPDIR)/4" > gmt_server_job.sh
 	for p in pdf man web tut share src scripts suppl; do \
-		echo "rm -f $(LIVEFTPDIR)/4/GMT_$$p.tar.{bz2,gz}" >> live2.sh; \
-		echo "ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> live2.sh; \
-		echo "ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> live2.sh; \
+		echo "rm -f $(LIVEFTPDIR)/4/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
+		echo "ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
-		echo "rm -f $(LIVEFTPDIR)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz} >> live2.sh; \
-		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> live2.sh; \
-		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> live2.sh; \
+		echo "rm -f $(LIVEFTPDIR)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz} >> gmt_server_job.sh; \
+		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
-	echo "rm -f $(LIVEFTPDIR)/live2.sh" >> live2.sh
-	scp live2.sh $(FTPSERVER):$(LIVEFTPDIR)
-	rm -f live2.sh
-	ssh $(FTPSERVER) sh $(LIVEFTPDIR)/live2.sh
+	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
+	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
+	ssh $(FTPSERVER) sh $(LIVEFTPDIR)/gmt_server_job.sh
+	rm -f gmt_server_job.sh
 
 update-ftp-live2:
 	echo -n "The .message file byte length is "; cat ../ftp/.message | wc -c
-	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR2)/4
-	scp ../guru/install_gmt $(FTPSERVER):$(LIVEFTPDIR2)
-	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR2)/4
-	echo "cd $(LIVEFTPDIR2)/4" > live2.sh
+	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/4
+	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)/4
+	scp ../guru/install_gmt $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)/4
+	echo "cd $(LIVEFTPDIR2)/4" > gmt_server_job.sh
 	for p in pdf man web tut share src scripts suppl; do \
-		echo "rm -f $(LIVEFTPDIR2)/4/GMT_$$p.tar.{bz2,gz} >> live2.sh; \
-		echo "ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> live2.sh; \
-		echo "ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> live2.sh; \
+		echo "rm -f $(LIVEFTPDIR2)/4/GMT_$$p.tar.{bz2,gz} >> gmt_server_job.sh; \
+		echo "ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
-		echo "rm -f $(LIVEFTPDIR2)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz} >> live2.sh; \
-		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> live2.sh; \
-		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> live2.sh; \
+		echo "rm -f $(LIVEFTPDIR2)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz} >> gmt_server_job.sh; \
+		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
-	echo "rm -f $(LIVEFTPDIR2)/live2.sh" >> live2.sh
-	scp live2.sh $(FTPSERVER):$(LIVEFTPDIR2)
-	rm -f live2.sh
-	ssh $(FTPSERVER) sh $(LIVEFTPDIR2)/live2.sh
+	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
+	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
+	ssh $(FTPSERVER2) sh $(LIVEFTPDIR2)/gmt_server_job.sh
+	rm -f gmt_server_job.sh
 
 update-ftp-test:
 	echo -n "The .message file byte length is "; cat ../ftp/.message | wc -c
@@ -179,16 +201,25 @@ update-ftp-test:
 	done
 
 clean-ftp:
-	rm -f ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip
+	rm -f ../ftp/G*.bz2 ../ftp/G*.gz ../ftp/G*.zip
 
 clean-test:
 	rm -rf $(TESTFTPDIR)
 	rm -rf $(TESTWWWDIR)
 
+netcdf:
+	cd ../ftp; \
+	curl http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf.tar.gz --remote-name --silent; \
+	gunzip netcdf.tar.gz; \
+	bzip2 -9 netcdf.tar
+
 nan:
-		cd ../src; \
-		$(CC) $(CFLAGS) gmt_nan_save.c $(CDF) -lm -o gmt_nan_save; \
-		./gmt_nan_save `uname -s`
+	cd ../src; \
+	$(CC) $(CFLAGS) gmt_nan_save.c $(CDF) -lm -o gmt_nan_save; \
+	./gmt_nan_save `uname -s`
 
 hitmap:
 	gmt_hitmap.sh -s
+
+../registration/gmt_usage.jpg:		../registration/GMT_old_unique_sites.d
+		(cd ../registration; GMT_usage_map.sh map)

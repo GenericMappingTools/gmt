@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.15 2007-10-02 19:36:55 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.16 2007-10-03 00:35:13 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -37,10 +37,10 @@ must ensure you do all the steps listed below:
     make archive >& log
    
 6.  Goto Windows and get all *.zip files and install
-    Copy *.exe *.dll to GMT/bin and *.exp *.lib to GMT/lib
+    Copy *.exe *.dll back to GMT/bin and *.exp *.lib to GMT/lib
    
-7.  Freshen the new zip files
-    make zip_do zip_exe zip_suppl_exe zip_done
+7.  Freshen the new zip files for executables
+    make zip_exe zip_suppl_exe
    
 8.  Determine file sizes of all archives and update these values
     in guru/install_gmt and website/gmt_install_form.html
@@ -51,16 +51,21 @@ must ensure you do all the steps listed below:
     a) Update gmt_arrrghh.html, gmt_bugs.html, gmt_faq.html,
        gmt_install_form.html, gmt_news.html, gmt_releases.html
     b) create web examples:
-       make -f Makefile.site web
-    c) test the update of ftp and web sites:
-       make -f Makefile.site update-version-test
-    c) If OK, update the "live" ftp and web sites:
-       make -f Makefile.site update-version-live
+       make web
+    c) test the update of ftp and web sites locally:
+       make update-version-test
+    c) If OK, update the remote TEST ftp and web sites:
+       make update-version-live2
+       Have team members install from these sites.
+    d) If still OK, update the LIVE ftp and web sites:
+       make update-version-live
     d) Follow the instructions given by the make update-version call
    
 11. Send email notifications:
     a) Alert the mirror sites (gmt-mirrors) that a new version has been posted.
     b) Send email to gmt-help and gmt-group with the Announcement.
+
+#-------------------------------------------------------------------------------
 
 12. To make 4-up man page printouts, do
 	 groff -man *.l | mpage -4 | grep -v 'setduplexmode' > man4.ps
