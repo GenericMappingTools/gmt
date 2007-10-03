@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.21 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.22 2007-10-03 14:24:17 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -21,18 +21,12 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CDF		= -L$(NETCDF)/lib -lnetcdf
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I../x_system -I$(NETCDF)/include
 
 PROGS_H		= gmt_mgg.h ../x_system/x_system.h
-PROGS_C		= binlegs.c gmt2bin.c gmt2dat.c dat2gmt.c gmtinfo.c gmtlegs.c gmtlist.c gmtpath.c mgd77togmt.c
-PROGSPS_C	= gmttrack.c
-
-PROGS_O		= $(PROGS_C:.c=.o)
-PROGS		= $(PROGS_C:.c=$(EXE))
-PROGSPS_O	= $(PROGSPS_C:.c=.o)
-PROGSPS		= $(PROGSPS_C:.c=$(EXE))
-MAN1		= $(PROGS_C:.c=.1) $(PROGSPS_C:.c=.1)
+PROGS_O		= binlegs.o gmt2bin.o gmt2dat.o dat2gmt.o gmtinfo.o gmtlegs.o gmtlist.o gmtpath.o mgd77togmt.o
+PROGSPS_O	= gmttrack.o
+MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 
 LIB		= libgmt_mgg.a
 
@@ -79,8 +73,8 @@ gmt_mgg.o:	$(PROGS_H)
 #-------------------------------------------------------------------------------
 
 $(LIB):		gmt_mgg.o
-		$(AR) cvr $(LIB) $?
-		$(RANLIB) $(LIB)
+		$(AR) cvr $@ $?
+		$(RANLIB) $@
 
 #-------------------------------------------------------------------------------
 #	program rules

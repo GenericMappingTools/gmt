@@ -10,14 +10,11 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CDF		= -L$(NETCDF)/lib -lnetcdf
 GMT		= -L.. -L$(libdir) -lgmt
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 
-PROGS_C		= img2mercgrd.c
-PROGS_O		= $(PROGS_C:.c=.o)
-PROGS		= $(PROGS_C:.c=$(EXE))
-MAN1		= $(PROGS_C:.c=.1) img2grd.1
+PROGS_O		= img2mercgrd.o
+MAN1		= $(PROGS_O:.o=.1) img2grd.1
 
 #-------------------------------------------------------------------------------
 #	software targets

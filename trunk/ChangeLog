@@ -1,11 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.112 2007-10-03 00:35:13 guru Exp $
+	$Id: ChangeLog,v 1.113 2007-10-03 14:24:17 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
-2007-10-02
+2007-10-04
 	* tar 4.2.1 made and released via email
 -----------------------------------------------------------------------------------------
+
+2007-10-03	remko
+	* makegmt.macros.in, */makefile:	Found robust way of assigning .exe extension
+				to Cygwin programs
+
 2007-10-01	pwessel
 	* surface.c:		Make sure verbose starts with surface:
 	* gmt_plot.c:		Oblique tickmarks sometimes were missing for latitudes

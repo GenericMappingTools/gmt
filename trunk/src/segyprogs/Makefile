@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.22 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.23 2007-10-03 14:24:17 remko Exp $
 #
 # makefile for segyprogs directory
 #
@@ -10,29 +10,27 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include -I$(GMT_DEFAULT_PATH)/src
-ALLLIB	= -L.. -L$(libdir) -lgmt -lgmtps -lpsl -L$(NETCDF)/lib -lnetcdf $(LIBS)
+CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include 
 
-PROGS_H	= segy_io.h segy.h segyreel.h
-PROGS_C	= pssegyz.c pssegy.c segy2grd.c
-PROGS_O	= $(PROGS_C:.c=.o)
-PROGS	= $(PROGS_C:.c=$(EXE))
-MAN1	= $(PROGS_C:.c=.1)
+PROGS_H		= segy_io.h segy.h segyreel.h
+PROGS_O		= segy2grd.o
+PROGSPS_O	= pssegyz.o pssegy.o
+MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 
 #---------------------------------------------------------------
 #	software targets
 #---------------------------------------------------------------
 
-all:		$(PROGS) 
+all:		$(PROGS) $(PROGSPS)
 
 install:	all
-		$(INSTALL) $(PROGS) $(bindir)
+		$(INSTALL) $(PROGS) $(PROGSPS) $(bindir)
 
 uninstall:	
-		cd $(bindir); \rm -f $(PROGS)
+		cd $(bindir); \rm -f $(PROGS) $(PROGSPS)
 
 clean:
-		\rm -f *.o *% $(PROGS)
+		\rm -f *.o *% $(PROGS) $(PROGSPS)
 
 install-man:	$(MAN1)
 		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
@@ -46,8 +44,9 @@ spotless::	clean
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(PROGS_O):	$(GMT_H) $(PS_H) $(PROGS_H)
 segy_io.o:	$(PROGS_H)
+$(PROGS_O):	$(GMT_H) $(PROGS_H)
+$(PROGSPS_O):	$(GMT_H) $(PS_H) $(PROGS_H)
 
 #-------------------------------------------------------------------------------
 #	program rules
@@ -57,6 +56,10 @@ pssegyz$(EXE):	pssegyz.o
 pssegy$(EXE):	pssegy.o
 segy2grd$(EXE):	segy2grd.o
 
-$(PROGS):	segy_io.o $(GMTLIB)
-		$(CC) $(LDFLAGS) segy_io.o $(@:.exe=).o -o $@ $(ALLLIB)
+$(PROGS):	$(GMTLIB) segy_io.o
+		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(COMPRESS) $@
+
+$(PROGSPS):	$(GMTLIB) segy_io.o
+		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@

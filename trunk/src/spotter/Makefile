@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.24 2007-09-25 01:50:16 remko Exp $
+#	$Id: Makefile,v 1.25 2007-10-03 14:24:17 remko Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -20,15 +20,12 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
-CDF	= -L$(NETCDF)/lib -lnetcdf
+CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 
-PROGS_H	= spotter.h
-PROGS_C	= backtracker.c grdrotater.c hotspotter.c originator.c rotconverter.c
-PROGS_O	= $(PROGS_C:.c=.o)
-PROGS	= $(PROGS_C:.c=$(EXE))
-MAN1	= $(PROGS_C:.c=.1)
-LIB	= libspotter.a
+PROGS_H		= spotter.h
+PROGS_O		= backtracker.o grdrotater.o hotspotter.o originator.o rotconverter.o
+MAN1		= $(PROGS_O:.o=.1)
+LIB		= libspotter.a
 
 #-------------------------------------------------------------------------------
 #	software targets
@@ -58,17 +55,16 @@ spotless::	clean
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(PROGS_O):	$(GMT_H) $(PROGS_H)
-
 libspotter.o:	$(PROGS_H)
+$(PROGS_O):	$(GMT_H) $(PROGS_H)
 
 #-------------------------------------------------------------------------------
 #	library
 #-------------------------------------------------------------------------------
 
 $(LIB):		libspotter.o
-		$(AR) cvr $(LIB) $?
-		$(RANLIB) $(LIB)
+		$(AR) cvr $@ $?
+		$(RANLIB) $@
 
 #-------------------------------------------------------------------------------
 #	program rules

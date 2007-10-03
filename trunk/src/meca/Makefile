@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.20 2007-09-25 01:50:16 remko Exp $
+#       $Id: Makefile,v 1.21 2007-10-03 14:24:17 remko Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -13,13 +13,10 @@ include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
-CDF		= -L$(NETCDF)/lib -lnetcdf
 ALLLIB		= -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) $(LDFLAGS)
 
-PROGS_C		= psmeca.c pscoupe.c pspolar.c psvelo.c
-PROGS_O		= $(PROGS_C:.c=.o)
-PROGS		= $(PROGS_C:.c=$(EXE))
-MAN1		= $(PROGS_C:.c=.1)
+PROGS_O		= psmeca.o pscoupe.o pspolar.o psvelo.o
+MAN1		= $(PROGS_O:.o=.1)
 
 #-------------------------------------------------------------------------------
 #	software targets
@@ -55,17 +52,17 @@ $(PROGS_O):	$(GMT_H) $(PS_H) meca.h nrutil.h submeca.h utilmeca.h utilstrain.h u
 #-------------------------------------------------------------------------------
 
 psmeca$(EXE): 	psmeca.o utilmeca.o nrutil.o $(GMTLIB)
-		$(CC) $(CFLAGS) psmeca.o utilmeca.o nrutil.o $(ALLLIB) -o $@
+		$(CC) $(LDFLAGS) psmeca.o utilmeca.o nrutil.o $(ALLLIB) -o $@
 		$(COMPRESS) $@
 
 pscoupe$(EXE):	pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(GMTLIB)
-		$(CC) $(CFLAGS) pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(ALLLIB) -o $@
+		$(CC) $(LDFLAGS) pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(ALLLIB) -o $@
 		$(COMPRESS) $@
 
 pspolar$(EXE): 	pspolar.o $(GMTLIB)
-		$(CC) $(CFLAGS) pspolar.o $(ALLLIB) -o $@
+		$(CC) $(LDFLAGS) pspolar.o $(ALLLIB) -o $@
 		$(COMPRESS) $@
 
 psvelo$(EXE):	psvelo.o utilvelo.o utilstrain.o $(GMTLIB)
-		$(CC) $(CFLAGS) psvelo.o utilvelo.o utilstrain.o $(ALLLIB) -o $@
+		$(CC) $(LDFLAGS) psvelo.o utilvelo.o utilstrain.o $(ALLLIB) -o $@
 		$(COMPRESS) $@
