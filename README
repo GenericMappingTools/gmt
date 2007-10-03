@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.40 2007-09-19 01:51:47 remko Exp $ 
+#		$Id: README,v 1.41 2007-10-03 00:35:13 guru Exp $ 
 #
 #	Copyright (c) 1991-2007, P. Wessel & W. H. F. Smith
 #
@@ -62,17 +62,18 @@ Note there are several GMT tar archives available:
 
  1. GMT_src.tar.gz		: Source code only, no documentation
  2. GMT_share.tar.gz		: Shared run-time support files
- 3. GMT_coast.tar.gz		: Standard resolution coastline data
+ 3. GSHHS_coast.tar.gz		: Standard resolution GSHHS coastline data
  4. GMT_pdf.tar.gz		: PDF version of cookbook, tutorial, and man pages
  5. GMT_man.tar.gz		: UNIX man pages for GMT
  6. GMT_web.tar.gz		: Web (HTML) version of docs and man pages
  7. GMT_tut.tar.gz		: Tutorial data sets
  8. GMT_scripts.tar.gz		: Example directory with scripts and test data
- 9. GMT_full.tar.gz		: Full resolution coastline data
-10. GMT_high.tar.gz		: High resolution coastline data
+ 9. GSHHS_full.tar.gz		: Full resolution GSHHS coastline data
+10. GSHHS_high.tar.gz		: High resolution GSHHS coastline data
 11. GMT_suppl.tar.gz		: GMT Supplemental programs that link with GMT
 
-You must get 1-3 for a minimal GMT installation.
+You MUST get 1-3 for a minimal GMT installation.
+
 All archives are available in gzip (*.gz) and bzip2 (*.bz2) format.
 The latter format results in much smaller files for ftp.
 [bzip2 is available from http://sourceware.cygnus.com/bzip2/index.html]
@@ -132,13 +133,13 @@ files are supplied with this archive.  The high and full resolution
 data must be obtained separately over the net or by mail.  The
 high and full resolution files are kept in the files
 
-GMT_high.tar.gz	(or .bz2)
-GMT_full.tar.gz	(or .bz2)
+GSHHS_high.tar.gz	(or .bz2)
+GSHHS_full.tar.gz	(or .bz2)
 
 Note that these two files are not necessary in order to use GMT,
 only if you want to make higher-resolution coastline plots.
-Note further that the three coastline archives GMT_share, GMT_high,
-and GMT_full contain share/*, not GMT<version>/share/*, so you must place
+Note further that the three coastline archives GSHHS_coast, GSHHS_high,
+and GSHHS_full contain share/*, not GSHHS<version>/share/*, so you must place
 these archives in the GMT<version> directory prior to extracting.
 This is done because these files change much less frequently
 than the source code and documentation archives.

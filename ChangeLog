@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.111 2007-10-02 18:43:18 guru Exp $
+	$Id: ChangeLog,v 1.112 2007-10-03 00:35:13 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -224,11 +224,7 @@
 2007-08-29	pwessel
 	* pshistogram.c:	-C for center bins now -F (-C still works for backwardness)
 				Now takes -C<cpt> to color bars based on mid x-value.
-	* gmt_support.c:	Enhancement: CPT files may now be setup for categorical data
-				e.g, records are <key>	<fill> <label>, where <key> is a
-				value that is monotonically increasing but not necessarily
-				continuous.  Used to support plotting of categorical data
-				on which interpolation is not defined.
+
 2007-08-28	pwessel
 	* mapproject.c:		Enhancement: -G-[unit] will calculate incremental distance rather
 				than the default cumulative distances.

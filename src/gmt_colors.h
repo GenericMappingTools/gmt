@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.25 2007-08-29 17:28:40 guru Exp $
+ *	$Id: gmt_colors.h,v 1.26 2007-10-03 00:35:13 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -86,8 +86,9 @@ EXTERN_MSC BOOLEAN GMT_b_and_w;		/* TRUE if only black OR white is used */
 EXTERN_MSC BOOLEAN GMT_continuous;	/* TRUE if colors change continuously within slice */
 EXTERN_MSC BOOLEAN GMT_cpt_pattern;	/* TRUE if cpt file contains any patterns */
 EXTERN_MSC BOOLEAN GMT_cpt_skip;	/* TRUE if current z-slice is to be skipped */
+#ifdef GMT_CPT2	
 EXTERN_MSC BOOLEAN GMT_categorical;	/* TRUE if the CPT applies to categorical data */
-
+#endif
 EXTERN_MSC void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode);
 
 #endif /* _GMT_COLORS_H */

@@ -1,28 +1,38 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtsite.macros,v 1.14 2006-12-06 18:13:51 remko Exp $
+#	$Id: gmtsite.macros,v 1.15 2007-10-03 00:35:13 guru Exp $
 #
-#	Original GMT Site Makefile Macro for Makefile.site
+#	Original GMT Site Makefile Macro for makefile
 #-------------------------------------------------------------------------------
 #
-# The Makefile.site file for GMT is used by the Maintainer to update
+# The makefile for GMT/website is used by the Maintainer to update
 # the official web and ftp directories on the main server.  These are
-# then mirrored by other sites
+# then mirrored by other sites.
 #
-# Below, indicate the FTP and WWW directories.  There are two sets; one
-# for harmless testing and one for the live directories.
-# The live uses ssh so only those with account/password can do that.
-# The test sites are created under GMT/sitetest
+# Below, indicate the FTP and WWW directories.  There are three sets; one
+# for harmless off-line, testing, one for on-line testing and one for the
+# active and live sites.
+# The on-line sites use ssh so only those with account/password can do that.
+# The test sites are created locally under GMT/sitetest
 
-# Live GMT web server (now hosted by main SOEST site)
+#-------------------------------------------------
+# THE ACTIVE WWW AND FTP SITES
+# Live GMT web server gmt.soest.hawaii.edu
 WEBSERVER	= imina.soest.hawaii.edu
 LIVEWWWDIR	= /export/imina2/httpd/htdocs/gmt
 LIVECGIDIR	= /export/imina2/httpd/cgi-bin
-
 # Live ftp server (now main SOEST ftp server)
 FTPSERVER	= ftp.soest.hawaii.edu
 LIVEFTPDIR	= /export/ftp/ftp/pub/gmt
+#-------------------------------------------------
+# THE BACKUP WWW AND FTP SITES FOR TESTING
+# Live GMT web server TEST dir (live2)
+WEBSERVER2	= imina.soest.hawaii.edu
+LIVEWWWDIR2	= /export/imina2/httpd/htdocs/gmttest
+LIVECGIDIR2	= /export/imina2/httpd/cgi-bin
+# Live ftp server TEST directory (live2)
+FTPSERVER2	= ftp.soest.hawaii.edu
 LIVEFTPDIR2	= /export/ftp/ftp/pub/gmttest
-
-# For local testing only
+#-------------------------------------------------
+# For local testing only (no cgi-bin service)
 TESTFTPDIR	= ../sitetest/ftp
 TESTWWWDIR	= ../sitetest/web

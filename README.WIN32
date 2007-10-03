@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.18 2007-04-03 03:19:10 pwessel Exp $
+	$Id: README.WIN32,v 1.19 2007-10-03 00:35:13 guru Exp $
 
 README file for GMT 4 Run-Time Distribution for Win32
 This version contains dynamic executables with the DLL support.
@@ -42,9 +42,9 @@ want to try the tutorial examples you will need GMT_tut.zip.
 UNIX man pages are in GMT_man.zip.  Most Windows users will only
 need the HTML or PDF versions.
 
-If you want the high and/or full resolution coastlines, political borders,
-and rivers you must obtain GMT_high.zip and GMT_full.zip as well.
-unzip from the directory that contains GMT.
+If you want the high and/or full resolution GSHHS coastlines,
+political borders, and rivers you must obtain GSHHS_high.zip and
+GSHHS_full.zip as well. unzip from the directory that contains GMT.
 
 To view your GMT PostScript or EPS plots, we recommend you install gsview
 (see www.cs.wisc.edu/~ghost/gsview). It is required to run the do_view script.

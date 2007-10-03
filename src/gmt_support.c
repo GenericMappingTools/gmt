@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.319 2007-10-01 02:17:31 remko Exp $
+ *	$Id: gmt_support.c,v 1.320 2007-10-03 00:35:13 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1378,7 +1378,10 @@ int GMT_read_cpt (char *cpt_file)
 	GMT_lut = (struct GMT_LUT *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_LUT), "GMT_read_cpt");
 
 	GMT_b_and_w = GMT_gray = TRUE;
-	GMT_continuous = GMT_cpt_pattern = GMT_categorical = FALSE;
+	GMT_continuous = GMT_cpt_pattern = FALSE;
+#ifdef GMT_CPT2	
+	GMT_categorical = FALSE;
+#endif
 	color_model = gmtdefs.color_model;		/* Save the original setting since it may be modified by settings in the CPT file */
 
 	while (!error && fgets (line, BUFSIZ, fp)) {
@@ -1517,6 +1520,7 @@ int GMT_read_cpt (char *cpt_file)
 			GMT_cpt_pattern = TRUE;
 		}
 		else {							/* Shades, RGB, HSV, or CMYK */
+#ifdef GMT_CPT2	
 			if (nread == 3) {	/* Categorical cpt records with key color label */
 				GMT_lut[n].label = (char *)GMT_memory (VNULL, strlen (T2) + 1, sizeof (char), GMT_program);
 				strcpy (GMT_lut[n].label, T2);
@@ -1536,6 +1540,9 @@ int GMT_read_cpt (char *cpt_file)
 				GMT_categorical = TRUE;
 			}
 			else if (nread == 4) {	/* gray shades */
+#else
+			if (nread == 4) {	/* gray shades */
+#endif
 				GMT_scanf_arg (T2, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
 				if (GMT_getrgb (T1, GMT_lut[n].rgb_low)) error++;
 				if (GMT_getrgb (T3, GMT_lut[n].rgb_high)) error++;
@@ -1563,15 +1570,18 @@ int GMT_read_cpt (char *cpt_file)
 				sprintf (option, "%s/%s/%s", T5, T6, T7);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_high)) error++;
 			}
-
+#ifdef GMT_CPT2	
 			if (!GMT_categorical) {
+#endif
 				dz = GMT_lut[n].z_high - GMT_lut[n].z_low;
 				if (dz == 0.0) {
 					fprintf (stderr, "%s: GMT Fatal Error: Z-slice with dz = 0\n", GMT_program);
 					GMT_exit (EXIT_FAILURE);
 				}
 				GMT_lut[n].i_dz = 1.0 / dz;
+#ifdef GMT_CPT2	
 			}
+#ifdef GMT_CPT2	
 			if (!GMT_is_gray (GMT_lut[n].rgb_low[0],  GMT_lut[n].rgb_low[1],  GMT_lut[n].rgb_low[2]))  GMT_gray = FALSE;
 			if (!GMT_is_gray (GMT_lut[n].rgb_high[0], GMT_lut[n].rgb_high[1], GMT_lut[n].rgb_high[2])) GMT_gray = FALSE;
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_low[0]))  GMT_b_and_w = FALSE;
@@ -1596,11 +1606,12 @@ int GMT_read_cpt (char *cpt_file)
 
 	if (fp != GMT_stdin) fclose (fp);
 
+#ifdef GMT_CPT2	
 	if (GMT_categorical && n_cat_records != n) {
 		fprintf (stderr, "%s: GMT Fatal Error: Error when decoding %s as categorical cpt file - aborts!\n", GMT_program, cpt_file);
 		GMT_exit (EXIT_FAILURE);
 	}
-
+#endif
 	if (error) {
 		fprintf (stderr, "%s: GMT Fatal Error: Error when decoding %s - aborts!\n", GMT_program, cpt_file);
 		GMT_exit (EXIT_FAILURE);
@@ -1613,6 +1624,7 @@ int GMT_read_cpt (char *cpt_file)
 	GMT_lut = (struct GMT_LUT *) GMT_memory ((void *)GMT_lut, (size_t)n, sizeof (struct GMT_LUT), "GMT_read_cpt");
 	GMT_n_colors = n;
 
+#ifdef GMT_CPT2	
 	if (GMT_categorical) {	/* Set up fake ranges so CPT is continuous */
 		for (i = 0; i < GMT_n_colors; i++) {
 			if (i == (GMT_n_colors-1)) {
@@ -1629,7 +1641,7 @@ int GMT_read_cpt (char *cpt_file)
 			GMT_lut[i].i_dz = 1.0 / dz;
 		}
 	}
-
+#endif
 	for (i = annot = 0, gap = FALSE; i < GMT_n_colors - 1; i++) {
 		if (GMT_lut[i].z_high != GMT_lut[i+1].z_low) gap = TRUE;
 		annot += GMT_lut[i].annot;
