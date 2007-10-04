@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.77 2007-10-03 00:35:13 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.78 2007-10-04 02:14:05 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -77,10 +77,10 @@ if \Opt{C} sets outline (-) or both fill and outline (+).
 \item \GMTprog{psxyz} hass enhanced \Opt{W}[+$|$-]{\it pen} that controls if \Opt{C} sets outline (-)
 or both fill and outline (+).
 \item \GMTprog{sample1d} now accepts \Opt{Fn} for no interpolation (returns nearest value).
-\item \GMTprog{spotter/originator} has new option \Opt{Q} to specify constant r/t for (x,y,z) data only.
 \item Two additional color maps have been added: \textbf{panoply} mimics the default colormap in
 the NetCDF viewing program \progname{Panoply}; \textbf{cyclic} provides a full spectrum of 360 degrees
 in hue.
+\item \GMTprog{originator} ({it spotter} supplement) has new option \Opt{Q} to specify constant r/t for (x,y,z) data only.
 \end{enumerate}
 
 Below is a list of previous problems that we have identified and corrected in the current release:
@@ -144,26 +144,29 @@ The color change (C) macro messed up \Opt{Xa} and \Opt{Ya} absolute settings.
 \item [\GMTprog{pslib.c}]: Now no text is written if font size equals 0.
 \item [\GMTprog{xyz2grd.c}]: \Opt{E} did not process pixel grids properly.
 \item [\GMTprog{psxyz.c}]: Fixed bug in painting outline of text symbols.
-\item [\GMTprog{gshhs/gshhstograss.c}]: Removed use of \GMTfunc{getopt} so even the lamest systems can compile it (incuding
+\end{description}
+A few bug-fixes applies to the supplements as well:
+\begin{description}
+\item [\GMTprog{gshhstograss.c}]: Removed use of \GMTfunc{getopt} so even the lamest systems can compile it (incuding
 Windows).
-\item [\GMTprog{imgsrc/img2mercgrd.c}]: Fixed AND vs OR logic in lat bounds check when \Opt{D} was set.
+\item [\GMTprog{img2mercgrd.c}]: Fixed AND vs OR logic in lat bounds check when \Opt{D} was set.
 Used wrong origin when \Opt{C} was used.  Now relative to lon = lat = 0.
-\item [\GMTprog{meca/*.c}]: Now works with Windows DLL by using the GMT i/o functions.
-\item [\GMTprog{meca/utilmeca.c}]: Make sure that checks on floating point numbers work well, even
+\item [The {\it meca} supplements now work with Windows DLL by using the GMT i/o functions.
+\item [\GMTprog{utilmeca.c}]: Make sure that checks on floating point numbers work well, even
 in case of small round off errors. Thanks to Peter Lombard.
-\item [\GMTprog{mgd77/mgd77manage.c}]: \Opt{Q}{\it value} changed to \Opt{Q}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
+\item [\GMTprog{mgd77manage.c}]: \Opt{Q}{\it value} changed to \Opt{Q}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
 take advantage of new BCR code.  Added E77 status attribute to MGD77+ files.
-\item [\GMTprog{mgd77/mgd77sniffer.c}]: Same.  Adjusted anomaly recalculation code so that
+\item [\GMTprog{mgd77sniffer.c}]: Same.  Adjusted anomaly recalculation code so that
 cruises with m=1 and b=0 are reported to be same as expected.  Repaired 8 memory leaks. Fixed
 two regression bugs, one in grid comparisons in which not all data were copied into the regression
 arrays and the other in faa recomputation regression where eot was being applied twice.
 Added code to check if regression is outside a specified percent (\Opt{P}).
 Updated e77 messages and moved along-track grid offset errors to e77 header rather than having its own error class.
-\item [\GMTprog{misc/gmtdigitize.c}]: Must use separate x and y-scales if \Opt{Jx} is specified.
+\item [\GMTprog{gmtdigitize.c}]: Must use separate x and y-scales if \Opt{Jx} is specified.
 Wrong coordinates used to calculate rms misfit.
-\item \GMTprog{spotter/originator.c} Now lists option \Opt{L} in both usage and man page.
-\item \GMTprog{x2sys/x2sys.c} \GMTfunc{x2sys\_set\_system} did not initialize structures properly.
-\item \GMTprog{x2sys/x2sys\_cross.c} Skip duplicate files with a warning. Distance calculations
+\item \GMTprog{originator.c} Now lists option \Opt{L} in both usage and man page.
+\item \GMTprog{x2sys.c} \GMTfunc{x2sys\_set\_system} did not initialize structures properly.
+\item \GMTprog{x2sys\_cross.c} Skip duplicate files with a warning. Distance calculations
 were bogus (see \GMTprog{gmt\_map.c}), and wrong number of arguments passed to readfile function pointer.
 \end{description}
 
@@ -207,7 +210,7 @@ Also added new option \Opt{SB} for horizontal bar (\Opt{Sb} is vertical).
 \item \GMTprog{sample1d} now allows absolute time in \Opt{S} option.
 \item \GMTprog{imgsrc/img2mercgrd} can take \Opt{C} to let the Mercator x/y use the global origin of img file.
 \item Because of its popularity, ease of use, and importance to many user how otherwise would not know about its
-existence, \GMTprog{ps2raster} is moved from the supplementary \GMTprog{misc} directory to the main set of \GMT\
+existence, \GMTprog{ps2raster} is moved from the supplementary \progname{misc} directory to the main set of \GMT\
 programs.
 \end{enumerate}
 
@@ -255,9 +258,12 @@ Also need 6 rather than 5 input columns.  Bar width has only half of what was re
 \item [\GMTprog{splitxyz}]: Reported headings in radians instead of degrees.
 \item [\GMTprog{trend2d}]: Failed to pass the new variable with column choices.
 Also did not accept { \bf z} as an output choice.
-\item [\GMTprog{gshhs/gshhs.c}]: Had \&\& instead of \& in bit-arithmetic that reported level.
-\item [\GMTprog{mgd77.mgd77manage}]: Failed to enforce that a new column abbreviation must be in lower case.
-\item [\GMTprog{x2sys/x2sys\_cross}]: Failed to check for crossovers falling exacly on data nodes.
+\end{description}
+A few bug-fixes applies to the supplements as well:
+\begin{description}
+\item [\GMTprog{gshhs.c}]: Had \&\& instead of \& in bit-arithmetic that reported level.
+\item [\GMTprog{mgd77manage}]: Failed to enforce that a new column abbreviation must be in lower case.
+\item [\GMTprog{x2sys\_cross}]: Failed to check for crossovers falling exacly on data nodes.
 \end{description}
 
 %-----------------------------------------
@@ -344,10 +350,13 @@ a comma to separate the fill and pen (done since fill may be a name containing o
 \item [\GMTprog{psxyz}]: \Opt{C} for symbols did not pick up color fill.
 \item [\GMTprog{trend2d}]: Processing of \Opt{F} happened after checking.
 \item [\GMTprog{xyz2grd}]: Had \Opt{Az} as default rather than no \Opt{A}.  Fixed bad header parsing when \Opt{E} was selected.
-\item [\GMTprog{dbase/grdraster}]: Only do 360-degree wrapping if working on a geographic grid.
-\item [\GMTprog{mgd77/mgd77list}]: Did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
+\end{description}
+A few bug-fixes applies to the supplements as well:
+\begin{description}
+\item [\GMTprog{grdraster}]: Only do 360-degree wrapping if working on a geographic grid.
+\item [\GMTprog{mgd77list}]: Did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
 Also, did not process time when \Opt{Am}2$|$4 was set and time was not requested as output.
-\item [\GMTprog{x2sys/x2sys}]: Did not look in current dir for *.def files.
+\item [\GMTprog{x2sys.c}]: Did not look in current dir for *.def files.
 \end{description}
 
 %-----------------------------------------
@@ -364,7 +373,7 @@ cosine-tapered filtering.
 can be handled properly.
 \item \GMTprog{makecpt} and \GMTprog{grd2cpt} have a new \Opt{M} option to allow the background, foreground, and
 NaN-colors to be assigned using the \GMT\ defaults instead of the settings in the master CPT file. 
-\item \GMTprog{mgd77list} in the {\bf mgd77} supplement has new option \Opt{Q} to specify limits on
+\item \GMTprog{mgd77list} in the \progname{mgd77} supplement has new option \Opt{Q} to specify limits on
 speed and azimuths for output records.
 \end{enumerate}
 
@@ -411,7 +420,7 @@ at runtime whereas the standard coastline files are in the new \filename{GMT\_co
 The \filename{GMT\_progs.*} archive has been renamed \filename{GMT\_src.*}.
 \item CPT files can now have {\it z}-values that are date-time strings.
 \item Optionally append {\bf z} to the \Opt{Jp} projection to annotate depths (i.e., ``north-y'') rather than radius.
-\item Two new tools added to the {\bf misc} supplement for digitizing lines (\GMTprog{gmtdigitize}) and
+\item Two new tools added to the \progname{misc} supplement for digitizing lines (\GMTprog{gmtdigitize}) and
 to stitch digitized lines into continuous lines or polygons (\GMTprog{gmtstitch}).
 \item Extended \Opt{M} option to take optional modifiers {\bf i} or {\bf o} for input or output.
 \item Added support for custom grd format AGC from Atlantic Geoscience Center, assigned the code {\bf af} [21].
@@ -424,7 +433,7 @@ A few programs or options have received minor updates and new features, such as
 \item [\GMTprog{blockmedian}]: Added \Opt{E} for reporting L1 scale, min, and max values per block.
 Also added \Opt{T} to specify a particular quartile [Default {\it q} = 0.5 = median].
 \item [\GMTprog{blockmode}]: Added \Opt{E} for reporting LMS scale, min, and max values per block.
-\item [\GMTprog{configure}]: Added explicit options to bypass the installation of supplements
+\item [\progname{configure}]: Added explicit options to bypass the installation of supplements
 that require Matlab (--disable-mex) and X11 (--disable-xgrid).
 \item [\GMTprog{gmtconvert}]: Added \Opt{D} option to write segments to individual output files.
 \item [\GMTprog{gmtdefaults}]: Support for new default {\bf PS\_VERBOSE} which controls the
@@ -471,7 +480,10 @@ The \Opt{Sq} option would get confused when distances between successive labels 
 \item [\GMTprog{mgd77/mgd77manage}]: Did not properly close the file after ingesting E77 information.
 \item [\GMTprog{pslib.c}]: \GMTfunc{ps\_load\_raster} did not use open mode {\bf rb} and hence failed under Windows.
 \item [\GMTprog{xyz2grd}]: The \Opt{E} option had the {\it y}-direction reversed.
-\item [\GMTprog{x2sys/x2sys\_get}]: \Opt{N} did not work properly (now fixed and tested).
+\end{description}
+A few bug-fixes applies to the supplements as well:
+\begin{description}
+\item [\GMTprog{x2sys\_get}]: \Opt{N} did not work properly (now fixed and tested).
 \end{description}
 
 %-----------------------------------------
@@ -497,19 +509,19 @@ A few programs or options have received minor updates and new features, such as
 \item [\GMTprog{gmtmath}]: If file is STDIN we read data from {\it stdin} and put the contents on the stack.
 Also added \Opt{F} to select which columns to use for output [all].
 \item [\GMTprog{grdtrack}]: Can now sample Sandwell/Smith IMG grids directly.
-\item [\GMTprog{mgd77/mgd77.c}]: Added mechanism to search directories for files.
-\item [\GMTprog{mgd77/mgd77list}]: Activated \Opt{X} option and associated machinery for applying data corrections.
 \item [\GMTprog{psmask}]: -Now takes \Opt{S}{\it radius}[{\bf c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
 Can now plot tiles regardless of projection and use patterns.
 \item [\GMTprog{pstext}]: \Opt{D}[...]{\bf v}{\it pen} can now be used with or without \Opt{M}.
 \item [\GMTprog{psxyz}]: \Opt{S}{\bf O}$|${\bf U} imitate \Opt{S}{\bf o}$|${\bf u} but without the 3-D color shading.
+\item [\GMTprog{mgd77.c}]: Added mechanism to search directories for files ({\it mgd77} supplement).
+\item [\GMTprog{mgd77list}]: Activated \Opt{X} option and associated machinery for applying data corrections  ({\it mgd77} supplement).
 \end{description}
 
 Inevitably, when new features are added, new bugs come along with them.  Below is a list of problems
 that we have identified and corrected in the current release:.
 
 \begin{description}
-\item [\GMTprog{configure.in}]: Extracting VERSION from \GMTprog{gmt\_version.h}, not \GMTprog{gmt.h}.
+\item [\progname{configure.in}]: Extracting VERSION from \GMTprog{gmt\_version.h}, not \GMTprog{gmt.h}.
 \item [\GMTprog{gmt\_init.c}]: BASEMAP\_FRAME\_RGB overrode any changes to grid pens etc.  Now only
 does so if prefixed by '+'.
 \item [\GMTprog{gmt\_calclock.c}]: Did not allow \Opt{B}0 for time-axis.
@@ -541,7 +553,10 @@ turn off clipping, messing up the rest of the plot.  Now pass -9 to \GMTfunc{GMT
 \item [\GMTprog{xyz2grd}]: For geographic grids with 360\DS\ range and gridline registration,
 the west and east bin did not get replicated properly.
 Now considers data inside the first and last tiles which might stick outside w/e/s/n.
-\item [\GMTprog{x2sys/x2sys\_cross}]: Several problems fixed.
+\end{description}
+A few bug-fixes applies to the supplements as well:
+\begin{description}
+\item [\GMTprog{x2sys\_cross}]: Several problems fixed.
 \end{description}
 
 \subsection{Overview of \gmt\ 4.1 [Jan-7, 2006]}
@@ -574,10 +589,10 @@ or nautical miles, respectively.  These increments are converted to degrees
 longitude (at the middle latitude) and degrees latitude.
 \item The polar $r, \theta$ projection \Opt{Jp} now takes an optional suffix {\bf r} that reverses the
 radial coordinates (useful when $r$ is elevation as used by sky plots.)
-\item The \GMTprog{misc} supplement has two new items: \GMTprog{ps2raster} uses \progname{ghostscript} to
+\item The \progname{misc} supplement has two new items: \GMTprog{ps2raster} uses \progname{ghostscript} to
 fascilitate the rasterization of \PS\ files, while \GMTprog{nc2xy} allows extraction of data columns from
 COARDS-compliant netCDF files.
-\item The \GMTprog{mgd77} supplement has two new items: \GMTprog{mgd77convert} translates between different
+\item The \progname{mgd77} supplement has two new items: \GMTprog{mgd77convert} translates between different
 MGD77 formats (including a new netCDF-based format), while \GMTprog{mgd77manage} assists in the management
 of trackline data sets.
 \item We now have improved PDF layout and navigation (thanks to Misha Tchernychev).
@@ -632,7 +647,7 @@ Inevitably, when new features are added, new bugs come along with them.  Below i
 that we have identified and corrected in the current release:
 
 \begin{description}
-\item [\GMTprog{install\_gmt}]: No longer test netcdf installation since that can fail even when install was
+\item [\progname{install\_gmt}]: No longer test netcdf installation since that can fail even when install was
 successful [e.g., under Mac OS X Tiger].
 \item [\GMTprog{gmt.h}]: \GMTfunc{GMT\_swab4} used {\tt unsigned long} instead of {\tt unsigned int} which could cause
 64-bit problems.
@@ -690,7 +705,7 @@ we would not scale symbols correctly if upper case symbols were given.
 size was given in \Opt{S}, with the symbol type supplied from file,
 we would not scale symbols correctly if upper case symbols were given
 \item [\GMTprog{spectrum1d}]: Bugs in error expressions for admittance, gain, and phase have been corrected.
-\item [\GMTprog{x2sys \& mgd77}]: Made DOS-format (CR/LF) tolerant.  Both supplements are now undergoing rapid
+\item [\emph{x2sys} \& \emph{mgd77} supplements]: Made DOS-format (CR/LF) tolerant.  Both supplements are now undergoing rapid
 development.
 \end{description}
 
