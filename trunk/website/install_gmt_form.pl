@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.25 2007-10-04 16:50:51 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.26 2007-10-04 21:31:55 remko Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -57,6 +57,7 @@ $cc		= $gmt_form{'cc'};
 $custom_cc	= $gmt_form{'custom_cc'};
 $make		= $gmt_form{'make'};
 $custom_make	= $gmt_form{'custom_make'};
+$gmt_prefix	= $gmt_form{'gmt_prefix'};
 $gmt_bin	= $gmt_form{'gmt_bin'};
 $gmt_lib	= $gmt_form{'gmt_lib'};
 $gmt_include	= $gmt_form{'gmt_include'};
@@ -101,7 +102,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.25 $, on
+# Processed by install_gmt_form.pl $Revision: 1.26 $, on
 #
 #	$now
 #
