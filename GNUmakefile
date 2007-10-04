@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.11 2007-10-02 20:02:03 remko Exp $
+#  $Id: GNUmakefile,v 1.12 2007-10-04 23:13:49 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -402,7 +402,7 @@ zip_suppl:	ftpdir
 		rm -f asc.lis
 
 zip_suppl_exe:	ftpdir
-		if [ -e "bin/x2sys.dll" ]; then \
+		if [ -e "bin/spotter.dll" ]; then \
 		  rm -f ftp/GMT_suppl_exe.zip; \
 		  echo "make GMT_suppl_exe.zip"; \
 		  sed -e 's:\.: :g' -e 's:/: :g' guru/GMT_suppl.lis \

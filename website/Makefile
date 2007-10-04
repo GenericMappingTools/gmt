@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.6 2007-10-04 20:09:53 guru Exp $
+#  $Id: Makefile,v 1.7 2007-10-04 23:13:49 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -147,10 +147,10 @@ update-bugs:
 
 # Note: .message should be less than 1300-1400 bytes!
 
-update-ftp-live:
+update-ftp-live:	netcdf
 	echo -n "The .message file byte length is "; cat ../ftp/.message | wc -c
 	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/4
-	scp ../guru/install_gmt $(FTPSERVER):$(LIVEFTPDIR)
+	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)/4
 	echo "cd $(LIVEFTPDIR)/4" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
@@ -168,11 +168,14 @@ update-ftp-live:
 	ssh $(FTPSERVER) sh $(LIVEFTPDIR)/gmt_server_job.sh
 	rm -f gmt_server_job.sh
 
-update-ftp-test:
-	echo -n "The .message file byte length is "; cat ../ftp/.message | wc -c
+update-ftp-test:	netcdf
+	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $1}'` -ge 1300 ]; then \
+		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
+		exit; \
+	fi
 	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/4
 	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)/4
-	scp ../guru/install_gmt $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)/4
 	echo "cd $(LIVEFTPDIR2)/4" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
@@ -215,10 +218,12 @@ clean-local:
 	rm -rf $(TESTWWWDIR)
 
 clean-test:
-	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/[43] install_gmt netcdf.tar.bz2
-	ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt gmt.html index.html
+	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/[43] $(LIVEFTPDIR2)/install_gmt $(LIVEFTPDIR2)/netcdf.tar.bz2
+	ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/gmt.html $(LIVEWWWDIR2)/index.html
 	
-netcdf:
+netcdf: ../ftp/netcdf.tar.bz2
+
+../ftp/netcdf.tar.bz2:
 	cd ../ftp; \
 	curl http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf.tar.gz --remote-name --silent; \
 	gunzip netcdf.tar.gz; \

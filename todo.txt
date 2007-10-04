@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.25 2007-09-30 00:20:33 remko Exp $
+#	$Id: todo.txt,v 1.26 2007-10-04 23:13:49 guru Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -18,6 +18,7 @@ psxy[z]:	-Sb -So etc with time data; what is size; how to specify months etc.
 
 GMT_time_array:	Should be able to handle phase shift passed from -B
 
+testing:	Need testing of supplements at some point
 ------------------------------------------------------------------------
 ENHANCEMENTS:
 
