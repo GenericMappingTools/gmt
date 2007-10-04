@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.45 2007-10-03 18:57:36 remko Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.46 2007-10-04 21:11:07 remko Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.45 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.46 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -259,27 +259,35 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 <HR><B>7. Select GMT final destination directories</B><BR>
 
 <TABLE border=0 cellspacing=2 cellpadding=2>
+<TR><TD>Place GMT in subdirectories of:</TD><TD><INPUT NAME="gmt_prefix" TYPE="text" SIZE="45"></TD></TR>
+<TR></TR>
+<TR><TD><B>OR</B></TD></TR>
 <TR><TD>Place GMT executables in:</TD><TD><INPUT NAME="gmt_bin" TYPE="text" SIZE="45"></TD></TR>
 <TR><TD>Place GMT libraries in:</TD><TD><INPUT NAME="gmt_lib" TYPE="text" SIZE="45"></TD></TR>
 <TR><TD>Place GMT include files in:</TD><TD><INPUT NAME="gmt_include" TYPE="text" SIZE="45"></TD></TR>
 <TR><TD>Place GMT data resources in:</TD><TD><INPUT NAME="gmt_share" TYPE="text" SIZE="45"></TD></TR>
-<TR><TD>Place GMT man pages in:</TD><TD><INPUT NAME="gmt_man" TYPE="text" SIZE="30">
+<TR><TD>Place GMT man pages in:</TD><TD><INPUT NAME="gmt_man" TYPE="text" SIZE="45">
 <TR><TD>Place GMT web pages in:</TD><TD><INPUT NAME="gmt_web" TYPE="text" SIZE="45"></TD></TR>
 </TABLE>
 
-<P><I>
-Note: The GMT archives will first be uncompressed, untarred, and compiled in the current working
-directory where install_gmt is run.  After those steps are successful you may want to copy
-the files to more traditional directories like /usr/local/bin, etc.  The default locations are
-subdirectories bin, lib, include, share, man, and www under GMT4.2.1 in the current install directory.
-Note that the man pages will be be placed in the man/man? subdirectory, where ? is the section specified
-above, e.g. "l", giving man/manl, is the default.  Do NOT specify the man dir as man/man?; the
-section directory will automatically be appended based on the chosen section unit.
-Only specify alternative directories if you want
-to place the files elsewhere.  Make sure the users' search path contains the directory where you
-place the executables.  
+<I><P>
+Note: The installation will install all GMT components in several subdirectories
+under one root directory.  By default, GMT will be installed under GMT4.2.1
+in the current working directory where install_gmt is run.
+On most Unix systems, however, the preferred location of the root directory will be
+something like /usr/local or /sw, under which the installation will add
+bin, lib, include, share, man, and www.
+To select another location for the root directory than the default (GMT4.2.1),
+specify it in the first box above, or enter all subdirectories
+individually.
+Only specify alternative directories if you want to place the files elsewhere. 
+<P>
+Note that the man pages will be be placed in the subdirectories man1 and man3 of the directory
+specified above.
 The man utility will find the GMT man pages if the chosen man directory is included in the
-users' MANPATH environmental variable.  Finally, advise users to add a browser bookmark for the
+users' MANPATH environmental variable.
+Make sure the users' search path contains the directory where you place the executables.  
+Finally, advise users to add a browser bookmark for the
 file gmt/gmt_services.html in the web directory you chose above; that page provides links to online
 GMT documentation and man pages (assuming you selected the web archive in Section C.3).</I><BR>
 
