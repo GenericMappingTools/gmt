@@ -1,5 +1,5 @@
 #!/bin/sh
-#		$Id: job26.sh,v 1.4 2007-09-13 17:31:23 remko Exp $
+#		$Id: job26.sh,v 1.5 2007-10-04 01:35:21 remko Exp $
 #		GMT EXAMPLE 26
 #
 # Purpose:	Demonstrate general vertical perspective projection
@@ -32,5 +32,5 @@ Height=30.0
 
 PROJ=-JG${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/5i
 
-pscoast -R $PROJ -B5g5/5g5 -Glightbrown -Slightblue -W0.25p -Ia -Dl -Na -O -X1i -Y-4i -U/-1.75i/-0.75i/"Example 26 in Cookbook" >> example_26.ps
+pscoast -R $PROJ -B5g5/5g5 -Glightbrown -Slightblue -W0.25p -Ia/blue -Di -Na -O -X1i -Y-4i -U/-1.75i/-0.75i/"Example 26 in Cookbook" >> example_26.ps
 rm -f .gmt*
