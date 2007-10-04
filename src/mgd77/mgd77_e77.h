@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77_e77.h,v 1.3 2007-07-25 01:19:18 mtchandl Exp $	
+ *	$Id: mgd77_e77.h,v 1.4 2007-10-04 22:28:20 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
@@ -33,6 +33,7 @@
 #define N_NAV_TYPES          6
 
 /* E77 Header Errata Codes */
+#define E77_HDR_RLS          0
 #define E77_HDR_SCALE        1
 #define E77_HDR_DCSHIFT      2
 #define E77_HDR_RMS          3
@@ -40,13 +41,15 @@
 #define E77_HDR_ANOM_FAA     5
 #define E77_HDR_ANOM_MAG     6
 #define E77_HDR_GRID_OFFSET  7
-#define E77_HDR_FLAGRANGE    8
-#define E77_HDR_BCC          9
-#define E77_HDR_PRECISION    10
+#define E77_HDR_SIGN         8
+#define E77_HDR_FLAGRANGE    9
+#define E77_HDR_BCC          10
+#define E77_HDR_PRECISION    11
 
 /* E77 Default Warning Codes */
 #define E77_ERROR           'E'
 #define E77_WARN            'W'
+#define E77_INFO			'I'
 #define E77_APPLY           'Y'
 #define E77_REJECT          'N'
 #define E77_REVIEW          '?'

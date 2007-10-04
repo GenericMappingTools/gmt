@@ -27,10 +27,7 @@ the OPT(L) option.
 .SH REQUIREMENTS
 The mgd77sniffer links with Generic Mapping Tools 4.0 or later along with the supplemental GMT
 packages x2sys and mgd77. See http://gmt.soest.hawaii.edu for GMT details. Grids for comparison with
-cruise data may be downloaded via the web. Among the many useful grids are
-NOAA's ETOPO2 global topography grid available from the National Geophysical Data Center's website
-as well as Sandwell
-and Smith's Raw Gravity grid available from Scripps Institution of Oceanography's website.
+cruise data may be downloaded via the web.
 
 .SH OPTIONS
 .TP
@@ -173,6 +170,10 @@ Hint: to test your custom limits, try: mgd77sniffer OPT(Dl) OPT(L)<yourlimitsfil
 .TP
 .B \-N
 Use nautical units.
+.TP
+.B \-P
+Flag regression statistics that are outside the specified confidence level.
+(i.e., -P5 flags coefficients m, b, rms, and r that fall outside 95%.)
 #include "explain_-Q.txt"
 #include "explain_-Rgeo.txt"
 .TP
@@ -269,29 +270,41 @@ E77 header information.
 .sp
 \fBSample\fP
 .br
-\('## Cruise 06050010 ID L476WG MGD77 FILE VERSION: 19870415 N_RECS: 27268\"'
+\('## Cruise 08010039 ID 74010908 MGD77 FILE VERSION: 19801230 N_RECS: 3066\"'
 .br
-\('## Examined: Tue Feb 21 16:33:34 2006\"'
+\('## Examined: Wed Oct  3 16:30:13 2007 by mtchandl\"'
 .br
-\('## Examiner: mtchandl\"'
+\('## Arguments:  -De -Gdepth,/data/GRIDS/etopo5_hdr.i2\"'
 .br
-\('## Arguments:  -De -Gfaa,/data/GRIDS/sandwell_smith11_hdr.i2\"'
+N Errata table verification status
+.br
+\('## mgd77manage applies corrections if the errata table is verified (toggle 'N' above to 'Y' after review)\"'
+.br
+\('## For instructions on E77 format and usage, see http://gmt.soest.hawaii.edu/mgd77/errata.php\"'
+.br
+\('## Verified by:\"'
+.br
+\('## Comments:\"'
 .br
 \('## Errata: Header\"'
 .br
-N-faa-E-01: Regression against grid gave scale 0.108643 which is statistically different from 1.0. Recommended scale: (10.0)
+Y-E-08010039-H13-02: Invalid Magnetics Sampling Rate: (99) [  ]
 .br
-N-faa-E-02: Regression against grid gave DC offset -1.319411 which is statistically different from 0.0
+Y-W-08010039-H13-10: Survey year (1975) outside magnetic reference field IGRF 1965 time range (1965-1970)
 .br
-I-twt-W-03: More recent bathymetry correction table available
+Y-I-08010039-depth-00: RLS m: 1.00053 b: 0 rms: 127.851 r: 0.973422 significant: 1 decimation: 0
 .br
-I-depth-W-04: Integer precision in depth
+Y-W-08010039-twt-09: More recent bathymetry correction table available
+.br
+Y-W-08010039-mtf1-10: Integer precision
+.br
+Y-W-08010039-mag-10: Integer precision
 .br
 .sp
 .TP
 \fBError Record\fP
 Individual error records have strict format. Included is a time or distance column followed by record number,
-a formatted error code string, and finally a verbose description of errors detected in the record. Four error
+a formatted error code string, and finally a verbose description of errors detected in the record. Three error
 classes are encoded into the error code string with different alphabetic characters representing unique error
 types. See below for error code format description.
 .br
@@ -305,20 +318,16 @@ types. See below for error code format description.
 .br
 \('## Errata: Data\"'
 .br
-1971-04-28T18:27:30	345	0-0-OQ-0	 gradient: mtf1, mag excessive
-.br
-1971-05-14T18:01:30	5413	0-0-OQ-0	 gradient: mtf1, mag excessive
-.br
-1971-05-15T03:41:30	5634	0-Q-0-0	 value: mag invalid
+Y	08010039	1975-05-10T22:16:05.88	74	C-0-0	 NAV: excessive speed
 .br
 .sp
 .TP
 \fBError Code Description\fP
-Each of the four error classes is separated by a dash '-' and described by a
+Each of the three error classes is separated by a dash '-' and described by a
 combination of alphabetic characters or 0 signifying no detected problems.
 .br
 .sp
-Error classes: NAV-VAL-GRAD-GRID
+Error classes: NAV-VAL-GRAD
 .br
 .sp
 \fBError Class Descriptions\fP
@@ -366,18 +375,7 @@ O - d[mtf1] excessive
 etc.
 .br
 .sp
-GRID (grid comparison):
-.br
-0 - fine
-.br
-L - depth offset
-.br
-W - faa offset
-.br
-etc.
-.br
-.sp
-The NAV error class has unique cases while VAL, GRAD and GRID classes are
+The NAV error class has unique cases while VAL and GRAD classes are
 described by alphabetic characters for each of the 24 numeric fields in MGD77 format order.
 .sp
   MGD77 bit-pattern w/ E77 alpha characters
