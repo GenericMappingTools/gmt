@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.5 2007-10-04 16:50:51 guru Exp $
+#  $Id: Makefile,v 1.6 2007-10-04 20:09:53 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -117,7 +117,7 @@ update-www-test:	../registration/gmt_usage.jpg
 		echo "rm -f gmt_server_job.sh" >> gmt_server_job.sh
 		scp gmt_server_job.sh $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		ssh $(WEBSERVER2) sh $(LIVEWWWDIR2)/gmt/gmt_server_job.sh
-#		rm -f gmt_server_job.sh
+		rm -f gmt_server_job.sh
 
 update-www-local:../registration/gmt_usage.jpg
 		rm -rf $(TESTWWWDIR)
