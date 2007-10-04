@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.26 2007-08-27 22:23:54 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.27 2007-10-04 22:28:20 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
@@ -40,6 +40,9 @@
 #define MGD77_MIN_RLS_PTS           100
 #define MGD77_N_MAG_RF              13
 #define MGD77_MAX_SEARCH            50
+#define MGD77_POS_BIT               (1 << 0)
+#define MGD77_ZERO_BIT              (1 << 1)
+#define MGD77_NEG_BIT               (1 << 2)
 
 /* RLS statistic array cell names */
 #define MGD77_RLS_SLOPE             0
