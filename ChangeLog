@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.114 2007-10-03 16:13:44 remko Exp $
+	$Id: ChangeLog,v 1.115 2007-10-04 22:01:43 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
-2007-10-04
+2007-10-05
 	* tar 4.2.1 made and released via email
 -----------------------------------------------------------------------------------------
+
+2007-10-04	remko
+	* gmt_map.c (GMT_map_setup):	Removed restriction that east and west limits can not be
+				both negative. This fixed the remaining Hexagone problem.
 
 2007-10-03	remko
 	* makegmt.macros.in, */makefile:	Found robust way of assigning .exe extension
