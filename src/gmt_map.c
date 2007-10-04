@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.157 2007-09-28 20:06:34 guru Exp $
+ *	$Id: gmt_map.c,v 1.158 2007-10-04 20:18:42 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -436,14 +436,17 @@ int GMT_map_setup (double west, double east, double south, double north)
 	GMT_init_ellipsoid ();	/* Set parameters depending on the ellipsoid since the latter could have been set explicitly */
 
 	if (project_info.degree[0]) {
-		if (west < 0.0 && east < 0.0) {
-			while (west < 0.0) west += 360.0;
-			while (east < 0.0) east += 360.0;
-		}
-		else if (east < west)
-			east += 360.0;
-
+		/* Limit east-west range to 360 and make sure east > -180 and west < 360 */
+		if (east < west) east += 360.0;
 		if ((fabs (east - west) - 360.0) > GMT_SMALL) return (GMT_MAP_EXCEEDS_360);
+		while (east < -180.0) {
+			west += 360.0;
+			east += 360.0;
+		}
+		while (west > 360.0) {
+			west -= 360.0;
+			east -= 360.0;
+		}
 	}
 	if (project_info.got_elevations) {
 		if (south < 0.0 || south >= 90.0) return (GMT_MAP_BAD_ELEVATION_MIN);
