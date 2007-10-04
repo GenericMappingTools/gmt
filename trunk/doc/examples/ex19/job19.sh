@@ -1,7 +1,7 @@
 #!/bin/sh
 #		GMT EXAMPLE 19
 #
-#		$Id: job19.sh,v 1.12 2007-09-12 23:45:42 remko Exp $
+#		$Id: job19.sh,v 1.13 2007-10-04 21:11:31 guru Exp $
 #
 # Purpose:	Illustrates various color pattern effects for maps
 # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext, psimage
@@ -19,9 +19,9 @@ pscoast -R -J -O -K -Dc -A5000 -Gc >> example_19.ps
 grdimage lon.grd -Sl -J -Clon.cpt -O -K >> example_19.ps
 pscoast -R -J -O -K -Q >> example_19.ps
 pscoast -R -J -O -K -Dc -A5000 -Wthinnest >> example_19.ps
-echo "0 20 32 0 1 CM 5TH INTERNATIONAL" | pstext -R -J -O -K -Gred -Sthinner >> example_19.ps
+echo "0 20 32 0 1 CM 6TH INTERNATIONAL" | pstext -R -J -O -K -Gred -Sthinner >> example_19.ps
 echo "0 -10 32 0 1 CM GMT CONFERENCE" | pstext -R -J -O -K -Gred -Sthinner >> example_19.ps
-echo "0 -30 18 0 1 CM Honolulu, Hawaii, April 1, 2007" | pstext -R -J -O -K -Ggreen -Sthinnest >> example_19.ps
+echo "0 -30 18 0 1 CM Honolulu, Hawaii, April 1, 2008" | pstext -R -J -O -K -Ggreen -Sthinnest >> example_19.ps
 
 # Then show example of color patterns and placing a PostScript image
 
@@ -37,8 +37,8 @@ pscoast -R -J -O -K -Dc -A5000 -Gc >> example_19.ps
 grdimage lat.grd -Sl -J -Clat.cpt -O -K >> example_19.ps
 pscoast -R -J -O -K -Q >> example_19.ps
 pscoast -R -J -O -K -Dc -A5000 -Wthinnest >> example_19.ps
-echo "0 20 32 0 1 CM 5TH INTERNATIONAL" | pstext -R -J -O -K -Gred -Sthinner >> example_19.ps
+echo "0 20 32 0 1 CM 6TH INTERNATIONAL" | pstext -R -J -O -K -Gred -Sthinner >> example_19.ps
 echo "0 -10 32 0 1 CM GMT CONFERENCE" | pstext -R -J -O -K -Gred -Sthinner >> example_19.ps
-echo "0 -30 18 0 1 CM Honolulu, Hawaii, April 1, 2007" | pstext -R -J -O -Ggreen -Sthinnest >> example_19.ps
+echo "0 -30 18 0 1 CM Honolulu, Hawaii, April 1, 2008" | pstext -R -J -O -Ggreen -Sthinnest >> example_19.ps
 
 rm -f l*.grd l*.cpt .gmt*
