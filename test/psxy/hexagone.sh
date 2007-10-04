@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: hexagone.sh,v 1.8 2007-09-11 22:56:12 remko Exp $
+#	$Id: hexagone.sh,v 1.9 2007-10-04 19:51:34 remko Exp $
 #
 # Check wrapping around Greenwich
 
@@ -16,10 +16,16 @@ cat > hexagone.dat <<%
 2.5 51
 %
 
-psxy hexagone.dat -R-5/9/42/52 -JM4i -P -L -Gpurple -K > $ps
+psxy hexagone.dat -R-5/9/42/52 -JM3i -P -L -Gpurple -K > $ps
 pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B2 -O -K --PLOT_DEGREE_FORMAT=D >> $ps
 
-psxy hexagone.dat -R1/10/47/52 -JM4i -Y5i -L -Gpurple -O -K >> $ps
+psxy hexagone.dat -R-8.5/-0.5/47/52 -JM3i -Y4i -L -Gpurple -O -K >> $ps
+pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O -K --PLOT_DEGREE_FORMAT=D >> $ps
+
+psxy hexagone.dat -R1/9/47/52 -JM3i -X4i -L -Gpurple -O -K >> $ps
+pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O -K --PLOT_DEGREE_FORMAT=D >> $ps
+
+psxy hexagone.dat -R-4/6/42/49.5 -JM3i -Y-4i -L -Gpurple -O -K >> $ps
 pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O --PLOT_DEGREE_FORMAT=D >> $ps
 
 compare -density 100 -metric PSNR {,orig/}$ps hexagone_diff.png > log 2>&1
