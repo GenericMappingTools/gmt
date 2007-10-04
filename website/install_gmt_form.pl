@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.24 2007-10-03 17:37:40 remko Exp $
+#       $Id: install_gmt_form.pl,v 1.25 2007-10-04 16:50:51 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -8,11 +8,11 @@
 #	Updated to work for multiple versions and passes browser
 #	control to unique (temporary) parameter file on GMT server
 #	You must start cron job on the server that will find and
-#	delete all temporary files in /export/gmt/gmt/www/gmttemp
+#	delete all temporary files in .../gmt/gmttemp
 #	that are older than 5 minutes.  The command for cron would be
 #
 #	entry for P.Wessel temp files (crontab on imina as root):
-#	07 01 * * * find /export/imina2/apache2052/htdocs/gmt/gmttemp -xdev -mtime +1 -type d -exec rm -r {} \; > /dev/null 2>&1
+#	07 01 * * * find /export/imina2/apache222/htdocs/gmt/gmttemp -xdev -mtime +1 -type d -exec rm -r {} \; > /dev/null 2>&1
 #
 #	The temporary files are placed in <PID>/GMTparam.txt
 
@@ -101,7 +101,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.24 $, on
+# Processed by install_gmt_form.pl $Revision: 1.25 $, on
 #
 #	$now
 #

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.4 2007-10-03 17:01:54 remko Exp $
+#  $Id: Makefile,v 1.5 2007-10-04 16:50:51 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -96,18 +96,18 @@ update-www-live:	../registration/gmt_usage.jpg
 		scp -r ../www/gmt/doc $(WEBSERVER):$(LIVEWWWDIR)/gmt
 		scp -r ../www/gmt/examples $(WEBSERVER):$(LIVEWWWDIR)/gmt
 
-update-www-test:	../registration/gmt_usage.jpg	
-		cp install_gmt_form.pl save.pl
-		mv -f install_gmt_form.pl install_gmt_form_test.pl
-		scp install_gmt_form.pl $(WEBSERVER2):$(LIVECGIDIR2)
-		cp save.pl install_gmt_form.pl
+update-www-test:	../registration/gmt_usage.jpg
+		echo "sB/gmt/B/gmttest/Bg" > job.sed
+		echo "sBgmt.soest.hawaii.edu/gmttempBwww.soest.hawaii.edu/gmttest/gmttempBg" >> job.sed
+		sed -f job.sed install_gmt_form.pl > install_gmt_form_test.pl
+		scp install_gmt_form_test.pl $(WEBSERVER2):$(LIVECGIDIR2)
+		rm -f install_gmt_form_test.pl job.sed
 		ssh $(WEBSERVER2) mkdir -p $(LIVEWWWDIR2)/gmt
 		ssh $(WEBSERVER2) rm -f $(LIVEWWWDIR2)/index.html
 		scp gmt.html $(WEBSERVER2):$(LIVEWWWDIR2)/index.html
 		scp gmt_*.html gmt_hitmap.map newgmtguru gmt_*.gif GMT?.gif soest_logo_reduced2.gif gmt_*.png \
 		  ../src/README.TRIANGLE ../www/gmt/gmt_services.html ../www/gmt/gmt_man.html ../registration/gmt_usage.jpg \
 		  ../www/gmt/gmt_examples.html ../www/gmt/gmt_suppl.html ../www/gmt/gmt_back.gif $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
-		ssh $(WEBSERVER2) 'sed -e s/install_gmt_form.pl/install_gmt_form/g $(LIVEWWWDIR2)/gmt/gmt_install_form.html >'
 		ssh $(WEBSERVER2) rm -r -f $(LIVEWWWDIR2)/gmt/doc $(LIVEWWWDIR2)/gmt/examples
 		scp -r ../www/gmt/doc $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		scp -r ../www/gmt/examples $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
