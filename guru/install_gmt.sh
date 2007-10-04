@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: install_gmt.sh,v 1.111 2007-10-03 20:01:17 remko Exp $
+#	$Id: install_gmt.sh,v 1.112 2007-10-04 23:26:01 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -285,7 +285,7 @@ EOF
 	size=`sed -n 2p $sizes`
 	GMT_get_share=`get_def_answer "Want the shared run-time files (cpt, patterns) [$size Mb] (y/n)?" "y"`
 	size=`sed -n 3p $sizes`
-	GMT_get_coast=`get_def_answer "Want the basic support data (coastlines) [$size Mb] (y/n)?" "y"`
+	GMT_get_coast=`get_def_answer "Want the basic support data (GSHHS coastlines) [$size Mb] (y/n)?" "y"`
 
 	echo " " >&2
 	echo " The next six archives are optional but recommended for a typical GMT install" >&2
@@ -307,9 +307,9 @@ EOF
 	echo " " >&2
 
 	size=`sed -n 4p $sizes`
-	GMT_get_high=`get_def_answer "Want optional high resolution coastline data [$size Mb] (y/n)?" "y"`
+	GMT_get_high=`get_def_answer "Want optional high resolution GSHHS coastline data [$size Mb] (y/n)?" "y"`
 	size=`sed -n 5p $sizes`
-	GMT_get_full=`get_def_answer "Want optional full resolution coastline data [$size Mb] (y/n)?" "y"`
+	GMT_get_full=`get_def_answer "Want optional full resolution GSHHS coastline data [$size Mb] (y/n)?" "y"`
 
 			     	
 	echo " " >&2
@@ -699,12 +699,8 @@ install_coast()
 	here=`pwd`
 	ok=1
 	done=0
-	if [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
-		this=GMT${VERSION}_${file}.tar.$suffix
-	elif [ -f GSHHS${GSHHS}_${file}.tar.$suffix ]; then
+	if [ -f GSHHS${GSHHS}_${file}.tar.$suffix ]; then
 		this=GSHHS${GSHHS}_${file}.tar.$suffix
-	elif [ -f GMT_${file}.tar.$suffix ]; then
-		this=GMT_${file}.tar.$suffix
 	elif [ -f GSHHS_${file}.tar.$suffix ]; then
 		this=GSHHS_${file}.tar.$suffix
 	else
@@ -725,7 +721,7 @@ install_coast()
 	cd $here
 #	Special treatment for Companion CD-ROM with individual bzip2 files for high and full
 #	that facilitates cross-platform install with Win32
-	if [ -f GMT${file}c.bz2 ] && [ "$get_this" != "n" ] && [ $done -eq 0 ]; then	# File is present and wanted
+	if [ -f GSHHS${file}c.bz2 ] && [ "$get_this" != "n" ] && [ $done -eq 0 ]; then	# File is present and wanted
 		if [ ! -d $dir ]; then
 			mkdir -p $dir
 		fi				
@@ -734,11 +730,11 @@ install_coast()
 		else
 			t=`echo $file | awk '{print substr($1,1,1)}'`
 			echo "share/binned_GSHHS_${t}.cdf"
-			$expand $here/GMT${file}c.bz2 > $dir/binned_GSHHS_${t}.cdf
+			$expand $here/GSHHS${file}c.bz2 > $dir/binned_GSHHS_${t}.cdf
 			echo "share/binned_binned_${t}.cdf"
-			$expand $here/GMT${file}r.bz2 > $dir/binned_river_${t}.cdf
+			$expand $here/GSHHS${file}r.bz2 > $dir/binned_river_${t}.cdf
 			echo "share/binned_river_${t}.cdf"
-			$expand $here/GMT${file}b.bz2 > $dir/binned_border_${t}.cdf
+			$expand $here/GSHHS${file}b.bz2 > $dir/binned_border_${t}.cdf
 		fi
 	fi
 		
