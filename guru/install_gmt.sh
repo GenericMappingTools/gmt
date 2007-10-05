@@ -1,6 +1,5 @@
 #!/bin/sh
-#
-#	$Id: install_gmt.sh,v 1.113 2007-10-05 00:57:05 guru Exp $
+#	$Id: install_gmt.sh,v 1.114 2007-10-05 01:34:48 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -707,6 +706,12 @@ install_coast()
 		this=GMT_${file}.tar.$suffix
 	elif [ -f GSHHS_${file}.tar.$suffix ]; then
 		this=GSHHS_${file}.tar.$suffix
+	elif [ -f GMT${VERSION}_${file}.tar.$suffix ]; then
+		this=GMT${VERSION}_${file}.tar.$suffix
+	elif [ -f GMT${GSHHS}_${file}.tar.$suffix ]; then
+		this=GMT${GSHHS}_${file}.tar.$suffix
+	elif [ -f GMT_${file}.tar.$suffix ]; then
+		this=GMT_${file}.tar.$suffix
 	else
 		ok=0
 	fi
