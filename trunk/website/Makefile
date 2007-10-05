@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.8 2007-10-05 03:11:28 guru Exp $
+#  $Id: Makefile,v 1.9 2007-10-05 04:29:13 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -110,6 +110,9 @@ update-www-test:	../registration/gmt_usage.jpg
 		scp gmt_*.html gmt_hitmap.map newgmtguru gmt_*.gif GMT?.gif soest_logo_reduced2.gif gmt_*.png \
 		  ../src/README.TRIANGLE ../www/gmt/gmt_services.html ../www/gmt/gmt_man.html ../registration/gmt_usage.jpg \
 		  ../www/gmt/gmt_examples.html ../www/gmt/gmt_suppl.html ../www/gmt/gmt_back.gif $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
+#	Change the Href to the ftp server to go to the test server dir instead
+		sed -e sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttestBg gmt_install_form.html > tmp
+		scp tmp $(WEBSERVER2):$(LIVEWWWDIR2)/gmt/gmt_install_form.html
 		ssh $(WEBSERVER2) rm -r -f $(LIVEWWWDIR2)/gmt/doc $(LIVEWWWDIR2)/gmt/examples
 		scp -r ../www/gmt/doc $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		scp -r ../www/gmt/examples $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
@@ -119,7 +122,7 @@ update-www-test:	../registration/gmt_usage.jpg
 		echo "rm -f gmt_server_job.sh" >> gmt_server_job.sh
 		scp gmt_server_job.sh $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		ssh $(WEBSERVER2) sh $(LIVEWWWDIR2)/gmt/gmt_server_job.sh
-		rm -f gmt_server_job.sh
+		rm -f gmt_server_job.sh tmp
 
 update-www-local:../registration/gmt_usage.jpg
 		rm -rf $(TESTWWWDIR)
@@ -150,7 +153,7 @@ update-bugs:
 # Note: .message should be less than 1300-1400 bytes!
 
 update-ftp-live:	netcdf
-	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $1}'` -ge 1300 ]; then \
+	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
@@ -174,7 +177,7 @@ update-ftp-live:	netcdf
 	rm -f gmt_server_job.sh
 
 update-ftp-test:	netcdf
-	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $1}'` -ge 1300 ]; then \
+	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
@@ -199,7 +202,7 @@ update-ftp-test:	netcdf
 	rm -f gmt_server_job.sh
 
 update-ftp-local:
-	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $1}'` -ge 1300 ]; then \
+	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
