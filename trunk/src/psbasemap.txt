@@ -279,7 +279,7 @@ To get a LEN_V-inch-wide world map centered on the Dateline:
 \fBpsbasemap\fP \fB\-Rg\fP SCALE_V \fB\-B\fP30\fBg\fP30/15\fBg\fP15:."Van der Grinten": > grinten.ps
 .SH RESTRICTIONS
 For some projections, a spherical earth is implicitly assumed.  A warning will notify the user if \fB\-V\fP
-is set.
+is set. Also note that plot titles are not plotted if OPT(E) is given.
 .SH BUGS
 The \fB\-B\fP option is somewhat complicated to explain and comprehend.  However, it is fairly simple for
 most applications (see examples).
