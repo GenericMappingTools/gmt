@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77_rls_coeffs.h,v 1.5 2007-08-29 20:07:53 mtchandl Exp $
+ *	$Id: mgd77_rls_coeffs.h,v 1.6 2007-10-05 01:45:09 guru Exp $
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
@@ -41,11 +41,11 @@
 #define RLS_N_NEWMAG_ROWS   40
 
 struct RLS {
-	float cd;
-	float m;
-	float b;
-	float rms;
-	float r;
+	double cd;
+	double m;
+	double b;
+	double rms;
+	double r;
 };
 
 /* Regression tables for ship vs vs altimetry derived BATHYMETRY */
