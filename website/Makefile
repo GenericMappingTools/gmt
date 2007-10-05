@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.7 2007-10-04 23:13:49 guru Exp $
+#  $Id: Makefile,v 1.8 2007-10-05 03:11:28 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -97,8 +97,10 @@ update-www-live:	../registration/gmt_usage.jpg
 		scp -r ../www/gmt/examples $(WEBSERVER):$(LIVEWWWDIR)/gmt
 
 update-www-test:	../registration/gmt_usage.jpg
+#		For the test we want GMT_ftpsite to always be 0, and to use the test web site - hence these sed commands
 		echo "sB/gmt/B/gmttest/Bg" > job.sed
 		echo "sBgmt.soest.hawaii.edu/gmttempBwww.soest.hawaii.edu/gmttest/gmttempBg" >> job.sed
+		echo 's/"GMT_ftpsite=", \$$site/"GMT_ftpsite=0"/g' >> job.sed
 		sed -f job.sed install_gmt_form.pl > install_gmt_form_test.pl
 		scp install_gmt_form_test.pl $(WEBSERVER2):$(LIVECGIDIR2)
 		rm -f install_gmt_form_test.pl job.sed
@@ -148,7 +150,10 @@ update-bugs:
 # Note: .message should be less than 1300-1400 bytes!
 
 update-ftp-live:	netcdf
-	echo -n "The .message file byte length is "; cat ../ftp/.message | wc -c
+	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $1}'` -ge 1300 ]; then \
+		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
+		exit; \
+	fi
 	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/4
 	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)/4
@@ -194,7 +199,10 @@ update-ftp-test:	netcdf
 	rm -f gmt_server_job.sh
 
 update-ftp-local:
-	echo -n "The .message file byte length is "; cat ../ftp/.message | wc -c
+	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $1}'` -ge 1300 ]; then \
+		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
+		exit; \
+	fi
 	rm -rf $(TESTFTPDIR)/4
 	mkdir -p $(TESTFTPDIR)/4
 	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > $(TESTFTPDIR)/install_gmt
