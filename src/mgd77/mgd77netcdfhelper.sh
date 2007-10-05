@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.18 2007-06-14 04:23:06 guru Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.19 2007-10-05 18:18:04 guru Exp $
 #
 #	Author:		P. Wessel
 #	Date:		2005-OCT-14
@@ -213,7 +213,7 @@ int MGD77_Param_Key (int record, int item);
 
 #define MGD77_N_HEADER_PARAMS	$n_names
 
-EXTERN_MSC struct MGD77_HEADER_LOOKUP MGD77_Header_Lookup[];
+extern struct MGD77_HEADER_LOOKUP MGD77_Header_Lookup[];
 EOF
 
 cat << EOF >> mgd77_functions.c
