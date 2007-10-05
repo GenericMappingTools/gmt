@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.160 2007-10-05 02:49:50 guru Exp $
+ *	$Id: mgd77.c,v 1.161 2007-10-05 18:18:04 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2042,7 +2042,7 @@ void MGD77_Process_Ignore (char code, char *format)
 {
 	int i;
 
-	for (i = 0; i < strlen(format); i++) {
+	for (i = 0; i < (int)strlen(format); i++) {
 		switch (format[i]) {									
 			case 'a':		/* Ignore any files in Standard ASCII MGD-77 format */
 			case 'A':

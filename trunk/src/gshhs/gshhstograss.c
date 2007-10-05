@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.16 2007-09-14 22:41:09 remko Exp $
+/*	$Id: gshhstograss.c,v 1.17 2007-10-05 18:18:03 guru Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -20,10 +20,10 @@
  */
 
 #include "gshhs.h"
-#include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
 #ifdef WIN32
+#include <io.h>
 struct passwd {
         char    *pw_name;
         int     pw_uid;
@@ -35,6 +35,7 @@ struct passwd *getpwuid (const int uid);
 int getuid (void);
 #else
 #include <pwd.h>
+#include <unistd.h>
 #endif
 #include <time.h>
 
