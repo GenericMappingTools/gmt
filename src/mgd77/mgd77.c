@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.159 2007-09-14 03:40:11 guru Exp $
+ *	$Id: mgd77.c,v 1.160 2007-10-05 02:49:50 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -689,7 +689,7 @@ int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 
 void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE *ufp)
 {
-	int i, k, pos, ix, iy, w, e, s, n, n_block, kind, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
+	int i, k, pos, ix, iy, w, e, s, n, n_block, kind = 0, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
 	char copy[151], p[GMT_TEXT_LEN], text[GMT_TEXT_LEN];
 	char *pscode[5] = {"Bathy", "Magnetics", "Gravity", "3.5 kHz", "Seismics"};
 	time_t now;
