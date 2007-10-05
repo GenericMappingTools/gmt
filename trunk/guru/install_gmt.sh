@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.115 2007-10-05 01:53:31 guru Exp $
+#	$Id: install_gmt.sh,v 1.116 2007-10-05 16:10:37 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -164,12 +164,12 @@ passive_ftp=n
 if [ $do_ftp_qa -eq 1 ]; then
 	cat << EOF >&2
 
-If you are behind a firewall you are unlikely to have permission to initiate a
-normal ftp session (which involves the server connecting back to the client).
-If so, you may want to select passive ftp mode.
+If you are behind a firewall you will need to use a passive ftp session.
+Only if you have some very old ftp client, you may have to resort to active ftp
+(which involves the server connecting back to the client).
 
 EOF
-	passive_ftp=`get_def_answer "Do you want passive ftp transmission (y/n)" "n"`
+	passive_ftp=`get_def_answer "Do you want passive ftp transmission (y/n)" "y"`
 fi
 
 #--------------------------------------------------------------------------------

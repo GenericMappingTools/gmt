@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.46 2007-10-04 21:11:07 remko Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.47 2007-10-05 16:10:37 remko Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.46 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.47 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -161,14 +161,17 @@ have downloaded the files and simply wants to use the script to reinstall, selec
 
 <!--  FTP MODE SELECTION  -->
 
-<HR><B>2. Select normal [Default] or passive ftp transmission:</B><BR>
+<HR><B>2. Select passive [Default] or active ftp transmission:</B><BR>
 
-<INPUT TYPE="radio" VALUE="active" NAME="radio_ftpmode" CHECKED> Normal ftp<BR>
-<INPUT TYPE="radio" VALUE="passive" NAME="radio_ftpmode"> passive ftp<BR>
+<INPUT TYPE="radio" VALUE="passive" NAME="radio_ftpmode" CHECKED> Passive ftp<BR>
+<INPUT TYPE="radio" VALUE="active" NAME="radio_ftpmode"> Active ftp<BR>
 
 <P>
-<I>Note: Normal ftp from a client will make the server connect to the client.  This may not work if you
-are behind a firewall.  In that case you may want to select passive ftp mode.</I>
+<I>Note:
+If you are behind a firewall you will need to use a passive ftp session.
+Only if you have some very old ftp client, you may have to resort to active ftp
+(which involves the server connecting back to the client).
+</I>
 
 <!--  GMT ARCHIVE SELECTION  -->
 
