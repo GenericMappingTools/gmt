@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.116 2007-10-04 23:13:49 guru Exp $
+	$Id: ChangeLog,v 1.117 2007-10-05 16:12:18 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -8,6 +8,7 @@
 -----------------------------------------------------------------------------------------
 2007-10-04	pwessel
 	* psscale.c:		Did not work if -Q and -B1p were used together
+	* psbasemap.txt:	Point out that -E disables plotting of titles
 
 2007-10-04	remko
 	* gmt_map.c (GMT_map_setup):	Removed restriction that east and west limits can not be

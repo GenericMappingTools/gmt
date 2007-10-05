@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.79 2007-10-04 04:07:21 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.80 2007-10-05 16:12:18 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -101,6 +101,8 @@ Suffices {\bf h$|$+$|$-} in \Opt{J} were mistaken for units.
 errors in scaling when {\bf ELLIPSOID} was not set to Sphere.  \GMTfunc{GMT\_distances} function did not work with correct pointer.
 Great circle intersection did not select correct vector sign so
 points 180 degrees from a line could pass as close in \GMTprog{gmtselect}.
+Removed restriction that east and west limits can not be
+both negative. This fixed the remaining Hexagone problem.
 \item [\GMTprog{gmt\_plot.c}]: Failed to activate ddd.mm.xxx format for maps.  Oblique tickmarks sometimes
 were missing for latitudes.
 \item [\GMTprog{gmt\_proj.c}]: \Opt{JS} inverse did not apply quadrant check.
@@ -142,8 +144,9 @@ The color change (C) macro messed up \Opt{Xa} and \Opt{Ya} absolute settings.
 \item [\GMTprog{psbasemap.c}]: Check that \Opt{L} is used with geographic coordinates only.
 \item [\GMTprog{psimage.c}]: The \Opt{I} option had become always active.
 \item [\GMTprog{pslib.c}]: Now no text is written if font size equals 0.
-\item [\GMTprog{xyz2grd.c}]: \Opt{E} did not process pixel grids properly.
+\item [\GMTprog{psscale.c}]: Annotations did not work properly if \Opt{Q} and \Opt{B}1p were used together.
 \item [\GMTprog{psxyz.c}]: Fixed bug in painting outline of text symbols.
+\item [\GMTprog{xyz2grd.c}]: \Opt{E} did not process pixel grids properly.
 \end{description}
 A few bug-fixes applies to the supplements as well:
 \begin{description}
