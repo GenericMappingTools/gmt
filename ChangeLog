@@ -1,11 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.117 2007-10-05 16:12:18 guru Exp $
+	$Id: ChangeLog,v 1.118 2007-10-05 22:17:16 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
-2007-10-05
+2007-10-06
 	* tar 4.2.1 made and released via email
 -----------------------------------------------------------------------------------------
+2007-10-05	pwessel
+	* grdcontour.c:		Only extend subset by 1 row/col if pixel-registered
+	
 2007-10-04	pwessel
 	* psscale.c:		Did not work if -Q and -B1p were used together
 	* psbasemap.txt:	Point out that -E disables plotting of titles
