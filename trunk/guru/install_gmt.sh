@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.117 2007-10-05 17:47:03 remko Exp $
+#	$Id: install_gmt.sh,v 1.118 2007-10-05 19:25:27 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1253,15 +1253,11 @@ fi
 # INSTALL GMT AND SUPPLEMENTAL PROGRAMS
 #--------------------------------------------------------------------------------
 
-echo "---> Make all" >&2
-
 $GMT_make all || exit
 
-echo "---> Make install" >&2
-
-$GMT_make install
-
 if [ $write_bin -eq 1 ]; then
+	$GMT_make install || exit
+else
 	echo "You do not have write permission to make $GMT_bin" >&2
 fi
 
@@ -1271,6 +1267,8 @@ fi
 
 if [ $write_share -eq 1 ]; then
 	$GMT_make install-data || exit
+else
+	echo "You do not have write permission to make $GMT_share" >&2
 fi
 
 #--------------------------------------------------------------------------------
@@ -1311,11 +1309,8 @@ if [ -d examples ] && [ "$GMT_run_examples" = "y" ]; then
 	$GMT_make run-examples || exit
 fi
 
-
 cd $here/src
-if [ $write_bin -eq 1 ]; then
-	$GMT_make clean || ( echo "Problems during make clean - check manually" >&2 )
-else
+if [ $write_bin -eq 0 ]; then
 	echo "Manually do the final installs as another user (root?)" >&2
 	echo "Go to the main GMT directory and say:" >&2
 	echo "make install install-suppl clean" >&2
