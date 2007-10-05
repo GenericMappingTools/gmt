@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.12 2007-09-13 17:36:35 remko Exp $
+#	$Id: do_examples.csh,v 1.13 2007-10-05 17:46:05 remko Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -49,6 +49,10 @@ if ($#argv >= 1) then
 		setenv LD_LIBRARY_PATH ${3}:$LD_LIBRARY_PATH
 	endif
 endif
+
+set dir = `which psxy`
+if ($status) exit 1
+echo "Running examples with executables from $dir" | sed s:/psxy\$::
 
 # Loop over all examples and run each job
 
