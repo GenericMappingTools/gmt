@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.49 2007-10-05 17:47:03 remko Exp $
+#	$Id: Makefile,v 1.50 2007-10-05 19:35:39 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -163,8 +163,7 @@ uninstall-www:
 
 # Run examples with the binaries from the src directory, not the installation directory.
 
-run-examples:	examples
-examples:
+examples run-examples:
 		@if [ -d examples ]; then \
 			cd examples; $(CSH) do_examples.$(CSH) $(srcdir) $(srcdir) $(NETCDF)/lib; \
 		else \
