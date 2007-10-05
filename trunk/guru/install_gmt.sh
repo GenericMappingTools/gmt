@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.114 2007-10-05 01:34:48 guru Exp $
+#	$Id: install_gmt.sh,v 1.115 2007-10-05 01:53:31 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -751,22 +751,15 @@ install_coast()
 
 make_ftp_list()
 {
-# arg1=get arg2=file
+# arg1=get arg2=file arg3=prefix
 	get_this=$1
 	file=$2
+	pre=$3
 	if [ "$get_this" = "y" ]; then
-		echo "get GMT_${file}.tar.$suffix" >> gmt_install.ftp_list
+		echo "get ${pre}_${file}.tar.$suffix" >> gmt_install.ftp_list
 	fi
 }
-make_ftp_list2()
-{
-# arg1=get arg2=file
-	get_this=$1
-	file=$2
-	if [ "$get_this" = "y" ]; then
-		echo "get ${file}.tar.$suffix" >> gmt_install.ftp_list
-	fi
-}
+
 #============================================================
 #	START OF MAIN SCRIPT - INITIALIZATION OF PARAMETERS
 #============================================================
@@ -1036,17 +1029,17 @@ if [ "$GMT_ftp" = "y" ]; then
 	fi
 	echo "cd $DIR/$sub" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
-	make_ftp_list $GMT_get_src src
-	make_ftp_list $GMT_get_share share
-	make_ftp_list $GMT_get_coast coast
-	make_ftp_list $GMT_get_high high
-	make_ftp_list $GMT_get_full full
-	make_ftp_list $GMT_get_suppl suppl
-	make_ftp_list $GMT_get_scripts scripts
-	make_ftp_list $GMT_get_pdf pdf
-	make_ftp_list $GMT_get_man man
-	make_ftp_list $GMT_get_web web
-	make_ftp_list $GMT_get_tut tut
+	make_ftp_list $GMT_get_src src GMT
+	make_ftp_list $GMT_get_share share GMT
+	make_ftp_list $GMT_get_coast coast GSHHS
+	make_ftp_list $GMT_get_high high GSHHS
+	make_ftp_list $GMT_get_full full GSHHS
+	make_ftp_list $GMT_get_suppl suppl GMT
+	make_ftp_list $GMT_get_scripts scripts GMT
+	make_ftp_list $GMT_get_pdf pdf GMT
+	make_ftp_list $GMT_get_man man GMT
+	make_ftp_list $GMT_get_web web GMT
+	make_ftp_list $GMT_get_tut tut GMT
 	echo "quit" >> gmt_install.ftp_list
 	echo " " >> gmt_install.ftp_list
 
