@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.48 2007-10-03 20:00:35 remko Exp $
+#	$Id: Makefile,v 1.49 2007-10-05 17:47:03 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -80,8 +80,10 @@ help::
 #!
 #!make <target>, where <target> can be:
 #!
-#!all           : Compile main source
-#!suppl         : Compile supplements
+#!all		: Compile both GMT and supplements
+#!gmt           : Compile main GMT source only
+#!suppl         : Compile supplements only
+#!install	: Compile & install GMT and supplements
 #!install-gmt   : Compile & install main GMT programs
 #!install-suppl : Compile & install supplements
 #!install-data  : Install GMT data files
@@ -164,7 +166,7 @@ uninstall-www:
 run-examples:	examples
 examples:
 		@if [ -d examples ]; then \
-			cd examples; $(CSH) do_examples.$(CSH) src src $(NETCDF)/lib; \
+			cd examples; $(CSH) do_examples.$(CSH) $(srcdir) $(srcdir) $(NETCDF)/lib; \
 		else \
 			echo "examples directory not installed"; \
 		fi
