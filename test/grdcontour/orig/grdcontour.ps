@@ -4,7 +4,7 @@
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Jul  4 09:48:03 2007
+%%CreationDate: Sat Oct  6 09:53:23 2007
 %%LanguageLevel: 1
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -297,11 +297,11 @@ end
     {
       n 0 eq
       {
-        PSL_CT_drawline
+	PSL_CT_drawline
       }
       {
 	PSL_CT_reversepath
-        PSL_CT_textline
+	PSL_CT_textline
       } ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
@@ -397,14 +397,14 @@ end
       /this_cut PSL_cuts kk get def
       dist this_cut gt
       {
-        /ds dist last_dist sub def
-        /f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
+	/ds dist last_dist sub def
+	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
 	/i1 i 0 eq { 0 } { i 1 sub } ifelse def
-        PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
-        PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
-        PSL_kind j 1 put
-        /j j 1 add def
-        /k k 1 add def
+	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
+	PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
+	PSL_kind j 1 put
+	/j j 1 add def
+	/k k 1 add def
       } if
     } for
     dist PSL_cuts k get le
@@ -673,10 +673,10 @@ S 0 A
 676.35
 4 array astore def
 /PSL_angle
-1.25
-2.24
-3.34
-4.26
+1.12
+2.05
+2.90
+3.79
 4 array astore def
 /PSL_str
 (200)
@@ -698,7 +698,7 @@ S 0.745 A
 -1418 -12 D
 -107 -1 D
 -318 -3 D
-0 -10 D
+0 -3 D
  S
 S 3 W
 1890 226 M
@@ -709,7 +709,7 @@ S 3 W
 -243 -4 D
 -275 -5 D
 -425 -8 D
-0 -19 D
+0 -5 D
  S
 S 1 W
 1890 323 M
@@ -719,7 +719,7 @@ S 1 W
 -390 -8 D
 -709 -18 D
 -425 -11 D
-0 -28 D
+0 -8 D
  S
 S 3 W
 1890 415 M
@@ -730,7 +730,7 @@ S 3 W
 -284 -9 D
 -38 -1 D
 -387 -14 D
-0 -35 D
+0 -9 D
  S
 S 1 W
 1890 504 M
@@ -740,7 +740,7 @@ S 1 W
 -88 -3 D
 -621 -24 D
 -425 -18 D
-0 -43 D
+0 -11 D
  S
 S 3 W
 1890 592 M
@@ -752,7 +752,7 @@ S 3 W
 -292 -13 D
 -15 -1 D
 -410 -20 D
-0 -51 D
+0 -14 D
  S
 S 1 W
 1890 681 M
@@ -762,7 +762,7 @@ S 1 W
 -253 -14 D
 -456 -23 D
 -425 -24 D
-0 -59 D
+0 -16 D
  S
 S 3 W
 1890 776 M
@@ -774,7 +774,7 @@ S 3 W
 -301 -17 D
 -116 -8 D
 -309 -19 D
-0 -67 D
+0 -18 D
  S
 S 1 W
 1890 851 M
@@ -785,12 +785,12 @@ S 1 W
 -661 -44 D
 -48 -3 D
 -425 -30 D
-0 -75 D
+0 -20 D
  S
 S 3 W
 391 851 M
 -391 -31 D
-0 -84 D
+0 -22 D
  S
 PSL_clip_on
 {
@@ -1175,10 +1175,10 @@ S 0 A
 676.35
 4 array astore def
 /PSL_angle
-1.25
-2.24
-3.34
-4.26
+1.12
+2.05
+2.90
+3.79
 4 array astore def
 /PSL_str
 (200)
@@ -1200,7 +1200,7 @@ S 0.745 A
 -1418 -12 D
 -107 -1 D
 -318 -3 D
-0 -10 D
+0 -3 D
  S
 S 3 W
 1890 226 M
@@ -1211,7 +1211,7 @@ S 3 W
 -243 -4 D
 -275 -5 D
 -425 -8 D
-0 -19 D
+0 -5 D
  S
 S 1 W
 1890 323 M
@@ -1221,7 +1221,7 @@ S 1 W
 -390 -8 D
 -709 -18 D
 -425 -11 D
-0 -28 D
+0 -8 D
  S
 S 3 W
 1890 415 M
@@ -1232,7 +1232,7 @@ S 3 W
 -284 -9 D
 -38 -1 D
 -387 -14 D
-0 -35 D
+0 -9 D
  S
 S 1 W
 1890 504 M
@@ -1242,7 +1242,7 @@ S 1 W
 -88 -3 D
 -621 -24 D
 -425 -18 D
-0 -43 D
+0 -11 D
  S
 S 3 W
 1890 592 M
@@ -1254,7 +1254,7 @@ S 3 W
 -292 -13 D
 -15 -1 D
 -410 -20 D
-0 -51 D
+0 -14 D
  S
 S 1 W
 1890 681 M
@@ -1264,7 +1264,7 @@ S 1 W
 -253 -14 D
 -456 -23 D
 -425 -24 D
-0 -59 D
+0 -16 D
  S
 S 3 W
 1890 776 M
@@ -1276,7 +1276,7 @@ S 3 W
 -301 -17 D
 -116 -8 D
 -309 -19 D
-0 -67 D
+0 -18 D
  S
 S 1 W
 1890 803 M
@@ -1286,12 +1286,12 @@ S 1 W
 -661 -44 D
 -48 -3 D
 -425 -30 D
-0 -75 D
+0 -20 D
  S
 S 3 W
 391 803 M
 -391 0 D
-0 -67 D
+0 -5 D
  S
 PSL_clip_on
 {
