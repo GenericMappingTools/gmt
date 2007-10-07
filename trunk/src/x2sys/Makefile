@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.29 2007-10-03 14:24:17 remko Exp $
+#	$Id: Makefile,v 1.30 2007-10-07 07:10:41 guru Exp $
 #
 # makefile for x2sys directory
 #
@@ -27,6 +27,7 @@ all:		$(PROGS)
 install:	all
 		$(INSTALL) $(PROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
+			$(INSTALL) -d $(libdir); \
 			$(INSTALL) -m 444 libx2sys.a $(libdir); \
 		fi
 		$(INSTALL) -d $(datadir)/x2sys

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.119 2007-10-05 23:22:33 guru Exp $
+#	$Id: install_gmt.sh,v 1.120 2007-10-07 07:10:41 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -284,7 +284,7 @@ EOF
 	size=`sed -n 2p $sizes`
 	GMT_get_share=`get_def_answer "Want the shared run-time files (cpt, patterns) [$size Mb] (y/n)?" "y"`
 	size=`sed -n 3p $sizes`
-	GMT_get_coast=`get_def_answer "Want the basic support data (coastlines) [$size Mb] (y/n)?" "y"`
+	GMT_get_coast=`get_def_answer "Want the basic support data (GSHHS coastlines) [$size Mb] (y/n)?" "y"`
 
 	echo " " >&2
 	echo " The next six archives are optional but recommended for a typical GMT install" >&2
@@ -306,9 +306,9 @@ EOF
 	echo " " >&2
 
 	size=`sed -n 4p $sizes`
-	GMT_get_high=`get_def_answer "Want optional high resolution coastline data [$size Mb] (y/n)?" "y"`
+	GMT_get_high=`get_def_answer "Want optional high resolution GSHHS coastline data [$size Mb] (y/n)?" "y"`
 	size=`sed -n 5p $sizes`
-	GMT_get_full=`get_def_answer "Want optional full resolution coastline data [$size Mb] (y/n)?" "y"`
+	GMT_get_full=`get_def_answer "Want optional full resolution GSHHS coastline data [$size Mb] (y/n)?" "y"`
 
 			     	
 	echo " " >&2
@@ -1112,7 +1112,7 @@ if [ -f $$.coast ]; then	# Install coastline.conf file
 fi
 
 echo " " >&2
-echo "write privileges on all files in GMT${VERSION} ..." >&2
+echo "Set write privileges on all files in GMT${VERSION} ..." >&2
 cd GMT${VERSION}
 chmod -R +w .
 cd ..
