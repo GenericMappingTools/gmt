@@ -5,7 +5,7 @@ grdvolume \- Calculating volume under a surface within a contour
 .SH SYNOPSIS
 \fBgrdvolume\fP \fIgrdfile\fP [ OPT(C)\fIcval\fP or OPT(C)\fIlow/high/delta\fP ] 
 [ OPT(L)\fIbase\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)[\fBk\fP] ] [ OPT(T) ] [ GMT_V_OPT[\fBl\fP] ] 
-[ OPT(Z)\fIfact\fP[/\fIdelta\fP] ]
+[ OPT(Z)\fIfact\fP[/\fIdelta\fP] ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
 \fBgrdvolume\fP reads a 2-D binary grid file and calculates the volume contained
 between the surface and the plane specified by the given contour (or zero if not given)
@@ -42,6 +42,7 @@ has been selected).
 .B \-Z
 Optionally subtract \fIshift\fP before scaling data by \fIfact\fP. [Default is no scaling].
 (Numbers in \fB\-C, -L\fP refer to values after this scaling has occurred).
+#include "explain_-f.txt"
 .SH EXAMPLES
 To determine the volume in km^3 under the surface hawaii_topo.grd (height in km), use
 .br
