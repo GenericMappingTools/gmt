@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.152 2007-09-29 03:06:17 remko Exp $
+ *	$Id: pslib.c,v 1.153 2007-10-07 07:10:41 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3255,7 +3255,7 @@ char *ps_prepare_text (char *text)
 					strcat (string, "\\100"); j += 4; i++;
 					break;
 				case '%':	/* Font switcher */
-					if (isdigit (text[i+1])) {	/* Got a font */
+					if (isdigit ((int)text[i+1])) {	/* Got a font */
 						font = atoi (&text[i+1]);
 						ps_encode_font (font);
 					}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.321 2007-10-03 04:18:44 guru Exp $
+ *	$Id: gmt_support.c,v 1.322 2007-10-07 07:10:41 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7416,7 +7416,7 @@ double GMT_set_label_offsets (int axis, double val0, double val1, struct GMT_PLO
 							break;
 					}
 				}
-				else if (A->unit[i] == '\\' && (len - i) > 3 && isdigit (A->unit[i+1]) && isdigit (A->unit[i+2]) && isdigit (A->unit[i+3])) {	/* Octal code */
+				else if (A->unit[i] == '\\' && (len - i) > 3 && isdigit ((int)(A->unit[i+1])) && isdigit ((int)(A->unit[i+2])) && isdigit ((int)(A->unit[i+3]))) {	/* Octal code */
 					i += 3;
 					u_len++;
 				}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.306 2007-09-30 04:16:48 guru Exp $
+ *	$Id: gmt_init.c,v 1.307 2007-10-07 07:10:41 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3536,7 +3536,7 @@ void GMT_strip_wesnz (const char *in, int t_side[], BOOLEAN *draw_box, char *out
 			case 'E':	/* Draw AND Annotate */
 				set++;
 			case 'e':	/* Just Draw */
-				if (i > 0 && (in[i-1] == '.' || isdigit (in[i-1])) && (in[i+1] && (isdigit (in[i+1]) || in[i+1] == '-' || in[i+1] == '+')))	/* Exponential notation */
+				if (i > 0 && (in[i-1] == '.' || isdigit ((int)in[i-1])) && (in[i+1] && ((int)isdigit (in[i+1]) || in[i+1] == '-' || in[i+1] == '+')))	/* Exponential notation */
 					out[k++] = in[i];
 				else {
 					side[1] = ++set;
@@ -3623,7 +3623,7 @@ int GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
 
 	t = in;
 	while (t[0] && !error) {	/* As long as there are more segments to decode and no trouble so far */
-		if (isdigit (t[0]) || t[0] == '-' || t[0] == '+' || t[0] == '.')	/* No segment type given, set to * which means a + f */
+		if (isdigit ((int)t[0]) || t[0] == '-' || t[0] == '+' || t[0] == '.')	/* No segment type given, set to * which means a + f */
 			flag = '*';
 		else {
 			flag = t[0];	/* Set flag */
@@ -3640,7 +3640,7 @@ int GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
 
 		/* Here, t must point to a valid number.  If t[0] is not [+,-,.] followed by a digit we have an error */
 
-		if (!(isdigit (t[0]) || ((t[0] == '-' || t[0] == '+' || t[0] == '.') && strlen(t) > 1))) {
+		if (!(isdigit ((int)t[0]) || ((t[0] == '-' || t[0] == '+' || t[0] == '.') && strlen(t) > 1))) {
 			error = 2;
 			continue;
 		}
