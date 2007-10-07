@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.322 2007-10-07 07:10:41 guru Exp $
+ *	$Id: gmt_support.c,v 1.323 2007-10-07 21:52:22 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4728,6 +4728,7 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 	*link = Out.trianglelist;	/* List of node numbers to return via link */
 
 	if (Out.pointlist) GMT_free ((void *)Out.pointlist);
+	GMT_free ((void *)In.pointlist);
 
 	return (Out.numberoftriangles);
 }
