@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.307 2007-10-07 07:10:41 guru Exp $
+ *	$Id: gmt_init.c,v 1.308 2007-10-07 22:41:07 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3536,7 +3536,7 @@ void GMT_strip_wesnz (const char *in, int t_side[], BOOLEAN *draw_box, char *out
 			case 'E':	/* Draw AND Annotate */
 				set++;
 			case 'e':	/* Just Draw */
-				if (i > 0 && (in[i-1] == '.' || isdigit ((int)in[i-1])) && (in[i+1] && ((int)isdigit (in[i+1]) || in[i+1] == '-' || in[i+1] == '+')))	/* Exponential notation */
+				if (i > 0 && (in[i-1] == '.' || isdigit ((int)in[i-1])) && (in[i+1] && (isdigit ((int)in[i+1]) || in[i+1] == '-' || in[i+1] == '+')))	/* Exponential notation */
 					out[k++] = in[i];
 				else {
 					side[1] = ++set;
