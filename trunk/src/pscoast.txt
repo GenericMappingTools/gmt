@@ -46,7 +46,7 @@ resolution drops off by 80% between data sets  [Default is \fBl\fP].
 Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 .TP
 .B \-G
-Select filling or clipping of "wet" areas.  Append the shade, color, or pattern (see SPECIFYING FILL below);
+Select filling or clipping of "dry" areas.  Append the shade, color, or pattern (see SPECIFYING FILL below);
 or use \fB\-Gc\fP for clipping [Default is no fill].
 .TP
 .B \-I
