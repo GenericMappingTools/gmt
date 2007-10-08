@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.65 2007-09-25 01:50:16 remko Exp $
+#  $Id: GNUmakefile,v 1.66 2007-10-08 17:28:31 guru Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #	
@@ -93,10 +93,10 @@ gmt_datums.h:		Datums.txt
 			awk '{if ($$1 != $$2) printf "\n\n>>>>>>>> GMT_N_DATUMS in gmt.h (%d) do not match entries in gmt_datums.h (%d)\n\n", $$1, $$2}' tmp.txt
 			rm -f tmp.txt
 
-# Must create gmt_grdformats.h from gmtformats.d
+# Must create gmt_grdformats.h from gmtformats.conf
 
-gmt_grdformats.h:	gmtformats.d
-			(egrep DEFAULT gmtformats.d ; (egrep -v '#|^  -' gmtformats.d | sort -n)) | awk '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' > gmt_grdformats.h
+gmt_grdformats.h:	../share/conf/gmtformats.conf
+			(egrep DEFAULT ../share/conf/gmtformats.conf ; (egrep -v '#|^  -' ../share/conf/gmtformats.conf | sort -n)) | awk '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' > gmt_grdformats.h
 			cat gmt_grdformats.h | wc -l | awk '{printf "%d\t", $$1}' > tmp.txt
 			grep '#define GMT_N_GRD_FORMATS' gmt_grdio.h | awk '{print $$3}' >> tmp.txt
 			awk '{if ($$1 != $$2) printf "\n\n>>>>>>>> GMT_N_GRD_FORMATS in gmt_grdio.h (%d) do not match entries in gmt_grdformats.h (%d)\n\n", $$1, $$2}' tmp.txt
