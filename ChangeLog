@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.120 2007-10-08 03:39:12 remko Exp $
+	$Id: ChangeLog,v 1.121 2007-10-08 16:15:17 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -12,6 +12,9 @@
 	* configure.in:		No more "test ! "$A" = "B"", but use test "X$A" != "XB"
 				Removed --wrapbindir and --wrapmandir (were not used anywhere)
 
+2007-10-07	pwessel
+	* gmt_support.c:	Removed memory leak in GMT_delaunay
+	
 2007-10-05	pwessel
 	* grdcontour.c:		Only extend subset by 1 row/col if pixel-registered
 	* grdvolume.c:		Added missing -f option
