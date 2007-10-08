@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.20 2007-10-03 14:24:17 remko Exp $
+#	$Id: Makefile,v 1.21 2007-10-08 21:26:08 remko Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -77,5 +77,5 @@ $(PROGS):	$(GMTLIB)
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L../mgg -lgmt_mgg -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L../mgg -lgmt_mgg -L.. -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@
