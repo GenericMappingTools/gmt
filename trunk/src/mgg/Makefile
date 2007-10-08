@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.23 2007-10-07 07:10:41 guru Exp $
+#	$Id: Makefile,v 1.24 2007-10-08 21:26:08 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -93,9 +93,9 @@ mgd77togmt$(EXE):	mgd77togmt.o
 gmttrack$(EXE):		gmttrack.o
 
 $(PROGS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@

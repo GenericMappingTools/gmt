@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.21 2007-10-03 14:24:17 remko Exp $
+#       $Id: Makefile,v 1.22 2007-10-08 21:26:08 remko Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -13,7 +13,7 @@ include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
-ALLLIB		= -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) $(LDFLAGS)
+ALLLIB		= -L.. -lgmt -lgmtps -lpsl $(CDF) $(LIBS) $(LDFLAGS)
 
 PROGS_O		= psmeca.o pscoupe.o pspolar.o psvelo.o
 MAN1		= $(PROGS_O:.o=.1)

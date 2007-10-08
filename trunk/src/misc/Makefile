@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.27 2007-10-03 14:32:17 remko Exp $
+#	$Id: Makefile,v 1.28 2007-10-08 21:26:08 remko Exp $
 #	makefile for misc directory
 #
 #-------------------------------------------------------------------------------
@@ -57,9 +57,9 @@ psmegaplot$(EXE):	psmegaplot.o
 makepattern$(EXE):	makepattern.o
 
 $(PROGS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@

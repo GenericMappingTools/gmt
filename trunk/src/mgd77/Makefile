@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.44 2007-10-07 07:10:41 guru Exp $
+#	$Id: Makefile,v 1.45 2007-10-08 21:26:08 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -102,9 +102,9 @@ mgd77sniffer$(EXE):	mgd77sniffer.o
 mgd77track$(EXE):	mgd77track.o
 
 $(PROGS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@

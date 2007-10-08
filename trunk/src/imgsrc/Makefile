@@ -10,7 +10,6 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-GMT		= -L.. -L$(libdir) -lgmt
 CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
 
 PROGS_O		= img2mercgrd.o
@@ -50,5 +49,5 @@ $(PROGS_O) gmt_imgsubs.o:	$(GMT_H) gmt_imgsubs.h
 #-------------------------------------------------------------------------------
 
 img2mercgrd$(EXE):	img2mercgrd.o gmt_imgsubs.o $(GMTLIB)
-		$(CC) $(LDFLAGS) img2mercgrd.o gmt_imgsubs.o $(GMT) $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) img2mercgrd.o gmt_imgsubs.o -L.. -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@

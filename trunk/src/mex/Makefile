@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.4 2007-10-03 14:24:17 remko Exp $
+#		$Id: Makefile,v 1.5 2007-10-08 21:26:08 remko Exp $
 #
 #	Makefile for gmt <--> matlab conversion programs
 #	Use with GMT 4.x
@@ -20,7 +20,7 @@ include $(GMTSRCDIR)gmtalldeps.macros
 
 MEX		= $(MATLAB)/bin/mex
 MEXLIB		= -L$(MATLAB)/extern/lib/$(MATLAB_MEX) -l$(MATLAB_LIB)
-GMT     	= -L.. -L$(libdir) -lgmt
+GMT     	= -L.. -lgmt
 FLAGS		= -I$(srcdir) -I$(MATLAB)/extern/include -I$(NETCDF)/include -O
 
 PROGS_H		= grdinfo.m grdread.m grdwrite.m

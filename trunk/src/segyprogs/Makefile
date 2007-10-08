@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.23 2007-10-03 14:24:17 remko Exp $
+#	$Id: Makefile,v 1.24 2007-10-08 21:26:08 remko Exp $
 #
 # makefile for segyprogs directory
 #
@@ -57,9 +57,9 @@ pssegy$(EXE):	pssegy.o
 segy2grd$(EXE):	segy2grd.o
 
 $(PROGS):	$(GMTLIB) segy_io.o
-		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(GMTLIB) segy_io.o
-		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -L$(libdir) -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@

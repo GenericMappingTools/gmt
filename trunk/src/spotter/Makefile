@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.25 2007-10-03 14:24:17 remko Exp $
+#	$Id: Makefile,v 1.26 2007-10-08 21:26:08 remko Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -77,5 +77,5 @@ originator$(EXE):	originator.o
 rotconverter$(EXE):	rotconverter.o
 
 $(PROGS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lspotter -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lspotter -L.. -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.5 2007-10-03 14:24:17 remko Exp $
+#	$Id: Makefile,v 1.6 2007-10-08 21:26:08 remko Exp $
 #	makefile for sph directory
 #
 #-------------------------------------------------------------------------------
@@ -46,5 +46,5 @@ grd2sph$(EXE):	grd2sph.o
 sph2grd$(EXE):	sph2grd.o
 
 $(PROGS):
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@

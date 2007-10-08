@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.34 2007-10-03 14:24:17 remko Exp $
+#	$Id: Makefile,v 1.35 2007-10-08 21:26:08 remko Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -153,5 +153,5 @@ $(LIB):		poly_check_subs.o string_check_subs.o douglas_peucker.o coast_io.o poly
 #-------------------------------------------------------------------------------
 
 $(PROGS):	$(LIB) $(PROGS_O) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lcoast -L.. -L$(libdir) -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lcoast -L.. -lgmt $(CDF) $(LIBS) -o $@
 		$(COMPRESS) $@
