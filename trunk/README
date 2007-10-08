@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.41 2007-10-03 00:35:13 guru Exp $ 
+#		$Id: README,v 1.42 2007-10-08 12:04:27 remko Exp $
 #
 #	Copyright (c) 1991-2007, P. Wessel & W. H. F. Smith
 #
@@ -105,7 +105,7 @@ taken care of by our install script:
      to "-Df2cFortran".  Under a Bourne shell this becomes
      EXPORT DEFINES="-Df2cFortran" while under csh it becomes
      setenv DEFINES "-Df2cFortran".
-     
+
 After install, place the line
 
 	setenv NETCDFHOME /path_to_netcdf_directory
@@ -209,16 +209,6 @@ you should pass these directories on the configure command line.
 	--includedir=your-includedir	Set include directory [PREFIX/include]
 	--mandir=your-mandir		Set man directory [PREFIX/man]
 	--datadir=your-datadir		Set GMT share directory for coastlines [PREFIX/share]
-	--wrapbindir=wrap-bindir	Set wrapper script bin directory [/usr/bin]
-	--wrapmandir=wrap-mandir	Set wrapper man page directory [/usr/man]
-
-The two wrap-*dir options is used to place the GMT wrapper script (and its
-man page) in a standard place.  The script can then start other GMT
-binaries that may be installed elsewhere.  This is used to avoid conflict
-with other executables of the same name (at the moment we know of one
-conflict - the pstext utility of the Seismic Unix package).
-The wrappers are only installed if you run "make install-wrapper"
-in the main GMT directory.
 
 There are a few GMT-specific options in configure.  They are
 
@@ -250,7 +240,7 @@ Both are installed, and the one that is read is given by the file
 share/gmt.conf.  This file will have either SI or US as the first
 two columns on a line.  SI is default, use --enable-US to switch.
 The default values differ slightly between SI and US, mostly because
-it is inconvenient to convert, say, 1" to 2.54 cm; we use 2.5 cm 
+it is inconvenient to convert, say, 1" to 2.54 cm; we use 2.5 cm
 instead.  Although strongly discouraged, if you want to make
 permanent changes to some of the defaults you can edit the
 .gmtdefaults_{SI,US} files directly.  A much better approach is to
@@ -274,7 +264,7 @@ GMT can produce either Freeform PostScript (suitable to be sent to
 various printers) or Encapsulated PostScript (suitable to be included
 in another document).  True PS files will use the setpagedevice
 PostScript command to manipulate paper trays and manual feeds
-on selected printers.  Some PostScript previewers (such as Sun's 
+on selected printers.  Some PostScript previewers (such as Sun's
 old pageview) do not understand these commands and will abort; this
 is also true of some PS to raster conversion utilities.  On the other
 hand, EPS files are intended to be included in another document and
@@ -329,7 +319,7 @@ From the main GMT directory (all make calls herein refers to the main
 GMT directory), type
 
 	make	(or make all)
-	
+
 which will compile/link all the programs.  After a successful
 compilation you may install the executables in the designated
 bin directory with the command
@@ -341,16 +331,11 @@ directory by saying
 
 	make install-data
 
-Optionally (and explain above under configure) you can install
-the GMT wrapper script and its man page by saying
-
-	make install-wrapper
-	
 After a successful install you can have *.o files and the local
 executables removed by saying
 
 	make clean
-	
+
 PS.  Should you need to start from scratch again, for instance
 to reinstall under another OS from the same directory, you should
 first say
@@ -358,7 +343,7 @@ first say
 	make spotless
 
 and run configure again before returning to step 5.
-	
+
 6. Man pages
 ------------
 
@@ -366,7 +351,7 @@ GMT man pages are stored in man/manl.  You can either
 install the entire set of man pages to the chosen directory with
 
 	make install-man
-	
+
 or set the environment variable MANPATH in your .login file to
 include the man directory that holds the desired gmt man pages.
 
@@ -470,7 +455,7 @@ Before running programs, there are a few things you should do/know:
     understanding of how gmt "works", its option lists, I/O, and composite
     plot mechanisms.  Then, before running individual gmt programs, read
     the associated man page.
-    
+
   - Do not confuse the GMT-system with the GMT-database that was
     initiated at Lamont-Doherty Earth Observatory.  These
     marine geophysical data files (Gravity, Magnetics, Topography)
