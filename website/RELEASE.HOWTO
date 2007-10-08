@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.16 2007-10-03 00:35:13 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.17 2007-10-08 17:06:19 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -31,7 +31,7 @@ must ensure you do all the steps listed below:
     make site
    
 4.  Tag the release(s), e.g.
-    cvs -q tag Release_2007_10_01_GMT_-4_2_1
+    cvs -q tag Release_2007_10_08_GMT_-4_2_1
 
 5.  Prepare the archives:
     make archive >& log
