@@ -1,11 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.119 2007-10-07 03:26:15 guru Exp $
+	$Id: ChangeLog,v 1.120 2007-10-08 03:39:12 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
-2007-10-06
+2007-10-08
 	* tar 4.2.1 made and released via email
 -----------------------------------------------------------------------------------------
+
+2007-10-07	remko
+	* nc2xy.c:		Added missing -f option
+	* configure.in:		No more "test ! "$A" = "B"", but use test "X$A" != "XB"
+				Removed --wrapbindir and --wrapmandir (were not used anywhere)
+
 2007-10-05	pwessel
 	* grdcontour.c:		Only extend subset by 1 row/col if pixel-registered
 	* grdvolume.c:		Added missing -f option
@@ -251,10 +257,10 @@
 	* rivers:		Added double-lined rivers to river database to improve rendering
 				of major permanent rivers.
 
-2007/08/27 mtchandl
-	* mgd77sniffer.c	Adjusted anomaly recalculation code so that cruises with m=1
+2007/08/27	mtchandl
+	* mgd77sniffer.c:	Adjusted anomaly recalculation code so that cruises with m=1
 				and b=0 are reported to be same as expected
-	* mgd77_rls_coeffs.h	Updated tables to include statistics only from decimated
+	* mgd77_rls_coeffs.h:	Updated tables to include statistics only from decimated
 				regression found to be significant
 
 2007-08-27	remko
@@ -292,8 +298,8 @@
 2007-08-08	pwessel
 	* grdfilter.c:		-I<nx>+/<ny>+ not propagated to output setup
 .
-2007/08/02 mtchandl
-	* mgd77sniffer.c	Repaired 8 memory leaks. Fixed two regression bugs, one in grid
+2007/08/02	mtchandl
+	* mgd77sniffer.c:	Repaired 8 memory leaks. Fixed two regression bugs, one in grid
 				comparisons in which not all data were copied into the regression
 				arrays and the other in faa recomputation regression where eot
 				was being applied twice
@@ -388,8 +394,8 @@
 	* doc/fig/*.png:	Pictures now in PNG instead of EPS.
 	* doc/makefile:		Use new -P and -Tef options of ps2raster. Changed rules for GMT_Appendix_N.tex.
 
-2007/06/07 mtchandl
-	* mgd77sniffer.c	Updated e77 messages and moved along-track grid offset errors to
+2007/06/07	mtchandl
+	* mgd77sniffer.c:	Updated e77 messages and moved along-track grid offset errors to
 				e77 header rather than having its own error class
 				
 2007-06-06	pwessel
