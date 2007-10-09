@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.153 2007-10-07 07:10:41 guru Exp $
+ *	$Id: pslib.c,v 1.154 2007-10-09 21:14:57 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -954,7 +954,9 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 	 fprintf (PSL->internal.fp, "N %d %d m %d %d L %d %d L %d %d L P clip N\n", ox, oy, ox+nx, oy, ox+nx, oy+ny, ox, oy+ny);
 	 fprintf (PSL->internal.fp, "countdictstack\nmark\n/showpage {} def\n");
 	 if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Start of imported EPS file\n");
+	 fprintf (PSL->internal.fp, "%%%%BeginDocument: psimage.eps\n");
 	 fwrite (buffer, (size_t)1, (size_t)size, PSL->internal.fp);
+	 fprintf (PSL->internal.fp, "%%%%EndDocument\n");
 	 if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of imported EPS file\n");
 	 fprintf (PSL->internal.fp, "cleartomark\ncountdictstack exch sub { end } repeat\nU\n");
 }
@@ -1043,7 +1045,7 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 	 * and eliminating repeating points and intermediate points along straight
 	 * line segments.  The result is the fewest points needed to draw the path
 	 * and still look exactly like the original path. */
-	 
+
 	double old_slope = 1.0e200, new_slope;
 	int i, k, dx, dy, old_dir = 0, new_dir;
 	/* These seeds for old_slope and old_dir make sure that first point gets saved */
@@ -3342,7 +3344,6 @@ unsigned char *ps_load_eps (FILE *fp, struct imageinfo *h)
 	int n, p, llx, lly, trx, try, BLOCKSIZE=4096;
 	unsigned char *buffer;
 
-	n=0;
 	llx=0; lly=0; trx=720; try=720;
 
 	/* Scan for BoundingBox */
