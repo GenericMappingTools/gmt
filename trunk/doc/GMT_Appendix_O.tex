@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_O.tex,v 1.21 2007-02-08 22:32:31 remko Exp $
+%	$Id: GMT_Appendix_O.tex,v 1.22 2007-10-10 15:33:02 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -34,7 +34,7 @@ to these options is the same in both cases and is of the form [{\bf code}]{\it i
 The five algorithms correspond to the five codes below (some codes will appear in both
 upper and lower case; they share the same algorithm but differ in some other ways).
 In what follows, the phrase ``line segment'' is taken to mean either a contour or a line
-to be labelled.  The codes are:
+to be labeled.  The codes are:
 \begin{description}
 \item [d:] Full syntax is {\bf d}{\it dist}[{\bf c$|$i$|$m$|$p}][/{\it frac}].
 Place labels according to the distance measured along the projected line on the map.  Append the
@@ -91,7 +91,7 @@ becomes important.  In the contouring programs, one or more attributes may be ap
 \Opt{A} option using the format +{\it code}[{\it args}] for each attribute, whereas for the line
 plotting programs these attributes are appended to the \Opt{Sq} option following a colon (:)
 that separates the label codes from the placement algorithm.  Several of the attributes do not
-apply to contours so we start off with listing those that apply universially.  These codes are:
+apply to contours so we start off with listing those that apply universally.  These codes are:
 \begin{description}
 \item [+a:]  Controls the angle of the label relative to the angle of the line.  Append {\bf n}
 for normal to the line, give a fixed {\it angle} measured counter-clockwise relative to the
@@ -181,7 +181,7 @@ of the map we request contour labels every 1.5 inches along the lines:
 
 \noindent
 As seen in Figure~\ref{fig:GMT_App_O_1}, the contours are placed rather arbitrary.
-The string of countours for $-40$ to $60$ align well but that is a fortuitous 
+The string of contours for $-40$ to $60$ align well but that is a fortuitous 
 consequence of reaching the 1.5 inch distance from the start at the bottom of the map.
 
 \GMTfig[H]{GMT_App_O_1}{Equidistant contour label placement with \Opt{Gd}, the only algorithm

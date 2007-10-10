@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.102 2007-10-04 12:32:58 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.103 2007-10-10 15:33:02 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -286,7 +286,7 @@ day-of-week) for the ISO calendar.  If no \emph{date} is given we assume the pre
 The optional \emph{clock} string is a 24-hour clock in \emph{hh}[\emph{:mm}[\emph{:ss}[\emph{.xxx}]]] format.
 If no \emph{clock} is given
 it implies 00:00:00, i.e., the start of the specified day.
-Note that not all of the specified enteties need be present in the data.  All calendar date-clock strings are internally represented as double precision seconds since
+Note that not all of the specified entities need be present in the data.  All calendar date-clock strings are internally represented as double precision seconds since
 proleptic Gregorian date Mon Jan 1 00:00:00 0001.  Proleptic means we assume that the modern calendar
 can be extrapolated forward and backward; a year zero is used, and Gregory's reforms\footnote{The Gregorian Calendar
 is a revision of the Julian Calendar which was instituted in a papal bull by Pope Gregory XIII in 1582. The reason for the calendar
@@ -527,7 +527,7 @@ intervals as well as the date at the start of each week:
 \script{GMT_-B_time1}
 
 These commands result in Figure~\ref{fig:GMT_-B_time1}.  Note the leading hyphen in the \textbf{PLOT\_DATE\_FORMAT}
-removes leading zeros from calender items (e.g., 02 becomes 2).
+removes leading zeros from calendar items (e.g., 02 becomes 2).
 \GMTfig[h]{GMT_-B_time1}{Cartesian time axis, example 1.}
 
 The next example shows two different ways to annotate an axis portraying 2 days in July 1969:
@@ -1178,7 +1178,7 @@ desert = 1, forest = 2, etc) it would be meaningless to compute average values (
 1.5 mean?).  For such data a special format of the CPT files are provided.  Here,
 each category is assigned a unique key, a color or pattern, and an optional
 label (usually the category name).  Keys must be monotonically increasing but do not
-need to be consequtive.  The format is
+need to be consecutive.  The format is
 
 \begin{center}
 \begin{tabular}{lll}
@@ -1437,8 +1437,9 @@ to any of the other recognized values (or by appending \emph{=ID}).
 \GMT\ can also read netCDF grid files produced by other software packages, provided the grid files
 satisfy the COARDS and Hadley Centre conventions for netCDF grids. Thus, products created under
 those conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be read directly by \GMT\ and the netCDF grids
-written by \GMT\ can be read by other programs that conform to those conventions. Two such programs are
-\htmladdnormallink{\progname{ncview}}{http://meteora.ucsd.edu/~pierce/ncview_home_page.html}
+written by \GMT\ can be read by other programs that conform to those conventions. Three such programs are
+\htmladdnormallink{\progname{ncview}}{http://meteora.ucsd.edu/~pierce/ncview_home_page.html},
+\htmladdnormallink{\progname{Panoply}}{http://www.giss.nasa.gov/tools/panoply/}
 and
 \htmladdnormallink{\progname{ncBrowse}}{http://www.epic.noaa.gov/java/ncBrowse/}; others can be found
 on the \htmladdnormallink{netCDF website}{http://www.unidata.ucar.edu/software/netcdf/software.html}.
@@ -1470,7 +1471,7 @@ bs & GMT native, C-binary format (short)	\\ \hline
 bi & GMT native, C-binary format (int)		\\ \hline
 bf & GMT native, C-binary format (float)	\\ \hline
 bd & GMT native, C-binary format (double)	\\ \hline \hline
-\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{Miscellaneous gridformats}} \\ \hline \hline
+\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{Miscellaneous grid formats}} \\ \hline \hline
 rb & SUN raster file format (8-bit standard)	\\ \hline
 rf & GEODAS grid format GRD98 (NGDC)		\\ \hline
 sf & Golden Software Surfer format 6 (float)	\\ \hline
@@ -1539,7 +1540,7 @@ and convert it to a \PM 1 range, give the name as
 
 Programs that both read and/or write more than one grid file may
 specify different formats and/or scaling for the files involved.
-The only restriction with the embedded grd specification mechanism
+The only restriction with the embedded grid specification mechanism
 is that no grid files may actually use the ``=''
 character as part of their name (presumably, a small sacrifice). 
 
@@ -1579,7 +1580,7 @@ your \filename{.gmtdefaults4} file.  Then, using the filename
 and the filename \filename{wet.mask} means wet.mask=bm/1/0/0.  For a
 file intended for masking, i.e., the nodes are either 1 or NaN,
 the bit or mask format file may be as small as 1/32 the size of the
-corresponding grd float format file. 
+corresponding grid float format file. 
 \index{grid file!formats|)}
 
 \section{Options for COARDS-compliant netCDF files}

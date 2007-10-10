@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.26 2007-09-19 01:51:30 remko Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.27 2007-10-10 15:33:02 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2007.
@@ -117,7 +117,7 @@ scale\_factor			& Factor to multiply $z$ with (default: 1) \\ \hline
 add\_offset			& Offset to add to scaled $z$ (default: 0) \\ \hline
 actual\_range			& Minimum and maximum $z$ (optional) \\ \hline
 \_FillValue			& Value associated with missing data points; if absent an\\
-(or missing\_value)		& approriate default value is assumed, depending on data type. \\ \hline
+(or missing\_value)		& appropriate default value is assumed, depending on data type. \\ \hline
 \end{tabular} 
 \caption{Attributes of default \gmt\ gridded file in COARDS-compliant netCDF format.}
 \label{tbl:netcdf-format}
@@ -125,7 +125,7 @@ actual\_range			& Minimum and maximum $z$ (optional) \\ \hline
 
 By default, the first 2-dimensional variable in a netCDF file will by read as the $z$ variable
 and the coordinate axes $x$ and $y$ will be determined from the dimensions of the $z$ variable.
-\GMT\ will recognise whether the $y$ (latitude) variable increases or decreases. Both forms of
+\GMT\ will recognize whether the $y$ (latitude) variable increases or decreases. Both forms of
 data storage are handled appropriately.
 
 For more information on the use of COARDS-compliant netCDF files, and on how to load

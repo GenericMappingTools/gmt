@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.82 2007-10-10 14:25:25 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.83 2007-10-10 15:33:02 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -37,7 +37,7 @@ history of the development milestones in the 4.x series.
 \subsection{Overview of \gmt\ 4.2.1 [October-10, 2007]}
 
 Changes in \GMT\ 4.2.1 once again address many structural issues as well as numerous bug fixes.
-System-wide changes include a rewamping of the entire configure/make setup for both regular
+System-wide changes include a revamping of the entire configure/make setup for both regular
 installations and CVS users, an improvement to how the BCR 2-D interpolations for images and grids
 are done by adding B-spline and nearest neighbor as optional interpolants, introduction of
 a new \PS\ Level 2 pattern machinery in \GMTprog{pslib.c}, an updated GSHHS coastline version (which
@@ -105,7 +105,7 @@ Removed restriction that east and west limits can not be
 both negative. This fixed the remaining Hexagone problem.
 \item [\GMTprog{gmt\_nc.c}]: The attribute \texttt{actual\_range} was erroneously stored in grid units
 in stead of actual units. The difference is only relevant when storing scaled integers. A backward
-compatibility for grids written with previous versions is build in. Also the \GMT\ version number is added
+compatibility for grids written with previous versions is built in. Also the \GMT\ version number is added
 to the global attributes and text attributes are truncated to their proper length.
 \item [\GMTprog{gmt\_plot.c}]: Failed to activate ddd.mm.xxx format for maps.  Oblique tickmarks sometimes
 were missing for latitudes.
