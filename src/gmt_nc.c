@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.66 2007-10-10 14:14:09 remko Exp $
+ *	$Id: gmt_nc.c,v 1.67 2007-10-10 18:57:58 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,7 +43,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #define GMT_WITH_NO_PS
-#define GMT_CDF_CONVENTION    "COARDS"	/* grd files are COARDS-compliant */
+#define GMT_CDF_CONVENTION    "COARDS, CF-1.0"	/* grd files are COARDS-compliant */
 #include "gmt.h"
 
 EXTERN_MSC int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
