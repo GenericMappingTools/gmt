@@ -1,11 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.124 2007-10-10 01:03:42 guru Exp $
+	$Id: ChangeLog,v 1.125 2007-10-10 14:25:25 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2007-10-10
 	* tar 4.2.1 made and released via email
 -----------------------------------------------------------------------------------------
+
+2007-10-10
+	* gmt_nc.c:		Properly write out actual_range in actual units, not grid units.
+				Backward compatibility for scaled integers build in.
+				Store GMT_version and truncate global text attributes to proper length.
 
 2007-10-09	remko
 	* pslib.c:		Enclose EPS inclusion between %%BeginDocument: and %%EndDocument
