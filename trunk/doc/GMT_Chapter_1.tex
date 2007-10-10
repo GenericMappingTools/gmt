@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.81 2007-10-10 01:03:42 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.82 2007-10-10 14:25:25 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -103,6 +103,10 @@ Great circle intersection did not select correct vector sign so
 points 180 degrees from a line could pass as close in \GMTprog{gmtselect}.
 Removed restriction that east and west limits can not be
 both negative. This fixed the remaining Hexagone problem.
+\item [\GMTprog{gmt\_nc.c}]: The attribute \texttt{actual\_range} was erroneously stored in grid units
+in stead of actual units. The difference is only relevant when storing scaled integers. A backward
+compatibility for grids written with previous versions is build in. Also the \GMT\ version number is added
+to the global attributes and text attributes are truncated to their proper length.
 \item [\GMTprog{gmt\_plot.c}]: Failed to activate ddd.mm.xxx format for maps.  Oblique tickmarks sometimes
 were missing for latitudes.
 \item [\GMTprog{gmt\_proj.c}]: \Opt{JS} inverse did not apply quadrant check.
