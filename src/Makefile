@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.17 2007-10-03 14:24:17 remko Exp $
+#	$Id: Makefile,v 1.18 2007-10-10 16:53:32 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -82,16 +82,14 @@ init:		gmtmacros gmt_notposix.h GMT
 gmtmacros:
 		@if [ ! -s makegmt.macros ]; then \
 			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
-			exit; \
+			exit 1; \
 		fi
 
 gmt_notposix.h:	gmt_notposix.h.in
-		echo "Warning: You probably should rerun configure manually instead"
-		cd ..; ./configure
+		@echo "You must first run configure in the main GMT directory"; exit 1
 
 GMT:		GMT.in
-		echo "Warning: You probably should rerun configure manually instead"
-		cd ..; ./configure
+		@echo "You must first run configure in the main GMT directory"; exit 1
 
 install:	all
 		$(INSTALL) -d $(bindir)
