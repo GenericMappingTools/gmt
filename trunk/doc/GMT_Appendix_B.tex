@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.27 2007-10-10 15:33:02 remko Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.28 2007-10-10 19:09:55 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2007.
@@ -83,6 +83,7 @@ to swap the byte-order on either input or output you must use upper case
 \subsection{NetCDF files}
 \index{grid file!formats!netCDF|(}
 \index{grid file!formats!COARDS|(}
+\index{grid file!formats!CF-1.0|(}
 
 By default, \GMT\ stores 2-D grids as COARDS-compliant netCDF files.
 COARDS (which stands for Cooperative Ocean/Atmosphere Research Data Service) is a convention used by
@@ -90,6 +91,10 @@ many agencies distributing gridded data for ocean and atmosphere research. Stick
 this convention allows \GMT\ to read gridded data provided by other institutes
 and other programs. Conversely, other general domain programs
 will be able to read grids created by \GMT.
+COARDS is a subset of a more extensive convention for netCDF data called CF-1.0 (Climate and
+Forecast, version 1.0). Hence, \GMT\ grids are also automatically CF-1.0-compliant.
+However, since CF-1.0 has more general application than COARDS, not all CF-1.0 compliant netCDF files
+can be read by \GMT.
 
 The netCDF grid file in \GMT\ has several attributes (See Table~\ref{tbl:netcdf-format})
 to describe the content. The routine
@@ -101,7 +106,7 @@ from the standards used by \GMT\ can also be read.
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c}{\emph{Attribute}}   &       \multicolumn{1}{|c|}{\emph{Description}}        \\ \hline
 \multicolumn{2}{|c|}{\emph{Global attributes}} \\ \hline
-Conventions			& COARDS (optional) \\ \hline
+Conventions			& COARDS, CF-1.0 (optional) \\ \hline
 title				& Title (optional) \\ \hline
 source				& How file was created (optional) \\ \hline
 node\_offset			& 0 for grid line registration (default), 1 for pixel registration \\ \hline
@@ -144,6 +149,7 @@ for more information.
 
 \index{grid file!formats!netCDF|)}
 \index{grid file!formats!COARDS|)}
+\index{grid file!formats!CF-1.0|)}
 
 \subsection{Grid line and Pixel registration} 
 \index{grid file!registration|(}
