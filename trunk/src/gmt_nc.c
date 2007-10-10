@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.65 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_nc.c,v 1.66 2007-10-10 14:14:09 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -120,7 +120,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	int i, j, err;
 	double dummy[2], *xy = VNULL;
 	char varname[GRD_UNIT_LEN];
-	nc_type z_type;
+	nc_type z_type, i_type;
 	double t_value[3];
 
 	/* Dimension ids, variable ids, etc.. */
@@ -293,13 +293,24 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		    nc_get_att_double (ncid, z_id, "missing_value", &header->nan_value);
 		if (nc_get_att_double (ncid, z_id, "actual_range", dummy) &&
 		    nc_get_att_double (ncid, z_id, "valid_range", dummy)) dummy[0] = 0, dummy [1] = 0;
-		header->z_min = dummy[0], header->z_max = dummy[1];
+
+		/* Limits need to be converted from actual to internal grid units.
+		   In GMT <= 4.2.0 actual_range was erroneously stored in grid units. This
+		   if-statement should catch those cases and leaves the in grid units.
+		*/
+		if (!nc_inq_atttype (ncid, z_id, "actual_range", &i_type) && (i_type == NC_SHORT || i_type == NC_INT) && z_type == i_type)
+			header->z_min = dummy[0], header->z_max = dummy[1];
+		else {
+			header->z_min = (dummy[0] - header->z_add_offset) / header->z_scale_factor;
+			header->z_max = (dummy[1] - header->z_add_offset) / header->z_scale_factor;
+		}
 
 		/* Get grid buffer */
 		item[0] = 0;
 		for (i = 0; i < ndims-2; i++) {
 			if (header->t_index[i] > -1) { /* Do nothing */ }
-			else if (GMT_is_dnan(t_value[i])) { header->t_index[i] = 0; }
+			else if (GMT_is_dnan(t_value[i]))
+				header->t_index[i] = 0;
 			else {
 				item[1] = lens[i]-1;
 				if (nc_get_att_double (ncid, ids[i], "actual_range", dummy)) {
@@ -312,10 +323,16 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	}
 	else {
 		/* Store global attributes */
-		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen (GMT_CDF_CONVENTION) + 1, (const char *) GMT_CDF_CONVENTION));
-		if (header->title[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN, header->title));
-		if (header->command[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", GRD_COMMAND_LEN, header->command));
-		if (header->remark[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", GRD_REMARK_LEN, header->remark));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_CDF_CONVENTION), (const char *) GMT_CDF_CONVENTION));
+		if (header->title[0]) {
+			GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
+		}
+		else {
+			GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->name), header->name));
+		}
+		if (header->command[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(header->command), header->command));
+		if (header->remark[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
 		GMT_err_trap (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, 1, &header->node_offset));
 
 		/* Define x variable */
@@ -340,11 +357,16 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 			i = irint (header->nan_value);
 			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1, &i));
 		}
-		if (header->z_min <= header->z_max)
-			dummy[0] = header->z_min, dummy[1] = header->z_max;
+
+		/* Limits need to be stored in actual, not internal grid, units */
+		if (header->z_min <= header->z_max) {
+			dummy[0] = header->z_min * header->z_scale_factor + header->z_add_offset;
+			dummy[1] = header->z_max * header->z_scale_factor + header->z_add_offset;
+		}
 		else
 			dummy[0] = 0.0, dummy[1] = 0.0;
-		GMT_err_trap (nc_put_att_double (ncid, z_id, "actual_range", z_type, 2, dummy));
+		GMT_err_trap (nc_put_att_double (ncid, z_id, "actual_range", NC_DOUBLE, 2, dummy));
+		GMT_err_trap (nc_put_att_text (header->ncid, header->z_id, "coordinates", 3, "x y"));
 
 		/* Store values along x and y axes */
 		GMT_err_trap (nc_enddef (ncid));
@@ -585,13 +607,18 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	GMT_free ((void *)k);
 
-	if (header->z_min <= header->z_max)
-		limit[0] = header->z_min, limit[1] = header->z_max;
+	/* Limits need to be written in actual, not internal grid, units */
+
+	if (header->z_min <= header->z_max) {
+		limit[0] = header->z_min * header->z_scale_factor + header->z_add_offset;
+		limit[1] = header->z_max * header->z_scale_factor + header->z_add_offset;
+	}
 	else {
 		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, header->name);
 		limit[0] = 0.0, limit[1] = 0.0;
 	}
-	GMT_err_trap (nc_put_att_double (header->ncid, header->z_id, "actual_range", z_type, 2, limit));
+	GMT_err_trap (nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, 2, limit));
+	GMT_err_trap (nc_put_att_text (header->ncid, header->z_id, "coordinates", 3, "x y"));
 
 	/* Close grid */
 
@@ -643,12 +670,12 @@ void GMT_nc_put_units (int ncid, int varid, char *name_units)
 	while (name[i] && name[i] != '[') i++;
 	if (name[i]) {
 		strcpy (units, &name[i+1]);
-		name[i]='\0';
-		if (name[i-1] == ' ') name[i-1]='\0';
+		name[i] = '\0';
+		if (name[i-1] == ' ') name[i-1] = '\0';
 	}
 	i = 0;
 	while (units[i] && units[i] != ']') i++;
-	if (units[i]) units[i]='\0';
+	if (units[i]) units[i] = '\0';
 	if (name[0]) nc_put_att_text (ncid, varid, "long_name", strlen(name), name);
 	if (units[0]) nc_put_att_text (ncid, varid, "units", strlen(units), units);
 }
