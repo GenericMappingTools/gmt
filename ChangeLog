@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.125 2007-10-10 14:25:25 remko Exp $
+	$Id: ChangeLog,v 1.126 2007-10-10 15:33:02 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -8,8 +8,9 @@
 -----------------------------------------------------------------------------------------
 
 2007-10-10
+	* doc/*.tex:		Fixed spelling errors.
 	* gmt_nc.c:		Properly write out actual_range in actual units, not grid units.
-				Backward compatibility for scaled integers build in.
+				Backward compatibility for scaled integers built in.
 				Store GMT_version and truncate global text attributes to proper length.
 
 2007-10-09	remko
