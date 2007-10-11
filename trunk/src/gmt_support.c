@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.323 2007-10-07 21:52:22 guru Exp $
+ *	$Id: gmt_support.c,v 1.324 2007-10-11 22:05:15 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8192,11 +8192,11 @@ void GMT_fourt (float *data, int *nn, int ndim, int ksign, int iform, float *wor
 	/* Real(0) or complex(1) data */
 	/* Work array */
 {
-	int fourt_ (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work);
-	(void) fourt_ (data, nn, &ndim, &ksign, &iform, work);
+	int BRENNER_fourt_ (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work);
+	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &iform, work);
 }
 
-int fourt_ (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work)
+int BRENNER_fourt_ (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work)
 {
 
     /* System generated locals */
