@@ -1,0 +1,36 @@
+Package: gshhs-hires
+Version: 1.9
+Revision: 1
+Source:  ftp://ftp.soest.hawaii.edu/gmt/4/GSHHS%v_high.tar.bz2
+Source2: ftp://ftp.soest.hawaii.edu/gmt/4/GSHHS%v_full.tar.bz2
+Source-MD5:  de50a3eab394393a7246f293ac0c840a
+Source2-MD5: 2d3064c3fa2f7a4c3a2603dbb9885fff
+Replaces: gmt-coast
+SourceDirectory: .
+CompileScript: echo "Moving files..."
+InstallScript: <<
+ mkdir -p %i/share/gmt
+ mv share/coast %i/share/gmt
+<<
+Description: GSHHS shorelines, rivers, borders (high res)
+DescDetail: <<
+ This package provides two high-resolution versions of the GSHHS
+ (Global Self-consistant Hierarchical High-resolution Shorelines)
+ data base: high and full resolution.
+ GSHHS combines the World Vector Shoreline and World Data Base II
+ products into a single quality-checked hierarchical data base at
+ 5 resolutions.
+
+ Although these shorelines are distributed as part of the Generic Mapping
+ Tools (GMT), they can be used stand-alone or with other applications
+ that can read NetCDF files.
+<<
+DescPort: <<
+ These high-resolution coastlines are recommended for the use with the
+ gmt package (but not essential).
+ Standard coastlines can be found in the gshhs-lores package.
+<<
+License: GPL
+DocFiles: COPYING README.gshhs
+Maintainer: Jeffrey Whitaker <jswhit@fastmail.fm>
+Homepage: http://gmt.soest.hawaii.edu/
