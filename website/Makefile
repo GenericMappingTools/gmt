@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.9 2007-10-05 04:29:13 guru Exp $
+#  $Id: Makefile,v 1.10 2007-10-11 22:05:16 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -157,6 +157,7 @@ update-ftp-live:	netcdf
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
+	ssh $(FTPSERVER) rm -rf $(LIVEFTPDIR)/4
 	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/4
 	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)/4
