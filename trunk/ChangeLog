@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.126 2007-10-10 15:33:02 remko Exp $
+	$Id: ChangeLog,v 1.127 2007-10-15 03:56:34 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-10-14	pwessel
+	* gmt_map.c:		Round-off could mess mapping of west/east to xmin/xmax
+				Now has a safety valve for checking that this does not occur
 -----------------------------------------------------------------------------------------
 2007-10-10
 	* tar 4.2.1 made and released via email
