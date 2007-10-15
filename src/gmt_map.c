@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.158 2007-10-04 20:18:42 remko Exp $
+ *	$Id: gmt_map.c,v 1.159 2007-10-15 03:56:34 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5520,6 +5520,10 @@ void GMT_map_setinfo (double xmin, double xmax, double ymin, double ymax, double
 {	/* Set [and rescale] parameters */
 	double factor = 1.0, w, h;
 
+	if (GMT_world_map && GMT_IS_ZERO (xmax - xmin)) {	/* Safety valve for cases when w & e both project to the same side due to round-off */
+		xmax = MAX (fabs (xmin), fabs (xmax));
+		xmin =-xmax;
+	}
 	w = (xmax - xmin) * project_info.x_scale;
 	h = (ymax - ymin) * project_info.y_scale;
 
