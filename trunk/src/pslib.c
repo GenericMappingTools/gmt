@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.154 2007-10-09 21:14:57 remko Exp $
+ *	$Id: pslib.c,v 1.155 2007-10-16 18:05:20 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1316,10 +1316,12 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	PSL->init.origin[0] = xoff;
 	PSL->init.magnify[1] = yscl;
 	PSL->init.origin[1] = yoff;
+	/* Initialize global variables */
 	strcpy (PSL->current.bw_format, "%.3lg ");			/* Default format used for grayshade value */
 	strcpy (PSL->current.rgb_format, "%.3lg %.3lg %.3lg ");		/* Same, for RGB triplets */
 	strcpy (PSL->current.hsv_format, "%.3lg %.3lg %.3lg ");		/* Same, for HSV triplets */
 	strcpy (PSL->current.cmyk_format, "%.3lg %.3lg %.3lg %.3lg ");	/* Same, for CMYK quadruples */
+	memcpy ((void *)PSL->internal.paint_code, (void *)paint_code, 12);
 
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
@@ -1447,9 +1449,6 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps_setpaint (no_rgb);
 	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (PSL->internal.fp, "%g %g T\n", xoff*PSL->internal.scale, yoff*PSL->internal.scale);
 
-	/* Initialize global variables */
-
-	memcpy ((void *)PSL->internal.paint_code, (void *)paint_code, 12);
 
 	return (0);
 }
