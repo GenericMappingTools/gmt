@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.127 2007-10-15 03:56:34 guru Exp $
+	$Id: ChangeLog,v 1.128 2007-10-16 18:05:20 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-10-15	pwessel
+	* pslib.c:		Used internal point_code before it was initialized.  This
+				caused PAGE_COLOR not to work (wrote <NUL> rather than C)
 
 2007-10-14	pwessel
 	* gmt_map.c:		Round-off could mess mapping of west/east to xmin/xmax
