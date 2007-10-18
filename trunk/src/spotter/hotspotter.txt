@@ -6,7 +6,7 @@ hotspotter \- Create CVA image from seamount flowlines
 \fBhotspotter\fP [\fIinfile(s)\fP] OPT(E)\fIstage_file\fP 
 OPT(G)\fICVAgrid\fP GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(C) ] [ OPT(D)\fIfactor\fP ] [ OPT(F) ] 
-[ GMT_H_OPT ] [ OPT(N)\fIupper_age\fP ] 
+[ GMT_H_OPT ] [ OPT(N)\fIupper_age\fP ] [ OPT(S) ] 
 [ OPT(T) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
 \fBhotspotter\fP reads (longitude, latitude, amplitude, radius, age) records
@@ -55,6 +55,9 @@ Force pixel registration [Default is grid registration].
 .TP
 .B \-N
 Set the upper age to assign seamounts whose crustal age is unknown (i.e. NaN) [no upper age].
+.TP
+.B \-S
+Normalize the resulting CVA grid to percentages of the CVA maximum.
 .TP
 .B \-T
 Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation].
