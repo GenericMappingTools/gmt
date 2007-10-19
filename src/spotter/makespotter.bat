@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: makespotter.bat,v 1.2 2001-12-24 18:13:26 pwessel Exp $
+REM	$Id: makespotter.bat,v 1.3 2007-10-19 23:40:20 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2001 by P. Wessel and W. H. F. Smith
@@ -22,7 +22,7 @@ REM This extremely lame DOS batch file will compile
 REM the GMT supplemental package SPOTTER under WIN32 using
 REM Microsoft Visual C/C++ tools.
 REM
-REM Author: Paul Wessel, 29-DEC-1999
+REM Author: Paul Wessel, 18-OCT-2007
 REM ----------------------------------------------------
 REM
 REM How to make and install SPOTTER under Win95/98/NT:
@@ -50,6 +50,7 @@ REM ----------------------------------------------------
 ECHO STEP 2: Compile and link programs
 REM ----------------------------------------------------
 CL %COPT% backtracker.c spotter.lib %LIBS%
+CL %COPT% grdrotater.c  spotter.lib %LIBS%
 CL %COPT% grdspotter.c  spotter.lib %LIBS%
 CL %COPT% hotspotter.c  spotter.lib %LIBS%
 CL %COPT% originator.c  spotter.lib %LIBS%
