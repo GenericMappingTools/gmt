@@ -156,6 +156,8 @@ src/spotter/rotconverter.1
 src/spotter/rotconverter.c
 src/spotter/grdrotater.c
 src/spotter/grdrotater.1
+src/spotter/grdspotter.c
+src/spotter/grdspotter.1
 src/spotter/originator.1
 src/spotter/libspotter.c
 src/spotter/makefile
@@ -275,6 +277,7 @@ www/gmt/doc/html/backtracker.html
 www/gmt/doc/html/hotspotter.html
 www/gmt/doc/html/rotconverter.html
 www/gmt/doc/html/grdrotater.html
+www/gmt/doc/html/grdspotter.html
 www/gmt/doc/html/originator.html
 www/gmt/doc/html/x2sys_binlist.html
 www/gmt/doc/html/x2sys_datalist.html
