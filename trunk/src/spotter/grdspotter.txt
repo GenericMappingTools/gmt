@@ -1,0 +1,105 @@
+.TH GRDSPOTTER 1 DATE VERSION "Generic Mapping Tools"
+#include "common_options.txt"
+.SH NAME
+GRDSPOTTER \- Create CVA image directly from gravity or bathymetry grids 
+.SH SYNOPSIS
+\fBGRDSPOTTER\fP [\fIgrdfile\fP] OPT(E)\fIstage_file\fP 
+OPT(G)\fICVAgrid\fP GMT_I_OPT 
+GMT_Rgeo_OPT [ OPT(A)\fIagegrid\fP ] [ OPT(B)\fIn_try\fP ] [ OPT(C) ] [ OPT(D)\fIDIgrid\fP ] [ OPT(F) ] 
+[ OPT(N)\fIupper_age\fP ] [ OPT(P)\fIPAgrid\fP ] [ OPT(Q)\fIIDinfo\fP ] [ OPT(S) ] 
+[ OPT(T) ] [ GMT_V_OPT ] [ OPT(Z)\fIz_min\fP[/\fIz_max\fP[/\fIz_inc\fP]] ]
+.SH DESCRIPTION
+\fBgrdspotter\fP reads a grid file with residual bathymetry or gravity
+and calculates flowlines using the  specified stage pole (Euler) rotations.
+These flowlines are convolved with the volume of the prism represented by
+each grid node and added up to give a Cumulative Volcano Amplitude grid (CVA).
+.br
+	No space between the option flag and the associated arguments.  Use upper case for the
+option flags and lower case for modifiers.
+.TP
+\fIgrdfile\fP
+Data grid to be processed. 
+.TP
+.B \-E
+Give file with stage poles and opening angles.  This file must contain
+one record for each stage; each record must be of the following format:
+.br
+.sp
+	lon lat tstart tstop ccw-angle
+.br
+.sp
+where tstart and tstop are in Ma and the rest is in degrees.  The oldest stage
+must be listed first.  tstart (tstop) is the age of the old (young) end of the
+stage.  Blank lines and records whose first column contains # will be ignored.
+.TP
+.B \-G
+Specify name for output grid file.
+#include "explain_-I.txt"
+#include "explain_-Rgeo.txt"
+.SH OPTIONS
+.TP
+.B \-A
+Supply a crustal age grid that is co-ergistered with the input data grid.  These ages
+become the upper ages to use when constructing flowlines [Default extent flowlines back
+to oldest age].
+.TP
+.B \-B
+Get \fIn_try\fP bootstrap estimates of the maximum CVA location; the results are written
+to stdout [Default is no bootstrapping]
+.TP
+.B \-C
+Expect Total Reconstruction Poles (Finite Poles) rather than Backward Stage Poles [Default]
+File format is similar to the stage pole format except the youngest rotation must be listed
+first and that the tstart column is optional (assumed to be 0 Ma).
+.TP
+.B \-D
+Use flowlines to determine the max CVA encountered along each flowline and create a Data
+Importance (DI) grid with these values at the originating nodes.
+.TP
+.B \-F
+Force pixel registration [Default is grid registration].
+TP
+.B \-L
+Supply a co-ergistered grid with seamount chain IDs for each nodes.
+.TP
+.B \-N
+Set the upper age to assign seamounts whose crustal age is unknown (i.e. NaN) [no upper age].
+.TP
+.B \-P
+Use flowlines to determine the flowline age for each node and create a Predicted
+Age (PA) grid with these values at the originating nodes.
+.TP
+.B \-Q
+Either give a single ID to use or a filename of a file with list of IDs [Default uses all IDs].
+Each line would be TAG ID [w e s n] (the w/e/s/n zoom box is optional).
+.TP
+.B \-S
+Normalize the resulting CVA grid to percentages of the CVA maximum.
+.TP
+.B \-T
+Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation].
+#include "explain_-V.txt"
+.TP
+.B \-Z
+Ignore nodes with z-values lower than \fIz_min\fP [0] and optionally larger than \fIz_max\fP [Inf].
+Give \fIz_min/z_max/z_inc\fP to make separate CVA grids for each \fIz\fP-slice {Default makes one CVA grid].
+.SH EXAMPLES
+To create a CVA image from the Pacific topography grid Pac_res_topo.grd,
+using the DC85.d Euler poles, and only output a grid for the specified domain, run
+.br
+.sp
+\fBgrdspotter\fP Pac_res_topo.grd \fB\-E\fPDC85.d \fB\-G\fPCVA.grd \fB\-R\fP190/220/15/25 \fB\-I\fP2\fBm \-N\fP145 \fB\-T \-V\fP
+.br
+.sp
+This file can then be plotted with \fBgrdimage\fP.
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR grdimage (1),
+.IR project (1),
+.IR mapproject (1),
+.IR backtracker (1),
+.IR hotspotter (1),
+.IR originator (1)
+.SH REFERENCES
+Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
+.br

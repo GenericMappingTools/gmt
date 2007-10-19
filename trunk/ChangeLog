@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.129 2007-10-18 17:01:59 guru Exp $
+	$Id: ChangeLog,v 1.130 2007-10-19 23:40:20 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-10-18	pwessel
 	* spotter/hotspotter.c:	Added -S option to normalize output to percent of CVA maximum
+	* spotter/grdspotter.c:	New program, like hotspotter but using gridded data as input
 
 2007-10-15	pwessel
 	* pslib.c:		Used internal point_code before it was initialized.  This

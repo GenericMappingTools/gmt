@@ -1,4 +1,4 @@
-	$Id: README.spotter,v 1.6 2007-09-24 00:38:02 remko Exp $
+	$Id: README.spotter,v 1.7 2007-10-19 23:40:20 guru Exp $
 
 SPOTTER Supplemental Package
 Distributed under the GNU Public License (see file ../COPYING)
@@ -6,14 +6,16 @@ Distributed under the GNU Public License (see file ../COPYING)
 ------------------------------------------------------
 Author:		Paul Wessel (pwessel@hawaii.edu)
 		SOEST, University of Hawaii
-Date:		December 02, 2001
-Version:	1.1
+Date:		October 18, 2007
+Version:	2.0
 ------------------------------------------------------
 
 This directory contains:
 
 README.spotter		: This document
 backtracker.c		: backtracker C program code
+grdrotater.c		: grdrotater C program code
+grdspotter.c		: grdspotter C program code
 hotspotter.c		: hotspotter C program code
 originator.c		: originator C program code
 rotconverter.c		: rotconverter C program code
@@ -23,6 +25,10 @@ makefile		: Unix makefile for SPOTTER package
 makespotter.bat		: DOS batch file for compiling SPOTTER
 backtracker.html	: backtracker Web documentation
 backtracker.1		: backtracker UNIX man file
+grdrotater.html		: grdrotater Web documentation
+grdrotater.1		: grdrotater UNIX man file
+grdspotter.html		: grdspotter Web documentation
+grdspotter.1		: grdspotter UNIX man file
 hotspotter.html		: hotspotter Web documentation
 hotspotter.1		: hotspotter UNIX man file
 originator.html		: originator Web documentation
@@ -41,11 +47,13 @@ can be downloaded from:
 
 http://www.soest.hawaii.edu/wessel/papers/1997/WL_seamounts_1997.d
 
-This package contains four programs that may be useful
+This package contains six programs that may be useful
 to people who work with Plate Tectonic Reconstructions.
 The four programs are
 
 	backtracker  - Move points back/forth in time
+	grdrotater   - Reconstruct data grids using finite rotations
+	grdspotter   - Create CVA grids using grids of bathy/faa
 	hotspotter   - Create CVA grids using seamount locations
 	originator   - Associate seamounts with hotspot point sources
 	rotconverter - Manipulate finite and stage rotations
