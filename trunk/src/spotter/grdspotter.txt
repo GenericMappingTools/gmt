@@ -58,9 +58,9 @@ Importance (DI) grid with these values at the originating nodes.
 .TP
 .B \-F
 Force pixel registration [Default is grid registration].
-TP
+.TP
 .B \-L
-Supply a co-ergistered grid with seamount chain IDs for each nodes.
+Supply a co-registered grid with seamount chain IDs for each nodes.
 .TP
 .B \-N
 Set the upper age to assign seamounts whose crustal age is unknown (i.e. NaN) [no upper age].

@@ -1,12 +1,12 @@
 echo OFF
 REM
-REM	$Id: spotter.bat,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+REM	$Id: spotter.bat,v 1.2 2007-10-19 23:40:20 guru Exp $
 REM
 REM	Examples of how to use the SPOTTER package
 REM	DOS version
 REM
 REM	Paul Wessel
-REM	29-DEC-1999
+REM	18-OCT-2007
 REM
 
 REM Rotation poles to use
