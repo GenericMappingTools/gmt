@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.205 2007-10-02 02:27:51 guru Exp $
+ *	$Id: gmt_plot.c,v 1.206 2007-10-22 16:08:15 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1537,7 +1537,7 @@ BOOLEAN GMT_annot_too_crowded (double x, double y, int side) {
 	GMT_n_annotations[side]++;
 
 	if (GMT_n_annotations[side] == GMT_alloc_annotations[side]) {
-		GMT_alloc_annotations[side] += GMT_SMALL_CHUNK;
+		GMT_alloc_annotations[side] <<= 1;
 		GMT_x_annotation[side] = (double *) GMT_memory ((void *)GMT_x_annotation[side], (size_t)GMT_alloc_annotations[side], sizeof (double), "GMT_annot_too_crowded");
 		GMT_y_annotation[side] = (double *) GMT_memory ((void *)GMT_y_annotation[side], (size_t)GMT_alloc_annotations[side], sizeof (double), "GMT_annot_too_crowded");
 	}
@@ -3122,7 +3122,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 			case GMT_ACTION_DRAW:
 				flush = TRUE;
 				if (n >= n_alloc) {
-					n_alloc += GMT_SMALL_CHUNK;
+					n_alloc <<= 1;
 					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
 					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
 				}
@@ -3136,7 +3136,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				na = GMT_get_arc (x, y, 0.5 * s->p[0] * size, s->p[1], s->p[2], &xp, &yp);
 				for (i = 0; i < na; i++) {
 					if (n >= n_alloc) {
-						n_alloc += GMT_SMALL_CHUNK;
+						n_alloc <<= 1;
 						xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
 						yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
 					}

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.39 2007-08-11 04:22:07 guru Exp $
+ *	$Id: libspotter.c,v 1.40 2007-10-22 16:08:16 guru Exp $
  *
  *   Copyright (c) 1999-2007 by P. Wessel
  *
@@ -140,7 +140,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 		e[i].lat_r = e[i].lat * D2R;
 		i++;
 		if (i == n_alloc) {
-			n_alloc += GMT_SMALL_CHUNK;
+			n_alloc <<= 1;
 			e = (struct EULER *) GMT_memory ((void *)e, n_alloc, sizeof (struct EULER), "libspotter");
 		}
 	}
@@ -218,7 +218,7 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 		if (path) {
 			start_k = kk++;
 			if (kk == n_alloc) {
-				n_alloc += BIG_CHUNK;
+				n_alloc <<= 1;
 				track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 			}
 		}
@@ -273,18 +273,18 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 				}
 				track[kk++] = xp[i];
 				if (kk == n_alloc) {
-					n_alloc += BIG_CHUNK;
+					n_alloc <<= 1;
 					track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 				}
 				track[kk++] = yp[i];
 				if (kk == n_alloc) {
-					n_alloc += BIG_CHUNK;
+					n_alloc <<= 1;
 					track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 				}
 				if (do_time) {
 					track[kk++] = (do_time == 2) ? (double)(ns - j) : t;
 					if (kk == n_alloc) {
-						n_alloc += BIG_CHUNK;
+						n_alloc <<= 1;
 						track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 					}
 				}
@@ -301,18 +301,18 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 					if (xx >= TWO_PI) xx -= TWO_PI;
 					track[kk++] = xx;
 					if (kk == n_alloc) {
-						n_alloc += BIG_CHUNK;
+						n_alloc <<= 1;
 						track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 					}
 					track[kk++] = yy;
 					if (kk == n_alloc) {
-						n_alloc += BIG_CHUNK;
+						n_alloc <<= 1;
 						track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 					}
 					if (do_time) {
 						track[kk++] = (do_time == 2) ? (double)(ns - j) : t - k * tt;
 						if (kk == n_alloc) {
-							n_alloc += BIG_CHUNK;
+							n_alloc <<= 1;
 							track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 						}
 					}
@@ -325,18 +325,18 @@ int spotter_backtrack (double xp[], double yp[], double tp[], int np, struct EUL
 		if (path) {
 			track[kk++] = xp[i];
 			if (kk == n_alloc) {
-				n_alloc += BIG_CHUNK;
+				n_alloc <<= 1;
 				track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 			}
 			track[kk++] = yp[i];
 			if (kk == n_alloc) {
-				n_alloc += BIG_CHUNK;
+				n_alloc <<= 1;
 				track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 			}
 			if (do_time) {
 				track[kk++] = (do_time == 2) ? (double)(ns - j) : t;
 				if (kk == n_alloc) {
-					n_alloc += BIG_CHUNK;
+					n_alloc <<= 1;
 					track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 				}
 			}
@@ -404,7 +404,7 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 /* wesn:	if do_time >= 10, only to track within the given box */
 /* c;		Pointer to return track vector */
 {
-	int i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn, n_alloc = 2 * GMT_CHUNK, sideA[2], sideB[2];
+	int i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn, n_alloc = BIG_CHUNK, sideA[2], sideB[2];
 	BOOLEAN path, bend, go = FALSE, box_check;
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, *track = VNULL;
 	double s_lat, c_lat, s_lon, c_lon, cc, ss, cs, i_nd, next_x, next_y;
@@ -432,7 +432,7 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 		if (path) {
 			start_k = kk++;
 			if (kk == n_alloc) {
-				n_alloc += BIG_CHUNK;
+				n_alloc <<= 1;
 				track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 			}
 		}
@@ -487,18 +487,18 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 				}
 				track[kk++] = xp[i];
 				if (kk == n_alloc) {
-					n_alloc += BIG_CHUNK;
+					n_alloc <<= 1;
 					track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 				}
 				track[kk++] = yp[i];
 				if (kk == n_alloc) {
-					n_alloc += BIG_CHUNK;
+					n_alloc <<= 1;
 					track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 				}
 				if (do_time) {
 					track[kk++] = (do_time == 2) ? (double)(ns - j) : t;
 					if (kk == n_alloc) {
-						n_alloc += BIG_CHUNK;
+						n_alloc <<= 1;
 						track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 					}
 				}
@@ -514,18 +514,18 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 					if (xx >= TWO_PI) xx -= TWO_PI;
 					track[kk++] = xx;
 					if (kk == n_alloc) {
-						n_alloc += BIG_CHUNK;
+						n_alloc <<= 1;
 						track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 					}
 					track[kk++] = yy;
 					if (kk == n_alloc) {
-						n_alloc += BIG_CHUNK;
+						n_alloc <<= 1;
 						track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 					}
 					if (do_time) {
 						track[kk++] = (do_time == 2) ? (double)(ns - j) : t + k * tt;
 						if (kk == n_alloc) {
-							n_alloc += BIG_CHUNK;
+							n_alloc <<= 1;
 							track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 						}
 					}
@@ -539,18 +539,18 @@ int spotter_forthtrack (double xp[], double yp[], double tp[], int np, struct EU
 		if (path) {
 			track[kk++] = xp[i];
 			if (kk == n_alloc) {
-				n_alloc += BIG_CHUNK;
+				n_alloc <<= 1;
 				track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 			}
 			track[kk++] = yp[i];
 			if (kk == n_alloc) {
-				n_alloc += BIG_CHUNK;
+				n_alloc <<= 1;
 				track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 			}
 			if (do_time) {
 				track[kk++] = (do_time == 2) ? (double)(ns - j) : t;
 				if (kk == n_alloc) {
-					n_alloc += BIG_CHUNK;
+					n_alloc <<= 1;
 					track = (double *) GMT_memory ((void *)track, (size_t)n_alloc, sizeof (double), "libspotter");
 				}
 			}

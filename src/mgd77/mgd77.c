@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.161 2007-10-05 18:18:04 guru Exp $
+ *	$Id: mgd77.c,v 1.162 2007-10-22 16:08:16 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2452,7 +2452,7 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 		strcpy (F->MGD77_datadir[F->n_MGD77_paths], line);
 		F->n_MGD77_paths++;
 		if (F->n_MGD77_paths == (int)n_alloc) {
-			n_alloc += GMT_SMALL_CHUNK;
+			n_alloc <<= 1;
 			F->MGD77_datadir = (char **) GMT_memory ((void *)F->MGD77_datadir, n_alloc, sizeof (char *), "MGD77_path_init");
 		}
 	}

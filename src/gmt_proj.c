@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.22 2007-09-26 15:28:53 remko Exp $
+ *	$Id: gmt_proj.c,v 1.23 2007-10-22 16:08:15 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -107,16 +107,15 @@ void GMT_translin (double forw, double *inv)	/* Linear forward */
 
 void GMT_translind (double forw, double *inv)	/* Linear forward, but with degrees*/
 {
-	while ((forw - project_info.central_meridian) < -180.0) forw += 360.0;
-	while ((forw - project_info.central_meridian) > 180.0) forw -= 360.0;
-	*inv = forw - project_info.central_meridian;
+	GMT_WIND_LON(forw)	/* Make sure forw is in -180/+180 range after removing central meridian */
+	*inv = forw ;
 }
 
 void GMT_itranslind (double *forw, double inv)	/* Linear inverse, but with degrees*/
 {
+	while (inv < -GMT_180) inv += 360.0;
+	while (inv > +GMT_180) inv -= 360.0;
 	*forw = inv + project_info.central_meridian;
-	while ((*forw - project_info.central_meridian) < -180.0) *forw += 360.0;
-	while ((*forw - project_info.central_meridian) > 180.0) *forw -= 360.0;
 }
 
 void GMT_itranslin (double *forw, double inv)	/* Linear inverse */
@@ -229,9 +228,7 @@ void GMT_merc_sph (double lon, double lat, double *x, double *y)
 {
 	/* Convert lon/lat to Mercator x/y (project_info.EQ_RAD in project_info.m_m) */
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_latc (lat);
 
 	*x = project_info.m_mx * lon;
@@ -265,9 +262,7 @@ void GMT_cyleq (double lon, double lat, double *x, double *y)
 {
 	/* Convert lon/lat to Cylindrical equal-area x/y */
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_lata (lat);
 
 	*x = lon * project_info.y_rx;
@@ -307,9 +302,7 @@ void GMT_cyleqdist (double lon, double lat, double *x, double *y)
 {
 	/* Convert lon/lat to Cylindrical equidistant x/y */
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	*x = lon * project_info.q_r;
 	*y = lat * project_info.q_r;
 }
@@ -341,9 +334,7 @@ void GMT_miller (double lon, double lat, double *x, double *y)
 {
 	/* Convert lon/lat to Miller Cylindrical x/y */
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	*x = lon * project_info.j_x;
 	*y = project_info.j_y * d_log (tan (M_PI_4 + 0.4 * lat * D2R));
 }
@@ -374,7 +365,7 @@ void GMT_vstereo (double lon0, double lat0)
 
 	project_info.central_meridian = lon0;
 	project_info.pole = lat0;		/* This is always geodetic */
-	sincos (clat * D2R, &(project_info.sinp), &(project_info.cosp));	/* These may be conformal */
+	sincosd (clat, &(project_info.sinp), &(project_info.cosp));	/* These may be conformal */
 	project_info.north_pole = (lat0 > 0.0);
 	project_info.s_c = 2.0 * project_info.EQ_RAD * gmtdefs.map_scale_factor;
 	project_info.s_ic = 1.0 / project_info.s_c;
@@ -386,12 +377,9 @@ void GMT_plrs_sph (double lon, double lat, double *x, double *y)
 	double rho, slon, clon;
 
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_latc (lat);
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	lon *= D2R;
-	sincos (lon, &slon, &clon);
+	sincosd (lon, &slon, &clon);
 	if (project_info.north_pole) {
 		rho = project_info.s_c * tan (M_PI_4 - 0.5 * D2R * lat);
 		*y = -rho * clon;
@@ -497,10 +485,8 @@ void GMT_stereo2_sph (double lon, double lat, double *x, double *y)
 	}
 	else {
 		if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_latc (lat);
-		dlon *= D2R;
-		lat *= D2R;
-		sincos (lat, &s, &c);
-		sincos (dlon, &slon, &clon);
+		sincosd (lat, &s, &c);
+		sincosd (dlon, &slon, &clon);
 		A = project_info.s_c / (1.0 + c * clon);
 		*x = A * c * slon;
 		*y = A * s;
@@ -556,9 +542,7 @@ void GMT_lamb (double lon, double lat, double *x, double *y)
 {
 	double rho, theta, hold1, hold2, hold3, es, s, c;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	lat *= D2R;
 
 	es = project_info.ECC * sin (lat);
@@ -603,9 +587,7 @@ void GMT_lamb_sph (double lon, double lat, double *x, double *y)
 {
 	double rho, theta, A, t, s, c;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_latc (lat);
 
 	lat *= D2R;
@@ -815,10 +797,8 @@ void GMT_tm_sph (double lon, double lat, double *x, double *y)
 
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_latc (lat);
 
-	lat *= D2R;
-	dlon *= D2R;
-	sincos (lat, &slat, &clat);
-	sincos (dlon, &slon, &clon);
+	sincosd (lat, &slat, &clat);
+	sincosd (dlon, &slon, &clon);
 	b = clat * slon;
 	if (fabs(b) >= 1.0) {
 		/* This corresponds to the transverse "pole"; the point at x = +-infinity, y = -lat0.
@@ -921,14 +901,10 @@ void GMT_lambeq (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to Spherical Lambert Azimuthal Equal-Area x/y */
 	double k, tmp, sin_lat, cos_lat, sin_lon, cos_lon, c;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_lata (lat);
-	lon *= D2R;
-	lat *= D2R;
-	sincos (lat, &sin_lat, &cos_lat);
-	sincos (lon, &sin_lon, &cos_lon);
+	sincosd (lat, &sin_lat, &cos_lat);
+	sincosd (lon, &sin_lon, &cos_lon);
 	c = cos_lat * cos_lon;
 	tmp = 1.0 + project_info.sinp * sin_lat + project_info.cosp * c;
 	if (tmp > 0.0) {
@@ -1455,7 +1431,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 			while (norm_long < 0) norm_long += 360.0;
 
 			dlong  = vp_long - norm_long;
-			if (dlong < -180.0) dlong += 360.0;
+			if (dlong < -GMT_180) dlong += 360.0;
 			dlong *= D2R;
 
 			cos_eca = cos(rlat0)*cos(rlat1) + sin(rlat0)*sin(rlat1)*cos(dlong);
@@ -1668,7 +1644,7 @@ void GMT_genper (double lon, double lat, double *xt, double *yt)
 	double angle;
 
 	dlon = lon - project_info.central_meridian;
-	while (dlon < -180.0) dlon += 360.0;
+	while (dlon < -GMT_180) dlon += 360.0;
 	while (dlon > 180.0) dlon -= 360.0;
 	dlon *= D2R;
 
@@ -1842,14 +1818,10 @@ void GMT_ortho (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to Orthographic x/y */
 	double sin_lat, cos_lat, sin_lon, cos_lon;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
-	lon *= D2R;
-	lat *= D2R;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	sincos (lat, &sin_lat, &cos_lat);
-	sincos (lon, &sin_lon, &cos_lon);
+	sincosd (lat, &sin_lat, &cos_lat);
+	sincosd (lon, &sin_lon, &cos_lon);
 	*x = project_info.EQ_RAD * cos_lat * sin_lon;
 	*y = project_info.EQ_RAD * (project_info.cosp * sin_lat - project_info.sinp * cos_lat * cos_lon);
 }
@@ -1898,13 +1870,9 @@ void GMT_gnomonic (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to Gnomonic x/y */
 	double k, sin_lat, cos_lat, sin_lon, cos_lon, cc;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
-	lon *= D2R;
-	lat *= D2R;
-	sincos (lat, &sin_lat, &cos_lat);
-	sincos (lon, &sin_lon, &cos_lon);
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
+	sincosd (lat, &sin_lat, &cos_lat);
+	sincosd (lon, &sin_lon, &cos_lon);
 
 	cc = cos_lat * cos_lon;
 	k =  project_info.EQ_RAD / (project_info.sinp * sin_lat + project_info.cosp * cc);
@@ -1954,13 +1922,10 @@ void GMT_azeqdist (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to azimuthal equidistant x/y */
 	double k, cc, c, clat, slon, clon, slat, t;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
-	lon *= D2R;
-	lat *= D2R;
-	sincos (lat, &slat, &clat);
-	sincos (lon, &slon, &clon);
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
+
+	sincosd (lat, &slat, &clat);
+	sincosd (lon, &slon, &clon);
 
 	t = clat * clon;
 	cc = project_info.sinp * slat + project_info.cosp * t;
@@ -2026,9 +1991,7 @@ void GMT_mollweide (double lon, double lat, double *x, double *y)
 		return;
 	}
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_lata (lat);
 	lat *= D2R;
 
@@ -2082,9 +2045,7 @@ void GMT_hammer (double lon, double lat, double *x, double *y)
 		return;
 	}
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_lata (lat);
 	lat *= D2R;
 	lon *= (0.5 * D2R);
@@ -2150,9 +2111,7 @@ void GMT_grinten (double lon, double lat, double *x, double *y)
 		return;
 	}
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 
 	if (GMT_IS_ZERO (flat)) {	/* Save time */
 		*x = project_info.EQ_RAD * D2R * lon;
@@ -2217,9 +2176,7 @@ void GMT_winkel (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to Winkel Tripel x/y */
 	double C, D, x1, x2, y1, c, s;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	lat *= D2R;
 	lon *= (0.5 * D2R);
 
@@ -2314,7 +2271,7 @@ double GMT_left_winkel (double y)
 	y -= project_info.y0;
 	y *= project_info.i_y_scale;
 	GMT_iwinkel_sub (y, &phi);
-	GMT_geo_to_xy (project_info.central_meridian-180.0, phi * R2D, &x, &c);
+	GMT_geo_to_xy (project_info.central_meridian - 180.0, phi * R2D, &x, &c);
 	return (x);
 }
 
@@ -2325,7 +2282,7 @@ double GMT_right_winkel (double y)
 	y -= project_info.y0;
 	y *= project_info.i_y_scale;
 	GMT_iwinkel_sub (y, &phi);
-	GMT_geo_to_xy (project_info.central_meridian+180.0, phi * R2D, &x, &c);
+	GMT_geo_to_xy (project_info.central_meridian + 180.0, phi * R2D, &x, &c);
 	return (x);
 }
 
@@ -2349,11 +2306,8 @@ void GMT_eckert4 (double lon, double lat, double *x, double *y)
 	double phi, delta, s_lat, s, c;
 	/* Convert lon/lat to Eckert IV x/y */
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	lat *= D2R;
-	lon *= D2R;
 	phi = 0.5 * lat;
 	s_lat = sin (lat);
 	do {
@@ -2364,7 +2318,7 @@ void GMT_eckert4 (double lon, double lat, double *x, double *y)
 	while (fabs(delta) > GMT_CONV_LIMIT && n_iter < 100);
 
 	sincos (phi, &s, &c);
-	*x = project_info.k4_x * lon * (1.0 + c);
+	*x = project_info.k4_x * lon * D2R * (1.0 + c);
 	*y = project_info.k4_y * s;
 }
 
@@ -2421,12 +2375,9 @@ void GMT_eckert6 (double lon, double lat, double *x, double *y)
 	double phi, delta, s_lat, s, c;
 	/* Convert lon/lat to Eckert VI x/y */
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_lata (lat);
 	lat *= D2R;
-	lon *= D2R;
 	phi = lat;
 	s_lat = sin (lat);
 	do {
@@ -2436,7 +2387,7 @@ void GMT_eckert6 (double lon, double lat, double *x, double *y)
 	}
 	while (fabs(delta) > GMT_CONV_LIMIT && n_iter < 100);
 
-	*x = project_info.k6_r * lon * (1.0 + cos (phi));
+	*x = project_info.k6_r * lon * D2R * (1.0 + cos (phi));
 	*y = 2.0 * project_info.k6_r * phi;
 }
 
@@ -2533,9 +2484,7 @@ void GMT_robinson (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to Robinson x/y */
 	double tmp, X, Y;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	tmp = fabs (lat);
 
 	X = GMT_robinson_spline (tmp, project_info.n_phi, project_info.n_X, project_info.n_x_coeff);
@@ -2629,15 +2578,12 @@ void GMT_sinusoidal (double lon, double lat, double *x, double *y)
 {
 	/* Convert lon/lat to Sinusoidal Equal-Area x/y */
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_lata (lat);
 
-	lon *= D2R;
 	lat *= D2R;
 
-	*x = project_info.EQ_RAD * lon * cos (lat);
+	*x = project_info.EQ_RAD * lon * D2R * cos (lat);
 	*y = project_info.EQ_RAD * lat;
 }
 
@@ -2707,9 +2653,7 @@ void GMT_cassini (double lon, double lat, double *x, double *y)
 
 	double lat2, tany, N, T, A, C, M, s, c, s2, c2, A2, A3;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	lon *= D2R;
 
 	if (GMT_IS_ZERO (lat)) {	/* Quick when lat is zero */
@@ -2772,13 +2716,10 @@ void GMT_cassini_sph (double lon, double lat, double *x, double *y)
 
 	/* Convert lon/lat to Cassini x/y */
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
-	lon *= D2R;
-	lat *= D2R;
-	sincos (lon, &slon, &clon);
-	sincos (lat, &slat, &clat);
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
+
+	sincosd (lon, &slon, &clon);
+	sincosd (lat, &slat, &clat);
 	tlat = slat / clat;
 	*x = project_info.EQ_RAD * d_asin (clat * slon);
 	*y = project_info.EQ_RAD * (atan (tlat / clon) - project_info.c_p);
@@ -2860,20 +2801,16 @@ void GMT_albers (double lon, double lat, double *x, double *y)
 
 	double s, c, q, theta, rho, r;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
-	lon *= D2R;
-	lat *= D2R;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	s = sin (lat);
+	s = sind (lat);
 	if (GMT_IS_ZERO (project_info.ECC))
 		q = 2.0 * s;
 	else {
 		r = project_info.ECC * s;
 		q = project_info.one_m_ECC2 * (s / (1.0 - project_info.ECC2 * s * s) - project_info.i_half_ECC * log ((1.0 - r) / (1.0 + r)));
 	}
-	theta = project_info.a_n * lon;
+	theta = project_info.a_n * lon * D2R;
 	rho = project_info.EQ_RAD * sqrt (project_info.a_C - project_info.a_n * q) * project_info.a_i_n;
 
 	sincos (theta, &s, &c);
@@ -2922,15 +2859,12 @@ void GMT_albers_sph (double lon, double lat, double *x, double *y)
 
 	double s, c, theta, rho;
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
+	
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_lata (lat);
-	lon *= D2R;
-	lat *= D2R;
 
-	theta = project_info.a_n * lon;
-	rho = project_info.EQ_RAD * sqrt (project_info.a_C - 2.0 * project_info.a_n * sin (lat)) * project_info.a_i_n;
+	theta = project_info.a_n * lon * D2R;
+	rho = project_info.EQ_RAD * sqrt (project_info.a_C - 2.0 * project_info.a_n * sind (lat)) * project_info.a_i_n;
 
 	sincos (theta, &s, &c);
 	*x = rho * s;
@@ -2975,13 +2909,10 @@ void GMT_econic (double lon, double lat, double *x, double *y)
 	double rho, theta, s, c;
 	/* Convert lon/lat to Equidistant Conic x/y */
 
-	lon -= project_info.central_meridian;
-	while (lon < -180.0) lon += 360.0;
-	while (lon > 180.0) lon -= 360.0;
-	lat *= D2R;
-	lon *= D2R;
-	rho = project_info.EQ_RAD * (project_info.d_G - lat);
-	theta = project_info.d_n * lon;
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
+
+	rho = project_info.EQ_RAD * (project_info.d_G - lat * D2R);
+	theta = project_info.d_n * lon * D2R;
 
 	sincos (theta, &s, &c);
 	*x = rho * s;

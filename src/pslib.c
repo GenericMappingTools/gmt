@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.155 2007-10-16 18:05:20 guru Exp $
+ *	$Id: pslib.c,v 1.156 2007-10-22 16:08:16 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -139,7 +139,7 @@
 #define COMPOSITE_1	8
 #define COMPOSITE_2	16
 #define SYMBOL		12
-#define PSL_CHUNK	2000
+#define PSL_CHUNK	2048
 
 struct GMT_WORD {
 	int font_no;
@@ -2521,7 +2521,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		if ((justify >> 2) == 2) y_off = -y_off;
 	}
 
-	n_alloc = n_words;
+	n_alloc = PSL_CHUNK;
 	last_font = font;
 	last_size = font_size;
 
@@ -2537,7 +2537,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 			if (i1 > i0) word[k++] = add_word_part (&clean[i0], i1 - i0, font, font_size, sub, super, small, under, NO_SPACE, rgb);
 			if ((size_t)k == n_alloc) {
-				n_alloc += PSL_CHUNK;
+				n_alloc <<= 1;
 				word = (struct GMT_WORD **) ps_memory ((void *)word, n_alloc, sizeof (struct GMT_WORD *));
 			}
 
@@ -2562,7 +2562,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 							i1++;
 						}
 						if ((size_t)k == n_alloc) {
-							n_alloc += PSL_CHUNK;
+							n_alloc <<= 1;
 							word = (struct GMT_WORD **) ps_memory ((void *)word, n_alloc, sizeof (struct GMT_WORD *));
 						}
 						if (clean[i1] == '\\') { /* 2nd char is Octal code character */
@@ -2576,7 +2576,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 						if (!clean[i1]) word[k]->flag++;	/* New word after this composite */
 						k++;
 						if ((size_t)k == n_alloc) {
-							n_alloc += PSL_CHUNK;
+							n_alloc <<= 1;
 							word = (struct GMT_WORD **) ps_memory ((void *)word, n_alloc, sizeof (struct GMT_WORD *));
 						}
 						break;
@@ -2670,7 +2670,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 						plain_word = TRUE;
 						word[k++] = add_word_part (&clean[i1], j-i1, font, font_size, sub, super, small, under, after, rgb);
 						if ((size_t)k == n_alloc) {
-							n_alloc += PSL_CHUNK;
+							n_alloc <<= 1;
 							word = (struct GMT_WORD **) ps_memory ((void *)word, n_alloc, sizeof (struct GMT_WORD *));
 						}
 						i1 = (clean[j]) ? j + 1 : j;
@@ -2689,7 +2689,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		else {	/* Plain word, no worries */
 			word[k++] = add_word_part (clean, 0, font, font_size, sub, super, small, under, ONE_SPACE, rgb);
 			if ((size_t)k == n_alloc) {
-				n_alloc += PSL_CHUNK;
+				n_alloc <<= 1;
 				word = (struct GMT_WORD **) ps_memory ((void *)word, n_alloc, sizeof (struct GMT_WORD *));
 			}
 		}
@@ -4311,7 +4311,7 @@ static void ps_bulkcopy (const char *fname)
 static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 {
 	FILE *in;
-	int i = 0, n_alloc = 50;
+	int i = 0, n_alloc = 64;
 	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
 
@@ -4338,7 +4338,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 		strcpy (PSL->internal.font[i].name, fullname);
 		i++;
 		if (i == n_alloc) {
-			n_alloc += 50;
+			n_alloc <<= 1;
 			PSL->internal.font = (struct PSL_FONT *) ps_memory ((void *)PSL->internal.font, (size_t)n_alloc, sizeof (struct PSL_FONT));
 		}
 	}
@@ -4366,7 +4366,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 			}
 			i++;
 			if (i == n_alloc) {
-				n_alloc += 50;
+				n_alloc <<= 1;
 				PSL->internal.font = (struct PSL_FONT *) ps_memory ((void *)PSL->internal.font, (size_t)n_alloc, sizeof (struct PSL_FONT));
 			}
 		}

@@ -3,6 +3,11 @@
 
 #define HALF_DBL_MAX (DBL_MAX/2.0)
 
+/* GMT_180 is used to see if a value really is exceeding it (beyond roundoff) */
+#define GMT_180	(180.0 + GMT_CONV_LIMIT)
+/* GMT_WIND_LON will remove central meridian value and adjust so lon fits between -180/+180 */
+#define GMT_WIND_LON(lon) {lon -= project_info.central_meridian; while (lon < -GMT_180) lon += 360.0; while (lon > +GMT_180) lon -= 360.0;}
+
 /* Macros, structures, and functions for conversion between different kinds
  * of latitudes used in GMT
  *

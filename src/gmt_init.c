@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.308 2007-10-07 22:41:07 guru Exp $
+ *	$Id: gmt_init.c,v 1.309 2007-10-22 16:08:15 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2820,7 +2820,7 @@ int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 		GMT_user_media[n].height = h;
 		n++;
 		if (n == n_alloc) {
-			n_alloc += GMT_TINY_CHUNK;
+			n_alloc <<= 1;
 			GMT_user_media = (struct GMT_MEDIA *) GMT_memory ((void *)GMT_user_media, (size_t)n_alloc, sizeof (struct GMT_MEDIA), GMT_program);
 			GMT_user_media_name = (char **) GMT_memory ((void *)GMT_user_media_name, (size_t)n_alloc, sizeof (char *), GMT_program);
 		}
@@ -2929,7 +2929,7 @@ void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shortha
 		GMT_file_nan[n] = (strcmp (e, "-")) ? atof (e) : GMT_d_NaN;
 		n++;
 		if (n == n_alloc) {
-			n_alloc += GMT_SMALL_CHUNK;
+			n_alloc <<= 1;
 			GMT_file_id = (int *) GMT_memory ((void *)GMT_file_id, (size_t)n_alloc, sizeof (int), GMT_program);
 			GMT_file_scale = (double *) GMT_memory ((void *)GMT_file_scale, (size_t)n_alloc, sizeof (double), GMT_program);
 			GMT_file_offset = (double *) GMT_memory ((void *)GMT_file_offset, (size_t)n_alloc, sizeof (double), GMT_program);
@@ -5836,7 +5836,7 @@ void GMT_verify_encodings () {
 int GMT_init_fonts (int *n_fonts)
 {
 	FILE *in;
-	int i = 0, n_GMT_fonts, n_alloc = 50;
+	int i = 0, n_GMT_fonts, n_alloc = GMT_SMALL_CHUNK;
 	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
 
@@ -5863,7 +5863,7 @@ int GMT_init_fonts (int *n_fonts)
 		strcpy (GMT_font[i].name, fullname);
 		i++;
 		if (i == n_alloc) {
-			n_alloc += 50;
+			n_alloc <<= 1;
 			GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)n_alloc, sizeof (struct GMT_FONT), GMT_program);
 		}
 	}
@@ -5888,7 +5888,7 @@ int GMT_init_fonts (int *n_fonts)
 			}
 			i++;
 			if (i == n_alloc) {
-				n_alloc += 50;
+				n_alloc <<= 1;
 				GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)n_alloc, sizeof (struct GMT_FONT), GMT_program);
 			}
 		}

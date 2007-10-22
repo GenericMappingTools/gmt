@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.141 2007-09-11 23:48:04 remko Exp $
+ *	$Id: gmt_io.c,v 1.142 2007-10-22 16:08:15 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2811,7 +2811,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 
 			row++;
 			if (row == (n_row_alloc-1)) {	/* -1 because we may have to close the polygon and hence need 1 more cell */
-				n_row_alloc += GMT_CHUNK;
+				n_row_alloc <<= 1;
 				GMT_alloc_segment (T->segment[seg], n_row_alloc, T->segment[seg]->n_columns, FALSE);
 			}
 			n_fields = GMT_input (fp, &n_expected_fields, &in);
@@ -2857,7 +2857,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 		}
 
 		if ((size_t)seg == (n_seg_alloc-1)) {
-			n_seg_alloc += GMT_CHUNK;
+			n_seg_alloc <<= 1;
 			T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)T->segment, n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 		}
 	}

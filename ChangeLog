@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.130 2007-10-19 23:40:20 guru Exp $
+	$Id: ChangeLog,v 1.131 2007-10-22 16:08:15 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-10-22	pwessel
+	* gmt_proj.c:		Added GMT_WIND_LON(lon) macro that handles periodicity
+	* *.c:			Rachet up memory allocation exponentially rather than linearly.
+	
 2007-10-18	pwessel
 	* spotter/hotspotter.c:	Added -S option to normalize output to percent of CVA maximum
 	* spotter/grdspotter.c:	New program, like hotspotter but using gridded data as input
