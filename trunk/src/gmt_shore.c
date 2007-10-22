@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.31 2007-09-29 23:44:14 remko Exp $
+ *	$Id: gmt_shore.c,v 1.32 2007-10-22 16:08:15 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -567,7 +567,7 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 		p[P].level = (dir == 1) ? 2 * ((low_level - 1) / 2) + 1: 2 * (low_level/2);
 		P++;
 		if (P == p_alloc) {
-			p_alloc += GMT_SMALL_CHUNK;
+			p_alloc <<= 1;
 			p = (struct GMT_GSHHS_POL *) GMT_memory ((void *)p, (size_t)p_alloc, sizeof (struct GMT_GSHHS_POL), "GMT_assemble_shore");
 		}
 		
@@ -585,7 +585,7 @@ int GMT_assemble_shore (struct GMT_SHORE *c, int dir, int first_level, BOOLEAN a
 		p[P].level = c->seg[id].level;
 		P++;
 		if (P == p_alloc) {
-			p_alloc += GMT_SMALL_CHUNK;
+			p_alloc <<= 1;
 			p = (struct GMT_GSHHS_POL *) GMT_memory ((void *)p, (size_t)p_alloc, sizeof (struct GMT_GSHHS_POL), "GMT_assemble_shore");
 		}
 	}

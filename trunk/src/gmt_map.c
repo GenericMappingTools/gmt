@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.159 2007-10-15 03:56:34 guru Exp $
+ *	$Id: gmt_map.c,v 1.160 2007-10-22 16:08:15 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4381,7 +4381,7 @@ int *GMT_split_line (double **xx, double **yy, int *nn, BOOLEAN add_crossings)
 			way[n_seg] = k;		/* Which way we jump : +1 is right to left, -1 is left to right */
 			n_seg++;
 			if (n_seg == (int)n_alloc) {
-				n_alloc += GMT_SMALL_CHUNK;
+				n_alloc <<= 1;
 				pos = (int *) GMT_memory ((void *)pos, n_alloc, sizeof (int), GMT_program);
 				way = (short int *) GMT_memory ((void *)way, n_alloc, sizeof (short int), GMT_program);
 			}
@@ -4809,7 +4809,7 @@ int GMT_rect_clip (double *lon, double *lat, int n, double **x, double **y, int 
 				xx[j] = xc[k];
 				yy[j++] = yc[k];
 				if (j >= (n_alloc-2)) {
-					n_alloc += GMT_CHUNK;
+					n_alloc <<= 1;
 					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 				}
@@ -4818,7 +4818,7 @@ int GMT_rect_clip (double *lon, double *lat, int n, double **x, double **y, int 
 		}
 		GMT_geo_to_xy (lon[i], lat[i], &xx[j], &yy[j]);
 		if (j >= (n_alloc-2)) {
-			n_alloc += GMT_CHUNK;
+			n_alloc <<= 1;
 			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 			yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 		}
@@ -4858,7 +4858,7 @@ int GMT_wesn_clip (double *lon, double *lat, int n, double **x, double **y, int 
 				xx[j] = xc[k];
 				yy[j++] = yc[k];
 				if (j >= (n_alloc-2)) {
-					n_alloc += GMT_CHUNK;
+					n_alloc <<= 1;
 					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 				}
@@ -4866,7 +4866,7 @@ int GMT_wesn_clip (double *lon, double *lat, int n, double **x, double **y, int 
 			}
 		}
 		if (j >= (n_alloc-2)) {
-			n_alloc += GMT_CHUNK;
+			n_alloc <<= 1;
 			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 
 			yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
@@ -5016,7 +5016,7 @@ int GMT_radial_clip_new (double *lon, double *lat, int np, double **x, double **
 			xx[n] = xc[0];	yy[n] = yc[0];	/* Add exit/entry point to the path */
 			n++;
 			if (n == n_alloc) {
-				n_alloc += GMT_CHUNK;
+				n_alloc <<= 1;
 				xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 				yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 			}
@@ -5030,7 +5030,7 @@ int GMT_radial_clip_new (double *lon, double *lat, int np, double **x, double **
 				da = (az2 - az1) / (n_arc - 1);			/* Reset da to get exact steps */
 				n_arc--;
 				while ((n + n_arc) >= n_alloc) {	/* Preallocate space if arc exceeds the allocated memory */
-					n_alloc += GMT_CHUNK;
+					n_alloc <<= 1;
 					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 				}
@@ -5051,7 +5051,7 @@ int GMT_radial_clip_new (double *lon, double *lat, int np, double **x, double **
 			n++;
 		}
 		if (n == n_alloc) {
-			n_alloc += GMT_CHUNK;
+			n_alloc <<= 1;
 			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 			yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 		}
@@ -5089,7 +5089,7 @@ int GMT_radial_clip_pscoast (double *lon, double *lat, int np, double **x, doubl
 			n++;
 			(*total_nx) ++;
 			if (n == n_alloc) {
-				n_alloc += GMT_CHUNK;
+				n_alloc <<= 1;
 				xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 				yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 			}
@@ -5107,7 +5107,7 @@ int GMT_radial_clip_pscoast (double *lon, double *lat, int np, double **x, doubl
 		xx[n] = xr;	yy[n] = yr;
 		n++;
 		if (n == n_alloc) {
-			n_alloc += GMT_CHUNK;
+			n_alloc <<= 1;
 			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 			yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 		}
@@ -6689,7 +6689,7 @@ int GMT_distances (double x[], double y[], int n, double scale, int dist_flag, d
 
 int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **xings)
 {
-	int i, go = FALSE, nx, nc = 0, n_alloc = 50;
+	int i, go = FALSE, nx, nc = 0, n_alloc = GMT_SMALL_CHUNK;
 	double lon, lon_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
 	double GMT_get_angle (double lon1, double lat1, double lon2, double lat2);
 	struct GMT_XINGS *X;
@@ -6725,7 +6725,7 @@ int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **x
 			X[nc].nx = nx;
 			nc++;
 			if (nc == n_alloc) {
-				n_alloc += 50;
+				n_alloc <<= 1;
 				X = (struct GMT_XINGS *) GMT_memory ((void *)X, (size_t)n_alloc, sizeof (struct GMT_XINGS), "GMT_map_latcross");
 			}
 			go = FALSE;
@@ -6746,7 +6746,7 @@ int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **x
 
 int GMT_map_loncross (double lon, double south, double north, struct GMT_XINGS **xings)
 {
-	int go = FALSE, j, nx, nc = 0, n_alloc = 50;
+	int go = FALSE, j, nx, nc = 0, n_alloc = GMT_SMALL_CHUNK;
 	double lat, lat_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
 	double GMT_get_angle (double lon1, double lat1, double lon2, double lat2);
 	struct GMT_XINGS *X;
@@ -6782,7 +6782,7 @@ int GMT_map_loncross (double lon, double south, double north, struct GMT_XINGS *
 			X[nc].nx = nx;
 			nc++;
 			if (nc == n_alloc) {
-				n_alloc += 50;
+				n_alloc <<= 1;
 				X = (struct GMT_XINGS *) GMT_memory ((void *)X, (size_t)n_alloc, sizeof (struct GMT_XINGS), "GMT_map_loncross");
 			}
 			go = FALSE;

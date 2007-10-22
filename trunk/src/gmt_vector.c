@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.15 2007-09-30 13:12:09 remko Exp $
+ *	$Id: gmt_vector.c,v 1.16 2007-10-22 16:08:16 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -586,7 +586,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 				lat_tmp[n_tmp] = lat[i-1];
 				n_tmp++;
 				if (n_tmp == n_alloc) {
-					n_alloc += GMT_CHUNK;
+					n_alloc <<= 1;
 					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 				}
@@ -599,7 +599,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_tmp++;
 				if (n_tmp == n_alloc) {
-					n_alloc += GMT_CHUNK;
+					n_alloc <<= 1;
 					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 				}
@@ -615,7 +615,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_tmp++;
 				if (n_tmp == n_alloc) {
-					n_alloc += GMT_CHUNK;
+					n_alloc <<= 1;
 					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 				}
@@ -628,7 +628,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 				lat_tmp[n_tmp] = lat[i];
 				n_tmp++;
 				if (n_tmp == n_alloc) {
-					n_alloc += GMT_CHUNK;
+					n_alloc <<= 1;
 					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 				}
@@ -658,7 +658,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 					lon_tmp[n_tmp] -= TWO_PI;
 				n_tmp++;
 				if (n_tmp == n_alloc) {
-					n_alloc += GMT_CHUNK;
+					n_alloc <<= 1;
 					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 				}
@@ -667,7 +667,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 		lon_tmp[n_tmp] = lon[i];	lat_tmp[n_tmp] = lat[i];
 		n_tmp++;
 		if (n_tmp == n_alloc) {
-			n_alloc += GMT_CHUNK;
+			n_alloc <<= 1;
 			lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 			lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 		}

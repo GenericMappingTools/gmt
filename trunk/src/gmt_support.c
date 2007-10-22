@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.324 2007-10-11 22:05:15 guru Exp $
+ *	$Id: gmt_support.c,v 1.325 2007-10-22 16:08:15 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1601,7 +1601,7 @@ int GMT_read_cpt (char *cpt_file)
 		n++;
 		if (n == n_alloc) {
 			i = n_alloc;
-			n_alloc += GMT_SMALL_CHUNK;
+			n_alloc <<= 1;
 			GMT_lut = (struct GMT_LUT *) GMT_memory ((void *)GMT_lut, (size_t)n_alloc, sizeof (struct GMT_LUT), "GMT_read_cpt");
 			memset ((void *)&GMT_lut[i], 0, (size_t)(GMT_SMALL_CHUNK * sizeof (struct GMT_LUT)));	/* Initialize new structs to zero */
 		}
@@ -2837,12 +2837,12 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 			}
 			G->xp->n_segments++;
 			if (G->xp->n_segments == (int)n_alloc) {
-				n_alloc += GMT_SMALL_CHUNK;
+				n_alloc <<= 1;
 				G->xp->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)G->xp->segment, n_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 			}
 		}
 		if (G->xp->n_segments < (int)n_alloc) {
-			n_alloc += GMT_SMALL_CHUNK;
+			n_alloc <<= 1;
 			G->xp->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)G->xp->segment, (size_t)G->xp->n_segments, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 		}
 	}
@@ -2904,7 +2904,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 			}
 			G->f_n++;
 			if (G->f_n == (int)n_alloc) {
-				n_alloc += GMT_SMALL_CHUNK;
+				n_alloc <<= 1;
 				G->f_xy[0] = (double *) GMT_memory ((void *)G->f_xy[0], n_alloc, sizeof (double), GMT_program);
 				G->f_xy[1] = (double *) GMT_memory ((void *)G->f_xy[1], n_alloc, sizeof (double), GMT_program);
 				if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)G->f_label, n_alloc, sizeof (char *), GMT_program);
@@ -3020,7 +3020,7 @@ void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *la
 	/* Adds this segment to the list of contour lines */
 
 	if (G->n_alloc == 0 || G->n_segments == (int)G->n_alloc) {
-		G->n_alloc += GMT_SMALL_CHUNK;
+		G->n_alloc = (G->n_alloc == 0) ? GMT_CHUNK : (G->n_alloc << 1);
 		G->segment = (struct GMT_CONTOUR_LINE **) GMT_memory ((void *)G->segment, G->n_alloc, sizeof (struct GMT_CONTOUR_LINE *), GMT_program);
 	}
 	G->segment[G->n_segments] = (struct GMT_CONTOUR_LINE *) GMT_memory (VNULL, 1, sizeof (struct GMT_CONTOUR_LINE), GMT_program);
@@ -3600,13 +3600,12 @@ int GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, double 
 		}
 
 		if (n > m) {	/* Must try to allocate more memory */
-			n_alloc += GMT_CHUNK;
-			m += GMT_CHUNK;
+			n_alloc <<= 1;
+			m = n_alloc - 2;
 			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_trace_contour");
 			yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_trace_contour");
 		}
 		if (n_cuts == 0) {	/* Close interior contour and return */
-		/*	if (n_nan == 0 && (n > 0 && fabs (xx[n-1] - xx[0]) <= dx && fabs (yy[n-1] - yy[0]) <= dy)) { */
 			if (ij == ij_in) {	/* Close interior contour */
 				xx[n] = xx[0];
 				yy[n] = yy[0];
@@ -3938,7 +3937,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						GMT_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
-							n_alloc += GMT_SMALL_CHUNK;
+							n_alloc <<= 1;
 							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
@@ -4001,7 +4000,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						if (G->number_placement) new_label->end = e_val;
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
-							n_alloc += GMT_SMALL_CHUNK;
+							n_alloc <<= 1;
 							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
@@ -4048,7 +4047,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						GMT_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
-							n_alloc += GMT_SMALL_CHUNK;
+							n_alloc <<= 1;
 							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
@@ -4082,7 +4081,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 						GMT_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
 						if (G->n_label == (int)n_alloc) {
-							n_alloc += GMT_SMALL_CHUNK;
+							n_alloc <<= 1;
 							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
@@ -4211,7 +4210,7 @@ int GMT_label_is_OK (struct GMT_LABEL *L, char *this_label, char *label, double 
 
 void GMT_get_plot_array (void) {      /* Allocate more space for plot arrays */
 
-	GMT_n_alloc += GMT_CHUNK;
+	GMT_n_alloc = (GMT_n_alloc == 0) ? GMT_CHUNK : (GMT_n_alloc << 1);
 	GMT_x_plot = (double *) GMT_memory ((void *)GMT_x_plot, (size_t)GMT_n_alloc, sizeof (double), "gmt");
 	GMT_y_plot = (double *) GMT_memory ((void *)GMT_y_plot, (size_t)GMT_n_alloc, sizeof (double), "gmt");
 	GMT_pen = (int *) GMT_memory ((void *)GMT_pen, (size_t)GMT_n_alloc, sizeof (int), "gmt");
@@ -6811,7 +6810,7 @@ int GMT_crossover (double xa[], double ya[], int *sa0, struct GMT_XSEGMENT A[], 
 				}
 
 				if (nx == nx_alloc) {
-					nx_alloc += GMT_SMALL_CHUNK;
+					nx_alloc <<= 1;
 					GMT_x_alloc (X, nx_alloc);
 				}
 			} /* End x-overlap */
@@ -6993,7 +6992,7 @@ int GMT_log_array (double min, double max, double delta, double **array)
 		i++;
 		n++;
 		if (n == n_alloc) {
-			n_alloc += GMT_SMALL_CHUNK;
+			n_alloc <<= 1;
 			val = (double *) GMT_memory ((void *)val, (size_t)n_alloc, sizeof (double), "GMT_log_array");
 		}
 
@@ -7068,7 +7067,7 @@ int GMT_pow_array (double min, double max, double delta, int x_or_y, double **ar
 		tval += delta;
 		n++;
 		if (n == n_alloc) {
-			n_alloc += GMT_SMALL_CHUNK;
+			n_alloc <<= 1;
 			val = (double *) GMT_memory ((void *)val, (size_t)n_alloc, sizeof (double), "GMT_pow_array");
 		}
 	}
@@ -7104,7 +7103,7 @@ int GMT_time_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double
 		if (I.dt[0] >= min || interval) val[n++] = I.dt[0];		/* Was inside region */
 		GMT_moment_interval (&I, 0.0, FALSE);			/* Advance to next interval */
 		if (n == n_alloc) {					/* Allocate more space */
-			n_alloc += GMT_SMALL_CHUNK;
+			n_alloc <<= 1;
 			val = (double *) GMT_memory ((void *)val, (size_t)n_alloc, sizeof (double), "GMT_time_array");
 		}
 	}

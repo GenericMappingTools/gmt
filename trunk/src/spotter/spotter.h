@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.13 2007-01-30 20:37:09 pwessel Exp $
+ *	$Id: spotter.h,v 1.14 2007-10-22 16:08:16 guru Exp $
  *
  *   Copyright (c) 1999-2007 by P. Wessel
  *
@@ -28,7 +28,7 @@
 #define SPOTTER_VERSION "1.1"
 #define EQ_RAD 6371.0087714
 #define KM_PR_DEG (EQ_RAD * M_PI / 180.0)
-#define BIG_CHUNK 50000
+#define BIG_CHUNK 65536
 #define T_2_PA	250.0
 #define PA_2_T  (1.0 / T_2_PA)
 #define SQRT_CHI2 2.44774689322	/* This is sqrt (Chi^2) for 95% and 2 degrees of freedom */

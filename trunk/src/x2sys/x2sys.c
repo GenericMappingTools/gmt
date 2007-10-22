@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.70 2007-09-15 04:00:16 guru Exp $
+ *	$Id: x2sys.c,v 1.71 2007-10-22 16:08:17 guru Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -284,7 +284,7 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 		p->ms_rec[j] = p->n_segments;
 		j++;
 		if (j == (int)n_alloc) {	/* Get more */
-			n_alloc += GMT_CHUNK;
+			n_alloc <<= 1;
 			for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory ((void *)z[i], n_alloc, sizeof (double), "x2sys_read_file");
 			p->ms_rec = (int *) GMT_memory ((void *)p->ms_rec, n_alloc, sizeof (int), "x2sys_read_file");
 		}
@@ -310,7 +310,7 @@ int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
 	/* Reads the format definition file and sets all information variables */
 
 	int i = 0, c;
-	size_t n_alloc = 10;
+	size_t n_alloc = GMT_TINY_CHUNK;
 	FILE *fp;
 	struct X2SYS_INFO *X;
 	char line[BUFSIZ], cardcol[80], yes_no;
@@ -374,7 +374,7 @@ int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
 		if (!strcmp (X->info[i].name, "t") || !strcmp (X->info[i].name, "time")) X->t_col = i;
 		i++;
 		if (i == (int)n_alloc) {
-			n_alloc += 10;
+			n_alloc <<= 1;
 			X->info = (struct X2SYS_DATA_INFO *) GMT_memory ((void *)X->info, n_alloc, sizeof (struct X2SYS_DATA_INFO), "x2sys_initialize");
 		}
 
@@ -642,7 +642,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 		if (p->year == 0 && !GMT_is_fnan (dvals[0])) p->year = get_first_year (dvals[0]);
 		j++;
 		if (j == n_alloc) {
-			n_alloc += GMT_CHUNK;
+			n_alloc <<= 1;
 			for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
 		}
 	}
@@ -748,7 +748,7 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 		strcpy (p[n], name);
 		n++;
 		if (n == n_alloc) {
-			n_alloc += GMT_CHUNK;
+			n_alloc <<= 1;
 			p = (char **) GMT_memory ((void *)p, n_alloc, sizeof (char *), "x2sys_read_list");
 		}
 	}
