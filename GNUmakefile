@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.12 2007-10-04 23:13:49 guru Exp $
+#  $Id: GNUmakefile,v 1.13 2007-10-23 18:43:14 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -450,4 +450,4 @@ include Makefile
 #-------------------------------------------------------------------------------
 
 spotless::
-		\rm -rf src/makegmt.macros configure autom4te.cache
+		\rm -rf src/makegmt.macros src/gmt_version.h configure autom4te.cache
