@@ -46,7 +46,7 @@ is used instead then the limits apply to the stage ids.  If no limits are suppli
 then individual limits for each seamount are expected in columns 4 and 5 of the input file.
 .TP
 .B \-C
-Expect Total Reconstruction Poles (Finite Poles) rather than Backward Stage Poles [Default].
+Expect Total Reconstruction Poles rather than Backward Stage Poles [Default].
 File format is similar to the stage pole format except the youngest rotation must be listed
 first and that the tstart column is optional (assumed to be 0 Ma).
 .TP

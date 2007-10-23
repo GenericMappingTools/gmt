@@ -56,7 +56,7 @@ Blank lines and records whose first column contains # will be ignored.
 .SH OPTIONS
 .TP
 .B \-C
-Expect Total Reconstruction Poles (Finite Poles) rather than Backward Stage Poles [Default]
+Expect Total Reconstruction Poles rather than Backward Stage Poles [Default].
 File format is similar to the stage pole format except the youngest rotation must be listed
 first and that the tstart column is optional (assumed to be 0 Ma).
 .TP

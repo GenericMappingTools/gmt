@@ -1,27 +1,28 @@
 .TH GRDSPOTTER 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
 .SH NAME
-GRDSPOTTER \- Create CVA image directly from gravity or bathymetry grids 
+grdspotter \- Create CVA image directly from gravity or bathymetry grids 
 .SH SYNOPSIS
-\fBGRDSPOTTER\fP [\fIgrdfile\fP] OPT(E)\fIstage_file\fP 
+\fBgrdspotter\fP [\fIgrdfile\fP] OPT(E)\fIrotations_file\fP 
 OPT(G)\fICVAgrid\fP GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(A)\fIagegrid\fP ] [ OPT(B)\fIn_try\fP ] [ OPT(C) ] [ OPT(D)\fIDIgrid\fP ] [ OPT(F) ] 
 [ OPT(N)\fIupper_age\fP ] [ OPT(P)\fIPAgrid\fP ] [ OPT(Q)\fIIDinfo\fP ] [ OPT(S) ] 
 [ OPT(T) ] [ GMT_V_OPT ] [ OPT(Z)\fIz_min\fP[/\fIz_max\fP[/\fIz_inc\fP]] ]
 .SH DESCRIPTION
 \fBgrdspotter\fP reads a grid file with residual bathymetry or gravity
-and calculates flowlines using the  specified stage pole (Euler) rotations.
-These flowlines are convolved with the volume of the prism represented by
+and calculates flowlines from each node that exceeds a minimum value
+using the specified rotations file.
+These flowlines are then convolved with the volume of the prism represented by
 each grid node and added up to give a Cumulative Volcano Amplitude grid (CVA).
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
 .TP
 \fIgrdfile\fP
-Data grid to be processed. 
+Data grid to be processed, typically residual bathymetry or free-air anomalies.
 .TP
 .B \-E
-Give file with stage poles and opening angles.  This file must contain
+Give file with rotation poles and opening angles.  This file must contain
 one record for each stage; each record must be of the following format:
 .br
 .sp
@@ -33,45 +34,48 @@ must be listed first.  tstart (tstop) is the age of the old (young) end of the
 stage.  Blank lines and records whose first column contains # will be ignored.
 .TP
 .B \-G
-Specify name for output grid file.
+Specify name for output CVA grid file.
 #include "explain_-I.txt"
 #include "explain_-Rgeo.txt"
 .SH OPTIONS
 .TP
 .B \-A
-Supply a crustal age grid that is co-ergistered with the input data grid.  These ages
+Supply a crustal age grid that is co-registered with the input data grid.  These ages
 become the upper ages to use when constructing flowlines [Default extent flowlines back
 to oldest age].
 .TP
 .B \-B
-Get \fIn_try\fP bootstrap estimates of the maximum CVA location; the results are written
-to stdout [Default is no bootstrapping]
+Get \fIn_try\fP bootstrap estimates of the maximum CVA location; the longitude and latitude
+results are written to stdout [Default is no bootstrapping]
 .TP
 .B \-C
-Expect Total Reconstruction Poles (Finite Poles) rather than Backward Stage Poles [Default]
+Expect Total Reconstruction Poles rather than Backward Stage Poles [Default].
 File format is similar to the stage pole format except the youngest rotation must be listed
 first and that the tstart column is optional (assumed to be 0 Ma).
 .TP
 .B \-D
-Use flowlines to determine the max CVA encountered along each flowline and create a Data
+Use flowlines to determine the maximum CVA encountered along each flowline and create a Data
 Importance (DI) grid with these values at the originating nodes.
 .TP
 .B \-F
 Force pixel registration [Default is grid registration].
 .TP
 .B \-L
-Supply a co-registered grid with seamount chain IDs for each nodes.
+Supply a co-registered grid with seamount chain IDs for each nodes.  Requires that
+you also use OPT(Q).
 .TP
 .B \-N
 Set the upper age to assign seamounts whose crustal age is unknown (i.e. NaN) [no upper age].
+Also see OPT)A).
 .TP
 .B \-P
 Use flowlines to determine the flowline age for each node and create a Predicted
 Age (PA) grid with these values at the originating nodes.
 .TP
 .B \-Q
-Either give a single ID to use or a filename of a file with list of IDs [Default uses all IDs].
-Each line would be TAG ID [w e s n] (the w/e/s/n zoom box is optional).
+Either give a single ID to use or the name of a file with a list of IDs to use [Default uses all IDs].
+Each line would be TAG ID [w e s n].  The \fIw/e/s/n\fP zoom box is optional; if specified it means
+we only trace the flowline if inside this region [Default uses region set by OPT(R)].  Requires OPT(L).
 .TP
 .B \-S
 Normalize the resulting CVA grid to percentages of the CVA maximum.
