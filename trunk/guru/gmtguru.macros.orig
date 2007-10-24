@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.50 2007-10-23 18:44:51 remko Exp $
+#	$Id: gmtguru.macros.orig,v 1.51 2007-10-24 00:21:23 guru Exp $
 #
 #	Original GMT Guru Makefile Macro for GNUmakefile
 #	Gurus should make a file gmtguru.macros to overrule any setting below.
@@ -30,7 +30,7 @@
 # Below, set the VERSION to be created. Do NOT start it with GMT, use numbers
 # only.  Also, you may want to change the DATE value.
 #
-VERSION		= 4.2.2
+VERSION		= 4.2.2b
 GSHHS_VERSION	= 1.9
 GMTBRANCH	= 4
 MANDATE		= 1 Apr 2008
