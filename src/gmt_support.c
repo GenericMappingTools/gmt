@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.325 2007-10-22 16:08:15 guru Exp $
+ *	$Id: gmt_support.c,v 1.326 2007-10-24 01:10:50 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5008,7 +5008,7 @@ int GMT_boundcond_parse (struct GMT_EDGEINFO *edgeinfo, char *edgestring)
 	if (ier) return (-1);
 
 	if (edgeinfo->gn && (edgeinfo->nxp == -1 || edgeinfo->nxp == -1) ) {
-		(void) fprintf (stderr, "WARNING:  GMT boundary condition g overrides x or y\n");
+		(void) fprintf (stderr, "%s: Warning: GMT boundary condition g overrides x or y\n", GMT_program);
 	}
 
 	return (GMT_NOERROR);
@@ -5023,7 +5023,7 @@ int GMT_boundcond_param_prep (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinf
 	if (edgeinfo->gn || GMT_grd_is_global(h)) {
 		/* User has requested geographical conditions.  */
 		if ( (h->x_max - h->x_min) < (360.0 - GMT_SMALL * h->x_inc) ) {
-			fprintf (stderr, "GMT Warning:  x range too small; g boundary condition ignored.\n");
+			fprintf (stderr, "%s: Warning: x range too small; g boundary condition ignored.\n", GMT_program);
 			edgeinfo->nxp = edgeinfo->nyp = 0;
 			edgeinfo->gn  = edgeinfo->gs = FALSE;
 			return (GMT_NOERROR);
@@ -5032,7 +5032,7 @@ int GMT_boundcond_param_prep (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinf
 		/* xtest should be within GMT_SMALL of zero or of one.  */
 		if ( xtest > GMT_SMALL && xtest < (1.0 - GMT_SMALL) ) {
 			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
-			fprintf (stderr, "GMT Warning:  x_inc does not divide 180; g boundary condition ignored.\n");
+			fprintf (stderr, "%s: Warning: x_inc does not divide 180; g boundary condition ignored.\n", GMT_program);
 			edgeinfo->nxp = edgeinfo->nyp = 0;
 			edgeinfo->gn  = edgeinfo->gs = FALSE;
 			return (GMT_NOERROR);
@@ -5155,7 +5155,7 @@ int GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, int 
 					if (a[jn + i] != a[jn + iw]) bok++;
 				}
 			}
-			if (bok > 0) fprintf (stderr, "GMT Warning: Inconsistent grid values at North pole.\n");
+			if (bok > 0) fprintf (stderr, "%s: Warning: Inconsistent grid values at North pole.\n", GMT_program);
 		}
 
 		if (edgeinfo->gs) {
@@ -5170,7 +5170,7 @@ int GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, int 
 					if (a[js + i] != a[js + iw]) bok++;
 				}
 			}
-			if (bok > 0) fprintf (stderr, "GMT Warning: Inconsistent grid values at South pole.\n");
+			if (bok > 0) fprintf (stderr, "%s: Warning: Inconsistent grid values at South pole.\n", GMT_program);
 		}
 	}
 
@@ -6006,7 +6006,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 				break;
 
 			case GMT_IS_GEO:	/* Found a : in the string - GEO ? */
-				fprintf (stderr, "%s: GMT Warning:  %s appears to be a Geographical Location String: ", GMT_program, item);
+				fprintf (stderr, "%s: Warning: %s appears to be a Geographical Location String: ", GMT_program, item);
 				if (project_info.projection == GMT_LINEAR)
 					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
@@ -6015,7 +6015,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 				break;
 
 			case GMT_IS_LON:	/* Found a : in the string and then W or E - LON ? */
-				fprintf (stderr, "%s: GMT Warning:  %s appears to be a Geographical Longitude String: ", GMT_program, item);
+				fprintf (stderr, "%s: Warning: %s appears to be a Geographical Longitude String: ", GMT_program, item);
 				if (project_info.projection == GMT_LINEAR)
 					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
@@ -6024,7 +6024,7 @@ int GMT_verify_expectations (int wanted, int got, char *item)
 				break;
 
 			case GMT_IS_LAT:	/* Found a : in the string and then S or N - LAT ? */
-				fprintf (stderr, "%s: GMT Warning:  %s appears to be a Geographical Latitude String: ", GMT_program, item);
+				fprintf (stderr, "%s: Warning: %s appears to be a Geographical Latitude String: ", GMT_program, item);
 				if (project_info.projection == GMT_LINEAR)
 					fprintf (stderr, "You should append d to the -Jx or -JX projection for geographical data.\n");
 				else
