@@ -6,7 +6,7 @@ grdspotter \- Create CVA image directly from gravity or bathymetry grids
 \fBgrdspotter\fP [\fIgrdfile\fP] OPT(E)\fIrotations_file\fP 
 OPT(G)\fICVAgrid\fP GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(A)\fIagegrid\fP ] [ OPT(B)\fIn_try\fP ] [ OPT(C) ] [ OPT(D)\fIDIgrid\fP ] [ OPT(F) ] 
-[ OPT(N)\fIupper_age\fP ] [ OPT(P)\fIPAgrid\fP ] [ OPT(Q)\fIIDinfo\fP ] [ OPT(S) ] 
+[ OPT(M) ] [ OPT(N)\fIupper_age\fP ] [ OPT(P)\fIPAgrid\fP ] [ OPT(Q)\fIIDinfo\fP ] [ OPT(S) ] 
 [ OPT(T) ] [ GMT_V_OPT ] [ OPT(Z)\fIz_min\fP[/\fIz_max\fP[/\fIz_inc\fP]] ]
 .SH DESCRIPTION
 \fBgrdspotter\fP reads a grid file with residual bathymetry or gravity
@@ -63,6 +63,12 @@ Force pixel registration [Default is grid registration].
 .B \-L
 Supply a co-registered grid with seamount chain IDs for each nodes.  Requires that
 you also use OPT(Q).
+.TP
+.B \-M
+Do not attempt to keep all flowlines in memory when using OPT(D) and/or OPT(P).  Should you run out of memory you can
+use this option to compute flowlines on-the-fly.  It will be slower as we no longer
+can use reuse the flowlines calculated for the CVA step.  Cannot be used with OPT(B) or the
+multi-slice mode in OPT(Z).
 .TP
 .B \-N
 Set the upper age to assign seamounts whose crustal age is unknown (i.e. NaN) [no upper age].
