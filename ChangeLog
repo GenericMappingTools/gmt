@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.131 2007-10-22 16:08:15 guru Exp $
+	$Id: ChangeLog,v 1.132 2007-10-25 19:51:23 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-10-25	remko
+	* grd2xyz.c:		For gridline oriented grids: grd2xyz -E returned xll and yll
+				one cell too large.
 
 2007-10-22	pwessel
 	* gmt_proj.c:		Added GMT_WIND_LON(lon) macro that handles periodicity
