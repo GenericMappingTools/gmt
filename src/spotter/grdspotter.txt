@@ -7,7 +7,7 @@ grdspotter \- Create CVA image directly from gravity or bathymetry grids
 OPT(G)\fICVAgrid\fP GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(A)\fIagegrid\fP ] [ OPT(B)\fIn_try\fP ] [ OPT(C) ] [ OPT(D)\fIDIgrid\fP ] [ OPT(F) ] 
 [ OPT(M) ] [ OPT(N)\fIupper_age\fP ] [ OPT(P)\fIPAgrid\fP ] [ OPT(Q)\fIIDinfo\fP ] [ OPT(S) ] 
-[ OPT(T) ] [ GMT_V_OPT ] [ OPT(Z)\fIz_min\fP[/\fIz_max\fP[/\fIz_inc\fP]] ]
+[ OPT(T) ] [ OPT(U)\fIfixed_val\fP ] [ GMT_V_OPT ] [ OPT(Z)\fIz_min\fP[/\fIz_max\fP[/\fIz_inc\fP]] ]
 .SH DESCRIPTION
 \fBgrdspotter\fP reads a grid file with residual bathymetry or gravity
 and calculates flowlines from each node that exceeds a minimum value
@@ -32,6 +32,7 @@ one record for each stage; each record must be of the following format:
 where tstart and tstop are in Ma and the rest is in degrees.  The oldest stage
 must be listed first.  tstart (tstop) is the age of the old (young) end of the
 stage.  Blank lines and records whose first column contains # will be ignored.
+However, see OPT(C) for total recostruction poles.
 .TP
 .B \-G
 Specify name for output CVA grid file.
@@ -42,11 +43,11 @@ Specify name for output CVA grid file.
 .B \-A
 Supply a crustal age grid that is co-registered with the input data grid.  These ages
 become the upper ages to use when constructing flowlines [Default extent flowlines back
-to oldest age].
+to oldest age found in the rotation file].
 .TP
 .B \-B
 Get \fIn_try\fP bootstrap estimates of the maximum CVA location; the longitude and latitude
-results are written to stdout [Default is no bootstrapping]
+results are written to stdout [Default is no bootstrapping].  Cannot be used with OPT(M).
 .TP
 .B \-C
 Expect Total Reconstruction Poles rather than Backward Stage Poles [Default].
@@ -61,38 +62,42 @@ Importance (DI) grid with these values at the originating nodes.
 Force pixel registration [Default is grid registration].
 .TP
 .B \-L
-Supply a co-registered grid with seamount chain IDs for each nodes.  Requires that
+Supply a co-registered grid with seamount chain IDs for each node.  This option requires that
 you also use OPT(Q).
 .TP
 .B \-M
 Do not attempt to keep all flowlines in memory when using OPT(D) and/or OPT(P).  Should you run out of memory you can
 use this option to compute flowlines on-the-fly.  It will be slower as we no longer
-can use reuse the flowlines calculated for the CVA step.  Cannot be used with OPT(B) or the
+can reuse the flowlines calculated for the CVA step.  Cannot be used with OPT(B) or the
 multi-slice mode in OPT(Z).
 .TP
 .B \-N
-Set the upper age to assign seamounts whose crustal age is unknown (i.e. NaN) [no upper age].
-Also see OPT)A).
+Set the upper age to assign to nodes whose crustal age is unknown (i.e., NaN) [no upper age].
+Also see OPT(A).
 .TP
 .B \-P
-Use flowlines to determine the flowline age for each node and create a Predicted
+Use flowlines to determine the flowline age at the CVA maximum for each node and create a Predicted
 Age (PA) grid with these values at the originating nodes.
 .TP
 .B \-Q
-Either give a single ID to use or the name of a file with a list of IDs to use [Default uses all IDs].
+Either give (1) a single ID to use or (2) the name of a file with a list of IDs to use [Default uses all IDs].
 Each line would be TAG ID [w e s n].  The \fIw/e/s/n\fP zoom box is optional; if specified it means
 we only trace the flowline if inside this region [Default uses region set by OPT(R)].  Requires OPT(L).
 .TP
 .B \-S
-Normalize the resulting CVA grid to percentages of the CVA maximum.
+Normalize the resulting CVA grid to percentages of the CVA maximum.  This also normalizes the DI grid (if requested).
 .TP
 .B \-T
-Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation].
+Truncate crustal ages given via the OPT(A) option that exceed the upper age set with \fB\-N\fP [no truncation].
+.TP
+.B \-U
+After a node passes the test implied by OPT(Z), use this \fIfixed_val\fP instead in the calculations.
 #include "explain_-V.txt"
 .TP
 .B \-Z
 Ignore nodes with z-values lower than \fIz_min\fP [0] and optionally larger than \fIz_max\fP [Inf].
 Give \fIz_min/z_max/z_inc\fP to make separate CVA grids for each \fIz\fP-slice {Default makes one CVA grid].
+Multi-slicing cannot be used with OPT(M).
 .SH EXAMPLES
 To create a CVA image from the Pacific topography grid Pac_res_topo.grd,
 using the DC85.d Euler poles, and only output a grid for the specified domain, run
