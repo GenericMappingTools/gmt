@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.133 2007-10-25 22:17:43 remko Exp $
+	$Id: ChangeLog,v 1.134 2007-10-26 16:44:26 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-10-26	pwessel
+	* psmask.c:		The -D option used the wrong output file name.
 
 2007-10-25	remko
 	* grd2xyz.c:		For gridline oriented grids: grd2xyz -E returned xll and yll
