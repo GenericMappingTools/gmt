@@ -1,8 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.135 2007-10-28 23:11:48 remko Exp $
+	$Id: ChangeLog,v 1.136 2007-10-28 23:24:18 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-10-28
+	* guru/gmtguru.macros.orig:	Change to 4.2.2b
+	* configure.in:		Deal with possibility of beta versions
+	* src/makegmt.macros.in:	Removed VERSION (was confusing VERSION from guru)
 	* grd2xyz.c:		For gridline oriented grids: grd2xyz -E returned xll and yll
 				one cell too large. Now writing [xy]llcenter properly.
 	* xyz2grd.c:		Assume pixel orientation when either [xy]llcenter is used.
