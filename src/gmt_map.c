@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.160 2007-10-22 16:08:15 guru Exp $
+ *	$Id: gmt_map.c,v 1.161 2007-10-29 21:26:14 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5316,6 +5316,10 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 	I_off = (I->node_offset) ? 0.5 : 0.0;
 	O_off = (O->node_offset) ? 0.5 : 0.0;
+
+	/* Initialize output to NaN (to be replaced by projected values) */
+	
+	for (ij_out = 0; ij_out < O->nx*O->ny; ij_out++) z_out[ij_out] = GMT_f_NaN;
 
 	/* Precalculate grid coordinates */
 
