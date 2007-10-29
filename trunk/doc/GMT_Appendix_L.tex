@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_L.tex,v 1.17 2007-01-30 20:37:07 pwessel Exp $
+%	$Id: GMT_Appendix_L.tex,v 1.18 2007-10-29 02:07:01 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2007.
@@ -67,8 +67,27 @@ packages (e.g., \progname{gcc} etc) as the basic installation does not include t
 Once you are up and running under Cygwin, you may install \GMT\ 
 the same way you do under any other \UNIX\ platform by either
 running the automated install via \progname{install\_gmt} or manually
-running configure first, then type make all.
-For details see the general README file.
+running configure first, then type make all.  If you intsall via the
+web form, make sure you save the parameter file without DOS CR/LF
+endings.  Use \progname{dos2unix} to get rid of those if need be.
+
+Finally, from Cygwin's User Guide: By default, no Cygwin program
+can allocate more than 384 MB of memory (program and data).
+You should not need to change this default in most circumstances. However, if you need
+to use more real or virtual memory in your machine you may add an entry in either the
+{\bf HKEY\_LOCAL\_MACHINE} (to change the limit for all users) or {\bf HKEY\_CURRENT\_USER} (for just
+the current user) section of the registry.  Add the DWORD value {\bf heap\_chunk\_in\_mb} and set
+it to the desired memory limit in decimal Mb.  It is preferred to do this in Cygwin
+using the \progname{regtool} program included in the Cygwin package. (For more information about
+\progname{regtool} or the other Cygwin utilities, see the Section called Cygwin Utilities in
+Chapter 3 of the Cygwin's User Guide or use the \-\-help option of each utility.) You should always be careful
+when using \progname{regtool} since damaging your system registry can result in an unusable system.
+This example sets the local machine memory limit to 1024 Mb:
+\begin{verbatim}
+regtool -i set /HKLM/Software/Cygnus\ Solutions/Cygwin/heap_chunk_in_mb 1024
+regtool -v list /HKLM/Software/Cygnus\ Solutions/Cygwin
+\end{verbatim}
+For more installation details see the general README file.
 
 \index{GMT@\GMT!under Cygwin|)}
 \index{Cygwin|)}
