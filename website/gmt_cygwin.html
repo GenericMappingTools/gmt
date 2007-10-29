@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_cygwin.html,v 1.1 2007-10-28 20:39:11 guru Exp $  -->
+<!--  $Id: gmt_cygwin.html,v 1.2 2007-10-29 02:07:01 guru Exp $  -->
 <HEAD>
 <TITLE>CYGWIN ISSUES</TITLE>
 </HEAD>
@@ -17,7 +17,7 @@ the current user) section of the registry.  Add the DWORD value heap_chunk_in_mb
 it to the desired memory limit in decimal MB.  It is preferred to do this in Cygwin
 using the regtool program included in the Cygwin package. (For more information about
 regtool or the other Cygwin utilities, see the Section called Cygwin Utilities in
-Chapter 3 or use each the --help option of each utility.) You should always be careful
+Chapter 3 or use the --help option of each utility.) You should always be careful
 when using regtool since damaging your system registry can result in an unusable system.
 This example sets memory limit to 1024 MB:<P>
 regtool -i set /HKLM/Software/Cygnus\ Solutions/Cygwin/heap_chunk_in_mb 1024<BR>
