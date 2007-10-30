@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.23 2007-10-22 16:08:15 guru Exp $
+ *	$Id: gmt_proj.c,v 1.24 2007-10-30 17:56:49 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -922,8 +922,8 @@ void GMT_lambeq (double lon, double lat, double *x, double *y)
 
 void GMT_ilambeq (double *lon, double *lat, double x, double y)
 {
-	/* Convert Lambert Azimuthal Equal-Area x/yto lon/lat */
-	double rho, c, sin_c, cos_c;
+	/* Convert Lambert Azimuthal Equal-Area x/y to lon/lat */
+	double rho, a, sin_c, cos_c;
 
 	if (project_info.GMT_convert_latitudes) {	/* Undo effect of fudge factors */
 		x *= project_info.iDx;
@@ -931,24 +931,13 @@ void GMT_ilambeq (double *lon, double *lat, double x, double y)
 	}
 
 	rho = hypot (x, y);
-
-	if (GMT_IS_ZERO (rho)) {
-		*lat = project_info.pole;
-		*lon = project_info.central_meridian;
-	}
-	else {
-		c = 2.0 * d_asin (0.5 * rho * project_info.i_EQ_RAD);
-		sincos (c, &sin_c, &cos_c);
-		*lat = d_asin (cos_c * project_info.sinp + (y * sin_c * project_info.cosp / rho)) * R2D;
-		if (project_info.n_polar)
-			*lon = project_info.central_meridian + R2D * d_atan2 (x, -y);
-		else if (project_info.s_polar)
-			*lon = project_info.central_meridian + R2D * d_atan2 (x, y);
-		else
-			*lon = project_info.central_meridian +
-				R2D * d_atan2 (x * sin_c, (rho * project_info.cosp * cos_c - y * project_info.sinp * sin_c));
-		if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
-	}
+	a = 0.5 * rho * project_info.i_EQ_RAD;			/* a = sin(c/2)		*/
+	a *= a;							/* a = sin(c/2)**2	*/
+	sin_c = d_sqrt (1.0 - a) * project_info.i_EQ_RAD;	/* sin_c = sin(c)/rho	*/
+	cos_c = 1.0 - 2.0 * a;					/* cos_c = cos(c)	*/
+	*lat = d_asin (cos_c * project_info.sinp + y * sin_c * project_info.cosp) * R2D;
+	*lon = d_atan2 (x * sin_c, project_info.cosp * cos_c - y * project_info.sinp * sin_c) * R2D + project_info.central_meridian;
+	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 
 /* Set up General Perspective projection */
@@ -1608,7 +1597,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 
 	if (project_info.g_debug > 0) {
 		GMT_genper (lonvp, latvp, &xt_vp, &yt_vp);
-		fprintf (stderr, "\nvgenper: polar %d north %d south %d\n", project_info.polar, project_info.n_polar, project_info.s_polar);
+		fprintf (stderr, "\nvgenper: polar %d north %d\n", project_info.polar, project_info.north_pole);
 		fprintf (stderr, "vgenper: altitude H %7.1f km P %7.4f\n", H/1000.0, P);
 		fprintf (stderr, "vgenper: azimuth %5.1f tilt %5.1f\n", azimuth, tilt);
 		fprintf (stderr, "vgenper: viewpoint width %5.1f height %5.1f degrees\n", width, height);
@@ -1828,27 +1817,15 @@ void GMT_ortho (double lon, double lat, double *x, double *y)
 
 void GMT_iortho (double *lon, double *lat, double x, double y)
 {
-	/* Convert Orthographic x/yto lon/lat */
-	double rho, sin_c, cos_c;
+	/* Convert Orthographic x/y to lon/lat */
+	double rho, cos_c;
 
+	x *= project_info.i_EQ_RAD;
+	y *= project_info.i_EQ_RAD;
 	rho = hypot (x, y);
-
-	if (GMT_IS_ZERO (rho)) {
-		*lat = project_info.pole;
-		*lon = project_info.central_meridian;
-	}
-	else {
-		sin_c = rho * project_info.i_EQ_RAD;
-		cos_c = d_sqrt (1.0 - sin_c * sin_c);
-		*lat = d_asin (cos_c * project_info.sinp + (y * sin_c * project_info.cosp / rho)) * R2D;
-		if (project_info.n_polar)
-			*lon = project_info.central_meridian + R2D * d_atan2 (x, -y);
-		else if (project_info.s_polar)
-			*lon = project_info.central_meridian + R2D * d_atan2 (x, y);
-		else
-			*lon = project_info.central_meridian +
-				R2D * d_atan2 (x * sin_c, (rho * project_info.cosp * cos_c - y * project_info.sinp * sin_c));
-	}
+	cos_c = d_sqrt (1.0 - rho * rho);
+	*lat = d_asin (cos_c * project_info.sinp + y * project_info.cosp) * R2D;
+	*lon = d_atan2 (x, cos_c * project_info.cosp - y * project_info.sinp) * R2D + project_info.central_meridian;
 }
 
 /* -JF GMT_GNOMONIC PROJECTION */
@@ -1883,26 +1860,14 @@ void GMT_gnomonic (double lon, double lat, double *x, double *y)
 void GMT_ignomonic (double *lon, double *lat, double x, double y)
 {
 	/* Convert Gnomonic x/y to lon/lat */
-	double rho, c, sin_c, cos_c;
+	double rho, c;
 
+	x *= project_info.i_EQ_RAD;
+	y *= project_info.i_EQ_RAD;
 	rho = hypot (x, y);
-
-	if (GMT_IS_ZERO (rho)) {
-		*lat = project_info.pole;
-		*lon = project_info.central_meridian;
-	}
-	else {
-		c = atan (rho * project_info.i_EQ_RAD);
-		sincos (c, &sin_c, &cos_c);
-		*lat = d_asin (cos_c * project_info.sinp + (y * sin_c * project_info.cosp / rho)) * R2D;
-		if (project_info.polar && project_info.north_pole)
-			*lon = project_info.central_meridian + R2D * d_atan2 (x, -y);
-		else if (project_info.polar)
-			*lon = project_info.central_meridian + R2D * d_atan2 (x, y);
-		else
-			*lon = project_info.central_meridian +
-				R2D * d_atan2 (x * sin_c, (rho * project_info.cosp * cos_c - y * project_info.sinp * sin_c));
-	}
+	c = atan (rho);
+	*lat = d_asin (cos(c) * (project_info.sinp + y * project_info.cosp)) * R2D;
+	*lon = d_atan2 (x, project_info.cosp - y * project_info.sinp) * R2D + project_info.central_meridian;
 }
 
 /* -JE GMT_IS_AZIMUTHAL EQUIDISTANT PROJECTION */
@@ -1941,28 +1906,20 @@ void GMT_azeqdist (double lon, double lat, double *x, double *y)
 
 void GMT_iazeqdist (double *lon, double *lat, double x, double y)
 {
-	/* Convert azimuthal equidistant x/yto lon/lat */
-	double rho, c, sin_c, cos_c;
+	/* Convert azimuthal equidistant x/y to lon/lat */
+	double rho, sin_c, cos_c;
 
+	x *= project_info.i_EQ_RAD;
+	y *= project_info.i_EQ_RAD;
 	rho = hypot (x, y);
-
-	if (GMT_IS_ZERO (rho)) {
-		*lat = project_info.pole;
-		*lon = project_info.central_meridian;
-	}
-	else {
-		c = rho * project_info.i_EQ_RAD;
-		sincos (c, &sin_c, &cos_c);
-		*lat = d_asin (cos_c * project_info.sinp + (y * sin_c * project_info.cosp / rho)) * R2D;
-		if (project_info.n_polar)
-			*lon = project_info.central_meridian + R2D * d_atan2 (x, -y);
-		else if (project_info.s_polar)
-			*lon = project_info.central_meridian + R2D * d_atan2 (x, y);
-		else
-			*lon = project_info.central_meridian +
-				R2D * d_atan2 (x * sin_c, (rho * project_info.cosp * cos_c - y * project_info.sinp * sin_c));
-		if ((*lon) <= -180) (*lon) += 360.0;
-	}
+	sincos (rho, &sin_c, &cos_c);
+	if (rho != 0.0) sin_c /= rho;
+	/* Since in the rest we only have sin_c in combination with x or y, it is not necessary to set
+	   sin_c = 1 when rho == 0. In that case x*sin_c and y*sin_c or 0 anyhow. */
+	*lat = d_asin (cos_c * project_info.sinp + y * sin_c * project_info.cosp) * R2D;
+	*lon = d_atan2 (x * sin_c, cos_c * project_info.cosp - y * sin_c * project_info.sinp) * R2D + project_info.central_meridian;
+	if ((*lon) <= -180) (*lon) += 360.0;
+	
 }
 
 /* -JW GMT_MOLLWEIDE EQUAL AREA PROJECTION */
