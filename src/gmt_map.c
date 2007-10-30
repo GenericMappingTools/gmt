@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.162 2007-10-30 01:29:46 remko Exp $
+ *	$Id: gmt_map.c,v 1.163 2007-10-30 17:58:18 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -180,9 +180,6 @@ int GMT_radial_clip_pscoast (double *lon, double *lat, int np, double **x, doubl
 int GMT_wesn_overlap (double lon0, double lat0, double lon1, double lat1);		/* Checks if two wesn regions overlap */
 int GMT_rect_overlap (double lon0, double lat0, double lon1, double lat1);		/* Checks if two xy regions overlap */
 int GMT_radial_overlap (double lon0, double lat0, double lon1, double lat1);		/* Currently a dummy routine */
-int GMT_genper_clip(double *lon, double *lat, int np, double **x, double **y, int *total_nx);	/* Clips to region based on spherical distance */
-int GMT_genper_outside(double lon, double lat);	/* Returns TRUE if a lon/lat point is outside the Lambert Azimuthal Eq. area boundaries */
-int GMT_genper_crossing(double lon1, double lat1, double lon2, double lat2, double *clon, double *clat, double *xx, double *yy, int *sides);	/* computes the crossing point between two lon/lat points and the circular map boundary between them */
 int GMT_genper_overlap(double lon0, double lat0, double lon1, double lat1);	/* Currently a dummy routine */
 int GMT_break_through  (double x0, double y0, double x1, double y1);
 int GMT_map_crossing  (double lon1, double lat1, double lon2, double lat2, double *xlon, double *xlat, double *xx, double *yy, int *sides);
@@ -2191,7 +2188,6 @@ int GMT_map_init_genper (void) {
 		frame_info.axis[0].item[4].interval = frame_info.axis[1].item[4].interval = 0.0;
 
 		GMT_overlap = (PFI) GMT_genper_overlap;
-
 		GMT_crossing = (PFI) GMT_radial_crossing;
 		GMT_map_clip = (PFI) GMT_radial_clip;
 		GMT_outside = (PFI) GMT_radial_outside;
@@ -3874,8 +3870,6 @@ int GMT_polar_outside (double lon, double lat)
 {
 
 	if (GMT_world_map) {
-		/* while ((lon - project_info.central_meridian) < -180.0) lon += 360.0;
-		while ((lon - project_info.central_meridian) > 180.0) lon -= 360.0; */
 		while (lon < project_info.w && (lon + 360.0) < project_info.e) lon += 360.0;
 		while (lon > project_info.e && (lon - 360.0) > project_info.w) lon -= 360.0;
 	}
@@ -3919,7 +3913,6 @@ int GMT_eqdist_outside (double lon, double lat)
 	lat *= D2R;
 	sincos (lat, &s, &c);
 	cc = project_info.sinp * s + project_info.cosp * c * cosd (lon);
-	/* if (cc <= -1.0) { */
 	if (cc < -1.0) {
 		GMT_y_status_new = -1;
 		GMT_x_status_new = 0;
@@ -3933,7 +3926,7 @@ int GMT_radial_outside (double lon, double lat)
 {
 	double dist;
 
-	/* Test if point is more than horizon spherical degrees from origin.  For global maps, let all borders by "south" */
+	/* Test if point is more than horizon spherical degrees from origin.  For global maps, let all borders be "south" */
 
 	GMT_x_status_new = 0;
 	dist = GMT_great_circle_dist (lon, lat, project_info.central_meridian, project_info.pole);
@@ -6195,8 +6188,6 @@ void GMT_set_polar (double plat)
 	if (GMT_IS_ZERO (fabs (plat) - 90.0)) {
 		project_info.polar = TRUE;
 		project_info.north_pole	= (plat > 0.0);
-		project_info.n_polar = project_info.north_pole;
-		project_info.s_polar = !project_info.n_polar;
 	}
 }
 
