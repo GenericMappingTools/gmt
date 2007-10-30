@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.161 2007-10-29 21:26:14 guru Exp $
+ *	$Id: gmt_map.c,v 1.162 2007-10-30 01:29:46 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5374,12 +5374,9 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 			ij_in = (j_in + 2) * mx + i_in + 2;		/* ij allowing for boundary padding */
 			ij_out = j_out * O->nx + i_out;			/* The output node */
 			if (nz[ij_out] == 0) z_out[ij_out] = 0.0;	/* First time, override the initial value */
-			z_out[ij_out] += z_in[ij_in];			/* Add up the z-sum inside this rect... */
-			nz[ij_out]++;					/* ..and how many points there were */
-			if (nz[ij_out] == SHRT_MAX) {			/* This bin is getting way too many points... */
-				fprintf (stderr, "%s: ERROR: Number of projected points inside a bin exceeds %d\n", GMT_program, SHRT_MAX);
-				fprintf (stderr, "%s: ERROR: Incorrect -R -I -J or insanely large grid?\n", GMT_program);
-				GMT_exit (EXIT_FAILURE);
+			if (nz[ij_out] < SHRT_MAX) {			/* Avoid overflow */
+				z_out[ij_out] += z_in[ij_in];		/* Add up the z-sum inside this rect... */
+				nz[ij_out]++;				/* ..and how many points there were */
 			}
 		}
 	    }
@@ -5394,34 +5391,30 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 				x_proj = x_out_proj[i_out];
 			else if (inverse)
 				GMT_geo_to_xy (x_out[i_out], y_out[j_out], &x_proj, &y_proj);
-			else
+			else {
 				GMT_xy_to_geo (&x_proj, &y_proj, x_out[i_out], y_out[j_out]);
 
-			/* On 17-Sep-2007 the slack of GMT_SMALL was added to allow for round-off
-			   errors in the grid limits. */
+				/* On 17-Sep-2007 the slack of GMT_SMALL was added to allow for round-off
+				   errors in the grid limits. */
 
-			if (GMT_io.in_col_type[0] == GMT_IS_LON) {
-				if (x_proj < I->x_min - GMT_SMALL) x_proj += 360.0;
-				if (x_proj > I->x_max + GMT_SMALL) x_proj -= 360.0;
+				if (GMT_io.in_col_type[0] == GMT_IS_LON) {
+					if (x_proj < I->x_min - GMT_SMALL) x_proj += 360.0;
+					if (x_proj > I->x_max + GMT_SMALL) x_proj -= 360.0;
+				}
+				if (GMT_outside (x_proj, y_proj)) continue;	/* Quite possible we are beyond the horizon */
 			}
-
-			if (i_out == (O->nx - 1)) i_in = 1;
 
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 
 			z_int = GMT_get_bcr_z (I, x_proj, y_proj, z_in, edgeinfo, &bcr);
 
-			if (!antialias)
+			if (!antialias || nz[ij_out] < 2)
 				z_out[ij_out] = (float)z_int;
-			else if (nz[ij_out] < 2)	/* Changed 10-Sep-07 from ==0 to <2 */
-				z_out[ij_out] = (float)z_int;
-			else {
-				if (GMT_is_dnan (z_int))
-					z_out[ij_out] /= nz[ij_out];		/* Plain average */
-				else {						/* Weighted average */
-					inv_nz = 1.0 / nz[ij_out];
-					z_out[ij_out] = (float) ((z_out[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz));
-				}
+			else if (GMT_is_dnan (z_int))
+				z_out[ij_out] /= nz[ij_out];		/* Plain average */
+			else {						/* Weighted average */
+				inv_nz = 1.0 / nz[ij_out];
+				z_out[ij_out] = (float) ((z_out[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz));
 			}
 		}
 	}
