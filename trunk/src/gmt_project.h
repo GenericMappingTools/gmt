@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.54 2007-09-26 15:28:53 remko Exp $
+ *	$Id: gmt_project.h,v 1.55 2007-10-30 17:53:09 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -190,8 +190,6 @@ struct GMT_MAP_PROJECTIONS {
 	double s_c, s_ic;
 	double r;		/* Radius of projected sphere in plot units (inch or cm) */
 	BOOLEAN polar;		/* True if projection pole coincides with S or N pole */
-	BOOLEAN s_polar;	/* True if projection pole is S pole */
-	BOOLEAN n_polar;	/* True if projection pole is N pole */
 
 	/* Mollweide Equal-Area Projection */
 
