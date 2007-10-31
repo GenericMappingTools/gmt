@@ -1,6 +1,24 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.136 2007-10-28 23:24:18 remko Exp $
+	$Id: ChangeLog,v 1.137 2007-10-31 17:07:58 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-10-31
+	* gmt_proj.c:		Review of all inverse projections. Bug fixes:
+				. -JS: Would set slice to NaN if central meridian was not Greenwich.
+				. -JR: Longitudes beyond 180 were set to 180.
+				Return NaN when longitude is more than 180 from central meridian:
+				. Cylindrical and miscellaneous projections -J[IKNRW]
+				Return NaN when point is out of map disc:
+				. Azimuthal and miscellaneous projections -J[AEGHSV]
+	* gmt_map.c (GMT_grd_project):		Now also wraps around longitude when
+				GMT_IS_RECT_GRATICULE. Removed initialization with NaN.
+	* grdimage.c:		Added -N option: do not clip image at map boundary.
+
+2007-10-30
+	* gmt_project.h:	project_info.[sn]_polar has become obsolete.
+	* gmt_map.c:		---"---
+	* gmt_proj.c:		Removed all singularities and discontinuities in inverse
+				azimuthal projections
 
 2007-10-28
 	* guru/gmtguru.macros.orig:	Change to 4.2.2b
