@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.24 2007-10-30 17:56:49 remko Exp $
+ *	$Id: gmt_proj.c,v 1.25 2007-10-31 17:07:17 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -98,7 +98,7 @@ void GMT_check_R_J (double *clon)	/* Make sure -R and -J agree for global plots;
 	}
 }
 
-/* GMT_LINEAR TRANSFORMATIONS */
+/* LINEAR TRANSFORMATIONS */
 
 void GMT_translin (double forw, double *inv)	/* Linear forward */
 {
@@ -163,7 +163,7 @@ void GMT_itranspowz (double *z, double z_in) /* pow z inverse */
 	*z = pow (z_in, project_info.xyz_ipow[2]);
 }
 
-/* -JP GMT_POLAR (r-theta) PROJECTION */
+/* -JP POLAR (r-theta) PROJECTION */
 
 void GMT_vpolar (double lon0)
 {
@@ -196,7 +196,7 @@ void GMT_ipolar (double *x, double *y, double x_i, double y_i)
 	if (project_info.got_elevations) *y = 90.0 - (*y);    /* elevations, presumably */
 }
 
-/* -JM GMT_MERCATOR PROJECTION */
+/* -JM MERCATOR PROJECTION */
 
 void GMT_vmerc (double cmerid)
 {
@@ -244,7 +244,7 @@ void GMT_imerc_sph (double *lon, double *lat, double x, double y)
 	if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 }
 
-/* -JY GMT_IS_CYLINDRICAL EQUAL-AREA PROJECTION */
+/* -JY CYLINDRICAL EQUAL-AREA PROJECTION */
 
 void GMT_vcyleq (double lon0, double slat)
 {
@@ -281,12 +281,12 @@ void GMT_icyleq (double *lon, double *lat, double x, double y)
 		x *= project_info.iDx;
 		y *= project_info.iDy;
 	}
-	*lon = (x * project_info.y_i_rx) + project_info.central_meridian;
+	*lon = x * project_info.y_i_rx + project_info.central_meridian;
 	*lat = R2D * d_asin (y * project_info.y_i_ry);
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 
-/* -JQ GMT_IS_CYLINDRICAL EQUIDISTANT PROJECTION */
+/* -JQ CYLINDRICAL EQUIDISTANT PROJECTION */
 
 void GMT_vcyleqdist (double lon0)
 {
@@ -316,7 +316,7 @@ void GMT_icyleqdist (double *lon, double *lat, double x, double y)
 	*lat = y * project_info.q_ir;
 }
 
-/* -JJ GMT_MILLER GMT_IS_CYLINDRICAL PROJECTION */
+/* -JJ MILLER CYLINDRICAL PROJECTION */
 
 void GMT_vmiller (double lon0)
 {
@@ -348,7 +348,7 @@ void GMT_imiller (double *lon, double *lat, double x, double y)
 	*lat = 2.5 * R2D * atan (exp (y * project_info.j_iy)) - 112.5;
 }
 
-/* -JS GMT_POLAR STEREOGRAPHIC PROJECTION */
+/* -JS POLAR STEREOGRAPHIC PROJECTION */
 
 void GMT_vstereo (double lon0, double lat0)
 {
@@ -451,24 +451,22 @@ void GMT_istereo_sph (double *lon, double *lat, double x, double y)
 {
 	double rho, c, sin_c, cos_c, denom;
 
-	if (x == 0.0 && y == 0.0) {
-		*lon = project_info.central_meridian;
-		*lat = project_info.pole;
+	if (project_info.GMT_convert_latitudes) {	/* Undo effect of fudge factors */
+		x *= project_info.iDx;
+		y *= project_info.iDy;
 	}
-	else {
-		if (project_info.GMT_convert_latitudes) {	/* Undo effect of fudge factors */
-			x *= project_info.iDx;
-			y *= project_info.iDy;
-		}
-		rho = hypot (x, y);
-		c = 2.0 * atan (rho * project_info.s_ic);
-		sincos (c, &sin_c, &cos_c);
-		*lat = d_asin (cos_c * project_info.sinp + (y * sin_c * project_info.cosp / rho)) * R2D;
-		denom = rho * project_info.cosp * cos_c - y * project_info.sinp * sin_c;
-		*lon = R2D * atan (x * sin_c / denom) + project_info.central_meridian;
-		if (denom < 0.0) *lon += 180.0;
-		if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
+	rho = hypot (x, y);
+	c = 2.0 * atan (rho * project_info.s_ic);
+	if (c > M_PI_2) {	/* Horizon */
+		*lat = *lon = GMT_d_NaN;
+		return;
 	}
+	sincos (c, &sin_c, &cos_c);
+	if (rho != 0.0) sin_c /= rho;
+	*lat = asin (cos_c * project_info.sinp + y * sin_c * project_info.cosp) * R2D;
+	denom = project_info.cosp * cos_c - y * project_info.sinp * sin_c;
+	*lon = d_atan2 (x * sin_c, denom) * R2D + project_info.central_meridian;
+	if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 }
 
 /* Spherical equatorial view */
@@ -497,7 +495,7 @@ void GMT_stereo2_sph (double lon, double lat, double *x, double *y)
 	}
 }
 
-/* -JL GMT_LAMBERT CONFORMAL CONIC PROJECTION */
+/* -JL LAMBERT CONFORMAL CONIC PROJECTION */
 
 void GMT_vlamb (double rlong0, double rlat0, double pha, double phb)
 {
@@ -546,12 +544,9 @@ void GMT_lamb (double lon, double lat, double *x, double *y)
 	lat *= D2R;
 
 	es = project_info.ECC * sin (lat);
-	hold2 = pow (((1.0 - es) / (1.0 + es)), project_info.half_ECC);
+	hold2 = pow ((1.0 - es) / (1.0 + es), project_info.half_ECC);
 	hold3 = tan (M_PI_4 - 0.5 * lat);
-	if (GMT_IS_ZERO (hold3))
-		hold1 = 0.0;
-	else
-		hold1 = pow (hold3 / hold2, project_info.l_N);
+	hold1 = pow (hold3 / hold2, project_info.l_N);
 	rho = project_info.l_rF * hold1;
 	theta = project_info.l_Nr * lon;
 	sincos (theta, &s, &c);
@@ -564,12 +559,12 @@ void GMT_ilamb (double *lon, double *lat, double x, double y)
 	int i;
 	double theta, rho, t, tphi, phi, delta, dy, r;
 
-	theta = atan (x / (project_info.l_rho0 - y));
+	theta = d_atan2 (x, project_info.l_rho0 - y);
 	*lon = theta * project_info.l_i_Nr + project_info.central_meridian;
 
 	dy = project_info.l_rho0 - y;
 	rho = copysign (hypot (x, dy), project_info.l_N);
-	t = pow ((rho * project_info.l_i_rF), project_info.l_i_N);
+	t = pow (rho * project_info.l_i_rF, project_info.l_i_N);
 	phi = tphi = M_PI_2 - 2.0 * atan (t);
 	delta = 1.0;
 	for (i = 0; i < 100 && delta > GMT_CONV_LIMIT; i++) {
@@ -592,7 +587,7 @@ void GMT_lamb_sph (double lon, double lat, double *x, double *y)
 
 	lat *= D2R;
 	t = tan (M_PI_4 - 0.5 * lat);
-	A = (GMT_IS_ZERO (t)) ? 0.0 : pow (t, project_info.l_N);
+	A = pow (t, project_info.l_N);
 	rho = project_info.l_rF * A;
 	theta = project_info.l_Nr * lon;
 
@@ -605,17 +600,17 @@ void GMT_ilamb_sph (double *lon, double *lat, double x, double y)
 {
 	double theta, rho, t;
 
-	theta = atan (x / (project_info.l_rho0 - y));
+	theta = d_atan2 (x, project_info.l_rho0 - y);
 	rho = hypot (x, project_info.l_rho0 - y);
 	if (project_info.l_N < 0.0) rho = -rho;
-	t = pow ((rho * project_info.l_i_rF), -project_info.l_i_N);
+	t = pow (rho * project_info.l_i_rF, -project_info.l_i_N);
 
 	*lon = theta * project_info.l_i_Nr + project_info.central_meridian;
 	*lat = 2.0 * R2D * atan (t) - 90.0;
 	if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 }
 
-/* -JO OBLIQUE GMT_MERCATOR PROJECTION */
+/* -JO OBLIQUE MERCATOR PROJECTION */
 
 void GMT_oblmrc (double lon, double lat, double *x, double *y)
 {
@@ -676,7 +671,7 @@ void GMT_iobl (double *lon, double *lat, double olon, double olat)
 	while ((*lon) >= TWO_PI) (*lon) -= TWO_PI;
 }
 
-/* -JT TRANSVERSE GMT_MERCATOR PROJECTION */
+/* -JT TRANSVERSE MERCATOR PROJECTION */
 
 void GMT_vtm (double lon0, double lat0)
 {
@@ -840,7 +835,7 @@ void GMT_itm_sph (double *lon, double *lat, double x, double y)
 	if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 }
 
-/* -JU UNIVERSAL TRANSVERSE GMT_MERCATOR PROJECTION */
+/* -JU UNIVERSAL TRANSVERSE MERCATOR PROJECTION */
 
 /* Ellipsoidal UTM */
 
@@ -884,7 +879,7 @@ void GMT_iutm_sph (double *lon, double *lat, double x, double y)
 	GMT_itm_sph (lon, lat, x, y);
 }
 
-/* -JA GMT_LAMBERT GMT_IS_AZIMUTHAL EQUAL AREA PROJECTION */
+/* -JA LAMBERT AZIMUTHAL EQUAL AREA PROJECTION */
 
 void GMT_vlambeq (double lon0, double lat0)
 {
@@ -933,12 +928,18 @@ void GMT_ilambeq (double *lon, double *lat, double x, double y)
 	rho = hypot (x, y);
 	a = 0.5 * rho * project_info.i_EQ_RAD;			/* a = sin(c/2)		*/
 	a *= a;							/* a = sin(c/2)**2	*/
-	sin_c = d_sqrt (1.0 - a) * project_info.i_EQ_RAD;	/* sin_c = sin(c)/rho	*/
 	cos_c = 1.0 - 2.0 * a;					/* cos_c = cos(c)	*/
+	if (cos_c < 0.0) {					/* Horizon		*/
+		*lat = *lon = GMT_d_NaN;
+		return;
+	}
+	sin_c = sqrt (1.0 - a) * project_info.i_EQ_RAD;		/* sin_c = sin(c)/rho	*/
 	*lat = d_asin (cos_c * project_info.sinp + y * sin_c * project_info.cosp) * R2D;
 	*lon = d_atan2 (x * sin_c, project_info.cosp * cos_c - y * project_info.sinp * sin_c) * R2D + project_info.central_meridian;
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
+
+/* -JG GENERAL PERSPECTIVE PROJECTION */
 
 /* Set up General Perspective projection */
 
@@ -1725,12 +1726,14 @@ void GMT_igenper (double *lon, double *lat, double xt, double yt)
 		*lon = project_info.central_meridian;
 		return;
 	}
+#if 0	/* XXX Do not project onto edge */
 	if (rho > project_info.g_rmax) {
 		x *= project_info.g_rmax/rho;
 		y *= project_info.g_rmax/rho;
 		rho = project_info.g_rmax;
 		project_info.g_outside = TRUE;
 	}
+#endif
 
 	con = P - 1.0;
 	com = P + 1.0;
@@ -1738,15 +1741,10 @@ void GMT_igenper (double *lon, double *lat, double xt, double yt)
 	if (project_info.ECC2 != 0.0)
 		genper_tolatlong (x, y, 0.0, lat, lon);
 	else {
-		sinc = (P - d_sqrt(1.0 - (rho * rho * com)/(R*R*con))) / (R * con / rho + rho/(R*con));
-		cosc = d_sqrt(1.0 - sinc*sinc);
-		*lat = d_asin(cosc * project_info.sinp + y*sinc * project_info.cosp/rho) * R2D;
-		*lon = d_atan2(x * sinc, rho * project_info.cosp * cosc - y * project_info.sinp * sinc)*R2D + project_info.central_meridian;
-	}
-	if (GMT_is_dnan(*lat) || GMT_is_dnan(*lon)) {
-		fprintf (stderr, "igenper: lat or lon nan\n");
-		fprintf (stderr, "igenper: xt %10.3e yt %10.3e\n", xt, yt);
-		fprintf (stderr, "igenper: lon %8.3f lat %6.3f\n", *lon, *lat);
+		sinc = (P - sqrt(1.0 - (rho * rho * com)/(R*R*con))) / (R * con / rho + rho/(R*con));
+		cosc = sqrt(1.0 - sinc * sinc);
+		*lat = asin(cosc * project_info.sinp + y * sinc * project_info.cosp/rho) * R2D;
+		*lon = d_atan2(x * sinc, rho * project_info.cosp * cosc - y * project_info.sinp * sinc) * R2D + project_info.central_meridian;
 	}
 	return;
 }
@@ -1823,12 +1821,12 @@ void GMT_iortho (double *lon, double *lat, double x, double y)
 	x *= project_info.i_EQ_RAD;
 	y *= project_info.i_EQ_RAD;
 	rho = hypot (x, y);
-	cos_c = d_sqrt (1.0 - rho * rho);
+	cos_c = sqrt (1.0 - rho * rho);	/* Produces NaN for rho > 1: beyond horizon */
 	*lat = d_asin (cos_c * project_info.sinp + y * project_info.cosp) * R2D;
 	*lon = d_atan2 (x, cos_c * project_info.cosp - y * project_info.sinp) * R2D + project_info.central_meridian;
 }
 
-/* -JF GMT_GNOMONIC PROJECTION */
+/* -JF GNOMONIC PROJECTION */
 
 void GMT_vgnomonic (double lon0, double lat0, double horizon)
 {
@@ -1866,11 +1864,15 @@ void GMT_ignomonic (double *lon, double *lat, double x, double y)
 	y *= project_info.i_EQ_RAD;
 	rho = hypot (x, y);
 	c = atan (rho);
+	if (c > project_info.f_horizon * D2R) {		/* Horizon */
+		*lat = *lon = GMT_d_NaN;
+		return;
+	}
 	*lat = d_asin (cos(c) * (project_info.sinp + y * project_info.cosp)) * R2D;
 	*lon = d_atan2 (x, project_info.cosp - y * project_info.sinp) * R2D + project_info.central_meridian;
 }
 
-/* -JE GMT_IS_AZIMUTHAL EQUIDISTANT PROJECTION */
+/* -JE AZIMUTHAL EQUIDISTANT PROJECTION */
 
 void GMT_vazeqdist (double lon0, double lat0)
 {
@@ -1912,17 +1914,19 @@ void GMT_iazeqdist (double *lon, double *lat, double x, double y)
 	x *= project_info.i_EQ_RAD;
 	y *= project_info.i_EQ_RAD;
 	rho = hypot (x, y);
+	if (rho > M_PI) {	/* Horizon */
+		*lat = *lon = GMT_d_NaN;
+		return;
+	}
 	sincos (rho, &sin_c, &cos_c);
 	if (rho != 0.0) sin_c /= rho;
 	/* Since in the rest we only have sin_c in combination with x or y, it is not necessary to set
 	   sin_c = 1 when rho == 0. In that case x*sin_c and y*sin_c or 0 anyhow. */
 	*lat = d_asin (cos_c * project_info.sinp + y * sin_c * project_info.cosp) * R2D;
 	*lon = d_atan2 (x * sin_c, cos_c * project_info.cosp - y * sin_c * project_info.sinp) * R2D + project_info.central_meridian;
-	if ((*lon) <= -180) (*lon) += 360.0;
-	
 }
 
-/* -JW GMT_MOLLWEIDE EQUAL AREA PROJECTION */
+/* -JW MOLLWEIDE EQUAL AREA PROJECTION */
 
 void GMT_vmollweide (double lon0, double scale)
 {
@@ -1973,14 +1977,19 @@ void GMT_imollweide (double *lon, double *lat, double x, double y)
 	/* Convert Mollweide Equal-Area x/y to lon/lat */
 	double phi, phi2;
 
-	phi = d_asin (y * project_info.w_iy);
+	phi = asin (y * project_info.w_iy);
+	*lon = x / (project_info.w_x * cos(phi));
+	if (fabs (*lon) > 180.0) {	/* Horizon */
+		*lat = *lon = GMT_d_NaN;
+		return;
+	}
+	*lon += project_info.central_meridian;
 	phi2 = 2.0 * phi;
-	*lat = R2D * d_asin ((phi2 + sin (phi2)) / M_PI);
-	*lon = project_info.central_meridian + (x / (project_info.w_x * cos (phi)));
+	*lat = R2D * asin ((phi2 + sin (phi2)) / M_PI);
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 
-/* -JH GMT_HAMMER-AITOFF EQUAL AREA PROJECTION */
+/* -JH HAMMER-AITOFF EQUAL AREA PROJECTION */
 
 void GMT_vhammer (double lon0, double scale)
 {
@@ -2017,28 +2026,24 @@ void GMT_hammer (double lon, double lat, double *x, double *y)
 void GMT_ihammer (double *lon, double *lat, double x, double y)
 {
 	/* Convert Hammer_Aitoff Equal-Area x/y to lon/lat */
-	double rho, c, angle;
+	double rho, a, sin_c, cos_c;
 
 	x *= 0.5;
 	rho = hypot (x, y);
-
-	if (GMT_IS_ZERO (rho)) {
-		*lat = 0.0;
-		*lon = project_info.central_meridian;
+	a = 0.5 * rho * project_info.i_EQ_RAD;			/* a = sin(c/2)		*/
+	a *= a;							/* a = sin(c/2)**2	*/
+	cos_c = 1.0 - 2.0 * a;					/* cos_c = cos(c)	*/
+	if (cos_c < 0.0) {					/* Horizon		*/
+		*lat = *lon = GMT_d_NaN;
+		return;
 	}
-	else {
-		c = 2.0 * d_asin (0.5 * rho * project_info.i_EQ_RAD);
-		*lat = d_asin (y * sin (c) / rho) * R2D;
-		if (GMT_IS_ZERO (c - M_PI_2))
-			angle = (GMT_IS_ZERO (x)) ? 0.0 : copysign (180.0, x);
-		else
-			angle = 2.0 * R2D * atan (x * tan (c) / rho);
-		*lon = project_info.central_meridian + angle;
-		if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
-	}
+	sin_c = sqrt (1.0 - a) * project_info.i_EQ_RAD;		/* sin_c = sin(c)/rho	*/
+	*lat = asin (y * sin_c) * R2D;
+	*lon = 2.0 * d_atan2 (x * sin_c, cos_c) * R2D + project_info.central_meridian;
+	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 
-/* -JV VAN DER GMT_VANGRINTEN PROJECTION */
+/* -JV VAN DER GRINTEN PROJECTION */
 
 void GMT_vgrinten (double lon0, double scale)
 {
@@ -2102,13 +2107,17 @@ void GMT_igrinten (double *lon, double *lat, double x, double y)
 	y *= project_info.v_ir;
 	x2 = x * x;	y2 = y * y;
 	x2y2 = x2 + y2;
+	if (x2y2 > 1.0) {	/* Horizon */
+		*lat = *lon = GMT_d_NaN;
+		return;
+	}
 	c1 = -fabs(y) * (1.0 + x2y2);
 	c2 = c1 - 2 * y2 + x2;
 	p = x2y2 * x2y2;
 	c3 = -2.0 * c1 + 1.0 + 2.0 * y2 + p;
 	d = y2 / c3 + (2 * pow (c2 / c3, 3.0) - 9.0 * c1 * c2 / (c3 * c3)) / 27.0;
 	a1 = (c1 - c2 * c2 / (3.0 * c3)) / c3;
-	m1 = 2 * sqrt (-a1 / 3.0);
+	m1 = 2.0 * sqrt (-a1 / 3.0);
 	theta1 = d_acos (3.0 * d / (a1 * m1)) / 3.0;
 
 	*lat = copysign (180.0, y) * (-m1 * cos (theta1 + M_PI/3.0) - c2 / (3.0 * c3));
@@ -2116,7 +2125,7 @@ void GMT_igrinten (double *lon, double *lat, double x, double y)
 	if (x != 0.0) *lon += 90.0 * (x2y2 - 1.0 + sqrt (1.0 + 2 * (x2 - y2) + p)) / x;
 }
 
-/* -JR GMT_WINKEL-TRIPEL MODIFIED GMT_IS_AZIMUTHAL PROJECTION */
+/* -JR WINKEL-TRIPEL MODIFIED GMT_IS_AZIMUTHAL PROJECTION */
 
 void GMT_vwinkel (double lon0, double scale)
 {
@@ -2199,9 +2208,13 @@ void GMT_iwinkel (double *lon, double *lat, double x, double y)
 		n_iter++;
 	}
 	while (delta > 1e-12 && n_iter < 100);
+	*lon *= R2D;
+	if (fabs (*lon) > 180.0) {	/* Horizon */
+		*lat = *lon = GMT_d_NaN;
+		return;
+	}
+	*lon += project_info.central_meridian;
 	*lat *= R2D;
-	*lon = project_info.central_meridian + (*lon) * R2D;
-	if (fabs (*lon) > 180.0) *lon = copysign (180.0, *lon);
 }
 
 void GMT_iwinkel_sub (double y, double *phi)
@@ -2288,8 +2301,13 @@ void GMT_ieckert4 (double *lon, double *lat, double x, double y)
 	s = y * project_info.k4_iy;
 	phi = d_asin (s);
 	c = cos (phi);
+	*lon = R2D * x * project_info.k4_ix / (1.0 + c);
+	if (fabs (*lon) > 180.0) {	/* Horizon */
+		*lat = *lon = GMT_d_NaN;
+		return;
+	}
+	*lon += project_info.central_meridian;
 	*lat = d_asin ((phi + s * c + 2.0 * s) / (2.0 + M_PI_2)) * R2D;
-	*lon = project_info.central_meridian + R2D * x * project_info.k4_ix / (1.0 + c);
 }
 
 double GMT_left_eckert4 (double y)
@@ -2356,8 +2374,13 @@ void GMT_ieckert6 (double *lon, double *lat, double x, double y)
 
 	phi = 0.5 * y * project_info.k6_ir;
 	sincos (phi, &s, &c);
+	*lon = R2D * x * project_info.k6_ir / (1.0 + c);
+	if (fabs (*lon) > 180.0) {	/* Horizon */
+		*lat = *lon = GMT_d_NaN;
+		return;
+	}
+	*lon += project_info.central_meridian;
 	*lat = d_asin ((phi + s) / (1.0 + M_PI_2)) * R2D;
-	*lon = project_info.central_meridian + R2D * x * project_info.k6_ir / (1.0 + c);
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 
@@ -2383,7 +2406,7 @@ double GMT_right_eckert6 (double y)
 	return (x * project_info.x_scale + project_info.x0);
 }
 
-/* -JN GMT_ROBINSON PSEUDOCYLINDRICAL PROJECTION */
+/* -JN ROBINSON PSEUDOCYLINDRICAL PROJECTION */
 
 void GMT_vrobinson (double lon0)
 {
@@ -2458,9 +2481,13 @@ void GMT_irobinson (double *lon, double *lat, double x, double y)
 	Y = fabs (y * project_info.n_i_cy);
 	*lat = GMT_robinson_spline (Y, project_info.n_Y, project_info.n_phi, project_info.n_iy_coeff);
 	X = GMT_robinson_spline (*lat, project_info.n_phi, project_info.n_X, project_info.n_x_coeff);
-
+	*lon = x / (project_info.n_cx * X);
+	if (fabs (*lon) > 180.0) {	/* Horizon */
+		*lat = *lon = GMT_d_NaN;
+		return;
+	}
+	*lon += project_info.central_meridian;
 	if (y < 0.0) *lat = -(*lat);
-	*lon = x / (project_info.n_cx * X) + project_info.central_meridian;
 }
 
 double GMT_robinson_spline (double xp, double *x, double *y, double *c) {
@@ -2521,7 +2548,7 @@ double GMT_right_robinson (double y)
 	return (x * project_info.x_scale + project_info.x0);
 }
 
-/* -JI GMT_SINUSOIDAL EQUAL AREA PROJECTION */
+/* -JI SINUSOIDAL EQUAL AREA PROJECTION */
 
 void GMT_vsinusoidal (double lon0)
 {
@@ -2549,7 +2576,12 @@ void GMT_isinusoidal (double *lon, double *lat, double x, double y)
 	/* Convert Sinusoidal Equal-Area x/y to lon/lat */
 
 	*lat = y * project_info.i_EQ_RAD;
-	*lon = ((GMT_IS_ZERO (fabs (*lat) - M_PI)) ? 0.0 : R2D * x / (project_info.EQ_RAD * cos (*lat))) + project_info.central_meridian;
+	*lon = (GMT_IS_ZERO (fabs (*lat) - M_PI)) ? 0.0 : R2D * x / (project_info.EQ_RAD * cos (*lat));
+	if (fabs (*lon) > 180.0) {	/* Horizon */
+		*lat = *lon = GMT_d_NaN;
+		return;
+	}
+	*lon += project_info.central_meridian;
 	*lat *= R2D;
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
@@ -2574,7 +2606,7 @@ double GMT_right_sinusoidal (double y)
 	return (x * project_info.x_scale + project_info.x0);
 }
 
-/* -JC GMT_CASSINI PROJECTION */
+/* -JC CASSINI PROJECTION */
 
 void GMT_vcassini (double lon0, double lat0)
 {
@@ -2697,7 +2729,7 @@ void GMT_icassini_sph (double *lon, double *lat, double x, double y)
 	*lon = project_info.central_meridian + R2D * atan (tx / cD);
 }
 
-/* -JB GMT_ALBERS PROJECTION */
+/* -JB ALBERS PROJECTION */
 
 void GMT_valbers (double lon0, double lat0, double ph1, double ph2)
 {
