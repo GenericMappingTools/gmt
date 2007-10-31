@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.142 2007-10-22 16:08:15 guru Exp $
+ *	$Id: gmt_io.c,v 1.143 2007-10-31 19:58:41 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3015,7 +3015,7 @@ BOOLEAN GMT_not_numeric (char *text)
 	 * settings in .gmtdefaults4.  Here we just rule out things
 	 * that we are sure of. */
 	 
-	int i, n_digits = 0, n_period = 0, n_plus = 0, n_minus = 0;
+	int i, k, n_digits = 0, n_period = 0, period, n_plus = 0, n_minus = 0;
 	
 	for (i = 0; text[i]; i++) {	/* Check each character */
 		/* First check for ASCII values that never appear in any number */
@@ -3028,10 +3028,17 @@ BOOLEAN GMT_not_numeric (char *text)
 		if (text[i] > 'W' && text[i] < 'd') return (TRUE);
 		if (text[i] > 'e') return (TRUE);
 		if (isdigit ((int)text[i])) n_digits++;
-		if (text[i] == '.') n_period++;
+		if (text[i] == '.') {
+			n_period++;
+			period = i;
+		}
 		if (text[i] == '+') n_plus++;
 		if (text[i] == '-') n_minus++;
 	}
 	if (n_digits == 0 || n_period > 1 || (n_plus + n_minus) > 2) return (TRUE);
+	if (n_period) {	/* Check if we have filename.ext with ext having no numbers */
+		for (i = period + 1, n_digits = k = 0; text[i]; i++, k++) if (isdigit ((int)text[i])) n_digits++;
+		if (k > 0 && n_digits == 0) return (TRUE);	/* Probably a file */
+	}
 	return (FALSE);	/* THis may in fact be numeric */
 }

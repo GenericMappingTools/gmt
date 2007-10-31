@@ -1,8 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.137 2007-10-31 17:07:58 remko Exp $
+	$Id: ChangeLog,v 1.138 2007-10-31 19:58:41 guru Exp $
 -----------------------------------------------------------------------------------------
 
-2007-10-31
+2007-10-31	pwessel
+	* g*math.c:		Would see files like 13239.d as possible numbers and give
+				annoying warnings (file was correctly chosen so no bug).
+				
+2007-10-31	remko
 	* gmt_proj.c:		Review of all inverse projections. Bug fixes:
 				. -JS: Would set slice to NaN if central meridian was not Greenwich.
 				. -JR: Longitudes beyond 180 were set to 180.
