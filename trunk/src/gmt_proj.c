@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.25 2007-10-31 17:07:17 remko Exp $
+ *	$Id: gmt_proj.c,v 1.26 2007-10-31 20:00:55 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -966,8 +966,8 @@ void genper_to_xtyt (double angle, double x, double y, double offset, double *xt
 
 	yp -= offset;
 
-	*xt = (xp * project_info.g_cos_twist - yp * project_info.g_sin_twist);
-	*yt = (yp * project_info.g_cos_twist + xp * project_info.g_sin_twist);
+	*xt = xp * project_info.g_cos_twist - yp * project_info.g_sin_twist;
+	*yt = yp * project_info.g_cos_twist + xp * project_info.g_sin_twist;
 
 	return;
 }
@@ -1130,7 +1130,7 @@ void genper_tolatlong (double x, double y, double h, double *lat, double *lon)
 
 	if (h == 0) {
 		phi = atan(S/sqrt(one_m_e2*(1.0 - e2 - S*S)));
-		if (GMT_is_dnan(phi)) set_exit++;
+		/* if (GMT_is_dnan(phi)) set_exit++; */
 	}
 	else {
 		double t1, t2;
@@ -1644,7 +1644,7 @@ void GMT_genper (double lon, double lat, double *xt, double *yt)
 	sincos (dlon, &sin_dlon, &cos_dlon);
 
 	cosc = project_info.sinp * sin_lat + project_info.cosp * cos_lat * cos_dlon;
-	sinc = d_sqrt(1.0 - cosc*cosc);
+	sinc = d_sqrt(1.0 - cosc * cosc);
 
 	project_info.g_outside = FALSE;
 
@@ -1726,14 +1726,12 @@ void GMT_igenper (double *lon, double *lat, double xt, double yt)
 		*lon = project_info.central_meridian;
 		return;
 	}
-#if 0	/* XXX Do not project onto edge */
 	if (rho > project_info.g_rmax) {
 		x *= project_info.g_rmax/rho;
 		y *= project_info.g_rmax/rho;
 		rho = project_info.g_rmax;
 		project_info.g_outside = TRUE;
 	}
-#endif
 
 	con = P - 1.0;
 	com = P + 1.0;
@@ -1741,9 +1739,9 @@ void GMT_igenper (double *lon, double *lat, double xt, double yt)
 	if (project_info.ECC2 != 0.0)
 		genper_tolatlong (x, y, 0.0, lat, lon);
 	else {
-		sinc = (P - sqrt(1.0 - (rho * rho * com)/(R*R*con))) / (R * con / rho + rho/(R*con));
-		cosc = sqrt(1.0 - sinc * sinc);
-		*lat = asin(cosc * project_info.sinp + y * sinc * project_info.cosp/rho) * R2D;
+		sinc = (P - d_sqrt(1.0 - (rho * rho * com)/(R*R*con))) / (R * con / rho + rho/(R*con));
+		cosc = d_sqrt(1.0 - sinc * sinc);
+		*lat = d_asin(cosc * project_info.sinp + y * sinc * project_info.cosp/rho) * R2D;
 		*lon = d_atan2(x * sinc, rho * project_info.cosp * cosc - y * project_info.sinp * sinc) * R2D + project_info.central_meridian;
 	}
 	return;
