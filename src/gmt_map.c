@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.163 2007-10-30 17:58:18 remko Exp $
+ *	$Id: gmt_map.c,v 1.164 2007-10-31 17:06:36 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5310,10 +5310,6 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 	I_off = (I->node_offset) ? 0.5 : 0.0;
 	O_off = (O->node_offset) ? 0.5 : 0.0;
 
-	/* Initialize output to NaN (to be replaced by projected values) */
-	
-	for (ij_out = 0; ij_out < O->nx*O->ny; ij_out++) z_out[ij_out] = GMT_f_NaN;
-
 	/* Precalculate grid coordinates */
 
 	for (i_in = 0; i_in < I->nx; i_in++) x_in[i_in] = GMT_i_to_x (i_in, I->x_min, I->x_max, I->x_inc, I_off, I->nx);
@@ -5335,7 +5331,13 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 		else {
 			for (i_in = 0; i_in < I->nx; i_in++) GMT_geo_to_xy (x_in[i_in], I->y_min, &x_in_proj[i_in], &y_proj);
 			for (j_in = 0; j_in < I->ny; j_in++) GMT_geo_to_xy (I->x_min, y_in[j_in], &x_proj, &y_in_proj[j_in]);
-			for (i_out = 0; i_out < O->nx; i_out++) GMT_xy_to_geo (&x_out_proj[i_out], &y_proj, x_out[i_out], I->y_min);
+			for (i_out = 0; i_out < O->nx; i_out++) {
+				GMT_xy_to_geo (&x_out_proj[i_out], &y_proj, x_out[i_out], I->y_min);
+				if (GMT_io.in_col_type[0] == GMT_IS_LON) {
+					while (x_out_proj[i_out] < I->x_min - GMT_SMALL) x_out_proj[i_out] += 360.0;
+					while (x_out_proj[i_out] > I->x_max + GMT_SMALL) x_out_proj[i_out] -= 360.0;
+				}
+			}
 			for (j_out = 0; j_out < O->ny; j_out++) GMT_xy_to_geo (&x_proj, &y_out_proj[j_out], I->y_min, y_out[j_out]);
 		}
 	}
@@ -5389,12 +5391,10 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 				/* On 17-Sep-2007 the slack of GMT_SMALL was added to allow for round-off
 				   errors in the grid limits. */
-
 				if (GMT_io.in_col_type[0] == GMT_IS_LON) {
-					if (x_proj < I->x_min - GMT_SMALL) x_proj += 360.0;
-					if (x_proj > I->x_max + GMT_SMALL) x_proj -= 360.0;
+					while (x_proj < I->x_min - GMT_SMALL) x_proj += 360.0;
+					while (x_proj > I->x_max + GMT_SMALL) x_proj -= 360.0;
 				}
-				if (GMT_outside (x_proj, y_proj)) continue;	/* Quite possible we are beyond the horizon */
 			}
 
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
