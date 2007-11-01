@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.143 2007-10-31 19:58:41 guru Exp $
+ *	$Id: gmt_io.c,v 1.144 2007-11-01 19:58:14 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3015,7 +3015,7 @@ BOOLEAN GMT_not_numeric (char *text)
 	 * settings in .gmtdefaults4.  Here we just rule out things
 	 * that we are sure of. */
 	 
-	int i, k, n_digits = 0, n_period = 0, period, n_plus = 0, n_minus = 0;
+	int i, k, n_digits = 0, n_period = 0, period = 0, n_plus = 0, n_minus = 0;
 	
 	for (i = 0; text[i]; i++) {	/* Check each character */
 		/* First check for ASCII values that never appear in any number */
