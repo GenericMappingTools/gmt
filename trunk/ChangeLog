@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.139 2007-11-02 03:39:51 guru Exp $
+	$Id: ChangeLog,v 1.140 2007-11-02 18:29:28 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-11-02	remko
+	* gmt_proj.[ch], gmt_project.h, gmt_map.c, gmt_init.c, explain_-J*.txt:
+				Added optional horizon to global azimuthal projections (-J[AEGS]),
+				also made horizon optional in Gnomonic projection (-JF).
 
 2007-11-01	pwessel
 	* gmt_support.c:	In GMT_contour, would occasionally not check internal crossings
