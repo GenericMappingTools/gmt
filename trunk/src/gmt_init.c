@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.309 2007-10-22 16:08:15 guru Exp $
+ *	$Id: gmt_init.c,v 1.310 2007-11-02 18:21:53 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -725,7 +725,8 @@ void GMT_syntax (char option)
 
 			switch (project_info.projection) {
 				case GMT_LAMB_AZ_EQ:
-					fprintf (stderr, "\t-Ja<lon0>/<lat0>/<scale> OR -JA<lon0>/<lat0>/<width>\n");
+					fprintf (stderr, "\t-Ja<lon0>/<lat0>[/<horizon>]/<scale> OR -JA<lon0>/<lat0>[/<horizon>]/<width>\n");
+					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (<= 180, default 90)\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
@@ -744,14 +745,21 @@ void GMT_syntax (char option)
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree ,or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
+				case GMT_AZ_EQDIST:
+					fprintf (stderr, "\t-Je<lon0>/<lat0>[/<horizon>]/<scale> OR -JE<lon0>/<lat0>[/<horizon>/<width>\n");
+					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (<= 180, default 180)\n");
+					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
+						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					break;
 				case GMT_GNOMONIC:
-					fprintf (stderr, "\t-Jf<lon0>/<lat0>/<horizon>/<scale> OR -JF<lon0>/<lat0>/<horizon>/<width>\n");
-					fprintf (stderr, "\t   <horizon> is distance from center to perimeter (< 90)\n");
+					fprintf (stderr, "\t-Jf<lon0>/<lat0>[/<horizon>]/<scale> OR -JF<lon0>/<lat0>[/<horizon>]/<width>\n");
+					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (< 90, default 60)\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case GMT_ORTHO:
-					fprintf (stderr, "\t-Jg<lon0>/<lat0>/<scale> OR -JG<lon0>/<lat0>/<width>\n");
+					fprintf (stderr, "\t-Jg<lon0>/<lat0>[/<horizon>]/<scale> OR -JG<lon0>/<lat0>[/<horizon>]/<width>\n");
+					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (<= 90, default 90)\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
@@ -808,7 +816,8 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case GMT_STEREO:
-					fprintf (stderr, "\t-Js<lon0>/<lat0>/<scale> OR -JS<lon0>/<lat0>/<width>\n");
+					fprintf (stderr, "\t-Js<lon0>/<lat0>[/<horizon>]/<scale> OR -JS<lon0>/<lat0>[/<horizon>]/<width>\n");
+					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (< 180, default 90)\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx>, <lat>/<1:xxxx>, or <radius> (in %s)/<lat>, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
@@ -4201,27 +4210,37 @@ int GMT_parse_J_option (char *args)
 	 	case 'A':	/* Lambert Azimuthal Equal-Area */
 	 		project_info.gave_map_width = width_given;
 	 	case 'a':
+			n = txt_c[0] = 0;
+			project_info.pars[2] = 90.0;
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
-	 			n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[2]);
-	 			if (project_info.pars[2] != 0.0) project_info.pars[2] = 1.0 / (project_info.pars[2] * project_info.unit);
-				error = (!(n_slashes == 2 && n == 3));
+				if (n_slashes == 2)
+	 				n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[3]);
+				else if (n_slashes == 3)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, &project_info.pars[3]);
+	 			if (project_info.pars[3] != 0.0) project_info.pars[3] = 1.0 / (project_info.pars[3] * project_info.unit);
 	 		}
 	 		else if (project_info.gave_map_width) {
-	 			n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-				if (n == 3) project_info.pars[2]= GMT_convert_units (txt_c, GMT_INCH);
-				error = (!(n_slashes == 2 && n == 3));
+				if (n_slashes == 2)
+	 				n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_d);
+				else if (n_slashes == 3)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+				project_info.pars[3]= GMT_convert_units (txt_d, GMT_INCH);
 	 		}
 	 		else {	/* Scale entered as radius/lat */
-	 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-				if (n == 4) {
-					error += GMT_verify_expectations (GMT_IS_FLOAT, GMT_scanf (txt_c, GMT_IS_FLOAT, &project_info.pars[2]), txt_c);
-					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_d, GMT_IS_LAT, &project_info.pars[3]), txt_d);
+				if (n_slashes == 3)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_d, txt_e);
+				else if (n_slashes == 4)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+				if (n == n_slashes + 1) {
+					error += GMT_verify_expectations (GMT_IS_FLOAT, GMT_scanf (txt_d, GMT_IS_FLOAT, &project_info.pars[3]), txt_d);
+					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_e, GMT_IS_LAT, &project_info.pars[4]), txt_e);
 				}
-				error += (!(n_slashes == 3 && n == 4));
 	 		}
+			error += (n != n_slashes + 1);
 			error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
 			error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
-			error += (project_info.pars[2] <= 0.0 || (k >= 0 && project_info.gave_map_width));
+			if (txt_c[0]) error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_c, GMT_IS_LON, &project_info.pars[2]), txt_c);
+			error += (project_info.pars[2] <= 0.0 || project_info.pars[3] <= 0.0 || (k >= 0 && project_info.gave_map_width));
 	 		project = GMT_LAMB_AZ_EQ;
 	 		break;
 	 	case 'B':		/* Albers Equal-area Conic */
@@ -4287,55 +4306,75 @@ int GMT_parse_J_option (char *args)
 	 	case 'E':		/* Azimuthal equal-distant */
 	 		project_info.gave_map_width = width_given;
 	 	case 'e':
+			n = txt_c[0] = 0;
+			project_info.pars[2] = 180.0;
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
-	 			n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[2]);
-	 			if (project_info.pars[2] != 0.0) project_info.pars[2] = 1.0 / (project_info.pars[2] * project_info.unit);
-				error = (!(n_slashes == 2 && n == 3));
+				if (n_slashes == 2)
+	 				n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[3]);
+				else if (n_slashes == 3)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, &project_info.pars[3]);
+	 			if (project_info.pars[3] != 0.0) project_info.pars[3] = 1.0 / (project_info.pars[3] * project_info.unit);
 	 		}
 	 		else if (project_info.gave_map_width) {
-		 		n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-				project_info.pars[2] = GMT_convert_units (txt_c, GMT_INCH);
-				error += (!(n_slashes == 2 && n == 3));
+				if (n_slashes == 2)
+		 			n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_d);
+				else if (n_slashes == 3)
+		 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+				project_info.pars[3]= GMT_convert_units (txt_d, GMT_INCH);
 	 		}
 	 		else {	/* Scale entered as radius/lat */
-	 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-				if (n == 4) {
-					project_info.pars[2] = GMT_convert_units (txt_c, GMT_INCH);
-					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_d, GMT_IS_LAT, &project_info.pars[3]), txt_d);
+				if (n_slashes == 3)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_d, txt_e);
+				else if (n_slashes == 4)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+				if (n == n_slashes + 1) {
+					project_info.pars[3] = GMT_convert_units (txt_d, GMT_INCH);
+					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_e, GMT_IS_LAT, &project_info.pars[4]), txt_e);
 				}
-				error += (!(n_slashes == 3 && n == 4));
 	 		}
+			error += (n != n_slashes + 1);
 			error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
 			error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
-			error += (project_info.pars[2] <= 0.0 || (k >= 0 && project_info.gave_map_width));
+			if (txt_c[0]) error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_c, GMT_IS_LON, &project_info.pars[2]), txt_c);
+			error += (project_info.pars[2] <= 0.0 || project_info.pars[3] <= 0.0 || (k >= 0 && project_info.gave_map_width));
 	 		project = GMT_AZ_EQDIST;
 	 		break;
 
 	 	case 'F':		/* Gnomonic */
 	 		project_info.gave_map_width = width_given;
 	 	case 'f':		/* Gnomonic */
+			n = txt_c[0] = 0;
+			project_info.pars[2] = 60.0;
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
-	 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, &project_info.pars[3]);
+				if (n_slashes == 2)
+	 				n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[3]);
+				else if (n_slashes == 3)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, &project_info.pars[3]);
 	 			if (project_info.pars[3] != 0.0) project_info.pars[3] = 1.0 / (project_info.pars[3] * project_info.unit);
-				error = (!(n_slashes == 3 && n == 4));
 	 		}
 	 		else if (project_info.gave_map_width) {
-		 		n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+				if (n_slashes == 2)
+	 				n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_d);
+				else if (n_slashes == 3)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 				project_info.pars[3] = GMT_convert_units (txt_d, GMT_INCH);
-				error = (!(n_slashes == 3 && n == 4));
 			}
 	 		else {	/* Scale entered as radius/lat */
-	 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
-				if (n == 5) {
+				if (n_slashes == 3)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+				else if (n_slashes == 4)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+				if (n == n_slashes + 1) {
 					project_info.pars[3] = GMT_convert_units (txt_d, GMT_INCH);
 					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_e, GMT_IS_LAT, &project_info.pars[4]), txt_e);
 				}
 				error += (!(n_slashes == 4 && n == 5));
 			}
+			error += (n != n_slashes + 1);
 			error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
 			error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
-			error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_c, GMT_IS_LAT, &project_info.pars[2]), txt_c);
-			error += (project_info.pars[3] <= 0.0 || (k >= 0 && project_info.gave_map_width) || (project_info.pars[2] >= 90.0));
+			if (txt_c[0]) error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_c, GMT_IS_LAT, &project_info.pars[2]), txt_c);
+			error += (project_info.pars[2] <= 0.0 || project_info.pars[3] <= 0.0 || (k >= 0 && project_info.gave_map_width) || (project_info.pars[2] >= 90.0));
 	 		project = GMT_GNOMONIC;
 	 		break;
 
@@ -4483,32 +4522,41 @@ int GMT_parse_J_option (char *args)
 				project = GMT_GENPER;
 
 			} else {
-				project_info.pars[4] = 0.0;
+				n = txt_c[0] = 0;
+				project_info.pars[2] = 90.0;
 				project_info.pars[5] = 0.0;
 				project_info.pars[6] = 0.0;
 				project_info.pars[7] = 0.0;
 
 	 			if (k >= 0) {	/* Scale entered as 1:mmmmm */
-	 				n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[2]);
-	 				if (project_info.pars[2] != 0.0) project_info.pars[2] = 1.0 / (project_info.pars[2] * project_info.unit);
-					error = (!(n_slashes == 2 && n == 3));
+					if (n_slashes == 2)
+	 					n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[3]);
+					else if (n_slashes == 3)
+	 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_e, &project_info.pars[3]);
+	 				if (project_info.pars[3] != 0.0) project_info.pars[3] = 1.0 / (project_info.pars[3] * project_info.unit);
 	 			}
 	 			else if (project_info.gave_map_width) {
-		 			n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-					project_info.pars[2] = GMT_convert_units (txt_c, GMT_INCH);
-					error = (!(n_slashes == 2 && n == 3));
+					if (n_slashes == 2)
+	 					n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_d);
+					else if (n_slashes == 3)
+	 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+					project_info.pars[3]= GMT_convert_units (txt_d, GMT_INCH);
 				}
 	 			else {	/* Scale entered as radius/lat */
-	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-					if (n == 4) {
-						project_info.pars[2] = GMT_convert_units (txt_c, GMT_INCH);
-						error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_d, GMT_IS_LAT, &project_info.pars[3]), txt_d);
+					if (n_slashes == 3)
+		 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+					else if (n_slashes == 4)
+		 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+					if (n == n_slashes + 1) {
+						project_info.pars[3] = GMT_convert_units (txt_c, GMT_INCH);
+						error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_e, GMT_IS_LAT, &project_info.pars[4]), txt_e);
 					}
-					error += (!(n_slashes == 3 && n == 4));
 				}
+				error += (n != n_slashes + 1);
 				error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
 				error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
-				error += (project_info.pars[2] <= 0.0 || (k >= 0 && project_info.gave_map_width));
+				if (txt_c[0]) error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_c, GMT_IS_LON, &project_info.pars[2]), txt_c);
+				error += (project_info.pars[2] <= 0.0 || project_info.pars[3] <= 0.0 || (k >= 0 && project_info.gave_map_width));
 	 			project = GMT_ORTHO;
 			}
 	 		break;
@@ -4771,37 +4819,45 @@ int GMT_parse_J_option (char *args)
 	 	case 'S':		/* Stereographic */
 	 		project_info.gave_map_width = width_given;
 	 	case 's':
+			n = txt_c[0] = 0;
+			project_info.pars[2] = 90.0;
 	 		if (k >= 0) {	/* Scale entered as 1:mmmmm */
-	 			if (n_slashes == 3) {	/* with true scale at specified latitude */
-	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, &project_info.pars[2]);
-					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_c, GMT_IS_LAT, &project_info.pars[3]), txt_c);
-					project_info.pars[4] = 1.0;	/* flag for true scale case */
-					error += (n != 4);
+	 			if (n_slashes == 2)
+	 				n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[3]);
+	 			else if (n_slashes == 3) {	/* with true scale at specified latitude */
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_e, &project_info.pars[3]);
+					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_e, GMT_IS_LAT, &project_info.pars[4]), txt_e);
+					project_info.pars[5] = 1.0;	/* flag for true scale case */
 				}
-	 			else if (n_slashes == 2) {
-	 				n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &project_info.pars[2]);
-					error = (n != 3);
-	 			}
-	 			else
-	 				error = TRUE;
-	 			if (project_info.pars[2] != 0.0) project_info.pars[2] = 1.0 / (project_info.pars[2] * project_info.unit);
+				else if (n_slashes == 4) {
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, txt_e, &project_info.pars[3]);
+					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_e, GMT_IS_LAT, &project_info.pars[4]), txt_e);
+					project_info.pars[5] = 1.0;	/* flag for true scale case */
+				}
+	 			if (project_info.pars[3] != 0.0) project_info.pars[3] = 1.0 / (project_info.pars[3] * project_info.unit);
 	 		}
 	 		else if (project_info.gave_map_width) {
-		 		n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-				project_info.pars[2] = GMT_convert_units (txt_c, GMT_INCH);
-				error = (!(n_slashes == 2 && n == 3));
+				if (n_slashes == 2)
+	 				n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_d);
+				else if (n_slashes == 3)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+				project_info.pars[3] = GMT_convert_units (txt_d, GMT_INCH);
 	 		}
 	 		else {	/* Scale entered as radius/lat */
-	 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-				if (n == 4) {
-					project_info.pars[2] = GMT_convert_units (txt_c, GMT_INCH);
-					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_d, GMT_IS_LAT, &project_info.pars[3]), txt_d);
+				if (n_slashes == 3)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_d, txt_e);
+				else if (n_slashes == 4)
+	 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+				if (n == n_slashes + 1) {
+					project_info.pars[3] = GMT_convert_units (txt_d, GMT_INCH);
+					error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_e, GMT_IS_LAT, &project_info.pars[4]), txt_e);
 				}
-				error += (!(n_slashes == 3 && n == 4));
 			}
+			error += (n != n_slashes + 1);
 			error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
 			error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
-			error += (project_info.pars[2] <= 0.0 || (k >= 0 && project_info.gave_map_width));
+			if (txt_c[0]) error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_c, GMT_IS_LON, &project_info.pars[2]), txt_c);
+			error += (project_info.pars[2] <= 0.0 || project_info.pars[3] <= 0.0 || (k >= 0 && project_info.gave_map_width));
 	 		project = GMT_STEREO;
 	 		break;
 

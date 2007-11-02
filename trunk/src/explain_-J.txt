@@ -92,24 +92,27 @@ The standard parallel is typically one of these (but can be any value):
 .sp
 Except for polar aspects, \fB\-R\fPw/e/s/n will be reset to \fB\-Rg\fP.  Use \fB\-R\fP<...>\fBr\fP for smaller regions.
 .TP
-\fB\-Ja\fP\fIlon0/lat0/scale\fP or \fB\-JA\fP\fIlon0/lat0/width\fP (Lambert \fB[E]\fP).
+\fB\-Ja\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JA\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (Lambert \fB[E]\fP).
 \fIlon0/lat0\fP specifies the projection center.
+\fIhorizon\fP specifies the max distance from projection center (in degrees, <= 180, default 90).
 Give \fIscale\fP as 1:xxxx or \fIradius/lat\fP, where \fIradius\fP is distance
 in UNIT from origin to the oblique latitude \fIlat\fP.
 .TP
-\fB\-Je\fP\fIlon0/lat0/scale\fP or \fB\-JE\fP\fIlon0/lat0/width\fP (Equidistant).
+\fB\-Je\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JE\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (Equidistant).
 \fIlon0/lat0\fP specifies the projection center.
+\fIhorizon\fP specifies the max distance from projection center (in degrees, <= 180, default 180).
 Give \fIscale\fP as 1:xxxx or \fIradius/lat\fP, where \fIradius\fP is distance
 in UNIT from origin to the oblique latitude \fIlat\fP.
 .TP
-\fB\-Jf\fP\fIlon0/lat0/horizon/scale\fP or \fB\-JF\fP\fIlon0/lat0/horizon/width\fP (Gnomonic).
+\fB\-Jf\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JF\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (Gnomonic).
 \fIlon0/lat0\fP specifies the projection center.
-\fIhorizon\fP specifies the max distance from projection center (in degrees, < 90).
+\fIhorizon\fP specifies the max distance from projection center (in degrees, < 90, default 60).
 Give \fIscale\fP as 1:xxxx or \fIradius/lat\fP, where \fIradius\fP is distance
 in UNIT from origin to the oblique latitude \fIlat\fP.
 .TP
-\fB\-Jg\fP\fIlon0/lat0/scale\fP or \fB\-JG\fP\fIlon0/lat0/width\fP (Orthographic).
+\fB\-Jg\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JG\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (Orthographic).
 \fIlon0/lat0\fP specifies the projection center.
+\fIhorizon\fP specifies the max distance from projection center (in degrees, <= 90, default 90).
 Give \fIscale\fP as 1:xxxx or \fIradius/lat\fP, where \fIradius\fP is distance
 in UNIT from origin to the oblique latitude \fIlat\fP.
 .TP
@@ -127,8 +130,9 @@ Further, specify the clockwise \fItwist\fP, \fIWidth\fP, and
 Give \fIscale\fP as 1:xxxx or \fIradius/lat\fP, where \fIradius\fP is distance
 in UNIT from origin to the oblique latitude \fIlat\fP.
 .TP
-\fB\-Js\fP\fIlon0/lat0/scale\fP or \fB\-JS\fP\fIlon0/lat0/width\fP (General Stereographic \fB[C]\fP).
+\fB\-Js\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JS\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (General Stereographic \fB[C]\fP).
 \fIlon0/lat0\fP specifies the projection center.
+\fIhorizon\fP specifies the max distance from projection center (in degrees, < 180, default 90).
 Give \fIscale\fP as 1:xxxx (true at pole) or \fIlats\fP/1:xxxx (true at standard parallel \fIlats\fP)
 or \fIradius/lat\fP (\fIradius\fP in UNIT from origin to the oblique latitude \fIlat\fP).
 .PP
