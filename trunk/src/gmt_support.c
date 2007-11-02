@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.326 2007-10-24 01:10:50 remko Exp $
+ *	$Id: gmt_support.c,v 1.327 2007-11-02 03:39:51 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3213,7 +3213,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 					i0 = i + 1;	j0 = j;
 				}
 			}
-			if (n == 0) {
+			if (n == 0) {	/* No more crossing of southern boundary, go to next side (east) */
 				i0 = nx - 2;
 				j0 = ny - 1;
 				(*side)++;
@@ -3240,7 +3240,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 					i0 = i;	j0 = j - 1;
 				}
 			}
-			if (n == 0) {
+			if (n == 0) {	/* No more crossing of eastern boundary, go to next side (north) */
 				i0 = nx - 2;
 				j0 = 1;
 				(*side)++;
@@ -3267,7 +3267,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 					i0 = i - 1;	j0 = j;
 				}
 			}
-			if (n == 0) {
+			if (n == 0) {	/* No more crossing of northern boundary, go to next side (west) */
 				i0 = 0;
 				j0 = 1;
 				(*side)++;
@@ -3294,7 +3294,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 					i0 = i;	j0 = j + 1;
 				}
 			}
-			if (n == 0) {
+			if (n == 0) {	/* No more crossing of western boundary, go to next side (vertical internals) */
 				i0 = 1;
 				j0 = 1;
 				(*side)++;
@@ -3333,7 +3333,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 				}
 				if (go_on) i0 = 1;
 			}
-			if (n == 0) {
+			if (n == 0) {	/* No more crossing of vertical internal edges, go to next side (horizontal internals) */
 				i0 = 0;
 				j0 = 1;
 				(*side)++;
@@ -3345,7 +3345,7 @@ int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int 
 			for (j = j0; go_on && j < ny; j++) {
 				ij = i0 + j * nx;
 				for (i = i0; go_on && i < nx-1; i++, ij++) {
-					edge_word = ij / 32 + offset;
+					edge_word = ij / 32;
 					z[0] = grd[ij];
 					z[1] = grd[ij+1];
 					edge_bit = ij % 32;
