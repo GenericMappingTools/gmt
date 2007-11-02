@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.138 2007-10-31 19:58:41 guru Exp $
+	$Id: ChangeLog,v 1.139 2007-11-02 03:39:51 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-11-01	pwessel
+	* gmt_support.c:	In GMT_contour, would occasionally not check internal crossings
+				for some interior contours.
 2007-10-31	pwessel
 	* g*math.c:		Would see files like 13239.d as possible numbers and give
 				annoying warnings (file was correctly chosen so no bug).
