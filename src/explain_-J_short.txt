@@ -40,17 +40,17 @@ More details can be found in the \fBpsbasemap\fP man pages.
 \fBAZIMUTHAL PROJECTIONS:\fP
 .br
 .sp
-\fB\-Ja\fP\fIlon0/lat0/scale\fP (Lambert)
+\fB\-Ja\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Lambert)
 .br
-\fB\-Je\fP\fIlon0/lat0/scale\fP (Equidistant)
+\fB\-Je\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Equidistant)
 .br
-\fB\-Jf\fP\fIlon0/lat0/horizon/scale\fP (Gnomonic)
+\fB\-Jf\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Gnomonic)
 .br
-\fB\-Jg\fP\fIlon0/lat0/scale\fP (Orthographic)
+\fB\-Jg\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Orthographic)
 .br
 \fB\-Jg\fP\fIlon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale\fP (General Perspective).
 .br
-\fB\-Js\fP\fIlon0/lat0/\fP[\fIslat/\fP]\fIscale\fP (General Stereographic)
+\fB\-Js\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI\fP[\fI/slat\fP]\fI/scale\fP (General Stereographic)
 .br
 .sp
 \fBCONIC PROJECTIONS:\fP

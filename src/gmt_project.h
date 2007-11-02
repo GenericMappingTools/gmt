@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.55 2007-10-30 17:53:09 remko Exp $
+ *	$Id: gmt_project.h,v 1.56 2007-11-02 18:21:53 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -133,8 +133,9 @@ struct GMT_MAP_PROJECTIONS {
 	double M_PR_DEG, KM_PR_DEG;	/* Current spherical approximations to convert degrees to dist */
 	double half_ECC, i_half_ECC;	/* 0.5 * ECC and 0.5 / ECC */
 	double one_m_ECC2, i_one_m_ECC2; /* 1.0 - ECC2 and inverse */
-
 	int gave_map_width;		/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
+
+	double f_horizon, rho_max;	/* Azimuthal horizon (deg) and in plot coordinates */
 
 	/* Linear plot parameters */
 
@@ -277,10 +278,6 @@ struct GMT_MAP_PROJECTIONS {
 
         int g_debug;
         BOOLEAN g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
-
-	/* Gnomonic horizon */
-
-	double f_horizon;
 
 	/* Polar (cylindrical) projection */
 

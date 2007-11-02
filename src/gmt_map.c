@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.164 2007-10-31 17:06:36 remko Exp $
+ *	$Id: gmt_map.c,v 1.165 2007-11-02 18:21:53 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -867,7 +867,7 @@ int GMT_init_three_D (void) {
 }
 
 /*
- *	GENERIC TRANSFORMATION ROUTINES FOR THE GMT_LINEAR PROJECTION
+ *	GENERIC TRANSFORMATION ROUTINES FOR THE LINEAR PROJECTION
  */
 
 void GMT_x_to_xx (double x, double *xx)
@@ -971,7 +971,7 @@ void GMT_project3D (double x, double y, double z, double *x_out, double *y_out, 
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_LINEAR PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE LINEAR PROJECTION
  */
 
 int GMT_map_init_linear (void) {
@@ -1101,7 +1101,7 @@ void GMT_coordinate_to_y (double coord, double *y)
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR GMT_POLAR (theta,r) PROJECTION
+ *	TRANSFORMATION ROUTINES FOR POLAR (theta,r) PROJECTION
  */
 
 int GMT_map_init_polar (void)
@@ -1148,7 +1148,7 @@ int GMT_map_init_polar (void)
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_MERCATOR PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE MERCATOR PROJECTION
  */
 
 int GMT_map_init_merc (void) {
@@ -1192,7 +1192,7 @@ int GMT_map_init_merc (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR GMT_IS_CYLINDRICAL EQUAL-AREA PROJECTIONS (GMT_CYL_EQ)
+ *	TRANSFORMATION ROUTINES FOR CYLINDRICAL EQUAL-AREA PROJECTIONS (GMT_CYL_EQ)
  */
 
 int GMT_map_init_cyleq (void) {
@@ -1238,7 +1238,7 @@ int GMT_map_init_cyleq (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR GMT_IS_CYLINDRICAL EQUIDISTANT PROJECTION (GMT_CYL_EQDIST)
+ *	TRANSFORMATION ROUTINES FOR CYLINDRICAL EQUIDISTANT PROJECTION (GMT_CYL_EQDIST)
  */
 
 int GMT_map_init_cyleqdist (void) {
@@ -1270,7 +1270,7 @@ int GMT_map_init_cyleqdist (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR GMT_MILLER GMT_IS_CYLINDRICAL PROJECTION (GMT_MILLER)
+ *	TRANSFORMATION ROUTINES FOR MILLER CYLINDRICAL PROJECTION (GMT_MILLER)
  */
 
 int GMT_map_init_miller (void) {
@@ -1302,7 +1302,7 @@ int GMT_map_init_miller (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_POLAR STEREOGRAPHIC PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE POLAR STEREOGRAPHIC PROJECTION
  */
 
 int GMT_map_init_stereo (void) {
@@ -1315,13 +1315,13 @@ int GMT_map_init_stereo (void) {
 	GMT_set_polar (project_info.pars[1]);
 
 	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 0.9996;	/* Select default map scale for Stereographic */
-	if (project_info.polar && (irint (project_info.pars[4]) == 1)) gmtdefs.map_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
+	if (project_info.polar && (irint (project_info.pars[5]) == 1)) gmtdefs.map_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
 	/* Equatorial view has a problem with infinite loops.  Until I find a cure
 	  we set projection center latitude to 0.001 so equatorial works for now */
 
 	if (fabs (project_info.pars[1]) < GMT_SMALL) project_info.pars[1] = 0.001;
 
-	GMT_vstereo (project_info.pars[0], project_info.pars[1]);
+	GMT_vstereo (project_info.pars[0], project_info.pars[1], project_info.pars[2]);
 
 	if (project_info.GMT_convert_latitudes) {	/* Set fudge factors when conformal latitudes are used */
 		double e1p, e1m, s, c;
@@ -1330,10 +1330,10 @@ int GMT_map_init_stereo (void) {
 		if (project_info.polar) {
 			e1p = 1.0 + project_info.ECC;	e1m = 1.0 - project_info.ECC;
 			D /= d_sqrt (pow (e1p, e1p) * pow (e1m, e1m));
-			if (irint (project_info.pars[4]) == 1) {	/* Gave true scale at given parallel */
+			if (irint (project_info.pars[5]) == 1) {	/* Gave true scale at given parallel */
 				double k_p, m_c, t_c, es;
 
-				sincos (fabs (project_info.pars[3]) * D2R, &s, &c);
+				sincos (fabs (project_info.pars[4]) * D2R, &s, &c);
 				es = project_info.ECC * s;
 				m_c = c / d_sqrt (1.0 - project_info.ECC2 * s * s);
 				t_c = d_sqrt (((1.0 - s) / (1.0 + s)) * pow ((1.0 + es) / (1.0 - es), project_info.ECC));
@@ -1355,25 +1355,25 @@ int GMT_map_init_stereo (void) {
 		GMT_forward = (PFI)GMT_plrs_sph;
 		GMT_inverse = (PFI)GMT_iplrs_sph;
 		if (project_info.units_pr_degree) {
-			(*GMT_forward) (project_info.pars[0], project_info.pars[3], &dummy, &radius);
-			project_info.x_scale = project_info.y_scale = fabs (project_info.pars[2] / radius);
+			(*GMT_forward) (project_info.pars[0], project_info.pars[4], &dummy, &radius);
+			project_info.x_scale = project_info.y_scale = fabs (project_info.pars[3] / radius);
 		}
 		else
-			project_info.x_scale = project_info.y_scale = project_info.pars[2];
+			project_info.x_scale = project_info.y_scale = project_info.pars[3];
 		GMT_meridian_straight = TRUE;
 	}
 	else {
 		GMT_forward = (GMT_IS_ZERO (project_info.pole)) ? (PFI)GMT_stereo2_sph : (PFI)GMT_stereo1_sph;
 		GMT_inverse = (PFI)GMT_istereo_sph;
 		if (project_info.units_pr_degree) {
-			GMT_vstereo (0.0, 90.0);
-			(*GMT_forward) (0.0, fabs(project_info.pars[3]), &dummy, &radius);
-			project_info.x_scale = project_info.y_scale = fabs (project_info.pars[2] / radius);
+			GMT_vstereo (0.0, 90.0, project_info.pars[2]);
+			(*GMT_forward) (0.0, fabs(project_info.pars[4]), &dummy, &radius);
+			project_info.x_scale = project_info.y_scale = fabs (project_info.pars[3] / radius);
 		}
 		else
-			project_info.x_scale = project_info.y_scale = project_info.pars[2];
+			project_info.x_scale = project_info.y_scale = project_info.pars[3];
 
-		GMT_vstereo (project_info.pars[0], project_info.pars[1]);
+		GMT_vstereo (project_info.pars[0], project_info.pars[1], project_info.pars[2]);
 	}
 
 
@@ -1423,8 +1423,8 @@ int GMT_map_init_stereo (void) {
 			project_info.e = 360.0;
 			project_info.s = -90.0;
 			project_info.n = 90.0;
-			xmin = ymin = -2.0 * project_info.EQ_RAD;
-			xmax = ymax = -xmin;
+			xmax = ymax = project_info.rho_max;
+			xmin = ymin = -xmax;
 			GMT_outside = (PFI) GMT_radial_outside;
 			GMT_crossing = (PFI) GMT_radial_crossing;
 			GMT_overlap = (PFI) GMT_radial_overlap;
@@ -1436,7 +1436,7 @@ int GMT_map_init_stereo (void) {
 		GMT_right_edge = (PFD) GMT_right_circle;
 	}
 
-	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
+	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[3]);
 	project_info.r = 0.5 * project_info.xmax;
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 
@@ -1444,7 +1444,7 @@ int GMT_map_init_stereo (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_LAMBERT CONFORMAL CONIC PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE LAMBERT CONFORMAL CONIC PROJECTION
  */
 
 int GMT_map_init_lambert (void) {
@@ -1499,7 +1499,7 @@ int GMT_map_init_lambert (void) {
 
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE OBLIQUE GMT_MERCATOR PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE OBLIQUE MERCATOR PROJECTION
  */
 
 int GMT_map_init_oblique (void) {
@@ -1685,7 +1685,7 @@ void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, doubl
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE TRANSVERSE GMT_MERCATOR PROJECTION (TM)
+ *	TRANSFORMATION ROUTINES FOR THE TRANSVERSE MERCATOR PROJECTION (TM)
  */
 
 int GMT_map_init_tm (void) {
@@ -1778,7 +1778,7 @@ int GMT_map_init_tm (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE UNIVERSAL TRANSVERSE GMT_MERCATOR PROJECTION (UTM)
+ *	TRANSFORMATION ROUTINES FOR THE UNIVERSAL TRANSVERSE MERCATOR PROJECTION (UTM)
  */
 
 int GMT_map_init_utm (void) {
@@ -1911,7 +1911,7 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_LAMBERT GMT_IS_AZIMUTHAL EQUAL AREA PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE LAMBERT AZIMUTHAL EQUAL-AREA PROJECTION
  */
 
 int GMT_map_init_lambeq (void) {
@@ -1930,7 +1930,7 @@ int GMT_map_init_lambeq (void) {
 		project_info.pars[1] = GMT_latg_to_lata (project_info.pars[1]);
 	}
 
-	GMT_vlambeq (project_info.pars[0], project_info.pars[1]);
+	GMT_vlambeq (project_info.pars[0], project_info.pars[1], project_info.pars[2]);
 
 	if (project_info.GMT_convert_latitudes) {
 		s = sind (latg);	c = cosd (latg);	/* Need original geographic pole coordinates */
@@ -1943,13 +1943,13 @@ int GMT_map_init_lambeq (void) {
 
 	GMT_forward = (PFI)GMT_lambeq;		GMT_inverse = (PFI)GMT_ilambeq;
 	if (project_info.units_pr_degree) {
-		GMT_vlambeq (0.0, 90.0);
-		GMT_lambeq (0.0, fabs(project_info.pars[3]), &dummy, &radius);
-		project_info.x_scale = project_info.y_scale = fabs (project_info.pars[2] / radius);
-		GMT_vlambeq (project_info.pars[0], project_info.pars[1]);
+		GMT_vlambeq (0.0, 90.0, project_info.pars[2]);
+		GMT_lambeq (0.0, fabs(project_info.pars[4]), &dummy, &radius);
+		project_info.x_scale = project_info.y_scale = fabs (project_info.pars[3] / radius);
+		GMT_vlambeq (project_info.pars[0], project_info.pars[1], project_info.pars[2]);
 	}
 	else
-		project_info.x_scale = project_info.y_scale = project_info.pars[2];
+		project_info.x_scale = project_info.y_scale = project_info.pars[3];
 
 	if (!project_info.region) {	/* Rectangular box given */
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
@@ -1997,8 +1997,8 @@ int GMT_map_init_lambeq (void) {
 			project_info.e = 360.0;
 			project_info.s = -90.0;
 			project_info.n = 90.0;
-			xmin = ymin = -d_sqrt (2.0) * project_info.EQ_RAD;
-			xmax = ymax = -xmin;
+			xmax = ymax = project_info.rho_max;
+			xmin = ymin = -xmax;
 			GMT_outside = (PFI) GMT_radial_outside;
 			GMT_crossing = (PFI) GMT_radial_crossing;
 			GMT_overlap = (PFI) GMT_radial_overlap;
@@ -2010,7 +2010,7 @@ int GMT_map_init_lambeq (void) {
 		GMT_right_edge = (PFD) GMT_right_circle;
 	}
 
-	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
+	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[3]);
 	project_info.r = 0.5 * project_info.xmax;
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 	if (project_info.polar) GMT_meridian_straight = TRUE;
@@ -2031,14 +2031,14 @@ int GMT_map_init_ortho (void) {
 	GMT_set_polar (project_info.pars[1]);
 
 	if (project_info.units_pr_degree) {
-		GMT_vortho (0.0, 90.0);
-		GMT_ortho (0.0, fabs(project_info.pars[3]), &dummy, &radius);
-		project_info.x_scale = project_info.y_scale = fabs (project_info.pars[2] / radius);
+		GMT_vortho (0.0, 90.0, project_info.pars[2]);
+		GMT_ortho (0.0, fabs(project_info.pars[4]), &dummy, &radius);
+		project_info.x_scale = project_info.y_scale = fabs (project_info.pars[3] / radius);
 	}
 	else
-		project_info.x_scale = project_info.y_scale = project_info.pars[2];
+		project_info.x_scale = project_info.y_scale = project_info.pars[3];
 
-	GMT_vortho (project_info.pars[0], project_info.pars[1]);
+	GMT_vortho (project_info.pars[0], project_info.pars[1], project_info.pars[2]);
 	GMT_forward = (PFI)GMT_ortho;		GMT_inverse = (PFI)GMT_iortho;
 
 	if (!project_info.region) {	/* Rectangular box given */
@@ -2087,8 +2087,8 @@ int GMT_map_init_ortho (void) {
 			project_info.e = 360.0;
 			project_info.s = -90.0;
 			project_info.n = 90.0;
-			xmin = ymin = -project_info.EQ_RAD;
-			xmax = ymax = -xmin;
+			xmax = ymax = project_info.rho_max * project_info.EQ_RAD;
+			xmin = ymin = -xmax;
 			GMT_outside = (PFI) GMT_radial_outside;
 			GMT_crossing = (PFI) GMT_radial_crossing;
 			GMT_overlap = (PFI) GMT_radial_overlap;
@@ -2100,7 +2100,7 @@ int GMT_map_init_ortho (void) {
 		GMT_right_edge = (PFD) GMT_right_circle;
 	}
 
-	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
+	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[3]);
 	project_info.r = 0.5 * project_info.xmax;
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 	if (project_info.polar) GMT_meridian_straight = TRUE;
@@ -2233,7 +2233,7 @@ int GMT_map_init_genper (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_GNOMONIC PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE GNOMONIC PROJECTION
  */
 
 int GMT_map_init_gnomonic (void) {
@@ -2295,8 +2295,8 @@ int GMT_map_init_gnomonic (void) {
 			project_info.e = 360.0;
 			project_info.s = -90.0;
 			project_info.n = 90.0;
-			xmin = ymin = -project_info.EQ_RAD * tand (project_info.f_horizon);
-			xmax = ymax = -xmin;
+			xmax = ymax = project_info.rho_max * project_info.EQ_RAD;
+			xmin = ymin = -xmax;
 			GMT_outside = (PFI) GMT_radial_outside;
 			GMT_crossing = (PFI) GMT_radial_crossing;
 			GMT_overlap = (PFI) GMT_radial_overlap;
@@ -2316,7 +2316,7 @@ int GMT_map_init_gnomonic (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_IS_AZIMUTHAL EQUIDISTANT PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE AZIMUTHAL EQUIDISTANT PROJECTION
  */
 
 int GMT_map_init_azeqdist (void) {
@@ -2326,25 +2326,24 @@ int GMT_map_init_azeqdist (void) {
 	GMT_set_spherical ();	/* PW: Force spherical for now */
 
 	GMT_set_polar (project_info.pars[1]);
-	project_info.f_horizon = 180.0;
 
 	if (project_info.units_pr_degree) {
-		GMT_vazeqdist (0.0, 90.0);
-		GMT_azeqdist (0.0, project_info.pars[3], &dummy, &radius);
-		if (GMT_IS_ZERO (radius)) radius = M_PI * project_info.EQ_RAD;
-		project_info.x_scale = project_info.y_scale = fabs (project_info.pars[2] / radius);
+		GMT_vazeqdist (0.0, 90.0, project_info.pars[2]);
+		GMT_azeqdist (0.0, fabs(project_info.pars[4]), &dummy, &radius);
+		if (GMT_IS_ZERO (radius)) radius = project_info.rho_max * project_info.EQ_RAD;
+		project_info.x_scale = project_info.y_scale = fabs (project_info.pars[3] / radius);
 	}
 	else
-		project_info.x_scale = project_info.y_scale = project_info.pars[2];
+		project_info.x_scale = project_info.y_scale = project_info.pars[3];
 
-	GMT_vazeqdist (project_info.pars[0], project_info.pars[1]);
+	GMT_vazeqdist (project_info.pars[0], project_info.pars[1], project_info.pars[2]);
 	GMT_forward = (PFI)GMT_azeqdist;		GMT_inverse = (PFI)GMT_iazeqdist;
 
 	if (!project_info.region) {	/* Rectangular box given */
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
 		(*GMT_forward) (project_info.e, project_info.n, &xmax, &ymax);
 
-		GMT_outside = (PFI) GMT_rect_outside;
+		GMT_outside = (PFI) GMT_rect_outside2;
 		GMT_crossing = (PFI) GMT_rect_crossing;
 		GMT_overlap = (PFI) GMT_rect_overlap;
 		GMT_map_clip = (PFI) GMT_rect_clip;
@@ -2374,10 +2373,11 @@ int GMT_map_init_azeqdist (void) {
 			project_info.e = 360.0;
 			project_info.s = -90.0;
 			project_info.n = 90.0;
-			xmin = ymin = -M_PI * project_info.EQ_RAD;
+			xmax = ymax = project_info.rho_max * project_info.EQ_RAD;
+			xmin = ymin = -xmax;
 			xmax = ymax = -xmin;
-			GMT_outside = (PFI) GMT_eqdist_outside;
-			GMT_crossing = (PFI) GMT_eqdist_crossing;
+			GMT_outside = (PFI) GMT_radial_outside;
+			GMT_crossing = (PFI) GMT_radial_crossing;
 			GMT_overlap = (PFI) GMT_radial_overlap;
 			GMT_map_clip = (PFI) GMT_radial_clip;
 			gmtdefs.basemap_type = GMT_IS_PLAIN;
@@ -2387,7 +2387,7 @@ int GMT_map_init_azeqdist (void) {
 		GMT_right_edge = (PFD) GMT_right_circle;
 	}
 
-	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
+	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[3]);
 	project_info.r = 0.5 * project_info.xmax;
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 	if (project_info.polar) GMT_meridian_straight = TRUE;
@@ -2396,7 +2396,7 @@ int GMT_map_init_azeqdist (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_MOLLWEIDE EQUAL AREA PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE MOLLWEIDE EQUAL AREA PROJECTION
  */
 
 int GMT_map_init_mollweide (void) {
@@ -2452,7 +2452,7 @@ int GMT_map_init_mollweide (void) {
 
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_HAMMER-AITOFF EQUAL AREA PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE HAMMER-AITOFF EQUAL AREA PROJECTION
  */
 
 int GMT_map_init_hammer (void) {
@@ -2506,7 +2506,7 @@ int GMT_map_init_hammer (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE VAN DER GMT_VANGRINTEN PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE VAN DER GRINTEN PROJECTION
  */
 
 int GMT_map_init_grinten (void) {
@@ -2560,7 +2560,7 @@ int GMT_map_init_grinten (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_WINKEL-TRIPEL MODIFIED GMT_IS_AZIMUTHAL PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE WINKEL-TRIPEL MODIFIED AZIMUTHAL PROJECTION
  */
 
 int GMT_map_init_winkel (void) {
@@ -2714,7 +2714,7 @@ int GMT_map_init_eckert6 (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_ROBINSON PSEUDOCYLINDRICAL PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE ROBINSON PSEUDOCYLINDRICAL PROJECTION
  */
 
 int GMT_map_init_robinson (void) {
@@ -2765,7 +2765,7 @@ int GMT_map_init_robinson (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_SINUSOIDAL EQUAL AREA PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE SINUSOIDAL EQUAL AREA PROJECTION
  */
 
 int GMT_map_init_sinusoidal (void) {
@@ -2821,7 +2821,7 @@ int GMT_map_init_sinusoidal (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_CASSINI PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE CASSINI PROJECTION
  */
 
 int GMT_map_init_cassini (void) {
@@ -2873,7 +2873,7 @@ int GMT_map_init_cassini (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR THE GMT_ALBERS PROJECTION
+ *	TRANSFORMATION ROUTINES FOR THE ALBERS PROJECTION
  */
 
 int GMT_map_init_albers (void) {
