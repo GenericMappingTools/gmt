@@ -1,10 +1,10 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%Title: GMT v4.2.0 Document from psbasemap
+%%Title: GMT v4.2.2b Document from psbasemap
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Jun  5 09:33:40 2007
+%%CreationDate: Fri Nov  2 14:56:20 2007
 %%LanguageLevel: 1
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -297,11 +297,11 @@ end
     {
       n 0 eq
       {
-        PSL_CT_drawline
+	PSL_CT_drawline
       }
       {
 	PSL_CT_reversepath
-        PSL_CT_textline
+	PSL_CT_textline
       } ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
@@ -397,14 +397,14 @@ end
       /this_cut PSL_cuts kk get def
       dist this_cut gt
       {
-        /ds dist last_dist sub def
-        /f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
+	/ds dist last_dist sub def
+	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
 	/i1 i 0 eq { 0 } { i 1 sub } ifelse def
-        PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
-        PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
-        PSL_kind j 1 put
-        /j j 1 add def
-        /k k 1 add def
+	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
+	PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
+	PSL_kind j 1 put
+	/j j 1 add def
+	/k k 1 add def
       } if
     } for
     dist PSL_cuts k get le
@@ -745,6 +745,19 @@ S
 510 900 M
 5 -2 D
 S
+0 0 M 38 F0 (+) E /PSL_dimx exch def bby /PSL_dimy exch def
+1056 192 M PSL_dimx 2 div neg PSL_dimy 2 div neg G 38 F0 (+) Z
+1050 205 M
+0 6 D
+S
+1059 181 M
+4 -4 D
+S
+0 0 M 38 F0 (-) E /PSL_dimx exch def bby /PSL_dimy exch def
+430 921 M PSL_dimx 2 div neg PSL_dimy 2 div neg G 38 F0 (-) Z
+430 930 M
+-4 -5 D
+S
 0 0 M 38 F0 (-) E /PSL_dimx exch def bby /PSL_dimy exch def
 223 948 M PSL_dimx 2 div neg PSL_dimy 2 div neg G 38 F0 (-) Z
 210 968 M
@@ -767,6 +780,29 @@ S
 S
 185 951 M
 4 -5 D
+S
+0 0 M 38 F0 (+) E /PSL_dimx exch def bby /PSL_dimy exch def
+172 689 M PSL_dimx 2 div neg PSL_dimy 2 div neg G 38 F0 (+) Z
+130 708 M
+-4 4 D
+S
+160 718 M
+1 6 D
+S
+192 714 M
+4 5 D
+S
+202 682 M
+6 2 D
+S
+203 659 M
+1 -6 D
+S
+172 662 M
+-2 -5 D
+S
+143 679 M
+-5 -4 D
 S
 0 0 M 38 F0 (+) E /PSL_dimx exch def bby /PSL_dimy exch def
 89 432 M PSL_dimx 2 div neg PSL_dimy 2 div neg G 38 F0 (+) Z
@@ -7366,7 +7402,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 0 -135 T
 %% PostScript produced by:
-%%GMT:  psscale -C9374.cpt -D2i/-0.35i/4i/0.1i -B1 -O -K 
+%%GMT:  psscale -C28469.cpt -D2i/-0.35i/4i/0.1i -B1 -O -K 
 
 S 0 A
 S 5 W
@@ -7468,7 +7504,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -7649,7 +7685,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -8712,7 +8748,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -8866,7 +8902,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -8890,7 +8926,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -10520,7 +10556,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -10611,7 +10647,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -12151,7 +12187,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -12287,7 +12323,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -13584,7 +13620,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -13648,7 +13684,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -14873,7 +14909,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -14991,7 +15027,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -15073,7 +15109,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -15308,7 +15344,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -16335,7 +16371,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -16507,7 +16543,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -17453,7 +17489,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -18219,7 +18255,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -18283,7 +18319,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -18455,7 +18491,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -18800,6 +18836,19 @@ S
 510 900 M
 5 -2 D
 S
+0 0 M 38 F0 (+) E /PSL_dimx exch def bby /PSL_dimy exch def
+1056 192 M PSL_dimx 2 div neg PSL_dimy 2 div neg G 38 F0 (+) Z
+1050 205 M
+0 6 D
+S
+1059 181 M
+4 -4 D
+S
+0 0 M 38 F0 (-) E /PSL_dimx exch def bby /PSL_dimy exch def
+430 921 M PSL_dimx 2 div neg PSL_dimy 2 div neg G 38 F0 (-) Z
+430 930 M
+-4 -5 D
+S
 0 0 M 38 F0 (-) E /PSL_dimx exch def bby /PSL_dimy exch def
 223 948 M PSL_dimx 2 div neg PSL_dimy 2 div neg G 38 F0 (-) Z
 210 968 M
@@ -18822,6 +18871,29 @@ S
 S
 185 951 M
 4 -5 D
+S
+0 0 M 38 F0 (+) E /PSL_dimx exch def bby /PSL_dimy exch def
+172 689 M PSL_dimx 2 div neg PSL_dimy 2 div neg G 38 F0 (+) Z
+130 708 M
+-4 4 D
+S
+160 718 M
+1 6 D
+S
+192 714 M
+4 5 D
+S
+202 682 M
+6 2 D
+S
+203 659 M
+1 -6 D
+S
+172 662 M
+-2 -5 D
+S
+143 679 M
+-5 -4 D
 S
 0 0 M 38 F0 (+) E /PSL_dimx exch def bby /PSL_dimy exch def
 89 432 M PSL_dimx 2 div neg PSL_dimy 2 div neg G 38 F0 (+) Z
@@ -25420,7 +25492,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -25601,7 +25673,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -26664,7 +26736,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -26818,7 +26890,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -26842,7 +26914,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -28472,7 +28544,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -28563,7 +28635,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -30103,7 +30175,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -30239,7 +30311,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -31536,7 +31608,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -31600,7 +31672,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -32825,7 +32897,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -32943,7 +33015,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -33025,7 +33097,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -33260,7 +33332,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -34287,7 +34359,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -34459,7 +34531,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -35405,7 +35477,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -36171,7 +36243,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -36235,7 +36307,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
@@ -36407,7 +36479,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C9374.cpt -Sc0.005i 
+%%GMT:  psxy -JM4i -R204/206/19/21 -O -K -C28469.cpt -Sc0.005i 
 
 S V
 0 0 M
