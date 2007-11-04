@@ -3,8 +3,8 @@
 .SH NAME
 ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats using GhostScript
 .SH SYNOPSIS
-\fBps2raster\fP \fIpsfile(s)\fP [ OPT(A) ] [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] 
-[ OPT(L)\fIlistfile\fP]  [ OPT(N) ] [ OPT(P) ] [ OPT(Te)|\fBf\fP|\fBj\fP|\fBg\fP|\fBm\fP|\fBt\fP ]
+\fBps2raster\fP \fIpsfile(s)\fP [ OPT(A) ] [ OPT(D)\fIoutdir\fP ] [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] 
+[ OPT(L)\fIlistfile\fP]  [ OPT(N) ] [ OPT(P) ] [ OPT(Te)|\fBf\fP|\fBj\fP|\fBg\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ]
 .SH DESCRIPTION
 \fBps2raster\fP reads one or more \fIPostScript\fP files (or a file with a list of \fIPostScript\fP filenames) and modifies the
 page size in order that the resulting image will have a size determined by the BoundingBox.
@@ -12,11 +12,15 @@ As an option, a tight BoundingBox may be computed first.
 .TP
 \fIpsfiles\fP
 Names of \fIPostScript\fP files to be converted. The output files will have the same name but with the
-conventional extension name associated to the raster format (e.g. .jpg for the jpeg format).
+conventional extension name associated to the raster format (e.g. .jpg for the jpeg format).  The output
+files are written to the current directory (but see OPT(D)).
 .SH OPTIONS
 .TP
 .B \-A
 Adjust the BoundingBox to the minimum required by the image content.
+.TP
+.B \-D
+Sets an alternative output directory (which must exist) [Default is the current directory].
 .TP
 .B \-E
 Set raster resolution in dpi [default = 720 for PDF, 300 for others].
@@ -50,6 +54,9 @@ Sets the output format, where \fBe\fP means EPS, \fBf\fP means PDF, \fBj\fP mean
 \fBm\fP means PPM, and \fBt\fP means TIF [default is JPEG].
 The EPS format can be combined with any of the other formats. For example, OPT(Tef) creates both an EPS and
 a PDF file.
+.TP
+.B \-V
+Run in verbose mode and report on progress [Default is silent].
 .SH NOTES
 The conversion to raster images (JPEG, PNG, PPM or TIF) inherently results in loss of details that are
 available in the original PostScript file. Choose a resolution that is large enough for the application that
