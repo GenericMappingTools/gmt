@@ -45,7 +45,9 @@ as requested with OPT(R).  By default, the final region is a direct projection o
 original Mercator region and will typically extend slightly beyond the requested latitude
 range, and futhermore the grid increment in latitude does not match the longitude increment.
 However, the extra resampling introduces small interpolation errors and should only
-be used if the output grid must match the requested region and have x_inc = y_inc.
+be used if the output grid must match the requested region and have x_inc = y_inc.  In
+this case the region set by OPT(R) must be given in multiples of the increment (.e.g,
+OPT(R)0/45/45/72).
 .TP
 .B \-L
 With no other arguments, list all *.img files found in the directory pointed to by
