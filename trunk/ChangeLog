@@ -1,10 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.141 2007-11-04 22:08:36 guru Exp $
+	$Id: ChangeLog,v 1.142 2007-11-06 00:44:50 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-11-04	pwessel
-	* ps2raster.c:	Now writes output to current directory unless option -D<dir>
-				is used.  Also added -V for progress reports [Default is silent].
+	* ps2raster.c:		New option -D<dir> specifies alternative output directory.
+				Also added -V for progress reports [Default is silent].
 				
 2007-11-02	remko
 	* gmt_proj.[ch], gmt_project.h, gmt_map.c, gmt_init.c, explain_-J*.txt:

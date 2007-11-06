@@ -20,7 +20,8 @@ files are written to the current directory (but see OPT(D)).
 Adjust the BoundingBox to the minimum required by the image content.
 .TP
 .B \-D
-Sets an alternative output directory (which must exist) [Default is the current directory].
+Sets an alternative output directory (which must exist) [Default is the same directory as the PS files].
+Use OPT(D.) to place the output in the current directory instead.
 .TP
 .B \-E
 Set raster resolution in dpi [default = 720 for PDF, 300 for others].
