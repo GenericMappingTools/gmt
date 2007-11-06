@@ -12,8 +12,8 @@ As an option, a tight BoundingBox may be computed first.
 .TP
 \fIpsfiles\fP
 Names of \fIPostScript\fP files to be converted. The output files will have the same name but with the
-conventional extension name associated to the raster format (e.g. .jpg for the jpeg format).  The output
-files are written to the current directory (but see OPT(D)).
+conventional extension name associated to the raster format (e.g. .jpg for the jpeg format).  Use
+OPT(D) to redirect the output to a different directory.
 .SH OPTIONS
 .TP
 .B \-A
