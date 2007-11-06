@@ -3,7 +3,7 @@
 .SH NAME
 ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats using GhostScript
 .SH SYNOPSIS
-\fBps2raster\fP \fIpsfile(s)\fP [ OPT(A) ] [ OPT(D)\fIoutdir\fP ] [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] 
+\fBps2raster\fP \fIpsfile(s)\fP [ OPT(A)[\fBu\fP] ] [ OPT(D)\fIoutdir\fP ] [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] 
 [ OPT(L)\fIlistfile\fP]  [ OPT(N) ] [ OPT(P) ] [ OPT(Te)|\fBf\fP|\fBj\fP|\fBg\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ]
 .SH DESCRIPTION
 \fBps2raster\fP reads one or more \fIPostScript\fP files (or a file with a list of \fIPostScript\fP filenames) and modifies the
@@ -17,7 +17,8 @@ OPT(D) to redirect the output to a different directory.
 .SH OPTIONS
 .TP
 .B \-A
-Adjust the BoundingBox to the minimum required by the image content.
+Adjust the BoundingBox to the minimum required by the image content.  Append \fBu\fP to first remove any
+GMT-produced time-stamps.
 .TP
 .B \-D
 Sets an alternative output directory (which must exist) [Default is the same directory as the PS files].
