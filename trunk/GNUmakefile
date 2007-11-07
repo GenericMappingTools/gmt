@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.13 2007-10-23 18:43:14 remko Exp $
+#  $Id: GNUmakefile,v 1.14 2007-11-07 16:52:51 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -98,6 +98,9 @@ help::
 #!update        : Get the latest source via cvs
 #!manpages      : Create manpages from text files
 #!usable        : Install-all and run examples
+#!pdfman	: Install PDF version of manpages
+#!pdfdocs	: Install PDF documentation
+#!docs		: Install PDF and HTML documentation
 #!site          : Complete install, incl documentation and web pages
 #!cvsclean      : Cleanup the package to a nearly clean CVS checkout
 #!archive       : Build the release archives
@@ -214,7 +217,10 @@ pdfman: 	guru/pdfman.sh
 		$(SHELL) guru/pdfman.sh -s
 
 docs:		FILES
-		cd doc ; $(MAKE) install
+		cd doc ; $(MAKE) install-all
+
+pdfdocs:	FILES
+		cd doc ; $(MAKE) install-pdf
 
 prep_suppl:	clean config
 
