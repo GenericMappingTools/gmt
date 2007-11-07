@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.206 2007-10-22 16:08:15 guru Exp $
+ *	$Id: gmt_plot.c,v 1.207 2007-11-07 04:27:28 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2444,12 +2444,13 @@ void GMT_echo_command (int argc, char **argv)
 		strcat (outstring, " ");
 		length += (strlen (argv[i]) + 1);
 		if (length >= 120) {
-			strcat (outstring, " \\");
+			strcat (outstring, "\\");
 			ps_command (outstring);
 			length = 0;
 			strcpy (outstring, "%%GMT:+ ");
 		}
 	}
+	outstring[length+7]=0;
 	if (length > 0) ps_command (outstring);
 	ps_command ("");
 }
