@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.142 2007-11-06 00:44:50 guru Exp $
+	$Id: ChangeLog,v 1.143 2007-11-13 17:30:00 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2007-11-13	pwessel
+	* gmt_map.c:		Minor bug in 4th term in conformal->geodetic lat.
+	
 2007-11-04	pwessel
 	* ps2raster.c:		New option -D<dir> specifies alternative output directory.
 				Also added -V for progress reports [Default is silent].
