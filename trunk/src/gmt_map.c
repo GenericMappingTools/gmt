@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.165 2007-11-02 18:21:53 remko Exp $
+ *	$Id: gmt_map.c,v 1.166 2007-11-13 17:30:00 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6045,7 +6045,7 @@ void	GMT_lat_swap_init ()
 	/* Conformal to geodetic:  */
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G][0] = e2 / 2.0 + (5.0 * e4 / 24.0 + (e6 / 12.0 + 13.0 * e8 / 360.0)) ;
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G][1] = 7.0 * e4 / 48.0 + (29.0 * e6 / 240.0 + 811.0 * e8 / 11520.0);
-	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G][2] = 81.0 * e6 / 1120.0;
+	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G][2] = 7.0 * e6 / 120.0 + 81.0 * e6 / 1120.0;
 	project_info.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G][3] = 4279.0 * e8 / 161280.0;
 
 
