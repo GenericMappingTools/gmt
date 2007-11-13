@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.327 2007-11-02 03:39:51 guru Exp $
+ *	$Id: gmt_support.c,v 1.328 2007-11-13 19:26:29 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5891,17 +5891,14 @@ int GMT_strtok (const char *string, const char *sep, int *pos, char *token)
 	/* Wind up *pos to first non-separating character: */
 	while (string[*pos] && strchr (sep, (int)string[*pos])) (*pos)++;
 
-	token[0] = '\0';	/* Initialize token to NULL in case we are at end */
+	token[0] = 0;	/* Initialize token to NULL in case we are at end */
 
 	if (*pos >= string_len || string_len == 0) return 0;	/* Got NULL string or no more string left to search */
 
 	/* Search for next non-separating character */
-	for (i = *pos; string[i] && !strchr (sep, (int)string[i]); i++);
-
-	/* Copy token */
-	j = i - *pos;
-	strncpy (token, &string[*pos], j);
-	token[j] = 0;
+	i = *pos; j = 0;
+	while (string[i] && !strchr (sep, (int)string[i])) token[j++] = string[i++];
+	token[j] = 0;	/* Add terminating \0 */
 
 	/* Wind up *pos to next non-separating character */
 	while (string[i] && strchr (sep, (int)string[i])) i++;
