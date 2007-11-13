@@ -1,7 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.143 2007-11-13 17:30:00 guru Exp $
+	$Id: ChangeLog,v 1.144 2007-11-13 19:30:52 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2007-11-13	remko
+	* gmt_grdio.c:		Fixed bug in parsing -D option from e.g. grdedit. Would always
+				see 0 as separator (along with /).
+	* gmt_support.c:	Removed strncpy from GMT_strtok. No consequence on function.
+	* grdinfo.c:		zmin==zmax no longer forces -M option.
+			
 2007-11-13	pwessel
 	* gmt_map.c:		Minor bug in 4th term in conformal->geodetic lat.
 	
