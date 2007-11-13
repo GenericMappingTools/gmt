@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.99 2007-08-11 04:22:06 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.100 2007-11-13 19:25:10 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -462,7 +462,7 @@ void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 	This routine is usually called if -D<input> was given by user,
 	and after GMT_grd_init() has been called.
 */
-	char	ptr[BUFSIZ], sep = '/';
+	char	ptr[BUFSIZ], *sep = "/";
 	int	entry = 0, pos = 0;
 
 	if (input[0] != input[strlen(input)-1]) {}
@@ -470,11 +470,11 @@ void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 	else if (input[0] >= 'a' && input[0] <= 'a') {}
 	else if (input[0] >= '0' && input[0] <= '9') {}
 	else {
-		sep = input[0];
+		sep[0] = input[0];
 		pos = 1;
 	}
 
-	while ((GMT_strtok (input, &sep, &pos, ptr))) {
+	while ((GMT_strtok (input, sep, &pos, ptr))) {
 		if (ptr[0] != '=') {
 			switch (entry) {
 				case 0:
