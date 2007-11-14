@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.15 2007-11-14 20:27:29 remko Exp $
+#  $Id: GNUmakefile,v 1.16 2007-11-14 20:34:22 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -224,8 +224,7 @@ ifeq "$(findstring spotless,$(MAKECMDGOALS)$(TARGET))" "spotless"
 src/makegmt.macros:
 			touch $@
 else
-src/makegmt.macros:	guru/gmtguru.macros src/makegmt.macros.in configure config.sub config.guess \
-			src/gmt_version.h.in src/GMT.in src/gmt_notposix.h doc/GMT_version.tex.in
+src/makegmt.macros:	guru/gmtguru.macros src/makegmt.macros.in configure config.sub config.guess
 			rm -f config.cache config.log config.status
 			./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) \
 				$(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL)
