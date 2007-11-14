@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.144 2007-11-13 19:30:52 remko Exp $
+	$Id: ChangeLog,v 1.145 2007-11-14 00:31:53 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-11-13	remko
@@ -10,6 +10,8 @@
 			
 2007-11-13	pwessel
 	* gmt_map.c:		Minor bug in 4th term in conformal->geodetic lat.
+	* pslib.c:		Redefine rect symbol to be less prone to round-off
+	* PSL_prologue.ps:	New macro for box symbol
 	
 2007-11-04	pwessel
 	* ps2raster.c:		New option -D<dir> specifies alternative output directory.

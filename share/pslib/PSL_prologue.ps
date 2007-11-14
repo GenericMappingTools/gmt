@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.13 2007-09-14 18:32:46 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.14 2007-11-14 00:31:53 guru Exp $
 % Begin pslib header
 250 dict begin
 /A /setgray load def
@@ -50,6 +50,11 @@
 /vA {v0 QA} bind def /va {v0 Qa} bind def /vC {v0 QC} bind def /vc {v0 Qc} bind def
 /vK {v0 QK} bind def /vk {v0 Qk} bind def /vH {v0 QH} bind def /vh {v0 Qh} bind def
 /vI {v0 QI} bind def /vi {v0 Qi} bind def /vQ {v0 QQ} bind def
+% Box
+/B0 {M dup 0 D exch 0 exch D neg 0 D} bind def
+/BA {B0 QA} bind def /Ba {B0 Qa} bind def /BC {B0 QC} bind def /Bc {B0 Qc} bind def
+/BK {B0 QK} bind def /Bk {B0 Qk} bind def /BH {B0 QH} bind def /Bh {B0 Qh} bind def
+/BI {B0 QI} bind def /Bi {B0 Qi} bind def /BQ {B0 QQ} bind def
 % Circle
 /CA {0 360 arc V A F U N} bind def /Ca {0 360 arc V A F U S} bind def
 /CC {0 360 arc V C F U N} bind def /Cc {0 360 arc V C F U S} bind def

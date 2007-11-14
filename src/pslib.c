@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.156 2007-10-22 16:08:16 guru Exp $
+ *	$Id: pslib.c,v 1.157 2007-11-14 00:31:53 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1605,7 +1605,12 @@ void ps_patch_ (double *x, double *y, int *n, int *rgb, int *outline)
 
 void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline)
 {
-	ps_rotaterect ((x1+x2)/2, (y1+y2)/2, 0.0, x2-x1, y2-y1, rgb, outline);
+	int pmode, xll, yll;
+	pmode = ps_place_color (rgb);
+	xll = irint (x1 * PSL->internal.scale);	/* Get lower left point with minimum round-off */
+	yll = irint (y1 * PSL->internal.scale);
+	fprintf (PSL->internal.fp, "%d %d %d %d B%c\n", irint(y2 * PSL->internal.scale) - yll, irint(x2 * PSL->internal.scale) - xll, xll, yll, PSL->internal.paint_code[pmode+outline]);
+	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
