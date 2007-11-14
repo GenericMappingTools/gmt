@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.18 2007-10-10 16:53:32 remko Exp $
+#	$Id: Makefile,v 1.19 2007-11-14 20:31:37 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -77,13 +77,16 @@ MAN3		= pslib.3
 
 all:		init $(ALLPROGS)
 
-init:		gmtmacros gmt_notposix.h GMT
+init:		gmtmacros gmt_version.h gmt_notposix.h GMT
 		
 gmtmacros:
 		@if [ ! -s makegmt.macros ]; then \
 			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
 			exit 1; \
 		fi
+
+gmt_version.h:	gmt_version.h.in
+		@echo "You must first run configure in the main GMT directory"; exit 1
 
 gmt_notposix.h:	gmt_notposix.h.in
 		@echo "You must first run configure in the main GMT directory"; exit 1
@@ -105,11 +108,11 @@ install:	all
 		if [ -f $(libdir)/libpsl.dylib ]; then \
 			cd $(libdir) ; \
 			\mv -f libpsl{,.4}.dylib ; \
-			\ln -s libpsl{.4,}.dylib ; \
+			$(LN_S) libpsl{.4,}.dylib ; \
 			\mv -f libgmt{,.4}.dylib ; \
-			\ln -s libgmt{.4,}.dylib ; \
+			$(LN_S) libgmt{.4,}.dylib ; \
 			\mv -f libgmtps{,.4}.dylib ; \
-			\ln -s libgmtps{.4,}.dylib ; \
+			$(LN_S) libgmtps{.4,}.dylib ; \
 		fi
 
 uninstall:

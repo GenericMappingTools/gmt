@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.10 2007-10-11 22:05:16 guru Exp $
+#  $Id: Makefile,v 1.11 2007-11-14 20:31:37 remko Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -26,8 +26,6 @@
 #	Default setup
 #-------------------------------------------------------------------------------
 
-include ../guru/gmtguru.macros.orig	# Guru-specific settings determined by GURU
-sinclude ../guru/gmtguru.macros		# any overrides
 include ../src/makegmt.macros		# GMT-specific settings determined by user
 include gmtsite.macros			# Site-specific settings determined by webmaster
 
@@ -164,13 +162,13 @@ update-ftp-live:	netcdf
 	echo "cd $(LIVEFTPDIR)/4" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
 		echo "rm -f $(LIVEFTPDIR)/4/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
-		echo "ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
+		echo "$(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "$(LN_S) GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
 		echo "rm -f $(LIVEFTPDIR)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
-		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
+		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
@@ -189,13 +187,13 @@ update-ftp-test:	netcdf
 	echo "cd $(LIVEFTPDIR2)/4" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
 		echo "rm -f $(LIVEFTPDIR2)/4/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
-		echo "ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
+		echo "$(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "$(LN_S) GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
 		echo "rm -f $(LIVEFTPDIR2)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
-		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
+		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
@@ -213,13 +211,13 @@ update-ftp-local:
 	cp -f ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)/4
 	for p in pdf web tut share src scripts suppl; do \
 		\rm -f $(TESTFTPDIR)/4/GMT_$$p.tar.{bz2,gz}; \
-		(cd $(TESTFTPDIR)/4; ln -s GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
-		(cd $(TESTFTPDIR)/4; ln -s GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz); \
+		(cd $(TESTFTPDIR)/4; $(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
+		(cd $(TESTFTPDIR)/4; $(LN_S) GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz); \
 	done
 	for p in coast high full; do \
 		\rm -f $(TESTFTPDIR)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz}; \
-		(cd $(TESTFTPDIR)/4; ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
-		(cd $(TESTFTPDIR)/4; ln -s GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz); \
+		(cd $(TESTFTPDIR)/4; $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
+		(cd $(TESTFTPDIR)/4; $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz); \
 	done
 
 clean-ftp:
