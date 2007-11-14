@@ -1,10 +1,10 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%Title: GMT v4.2.0 Document from psscale
+%%Title: GMT v4.2.2b Document from psscale
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Jun  5 09:34:17 2007
+%%CreationDate: Wed Nov 14 16:47:03 2007
 %%LanguageLevel: 1
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -56,6 +56,10 @@
 /vA {v0 QA} bind def /va {v0 Qa} bind def /vC {v0 QC} bind def /vc {v0 Qc} bind def
 /vK {v0 QK} bind def /vk {v0 Qk} bind def /vH {v0 QH} bind def /vh {v0 Qh} bind def
 /vI {v0 QI} bind def /vi {v0 Qi} bind def /vQ {v0 QQ} bind def
+/B0 {M dup 0 D exch 0 exch D neg 0 D} bind def
+/BA {B0 QA} bind def /Ba {B0 Qa} bind def /BC {B0 QC} bind def /Bc {B0 Qc} bind def
+/BK {B0 QK} bind def /Bk {B0 Qk} bind def /BH {B0 QH} bind def /Bh {B0 Qh} bind def
+/BI {B0 QI} bind def /Bi {B0 Qi} bind def /BQ {B0 QQ} bind def
 /CA {0 360 arc V A F U N} bind def /Ca {0 360 arc V A F U S} bind def
 /CC {0 360 arc V C F U N} bind def /Cc {0 360 arc V C F U S} bind def
 /CK {0 360 arc V K F U N} bind def /Ck {0 360 arc V K F U S} bind def
@@ -297,11 +301,11 @@ end
     {
       n 0 eq
       {
-        PSL_CT_drawline
+	PSL_CT_drawline
       }
       {
 	PSL_CT_reversepath
-        PSL_CT_textline
+	PSL_CT_textline
       } ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
@@ -397,14 +401,14 @@ end
       /this_cut PSL_cuts kk get def
       dist this_cut gt
       {
-        /ds dist last_dist sub def
-        /f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
+	/ds dist last_dist sub def
+	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
 	/i1 i 0 eq { 0 } { i 1 sub } ifelse def
-        PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
-        PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
-        PSL_kind j 1 put
-        /j j 1 add def
-        /k k 1 add def
+	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
+	PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
+	PSL_kind j 1 put
+	/j j 1 add def
+	/k k 1 add def
       } if
     } for
     dist PSL_cuts k get le
@@ -645,7 +649,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  psscale -Ctmp.cpt -D00/04/8/0.5 -K 
+%%GMT:  psscale -Ctmp.cpt -D00/04/8/0.5 -K
 
 300 300 T
 S 0 A
@@ -753,7 +757,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 0 1062.99 T
 %% PostScript produced by:
-%%GMT:  psscale -I -Ctmp.cpt -D00/13/8/0.5 -O -K -N100 
+%%GMT:  psscale -I -Ctmp.cpt -D00/13/8/0.5 -O -K -N100
 
 S 0 A
 S 5 W
@@ -876,22 +880,22 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 472.441 0 T
 %% PostScript produced by:
-%%GMT:  psscale -Ctmp.cpt -D04/04/8/0.5 -O -K 
+%%GMT:  psscale -Ctmp.cpt -D04/04/8/0.5 -O -K
 
 S 0 A
 S 5 W
 59.0551 0 T 90 R
-0.792 0 0 59 79 0 39 30 RC
-1 0.0392 0 59 79 0 118 30 RC
-1 0.29 0 59 79 0 197 30 RC
-1 0.541 0 59 79 0 276 30 RC
-1 0.792 0 59 79 0 354 30 RC
-1 1 0 59 79 0 433 30 RC
-0.596 1 0.0745 59 157 0 551 30 RC
-0.22 0.976 0.235 59 79 0 669 30 RC
-0 0.863 0.506 59 79 0 748 30 RC
-0 0.388 0.929 59 79 0 827 30 RC
-0 0.118 0.878 59 79 0 906 30 RC
+0.792 0 0 59 79 0 0 BC
+1 0.0392 0 59 78 79 0 BC
+1 0.29 0 59 79 157 0 BC
+1 0.541 0 59 79 236 0 BC
+1 0.792 0 59 79 315 0 BC
+1 1 0 59 78 394 0 BC
+0.596 1 0.0745 59 158 472 0 BC
+0.22 0.976 0.235 59 79 630 0 BC
+0 0.863 0.506 59 78 709 0 BC
+0 0.388 0.929 59 79 787 0 BC
+0 0.118 0.878 59 79 866 0 BC
 0 0 M 945 0 D S
 0 59 M 945 0 D S
 0 0 M 0 59 D S
@@ -981,7 +985,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 472.441 1062.99 T
 %% PostScript produced by:
-%%GMT:  psscale -I -Ctmp.cpt -D04/13/8/0.5 -O -K -N100 
+%%GMT:  psscale -I -Ctmp.cpt -D04/13/8/0.5 -O -K -N100
 
 S 0 A
 S 5 W
@@ -1163,7 +1167,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 944.882 0 T
 %% PostScript produced by:
-%%GMT:  psscale -Ctmp.cpt -D08/04/8/0.5 -O -K -L 
+%%GMT:  psscale -Ctmp.cpt -D08/04/8/0.5 -O -K -L
 
 S 0 A
 S 5 W
@@ -1264,7 +1268,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 944.882 1062.99 T
 %% PostScript produced by:
-%%GMT:  psscale -I -Ctmp.cpt -D08/13/8/0.5 -O -K -L -N100 
+%%GMT:  psscale -I -Ctmp.cpt -D08/13/8/0.5 -O -K -L -N100
 
 S 0 A
 S 5 W
@@ -1380,22 +1384,22 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 1417.32 0 T
 %% PostScript produced by:
-%%GMT:  psscale -Ctmp.cpt -D12/04/8/0.5 -O -K -L0.1 
+%%GMT:  psscale -Ctmp.cpt -D12/04/8/0.5 -O -K -L0.1
 
 S 0 A
 S 5 W
 59.0551 0 T 90 R
-0.792 0 0 59 74 0 43 30 Rc
-1 0.0392 0 59 74 0 129 30 Rc
-1 0.29 0 59 74 0 215 30 Rc
-1 0.541 0 59 74 0 301 30 Rc
-1 0.792 0 59 74 0 387 30 Rc
-1 1 0 59 74 0 472 30 Rc
-0.596 1 0.0745 59 74 0 558 30 Rc
-0.22 0.976 0.235 59 74 0 644 30 Rc
-0 0.863 0.506 59 74 0 730 30 Rc
-0 0.388 0.929 59 74 0 816 30 Rc
-0 0.118 0.878 59 74 0 902 30 Rc
+0.792 0 0 59 74 6 0 Bc
+1 0.0392 0 59 74 92 0 Bc
+1 0.29 0 59 74 178 0 Bc
+1 0.541 0 59 74 264 0 Bc
+1 0.792 0 59 75 349 0 Bc
+1 1 0 59 74 435 0 Bc
+0.596 1 0.0745 59 74 521 0 Bc
+0.22 0.976 0.235 59 74 607 0 Bc
+0 0.863 0.506 59 74 693 0 Bc
+0 0.388 0.929 59 74 779 0 Bc
+0 0.118 0.878 59 74 865 0 Bc
 S 2 W
 0 0 M 42 F0 (-6) E /PSL_dimx exch def bby /PSL_dimy exch def
 43 -68 M V -90 R PSL_dimx neg PSL_dimy 2 div neg G 42 F0 (-6) Z U
@@ -1430,7 +1434,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 1417.32 1062.99 T
 %% PostScript produced by:
-%%GMT:  psscale -I -Ctmp.cpt -D12/13/8/0.5 -O -K -L0.1 -N100 
+%%GMT:  psscale -I -Ctmp.cpt -D12/13/8/0.5 -O -K -L0.1 -N100
 
 S 0 A
 S 5 W
@@ -1557,7 +1561,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 1889.76 0 T
 %% PostScript produced by:
-%%GMT:  psscale -Ctmp.cpt -D16/04/8/0.5 -O -K 
+%%GMT:  psscale -Ctmp.cpt -D16/04/8/0.5 -O -K
 
 S 0 A
 S 5 W
@@ -1697,7 +1701,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 1889.76 1062.99 T
 %% PostScript produced by:
-%%GMT:  psscale -I -Ctmp.cpt -D16/13/8/0.5 -O -K -N100 
+%%GMT:  psscale -I -Ctmp.cpt -D16/13/8/0.5 -O -K -N100
 
 S 0 A
 S 5 W
@@ -2039,7 +2043,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 2362.2 0 T
 %% PostScript produced by:
-%%GMT:  psscale -Ctmp.cpt -D20/04/8/0.5 -O -K 
+%%GMT:  psscale -Ctmp.cpt -D20/04/8/0.5 -O -K
 
 S 0 A
 S 5 W
@@ -2173,7 +2177,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 2362.2 1062.99 T
 %% PostScript produced by:
-%%GMT:  psscale -I -Ctmp.cpt -D20/13/8/0.5 -O -N100 
+%%GMT:  psscale -I -Ctmp.cpt -D20/13/8/0.5 -O -N100
 
 S 0 A
 S 5 W
