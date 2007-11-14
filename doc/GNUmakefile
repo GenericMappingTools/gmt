@@ -1,0 +1,267 @@
+#	$Id: GNUmakefile,v 1.1 2007-11-14 20:22:33 remko Exp $
+#
+#	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
+#	See COPYING file for copying and redistribution conditions.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; version 2 of the License.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	Contact info: gmt.soest.hawaii.edu
+#-------------------------------------------------------------------------------
+#		Makefile for GMT Documentation
+#		GNU, Sys V, and BSD Compatible
+#
+#	The following commands are available to create all the GMT documentation
+#
+#	make all	: same as : make pdf html
+#	make pdf	: Create GMT_Docs.pdf and GMT_Tutorial.pdf
+#	make html	: Create the HTML versions of GMT_Docs and GMT_Tutorial
+#	make install	: First makes the above, then installs it in the right place
+#
+#	All the above commands prepare all the necessary graphs and text to be included.
+#	Make sure, however, that the examples are already made by running "make examples"
+#	
+#	make prepro	: Only create the prerequisites.
+#
+#	Authors:	Paul Wessel, SOEST, U. of Hawaii
+#			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
+#
+#	Date:		08-Feb-2007
+#-------------------------------------------------------------------------------
+
+include ../src/makegmt.macros
+
+.SUFFIXES:	.eps .pdf .tex .ps .sh .csh
+
+PAPER=a4
+L2H=latex2html -local_icons -white -show_section_numbers -image_type png -bottom_navigation
+# NOTICE: If inline graphics shows up with underlines then you might need to edit
+# your l2hconf.pm file and remove the -Ppdf option from DVIPSOPT.
+LATEX=latex --interaction=batchmode
+PDFLATEX=pdflatex --interaction=batchmode
+
+# EPS and TEX files used by all documents
+ALLEPS=	fig/GMT_covertext.eps scripts/GMT_coverlogo.eps
+ALLTEX=	GMT_version.tex GMT_macros.tex GMT_Cover.tex
+
+# EPS, PDF and TEX files used to make Tutorial
+TUTEPS=	fig/GMT_Environment.eps scripts/GMT_pstext_clearance.eps scripts/GMT_pstext_justify.eps \
+	scripts/GMT_nearneighbor.eps scripts/GMT_atan.eps $(ALLEPS)
+TUTPDF=$(TUTEPS:.eps=.pdf)
+TUTTEX=GMT_Tutorial.tex $(ALLTEX)
+
+# EPS files to be converted from example PS files
+EX_EPS=	scripts/example_01.eps scripts/example_02.eps scripts/example_03.eps scripts/example_04.eps \
+	scripts/example_4c.eps scripts/example_05.eps scripts/example_06.eps scripts/example_07.eps \
+	scripts/example_08.eps scripts/example_09.eps scripts/example_10.eps scripts/example_11.eps \
+	scripts/example_12.eps scripts/example_13.eps scripts/example_14.eps scripts/example_15.eps \
+	scripts/example_16.eps scripts/example_17.eps scripts/example_18.eps scripts/example_19.eps \
+	scripts/example_20.eps scripts/example_21.eps scripts/example_22.eps scripts/example_23.eps \
+	scripts/example_24.eps scripts/example_25.eps scripts/example_26.eps
+
+# TEX files used in Chapter 7 (Cookbook)
+EX_TEX=	scripts/volcano.tex scripts/bullseye.tex $(EX_EPS:.eps=.tex)
+
+# EPS files that need special attention
+APP_F_EPS=scripts/GMT_App_F_dingbats.eps scripts/GMT_App_F_iso+.eps scripts/GMT_App_F_stand+.eps \
+	scripts/GMT_App_F_symbol.eps
+APP_J_EPS=scripts/GMT_App_J_1.eps scripts/GMT_App_J_2.eps scripts/GMT_App_J_3.eps
+APP_N_EPS=scripts/GMT_App_N_1.eps
+APP_O_EPS= \
+	scripts/GMT_App_O_1.eps scripts/GMT_App_O_2.eps scripts/GMT_App_O_3.eps \
+	scripts/GMT_App_O_4.eps scripts/GMT_App_O_5.eps scripts/GMT_App_O_6.eps scripts/GMT_App_O_7.eps \
+	scripts/GMT_App_O_8.eps scripts/GMT_App_O_9.eps
+SQRT_EPS=scripts/GMT_linear.eps scripts/GMT_log.eps scripts/GMT_pow.eps
+IS_EPS=	fig/GMT_covertext.eps fig/GMT_Environment.eps
+
+# EPS files for GMT_Docs to be created from scripts. Scripts have to be converted to TEX
+DOCEPS1=scripts/GMT_App_K_1.eps scripts/GMT_App_K_2.eps scripts/GMT_App_K_3.eps scripts/GMT_App_K_4.eps \
+	scripts/GMT_App_K_5.eps $(APP_O_EPS) \
+	scripts/GMT_-B_time1.eps scripts/GMT_-B_time2.eps scripts/GMT_-B_time3.eps \
+	scripts/GMT_-B_time4.eps scripts/GMT_-B_time5.eps scripts/GMT_-B_time6.eps scripts/GMT_-B_time7.eps \
+	$(SQRT_EPS) scripts/GMT_linear_cal.eps scripts/GMT_linear_d.eps scripts/GMT_polar.eps \
+	scripts/GMT_TM.eps scripts/GMT_albers.eps scripts/GMT_az_equidistant.eps \
+	scripts/GMT_cassini.eps scripts/GMT_eckert4.eps scripts/GMT_eckert6.eps scripts/GMT_equi_cyl.eps \
+	scripts/GMT_equidistant_conic.eps scripts/GMT_general_cyl.eps \
+	scripts/GMT_gnomonic.eps scripts/GMT_grinten.eps scripts/GMT_hammer.eps \
+	scripts/GMT_lambert_az_hemi.eps scripts/GMT_lambert_az_rect.eps scripts/GMT_lambert_conic.eps \
+	scripts/GMT_mercator.eps scripts/GMT_miller.eps scripts/GMT_mollweide.eps \
+	scripts/GMT_perspective.eps scripts/GMT_obl_merc.eps scripts/GMT_orthographic.eps \
+	scripts/GMT_robinson.eps scripts/GMT_sinus_int.eps scripts/GMT_sinusoidal.eps \
+	scripts/GMT_stereographic_general.eps scripts/GMT_stereographic_polar.eps \
+	scripts/GMT_stereographic_rect.eps scripts/GMT_stereonets.eps scripts/GMT_transverse_merc.eps \
+	scripts/GMT_winkel.eps
+
+# EPS files for GMT_Docs to be created from scripts. Scripts do not need to be converted to TEX
+DOCEPS2=scripts/GMT_-B_geo_1.eps scripts/GMT_-B_geo_2.eps scripts/GMT_-B_linear.eps scripts/GMT_-B_log.eps \
+	scripts/GMT_-B_pow.eps scripts/GMT_utm_zones.eps \
+	scripts/GMT_-J.eps scripts/GMT_-OK.eps scripts/GMT_-P.eps scripts/GMT_-R.eps scripts/GMT_-U.eps \
+	scripts/GMT_-XY.eps scripts/GMT_App_B_1.eps scripts/GMT_App_B_2.eps scripts/GMT_App_E.eps \
+	$(APP_F_EPS) scripts/GMT_App_G.eps $(APP_J_EPS) scripts/GMT_App_M.eps $(APP_N_EPS) \
+	scripts/GMT_Defaults_1a.eps scripts/GMT_Defaults_1b.eps scripts/GMT_Defaults_1c.eps scripts/GMT_volcano.eps
+
+# All EPS and PDF files for GMT_Docs
+DOCEPS=	$(DOCEPS1) $(DOCEPS2) $(ALLEPS) $(EX_EPS)
+DOCPDF= $(DOCEPS:.eps=.pdf)
+
+# All PNG files for GMT_Docs
+DOCPNG=	fig/Smith.png fig/Wessel.png ppt/formatpicture.png ppt/rendering.png
+
+# Additional TEX files to be converted from scripts
+SCRTEX=	scripts/getbox.tex scripts/getrect.tex scripts/GMT_dummydata.tex
+
+# All TEX files needed for GMT_Docs
+DOCTEX= \
+	GMT_Docs.tex GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex GMT_Appendix_D.tex \
+	GMT_Appendix_E.tex GMT_Appendix_F.tex GMT_Appendix_G.tex GMT_Appendix_H.tex GMT_Appendix_I.tex \
+	GMT_Appendix_J.tex GMT_Appendix_K.tex GMT_Appendix_L.tex GMT_Appendix_M.tex GMT_Appendix_N.tex \
+	GMT_Appendix_N_inc.tex GMT_Appendix_O.tex GMT_Appendix_P.tex \
+	GMT_Chapter_1.tex GMT_Chapter_2.tex GMT_Chapter_3.tex GMT_Chapter_4.tex GMT_Chapter_5.1.tex \
+	GMT_Chapter_5.2.tex GMT_Chapter_5.tex GMT_Chapter_6.1.tex GMT_Chapter_6.2.tex GMT_Chapter_6.3.tex \
+	GMT_Chapter_6.4.tex GMT_Chapter_6.tex GMT_Chapter_7.tex GMT_Chapter_8.tex \
+	GMT_Frontmatter.tex $(DOCEPS1:.eps=.tex) $(SCRTEX) $(EX_TEX) $(ALLTEX)
+
+all:	pdf html
+
+# Shortcut, just to preprocess all required files
+prepro:		$(DOCTEX) $(DOCPDF) $(DOCEPS) $(DOCPNG) $(TUTTEX) $(TUTPDF) $(TUTEPS)
+
+# Test if plots are OK
+tests doctests:	prepro
+	@echo "Test all GMT Documentation EPS files"
+	@echo ""
+	@cd scripts ; sh run_doc_tests.sh
+
+# Cleanup, before or after
+clean:
+	\rm -f *% .gmt*
+	\rm -f *.aux *.lot *.lof *.toc *.pdf *.out *.dvi *.ind *.ilg *.idx *.log *.ps *.eps
+	\rm -f GMT_version.tex GMT_Appendix_N_inc.tex
+	\rm -f scripts/*.{tex,eps,pdf,csh,ps,ps1} scripts/sqrt.d* scripts/.gmtdefaults4 scripts/.gmtcommands4
+	\rm -f fig/*.pdf
+	\rm -rf GMT_Docs GMT_Tutorial
+
+# Shortcuts, just to do a couple of things
+ps:	GMT_Docs.ps GMT_Tutorial.ps
+pdf:	GMT_Docs.pdf GMT_Tutorial.pdf
+html:	GMT_Docs/index.html GMT_Tutorial/index.html
+docs:	GMT_Docs.pdf GMT_Docs/index.html
+tutorial: GMT_Tutorial.pdf GMT_Tutorial/index.html
+
+# Create links to script files elsewhere on the system
+$(EX_TEX:.tex=.csh):
+	$(LN_S) -f ../../share/custom/volcano.def scripts/volcano.csh
+	$(LN_S) -f ../../examples/ex20/bullseye.def scripts/bullseye.csh
+	for f in `ls ../examples/*/job*.csh` ; do $(LN_S) -f ../$$f scripts/example_`basename $$f|cut -c4-5`.csh ; done
+
+# Link to the example files
+$(EX_EPS:.eps=.ps):
+	cd scripts && $(LN_S) -f ../../examples/*/example_??.ps .
+
+# Convert the PS files of the examples to PDF, while stripping off the time tag and
+# rotating landscape images back to portrait. Leave intermediate EPS behind.
+.ps.pdf:
+	ps2raster -Au -P -Tef $*.ps
+
+# To convert EPS to PDF
+$(IS_EPS:.eps=.pdf):	$(IS_EPS)
+	ps2raster -P -Tf $?
+
+# Graphics of Appendices F, J, N, O need special attention. One script makes several EPS and PDF files.
+$(APP_F_EPS) $(APP_F_EPS:.eps=.pdf):	scripts/GMT_App_F.sh
+	$(MAKE) APP=F run_app
+
+$(APP_J_EPS) $(APP_J_EPS:.eps=.pdf):	scripts/GMT_App_J.sh
+	$(MAKE) APP=J run_app
+
+$(APP_N_EPS) $(APP_N_EPS:.eps=.pdf) GMT_Appendix_N_inc.tex:	scripts/GMT_App_N.sh
+	$(MAKE) APP=N run_app
+
+$(APP_O_EPS) $(APP_O_EPS:.eps=.pdf):	scripts/GMT_App_O.sh $(APP_O_EPS:.eps=.sh)
+	$(MAKE) APP=O run_app
+
+run_app:
+	cd scripts && (cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C sh GMT_App_$(APP).sh)
+	ps2raster -A -P -Tef scripts/GMT_App_$(APP)_*.ps
+	\rm -f scripts/GMT_App_$(APP)_*.ps
+
+# How to run the scripts in the scripts directory to make EPS and PDF files
+.sh.eps .sh.pdf:
+	cd scripts && (cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C sh ../$*.sh)
+	ps2raster -A -P -Tef $*.ps
+	\rm -f $*.ps
+
+# Turn scripts into TEX files for inclusion in the documentation.
+.sh.tex:
+	pr -t -e $*.sh | egrep -v '^#|^$$' > $*.tex
+# Those converted from CSH files (i.e. examples) keep their comments, but remove CVS tag.
+.csh.tex:
+	pr -t -e $*.csh | egrep -v 'Id:' > $*.tex
+
+# Additional dependency for some graphs
+$(SQRT_EPS) $(SQRT_EPS:.eps=.pdf):	scripts/sqrt.d scripts/sqrt.d10
+scripts/sqrt.d scripts/sqrt.d10:	scripts/GMT_dummydata.sh
+	cd scripts && sh GMT_dummydata.sh
+
+# How to create version info
+GMT_version.tex:	GMT_version.tex.in
+	@echo "You must first run configure in the main GMT directory"; exit 1
+
+# Dependencies and rules to make PDF documentation
+GMT_Docs.pdf:	$(DOCPDF) $(DOCPNG) $(DOCTEX)
+GMT_Tutorial.pdf:	$(TUTPDF) $(TUTTEX)
+GMT_Docs.pdf GMT_Tutorial.pdf:
+	\rm -f $*.{aux,ind,lot,lof,toc,out,dvi}
+	$(PDFLATEX) $*
+	$(PDFLATEX) $*
+	makeindex -s GMT.ist $*.idx
+	$(PDFLATEX) $*
+	$(PDFLATEX) $*
+
+# Dependencies and rules to make PS documentation
+GMT_Docs.ps:	$(DOCEPS) $(DOCPNG) $(DOCTEX)
+GMT_Tutorial.ps:	$(TUTEPS) $(TUTTEX)
+GMT_Docs.ps GMT_Tutorial.ps:
+	\rm -f $*.{aux,ind,lot,lof,toc,out,dvi}
+	$(LATEX) $*
+	$(LATEX) $*
+	makeindex -s GMT.ist $*.idx
+	$(LATEX) $*
+	$(LATEX) $*
+	dvips -t $(PAPER) -o tmp.ps $*.dvi
+	cat fig/GMT_glyph10_proc.eps tmp.ps > $@
+	\rm -f tmp.ps
+
+# Dependencies and rules to make HTML documentation
+GMT_Docs/index.html:	$(DOCEPS) $(DOCPNG) $(DOCTEX)
+	\rm -f GMT_Docs.{aux,ind,lot,lof,toc,out,dvi}
+	\rm -rf GMT_Docs
+	$(LATEX) GMT_Docs.tex
+	$(LATEX) GMT_Docs.tex
+	makeindex -s GMT.ist GMT_Docs.idx
+	$(LATEX) GMT_Docs.tex
+	$(L2H) -t "GMT -- Technical Reference and Cookbook" GMT_Docs
+GMT_Tutorial/index.html:	$(TUTEPS) $(TUTTEX)
+	\rm -f GMT_Tutorial.{aux,ind,lot,lof,toc,out,dvi}
+	\rm -rf GMT_Tutorial
+	$(LATEX) GMT_Tutorial.tex
+	$(LATEX) GMT_Tutorial.tex
+	makeindex -s GMT.ist GMT_Tutorial.idx
+	$(LATEX) GMT_Tutorial.tex
+	$(L2H) -t "GMT -- A Map-making Tutorial" GMT_Tutorial
+
+# Finally, install all in the right place
+install install-all:	install-pdf install-html
+install-pdf:	pdf
+	mkdir -p ../www/gmt/doc/pdf
+	mv -f GMT_{Docs,Tutorial}.pdf ../www/gmt/doc/pdf
+install-html:	html
+	\rm -rf ../www/gmt/doc/html/GMT_{Docs,Tutorial}
+	\rm -f GMT_{Docs,Tutorial}/{index.html,images.*,*.pl,WARNINGS}
+	mv GMT_{Docs,Tutorial} ../www/gmt/doc/html
