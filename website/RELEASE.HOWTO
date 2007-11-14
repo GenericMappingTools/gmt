@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.18 2007-10-08 17:06:58 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.19 2007-11-14 21:04:32 remko Exp $
 #
 #		FOR 4.x SERIES
 
@@ -17,7 +17,7 @@ must ensure you do all the steps listed below:
 0.  Make any changes to README, README.WIN32, and Changelog.
     Finalize Announcements/Announce.4.*.  Make sure the macros
     in the gmtsite.macros file points to the actual FTP and WWW dirs.
-    Check VERSION number in guru/gmtguru.macros.orig
+    Check version number and release data in configure.in
 
 1.  run make latest-config
     get the latest config.sub and config.guess.  Make sure this worked

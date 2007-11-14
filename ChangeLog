@@ -1,17 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.146 2007-11-14 20:31:37 remko Exp $
+	$Id: ChangeLog,v 1.147 2007-11-14 21:04:32 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-11-14	remko
-	* guru/gmtguru.macros.orig:	Made superfluous. Settings now in GNUmakefile and
-				configure.in
-	* GNUmakefile(s):	Removed includes of guru/gmtguru.macros*. Information now comes
-				from src/makegmt.macros
+	* guru/gmtguru.macros.orig:	Settings are now only included in GNUmakefile.
+				Version information has moved to configure.in.
+	* GNUmakefile:		Has become the only makefile to include gmtguru.macros*
+	* */GNUmakefile:	Removed includes of guru/gmtguru.macros*. Information now comes
+				from src/makegmt.macros.
 	* gmt_version.h.in:	New: template for versioning info in source and manpages.
 	* doc/GMT_version.tex.in:	New: template for versioning info in documentation.
 	* common_options.txt:	Now includes gmt_version.h to get version info.
 	* *.txt:		Now include common_options.txt at the very start.
-	* doc/GNUmakefile:	Renamed from doc/makefile
+	* doc/GNUmakefile:	Renamed from doc/makefile.
 
 2007-11-13	remko
 	* gmt_grdio.c:		Fixed bug in parsing -D option from e.g. grdedit. Would always
