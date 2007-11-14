@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.67 2007-10-08 17:43:31 guru Exp $
+#  $Id: GNUmakefile,v 1.68 2007-11-14 20:27:29 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #	
@@ -13,9 +13,6 @@
 #
 #	Date:		04-NOV-2006
 #-------------------------------------------------------------------------------
-
-include ../guru/gmtguru.macros.orig	# Overall default guru settings
-sinclude ../guru/gmtguru.macros		# Guru-specific settings determined by GURU
 
 include makefile
 

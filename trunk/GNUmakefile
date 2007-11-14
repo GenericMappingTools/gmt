@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.14 2007-11-07 16:52:51 remko Exp $
+#  $Id: GNUmakefile,v 1.15 2007-11-14 20:27:29 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -9,9 +9,7 @@
 #	To be installed in top-level GMT directory and requires GNU make
 #
 #	New GMT gurus should create a file guru/gmtguru.macros with any settings
-#	that are intended to overrule the settings in guru/gmtguru.macros.orig.
-#	If not, this GNUmakefile will use the default settings from guru/gmtguru.macros.orig.
-#	(See that file from more information.)
+#	that are intended to overrule the DEFAULT SETTINGS specified below.
 #	Once done, it is reasonable to first try "make site".
 #
 #	To ensure the very latest code, start with "make update".
@@ -69,11 +67,43 @@
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
 #	Date:		13-SEP-2007
+#
 #-------------------------------------------------------------------------------
-#	Default setup
+#	DEFAULT SETTINGS
 #-------------------------------------------------------------------------------
+# This section contains macros that you may want to override with your own
+# settings to reflect your particular computer environment. You can best do this
+# by creating a file guru/gmtguru.macros. For example setting:
+#
+# GMT_DEBUG=
+# GMT_SHARED_LIBS=--enable-shared
+#
+# in the guru/gmtguru.macros will switch debugging code off and building of shared libraries on.
+#
+AUTOCONF	= autoconf		# GNU autoconf utility (add path if not in your search path)
+GMT_SHARED_LIBS	=# --enable-shared	# --enable-shared for shared; empty for static libraries
+GMT_US		= --enable-US		# --enable-US for inch; empty for cm
+GMT_TRIANGLE	= --enable-triangle	# --enable-triangle for Shewchuk's triangulation; empty for Watson's
+GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
+GMT_NETCDF	= --enable-netcdf=$(NETCDFHOME)	# Change if your netcdf is elsewhere
+GMT_SITE	=# --enable-update=ftp.soest.hawaii.edu	# Specify your nearest GMT ftp mirror
+GMT_MATLAB	= --enable-matlab=$(MATLAB)	# To compile the mex supplement
+GMT_64		=# --enable-64		# Compile for 64-bit platforms
+GMT_UNIVERSAL	=# --enable-universal	# Make universal binaries under OS X
+#
+# The following two will let you tailor where GMT will install (1) machine-specific
+# executables/libraries and (2) machine-independent files such as the stuff in share,
+# man pages etc.  By default they are all installed in the main GMT directory.
+# Uncomment these two to change this behavior:
+#
+GMT_DIST	=#--prefix=/usr/local/gmt 		# Uncomment for alternate installation path for machine-independent files (man, web)
+GMT_EXDIST	=#--exec_prefix=/usr/local/gmt/linux	# Uncomment for alternate installation path for executables
+#
+# Choose the correct preprocessing command for your system. 'configure' already knows
+# about HP-UX, SunOS, Linux and Darwin
+#
+TXT2MAN		=#/usr/bin/cpp -w -P -nostdinc	# Linux/Darwin
 
-include guru/gmtguru.macros.orig	# Overall default guru settings
 sinclude guru/gmtguru.macros		# Guru-specific settings determined by GURU
 
 #-------------------------------------------------------------------------------
@@ -98,9 +128,9 @@ help::
 #!update        : Get the latest source via cvs
 #!manpages      : Create manpages from text files
 #!usable        : Install-all and run examples
-#!pdfman	: Install PDF version of manpages
-#!pdfdocs	: Install PDF documentation
-#!docs		: Install PDF and HTML documentation
+#!pdfman        : Install PDF version of manpages
+#!pdfdocs       : Install PDF documentation
+#!docs          : Install PDF and HTML documentation
 #!site          : Complete install, incl documentation and web pages
 #!cvsclean      : Cleanup the package to a nearly clean CVS checkout
 #!archive       : Build the release archives
@@ -111,7 +141,7 @@ update:
 
 create:
 # We make the GMT$(VERSION) link from scratch each time
-		cd ..; rm -f GMT$(VERSION); ln -s `basename $(PWD)` GMT$(VERSION)
+		cd ..; rm -f GMT$(VERSION); $(LN_S) `basename $(PWD)` GMT$(VERSION)
 
 GMT$(VERSION):	archive
 
@@ -166,7 +196,7 @@ webdoc:		;
 # FILES from the CVS-distributed master files:
 #-------------------------------------------------------------------------------
 
-FILES =		configure src/makegmt.macros src/gmt_version.h share/conf/gmt.conf share/conf/.gmtdefaults_SI share/conf/.gmtdefaults_US
+FILES =		configure src/makegmt.macros share/conf/gmt.conf share/conf/.gmtdefaults_SI share/conf/.gmtdefaults_US
 
 gmtmacros FILES:		$(FILES)
 examples:	FILES
@@ -194,14 +224,12 @@ ifeq "$(findstring spotless,$(MAKECMDGOALS)$(TARGET))" "spotless"
 src/makegmt.macros:
 			touch $@
 else
-src/makegmt.macros:	guru/gmtguru.macros.orig guru/gmtguru.macros src/makegmt.macros.in src/gmt_version.h configure config.sub config.guess
+src/makegmt.macros:	guru/gmtguru.macros src/makegmt.macros.in configure config.sub config.guess \
+			src/gmt_version.h.in src/GMT.in src/gmt_notposix.h doc/GMT_version.tex.in
 			rm -f config.cache config.log config.status
 			./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) \
 				$(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL)
 endif
-
-src/gmt_version.h:	guru/gmtguru.macros.orig guru/gmtguru.macros
-			echo '#define GMT_VERSION "$(VERSION)"' > $@
 
 configure:	configure.in
 		$(AUTOCONF)
@@ -228,7 +256,7 @@ get_coast get_high get_full:
 #		Set-up ftp command & get coast file
 		echo "Getting coasts/rivers (GSHHS$(GSHHS_VERSION)_$(subst get_,,$@)) by anonymous ftp (be patient)..."
 		echo "user anonymous $(USER)@" > ftp.job
-		echo "cd gmt/$(GMTBRANCH)" >> ftp.job
+		echo "cd gmt/$(firstword $(subst ., ,$(VERSION)))" >> ftp.job
 		echo "binary" >> ftp.job
 		echo "get GSHHS$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2" >> ftp.job
 		echo "quit" >> ftp.job
