@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: manpages.mk,v 1.2 2007-09-26 19:06:55 remko Exp $
+#  $Id: manpages.mk,v 1.3 2007-11-14 20:31:37 remko Exp $
 #
 #	GNUmakefile to create manpages for GMT Version 4.x
 #	
@@ -24,9 +24,8 @@ ifneq "$(MAKECMDGOALS)" "spotless"
 endif
 
 %.1 %.3 %.5:		%.txt
-		@echo "Making $@"
 		@cp -f $< junk.c
-		$(TXT2MAN) -I.. $(CPFLAGS) $(SI) junk.c | egrep -v '^#|^$$' > $@
+		$(TXT2MAN) -I.. junk.c | egrep -v '^#|^$$' > $@
 		@rm -f junk.c
 
 $(DEP1):	%.dep:	%.txt
