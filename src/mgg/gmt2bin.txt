@@ -1,5 +1,5 @@
-.TH GMT2BIN 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GMT2BIN 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 gmt2bin \- Create bin-index files from gmt files
 .SH SYNOPSIS

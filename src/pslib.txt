@@ -1,4 +1,5 @@
-.TH PSLIB 3 DATE VERSION "Generic Mapping Tools"
+#include "common_options.txt"
+.TH PSLIB 3 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 pslib 4.0 \- A \fIPostScript\fP based plotting library
 .SH DESCRIPTION

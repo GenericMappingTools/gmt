@@ -1,5 +1,5 @@
-.TH PSLEGEND 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH PSLEGEND 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define CLEARENCE_SI 0.15\fBc\fP/0.15\fBc\fP
 #define CLEARENCE_US 0.05\fBi\fP/0.05\fBi\fP
 .SH NAME

@@ -1,5 +1,5 @@
-.TH TREND1D 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH TREND1D 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 trend1d \- Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data.
 .SH SYNOPSIS

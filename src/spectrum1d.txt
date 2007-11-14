@@ -1,5 +1,5 @@
-.TH SPECTRUM1D 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH SPECTRUM1D 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 spectrum1d \- compute auto\- [and cross\- ] spectra from one [or two] timeseries.
 .SH SYNOPSIS

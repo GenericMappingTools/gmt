@@ -1,5 +1,5 @@
-.TH SEGY2GRD 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH SEGY2GRD 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 segy2grd \- Converting SEGY file to grid file format
 .SH SYNOPSIS

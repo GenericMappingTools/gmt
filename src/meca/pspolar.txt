@@ -1,5 +1,5 @@
-.TH PSPOLAR 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH PSPOLAR 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 \fBpspolar\fP\ - Plot polarities on the inferior focal half\-sphere on maps
 .SH SYNOPSIS

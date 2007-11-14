@@ -1,5 +1,5 @@
-.TH ORIGINATOR 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH ORIGINATOR 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 originator \- Associate seamounts with hotspot point sources 
 .SH SYNOPSIS

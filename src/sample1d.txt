@@ -1,5 +1,5 @@
-.TH SAMPLE1D 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH SAMPLE1D 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 sample1d \- Resampling of 1-D data sets
 .SH SYNOPSIS

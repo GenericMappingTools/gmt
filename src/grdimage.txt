@@ -1,5 +1,5 @@
-.TH GRDIMAGE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GRDIMAGE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_L   1.5
 #define SCALE1	\fB\-Jl\fP18/24/1.5\fBc\fP
 #define LEN_X   10

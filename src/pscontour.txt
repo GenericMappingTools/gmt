@@ -1,5 +1,5 @@
-.TH PSCONTOUR 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH PSCONTOUR 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_L 0.5
 #define SCALE_L \fB\-Jl\fP18/24/0.5\fBi\fP
 .SH NAME

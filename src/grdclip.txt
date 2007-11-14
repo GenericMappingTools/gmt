@@ -1,5 +1,5 @@
-.TH GRDCLIP 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GRDCLIP 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 grdclip \- Clipping of range in grid files.
 .SH SYNOPSIS

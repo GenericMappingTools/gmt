@@ -1,5 +1,5 @@
-.TH IMG2GRD 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH IMG2GRD 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 img2grd \- Extract region of img in Mercator or geographic form 
 .SH SYNOPSIS

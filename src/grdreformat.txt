@@ -1,6 +1,6 @@
-.TH GRDREFORMAT 1 DATE VERSION "Generic Mapping Tools"
-.SH NAME
 #include "common_options.txt"
+.TH GRDREFORMAT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
 grdreformat \- Converting between different grid file formats.
 .SH SYNOPSIS
 \fBgrdreformat\fP \fIingrdfile\fP[\fI=id\fP[\fI/scale/offset\fP[\fI/NaNvalue\fP]]] 

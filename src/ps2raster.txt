@@ -1,5 +1,5 @@
-.TH PS2RASTER 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH PS2RASTER 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats using GhostScript
 .SH SYNOPSIS

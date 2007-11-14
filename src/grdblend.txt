@@ -1,5 +1,5 @@
-.TH GRDBLEND 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GRDBLEND 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 grdblend \- Blend several partially over-lapping grids into one large grid
 .SH SYNOPSIS

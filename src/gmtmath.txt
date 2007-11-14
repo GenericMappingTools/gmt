@@ -1,5 +1,5 @@
-.TH GMTMATH 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GMTMATH 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS

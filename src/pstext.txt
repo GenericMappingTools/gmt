@@ -1,5 +1,5 @@
-.TH PSTEXT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH PSTEXT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define CLEARANCE_SI 0.1\fBc\fP/0.1\fBc\fP
 #define CLEARANCE_US 0.0254\fBi\fP/0.0254\fBi\fP
 .SH NAME

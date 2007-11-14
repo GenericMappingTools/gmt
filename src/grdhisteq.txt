@@ -1,5 +1,5 @@
-.TH GRDHISTEQ 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GRDHISTEQ 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 grdhisteq \- Histogram equalization for grid files 
 .SH SYNOPSIS

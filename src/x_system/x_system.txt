@@ -1,4 +1,5 @@
-.TH X_SYSTEM 1 DATE VERSION "Generic Mapping Tools"
+#include "common_options.txt"
+.TH X_SYSTEM 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 \fBx_system\fP \- A Cross-Over Error Analysis Tool
 .SH INTRODUCTION

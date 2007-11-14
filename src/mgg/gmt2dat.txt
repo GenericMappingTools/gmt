@@ -1,4 +1,5 @@
-.TH GMT2DAT 1 DATE VERSION "Generic Mapping Tools"
+#include "common_options.txt"
+.TH GMT2DAT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 gmt2dat \- Convert a binary gmt file to an ASCII file
 .SH SYNOPSIS

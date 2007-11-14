@@ -1,5 +1,5 @@
-.TH BLOCKMODE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH BLOCKMODE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 blockmode \- filter to block average (\fIx,y,z\fP) data by mode estimation.
 .SH SYNOPSIS

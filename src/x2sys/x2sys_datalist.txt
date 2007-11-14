@@ -1,5 +1,5 @@
-.TH X2SYS_DATALIST 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH X2SYS_DATALIST 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH SYNOPSIS
