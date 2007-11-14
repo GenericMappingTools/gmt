@@ -1,5 +1,5 @@
-.TH GMTLIST 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GMTLIST 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 gmtlist \- A data-extractor for <legid>.gmt files
 .SH SYNOPSIS

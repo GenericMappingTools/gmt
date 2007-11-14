@@ -1,5 +1,5 @@
-.TH PSWIGGLE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH PSWIGGLE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN 15
 #define SCALE_S \fB\-JS\fP0/90/15\fBc\fP
 .SH NAME

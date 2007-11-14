@@ -1,6 +1,6 @@
-.TH GRDPROJECT 1 DATE VERSION "Generic Mapping Tools"
-.SH NAME
 #include "common_options.txt"
+.TH GRDPROJECT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
 grdproject \- Forward and Inverse map transformation of 2-D grid files 
 .SH SYNOPSIS
 \fBgrdproject\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP GMT_J_OPT

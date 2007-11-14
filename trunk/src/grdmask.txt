@@ -1,5 +1,5 @@
-.TH GRDMASK 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GRDMASK 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 grdmask \- Create mask grid files from xy paths.
 .SH SYNOPSIS

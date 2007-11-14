@@ -1,5 +1,5 @@
-.TH GRDINFO 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GRDINFO 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 grdinfo \- Get information about the contents of a 2-D grid file
 .SH SYNOPSIS

@@ -1,5 +1,5 @@
-.TH X2SYS_PUT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH X2SYS_PUT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 x2sys_put \- Update track data bases
 .SH SYNOPSIS

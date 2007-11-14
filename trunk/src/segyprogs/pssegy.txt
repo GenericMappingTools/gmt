@@ -1,5 +1,5 @@
-.TH PSSEGY 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH PSSEGY 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 pssegy \- Create imagemasked postscript from SEGY file
 .SH SYNOPSIS

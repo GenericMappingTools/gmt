@@ -1,6 +1,6 @@
-.TH GRDTRACK 1 DATE VERSION "Generic Mapping Tools"
-.SH NAME
 #include "common_options.txt"
+.TH GRDTRACK 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
 grdtrack \- Sampling of a 2-D grid file along 1-D trackline (a sequence of x,y points)
 .SH SYNOPSIS
 \fBgrdtrack\fP \fIxyfile\fP OPT(G)\fIgrdfile\fP [ GMT_H_OPT ] [ OPT(L)\fIflag\fP ] [ GMT_M_OPT ] 

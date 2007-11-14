@@ -1,5 +1,5 @@
-.TH GRD2CPT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GRD2CPT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 grd2cpt \- Read a grid file and make a color palette file
 .SH SYNOPSIS

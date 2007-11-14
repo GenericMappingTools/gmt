@@ -1,5 +1,5 @@
-.TH MDG77TOGMT 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH MDG77TOGMT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 mgd77togmt \- Convert an MGD-77 ASCII file to a binary gmt file
 .SH SYNOPSIS

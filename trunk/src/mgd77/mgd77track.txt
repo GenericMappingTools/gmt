@@ -1,5 +1,5 @@
-.TH MGD77TRACK 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH MGD77TRACK 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #ifdef SI
 #define SCALE1 0.25cm/degree
 #define SCALE2 \fB\-Jm\fP0.25

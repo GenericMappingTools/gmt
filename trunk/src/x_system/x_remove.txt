@@ -1,4 +1,5 @@
-.TH X_REMOVE 1 DATE VERSION "Generic Mapping Tools"
+#include "common_options.txt"
+.TH X_REMOVE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 \fBx_remove\fP \- Remove COEs for Selected Cruises from the Data Base
 .SH SYNOPSIS

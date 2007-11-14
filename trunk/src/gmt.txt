@@ -1,4 +1,5 @@
-.TH GMT 1 DATE VERSION "Generic Mapping Tools"
+#include "common_options.txt"
+.TH GMT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 GMT \- The Generic Mapping Tools data processing and display software package
 .SH INTRODUCTION

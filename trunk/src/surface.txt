@@ -1,5 +1,5 @@
-.TH SURFACE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH SURFACE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 surface \- adjustable tension continuous curvature surface gridding algorithm
 .SH SYNOPSIS

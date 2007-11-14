@@ -1,5 +1,5 @@
-.TH PSBASEMAP 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH PSBASEMAP 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_1   25
 #define LEN_2   15
 #define SCALE_LL   \fB\-JX\fP25\fBcl\fP/15\fBcl\fP

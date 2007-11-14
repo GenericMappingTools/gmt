@@ -1,5 +1,5 @@
-.TH XYZ2GRD 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH XYZ2GRD 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 xyz2grd \- Converting an ASCII or binary table to grid file format
 .SH SYNOPSIS

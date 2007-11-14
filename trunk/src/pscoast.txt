@@ -1,5 +1,5 @@
-.TH PSCOAST 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH PSCOAST 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_1   0.1
 #define SCALE_M1   \fB\-Jm\fP0.1\fBi\fP
 #define LEN_2   1

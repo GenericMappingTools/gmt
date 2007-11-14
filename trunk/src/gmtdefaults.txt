@@ -1,5 +1,5 @@
-.TH GMTDEFAULTS 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GMTDEFAULTS 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define TOL_SI	0.025\fBc\fP
 #define LEN_1_SI	0.2\fBc\fP
 #define LEN_3_SI	25\fBc\fP

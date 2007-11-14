@@ -1,5 +1,5 @@
-.TH GSHHS2GRASS 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GSHHS2GRASS 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 gshhs2grass \- Extracting GSHHS and WDBII data in GRASS-compatible ASCII format
 .SH SYNOPSIS

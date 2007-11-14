@@ -1,5 +1,5 @@
-.TH PSROSE 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH PSROSE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define PARAM_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP/0/0/0
 #define PARAM_US 0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP/0/0/0
 #define LEN_1	3

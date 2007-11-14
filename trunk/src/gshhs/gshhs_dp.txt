@@ -1,5 +1,5 @@
-.TH GSHHS_DP 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH GSHHS_DP 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 gshhs_dp \- Line reduction using the Douglas-Peucker algorithm
 .SH SYNOPSIS

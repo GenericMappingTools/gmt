@@ -1,5 +1,5 @@
-.TH SPLITXYZ 1 DATE VERSION "Generic Mapping Tools"
 #include "common_options.txt"
+.TH SPLITXYZ 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track segments.
 .SH SYNOPSIS
