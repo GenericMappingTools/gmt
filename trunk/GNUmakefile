@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.16 2007-11-14 20:34:22 remko Exp $
+#  $Id: GNUmakefile,v 1.17 2007-11-14 21:04:32 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -73,37 +73,10 @@
 #-------------------------------------------------------------------------------
 # This section contains macros that you may want to override with your own
 # settings to reflect your particular computer environment. You can best do this
-# by creating a file guru/gmtguru.macros. For example setting:
-#
-# GMT_DEBUG=
-# GMT_SHARED_LIBS=--enable-shared
-#
-# in the guru/gmtguru.macros will switch debugging code off and building of shared libraries on.
-#
-AUTOCONF	= autoconf		# GNU autoconf utility (add path if not in your search path)
-GMT_SHARED_LIBS	=# --enable-shared	# --enable-shared for shared; empty for static libraries
-GMT_US		= --enable-US		# --enable-US for inch; empty for cm
-GMT_TRIANGLE	= --enable-triangle	# --enable-triangle for Shewchuk's triangulation; empty for Watson's
-GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
-GMT_NETCDF	= --enable-netcdf=$(NETCDFHOME)	# Change if your netcdf is elsewhere
-GMT_SITE	=# --enable-update=ftp.soest.hawaii.edu	# Specify your nearest GMT ftp mirror
-GMT_MATLAB	= --enable-matlab=$(MATLAB)	# To compile the mex supplement
-GMT_64		=# --enable-64		# Compile for 64-bit platforms
-GMT_UNIVERSAL	=# --enable-universal	# Make universal binaries under OS X
-#
-# The following two will let you tailor where GMT will install (1) machine-specific
-# executables/libraries and (2) machine-independent files such as the stuff in share,
-# man pages etc.  By default they are all installed in the main GMT directory.
-# Uncomment these two to change this behavior:
-#
-GMT_DIST	=#--prefix=/usr/local/gmt 		# Uncomment for alternate installation path for machine-independent files (man, web)
-GMT_EXDIST	=#--exec_prefix=/usr/local/gmt/linux	# Uncomment for alternate installation path for executables
-#
-# Choose the correct preprocessing command for your system. 'configure' already knows
-# about HP-UX, SunOS, Linux and Darwin
-#
-TXT2MAN		=#/usr/bin/cpp -w -P -nostdinc	# Linux/Darwin
+# by creating coying guru/gmtguru.macros.orig to guru/gmtguru.macros. Then edit
+# the latter.
 
+include guru/gmtguru.macros.orig	# Default guru settings
 sinclude guru/gmtguru.macros		# Guru-specific settings determined by GURU
 
 #-------------------------------------------------------------------------------
