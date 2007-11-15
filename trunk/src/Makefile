@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.20 2007-11-14 21:15:32 remko Exp $
+#	$Id: Makefile,v 1.21 2007-11-15 04:37:47 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -79,16 +79,13 @@ MAN3		= pslib.3
 
 all:		init $(ALLPROGS)
 
-init:		gmtmacros $(CONFIGS)
+init:		gmtmacros gmt_version.h gmt_notposix.h GMT
 		
 gmtmacros:
 		@if [ ! -s makegmt.macros ]; then \
 			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
 			exit 1; \
 		fi
-
-makegmt.macros:	makegmt.macros.in
-		@echo "You must first run configure in the main GMT directory"; exit 1
 
 gmt_version.h:	gmt_version.h.in
 		@echo "You must first run configure in the main GMT directory"; exit 1
