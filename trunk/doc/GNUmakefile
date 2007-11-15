@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.1 2007-11-14 20:22:33 remko Exp $
+#	$Id: GNUmakefile,v 1.2 2007-11-15 04:38:47 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -143,7 +143,7 @@ clean:
 	\rm -f *% .gmt*
 	\rm -f *.aux *.lot *.lof *.toc *.pdf *.out *.dvi *.ind *.ilg *.idx *.log *.ps *.eps
 	\rm -f GMT_version.tex GMT_Appendix_N_inc.tex
-	\rm -f scripts/*.{tex,eps,pdf,csh,ps,ps1} scripts/sqrt.d* scripts/.gmtdefaults4 scripts/.gmtcommands4
+	\rm -f scripts/*.{tex,eps,pdf,csh,ps} scripts/sqrt.d* scripts/.gmtdefaults4 scripts/.gmtcommands4
 	\rm -f fig/*.pdf
 	\rm -rf GMT_Docs GMT_Tutorial
 
