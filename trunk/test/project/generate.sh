@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: generate.sh,v 1.8 2007-11-15 04:20:42 remko Exp $
+#	$Id: generate.sh,v 1.9 2007-11-15 04:32:58 remko Exp $
 #
 # Tests project in generating lines
 
@@ -53,5 +53,7 @@ echo 15 15 | psxy -R -J -O -K -Sc0.1i -Gblack >> $ps
 echo 85 40 | psxy -R -J -O -K -Sa0.1i -Gblack >> $ps
 # The end
 psbasemap -R -J -O -B30g30 >> $ps
+
+rm  -f $$.xy
 
 pscmp
