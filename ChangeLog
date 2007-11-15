@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.147 2007-11-14 21:04:32 remko Exp $
+	$Id: ChangeLog,v 1.148 2007-11-15 04:40:16 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-11-14	remko
@@ -13,6 +13,8 @@
 	* common_options.txt:	Now includes gmt_version.h to get version info.
 	* *.txt:		Now include common_options.txt at the very start.
 	* doc/GNUmakefile:	Renamed from doc/makefile.
+	* test/functions.sh:	Test functions defined in this file to make writing test
+				scripts easier.
 
 2007-11-13	remko
 	* gmt_grdio.c:		Fixed bug in parsing -D option from e.g. grdedit. Would always
