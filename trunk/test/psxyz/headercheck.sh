@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: headercheck.sh,v 1.8 2007-11-15 04:20:42 remko Exp $
+#	$Id: headercheck.sh,v 1.9 2007-11-15 04:34:19 remko Exp $
 # Test that symbols pick up correct -W -G from command line or header
 
 . ../functions.sh
@@ -56,5 +56,7 @@ psxyz -R -J -JZ -E135/35 -O -Y4.25i -Gred -L -M -B2g1 -C$$.cpt << EOF >> $ps
 9	9	0
 6	9	0
 EOF
+
+rm -f $$.cpt
 
 pscmp
