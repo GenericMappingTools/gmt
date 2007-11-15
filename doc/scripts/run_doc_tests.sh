@@ -1,11 +1,11 @@
 #!/bin/sh
-#	$Id: run_doc_tests.sh,v 1.1 2007-09-13 17:39:08 remko Exp $
+#	$Id: run_doc_tests.sh,v 1.2 2007-11-15 04:15:48 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
 # Specify archived images to check against on command line, or otherwise checks all.
 
-echo "File                          : STATUS"
+echo "File                            STATUS"
 echo "--------------------------------------"
 
 # Get the file names of all archived images
@@ -20,17 +20,22 @@ fi
 
 rm -f fail_count.d
 touch fail_count.d
+
 for o in $origs ; do
-        f=`basename $o`
-        echo $f | awk '{printf "%-30s: ", $1}'
-        compare -density 100 -metric PSNR $f $o $f.diff.png 2>&1 | grep inf > fail
-        if [ ! -s fail ]; then
-                echo "[FAIL]"
-                echo failed >> fail_count.d
-        else
-                echo "[PASS]"
-                rm -f $f.diff.png
-        fi
+        f=`basename $o .eps`
+	printf "%-32s" $f.eps
+	compare -density 100 -metric PSNR $f.eps orig/$f.eps $f.png 2>&1 | grep -v inf > fail
+	if [ -s fail ]; then
+        	echo "[FAIL]"
+		echo $f >> fail_count.d
+		mv -f fail $f.log
+	else
+        	echo "[PASS]"
+        	rm -f fail $f.log $f.png
+	fi
 done
+
+echo "--------------------------------------"
 wc -l fail_count.d | awk '{printf "GMT Documentation EPS file failures: %d\n", $1}'
+cat fail_count.d
 rm -f fail_count.d fail
