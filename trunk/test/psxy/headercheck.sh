@@ -1,8 +1,9 @@
 #!/bin/sh
-#	$Id: headercheck.sh,v 1.7 2007-09-11 22:56:12 remko Exp $
+#	$Id: headercheck.sh,v 1.8 2007-11-15 04:20:42 remko Exp $
 # Test that symbols pick up correct -W -G from command line or header
 
-echo -n "$0: Test psxy and operation of -W -G in headers:		"
+. ../functions.sh
+header "Test psxy and operation of -W -G in headers"
 
 ps=headercheck.ps
 psxy -R-1/10/-1/10 -JX6/4 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -M -K << EOF > $ps
@@ -55,13 +56,7 @@ psxy -R -J -O -Y4.75i -Gred -L -M -B2g1 -C$$.cpt << EOF >> $ps
 9	9
 6	9
 EOF
-compare -density 100 -metric PSNR {,orig/}$ps headercheck_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail headercheck_diff.png log
-fi
+
 rm -f $$.*
+
+pscmp

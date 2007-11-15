@@ -1,12 +1,13 @@
 #!/bin/sh
 #
-#	$Id: grdimage.sh,v 1.8 2007-09-11 22:54:32 remko Exp $
+#	$Id: grdimage.sh,v 1.9 2007-11-15 04:20:41 remko Exp $
 
 ps=grdimage.ps
 grdimage=grdimage" $VERBOSE t.grd -Ct.cpt -JX1i -B1/1WeSn --ANNOT_FONT_SIZE=10p"
 grdcontour=grdcontour" t.grd -Ct.cpt -J -R -O"
 
-echo -n "$0: Test grdimage for grid and pixel plots:			"
+. ../functions.sh
+header "Test grdimage for grid and pixel plots"
 makegrd () {
 xyz2grd -I1 -Gt.grd $* <<%
 0 0 0.0
@@ -59,12 +60,4 @@ plots "-O -X-12c -Y-4c" " " -F >> $ps
 
 rm -f t.grd t.cpt .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps grdimage_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail grdimage_diff.png log
-fi
+pscmp

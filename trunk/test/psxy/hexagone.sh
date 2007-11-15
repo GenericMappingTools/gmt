@@ -1,9 +1,10 @@
 #!/bin/sh
-#	$Id: hexagone.sh,v 1.9 2007-10-04 19:51:34 remko Exp $
+#	$Id: hexagone.sh,v 1.10 2007-11-15 04:20:42 remko Exp $
 #
 # Check wrapping around Greenwich
 
-echo -n "$0: Test psxy and -A resampling crossing Greenwich:		"
+. ../functions.sh
+header "Test psxy and -A resampling crossing Greenwich"
 
 ps=hexagone.ps
 
@@ -28,13 +29,6 @@ pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O -K --PLOT_DEGREE_FORMAT=D
 psxy hexagone.dat -R-4/6/42/49.5 -JM3i -Y-4i -L -Gpurple -O -K >> $ps
 pscoast -R -J -Dl -Wthin -Ia/thin -N1/thick,red -B1 -O --PLOT_DEGREE_FORMAT=D >> $ps
 
-compare -density 100 -metric PSNR {,orig/}$ps hexagone_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail hexagone_diff.png log
-fi
 rm -f hexagone.dat .gmtcommands4
+
+pscmp

@@ -1,8 +1,9 @@
 #!/bin/sh
 #
-#	$Id: grdcontour.sh,v 1.7 2007-09-11 22:56:12 remko Exp $
+#	$Id: grdcontour.sh,v 1.8 2007-11-15 04:20:41 remko Exp $
 
-echo -n "$0: Test grdcontour for a problem on region selection:	"
+. ../functions.sh
+header "Test grdcontour for a problem on region selection"
 ps=grdcontour.ps
 grdcontour="grdcontour -A200 -C100 -Gd4 xz-temp.grd -Jx0.4c/0.4c -Ba5f1/a5f1WNse -Gd4 -Wa3/grey -Wc1/grey"
 $grdcontour -R-100/-60/3/21.02 -P -K > $ps
@@ -10,12 +11,4 @@ $grdcontour -R-100/-60/3/20 -O -Y10c >> $ps
 
 rm -f .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps grdcontour_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail grdcontour_diff.png log
-fi
+pscmp

@@ -1,7 +1,9 @@
 #!/bin/sh
-#	$Id: seis.sh,v 1.9 2007-09-11 22:56:12 remko Exp $
+#	$Id: seis.sh,v 1.10 2007-11-15 04:20:42 remko Exp $
 #
-echo -n "$0: Test psscale and makecpt combinations:				"
+. ../functions.sh
+
+header "Test psscale and makecpt combinations"
 
 ps=seis.ps
 gmtset ANNOT_FONT_SIZE 10p MEASURE_UNIT cm
@@ -25,12 +27,4 @@ psscale -Ctmp.cpt -D20/13/8/0.5 -O    -I -N100 >> $ps
 
 rm -f tmp.cpt .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps seis_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail seis_diff.png log
-fi
+pscmp seis

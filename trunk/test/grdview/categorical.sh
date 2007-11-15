@@ -1,9 +1,12 @@
 #!/bin/sh
 #
-#       $Id: categorical.sh,v 1.2 2007-09-11 22:56:12 remko Exp $
+#       $Id: categorical.sh,v 1.3 2007-11-15 04:20:42 remko Exp $
 
 ps=categorical.ps
-echo -n "$0: Test grdview for categorical grid plots:		"
+
+. ../functions.sh
+header "Test grdview for categorical grid plots"
+
 # The cpt
 cat << EOF > $$.cpt
 1	red	2	red	;A
@@ -40,12 +43,4 @@ grdview $$.grd -C$$.cpt -J -O -B5g5:."-Qt100":WSne -Qt100 -X3.5 --HEADER_OFFSET=
 
 rm -f $$.* .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps categorical_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-        echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail categorical_diff.png log
-fi
+pscmp

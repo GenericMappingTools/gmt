@@ -1,10 +1,12 @@
 #!/bin/sh
 #
-#	$Id: rendering.sh,v 1.1 2007-09-11 22:54:05 remko Exp $
+#	$Id: rendering.sh,v 1.2 2007-11-15 04:20:42 remko Exp $
 
 ps=rendering.ps
 
-echo -n "$0: Test grdimage for rendering issues:			"
+. ../functions.sh
+header "Test grdimage for rendering issues"
+
 xyz2grd -R0/360/0/90 -F -I60/30 -Gt.grd <<%
 #30 45 -1
 90 15 -1
@@ -43,12 +45,4 @@ psxy -R -J /dev/null -O >> $ps
 
 rm -f t.grd t.cpt .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps rendering_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail rendering_diff.png log
-fi
+pscmp
