@@ -2,7 +2,10 @@
 #	$ID
 #
 ps=psimage.ps
-echo -n "$0: Test psimage with different pattern options:		"
+
+. ../functions.sh
+header "Test psimage with different pattern options"
+
 cat > $$.in <<%
 0 0
 1 0 :FwhiteBblack
@@ -45,12 +48,4 @@ psimage -E80 -C3i/3i/BL ../../share/pattern/ps_pattern_10.ras -Gfred -Gb- -O -K 
 psimage -E80 -C3i/3i/TL ../../share/pattern/ps_pattern_10.ras -O >> $ps
 rm -f $$.in .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps psimage_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail psimage_diff.png log
-fi
+pscmp

@@ -1,12 +1,14 @@
 #!/bin/sh
 #
-#	$Id: grdview.sh,v 1.8 2007-09-11 22:56:12 remko Exp $
+#	$Id: grdview.sh,v 1.9 2007-11-15 04:20:42 remko Exp $
 
 ps=grdview.ps
 grdview=grdview" t.grd -Ct.cpt -JX1i -B1/1WeSn --ANNOT_FONT_SIZE=10p"
 grdcontour=grdcontour" t.grd -Ct.cpt -J -R -O"
 
-echo -n "$0: Test grdview for grid and pixel plots:			"
+. ../functions.sh
+header "Test grdview for grid and pixel plots"
+
 makegrd () {
 xyz2grd -I1 -Gt.grd $* <<%
 0 0 0.0
@@ -65,12 +67,4 @@ plots "-O -X-12c -Y-4c" " " -F >> $ps
 
 rm -f t.grd t.cpt .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps grdview_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail grdview_diff.png log
-fi
+pscmp

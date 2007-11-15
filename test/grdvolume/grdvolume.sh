@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: grdvolume.sh,v 1.6 2007-05-31 02:51:31 pwessel Exp $
+#	$Id: grdvolume.sh,v 1.7 2007-11-15 04:20:42 remko Exp $
 
 makegrd () {
 xyz2grd -I1 -Gt.grd -Za $1 <<%
@@ -31,18 +31,17 @@ makegrd "-R0/3/0/3 -F -N0"
 makegrd -R0/2/0/2 "-C0/0.8/0.4"
 }
 
-echo -n "$0: Test grdvolume for various grid registrations:		"
+. ../functions.sh
+header "Test grdvolume for various grid registrations"
 
 testcase > grdvolume.log
 
 diff grdvolume.{log,out} > log
 
-if [ $? == 0 ]; then
-	echo "[PASS]"
-	rm -f log
-else
-	echo "[FAIL]"
-	echo $0 >> ../fail_count.d
+if [ $? != 0 ]; then
+	touch fail
 fi
 
-rm -f t.grd .gmtcommands4
+rm -f t.grd .gmtcommands4 log
+
+passfail grdvolume

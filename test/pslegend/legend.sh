@@ -1,9 +1,10 @@
 #!/bin/sh
-#	$Id: legend.sh,v 1.8 2007-09-11 22:56:12 remko Exp $
+#	$Id: legend.sh,v 1.9 2007-11-15 04:20:42 remko Exp $
 #
 # Testing pslegend capabilities
 
-echo -n "$0: Test pslegend and its various items:				"
+. ../functions.sh
+header "Test pslegend and its various items"
 
 ps=legend.ps
 gmtset ANNOT_FONT_SIZE_PRIMARY 12p
@@ -44,13 +45,7 @@ EOF
 #sh -xv script.sh >> $ps
 # rm -f script.sh
 pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F >> $ps
-compare -density 100 -metric PSNR {,orig/}$ps legend_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail legend_diff.png log
-fi
+
 rm -f $$.d
+
+pscmp

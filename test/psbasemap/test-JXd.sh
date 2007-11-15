@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: test-JXd.sh,v 1.9 2007-09-11 22:56:12 remko Exp $
+#	$Id: test-JXd.sh,v 1.10 2007-11-15 04:20:42 remko Exp $
 
 psbasemap="psbasemap --PLOT_DEGREE_FORMAT=dddF --LABEL_FONT_SIZE=16p --BASEMAP_AXES=WeSn"
 psxy=psxy
@@ -22,7 +22,9 @@ annot () {
 %
 }
 
-echo -n "$0: Test various specifications of -Jx w/wo trailing d:	"
+. ../functions.sh
+header "Test various specifications of -Jx w/wo trailing d"
+
 ps=test-JXd.ps
 psxy /dev/null -R-60/60/-60/60 -JX8c/8c -K -X4c -Y13c > $ps
 plot1 8c/8c >> $ps
@@ -33,12 +35,4 @@ psxy /dev/null -R -J -O >> $ps
 
 rm -f .gmtcommands4
 
-compare -density 100 -metric PSNR {,orig/}$ps test-JXd_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail test-JXd_diff.png log
-fi
+pscmp

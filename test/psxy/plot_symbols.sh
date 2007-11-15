@@ -1,9 +1,10 @@
 #!/bin/sh
-#	$Id: plot_symbols.sh,v 1.7 2007-09-11 22:56:12 remko Exp $
+#	$Id: plot_symbols.sh,v 1.8 2007-11-15 04:20:42 remko Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
-echo -n "$0: Test psxy and all the symbols with fill:		"
+. ../functions.sh
+header "Test psxy and all the symbols with fill"
 
 ps=plot_symbols.ps
 psxy -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
@@ -37,12 +38,5 @@ psxy -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 > Dual-colored pattern # 12 -Gp100/12:FredBgreen -W3p,orange
 3.5	1.5	a
 EOF
-compare -density 100 -metric PSNR {,orig/}$ps plot_symbols_diff.png > log 2>&1
-grep inf log > fail
-if [ ! -s fail ]; then
-        echo "[FAIL]"
-	echo $0 >> ../fail_count.d
-else
-        echo "[PASS]"
-        rm -f fail plot_symbols_diff.png log
-fi
+
+pscmp
