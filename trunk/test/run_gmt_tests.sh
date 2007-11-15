@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: run_gmt_tests.sh,v 1.9 2007-09-13 17:42:36 remko Exp $
+#	$Id: run_gmt_tests.sh,v 1.10 2007-11-15 04:16:54 remko Exp $
 #
 #	test script for GMT/test directory
 #
@@ -7,8 +7,7 @@
 # Bourne scripts found in each directory.
 # If directory/ies are specified as arguments: will only run scripts in those.
 
-echo "Script    :                  Purpose					STATUS"
-echo "------------------------------------------------------------------------------"
+echo "Script:                      Purpose                                    STATUS"
 
 # Get all directories below GMT/test and filter out the CVS directories
 
@@ -26,7 +25,9 @@ touch fail_count.d
 here=`pwd`
 for dir in $dirs; do
 	cd $here/$dir
-	echo "=== Directory: $dir ==="
+	echo "------------------------------------------------------------------------------"
+	echo "Directory: $dir"
+	echo "------------------------------------------------------------------------------"
 	# Look for Bourne shell scripts
 	ls *.sh > /tmp/$$.lis
 	if [ -s /tmp/$$.lis ]; then	# Found Bourne shell scripts
@@ -38,5 +39,7 @@ for dir in $dirs; do
 	fi
 done
 cd $here
+echo "------------------------------------------------------------------------------"
 wc -l fail_count.d | awk '{printf "GMT test script failures: %d\n", $1}'
+cat fail_count.d
 rm -f fail_count.d
