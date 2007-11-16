@@ -42,8 +42,8 @@ Specify name for output CVA grid file.
 .TP
 .B \-A
 Supply a crustal age grid that is co-registered with the input data grid.  These ages
-become the upper ages to use when constructing flowlines [Default extent flowlines back
-to oldest age found in the rotation file].
+become the upper ages to use when constructing flowlines [Default extend flowlines back
+to oldest age found in the rotation file; but see OPT(N)].
 .TP
 .B \-B
 Get \fIn_try\fP bootstrap estimates of the maximum CVA location; the longitude and latitude
@@ -92,11 +92,12 @@ Truncate crustal ages given via the OPT(A) option that exceed the upper age set 
 .TP
 .B \-U
 After a node passes the test implied by OPT(Z), use this \fIfixed_val\fP instead in the calculations.
+[Default uses individual node values].
 #include "explain_-V.txt"
 .TP
 .B \-Z
 Ignore nodes with z-values lower than \fIz_min\fP [0] and optionally larger than \fIz_max\fP [Inf].
-Give \fIz_min/z_max/z_inc\fP to make separate CVA grids for each \fIz\fP-slice {Default makes one CVA grid].
+Give \fIz_min/z_max/z_inc\fP to make separate CVA grids for each \fIz\fP-slice [Default makes one CVA grid].
 Multi-slicing cannot be used with OPT(M).
 .SH EXAMPLES
 To create a CVA image from the Pacific topography grid Pac_res_topo.grd,
