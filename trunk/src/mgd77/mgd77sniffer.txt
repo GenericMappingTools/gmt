@@ -134,7 +134,18 @@ check.
 .sp
 .TP
 .B \-H
-(with \fB\-G\fP|\fBg\fP only) disable data decimation during RLS regression.
+(with \fB\-G\fP|\fBg\fP only) disable (or force) decimation during RLS analysis of ship and gridded data.
+By default mgd77sniffer analyses both the full and decimated data sets then reports RLS statistics for the
+higher correlation regression.
+.br
+.sp
+\fB\-Hb\fP analyze both (default), report better of two.
+.br
+.sp
+\fB\-Hd\fP to disable data decimation (equivalent to -H with no argument).
+.br
+.sp
+\fB\-Hf\fP to force data decimation.
 .TP
 .B \-I
 Append a field abbreviation and the first and last record in a range of records that should
