@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.20 2007-10-08 21:26:08 remko Exp $
+#	$Id: Makefile,v 1.21 2007-11-24 21:44:18 remko Exp $
 #
 #	makefile for dbase directory
 #
@@ -12,7 +12,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) $(WIN32) $(SWAP) -I$(srcdir) -I$(NETCDF)/include
+CFLAGS		= $(CC_OPT) $(SWAP) -I$(srcdir) $(NC_CFLAGS)
 
 PROGS_O		= grdraster.o
 MAN1		= $(PROGS_O:.o=.1)
@@ -53,5 +53,5 @@ $(PROGS_O):	$(GMT_H)
 grdraster$(EXE):	grdraster.o
 
 $(PROGS):
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@

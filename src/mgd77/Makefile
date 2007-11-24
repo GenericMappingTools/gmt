@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.45 2007-10-08 21:26:08 remko Exp $
+#	$Id: Makefile,v 1.46 2007-11-24 21:44:18 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -20,7 +20,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include
+CFLAGS		= $(CC_OPT) -I$(srcdir) $(NC_CFLAGS)
 
 PROGS_H		= mgd77.h mgd77defaults.h mgd77_IGF_coeffs.h mgd77sniffer.h mgd77snifferdefaults.h \
 		mgd77magref.h mgd77_codes.h
@@ -102,9 +102,9 @@ mgd77sniffer$(EXE):	mgd77sniffer.o
 mgd77track$(EXE):	mgd77track.o
 
 $(PROGS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -lgmt -lgmtps -lpsl $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@

@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.5 2007-10-08 21:26:08 remko Exp $
+#		$Id: Makefile,v 1.6 2007-11-24 21:44:18 remko Exp $
 #
 #	Makefile for gmt <--> matlab conversion programs
 #	Use with GMT 4.x
@@ -21,7 +21,7 @@ include $(GMTSRCDIR)gmtalldeps.macros
 MEX		= $(MATLAB)/bin/mex
 MEXLIB		= -L$(MATLAB)/extern/lib/$(MATLAB_MEX) -l$(MATLAB_LIB)
 GMT     	= -L.. -lgmt
-FLAGS		= -I$(srcdir) -I$(MATLAB)/extern/include -I$(NETCDF)/include -O
+FLAGS		= -I$(srcdir) -I$(MATLAB)/extern/include $(NC_CFLAGS) -O
 
 PROGS_H		= grdinfo.m grdread.m grdwrite.m
 PROGS_M		= grdinfo.$(MATLAB_EXT) grdread.$(MATLAB_EXT) grdwrite.$(MATLAB_EXT)
@@ -58,10 +58,10 @@ clean:
 #-------------------------------------------------------------------------------
 
 grdinfo.$(MATLAB_EXT):	$(GMT_H) $(GMTLIB) grdinfo.c grdinfo.m
-		$(MEX) $(FLAGS) grdinfo.c $(GMT) $(CDF) $(MEXLIB) 
+		$(MEX) $(FLAGS) grdinfo.c $(GMT) $(NC_LIBS) $(MEXLIB) 
 
 grdread.$(MATLAB_EXT):	$(GMT_H) $(GMTLIB) grdread.c grdread.m
-		$(MEX) $(FLAGS) grdread.c $(GMT) $(CDF) $(MEXLIB) 
+		$(MEX) $(FLAGS) grdread.c $(GMT) $(NC_LIBS) $(MEXLIB) 
 
 grdwrite.$(MATLAB_EXT):	$(GMT_H) $(GMTLIB) grdwrite.c grdwrite.m
-		$(MEX) $(FLAGS) grdwrite.c $(GMT) $(CDF) $(MEXLIB)
+		$(MEX) $(FLAGS) grdwrite.c $(GMT) $(NC_LIBS) $(MEXLIB)

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.21 2007-11-15 04:37:47 remko Exp $
+#	$Id: Makefile,v 1.22 2007-11-24 21:44:18 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -39,7 +39,7 @@ GMTSRCDIR	=# Keep this empty, use ../ in supplements
 include makegmt.macros		# GMT-specific settings determined by user & configure
 include gmtalldeps.macros	# Dependencies
 
-CFLAGS		= $(CC_OPT) $(WIN32) -I$(NETCDF)/include -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
+CFLAGS		= $(CC_OPT) $(NC_CFLAGS) -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
 
 PS		= -lpsl
 GMT		= -lgmt
