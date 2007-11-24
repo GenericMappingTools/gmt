@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.24 2007-10-08 21:26:08 remko Exp $
+#	$Id: Makefile,v 1.25 2007-11-24 21:44:18 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -21,7 +21,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I../x_system -I$(NETCDF)/include
+CFLAGS		= $(CC_OPT) -I$(srcdir) -I../x_system $(NC_CFLAGS)
 
 PROGS_H		= gmt_mgg.h ../x_system/x_system.h
 PROGS_O		= binlegs.o gmt2bin.o gmt2dat.o dat2gmt.o gmtinfo.o gmtlegs.o gmtlist.o gmtpath.o mgd77togmt.o
@@ -93,9 +93,9 @@ mgd77togmt$(EXE):	mgd77togmt.o
 gmttrack$(EXE):		gmttrack.o
 
 $(PROGS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -lgmt -lgmtps -lpsl $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@

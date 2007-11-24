@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.35 2007-10-08 21:26:08 remko Exp $
+#	$Id: Makefile,v 1.36 2007-11-24 21:44:18 remko Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -28,8 +28,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS	= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include \
-	-DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
+CFLAGS	= $(CC_OPT) -I$(srcdir) $(NC_CFLAGS) -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
 PREV_VERSION = 4.2
 VERSION = 4.3
 GSHHS_DATA_VERSION	= 1.6
@@ -153,5 +152,5 @@ $(LIB):		poly_check_subs.o string_check_subs.o douglas_peucker.o coast_io.o poly
 #-------------------------------------------------------------------------------
 
 $(PROGS):	$(LIB) $(PROGS_O) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lcoast -L.. -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lcoast -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@

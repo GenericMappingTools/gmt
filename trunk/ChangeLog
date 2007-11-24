@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.148 2007-11-15 04:40:16 remko Exp $
+	$Id: ChangeLog,v 1.149 2007-11-24 21:44:18 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-11-24	remko
+	* configure.in, */makefile, makegmt.macros.in:	Provide compiler and linker flags for
+				netCDF through NC_CFLAGS and NC_LIBS. This should help distributions,
+				like Fedora, that have netCDF files not in include and lib directories.
 
 2007-11-14	remko
 	* guru/gmtguru.macros.orig:	Settings are now only included in GNUmakefile.

@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.6 2007-10-08 21:26:08 remko Exp $
+#		$Id: Makefile,v 1.7 2007-11-24 21:44:19 remko Exp $
 #
 #	Makefile for xgrid directory
 #	X Windows application xgridedit
@@ -12,8 +12,8 @@ GMTSRCDIR	= ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include $(XCFLAGS)
-ALLLIB		= $(X_LIBS) -L.. -lgmt $(CDF) $(LIBS)
+CFLAGS		= $(CC_OPT) -I$(srcdir) $(NC_CFLAGS) $(X_CFLAGS)
+ALLLIB		= $(X_LIBS) -L.. -lgmt $(NC_LIBS) $(LIBS)
 
 OBJS1		= xgrid_utility.o xgrid_Xutility.o xgrid_Canvas.o \
 		xgrid_Panner.o xgrid_controls.o xgrid_messages.o

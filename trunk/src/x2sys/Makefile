@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.31 2007-10-08 21:26:08 remko Exp $
+#	$Id: Makefile,v 1.32 2007-11-24 21:44:19 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -10,8 +10,8 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I../mgg -I../mgd77 -I$(NETCDF)/include
-ALLLIB		= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -lgmt $(CDF) $(LIBS)
+CFLAGS		= $(CC_OPT) -I$(srcdir) -I../mgg -I../mgd77 $(NC_CFLAGS)
+ALLLIB		= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -lgmt $(NC_LIBS) $(LIBS)
 
 PROGS_H		= x2sys.h
 PROGS_O		= x2sys_init.o x2sys_put.o x2sys_get.o x2sys_binlist.o x2sys_datalist.o x2sys_cross.o

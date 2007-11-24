@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.28 2007-10-08 21:26:08 remko Exp $
+#	$Id: Makefile,v 1.29 2007-11-24 21:44:18 remko Exp $
 #	makefile for misc directory
 #
 #-------------------------------------------------------------------------------
@@ -9,7 +9,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) $(WIN32) -I$(srcdir) -I$(NETCDF)/include 
+CFLAGS		= $(CC_OPT) -I$(srcdir) $(NC_CFLAGS)
 
 PROGS_H		=
 PROGS_O		= gmtdigitize.o gmtstitch.o nc2xy.o psmegaplot.o
@@ -57,9 +57,9 @@ psmegaplot$(EXE):	psmegaplot.o
 makepattern$(EXE):	makepattern.o
 
 $(PROGS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt -lgmtps -lpsl $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt -lgmtps -lpsl $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
