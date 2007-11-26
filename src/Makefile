@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.22 2007-11-24 21:44:18 remko Exp $
+#	$Id: Makefile,v 1.23 2007-11-26 03:37:29 guru Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -272,9 +272,9 @@ triangulate$(EXE):	triangulate.o
 xyz2grd$(EXE):		xyz2grd.o
 
 $(PROGS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(GMTPS) $(PS) $(CDF) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(GMTPS) $(PS) $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
