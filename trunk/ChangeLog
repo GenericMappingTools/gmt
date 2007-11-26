@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.149 2007-11-24 21:44:18 remko Exp $
+	$Id: ChangeLog,v 1.150 2007-11-26 02:10:50 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-11-25	remko
+	* configure.in:		Honor LDFLAGS set by user
+	* configure.ac:		Renamed from configure.in
 
 2007-11-24	remko
 	* configure.in, */makefile, makegmt.macros.in:	Provide compiler and linker flags for

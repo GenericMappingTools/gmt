@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.17 2007-11-14 21:04:32 remko Exp $
+#  $Id: GNUmakefile,v 1.18 2007-11-26 02:10:50 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -203,7 +203,7 @@ src/makegmt.macros:	guru/gmtguru.macros src/makegmt.macros.in configure config.s
 				$(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL)
 endif
 
-configure:	configure.in
+configure:	configure.ac
 		$(AUTOCONF)
 
 latest-config:
