@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.59 2007-11-28 02:00:20 guru Exp $
+ *	$Id: gmt_stat.c,v 1.60 2007-11-28 02:01:30 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2704,6 +2704,11 @@ static void Cdiv (double A[], double B[], double C[])
 	denom = B[0]*B[0] + B[1]*B[1];
 	C[0] = (A[0]*B[0] + A[1]*B[1])/denom;
 	C[1] = (A[1]*B[0] - A[0]*B[1])/denom;
+}
+
+static double Cabs (double A[])
+{
+	return (hypot (A[0], A[1]));
 }
 
 double GMT_psi (double zz[], double p[])
