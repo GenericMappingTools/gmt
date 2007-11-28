@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.58 2007-09-28 19:49:43 remko Exp $
+ *	$Id: gmt_stat.c,v 1.59 2007-11-28 02:00:20 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2777,51 +2777,51 @@ double GMT_psi (double zz[], double p[])
 void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 {
 	/* Here, -1 <= x <= +1, v_ri is an imaginary number [r,i], and we return
-	 * both Pv(x) and Qv(x) in the pq array since no savings in doing it separately.
-	 * Based on recipe in Spanier/Oldham: An Atlas of Functions.
-	 * pq[0-1] is real/imag Pv
-	 * pq[2-3] is real/imag Qv
-	 */
+	 * the real parts of Pv(x) and Qv(x) in the pq array.
+	 * Based on recipe in An Atlas of Functions */
 
-	double v[2], a[2], R[2], r[2], z[2], tmp[2], X[2], ep, em, s[2], c[2];
-	double M, L, K, vp1[2], G[2], Xn, x2, g, u, t, f, k, k1, sx, cx, w, sL, cL;
-
+	double M, L, K, Xn, x2, k, k1, ep, em, sx, cx, fact;
+	double a[2], v[2], vp1[2], G[2], P[2], Q[2], g[2], u[2], t[2], f[2];
+	double R[2], r[2], z[2], s[2], c[2], w[2], tmp[2], X[2], A[2], B[2];
+	
 	*iter = 0;
-	if (x == -1) {	/* Both blow up */
+	if (x == -1) {
     		pq[0] = pq[2] = GMT_d_NaN;
     		pq[1] = pq[3] = 0.0;
 		return;
 	}
-	else if (x == +1) {	/* Pv = 1, Qv = inf */
+	else if (x == +1) {
 		pq[0] = 1;
 		pq[2] = GMT_d_NaN;
     		pq[1] = pq[3] = 0.0;
 		return;
 	}
 	/* General case of |x| < 1 */
+
 	a[0] = a[1] = R[0] = 1.0;	R[1] = 0.0;
 	v[0] = v_ri[0];	v[1] = v_ri[1];
 	Cmul (v, v, z);
 	z[0] = v[0] - z[0];	z[1] = v[1] - z[1];
-	K = 4.0 * sqrt (hypot(z[0], z[1]));
+	K = 4.0 * sqrt (Cabs(z));
 	vp1[0] = v[0] + 1.0;	vp1[1] = v[1];
-	if ((hypot(vp1[0], vp1[1]) + floor(vp1[1])) == 0.0) {
+	if ((Cabs(vp1) + floor(vp1[1])) == 0.0) {
 		a[0] = GMT_d_NaN;
 		a[1] = 0.0;
-		v[0] = -1.0 - v[0];
+		v[0] = -1 - v[0];
 		v[1] = -v[1];
 	}
 	z[0] = 0.5 * M_PI * v[0];	z[1] = 0.5 * M_PI * v[1];
 	ep = exp (z[1]);	em = exp (-z[1]);
 	sincos (z[0], &sx, &cx);
-	s[0] = +0.5 * sx * (em + ep);
-	s[1] = -0.5 * cx * (em - ep);
-	c[0] = +0.5 * cx * (em + ep);
-	c[1] = +0.5 * sx * (em - ep);
-	w = (0.5 + v[0])*(0.5 + v[0]) - v[1] * v[1];
+	s[0] = 0.5 * sx * (em + ep); 
+	s[1] = -0.5 * cx * (em - ep); 
+	c[0] = 0.5 * cx * (em + ep); 
+	c[1] = 0.5 * sx * (em - ep);
+	tmp[0] = 0.5 + v[0];	tmp[1] = v[1];
+	Cmul (tmp, tmp, w);
 	z[1] = v[1];
 	while (v[0] <= 6.0) {
-		v[0] += 2.0;
+		v[0] = v[0] + 2.0;
 		z[0] = v[0] - 1.0;
 		Cdiv (z, v, tmp);
 		Cmul (R,tmp,r);
@@ -2838,47 +2838,58 @@ void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 	z[0] = 8.0 * X[0];	z[1] = 8.0 * X[1];
 	M = sqrt(hypot(z[0], z[1]));
 	L = 0.5 * atan2 (z[1], z[0]);
-	sincos (L, &sL, &cL);
-	tmp[0] = M * cL;	tmp[1] = M * sL;
+	tmp[0] = M * cos(L);	tmp[1] = M * sin(L);
 	Cmul (G, X, z);
 	z[0] = 1.0 - 0.5*z[0];	z[1] = -0.5*z[1];
 	Cmul (X, z, r);
 	r[0] = 1.0 - r[0];	r[1] = -r[1];
 	Cmul (R, r, z);
 	Cdiv (z, tmp, R);
-	u = g = 2.0 * x;
-	f = t = 1.0;
+	u[0] = g[0] = 2.0 * x;	u[1] = g[1] = f[1] = t[1] = 0.0;
+	f[0] = t[0] = 1.0;
 	k = 0.5;
 	x2 = x * x;
-	Xn = 1.0 + (1e8/(1.0 - x2));
+	Xn = 1.0 + (1e8/(1 - x2));
 	k1 = k + 1.0;
-	t = t * x2 * (k*k - w) / (k1*k1 - 0.25);
+	fact = x2 / (k1*k1 - 0.25);
+	t[0] = (k*k - w[0]) * fact;	t[1] = -w[1] * fact;
 	k += 1.0;
-	f += t;
+	f[0] += t[0];	f[1] += t[1];
 	k1 = k + 1.0;
-	u = u * x2 * (k*k - w) / (k1*k1 - 0.25);
-	k += 1.0;
-	g += u;
-	while (k < K || fabs (Xn*t) > fabs(f)) {
+	fact = u[0] * x2 / (k1*k1 - 0.25);
+	u[0] = (k*k - w[0]) * fact;	u[1] = -w[1] * fact;
+	k += 1;
+	g[0] += u[0];	g[1] += u[1];
+	tmp[0] = Xn * t[0];	tmp[1] = Xn * t[1];
+	while (k < K || Cabs (tmp) > Cabs(f)) {
 		(*iter)++;
 		k1 = k + 1.0;
-		t = t * x2 * (k*k - w) / (k1*k1 - 0.25);
+		tmp[0] = k*k - w[0];	tmp[1] = -w[1];	fact = x2 / (k1*k1 - 0.25);
+		Cmul (t, tmp, A);
+		t[0] = A[0] * fact;	t[1] = A[1] * fact;
 		k += 1.0;
 		k1 = k + 1.0;
-		f += t;
-		u = u * x2 * (k*k - w) / (k1*k1 - 0.25);
+		f[0] += t[0];	f[1] += t[1];
+		tmp[0] = k*k - w[0];	tmp[1] = -w[1];	fact = x2 / (k1*k1 - 0.25);
+		Cmul (u, tmp, B);
+		u[0] = B[0] * fact;	u[1] = B[1] * fact;
 		k += 1.0;
-		g += u;
+		g[0] += u[0];	g[1] += u[1];
+		tmp[0] = Xn * t[0];	tmp[1] = Xn * t[1];
 	}
-	L = x2 / (1.0 - x2);
-	f += (t * L);
-	g += (u * L);
+	fact = x2 / (1.0 - x2);
+	f[0] += t[0] * fact;	f[1] += t[1] * fact;
+	g[0] += u[0] * fact;	g[1] += u[1] * fact;
 	Cmul(s,R,z);
 	Cdiv(c,R,tmp);
-	pq[0] = (g*z[0] + f*tmp[0])/M_SQRT_PI;
-	pq[1] = (g*z[1] + f*tmp[1])/M_SQRT_PI;
+	Cmul (g, z, A);	Cmul (f, tmp, B);
+	P[0] = (A[0] + B[0])/M_SQRT_PI;
+	P[1] = (A[1] + B[1])/M_SQRT_PI;
 	Cmul(c,R,z);
 	Cdiv(s,R,tmp);
-	pq[2] = a[0]*M_SQRT_PI*(g*z[0] - f*tmp[0])/2.0;
-	pq[3] = a[1]*M_SQRT_PI*(g*z[1] - f*tmp[1])/2.0;
+	Cmul (g, z, A);	Cmul (f, tmp, B);
+	Q[0] = a[0]*M_SQRT_PI*(A[0] - B[0])/2.0;
+	Q[1] = a[1]*M_SQRT_PI*(A[1] - B[1])/2.0;
+	pq[0] = P[0];
+	pq[1] = Q[0];
 }
