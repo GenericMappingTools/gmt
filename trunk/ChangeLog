@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.150 2007-11-26 02:10:50 remko Exp $
+	$Id: ChangeLog,v 1.151 2007-11-28 21:17:33 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-11-28	pwessel
+	* gmt_stat.c:		Fixed minor issues in PvQv function
 
 2007-11-25	remko
 	* configure.in:		Honor LDFLAGS set by user
