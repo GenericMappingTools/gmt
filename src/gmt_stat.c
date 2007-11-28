@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.60 2007-11-28 02:01:30 guru Exp $
+ *	$Id: gmt_stat.c,v 1.61 2007-11-28 21:17:33 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2692,23 +2692,26 @@ double GMT_quantile_f (float *x, double q, size_t n)
 	return (p);
 }
 
+#define RE 0
+#define IM 1
+
 static void Cmul (double A[], double B[], double C[])
 {	/* Complex multiplication */
-	C[0] = A[0]*B[0] - A[1]*B[1];
-	C[1] = A[0]*B[1] + A[1]*B[0];
+	C[RE] = A[RE]*B[RE] - A[IM]*B[IM];
+	C[IM] = A[RE]*B[IM] + A[IM]*B[RE];
 }
 
 static void Cdiv (double A[], double B[], double C[])
 {	/* Complex division */
 	double denom;
-	denom = B[0]*B[0] + B[1]*B[1];
-	C[0] = (A[0]*B[0] + A[1]*B[1])/denom;
-	C[1] = (A[1]*B[0] - A[0]*B[1])/denom;
+	denom = B[RE]*B[RE] + B[IM]*B[IM];
+	C[RE] = (A[RE]*B[RE] + A[IM]*B[IM])/denom;
+	C[IM] = (A[IM]*B[RE] - A[RE]*B[IM])/denom;
 }
 
 static double Cabs (double A[])
 {
-	return (hypot (A[0], A[1]));
+	return (hypot (A[RE], A[IM]));
 }
 
 double GMT_psi (double zz[], double p[])
@@ -2719,7 +2722,7 @@ double GMT_psi (double zz[], double p[])
 *        Psi(z) = --log(Gamma(z))
 *                 dz
 *
-* zz[0] is real and zz[1] is imaginary component; same for p on output (only if p != NULL).
+* zz[RE] is real and zz[IM] is imaginary component; same for p on output (only if p != NULL).
 * We also return the real component as function result.
 */
 	static double c[15] = { 0.99999999999999709182, 57.156235665862923517, -59.597960355475491248,
@@ -2730,171 +2733,212 @@ double GMT_psi (double zz[], double p[])
 	double z[2], g[2], dx[2], dd[2], d[2], n[2], gg[2], f[2], x0, A[2], B[2], C[2], sx, cx, e;
 	int k;
 
-	if (zz[1] == 0.0 && rint(zz[0]) == zz[0] && zz[0] <= 0.0) {
-		if (p) { p[0] = GMT_d_NaN; p[1] = 0.0;}
+	if (zz[IM] == 0.0 && rint(zz[RE]) == zz[RE] && zz[RE] <= 0.0) {
+		if (p) { p[RE] = GMT_d_NaN; p[IM] = 0.0;}
 		return (GMT_d_NaN);	/* Singular points */
 	}
 
-	z[0] = zz[0];	z[1] = zz[1];
-	if ((x0 = z[0]) < 0.5) {	/* reflection point */
-		z[0] = 1.0 - z[0];
-		z[1] = -z[1];
+	z[RE] = zz[RE];	z[IM] = zz[IM];
+	if ((x0 = z[RE]) < 0.5) {	/* reflection point */
+		z[RE] = 1.0 - z[RE];
+		z[IM] = -z[IM];
 	}
 
 	/* Lanczos approximation */
 
-	g[0] = 607.0/128.0;	g[1] = 0.0; /* best results when 4<=g<=5 */
-	n[0] = d[0] = n[1] = d[1] = 0.0;
+	g[RE] = 607.0/128.0;	g[IM] = 0.0; /* best results when 4<=g<=5 */
+	n[RE] = d[RE] = n[IM] = d[IM] = 0.0;
 	for (k = 14; k > 0; k--) {
-		A[0] = 1.0;	A[1] = 0.0;
-		B[0] = z[0] + k - 1.0;	B[1] = z[1];
+		A[RE] = 1.0;	A[IM] = 0.0;
+		B[RE] = z[RE] + k - 1.0;	B[IM] = z[IM];
 		Cdiv (A, B, dx);
-		dd[0] = c[k] * dx[0];	dd[1] = c[k] * dx[1];
-		d[0] += dd[0];	d[1] += dd[1];
+		dd[RE] = c[k] * dx[RE];	dd[IM] = c[k] * dx[IM];
+		d[RE] += dd[RE];	d[IM] += dd[IM];
 		Cmul (dd, dx, B);
-		n[0] -= B[0];	n[1] -= B[1];
+		n[RE] -= B[RE];	n[IM] -= B[IM];
 	}
-	d[0] += c[0];
-	gg[0] = z[0] + g[0] - 0.5;	gg[1] = z[1];
+	d[RE] += c[RE];
+	gg[RE] = z[RE] + g[RE] - 0.5;	gg[IM] = z[IM];
 	Cdiv (n, d, A);
 	Cdiv (g, gg, B);
-	f[0] = log (hypot(gg[0], gg[1])) + A[0] - B[0];
-	f[1] = atan2 (gg[1], gg[0])  + A[1] - B[1];
+	f[RE] = log (hypot(gg[RE], gg[IM])) + A[RE] - B[RE];
+	f[IM] = atan2 (gg[IM], gg[RE])  + A[IM] - B[IM];
 	if (x0 < 0.5) {
-		C[0] = M_PI * zz[0];	C[1] = M_PI * zz[1];
-		e = exp (-2*C[1]);	sx = sin (2*C[0]);	cx = cos (2*C[0]);
-		A[0] = -e * sx;	A[1] = e * cx + 1.0;
-		B[0] = e * cx - 1.0;	B[1] = e * sx;
+		C[RE] = M_PI * zz[RE];	C[IM] = M_PI * zz[IM];
+		e = exp (-2*C[IM]);	sx = sin (2*C[RE]);	cx = cos (2*C[RE]);
+		A[RE] = -e * sx;	A[IM] = e * cx + 1.0;
+		B[RE] = e * cx - 1.0;	B[IM] = e * sx;
 		Cdiv (A, B, C);
-		f[0] -= M_PI * C[0];	f[1] -= M_PI * C[1];
+		f[RE] -= M_PI * C[RE];	f[IM] -= M_PI * C[IM];
 	}
 	if (p) {
-		p[0] = f[0];
-		p[1] = f[1];
+		p[RE] = f[RE];
+		p[IM] = f[IM];
 	}
-	return (f[0]);
+	return (f[RE]);
 }
 
 #ifndef M_SQRT_PI
 #define M_SQRT_PI 1.772453850905516
 #endif
 
+#define PV_RE 0
+#define PV_IM 1
+#define QV_RE 2
+#define QV_IM 3
 void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
 {
 	/* Here, -1 <= x <= +1, v_ri is an imaginary number [r,i], and we return
-	 * the real parts of Pv(x) and Qv(x) in the pq array.
+	 * the real amd imaginary parts of Pv(x) and Qv(x) in the pq array.
 	 * Based on recipe in An Atlas of Functions */
 
+	BOOLEAN p_set, q_set;
 	double M, L, K, Xn, x2, k, k1, ep, em, sx, cx, fact;
-	double a[2], v[2], vp1[2], G[2], P[2], Q[2], g[2], u[2], t[2], f[2];
+	double a[2], v[2], vp1[2], G[2], g[2], u[2], t[2], f[2];
 	double R[2], r[2], z[2], s[2], c[2], w[2], tmp[2], X[2], A[2], B[2];
 	
 	*iter = 0;
-	if (x == -1) {
-    		pq[0] = pq[2] = GMT_d_NaN;
-    		pq[1] = pq[3] = 0.0;
-		return;
+    	pq[PV_RE] = pq[QV_RE] = pq[PV_IM] = pq[QV_IM] = 0.0;	/* Initialize all answers to zero first */
+	p_set = q_set = FALSE;
+	if (x == -1 && v_ri[IM] == 0.0) {	/* Check special values for real nu when x = -1 */
+			/* Special Pv(-1) values */
+		if ((v_ri[RE] > 0.0 && fmod (v_ri[RE], 2.0) == 1.0) || (v_ri[RE] < 0.0 && fmod (v_ri[RE], 2.0) == 0.0)) {	/* v = 1,3,5,.. or -2, -4, -6 */
+ 			pq[PV_RE] = -1.0; p_set = TRUE;
+		}
+		else if ((v_ri[RE] >= 0.0 && fmod (v_ri[RE], 2.0) == 0.0) || (v_ri[RE] < 0.0 && fmod (v_ri[RE]+1.0, 2.0) == 0.0)) {	/* v = 0,2,4,6 or -1,-3,-5,-7 */
+ 			pq[PV_RE] = 1.0; p_set = TRUE;
+		}
+		else if (v_ri[RE] > 0.0 && ((fact = v_ri[RE]-2.0*floor(v_ri[RE]/2.0)) < 1.0 && fact > 0.0)) { /* 0 < v < 1, 2 < v < 3, 4 < v < 5, ... */
+   			pq[PV_RE] = GMT_d_NaN; p_set = TRUE;	/* -inf */
+		}
+		else if (v_ri[RE] < 1.0 && ((fact = v_ri[RE]-2.0*floor(v_ri[RE]/2.0)) < 1.0 && fact > 0.0)) {	/* -2 < v < -1, -4 < v < -3, -6 < v < -5 */
+   			pq[PV_RE] = GMT_d_NaN; p_set = TRUE;	/* -inf */
+		}
+		else if (v_ri[RE] > 1.0 && (v_ri[RE]-2.0*floor(v_ri[RE]/2.0)) > 1.0) {	/* 1 < v < 2, 3 < v < 4, 5 < v < 6, .. */
+   			pq[PV_RE] = GMT_d_NaN; p_set = TRUE;	/* +inf */
+		}
+		else if (v_ri[RE] < 2.0 && ( v_ri[RE]-2.0*floor(v_ri[RE]/2.0)) > 1.0) {	/* -3 < v < -2, -5 < v < -4, -7 < v < -6, .. */
+   			pq[PV_RE] = GMT_d_NaN; p_set = TRUE;	/* +inf */
+		}
+		/* Special Qv(-1) values */
+		if (v_ri[RE] > 0.0 && fmod (2.0 * v_ri[RE] - 1.0, 4.0) == 0.0) {	/* v = 1/2, 5/2, 9/2, ... */
+   			pq[QV_RE] = -M_PI_2; q_set = TRUE;
+		}
+		else if (v_ri[RE] > -1.0 && fmod (2.0 * v_ri[RE] + 1.0, 4.0) == 0.0) {	/* v = -1/2, 3/2, 7/2, ... */
+   			pq[QV_RE] = M_PI_2; q_set = TRUE;
+		}
+		else if (v_ri[RE] < -1.0 && fmod (2.0 * v_ri[RE] - 1.0, 4.0) == 0.0) {	/* v = -3/2, -7/2, -11/2, ... */
+   			pq[QV_RE] = -M_PI_2; q_set = TRUE;
+		}
+		else if (v_ri[RE] < -2.0 && fmod (2.0 * v_ri[RE] + 1.0, 4.0) == 0.0) {	/* v = -5/2, -9/2, -13/2, ... */
+   			pq[QV_RE] = M_PI_2; q_set = TRUE;
+		}
+		else {	/* Either -inf or +inf */
+   			pq[QV_RE] = GMT_d_NaN; q_set = TRUE;
+		}
 	}
-	else if (x == +1) {
-		pq[0] = 1;
-		pq[2] = GMT_d_NaN;
-    		pq[1] = pq[3] = 0.0;
-		return;
+	else if (x == +1 && v_ri[IM] == 0.0) {	/* Check special values for real nu when x = +1 */
+		pq[PV_RE] = 1.0; p_set = TRUE;
+		pq[QV_RE] = GMT_d_NaN; q_set = TRUE;
 	}
+	if (p_set && q_set) return;
+	
 	/* General case of |x| < 1 */
 
-	a[0] = a[1] = R[0] = 1.0;	R[1] = 0.0;
-	v[0] = v_ri[0];	v[1] = v_ri[1];
+	a[0] = a[1] = R[RE] = 1.0;	R[IM] = 0.0;
+	v[RE] = v_ri[RE];	v[IM] = v_ri[IM];
 	Cmul (v, v, z);
-	z[0] = v[0] - z[0];	z[1] = v[1] - z[1];
+	z[RE] = v[RE] - z[RE];	z[IM] = v[IM] - z[IM];
 	K = 4.0 * sqrt (Cabs(z));
-	vp1[0] = v[0] + 1.0;	vp1[1] = v[1];
-	if ((Cabs(vp1) + floor(vp1[1])) == 0.0) {
+	vp1[RE] = v[RE] + 1.0;	vp1[IM] = v[IM];
+	if ((Cabs(vp1) + floor(vp1[RE])) == 0.0) {
 		a[0] = GMT_d_NaN;
 		a[1] = 0.0;
-		v[0] = -1 - v[0];
-		v[1] = -v[1];
+		v[RE] = -1 - v[RE];
+		v[IM] = -v[IM];
 	}
-	z[0] = 0.5 * M_PI * v[0];	z[1] = 0.5 * M_PI * v[1];
-	ep = exp (z[1]);	em = exp (-z[1]);
-	sincos (z[0], &sx, &cx);
-	s[0] = 0.5 * sx * (em + ep); 
-	s[1] = -0.5 * cx * (em - ep); 
-	c[0] = 0.5 * cx * (em + ep); 
-	c[1] = 0.5 * sx * (em - ep);
-	tmp[0] = 0.5 + v[0];	tmp[1] = v[1];
+	z[RE] = 0.5 * M_PI * v[RE];	z[IM] = 0.5 * M_PI * v[IM];
+	ep = exp (z[IM]);	em = exp (-z[IM]);
+	sincos (z[RE], &sx, &cx);
+	s[RE] = 0.5 * sx * (em + ep); 
+	s[IM] = -0.5 * cx * (em - ep); 
+	c[RE] = 0.5 * cx * (em + ep); 
+	c[IM] = 0.5 * sx * (em - ep);
+	tmp[RE] = 0.5 + v[RE];	tmp[IM] = v[IM];
 	Cmul (tmp, tmp, w);
-	z[1] = v[1];
-	while (v[0] <= 6.0) {
-		v[0] = v[0] + 2.0;
-		z[0] = v[0] - 1.0;
+	z[IM] = v[IM];
+	while (v[RE] <= 6.0) {
+		v[RE] = v[RE] + 2.0;
+		z[RE] = v[RE] - 1.0;
 		Cdiv (z, v, tmp);
 		Cmul (R,tmp,r);
-		R[0] = r[0];	R[1] = r[1];
+		R[RE] = r[RE];	R[IM] = r[IM];
 	}
-	z[0] = v[0] + 1.0;
-	tmp[0] = 0.25;	tmp[1] = 0.0;
+	z[RE] = v[RE] + 1.0;
+	tmp[RE] = 0.25;	tmp[IM] = 0.0;
 	Cdiv (tmp, z, X);
-	tmp[0] = 0.35 + 6.1 * X[0];	tmp[1] = 6.1*X[1];
+	tmp[RE] = 0.35 + 6.1 * X[RE];	tmp[IM] = 6.1*X[IM];
 	Cmul (X, tmp, z);
-	z[0] = 1.0 - 3.0*z[0];	z[1] = -3.0*z[1];
+	z[RE] = 1.0 - 3.0*z[RE];	z[IM] = -3.0*z[IM];
 	Cmul (X, z, tmp);
-	G[0] = 1.0 + 5.0 * tmp[0];	G[1] = 5.0 * tmp[1];
-	z[0] = 8.0 * X[0];	z[1] = 8.0 * X[1];
-	M = sqrt(hypot(z[0], z[1]));
-	L = 0.5 * atan2 (z[1], z[0]);
-	tmp[0] = M * cos(L);	tmp[1] = M * sin(L);
+	G[RE] = 1.0 + 5.0 * tmp[RE];	G[IM] = 5.0 * tmp[IM];
+	z[RE] = 8.0 * X[RE];	z[IM] = 8.0 * X[IM];
+	M = sqrt(hypot(z[RE], z[IM]));
+	L = 0.5 * atan2 (z[IM], z[RE]);
+	tmp[RE] = M * cos(L);	tmp[IM] = M * sin(L);
 	Cmul (G, X, z);
-	z[0] = 1.0 - 0.5*z[0];	z[1] = -0.5*z[1];
+	z[RE] = 1.0 - 0.5*z[RE];	z[IM] = -0.5*z[IM];
 	Cmul (X, z, r);
-	r[0] = 1.0 - r[0];	r[1] = -r[1];
+	r[RE] = 1.0 - r[RE];	r[IM] = -r[IM];
 	Cmul (R, r, z);
 	Cdiv (z, tmp, R);
-	u[0] = g[0] = 2.0 * x;	u[1] = g[1] = f[1] = t[1] = 0.0;
-	f[0] = t[0] = 1.0;
+	u[RE] = g[RE] = 2.0 * x;	u[IM] = g[IM] = f[IM] = t[IM] = 0.0;
+	f[RE] = t[RE] = 1.0;
 	k = 0.5;
 	x2 = x * x;
 	Xn = 1.0 + (1e8/(1 - x2));
 	k1 = k + 1.0;
 	fact = x2 / (k1*k1 - 0.25);
-	t[0] = (k*k - w[0]) * fact;	t[1] = -w[1] * fact;
+	t[RE] = (k*k - w[RE]) * fact;	t[IM] = -w[IM] * fact;
 	k += 1.0;
-	f[0] += t[0];	f[1] += t[1];
+	f[RE] += t[RE];	f[IM] += t[IM];
 	k1 = k + 1.0;
-	fact = u[0] * x2 / (k1*k1 - 0.25);
-	u[0] = (k*k - w[0]) * fact;	u[1] = -w[1] * fact;
+	fact = u[RE] * x2 / (k1*k1 - 0.25);
+	u[RE] = (k*k - w[RE]) * fact;	u[IM] = -w[IM] * fact;
 	k += 1;
-	g[0] += u[0];	g[1] += u[1];
-	tmp[0] = Xn * t[0];	tmp[1] = Xn * t[1];
+	g[RE] += u[RE];	g[IM] += u[IM];
+	tmp[RE] = Xn * t[RE];	tmp[IM] = Xn * t[IM];
 	while (k < K || Cabs (tmp) > Cabs(f)) {
 		(*iter)++;
 		k1 = k + 1.0;
-		tmp[0] = k*k - w[0];	tmp[1] = -w[1];	fact = x2 / (k1*k1 - 0.25);
+		tmp[RE] = k*k - w[RE];	tmp[IM] = -w[IM];	fact = x2 / (k1*k1 - 0.25);
 		Cmul (t, tmp, A);
-		t[0] = A[0] * fact;	t[1] = A[1] * fact;
+		t[RE] = A[RE] * fact;	t[IM] = A[IM] * fact;
 		k += 1.0;
 		k1 = k + 1.0;
-		f[0] += t[0];	f[1] += t[1];
-		tmp[0] = k*k - w[0];	tmp[1] = -w[1];	fact = x2 / (k1*k1 - 0.25);
+		f[RE] += t[RE];	f[IM] += t[IM];
+		tmp[RE] = k*k - w[RE];	tmp[IM] = -w[IM];	fact = x2 / (k1*k1 - 0.25);
 		Cmul (u, tmp, B);
-		u[0] = B[0] * fact;	u[1] = B[1] * fact;
+		u[RE] = B[RE] * fact;	u[IM] = B[IM] * fact;
 		k += 1.0;
-		g[0] += u[0];	g[1] += u[1];
-		tmp[0] = Xn * t[0];	tmp[1] = Xn * t[1];
+		g[RE] += u[RE];	g[IM] += u[IM];
+		tmp[RE] = Xn * t[RE];	tmp[IM] = Xn * t[IM];
 	}
 	fact = x2 / (1.0 - x2);
-	f[0] += t[0] * fact;	f[1] += t[1] * fact;
-	g[0] += u[0] * fact;	g[1] += u[1] * fact;
-	Cmul(s,R,z);
-	Cdiv(c,R,tmp);
-	Cmul (g, z, A);	Cmul (f, tmp, B);
-	P[0] = (A[0] + B[0])/M_SQRT_PI;
-	P[1] = (A[1] + B[1])/M_SQRT_PI;
-	Cmul(c,R,z);
-	Cdiv(s,R,tmp);
-	Cmul (g, z, A);	Cmul (f, tmp, B);
-	Q[0] = a[0]*M_SQRT_PI*(A[0] - B[0])/2.0;
-	Q[1] = a[1]*M_SQRT_PI*(A[1] - B[1])/2.0;
-	pq[0] = P[0];
-	pq[1] = Q[0];
+	f[RE] += t[RE] * fact;	f[IM] += t[IM] * fact;
+	g[RE] += u[RE] * fact;	g[IM] += u[IM] * fact;
+	if (!p_set) {
+		Cmul(s,R,z);
+		Cdiv(c,R,tmp);
+		Cmul (g, z, A);	Cmul (f, tmp, B);
+		pq[PV_RE] = (A[RE] + B[RE])/M_SQRT_PI;
+		pq[PV_IM] = (A[IM] + B[IM])/M_SQRT_PI;
+	}
+	if (!q_set) {
+		Cmul(c,R,z);
+		Cdiv(s,R,tmp);
+		Cmul (g, z, A);	Cmul (f, tmp, B);
+		pq[QV_RE] = a[0]*M_SQRT_PI*(A[RE] - B[RE])/2.0;
+		pq[QV_IM] = a[1]*M_SQRT_PI*(A[IM] - B[IM])/2.0;
+	}
 }
