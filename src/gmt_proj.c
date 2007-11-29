@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.27 2007-11-02 18:21:53 remko Exp $
+ *	$Id: gmt_proj.c,v 1.28 2007-11-29 03:35:37 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2540,7 +2540,10 @@ double GMT_left_robinson (double y)
 	y -= project_info.y0;
 	y *= project_info.i_y_scale;
 	Y = fabs (y * project_info.n_i_cy);
-	GMT_intpol (project_info.n_Y, project_info.n_X, 19, 1, &Y, &X, gmtdefs.interpolant);
+	if (GMT_intpol (project_info.n_Y, project_info.n_X, 19, 1, &Y, &X, gmtdefs.interpolant)) {
+		fprintf (stderr, "GMT Internal error in GMT_left_robinson!\n");
+		exit (EXIT_FAILURE);
+	}
 
 	x = project_info.n_cx * X * (project_info.w - project_info.central_meridian);
 	return (x * project_info.x_scale + project_info.x0);
@@ -2553,7 +2556,10 @@ double GMT_right_robinson (double y)
 	y -= project_info.y0;
 	y *= project_info.i_y_scale;
 	Y = fabs (y * project_info.n_i_cy);
-	GMT_intpol (project_info.n_Y, project_info.n_X, 19, 1, &Y, &X, gmtdefs.interpolant);
+	if (GMT_intpol (project_info.n_Y, project_info.n_X, 19, 1, &Y, &X, gmtdefs.interpolant)) {
+		fprintf (stderr, "GMT Internal error in GMT_right_robinson!\n");
+		exit (EXIT_FAILURE);
+	}
 
 	x = project_info.n_cx * X * (project_info.e - project_info.central_meridian);
 	return (x * project_info.x_scale + project_info.x0);

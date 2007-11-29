@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.328 2007-11-13 19:26:29 remko Exp $
+ *	$Id: gmt_support.c,v 1.329 2007-11-29 03:35:37 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2277,7 +2277,7 @@ int GMT_intpol (double *x, double *y, int n, int m, double *u, double *v, int mo
 	if (mode > 3) mode = 0;
 	if (mode != 3 && n < 4) mode = 0;
 	if (n < 2) {
-		fprintf (stderr, "%s: GMT Fatal Error: need at least 2 x-values\n", GMT_program);
+		if (gmtdefs.verbose == 2) fprintf (stderr, "%s: GMT Fatal Error: need at least 2 x-values\n", GMT_program);
 		return (EXIT_FAILURE);
 	}
 
@@ -2298,7 +2298,7 @@ int GMT_intpol (double *x, double *y, int n, int m, double *u, double *v, int mo
 		}
 
 		if (err_flag) {
-			fprintf (stderr, "%s: GMT Fatal Error: x-values are not monotonically increasing/decreasing!\n", GMT_program);
+			if (gmtdefs.verbose == 2) fprintf (stderr, "%s: GMT Fatal Error: x-values are not monotonically increasing/decreasing!\n", GMT_program);
 			return (err_flag);
 		}
 
@@ -3718,8 +3718,14 @@ int GMT_smooth_contour (double **x_in, double **y_in, int n, int sfactor, int st
 	if (t_out[n_out-1] == t_out[n_out-2]) n_out--;
 	flag[n_out-1] = TRUE;
 
-	GMT_intpol (t_in, x, n, n_out, t_out, x_tmp, stype);
-	GMT_intpol (t_in, y, n, n_out, t_out, y_tmp, stype);
+	if (GMT_intpol (t_in, x, n, n_out, t_out, x_tmp, stype)) {
+		fprintf (stderr, "GMT internal error in  GMT_smooth_contour!\n");
+		exit (EXIT_FAILURE);
+	}
+	if (GMT_intpol (t_in, y, n, n_out, t_out, y_tmp, stype)) {
+		fprintf (stderr, "GMT internal error in  GMT_smooth_contour!\n");
+		exit (EXIT_FAILURE);
+	}
 
 	/* Make sure interpolated function is bounded on each segment interval */
 
