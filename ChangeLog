@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.151 2007-11-28 21:17:33 guru Exp $
+	$Id: ChangeLog,v 1.152 2007-11-29 02:30:02 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-11-28	pwessel
 	* gmt_stat.c:		Fixed minor issues in PvQv function
+	* x2sys/x2sys_cross.c:	Used wrong data column order and computed speed when there is no time
+	* x2sys/x2sys.c:	Error in determining which columns had been requested.
 
 2007-11-25	remko
 	* configure.in:		Honor LDFLAGS set by user

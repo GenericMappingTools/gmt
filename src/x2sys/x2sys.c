@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.71 2007-10-22 16:08:17 guru Exp $
+ *	$Id: x2sys.c,v 1.72 2007-11-29 02:30:02 guru Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -435,12 +435,11 @@ int x2sys_n_data_cols (struct X2SYS_INFO *s)
 {
 	int i, n = 0;
 
-	for (i = 0; i < s->n_out_columns; i++) {
+	for (i = 0; i < s->n_out_columns; i++) {	/* Loop over all possible fields in this data set */
 		if (i == s->x_col) continue;
 		if (i == s->y_col) continue;
 		if (i == s->t_col) continue;
-		if (!s->use_column[i]) continue;
-		n++;
+		n++;	/* Only count data columns */
 	}
 
 	return (n);
@@ -450,7 +449,8 @@ int x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 {
 	/* Scan the -Fstring and select which columns to use and which order
 	 * they should appear on output.  Default is all columns and the same
-	 * order as on input
+	 * order as on input.  Once this is set you can loop through i = 0:n_out_columns
+	 * and use out_order[i] to get the original column number.
 	 */
 
 	char line[BUFSIZ], p[BUFSIZ];
