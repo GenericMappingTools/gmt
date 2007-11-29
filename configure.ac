@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.1 2007-11-26 02:10:50 remko Exp $
-AC_REVISION($Revision: 1.1 $)
+dnl $Id: configure.ac,v 1.2 2007-11-29 14:49:15 remko Exp $
+AC_REVISION($Revision: 1.2 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -23,7 +23,8 @@ dnl
 AC_CONFIG_SRCDIR(src/gmt.h)
 AC_CONFIG_HEADER(src/gmt_notposix.h)
 AC_CONFIG_AUX_DIR(`pwd`)
-owncflags=${CFLAGS:-NONE}
+owncflags=${CFLAGS}
+ownldflags=${LDFLAGS}
 AC_CYGWIN
 AC_CANONICAL_SYSTEM
 AC_LANG_C
@@ -308,7 +309,7 @@ if test "X$enable_mex" = "Xno" ; then
 elif test -f "$MATLAB/bin/mex" ; then
 	enable_mex="yes"
 else
-	enable_mex"no"
+	enable_mex="no"
 fi
 AC_MSG_RESULT($enable_mex)
 if test "$enable_mex" = "no" && test -d src/mex; then
@@ -509,6 +510,7 @@ if test "$enable_shared" = "yes" ; then
 	AC_MSG_RESULT($SL)
 fi
 AC_MSG_CHECKING(linker options for GMT)
+LDFLAGS=${ownldflags:-$LDFLAGS}			# Overrule with user settings
 AC_MSG_RESULT($LDFLAGS)
 dnl
 dnl -----------------------------------------------------------------
@@ -516,47 +518,44 @@ dnl Determine CC_OPT for this platform
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(compiler options for GMT)
-if test "$owncflags" = "NONE"; then
-	if test "$enable_64" = "yes" ; then
-		OPT64=' -m64'
-	fi
-	if test "$GCC" = "yes"; then		# GNU cc options
-		if test "$chip" = "alpha" ; then	# Alpha PC
-			CC_OPT=$OPTG'-mieee -Wall'
-		elif test "$os" = "Darwin" ; then	# MacOS X
-			CC_OPT=$OPTGO'-pedantic -fno-common -Wall'$OPT64$OSX_C
-		else
-			CC_OPT=$OPTGO'-pedantic -Wall'
-		fi
-		if test "$enable_shared" = "yes" ; then
-			CC_OPT=$CC_OPT' -fPIC'
-		fi
-	elif test "$os" = "SunOS" ; then	# Sun Workshop CC options
-		CC_OPT=$OPTGO'-Xc'
-	elif test "$os" = "IRIX64" ; then	# SGI Irix cc options
-		CC_OPT=$OPTGO
-	elif test "$os" = "HP-UX" ; then	# HP cc options
-		CC_OPT=$OPTG'-Aa +Ofltacc +O1 +Olibcalls'
-		if test "$enable_shared" = "yes" ; then
-			CC_OPT=$CC_OPT' +z'
-		fi
-	elif test "$os" = "AIX" ; then		# IBM AIX cc options
-		CC_OPT=$OPTGO
-	elif test "$os" = "AUX" ; then		# Apple A/UX cc options
-		CC_OPT=$OPTG'-Daux'
-	elif test "$os" = "OSF1" ; then		# Dec Alpha OSF cc options
-		CC_OPT=$OPTGO'-Olimit 1500 -ieee_with_inexact'
-	elif test "$os" = "ULTRIX" ; then	# Dec Ultrix cc options
-		CC_OPT=$OPTGO'-Olimit 1500'
-	elif test "$os" = "Windows_NT" ; then	# Interix w/ MS cc options
-		CC_OPT=$OPTGO
-	else					# Generic setting for unknown systems
-		CC_OPT=$OPTGO
-	fi
-	CC_OPT=$CC_OPT$WIN32			# Adds Windows flag
-else
-	CC_OPT=$CFLAGS
+if test "$enable_64" = "yes" ; then
+	OPT64=' -m64'
 fi
+if test "$GCC" = "yes"; then		# GNU cc options
+	if test "$chip" = "alpha" ; then	# Alpha PC
+		CC_OPT=$OPTG'-mieee -Wall'
+	elif test "$os" = "Darwin" ; then	# MacOS X
+		CC_OPT=$OPTGO'-pedantic -fno-common -Wall'$OPT64$OSX_C
+	else
+		CC_OPT=$OPTGO'-pedantic -Wall'
+	fi
+	if test "$enable_shared" = "yes" ; then
+		CC_OPT=$CC_OPT' -fPIC'
+	fi
+elif test "$os" = "SunOS" ; then	# Sun Workshop CC options
+	CC_OPT=$OPTGO'-Xc'
+elif test "$os" = "IRIX64" ; then	# SGI Irix cc options
+	CC_OPT=$OPTGO
+elif test "$os" = "HP-UX" ; then	# HP cc options
+	CC_OPT=$OPTG'-Aa +Ofltacc +O1 +Olibcalls'
+	if test "$enable_shared" = "yes" ; then
+		CC_OPT=$CC_OPT' +z'
+	fi
+elif test "$os" = "AIX" ; then		# IBM AIX cc options
+	CC_OPT=$OPTGO
+elif test "$os" = "AUX" ; then		# Apple A/UX cc options
+	CC_OPT=$OPTG'-Daux'
+elif test "$os" = "OSF1" ; then		# Dec Alpha OSF cc options
+	CC_OPT=$OPTGO'-Olimit 1500 -ieee_with_inexact'
+elif test "$os" = "ULTRIX" ; then	# Dec Ultrix cc options
+	CC_OPT=$OPTGO'-Olimit 1500'
+elif test "$os" = "Windows_NT" ; then	# Interix w/ MS cc options
+	CC_OPT=$OPTGO
+else					# Generic setting for unknown systems
+	CC_OPT=$OPTGO
+fi
+CC_OPT=$CC_OPT$WIN32			# Adds Windows flag
+CC_OPT=${owncflags:-$CC_OPT}		# Overrule with user settings
 if test "$enable_flock" = "no" ; then
 	CC_OPT=$CC_OPT' -DNO_LOCK'
 fi
