@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.151 2007-09-26 15:28:53 remko Exp $
+ *	$Id: gmt.h,v 1.152 2007-11-30 19:05:29 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -250,16 +250,11 @@ typedef long GMT_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
  *			GMT PARAMETERS DEFINITIONS
  *--------------------------------------------------------------------*/
 
-#define GMT_N_KEYS 122		/* Number of gmt defaults */
-#define GMT_HASH_SIZE 122		/* Used in get_gmtdefaults, should be ~> GMT_N_KEYS */
 /* This structure contains default parameters for the GMT system */
 
-#define GMT_N_ELLIPSOIDS	64
-#define GMT_N_DATUMS	223
-
+#include "gmt_dimensions.h"
 #define GMT_PEN_LEN	128
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
-#define GMT_N_PEN_NAMES	12
 
 struct GMT_PEN {	/* Holds pen attributes */
 	double width;	/* In points */
