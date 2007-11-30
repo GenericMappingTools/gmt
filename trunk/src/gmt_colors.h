@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.26 2007-10-03 00:35:13 guru Exp $
+ *	$Id: gmt_colors.h,v 1.27 2007-11-30 19:08:14 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,8 +42,6 @@
 #define GMT_BGD 0
 #define GMT_FGD 1
 #define GMT_NAN 2
-
-#define GMT_N_COLOR_NAMES 663
 
 /* How B/W TV's convert RGB to Gray */
 #define GMT_YIQ(rgb) irint (0.299 * (rgb[0]) + 0.587 * (rgb[1]) + 0.114 * (rgb[2]))
