@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.68 2007-11-14 20:27:29 remko Exp $
+#  $Id: GNUmakefile,v 1.69 2007-11-30 19:08:45 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #	
@@ -48,7 +48,7 @@ uninstall2-suppl:
 
 # All the files that need to be build before compilation
 
-FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h gmt_keywords.h gmt_keycases.h \
+FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h gmt_keywords.h gmt_keycases.h gmt_dimensions.h \
 	gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i \
 	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i
 	
@@ -57,24 +57,16 @@ gmtmacros FILES:	$(FILES)
 # Must create gmt_key*.h from gmt_keywords.d
 
 gmt_keywords.h:		gmt_keywords.d
-			grep -v '^#' gmt_keywords.d | awk '{printf "\"%s\",\n", $$1}' > gmt_keywords.h
-			grep -v '^#' gmt_keywords.d | wc -l | awk '{printf "%d\t", $$1}' > tmp.txt
-			grep '#define GMT_N_KEYS ' gmt.h | awk '{print $$3}' >> tmp.txt
-			awk '{if ($$1 != $$2) printf "\n\n>>>>>>>> GMT_N_KEYS in gmt.h (%d) do not match entries in gmt_keywords.d (%d)\n\n", $$1, $$2}' tmp.txt
-			rm -f tmp.txt
+			grep -v '^#' gmt_keywords.d | awk '{printf "\"%s\",\n", $$1}' > $@
 
 gmt_keycases.h:		gmt_keywords.d
-			grep -v '^#' gmt_keywords.d | awk '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > gmt_keycases.h
+			grep -v '^#' gmt_keywords.d | awk '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > $@
 		
 
 # Must create gmt_ellipsoids.h and gmtdefaults.i from Ellipsoids.txt and gmt_datums.h from Datums.txt
 
 gmt_ellipsoids.h:	Ellipsoids.txt
-			grep -v '^#' Ellipsoids.txt | LANG=C awk '{if ($$4 == 0.0) {printf "\t\t{ \"%s\", %d, %s, 0.0, 0.0 },\n", $$1, $$2, $$3} else {printf "\t\t{ \"%s\", %d, %s, 0.0, 1.0/%s},\n", $$1, $$2, $$3, $$4}}' | sed '$$s/},/}/' > gmt_ellipsoids.h
-			cat gmt_ellipsoids.h | wc -l | awk '{printf "%d\t", $$1}' > tmp.txt
-			grep '#define GMT_N_ELLIPSOIDS' gmt.h | awk '{print $$3}' >> tmp.txt
-			awk '{if ($$1 != $$2) printf "\n\n>>>>>>>> GMT_N_ELLIPSOIDS in gmt.h (%d) do not match entries in gmt_ellipsoids.h (%d)\n\n", $$1, $$2}' tmp.txt
-			rm -f tmp.txt
+			grep -v '^#' Ellipsoids.txt | LANG=C awk '{if ($$4 == 0.0) {printf "\t\t{ \"%s\", %d, %s, 0.0, 0.0 },\n", $$1, $$2, $$3} else {printf "\t\t{ \"%s\", %d, %s, 0.0, 1.0/%s},\n", $$1, $$2, $$3, $$4}}' | sed '$$s/},/}/' > $@
 
 gmtdefaults.i:		Ellipsoids.txt
 			grep -v '^#' Ellipsoids.txt > tmp0.txt
@@ -84,20 +76,23 @@ gmtdefaults.i:		Ellipsoids.txt
 			rm -f tmp[012].txt
 
 gmt_datums.h:		Datums.txt
-			grep -v '^#' Datums.txt | awk -F'	' '{printf "\t\t{ \"%s\", \"%s\", \"%s\", {%s, %s, %s}},\n", $$1, $$2, $$6, $$3, $$4, $$5}' | sed '$$s/},/}/' > gmt_datums.h
-			cat gmt_datums.h | wc -l | awk '{printf "%d\t", $$1}' > tmp.txt
-			grep '#define GMT_N_DATUMS' gmt.h | awk '{print $$3}' >> tmp.txt
-			awk '{if ($$1 != $$2) printf "\n\n>>>>>>>> GMT_N_DATUMS in gmt.h (%d) do not match entries in gmt_datums.h (%d)\n\n", $$1, $$2}' tmp.txt
-			rm -f tmp.txt
+			grep -v '^#' Datums.txt | awk -F'	' '{printf "\t\t{ \"%s\", \"%s\", \"%s\", {%s, %s, %s}},\n", $$1, $$2, $$6, $$3, $$4, $$5}' | sed '$$s/},/}/' > $@
 
 # Must create gmt_grdformats.h from gmt_formats.conf
 
 gmt_grdformats.h:	../share/conf/gmt_formats.conf
-			(egrep DEFAULT ../share/conf/gmt_formats.conf ; (egrep -v '#|^  -' ../share/conf/gmt_formats.conf | sort -n)) | awk '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' > gmt_grdformats.h
-			cat gmt_grdformats.h | wc -l | awk '{printf "%d\t", $$1}' > tmp.txt
-			grep '#define GMT_N_GRD_FORMATS' gmt_grdio.h | awk '{print $$3}' >> tmp.txt
-			awk '{if ($$1 != $$2) printf "\n\n>>>>>>>> GMT_N_GRD_FORMATS in gmt_grdio.h (%d) do not match entries in gmt_grdformats.h (%d)\n\n", $$1, $$2}' tmp.txt
-			rm -f tmp.txt
+			(egrep DEFAULT ../share/conf/gmt_formats.conf ; (egrep -v '#|^  -' ../share/conf/gmt_formats.conf | sort -n)) | awk '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' > $@
+
+# Add all the dimensions to gmt_dimensions.h
+
+gmt_dimensions.h:	gmt_keywords.h gmt_ellipsoids.h gmt_datums.h gmt_grdformats.h gmt_pennames.h gmt_time_systems.h gmt_colornames.h
+			printf "#define GMT_N_KEYS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_keywords.h` > $@
+			printf "#define GMT_N_ELLIPSOIDS\t%d\t/* Lines in %s */\n" `wc -l gmt_ellipsoids.h` >> $@
+			printf "#define GMT_N_DATUMS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_datums.h` >> $@
+			printf "#define GMT_N_GRD_FORMATS\t%d\t/* Lines in %s */\n" `wc -l gmt_grdformats.h` >> $@
+			printf "#define GMT_N_PEN_NAMES\t\t%d\t/* Lines in %s */\n" `wc -l gmt_pennames.h` >> $@
+			printf "#define GMT_N_SYSTEMS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_time_systems.h` >> $@
+			printf "#define GMT_N_COLOR_NAMES\t%d\t/* Lines in %s */\n" `wc -l gmt_colornames.h` >> $@
 
 # Must create g[rd|mt]math.h from g[rd|mt]math.c
 
