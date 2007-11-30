@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.68 2007-09-17 17:52:02 remko Exp $
+ *	$Id: gmt_init.h,v 1.69 2007-11-30 19:11:07 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,7 +43,6 @@ EXTERN_MSC int GMT_hash (char *v, int n_hash);
 EXTERN_MSC int GMT_hash_lookup (char *key, struct GMT_HASH *hashnode, int n, int n_hash);
 EXTERN_MSC int GMT_parse_J_option (char *args);
 EXTERN_MSC int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n);
-EXTERN_MSC int GMT_savedefaults (char *file);
 EXTERN_MSC int GMT_unit_lookup (int c);
 EXTERN_MSC void GMT_cont_syntax (int indent, int kind);
 EXTERN_MSC void GMT_default_error (char option);
@@ -51,6 +50,7 @@ EXTERN_MSC void GMT_end (int argc, char **argv);
 EXTERN_MSC void GMT_explain_option (char option);
 EXTERN_MSC void GMT_fill_syntax (char option, char *string);
 EXTERN_MSC void GMT_getdefaults (char *this_file);
+EXTERN_MSC void GMT_putdefaults (char *this_file);
 EXTERN_MSC void GMT_hash_init (struct GMT_HASH *hashnode , char **keys, int n_hash, int n_keys);
 EXTERN_MSC void GMT_inc_syntax (char option, int error);
 EXTERN_MSC int GMT_init_fonts (int *n_fonts);

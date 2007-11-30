@@ -1,6 +1,20 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.152 2007-11-29 02:30:02 guru Exp $
+	$Id: ChangeLog,v 1.153 2007-11-30 19:11:07 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-11-30	remko
+	* gmt_dimensions.h:	New automatically generated file: contains all dimensions like
+				GMT_N_PEN_NAMES, GMT_N_DATUMS, etc.
+	* src/GNUmakefile:	Create gmt_dimensions.h. No more need for checks on those dimensions.
+	* gmt.h:		Now includes gmt_dimensions.h. GMT_HASH_SIZE removed.
+	* gmt_colors.h, gmt_grdio.h, gmt_globals.h:	Now get GMT_N_* from gmt_dimensions.h
+	* gmt_init.c:		Introduced GMT_putdefaults to write GMT parameters. GMT_savedefaults
+				improved (\t in output strings instead of <tab>, and finailly writes
+				ANNOT_FONT_SIZE_PRIMARY instead of ANNOT_FONT_SIZE). Inits hashes
+				now with appropriate size.
+	* gmtdefaults.c, gmtset.c:	Use gmt_putdefaults instead of gmt_savedefaults.
+	* ???math.c:		Inits hashes with the appropriate size.
+	* .gmtdefaults*.orig:	Estatic changes only.
 
 2007-11-28	pwessel
 	* gmt_stat.c:		Fixed minor issues in PvQv function
