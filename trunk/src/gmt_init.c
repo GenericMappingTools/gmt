@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.310 2007-11-02 18:21:53 remko Exp $
+ *	$Id: gmt_init.c,v 1.311 2007-11-30 19:10:04 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,9 +28,9 @@
  *	GMT_explain_option		Prints explanations for the common options
  *	GMT_parse_common_options 	Interprets -B -H -J -K -O -P -R -U -V -X -Y -: -c
  *	GMT_getdefaults			Initializes the GMT global parameters
+ *	GMT_putdefaults			Dumps the GMT global parameters
  *	GMT_free_plot_array		Free plot memory
  *	GMT_key_lookup			Linear Key - id lookup function
- *	GMT_savedefaults		Writes the GMT global parameters to .gmtdefaults4
  *	GMT_hash_init	 		Initializes a hash
  *	GMT_hash_lookup			Key - id lookup using hashing
  *	GMT_hash			Key - id lookup using hashing
@@ -44,6 +44,7 @@
  * The INTERNAL functions are:
  *
  *	GMT_loaddefaults		Reads the GMT global parameters from .gmtdefaults4
+ *	GMT_savedefaults		Writes the GMT global parameters to .gmtdefaults4
  *	GMT_parse_?_option		Decode the -B, -H, -U, -: options
  *	GMT_setparameter		Sets a default value given keyword,value-pair
  *	GMT_setshorthand		Reads and initializes the suffix shorthands
@@ -145,10 +146,12 @@ int GMT_parse_B_option (char *in);
 int GMT_parse_H_option (char *item);
 int GMT_parse_U_option (char *item);
 int GMT_parse_t_option (char *item);
+int GMT_loaddefaults (char *file);
+int GMT_savedefaults (char *file);
 
 /* Local variables to gmt_init.c */
 
-struct GMT_HASH hashnode[GMT_HASH_SIZE];
+struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 BOOLEAN GMT_x_abs = FALSE, GMT_y_abs = FALSE;
 BOOLEAN GMT_got_frame_rgb;
 struct GMT_BACKWARD {	/* Used to ensure backwards compatibility */
@@ -1357,7 +1360,7 @@ int GMT_loaddefaults (char *file)
 
 	/* Set up hash table */
 
-	GMT_hash_init (hashnode, GMT_keywords, GMT_HASH_SIZE, GMT_N_KEYS);
+	GMT_hash_init (keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
 
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments */
@@ -1384,7 +1387,7 @@ void GMT_setdefaults (int argc, char **argv)
 
 	/* Set up hash table */
 
-	GMT_hash_init (hashnode, GMT_keywords, GMT_HASH_SIZE, GMT_N_KEYS);
+	GMT_hash_init (keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
 
 	GMT_got_frame_rgb = FALSE;	/* "Listen" for changes to basemap_frame RGB */
 
@@ -1516,7 +1519,7 @@ int GMT_setparameter (char *keyword, char *value)
 	strncpy (lower_value, value, BUFSIZ);	/* Get a lower case version */
 	GMT_str_tolower (lower_value);
 
-	case_val = GMT_hash_lookup (keyword, hashnode, GMT_HASH_SIZE, GMT_HASH_SIZE);
+	case_val = GMT_hash_lookup (keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 
 	switch (case_val) {
 		case GMTCASE_ANNOT_MIN_ANGLE:
@@ -2295,32 +2298,42 @@ BOOLEAN true_false_or_error (char *value, int *answer)
 	return (TRUE);
 }
 
+void GMT_putdefaults (char *this_file)	/* Dumps the GMT parameters to file or standard output */
+{
+	if (this_file)
+		GMT_savedefaults (this_file);
+	else
+		GMT_savedefaults (".gmtdefaults4");
+}
+
 int GMT_savedefaults (char *file)
 {
 	FILE *fp;
 	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, pm[2] = {'+', '-'};
+	char *ft[2] = {"FALSE", "TRUE"};
 	double s;
 
-	if (!file)
+	if (file[0] == '-' && !file[1])
 		fp = GMT_stdout;
 	else if ((fp = fopen (file, "w")) == NULL) {
-		fprintf (stderr, "GMT: Could not create file %s\n", file);
+		fprintf (stderr, "%s: Error: Could not create file %s\n", file, GMT_program);
 		return (-1);
 	}
 
 	u = abbrev[gmtdefs.measure_unit];
 	s = GMT_u2u[GMT_INCH][gmtdefs.measure_unit];	/* Convert from internal inch to users unit */
 
-	fprintf (fp, "#\n#	GMT-SYSTEM %s Defaults file\n#\n", GMT_VERSION);
+	fprintf (fp, "#\n#\tGMT-SYSTEM %s Defaults file\n#\n", GMT_VERSION);
 	fprintf (fp, "#-------- Plot Media Parameters -------------\n");
-	fprintf (fp, "PAGE_COLOR		= %d/%d/%d\n", gmtdefs.page_rgb[0], gmtdefs.page_rgb[1], gmtdefs.page_rgb[2]);
-	(gmtdefs.portrait) ? fprintf (fp, "PAGE_ORIENTATION	= portrait\n") : fprintf (fp, "PAGE_ORIENTATION	= landscape\n");
+	fprintf (fp, "PAGE_COLOR\t\t= %d/%d/%d\n", gmtdefs.page_rgb[0], gmtdefs.page_rgb[1], gmtdefs.page_rgb[2]);
+	fprintf (fp, "PAGE_ORIENTATION\t= %s\n", (gmtdefs.portrait ? "portrait" : "landscape"));
+	fprintf (fp, "PAPER_MEDIA\t\t= ");
 	if (gmtdefs.media == -USER_MEDIA_OFFSET)
-		fprintf (fp, "PAPER_MEDIA		= Custom_%dx%d", abs(gmtdefs.paper_width[0]), abs(gmtdefs.paper_width[1]));
+		fprintf (fp, "Custom_%dx%d", abs(gmtdefs.paper_width[0]), abs(gmtdefs.paper_width[1]));
 	else if (gmtdefs.media >= USER_MEDIA_OFFSET)
-		fprintf (fp, "PAPER_MEDIA		= %s", GMT_user_media_name[gmtdefs.media-USER_MEDIA_OFFSET]);
+		fprintf (fp, "%s", GMT_user_media_name[gmtdefs.media-USER_MEDIA_OFFSET]);
 	else
-		fprintf (fp, "PAPER_MEDIA		= %s", GMT_media_name[gmtdefs.media]);
+		fprintf (fp, "%s", GMT_media_name[gmtdefs.media]);
 	if (gmtdefs.paper_width[0] < 0)
 		fprintf (fp, "-\n");
 	else if (gmtdefs.paper_width[1] < 0)
@@ -2328,180 +2341,188 @@ int GMT_savedefaults (char *file)
 	else
 		fprintf (fp, "\n");
 	fprintf (fp, "#-------- Basemap Annotation Parameters ------\n");
-	fprintf (fp, "ANNOT_MIN_ANGLE		= %g\n", gmtdefs.annot_min_angle);
-	fprintf (fp, "ANNOT_MIN_SPACING	= %g\n", gmtdefs.annot_min_spacing);
-	fprintf (fp, "ANNOT_FONT_PRIMARY	= %s\n", GMT_font[gmtdefs.annot_font[0]].name);
-	(GMT_force_resize && !GMT_annot_special) ? fprintf (fp, "ANNOT_FONT_SIZE_PRIMARY	= +%gp\n", gmtdefs.annot_font_size[0]) :  fprintf (fp, "ANNOT_FONT_SIZE		= %gp\n", gmtdefs.annot_font_size[0]);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET_PRIMARY	= %g%c\n", save_annot_offset[0] * s, u) : fprintf (fp, "ANNOT_OFFSET_PRIMARY	= %g%c\n", gmtdefs.annot_offset[0] * s, u);
-	fprintf (fp, "ANNOT_FONT_SECONDARY	= %s\n", GMT_font[gmtdefs.annot_font[1]].name);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_FONT_SIZE_SECONDARY	= %gp\n", save_annot_size[1]) : fprintf (fp, "ANNOT_FONT_SIZE_SECONDARY	= %gp\n", gmtdefs.annot_font_size[1]);
-	(GMT_force_resize) ? fprintf (fp, "ANNOT_OFFSET_SECONDARY = %g%c\n", save_annot_offset[1] * s, u) : fprintf (fp, "ANNOT_OFFSET_SECONDARY	= %g%c\n", gmtdefs.annot_offset[1] * s, u);
-	fprintf (fp, "DEGREE_SYMBOL		= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
-	fprintf (fp, "HEADER_FONT		= %s\n", GMT_font[gmtdefs.header_font].name);
-	(GMT_force_resize) ? fprintf (fp, "HEADER_FONT_SIZE	= %gp\n", save_header_size) : fprintf (fp, "HEADER_FONT_SIZE	= %gp\n", gmtdefs.header_font_size);
-	(GMT_force_resize) ? fprintf (fp, "HEADER_OFFSET			= %g%c\n", save_header_offset * s, u) : fprintf (fp, "HEADER_OFFSET		= %g%c\n", gmtdefs.header_offset * s, u);
-	fprintf (fp, "LABEL_FONT		= %s\n", GMT_font[gmtdefs.label_font].name);
-	(GMT_force_resize) ? fprintf (fp, "LABEL_FONT_SIZE		= %gp\n", save_label_size) : fprintf (fp, "LABEL_FONT_SIZE		= %gp\n", gmtdefs.label_font_size);
-	(GMT_force_resize) ? fprintf (fp, "LABEL_OFFSET			= %g%c\n", save_label_offset * s, u) : fprintf (fp, "LABEL_OFFSET		= %g%c\n", gmtdefs.label_offset * s, u);
-	fprintf (fp, "OBLIQUE_ANNOTATION	= %d\n", gmtdefs.oblique_annotation);
-	fprintf (fp, "PLOT_CLOCK_FORMAT	= %s\n", gmtdefs.plot_clock_format);
-	fprintf (fp, "PLOT_DATE_FORMAT	= %s\n", gmtdefs.plot_date_format);
-	fprintf (fp, "PLOT_DEGREE_FORMAT	= %s\n", gmtdefs.plot_degree_format);
-	(gmtdefs.y_axis_type == 1) ? fprintf (fp, "Y_AXIS_TYPE		= ver_text\n") : fprintf (fp, "Y_AXIS_TYPE		= hor_text\n");
+	fprintf (fp, "ANNOT_MIN_ANGLE\t\t= %g\n", gmtdefs.annot_min_angle);
+	fprintf (fp, "ANNOT_MIN_SPACING\t= %g\n", gmtdefs.annot_min_spacing);
+	fprintf (fp, "ANNOT_FONT_PRIMARY\t= %s\n", GMT_font[gmtdefs.annot_font[0]].name);
+	fprintf (fp, "ANNOT_FONT_SIZE_PRIMARY\t= %s%gp\n", (GMT_force_resize && !GMT_annot_special ? "+" : ""), gmtdefs.annot_font_size[0]);
+	fprintf (fp, "ANNOT_OFFSET_PRIMARY\t= %g%c\n", (GMT_force_resize ? save_annot_offset[0] : gmtdefs.annot_offset[0]) * s, u);
+	fprintf (fp, "ANNOT_FONT_SECONDARY\t= %s\n", GMT_font[gmtdefs.annot_font[1]].name);
+	fprintf (fp, "ANNOT_FONT_SIZE_SECONDARY\t= %gp\n", (GMT_force_resize ? save_annot_size[1] : gmtdefs.annot_font_size[1]));
+	fprintf (fp, "ANNOT_OFFSET_SECONDARY\t= %g%c\n", (GMT_force_resize ? save_annot_offset[1] : gmtdefs.annot_offset[1]) * s, u);
+	fprintf (fp, "DEGREE_SYMBOL\t\t= %s\n", GMT_degree_choice[gmtdefs.degree_symbol - gmt_none]);
+	fprintf (fp, "HEADER_FONT\t\t= %s\n", GMT_font[gmtdefs.header_font].name);
+	fprintf (fp, "HEADER_FONT_SIZE\t= %gp\n", (GMT_force_resize ? save_header_size : gmtdefs.header_font_size));
+	fprintf (fp, "HEADER_OFFSET\t\t= %g%c\n", (GMT_force_resize ? save_header_offset : gmtdefs.header_offset) * s, u);
+	fprintf (fp, "LABEL_FONT\t\t= %s\n", GMT_font[gmtdefs.label_font].name);
+	fprintf (fp, "LABEL_FONT_SIZE\t\t= %gp\n", (GMT_force_resize ? save_label_size : gmtdefs.label_font_size));
+	fprintf (fp, "LABEL_OFFSET\t\t= %g%c\n", (GMT_force_resize ? save_label_offset : gmtdefs.label_offset) * s, u);
+	fprintf (fp, "OBLIQUE_ANNOTATION\t= %d\n", gmtdefs.oblique_annotation);
+	fprintf (fp, "PLOT_CLOCK_FORMAT\t= %s\n", gmtdefs.plot_clock_format);
+	fprintf (fp, "PLOT_DATE_FORMAT\t= %s\n", gmtdefs.plot_date_format);
+	fprintf (fp, "PLOT_DEGREE_FORMAT\t= %s\n", gmtdefs.plot_degree_format);
+	fprintf (fp, "Y_AXIS_TYPE\t\t= %s\n", (gmtdefs.y_axis_type == 1 ? "ver_text" : "hor_text"));
 	fprintf (fp, "#-------- Basemap Layout Parameters ---------\n");
-	fprintf (fp, "BASEMAP_AXES		= %s\n", gmtdefs.basemap_axes);
-	fprintf (fp, "BASEMAP_FRAME_RGB	= %d/%d/%d\n", gmtdefs.basemap_frame_rgb[0],
-		gmtdefs.basemap_frame_rgb[1], gmtdefs.basemap_frame_rgb[2]);
+	fprintf (fp, "BASEMAP_AXES\t\t= %s\n", gmtdefs.basemap_axes);
+	fprintf (fp, "BASEMAP_FRAME_RGB\t= %d/%d/%d\n", gmtdefs.basemap_frame_rgb[0], gmtdefs.basemap_frame_rgb[1], gmtdefs.basemap_frame_rgb[2]);
+	fprintf (fp, "BASEMAP_TYPE\t\t= ");
 	if (gmtdefs.basemap_type == GMT_IS_PLAIN)
-		fprintf (fp, "BASEMAP_TYPE		= plain\n");
+		fprintf (fp, "plain\n");
 	else if (gmtdefs.basemap_type == GMT_IS_FANCY)
-		fprintf (fp, "BASEMAP_TYPE		= fancy\n");
+		fprintf (fp, "fancy\n");
 	else if (gmtdefs.basemap_type == GMT_IS_ROUNDED)
-		fprintf (fp, "BASEMAP_TYPE		= fancy+\n");
-	fprintf (fp, "FRAME_PEN		= %s\n", GMT_putpen (&gmtdefs.frame_pen));
-	(GMT_force_resize) ? fprintf (fp, "FRAME_WIDTH		= %g%c\n", save_frame_width * s, u) :  fprintf (fp, "FRAME_WIDTH		= %g%c\n", gmtdefs.frame_width * s, u);
-	fprintf (fp, "GRID_CROSS_SIZE_PRIMARY	= %g%c\n", gmtdefs.grid_cross_size[0] * s, u);
-	fprintf (fp, "GRID_CROSS_SIZE_SECONDARY	= %g%c\n", gmtdefs.grid_cross_size[1] * s, u);
-	fprintf (fp, "GRID_PEN_PRIMARY	= %s\n", GMT_putpen (&gmtdefs.grid_pen[0]));
-	fprintf (fp, "GRID_PEN_SECONDARY	= %s\n", GMT_putpen (&gmtdefs.grid_pen[1]));
-	fprintf (fp, "MAP_SCALE_HEIGHT	= %g%c\n", gmtdefs.map_scale_height * s, u);
-	(GMT_force_resize) ? fprintf (fp, "TICK_LENGTH		= %g%c\n", save_tick_length * s, u) :  fprintf (fp, "TICK_LENGTH		= %g%c\n", gmtdefs.tick_length * s, u);
+		fprintf (fp, "fancy+\n");
+	fprintf (fp, "FRAME_PEN\t\t= %s\n", GMT_putpen (&gmtdefs.frame_pen));
+	fprintf (fp, "FRAME_WIDTH\t\t= %g%c\n", (GMT_force_resize ? save_frame_width : gmtdefs.frame_width) * s, u);
+	fprintf (fp, "GRID_CROSS_SIZE_PRIMARY\t= %g%c\n", gmtdefs.grid_cross_size[0] * s, u);
+	fprintf (fp, "GRID_CROSS_SIZE_SECONDARY\t= %g%c\n", gmtdefs.grid_cross_size[1] * s, u);
+	fprintf (fp, "GRID_PEN_PRIMARY\t= %s\n", GMT_putpen (&gmtdefs.grid_pen[0]));
+	fprintf (fp, "GRID_PEN_SECONDARY\t= %s\n", GMT_putpen (&gmtdefs.grid_pen[1]));
+	fprintf (fp, "MAP_SCALE_HEIGHT\t= %g%c\n", gmtdefs.map_scale_height * s, u);
+	fprintf (fp, "TICK_LENGTH\t\t= %g%c\n", (GMT_force_resize ? save_tick_length : gmtdefs.tick_length) * s, u);
+	fprintf (fp, "POLAR_CAP\t\t= ");
 	if (GMT_IS_ZERO (gmtdefs.polar_cap[0] - 90.0))
-		fprintf (fp, "POLAR_CAP		= none\n");
+		fprintf (fp, "none\n");
 	else
-		fprintf (fp, "POLAR_CAP		= %g/%g\n", gmtdefs.polar_cap[0], gmtdefs.polar_cap[1]);
-	fprintf (fp, "TICK_PEN		= %s\n", GMT_putpen (&gmtdefs.tick_pen));
-	fprintf (fp, "X_AXIS_LENGTH		= %g%c\n", gmtdefs.x_axis_length * s, u);
-	fprintf (fp, "Y_AXIS_LENGTH		= %g%c\n", gmtdefs.y_axis_length * s, u);
-	fprintf (fp, "X_ORIGIN		= %g%c\n", gmtdefs.x_origin * s, u);
-	fprintf (fp, "Y_ORIGIN		= %g%c\n", gmtdefs.y_origin * s, u);
-	(gmtdefs.unix_time) ? fprintf (fp, "UNIX_TIME		= TRUE\n") : fprintf (fp, "UNIX_TIME		= FALSE\n");
-	fprintf (fp, "UNIX_TIME_POS		= %g%c/%g%c\n", gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
+		fprintf (fp, "%g/%g\n", gmtdefs.polar_cap[0], gmtdefs.polar_cap[1]);
+	fprintf (fp, "TICK_PEN\t\t= %s\n", GMT_putpen (&gmtdefs.tick_pen));
+	fprintf (fp, "X_AXIS_LENGTH\t\t= %g%c\n", gmtdefs.x_axis_length * s, u);
+	fprintf (fp, "Y_AXIS_LENGTH\t\t= %g%c\n", gmtdefs.y_axis_length * s, u);
+	fprintf (fp, "X_ORIGIN\t\t= %g%c\n", gmtdefs.x_origin * s, u);
+	fprintf (fp, "Y_ORIGIN\t\t= %g%c\n", gmtdefs.y_origin * s, u);
+	fprintf (fp, "UNIX_TIME\t\t= %s\n", ft[gmtdefs.unix_time]);
+	fprintf (fp, "UNIX_TIME_POS\t\t= %g%c/%g%c\n", gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
 	fprintf (fp, "#-------- Color System Parameters -----------\n");
+	fprintf (fp, "COLOR_BACKGROUND\t= ");
 	if (gmtdefs.background_rgb[0] == -1)
-		fprintf (fp, "COLOR_BACKGROUND	= -\n");
+		fprintf (fp, "-\n");
 	else
-		fprintf (fp, "COLOR_BACKGROUND	= %d/%d/%d\n", gmtdefs.background_rgb[0], gmtdefs.background_rgb[1], gmtdefs.background_rgb[2]);
+		fprintf (fp, "%d/%d/%d\n", gmtdefs.background_rgb[0], gmtdefs.background_rgb[1], gmtdefs.background_rgb[2]);
+	fprintf (fp, "COLOR_FOREGROUND\t= ");
 	if (gmtdefs.foreground_rgb[0] == -1)
-		fprintf (fp, "COLOR_FOREGROUND	= -\n");
+		fprintf (fp, "-\n");
 	else
-		fprintf (fp, "COLOR_FOREGROUND	= %d/%d/%d\n", gmtdefs.foreground_rgb[0], gmtdefs.foreground_rgb[1], gmtdefs.foreground_rgb[2]);
+		fprintf (fp, "%d/%d/%d\n", gmtdefs.foreground_rgb[0], gmtdefs.foreground_rgb[1], gmtdefs.foreground_rgb[2]);
+	fprintf (fp, "COLOR_NAN\t\t= ");
 	if (gmtdefs.nan_rgb[0] == -1)
-		fprintf (fp, "COLOR_NAN		= -\n");
+		fprintf (fp, "-\n");
 	else
-		fprintf (fp, "COLOR_NAN		= %d/%d/%d\n", gmtdefs.nan_rgb[0], gmtdefs.nan_rgb[1], gmtdefs.nan_rgb[2]);
-	fprintf (fp, "COLOR_IMAGE		= ");
-	if (gmtdefs.color_image == 0)
-		fprintf (fp, "adobe\n");
-	else if (gmtdefs.color_image == 1)
-		fprintf (fp, "tiles\n");
+		fprintf (fp, "%d/%d/%d\n", gmtdefs.nan_rgb[0], gmtdefs.nan_rgb[1], gmtdefs.nan_rgb[2]);
+	fprintf (fp, "COLOR_IMAGE\t\t= %s\n", (gmtdefs.color_image ? "tiles" : "adobe"));
+	fprintf (fp, "COLOR_MODEL\t\t= ");
 	if (gmtdefs.color_model & GMT_USE_HSV)
-		fprintf (fp, "COLOR_MODEL		= +hsv\n");
+		fprintf (fp, "+hsv\n");
 	else if (gmtdefs.color_model & GMT_READ_HSV)
-		fprintf (fp, "COLOR_MODEL		= hsv\n");
+		fprintf (fp, "hsv\n");
 	else if (gmtdefs.color_model & GMT_USE_CMYK)
-		fprintf (fp, "COLOR_MODEL		= +cmyk\n");
+		fprintf (fp, "+cmyk\n");
 	else if (gmtdefs.color_model & GMT_READ_CMYK)
-		fprintf (fp, "COLOR_MODEL		= cmyk\n");
+		fprintf (fp, "cmyk\n");
 	else if (gmtdefs.color_model & GMT_USE_RGB)
-		fprintf (fp, "COLOR_MODEL		= +rgb\n");
+		fprintf (fp, "+rgb\n");
 	else
-		fprintf (fp, "COLOR_MODEL		= rgb\n");
-	fprintf (fp, "HSV_MIN_SATURATION	= %g\n", gmtdefs.hsv_min_saturation);
-	fprintf (fp, "HSV_MAX_SATURATION	= %g\n", gmtdefs.hsv_max_saturation);
-	fprintf (fp, "HSV_MIN_VALUE		= %g\n", gmtdefs.hsv_min_value);
-	fprintf (fp, "HSV_MAX_VALUE		= %g\n", gmtdefs.hsv_max_value);
+		fprintf (fp, "rgb\n");
+	fprintf (fp, "HSV_MIN_SATURATION\t= %g\n", gmtdefs.hsv_min_saturation);
+	fprintf (fp, "HSV_MAX_SATURATION\t= %g\n", gmtdefs.hsv_max_saturation);
+	fprintf (fp, "HSV_MIN_VALUE\t\t= %g\n", gmtdefs.hsv_min_value);
+	fprintf (fp, "HSV_MAX_VALUE\t\t= %g\n", gmtdefs.hsv_max_value);
 	fprintf (fp, "#-------- PostScript Parameters -------------\n");
-	fprintf (fp, "CHAR_ENCODING		= %s\n", gmtdefs.encoding.name);
-	fprintf (fp, "DOTS_PR_INCH		= %d\n", gmtdefs.dpi);
-	fprintf (fp, "N_COPIES		= %d\n", gmtdefs.n_copies);
+	fprintf (fp, "CHAR_ENCODING\t\t= %s\n", gmtdefs.encoding.name);
+	fprintf (fp, "DOTS_PR_INCH\t\t= %d\n", gmtdefs.dpi);
+	fprintf (fp, "N_COPIES\t\t= %d\n", gmtdefs.n_copies);
+	fprintf (fp, "PS_COLOR\t\t= ");
 	if (gmtdefs.ps_colormode == 0)
-		fprintf (fp, "PS_COLOR		= rgb\n");
+		fprintf (fp, "rgb\n");
 	else if (gmtdefs.ps_colormode == 1)
-		fprintf (fp, "PS_COLOR		= cmyk\n");
+		fprintf (fp, "cmyk\n");
 	else
-		fprintf (fp, "PS_COLOR		= hsv\n");
+		fprintf (fp, "hsv\n");
+	fprintf (fp, "PS_IMAGE_COMPRESS\t= ");
 	if (gmtdefs.ps_compress == 1)
-		fprintf (fp, "PS_IMAGE_COMPRESS	= rle\n");
+		fprintf (fp, "rle\n");
 	else if (gmtdefs.ps_compress == 2)
-		fprintf (fp, "PS_IMAGE_COMPRESS	= lzw\n");
+		fprintf (fp, "lzw\n");
 	else
-		fprintf (fp, "PS_IMAGE_COMPRESS	= none\n");
-	(gmtdefs.ps_heximage) ? fprintf (fp, "PS_IMAGE_FORMAT		= ascii\n") : fprintf (fp, "PS_IMAGE_FORMAT		= bin\n");
+		fprintf (fp, "none\n");
+	fprintf (fp, "PS_IMAGE_FORMAT\t\t= %s\n", (gmtdefs.ps_heximage ? "ascii" : "bin"));
+	fprintf (fp, "PS_LINE_CAP\t\t= ");
 	if (gmtdefs.ps_line_cap == 0)
-		fprintf (fp, "PS_LINE_CAP		= butt\n");
+		fprintf (fp, "butt\n");
 	else if (gmtdefs.ps_line_cap == 1)
-		fprintf (fp, "PS_LINE_CAP		= round\n");
+		fprintf (fp, "round\n");
 	else
-		fprintf (fp, "PS_LINE_CAP		= square\n");
+		fprintf (fp, "square\n");
+	fprintf (fp, "PS_LINE_JOIN\t\t= ");
 	if (gmtdefs.ps_line_join == 0)
-		fprintf (fp, "PS_LINE_JOIN		= miter\n");
+		fprintf (fp, "miter\n");
 	else if (gmtdefs.ps_line_join == 1)
-		fprintf (fp, "PS_LINE_JOIN		= round\n");
+		fprintf (fp, "round\n");
 	else
-		fprintf (fp, "PS_LINE_JOIN		= bevel\n");
-	fprintf (fp, "PS_MITER_LIMIT		= %d\n", gmtdefs.ps_miter_limit);
-	(gmtdefs.ps_verbose) ? fprintf (fp, "PS_VERBOSE			= TRUE\n") : fprintf (fp, "PS_VERBOSE			= FALSE\n");
-	fprintf (fp, "GLOBAL_X_SCALE		= %g\n", gmtdefs.global_x_scale);
-	fprintf (fp, "GLOBAL_Y_SCALE		= %g\n", gmtdefs.global_y_scale);
+		fprintf (fp, "bevel\n");
+	fprintf (fp, "PS_MITER_LIMIT\t\t= %d\n", gmtdefs.ps_miter_limit);
+	fprintf (fp, "PS_VERBOSE\t\t= %s\n", ft[gmtdefs.ps_verbose]);
+	fprintf (fp, "GLOBAL_X_SCALE\t\t= %g\n", gmtdefs.global_x_scale);
+	fprintf (fp, "GLOBAL_Y_SCALE\t\t= %g\n", gmtdefs.global_y_scale);
 	fprintf (fp, "#-------- I/O Format Parameters -------------\n");
-	fprintf (fp, "D_FORMAT		= %s\n", gmtdefs.d_format);
+	fprintf (fp, "D_FORMAT\t\t= %s\n", gmtdefs.d_format);
+	fprintf (fp, "FIELD_DELIMITER\t\t= ");
 	if (!strcmp (gmtdefs.field_delimiter, "\t"))
-		fprintf (fp, "FIELD_DELIMITER		= tab\n");
+		fprintf (fp, "tab\n");
 	else if (!strcmp (gmtdefs.field_delimiter, " "))
-		fprintf (fp, "FIELD_DELIMITER		= space\n");
+		fprintf (fp, "space\n");
 	else if (!strcmp (gmtdefs.field_delimiter, ","))
-		fprintf (fp, "FIELD_DELIMITER		= comma\n");
+		fprintf (fp, "comma\n");
 	else if (gmtdefs.field_delimiter[0] == 0)
-		fprintf (fp, "FIELD_DELIMITER		= none\n");
+		fprintf (fp, "none\n");
 	else
-		fprintf (fp, "FIELD_DELIMITER		= %s\n", gmtdefs.field_delimiter);
-	(gmtdefs.gridfile_shorthand) ? fprintf (fp, "GRIDFILE_SHORTHAND	= TRUE\n") : fprintf (fp, "GRIDFILE_SHORTHAND	= FALSE\n");
-	fprintf (fp, "GRID_FORMAT       	= %s\n", gmtdefs.grid_format);
-	fprintf (fp, "INPUT_CLOCK_FORMAT	= %s\n", gmtdefs.input_clock_format);
-	fprintf (fp, "INPUT_DATE_FORMAT	= %s\n", gmtdefs.input_date_format);
-	(gmtdefs.io_header[GMT_IN]) ? fprintf (fp, "IO_HEADER		= TRUE\n") : fprintf (fp, "IO_HEADER		= FALSE\n");
-	fprintf (fp, "N_HEADER_RECS		= %d\n", gmtdefs.n_header_recs);
-	fprintf (fp, "OUTPUT_CLOCK_FORMAT	= %s\n", gmtdefs.output_clock_format);
-	fprintf (fp, "OUTPUT_DATE_FORMAT	= %s\n", gmtdefs.output_date_format);
-	fprintf (fp, "OUTPUT_DEGREE_FORMAT	= %s\n", gmtdefs.output_degree_format);
+		fprintf (fp, "%s\n", gmtdefs.field_delimiter);
+	fprintf (fp, "GRIDFILE_SHORTHAND\t= %s\n", ft[gmtdefs.gridfile_shorthand]);
+	fprintf (fp, "GRID_FORMAT\t\t= %s\n", gmtdefs.grid_format);
+	fprintf (fp, "INPUT_CLOCK_FORMAT\t= %s\n", gmtdefs.input_clock_format);
+	fprintf (fp, "INPUT_DATE_FORMAT\t= %s\n", gmtdefs.input_date_format);
+	fprintf (fp, "IO_HEADER\t\t= %s\n", ft[gmtdefs.io_header[GMT_IN]]);
+	fprintf (fp, "N_HEADER_RECS\t\t= %d\n", gmtdefs.n_header_recs);
+	fprintf (fp, "OUTPUT_CLOCK_FORMAT\t= %s\n", gmtdefs.output_clock_format);
+	fprintf (fp, "OUTPUT_DATE_FORMAT\t= %s\n", gmtdefs.output_date_format);
+	fprintf (fp, "OUTPUT_DEGREE_FORMAT\t= %s\n", gmtdefs.output_degree_format);
+	fprintf (fp, "XY_TOGGLE\t\t= ");
 	if (gmtdefs.xy_toggle[0] && gmtdefs.xy_toggle[1])
-		fprintf (fp, "XY_TOGGLE	= TRUE\n");
+		fprintf (fp, "TRUE\n");
 	else if (!gmtdefs.xy_toggle[0] && !gmtdefs.xy_toggle[1])
-		fprintf (fp, "XY_TOGGLE		= FALSE\n");
+		fprintf (fp, "FALSE\n");
 	else if (gmtdefs.xy_toggle[0] && !gmtdefs.xy_toggle[1])
-		fprintf (fp, "XY_TOGGLE		= IN\n");
+		fprintf (fp, "IN\n");
 	else
-		fprintf (fp, "XY_TOGGLE		= OUT\n");
+		fprintf (fp, "OUT\n");
 	fprintf (fp, "#-------- Projection Parameters -------------\n");
-	fprintf (fp, "ELLIPSOID		= %s\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].name);
+	fprintf (fp, "ELLIPSOID\t\t= %s\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].name);
+	fprintf (fp, "MAP_SCALE_FACTOR\t= ");
 	if (gmtdefs.map_scale_factor == -1.0)
-		fprintf (fp, "MAP_SCALE_FACTOR	= default\n");
+		fprintf (fp, "default\n");
 	else
-		fprintf (fp, "MAP_SCALE_FACTOR	= %g\n", gmtdefs.map_scale_factor);
-	fprintf (fp, "MEASURE_UNIT		= %s\n", GMT_unit_names[gmtdefs.measure_unit]);
+		fprintf (fp, "%g\n", gmtdefs.map_scale_factor);
+	fprintf (fp, "MEASURE_UNIT\t\t= %s\n", GMT_unit_names[gmtdefs.measure_unit]);
 	fprintf (fp, "#-------- Calendar/Time Parameters ----------\n");
-	fprintf (fp, "TIME_FORMAT_PRIMARY	= %s\n", gmtdefs.time_format[0]);
-	fprintf (fp, "TIME_FORMAT_SECONDARY	= %s\n", gmtdefs.time_format[1]);
-	fprintf (fp, "TIME_EPOCH		= %s\n", gmtdefs.time_epoch);
+	fprintf (fp, "TIME_FORMAT_PRIMARY\t= %s\n", gmtdefs.time_format[0]);
+	fprintf (fp, "TIME_FORMAT_SECONDARY\t= %s\n", gmtdefs.time_format[1]);
+	fprintf (fp, "TIME_EPOCH\t\t= %s\n", gmtdefs.time_epoch);
+	fprintf (fp, "TIME_IS_INTERVAL\t= ");
 	if (gmtdefs.time_is_interval)
-		fprintf (fp, "TIME_IS_INTERVAL	= %c%d%c\n", pm[GMT_truncate_time.direction], GMT_truncate_time.T.step, GMT_truncate_time.T.unit);
+		fprintf (fp, "%c%d%c\n", pm[GMT_truncate_time.direction], GMT_truncate_time.T.step, GMT_truncate_time.T.unit);
 	else
-		fprintf (fp, "TIME_IS_INTERVAL	= OFF\n");
-	fprintf (fp, "TIME_INTERVAL_FRACTION	= %g\n", gmtdefs.time_interval_fraction);
-	fprintf (fp, "TIME_LANGUAGE		= %s\n", gmtdefs.time_language);
-	fprintf (fp, "TIME_SYSTEM		= %s\n", GMT_time_system[gmtdefs.time_system].name);
-	fprintf (fp, "TIME_UNIT		= %c\n", gmtdefs.time_unit);
-	fprintf (fp, "TIME_WEEK_START		= %s\n", GMT_weekdays[gmtdefs.time_week_start]);
+		fprintf (fp, "OFF\n");
+	fprintf (fp, "TIME_INTERVAL_FRACTION\t= %g\n", gmtdefs.time_interval_fraction);
+	fprintf (fp, "TIME_LANGUAGE\t\t= %s\n", gmtdefs.time_language);
+	fprintf (fp, "TIME_SYSTEM\t\t= %s\n", GMT_time_system[gmtdefs.time_system].name);
+	fprintf (fp, "TIME_UNIT\t\t= %c\n", gmtdefs.time_unit);
+	fprintf (fp, "TIME_WEEK_START\t\t= %s\n", GMT_weekdays[gmtdefs.time_week_start]);
 	/*
 	 * PW 4/2/03: LEAP_SECONDS is commented out for output until we actually want to implement this feature.  We still process on input to avoid error messages.
-	(gmtdefs.want_leap_seconds) ? fprintf (fp, "WANT_LEAP_SECONDS	= TRUE\n") : fprintf (fp, "WANT_LEAP_SECONDS	= FALSE\n");
-	 *
+	fprintf (fp, "WANT_LEAP_SECONDS\t= %s\n", ft[gmtdefs.want_leap_seconds]);
 	 */
-	fprintf (fp, "Y2K_OFFSET_YEAR		= %d\n", gmtdefs.Y2K_offset_year);
+	fprintf (fp, "Y2K_OFFSET_YEAR\t\t= %d\n", gmtdefs.Y2K_offset_year);
 	fprintf (fp, "#-------- Miscellaneous Parameters ----------\n");
-	(gmtdefs.history) ? fprintf (fp, "HISTORY			= TRUE\n") : fprintf (fp, "HISTORY			= FALSE\n");
-	fprintf (fp, "INTERPOLANT		= ");
+	fprintf (fp, "HISTORY\t\t\t= %s\n", ft[gmtdefs.history]);
+	fprintf (fp, "INTERPOLANT\t\t= ");
 	if (gmtdefs.interpolant == 0)
 		fprintf (fp, "linear\n");
 	else if (gmtdefs.interpolant == 1)
@@ -2510,9 +2531,9 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "cubic\n");
 	else if (gmtdefs.interpolant == 3)
 		fprintf (fp, "none\n");
-	fprintf (fp, "LINE_STEP		= %g%c\n", gmtdefs.line_step * s, u);
-	fprintf (fp, "VECTOR_SHAPE		= %g\n", gmtdefs.vector_shape);
-	(gmtdefs.verbose) ? fprintf (fp, "VERBOSE			= TRUE\n") : fprintf (fp, "VERBOSE			= FALSE\n");
+	fprintf (fp, "LINE_STEP\t\t= %g%c\n", gmtdefs.line_step * s, u);
+	fprintf (fp, "VECTOR_SHAPE\t\t= %g\n", gmtdefs.vector_shape);
+	fprintf (fp, "VERBOSE\t\t\t= %s\n", ft[gmtdefs.verbose]);
 
 	if (fp != GMT_stdout) fclose (fp);
 
@@ -2532,15 +2553,15 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults4 file and ini
 	for (i = 0; i < 5; i++) frame_info.side[i] = 2;
 
 	if (this_file)	/* Defaults file is specified */
-		(void) GMT_loaddefaults (this_file);
+		GMT_loaddefaults (this_file);
 	else if (GMT_getuserpath (".gmtdefaults4", file))
-		(void) GMT_loaddefaults (file);
+		GMT_loaddefaults (file);
 	else if (GMT_getuserpath (".gmtdefaults", file))
-		(void) GMT_loaddefaults (file);
+		GMT_loaddefaults (file);
 	else {		/* No .gmtdefaults[4] files in sight; Must use GMT system defaults */
 		char *path;
 		GMT_getdefpath (0, &path);
-		(void) GMT_loaddefaults (path);
+		GMT_loaddefaults (path);
 		GMT_free ((void *)path);
 	}
 }
@@ -3112,8 +3133,8 @@ void GMT_end (int argc, char **argv)
 			GMT_free ((void *)current);
 		}
 	}
-	for (i = 0; i < GMT_HASH_SIZE; i++) {
-		p = hashnode[i].next;
+	for (i = 0; i < GMT_N_KEYS; i++) {
+		p = keys_hashnode[i].next;
 		while ((current = p)) {
 			p = p->next;
 			GMT_free ((void *)current);
