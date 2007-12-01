@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.207 2007-11-07 04:27:28 remko Exp $
+ *	$Id: gmt_plot.c,v 1.208 2007-12-01 04:19:05 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2012,7 +2012,7 @@ void GMT_map_boundary (double w, double e, double s, double n)
  * Tickmark info are passed through the frame_info-structure
  *
  */
- 
+
 void GMT_map_basemap (void) {
 	int i;
 	double w, e, s, n;
@@ -4113,16 +4113,22 @@ struct EPS *GMT_epsinfo (char *program)
 	int fno[5], id, i, n, n_fonts, last, move_up = FALSE, old_x0, old_y0, old_x1, old_y1;
 	int tick_space, frame_space, u_dx, u_dy;
 	double dy, x0, y0, orig_x0 = 0.0, orig_y0 = 0.0;
-	char title[BUFSIZ];
+	char info[BUFSIZ];
 	FILE *fp;
 	struct passwd *pw;
 	struct EPS *new;
 
 	new = (struct EPS *) GMT_memory (VNULL, (size_t)1, sizeof (struct EPS), "GMT_epsinfo");
 
-	 /* First crudely estimate the boundingbox coordinates */
+	/* Set the name of .gmt_bb_info file */
+	if (GMT_TMPDIR)
+		sprintf (info, "%s%c.gmt_bb_info", GMT_TMPDIR, DIR_DELIM);
+	else
+		sprintf (info, ".gmt_bb_info");
 
-	if (GMT_ps.overlay && (fp = fopen (".GMT_bb_info", "r")) != NULL) {	/* Must get previous boundingbox values */
+	/* First crudely estimate the boundingbox coordinates */
+
+	if (GMT_ps.overlay && (fp = fopen (info, "r")) != NULL) {	/* Must get previous boundingbox values */
 		fscanf (fp, "%d %d %lf %lf %d %d %d %d\n", &(new->portrait), &(new->clip_level), &orig_x0, &orig_y0, &old_x0, &old_y0, &old_x1, &old_y1);
 		fclose (fp);
 		x0 = orig_x0;
@@ -4131,7 +4137,7 @@ struct EPS *GMT_epsinfo (char *program)
 			x0 = GMT_ps.x_origin;
 			y0 = GMT_ps.y_origin;
 		}
-		else {					/* Relative */
+		else {			/* Relative */
 			x0 += GMT_ps.x_origin;
 			y0 += GMT_ps.y_origin;
 		}
@@ -4200,12 +4206,12 @@ struct EPS *GMT_epsinfo (char *program)
 
 	/* Update the bb file or tell use */
 
-	if (GMT_ps.last_page) {	/* Clobber the .GMT_bb_info file and add label padding */
-		(void) remove (".GMT_bb_info");	/* Don't really care if it is successful or not */
+	if (GMT_ps.last_page) {	/* Clobber the .gmt_bb_info file and add label padding */
+		(void) remove (info);	/* Don't really care if it is successful or not */
 		if (new->clip_level > 0) fprintf (stderr, "%s: Warning: %d (?) external clip operations were not terminated!\n", GMT_program, new->clip_level);
 		if (new->clip_level < 0) fprintf (stderr, "%s: Warning: %d extra terminations of external clip operations!\n", GMT_program, -new->clip_level);
 	}
-	else if ((fp = fopen (".GMT_bb_info", "w")) != NULL) {	/* Update the .GMT_bb_info file */
+	else if ((fp = fopen (info, "w")) != NULL) {	/* Update the .gmt_bb_info file */
 		fprintf (fp, "%d %d %g %g %d %d %d %d\n", new->portrait, new->clip_level, x0, y0, new->x0, new->y0, new->x1, new->y1);
 		fclose (fp);
 	}
@@ -4250,9 +4256,9 @@ struct EPS *GMT_epsinfo (char *program)
 		new->name = (char *) GMT_memory (VNULL, (size_t)8, sizeof (char), "GMT_epsinfo");
 		strcpy (new->name, "unknown");
 	}
-	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, program);
-	new->title = (char *) GMT_memory (VNULL, (size_t)(strlen (title) + 1), sizeof (char), "GMT_epsinfo");
-	strcpy (new->title, title);
+	sprintf (info, "GMT v%s Document from %s", GMT_VERSION, program);
+	new->title = (char *) GMT_memory (VNULL, (size_t)(strlen (info) + 1), sizeof (char), "GMT_epsinfo");
+	strcpy (new->title, info);
 
 	return (new);
 }

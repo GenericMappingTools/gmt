@@ -1,6 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.153 2007-11-30 19:11:07 remko Exp $
+	$Id: ChangeLog,v 1.154 2007-12-01 04:19:05 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-01	remko
+	* gmt_init.c:		** Isolation mode implemented **
+				At initialization, check is GMT_TMPDIR is defined and writable.
+				When GMT_TMPDIR is defined: attempt to read .gmtdefaults4 from
+				GMT_TMPDIR and always write .gmtdefaults4 to GMT_TMPDIR.
+	* gmt_io.c (gmt_getuserpath):	Search first in GMT_TMPDIR (when defined).
+	* gmt_plot.c:		When GMT_TMPDIR is defined: read and write .gmt_bb_info in GMT_TMPDIR.
 
 2007-11-30	remko
 	* gmt_dimensions.h:	New automatically generated file: contains all dimensions like

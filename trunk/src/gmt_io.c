@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.144 2007-11-01 19:58:14 remko Exp $
+ *	$Id: gmt_io.c,v 1.145 2007-12-01 04:19:05 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,7 +26,7 @@
  *
  * The following functions are here:
  *
- *	GMT_getuserpath		Get pathname of file in "user directories" (CWD, HOME, GMT_USERDIR)
+ *	GMT_getuserpath		Get pathname of file in "user directories" (GMT_TMPDIR, CWD, HOME, GMT_USERDIR)
  *	GMT_getdatapath		Get pathname of file in "data directories" (CWD, GMT_{USER,DATA,GRID,IMG}DIR)
  *	GMT_getsharepath	Get pathname of file in "share directries" (CWD, GMT_USERDIR, GMT_SHAREDIR tree)
  *	GMT_fopen:		Open a file using GMT_getdatapath
@@ -181,7 +181,7 @@ int GMT_fclose (FILE *stream)
 FILE *GMT_fopen (const char* filename, const char *mode)
 {
 	char path[BUFSIZ];
-	
+
 	if (mode[0] == 'r')
 		return (fopen (GMT_getdatapath(filename, path),mode));
 	else
@@ -195,17 +195,25 @@ char *GMT_getuserpath (const char *stem, char *path)
 	/* stem is the name of the file, e.g., .gmtdefaults4 or .gmtdefaults
 	 * path is the full path to the file in question
 	 * Returns full pathname if a workable path was found
-	 * Looks for file stem in current directory, home directory and $GMT_USERDIR (default ~/.gmt)
+	 * Looks for file stem in the temporary directory (if defined),
+	 * current directory, home directory and $GMT_USERDIR (default ~/.gmt)
 	 */
 
-	/* First look in the current working directory */
+	/* In isolation mode (when GMT_TMPDIR is defined), we first look there */
+
+	if (GMT_TMPDIR) {
+		sprintf (path, "%s%c%s", GMT_TMPDIR, DIR_DELIM, stem);
+		if (!access (path, R_OK)) return (path);
+	}
+
+	/* Then look in the current working directory */
 
 	if (!access (stem, R_OK)) {	/* Yes, found it */
 		strcpy (path, stem);
 		return (path);
 	}
 
-	/* Not found, see if there is a file in the GMT_{HOME,USER}DIR directories */
+	/* If still not found, see if there is a file in the GMT_{HOME,USER}DIR directories */
 
 	if (GMT_HOMEDIR) {
 		sprintf (path, "%s%c%s", GMT_HOMEDIR, DIR_DELIM, stem);
@@ -3008,15 +3016,15 @@ void GMT_free_segment (struct GMT_LINE_SEGMENT *segment)
 
 BOOLEAN GMT_not_numeric (char *text)
 {
-	/* TRUE if text does not represent a valid number  However, 
+	/* TRUE if text does not represent a valid number  However,
 	 * FALSE does not therefore mean we have a valid number because
 	 * <date>T<clock> representations may use all kinds
 	 * of punctuations or letters according to the various format
 	 * settings in .gmtdefaults4.  Here we just rule out things
 	 * that we are sure of. */
-	 
+
 	int i, k, n_digits = 0, n_period = 0, period = 0, n_plus = 0, n_minus = 0;
-	
+
 	for (i = 0; text[i]; i++) {	/* Check each character */
 		/* First check for ASCII values that never appear in any number */
 		if (text[i] < 43) return (TRUE);	/* ASCII 0-42 */
