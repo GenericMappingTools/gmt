@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.152 2007-11-30 19:05:29 remko Exp $
+ *	$Id: gmt.h,v 1.153 2007-12-01 04:19:05 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -501,6 +501,7 @@ EXTERN_MSC char *GMT_USERDIR;			/* Points to the GMT user .gmt directory [~/.gmt
 EXTERN_MSC char *GMT_DATADIR;			/* Points to the GMT misc directory [if set] */
 EXTERN_MSC char *GMT_GRIDDIR;			/* Points to the GMT grids directory [if set] */
 EXTERN_MSC char *GMT_IMGDIR;			/* Points to the GMT img directory [if set] */
+EXTERN_MSC char *GMT_TMPDIR;			/* Points to the GMT temporary directory [if set] */
 EXTERN_MSC char *GMT_unit_names[];
 EXTERN_MSC double GMT_u2u[4][4];		/* measure unit translation matrix 4 x 4*/
 EXTERN_MSC struct GMT_FONT *GMT_font;
