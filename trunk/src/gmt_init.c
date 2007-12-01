@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.312 2007-12-01 04:19:05 remko Exp $
+ *	$Id: gmt_init.c,v 1.313 2007-12-01 23:01:22 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2167,20 +2167,20 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_TIME_EPOCH:
 			strncpy (gmtdefs.time_epoch, value, GMT_TEXT_LEN);
-			strncpy (GMT_time_system[GMT_N_SYSTEMS-1].epoch, value, GMT_TEXT_LEN);
+			strncpy (GMT_time_system[GMT_N_TIME_SYSTEMS-1].epoch, value, GMT_TEXT_LEN);
 #ifndef OLDCAL
-			gmtdefs.time_system = GMT_N_SYSTEMS-1;
+			gmtdefs.time_system = GMT_N_TIME_SYSTEMS-1;
 #endif
 			break;
 		case GMTCASE_TIME_UNIT:
-			gmtdefs.time_unit = GMT_time_system[GMT_N_SYSTEMS-1].unit = value[0];
+			gmtdefs.time_unit = GMT_time_system[GMT_N_TIME_SYSTEMS-1].unit = value[0];
 #ifndef OLDCAL
-			gmtdefs.time_system = GMT_N_SYSTEMS-1;
+			gmtdefs.time_system = GMT_N_TIME_SYSTEMS-1;
 #endif
 			break;
 		case GMTCASE_TIME_SYSTEM:
 			gmtdefs.time_system = GMT_get_time_system (lower_value);
-			if (gmtdefs.time_system < 0 || gmtdefs.time_system >= GMT_N_SYSTEMS) {
+			if (gmtdefs.time_system < 0 || gmtdefs.time_system >= GMT_N_TIME_SYSTEMS) {
 				error = TRUE;
 				gmtdefs.time_system = 0;
 			}
@@ -2874,7 +2874,7 @@ int GMT_get_time_system (char *name)
 {
 	int i;
 
-	for (i = 0; i < GMT_N_SYSTEMS && strcmp (name, GMT_time_system[i].name); i++);
+	for (i = 0; i < GMT_N_TIME_SYSTEMS && strcmp (name, GMT_time_system[i].name); i++);
 	return (i);
 }
 
@@ -5746,7 +5746,7 @@ int	GMT_init_time_system_structure () {
 
 	/* The last time system is user-defined and set up here.
 		All others are known and already complete.  */
-	if (gmtdefs.time_system < (GMT_N_SYSTEMS - 1) ) return (GMT_NOERROR);
+	if (gmtdefs.time_system < (GMT_N_TIME_SYSTEMS - 1) ) return (GMT_NOERROR);
 
 	/* Check the unit sanity:  */
 	switch (GMT_time_system[gmtdefs.time_system].unit) {
