@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.69 2007-11-30 19:08:45 remko Exp $
+#  $Id: GNUmakefile,v 1.70 2007-12-01 23:01:22 guru Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #	
@@ -91,7 +91,7 @@ gmt_dimensions.h:	gmt_keywords.h gmt_ellipsoids.h gmt_datums.h gmt_grdformats.h 
 			printf "#define GMT_N_DATUMS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_datums.h` >> $@
 			printf "#define GMT_N_GRD_FORMATS\t%d\t/* Lines in %s */\n" `wc -l gmt_grdformats.h` >> $@
 			printf "#define GMT_N_PEN_NAMES\t\t%d\t/* Lines in %s */\n" `wc -l gmt_pennames.h` >> $@
-			printf "#define GMT_N_SYSTEMS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_time_systems.h` >> $@
+			printf "#define GMT_N_TIME_SYSTEMS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_time_systems.h` >> $@
 			printf "#define GMT_N_COLOR_NAMES\t%d\t/* Lines in %s */\n" `wc -l gmt_colornames.h` >> $@
 
 # Must create g[rd|mt]math.h from g[rd|mt]math.c
