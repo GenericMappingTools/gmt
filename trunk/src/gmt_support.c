@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.329 2007-11-29 03:35:37 guru Exp $
+ *	$Id: gmt_support.c,v 1.330 2007-12-02 14:37:02 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1361,7 +1361,7 @@ int GMT_read_cpt (char *cpt_file)
 
 	int n = 0, i, nread, annot, n_alloc = GMT_SMALL_CHUNK, color_model, id;
 #ifdef GMT_CPT2	
-	int n_cat_records = 0
+	int n_cat_records = 0;
 #endif
 	long k;
 	double dz;
