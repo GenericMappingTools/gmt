@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.154 2007-12-01 04:19:05 remko Exp $
+	$Id: ChangeLog,v 1.155 2007-12-07 01:55:56 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-05	pwessel
+	* phiostogram.c:	Bug in -F option failed to center bins
 
 2007-12-01	remko
 	* gmt_init.c:		** Isolation mode implemented **
