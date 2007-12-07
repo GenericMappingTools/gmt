@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.72 2007-11-29 02:30:02 guru Exp $
+ *	$Id: x2sys.c,v 1.73 2007-12-07 02:43:54 guru Exp $
  *
  *      Copyright (c) 1999-2007 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -956,7 +956,7 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID)
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B)
+int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
 {
 	char index_file[BUFSIZ], index_path[BUFSIZ];
 	FILE *fbin;
@@ -974,10 +974,18 @@ int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B)
 
 	while ((fread ((void *)(&index), sizeof (int), (size_t)1, fbin)) == 1) {
 		fread ((void *)(&no_of_tracks), sizeof (int), (size_t)1, fbin);
+		if (swap) {
+			index = GMT_swab4 (index);
+			no_of_tracks = GMT_swab4 (no_of_tracks);
+		}
 		B->base[index].first_track = B->base[index].last_track = x2sys_bix_make_track (0, 0);
 		for (i = 0; i < no_of_tracks; i++) {
 			fread ((void *)(&id), sizeof (int), (size_t)1, fbin);
 			fread ((void *)(&flag), sizeof (int), (size_t)1, fbin);
+			if (swap) {
+				id = GMT_swab4 (id);
+				flag = GMT_swab4 (flag);
+			}
 			B->base[index].last_track->next_track = x2sys_bix_make_track (id, flag);
 			B->base[index].last_track = B->base[index].last_track->next_track;
 			B->base[index].n_tracks++;

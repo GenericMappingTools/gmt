@@ -112,6 +112,11 @@ that tend to introduce wild oscillations in the interpolation.
 .SH SIGN CONVENTION
 If lega and legb are passed on the command line, then the COE value is Value
 (lega) - Value (legb).
+.SH PRECISION AND FORMAT
+THe output format of individual columns are controlled by \fBD_FORMAT\fP except for
+geographic coordinates (\fBOUTPUT_DEGREE_FORMAT\fP) and absolute calendar time
+(\fBOUTPUT_DATE_FORMAT\fP, \fBOUTPUT_CLOCK_FORMAT\fP).  Make sure these are set to
+give you enough significant digits to achieve the desired precision.
 .SH EXAMPLES
 To compute all internal crossovers in the gmt-formatted file c2104.gmt, and
 output in the old XOVER format, using the tag MGG, try
