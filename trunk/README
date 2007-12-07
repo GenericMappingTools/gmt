@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.42 2007-10-08 12:04:27 remko Exp $
+#		$Id: README,v 1.43 2007-12-07 02:07:56 guru Exp $
 #
 #	Copyright (c) 1991-2007, P. Wessel & W. H. F. Smith
 #
@@ -60,17 +60,16 @@ and installation details.
 
 Note there are several GMT tar archives available:
 
- 1. GMT_src.tar.gz		: Source code only, no documentation
+ 1. GMT_src.tar.gz		: Source code and Unix man pages only, no documentation
  2. GMT_share.tar.gz		: Shared run-time support files
  3. GSHHS_coast.tar.gz		: Standard resolution GSHHS coastline data
  4. GMT_pdf.tar.gz		: PDF version of cookbook, tutorial, and man pages
- 5. GMT_man.tar.gz		: UNIX man pages for GMT
- 6. GMT_web.tar.gz		: Web (HTML) version of docs and man pages
- 7. GMT_tut.tar.gz		: Tutorial data sets
- 8. GMT_scripts.tar.gz		: Example directory with scripts and test data
- 9. GSHHS_full.tar.gz		: Full resolution GSHHS coastline data
-10. GSHHS_high.tar.gz		: High resolution GSHHS coastline data
-11. GMT_suppl.tar.gz		: GMT Supplemental programs that link with GMT
+ 5. GMT_web.tar.gz		: Web (HTML) version of docs and man pages
+ 6. GMT_tut.tar.gz		: Tutorial data sets
+ 7. GMT_scripts.tar.gz		: Example directory with scripts and test data
+ 8. GSHHS_full.tar.gz		: Full resolution GSHHS coastline data
+ 9. GSHHS_high.tar.gz		: High resolution GSHHS coastline data
+10. GMT_suppl.tar.gz		: GMT Supplemental programs that link with GMT
 
 You MUST get 1-3 for a minimal GMT installation.
 
