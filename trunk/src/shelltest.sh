@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: shelltest.sh,v 1.1 2007-12-07 19:22:09 guru Exp $
+#	$Id: shelltest.sh,v 1.2 2007-12-07 19:23:19 guru Exp $
 #
 # Testing gmt_shell_functions
 
@@ -19,12 +19,14 @@ EOF
 n=`gmt_nrecords crap.txt`
 gmt_message "We got $n records"
 
+rec=0
 while read line; do
+	rec=`expr $rec + 1`
 	n=`gmt_nfields $line`
 	i=1
 	while [ $i -le $n ]; do
 		x=`gmt_get_field $i "$line"`
-		gmt_message "Field $i is $x"
+		gmt_message "Rec $rec Field $i is $x"
 		i=`expr $i + 1`
 	done
 done < crap.txt
