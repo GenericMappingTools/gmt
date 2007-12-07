@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.156 2007-12-07 02:43:54 guru Exp $
+	$Id: ChangeLog,v 1.157 2007-12-07 06:30:20 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-12-05	pwessel
+	* gmtselect.c:		The -:o option failed to reverse output order
 	* pshistogram.c:	Bug in -F option failed to center bins
 	* x2sys/x2sys_get.c:	THe -L option did not honor any -F or -N settings
 
