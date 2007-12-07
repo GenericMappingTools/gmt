@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.157 2007-11-14 00:31:53 guru Exp $
+ *	$Id: pslib.c,v 1.158 2007-12-07 21:14:07 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2534,7 +2534,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 	for (i = k = 0; i < n_words; i++) {
 
-		clean = ps_prepare_text (text[i]);	/* Escape special characters and Scandinavian shorthands */
+		clean = ps_prepare_text (text[i]);	/* Escape special characters and European character shorthands */
 
 		if ((c = strchr (clean, '@'))) {	/* Found a @ escape command */
 			i0 = 0;
