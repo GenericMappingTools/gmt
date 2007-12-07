@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.313 2007-12-01 23:01:22 guru Exp $
+ *	$Id: gmt_init.c,v 1.314 2007-12-07 06:30:20 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -555,7 +555,7 @@ void GMT_explain_option (char option)
 		case ':':	/* lon/lat or lat/lon */
 
 			fprintf (stderr, "\t-: Expect lat/lon input/output rather than lon/lat [%s/%s].\n",
-				GMT_choice[gmtdefs.xy_toggle[0]], GMT_choice[gmtdefs.xy_toggle[1]]);
+				GMT_choice[gmtdefs.xy_toggle[GMT_IN]], GMT_choice[gmtdefs.xy_toggle[GMT_OUT]]);
 			break;
 
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
@@ -1260,7 +1260,7 @@ int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) 
 			icol = i%2;
 		else
 			icol = i/2;
-		if (icol < 2 && gmtdefs.xy_toggle[0]) icol = 1 - icol;	/* col_types were swapped */
+		if (icol < 2 && gmtdefs.xy_toggle[GMT_IN]) icol = 1 - icol;	/* col_types were swapped */
 		/* If column is either RELTIME or ABSTIME, use ARGTIME */
 		if (GMT_io.in_col_type[icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
 			got = GMT_scanf_arg (text, GMT_io.in_col_type[icol], p[i]);
@@ -1327,15 +1327,15 @@ int GMT_parse_t_option (char *item) {
 	/* Parse the -: option.  Full syntax:  -:[i|o] */
 	switch (item[2]) {
 		case 'i':	/* Toggle on input data only */
-			gmtdefs.xy_toggle[0] = TRUE;
+			gmtdefs.xy_toggle[GMT_IN] = TRUE;
 			i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
 			break;
 		case 'o':	/* Toggle on output data only */
-			gmtdefs.xy_toggle[1] = TRUE;
+			gmtdefs.xy_toggle[GMT_OUT] = TRUE;
 			i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
 			break;
 		case '\0':	/* Toggle both input and output data */
-			gmtdefs.xy_toggle[0] = gmtdefs.xy_toggle[1] = TRUE;
+			gmtdefs.xy_toggle[GMT_IN] = gmtdefs.xy_toggle[GMT_OUT] = TRUE;
 			i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
 			i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
 			break;
@@ -2081,16 +2081,16 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_XY_TOGGLE:
 			if (!strcmp (lower_value, "true"))
-				gmtdefs.xy_toggle[0] = gmtdefs.xy_toggle[1] = TRUE;
+				gmtdefs.xy_toggle[GMT_IN] = gmtdefs.xy_toggle[GMT_OUT] = TRUE;
 			else if (!strcmp (lower_value, "false"))
-				gmtdefs.xy_toggle[0] = gmtdefs.xy_toggle[1] = FALSE;
+				gmtdefs.xy_toggle[GMT_IN] = gmtdefs.xy_toggle[GMT_OUT] = FALSE;
 			else if (!strcmp (lower_value, "in")) {
-				gmtdefs.xy_toggle[0] = TRUE;
-				gmtdefs.xy_toggle[1] = FALSE;
+				gmtdefs.xy_toggle[GMT_IN] = TRUE;
+				gmtdefs.xy_toggle[GMT_OUT] = FALSE;
 			}
 			else if (!strcmp (lower_value, "out")) {
-				gmtdefs.xy_toggle[0] = FALSE;
-				gmtdefs.xy_toggle[1] = TRUE;
+				gmtdefs.xy_toggle[GMT_IN] = FALSE;
+				gmtdefs.xy_toggle[GMT_OUT] = TRUE;
 			}
 			else
 				error = TRUE;
@@ -2492,11 +2492,11 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "OUTPUT_DATE_FORMAT\t= %s\n", gmtdefs.output_date_format);
 	fprintf (fp, "OUTPUT_DEGREE_FORMAT\t= %s\n", gmtdefs.output_degree_format);
 	fprintf (fp, "XY_TOGGLE\t\t= ");
-	if (gmtdefs.xy_toggle[0] && gmtdefs.xy_toggle[1])
+	if (gmtdefs.xy_toggle[GMT_IN] && gmtdefs.xy_toggle[GMT_OUT])
 		fprintf (fp, "TRUE\n");
-	else if (!gmtdefs.xy_toggle[0] && !gmtdefs.xy_toggle[1])
+	else if (!gmtdefs.xy_toggle[GMT_IN] && !gmtdefs.xy_toggle[GMT_OUT])
 		fprintf (fp, "FALSE\n");
-	else if (gmtdefs.xy_toggle[0] && !gmtdefs.xy_toggle[1])
+	else if (gmtdefs.xy_toggle[GMT_IN] && !gmtdefs.xy_toggle[GMT_OUT])
 		fprintf (fp, "IN\n");
 	else
 		fprintf (fp, "OUT\n");
@@ -6026,8 +6026,8 @@ void *New_GMT_Ctrl () {	/* Allocate and initialize a new common control structur
 	/* [13]  -c */
 	C->common->c.copies = gmtdefs.n_copies;
 	/* [14]  -:[i|o] */
-	C->common->t.toggle[0] = gmtdefs.xy_toggle[0];
-	C->common->t.toggle[1] = gmtdefs.xy_toggle[1];
+	C->common->t.toggle[0] = gmtdefs.xy_toggle[GMT_IN];
+	C->common->t.toggle[1] = gmtdefs.xy_toggle[GMT_OUT];
 
 	return ((void *)C);
 }
