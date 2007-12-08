@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: shelltest.sh,v 1.3 2007-12-07 21:39:13 remko Exp $
+#	$Id: shelltest.sh,v 1.4 2007-12-08 01:19:01 guru Exp $
 #
 # Testing gmt_shell_functions
 
@@ -32,9 +32,9 @@ while read line; do
 		gmt_message "Rec $rec Field $i is $x"
 		i=`expr $i + 1`
 	done
-done < crap.txt
+done < $GMT_TMPDIR/crap.txt
 
-R=`gmt_get_region crap.txt -I2`
+R=`gmt_get_region $GMT_TMPDIR/crap.txt -I2`
 gmt_message "Found the table region to be $R"
 
 grdmath -R0/50/10/90 -I10 X Y MUL = $GMT_TMPDIR/crap.grd
