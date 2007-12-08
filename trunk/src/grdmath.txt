@@ -33,6 +33,24 @@ The following symbols have special meaning:
 .br
 \fBE \fP	2.7182818...
 .br
+\fBEULER \fP	0.5772156...
+.br
+\fBXMIN \fP	Minimum x value
+.br
+\fBXMAX \fP	Maximum x value
+.br
+\fBXINC \fP	x increment
+.br
+\fBNX \fP	The number of x nodes
+.br
+\fBYMIN \fP	Minimum y value
+.br
+\fBYMAX \fP	Maximum y value
+.br
+\fBYINC \fP	y increment
+.br
+\fBNY \fP	The number of y nodes
+.br
 \fBX \fP	Grid with x-coordinates
 .br
 \fBY \fP	Grid with y-coordinates

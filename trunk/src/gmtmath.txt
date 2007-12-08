@@ -40,6 +40,16 @@ The following symbols have special meaning:
 .br
 \fBE \fP	2.7182818...
 .br
+\fBEULER \fP	0.5772156...
+.br
+\fBTMIN \fP	Minimum t value
+.br
+\fBTMAX \fP	Maximum t value
+.br
+\fBTINC \fP	t increment
+.br
+\fBN \fP	The number of records
+.br
 \fBT \fP	Table with t-coordinates
 .br
 .SH OPTIONS
