@@ -1,10 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.158 2007-12-08 00:07:44 guru Exp $
+	$Id: ChangeLog,v 1.159 2007-12-09 18:07:00 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-09	remko
+	* gmt_shell_functions.txt:	Added to manpages
 
 2007-12-07	pwessel
 	* gmtmath.c:		Added constants TMIN, TMAX, TINC, and N
 	* grdmath.c:		Added constants XMIN, XMAX, XINC, NX, YMIN, YMAX, YINC, and NY
+	* gmt_shell_functions.sh:	Added to programs
 
 2007-12-06	pwessel
 	* gmtselect.c:		The -:o option failed to reverse output order
