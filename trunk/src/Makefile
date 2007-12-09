@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.24 2007-12-07 21:48:49 remko Exp $
+#	$Id: Makefile,v 1.25 2007-12-09 18:07:00 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -70,7 +70,7 @@ ALLPROGS	= GMT gmt_shell_functions.sh $(PROGS) $(PROGSPS)
 
 CONFIGS		= makegmt.macros gmt_version.h gmt_notposix.h GMT
 
-MAN1		= GMT.1 $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
+MAN1		= GMT.1 gmt_shell_functions.1 $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 MAN3		= pslib.3
 
 #-------------------------------------------------------------------------------
