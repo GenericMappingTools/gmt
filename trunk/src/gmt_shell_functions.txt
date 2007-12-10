@@ -22,6 +22,10 @@ gmt_shell_functions.sh \- Practical functions to be used in GMT bourne shell scr
 .br
 \fBgmt_get_gridregion\fP \fIfile\fP [\fIoptions\fP]
 .br
+\fBgmt_get_map_width\fP \fB\-R \-J\fP
+br
+\fBgmt_get_map_height\fP \fB\-R \-J\fP
+.br
 \fBgmt_set_psfile\fP \fIfile\fP
 .SH DESCRIPTION
 \fBgmt_shell_functions.sh\fP provides a set of functions to bourne (again) shell scripts in support
@@ -68,6 +72,14 @@ Returns the region in the form w/e/s/n based on the data in table \fIfile(s)\fP.
 .B gmt_get_gridregion
 Returns the region in the form w/e/s/n based on the header of a grid \fIfile\fP. Optionally add
 -I\fIdx\fP/\fIdy\fP to round off the answer.
+.TP
+.B gmt_map_width
+Expects the user to give the desired \fB-R \-J\fP settings and returns the map width in
+the current measurement unit.
+.TP
+.B gmt_map_height
+Expects the user to give the desired \fB-R \-J\fP settings and returns the map height in
+the current measurement unit.
 .TP
 .B gmt_set_psfile
 Create the output PS file name based on the base name of a given file (usually the script name
