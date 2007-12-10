@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmt_shell_functions.sh,v 1.3 2007-12-07 21:43:38 remko Exp $
+#	$Id: gmt_shell_functions.sh,v 1.4 2007-12-10 21:17:06 guru Exp $
 #
 # These functions can be used from any sh/bash script by specifying
 # . gmt_shell_functions.sh
@@ -58,6 +58,16 @@ gmt_get_region() {
 #	Return the w/e/s/n from the header in grd file
 gmt_get_gridregion() {
 	printf "%s/%s/%s/%s\n" `grdinfo -C $* | cut -d'	' -f2-5`
+}
+
+#	Return the current map width (expects -R and -J settings)
+gmt_map_width() {
+	mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $5}'
+}
+
+#	Return the current map height (expects -R and -J settings)
+gmt_map_height() {
+	mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $7}' | cut -f1 -d' '
 }
 
 # Make output PostScript file name based on script base name

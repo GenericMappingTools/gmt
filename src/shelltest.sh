@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: shelltest.sh,v 1.4 2007-12-08 01:19:01 guru Exp $
+#	$Id: shelltest.sh,v 1.5 2007-12-10 21:17:06 guru Exp $
 #
 # Testing gmt_shell_functions
 
@@ -41,6 +41,12 @@ grdmath -R0/50/10/90 -I10 X Y MUL = $GMT_TMPDIR/crap.grd
 
 R=`gmt_get_gridregion $GMT_TMPDIR/crap.grd`
 gmt_message "Found the grid region to be $R"
+
+w=`gmt_map_width -Rg -JG200/-30/5.5i`
+gmt_message "Map width given -Rg -JG200/-30/5.5i is $w"
+
+h=`gmt_map_height -R-20/30/-10/9 -JM10c`
+gmt_message "Map height given -R-20/30/-10/9 -JM10c is $h"
 
 PS=`gmt_set_psfile $0`
 
