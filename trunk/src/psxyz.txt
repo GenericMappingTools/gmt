@@ -8,7 +8,7 @@
 psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS
 \fBpsxyz\fB \fIfiles\fP GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
-[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ]
+[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP[\fIdz\fP] ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ]
 [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ]
 [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ]
 [ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_t_OPT ] [ GMT_c_OPT ]
@@ -42,6 +42,9 @@ t-value in the fourth column. Additional fields are shifted over by one column
 If OPT(S) is not set, then \fBpsxyz\fP expects the user to supply a multisegment line or polygon file
 (requires OPT(M)) where each segment header contains a OPT(Z)\fIval\fP string.  The \fIval\fP
 will control the color of the line or polygon (if OPT(L) is set) via the cpt file.
+.TP
+.B \-D
+Offset the plot symbol or line locations by the given amounts \fIdx/dy\fP[\fIdz\fP] [Default is no offset].
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation [180/90].\"'
