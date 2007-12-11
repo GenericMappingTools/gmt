@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.159 2007-12-09 18:07:00 remko Exp $
+	$Id: ChangeLog,v 1.160 2007-12-11 21:56:20 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-11	pwessel
+	* psxy.c:		Now, -D applies to all symbols, lines, and polygons
+	* psxyz.c:		New option -D with similar purpose as for psxy
 
 2007-12-09	remko
 	* gmt_shell_functions.txt:	Added to manpages
