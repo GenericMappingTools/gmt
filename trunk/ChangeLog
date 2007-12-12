@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.161 2007-12-12 19:32:45 guru Exp $
+	$Id: ChangeLog,v 1.162 2007-12-12 19:39:48 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2007-12-12	pwessel
@@ -37,7 +37,7 @@
 	* gmt.h:		Now includes gmt_dimensions.h. GMT_HASH_SIZE removed.
 	* gmt_colors.h, gmt_grdio.h, gmt_globals.h:	Now get GMT_N_* from gmt_dimensions.h
 	* gmt_init.c:		Introduced GMT_putdefaults to write GMT parameters. GMT_savedefaults
-				improved (\t in output strings instead of <tab>, and finailly writes
+				improved (\t in output strings instead of <tab>, and finally writes
 				ANNOT_FONT_SIZE_PRIMARY instead of ANNOT_FONT_SIZE). Inits hashes
 				now with appropriate size.
 	* gmtdefaults.c, gmtset.c:	Use gmt_putdefaults instead of gmt_savedefaults.
