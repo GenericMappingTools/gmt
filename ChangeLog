@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.160 2007-12-11 21:56:20 guru Exp $
+	$Id: ChangeLog,v 1.161 2007-12-12 19:32:45 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-12	pwessel
+	* pshistogram.c:	THe -R option was processed separately and did not understand time coordinates
 
 2007-12-11	pwessel
 	* psxy.c:		Now, -D applies to all symbols, lines, and polygons
