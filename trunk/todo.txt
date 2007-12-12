@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.26 2007-10-04 23:13:49 guru Exp $
+#	$Id: todo.txt,v 1.27 2007-12-12 19:32:45 guru Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -26,9 +26,6 @@ GIS supplement:	In src/gis, finalize grd2geotiff.c donated from K. Feigl.  Needs
 		on configure and finding libs.  This supplement should also have Lloyd's
 		shapefile converter.
 		
-*.c:		Use Chunk = GMT_CHUNK; n_alloc += Chunk, Chunk *= 2; to rachet up
-		allocation for large data sets.
-
 grd|gmtmath.c	1) Add macro support; macros defined in .gmtmath or passed via -D
 		2) Add variable support:  _var will assign stack content to variable
 		var which can be used later in the expression.
