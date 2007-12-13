@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.162 2007-12-12 19:39:48 guru Exp $
+	$Id: ChangeLog,v 1.163 2007-12-13 19:28:28 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-13	remko
+	* pslegend.c:		Use unique names pslegend_$$.bat and pslegend_$$.txt (was GMT$$.bat and
+				pslegend_tmp.txt). Write them in GMT_TMPDIR if defined.
 
 2007-12-12	pwessel
 	* pshistogram.c:	THe -R option was processed separately and did not understand time coordinates
