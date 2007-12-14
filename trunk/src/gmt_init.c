@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.314 2007-12-07 06:30:20 guru Exp $
+ *	$Id: gmt_init.c,v 1.315 2007-12-14 17:01:24 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -373,7 +373,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jy<lon0>/<lats>/<scale> OR -JY<lon0>/<lats>/<width> (Cylindrical Equal-area)\n");
 			fprintf (stderr, "\t     Give central meridian, standard parallel and scale as 1:xxxx or %s/degree\n", GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "\t     <slat> = 45 (Peters), 37.4 (Trystan Edwards), 30 (Behrmann), 0 (Lambert)\n");
+			fprintf (stderr, "\t     <slat> = 50 (Balthasart), 45 (Gall-Peters), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards),\n\t              37.0666 (Caster), 30 (Behrmann), 0 (Lambert)\n");
 
 			fprintf (stderr, "\t   -Jp[a]<scale>[/<base>][r|z] OR -JP[a]<width>[/<base>][r|z] (Polar (theta,radius))\n");
 			fprintf (stderr, "\t     Linear scaling for polar coordinates.\n");
