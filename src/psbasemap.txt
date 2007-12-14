@@ -149,13 +149,13 @@ basemap for Indo-China can be plotted as
 .br
 .sp
 \fBpsbasemap\fP \fB\-R\fP95/5/108/20\fBr \-Ju\fP46/1:10000000 \fB\-B\fP3\fBg\fP3:.UTM: > utm.ps
-.SS Basic Cylindrical [equal-area]
+.SS General Cylindrical [equal-area]
 First select which of the cylindrical equal-area projections you want by deciding on the standard parallel.
-Here we will use 45 degrees which gives the Peters projection.  A LEN_Y inch wide global basemap centered on the Pacific
+Here we will use 45 degrees which gives the Gall-Peters projection.  A LEN_Y inch wide global basemap centered on the Pacific
 is made by
 .br
 .sp
-\fBpsbasemap\fP \fB\-Rg\fP SCALE_Y \fB\-B\fP30\fBg\fP30:.Peters: > peters.ps
+\fBpsbasemap\fP \fB\-Rg\fP SCALE_Y \fB\-B\fP30\fBg\fP30:.Gall-Peters: > gall-peters.ps
 .SH CONIC MAP PROJECTIONS
 .SS Albers [equal-area]
 A basemap for middle Europe may be created by

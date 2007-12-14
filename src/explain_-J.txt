@@ -73,14 +73,20 @@ Give the UTM zone (A,B,1-60[C-X],Y,Z)) and \fIscale\fP (1:xxxx or UNIT/degree).
 .br
 Zones: If C-X not given, prepend - or + to enforce southern or northern hemisphere conventions [northern if south > 0].
 .TP
-\fB\-Jy\fP\fIlon0/lats/scale\fP or \fB\-JY\fP\fIlon0/lats/width\fP (Basic Cylindrical Projections \fB[E]\fP).
+\fB\-Jy\fP\fIlon0/lats/scale\fP or \fB\-JY\fP\fIlon0/lats/width\fP (General Cylindrical Projections \fB[E]\fP).
 Give the central meridian \fIlon0\fP, standard parallel \fIlats\fP, and \fIscale\fP (1:xxxx or UNIT/degree).
 The standard parallel is typically one of these (but can be any value):
 .RS
 .RS
-45 - The Peters projection
+50 - The Balthasart projection
+.br
+45 - The Gall-Peters projection
+.br
+37.0666 - The Caster projection
 .br
 37.4 - The Trystan Edwards projection
+.br
+37.5 - The Hobo-Dyer projection
 .br
 30 - The Behrman projection
 .br
