@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.163 2007-12-13 19:28:28 remko Exp $
+	$Id: ChangeLog,v 1.164 2007-12-17 00:32:46 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-16	pwessel
+	* gmt_plot.c:		3-D basemap axis did not use LABEL_OFFSET
 
 2007-12-13	remko
 	* pslegend.c:		Use unique names pslegend_$$.bat and pslegend_$$.txt (was GMT$$.bat and
