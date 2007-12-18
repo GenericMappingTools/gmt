@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.164 2007-12-17 00:32:46 guru Exp $
+	$Id: ChangeLog,v 1.165 2007-12-18 04:12:39 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-18	remko
+	* gmt_proj.[ch]:	Added Braun projection functions
+	* gmt_project.h:	Consolidated all cyclindrical projection parameters into one set of four.
+	* gmtalldeps.macros, makefile:		Properly identify all unusual dependencies of sources.
+	* gmt_map.c:		Added initialization of Braun projections
 
 2007-12-16	pwessel
 	* gmt_plot.c:		3-D basemap axis did not use LABEL_OFFSET
@@ -10,7 +16,7 @@
 				pslegend_tmp.txt). Write them in GMT_TMPDIR if defined.
 
 2007-12-12	pwessel
-	* pshistogram.c:	THe -R option was processed separately and did not understand time coordinates
+	* pshistogram.c:	The -R option was processed separately and did not understand time coordinates.
 
 2007-12-11	pwessel
 	* psxy.c:		Now, -D applies to all symbols, lines, and polygons
