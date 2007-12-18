@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.168 2007-12-18 03:36:59 remko Exp $
+ *	$Id: gmt_map.c,v 1.169 2007-12-18 23:52:37 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1166,6 +1166,8 @@ int GMT_map_init_merc (void) {
 	GMT_vmerc (0.5 * (project_info.w + project_info.e));
 	project_info.m_m *= D;
 	project_info.m_im /= D;
+	project_info.m_mx *= D;
+	project_info.m_imx /= D;
 	GMT_forward = (PFI) GMT_merc_sph;
 	GMT_inverse = (PFI) GMT_imerc_sph;
 	(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
