@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.56 2007-11-02 18:21:53 remko Exp $
+ *	$Id: gmt_project.h,v 1.57 2007-12-18 03:30:38 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -126,7 +126,6 @@ struct GMT_MAP_PROJECTIONS {
 	double z_level;			/* Level at which to draw basemap [0] */
 	double unit;			/* Gives meters pr plot unit (0.01 or 0.0254) */
 	double central_meridian;	/* Central meridian for projection */
-	double central_meridian_rad;	/* Same, in radians */
 	double pole;			/* +90 pr -90, depending on which pole */
 	double EQ_RAD, i_EQ_RAD;	/* Current ellipsoid parameters */
 	double ECC, ECC2, ECC4, ECC6;	/* Powers of eccentricity */
@@ -192,12 +191,9 @@ struct GMT_MAP_PROJECTIONS {
 	double r;		/* Radius of projected sphere in plot units (inch or cm) */
 	BOOLEAN polar;		/* True if projection pole coincides with S or N pole */
 
-	/* Mollweide Equal-Area Projection */
+	/* Mollweide, Hammer-Aitoff and Winkel Projection */
 
-	double w_x;
-	double w_y;
-	double w_iy;
-	double w_r;	/* Also used by Hammer-Aitoff and Winkel Projections */
+	double w_x, w_y, w_iy, w_r;
 
 	/* Winkel Tripel Projection */
 
@@ -223,18 +219,9 @@ struct GMT_MAP_PROJECTIONS {
 	double c_M0, c_c1, c_c2, c_c3, c_c4;
 	double c_i1, c_i2, c_i3, c_i4, c_i5, c_p;
 
-	/* Miller Projection */
+	/* All Cylindrical Projections (except Mercator) */
 
-	double j_x, j_ix, j_y, j_iy;
-
-	/* Cylindrical equidistant Projection */
-
-	double q_r, q_ir;
-
-	/* Cylindrical equal-area Projection(s) */
-
-	double y_rx, y_ry;
-	double y_i_rx, y_i_ry;
+	double j_x, j_y, j_ix, j_iy;
 
 	/* Albers Equal-area conic parameters. */
 
@@ -254,22 +241,16 @@ struct GMT_MAP_PROJECTIONS {
         /* General Perspective parameters */
         double g_H, g_R;
         double g_P, g_P_inverse;
-
         double g_lon0;
         double g_sphi1, g_cphi1;
-
         double g_phig, g_sphig, g_cphig;
         double g_sdphi, g_cdphi;
-
         double g_B, g_D, g_L, g_G, g_J;
         double g_BLH, g_DG, g_BJ, g_DHJ, g_LH2, g_HJ;
-
         double g_sin_tilt, g_cos_tilt;
         double g_azimuth, g_sin_azimuth, g_cos_azimuth;
         double g_sin_twist, g_cos_twist;
-
         double g_width;
-
         double g_yoffset;
         double g_rmax;
         double g_max_yt;
