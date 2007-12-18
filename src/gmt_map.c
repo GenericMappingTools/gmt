@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.167 2007-11-13 18:43:19 wsmith Exp $
+ *	$Id: gmt_map.c,v 1.168 2007-12-18 03:36:59 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1166,10 +1166,8 @@ int GMT_map_init_merc (void) {
 	GMT_vmerc (0.5 * (project_info.w + project_info.e));
 	project_info.m_m *= D;
 	project_info.m_im /= D;
-	project_info.m_mx = project_info.m_m * D2R;
-	project_info.m_imx = project_info.m_im * R2D;
-	GMT_forward = (PFI)GMT_merc_sph;
-	GMT_inverse = (PFI)GMT_imerc_sph;
+	GMT_forward = (PFI) GMT_merc_sph;
+	GMT_inverse = (PFI) GMT_imerc_sph;
 	(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
 	(*GMT_forward) (project_info.e, project_info.n, &xmax, &ymax);
 	if (project_info.units_pr_degree) project_info.pars[0] /= (D * project_info.M_PR_DEG);
@@ -1223,7 +1221,8 @@ int GMT_map_init_cyleq (void) {
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
 	GMT_n_lat_nodes = 2;
 	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	GMT_forward = (PFI)GMT_cyleq;		GMT_inverse = (PFI)GMT_icyleq;
+	GMT_forward = (PFI) GMT_cyleq;
+	GMT_inverse = (PFI) GMT_icyleq;
 	GMT_outside = (PFI) GMT_wesn_outside;
 	GMT_crossing = (PFI) GMT_wesn_crossing;
 	GMT_overlap = (PFI) GMT_wesn_overlap;
@@ -1255,7 +1254,8 @@ int GMT_map_init_cyleqdist (void) {
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_n_lat_nodes = 2;
 	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	GMT_forward = (PFI)GMT_cyleqdist;		GMT_inverse = (PFI)GMT_icyleqdist;
+	GMT_forward = (PFI) GMT_cyleqdist;
+	GMT_inverse = (PFI) GMT_icyleqdist;
 	GMT_outside = (PFI) GMT_wesn_outside;
 	GMT_crossing = (PFI) GMT_wesn_crossing;
 	GMT_overlap = (PFI) GMT_wesn_overlap;
@@ -1287,7 +1287,8 @@ int GMT_map_init_miller (void) {
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_n_lat_nodes = 2;
 	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	GMT_forward = (PFI)GMT_miller;		GMT_inverse = (PFI)GMT_imiller;
+	GMT_forward = (PFI) GMT_miller;
+	GMT_inverse = (PFI) GMT_imiller;
 	GMT_outside = (PFI) GMT_wesn_outside;
 	GMT_crossing = (PFI) GMT_wesn_crossing;
 	GMT_overlap = (PFI) GMT_wesn_overlap;
@@ -1300,6 +1301,40 @@ int GMT_map_init_miller (void) {
 
 	return (FALSE);	/* No need to search for wesn */
 }
+
+/*
+ *	TRANSFORMATION ROUTINES FOR BRAUN CYLINDRICAL STEREOGRAPHIC PROJECTIONS (GMT_BRAUN)
+ */
+
+int GMT_map_init_braun (void) {
+	double xmin, xmax, ymin, ymax;
+
+	GMT_set_spherical ();	/* Force spherical for now */
+
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
+	GMT_vbraun (project_info.pars[0], project_info.pars[1]);
+	GMT_braun (project_info.w, project_info.s, &xmin, &ymin);
+	GMT_braun (project_info.e, project_info.n, &xmax, &ymax);
+	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
+	project_info.x_scale = project_info.y_scale = project_info.pars[2];
+	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
+	GMT_n_lat_nodes = 2;
+	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
+	GMT_forward = (PFI) GMT_braun;
+	GMT_inverse = (PFI) GMT_ibraun;
+	GMT_outside = (PFI) GMT_wesn_outside;
+	GMT_crossing = (PFI) GMT_wesn_crossing;
+	GMT_overlap = (PFI) GMT_wesn_overlap;
+	GMT_map_clip = (PFI) GMT_wesn_clip;
+	GMT_left_edge = (PFD) GMT_left_rect;
+	GMT_right_edge = (PFD) GMT_right_rect;
+	frame_info.horizontal = TRUE;
+	frame_info.check_side = TRUE;
+	GMT_meridian_straight = GMT_parallel_straight = TRUE;
+
+	return (FALSE);	/* No need to search for wesn */
+}
+
 
 /*
  *	TRANSFORMATION ROUTINES FOR THE POLAR STEREOGRAPHIC PROJECTION
@@ -1352,8 +1387,8 @@ int GMT_map_init_stereo (void) {
 	project_info.iDy = 1.0 / project_info.Dy;
 
 	if (project_info.polar) {	/* Polar aspect */
-		GMT_forward = (PFI)GMT_plrs_sph;
-		GMT_inverse = (PFI)GMT_iplrs_sph;
+		GMT_forward = (PFI) GMT_plrs_sph;
+		GMT_inverse = (PFI) GMT_iplrs_sph;
 		if (project_info.units_pr_degree) {
 			(*GMT_forward) (project_info.pars[0], project_info.pars[4], &dummy, &radius);
 			project_info.x_scale = project_info.y_scale = fabs (project_info.pars[3] / radius);
@@ -1363,8 +1398,8 @@ int GMT_map_init_stereo (void) {
 		GMT_meridian_straight = TRUE;
 	}
 	else {
-		GMT_forward = (GMT_IS_ZERO (project_info.pole)) ? (PFI)GMT_stereo2_sph : (PFI)GMT_stereo1_sph;
-		GMT_inverse = (PFI)GMT_istereo_sph;
+		GMT_forward = (GMT_IS_ZERO (project_info.pole)) ? (PFI) GMT_stereo2_sph : (PFI) GMT_stereo1_sph;
+		GMT_inverse = (PFI) GMT_istereo_sph;
 		if (project_info.units_pr_degree) {
 			GMT_vstereo (0.0, 90.0, project_info.pars[2]);
 			(*GMT_forward) (0.0, fabs(project_info.pars[4]), &dummy, &radius);
@@ -1457,12 +1492,12 @@ int GMT_map_init_lambert (void) {
 	if (project_info.units_pr_degree) project_info.pars[4] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[4];
 	if (GMT_IS_SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
-		GMT_forward = (PFI)GMT_lamb_sph;
-		GMT_inverse = (PFI)GMT_ilamb_sph;
+		GMT_forward = (PFI) GMT_lamb_sph;
+		GMT_inverse = (PFI) GMT_ilamb_sph;
 	}
 	else {
-		GMT_forward = (PFI)GMT_lamb;
-		GMT_inverse = (PFI)GMT_ilamb;
+		GMT_forward = (PFI) GMT_lamb;
+		GMT_inverse = (PFI) GMT_ilamb;
 	}
 
 	if (!project_info.region) {	/* Rectangular box given*/
@@ -1496,7 +1531,6 @@ int GMT_map_init_lambert (void) {
 
 	return (search);
 }
-
 
 /*
  *	TRANSFORMATION ROUTINES FOR THE OBLIQUE MERCATOR PROJECTION
@@ -1551,8 +1585,6 @@ int GMT_map_init_oblique (void) {
 	GMT_normalize3v (project_info.o_IC);
 
 	GMT_vmerc (0.0);
-	project_info.m_mx = project_info.m_m * D2R;
-	project_info.m_imx = project_info.m_im * R2D;
 
 	if (project_info.region) {	/* Gave oblique degrees */
 		/* Convert oblique wesn in degrees to meters using regular Mercator */
@@ -1575,7 +1607,8 @@ int GMT_map_init_oblique (void) {
 	GMT_imerc_sph (&e, &n, xmax, ymax);
 	project_info.x_scale = project_info.y_scale = project_info.pars[4];
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[4]);
-	GMT_forward = (PFI)GMT_oblmrc;		GMT_inverse = (PFI)GMT_ioblmrc;
+	GMT_forward = (PFI) GMT_oblmrc;
+	GMT_inverse = (PFI) GMT_ioblmrc;
 	GMT_outside = (PFI) GMT_rect_outside;
 	GMT_crossing = (PFI) GMT_rect_crossing;
 	GMT_overlap = (PFI) GMT_rect_overlap;
@@ -1708,12 +1741,12 @@ int GMT_map_init_tm (void) {
 	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[2];
 	if (GMT_IS_SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
-		GMT_forward = (PFI)GMT_tm_sph;
-		GMT_inverse = (PFI)GMT_itm_sph;
+		GMT_forward = (PFI) GMT_tm_sph;
+		GMT_inverse = (PFI) GMT_itm_sph;
 	}
 	else {
-		GMT_forward = (PFI)GMT_tm;
-		GMT_inverse = (PFI)GMT_itm;
+		GMT_forward = (PFI) GMT_tm;
+		GMT_inverse = (PFI) GMT_itm;
 	}
 
 	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
@@ -1805,12 +1838,12 @@ int GMT_map_init_utm (void) {
 			break;
 	}
 	if (GMT_IS_SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
-		GMT_forward = (PFI)GMT_utm_sph;
-		GMT_inverse = (PFI)GMT_iutm_sph;
+		GMT_forward = (PFI) GMT_utm_sph;
+		GMT_inverse = (PFI) GMT_iutm_sph;
 	}
 	else {
-		GMT_forward = (PFI)GMT_utm;
-		GMT_inverse = (PFI)GMT_iutm;
+		GMT_forward = (PFI) GMT_utm;
+		GMT_inverse = (PFI) GMT_iutm;
 	}
 
 	if (fabs (project_info.w - project_info.e) > 360.0) {	/* -R in UTM meters */
@@ -1869,9 +1902,9 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 			error = TRUE;
 		return (error);
 	}
-	
+
 	/* OK, here zone_y has a value */
-	
+
 	if (zone_y <= 'B') {
 		*s = -90.0;	*n = -84.0;
 		*w = 180.0 * (zone_y - 'A' - 1);
@@ -1941,7 +1974,8 @@ int GMT_map_init_lambeq (void) {
 	project_info.iDx = 1.0 / project_info.Dx;
 	project_info.iDy = 1.0 / project_info.Dy;
 
-	GMT_forward = (PFI)GMT_lambeq;		GMT_inverse = (PFI)GMT_ilambeq;
+	GMT_forward = (PFI) GMT_lambeq;
+	GMT_inverse = (PFI) GMT_ilambeq;
 	if (project_info.units_pr_degree) {
 		GMT_vlambeq (0.0, 90.0, project_info.pars[2]);
 		GMT_lambeq (0.0, fabs(project_info.pars[4]), &dummy, &radius);
@@ -2039,7 +2073,8 @@ int GMT_map_init_ortho (void) {
 		project_info.x_scale = project_info.y_scale = project_info.pars[3];
 
 	GMT_vortho (project_info.pars[0], project_info.pars[1], project_info.pars[2]);
-	GMT_forward = (PFI)GMT_ortho;		GMT_inverse = (PFI)GMT_iortho;
+	GMT_forward = (PFI) GMT_ortho;
+	GMT_inverse = (PFI) GMT_iortho;
 
 	if (!project_info.region) {	/* Rectangular box given */
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
@@ -2253,7 +2288,8 @@ int GMT_map_init_gnomonic (void) {
 		project_info.x_scale = project_info.y_scale = project_info.pars[3];
 
 	GMT_vgnomonic (project_info.pars[0], project_info.pars[1], project_info.pars[2]);
-	GMT_forward = (PFI)GMT_gnomonic;		GMT_inverse = (PFI)GMT_ignomonic;
+	GMT_forward = (PFI) GMT_gnomonic;
+	GMT_inverse = (PFI) GMT_ignomonic;
 
 	if (!project_info.region) {	/* Rectangular box given */
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
@@ -2337,7 +2373,8 @@ int GMT_map_init_azeqdist (void) {
 		project_info.x_scale = project_info.y_scale = project_info.pars[3];
 
 	GMT_vazeqdist (project_info.pars[0], project_info.pars[1], project_info.pars[2]);
-	GMT_forward = (PFI)GMT_azeqdist;		GMT_inverse = (PFI)GMT_iazeqdist;
+	GMT_forward = (PFI) GMT_azeqdist;
+	GMT_inverse = (PFI) GMT_iazeqdist;
 
 	if (!project_info.region) {	/* Rectangular box given */
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
@@ -2443,7 +2480,8 @@ int GMT_map_init_mollweide (void) {
 		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
-	GMT_forward = (PFI)GMT_mollweide;		GMT_inverse = (PFI)GMT_imollweide;
+	GMT_forward = (PFI) GMT_mollweide;
+	GMT_inverse = (PFI) GMT_imollweide;
 	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 
@@ -2500,7 +2538,8 @@ int GMT_map_init_hammer (void) {
 		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
-	GMT_forward = (PFI)GMT_hammer;		GMT_inverse = (PFI)GMT_ihammer;
+	GMT_forward = (PFI) GMT_hammer;
+	GMT_inverse = (PFI) GMT_ihammer;
 	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	return (search);
 }
@@ -2554,7 +2593,8 @@ int GMT_map_init_grinten (void) {
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	project_info.r = 0.5 * project_info.xmax;
-	GMT_forward = (PFI)GMT_grinten;		GMT_inverse = (PFI)GMT_igrinten;
+	GMT_forward = (PFI) GMT_grinten;
+	GMT_inverse = (PFI) GMT_igrinten;
 	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	return (search);
 }
@@ -2604,7 +2644,8 @@ int GMT_map_init_winkel (void) {
 		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
-	GMT_forward = (PFI)GMT_winkel;		GMT_inverse = (PFI)GMT_iwinkel;
+	GMT_forward = (PFI) GMT_winkel;
+	GMT_inverse = (PFI) GMT_iwinkel;
 	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	return (search);
 }
@@ -2654,7 +2695,8 @@ int GMT_map_init_eckert4 (void) {
 		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
-	GMT_forward = (PFI)GMT_eckert4;		GMT_inverse = (PFI)GMT_ieckert4;
+	GMT_forward = (PFI) GMT_eckert4;
+	GMT_inverse = (PFI) GMT_ieckert4;
 	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 
@@ -2706,7 +2748,8 @@ int GMT_map_init_eckert6 (void) {
 		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
-	GMT_forward = (PFI)GMT_eckert6;		GMT_inverse = (PFI)GMT_ieckert6;
+	GMT_forward = (PFI) GMT_eckert6;
+	GMT_inverse = (PFI) GMT_ieckert6;
 	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 
@@ -2757,7 +2800,8 @@ int GMT_map_init_robinson (void) {
 		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
-	GMT_forward = (PFI)GMT_robinson;		GMT_inverse = (PFI)GMT_irobinson;
+	GMT_forward = (PFI) GMT_robinson;
+	GMT_inverse = (PFI) GMT_irobinson;
 	gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 
@@ -2782,7 +2826,8 @@ int GMT_map_init_sinusoidal (void) {
 	GMT_vsinusoidal (project_info.pars[0]);
 	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[1];
-	GMT_forward = (PFI)GMT_sinusoidal;		GMT_inverse = (PFI)GMT_isinusoidal;
+	GMT_forward = (PFI) GMT_sinusoidal;
+	GMT_inverse = (PFI) GMT_isinusoidal;
 	gmtdefs.basemap_type = GMT_IS_PLAIN;
 
 	if (project_info.region) {
@@ -2832,12 +2877,12 @@ int GMT_map_init_cassini (void) {
 	if (too_big) GMT_set_spherical();	/* Cannot use ellipsoidal series for this area */
 	GMT_vcassini (project_info.pars[0], project_info.pars[1]);
 	if (GMT_IS_SPHERICAL) {
-		GMT_forward = (PFI)GMT_cassini_sph;
-		GMT_inverse = (PFI)GMT_icassini_sph;
+		GMT_forward = (PFI) GMT_cassini_sph;
+		GMT_inverse = (PFI) GMT_icassini_sph;
 	}
 	else {
-		GMT_forward = (PFI)GMT_cassini;
-		GMT_inverse = (PFI)GMT_icassini;
+		GMT_forward = (PFI) GMT_cassini;
+		GMT_inverse = (PFI) GMT_icassini;
 	}
 	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[2];
@@ -2884,13 +2929,13 @@ int GMT_map_init_albers (void) {
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 	if (GMT_IS_SPHERICAL || project_info.GMT_convert_latitudes) {	/* Spherical code w/wo authalic latitudes */
 		GMT_valbers_sph (project_info.pars[0], project_info.pars[1], project_info.pars[2], project_info.pars[3]);
-		GMT_forward = (PFI)GMT_albers_sph;
-		GMT_inverse = (PFI)GMT_ialbers_sph;
+		GMT_forward = (PFI) GMT_albers_sph;
+		GMT_inverse = (PFI) GMT_ialbers_sph;
 	}
 	else {
 		GMT_valbers (project_info.pars[0], project_info.pars[1], project_info.pars[2], project_info.pars[3]);
-		GMT_forward = (PFI)GMT_albers;
-		GMT_inverse = (PFI)GMT_ialbers;
+		GMT_forward = (PFI) GMT_albers;
+		GMT_inverse = (PFI) GMT_ialbers;
 	}
 	if (project_info.units_pr_degree) project_info.pars[4] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[4];
@@ -2945,8 +2990,8 @@ int GMT_map_init_econic (void) {
 	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
 	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 	GMT_veconic (project_info.pars[0], project_info.pars[1], project_info.pars[2], project_info.pars[3]);
-	GMT_forward = (PFI)GMT_econic;
-	GMT_inverse = (PFI)GMT_ieconic;
+	GMT_forward = (PFI) GMT_econic;
+	GMT_inverse = (PFI) GMT_ieconic;
 	if (project_info.units_pr_degree) project_info.pars[4] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[4];
 
@@ -4694,11 +4739,7 @@ int GMT_rhumbline (double lon1, double lat1, double lon2, double lat2, double **
 	int i, n;
 	double x1, x2, y1, y2, dx, dy, L, dL, f, *xx, *yy;
 
-	project_info.m_m = project_info.EQ_RAD;	/* Since we cannot assume the user is using -Jm */
-	project_info.m_im = 1.0 / project_info.m_m;
-	project_info.m_mx = project_info.m_m * D2R;
-	project_info.m_imx = project_info.m_im * R2D;
-
+	GMT_vmerc (0.0);
 	GMT_merc_sph (lon1, lat1, &x1, &y1);	/* Mercator coordinates of end points in projected meters */
 	GMT_merc_sph (lon2, lat2, &x2, &y2);
 	dx = x2 - x1;
