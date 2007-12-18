@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.25 2007-12-09 18:07:00 remko Exp $
+#	$Id: Makefile,v 1.26 2007-12-18 03:33:54 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -155,16 +155,22 @@ pslib.o:	$(PS_H) $(PS_I) gmt_notunix.h gmt_notposix.h gmt_math.h
 
 # Additional unusual dependancies
 
-blockmean.o blockmedian.o blockmode.o:	block_subs.c
-gmt_customio.o: gmt_mgg_header2.c gmt_agc_io.c
+blockmean.o blockmedian.o blockmode.o:	block_subs.c block_subs.h
+gmt_customio.o: gmt_mgg_header2.c gmt_mgg_header2.h gmt_agc_io.c
+gmt_grdio.o:	gmt_grdformats.h
+gmt_init.o:	gmt_globals.h gmt_keycases.h gmt_unique.h gmt_keywords.h \
+		gmt_media_name.h gmt_media_size.h gmt_colornames.h
+gmt_proj.o:	gmt_proj.h
+gmt_support.o:	gmt_color_rgb.h gmt_pennames.h triangle.h
 gmtmath.o:	gmtmath.h gmtmath_def.h gmtmath_explain.h
 grdmath.o:	grdmath.h grdmath_def.h grdmath_explain.h
+grd2xyz.o xyz2grd.o:	gmt_parse_z_io.h
 
 # Jonathan Shewchuk's triangulation model (www.cs.cmu.edu/~quake)
 # Only used if TRIANGLE_D and TRIANGLE_O are set in makegmt.macros
 # Please read README.TRIANGLE in this source directory.
 
-triangle.o:	triangle.c
+triangle.o:	triangle.c triangle.h
 		$(CC) -c $(CFLAGS) -DNO_TIMER -DTRILIBRARY -DREDUCED -DCDT_ONLY $<
 
 # Assembly wrapper for sincos on Dec Alphas
