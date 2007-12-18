@@ -1,43 +1,8 @@
-/*	$Id: gmt_mgg_header2.c,v 1.22 2007-03-29 02:51:54 pwessel Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.23 2007-12-18 03:39:53 remko Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
- *	This is the README file:
- ------------------------------------------------------------------------
- Adding MGG file format to GMT
------------------------------
-1) Modify gmt_grdio.h
-   - Increment GMT_N_GRD_FORMATS.
-     This number is one based, the formats are zero based so this
-     value will be one greater than the grid number you are creating.
-     
-2) Modify gmt_customio.c
-   - Make sure both gmt_mgg_header2.h and gmt_mgg_header2.c are in the same
-     directory as gmt_customio.c
-
-   - Scroll down to the comment
-     FORMAT # N:
-
-   - Add the following lines:
-    id = N;
-    GMT_io_readinfo[id]  = (PFI) mgg2_read_grd_info;
-    GMT_io_writeinfo[id] = (PFI) mgg2_write_grd_info;
-    GMT_io_readgrd[id]   = (PFI) mgg2_read_grd;
-    GMT_io_writegrd[id]  = (PFI) mgg2_write_grd;
-
-   - Jump down to the end of the file and add this line:
-    #include "gmt_mgg_header2.c"
-
-2) Modify gmt_customio.h
-   - At the end of this file add:
-    #include "gmt_mgg_header2."
-
-Build GMT with new format by typing:
-> make all
-
-Test format by checking a grid:
-> grdinfo gnaXXXXX.g03=N
---------------------------------------------------------------------*/
+ *--------------------------------------------------------------------*/
 
 /* Comments added by P. Wessel:
  *
