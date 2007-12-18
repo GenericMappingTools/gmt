@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.28 2007-11-29 03:35:37 guru Exp $
+ *	$Id: gmt_proj.c,v 1.29 2007-12-18 03:38:22 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -198,7 +198,7 @@ void GMT_ipolar (double *x, double *y, double x_i, double y_i)
 
 /* -JM MERCATOR PROJECTION */
 
-void GMT_vmerc (double cmerid)
+void GMT_vmerc (double lon0)
 {
 	/* Set up a Mercator transformation */
 
@@ -206,7 +206,7 @@ void GMT_vmerc (double cmerid)
 
 		/* Get here when we use -JMwidth or -Jmscale OR GMT_vmerc is called as part of -JO */
 
-		project_info.central_meridian = cmerid;
+		project_info.central_meridian = lon0;
 		project_info.m_m = project_info.EQ_RAD;
 		project_info.pars[1] = project_info.pars[2] = 0.0;
 	}
@@ -218,8 +218,9 @@ void GMT_vmerc (double cmerid)
 		project_info.m_m = cosd (project_info.pars[1]) / d_sqrt (1.0 - project_info.ECC2 * sind (project_info.pars[1]) * sind (project_info.pars[1])) * project_info.EQ_RAD;	/* Put project_info.EQ_RAD here instead of in merc */
 		project_info.pars[0] = project_info.pars[2];	/* Since GMT_map_init_merc expects scale/width as 0'th arg */
 	}
+	project_info.m_mx = project_info.m_m * D2R;
 	project_info.m_im = 1.0 / project_info.m_m;
-	project_info.central_meridian_rad = project_info.central_meridian * D2R;
+	project_info.m_imx = 1.0 / project_info.m_mx;
 }
 
 /* Mercator projection for the sphere */
@@ -252,10 +253,10 @@ void GMT_vcyleq (double lon0, double slat)
 
 	GMT_check_R_J (&lon0);
 	project_info.central_meridian = lon0;
-	project_info.y_rx = project_info.EQ_RAD * D2R * cosd (slat);
-	project_info.y_ry = project_info.EQ_RAD / cosd (slat);
-	project_info.y_i_rx = 1.0 / project_info.y_rx;
-	project_info.y_i_ry = 1.0 / project_info.y_ry;
+	project_info.j_x = project_info.EQ_RAD * D2R * cosd (slat);
+	project_info.j_y = project_info.EQ_RAD / cosd (slat);
+	project_info.j_ix = 1.0 / project_info.j_x;
+	project_info.j_iy = 1.0 / project_info.j_y;
 }
 
 void GMT_cyleq (double lon, double lat, double *x, double *y)
@@ -265,8 +266,8 @@ void GMT_cyleq (double lon, double lat, double *x, double *y)
 	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_lata (lat);
 
-	*x = lon * project_info.y_rx;
-	*y = project_info.y_ry * sind (lat);
+	*x = lon * project_info.j_x;
+	*y = project_info.j_y * sind (lat);
 	if (project_info.GMT_convert_latitudes) {	/* Gotta fudge abit */
 		(*x) *= project_info.Dx;
 		(*y) *= project_info.Dy;
@@ -281,12 +282,12 @@ void GMT_icyleq (double *lon, double *lat, double x, double y)
 		x *= project_info.iDx;
 		y *= project_info.iDy;
 	}
-	*lon = x * project_info.y_i_rx + project_info.central_meridian;
-	*lat = R2D * d_asin (y * project_info.y_i_ry);
+	*lon = x * project_info.j_ix + project_info.central_meridian;
+	*lat = R2D * d_asin (y * project_info.j_iy);
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 
-/* -JQ CYLINDRICAL EQUIDISTANT PROJECTION */
+/* -JQ CYLINDRICAL EQUIDISTANT (PLATE CARREE) PROJECTION */
 
 void GMT_vcyleqdist (double lon0)
 {
@@ -294,8 +295,8 @@ void GMT_vcyleqdist (double lon0)
 
 	GMT_check_R_J (&lon0);
 	project_info.central_meridian = lon0;
-	project_info.q_r = D2R * project_info.EQ_RAD;
-	project_info.q_ir = 1.0 / project_info.q_r;
+	project_info.j_x = D2R * project_info.EQ_RAD;
+	project_info.j_ix = 1.0 / project_info.j_x;
 }
 
 void GMT_cyleqdist (double lon, double lat, double *x, double *y)
@@ -303,8 +304,8 @@ void GMT_cyleqdist (double lon, double lat, double *x, double *y)
 	/* Convert lon/lat to Cylindrical equidistant x/y */
 
 	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
-	*x = lon * project_info.q_r;
-	*y = lat * project_info.q_r;
+	*x = lon * project_info.j_x;
+	*y = lat * project_info.j_x;
 }
 
 void GMT_icyleqdist (double *lon, double *lat, double x, double y)
@@ -312,8 +313,8 @@ void GMT_icyleqdist (double *lon, double *lat, double x, double y)
 
 	/* Convert Cylindrical equal-area x/y to lon/lat */
 
-	*lon = x * project_info.q_ir + project_info.central_meridian;
-	*lat = y * project_info.q_ir;
+	*lon = x * project_info.j_ix + project_info.central_meridian;
+	*lat = y * project_info.j_ix;
 }
 
 /* -JJ MILLER CYLINDRICAL PROJECTION */
@@ -347,6 +348,39 @@ void GMT_imiller (double *lon, double *lat, double x, double y)
 	*lon = x * project_info.j_ix + project_info.central_meridian;
 	*lat = 2.5 * R2D * atan (exp (y * project_info.j_iy)) - 112.5;
 }
+
+/* -JBraun BRAUN CYLINDRICAL STEREOGRAPHIC PROJECTION */
+
+void GMT_vbraun (double lon0, double slat)
+{
+	/* Set up a Braun Cylindrical Stereographic transformation */
+
+	GMT_check_R_J (&lon0);
+	project_info.central_meridian = lon0;
+	project_info.j_x = project_info.EQ_RAD * D2R * cosd (slat);
+	project_info.j_y = project_info.EQ_RAD * (1.0 + cosd (slat));
+	project_info.j_ix = 1.0 / project_info.j_x;
+	project_info.j_iy = 1.0 / project_info.j_y;
+}
+
+void GMT_braun (double lon, double lat, double *x, double *y)
+{
+	/* Convert lon/lat to Braun Cylindrical x/y */
+
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
+	*x = lon * project_info.j_x;
+	*y = project_info.j_y * sind (0.5 * lat);
+}
+
+void GMT_ibraun (double *lon, double *lat, double x, double y)
+{
+
+	/* Convert Braun Cylindrical x/y to lon/lat */
+
+	*lon = x * project_info.j_ix + project_info.central_meridian;
+	*lat = 2.0 * R2D * asin (y * project_info.j_iy);
+}
+
 
 /* -JS POLAR STEREOGRAPHIC PROJECTION */
 
@@ -2866,7 +2900,7 @@ void GMT_albers_sph (double lon, double lat, double *x, double *y)
 	double s, c, theta, rho;
 
 	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
-	
+
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_lata (lat);
 
 	theta = project_info.a_n * lon * D2R;
