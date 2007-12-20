@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.36 2007-11-24 21:44:18 remko Exp $
+#	$Id: Makefile,v 1.37 2007-12-20 16:51:42 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -100,7 +100,7 @@ set_old:
 delete:		
 		\rm res_?/binned_*_?.bin res_?/binned_*_?.seg res_?/binned_*_?.pt
 
-gshhs:
+build-gshhs:
 		mkdir -p gshhs
 		polygon_to_gshhs res_f/v${VERSION}_final_f_dbase.b > gshhs/gshhs_f.b
 		polygon_to_gshhs res_h/v${VERSION}_final_h_dbase.b > gshhs/gshhs_h.b
