@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.169 2007-12-18 23:52:37 remko Exp $
+ *	$Id: gmt_map.c,v 1.170 2007-12-20 05:09:02 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -38,7 +38,7 @@
  *
  * Author:	Paul Wessel
  * Date:	22-MAR-2006
- * Version:	4.1.2
+ * Version:	4.2.2
  *
  *
  * PUBLIC GMT Functions include:
@@ -66,44 +66,17 @@
  *	GMT_break_through :		Checks if we cross a map boundary
  *	GMT_get_origin :		Find origin of projection based on pole and 2nd point
  *	GMT_get_rotate_pole :		Find rotation pole based on two points on great circle
- *	GMT_grinten :			Van der Grinten projection
- *	GMT_igrinten :			Inverse Van der Grinten projection
- *	GMT_hammer :			Hammer-Aitoff equal area projection
- *	GMT_ihammer :			Inverse Hammer-Aitoff equal area projection
- *	GMT_ilamb :			Inverse Lambert conformal conic projection
- *	GMT_ilambeq :			Inverse Lambert azimuthal equal area projection
  *	GMT_ilinearxy :			Inverse linear projection
- *	GMT_imerc :			Inverse Mercator projection
- *	GMT_imollweide :		Inverse Mollweide projection
  *	GMT_init_three_D :		Initializes parameters needed for 3-D plots
- *	GMT_ioblmrc :			Inverse oblique Mercator projection, spherical only
- *	GMT_iortho :			Inverse orthographic projection
- *	GMT_iplrs_sph :			Inverse Polar stereographic projection
  *	GMT_map_crossing :		Generic function finds crossings between line and map boundary
- *	GMT_itranslin :			Inverse linear x projection
- *	GMT_itranslog10 :		Inverse log10 x projection
- *	GMT_itranspowx :		Inverse pow x projection
- *	GMT_itranspowy :		Inverse pow y projection
- *	GMT_itranspowz :		Inverse pow z projection
- *	GMT_itm :			Inverse TM projection
- *	GMT_itm_sph :			Inverse TM projection (Spherical)
- *	GMT_iutm :			Inverse UTM projection
- *	GMT_iutm_sph :			Inverse UTM projection (Spherical)
- *	GMT_lamb :			Lambert conformal conic projection
- *	GMT_lambeq :			Lambert azimuthal equal area projection
  *	GMT_latpath :			Return path between 2 points of equal latitide
  *	GMT_lonpath :			Return path between 2 points of equal longitude
  *	GMT_radial_crossing :		Determine map crossing in the Lambert azimuthal equal area projection
  *	GMT_left_boundary :		Return left boundary in x-inches
  *	GMT_linearxy :			Linear xy projection
  *	GMT_lon_inside :		Accounts for wrap-around in longitudes and checks for inside
- *	GMT_merc :			Mercator projection
- *	GMT_mollweide :			Mollweide projection
  *	GMT_ellipse_crossing :		Find map crossings in the Mollweide projection
  *	GMT_move_to_rect :		Move an outside point straight in to nearest edge
- *	GMT_oblmrc :			Spherical oblique Mercator projection
- *	GMT_ortho :			Orthographic projection
- *	GMT_plrs_sph :			Polar stereographic projection
  *	GMT_polar_outside :		Determines if a point is outside polar projection region
  *	GMT_pole_rotate_forward :	Compute positions from oblique coordinates
  *	GMT_pole_rotate_inverse :	Compute oblique coordinates
@@ -116,24 +89,7 @@
  *	GMT_rect_outside2 :		Determine if point is outside rect region (azimuthal proj only)
  *	GMT_rect_overlap :		Determine overlap between rect regions
  *	GMT_right_boundary :		Return x value of right map boundary
- *	GMT_translin :			Linear x projection
- *	GMT_translog10 :		Log10 x projection
- *	GMT_transpowx :			Linear pow x projection
- *	GMT_transpowy :			Linear pow y projection
- *	GMT_transpowz :			Linear pow z projection
- *	GMT_tm :			TM projection
  *	GMT_xy_search :			Find xy map boundary
- *	GMT_valbers :			Initialize Albers conic equal area projection
- *	GMT_veconic :			Initialize Equidistant conic projection
- *	GMT_vhammer :			Initialize Hammer-Aitoff equal area projection
- *	GMT_vlamb :			Initialize Lambert conformal conic projection
- *	GMT_vlambeq :			Initialize Lambert azimuthal equal area projection
- *	GMT_vmerc :			Initialize Mercator projection
- *	GMT_vmollweide :		Initialize Mollweide projection
- *	GMT_vortho :			Initialize Orthographic projection
- *	GMT_vgrinten :			Initialize Van der Grinten projection
- *	GMT_vstereo :			Initialize Stereographic projection
- *	GMT_vtm :			Initialize TM projection
  *	GMT_wesn_clip:			Clip polygon to wesn boundaries
  *	GMT_wesn_crossing :		Find crossing between line and lon/lat rectangle
  *	GMT_wesn_outside :		Determine if a point is outside a lon/lat rectangle
@@ -187,6 +143,7 @@ int GMT_map_crossing  (double lon1, double lat1, double lon2, double lat2, doubl
 int GMT_map_init_linear (void);
 int GMT_map_init_polar (void);
 int GMT_map_init_merc (void);
+int GMT_map_init_braun (void);
 int GMT_map_init_miller (void);
 int GMT_map_init_stereo (void);
 int GMT_map_init_lambert (void);
@@ -275,22 +232,22 @@ PFI GMT_radial_clip;
  *   w,e,s,n defines the area in degrees.
  *   project == GMT_LINEAR, GMT_POLAR, GMT_MERCATOR, GMT_STEREO, GMT_LAMBERT, GMT_OBLIQUE_MERC, GMT_UTM,
  *	GMT_TM, GMT_ORTHO, GMT_AZ_EQDIST, GMT_LAMB_AZ_EQ, GMT_WINKEL, GMT_ROBINSON, GMT_CASSINI, GMT_ALBERS, GMT_ECONIC,
- *	GMT_ECKERT4, GMT_ECKERT6, GMT_CYL_EQ, GMT_CYL_EQDIST, GMT_MILLER, GMT_VANGRINTEN
+ *	GMT_ECKERT4, GMT_ECKERT6, GMT_CYL_EQ, GMT_CYL_EQDIST, GMT_BRAUN, GMT_MILLER, GMT_VANGRINTEN
  *	For GMT_LINEAR, we may have GMT_LINEAR, GMT_LOG10, or GMT_POW
  *
  * parameters[0] through parameters[np-1] mean different things to the various
  * projections, as explained below. (np also varies, of course)
  *
- * GMT_LINEAR projection:
+ * LINEAR projection:
  *	parameters[0] is inch (or cm)/x_user_unit.
  *	parameters[1] is inch (or cm)/y_user_unit. If 0, then yscale = xscale.
  *	parameters[2] is pow for x^pow (if GMT_POW is on).
  *	parameters[3] is pow for y^pow (if GMT_POW is on).
  *
- * GMT_POLAR (r,theta) projection:
+ * POLAR (r,theta) projection:
  *	parameters[0] is inch (or cm)/x_user_unit (radius)
  *
- * GMT_MERCATOR projection:
+ * MERCATOR projection:
  *	parameters[0] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
  * STEREOgraphic projection:
@@ -299,12 +256,12 @@ PFI GMT_radial_clip;
  *	parameters[2] is radius in inches (or cm) from pole to the latitude specified
  *	   by parameters[3] OR 1:xxxxx OR map-width.
  *
- * GMT_LAMBERT projection (Conic):
+ * LAMBERT projection (Conic):
  *	parameters[0] is first standard parallel
  *	parameters[1] is second standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * OBLIQUE GMT_MERCATOR projection:
+ * OBLIQUE MERCATOR projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
  *	Definition a:
@@ -319,21 +276,21 @@ PFI GMT_radial_clip;
  *		parameters[3] is latitude of pole of projection
  *		parameters[4] is scale in inch (cm)/degree along oblique equator OR 1:xxxxx OR map-width
  *
- * TRANSVERSE GMT_MERCATOR (TM) projection
+ * TRANSVERSE MERCATOR (TM) projection
  *	parameters[0] is central meridian
  *	parameters[1] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
  *
- * UNIVERSAL TRANSVERSE GMT_MERCATOR (UTM) projection
+ * UNIVERSAL TRANSVERSE MERCATOR (UTM) projection
  *	parameters[0] is UTM zone (0-60, use negative for S hemisphere)
  *	parameters[1] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
  *
- * GMT_LAMBERT GMT_IS_AZIMUTHAL EQUAL AREA projection:
+ * LAMBERT AZIMUTHAL EQUAL AREA projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
  *	parameters[2] is radius in inches (or cm) from pole to the latitude specified
  *	   by parameters[3] OR 1:xxxxx OR map-width.
  *
- * ORTHOGRAPHIC GMT_IS_AZIMUTHAL projection:
+ * ORTHOGRAPHIC AZIMUTHAL projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
  *	parameters[2] is radius in inches (or cm) from pole to the latitude specified
@@ -354,42 +311,42 @@ PFI GMT_radial_clip;
  *      parameters[8] is the height of the viewpoint in degrees
  *         if = 0, no viewpoint clipping
  *
- * GMT_IS_AZIMUTHAL EQUIDISTANCE projection:
+ * AZIMUTHAL EQUIDISTANCE projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
  *	parameters[2] is radius in inches (or cm) from pole to the latitude specified
  *	   by parameters[3] OR 1:xxxxx OR map-width.
  *
- * GMT_MOLLWEIDE EQUAL-AREA projection
+ * MOLLWEIDE EQUAL-AREA projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * GMT_HAMMER-AITOFF EQUAL-AREA projection
+ * HAMMER-AITOFF EQUAL-AREA projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * GMT_SINUSOIDAL EQUAL-AREA projection
+ * SINUSOIDAL EQUAL-AREA projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * GMT_WINKEL TRIPEL MODIFIED GMT_IS_AZIMUTHAL projection
+ * WINKEL TRIPEL MODIFIED AZIMUTHAL projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * GMT_ROBINSON PSEUDOCYLINDRICAL projection
+ * ROBINSON PSEUDOCYLINDRICAL projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * VAN DER GMT_VANGRINTEN projection
+ * VAN DER VANGRINTEN projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * GMT_CASSINI projection
+ * CASSINI projection
  *	parameters[0] is longitude of origin
  *	parameters[1] is latitude of origin
  *	parameters[2] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
  *
- * GMT_ALBERS projection (Conic):
+ * ALBERS projection (Conic):
  *	parameters[0] is first standard parallel
  *	parameters[1] is second standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
@@ -399,20 +356,25 @@ PFI GMT_radial_clip;
  *	parameters[1] is second standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * GMT_ECKERT6 IV projection:
+ * ECKERT6 IV projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * GMT_ECKERT6 IV projection:
+ * ECKERT6 IV projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * GMT_IS_CYLINDRICAL EQUAL-AREA projections (Behrmann, Gall, Peters):
+ * CYLINDRICAL EQUAL-AREA projections (Behrmann, Gall-Peters):
  *	parameters[0] is longitude of origin
  *	parameters[1] is the standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * GMT_MILLER GMT_IS_CYLINDRICAL projection:
+ * BRAUN CYLINDRICAL STEREOGRAPHIC projections (Braun, Gall, B.S.A.M.):
+ *	parameters[0] is longitude of origin
+ *	parameters[1] is the standard parallel
+ *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
+ *
+ * MILLER CYLINDRICAL projection:
  *	parameters[0] is longitude of origin
  *	parameters[1] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
@@ -572,6 +534,11 @@ int GMT_map_setup (double west, double east, double south, double north)
 		case GMT_CYL_EQ:		/* Cylindrical Equal-Area */
 
 			search = GMT_map_init_cyleq ();
+			break;
+
+		case GMT_BRAUN:			/* Braun Cyclindrical Stereographic */
+
+			search = GMT_map_init_braun ();
 			break;
 
 		case GMT_MILLER:		/* Miller Cylindrical */
@@ -739,6 +706,7 @@ int GMT_init_three_D (void) {
 		case GMT_OBLIQUE_MERC:
 		case GMT_CYL_EQ:
 		case GMT_CYL_EQDIST:
+		case GMT_BRAUN:
 		case GMT_MILLER:
 			easy = TRUE;
 			break;
@@ -3083,7 +3051,6 @@ void GMT_wesn_search (double xmin, double xmax, double ymin, double ymax, double
 		w = 0.0;
 		e = 360.0;
 	}
-	/* if (project_info.projection != GMT_AZ_EQDIST && !GMT_map_outside (project_info.central_meridian, -90.0)) { why was it like this? */
 	if (!GMT_map_outside (project_info.central_meridian, -90.0)) {
 		s = -90.0;
 		w = 0.0;
@@ -5495,7 +5462,7 @@ void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *a
 {
 	double lon1, lat1, x0, x1, y0, y1, dx, width, sinc, cosc, sinaz, cosaz, sinl, cosl;
 
-	if (project_info.projection < GMT_MERCATOR) {	/* Trivial case */
+	if (GMT_IS_LINEAR) {	/* Trivial case */
 		*angle = 90.0 - azim;
 		if (project_info.x_scale != project_info.y_scale) {
 			sincos (*angle * D2R, &sinaz, &cosaz);
@@ -5608,6 +5575,7 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case GMT_MERCATOR:
 			case GMT_CYL_EQ:
 			case GMT_CYL_EQDIST:
+			case GMT_BRAUN:
 			case GMT_MILLER:
 			case GMT_OBLIQUE_MERC:
 				np = 4;
@@ -5677,6 +5645,7 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case GMT_MERCATOR:
 			case GMT_CYL_EQ:
 			case GMT_CYL_EQDIST:
+			case GMT_BRAUN:
 			case GMT_MILLER:
 			case GMT_OBLIQUE_MERC:
 				work_x[0] = work_x[3] = project_info.xmin;	work_y[0] = work_y[1] = project_info.ymin;
@@ -6175,7 +6144,6 @@ void GMT_scale_eqrad ()
 		/* Equal Area projections */
 
 		case GMT_LAMB_AZ_EQ:
-		/* case GMT_CYL_EQ: */
 		case GMT_ALBERS:
 		case GMT_ECKERT4:
 		case GMT_ECKERT6:

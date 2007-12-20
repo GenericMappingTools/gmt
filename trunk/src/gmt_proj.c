@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.29 2007-12-18 03:38:22 remko Exp $
+ *	$Id: gmt_proj.c,v 1.30 2007-12-20 05:09:03 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -41,23 +41,24 @@
  *  Cylindrical:
  *	Mercator
  *	Cassini Cylindrical
+ *	Braun Cylindrical (e.g., Gall, B.S.A.M)
  *	Miller Cylindrical
  *	Oblique Mercator
  *	TM Transverse Mercator (Ellipsoidal and Spherical)
  *	UTM Universal Transverse Mercator
- *	Cylindrical Equal-area (e.g., Peters, Gall, Behrmann)
+ *	Cylindrical Equal-area (e.g., Gall-Peters, Behrmann)
  *	Cylindrical Equidistant (Plate Carree)
- *  Azimuthal
+ *  Conic:
+ *	Albers Equal-Area Conic
+ *	Lambert Conformal Conic
+ *	Equidistant Conic
+ *  Azimuthal:
  *	Stereographic Conformal
  *	Lambert Azimuthal Equal-Area
  *	Orthographic
  *	Azimuthal Equidistant
  *	Gnomonic
- *  Conic
- *	Albers Equal-Area Conic
- *	Lambert Conformal Conic
- *	Equidistant Conic
- *  Thematic
+ *  Thematic:
  *	Mollweide Equal-Area
  *	Hammer-Aitoff Equal-Area
  *	Sinusoidal Equal-Area
@@ -69,7 +70,7 @@
  *
  * Author:	Paul Wessel
  * Date:	22-MAR-2006
- * Version:	4.1.2
+ * Version:	4.2.2
  */
 
 #define GMT_WITH_NO_PS
@@ -369,7 +370,7 @@ void GMT_braun (double lon, double lat, double *x, double *y)
 
 	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	*x = lon * project_info.j_x;
-	*y = project_info.j_y * sind (0.5 * lat);
+	*y = project_info.j_y * tand (0.5 * lat);
 }
 
 void GMT_ibraun (double *lon, double *lat, double x, double y)
@@ -378,7 +379,7 @@ void GMT_ibraun (double *lon, double *lat, double x, double y)
 	/* Convert Braun Cylindrical x/y to lon/lat */
 
 	*lon = x * project_info.j_ix + project_info.central_meridian;
-	*lat = 2.0 * R2D * asin (y * project_info.j_iy);
+	*lat = 2.0 * R2D * atan (y * project_info.j_iy);
 }
 
 
