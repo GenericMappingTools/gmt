@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.57 2007-12-18 03:30:38 remko Exp $
+ *	$Id: gmt_project.h,v 1.58 2007-12-20 05:04:25 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -22,7 +22,8 @@
  * Author:	Paul Wessel
  * Date:	26-FEB-1990
  * Revised:	24-MAR-2000
- * Version:	4.1.x
+ * Revised:	18-DEC-2007
+ * Version:	4.2.2
  *
  */
 #ifndef _GMT_PROJECT_H
@@ -30,45 +31,66 @@
 
 #define GMT_N_PROJECTIONS	29	/* Total number of projections in GMT */
 
-#define GMT_LINEAR		0	/* Linear projections tagged 0-9 */
-#define GMT_LOG10		1
-#define GMT_POW			2
+/* These numbers should remain flexible. Do not use them in any programming. Use only their symbolic names.
+   However, all the first items in each section (i.e. GMT_LINEAR, GMT_MERCATOR,...) should remain the first.
+*/
+#define GMT_NO_PROJ		-1	/* Projection not specified (initial value) */
+
+/* Linear projections tagged 0-99 */
+#define GMT_IS_LINEAR (project_info.projection / 100 == 0)
+#define GMT_LINEAR		0
+#define GMT_LOG10		1	/* These numbers are only used for project_info.xyz_projection[3], */
+#define GMT_POW			2	/* while project_info.projection = 0 */
 #define GMT_TIME		3
-#define GMT_MERCATOR		10	/* Cylindrical projections tagged 10-99 */
-#define	GMT_CYL_EQ		11
-#define	GMT_CYL_EQDIST		12
-#define GMT_MILLER		13
-#define GMT_OBLIQUE_MERC	14
-#define GMT_TM			15
-#define GMT_UTM			16
-#define GMT_CASSINI		17
-#define GMT_STEREO		100	/* Azimuthal projections tagged 100-999 */
-#define GMT_LAMB_AZ_EQ		101
-#define GMT_ORTHO		102
-#define GMT_AZ_EQDIST		103
-#define GMT_GNOMONIC		104
-#define GMT_GENPER              105     /* General Perspective Projection */
-#define GMT_POLAR		110
-#define GMT_LAMBERT		1000	/* Conic projections tagged 1000-9999 */
-#define GMT_ALBERS		1001
-#define GMT_ECONIC		1002
-#define GMT_MOLLWEIDE		10000	/* Misc projections tagged 10000-99999 */
-#define GMT_HAMMER		10001
-#define GMT_SINUSOIDAL		10002
-#define GMT_WINKEL		10003
-#define GMT_ROBINSON		10004
-#define GMT_ECKERT4		10005
-#define GMT_ECKERT6		10006
-#define GMT_VANGRINTEN		10007
+#define GMT_ZAXIS		50
+
+/* Cylindrical projections tagged 100-199 */
+#define GMT_IS_CYLINDRICAL (project_info.projection / 100 == 1)
+#define GMT_MERCATOR		100
+#define	GMT_CYL_EQ		101
+#define	GMT_CYL_EQDIST		102
+#define GMT_BRAUN		103
+#define GMT_MILLER		104
+#define GMT_TM			106
+#define GMT_UTM			107
+#define GMT_CASSINI		108
+#define GMT_OBLIQUE_MERC	150
+#define GMT_OBLIQUE_MERC_AZIM	151
+#define GMT_OBLIQUE_MERC_POLE	152
+
+/* Conic projections tagged 200-299 */
+#define GMT_IS_CONICAL (project_info.projection / 100 == 2)
+#define GMT_ALBERS		200
+#define GMT_ECONIC		201
+#define GMT_LAMBERT		250
+
+/* Azimuthal projections tagged 300-399 */
+#define GMT_IS_AZIMUTHAL (project_info.projection / 100 == 3)
+#define GMT_STEREO		300
+#define GMT_LAMB_AZ_EQ		301
+#define GMT_ORTHO		302
+#define GMT_AZ_EQDIST		303
+#define GMT_GNOMONIC		304
+#define GMT_GENPER              305
+#define GMT_POLAR		350
+
+/* Misc projections tagged 400-499 */
+#define GMT_IS_MISC (project_info.projection / 100 == 4)
+#define GMT_MOLLWEIDE		400
+#define GMT_HAMMER		401
+#define GMT_SINUSOIDAL		402
+#define GMT_VANGRINTEN		403
+#define GMT_ROBINSON		404
+#define GMT_ECKERT4		405
+#define GMT_ECKERT6		406
+#define GMT_WINKEL		407
+
+#define GMT_IS_RECT_GRATICULE (project_info.projection <= GMT_MILLER)
+#define GMT_GRID_CLIP_OK (GMT_IS_LINEAR || (GMT_IS_CYLINDRICAL && project_info.projection < GMT_OBLIQUE_MERC) || GMT_IS_CONICAL)
+#define GMT_POLE_IS_POINT (project_info.projection >= GMT_LAMBERT && project_info.projection <= GMT_VANGRINTEN)
 
 #define GMT_IS_MAPPING (project_info.degree[0] && project_info.degree[1])	/* TRUE when map projections are used */
-#define GMT_IS_CYLINDRICAL (project_info.projection >= 10 && project_info.projection < 100)
-#define GMT_IS_AZIMUTHAL (project_info.projection >= 100 && project_info.projection < 1000)
-#define GMT_IS_CONICAL (project_info.projection >= 1000 && project_info.projection < 10000)
-#define GMT_IS_RECT_GRATICULE (project_info.projection <= GMT_MILLER)
-#define GMT_GRID_CLIP_OK (project_info.projection < 10000 && project_info.projection != GMT_OBLIQUE_MERC && !GMT_IS_AZIMUTHAL)
 #define GMT_IS_SPHERICAL (gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening < 1.0e-10)
-#define GMT_POLE_IS_POINT (GMT_IS_AZIMUTHAL || project_info.projection == GMT_LAMBERT || (project_info.projection >= GMT_MOLLWEIDE && project_info.projection <= GMT_SINUSOIDAL) || project_info.projection == GMT_VANGRINTEN)
 
 #define GMT_360_RANGE(w,e) (fabs (fabs((e) - (w)) - 360.0) < GMT_CONV_LIMIT)
 #define GMT_180_RANGE(s,n) (fabs (fabs((n) - (s)) - 180.0) < GMT_CONV_LIMIT)
@@ -84,7 +106,7 @@
 
 /* Number of nodes in Robinson interpolation */
 
-#define GMT_N_ROBINSON 19
+#define GMT_N_ROBINSON	19
 
 #define GMT_LATSWAP_N	12	/* number of defined swaps  */
 
