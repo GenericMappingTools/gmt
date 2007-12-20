@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.210 2007-12-20 05:09:02 remko Exp $
+ *	$Id: gmt_plot.c,v 1.211 2007-12-20 18:18:03 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2194,7 +2194,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct GMT_PLOT_AXIS *A, int annota
 
 	annot_off = sign * (len + gmtdefs.annot_offset[0]);
 	/* label_off = sign * (len + 2.5 * gmtdefs.annot_offset[0] + (gmtdefs.annot_font_size[0] * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font[gmtdefs.annot_font[0]].height); */
-	label_off = sign * (len + gmtdefs.label_offset + (gmtdefs.annot_font_size[0] * GMT_u2u[GMT_PT][GMT_INCH]) * GMT_font[gmtdefs.annot_font[0]].height);
+	label_off = sign * (len + gmtdefs.label_offset + gmtdefs.annot_offset[0] + gmtdefs.annot_font_size[0] * GMT_u2u[GMT_PT][GMT_INCH] * GMT_font[gmtdefs.annot_font[0]].height);
 
 	/* Ready to draw axis */
 
