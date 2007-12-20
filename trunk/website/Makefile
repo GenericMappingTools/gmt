@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.11 2007-11-14 20:31:37 remko Exp $
+#  $Id: Makefile,v 1.12 2007-12-20 19:35:16 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -53,7 +53,7 @@ help::
 #!clean-ftp		: Empty all local ftp archives
 #!clean-local		: Remove the local site directories
 #!clean-test		: Empty the remote test directories
-#!hitmap			: Creates the GMT hit map for site links
+#!hitmap			: Creates the GMT mirror page for site links
 #!---------------------------------------------------------------
 		
 web:		../examples/ex01/example_01.ps
@@ -82,19 +82,19 @@ update-version-live:	update-ftp-live update-www-live
 # GMT WEB PAGE MATERIALS
 #---------------------------------------------------------------------------
 
-update-www-live:	../registration/gmt_usage.jpg	
+update-www-live:	../registration/gmt_usage.jpg gmt_mirrors.html
 		scp install_gmt_form.pl $(WEBSERVER):$(LIVECGIDIR)/install_gmt_form.pl
 		ssh $(WEBSERVER) mkdir -p $(LIVEWWWDIR)/gmt
 		ssh $(WEBSERVER) rm -f $(LIVEWWWDIR)/index.html
 		scp gmt.html $(WEBSERVER):$(LIVEWWWDIR)/index.html
-		scp gmt_*.html gmt_hitmap.map newgmtguru gmt_*.gif GMT?.gif soest_logo_reduced2.gif gmt_*.png \
+		scp gmt_*.html newgmtguru gmt_*.gif GMT?.gif soest_logo_reduced2.gif gmt_*.png \
 		  ../src/README.TRIANGLE ../www/gmt/gmt_services.html ../www/gmt/gmt_man.html ../registration/gmt_usage.jpg \
 		  ../www/gmt/gmt_examples.html ../www/gmt/gmt_suppl.html ../www/gmt/gmt_back.gif $(WEBSERVER):$(LIVEWWWDIR)/gmt
 		ssh $(WEBSERVER) rm -r -f $(LIVEWWWDIR)/gmt/doc $(LIVEWWWDIR)/gmt/examples
 		scp -r ../www/gmt/doc $(WEBSERVER):$(LIVEWWWDIR)/gmt
 		scp -r ../www/gmt/examples $(WEBSERVER):$(LIVEWWWDIR)/gmt
 
-update-www-test:	../registration/gmt_usage.jpg
+update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html
 #		For the test we want GMT_ftpsite to always be 0, and to use the test web site - hence these sed commands
 		echo "sB/gmt/B/gmttest/Bg" > job.sed
 		echo "sBgmt.soest.hawaii.edu/gmttempBwww.soest.hawaii.edu/gmttest/gmttempBg" >> job.sed
@@ -105,7 +105,7 @@ update-www-test:	../registration/gmt_usage.jpg
 		ssh $(WEBSERVER2) mkdir -p $(LIVEWWWDIR2)/gmt
 		ssh $(WEBSERVER2) rm -f $(LIVEWWWDIR2)/index.html
 		scp gmt.html $(WEBSERVER2):$(LIVEWWWDIR2)/index.html
-		scp gmt_*.html gmt_hitmap.map newgmtguru gmt_*.gif GMT?.gif soest_logo_reduced2.gif gmt_*.png \
+		scp gmt_*.html newgmtguru gmt_*.gif GMT?.gif soest_logo_reduced2.gif gmt_*.png \
 		  ../src/README.TRIANGLE ../www/gmt/gmt_services.html ../www/gmt/gmt_man.html ../registration/gmt_usage.jpg \
 		  ../www/gmt/gmt_examples.html ../www/gmt/gmt_suppl.html ../www/gmt/gmt_back.gif $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 #	Change the Href to the ftp server to go to the test server dir instead
@@ -122,12 +122,11 @@ update-www-test:	../registration/gmt_usage.jpg
 		ssh $(WEBSERVER2) sh $(LIVEWWWDIR2)/gmt/gmt_server_job.sh
 		rm -f gmt_server_job.sh tmp
 
-update-www-local:../registration/gmt_usage.jpg
+update-www-local:../registration/gmt_usage.jpg gmt_mirrors.html
 		rm -rf $(TESTWWWDIR)
 		mkdir -p $(TESTWWWDIR)/gmt
 		cp -f gmt.html $(TESTWWWDIR)/index.html
 		cp -f gmt_*.html $(TESTWWWDIR)/gmt
-		cp -f gmt_hitmap.map $(TESTWWWDIR)/gmt
 		cp -f newgmtguru $(TESTWWWDIR)/gmt
 		cp -f gmt_*.gif GMT?.gif soest_logo_reduced2.gif $(TESTWWWDIR)/gmt
 		cp -f gmt_*.png ../registration/gmt_usage.jpg $(TESTWWWDIR)/gmt
@@ -243,6 +242,12 @@ nan:
 	cd ../src; \
 	$(CC) $(CFLAGS) gmt_nan_save.c $(CDF) -lm -o gmt_nan_save; \
 	./gmt_nan_save `uname -s`
+
+gmt_mirrors.html:	gmt_hitmap.sh
+	gmt_hitmap.sh -s
+
+gmt_hitmap.png: 	gmt_hitmap.sh
+	gmt_hitmap.sh -s
 
 hitmap:
 	gmt_hitmap.sh -s
