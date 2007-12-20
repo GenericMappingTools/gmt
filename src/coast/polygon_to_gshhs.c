@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.13 2007-08-27 22:08:30 guru Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.14 2007-12-20 16:51:42 guru Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
@@ -23,7 +23,7 @@ int main (int argc, char **argv)
 		fprintf (stderr,"	-l indicates data are lines (rivers, borders) and not polygons\n");
 		exit (EXIT_FAILURE);
 	}
-	if (argc == 3 && !strcmp (argv[2], "-l")) lines = 1;
+	if (argc == 3 && !strcmp (argv[1], "-l")) lines = 1;
 	fp_in = fopen(argv[1+lines], "r");
 		
 	while (pol_readheader (&h, fp_in) == 1) {
