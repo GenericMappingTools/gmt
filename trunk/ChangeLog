@@ -1,12 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.165 2007-12-18 04:12:39 remko Exp $
+	$Id: ChangeLog,v 1.166 2007-12-20 05:10:20 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-20	remko
+	* gmt_init.c:		Optionally use names for projections
+	* gmt_project.h:	Changed the numbering of projection IDs.
+	* *.c:			Avoid using numbers for projections and add GMT_BRAUN where needed.
 
 2007-12-18	remko
 	* gmt_proj.[ch]:	Added Braun projection functions
 	* gmt_project.h:	Consolidated all cyclindrical projection parameters into one set of four.
-	* gmtalldeps.macros, makefile:		Properly identify all unusual dependencies of sources.
 	* gmt_map.c:		Added initialization of Braun projections
+	* gmtalldeps.macros, makefile:	Properly identify all unusual dependencies of sources.
+	* spotter/grdrotimage.c:	Removed from CVS, not used by anything
 
 2007-12-16	pwessel
 	* gmt_plot.c:		3-D basemap axis did not use LABEL_OFFSET
