@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.318 2007-12-21 20:17:33 remko Exp $
+ *	$Id: gmt_init.c,v 1.319 2007-12-21 20:26:26 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4016,35 +4016,35 @@ int GMT_project_type (char *args, int *pos, int *width_given)
 
 	/* Check the lowercase version of the first characters */
 
-	if ((*pos = GMT_strlcmp("laea/"     , name))) return (GMT_LAMB_AZ_EQ);
-	if ((*pos = GMT_strlcmp("aeqd/"     , name))) return (GMT_AZ_EQDIST);
 	if ((*pos = GMT_strlcmp("aea/"      , name))) return (GMT_ALBERS);
+	if ((*pos = GMT_strlcmp("aeqd/"     , name))) return (GMT_AZ_EQDIST);
 	if ((*pos = GMT_strlcmp("cyl_stere/", name))) return (GMT_CYL_STEREO);
 	if ((*pos = GMT_strlcmp("cass/"     , name))) return (GMT_CASSINI);
-	if ((*pos = GMT_strlcmp("eqc/"      , name))) return (GMT_CYL_EQDIST);
 	if ((*pos = GMT_strlcmp("cea/"      , name))) return (GMT_CYL_EQ);
 	if ((*pos = GMT_strlcmp("eck4/"     , name))) return (GMT_ECKERT4);
 	if ((*pos = GMT_strlcmp("eck6/"     , name))) return (GMT_ECKERT6);
+	if ((*pos = GMT_strlcmp("eqc/"      , name))) return (GMT_CYL_EQDIST);
 	if ((*pos = GMT_strlcmp("eqdc/"     , name))) return (GMT_ECONIC);
-	if ((*pos = GMT_strlcmp("hammer/"   , name))) return (GMT_HAMMER);
 	if ((*pos = GMT_strlcmp("gnom/"     , name))) return (GMT_GNOMONIC);
-	if ((*pos = GMT_strlcmp("vandg/"    , name))) return (GMT_VANGRINTEN);
+	if ((*pos = GMT_strlcmp("hammer/"   , name))) return (GMT_HAMMER);
+	if ((*pos = GMT_strlcmp("laea/"     , name))) return (GMT_LAMB_AZ_EQ);
 	if ((*pos = GMT_strlcmp("lcc/"      , name))) return (GMT_LAMBERT);
-	if ((*pos = GMT_strlcmp("rect/"     , name))) return (GMT_LINEAR);
 	if ((*pos = GMT_strlcmp("merc/"     , name))) return (GMT_MERCATOR);
 	if ((*pos = GMT_strlcmp("mill/"     , name))) return (GMT_MILLER);
 	if ((*pos = GMT_strlcmp("moll/"     , name))) return (GMT_MOLLWEIDE);
+	if ((*pos = GMT_strlcmp("nsper/"    , name))) return (GMT_GENPER);
 	if ((*pos = GMT_strlcmp("omerc/"    , name))) return (GMT_OBLIQUE_MERC);
 	if ((*pos = GMT_strlcmp("omercp/"   , name))) return (GMT_OBLIQUE_MERC_POLE);
 	if ((*pos = GMT_strlcmp("ortho/"    , name))) return (GMT_ORTHO);
-	if ((*pos = GMT_strlcmp("nsper/"    , name))) return (GMT_GENPER);
 	if ((*pos = GMT_strlcmp("polar/"    , name))) return (GMT_POLAR);
 	if ((*pos = GMT_strlcmp("robin/"    , name))) return (GMT_ROBINSON);
 	if ((*pos = GMT_strlcmp("sinu/"     , name))) return (GMT_SINUSOIDAL);
 	if ((*pos = GMT_strlcmp("stere/"    , name))) return (GMT_STEREO);
-	if ((*pos = GMT_strlcmp("utm/"      , name))) return (GMT_UTM);
 	if ((*pos = GMT_strlcmp("tmerc/"    , name))) return (GMT_TM);
+	if ((*pos = GMT_strlcmp("utm/"      , name))) return (GMT_UTM);
+	if ((*pos = GMT_strlcmp("vandg/"    , name))) return (GMT_VANGRINTEN);
 	if ((*pos = GMT_strlcmp("wintri/"   , name))) return (GMT_WINKEL);
+	if ((*pos = GMT_strlcmp("xy/"       , name))) return (GMT_LINEAR);
 	if ((*pos = GMT_strlcmp("z/"        , name))) return (GMT_ZAXIS);
 
 	/* These older codes took 2 characters */
