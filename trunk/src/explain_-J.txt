@@ -5,9 +5,13 @@ character is upper case then the argument(s) supplied as scale(s) is interpreted
 the map width (or axis lengths), else the scale argument(s) is the map scale (see its
 definition for each projection). UNIT is cm, inch, or m, depending on the \fBMEASURE_UNIT\fP
 setting in .gmtdefaults4, but this can be overridden on the command line by appending
-\fBc\fP, \fBi\fP, or \fBm\fP to the \fIscale\fP/\fIwidth\fP values.  Append \fBh\fP, \fB+\fP, or \fB-\fP
+\fBc\fP, \fBi\fP, or \fBm\fP to the \fIscale\fP or \fIwidth\fP values.  Append \fBh\fP, \fB+\fP, or \fB-\fP
 to the given \fIwidth\fP if you instead want to set map height, the maximum dimension, or
 the minimum dimension, respectively [Default is \fBw\fP for width].
+.br
+In case the central meridian is an optional parameter and it is being omitted, then the
+center of the longitude range given by the OPT(R) option is used. The default standard parallel
+is the equator.
 .br
 The ellipsoid used in the map projections is user-definable by editing the .gmtdefaults4 file
 in your home directory. 63 commonly used ellipsoids and a spheroid are currently
@@ -21,60 +25,57 @@ stands for Equal-Area and Conformal, respectively):
 .PP
 \fBCYLINDRICAL PROJECTIONS:\fP
 .TP
-\fB\-Jc\fP\fIlon0/lat0/scale\fP or \fB\-JC\fP\fIlon0/lat0/width\fP (Cassini).
-Give projection center \fIlon0/lat0\fP and \fIscale\fP (1:xxxx or UNIT/degree).
-.TP
-\fB\-Jj\fP\fIlon0/scale\fP or \fB\-JJ\fP\fIlon0/width\fP (Miller Cylindrical Projection).
-Give the central meridian \fIlon0\fP and \fIscale\fP (1:xxxx or UNIT/degree).
-.TP
-\fB\-Jm\fP\fIparameters\fP (Mercator \fB[C]\fP).
-Specify one of:
+\fB\-Jbraun\fP/[[\fIlon0/\fP]\fIlat0/\fP]\fIscale\fP or \fB\-JBraun\fP/[[\fIlon0/\fP]\fIlat0/\fP]\fIwidth\fP (Braun Stereographic)
+Give central meridian \fIlon0\fP (optional), standard parallel \fIlat0\fP (optional), and \fIscale\fP along parallel (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+The standard parallel is typically one of these (but can be any value):
 .RS
-.TP
-\fB\-Jm\fP\fIscale\fP or \fB\-JM\fP\fIwidth\fP
-Give \fIscale\fP along equator (1:xxxx or UNIT/degree).
-.TP
-\fB\-Jm\fP\fIlon0/lat0/scale\fP or \fB\-JM\fP\fIlon0/lat0/width\fP
-Give central meridian \fIlon0\fP, standard parallel \fIlat0\fP, and \fIscale\fP along parallel (1:xxxx or UNIT/degree).
+.RS
+45 - Gall
+.br
+30 - Bolshoi Sovietskii Atlas Mira
+.br
+0 - Braun
 .RE
+.RE
+.TP
+\fB\-Jc\fP\fIlon0/lat0/scale\fP or \fB\-JC\fP\fIlon0/lat0/width\fP (Cassini).
+Give projection center \fIlon0/lat0\fP and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+.TP
+\fB\-Jj\fP[\fIlon0/\fP]\fIscale\fP or \fB\-JJ\fP[\fIlon0/\fP]\fIwidth\fP (Miller Cylindrical Projection).
+Give the central meridian \fIlon0\fP (optional) and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+.TP
+\fB\-Jm\fP[[\fIlon0/\fP]\fIlat0/\fP]\fIscale\fP or \fB\-JM\fP[[\fIlon0/\fP]\fIlat0/\fP]\fIwidth\fP
+Give central meridian \fIlon0\fP (optional), standard parallel \fIlat0\fP (optional), and \fIscale\fP along parallel (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
 \fB\-Jo\fP\fIparameters\fP (Oblique Mercator \fB[C]\fP).
 Specify one of:
 .RS
 .TP
-\fB\-Joa\fP\fIlon0/lat0/azimuth/scale\fP or \fB\-JOa\fP\fIlon0/lat0/azimuth/width\fP
+\fB\-Jo\fP[\fBa\fP]\fIlon0/lat0/azimuth/scale\fP or \fB\-JO\fP[\fBa\fP]\fIlon0/lat0/azimuth/width\fP
 Set projection center \fIlon0/lat0\fP, \fIazimuth\fP of oblique equator, and \fIscale\fP.
 .TP
-\fB\-Job\fP\fIlon0/lat0/lon1/lat1/scale\fP or \fB\-JOb\fP\fIlon0/lat0/lon1/lat1/scale\fP
+\fB\-Jo\fP[\fBb\fP]\fIlon0/lat0/lon1/lat1/scale\fP or \fB\-JO\fP[\fBb\fP]\fIlon0/lat0/lon1/lat1/scale\fP
 Set projection center \fIlon0/lat0\fP, another point on the oblique equator \fIlon1/lat1\fP, and \fIscale\fP.
 .TP
 \fB\-Joc\fP\fIlon0/lat0/lonp/latp/scale\fP or \fB\-JOc\fP\fIlon0/lat0/lonp/latp/scale\fP
 Set projection center \fIlon0/lat0\fP, pole of oblique projection \fIlonp/latp\fP, and \fIscale\fP.
 .PP
-Give \fIscale\fP along oblique equator (1:xxxx or UNIT/degree).
+Give \fIscale\fP along oblique equator (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .RE
 .TP
-\fB\-Jq\fP\fIlon0/scale\fP or \fB\-JQ\fP\fIlon0/width\fP (Equidistant Cylindrical Projection (Plate Carree)).
-Give the central meridian \fIlon0\fP and \fIscale\fP (1:xxxx or UNIT/degree).
+\fB\-Jq\fP[\fIlon0/\fP]\fIscale\fP or \fB\-JQ\fP[\fIlon0/\fP]\fIwidth\fP (Equidistant Cylindrical Projection (Plate Carree)).
+Give the central meridian \fIlon0\fP (optional) and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
-\fB\-Jt\fP\fIparameters\fP (Transverse Mercator \fB[C]\fP).
-Specify one of:
-.RS
-.TP
-\fB\-Jt\fP\fIlon0/scale\fP or \fB\-JT\fP\fIlon0/width\fP
-Give the central meridian \fIlon0\fP and \fIscale\fP (1:xxxx or UNIT/degree).
-.TP
-\fB\-Jt\fP\fIlon0/lat0/scale\fP or \fB\-JT\fP\fIlon0/lat0/width\fP
-Give projection center \fIlon0/lat0\fP and \fIscale\fP (1:xxxx or UNIT/degree).
-.RE
+\fB\-Jt\fP\fIlon0/\fP[\fIlat0/\fP]\fIscale\fP or \fB\-JT\fP\fIlon0/\fP[\fIlat0/\fP]\fIwidth\fP
+Give the central meridian \fIlon0\fP, central parallel \fIlat0\fP (optional), and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
 \fB\-Ju\fP\fIzone/scale\fP or \fB\-JU\fP\fIzone/width\fP (UTM - Universal Transverse Mercator \fB[C]\fP).
-Give the UTM zone (A,B,1-60[C-X],Y,Z)) and \fIscale\fP (1:xxxx or UNIT/degree).
+Give the UTM zone (A,B,1-60[C-X],Y,Z)) and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .br
 Zones: If C-X not given, prepend - or + to enforce southern or northern hemisphere conventions [northern if south > 0].
 .TP
-\fB\-Jy\fP\fIlon0/lats/scale\fP or \fB\-JY\fP\fIlon0/lats/width\fP (General Cylindrical Projections \fB[E]\fP).
-Give the central meridian \fIlon0\fP, standard parallel \fIlats\fP, and \fIscale\fP (1:xxxx or UNIT/degree).
+\fB\-Jy\fP\fIlon0/lat0/scale\fP or \fB\-JY\fP\fIlon0/lat0/width\fP (General Cylindrical Projections \fB[E]\fP).
+Give the central meridian \fIlon0\fP, standard parallel \fIlat0\fP, and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 The standard parallel is typically one of these (but can be any value):
 .RS
 .RS
@@ -94,6 +95,17 @@ The standard parallel is typically one of these (but can be any value):
 .RE
 .RE
 .PP
+\fBCONIC PROJECTIONS:\fP
+.TP
+\fB\-Jb\fP\fIlon0/lat0/lat1/lat2/scale\fP or \fB\-JB\fP\fIlon0/lat0/lat1/lat2/width\fP (Albers \fB[E]\fP).
+Give projection center \fIlon0/lat0\fP, two standard parallels \fIlat1/lat2\fP, and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+.TP
+\fB\-Jd\fP\fIlon0/lat0/lat1/lat2/scale\fP or \fB\-JD\fP\fIlon0/lat0/lat1/lat2/width\fP (Conic Equidistant)
+Give projection center \fIlon0/lat0\fP, two standard parallels \fIlat1/lat2\fP, and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+.TP
+\fB\-Jl\fP\fIlon0/lat0/lat1/lat2/scale\fP or \fB\-JL\fP\fIlon0/lat0/lat1/lat2/width\fP (Lambert \fB[C]\fP)
+Give origin \fIlon0/lat0\fP, two standard parallels \fIlat1/lat2\fP, and \fIscale\fP along these (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+.PP
 \fBAZIMUTHAL PROJECTIONS:\fP
 .sp
 Except for polar aspects, \fB\-R\fPw/e/s/n will be reset to \fB\-Rg\fP.  Use \fB\-R\fP<...>\fBr\fP for smaller regions.
@@ -101,25 +113,25 @@ Except for polar aspects, \fB\-R\fPw/e/s/n will be reset to \fB\-Rg\fP.  Use \fB
 \fB\-Ja\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JA\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (Lambert \fB[E]\fP).
 \fIlon0/lat0\fP specifies the projection center.
 \fIhorizon\fP specifies the max distance from projection center (in degrees, <= 180, default 90).
-Give \fIscale\fP as 1:xxxx or \fIradius/lat\fP, where \fIradius\fP is distance
+Give \fIscale\fP as \fB1:\fP\fIxxxx\fP or \fIradius/lat\fP, where \fIradius\fP is distance
 in UNIT from origin to the oblique latitude \fIlat\fP.
 .TP
-\fB\-Je\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JE\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (Equidistant).
+\fB\-Je\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JE\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (Azimuthal Equidistant).
 \fIlon0/lat0\fP specifies the projection center.
 \fIhorizon\fP specifies the max distance from projection center (in degrees, <= 180, default 180).
-Give \fIscale\fP as 1:xxxx or \fIradius/lat\fP, where \fIradius\fP is distance
+Give \fIscale\fP as \fB1:\fP\fIxxxx\fP or \fIradius/lat\fP, where \fIradius\fP is distance
 in UNIT from origin to the oblique latitude \fIlat\fP.
 .TP
 \fB\-Jf\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JF\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (Gnomonic).
 \fIlon0/lat0\fP specifies the projection center.
 \fIhorizon\fP specifies the max distance from projection center (in degrees, < 90, default 60).
-Give \fIscale\fP as 1:xxxx or \fIradius/lat\fP, where \fIradius\fP is distance
+Give \fIscale\fP as \fB1:\fP\fIxxxx\fP or \fIradius/lat\fP, where \fIradius\fP is distance
 in UNIT from origin to the oblique latitude \fIlat\fP.
 .TP
 \fB\-Jg\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JG\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (Orthographic).
 \fIlon0/lat0\fP specifies the projection center.
 \fIhorizon\fP specifies the max distance from projection center (in degrees, <= 90, default 90).
-Give \fIscale\fP as 1:xxxx or \fIradius/lat\fP, where \fIradius\fP is distance
+Give \fIscale\fP as \fB1:\fP\fIxxxx\fP or \fIradius/lat\fP, where \fIradius\fP is distance
 in UNIT from origin to the oblique latitude \fIlat\fP.
 .TP
 \fB\-Jg\fP\fIlon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale\fP or \fB\-JG\fP\fIlon0/lat0/altitude/azimuth/tilt/twist/Width/Height/width\fP (General Perspective).
@@ -133,48 +145,40 @@ from the center of the earth in kilometers.
 viewpoint is centered on the horizon.
 Further, specify the clockwise \fItwist\fP, \fIWidth\fP, and
 \fIHeight\fP of the viewpoint in degrees.
-Give \fIscale\fP as 1:xxxx or \fIradius/lat\fP, where \fIradius\fP is distance
+Give \fIscale\fP as \fB1:\fP\fIxxxx\fP or \fIradius/lat\fP, where \fIradius\fP is distance
 in UNIT from origin to the oblique latitude \fIlat\fP.
 .TP
 \fB\-Js\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or \fB\-JS\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/width\fP (General Stereographic \fB[C]\fP).
 \fIlon0/lat0\fP specifies the projection center.
 \fIhorizon\fP specifies the max distance from projection center (in degrees, < 180, default 90).
-Give \fIscale\fP as 1:xxxx (true at pole) or \fIlats\fP/1:xxxx (true at standard parallel \fIlats\fP)
+Give \fIscale\fP as \fB1:\fP\fIxxxx\fP (true at pole) or \fIlat0\fP/\fB1:\fP\fIxxxx\fP (true at standard parallel \fIlat0\fP)
 or \fIradius/lat\fP (\fIradius\fP in UNIT from origin to the oblique latitude \fIlat\fP).
-.PP
-\fBCONIC PROJECTIONS:\fP
-.TP
-\fB\-Jb\fP\fIlon0/lat0/lat1/lat2/scale\fP or \fB\-JB\fP\fIlon0/lat0/lat1/lat2/width\fP (Albers \fB[E]\fP).
-Give projection center \fIlon0/lat0\fP, two standard parallels \fIlat1/lat2\fP, and \fIscale\fP (1:xxxx or UNIT/degree).
-.TP
-\fB\-Jd\fP\fIlon0/lat0/lat1/lat2/scale\fP or \fB\-JD\fP\fIlon0/lat0/lat1/lat2/width\fP (Equidistant)
-Give projection center \fIlon0/lat0\fP, two standard parallels \fIlat1/lat2\fP, and \fIscale\fP (1:xxxx or UNIT/degree).
-.TP
-\fB\-Jl\fP\fIlon0/lat0/lat1/lat2/scale\fP or \fB\-JL\fP\fIlon0/lat0/lat1/lat2/width\fP (Lambert \fB[C]\fP)
-Give origin \fIlon0/lat0\fP, two standard parallels \fIlat1/lat2\fP, and \fIscale\fP along these (1:xxxx or UNIT/degree).
 .PP
 \fBMISCELLANEOUS PROJECTIONS:\fP
 .TP
-\fB\-Jh\fP\fIlon0/scale\fP or \fB\-JH\fP\fIlon0/width\fP (Hammer \fB[E]\fP).
-Give the central meridian \fIlon0\fP and \fIscale\fP along equator (1:xxxx or UNIT/degree).
+\fB\-Jh\fP[\fIlon0/\fP]\fIscale\fP or \fB\-JH\fP[\fIlon0/\fP]\fIwidth\fP (Hammer \fB[E]\fP).
+Give the central meridian \fIlon0\fP (optional) and \fIscale\fP along equator (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
-\fB\-Ji\fP\fIlon0/scale\fP or \fB\-JI\fP\fIlon0/width\fP (Sinusoidal \fB[E]\fP).
-Give the central meridian \fIlon0\fP and \fIscale\fP along equator (1:xxxx or UNIT/degree).
+\fB\-Ji\fP[\fIlon0/\fP]\fIscale\fP or \fB\-JI\fP[\fIlon0/\fP]\fIwidth\fP (Sinusoidal \fB[E]\fP).
+Give the central meridian \fIlon0\fP (optional) and \fIscale\fP along equator (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
-\fB\-Jk\fP[\fBf|s\fP]\fIlon0/scale\fP or \fB\-JK\fP[\fBf|s\fP]\fIlon0/width\fP (Eckert IV (f) and VI (s) \fB[E]\fP).
-Give the central meridian \fIlon0\fP and \fIscale\fP along equator (1:xxxx or UNIT/degree).
+\fB\-Jkf\fP[\fIlon0/\fP]\fIscale\fP or \fB\-JKf\fP[\fIlon0/\fP]\fIwidth\fP (Eckert IV) \fB[E]\fP).
+Give the central meridian \fIlon0\fP (optional) and \fIscale\fP along equator (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
-\fB\-Jn\fP\fIlon0/scale\fP or \fB\-JN\fP\fIlon0/width\fP (Robinson).
-Give the central meridian \fIlon0\fP and \fIscale\fP along equator (1:xxxx or UNIT/degree).
+\fB\-Jk\fP[\fBs\fP][\fIlon0/\fP]\fIscale\fP or \fB\-JK\fP[\fBs\fP][\fIlon0/\fP]\fIwidth\fP (Eckert VI) \fB[E]\fP).
+Give the central meridian \fIlon0\fP (optional) and \fIscale\fP along equator (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
-\fB\-Jr\fP\fIlon0/scale\fP \fB\-JR\fP\fIlon0/width\fP (Winkel Tripel).
-Give the central meridian \fIlon0\fP and \fIscale\fP along equator (1:xxxx or UNIT/degree).
+\fB\-Jn\fP[\fIlon0/\fP]\fIscale\fP or \fB\-JN\fP[\fIlon0/\fP]\fIwidth\fP (Robinson).
+Give the central meridian \fIlon0\fP (optional) and \fIscale\fP along equator (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
-\fB\-Jv\fP\fIlon0/scale\fP or \fB\-JV\fP\fIlon0/width\fP (Van der Grinten).
-Give the central meridian \fIlon0\fP and \fIscale\fP along equator (1:xxxx or UNIT/degree).
+\fB\-Jr\fP[\fIlon0/\fP]\fIscale\fP \fB\-JR\fP[\fIlon0/\fP]\fIwidth\fP (Winkel Tripel).
+Give the central meridian \fIlon0\fP (optional) and \fIscale\fP along equator (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
-\fB\-Jw\fP\fIlon0/scale\fP or \fB\-JW\fP\fIlon0/width\fP (Mollweide \fB[E]\fP).
-Give the central meridian \fIlon0\fP and \fIscale\fP along equator (1:xxxx or UNIT/degree).
+\fB\-Jv\fP[\fIlon0/\fP]\fIscale\fP or \fB\-JV\fP[\fIlon0/\fP]\fIwidth\fP (Van der Grinten).
+Give the central meridian \fIlon0\fP (optional) and \fIscale\fP along equator (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+.TP
+\fB\-Jw\fP[\fIlon0/\fP]\fIscale\fP or \fB\-JW\fP[\fIlon0/\fP]\fIwidth\fP (Mollweide \fB[E]\fP).
+Give the central meridian \fIlon0\fP (optional) and \fIscale\fP along equator (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .PP
 \fBNON-GEOGRAPHICAL PROJECTIONS:\fP
 .TP
@@ -187,9 +191,9 @@ or \fBz\fP if you want to annotate depth rather than radius [Default].
 Give \fIscale\fP in UNIT/r-unit.
 .TP
 \fB\-Jx\fP\fIx-scale\fP[\fI/y-scale\fP] or \fB\-JX\fP\fIwidth\fP[\fI/height\fP] (Linear, log, and power scaling)
-Give \fIx-scale\fP (1:xxxx or UNIT/x-unit) and/or \fIy-scale\fP (1:xxxx or UNIT/y-unit); or
+Give \fIx-scale\fP (\fB1:\fP\fIxxxx\fP or UNIT/x-unit) and/or \fIy-scale\fP (\fB1:\fP\fIxxxx\fP or UNIT/y-unit); or
 specify \fIwidth\fP and/or \fIheight\fP in UNIT.
-\fIy-scale\fP=\fIx-scale\fP if not specified separately and using 1:xxxx implies that x-unit and y-unit are in
+\fIy-scale\fP=\fIx-scale\fP if not specified separately and using \fB1:\fP\fIxxxx\fP implies that x-unit and y-unit are in
 meters.
 Use negative scale(s) to reverse the direction of an axis (e.g., to have y be positive down).
 Optionally, append to \fIx-scale\fP, \fIy-scale\fP, \fIwidth\fP or \fIheight\fP one of the following:
