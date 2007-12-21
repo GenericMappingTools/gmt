@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.100 2007-11-13 19:25:10 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.101 2007-12-21 20:14:30 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1201,8 +1201,9 @@ int GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w,
 		/* Select plain Mercator on a sphere with -Jm1 -R0/360/-lat/+lat */
 		gmtdefs.ellipsoid = GMT_N_ELLIPSOIDS - 1;
 		project_info.units_pr_degree = TRUE;
-		project_info.m_got_parallel = FALSE;
-		project_info.pars[0] = 1.0;
+		project_info.pars[0] = 180.0;
+		project_info.pars[1] = 0.0;
+		project_info.pars[2] = 1.0;
 		project_info.projection = GMT_MERCATOR;
 		project_info.degree[0] = project_info.degree[1] = TRUE;
 
