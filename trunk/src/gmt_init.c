@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.317 2007-12-21 16:58:05 remko Exp $
+ *	$Id: gmt_init.c,v 1.318 2007-12-21 20:17:33 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -256,7 +256,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t-J Selects the map proJection system. The projection type is identified by a 1- or\n");
 			fprintf (stderr, "\t   2-character ID (e.g. 'm' or 'kf') or by an abbreviation followed by a slash\n");
-			fprintf (stderr, "\t   (e.g. 'braun/'). When using a lower-case ID <scale> can be given either as 1:<xxxx>\n");
+			fprintf (stderr, "\t   (e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either as 1:<xxxx>\n");
 			fprintf (stderr, "\t   or in %s/degree along the standard parallel. Alternatively, when the projection ID is\n", GMT_unit_names[gmtdefs.measure_unit]);
 			fprintf (stderr, "\t   Capitalized, <scale|width> denotes the width of the plot in %s\n", GMT_unit_names[gmtdefs.measure_unit]);
 			fprintf (stderr, "\t   Append h for map height, + for max map dimension, and - for min map dimension.\n");
@@ -272,11 +272,12 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Albers Equal-Area Conic)\n");
 			fprintf (stderr, "\t     Give origin, 2 standard parallels, and true scale\n");
 
-			fprintf (stderr, "\t   -Jbraun|Braun/[[<lon0>/[<lat0>/]<scale|width> (Braun)\n");
-			fprintf (stderr, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
-			fprintf (stderr, "\t     <lat0> = 45 (Gall), 30 (Bolshoi Sovietskii Atlas Mira), 0 (Braun)\n");
-
 			fprintf (stderr, "\t   -Jc|C<lon0>/<lat0><scale|width> (Cassini)\n\t     Give central point and scale\n");
+
+			fprintf (stderr, "\t   -Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<scale|width> (Cylindrical Stereographic)\n");
+			fprintf (stderr, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
+			fprintf (stderr, "\t     <lat0> = 66.159467 (Miller's modified Gall), 55 (Kamenetskiy's First),\n");
+			fprintf (stderr, "\t     45 (Gall Stereographic), 30 (Bolshoi Sovietskii Atlas Mira), 0 (Braun)\n");
 
 			fprintf (stderr, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Equidistant Conic)\n");
 			fprintf (stderr, "\t     Give origin, 2 standard parallels, and true scale\n");
@@ -325,7 +326,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   -Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Lambert Conformal Conic)\n");
 			fprintf (stderr, "\t     Give origin, 2 standard parallels, and true scale\n");
 
-			fprintf (stderr, "\t   -Jm|M[[<lon0>/]<lat0>/]<scale|width> (Mercator).\n");
+			fprintf (stderr, "\t   -Jm|M[<lon0>/[<lat0>/]]<scale|width> (Mercator).\n");
 			fprintf (stderr, "\t     Give central meridian (opt), true scale parallel (opt), and scale\n");
 
 			fprintf (stderr, "\t   -Jn|N[<lon0>/]<scale|width> (Robinson projection)\n\t     Give central meridian (opt) and scale\n");
@@ -339,7 +340,11 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t       Give origin, pole of projection, and scale at oblique equator\n");
 			fprintf (stderr, "\t       Specify region in oblique degrees OR use -R<>r\n");
 
-			fprintf (stderr, "\t   -Jq|Q[<lon0>/]<scale|width> (Equidistant Cylindrical)\n\t     Give central meridian (opt) and scale");
+			fprintf (stderr, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scale|width> (Equidistant Cylindrical)\n");
+			fprintf (stderr, "\t     Give central meridian (opt), standard parallel (opt), and scale");
+			fprintf (stderr, "\t     <lat0> = 61.7 (Min. linear distortion), 50.5 (R. Miller equirectangular),\n");
+			fprintf (stderr, "\t     45 (Gall isographic), 43.5 (Min. continental distortion), 42 (Grafarend & Niermann),\n");
+			fprintf (stderr, "\t     37.5 (Min. overall distortion), 0 (Plate Carree)\n");
 
 			fprintf (stderr, "\t   -Jr|R[<lon0>/]<scale|width> (Winkel Tripel)\n\t     Give central meridian and scale\n");
 
@@ -358,7 +363,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jw|W[<lon0>/]<scale|width> (Mollweide)\n\t     Give central meridian (opt) and scale\n");
 
-			fprintf (stderr, "\t   -Jy|Y[[<lon0>/[<lat0>/]<scale|width> (Cylindrical Equal-area)\n");
+			fprintf (stderr, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scale|width> (Cylindrical Equal-area)\n");
 			fprintf (stderr, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
 			fprintf (stderr, "\t     <lat0> = 50 (Balthasart), 45 (Gall-Peters), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards),\n\t              37.0666 (Caster), 30 (Behrmann), 0 (Lambert)\n");
 
@@ -389,7 +394,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Albers Equal-Area Conic)\n");
 
-			fprintf (stderr, "\t   -Jbraun|Braun/[[<lon0>]/<lat0>/]<lat1>/<lat2>/<scale|width> (Albers Equal-Area Conic)\n");
+			fprintf (stderr, "\t   -Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<lat1>/<lat2>/<scale|width> (Albers Equal-Area Conic)\n");
 
 			fprintf (stderr, "\t   -Jc|C<lon0>/<lat0><scale|width> (Cassini)\n");
 
@@ -415,7 +420,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Lambert Conformal Conic)\n");
 
-			fprintf (stderr, "\t   -Jm|M[[<lon0>/]<lat0>]<scale|width> (Mercator).\n");
+			fprintf (stderr, "\t   -Jm|M[<lon0>/[<lat0>/]]<scale|width> (Mercator).\n");
 
 			fprintf (stderr, "\t   -Jn|N[<lon0>/]<scale|width> (Robinson projection)\n");
 
@@ -424,7 +429,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t      -Jo|O[b]<lon0>/<lat0>/<lon1>/<lat1>/<scale|width>\n");
 			fprintf (stderr, "\t      -Joc|Oc<lon0>/<lat0>/<lonp>/<latp>/<scale|width>\n");
 
-			fprintf (stderr, "\t   -Jq|Q[<lon0>/]<scale|width> (Equidistant Cylindrical)\n");
+			fprintf (stderr, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scale|width> (Equidistant Cylindrical)\n");
 
 			fprintf (stderr, "\t   -Jr|R[<lon0>/]<scale|width> (Winkel Tripel)\n");
 
@@ -724,14 +729,14 @@ void GMT_syntax (char option)
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
-				case GMT_BRAUN:
-					fprintf (stderr, "\t-Jbraun/[[<lon0>/[<lat0>/]<scale> OR -JBraun/[[<lon0>/]<lat0>]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
-					break;
 				case GMT_CASSINI:
 					fprintf (stderr, "\t-Jc<lon0>/<lat0><scale> OR -JC<lon0>/<lat0><width>\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree ,or use <width> in %s\n",
+						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					break;
+				case GMT_CYL_STEREO:
+					fprintf (stderr, "\t-Jcyl_stere/[<lon0>/[<lat0>/]]<scale> OR -JCyl_stere/[<lon0>/[<lat0>/]]<width>\n");
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case GMT_ECONIC:
@@ -793,7 +798,7 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case GMT_MERCATOR:
-					fprintf (stderr, "\t-Jm[[<lon0>/]<lat0>/]<scale> OR -JM[[<lon0>/]<lat0>/]<width>\n");
+					fprintf (stderr, "\t-Jm[<lon0>/[<lat0>/]]<scale> OR -JM[<lon0>/[<lat0>/]]<width>\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
@@ -815,7 +820,7 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case GMT_CYL_EQDIST:
-					fprintf (stderr, "\t-Jq[<lon0>/]<scale> OR -JQ[<lon0>/]<width>\n");
+					fprintf (stderr, "\t-Jq[<lon0>/[<lat0>/]]<scale> OR -JQ[<lon0>/[<lat0>/]]<width>\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
@@ -847,7 +852,7 @@ void GMT_syntax (char option)
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
 				case GMT_CYL_EQ:
-					fprintf (stderr, "\t-Jy[[<lon0>/]<lat0>/]<scale> OR -JY[[<lon0>/]<lat0>/]<width>\n");
+					fprintf (stderr, "\t-Jy[<lon0>/[<lat0>/]]<scale> OR -JY[<lon0>/[<lat0>/]]<width>\n");
 					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
 						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
 					break;
@@ -3996,7 +4001,7 @@ int GMT_project_type (char *args, int *pos, int *width_given)
 	 * GMT_NO_PROJ when unsuccessful.
 	 */
 
-	char name[8];
+	char name[12];
 
 	/* Check for upper case */
 
@@ -4006,41 +4011,41 @@ int GMT_project_type (char *args, int *pos, int *width_given)
 	   projection name (followed by a slash) or the 1- or 2-letter abbreviation
 	   used prior to GMT 4.2.2. */
 
-	strncpy (name, args, 8);
+	strncpy (name, args, 12);
 	GMT_str_tolower (name);
 
 	/* Check the lowercase version of the first characters */
 
-	if ((*pos = GMT_strlcmp("laea/"  , name))) return (GMT_LAMB_AZ_EQ);
-	if ((*pos = GMT_strlcmp("aeqd/"  , name))) return (GMT_AZ_EQDIST);
-	if ((*pos = GMT_strlcmp("aea/"   , name))) return (GMT_ALBERS);
-	if ((*pos = GMT_strlcmp("braun/" , name))) return (GMT_BRAUN);
-	if ((*pos = GMT_strlcmp("cass/"  , name))) return (GMT_CASSINI);
-	if ((*pos = GMT_strlcmp("eqc/"   , name))) return (GMT_CYL_EQDIST);
-	if ((*pos = GMT_strlcmp("cea/"   , name))) return (GMT_CYL_EQ);
-	if ((*pos = GMT_strlcmp("eck4/"  , name))) return (GMT_ECKERT4);
-	if ((*pos = GMT_strlcmp("eck6/"  , name))) return (GMT_ECKERT6);
-	if ((*pos = GMT_strlcmp("eqdc/"  , name))) return (GMT_ECONIC);
-	if ((*pos = GMT_strlcmp("hammer/", name))) return (GMT_HAMMER);
-	if ((*pos = GMT_strlcmp("gnom/"  , name))) return (GMT_GNOMONIC);
-	if ((*pos = GMT_strlcmp("vandg/" , name))) return (GMT_VANGRINTEN);
-	if ((*pos = GMT_strlcmp("lcc/"   , name))) return (GMT_LAMBERT);
-	if ((*pos = GMT_strlcmp("rect/"  , name))) return (GMT_LINEAR);
-	if ((*pos = GMT_strlcmp("merc/"  , name))) return (GMT_MERCATOR);
-	if ((*pos = GMT_strlcmp("mill/"  , name))) return (GMT_MILLER);
-	if ((*pos = GMT_strlcmp("moll/"  , name))) return (GMT_MOLLWEIDE);
-	if ((*pos = GMT_strlcmp("omerc/" , name))) return (GMT_OBLIQUE_MERC);
-	if ((*pos = GMT_strlcmp("omercp/", name))) return (GMT_OBLIQUE_MERC_POLE);
-	if ((*pos = GMT_strlcmp("ortho/" , name))) return (GMT_ORTHO);
-	if ((*pos = GMT_strlcmp("nsper/" , name))) return (GMT_GENPER);
-	if ((*pos = GMT_strlcmp("polar/" , name))) return (GMT_POLAR);
-	if ((*pos = GMT_strlcmp("robin/" , name))) return (GMT_ROBINSON);
-	if ((*pos = GMT_strlcmp("sinu/"  , name))) return (GMT_SINUSOIDAL);
-	if ((*pos = GMT_strlcmp("stere/" , name))) return (GMT_STEREO);
-	if ((*pos = GMT_strlcmp("utm/"   , name))) return (GMT_UTM);
-	if ((*pos = GMT_strlcmp("tmerc/" , name))) return (GMT_TM);
-	if ((*pos = GMT_strlcmp("wintri/", name))) return (GMT_WINKEL);
-	if ((*pos = GMT_strlcmp("z/"     , name))) return (GMT_ZAXIS);
+	if ((*pos = GMT_strlcmp("laea/"     , name))) return (GMT_LAMB_AZ_EQ);
+	if ((*pos = GMT_strlcmp("aeqd/"     , name))) return (GMT_AZ_EQDIST);
+	if ((*pos = GMT_strlcmp("aea/"      , name))) return (GMT_ALBERS);
+	if ((*pos = GMT_strlcmp("cyl_stere/", name))) return (GMT_CYL_STEREO);
+	if ((*pos = GMT_strlcmp("cass/"     , name))) return (GMT_CASSINI);
+	if ((*pos = GMT_strlcmp("eqc/"      , name))) return (GMT_CYL_EQDIST);
+	if ((*pos = GMT_strlcmp("cea/"      , name))) return (GMT_CYL_EQ);
+	if ((*pos = GMT_strlcmp("eck4/"     , name))) return (GMT_ECKERT4);
+	if ((*pos = GMT_strlcmp("eck6/"     , name))) return (GMT_ECKERT6);
+	if ((*pos = GMT_strlcmp("eqdc/"     , name))) return (GMT_ECONIC);
+	if ((*pos = GMT_strlcmp("hammer/"   , name))) return (GMT_HAMMER);
+	if ((*pos = GMT_strlcmp("gnom/"     , name))) return (GMT_GNOMONIC);
+	if ((*pos = GMT_strlcmp("vandg/"    , name))) return (GMT_VANGRINTEN);
+	if ((*pos = GMT_strlcmp("lcc/"      , name))) return (GMT_LAMBERT);
+	if ((*pos = GMT_strlcmp("rect/"     , name))) return (GMT_LINEAR);
+	if ((*pos = GMT_strlcmp("merc/"     , name))) return (GMT_MERCATOR);
+	if ((*pos = GMT_strlcmp("mill/"     , name))) return (GMT_MILLER);
+	if ((*pos = GMT_strlcmp("moll/"     , name))) return (GMT_MOLLWEIDE);
+	if ((*pos = GMT_strlcmp("omerc/"    , name))) return (GMT_OBLIQUE_MERC);
+	if ((*pos = GMT_strlcmp("omercp/"   , name))) return (GMT_OBLIQUE_MERC_POLE);
+	if ((*pos = GMT_strlcmp("ortho/"    , name))) return (GMT_ORTHO);
+	if ((*pos = GMT_strlcmp("nsper/"    , name))) return (GMT_GENPER);
+	if ((*pos = GMT_strlcmp("polar/"    , name))) return (GMT_POLAR);
+	if ((*pos = GMT_strlcmp("robin/"    , name))) return (GMT_ROBINSON);
+	if ((*pos = GMT_strlcmp("sinu/"     , name))) return (GMT_SINUSOIDAL);
+	if ((*pos = GMT_strlcmp("stere/"    , name))) return (GMT_STEREO);
+	if ((*pos = GMT_strlcmp("utm/"      , name))) return (GMT_UTM);
+	if ((*pos = GMT_strlcmp("tmerc/"    , name))) return (GMT_TM);
+	if ((*pos = GMT_strlcmp("wintri/"   , name))) return (GMT_WINKEL);
+	if ((*pos = GMT_strlcmp("z/"        , name))) return (GMT_ZAXIS);
 
 	/* These older codes took 2 characters */
 
@@ -4343,7 +4348,6 @@ int GMT_parse_J_option (char *args)
 
 		/* Map projections */
 
-		case GMT_CYL_EQDIST:	/* Equidistant Cylindrical (Plate Carree) */
 		case GMT_ECKERT4:	/* Eckert IV */
 		case GMT_ECKERT6:	/* Eckert VI */
 		case GMT_HAMMER:	/* Hammer-Aitoff Equal-Area */
@@ -4364,23 +4368,25 @@ int GMT_parse_J_option (char *args)
 			error += !(n = n_slashes + 1);
 			break;
 
-		case GMT_BRAUN:		/* Braun Cylindrical Stereographic */
-		case GMT_CASSINI:	/* Cassini */
 		case GMT_CYL_EQ:	/* Cylindrical Equal Area */
+		case GMT_CYL_EQDIST:	/* Equidistant Cylindrical */
+		case GMT_CYL_STEREO:	/* Cylindrical Stereographic */
+		case GMT_CASSINI:	/* Cassini */
 		case GMT_MERCATOR:	/* Mercator */
+		case GMT_TM:		/* Transverse Mercator */
 			project_info.pars[0] = GMT_d_NaN;
-			strcpy (txt_b, "0");	/* Initialize default standard parallel */
+			project_info.pars[1] = 0.0;
+			txt_a[0] = txt_b[0] = 0;
 			if (n_slashes == 0)
 				n = sscanf (args, "%s", txt_c);
 			else if (n_slashes == 1)
-				n = sscanf (args, "%[^/]/%s", txt_b, txt_c);
+				n = sscanf (args, "%[^/]/%s", txt_a, txt_c);
 			else if (n_slashes == 2) {
 				n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-				error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
-			}
-			error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
+			if (txt_a[0]) error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
+			if (txt_b[0]) error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
 			error += GMT_scale_or_width (txt_c, &project_info.pars[2]);
-			error += ((project == GMT_CYL_EQ || project == GMT_MERCATOR) && fabs(project_info.pars[1]) >= 90.0);
+			error += ((project == GMT_CYL_EQ || project == GMT_MERCATOR || project == GMT_TM) && fabs(project_info.pars[1]) >= 90.0);
 			error += !(n = n_slashes + 1);
 			break;
 
@@ -4643,18 +4649,6 @@ int GMT_parse_J_option (char *args)
 			project_info.pars[6] = 1.0;
 			error += !(n_slashes == 4 && n == 5);
 			project = GMT_OBLIQUE_MERC;
-			break;
-
-		case GMT_TM:	/* Transverse Mercator */
-			strcpy (txt_b, "0");	/* Default latitude of origin */
-			if (n_slashes == 1)		/* -JT<lon>/<width> */
-				n = sscanf (args, "%[^/]/%s", txt_a, txt_c);
-			else if (n_slashes == 2)	/* -JT<lon>/<lat>/<width> */
-				n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-			error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
-			error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
-			error += GMT_scale_or_width (txt_c, &project_info.pars[2]);
-			error += !(n == n_slashes + 1);
 			break;
 
 		case GMT_UTM:	/* Universal Transverse Mercator */

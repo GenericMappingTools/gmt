@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.171 2007-12-21 16:56:40 remko Exp $
+ *	$Id: gmt_map.c,v 1.172 2007-12-21 20:17:33 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -143,7 +143,6 @@ int GMT_map_crossing  (double lon1, double lat1, double lon2, double lat2, doubl
 int GMT_map_init_linear (void);
 int GMT_map_init_polar (void);
 int GMT_map_init_merc (void);
-int GMT_map_init_braun (void);
 int GMT_map_init_miller (void);
 int GMT_map_init_stereo (void);
 int GMT_map_init_lambert (void);
@@ -162,6 +161,7 @@ int GMT_map_init_eckert4 (void);
 int GMT_map_init_eckert6 (void);
 int GMT_map_init_cyleq (void);
 int GMT_map_init_cyleqdist (void);
+int GMT_map_init_cylstereo (void);
 int GMT_map_init_robinson (void);
 int GMT_map_init_sinusoidal (void);
 int GMT_map_init_cassini (void);
@@ -232,7 +232,7 @@ PFI GMT_radial_clip;
  *   w,e,s,n defines the area in degrees.
  *   project == GMT_LINEAR, GMT_POLAR, GMT_MERCATOR, GMT_STEREO, GMT_LAMBERT, GMT_OBLIQUE_MERC, GMT_UTM,
  *	GMT_TM, GMT_ORTHO, GMT_AZ_EQDIST, GMT_LAMB_AZ_EQ, GMT_WINKEL, GMT_ROBINSON, GMT_CASSINI, GMT_ALBERS, GMT_ECONIC,
- *	GMT_ECKERT4, GMT_ECKERT6, GMT_CYL_EQ, GMT_CYL_EQDIST, GMT_BRAUN, GMT_MILLER, GMT_VANGRINTEN
+ *	GMT_ECKERT4, GMT_ECKERT6, GMT_CYL_EQ, GMT_CYL_EQDIST, GMT_CYL_STEREO, GMT_MILLER, GMT_VANGRINTEN
  *	For GMT_LINEAR, we may have GMT_LINEAR, GMT_LOG10, or GMT_POW
  *
  * parameters[0] through parameters[np-1] mean different things to the various
@@ -248,9 +248,11 @@ PFI GMT_radial_clip;
  *	parameters[0] is inch (or cm)/x_user_unit (radius)
  *
  * MERCATOR projection:
- *	parameters[0] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
+ *	parameters[0] is central meridian
+ *	parameters[1] is standard parallel
+ *	parameters[2] is in inch (or cm)/degree_longitude @ equator OR 1:xxxxx OR map-width
  *
- * STEREOgraphic projection:
+ * STEREOGRAPHIC projection:
  *	parameters[0] is longitude of pole
  *	parameters[1] is latitude of pole
  *	parameters[2] is radius in inches (or cm) from pole to the latitude specified
@@ -278,7 +280,8 @@ PFI GMT_radial_clip;
  *
  * TRANSVERSE MERCATOR (TM) projection
  *	parameters[0] is central meridian
- *	parameters[1] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
+ *	parameters[1] is central parallel
+ *	parameters[2] is scale in inch (cm)/degree along this meridian OR 1:xxxxx OR map-width
  *
  * UNIVERSAL TRANSVERSE MERCATOR (UTM) projection
  *	parameters[0] is UTM zone (0-60, use negative for S hemisphere)
@@ -369,7 +372,7 @@ PFI GMT_radial_clip;
  *	parameters[1] is the standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * BRAUN CYLINDRICAL STEREOGRAPHIC projections (Braun, Gall, B.S.A.M.):
+ * CYLINDRICAL STEREOGRAPHIC projections (Braun, Gall, B.S.A.M.):
  *	parameters[0] is longitude of origin
  *	parameters[1] is the standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
@@ -437,142 +440,114 @@ int GMT_map_setup (double west, double east, double south, double north)
 	switch (project_info.projection) {
 
 		case GMT_LINEAR:		/* Linear transformations */
-
 			search = GMT_map_init_linear ();
 			break;
 
 		case GMT_POLAR:		/* Both lon/lat are actually theta, radius */
-
 			search = GMT_map_init_polar ();
 			break;
 
 		case GMT_MERCATOR:		/* Standard Mercator projection */
-
 			search = GMT_map_init_merc ();
 			break;
 
 		case GMT_STEREO:		/* Stereographic projection */
-
 			search = GMT_map_init_stereo ();
 			break;
 
 		case GMT_LAMBERT:		/* Lambert Conformal Conic */
-
 			search = GMT_map_init_lambert ();
 			break;
 
 		case GMT_OBLIQUE_MERC:	/* Oblique Mercator */
-
 			search = GMT_map_init_oblique ();
 			break;
 
 		case GMT_TM:		/* Transverse Mercator */
-
 			search = GMT_map_init_tm ();
 			break;
 
 		case GMT_UTM:		/* Universal Transverse Mercator */
-
 			search = GMT_map_init_utm ();
 			break;
 
 		case GMT_LAMB_AZ_EQ:	/* Lambert Azimuthal Equal-Area */
-
 			search = GMT_map_init_lambeq ();
 			break;
 
 		case GMT_ORTHO:		/* Orthographic Projection */
-
 			search = GMT_map_init_ortho ();
 			break;
 
 		case GMT_GENPER:		/* General Perspective Projection */
-
 			search = GMT_map_init_genper ();
 			break;
 
 		case GMT_AZ_EQDIST:		/* Azimuthal Equal-Distance Projection */
-
 			search = GMT_map_init_azeqdist ();
 			break;
 
 		case GMT_GNOMONIC:		/* Azimuthal Gnomonic Projection */
-
 			search = GMT_map_init_gnomonic ();
 			break;
 
 		case GMT_MOLLWEIDE:		/* Mollweide Equal-Area */
-
 			search = GMT_map_init_mollweide ();
 			break;
 
 		case GMT_HAMMER:		/* Hammer-Aitoff Equal-Area */
-
 			search = GMT_map_init_hammer ();
 			break;
 
 		case GMT_VANGRINTEN:		/* Van der Grinten */
-
 			search = GMT_map_init_grinten ();
 			break;
 
 		case GMT_WINKEL:		/* Winkel Tripel */
-
 			search = GMT_map_init_winkel ();
 			break;
 
 		case GMT_ECKERT4:		/* Eckert IV */
-
 			search = GMT_map_init_eckert4 ();
 			break;
 
 		case GMT_ECKERT6:		/* Eckert VI */
-
 			search = GMT_map_init_eckert6 ();
 			break;
 
 		case GMT_CYL_EQ:		/* Cylindrical Equal-Area */
-
 			search = GMT_map_init_cyleq ();
 			break;
 
-		case GMT_BRAUN:			/* Braun Cyclindrical Stereographic */
-
-			search = GMT_map_init_braun ();
+		case GMT_CYL_STEREO:			/* Cyclindrical Stereographic */
+			search = GMT_map_init_cylstereo ();
 			break;
 
 		case GMT_MILLER:		/* Miller Cylindrical */
-
 			search = GMT_map_init_miller ();
 			break;
 
 		case GMT_CYL_EQDIST:	/* Cylindrical Equidistant */
-
 			search = GMT_map_init_cyleqdist ();
 			break;
 
 		case GMT_ROBINSON:		/* Robinson */
-
 			search = GMT_map_init_robinson ();
 			break;
 
 		case GMT_SINUSOIDAL:	/* Sinusoidal Equal-Area */
-
 			search = GMT_map_init_sinusoidal ();
 			break;
 
 		case GMT_CASSINI:		/* Cassini cylindrical */
-
 			search = GMT_map_init_cassini ();
 			break;
 
 		case GMT_ALBERS:		/* Albers Equal-Area Conic */
-
 			search = GMT_map_init_albers ();
 			break;
 
 		case GMT_ECONIC:		/* Equidistant Conic */
-
 			search = GMT_map_init_econic ();
 			break;
 
@@ -706,7 +681,7 @@ int GMT_init_three_D (void) {
 		case GMT_OBLIQUE_MERC:
 		case GMT_CYL_EQ:
 		case GMT_CYL_EQDIST:
-		case GMT_BRAUN:
+		case GMT_CYL_STEREO:
 		case GMT_MILLER:
 			easy = TRUE;
 			break;
@@ -1132,11 +1107,9 @@ int GMT_map_init_merc (void) {
 		GMT_exit (EXIT_FAILURE);
 	}
 	if (GMT_is_dnan(project_info.pars[0])) project_info.pars[0] = 0.5 * (project_info.w + project_info.e);
-	GMT_vmerc (project_info.pars[0]);
-	project_info.m_m *= D;
-	project_info.m_im /= D;
-	project_info.m_mx *= D;
-	project_info.m_imx /= D;
+	GMT_vmerc (project_info.pars[0], project_info.pars[1]);
+	project_info.j_x *= D;
+	project_info.j_ix /= D;
 	GMT_forward = (PFI) GMT_merc_sph;
 	GMT_inverse = (PFI) GMT_imerc_sph;
 	(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
@@ -1219,12 +1192,12 @@ int GMT_map_init_cyleqdist (void) {
 
 	if (GMT_is_dnan(project_info.pars[0])) project_info.pars[0] = 0.5 * (project_info.w + project_info.e);
 	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
-	GMT_vcyleqdist (project_info.pars[0]);
+	GMT_vcyleqdist (project_info.pars[0], project_info.pars[1]);
 	GMT_cyleqdist (project_info.w, project_info.s, &xmin, &ymin);
 	GMT_cyleqdist (project_info.e, project_info.n, &xmax, &ymax);
-	if (project_info.units_pr_degree) project_info.pars[1] /= project_info.M_PR_DEG;
-	project_info.x_scale = project_info.y_scale = project_info.pars[1];
-	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
+	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
+	project_info.x_scale = project_info.y_scale = project_info.pars[2];
+	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
 	GMT_n_lat_nodes = 2;
 	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
 	GMT_forward = (PFI) GMT_cyleqdist;
@@ -1277,26 +1250,26 @@ int GMT_map_init_miller (void) {
 }
 
 /*
- *	TRANSFORMATION ROUTINES FOR BRAUN CYLINDRICAL STEREOGRAPHIC PROJECTIONS (GMT_BRAUN)
+ *	TRANSFORMATION ROUTINES FOR CYLINDRICAL STEREOGRAPHIC PROJECTIONS (GMT_CYL_STEREO)
  */
 
-int GMT_map_init_braun (void) {
+int GMT_map_init_cylstereo (void) {
 	double xmin, xmax, ymin, ymax;
 
 	GMT_set_spherical ();	/* Force spherical for now */
 
 	if (GMT_is_dnan(project_info.pars[0])) project_info.pars[0] = 0.5 * (project_info.w + project_info.e);
 	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
-	GMT_vbraun (project_info.pars[0], project_info.pars[1]);
-	GMT_braun (project_info.w, project_info.s, &xmin, &ymin);
-	GMT_braun (project_info.e, project_info.n, &xmax, &ymax);
+	GMT_vcylstereo (project_info.pars[0], project_info.pars[1]);
+	GMT_cylstereo (project_info.w, project_info.s, &xmin, &ymin);
+	GMT_cylstereo (project_info.e, project_info.n, &xmax, &ymax);
 	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[2];
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
 	GMT_n_lat_nodes = 2;
 	GMT_n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	GMT_forward = (PFI) GMT_braun;
-	GMT_inverse = (PFI) GMT_ibraun;
+	GMT_forward = (PFI) GMT_cylstereo;
+	GMT_inverse = (PFI) GMT_icylstereo;
 	GMT_outside = (PFI) GMT_wesn_outside;
 	GMT_crossing = (PFI) GMT_wesn_crossing;
 	GMT_overlap = (PFI) GMT_wesn_overlap;
@@ -1559,7 +1532,7 @@ int GMT_map_init_oblique (void) {
 	GMT_cross3v (project_info.o_IP, P, project_info.o_IC);
 	GMT_normalize3v (project_info.o_IC);
 
-	GMT_vmerc (0.0);
+	GMT_vmerc (0.0, 0.0);
 
 	if (project_info.region) {	/* Gave oblique degrees */
 		/* Convert oblique wesn in degrees to meters using regular Mercator */
@@ -4722,7 +4695,7 @@ int GMT_rhumbline (double lon1, double lat1, double lon2, double lat2, double **
 	int i, n;
 	double x1, x2, y1, y2, dx, dy, L, dL, f, *xx, *yy;
 
-	GMT_vmerc (0.0);
+	GMT_vmerc (0.0, 0.0);
 	GMT_merc_sph (lon1, lat1, &x1, &y1);	/* Mercator coordinates of end points in projected meters */
 	GMT_merc_sph (lon2, lat2, &x2, &y2);
 	dx = x2 - x1;
@@ -5589,7 +5562,7 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case GMT_MERCATOR:
 			case GMT_CYL_EQ:
 			case GMT_CYL_EQDIST:
-			case GMT_BRAUN:
+			case GMT_CYL_STEREO:
 			case GMT_MILLER:
 			case GMT_OBLIQUE_MERC:
 				np = 4;
@@ -5659,7 +5632,7 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case GMT_MERCATOR:
 			case GMT_CYL_EQ:
 			case GMT_CYL_EQDIST:
-			case GMT_BRAUN:
+			case GMT_CYL_STEREO:
 			case GMT_MILLER:
 			case GMT_OBLIQUE_MERC:
 				work_x[0] = work_x[3] = project_info.xmin;	work_y[0] = work_y[1] = project_info.ymin;

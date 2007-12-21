@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.211 2007-12-20 18:18:03 guru Exp $
+ *	$Id: gmt_plot.c,v 1.212 2007-12-21 20:17:33 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1109,7 +1109,7 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 	ps_setline (thin_pen);
 }
 
-/*	OBLIQUE GMT_MERCATOR PROJECTION MAP FUNCTIONS	*/
+/*	OBLIQUE MERCATOR PROJECTION MAP FUNCTIONS	*/
 
 void GMT_oblmrc_map_boundary (double w, double e, double s, double n)
 {
@@ -1117,7 +1117,7 @@ void GMT_oblmrc_map_boundary (double w, double e, double s, double n)
 	GMT_rect_map_boundary (0.0, 0.0, project_info.xmax, project_info.ymax);
 }
 
-/*	GMT_MOLLWEIDE and GMT_HAMMER-AITOFF EQUAL AREA PROJECTION MAP FUNCTIONS	*/
+/*	MOLLWEIDE and HAMMER-AITOFF EQUAL AREA PROJECTION MAP FUNCTIONS	*/
 
 void GMT_ellipse_map_boundary (double w, double e, double s, double n)
 {
@@ -1823,7 +1823,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		full_lat_range = (fabs (180.0 - fabs (project_info.n - project_info.s)) < GMT_SMALL);
 		proj_A = (project_info.projection == GMT_MERCATOR || project_info.projection == GMT_OBLIQUE_MERC ||
 			project_info.projection == GMT_WINKEL || project_info.projection == GMT_ECKERT4 || project_info.projection == GMT_ECKERT6 ||
-			project_info.projection == GMT_ROBINSON || project_info.projection == GMT_CYL_EQ || project_info.projection == GMT_BRAUN ||
+			project_info.projection == GMT_ROBINSON || project_info.projection == GMT_CYL_EQ || project_info.projection == GMT_CYL_STEREO ||
 			project_info.projection == GMT_CYL_EQDIST || project_info.projection == GMT_MILLER || project_info.projection == GMT_LINEAR);
 		proj_B = (project_info.projection == GMT_HAMMER || project_info.projection == GMT_MOLLWEIDE ||
 			project_info.projection == GMT_SINUSOIDAL);
@@ -1960,7 +1960,7 @@ void GMT_map_boundary (double w, double e, double s, double n)
 		case GMT_MERCATOR:
 		case GMT_CYL_EQ:
 		case GMT_CYL_EQDIST:
-		case GMT_BRAUN:
+		case GMT_CYL_STEREO:
 		case GMT_MILLER:
 			GMT_fancy_map_boundary (w, e, s, n);
 			break;

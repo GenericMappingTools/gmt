@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.332 2007-12-21 16:49:43 remko Exp $
+ *	$Id: gmt_support.c,v 1.333 2007-12-21 20:17:33 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7486,7 +7486,7 @@ BOOLEAN GMT_is_fancy_boundary (void)
 		case GMT_MERCATOR:
 		case GMT_CYL_EQ:
 		case GMT_CYL_EQDIST:
-		case GMT_BRAUN:
+		case GMT_CYL_STEREO:
 		case GMT_MILLER:
 			return (TRUE);
 			break;
