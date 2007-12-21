@@ -3,6 +3,8 @@
 Selects the map projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT (upper case modifier).
 UNIT is cm, inch, or m, depending on the \fBMEASURE_UNIT\fP setting in \.gmtdefaults4, but this can be
 overridden on the command line by appending \fBc\fP, \fBi\fP, or \fBm\fP to the scale/width value.
+When central meridian is optional, default is center of longitude range on OPT(R) option.
+Default standard parallel is the equator.
 For map height, max dimension, or min dimension, append \fBh\fP, \fB+\fP, or \fB-\fP to the width,
 respectively.
 .br
@@ -12,45 +14,29 @@ More details can be found in the \fBpsbasemap\fP man pages.
 \fBCYLINDRICAL PROJECTIONS:\fP
 .br
 .sp
+\fB\-Jbraun\fP/[[\fIlon0/\fP]\fIlat0/\fP]\fIscale\fP (Braun Stereographic)
+.br
 \fB\-Jc\fP\fIlon0/lat0/scale\fP (Cassini)
 .br
-\fB\-Jj\fP\fIlon0/scale\fP (Miller)
+\fB\-Jj\fP[\fIlon0/\fP]\fIscale\fP (Miller)
 .br
-\fB\-Jm\fP\fIscale\fP (Mercator - Greenwich and Equator as origin)
+\fB\-Jm\fP[[\fIlon0\fP/]\fIlat0/\fP]\fIscale\fP (Mercator)
 .br
 \fB\-Jm\fP\fIlon0/lat0/scale\fP (Mercator - Give meridian and standard parallel)
 .br
-\fB\-Joa\fP\fIlon0/lat0/azimuth/scale\fP (Oblique Mercator - point and azimuth)
+\fB\-Jo\fP[\fBa\fP]\fIlon0/lat0/azimuth/scale\fP (Oblique Mercator - point and azimuth)
 .br
-\fB\-Job\fP\fIlon0/lat0/lon1/lat1/scale\fP (Oblique Mercator - two points)
+\fB\-Jo\fP[\fBb\fP]\fIlon0/lat0/lon1/lat1/scale\fP (Oblique Mercator - two points)
 .br
 \fB\-Joc\fP\fIlon0/lat0/lonp/latp/scale\fP (Oblique Mercator - point and pole)
 .br
-\fB\-Jq\fP\fIlon0/scale\fP (Equidistant Cylindrical Projection (Plate Carree))
+\fB\-Jq\fP[\fIlon0/\fP]\fIscale\fP (Equidistant Cylindrical Projection (Plate Carree))
 .br
-\fB\-Jt\fP\fIlon0/scale\fP (TM - Transverse Mercator, with Equator as y = 0)
-.br
-\fB\-Jt\fP\fIlon0/lat0/scale\fP (TM - Transverse Mercator, set origin)
+\fB\-Jt\fP\fIlon0/\fP[\fIlat0/\fP]\fIscale\fP (TM - Transverse Mercator)
 .br
 \fB\-Ju\fP\fIzone/scale\fP (UTM - Universal Transverse Mercator)
 .br
-\fB\-Jy\fP\fIlon0/lats/scale\fP (Basic Cylindrical Projection) 
-.br
-.sp
-\fBAZIMUTHAL PROJECTIONS:\fP
-.br
-.sp
-\fB\-Ja\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Lambert)
-.br
-\fB\-Je\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Equidistant)
-.br
-\fB\-Jf\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Gnomonic)
-.br
-\fB\-Jg\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Orthographic)
-.br
-\fB\-Jg\fP\fIlon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale\fP (General Perspective).
-.br
-\fB\-Js\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI\fP[\fI/slat\fP]\fI/scale\fP (General Stereographic)
+\fB\-Jy\fP[[\fIlon0/\fP]\fIlat0/\fP]\fIscale\fP (Basic Cylindrical Projection) 
 .br
 .sp
 \fBCONIC PROJECTIONS:\fP
@@ -58,27 +44,45 @@ More details can be found in the \fBpsbasemap\fP man pages.
 .sp
 \fB\-Jb\fP\fIlon0/lat0/lat1/lat2/scale\fP (Albers)
 .br
-\fB\-Jd\fP\fIlon0/lat0/lat1/lat2/scale\fP (Equidistant)
+\fB\-Jd\fP\fIlon0/lat0/lat1/lat2/scale\fP (Conic Equidistant)
 .br
-\fB\-Jl\fP\fIlon0/lat0/lat1/lat2/scale\fP (Lambert)
+\fB\-Jl\fP\fIlon0/lat0/lat1/lat2/scale\fP (Lambert Conic Conformal)
+.br
+.sp
+\fBAZIMUTHAL PROJECTIONS:\fP
+.br
+.sp
+\fB\-Ja\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Lambert Azimuthal Equal-Area)
+.br
+\fB\-Je\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Azimuthal Equidistant)
+.br
+\fB\-Jf\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Gnomonic)
+.br
+\fB\-Jg\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Orthographic)
+.br
+\fB\-Jg\fP\fIlon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale\fP (General Perspective).
+.br
+\fB\-Js\fP\fIlon0/lat0\fP[\fI/horizon\fP][\fI/slat\fP]\fI/scale\fP (General Stereographic)
 .br
 .sp
 \fBMISCELLANEOUS PROJECTIONS:\fP
 .br
 .sp
-\fB\-Jh\fP\fIlon0/scale\fP (Hammer)
+\fB\-Jh\fP[\fIlon0/\fP]\fIscale\fP (Hammer)
 .br
-\fB\-Ji\fP\fIlon0/scale\fP (Sinusoidal)
+\fB\-Ji\fP[\fIlon0/\fP]\fIscale\fP (Sinusoidal)
 .br
-\fB\-Jk\fP[\fBf|s\fP]\fIlon0/scale\fP (Eckert IV (f) and VI (s))
+\fB\-Jkf\fP[\fIlon0/\fP]\fIscale\fP (Eckert IV)
 .br
-\fB\-Jn\fP\fIlon0/scale\fP (Robinson)
+\fB\-Jk\fP[\fBs\fP][\fIlon0/\fP]\fIscale\fP (Eckert IV)
 .br
-\fB\-Jr\fP\fIlon0/scale\fP (Winkel Tripel)
+\fB\-Jn\fP[\fIlon0/\fP]\fIscale\fP (Robinson)
 .br
-\fB\-Jv\fP\fIlon0/scale\fP (Van der Grinten)
+\fB\-Jr\fP[\fIlon0/\fP]\fIscale\fP (Winkel Tripel)
 .br
-\fB\-Jw\fP\fIlon0/scale\fP (Mollweide)
+\fB\-Jv\fP[\fIlon0/\fP]\fIscale\fP (Van der Grinten)
+.br
+\fB\-Jw\fP[\fIlon0/\fP]\fIscale\fP (Mollweide)
 .br
 .sp
 \fBNON-GEOGRAPHICAL PROJECTIONS:\fP
