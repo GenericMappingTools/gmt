@@ -43,9 +43,9 @@ void GMT_scale_eqrad ();
 void GMT_vpolar(double lon0);
 void GMT_vmerc(double lon0);
 void GMT_vcyleq(double lon0, double slat);
-void GMT_vcyleqdist(double lon0);
+void GMT_vcyleqdist(double lon0, double slat);
+void GMT_vcylstereo(double lon0, double slat);
 void GMT_vmiller(double lon0);
-void GMT_vbraun(double lon0, double slat);
 void GMT_vstereo(double lon0, double lat0, double horizon);
 void GMT_vlamb(double lon0, double lat0, double pha, double phb);
 void GMT_vtm(double lon0, double lat0);
@@ -150,8 +150,8 @@ void GMT_cyleqdist(double lon, double lat, double *x, double *y);	/*	Convert lon
 void GMT_icyleqdist(double *lon, double *lat, double x, double y);	/*	Convert x/y (Cylindrical Equidistant) to lon/lat 	*/
 void GMT_miller(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Miller Cylindrical)	*/
 void GMT_imiller(double *lon, double *lat, double x, double y);		/*	Convert x/y (Miller Cylindrical) to lon/lat 	*/
-void GMT_braun(double lon, double lat, double *x, double *y);		/*	Convert lon/lat to x/y (Braun Cylindrical)	*/
-void GMT_ibraun(double *lon, double *lat, double x, double y);		/*	Convert x/y (Braun Cylindrical) to lon/lat 	*/
+void GMT_cylstereo(double lon, double lat, double *x, double *y);	/*	Convert lon/lat to x/y (Cylindrical Stereographic)	*/
+void GMT_icylstereo(double *lon, double *lat, double x, double y);	/*	Convert x/y (Cylindrical Stereographic) to lon/lat 	*/
 void GMT_obl (double lon, double lat, double *olon, double *olat);	/*	Convert lon/loat to oblique lon/lat		*/
 void GMT_iobl (double *lon, double *lat, double olon, double olat);	/*	Convert oblique lon/lat to regular lon/lat	*/
 double GMT_left_winkel(double y);	/*	For Winkel maps	*/

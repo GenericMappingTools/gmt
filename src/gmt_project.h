@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.59 2007-12-21 16:58:38 remko Exp $
+ *	$Id: gmt_project.h,v 1.60 2007-12-21 20:17:33 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,7 +49,7 @@
 #define GMT_MERCATOR		100
 #define	GMT_CYL_EQ		101
 #define	GMT_CYL_EQDIST		102
-#define GMT_BRAUN		103
+#define GMT_CYL_STEREO		103
 #define GMT_MILLER		104
 #define GMT_TM			106
 #define GMT_UTM			107
@@ -166,11 +166,6 @@ struct GMT_MAP_PROJECTIONS {
 	double xyz_pow[3];		/* For GMT_POW projection */
 	double xyz_ipow[3];
 
-	/* Mercator parameters.  (See Snyder for details on all parameters) */
-
-	double m_m, m_im, m_mx, m_imx;
-	BOOLEAN m_got_parallel;		/* TRUE if scale given at lat != 0 */
-
 	/* Center of radii for all conic projections */
 
 	double c_x0, c_y0;
@@ -240,7 +235,7 @@ struct GMT_MAP_PROJECTIONS {
 	double c_M0, c_c1, c_c2, c_c3, c_c4;
 	double c_i1, c_i2, c_i3, c_i4, c_i5, c_p;
 
-	/* All Cylindrical Projections (except Mercator) */
+	/* All Cylindrical Projections */
 
 	double j_x, j_y, j_ix, j_iy;
 
