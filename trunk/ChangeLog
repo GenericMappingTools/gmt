@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.166 2007-12-20 05:10:20 remko Exp $
+	$Id: ChangeLog,v 1.167 2007-12-21 17:02:35 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-21	remko
+	* gmt_init.c:		Made central longitude optional in cylindrical projections.
+				Made Mercator to have 1, 2, or 3 arguments.
+				Updated usage info.
+	* explain_-J*.txt:	Updated accordingly.
+	* gmt_support.[ch]:	Added GMT_strlcmp in support of GMT_project_type
+	* gmt_map.c:		When central meridian is NaN, replace it by center of longitude range.
+	* gmt_proj.c:		Simplified GMT_vmerc.
 
 2007-12-20	remko
 	* gmt_init.c:		Optionally use names for projections
