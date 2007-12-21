@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.58 2007-12-20 05:04:25 remko Exp $
+ *	$Id: gmt_project.h,v 1.59 2007-12-21 16:58:38 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,8 +55,7 @@
 #define GMT_UTM			107
 #define GMT_CASSINI		108
 #define GMT_OBLIQUE_MERC	150
-#define GMT_OBLIQUE_MERC_AZIM	151
-#define GMT_OBLIQUE_MERC_POLE	152
+#define GMT_OBLIQUE_MERC_POLE	151
 
 /* Conic projections tagged 200-299 */
 #define GMT_IS_CONICAL (project_info.projection / 100 == 2)
