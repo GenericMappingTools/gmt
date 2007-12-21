@@ -1,25 +1,25 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.167 2007-12-21 17:02:35 remko Exp $
+	$Id: ChangeLog,v 1.168 2007-12-21 20:27:13 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2007-12-21	remko
 	* gmt_init.c:		Made central longitude optional in cylindrical projections.
 				Made Mercator to have 1, 2, or 3 arguments.
-				Updated usage info.
-	* explain_-J*.txt:	Updated accordingly.
+				Allow optional standard parallel in cylindrical equidistant (-JQ).
+				Added cyclindrical stereographic projection.
+				Optionally use names for projections. Updated usage info.
+	* explain_-J*.txt, psbasemap.txt:	Updated accordingly.
 	* gmt_support.[ch]:	Added GMT_strlcmp in support of GMT_project_type
 	* gmt_map.c:		When central meridian is NaN, replace it by center of longitude range.
-	* gmt_proj.c:		Simplified GMT_vmerc.
-
-2007-12-20	remko
-	* gmt_init.c:		Optionally use names for projections
-	* gmt_project.h:	Changed the numbering of projection IDs.
-	* *.c:			Avoid using numbers for projections and add GMT_BRAUN where needed.
+				Added initialization of cylindrical stereographic projections
+	* gmt_proj.c:		Simplified GMT_vmerc. Use central meridian and standard parallel as input.
+				Added cylindrical stereographic projection functions
+	* gmt_project.h:	Changed the numbering of projection IDs. Added GMT_CYL_STEREO
+				Consolidated all cyclindrical projection parameters into one set of four.
+	* gmt_grdio.c, mgd77manage.c:	Use the new three parameters of Mercator initialization.
+	* *.c:			Avoid using numbers for projections and add GMT_CYL_STEREO where needed.
 
 2007-12-18	remko
-	* gmt_proj.[ch]:	Added Braun projection functions
-	* gmt_project.h:	Consolidated all cyclindrical projection parameters into one set of four.
-	* gmt_map.c:		Added initialization of Braun projections
 	* gmtalldeps.macros, makefile:	Properly identify all unusual dependencies of sources.
 	* spotter/grdrotimage.c:	Removed from CVS, not used by anything
 
