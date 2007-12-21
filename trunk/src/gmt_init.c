@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.319 2007-12-21 20:26:26 remko Exp $
+ *	$Id: gmt_init.c,v 1.320 2007-12-21 20:31:03 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4381,7 +4381,7 @@ int GMT_parse_J_option (char *args)
 				n = sscanf (args, "%s", txt_c);
 			else if (n_slashes == 1)
 				n = sscanf (args, "%[^/]/%s", txt_a, txt_c);
-			else if (n_slashes == 2) {
+			else if (n_slashes == 2)
 				n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 			if (txt_a[0]) error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
 			if (txt_b[0]) error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
