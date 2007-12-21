@@ -25,26 +25,30 @@ stands for Equal-Area and Conformal, respectively):
 .PP
 \fBCYLINDRICAL PROJECTIONS:\fP
 .TP
-\fB\-Jbraun\fP/[[\fIlon0/\fP]\fIlat0/\fP]\fIscale\fP or \fB\-JBraun\fP/[[\fIlon0/\fP]\fIlat0/\fP]\fIwidth\fP (Braun Stereographic)
+\fB\-Jc\fP\fIlon0/lat0/scale\fP or \fB\-JC\fP\fIlon0/lat0/width\fP (Cassini).
+Give projection center \fIlon0/lat0\fP and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+.TP
+\fB\-Jcyl_stere\fP/[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP or \fB\-JCyl_stere\fP/[\fIlon0/\fP[\fIlat0/\fP]]\fIwidth\fP (Cylindrical Stereographic).
 Give central meridian \fIlon0\fP (optional), standard parallel \fIlat0\fP (optional), and \fIscale\fP along parallel (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 The standard parallel is typically one of these (but can be any value):
 .RS
 .RS
-45 - Gall
+66.159467 - Miller's modified Gall
 .br
-30 - Bolshoi Sovietskii Atlas Mira
+55 - Kamenetskiy's First
 .br
-0 - Braun
+45 - Gall's Stereographic
+.br
+30 - Bolshoi Sovietskii Atlas Mira or Kamenetskiy's Second
+.br
+0 - Braun's Cylindrical
 .RE
 .RE
-.TP
-\fB\-Jc\fP\fIlon0/lat0/scale\fP or \fB\-JC\fP\fIlon0/lat0/width\fP (Cassini).
-Give projection center \fIlon0/lat0\fP and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
 \fB\-Jj\fP[\fIlon0/\fP]\fIscale\fP or \fB\-JJ\fP[\fIlon0/\fP]\fIwidth\fP (Miller Cylindrical Projection).
 Give the central meridian \fIlon0\fP (optional) and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
-\fB\-Jm\fP[[\fIlon0/\fP]\fIlat0/\fP]\fIscale\fP or \fB\-JM\fP[[\fIlon0/\fP]\fIlat0/\fP]\fIwidth\fP
+\fB\-Jm\fP[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP or \fB\-JM\fP[\fIlon0/\fP[\fIlat0/\fP]]\fIwidth\fP
 Give central meridian \fIlon0\fP (optional), standard parallel \fIlat0\fP (optional), and \fIscale\fP along parallel (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
 \fB\-Jo\fP\fIparameters\fP (Oblique Mercator \fB[C]\fP).
@@ -63,8 +67,25 @@ Set projection center \fIlon0/lat0\fP, pole of oblique projection \fIlonp/latp\f
 Give \fIscale\fP along oblique equator (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .RE
 .TP
-\fB\-Jq\fP[\fIlon0/\fP]\fIscale\fP or \fB\-JQ\fP[\fIlon0/\fP]\fIwidth\fP (Equidistant Cylindrical Projection (Plate Carree)).
-Give the central meridian \fIlon0\fP (optional) and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+\fB\-Jq\fP[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP or \fB\-JQ\fP[\fIlon0/\fP[\fIlat0/\fP]]\fIwidth\fP (Cylindrical Equidistant).
+Give the central meridian \fIlon0\fP (optional), standard parallel \fIlat0\fP (optional), and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+The standard parallel is typically one of these (but can be any value):
+.RS
+.RS
+61.7 - Grafarend and Niermann, minimum linear distortion
+.br
+50.5 - Ronald Miller Equirectangular
+.br
+43.5 - Ronald Miller, minimum continental distortion
+.br
+42 - Grafarend and Niermann
+.br
+37.5 - Ronald Miller, minimum overall distortion
+.br
+0 - Plate Carree, Simple Cylindrical, Plain/Plane Chart
+.br
+.RE
+.RE
 .TP
 \fB\-Jt\fP\fIlon0/\fP[\fIlat0/\fP]\fIscale\fP or \fB\-JT\fP\fIlon0/\fP[\fIlat0/\fP]\fIwidth\fP
 Give the central meridian \fIlon0\fP, central parallel \fIlat0\fP (optional), and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
@@ -74,7 +95,7 @@ Give the UTM zone (A,B,1-60[C-X],Y,Z)) and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UN
 .br
 Zones: If C-X not given, prepend - or + to enforce southern or northern hemisphere conventions [northern if south > 0].
 .TP
-\fB\-Jy\fP\fIlon0/lat0/scale\fP or \fB\-JY\fP\fIlon0/lat0/width\fP (General Cylindrical Projections \fB[E]\fP).
+\fB\-Jy\fP\fIlon0/lat0/scale\fP or \fB\-JY\fP\fIlon0/lat0/width\fP (Cylindrical Equal-Area \fB[E]\fP).
 Give the central meridian \fIlon0\fP, standard parallel \fIlat0\fP, and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 The standard parallel is typically one of these (but can be any value):
 .RS

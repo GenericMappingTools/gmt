@@ -14,13 +14,13 @@ More details can be found in the \fBpsbasemap\fP man pages.
 \fBCYLINDRICAL PROJECTIONS:\fP
 .br
 .sp
-\fB\-Jbraun\fP/[[\fIlon0/\fP]\fIlat0/\fP]\fIscale\fP (Braun Stereographic)
-.br
 \fB\-Jc\fP\fIlon0/lat0/scale\fP (Cassini)
+.br
+\fB\-Jcyl_stere\fP/[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP (Cylindrical Stereographic)
 .br
 \fB\-Jj\fP[\fIlon0/\fP]\fIscale\fP (Miller)
 .br
-\fB\-Jm\fP[[\fIlon0\fP/]\fIlat0/\fP]\fIscale\fP (Mercator)
+\fB\-Jm\fP[\fIlon0\fP/[\fIlat0/\fP]]\fIscale\fP (Mercator)
 .br
 \fB\-Jm\fP\fIlon0/lat0/scale\fP (Mercator - Give meridian and standard parallel)
 .br
@@ -30,13 +30,13 @@ More details can be found in the \fBpsbasemap\fP man pages.
 .br
 \fB\-Joc\fP\fIlon0/lat0/lonp/latp/scale\fP (Oblique Mercator - point and pole)
 .br
-\fB\-Jq\fP[\fIlon0/\fP]\fIscale\fP (Equidistant Cylindrical Projection (Plate Carree))
+\fB\-Jq\fP[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP (Cylindrical Equidistant)
 .br
 \fB\-Jt\fP\fIlon0/\fP[\fIlat0/\fP]\fIscale\fP (TM - Transverse Mercator)
 .br
 \fB\-Ju\fP\fIzone/scale\fP (UTM - Universal Transverse Mercator)
 .br
-\fB\-Jy\fP[[\fIlon0/\fP]\fIlat0/\fP]\fIscale\fP (Basic Cylindrical Projection) 
+\fB\-Jy\fP[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP (Cylindrical Equal-Area) 
 .br
 .sp
 \fBCONIC PROJECTIONS:\fP
