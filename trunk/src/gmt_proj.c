@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.30 2007-12-20 05:09:03 remko Exp $
+ *	$Id: gmt_proj.c,v 1.31 2007-12-21 17:01:48 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -203,22 +203,9 @@ void GMT_vmerc (double lon0)
 {
 	/* Set up a Mercator transformation */
 
-	if (project_info.projection != GMT_MERCATOR || !project_info.m_got_parallel) {
-
-		/* Get here when we use -JMwidth or -Jmscale OR GMT_vmerc is called as part of -JO */
-
-		project_info.central_meridian = lon0;
-		project_info.m_m = project_info.EQ_RAD;
-		project_info.pars[1] = project_info.pars[2] = 0.0;
-	}
-	else {	/* Different standard parallel than equator and also set central meridian */
-
-		/* Got here because we used -JM<clon>/<clat>/<width|scale> */
-
-		project_info.central_meridian = project_info.pars[0];
-		project_info.m_m = cosd (project_info.pars[1]) / d_sqrt (1.0 - project_info.ECC2 * sind (project_info.pars[1]) * sind (project_info.pars[1])) * project_info.EQ_RAD;	/* Put project_info.EQ_RAD here instead of in merc */
-		project_info.pars[0] = project_info.pars[2];	/* Since GMT_map_init_merc expects scale/width as 0'th arg */
-	}
+	project_info.central_meridian = lon0;
+	if (project_info.projection != GMT_MERCATOR) project_info.pars[1] = 0.0; /* Get here when GMT_vmerc is called as part of -JO */
+	project_info.m_m = cosd (project_info.pars[1]) / d_sqrt (1.0 - project_info.ECC2 * sind (project_info.pars[1]) * sind (project_info.pars[1])) * project_info.EQ_RAD;	/* Put project_info.EQ_RAD here instead of in merc */
 	project_info.m_mx = project_info.m_m * D2R;
 	project_info.m_im = 1.0 / project_info.m_m;
 	project_info.m_imx = 1.0 / project_info.m_mx;
