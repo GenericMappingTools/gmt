@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.331 2007-12-20 05:09:03 remko Exp $
+ *	$Id: gmt_support.c,v 1.332 2007-12-21 16:49:43 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -65,6 +65,8 @@
  *	GMT_sample_cpt		Resamples the current cpt table based on new z-array
  *	GMT_smooth_contour	Use Akima's spline to smooth contour
  *	GMT_start_trace		Subfunction used by GMT_trace_contour
+ *	GMT_strlcmp		Compares strings until shortest reaches null character
+ *	GMT_strtok		Reiterant replacement of strtok
  *	GMT_trace_contour	Function that trace the contours in GMT_contours
  *	GMT_polar_adjust	Adjust label justification for polar projection
  *	GMT_fourt		Fourier transform routine
@@ -5877,6 +5879,19 @@ void GMT_chop (char *string)
 	for (i = n - 1; i >= 0 && (string[i] == '\n' || string[i] == '\r'); i--);
 	i++;
 	if (i >= 0) string[i] = '\0';	/* Terminate string */
+}
+
+int GMT_strlcmp (char *str1, char *str2)
+{
+	/* Compares str1 with str2 but only until either one reaches the
+	 * null-terminator character.
+	 * When the strings match until that point, the routine returns the
+	 * length of the shortest string, otherwise it returns 0.
+	 */
+	int i = 0;
+	while (str1[i] && str1[i] == str2[i]) i++;
+	if (!str1[i] || !str2[i]) return i;
+	return 0;
 }
 
 int GMT_strtok (const char *string, const char *sep, int *pos, char *token)

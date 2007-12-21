@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.22 2007-09-11 23:30:36 remko Exp $
+ *	$Id: gmt_support.h,v 1.23 2007-12-21 16:49:43 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -66,6 +66,7 @@ EXTERN_MSC int GMT_near_a_point_cartesian (double x, double y, struct GMT_TABLE 
 EXTERN_MSC int GMT_get_arc (double x0, double y0, double r, double dir1, double dir2, double **x, double **y);
 EXTERN_MSC int GMT_non_zero_winding (double xp, double yp, double *x, double *y, int n_path);
 EXTERN_MSC int GMT_set_cpt_path (char *cpt_file, char *table);
+EXTERN_MSC int GMT_strlcmp (char *str1, char *str2);
 EXTERN_MSC int GMT_strtok (const char *string, const char *sep, int *start, char *token);
 EXTERN_MSC int GMT_verify_expectations (int wanted, int got, char *item);
 EXTERN_MSC void GMT_RI_prepare (struct GRD_HEADER *h);
