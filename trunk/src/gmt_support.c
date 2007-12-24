@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.334 2007-12-22 12:30:33 remko Exp $
+ *	$Id: gmt_support.c,v 1.335 2007-12-24 22:31:03 guru Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5890,7 +5890,7 @@ int GMT_strlcmp (char *str1, char *str2)
 	 */
 	int i = 0;
 	while (str1[i] && str1[i] == str2[i]) i++;
-	if (str[i]) return 0;
+	if (str1[i]) return 0;
 	return i;
 }
 
