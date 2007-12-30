@@ -1,6 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.168 2007-12-21 20:27:13 remko Exp $
+	$Id: ChangeLog,v 1.169 2007-12-30 21:33:01 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2007-12-30	remko
+	* gmt_defaults.h:	Removed. Merged into gmt_globals.h
+	* gmt_globals.h:	Now has gmt_defaults.h embedded
+	* gmtalldeps.macros, src/makefile: Improved dependencies
+	* gmt_calclock.h:	Should not include gmt.h (it is included by gmt.h)
+	* pslib.c:		GMT_bulkcopy checks version number (or any string) as part of $Id: ChangeLog,v 1.169 2007-12-30 21:33:01 remko Exp $
+				in first line. No check is performed when using "" as argument.
 
 2007-12-21	remko
 	* gmt_init.c:		Made central longitude optional in cylindrical projections.
