@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.26 2007-12-18 03:33:54 remko Exp $
+#	$Id: Makefile,v 1.27 2007-12-30 19:47:24 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -50,11 +50,6 @@ LIB_O		= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_grdio.o gmt_init.
 
 LIBPS_O		= gmt_plot.o
 
-GMT_I		= gmt_globals.h gmt_defaults.h gmt_media_name.h gmt_media_size.h gmt_colornames.h \
-		gmt_color_rgb.h gmt_pennames.h
-
-PS_I		= pslib_inc.h
-
 PROGS_O		= blockmean.o blockmedian.o blockmode.o filter1d.o fitcircle.o gmtconvert.o \
 		gmtdefaults.o gmtmath.o gmtselect.o gmtset.o grd2cpt.o grd2xyz.o grdblend.o grdcut.o \
 		grdclip.o grdedit.o grdfft.o grdfilter.o grdgradient.o grdhisteq.o grdinfo.o grdlandmask.o \
@@ -63,8 +58,8 @@ PROGS_O		= blockmean.o blockmedian.o blockmode.o filter1d.o fitcircle.o gmtconve
 		sample1d.o spectrum1d.o splitxyz.o surface.o trend1d.o trend2d.o triangulate.o xyz2grd.o
 
 PROGSPS_O	= gmt2rgb.o grdcontour.o grdimage.o grdvector.o grdview.o psbasemap.o psclip.o \
-	  	pscoast.o pshistogram.o psimage.o pslegend.o psmask.o psrose.o psscale.o pstext.o \
-		pscontour.o pswiggle.o psxy.o psxyz.o
+	  	pscoast.o pscontour.o pshistogram.o psimage.o pslegend.o psmask.o psrose.o \
+		psscale.o pstext.o pswiggle.o psxy.o psxyz.o
 
 ALLPROGS	= GMT gmt_shell_functions.sh $(PROGS) $(PROGSPS)
 
@@ -147,20 +142,19 @@ distclean:	spotless
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(LIB_O):	$(GMT_H) $(GMT_I)
-$(LIBPS_O):	$(GMT_H) $(GMT_I) pslib.h
-$(PROGS_O):	$(GMT_H)
-$(PROGSPS_O):	$(GMT_H) pslib.h
-pslib.o:	$(PS_H) $(PS_I) gmt_notunix.h gmt_notposix.h gmt_math.h
+$(LIB_O) $(PROGS_O):		$(GMT_H)
+$(LIBPS_O) $(PROGSPS_O):	$(GMT_H) $(PS_H)
+pslib.o:	$(PS_H) pslib_inc.h gmt_notunix.h gmt_notposix.h gmt_math.h
 
 # Additional unusual dependancies
 
 blockmean.o blockmedian.o blockmode.o:	block_subs.c block_subs.h
 gmt_customio.o: gmt_mgg_header2.c gmt_mgg_header2.h gmt_agc_io.c
 gmt_grdio.o:	gmt_grdformats.h
-gmt_init.o:	gmt_globals.h gmt_keycases.h gmt_unique.h gmt_keywords.h \
-		gmt_media_name.h gmt_media_size.h gmt_colornames.h
-gmt_proj.o:	gmt_proj.h
+gmt_init.o:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_globals.h \
+		gmt_keycases.h gmt_keywords.h gmt_media_name.h gmt_media_size.h \
+		gmt_time_systems.h gmt_unique.h
+gmt_map.o gmt_proj.o:	gmt_proj.h
 gmt_support.o:	gmt_color_rgb.h gmt_pennames.h triangle.h
 gmtmath.o:	gmtmath.h gmtmath_def.h gmtmath_explain.h
 grdmath.o:	grdmath.h grdmath_def.h grdmath_explain.h

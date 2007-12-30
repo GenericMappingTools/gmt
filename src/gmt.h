@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.153 2007-12-01 04:19:05 remko Exp $
+ *	$Id: gmt.h,v 1.154 2007-12-30 19:47:24 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -264,7 +264,7 @@ struct GMT_PEN {	/* Holds pen attributes */
 };
 
 struct GMT_DEFAULTS {
-	/* DO NOT MAKE CHANGES HERE WITHOUT CORRESPONDING CHANGES TO gmt_defaults.h !!!!!!!!!!!!!!!!!!! */
+	/* DO NOT MAKE CHANGES HERE WITHOUT CORRESPONDING CHANGES TO gmt_globals.h !!!!!!!!!!!!!!!!!!! */
 	double annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
 	double annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
 	int annot_font[2];		/* Font for primary and secondary annotations [Helvetica] */

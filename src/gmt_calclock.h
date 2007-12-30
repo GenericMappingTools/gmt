@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.21 2007-01-30 20:37:08 pwessel Exp $
+ *	$Id: gmt_calclock.h,v 1.22 2007-12-30 19:47:24 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -24,8 +24,6 @@
 	W H F Smith, 5 April 2000
 
 */
-
-#include "gmt.h"
 
 typedef int GMT_cal_rd;	/* GMT calendar "rata die" day numbers  */
 /* typedef double GMT_dtime; [in gmt.h]	GMT internal time representation;
