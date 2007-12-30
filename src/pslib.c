@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.158 2007-12-07 21:14:07 guru Exp $
+ *	$Id: pslib.c,v 1.159 2007-12-30 21:33:01 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -189,7 +189,7 @@ void ps_a85_encode (unsigned char quad[], int nbytes);
 void *ps_memory (void *prev_addr, size_t nelem, size_t size);
 int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
-static void ps_bulkcopy (const char *);
+static void ps_bulkcopy (const char *fname, const char *version);
 static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
 int ps_pattern_init(int image_no, char *imagefile);
 void ps_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]);
@@ -1386,8 +1386,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue");
-		ps_bulkcopy (PSL->init.encoding);
+		ps_bulkcopy ("PSL_prologue", "v 1.14 ");
+		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Place code for reencoding of fonts and initialize book-keeping */
 
@@ -1395,7 +1395,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 
 		for (i = 0; i < PSL->internal.N_FONTS; i++) fprintf (PSL->internal.fp, "/F%d {/%s Y} bind def\n", i, PSL->internal.font[i].name);
 
-		ps_bulkcopy ("PSL_label");		/* Place code for label line annotations and clipping */
+		ps_bulkcopy ("PSL_label", "v 1.13 ");		/* Place code for label line annotations and clipping */
 		fprintf (PSL->internal.fp, "%%%%EndProlog\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginSetup\n");
@@ -2798,7 +2798,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	/* Load PSL_text procedures from file for now */
 
 	if (!PSL->internal.text_init) {
-		ps_bulkcopy ("PSL_text");
+		ps_bulkcopy ("PSL_text", "v 1.9 ");
 		PSL->internal.text_init = TRUE;
 	}
 
@@ -4274,13 +4274,16 @@ int ps_comp_int_asc (const void *p1, const void *p2)
 
 /* This function copies a file called $GMT_SHAREDIR/pslib/<fname>.ps
  * to the postscript output verbatim.
+ * If version is not "" then the first line should contain both $Id: and
+ * the requested version string.
  */
-static void ps_bulkcopy (const char *fname)
+static void ps_bulkcopy (const char *fname, const char *version)
 {
 	FILE *in;
 	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
 	int i, j;
+	BOOLEAN first = TRUE;
 
 	ps_getsharepath ("pslib", fname, ".ps", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {
@@ -4290,7 +4293,11 @@ static void ps_bulkcopy (const char *fname)
 	}
 
 	while (fgets (buf, BUFSIZ, in)) {
-		if (PSL->internal.comments) {
+		if (version[0] && first) {
+			first = FALSE;
+			if (!strstr (buf, "$Id:") || !strstr (buf, version)) fprintf (stderr, "Warning: PSL expects %sof %s\n", version, fullname);
+		}
+		else if (PSL->internal.comments) {
 			/* We copy every line, including the comments, except those starting '%-' */
 			if (buf[0] == '%' && buf[1] == '-') continue;
 			fprintf (PSL->internal.fp, "%s", buf);
