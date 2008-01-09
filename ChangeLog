@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.170 2008-01-09 03:04:00 remko Exp $
+	$Id: ChangeLog,v 1.171 2008-01-09 16:49:23 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2008-01-09	remko
 	* gmt_init.c:		Fixed "Holiday-bug" in GMT_parse_J_option introduced 2007-12-21.
 				GMT_str_tolower could run out of bounds. Probably only affected 32-bit compiles.
+	* gmt_support.c (GMT_strlcmp):	Now ignores case.
 
 2007-12-30	remko
 	* gmt_defaults.h:	Removed. Merged into gmt_globals.h
