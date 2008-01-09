@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.320 2007-12-21 20:31:03 remko Exp $
+ *	$Id: gmt_init.c,v 1.321 2008-01-09 02:07:24 remko Exp $
  *
  *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4007,11 +4007,12 @@ int GMT_project_type (char *args, int *pos, int *width_given)
 
 	*width_given = (args[0] >= 'A' && args[0] <= 'Z');
 
-	/* Capture the first 8 characters. This should contain either the Proj4
+	/* Capture the first 11 characters. This should contain either the Proj4
 	   projection name (followed by a slash) or the 1- or 2-letter abbreviation
 	   used prior to GMT 4.2.2. */
 
-	strncpy (name, args, 12);
+	strncpy (name, args, 11);
+	name[11] = '\0';	/* Make sure to add a terminating character */
 	GMT_str_tolower (name);
 
 	/* Check the lowercase version of the first characters */
