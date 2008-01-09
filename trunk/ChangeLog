@@ -1,13 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.169 2007-12-30 21:33:01 remko Exp $
+	$Id: ChangeLog,v 1.170 2008-01-09 03:04:00 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2008-01-09	remko
+	* gmt_init.c:		Fixed "Holiday-bug" in GMT_parse_J_option introduced 2007-12-21.
+				GMT_str_tolower could run out of bounds. Probably only affected 32-bit compiles.
 
 2007-12-30	remko
 	* gmt_defaults.h:	Removed. Merged into gmt_globals.h
 	* gmt_globals.h:	Now has gmt_defaults.h embedded
 	* gmtalldeps.macros, src/makefile: Improved dependencies
 	* gmt_calclock.h:	Should not include gmt.h (it is included by gmt.h)
-	* pslib.c:		GMT_bulkcopy checks version number (or any string) as part of $Id: ChangeLog,v 1.169 2007-12-30 21:33:01 remko Exp $
+	* pslib.c:		ps_bulkcopy checks version number (or any string) as part of Id: tag
 				in first line. No check is performed when using "" as argument.
 
 2007-12-21	remko
@@ -147,13 +151,13 @@
 				GMT_IS_RECT_GRATICULE. Removed initialization with NaN.
 	* grdimage.c:		Added -N option: do not clip image at map boundary.
 
-2007-10-30
+2007-10-30	remko
 	* gmt_project.h:	project_info.[sn]_polar has become obsolete.
 	* gmt_map.c:		---"---
 	* gmt_proj.c:		Removed all singularities and discontinuities in inverse
 				azimuthal projections
 
-2007-10-28
+2007-10-28	remko
 	* guru/gmtguru.macros.orig:	Change to 4.2.2b
 	* configure.in:		Deal with possibility of beta versions
 	* src/makegmt.macros.in:	Removed VERSION (was confusing VERSION from guru)
