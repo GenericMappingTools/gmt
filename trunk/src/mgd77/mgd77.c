@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.162 2007-10-22 16:08:16 guru Exp $
+ *	$Id: mgd77.c,v 1.163 2008-01-15 20:29:15 guru Exp $
  *
  *    Copyright (c) 2005-2007 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -26,6 +26,8 @@
 #endif
 
 #define MGD77_CDF_CONVENTION	"CF-1.0"	/* MGD77+ files are CF-1.0 and hence COARDS-compliant */
+
+#define MGD77_COL_ORDER "#rec\tTZ\tyear\tmonth\tday\thour\tmin\tlat\t\tlon\t\tptc\ttwt\tdepth\tbcc\tbtc\tmtf1\tmtf2\tmag\tmsens\tdiur\tmsd\tgobs\teot\tfaa\tnqc\tid\tsln\tsspn\n"
 
 struct MGD77_MAG_RF {
 	char *model;        /* Reference field model name */
@@ -396,7 +398,7 @@ int MGD77_Write_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77
 			break;
 		case MGD77_FORMAT_TBL:
 			error = MGD77_Write_Header_Record_m77 (file, F, H);
-			fprintf (F->fp, "#day\tmonth\tyear\thour\tmin\tsec\tTZ\tlat\t\tlon\t\tptc\ttwt\tdepth\tbcc\tbtc\tmtf1\tmtf2\tmag\tmsens\tdiur\tmsd\tgobs\teot\tfaa\tnqc\tid\tsln\tsspn\n");
+			fprintf (F->fp, MGD77_COL_ORDER);
 			break;
 		case MGD77_FORMAT_CDF:	/* Will read MGD77 headers from a netCDF file */
 			error = MGD77_Write_Header_Record_cdf (file, F, H);
@@ -1721,7 +1723,7 @@ int MGD77_Write_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	if (MGD77_Open_File (file, F, MGD77_WRITE_MODE)) return (-1);
 	err = MGD77_Write_Header_Record_m77 (file, F, &S->H);  /* Will write the entire 24-section header structure */
 	if (err) return (err);
-	if (F->format == MGD77_FORMAT_TBL) fprintf (F->fp, "#day\tmonth\tyear\thour\tmin\tsec\tTZ\tlat\t\tlon\t\tptc\ttwt\tdepth\tbcc\tbtc\tmtf1\tmtf2\tmag\tmsens\tdiur\tmsd\tgobs\teot\tfaa\tnqc\tid\tsln\tsspn\n");
+	if (F->format == MGD77_FORMAT_TBL) fprintf (F->fp, MGD77_COL_ORDER);
 
 	err = MGD77_Write_Data_asc (file, F, S);	  /* Will write all MGD77 records in current file */
 	if (err) return (err);
