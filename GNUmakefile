@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.18 2007-11-26 02:10:50 remko Exp $
+#  $Id: GNUmakefile,v 1.19 2008-01-20 22:38:53 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -86,7 +86,7 @@ SUPPL	= dbase gshhs imgsrc meca mex mgd77 mgg misc segyprogs spotter x2sys x_sys
 SUPPL_M	= dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 
 #-------------------------------------------------------------------------------
-.PHONY:		FILES all man manpages webman webdoc pdfman docs prep_suppl get_coast get_high get_full
+.PHONY:		FILES all man manpages webman webdoc pdfman docs prep_suppl get_coast get_high get_full \
 		latest-config help update create newsite usable site archive \
 		tar_all zip_all zip_bin zip_src \
 		full high tar_full zip_full tar_high zip_high installl suppl alltests \
