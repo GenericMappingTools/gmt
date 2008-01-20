@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.2 2007-11-29 14:49:15 remko Exp $
-AC_REVISION($Revision: 1.2 $)
+dnl $Id: configure.ac,v 1.3 2008-01-20 22:38:53 remko Exp $
+AC_REVISION($Revision: 1.3 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -40,7 +40,7 @@ dnl
 AC_SUBST(EXE)
 AC_SUBST(COMPRESS)
 AC_SUBST(MATLAB)
-AC_SUBST(GMT_site)
+AC_SUBST(FTPSITE)
 AC_SUBST(TXT2MAN)
 AC_SUBST(NETCDF)
 AC_SUBST(TRIANGLE_D)
@@ -153,11 +153,11 @@ dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(for GMT ftp site selection)
 if test "X$enable_update" = "X" || test "X$enable_update" = "Xyes" ; then
-	GMT_site='ftp.soest.hawaii.edu'
+	FTPSITE='ftp.soest.hawaii.edu'
 else
-	GMT_site=$enable_update
+	FTPSITE=$enable_update
 fi
-AC_MSG_RESULT($GMT_site)
+AC_MSG_RESULT($FTPSITE)
 dnl
 dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-matlab to set Matlab dir
