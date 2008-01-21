@@ -12,7 +12,7 @@ triangulate \- Perform optimal Delauney triangulation and gridding of Cartesian 
 .SH DESCRIPTION
 \fBtriangulate\fP reads one or more ASCII [or binary] files (or standard input) containing x,y[,z] and
 performs Delauney triangulation, i.e., it find how the points should be connected to give
-the most equilateral triangulation possible.  If a map projection is chosen then it is applied before
+the most equilateral triangulation possible.  If a map projection (give OPT(R) and OPT(J)) is chosen then it is applied before
 the triangulation is calculated.  By default, the output is triplets of point id numbers
 that make up each triangle and is written to standard output.
 The id numbers refer to the points position (line number, starting at 0 for the first line) in the input file.
