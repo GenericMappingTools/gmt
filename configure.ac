@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.4 2008-01-23 03:28:56 guru Exp $
-AC_REVISION($Revision: 1.4 $)
+dnl $Id: configure.ac,v 1.5 2008-01-23 04:15:17 guru Exp $
+AC_REVISION($Revision: 1.5 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -52,6 +52,7 @@ AC_SUBST(CC_OPT)
 AC_SUBST(LD_OPT)
 AC_SUBST(LDFLAGS)
 AC_SUBST(DOCDATE)
+AC_SUBST(DOCYEAR)
 AC_SUBST(MANDATE)
 AC_SUBST(SL)
 AC_SUBST(MATLAB)
