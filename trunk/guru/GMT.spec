@@ -1,7 +1,7 @@
-# $Id: GMT.spec,v 1.26 2007-09-10 19:02:03 guru Exp $
+# $Id: GMT.spec,v 1.27 2008-01-23 03:52:12 guru Exp $
 # spec file for package GMT (Version 4)
 #
-# Copyright (c) 2004-2007 Dirk Stoecker <gmt@dstoecker.de>.
+# Copyright (c) 2004-2008 Dirk Stoecker <gmt@dstoecker.de>.
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 #
