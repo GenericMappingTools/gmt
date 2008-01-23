@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.61 2007-03-24 01:42:06 pwessel Exp $
+ *	$Id: gmt_io.h,v 1.62 2008-01-23 03:22:48 guru Exp $
  *
- *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

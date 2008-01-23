@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.163 2008-01-15 20:29:15 guru Exp $
+ *	$Id: mgd77.c,v 1.164 2008-01-23 03:22:49 guru Exp $
  *
- *    Copyright (c) 2005-2007 by P. Wessel
+ *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
  *
  *  File:	mgd77.c

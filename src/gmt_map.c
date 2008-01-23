@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.172 2007-12-21 20:17:33 remko Exp $
+ *	$Id: gmt_map.c,v 1.173 2008-01-23 03:22:48 guru Exp $
  *
- *	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
