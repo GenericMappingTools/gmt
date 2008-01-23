@@ -1,8 +1,8 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77_e77.h,v 1.4 2007-10-04 22:28:20 mtchandl Exp $	
+ *	$Id: mgd77_e77.h,v 1.5 2008-01-23 03:22:49 guru Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
- *    Copyright (c) 2004-2007 by P. Wessel and M. T. Chandler
+ *    Copyright (c) 2004-2008 by P. Wessel and M. T. Chandler
  *	File:	mgd77_e77.h
  *
  *	Include file for mgd77 programs

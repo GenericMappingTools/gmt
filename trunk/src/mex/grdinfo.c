@@ -1,7 +1,7 @@
 /*
- *	$Id: grdinfo.c,v 1.1 2007-09-15 04:34:28 remko Exp $
+ *	$Id: grdinfo.c,v 1.2 2008-01-23 03:22:49 guru Exp $
  *
- *      Copyright (c) 1999-2007 by P. Wessel
+ *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
