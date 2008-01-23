@@ -1,10 +1,10 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.34 2007-09-06 00:40:13 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.35 2008-01-23 03:52:12 guru Exp $
 REM
 REM
-REM	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
+REM	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 REM	See COPYING file for copying and redistribution conditions.
 REM
 REM	This program is free software; you can redistribute it and/or modify
