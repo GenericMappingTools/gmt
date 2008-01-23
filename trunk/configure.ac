@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.3 2008-01-20 22:38:53 remko Exp $
-AC_REVISION($Revision: 1.3 $)
+dnl $Id: configure.ac,v 1.4 2008-01-23 03:28:56 guru Exp $
+AC_REVISION($Revision: 1.4 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -10,11 +10,12 @@ dnl -----------------------------------------------------------------
 dnl First specify the GMT and GSHHS version and release date
 dnl -----------------------------------------------------------------
 dnl Below, set the VERSION to be created.
-dnl Also, you may want to change the DATE value.
+dnl Also, you may want to change the DATE values.
 dnl
 AC_INIT(GMT, 4.2.2b, gmt-help@hawaii.edu)
 MANDATE="1 Apr 2008"
 DOCDATE="April 2008"
+DOCYEAR="2008"
 dnl
 dnl -----------------------------------------------------------------
 dnl The remainder should need no editing
