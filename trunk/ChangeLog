@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.172 2008-01-15 20:29:15 guru Exp $
+	$Id: ChangeLog,v 1.173 2008-01-23 01:10:53 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2008-01-22	pwessel
+	* sample1d.c:		Calendar time knots did not get properly interpreted with -N.
 
 2008-01-15	pwessel
 	* mgd77/mgd77.c:	Wrong header order written if mgd77convert .. -Tt was used

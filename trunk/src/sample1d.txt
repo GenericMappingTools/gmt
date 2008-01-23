@@ -35,7 +35,8 @@ Multiple segment file.  Segments are separated by a record whose first character
 [Default is '>'].
 .TP
 .B \-N
-\fIknotfile\fP is an optional ASCII file with the x locations where the data set will be resampled in the first column
+\fIknotfile\fP is an optional ASCII file with the x locations where the data set will be resampled in the first column.
+Note: if OPT(H) is selected it applies to both \fIinfile\fP and \fIknotfile\fP.
 .TP
 .B \-S
 For equidistant sampling, \fIxstart\fP indicates the location of the first output value. [Default
@@ -50,6 +51,10 @@ Sets the column number of the independent variable [Default is 0 (first)].
 [Default is same as input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
+.SH CALENDAR TIME SAMPLING
+If the abscissa are calendar times then you must use the OPT(f) option to indicate this.  Furthermore,
+OPT(I) then expects an increment in the current \fBTIME_UNIT\fP units.  There is not yet support for
+variable intervals such as months.
 .SH EXAMPLES
 To resample the file profiles.tdgmb, which contains (time,distance,gravity,magnetics,bathymetry) records,
 at 1km equidistant intervals using Akima's spline, use\"'
