@@ -1,5 +1,4 @@
-#!/bin/sh
-#	$Id: copyright.sh,v 1.6 2008-01-23 03:22:47 guru Exp $
+#!/bin/sh # $Id: copyright.sh,v 1.7 2008-01-23 03:28:56 guru Exp $
 
 # Tool that replaces the 1991-$1 Copyright string with 1991-$2 where
 # $1 and $2 are the two year arguments passed to the script.
