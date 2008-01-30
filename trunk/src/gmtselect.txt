@@ -75,6 +75,8 @@ Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are pro
 Use \fB\-Lp\fP to ensure only points whose orthogonal projections onto the nearest line-segment
 fall within the segments endpoints [Default considers points "beyond" the line's endpoints.\"'
 #include "explain_-M.txt"
+The OPT(M) option make sure that segment headers in the input files are copied to output, but it has no effect
+on the data selection. Selection is always done point by point, not by segment.
 .TP
 .B \-N
 Pass all records whose location is inside specified geographical features.
@@ -85,13 +87,13 @@ Specify if records should be skipped (s) or kept (k) using 1 of 2 formats:
 	\fB\-N\fP\fIocean/land/lake/island/pond\fP.
 .br
 Append \fBo\fP to let points exactly on feature boundaries be considered outside the feature [Default is inside]. [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
+#include "explain_-R.txt"
+If no map projection is supplied we implicitly set \fB\-Jx\fP1.
+#include "explain_-V.txt"
 .TP
 .B \-Z
 Pass all records whose 3rd colum (z) lies within the given range.  Input file must have at least
 three columns.  To indicate no limit on min or max, specify a hyphen (-).
-#include "explain_-R.txt"
-If no map projection is supplied we implicitly set \fB\-Jx\fP1.
-#include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 2 input columns].
@@ -125,7 +127,7 @@ To keep all points in data.d within the specified region, except the points on l
 coastlines), use
 .br
 .sp
-\fBgmtselect\fP data.d \fB\-R\fP120/121/22/24 \fB\-Dh\fP \fB\-Ns\fP/\fBk\fP > subset
+\fBgmtselect\fP data.d \fB\-R\fP120/121/22/24 \fB\-Dh\fP \fB\-Nk\fP/\fBs\fP > subset
 .br
 .sp
 To return all points in quakes.d that are inside the spherical polygon lonlatpath.d, try
