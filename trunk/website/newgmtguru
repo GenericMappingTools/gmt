@@ -1,5 +1,5 @@
 #!/bin/csh
-#		$Id: newgmtguru,v 1.14 2007-09-14 01:13:39 remko Exp $
+#		$Id: newgmtguru,v 1.15 2008-01-30 20:12:27 guru Exp $
 #
 # newgmtguru is run to initiate a new guru site
 # and helps setting up the guru directory with
@@ -65,8 +65,8 @@ STEP 3: GET CURRENT GMT PROJECT
 
 We are now ready to obtain the latest GMT project sources from the CVS server.
 This may take a while depending your network connection and net traffic.
-Hit return to initiate the transfer.
 EOF
+echo -n "==> Hit return to initiate the transfer: "
 set answer = $<
 
 cvs checkout GMT
@@ -101,10 +101,11 @@ cat << EOF
 STEP 5: SET GURU- AND SITE-SPECIFIC MAKE PARAMETERS
 
 You must edit the guru Makefile macros to work on `uname -n`.
-Follow instructions in the file.   Hit return to start editing:
+Follow instructions in the file.
 EOF
-cp -f gmtguru.macros.orig gmtguru.macros
+echo -n "==> Hit return to start the editing: "
 set answer = $<
+cp -f gmtguru.macros.orig gmtguru.macros
 if ($?EDITOR) then
 	$EDITOR gmtguru.macros
 else
@@ -158,7 +159,6 @@ man pages to html and generate gif files.  You need to make sure you have:
 
 ghostscript (and utility scripts ps2epsi, ps2pdf)
 latex (and dvips)
-man2html (v3 or higher, a Perl script by Earl Hood)
 latex2html (+ the pbm/ppm tools)
 autoconf and m4
 EOF
