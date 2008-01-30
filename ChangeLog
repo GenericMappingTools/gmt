@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.173 2008-01-23 01:10:53 guru Exp $
+	$Id: ChangeLog,v 1.174 2008-01-30 01:02:33 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2008-01-30	remko
+	* gmtselect.txt:	Fixed error in example (-Ns/k replaced by -Nk/s).
+				Added to -M option: does not affect selection. Always done on point by
+				point basis. However, it is a sensible suggestion to select by segment.
 
 2008-01-22	pwessel
 	* sample1d.c:		Calendar time knots did not get properly interpreted with -N.
