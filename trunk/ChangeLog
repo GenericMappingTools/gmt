@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.174 2008-01-30 01:02:33 remko Exp $
+	$Id: ChangeLog,v 1.175 2008-01-31 18:22:01 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2008-01-31	pwessel
+	* minmax.c:		Could get confused when longitudes crossed dateline or Greenwich,
+				and OUTPUT_DEGREE_FORMAT could interfere with result
 2008-01-30	remko
 	* gmtselect.txt:	Fixed error in example (-Ns/k replaced by -Nk/s).
 				Added to -M option: does not affect selection. Always done on point by
