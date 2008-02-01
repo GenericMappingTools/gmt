@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.5 2008-01-23 04:15:17 guru Exp $
-AC_REVISION($Revision: 1.5 $)
+dnl $Id: configure.ac,v 1.6 2008-02-01 22:56:47 guru Exp $
+AC_REVISION($Revision: 1.6 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -708,8 +708,8 @@ dnl Update the GMT macros
 dnl -----------------------------------------------------------------
 dnl
 morefiles=
-if test -f doc/gmt_version.tex.in ; then
-	morefiles=doc/gmt_version.tex
+if test -f doc/GMT_version.tex.in ; then
+	morefiles=doc/GMT_version.tex
 fi
 AC_OUTPUT(src/makegmt.macros src/GMT src/gmt_version.h $morefiles)
 dnl
