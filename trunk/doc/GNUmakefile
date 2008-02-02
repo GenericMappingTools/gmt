@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.2 2007-11-15 04:38:47 remko Exp $
+#	$Id: GNUmakefile,v 1.3 2008-02-02 07:45:33 guru Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -34,6 +34,12 @@
 #
 #	Date:		08-Feb-2007
 #-------------------------------------------------------------------------------
+# If we ever get strange messages like 
+# pstoimg: Error: "/sw/bin/pnmcrop -verbose  < /tmp/l2h29411/p29461.pnm | /sw/bin/ppmquant -floyd 256 | \
+# /sw/bin/pnmtopng -interlace -trans 'gray85'  > img294.png" failed: Invalid argument
+# it means that we must set export RGBDEF=/usr/X11/share/X11/rgb.txt
+# as for some reason it cannot be found where it is expected (usr/X11R6/lib/X11)
+#
 
 include ../src/makegmt.macros
 
