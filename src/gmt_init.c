@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.323 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_init.c,v 1.324 2008-02-11 18:19:48 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3914,7 +3914,7 @@ int GMT_parse_B_option (char *in) {
 	 */
 
 	char out1[BUFSIZ], out2[BUFSIZ], out3[BUFSIZ], *info[3];
-	char one[GMT_TEXT_LEN], two[GMT_TEXT_LEN], three[GMT_TEXT_LEN];
+	char one[BUFSIZ], two[BUFSIZ], three[BUFSIZ];
 	struct GMT_PLOT_AXIS *A;
 	int i, j, k;
 
