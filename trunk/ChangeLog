@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.177 2008-02-11 18:19:48 guru Exp $
+	$Id: ChangeLog,v 1.178 2008-02-13 20:14:10 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2008-02-13	pwessel
+	* grdmask.c:		Needed to allow for some slop when comparing shrink to 0 since sometime
+						the result is 1e-14 or thereabouts.
+	
 2008-02-11	pwessel
 	* gmt_init.c:		-B processing of labels used an internal string that was too short,
 				which could lead to label truncation.
