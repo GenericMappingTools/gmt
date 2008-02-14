@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.324 2008-02-11 18:19:48 guru Exp $
+ *	$Id: gmt_init.c,v 1.325 2008-02-14 03:14:22 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -125,11 +125,7 @@ void GMT_free_plot_array(void);
 char *GMT_putpen (struct GMT_PEN *pen);
 int GMT_get_time_language (char *name);
 int GMT_init_time_system_structure ();
-#ifndef OLDCAL
 int GMT_scanf_epoch (char *s, int *day, double *t0);
-#else
-int GMT_scanf_epoch (char *s, double *t0);
-#endif
 void GMT_backwards_compatibility ();
 int GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out);
 void GMT_strip_wesnz (const char *in, int side[], BOOLEAN *draw_box, char *out);
@@ -2164,15 +2160,11 @@ int GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_TIME_EPOCH:
 			strncpy (gmtdefs.time_epoch, value, GMT_TEXT_LEN);
 			strncpy (GMT_time_system[GMT_N_TIME_SYSTEMS-1].epoch, value, GMT_TEXT_LEN);
-#ifndef OLDCAL
 			gmtdefs.time_system = GMT_N_TIME_SYSTEMS-1;
-#endif
 			break;
 		case GMTCASE_TIME_UNIT:
 			gmtdefs.time_unit = GMT_time_system[GMT_N_TIME_SYSTEMS-1].unit = value[0];
-#ifndef OLDCAL
 			gmtdefs.time_system = GMT_N_TIME_SYSTEMS-1;
-#endif
 			break;
 		case GMTCASE_TIME_SYSTEM:
 			gmtdefs.time_system = GMT_get_time_system (lower_value);
@@ -5456,14 +5448,8 @@ int	GMT_init_time_system_structure () {
 	/* Set inverse scale and store it to avoid divisions later */
 	GMT_time_system[gmtdefs.time_system].i_scale = 1.0 / GMT_time_system[gmtdefs.time_system].scale;
 
-#ifndef OLDCAL
 	if ( GMT_scanf_epoch (GMT_time_system[gmtdefs.time_system].epoch,
 		&GMT_time_system[gmtdefs.time_system].rata_die, &GMT_time_system[gmtdefs.time_system].epoch_t0) ) {
-#else
-	if ( GMT_scanf_epoch (GMT_time_system[gmtdefs.time_system].epoch,
-		&GMT_time_system[gmtdefs.time_system].epoch_t0) ) {
-#endif
-
 		fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_EPOCH format is invalid.\n");
 		fprintf (stderr, "   A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
 		fprintf (stderr, "   or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
@@ -5473,11 +5459,7 @@ int	GMT_init_time_system_structure () {
 	return (GMT_NOERROR);
 }
 
-#ifndef OLDCAL
 int	GMT_scanf_epoch (char *s, int *rata_die, double *t0) {
-#else
-int	GMT_scanf_epoch (char *s, double *t0) {
-#endif
 
 	/* Read a string which must be in one of these forms:
 		[-]yyyy-mm-ddThh:mm:ss[.xxx]
@@ -5513,12 +5495,8 @@ int	GMT_scanf_epoch (char *s, double *t0) {
 	}
 	if (GMT_hms_is_bad (hh, mm, ss)) return (-1);
 
-#ifndef OLDCAL
 	*rata_die = rd;								/* Rata day number of epoch */
 	*t0 =  (GMT_HR2SEC_F * hh + GMT_MIN2SEC_F * mm + ss) * GMT_SEC2DAY;	/* Fractional day (0<= t0 < 1) since rata_die of epoch */
-#else
-	*t0 = GMT_rdc2dt (rd, 60.0*(60.0*hh + mm) + ss);
-#endif
 	return (0);
 }
 
