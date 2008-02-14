@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.179 2008-02-13 20:18:25 guru Exp $
+	$Id: ChangeLog,v 1.180 2008-02-14 03:14:22 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2008-02-14	remko
+	* gmt.h, gmt_init.c, gmt_calclock.c:	Removed #ifndef OLDCAL (assumed always true).
 
 2008-02-13	pwessel
 	* grdmask.c:		Needed to allow for some slop when comparing shrink to 0.0 since sometime
-						the result of acos is 1e-14 or thereabouts.
+				the result of acos is 1e-14 or thereabouts.
 	
 2008-02-11	pwessel
 	* gmt_init.c:		-B processing of labels used an internal string that was too short,
@@ -15,7 +18,7 @@
 
 2008-01-31	pwessel
 	* minmax.c:		Could get confused when longitudes crossed dateline or Greenwich,
-			and OUTPUT_DEGREE_FORMAT could interfere with result
+				and OUTPUT_DEGREE_FORMAT could interfere with result
 
 2008-01-30	remko
 	* gmtselect.txt:	Fixed error in example (-Ns/k replaced by -Nk/s).
@@ -30,7 +33,8 @@
 
 2008-01-09	remko
 	* gmt_init.c:		Fixed "Holiday-bug" in GMT_parse_J_option introduced 2007-12-21.
-				GMT_str_tolower could run out of bounds. Probably only affected 32-bit compiles.
+				GMT_str_tolower could run out of bounds. Probably only affected 32-bit
+				compilers.
 	* gmt_support.c (GMT_strlcmp):	Now ignores case.
 
 2007-12-30	remko

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.55 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.56 2008-02-14 03:14:22 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,18 +43,12 @@ and time of day (double secs):
 */
 
 GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs) {
-#ifndef OLDCAL
 /*	Given rata die rd and double seconds, return 
 	time in TIME_UNIT relative to chosen TIME_EPOCH  */
 	double f_days;
 	f_days = (rd - GMT_time_system[gmtdefs.time_system].rata_die - GMT_time_system[gmtdefs.time_system].epoch_t0);
 	if (gmtdefs.time_system == 6)  f_days += GMT_GCAL_EPOCH;
 	return ((f_days * GMT_DAY2SEC_F  + secs) * GMT_time_system[gmtdefs.time_system].i_scale);
-#else
-/*	Given rata die rd and double seconds, return 
-	GMT_dtime value of time  */
-	return ((GMT_dtime)(GMT_DAY2SEC_F*(rd-GMT_GCAL_EPOCH) + secs));
-#endif
 }
 
 int	splitinteger(double value, int epsilon, double *doublepart) {
@@ -81,7 +75,6 @@ void	GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s) {
 
 	int i;
 
-#ifndef OLDCAL
 /*	Given time in TIME_UNIT relative to TIME_EPOCH, load rata die of this day
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
@@ -89,12 +82,6 @@ void	GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s) {
 	i = splitinteger(t_sec, 86400, s) + GMT_time_system[gmtdefs.time_system].rata_die;
 	if (gmtdefs.time_system == 6) i -= GMT_GCAL_EPOCH;
 	*rd = (GMT_cal_rd)(i);
-#else
-/*	Given GMT_dtime value t, load calendar data of that day
-	in rd and the seconds since the start of that day in s.  */
-	i = splitinteger(t, 86400, s);
-	*rd = (GMT_cal_rd)(i+GMT_GCAL_EPOCH);
-#endif
 }
 
 
@@ -203,12 +190,7 @@ GMT_cal_rd GMT_rd_from_gymd (int gy, int gm, int gd) {
 	}
 	
 	yearm1 = gy - 1;
-#ifndef OLDCAL
-	rd = day_offset + gd;
-#else
-	rd = GMT_GCAL_EPOCH - 1 + day_offset + gd;
-#endif
-	rd += 365 * yearm1;
+	rd = day_offset + gd + 365 * yearm1;
 	s = floor(yearm1/4.0) - floor(yearm1/100.0) + floor(yearm1/400.0);
 	s += floor( (367 * gm - 362)/12.0);
 	rd += (int)s;
@@ -220,11 +202,7 @@ int	GMT_gyear_from_rd (GMT_cal_rd date) {
 
 	int d0, d1, d2, d3, n400, n100, n4, n1, year;
 	
-#ifndef OLDCAL
 	d0 = date - 1;
-#else
-	d0 = date - GMT_GCAL_EPOCH;
-#endif
 	n400 = (int) floor (d0 / 146097.0);
 	d1 = GMT_cal_imod (d0, 146097);
 	n100 = (int) floor (d1 / 36524.0);
@@ -307,15 +285,7 @@ void GMT_gcal_from_rd (GMT_cal_rd date, struct GMT_gcal *gcal) {
 }
 
 double	GMT_usert_from_dt (GMT_dtime t) {
-#ifndef OLDCAL
 	return (t);
-#else
-	double x;
-
-	x = t - GMT_time_system[gmtdefs.time_system].epoch_t0;
-	if (GMT_time_system[gmtdefs.time_system].i_scale != 1.0) x *= GMT_time_system[gmtdefs.time_system].i_scale;
-	return (x);
-#endif
 }
 
 GMT_dtime	GMT_dt_from_usert (double x) {
@@ -326,17 +296,7 @@ GMT_dtime	GMT_dt_from_usert (double x) {
 		For now, just scale and offset ?
 	*/
 	
-#ifndef OLDCAL
 	return (x);
-#else
-	if (GMT_time_system[gmtdefs.time_system].scale == 1.0) {
-		return ( (GMT_dtime) (x + GMT_time_system[gmtdefs.time_system].epoch_t0) );
-	}
-	else {
-		return ( (GMT_dtime) (x*GMT_time_system[gmtdefs.time_system].scale 
-			+ GMT_time_system[gmtdefs.time_system].epoch_t0) );
-	}
-#endif
 }
 
 int	GMT_y2_to_y4_yearfix (int y2) {
