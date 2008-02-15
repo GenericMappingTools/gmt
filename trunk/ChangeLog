@@ -1,12 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.180 2008-02-14 03:14:22 remko Exp $
+	$Id: ChangeLog,v 1.181 2008-02-15 05:52:13 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2008-02-14	remko
 	* gmt.h, gmt_init.c, gmt_calclock.c:	Removed #ifndef OLDCAL (assumed always true).
 
 2008-02-13	pwessel
-	* grdmask.c:		Needed to allow for some slop when comparing shrink to 0.0 since sometime
+	* grdmask.c:		Needed to allow for some slop when comparing shrink to 0.0 since sometimes
 				the result of acos is 1e-14 or thereabouts.
 	
 2008-02-11	pwessel
