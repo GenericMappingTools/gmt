@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.68 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_nc.c,v 1.69 2008-02-16 16:58:20 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -366,7 +366,8 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		else
 			dummy[0] = 0.0, dummy[1] = 0.0;
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "actual_range", NC_DOUBLE, 2, dummy));
-		GMT_err_trap (nc_put_att_text (header->ncid, header->z_id, "coordinates", 3, "x y"));
+		/* This line confuses Panoply. So we do not use it yet. */
+		/* GMT_err_trap (nc_put_att_text (header->ncid, header->z_id, "coordinates", 3, "x y")); */
 
 		/* Store values along x and y axes */
 		GMT_err_trap (nc_enddef (ncid));
@@ -618,7 +619,8 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		limit[0] = 0.0, limit[1] = 0.0;
 	}
 	GMT_err_trap (nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, 2, limit));
-	GMT_err_trap (nc_put_att_text (header->ncid, header->z_id, "coordinates", 3, "x y"));
+	/* This line confuses Panoply. So we do not use it yet. */
+	/* GMT_err_trap (nc_put_att_text (header->ncid, header->z_id, "coordinates", 3, "x y")); */
 
 	/* Close grid */
 
