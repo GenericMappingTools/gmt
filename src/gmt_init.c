@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.325 2008-02-14 03:14:22 remko Exp $
+ *	$Id: gmt_init.c,v 1.326 2008-02-19 08:32:20 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2990,6 +2990,10 @@ int GMT_begin (int argc, char **argv)
 	int i, j, k, n;
 	char *this;
 
+#ifdef DEBUG
+	GMT_memtrack_init (&GMT_mem_keeper);
+#endif
+
 #ifdef __FreeBSD__
 	/* allow divide by zero -- Inf */
 	fpsetmask (fpgetmask () & ~(FP_X_DZ | FP_X_INV));
@@ -3153,6 +3157,9 @@ void GMT_end (int argc, char **argv)
 
 	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
 
+#ifdef DEBUG
+	GMT_memtrack_report (GMT_mem_keeper);
+#endif
 	exit (EXIT_SUCCESS);
 }
 

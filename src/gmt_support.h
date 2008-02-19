@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.24 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_support.h,v 1.25 2008-02-19 08:32:20 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -85,12 +85,42 @@ EXTERN_MSC void GMT_rotate2D (double x[], double y[], int n, double x0, double y
 EXTERN_MSC void GMT_smart_justify (int just, double angle, double dx, double dy, double *x_shift, double *y_shift);
 EXTERN_MSC void GMT_str_tolower (char *string);
 EXTERN_MSC void GMT_str_toupper (char *string);
-EXTERN_MSC void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname);
 EXTERN_MSC char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, int rgb[]);
 EXTERN_MSC void GMT_fourt (float *data, int *nn, int ndim, int ksign, int iform, float *work);
 EXTERN_MSC int GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
+EXTERN_MSC void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname);
 
 /* Backwards macro for MB-system support */
 #define GMT_get_rgb24(z,rgb) GMT_get_rgb_from_z(z,rgb)
+
+#ifdef DEBUG
+struct MEMORY_ITEM {
+	size_t size;	/* Size of memory allocated */
+	char name[32];	/* Variable name */
+	void *ptr;		/* Memory pointer */
+};
+
+struct MEMORY_TRACKER {
+	int n_ptr;	/* Number of unique pointers to allocated memory */
+	int n_allocated;	/* Number of items allocated by GMT_memory */
+	int n_reallocated;	/* Number of items reallocated by GMT_memory */
+	int n_freed;	/* Number of items freed by GMT_free */
+	size_t current;	/* Memory allocated at current time */
+	size_t maximum;	/* Highest memory count during execution */
+	size_t n_alloc;			/* Allocated size of memory pointer array */
+	struct MEMORY_ITEM *item;			/* Memory item array */
+};
+
+/* In gmt_init.c we need struct MEMORY_TRACKER GMT_mem_keeper which is then
+ * initialized in GMT_begin and reported upon in GMT_end
+ */
+
+EXTERN_MSC void GMT_memtrack_init (struct MEMORY_TRACKER **M);
+EXTERN_MSC void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, void *ptr, size_t size);
+EXTERN_MSC void GMT_memtrack_sub (struct MEMORY_TRACKER *M, void *ptr);
+EXTERN_MSC int GMT_memtrack_find (struct MEMORY_TRACKER *M, void *ptr);
+EXTERN_MSC void GMT_memtrack_alloc (struct MEMORY_TRACKER *M);
+EXTERN_MSC void GMT_memtrack_report (struct MEMORY_TRACKER *M);
+#endif
 
 #endif /* _GMT_SUPPORT_H */

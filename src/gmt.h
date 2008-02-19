@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.156 2008-02-14 03:14:22 remko Exp $
+ *	$Id: gmt.h,v 1.157 2008-02-19 08:32:20 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -612,6 +612,10 @@ EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts time
 #include "gmt_stat.h"      	/* extern functions defined in gmt_stat.c */
 #include "gmt_support.h"      	/* extern functions defined in gmt_support.c */
 #include "gmt_vector.h"      	/* extern functions defined in gmt_vector.c */
+
+#ifdef DEBUG
+extern struct MEMORY_TRACKER *GMT_mem_keeper;
+#endif
 
 #endif  /* _GMT_H */
 #ifdef __cplusplus
