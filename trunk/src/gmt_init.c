@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.327 2008-02-19 17:04:47 guru Exp $
+ *	$Id: gmt_init.c,v 1.328 2008-02-19 23:42:24 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1368,6 +1368,7 @@ int GMT_loaddefaults (char *file)
 	GMT_backwards_compatibility ();
 	if (!strstr (GMT_program, "gmtset")) GMT_verify_encodings ();
 
+	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now */		
 	if (error) fprintf (stderr, "GMT:  %d conversion errors in file %s!\n", error, file);
 
 	return (0);
@@ -1430,6 +1431,7 @@ void GMT_setdefaults (int argc, char **argv)
 		memcpy ((void *)gmtdefs.grid_pen[1].rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
 	}
 
+	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */		
 	if (error) fprintf (stderr, "%s:  %d conversion errors\n", GMT_program, error);
 }
 
@@ -2287,7 +2289,7 @@ BOOLEAN true_false_or_error (char *value, int *answer)
 }
 
 void GMT_putdefaults (char *this_file)	/* Dumps the GMT parameters to file or standard output */
-{
+{	/* ONLY USED BY GMTSET AND GMTDEFAULTS */
 	if (this_file)	/* File name is defined: use it */
 		GMT_savedefaults (this_file);
 	else if (GMT_TMPDIR) {	/* Write $GMT_TMPDIR/.gmtdefaults4 */
@@ -3054,6 +3056,7 @@ int GMT_begin (int argc, char **argv)
 	/* See if user specified -- defaults on the command line [Per Dave Ball's suggestion].
 	 * If found, apply option and remove from argv.  These options only apply to current process. */
 
+	GMT_hash_init (keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
 	for (i = j = 1, n = 0; i < argc; i++) {
 		if (argv[i][0] == '-' && argv[i][1] == '-' && argv[i][2] ) {
 			if ((this = strchr (argv[i], '='))) {	/* Got --PAR=VALUE */
@@ -3067,6 +3070,7 @@ int GMT_begin (int argc, char **argv)
 			argv[j++] = argv[i];
 	}
 	argc = j;
+	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now */		
 	if (n) fprintf (stderr, "%s:  %d conversion errors from command-line default override settings!\n", GMT_program, n);
 
 	GMT_PS_init ();		/* Init the PostScript-related parameters */
@@ -3112,33 +3116,13 @@ void GMT_end (int argc, char **argv)
 	/* GMT_end will clean up after us. */
 
 	int i, j;
-	struct GMT_HASH *p, *current;
 
 	for (i = 0; i < GMT_N_UNIQUE; i++) if (GMT_oldargv[i]) GMT_free ((void *)GMT_oldargv[i]);
 	if (GMT_lut) GMT_free ((void *)GMT_lut);
 	GMT_free_plot_array ();
 	/* Remove allocated hash structures */
-	for (i = 0; i < 12; i++) {
-		p = GMT_month_hashnode[i].next;
-		while ((current = p)) {
-			p = p->next;
-			GMT_free ((void *)current);
-		}
-	}
-	for (i = 0; i < GMT_N_COLOR_NAMES; i++) {
-		p = GMT_rgb_hashnode[i].next;
-		while ((current = p)) {
-			p = p->next;
-			GMT_free ((void *)current);
-		}
-	}
-	for (i = 0; i < GMT_N_KEYS; i++) {
-		p = keys_hashnode[i].next;
-		while ((current = p)) {
-			p = p->next;
-			GMT_free ((void *)current);
-		}
-	}
+	GMT_free_hash (GMT_month_hashnode, 12);
+	GMT_free_hash (GMT_rgb_hashnode, GMT_N_COLOR_NAMES);
 	for (i = 0; i < GMT_N_FONTS; i++) GMT_free ((void *)GMT_font[i].name);
 	GMT_free ((void *)GMT_font);
 
@@ -3147,9 +3131,9 @@ void GMT_end (int argc, char **argv)
 	fpsetmask (FP_X_DZ | FP_X_INV);
 #endif
 
-	GMT_free ((void *)GMT_io.skip_if_NaN);
-	GMT_free ((void *)GMT_io.in_col_type);
-	GMT_free ((void *)GMT_io.out_col_type);
+	if (GMT_io.skip_if_NaN) GMT_free ((void *)GMT_io.skip_if_NaN);
+	if (GMT_io.in_col_type) GMT_free ((void *)GMT_io.in_col_type);
+	if (GMT_io.out_col_type) GMT_free ((void *)GMT_io.out_col_type);
 
 	GMT_free ((void *)GMT_SHAREDIR);
 	GMT_free ((void *)GMT_HOMEDIR);
@@ -3171,6 +3155,21 @@ void GMT_end (int argc, char **argv)
 	GMT_memtrack_report (GMT_mem_keeper);
 #endif
 	exit (EXIT_SUCCESS);
+}
+
+void GMT_free_hash (struct GMT_HASH *hashnode, int n_items) {
+	int i;
+	struct GMT_HASH *p, *current;
+	
+	if (!hashnode) return;	/* Nothing to free */
+	for (i = 0; i < n_items; i++) {
+		p = hashnode[i].next;
+		while (p) {
+			current = p;
+			p = p->next;
+			GMT_free ((void *)current);
+		}
+	}
 }
 
 void GMT_set_home (void)
@@ -5707,6 +5706,7 @@ void *New_GMT_Ctrl () {	/* Allocate and initialize a new common control structur
 }
 
 void Free_GMT_Ctrl (struct GMT_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;	/* Never was allocated */
 	GMT_free ((void *)C->common);
 	GMT_free ((void *)C->gmtdefs);
 	GMT_free ((void *)C->hidden);

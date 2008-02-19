@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.33 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_shore.c,v 1.34 2008-02-19 23:42:24 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -102,8 +102,9 @@ int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s,
 	
 	sprintf (stem, "binned_GSHHS_%c", res);
 	
-        if (!GMT_shore_getpathname (stem, path)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Failed to find file */
-        
+	if (!GMT_shore_getpathname (stem, path)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Failed to find file */
+	memset ((void *)c, 0, sizeof (struct GMT_SHORE));
+		
 	GMT_err_trap (nc_open (path, NC_NOWRITE,&c->cdfid));
                 
 	/* Get all id tags */
@@ -403,9 +404,7 @@ int GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels)
         GMT_err_trap (nc_get_vara_short (c->cdfid, c->seg_level_id, start, count, seg_level));
         GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
 
-
-	c->seg = (struct GMT_BR_SEGMENT *) GMT_memory (VNULL, (size_t)c->ns, sizeof (struct GMT_BR_SEGMENT), "GMT_get_br_bin");
-	
+	c->seg = NULL;
 	for (s = i = 0; i < c->ns; i++) {
 		if (n_levels == 0)
 			skip = FALSE;
@@ -414,7 +413,7 @@ int GMT_get_br_bin (int b, struct GMT_BR *c, int *level, int n_levels)
 				if (seg_level[i] == level[k]) skip = FALSE;
 		}
 		if (skip) continue;
-		
+		if (!c->seg) c->seg = (struct GMT_BR_SEGMENT *) GMT_memory (VNULL, (size_t)c->ns, sizeof (struct GMT_BR_SEGMENT), "GMT_get_br_bin");
 		c->seg[s].n = seg_n[i];
 		c->seg[s].level = seg_level[i];
 		c->seg[s].dx = (short *) GMT_memory (VNULL, (size_t)c->seg[s].n, sizeof (short), "GMT_get_br_bin");
@@ -641,6 +640,7 @@ void GMT_free_br (struct GMT_BR *c)
 		GMT_free ((void *)c->seg[i].dy);
 	}
 	if (c->ns) GMT_free ((void *)c->seg);
+	
 }
 		
 void GMT_shore_cleanup (struct GMT_SHORE *c)
@@ -693,7 +693,7 @@ int GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, int np, BOOLEAN sample, dou
 		/* Clip polygon against map boundary if necessary and return plot x,y in inches */
 				
 		if ((n = GMT_clip_to_map (p[k].lon, p[k].lat, p[k].n, &xtmp, &ytmp)) == 0) {	/* Completely outside */
-			p[k].n = 0;
+			p[k].n = 0;	/* Note the memory in lon, lat not freed yet */
 			continue;
 		}
 			

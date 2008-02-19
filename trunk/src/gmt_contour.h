@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.37 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_contour.h,v 1.38 2008-02-19 23:42:24 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -61,7 +61,7 @@ struct GMT_CONTOUR_LINE {
 	char *name;			/* Contour name */
 	struct GMT_PEN pen;		/* Pen for drawing contour */
 	int font_rgb[3];		/* Font color */
-	struct GMT_LABEL *L;		/* Pointer to array of strictures with labels */
+	struct GMT_LABEL *L;		/* Pointer to array of structures with labels */
 	int n_labels;			/* Number of labels; if 0 we just have a line segment */
 };
 
