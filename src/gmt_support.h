@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.27 2008-02-19 17:14:57 guru Exp $
+ *	$Id: gmt_support.h,v 1.28 2008-02-19 23:42:24 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -124,7 +124,7 @@ struct MEMORY_TRACKER {
  */
 
 EXTERN_MSC void GMT_memtrack_init (struct MEMORY_TRACKER **M);
-EXTERN_MSC void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr, size_t size);
+EXTERN_MSC void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr, void *prev_ptr, size_t size);
 EXTERN_MSC void GMT_memtrack_sub (struct MEMORY_TRACKER *M, void *ptr);
 EXTERN_MSC int GMT_memtrack_find (struct MEMORY_TRACKER *M, void *ptr);
 EXTERN_MSC void GMT_memtrack_alloc (struct MEMORY_TRACKER *M);
