@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.338 2008-02-19 08:32:20 guru Exp $
+ *	$Id: gmt_support.c,v 1.339 2008-02-19 16:36:21 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2375,7 +2375,11 @@ int GMT_intpol (double *x, double *y, int n, int m, double *u, double *v, int mo
 	return (GMT_NOERROR);
 }
 
+#ifdef DEBUG
+void *GMT_memory_func (void *prev_addr, size_t nelem, size_t size, char *progname, char *fname, int line)
+#else
 void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
+#endif
 {
 	void *tmp;
 	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
@@ -2403,7 +2407,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 		}
 	}
 #ifdef DEBUG
-	GMT_memtrack_add (GMT_mem_keeper, "Name goes here", tmp, nelem * size);
+	GMT_memtrack_add (GMT_mem_keeper, fname, line, tmp, nelem * size);
 #endif
 	return (tmp);
 }
@@ -9084,12 +9088,12 @@ void GMT_memtrack_init (struct MEMORY_TRACKER **M) {	/* Called in GMT_begin() */
 	P = (struct MEMORY_TRACKER *)malloc (sizeof (struct MEMORY_TRACKER));
 	P->n_alloc = GMT_CHUNK;
 	P->item = (struct MEMORY_ITEM *)malloc ((size_t)(P->n_alloc * sizeof(struct MEMORY_ITEM)));
-	P->current = P->maximum = P->n_ptr = 0;
+	P->current = P->maximum = P->largest = P->n_ptr = 0;
 	P->n_allocated = P->n_reallocated = P->n_freed = 0;
 	*M = P;
 }
 
-void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, void *ptr, size_t size) {
+void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr, size_t size) {
 	/* Called from GMT_memory to update current list of memory allocated */
 	int entry;
 	size_t old;
@@ -9102,8 +9106,9 @@ void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, void *ptr, size_t s
 	else {	/* Not found, must insert new entry at end */
 		if (entry == M->n_alloc) GMT_memtrack_alloc (M);	/* Must update our memory arrays */
 		M->item[entry].ptr = ptr;
-		strncpy (M->item[entry].name, name, 31);
-		M->item[entry].name[31] = 0;
+		strncpy (M->item[entry].name, name, MEM_TXT_LEN-1);
+		M->item[entry].name[MEM_TXT_LEN-1] = 0;
+		M->item[entry].line = line;
 		old = 0;
 		M->n_ptr++;
 		M->n_allocated++;
@@ -9113,7 +9118,8 @@ void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, void *ptr, size_t s
 		fprintf (stderr, "%s: Memory tracker reports < 0 bytes allocated!\n", GMT_program);
 	}
 	M->item[entry].size = size;
-	if (M->current > M->maximum) M->maximum = M->current;
+	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
+	if (size > M->largest) M->largest = size;				/* Update largest single item */
 }
 
 void GMT_memtrack_sub (struct MEMORY_TRACKER *M, void *ptr) {
@@ -9157,30 +9163,44 @@ void GMT_memtrack_alloc (struct MEMORY_TRACKER *M)
 }
 
 void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_end() */
-	int k = 0, excess;
+	int k, u, excess;
 	char *unit[3] = {"kb", "Mb", "Gb"};
-	double tot;
-	tot = M->maximum / 1024.0;
-	if (tot > 1024.0) {tot /= 1024.0; k++;}
-	if (tot > 1024.0) {tot /= 1024.0; k++;}
-	fprintf (stderr, "GMT: Max memory allocated was %g %s [", tot, unit[k]);
+	double tot, GMT_memtrack_mem (size_t mem, int *unit);
+	
+	tot = GMT_memtrack_mem (M->maximum, &u);
+	fprintf (stderr, "GMT: Max total memory allocated was %.3f %s [", tot, unit[u]);
 	PRINT_SIZE_T(stderr,M->maximum);
 	fprintf (stderr, " bytes]\n");
-	tot = M->current / 1024.0;
-	if (tot > 1024.0) {tot /= 1024.0; k++;}
-	if (tot > 1024.0) {tot /= 1024.0; k++;}
-	fprintf (stderr, "GMT: Upon exit, memory not freed amounts to %g %s [", tot, unit[k]);
+	tot = GMT_memtrack_mem (M->largest, &u);
+	fprintf (stderr, "GMT: Single largest allocation was %.3f %s [", tot, unit[u]);
+	PRINT_SIZE_T(stderr,M->largest);
+	fprintf (stderr, " bytes]\n");
+	tot = GMT_memtrack_mem (M->current, &u);
+	fprintf (stderr, "GMT: Upon exit, memory not freed amounts to %.3f %s [", tot, unit[u]);
 	PRINT_SIZE_T(stderr,M->current);
 	fprintf (stderr, " bytes]\n");
 	fprintf (stderr, "GMT: Items allocated: %d reallocated: %d Freed: %d\n", M->n_allocated, M->n_reallocated, M->n_freed);
 	excess = M->n_allocated - M->n_freed;
 	if (excess) fprintf (stderr, "GMT: Items not properly freed: %d\n", excess);
 	for (k = 0; k < M->n_ptr; k++) {
-		fprintf (stderr, "Item not freed: %s [", M->item[k].name);
+		tot = GMT_memtrack_mem (M->item[k].size, &u);
+		fprintf (stderr, "Memory not freed first allocated in %s, line %d is %.3f %s [", M->item[k].name, M->item[k].line, tot, unit[u]);
 		PRINT_SIZE_T(stderr,M->item[k].size);
 		fprintf (stderr, " bytes]\n");
 	}
 	free (M->item);
 	free ((void *)M);
 }
+
+double GMT_memtrack_mem (size_t mem, int *unit)
+{
+	int k = 0;
+	double val;
+	val = mem / 1024.0;
+	if (val > 1024.0) {val /= 1024.0; k++;}
+	if (val > 1024.0) {val /= 1024.0; k++;}
+	*unit = k;
+	return (val);
+}
+
 #endif
