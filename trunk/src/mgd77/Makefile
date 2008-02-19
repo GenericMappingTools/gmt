@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.46 2007-11-24 21:44:18 remko Exp $
+#	$Id: Makefile,v 1.47 2008-02-19 17:14:57 guru Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -80,7 +80,7 @@ spotless::	clean
 
 $(PROGS_O):	$(PROGS_H) $(GMT_H)
 $(PROGSPS_O):	$(PROGS_H) $(GMT_H) $(PS_H)
-$(LIB_O):	$(LIB_H)
+$(LIB_O):	$(LIB_H) $(GMT_H)
 
 #-------------------------------------------------------------------------------
 #	library
