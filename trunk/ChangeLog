@@ -1,11 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.182 2008-02-17 04:54:58 guru Exp $
+	$Id: ChangeLog,v 1.183 2008-02-19 16:36:21 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2008-02-19	pwessel
+	* gmt_support.[ch]:		Added debug tracking support for memory allocation/freeing.
+	* gmt.h				--"--.  Requires -DDEBUG during compilation to take effect.
+	"
 2008-02-16	pwessel
 	* grdmask.c:		Tiny bug for determining which hemisphere (N/S) unlikely to have
 						had any effect.
-
 2008-02-14	remko
 	* gmt.h, gmt_init.c, gmt_calclock.c:	Removed #ifndef OLDCAL (assumed always true).
 

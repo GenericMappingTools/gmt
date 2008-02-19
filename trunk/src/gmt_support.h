@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.25 2008-02-19 08:32:20 guru Exp $
+ *	$Id: gmt_support.h,v 1.26 2008-02-19 16:36:21 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -88,15 +88,23 @@ EXTERN_MSC void GMT_str_toupper (char *string);
 EXTERN_MSC char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, int rgb[]);
 EXTERN_MSC void GMT_fourt (float *data, int *nn, int ndim, int ksign, int iform, float *work);
 EXTERN_MSC int GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
+#ifdef DEBUG
+EXTERN_MSC void *GMT_memory_func (void *prev_addr, size_t nelem, size_t size, char *progname, char *fname, int line);
+#else
 EXTERN_MSC void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname);
+#endif
 
 /* Backwards macro for MB-system support */
 #define GMT_get_rgb24(z,rgb) GMT_get_rgb_from_z(z,rgb)
 
 #ifdef DEBUG
+#define GMT_memory(array,n,size,program) GMT_memory_func(array,n,size,program,__FILE__,__LINE__)
+#define MEM_TXT_LEN	64
+
 struct MEMORY_ITEM {
 	size_t size;	/* Size of memory allocated */
-	char name[32];	/* Variable name */
+	char name[MEM_TXT_LEN];	/* File name */
+	int line;	/* Line number where things were initially allocated */
 	void *ptr;		/* Memory pointer */
 };
 
@@ -107,6 +115,7 @@ struct MEMORY_TRACKER {
 	int n_freed;	/* Number of items freed by GMT_free */
 	size_t current;	/* Memory allocated at current time */
 	size_t maximum;	/* Highest memory count during execution */
+	size_t largest;	/* Highest memory allocation to a single variable */
 	size_t n_alloc;			/* Allocated size of memory pointer array */
 	struct MEMORY_ITEM *item;			/* Memory item array */
 };
@@ -116,7 +125,7 @@ struct MEMORY_TRACKER {
  */
 
 EXTERN_MSC void GMT_memtrack_init (struct MEMORY_TRACKER **M);
-EXTERN_MSC void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, void *ptr, size_t size);
+EXTERN_MSC void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr, size_t size);
 EXTERN_MSC void GMT_memtrack_sub (struct MEMORY_TRACKER *M, void *ptr);
 EXTERN_MSC int GMT_memtrack_find (struct MEMORY_TRACKER *M, void *ptr);
 EXTERN_MSC void GMT_memtrack_alloc (struct MEMORY_TRACKER *M);
