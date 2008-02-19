@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.326 2008-02-19 08:32:20 guru Exp $
+ *	$Id: gmt_init.c,v 1.327 2008-02-19 17:04:47 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3139,6 +3139,8 @@ void GMT_end (int argc, char **argv)
 			GMT_free ((void *)current);
 		}
 	}
+	for (i = 0; i < GMT_N_FONTS; i++) GMT_free ((void *)GMT_font[i].name);
+	GMT_free ((void *)GMT_font);
 
 #ifdef __FreeBSD__
 	fpresetsticky (FP_X_DZ | FP_X_INV);
@@ -3149,6 +3151,14 @@ void GMT_end (int argc, char **argv)
 	GMT_free ((void *)GMT_io.in_col_type);
 	GMT_free ((void *)GMT_io.out_col_type);
 
+	GMT_free ((void *)GMT_SHAREDIR);
+	GMT_free ((void *)GMT_HOMEDIR);
+	if (GMT_USERDIR) GMT_free ((void *)GMT_USERDIR);
+	if (GMT_GRIDDIR) GMT_free ((void *)GMT_GRIDDIR);
+	if (GMT_IMGDIR) GMT_free ((void *)GMT_IMGDIR);
+	if (GMT_DATADIR) GMT_free ((void *)GMT_DATADIR);
+	if (GMT_TMPDIR) GMT_free ((void *)GMT_TMPDIR);
+	
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) if (GMT_plot_format[i][j]) GMT_free ((void *)GMT_plot_format[i][j]);
 
 	if (gmtdefs.encoding.name) free (gmtdefs.encoding.name);
@@ -3204,7 +3214,10 @@ void GMT_set_home (void)
 		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_HOMEDIR) + 6), sizeof (char), "GMT");
 		sprintf (GMT_USERDIR, "%s%c%s", GMT_HOMEDIR, DIR_DELIM, ".gmt");
 	}
-	if (access(GMT_USERDIR,R_OK)) GMT_USERDIR = CNULL;
+	if (access(GMT_USERDIR,R_OK)) {
+		GMT_free ((void *) GMT_USERDIR);
+		GMT_USERDIR = CNULL;
+	}
 
 	/* Check if obsolete GMT_CPTDIR was specified */
 
@@ -3217,30 +3230,41 @@ void GMT_set_home (void)
 	/* Determine GMT_DATADIR, GMT_GRIDDIR, GMT_IMGDIR (data directories) */
 
 	if ((this = getenv ("GMT_DATADIR")) != CNULL) {	/* GMT_DATADIR was set */
-		GMT_DATADIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-		strcpy (GMT_DATADIR, this);
-		if (access(GMT_DATADIR,R_OK)) GMT_DATADIR = CNULL;
+		if (access(this,R_OK))
+			GMT_DATADIR = CNULL;
+		else {
+			GMT_DATADIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
+			strcpy (GMT_DATADIR, this);
+		}
 	}
 	if ((this = getenv ("GMT_GRIDDIR")) != CNULL) {	/* GMT_GRIDDIR was set */
-		GMT_GRIDDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-		strcpy (GMT_GRIDDIR, this);
-		if (access(GMT_GRIDDIR,R_OK)) GMT_GRIDDIR = CNULL;
+		if (access(this,R_OK))
+			GMT_GRIDDIR = CNULL;
+		else {
+			GMT_GRIDDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
+			strcpy (GMT_GRIDDIR, this);
+		}
 	}
 	if ((this = getenv ("GMT_IMGDIR")) != CNULL) {	/* GMT_IMGDIR was set */
-		GMT_IMGDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-		strcpy (GMT_IMGDIR, this);
-		if (access(GMT_IMGDIR,R_OK)) GMT_IMGDIR = CNULL;
+		if (access(this,R_OK))
+			GMT_IMGDIR = CNULL;
+		else {
+			GMT_IMGDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
+			strcpy (GMT_IMGDIR, this);
+		}
 	}
 
 	/* Determine GMT_TMPDIR (for isolation mode). Needs to exist use it. */
 
 	if ((this = getenv("GMT_TMPDIR")) != CNULL) {	/* GMT_TMPDIR was set */
-		GMT_TMPDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-		strcpy (GMT_TMPDIR, this);
-		if (access(GMT_TMPDIR,R_OK+W_OK+X_OK)) {
-			fprintf (stderr, "GMT WARNING: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", GMT_TMPDIR);
+		if (access(this,R_OK+W_OK+X_OK)) {
+			fprintf (stderr, "GMT WARNING: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this);
 			fprintf (stderr, "GMT WARNING: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
 			GMT_TMPDIR = CNULL;
+		}
+		else {
+			GMT_TMPDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
+			strcpy (GMT_TMPDIR, this);
 		}
 	}
 }
