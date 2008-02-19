@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.213 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_plot.c,v 1.214 2008-02-19 19:03:37 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4018,7 +4018,7 @@ void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G)
 
 void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 {
-	int i;
+	int i, j;
 	struct GMT_CONTOUR_LINE *C;
 
 	ps_setfont (G->label_font);
@@ -4040,10 +4040,14 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 
 	for (i = 0; i < G->n_segments; i++) {
 		C = G->segment[i];	/* Pointer to current segment */
-		if (C->n_labels) GMT_free ((void *)C->L);
+		for (j = 0; j < C->n_labels; j++) {
+			if (C->L[j].label) GMT_free ((void *)C->L[j].label);
+		}
+		if (C->L) GMT_free ((void *)C->L);
 		GMT_free ((void *)C->x);
 		GMT_free ((void *)C->y);
 		GMT_free ((void *)C->name);
+		GMT_free ((void *)C);
 	}
 	GMT_free ((void *)G->segment);
 }
@@ -4056,7 +4060,8 @@ int GMT_plotinit (int argc, char *argv[])
 
 	int PS_bit_settings = 0;
 	char label[BUFSIZ];
-
+	struct EPS *eps;
+	
 	/* Load all the bits required by ps_plotinit */
 
 	if (GMT_ps.portrait)    PS_bit_settings |= 1;
@@ -4072,9 +4077,10 @@ int GMT_plotinit (int argc, char *argv[])
 
 	/* Initialize the plot header and settings */
 
+	eps = GMT_epsinfo (GMT_program);
 	ps_plotinit (CNULL, GMT_ps.overlay, PS_bit_settings, GMT_ps.x_origin, GMT_ps.y_origin,
 		GMT_ps.x_scale, GMT_ps.y_scale, GMT_ps.n_copies, GMT_ps.dpi, GMT_INCH,
-		GMT_ps.paper_width, GMT_ps.page_rgb, GMT_ps.encoding_name, GMT_epsinfo (GMT_program));
+		GMT_ps.paper_width, GMT_ps.page_rgb, GMT_ps.encoding_name, eps);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
 
@@ -4098,6 +4104,9 @@ int GMT_plotinit (int argc, char *argv[])
 	else if (GMT_ps.unix_time_label[0])	/* Use the -U supplied label */
 		strcpy (label, GMT_ps.unix_time_label);
 	if (GMT_ps.unix_time) GMT_timestamp (GMT_ps.unix_time_pos[0], GMT_ps.unix_time_pos[1], label);
+	if (eps->name) GMT_free ((void *)eps->name);
+	if (eps->title) GMT_free ((void *)eps->title);
+	if (eps) GMT_free ((void *)eps);
 	return (0);
 }
 

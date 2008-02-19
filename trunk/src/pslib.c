@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.160 2008-01-23 03:22:49 guru Exp $
+ *	$Id: pslib.c,v 1.161 2008-02-19 19:03:37 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1163,6 +1163,8 @@ void ps_plotend (int lastpage)
 	for (i = 0; i < PSL->internal.n_userimages; i++) if (PSL->internal.user_image[i]) ps_free (PSL->internal.user_image[i]);
 	if (PSL->init.file) ps_free ((void *)PSL->init.file);
 	if (PSL->init.encoding) ps_free ((void *)PSL->init.encoding);
+	if (PSL->init.eps->name) ps_free ((void *)PSL->init.eps->name);
+	if (PSL->init.eps->title) ps_free ((void *)PSL->init.eps->title);
 	if (PSL->init.eps) ps_free ((void *)PSL->init.eps);
 	if (PSL->internal.SHAREDIR) ps_free ((void *)PSL->internal.SHAREDIR);
 	if (PSL->internal.USERDIR) ps_free ((void *)PSL->internal.USERDIR);
@@ -1225,9 +1227,14 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	memcpy ((void *)PSL->init.page_size, (void *)page_size, 2*sizeof(int));
 	PSL->init.origin[0] = xoff;	PSL->init.origin[1] = yoff;
 	PSL->init.magnify[0] = xscl;	PSL->init.magnify[1] = yscl;
+	/* Duplicate entire contents of EPS structure - to be freed by ps_plotend() */
 	PSL->init.eps = (struct EPS *) ps_memory (VNULL, 1, sizeof (struct EPS));
 	memcpy ((void *)PSL->init.eps, (void *)eps,sizeof(struct EPS));
-
+	PSL->init.eps->name = (char *) ps_memory (VNULL, (size_t)(strlen (eps->name) + 1), sizeof (char));
+	strcpy (PSL->init.eps->name, eps->name);
+	PSL->init.eps->title = (char *) ps_memory (VNULL, (size_t)(strlen (eps->title) + 1), sizeof (char));
+	strcpy (PSL->init.eps->title, eps->title);
+		
 	/* Determine SHAREDIR (directory containing pslib and pattern subdirectories) */
 
 	if ((this = getenv ("GMT_SHAREDIR")) != CNULL) {	/* GMT_SHAREDIR was set */
@@ -1326,17 +1333,17 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
 	if (eps) {	/* Document info is available */
-		if (eps->portrait) {	/* Plot originated as Portrait */
-			PSL->internal.bb[0] = eps->x0;
-			PSL->internal.bb[1] = eps->y0;
-			PSL->internal.bb[2] = eps->x1;
-			PSL->internal.bb[3] = eps->y1;
+		if (PSL->init.eps->portrait) {	/* Plot originated as Portrait */
+			PSL->internal.bb[0] = PSL->init.eps->x0;
+			PSL->internal.bb[1] = PSL->init.eps->y0;
+			PSL->internal.bb[2] = PSL->init.eps->x1;
+			PSL->internal.bb[3] = PSL->init.eps->y1;
 		}
 		else {			/* Plot originated as Landscape */
-			PSL->internal.bb[0] = PSL->internal.p_width - eps->y1;
-			PSL->internal.bb[1] = eps->x0;
-			PSL->internal.bb[2] = PSL->internal.p_width - eps->y0;
-			PSL->internal.bb[3] = eps->x1;
+			PSL->internal.bb[0] = PSL->internal.p_width - PSL->init.eps->y1;
+			PSL->internal.bb[1] = PSL->init.eps->x0;
+			PSL->internal.bb[2] = PSL->internal.p_width - PSL->init.eps->y0;
+			PSL->internal.bb[3] = PSL->init.eps->x1;
 		}
 	}
 	else {		/* No info is available, default to Current Media Size */
@@ -1360,11 +1367,11 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		else
 			fprintf (PSL->internal.fp, "0 0 %d %d\n", PSL->internal.p_width, PSL->internal.p_height);
 		if (eps) {	/* Document info is available */
-			fprintf (PSL->internal.fp, "%%%%Title: %s\n", eps->title);
+			fprintf (PSL->internal.fp, "%%%%Title: %s\n", PSL->init.eps->title);
 			fprintf (PSL->internal.fp, "%%%%Creator: GMT\n");
-			fprintf (PSL->internal.fp, "%%%%For: %s\n", eps->name);
+			fprintf (PSL->internal.fp, "%%%%For: %s\n", PSL->init.eps->name);
 			fprintf (PSL->internal.fp, "%%%%DocumentNeededResources: font");
-			for (i = 0; i < PSL_MAX_EPS_FONTS && eps->fontno[i] != -1; i++) fprintf (PSL->internal.fp, " %s", PSL->internal.font[eps->fontno[i]].name);
+			for (i = 0; i < PSL_MAX_EPS_FONTS && PSL->init.eps->fontno[i] != -1; i++) fprintf (PSL->internal.fp, " %s", PSL->internal.font[PSL->init.eps->fontno[i]].name);
 			fprintf (PSL->internal.fp, "\n");
 		}
 		else {
@@ -3132,7 +3139,7 @@ void init_font_encoding (struct EPS *eps)
 	int i;
 
 	if (eps)
-		for (i = 0; i < 6 && eps->fontno[i] != -1; i++) ps_encode_font (eps->fontno[i]);
+		for (i = 0; i < 6 && PSL->init.eps->fontno[i] != -1; i++) ps_encode_font (PSL->init.eps->fontno[i]);
 	else	/* Must output all */
 		for (i = 0; i < PSL->internal.N_FONTS; i++) ps_encode_font (i);
 }

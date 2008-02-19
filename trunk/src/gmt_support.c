@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.340 2008-02-19 17:04:47 guru Exp $
+ *	$Id: gmt_support.c,v 1.341 2008-02-19 19:03:37 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3916,6 +3916,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 			track_dist[i] = track_dist[i-1] + step;
 			value_dist[i] = value_dist[i-1] + stept;
 		}
+		GMT_free ((void *)radii);
 
 		/* G->L array is only used so we can later sort labels based on distance along track.  Once
 		 * GMT_contlabel_draw has been called we will free up the memory as the labels are kept in
@@ -3959,6 +3960,8 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
+					else	/* All in vain... */
+						GMT_free ((void *)new_label);
 					dist_offset = 0.0;
 					last_label_dist = this_dist;
 				}
@@ -4069,6 +4072,8 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
+					else	/* All in vain... */
+						GMT_free ((void *)new_label);
 				}
 				GMT_x_free (&G->XC);
 			}
@@ -4103,6 +4108,8 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 							G->L = (struct GMT_LABEL **) GMT_memory ((void *)G->L, n_alloc, sizeof (struct GMT_LABEL *), GMT_program);
 						}
 					}
+					else	/* All in vain... */
+						GMT_free ((void *)new_label);
 				}
 			}
 
@@ -4114,6 +4121,11 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, int nn, double zval, char
 		GMT_free ((void *)track_dist);
 		GMT_free ((void *)map_dist);
 		GMT_free ((void *)value_dist);
+		/* Free label structure since info is now copied to segment labels */
+		for (i = 0; i < G->n_label; i++) {
+			if (G->L[i]->label) GMT_free ((void *)G->L[i]->label);
+			GMT_free ((void *)G->L[i]);
+		}
 		GMT_free ((void *)G->L);
 	}
 	else {   /* just one line, no holes for labels */
@@ -4130,14 +4142,14 @@ void GMT_place_label (struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G, BOO
 	n = strlen (txt) + 1 + m;
 	if (G->prefix && G->prefix[0]) {	/* Must prepend the prefix string */
 		n += strlen (G->prefix) + 1;
-		L->label = (char *) GMT_memory (VNULL, (size_t)n, sizeof (char), "gmt");
+		L->label = (char *) GMT_memory (VNULL, (size_t)n, sizeof (char), GMT_program);
 		if (G->prefix[0] == '-')	/* No space between annotation and prefix */
 			sprintf (L->label, "%s%s", &G->prefix[1], txt);
 		else
 			sprintf (L->label, "%s %s", G->prefix, txt);
 	}
 	else {
-		L->label = (char *) GMT_memory (VNULL, (size_t)n, sizeof (char), "gmt");
+		L->label = (char *) GMT_memory (VNULL, (size_t)n, sizeof (char), GMT_program);
 		strcpy (L->label, txt);
 	}
 	if (use_unit && G->unit && G->unit[0]) {	/* Append a unit string */
@@ -9169,27 +9181,27 @@ void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_en
 	double tot, GMT_memtrack_mem (size_t mem, int *unit);
 	
 	tot = GMT_memtrack_mem (M->maximum, &u);
-	fprintf (stderr, "GMT: Max total memory allocated was %.3f %s [", tot, unit[u]);
+	fprintf (stderr, "%s: Max total memory allocated was %.3f %s [", GMT_program, tot, unit[u]);
 	PRINT_SIZE_T(stderr,M->maximum);
 	fprintf (stderr, " bytes]\n");
 	tot = GMT_memtrack_mem (M->largest, &u);
-	fprintf (stderr, "GMT: Single largest allocation was %.3f %s [", tot, unit[u]);
+	fprintf (stderr, "%s: Single largest allocation was %.3f %s [", GMT_program, tot, unit[u]);
 	PRINT_SIZE_T(stderr,M->largest);
 	fprintf (stderr, " bytes]\n");
 	tot = GMT_memtrack_mem (M->current, &u);
-	fprintf (stderr, "GMT: Upon exit, memory not freed amounts to %.3f %s [", tot, unit[u]);
+	fprintf (stderr, "%s: Upon exit, memory not freed amounts to %.3f %s [", GMT_program, tot, unit[u]);
 	PRINT_SIZE_T(stderr,M->current);
 	fprintf (stderr, " bytes]\n");
-	fprintf (stderr, "GMT: Items allocated: %d reallocated: %d Freed: %d\n", M->n_allocated, M->n_reallocated, M->n_freed);
+	fprintf (stderr, "%s: Items allocated: %d reallocated: %d Freed: %d\n", GMT_program, M->n_allocated, M->n_reallocated, M->n_freed);
 	excess = M->n_allocated - M->n_freed;
-	if (excess) fprintf (stderr, "GMT: Items not properly freed: %d\n", excess);
+	if (excess) fprintf (stderr, "%s: Items not properly freed: %d\n", GMT_program, excess);
 	for (k = 0; k < M->n_ptr; k++) {
 		tot = GMT_memtrack_mem (M->item[k].size, &u);
-		fprintf (stderr, "Memory not freed first allocated in %s, line %d is %.3f %s [", M->item[k].name, M->item[k].line, tot, unit[u]);
+		fprintf (stderr, "%s: Memory not freed first allocated in %s, line %d is %.3f %s [", GMT_program, M->item[k].name, M->item[k].line, tot, unit[u]);
 		PRINT_SIZE_T(stderr,M->item[k].size);
 		fprintf (stderr, " bytes]\n");
 	}
-	if (M->n_ptr == 0) fprintf (stderr, "GMT: All memory freed\n");
+	if (M->n_ptr == 0) fprintf (stderr, "%s: All memory freed\n", GMT_program);
 	
 	free (M->item);
 	free ((void *)M);
