@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.1.1.1 2008-02-19 05:30:04 myself Exp $
+#	$Id: Makefile,v 1.2 2008-02-19 19:03:52 myself Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -86,6 +86,8 @@ stripack.o:	stripack.c
 $(SPHLIB):	sph.o
 	$(AR) cvr $@ $?
 	$(RANLIB) $@
+
+sph.o:	sph.c sph.h $(GMT_H)
 
 spotless::	clean
 #	rm -rf libstripack.a stripack.f90 772 stripack.c Fortran77
