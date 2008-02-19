@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.339 2008-02-19 16:36:21 guru Exp $
+ *	$Id: gmt_support.c,v 1.340 2008-02-19 17:04:47 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -9099,11 +9099,8 @@ void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr
 	size_t old;
 	
 	entry = GMT_memtrack_find (M, ptr);
-	if (entry < M->n_ptr) {	/* Found existing pointer, get its previous size */
-		old = M->item[entry].size;
-		M->n_reallocated++;
-	}
-	else {	/* Not found, must insert new entry at end */
+	if (entry == -1) {	/* Not found, must insert new entry at end */
+		entry = M->n_ptr;	/* Position of this new entry */
 		if (entry == M->n_alloc) GMT_memtrack_alloc (M);	/* Must update our memory arrays */
 		M->item[entry].ptr = ptr;
 		strncpy (M->item[entry].name, name, MEM_TXT_LEN-1);
@@ -9112,6 +9109,10 @@ void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr
 		old = 0;
 		M->n_ptr++;
 		M->n_allocated++;
+	}
+	else {	/* Found existing pointer, get its previous size */
+		old = M->item[entry].size;
+		M->n_reallocated++;
 	}
 	M->current += (size - old);
 	if (M->current < 0) {
@@ -9127,7 +9128,7 @@ void GMT_memtrack_sub (struct MEMORY_TRACKER *M, void *ptr) {
 	int entry;
 	
 	entry = GMT_memtrack_find (M, ptr);
-	if (entry >= M->n_ptr) {	/* Error, trying to free something not allocated by GMT_memory */
+	if (entry == -1) {	/* Error, trying to free something not allocated by GMT_memory */
 		fprintf (stderr, "%s: GMT_memtrack_sub tries to free but item is not found\n", GMT_program);
 		return;
 	}
@@ -9153,7 +9154,7 @@ int GMT_memtrack_find (struct MEMORY_TRACKER *M, void *ptr) {
 		else
 			i++;
 	}
-	return (i);
+	return (go ? -1 : i);
 }
 
 void GMT_memtrack_alloc (struct MEMORY_TRACKER *M)
@@ -9188,6 +9189,8 @@ void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_en
 		PRINT_SIZE_T(stderr,M->item[k].size);
 		fprintf (stderr, " bytes]\n");
 	}
+	if (M->n_ptr == 0) fprintf (stderr, "GMT: All memory freed\n");
+	
 	free (M->item);
 	free ((void *)M);
 }
