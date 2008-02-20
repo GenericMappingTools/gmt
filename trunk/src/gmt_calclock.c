@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.56 2008-02-14 03:14:22 remko Exp $
+ *	$Id: gmt_calclock.c,v 1.57 2008-02-20 15:21:50 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,9 +46,8 @@ GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs) {
 /*	Given rata die rd and double seconds, return 
 	time in TIME_UNIT relative to chosen TIME_EPOCH  */
 	double f_days;
-	f_days = (rd - GMT_time_system[gmtdefs.time_system].rata_die - GMT_time_system[gmtdefs.time_system].epoch_t0);
-	if (gmtdefs.time_system == 6)  f_days += GMT_GCAL_EPOCH;
-	return ((f_days * GMT_DAY2SEC_F  + secs) * GMT_time_system[gmtdefs.time_system].i_scale);
+	f_days = (rd - GMT_time_system.rata_die - GMT_time_system.epoch_t0);
+	return ((f_days * GMT_DAY2SEC_F  + secs) * GMT_time_system.i_scale);
 }
 
 int	splitinteger(double value, int epsilon, double *doublepart) {
@@ -78,9 +77,8 @@ void	GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s) {
 /*	Given time in TIME_UNIT relative to TIME_EPOCH, load rata die of this day
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
-	t_sec = (t * GMT_time_system[gmtdefs.time_system].scale + GMT_time_system[gmtdefs.time_system].epoch_t0 * GMT_DAY2SEC_F);
-	i = splitinteger(t_sec, 86400, s) + GMT_time_system[gmtdefs.time_system].rata_die;
-	if (gmtdefs.time_system == 6) i -= GMT_GCAL_EPOCH;
+	t_sec = (t * GMT_time_system.scale + GMT_time_system.epoch_t0 * GMT_DAY2SEC_F);
+	i = splitinteger(t_sec, 86400, s) + GMT_time_system.rata_die;
 	*rd = (GMT_cal_rd)(i);
 }
 
@@ -827,7 +825,7 @@ void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BO
 	if (step_secs == GMT_DAY2SEC_I) {
 		/* Special case of a 1-day step.  */
 		if (p->sd[0] != 0.0) {	/* Floor it to start of day.  */
-			p->dt[0] -= (p->sd[0] * GMT_time_system[gmtdefs.time_system].i_scale);
+			p->dt[0] -= (p->sd[0] * GMT_time_system.i_scale);
 			p->sd[0] = 0.0;
 		}
 		/* Now we step to next day in rd first, and set dt from there.
@@ -841,7 +839,7 @@ void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BO
 		if (init) {
 			x = step_secs * floor (p->sd[0] / step_secs);
 			if (x != p->sd[0]) {
-				p->dt[0] -= ((p->sd[0] - x) * GMT_time_system[gmtdefs.time_system].i_scale);
+				p->dt[0] -= ((p->sd[0] - x) * GMT_time_system.i_scale);
 				x = p->sd[0];
 			}
 		}
@@ -860,7 +858,7 @@ void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BO
 		}
 		else {
 			p->sd[1] = x;
-			p->dt[1] = p->dt[0] + step_secs * GMT_time_system[gmtdefs.time_system].i_scale;
+			p->dt[1] = p->dt[0] + step_secs * GMT_time_system.i_scale;
 			/* No call here to reset cc[1] struct, as rd hasn't changed.
 				Later, if it is desired to reset struct for clock
 				changes on same day, add a call here.  */
@@ -904,7 +902,7 @@ void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct
 	char text[GMT_CALSTRING_LENGTH];
 	GMT_dtime step;
 
-	step = 0.5 / C->f_sec_to_int / GMT_time_system[gmtdefs.time_system].scale;	/* Precision desired in time units */
+	step = 0.5 / C->f_sec_to_int / GMT_time_system.scale;	/* Precision desired in time units */
 
 	GMT_gcal_from_dt (dt + step, &calendar);			/* Convert dt to a complete calendar structure */
 	

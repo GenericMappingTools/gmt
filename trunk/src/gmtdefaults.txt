@@ -593,9 +593,9 @@ Controls how secondary month-, week-, and weekday-names are formatted.  Choose a
 character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case. 
 .TP
 .B TIME_EPOCH
-Specifying this parameter also sets \fBTIME_SYSTEM\fP to OTHER.  It is a string
-of the form yyyy-mm-ddT[hh:mm:ss] (Gregorian) or yyyy-Www-ddT[hh:mm:ss] (ISO) indicating
-the value of the calendar and clock at the origin (zero point) of relative time units (see \fBTIME_UNIT\fP).
+Specifies the value of the calendar and clock at the origin (zero point) of relative time units (see \fBTIME_UNIT\fP).
+It is a string of the form yyyy-mm-ddT[hh:mm:ss] (Gregorian) or yyyy-Www-ddT[hh:mm:ss] (ISO)
+Default is 2000-01-01T12:00:00, the epoch of the J2000 system.
 .TP
 .B TIME_IS_INTERVAL
 Used when input calendar data should be truncated and adjusted to the middle of the relevant interval.
@@ -606,12 +606,12 @@ can have any of the following three values: (1) OFF [Default].  No adjustment, t
 units and then center time on the following interval.  (3) -\fIn\fP\fBu\fP.  Same, but center time on the
 previous interval.  For example, with \fBTIME_IS_INTERVAL\fP = +1o, an input data string like 1999-12 will
 be interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December), while if \fBTIME_IS_INTERVAL\fP = OFF
-then that date is interpreted to mean 1999-12-1T00:00:00.0 (start of December).
+then that date is interpreted to mean 1999-12-01T00:00:00.0 (start of December)  [OFF].
 .TP
 .B TIME_INTERVAL_FRACTION
 Determines if partial intervals at the start and end of an axis should be annotated.  If the range of the partial
 interval exceeds the specified fraction of the normal interval stride we will place the annotation centered on the
-partial interval [0.5].
+partial interval  [0.5].
 .TP
 .B TIME_LANGUAGE
 Language to use when plotting calendar items such as months and days.  Select from:
@@ -676,29 +676,31 @@ make a similar file.  Please submit it to the \fBGMT\fP Developers for official 
 Custom language files can be placed in directories \fB$GMT_SHAREDIR\fP/time or ~/.gmt.
 .TP
 .B TIME_SYSTEM
-Determines which time epoch the relative time refers to and what the units are.  Choose from one of the preset systems below
-(epoch and units are indicated):
+Shorthand for a combination of \fBTIME_EPOCH\fP and \fBTIME_UNIT\fP, specifying
+which time epoch the relative time refers to and what the units are.
+Choose from one of the preset systems below (epoch and units are indicated):
 .br
-JD	-4713-11-25T12:00:00 d	(Julian Date)
+JD	-4713-11-25T12:00:00	d	(Julian Date)
 .br
-MJD	1858-11-27T00:00:00 d	(Modified Julian Date)
+MJD	1858-11-27T00:00:00	d	(Modified Julian Date)
 .br
-J2000	2000-01-01T12:00:00 d
+J2000	2000-01-01T12:00:00	d	(Astronomical time)
 .br
-S1985	1985-01-01T00:00:00 c
+S1985	1985-01-01T00:00:00	c	(Altimetric time)
 .br
-UNIX	1970-01-01T00:00:00 c
+UNIX	1970-01-01T00:00:00	c	(UNIX time)
 .br
-RD0001	0001-01-01T00:00:00 c
+RD0001	0001-01-01T00:00:00	c
 .br
-RATA	0000-12-31T00:00:00 d
+RATA	0000-12-31T00:00:00	d
 .br
-or specify OTHER and supply your own \fBTIME_EPOCH\fP and \fBTIME_UNIT\fP settings [J2000].
+This parameter is not stored in the \.gmtdefaults4 file but is translated to the respective
+values of \fBTIME_EPOCH\fP and \fBTIME_UNIT\fP.
 .TP
 .B TIME_UNIT
-This parameter is active only when \fBTIME_SYSTEM\fP is set to OTHER, and specifies the
-units of relative time data.  Choose y (year - assumes all years are 365.2425 days), o (month - assumes
-all months are of equal length y/12), d (day), h (hour), m (minute), or c (second).
+Specifies the units of relative time data since epoch (see \fBTIME_EPOCH\fP).
+Choose y (year - assumes all years are 365.2425 days), o (month - assumes
+all months are of equal length y/12), d (day), h (hour), m (minute), or c (second)  [d].
 .TP
 .B TIME_WEEK_START
 When weeks are indicated on time axes, this parameter determines the first day of the week
@@ -710,7 +712,7 @@ for Gregorian calendars.  (The ISO weekly calendar always begins weeks with Mond
 at the lower left corner of the plot  [FALSE].
 .TP
 .B UNIX_TIME_POS
-(\fB* \-U\fP) Sets the position of the UNIX time stamp relative to the current plots lower left corner [POS_SI (or POS_US)].
+(\fB* \-U\fP) Sets the position of the UNIX time stamp relative to the current plots lower left corner  [POS_SI (or POS_US)].
 .TP
 .B VECTOR_SHAPE
 Determines the shape of the head of a vector.   Normally (i.e., for vector_shape = 0),

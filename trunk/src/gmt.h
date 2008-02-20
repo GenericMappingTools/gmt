@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.159 2008-02-20 03:15:14 guru Exp $
+ *	$Id: gmt.h,v 1.160 2008-02-20 15:21:50 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -363,7 +363,6 @@ struct GMT_DEFAULTS {
 	BOOLEAN want_leap_seconds;	/* Do we need to worry about leap seconds? */
 	char time_epoch[GMT_TEXT_LEN];	/* User-defined epoch for time */
 	char time_unit;			/* User-defined time unit */
-	int time_system;		/* Which time system is in effect */
 	int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
 	char time_language[GMT_TEXT_LEN];	/* Language file for time support */
 	int Y2K_offset_year;		/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
@@ -412,9 +411,6 @@ struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */
 };
 
 struct GMT_TIME_SYSTEM {
-	char name[GMT_TEXT_LEN];	/* Name of system */
-	char epoch[GMT_TEXT_LEN];	/* Epoch time string */
-	char unit;			/* Time unit */
 	int rata_die;			/* Rata die number of epoch */
 	double epoch_t0;		/* epoch in seconds since start of rata_die */
 	double scale;			/* Converts user units to seconds */
@@ -504,7 +500,7 @@ EXTERN_MSC char *GMT_unit_names[];
 EXTERN_MSC double GMT_u2u[4][4];		/* measure unit translation matrix 4 x 4*/
 EXTERN_MSC struct GMT_FONT *GMT_font;
 EXTERN_MSC struct GMT_HASH GMT_month_hashnode[12];
-EXTERN_MSC struct GMT_TIME_SYSTEM GMT_time_system[];
+EXTERN_MSC struct GMT_TIME_SYSTEM GMT_time_system;
 EXTERN_MSC struct GMT_TIME_LANGUAGE GMT_time_language;
 
 EXTERN_MSC float GMT_f_NaN;		/* Holds IEEE not-a-number float */

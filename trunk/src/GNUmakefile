@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.71 2007-12-30 19:47:24 remko Exp $
+#  $Id: GNUmakefile,v 1.72 2008-02-20 15:21:50 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #	
@@ -85,13 +85,12 @@ gmt_grdformats.h:	../share/conf/gmt_formats.conf
 
 # Add all the dimensions to gmt_dimensions.h
 
-gmt_dimensions.h:	gmt_keywords.h gmt_ellipsoids.h gmt_datums.h gmt_grdformats.h gmt_pennames.h gmt_time_systems.h gmt_colornames.h
+gmt_dimensions.h:	gmt_keywords.h gmt_ellipsoids.h gmt_datums.h gmt_grdformats.h gmt_pennames.h gmt_colornames.h
 			printf "#define GMT_N_KEYS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_keywords.h` > $@
 			printf "#define GMT_N_ELLIPSOIDS\t%d\t/* Lines in %s */\n" `wc -l gmt_ellipsoids.h` >> $@
 			printf "#define GMT_N_DATUMS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_datums.h` >> $@
 			printf "#define GMT_N_GRD_FORMATS\t%d\t/* Lines in %s */\n" `wc -l gmt_grdformats.h` >> $@
 			printf "#define GMT_N_PEN_NAMES\t\t%d\t/* Lines in %s */\n" `wc -l gmt_pennames.h` >> $@
-			printf "#define GMT_N_TIME_SYSTEMS\t%d\t/* Lines in %s */\n" `wc -l gmt_time_systems.h` >> $@
 			printf "#define GMT_N_COLOR_NAMES\t%d\t/* Lines in %s */\n" `wc -l gmt_colornames.h` >> $@
 
 # Must create g[rd|mt]math.h from g[rd|mt]math.c

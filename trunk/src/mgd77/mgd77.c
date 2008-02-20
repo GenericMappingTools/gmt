@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.164 2008-01-23 03:22:49 guru Exp $
+ *	$Id: mgd77.c,v 1.165 2008-02-20 15:21:50 remko Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2078,9 +2078,9 @@ void MGD77_Init (struct MGD77_CONTROL *F)
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = TRUE;		/* TRUE means programs will use error bitflags (if present) when returning data */
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = TRUE;	/* TRUE means we will apply correction factors (if present) when reading data */
 	GMT_get_time_system ("unix");							/* MGD77+ uses GMT's Unix time epoch */
+	GMT_init_time_system_structure ();
 	memset ((void *)mgd77_range, 0, (size_t)(MGD77_N_DATA_EXTENDED * sizeof (struct MGD77_LIMITS)));
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
-	gmtdefs.time_system = 4;	/* Use UNIX time as rtime */
 	if ((pw = getpwuid (getuid ())) != NULL) {
 		strcpy (F->user, pw->pw_name);
 	}
