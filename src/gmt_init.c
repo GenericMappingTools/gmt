@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.329 2008-02-20 03:15:14 guru Exp $
+ *	$Id: gmt_init.c,v 1.330 2008-02-20 14:53:04 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -124,7 +124,6 @@ void GMT_prepare_3D (void);
 void GMT_free_plot_array(void);
 char *GMT_putpen (struct GMT_PEN *pen);
 int GMT_get_time_language (char *name);
-int GMT_init_time_system_structure ();
 int GMT_scanf_epoch (char *s, int *day, double *t0);
 void GMT_backwards_compatibility ();
 int GMT_strip_colonitem (const char *in, const char *pattern, char *item, char *out);
@@ -1368,7 +1367,7 @@ int GMT_loaddefaults (char *file)
 	GMT_backwards_compatibility ();
 	if (!strstr (GMT_program, "gmtset")) GMT_verify_encodings ();
 
-	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now */		
+	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
 	if (error) fprintf (stderr, "GMT:  %d conversion errors in file %s!\n", error, file);
 
 	return (0);
@@ -1431,7 +1430,7 @@ void GMT_setdefaults (int argc, char **argv)
 		memcpy ((void *)gmtdefs.grid_pen[1].rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
 	}
 
-	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */		
+	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */
 	if (error) fprintf (stderr, "%s:  %d conversion errors\n", GMT_program, error);
 }
 
@@ -2161,19 +2160,12 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_TIME_EPOCH:
 			strncpy (gmtdefs.time_epoch, value, GMT_TEXT_LEN);
-			strncpy (GMT_time_system[GMT_N_TIME_SYSTEMS-1].epoch, value, GMT_TEXT_LEN);
-			gmtdefs.time_system = GMT_N_TIME_SYSTEMS-1;
 			break;
 		case GMTCASE_TIME_UNIT:
-			gmtdefs.time_unit = GMT_time_system[GMT_N_TIME_SYSTEMS-1].unit = value[0];
-			gmtdefs.time_system = GMT_N_TIME_SYSTEMS-1;
+			gmtdefs.time_unit = lower_value[0];
 			break;
 		case GMTCASE_TIME_SYSTEM:
-			gmtdefs.time_system = GMT_get_time_system (lower_value);
-			if (gmtdefs.time_system < 0 || gmtdefs.time_system >= GMT_N_TIME_SYSTEMS) {
-				error = TRUE;
-				gmtdefs.time_system = 0;
-			}
+			error = GMT_get_time_system (lower_value);
 			break;
 		case GMTCASE_TIME_WEEK_START:
 			gmtdefs.time_week_start = GMT_key_lookup (value, GMT_weekdays, 7);
@@ -2509,7 +2501,6 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "OFF\n");
 	fprintf (fp, "TIME_INTERVAL_FRACTION\t= %g\n", gmtdefs.time_interval_fraction);
 	fprintf (fp, "TIME_LANGUAGE\t\t= %s\n", gmtdefs.time_language);
-	fprintf (fp, "TIME_SYSTEM\t\t= %s\n", GMT_time_system[gmtdefs.time_system].name);
 	fprintf (fp, "TIME_UNIT\t\t= %c\n", gmtdefs.time_unit);
 	fprintf (fp, "TIME_WEEK_START\t\t= %s\n", GMT_weekdays[gmtdefs.time_week_start]);
 	/*
@@ -2862,10 +2853,38 @@ int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 
 int GMT_get_time_system (char *name)
 {
-	int i;
-
-	for (i = 0; i < GMT_N_TIME_SYSTEMS && strcmp (name, GMT_time_system[i].name); i++);
-	return (i);
+	if (!strcmp(name,"j2000")) {
+		strcpy (gmtdefs.time_epoch, "2000-01-01T12:00:00");
+		gmtdefs.time_unit = 'd';
+	}
+	else if (!strcmp(name,"jd")) {
+		strcpy (gmtdefs.time_epoch, "-4713-11-25T12:00:00");
+		gmtdefs.time_unit = 'd';
+	}
+	else if (!strcmp(name,"mjd")) {
+		strcpy (gmtdefs.time_epoch, "1858-11-17T00:00:00");
+		gmtdefs.time_unit = 'd';
+	}
+	else if (!strcmp(name,"s1985")) {
+		strcpy (gmtdefs.time_epoch, "1985-01-01T00:00:00");
+		gmtdefs.time_unit = 'c';
+	}
+	else if (!strcmp(name,"unix")) {
+		strcpy (gmtdefs.time_epoch, "1970-01-01T00:00:00");
+		gmtdefs.time_unit = 'c';
+	}
+	else if (!strcmp(name,"dr0001")) {
+		strcpy (gmtdefs.time_epoch, "0001-01-01T00:00:00");
+		gmtdefs.time_unit = 'c';
+	}
+	else if (!strcmp(name,"rata")) {
+		strcpy (gmtdefs.time_epoch, "0000-12-31T00:00:00");
+		gmtdefs.time_unit = 'd';
+	}
+	else if (strcmp(name,"other")) {
+		return (TRUE);
+	}
+	return (FALSE);
 }
 
 int GMT_get_char_encoding (char *name)
@@ -3070,7 +3089,7 @@ int GMT_begin (int argc, char **argv)
 			argv[j++] = argv[i];
 	}
 	argc = j;
-	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now */		
+	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
 	if (n) fprintf (stderr, "%s:  %d conversion errors from command-line default override settings!\n", GMT_program, n);
 
 	GMT_PS_init ();		/* Init the PostScript-related parameters */
@@ -3141,7 +3160,7 @@ void GMT_end (int argc, char **argv)
 	if (GMT_IMGDIR) GMT_free ((void *)GMT_IMGDIR);
 	if (GMT_DATADIR) GMT_free ((void *)GMT_DATADIR);
 	if (GMT_TMPDIR) GMT_free ((void *)GMT_TMPDIR);
-	
+
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) if (GMT_plot_format[i][j]) GMT_free ((void *)GMT_plot_format[i][j]);
 
 	if (gmtdefs.encoding.name) free (gmtdefs.encoding.name);
@@ -3167,7 +3186,7 @@ void GMT_end (int argc, char **argv)
 void GMT_free_hash (struct GMT_HASH *hashnode, int n_items) {
 	int i;
 	struct GMT_HASH *p, *current;
-	
+
 	if (!hashnode) return;	/* Nothing to free */
 	for (i = 0; i < n_items; i++) {
 		p = hashnode[i].next;
@@ -3734,7 +3753,7 @@ int GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
 			s++;
 		}
 		else if (A->type == GMT_TIME)				/* Default time system unit implied */
-			unit = GMT_time_system[gmtdefs.time_system].unit;
+			unit = gmtdefs.time_unit;
 		else
 			unit = 0;	/* Not specified */
 
@@ -5438,12 +5457,8 @@ int GMT_set_measure_unit (char unit) {
 
 int	GMT_init_time_system_structure () {
 
-	/* The last time system is user-defined and set up here.
-		All others are known and already complete.  */
-	if (gmtdefs.time_system < (GMT_N_TIME_SYSTEMS - 1) ) return (GMT_NOERROR);
-
 	/* Check the unit sanity:  */
-	switch (GMT_time_system[gmtdefs.time_system].unit) {
+	switch (gmtdefs.time_unit) {
 		case 'y':
 			/* This is a kludge:  we assume all years
 			are the same length, thinking that a user
@@ -5451,7 +5466,7 @@ int	GMT_init_time_system_structure () {
 			precise time.  To do this right would
 			take an entirely different scheme, not
 			a simple unit conversion. */
-			GMT_time_system[gmtdefs.time_system].scale = GMT_YR2SEC_F;
+			GMT_time_system.scale = GMT_YR2SEC_F;
 			break;
 		case 'o':
 			/* This is also a kludge:  we assume all months
@@ -5460,37 +5475,37 @@ int	GMT_init_time_system_structure () {
 			precise time.  To do this right would
 			take an entirely different scheme, not
 			a simple unit conversion. */
-			GMT_time_system[gmtdefs.time_system].scale = GMT_MON2SEC_F;
+			GMT_time_system.scale = GMT_MON2SEC_F;
 			break;
 		case 'd':
-			GMT_time_system[gmtdefs.time_system].scale = GMT_DAY2SEC_F;
+			GMT_time_system.scale = GMT_DAY2SEC_F;
 			break;
 		case 'h':
-			GMT_time_system[gmtdefs.time_system].scale = GMT_HR2SEC_F;
+			GMT_time_system.scale = GMT_HR2SEC_F;
 			break;
 		case 'm':
-			GMT_time_system[gmtdefs.time_system].scale = GMT_MIN2SEC_F;
+			GMT_time_system.scale = GMT_MIN2SEC_F;
 			break;
-		case 's':
-			GMT_time_system[gmtdefs.time_system].scale = 1.0;
+		case 'c':
+		case 's':	/* For backwards compatibility */
+			GMT_time_system.scale = 1.0;
 			break;
 		default:
 			fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_UNIT is invalid.\n");
-			fprintf (stderr, "    Choose one only from y o d h m s\n");
+			fprintf (stderr, "    Choose one only from y o d h m c\n");
 			fprintf (stderr, "    Corresponding to year month day hour minute second\n");
 			fprintf (stderr, "    Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 	/* Set inverse scale and store it to avoid divisions later */
-	GMT_time_system[gmtdefs.time_system].i_scale = 1.0 / GMT_time_system[gmtdefs.time_system].scale;
+	GMT_time_system.i_scale = 1.0 / GMT_time_system.scale;
 
-	if ( GMT_scanf_epoch (GMT_time_system[gmtdefs.time_system].epoch,
-		&GMT_time_system[gmtdefs.time_system].rata_die, &GMT_time_system[gmtdefs.time_system].epoch_t0) ) {
+	if ( GMT_scanf_epoch (gmtdefs.time_epoch, &GMT_time_system.rata_die, &GMT_time_system.epoch_t0) ) {
 		fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_EPOCH format is invalid.\n");
 		fprintf (stderr, "   A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
 		fprintf (stderr, "   or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
-		fprintf (stderr, "   An example of a correct format is:  %s\n", GMT_time_system[0].epoch);
+		fprintf (stderr, "   An example of a correct format is:  2000-01-01T12:00:00\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	return (GMT_NOERROR);
