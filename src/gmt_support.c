@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.342 2008-02-19 23:42:24 guru Exp $
+ *	$Id: gmt_support.c,v 1.343 2008-02-20 03:15:14 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2412,11 +2412,14 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 	return (tmp);
 }
 
-void GMT_free (void *addr)
-{
-
 #ifdef DEBUG
-	GMT_memtrack_sub (GMT_mem_keeper, addr);
+void GMT_free_func (void *addr, char *fname, int line)
+#else
+void GMT_free (void *addr)
+#endif
+{
+#ifdef DEBUG
+	GMT_memtrack_sub (GMT_mem_keeper, fname, line, addr);
 #endif
 	free (addr);
 }
@@ -3070,6 +3073,33 @@ void GMT_contlabel_addpath (double x[], double y[], int n, double zval, char *la
 		}
 	}
 	G->n_segments++;
+}
+
+void GMT_contlabel_free (struct GMT_CONTOUR *G)
+{
+	int i, j;
+	struct GMT_CONTOUR_LINE *C;
+
+	/* Free memory */
+
+	for (i = 0; i < G->n_segments; i++) {
+		C = G->segment[i];	/* Pointer to current segment */
+		for (j = 0; j < C->n_labels; j++) {
+			if (C->L[j].label) GMT_free ((void *)C->L[j].label);
+		}
+		if (C->L) GMT_free ((void *)C->L);
+		GMT_free ((void *)C->x);
+		GMT_free ((void *)C->y);
+		GMT_free ((void *)C->name);
+		GMT_free ((void *)C);
+	}
+	GMT_free ((void *)G->segment);
+	if (G->xp) GMT_free_table (G->xp);
+	if (G->f_n) {	/* Array for fixed points */
+		GMT_free ((void *)G->f_xy[GMT_X]);	
+		GMT_free ((void *)G->f_xy[GMT_Y]);
+		for (i = 0; i < G->f_n; i++) if (G->f_label[i]) GMT_free ((void *)G->f_label[i]);
+	}
 }
 
 int sort_label_struct (const void *p_1, const void *p_2)
@@ -4756,7 +4786,7 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 
 	*link = Out.trianglelist;	/* List of node numbers to return via link */
 
-	if (Out.pointlist) GMT_free ((void *)Out.pointlist);
+	if (Out.pointlist) free ((void *)Out.pointlist);
 	GMT_free ((void *)In.pointlist);
 
 	return (Out.numberoftriangles);
@@ -6871,6 +6901,8 @@ int GMT_crossover (double xa[], double ya[], int *sa0, struct GMT_XSEGMENT A[], 
 	if (!sa0) GMT_free ((void *)sa);
 	if (!sb0) GMT_free ((void *)sb);
 
+	if (nx == 0) GMT_x_free (X);	/* Nothing to write home about... */
+
 	return (nx);
 }
 
@@ -7994,6 +8026,20 @@ struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name) {
 	GMT_init_custom_symbol (name, &(GMT_custom_symbol[GMT_n_custom_symbols]));
 
 	return (GMT_custom_symbol[GMT_n_custom_symbols++]);
+}
+
+void GMT_free_custom_symbols () {	/* Free the allocated list of custom symbols */
+	int i;
+	struct GMT_CUSTOM_SYMBOL_ITEM *s, *current;
+	for (i = 0; i < GMT_n_custom_symbols; i++) {
+		s = GMT_custom_symbol[i]->first;
+		while (s) {
+			current = s;
+			s = s->next;
+			GMT_free ((void *)current);
+		}
+		GMT_free ((void *)GMT_custom_symbol[i]);
+	}
 }
 
 int GMT_init_custom_symbol (char *name, struct GMT_CUSTOM_SYMBOL **S) {
@@ -9138,13 +9184,13 @@ void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr
 	if (size > M->largest) M->largest = size;				/* Update largest single item */
 }
 
-void GMT_memtrack_sub (struct MEMORY_TRACKER *M, void *ptr) {
+void GMT_memtrack_sub (struct MEMORY_TRACKER *M, char *name, int line, void *ptr) {
 	/* Called from GMT_free to remove memory pointer */
 	int entry;
 	
 	entry = GMT_memtrack_find (M, ptr);
 	if (entry == -1) {	/* Error, trying to free something not allocated by GMT_memory */
-		fprintf (stderr, "%s: GMT_memtrack_sub tries to free but item is not found\n", GMT_program);
+		fprintf (stderr, "%s: Wrongly tries to free item in %s, line %d\n", GMT_program, name, line);
 		return;
 	}
 	M->current -= M->item[entry].size;	/* "Free" the memory */

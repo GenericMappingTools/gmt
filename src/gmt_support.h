@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.28 2008-02-19 23:42:24 guru Exp $
+ *	$Id: gmt_support.h,v 1.29 2008-02-20 03:15:14 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -72,7 +72,6 @@ EXTERN_MSC int GMT_verify_expectations (int wanted, int got, char *item);
 EXTERN_MSC void GMT_RI_prepare (struct GRD_HEADER *h);
 EXTERN_MSC void GMT_chop (char *string);
 EXTERN_MSC void GMT_dump_contour (double *xx, double *yy, int nn, double cval, int id, BOOLEAN interior, char *file);
-EXTERN_MSC void GMT_free (void *addr);
 EXTERN_MSC void GMT_get_plot_array (void);
 EXTERN_MSC void GMT_get_primary_annot (struct GMT_PLOT_AXIS *A, int *primary, int *secondary);
 EXTERN_MSC void GMT_illuminate (double intensity, int *rgb);
@@ -90,8 +89,10 @@ EXTERN_MSC void GMT_fourt (float *data, int *nn, int ndim, int ksign, int iform,
 EXTERN_MSC int GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 #ifdef DEBUG
 EXTERN_MSC void *GMT_memory_func (void *prev_addr, size_t nelem, size_t size, char *progname, char *fname, int line);
+EXTERN_MSC void GMT_free_func (void *addr, char *fname, int line);
 #else
 EXTERN_MSC void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname);
+EXTERN_MSC void GMT_free (void *addr);
 #endif
 
 /* Backwards macro for MB-system support */
@@ -125,7 +126,7 @@ struct MEMORY_TRACKER {
 
 EXTERN_MSC void GMT_memtrack_init (struct MEMORY_TRACKER **M);
 EXTERN_MSC void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr, void *prev_ptr, size_t size);
-EXTERN_MSC void GMT_memtrack_sub (struct MEMORY_TRACKER *M, void *ptr);
+EXTERN_MSC void GMT_memtrack_sub (struct MEMORY_TRACKER *M, char *name, int line, void *ptr);
 EXTERN_MSC int GMT_memtrack_find (struct MEMORY_TRACKER *M, void *ptr);
 EXTERN_MSC void GMT_memtrack_alloc (struct MEMORY_TRACKER *M);
 EXTERN_MSC void GMT_memtrack_report (struct MEMORY_TRACKER *M);

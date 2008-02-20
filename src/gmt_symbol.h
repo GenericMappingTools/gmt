@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_symbol.h,v 1.20 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_symbol.h,v 1.21 2008-02-20 03:15:14 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -65,5 +65,6 @@ EXTERN_MSC struct GMT_CUSTOM_SYMBOL **GMT_custom_symbol;
 
 EXTERN_MSC struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name);
 EXTERN_MSC void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline);
+EXTERN_MSC void GMT_free_custom_symbols ();
 
 #endif	/* _GMT_SYMBOLS_H */
