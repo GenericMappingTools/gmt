@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.23 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_calclock.h,v 1.24 2008-02-20 14:54:57 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -31,9 +31,6 @@ typedef int GMT_cal_rd;	/* GMT calendar "rata die" day numbers  */
 	Monday Jan 01 0001  */
 
 #define GMT_CALSTRING_LENGTH	16	/* All strings used to format date/clock output must be this length */
-
-#define GMT_GCAL_EPOCH 1	/* rata die fixed day number when
-	proleptic Gregorian calendar is at Monday, Jan 01 0001  */
 
 struct GMT_gcal {	/* (proleptic) Gregorian calendar  */
 	int	year;	/* signed; negative and 0 allowed  */
