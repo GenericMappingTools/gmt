@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-#	$Id: hovmuller.sh,v 1.8 2007-11-15 04:20:42 remko Exp $
+#	$Id: hovmuller.sh,v 1.9 2008-02-20 14:43:51 remko Exp $
 
 ps=hovmuller.ps
-opt="--TIME_SYSTEM=other --TIME_EPOCH=2000-01-01T --TIME_UNIT=y"
+opt="--TIME_EPOCH=2000-01-01T --TIME_UNIT=y"
 
 . ../functions.sh
 header "Test grdimage for making Hovmuller plots"
