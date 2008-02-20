@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77magref.h,v 1.8 2008-02-20 06:27:57 mtchandl Exp $	
+ *	$Id: mgd77magref.h,v 1.9 2008-02-20 06:30:47 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2005-2008 by P. Wessel and M. T. Chandler
@@ -34,4 +34,5 @@
 		{"IGRF-80",		11,		1980,		1985},
 		{"IGRF-85",		12,		1985,		1990},
 		{"IGRF-90",		13,		1990,		1995},
-		{"IGRF-95",		14,		1995,		2000}
+		{"IGRF-95",		14,		1995,		2000},
+		{"Other",       88,     9999,       9999}
