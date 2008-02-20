@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.328 2008-02-19 23:42:24 guru Exp $
+ *	$Id: gmt_init.c,v 1.329 2008-02-20 03:15:14 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3118,14 +3118,13 @@ void GMT_end (int argc, char **argv)
 	int i, j;
 
 	for (i = 0; i < GMT_N_UNIQUE; i++) if (GMT_oldargv[i]) GMT_free ((void *)GMT_oldargv[i]);
-	if (GMT_lut) GMT_free ((void *)GMT_lut);
 	GMT_free_plot_array ();
 	/* Remove allocated hash structures */
 	GMT_free_hash (GMT_month_hashnode, 12);
 	GMT_free_hash (GMT_rgb_hashnode, GMT_N_COLOR_NAMES);
 	for (i = 0; i < GMT_N_FONTS; i++) GMT_free ((void *)GMT_font[i].name);
 	GMT_free ((void *)GMT_font);
-
+	GMT_free_custom_symbols();
 #ifdef __FreeBSD__
 	fpresetsticky (FP_X_DZ | FP_X_INV);
 	fpsetmask (FP_X_DZ | FP_X_INV);
@@ -3146,6 +3145,14 @@ void GMT_end (int argc, char **argv)
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) if (GMT_plot_format[i][j]) GMT_free ((void *)GMT_plot_format[i][j]);
 
 	if (gmtdefs.encoding.name) free (gmtdefs.encoding.name);
+	if (GMT_n_colors) {
+		for (i = 0; i < GMT_n_colors; i++) {
+			if (GMT_lut[i].label) GMT_free ((void *)GMT_lut[i].label);
+			if (GMT_lut[i].fill) GMT_free ((void *)GMT_lut[i].fill);
+		}
+		GMT_free ((void *)GMT_lut);
+	}
+	for (i = 0; i < 3; i++) if (GMT_bfn[i].fill) GMT_free ((void *)GMT_bfn[i].fill);
 
 	fflush (GMT_stdout);	/* Make sure output buffer is flushed */
 

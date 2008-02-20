@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.214 2008-02-19 19:03:37 guru Exp $
+ *	$Id: gmt_plot.c,v 1.215 2008-02-20 03:15:14 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4018,9 +4018,6 @@ void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G)
 
 void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 {
-	int i, j;
-	struct GMT_CONTOUR_LINE *C;
-
 	ps_setfont (G->label_font);
 	ps_setpaint (G->font_rgb);
 	if (G->debug) GMT_contlabel_debug (G);		/* Debugging lines and points */
@@ -4035,23 +4032,7 @@ void GMT_contlabel_plot (struct GMT_CONTOUR *G)
 		if (project_info.three_D) GMT_contlabel_plotboxes (G);
 		GMT_contlabel_plotlabels (G, 0);
 	}
-
-	/* Free memory */
-
-	for (i = 0; i < G->n_segments; i++) {
-		C = G->segment[i];	/* Pointer to current segment */
-		for (j = 0; j < C->n_labels; j++) {
-			if (C->L[j].label) GMT_free ((void *)C->L[j].label);
-		}
-		if (C->L) GMT_free ((void *)C->L);
-		GMT_free ((void *)C->x);
-		GMT_free ((void *)C->y);
-		GMT_free ((void *)C->name);
-		GMT_free ((void *)C);
-	}
-	GMT_free ((void *)G->segment);
 }
-
 
 int GMT_plotinit (int argc, char *argv[])
 {
