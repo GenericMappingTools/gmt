@@ -1,14 +1,32 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.183 2008-02-19 16:36:21 guru Exp $
+	$Id: ChangeLog,v 1.184 2008-02-20 15:21:50 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2008-02-20	remko
+	* gmt_init.c:		TIME_SYSTEM has become a shortcut for a combination of TIME_EPOCH and
+				TIME_UNIT. When used, set gmtdefs.time_unit and gmtdefs.epoch immediately.
+				No longer appears in .gmtdefaults4 file.  No more predefined scale,
+				rata_die, etc for time systems. Those are determined from
+				gmtdefs.time_{unit,epoch} by GMT_init_time_system_structure instead.
+				Bug fix: 'c' for seconds was not recognized as TIME_UNIT (expected 's',
+				which is kept for backwards compatibility).
+	* gmt_time_systems.h:	Removed. Information merged into gmt_init.c.
+	* gmt_calclock.h:	GMT_GCAL_EPOCH has become obsolete.
+	* gmt_globals.h:	Changed default time_epoch from 2000-01-01 midnight to noon.
+				GMT_time_system is no longer an array. time_system removed from gmtdefs.
+	* gmt.h:		Removed name, epoch, unit as part of GMT_TIME_SYSTEM struct. Epoch and
+				unit can be found in GMT_DEFAULTS struct.
+	* src/GNUmakefile, gmt_grdio.c, gmt_calclock.c:	Changed accordingly.
+	* gmt_defaults.txt:	Updated to reflect changes.
+	* .gmtdefaults_test, .gmtdefaults_*.orig, .gmtdefaults4.doc:	Removed TIME_SYSTEM.
+
 2008-02-19	pwessel
-	* gmt_support.[ch]:		Added debug tracking support for memory allocation/freeing.
-	* gmt.h				--"--.  Requires -DDEBUG during compilation to take effect.
-	"
+	* gmt_support.[ch]:	Added debug tracking support for memory allocation/freeing.
+	* gmt.h:		--"--.  Requires -DDEBUG during compilation to take effect.
+
 2008-02-16	pwessel
 	* grdmask.c:		Tiny bug for determining which hemisphere (N/S) unlikely to have
-						had any effect.
+				had any effect.
 2008-02-14	remko
 	* gmt.h, gmt_init.c, gmt_calclock.c:	Removed #ifndef OLDCAL (assumed always true).
 
