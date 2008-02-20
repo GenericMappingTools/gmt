@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.2 2008-02-19 08:52:29 myself Exp $
+#  $Id: GNUmakefile,v 1.3 2008-02-20 01:11:45 myself Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	
@@ -22,8 +22,6 @@ Fortran77/Src/Sp/src.f:	772
 772:
 		wget http://www.netlib.org/toms/772
 		sh 772
-		rm -f 772
-
 
 stripack.c:	Fortran77/Src/Sp/src.f
 	f2c -r8 Fortran77/Src/Sp/src.f
