@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.344 2008-02-20 20:59:39 guru Exp $
+ *	$Id: gmt_support.c,v 1.345 2008-02-21 01:58:21 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2799,7 +2799,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 		while ((GMT_strtok (buffer, ",", &pos, p))) {
 			G->xp->segment[G->xp->n_segments] = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, 1, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 			GMT_alloc_segment (G->xp->segment[G->xp->n_segments], 2, 2, TRUE);
-			G->xp->segment[G->xp->n_segments]->n_rows = 2;
+			G->xp->segment[G->xp->n_segments]->n_rows = G->xp->segment[G->xp->n_segments]->n_columns = 2;
 			n = sscanf (p, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 			if (n == 4) {	/* Easy, got lon0/lat0/lon1/lat1 */
 				error += GMT_verify_expectations (GMT_io.in_col_type[GMT_X], GMT_scanf_arg (txt_a, GMT_io.in_col_type[GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_X][0]), txt_a);
@@ -8038,10 +8038,14 @@ void GMT_free_custom_symbols () {	/* Free the allocated list of custom symbols *
 		while (s) {
 			current = s;
 			s = s->next;
+			if (current->fill) GMT_free ((void *)current->fill);
+			if (current->pen) GMT_free ((void *)current->pen);
 			GMT_free ((void *)current);
 		}
 		GMT_free ((void *)GMT_custom_symbol[i]);
 	}
+	if (GMT_n_custom_symbols) GMT_free ((void *)GMT_custom_symbol);
+	GMT_n_custom_symbols = 0;
 }
 
 int GMT_init_custom_symbol (char *name, struct GMT_CUSTOM_SYMBOL **S) {
@@ -9145,11 +9149,14 @@ L920:
 
 void GMT_memtrack_init (struct MEMORY_TRACKER **M) {	/* Called in GMT_begin() */
 	struct MEMORY_TRACKER *P;
+char *c;
 	P = (struct MEMORY_TRACKER *)malloc (sizeof (struct MEMORY_TRACKER));
 	P->n_alloc = GMT_CHUNK;
 	P->item = (struct MEMORY_ITEM *)malloc ((size_t)(P->n_alloc * sizeof(struct MEMORY_ITEM)));
 	P->current = P->maximum = P->largest = P->n_ptr = 0;
 	P->n_allocated = P->n_reallocated = P->n_freed = 0;
+	c = getenv ("GMT_MEM");
+	P->active = (c == CNULL) ? TRUE : FALSE;
 	*M = P;
 }
 
@@ -9159,6 +9166,7 @@ void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr
 	size_t old;
 	void *use;
 	
+	if (!M->active) return;	/* Not activated */
 	use = (prev_ptr) ? prev_ptr : ptr;
 	entry = GMT_memtrack_find (M, use);
 	if (entry == -1) {	/* Not found, must insert new entry at end */
@@ -9190,6 +9198,7 @@ void GMT_memtrack_sub (struct MEMORY_TRACKER *M, char *name, int line, void *ptr
 	/* Called from GMT_free to remove memory pointer */
 	int entry;
 	
+	if (!M->active) return;	/* Not activated */
 	entry = GMT_memtrack_find (M, ptr);
 	if (entry == -1) {	/* Error, trying to free something not allocated by GMT_memory */
 		fprintf (stderr, "%s: Wrongly tries to free item in %s, line %d\n", GMT_program, name, line);
@@ -9231,6 +9240,7 @@ void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_en
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double tot, GMT_memtrack_mem (size_t mem, int *unit);
 	
+	if (!M->active) return;	/* Not activated */
 	report = (M->current > 0);
 	if (report) {
 		tot = GMT_memtrack_mem (M->maximum, &u);
@@ -9260,6 +9270,16 @@ void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_en
 	
 	free (M->item);
 	free ((void *)M);
+}
+
+void GMT_memtrack_on (struct MEMORY_TRACKER *M)
+{
+	M->active = TRUE;
+}
+
+void GMT_memtrack_off (struct MEMORY_TRACKER *M)
+{
+	M->active = FALSE;
 }
 
 double GMT_memtrack_mem (size_t mem, int *unit)
