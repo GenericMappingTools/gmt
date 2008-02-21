@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: manpages.mk,v 1.4 2008-02-19 16:36:21 guru Exp $
+#  $Id: manpages.mk,v 1.5 2008-02-21 20:10:20 remko Exp $
 #
 #	GNUmakefile to create manpages for GMT Version 4.x
 #	
@@ -24,17 +24,17 @@ endif
 
 %.1 %.3 %.5:		%.txt
 		@cp -f $< junk.c
-		$(TXT2MAN) -I$(GMTSRCDIR) junk.c | egrep -v '^#|^$$' > $@
+		$(TXT2MAN) -I.. junk.c | egrep -v '^#|^$$' > $@
 		@rm -f junk.c
 
 $(DEP1):	%.dep:	%.txt
-		$(TXT2MAN) -I$(GMTSRCDIR) -MM -MG $*.txt | sed s,.o:,.1:, > $@
+		$(TXT2MAN) -I.. -MM -MG $*.txt | sed s,.o:,.1:, > $@
 
 $(DEP3):	%.dep:	%.txt
-		$(TXT2MAN) -I$(GMTSRCDIR) -MM -MG $*.txt | sed s,.o:,.3:, > $@
+		$(TXT2MAN) -I.. -MM -MG $*.txt | sed s,.o:,.3:, > $@
 
 $(DEP5):	%.dep:	%.txt
-		$(TXT2MAN) -I$(GMTSRCDIR) -MM -MG $*.txt | sed s,.o:,.5:, > $@
+		$(TXT2MAN) -I.. -MM -MG $*.txt | sed s,.o:,.5:, > $@
 
 manpages:	$(MAN1) $(MAN3) $(MAN5)
 
