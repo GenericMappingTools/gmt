@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.185 2008-02-21 19:47:58 remko Exp $
+	$Id: ChangeLog,v 1.186 2008-02-21 22:46:13 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2008-02-21	remko
@@ -7,7 +7,10 @@
 	* psscale.c:		Bug fixes: (1) Inverted vertical scale, when using filled rectangles:
 				Colours remained in the original order. (2) Inverted vertical or horizontal
 				scale, when using rectangles with gradients: Size of rectangles followed
-				original order, not inverted.
+				original order, not inverted. (3) In reverse mode, -Eb was plotting
+				foreground triangle, -Ef background triangle.
+	* doc/GMT_Appendix_M.tex, doc/scripts/GMT_App_M_2.csh:	Figure added to App M to illustrate uses
+				of psscale.
 
 2008-02-20	remko
 	* gmt_init.c:		TIME_SYSTEM has become a shortcut for a combination of TIME_EPOCH and
