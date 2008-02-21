@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.184 2008-02-20 15:21:50 remko Exp $
+	$Id: ChangeLog,v 1.185 2008-02-21 19:47:58 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2008-02-21	remko
+	* test/psscale/ages.sh:	Fixed errors in geological names. Put some bars upside down.
+	* psscale.c:		Bug fixes: (1) Inverted vertical scale, when using filled rectangles:
+				Colours remained in the original order. (2) Inverted vertical or horizontal
+				scale, when using rectangles with gradients: Size of rectangles followed
+				original order, not inverted.
 
 2008-02-20	remko
 	* gmt_init.c:		TIME_SYSTEM has become a shortcut for a combination of TIME_EPOCH and
