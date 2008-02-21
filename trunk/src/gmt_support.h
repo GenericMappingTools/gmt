@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.29 2008-02-20 03:15:14 guru Exp $
+ *	$Id: gmt_support.h,v 1.30 2008-02-21 01:58:21 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -109,6 +109,7 @@ struct MEMORY_ITEM {
 };
 
 struct MEMORY_TRACKER {
+	BOOLEAN active;	/* Normally TRUE but can be changed to focus on just some allocations */
 	int n_ptr;	/* Number of unique pointers to allocated memory */
 	int n_allocated;	/* Number of items allocated by GMT_memory */
 	int n_reallocated;	/* Number of items reallocated by GMT_memory */
@@ -130,6 +131,8 @@ EXTERN_MSC void GMT_memtrack_sub (struct MEMORY_TRACKER *M, char *name, int line
 EXTERN_MSC int GMT_memtrack_find (struct MEMORY_TRACKER *M, void *ptr);
 EXTERN_MSC void GMT_memtrack_alloc (struct MEMORY_TRACKER *M);
 EXTERN_MSC void GMT_memtrack_report (struct MEMORY_TRACKER *M);
+EXTERN_MSC void GMT_memtrack_on (struct MEMORY_TRACKER *M);
+EXTERN_MSC void GMT_memtrack_off (struct MEMORY_TRACKER *M);
 #endif
 
 #endif /* _GMT_SUPPORT_H */
