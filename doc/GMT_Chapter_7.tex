@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.43 2008-01-23 03:22:47 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.44 2008-02-21 22:40:59 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -129,8 +129,7 @@ the data we calculate the slopes in the north-south direction
 using \GMTprog{grdgradient}; these will be used to modulate the
 color image.  Next we run \GMTprog{grdimage} to create a
 color-code image of the Geosat geoid heights, and draw a
-color scale to the right of the image with \GMTprog{psscale}.
-We also annotate the color scales with \GMTprog{psscale}.
+color legend to the right of the image with \GMTprog{psscale}.
 Similarly, we run \GMTprog{grdimage} but specify \Opt{Y}4.5i
 to plot above the previous image.  Adding scale and label
 the two plots a) and b) completes the illustration
@@ -607,6 +606,11 @@ option \Opt{Q} (Figure~\ref{fig:GMT_example_17}):
 
 \script{example_17} 
 \GMTexample{17}{Clipping of images using coastlines.}
+
+We also plot a color legend on top of the land. So here we basically have three layers of ``paint'' stacked on top of each other: the underlaying geoid map, the land mask, and finally the color legend. This legend makes clear how \GMTprog{grd2cpt} distributed the colors over the range: they are not of equal length put are associated with equal amounts of area in the plot. Since the high amounts (in red) are not very prevalent, that color spans a long range.
+
+For this image it is appropriate to use the \Opt{I} option in \GMTprog{psscale} so the legend gets shaded, similar to the geoid grid.
+See Appendix~\ref{App:M} to learn more about color palettes and ways to draw color legends.
 
 \index{Example!image clipping|)}
 
