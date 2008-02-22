@@ -10,7 +10,7 @@
 psrose \- Plot (length, azimuth) as windrose diagram or polar histogram (sector or rose diagram).
 .SH SYNOPSIS
 \fBpsrose\fP \fIfile\fP [ OPT(A)\fIsector_width\fP[\fBr\fP] ] 
-[ GMT_B_OPT ] [ OPT(C)[\fImode_file\fP] ] [ OPT(D) ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(G)\fIfill\fP ] 
+[ GMT_B_OPT ] [ OPT(C)[\fImode_file\fP] ] [ OPT(D) ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(I) ] [ OPT(G)\fIfill\fP ] 
 [ GMT_H_OPT ] [ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)[\fIwlabel\fP/\fIelabel\fP/\fIslabel\fP/\fInlabel\fP] ] 
 [ OPT(M)[\fIparameters\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(R)\fIr0\fP/\fIr1\fP/\fIaz_0\fP/\fIaz_1\fP ] [ OPT(S)\fIradial_scale\fP[\fBn\fP] ] [ OPT(T) ] [ GMT_U_OPT ] 
@@ -43,6 +43,9 @@ Shift sectors so that they are centered on the bin interval (e.g., first sector 
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation [180/90]\"'
+.TP
+.B \-F
+Do not draw the scale length bar [Default plots scale in lower right corner]
 .TP
 .B \-G
 Selects shade, color or pattern for filling the sectors [Default is no fill].
