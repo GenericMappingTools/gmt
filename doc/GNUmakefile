@@ -1,6 +1,6 @@
-#	$Id: GNUmakefile,v 1.4 2008-02-21 22:42:14 remko Exp $
+#	$Id: GNUmakefile,v 1.5 2008-02-22 08:49:15 guru Exp $
 #
-#	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
+#	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -34,11 +34,13 @@
 #
 #	Date:		08-Feb-2007
 #-------------------------------------------------------------------------------
-# If we ever get strange messages like 
-# pstoimg: Error: "/sw/bin/pnmcrop -verbose  < /tmp/l2h29411/p29461.pnm | /sw/bin/ppmquant -floyd 256 | \
-# /sw/bin/pnmtopng -interlace -trans 'gray85'  > img294.png" failed: Invalid argument
-# it means that we must set export RGBDEF=/usr/X11/share/X11/rgb.txt
-# as for some reason it cannot be found where it is expected (usr/X11R6/lib/X11)
+# THINGS TO REMEMBER:
+# 1. If we ever get strange messages like 
+#    pstoimg: Error: "/sw/bin/pnmcrop -verbose  < /tmp/l2h29411/p29461.pnm | /sw/bin/ppmquant -floyd 256 | \
+#    /sw/bin/pnmtopng -interlace -trans 'gray85'  > img294.png" failed: Invalid argument
+#    it means that we must set export RGBDEF=/usr/X11/share/X11/rgb.txt
+#    as for some reason it cannot be found where it is expected (usr/X11R6/lib/X11)
+# 2. If latex complains that it cannot find html.sty you need to run mktexlsr (as admin)
 #
 
 include ../src/makegmt.macros

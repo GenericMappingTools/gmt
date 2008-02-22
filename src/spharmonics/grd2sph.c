@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2sph.c,v 1.6 2007-09-18 01:32:39 remko Exp $
+ *	$Id: grd2sph.c,v 1.7 2008-02-22 08:49:16 guru Exp $
  *
- *	Copyright (c) 1991-2006 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
