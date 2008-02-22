@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.54 2008-02-22 03:39:13 remko Exp $
+#	$Id: Makefile,v 1.55 2008-02-22 21:50:08 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -37,7 +37,7 @@
 #	make install-www
 #
 #	When done, clean out directory with "make clean".  To clean
-#	the entire build distribution, do "make cleandist"
+#	the entire build distribution, do "make distclean"
 #
 #	To uninstall the installed files, try
 #
@@ -166,12 +166,12 @@ uninstall-www:
 
 examples run-examples:
 		@if [ -d examples ]; then \
-			cd examples; $(CSH) do_examples.$(CSH) $(srcdir) $(srcdir) $(NETCDF)/lib; \
+			cd examples; do_examples.sh $(srcdir) $(srcdir) $(NETCDF)/lib; \
 		else \
 			echo "examples directory not installed"; \
 		fi
 
-clean:
+clean::
 		$(MAKE) TARGET=$@ $(SUPPL)
 		cd src ; $(MAKE) $@
 
