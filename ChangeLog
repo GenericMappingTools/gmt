@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.187 2008-02-22 02:07:56 guru Exp $
+	$Id: ChangeLog,v 1.188 2008-02-22 07:49:11 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2008-02-21	pwessel
 	* pslib.c:	Fixed error in applying pstext's -Dj<dx>/<dy> shift in paragraph mode (-M).
+	* mgd77/mgd77list.c:	Added -Ga|b<rec> to limit output to a certain record # range
 	
 2008-02-21	remko
 	* test/psscale/ages.sh:	Fixed errors in geological names. Put some bars upside down.

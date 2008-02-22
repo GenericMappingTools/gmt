@@ -5,7 +5,7 @@ mgd77list \- A data-extractor for MGD77[+] files
 .SH SYNOPSIS
 \fBmgd77list\fP \fINGDC-ids\fP OPT(F)\fIcolumns\fP[,\fIlogic\fP][:\fIbittests\fP] 
 [ OPT(Ac)|\fBd\fP|\fBf\fP|\fBm\fP\fIcode\fP ] [ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] 
-[ OPT(Da)\fIstartdate\fP ] [ OPT(Db)\fIstopdate\fP ] [ OPT(E) ] 
+[ OPT(Da)\fIstartdate\fP ] [ OPT(Db)\fIstopdate\fP ] [ OPT(E) ] [ OPT(Ga)\fIstartrec\fP ] [ OPT(Gb)\fIstoprec\fP ] 
 [ GMT_H_OPT ] [ OPT(I)\fIignore\fP ] [ OPT(X)[\fIcorrtable\fP] ] [ GMT_Mo_OPT ] 
 [ OPT(Nd)|\fBs\fP\fIunit\fP ] [ OPT(Q)\fBa\fP|\fBv\fP\fImin\fP/\fImax\fP ] [ GMT_Rgeo_OPT ] [ OPT(Sa)\fIstartdist\fP[unit] ] 
 [ OPT(Sb)\fIstopdist\fP[unit] ] [ OPT(T)[\fBm\fP|\fBe\fP] ]  [ GMT_V_OPT ] 
@@ -297,6 +297,12 @@ Do not list data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [
 .B \-E
 Exact match: Only output records that match all the requested geophysical columns
 [Default outputs records that matches at least one of the observed columns].
+.TP
+.B \-Ga
+Do not list records before \fIstartrec\fP  [Default is 0, the first record].
+.TP
+.B \-Gb
+Do not list data after \fIstoprec\fP. [Default is the last record].
 .TP
 .B \-H
 Issue a header record with names for each data field.
