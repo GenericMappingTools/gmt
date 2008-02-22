@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: manpages.mk,v 1.5 2008-02-21 20:10:20 remko Exp $
+#  $Id: manpages.mk,v 1.6 2008-02-22 02:59:42 remko Exp $
 #
 #	GNUmakefile to create manpages for GMT Version 4.x
 #	
@@ -18,23 +18,29 @@ DEP1=$(MAN1:.1=.dep)
 DEP3=$(MAN3:.3=.dep)
 DEP5=$(MAN5:.5=.dep)
 
+ifeq "$(strip $(GMTSRCDIR))" ""
+    INCDIR=.
+else
+    INCDIR=$(GMTSRCDIR)
+endif
+
 ifneq "$(MAKECMDGOALS)" "spotless"
     include $(DEP1) $(DEP3) $(DEP5)
 endif
 
 %.1 %.3 %.5:		%.txt
 		@cp -f $< junk.c
-		$(TXT2MAN) -I.. junk.c | egrep -v '^#|^$$' > $@
+		$(TXT2MAN) -I$(INCDIR) junk.c | egrep -v '^#|^$$' > $@
 		@rm -f junk.c
 
 $(DEP1):	%.dep:	%.txt
-		$(TXT2MAN) -I.. -MM -MG $*.txt | sed s,.o:,.1:, > $@
+		$(TXT2MAN) -I$(INCDIR) -MM -MG $*.txt | sed s,.o:,.1:, > $@
 
 $(DEP3):	%.dep:	%.txt
-		$(TXT2MAN) -I.. -MM -MG $*.txt | sed s,.o:,.3:, > $@
+		$(TXT2MAN) -I$(INCDIR) -MM -MG $*.txt | sed s,.o:,.3:, > $@
 
 $(DEP5):	%.dep:	%.txt
-		$(TXT2MAN) -I.. -MM -MG $*.txt | sed s,.o:,.5:, > $@
+		$(TXT2MAN) -I$(INCDIR) -MM -MG $*.txt | sed s,.o:,.5:, > $@
 
 manpages:	$(MAN1) $(MAN3) $(MAN5)
 

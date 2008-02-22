@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.28 2008-02-20 15:21:50 remko Exp $
+#	$Id: Makefile,v 1.29 2008-02-22 02:59:42 remko Exp $
 #
 #	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -35,7 +35,6 @@
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
 
-GMTSRCDIR	=# Keep this empty, use ../ in supplements
 include makegmt.macros		# GMT-specific settings determined by user & configure
 include gmtalldeps.macros	# Dependencies
 
