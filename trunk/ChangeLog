@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.189 2008-02-22 19:18:48 guru Exp $
+	$Id: ChangeLog,v 1.190 2008-02-22 19:45:12 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2008-02-22	pwessel
+	* psrose.c:	Added new -F option to disable the plotting of the scale bar.
 
 2008-02-21	pwessel
 	* pslib.c:	Fixed error in applying pstext's -Dj<dx>/<dy> shift in paragraph mode (-M).
