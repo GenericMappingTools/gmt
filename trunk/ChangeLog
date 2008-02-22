@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.186 2008-02-21 22:46:13 remko Exp $
+	$Id: ChangeLog,v 1.187 2008-02-22 02:07:56 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2008-02-21	pwessel
+	* pslib.c:	Fixed error in applying pstext's -Dj<dx>/<dy> shift in paragraph mode (-M).
+	
 2008-02-21	remko
 	* test/psscale/ages.sh:	Fixed errors in geological names. Put some bars upside down.
 	* psscale.c:		Bug fixes: (1) Inverted vertical scale, when using filled rectangles:

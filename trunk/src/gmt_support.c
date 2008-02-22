@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.345 2008-02-21 01:58:21 guru Exp $
+ *	$Id: gmt_support.c,v 1.346 2008-02-22 02:07:56 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -9149,7 +9149,7 @@ L920:
 
 void GMT_memtrack_init (struct MEMORY_TRACKER **M) {	/* Called in GMT_begin() */
 	struct MEMORY_TRACKER *P;
-char *c;
+	char *c;
 	P = (struct MEMORY_TRACKER *)malloc (sizeof (struct MEMORY_TRACKER));
 	P->n_alloc = GMT_CHUNK;
 	P->item = (struct MEMORY_ITEM *)malloc ((size_t)(P->n_alloc * sizeof(struct MEMORY_ITEM)));
@@ -9166,6 +9166,7 @@ void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr
 	size_t old;
 	void *use;
 	
+	if (!M) return;	/* Not initialized */
 	if (!M->active) return;	/* Not activated */
 	use = (prev_ptr) ? prev_ptr : ptr;
 	entry = GMT_memtrack_find (M, use);
@@ -9198,6 +9199,7 @@ void GMT_memtrack_sub (struct MEMORY_TRACKER *M, char *name, int line, void *ptr
 	/* Called from GMT_free to remove memory pointer */
 	int entry;
 	
+	if (!M) return;	/* Not initialized */
 	if (!M->active) return;	/* Not activated */
 	entry = GMT_memtrack_find (M, ptr);
 	if (entry == -1) {	/* Error, trying to free something not allocated by GMT_memory */
@@ -9240,6 +9242,7 @@ void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_en
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double tot, GMT_memtrack_mem (size_t mem, int *unit);
 	
+	if (!M) return;	/* Not initialized */
 	if (!M->active) return;	/* Not activated */
 	report = (M->current > 0);
 	if (report) {
