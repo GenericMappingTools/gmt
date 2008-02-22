@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.5 2008-02-22 08:49:15 guru Exp $
+#	$Id: GNUmakefile,v 1.6 2008-02-22 21:53:10 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -45,7 +45,7 @@
 
 include ../src/makegmt.macros
 
-.SUFFIXES:	.eps .pdf .tex .ps .sh .csh
+.SUFFIXES:	.eps .pdf .tex .ps .sh
 
 PAPER=a4
 L2H=latex2html -local_icons -white -show_section_numbers -image_type png -bottom_navigation
@@ -73,7 +73,7 @@ EX_EPS=	scripts/example_01.eps scripts/example_02.eps scripts/example_03.eps scr
 	scripts/example_20.eps scripts/example_21.eps scripts/example_22.eps scripts/example_23.eps \
 	scripts/example_24.eps scripts/example_25.eps scripts/example_26.eps
 
-# TEX files used in Chapter 7 (Cookbook)
+# TEX files of examples used in the Cookbook that are to retain the comments
 EX_TEX=	scripts/volcano.tex scripts/bullseye.tex scripts/GMT_App_M_2.tex $(EX_EPS:.eps=.tex)
 
 # EPS files that need special attention
@@ -88,7 +88,7 @@ APP_O_EPS= \
 SQRT_EPS=scripts/GMT_linear.eps scripts/GMT_log.eps scripts/GMT_pow.eps
 IS_EPS=	fig/GMT_covertext.eps fig/GMT_Environment.eps
 
-# EPS files for GMT_Docs to be created from scripts. Scripts have to be converted to TEX
+# EPS files for GMT_Docs to be created from scripts. Scripts have to be converted to TEX (without comments)
 DOCEPS1=scripts/GMT_App_K_1.eps scripts/GMT_App_K_2.eps scripts/GMT_App_K_3.eps scripts/GMT_App_K_4.eps \
 	scripts/GMT_App_K_5.eps $(APP_O_EPS) \
 	scripts/GMT_-B_time1.eps scripts/GMT_-B_time2.eps scripts/GMT_-B_time3.eps \
@@ -150,10 +150,14 @@ tests doctests:	prepro
 clean:
 	\rm -f *% .gmt*
 	\rm -f *.aux *.lot *.lof *.toc *.pdf *.out *.dvi *.ind *.ilg *.idx *.log *.ps *.eps
-	\rm -f GMT_version.tex GMT_Appendix_N_inc.tex
+	\rm -f GMT_Appendix_N_inc.tex
 	\rm -f scripts/*.{tex,eps,pdf,csh,ps} scripts/sqrt.d* scripts/.gmtdefaults4 scripts/.gmtcommands4
+	\rm -f scripts/example_*.sh scripts/volcano.sh scripts/bullseye.sh
 	\rm -f fig/*.pdf
 	\rm -rf GMT_Docs GMT_Tutorial
+
+spotless:	clean
+	\rm -f GMT_version.tex
 
 # Shortcuts, just to do a couple of things
 ps:	GMT_Docs.ps GMT_Tutorial.ps
@@ -163,19 +167,15 @@ docs:	GMT_Docs.pdf GMT_Docs/index.html
 tutorial: GMT_Tutorial.pdf GMT_Tutorial/index.html
 
 # Create links to script files elsewhere on the system
-$(EX_TEX:.tex=.csh):
-	$(LN_S) -f ../../share/custom/volcano.def scripts/volcano.csh
-	$(LN_S) -f ../../examples/ex20/bullseye.def scripts/bullseye.csh
-	for f in `ls ../examples/*/job*.csh` ; do $(LN_S) -f ../$$f scripts/example_`basename $$f|cut -c4-5`.csh ; done
+$(EX_TEX:.tex=.sh):
+	$(LN_S) -f ../../share/custom/volcano.def scripts/volcano.sh
+	$(LN_S) -f ../../examples/ex20/bullseye.def scripts/bullseye.sh
+	for f in `ls ../examples/*/job*.sh` ; do $(LN_S) -f ../$$f scripts/example_`basename $$f|cut -c4-5`.sh ; done
 
-# Link to the example files
-$(EX_EPS:.eps=.ps):
-	cd scripts && $(LN_S) -f ../../examples/*/example_??.ps .
-
-# Convert the PS files of the examples to PDF, while stripping off the time tag and
+# Convert the PS files of the examples to EPS and PDF, while stripping off the time tag and
 # rotating landscape images back to portrait. Leave intermediate EPS behind.
-.ps.pdf:
-	ps2raster -Au -P -Tef $*.ps
+$(EX_EPS) $(EX_EPS:.eps=.pdf):	../examples/ex01/example_01.ps
+	ps2raster -Au -P -Tef -Dscripts ../examples/ex*/$(*F).ps
 
 # To convert EPS to PDF
 $(IS_EPS:.eps=.pdf):	$(IS_EPS)
@@ -204,17 +204,14 @@ run_app:
 	cd scripts ; cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C sh ../$*.sh
 	ps2raster -A -P -Tef $*.ps
 	\rm -f $*.ps
-.csh.eps .csh.pdf:
-	cd scripts ; cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C csh ../$*.csh
-	ps2raster -A -P -Tef $*.ps
-	\rm -f $*.ps
 
-# Turn scripts into TEX files for inclusion in the documentation.
-.sh.tex:
+# Turn scripts into TEX files for inclusion in the documentation. Remove comments in these.
+$(SCRTEX) $(DOCEPS1:.eps=.tex):	%.tex:	%.sh
 	pr -t -e $*.sh | egrep -v '^#|^$$' > $*.tex
-# Those converted from CSH files (i.e. examples) keep their comments, but remove CVS tag.
-.csh.tex:
-	pr -t -e $*.csh | egrep -v 'Id:' > $*.tex
+
+# Keep the comments in the examples, but remove CVS tag.
+$(EX_TEX):	%.tex:	%.sh
+	pr -t -e $*.sh | egrep -v 'Id:' > $*.tex
 
 # Additional dependency for some graphs
 $(SQRT_EPS) $(SQRT_EPS:.eps=.pdf):	scripts/sqrt.d scripts/sqrt.d10
