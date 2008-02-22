@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.188 2008-02-22 07:49:11 guru Exp $
+	$Id: ChangeLog,v 1.189 2008-02-22 19:18:48 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2008-02-21	pwessel
@@ -13,7 +13,7 @@
 				scale, when using rectangles with gradients: Size of rectangles followed
 				original order, not inverted. (3) In reverse mode, -Eb was plotting
 				foreground triangle, -Ef background triangle.
-	* doc/GMT_Appendix_M.tex, doc/scripts/GMT_App_M_2.csh:	Figure added to App M to illustrate uses
+	* doc/GMT_Appendix_M.tex, doc/scripts/GMT_App_M_2.sh:	Figure added to App M to illustrate uses
 				of psscale.
 
 2008-02-20	remko
