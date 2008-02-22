@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.53 2008-02-20 16:32:41 remko Exp $
+#	$Id: Makefile,v 1.54 2008-02-22 03:39:13 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -64,13 +64,13 @@ include src/makegmt.macros	# GMT-specific settings determined by user & install_
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
+SUPPL	=	dbase gshhs imgsrc meca mex mgd77 mgg misc segyprogs spotter x2sys x_system xgrid
+SUPPL_M	=	dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
+
 .PHONY:		all gmt suppl update gmtmacros \
 		install uninstall install-all uninstall-all install-gmt uninstall-gmt \
 		install-suppl uninstall-suppl install-data uninstall-data install-man uninstall-man \
-		install-www uninstall-www examples run-examples clean spotless distclean insuppl
-
-SUPPL	=	dbase gshhs imgsrc meca mex mgd77 mgg misc segyprogs spotter x2sys x_system xgrid
-SUPPL_M	=	dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
+		install-www uninstall-www examples run-examples clean spotless distclean $(SUPPL)
 
 all:		gmt suppl
 
@@ -113,11 +113,11 @@ uninstall-gmt:
 
 suppl:		gmtmacros
 		cd src ; $(MAKE) libs
-		$(MAKE) TARGET=all insuppl
+		$(MAKE) TARGET=all $(SUPPL)
 
 install-suppl suppl-install:	gmtmacros
 		cd src ; $(MAKE) libs
-		$(MAKE) TARGET=install insuppl
+		$(MAKE) TARGET=install $(SUPPL)
 
 gmtmacros:
 		@if [ ! -s src/makegmt.macros ]; then \
@@ -126,7 +126,7 @@ gmtmacros:
 		fi
 
 uninstall-suppl:
-		$(MAKE) TARGET=uninstall insuppl
+		$(MAKE) TARGET=uninstall $(SUPPL)
 
 install-data:
 		if [ ! $(rootdir)/share = $(datadir) ]; then \
@@ -145,7 +145,7 @@ uninstall-data:
 
 install-man uninstall-man:
 		cd src ; $(MAKE) $@
-		$(MAKE) TARGET=$@ insuppl
+		$(MAKE) TARGET=$@ $(SUPPL)
 
 install-www:
 		@if [ ! $(rootdir)/www = $(wwwdir) ]; then \
@@ -172,20 +172,18 @@ examples run-examples:
 		fi
 
 clean:
-		$(MAKE) TARGET=$@ insuppl
+		$(MAKE) TARGET=$@ $(SUPPL)
 		cd src ; $(MAKE) $@
 
 spotless::
 		\rm -f config.cache config.status config.log
-		$(MAKE) TARGET=$@ insuppl
+		$(MAKE) TARGET=$@ $(SUPPL)
 		cd src ; $(MAKE) $@
 
 distclean:	spotless
 
-insuppl:
-		@set -e; for d in $(SUPPL); do \
-			if [ -d src/$$d ] && [ ! -f src/$$d/.skip ]; then \
-				echo "Making $(TARGET) in src/$$d"; \
-				cd src/$$d; $(MAKE) $(TARGET); cd ../..; \
-			fi; \
-		done
+$(SUPPL):
+		@set -e; if [ -d src/$@ ] && [ ! -f src/$@/.skip ]; then \
+			echo "Making $(TARGET) in src/$@"; \
+			cd src/$@; $(MAKE) $(TARGET); \
+		fi
