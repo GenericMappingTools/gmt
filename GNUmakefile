@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.19 2008-01-20 22:38:53 remko Exp $
+#  $Id: GNUmakefile,v 1.20 2008-02-22 03:39:13 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -82,15 +82,11 @@ sinclude guru/gmtguru.macros		# Guru-specific settings determined by GURU
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
-SUPPL	= dbase gshhs imgsrc meca mex mgd77 mgg misc segyprogs spotter x2sys x_system xgrid
-SUPPL_M	= dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
-
-#-------------------------------------------------------------------------------
-.PHONY:		FILES all man manpages webman webdoc pdfman docs prep_suppl get_coast get_high get_full \
+.PHONY:		FILES man manpages webman webdoc pdfman docs prep_suppl get_coast get_high get_full \
 		latest-config help update create newsite usable site archive \
 		tar_all zip_all zip_bin zip_src \
 		full high tar_full zip_full tar_high zip_high installl suppl alltests \
-		doctests tests ex examples clean cvsclean distclean spotless
+		doctests tests ex examples cvsclean
 
 help::
 		@grep '^#!' GNUmakefile | cut -c3-
@@ -180,27 +176,27 @@ fresh:
 config:		src/makegmt.macros
 
 share/conf/gmt.conf: 	share/conf/gmt.conf.orig 
-			cp -f share/conf/gmt.conf.orig share/conf/gmt.conf
+		cp -f share/conf/gmt.conf.orig share/conf/gmt.conf
 
 share/conf/.gmtdefaults_SI:	share/conf/.gmtdefaults_SI.orig
-			cp -f share/conf/.gmtdefaults_SI.orig share/conf/.gmtdefaults_SI
+		cp -f share/conf/.gmtdefaults_SI.orig share/conf/.gmtdefaults_SI
 
 share/conf/.gmtdefaults_US:	share/conf/.gmtdefaults_US.orig
-			cp -f share/conf/.gmtdefaults_US.orig share/conf/.gmtdefaults_US
+		cp -f share/conf/.gmtdefaults_US.orig share/conf/.gmtdefaults_US
 
 guru/gmtguru.macros:
-			touch $@
+		touch $@
 
 # When doing spotless or TARGET=spotless, make sure a dummy src/makegmt.macros exists
 
 ifeq "$(findstring spotless,$(MAKECMDGOALS)$(TARGET))" "spotless"
 src/makegmt.macros:
-			touch $@
+		touch $@
 else
 src/makegmt.macros:	guru/gmtguru.macros src/makegmt.macros.in configure config.sub config.guess
-			rm -f config.cache config.log config.status
-			./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) \
-				$(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL)
+		rm -f config.cache config.log config.status
+		./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) \
+			$(GMT_DIST) $(GMT_EXDIST) $(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL)
 endif
 
 configure:	configure.ac
@@ -242,13 +238,17 @@ get_coast get_high get_full:
 #	TARRING OFF THE NEW VERSION
 #-------------------------------------------------------------------------------
 
-tar_all:	tar_progs tar_share tar_coast tar_tut tar_web tar_pdf tar_scripts tar_suppl tar_done
+tar_all:	tar_progs tar_share tar_coast tar_tut tar_web tar_pdf tar_scripts tar_suppl
+		@echo " "
+		@echo "Completed tarring off entire archive"
 
 zip_all:	zip_src zip_bin
+		@echo " "
+		@echo "Completed zipping off entire archive"
 
-zip_bin:	zip_exe zip_suppl_exe zip_done
+zip_bin:	zip_exe zip_suppl_exe
 
-zip_src:	zip_progs zip_share zip_coast zip_tut zip_web zip_pdf zip_scripts zip_suppl zip_done
+zip_src:	zip_progs zip_share zip_coast zip_tut zip_web zip_pdf zip_scripts zip_suppl
 
 full:		tar_full zip_full
 
@@ -440,14 +440,6 @@ zip_coast zip_high zip_full:	ftpdir
 		(cd ..; zip -r -9 -q -l GMT/ftp/GSHHS_$(subst zip_,,$@).zip GMT/COPYING)
 		if [ "$(subst zip_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
 		   (cd ..; zip -r -9 -q    GMT/ftp/GSHHS_$(subst zip_,,$@).zip GMT/share/coast/*_[$$suf].cdf)
-
-tar_done:
-		@echo " "
-		@echo "Completed tarring off entire archive"
-
-zip_done:
-		@echo " "
-		@echo "Completed zipping off entire archive"
 
 include Makefile
 
