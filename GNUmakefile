@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.20 2008-02-22 03:39:13 remko Exp $
+#  $Id: GNUmakefile,v 1.21 2008-02-22 21:50:50 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -148,8 +148,8 @@ doctests:
 cvsclean:
 		$(SHELL) guru/cvsclean.sh
 
-spotless::
-		cd doc ; $(MAKE) clean
+clean spotless::
+		cd doc ; $(MAKE) $@
 
 #-------------------------------------------------------------------------------
 # For compatibility with previous versions
