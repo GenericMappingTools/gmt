@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.44 2008-02-21 22:40:59 remko Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.45 2008-02-22 21:54:34 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -23,7 +23,7 @@ mostly follow the following format:
 \item We explain what we want to achieve in plain
 language.
 
-\item We present an annotated cshell script that contains
+\item We present an annotated bourne shell script that contains
 all commands used to generate the illustration.
 
 \item We explain the rationale behind the commands.
@@ -36,19 +36,22 @@ A detailed discussion of each command is not given;
 we refer you to the manual pages for command line
 syntax, etc.  We encourage you to run these scripts for yourself.
 See Appendix~\ref{app:D} if you would like an electronic version
-of all the shell-scripts (both \progname{csh} and \progname{sh} scripts
-are available; only the \progname{csh}-scripts are discussed here) and support
+of all the shell-scripts (both \progname{sh} and \progname{csh} scripts
+are available; only the \progname{sh}-scripts are discussed here) and support
 data used below.  Note that all examples explicitly specifies the
 measurement units, so although we use inches you should be able
 to run these scripts and get the same plots even if you have cm
 as the default measure unit.  The examples are all written to be ``quiet'',
 that is no information is echoed to the screen.  Thus,
 these scripts are well suited for background execution.
+
 Note that we also end each script by cleaning up after
 ourselves. Because \progname{awk} is broken as designed on some
 systems, and \progname{nawk} is not available on others we refer
-to \progname{\$AWK} in the scripts below; the \progname{do\_examples}
+to \progname{\$AWK} in the scripts below; the \progname{do\_examples.sh}
 scripts will set this when running all examples. 
+
+Finally, be aware that for practical purposes the output \PS\ file name is stored as the variable \texttt{ps}.
 
 \section{The making of contour maps}
 
