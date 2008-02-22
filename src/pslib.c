@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.161 2008-02-19 19:03:37 guru Exp $
+ *	$Id: pslib.c,v 1.162 2008-02-22 02:07:56 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2530,7 +2530,9 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	sub = super = small = under = FALSE;
 	if (draw_box & 64) {	/* Smart offsets follow justification */
 		if ((justify & 3) == 3)  x_off = -x_off;
+		if ((justify & 2) == 2)  x_off = 0.0;
 		if ((justify >> 2) == 2) y_off = -y_off;
+		if ((justify & 4) == 4) y_off = 0.0;
 	}
 
 	n_alloc = PSL_CHUNK;

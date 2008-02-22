@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.28 2008-01-30 01:02:33 remko Exp $
+#	$Id: todo.txt,v 1.29 2008-02-22 02:07:56 guru Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -57,6 +57,8 @@ psscale:	Add 3-D view option.  Add 3-D view [Need to reclaim the -E option
 		current -E option as -T.  Also reclaim -Z for setting the z-level
 		for 3-D views and move current -Z to -W for bar widths; process
 		-Z<file> still for backwardness.
+
+pstext.c	Implement -S option in paragraph mode.
 
 geotiff:	Kurt Feigl has contributed a grd2geotiff.c program but it is mostly
 		based on grdimage that I can imagine we could add this extensive
