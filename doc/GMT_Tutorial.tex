@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Tutorial.tex,v 1.53 2008-01-23 03:22:47 guru Exp $
+%       $Id: GMT_Tutorial.tex,v 1.54 2008-02-22 21:54:34 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2008.
@@ -141,16 +141,16 @@ commands if you have made the installation or ignore them if
 you have not.
 
 \item For all but the simplest \GMT\ jobs it is recommended that
-you place all the \GMT\ (and \UNIX) commands in a \progname{cshell} script
+you place all the \GMT\ (and \UNIX) commands in a shell script
 file and make it executable.  To ensure that \UNIX\ recognizes
-your script as a \progname{cshell} script it is a good habit always to start
-the script with the line \#!/bin/csh.  All the examples in this
-tutorial assumes you are running the \progname{cshell}; if you are using
+your script as a shell script it is a good habit always to start
+the script with the line \#!/bin/sh or \#!/bin/csh, depending on the shell you prefer to use.
+All the examples in this tutorial assumes you are running the bourne shell, \progname{sh}; if you are using
 something different then you are on your own.
 
 \item Making a script executable is accomplished using the \texttt{chmod}
-command, e.g., the script \filename{figure\_1.csh} is made executable
-with ``\texttt{chmod +x figure\_1.csh}''.
+command, e.g., the script \filename{figure\_1.sh} is made executable
+with ``\texttt{chmod +x figure\_1.sh}''.
 
 \item To view a \PS\ file (e.g., \filename{map.ps}) on a UNIX workstation
 we use \progname{ghostview} \filename{map.ps}.  On some systems there
@@ -290,15 +290,16 @@ terminal (called \emph{stdout}).  To use files instead one can
 use \UNIX\ redirection:
 
 {\small\begin{verbatim}
-GMTprogram input-file >! output-file
-GMTprogram < input-file >! output-file
+GMTprogram input-file > output-file
+GMTprogram < input-file > output-file
 GMTprogram input-file >> output-file       # Append to existing file
 \end{verbatim}
 }
 
 \noindent
-The exclamation sign (!) allows us to overwrite existing files.
-The use of it the exclamtion sign is only required when you set the shell variable {\bf noclobber}.
+In this example, and in all those to follow, it is assumed that you do not have the shell
+variable {\bf noclobber} set. If you do, it prevents accidental overwriting of existing files.
+That may be a noble cause, but it is extremely annoying. So please, {\bf unset noclobber}.
 
 \subsection{Piping ($|$)}
 \index{UNIX@\UNIX!piping}
@@ -308,7 +309,7 @@ Sometimes we want to use the output from one program as input
 to another program.  This is achieved with \UNIX\ pipes:
 
 {\small\begin{verbatim}
-Someprogram | GMTprogram1 | GMTprogram2 >!  Output-file (or | lp) 
+Someprogram | GMTprogram1 | GMTprogram2 > Output-file (or | lp) 
 \end{verbatim}
 }
 
@@ -319,11 +320,11 @@ Someprogram | GMTprogram1 | GMTprogram2 >!  Output-file (or | lp)
 Most \UNIX\ and \GMT\ programs will on occasion write error messages.
 These are typically written to a separate data stream called
 \emph{stderr} and can be redirected separately from the standard
-output (which goes to \emph{stdout}).  To redirect error messages
-we use
+output (which goes to \emph{stdout}).  To send the error messages to the same location
+as standard output we use
 
 {\small\begin{verbatim}
-UNIXprogram >& errors.log
+UNIXprogram > errors.log 2>&1
 \end{verbatim}
 }
 
@@ -331,7 +332,7 @@ When we want to save both program output and error messages to
 separate files we use the following syntax:
 
 {\small\begin{verbatim}
-(GMTprogram > output.d) >& errors.log
+GMTprogram > output.d 2> errors.log
 \end{verbatim}
 }
 
@@ -396,7 +397,7 @@ from -3 to 8 in {\it y}, annotating every 1.  The final plot should be
 4 by 3 inches in size.  Here's how we do it:
 
 {\small\begin{verbatim}
-psbasemap -R10/70/-3/8 -JX4i/3i -B10/1:."My first plot": -P >! plot.ps
+psbasemap -R10/70/-3/8 -JX4i/3i -B10/1:."My first plot": -P > plot.ps
 \end{verbatim}
 }
 
@@ -427,7 +428,7 @@ ranges from $3.2 \cdot 10^{20}$ to $6.8 \cdot 10^{24}$.  One possibility is
 
 {\small\begin{verbatim} 
 psbasemap -R1/10000/1e20/1e25 -JX9il/6il \
-   -B2:"Wavelength (m)":/a1pf3:"Power (W)":WS >! plot.ps 
+   -B2:"Wavelength (m)":/a1pf3:"Power (W)":WS > plot.ps 
 \end{verbatim}
 }
 
@@ -488,7 +489,7 @@ One of \Opt{W}, \Opt{G}, \Opt{S} must be selected.  Our first coastline
 example is from Latin America:
 
 {\small\begin{verbatim}
-pscoast -R-90/-70/0/20 -JM6i -P -B5g5 -Gchocolate >! map.ps 
+pscoast -R-90/-70/0/20 -JM6i -P -B5g5 -Gchocolate > map.ps 
 \end{verbatim}
 }
 
@@ -531,7 +532,7 @@ We try the following command:
 
 {\small\begin{verbatim}
 pscoast -R-130/-70/24/52 -JB-100/35/33/45/6i -B10g5:."Conic Projection": \
-   -N1/thickest -N2/thinnest -A500 -Ggrey -Wthinnest -P >! map.ps
+   -N1/thickest -N2/thinnest -A500 -Ggrey -Wthinnest -P > map.ps
 \end{verbatim}
 }
 
@@ -566,7 +567,7 @@ As an example we will try
 
 {\small\begin{verbatim}
 pscoast -R0/360/-90/90 -JG280/30/6i -Bg30/g15 -Dc -A5000 -Gwhite \
-    -SDarkTurquoise -P >! map.ps
+    -SDarkTurquoise -P > map.ps
 \end{verbatim}
 }
 
@@ -599,7 +600,7 @@ is thus generated by
 
 {\small\begin{verbatim}
 pscoast -R0/360/-90/90 -JKs180/9i -B60g30/30g15 -Dc -A5000 \
-    -Gchocolate -SDarkTurquoise -Wthinnest >! map.ps
+    -Gchocolate -SDarkTurquoise -Wthinnest > map.ps
 \end{verbatim}
 }
 
@@ -828,7 +829,7 @@ dashed pen.
 To simply plot the data as a line we choose no symbol and specify a pen thickness instead:
 
 {\small\begin{verbatim} 
-psxy data -R -J -P -B -Wthinner >! plot.ps
+psxy data -R -J -P -B -Wthinner > plot.ps
 \end{verbatim}
 }
 \index{Examples|)}
@@ -856,7 +857,7 @@ symbols with a line we must use the overlay approach:
 \index{Connected symbols}
 
 {\small\begin{verbatim} 
-psxy data -R -J -B -P -K -Wthinner >! plot.ps
+psxy data -R -J -B -P -K -Wthinner > plot.ps
 psxy data -R -J -O -W -Si0.2i >> plot.ps
 \end{verbatim}
 }
@@ -891,7 +892,7 @@ tools.  Here, without further elaboration, we simply use the \UNIX\ tool
 is the current record number):
 
 {\small\begin{verbatim}
-awk '{if (NR > 3) print $5, $4, $6, 0.02*$7}' quakes.ngdc >! quakes.d
+awk '{if (NR > 3) print $5, $4, $6, 0.02*$7}' quakes.ngdc > quakes.d
 \end{verbatim}
 }
 
@@ -930,7 +931,7 @@ We may now complete our example using the Mercator projection; we throw in a
 map scale out of pure generosity:
 
 {\small\begin{verbatim} 
-pscoast -R130/150/35/50 -JM6i -B5 -P -Ggrey -Lf134/49/42.5/500 -K >! map.ps
+pscoast -R130/150/35/50 -JM6i -B5 -P -Ggrey -Lf134/49/42.5/500 -K > map.ps
 psxy -R -J -O -Cquakes.cpt quakes.d -Sci -Wthinnest >> map.ps
 \end{verbatim}
 }
@@ -1351,7 +1352,7 @@ all take the same options (listed in Table~\ref{tbl:preprocess}).
 With respect to our ship data we preprocess it using the median method:
 
 {\small\begin{verbatim}
-blockmedian -R245/255/20/30 -I5m -V ship.xyz >! ship_5m.xyz
+blockmedian -R245/255/20/30 -I5m -V ship.xyz > ship_5m.xyz
 \end{verbatim}
 }
 
@@ -1392,7 +1393,7 @@ contour the final grid; we finally deactivate the clipping with a second
 call to \GMTprog{psmask}.  Here's the recipe:
 
 {\small\begin{verbatim}
-psmask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -B2 -P -K -V >! map.ps
+psmask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -B2 -P -K -V > map.ps
 grdcontour ship.nc -J -O -K -C250 -A1000 >> map.ps
 psmask -C -O >> map.ps
 \end{verbatim}
@@ -1472,8 +1473,8 @@ To make discrete and continuous color cpt files for data that ranges
 from -20 to 60, with color changes at every 10, try these two variants:
 
 {\small\begin{verbatim}
-makecpt -Crainbow -T-20/60/10 >! disc.cpt
-makecpt -Crainbow -T-20/60/10 -Z >! cont.cpt
+makecpt -Crainbow -T-20/60/10 > disc.cpt
+makecpt -Crainbow -T-20/60/10 -Z > cont.cpt
 \end{verbatim}
 }
 
@@ -1499,7 +1500,7 @@ and grid-line intervals for the colorbars.)
 \end{table}
 
 {\small\begin{verbatim}
-psbasemap -R0/8.5/0/11 -Jx1i -P -B0 -K >! bar.ps
+psbasemap -R0/8.5/0/11 -Jx1i -P -B0 -K > bar.ps
 psscale -D3i/3i/4i/0.5ih -Cdisc.cpt -B:discrete: -O -K >> bar.ps
 psscale -D3i/5i/4i/0.5ih -Ccont.cpt -B:continuous: -O -K >> bar.ps
 psscale -D3i/7i/4i/0.5ih -Cdisc.cpt -B:discrete: -I0.5 -O -K >> bar.ps
@@ -1586,7 +1587,7 @@ Using \GMTprog{grdinfo} we find that the data ranges from $\sim$1000m to
 $\sim$4300m so we make a cpt file accordingly:
 
 {\small\begin{verbatim}
-makecpt -Crainbow -T1000/5000/500 -Z >! topo.cpt
+makecpt -Crainbow -T1000/5000/500 -Z > topo.cpt
 \end{verbatim}
 }
 
@@ -1611,7 +1612,7 @@ We want to make a plain color map with a color bar superimposed above
 the plot.  We try
 
 {\small\begin{verbatim}
-grdimage us.nc -JM6i -P -B2 -Ctopo.cpt -V -K >! topo.ps
+grdimage us.nc -JM6i -P -B2 -Ctopo.cpt -V -K > topo.ps
 psscale -D3i/8.5i/5i/0.25ih -Ctopo.cpt -I0.4 -B/:m: -O >> topo.ps
 \end{verbatim}
 }
@@ -1664,7 +1665,7 @@ Given the cpt file and the two gridded data sets we can
 create the shaded relief image:
 
 {\small\begin{verbatim}
-grdimage us.nc -Ius_i.nc -JM6i -P -B2 -Ctopo.cpt -K >! topo.ps
+grdimage us.nc -Ius_i.nc -JM6i -P -B2 -Ctopo.cpt -K > topo.ps
 psscale -D3i/8.5i/5i/0.25ih -Ctopo.cpt -I0.4 -B/:m: -O >> topo.ps
 \end{verbatim}
 }
@@ -1707,7 +1708,7 @@ We will need to make an appropriate color scale, running from -2\DS C (freezing 
 water) to 30\DS C (highest likely ocean temperature). We do this as follows:
 
 {\small\begin{verbatim}
-makecpt -Cno_green -T-2/30/2 >! otemp.cpt
+makecpt -Cno_green -T-2/30/2 > otemp.cpt
 \end{verbatim}
 }
 
@@ -1717,7 +1718,7 @@ use:
 
 {\small\begin{verbatim}
 grdimage -Rg -JW180/9i "otemp.anal1deg.nc?otemp[2,0]" -Cotemp.cpt -Bg30 \
-   >! otemp.ps
+   > otemp.ps
 \end{verbatim}
 }
 
@@ -1799,14 +1800,14 @@ subset of the ETOPO5 data over Bermuda and make a quick-and-dirty
 cpt file:
 
 {\small\begin{verbatim}
-grd2cpt bermuda.nc -Cocean >! bermuda.cpt
+grd2cpt bermuda.nc -Cocean > bermuda.cpt
 \end{verbatim}
 }
 
 A simple mesh plot can therefore be obtained with
 
 {\small\begin{verbatim}
-grdview bermuda.nc -JM5i -P -JZ2i -E135/30 -B2 -Cbermuda.cpt >! map.ps
+grdview bermuda.nc -JM5i -P -JZ2i -E135/30 -B2 -Cbermuda.cpt > map.ps
 \end{verbatim}
 }
 
@@ -1828,7 +1829,7 @@ from the southeast.  This is done using
 
 {\small\begin{verbatim}
 grdview us.nc -JM6i -E135/35 -Qi50 -Ius_i.nc -Ctopo.cpt -V -B2 \
-    -JZ0.5i >! view.ps
+    -JZ0.5i > view.ps
 \end{verbatim}
 }
 
