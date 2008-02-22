@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.173 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_map.c,v 1.174 2008-02-22 19:59:37 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6283,6 +6283,8 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 void GMT_conv_datum (double in[], double out[])
 {
 	/* Evaluate J^-1 and B on from ellipsoid */
+	/* Based on Standard Molodensky Datum Conversion, implemented from
+	 * http://www.colorado.edu/geography/gcraft/notes/datum/gif/molodens.gif */
 
 	double sin_lon, cos_lon, sin_lat, cos_lat, sin_lat2, M, N, h, tmp_1, tmp_2, tmp_3;
 	double delta_lat, delta_lon, delta_h, sc_lat;

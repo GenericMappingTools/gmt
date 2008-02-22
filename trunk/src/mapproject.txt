@@ -88,7 +88,7 @@ List all projection parameters.  To only list datums, use OPT(Qd).  To only list
 Suppress points that fall outside the region.
 .TP
 .B \-T
-Coordinate conversions between datums \fIfrom\fP and \fIto\fP.  Use OPT(Th) if 3rd input column has
+Coordinate conversions between datums \fIfrom\fP and \fIto\fP using the standard Molodensky transformation.  Use OPT(Th) if 3rd input column has
 height above ellipsoid [Default assumes height = 0, i.e., on the ellipsoid].  Specify datums using the
 ID (see OPT(Qd)) or give \fIellipsoid\fP:\fIdx,dy,dz\fP, where \fIellipsoid\fP may be an ellipsoid
 ID (see OPT(Qe)) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not given we use WGS-84.
