@@ -1,11 +1,12 @@
 #!/bin/sh
-#
-#	GMT Example 22  $Id: job22.sh,v 1.8 2007-09-13 17:31:23 remko Exp $
+#		GMT EXAMPLE 22
+#		$Id: job22.sh,v 1.9 2008-02-22 21:10:42 remko Exp $
 #
 # Purpose:	Automatic map of last 7 days of world-wide seismicity
 # GMT progs:	gmtset, pscoast, psxy, pslegend
 # Unix progs:	cat, sed, awk, wget|curl
 #
+ps=example_22.ps
 gmtset ANNOT_FONT_SIZE_PRIMARY 10p HEADER_FONT_SIZE 18p PLOT_DEGREE_FORMAT ddd:mm:ssF
 
 # Get the data (-q quietly) from USGS using the wget (comment out in case
@@ -32,20 +33,21 @@ me="GMT guru @@ GMTbox"
 
 # Create standard seismicity color table
 
-cat << EOF > neis.cpt
+cat > neis.cpt << END
 0	red	100	red
 100	green	300	green
 300	blue	10000	blue
-EOF
+END
 
 # Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
 pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue \
-  -Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > example_22.ps
-awk -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -H >> example_22.ps
+	-Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > $ps
+awk -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d \
+	| psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -H >> $ps
 # Create legend input file for NEIS quake plot
 
-cat << EOF > neis.legend
+cat > neis.legend << END
 H 16 1 $n events during $first to $last
 D 0 1p
 N 3
@@ -68,7 +70,7 @@ V 0 1p
 D 0 1p
 N 1
 >
-EOF
+END
 
 # Put together a reasonable legend text, and add logo and user's name:
 
@@ -89,7 +91,7 @@ EOF
 # OK, now we can actually run pslegend.  We center the legend below the map.
 # Trial and error shows that 1.7i is a good legend height:
 
-pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -Jx1i -R0/8/0/8 -O -F neis.legend -Glightyellow >> example_22.ps
+pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -Jx1i -R0/8/0/8 -O -F neis.legend -Glightyellow >> $ps
 
 # Clean up after ourselves:
 

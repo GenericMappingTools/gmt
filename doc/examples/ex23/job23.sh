@@ -1,10 +1,12 @@
 #!/bin/sh
-#
-#	GMT Example 23  $Id: job23.sh,v 1.13 2007-09-13 17:31:01 remko Exp $
+#		GMT EXAMPLE 23
+#		$Id: job23.sh,v 1.14 2008-02-22 21:10:43 remko Exp $
 #
 # Purpose:	Plot distances from Rome and draw shortest paths
 # GMT progs:	grdmath, grdcontour, pscoast, psxy, pstext, grdtrack
 # Unix progs:	echo, cat, awk
+#
+ps=example_23.ps
 
 # Position and name of central point:
 
@@ -27,27 +29,28 @@ cat << EOF > cities.d
 EOF
 
 pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 \
-  -B0g30:."Distances from $name to the World": -K -Dc -Wthinnest > example_23.ps
+	-B0g30:."Distances from $name to the World": -K -Dc -Wthinnest > $ps
 
-grdcontour dist.grd -A1000+v+ukm+kwhite -Glz-/z+ -S8 -C500 -O -K -J -Wathin,white -Wcthinnest,white,- >> example_23.ps
+grdcontour dist.grd -A1000+v+ukm+kwhite -Glz-/z+ -S8 -C500 -O -K -J \
+	-Wathin,white -Wcthinnest,white,- >> $ps
 
 # For each of the cities, plot great circle arc to Rome with psxy
 
 while read clon clat city; do
-	(echo $lon $lat; echo $clon $clat) | psxy -R -J -O -K -Wthickest/red >> example_23.ps
+	(echo $lon $lat; echo $clon $clat) | psxy -R -J -O -K -Wthickest/red >> $ps
 done < cities.d
 
 # Plot red squares at cities and plot names:
-psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> example_23.ps
-awk '{print $1, $2, 12, 1, 9, $4, $3}' cities.d | pstext -R -J -O -K -Dj0.15/0 -Gred -N >> example_23.ps
+psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> $ps
+awk '{print $1, $2, 12, 1, 9, $4, $3}' cities.d | pstext -R -J -O -K -Dj0.15/0 -Gred -N >> $ps
 # Place a yellow star at Rome
-echo "$lon $lat" | psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> example_23.ps
+echo "$lon $lat" | psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> $ps
 
 # Sample the distance grid at the cities and use the distance in km for labels
 
 grdtrack -Gdist.grd cities.d \
 	| awk '{printf "%s %s 12 0 1 CT %d\n", $1, $2, int($NF+0.5)}' \
-	| pstext -R -J -O -D0/-0.2i -N -Wwhite,o -C0.02i/0.02i >> example_23.ps
+	| pstext -R -J -O -D0/-0.2i -N -Wwhite,o -C0.02i/0.02i >> $ps
 
 # Clean up after ourselves:
 

@@ -1,12 +1,13 @@
 #!/bin/sh
-#
-#	GMT Example 25  $Id: job25.sh,v 1.5 2007-09-13 17:30:25 remko Exp $
+#		GMT EXAMPLE 25
+#		$Id: job25.sh,v 1.6 2008-02-22 21:10:43 remko Exp $
 #
 # Purpose:	Display distribution of antipode types
 # GMT progs:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
 # Unix progs:	cat
 #
 # Create D minutes global grid with -1 over oceans and +1 over land
+ps=example_25.ps
 D=30
 grdlandmask -Rg -I${D}m -Dc -A500 -N-1/1/1/1/1 -F -Gwetdry.grd
 # Manipulate so -1 means ocean/ocean antipode, +1 = land/land, and 0 elsewhere
@@ -30,13 +31,14 @@ cat << EOF > key.cpt
 EOF
 # Create the final plot and overlay coastlines
 gmtset ANNOT_FONT_SIZE_PRIMARY +10p PLOT_DEGREE_FORMAT dddF
-grdimage key.grd -Sn -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i -U/-0.75i/-0.95i/"Example 25 in Cookbook" > example_25.ps
-pscoast -R -J -O -K -Wthinnest -Dc -A500 >> example_25.ps
+grdimage key.grd -Sn -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i \
+	-U/-0.75i/-0.95i/"Example 25 in Cookbook" > $ps
+pscoast -R -J -O -K -Wthinnest -Dc -A500 >> $ps
 # Place an explanatory legend below
-pslegend -R0/9/0/0.5 -Jx1i/-1i -O -Dx4.5/0/6i/0.3i/TC -Y-0.2i -Fthick << EOF >> example_25.ps
+pslegend -R0/9/0/0.5 -Jx1i/-1i -O -Dx4.5/0/6i/0.3i/TC -Y-0.2i -Fthick >> $ps << END
 N 3
 S 0.15i s 0.2i red  0.25p 0.3i Terrestrial Antipodes [$land %]
 S 0.15i s 0.2i blue 0.25p 0.3i Oceanic Antipodes [$ocean %]
 S 0.15i s 0.2i gray 0.25p 0.3i Mixed Antipodes [$mixed %]
-EOF
+END
 rm -f *.grd key.* .gmt*

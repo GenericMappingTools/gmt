@@ -1,7 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 20
-#
-#		$Id: job20.sh,v 1.7 2006-10-22 14:26:49 remko Exp $
+#		$Id: job20.sh,v 1.8 2008-02-22 21:10:42 remko Exp $
 #
 # Purpose:	Extend GMT to plot custom symbols
 # GMT progs:	pscoast, psxy
@@ -9,8 +8,9 @@
 #
 # Plot a world-map with volcano symbols of different sizes
 # on top given locations and sizes in hotspots.d
+ps=example_20.ps
 
-cat << EOF > hotspots.d
+cat > hotspots.d << END
 55.5	-21.0	0.25
 63.0	-49.0	0.25
 -12.0	-37.0	0.25
@@ -22,20 +22,21 @@ cat << EOF > hotspots.d
 -153.5	-21.0	0.25
 -116.7	-26.3	0.25
 -16.5	64.4	0.25
-EOF
+END
 
-pscoast -Rg -JR180/9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 -K -U"Example 20 in Cookbook" > example_20.ps
+pscoast -Rg -JR180/9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 -K \
+	-U"Example 20 in Cookbook" > $ps
 
-psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> example_20.ps
+psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> $ps
 
 # Overlay a few bullseyes at NY, Cairo, and Perth
 
-cat << EOF > cities.d
+cat > cities.d << END
 286	40.45	0.8
 31.15	30.03	0.8
 115.49	-31.58	0.8
-EOF
+END
 
-psxy -R -J cities.d -Skbullseye -O >> example_20.ps
+psxy -R -J cities.d -Skbullseye -O >> $ps
 
 rm -f hotspots.d cities.d .gmt*
