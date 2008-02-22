@@ -1,5 +1,5 @@
-/*	$Id: submeca.c,v 1.6 2007-02-02 16:23:20 pwessel Exp $
- *    Copyright (c) 1996-2007 by G. Patau
+/*	$Id: submeca.c,v 1.7 2008-02-22 08:49:16 guru Exp $
+ *    Copyright (c) 1996-2008 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
  */

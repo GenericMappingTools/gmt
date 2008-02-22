@@ -1,6 +1,6 @@
-#	$Id: Makefile,v 1.29 2008-02-22 02:59:42 remko Exp $
+#	$Id: Makefile,v 1.30 2008-02-22 08:49:15 guru Exp $
 #
-#	Copyright (c) 1991-2007 by P. Wessel and W. H. F. Smith
+#	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
