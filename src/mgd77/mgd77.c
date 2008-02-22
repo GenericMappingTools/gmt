@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.165 2008-02-20 15:21:50 remko Exp $
+ *	$Id: mgd77.c,v 1.166 2008-02-22 02:50:26 mtchandl Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -36,7 +36,7 @@ struct MGD77_MAG_RF {
 	int end;            /* Model end year             */
 };
 
-#define MGD77_N_MAG_RF 13
+#define MGD77_N_MAG_RF 16
 struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
 #include "mgd77magref.h"
 };
