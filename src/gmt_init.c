@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.330 2008-02-20 14:53:04 remko Exp $
+ *	$Id: gmt_init.c,v 1.331 2008-02-22 03:32:42 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3160,6 +3160,9 @@ void GMT_end (int argc, char **argv)
 	if (GMT_IMGDIR) GMT_free ((void *)GMT_IMGDIR);
 	if (GMT_DATADIR) GMT_free ((void *)GMT_DATADIR);
 	if (GMT_TMPDIR) GMT_free ((void *)GMT_TMPDIR);
+	if (project_info.n_x_coeff) GMT_free ((void *)project_info.n_x_coeff);
+	if (project_info.n_y_coeff) GMT_free ((void *)project_info.n_y_coeff);
+	if (project_info.n_iy_coeff) GMT_free ((void *)project_info.n_iy_coeff);
 
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) if (GMT_plot_format[i][j]) GMT_free ((void *)GMT_plot_format[i][j]);
 

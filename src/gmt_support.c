@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.346 2008-02-22 02:07:56 guru Exp $
+ *	$Id: gmt_support.c,v 1.347 2008-02-22 03:32:42 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3100,6 +3100,7 @@ void GMT_contlabel_free (struct GMT_CONTOUR *G)
 		GMT_free ((void *)G->f_xy[GMT_Y]);
 		if (G->f_label) {
 			for (i = 0; i < G->f_n; i++) if (G->f_label[i]) GMT_free ((void *)G->f_label[i]);
+			GMT_free ((void *)G->f_label);
 		}
 	}
 }
