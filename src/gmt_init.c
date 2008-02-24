@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.331 2008-02-22 03:32:42 guru Exp $
+ *	$Id: gmt_init.c,v 1.332 2008-02-24 00:23:23 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2159,13 +2159,13 @@ int GMT_setparameter (char *keyword, char *value)
 			error = true_false_or_error (lower_value, &gmtdefs.want_leap_seconds);
 			break;
 		case GMTCASE_TIME_EPOCH:
-			strncpy (gmtdefs.time_epoch, value, GMT_TEXT_LEN);
+			strncpy (gmtdefs.time_system.epoch, value, GMT_TEXT_LEN);
 			break;
 		case GMTCASE_TIME_UNIT:
-			gmtdefs.time_unit = lower_value[0];
+			gmtdefs.time_system.unit = lower_value[0];
 			break;
 		case GMTCASE_TIME_SYSTEM:
-			error = GMT_get_time_system (lower_value);
+			error = GMT_get_time_system (lower_value, &gmtdefs.time_system);
 			break;
 		case GMTCASE_TIME_WEEK_START:
 			gmtdefs.time_week_start = GMT_key_lookup (value, GMT_weekdays, 7);
@@ -2493,7 +2493,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "#-------- Calendar/Time Parameters ----------\n");
 	fprintf (fp, "TIME_FORMAT_PRIMARY\t= %s\n", gmtdefs.time_format[0]);
 	fprintf (fp, "TIME_FORMAT_SECONDARY\t= %s\n", gmtdefs.time_format[1]);
-	fprintf (fp, "TIME_EPOCH\t\t= %s\n", gmtdefs.time_epoch);
+	fprintf (fp, "TIME_EPOCH\t\t= %s\n", gmtdefs.time_system.epoch);
 	fprintf (fp, "TIME_IS_INTERVAL\t= ");
 	if (gmtdefs.time_is_interval)
 		fprintf (fp, "%c%d%c\n", pm[GMT_truncate_time.direction], GMT_truncate_time.T.step, GMT_truncate_time.T.unit);
@@ -2501,7 +2501,7 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "OFF\n");
 	fprintf (fp, "TIME_INTERVAL_FRACTION\t= %g\n", gmtdefs.time_interval_fraction);
 	fprintf (fp, "TIME_LANGUAGE\t\t= %s\n", gmtdefs.time_language);
-	fprintf (fp, "TIME_UNIT\t\t= %c\n", gmtdefs.time_unit);
+	fprintf (fp, "TIME_UNIT\t\t= %c\n", gmtdefs.time_system.unit);
 	fprintf (fp, "TIME_WEEK_START\t\t= %s\n", GMT_weekdays[gmtdefs.time_week_start]);
 	/*
 	 * PW 4/2/03: LEAP_SECONDS is commented out for output until we actually want to implement this feature.  We still process on input to avoid error messages.
@@ -2851,39 +2851,56 @@ int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 	return (n);
 }
 
-int GMT_get_time_system (char *name)
+int GMT_get_time_system (char *name, struct GMT_TIME_SYSTEM *time_system)
 {
-	if (!strcmp(name,"j2000")) {
-		strcpy (gmtdefs.time_epoch, "2000-01-01T12:00:00");
-		gmtdefs.time_unit = 'd';
+	/* Convert TIME_SYSTEM into TIME_EPOCH and TIME_UNIT.
+	   TIME_SYSTEM can be one of the following: j2000, jd, mjd, s1985, unix, dr0001, rata
+	   or any string in the form "TIME_UNIT since TIME_EPOCH", like "seconds since 1985-01-01".
+	   This function only splits the strings, no validation or analysis is done. See
+	   GMT_init_time_system_structure for that.
+	   TIME_SYSTEM = other is completely ignored.
+	*/
+	char *epoch;
+
+	if (!strcmp (name, "j2000")) {
+		strcpy (time_system->epoch, "2000-01-01T12:00:00");
+		time_system->unit = 'd';
 	}
-	else if (!strcmp(name,"jd")) {
-		strcpy (gmtdefs.time_epoch, "-4713-11-25T12:00:00");
-		gmtdefs.time_unit = 'd';
+	else if (!strcmp (name, "jd")) {
+		strcpy (time_system->epoch, "-4713-11-25T12:00:00");
+		time_system->unit = 'd';
 	}
-	else if (!strcmp(name,"mjd")) {
-		strcpy (gmtdefs.time_epoch, "1858-11-17T00:00:00");
-		gmtdefs.time_unit = 'd';
+	else if (!strcmp (name, "mjd")) {
+		strcpy (time_system->epoch, "1858-11-17T00:00:00");
+		time_system->unit = 'd';
 	}
-	else if (!strcmp(name,"s1985")) {
-		strcpy (gmtdefs.time_epoch, "1985-01-01T00:00:00");
-		gmtdefs.time_unit = 'c';
+	else if (!strcmp (name, "s1985")) {
+		strcpy (time_system->epoch, "1985-01-01T00:00:00");
+		time_system->unit = 'c';
 	}
-	else if (!strcmp(name,"unix")) {
-		strcpy (gmtdefs.time_epoch, "1970-01-01T00:00:00");
-		gmtdefs.time_unit = 'c';
+	else if (!strcmp (name, "unix")) {
+		strcpy (time_system->epoch, "1970-01-01T00:00:00");
+		time_system->unit = 'c';
 	}
-	else if (!strcmp(name,"dr0001")) {
-		strcpy (gmtdefs.time_epoch, "0001-01-01T00:00:00");
-		gmtdefs.time_unit = 'c';
+	else if (!strcmp (name, "dr0001")) {
+		strcpy (time_system->epoch, "0001-01-01T00:00:00");
+		time_system->unit = 'c';
 	}
-	else if (!strcmp(name,"rata")) {
-		strcpy (gmtdefs.time_epoch, "0000-12-31T00:00:00");
-		gmtdefs.time_unit = 'd';
+	else if (!strcmp (name, "rata")) {
+		strcpy (time_system->epoch, "0000-12-31T00:00:00");
+		time_system->unit = 'd';
 	}
-	else if (strcmp(name,"other")) {
+	else if (!strcmp (name, "other")) {
+		/* Ignore completely */
+	}
+	else if ((epoch = strstr (name, "since"))) {
+		epoch += 6;
+		strcpy (time_system->epoch, epoch);
+		time_system->unit = name[0];
+		if (!strncmp (name, "mon", 3)) time_system->unit = 'o';
+	}
+	else
 		return (TRUE);
-	}
 	return (FALSE);
 }
 
@@ -3096,7 +3113,19 @@ int GMT_begin (int argc, char **argv)
 
 	GMT_init_ellipsoid ();	/* Set parameters depending on the ellipsoid */
 
-	GMT_init_time_system_structure ();
+	i = GMT_init_time_system_structure (&gmtdefs.time_system);
+	if (i & 1) {
+		fprintf (stderr, "GMT Warning:  gmtdefaults TIME_UNIT is invalid.  Default assumed.\n");
+		fprintf (stderr, "    Choose one only from y o d h m c\n");
+		fprintf (stderr, "    Corresponding to year month day hour minute second\n");
+		fprintf (stderr, "    Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
+	}
+	if (i & 2) {
+		fprintf (stderr, "GMT Warning:  TIME_EPOCH format is invalid.  Default assumed.\n");
+		fprintf (stderr, "   A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
+		fprintf (stderr, "   or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
+		fprintf (stderr, "   An example of a correct format is:  2000-01-01T12:00:00\n");
+	}
 
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
 		memcpy ((void *)gmtdefs.frame_pen.rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
@@ -3756,7 +3785,7 @@ int GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
 			s++;
 		}
 		else if (A->type == GMT_TIME)				/* Default time system unit implied */
-			unit = gmtdefs.time_unit;
+			unit = gmtdefs.time_system.unit;
 		else
 			unit = 0;	/* Not specified */
 
@@ -5409,8 +5438,8 @@ int GMT_check_scalingopt (char option, char unit, char *unit_name) {
 			mode = 3;
 			strcpy (unit_name, "nautical miles");
 			break;
-		case 'I':
 		case 'i':
+		case 'I':
 			mode = 4;
 			strcpy (unit_name, "inch");
 			break;
@@ -5440,8 +5469,8 @@ int GMT_set_measure_unit (char unit) {
 		case 'M':
 			gmtdefs.measure_unit = GMT_M;
 			break;
-		case 'I':
 		case 'i':
+		case 'I':
 			gmtdefs.measure_unit = GMT_INCH;
 			break;
 		case 'c':
@@ -5458,95 +5487,89 @@ int GMT_set_measure_unit (char unit) {
 	return (GMT_NOERROR);
 }
 
-int	GMT_init_time_system_structure () {
+int GMT_init_time_system_structure (struct GMT_TIME_SYSTEM *time_system) {
+	/* Processes strings time_system.unit and time_system.epoch to produce a time system scale
+	   (units in seconds), inverse scale, and rata die number and fraction of the epoch (days).
+	   Return values: 0 = no error, 1 = unit error, 2 = epoch error, 3 = unit and epoch error.
+	*/
+	int error = GMT_NOERROR;
 
 	/* Check the unit sanity:  */
-	switch (gmtdefs.time_unit) {
+	switch (time_system->unit) {
 		case 'y':
-			/* This is a kludge:  we assume all years
-			are the same length, thinking that a user
-			with decimal years doesn't care about
-			precise time.  To do this right would
-			take an entirely different scheme, not
-			a simple unit conversion. */
-			GMT_time_system.scale = GMT_YR2SEC_F;
+		case 'Y':
+			/* This is a kludge:  we assume all years are the same length, thinking that a user
+			with decimal years doesn't care about precise time.  To do this right would
+			take an entirely different scheme, not a simple unit conversion. */
+			time_system->scale = GMT_YR2SEC_F;
 			break;
 		case 'o':
-			/* This is also a kludge:  we assume all months
-			are the same length, thinking that a user
-			with decimal years doesn't care about
-			precise time.  To do this right would
-			take an entirely different scheme, not
-			a simple unit conversion. */
-			GMT_time_system.scale = GMT_MON2SEC_F;
+		case 'O':
+			/* This is also a kludge:  we assume all months are the same length, thinking that a user
+			with decimal years doesn't care about precise time.  To do this right would
+			take an entirely different scheme, not a simple unit conversion. */
+			time_system->scale = GMT_MON2SEC_F;
 			break;
 		case 'd':
-			GMT_time_system.scale = GMT_DAY2SEC_F;
+		case 'D':
+			time_system->scale = GMT_DAY2SEC_F;
 			break;
 		case 'h':
-			GMT_time_system.scale = GMT_HR2SEC_F;
+		case 'H':
+			time_system->scale = GMT_HR2SEC_F;
 			break;
 		case 'm':
-			GMT_time_system.scale = GMT_MIN2SEC_F;
+		case 'M':
+			time_system->scale = GMT_MIN2SEC_F;
 			break;
+		case 's':	/* For backwards compatibility. Should be 'c' instead */
+		case 'S':
+			time_system->unit = 'c';
 		case 'c':
-		case 's':	/* For backwards compatibility */
-			GMT_time_system.scale = 1.0;
+		case 'C':
+			time_system->scale = 1.0;
 			break;
 		default:
-			fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_UNIT is invalid.\n");
-			fprintf (stderr, "    Choose one only from y o d h m c\n");
-			fprintf (stderr, "    Corresponding to year month day hour minute second\n");
-			fprintf (stderr, "    Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
-			GMT_exit (EXIT_FAILURE);
+			error += 1;
 			break;
 	}
-	/* Set inverse scale and store it to avoid divisions later */
-	GMT_time_system.i_scale = 1.0 / GMT_time_system.scale;
 
-	if ( GMT_scanf_epoch (gmtdefs.time_epoch, &GMT_time_system.rata_die, &GMT_time_system.epoch_t0) ) {
-		fprintf (stderr, "GMT_FATAL_ERROR:  gmtdefault TIME_EPOCH format is invalid.\n");
-		fprintf (stderr, "   A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
-		fprintf (stderr, "   or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
-		fprintf (stderr, "   An example of a correct format is:  2000-01-01T12:00:00\n");
-		GMT_exit (EXIT_FAILURE);
-	}
-	return (GMT_NOERROR);
+	/* Set inverse scale and store it to avoid divisions later */
+	time_system->i_scale = 1.0 / time_system->scale;
+
+	/* Now convert epoch into rata die number and fraction */
+	if (GMT_scanf_epoch (time_system->epoch, &time_system->rata_die, &time_system->epoch_t0)) error += 2;
+
+	return (error);
 }
 
-int	GMT_scanf_epoch (char *s, int *rata_die, double *t0) {
+int GMT_scanf_epoch (char *s, int *rata_die, double *t0) {
 
 	/* Read a string which must be in one of these forms:
-		[-]yyyy-mm-ddThh:mm:ss[.xxx]
-		[-]yyyy-Www-dThh:mm:ss[.xxx]
+		[-]yyyy-mm-dd[T| [hh:mm:ss.sss]]
+		[-]yyyy-Www-d[T| [hh:mm:ss.sss]]
+	   Hence, data and clock can be separated by 'T' or ' ' (space), and the clock string is optional.
+	   In fact, seconds can be decimal or integer, or missing. Minutes and hour are optional too.
+	   Examples: 2000-01-01, 2000-01-01T, 2000-01-01 00:00, 2000-01-01T00, 2000-01-01T00:00:00.000
 	*/
 
-	double	ss = 0.0;
-	int i, vals[3], hh = 0, mm = 0;
+	double ss = 0.0;
+	int i, yy, mo, dd, hh = 0, mm = 0;
 	GMT_cal_rd rd;
+	char tt[8];
 
 	i = 0;
 	while (s[i] && s[i] == ' ') i++;
 	if (!(s[i])) return (-1);
-	if (strchr (&s[i], 'W') ) {	/* ISO calendar string */
-		if (strchr (&s[i], ':') ) {	/* ISO calendar string with date and clock */
-			if ( (sscanf (&s[i], "%5d-W%2d-%1dT%2d:%2d:%lf", &vals[0], &vals[1], &vals[2], &hh, &mm, &ss) ) != 6) return (-1);
-		}
-		else {				/* ISO calendar date only */
-			if ( (sscanf (&s[i], "%5d-W%2d-%1dT", &vals[0], &vals[1], &vals[2]) ) != 3) return (-1);
-		}
-		if (GMT_iso_ywd_is_bad (vals[0], vals[1], vals[2]) ) return (-1);
-		rd = GMT_rd_from_iywd (vals[0], vals[1], vals[2]);
+	if (strchr (&s[i], 'W') ) {	/* ISO calendar string, date with or without clock */
+		if (sscanf (&s[i], "%5d-W%2d-%1d%[^0-9:-]%2d:%2d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
+		if (GMT_iso_ywd_is_bad (yy, mo, dd) ) return (-1);
+		rd = GMT_rd_from_iywd (yy, mo, dd);
 	}
-	else {				/* Gregorian calendar string */
-		if (strchr (&s[i], ':') ) {	/* Gregorian calendar string with date and clock */
-			if ( (sscanf (&s[i], "%5d-%2d-%2dT%2d:%2d:%lf", &vals[0], &vals[1], &vals[2], &hh, &mm, &ss) ) != 6) return (-1);
-		}
-		else {				/* Gregorian calendar string with date only  */
-			if ( (sscanf (&s[i], "%5d-%2d-%2dT", &vals[0], &vals[1], &vals[2]) ) != 3) return (-1);
-		}
-		if (GMT_g_ymd_is_bad (vals[0], vals[1], vals[2]) ) return (-1);
-		rd = GMT_rd_from_gymd (vals[0], vals[1], vals[2]);
+	else {				/* Gregorian calendar string, date with or without clock */
+		if (sscanf (&s[i], "%5d-%2d-%2d%[^0-9:-]%2d:%2d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
+		if (GMT_g_ymd_is_bad (yy, mo, dd) ) return (-1);
+		rd = GMT_rd_from_gymd (yy, mo, dd);
 	}
 	if (GMT_hms_is_bad (hh, mm, ss)) return (-1);
 
