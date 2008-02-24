@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.17 2007-10-05 18:18:03 guru Exp $
+/*	$Id: gshhstograss.c,v 1.18 2008-02-24 21:36:53 guru Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "copy these into grassmapset/dig_[ascii|att|cats]/gshhs_[f|h|i|l|c]\n");
 		fprintf (stderr, "and then import them into the GRASS database using v.in.ascii and v.support.\n");
 		fprintf (stderr, "usage:  %s -i gshhs_[f|h|i|l|c].b [-x minx] [-X maxx] [-y miny] [-Y maxy]\n", progname);
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	while (i < argc) {
@@ -112,17 +112,17 @@ int main (int argc, char **argv)
 	strcpy(dig_name,"dig_ascii.");  strcat(dig_name,dataname);
 	if ((dig_ascii = fopen (dig_name, "w")) == NULL ) {
 		fprintf (stderr, "%s:  Could not open file %s for writing.\n", progname, dig_name);
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	strcpy(att_name,"dig_att.");    strcat(att_name,dataname);
 	if ((dig_att = fopen (att_name, "w")) == NULL ) {
 		fprintf (stderr, "%s:  Could not open file %s for writing.\n", progname, att_name);
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	strcpy(cats_name,"dig_cats.");  strcat(cats_name,dataname);
 	if ((dig_cats = fopen (cats_name, "w")) == NULL ) {
 		fprintf (stderr, "%s:  Could not open file %s for writing.\n", progname, cats_name);
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	fprintf(dig_ascii,"ORGANIZATION: \n");
@@ -188,7 +188,7 @@ int main (int argc, char **argv)
 
 			if (fread ((void *)&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
 				fprintf (stderr, "gshhs:  Error reading file.\n");
-				exit(-1);
+				exit(EXIT_FAILURE);
 			}
 			if (flip) {
 				p.x = swabi4 ((unsigned int)p.x);

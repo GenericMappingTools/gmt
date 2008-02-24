@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.9 2008-02-22 08:49:16 guru Exp $
+/*	$Id: utilmeca.c,v 1.10 2008-02-24 21:36:53 guru Exp $
  *    Copyright (c) 1996-2008 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -482,7 +482,7 @@ double datan2(double y,double x)
         if(fabs(y) < EPSIL) {
 /*
             fprintf(stderr, "undetermined form 0. / 0.");
-            exit();
+            exit(EXIT_FAILURE);
 */
             arctg = 0.;
         }
