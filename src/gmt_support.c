@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.347 2008-02-22 03:32:42 guru Exp $
+ *	$Id: gmt_support.c,v 1.348 2008-02-24 21:27:30 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -266,7 +266,7 @@ void GMT_err_fail (int err, char *file)
 		fprintf (stderr, "%s: %s [%s]\n", GMT_program, GMT_strerror(err), file);
 	else
 		fprintf (stderr, "%s: %s\n", GMT_program, GMT_strerror(err));
-	exit (EXIT_FAILURE);
+	GMT_exit (EXIT_FAILURE);
 }
 
 int GMT_parse_multisegment_header (char *header, BOOLEAN use_cpt, BOOLEAN *use_fill, struct GMT_FILL *fill, struct GMT_FILL *def_fill,  BOOLEAN *use_pen, struct GMT_PEN *pen, struct GMT_PEN *def_pen, int def_outline)
@@ -2394,7 +2394,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			fprintf (stderr, "GMT Fatal Error: %s could not reallocate memory [%.2f %s, n_items = %d]\n", progname, mem, m_unit[k], (int)nelem);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 	else {
@@ -2403,7 +2403,7 @@ void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname)
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			fprintf (stderr, "GMT Fatal Error: %s could not allocate memory [%.2f %s, n_items = %d]\n", progname, mem, m_unit[k], (int)nelem);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 	}
 #ifdef DEBUG
@@ -3765,11 +3765,11 @@ int GMT_smooth_contour (double **x_in, double **y_in, int n, int sfactor, int st
 
 	if (GMT_intpol (t_in, x, n, n_out, t_out, x_tmp, stype)) {
 		fprintf (stderr, "GMT internal error in  GMT_smooth_contour!\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (GMT_intpol (t_in, y, n, n_out, t_out, y_tmp, stype)) {
 		fprintf (stderr, "GMT internal error in  GMT_smooth_contour!\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	/* Make sure interpolated function is bounded on each segment interval */
