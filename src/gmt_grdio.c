@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.103 2008-02-20 15:21:50 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.104 2008-02-24 00:25:59 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1029,7 +1029,7 @@ void GMT_grd_set_units (struct GRD_HEADER *header)
 		case GMT_IS_RELTIME:
 		case GMT_IS_RATIME:
 			/* Determine time unit */
-			switch (gmtdefs.time_unit) {
+			switch (gmtdefs.time_system.unit) {
 			case 'y':
 				strcpy (unit, "years"); break;
 			case 'o':
@@ -1059,8 +1059,9 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 	   When "Time": transform the data scale and offset to match the current time system.
 	*/
 	int i;
-	char string[3][GRD_UNIT_LEN], *cal, *l;
+	char string[3][GRD_UNIT_LEN], *l;
 	double scale = 1.0, offset = 0.0;
+	struct GMT_TIME_SYSTEM time_system;
 
 	/* Copy unit strings */
 	strcpy (string[0], header->x_units);
@@ -1096,29 +1097,18 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 			/* Input data type is time */
 			GMT_io.in_col_type[i] = GMT_IS_RELTIME;
 			project_info.xyz_projection[i] = GMT_TIME;
-			/* Determine relative time units */
-			if (strstr (string[i], "years"))
-				scale = GMT_YR2SEC_F / GMT_time_system.scale;
-			else if (strstr (string[i], "months"))
-				scale = GMT_MON2SEC_F / GMT_time_system.scale;
-			else if (strstr (string[i], "days"))
-				scale = GMT_DAY2SEC_F / GMT_time_system.scale;
-			else if (strstr (string[i], "hours"))
-				scale = GMT_HR2SEC_F / GMT_time_system.scale;
-			else if (strstr (string[i], "minutes"))
-				scale = GMT_MIN2SEC_F / GMT_time_system.scale;
-			else if (strstr (string[i], "seconds"))
-				scale = 1.0 / GMT_time_system.scale;
-			else
-				fprintf (stderr, "%s: Warning: Time unit in grid not recognised; assumed %c.\n", GMT_program, gmtdefs.time_unit);
-			/* Determine relative time epoch */
-			if ((l = strstr (string[i], "since"))) {
-				cal = l + 6;
-				if ((l = strchr (cal, ' '))) *l = 'T';
-				if (GMT_scanf (cal, GMT_IS_ABSTIME, &offset) == GMT_IS_NAN) fprintf (stderr, "%s: Warning: Epoch in grid not recognised; assumed %s.\n", GMT_program, gmtdefs.time_epoch);
-			}
-			else
-				fprintf (stderr, "%s: Warning: No epoch for time in grid specified; assumed %s.\n", GMT_program, gmtdefs.time_epoch);
+
+			/* Determine coordinates epoch and units (default is internal system) */
+			memcpy ((void *)&time_system, (void *)&gmtdefs.time_system, sizeof (struct GMT_TIME_SYSTEM));
+			l = strchr (string[i], '[') + 1;
+			if (!l || GMT_get_time_system (l, &time_system) || GMT_init_time_system_structure (&time_system))
+				fprintf (stderr, "%s: Warning: Time unit in grid not recognised, defaulting to gmtdefaults.\n", GMT_program);
+
+			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
+			scale = time_system.scale * gmtdefs.time_system.i_scale;
+			offset = (time_system.rata_die - gmtdefs.time_system.rata_die) + (time_system.epoch_t0 - gmtdefs.time_system.epoch_t0);
+			offset *= GMT_DAY2SEC_F * gmtdefs.time_system.i_scale;
+
 			/* Scale data scale and extremes based on scale and offset */
 			if (i == 0) {
 				header->x_min = header->x_min * scale + offset;
