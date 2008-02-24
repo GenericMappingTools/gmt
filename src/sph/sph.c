@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.1.1.1 2008-02-19 05:30:04 myself Exp $
+ *	$Id: sph.c,v 1.2 2008-02-24 21:37:12 myself Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -74,12 +74,12 @@ void stripack_lists (int n, double *x, double *y, double *z, struct STRIPACK *T)
 
 	if ( ierror == -2 ) {
 		fprintf (stderr, "STRIPACK: Error in TRMESH. The first 3 nodes are collinear.\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	if (ierror > 0) {
 		fprintf (stderr, "STRIPACK: Error in TRMESH.  Duplicate nodes encountered.\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	/* Create a triangle list which returns the number of triangles and their node list tri */
@@ -90,7 +90,7 @@ void stripack_lists (int n, double *x, double *y, double *z, struct STRIPACK *T)
 
 	if (ierror) {
 		fprintf (stderr, "STRIPACK: Error in TRLIST.\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	
 	if (T->mode == VORONOI) {	/* Construct the Voronoi diagram */
@@ -127,7 +127,7 @@ void stripack_lists (int n, double *x, double *y, double *z, struct STRIPACK *T)
 
 		if ( 0 < ierror ) {
 			fprintf (stderr, "STRIPACK: Error in CRLIST.  IERROR = %d.\n", ierror);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		
 		/* Adjust Fortran to C indeces */
