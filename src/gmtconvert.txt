@@ -90,7 +90,7 @@ we extract the last column and columns 4-6 and write ASCII with the command
 You want to plot the 2nd column of the file left.d versus the first column of file right.d:
 .br
 .sp
-\fBgmtconvert\fP left.d right.d \fB\-S \-F\fP1,2 | psxy ...
+\fBgmtconvert\fP left.d right.d \fB\-A \-F\fP1,0 | psxy ...
 .br
 .sp
 To extract all segments in the file big_file.d whose headers contain the string "RIDGE AXIS", try
