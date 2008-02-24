@@ -73,7 +73,15 @@ Note that \fB\-Z\fP only applies to 1-column output.
 [Default is 3].
 This option only applies to xyz output; see \fB\-Z\fP for z table output.
 #include "explain_-f.txt"
+See also \fBTIME COORDINATES\fP below.
 #include "explain_precision.txt"
+.SH TIME COORDINATES
+Time coordinates in NetCDF grids, be it the x, y, or z coordinate, will be recognized as such.
+The variable's \fBunit\fP attribute is parsed to determine the unit and epoch of the time coordinate in the grid.
+Values are then converted to the internal time system specified by \fBTIME_UNIT\fP and \fBTIME_EPOCH\fP in the \.gmtdefaults
+file or on the command line.
+The default output is relative time in that time system, or absolute time when using the option OPT(f0T), OPT(f1T), or
+OPT(f2T) for x, y, or z coordinate, respectively.
 .SH EXAMPLES
 To edit individual values in the 5' by 5' hawaii_grv.grd file, dump the .grd
 to ASCII:
