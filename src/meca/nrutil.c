@@ -1,4 +1,4 @@
-/*	$Id: nrutil.c,v 1.3 2007-02-02 16:23:20 pwessel Exp $
+/*	$Id: nrutil.c,v 1.4 2008-02-24 21:36:53 guru Exp $
  *    Public Domain NR stuff.
  */
  
@@ -16,7 +16,7 @@ void nrerror(char error_text[])
 	fprintf(stderr,"Numerical Recipes run-time error...\n");
 	fprintf(stderr,"%s\n",error_text);
 	fprintf(stderr,"...now exiting to system...\n");
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 float *vector(long nl, long nh)

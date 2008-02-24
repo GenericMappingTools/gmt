@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.74 2008-01-23 03:22:49 guru Exp $
+ *	$Id: x2sys.c,v 1.75 2008-02-24 21:36:53 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1154,5 +1154,5 @@ void x2sys_err_fail (int err, char *file)
 		fprintf (stderr, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(err), file);
 	else
 		fprintf (stderr, "%s: %s\n", X2SYS_program, x2sys_strerror(err));
-	exit (EXIT_FAILURE);
+	GMT_exit (EXIT_FAILURE);
 }
