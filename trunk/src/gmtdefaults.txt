@@ -275,7 +275,7 @@ instead [0].
 .B GRID_FORMAT
 Default file format for grids, with optional scale, offset and invalid value, written as
 ff/scale/offset/invalid. The 2-letter format indicator can be one of [bcnsr][bsifd]. The first
-letter indicates native \fBGMT\fP binary, old format NetCDF, COARDS-compliant NetCDF, Surfer format or Sun
+letter indicates native \fBGMT\fP binary, old format netCDF, COARDS-compliant netCDF, Surfer format or Sun
 Raster format. The second letter stands for byte, short, int, float and double, respectively. When
 /invalid is omitted the appropriate value for the given format is used (NaN or largest negative).
 When /scale/offset is omitted, /1.0/0.0 is used. [nf].
