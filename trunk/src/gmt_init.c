@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.332 2008-02-24 00:23:23 remko Exp $
+ *	$Id: gmt_init.c,v 1.333 2008-02-24 18:30:07 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3115,16 +3115,16 @@ int GMT_begin (int argc, char **argv)
 
 	i = GMT_init_time_system_structure (&gmtdefs.time_system);
 	if (i & 1) {
-		fprintf (stderr, "GMT Warning:  gmtdefaults TIME_UNIT is invalid.  Default assumed.\n");
+		fprintf (stderr, "%s: GMT Warning:  gmtdefaults TIME_UNIT is invalid.  Default assumed.\n", GMT_program);
 		fprintf (stderr, "    Choose one only from y o d h m c\n");
 		fprintf (stderr, "    Corresponding to year month day hour minute second\n");
 		fprintf (stderr, "    Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
 	}
 	if (i & 2) {
-		fprintf (stderr, "GMT Warning:  TIME_EPOCH format is invalid.  Default assumed.\n");
-		fprintf (stderr, "   A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
-		fprintf (stderr, "   or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
-		fprintf (stderr, "   An example of a correct format is:  2000-01-01T12:00:00\n");
+		fprintf (stderr, "%s: GMT Warning:  TIME_EPOCH format is invalid.  Default assumed.\n", GMT_program);
+		fprintf (stderr, "    A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
+		fprintf (stderr, "    or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
+		fprintf (stderr, "    An example of a correct format is:  2000-01-01T12:00:00\n");
 	}
 
 	if (GMT_got_frame_rgb) {	/* Must enforce change of frame, tick, and grid pen rgb */
