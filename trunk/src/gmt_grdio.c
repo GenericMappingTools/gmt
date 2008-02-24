@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.104 2008-02-24 00:25:59 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.105 2008-02-24 18:28:48 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1059,7 +1059,7 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 	   When "Time": transform the data scale and offset to match the current time system.
 	*/
 	int i;
-	char string[3][GRD_UNIT_LEN], *l;
+	char string[3][GRD_UNIT_LEN], *units;
 	double scale = 1.0, offset = 0.0;
 	struct GMT_TIME_SYSTEM time_system;
 
@@ -1083,26 +1083,26 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 		/* Change name of variable and unit to lower case for comparison */
 		GMT_str_tolower (string[i]);
 
-		if (!strncmp (string[i], "lon", 3) || strstr (string[i], "degrees_e")) {
+		if (!strncmp (string[i], "longitude", 9) || strstr (string[i], "degrees_e")) {
 			/* Input data type is longitude */
 			GMT_io.in_col_type[i] = GMT_IS_LON;
 			project_info.degree[i] = TRUE;
 		}
-		else if (!strncmp (string[i], "lat", 3) || strstr (string[i], "degrees_n")) {
+		else if (!strncmp (string[i], "latitude", 8) || strstr (string[i], "degrees_n")) {
 			/* Input data type is latitude */
 			GMT_io.in_col_type[i] = GMT_IS_LAT;
 			project_info.degree[i] = TRUE;
 		}
-		else if (!strncmp (string[i], "time", 4)) {
+		else if (!strcmp (string[i], "time") || !strncmp (string[i], "time [", 6)) {
 			/* Input data type is time */
 			GMT_io.in_col_type[i] = GMT_IS_RELTIME;
 			project_info.xyz_projection[i] = GMT_TIME;
 
 			/* Determine coordinates epoch and units (default is internal system) */
 			memcpy ((void *)&time_system, (void *)&gmtdefs.time_system, sizeof (struct GMT_TIME_SYSTEM));
-			l = strchr (string[i], '[') + 1;
-			if (!l || GMT_get_time_system (l, &time_system) || GMT_init_time_system_structure (&time_system))
-				fprintf (stderr, "%s: Warning: Time unit in grid not recognised, defaulting to gmtdefaults.\n", GMT_program);
+			units = strchr (string[i], '[') + 1;
+			if (!units || GMT_get_time_system (units, &time_system) || GMT_init_time_system_structure (&time_system))
+				fprintf (stderr, "%s: Warning: Time units [%s] in grid not recognised, defaulting to gmtdefaults.\n", GMT_program, units);
 
 			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
 			scale = time_system.scale * gmtdefs.time_system.i_scale;
