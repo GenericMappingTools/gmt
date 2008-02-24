@@ -1,6 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.191 2008-02-22 21:57:07 remko Exp $
+	$Id: ChangeLog,v 1.192 2008-02-24 00:41:29 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-02-24	remko
+	* grd2xyz.txt, xyz2grd.txt:	Added information on using TIME COORDINATES.
+	* gmt.h, gmt_globals.h:	Time system now fully defined in struct gmtdefs.time_system.
+	* gmt_calclock.c:	---"---
+	* gmt_init.c, gmt_init.h:	GMT_get_time_system and GMT_init_time_system_structure now use
+				time_system as argument so that not only the internal time system
+				defined in gmtdefs.time_system can be parsed.
+				Need to move these functions to gmt_support.c?
+				GMT_get_time_system can now also deal with "TIME_UNIT since TIME_EPOCH".
+				'T' no longer required in epoch string.
+				That means TIME_SYSTEM = "days since 2000-01-01 12:00" works.
+	* gmt_grdio.c:		Now reuses GMT_get_time_system and GMT_init_time_system_structure.
 
 2008-02-22	remko
 	* ex*/job*.sh:		Prepared for inclusion in documentation (instead of job*.csh)
