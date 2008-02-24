@@ -76,7 +76,7 @@ This option only applies to xyz output; see \fB\-Z\fP for z table output.
 See also \fBTIME COORDINATES\fP below.
 #include "explain_precision.txt"
 .SH TIME COORDINATES
-Time coordinates in NetCDF grids, be it the x, y, or z coordinate, will be recognized as such.
+Time coordinates in netCDF grids, be it the x, y, or z coordinate, will be recognized as such.
 The variable's \fBunit\fP attribute is parsed to determine the unit and epoch of the time coordinate in the grid.
 Values are then converted to the internal time system specified by \fBTIME_UNIT\fP and \fBTIME_EPOCH\fP in the \.gmtdefaults
 file or on the command line.
