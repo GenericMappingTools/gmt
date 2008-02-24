@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.162 2008-02-22 02:07:56 guru Exp $
+ *	$Id: pslib.c,v 1.163 2008-02-24 22:21:55 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1050,14 +1050,18 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 	int i, k, dx, dy, old_dir = 0, new_dir;
 	/* These seeds for old_slope and old_dir make sure that first point gets saved */
 
-	if (n < 2) return (0);
+	if (n < 2) return (0);	/* Not a path to start with */
 
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; i++) {	/* Convert all coordinates to integers at current scale */
 		ix[i] = irint (x[i] * PSL->internal.scale);
 		iy[i] = irint (y[i] * PSL->internal.scale);
 	}
 
-	for (i = k = 0; i < n-1; i++) {
+	/* The only truly unique point is the starting point; all else must show increments
+	 * relative to the previous point */
+	
+	k = 1;	/* First point is a given anchor, hence we will find at least 1 point */
+	for (i = 0; i < n-1; i++) {
 		dx = ix[i+1] - ix[i];
 		dy = iy[i+1] - iy[i];
 		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
@@ -1071,8 +1075,8 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 			old_dir = new_dir;
 		}
 	}
-	/* Last point */
-	if (!(ix[k-1] == ix[n-1] && iy[k-1] == iy[n-1])) {
+	/* Last point (k cannot be < 1 so k-1 is >= 0) */
+	if (!(ix[k-1] == ix[n-1] && iy[k-1] == iy[n-1])) {	/* Do not do slope check on last point since we must end there */
 		ix[k] = ix[n-1];
 		iy[k] = iy[n-1];
 		k++;
