@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.160 2008-02-20 15:21:50 remko Exp $
+ *	$Id: gmt.h,v 1.161 2008-02-24 00:17:14 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -263,6 +263,21 @@ struct GMT_PEN {	/* Holds pen attributes */
 	char texture[GMT_PEN_LEN];	/* In points */
 };
 
+struct GMT_TIME_SYSTEM {
+	char epoch[GMT_TEXT_LEN];	/* User-defined epoch for time */
+	char unit;			/* User-defined time unit */
+	int rata_die;			/* Rata die number of epoch */
+	double epoch_t0;		/* Rata_die fraction (in days since epoch, 0 <= t0 < 1) */
+	double scale;			/* Converts user units to seconds */
+	double i_scale;			/* Converts seconds to user units (= 1.0/scale) */
+};
+
+struct GMT_TIME_LANGUAGE {		/* Language-specific text strings for calendars */
+	char month_name[3][12][16];	/* Full, short, and 1-char month names */
+	char day_name[3][7][16];	/* Full, short, and 1-char weekday names */
+	char week_name[3][16];		/* Full, short, and 1-char versions of the word Week */
+};
+
 struct GMT_DEFAULTS {
 	/* DO NOT MAKE CHANGES HERE WITHOUT CORRESPONDING CHANGES TO gmt_globals.h !!!!!!!!!!!!!!!!!!! */
 	double annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
@@ -361,8 +376,7 @@ struct GMT_DEFAULTS {
 	BOOLEAN time_is_interval;	/* Does a time given as a month (or year or day) mean the middle of the interval? */
 	double time_interval_fraction;	/* How much of a partial interval is needed in order to annotate it */
 	BOOLEAN want_leap_seconds;	/* Do we need to worry about leap seconds? */
-	char time_epoch[GMT_TEXT_LEN];	/* User-defined epoch for time */
-	char time_unit;			/* User-defined time unit */
+	struct GMT_TIME_SYSTEM time_system;	/* All the information about the selected time system */
 	int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
 	char time_language[GMT_TEXT_LEN];	/* Language file for time support */
 	int Y2K_offset_year;		/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
@@ -408,19 +422,6 @@ struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */
 	struct GMT_HASH *next;
 	int id;
 	char *key;
-};
-
-struct GMT_TIME_SYSTEM {
-	int rata_die;			/* Rata die number of epoch */
-	double epoch_t0;		/* epoch in seconds since start of rata_die */
-	double scale;			/* Converts user units to seconds */
-	double i_scale;			/* Converts seconds to user units (1.0/scale) */
-};
-
-struct GMT_TIME_LANGUAGE {	/* Language-specific text strings for calendars */
-	char month_name[3][12][16];	/* Full, short, and 1-char month names */
-	char day_name[3][7][16];	/* Full, short, and 1-char weekday names */
-	char week_name[3][16];		/* Full, short, and 1-char versions of the word Week */
 };
 
 struct GMT_FILL {	/* Holds fill attributes */
@@ -500,7 +501,6 @@ EXTERN_MSC char *GMT_unit_names[];
 EXTERN_MSC double GMT_u2u[4][4];		/* measure unit translation matrix 4 x 4*/
 EXTERN_MSC struct GMT_FONT *GMT_font;
 EXTERN_MSC struct GMT_HASH GMT_month_hashnode[12];
-EXTERN_MSC struct GMT_TIME_SYSTEM GMT_time_system;
 EXTERN_MSC struct GMT_TIME_LANGUAGE GMT_time_language;
 
 EXTERN_MSC float GMT_f_NaN;		/* Holds IEEE not-a-number float */
