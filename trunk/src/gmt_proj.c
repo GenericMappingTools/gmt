@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.33 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_proj.c,v 1.34 2008-02-24 21:27:30 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2563,7 +2563,7 @@ double GMT_left_robinson (double y)
 	Y = fabs (y * project_info.n_i_cy);
 	if (GMT_intpol (project_info.n_Y, project_info.n_X, 19, 1, &Y, &X, gmtdefs.interpolant)) {
 		fprintf (stderr, "GMT Internal error in GMT_left_robinson!\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	x = project_info.n_cx * X * (project_info.w - project_info.central_meridian);
@@ -2579,7 +2579,7 @@ double GMT_right_robinson (double y)
 	Y = fabs (y * project_info.n_i_cy);
 	if (GMT_intpol (project_info.n_Y, project_info.n_X, 19, 1, &Y, &X, gmtdefs.interpolant)) {
 		fprintf (stderr, "GMT Internal error in GMT_right_robinson!\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	x = project_info.n_cx * X * (project_info.e - project_info.central_meridian);

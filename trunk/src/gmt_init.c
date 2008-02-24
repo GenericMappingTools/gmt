@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.333 2008-02-24 18:30:07 remko Exp $
+ *	$Id: gmt_init.c,v 1.334 2008-02-24 21:27:30 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3212,7 +3212,6 @@ void GMT_end (int argc, char **argv)
 #ifdef DEBUG
 	GMT_memtrack_report (GMT_mem_keeper);
 #endif
-	exit (EXIT_SUCCESS);
 }
 
 void GMT_free_hash (struct GMT_HASH *hashnode, int n_items) {

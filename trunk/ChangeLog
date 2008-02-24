@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.192 2008-02-24 00:41:29 remko Exp $
+	$Id: ChangeLog,v 1.193 2008-02-24 21:27:30 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-02-24	remko
 	* grd2xyz.txt, xyz2grd.txt:	Added information on using TIME COORDINATES.
@@ -13,6 +13,10 @@
 				'T' no longer required in epoch string.
 				That means TIME_SYSTEM = "days since 2000-01-01 12:00" works.
 	* gmt_grdio.c:		Now reuses GMT_get_time_system and GMT_init_time_system_structure.
+
+2008-02-24	pwessel
+	* gmt_*.c	Made sure functions call GMT_exit and not exit when quitting.  Only main
+				programs call exit.
 
 2008-02-22	remko
 	* ex*/job*.sh:		Prepared for inclusion in documentation (instead of job*.csh)
