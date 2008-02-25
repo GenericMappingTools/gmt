@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.197 2008-02-25 17:18:38 remko Exp $
+	$Id: ChangeLog,v 1.198 2008-02-25 21:36:48 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-02-25	pwessel
+	* gmt_io.c:	Now skips blank lines that has leading whitespace
+
 2008-02-25	remko
 	* configure.ac, src/makefile, src/x2sys/makefile, src/mgd77/makefile, makegmt.macros.in:
 				Shared libraries made easy: now set LIBEXT=a for static libraries and
