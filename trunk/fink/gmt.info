@@ -28,6 +28,8 @@ SplitOff: <<
     %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.2.0-1)
     %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.2.0-1)
     %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.2.0-1)
+    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.2.0-1)
+    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.2.0-1)
   <<
   DocFiles: ChangeLog COPYING README
 <<
