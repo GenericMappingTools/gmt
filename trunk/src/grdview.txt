@@ -65,7 +65,7 @@ the plane and the data perimeter is colored.
 #include "explain_-P.txt"
 .TP
 .B \-Q
-Select one of four settings: 1. Specify \fBm\fP for mesh plot [Default], and optionally append /r/g/b for a different mesh paint [white].
+Select one of four settings: 1. Specify \fBm\fP for mesh plot [Default], and optionally append /\fIcolor\fP for a different mesh paint [white].
 2. Specify \fBs\fP for surface plot, and optionally append \fBm\fP to have mesh lines drawn on top of surface.
 3. Specify \fBi\fP for image plot, and optionally append the effective dpi resolution for the rasterization [100].
 4. Specify \fBc\fP.  Same as \fB\-Qi\fP but will mask out nodes with z = NaN using the colormasking feature in \fIPostScript\fP Level 3
