@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.194 2008-02-24 22:21:55 guru Exp $
+	$Id: ChangeLog,v 1.195 2008-02-25 01:55:18 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-02-25	remko
+	* nc2xy.c:		Time coordinated recognised as such. Relative time output according
+				to TIME_UNIT and TIME_EPOCH set in .gmtdefaults.
+
 2008-02-24	remko
 	* grd2xyz.txt, xyz2grd.txt:	Added information on using TIME COORDINATES.
 	* gmt.h, gmt_globals.h:	Time system now fully defined in struct gmtdefs.time_system.
@@ -15,9 +19,9 @@
 	* gmt_grdio.c:		Now reuses GMT_get_time_system and GMT_init_time_system_structure.
 
 2008-02-24	pwessel
-	* gmt_*.c:	Made sure functions call GMT_exit and not exit when quitting.  Only main
+	* gmt_*.c:		Made sure functions call GMT_exit and not exit when quitting.  Only main
 				programs call exit.
-	* pslib.c:	Bug in ps_shorten_path lead to SEGV when path resulted in no actual length.
+	* pslib.c:		Bug in ps_shorten_path lead to SEGV when path resulted in no actual length.
 
 2008-02-22	remko
 	* ex*/job*.sh:		Prepared for inclusion in documentation (instead of job*.csh)
