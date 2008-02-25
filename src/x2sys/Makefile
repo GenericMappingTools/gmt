@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.33 2008-02-19 17:14:57 guru Exp $
+#	$Id: Makefile,v 1.34 2008-02-25 17:18:38 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -16,7 +16,7 @@ ALLLIB		= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -lgmt $(NC_LIBS) $(LIBS)
 PROGS_H		= x2sys.h
 PROGS_O		= x2sys_init.o x2sys_put.o x2sys_get.o x2sys_binlist.o x2sys_datalist.o x2sys_cross.o
 MAN1		= $(PROGS_O:.o=.1)
-LIB		= libx2sys.a
+LIB		= libx2sys.$(LIBEXT)
 
 #---------------------------------------------------------------
 #	software targets
@@ -28,7 +28,12 @@ install:	all
 		$(INSTALL) $(PROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir); \
-			$(INSTALL) -m 444 libx2sys.a $(libdir); \
+			$(INSTALL) -m 444 $(LIB) $(LIB:.$(LIBEXT)=.a) $(libdir); \
+		fi
+		if [ -f $(libdir)/libx2sys.dylib ]; then \
+			cd $(libdir) ; \
+			\mv -f libx2sys{,.4}.dylib ; \
+			$(LN_S) libx2sys{.4,}.dylib ; \
 		fi
 		$(INSTALL) -d $(datadir)/x2sys
 		for i in *.def; do \
@@ -38,7 +43,7 @@ install:	all
 uninstall:	
 		cd $(bindir); \rm -f $(PROGS)
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f $(LIB)
+			cd $(libdir); \rm -f $(LIB) $(LIB:.$(LIBEXT)=.a)
 		fi
 		\rm -rf $(datadir)/x2sys
 
@@ -48,11 +53,10 @@ install-man:	$(MAN1)
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
-spotless::	clean
-		\rm -f $(LIB)
-
 clean:
-		\rm -f *.o *% $(PROGS)
+		\rm -f *.o *.a *.so *.sa *.sl *.dylib *% $(PROGS)
+
+spotless::	clean
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
@@ -65,9 +69,12 @@ x2sys.o:	$(PROGS_H) $(GMT_H)
 #	library
 #-------------------------------------------------------------------------------
 
-$(LIB):		x2sys.o
+libx2sys.a:	x2sys.o
 		$(AR) cvr $@ $?
 		$(RANLIB) $@
+
+libx2sys.$(SL):	libx2sys.a
+		$(LD) $(LD_OPT) x2sys.o -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules

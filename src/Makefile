@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.30 2008-02-22 08:49:15 guru Exp $
+#	$Id: Makefile,v 1.31 2008-02-25 17:18:38 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -95,7 +95,7 @@ install:	all
 		$(INSTALL) $(ALLPROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir) ; \
-			$(INSTALL) -m 444 $(GMTLIB) $(libdir); \
+			$(INSTALL) -m 444 $(GMTLIB) $(GMTLIB:.$(LIBEXT)=.a) $(libdir); \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(includedir) ; \
@@ -114,7 +114,7 @@ install:	all
 uninstall:
 		cd $(bindir); \rm -f $(ALLPROGS)
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f $(GMTLIB); \
+			cd $(libdir); \rm -f $(GMTLIB) $(GMTLIB:.$(LIBEXT)=.a); \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			cd $(includedir); \rm -f  $(GMT_H) $(PS_H) $(PS_I); \
@@ -192,13 +192,13 @@ libgmtps.a:	$(LIBPS_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
 
-libpsl.$(SL):	pslib.o
+libpsl.$(SL):	libpsl.a
 		$(LD) $(LD_OPT) pslib.o -o $@
 
-libgmt.$(SL):	$(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O)
+libgmt.$(SL):	libgmt.a
 		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) -o $@
 
-libgmtps.$(SL):	$(LIBPS_O)
+libgmtps.$(SL):	libgmtps.a
 		$(LD) $(LD_OPT) $(LIBPS_O) -o $@
 
 #-------------------------------------------------------------------------------

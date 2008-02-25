@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.196 2008-02-25 08:53:18 guru Exp $
+	$Id: ChangeLog,v 1.197 2008-02-25 17:18:38 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-02-25	remko
+	* configure.ac, src/makefile, src/x2sys/makefile, src/mgd77/makefile, makegmt.macros.in:
+				Shared libraries made easy: now set LIBEXT=a for static libraries and
+				LIBEXT=$(SL) for shared libraries. Works also in supplements.
 	* nc2xy.c:		Time coordinated recognised as such. Relative time output according
 				to TIME_UNIT and TIME_EPOCH set in .gmtdefaults.
 

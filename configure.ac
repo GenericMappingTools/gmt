@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.6 2008-02-01 22:56:47 guru Exp $
-AC_REVISION($Revision: 1.6 $)
+dnl $Id: configure.ac,v 1.7 2008-02-25 17:18:38 remko Exp $
+AC_REVISION($Revision: 1.7 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -47,13 +47,13 @@ AC_SUBST(NETCDF)
 AC_SUBST(TRIANGLE_D)
 AC_SUBST(TRIANGLE_O)
 AC_SUBST(ALPHA_SINCOS_O)
-AC_SUBST(GMTLIB)
 AC_SUBST(CC_OPT)
 AC_SUBST(LD_OPT)
 AC_SUBST(LDFLAGS)
 AC_SUBST(DOCDATE)
 AC_SUBST(DOCYEAR)
 AC_SUBST(MANDATE)
+AC_SUBST(LIBEXT)
 AC_SUBST(SL)
 AC_SUBST(MATLAB)
 AC_SUBST(MATLAB_EXT)
@@ -378,47 +378,6 @@ else
 fi
 dnl
 dnl -----------------------------------------------------------------
-dnl Allow user to set --enable-shared to build shared libraries
-dnl -----------------------------------------------------------------
-dnl
-shared_unknown=no
-if test "X$enable_shared" = "Xyes" ; then
-	AC_MSG_CHECKING(if we can build shared libraries)
-	if test "$os" = "Linux" ; then
-		AC_MSG_RESULT(yes)
-		GMTLIB='$(SHARED_LIB)'
-	elif test "$os" = "FreeBSD" ; then
-		AC_MSG_RESULT(yes)
-		GMTLIB='$(SHARED_LIB)'
-	elif test "$os" = "NetBSD" ; then
-		AC_MSG_RESULT(yes)
-		GMTLIB='$(SHARED_LIB)'
-	elif test "$os" = "SunOS" ; then
-		AC_MSG_RESULT(yes)
-		GMTLIB='$(SHARED_LIB)'
-	elif test "$os" = "HP-UX" ; then
-		AC_MSG_RESULT(yes)
-		GMTLIB='$(SHARED_LIB)'
-	elif test "$os" = "IRIX64" ; then
-		AC_MSG_RESULT(yes)
-		GMTLIB='$(SHARED_LIB)'
-	elif test "$os" = "OSF1" ; then
-		AC_MSG_RESULT(yes)
-		GMTLIB='$(SHARED_LIB)'
-	elif test "$os" = "Darwin" ; then
-		AC_MSG_RESULT(yes)
-		GMTLIB='$(SHARED_LIB)'
-	else	# Not yet implemented
-		AC_MSG_RESULT(not supported for GMT under $os)
-		enable_shared=no
-		shared_unknown=yes
-		GMTLIB='$(STATIC_LIB)'
-	fi
-else
-	GMTLIB='$(STATIC_LIB)'
-fi
-dnl
-dnl -----------------------------------------------------------------
 dnl Special checking and action required for Cygwin or OS/2
 dnl -----------------------------------------------------------------
 dnl
@@ -465,10 +424,12 @@ dnl -----------------------------------------------------------------
 dnl Determine LD_OPT and LDFLAGS for this platform
 dnl -----------------------------------------------------------------
 dnl
+shared_unknown=no
 LDFLAGS=$OPTS
 LD_OPT=
 LD=ld
 SL="so"
+LIBEXT='$(SL)'
 if test "$enable_shared" = "yes" ; then
 	AC_MSG_CHECKING(how to make a shared object)
 	if test "$os" = "SunOS" ; then
@@ -506,10 +467,18 @@ if test "$enable_shared" = "yes" ; then
 		LD_OPT="-b"
 		LDFLAGS=$OPTS'-Wl,+b,$(libdir)'
 		SL="sl"
+	else	# Not yet implemented
+		AC_MSG_RESULT(not supported for GMT under $os)
+		enable_shared=no
+		shared_unknown=yes
 	fi
+fi
+if test "$enable_shared" = "yes" ; then
 	AC_MSG_RESULT($LD $LD_OPT)
 	AC_MSG_CHECKING(the file extension for a shared object)
 	AC_MSG_RESULT($SL)
+else
+	LIBEXT='a'
 fi
 AC_MSG_CHECKING(linker options for GMT)
 LDFLAGS=${ownldflags:-$LDFLAGS}			# Overrule with user settings
@@ -729,7 +698,7 @@ or that the GMT configure script simply does not know how to.
 Therefore, configure has ignored the --enable-shared option.
 However, if shared libraries ARE supported on this system you
 may try edit src/makegmt.macros and manually set the macros
-CC_OPT, LD_OPT, LDFLAGS, and GMTLIB accordingly.
+CC_OPT, LD_OPT, LDFLAGS, and LIBEXT accordingly.
 Please include the output of uname -a and mail the working
 makegmt.macros to gmt-team@hawaii.edu.  Thanx.
 =============================================================

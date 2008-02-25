@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.47 2008-02-19 17:14:57 guru Exp $
+#	$Id: Makefile,v 1.48 2008-02-25 17:18:38 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -30,7 +30,7 @@ MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 
 LIB_O		= mgd77.o
 LIB_H		= mgd77.h mgd77_functions.h mgd77defaults.h
-LIB		= libmgd77.a
+LIB		= libmgd77.$(LIBEXT)
 
 #-------------------------------------------------------------------------------
 #	software targets
@@ -46,10 +46,12 @@ install:	all
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir); \
-			$(INSTALL) -m 444 $(LIB) $(libdir); \
-			if [ -f $(LIB:.a=.$(SL)) ]; then \
-				$(INSTALL) -m 444 $(LIB:.a=.$(SL)) $(libdir); \
-			fi; \
+			$(INSTALL) -m 444 $(LIB) $(LIB:.$(LIBEXT)=.a) $(libdir); \
+		fi
+		if [ -f $(libdir)/libmgd77.dylib ]; then \
+			cd $(libdir) ; \
+			\mv -f libmgd77{,.4}.dylib ; \
+			$(LN_S) libmgd77{.4,}.dylib ; \
 		fi
 
 uninstall:
@@ -58,8 +60,7 @@ uninstall:
 			cd $(includedir); \rm -f $(LIB_H)
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f $(LIB) $(LIB:.a=.$(SL))
-			\rm -f $(libdir)/libmgd77.a $(libdir)/libmgd77.$(SL); \
+			cd $(libdir); \rm -f $(LIB) $(LIB:$(LIBEXT)=.a); \
 		fi
 
 install-man:	$(MAN1)
@@ -69,10 +70,9 @@ uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
 clean:
-		\rm -f *.o *% $(PROGS) $(PROGSPS)
+		\rm -f *.o *.a *.so *.sa *.sl *.dylib *% $(PROGS) $(PROGSPS)
 
 spotless::	clean
-		\rm -f $(LIB)
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
@@ -86,9 +86,12 @@ $(LIB_O):	$(LIB_H) $(GMT_H)
 #	library
 #-------------------------------------------------------------------------------
 
-$(LIB):		$(LIB_O)
+libmgd77.a:	$(LIB_O)
 		$(AR) cvur $@ $?
 		$(RANLIB) $@
+
+libmgd77.$(SL):	libmgd77.a
+		$(LD) $(LD_OPT) $(LIB_O) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules
