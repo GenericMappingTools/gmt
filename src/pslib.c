@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.163 2008-02-24 22:21:55 guru Exp $
+ *	$Id: pslib.c,v 1.164 2008-02-25 17:27:08 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1060,10 +1060,10 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 	/* The only truly unique point is the starting point; all else must show increments
 	 * relative to the previous point */
 	
-	k = 1;	/* First point is a given anchor, hence we will find at least 1 point */
-	for (i = 0; i < n-1; i++) {
-		dx = ix[i+1] - ix[i];
-		dy = iy[i+1] - iy[i];
+	/* First point is a given anchor, hence we will find at least 1 point and k starts at 1 */
+	for (i = k = 1; i < n-1; i++) {
+		dx = ix[i] - ix[i-1];
+		dy = iy[i] - iy[i-1];
 		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
 		new_slope = (dx == 0) ? copysign (1.0e100, (double)dy) : ((double)dy) / ((double)dx);
 		new_dir = (dx >= 0) ? 1 : -1;
