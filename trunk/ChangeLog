@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.195 2008-02-25 01:55:18 remko Exp $
+	$Id: ChangeLog,v 1.196 2008-02-25 08:53:18 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-02-25	remko
 	* nc2xy.c:		Time coordinated recognised as such. Relative time output according
@@ -21,7 +21,7 @@
 2008-02-24	pwessel
 	* gmt_*.c:		Made sure functions call GMT_exit and not exit when quitting.  Only main
 				programs call exit.
-	* pslib.c:		Bug in ps_shorten_path lead to SEGV when path resulted in no actual length.
+	* pslib.c:		Bug in ps_shorten_path lead to SEGV when path resulted in a single point.
 
 2008-02-22	remko
 	* ex*/job*.sh:		Prepared for inclusion in documentation (instead of job*.csh)
