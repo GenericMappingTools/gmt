@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.334 2008-02-24 21:27:30 guru Exp $
+ *	$Id: gmt_init.c,v 1.335 2008-02-25 18:15:18 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -145,6 +145,8 @@ int GMT_parse_U_option (char *item);
 int GMT_parse_t_option (char *item);
 int GMT_loaddefaults (char *file);
 int GMT_savedefaults (char *file);
+void GMT_setshorthand (void);
+void GMT_freeshorthand (void);
 
 /* Local variables to gmt_init.c */
 
@@ -3009,6 +3011,17 @@ void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shortha
 	GMT_file_suffix = (char **) GMT_memory ((void *)GMT_file_suffix, (size_t)GMT_n_file_suffix, sizeof (char *), GMT_program);
 }
 
+void GMT_freeshorthand (void) {/* Free memory used by shorthand arrays */
+	int i;
+
+	for (i = 0; i < GMT_n_file_suffix; i++) GMT_free ((void *)GMT_file_suffix[i]);
+	GMT_free ((void *)GMT_file_id);
+	GMT_free ((void *)GMT_file_scale);
+	GMT_free ((void *)GMT_file_offset);
+	GMT_free ((void *)GMT_file_nan);
+	GMT_free ((void *)GMT_file_suffix);
+}
+
 int GMT_begin (int argc, char **argv)
 {
 	/* GMT_begin will merge the command line arguments with the arguments
@@ -3204,6 +3217,7 @@ void GMT_end (int argc, char **argv)
 		GMT_free ((void *)GMT_lut);
 	}
 	for (i = 0; i < 3; i++) if (GMT_bfn[i].fill) GMT_free ((void *)GMT_bfn[i].fill);
+	if (gmtdefs.gridfile_shorthand) GMT_freeshorthand ();
 
 	fflush (GMT_stdout);	/* Make sure output buffer is flushed */
 
