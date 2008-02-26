@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.62 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_io.h,v 1.63 2008-02-26 04:09:48 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -106,6 +106,7 @@ EXTERN_MSC void GMT_lon_range_adjust (int range, double *lon);		/* Adjust the lo
 EXTERN_MSC BOOLEAN GMT_points_are_antipodal (double lonA, double latA, double lonB, double latB);
 EXTERN_MSC BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix);
 EXTERN_MSC BOOLEAN GMT_not_numeric (char *text);				/* Rules out _some_ text as possible numerics */
+EXTERN_MSC BOOLEAN GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 
 
 struct GMT_CLOCK_IO {
