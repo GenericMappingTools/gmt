@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.199 2008-02-26 04:09:48 guru Exp $
+	$Id: ChangeLog,v 1.200 2008-02-26 04:53:46 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-02-25	pwessel
 	* gmt_io.c:	Now skips blank lines that has leading whitespace.  Function
@@ -190,7 +190,7 @@
 				now with appropriate size.
 	* gmtdefaults.c, gmtset.c:	Use gmt_putdefaults instead of gmt_savedefaults.
 	* ???math.c:		Inits hashes with the appropriate size.
-	* .gmtdefaults*.orig:	Estatic changes only.
+	* .gmtdefaults*.orig:	Esthetic changes only.
 
 2007-11-28	pwessel
 	* gmt_stat.c:		Fixed minor issues in PvQv function
@@ -277,12 +277,12 @@
 	* psmask.c:		The -D option used the wrong output file name.
 
 2007-10-25	remko
-	* psy[z].txt:		Made sure that both say the same thing for the same options.
+	* psxy[z].txt:		Made sure that both say the same thing for the same options.
 				Extended -M option with info on -G, -W, -Z (instead of at -G)
 
 2007-10-22	pwessel
 	* gmt_proj.c:		Added GMT_WIND_LON(lon) macro that handles periodicity
-	* *.c:			Rachet up memory allocation exponentially rather than linearly.
+	* *.c:			Ratchet up memory allocation exponentially rather than linearly.
 	
 2007-10-18	pwessel
 	* spotter/hotspotter.c:	Added -S option to normalize output to percent of CVA maximum
