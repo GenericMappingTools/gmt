@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.148 2008-02-25 21:36:48 guru Exp $
+ *	$Id: gmt_io.c,v 1.149 2008-02-26 04:09:48 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -114,7 +114,6 @@ int GMT_bin_double_output_swab (FILE *fp, int n, double *ptr);	/* Write binary d
 int GMT_bin_float_output (FILE *fp, int n, double *ptr);	/* Write binary float output records */
 int GMT_bin_float_output_swab (FILE *fp, int n, double *ptr);	/* Write binary float output records */
 int GMT_ascii_output_one (FILE *fp, double x, int col);		/* Writes one item to output in ascii format */
-BOOLEAN is_a_blank_line (char *line);
 void GMT_adjust_periodic ();					/* Add/sub 360 as appropriate */
 void GMT_decode_calclock_formats ();
 int GMT_get_ymdj_order (char *text, struct GMT_DATE_IO *S, int mode);
@@ -477,7 +476,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		/* First read until we get a non-blank, non-comment record, or reach EOF */
 
 		GMT_io.rec_no++;
-		while ((p = fgets (line, BUFSIZ, fp)) && is_a_blank_line(line)) GMT_io.rec_no++;	/* Skip comments and blank lines */
+		while ((p = fgets (line, BUFSIZ, fp)) && GMT_is_a_blank_line(line)) GMT_io.rec_no++;	/* Skip comments and blank lines */
 
 		if (!p) {
 			GMT_io.status = GMT_IO_EOF;
@@ -550,7 +549,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	return (col_no);
 }
 
-BOOLEAN is_a_blank_line (char *line) {
+BOOLEAN GMT_is_a_blank_line (char *line) {
 	/* Returns TRUE if we should skip this line (because it is blank or has comments */
 	int i = 0;
 	if (line[i] == '#' && GMT_io.EOF_flag[GMT_IN] != '#') return (TRUE);	/* Comment */

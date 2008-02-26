@@ -1,8 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.198 2008-02-25 21:36:48 guru Exp $
+	$Id: ChangeLog,v 1.199 2008-02-26 04:09:48 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-02-25	pwessel
-	* gmt_io.c:	Now skips blank lines that has leading whitespace
+	* gmt_io.c:	Now skips blank lines that has leading whitespace.  Function
+				GMT_is_a_blank_line (char *line) is now used wherever ascii
+				input is processed.
+	* pscontour.c:	-T option was susceptible to infinite loop if bad record was found.
 
 2008-02-25	remko
 	* configure.ac, src/makefile, src/x2sys/makefile, src/mgd77/makefile, makegmt.macros.in:
