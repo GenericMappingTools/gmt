@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.30 2008-02-25 01:50:08 remko Exp $
+#	$Id: todo.txt,v 1.31 2008-02-26 06:23:22 guru Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -27,6 +27,10 @@ gmtselect:	Should -M option cause selection by segment. I.e., if one point
 ------------------------------------------------------------------------
 ENHANCEMENTS:
 
+gmt_*.c:	Separate allocation of memory for plot-related things from the
+		core calculation-related things.  E.g., grd2xyz does not need GMT_begin
+		to allocated fonts etc.
+		
 gmt_io.c:	Support netCDF files as column data input. What options to use to
 		achieve this? Would benifit all programs that read and/or write column
 		data.
