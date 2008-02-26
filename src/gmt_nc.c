@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.69 2008-02-16 16:58:20 remko Exp $
+ *	$Id: gmt_nc.c,v 1.70 2008-02-26 04:14:24 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -632,18 +632,19 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 int GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen)
 {	/* This function is a replacement for nc_get_att_text that avoids overflow of text
 	 * ncid, varid, name, text	: as in nc_get_att_text
-	 * textleni			: maximum number of characters to copy to string text
+	 * textlen			: maximum number of characters to copy to string text
 	 */
 	int err;
 	size_t attlen;
-	char *tmp;
+	char *att;
 
 	GMT_err_trap (nc_inq_attlen (ncid, varid, name, &attlen));
-	tmp = (char *) GMT_memory (VNULL, attlen, sizeof (char), "GMT_nc_get_att_text");
-	nc_get_att_text (ncid, varid, name, tmp);
-	strncpy (text, tmp, textlen);
-	if (attlen < textlen) text[attlen] = 0;
-	GMT_free (tmp);
+	att = (char *) GMT_memory (VNULL, attlen, sizeof (char), "GMT_nc_get_att_text");
+	nc_get_att_text (ncid, varid, name, att);
+	attlen = MIN (attlen, textlen-1);	/* Truncate text to one less than textlen (to keep space for NUL terminator) */
+	memcpy (text, att, attlen);		/* Copy att to text */
+	memset (&text[attlen], 0, textlen - attlen);	/* Fill rest of text with zeros */
+	GMT_free (att);
 	return (GMT_NOERROR);
 }
 
