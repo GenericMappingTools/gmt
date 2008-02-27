@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.17 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_vector.c,v 1.18 2008-02-27 03:16:54 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,8 +26,6 @@
 #include "gmt.h"
 
 #define MAX_SWEEPS 50
-
-double GMT_mag3v (double *a);
 
 int	GMT_jacobi (double *a, int *n, int *m, double *d, double *v, double *b, double *z, int *nrots) {
 /*
@@ -490,7 +488,7 @@ double GMT_mag3v (double *a)
 void GMT_normalize3v (double *a)
 {
 	double r_length;
-	r_length = (GMT_mag3v(a));
+	r_length = GMT_mag3v(a);
 	if (r_length != 0.0) {
 		r_length = 1.0 / r_length;
 		a[0] *= r_length;
