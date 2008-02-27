@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.58 2008-02-24 00:29:31 remko Exp $
+ *	$Id: gmt_calclock.c,v 1.59 2008-02-27 19:16:31 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -38,11 +38,11 @@
 BOOLEAN want_iso = FALSE;	/* Temporary to test compilation.  Delete this.  */
 
 /* Functions to assemble/disassemble a continuous
-variable (GMT_dtime) and a calendar day (GMT_cal_rd)
+variable (double) and a calendar day (GMT_cal_rd)
 and time of day (double secs):  
 */
 
-GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs) {
+double GMT_rdc2dt (GMT_cal_rd rd, double secs) {
 /*	Given rata die rd and double seconds, return 
 	time in TIME_UNIT relative to chosen TIME_EPOCH  */
 	double f_days;
@@ -70,7 +70,7 @@ int	splitinteger(double value, int epsilon, double *doublepart) {
 	return i;
 }
 
-void	GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s) {
+void	GMT_dt2rdc (double t, GMT_cal_rd *rd, double *s) {
 
 	int i;
 
@@ -282,21 +282,6 @@ void GMT_gcal_from_rd (GMT_cal_rd date, struct GMT_gcal *gcal) {
 	gcal->iso_d = (gcal->day_w) ? gcal->day_w : 7;
 }
 
-double	GMT_usert_from_dt (GMT_dtime t) {
-	return (t);
-}
-
-GMT_dtime	GMT_dt_from_usert (double x) {
-
-	/* If we are going to allow the user to have irregular times
-		(months, years) then we have to do something complicated.
-		
-		For now, just scale and offset ?
-	*/
-	
-	return (x);
-}
-
 int	GMT_y2_to_y4_yearfix (int y2) {
 
 	/* Convert 2-digit year to 4-digit year, using 
@@ -382,7 +367,7 @@ BOOLEAN	GMT_hms_is_bad (int h, int m, double s) {
 	return (FALSE);
 }
 
-void	GMT_gcal_from_dt (GMT_dtime t, struct GMT_gcal *cal) {
+void	GMT_gcal_from_dt (double t, struct GMT_gcal *cal) {
 
 	/* Given time in internal units, load cal and clock info
 		in cal.
@@ -892,7 +877,7 @@ int	GMT_gmonth_length (int year,  int month) {
 	return (k);
 }
 
-void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, BOOLEAN upper, int kind, GMT_dtime dt)
+void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, BOOLEAN upper, int kind, double dt)
 {	/* Given the internal time representation dt and the formatting information
 	 * in the D and C structure, write the calendar representation to strings date and clock,
 	 * but skip either string if it is a NULL pointer */
@@ -900,7 +885,7 @@ void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct
 	struct GMT_gcal calendar;
 	int i_sec, m_sec, ap, ival[3];
 	char text[GMT_CALSTRING_LENGTH];
-	GMT_dtime step;
+	double step;
 
 	step = 0.5 / C->f_sec_to_int / gmtdefs.time_system.scale;	/* Precision desired in time units */
 
@@ -974,7 +959,7 @@ void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct
 	return;
 }
 
-void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, GMT_dtime t)
+void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t)
 {	/* Assemble the annotation label given the formatting options presented */
 	struct GMT_gcal calendar;
 

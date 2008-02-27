@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.149 2008-02-26 04:09:48 guru Exp $
+ *	$Id: gmt_io.c,v 1.150 2008-02-27 19:16:31 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -357,7 +357,7 @@ int GMT_parse_b_option (char *text)
 {
 	/* Syntax:	-b[i][o][s|S][d|D][#cols] */
 
-	int i, id = 0;
+	int i, id = GMT_IN;
 	BOOLEAN i_or_o = FALSE, ok = TRUE, error = FALSE;
 
 	for (i = 0; ok && text[i]; i++) {
@@ -574,13 +574,11 @@ int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 	}
 
-	for (i = 0; i < (*n); i++) if (GMT_io.in_col_type[i] == GMT_IS_RELTIME) GMT_data[i] = GMT_dt_from_usert (GMT_data[i]);
 	*ptr = GMT_data;
 
 	/* Read ok, how about multisegment? */
 
 	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs */
-		int i;
 		BOOLEAN is_bad = TRUE;
 		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
 		if (is_bad) {
@@ -610,14 +608,12 @@ int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr)
 		jj = GMT_swab4 (ii[0]);
 		ii[0] = GMT_swab4 (ii[1]);
 		ii[1] = jj;
-		if (GMT_io.in_col_type[i] == GMT_IS_RELTIME) GMT_data[i] = GMT_dt_from_usert (GMT_data[i]);
 	}
 	*ptr = GMT_data;
 
 	/* Read ok, how about multisegment? */
 
 	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs */
-		int i;
 		BOOLEAN is_bad = TRUE;
 		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
 		if (is_bad) {
@@ -643,7 +639,7 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 	}
 	else {
-		for (i = 0; i < n_read; i++) GMT_data[i] = (double)((GMT_io.in_col_type[i] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double)GMT_f[i]) : GMT_f[i]);
+		for (i = 0; i < n_read; i++) GMT_data[i] = (double)GMT_f[i];
 	}
 
 	*ptr = GMT_data;
@@ -679,7 +675,7 @@ int GMT_bin_float_input_swab (FILE *fp, int *n, double **ptr)
 		for (i = 0; i < n_read; i++) {
 			ii = (unsigned int *)&GMT_f[i];	/* These 2 lines do the swab */
 			*ii = GMT_swab4 (*ii);
-			GMT_data[i] = (double)((GMT_io.in_col_type[i] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double)GMT_f[i]) : GMT_f[i]);
+			GMT_data[i] = (double)GMT_f[i];
 		}
 	}
 
@@ -739,21 +735,17 @@ void GMT_ascii_format_one (char *text, double x, int type)
 		return;
 	}
 	switch (type) {
-		case GMT_IS_FLOAT:
-		case GMT_IS_UNKNOWN:
-			sprintf (text, gmtdefs.d_format, x);
-			break;
 		case GMT_IS_LON:
 			GMT_format_geo_output (FALSE, x, text);
 			break;
 		case GMT_IS_LAT:
 			GMT_format_geo_output (TRUE, x, text);
 			break;
-		case GMT_IS_RELTIME:
-			sprintf (text, gmtdefs.d_format, GMT_usert_from_dt ( (GMT_dtime) x));
-			break;
 		case GMT_IS_ABSTIME:
-			GMT_format_abstime_output ((GMT_dtime) x, text);
+			GMT_format_abstime_output (x, text);
+			break;
+		default:
+			sprintf (text, gmtdefs.d_format, x);
 			break;
 	}
 }
@@ -877,7 +869,7 @@ BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m
 	return (FALSE);
 }
 
-void GMT_format_abstime_output (GMT_dtime dt, char *text)
+void GMT_format_abstime_output (double dt, char *text)
 {
 	char date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
 
@@ -890,7 +882,6 @@ int GMT_bin_double_output (FILE *fp, int n, double *ptr)
 	int i;
 	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = 0; i < n; i++) {
-		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) ptr[i] = GMT_usert_from_dt ((GMT_dtime) ptr[i]);
 		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
 	}
 
@@ -905,7 +896,6 @@ int GMT_bin_double_output_swab (FILE *fp, int n, double *ptr)
 
 	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = k = 0; i < n; i++) {
-		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME) ptr[i] = GMT_usert_from_dt ((GMT_dtime) ptr[i]);
 		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
 		/* Do the 8-byte swabbing */
 		d = ptr[i];
@@ -926,14 +916,8 @@ int GMT_bin_float_output (FILE *fp, int n, double *ptr)
 
 	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = 0; i < n; i++) {
-		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME)
-			GMT_f[i] = (float) GMT_usert_from_dt ((GMT_dtime) ptr[i]);
-		else if (GMT_io.out_col_type[i] == GMT_IS_LON) {
-			GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
-			GMT_f[i] = (float) ptr[i];
-		}
-		else
-			GMT_f[i] = (float) ptr[i];
+		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
+		GMT_f[i] = (float) ptr[i];
 	}
 	return (GMT_fwrite ((void *) GMT_f, sizeof (float), (size_t)n, fp));
 }
@@ -946,14 +930,8 @@ int GMT_bin_float_output_swab (FILE *fp, int n, double *ptr)
 
 	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = k = 0; i < n; i++) {
-		if (GMT_io.out_col_type[i] == GMT_IS_RELTIME)
-			GMT_f[i] = (float) GMT_usert_from_dt ((GMT_dtime) ptr[i]);
-		else if (GMT_io.out_col_type[i] == GMT_IS_LON) {
-			GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
-			GMT_f[i] = (float) ptr[i];
-		}
-		else
-			GMT_f[i] = (float) ptr[i];
+		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
+		GMT_f[i] = (float) ptr[i];
 		ii = (unsigned int *)&GMT_f[i];
 		*ii = GMT_swab4 (*ii);
 		k += GMT_fwrite ((void *) &GMT_f[i], sizeof (float), (size_t)1, fp);
@@ -1126,123 +1104,102 @@ int GMT_a_read (FILE *fp, double *d)
 {
 	int i;
 	char line[GMT_TEXT_LEN];
-	if (fgets (line, GMT_TEXT_LEN, fp)) {	/* Read was successful */
-		for (i = strlen(line) - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);	/* Take out trailing whitespace */
-		line[++i] = '\0';
-		GMT_scanf (line, GMT_io.in_col_type[2], d);	/* Convert whatever it is to double */
-		return (1);
-	}
-	return (0);	/* Upon failure to read the line */
+	if (!fgets (line, GMT_TEXT_LEN, fp)) return (0);	/* Read was unsuccessful */
+	for (i = strlen(line) - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);	/* Take out trailing whitespace */
+	line[++i] = '\0';
+	GMT_scanf (line, GMT_io.in_col_type[2], d);	/* Convert whatever it is to double */
+	return (1);
 }
 
 int GMT_c_read (FILE *fp, double *d)
 {
 	char c;
-	if (GMT_fread ((void *)&c, sizeof (char), 1, fp)) {
-		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) c) : (double) c;
-		return (1);
-	}
-	return (0);
+	if (!GMT_fread ((void *)&c, sizeof (char), 1, fp)) return (0);
+	*d = (double) c;
+	return (1);
 }
 
 int GMT_u_read (FILE *fp, double *d)
 {
 	unsigned char u;
-	if (GMT_fread ((void *)&u, sizeof (unsigned char), 1, fp)) {
-		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) u) : (double) u;
-		return (1);
-	}
-	return (0);
+	if (!GMT_fread ((void *)&u, sizeof (unsigned char), 1, fp)) return (0);
+	*d = (double) u;
+	return (1);
 }
 
 int GMT_h_read (FILE *fp, double *d)
 {
 	short int h;
-	if (GMT_fread ((void *)&h, sizeof (short int), 1, fp)) {
-		if (GMT_do_swab) h = GMT_swab2 (h);
-		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) h) : (double) h;
-		return (1);
-	}
-	return (0);
+	if (!GMT_fread ((void *)&h, sizeof (short int), 1, fp)) return (0);
+	if (GMT_do_swab) h = GMT_swab2 (h);
+	*d = (double) h;
+	return (1);
 }
 
 int GMT_H_read (FILE *fp, double *d)
 {
 	unsigned short int h;
-	if (GMT_fread ((void *)&h, sizeof (unsigned short int), 1, fp)) {
-		if (GMT_do_swab) h = GMT_swab2 (h);
-		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) h) : (double) h;
-		return (1);
-	}
-	return (0);
+	if (!GMT_fread ((void *)&h, sizeof (unsigned short int), 1, fp)) return (0);
+	if (GMT_do_swab) h = GMT_swab2 (h);
+	*d = (double) h;
+	return (1);
 }
 
 int GMT_i_read (FILE *fp, double *d)
 {
 	int i;
-	if (GMT_fread ((void *)&i, sizeof (int), 1, fp)) {
-		if (GMT_do_swab) i = GMT_swab4 (i);
-		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) i) : (double) i;
-		return (1);
-	}
-	return (0);
+	if (!GMT_fread ((void *)&i, sizeof (int), 1, fp)) return (0);
+	if (GMT_do_swab) i = GMT_swab4 (i);
+	*d = (double) i;
+	return (1);
 }
 
 int GMT_I_read (FILE *fp, double *d)
 {
 	unsigned int i;
-	if (GMT_fread ((void *)&i, sizeof (unsigned int), 1, fp)) {
-		if (GMT_do_swab) i = GMT_swab4 (i);
-		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) i) : (double) i;
-		return (1);
-	}
-	return (0);
+	if (!GMT_fread ((void *)&i, sizeof (unsigned int), 1, fp)) return (0);
+	if (GMT_do_swab) i = GMT_swab4 (i);
+	*d = (double) i;
+	return (1);
 }
 
 int GMT_l_read (FILE *fp, double *d)
 {
 	long int l;
-	if (GMT_fread ((void *)&l, sizeof (long int), 1, fp)) {
-		if (GMT_do_swab) {
-			unsigned int *i, k;
-			i = (unsigned int *)&l;
-			for (k = 0; k < sizeof (long int)/4; k++) i[k] = GMT_swab4 (i[k]);
-		}
-		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) l) : (double) l;
-		return (1);
+	if (!GMT_fread ((void *)&l, sizeof (long int), 1, fp)) return (0);
+	if (GMT_do_swab) {
+		unsigned int *i, k;
+		i = (unsigned int *)&l;
+		for (k = 0; k < sizeof (long int)/4; k++) i[k] = GMT_swab4 (i[k]);
 	}
-	return (0);
+	*d = (double) l;
+	return (1);
 }
 
 int GMT_f_read (FILE *fp, double *d)
 {
 	float f;
-	if (GMT_fread ((void *)&f, sizeof (float), 1, fp)) {
-		if (GMT_do_swab) {
-			unsigned int *i;
-			i = (unsigned int *)&f;
-			*i = GMT_swab4 (*i);
-		}
-		*d = (GMT_io.in_col_type[2] == GMT_IS_RELTIME) ? GMT_dt_from_usert ((double) f) : (double) f;
-		return (1);
+	if (!GMT_fread ((void *)&f, sizeof (float), 1, fp)) return (0);
+	if (GMT_do_swab) {
+		unsigned int *i;
+		i = (unsigned int *)&f;
+		*i = GMT_swab4 (*i);
 	}
-	return (0);
+	*d = (double) f;
+	return (1);
 }
 
 int GMT_d_read (FILE *fp, double *d)
 {
-	if (GMT_fread ((void *)d, sizeof (double), 1, fp)) {
-		if (GMT_do_swab) {
-			unsigned int *i, j;
-			i = (unsigned int *)d;
-			j = GMT_swab4 (i[0]);
-			i[0] = GMT_swab4 (i[1]);
-			i[1] = j;
-		}
-		if (GMT_io.in_col_type[2] == GMT_IS_RELTIME) *d = GMT_dt_from_usert (*d);
-		return (1);
+	if (!GMT_fread ((void *)d, sizeof (double), 1, fp)) return (0);
+	if (GMT_do_swab) {
+		unsigned int *i, j;
+		i = (unsigned int *)d;
+		j = GMT_swab4 (i[0]);
+		i[0] = GMT_swab4 (i[1]);
+		i[1] = j;
 	}
-	return (0);
+	return (1);
 }
 
 int GMT_a_write (FILE *fp, double d)
@@ -1256,7 +1213,6 @@ int GMT_a_write (FILE *fp, double d)
 int GMT_c_write (FILE *fp, double d)
 {
 	char c;
-	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	c = (char) d;
 	return (GMT_fwrite ((void *)&c, sizeof (char), (size_t)1, fp));
 }
@@ -1264,7 +1220,6 @@ int GMT_c_write (FILE *fp, double d)
 int GMT_u_write (FILE *fp, double d)
 {
 	unsigned char u;
-	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	u = (unsigned char) d;
 	return (GMT_fwrite ((void *)&u, sizeof (unsigned char), (size_t)1, fp));
 }
@@ -1272,7 +1227,6 @@ int GMT_u_write (FILE *fp, double d)
 int GMT_h_write (FILE *fp, double d)
 {
 	short int h;
-	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	h = (short int) d;
 	return (GMT_fwrite ((void *)&h, sizeof (short int), (size_t)1, fp));
 }
@@ -1280,7 +1234,6 @@ int GMT_h_write (FILE *fp, double d)
 int GMT_H_write (FILE *fp, double d)
 {
 	unsigned short int h;
-	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	h = (unsigned short int) d;
 	return (GMT_fwrite ((void *)&h, sizeof (unsigned short int), (size_t)1, fp));
 }
@@ -1288,7 +1241,6 @@ int GMT_H_write (FILE *fp, double d)
 int GMT_i_write (FILE *fp, double d)
 {
 	int i;
-	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	i = (int) d;
 	return (GMT_fwrite ((void *)&i, sizeof (int), (size_t)1, fp));
 }
@@ -1296,7 +1248,6 @@ int GMT_i_write (FILE *fp, double d)
 int GMT_I_write (FILE *fp, double d)
 {
 	unsigned int i;
-	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	i = (unsigned int) d;
 	return (GMT_fwrite ((void *)&i, sizeof (unsigned int), (size_t)1, fp));
 }
@@ -1304,7 +1255,6 @@ int GMT_I_write (FILE *fp, double d)
 int GMT_l_write (FILE *fp, double d)
 {
 	long int l;
-	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	l = (long int) d;
 	return (GMT_fwrite ((void *)&l, sizeof (long int), (size_t)1, fp));
 }
@@ -1312,14 +1262,12 @@ int GMT_l_write (FILE *fp, double d)
 int GMT_f_write (FILE *fp, double d)
 {
 	float f;
-	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	f = (float) d;
 	return (GMT_fwrite ((void *)&f, sizeof (float), (size_t)1, fp));
 }
 
 int GMT_d_write (FILE *fp, double d)
 {
-	if (GMT_io.out_col_type[2] == GMT_IS_RELTIME) d = GMT_usert_from_dt ( (GMT_dtime) d);
 	return (GMT_fwrite ((void *)&d, sizeof (double), (size_t)1, fp));
 }
 
@@ -2046,7 +1994,7 @@ int GMT_parse_f_option (char *arg)
 			case 'T':	/* Absolute calendar time */
 				code = GMT_IS_ABSTIME;
 				break;
-			case 't':	/* Relative calendar time (need epoch) */
+			case 't':	/* Relative time (units since epoch) */
 				code = GMT_IS_RELTIME;
 				break;
 			case 'x':	/* Longitude coordinates */
@@ -2078,16 +2026,14 @@ int	GMT_scanf_clock (char *s, double *val)
 {
 	/* On failure, return -1.  On success, set val and return 0.
 
-	Looks for apAP, but doesn't discover a failure if called
-	with "11:13:15 Hello, Walter", because it will find an a.
+	Looks for apAP, but doesn't discover a failure if called with "11:13:15 Hello, Walter",
+	because it will find an a.
 
-	Doesn't check whether use of a or p matches stated intent
-	to use twelve_hour_clock.
+	Doesn't check whether use of a or p matches stated intent to use twelve_hour_clock.
 
 	ISO standard allows 24:00:00, so 86400 is not too big.
-	If the day of this clock might be a day with a leap second,
-	(this routine doesn't know that) then we should also allow
-	86401.  A value exceeding 86401 is an error.
+	If the day of this clock might be a day with a leap second, (this routine doesn't know that)
+	then we should also allow 86401.  A value exceeding 86401 is an error.
 	*/
 
 	int	k, hh, mm, add_noon = 0;
@@ -2178,12 +2124,8 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
 			&ival[GMT_io.date_input.item_order[0]],
 			&ival[GMT_io.date_input.item_order[1]]) ) == 0) return (-1);
 		if (k < 2) {
-			if (GMT_io.date_input.truncated_cal_is_ok) {
-				ival[1] = 1;	/* Set first day of year  */
-			}
-			else {
-				return (-1);
-			}
+			if (!GMT_io.date_input.truncated_cal_is_ok) return (-1);
+			ival[1] = 1;	/* Set first day of year  */
 		}
 		if (GMT_io.date_input.Y2K_year) {
 			if (ival[0] < 0 || ival[0] > 99) return (-1);
@@ -2247,23 +2189,16 @@ int	GMT_scanf_g_calendar (char *s, GMT_cal_rd *rd)
 
 int	GMT_scanf_geo (char *s, double *val)
 {
-	/* Try to read a character string token stored in s,
-	knowing that it should be a geographical variable.
-	If successful, stores value in val and returns one of
-	GMT_IS_FLOAT, GMT_IS_GEO, GMT_IS_LAT, GMT_IS_LON,
+	/* Try to read a character string token stored in s, knowing that it should be a geographical variable.
+	If successful, stores value in val and returns one of GMT_IS_FLOAT, GMT_IS_GEO, GMT_IS_LAT, GMT_IS_LON,
 	whichever can be determined from the format of s.
-	If unsuccessful, does not store anything in val and
-	returns GMT_IS_NAN.
-	This should have essentially the same functionality
-	as the GMT3.4 GMT_scanf, except that the expectation is
-	now used and returned, and this also permits a double
-	precision format in the minutes or seconds, and does
-	more error checking.  However, this is not optimized
-	for speed (yet).  WHFS, 16 Aug 2001
+	If unsuccessful, does not store anything in val and returns GMT_IS_NAN.
+	This should have essentially the same functionality as the GMT3.4 GMT_scanf, except that the expectation
+	is now used and returned, and this also permits a double precision format in the minutes or seconds,
+	and does more error checking.  However, this is not optimized for speed (yet).  WHFS, 16 Aug 2001
 
-	note:  mismatch handling (e.g. this routine finds a lon
-	but calling routine expected a lat) is not done here.
-
+	Note:  Mismatch handling (e.g. this routine finds a lon but calling routine expected a lat) is not
+	done here.
 	*/
 
 	char	scopy[GMT_TEXT_LEN], suffix, *p, *p2;
@@ -2447,11 +2382,10 @@ int	GMT_scanf (char *s, int expectation, double *val)
 	else if (expectation == GMT_IS_RELTIME) {
 		/* True if we expect to read a float with no special
 		formatting (except for an optional trailing 't'), and then
-		convert that float to our time based on user's epoch and units.  */
+		assume it is relative time in user's units since epoch.  */
 		callen = strlen (s) - 1;
 		if (s[callen] == 't') s[callen] = '\0';
-		if ( ( GMT_scanf_float (s, &x) ) == GMT_IS_NAN) return (GMT_IS_NAN);
-		*val = GMT_dt_from_usert (x);
+		if ((GMT_scanf_float (s, val)) == GMT_IS_NAN) return (GMT_IS_NAN);
 		return (GMT_IS_ABSTIME);
 	}
 
@@ -2483,13 +2417,9 @@ int	GMT_scanf (char *s, int expectation, double *val)
 			clocklen--;
 		}
 		x = 0.0;
-		if (clocklen && GMT_scanf_clock (clockstring, &x) ) {
-			return (GMT_IS_NAN);
-		}
+		if (clocklen && GMT_scanf_clock (clockstring, &x)) return (GMT_IS_NAN);
 		rd = 1;
-		if (callen && GMT_scanf_calendar (calstring, &rd) ) {
-			return (GMT_IS_NAN);
-		}
+		if (callen && GMT_scanf_calendar (calstring, &rd)) return (GMT_IS_NAN);
 		*val = GMT_rdc2dt (rd, x);
 		if (gmtdefs.time_is_interval) {	/* Must truncate and center on time interval */
 			GMT_moment_interval (&GMT_truncate_time.T, *val, TRUE);	/* Get the current interval */
@@ -2518,40 +2448,29 @@ int	GMT_scanf (char *s, int expectation, double *val)
 	}
 }
 
-int	GMT_scanf_argtime (char *s, GMT_dtime *t)
+int	GMT_scanf_argtime (char *s, double *t)
 {
 	/* s is a string from a command-line argument.
-		The argument is known to refer to a time
-		variable.  For example, the argument is
-		a token from -R<t_min>/<t_max>/a/b[/c/d].
-		However, we will permit it to be in EITHER
-			-generic floating point format,
-			in which case we interpret it as
-			time relative to user units and epoch;
+		The argument is known to refer to a time variable.  For example, the argument is
+		a token from -R<t_min>/<t_max>/a/b[/c/d].  However, we will permit it to be in EITHER
+		-- generic floating point format, in which case we interpret it as relative time
+		   in user units since epoch;
 		OR
-			-absolute time in a restricted format.
+		-- absolute time in a restricted format, which is to be converted to relative time.
 
-		The absolute format must be restricted because
-		we cannot use '/' as a delimiter in an arg
-		string, but we might allow the user to use that
-		in a data file (in gmtdefs.[in/out]put_date_format.
-		Therefore we cannot use the user's date format
-		string here, and we hard-wire something here.
+		The absolute format must be restricted because we cannot use '/' as a delimiter in an arg
+		string, but we might allow the user to use that in a data file (in gmtdefs.[in/out]put_date_format.
+		Therefore we cannot use the user's date format string here, and we hard-wire something here.
 
-		The relative format must be decodable by GMT_scanf_float().
-		It may optionally end in 't' (which will be stripped off by
-		this routine).
+		The relative format must be decodable by GMT_scanf_float().  It may optionally end in 't'
+		(which will be stripped off by this routine).
 
-		The absolute format must have a T.  If it has a clock
-		string then it must be of the form
-		<complete_calstring>T<clockstring>
-		or just T<clockstring>.  If it has no clockstring then
-		it must be of the form
-		<partial or complete calstring>T.
+		The absolute format must have a T.  If it has a clock string then it must be of the form
+		<complete_calstring>T<clockstring> or just T<clockstring>.  If it has no clockstring then
+		it must be of the form <partial or complete calstring>T.
 
-		A <clockstring> may be partial (e.g. hh or hh:mm) or
-		complete (hh:mm:ss[.xxx]) but it must use ':' for a
-		delimiter and it must be readable with "%2d:%2d:%lf".
+		A <clockstring> may be partial (e.g. hh or hh:mm) or complete (hh:mm:ss[.xxx]) but it must use
+		':' for a delimiter and it must be readable with "%2d:%2d:%lf".
 		Also, it must be a 24 hour clock (00:00:00 to 23:59:59.xxx,
 		or 60.xxx on a leap second); no am/pm suffixes allowed.
 
@@ -2560,13 +2479,10 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 		[-]yyyy[-jjj]T readable after first '-' with "%4d-%3dT" (Gregorian year, day-of-year)
 		yyyy[-Www[-d]]T (ISO week calendar)
 
-	Upon failure, returns GMT_IS_NAN.  Upon success, sets
-	t and returns GMT_IS_ABSTIME.
-	We have it return either ABSTIME or RELTIME to indicate which one
-	it thinks it decoded. This is inconsistent with the use of
-	GMT_scanf which always returns ABSTIME, even when RELTIME is
-	expected and ABSTIME conversion is done internal to the routine,
-	as it is here.
+	Upon failure, returns GMT_IS_NAN.  Upon success, sets t and returns GMT_IS_ABSTIME.
+	We have it return either ABSTIME or RELTIME to indicate which one it thinks it decoded.
+	This is inconsistent with the use of GMT_scanf which always returns ABSTIME, even when RELTIME is
+	expected and ABSTIME conversion is done internal to the routine, as it is here.
 	The reason for returning RELTIME instead is that the -R option needs
 	to know which was decoded and hence which is expected as column input.
 	*/
@@ -2580,8 +2496,7 @@ int	GMT_scanf_argtime (char *s, GMT_dtime *t)
 	if (s[i] == 't') s[i] = '\0';
 	if ( (pt = strchr (s, (int)'T') ) == CNULL) {
 		/* There is no T.  This must decode with GMT_scanf_float() or we die.  */
-		if ( ( GMT_scanf_float (s, &x) ) == GMT_IS_NAN) return (GMT_IS_NAN);
-		*t = GMT_dt_from_usert (x);
+		if ( ( GMT_scanf_float (s, t) ) == GMT_IS_NAN) return (GMT_IS_NAN);
 		return (GMT_IS_RELTIME);
 	}
 	x = 0.0;	/* x will be the seconds since start of today.  */
