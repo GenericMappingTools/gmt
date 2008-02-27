@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.165 2008-02-27 16:47:37 guru Exp $
+ *	$Id: pslib.c,v 1.166 2008-02-27 18:09:09 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1041,71 +1041,6 @@ void ps_line_ (double *x, double *y, int *n, int *type, int *close, int *split)
 
 int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 {
-	double old_slope, new_slope, dx, dy, old_dir, new_dir;
-	int i, j, k, *xx, *yy, fixed;
-
-	if (n < 2) return (0);
-
-	xx = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
-	yy = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
-
-	xx[0] = irint (x[0] * PSL->internal.scale);
-	yy[0] = irint (y[0] * PSL->internal.scale);
-
-	for (i = j = 1; i < n; i++) {
-		xx[j] = irint (x[i] * PSL->internal.scale);
-		yy[j] = irint (y[i] * PSL->internal.scale);
-		if (xx[j] != xx[j-1] || yy[j] != yy[j-1]) j++;
-	}
-	n = j;
-
-	if (n < 2) {
-		ps_free ((void *)xx);
-		ps_free ((void *)yy);
-		return (0);
-	}
-
-	ix[0] = xx[0];	iy[0] = yy[0];	k = 1;
-
-	dx = xx[1] - xx[0];
-	dy = yy[1] - yy[0];
-	fixed = (dx == 0.0 && dy == 0.0);
-	old_slope = (fixed) ? 1.01e100 : ((dx == 0) ? copysign (1.0e100, dy) : dy / dx);
-	old_dir = (dx >= 0.0) ? 1 : -1;
-
-	for (i = 1; i < n-1; i++) {
-		dx = xx[i+1] - xx[i];
-		dy = yy[i+1] - yy[i];
-		fixed = (dx == 0.0 && dy == 0.0);
-		new_slope = (fixed) ? 1.01e100 : ((dx == 0) ? copysign (1.0e100, dy) : dy / dx);
-		if (fixed) continue;	/* Didnt move */
-
-		new_dir = (dx >= 0.0) ? 1 : -1;
-		if (new_slope != old_slope || new_dir != old_dir) {
-			ix[k] = xx[i];
-			iy[k] = yy[i];
-			k++;
-			old_slope = new_slope;
-			old_dir = new_dir;
-		}
-	}
-	dx = xx[n-1] - xx[n-2];
-	dy = yy[n-1] - yy[n-2];
-	fixed = (dx == 0.0 && dy == 0.0 && (k > 1 && ix[k-1] == xx[n-1] && iy[k-1] == yy[n-1]));	/* Didnt move */
-	if (!fixed) {
-		ix[k] = xx[n-1];
-		iy[k] = yy[n-1];
-		k++;
-	}
-
-	ps_free ((void *)xx);
-	ps_free ((void *)yy);
-
-	return (k);
-}
-
-int ps_shorten_path_new (double *x, double *y, int n, int *ix, int *iy)
-{
 	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
 	 * and eliminating repeating points and intermediate points along straight
 	 * line segments.  The result is the fewest points needed to draw the path
@@ -1115,7 +1050,7 @@ int ps_shorten_path_new (double *x, double *y, int n, int *ix, int *iy)
 	int i, k, dx, dy, old_dir = 0, new_dir;
 	/* These seeds for old_slope and old_dir make sure that first point gets saved */
 
-	if (n < 2) return (0);	/* Not a path to start with */
+	if (n < 2) return (n);	/* Not a path to start with */
 
 	for (i = 0; i < n; i++) {	/* Convert all coordinates to integers at current scale */
 		ix[i] = irint (x[i] * PSL->internal.scale);
@@ -1125,10 +1060,10 @@ int ps_shorten_path_new (double *x, double *y, int n, int *ix, int *iy)
 	/* The only truly unique point is the starting point; all else must show increments
 	 * relative to the previous point */
 	
-	/* First point is a given anchor, hence we will find at least 1 point and k starts at 1 */
-	for (i = k = 1; i < n-1; i++) {
-		dx = ix[i] - ix[i-1];
-		dy = iy[i] - iy[i-1];
+	/* First point is the anchor. We will find at least one point, unless all points are the same */
+	for (i = k = 0; i < n-1; i++) {
+		dx = ix[i+1] - ix[i];
+		dy = iy[i+1] - iy[i];
 		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
 		new_slope = (dx == 0) ? copysign (1.0e100, (double)dy) : ((double)dy) / ((double)dx);
 		new_dir = (dx >= 0) ? 1 : -1;
@@ -1140,13 +1075,16 @@ int ps_shorten_path_new (double *x, double *y, int n, int *ix, int *iy)
 			old_dir = new_dir;
 		}
 	}
-	/* Last point (k cannot be < 1 so k-1 is >= 0) */
-	if (!(ix[k-1] == ix[n-1] && iy[k-1] == iy[n-1])) {	/* Do not do slope check on last point since we must end there */
+
+	/* If all points are the same, we get here with k = 0, so we can exit here now with 1 point */
+	if (k < 1) return (1);
+
+	/* Last point (k cannot be < 1 so k-1 >= 0) */
+	if (x[k-1] != ix[n-1] || iy[k-1] != iy[n-1]) {	/* Do not do slope check on last point since we must end there */
 		ix[k] = ix[n-1];
 		iy[k] = iy[n-1];
 		k++;
 	}
-
 	return (k);
 }
 
