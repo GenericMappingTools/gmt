@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.63 2008-02-26 04:09:48 guru Exp $
+ *	$Id: gmt_io.h,v 1.64 2008-02-27 19:16:31 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -98,7 +98,7 @@ EXTERN_MSC void GMT_write_segmentheader (FILE *fp, int n);		/* Write multisegmen
 EXTERN_MSC int GMT_scanf (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats [Data records only ] */
 EXTERN_MSC int GMT_scanf_arg (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats [ command line only ] */
 EXTERN_MSC int	GMT_scanf_argtime (char *s, double *val);		/* Convert an argument token to a time  */
-EXTERN_MSC void GMT_format_abstime_output (GMT_dtime dt, char *text);	/* Generate formatted textstring for absolute calendar time */
+EXTERN_MSC void GMT_format_abstime_output (double dt, char *text);	/* Generate formatted textstring for absolute calendar time */
 EXTERN_MSC void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text);	/* Generate formatted textstring for geographic coordinate */
 EXTERN_MSC int GMT_ascii_output_one (FILE *fp, double x, int col);
 EXTERN_MSC void GMT_ascii_format_one (char *text, double x, int type);

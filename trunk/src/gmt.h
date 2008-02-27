@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.161 2008-02-24 00:17:14 remko Exp $
+ *	$Id: gmt.h,v 1.162 2008-02-27 19:16:31 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -242,7 +242,6 @@ typedef void (*PFV) ();		/* PFV declares a pointer to a function returning void 
 typedef int (*PFI) ();		/* PFI declares a pointer to a function returning an int */
 typedef BOOLEAN (*PFB) ();	/* PFB declares a pointer to a function returning a BOOLEAN */
 typedef double (*PFD) ();	/* PFD declares a pointer to a function returning a double */
-typedef double GMT_dtime;	/* GMT internal time representation */
 #ifndef _WIN64
 typedef long GMT_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #endif

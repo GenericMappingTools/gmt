@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.24 2008-02-20 14:54:57 remko Exp $
+ *	$Id: gmt_calclock.h,v 1.25 2008-02-27 19:16:31 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,9 +26,6 @@
 */
 
 typedef int GMT_cal_rd;	/* GMT calendar "rata die" day numbers  */
-/* typedef double GMT_dtime; [in gmt.h]	GMT internal time representation;
-	equal to seconds elapsed since Midnight on proleptic Gregorian 
-	Monday Jan 01 0001  */
 
 #define GMT_CALSTRING_LENGTH	16	/* All strings used to format date/clock output must be this length */
 
@@ -54,7 +51,7 @@ struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
 
 struct GMT_MOMENT_INTERVAL {
 	struct GMT_gcal	cc[2];		
-	GMT_dtime	dt[2];		
+	double		dt[2];		
 	double		sd[2];		/* Seconds since the start of the day.  */
 	GMT_cal_rd	rd[2];
 	int		itype;
@@ -69,33 +66,31 @@ struct GMT_TRUNCATE_TIME {		/* Used when TIME_IS_INTERVAL is not OFF */
 
 /* Functions whose source is in gmt_calclock.c:  */
 
-EXTERN_MSC GMT_dtime GMT_rdc2dt (GMT_cal_rd rd, double secs);
-EXTERN_MSC void    GMT_dt2rdc (GMT_dtime t, GMT_cal_rd *rd, double *s);
-EXTERN_MSC int	GMT_cal_imod (int x, int y);
+EXTERN_MSC double GMT_rdc2dt (GMT_cal_rd rd, double secs);
+EXTERN_MSC void GMT_dt2rdc (double t, GMT_cal_rd *rd, double *s);
+EXTERN_MSC int GMT_cal_imod (int x, int y);
 EXTERN_MSC GMT_cal_rd GMT_kday_on_or_before (GMT_cal_rd date, int kday);
 EXTERN_MSC GMT_cal_rd GMT_kday_after (GMT_cal_rd date, int kday);
 EXTERN_MSC GMT_cal_rd GMT_kday_before (GMT_cal_rd date, int kday);
 EXTERN_MSC GMT_cal_rd GMT_nth_kday (int n, int kday, GMT_cal_rd date);
-EXTERN_MSC BOOLEAN	GMT_is_gleap (int gyear);
+EXTERN_MSC BOOLEAN GMT_is_gleap (int gyear);
 EXTERN_MSC double GMT_cal_mod (double x, double y);
 EXTERN_MSC GMT_cal_rd GMT_rd_from_gymd (int gy, int gm, int gd);
 EXTERN_MSC int GMT_gyear_from_rd (GMT_cal_rd date);
 EXTERN_MSC GMT_cal_rd GMT_rd_from_iywd (int iy, int iw, int id);
 EXTERN_MSC void GMT_gcal_from_rd ( GMT_cal_rd date, struct GMT_gcal *gcal);
-EXTERN_MSC GMT_dtime	GMT_dt_from_usert (double x);	/* Convert relative usertime to internal abs time */
-EXTERN_MSC double	GMT_usert_from_dt (GMT_dtime t); /* Converts internal abs time to relative usertime */
 EXTERN_MSC int	GMT_y2_to_y4_yearfix (int y2);	/* Convert a 2-digit year to a 4-digit year */
 EXTERN_MSC BOOLEAN GMT_iso_ywd_is_bad (int y, int w, int d);	/* Check range of week and day for ISO W calendar.  */
 EXTERN_MSC BOOLEAN GMT_g_ymd_is_bad (int y, int m, int d);	/* Check range of month and day for Gregorian YMD calendar values  */
 EXTERN_MSC BOOLEAN GMT_hms_is_bad (int h, int m, double s);	/* Check range of hours, min, and secs */
-EXTERN_MSC void	GMT_gcal_from_dt (GMT_dtime t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
+EXTERN_MSC void	GMT_gcal_from_dt (double t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */
 EXTERN_MSC struct GMT_Y2K_FIX GMT_Y2K_fix;	/* Structure holding Y2K parameters */
 EXTERN_MSC int GMT_verify_time_step (int step, char unit);	/* Check that time step and unit for time axis are OK  */
 EXTERN_MSC void GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN init); /* step a time axis by time units */
 EXTERN_MSC int GMT_gmonth_length (int year,  int month);	/* Get the number of days in a month by Gregorian leap rule */
 EXTERN_MSC void GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, int step_secs, BOOLEAN init); /* Aux to GMT_moment_interval */
-EXTERN_MSC void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, BOOLEAN upper, int kind, GMT_dtime dt);	/* Write formatted strings for date and clock */
-EXTERN_MSC void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, GMT_dtime t);
+EXTERN_MSC void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, BOOLEAN upper, int kind, double dt);	/* Write formatted strings for date and clock */
+EXTERN_MSC void GMT_get_time_label (char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t);
 
 #ifdef USE_UNUSED_GMT_FUNCTIONS
 EXTERN_MSC int     GMT_read_clock (char *s, double *t);
