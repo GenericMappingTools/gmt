@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.h,v 1.5 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_vector.h,v 1.6 2008-02-27 03:16:54 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -20,6 +20,7 @@
 #define _GMT_VECTOR_H
 
 EXTERN_MSC double GMT_dot3v (double *a, double *b);
+EXTERN_MSC double GMT_mag3v (double *a);
 EXTERN_MSC int GMT_chol_dcmp (double *a, double *d, double *cond, int nr, int n);
 EXTERN_MSC int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mode);
 EXTERN_MSC int GMT_jacobi (double *a, int *n, int *m, double *d, double *v, double *b, double *z, int *nrots);
