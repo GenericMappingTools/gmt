@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.200 2008-02-26 04:53:46 guru Exp $
+	$Id: ChangeLog,v 1.201 2008-02-27 19:17:23 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-02-27	remko
+	* gmt_io.[ch], gmt_calclock.[ch]:	Removed GMT_dt_from_usert, GMT_usert_from_dt, GMT_dtime.
+				These were remnants of a time that internal time representation was entirely
+				in rata die numbers. Since computations are done extensively with relative
+				time (in doubles) keeping the conversion double-to-double became non-sensical.
+
 2008-02-25	pwessel
 	* gmt_io.c:	Now skips blank lines that has leading whitespace.  Function
 				GMT_is_a_blank_line (char *line) is now used wherever ascii
