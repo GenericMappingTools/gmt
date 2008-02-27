@@ -22,7 +22,7 @@ ASCII (or binary, see \fB\-bi\fP) file(s) holding a number of data columns.
 .SH OPTIONS
 .TP
 .B \-A
-The records from the input files should be pAsted horizontally, not appended vertically.  [Default
+The records from the input files should be pasted horizontally, not appended vertically.  [Default
 processes one file at the time].  Note for binary input, all the files you want to paste must
 have the same number of columns (as set with \fB\-bi\fP).
 .TP
@@ -87,10 +87,10 @@ we extract the last column and columns 4-6 and write ASCII with the command
 \fBgmtconvert\fP results.b \fB\-F\fP8,4-6 -bi9s | psxy ...
 .br
 .sp
-You want to plot the 2nd column of the file left.d versus the first column of file right.d:
+You want to plot the 2nd column of a 2-column file left.d versus the first column of a file right.d:
 .br
 .sp
-\fBgmtconvert\fP left.d right.d \fB\-A \-F\fP1,0 | psxy ...
+\fBgmtconvert\fP left.d right.d \fB\-A \-F\fP1,2 | psxy ...
 .br
 .sp
 To extract all segments in the file big_file.d whose headers contain the string "RIDGE AXIS", try
