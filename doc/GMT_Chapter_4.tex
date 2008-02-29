@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.105 2008-02-08 23:56:35 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.106 2008-02-29 03:30:04 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -44,6 +44,7 @@ you always supply the desired unit explicitly.
 \index{Units|)}
 
 \section{\gmt\ defaults}
+\label{sec:gmtdefaults}
 \subsection{Overview and the \filename{.gmtdefaults4}\ file}
 
 \index{GMT@\GMT!defaults|(}
@@ -59,8 +60,7 @@ defaults\footnote{Choose between SI and US default units by modifying
 then tries to open the file \filename{.gmtdefaults4}
 in the current directory\footnote{To remain backwards compatible with \GMT\ 3.4.x
 we will also look for \filename{.gmtdefaults} but only if \filename{.gmtdefaults4}
-cannot be found.}.  If not found, it will look for that file
-in your home directory.  If successful, the program will read the
+cannot be found.}.  If not found, it will look for that file in a sub-directory \filename{\~/.gmt} of your home directory, and finally in your home directory itself.  If successful, the program will read the
 contents and set the default values to those provided in the file.
 By editing this file you can affect features such as pen thicknesses
 used for maps, fonts and font sizes used for annotations and labels,
@@ -94,12 +94,12 @@ changed (such as the ellipsoid used for map projections).
 
 \item It is convenient to keep separate \filename{.gmtdefaults4}
 files for specific projects, so that one may achieve a special
-effect simply by running \GMT\ commands in a sub-directory whose
+effect simply by running \GMT\ commands in the directory whose
 \filename{.gmtdefaults4} file has the desired settings.  For example,
 when making final illustrations for a journal article one must often
 standardize on font sizes and font types, etc.  Keeping all those
 settings in a separate \filename{.gmtdefaults4} file simplifies this
-process.  Likewise, \GMT\ scripts that make figures for PowerPoint
+process and will allow you to generate those illustrations with the same settings later on.  Likewise, \GMT\ scripts that make figures for PowerPoint
 presentations often use a different color scheme and font size than
 output intended for laser printers.  Organizing these various scenarios
 into separate \filename{.gmtdefaults4} files will minimize headaches
@@ -136,12 +136,13 @@ change the primary annotation font to 12 point Times-Bold we run \\
 \texttt{gmtset ANNOT\_FONT\_PRIMARY Times-Bold ANNOT\_FONT\_SIZE\_PRIMARY 12} \\
 
 These changes will remain in effect until they are overridden.
-\item Finally, if all you want to achieve is to change a few parameters during
+\item If all you want to achieve is to change a few parameters during
 the execution of a single command but otherwise leave the environment intact, consider
 passing the parameter changes on the command line via the {--}{--}\emph{PAR=value}
 mechanism.  For instance, to temporarily set the output format for floating
 points to have lots of decimals, say, for map projection coordinate output,
 append {--}{--}\textbf{D\_FORMAT}=\%.12lg to the command in question.
+\item Finally, since version 4.2.2 \GMT\ provides to possibility to override the settings only  during the running of a single script, reverting to the original settings after the script is run, as if the script was run in ``isolation''. The isolation mode is discussed in Section~\ref{sec:isolationmode}.
 \end{enumerate}
 In addition to those parameters
 that directly affect the plot there are numerous parameters than
@@ -755,6 +756,7 @@ first (minor) dimension.
 \index{Command line!standardized options|)}%
 
 \section{Command Line History}
+\label{sec:gmtcommands}
 \index{Command line!history}
 \index{History, command line}
 
