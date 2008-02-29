@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.202 2008-02-28 21:01:11 guru Exp $
+	$Id: ChangeLog,v 1.203 2008-02-29 03:49:43 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-02-29	remko
+	* isogmt.in, isogmt.txt:	Script to run GMT in isolation mode introduced
+	* GMT_App_P_{1,2}.sh:	Isolation mode examples
+	* GMT_Appendix_P.tex:	Added description of isolation mode
+
 2008-02-28	pwessel
 	* mgd77/mgd77info.c:		Same issue as minmax that was fixed on 1/31/2008.
 
