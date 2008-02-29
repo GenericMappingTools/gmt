@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.6 2008-02-22 21:53:10 remko Exp $
+#	$Id: GNUmakefile,v 1.7 2008-02-29 03:27:07 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -74,7 +74,8 @@ EX_EPS=	scripts/example_01.eps scripts/example_02.eps scripts/example_03.eps scr
 	scripts/example_24.eps scripts/example_25.eps scripts/example_26.eps
 
 # TEX files of examples used in the Cookbook that are to retain the comments
-EX_TEX=	scripts/volcano.tex scripts/bullseye.tex scripts/GMT_App_M_2.tex $(EX_EPS:.eps=.tex)
+EX_TEX=	scripts/volcano.tex scripts/bullseye.tex scripts/GMT_App_M_2.tex scripts/GMT_App_P_2.tex \
+	$(EX_EPS:.eps=.tex)
 
 # EPS files that need special attention
 APP_F_EPS=scripts/GMT_App_F_dingbats.eps scripts/GMT_App_F_iso+.eps scripts/GMT_App_F_stand+.eps \
@@ -112,7 +113,8 @@ DOCEPS2=scripts/GMT_-B_geo_1.eps scripts/GMT_-B_geo_2.eps scripts/GMT_-B_linear.
 	scripts/GMT_-J.eps scripts/GMT_-OK.eps scripts/GMT_-P.eps scripts/GMT_-R.eps scripts/GMT_-U.eps \
 	scripts/GMT_-XY.eps scripts/GMT_App_B_1.eps scripts/GMT_App_B_2.eps scripts/GMT_App_E.eps \
 	$(APP_F_EPS) scripts/GMT_App_G.eps $(APP_J_EPS) scripts/GMT_App_M_1.eps scripts/GMT_App_M_2.eps $(APP_N_EPS) \
-	scripts/GMT_Defaults_1a.eps scripts/GMT_Defaults_1b.eps scripts/GMT_Defaults_1c.eps scripts/GMT_volcano.eps
+	scripts/GMT_Defaults_1a.eps scripts/GMT_Defaults_1b.eps scripts/GMT_Defaults_1c.eps scripts/GMT_volcano.eps \
+	scripts/GMT_App_P_2.eps
 
 # All EPS and PDF files for GMT_Docs
 DOCEPS=	$(DOCEPS1) $(DOCEPS2) $(ALLEPS) $(EX_EPS)
@@ -122,7 +124,7 @@ DOCPDF= $(DOCEPS:.eps=.pdf)
 DOCPNG=	fig/Smith.png fig/Wessel.png ppt/formatpicture.png ppt/rendering.png
 
 # Additional TEX files to be converted from scripts
-SCRTEX=	scripts/getbox.tex scripts/getrect.tex scripts/GMT_dummydata.tex
+SCRTEX=	scripts/getbox.tex scripts/getrect.tex scripts/GMT_dummydata.tex scripts/GMT_App_P_1.tex
 
 # All TEX files needed for GMT_Docs
 DOCTEX= \
