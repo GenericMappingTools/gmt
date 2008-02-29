@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.33 2008-02-29 20:04:07 remko Exp $
+#	$Id: Makefile,v 1.34 2008-02-29 20:21:52 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -95,12 +95,12 @@ install:	all
 		$(INSTALL) $(ALLPROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir) ; \
-			$(INSTALL) -m 444 $(GMTLIB:.$(LIBEXT)=.a) $(libdir); \
+			$(INSTALL) -m 644 $(GMTLIB:.$(LIBEXT)=.a) $(libdir); \
 			[ ! $(LIBEXT) = a ] && $(INSTALL) -m 755 $(GMTLIB) $(libdir); \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(includedir) ; \
-			$(INSTALL) -m 444 $(GMT_H) $(PS_H) $(PS_I) $(includedir); \
+			$(INSTALL) -m 644 $(GMT_H) $(PS_H) $(PS_I) $(includedir); \
 		fi
 		if [ -f $(libdir)/libpsl.dylib ]; then \
 			cd $(libdir) ; \

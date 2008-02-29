@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.26 2008-02-19 17:14:57 guru Exp $
+#	$Id: Makefile,v 1.27 2008-02-29 20:21:52 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -40,7 +40,7 @@ install:	all
 		$(INSTALL) $(PROGS) $(PROGSPS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir); \
-			$(INSTALL) -m 444 $(LIB) $(libdir); \
+			$(INSTALL) -m 644 $(LIB) $(libdir); \
 		fi
 
 uninstall:

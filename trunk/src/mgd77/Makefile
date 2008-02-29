@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.50 2008-02-29 20:04:07 remko Exp $
+#	$Id: Makefile,v 1.51 2008-02-29 20:21:52 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -42,11 +42,11 @@ install:	all
 		$(INSTALL) $(PROGS) $(PROGSPS) $(bindir)
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(includedir); \
-			$(INSTALL) -m 444 $(LIB_H) $(includedir); \
+			$(INSTALL) -m 644 $(LIB_H) $(includedir); \
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir); \
-			$(INSTALL) -m 444 $(LIB:.$(LIBEXT)=.a) $(libdir); \
+			$(INSTALL) -m 644 $(LIB:.$(LIBEXT)=.a) $(libdir); \
 			[ ! $(LIBEXT) = a ] && $(INSTALL) -m 755 $(LIB) $(libdir); \
 		fi
 		if [ -f $(libdir)/libmgd77.dylib ]; then \
