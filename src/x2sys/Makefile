@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.35 2008-02-27 18:25:15 remko Exp $
+#	$Id: Makefile,v 1.36 2008-02-29 20:04:07 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -28,7 +28,8 @@ install:	all
 		$(INSTALL) $(PROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir); \
-			$(INSTALL) -m 444 $(LIB) $(LIB:.$(LIBEXT)=.a) $(libdir); \
+			$(INSTALL) -m 444 $(LIB:.$(LIBEXT)=.a) $(libdir); \
+			[ ! $(LIBEXT) = a ] && $(INSTALL) -m 755 $(LIB) $(libdir); \
 		fi
 		if [ -f $(libdir)/libx2sys.dylib ]; then \
 			cd $(libdir) ; \
