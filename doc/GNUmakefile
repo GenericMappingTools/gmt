@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.7 2008-02-29 03:27:07 remko Exp $
+#	$Id: GNUmakefile,v 1.8 2008-02-29 04:06:39 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -74,8 +74,8 @@ EX_EPS=	scripts/example_01.eps scripts/example_02.eps scripts/example_03.eps scr
 	scripts/example_24.eps scripts/example_25.eps scripts/example_26.eps
 
 # TEX files of examples used in the Cookbook that are to retain the comments
-EX_TEX=	scripts/volcano.tex scripts/bullseye.tex scripts/GMT_App_M_2.tex scripts/GMT_App_P_2.tex \
-	$(EX_EPS:.eps=.tex)
+EX_TEX=	scripts/volcano.tex scripts/bullseye.tex scripts/GMT_App_M_2.tex \
+	scripts/GMT_App_P_1.tex scripts/GMT_App_P_2.tex $(EX_EPS:.eps=.tex)
 
 # EPS files that need special attention
 APP_F_EPS=scripts/GMT_App_F_dingbats.eps scripts/GMT_App_F_iso+.eps scripts/GMT_App_F_stand+.eps \
@@ -124,7 +124,7 @@ DOCPDF= $(DOCEPS:.eps=.pdf)
 DOCPNG=	fig/Smith.png fig/Wessel.png ppt/formatpicture.png ppt/rendering.png
 
 # Additional TEX files to be converted from scripts
-SCRTEX=	scripts/getbox.tex scripts/getrect.tex scripts/GMT_dummydata.tex scripts/GMT_App_P_1.tex
+SCRTEX=	scripts/getbox.tex scripts/getrect.tex scripts/GMT_dummydata.tex
 
 # All TEX files needed for GMT_Docs
 DOCTEX= \
