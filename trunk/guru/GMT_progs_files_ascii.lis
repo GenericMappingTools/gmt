@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.48 2007-12-09 18:07:00 remko Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.49 2008-02-29 04:18:30 remko Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_progs tar/zip files.  See GMT_progs_files_bin.lis for binary files
@@ -23,6 +23,7 @@ src/makefile
 src/makegmt.macros.in
 src/gmtalldeps.macros
 src/GMT.in
+src/isogmt.in
 src/alpha-sincos.s
 src/gmt_shell_functions.sh
 src/gmtinstall.bat
