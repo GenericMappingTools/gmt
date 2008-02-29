@@ -1,7 +1,8 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.203 2008-02-29 03:49:43 remko Exp $
+	$Id: ChangeLog,v 1.204 2008-02-29 20:07:35 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-02-29	remko
+	* makefile:		More sure-fire way to install libraries. Also give shared libs mode 755.
 	* isogmt.in, isogmt.txt:	Script to run GMT in isolation mode introduced
 	* GMT_App_P_{1,2}.sh:	Isolation mode examples
 	* GMT_Appendix_P.tex:	Added description of isolation mode
