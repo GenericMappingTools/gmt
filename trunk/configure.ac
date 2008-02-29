@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.7 2008-02-25 17:18:38 remko Exp $
-AC_REVISION($Revision: 1.7 $)
+dnl $Id: configure.ac,v 1.8 2008-02-29 03:49:43 remko Exp $
+AC_REVISION($Revision: 1.8 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -680,7 +680,7 @@ morefiles=
 if test -f doc/GMT_version.tex.in ; then
 	morefiles=doc/GMT_version.tex
 fi
-AC_OUTPUT(src/makegmt.macros src/GMT src/gmt_version.h $morefiles)
+AC_OUTPUT(src/makegmt.macros src/GMT src/gmt_version.h src/isogmt $morefiles)
 dnl
 dnl -----------------------------------------------------------------
 dnl Remove and, if trouble, write the .gmtconfigure file
