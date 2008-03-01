@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.34 2008-02-29 20:21:52 remko Exp $
+#	$Id: Makefile,v 1.35 2008-03-01 13:22:11 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -96,7 +96,7 @@ install:	all
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir) ; \
 			$(INSTALL) -m 644 $(GMTLIB:.$(LIBEXT)=.a) $(libdir); \
-			[ ! $(LIBEXT) = a ] && $(INSTALL) -m 755 $(GMTLIB) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(GMTLIB) $(libdir); fi \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(includedir) ; \
