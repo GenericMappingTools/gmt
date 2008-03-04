@@ -93,7 +93,7 @@ and 10N to 40N, and you want the output values every 0.5 degree.  Using spherica
 .SH LIMITATIONS
 When working with geographic (lat, lon) grids, all three convolution filters (boxcar, cosine arch, and gaussian) will properly normalize
 the filter weights for the variation in gridbox size with latitude, and correctly determine which nodes are needed for the convolution
-when the fiter "circle" crosses a periodic (0-360) boundary or contains a geographic pole.  However, the spatial filters, such as median and mode filters,
+when the filter "circle" crosses a periodic (0-360) boundary or contains a geographic pole.  However, the spatial filters, such as median and mode filters,
 do not use weights and thus should only be used on Cartesian grids (or at very low latitudes) only.  If you want to apply such spatial
 filters you should project your data to an equal-area projection and run grdfilter on the resulting Cartesian grid.
 .br
