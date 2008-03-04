@@ -28,7 +28,7 @@ prior to \fBGMT\fP 3.1) often had excessive slop in
 Give new values for \fIxname, yname, zname, scale, offset, title,\fP and \fIremark\fP.
 To leave some of the values untouched, specify = as the new value.
 Alternatively, to allow "/" to be part of one of the values, use any non-alphanumeric
-character as separator by both starting and ending with it. For example:
+character (and not the equal sign) as separator by both starting and ending with it. For example:
 \fB\-D\fP:\fIxname\fP:\fIyname\fP:\fIzname\fP:\fIscale\fP:\fIoffset\fP:\fItitle\fP:\fIremark\fP:
 .TP
 .B \-E
