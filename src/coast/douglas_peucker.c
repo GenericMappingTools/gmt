@@ -1,30 +1,23 @@
 /*
- *	$Id: douglas_peucker.c,v 1.2 2004-09-05 04:08:18 pwessel Exp $
+ *	$Id: douglas_peucker.c,v 1.3 2008-03-05 02:11:58 guru Exp $
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+
+#define COASTLIB
+#include"wvs.h"
 
 #define sqr(x) ((x)*(x))
-#define D2R (M_PI/180.0)
 #define F (D2R * 0.5 * 1.0e-6)
-#ifndef M_PI
-#define M_PI          3.14159265358979323846
-#endif
 
-extern void *GMT_memory();
 int Douglas_Peucker (double x_source[], double y_source[], int n_source, double band, int index[]);
 int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[]);
 
 /* Stack-based Douglas Peucker line simplification routine */
 /* returned value is the number of output points */
 
-int Douglas_Peucker (x_source, y_source, n_source, band, index)
-double  x_source[];	/* Input coordinates */
-double  y_source[];
-int     n_source;
-double  band;		/* tolerance in km */
-int	index[];	/* output co-ordinates indeces */
+int Douglas_Peucker (double x_source[], double y_source[], int n_source, double band, int index[])
+/* x/y_source	Input coordinates, n_source of them */
+/* band;		tolerance in km */
+/* index[]	output co-ordinates indeces */
 {
 	int	n_stack, n_dest, start, end, i, sig;
 	int	*sig_start, *sig_end;	/* indices of start&end of working section */
@@ -156,12 +149,10 @@ start point */
         return(n_dest);
 }
 
-int Douglas_Peucker_i (x_source, y_source, n_source, band, index)
-int	x_source[];	/* Input coordinates */
-int	y_source[];
-int     n_source;
-double  band;		/* tolerance in kilometers */
-int	index[];	/* output co-ordinates indeces */
+int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[])
+/* x/y_source	Input coordinates, n_source of them */
+/* band;		tolerance in km */
+/* index[]	output co-ordinates indeces */
 {
 	int	n_stack, n_dest, start, end, i, sig;
 	int	*sig_start, *sig_end;	/* indices of start&end of working section */

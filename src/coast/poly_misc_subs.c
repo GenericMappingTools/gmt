@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_misc_subs.c,v 1.1 2008-03-05 01:24:51 guru Exp $
+ *	$Id: poly_misc_subs.c,v 1.2 2008-03-05 02:11:58 guru Exp $
  *
  * Contains misc functions used by polygon* executables
  */
@@ -12,7 +12,7 @@ void area_init ()
 	gmtdefs.ellipsoid = GMT_N_ELLIPSOIDS-1;
 	project_info.projection = GMT_LAMB_AZ_EQ;
 	project_info.unit = GMT_M;
-	project_info.pars[2] = 39.3700787401574814;
+	project_info.pars[3] = 39.3700787401574814;
 	project_info.region = 1;
 	gmtdefs.line_step = 1.0e7;	/* To avoid nlon/nlat being huge */
 	project_info.degree[0] = project_info.degree[1] = TRUE;
