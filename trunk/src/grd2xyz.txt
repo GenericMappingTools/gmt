@@ -26,6 +26,8 @@ the grid value equals NaN [-9999].  Note that all data values are written as int
 Output 1 header record based on information in the first grid file header.
 Ignored if binary output is selected.  [Default is no header].
 #include "explain_-R.txt" 
+Using the OPT(R) option will select a subsection of the grid. If this subsection exceeds the
+boundaries of the grid, only the common region will be output.
 .TP
 .B \-S
 Suppress output for nodes whose z-value equals NaN [Default outputs all nodes].
