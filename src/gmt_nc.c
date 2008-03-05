@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.70 2008-02-26 04:14:24 remko Exp $
+ *	$Id: gmt_nc.c,v 1.71 2008-03-05 14:11:19 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,7 +43,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #define GMT_WITH_NO_PS
-#define GMT_CDF_CONVENTION    "COARDS, CF-1.0"	/* grd files are COARDS-compliant */
+#define GMT_CDF_CONVENTION    "COARDS/CF-1.0"	/* grd files are COARDS-compliant */
 #include "gmt.h"
 
 EXTERN_MSC int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
@@ -119,7 +119,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 {
 	int i, j, err;
 	double dummy[2], *xy = VNULL;
-	char varname[GRD_UNIT_LEN];
+	char varname[GRD_UNIT_LEN], coord[8];
 	nc_type z_type, i_type;
 	double t_value[3];
 
@@ -202,10 +202,12 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		/* Define dimensions of z variable */
 #define NC_FLOAT_OR_DOUBLE(xmin, xmax, dx) ((dx) < GMT_SMALL * MAX(fabs(xmin),fabs(xmax)) ? NC_DOUBLE : NC_FLOAT)
 		ndims = 2;
-		GMT_err_trap (nc_def_dim (ncid, "x", (size_t) header->nx, &dims[1]));
-		GMT_err_trap (nc_def_var (ncid, "x", NC_FLOAT_OR_DOUBLE(header->x_min, header->x_max, header->x_inc), 1, &dims[1], &ids[1]));
-		GMT_err_trap (nc_def_dim (ncid, "y", (size_t) header->ny, &dims[0]));
-		GMT_err_trap (nc_def_var (ncid, "y", NC_FLOAT_OR_DOUBLE(header->y_min, header->y_max, header->y_inc), 1, &dims[0], &ids[0]));
+		strcpy (coord, (GMT_io.out_col_type[0] == GMT_IS_LON) ? "lon" : (GMT_io.out_col_type[0] & GMT_IS_RATIME) ? "time" : "x");
+		GMT_err_trap (nc_def_dim (ncid, coord, (size_t) header->nx, &dims[1]));
+		GMT_err_trap (nc_def_var (ncid, coord, NC_FLOAT_OR_DOUBLE(header->x_min, header->x_max, header->x_inc), 1, &dims[1], &ids[1]));
+		strcpy (coord, (GMT_io.out_col_type[1] == GMT_IS_LAT) ? "lat" : (GMT_io.out_col_type[1] & GMT_IS_RATIME) ? "time" : "y");
+		GMT_err_trap (nc_def_dim (ncid, coord, (size_t) header->ny, &dims[0]));
+		GMT_err_trap (nc_def_var (ncid, coord, NC_FLOAT_OR_DOUBLE(header->y_min, header->y_max, header->y_inc), 1, &dims[0], &ids[0]));
 
 		switch (GMT_grdformats[header->type][1]) {
 			case 'b':
@@ -296,7 +298,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 
 		/* Limits need to be converted from actual to internal grid units.
 		   In GMT <= 4.2.0 actual_range was erroneously stored in grid units. This
-		   if-statement should catch those cases and leaves the in grid units.
+		   if-statement should catch those cases and leaves them in grid units.
 		*/
 		if (!nc_inq_atttype (ncid, z_id, "actual_range", &i_type) && (i_type == NC_SHORT || i_type == NC_INT) && z_type == i_type)
 			header->z_min = dummy[0], header->z_max = dummy[1];
@@ -346,10 +348,18 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		dummy[(1-header->y_order)/2] = header->y_min, dummy[(1+header->y_order)/2] = header->y_max;
 		GMT_err_trap (nc_put_att_double (ncid, ids[ndims-2], "actual_range", NC_DOUBLE, 2, dummy));
 
-		/* Define z variable */
+		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		GMT_nc_put_units (ncid, z_id, header->z_units);
-		if (header->z_scale_factor != 1.0) GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
-		if (header->z_add_offset != 0.0) GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
+		if (header->z_scale_factor != 1.0) {
+			GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1, &header->z_scale_factor));
+		}
+		else if (job == 'u')
+			nc_del_att (ncid, z_id, "scale_factor");
+		if (header->z_add_offset != 0.0) {
+			GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1, &header->z_add_offset));
+		}
+		else if (job == 'u')
+			nc_del_att (ncid, z_id, "add_offset");
 		if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
 			GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1, &header->nan_value));
 		}
@@ -366,8 +376,6 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		else
 			dummy[0] = 0.0, dummy[1] = 0.0;
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "actual_range", NC_DOUBLE, 2, dummy));
-		/* This line confuses Panoply. So we do not use it yet. */
-		/* GMT_err_trap (nc_put_att_text (header->ncid, header->z_id, "coordinates", 3, "x y")); */
 
 		/* Store values along x and y axes */
 		GMT_err_trap (nc_enddef (ncid));
@@ -619,8 +627,6 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		limit[0] = 0.0, limit[1] = 0.0;
 	}
 	GMT_err_trap (nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, 2, limit));
-	/* This line confuses Panoply. So we do not use it yet. */
-	/* GMT_err_trap (nc_put_att_text (header->ncid, header->z_id, "coordinates", 3, "x y")); */
 
 	/* Close grid */
 
