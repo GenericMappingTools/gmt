@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.106 2008-02-26 02:37:20 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.107 2008-03-05 14:06:34 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1023,9 +1023,9 @@ void GMT_grd_set_units (struct GRD_HEADER *header)
 	for (i = 0; i < 3; i++) {
 		switch (GMT_io.out_col_type[i]) {
 		case GMT_IS_LON:
-			strcpy (string[i], "Longitude [degrees_east]"); break;
+			strcpy (string[i], "longitude [degrees_east]"); break;
 		case GMT_IS_LAT:
-			strcpy (string[i], "Latitude [degrees_north]"); break;
+			strcpy (string[i], "latitude [degrees_north]"); break;
 		case GMT_IS_ABSTIME:
 		case GMT_IS_RELTIME:
 		case GMT_IS_RATIME:
@@ -1045,7 +1045,7 @@ void GMT_grd_set_units (struct GRD_HEADER *header)
 				strcpy (unit, "seconds"); break;
 			}
 			GMT_format_calendar (date, clock, &GMT_io.date_output, &GMT_io.clock_output, FALSE, 1, 0.0);
-			sprintf (string[i], "Time [%s since %s %s]", unit, date, clock);
+			sprintf (string[i], "time [%s since %s %s]", unit, date, clock);
 			/* Warning for non-double grids */
 			if (i == 2 && GMT_grdformats[header->type][1] != 'd') fprintf (stderr, "%s: Warning: Use double precision output grid to avoid loss of significance of time coordinate.\n", GMT_program);
 			break;
