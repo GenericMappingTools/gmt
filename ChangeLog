@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.205 2008-03-05 14:13:51 remko Exp $
+	$Id: ChangeLog,v 1.206 2008-03-05 19:38:53 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-03-05	remko
 	* grdinfo.c:		Implemented Welford (1962) algorithm for more precise one-pass
@@ -9,6 +9,7 @@
 	* gmt_nc.c:		Use coordinate variables lon(lon), lat(lat) or time(time) when
 				appropriate. When updating: need to remove "add_offset" when 0 and
 				"scale_factor" when 1.
+	* grd2xyz.c:		Do not abort with -R exceeds grid; simply output common region.
 
 2008-03-04	remko
 	* grdmath.c, gmtmath.c:	Implemented Welford (1962) algorithm in KURT, SKEW and STD operators
