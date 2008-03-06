@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.174 2008-02-22 19:59:37 guru Exp $
+ *	$Id: gmt_map.c,v 1.175 2008-03-06 21:37:16 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6357,12 +6357,11 @@ void GMT_ECEF_inverse (double in[], double out[])
 double GMT_az_backaz_cartesian (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
 {
 	/* Calculate azimuths or backazimuths.  Cartesian case.
-	 * First point is considered "Event" and second "Station". */
+	 * First point is considered "Event" and second "Station".
+	 * Azimuth is direction from Station to Event.
+	 * BackAzimuth is direction from Event to Station */
 
 	double az, dx, dy;
-
-	latE *= D2R;	lonE *= D2R;
-	latS *= D2R;	lonS *= D2R;
 
 	if (baz) {	/* exchange point one and two */
 		d_swap (lonS, lonE);
@@ -6378,7 +6377,9 @@ double GMT_az_backaz_cartesian (double lonE, double latE, double lonS, double la
 double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
 {
 	/* Calculate azimuths or backazimuths.  Flat earth code.
-	 * First point is considered "Event" and second "Station". */
+	 * First point is considered "Event" and second "Station".
+	 * Azimuth is direction from Station to Event.
+	 * BackAzimuth is direction from Event to Station */
 
 	double az, dx, dy, dlon;
 
@@ -6401,7 +6402,9 @@ double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double la
 double GMT_az_backaz_sphere (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
 {
 	/* Calculate azimuths or backazimuths.  Spherical code.
-	 * First point is considered "Event" and second "Station". */
+	 * First point is considered "Event" and second "Station".
+	 * Azimuth is direction from Station to Event.
+	 * BackAzimuth is direction from Event to Station */
 
 	double az, sin_yS, cos_yS, sin_yE, cos_yE, sin_dlon, cos_dlon;
 
@@ -6423,7 +6426,9 @@ double GMT_az_backaz_sphere (double lonE, double latE, double lonS, double latS,
 double GMT_az_backaz_geodesic (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
 {
 	/* Calculate azimuths or backazimuths for geodesics using geocentric latitudes.
-	 * First point is considered "Event" and second "Station". */
+	 * First point is considered "Event" and second "Station".
+	 * Azimuth is direction from Station to Event.
+	 * BackAzimuth is direction from Event to Station */
 
 	double az, a, b, c, d, e, f, g, h, a1, b1, c1, d1, e1, f1, g1, h1, thg, ss, sc;
 
