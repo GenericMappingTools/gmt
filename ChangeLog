@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.206 2008-03-05 19:38:53 remko Exp $
+	$Id: ChangeLog,v 1.207 2008-03-06 05:16:06 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-03-06	pwessel
+	* binned_GSHHS*.cdf:	Added missing Fire and Long Islands to the GSHHS database.
+			Updated GSHHS version number to 1.10
+	
 2008-03-05	remko
 	* grdinfo.c:		Implemented Welford (1962) algorithm for more precise one-pass
 				computation of mean and sum of squares.
