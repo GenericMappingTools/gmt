@@ -1,5 +1,5 @@
 /*
- *	$Id: shoremaker.c,v 1.7 2007-08-27 19:24:42 guru Exp $
+ *	$Id: shoremaker.c,v 1.8 2008-03-06 19:32:37 guru Exp $
  */
 /*
  *
@@ -31,7 +31,7 @@ int main (int argc, char **argv) {
 
 	if (argc != 2) {
 		fprintf (stderr, "usage: shoremaker shore_prefix\n");
-		exit (-1);
+		exit (EXIT_FAILURE);
 	}
 	
 	prefix = argv[1];
@@ -39,17 +39,17 @@ int main (int argc, char **argv) {
 	sprintf (file, "%s.bin", prefix);
 	if ((fp_bin = fopen (file, "r")) == NULL) {
 		fprintf (stderr, "shoremaker:  Cannot open shore bin file %s\n", file);
-		exit (-1);
+		exit (EXIT_FAILURE);
 	}
 	sprintf (file, "%s.seg", prefix);
 	if ((fp_seg = fopen (file, "r")) == NULL) {
 		fprintf (stderr, "shoremaker:  Cannot open shore seg file %s\n", file);
-		exit (-1);
+		exit (EXIT_FAILURE);
 	}
 	sprintf (file, "%s.pt", prefix);
 	if ((fp_pt = fopen (file, "r")) == NULL) {
 		fprintf (stderr, "shoremaker:  Cannot open shore point file %s\n", file);
-		exit (-1);
+		exit (EXIT_FAILURE);
 	}
 		
 	sprintf (file, "%s.cdf", prefix);
@@ -59,7 +59,7 @@ int main (int argc, char **argv) {
 
 	if (fread ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
 		fprintf (stderr, "shoremaker:  Error reading file header\n");
-		exit (-1);
+		exit (EXIT_FAILURE);
 	}
 	
 	s.bin_size = file_head.bsize;
@@ -198,18 +198,18 @@ int main (int argc, char **argv) {
 				
         GMT_err_fail (nc_close (s.cdfid), file);
 	
-	free ((void *)bin_firstseg);
-	free ((void *)bin_info);
-	free ((void *)bin_nseg);
+	GMT_free ((void *)bin_firstseg);
+	GMT_free ((void *)bin_info);
+	GMT_free ((void *)bin_nseg);
 	
-	free ((void *)seg_info);
-	free ((void *)seg_area);
-	free ((void *)seg_start);
+	GMT_free ((void *)seg_info);
+	GMT_free ((void *)seg_area);
+	GMT_free ((void *)seg_start);
 	
-	free ((void *)pt_dx);
-	free ((void *)pt_dy);
+	GMT_free ((void *)pt_dx);
+	GMT_free ((void *)pt_dy);
 
 	GMT_end (argc, argv);
 	
-	exit(0);
+	exit (EXIT_SUCCESS);
 }
