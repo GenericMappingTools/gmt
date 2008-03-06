@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_check_subs.c,v 1.3 2006-04-10 04:53:48 pwessel Exp $
+ *	$Id: poly_check_subs.c,v 1.4 2008-03-06 05:16:06 guru Exp $
  */
 /* poly_check_subs.c
  * Subroutines for testing polygon quality.
@@ -39,7 +39,7 @@ int poly_problems (struct PAIR p[], int *n)
 	program, so make sure the malloc for p[] is sufficient.  */
 
 	int i, j, spike, duplicate, ntrivial, spike_total, bowtie;
-	int	P_compare_xy(), P_compare_k(), P_compare_absk();
+	int	P_compare_xy(const void *v1, const void *v2), P_compare_k(const void *v1, const void *v2), P_compare_absk(const void *v1, const void *v2);
 	
 	if (*n < 3) {
 		fprintf(stderr,"poly_check_subs:  ERROR  called with degenerate polygon (n<3).\n");
@@ -112,9 +112,12 @@ int poly_problems (struct PAIR p[], int *n)
 		return(0);
 }
 
-int P_compare_xy (struct PAIR *p1, struct PAIR *p2)
+int P_compare_xy (const void *v1, const void *v2)
 {
 	/* Ignore k values  */
+	struct PAIR *p1, *p2;
+	p1 = (struct PAIR *)v1;
+	p2 = (struct PAIR *)v2;
 	if (p1->x > p2->x) return(1);
 	if (p1->x < p2->x) return(-1);
 	if (p1->y > p2->y) return(1);
@@ -122,17 +125,23 @@ int P_compare_xy (struct PAIR *p1, struct PAIR *p2)
 	return(0);
 }
 
-int P_compare_k (struct PAIR *p1, struct PAIR *p2)
+int P_compare_k (const void *v1, const void *v2)
 {
 	/* Here, k's magnitude and sign are both important:  */
+	struct PAIR *p1, *p2;
+	p1 = (struct PAIR *)v1;
+	p2 = (struct PAIR *)v2;
 	if (p1->k < p2->k) return(-1);
 	if (p1->k > p2->k) return(1);
 	return(0);
 }
 
-int P_compare_absk (struct PAIR *p1, struct PAIR *p2)
+int P_compare_absk (const void *v1, const void *v2)
 {
 	/* Here, k's magnitude only, not sign, is important:  */
+	struct PAIR *p1, *p2;
+	p1 = (struct PAIR *)v1;
+	p2 = (struct PAIR *)v2;
 	if (abs(p1->k) < abs(p2->k)) return(-1);
 	if (abs(p1->k) > abs(p2->k)) return(1);
 	return(0);
@@ -145,7 +154,7 @@ int P_remove_spikes (struct PAIR p[], int *n)
 		it returns 0.  */
 
 	int	i, j, spike;
-	int	P_compare_k (struct PAIR *p1, struct PAIR *p2);
+	int	P_compare_k (const void *v1, const void *v2);
 	
 	for (j = 0; j < *n; j++) p[j].k = j + 1;
 
