@@ -1,9 +1,9 @@
-#	$Id: coast.dep,v 1.2 2007-08-27 21:36:33 guru Exp $
+#	$Id: coast.dep,v 1.3 2008-03-06 04:39:37 guru Exp $
 #-------------------------------------------------------------------------------
 # Dependencies of data on CVS-produces originals
 
 update: 	res_f/v${VERSION}_final_f_dbase.b res_h/v${VERSION}_final_h_dbase.b res_i/v${VERSION}_final_i_dbase.b \
-		res_l/v${VERSION}_final_l_dbase.b res_l/v${VERSION}_final_l_dbase.b wdb/wdb_f_borders.b wdb/wdb_f_rivers.b
+		res_l/v${VERSION}_final_l_dbase.b res_c/v${VERSION}_final_c_dbase.b wdb/wdb_f_borders.b wdb/wdb_f_rivers.b
 
 res_f/v${VERSION}_final_f_dbase.b: GSHHS+WDBII/GSHHS/res_f/GSHHS_f_polygons.b
 		cp -f GSHHS+WDBII/GSHHS/res_f/GSHHS_f_polygons.b res_f/v${VERSION}_final_f_dbase.b

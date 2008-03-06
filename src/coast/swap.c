@@ -1,10 +1,10 @@
 /*
- *	$Id: swap.c,v 1.1 2008-03-05 01:43:03 guru Exp $
+ *	$Id: swap.c,v 1.2 2008-03-06 04:39:37 guru Exp $
  * Based on polygon_findlevel but limited to just compute polygon areas.
  */
 #include "wvs.h"
-int swab_polheader (struct GMT3_POLY *h);
-int swab_polpoints (struct LONGPAIR *p, int n);
+void swab_polheader (struct GMT3_POLY *h);
+void swab_polpoints (struct LONGPAIR *p, int n);
 
 int main (int argc, char **argv) {
 	int k;
