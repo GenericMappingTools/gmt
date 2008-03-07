@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.8 2008-02-29 04:06:39 remko Exp $
+#	$Id: GNUmakefile,v 1.9 2008-03-07 17:25:35 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -114,7 +114,7 @@ DOCEPS2=scripts/GMT_-B_geo_1.eps scripts/GMT_-B_geo_2.eps scripts/GMT_-B_linear.
 	scripts/GMT_-XY.eps scripts/GMT_App_B_1.eps scripts/GMT_App_B_2.eps scripts/GMT_App_E.eps \
 	$(APP_F_EPS) scripts/GMT_App_G.eps $(APP_J_EPS) scripts/GMT_App_M_1.eps scripts/GMT_App_M_2.eps $(APP_N_EPS) \
 	scripts/GMT_Defaults_1a.eps scripts/GMT_Defaults_1b.eps scripts/GMT_Defaults_1c.eps scripts/GMT_volcano.eps \
-	scripts/GMT_App_P_2.eps
+	scripts/GMT_App_P_2.eps scripts/GMT_color_interpolate.eps
 
 # All EPS and PDF files for GMT_Docs
 DOCEPS=	$(DOCEPS1) $(DOCEPS2) $(ALLEPS) $(EX_EPS)
