@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_version.tex.in,v 1.3 2008-01-23 03:28:56 guru Exp $
+%       $Id: GMT_version.tex.in,v 1.4 2008-03-07 17:22:16 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2008.
@@ -9,6 +9,6 @@
 % This file will be converted to GMT_version.tex by 'configure'.
 % That script will insert the version number and document date
 %
-\newcommand{\GMTDOCVERSION}{Version @PACKAGE_VERSION@}
+\newcommand{\GMTDOCVERSION}{@PACKAGE_VERSION@}
 \newcommand{\GMTDOCDATE}{@DOCDATE@}
 \newcommand{\GMTDOCYEAR}{@DOCYEAR@}
