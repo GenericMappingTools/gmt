@@ -204,11 +204,12 @@ two different options:
 .TP
 .B COLOR_MODEL
 Selects if color palette files contain RGB values (r,g,b in 0-255 range), HSV values
-(h in 0-360, s,v in 0-1 range), or CMYK values (c,m,y,k in 0-100% range).  A \fBCOLOR_MODEL\fP setting in the color palette file
+(h in 0-360, s,v in 0-1 range), or CMYK values (c,m,y,k in 0-1 range).  A \fBCOLOR_MODEL\fP setting in the color palette file
 will override this setting.  Internally, color interpolation takes place directly
-on the rgb values which can give unexpected hues, whereas interpolation directly on the
-hsv values better preserves the hues.  Prepend the prefix "+" to force interpolation in
-the selected color system (does not apply to the CMYK system)  [rgb].
+on the RGB values which can give unexpected hues, whereas interpolation directly on the
+HSV values better preserves the hues.  Prepend the prefix "+" to force interpolation in
+the selected color system (does not apply to the CMYK system). For this additional option, the defaults take
+precedence over the color palette file  [rgb].
 .TP
 .B COLOR_NAN
 Color used for the non-defined areas of images (i.e., where z == NaN).
@@ -540,7 +541,7 @@ the latitudes -\fIpc_lat\fP/+\fIpc_lat\fP, and above those latitudes the gridlin
 \fIpc_dlon\fP interval; the two domains are separated by a small circle drawn at the \fIpc_lat\fP latitude [85/90].
 .TP
 .B PS_COLOR
-Determines whether PostScript output should use RGB, HSV, or CMYK when specifying color [RGB].
+Determines whether PostScript output should use RGB, HSV, or CMYK when specifying color [rgb].
 Note if HSV is selected it does not apply to images which in that case uses RGB.
 .TP
 .B PS_IMAGE_COMPRESS
