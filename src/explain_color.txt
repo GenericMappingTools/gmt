@@ -4,4 +4,4 @@
 The \fIcolor\fP of lines, areas and patterns can be specified by a valid color name
 (from the system's X11/rgb.txt file),\"'
 by a grey shade (in the range 0\-255) or by a numerical color code (r/g/b, each in range 0\-255; h-s-v, ranges
-0\-360, 0\-1, 0\-1; or c/m/y/k, each in range 0\-100%).
+0\-360, 0\-1, 0\-1; or c/m/y/k, each in range 0\-1).
