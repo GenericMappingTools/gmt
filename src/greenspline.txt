@@ -43,7 +43,7 @@ clockwise from the vertical (north) [Default]).
 clockwise from the vertical (north)).  Options 3-5 are for either 2-D or 3-D data:
 \fB3\fP: records contain \fBx\fP, \fIdirection(s), v\fP (\fIdirection(s)\fP in degrees are measured
 counter-clockwise from the horizontal (and for 3-D the vertical axis). 
-\fB4\fP: records contain \fBx\fP, \fBv\fP\fP.
+\fB4\fP: records contain \fBx\fP, \fBv\fP.
 \fB5\fP: records contain \fBx\fP, \fBn\fP, \fIv\fP.
 Append name of ASCII file with the surface gradients (following a comma if a format is specified).  
 .TP
@@ -102,7 +102,8 @@ derivative instead.  For 3-D interpolation, specify the three components of the 
 be normalized before use).
 .TP
 .B \-R
-Specify the domain for an equidistant lattice where output predictions are required.
+Specify the domain for an equidistant lattice where output predictions are required.  Requires OPT(I) and optionally OPT(F).
+.br
 \fI1-D:\fP  Give \fIxmin/xmax\fP, the minimum and maximum \fIx\fP coordinates.
 .br
 \fI2-D:\fP  Give \fIxmin/xmax/ymin/ymax\fP, the minimum and maximum \fIx\fP and \fIy\fP coordinates.
@@ -146,6 +147,7 @@ every 0.1 step from 0 to 10, and using a minimum cubic spline, try
 \fBgmtmath\fP \fB\-T\fP0/10/1 0 1 \fBNRAND\fP = 1D.txt
 .br
 \fBpsxy \-R\fP0/10/-5/5 \fB\-JX\fP6i/3i \fB\-B\fP2f1/1 \fB\-Sc\fP0.1 \fB\-G\fPblack 1D.txt \fB\-K\fP > 1D.ps
+.br
 \fBgreenspline\fP 1D.txt \fB\-R\fP0/10 \fB\-I\fP0.1 \fB\-Sc \-V\fP | \fBpsxy \-R \-J \-O \-W\fPthin >> 1D.ps
 .br
 .sp
@@ -153,13 +155,16 @@ To apply a spline in tension instead, using a tension of 0.7, try
 .br
 .sp
 \fBpsxy \-R\fP0/10/-5/5 \fB\-JX\fP6i/3i \fB\-B\fP2f1/1 \fB\-Sc\fP0.1 \fB\-G\fPblack 1D.txt \fB\-K\fP > 1Dt.ps
+.br
 \fBgreenspline\fP 1D.txt \fB\-R\fP0/10 \fB\-I\fP0.1 \fB\-St\fP0.7 \fB\-V\fP | \fBpsxy \-R \-J \-O \-W\fPthin >> 1Dt.ps
 .SH 2-D EXAMPLES
 To make a uniform grid using the minimum curvature spline for the same Cartesian data set from Davis (1986) that is
 used in the GMT Cookbook example 16, try
 .sp
 \fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sc \-V\fP \fB\-G\fPS1987.grd
-\fBpsxy \fB\-R\fP0/6.5/-0.2/6.5 \fB\-JX\fP6i \fB\-B\fP2f1 \fB\-Sc\fP0.1 \fB\-G\fPblack table_5.11 \fB\-K\fP > 2D.ps
+.br
+\fBpsxy \-R\fP0/6.5/-0.2/6.5 \fB\-JX\fP6i \fB\-B\fP2f1 \fB\-Sc\fP0.1 \fB\-G\fPblack table_5.11 \fB\-K\fP > 2D.ps
+.br
 \fBgrdcontour \-JX\fP6i \fB\-B\fP2f1 \fB\-O -C\fP25 \fB\-A\fP50 S1987.grd >> 2D.ps
 .br
 .sp
@@ -189,12 +194,12 @@ To do the same problem but applying tension and use pre-calculated Green functio
 .sp
 greenspline \fB\-V \-Rg \-fg \-SQ\fP2.5 \fB\-D\fP3 \fB\-I\fP1 \fB\-G\fPWB2008.grd mag_obs_1990.d
 .SH CONSIDERATIONS
-For the Cartesian cases we use the free-space Green functions, hence no boundary conditions are
+(1) For the Cartesian cases we use the free-space Green functions, hence no boundary conditions are
 applied at the edges of the specified domain.  For most applications this is fine as the region typically
 is arbitrarily set to reflect the extent of your data.  However, if you require
 particular boundary conditions then you may consider using \fBsurface\fP instead.
 .br
-In all cases, the solution is obtained by inverting a \fIn\fP x \fIn\fP double precision matrix for the Green
+(2) In all cases, the solution is obtained by inverting a \fIn\fP x \fIn\fP double precision matrix for the Green
 function coefficients, where \fIn\fP
 is the number of data constraints.  Hence, your computer's memory may place restrictions on how large data
 sets you can process with \fBgreenspline\fP.  Pre-processing your data with \fBblockmean\fP, \fBblockmedian\fP,
@@ -206,7 +211,8 @@ Tension is generally used to suppress spurious oscillations caused by the minimu
 when rapid gradient changes are present in the data.  The proper amount of tension can only be determined by experimentation.
 Generally, very smooth data (such as potential fields) do not require much, if any tension, while rougher data (such
 as topography) will typically interpolate better with moderate tension.  Make sure you try a range of values before
-choosing your final result.  For more information on tension see the references below.
+choosing your final result.  Note: the regularized spline in tension is only stable for a finite range of \fIscale\fP values;
+you must experiment to find the valid range and a useful setting.  For more information on tension see the references below.
 .SH "REFERENCES"
 Davis, J. C., 1986, \fIStatistics and Data Analysis in Geology\fP, 2nd Edition, 646 pp., Wiley, New York, 
 .br
@@ -218,9 +224,9 @@ Sandwell, D. T., 1987, Biharmonic spline interpolation of Geos-3 and Seasat alti
 .br
 Wessel, P., and D. Bercovici, 1998, Interpolation with splines in tension: a Green's function approach, \fIMath. Geol., 30\fP, 77\-93.
 .br
-Wessel, P., and J. M. Becker, 2008, Continuous curvature spherical spline in tension, \fIGeophys. Res. Lett, yy\fP, xx\-xx.
+Wessel, P., and J. M. Becker, 2008, Continuous curvature spherical spline in tension, \fIGeophys. J. Int, yy\fP, xx\-xx.
 .br
-Wessel, P., 2008, A general-purpose Green function interpolator, \fIComputers & Geosciences, yy\fP, xx\-xx.
+Wessel, P., 2008, A general-purpose Green's function interpolator, \fIComputers & Geosciences, yy\fP, xx\-xx.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmtmath (1),
