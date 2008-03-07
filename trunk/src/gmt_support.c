@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.348 2008-02-24 21:27:30 guru Exp $
+ *	$Id: gmt_support.c,v 1.349 2008-03-07 18:11:23 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1544,13 +1544,18 @@ int GMT_read_cpt (char *cpt_file)
 				n_cat_records++;
 				GMT_categorical = TRUE;
 			}
-			else if (nread == 4) {	/* gray shades */
-#else
-			if (nread == 4) {	/* gray shades */
+			else
 #endif
+			if (nread == 4) {	/* gray shades or color names */
 				GMT_scanf_arg (T2, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
-				if (GMT_getrgb (T1, GMT_lut[n].rgb_low)) error++;
-				if (GMT_getrgb (T3, GMT_lut[n].rgb_high)) error++;
+				if (gmtdefs.color_model & GMT_READ_HSV) {
+					if (GMT_gethsv (T1, GMT_lut[n].hsv_low)) error++;
+					if (GMT_gethsv (T3, GMT_lut[n].hsv_high)) error++;
+				}
+				else {
+					if (GMT_getrgb (T1, GMT_lut[n].rgb_low)) error++;
+					if (GMT_getrgb (T3, GMT_lut[n].rgb_high)) error++;
+				}
 			}
 			else if (gmtdefs.color_model & GMT_READ_CMYK) {
 				GMT_scanf_arg (T5, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
@@ -1565,8 +1570,6 @@ int GMT_read_cpt (char *cpt_file)
 				if (GMT_gethsv (option, GMT_lut[n].hsv_low)) error++;
 				sprintf (option, "%s/%s/%s", T5, T6, T7);
 				if (GMT_gethsv (option, GMT_lut[n].hsv_high)) error++;
-				GMT_hsv_to_rgb (GMT_lut[n].rgb_low,  GMT_lut[n].hsv_low[0],  GMT_lut[n].hsv_low[1],  GMT_lut[n].hsv_low[2]);
-				GMT_hsv_to_rgb (GMT_lut[n].rgb_high, GMT_lut[n].hsv_high[0], GMT_lut[n].hsv_high[1], GMT_lut[n].hsv_high[2]);
 			}
 			else {			/* RGB */
 				GMT_scanf_arg (T4, GMT_IS_UNKNOWN, &GMT_lut[n].z_high);
@@ -1587,17 +1590,23 @@ int GMT_read_cpt (char *cpt_file)
 #ifdef GMT_CPT2	
 			}
 #endif	
+			/* Convert HSV to RGB, or vice versa, depending on what was read */
+			if (gmtdefs.color_model & GMT_READ_HSV) {
+				GMT_hsv_to_rgb (GMT_lut[n].rgb_low, GMT_lut[n].hsv_low[0], GMT_lut[n].hsv_low[1], GMT_lut[n].hsv_low[2]);
+				GMT_hsv_to_rgb (GMT_lut[n].rgb_high, GMT_lut[n].hsv_high[0], GMT_lut[n].hsv_high[1], GMT_lut[n].hsv_high[2]);
+			}
+			else {
+				GMT_rgb_to_hsv (GMT_lut[n].rgb_low, &GMT_lut[n].hsv_low[0], &GMT_lut[n].hsv_low[1], &GMT_lut[n].hsv_low[2]);
+				GMT_rgb_to_hsv (GMT_lut[n].rgb_high, &GMT_lut[n].hsv_high[0], &GMT_lut[n].hsv_high[1], &GMT_lut[n].hsv_high[2]);
+			}
 			if (!GMT_is_gray (GMT_lut[n].rgb_low[0],  GMT_lut[n].rgb_low[1],  GMT_lut[n].rgb_low[2]))  GMT_gray = FALSE;
 			if (!GMT_is_gray (GMT_lut[n].rgb_high[0], GMT_lut[n].rgb_high[1], GMT_lut[n].rgb_high[2])) GMT_gray = FALSE;
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_low[0]))  GMT_b_and_w = FALSE;
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_high[0])) GMT_b_and_w = FALSE;
 			for (i = 0; !GMT_continuous && i < 3; i++) if (GMT_lut[n].rgb_low[i] != GMT_lut[n].rgb_high[i]) GMT_continuous = TRUE;
-			for (i = 0; i < 3; i++) GMT_lut[n].rgb_diff[i] = GMT_lut[n].rgb_high[i] - GMT_lut[n].rgb_low[i];	/* Used in GMT_get_rgb_from_z */
-			if (! (gmtdefs.color_model & GMT_READ_HSV)) {
-				GMT_rgb_to_hsv (GMT_lut[n].rgb_low, &GMT_lut[n].hsv_low[0], &GMT_lut[n].hsv_low[1], &GMT_lut[n].hsv_low[2]);
-				GMT_rgb_to_hsv (GMT_lut[n].rgb_high, &GMT_lut[n].hsv_high[0], &GMT_lut[n].hsv_high[1], &GMT_lut[n].hsv_high[2]);
-			}
-			for (i = 0; i < 3; i++) GMT_lut[n].hsv_diff[i] = GMT_lut[n].hsv_high[i] - GMT_lut[n].hsv_low[i];	/* Used in GMT_get_rgb_from_z */
+			/* Differences used in GMT_get_rgb_from_z */
+			for (i = 0; i < 3; i++) GMT_lut[n].rgb_diff[i] = GMT_lut[n].rgb_high[i] - GMT_lut[n].rgb_low[i];
+			for (i = 0; i < 3; i++) GMT_lut[n].hsv_diff[i] = GMT_lut[n].hsv_high[i] - GMT_lut[n].hsv_low[i];
 		}
 
 		n++;
@@ -1666,7 +1675,10 @@ int GMT_read_cpt (char *cpt_file)
 		GMT_rgb_to_hsv (GMT_bfn[id].rgb, &GMT_bfn[id].hsv[0], &GMT_bfn[id].hsv[1], &GMT_bfn[id].hsv[2]);
 	}
 	if (!GMT_gray) GMT_b_and_w = FALSE;
-	if (!(gmtdefs.color_model & (GMT_USE_RGB | GMT_USE_HSV | GMT_USE_CMYK))) gmtdefs.color_model = color_model;	/* Reset to what it was before */
+	/* Reset the color model to what it was in the GMT defaults when a + is used there.
+	   07-Mar-2008: This is a change from the previous behavior that would reset always, except when +
+	   was used in the color palette */
+	if (color_model & (GMT_USE_RGB | GMT_USE_HSV | GMT_USE_CMYK)) gmtdefs.color_model = color_model;
 
 	return (GMT_NOERROR);
 }
@@ -1832,17 +1844,32 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 			memcpy ((void *)hsv_fore, (void *)hsv_high, (size_t)(3 * sizeof (double)));
 		}
 
+		/* Print out one row. Avoid tiny numbers. Particularly something like -1e-10 will look like an h-s-v color */
+
 		if (gmtdefs.color_model & GMT_READ_HSV) {
+			for (k = 0; k < 3; k++) {
+				if (fabs (hsv_low[k]) < 1e-6) hsv_low[k] = 0.0;
+				if (fabs (hsv_high[k]) < 1e-6) hsv_high[k] = 0.0;
+			}
 			fprintf (GMT_stdout, format, z_out[lower], hsv_low[0], hsv_low[1], hsv_low[2], z_out[upper], hsv_high[0], hsv_high[1], hsv_high[2]);
 		}
 		else if (gmtdefs.color_model & GMT_READ_CMYK) {
 			GMT_rgb_to_cmyk (rgb_low, cmyk_low);
 			GMT_rgb_to_cmyk (rgb_high, cmyk_high);
+			for (k = 0; k < 4; k++) {
+				if (fabs (cmyk_low[k]) < 1e-6) cmyk_low[k] = 0.0;
+				if (fabs (cmyk_high[k]) < 1e-6) cmyk_high[k] = 0.0;
+			}
 			fprintf (GMT_stdout, format, z_out[lower], cmyk_low[0], cmyk_low[1], cmyk_low[2], cmyk_low[3],
 				z_out[upper], cmyk_high[0], cmyk_high[1], cmyk_high[2], cmyk_high[3]);
 		}
-		else
+		else {
+			for (k = 0; k < 3; k++) {
+				if (fabs (rgb_low[k]) < 1e-6) rgb_low[k] = 0.0;
+				if (fabs (rgb_high[k]) < 1e-6) rgb_high[k] = 0.0;
+			}
 			fprintf (GMT_stdout, format, z_out[lower], rgb_low[0], rgb_low[1], rgb_low[2], z_out[upper], rgb_high[0], rgb_high[1], rgb_high[2]);
+		}
 	}
 
 	GMT_free ((void *)x);
