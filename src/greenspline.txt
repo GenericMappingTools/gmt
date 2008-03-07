@@ -153,8 +153,8 @@ the NW direction, try
 .SH 3-D EXAMPLES
 To create a uniform 3-D Cartesian grid table based on the data in table_5.23 that contains \fIx,y,z\fP locations and
 a measure of Uranium Oxide concentrations (in percent), try
-.br.
-sp
+.br
+.sp
 \fBgreenspline\fP table_5.23 \fB\-R\fP5/40/-5/10/5/16 \fB\-I\fP0.25 \fB\-Sr\fP2.5 \fB\-V \-D\fP5 \fB\-G\fP3D_UO2.txt
 .SH 2-D SPHERICAL SURFACE EXAMPLES
 To recreate Parker's [1994] example on a global 1x1 degree grid, assuming the data are in file mag_obs_1990.d, try
