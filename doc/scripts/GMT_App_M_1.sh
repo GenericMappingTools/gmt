@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_M_1.sh,v 1.1 2008-02-21 22:39:54 remko Exp $
+#	$Id: GMT_App_M_1.sh,v 1.2 2008-03-07 17:13:43 remko Exp $
 #
 #	Makes the insert for Appendix M(cpt)
 #
@@ -33,8 +33,8 @@ do
 	psscale -D4.50/$y/2.70/0.125h -C$$.right.cpt -B0 -O -K >> $ps
 	psscale -D1.55/$y2/2.70/0.125h -C$$.left2.cpt -B0.5 -O -K >> $ps
 	psscale -D4.50/$y2/2.70/0.125h -C$$.right2.cpt -B0.5 -O -K >> $ps
-	echo "1.5 $y 9 0 1 CB $left" | pstext -R -J -O -K -D0/0.05 >> $ps
-	echo "4.5 $y 9 0 1 CB $right" | pstext -R -J -O -K -D0/0.05 >> $ps
+	echo 1.55 $y 9 0 1 BC ${left} | pstext -R -J -O -K -D0/0.05 >> $ps
+	echo 4.50 $y 9 0 1 BC ${right} | pstext -R -J -O -K -D0/0.05 >> $ps
 	i=`expr $i + 2`
 	y=`gmtmath -Q $y $dy ADD =`
 	y2=`gmtmath -Q $y2 $dy ADD =`
