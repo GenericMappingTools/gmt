@@ -1,6 +1,21 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.209 2008-03-06 23:03:22 guru Exp $
+	$Id: ChangeLog,v 1.210 2008-03-07 18:13:13 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2008-03-07	remko
+	* ex11/job11.*:		Added R, G, B, H, S, and V arrows.
+	* doc/scripts/GMT_color_interpolate.sh:	New example on color palette interpolation.
+	* doc/scripts/GMT_App_M_1.sh:	Make sure titles get centered on color bars.
+	* doc/fig/{gimp*,hsv-cone}.png:	New imagery for Appendix I
+	* doc/GMT_Appendix_I.tex:	Completely revamped Appendix I
+	* doc/GMT_Chapter_7.tex:	Removed some ugly orphans.
+	* doc/GMT_version.tex.in:	Removed "Version" from \GMTDOCVERSION
+	* doc/GMT_Frontmatter.tex:	Added some more acknowledgments
+	* gmtdefaults.txt:		Explained COLOR_MODEL better.
+	* gmt_support.c:	Avoid small color values. -1e-15 will look like h-s-v.
+				A + in the gmtdefaults COLOR_MODEL definition overrules interpolation
+				mode specified in cpt file.
+
 2008-03-06	pwessel
 	* binned_GSHHS*.cdf:	Added two missing barrier islands along Long Island, NY
 			to the GSHHS database.  Updated next GSHHS version number to 1.10.
