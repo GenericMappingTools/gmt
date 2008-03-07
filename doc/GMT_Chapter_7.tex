@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.46 2008-02-29 03:29:04 remko Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.47 2008-03-07 17:21:08 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -325,13 +325,11 @@ ASCII $xyz$ table and use the height information to draw a
 2-D histogram in a 3-D perspective view.  Our gridded
 bathymetry file is called \filename{topo.grd} and covers the region
 from 0 to 5 \DS E and 0 to 5 \DS N.  Depth ranges from
--5000 meter to sea-level.  We produce the illustration by
-running this command:
+-5000 meter to sea-level.  We produce the Figure~\ref{fig:GMT_example_08} by
+running this script:
 
-\GMTexample{08}{A 3-D histogram.}
-
-The output can be viewed in Figure~\ref{fig:GMT_example_08}.
 \script{example_08} 
+\GMTexample{08}{A 3-D histogram.}
 
 \index{Example!3-D histogram|)}
 
@@ -385,12 +383,9 @@ each continent with a height that is proportional to the
 logarithm of the membership.  A log$_{10}$-scale is
 used since the memberships vary by almost 3 orders of
 magnitude.  We choose a plain linear projection for the
-basemap and add the columns and text on top. Our script reads:
+basemap and add the columns and text on top. Our script that produces Figure~\ref{fig:GMT_example_10} reads:
 
 \script{example_10}
-
-The result is presented in Figure~\ref{fig:GMT_example_10}.
-
 \GMTexample{10}{Geographical bar graph.}
 
 \index{Example!bar graph|)}
@@ -421,12 +416,9 @@ to 1 (in black font). On these 3 faces the brightness is a constant value of 1.
 On the other 3 faces of the cube, around the black corner, the white decimal numbers indicate
 brightnesses between 0 and 1, with saturation fixed at 1.
 
-Here is the shell script to generate the RGB cube:
+Here is the shell script to generate the RGB cube in Figure~\ref{fig:GMT_example_11}:
 
 \script{example_11} 
-
-The cube can be viewed in Figure~\ref{fig:GMT_example_11}.
-
 \GMTexample[width=\textwidth]{11}{The RGB color cube.}
 
 \index{Example!3-D RGB color cube|)}
@@ -467,13 +459,11 @@ and to calculate $\nabla z$ by
 returning the {\it x}- and {\it y}-derivatives separately.
 We superpose the gradient vector field and the surface
 {\it z} and also plot the components of the gradient
-in separate windows:
+in separate windows.
+A \GMTprog{pstext} call to place a header finishes the plot
+(Figure~\ref{fig:GMT_example_13}:
 
 \script{example_13} 
-
-A \GMTprog{pstext} call to place a header finishes the plot
-(Figure~\ref{fig:GMT_example_13}.
-
 \GMTexample{13}{Display of vector fields in \gmt.}
 
 \index{Example!vector fields|)}
@@ -634,11 +624,9 @@ to \GMTprog{gmtselect} which retains only the points within 200
 km of Pratt.  We then mask out all the data outside this
 radius and use \GMTprog{grdvolume} to determine the combined
 area and volumes of the chosen seamounts.
-
-\script{example_18}
-
 Our illustration is presented in Figure~\ref{fig:GMT_example_18}.
 
+\script{example_18}
 \GMTexample{18}{Volumes and geo-spatial selections.}
 
 \index{Example!spatial selections|)}
@@ -662,8 +650,8 @@ The text \GMT\ in the center is an off-line \PS\ file that was overlaid using \G
 The final panel repeats the top panel except that the land and sea images have changed places
 (Figure~\ref{fig:GMT_example_19}).
 
-\GMTexample[width=0.9\textwidth]{19}{Using color patterns and additional PostScript material in illustrations.}
 \script{example_19} 
+\GMTexample[width=0.9\textwidth]{19}{Using color patterns and additional PostScript material in illustrations.}
 
 \index{Example!PostScript inclusions|)}
 \index{Example!color patterns|)}
@@ -741,12 +729,9 @@ world map and overlay red volcano symbols using our custom-built
 volcano symbol and \GMTprog{psxy}. We do something similar with the bullseye symbols.
 Without the \Opt{G} option, however, they get the colors defined in \filename{bullseye.def}.
 
-Here is our final map script:
+Here is our final map script that produces Figure~\ref{fig:GMT_example_20}:
 
 \script{example_20}
-
-which produces the plot in Figure~\ref{fig:GMT_example_20}.
-
 \GMTexample{20}{Using custom symbols in \gmt.}
 
 Given these guidelines you can easily make your own symbols.
@@ -865,13 +850,12 @@ is carried out by the usual \GMTprog{pscoast} and \GMTprog{psxy} workhorses.  No
 for our purposes the Dateline is just a line along the 180\DS\ meridian.
 
 \script{example_24} 
+\GMTexample{24}{Data selection based on geospatial criteria.}
 
 The script produces the plot in Figure~\ref{fig:GMT_example_24}.  Note that the
 horizontal distance from the dateline seems to increase as we go south; however that
 is just the projected distance (Mercator distortion) and not the actual distance
 which remains constant at 1000 km.
-
-\GMTexample{24}{Data selection based on geospatial criteria.}
 
 \index{Example!geospatial criteria|)}
 
