@@ -33,14 +33,18 @@ data points.  If no file is given then we read standard input instead.
 .B \-A
 The solution will partly be constrained by surface gradients \fBV\fP = \fIv\fP*\fBN\fP, where \fIv\fP is the
 gradient magnitude and \fBN\fP its unit vector direction.  The gradient direction may be specified either by
-Cartesian components or angles w.r.t. the coordinate axes.  Specify one of three input formats:
+Cartesian components (either unit vectors and magnitude separately or gradient components directly)
+or angles w.r.t. the coordinate axes.  Specify one of five input formats:
 \fB0\fP: For 1-D data there is no direction, just gradient magnitude (slope) so the input format is
-\fIx, gradient\fP.
-\fB1\fP: For 2-D or spherical surface data, the records contain \fIx, y, azimuth, gradient\fP (\fIazimuth\fP in degrees is measured
-clockwise from the vertical (north) [Default]).
-\fB2\fP: For 2-D or 3-D data, the records contain \fBx\fP, \fIdirection(s), gradient\fP (\fIdirection(s)\fP in degrees is measured
+\fIx, gradient\fP.  The other options (1-5) are for 2-D and 3-D data sets:
+\fB1\fP: 2-D: The records contain \fIx, y, azimuth, gradient\fP (\fIazimuth\fP in degrees is measured
+clockwise from the vertical (north) and [Default]).
+\fB2\fP: 2-D: The records contain \fIx, y, gradient, azimuth\fP (\fIazimuth\fP in degrees is measured
+clockwise from the vertical (north) and [Default]).
+\fB3\fP: For 2-D or 3-D data, the records contain \fBx\fP, \fIdirection(s), gradient\fP (\fIdirection(s)\fP in degrees are measured
 counter-clockwise from the horizontal (and for 3-D the vertical axis). 
-\fB3\fP: For 2-D or 3-D data, the records contain \fBx\fP, \fBV\fP-\fIcomponent(s)\fP.
+\fB4\fP: For 2-D or 3-D data, the records contain \fBx\fP, \fBV\fP-\fIcomponent(s)\fP.
+\fB5\fP: For 2-D or 3-D data, the records contain \fBx\fP, \fBN\fP-\fIcomponent(s), magnitude\fP.
 Append name of ASCII file with the surface gradients (following a comma if a format is specified).  
 .TP
 .B \-C
@@ -141,18 +145,23 @@ To use Cartesian splines in tension but only evaluate the solution where the inp
 .br
 .sp
 \fBgreenspline\fP table_5.11 \fB\-N\fPmask.grd \fB\-St\fP0.5 \fB\-V\fP \fB\-G\fPWB1998.grd
-FInally, to use Cartesian generalized splines in tension and return the magnitude of the surface slope in
+Finally, to use Cartesian generalized splines in tension and return the magnitude of the surface slope in
 the NW direction, try
 .br
 .sp
 \fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sr\fP5 \fB\-V \-Q\fP-45 \fB\-G\fPslopes.grd
 .SH 3-D EXAMPLES
+To create a uniform 3-D Cartesian grid table based on the data in table_5.23 that contains \fIx,y,z\fP locations and
+a measure of Uranium Oxide concentrations (in percent), try
+.br.
+sp
+\fBgreenspline\fP table_5.23 \fB\-R\fP5/40/-5/10/5/16 \fB\-I\fP0.25 \fB\-Sr\fP2.5 \fB\-V \-D\fP5 \fB\-G\fP3D_UO2.txt
 .SH 2-D SPHERICAL SURFACE EXAMPLES
 To recreate Parker's [1994] example on a global 1x1 degree grid, assuming the data are in file mag_obs_1990.d, try
 .sp
 greenspline \fB\-V \-Rg \-fg \-Sp \-D\fP3 \fB\-I\fP1 \fB\-G\fPP1994.grd mag_obs_1990.d
 .sp
-To do the same problem but applying tension and use precalculated Green functions, use
+To do the same problem but applying tension and use pre-calculated Green functions, use
 .sp
 greenspline \fB\-V \-Rg \-fg \-SQ\fP2.5 \fB\-D\fP3 \fB\-I\fP1 \fB\-G\fPWB2008.grd mag_obs_1990.d
 .SH CONSIDERATIONS
