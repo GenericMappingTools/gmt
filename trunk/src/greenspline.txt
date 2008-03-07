@@ -6,7 +6,7 @@ greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data usi
 \fBgreenspline\fP [ \fIdatafile(s)\fP ] 
 [ OPT(A)[\fB1\fP|\fB2\fP|\fB3\fP,]\fIgradfile\fP ] [ OPT(C)\fIcut\fP[/\fIfile\fP] ] 
 [ OPT(D)\fImode\fP ] [ OPT(F) ] [ OPT(G)\fIgrdfile\fP] [ GMT_H_OPT ] [ OPT(I)\fIxinc\fP[\fIyinc\fP[\fIzinc\fP]] ] [ OPT(L) ] 
-[ OPT(N)\fImaskgrid\fP ] [ OPT(Q)\fIaz\fP ] [ OPT(R)\fIxmin\fP/\fIxmax\fP[/\fIymin\fP/\fIymax\fP[/\fIzmin\fP\fIzmax\fP]] ] 
+[ OPT(N)\fImaskgrid\fP ] [ OPT(Q)\fIaz\fP|\fIx/y/z\fP ] [ OPT(R)\fIxmin\fP/\fIxmax\fP[/\fIymin\fP/\fIymax\fP[/\fIzmin\fP\fIzmax\fP]] ] 
 [ OPT(S)\fBc|t|g|p|q\fP[\fIpars\fP] ] [ OPT(T)\fInodefile\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBgreenspline\fP uses the Green function G(\fBx\fP; \fBx'\fP) for the chosen spline and geometry to interpolate data
@@ -31,20 +31,20 @@ The name of one or more ASCII [or binary, see OPT(bi)] files holding the \fBx\fP
 data points.  If no file is given then we read standard input instead.
 .TP
 .B \-A
-The solution will partly be constrained by surface gradients \fBV\fP = \fIv\fP*\fBN\fP, where \fIv\fP is the
-gradient magnitude and \fBN\fP its unit vector direction.  The gradient direction may be specified either by
-Cartesian components (either unit vectors and magnitude separately or gradient components directly)
+The solution will partly be constrained by surface gradients \fBv\fP = \fIv\fP*\fBn\fP, where \fIv\fP is the
+gradient magnitude and \fBn\fP its unit vector direction.  The gradient direction may be specified either by
+Cartesian components (either unit vector \fBn\fP and magnitude \fIv\fP separately or gradient components \fBv\fP directly)
 or angles w.r.t. the coordinate axes.  Specify one of five input formats:
 \fB0\fP: For 1-D data there is no direction, just gradient magnitude (slope) so the input format is
-\fIx, gradient\fP.  The other options (1-5) are for 2-D and 3-D data sets:
-\fB1\fP: 2-D: The records contain \fIx, y, azimuth, gradient\fP (\fIazimuth\fP in degrees is measured
-clockwise from the vertical (north) and [Default]).
-\fB2\fP: 2-D: The records contain \fIx, y, gradient, azimuth\fP (\fIazimuth\fP in degrees is measured
-clockwise from the vertical (north) and [Default]).
-\fB3\fP: For 2-D or 3-D data, the records contain \fBx\fP, \fIdirection(s), gradient\fP (\fIdirection(s)\fP in degrees are measured
+\fIx, gradient\fP.  Options 1-2 are for 2-D data sets:
+\fB1\fP: records contain \fIx, y, azimuth, gradient\fP (\fIazimuth\fP in degrees is measured
+clockwise from the vertical (north) [Default]).
+\fB2\fP: records contain \fIx, y, gradient, azimuth\fP (\fIazimuth\fP in degrees is measured
+clockwise from the vertical (north)).  Options 3-5 are for either 2-D or 3-D data:
+\fB3\fP: records contain \fBx\fP, \fIdirection(s), v\fP (\fIdirection(s)\fP in degrees are measured
 counter-clockwise from the horizontal (and for 3-D the vertical axis). 
-\fB4\fP: For 2-D or 3-D data, the records contain \fBx\fP, \fBV\fP-\fIcomponent(s)\fP.
-\fB5\fP: For 2-D or 3-D data, the records contain \fBx\fP, \fBN\fP-\fIcomponent(s), magnitude\fP.
+\fB4\fP: records contain \fBx\fP, \fBv\fP\fP.
+\fB5\fP: records contain \fBx\fP, \fBn\fP, \fIv\fP.
 Append name of ASCII file with the surface gradients (following a comma if a format is specified).  
 .TP
 .B \-C
@@ -98,12 +98,26 @@ specify options OPT(R), OPT(I), and OPT(F).
 .TP
 .B \-Q
 Rather than evaluate the surface, take the directional derivative in the \fIaz\fP azimuth and return the magnitude of this
-derivative instead.  For 3-D interpolation, specify the three components of the desired vector direction.
-#include "explain_-Rgeo.txt"
+derivative instead.  For 3-D interpolation, specify the three components of the desired vector direction (the vector will
+be normalized before use).
+.TP
+.B \-R
+Specify the domain for an equidistant lattice where output predictions are required.
+\fI1-D:\fP  Give \fIxmin/xmax\fP, the minimum and maximum \fIx\fP coordinates.
+.br
+\fI2-D:\fP  Give \fIxmin/xmax/ymin/ymax\fP, the minimum and maximum \fIx\fP and \fIy\fP coordinates.
+These may be Cartesian or geographical.  If geographical, then
+\fIwest, east, south,\fP and \fInorth\fP specify the Region of interest, and you may specify them
+in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  The two shorthands OPT(Rg) and OPT(Rd) stand for global domain
+(0/360 and -180/+180 in longitude respectively, with -90/+90 in latitude).
+.br
+\fI3-D:\fP  Give \fIxmin/xmax/ymin/ymax/zmin/zmax\fP, the minimum and maximum \fIx\fP, \fIy\fP and \fIz\fP coordinates.
+See the 2-D section if your horizontal coordinates are geographical; note the shorthands OPT(Rg) and OPT(Rd) cannot
+be used if a 3-D domain is specified.
 .TP
 .B \-S
 Select one of five different splines.  The first two are used for 1-D, 2-D, or 3-D Cartesian splines (see OPT(D) for discussion):
-(\fBc\fP) Minimum curvature spline [\fISandwell\fP, 1984],
+(\fBc\fP) Minimum curvature spline [\fISandwell\fP, 1987],
 (\fBt\fP) Continuous curvature spline in tension [\fIWessel and Bercovici\fP, 1998]; append
 \fItension\fP[/\fIscale\fP] with \fItension\fP in the 0\-1 range and optionally supply a length scale [Default is the average grid spacing].
 The next is a 2-D or 3-D spline:
@@ -122,37 +136,47 @@ see OPT(bo) for binary output instead.  This option eliminates the need to
 specify options OPT(R), OPT(I), and OPT(F).
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
-[Default is 2-4 input columns (\fBx\fP,\fIw\fP) which depends on the dimension].
+[Default is 2-4 input columns (\fBx\fP,\fIw\fP); the number depends on the chosen dimension].
 #include "explain_-bo.txt"
 .SH 1-D EXAMPLES
-To resample the \fIx,y\fP data in 1D.txt every 0.1 step from 0 to 10, using a minimum cubic spline, try
+To resample the \fIx,y\fP Gaussian random data created by \fBgmtmath\fP and stored in 1D.txt, requesting output
+every 0.1 step from 0 to 10, and using a minimum cubic spline, try
 .br
 .sp
-\fBgreenspline\fP 1D.txt \fB\-R\fP0/10 \fB\-I\fP0.1 \fB\-Sc \-V\fP > 1D_mincurv.txt
+\fBgmtmath\fP \fB\-T\fP0/10/1 0 1 \fBNRAND\fP = 1D.txt
+.br
+\fBpsxy \-R\fP0/10/-5/5 \fB\-JX\fP6i/3i \fB\-B\fP2f1/1 \fB\-Sc\fP0.1 \fB\-G\fPblack 1D.txt \fB\-K\fP > 1D.ps
+\fBgreenspline\fP 1D.txt \fB\-R\fP0/10 \fB\-I\fP0.1 \fB\-Sc \-V\fP | \fBpsxy \-R \-J \-O \-W\fPthin >> 1D.ps
 .br
 .sp
-To apply a spline in tensions instead, using a tension of 0.7, use
+To apply a spline in tension instead, using a tension of 0.7, try
 .br
 .sp
-\fBgreenspline\fP 1D.txt \fB\-R\fP0/10 \fB\-I\fP0.1 \fB\-St\fP0.7 \fB\-V\fP > 1D_tension.txt
+\fBpsxy \-R\fP0/10/-5/5 \fB\-JX\fP6i/3i \fB\-B\fP2f1/1 \fB\-Sc\fP0.1 \fB\-G\fPblack 1D.txt \fB\-K\fP > 1Dt.ps
+\fBgreenspline\fP 1D.txt \fB\-R\fP0/10 \fB\-I\fP0.1 \fB\-St\fP0.7 \fB\-V\fP | \fBpsxy \-R \-J \-O \-W\fPthin >> 1Dt.ps
 .SH 2-D EXAMPLES
-To make a uniform grid using the minimum curvature spline for the same Cartesian data set used in the GMT Cookbook example 16, try
+To make a uniform grid using the minimum curvature spline for the same Cartesian data set from Davis (1986) that is
+used in the GMT Cookbook example 16, try
 .sp
 \fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sc \-V\fP \fB\-G\fPS1987.grd
+\fBpsxy \fB\-R\fP0/6.5/-0.2/6.5 \fB\-JX\fP6i \fB\-B\fP2f1 \fB\-Sc\fP0.1 \fB\-G\fPblack table_5.11 \fB\-K\fP > 2D.ps
+\fBgrdcontour \-JX\fP6i \fB\-B\fP2f1 \fB\-O -C\fP25 \fB\-A\fP50 S1987.grd >> 2D.ps
 .br
 .sp
 To use Cartesian splines in tension but only evaluate the solution where the input mask grid is not NaN, try
 .br
 .sp
 \fBgreenspline\fP table_5.11 \fB\-N\fPmask.grd \fB\-St\fP0.5 \fB\-V\fP \fB\-G\fPWB1998.grd
+.br
+.sp
 Finally, to use Cartesian generalized splines in tension and return the magnitude of the surface slope in
 the NW direction, try
 .br
 .sp
 \fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sr\fP5 \fB\-V \-Q\fP-45 \fB\-G\fPslopes.grd
 .SH 3-D EXAMPLES
-To create a uniform 3-D Cartesian grid table based on the data in table_5.23 that contains \fIx,y,z\fP locations and
-a measure of Uranium Oxide concentrations (in percent), try
+To create a uniform 3-D Cartesian grid table based on the data in table_5.23 in Davis (1986) that contains \fIx,y,z\fP locations and
+a measure of uranium oxide concentrations (in percent), try
 .br
 .sp
 \fBgreenspline\fP table_5.23 \fB\-R\fP5/40/-5/10/5/16 \fB\-I\fP0.25 \fB\-Sr\fP2.5 \fB\-V \-D\fP5 \fB\-G\fP3D_UO2.txt
@@ -184,6 +208,8 @@ Generally, very smooth data (such as potential fields) do not require much, if a
 as topography) will typically interpolate better with moderate tension.  Make sure you try a range of values before
 choosing your final result.  For more information on tension see the references below.
 .SH "REFERENCES"
+Davis, J. C., 1986, \fIStatistics and Data Analysis in Geology\fP, 2nd Edition, 646 pp., Wiley, New York, 
+.br
 Mitasova, H., and L. Mitas, 1993, Interpolation by regularized spline with tension: I. Theory and implementation, \fIMath. Geol., 25\fP, 641\-655.
 .br
 Parker, R. L., 1994, \fIGeophysical Inverse Theory\fP, 386 pp., Princeton Univ. Press, Princeton, N.J.
@@ -197,7 +223,9 @@ Wessel, P., and J. M. Becker, 2008, Continuous curvature spherical spline in ten
 Wessel, P., 2008, A general-purpose Green function interpolator, \fIComputers & Geosciences, yy\fP, xx\-xx.
 .SH "SEE ALSO"
 .IR GMT (1),
+.IR gmtmath (1),
 .IR nearneighbor (1),
+.IR psxy (1),
 .IR surface (1),
 .IR triangulate (1),
 .IR xyz2grd (1),
