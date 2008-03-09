@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.212 2008-03-09 21:01:54 remko Exp $
+	$Id: ChangeLog,v 1.213 2008-03-09 21:18:35 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-03-09	pwessel
+	* pstext.c:	Parsing of -C complained about % sign
+	
 2008-03-09	remko
 	* gmt_init.c, gmt_globals.h:	Moved GMT_N_MEDIA and GMT_N_UNIQUE to gmt_dimensions.h, which
 				is automatically created.
