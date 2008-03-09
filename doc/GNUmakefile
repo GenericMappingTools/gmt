@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.10 2008-03-09 21:01:00 remko Exp $
+#	$Id: GNUmakefile,v 1.11 2008-03-09 21:22:29 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -88,9 +88,7 @@ APP_O_EPS= \
 	scripts/GMT_App_O_8.eps scripts/GMT_App_O_9.eps
 SQRT_EPS=scripts/GMT_linear.eps scripts/GMT_log.eps scripts/GMT_pow.eps
 IS_EPS=	fig/GMT_covertext.eps fig/GMT_Environment.eps
-
-# RGB prints to be put in the www/gmt/doc/pdf directory
-RGBPDF=	scripts/GMT_RGBchart_a4.pdf scripts/GMT_RGBchart_letter.pdf scripts/GMT_RGBchart_ledger.pdf
+RGBEPS=	scripts/GMT_RGBchart_a4.eps scripts/GMT_RGBchart_letter.eps scripts/GMT_RGBchart_ledger.eps
 
 # EPS files for GMT_Docs to be created from scripts. Scripts have to be converted to TEX (without comments)
 DOCEPS1=scripts/GMT_App_K_1.eps scripts/GMT_App_K_2.eps scripts/GMT_App_K_3.eps scripts/GMT_App_K_4.eps \
@@ -120,7 +118,7 @@ DOCEPS2=scripts/GMT_-B_geo_1.eps scripts/GMT_-B_geo_2.eps scripts/GMT_-B_linear.
 	scripts/GMT_App_P_2.eps scripts/GMT_color_interpolate.eps
 
 # All EPS and PDF files for GMT_Docs
-DOCEPS=	$(DOCEPS1) $(DOCEPS2) $(ALLEPS) $(EX_EPS)
+DOCEPS=	$(DOCEPS1) $(DOCEPS2) $(ALLEPS) $(EX_EPS) $(IS_EPS) $(RGBEPS)
 DOCPDF= $(DOCEPS:.eps=.pdf)
 
 # All PNG files for GMT_Docs
@@ -184,7 +182,7 @@ $(EX_EPS) $(EX_EPS:.eps=.pdf):	../examples/ex01/example_01.ps
 	ps2raster -Au -P -Tef -Dscripts ../examples/ex*/$(*F).ps
 
 # To convert EPS to PDF
-$(IS_EPS:.eps=.pdf):	$(IS_EPS)
+$(IS_EPS:.eps=.pdf) $(RGBEPS:.eps=.pdf):	%.pdf:	%.eps
 	ps2raster -P -Tf $?
 
 # Graphics of Appendices F, J, N, O need special attention. One script makes several EPS and PDF files.
@@ -206,10 +204,8 @@ run_app:
 	\rm -f scripts/GMT_App_$(APP)_*.ps
 
 # The RGB prints should not be cropped.
-$(RGBPDF):	scripts/GMT_showrgb.sh
-	cd scripts ; cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C sh GMT_showrgb.sh $(word 3,$(subst _, ,$*))
-	ps2raster -Tf -P $*.ps
-	\rm -f scripts/$*.ps
+$(RGBEPS):	scripts/GMT_RGBchart.sh
+	cd scripts ; cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C sh GMT_RGBchart.sh $(word 3,$(subst _, ,$*))
 
 # How to run the scripts in the scripts directory to make EPS and PDF files
 .sh.eps .sh.pdf:
@@ -281,7 +277,7 @@ GMT_Tutorial/index.html:	$(TUTEPS) $(TUTTEX)
 install install-all:	install-pdf install-html
 install-pdf:	pdf
 	mkdir -p ../www/gmt/doc/pdf
-	mv -f GMT_{Docs,Tutorial}.pdf $(RGBPDF) ../www/gmt/doc/pdf
+	mv -f GMT_{Docs,Tutorial}.pdf scripts/GMT_RGBchart_*.pdf ../www/gmt/doc/pdf
 install-html:	html
 	\rm -rf ../www/gmt/doc/html/GMT_{Docs,Tutorial}
 	\rm -f GMT_{Docs,Tutorial}/{index.html,images.*,*.pl,WARNINGS}
