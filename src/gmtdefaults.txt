@@ -494,6 +494,8 @@ flsa	612	936
 .br
 halfletter	396	612
 .br
+statement	396	612
+.br
 note	540	720
 .br
 letter	612	792
@@ -501,6 +503,8 @@ letter	612	792
 legal	612	1008
 .br
 11x17	792	1224
+.br
+tabloid	792	1224
 .br
 ledger	1224	792
 .br
