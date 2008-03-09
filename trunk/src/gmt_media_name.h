@@ -22,8 +22,10 @@
 "arche",
 "flsa",
 "halfletter",
+"statement",
 "note",
 "letter",
 "legal",
 "11x17",
+"tabloid",
 "ledger"
