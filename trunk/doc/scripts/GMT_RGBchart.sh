@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_RGBchart.sh,v 1.1 2008-03-09 21:00:21 remko Exp $
+#	$Id: GMT_RGBchart.sh,v 1.2 2008-03-09 21:22:30 remko Exp $
 #
 # Plots a page of all 555 unique named colors
 # Usage: GMT_RGBchart.sh <size>
@@ -29,7 +29,7 @@ else
 	HEIGHT=10.5
 fi
 
-ps=$PWD/GMT_RGBchart_$SIZE.ps
+ps=$PWD/GMT_RGBchart_$SIZE.eps
 gmtset DOTS_PR_INCH 600 PAPER_MEDIA $SIZE PAGE_ORIENTATION portrait
 
 rectheight=0.7
