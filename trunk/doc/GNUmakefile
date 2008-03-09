@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.9 2008-03-07 17:25:35 remko Exp $
+#	$Id: GNUmakefile,v 1.10 2008-03-09 21:01:00 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -89,6 +89,9 @@ APP_O_EPS= \
 SQRT_EPS=scripts/GMT_linear.eps scripts/GMT_log.eps scripts/GMT_pow.eps
 IS_EPS=	fig/GMT_covertext.eps fig/GMT_Environment.eps
 
+# RGB prints to be put in the www/gmt/doc/pdf directory
+RGBPDF=	scripts/GMT_RGBchart_a4.pdf scripts/GMT_RGBchart_letter.pdf scripts/GMT_RGBchart_ledger.pdf
+
 # EPS files for GMT_Docs to be created from scripts. Scripts have to be converted to TEX (without comments)
 DOCEPS1=scripts/GMT_App_K_1.eps scripts/GMT_App_K_2.eps scripts/GMT_App_K_3.eps scripts/GMT_App_K_4.eps \
 	scripts/GMT_App_K_5.eps $(APP_O_EPS) \
@@ -121,7 +124,8 @@ DOCEPS=	$(DOCEPS1) $(DOCEPS2) $(ALLEPS) $(EX_EPS)
 DOCPDF= $(DOCEPS:.eps=.pdf)
 
 # All PNG files for GMT_Docs
-DOCPNG=	fig/Smith.png fig/Wessel.png ppt/formatpicture.png ppt/rendering.png
+DOCPNG=	fig/Smith.png fig/Wessel.png ppt/formatpicture.png ppt/rendering.png fig/gimp-panel.png fig/gimp-sliders.png \
+	fig/hsv-cone.png
 
 # Additional TEX files to be converted from scripts
 SCRTEX=	scripts/getbox.tex scripts/getrect.tex scripts/GMT_dummydata.tex
@@ -140,7 +144,7 @@ DOCTEX= \
 all:	pdf html
 
 # Shortcut, just to preprocess all required files
-prepro:		$(DOCTEX) $(DOCPDF) $(DOCEPS) $(DOCPNG) $(TUTTEX) $(TUTPDF) $(TUTEPS)
+prepro:		$(DOCTEX) $(DOCPDF) $(DOCPNG) $(TUTTEX) $(TUTPDF) $(RGBPDF)
 
 # Test if plots are OK
 tests doctests:	prepro
@@ -200,6 +204,12 @@ run_app:
 	cd scripts ; cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C sh GMT_App_$(APP).sh
 	ps2raster -A -P -Tef scripts/GMT_App_$(APP)_*.ps
 	\rm -f scripts/GMT_App_$(APP)_*.ps
+
+# The RGB prints should not be cropped.
+$(RGBPDF):	scripts/GMT_showrgb.sh
+	cd scripts ; cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C sh GMT_showrgb.sh $(word 3,$(subst _, ,$*))
+	ps2raster -Tf -P $*.ps
+	\rm -f scripts/$*.ps
 
 # How to run the scripts in the scripts directory to make EPS and PDF files
 .sh.eps .sh.pdf:
@@ -271,7 +281,7 @@ GMT_Tutorial/index.html:	$(TUTEPS) $(TUTTEX)
 install install-all:	install-pdf install-html
 install-pdf:	pdf
 	mkdir -p ../www/gmt/doc/pdf
-	mv -f GMT_{Docs,Tutorial}.pdf ../www/gmt/doc/pdf
+	mv -f GMT_{Docs,Tutorial}.pdf $(RGBPDF) ../www/gmt/doc/pdf
 install-html:	html
 	\rm -rf ../www/gmt/doc/html/GMT_{Docs,Tutorial}
 	\rm -f GMT_{Docs,Tutorial}/{index.html,images.*,*.pl,WARNINGS}

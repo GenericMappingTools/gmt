@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_I.tex,v 1.15 2008-03-07 20:54:13 remko Exp $
+%	$Id: GMT_Appendix_I.tex,v 1.16 2008-03-09 21:01:00 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -24,12 +24,21 @@ Remember your (parents') first color television set? Likely it had three little 
 
 A mix of levels of red, green, and blue creates basically any color imaginable. In \GMT\ each color can be represented by the triplet $r$/$g$/$b$. For example, 127/255/0 (half red, full green, and no blue) creates a color called chartreuse. The color sliders in the graphics program \progname{GIMP} are an excellent way to experiment with colors, since they show you in advance how moving one of the color sliders will change the color. As Figure~\ref{fig:gimp}\emph{a} shows: increase the red and you will get a more yellow color, while lowering the blue level will turn it into brown.
 
-Is chocolate your favorite color, but you do not know the RGB equivalent values? Then look them up in the \filename{rgb.txt} file in your X-windows system directory. It's 210/105/30. But \GMT\ makes it easy on you: you can specify pen, fill, and palette colors by any of the more than 600 names found in that file.
-
 \begin{figure}[b]
    \includegraphics[width=0.47\textwidth,bb=0 0 375 209]{fig/gimp-sliders.png}~\emph{a}\hfill
-   \emph{b}~\includegraphics[width=0.47\textwidth,bb=0 0 375 209]{fig/gimp-panel.png}   \caption{Chartreuse in \progname{GIMP}. (\emph{a}) Sliders indicate how the color is altered when changing the H, S, V, R, G, or B levels. (\emph{b}) For a constant hue (here 90\DS) value increases to the right and saturation increases up, so the ``pure'' color is on the top right.}
+   \emph{b}~\includegraphics[width=0.47\textwidth,bb=0 0 375 209]{fig/gimp-panel.png}
+   \caption{Chartreuse in \progname{GIMP}. (\emph{a}) Sliders indicate how the color is altered when changing the H, S, V, R, G, or B levels. (\emph{b}) For a constant hue (here 90\DS) value increases to the right and saturation increases up, so the ``pure'' color is on the top right.}
    \label{fig:gimp}
+\end{figure}
+
+Is chocolate your favorite color, but you do not know the RGB equivalent values? Then look them up in the \filename{rgb.txt} file in your X-windows system directory or in Figure~\ref{fig:RGBchart}. It's 210/105/30. But \GMT\ makes it easy on you: you can specify pen, fill, and palette colors by any of the more than 550 unique names found in that file.
+
+\begin{figure}
+   \includegraphics[width=\textwidth]{scripts/GMT_RGBchart_a4.pdf}
+   \caption{The 555 unique color names that can be used in \GMT. Lower, upper, or mixed case, as well as the british
+   spelling of ``GREY'' are allowed. A4, Letter and Ledger sized versions of this RGB chart can be found in the
+   GMT documentation directory.}
+   \label{fig:RGBchart}
 \end{figure}
 
 \section{HSV color system}
