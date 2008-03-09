@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.335 2008-02-25 18:15:18 guru Exp $
+ *	$Id: gmt_init.c,v 1.336 2008-03-09 15:11:55 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,8 +71,6 @@ char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT commandline options 
 char *GMT_keywords[GMT_N_KEYS] = {		/* Names of all parameters in .gmtdefaults4 */
 #include "gmt_keywords.h"
 };
-
-#define GMT_N_MEDIA 29				/* Number of standard paper formats in the GMT_media_names.h include file */
 
 char *GMT_media_name[GMT_N_MEDIA] = {		/* Names of all paper formats */
 #include "gmt_media_name.h"
