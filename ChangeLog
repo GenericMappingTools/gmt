@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.211 2008-03-09 15:11:55 remko Exp $
+	$Id: ChangeLog,v 1.212 2008-03-09 21:01:54 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-03-09	remko
 	* gmt_init.c, gmt_globals.h:	Moved GMT_N_MEDIA and GMT_N_UNIQUE to gmt_dimensions.h, which
 				is automatically created.
 	* gmt_media_name.h, gmt_media_size.h:	Added "statement" and "tabloid" sizes
+	* doc/scripts/GMT_RGBchart.sh:	Script to create RGB color tiles added to CVS
+	* doc/GMT_Appendix_I.tex:	Added RGB chart
+	* www/gmt/doc/pdf/GMT_RGBchart_*.pdf:	Added A4, Letter and Ledger sized RGB charts
 
 2008-03-07	remko
 	* ex11/job11.*:		Added R, G, B, H, S, and V arrows.
