@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.21 2008-02-22 21:50:50 remko Exp $
+#  $Id: GNUmakefile,v 1.22 2008-03-10 13:38:17 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -354,7 +354,7 @@ tar_pdf:	ftpdir
 		rm -f ftp/GMT$(VERSION)_pdf.tar.{gz,bz2}
 		echo "make GMT$(VERSION)_pdf.tar.gz"
 		tar -cf ftp/GMT$(VERSION)_pdf.tar -C .. GMT$(VERSION)/COPYING \
-		   GMT$(VERSION)/www/gmt/doc/pdf/GMT_{Docs,Tutorial,Manpages,Manpages_suppl}.pdf
+		   GMT$(VERSION)/www/gmt/doc/pdf/GMT_*.pdf
 		gzip -c9 ftp/GMT$(VERSION)_pdf.tar > ftp/GMT$(VERSION)_pdf.tar.gz
 		echo "make GMT$(VERSION)_pdf.tar.bz2"
 		bzip2 -9 ftp/GMT$(VERSION)_pdf.tar
@@ -364,8 +364,7 @@ zip_pdf:	ftpdir
 		rm -f ftp/GMT_pdf.zip
 		echo "make GMT_pdf.zip"
 		(cd ..; zip -r -9 -q -l GMT/ftp/GMT_pdf.zip GMT/COPYING)
-		(cd ..; zip -r -9 -q    GMT/ftp/GMT_pdf.zip \
-		   GMT/www/gmt/doc/pdf/GMT_{Docs,Tutorial,Manpages,Manpages_suppl}.pdf)
+		(cd ..; zip -r -9 -q    GMT/ftp/GMT_pdf.zip GMT/www/gmt/doc/pdf/GMT_*.pdf)
 
 tar_scripts:	ftpdir
 		rm -f ftp/GMT$(VERSION)_scripts.tar.{gz,bz2}
