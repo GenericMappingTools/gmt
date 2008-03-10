@@ -1,5 +1,5 @@
 Package: gmt
-Version: 4.2.1
+Version: 4.2.2
 Revision: 1
 Source:  ftp://ftp.soest.hawaii.edu/gmt/4/GMT%v_src.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/4/GMT%v_share.tar.bz2
@@ -61,5 +61,5 @@ DescPort: <<
 <<
 License: GPL
 DocFiles: ChangeLog COPYING README
-Maintainer: Jeffrey Whitaker <jswhit@fastmail.fm>
+Maintainer: Kurt Schwehr <goatbar@users.sourceforge.net>
 Homepage: http://gmt.soest.hawaii.edu/

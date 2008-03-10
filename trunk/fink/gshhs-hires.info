@@ -1,11 +1,12 @@
 Package: gshhs-hires
-Version: 1.9
+Version: 1.10
 Revision: 1
 Source:  ftp://ftp.soest.hawaii.edu/gmt/4/GSHHS%v_high.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/4/GSHHS%v_full.tar.bz2
 Source-MD5:  de50a3eab394393a7246f293ac0c840a
 Source2-MD5: 2d3064c3fa2f7a4c3a2603dbb9885fff
 Replaces: gmt-coast
+Recommends: gmt
 SourceDirectory: .
 CompileScript: echo "Moving files..."
 InstallScript: <<
@@ -32,5 +33,5 @@ DescPort: <<
 <<
 License: GPL
 DocFiles: COPYING README.gshhs
-Maintainer: Jeffrey Whitaker <jswhit@fastmail.fm>
+Maintainer: Kurt Schwehr <goatbar@users.sourceforge.net>
 Homepage: http://gmt.soest.hawaii.edu/
