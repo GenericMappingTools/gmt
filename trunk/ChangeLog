@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.214 2008-03-11 01:38:55 remko Exp $
+	$Id: ChangeLog,v 1.215 2008-03-11 18:37:12 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-03-11	remko
 	* bin/gmtlogo:		Pushed text back up into 2 x 1 inch box. Put in isoloation mode
-	* gmt_color{name,_rgb}.h:	Moved last 6 colors into proper place
-	* doc/sctipts/GMT_RGBchart.sh:	Added GMT logo
+	* share/conf/gmt_colors.conf:	Reorganized list of RGB colors and names.
+	* gmt_color{name,_rgb}.h:	Removed from CVS. Now created from gmt_colors.conf.
+	* doc/sctipts/GMT_RGBchart.sh:	Added GMT logo. All sizes horizontal.
 
 2008-03-09	pwessel
 	* pstext.c:		Parsing of -C complained about % sign
