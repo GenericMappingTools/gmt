@@ -1,0 +1,46 @@
+#       $Id: Grdformats.txt,v 1.1 2008-03-11 22:14:57 remko Exp $
+#
+# To add new formats, read gmt_customio.c.  Entries must be
+# added in the right group and given unique 2-char code names.
+# 2nd char should reflect data type (f float, i int etc).
+# 1st char should reflect format class.  Add new id numbers
+# sequentially.
+# DO NOT mess with the old id numbers - they must remain as is
+# for backwards compatibility.
+# Note that src/GNUmakefile expects this format exactly as
+# it is in order to automatically create gmt_grdformats.h from
+# this file.
+  - ----------------------------------------------------------------
+  - | ID | DESCRIPTION - GMT 3 netCDF legacy formats               |
+  - ----------------------------------------------------------------
+  7 | cb | GMT netCDF format (byte)                                |
+  8 | cs | GMT netCDF format (short)                               |
+  9 | ci | GMT netCDF format (int)                                 |
+ 10 | cf | GMT netCDF format (float)                               |
+ 11 | cd | GMT netCDF format (double)                              |
+  - ----------------------------------------------------------------
+  - | ID | DESCRIPTION - GMT native binary formats                 |
+  - ----------------------------------------------------------------
+  5 | bm | GMT native, C-binary format (bit-mask)                  |
+  4 | bb | GMT native, C-binary format (byte)                      |
+  2 | bs | GMT native, C-binary format (short)                     |
+ 13 | bi | GMT native, C-binary format (int)                       |
+  1 | bf | GMT native, C-binary format (float)                     |
+ 14 | bd | GMT native, C-binary format (double)                    |
+  - ----------------------------------------------------------------
+  - | ID | DESCRIPTION - GMT 4 netCDF standard                     |
+  - ----------------------------------------------------------------
+ 15 | nb | GMT netCDF format (byte)   (COARDS-compliant)           |
+ 16 | ns | GMT netCDF format (short)  (COARDS-compliant)           |
+ 17 | ni | GMT netCDF format (int)    (COARDS-compliant)           |
+ 18 | nf | GMT netCDF format (float)  (COARDS-compliant) [DEFAULT] |
+ 19 | nd | GMT netCDF format (double) (COARDS-compliant)           |
+  - ----------------------------------------------------------------
+  - | ID | DESCRIPTION - Misc formats                              |
+  - ----------------------------------------------------------------
+  3 | rb | SUN rasterfile format (8-bit standard)                  |
+ 12 | rf | GEODAS grid format GRD98 (NGDC)                         |
+  6 | sf | Golden Software Surfer format 6 (float)                 |
+ 20 | sd | Golden Software Surfer format 7 (double, read-only)     |
+ 21 | af | Atlantic Geoscience Center format AGC (float)           |
+  - ----------------------------------------------------------------
