@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.11 2008-03-09 21:22:29 remko Exp $
+#	$Id: GNUmakefile,v 1.12 2008-03-11 18:35:52 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -88,7 +88,7 @@ APP_O_EPS= \
 	scripts/GMT_App_O_8.eps scripts/GMT_App_O_9.eps
 SQRT_EPS=scripts/GMT_linear.eps scripts/GMT_log.eps scripts/GMT_pow.eps
 IS_EPS=	fig/GMT_covertext.eps fig/GMT_Environment.eps
-RGBEPS=	scripts/GMT_RGBchart_a4.eps scripts/GMT_RGBchart_letter.eps scripts/GMT_RGBchart_ledger.eps
+RGBEPS=	scripts/GMT_RGBchart_a4.eps scripts/GMT_RGBchart_letter.eps scripts/GMT_RGBchart_tabloid.eps
 
 # EPS files for GMT_Docs to be created from scripts. Scripts have to be converted to TEX (without comments)
 DOCEPS1=scripts/GMT_App_K_1.eps scripts/GMT_App_K_2.eps scripts/GMT_App_K_3.eps scripts/GMT_App_K_4.eps \
