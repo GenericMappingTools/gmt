@@ -1,8 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.213 2008-03-09 21:18:35 guru Exp $
+	$Id: ChangeLog,v 1.214 2008-03-11 01:38:55 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-03-11	remko
+	* bin/gmtlogo:		Pushed text back up into 2 x 1 inch box. Put in isoloation mode
+	* gmt_color{name,_rgb}.h:	Moved last 6 colors into proper place
+	* doc/sctipts/GMT_RGBchart.sh:	Added GMT logo
+
 2008-03-09	pwessel
-	* pstext.c:	Parsing of -C complained about % sign
+	* pstext.c:		Parsing of -C complained about % sign
 	
 2008-03-09	remko
 	* gmt_init.c, gmt_globals.h:	Moved GMT_N_MEDIA and GMT_N_UNIQUE to gmt_dimensions.h, which
