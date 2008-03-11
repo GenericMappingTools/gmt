@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 21
-#		$Id: job21.sh,v 1.12 2008-02-22 21:10:42 remko Exp $
+#		$Id: job21.sh,v 1.13 2008-03-11 19:08:34 remko Exp $
 #
 # Purpose:	Plot a time-series
 # GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
@@ -15,8 +15,12 @@ gmtset TIME_FORMAT_PRIMARY abbreviated CHAR_ENCODING ISOLatin1+
 
 # Pull out a suitable region string in yyy-mm-dd format
 
-info=(`minmax -fT -I50 -C -H RHAT_price.csv`)
-R="-R${info[0]}/${info[1]}/${info[2]}/${info[3]}"
+minmax -fT -I50 -C -H RHAT_price.csv > RHAT.info
+w=`cut -f1 RHAT.info`
+e=`cut -f2 RHAT.info`
+s=`cut -f3 RHAT.info`
+n=`cut -f4 RHAT.info`
+R="-R$w/$e/$s/$n"
 
 # Lay down the basemap:
 
@@ -41,12 +45,12 @@ echo "01-Jan-99	25" > RHAT.pw
 echo "01-Jan-07	25" >> RHAT.pw
 psxy -R -J RHAT.pw -Wthick,- -O -K >> $ps
 gmtset INPUT_DATE_FORMAT yyyy-mm-dd
-echo "${info[0]} 25 12 0 17 LB Wessel purchase price" | pstext -R -J -O -K -D2i/0.05i -N >> $ps
+echo "$w 25 12 0 17 LB Wessel purchase price" | pstext -R -J -O -K -D2i/0.05i -N >> $ps
 gmtset INPUT_DATE_FORMAT dd-o-yy
 
 # Get smaller region for insert for trend since 2004
 
-R="-R2004T/${info[1]}/$${info[2]}/40"
+R="-R2004T/$e/$s/40"
 
 # Lay down the basemap, using Finnish annotations and place the insert in the upper right:
 
