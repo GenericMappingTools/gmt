@@ -243,7 +243,9 @@ a file with that name in the current directory, and read a single record that co
 the ellipsoid name, year, major-axis (in m), minor-axis (in m), and flattening (f) from
 the first record, where the fields must be separated by white-space (not commas).  This way a
 custom ellipsoid (e.g., those used for other planets) may be used.  A negative flattening means
-\fBGMT\fP will recalculate flattening from the two radii.
+\fBGMT\fP will recalculate flattening from the two radii.  Further note that coordinate
+transformations in \fBmapproject\fP can also specify specific datums; see the \fBmapproject\fP
+man page for further details and how to view ellipsoid and datum parameters.
 .TP
 .B FIELD_DELIMITER
 This setting determines what character will separate ASCII output data columns written by \fBGMT\fP.  Choose
