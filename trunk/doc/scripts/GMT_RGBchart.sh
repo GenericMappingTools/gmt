@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_RGBchart.sh,v 1.4 2008-03-11 18:35:52 remko Exp $
+#	$Id: GMT_RGBchart.sh,v 1.5 2008-03-11 22:12:55 remko Exp $
 #
 # Plots a page of all 555 unique named colors
 # Usage: GMT_RGBchart.sh <size>
@@ -40,7 +40,7 @@ fontsizeL=`gmtmath -Q $HEIGHT $ROW DIV $textheight MUL 0.7 MUL 72 MUL =`
 cd $GMT_TMPDIR
 
 # Produce allinfo.tmp from color and name files
-egrep -v "^#|grey" $GMTHOME/share/conf/gmt_colors.conf | awk -v COL=$COL -v ROW=$ROW \
+egrep -v "^#|grey" $GMTHOME/src/Colors.txt | awk -v COL=$COL -v ROW=$ROW \
 	'BEGIN{col=0;row=0}{if(col==0&&row<2){col++};if ($1 == $2 && $2 == $3) {printf "%s", $1} else {printf "%s/%s/%s", $1, $2, $3};printf " %g %s %g %g\n",0.299*$1+0.587*$2+0.114*$3,$4,col,row;col++;if(col==COL){col=0;row++}}' > allinfo.tmp
 
 # Produce temp files from allinfo.tmp
