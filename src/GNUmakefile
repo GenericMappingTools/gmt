@@ -1,8 +1,8 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.73 2008-03-09 15:11:55 remko Exp $
+#  $Id: GNUmakefile,v 1.74 2008-03-11 18:33:31 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
-#	
+#
 #	!!! THIS MAKEFILE IS FOR GMT DEVELOPERS ONLY !!!
 #
 #	This makefile extends the regular makefile by adding the
@@ -48,22 +48,30 @@ uninstall2-suppl:
 
 # All the files that need to be build before compilation
 
-FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h gmt_keywords.h gmt_keycases.h gmt_dimensions.h \
+FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h gmt_keywords.h gmt_keycases.h \
+	gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h \
 	gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i \
 	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i
-	
+
 gmtmacros FILES:	$(FILES)
 
 # Must create gmt_key*.h from gmt_keywords.d
 
 gmt_keywords.h:		gmt_keywords.d
-			grep -v '^#' gmt_keywords.d | awk '{printf "\"%s\",\n", $$1}' > $@
+			grep -v '^#' gmt_keywords.d | awk '{printf "\"%s\",\n", $$1}' | sed '$$s/,$$//' > $@
 
 gmt_keycases.h:		gmt_keywords.d
 			grep -v '^#' gmt_keywords.d | awk '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > $@
-		
 
-# Must create gmt_ellipsoids.h and gmtdefaults.i from Ellipsoids.txt and gmt_datums.h from Datums.txt
+# Must create gmt_color_rgb.h and gmt_colornames.h from gmt_colors.conf
+
+gmt_color_rgb.h:	../share/conf/gmt_colors.conf
+			grep -v '^#' ../share/conf/gmt_colors.conf | LANG=C awk '{printf "{ %3i, %3i, %3i },\n", $$1, $$2, $$3}' | sed '$$s/},/}/' > $@
+
+gmt_colornames.h:	../share/conf/gmt_colors.conf
+			grep -v '^#' ../share/conf/gmt_colors.conf | LANG=C awk '{printf "\"%s\",\n", $$4}' | sed '$$s/,$$//' > $@
+
+# Must create gmt_ellipsoids.h and gmtdefaults.i from Ellipsoids.txt
 
 gmt_ellipsoids.h:	Ellipsoids.txt
 			grep -v '^#' Ellipsoids.txt | LANG=C awk '{if ($$4 == 0.0) {printf "\t\t{ \"%s\", %d, %s, 0.0, 0.0 },\n", $$1, $$2, $$3} else {printf "\t\t{ \"%s\", %d, %s, 0.0, 1.0/%s},\n", $$1, $$2, $$3, $$4}}' | sed '$$s/},/}/' > $@
@@ -75,25 +83,27 @@ gmtdefaults.i:		Ellipsoids.txt
 			paste tmp1.txt tmp2.txt | awk '{printf "%s\n.br\n", $$0}' > gmtdefaults.i
 			rm -f tmp[012].txt
 
+# Must create gmt_datums.h from Datums.txt
+
 gmt_datums.h:		Datums.txt
 			grep -v '^#' Datums.txt | awk -F'	' '{printf "\t\t{ \"%s\", \"%s\", \"%s\", {%s, %s, %s}},\n", $$1, $$2, $$6, $$3, $$4, $$5}' | sed '$$s/},/}/' > $@
 
 # Must create gmt_grdformats.h from gmt_formats.conf
 
 gmt_grdformats.h:	../share/conf/gmt_formats.conf
-			(egrep DEFAULT ../share/conf/gmt_formats.conf ; (egrep -v '#|^  -' ../share/conf/gmt_formats.conf | sort -n)) | awk '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' > $@
+			(egrep DEFAULT ../share/conf/gmt_formats.conf ; (egrep -v '#|^  -' ../share/conf/gmt_formats.conf | sort -n)) | awk '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' | sed '$$s/},/}/' > $@
 
 # Add all the dimensions to gmt_dimensions.h
 
-gmt_dimensions.h:	gmt_keywords.h gmt_ellipsoids.h gmt_datums.h gmt_grdformats.h gmt_pennames.h gmt_colornames.h \
-			gmt_media_name.h gmt_unique.h
-			printf "#define GMT_N_KEYS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_keywords.h` > $@
-			printf "#define GMT_N_ELLIPSOIDS\t%d\t/* Lines in %s */\n" `wc -l gmt_ellipsoids.h` >> $@
+gmt_dimensions.h:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_grdformats.h gmt_keywords.h \
+			gmt_media_name.h gmt_pennames.h gmt_unique.h
+			printf "#define GMT_N_COLOR_NAMES\t%d\t/* Lines in %s */\n" `wc -l gmt_colornames.h` > $@
 			printf "#define GMT_N_DATUMS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_datums.h` >> $@
+			printf "#define GMT_N_ELLIPSOIDS\t%d\t/* Lines in %s */\n" `wc -l gmt_ellipsoids.h` >> $@
 			printf "#define GMT_N_GRD_FORMATS\t%d\t/* Lines in %s */\n" `wc -l gmt_grdformats.h` >> $@
-			printf "#define GMT_N_PEN_NAMES\t\t%d\t/* Lines in %s */\n" `wc -l gmt_pennames.h` >> $@
-			printf "#define GMT_N_COLOR_NAMES\t%d\t/* Lines in %s */\n" `wc -l gmt_colornames.h` >> $@
+			printf "#define GMT_N_KEYS\t\t%d\t/* Lines in %s */\n" `wc -l gmt_keywords.h` >> $@
 			printf "#define GMT_N_MEDIA\t\t%d\t/* Lines in %s */\n" `wc -l gmt_media_name.h` >> $@
+			printf "#define GMT_N_PEN_NAMES\t\t%d\t/* Lines in %s */\n" `wc -l gmt_pennames.h` >> $@
 			printf "#define GMT_N_UNIQUE\t\t%d\t/* Lines in %s */\n" `wc -l gmt_unique.h` >> $@
 
 # Must create g[rd|mt]math.h from g[rd|mt]math.c
@@ -121,4 +131,4 @@ include manpages.mk
 # How to clean it all up
 
 spotless::
-		\rm -f $(FILES)
+			\rm -f $(FILES)
