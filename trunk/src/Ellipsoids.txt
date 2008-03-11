@@ -1,8 +1,11 @@
-#	$Id: Ellipsoids.txt,v 1.4 2006-05-21 01:23:43 pwessel Exp $
+#	$Id: Ellipsoids.txt,v 1.5 2008-03-11 18:32:50 remko Exp $
 #
 # This is the core listing of supported ellipsoids in GMT map projections.
-# To add more ellipsoids, add record sorted by year, run make_ellipsoids.sh
-# and update the N_ELLIPSOIDS value in gmt.h
+# Please adhere to the format.
+#
+# This file is converted to gmt_ellipsoids.h by the guru's make process
+# described in src/GNUmakefile. It also updates GMT_N_ELLIPSOIDS in
+# gmt_dimensions.h. Changing this file at runtime has no affect.
 #
 # Tab-ID		Year semi-major		1/f		Info
 #--------------------------------------------------------------------------------------------------------------------------------------
