@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.215 2008-03-11 18:37:12 remko Exp $
+	$Id: ChangeLog,v 1.216 2008-03-11 19:14:04 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-03-11	pwessel
+	* grdgradient.c:	With -D -S the slopes were not set to NaN if data were NaN
+
 2008-03-11	remko
 	* bin/gmtlogo:		Pushed text back up into 2 x 1 inch box. Put in isoloation mode
 	* share/conf/gmt_colors.conf:	Reorganized list of RGB colors and names.
