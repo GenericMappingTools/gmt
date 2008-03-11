@@ -70,7 +70,7 @@
 "mediumaquamarine",
 "aquamarine",
 "darkgreen",
-"lightgreen"
+"lightgreen",
 "darkolivegreen",
 "darkseagreen",
 "seagreen",
@@ -660,4 +660,4 @@
 "gray99",
 "grey99",
 "gray100",
-"grey100",
+"grey100"
