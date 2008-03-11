@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.35 2008-03-01 13:22:11 remko Exp $
+#	$Id: Makefile,v 1.36 2008-03-11 22:17:35 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -66,6 +66,7 @@ CONFIGS		= makegmt.macros gmt_version.h gmt_notposix.h GMT
 
 MAN1		= GMT.1 gmt_shell_functions.1 isogmt.1 $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 MAN3		= pslib.3
+MAN5		= gmtcolors.5
 
 #-------------------------------------------------------------------------------
 #	software targets
@@ -121,14 +122,16 @@ uninstall:
 			cd $(includedir); \rm -f  $(GMT_H) $(PS_H) $(PS_I); \
 		fi
 
-install-man:	$(MAN1) $(MAN3)
-		$(INSTALL) -d $(mandir)/man1 $(mandir)/man3
+install-man:	$(MAN1) $(MAN3) $(MAN5)
+		$(INSTALL) -d $(mandir)/man1 $(mandir)/man3 $(mandir)/man5
 		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
 		$(INSTALL) -m 644 $(MAN3) $(mandir)/man3
+		$(INSTALL) -m 644 $(MAN5) $(mandir)/man5
 
 uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 		cd $(mandir)/man3; \rm -f $(MAN3)
+		cd $(mandir)/man5; \rm -f $(MAN5)
 
 clean:
 		\rm -f *.o *.a *.so *.sa *.sl *.dylib *% $(PROGS) $(PROGSPS)
