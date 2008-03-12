@@ -4,7 +4,7 @@
 greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data using Green function splines.
 .SH SYNOPSIS
 \fBgreenspline\fP [ \fIdatafile(s)\fP ] 
-[ OPT(A)[\fB1\fP|\fB2\fP|\fB3\fP,]\fIgradfile\fP ] [ OPT(C)\fIcut\fP[/\fIfile\fP] ] 
+[ OPT(A)[\fB1\fP|\fB2\fP|\fB3\fP|\fB4\fP|\fB5\fP,]\fIgradfile\fP ] [ OPT(C)\fIcut\fP[/\fIfile\fP] ] 
 [ OPT(D)\fImode\fP ] [ OPT(F) ] [ OPT(G)\fIgrdfile\fP] [ GMT_H_OPT ] [ OPT(I)\fIxinc\fP[\fIyinc\fP[\fIzinc\fP]] ] [ OPT(L) ] 
 [ OPT(N)\fImaskgrid\fP ] [ OPT(Q)\fIaz\fP|\fIx/y/z\fP ] [ OPT(R)\fIxmin\fP/\fIxmax\fP[/\fIymin\fP/\fIymax\fP[/\fIzmin\fP\fIzmax\fP]] ] 
 [ OPT(S)\fBc|t|g|p|q\fP[\fIpars\fP] ] [ OPT(T)\fInodefile\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ]
@@ -12,7 +12,7 @@ greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data usi
 \fBgreenspline\fP uses the Green function G(\fBx\fP; \fBx'\fP) for the chosen spline and geometry to interpolate data
 at regular [or arbitrary] output locations.  Mathematically, the solution is composed as
 \fIw\fP(\fBx\fP) = sum {\fIc\fP(\fIi\fP) G(\fBx\fP; \fBx\fP(\fIi\fP))}, for \fIi\fP = 1, \fIn\fP, the number
-of data points \fBx\fP(\fIi\fP), \fIw\fP(\fIi\fP).  Once the \fIn\fP coefficients \fIc\fP(\fIi\fP)
+of data points {\fBx\fP(\fIi\fP), \fIw\fP(\fIi\fP)}.  Once the \fIn\fP coefficients \fIc\fP(\fIi\fP)
 have been found then the sum can be evaluated at any output point \fBx\fP.
 Choose between minimum curvature, regularized, or continuous curvature splines in tension for
 either 1-D, 2-D, or 3-D Cartesian coordinates or spherical surface coordinates. After first removing a linear or planar trend
@@ -131,8 +131,8 @@ by first pre-calculating G(\fBx\fP; \fBx'\fP) for a dense set of \fBx\fP values 
 and store them in look-up tables.  Optionally append /\fIN\fP (an odd integer) to specify how many points in the spline to set [100001]
 .TP
 .B \-T
-ASCII file with desired (\fBx\fP) output locations in first column(s).  The resulting
-(\fIw\fP) values are appended to each record and written to the file given in OPT(G) [or stdout if not specified];
+ASCII file with coordinates of desired output locations \fBx\fP in the first column(s).  The resulting
+\fIw\fP values are appended to each record and written to the file given in OPT(G) [or stdout if not specified];
 see OPT(bo) for binary output instead.  This option eliminates the need to
 specify options OPT(R), OPT(I), and OPT(F).
 #include "explain_-V.txt"
