@@ -1,10 +1,10 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%Title: GMT v4.2.1 Document from grdimage
+%%Title: GMT v4.2.2b Document from grdimage
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Sep 11 14:17:12 2007
+%%CreationDate: Wed Mar 12 09:05:20 2008
 %%LanguageLevel: 1
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -56,6 +56,10 @@
 /vA {v0 QA} bind def /va {v0 Qa} bind def /vC {v0 QC} bind def /vc {v0 Qc} bind def
 /vK {v0 QK} bind def /vk {v0 Qk} bind def /vH {v0 QH} bind def /vh {v0 Qh} bind def
 /vI {v0 QI} bind def /vi {v0 Qi} bind def /vQ {v0 QQ} bind def
+/B0 {M dup 0 D exch 0 exch D neg 0 D} bind def
+/BA {B0 QA} bind def /Ba {B0 Qa} bind def /BC {B0 QC} bind def /Bc {B0 Qc} bind def
+/BK {B0 QK} bind def /Bk {B0 Qk} bind def /BH {B0 QH} bind def /Bh {B0 Qh} bind def
+/BI {B0 QI} bind def /Bi {B0 Qi} bind def /BQ {B0 QQ} bind def
 /CA {0 360 arc V A F U N} bind def /Ca {0 360 arc V A F U S} bind def
 /CC {0 360 arc V C F U N} bind def /Cc {0 360 arc V C F U S} bind def
 /CK {0 360 arc V K F U N} bind def /Ck {0 360 arc V K F U S} bind def
@@ -297,11 +301,11 @@ end
     {
       n 0 eq
       {
-        PSL_CT_drawline
+	PSL_CT_drawline
       }
       {
 	PSL_CT_reversepath
-        PSL_CT_textline
+	PSL_CT_textline
       } ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
@@ -397,14 +401,14 @@ end
       /this_cut PSL_cuts kk get def
       dist this_cut gt
       {
-        /ds dist last_dist sub def
-        /f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
+	/ds dist last_dist sub def
+	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
 	/i1 i 0 eq { 0 } { i 1 sub } ifelse def
-        PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
-        PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
-        PSL_kind j 1 put
-        /j j 1 add def
-        /k k 1 add def
+	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
+	PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
+	PSL_kind j 1 put
+	/j j 1 add def
+	/k k 1 add def
       } if
     } for
     dist PSL_cuts k get le
@@ -645,7 +649,7 @@ PSL_font_encode 0 get 0 eq {
 10 setmiterlimit
 225 600 T
 %% PostScript produced by:
-%%GMT:  grdimage -V -JGe-140.0/0.0/35000.0/-160L/22.5L/0/2.0/2.0/7i+ -Rg etopo2-hawaii.nc -P -Xc -Yc -E200 -Ctopo.cpt -K 
+%%GMT:  grdimage -JGe-140.0/0.0/35000.0/-160L/22.5L/0/2.0/2.0/7i+ -Rg etopo2-hawaii.nc -P -Xc -Yc -E200 -Ctopo.cpt -K
 
 S V
 2100 2100 M
@@ -3123,7 +3127,7 @@ PSL_font_encode 0 get 0 eq {
 0 setlinejoin
 10 setmiterlimit
 %% PostScript produced by:
-%%GMT:  pscoast -V -JGe-140.0/0.0/35000.0/-160L/22.5L/0/2.0/2.0/7i+ -Rg -Ia -B5g5/5g5:.pacific_map_2.e: -Na -O 
+%%GMT:  pscoast -JGe-140.0/0.0/35000.0/-160L/22.5L/0/2.0/2.0/7i+ -Rg -Ia -B5g5/5g5:.pacific_map_2.e: -Na -O
 
 S 0 A
 S 1 W
@@ -6875,7 +6879,7 @@ PSL_x PSL_dimx 2 div sub PSL_y PSL_H_y add M
 0 0 M 58 F0 (190Ê) E /PSL_dimx exch def bby /PSL_dimy exch def
 -36 1974 M V 36.1 R PSL_dimx neg PSL_dimy 2 div neg G 58 F0 (190Ê) Z U
 0 0 M 58 F0 (190Ê) E /PSL_dimx exch def bby /PSL_dimy exch def
-175 2126 M V 35.4 R PSL_dimx neg PSL_dimy 2 div neg G 58 F0 (190Ê) Z U
+175 2126 M V 35.4 R 0 PSL_dimy 2 div neg G 58 F0 (190Ê) Z U
 0 0 M 58 F0 (195Ê) E /PSL_dimx exch def bby /PSL_dimy exch def
 -34 1094 M V 40.6 R PSL_dimx neg PSL_dimy 2 div neg G 58 F0 (195Ê) Z U
 0 0 M 58 F0 (195Ê) E /PSL_dimx exch def bby /PSL_dimy exch def
@@ -6895,13 +6899,9 @@ PSL_x PSL_dimx 2 div sub PSL_y PSL_H_y add M
 0 0 M 58 F0 (20Ê) E /PSL_dimx exch def bby /PSL_dimy exch def
 -36 1325 M V -37.7 R PSL_dimx neg PSL_dimy 2 div neg G 58 F0 (20Ê) Z U
 0 0 M 58 F0 (20Ê) E /PSL_dimx exch def bby /PSL_dimy exch def
-1682 -28 M V -38.7 R PSL_dimx neg PSL_dimy 2 div neg G 58 F0 (20Ê) Z U
-0 0 M 58 F0 (25Ê) E /PSL_dimx exch def bby /PSL_dimy exch def
-213 2127 M V -36.9 R PSL_dimx neg PSL_dimy 2 div neg G 58 F0 (25Ê) Z U
+1682 -28 M V -38.7 R 0 PSL_dimy 2 div neg G 58 F0 (20Ê) Z U
 0 0 M 58 F0 (25Ê) E /PSL_dimx exch def bby /PSL_dimy exch def
 2135 641 M V -38.4 R 0 PSL_dimy 2 div neg G 58 F0 (25Ê) Z U
-0 0 M 58 F0 (30Ê) E /PSL_dimx exch def bby /PSL_dimy exch def
-1445 2127 M V -37.1 R 0 PSL_dimy 2 div neg G 58 F0 (30Ê) Z U
 0 0 M 58 F0 (30Ê) E /PSL_dimx exch def bby /PSL_dimy exch def
 2136 1599 M V -37.7 R 0 PSL_dimy 2 div neg G 58 F0 (30Ê) Z U
 S 5 W
