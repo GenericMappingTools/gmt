@@ -1,10 +1,10 @@
 #!/bin/sh
-#	$Id: clipping1.sh,v 1.1 2008-03-12 00:03:49 guru Exp $
+#	$Id: clipping1.sh,v 1.2 2008-03-12 02:49:21 guru Exp $
 #
 # Check clipping of lines crossing over the horizon AND dateline (N pole)
 
 . ../functions.sh
-header "Test psxy -JG for clipping line crossing horizon"
+header "Test psxy -JG for clipping line crossing horizon (N pole)"
 
 ps=clipping1.ps
 
