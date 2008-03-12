@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.176 2008-03-12 00:03:49 guru Exp $
+ *	$Id: gmt_map.c,v 1.177 2008-03-12 04:41:43 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2273,7 +2273,7 @@ int GMT_map_init_gnomonic (void) {
 			GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);
 		}
 		else {	/* Global view only */
-			frame_info.axis[0].item[0].interval = frame_info.axis[1].item[0].interval = 0.0;	/* No annotations for global mode */
+			/* frame_info.axis[0].item[0].interval = frame_info.axis[1].item[0].interval = 0.0; */	/* No annotations for global mode */
 			/* frame_info.axis[0].item[4].interval = frame_info.axis[1].item[4].interval = 0.0; */	/* No tickmarks for global mode */
 			project_info.w = 0.0;
 			project_info.e = 360.0;

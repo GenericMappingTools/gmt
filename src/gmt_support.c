@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.350 2008-03-12 02:27:09 guru Exp $
+ *	$Id: gmt_support.c,v 1.351 2008-03-12 04:41:43 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -140,6 +140,7 @@ int GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G);
 int GMT_init_custom_symbol (char *name, struct GMT_CUSTOM_SYMBOL **S);
 int GMT_get_label_parameters(int side, double line_angle, int type, double *text_angle, int *justify);
 int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, int count[]);
+int GMT_gnomonic_adjust (int side, double angle, double x, double y);
 #if 0
 void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis);
 #endif
@@ -7625,7 +7626,7 @@ int GMT_prepare_label (double angle, int side, double x, double y, int type, dou
 	if (angle < 0.0) angle += 360.0;
 
 	set_angle = ((project_info.region && !(GMT_IS_AZIMUTHAL || GMT_IS_CONICAL)) || !project_info.region);
-	if (project_info.region && project_info.projection == GMT_GENPER) set_angle = TRUE;
+	if (project_info.region && (project_info.projection == GMT_GENPER || project_info.projection == GMT_GNOMONIC)) set_angle = TRUE;
 	if (set_angle) {
 		if (side == 0 && angle < 180.0) angle -= 180.0;
 		if (side == 1 && (angle > 90.0 && angle < 270.0)) angle -= 180.0;
@@ -7638,6 +7639,16 @@ int GMT_prepare_label (double angle, int side, double x, double y, int type, dou
 	if (gmtdefs.oblique_annotation & 16) *line_angle = (side - 1) * 90.0;
 
 	if (!set_angle) *justify = GMT_polar_adjust (side, angle, x, y);
+	if (set_angle && project_info.region && project_info.projection == GMT_GNOMONIC) {
+		/* FIx until we write something that works for everything.  This is a global gnomonic map
+		 * so it is easy to fix the angles.  We get correct justify and make sure
+		 * the line_angle points away from the boundary */
+		
+		angle = fmod (2.0 * angle, 360.0) / 2.0;	/* 0-180 range */
+		if (angle > 90.0) angle -= 180.0;
+		*justify = GMT_gnomonic_adjust (side, angle, x, y);
+		if (*justify == 7) *line_angle += 180.0;
+	}
 
 	return 0;
 }
@@ -7795,6 +7806,22 @@ int GMT_polar_adjust (int side, double angle, double x, double y)
 		}
 	}
 	return (justify);
+}
+
+int GMT_gnomonic_adjust (int side, double angle, double x, double y)
+{
+	/* Called when GNOMONIC and global region.  angle has been fixed to the +- 90 range */
+	/* This is a kludge until we rewrite the entire justification stuff */
+	BOOLEAN inside;
+	double xp, yp;
+	
+	/* Create a point a small step away from (x,y) along the angle baseline
+	 * If it is inside the circle the we want right-justify, else left-justify. */
+	sincosd (angle, &yp, &xp);
+	xp = xp * gmtdefs.line_step + x;
+	yp = yp * gmtdefs.line_step + y;
+	inside = (hypot (xp - project_info.r, yp - project_info.r) < project_info.r);
+	return ((inside) ? 7 : 5);
 }
 
 double GMT_get_angle (double lon1, double lat1, double lon2, double lat2)
