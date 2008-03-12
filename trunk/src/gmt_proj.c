@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.34 2008-02-24 21:27:30 guru Exp $
+ *	$Id: gmt_proj.c,v 1.35 2008-03-12 02:27:08 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1790,7 +1790,7 @@ int GMT_genper_map_clip_path (int np, double *work_x, double *work_y)
 		fprintf (stderr, " x_scale %e y_scale %e, x0 %e y0 %e\n", project_info.x_scale, project_info.y_scale, project_info.x0, project_info.y0);
 	}
 
-	da = TWO_PI/np;
+	da = TWO_PI/(np-1);
 
 	for (i = 0; i < np; i++) {
 		angle = i * da;

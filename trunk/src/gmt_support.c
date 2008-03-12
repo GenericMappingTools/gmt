@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.349 2008-03-07 18:11:23 remko Exp $
+ *	$Id: gmt_support.c,v 1.350 2008-03-12 02:27:09 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7625,6 +7625,7 @@ int GMT_prepare_label (double angle, int side, double x, double y, int type, dou
 	if (angle < 0.0) angle += 360.0;
 
 	set_angle = ((project_info.region && !(GMT_IS_AZIMUTHAL || GMT_IS_CONICAL)) || !project_info.region);
+	if (project_info.region && project_info.projection == GMT_GENPER) set_angle = TRUE;
 	if (set_angle) {
 		if (side == 0 && angle < 180.0) angle -= 180.0;
 		if (side == 1 && (angle > 90.0 && angle < 270.0)) angle -= 180.0;
