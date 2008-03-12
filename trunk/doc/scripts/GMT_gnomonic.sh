@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_gnomonic.sh,v 1.4 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_gnomonic.sh,v 1.5 2008-03-12 04:41:43 guru Exp $
 #
 
-pscoast -Rg -JF-120/35/60/4.5i -Bg15 -Dc -A10000 -Glightgray -Wthinnest -P > GMT_gnomonic.ps
+pscoast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Glightgray -Wthinnest -P > GMT_gnomonic.ps

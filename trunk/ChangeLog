@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.219 2008-03-12 02:27:08 guru Exp $
+	$Id: ChangeLog,v 1.220 2008-03-12 04:41:42 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-03-11	pwessel
 	* grdgradient.c:	With -D -S the slopes were not set to NaN if data were NaN
 	* gmt_map.c:	Bug in map clipping for -JG
 	* gmt_support.c:	Improve map annotation for general perspective projection
+			Added support for annotations for -JF gnomonic for global maps.
 	* gmt_proj.c:	Clip path for general perspective projection was not closed.
 
 2008-03-11	remko
