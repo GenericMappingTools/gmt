@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.175 2008-03-06 21:37:16 guru Exp $
+ *	$Id: gmt_map.c,v 1.176 2008-03-12 00:03:49 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4011,6 +4011,10 @@ int GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, doubl
 
 	dlon0 = lon0 - lon1;
 	dlat0 = lat0 - lat1;
+	if (fabs (dlon0) > 180.0) {	/* Adjust lon0 so there is no dateline/Greenwhich jump discontinuity */
+		lon0 += copysign (360.0, -dlon0);
+		dlon0 = lon0 - lon1;
+	}
 	GMT_x_wesn_corner (&lon0);
 	GMT_x_wesn_corner (&lon1);
 	GMT_y_wesn_corner (&lat0);
@@ -4020,7 +4024,7 @@ int GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, doubl
 		sides[n] = 0;
 		clat[n] = project_info.s;
 		dlat = lat0 - lat1;
-		clon[n] = (GMT_IS_ZERO (dlat)) ? lon1 : lon1 + (lon0 - lon1) * (clat[n] - lat1) / dlat;
+		clon[n] = (GMT_IS_ZERO (dlat)) ? lon1 : lon1 + dlon0 * (clat[n] - lat1) / dlat;
 		GMT_x_wesn_corner (&clon[n]);
 		if (fabs(dlat0) > 0.0 && GMT_lon_inside (clon[n], project_info.w, project_info.e)) n++;
 	}
@@ -4036,7 +4040,7 @@ int GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, doubl
 		sides[n] = 2;
 		clat[n] = project_info.n;
 		dlat = lat0 - lat1;
-		clon[n] = (GMT_IS_ZERO (dlat)) ? lon1 : lon1 + (lon0 - lon1) * (clat[n] - lat1) / dlat;
+		clon[n] = (GMT_IS_ZERO (dlat)) ? lon1 : lon1 + dlon0 * (clat[n] - lat1) / dlat;
 		GMT_x_wesn_corner (&clon[n]);
 		if (fabs(dlat0) > 0.0 && GMT_lon_inside (clon[n], project_info.w, project_info.e)) n++;
 	}
