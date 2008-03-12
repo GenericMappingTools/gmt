@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.217 2008-03-11 22:23:26 remko Exp $
+	$Id: ChangeLog,v 1.218 2008-03-12 00:03:48 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-03-11	pwessel
 	* grdgradient.c:	With -D -S the slopes were not set to NaN if data were NaN
+	* gmt_map.c:	Bug in map clipping for -JG
 
 2008-03-11	remko
 	* bin/gmtlogo:		Pushed text back up into 2 x 1 inch box. Put in isoloation mode
