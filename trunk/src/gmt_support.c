@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.352 2008-03-13 05:06:51 guru Exp $
+ *	$Id: gmt_support.c,v 1.353 2008-03-13 16:47:40 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,7 +46,7 @@
  *	GMT_get_annot_offset	Return offset in inches for text annotation
  *	GMT_get_index		Return color table entry for given z
  *	GMT_get_format		Find # of decimals and create format string
- *	GMT_get_rgb_from_z		Return rgb for given z
+ *	GMT_get_rgb_from_z	Return rgb for given z
  *	GMT_get_plot_array	Allocate memory for plotting arrays
  *	GMT_getfill		Decipher and check fill argument
  *	GMT_getinc		Decipher and check increment argument
@@ -95,7 +95,6 @@ struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths of pen
 #include "gmt_pennames.h"
 };
 
-
 int GMT_polar_adjust(int side, double angle, double x, double y);
 int GMT_start_trace(float first, float second, int *edge, int edge_word, int edge_bit, unsigned int *bit);
 int GMT_trace_contour(float *grd, struct GRD_HEADER *header, double x0, double y0, int *edge, double **x_array, double **y_array, int i, int j, int kk, int offset, int *i_off, int *j_off, int *k_off, int *p, unsigned int *bit, int *nan_flag);
@@ -103,17 +102,11 @@ int GMT_smooth_contour(double **x_in, double **y_in, int n, int sfactor, int sty
 int GMT_splice_contour(double **x, double **y, int n, double **x2, double **y2, int n2);
 void GMT_orient_contour (float *grd, struct GRD_HEADER *header, double *x, double *y, int n, int orient);
 void GMT_setcontjump (float *z, int nz);
-void GMT_rgb_to_hsv(int rgb[], double *h, double *s, double *v);
-void GMT_hsv_to_rgb(int rgb[], double h, double s, double v);
+void GMT_rgb_to_hsv(int rgb[], double hsv[]);
+void GMT_hsv_to_rgb(int rgb[], double hsv[]);
 void GMT_rgb_to_cmyk (int rgb[], double cmyk[]);
 void GMT_cmyk_to_rgb (int rgb[], double cmyk[]);
-#if 0
-void GMT_get_bcr_cardinals (double x, double y, struct GMT_BCR *bcr);
-void GMT_get_bcr_ij (struct GRD_HEADER *grd, double xx, double yy, int *ii, int *jj, struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr);
-void GMT_get_bcr_xy(struct GRD_HEADER *grd, double xx, double yy, double *x, double *y, struct GMT_BCR *bcr);
-void GMT_get_bcr_nodal_values(float *z, int ii, int jj, struct GMT_BCR *bcr);
-#endif
-int GMT_check_hsv (double h, double s, double v);
+int GMT_check_hsv (double hsv[]);
 int GMT_check_cmyk (double cmyk[]);
 int GMT_char_count (char *txt, char c);
 int GMT_colorname2index (char *name);
@@ -368,9 +361,9 @@ int GMT_check_rgb (int rgb[])
 	return (( (rgb[0] < 0 || rgb[0] > 255) || (rgb[1] < 0 || rgb[1] > 255) || (rgb[2] < 0 || rgb[2] > 255) ));
 }
 
-int GMT_check_hsv (double h, double s, double v)
+int GMT_check_hsv (double hsv[])
 {
-	return (( (h < 0.0 || h > 360.0) || (s < 0.0 || s > 1.0) || (h < 0.0 || v > 1.0) ));
+	return (( (hsv[0] < 0.0 || hsv[0] > 360.0) || (hsv[1] < 0.0 || hsv[1] > 1.0) || (hsv[2] < 0.0 || hsv[2] > 1.0) ));
 }
 
 int GMT_check_cmyk (double cmyk[])
@@ -467,8 +460,13 @@ int GMT_getrgb (char *line, int rgb[])
 
 	if (!line[0]) return (FALSE);	/* Nothing to do - accept default action */
 
+	if (line[0] == '#') {	/* #rrggbb */
+		n = sscanf (line, "#%2x%2x%2x", (unsigned int *)&rgb[0], (unsigned int *)&rgb[1], (unsigned int *)&rgb[2]);
+		if (n != 3 || GMT_check_rgb (rgb)) return (TRUE);
+		return (FALSE);
+	}
+
 	count = GMT_char_count (line, '/');
-	hyp   = GMT_char_count (line, '-');
 
 	if (count == 3) {	/* c/m/y/k */
 		double cmyk[4];
@@ -484,19 +482,21 @@ int GMT_getrgb (char *line, int rgb[])
 			if (n != 3 || GMT_check_rgb (rgb)) return (TRUE);
 		}
 		else {					/* h/s/v */
-			double h, s, v;
-			n = sscanf (line, "%lf/%lf/%lf", &h, &s, &v);
-			if (n != 3 || GMT_check_hsv (h, s, v)) return (TRUE);
-			GMT_hsv_to_rgb (rgb, h, s, v);
+			double hsv[3];
+			n = sscanf (line, "%lf/%lf/%lf", &hsv[0], &hsv[1], &hsv[2]);
+			if (n != 3 || GMT_check_hsv (hsv)) return (TRUE);
+			GMT_hsv_to_rgb (rgb, hsv);
 		}
 		return (FALSE);
 	}
 
+	hyp   = GMT_char_count (line, '-');
+
 	if (hyp == 2) {	/* h-s-v */
-		double h, s, v;
-		n = sscanf (line, "%lf-%lf-%lf", &h, &s, &v);
-		if (n != 3 || GMT_check_hsv (h, s, v)) return (TRUE);
-		GMT_hsv_to_rgb (rgb, h, s, v);
+		double hsv[3];
+		n = sscanf (line, "%lf-%lf-%lf", &hsv[0], &hsv[1], &hsv[2]);
+		if (n != 3 || GMT_check_hsv (hsv)) return (TRUE);
+		GMT_hsv_to_rgb (rgb, hsv);
 		return (FALSE);
 	}
 
@@ -509,7 +509,7 @@ int GMT_getrgb (char *line, int rgb[])
 		else {
 			if ((n = GMT_colorname2index (line)) < 0) {
 				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
-				GMT_exit (EXIT_FAILURE);
+				return (TRUE);
 			}
 			for (i = 0; i < 3; i++) rgb[i] = GMT_color_rgb[n][i];
 		}
@@ -527,8 +527,14 @@ int GMT_gethsv (char *line, double hsv[])
 
 	if (!line[0]) return (FALSE);	/* Nothing to do - accept default action */
 
+	if (line[0] == '#') {	/* #rrggbb */
+		n = sscanf (line, "#%2x%2x%2x", (unsigned int *)&rgb[0], (unsigned int *)&rgb[1], (unsigned int *)&rgb[2]);
+		if (n != 3 || GMT_check_rgb (rgb)) return (TRUE);
+		GMT_rgb_to_hsv (rgb, hsv);
+		return (FALSE);
+	}
+
 	count = GMT_char_count (line, '/');
-	hyp   = GMT_char_count (line, '-');
 
 	if (count == 3) {	/* c/m/y/k */
 		double cmyk[4];
@@ -542,18 +548,20 @@ int GMT_gethsv (char *line, double hsv[])
 		if (gmtdefs.color_model & GMT_READ_RGB) {	/* r/g/b */
 			n = sscanf (line, "%d/%d/%d", &rgb[0], &rgb[1], &rgb[2]);
 			if (n != 3 || GMT_check_rgb (rgb)) return (TRUE);
-			GMT_rgb_to_hsv (rgb, &hsv[0], &hsv[1], &hsv[2]);
+			GMT_rgb_to_hsv (rgb, hsv);
 		}
 		else {					/* h/s/v */
 			n = sscanf (line, "%lf/%lf/%lf", &hsv[0], &hsv[1], &hsv[2]);
-			if (n != 3 || GMT_check_hsv (hsv[0], hsv[1], hsv[2])) return (TRUE);
+			if (n != 3 || GMT_check_hsv (hsv)) return (TRUE);
 		}
 		return (FALSE);
 	}
 
+	hyp   = GMT_char_count (line, '-');
+
 	if (hyp == 2) {	/* h-s-v */
 		n = sscanf (line, "%lf-%lf-%lf", &hsv[0], &hsv[1], &hsv[2]);
-		if (n != 3 || GMT_check_hsv (hsv[0], hsv[1], hsv[2])) return (TRUE);
+		if (n != 3 || GMT_check_hsv (hsv)) return (TRUE);
 		return (FALSE);
 	}
 
@@ -562,15 +570,15 @@ int GMT_gethsv (char *line, double hsv[])
 			n = sscanf (line, "%d", &rgb[0]);
 			rgb[1] = rgb[2] = rgb[0];
 			if (n != 1 || GMT_check_rgb (rgb)) return (TRUE);
-			GMT_rgb_to_hsv (rgb, &hsv[0], &hsv[1], &hsv[2]);
+			GMT_rgb_to_hsv (rgb, hsv);
 		}
 		else {
 			if ((n = GMT_colorname2index (line)) < 0) {
 				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
-				GMT_exit (EXIT_FAILURE);
+				return (TRUE);
 			}
 			for (i = 0; i < 3; i++) rgb[i] = GMT_color_rgb[n][i];
-			GMT_rgb_to_hsv (rgb, &hsv[0], &hsv[1], &hsv[2]);
+			GMT_rgb_to_hsv (rgb, hsv);
 		}
 		return (FALSE);
 	}
@@ -961,12 +969,13 @@ BOOLEAN GMT_is_color (char *word, int max_slashes)
 	int i, k, n, n_hyphen = 0;
 
 	/* Returns TRUE if we are sure the word is a color string - else FALSE.
-	 * color syntax is <gray>|<r/g/b>|<h-s-v>/<c/m/y/k>/<colorname>.
+	 * color syntax is <gray>|<r/g/b>|<h-s-v>|<c/m/y/k>|<colorname>.
 	 * NOTE: we are not checking if the values are kosher; just the pattern  */
 
 	n = strlen (word);
 	if (n == 0) return (FALSE);
 
+	if (word[0] == '#') return (TRUE);		/* Probably #rrggbb */
 	if (GMT_colorname2index (word) >= 0) return (TRUE);	/* Valid color name */
 	if (strchr(word,'t')) return (FALSE);		/* Got a t somewhere */
 	if (strchr(word,':')) return (FALSE);		/* Got a : somewhere */
@@ -1593,12 +1602,12 @@ int GMT_read_cpt (char *cpt_file)
 #endif	
 			/* Convert HSV to RGB, or vice versa, depending on what was read */
 			if (gmtdefs.color_model & GMT_READ_HSV) {
-				GMT_hsv_to_rgb (GMT_lut[n].rgb_low, GMT_lut[n].hsv_low[0], GMT_lut[n].hsv_low[1], GMT_lut[n].hsv_low[2]);
-				GMT_hsv_to_rgb (GMT_lut[n].rgb_high, GMT_lut[n].hsv_high[0], GMT_lut[n].hsv_high[1], GMT_lut[n].hsv_high[2]);
+				GMT_hsv_to_rgb (GMT_lut[n].rgb_low, GMT_lut[n].hsv_low);
+				GMT_hsv_to_rgb (GMT_lut[n].rgb_high, GMT_lut[n].hsv_high);
 			}
 			else {
-				GMT_rgb_to_hsv (GMT_lut[n].rgb_low, &GMT_lut[n].hsv_low[0], &GMT_lut[n].hsv_low[1], &GMT_lut[n].hsv_low[2]);
-				GMT_rgb_to_hsv (GMT_lut[n].rgb_high, &GMT_lut[n].hsv_high[0], &GMT_lut[n].hsv_high[1], &GMT_lut[n].hsv_high[2]);
+				GMT_rgb_to_hsv (GMT_lut[n].rgb_low, GMT_lut[n].hsv_low);
+				GMT_rgb_to_hsv (GMT_lut[n].rgb_high, GMT_lut[n].hsv_high);
 			}
 			if (!GMT_is_gray (GMT_lut[n].rgb_low[0],  GMT_lut[n].rgb_low[1],  GMT_lut[n].rgb_low[2]))  GMT_gray = FALSE;
 			if (!GMT_is_gray (GMT_lut[n].rgb_high[0], GMT_lut[n].rgb_high[1], GMT_lut[n].rgb_high[2])) GMT_gray = FALSE;
@@ -1673,7 +1682,7 @@ int GMT_read_cpt (char *cpt_file)
 	for (id = 0; id < 3; id++) {
 		if (!GMT_is_gray (GMT_bfn[id].rgb[0], GMT_bfn[id].rgb[1],  GMT_bfn[id].rgb[2]))  GMT_gray = FALSE;
 		if (GMT_gray && !GMT_is_bw(GMT_bfn[id].rgb[0]))  GMT_b_and_w = FALSE;
-		GMT_rgb_to_hsv (GMT_bfn[id].rgb, &GMT_bfn[id].hsv[0], &GMT_bfn[id].hsv[1], &GMT_bfn[id].hsv[2]);
+		GMT_rgb_to_hsv (GMT_bfn[id].rgb, GMT_bfn[id].hsv);
 	}
 	if (!GMT_gray) GMT_b_and_w = FALSE;
 	/* Reset the color model to what it was in the GMT defaults when a + is used there.
@@ -2003,7 +2012,7 @@ void get_rgb_lookup (int index, double value, int *rgb)
 		if (gmtdefs.color_model & GMT_USE_HSV) {	/* Interpolation in HSV space */
 			double hsv[3];
 			for (i = 0; i < 3; i++) hsv[i] = GMT_lut[index].hsv_low[i] + rel * GMT_lut[index].hsv_diff[i];
-			GMT_hsv_to_rgb (rgb, hsv[0], hsv[1], hsv[2]);
+			GMT_hsv_to_rgb (rgb, hsv);
 		}
 		else {	/* Interpolation in RGB space */
 			for (i = 0; i < 3; i++) rgb[i] = GMT_lut[index].rgb_low[i] + irint (rel * GMT_lut[index].rgb_diff[i]);
@@ -2032,7 +2041,7 @@ int GMT_get_fill_from_z (double value, struct GMT_FILL *fill)
 	return (index);
 }
 
-void GMT_rgb_to_hsv (int rgb[], double *h, double *s, double *v)
+void GMT_rgb_to_hsv (int rgb[], double hsv[])
 {
 	double xr, xg, xb, r_dist, g_dist, b_dist, max_v, min_v, diff, idiff;
 
@@ -2042,58 +2051,59 @@ void GMT_rgb_to_hsv (int rgb[], double *h, double *s, double *v)
 	max_v = MAX (MAX (xr, xg), xb);
 	min_v = MIN (MIN (xr, xg), xb);
 	diff = max_v - min_v;
-	*h = 0.0;
-	*s = (max_v == 0.0) ? 0.0 : diff / max_v;
-	*v = max_v;
-	if ((*s) == 0.0) return;	/* Hue is undefined */
+	hsv[0] = 0.0;
+	hsv[1] = (max_v == 0.0) ? 0.0 : diff / max_v;
+	hsv[2] = max_v;
+	if (hsv[1] == 0.0) return;	/* Hue is undefined */
 	idiff = 1.0 / diff;
 	r_dist = (max_v - xr) * idiff;
 	g_dist = (max_v - xg) * idiff;
 	b_dist = (max_v - xb) * idiff;
 	if (xr == max_v)
-		*h = b_dist - g_dist;
+		hsv[0] = b_dist - g_dist;
 	else if (xg == max_v)
-		*h = 2.0 + r_dist - b_dist;
+		hsv[0] = 2.0 + r_dist - b_dist;
 	else
-		*h = 4.0 + g_dist - r_dist;
-	(*h) *= 60.0;
-	if ((*h) < 0.0) (*h) += 360.0;
+		hsv[0] = 4.0 + g_dist - r_dist;
+	hsv[0] *= 60.0;
+	if (hsv[0] < 0.0) hsv[0] += 360.0;
 }
 
-void GMT_hsv_to_rgb (int rgb[], double h, double s, double v)
+void GMT_hsv_to_rgb (int rgb[], double hsv[])
 {
 	int i;
-	double f, p, q, t, rr, gg, bb;
+	double h, f, p, q, t, rr, gg, bb;
 
-	if (s == 0.0)
-		rgb[0] = rgb[1] = rgb[2] = (int) floor (255.999 * v);
+	if (hsv[1] == 0.0)
+		rgb[0] = rgb[1] = rgb[2] = (int) floor (255.999 * hsv[2]);
 	else {
+		h = hsv[0];
 		while (h >= 360.0) h -= 360.0;
 		while (h < 0.0) h += 360.0;
 		h /= 60.0;
 		i = (int)h;
 		f = h - i;
-		p = v * (1.0 - s);
-		q = v * (1.0 - (s * f));
-		t = v * (1.0 - (s * (1.0 - f)));
+		p = hsv[2] * (1.0 - hsv[1]);
+		q = hsv[2] * (1.0 - (hsv[1] * f));
+		t = hsv[2] * (1.0 - (hsv[1] * (1.0 - f)));
 		switch (i) {
 			case 0:
-				rr = v;	gg = t;	bb = p;
+				rr = hsv[2]; gg = t; bb = p;
 				break;
 			case 1:
-				rr = q;	gg = v;	bb = p;
+				rr = q; gg = hsv[2]; bb = p;
 				break;
 			case 2:
-				rr = p;	gg = v;	bb = t;
+				rr = p; gg = hsv[2]; bb = t;
 				break;
 			case 3:
-				rr = p;	gg = q;	bb = v;
+				rr = p; gg = q; bb = hsv[2];
 				break;
 			case 4:
-				rr = t;	gg = p;	bb = v;
+				rr = t; gg = p; bb = hsv[2];
 				break;
 			default:
-				rr = v;	gg = p;	bb = q;
+				rr = hsv[2]; gg = p; bb = q;
 				break;
 		}
 
@@ -2144,33 +2154,33 @@ void GMT_cmyk_to_hsv (double hsv[], double cmyk[])
 	/* CMYK is in 0-100, RGB will be in 0-255 range */
 
 	for (i = 0; i < 3; i++) rgb[i] = (int) floor ((100.0 - cmyk[i] - cmyk[3]) * 2.55999);
-	GMT_rgb_to_hsv (rgb, &hsv[0], &hsv[1], &hsv[2]);
+	GMT_rgb_to_hsv (rgb, hsv);
 }
 
 void GMT_illuminate (double intensity, int rgb[])
 {
-	double h, s, v, di;
+	double di, hsv[3];
 
 	if (GMT_is_dnan (intensity)) return;
 	if (intensity == 0.0) return;
 	if (fabs (intensity) > 1.0) intensity = copysign (1.0, intensity);
 
-	GMT_rgb_to_hsv (rgb, &h, &s, &v);
+	GMT_rgb_to_hsv (rgb, hsv);
 	if (intensity > 0.0) {	/* Lighten the color */
 		di = 1.0 - intensity;
-		if (s != 0.0) s = di * s + intensity * gmtdefs.hsv_max_saturation;
-		v = di * v + intensity * gmtdefs.hsv_max_value;
+		if (hsv[1] != 0.0) hsv[1] = di * hsv[1] + intensity * gmtdefs.hsv_max_saturation;
+		hsv[2] = di * hsv[2] + intensity * gmtdefs.hsv_max_value;
 	}
 	else {			/* Darken the color */
 		di = 1.0 + intensity;
-		if (s != 0.0) s = di * s - intensity * gmtdefs.hsv_min_saturation;
-		v = di * v - intensity * gmtdefs.hsv_min_value;
+		if (hsv[1] != 0.0) hsv[1] = di * hsv[1] - intensity * gmtdefs.hsv_min_saturation;
+		hsv[2] = di * hsv[2] - intensity * gmtdefs.hsv_min_value;
 	}
-	if (v < 0.0) v = 0.0;
-	if (s < 0.0) s = 0.0;
-	if (v > 1.0) v = 1.0;
-	if (s > 1.0) s = 1.0;
-	GMT_hsv_to_rgb (rgb, h, s, v);
+	if (hsv[1] < 0.0) hsv[1] = 0.0;
+	if (hsv[2] < 0.0) hsv[2] = 0.0;
+	if (hsv[1] > 1.0) hsv[1] = 1.0;
+	if (hsv[2] > 1.0) hsv[2] = 1.0;
+	GMT_hsv_to_rgb (rgb, hsv);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
