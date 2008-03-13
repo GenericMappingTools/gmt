@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.220 2008-03-12 04:41:42 guru Exp $
+	$Id: ChangeLog,v 1.221 2008-03-13 17:26:31 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-03-13	remko
+	* gmt_support.c:	GMT_hsv_to_rgb, GMT_rgb_to_hsv, GMT_check_hsv now uses hsv[]
+				instead of h, s, v, in accordance with similar routines.
+				GMT_getrgb and GMT_gethsv can read hexadecimal color codes,
+				which need to start with #, e.g. #ff0000 for red.
+
 2008-03-11	pwessel
 	* grdgradient.c:	With -D -S the slopes were not set to NaN if data were NaN
 	* gmt_map.c:	Bug in map clipping for -JG

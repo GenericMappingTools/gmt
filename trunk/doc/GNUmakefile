@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.12 2008-03-11 18:35:52 remko Exp $
+#	$Id: GNUmakefile,v 1.13 2008-03-13 17:26:31 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -142,7 +142,7 @@ DOCTEX= \
 all:	pdf html
 
 # Shortcut, just to preprocess all required files
-prepro:		$(DOCTEX) $(DOCPDF) $(DOCPNG) $(TUTTEX) $(TUTPDF) $(RGBPDF)
+prepro:		$(DOCTEX) $(DOCEPS) $(DOCPDF) $(DOCPNG) $(TUTTEX) $(TUTEPS) $(TUTPDF) $(RGBEPS) $(RGBPDF)
 
 # Test if plots are OK
 tests doctests:	prepro

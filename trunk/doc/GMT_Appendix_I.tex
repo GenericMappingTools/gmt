@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_I.tex,v 1.19 2008-03-11 22:11:54 remko Exp $
+%	$Id: GMT_Appendix_I.tex,v 1.20 2008-03-13 17:26:31 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -31,7 +31,9 @@ A mix of levels of red, green, and blue creates basically any color imaginable. 
    \label{fig:gimp}
 \end{figure}
 
-Is chocolate your favorite color, but you do not know the RGB equivalent values? Then look them up in Figure~\ref{fig:RGBchart} or type \progname{man gmtcolors} for a full list. It's 210/105/30. But \GMT\ makes it easy on you: you can specify pen, fill, and palette colors by any of the more than 550 unique names found in that file.
+Is chocolate your favorite color, but you do not know the RGB equivalent values? Then look them up in Figure~\ref{fig:RGBchart} or type \progname{man gmtcolors} for a full list. It's 210/105/30. But \GMT\ makes it easy on you: you can specify pen, fill, and palette colors by any of the more than 500 unique colors found in that file.
+
+Are you very web-savvy and work best with hexadecimal color codes as they are used in HTML? Even that is allowed in \GMT. Just start with a hash mark (\texttt{\#}) and follow with the 2 hexadecimal characters for red, green, and blue. For example, you can use \texttt{\#79ff00} for chartreuse, \texttt{\#D2691E} for chocolate.
 
 \begin{figure}
    \includegraphics[angle=90,width=\textwidth]{scripts/GMT_RGBchart_a4}
@@ -166,10 +168,10 @@ coordinates of the color.  When the intensity is zero (flat illumination), the d
 are colored according to the cpt file.  If the intensity is
 non-zero, the data are given a starting color from the cpt file
 but this color (after conversion to HSV if necessary) is then
-changed by moving ($s$,$v$) toward \textbf{HSV\_MIN\_SATURATION},
-\textbf{HSV\_MIN\_VALUE} if the intensity is negative (shadow), or toward
-\textbf{HSV\_MAX\_SATURATION}, \textbf{HSV\_MAX\_VALUE} if positive (illuminated).  These are
-defined in the \filename{.gmtdefaults4} file and are usually
+changed by moving ($s$,$v$) toward (\textbf{HSV\_MIN\_SATURATION},
+\textbf{HSV\_MIN\_VALUE}) if the intensity is negative (shadow), or toward
+(\textbf{HSV\_MAX\_SATURATION}, \textbf{HSV\_MAX\_VALUE}) if the illumination is positive positive (illuminated).
+The extremes of the $s$ and $v$ are defined in the \filename{.gmtdefaults4} file and are usually
 chosen so the corresponding points are nearly black ($s$ = 1,
 $v$ = 0) and white ($s$ = 0, $v$ = 1).
 The reason this works is that the HSV system allows movements in
