@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.351 2008-03-12 04:41:43 guru Exp $
+ *	$Id: gmt_support.c,v 1.352 2008-03-13 05:06:51 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -9203,6 +9203,28 @@ L920:
  * Paul Wessel, Feb 2008.
 */
 
+void GMT_memtrack_on (struct MEMORY_TRACKER *M)
+{
+	M->active = TRUE;
+}
+
+void GMT_memtrack_off (struct MEMORY_TRACKER *M)
+{
+	M->active = FALSE;
+}
+
+double GMT_memtrack_mem (size_t mem, int *unit)
+{
+	int k = 0;
+	double val;
+	val = mem / 1024.0;
+	if (val > 1024.0) {val /= 1024.0; k++;}
+	if (val > 1024.0) {val /= 1024.0; k++;}
+	*unit = k;
+	return (val);
+}
+
+#ifndef NEW_DEBUG
 void GMT_memtrack_init (struct MEMORY_TRACKER **M) {	/* Called in GMT_begin() */
 	struct MEMORY_TRACKER *P;
 	char *c;
@@ -9330,26 +9352,193 @@ void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_en
 	free (M->item);
 	free ((void *)M);
 }
+#else
+/* Binary tree manipulation, modified after Sedgewick's Algorithms in C */
 
-void GMT_memtrack_on (struct MEMORY_TRACKER *M)
-{
-	M->active = TRUE;
+void GMT_memtrack_init (struct MEMORY_TRACKER **M) {	/* Called in GMT_begin() */
+	struct MEMORY_TRACKER *P;
+	char *c;
+	P = (struct MEMORY_TRACKER *)malloc (sizeof (struct MEMORY_TRACKER));
+	memset ((void *)P, 0, sizeof (struct MEMORY_TRACKER));
+	c = getenv ("GMT_MEM");
+	P->active = (c == CNULL) ? TRUE : FALSE;
+	P->search = TRUE;
+	P->list_tail = (struct MEMORY_ITEM *) malloc(sizeof *P->list_tail);
+	P->list_tail->l = P->list_tail;	P->list_tail->r = P->list_tail;
+	P->list_head = (struct MEMORY_ITEM *) malloc(sizeof *P->list_head);
+	P->list_head->r = P->list_tail;
+	P->list_head->l = NULL;
+	*M = P;
 }
 
-void GMT_memtrack_off (struct MEMORY_TRACKER *M)
-{
-	M->active = FALSE;
+void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr, void *prev_ptr, size_t size) {
+	/* Called from GMT_memory to update current list of memory allocated */
+	size_t old;
+	void *use;
+	struct MEMORY_ITEM *entry;
+	struct MEMORY_ITEM * GMT_treeinsert (struct MEMORY_TRACKER *M, void *addr);
+	struct MEMORY_ITEM * GMT_memtrack_find (struct MEMORY_TRACKER *M, void *addr);
+	
+	if (!M) return;	/* Not initialized */
+	if (!M->active) return;	/* Not activated */
+	use = (prev_ptr) ? prev_ptr : ptr;
+	entry = (M->search) ? GMT_memtrack_find (M, use) : NULL;
+	if (!entry) {	/* Not found, must insert new entry at end */
+		int n;
+		entry = GMT_treeinsert (M, use);
+		entry->line = line;
+		n = strlen (name);
+		entry->name = (char *)malloc ((size_t) (n+1));
+		strncpy (entry->name, name, n);
+		old = 0;
+		M->n_ptr++;
+		M->n_allocated++;
+	}
+	else {	/* Found existing pointer, get its previous size */
+		old = entry->size;
+		entry->ptr = ptr;	/* Since realloc could have changed it */
+		M->n_reallocated++;
+	}
+	M->current += (size - old);
+	if (M->current < 0) {
+		fprintf (stderr, "%s: Memory tracker reports < 0 bytes allocated!\n", GMT_program);
+	}
+	entry->size = size;
+	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
+	if (size > M->largest) M->largest = size;				/* Update largest single item */
 }
 
-double GMT_memtrack_mem (size_t mem, int *unit)
-{
-	int k = 0;
-	double val;
-	val = mem / 1024.0;
-	if (val > 1024.0) {val /= 1024.0; k++;}
-	if (val > 1024.0) {val /= 1024.0; k++;}
-	*unit = k;
-	return (val);
+void GMT_memtrack_sub (struct MEMORY_TRACKER *M, char *name, int line, void *ptr) {
+	/* Called from GMT_free to remove memory pointer */
+	struct MEMORY_ITEM *entry;
+	struct MEMORY_ITEM * GMT_memtrack_find (struct MEMORY_TRACKER *M, void *addr);
+	void GMT_treedelete (struct MEMORY_TRACKER *M, void *addr);
+	
+	if (!M) return;	/* Not initialized */
+	if (!M->active) return;	/* Not activated */
+	entry = GMT_memtrack_find (M, ptr);
+	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
+		fprintf (stderr, "%s: Wrongly tries to free item in %s, line %d\n", GMT_program, name, line);
+		return;
+	}
+	M->current -= entry->size;	/* "Free" the memory */
+	GMT_treedelete (M, entry->ptr);
+	M->n_ptr--;
+	M->n_freed++;
+	if (M->current < 0) {
+		fprintf (stderr, "%s: Memory tracker reports < 0 bytes allocated!\n", GMT_program);
+	}
 }
+
+void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_end() */
+	int u, excess, report;
+	double tot, GMT_memtrack_mem (size_t mem, int *unit);
+	char *unit[3] = {"kb", "Mb", "Gb"};
+	void GMT_treeprint (struct MEMORY_TRACKER *M, struct MEMORY_ITEM *x);
+	
+	if (!M) return;	/* Not initialized */
+	if (!M->active) return;	/* Not activated */
+	report = (M->current > 0);
+	if (report) {
+		tot = GMT_memtrack_mem (M->maximum, &u);
+		fprintf (stderr, "%s: Max total memory allocated was %.3f %s [", GMT_program, tot, unit[u]);
+		PRINT_SIZE_T(stderr,M->maximum);
+		fprintf (stderr, " bytes]\n");
+		tot = GMT_memtrack_mem (M->largest, &u);
+		fprintf (stderr, "%s: Single largest allocation was %.3f %s [", GMT_program, tot, unit[u]);
+		PRINT_SIZE_T(stderr,M->largest);
+		fprintf (stderr, " bytes]\n");
+		tot = GMT_memtrack_mem (M->current, &u);
+		if (M->current) {
+			fprintf (stderr, "%s: MEMORY NOT FREED: %.3f %s [", GMT_program, tot, unit[u]);
+			PRINT_SIZE_T(stderr,M->current);
+			fprintf (stderr, " bytes]\n");
+		}
+		fprintf (stderr, "%s: Items allocated: %d reallocated: %d Freed: %d\n", GMT_program, M->n_allocated, M->n_reallocated, M->n_freed);
+		excess = M->n_allocated - M->n_freed;
+		if (excess) fprintf (stderr, "%s: Items not properly freed: %d\n", GMT_program, excess);
+		GMT_treeprint (M, M->list_head->r);
+	}
+	
+	free ((void *)M->list_head);
+	free ((void *)M->list_tail);
+	free ((void *)M);
+}
+
+void GMT_treeprint (struct MEMORY_TRACKER *M, struct MEMORY_ITEM *x)
+{
+	void GMT_treereport (struct MEMORY_ITEM *x);
+	if (!x) return;
+	if (x != M->list_tail) {
+		GMT_treeprint (M, x->l);
+		GMT_treereport (x);
+		GMT_treeprint (M, x->r);
+	}
+}
+
+void GMT_treereport (struct MEMORY_ITEM *x) {
+	int u;
+	char *unit[3] = {"kb", "Mb", "Gb"};
+	double tot, GMT_memtrack_mem (size_t mem, int *unit);
+	tot = GMT_memtrack_mem (x->size, &u);
+	fprintf (stderr, "%s: Memory not freed first allocated in %s, line %d is %.3f %s [", GMT_program, x->name, x->line, tot, unit[u]);
+	PRINT_SIZE_T(stderr, x->size);
+	fprintf (stderr, " bytes]\n");
+	
+}
+
+struct MEMORY_ITEM * GMT_treeinsert (struct MEMORY_TRACKER *M, void *addr)
+{
+	struct MEMORY_ITEM *p, *x;
+	p = M->list_head;	x = M->list_head->r;
+	while (x != M->list_tail) {
+		p = x;
+		x = (addr < x->ptr) ? x->l : x->r;
+	}
+	x = (struct MEMORY_ITEM *)malloc (sizeof (struct MEMORY_ITEM));
+	x->ptr = addr;
+	x->l = M->list_tail;	x->r = M->list_tail;
+	if (x->ptr < p->ptr) p->l = x; else p->r = x;
+	return (x);
+}
+
+struct MEMORY_ITEM * GMT_memtrack_find (struct MEMORY_TRACKER *M, void *addr)
+{
+	struct MEMORY_ITEM *x;
+	M->list_tail->ptr = addr;
+	x = M->list_head->r;
+	while (x->ptr && addr != x->ptr) {
+		x = (addr < x->ptr) ? x->l : x->r;
+	}
+	M->list_tail->ptr = NULL;
+	return ((x->ptr) ? x : NULL);
+}
+
+void GMT_treedelete (struct MEMORY_TRACKER *M, void *addr) {
+	struct MEMORY_ITEM *c, *p, *t, *x;
+	M->list_tail->ptr = addr;
+	p = M->list_head;	x = M->list_head->r;
+	while (addr != x->ptr) {
+		p = x;
+		x = (addr < x->ptr) ? x->l : x->r;
+	}
+	t = x;
+	if (t->r == M->list_tail) x = x->l;
+	else if (t->r->l == M->list_tail) {
+		x = x->r;	x->l = t->l;
+	}
+	else {
+		c = x->r;
+		while (c->l->l != M->list_tail) c = c->l;
+		x = c->l;	c->l = x->r;
+		x->l = t->l;	x->r = t->r;
+	}
+	if (t->name) free ((void *)t->name);
+	free ((void *)t);
+	if (addr < p->ptr) p->l = x; else p->r = x;
+	M->list_tail->ptr = NULL;
+}
+
+#endif
 
 #endif

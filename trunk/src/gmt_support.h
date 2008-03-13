@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.30 2008-02-21 01:58:21 guru Exp $
+ *	$Id: gmt_support.h,v 1.31 2008-03-13 05:06:51 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -103,13 +103,19 @@ EXTERN_MSC void GMT_free (void *addr);
 
 struct MEMORY_ITEM {
 	size_t size;	/* Size of memory allocated */
-	char name[MEM_TXT_LEN];	/* File name */
 	int line;	/* Line number where things were initially allocated */
 	void *ptr;		/* Memory pointer */
+#ifdef NEW_DEBUG
+	char *name;	/* File name */
+	struct MEMORY_ITEM *l, *r;
+#else
+	char name[MEM_TXT_LEN];	/* File name */
+#endif
 };
 
 struct MEMORY_TRACKER {
 	BOOLEAN active;	/* Normally TRUE but can be changed to focus on just some allocations */
+	BOOLEAN search;	/* Normally TRUE but can be changed to skip searching when we know we add a new item */
 	int n_ptr;	/* Number of unique pointers to allocated memory */
 	int n_allocated;	/* Number of items allocated by GMT_memory */
 	int n_reallocated;	/* Number of items reallocated by GMT_memory */
@@ -118,7 +124,11 @@ struct MEMORY_TRACKER {
 	size_t maximum;	/* Highest memory count during execution */
 	size_t largest;	/* Highest memory allocation to a single variable */
 	size_t n_alloc;			/* Allocated size of memory pointer array */
+#ifdef NEW_DEBUG
+	struct MEMORY_ITEM *list_head, *list_tail;
+#else
 	struct MEMORY_ITEM *item;			/* Memory item array */
+#endif
 };
 
 /* In gmt_init.c we need struct MEMORY_TRACKER GMT_mem_keeper which is then
@@ -128,11 +138,15 @@ struct MEMORY_TRACKER {
 EXTERN_MSC void GMT_memtrack_init (struct MEMORY_TRACKER **M);
 EXTERN_MSC void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, int line, void *ptr, void *prev_ptr, size_t size);
 EXTERN_MSC void GMT_memtrack_sub (struct MEMORY_TRACKER *M, char *name, int line, void *ptr);
-EXTERN_MSC int GMT_memtrack_find (struct MEMORY_TRACKER *M, void *ptr);
 EXTERN_MSC void GMT_memtrack_alloc (struct MEMORY_TRACKER *M);
 EXTERN_MSC void GMT_memtrack_report (struct MEMORY_TRACKER *M);
 EXTERN_MSC void GMT_memtrack_on (struct MEMORY_TRACKER *M);
 EXTERN_MSC void GMT_memtrack_off (struct MEMORY_TRACKER *M);
+#ifdef NEW_DEBUG
+EXTERN_MSC struct MEMORY_ITEM * GMT_memtrack_find (struct MEMORY_TRACKER *M, void *addr);
+#else
+EXTERN_MSC int GMT_memtrack_find (struct MEMORY_TRACKER *M, void *ptr);
+#endif
 #endif
 
 #endif /* _GMT_SUPPORT_H */
