@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.107 2008-03-11 22:11:54 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.108 2008-03-13 17:26:31 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -1094,7 +1094,7 @@ symbols.  The fill specification may take two forms:
 \begin{description}
 \item [fill:]
 In the first case we may specify a \emph{gray} shade (0--255), RGB color
-(\emph{r}/\emph{g}/\emph{b} all in the 0--255 range), HSV color (\emph{hue}-\emph{saturation}-\emph{value}
+(\emph{r}/\emph{g}/\emph{b} all in the 0--255 range or in hexadecimal \emph{\#rrggbb}), HSV color (\emph{hue}-\emph{saturation}-\emph{value}
 in the 0--360, 0--1, 0--1 range), CMYK color (\emph{cyan}/\emph{magenta}/\emph{yellow}/\emph{black},
 each ranging from 0--100\%), or a valid color \emph{name}; in that respect it is similar
 to specifying the pen color settings (see pen color discussion under Section~\ref{sec:pen}).
@@ -1137,10 +1137,11 @@ Table~\ref{tbl:fillex} contains a few examples of fill specifications.
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{Fill example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
-\Opt{G}blue		&	Solid blue \\ \hline 
-\Opt{G}120/80/35	&	Kind of brown, R/G/B-style \\ \hline 
-\Opt{G}290-0.25-1	&	Digging pink, h-s-v -- style \\ \hline 
-\Opt{G}DarkOliveGreen1	&	One of those X11 colors \\ \hline 
+\Opt{G}128		&	Solid grey \\ \hline
+\Opt{G}127/255/0	&	Chartreuse, R/G/B-style \\ \hline
+\Opt{G}\#00ff00 & Green, hexadecimal RGB code \\ \hline  
+\Opt{G}25-0.86-0.82	&	Chocolate, h-s-v -- style \\ \hline 
+\Opt{G}DarkOliveGreen1	&	One of the named colors \\ \hline 
 \Opt{Gp}300/7		&	Simple diagonal hachure pattern in b/w at 300 dpi\\ \hline 
 \Opt{Gp}300/7:Bred	&	Same, but with red lines on white \\ \hline 
 \Opt{Gp}300/7:BredF-	&	Now the gaps between red lines are transparent \\ \hline 
