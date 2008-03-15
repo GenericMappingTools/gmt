@@ -55,6 +55,7 @@ will control the color of the line or polygon (if OPT(L) is set) via the cpt fil
 .TP
 .B \-D
 Offset the plot symbol or line locations by the given amounts \fIdx/dy\fP [Default is no offset].
+If \fIdy\fP is not given it is set equal to \fIdx\fP.
 .TP
 .B \-E
 Draw error bars.  Append \fBx\fP and/or \fBy\fP to indicate which bars you want to draw (Default is both x and y).  The x and/or
