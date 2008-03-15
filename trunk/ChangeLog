@@ -1,8 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.222 2008-03-15 20:08:16 guru Exp $
+	$Id: ChangeLog,v 1.223 2008-03-15 23:07:04 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-03-15	pwessel
 	* gmt_support.c:	GMT_get_annot_label did not properly honor the ddd.xx setting
+	* pstext.c:		In -D, if /dy is not given it is set equal to dx
+	* psxy.c:	Same. Clarified both usage and man pages.
 
 2008-03-13	remko
 	* gmt_support.c:	GMT_hsv_to_rgb, GMT_rgb_to_hsv, GMT_check_hsv now uses hsv[]
