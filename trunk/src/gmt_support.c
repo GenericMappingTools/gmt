@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.353 2008-03-13 16:47:40 remko Exp $
+ *	$Id: gmt_support.c,v 1.354 2008-03-15 20:08:16 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7675,6 +7675,11 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 	BOOLEAN zero_fix = FALSE;
 	char letter = 0, format[GMT_TEXT_LEN];
 
+	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
+	
+	if (GMT_plot_calclock.geo.order[1] == -1) do_minutes = FALSE;
+	if (GMT_plot_calclock.geo.order[2] == -1) do_seconds = FALSE;
+	
 	if (lonlat == 0) {	/* Fix longitudes range first */
 		GMT_lon_range_adjust (GMT_plot_calclock.geo.range, &val);
 	}
