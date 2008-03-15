@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.221 2008-03-13 17:26:31 remko Exp $
+	$Id: ChangeLog,v 1.222 2008-03-15 20:08:16 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-03-15	pwessel
+	* gmt_support.c:	GMT_get_annot_label did not properly honor the ddd.xx setting
+
 2008-03-13	remko
 	* gmt_support.c:	GMT_hsv_to_rgb, GMT_rgb_to_hsv, GMT_check_hsv now uses hsv[]
 				instead of h, s, v, in accordance with similar routines.
