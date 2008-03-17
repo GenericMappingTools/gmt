@@ -161,7 +161,7 @@ To apply a spline in tension instead, using a tension of 0.7, try
 To make a uniform grid using the minimum curvature spline for the same Cartesian data set from Davis (1986) that is
 used in the GMT Cookbook example 16, try
 .sp
-\fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sc \-V\fP \fB\-G\fPS1987.grd
+\fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sc \-V \-D\fP1 \fB\-G\fPS1987.grd
 .br
 \fBpsxy \-R\fP0/6.5/-0.2/6.5 \fB\-JX\fP6i \fB\-B\fP2f1 \fB\-Sc\fP0.1 \fB\-G\fPblack table_5.11 \fB\-K\fP > 2D.ps
 .br
@@ -171,14 +171,19 @@ used in the GMT Cookbook example 16, try
 To use Cartesian splines in tension but only evaluate the solution where the input mask grid is not NaN, try
 .br
 .sp
-\fBgreenspline\fP table_5.11 \fB\-N\fPmask.grd \fB\-St\fP0.5 \fB\-V\fP \fB\-G\fPWB1998.grd
+\fBgreenspline\fP table_5.11 \fB\-N\fPmask.grd \fB\-St\fP0.5 \fB\-V \-D\fP1 \fB\-G\fPWB1998.grd
 .br
 .sp
-Finally, to use Cartesian generalized splines in tension and return the magnitude of the surface slope in
+To use Cartesian generalized splines in tension and return the magnitude of the surface slope in
 the NW direction, try
 .br
 .sp
-\fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sr\fP5 \fB\-V \-Q\fP-45 \fB\-G\fPslopes.grd
+\fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sr\fP5 \fB\-V \-D\fP1 \fB\-Q\fP-45 \fB\-G\fPslopes.grd
+Finally, to use Cartesian minimum curvature splines in recovering a surface where the input data is a single surface
+value (pt.d) and the remaining constraints specify only the surface slope and direction (slopes.d), use
+.br
+.sp
+\fBgreenspline\fP pt.d \fB\-R\fP-3.2/3.2/-3.2/3.2 \fB\-I\fP0.1 \fB\-Sc\fP5 \fB\-V \-D\fP1 \fB\-A1\fP,slopes.d \fB\-G\fPslopes.grd
 .SH 3-D EXAMPLES
 To create a uniform 3-D Cartesian grid table based on the data in table_5.23 in Davis (1986) that contains \fIx,y,z\fP locations and
 a measure of uranium oxide concentrations (in percent), try
@@ -224,7 +229,7 @@ Sandwell, D. T., 1987, Biharmonic spline interpolation of Geos-3 and Seasat alti
 .br
 Wessel, P., and D. Bercovici, 1998, Interpolation with splines in tension: a Green's function approach, \fIMath. Geol., 30\fP, 77\-93.
 .br
-Wessel, P., and J. M. Becker, 2008, Continuous curvature spherical spline in tension, \fIGeophys. J. Int, yy\fP, xx\-xx.
+Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Geren's function for a spherical surface spline in tension, \fIGeophys. J. Int, yy\fP, xx\-xx.
 .br
 Wessel, P., 2008, A general-purpose Green's function interpolator, \fIComputers & Geosciences, yy\fP, xx\-xx.
 .SH "SEE ALSO"
