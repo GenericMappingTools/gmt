@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.83 2008-01-23 03:22:49 guru Exp $
+ *	$Id: mgd77.h,v 1.84 2008-03-18 02:06:27 mtchandl Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -102,6 +102,9 @@
 #define MGD77_IGF_1930		2
 #define MGD77_IGF_1967		3
 #define MGD77_IGF_1980		4
+
+#define TWT_PDR_WRAP	10.0						/* The 10 second PDR wrap-around we see in SIO cruises */
+#define TWT_PDR_WRAP_TRIGGER	0.5 * TWT_PDR_WRAP	/* Any jump in TWT that exceeds this triggers a wrap */
 
 #define GMT_IMG_MINLAT -72.0059773539
 #define GMT_IMG_MAXLAT +72.0059773539
