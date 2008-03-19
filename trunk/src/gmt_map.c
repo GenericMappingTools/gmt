@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.177 2008-03-12 04:41:43 guru Exp $
+ *	$Id: gmt_map.c,v 1.178 2008-03-19 03:12:51 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5583,9 +5583,6 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 					np++;
 				break;
 			case GMT_GENPER:
-				np = 2 * (GMT_n_lon_nodes + 1);
-				np = (project_info.polar && (project_info.s <= -90.0 || project_info.n >= 90.0)) ? GMT_n_lon_nodes + 2 : 2 * (GMT_n_lon_nodes + 1);
-				break;
 			case GMT_STEREO:
 			case GMT_LAMBERT:
 			case GMT_LAMB_AZ_EQ:
@@ -5682,7 +5679,7 @@ int GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 					}
 				}
 				else {
-					da = fabs (project_info.e - project_info.w) / (GMT_n_lon_nodes - 1);
+					da = fabs (project_info.e - project_info.w) / GMT_n_lon_nodes;
 					if (project_info.got_elevations) {
 						for (i = j = 0; i <= GMT_n_lon_nodes; i++, j++)	/* Draw outer clippath */
 							GMT_geo_to_xy (project_info.w + i * da, project_info.s, &work_x[j], &work_y[j]);
