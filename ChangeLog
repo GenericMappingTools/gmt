@@ -1,10 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.223 2008-03-15 23:07:04 guru Exp $
+	$Id: ChangeLog,v 1.224 2008-03-19 03:13:26 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-03-19	remko
+	* gmt_map.c (GMT_map_clip_path):	In polar projection, step size for drawing clip path
+				was wrong, resulting in missing wedge in donut shape.
+
 2008-03-15	pwessel
 	* gmt_support.c:	GMT_get_annot_label did not properly honor the ddd.xx setting
 	* pstext.c:		In -D, if /dy is not given it is set equal to dx
-	* psxy.c:	Same. Clarified both usage and man pages.
+	* psxy.c:		Same. Clarified both usage and man pages.
 
 2008-03-13	remko
 	* gmt_support.c:	GMT_hsv_to_rgb, GMT_rgb_to_hsv, GMT_check_hsv now uses hsv[]
@@ -14,10 +18,10 @@
 
 2008-03-11	pwessel
 	* grdgradient.c:	With -D -S the slopes were not set to NaN if data were NaN
-	* gmt_map.c:	Bug in map clipping for -JG
+	* gmt_map.c:		Bug in map clipping for -JG
 	* gmt_support.c:	Improve map annotation for general perspective projection
-			Added support for annotations for -JF gnomonic for global maps.
-	* gmt_proj.c:	Clip path for general perspective projection was not closed.
+				Added support for annotations for -JF gnomonic for global maps.
+	* gmt_proj.c:		Clip path for general perspective projection was not closed.
 
 2008-03-11	remko
 	* bin/gmtlogo:		Pushed text back up into 2 x 1 inch box. Put in isoloation mode
@@ -54,8 +58,8 @@
 
 2008-03-06	pwessel
 	* binned_GSHHS*.cdf:	Added two missing barrier islands along Long Island, NY
-			to the GSHHS database.  Updated next GSHHS version number to 1.10.
-	* grdcontour.c:	Recognize if no contours can be found inside -L range and exit.
+				to the GSHHS database.  Updated next GSHHS version number to 1.10.
+	* grdcontour.c:		Recognize if no contours can be found inside -L range and exit.
 	
 2008-03-05	remko
 	* grdinfo.c:		Implemented Welford (1962) algorithm for more precise one-pass
