@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.178 2008-03-19 03:12:51 remko Exp $
+ *	$Id: gmt_map.c,v 1.179 2008-03-20 03:12:09 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5451,7 +5451,7 @@ void GMT_2Dz_to_3D (double *x, double *y, double z, int n)
 void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *angle)
 	/* All variables in degrees */
 {
-	double lon1, lat1, x0, x1, y0, y1, dx, width, sinc, cosc, sinaz, cosaz, sinl, cosl;
+	double lon1, lat1, x0, x1, y0, y1, dx, width, sinaz, cosaz;
 
 	if (GMT_IS_LINEAR) {	/* Trivial case */
 		*angle = 90.0 - azim;
@@ -5464,20 +5464,11 @@ void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *a
 
 	/* Find second point c spherical degrees away in the azim direction */
 
+	GMT_get_point_from_r_az (lon, lat, c, azim, &lon1, &lat1);
+
+	/* Convert both points to x,y and get angle */
+
 	GMT_geo_to_xy (lon, lat, &x0, &y0);
-
-	azim  *= D2R;
-	c   *= D2R;
-	lat *= D2R;
-	sincos (azim, &sinaz, &cosaz);
-	sincos (c, &sinc, &cosc);
-	sincos (lat, &sinl, &cosl);
-
-	lon1 = lon + R2D * atan (sinc * sinaz / (cosl * cosc - sinl * sinc * cosaz));
-	lat1 = R2D * d_asin (sinl * cosc + cosl * sinc * cosaz);
-
-	/* Convert to x,y and get angle */
-
 	GMT_geo_to_xy (lon1, lat1, &x1, &y1);
 
 	/* Check for wrap-around */
@@ -5492,6 +5483,19 @@ void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *a
 			x0 += width;
 	}
 	*angle = d_atan2 (y1 - y0, x1 - x0) * R2D;
+}
+
+void GMT_get_point_from_r_az (double lon0, double lat0, double r, double azim, double *lon1, double *lat1)
+/* Given point (lon0, lat0), find coordinates of a point r degrees away in the azim direction */
+{
+	double sinr, cosr, sinaz, cosaz, siny, cosy;
+	
+	sincosd (azim, &sinaz, &cosaz);
+	sincosd (r, &sinr, &cosr);
+	sincosd (lat0, &siny, &cosy);
+
+	*lon1 = lon0 + R2D * atan (sinr * sinaz / (cosy * cosr - siny * sinr * cosaz));
+	*lat1 = R2D * d_asin (siny * cosr + cosy * sinr * cosaz);
 }
 
 void GMT_set_spherical (void) {	/* Force spherical solution */
