@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.23 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_map.h,v 1.24 2008-03-20 03:12:09 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -53,6 +53,7 @@ EXTERN_MSC void GMT_2Dz_to_3D (double *x, double *y, double z, int n);
 EXTERN_MSC void GMT_ECEF_forward (double in[], double out[]);
 EXTERN_MSC void GMT_ECEF_inverse (double in[], double out[]);
 EXTERN_MSC void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *angle);
+EXTERN_MSC void GMT_get_point_from_r_az (double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 EXTERN_MSC void GMT_conv_datum (double in[], double out[]);
 EXTERN_MSC void GMT_geo_to_xy (double lon, double lat, double *x, double *y);
 EXTERN_MSC void GMT_geoz_to_xy (double x, double y, double z, double *x_out, double *y_out);
