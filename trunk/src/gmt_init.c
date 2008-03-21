@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.336 2008-03-09 15:11:55 remko Exp $
+ *	$Id: gmt_init.c,v 1.337 2008-03-21 03:48:47 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2257,7 +2257,7 @@ int GMT_setparameter (char *keyword, char *value)
 			break;
 	}
 
-	if (error && case_val < GMT_N_KEYS) fprintf (stderr, "%s: GMT SYNTAX ERROR:  %s given illegal value (%s)!\n", GMT_program, keyword, value);
+	if (error && case_val >= 0) fprintf (stderr, "%s: GMT SYNTAX ERROR:  %s given illegal value (%s)!\n", GMT_program, keyword, value);
 	return (error);
 }
 
