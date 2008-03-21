@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.23 2007-12-18 03:39:53 remko Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.24 2008-03-21 00:25:51 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -251,8 +251,9 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 	int  *tLong  = NULL;
 	short *tShort = NULL;
 	char  *tChar  = NULL;
-	int first_col, last_col, first_row, last_row, nm, kk, one_or_zero;
-	int i, j, j2, ij, width_in, width_out, height_in, i_0_out, inc = 1;
+	int first_col, last_col, first_row, last_row, one_or_zero;
+	int j, j2, width_in, height_in, i_0_out, inc = 1;
+	GMT_LONG i, kk, ij, nm, width_out;
 	BOOLEAN piping = FALSE, geo = FALSE;
 	double half_or_zero, x, small;
 	long long_offset;	/* For fseek only */
@@ -274,12 +275,12 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 	}
 	
 	if (w == 0.0 && e == 0.0) {	/* Get entire file and return */
-		nm = header->nx * header->ny;
-		tLong  = (int *) GMT_memory (CNULL, nm, sizeof (int), "mgg_read_grd");
+		nm = ((GMT_LONG)header->nx) * ((GMT_LONG)header->ny);
+		tLong  = (int *) GMT_memory (CNULL, (size_t)nm, sizeof (int), "mgg_read_grd");
 		tShort = (short *) tLong;
 		tChar  = (char *) tLong;
 
-		if (GMT_fread ((void *)tLong, mggHeader.numType, nm, fp) != (size_t)nm) return (GMT_GRDIO_READ_FAILED);
+		if (GMT_fread ((void *)tLong, mggHeader.numType, (size_t)nm, fp) != (size_t)nm) return (GMT_GRDIO_READ_FAILED);
 		for (i = 0; i < nm; i++) {
 			/* 4-byte values */
 			if (mggHeader.numType == sizeof(int)) {
@@ -336,7 +337,7 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 	if ((last_col - first_col + 1) > width_in) first_col++;
 	if ((last_row - first_row + 1) > height_in) first_row++;
 	
-	width_out = width_in;		/* Width of output array */
+	width_out = (GMT_LONG)width_in;		/* Width of output array */
 	if (pad[0] > 0) width_out += pad[0];
 	if (pad[1] > 0) width_out += pad[1];
 	
@@ -484,9 +485,10 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
 {
 	MGG_GRID_HEADER_2	mggHeader;
-	int i, i2, nm, kk, err, *k;
-	int j, ij, j2, width_in, width_out, height_out, one_or_zero;
+	int i2, kk, err, *k;
+	int j, j2, width_out, height_out, one_or_zero;
 	int first_col, last_col, first_row, last_row;
+	GMT_LONG i, nm, ij, width_in;
 	
 	BOOLEAN geo = FALSE;
 	double half_or_zero, small, x;
@@ -506,7 +508,7 @@ int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, 
 	if (w == 0.0 && e == 0.0) {	/* Write entire file and return */
 		/* Find min/max of data */
 		
-		nm = header->nx * header->ny;
+		nm = ((GMT_LONG)header->nx) * ((GMT_LONG)header->ny);
 		header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 		for (i = 0; i < nm; i++) {
 			ij = (complex) ? 2 * i : i;
@@ -586,7 +588,7 @@ int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, 
 	if ((last_col - first_col + 1) > width_out) first_col++;
 	if ((last_row - first_row + 1) > height_out) first_row++;
 
-	width_in = width_out;		/* Physical width of input array */
+	width_in = (GMT_LONG)width_out;		/* Physical width of input array */
 	if (pad[0] > 0) width_in += pad[0];
 	if (pad[1] > 0) width_in += pad[1];
 	

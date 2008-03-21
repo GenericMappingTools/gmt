@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.18 2007-04-30 19:45:23 pwessel Exp $
+/*      $Id: gmt_agc_io.c,v 1.19 2008-03-21 00:25:50 guru Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -140,14 +140,15 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
 	int width_in;			/* Number of items in one row of the subregion */
-	int width_out;			/* Width of row as return (may include padding) */
+	GMT_LONG width_out;			/* Width of row as return (may include padding) */
 	int height_in;			/* Number of columns in subregion */
 	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	int i, j, ij, j_gmt, i_0_out;	/* Misc. counters */
+	int i, j, j_gmt, i_0_out;	/* Misc. counters */
 	int *k;				/* Array with indices */
 	int size;			/* Length of data type */
 	int block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
 	int datablockcol, datablockrow, rowstart, rowend, colstart, colend, row, col;
+	GMT_LONG ij;
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
@@ -167,7 +168,7 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
-	width_out = width_in;		/* Width of output array */
+	width_out = (GMT_LONG)width_in;		/* Width of output array */
 	if (pad[0] > 0) width_out += pad[0];
 	if (pad[1] > 0) width_out += pad[1];
 
@@ -249,14 +250,15 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
-	int width_in;			/* Number of items in one row of the subregion */
+	GMT_LONG width_in;			/* Number of items in one row of the subregion */
 	int width_out;			/* Width of row as return (may include padding) */
 	int height_out;			/* Number of columns in subregion */
 	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	int i, j, i2, j2, ij;		/* Misc. counters */
+	int i, j, i2, j2;		/* Misc. counters */
 	int *k;				/* Array with indices */
 	int size;			/* Length of data type */
 	int block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
+	GMT_LONG ij;
 	FILE *fp;			/* File pointer to data or pipe */
 	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT];
@@ -280,7 +282,7 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
-	width_in = width_out;		/* Physical width of input array */
+	width_in = (GMT_LONG)width_out;		/* Physical width of input array */
 	if (pad[0] > 0) width_in += pad[0];
 	if (pad[1] > 0) width_in += pad[1];
 	if (complex) inc = 2;
