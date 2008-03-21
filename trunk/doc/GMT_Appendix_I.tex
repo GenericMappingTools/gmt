@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_I.tex,v 1.20 2008-03-13 17:26:31 remko Exp $
+%	$Id: GMT_Appendix_I.tex,v 1.21 2008-03-21 02:53:01 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -44,7 +44,7 @@ Are you very web-savvy and work best with hexadecimal color codes as they are us
 \end{figure}
 
 \section{HSV color system}
-If you have played around with RGB color sliders, you will have noticed that it is not intuitive to make a chosen color lighter or darker, more saturated or more gray. It would involve changing three sliders. To make it easier to manipulate colors in terms of lightness and saturation, another coordinate system was invented: HSV (hue, saturation, value). Those terms can be made clear best by looking at the color sliders in Figure~\ref{fig:gimp}\emph{a}. Hue (running from 0\DS\ to 360\DS) gives you the full spectrum of saturated colors. Saturation (from 0 to 1, or 100\%) tells you how `full' your color is: reduce it to zero and you only have gray scales. Value (from 0 to 1, or 100\%) will bring you from black to a fully saturated color. Note that ``value'' is not the same as ``brightness'', ``intensity'', or ``lightness'', used in other color geometries. ``Brilliance'' may be the best alternative word to describe ``value''.
+If you have played around with RGB color sliders, you will have noticed that it is not intuitive to make a chosen color lighter or darker, more saturated or more gray. It would involve changing three sliders. To make it easier to manipulate colors in terms of lightness and saturation, another coordinate system was invented: HSV (hue, saturation, value). Those terms can be made clear best by looking at the color sliders in Figure~\ref{fig:gimp}\emph{a}. Hue (running from 0\DS\ to 360\DS) gives you the full spectrum of saturated colors. Saturation (from 0 to 1, or 100\%) tells you how `full' your color is: reduce it to zero and you only have gray scales. Value (from 0 to 1, or 100\%) will bring you from black to a fully saturated color. Note that ``value'' is not the same as ``intensity'', or ``lightness'', used in other color geometries. ``Brilliance'' may be the best alternative word to describe ``value''. Apple calls it as ``brightness'', and hence refers to HSB for this color space.
 
 Want more chartreuse or chocolate? You can specify them in \GMT\ as 90-1-1 and 25-0.86-0.82, respectively.
 
@@ -109,7 +109,7 @@ we get to the point where we cannot remove any more gray, at least one
 of ($r$,$g$,$b$) will have become zero and the color is now fully
 saturated; $s = 1$.  Conversely, any point on the gray axis is
 completely undersaturated, so that $s = 0$ there.  Now we see that
-the black point is special, $s$ is both 0 and 1 at the same time. In other words, at the black point saturation in undefined (and so is hue).
+the black point is special, $s$ is both 0 and 1 at the same time. In other words, at the black point saturation in undefined (and so is hue). The convention is to use $h = s = v = 0$ at this point.
 
 It remains to define value. To do so, try this:
 Take your point in RGB space and construct a line through it so that
@@ -166,11 +166,11 @@ achieve artificial illumination of colored images (e.g. \Opt{I}
 option in \GMTprog{grdimage}) by changing the saturation \emph{s} and value \emph{v}
 coordinates of the color.  When the intensity is zero (flat illumination), the data
 are colored according to the cpt file.  If the intensity is
-non-zero, the data are given a starting color from the cpt file
-but this color (after conversion to HSV if necessary) is then
-changed by moving ($s$,$v$) toward (\textbf{HSV\_MIN\_SATURATION},
-\textbf{HSV\_MIN\_VALUE}) if the intensity is negative (shadow), or toward
-(\textbf{HSV\_MAX\_SATURATION}, \textbf{HSV\_MAX\_VALUE}) if the illumination is positive positive (illuminated).
+non-zero, the color is either lightened or darkened depending on the illumination.
+The color is first converted to HSV (if necessary) and then
+darkened by moving ($s$,$v$) toward (\textbf{HSV\_MIN\_SATURATION},
+\textbf{HSV\_MIN\_VALUE}) if the intensity is negative, or lightened by sliding ($s$,$v$) toward
+(\textbf{HSV\_MAX\_SATURATION}, \textbf{HSV\_MAX\_VALUE}) if the illumination is positive.
 The extremes of the $s$ and $v$ are defined in the \filename{.gmtdefaults4} file and are usually
 chosen so the corresponding points are nearly black ($s$ = 1,
 $v$ = 0) and white ($s$ = 0, $v$ = 1).
@@ -187,7 +187,7 @@ and a lighter shade of orange, or a less vivid orange''.  With HSV we
 can do this, by saying, ``Orange must be between red and yellow, so
 its hue is about $h$ = 30\DS; a less vivid orange has a lesser
 $s$, a darker orange has a lesser $v$''.  On the other hand,
-the HSV system is a peculiar geometric construction, it is not an
+the HSV system is a peculiar geometric construction, more like a cone (Figure~\ref{fig:hsv-cone}). It is not an
 orthogonal coordinate system, and it is not found by a matrix
 transformation of RGB; these make it difficult in some cases too.
 Note that a move toward black or a move toward white will change both
@@ -204,5 +204,6 @@ in RGB coordinates.
 \index{Color!CMYK system}
 Finally, you can imagine that printers work in a different way: they mix different paints to make a color. The more paint, the darker the color, which is the reverse of adding more light. Also, mixing more colored paints does not give you true black, so that means that you really need four colors to do it right. Open up your color printer and you'll probably find four cartridges: cyan, magenta, yellow (often these are combined into one), and black. They form the CMYK system of colors, each value running from 0 to 1 (or 100\%). In \GMT\ CMYK color coding can be achieved using $c$/$m$/$y$/$k$ quadruplets.
 
-Obviously, there is no unique way to go from a 3-dimensional system (RGB) to a 4-dimensional system. So, again, there is a lot of hand waving applied in the transformation. Strikingly, CMYK actually covers a smaller color space than RGB. We will not try to explain you the details behind it, just know that there is a transformation needed to go from the colors on your screen to the colors on your printer. It might explain why what you see is not necessarily what you get. If you are really concerned about how your color plots will show up in your PhD thesis, for example, it might be worth trying to print your plots using the CMYK system. It will preserve you from some nasty surprises when you let the publisher convert your RGB plots to CMYK themselves.
+Obviously, there is no unique way to go from the 3-dimensional RGB system to the 4-dimensional CMYK system. So, again, there is a lot of hand waving applied in the transformation. Strikingly, CMYK actually covers a smaller color space than RGB. We will not try to explain you the details behind it, just know that there is a transformation needed to go from the colors on your screen to the colors on your printer. It might explain why what you see is not necessarily what you get. If you are really concerned about how your color plots will show up in your PhD thesis, for example, it might be worth trying to save and print all your color plots using the CMYK system. Letting \GMT\ do the conversion to CMYK may avoid
+some nasty surprises when it comes down to printing. To specify the color space of your \PS\ file, set \textbf{PS\_COLOR} in the \filename{.gmtdefaults4} file to RGB, HSV, or CMYK.
 \index{Color|)}

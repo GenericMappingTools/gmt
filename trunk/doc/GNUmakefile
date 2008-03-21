@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.13 2008-03-13 17:26:31 remko Exp $
+#	$Id: GNUmakefile,v 1.14 2008-03-21 02:53:01 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -277,7 +277,8 @@ GMT_Tutorial/index.html:	$(TUTEPS) $(TUTTEX)
 install install-all:	install-pdf install-html
 install-pdf:	pdf
 	mkdir -p ../www/gmt/doc/pdf
-	mv -f GMT_{Docs,Tutorial}.pdf scripts/GMT_RGBchart_*.pdf ../www/gmt/doc/pdf
+	mv -f GMT_{Docs,Tutorial}.pdf ../www/gmt/doc/pdf
+	\cp -p scripts/GMT_RGBchart_*.pdf ../www/gmt/doc/pdf
 install-html:	html
 	\rm -rf ../www/gmt/doc/html/GMT_{Docs,Tutorial}
 	\rm -f GMT_{Docs,Tutorial}/{index.html,images.*,*.pl,WARNINGS}
