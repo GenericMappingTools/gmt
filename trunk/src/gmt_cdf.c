@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.48 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_cdf.c,v 1.49 2008-03-21 00:25:50 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -224,14 +224,15 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	int  ncid, err;
 	size_t start[1], edge[1];
 	int first_col, last_col, first_row, last_row;
-	int i, j, ij, width_in, width_out, height_in, i_0_out, kk, inc = 1;
+	int i, j, width_in, height_in, i_0_out, inc = 1;
+	GMT_LONG ij, kk, width_out;
 	int *k;
 	BOOLEAN check;
 	float *tmp = VNULL;
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
-	width_out = width_in;		/* Width of output array */
+	width_out = (GMT_LONG)width_in;		/* Width of output array */
 	if (pad[0] > 0) width_out += pad[0];
 	if (pad[1] > 0) width_out += pad[1];
 
@@ -298,8 +299,9 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	size_t start[1], edge[1];
 	int ncid, err;
 	int i, inc = 1, *k, nr_oor = 0;
-	int j, ij, width_in, width_out, height_out;
+	int j, width_out, height_out;
 	int first_col, last_col, first_row, last_row;
+	GMT_LONG ij, width_in;
 	float *tmp_f = VNULL;
 	int *tmp_i = VNULL;
 	double limit[2] = {-FLT_MAX, FLT_MAX}, value;
@@ -330,7 +332,7 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
-	width_in = width_out;		/* Physical width of input array */
+	width_in = (GMT_LONG)width_out;		/* Physical width of input array */
 	if (pad[0] > 0) width_in += pad[0];
 	if (pad[1] > 0) width_in += pad[1];
 
