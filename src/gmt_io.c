@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.151 2008-03-22 11:55:34 guru Exp $
+ *	$Id: gmt_io.c,v 1.152 2008-03-22 16:12:36 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -129,6 +129,9 @@ GMT_LONG GMT_scanf_geo (char *s, double *val);
 GMT_LONG GMT_scanf_float (char *s, double *val);
 GMT_LONG GMT_n_segment_points (struct GMT_LINE_SEGMENT *S, GMT_LONG n_segments);
 
+FILE *GMT_nc_fopen (const char *filename, const char *mode);
+GMT_LONG GMT_nc_input (FILE *fp, GMT_LONG *n, double **ptr);
+
 /* Library functions needed for WIndows DLL to work properly.
  * THese are only compiled under Windows - under other OS the
  * macros in gmt_io.h will kick in instead.
@@ -163,30 +166,155 @@ long GMT_ftell (FILE *stream)
 	return (ftell(stream));
 }
 
-size_t GMT_fread (void * ptr, size_t size, size_t nmemb, FILE * stream)
+size_t GMT_fread (void *ptr, size_t size, size_t nmemb, FILE * stream)
 {
 	return (fread (ptr, size, nmemb, stream));
 }
 
-size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE * stream)
+size_t GMT_fwrite (const void *ptr, size_t size, size_t nmemb, FILE * stream)
 {
 	return (fwrite (ptr, size, nmemb, stream));
 }
+#endif
 
 int GMT_fclose (FILE *stream)
 {
-        return (fclose (stream));
+	if (GMT_io.ncid) {
+		nc_close (GMT_io.ncid);
+		GMT_free (GMT_io.varid);
+		GMT_free (GMT_io.add_offset);
+		GMT_free (GMT_io.scale_factor);
+		GMT_free (GMT_io.missing_value);
+		GMT_io.ncid = GMT_io.nvars = GMT_io.ndim = GMT_io.nrec = 0;
+		GMT_input = GMT_input_ascii;
+		return (0);
+	}
+	else
+		return (fclose (stream));
 }
-#endif
 
-FILE *GMT_fopen (const char* filename, const char *mode)
+FILE *GMT_fopen (const char *filename, const char *mode)
 {
 	char path[BUFSIZ];
+	FILE *fp;
 
-	if (mode[0] == 'r')
-		return (fopen (GMT_getdatapath(filename, path),mode));
+	if (strchr (filename, '?')) return (GMT_nc_fopen (filename, mode)); /* Must be netCDF */
+	if (mode[0] == 'r') {
+		/* Open file as NetCDF. If unsuccessful, try fopen instead */
+		if ((fp = GMT_nc_fopen (filename, mode))) return (fp);
+		return (fopen (GMT_getdatapath(filename, path), mode));
+	}
 	else
 		return (fopen (filename, mode));
+}
+
+FILE *GMT_nc_fopen (const char *filename, const char *mode)
+/* Open a netCDF file for column I/O. Append ?var1/var2/... to indicate the requested
+ * columns.
+ * Currently only reading is supported.
+ * The routine returns a fake file pointer (in fact the netCDF file ID), but stores
+ * all the relevant information in the GMT_io struct (ncid, ndim, nrec, varid, add_offset,
+ * scale_factor, missing_value). Some of these are allocated here, and have to be
+ * deallocated upon GMT_fclose.
+ * Also asigns GMT_io.in_col_type based on the variable attributes.
+ */
+{
+	char file[BUFSIZ], path[BUFSIZ];
+	int i, j;
+	size_t n;
+	char varnm[10][GMT_TEXT_LEN], long_name[GMT_LONG_TEXT], units[GMT_LONG_TEXT], varname[GMT_TEXT_LEN];
+	struct GMT_TIME_SYSTEM time_system;
+	BOOLEAN get_all = FALSE;
+
+	if (mode[0] != 'r') {
+		fprintf (stderr, "%s: GMT_fopen does not support netCDF writing mode\n", GMT_program);
+		GMT_exit (EXIT_FAILURE);
+	}
+
+	GMT_io.ncid = GMT_io.nvars = GMT_io.ndim = GMT_io.nrec = 0;
+	GMT_io.nvars = sscanf (filename, "%[^?]?%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9]) - 1;
+	if (nc_open (GMT_getdatapath(file, path), NC_NOWRITE, &GMT_io.ncid)) return (NULL);
+	if (GMT_io.nvars == 0) {
+		nc_inq_nvars (GMT_io.ncid, &GMT_io.nvars);
+		get_all = TRUE;
+	}
+	GMT_io.varid = (int *)GMT_memory (VNULL, (size_t)GMT_io.nvars, sizeof (int), GMT_program);
+	GMT_io.scale_factor = (double *)GMT_memory (VNULL, (size_t)GMT_io.nvars, sizeof (double), GMT_program);
+	GMT_io.add_offset = (double *)GMT_memory (VNULL, (size_t)GMT_io.nvars, sizeof (double), GMT_program);
+	GMT_io.missing_value = (double *)GMT_memory (VNULL, (size_t)GMT_io.nvars, sizeof (double), GMT_program);
+
+	for (i = 0; i < GMT_io.nvars; i++) {
+		/* Get variable ID */
+		if (get_all)
+			GMT_io.varid[i] = i;
+		else
+			GMT_err_fail (nc_inq_varid (GMT_io.ncid, varnm[i], &GMT_io.varid[i]), file);
+		nc_inq_varname (GMT_io.ncid, GMT_io.varid[i], varname);
+
+		/* Check column size */
+		nc_inq_varndims (GMT_io.ncid, GMT_io.varid[i], &j);
+		if (j != 1) {
+			fprintf (stderr, "%s: NetCDF variable %s is not 1-dimensional\n", GMT_program, varname);
+			GMT_exit (EXIT_FAILURE);
+		}
+		nc_inq_vardimid(GMT_io.ncid, GMT_io.varid[i], &j);
+		nc_inq_dimlen(GMT_io.ncid, j, &n);
+		if (GMT_io.ndim != 0 && GMT_io.ndim != n) {
+			fprintf (stderr, "%s: NetCDF variable %s has different dimension (%d) from others (%d)\n", GMT_program, varname, (int)n, (int)GMT_io.ndim);
+			GMT_exit (EXIT_FAILURE);
+		}
+		GMT_io.ndim = n;
+
+		/* Get scales, offsets and missing values */
+		if (nc_get_att_double(GMT_io.ncid, GMT_io.varid[i], "scale_factor", &GMT_io.scale_factor[i])) GMT_io.scale_factor[i] = 1.0;
+		if (nc_get_att_double(GMT_io.ncid, GMT_io.varid[i], "add_offset", &GMT_io.add_offset[i])) GMT_io.add_offset[i] = 0.0;
+		if (nc_get_att_double (GMT_io.ncid, GMT_io.varid[i], "_FillValue", &GMT_io.missing_value[i]) &&
+		    nc_get_att_double (GMT_io.ncid, GMT_io.varid[i], "missing_value", &GMT_io.missing_value[i])) GMT_io.missing_value[i] = GMT_d_NaN;
+
+		/* Scan for geographical or time units */
+		if (GMT_nc_get_att_text (GMT_io.ncid, GMT_io.varid[i], "long_name", long_name, GMT_LONG_TEXT)) long_name[0] = 0;
+		if (GMT_nc_get_att_text (GMT_io.ncid, GMT_io.varid[i], "units", units, GMT_LONG_TEXT)) units[0] = 0;
+		GMT_str_tolower (long_name); GMT_str_tolower (units);
+
+		if (!strcmp (long_name, "longitude") || strstr (units, "degrees_e"))
+			GMT_io.in_col_type[i] = GMT_IS_LON;
+		else if (!strcmp (long_name, "latitude") || strstr (units, "degrees_n"))
+			GMT_io.in_col_type[i] = GMT_IS_LAT;
+		else if (!strcmp (long_name, "time") || !strcmp (varname, "time")) {
+			GMT_io.in_col_type[i] = GMT_IS_RELTIME;
+			memcpy ((void *)&time_system, (void *)&gmtdefs.time_system, sizeof (struct GMT_TIME_SYSTEM));
+			if (GMT_get_time_system (units, &time_system) || GMT_init_time_system_structure (&time_system))
+				fprintf (stderr, "%s: Warning: Time units [%s] in NetCDF file not recognised, defaulting to gmtdefaults.\n", GMT_program, units);
+			/* Determine scale between data and internal time system, as well as the offset (in internal units) */
+			GMT_io.scale_factor[i] = time_system.scale * gmtdefs.time_system.i_scale;
+			GMT_io.add_offset[i] = (time_system.rata_die - gmtdefs.time_system.rata_die) + (time_system.epoch_t0 - gmtdefs.time_system.epoch_t0);
+			GMT_io.add_offset[i] *= GMT_DAY2SEC_F * gmtdefs.time_system.i_scale;
+		}
+		else if (GMT_io.in_col_type[i] == GMT_IS_UNKNOWN)
+			GMT_io.in_col_type[i] = GMT_IS_FLOAT;
+	}
+
+	GMT_input = GMT_nc_input;
+	return ((FILE *)GMT_io.ncid);
+}
+
+GMT_LONG GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen)
+{	/* This function is a replacement for nc_get_att_text that avoids overflow of text
+	 * ncid, varid, name, text	: as in nc_get_att_text
+	 * textlen			: maximum number of characters to copy to string text
+	 */
+	GMT_LONG err;
+	size_t attlen;
+	char *att;
+
+	GMT_err_trap (nc_inq_attlen (ncid, varid, name, &attlen));
+	att = (char *) GMT_memory (VNULL, attlen, sizeof (char), "GMT_nc_get_att_text");
+	nc_get_att_text (ncid, varid, name, att);
+	attlen = MIN (attlen, textlen-1);	/* Truncate text to one less than textlen (to keep space for NUL terminator) */
+	memcpy (text, att, attlen);		/* Copy att to text */
+	memset (&text[attlen], 0, textlen - attlen);	/* Fill rest of text with zeros */
+	GMT_free (att);
+	return (GMT_NOERROR);
 }
 
 /* Table I/O routines for ascii and binary io */
@@ -565,6 +693,36 @@ char *GMT_fgets (char *record, int maxlength, FILE *fp)
 	return (fgets (record, maxlength, fp));
 }
 #endif
+
+GMT_LONG GMT_nc_input (FILE *fp, GMT_LONG *n, double **ptr)
+{
+	GMT_LONG i;
+
+	GMT_io.status = 0;
+	if (*n == BUFSIZ)
+		*n = GMT_io.nvars;
+	else if (*n > GMT_io.nvars) {
+		fprintf (stderr, "%s: GMT_nc_input is asking for %ld columns, but file has only %d\n", GMT_program, *n, GMT_io.nvars);
+		GMT_io.status = GMT_IO_MISMATCH;
+	}
+
+	for (i = 0; i < GMT_io.nvars && i < *n; i++) {
+		nc_get_var1_double (GMT_io.ncid, GMT_io.varid[i], &GMT_io.nrec, &GMT_data[i]);
+		if (GMT_data[i] == GMT_io.missing_value[i])
+			GMT_data[i] = GMT_d_NaN;
+		else
+			GMT_data[i] = GMT_data[i] * GMT_io.scale_factor[i] + GMT_io.add_offset[i];
+	}
+	if (GMT_io.nrec == GMT_io.ndim) GMT_io.status = GMT_IO_EOF;
+	GMT_io.nrec++;
+
+	*ptr = GMT_data;
+
+	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+
+	return (i);
+}
 
 GMT_LONG GMT_bin_double_input (FILE *fp, GMT_LONG *n, double **ptr)
 {
