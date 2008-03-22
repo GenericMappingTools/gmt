@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.355 2008-03-22 11:55:35 guru Exp $
+ *	$Id: gmt_support.c,v 1.356 2008-03-22 22:00:43 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7073,13 +7073,13 @@ GMT_LONG GMT_log_array (double min, double max, double delta, double **array)
 	test = irint (fabs (delta)) - 1;
 	if (test == 1) {
 		tvals[0] = 0.0;	/* = log10 (1.0) */
-		tvals[1] = log10 (2.0);
-		tvals[2] = log10 (5.0);
+		tvals[1] = d_log10 (2.0);
+		tvals[2] = d_log10 (5.0);
 		nticks = 3;
 	}
 	else if (test == 2) {
 		nticks = 9;
-		for (i = 0; i < nticks; i++) tvals[i] = log10 ((double)(i + 1));
+		for (i = 0; i < nticks; i++) tvals[i] = d_log10 ((double)(i + 1));
 	}
 	else {
 		tvals[0] = 0.0;
