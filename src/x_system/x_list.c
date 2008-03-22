@@ -1,5 +1,5 @@
 /*
- *	$Id: x_list.c,v 1.7 2007-03-12 19:52:27 remko Exp $
+ *	$Id: x_list.c,v 1.8 2008-03-22 11:55:37 guru Exp $
  *
  * XLIST produces ASCII listings of cross-over info. The xx_base.b-file
  * contains longitude(x), latitude(y), time1(t1), time2(t2),  heading1(h),
@@ -38,18 +38,18 @@
 struct CORR **bin;
 
 size_t binsize = sizeof(struct CORR);
-int nlegs = 0;
-int nbadlegs=0;
+GMT_LONG nlegs = 0;
+GMT_LONG nbadlegs=0;
 
 char badlegs[BUFSIZ][10];
 
-int get_id (char *name);
-int findleg (char *name);
+GMT_LONG get_id (char *name);
+GMT_LONG findleg (char *name);
 
 int main (int argc, char *argv[])
 {
-	int i, j, id1, id2, time, no[12];
-	int nval = 0, ok, n_x, nlegs_in = 0, strike, heading;
+	GMT_LONG i, j, id1, id2, time, no[12];
+	GMT_LONG nval = 0, ok, n_x, nlegs_in = 0, strike, heading;
 	char error, g, m, b, SH_format = FALSE, once = FALSE;
 	char corrfile[80], correct = FALSE, inter = FALSE, leg[2][10];
 	char internal, legchoice = FALSE, header[REC_SIZE], shift_ok, skip, swap;
@@ -307,7 +307,7 @@ int main (int argc, char *argv[])
 	once = (inter && legchoice) || (nlegs_in == 2);
 
 	while (ok) {
-		sscanf(header, "%s %s %d",lega, legb, &n_x);
+		sscanf(header, "%s %s %ld",lega, legb, &n_x);
 		internal = !strcmp(lega, legb);
 		skip = FALSE;
 		if ((inter && !internal) || (!inter && internal))
@@ -329,7 +329,7 @@ int main (int argc, char *argv[])
 			id1 = get_id(lega);
 			id2 = (internal) ? id1 : get_id(legb);
 			shift_ok = (id1 >=0 && id2 >= 0);
-			if (verbose) fprintf (stderr, "%s %s nx=%d\n", lega, legb, n_x);
+			if (verbose) fprintf (stderr, "%s %s nx=%ld\n", lega, legb, n_x);
 			for (j = 0; j < n_x; j++) {
 				if ((ok = fread ((void *)&crossover, REC_SIZE, (size_t)1, fp)) != (size_t)1) {
 					fprintf (stderr, "Read error on xx_base.b\n");
@@ -354,10 +354,10 @@ int main (int argc, char *argv[])
 					switch(no[i]) {
 						case 0:	/* Print out time */
 							if (internal)
-								time = (int)fabs(t2-t1);
+								time = (GMT_LONG)fabs(t2-t1);
 							else
-								time = (int)((swap) ? t2 : t1);
-							printf ("%d", time);
+								time = (GMT_LONG)((swap) ? t2 : t1);
+							printf ("%ld", time);
 							break;
 						case 1:	/* Print out longitude */
 							if (lon > 360.0) lon -= 360.0;
@@ -385,7 +385,7 @@ int main (int argc, char *argv[])
 								if (shift_ok) xmag -= bin[id1]->dc_shift_gmt[1] + bin[id1]->drift_rate_gmt[1] * t1
 								- bin[id2]->dc_shift_gmt[1] - bin[id2]->drift_rate_gmt[1] * t2;
 								if (swap) xmag = -xmag;
-		 						printf ("%d", (int) xmag);
+		 						printf ("%ld", (GMT_LONG) xmag);
 		 					}
 							break;
 						case 5:	/* Print out bathymetry cross-over */
@@ -396,7 +396,7 @@ int main (int argc, char *argv[])
 								if (shift_ok) xtop -= bin[id1]->dc_shift_gmt[2] + bin[id1]->drift_rate_gmt[2] * t1
 								- bin[id2]->dc_shift_gmt[2] - bin[id2]->drift_rate_gmt[2] * t2;
 								if (swap) xtop = -xtop;
-								printf ("%d", (int) xtop);
+								printf ("%ld", (GMT_LONG) xtop);
 							}
 							break;
 						case 6:	/* Print out gravity */
@@ -416,7 +416,7 @@ int main (int argc, char *argv[])
 								mag = crossover.gmt[1];
 								if (shift_ok) mag -= bin[id1]->dc_shift_gmt[1] + bin[id1]->drift_rate_gmt[1] * t1
 								- bin[id2]->dc_shift_gmt[1] - bin[id2]->drift_rate_gmt[1] * t2;
-		 						printf ("%d", (int) mag);
+		 						printf ("%ld", (GMT_LONG) mag);
 		 					}
 							break;
 						case 8:	/* Print out bathymetry */
@@ -426,12 +426,12 @@ int main (int argc, char *argv[])
 								top = crossover.gmt[2];
 								if (shift_ok) top -= bin[id1]->dc_shift_gmt[2] + bin[id1]->drift_rate_gmt[2] * t1
 								- bin[id2]->dc_shift_gmt[2] - bin[id2]->drift_rate_gmt[2] * t2;
-								printf ("%d", (int) top);
+								printf ("%ld", (GMT_LONG) top);
 							}
 							break;
 						case 9: /* Print out heading */
 							heading = (swap) ? crossover.xhead[1] : crossover.xhead[0];
-							printf ("%d", heading);
+							printf ("%ld", heading);
 							break;
 						case 10: /* Print out leg_1 */
 							(swap) ? printf ("%s", legb) : printf ("%s", lega);
@@ -459,9 +459,9 @@ int main (int argc, char *argv[])
 
 }
 
-int get_id (char *name)
+GMT_LONG get_id (char *name)
 {
-	int left, right, mid, cmp;
+	GMT_LONG left, right, mid, cmp;
 
 	left = 0;
 	right = nlegs-1;
@@ -478,9 +478,9 @@ int get_id (char *name)
 	return (-1);
 }
 
-int findleg (char *name)
+GMT_LONG findleg (char *name)
 {
-	int left, right, mid, cmp;
+	GMT_LONG left, right, mid, cmp;
 
 	left = 0;
 	right = nbadlegs-1;

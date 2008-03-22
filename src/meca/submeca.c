@@ -1,4 +1,4 @@
-/*	$Id: submeca.c,v 1.7 2008-02-22 08:49:16 guru Exp $
+/*	$Id: submeca.c,v 1.8 2008-03-22 11:55:36 guru Exp $
  *    Copyright (c) 1996-2008 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -184,7 +184,7 @@ void rot_meca(st_me meca,struct nodal_plane PREF,st_me *mecar)
 }
 
 
-int gutm(double lon ,double lat ,double *xutm ,double *yutm,int fuseau)
+GMT_LONG gutm(double lon ,double lat ,double *xutm ,double *yutm,GMT_LONG fuseau)
 {
      double ccc = 6400057.7, eprim = 0.08276528;
      double alfe = 0.00507613, bete = 0.429451e-4;
@@ -197,7 +197,7 @@ int gutm(double lon ,double lat ,double *xutm ,double *yutm,int fuseau)
      double xi;
 
      if(fuseau == 0)
-             fuseau = (int)((lon + 186.) / 6.);
+             fuseau = (GMT_LONG)((lon + 186.) / 6.);
 
 /* calcul des coordonnees utm */
      amo = ((double)fuseau * 6. - 183.);
@@ -224,7 +224,7 @@ int gutm(double lon ,double lat ,double *xutm ,double *yutm,int fuseau)
      return(fuseau);
 }
 
-int dans_coupe(double lon,double lat,double depth,double xlonref,double ylatref,int fuseau,double str,double dip,double p_length,double p_width,double *distance,double *n_dep)
+GMT_LONG dans_coupe(double lon,double lat,double depth,double xlonref,double ylatref,GMT_LONG fuseau,double str,double dip,double p_length,double p_width,double *distance,double *n_dep)
 
 /* if fuseau < 0, cartesian coordinates */
 
@@ -232,7 +232,7 @@ int dans_coupe(double lon,double lat,double depth,double xlonref,double ylatref,
      double xlon, ylat;
      double largeur;
      double sd, cd, ss, cs;
-     int test;
+     GMT_LONG test;
 
      if(fuseau >= 0) {
          gutm(lon, lat, &xlon, &ylat, fuseau);

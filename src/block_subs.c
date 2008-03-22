@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.c,v 1.5 2008-01-23 03:22:47 guru Exp $
+ *    $Id: block_subs.c,v 1.6 2008-03-22 11:55:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,7 +42,7 @@ int BLK_compare_index_z (const void *point_1, const void *point_2)
 }
 
 /* Sort on index, then the specified item a[0,1,2] = x, y, z */
-int BLK_compare_sub (const void *point_1, const void *point_2, int item)
+int BLK_compare_sub (const void *point_1, const void *point_2, GMT_LONG item)
 {
 	struct BLK_DATA *p1, *p2;
 

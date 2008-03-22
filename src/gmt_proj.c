@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.35 2008-03-12 02:27:08 guru Exp $
+ *	$Id: gmt_proj.c,v 1.36 2008-03-22 11:55:35 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -578,7 +578,7 @@ void GMT_lamb (double lon, double lat, double *x, double *y)
 
 void GMT_ilamb (double *lon, double *lat, double x, double y)
 {
-	int i;
+	GMT_LONG i;
 	double theta, rho, t, tphi, phi, delta, dy, r;
 
 	theta = d_atan2 (x, project_info.l_rho0 - y);
@@ -1079,8 +1079,8 @@ void genper_tolatlong (double x, double y, double h, double *lat, double *lon)
 	double e2, R, one_m_e2;
 	double cphi1, sphi1;
 
-	int niter;
-	int set_exit = 0;
+	GMT_LONG niter;
+	GMT_LONG set_exit = 0;
 
 	h *= 1e3;
 
@@ -1206,7 +1206,7 @@ void genper_tolatlong (double x, double y, double h, double *lat, double *lon)
 			if (GMT_is_dnan(Kp) || GMT_is_dnan(X) || GMT_is_dnan(Y) || GMT_is_dnan(S) || GMT_is_dnan(phi) || GMT_is_dnan(E)) set_exit++;
 			if (set_exit == 1) fprintf (stderr, "genper_tolatlong - 4 \n");
 			if (set_exit || project_info.g_debug > 1) {
-				fprintf (stderr, "\niter %d\n", niter);
+				fprintf (stderr, "\niter %ld\n", niter);
 				fprintf (stderr, "t    %12.7f\n", t);
 				fprintf (stderr, "Kp   %12.1f\n", Kp);
 				fprintf (stderr, "X    %12.1f\n", X);
@@ -1237,7 +1237,7 @@ void genper_setup (double h0, double altitude, double lat, double lon0)
 	double sphi1, cphi1, sphig, cphig;
 	double a, e2, phig;
 
-	int niter;
+	GMT_LONG niter;
 
 	a = project_info.EQ_RAD;
 	e2 = project_info.ECC2;
@@ -1363,7 +1363,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 	double rlat0, rlat1, dlong;
 	double lat0_save;
 	double vp_lat, vp_long;
-	int az;
+	GMT_LONG az;
 
 	project_info.central_meridian = lon0;
 
@@ -1591,7 +1591,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 			y *= rmax;
 			genper_to_xtyt ((double)az, x, y, project_info.g_yoffset, &xt, &yt);
 
-			if (project_info.g_debug > 2) fprintf (fp,"%3i x %10.2f y %10.2f xt %10.3f yt %10.3f\n", az, x/1000, y/1000, xt/1000, yt/1000);
+			if (project_info.g_debug > 2) fprintf (fp,"%3li x %10.2f y %10.2f xt %10.3f yt %10.3f\n", az, x/1000, y/1000, xt/1000, yt/1000);
 
 			xt_min = MIN (xt, xt_min);
 			xt_max = MAX (xt, xt_max);
@@ -1772,21 +1772,21 @@ void GMT_igenper (double *lon, double *lat, double xt, double yt)
 	return;
 }
 
-int GMT_genper_overlap (double lon0, double lat0, double lon1, double lat1)
+GMT_LONG GMT_genper_overlap (double lon0, double lat0, double lon1, double lat1)
 {
 /* Dummy routine */
 	if (project_info.g_debug > 0) fprintf (stderr, "genper_overlap: overlap called\n");
 	return (TRUE);
 }
 
-int GMT_genper_map_clip_path (int np, double *work_x, double *work_y)
+GMT_LONG GMT_genper_map_clip_path (GMT_LONG np, double *work_x, double *work_y)
 {
-	int i;
+	GMT_LONG i;
 	double da, angle;
 	double x, y, xt, yt;
 
 	if (project_info.g_debug > 0) {
-		fprintf (stderr, "\n\ngenper_map_clip_path: np %d\n", np);
+		fprintf (stderr, "\n\ngenper_map_clip_path: np %ld\n", np);
 		fprintf (stderr, " x_scale %e y_scale %e, x0 %e y0 %e\n", project_info.x_scale, project_info.y_scale, project_info.x0, project_info.y0);
 	}
 
@@ -1975,7 +1975,7 @@ void GMT_vmollweide (double lon0, double scale)
 void GMT_mollweide (double lon, double lat, double *x, double *y)
 {
 	/* Convert lon/lat to Mollweide Equal-Area x/y */
-	int i;
+	GMT_LONG i;
 	double phi, delta, psin_lat, c, s;
 
 	if (GMT_IS_ZERO (fabs (lat) - 90.0)) {	/* Special case */
@@ -2208,7 +2208,7 @@ void GMT_iwinkel (double *lon, double *lat, double x, double y)
 	 * Ipbuker, 2002, Cartography & Geographical Information Science, 20, 1, 37-42.
 	 */
 
-	int n_iter = 0;
+	GMT_LONG n_iter = 0;
 	double phi0, lambda0, sp, cp, s2p, sl, cl, sl2, cl2, C, D, sq_C, C_32;
 	double f1, f2, df1dp, df1dl, df2dp, df2dl, denom, delta;
 
@@ -2251,7 +2251,7 @@ void GMT_iwinkel (double *lon, double *lat, double x, double y)
 
 void GMT_iwinkel_sub (double y, double *phi)
 {	/* Valid only along meridian 180 degree from central meridian.  Used in left/right_winkel only */
-	int n_iter = 0;
+	GMT_LONG n_iter = 0;
 	double c, phi0, delta, sp, cp;
 
 	c = 2.0 * y * project_info.i_EQ_RAD;
@@ -2304,7 +2304,7 @@ void GMT_veckert4 (double lon0)
 
 void GMT_eckert4 (double lon, double lat, double *x, double *y)
 {
-	int n_iter = 0;
+	GMT_LONG n_iter = 0;
 	double phi, delta, s_lat, s, c;
 	/* Convert lon/lat to Eckert IV x/y */
 
@@ -2378,7 +2378,7 @@ void GMT_veckert6 (double lon0)
 
 void GMT_eckert6 (double lon, double lat, double *x, double *y)
 {
-	int n_iter = 0;
+	GMT_LONG n_iter = 0;
 	double phi, delta, s_lat, s, c;
 	/* Convert lon/lat to Eckert VI x/y */
 
@@ -2442,7 +2442,7 @@ double GMT_right_eckert6 (double y)
 
 void GMT_vrobinson (double lon0)
 {
-	int err_flag;
+	GMT_LONG err_flag;
 
 	/* Set up Robinson projection */
 
@@ -2525,7 +2525,7 @@ void GMT_irobinson (double *lon, double *lat, double x, double y)
 double GMT_robinson_spline (double xp, double *x, double *y, double *c) {
 	/* Compute the interpolated values from the Robinson coefficients */
 
-	int j = 0, j1;
+	GMT_LONG j = 0, j1;
 	double yp, a, b, h, ih, dx;
 
 	if (xp < x[0] || xp > x[GMT_N_ROBINSON-1])	/* Desired point outside data range */
@@ -2849,7 +2849,7 @@ void GMT_ialbers (double *lon, double *lat, double x, double y)
 {
 	/* Convert Albers x/y to lon/lat */
 
-	int n_iter;
+	GMT_LONG n_iter;
 	double theta, rho, q, phi, phi0, s, c, s2, ex_1, delta, r;
 
 	theta = (project_info.a_n < 0.0) ? d_atan2 (-x, y - project_info.a_rho0) : d_atan2 (x, project_info.a_rho0 - y);

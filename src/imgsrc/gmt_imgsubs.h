@@ -1,4 +1,4 @@
-/* $Id: gmt_imgsubs.h,v 1.6 2008-01-23 03:22:49 guru Exp $
+/* $Id: gmt_imgsubs.h,v 1.7 2008-03-22 11:55:36 guru Exp $
  *
  * Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  * See COPYING file for copying and redistribution conditions.
@@ -60,10 +60,10 @@ struct GMT_IMG_RANGE {
  
  struct GMT_IMG_COORD {
 	double	radius;		/* # of pixels in 1 radian of longitude */
-	int	nx360;		/* # of pixels in 360 degrees of longtd */
-	int	nxcol;		/* # of columns in input img file  */
-	int	nyrow;		/* # of rows in input img file  */
-	int	nytop;		/* # of rows from Equator to top edge */
+	GMT_LONG	nx360;		/* # of pixels in 360 degrees of longtd */
+	GMT_LONG	nxcol;		/* # of columns in input img file  */
+	GMT_LONG	nyrow;		/* # of rows in input img file  */
+	GMT_LONG	nytop;		/* # of rows from Equator to top edge */
 };
 
 double	GMT_img_gud_fwd (double y);		/* Forward Gudermannian function */
@@ -76,4 +76,4 @@ double	GMT_img_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord);
 double	GMT_img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord);
 
 /* Function to set up the GMT_IMG_COORD based on GMT_IMG_RANGE */
-int     GMT_img_setup_coord (struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c);
+GMT_LONG     GMT_img_setup_coord (struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c);

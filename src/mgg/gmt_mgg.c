@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.15 2008-01-23 03:22:49 guru Exp $
+ *	$Id: gmt_mgg.c,v 1.16 2008-03-22 11:55:36 guru Exp $
  *
  *    Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -39,7 +39,7 @@
 #include "carter.h"	/* Carter Tables parameters */
 
 char *gmtmgg_path[10];	/* Max 10 directories for now */
-int n_gmtmgg_paths = 0;	/* Number of these directories */
+GMT_LONG n_gmtmgg_paths = 0;	/* Number of these directories */
 char *MGG_SHAREDIR;	/* Copy of GMT_SHAREDIR (for DLL purposes) */
 
 BOOLEAN MGD77_first_1900 = FALSE, MGD77_first_2000 = FALSE;
@@ -51,20 +51,20 @@ BOOLEAN MGD77_first_1900 = FALSE, MGD77_first_2000 = FALSE;
  * through the argument list.
  */
  
-int gmtmgg_date (int time, int *year, int *month, int *day, int *hour, int *minute, int *second, struct GMTMGG_TIME *gmt_struct)
+GMT_LONG gmtmgg_date (GMT_LONG time, GMT_LONG *year, GMT_LONG *month, GMT_LONG *day, GMT_LONG *hour, GMT_LONG *minute, GMT_LONG *second, struct GMTMGG_TIME *gmt_struct)
 {
-	int day_time, julian_day;
+	GMT_LONG day_time, julian_day;
 	day_time = time/86400;
 	*month = day_time / 31 + 1;	/* Only approximately, may be smaller */
 
 	if ((*month) < 0 || (*month) >= GMTMGG_TIME_MAXMONTH) {
-		fprintf (stderr, "GMT ERROR: in gmtmgg_date: Month outside valid range [0-%d>: %d\n", GMTMGG_TIME_MAXMONTH, *month);
+		fprintf (stderr, "GMT ERROR: in gmtmgg_date: Month outside valid range [0-%d>: %ld\n", GMTMGG_TIME_MAXMONTH, *month);
 		GMT_exit (EXIT_FAILURE);
 	}
 	while (gmt_struct->daymon[*month +1] <= day_time) {
 		(*month)++;
 		if ((*month) < 0 || (*month) > GMTMGG_TIME_MAXMONTH) {
-			fprintf (stderr, "GMT ERROR: in gmtmgg_date: Month outside valid range [0-%d>: %d\n", GMTMGG_TIME_MAXMONTH, *month);
+			fprintf (stderr, "GMT ERROR: in gmtmgg_date: Month outside valid range [0-%d>: %ld\n", GMTMGG_TIME_MAXMONTH, *month);
 			GMT_exit (EXIT_FAILURE);
 		}
 	}
@@ -97,11 +97,11 @@ int gmtmgg_date (int time, int *year, int *month, int *day, int *hour, int *minu
  *
  */
  
-struct GMTMGG_TIME *gmtmgg_init (int year1)
+struct GMTMGG_TIME *gmtmgg_init (GMT_LONG year1)
 {
 	struct GMTMGG_TIME *gmt_struct;
-	int dm[12];	/* No of days in each month */
-	int year, this_year, month, m;
+	GMT_LONG dm[12];	/* No of days in each month */
+	GMT_LONG year, this_year, month, m;
 	gmt_struct = (struct GMTMGG_TIME *) GMT_memory (VNULL, (size_t)1, sizeof(struct GMTMGG_TIME), "gmtmgg_init");
 	gmt_struct->first_year = year1;
 	/* initialize days of the month etc. */
@@ -140,18 +140,18 @@ struct GMTMGG_TIME *gmtmgg_init (int year1)
  /* MODIFIED 10 July, 1987 by W. Smith  --  I killed a bug in
      month calculation */
  
-int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, int second, struct GMTMGG_TIME *gmt_struct)
+GMT_LONG gmtmgg_time (GMT_LONG *time, GMT_LONG year, GMT_LONG month, GMT_LONG day, GMT_LONG hour, GMT_LONG minute, GMT_LONG second, struct GMTMGG_TIME *gmt_struct)
 {
-	int mon, n_days, bad = 0;
+	GMT_LONG mon, n_days, bad = 0;
 	if ((mon = (year - gmt_struct->first_year)) > 4) {
 		fprintf (stderr, "gmtmgg_time:  Year - first_year > 4\n");
 		return(-1);
 	}
-	if (month < 1 || month > 12) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Month out of range [1-12]: %d\n", month), bad++;
-	if (day < 1 || day > 31) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Day out of range [1-31]: %d\n", day), bad++;
-	if (hour < 0 || hour > 24) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Hour out of range [0-24]: %d\n", hour), bad++;
-	if (minute < 0 || minute > 60) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Minute out of range [0-60]: %d\n", minute), bad++;
-	if (second < 0 || second > 60) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Second out of range [0-60]: %d\n", second), bad++;
+	if (month < 1 || month > 12) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Month out of range [1-12]: %ld\n", month), bad++;
+	if (day < 1 || day > 31) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Day out of range [1-31]: %ld\n", day), bad++;
+	if (hour < 0 || hour > 24) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Hour out of range [0-24]: %ld\n", hour), bad++;
+	if (minute < 0 || minute > 60) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Minute out of range [0-60]: %ld\n", minute), bad++;
+	if (second < 0 || second > 60) fprintf (stderr, "GMT WARNING: in gmtmgg_time: Second out of range [0-60]: %ld\n", second), bad++;
 	if (bad) return (-1);	/* When we got garbage input */
 	mon = mon * 12 + month;
 	n_days = gmt_struct->daymon[mon] + day - 1;
@@ -164,7 +164,7 @@ int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, 
  */
  
 void gmtmggpath_init (char *dir) {
-	int i;
+	GMT_LONG i;
 	char file[BUFSIZ], line[BUFSIZ];
 	FILE *fp;
 
@@ -201,9 +201,9 @@ void gmtmggpath_init (char *dir) {
  * called first
  */
  
-int gmtmggpath_func (char *leg_path, char *leg)
+GMT_LONG gmtmggpath_func (char *leg_path, char *leg)
 {
-	int id;
+	GMT_LONG id;
 	char geo_path[BUFSIZ];
 	
 	/* First look in current directory */
@@ -226,9 +226,9 @@ int gmtmggpath_func (char *leg_path, char *leg)
 	return(1);
 }
 	
-int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, struct GMTMGG_TIME **gmt)
+GMT_LONG gmtmgg_decode_MGD77 (char *string, GMT_LONG tflag, struct GMTMGG_REC *record, struct GMTMGG_TIME **gmt)
 {
-	int year, month, day, hour, min, sec, l_mag, l_top, test, bin, zone, l_twt;
+	GMT_LONG year, month, day, hour, min, sec, l_mag, l_top, test, bin, zone, l_twt;
 	short int twt;
 	double tz, fmin;
 	char s_tz[5], s_yr[5], s_mo[3], s_dy[3], s_hr[3], s_mi[6], s_lat[8], s_lon[9];
@@ -264,12 +264,12 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 			strncpy (s_yr, &string[14], (size_t) 2);	s_yr[2] = 0;
 			year = atoi (s_yr);
 			if (year < NGDC_OLDEST_YY) {	/* Presumably 20xx */
-				if (MGD77_first_2000) fprintf (stderr, "GMT WARNING: in gmtmgg_decode_MGD77: Warning: 2-digit year %d assumed to be 20%d\n", year, year);
+				if (MGD77_first_2000) fprintf (stderr, "GMT WARNING: in gmtmgg_decode_MGD77: Warning: 2-digit year %ld assumed to be 20%ld\n", year, year);
 				year += 2000;
 				MGD77_first_2000 = FALSE;
 			}
 			else {
-				if (MGD77_first_1900) fprintf (stderr, "GMT WARNING: in gmtmgg_decode_MGD77: Warning: 2-digit year %d assumed to be 19%d\n", year, year);
+				if (MGD77_first_1900) fprintf (stderr, "GMT WARNING: in gmtmgg_decode_MGD77: Warning: 2-digit year %ld assumed to be 19%ld\n", year, year);
 				year += 1900;
 				MGD77_first_1900 = FALSE;
 			}
@@ -286,12 +286,12 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 	
 		strncpy (s_mi, &string[22], (size_t) 5);	s_mi[5] = 0;
 		fmin = atof (s_mi) * 0.001;
-		min = (int) floor (fmin);
+		min = (GMT_LONG) floor (fmin);
 		sec = irint (60.0 * (fmin - min));
 
 		if (!(*gmt)) {	/* If not set, now is the time */
 			*gmt = gmtmgg_init (year);
-			fprintf (stderr, "GMT ERROR: in gmtmgg_decode_MGD77:  : No start year set, using year = %d from 1st data record\n", year);
+			fprintf (stderr, "GMT ERROR: in gmtmgg_decode_MGD77:  : No start year set, using year = %ld from 1st data record\n", year);
 		}
 		test = gmtmgg_time (&(record->time), year, month, day, hour, min, sec, *gmt);
 		if (test < 0) return (1);
@@ -362,7 +362,7 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 }
 
 /* CARTER TABLE ROUTINES */
-int carter_setup (void)
+GMT_LONG carter_setup (void)
 {
 	/* This routine must be called once before using carter table stuff.
 	It reads the carter.d file and loads the appropriate arrays.
@@ -371,7 +371,7 @@ int carter_setup (void)
 
 	FILE *fp = NULL;
 	char buffer [BUFSIZ];
-	int  i;
+	GMT_LONG  i;
 
 	carter_not_initialized = TRUE;
 
@@ -387,13 +387,13 @@ int carter_setup (void)
 	fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_CORRECTIONS) {
-		fprintf (stderr, "carter_setup:  Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
+		fprintf (stderr, "carter_setup:  Incorrect correction key (%ld), should be %d\n", i, N_CARTER_CORRECTIONS);
                 return(-1);
 	}
 
         for (i = 0; i < N_CARTER_CORRECTIONS; i++) {
                 if (!fgets (buffer, BUFSIZ, fp)) {
-			fprintf (stderr, "carter_setup:  Could not read correction # %d\n", i);
+			fprintf (stderr, "carter_setup:  Could not read correction # %ld\n", i);
 			return (-1);
 		}
                 carter_correction[i] = atoi (buffer);
@@ -405,13 +405,13 @@ int carter_setup (void)
 	fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_OFFSETS) {
-		fprintf (stderr, "carter_setup:  Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
+		fprintf (stderr, "carter_setup:  Incorrect offset key (%ld), should be %d\n", i, N_CARTER_OFFSETS);
                 return (-1);
 	}
 
         for (i = 0; i < N_CARTER_OFFSETS; i++) {
                  if (!fgets (buffer, BUFSIZ, fp)) {
-			fprintf (stderr, "carter_setup:  Could not read offset # %d\n", i);
+			fprintf (stderr, "carter_setup:  Could not read offset # %ld\n", i);
 			return (-1);
 		}
                 carter_offset[i] = atoi (buffer);
@@ -423,13 +423,13 @@ int carter_setup (void)
 	fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_BINS) {
-		fprintf (stderr, "carter_setup:  Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);
+		fprintf (stderr, "carter_setup:  Incorrect zone key (%ld), should be %d\n", i, N_CARTER_BINS);
                 return (-1);
 	}
 
         for (i = 0; i < N_CARTER_BINS; i++) {
                  if (!fgets (buffer, BUFSIZ, fp)) {
-			fprintf (stderr, "carter_setup:  Could not read offset # %d\n", i);
+			fprintf (stderr, "carter_setup:  Could not read offset # %ld\n", i);
 			return (-1);
 		}
                 carter_zone[i] = atoi (buffer);
@@ -442,13 +442,13 @@ int carter_setup (void)
 	return (0);
 }
 
-int carter_get_bin (int lat, int lon, int *bin)
+GMT_LONG carter_get_bin (GMT_LONG lat, GMT_LONG lon, GMT_LONG *bin)
 {
 	/* Given signed long ints in the 1.0e06 times decimal degree range, 
 	   -90000000 <= lat < 90000000, 0 <= lon < 360000000, set bin
 	   number.  Returns 0 if OK, -1 if error.  */
 
-	int latdeg, londeg;
+	GMT_LONG latdeg, londeg;
 
 	if (lat < -90000000 || lat > 90000000) {
 		fprintf (stderr, "GMT ERROR: in carter_get_bin:  Latitude domain error (%g)\n", 1e-6 * lat);
@@ -467,7 +467,7 @@ int carter_get_bin (int lat, int lon, int *bin)
 	return (0);
 }
 
-int carter_get_zone (int bin, int *zone)
+GMT_LONG carter_get_zone (GMT_LONG bin, GMT_LONG *zone)
 {
 	/* Sets value pointed to by zone to the Carter zone corresponding to
 		the bin "bin".  Returns 0 if successful, -1 if bin out of
@@ -479,7 +479,7 @@ int carter_get_zone (int bin, int *zone)
 	}
 
 	if (bin < 0 || bin >= N_CARTER_BINS) {
-		fprintf (stderr, "GMT ERROR: in carter_get_zone:  Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
+		fprintf (stderr, "GMT ERROR: in carter_get_zone:  Input bin out of range [0-%d]: %ld.\n", N_CARTER_BINS, bin);
 		return (-1);
 	}
 	*zone = carter_zone[bin];
@@ -487,24 +487,24 @@ int carter_get_zone (int bin, int *zone)
 }
 
 
-int carter_depth_from_twt (int zone, short int twt_in_msec, short int *depth_in_corr_m)
+GMT_LONG carter_depth_from_twt (GMT_LONG zone, short int twt_in_msec, short int *depth_in_corr_m)
 {
 	/* Given two-way travel time of echosounder in milliseconds, and
 		Carter Zone number, finds depth in Carter corrected meters.
 		Returns (0) if OK, -1 if error condition.  */
 
-	int	i, nominal_z1500, low_hundred, part_in_100;
+	GMT_LONG	i, nominal_z1500, low_hundred, part_in_100;
 
 	if (carter_not_initialized && carter_setup() ) {
 		fprintf (stderr,"GMT ERROR: in carter_depth_from_twt:  Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		fprintf (stderr,"GMT ERROR: in carter_depth_from_twt:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		fprintf (stderr,"GMT ERROR: in carter_depth_from_twt:  Zone out of range [1-%d]: %ld\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (twt_in_msec < 0) {
-		fprintf (stderr,"GMT ERROR: in carter_depth_from_twt:  Negative twt: %d msec\n", (int)twt_in_msec);
+		fprintf (stderr,"GMT ERROR: in carter_depth_from_twt:  Negative twt: %ld msec\n", (GMT_LONG)twt_in_msec);
 		return (-1);
 	}
 
@@ -519,7 +519,7 @@ int carter_depth_from_twt (int zone, short int twt_in_msec, short int *depth_in_
 	i = carter_offset[zone-1] + low_hundred - 1;	/* -1 'cause .f indices */
 	
 	if (i >= (carter_offset[zone] - 1) ) {
-		fprintf (stderr, "GMT ERROR: in carter_depth_from_twt:  twt too big: %d msec\n", (int)twt_in_msec);
+		fprintf (stderr, "GMT ERROR: in carter_depth_from_twt:  twt too big: %ld msec\n", (GMT_LONG)twt_in_msec);
 		return (-1);
 	}
 
@@ -528,7 +528,7 @@ int carter_depth_from_twt (int zone, short int twt_in_msec, short int *depth_in_
 	if (part_in_100) {	/* We have to interpolate the table  */
 
 		if ( i == (carter_offset[zone] - 2) ) {
-			fprintf (stderr, "GMT ERROR: in carter_depth_from_twt:  twt too big: %d msec\n", (int)twt_in_msec);
+			fprintf (stderr, "GMT ERROR: in carter_depth_from_twt:  twt too big: %ld msec\n", (GMT_LONG)twt_in_msec);
 			return (-1);
 		}
 
@@ -544,13 +544,13 @@ int carter_depth_from_twt (int zone, short int twt_in_msec, short int *depth_in_
 }
 
 
-int carter_twt_from_depth (int zone, short int depth_in_corr_m, short int *twt_in_msec)
+GMT_LONG carter_twt_from_depth (GMT_LONG zone, short int depth_in_corr_m, short int *twt_in_msec)
 {
 	/*  Given Carter zone and depth in Carter corrected meters,
 	finds the two-way travel time of the echosounder in milliseconds.
 	Returns -1 upon error, 0 upon success.  */
 
-	int	min, max, guess;
+	GMT_LONG	min, max, guess;
 	double	fraction;
 
 	if (carter_not_initialized && carter_setup() ) {
@@ -558,11 +558,11 @@ int carter_twt_from_depth (int zone, short int depth_in_corr_m, short int *twt_i
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		fprintf (stderr,"GMT ERROR: in carter_twt_from_depth:  Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		fprintf (stderr,"GMT ERROR: in carter_twt_from_depth:  Zone out of range [1-%d]: %ld\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (depth_in_corr_m < 0) {
-		fprintf(stderr,"GMT ERROR: in carter_twt_from_depth:  Negative depth: %d m\n", (int)depth_in_corr_m);
+		fprintf(stderr,"GMT ERROR: in carter_twt_from_depth:  Negative depth: %ld m\n", (GMT_LONG)depth_in_corr_m);
 		return(-1);
 	}
 
@@ -575,7 +575,7 @@ int carter_twt_from_depth (int zone, short int depth_in_corr_m, short int *twt_i
 	min = carter_offset[zone-1] - 1;
 
 	if (depth_in_corr_m > carter_correction[max]) {
-		fprintf (stderr, "GMT ERROR: in carter_twt_from_depth:  Depth too big: %d m.\n", (int)depth_in_corr_m);
+		fprintf (stderr, "GMT ERROR: in carter_twt_from_depth:  Depth too big: %ld m.\n", (GMT_LONG)depth_in_corr_m);
 		return (-1);
 	}
 

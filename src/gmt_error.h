@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_error.h,v 1.4 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_error.h,v 1.5 2008-03-22 11:55:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -84,6 +84,6 @@
 /* Definition for an error trap */
 #define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 
-EXTERN_MSC const char * GMT_strerror (int err);
+EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
 
 #endif /* GMT_ERROR_H */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.166 2008-02-27 18:09:09 remko Exp $
+ *	$Id: pslib.c,v 1.167 2008-03-22 11:55:35 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -142,9 +142,9 @@
 #define PSL_CHUNK	2048
 
 struct GMT_WORD {
-	int font_no;
-	int rgb[3];
-	int flag;
+	PS_LONG font_no;
+	PS_LONG rgb[3];
+	PS_LONG flag;
 	double font_size;
 	double baseshift;
 	char *txt;
@@ -158,7 +158,7 @@ struct GMT_WORD {
 
 typedef struct
 {
-	int ncolors;
+	PS_LONG ncolors;
 	unsigned char colors[MAX_COLORS][3];
 } *colormap_t;
 
@@ -169,7 +169,7 @@ typedef struct
 } *indexed_image_t;
 
 typedef struct {
-	int nbytes, depth;
+	PS_LONG nbytes, depth;
 	unsigned char *buffer;
 } *byte_stream_t;
 
@@ -180,52 +180,52 @@ void def_font_encoding (void);
 void init_font_encoding (struct EPS *eps);
 void get_uppercase(char *new, char *old);
 void ps_rle_decode (struct imageinfo *h, unsigned char **in);
-unsigned char *ps_cmyk_encode (int *nbytes, unsigned char *input);
-unsigned char *ps_rle_encode (int *nbytes, unsigned char *input);
-unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input);
+unsigned char *ps_cmyk_encode (PS_LONG *nbytes, unsigned char *input);
+unsigned char *ps_rle_encode (PS_LONG *nbytes, unsigned char *input);
+unsigned char *ps_lzw_encode (PS_LONG *nbytes, unsigned char *input);
 byte_stream_t ps_lzw_putcode (byte_stream_t stream, short int incode);
-void ps_stream_dump (unsigned char *buffer, int nx, int ny, int depth, int compress, int encode, int mask);
-void ps_a85_encode (unsigned char quad[], int nbytes);
+void ps_stream_dump (unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG depth, PS_LONG compress, PS_LONG encode, PS_LONG mask);
+void ps_a85_encode (unsigned char quad[], PS_LONG nbytes);
 void *ps_memory (void *prev_addr, size_t nelem, size_t size);
-int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy);
+PS_LONG ps_shorten_path (double *x, double *y, PS_LONG n, PS_LONG *ix, PS_LONG *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
 static void ps_bulkcopy (const char *fname, const char *version);
-static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts);
-int ps_pattern_init(int image_no, char *imagefile);
+static void ps_init_fonts (PS_LONG *n_fonts, PS_LONG *n_GMT_fonts);
+PS_LONG ps_pattern_init(PS_LONG image_no, char *imagefile);
 void ps_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]);
-void ps_rgb_to_cmyk_int (int rgb[], int cmyk[]);
-void ps_rgb_to_cmyk (int rgb[], double cmyk[]);
-void ps_rgb_to_hsv (int rgb[], double hsv[]);
-void ps_cmyk_to_rgb (int rgb[], double cmyk[]);
-int ps_place_color (int rgb[]);
-void ps_place_setdash (char *pattern, int offset);
-void ps_set_length_array (char *param, double *array, int n);
-int ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, double *y, int *node, int n, int m);
-void ps_set_txt_array (char *param, char *array[], int n);
-void ps_set_integer (char *param, int value);
-void ps_set_real_array (char *param, double *array, int n);
-indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbits);
-int ps_bitreduce (unsigned char *buffer, int nx, int ny, int ncolors);
-int ps_bitimage_cmap (int f_rgb[], int b_rgb[]);
-void ps_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
-void ps_colorimage_cmap (double x, double y, double xsize, double ysize, indexed_image_t image, int nx, int ny, int nbits);
+void ps_rgb_to_cmyk_int (PS_LONG rgb[], PS_LONG cmyk[]);
+void ps_rgb_to_cmyk (PS_LONG rgb[], double cmyk[]);
+void ps_rgb_to_hsv (PS_LONG rgb[], double hsv[]);
+void ps_cmyk_to_rgb (PS_LONG rgb[], double cmyk[]);
+PS_LONG ps_place_color (PS_LONG rgb[]);
+void ps_place_setdash (char *pattern, PS_LONG offset);
+void ps_set_length_array (char *param, double *array, PS_LONG n);
+PS_LONG ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, double *y, PS_LONG *node, PS_LONG n, PS_LONG m);
+void ps_set_txt_array (char *param, char *array[], PS_LONG n);
+void ps_set_integer (char *param, PS_LONG value);
+void ps_set_real_array (char *param, double *array, PS_LONG n);
+indexed_image_t ps_makecolormap (unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbits);
+PS_LONG ps_bitreduce (unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG ncolors);
+PS_LONG ps_bitimage_cmap (PS_LONG f_rgb[], PS_LONG b_rgb[]);
+void ps_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbits);
+void ps_colorimage_cmap (double x, double y, double xsize, double ysize, indexed_image_t image, PS_LONG nx, PS_LONG ny, PS_LONG nbits);
 unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header);
 unsigned char *ps_load_eps (FILE *fp, struct imageinfo *header);
-int ps_get_boundingbox (FILE *fp, int *llx, int *lly, int *trx, int *try);
+PS_LONG ps_get_boundingbox (FILE *fp, PS_LONG *llx, PS_LONG *lly, PS_LONG *trx, PS_LONG *try);
 char *ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);
-int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[]);
+PS_LONG ps_pattern (PS_LONG image_no, char *imagefile, PS_LONG invert, PS_LONG image_dpi, PS_LONG outline, PS_LONG f_rgb[], PS_LONG b_rgb[]);
 
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
 
 
-void ps_arc (double x, double y, double radius, double az1, double az2, int status)
+void ps_arc (double x, double y, double radius, double az1, double az2, PS_LONG status)
 {	/* 1 = set anchor, 2 = set end, 3 = both */
-	int ix, iy, ir;
+	PS_LONG ix, iy, ir;
 
-	ix = irint (x * PSL->internal.scale);
-	iy = irint (y * PSL->internal.scale);
-	ir = irint (radius * PSL->internal.scale);
+	ix = (PS_LONG)irint (x * PSL->internal.scale);
+	iy = (PS_LONG)irint (y * PSL->internal.scale);
+	ir = (PS_LONG)irint (radius * PSL->internal.scale);
 	if (fabs (az1 - az2) > 360.0) az1 = 0.0, az2 = 360.0;
 	if (status%2) {	/* Beginning of new segment */
 		fprintf (PSL->internal.fp, "S ");
@@ -234,23 +234,23 @@ void ps_arc (double x, double y, double radius, double az1, double az2, int stat
 	else
 		PSL->internal.npath++;
 	if (az1 < az2)	/* Forward positive arc */
-		fprintf (PSL->internal.fp, "%d %d %d %g %g arc", ix ,iy, ir, az1, az2);
+		fprintf (PSL->internal.fp, "%ld %ld %ld %g %g arc", ix ,iy, ir, az1, az2);
 	else	/* Negative arc */
-		fprintf (PSL->internal.fp, "%d %d %d %g %g arcn", ix ,iy, ir, az1, az2);
+		fprintf (PSL->internal.fp, "%ld %ld %ld %g %g arcn", ix ,iy, ir, az1, az2);
 	if (status > 1)	fprintf (PSL->internal.fp, " S");
 	fprintf (PSL->internal.fp, "\n");
 }
 
 /* fortran interface */
-void ps_arc_ (double *x, double *y, double *radius, double *az1, double *az2, int *status)
+void ps_arc_ (double *x, double *y, double *radius, double *az1, double *az2, PS_LONG *status)
 {
 	 ps_arc (*x, *y, *radius, *az1, *az2, *status);
 }
 
-void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, double annotpointsize, int side)
+void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, double annotpointsize, PS_LONG side)
 {
-	int annot_justify, label_justify, i, j, ndig = 0;
-	int left = FALSE;
+	PS_LONG annot_justify, label_justify, i, j, ndig = 0;
+	PS_LONG left = FALSE;
 	double angle, dy, scl, val, annot_off, label_off, xx, sign;
 	char text[256], format[256];
 
@@ -263,7 +263,7 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 		ndig = j - i - 1;
 	}
 	if (ndig > 0)
-		sprintf (format, "%%.%df", ndig);
+		sprintf (format, "%%.%ldf", ndig);
 	else
 		strcpy (format, "%g");
 
@@ -291,20 +291,20 @@ void ps_axis (double x, double y, double length, double val0, double val1, doubl
 		if (left) xx = length - xx;
 		ps_segment (xx, 0.0, xx, dy);
 		sprintf( text, format, val);
-		ps_text (xx, annot_off, annotpointsize, text, 0.0, annot_justify, 0);
+		ps_text (xx, annot_off, annotpointsize, text, 0.0, annot_justify, 0L);
 		val = val0 + i * annotation_int;
 	}
-	ps_text (0.5*length, label_off, annotpointsize*1.5, label, 0.0, label_justify, 0);
+	ps_text (0.5*length, label_off, annotpointsize*1.5, label, 0.0, label_justify, 0L);
 	fprintf (PSL->internal.fp, "U\n\n");
 }
 
 /* fortran interface */
-void ps_axis_ (double *x, double *y, double *length, double *val0, double *val1, double *annotation_int, char *label, double *annotpointsize, int *side, int nlen)
+void ps_axis_ (double *x, double *y, double *length, double *val0, double *val1, double *annotation_int, char *label, double *annotpointsize, PS_LONG *side, PS_LONG nlen)
 {
 	ps_axis (*x, *y, *length, *val0, *val1, *annotation_int, label, *annotpointsize, *side);
 }
 
-void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int invert, int f_rgb[], int b_rgb[])
+void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG invert, PS_LONG f_rgb[], PS_LONG b_rgb[])
 {
 	/* Plots a 1-bit image or imagemask.
 	 * x,y:		Position of image (in inches)
@@ -315,45 +315,45 @@ void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char 
 	 * f_rgb:	Foreground color for 1 bits (if f_rgb[0] < 0, make transparent)
 	 * b_rgb:	Background color for 0 bits (if b_rgb[0] < 0, make transparent)
 	 */
-	int lx, ly, inv;
+	PS_LONG lx, ly, inv;
 	char *kind[2] = {"Binary", "Ascii"};
 
-	lx = irint (xsize * PSL->internal.scale);
-	ly = irint (ysize * PSL->internal.scale);
+	lx = (PS_LONG)irint (xsize * PSL->internal.scale);
+	ly = (PS_LONG)irint (ysize * PSL->internal.scale);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of %s Adobe 1-bit image\n", kind[PSL->internal.ascii]);
-	fprintf (PSL->internal.fp, "V N %g %g T %d %d scale", x * PSL->internal.scale, y * PSL->internal.scale, lx, ly);
+	fprintf (PSL->internal.fp, "V N %g %g T %ld %ld scale", x * PSL->internal.scale, y * PSL->internal.scale, lx, ly);
 	inv = (ps_bitimage_cmap (f_rgb, b_rgb) + invert) % 2;
-	fprintf (PSL->internal.fp, "\n<< /ImageType 1 /Decode [%d %d] ", inv, 1-inv);
-	ps_stream_dump (buffer, nx, ny, 1, PSL->internal.compress, PSL->internal.ascii, f_rgb[0] < 0 || b_rgb[0] < 0);
+	fprintf (PSL->internal.fp, "\n<< /ImageType 1 /Decode [%ld %ld] ", inv, 1-inv);
+	ps_stream_dump (buffer, nx, ny, 1L, PSL->internal.compress, PSL->internal.ascii, (PS_LONG)(f_rgb[0] < 0 || b_rgb[0] < 0));
 
 	fprintf (PSL->internal.fp, "U\n");
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of %s Abobe 1-bit image\n", kind[PSL->internal.ascii]);
 }
 
 /* fortran interface */
-void ps_bitimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int *nx, int *ny, int *invert, int *f_rgb, int *b_rgb)
+void ps_bitimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, PS_LONG *nx, PS_LONG *ny, PS_LONG *invert, PS_LONG *f_rgb, PS_LONG *b_rgb)
 {
 	ps_bitimage (*x, *y, *xsize, *ysize, buffer, *nx, *ny, *invert, f_rgb, b_rgb);
 }
 
-void ps_circle (double x, double y, double size, int rgb[], int outline)
+void ps_circle (double x, double y, double size, PS_LONG rgb[], PS_LONG outline)
 {
-	int ix, iy, ir, pmode;
+	PS_LONG ix, iy, ir, pmode;
 
 	/* size is assumed to be diameter */
 
-	ix = irint (x * PSL->internal.scale);
-	iy = irint (y * PSL->internal.scale);
-	ir = irint (0.5 * size * PSL->internal.scale);
+	ix = (PS_LONG)irint (x * PSL->internal.scale);
+	iy = (PS_LONG)irint (y * PSL->internal.scale);
+	ir = (PS_LONG)irint (0.5 * size * PSL->internal.scale);
 	fprintf (PSL->internal.fp, "N ");
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %d C%c\n", ix, iy, ir, PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld C%c\n", ix, iy, ir, PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_circle_ (double *x, double *y, double *size, int *rgb, int *outline)
+void ps_circle_ (double *x, double *y, double *size, PS_LONG *rgb, PS_LONG *outline)
 {
 	 ps_circle (*x, *y, *size, rgb, *outline);
 }
@@ -372,7 +372,7 @@ void ps_clipoff_ (void) {
 	ps_clipoff ();
 }
 
-void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
+void ps_clipon (double *x, double *y, PS_LONG n, PS_LONG rgb[], PS_LONG flag)
 {
 	/* Path length */
 	/* Optional paint (-1 to avoid paint) */
@@ -380,7 +380,7 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 	/* Any plotting outside the path defined by x,y will be clipped.
 	   use clipoff to restore the original clipping path. */
 
-	int used, pmode;
+	PS_LONG used, pmode;
 	char move[7];
 
 	if (flag & 1) {	/* First segment in (possibly multi-segmented) clip-path */
@@ -394,12 +394,12 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 
 	used = 0;
 	if (n > 0) {
-		PSL->internal.ix = irint (x[0]*PSL->internal.scale);
-		PSL->internal.iy = irint (y[0]*PSL->internal.scale);
+		PSL->internal.ix = (PS_LONG)irint (x[0]*PSL->internal.scale);
+		PSL->internal.iy = (PS_LONG)irint (y[0]*PSL->internal.scale);
 		PSL->internal.npath++;
 		used++;
-		fprintf (PSL->internal.fp, "%d %d %s\n", PSL->internal.ix, PSL->internal.iy, move);
-		used += ps_line (&x[1], &y[1], n-1, 0, FALSE, FALSE);	/* Must pass close = FALSE since first point not given ! */
+		fprintf (PSL->internal.fp, "%ld %ld %s\n", PSL->internal.ix, PSL->internal.iy, move);
+		used += ps_line (&x[1], &y[1], n-1, 0L, FALSE, FALSE);	/* Must pass close = FALSE since first point not given ! */
 		fprintf (PSL->internal.fp, "P\n");
 	}
 	PSL->internal.clip_path_length += used;
@@ -421,12 +421,12 @@ void ps_clipon (double *x, double *y, int n, int rgb[], int flag)
 }
 
 /* fortran interface */
-void ps_clipon_ (double *x, double *y, int *n, int *rgb, int *flag)
+void ps_clipon_ (double *x, double *y, PS_LONG *n, PS_LONG *rgb, PS_LONG *flag)
 {
 	ps_clipon (x, y, *n, rgb, *flag);
 }
 
-void ps_colorimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits)
+void ps_colorimage (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbits)
 {
 	/* Plots a 24-bit color image in Grayscale, RGB or CMYK mode.
 	 * When the number of unique colors does not exceed MAX_COLORS, the routine will index
@@ -442,15 +442,15 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	 * nx < 0	: 24-bit image contains a color mask (first 3 bytes)
 	 * nbits < 0	: "Hardware" interpolation requested
 	 */
-	int lx, ly, id, it;
+	PS_LONG lx, ly, id, it;
 	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
 	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
 	char *kind[2] = {"Binary", "Ascii"};				/* What encoding to use */
 	char *type[3] = {"1", "4 /MaskColor[0]", "1 /Interpolate true"};
 	indexed_image_t image;
 
-	lx = irint (xsize * PSL->internal.scale);
-	ly = irint (ysize * PSL->internal.scale);
+	lx = (PS_LONG)irint (xsize * PSL->internal.scale);
+	ly = (PS_LONG)irint (ysize * PSL->internal.scale);
 	id = ((PSL->internal.color_mode & PSL_CMYK) && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
 	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0);	/* Colormask or interpolate */
 
@@ -458,11 +458,11 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		/* Creation of colormap was successful */
 		nbits = ps_bitreduce (image->buffer, nx, ny, image->colormap->ncolors);
 
-		if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of %s Adobe Indexed %s image [%d bit]\n", kind[PSL->internal.ascii], colorspace[id], nbits);
-		fprintf (PSL->internal.fp, "V N %g %g T %d %d scale [/Indexed /Device%s %d <\n", x * PSL->internal.scale, y * PSL->internal.scale, lx, ly, colorspace[id], image->colormap->ncolors - 1);
-		ps_stream_dump (&image->colormap->colors[0][0], image->colormap->ncolors, 1, 24, 0, 2, 2);
+		if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of %s Adobe Indexed %s image [%ld bit]\n", kind[PSL->internal.ascii], colorspace[id], nbits);
+		fprintf (PSL->internal.fp, "V N %g %g T %ld %ld scale [/Indexed /Device%s %ld <\n", x * PSL->internal.scale, y * PSL->internal.scale, lx, ly, colorspace[id], image->colormap->ncolors - 1);
+		ps_stream_dump (&image->colormap->colors[0][0], image->colormap->ncolors, 1L, 24L, 0L, 2L, 2L);
 		fprintf (PSL->internal.fp, ">] setcolorspace\n<< /ImageType %s /Decode [0 %d] ", type[it], (1<<nbits)-1);
-		ps_stream_dump (image->buffer, nx, ny, nbits, PSL->internal.compress, PSL->internal.ascii, 0);
+		ps_stream_dump (image->buffer, nx, ny, nbits, PSL->internal.compress, PSL->internal.ascii, 0L);
 		fprintf (PSL->internal.fp, "U\n");
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of %s Adobe Indexed %s image\n", kind[PSL->internal.ascii], colorspace[id]);
 
@@ -475,30 +475,30 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		/* Export full RGB or CMYK image */
 		nbits = abs(nbits);
 
-		if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[PSL->internal.ascii], colorspace[id], nbits);
-		fprintf (PSL->internal.fp, "V N %g %g T %d %d scale /Device%s setcolorspace", x * PSL->internal.scale, y * PSL->internal.scale, lx, ly, colorspace[id]);
+		if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of %s Adobe %s image [%ld bit]\n", kind[PSL->internal.ascii], colorspace[id], nbits);
+		fprintf (PSL->internal.fp, "V N %g %g T %ld %ld scale /Device%s setcolorspace", x * PSL->internal.scale, y * PSL->internal.scale, lx, ly, colorspace[id]);
 
 		if (it == 1) {	/* Do PS Level 3 image type 4 with colormask */
-			fprintf (PSL->internal.fp, "\n<< /ImageType 4 /MaskColor[%d %d %d]", buffer[0], buffer[1], buffer[2]);
+			fprintf (PSL->internal.fp, "\n<< /ImageType 4 /MaskColor[%d %d %d]", (int)buffer[0], (int)buffer[1], (int)buffer[2]);
 			buffer += 3;
 		}
 		else		/* Do PS Level 2 image, optionally with interpolation */
 			fprintf (PSL->internal.fp, "\n<< /ImageType %s", type[it]);
 
 		fprintf (PSL->internal.fp, " /Decode [%s] ", decode[id]);
-		ps_stream_dump (buffer, nx, ny, nbits, PSL->internal.compress, PSL->internal.ascii, 0);
+		ps_stream_dump (buffer, nx, ny, nbits, PSL->internal.compress, PSL->internal.ascii, 0L);
 		fprintf (PSL->internal.fp, "U\n\n");
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of %s Adobe %s image\n", kind[PSL->internal.ascii], colorspace[id]);
 	}
 }
 
 /* fortran interface */
-void ps_colorimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int *nx, int *ny, int *nbits, int nlen)
+void ps_colorimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, PS_LONG *nx, PS_LONG *ny, PS_LONG *nbits, PS_LONG nlen)
 {
 	ps_colorimage (*x, *y, *xsize, *ysize, buffer, *nx, *ny, *nbits);
 }
 
-void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned char *image, int nx, int ny)
+void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned char *image, PS_LONG nx, PS_LONG ny)
 {
 	/* Plots image as many colored rectangles
 	 * x0, y0	: Lower left corner in inches
@@ -506,7 +506,7 @@ void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned c
 	 * image	: color image with rgb triplets per pixel
 	 * nx, ny	: image size in pixels
 	 */
-	int i, j, k, rgb[3];
+	PS_LONG i, j, k, rgb[3];
 	double x1, x2, y1, y2, dx, dy, noise, noise2;
 
 	nx = abs(nx);
@@ -534,7 +534,7 @@ void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned c
 }
 
 /* fortran interface */
-void ps_colortiles_ (double *x0, double *y0, double *xsize, double *ysize, unsigned char *image, int *nx, int *ny, int nlen)
+void ps_colortiles_ (double *x0, double *y0, double *xsize, double *ysize, unsigned char *image, PS_LONG *nx, PS_LONG *ny, PS_LONG nlen)
 {
 	 ps_colortiles (*x0, *y0, *xsize, *ysize, image, *nx, *ny);
 }
@@ -545,7 +545,7 @@ void ps_command (char *text)
 }
 
 /* fortran interface */
-void ps_command_ (char *text, int nlen)
+void ps_command_ (char *text, PS_LONG nlen)
 {
 	ps_command (text);
 }
@@ -556,14 +556,14 @@ void ps_comment (char *text)
 }
 
 /* fortran interface */
-void ps_comment_ (char *text, int nlen)
+void ps_comment_ (char *text, PS_LONG nlen)
 {
 	ps_comment (text);
 }
 
 void ps_cross (double x, double y, double diameter)
 {	/* Fit inside circle of given diameter; draw using current color */
-	fprintf (PSL->internal.fp, "%d %d %d X\n", (int) irint (diameter * PSL->internal.scale), (int) irint ((x - 0.5 * diameter) * PSL->internal.scale), (int ) irint (y * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "%ld %ld %ld X\n", (PS_LONG) irint (diameter * PSL->internal.scale), (PS_LONG) irint ((x - 0.5 * diameter) * PSL->internal.scale), (PS_LONG ) irint (y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -575,7 +575,7 @@ void ps_cross_ (double *x, double *y, double *diameter)
 
 void ps_point (double x, double y, double diameter)
 {     /* Fit inside circle of given diameter; draw using current color */
-	fprintf (PSL->internal.fp, "%d %d %d O\n", irint (diameter * PSL->internal.scale), irint (x * PSL->internal.scale), irint (y * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "%ld %ld %ld O\n", (PS_LONG)irint (diameter * PSL->internal.scale), (PS_LONG)irint (x * PSL->internal.scale), (PS_LONG)irint (y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -585,30 +585,30 @@ void ps_point_ (double *x, double *y, double *diameter)
 	ps_point (*x, *y, *diameter);
 }
 
-void ps_diamond (double x, double y, double diameter, int rgb[], int outline)
+void ps_diamond (double x, double y, double diameter, PS_LONG rgb[], PS_LONG outline)
 {	/* diameter is diameter of circumscribing circle */
-	int pmode;
+	PS_LONG pmode;
 
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %d D%c\n", irint(0.5 * diameter * PSL->internal.scale), irint(x * PSL->internal.scale), irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld D%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_diamond_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+void ps_diamond_ (double *x, double *y, double *diameter, PS_LONG *rgb, PS_LONG *outline)
 {
 	 ps_diamond (*x, *y, *diameter, rgb, *outline);
 }
 
 void ps_segment (double x0, double y0, double x1, double y1)
 {	/* Short line segment */
-	int ix, iy, dx, dy;
+	PS_LONG ix, iy, dx, dy;
 
-	ix = irint (x0 * PSL->internal.scale);
-	iy = irint (y0 * PSL->internal.scale);
-	dx = irint (x1 * PSL->internal.scale) - ix;
-	dy = irint (y1 * PSL->internal.scale) - iy;
-	fprintf (PSL->internal.fp, "%d %d M %d %d D S\n", ix, iy, dx, dy);
+	ix = (PS_LONG)irint (x0 * PSL->internal.scale);
+	iy = (PS_LONG)irint (y0 * PSL->internal.scale);
+	dx = (PS_LONG)irint (x1 * PSL->internal.scale) - ix;
+	dy = (PS_LONG)irint (y1 * PSL->internal.scale) - iy;
+	fprintf (PSL->internal.fp, "%ld %ld M %ld %ld D S\n", ix, iy, dx, dy);
 	PSL->internal.npath = 0;
 }
 
@@ -618,150 +618,150 @@ void ps_segment_ (double *x0, double *y0, double *x1, double *y1)
 	 ps_segment (*x0, *y0, *x1, *y1);
 }
 
-void ps_star (double x, double y, double diameter, int rgb[], int outline)
+void ps_star (double x, double y, double diameter, PS_LONG rgb[], PS_LONG outline)
 {	/* Fit inside circle of given diameter */
-	int pmode;
+	PS_LONG pmode;
 
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %d A%c\n", irint(0.5 * diameter * PSL->internal.scale), irint(x * PSL->internal.scale), irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld A%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_star_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+void ps_star_ (double *x, double *y, double *diameter, PS_LONG *rgb, PS_LONG *outline)
 {
 	 ps_star (*x, *y, *diameter, rgb, *outline);
 }
 
-void ps_square (double x, double y, double diameter, int rgb[], int outline)
+void ps_square (double x, double y, double diameter, PS_LONG rgb[], PS_LONG outline)
 {	/* give diameter of circumscribing circle */
-	int pmode;
+	PS_LONG pmode;
 
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %d S%c\n", irint(0.5 * diameter * PSL->internal.scale), irint(x * PSL->internal.scale), irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld S%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_square_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+void ps_square_ (double *x, double *y, double *diameter, PS_LONG *rgb, PS_LONG *outline)
 {
 	ps_square (*x, *y, *diameter, rgb, *outline);
 }
 
-void ps_triangle (double x, double y, double diameter, int rgb[], int outline)
+void ps_triangle (double x, double y, double diameter, PS_LONG rgb[], PS_LONG outline)
 {	/* Give diameter of circumscribing circle */
-	int pmode;
+	PS_LONG pmode;
 
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %d T%c\n", irint(0.5 * diameter * PSL->internal.scale), irint(x * PSL->internal.scale), irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld T%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_triangle_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+void ps_triangle_ (double *x, double *y, double *diameter, PS_LONG *rgb, PS_LONG *outline)
 {
 	ps_triangle (*x, *y, *diameter, rgb, *outline);
 }
 
-void ps_itriangle (double x, double y, double diameter, int rgb[], int outline)	/* Inverted triangle */
+void ps_itriangle (double x, double y, double diameter, PS_LONG rgb[], PS_LONG outline)	/* Inverted triangle */
 {	/* Give diameter of circumscribing circle */
-	int pmode;
+	PS_LONG pmode;
 
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %d I%c\n", irint(0.5 * diameter * PSL->internal.scale), irint(x * PSL->internal.scale), irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld I%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_itriangle_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+void ps_itriangle_ (double *x, double *y, double *diameter, PS_LONG *rgb, PS_LONG *outline)
 {
 	ps_itriangle (*x, *y, *diameter, rgb, *outline);
 }
 
-void ps_hexagon (double x, double y, double diameter, int rgb[], int outline)
+void ps_hexagon (double x, double y, double diameter, PS_LONG rgb[], PS_LONG outline)
 {	/* diameter is diameter of circumscribing circle */
-	int pmode;
+	PS_LONG pmode;
 
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %d H%c\n", irint(0.5 * diameter * PSL->internal.scale), irint(x * PSL->internal.scale), irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld H%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_hexagon_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+void ps_hexagon_ (double *x, double *y, double *diameter, PS_LONG *rgb, PS_LONG *outline)
 {
 	 ps_hexagon (*x, *y, *diameter, rgb, *outline);
 }
 
-void ps_pentagon (double x, double y, double diameter, int rgb[], int outline)
+void ps_pentagon (double x, double y, double diameter, PS_LONG rgb[], PS_LONG outline)
 {	/* diameter is diameter of circumscribing circle */
-	int pmode;
+	PS_LONG pmode;
 
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %d N%c\n", irint(0.5 * diameter * PSL->internal.scale), irint(x * PSL->internal.scale), irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld N%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_pentagon_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+void ps_pentagon_ (double *x, double *y, double *diameter, PS_LONG *rgb, PS_LONG *outline)
 {
 	 ps_pentagon (*x, *y, *diameter, rgb, *outline);
 }
 
-void ps_octagon (double x, double y, double diameter, int rgb[], int outline)
+void ps_octagon (double x, double y, double diameter, PS_LONG rgb[], PS_LONG outline)
 {	/* diameter is diameter of circumscribing circle */
-	int pmode;
+	PS_LONG pmode;
 
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %d O%c\n", irint(0.5 * diameter * PSL->internal.scale), irint(x * PSL->internal.scale), irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld O%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_octagon_ (double *x, double *y, double *diameter, int *rgb, int *outline)
+void ps_octagon_ (double *x, double *y, double *diameter, PS_LONG *rgb, PS_LONG *outline)
 {
 	 ps_octagon (*x, *y, *diameter, rgb, *outline);
 }
 
-void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[], int outline)
+void ps_pie (double x, double y, double radius, double az1, double az2, PS_LONG rgb[], PS_LONG outline)
 {
-	int ix, iy, ir, pmode;
+	PS_LONG ix, iy, ir, pmode;
 
-	ix = irint (x * PSL->internal.scale);
-	iy = irint (y * PSL->internal.scale);
-	ir = irint (radius * PSL->internal.scale);
-	fprintf (PSL->internal.fp, "%d %d M ", ix, iy);
+	ix = (PS_LONG)irint (x * PSL->internal.scale);
+	iy = (PS_LONG)irint (y * PSL->internal.scale);
+	ir = (PS_LONG)irint (radius * PSL->internal.scale);
+	fprintf (PSL->internal.fp, "%ld %ld M ", ix, iy);
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %d %g %g W%c\n", ix, iy, ir, az1, az2, PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld %g %g W%c\n", ix, iy, ir, az1, az2, PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_pie_ (double *x, double *y, double *radius, double *az1, double *az2, int *rgb, int *outline)
+void ps_pie_ (double *x, double *y, double *radius, double *az1, double *az2, PS_LONG *rgb, PS_LONG *outline)
 {
 	 ps_pie (*x, *y, *radius, *az1, *az2, rgb, *outline);
 }
 
-void ps_ellipse (double x, double y, double angle, double major, double minor, int rgb[], int outline)
+void ps_ellipse (double x, double y, double angle, double major, double minor, PS_LONG rgb[], PS_LONG outline)
 {
-	int ix, iy, ir, pmode;
+	PS_LONG ix, iy, ir, pmode;
 	double aspect;
 
 	/* Feature: Pen thickness also affected by aspect ratio */
 
-	ix = irint (x * PSL->internal.scale);
-	iy = irint (y * PSL->internal.scale);
-	fprintf (PSL->internal.fp, "V %d %d T", ix, iy);
+	ix = (PS_LONG)irint (x * PSL->internal.scale);
+	iy = (PS_LONG)irint (y * PSL->internal.scale);
+	fprintf (PSL->internal.fp, "V %ld %ld T", ix, iy);
 	if (angle != 0.0) fprintf (PSL->internal.fp, " %g R", angle);
 	aspect = minor / major;
 	fprintf (PSL->internal.fp, " 1 %g scale\n", aspect);
-	ir = irint (major * PSL->internal.scale);
+	ir = (PS_LONG)irint (major * PSL->internal.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "0 0 %d C%c U\n", ir, PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "0 0 %ld C%c U\n", ir, PSL->internal.paint_code[pmode+outline]);
 }
 
 /* fortran interface */
-void ps_ellipse_ (double *x, double *y, double *angle, double *major, double *minor, int *rgb, int *outline)
+void ps_ellipse_ (double *x, double *y, double *angle, double *major, double *minor, PS_LONG *rgb, PS_LONG *outline)
 {
 	 ps_ellipse (*x, *y, *angle, *major, *minor, rgb, *outline);
 }
@@ -778,35 +778,35 @@ void ps_flush_ ()
 	ps_flush();
 }
 
-void ps_image (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits)
+void ps_image (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbits)
 {	/* Backwards compatibility */
 	ps_colorimage (x, y, xsize, ysize, buffer, nx, ny, nbits);
 }
 
 /* fortran interface */
-void ps_image_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int *nx, int *ny, int *nbits, int nlen)
+void ps_image_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, PS_LONG *nx, PS_LONG *ny, PS_LONG *nbits, PS_LONG nlen)
 {
 	ps_image (*x, *y, *xsize, *ysize, buffer, *nx, *ny, *nbits);
 }
 
 void ps_pattern_cleanup (void) {
-	int image_no;
+	PS_LONG image_no;
 
 	for (image_no = 0; image_no < PSL_N_PATTERNS * 2; image_no++) {
 		if (PSL->internal.pattern[image_no].status) {
-			fprintf (PSL->internal.fp, "currentdict /image%d undef\n", image_no);
-			fprintf (PSL->internal.fp, "currentdict /pattern%d undef\n", image_no);
+			fprintf (PSL->internal.fp, "currentdict /image%ld undef\n", image_no);
+			fprintf (PSL->internal.fp, "currentdict /pattern%ld undef\n", image_no);
 		}
 	}
 }
 
 /* fortran interface */
-int ps_pattern_ (int *image_no, char *imagefile, int *invert, int *image_dpi, int *outline, int *f_rgb, int *b_rgb, int nlen)
+PS_LONG ps_pattern_ (PS_LONG *image_no, char *imagefile, PS_LONG *invert, PS_LONG *image_dpi, PS_LONG *outline, PS_LONG *f_rgb, PS_LONG *b_rgb, PS_LONG nlen)
 {
 	 return (ps_pattern (*image_no, imagefile, *invert, *image_dpi, *outline, f_rgb, b_rgb));
 }
 
-int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[])
+PS_LONG ps_pattern (PS_LONG image_no, char *imagefile, PS_LONG invert, PS_LONG image_dpi, PS_LONG outline, PS_LONG f_rgb[], PS_LONG b_rgb[])
 {
 	/* Set up pattern fill, either by using image number or imagefile name
 	 * image_no:	Number of the standard GMT fill pattern (use negative when file name used instead)
@@ -820,7 +820,7 @@ int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int ou
 	 */
 
 	BOOLEAN found;
-	int i, nx, ny, id, inv, refresh;
+	PS_LONG i, nx, ny, id, inv, refresh;
 	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
 	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
 	char *name;
@@ -859,22 +859,22 @@ int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int ou
 
 	if (refresh) {
 
-		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Setup %s fill using pattern %d\n", name, image_no);
+		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Setup %s fill using pattern %ld\n", name, image_no);
 		if (image_dpi) {	/* Use given DPI */
-			nx = irint (nx * PSL->internal.scale / image_dpi);
-			ny = irint (ny * PSL->internal.scale / image_dpi);
+			nx = (PS_LONG)irint (nx * PSL->internal.scale / image_dpi);
+			ny = (PS_LONG)irint (ny * PSL->internal.scale / image_dpi);
 		}
-		fprintf (PSL->internal.fp, "/pattern%d {V %d %d scale", image_no, nx, ny);
+		fprintf (PSL->internal.fp, "/pattern%ld {V %ld %ld scale", image_no, nx, ny);
 		fprintf (PSL->internal.fp, "\n<< /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc\n   {begin");
 
 		if (PSL->internal.pattern[image_no].depth == 1) {	/* 1-bit bitmap basis */
 			inv = (ps_bitimage_cmap (f_rgb, b_rgb) + invert) % 2;
-			fprintf (PSL->internal.fp, "\n<< /ImageType 1 /Decode [%d %d]", inv, 1-inv);
+			fprintf (PSL->internal.fp, "\n<< /ImageType 1 /Decode [%ld %ld]", inv, 1-inv);
 		}
 		else
 			fprintf (PSL->internal.fp, " /Device%s setcolorspace\n<< /ImageType 1 /Decode [%s]", colorspace[id], decode[id]);
-		fprintf (PSL->internal.fp, " /Width %d /Height %d /BitsPerComponent %d", PSL->internal.pattern[image_no].nx, PSL->internal.pattern[image_no].ny, MIN(PSL->internal.pattern[image_no].depth,8));
-		fprintf (PSL->internal.fp, "\n   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource image%d\n>> %s end}\n>> matrix makepattern U} def\n", PSL->internal.pattern[image_no].nx, -PSL->internal.pattern[image_no].ny, PSL->internal.pattern[image_no].ny, image_no, name);
+		fprintf (PSL->internal.fp, " /Width %ld /Height %ld /BitsPerComponent %ld", PSL->internal.pattern[image_no].nx, PSL->internal.pattern[image_no].ny, MIN(PSL->internal.pattern[image_no].depth,8));
+		fprintf (PSL->internal.fp, "\n   /ImageMatrix [%ld 0 0 %ld 0 %ld] /DataSource image%ld\n>> %s end}\n>> matrix makepattern U} def\n", PSL->internal.pattern[image_no].nx, -PSL->internal.pattern[image_no].ny, PSL->internal.pattern[image_no].ny, image_no, name);
 
 		PSL->internal.pattern[image_no].dpi = image_dpi;
 		for (i = 0; i < 3; i++) {
@@ -886,9 +886,9 @@ int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int ou
 	return (image_no);
 }
 
-int ps_pattern_init (int image_no, char *imagefile)
+PS_LONG ps_pattern_init (PS_LONG image_no, char *imagefile)
 {
-	int i;
+	PS_LONG i;
 	char name[BUFSIZ], file[BUFSIZ];
 	unsigned char *picture;
 	struct imageinfo h;
@@ -897,7 +897,7 @@ int ps_pattern_init (int image_no, char *imagefile)
 	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && PSL->internal.pattern[image_no].status) return (image_no);	/* Already done this */
 
 	if ((image_no >= 0 && image_no < PSL_N_PATTERNS)) {	/* Premade pattern yet not used */
-		sprintf (name, "ps_pattern_%2.2d", image_no);
+		sprintf (name, "ps_pattern_%2.2ld", image_no);
 		ps_getsharepath ("pattern", name, ".ras", file);
 	}
 	else {	/* User image, check to see if already used */
@@ -921,10 +921,10 @@ int ps_pattern_init (int image_no, char *imagefile)
 	PSL->internal.pattern[image_no].depth = h.depth;
 	PSL->internal.pattern[image_no].dpi = -999;
 
-	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%%\n%% Define pattern %d\n%%\n", image_no);
+	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%%\n%% Define pattern %ld\n%%\n", image_no);
 
-	fprintf (PSL->internal.fp, "/image%d {<~\n", image_no);
-	ps_stream_dump (picture, h.width, h.height, h.depth, PSL->internal.compress, 1, 2);
+	fprintf (PSL->internal.fp, "/image%ld {<~\n", image_no);
+	ps_stream_dump (picture, h.width, h.height, h.depth, PSL->internal.compress, 1L, 2L);
 	fprintf (PSL->internal.fp, "} def\n");
 
 	ps_free ((void *)picture);
@@ -933,12 +933,12 @@ int ps_pattern_init (int image_no, char *imagefile)
 }
 
 /* fortran interface */
-void ps_epsimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, int size, int *nx, int *ny, int *ox, int *oy, int nlen)
+void ps_epsimage_ (double *x, double *y, double *xsize, double *ysize, unsigned char *buffer, PS_LONG size, PS_LONG *nx, PS_LONG *ny, PS_LONG *ox, PS_LONG *oy, PS_LONG nlen)
 {
 	ps_epsimage (*x, *y, *xsize, *ysize, buffer, size, *nx, *ny, *ox, *oy);
 }
 
-void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int size, int nx, int ny, int ox, int oy)
+void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG size, PS_LONG nx, PS_LONG ny, PS_LONG ox, PS_LONG oy)
 {
 	/* Plots an EPS image
 	 * x,y:		Position of image (in inches)
@@ -950,8 +950,8 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 	 */
 
 	 fprintf (PSL->internal.fp, "V N %g %g T %g %g scale\n", x * PSL->internal.scale, y * PSL->internal.scale, xsize * PSL->internal.scale / nx, ysize * PSL->internal.scale / ny);
-	 fprintf (PSL->internal.fp, "%d %d T\n", -ox, -oy);
-	 fprintf (PSL->internal.fp, "N %d %d m %d %d L %d %d L %d %d L P clip N\n", ox, oy, ox+nx, oy, ox+nx, oy+ny, ox, oy+ny);
+	 fprintf (PSL->internal.fp, "%ld %ld T\n", -ox, -oy);
+	 fprintf (PSL->internal.fp, "N %ld %ld m %ld %ld L %ld %ld L %ld %ld L P clip N\n", ox, oy, ox+nx, oy, ox+nx, oy+ny, ox, oy+ny);
 	 fprintf (PSL->internal.fp, "countdictstack\nmark\n/showpage {} def\n");
 	 if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Start of imported EPS file\n");
 	 fprintf (PSL->internal.fp, "%%%%BeginDocument: psimage.eps\n");
@@ -961,20 +961,20 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 	 fprintf (PSL->internal.fp, "cleartomark\ncountdictstack exch sub { end } repeat\nU\n");
 }
 
-int ps_line (double *x, double *y, int n, int type, int close, int split)
+PS_LONG ps_line (double *x, double *y, PS_LONG n, PS_LONG type, BOOLEAN close, BOOLEAN split)
 {
 	/* type: 1 means new anchor point, 2 means stroke line, 3 = both */
 	/* TRUE if a closed polygon */
 	/* TRUE if we can split line segment into several sections */
-	int i, *ix, *iy, trim = FALSE;
+	PS_LONG i, *ix, *iy, trim = FALSE;
 	char move = 'M';
 
 	PSL->internal.split = 0;	/* No splitting yet... */
 
 	/* First remove unnecessary points that have zero curvature */
 
-	ix = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
-	iy = (int *) ps_memory (VNULL, (size_t)n, sizeof (int));
+	ix = (PS_LONG *) ps_memory (VNULL, (size_t)n, sizeof (PS_LONG));
+	iy = (PS_LONG *) ps_memory (VNULL, (size_t)n, sizeof (PS_LONG));
 
 	if ((n = ps_shorten_path (x, y, n, ix, iy)) < 2) {
 		ps_free ((void *)ix);
@@ -993,23 +993,23 @@ int ps_line (double *x, double *y, int n, int type, int close, int split)
 	}
 
 	if (type%2) {
-		fprintf (PSL->internal.fp, "%d %d %c\n", ix[0], iy[0], move);
+		fprintf (PSL->internal.fp, "%ld %ld %c\n", ix[0], iy[0], move);
 		PSL->internal.npath = 1;
 	}
 	else
-		fprintf (PSL->internal.fp, "%d %d D\n", ix[0] - PSL->internal.ix, iy[0] - PSL->internal.iy);
+		fprintf (PSL->internal.fp, "%ld %ld D\n", ix[0] - PSL->internal.ix, iy[0] - PSL->internal.iy);
 	PSL->internal.ix = ix[0];
 	PSL->internal.iy = iy[0];
 
 	if (!split) PSL->internal.max_path_length = MAX ((n + PSL->internal.clip_path_length), PSL->internal.max_path_length);
 
 	for (i = 1; i < n; i++) {
-		fprintf (PSL->internal.fp, "%d %d D\n", ix[i] - PSL->internal.ix, iy[i] - PSL->internal.iy);
+		fprintf (PSL->internal.fp, "%ld %ld D\n", ix[i] - PSL->internal.ix, iy[i] - PSL->internal.iy);
 		PSL->internal.ix = ix[i];
 		PSL->internal.iy = iy[i];
 		PSL->internal.npath++;
 		if ((PSL->internal.npath + PSL->internal.clip_path_length) > PSL_MAX_L1_PATH && split) {
-			fprintf (PSL->internal.fp, "S %d %d M\n", PSL->internal.ix, PSL->internal.iy);
+			fprintf (PSL->internal.fp, "S %ld %ld M\n", PSL->internal.ix, PSL->internal.iy);
 			PSL->internal.npath = 1;
 			PSL->internal.split = 1;
 			close = FALSE;
@@ -1034,12 +1034,12 @@ int ps_line (double *x, double *y, int n, int type, int close, int split)
 }
 
 /* fortran interface */
-void ps_line_ (double *x, double *y, int *n, int *type, int *close, int *split)
+void ps_line_ (double *x, double *y, PS_LONG *n, PS_LONG *type, PS_LONG *close, PS_LONG *split)
 {
 	ps_line (x, y, *n, *type, *close, *split);
 }
 
-int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
+PS_LONG ps_shorten_path (double *x, double *y, PS_LONG n, PS_LONG *ix, PS_LONG *iy)
 {
 	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
 	 * and eliminating repeating points and intermediate points along straight
@@ -1047,14 +1047,14 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 	 * and still look exactly like the original path. */
 
 	double old_slope = 1.0e200, new_slope;
-	int i, k, dx, dy, old_dir = 0, new_dir;
+	PS_LONG i, k, dx, dy, old_dir = 0, new_dir;
 	/* These seeds for old_slope and old_dir make sure that first point gets saved */
 
 	if (n < 2) return (n);	/* Not a path to start with */
 
 	for (i = 0; i < n; i++) {	/* Convert all coordinates to integers at current scale */
-		ix[i] = irint (x[i] * PSL->internal.scale);
-		iy[i] = irint (y[i] * PSL->internal.scale);
+		ix[i] = (PS_LONG)irint (x[i] * PSL->internal.scale);
+		iy[i] = (PS_LONG)irint (y[i] * PSL->internal.scale);
 	}
 
 	/* The only truly unique point is the starting point; all else must show increments
@@ -1089,69 +1089,69 @@ int ps_shorten_path (double *x, double *y, int n, int *ix, int *iy)
 }
 
 /* fortran interface */
-void ps_shorten_path_ (double *x, double *y, int *n, int *ix, int *iy)
+void ps_shorten_path_ (double *x, double *y, PS_LONG *n, PS_LONG *ix, PS_LONG *iy)
 {
 	ps_shorten_path (x, y, *n, ix, iy);
 }
 
-void ps_plot (double x, double y, int pen)
+void ps_plot (double x, double y, PS_LONG pen)
 {
-	int ix, iy, idx, idy;
+	PS_LONG ix, iy, idx, idy;
 
-	ix = irint (x*PSL->internal.scale);
-	iy = irint (y*PSL->internal.scale);
+	ix = (PS_LONG)irint (x*PSL->internal.scale);
+	iy = (PS_LONG)irint (y*PSL->internal.scale);
 	if (abs (pen) == 2) {	/* Convert absolute draw to relative draw */
 		idx = ix - PSL->internal.ix;
 		idy = iy - PSL->internal.iy;
 		if (idx == 0 && idy == 0) return;
-		fprintf (PSL->internal.fp, "%d %d D\n", idx, idy);
+		fprintf (PSL->internal.fp, "%ld %ld D\n", idx, idy);
 		PSL->internal.npath++;
 	}
 	else {
 		idx = ix;
 		idy = iy;
-		fprintf (PSL->internal.fp, "%d %d M\n", idx, idy);
+		fprintf (PSL->internal.fp, "%ld %ld M\n", idx, idy);
 		PSL->internal.npath = 1;
 	}
 	if (pen == PSL_PEN_DRAW_AND_STROKE) fprintf (PSL->internal.fp, "S\n");
 	PSL->internal.ix = ix;
 	PSL->internal.iy = iy;
 	if ((PSL->internal.npath + PSL->internal.clip_path_length) > PSL_MAX_L1_PATH) {
-		fprintf (PSL->internal.fp, "S %d %d M\n", ix, iy);
+		fprintf (PSL->internal.fp, "S %ld %ld M\n", ix, iy);
 		PSL->internal.npath = 1;
 	}
 }
 
 /* fortran interface */
-void ps_plot_ (double *x, double *y, int *pen)
+void ps_plot_ (double *x, double *y, PS_LONG *pen)
 {
 	ps_plot (*x, *y, *pen);
 }
 
-void ps_plotend (int lastpage)
+void ps_plotend (PS_LONG lastpage)
 {
-	int i;
+	PS_LONG i;
 
 	ps_pattern_cleanup ();
-	ps_setdash (CNULL, 0);
+	ps_setdash (CNULL, 0L);
 
 	if (lastpage) {
 		if (!PSL->internal.eps_format)
 			fprintf (PSL->internal.fp, "%%%%PageTrailer\n");
 		else {
-			int x0, y0, x1, y1;
-			x0 = MAX (irint (PSL->init.magnify[0] * PSL->internal.bb[0]), 0);
-			y0 = MAX (irint (PSL->init.magnify[1] * PSL->internal.bb[1]), 0);
-			x1 = irint (PSL->init.magnify[0] * PSL->internal.bb[2]);
-			y1 = irint (PSL->init.magnify[1] * PSL->internal.bb[3]);
+			PS_LONG x0, y0, x1, y1;
+			x0 = MAX ((PS_LONG)irint (PSL->init.magnify[0] * PSL->internal.bb[0]), 0);
+			y0 = MAX ((PS_LONG)irint (PSL->init.magnify[1] * PSL->internal.bb[1]), 0);
+			x1 = (PS_LONG)irint (PSL->init.magnify[0] * PSL->internal.bb[2]);
+			y1 = (PS_LONG)irint (PSL->init.magnify[1] * PSL->internal.bb[3]);
 			fprintf (PSL->internal.fp, "%%%%Trailer\n");
-			fprintf (PSL->internal.fp, "%%%%BoundingBox: %d %d %d %d\n", x0, y0, x1, y1);
+			fprintf (PSL->internal.fp, "%%%%BoundingBox: %ld %ld %ld %ld\n", x0, y0, x1, y1);
 		}
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Reset translations and scale and call showpage\n");
 		fprintf (PSL->internal.fp, "S %g %g T", -(PSL->init.origin[0] * PSL->internal.scale), -(PSL->init.origin[1] * PSL->internal.scale));
 		fprintf (PSL->internal.fp, " %g %g scale",
 			PSL->internal.scale/(PSL->internal.points_pr_unit * PSL->init.magnify[0]), PSL->internal.scale/(PSL->internal.points_pr_unit * PSL->init.magnify[1]));
-		if (PSL->internal.landscape) fprintf (PSL->internal.fp, " -90 R %d 0 T", -PSL->internal.p_width);
+		if (PSL->internal.landscape) fprintf (PSL->internal.fp, " -90 R %ld 0 T", -PSL->internal.p_width);
 		fprintf (PSL->internal.fp, " 0 A\nshowpage\n");
 		if (!PSL->internal.eps_format) fprintf (PSL->internal.fp, "\n%%%%Trailer\n");
 		fprintf (PSL->internal.fp, "\nend\n");
@@ -1179,12 +1179,12 @@ void ps_plotend (int lastpage)
 }
 
 /* fortran interface */
-void ps_plotend_ (int *lastpage)
+void ps_plotend_ (PS_LONG *lastpage)
 {
 	ps_plotend (*lastpage);
 }
 
-int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_size, int *rgb, const char *encoding, struct EPS *eps)
+PS_LONG ps_plotinit (char *plotfile, PS_LONG overlay, PS_LONG mode, double xoff, double yoff, double xscl, double yscl, PS_LONG ncopies, PS_LONG dpi, PS_LONG unit, PS_LONG *page_size, PS_LONG *rgb, const char *encoding, struct EPS *eps)
 /* plotfile:	Name of output file or NULL for standard output
    xoff, yoff:	Sets a new origin relative to old
    xscl, yscl:	Global scaling, usually left to 1,1
@@ -1208,8 +1208,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
    eps:		structure with Document info.  !! Fortran version (ps_plotinit_) does not have this argument !!
 */
 {
-	int i, pmode, manual = FALSE, n_GMT_fonts;
-	int no_rgb[3] = {-1, -1, -1};
+	PS_LONG i, pmode, manual = FALSE, n_GMT_fonts;
+	PS_LONG no_rgb[3] = {-1, -1, -1};
 	time_t right_now;
 	char openmode[2], *this;
 	char paint_code[12] = {'Q', 'Q', 'A', 'a', 'C', 'c', 'K', 'k', 'H', 'h', 'I', 'i'};
@@ -1217,7 +1217,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 
 	/* Allocate PSL control structure */
 
-	if ((PSL = (struct PSL *) ps_memory (VNULL, 1, sizeof (struct PSL))) == NULL) {
+	if ((PSL = (struct PSL *) ps_memory (VNULL, 1L, sizeof (struct PSL))) == NULL) {
 		fprintf (stderr, "PSL Fatal Error: Could not allocate PSL control structure!\n");
 		exit (EXIT_FAILURE);
 	}
@@ -1230,12 +1230,12 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	PSL->init.mode = mode;
 	PSL->init.unit = unit;
 	PSL->init.dpi = dpi;
-	memcpy ((void *)PSL->init.page_rgb, (void *)rgb, 3*sizeof(int));
-	memcpy ((void *)PSL->init.page_size, (void *)page_size, 2*sizeof(int));
+	memcpy ((void *)PSL->init.page_rgb, (void *)rgb, 3*sizeof(PS_LONG));
+	memcpy ((void *)PSL->init.page_size, (void *)page_size, 2*sizeof(PS_LONG));
 	PSL->init.origin[0] = xoff;	PSL->init.origin[1] = yoff;
 	PSL->init.magnify[0] = xscl;	PSL->init.magnify[1] = yscl;
 	/* Duplicate entire contents of EPS structure - to be freed by ps_plotend() */
-	PSL->init.eps = (struct EPS *) ps_memory (VNULL, 1, sizeof (struct EPS));
+	PSL->init.eps = (struct EPS *) ps_memory (VNULL, 1L, sizeof (struct EPS));
 	memcpy ((void *)PSL->init.eps, (void *)eps,sizeof(struct EPS));
 	PSL->init.eps->name = (char *) ps_memory (VNULL, (size_t)(strlen (eps->name) + 1), sizeof (char));
 	strcpy (PSL->init.eps->name, eps->name);
@@ -1335,7 +1335,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	strcpy (PSL->current.rgb_format, "%.3lg %.3lg %.3lg ");		/* Same, for RGB triplets */
 	strcpy (PSL->current.hsv_format, "%.3lg %.3lg %.3lg ");		/* Same, for HSV triplets */
 	strcpy (PSL->current.cmyk_format, "%.3lg %.3lg %.3lg %.3lg ");	/* Same, for CMYK quadruples */
-	memcpy ((void *)PSL->internal.paint_code, (void *)paint_code, 12);
+	memcpy ((void *)PSL->internal.paint_code, (void *)paint_code, 12L);
 
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
@@ -1372,7 +1372,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		if (PSL->internal.eps_format)
 			fprintf (PSL->internal.fp, "(atend)\n");
 		else
-			fprintf (PSL->internal.fp, "0 0 %d %d\n", PSL->internal.p_width, PSL->internal.p_height);
+			fprintf (PSL->internal.fp, "0 0 %ld %ld\n", PSL->internal.p_width, PSL->internal.p_height);
 		if (eps) {	/* Document info is available */
 			fprintf (PSL->internal.fp, "%%%%Title: %s\n", PSL->init.eps->title);
 			fprintf (PSL->internal.fp, "%%%%Creator: GMT\n");
@@ -1407,7 +1407,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 
 		/* Define font macros (see pslib.h for details on how to add fonts) */
 
-		for (i = 0; i < PSL->internal.N_FONTS; i++) fprintf (PSL->internal.fp, "/F%d {/%s Y} bind def\n", i, PSL->internal.font[i].name);
+		for (i = 0; i < PSL->internal.N_FONTS; i++) fprintf (PSL->internal.fp, "/F%ld {/%s Y} bind def\n", i, PSL->internal.font[i].name);
 
 		ps_bulkcopy ("PSL_label", "v 1.13 ");		/* Place code for label line annotations and clipping */
 		fprintf (PSL->internal.fp, "%%%%EndProlog\n\n");
@@ -1417,8 +1417,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		if (manual)	/* Manual media feed requested */
 			fprintf (PSL->internal.fp, "PSLevel 1 gt { << /ManualFeed true >> setpagedevice } if\n");
 		else if (!PSL->internal.eps_format && PSL->internal.p_width > 0 && PSL->internal.p_height > 0)	/* Specific media selected */
-			fprintf (PSL->internal.fp, "PSLevel 1 gt { << /PageSize [%d %d] /ImagingBBox null >> setpagedevice } if\n", PSL->internal.p_width, PSL->internal.p_height);
-		if (!PSL->internal.eps_format && ncopies > 1) fprintf (PSL->internal.fp, "/#copies %d def\n", ncopies);
+			fprintf (PSL->internal.fp, "PSLevel 1 gt { << /PageSize [%ld %ld] /ImagingBBox null >> setpagedevice } if\n", PSL->internal.p_width, PSL->internal.p_height);
+		if (!PSL->internal.eps_format && ncopies > 1) fprintf (PSL->internal.fp, "/#copies %ld def\n", ncopies);
 		fprintf (PSL->internal.fp, "%%%%EndSetup\n\n");
 
 		if (!PSL->internal.eps_format) fprintf (PSL->internal.fp, "%%%%Page: 1 1\n\n");
@@ -1428,13 +1428,13 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		scl = PSL->internal.points_pr_unit / PSL->internal.scale;
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Scale is originally set to %g, which means that\n", scl);
 		if (unit == 0) {	/* CM used as unit */
-			if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% 1 cm on the paper equals %d Postscript units\n", (int)PSL->internal.scale);
+			if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% 1 cm on the paper equals %ld Postscript units\n", (PS_LONG)PSL->internal.scale);
 		}
 		else if (unit == 1) {	/* INCH used as unit */
-			if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% 1 inch on the paper equals %d Postscript units\n", (int)PSL->internal.scale);
+			if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% 1 inch on the paper equals %ld Postscript units\n", (PS_LONG)PSL->internal.scale);
 		}
 		else if (unit == 2) {	/* M used as unit */
-			if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% 1 m on the paper equals %d Postscript units\n", (int)PSL->internal.scale);
+			if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% 1 m on the paper equals %ld Postscript units\n", (PS_LONG)PSL->internal.scale);
 		}
 		else {
 			fprintf (stderr, "pslib: Measure unit not valid!\n");
@@ -1443,7 +1443,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 
 		xscl *= scl;
 		yscl *= scl;
-		if (PSL->internal.landscape) fprintf (PSL->internal.fp, "%d 0 T 90 R\n", PSL->internal.p_width);
+		if (PSL->internal.landscape) fprintf (PSL->internal.fp, "%ld 0 T 90 R\n", PSL->internal.p_width);
 		fprintf (PSL->internal.fp, "%g %g scale\n", xscl, yscl);
 		fprintf (PSL->internal.fp, "%%%%EndPageSetup\n\n");
 
@@ -1468,34 +1468,34 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 }
 
 /* fortran interface */
-void ps_plotinit_ (char *plotfile, int *overlay, int *mode, double *xoff, double *yoff, double *xscl, double *yscl, int *ncopies, int *dpi, int *unit, int *page_size, int *rgb, const char *encoding, int nlen1, int nlen2)
+void ps_plotinit_ (char *plotfile, PS_LONG *overlay, PS_LONG *mode, double *xoff, double *yoff, double *xscl, double *yscl, PS_LONG *ncopies, PS_LONG *dpi, PS_LONG *unit, PS_LONG *page_size, PS_LONG *rgb, const char *encoding, PS_LONG nlen1, PS_LONG nlen2)
 {
 	 ps_plotinit (plotfile, *overlay, *mode, *xoff, *yoff, *xscl, *yscl, *ncopies, *dpi, *unit, page_size, rgb, encoding, (struct EPS *)NULL);
 }
 
-void ps_setlinecap (int cap)
+void ps_setlinecap (PS_LONG cap)
 {
-	fprintf (PSL->internal.fp, "%d setlinecap\n", cap);
+	fprintf (PSL->internal.fp, "%ld setlinecap\n", cap);
 }
 
 /* fortran interface */
-void ps_setlinecap_ (int *cap)
+void ps_setlinecap_ (PS_LONG *cap)
 {
 	ps_setlinecap (*cap);
 }
 
-void ps_setlinejoin (int join)
+void ps_setlinejoin (PS_LONG join)
 {
-	fprintf (PSL->internal.fp, "%d setlinejoin\n", join);
+	fprintf (PSL->internal.fp, "%ld setlinejoin\n", join);
 }
 
 /* fortran interface */
-void ps_setlinejoin_ (int *join)
+void ps_setlinejoin_ (PS_LONG *join)
 {
 	ps_setlinejoin (*join);
 }
 
-void ps_setmiterlimit (int limit)
+void ps_setmiterlimit (PS_LONG limit)
 {
 	double miter;
 	miter = (limit == 0) ? 10.0 : 1.0 / sin (0.5 * limit * D2R);
@@ -1503,23 +1503,23 @@ void ps_setmiterlimit (int limit)
 }
 
 /* fortran interface */
-void ps_setmiterlimit_ (int *limit)
+void ps_setmiterlimit_ (PS_LONG *limit)
 {
 	ps_setmiterlimit (*limit);
 }
 
-void ps_plotr (double x, double y, int pen)
+void ps_plotr (double x, double y, PS_LONG pen)
 {
-	int ix, iy;
+	PS_LONG ix, iy;
 
-	ix = irint (x * PSL->internal.scale);
-	iy = irint (y * PSL->internal.scale);
+	ix = (PS_LONG)irint (x * PSL->internal.scale);
+	iy = (PS_LONG)irint (y * PSL->internal.scale);
 	if (ix == 0 && iy == 0) return;
 	PSL->internal.npath++;
 	if (abs (pen) == 2)
-		fprintf (PSL->internal.fp, "%d %d D\n", ix, iy);
+		fprintf (PSL->internal.fp, "%ld %ld D\n", ix, iy);
 	else {
-		fprintf (PSL->internal.fp, "%d %d G\n", ix, iy);
+		fprintf (PSL->internal.fp, "%ld %ld G\n", ix, iy);
 		PSL->internal.npath = 1;
 	}
 	if (pen == PSL_PEN_DRAW_AND_STROKE) fprintf (PSL->internal.fp, "S\n");
@@ -1528,15 +1528,15 @@ void ps_plotr (double x, double y, int pen)
 }
 
 /* fortran interface */
-void ps_plotr_ (double *x, double *y, int *pen)
+void ps_plotr_ (double *x, double *y, PS_LONG *pen)
 {
 	ps_plotr (*x, *y, *pen);
 }
 
-void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
+void ps_polygon (double *x, double *y, PS_LONG n, PS_LONG rgb[], PS_LONG outline)
 {
 	/* Draw and optionally fill polygons. */
-	int split, pmode;
+	PS_LONG split, pmode;
 
 	split = (rgb[0] < 0);	/* Can only split if we need outline only */
 	if (outline >= 0) ps_line (x, y, n, 1, FALSE, split);	/* No stroke or close path yet */
@@ -1561,12 +1561,12 @@ void ps_polygon (double *x, double *y, int n, int rgb[], int outline)
 }
 
 /* fortran interface */
-void ps_polygon_ (double *x, double *y, int *n, int *rgb, int *outline)
+void ps_polygon_ (double *x, double *y, PS_LONG *n, PS_LONG *rgb, PS_LONG *outline)
 {
 	ps_polygon (x, y, *n, rgb, *outline);
 }
 
-void ps_patch (double *x, double *y, int np, int rgb[], int outline)
+void ps_patch (double *x, double *y, PS_LONG np, PS_LONG rgb[], PS_LONG outline)
 {
 	/* Like ps_polygon but intended for small polygons (< 20 points).  No checking for
 	 * shorter path by calling ps_shorten_path as in ps_polygon.
@@ -1583,19 +1583,19 @@ void ps_patch (double *x, double *y, int np, int rgb[], int outline)
 	 *	pattern dx_n dy_n ... n x0 y0 qI	(pattern fill; use qi for outline)
 	 */
 
-	int i, n, pmode, n1, ix[20], iy[20];
+	PS_LONG i, n, pmode, n1, ix[20], iy[20];
 
 	if (np > 20) {	/* Must call ps_polygon instead */
 		ps_polygon ( x, y, np, rgb, outline);
 		return;
 	}
 
-	ix[0] = irint (x[0] * PSL->internal.scale);	/* Convert inch to absolute pixel position for start of quadrilateral */
-	iy[0] = irint (y[0] * PSL->internal.scale);
+	ix[0] = (PS_LONG)irint (x[0] * PSL->internal.scale);	/* Convert inch to absolute pixel position for start of quadrilateral */
+	iy[0] = (PS_LONG)irint (y[0] * PSL->internal.scale);
 
 	for (i = n = 1, n1 = 0; i < np; i++) {	/* Same but check if new point represent a different pixel */
-		ix[n] = irint (x[i] * PSL->internal.scale);
-		iy[n] = irint (y[i] * PSL->internal.scale);
+		ix[n] = (PS_LONG)irint (x[i] * PSL->internal.scale);
+		iy[n] = (PS_LONG)irint (y[i] * PSL->internal.scale);
 		if (ix[n] != ix[n1] || iy[n] != iy[n1]) n++, n1++;
 	}
 	if (ix[0] == ix[n1] && iy[0] == iy[n1]) n--, n1--;	/* Closepath will do this automatically */
@@ -1606,50 +1606,50 @@ void ps_patch (double *x, double *y, int np, int rgb[], int outline)
 
 	n--;
 	n1 = n;
-	for (i = n - 1; i != -1; i--, n--) fprintf (PSL->internal.fp, "%d %d ", ix[n] - ix[i], iy[n] - iy[i]);
-	fprintf (PSL->internal.fp, "%d %d %d q%c\n", n1, ix[0], iy[0], PSL->internal.paint_code[pmode]);
+	for (i = n - 1; i != -1; i--, n--) fprintf (PSL->internal.fp, "%ld %ld ", ix[n] - ix[i], iy[n] - iy[i]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld q%c\n", n1, ix[0], iy[0], PSL->internal.paint_code[pmode]);
 }
 
 /* fortran interface */
 
-void ps_patch_ (double *x, double *y, int *n, int *rgb, int *outline)
+void ps_patch_ (double *x, double *y, PS_LONG *n, PS_LONG *rgb, PS_LONG *outline)
 {
 	ps_patch (x, y, *n, rgb, *outline);
 }
 
-void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline)
+void ps_rect (double x1, double y1, double x2, double y2, PS_LONG rgb[], PS_LONG outline)
 {
-	int pmode, xll, yll;
+	PS_LONG pmode, xll, yll;
 	pmode = ps_place_color (rgb);
-	xll = irint (x1 * PSL->internal.scale);	/* Get lower left point with minimum round-off */
-	yll = irint (y1 * PSL->internal.scale);
-	fprintf (PSL->internal.fp, "%d %d %d %d B%c\n", irint(y2 * PSL->internal.scale) - yll, irint(x2 * PSL->internal.scale) - xll, xll, yll, PSL->internal.paint_code[pmode+outline]);
+	xll = (PS_LONG)irint (x1 * PSL->internal.scale);	/* Get lower left point with minimum round-off */
+	yll = (PS_LONG)irint (y1 * PSL->internal.scale);
+	fprintf (PSL->internal.fp, "%ld %ld %ld %ld B%c\n", (PS_LONG)irint(y2 * PSL->internal.scale) - yll, (PS_LONG)irint(x2 * PSL->internal.scale) - xll, xll, yll, PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_rect_ (double *x1, double *y1, double *x2, double *y2, int *rgb, int *outline)
+void ps_rect_ (double *x1, double *y1, double *x2, double *y2, PS_LONG *rgb, PS_LONG *outline)
 {
 	ps_rect (*x1, *y1, *x2, *y2, rgb, *outline);
 }
 
-void ps_rotaterect (double x, double y, double angle, double x_len, double y_len, int rgb[], int outline)
+void ps_rotaterect (double x, double y, double angle, double x_len, double y_len, PS_LONG rgb[], PS_LONG outline)
 {
-	int pmode;
+	PS_LONG pmode;
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%d %d %g %d %d R%c\n", irint(y_len * PSL->internal.scale), irint(x_len * PSL->internal.scale), angle, irint(x * PSL->internal.scale), irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %g %ld %ld R%c\n", (PS_LONG)irint(y_len * PSL->internal.scale), (PS_LONG)irint(x_len * PSL->internal.scale), angle, (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_rotaterect_ (double *x1, double *y1, double *angle, double *x2, double *y2, int *rgb, int *outline)
+void ps_rotaterect_ (double *x1, double *y1, double *angle, double *x2, double *y2, PS_LONG *rgb, PS_LONG *outline)
 {
 	ps_rotaterect (*x1, *y1, *angle, *x2, *y2, rgb, *outline);
 }
 
 void ps_rotatetrans (double x, double y, double angle)
 {
-	int go = FALSE;
+	PS_LONG go = FALSE;
 
 	if (fabs(angle) < 1e-9) angle = 0.0;
 	if (angle != 0.0) {
@@ -1672,7 +1672,7 @@ void ps_rotatetrans_ (double *x, double *y, double *angle)
 	 ps_rotatetrans (*x, *y, *angle);
 }
 
-void ps_setdash (char *pattern, int offset)
+void ps_setdash (char *pattern, PS_LONG offset)
 {
 	/* Line structure in Postscript units
 	 * offset from plotpoint in PS units
@@ -1687,18 +1687,18 @@ void ps_setdash (char *pattern, int offset)
 	if (offset == PSL->current.offset && ((pattern && !strcmp (pattern, PSL->current.texture)) || (!pattern && PSL->current.texture[0] == '\0'))) return;
 	PSL->current.offset = offset;
 	if (pattern)
-		strncpy (PSL->current.texture, pattern, 512);
+		strncpy (PSL->current.texture, pattern, 512L);
 	else
-		memset (PSL->current.texture, 0, 512);
+		memset (PSL->current.texture, 0, 512L);
 	fputs ("S ", PSL->internal.fp);
 	ps_place_setdash (pattern, offset);
 	fputs ("\n", PSL->internal.fp);
 	PSL->internal.npath = 0;
 }
 
-void ps_place_setdash (char *pattern, int offset)
+void ps_place_setdash (char *pattern, PS_LONG offset)
 {
-	int place_space;
+	PS_LONG place_space;
 	if (pattern) {
 		fputs ("[", PSL->internal.fp);
 		place_space = 0;
@@ -1709,55 +1709,55 @@ void ps_place_setdash (char *pattern, int offset)
 			while (*pattern && *pattern == ' ') pattern++;
 			place_space = 1;
 		}
-		fprintf (PSL->internal.fp, "] %d B", offset);
+		fprintf (PSL->internal.fp, "] %ld B", offset);
 	}
 	else
 		fprintf (PSL->internal.fp, "[] 0 B");	/* Reset to continuous line */
 }
 
 /* fortran interface */
-void ps_setdash_ (char *pattern, int *offset, int nlen)
+void ps_setdash_ (char *pattern, PS_LONG *offset, PS_LONG nlen)
 {
 	ps_setdash (pattern, *offset);
 }
 
-void ps_setfont (int font_no)
+void ps_setfont (PS_LONG font_no)
 {
 	if (font_no < 0 || font_no >= PSL->internal.N_FONTS)
-		fprintf (stderr, "pslib: Selected font out of range (%d), ignored\n", font_no);
+		fprintf (stderr, "pslib: Selected font out of range (%ld), ignored\n", font_no);
 	else
 		PSL->current.font_no = font_no;
 }
 
 /* fortran interface */
-void ps_setfont_ (int *font_no)
+void ps_setfont_ (PS_LONG *font_no)
 {
 	ps_setfont (*font_no);
 }
 
-void ps_setformat (int n_decimals)
+void ps_setformat (PS_LONG n_decimals)
 {
 	/* Sets nmber of decimals used for rgb/gray specifications [3] */
 	if (n_decimals < 1 || n_decimals > 3)
-		fprintf (stderr, "pslib: Selected decimals for color out of range (%d), ignored\n", n_decimals);
+		fprintf (stderr, "pslib: Selected decimals for color out of range (%ld), ignored\n", n_decimals);
 	else {
-		sprintf (PSL->current.bw_format, "%%.%df ", n_decimals);
-		sprintf (PSL->current.rgb_format, "%%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals);
-		sprintf (PSL->current.hsv_format, "%%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals);
-		sprintf (PSL->current.cmyk_format, "%%.%df %%.%df %%.%df %%.%df ", n_decimals, n_decimals, n_decimals, n_decimals);
+		sprintf (PSL->current.bw_format, "%%.%ldf ", n_decimals);
+		sprintf (PSL->current.rgb_format, "%%.%ldf %%.%ldf %%.%ldf ", n_decimals, n_decimals, n_decimals);
+		sprintf (PSL->current.hsv_format, "%%.%ldf %%.%ldf %%.%ldf ", n_decimals, n_decimals, n_decimals);
+		sprintf (PSL->current.cmyk_format, "%%.%ldf %%.%ldf %%.%ldf %%.%ldf ", n_decimals, n_decimals, n_decimals, n_decimals);
 	}
 }
 
 /* fortran interface */
-void ps_setformat_ (int *n_decimals)
+void ps_setformat_ (PS_LONG *n_decimals)
 {
 	ps_setformat (*n_decimals);
 }
 
-void ps_setline (int linewidth)
+void ps_setline (PS_LONG linewidth)
 {
 	if (linewidth < 0) {
-		fprintf (stderr, "pslib: Selected linewidth is negative (%d), ignored\n", linewidth);
+		fprintf (stderr, "pslib: Selected linewidth is negative (%ld), ignored\n", linewidth);
 		return;
 	}
 	if (linewidth == PSL->current.linewidth) return;
@@ -1767,14 +1767,14 @@ void ps_setline (int linewidth)
 }
 
 /* fortran interface */
-void ps_setline_ (int *linewidth)
+void ps_setline_ (PS_LONG *linewidth)
 {
 	 ps_setline (*linewidth);
 }
 
-void ps_setpaint (int rgb[])
+void ps_setpaint (PS_LONG rgb[])
 {
-	int pmode;
+	PS_LONG pmode;
 
 	if (rgb[0] < 0) return;	/* Some rgb's indicate no fill */
 	if (rgb[0] == PSL->current.rgb[0] && rgb[1] == PSL->current.rgb[1] && rgb[2] == PSL->current.rgb[2]) return;	/* Same color as already set */
@@ -1791,12 +1791,12 @@ void ps_setpaint (int rgb[])
 }
 
 /* fortran interface */
-void ps_setpaint_ (int *rgb)
+void ps_setpaint_ (PS_LONG *rgb)
 {
 	 ps_setpaint (rgb);
 }
 
-void ps_textbox (double x, double y, double pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[])
+void ps_textbox (double x, double y, double pointsize, char *text, double angle, PS_LONG justify, PS_LONG outline, double dx, double dy, PS_LONG rgb[])
 {
 /* x,y = location of string
  * pointsize = fontsize in points
@@ -1815,7 +1815,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
  *   1       2        3
  */
 	char *string, align[3][10] = {"0", "2 div neg", "neg"};
-	int i = 0, pmode, j, h_just, v_just, rounded;
+	PS_LONG i = 0, pmode, j, h_just, v_just, rounded;
 
 	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
 
@@ -1845,9 +1845,9 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	/* Got to anchor point */
 
 	if (pointsize > 0.0) {	/* Set a new anchor point */
-		PSL->internal.ix = irint (x * PSL->internal.scale);
-		PSL->internal.iy = irint (y * PSL->internal.scale);
-		fprintf (PSL->internal.fp, "V %d %d T ", PSL->internal.ix, PSL->internal.iy);
+		PSL->internal.ix = (PS_LONG)irint (x * PSL->internal.scale);
+		PSL->internal.iy = (PS_LONG)irint (y * PSL->internal.scale);
+		fprintf (PSL->internal.fp, "V %ld %ld T ", PSL->internal.ix, PSL->internal.iy);
 	}
 	else
 		fprintf (PSL->internal.fp, "V PSL_save_x PSL_save_y T ");
@@ -1862,9 +1862,9 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	}
 	/* Here, (0,0) is lower point on textbox with no clearance yet */
 	if (rounded) {
-		fprintf (PSL->internal.fp, "\n/PSL_r %d def\n", irint (MIN (dx, dy) * PSL->internal.scale));
-		fprintf (PSL->internal.fp, "/PSL_dx2 %d def\n", irint ((dx - MIN (dx, dy)) * PSL->internal.scale));
-		fprintf (PSL->internal.fp, "/PSL_dy2 %d def\n", irint ((dy - MIN (dx, dy)) * PSL->internal.scale));
+		fprintf (PSL->internal.fp, "\n/PSL_r %ld def\n", (PS_LONG)irint (MIN (dx, dy) * PSL->internal.scale));
+		fprintf (PSL->internal.fp, "/PSL_dx2 %ld def\n", (PS_LONG)irint ((dx - MIN (dx, dy)) * PSL->internal.scale));
+		fprintf (PSL->internal.fp, "/PSL_dy2 %ld def\n", (PS_LONG)irint ((dy - MIN (dx, dy)) * PSL->internal.scale));
 		fprintf (PSL->internal.fp, "/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx2 2 mul add def\n");
 		fprintf (PSL->internal.fp, "/PSL_y_side PSL_dimy_ur PSL_dimy_ll sub PSL_dy2 2 mul add def\n");
 		fprintf (PSL->internal.fp, "/PSL_bx0 PSL_dimx_ll PSL_dx2 sub def\n");
@@ -1893,12 +1893,12 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 }
 
 /* fortran interface */
-void ps_textbox_ (double *x, double *y, double *pointsize, char *text, double *angle, int *justify, int *outline, double *dx, double *dy, int *rgb, int nlen)
+void ps_textbox_ (double *x, double *y, double *pointsize, char *text, double *angle, PS_LONG *justify, PS_LONG *outline, double *dx, double *dy, PS_LONG *rgb, PS_LONG nlen)
 {
 	 ps_textbox (*x, *y, *pointsize, text, *angle, *justify, *outline, *dx, *dy, rgb);
 }
 
-void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *text, int key)
+void ps_textdim (char *xdim, char *ydim, double pointsize, PS_LONG in_font, char *text, PS_LONG key)
 {
 	/* key = 0: Will calculate the exact dimensions (xdim, ydim) of the given text string.
 	 * Because of possible escape sequences we need to examine the string
@@ -1909,8 +1909,8 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	 */
 
 	char *tempstring, *piece, *piece2, *ptr, *string;
-	int i = 0, font;
-	int sub, super, small, old_font;
+	PS_LONG i = 0, font;
+	PS_LONG sub, super, small, old_font;
 	double height, small_size, size, scap_size;
 
 	if (strlen (text) >= (BUFSIZ-1)) {
@@ -1926,9 +1926,9 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 
 	if (!strchr (string, '@')) {	/* Plain text string */
 		if (key == 0)
-			fprintf (PSL->internal.fp, "0 0 M %d F%d (%s) E /%s exch def bby /%s exch def\n", (int) irint (height * PSL->internal.scale), PSL->current.font_no, string, xdim, ydim);
+			fprintf (PSL->internal.fp, "0 0 M %ld F%ld (%s) E /%s exch def bby /%s exch def\n", (PS_LONG) irint (height * PSL->internal.scale), PSL->current.font_no, string, xdim, ydim);
 		else
-			fprintf (PSL->internal.fp, "0 0 M %d F%d (%s) tcf pathbbox N /%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n" , (int) irint (height * PSL->internal.scale), PSL->current.font_no, string, ydim, xdim, ydim, xdim);
+			fprintf (PSL->internal.fp, "0 0 M %ld F%ld (%s) tcf pathbbox N /%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n" , (PS_LONG) irint (height * PSL->internal.scale), PSL->current.font_no, string, ydim, xdim, ydim, xdim);
 		ps_free ((void *)string);
 		return;
 	}
@@ -1957,7 +1957,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	ptr = strtok (tempstring, "@");
 	fprintf (PSL->internal.fp, "N 0 0 m ");	/* Initialize currentpoint */
 	if(string[0] != '@') {
-		fprintf (PSL->internal.fp, "%d F%d (%s) tcf ", irint (size*PSL->internal.scale), font, ptr);
+		fprintf (PSL->internal.fp, "%ld F%ld (%s) tcf ", (PS_LONG)irint (size*PSL->internal.scale), font, ptr);
 		ptr = strtok ((char *)NULL, "@");
 	}
 
@@ -2029,7 +2029,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 		}
 		else	/* Not recognized or @@ for a single @ */
 			strcpy (piece, ptr);
-		if (strlen (piece) > 0) fprintf (PSL->internal.fp, "%d F%d (%s) tcf ", irint (size*PSL->internal.scale), font, piece);
+		if (strlen (piece) > 0) fprintf (PSL->internal.fp, "%ld F%ld (%s) tcf ", (PS_LONG)irint (size*PSL->internal.scale), font, piece);
 		ptr = strtok ((char *)NULL, "@");
 	}
 
@@ -2045,7 +2045,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	ps_free ((void *)string);
 }
 
-void ps_text (double x, double y, double pointsize, char *text, double angle, int justify, int form)
+void ps_text (double x, double y, double pointsize, char *text, double angle, PS_LONG justify, PS_LONG form)
 {
 	/* General purpose text plotter for single line of text.  For paragraphs, see ps_words.
 	* ps_text positions and justifies the text string according to the parameters given.
@@ -2071,8 +2071,8 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	*/
 
 	char *piece, *piece2, *ptr, *string, op[16], align[3][10] = {"0", "2 div neg", "neg"};
-	int dy, i = 0, j, font, v_just, h_just, upen, ugap;
-	int sub, super, small, old_font, n_uline, start_uline, stop_uline;
+	PS_LONG dy, i = 0, j, font, v_just, h_just, upen, ugap;
+	PS_LONG sub, super, small, old_font, n_uline, start_uline, stop_uline;
 	double height, small_size, size, scap_size, ustep, dstep;
 
 	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
@@ -2101,9 +2101,9 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	PSL->internal.npath = 0;
 
 	if (pointsize > 0.0) {	/* Set a new anchor point */
-		PSL->internal.ix = irint (x * PSL->internal.scale);
-		PSL->internal.iy = irint (y * PSL->internal.scale);
-		fprintf (PSL->internal.fp, "%d %d M ", PSL->internal.ix, PSL->internal.iy);
+		PSL->internal.ix = (PS_LONG)irint (x * PSL->internal.scale);
+		PSL->internal.iy = (PS_LONG)irint (y * PSL->internal.scale);
+		fprintf (PSL->internal.fp, "%ld %ld M ", PSL->internal.ix, PSL->internal.iy);
 	}
 
 	if (angle != 0.0) fprintf (PSL->internal.fp, "V %.3g R ", angle);
@@ -2116,7 +2116,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	}
 
 	if (!strchr (string, '@')) {	/* Plain text string - do things simply and exit */
-		fprintf (PSL->internal.fp, "%d F%d (%s) ", (int) irint (height * PSL->internal.scale), PSL->current.font_no, string);
+		fprintf (PSL->internal.fp, "%ld F%ld (%s) ", (PS_LONG) irint (height * PSL->internal.scale), PSL->current.font_no, string);
 		(form == 0) ? fprintf (PSL->internal.fp, "Z") : fprintf (PSL->internal.fp, "false charpath S");
 		(angle != 0.0) ? fprintf (PSL->internal.fp, " U\n") : fprintf (PSL->internal.fp, "\n");
 		ps_free ((void *)string);
@@ -2146,13 +2146,13 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	scap_size = height * 0.85;
 	ustep = 0.35 * height;
 	dstep = 0.25 * height;
-	upen = irint (0.025 * height * PSL->internal.scale);	/* Underline pen thickness */
-	ugap = irint (0.075 * height * PSL->internal.scale);	/* Underline shift */
+	upen = (PS_LONG)irint (0.025 * height * PSL->internal.scale);	/* Underline pen thickness */
+	ugap = (PS_LONG)irint (0.075 * height * PSL->internal.scale);	/* Underline shift */
 	start_uline = stop_uline = n_uline = 0;
 
 	ptr = strtok (string, "@");
 	if(string[0] != '@') {	/* String has @ but not at start - must deal with first piece explicitly */
-		fprintf (PSL->internal.fp, "%d F%d (%s) %s\n", irint (size*PSL->internal.scale), font, ptr, op);
+		fprintf (PSL->internal.fp, "%ld F%ld (%s) %s\n", (PS_LONG)irint (size*PSL->internal.scale), font, ptr, op);
 		ptr = strtok ((char *)NULL, "@");
 	}
 
@@ -2178,8 +2178,8 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 				ptr++;
 			}
 			/* Try to center justify these two character to make a composite character - may not be right */
-			fprintf (PSL->internal.fp, "%d F%d (%s) dup stringwidth pop exch %s -2 div dup 0 G\n", irint (size*PSL->internal.scale), font, piece2, op);
-			fprintf (PSL->internal.fp, "%d F%d (%s) E -2 div dup 0 G exch %s sub neg dup 0 lt {pop 0} if 0 G\n", irint (size*PSL->internal.scale), font, piece, op);
+			fprintf (PSL->internal.fp, "%ld F%ld (%s) dup stringwidth pop exch %s -2 div dup 0 G\n", (PS_LONG)irint (size*PSL->internal.scale), font, piece2, op);
+			fprintf (PSL->internal.fp, "%ld F%ld (%s) E -2 div dup 0 G exch %s sub neg dup 0 lt {pop 0} if 0 G\n", (PS_LONG)irint (size*PSL->internal.scale), font, piece, op);
 			strcpy (piece, ptr);
 		}
 		else if (ptr[0] == '~') {	/* Symbol font */
@@ -2202,16 +2202,16 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 		else if (ptr[0] == '-') {	/* Subscript */
 			sub = !sub;
 			size = (sub) ? small_size : height;
-			dy = (sub) ? irint (-dstep*PSL->internal.scale) : irint (dstep*PSL->internal.scale);
-			fprintf (PSL->internal.fp, "0 %d G\n", dy);
+			dy = (sub) ? (PS_LONG)irint (-dstep*PSL->internal.scale) : (PS_LONG)irint (dstep*PSL->internal.scale);
+			fprintf (PSL->internal.fp, "0 %ld G\n", dy);
 			ptr++;
 			strcpy (piece, ptr);
 		}
 		else if (ptr[0] == '+') {	/* Superscript */
 			super = !super;
 			size = (super) ? small_size : height;
-			dy = (super) ? irint (ustep*PSL->internal.scale) : irint (-ustep*PSL->internal.scale);
-			fprintf (PSL->internal.fp, "0 %d G\n", dy);
+			dy = (super) ? (PS_LONG)irint (ustep*PSL->internal.scale) : (PS_LONG)irint (-ustep*PSL->internal.scale);
+			fprintf (PSL->internal.fp, "0 %ld G\n", dy);
 			ptr++;
 			strcpy (piece, ptr);
 		}
@@ -2234,7 +2234,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 			strcpy (piece, ptr);
 		}
 		else if (ptr[0] == ';') {	/* Font color change */
-			int pmode, n_scan, rgb[3], error = FALSE;
+			PS_LONG pmode, n_scan, rgb[3], error = FALSE;
 			ptr++;
 			if (ptr[0] == ';') {	/* Reset color */
 				pmode = ps_place_color (PSL->current.rgb);
@@ -2244,7 +2244,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 				j = 0;
 				while (ptr[j] != ';') j++;
 				ptr[j] = 0;
-				n_scan = sscanf (ptr, "%d/%d/%d", &rgb[0], &rgb[1], &rgb[2]);
+				n_scan = sscanf (ptr, "%ld/%ld/%ld", &rgb[0], &rgb[1], &rgb[2]);
 				if (n_scan == 1) {	/* Got gray shade */
 					rgb[1] = rgb[2] = rgb[0];
 					if (rgb[0] < 0 || rgb[0] > 255) error++;
@@ -2281,9 +2281,9 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 		else
 			strcpy (piece, ptr);
 		if (start_uline) fprintf (PSL->internal.fp, "currentpoint /y0_u exch def /x0_u exch def\n");
-		if (stop_uline) fprintf (PSL->internal.fp, "V %d W currentpoint pop /x1_u exch def x0_u y0_u %d sub m x1_u x0_u sub 0 D S x1_u y0_u m U\n", upen, ugap);
+		if (stop_uline) fprintf (PSL->internal.fp, "V %ld W currentpoint pop /x1_u exch def x0_u y0_u %ld sub m x1_u x0_u sub 0 D S x1_u y0_u m U\n", upen, ugap);
 		start_uline = stop_uline = FALSE;
-		if (strlen (piece) > 0) fprintf (PSL->internal.fp, "%d F%d (%s) %s\n", irint (size*PSL->internal.scale), font, piece, op);
+		if (strlen (piece) > 0) fprintf (PSL->internal.fp, "%ld F%ld (%s) %s\n", (PS_LONG)irint (size*PSL->internal.scale), font, piece, op);
 		ptr = strtok ((char *)NULL, "@");
 	}
 	if (form == 1) fprintf (PSL->internal.fp, "S\n");
@@ -2295,12 +2295,12 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 }
 
 /* fortran interface */
-void ps_text_ (double *x, double *y, double *pointsize, char *text, double *angle, int *justify, int *form, int nlen)
+void ps_text_ (double *x, double *y, double *pointsize, char *text, double *angle, PS_LONG *justify, PS_LONG *form, PS_LONG nlen)
 {
 	ps_text (*x, *y, *pointsize, text, *angle, *justify, *form);
 }
 
-void ps_textpath (double x[], double y[], int n, int node[], double angle[], char *label[], int m, double pointsize, double offset[], int justify, int form)
+void ps_textpath (double x[], double y[], PS_LONG n, PS_LONG node[], double angle[], char *label[], PS_LONG m, double pointsize, double offset[], PS_LONG justify, PS_LONG form)
 {
 	/* x,y		Array containing the label path
 	 * n		Length of label path
@@ -2316,12 +2316,12 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	 *		      32 = first time called, 64 = final time called, 128 = fill box, 256 = draw box
 	 */
 
-	int i = 0, j, k, first;
+	PS_LONG i = 0, j, k, first;
 
 
 	if (form & 8) {		/* If 8 bit is set we already have placed the info */
 		form -= 8;		/* Knock off the 8 flag */
-		fprintf (PSL->internal.fp, "%d PSL_curved_text_labels\n", form);
+		fprintf (PSL->internal.fp, "%ld PSL_curved_text_labels\n", form);
 		return;
 	}
 
@@ -2356,7 +2356,7 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 			ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), PSL->current.font_no, label[0], 0);		/* Set the string dimensions in PS */
 			if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
 		}
-		fprintf (PSL->internal.fp, "%d F%d\n", (int) irint ((fabs (pointsize) / PSL->internal.points_pr_unit) * PSL->internal.scale), PSL->current.font_no);	/* Set font */
+		fprintf (PSL->internal.fp, "%ld F%ld\n", (PS_LONG) irint ((fabs (pointsize) / PSL->internal.points_pr_unit) * PSL->internal.scale), PSL->current.font_no);	/* Set font */
 	}
 
 	/* Set these each time */
@@ -2367,18 +2367,18 @@ void ps_textpath (double x[], double y[], int n, int node[], double angle[], cha
 	ps_set_integer ("PSL_n", n);
 	ps_set_integer ("PSL_m", m);
 
-	fprintf (PSL->internal.fp, "%d PSL_curved_text_labels\n", form);
+	fprintf (PSL->internal.fp, "%ld PSL_curved_text_labels\n", form);
 
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_textpath_ (double x[], double y[], int *n, int node[], double angle[], char *label[], int *m, double *pointsize, double offset[], int *justify, int *form, int len)
+void ps_textpath_ (double x[], double y[], PS_LONG *n, PS_LONG node[], double angle[], char *label[], PS_LONG *m, double *pointsize, double offset[], PS_LONG *justify, PS_LONG *form, PS_LONG len)
 {
 	ps_textpath (x, y, *n, node, angle, label, *m, *pointsize, offset, *justify, *form);
 }
 
-void ps_textclip (double x[], double y[], int m, double angle[], char *label[], double pointsize, double offset[], int justify, int key)
+void ps_textclip (double x[], double y[], PS_LONG m, double angle[], char *label[], double pointsize, double offset[], PS_LONG justify, PS_LONG key)
 {
 	/* x,y		Array containing the locations where labels will go
 	 * m		Number of labels
@@ -2391,7 +2391,7 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 	 *		8 = reuse pars, 16 = rounded box, 128 fill box, 256 draw box
 	 */
 
-	int i = 0, j, k;
+	PS_LONG i = 0, j, k;
 
 	if (key & 2) {	/* Flag to terminate clipping */
 		if (PSL->internal.comments)
@@ -2401,7 +2401,7 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 		return;
 	}
 	if (key & 8) {		/* Flag to place text already define in PSL arrays */
-		fprintf (PSL->internal.fp, "%d PSL_straight_text_labels\n", key);
+		fprintf (PSL->internal.fp, "%ld PSL_straight_text_labels\n", key);
 		return;
 	}
 
@@ -2443,21 +2443,21 @@ void ps_textclip (double x[], double y[], int m, double angle[], char *label[], 
 		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
 	}
 
-	fprintf (PSL->internal.fp, "%d F%d\n", (int) irint ((fabs (pointsize) / PSL->internal.points_pr_unit) * PSL->internal.scale), PSL->current.font_no);	/* Set font */
-	fprintf (PSL->internal.fp, "%d PSL_straight_text_labels\n", key);
+	fprintf (PSL->internal.fp, "%ld F%ld\n", (PS_LONG) irint ((fabs (pointsize) / PSL->internal.points_pr_unit) * PSL->internal.scale), PSL->current.font_no);	/* Set font */
+	fprintf (PSL->internal.fp, "%ld PSL_straight_text_labels\n", key);
 
 	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
-void ps_textclip_ (double x[], double y[], int *m, double angle[], char *label[], double *pointsize, double offset[], int *justify, int *key, int len)
+void ps_textclip_ (double x[], double y[], PS_LONG *m, double angle[], char *label[], double *pointsize, double offset[], PS_LONG *justify, PS_LONG *key, PS_LONG len)
 {
 	ps_textclip (x, y, *m, angle, label, *pointsize, offset, *justify, *key);
 }
 
 void ps_transrotate (double x, double y, double angle)
 {
-	int go = FALSE;
+	PS_LONG go = FALSE;
 
 	if (fabs(x) < 1e-9) x = 0.0;
 	if (fabs(y) < 1e-9) y = 0.0;
@@ -2480,57 +2480,57 @@ void ps_transrotate_ (double *x, double *y, double *angle)
 	ps_transrotate (*x, *y, *angle);
 }
 
-void ps_vector (double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], int outline)
+void ps_vector (double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, PS_LONG rgb[], PS_LONG outline)
 {
 	/* Will make sure that arrow has a finite width in PS coordinates */
 
 	double angle;
-	int w2, length, hw, hl, hl2, hw2, l2, pmode;
+	PS_LONG w2, length, hw, hl, hl2, hw2, l2, pmode;
 
-	length = irint (hypot ((xtail-xtip), (ytail-ytip)) * PSL->internal.scale);	/* Vector length in PS units */
+	length = (PS_LONG)irint (hypot ((xtail-xtip), (ytail-ytip)) * PSL->internal.scale);	/* Vector length in PS units */
 	if (length == 0) return;					/* NULL vector */
 
 	angle = atan2 ((ytip-ytail),(xtip-xtail)) * R2D;					/* Angle vector makes with horizontal, in radians */
-	fprintf (PSL->internal.fp, "V %d %d T ", irint (xtail * PSL->internal.scale), irint (ytail * PSL->internal.scale));	/* Temporarily set tail point the local origin (0, 0) */
+	fprintf (PSL->internal.fp, "V %ld %ld T ", (PS_LONG)irint (xtail * PSL->internal.scale), (PS_LONG)irint (ytail * PSL->internal.scale));	/* Temporarily set tail point the local origin (0, 0) */
 	if (angle != 0.0) fprintf (PSL->internal.fp, "%g R ", angle);					/* Rotate so vector is horizontal in local coordinate system */
-	w2 = irint (0.5 * tailwidth * PSL->internal.scale);	if (w2 == 0) w2 = 1;			/* Half-width of vector tail */
-	hw = irint (headwidth * PSL->internal.scale);	if (hw == 0) hw = 1;				/* Width of vector head */
-	hl = irint (headlength * PSL->internal.scale);							/* Length of vector head */
-	hl2 = irint (0.5 * headshape * headlength * PSL->internal.scale);					/* Cut-in distance due to slanted back-side of arrow head */
+	w2 = (PS_LONG)irint (0.5 * tailwidth * PSL->internal.scale);	if (w2 == 0) w2 = 1;			/* Half-width of vector tail */
+	hw = (PS_LONG)irint (headwidth * PSL->internal.scale);	if (hw == 0) hw = 1;				/* Width of vector head */
+	hl = (PS_LONG)irint (headlength * PSL->internal.scale);							/* Length of vector head */
+	hl2 = (PS_LONG)irint (0.5 * headshape * headlength * PSL->internal.scale);					/* Cut-in distance due to slanted back-side of arrow head */
 	hw2 = hw - w2;										/* Distance from tail side to head side (vertically) */
 	if (outline & 8) {	/* Double-headed vector */
 		outline -= 8;	/* Remove the flag */
 		l2 = length - 2 * hl + 2 * hl2;							/* Inside length between start of heads */
 		pmode = ps_place_color (rgb);
-		fprintf (PSL->internal.fp, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d v%c U\n",
+		fprintf (PSL->internal.fp, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld v%c U\n",
 				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, PSL->internal.paint_code[pmode+outline]);
 	}
 	else {			/* Single-headed vector */
 		l2 = length - hl + hl2;								/* Length from tail to start of slanted head */
 		pmode = ps_place_color (rgb);
-		fprintf (PSL->internal.fp, "%d %d %d %d %d %d %d %d %d %d %d V%c U\n",
+		fprintf (PSL->internal.fp, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld V%c U\n",
 			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, PSL->internal.paint_code[pmode+outline]);
 	}
 }
 
 /* fortran interface */
-void ps_vector_ (double *xtail, double *ytail, double *xtip, double *ytip, double *tailwidth, double *headlength, double *headwidth, double *headshape, int *rgb, int *outline)
+void ps_vector_ (double *xtail, double *ytail, double *xtip, double *ytip, double *tailwidth, double *headlength, double *headwidth, double *headshape, PS_LONG *rgb, PS_LONG *outline)
 {
 	 ps_vector (*xtail, *ytail, *xtip, *ytip, *tailwidth, *headlength, *headwidth, *headshape, rgb, *outline);
 }
 
-void ps_words (double x, double y, char **text, int n_words, double line_space, double par_width, int par_just, int font, double font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3])
+void ps_words (double x, double y, char **text, PS_LONG n_words, double line_space, double par_width, PS_LONG par_just, PS_LONG font, double font_size, double angle, PS_LONG rgb[3], PS_LONG justify, PS_LONG draw_box, double x_off, double y_off, double x_gap, double y_gap, PS_LONG boxpen_width, char *boxpen_texture, PS_LONG boxpen_offset, PS_LONG boxpen_rgb[], PS_LONG vecpen_width, char *vecpen_texture, PS_LONG vecpen_offset, PS_LONG vecpen_rgb[], PS_LONG boxfill_rgb[3])
 {
-	int i, i1, i0, j, k, n, pj, pmode, error = 0, last_font, last_rgb[3];
-	int n_scan, after, color, found, last_k = -1;
-	int *rgb_list, *rgb_unique, n_rgb_unique;
-	int *font_list, *font_unique, n_font_unique;
+	PS_LONG i, i1, i0, j, k, n, pj, pmode, error = 0, last_font, last_rgb[3];
+	PS_LONG n_scan, after, color, found, last_k = -1;
+	PS_LONG *rgb_list, *rgb_unique, n_rgb_unique;
+	PS_LONG *font_list, *font_unique, n_font_unique;
 	size_t n_alloc, n_items;
 	BOOLEAN sub, super, small, plain_word = FALSE, under, escape;
 	char *c, *clean, test_char;
 	double last_size;
 	struct GMT_WORD **word;
-	struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, int space, int rgb[]);
+	struct GMT_WORD *add_word_part (char *word, PS_LONG length, PS_LONG fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, PS_LONG space, PS_LONG rgb[]);
 
 	if (font_size == 0.0) return;	/* Nothing to do if text has zero size */
 
@@ -2554,7 +2554,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 		if ((c = strchr (clean, '@'))) {	/* Found a @ escape command */
 			i0 = 0;
-			i1 = (int) (c - clean);
+			i1 = (PS_LONG) (c - clean);
 
 			if (i1 > i0) word[k++] = add_word_part (&clean[i0], i1 - i0, font, font_size, sub, super, small, under, NO_SPACE, rgb);
 			if ((size_t)k == n_alloc) {
@@ -2657,15 +2657,15 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 					case ';':	/* Change font color */
 						i1++;
 						if (clean[i1] == ';') {
-							memcpy ((void *)rgb, (void *)last_rgb, (size_t)(3 * sizeof (int)));
+							memcpy ((void *)rgb, (void *)last_rgb, (size_t)(3 * sizeof (PS_LONG)));
 							i1++;
 						}
 						else {
-							memcpy ((void *)last_rgb, (void *)rgb, (size_t)(3 * sizeof (int)));
+							memcpy ((void *)last_rgb, (void *)rgb, (size_t)(3 * sizeof (PS_LONG)));
 							j = i1;
 							while (clean[j] != ';') j++;
 							clean[j] = 0;
-							n_scan = sscanf (&clean[i1], "%d/%d/%d", &rgb[0], &rgb[1], &rgb[2]);
+							n_scan = sscanf (&clean[i1], "%ld/%ld/%ld", &rgb[0], &rgb[1], &rgb[2]);
 							if (n_scan == 1) {	/* Got gray shade */
 								rgb[1] = rgb[2] = rgb[0];
 								if (rgb[0] < 0 || rgb[0] > 255) error++;
@@ -2723,7 +2723,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	while (k && !word[k]->txt) k--;	/* Skip any blank lines at end */
 	n_items = k + 1;
 
-	for (i0 = 0, i1 = 1 ; i1 < (int)n_items-1; i1++, i0++) {	/* Loop for periods ending sentences and indicate 2 spaces to follow */
+	for (i0 = 0, i1 = 1 ; i1 < (PS_LONG)n_items-1; i1++, i0++) {	/* Loop for periods ending sentences and indicate 2 spaces to follow */
 		if (isupper ((int)word[i1]->txt[0]) && word[i0]->txt[strlen(word[i0]->txt)-1] == '.') {
 			word[i0]->flag &= 60;	/* Sets bits 1 & 2 to zero */
 			word[i0]->flag |= 2;	/* Specify 2 spaces */
@@ -2733,20 +2733,20 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			word[i1]->flag &= 60;
 		}
 	}
-	if (i1 >= (int)n_items) i1 = (int)n_items - 1;	/* one-word fix */
+	if (i1 >= (PS_LONG)n_items) i1 = (PS_LONG)n_items - 1;	/* one-word fix */
 	word[i1]->flag &= 60;	/* Last word not followed by anything */
 
 	/* Determine list of unique colors */
 
-	rgb_list = (int *) ps_memory (VNULL, n_items, sizeof (int));
-	rgb_unique = (int *) ps_memory (VNULL, n_items, sizeof (int));
+	rgb_list = (PS_LONG *) ps_memory (VNULL, n_items, sizeof (PS_LONG));
+	rgb_unique = (PS_LONG *) ps_memory (VNULL, n_items, sizeof (PS_LONG));
 
-	for (i = 0; i < (int)n_items; i++) rgb_list[i] = (word[i]->rgb[0] << 16) + (word[i]->rgb[1] << 8) + word[i]->rgb[2];
-	qsort ((void *)rgb_list, (size_t) n_items, sizeof (int), ps_comp_int_asc);
+	for (i = 0; i < (PS_LONG)n_items; i++) rgb_list[i] = (word[i]->rgb[0] << 16) + (word[i]->rgb[1] << 8) + word[i]->rgb[2];
+	qsort ((void *)rgb_list, (size_t) n_items, sizeof (PS_LONG), ps_comp_int_asc);
 	rgb_unique[0] = rgb_list[0];
 	n_rgb_unique = 1;
 	k = 0;
-	for (i = 1; i < (int)n_items; i++) {
+	for (i = 1; i < (PS_LONG)n_items; i++) {
 		if (rgb_list[i] != rgb_list[k]) {	/* New color */
 			rgb_unique[n_rgb_unique++] = rgb_list[i];
 			k = i;
@@ -2756,7 +2756,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 	/* Replace each word's red value with the index of the corresponding unique color entry */
 
-	for (i = 0; i < (int)n_items; i++) {
+	for (i = 0; i < (PS_LONG)n_items; i++) {
 		color = (word[i]->rgb[0] << 16) + (word[i]->rgb[1] << 8) + word[i]->rgb[2];
 		for (j = 0, found = -1; found < 0 && j < n_rgb_unique; j++) if (color == rgb_unique[j]) found = j;
 		word[i]->rgb[0] = found;
@@ -2764,15 +2764,15 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 	/* Determine list of unique fonts */
 
-	font_list = (int *) ps_memory (VNULL, n_items, sizeof (int));
-	font_unique = (int *) ps_memory (VNULL, n_items, sizeof (int));
+	font_list = (PS_LONG *) ps_memory (VNULL, n_items, sizeof (PS_LONG));
+	font_unique = (PS_LONG *) ps_memory (VNULL, n_items, sizeof (PS_LONG));
 
-	for (i = 0; i < (int)n_items; i++) font_list[i] = word[i]->font_no;
-	qsort ((void *)font_list, (size_t) n_items, sizeof (int), ps_comp_int_asc);
+	for (i = 0; i < (PS_LONG)n_items; i++) font_list[i] = word[i]->font_no;
+	qsort ((void *)font_list, (size_t) n_items, sizeof (PS_LONG), ps_comp_int_asc);
 	font_unique[0] = font_list[0];
 	n_font_unique = 1;
 	k = 0;
-	for (i = 1; i < (int)n_items; i++) {
+	for (i = 1; i < (PS_LONG)n_items; i++) {
 		if (font_list[i] != font_list[k]) {	/* New font */
 			font_unique[n_font_unique++] = font_list[i];
 			k = i;
@@ -2782,7 +2782,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 	/* Replace each word's font with the index of the corresponding unique font entry */
 
-	for (i = 0; i < (int)n_items; i++) {
+	for (i = 0; i < (PS_LONG)n_items; i++) {
 		for (j = 0, found = -1; found < 0 && j < n_font_unique; j++) if (word[i]->font_no == font_unique[j]) found = j;
 		word[i]->font_no = found;
 	}
@@ -2805,7 +2805,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			pj = 4;
 			break;
 		default:
-			fprintf (stderr, "%s: Bad paragraph justification (%c) - Exiting\n", "pslib", par_just);
+			fprintf (stderr, "%s: Bad paragraph justification (%c) - Exiting\n", "pslib", (int)par_just);
 			exit (EXIT_FAILURE);
 	}
 
@@ -2824,26 +2824,26 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of fonts:\n");
 	fprintf (PSL->internal.fp, "\n/PSL_fontname\n");
 	for (i = 0 ; i < n_font_unique; i++) fprintf (PSL->internal.fp, "/%s\n", PSL->internal.font[font_unique[i]].name);
-	fprintf (PSL->internal.fp, "%d array astore def\n", n_font_unique);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", n_font_unique);
 	ps_free ((void *)font_unique);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Initialize variables:\n\n");
-	fprintf (PSL->internal.fp, "/PSL_n %d def\n", (int)n_items);
-	fprintf (PSL->internal.fp, "/PSL_n1 %d def\n", (int)n_items - 1);
-	fprintf (PSL->internal.fp, "/PSL_y0 %d def\n", irint (y * PSL->internal.scale));
-	fprintf (PSL->internal.fp, "/PSL_linespace %d def\n", irint (line_space * PSL->internal.scale));
-	fprintf (PSL->internal.fp, "/PSL_parwidth %d def\n", irint (par_width * PSL->internal.scale));
-	fprintf (PSL->internal.fp, "/PSL_parjust %d def\n", pj);
+	fprintf (PSL->internal.fp, "/PSL_n %ld def\n", (PS_LONG)n_items);
+	fprintf (PSL->internal.fp, "/PSL_n1 %ld def\n", (PS_LONG)n_items - 1);
+	fprintf (PSL->internal.fp, "/PSL_y0 %ld def\n", (PS_LONG)irint (y * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "/PSL_linespace %ld def\n", (PS_LONG)irint (line_space * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "/PSL_parwidth %ld def\n", (PS_LONG)irint (par_width * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "/PSL_parjust %ld def\n", pj);
 	fprintf (PSL->internal.fp, "/PSL_spaces [() ( ) (  ) ] def\n");
 	(draw_box & 1) ? fprintf (PSL->internal.fp, "/PSL_drawbox true def\n") : fprintf (PSL->internal.fp, "/PSL_drawbox false def\n");
 	(draw_box & 2) ? fprintf (PSL->internal.fp, "/PSL_fillbox true def\n") : fprintf (PSL->internal.fp, "/PSL_fillbox false def\n");
-	fprintf (PSL->internal.fp, "/PSL_boxshape %d def\n", draw_box & 4);
+	fprintf (PSL->internal.fp, "/PSL_boxshape %ld def\n", draw_box & 4);
 	fprintf (PSL->internal.fp, "/PSL_lastfn -1 def\n/PSL_lastfs -1 def\n/PSL_lastfc -1 def\n");
 	fprintf (PSL->internal.fp, "/PSL_UL 0 def\n/PSL_show {ashow} def\n");
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of words:\n");
 	fprintf (PSL->internal.fp, "\n/PSL_word\n");
-	for (i = n = 0 ; i < (int)n_items; i++) {
+	for (i = n = 0 ; i < (PS_LONG)n_items; i++) {
 		fprintf (PSL->internal.fp, "(%s)", word[i]->txt);
 		n += strlen (word[i]->txt) + 1;
 		if (n < 60)
@@ -2854,61 +2854,61 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		}
 	}
 	if (n) fputc ('\n', PSL->internal.fp);
-	fprintf (PSL->internal.fp, "%d array astore def\n", (int)n_items);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word font numbers:\n");
 	fprintf (PSL->internal.fp, "\n/PSL_fnt\n");
-	for (i = 0 ; i < (int)n_items; i++) {
-		fprintf (PSL->internal.fp, "%d", word[i]->font_no);
+	for (i = 0 ; i < (PS_LONG)n_items; i++) {
+		fprintf (PSL->internal.fp, "%ld", word[i]->font_no);
 		(!((i+1)%25)) ? fputc ('\n', PSL->internal.fp) : fputc (' ', PSL->internal.fp);
 	}
 	if ((i%25)) fputc ('\n', PSL->internal.fp);
-	fprintf (PSL->internal.fp, "%d array astore def\n", (int)n_items);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word fontsizes:\n");
 	fprintf (PSL->internal.fp, "\n/PSL_size\n");
-	for (i = 0 ; i < (int)n_items; i++) {
+	for (i = 0 ; i < (PS_LONG)n_items; i++) {
 		fprintf (PSL->internal.fp, "%.2f", word[i]->font_size);
 		(!((i+1)%20)) ? fputc ('\n', PSL->internal.fp) : fputc (' ', PSL->internal.fp);
 	}
 	if ((i%20)) fputc ('\n', PSL->internal.fp);
-	fprintf (PSL->internal.fp, "%d array astore def\n", (int)n_items);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word spaces to follow:\n");
 	fprintf (PSL->internal.fp, "\n/PSL_flag\n");
-	for (i = 0 ; i < (int)n_items; i++) {
-		fprintf (PSL->internal.fp, "%d", word[i]->flag);
+	for (i = 0 ; i < (PS_LONG)n_items; i++) {
+		fprintf (PSL->internal.fp, "%ld", word[i]->flag);
 		(!((i+1)%25)) ? fputc ('\n', PSL->internal.fp) : fputc (' ', PSL->internal.fp);
 	}
 	if ((i%25)) fputc ('\n', PSL->internal.fp);
-	fprintf (PSL->internal.fp, "%d array astore def\n", (int)n_items);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word baseline shifts:\n");
 	fprintf (PSL->internal.fp, "\n/PSL_bshift\n");
-	for (i = 0 ; i < (int)n_items; i++) {
+	for (i = 0 ; i < (PS_LONG)n_items; i++) {
 		fprintf (PSL->internal.fp, "%g", word[i]->baseshift);
 		(!((i+1)%25)) ? fputc ('\n', PSL->internal.fp) : fputc (' ', PSL->internal.fp);
 	}
 	if ((i%25)) fputc ('\n', PSL->internal.fp);
-	fprintf (PSL->internal.fp, "%d array astore def\n", (int)n_items);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word colors indices:\n");
 	fprintf (PSL->internal.fp, "\n/PSL_color\n");
-	for (i = 0 ; i < (int)n_items; i++) {
-		fprintf (PSL->internal.fp, "%d", word[i]->rgb[0]);
+	for (i = 0 ; i < (PS_LONG)n_items; i++) {
+		fprintf (PSL->internal.fp, "%ld", word[i]->rgb[0]);
 		(!((i+1)%25)) ? fputc ('\n', PSL->internal.fp) : fputc (' ', PSL->internal.fp);
 	}
 	if ((i%25)) fputc ('\n', PSL->internal.fp);
-	fprintf (PSL->internal.fp, "%d array astore def\n", (int)n_items);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word colors:\n");
 	fprintf (PSL->internal.fp, "\n/PSL_rgb\n");
 	for (i = 0 ; i < n_rgb_unique; i++) fprintf (PSL->internal.fp, "%.3g %.3g %.3g\n", PSL_INV_255 * (rgb_unique[i] >> 16), PSL_INV_255 * ((rgb_unique[i] >> 8) & 0xFF), PSL_INV_255 * (rgb_unique[i] & 0xFF));
-	fprintf (PSL->internal.fp, "%d array astore def\n", 3 * n_rgb_unique);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", 3 * n_rgb_unique);
 	ps_free ((void *)rgb_unique);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word widths:\n\n");
-	fprintf (PSL->internal.fp, "/PSL_width %d array def\n", (int)n_items);
+	fprintf (PSL->internal.fp, "/PSL_width %ld array def\n", (PS_LONG)n_items);
 	fprintf (PSL->internal.fp, "0 1 PSL_n1 {");
 	(PSL->internal.comments) ? fprintf (PSL->internal.fp, "\t%% Determine word width given the font and fontsize for each word\n") : fprintf (PSL->internal.fp, "\n");
 	fprintf (PSL->internal.fp, "  /i exch def");
@@ -2920,7 +2920,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 	fprintf (PSL->internal.fp, "} for\n");
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word char counts:\n\n");
-	fprintf (PSL->internal.fp, "/PSL_count %d array def\n", (int)n_items);
+	fprintf (PSL->internal.fp, "/PSL_count %ld array def\n", (PS_LONG)n_items);
 	fprintf (PSL->internal.fp, "0 1 PSL_n1 {PSL_count exch dup PSL_word exch get length put} for\n");
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% For composite chars, set width and count to zero for 2nd char:\n\n");
@@ -2935,7 +2935,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		ps_setline (vecpen_width);
 		ps_setpaint (vecpen_rgb);
 		if (vecpen_texture) ps_setdash (vecpen_texture, vecpen_offset);
-		fprintf (PSL->internal.fp, "0 0 M %d %d D S\n", irint (x_off * PSL->internal.scale), irint (y_off * PSL->internal.scale));
+		fprintf (PSL->internal.fp, "0 0 M %ld %ld D S\n", (PS_LONG)irint (x_off * PSL->internal.scale), (PS_LONG)irint (y_off * PSL->internal.scale));
 		if (vecpen_texture) ps_setdash (CNULL, 0);
 	}
 
@@ -2948,7 +2948,7 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 
 	/* Adjust origin for box justification */
 
-	fprintf (PSL->internal.fp, "\n/PSL_x0 %d def\n", -irint (0.5 * ((justify - 1) % 4) * par_width * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "\n/PSL_x0 %ld def\n", -(PS_LONG)irint (0.5 * ((justify - 1) % 4) * par_width * PSL->internal.scale));
 	if (justify > 8) {	/* Top row */
 		fprintf (PSL->internal.fp, "/PSL_y0 0 def\n");
 	}
@@ -2969,8 +2969,8 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 		ps_setline (boxpen_width);
 		ps_setpaint (boxpen_rgb);
 		if (boxpen_texture) ps_setdash (boxpen_texture, boxpen_offset);
-		fprintf (PSL->internal.fp, "/PSL_xgap %d def\n", irint (x_gap * PSL->internal.scale));
-		fprintf (PSL->internal.fp, "/PSL_ygap %d def\n", irint (y_gap * PSL->internal.scale));
+		fprintf (PSL->internal.fp, "/PSL_xgap %ld def\n", (PS_LONG)irint (x_gap * PSL->internal.scale));
+		fprintf (PSL->internal.fp, "/PSL_ygap %ld def\n", (PS_LONG)irint (y_gap * PSL->internal.scale));
 		if (draw_box & 16) {	/* Create convex box path */
 			fprintf (PSL->internal.fp, "/PSL_h PSL_parheight 2 div PSL_ygap add def\n");
 			fprintf (PSL->internal.fp, "/PSL_w PSL_parwidth 2 div PSL_xgap add def\n");
@@ -3004,10 +3004,10 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 			fprintf (PSL->internal.fp, "/XR PSL_parwidth PSL_xgap add def\n");
 			fprintf (PSL->internal.fp, "/YT PSL_ygap def\n");
 			fprintf (PSL->internal.fp, "/YB PSL_parheight PSL_ygap add neg def\n");
-			fprintf (PSL->internal.fp, "/PSL_r %d def\n", irint (MIN (x_gap, y_gap) * PSL->internal.scale));
-			fprintf (PSL->internal.fp, "/PSL_dx %d def\n", irint (MAX (x_gap-y_gap, 0.0) * PSL->internal.scale));
-			fprintf (PSL->internal.fp, "/PSL_dx %d def\n", irint (MAX (x_gap-y_gap, 0.0) * PSL->internal.scale));
-			fprintf (PSL->internal.fp, "/PSL_dy %d def\n", irint (MAX (y_gap-x_gap, 0.0) * PSL->internal.scale));
+			fprintf (PSL->internal.fp, "/PSL_r %ld def\n", (PS_LONG)irint (MIN (x_gap, y_gap) * PSL->internal.scale));
+			fprintf (PSL->internal.fp, "/PSL_dx %ld def\n", (PS_LONG)irint (MAX (x_gap-y_gap, 0.0) * PSL->internal.scale));
+			fprintf (PSL->internal.fp, "/PSL_dx %ld def\n", (PS_LONG)irint (MAX (x_gap-y_gap, 0.0) * PSL->internal.scale));
+			fprintf (PSL->internal.fp, "/PSL_dy %ld def\n", (PS_LONG)irint (MAX (y_gap-x_gap, 0.0) * PSL->internal.scale));
 			fprintf (PSL->internal.fp, "/xl PSL_dx def\n");
 			fprintf (PSL->internal.fp, "/xr PSL_parwidth PSL_dx add def\n");
 			fprintf (PSL->internal.fp, "/yt PSL_dy def\n");
@@ -3057,13 +3057,13 @@ void ps_words (double x, double y, char **text, int n_words, double line_space, 
 }
 
 /* fortran interface */
-void ps_words_ (double *x, double *y, char **text, int *n_words, double *line_space, double *par_width, int *par_just, int* font, double *font_size, double *angle, int *rgb, int *justify, int *draw_box, double *x_off, double *y_off, double *x_gap, double *y_gap, int *boxpen_width, char *boxpen_texture, int *boxpen_offset, int *boxpen_rgb, int *vecpen_width, char *vecpen_texture, int *vecpen_offset, int *vecpen_rgb, int *boxfill_rgb, int n1, int n2, int n3) {
+void ps_words_ (double *x, double *y, char **text, PS_LONG *n_words, double *line_space, double *par_width, PS_LONG *par_just, PS_LONG* font, double *font_size, double *angle, PS_LONG *rgb, PS_LONG *justify, PS_LONG *draw_box, double *x_off, double *y_off, double *x_gap, double *y_gap, PS_LONG *boxpen_width, char *boxpen_texture, PS_LONG *boxpen_offset, PS_LONG *boxpen_rgb, PS_LONG *vecpen_width, char *vecpen_texture, PS_LONG *vecpen_offset, PS_LONG *vecpen_rgb, PS_LONG *boxfill_rgb, PS_LONG n1, PS_LONG n2, PS_LONG n3) {
 
 	ps_words (*x, *y, text, *n_words, *line_space, *par_width, *par_just, *font, *font_size, *angle, rgb, *justify, *draw_box, *x_off, *y_off, *x_gap, *y_gap, *boxpen_width, boxpen_texture, *boxpen_offset, boxpen_rgb, *vecpen_width, vecpen_texture, *vecpen_offset, vecpen_rgb, boxfill_rgb);
 
 }
 
-struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, int space, int rgb[])
+struct GMT_WORD *add_word_part (char *word, PS_LONG length, PS_LONG fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, PS_LONG space, PS_LONG rgb[])
 {
 	/* For flag: bits 1 and 2 give number of spaces to follow (0, 1, or 2)
 	 * bit 3 == 1 means leading TAB
@@ -3072,7 +3072,7 @@ struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_
 	 * bit 6 == 1 means underline word
 	 */
 
-	int i = 0, c;
+	PS_LONG i = 0, c;
 	BOOLEAN tab = FALSE;
 	double fs;
 	struct GMT_WORD *new;
@@ -3093,7 +3093,7 @@ struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_
 	if (small) {	/* Small caps is on */
 		new->font_size = 0.85 * fs;
 		for (i = 0; new->txt[i]; i++) {
-			c = (int)new->txt[i];
+			c = (PS_LONG)new->txt[i];
 			new->txt[i] = (char) toupper (c);
 		}
 	}
@@ -3111,7 +3111,7 @@ struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_
 	new->flag = space;
 	if (tab) new->flag |= 4;	/* 3rd bit indicates tab, then add space after word */
 	if (under) new->flag |= 32;	/* 6rd bit indicates underline */
-	memcpy ((void *)new->rgb, rgb, (3 * sizeof (int)));
+	memcpy ((void *)new->rgb, rgb, (3 * sizeof (PS_LONG)));
 
 	return (new);
 }
@@ -3121,31 +3121,31 @@ struct GMT_WORD *add_word_part (char *word, int length, int fontno, double font_
 
 void get_uppercase (char *new, char *old)
 {
-	int i = 0, c;
+	PS_LONG i = 0, c;
 	while (old[i]) {
-		c = (int)old[i];
+		c = (PS_LONG)old[i];
 		new[i++] = toupper (c);
 	}
 	new[i] = 0;
 }
 
-void ps_encode_font (int font_no)
+void ps_encode_font (PS_LONG font_no)
 {
 	if (PSL->init.encoding == 0) return;		/* Already have StandardEncoding by default */
 	if (PSL->internal.font[font_no].encoded) return;	/* Already reencoded or should not be reencoded ever */
 
 	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
-	fprintf (PSL->internal.fp, "PSL_font_encode %d get 0 eq {", font_no);
+	fprintf (PSL->internal.fp, "PSL_font_encode %ld get 0 eq {", font_no);
 	(PSL->internal.comments) ? fprintf (PSL->internal.fp, "\t%% Set this font\n") : fprintf (PSL->internal.fp, "\n");
 	fprintf (PSL->internal.fp, "\t%s_Encoding /%s /%s PSL_reencode\n", PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name);
-	fprintf (PSL->internal.fp, "\tPSL_font_encode %d 1 put\n} if\n", font_no);
+	fprintf (PSL->internal.fp, "\tPSL_font_encode %ld 1 put\n} if\n", font_no);
 	PSL->internal.font[font_no].encoded = TRUE;
 }
 
 void init_font_encoding (struct EPS *eps)
 {	/* Reencode all the fonts that we know may be used: the ones listed in eps */
 
-	int i;
+	PS_LONG i;
 
 	if (eps)
 		for (i = 0; i < 6 && PSL->init.eps->fontno[i] != -1; i++) ps_encode_font (PSL->init.eps->fontno[i]);
@@ -3157,7 +3157,7 @@ void def_font_encoding (void)
 {
 	/* Place code for reencoding of fonts and initialize book-keeping array */
 
-	int i;
+	PS_LONG i;
 
 	fprintf (PSL->internal.fp, "/PSL_reencode {");
 	(PSL->internal.comments) ? fprintf (PSL->internal.fp, "\t%% To reencode one font with the provided encoding vector\n") : fprintf (PSL->internal.fp, "\n");
@@ -3171,7 +3171,7 @@ void def_font_encoding (void)
 
 	fprintf (PSL->internal.fp, "/PSL_font_encode ");
 	for (i = 0; i < PSL->internal.N_FONTS; i++) fprintf (PSL->internal.fp, "0 ");
-	fprintf (PSL->internal.fp, "%d array astore def", PSL->internal.N_FONTS);
+	fprintf (PSL->internal.fp, "%ld array astore def", PSL->internal.N_FONTS);
 	(PSL->internal.comments) ? fprintf (PSL->internal.fp, "\t%% Initially zero\n") : fprintf (PSL->internal.fp, "\n");
 }
 
@@ -3198,8 +3198,8 @@ char *ps_prepare_text (char *text)
 		{ "u", "\\370", "\\374", "\\374"}	/* udieresis */
 	};
 	char *string;
-	int i=0, j=0, font;
-	int he = 0;		/* GMT Historical Encoding (if any) */
+	PS_LONG i=0, j=0, font;
+	PS_LONG he = 0;		/* GMT Historical Encoding (if any) */
 
 	if (strcmp ("Standard", PSL->init.encoding) == 0)
 		he = 1;
@@ -3361,7 +3361,7 @@ unsigned char *ps_load_eps (FILE *fp, struct imageinfo *h)
 {
 	/* ps_load_eps reads an Encapsulated PostScript file */
 
-	int n, p, llx, lly, trx, try, BLOCKSIZE=4096;
+	PS_LONG n, p, llx, lly, trx, try, BLOCKSIZE=4096;
 	unsigned char *buffer;
 
 	llx=0; lly=0; trx=720; try=720;
@@ -3401,7 +3401,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 {
 	/* ps_load_raster reads a Sun standard rasterfile of depth 1, 8, 24, or 32 into memory */
 
-	int mx_in, mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
+	PS_LONG mx_in, mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
 	unsigned char *buffer, *entry, *red, *green, *blue;
 
 	if (ps_read_rasheader (fp, header, 0, 7)) {
@@ -3421,8 +3421,8 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 	buffer = entry = red = green = blue = (unsigned char *)NULL;
 
 	if (header->depth == 1) {	/* 1 bit black and white image */
-		mx_in = (int) (2 * ceil (header->width / 16.0));	/* Because Sun images are written in multiples of 2 bytes */
-		mx = (int) (ceil (header->width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
+		mx_in = (PS_LONG) (2 * ceil (header->width / 16.0));	/* Because Sun images are written in multiples of 2 bytes */
+		mx = (PS_LONG) (ceil (header->width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
 		ny = header->height;
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
@@ -3458,7 +3458,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 			fprintf (stderr, "%s: Error reading colormap!\n", "pslib");
 			return ((unsigned char *)NULL);
 		}
-		odd = (int)header->width%2;
+		odd = (PS_LONG)header->width%2;
 		entry = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)entry, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
 			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
@@ -3597,7 +3597,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 	return (buffer);
 }
 
-int ps_read_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
+PS_LONG ps_read_rasheader (FILE *fp, struct imageinfo *h, PS_LONG i0, PS_LONG i1)
 {
 	/* Reads the header of a Sun rasterfile (or any other).
 	   Since the byte order is defined as Big Endian, the bytes are read
@@ -3605,7 +3605,7 @@ int ps_read_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
 	 */
 
 	unsigned char byte[4];
-	int i, j, value, in[4];
+	PS_LONG i, j, value, in[4];
 
 	for (i = i0; i <= i1; i++) {
 
@@ -3613,7 +3613,7 @@ int ps_read_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
 			fprintf (stderr, "pslib: Error reading rasterfile header\n");
 			return (-1);
 		}
-		for (j = 0; j < 4; j++) in[j] = (int)byte[j];
+		for (j = 0; j < 4; j++) in[j] = (PS_LONG)byte[j];
 
 		value = (in[0] << 24) + (in[1] << 16) + (in[2] << 8) + in[3];
 
@@ -3650,7 +3650,7 @@ int ps_read_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
 	return (0);
 }
 
-int ps_write_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
+PS_LONG ps_write_rasheader (FILE *fp, struct imageinfo *h, PS_LONG i0, PS_LONG i1)
 {
 	/* Writes the header of a Sun rasterfile.
 	   Since the byte order is defined as Big Endian, the bytes are read
@@ -3658,7 +3658,7 @@ int ps_write_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
 	 */
 
 	unsigned char byte[4];
-	int i, j, value, in[4];
+	PS_LONG i, j, value, in[4];
 
 	for (i = i0; i <= i1; i++) {
 		switch (i) {
@@ -3703,7 +3703,7 @@ int ps_write_rasheader (FILE *fp, struct imageinfo *h, int i0, int i1)
 	return (0);
 }
 
-indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbits)
+indexed_image_t ps_makecolormap (unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbits)
 {
 	/* When image consists of less than MAX_COLORS colors, the image can be
 	 * indexed to safe a significant amount of space.
@@ -3712,7 +3712,7 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbit
 	 * It is important that the first RGB tuple is mapped to index 0.
 	 * This is used for color masked images.
 	 */
-	int i, j, npixels;
+	PS_LONG i, j, npixels;
 	colormap_t colormap;
 	indexed_image_t image;
 
@@ -3758,11 +3758,11 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbit
 		}
 		buffer += 3;
 	}
-	if (PSL->internal.verbose) fprintf (stderr, "pslib: Colormap of %d colors created\n", colormap->ncolors);
+	if (PSL->internal.verbose) fprintf (stderr, "pslib: Colormap of %ld colors created\n", colormap->ncolors);
 	return (image);
 }
 
-void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compress, int encode, int mask)
+void ps_stream_dump (unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbits, PS_LONG compress, PS_LONG encode, PS_LONG mask)
 {
 	/* Writes a stream of bytes in binary or ascii, performs RGB to CMYK
 	 * conversion and compression.
@@ -3773,7 +3773,7 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 	 * encode	= binary (0), ascii85 (1) or hex (2) encoding
 	 * mask		= image (0), imagemask (1), or neither (2)
 	 */
-	int nbytes, i;
+	PS_LONG nbytes, i;
 	unsigned char *buffer1, *buffer2;
 	char *kind_compress[3] = {"", "/RunLengthDecode filter", "/LZWDecode filter"};
 	char *kind_mask[2] = {"", "mask"};
@@ -3803,8 +3803,8 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 
 	/* Output image dictionary */
 	if (mask < 2) {
-		fprintf (PSL->internal.fp, "/Width %d /Height %d /BitsPerComponent %d\n", nx, ny, MIN(nbits,8));
-		fprintf (PSL->internal.fp, "   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource currentfile ", nx, -ny, ny);
+		fprintf (PSL->internal.fp, "/Width %ld /Height %ld /BitsPerComponent %ld\n", nx, ny, MIN(nbits,8));
+		fprintf (PSL->internal.fp, "   /ImageMatrix [%ld 0 0 %ld 0 %ld] /DataSource currentfile ", nx, -ny, ny);
 		if (PSL->internal.ascii) fprintf (PSL->internal.fp, "/ASCII85Decode filter ");
 		fprintf (PSL->internal.fp, "%s\n>> image%s\n", kind_compress[compress], kind_mask[mask]);
 	}
@@ -3830,13 +3830,13 @@ void ps_stream_dump (unsigned char *buffer, int nx, int ny, int nbits, int compr
 	if (buffer1 != buffer ) ps_free(buffer1);
 }
 
-void ps_a85_encode (unsigned char quad[], int nbytes)
+void ps_a85_encode (unsigned char quad[], PS_LONG nbytes)
 {
 	/* Encode 4-byte binary to 5-byte ASCII
 	 * Special cases:	#00000000 is encoded as z
 	 *			When n < 4, output only n+1 bytes */
 	int j;
-	unsigned int n;
+	unsigned int n;	/* Was size_t but that fails under 64-bit mode */
 	unsigned char c[5];
 
 	if (nbytes < 1) return;		/* Ignore empty input */
@@ -3878,7 +3878,7 @@ void ps_rle_decode (struct imageinfo *h, unsigned char **in)
 	 * be an even number of bytes (i.e., we are using 16-bit words
 	 */
 
-	int i, j, col, count, width, len, odd = FALSE;
+	PS_LONG i, j, col, count, width, len, odd = FALSE;
 	unsigned char mask_table[] = {0xff, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe};
 	unsigned char mask, *out, value = 0;
 
@@ -3900,9 +3900,9 @@ void ps_rle_decode (struct imageinfo *h, unsigned char **in)
 			col++;
 		}
 		else {
-			switch ((int)(*in)[j]) {
+			switch ((PS_LONG)(*in)[j]) {
 				case ESC:
-					count = (int)(*in)[++j];
+					count = (PS_LONG)(*in)[++j];
 					j++;
 					if (count == 0) {
 						out[i++] = ESC;
@@ -3927,17 +3927,17 @@ void ps_rle_decode (struct imageinfo *h, unsigned char **in)
 		}
 	}
 
-	if (i != len) fprintf (stderr, "pslib: ps_rle_decode has wrong # of outbytes (%d versus expected %d)\n", i, len);
+	if (i != len) fprintf (stderr, "pslib: ps_rle_decode has wrong # of outbytes (%ld versus expected %ld)\n", i, len);
 
 	ps_free ((void *)*in);
 	*in = out;
 }
 
-unsigned char *ps_cmyk_encode (int *nbytes, unsigned char *input)
+unsigned char *ps_cmyk_encode (PS_LONG *nbytes, unsigned char *input)
 {
 	/* Recode RGB stream as CMYK stream */
 
-	int in, out, nout;
+	PS_LONG in, out, nout;
 	unsigned char *output;
 
 	nout = *nbytes / 3 * 4;
@@ -3952,11 +3952,11 @@ unsigned char *ps_cmyk_encode (int *nbytes, unsigned char *input)
 	return (output);
 }
 
-unsigned char *ps_rle_encode (int *nbytes, unsigned char *input)
+unsigned char *ps_rle_encode (PS_LONG *nbytes, unsigned char *input)
 {
 	/* Run Length Encode a buffer of nbytes. */
 
-	int count = 0, out = 0, in = 0, i;
+	PS_LONG count = 0, out = 0, in = 0, i;
 	unsigned char pixel, *output;
 
 	i = MAX (512, *nbytes) + 136;	/* Maximum output length */
@@ -3985,23 +3985,23 @@ unsigned char *ps_rle_encode (int *nbytes, unsigned char *input)
 
 	/* Drop the compression when end result is bigger than original */
 	if (out > in) {
-		if (PSL->internal.verbose) fprintf (stderr, "pslib: RLE inflated %d to %d bytes (aborted)\n", in, out);
+		if (PSL->internal.verbose) fprintf (stderr, "pslib: RLE inflated %ld to %ld bytes (aborted)\n", in, out);
 		ps_free (output);
 		return (NULL);
 	}
 
 	/* Return number of output bytes and output buffer */
-	if (PSL->internal.verbose) fprintf (stderr, "pslib: RLE compressed %d to %d bytes\n", in, out);
+	if (PSL->internal.verbose) fprintf (stderr, "pslib: RLE compressed %ld to %ld bytes\n", in, out);
 	*nbytes = out;
 	return (output);
 }
 
-unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
+unsigned char *ps_lzw_encode (PS_LONG *nbytes, unsigned char *input)
 {
 	/* LZW compress a buffer of nbytes. */
 
-	static int ncode = 4096*256;
-	int i, index, in = 0;
+	static PS_LONG ncode = 4096*256;
+	PS_LONG i, index, in = 0;
 	static short int clear = 256, eod = 257;
 	short int table = 4095;	/* Initial value forces clearing of table on first byte */
 	short int bmax = 0, pre, oldpre, ext, *code;
@@ -4050,7 +4050,7 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 
 	/* Drop the compression when end result is bigger than original */
 	if (output->nbytes > in) {
-		if (PSL->internal.verbose) fprintf (stderr, "pslib: LZW inflated %d to %d bytes (aborted)\n", in, output->nbytes);
+		if (PSL->internal.verbose) fprintf (stderr, "pslib: LZW inflated %ld to %ld bytes (aborted)\n", in, output->nbytes);
 		ps_free (code);
 		ps_free (output->buffer);
 		ps_free (output);
@@ -4058,7 +4058,7 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 	}
 
 	/* Return number of output bytes and output buffer; release code table */
-	if (PSL->internal.verbose) fprintf (stderr, "pslib: LZW compressed %d to %d bytes\n", in, output->nbytes);
+	if (PSL->internal.verbose) fprintf (stderr, "pslib: LZW compressed %ld to %ld bytes\n", in, output->nbytes);
 	*nbytes = output->nbytes;
 	buffer = output->buffer;
 	ps_free (code);
@@ -4069,11 +4069,11 @@ unsigned char *ps_lzw_encode (int *nbytes, unsigned char *input)
 byte_stream_t ps_lzw_putcode (byte_stream_t stream, short int incode)
 {
 	static short int eod = 257;
-	static int bit_count = 0;
-	static unsigned int bit_buffer = 0;
+	static size_t bit_count = 0;
+	static size_t bit_buffer = 0;
 
 	/* Add incode to buffer and output 1 or 2 bytes */
-	bit_buffer |= (unsigned int) incode << (32 - stream->depth - bit_count);
+	bit_buffer |= (size_t) incode << (32 - stream->depth - bit_count);
 	bit_count += stream->depth;
 	while (bit_count >= 8) {
 		stream->buffer[stream->nbytes] = bit_buffer >> 24;
@@ -4090,7 +4090,7 @@ byte_stream_t ps_lzw_putcode (byte_stream_t stream, short int incode)
 	return (stream);
 }
 
-int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
+PS_LONG ps_bitimage_cmap (PS_LONG f_rgb[], PS_LONG b_rgb[])
 {
 	/* Print colormap for 1-bit image or imagemask. Returns value of "polarity":
 	 * 0 = Paint 0 bits foreground color, leave 1 bits transparent
@@ -4104,7 +4104,7 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 	 * ! inverted before plotting, either explicitly, or through a mapping
 	 * ! function in the PostScript image definition.
 	 */
-	int polarity, f_cmyk[4], b_cmyk[4];
+	PS_LONG polarity, f_cmyk[4], b_cmyk[4];
 
 	if (b_rgb[0] < 0) {
 		/* Backgound is transparent */
@@ -4113,10 +4113,10 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 			polarity = 4;
 		else if (PSL->internal.color_mode & PSL_CMYK) {
 			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
-			fprintf (PSL->internal.fp, " [/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3]);
+			fprintf (PSL->internal.fp, " [/Indexed /DeviceCMYK 0 <%02lX%02lX%02lX%02lX>] setcolorspace", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3]);
 		}
 		else
-			fprintf (PSL->internal.fp, " [/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace", f_rgb[0], f_rgb[1], f_rgb[2]);
+			fprintf (PSL->internal.fp, " [/Indexed /DeviceRGB 0 <%02lX%02lX%02lX>] setcolorspace", f_rgb[0], f_rgb[1], f_rgb[2]);
 	}
 	else if (f_rgb[0] < 0) {
 		/* Foreground is transparent */
@@ -4125,10 +4125,10 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 			polarity = 5;
 		else if (PSL->internal.color_mode & PSL_CMYK) {
 			ps_rgb_to_cmyk_int (b_rgb, b_cmyk);
-			fprintf (PSL->internal.fp, " [/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace", b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
+			fprintf (PSL->internal.fp, " [/Indexed /DeviceCMYK 0 <%02lX%02lX%02lX%02lX>] setcolorspace", b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
 		}
 		else
-			fprintf (PSL->internal.fp, " [/Indexed /DeviceRGB 0 <%02X%02X%02X>] setcolorspace", b_rgb[0], b_rgb[1], b_rgb[2]);
+			fprintf (PSL->internal.fp, " [/Indexed /DeviceRGB 0 <%02lX%02lX%02lX>] setcolorspace", b_rgb[0], b_rgb[1], b_rgb[2]);
 	}
 	else if (b_rgb[0] == 0 && b_rgb[1] == 0 && b_rgb[2] == 0 && f_rgb[0] == 255 && f_rgb[1] == 255 && f_rgb[1] == 255) {
 		/* 0 = White; 1 = Black */
@@ -4144,10 +4144,10 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 		if (PSL->internal.color_mode & PSL_CMYK) {
 			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
 			ps_rgb_to_cmyk_int (b_rgb, b_cmyk);
-			fprintf (PSL->internal.fp, " [/Indexed /DeviceCMYK 1 <%02X%02X%02X%02X%02X%02X%02X%02X>] setcolorspace", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3], b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
+			fprintf (PSL->internal.fp, " [/Indexed /DeviceCMYK 1 <%02lX%02lX%02lX%02lX%02lX%02lX%02lX%02lX>] setcolorspace", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3], b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
 		}
 		else
-			fprintf (PSL->internal.fp, " [/Indexed /DeviceRGB 1 <%02X%02X%02X%02X%02X%02X>] setcolorspace", f_rgb[0], f_rgb[1], f_rgb[2], b_rgb[0], b_rgb[1], b_rgb[2]);
+			fprintf (PSL->internal.fp, " [/Indexed /DeviceRGB 1 <%02lX%02lX%02lX%02lX%02lX%02lX>] setcolorspace", f_rgb[0], f_rgb[1], f_rgb[2], b_rgb[0], b_rgb[1], b_rgb[2]);
 	}
 
 	return (polarity);
@@ -4155,58 +4155,58 @@ int ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 
 void ps_set_length (char *param, double value)
 {
-	fprintf (PSL->internal.fp, "/%s %d def\n", param, irint (value * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "/%s %ld def\n", param, (PS_LONG)irint (value * PSL->internal.scale));
 }
 
 void ps_set_height (char *param, double fontsize)
 {
-	fprintf (PSL->internal.fp, "/%s %d def\n", param, irint (fontsize * PSL->internal.scale / PSL->internal.points_pr_unit));
+	fprintf (PSL->internal.fp, "/%s %ld def\n", param, (PS_LONG)irint (fontsize * PSL->internal.scale / PSL->internal.points_pr_unit));
 }
 
-void ps_set_integer (char *param, int value)
+void ps_set_integer (char *param, PS_LONG value)
 {
-	fprintf (PSL->internal.fp, "/%s %d def\n", param, value);
+	fprintf (PSL->internal.fp, "/%s %ld def\n", param, value);
 }
 
-void ps_define_pen (char *param, int width, char *texture, int offset, int rgb[])
+void ps_define_pen (char *param, PS_LONG width, char *texture, PS_LONG offset, PS_LONG rgb[])
 {
-	int k;
+	PS_LONG k;
 	/* Function to set line pen attributes */
 	fprintf (PSL->internal.fp, "/%s {", param);
 	k = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%c %d W ", PSL->internal.paint_code[k], width);
+	fprintf (PSL->internal.fp, "%c %ld W ", PSL->internal.paint_code[k], width);
 	ps_place_setdash (texture, offset);
 	fprintf (PSL->internal.fp, "} def\n");
 }
 
-void ps_define_rgb (char *param, int rgb[])
+void ps_define_rgb (char *param, PS_LONG rgb[])
 {
-	int k;
+	PS_LONG k;
 	fprintf (PSL->internal.fp, "/%s {", param);
 	k = ps_place_color (rgb);
 	fprintf (PSL->internal.fp, "%c} def\n", PSL->internal.paint_code[k]);
 }
 
-void ps_set_length_array (char *param, double *array, int n)
+void ps_set_length_array (char *param, double *array, PS_LONG n)
 {	/* These are scaled by psscale */
-	int i;
+	PS_LONG i;
 	fprintf (PSL->internal.fp, "/%s\n", param);
 	for (i = 0; i < n; i++) fprintf (PSL->internal.fp, "%.2f\n", array[i] * PSL->internal.scale);
-	fprintf (PSL->internal.fp, "%d array astore def\n", n);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", n);
 }
 
-int ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, double *y, int *node, int n, int m)
+PS_LONG ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, double *y, PS_LONG *node, PS_LONG n, PS_LONG m)
 {	/* These are scaled by psscale.  We make sure there are no point pairs that would yield dx = dy = 0 (repeat point)
 	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
-	int i, j, k, this_i, this_j, last_i, last_j, n_skipped;
+	PS_LONG i, j, k, this_i, this_j, last_i, last_j, n_skipped;
 	char *use;
 
 	use = (char *) ps_memory (VNULL, (size_t)n, sizeof (char));
 	this_i = this_j = INT_MAX;
 	for (i = j = k = n_skipped = 0; i < n; i++) {
 		last_i = this_i;	last_j = this_j;
-		this_i = irint (x[i] * PSL->internal.scale * 100.0);	/* Simulates the digits written by a %.2lf format */
-		this_j = irint (y[i] * PSL->internal.scale * 100.0);
+		this_i = (PS_LONG)irint (x[i] * PSL->internal.scale * 100.0);	/* Simulates the digits written by a %.2lf format */
+		this_j = (PS_LONG)irint (y[i] * PSL->internal.scale * 100.0);
 		if (this_i != last_i && this_j != last_j) {	/* Not a repeat point, use it */
 			use[i] = TRUE;
 			j++;
@@ -4217,32 +4217,32 @@ int ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, doub
 	}
 	fprintf (PSL->internal.fp, "/%s\n", xparam);
 	for (i = 0; i < n; i++) if (use[i]) fprintf (PSL->internal.fp, "%.2f\n", x[i] * PSL->internal.scale);
-	fprintf (PSL->internal.fp, "%d array astore def\n", j);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", j);
 	fprintf (PSL->internal.fp, "/%s\n", yparam);
 	for (i = 0; i < n; i++) if (use[i]) fprintf (PSL->internal.fp, "%.2f\n", y[i] * PSL->internal.scale);
-	fprintf (PSL->internal.fp, "%d array astore def\n", j);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", j);
 	fprintf (PSL->internal.fp, "/%s\n", nparam);
-	for (i = 0; i < m; i++) fprintf (PSL->internal.fp, "%d\n", node[i]);
-	fprintf (PSL->internal.fp, "%d array astore def\n", m);
+	for (i = 0; i < m; i++) fprintf (PSL->internal.fp, "%ld\n", node[i]);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", m);
 
 	ps_free ((void *)use);
 	return (j);
 }
 
-void ps_set_real_array (char *param, double *array, int n)
+void ps_set_real_array (char *param, double *array, PS_LONG n)
 {	/* These are raw and not scaled */
-	int i;
+	PS_LONG i;
 	fprintf (PSL->internal.fp, "/%s\n", param);
 	for (i = 0; i < n; i++) fprintf (PSL->internal.fp, "%.2f\n", array[i]);
-	fprintf (PSL->internal.fp, "%d array astore def\n", n);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", n);
 }
 
-void ps_set_txt_array (char *param, char *array[], int n)
+void ps_set_txt_array (char *param, char *array[], PS_LONG n)
 {
-	int i;
+	PS_LONG i;
 	fprintf (PSL->internal.fp, "/%s\n", param);
 	for (i = 0; i < n; i++) fprintf (PSL->internal.fp, "(%s)\n", array[i]);
-	fprintf (PSL->internal.fp, "%d array astore def\n", n);
+	fprintf (PSL->internal.fp, "%ld array astore def\n", n);
 }
 
 void *ps_memory (void *prev_addr, size_t nelem, size_t size)
@@ -4253,13 +4253,13 @@ void *ps_memory (void *prev_addr, size_t nelem, size_t size)
 
 	if (prev_addr) {
 		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == VNULL) {
-			fprintf (stderr, "PSL Fatal Error: Could not reallocate more memory, n = %d\n", (int)nelem);
+			fprintf (stderr, "PSL Fatal Error: Could not reallocate more memory, n = %ld\n", (PS_LONG)nelem);
 			exit (EXIT_FAILURE);
 		}
 	}
 	else {
 		if ((tmp = calloc ((size_t) nelem, (unsigned) size)) == VNULL) {
-			fprintf (stderr, "PSL Fatal Error: Could not allocate memory, n = %d\n", (int)nelem);
+			fprintf (stderr, "PSL Fatal Error: Could not allocate memory, n = %ld\n", (PS_LONG)nelem);
 			exit (EXIT_FAILURE);
 		}
 	}
@@ -4276,10 +4276,10 @@ int ps_comp_int_asc (const void *p1, const void *p2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	int *point_1, *point_2;
+	PS_LONG *point_1, *point_2;
 
-	point_1 = (int *)p1;
-	point_2 = (int *)p2;
+	point_1 = (PS_LONG *)p1;
+	point_2 = (PS_LONG *)p2;
 	if ( (*point_1) < (*point_2) )
 		return (-1);
 	else if ( (*point_1) > (*point_2) )
@@ -4298,7 +4298,7 @@ static void ps_bulkcopy (const char *fname, const char *version)
 	FILE *in;
 	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
-	int i, j;
+	PS_LONG i, j;
 	BOOLEAN first = TRUE;
 
 	ps_getsharepath ("pslib", fname, ".ps", fullname);
@@ -4336,10 +4336,10 @@ static void ps_bulkcopy (const char *fname, const char *version)
 	fclose (in);
 }
 
-static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
+static void ps_init_fonts (PS_LONG *n_fonts, PS_LONG *n_GMT_fonts)
 {
 	FILE *in;
-	int i = 0, n_alloc = 64;
+	PS_LONG i = 0, n_alloc = 64;
 	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
 
@@ -4359,7 +4359,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 	while (fgets (buf, BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (sscanf (buf, "%s %lf %d", fullname, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %d\n", i);
+			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %ld\n", i);
 			exit (EXIT_FAILURE);
 		}
 		PSL->internal.font[i].name = (char *)ps_memory (VNULL, (size_t)(strlen (fullname)+1), sizeof (char));
@@ -4389,7 +4389,7 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			PSL->internal.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
 			if (sscanf (buf, "%s %lf %d", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-				fprintf (stderr, "PSL Fatal Error: Trouble decoding custom font info for font %d\n", i - *n_GMT_fonts);
+				fprintf (stderr, "PSL Fatal Error: Trouble decoding custom font info for font %ld\n", i - *n_GMT_fonts);
 				exit (EXIT_FAILURE);
 			}
 			i++;
@@ -4404,9 +4404,9 @@ static void ps_init_fonts (int *n_fonts, int *n_GMT_fonts)
 	PSL->internal.font = (struct PSL_FONT *) ps_memory ((void *)PSL->internal.font, (size_t)(*n_fonts), sizeof (struct PSL_FONT));
 }
 
-int ps_place_color (int rgb[])
+PS_LONG ps_place_color (PS_LONG rgb[])
 {
-	int pmode;
+	PS_LONG pmode;
 
 	if (rgb[0] == -1) {
 		/* Outline only, no color set */
@@ -4414,7 +4414,7 @@ int ps_place_color (int rgb[])
 	}
 	else if (rgb[0] == -3) {
 		/* Pattern fill */
-		fprintf (PSL->internal.fp, "pattern%d ", rgb[1]);
+		fprintf (PSL->internal.fp, "pattern%ld ", rgb[1]);
 		pmode = 10;
 	}
 	else if (!PSL_iscolor (rgb)) {
@@ -4449,31 +4449,31 @@ void ps_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[])
 	/* Plain conversion; no undercolor removal or blackgeneration */
 	/* RGB is in 0-255, CMYK will be in 0-255 range */
 
-	int i;
+	PS_LONG i;
 
 	for (i = 0; i < 3; i++) cmyk[i] = 255 - rgb[i];
 	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Black */
 	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];
 }
 
-void ps_rgb_to_cmyk_int (int rgb[], int cmyk[])
+void ps_rgb_to_cmyk_int (PS_LONG rgb[], PS_LONG cmyk[])
 {
 	/* Plain conversion; no undercolor removal or blackgeneration */
 	/* RGB is in 0-255, CMYK will be in 0-255 range */
 
-	int i;
+	PS_LONG i;
 
 	for (i = 0; i < 3; i++) cmyk[i] = 255 - rgb[i];
 	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Black */
 	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];
 }
 
-void ps_rgb_to_cmyk (int rgb[], double cmyk[])
+void ps_rgb_to_cmyk (PS_LONG rgb[], double cmyk[])
 {
 	/* Plain conversion; no undercolor removal or blackgeneration */
 	/* RGB is in 0-255, CMYK will be in 0-1 range */
 
-	int i;
+	PS_LONG i;
 
 	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - (rgb[i] * PSL_INV_255);
 	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Black */
@@ -4483,7 +4483,7 @@ void ps_rgb_to_cmyk (int rgb[], double cmyk[])
 	}
 }
 
-void ps_rgb_to_hsv (int rgb[], double hsv[])
+void ps_rgb_to_hsv (PS_LONG rgb[], double hsv[])
 {
 	double xr, xg, xb, r_dist, g_dist, b_dist, max_v, min_v, diff, idiff;
 
@@ -4511,19 +4511,19 @@ void ps_rgb_to_hsv (int rgb[], double hsv[])
 	if (hsv[0] < 0.0) hsv[0] += 360.0;
 }
 
-void ps_cmyk_to_rgb (int rgb[], double cmyk[])
+void ps_cmyk_to_rgb (PS_LONG rgb[], double cmyk[])
 {
 	/* Plain conversion; no undercolor removal or blackgeneration */
 	/* CMYK is in 0-1, RGB will be in 0-255 range */
 
-	int i;
+	PS_LONG i;
 
-	for (i = 0; i < 3; i++) rgb[i] = (int) floor ((1.0 - cmyk[i] - cmyk[3]) * 255.999);
+	for (i = 0; i < 3; i++) rgb[i] = (PS_LONG) floor ((1.0 - cmyk[i] - cmyk[3]) * 255.999);
 }
 
 void ps_rgb_to_mono (unsigned char *buffer, struct imageinfo *h)
 {
-	int i, j;
+	PS_LONG i, j;
 	unsigned char rgb[3];
 
 	if (h->depth == 24) {
@@ -4536,10 +4536,10 @@ void ps_rgb_to_mono (unsigned char *buffer, struct imageinfo *h)
 	}
 }
 
-int ps_bitreduce (unsigned char *buffer, int nx, int ny, int ncolors)
+PS_LONG ps_bitreduce (unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG ncolors)
 {
 	/* Reduce an 8-bit stream to 1-, 2- or 4-bit stream */
-	int in, out, i, j, nout, nbits;
+	PS_LONG in, out, i, j, nout, nbits;
 
 	/* Number of colors determines number of bits */
 	if (ncolors <= 2)
@@ -4576,20 +4576,20 @@ int ps_bitreduce (unsigned char *buffer, int nx, int ny, int ncolors)
 			}
 		}
 	}
-	if (PSL->internal.verbose) fprintf (stderr, "pslib: Image depth reduced to %d bits\n", nbits);
+	if (PSL->internal.verbose) fprintf (stderr, "pslib: Image depth reduced to %ld bits\n", nbits);
 	return (nbits);
 }
 
-int ps_get_boundingbox(FILE *fp, int *llx, int *lly, int *trx, int *try)
+PS_LONG ps_get_boundingbox(FILE *fp, PS_LONG *llx, PS_LONG *lly, PS_LONG *trx, PS_LONG *try)
 {
-	int nested;
+	PS_LONG nested;
 	char buf[BUFSIZ];
 
 	nested = 0; *llx = 1; *trx = 0;
 	while (fgets(buf, BUFSIZ, fp) != NULL) {
 		if (!nested && !strncmp(buf, "%%BoundingBox:", 14)) {
 			if (!strstr(buf, "(atend)")) {
-				if (sscanf(strchr(buf, ':') + 1, "%d %d %d %d", llx, lly, trx, try) < 4) return 1;
+				if (sscanf(strchr(buf, ':') + 1, "%ld %ld %ld %ld", llx, lly, trx, try) < 4) return 1;
 				break;
 			}
 		}
@@ -4603,7 +4603,7 @@ int ps_get_boundingbox(FILE *fp, int *llx, int *lly, int *trx, int *try)
 
 	if (*llx >= *trx || *lly >= *try) {
 		*llx = 0; *trx = 720; *lly = 0; *try = 720;
-		fprintf(stderr, "No proper BoundingBox, defaults assumed: %d %d %d %d\n", *llx, *lly, *trx, *try);
+		fprintf(stderr, "No proper BoundingBox, defaults assumed: %ld %ld %ld %ld\n", *llx, *lly, *trx, *try);
 		return 1;
 	}
 

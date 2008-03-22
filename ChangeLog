@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.224 2008-03-19 03:13:26 remko Exp $
+	$Id: ChangeLog,v 1.225 2008-03-22 11:55:33 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-03-22	pwessel
+	* *.[ch]:	Experimental support for full 64-bit computing with introduction of 8-byte
+		integers instead of 4-byte.
+		
 2008-03-19	remko
 	* gmt_map.c (GMT_map_clip_path):	In polar projection, step size for drawing clip path
 				was wrong, resulting in missing wedge in donut shape.

@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.7 2007-03-12 19:52:27 remko Exp $
+/*	$Id: x_setup.c,v 1.8 2008-03-22 11:55:37 guru Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -37,21 +37,21 @@ struct LEGNAMES {
 	char gmt;
 } leg_info[NTOT];
 
-struct INFO *make_info (char *name, int id_no);
-int findleg (char *name);
+struct INFO *make_info (char *name, GMT_LONG id_no);
+GMT_LONG findleg (char *name);
 
-int nlegs_used = 0;
+GMT_LONG nlegs_used = 0;
 char leg_used[MAXNEW][10];
 unsigned int legpointer[NTOT];
 struct INFO *ptr[MAXLEGS];
 
 int main (int argc, char *argv[])
 {
-	int i, j, byte_1, byte_2, bit_1, bit_2, leg_1, leg_2, ok;
-	int lat, lon, west = 0, east = 360, south = -90, north = 89;
+	GMT_LONG i, j, byte_1, byte_2, bit_1, bit_2, leg_1, leg_2, ok;
+	GMT_LONG lat, lon, west = 0, east = 360, south = -90, north = 89;
 	long n_alloc, record;
-	int bin, no;
-	int nlegs, n_tot_legs;
+	GMT_LONG bin, no;
+	GMT_LONG nlegs, n_tot_legs;
 	double w, e, s, n;
 	char lname[8], line[BUFSIZ];
 	unsigned char turn_on[8];
@@ -68,8 +68,8 @@ int main (int argc, char *argv[])
   					break;
   				case 'R':	/* Region */
   					sscanf (&argv[i][2], "%lf/%lf/%lf/%lf", &w, &e, &s, &n);
-  					west = (int) floor (w);	east = (int) ceil (e);
-  					south = (int) floor (s);	north = (int) ceil (n);
+  					west = (GMT_LONG) floor (w);	east = (GMT_LONG) ceil (e);
+  					south = (GMT_LONG) floor (s);	north = (GMT_LONG) ceil (n);
   					if (west < 0) {
   						west += 360;
   						east += 360;
@@ -118,7 +118,7 @@ int main (int argc, char *argv[])
 
 	i = 0;
 	while (fgets (line, BUFSIZ,fleg)) {
-		sscanf(line,"%s %d",lname, &no);
+		sscanf(line,"%s %ld",lname, &no);
 		ptr[no] = make_info (lname, no);
 		legpointer[i] = no;
 		ptr[no]->seq_no = i++;
@@ -201,7 +201,7 @@ int main (int argc, char *argv[])
 	exit (EXIT_SUCCESS);
 }
 
-struct INFO *make_info (char *name, int id_no)
+struct INFO *make_info (char *name, GMT_LONG id_no)
 {
 	struct INFO *new;
 	if ((new = (struct INFO *) malloc(sizeof(struct INFO))) == NULL) {
@@ -215,9 +215,9 @@ struct INFO *make_info (char *name, int id_no)
 }
 
 
-int findleg (char *name)
+GMT_LONG findleg (char *name)
 {
-	int left, right, mid, cmp;
+	GMT_LONG left, right, mid, cmp;
 
 	left = 0;
 	right = nlegs_used-1;

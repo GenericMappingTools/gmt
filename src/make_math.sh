@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: make_math.sh,v 1.7 2008-01-23 03:52:12 guru Exp $
+#	$Id: make_math.sh,v 1.8 2008-03-22 11:55:35 guru Exp $
 
 # This script puts together Xmath.h, Xmath_def.h, Xmath_explain.h, and Xmath_man.i
 # from Xmath.c.  To be run from the GMT src directory.  X is either grd or gmt.
@@ -63,12 +63,12 @@ echo "" >> ${prefix}math_def.h
 
 # Add function declarations
 
-echo "/* Declare all functions to return int */" >> ${prefix}math_def.h
+echo "/* Declare all functions to return GMT_LONG */" >> ${prefix}math_def.h
 echo "" >> ${prefix}math_def.h
 if [ $1 = "gmt" ]; then
-	awk '{printf "void table_%s(struct GMTMATH_INFO *info, double **stack[], BOOLEAN *constant, double *factor, int last, int start, int n);\t\t/* id = %d */\n", $2, NR-1}' $$.txt >> gmtmath_def.h
+	awk '{printf "void table_%s(struct GMTMATH_INFO *info, double **stack[], BOOLEAN *constant, double *factor, GMT_LONG last, GMT_LONG start, GMT_LONG n);\t\t/* id = %d */\n", $2, NR-1}' $$.txt >> gmtmath_def.h
 else
-	awk '{printf "void grd_%s(struct GRDMATH_INFO *info, float *stack[], BOOLEAN *constant, double *factor, int last);\t\t/* id=%d */\n", $2, NR-1}' $$.txt >> grdmath_def.h
+	awk '{printf "void grd_%s(struct GRDMATH_INFO *info, float *stack[], BOOLEAN *constant, double *factor, GMT_LONG last);\t\t/* id=%d */\n", $2, NR-1}' $$.txt >> grdmath_def.h
 fi
 echo "" >> ${prefix}math_def.h
 
@@ -144,7 +144,7 @@ cat << EOF > ${prefix}math.h
  *	Do NOT edit manually!
  */
 
-void ${prefix}math_init (PFV ops[], int n_args[], int n_out[])
+void ${prefix}math_init (PFV ops[], GMT_LONG n_args[], GMT_LONG n_out[])
 {
 
 	/* Operator function		# of operands  		# of outputs */

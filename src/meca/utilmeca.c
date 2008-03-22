@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.10 2008-02-24 21:36:53 guru Exp $
+/*	$Id: utilmeca.c,v 1.11 2008-03-22 11:55:36 guru Exp $
  *    Copyright (c) 1996-2008 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -60,7 +60,7 @@ void get_trans (double slon,double slat,double *t11,double *t12,double *t21,doub
 }
 
 /***********************************************************************************************************/
-double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], int ergb[3], BOOLEAN outline)
+double  ps_mechanism(double x0, double y0, st_me meca, double size, GMT_LONG rgb[3], GMT_LONG ergb[3], BOOLEAN outline)
 
 /* Genevieve Patau */
 
@@ -77,7 +77,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
     double str, radius, increment;
     double si, co;
 
-    int lineout = 1, i, npoints;
+    GMT_LONG lineout = 1, i, npoints;
 
     struct AXIS N_axis;
 
@@ -305,7 +305,7 @@ double ps_meca(double x0,double y0,st_me meca,double size)
 
 {
 
-    int i, npoints;
+    GMT_LONG i, npoints;
 
     double proj_radius();
 
@@ -314,7 +314,7 @@ double ps_meca(double x0,double y0,st_me meca,double size)
     double str, radius, increment;
     double si, co;
 
-    int no_fill[3], lineout = 1;
+    GMT_LONG no_fill[3], lineout = 1;
 
     no_fill[0] = -1;
     no_fill[1] = -1;
@@ -361,13 +361,13 @@ double ps_meca(double x0,double y0,st_me meca,double size)
 }
 
 /*********************************************************************/
-double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
+double ps_plan(double x0,double y0,st_me meca,double size,GMT_LONG num_of_plane)
 
 /* Genevieve Patau */
 
 {
 
-    int i, npoints;
+    GMT_LONG i, npoints;
 
     double proj_radius();
 
@@ -376,7 +376,7 @@ double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
     double str, radius, increment;
     double si, co;
 
-    int rgb[3], lineout=1;
+    GMT_LONG rgb[3], lineout=1;
 
     rgb[0] = -1;
     rgb[1] = -1;
@@ -770,9 +770,9 @@ Genevieve Patau, 18 mars 1999
 #define ROTATE(a,i,j,k,l) g=a[i][j];h=a[k][l];a[i][j]=g-s*(h+g*tau);\
         a[k][l]=h+s*(g-h*tau);
 
-void jacobi(float **a, int n, float d[], float **v, int *nrot)
+void jacobi(float **a, GMT_LONG n, float d[], float **v, GMT_LONG *nrot)
 {
-        int j,iq,ip,i;
+        GMT_LONG j,iq,ip,i;
         float tresh,theta,tau,t,sm,s,h,g,c,*b,*z;
 
         b=vector(1,n);
@@ -863,12 +863,12 @@ void momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P)
  * Numerical Recipes in C
  * Cambridge University press
  */
-    int j,kk,nrot;
-    int jj[3];
+    GMT_LONG j,kk,nrot;
+    GMT_LONG jj[3];
     float a[3][3];
     float *d,*r,**v,**e;
     float val[3], azi[3], plu[3];
-    static int num=3;
+    static GMT_LONG num=3;
 
     float min,max,mid;
     float az[3], pl[3];
@@ -908,14 +908,14 @@ void momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P)
 }
 
 /***************************************************************************************/
-double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,struct AXIS P,int c_rgb[3],int e_rgb[3], int outline, int plot_zerotrace)
+double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,struct AXIS P,GMT_LONG c_rgb[3],GMT_LONG e_rgb[3], GMT_LONG outline, GMT_LONG plot_zerotrace)
 {
-    int d, b = 1, m;
-    int i, ii, n = 0, j = 1, j2 = 0, j3 = 0;
-    int npoints;
-    int lineout = 1;
-    int rgb1[3], rgb2[3];
-    int big_iso = 0;
+    GMT_LONG d, b = 1, m;
+    GMT_LONG i, ii, n = 0, j = 1, j2 = 0, j3 = 0;
+    GMT_LONG npoints;
+    GMT_LONG lineout = 1;
+    GMT_LONG rgb1[3], rgb2[3];
+    GMT_LONG big_iso = 0;
 
     double a[3], p[3], v[3];
     double vi, iso, f;
@@ -1232,15 +1232,15 @@ from nodal plane strikes, dips and rakes.
 */
 
 {
-        int im = 0;
-        int pure_strike_slip = 0;
+        GMT_LONG im = 0;
+        GMT_LONG pure_strike_slip = 0;
         double cd1, sd1, cd2, sd2;
         double cp1, sp1, cp2, sp2;
         double amz, amx, amy, dx, px, dy, py;
         double radius;
 
-        if(fabs(sin(meca.NP1.rake * D2R)) > EPSIL) im = (int) (meca.NP1.rake / fabs(meca.NP1.rake));
-        else if(fabs(sin(meca.NP2.rake * D2R)) > EPSIL) im = (int) (meca.NP2.rake / fabs(meca.NP2.rake));
+        if(fabs(sin(meca.NP1.rake * D2R)) > EPSIL) im = (GMT_LONG) (meca.NP1.rake / fabs(meca.NP1.rake));
+        else if(fabs(sin(meca.NP2.rake * D2R)) > EPSIL) im = (GMT_LONG) (meca.NP2.rake / fabs(meca.NP2.rake));
         else pure_strike_slip = 1;
 
         size *= 0.5;
@@ -1324,14 +1324,14 @@ from nodal plane strikes, dips and rakes.
 */
 
 {
-        int im = 0;
-        int pure_strike_slip = 0;
+        GMT_LONG im = 0;
+        GMT_LONG pure_strike_slip = 0;
         double cd1, sd1, cd2, sd2;
         double cp1, sp1, cp2, sp2;
         double amz, amx, amy, dx, px, dy, py;
 
-        if(fabs(sind(meca.NP1.rake)) > EPSIL) im = (int) (meca.NP1.rake / fabs(meca.NP1.rake));
-        else if(fabs(sind(meca.NP2.rake)) > EPSIL) im = (int) (meca.NP2.rake / fabs(meca.NP2.rake));
+        if(fabs(sind(meca.NP1.rake)) > EPSIL) im = (GMT_LONG) (meca.NP1.rake / fabs(meca.NP1.rake));
+        else if(fabs(sind(meca.NP2.rake)) > EPSIL) im = (GMT_LONG) (meca.NP2.rake / fabs(meca.NP2.rake));
         else pure_strike_slip = 1;
 
         if(pure_strike_slip) {

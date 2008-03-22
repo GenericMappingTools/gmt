@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.7 2007-03-12 19:52:27 remko Exp $
+/*	$Id: x_update.c,v 1.8 2008-03-22 11:55:37 guru Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -32,33 +32,33 @@
 /* Global variables */
 
 void append_leg (struct LEG *leg, struct LEG*leg_head);
-int read_xx_legs (FILE *fp, struct LEG **L);
+GMT_LONG read_xx_legs (FILE *fp, struct LEG **L);
 struct LEG *make_leg (char *text);
 struct LEG *find_leg (char *text, struct LEG*leg_head);
 
 int main (int argc, char *argv[])
 {
 
-static char *xformat = "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf";
+	static char *xformat = "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf";
 
-struct XOVERS crossover[MAX_NR];
+	struct XOVERS crossover[MAX_NR];
 
-struct LEG *leg_head = NULL;
+	struct LEG *leg_head = NULL;
 
-FILE *fxb = NULL;		/* File handle for xx_base.b */
-FILE *fxl = NULL;		/* File handle for xx_legs.b file */
+	FILE *fxb = NULL;		/* File handle for xx_base.b */
+	FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 
 
 	char lega[10], legb[10];	/* two legnames */
 	char header[REC_SIZE];		/* header buffer for xx_base.b */
 	char buffer[BUFSIZ];		/* Input data buffer */
 	char *nread;
-	int n_legs;			/* number of legs */
-	int n_rec;			/* rec counters */
-	int n_x;			/* number of crossovers in a file */
-	int n_x_gmt[3];			/* number of g/m/t crossovers in a file */
-	int year1, year2;		/* Start year for each leg */
-	int i, j, nxcheck = 0;
+	GMT_LONG n_legs;			/* number of legs */
+	GMT_LONG n_rec;			/* rec counters */
+	GMT_LONG n_x;			/* number of crossovers in a file */
+	GMT_LONG n_x_gmt[3];			/* number of g/m/t crossovers in a file */
+	GMT_LONG year1, year2;		/* Start year for each leg */
+	GMT_LONG i, j, nxcheck = 0;
   
 	double sum_gmt[3], sum2_gmt[3], tmpsum_1, tmpsum_2, tmpsum2_1, tmpsum2_2;
 	double xlat, xlon;		/* Crossover coordinates in decimal degree */
@@ -134,7 +134,7 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 		fprintf(stderr,"x_update : Read error on xx_base.b\n");
 		exit (EXIT_FAILURE);
 	}
-	sscanf (header,"%d", &n_rec);
+	sscanf (header,"%ld", &n_rec);
 	fseek (fxb, 0L, SEEK_END);		/* Go to end of file */
 	for (i = 0; i < REC_SIZE; i++) header[i] = ' ';
 
@@ -142,7 +142,7 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 	leg1 = NULL;
 	nread = fgets (buffer, BUFSIZ, fp);
 	while (nread) {
-		sscanf (buffer,"%s %d %s %d",lega, &year1, legb, &year2);
+		sscanf (buffer,"%s %ld %s %ld",lega, &year1, legb, &year2);
 		internal = (!strcmp(lega,legb)) ? TRUE : FALSE;
 
 		if (leg1 != NULL && strcmp(leg1->name,lega) == 0)  {
@@ -197,13 +197,13 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 
 		/* Copy this info to xx_base.b */
 
-		sprintf (header,"%s %s %10d", lega, legb, n_x);
+		sprintf (header,"%s %s %10ld", lega, legb, n_x);
 		if (fwrite ((void *)header, REC_SIZE, (size_t)1, fxb) != (size_t)1) {
-			fprintf(stderr,"x_update : Write header error at rec %d\n", n_rec);
+			fprintf(stderr,"x_update : Write header error at rec %ld\n", n_rec);
 			exit (EXIT_FAILURE);
 		}
 		if (fwrite((void *)crossover, REC_SIZE, (size_t)n_x, fxb) != (size_t)n_x) {
-			fprintf(stderr,"x_update : Write data error at rec % d\n", n_rec);
+			fprintf(stderr,"x_update : Write data error at rec %ld\n", n_rec);
 			exit (EXIT_FAILURE);
 		}
       
@@ -251,7 +251,7 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 
 		n_rec += n_x + 1;
 		if (verbose) fprintf(stderr,"x_update: Updated legs %s and %s\n",lega,legb);
-		if (warning && n_x > nxcheck) printf ("x_update: %s %s generated %d crossovers\n", lega, legb, n_x);
+		if (warning && n_x > nxcheck) printf ("x_update: %s %s generated %ld crossovers\n", lega, legb, n_x);
 	}
 	fclose (fp);
   
@@ -260,9 +260,9 @@ FILE *fxl = NULL;		/* File handle for xx_legs.b file */
 	/* Write first rec for next time x_update is used */
 
 	fseek (fxb, 0L, SEEK_SET);
-	sprintf(header,"%10d xx_base.b header",n_rec);
+	sprintf(header,"%10ld xx_base.b header",n_rec);
 	if (fwrite((void *)header,REC_SIZE, (size_t)1, fxb) != (size_t)1) {
-		fprintf(stderr,"x_update : Write header error for n_rec = %d\n",n_rec);
+		fprintf(stderr,"x_update : Write header error for n_rec = %ld\n",n_rec);
 		exit (EXIT_FAILURE);
 	}
 	fclose(fxb);
@@ -298,8 +298,8 @@ void append_leg (struct LEG *leg, struct LEG*leg_head)
 	current->next_leg = leg;
 }
     
-int read_xx_legs (FILE *fxl, struct LEG **L) {
-	int nlegs = 0;
+GMT_LONG read_xx_legs (FILE *fxl, struct LEG **L) {
+	GMT_LONG nlegs = 0;
 	struct LEG *new_leg, *last_leg, *leg_head;
 	leg_head = make_leg("-----");
 	new_leg = make_leg("-----");
@@ -317,7 +317,7 @@ int read_xx_legs (FILE *fxl, struct LEG **L) {
 
 struct LEG *make_leg (char *text)
 {
-	int j;
+	GMT_LONG j;
 	struct LEG *new_leg;
 	if ((new_leg = (struct LEG *) malloc(sizeof(struct LEG))) == NULL) {
 		fprintf(stderr,"x_update : Could not allocate memory for leg %s\n",text);
@@ -345,7 +345,7 @@ struct LEG *make_leg (char *text)
 struct LEG *find_leg (char *text, struct LEG*leg_head)
 {
 	struct LEG *leg;
-	int test1 = -1;
+	GMT_LONG test1 = -1;
 	for (leg = leg_head->next_leg; leg && (test1 = strcmp(leg->name,text)) < 0; leg = leg->next_leg);
 	if (test1 == 0)
 		return (leg);

@@ -1,4 +1,4 @@
-/*	$Id: meca.h,v 1.4 2008-02-22 08:49:16 guru Exp $
+/*	$Id: meca.h,v 1.5 2008-03-22 11:55:36 guru Exp $
  *    Copyright (c) 1996-2008 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -29,13 +29,13 @@ struct AXIS {
     double str;
     double dip;
     double val;
-    int e;
+    GMT_LONG e;
 };
 /* val in 10**e dynes-cm */
 
 struct MOMENT {
     double mant;
-    int exponent;
+    GMT_LONG exponent;
 };
 
 struct nodal_plane {
@@ -52,7 +52,7 @@ struct MECHANISM {
 };
 
 struct M_TENSOR {
-    int expo;
+    GMT_LONG expo;
     double f[6];
 };
 /* mrr mtt mff mrt mrf mtf in 10**expo dynes-cm */

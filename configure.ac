@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.8 2008-02-29 03:49:43 remko Exp $
-AC_REVISION($Revision: 1.8 $)
+dnl $Id: configure.ac,v 1.9 2008-03-22 11:55:34 guru Exp $
+AC_REVISION($Revision: 1.9 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -407,6 +407,9 @@ dnl -----------------------------------------------------------------
 dnl Determine optional CFLAGS and LDFLAGS additions for OS X
 dnl -----------------------------------------------------------------
 dnl
+if test "$enable_64" = "yes" ; then
+	OPT64=' -m64'
+fi
 if test "$enable_universal" = "yes" ; then
 	if test "$enable_64" = "yes" ; then
 		ppc=ppc64
@@ -425,7 +428,7 @@ dnl Determine LD_OPT and LDFLAGS for this platform
 dnl -----------------------------------------------------------------
 dnl
 shared_unknown=no
-LDFLAGS=$OPTS
+LDFLAGS="$OPTS $OPT64"
 LD_OPT=
 LD=ld
 SL="so"
@@ -461,7 +464,7 @@ if test "$enable_shared" = "yes" ; then
 	elif test "$os" = "Darwin" ; then	# MacOS X
 		LD=gcc
 		LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.4.$(SL) -compatibility_version 4.0.0 -current_version '$LIB_VERSION' -dynamiclib'
-		LDFLAGS='-Wl,-x'$OSX_L
+		LDFLAGS=$OPT64' -Wl,-x'$OSX_L
 		SL=dylib
 	elif test "$os" = "HP-UX" ; then
 		LD_OPT="-b"
@@ -489,9 +492,6 @@ dnl Determine CC_OPT for this platform
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(compiler options for GMT)
-if test "$enable_64" = "yes" ; then
-	OPT64=' -m64'
-fi
 if test "$GCC" = "yes"; then		# GNU cc options
 	if test "$chip" = "alpha" ; then	# Alpha PC
 		CC_OPT=$OPTG'-mieee -Wall'

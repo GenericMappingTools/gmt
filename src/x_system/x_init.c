@@ -1,5 +1,5 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *	$Id: x_init.c,v 1.5 2007-03-12 19:52:27 remko Exp $
+ *	$Id: x_init.c,v 1.6 2008-03-22 11:55:37 guru Exp $
  *
  * XINIT will create the xx_base.b and xx_legs.b files and write out
  * the first header record (in xx_base.b) that tells which record number
@@ -17,7 +17,7 @@
 int main (int argc, char **argv)
 {
 	char buffer[REC_SIZE];
-	int i;
+	GMT_LONG i;
 	FILE *fhandle, *fp;
 
 	if (!(argc == 2 && argv[1][1] == 'I')) {

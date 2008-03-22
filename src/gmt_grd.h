@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.30 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_grd.h,v 1.31 2008-03-22 11:55:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -97,14 +97,14 @@ struct GRD_HEADER {
  * match the sense of truncation used for x) then we revert to row number increasing down
  * by flipping: j = ny - 1 - j' */
 
-#define GMT_x_to_i(x,x0,dx,off,nx) (irint(((((x) - (x0)) / (dx)) - (off))))
-#define GMT_y_to_j(y,y0,dy,off,ny) ((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off))))
+#define GMT_x_to_i(x,x0,dx,off,nx) ((GMT_LONG)irint(((((x) - (x0)) / (dx)) - (off))))
+#define GMT_y_to_j(y,y0,dy,off,ny) ((GMT_LONG)((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off)))))
 #define GMT_i_to_x(i,x0,x1,dx,off,nx) (((i) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((i) + (off)) * (dx))
 #define GMT_j_to_y(j,y0,y1,dy,off,ny) (((j) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((j) + (off)) * (dy))
 
 /* These macros calculate the number of nodes in x or y  or the increment dx, dy*/
 
-#define GMT_get_n(min,max,inc,off) (irint (((max) - (min)) / (inc)) + 1 - (off))
+#define GMT_get_n(min,max,inc,off) ((GMT_LONG)irint (((max) - (min)) / (inc)) + 1 - (off))
 #define GMT_get_inc(min,max,n,off) (((max) - (min)) / ((n) + (off) - 1))
 
 /* Calculate 1-D index a[ij] corresponding to 2-D array a[row][col], with 64-bit precision.

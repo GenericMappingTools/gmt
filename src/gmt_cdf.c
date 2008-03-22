@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.49 2008-03-21 00:25:50 guru Exp $
+ *	$Id: gmt_cdf.c,v 1.50 2008-03-22 11:55:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,11 +42,12 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
+GMT_LONG GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
 
-int GMT_cdf_read_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_cdf_read_grd_info (struct GRD_HEADER *header)
 {
-	int ncid, err;
+	int ncid;
+	GMT_LONG err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
 	GMT_err_trap (GMT_cdf_grd_info (ncid, header, 'r'));
@@ -54,9 +55,10 @@ int GMT_cdf_read_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_cdf_update_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_cdf_update_grd_info (struct GRD_HEADER *header)
 {
-	int ncid, err;
+	int ncid;
+	GMT_LONG err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	GMT_err_trap (nc_open (header->name, NC_WRITE + NC_NOFILL, &ncid));
 	GMT_err_trap (GMT_cdf_grd_info (ncid, header, 'u'));
@@ -64,9 +66,10 @@ int GMT_cdf_update_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_cdf_write_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_cdf_write_grd_info (struct GRD_HEADER *header)
 {
-	int ncid, err;
+	int ncid;
+	GMT_LONG err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	GMT_err_trap (nc_create (header->name, NC_CLOBBER + NC_NOFILL, &ncid));
 	GMT_err_trap (GMT_cdf_grd_info (ncid, header, 'w'));
@@ -74,9 +77,10 @@ int GMT_cdf_write_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
+GMT_LONG GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 {
-	int nm[2], i, err;
+	GMT_LONG err;
+	int i, nm[2];
 	double dummy[2];
 	char text[GRD_COMMAND_LEN+GRD_REMARK_LEN];
 	nc_type z_type;
@@ -207,7 +211,7 @@ int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 	return (GMT_NOERROR);
 }
 
-int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -221,18 +225,19 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	 * not the physical size (i.e., the padding is not counted in nx and ny)
 	 */
 	 
-	int  ncid, err;
+	int  ncid;
+	GMT_LONG err;
 	size_t start[1], edge[1];
-	int first_col, last_col, first_row, last_row;
-	int i, j, width_in, height_in, i_0_out, inc = 1;
+	GMT_LONG first_col, last_col, first_row, last_row;
+	GMT_LONG i, j, width_in, height_in, i_0_out, inc = 1;
 	GMT_LONG ij, kk, width_out;
-	int *k;
+	GMT_LONG *k;
 	BOOLEAN check;
 	float *tmp = VNULL;
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
-	width_out = (GMT_LONG)width_in;		/* Width of output array */
+	width_out = width_in;		/* Width of output array */
 	if (pad[0] > 0) width_out += pad[0];
 	if (pad[1] > 0) width_out += pad[1];
 
@@ -286,7 +291,7 @@ int GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	return (GMT_NOERROR);
 }
 
-int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0]
@@ -297,10 +302,11 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	 */
 
 	size_t start[1], edge[1];
-	int ncid, err;
-	int i, inc = 1, *k, nr_oor = 0;
-	int j, width_out, height_out;
-	int first_col, last_col, first_row, last_row;
+	int ncid;
+	GMT_LONG err;
+	GMT_LONG i, inc = 1, *k, nr_oor = 0;
+	GMT_LONG j, width_out, height_out;
+	GMT_LONG first_col, last_col, first_row, last_row;
 	GMT_LONG ij, width_in;
 	float *tmp_f = VNULL;
 	int *tmp_i = VNULL;
@@ -332,7 +338,7 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
-	width_in = (GMT_LONG)width_out;		/* Physical width of input array */
+	width_in = width_out;		/* Physical width of input array */
 	if (pad[0] > 0) width_in += pad[0];
 	if (pad[1] > 0) width_in += pad[1];
 
@@ -407,7 +413,7 @@ int GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 		GMT_free ((void *)tmp_i);
 	}
 
-	if (nr_oor > 0) fprintf (stderr, "%s: Warning: %d out-of-range grid values converted to _FillValue [%s]\n", GMT_program, nr_oor, header->name);
+	if (nr_oor > 0) fprintf (stderr, "%s: Warning: %ld out-of-range grid values converted to _FillValue [%s]\n", GMT_program, nr_oor, header->name);
 
 	GMT_free ((void *)k);
 

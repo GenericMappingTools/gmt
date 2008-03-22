@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.66 2008-03-21 00:25:50 guru Exp $
+ *	$Id: gmt_customio.c,v 1.67 2008-03-22 11:55:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -62,18 +62,18 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-int GMT_read_rasheader (FILE *fp, struct rasterfile *h);
-int GMT_write_rasheader (FILE *fp, struct rasterfile *h);
-int GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header);
-int GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header);
-int GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header);
-int GMT_native_read_grd_info (struct GRD_HEADER *header);
-int GMT_native_write_grd_info (struct GRD_HEADER *header);
-int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
-int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
+GMT_LONG GMT_read_rasheader (FILE *fp, struct rasterfile *h);
+GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h);
+GMT_LONG GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header);
+GMT_LONG GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header);
+GMT_LONG GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header);
+GMT_LONG GMT_native_read_grd_info (struct GRD_HEADER *header);
+GMT_LONG GMT_native_write_grd_info (struct GRD_HEADER *header);
+GMT_LONG GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex);
+GMT_LONG GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex);
 
 void GMT_grdio_init (void) {
-	int id;
+	GMT_LONG id;
 
 	/* FORMAT # 0: DEFAULT: GMT netCDF-based (float) grdio, same as # 18 */
 
@@ -304,7 +304,7 @@ void GMT_grdio_init (void) {
 
 #define	RAS_MAGIC	0x59a66a95
 
-int GMT_is_ras_grid (char *file)
+GMT_LONG GMT_is_ras_grid (char *file)
 {	/* Determine if file is a Sun rasterfile */
 	FILE *fp;
 	struct rasterfile h;
@@ -316,12 +316,12 @@ int GMT_is_ras_grid (char *file)
 	return (GMT_grd_format_decoder ("rb"));
 }
 
-int GMT_ras_read_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_ras_read_grd_info (struct GRD_HEADER *header)
 {
 	FILE *fp;
 	struct rasterfile h;
 	unsigned char u;
-	int i;
+	GMT_LONG i;
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -353,7 +353,7 @@ int GMT_ras_read_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_ras_write_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_ras_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE *fp;
 	struct rasterfile h;
@@ -384,7 +384,7 @@ int GMT_ras_write_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
@@ -393,14 +393,14 @@ int GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc. */
 
-	int first_col, last_col, first_row, last_row, inc = 1;
-	int i, j, j2, width_in, width_out, height_in, i_0_out, n2;
+	GMT_LONG first_col, last_col, first_row, last_row, inc = 1;
+	GMT_LONG i, j, j2, width_in, width_out, height_in, i_0_out, n2;
 	GMT_LONG kk, ij;
 	FILE *fp;
 	BOOLEAN piping = FALSE, check;
 	unsigned char *tmp;
 	struct rasterfile h;
-	int *k;
+	GMT_LONG *k;
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
@@ -416,7 +416,7 @@ int GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	n2 = (int) ceil (header->nx / 2.0) * 2;	/* Sun 8-bit rasters are stored using 16-bit words */
+	n2 = (GMT_LONG) ceil (header->nx / 2.0) * 2;	/* Sun 8-bit rasters are stored using 16-bit words */
 	tmp = (unsigned char *) GMT_memory (VNULL, (size_t)n2, sizeof (unsigned char), "GMT_ras_read_grd");
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
@@ -473,17 +473,17 @@ int GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	return (GMT_NOERROR);
 }
 
-int GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to write  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to remove on w, e, s, n of grid, respectively */
 	/* complex:	Must be FALSE for rasterfiles.    If 64 is added we write no header */
 
-	int i, i2, inc = 1;
-	int j, j2, width_in, width_out, height_out, n2;
-	int first_col, last_col, first_row, last_row;
-	int *k;
+	GMT_LONG i, i2, inc = 1;
+	GMT_LONG j, j2, width_in, width_out, height_out, n2;
+	GMT_LONG first_col, last_col, first_row, last_row;
+	GMT_LONG *k;
 	GMT_LONG kk, ij;
 
 	BOOLEAN check, do_header = TRUE;
@@ -512,7 +512,7 @@ int GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	h.maptype = 0;
 	h.maplength = 0;
 
-	n2 = (int) ceil (header->nx / 2.0) * 2;
+	n2 = (GMT_LONG) ceil (header->nx / 2.0) * 2;
 	tmp = (unsigned char *) GMT_memory (VNULL, (size_t)n2, sizeof (unsigned char), "GMT_ras_write_grd");
 
 	check = !GMT_is_dnan (header->nan_value);
@@ -561,7 +561,7 @@ int GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 }
 
-int GMT_read_rasheader (FILE *fp, struct rasterfile *h)
+GMT_LONG GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 {
 	/* Reads the header of a Sun rasterfile byte by byte
 	   since the format is defined as the byte order on the
@@ -569,13 +569,13 @@ int GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 	 */
 
 	unsigned char byte[4];
-	int i, j, value, in[4];
+	GMT_LONG i, j, value, in[4];
 
 	for (i = 0; i < 8; i++) {
 
 		if (GMT_fread ((void *)byte, sizeof (unsigned char), (size_t)4, fp) != 4) return (GMT_GRDIO_READ_FAILED);
 
-		for (j = 0; j < 4; j++) in[j] = (int)byte[j];
+		for (j = 0; j < 4; j++) in[j] = (GMT_LONG)byte[j];
 
 		value = (in[0] << 24) + (in[1] << 16) + (in[2] << 8) + in[3];
 
@@ -612,7 +612,7 @@ int GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 	return (GMT_NOERROR);
 }
 
-int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
+GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 {
 	/* Writes the header of a Sun rasterfile byte by byte
 	   since the format is defined as the byte order on the
@@ -620,7 +620,7 @@ int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 	 */
 
 	unsigned char byte[4];
-	int i, value;
+	GMT_LONG i, value;
 
 	if (h->type == RT_OLD && h->length == 0) {
 		h->length = 2 * irint (ceil (h->width * h->depth / 16.0)) * h->height;
@@ -684,7 +684,7 @@ int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
  * Functions :	GMT_bit_read_grd, GMT_bit_write_grd
  *-----------------------------------------------------------*/
 
-int GMT_is_native_grid (char *file)
+GMT_LONG GMT_is_native_grid (char *file)
 {
 	struct STAT buf;
 	GMT_LONG nm, mx, status, size;
@@ -734,7 +734,7 @@ int GMT_is_native_grid (char *file)
 	}
 }
 
-int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
@@ -743,9 +743,9 @@ int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc. */
 
-	int first_col, last_col, first_row, last_row, word, bit, err;
-	int i, j, j2, width_in, width_out, height_in, i_0_out, inc = 1, mx;
-	int *k;
+	GMT_LONG first_col, last_col, first_row, last_row, word, bit, err;
+	GMT_LONG i, j, j2, width_in, width_out, height_in, i_0_out, inc = 1, mx;
+	GMT_LONG *k;
 	GMT_LONG kk, ij;
 	FILE *fp;
 	BOOLEAN piping = FALSE, check = FALSE;
@@ -765,7 +765,7 @@ int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	check = !GMT_is_dnan (header->nan_value);
-	mx = (int) ceil (header->nx / 32.0);
+	mx = (GMT_LONG) ceil (header->nx / 32.0);
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
@@ -826,7 +826,7 @@ int GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	return (GMT_NOERROR);
 }
 
-int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
@@ -835,9 +835,9 @@ int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc.   If 64 is added we write no header*/
 
-	int i, i2, *k;
-	int j, j2, width_in, width_out, height_out, mx, word, bit, err, inc = 1;
-	int first_col, last_col, first_row, last_row;
+	GMT_LONG i, i2, *k;
+	GMT_LONG j, j2, width_in, width_out, height_out, mx, word, bit, err, inc = 1;
+	GMT_LONG first_col, last_col, first_row, last_row;
 	GMT_LONG kk, ij;
 	BOOLEAN check = FALSE, do_header = TRUE;
 	unsigned int *tmp, ival;
@@ -896,7 +896,7 @@ int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 		GMT_err_trap (GMT_native_write_grd_header (fp, header));
 	}
 
-	mx = (int) ceil (width_out / 32.0);
+	mx = (GMT_LONG) ceil (width_out / 32.0);
 	tmp = (unsigned int *) GMT_memory (VNULL, (size_t)mx, sizeof (unsigned int), "GMT_bit_write_grd");
 
 	i2 = first_col + pad[0];
@@ -955,18 +955,18 @@ int GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
  * header.
  */
 
-int GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header)
+GMT_LONG GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header)
 {
-	int err = GMT_NOERROR;
+	GMT_LONG err = GMT_NOERROR;
 	/* Because GRD_HEADER is not 64-bit aligned we must read it in parts */
 	if (GMT_fread ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fread ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1)
                 err = GMT_GRDIO_READ_FAILED;
 	return (err);
 }
 
-int GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header)
+GMT_LONG GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header)
 {
-	int err = GMT_NOERROR;
+	GMT_LONG err = GMT_NOERROR;
 	/* Because GRD_HEADER is not 64-bit aligned we must write it in parts */
 
 	if (GMT_fwrite ((void *)&header->nx, 3*sizeof (int), (size_t)1, fp) != 1 || GMT_fwrite ((void *)&header->x_min, sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx), (size_t)1, fp) != 1)
@@ -974,9 +974,9 @@ int GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header)
 	return (err);
 }
 
-int GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header)
+GMT_LONG GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header)
 {
-	int err = GMT_NOERROR;
+	GMT_LONG err = GMT_NOERROR;
 	/* Because GRD_HEADER is not 64-bit aligned we must estimate the # of bytes in parts */
 	
 	if (GMT_fseek (fp, (long)(3*sizeof (int) + sizeof (struct GRD_HEADER) - ((long)&header->x_min - (long)&header->nx)), SEEK_SET))
@@ -984,12 +984,12 @@ int GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header)
 	return (err);
 }
 
-int GMT_native_read_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_native_read_grd_info (struct GRD_HEADER *header)
 {
 	/* Read GRD header structure from native binary file.  This is used by
 	 * all the native binary formats in GMT */
 
-	int err;
+	GMT_LONG err;
 	FILE *fp;
 
 	if (!strcmp (header->name, "=")) {
@@ -1008,12 +1008,12 @@ int GMT_native_read_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_native_write_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_native_write_grd_info (struct GRD_HEADER *header)
 {
 	/* Write GRD header structure to native binary file.  This is used by
 	 * all the native binary formats in GMT */
 
-	int err;
+	GMT_LONG err;
 	FILE *fp;
 
 	if (!strcmp (header->name, "=")) {
@@ -1032,7 +1032,7 @@ int GMT_native_write_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
@@ -1041,15 +1041,15 @@ int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc. */
 
-	int first_col, last_col;	/* First and last column to deal with */
-	int first_row, last_row;	/* First and last row to deal with */
-	int height_in;			/* Number of columns in subregion */
-	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	int err, i, j, j2, i_0_out;	/* Misc. counters */
-	int *k;				/* Array with indices */
-	int type;			/* Data type */
-	int size;			/* Length of data type */
-	int width_in;			/* Number of items in one row of the subregion */
+	GMT_LONG first_col, last_col;	/* First and last column to deal with */
+	GMT_LONG first_row, last_row;	/* First and last row to deal with */
+	GMT_LONG height_in;			/* Number of columns in subregion */
+	GMT_LONG inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	GMT_LONG err, i, j, j2, i_0_out;	/* Misc. counters */
+	GMT_LONG *k;				/* Array with indices */
+	GMT_LONG type;			/* Data type */
+	GMT_LONG size;			/* Length of data type */
+	GMT_LONG width_in;			/* Number of items in one row of the subregion */
 	GMT_LONG kk, ij;
 	GMT_LONG width_out;			/* Width of row as return (may include padding) */
 	FILE *fp;			/* File pointer to data or pipe */
@@ -1076,7 +1076,7 @@ int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
-	width_out = (GMT_LONG)width_in;		/* Width of output array */
+	width_out = width_in;		/* Width of output array */
 	if (pad[0] > 0) width_out += pad[0];
 	if (pad[1] > 0) width_out += pad[1];
 
@@ -1140,7 +1140,7 @@ int GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 	return (GMT_NOERROR);
 }
 
-int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0] */
@@ -1149,15 +1149,15 @@ int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, doub
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc.  If 64 is added we write no header */
 
-	int first_col, last_col;	/* First and last column to deal with */
-	int first_row, last_row;	/* First and last row to deal with */
-	int width_out;			/* Width of row as return (may include padding) */
-	int height_out;			/* Number of columns in subregion */
-	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	int i, j, i2, j2, err;	/* Misc. counters */
-	int *k;				/* Array with indices */
-	int type;			/* Data type */
-	int size;			/* Length of data type */
+	GMT_LONG first_col, last_col;	/* First and last column to deal with */
+	GMT_LONG first_row, last_row;	/* First and last row to deal with */
+	GMT_LONG width_out;			/* Width of row as return (may include padding) */
+	GMT_LONG height_out;			/* Number of columns in subregion */
+	GMT_LONG inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	GMT_LONG i, j, i2, j2, err;	/* Misc. counters */
+	GMT_LONG *k;				/* Array with indices */
+	GMT_LONG type;			/* Data type */
+	GMT_LONG size;			/* Length of data type */
 	GMT_LONG width_in;			/* Number of items in one row of the subregion */
 	GMT_LONG ij;
 	FILE *fp;			/* File pointer to data or pipe */
@@ -1180,7 +1180,7 @@ int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, doub
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
-	width_in = (GMT_LONG)width_out;		/* Physical width of input array */
+	width_in = width_out;		/* Physical width of input array */
 	if (pad[0] > 0) width_in += pad[0];
 	if (pad[1] > 0) width_in += pad[1];
 	if (complex >= 64) {	/* Want no header, adjust complex */
@@ -1242,7 +1242,7 @@ int GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w, doub
 	return (GMT_NOERROR);
 }
 
-void GMT_encode (void *vptr, int k, float z, int type)
+void GMT_encode (void *vptr, GMT_LONG k, float z, GMT_LONG type)
 {
 
 	switch (type) {
@@ -1269,7 +1269,7 @@ void GMT_encode (void *vptr, int k, float z, int type)
 }
 
 
-float GMT_decode (void *vptr, int k, int type)
+float GMT_decode (void *vptr, GMT_LONG k, GMT_LONG type)
 {
 	float fval;
 
@@ -1368,7 +1368,7 @@ struct srf_header7 {	/* Surfer 7 file header structure */
 	int len_d;		/* Length in bytes of the DATA section */
 };
 
-int GMT_is_srf_grid (char *file)
+GMT_LONG GMT_is_srf_grid (char *file)
 {
 	FILE *fp;
 	char id[5];
@@ -1381,13 +1381,13 @@ int GMT_is_srf_grid (char *file)
 	return (GMT_GRDIO_BAD_VAL);	/* Neither */
 }
 
-int GMT_srf_read_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_srf_read_grd_info (struct GRD_HEADER *header)
 {
 	FILE *fp;
 	struct srf_header6 h6;
 	struct srf_header7 h7;
-	int GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h);
-	int GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h);
+	GMT_LONG GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h);
+	GMT_LONG GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h);
 	char id[5];
 
 	if (!strcmp (header->name, "=")) {
@@ -1439,11 +1439,11 @@ int GMT_srf_read_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_srf_write_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_srf_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE *fp;
 	struct srf_header6 h;
-	int GMT_write_srfheader (FILE *fp, struct srf_header6 *h);
+	GMT_LONG GMT_write_srfheader (FILE *fp, struct srf_header6 *h);
 
 	if (!strcmp (header->name, "="))
 	{
@@ -1474,7 +1474,7 @@ int GMT_srf_write_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h)
+GMT_LONG GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h)
 {
 	/* Reads the header of a Surfer 6 gridfile */
 
@@ -1482,7 +1482,7 @@ int GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h)
 	return (GMT_NOERROR);
 }
 
-int GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
+GMT_LONG GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
 {
 	/* Reads the header of a Surfer 7 gridfile */
 
@@ -1491,13 +1491,13 @@ int GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
 	return (GMT_NOERROR);
 }
 
-int GMT_write_srfheader (FILE *fp, struct srf_header6 *h)
+GMT_LONG GMT_write_srfheader (FILE *fp, struct srf_header6 *h)
 {
 	if (GMT_fwrite ((void *)h, sizeof (struct srf_header6), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_WRITE_FAILED); 
 	return (GMT_NOERROR);
 }
 
-int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:     	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
@@ -1506,15 +1506,15 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc. */
 
-	int first_col, last_col;	/* First and last column to deal with */
-	int first_row, last_row;	/* First and last row to deal with */
-	int width_in;			/* Number of items in one row of the subregion */
-	int height_in;			/* Number of columns in subregion */
-	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	int i, j, j2, i_0_out; 	/* Misc. counters */
-	int *k;				/* Array with indices */
-	int type;			/* Data type */
-	int size;			/* Length of data type */
+	GMT_LONG first_col, last_col;	/* First and last column to deal with */
+	GMT_LONG first_row, last_row;	/* First and last row to deal with */
+	GMT_LONG width_in;			/* Number of items in one row of the subregion */
+	GMT_LONG height_in;			/* Number of columns in subregion */
+	GMT_LONG inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	GMT_LONG i, j, j2, i_0_out; 	/* Misc. counters */
+	GMT_LONG *k;				/* Array with indices */
+	GMT_LONG type;			/* Data type */
+	GMT_LONG size;			/* Length of data type */
 	GMT_LONG kk, ij;
 	GMT_LONG width_out;			/* Width of row as return (may include padding) */
 	FILE *fp;			/* File pointer to data or pipe */
@@ -1545,7 +1545,7 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);;
 
-	width_out = (GMT_LONG)width_in;		/* Width of output array */
+	width_out = width_in;		/* Width of output array */
 	if (pad[0] > 0) width_out += pad[0];
 	if (pad[1] > 0) width_out += pad[1];
 
@@ -1616,7 +1616,7 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	return (GMT_NOERROR);
 }
 
-int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0] */
@@ -1625,15 +1625,15 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc. */
 
-	int first_col, last_col;	/* First and last column to deal with */
-	int first_row, last_row;	/* First and last row to deal with */
-	int width_out;			/* Width of row as return (may include padding) */
-	int height_out;			/* Number of columns in subregion */
-	int inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	int i, j, i2, j2;		/* Misc. counters */
-	int *k;				/* Array with indices */
-	int type;			/* Data type */
-	int size;			/* Length of data type */
+	GMT_LONG first_col, last_col;	/* First and last column to deal with */
+	GMT_LONG first_row, last_row;	/* First and last row to deal with */
+	GMT_LONG width_out;			/* Width of row as return (may include padding) */
+	GMT_LONG height_out;			/* Number of columns in subregion */
+	GMT_LONG inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	GMT_LONG i, j, i2, j2;		/* Misc. counters */
+	GMT_LONG *k;				/* Array with indices */
+	GMT_LONG type;			/* Data type */
+	GMT_LONG size;			/* Length of data type */
 	GMT_LONG ij;
 	GMT_LONG width_in;			/* Number of items in one row of the subregion */
 	FILE *fp;			/* File pointer to data or pipe */
@@ -1656,7 +1656,7 @@ int GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
-	width_in = (GMT_LONG)width_out;		/* Physical width of input array */
+	width_in = width_out;		/* Physical width of input array */
 	if (pad[0] > 0) width_in += pad[0];
 	if (pad[1] > 0) width_in += pad[1];
 	complex %= 64;

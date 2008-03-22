@@ -1,4 +1,4 @@
-/*	$Id: x_remove.c,v 1.5 2007-03-12 19:52:27 remko Exp $
+/*	$Id: x_remove.c,v 1.6 2008-03-22 11:55:37 guru Exp $
  *
  * XREMOVE will read a list of bad legs from a file, and then remove all
  * trace of these files from the x_system data base files. New x_system files
@@ -24,17 +24,17 @@ struct XOVERS crossover[MAX_X];
 struct LEG leg[MAXLEGS];
 
 size_t legsize = sizeof (struct LEG);
-int nbadlegs = 0, nlegs = 0;
+GMT_LONG nbadlegs = 0, nlegs = 0;
 
 char badlegs[MAXBADLEGS][10];
 
-int findleg (char *name);
-int get_id (char *name);
+GMT_LONG findleg (char *name);
+GMT_LONG get_id (char *name);
 
 int main (int argc, char **argv)
 {
 	FILE *fpb = NULL, *fpl = NULL, *fpr = NULL, *fpl2, *fpb2;
-	int i, j, n_x, error = FALSE, id1, id2, internal, ok, nrecs = 1, verbose = FALSE;
+	GMT_LONG i, j, n_x, error = FALSE, id1, id2, internal, ok, nrecs = 1, verbose = FALSE;
 	char header[BUFSIZ], lega[10], legb[10], line[BUFSIZ];
 	double mean;
 
@@ -129,7 +129,7 @@ int main (int argc, char **argv)
 	}
 	ok = fread ((void *)header, REC_SIZE, (size_t)1, fpb);
 	while (ok) {
-		sscanf(header, "%s %s %d",lega, legb, &n_x);
+		sscanf(header, "%s %s %ld",lega, legb, &n_x);
 		if (findleg (lega) || findleg (legb)) {
 			if (verbose) fprintf (stderr, "xremove: Skipping %s - %s\n", lega, legb);
 			fseek (fpb, (long int)(REC_SIZE*n_x), SEEK_CUR);
@@ -139,7 +139,7 @@ int main (int argc, char **argv)
 			id1 = get_id (lega);
 			id2 = (internal) ? id1 : get_id (legb);
 			if (n_x > MAX_X) {
-				fprintf (stderr, "xremove: nx (= %d) > MAX_X, recompile!\n", n_x);
+				fprintf (stderr, "xremove: nx (= %ld) > MAX_X, recompile!\n", n_x);
 				exit (EXIT_FAILURE);
 			}
 			if (fread ((void *)crossover, REC_SIZE, (size_t)n_x, fpb) != (size_t)n_x) {
@@ -186,7 +186,7 @@ int main (int argc, char **argv)
 		ok = fread ((void*)header, REC_SIZE, (size_t)1, fpb);
 	}
 	fclose (fpb);
-	sprintf (header, "%10d xx_base.b header", nrecs);
+	sprintf (header, "%10ld xx_base.b header", nrecs);
 	fseek (fpb2, 0L, SEEK_SET);
 	if (fwrite ((void *)header, REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
 		fprintf (stderr, "xremove: Write error on xx_base.b\n");
@@ -224,9 +224,9 @@ int main (int argc, char **argv)
 	exit (EXIT_SUCCESS);
 }
           
-int findleg (char *name)
+GMT_LONG findleg (char *name)
 {
-	int left, right, mid, cmp;
+	GMT_LONG left, right, mid, cmp;
 
 	left = 0;
 	right = nbadlegs-1;
@@ -243,9 +243,9 @@ int findleg (char *name)
 	return (0);
 }
 
-int get_id (char *name)
+GMT_LONG get_id (char *name)
 {
-	int left, right, mid, cmp;
+	GMT_LONG left, right, mid, cmp;
 
 	left = 0;
 	right = nlegs-1;

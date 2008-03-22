@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.18 2008-02-27 03:16:54 guru Exp $
+ *	$Id: gmt_vector.c,v 1.19 2008-03-22 11:55:35 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -27,7 +27,7 @@
 
 #define MAX_SWEEPS 50
 
-int	GMT_jacobi (double *a, int *n, int *m, double *d, double *v, double *b, double *z, int *nrots) {
+GMT_LONG	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots) {
 /*
  *
  * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
@@ -118,7 +118,7 @@ int	GMT_jacobi (double *a, int *n, int *m, double *d, double *v, double *b, doub
  * Revised:	PW: 12-MAR-1998 for GMT 3.1
  * Revision by WHF Smith, March 03, 2000, to speed up loop indexes.
  */
-	int	p, q, pp, pq, mp1, pm, qm, nsweeps, j, jm, i, k;
+	GMT_LONG	p, q, pp, pq, mp1, pm, qm, nsweeps, j, jm, i, k;
 	double	sum, threshold, g, h, t, theta, c, s, tau;
 
 
@@ -273,13 +273,13 @@ int	GMT_jacobi (double *a, int *n, int *m, double *d, double *v, double *b, doub
 	/* Return 0 if converged; else print warning and return -1:  */
 
 	if (nsweeps == MAX_SWEEPS) {
-		fprintf (stderr, "GMT_jacobi:  Failed to converge in %d sweeps\n", nsweeps);
+		fprintf (stderr, "GMT_jacobi:  Failed to converge in %ld sweeps\n", nsweeps);
 		return(-1);
 	}
 	return(0);
 }
 
-int	GMT_jacobi_old (double *a, int *n, int *m, double *d, double *v, double *b, double *z, int *nrots)
+GMT_LONG	GMT_jacobi_old (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots)
 /*
  *
  * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
@@ -308,7 +308,7 @@ int	GMT_jacobi_old (double *a, int *n, int *m, double *d, double *v, double *b, 
    	       	/* Returned.  number of Givens rotations performed.  */
 
 {
-	int	ip, iq, nsweeps, i, j, k;
+	GMT_LONG	ip, iq, nsweeps, i, j, k;
 	double	sum, threshold, g, h, t, theta, c, s, tau, p;
 
 
@@ -462,7 +462,7 @@ int	GMT_jacobi_old (double *a, int *n, int *m, double *d, double *v, double *b, 
 	/* Return 0 if converged; else print warning and return -1:  */
 
 	if (nsweeps == MAX_SWEEPS) {
-		fprintf(stderr,"GMT_jacobi:  Failed to converge in %d sweeps\n", nsweeps);
+		fprintf(stderr,"GMT_jacobi:  Failed to converge in %ld sweeps\n", nsweeps);
 		return(-1);
 	}
 	return(0);
@@ -504,7 +504,7 @@ void GMT_cross3v (double *a, double *b, double *c)
 	c[2] = a[0] * b[1] - a[1] * b[0];
 }
 
-void GMT_geo_to_cart (double *alat, double *alon, double *a, int rads)
+void GMT_geo_to_cart (double *alat, double *alon, double *a, GMT_LONG rads)
 {
 	/* Convert geographic latitude and longitude (alat, alon)
 	   to a 3-vector of unit length (a).  rads = TRUE if we
@@ -522,7 +522,7 @@ void GMT_geo_to_cart (double *alat, double *alon, double *a, int rads)
 	a[1] = clat * slon;
 }
 
-void GMT_cart_to_geo (double *alat, double *alon, double *a, int rads)
+void GMT_cart_to_geo (double *alat, double *alon, double *a, GMT_LONG rads)
 {
 	/* Convert a 3-vector (a) of unit length into geographic
 	   coordinates (alat, alon).  rads = TRUE if we want the
@@ -538,7 +538,7 @@ void GMT_cart_to_geo (double *alat, double *alon, double *a, int rads)
 	}
 }
 
-int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mode)
+GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double step, GMT_LONG mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
@@ -554,7 +554,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 	 * inches of map projection.
 	 */
       
-	int i, j, n_tmp, n_step = 0, n_alloc;
+	GMT_LONG i, j, n_tmp, n_step = 0, n_alloc;
 	double *lon_tmp, *lat_tmp, *old;
 	double a[3], b[3], x[3], *lon, *lat;
 	double c, d, fraction, theta, minlon, maxlon;
@@ -689,7 +689,7 @@ int GMT_fix_up_path (double **a_lon, double **a_lat, int n, double step, int mod
 	return (n_tmp);
 }		
 
-int GMT_chol_dcmp (double *a, double *d, double *cond, int nr, int n) {
+GMT_LONG GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LONG n) {
 
 	/* Given a, a symmetric positive definite matrix
 	of size n, and row dimension nr, compute a lower
@@ -718,7 +718,7 @@ int GMT_chol_dcmp (double *a, double *d, double *cond, int nr, int n) {
 	
 	W H F Smith, 18 Feb 2000.
 */
-	int	i, j, k, ik, ij, kj, kk, nrp1;
+	GMT_LONG	i, j, k, ik, ij, kj, kk, nrp1;
 	double	eigmax, eigmin;
 
 	nrp1 = nr + 1;
@@ -745,7 +745,7 @@ int GMT_chol_dcmp (double *a, double *d, double *cond, int nr, int n) {
 	return (0);
 }
 
-void GMT_chol_recover (double *a, double *d, int nr, int n, int nerr, int donly) {
+void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG nerr, GMT_LONG donly) {
 
 	/* Given a, a symmetric positive definite matrix of row dimension nr,
 	and size n >= abs(nerr), one uses GMT_chol_dcmp() to attempt to find
@@ -780,7 +780,7 @@ void GMT_chol_recover (double *a, double *d, int nr, int n, int nerr, int donly)
 	W H F Smith, 18 Feb 2000
 */
 	
-	int	kbad, i, j, ii, ij, ji, nrp1;
+	GMT_LONG	kbad, i, j, ii, ij, ji, nrp1;
 	
 	kbad = abs(nerr) - 1;
 	nrp1 = nr + 1;
@@ -799,7 +799,7 @@ void GMT_chol_recover (double *a, double *d, int nr, int n, int nerr, int donly)
 	return;
 }
 
-void GMT_chol_solv (double *a, double *x, double *y, int nr, int n) {
+void GMT_chol_solv (double *a, double *x, double *y, GMT_LONG nr, GMT_LONG n) {
 	/* Given an n by n linear system ax = y, with a a symmetric, 
 	positive-definite matrix, y a known vector, and x an unknown
 	vector, this routine finds x, if a holds the lower-triangular
@@ -817,7 +817,7 @@ void GMT_chol_solv (double *a, double *x, double *y, int nr, int n) {
 	
 	W H F Smith, 18 Feb 2000
 */
-	int	i, j, ij, ji, ii, nrp1;
+	GMT_LONG	i, j, ij, ji, ii, nrp1;
 	
 	nrp1 = nr + 1;
 
