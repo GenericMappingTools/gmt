@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.65 2008-03-22 11:55:34 guru Exp $
+ *	$Id: gmt_io.h,v 1.66 2008-03-22 16:13:45 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -73,7 +73,6 @@ EXTERN_MSC int GMT_fseek (FILE *stream, long offset, int whence);
 EXTERN_MSC long GMT_ftell (FILE *stream);
 EXTERN_MSC size_t GMT_fread (void * ptr, size_t size, size_t nmemb, FILE * stream);
 EXTERN_MSC size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE * stream);
-EXTERN_MSC int GMT_fclose (FILE *stream);
 #else
 #define GMT_fdopen(handle, mode) fdopen(handle, mode)
 #define GMT_fgets(line,buf,fp) fgets(line,buf,fp)
@@ -82,9 +81,9 @@ EXTERN_MSC int GMT_fclose (FILE *stream);
 #define GMT_ftell(stream) ftell(stream)
 #define GMT_fread(ptr,size,nmemb,stream) fread(ptr,size,nmemb,stream)
 #define GMT_fwrite(ptr,size,nmemb,stream) fwrite(ptr,size,nmemb,stream)
-#define GMT_fclose(fp) fclose(fp)
 #endif
 
+EXTERN_MSC int GMT_fclose (FILE *stream);
 EXTERN_MSC FILE *GMT_fopen (const char* filename, const char *mode);
 EXTERN_MSC char *GMT_getuserpath (const char *stem, char *path);		/* Look for user file */
 EXTERN_MSC char *GMT_getdatapath (const char *stem, char *path);		/* Look for data file */
@@ -107,6 +106,7 @@ EXTERN_MSC BOOLEAN GMT_points_are_antipodal (double lonA, double latA, double lo
 EXTERN_MSC BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix);
 EXTERN_MSC BOOLEAN GMT_not_numeric (char *text);				/* Rules out _some_ text as possible numerics */
 EXTERN_MSC BOOLEAN GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
+EXTERN_MSC GMT_LONG GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen);
 
 /* DO NOT REARRANGE THE ORDER OF ITEMS IN THESE STRUCTURES UNLESS YOU MATCH IT IN gmt_globals.h */
 
@@ -179,6 +179,14 @@ struct GMT_IO {	/* Used to process input data records */
 	BOOLEAN *skip_if_NaN;		/* TRUE if column j cannot be NaN and we must skip the record */
 	GMT_LONG *in_col_type;		/* Type of column on input: Time, geographic, etc, see GMT_IS_<TYPE> */
 	GMT_LONG *out_col_type;		/* Type of column on output: Time, geographic, etc, see GMT_IS_<TYPE> */
+	int ncid;			/* NetCDF file ID (when opening netCDF file) */
+	int nvars;			/* Number of requested variables in netCDF file */
+	size_t ndim;			/* Length of the column dimension */
+	size_t nrec;			/* Record count */
+	int *varid;			/* Array of variable IDs */
+	double *scale_factor;		/* Array of scale factors */
+	double *add_offset;		/* Array of offsets */
+	double *missing_value;		/* Array of missing values */
 	struct GMT_DATE_IO date_input;	/* Has all info on how to decode input dates */
 	struct GMT_DATE_IO date_output;	/* Has all info on how to write output dates */
 	struct GMT_CLOCK_IO clock_input;	/* Has all info on how to decode input clocks */
