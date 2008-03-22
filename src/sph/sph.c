@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.2 2008-02-24 21:37:12 myself Exp $
+ *	$Id: sph.c,v 1.3 2008-03-22 22:01:04 myself Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -33,12 +33,12 @@
 
 
 /* STRIPACK FORTRAN SUBROUTINES PROTOTYPES */
-extern int trmesh_ (int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, double *, int *);
+extern trmesh_ (int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, double *, int *);
 extern int trlist_ (int *, int *, int *, int *, int *, int *, int *, int *);
 extern int crlist_ (int *, int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, int *);
 extern double areas_ (double *, double *, double *);
 
-void stripack_lists (int n, double *x, double *y, double *z, struct STRIPACK *T)
+void stripack_lists (GMT_LONG n, double *x, double *y, double *z, struct STRIPACK *T)
 {
  	/* n, the number of points.
 	 * x, y, z, the arrays with coordinates of points 
@@ -50,7 +50,7 @@ void stripack_lists (int n, double *x, double *y, double *z, struct STRIPACK *T)
 	 * NOTE: All indeces returned are C (0->) adjusted from FORTRAN (1->).
 	 */
 
-	int k, nrow = TRI_NROW, lnew, ierror;
+	int k, nrow = TRI_NROW, lnew, ierror, n4;
 	int *iwk, *list, *lptr, *lend;
 	size_t n_alloc;
 	double *ds;
@@ -66,8 +66,9 @@ void stripack_lists (int n, double *x, double *y, double *z, struct STRIPACK *T)
 
 	/* Create the triangulation. Main output is (list, lptr, lend) */
 
+	n4 = (int)n;
 	if (gmtdefs.verbose) fprintf (stderr, "%s: Call STRIPACK TRMESH subroutine...", GMT_program);
-	trmesh_ (&n, x, y, z, list, lptr, lend, &lnew, iwk, &iwk[n], ds, &ierror);
+	trmesh_ (&n4, x, y, z, list, lptr, lend, &lnew, iwk, &iwk[n], ds, &ierror);
 	GMT_free ((void *)ds);
 	GMT_free ((void *)iwk);
 	if (gmtdefs.verbose) fprintf (stderr, "OK\n");
@@ -85,7 +86,7 @@ void stripack_lists (int n, double *x, double *y, double *z, struct STRIPACK *T)
 	/* Create a triangle list which returns the number of triangles and their node list tri */
 
 	if (gmtdefs.verbose) fprintf (stderr, "%s: Call STRIPACK TRLIST subroutine...", GMT_program);
-	trlist_ (&n, list, lptr, lend, &nrow, &T->D.n, T->D.tri, &ierror);
+	trlist_ (&n4, list, lptr, lend, &nrow, &T->D.n, T->D.tri, &ierror);
 	if (gmtdefs.verbose) fprintf (stderr, "OK\n");
 
 	if (ierror) {
@@ -110,7 +111,7 @@ void stripack_lists (int n, double *x, double *y, double *z, struct STRIPACK *T)
 		lbtri = (int *)GMT_memory (VNULL, (size_t)(6*n), sizeof (int), GMT_program);
 
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Call STRIPACK CRLIST subroutine...", GMT_program);
-		crlist_ (&n, &n, x, y, z, list, lend, lptr, &lnew, lbtri, T->V.listc, &T->V.n, xc, yc, zc, rc, &ierror);
+		crlist_ (&n4, &n4, x, y, z, list, lend, lptr, &lnew, lbtri, T->V.listc, &T->V.n, xc, yc, zc, rc, &ierror);
 		if (gmtdefs.verbose) fprintf (stderr, "OK\n");
 		GMT_free ((void *)lbtri);
 		GMT_free ((void *)rc);
@@ -152,9 +153,9 @@ double stripack_areas (double *V1, double *V2, double *V3)
 	return (areas_ (V1, V2, V3));
 }
 
-void cart_to_geo (int n, double *x, double *y, double *z, double *lon, double *lat)
+void cart_to_geo (GMT_LONG n, double *x, double *y, double *z, double *lon, double *lat)
 {	/* Convert Cartesian vectors back to lon, lat vectors */
-	int k;
+	GMT_LONG k;
 	double V[3];
 	for (k = 0; k < n; k++) {
 		V[0] = x[k];
@@ -164,7 +165,7 @@ void cart_to_geo (int n, double *x, double *y, double *z, double *lon, double *l
 	}
 }
 
-void geo_to_cart (double alat, double alon, double *a, int rads)
+void geo_to_cart (double alat, double alon, double *a, GMT_LONG rads)
 {	/* Unlike GMT main version we leave lon,lat untouched */
 	/* Convert geographic latitude and longitude (alat, alon)
 	   to a 3-vector of unit length (a).  rads = TRUE if we
