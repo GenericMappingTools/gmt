@@ -1,9 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.225 2008-03-22 11:55:33 guru Exp $
+	$Id: ChangeLog,v 1.226 2008-03-22 16:16:29 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-03-22	remko
+	* gmt_nc.c:		Moved GMT_nc_get_att_text to gmt_io.c so it can be used more generally.
+	* gmt_io.c:		Implemented GMT_nc_input to support reading netCDF column data (tables).
+				This also required changes to GMT_fopen and making GMT_fclose a real routine
+				rather than a macro.
+	* gmt_io.h, gmt_globals.h:	Changed accordingly.
+	* misc/nc2xy.c:		More space for long_name and units.
+
 2008-03-22	pwessel
-	* *.[ch]:	Experimental support for full 64-bit computing with introduction of 8-byte
-		integers instead of 4-byte.
+	* *.[ch]:		Experimental support for full 64-bit computing with introduction of 8-byte
+				integers instead of 4-byte.
 		
 2008-03-19	remko
 	* gmt_map.c (GMT_map_clip_path):	In polar projection, step size for drawing clip path
