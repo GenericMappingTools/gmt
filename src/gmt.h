@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.163 2008-03-22 11:55:34 guru Exp $
+ *	$Id: gmt.h,v 1.164 2008-03-22 22:00:43 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -181,14 +181,24 @@ extern "C" {
 
 /* Safe math macros that check arguments */
 
+#ifdef __APPLE__
+#ifdef __x86_64__
+/* Temorarily bypass Apple 64-bit log10 bug on Leopard 10.5.2 */
+#define d_log10(x) ((x) <= 0.0 ? GMT_d_NaN : 0x1.34413509F79FFp-2 * log2 (x))
+#define d_log101p(x) ((x) <= -1.0 ? GMT_d_NaN : 0x1.34413509F79FFp-2 * log2 (1.0+(x)))
+#endif
+#endif
+#ifndef d_log10
+#define d_log10(x) ((x) <= 0.0 ? GMT_d_NaN : log10 (x))
+#define d_log101p(x) ((x) <= -1.0 ? GMT_d_NaN : log10 (1.0+(x)))
+#endif
 #define d_sqrt(x) ((x) < 0.0 ? 0.0 : sqrt (x))
 #define d_acos(x) (fabs (x) >= 1.0 ? ((x) < 0.0 ? M_PI : 0.0) : acos (x))
 #define d_asin(x) (fabs (x) >= 1.0 ? copysign (M_PI_2, (x)) : asin (x))
 #define d_atan2(y,x) ((x) == 0.0 && (y) == 0.0 ? 0.0 : atan2 (y, x))
 #define d_log(x) ((x) <= 0.0 ? GMT_d_NaN : log (x))
-#define d_log10(x) ((x) <= 0.0 ? GMT_d_NaN : log10 (x))
 #define d_log1p(x) ((x) <= -1.0 ? GMT_d_NaN : log1p (x))
-#define d_log101p(x) ((x) <= -1.0 ? GMT_d_NaN : log10 (1.0+(x)))
+
 
 /* Macros for degree-based trig */
 
