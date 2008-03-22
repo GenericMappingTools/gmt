@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.72 2008-03-22 11:55:34 guru Exp $
+ *	$Id: gmt_nc.c,v 1.73 2008-03-22 16:11:50 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,7 +48,6 @@
 
 EXTERN_MSC GMT_LONG GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
 GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job);
-GMT_LONG GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen);
 void GMT_nc_get_units (int ncid, int varid, char *name_units);
 void GMT_nc_put_units (int ncid, int varid, char *name_units);
 void GMT_nc_check_step (GMT_LONG n, double *x, char *varname, char *file);
@@ -633,25 +632,6 @@ GMT_LONG GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, dou
 
 	GMT_err_trap (nc_close (header->ncid));
 
-	return (GMT_NOERROR);
-}
-
-GMT_LONG GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen)
-{	/* This function is a replacement for nc_get_att_text that avoids overflow of text
-	 * ncid, varid, name, text	: as in nc_get_att_text
-	 * textlen			: maximum number of characters to copy to string text
-	 */
-	GMT_LONG err;
-	size_t attlen;
-	char *att;
-
-	GMT_err_trap (nc_inq_attlen (ncid, varid, name, &attlen));
-	att = (char *) GMT_memory (VNULL, attlen, sizeof (char), "GMT_nc_get_att_text");
-	nc_get_att_text (ncid, varid, name, att);
-	attlen = MIN (attlen, textlen-1);	/* Truncate text to one less than textlen (to keep space for NUL terminator) */
-	memcpy (text, att, attlen);		/* Copy att to text */
-	memset (&text[attlen], 0, textlen - attlen);	/* Fill rest of text with zeros */
-	GMT_free (att);
 	return (GMT_NOERROR);
 }
 
