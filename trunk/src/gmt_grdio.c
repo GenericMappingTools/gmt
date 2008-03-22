@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.108 2008-03-20 22:25:23 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.109 2008-03-22 11:55:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -63,28 +63,28 @@
 #define STAT stat
 #endif
 
-int GMT_grdformats[GMT_N_GRD_FORMATS][2] = {
+GMT_LONG GMT_grdformats[GMT_N_GRD_FORMATS][2] = {
 #include "gmt_grdformats.h"
 };
 
 void GMT_grd_do_scaling (float *grid, GMT_LONG nm, double scale, double offset);
 void GMT_grd_get_units (struct GRD_HEADER *header);
 void GMT_grd_set_units (struct GRD_HEADER *header);
-int GMT_is_nc_grid (char *file);
-int GMT_is_native_grid (char *file);
-int GMT_is_ras_grid (char *file);
-int GMT_is_srf_grid (char *file);
-int GMT_is_mgg2_grid (char *file);
-int GMT_is_agc_grid (char *file);
+GMT_LONG GMT_is_nc_grid (char *file);
+GMT_LONG GMT_is_native_grid (char *file);
+GMT_LONG GMT_is_ras_grid (char *file);
+GMT_LONG GMT_is_srf_grid (char *file);
+GMT_LONG GMT_is_mgg2_grid (char *file);
+GMT_LONG GMT_is_agc_grid (char *file);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
-int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
+GMT_LONG GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 {	/* file:	File name
 	 * header:	grid structure header
 	 */
 
-	int err;
+	GMT_LONG err;
 	double scale, offset, nan_value;
 
 	/* Initialize grid information */
@@ -108,12 +108,12 @@ int GMT_read_grd_info (char *file, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
+GMT_LONG GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 {	/* file:	File name
 	 * header:	grid structure header
 	 */
 
-	int err;
+	GMT_LONG err;
 
  	GMT_err_trap (GMT_grd_get_format (file, header, FALSE));
 
@@ -129,7 +129,7 @@ int GMT_write_grd_info (char *file, struct GRD_HEADER *header)
 	return ((*GMT_io_writeinfo[header->type]) (header));
 }
 
-int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
+GMT_LONG GMT_update_grd_info (char *file, struct GRD_HEADER *header)
 {	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 */
@@ -140,7 +140,7 @@ int GMT_update_grd_info (char *file, struct GRD_HEADER *header)
 	return ((*GMT_io_updateinfo[header->type]) (header));
 }
 
-int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 * grid:	array with final grid
@@ -151,7 +151,7 @@ int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, 
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	int err;
+	GMT_LONG err;
 	GMT_LONG nm;
 
 	GMT_err_trap ((*GMT_io_readgrd[header->type]) (header, grid, w, e, s, n, pad, complex));
@@ -164,7 +164,7 @@ int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, 
 	return (GMT_NOERROR);
 }
 
-int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* file:	File name
 	 * header:	grid structure header
 	 * grid:	array with final grid
@@ -175,7 +175,7 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	int err;
+	GMT_LONG err;
 	GMT_LONG nm;
 
 	GMT_err_trap (GMT_grd_get_format (file, header, FALSE));
@@ -195,18 +195,18 @@ int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w,
 
 void GMT_expand_filename (char *file, char *fname)
 {
-	int i, length, f_length, found, start;
+	GMT_LONG i, length, f_length, found, start;
 
 	if (gmtdefs.gridfile_shorthand) {	/* Look for matches */
-		f_length = (int) strlen (file);
+		f_length = (GMT_LONG) strlen (file);
 		for (i = found = 0; !found && i < GMT_n_file_suffix; i++) {
-			length = (int) strlen (GMT_file_suffix[i]);
+			length = (GMT_LONG) strlen (GMT_file_suffix[i]);
 			start = f_length - length;
 			found = (start < 0) ? FALSE : !strncmp (&file[start], GMT_file_suffix[i], (size_t)length);
 		}
 		if (found) {
 			i--;
-			sprintf (fname, "%s=%d/%g/%g/%g", file, GMT_file_id[i], GMT_file_scale[i], GMT_file_offset[i], GMT_file_nan[i]);
+			sprintf (fname, "%s=%ld/%g/%g/%g", file, GMT_file_id[i], GMT_file_scale[i], GMT_file_offset[i], GMT_file_nan[i]);
 		}
 		else
 			strcpy (fname, file);
@@ -215,9 +215,9 @@ void GMT_expand_filename (char *file, char *fname)
 		strcpy (fname, file);
 }
 
-int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
+GMT_LONG GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 {
-	int i = 0, val, j;
+	GMT_LONG i = 0, val, j;
 	char code[GMT_TEXT_LEN];
 
 	GMT_expand_filename (file, header->name);
@@ -263,7 +263,7 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 	return (GMT_NOERROR);
 }
 
-int GMT_grd_data_size (int format, double *nan_value)
+GMT_LONG GMT_grd_data_size (GMT_LONG format, double *nan_value)
 {
 	/* Determine size of data type and set NaN value, if not yet done so (integers only) */
 
@@ -288,23 +288,23 @@ int GMT_grd_data_size (int format, double *nan_value)
 			return (sizeof(double));
 			break;
 		default:
-			fprintf (stderr, "Unknown grid data type: %c\n", GMT_grdformats[format][1]);
+			fprintf (stderr, "Unknown grid data type: %c\n", (int)GMT_grdformats[format][1]);
 			return (GMT_GRDIO_UNKNOWN_TYPE);
 	}
 }
 
-int GMT_grd_format_decoder (const char *code)
+GMT_LONG GMT_grd_format_decoder (const char *code)
 {
 	/* Returns the integer grid format ID that goes with the specified 2-character code */
 
-	int id;
+	GMT_LONG id;
 
 	if (isdigit ((int)code[0])) {	/* File format number given, convert directly */
 		id = atoi (code);
  		if (id < 0 || id >= GMT_N_GRD_FORMATS) return (GMT_GRDIO_UNKNOWN_ID);
 	}
 	else {	/* Character code given */
-		int i, group;
+		GMT_LONG i, group;
 		for (i = group = 0, id = -1; id < 0 && i < GMT_N_GRD_FORMATS; i++) {
 			if (GMT_grdformats[i][0] == (short)code[0]) {
 				group = code[0];
@@ -339,11 +339,11 @@ void GMT_grd_do_scaling (float *grid, GMT_LONG nm, double scale, double offset)
  * Date:	20 April 1998
  */
 
-int GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
+GMT_LONG GMT_grd_RI_verify (struct GRD_HEADER *h, GMT_LONG mode)
 {
 	/* mode - 0 means we are checking an existing grid, mode = 1 means we test a new -R -I combination */
 
-	int error = 0;
+	GMT_LONG error = 0;
 
 	if (!strcmp (GMT_program, "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
 
@@ -384,12 +384,12 @@ int GMT_grd_RI_verify (struct GRD_HEADER *h, int mode)
 	return (GMT_NOERROR);
 }
 
-int GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, int *width, int *height, int *first_col, int *last_col, int *first_row, int *last_row, int **index)
+GMT_LONG GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, GMT_LONG *width, GMT_LONG *height, GMT_LONG *first_col, GMT_LONG *last_col, GMT_LONG *first_row, GMT_LONG *last_row, GMT_LONG **index)
 {
 	/* Determines which rows and columns to extract, and if it is
 	 * a grid that is periodic and wraps around and returns indices. */
 
-	int one_or_zero, i, *k;
+	GMT_LONG one_or_zero, i, *k;
 	BOOLEAN geo = FALSE;
 	double small = 0.1, half_or_zero, x;
 
@@ -425,10 +425,10 @@ int GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s,
 
 		/* Get first and last row and column numbers */
 
-		*first_col = (int)floor ((*w - header->x_min) / header->x_inc + small);
-		*last_col  = (int)ceil  ((*e - header->x_min) / header->x_inc - small) - 1 + one_or_zero;
-		*first_row = (int)floor ((header->y_max - *n) / header->y_inc + small);
-		*last_row  = (int)ceil  ((header->y_max - *s) / header->y_inc - small) - 1 + one_or_zero;
+		*first_col = (GMT_LONG)floor ((*w - header->x_min) / header->x_inc + small);
+		*last_col  = (GMT_LONG)ceil  ((*e - header->x_min) / header->x_inc - small) - 1 + one_or_zero;
+		*first_row = (GMT_LONG)floor ((header->y_max - *n) / header->y_inc + small);
+		*last_row  = (GMT_LONG)ceil  ((header->y_max - *s) / header->y_inc - small) - 1 + one_or_zero;
 
 		if ((*last_col - *first_col + 1) > *width) (*last_col)--;
 		if ((*last_row - *first_row + 1) > *height) (*last_row)--;
@@ -436,7 +436,7 @@ int GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s,
 		if ((*last_row - *first_row + 1) > *height) (*first_row)++;
 	}
 
-	k = (int *) GMT_memory (VNULL, (size_t)(*width), sizeof (int), "GMT_grd_prep_io");
+	k = (GMT_LONG *) GMT_memory (VNULL, (size_t)(*width), sizeof (GMT_LONG), "GMT_grd_prep_io");
 	if (geo) {
 		for (i = 0; i < (*width); i++) {
 			x = *w + (i + half_or_zero) * header->x_inc;
@@ -468,7 +468,7 @@ void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 	and after GMT_grd_init() has been called.
 */
 	char ptr[BUFSIZ], sep[] = "/";
-	int entry = 0, pos = 0;
+	GMT_LONG entry = 0, pos = 0;
 
 	if (input[0] != input[strlen(input)-1]) {}
 	else if (input[0] == '=') {}
@@ -521,7 +521,7 @@ void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h) {
 	return;
 }
 
-int GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
+GMT_LONG GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 {
 	/* Assumes header contents is already known.  For writing we
 	 * assume that the header has already been written.  We fill
@@ -530,11 +530,11 @@ int GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	 * grdraster-type files.
 	 */
 
-	int r_w, err;
-	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};
+	GMT_LONG r_w, err;
+	GMT_LONG cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
 	BOOLEAN header = TRUE, magic = TRUE;
-	EXTERN_MSC int GMT_nc_grd_info (struct GRD_HEADER *header, char job);
+	EXTERN_MSC GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 
 	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
 		if (mode == 'R') header = FALSE;
@@ -601,13 +601,13 @@ void GMT_close_grd (struct GMT_GRDFILE *G)
 		GMT_fclose (G->fp);
 }
 
-int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
+GMT_LONG GMT_read_grd_row (struct GMT_GRDFILE *G, GMT_LONG row_no, float *row)
 {	/* Reads the entire row vector form the grdfile
 	 * If row_no is negative it is interpreted to mean that we want to
 	 * fseek to the start of the abs(row_no) record and no reading takes place.
 	 */
 
-	int i, err;
+	GMT_LONG i, err;
 
 	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Get one NetCDF row, old format */
 		if (row_no < 0) {	/* Special seek instruction */
@@ -646,10 +646,10 @@ int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	return (GMT_NOERROR);
 }
 
-int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
+GMT_LONG GMT_write_grd_row (struct GMT_GRDFILE *G, GMT_LONG row_no, float *row)
 {	/* Writes the entire row vector to the grdfile */
 
-	int i, size, err;
+	GMT_LONG i, size, err;
 	void *tmp;
 
 	size = GMT_grd_data_size (G->header.type, &G->header.nan_value);
@@ -682,7 +682,7 @@ void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN upd
 {	/* GMT_grd_init initializes a grd header to default values and copies the
 	 * command line to the header variable command.
 	 * update = TRUE if we only want to update command line */
-	int i, len;
+	GMT_LONG i, len;
 
 	/* Always update command line history */
 
@@ -734,7 +734,7 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 	/* Rotate geographical, global grid in e-w direction
 	 * This function will shift a grid by shift degrees */
 
-	int i, j, k, ij, nc, nx1, n_shift, width, n_warn = 0;
+	GMT_LONG i, j, k, ij, nc, nx1, n_shift, width, n_warn = 0;
 	float *tmp;
 
 	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_grd_shift");
@@ -768,7 +768,7 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 		header->x_max -= 360.0;
 	}
 
-	if (n_warn) fprintf (stderr, "%s: Gridline-registered global grid has inconsistant values at repeated node for %d rows\n", GMT_program, n_warn);
+	if (n_warn) fprintf (stderr, "%s: Gridline-registered global grid has inconsistant values at repeated node for %ld rows\n", GMT_program, n_warn);
 
 	GMT_free ((void *) tmp);
 }
@@ -808,7 +808,7 @@ BOOLEAN GMT_grd_is_global (struct GRD_HEADER *h)
 
 #define GMT_region_is_global ((fabs (project_info.e - project_info.w - 360.0) < GMT_SMALL && project_info.degree[0]))
 
-int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
+GMT_LONG GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax)
 {
 	/* GMT_grd_setregion determines what wesn should be passed to GMT_read_grd.
 	 * It does so by using project_info.w,e,s,n which have been set correctly
@@ -908,11 +908,11 @@ int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double 
 	return (0);
 }
 
-int GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header)
+GMT_LONG GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header)
 {
 	/* used to ensure that sloppy w,e,s,n values are rounded to proper multiples */
 	
-	int i;
+	GMT_LONG i;
 	BOOLEAN global;
 	double half_or_zero, val, start, dx, small, i_d;
 	
@@ -1002,7 +1002,7 @@ void GMT_grd_set_units (struct GRD_HEADER *header)
 	/* Set unit strings for grid coordinates x, y and z based on
 	   output data types for columns 0, 1, and 2.
 	*/
-	int i;
+	GMT_LONG i;
 	char *string[3], unit[GRD_UNIT_LEN], date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
 
 	/* Copy pointers to unit strings */
@@ -1064,7 +1064,7 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 	   grid coordinates x, y and z.
 	   When "Time": transform the data scale and offset to match the current time system.
 	*/
-	int i;
+	GMT_LONG i;
 	char string[3][GRD_UNIT_LEN], *units;
 	double scale = 1.0, offset = 0.0;
 	struct GMT_TIME_SYSTEM time_system;
@@ -1148,14 +1148,14 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 #define GMT_IMG_NLAT_2M_80	8640	/* At 1 min resolution */
 #define GMT_IMG_ITEMSIZE	2	/* Size of 2 byte short ints */
 
-int GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w, double e, double s, double n, double scale, int mode, double lat, BOOLEAN init)
+GMT_LONG GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w, double e, double s, double n, double scale, GMT_LONG mode, double lat, BOOLEAN init)
 {
 	/* Function that reads an entire Sandwell/Smith Mercator grid and stores it like a regular
 	 * GMT grid.  If init is TRUE we also initialize the Mercator projection.  Lat should be 0.0
 	 * if we are dealing with standard 72 or 80 img latitude; else it must be specified.
 	 */
 
-	int min, i, j, k, ij, mx, my, first_i, n_skip, n_cols;
+	GMT_LONG min, i, j, k, ij, mx, my, first_i, n_skip, n_cols;
 	short int *i2;
 	char file[BUFSIZ];
 	struct STAT buf;
@@ -1180,7 +1180,7 @@ int GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w,
 		default:
 			if (lat == 0.0) return (GMT_GRDIO_BAD_IMG_LAT);
 			min = (buf.st_size > GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE) ? 1 : 2;
-			fprintf (stderr, "%s: img file %s has unusual size - grid increment defaults to %d min\n", GMT_program, file, min);
+			fprintf (stderr, "%s: img file %s has unusual size - grid increment defaults to %ld min\n", GMT_program, file, min);
 			break;
 	}
 
@@ -1226,9 +1226,9 @@ int GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w,
 	grd->xy_off = 0.5;
 
 	n_cols = (min == 1) ? GMT_IMG_NLON_1M : GMT_IMG_NLON_2M;		/* Number of columns (10800 or 21600) */
-	first_i = (int)floor (grd->x_min / grd->x_inc);				/* first tile partly or fully inside region */
+	first_i = (GMT_LONG)floor (grd->x_min / grd->x_inc);				/* first tile partly or fully inside region */
 	if (first_i < 0) first_i += n_cols;
-	n_skip = (int)floor ((project_info.ymax - grd->y_max) / grd->y_inc);	/* Number of rows clearly above y_max */
+	n_skip = (GMT_LONG)floor ((project_info.ymax - grd->y_max) / grd->y_inc);	/* Number of rows clearly above y_max */
 	if (GMT_fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
 	i2 = (short int *) GMT_memory (VNULL, (size_t)n_cols, sizeof (short int), GMT_program);

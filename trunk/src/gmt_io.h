@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.64 2008-02-27 19:16:31 remko Exp $
+ *	$Id: gmt_io.h,v 1.65 2008-03-22 11:55:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -91,27 +91,28 @@ EXTERN_MSC char *GMT_getdatapath (const char *stem, char *path);		/* Look for da
 EXTERN_MSC char *GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);	/* Look for shared file */
 EXTERN_MSC int GMT_access (const char *filename, int mode);		/* access wrapper */
 EXTERN_MSC void GMT_io_init (void);					/* Initialize pointers */
-EXTERN_MSC int GMT_parse_b_option (char *text);				/* Decode -b option and set parameters */
-EXTERN_MSC int GMT_parse_f_option (char *text);				/* Decode -i option and set parameters */
+EXTERN_MSC GMT_LONG GMT_parse_b_option (char *text);				/* Decode -b option and set parameters */
+EXTERN_MSC GMT_LONG GMT_parse_f_option (char *text);				/* Decode -i option and set parameters */
 EXTERN_MSC void GMT_multisegment (char *text);				/* Decode -M option */
-EXTERN_MSC void GMT_write_segmentheader (FILE *fp, int n);		/* Write multisegment header back out */
-EXTERN_MSC int GMT_scanf (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats [Data records only ] */
-EXTERN_MSC int GMT_scanf_arg (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats [ command line only ] */
-EXTERN_MSC int	GMT_scanf_argtime (char *s, double *val);		/* Convert an argument token to a time  */
+EXTERN_MSC void GMT_write_segmentheader (FILE *fp, GMT_LONG n);		/* Write multisegment header back out */
+EXTERN_MSC GMT_LONG GMT_scanf (char *p, GMT_LONG expectation, double *val);	/* Convert strings to double, handling special formats [Data records only ] */
+EXTERN_MSC GMT_LONG GMT_scanf_arg (char *p, GMT_LONG expectation, double *val);	/* Convert strings to double, handling special formats [ command line only ] */
+EXTERN_MSC GMT_LONG	GMT_scanf_argtime (char *s, double *val);		/* Convert an argument token to a time  */
 EXTERN_MSC void GMT_format_abstime_output (double dt, char *text);	/* Generate formatted textstring for absolute calendar time */
 EXTERN_MSC void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text);	/* Generate formatted textstring for geographic coordinate */
-EXTERN_MSC int GMT_ascii_output_one (FILE *fp, double x, int col);
-EXTERN_MSC void GMT_ascii_format_one (char *text, double x, int type);
-EXTERN_MSC void GMT_lon_range_adjust (int range, double *lon);		/* Adjust the longitude given the desired range */
+EXTERN_MSC GMT_LONG GMT_ascii_output_one (FILE *fp, double x, GMT_LONG col);
+EXTERN_MSC void GMT_ascii_format_one (char *text, double x, GMT_LONG type);
+EXTERN_MSC void GMT_lon_range_adjust (GMT_LONG range, double *lon);		/* Adjust the longitude given the desired range */
 EXTERN_MSC BOOLEAN GMT_points_are_antipodal (double lonA, double latA, double lonB, double latB);
-EXTERN_MSC BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix);
+EXTERN_MSC BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix);
 EXTERN_MSC BOOLEAN GMT_not_numeric (char *text);				/* Rules out _some_ text as possible numerics */
 EXTERN_MSC BOOLEAN GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 
+/* DO NOT REARRANGE THE ORDER OF ITEMS IN THESE STRUCTURES UNLESS YOU MATCH IT IN gmt_globals.h */
 
 struct GMT_CLOCK_IO {
-	int order[3];			/* The relative order of hour, mn, sec in input clock string */
-	int n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
+	GMT_LONG order[3];			/* The relative order of hour, mn, sec in input clock string */
+	GMT_LONG n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
 	BOOLEAN compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
 	BOOLEAN twelve_hr_clock;	/* TRUE if we are doing am/pm on output */
@@ -121,8 +122,8 @@ struct GMT_CLOCK_IO {
 };
 
 struct GMT_DATE_IO {
-	int item_order[4];		/* The sequence year, month, day, day-of-year in input calendar string */
-	int item_pos[4];		/* Which position year, month, day, day-of-year has in calendar string */
+	GMT_LONG item_order[4];		/* The sequence year, month, day, day-of-year in input calendar string */
+	GMT_LONG item_pos[4];		/* Which position year, month, day, day-of-year has in calendar string */
 	BOOLEAN Y2K_year;		/* TRUE if we have 2-digit years */
 	BOOLEAN truncated_cal_is_ok;	/* TRUE if we have YMD or YJ order so smallest unit is to the right */
 	char format[GMT_TEXT_LEN];	/* Actual C format used to input/output date */
@@ -134,12 +135,12 @@ struct GMT_DATE_IO {
 };
 
 struct GMT_GEO_IO {	/* For geographic output and plotting */
-	int order[3];			/* The relative order of degree, minute, seconds in form */
-	int range;			/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
+	GMT_LONG order[3];			/* The relative order of degree, minute, seconds in form */
+	GMT_LONG range;			/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
 	BOOLEAN decimal;		/* TRUE if we want to use the D_FORMAT for decimal degrees only */
 	BOOLEAN wesn;			/* TRUE if we want sign encoded with suffix W, E, S, N */
 	BOOLEAN no_sign;		/* TRUE if we want absolute values (plot only) */
-	int n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
+	GMT_LONG n_sec_decimals;		/* Number of digits in decimal seconds (0 for whole seconds) */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
 	char x_format[GMT_TEXT_LEN];	/* Actual C format used to plot/output longitude */
 	char y_format[GMT_TEXT_LEN];	/* Actual C format used to plot/output latitude */
@@ -157,15 +158,15 @@ struct GMT_IO {	/* Used to process input data records */
 	BOOLEAN skip_bad_records;	/* TRUE if records where x and/or y are NaN or Inf */
 	BOOLEAN give_report;		/* TRUE if functions should report how many bad records were skipped */
 
-	int ncol[2];			/* Number of expected columns of input(0) and output(1)
-					   0 means it will be determined by program */
-	int n_header_recs;		/* number of header records [0] */
-	int file_no;			/* Number of current file */
-	int seg_no;			/* Number of current multi-segment */
-	int rec_no;			/* Number of current records */
-	int n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
-	int n_bad_records;		/* Number of bad records encountered during i/o */
-	unsigned int status;		/* 0	All is ok
+	GMT_LONG file_no;			/* Number of current file */
+	GMT_LONG ncol[2];			/* Number of expected columns of input(0) and output(1)
+					   			   0 means it will be determined by program */
+	GMT_LONG n_header_recs;		/* number of header records [0] */
+	GMT_LONG seg_no;			/* Number of current multi-segment */
+	GMT_LONG rec_no;			/* Number of current records */
+	GMT_LONG n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
+	GMT_LONG n_bad_records;		/* Number of bad records encountered during i/o */
+	GMT_LONG status;		/* 0	All is ok
 					   1	Current record is segment header
 					   2	Mismatch between actual and expected fields
 					   4	EOF */
@@ -176,8 +177,8 @@ struct GMT_IO {	/* Used to process input data records */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
 	BOOLEAN *skip_if_NaN;		/* TRUE if column j cannot be NaN and we must skip the record */
-	int *in_col_type;		/* Type of column on input: Time, geographic, etc, see GMT_IS_<TYPE> */
-	int *out_col_type;		/* Type of column on output: Time, geographic, etc, see GMT_IS_<TYPE> */
+	GMT_LONG *in_col_type;		/* Type of column on input: Time, geographic, etc, see GMT_IS_<TYPE> */
+	GMT_LONG *out_col_type;		/* Type of column on output: Time, geographic, etc, see GMT_IS_<TYPE> */
 	struct GMT_DATE_IO date_input;	/* Has all info on how to decode input dates */
 	struct GMT_DATE_IO date_output;	/* Has all info on how to write output dates */
 	struct GMT_CLOCK_IO clock_input;	/* Has all info on how to decode input clocks */
@@ -186,23 +187,23 @@ struct GMT_IO {	/* Used to process input data records */
 };
 
 struct GMT_Z_IO {	/* Used when processing z(x,y) table input when (x,y) is implicit */
-	int binary;	/* TRUE if we are reading/writing binary data */
-	int input;	/* TRUE if we are reading, FALSE if we are writing */
-	int format;	/* Either GMT_COLUMN_FORMAT or GMT_ROW_FORMAT */
-	int skip;	/* Number of bytes to skip before reading data */
 	BOOLEAN swab;	/* TRUE if we must swap byte-order */
-	int x_step;	/* +1 if logical x values increase to right, else -1 */
-	int y_step;	/* +1 if logical y values increase upwards, else -1 */
-	int x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
-	int y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
-	int n_expected;	/* Number of data element expected to be read */
-	int start_col;	/* First logical column in file */
-	int start_row;	/* First logical row in file */
-	int nx, ny;	/* Dimensions of final gridded data */
-	int x_period;	/* length of a row in the input data ( <= nx, see x_missing) */
-	int y_period;	/* length of a col in the input data ( <= ny, see y_missing) */
-	int gmt_i;	/* Current column number in the GMT registered grid */
-	int gmt_j;	/* Current row number in the GMT registered grid */
+	BOOLEAN x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
+	BOOLEAN y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
+	BOOLEAN binary;	/* TRUE if we are reading/writing binary data */
+	BOOLEAN input;	/* TRUE if we are reading, FALSE if we are writing */
+	GMT_LONG format;	/* Either GMT_COLUMN_FORMAT or GMT_ROW_FORMAT */
+	GMT_LONG x_step;	/* +1 if logical x values increase to right, else -1 */
+	GMT_LONG y_step;	/* +1 if logical y values increase upwards, else -1 */
+	GMT_LONG skip;	/* Number of bytes to skip before reading data */
+	GMT_LONG n_expected;	/* Number of data element expected to be read */
+	GMT_LONG x_period;	/* length of a row in the input data ( <= nx, see x_missing) */
+	GMT_LONG y_period;	/* length of a col in the input data ( <= ny, see y_missing) */
+	GMT_LONG start_col;	/* First logical column in file */
+	GMT_LONG start_row;	/* First logical row in file */
+	GMT_LONG nx, ny;	/* Dimensions of final gridded data */
+	GMT_LONG gmt_i;	/* Current column number in the GMT registered grid */
+	GMT_LONG gmt_j;	/* Current row number in the GMT registered grid */
 	PFI read_item;	/* Pointer to function that will read 1 data point from file */
 	PFI write_item;	/* Pointer to function that will write 1 data point from file */
 	PFV get_gmt_ij;	/* Pointer to function that converts running number to GMT ij */
@@ -217,9 +218,9 @@ struct GMT_PLOT_CALCLOCK {
 struct GMT_LINE_SEGMENT {		/* For holding multisegment lines in memory */
 	char *label;			/* Label string (if applicable) */
 	char *header;			/* Multisegment header (if applicable) */
-	int n_rows;			/* Number of points in this segment */
-	int n_columns;			/* Number of fields in each record (>= 2) */
-	int pole;			/* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
+	GMT_LONG n_rows;			/* Number of points in this segment */
+	GMT_LONG n_columns;			/* Number of fields in each record (>= 2) */
+	GMT_LONG pole;			/* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
 	double dist;			/* Distance from a point to this feature */
 	double *min;			/* Minimum coordinate for each column */
 	double *max;			/* Maximum coordinate for each column */
@@ -227,34 +228,34 @@ struct GMT_LINE_SEGMENT {		/* For holding multisegment lines in memory */
 };
 
 struct GMT_TABLE {	/* To hold an array of line segment structures and header information in one container */
-	int n_headers;				/* Number of file header records (0 if no header) */
+	GMT_LONG n_headers;				/* Number of file header records (0 if no header) */
 	char **header;				/* Array with all file header records, if any) */
-	int n_segments;				/* Number of segments in the array */
-	int n_records;				/* Total number of data records across all segments */
-	int n_columns;				/* Number of columns (fields) in each record */
+	GMT_LONG n_segments;				/* Number of segments in the array */
+	GMT_LONG n_records;				/* Total number of data records across all segments */
+	GMT_LONG n_columns;				/* Number of columns (fields) in each record */
 	struct GMT_LINE_SEGMENT **segment;	/* Pointer to array of segments */
 };
 
 struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
-	int n_tables;			/* The total number of tables (files) contained */
-	int n_segments;			/* The total number of segments across all tables */
-	int n_records;			/* The total number of data records across all tables */
+	GMT_LONG n_tables;			/* The total number of tables (files) contained */
+	GMT_LONG n_segments;		/* The total number of segments across all tables */
+	GMT_LONG n_records;			/* The total number of data records across all tables */
 	struct GMT_TABLE **table;	/* Pointer to array of tables */
 };
 
 EXTERN_MSC struct GMT_IO GMT_io;
 EXTERN_MSC struct GMT_PLOT_CALCLOCK GMT_plot_calclock;	/* Formatting information for time axis plotting */
 
-EXTERN_MSC int GMT_init_z_io (char format[], BOOLEAN repeat[], BOOLEAN swab, int skip, char type, struct GMT_Z_IO *r);
-EXTERN_MSC int GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h);
+EXTERN_MSC GMT_LONG GMT_init_z_io (char format[], BOOLEAN repeat[], BOOLEAN swab, GMT_LONG skip, char type, struct GMT_Z_IO *r);
+EXTERN_MSC GMT_LONG GMT_set_z_io (struct GMT_Z_IO *r, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_check_z_io (struct GMT_Z_IO *r, float *a);
-EXTERN_MSC int GMT_import_table (void *source, int source_type, struct GMT_TABLE **T, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io);
-EXTERN_MSC int GMT_export_table (void *dest, int dest_type, struct GMT_TABLE *T, BOOLEAN use_GMT_io);
-EXTERN_MSC void GMT_alloc_segment (struct GMT_LINE_SEGMENT *S, int n_rows, int n_columns, BOOLEAN first);
+EXTERN_MSC GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE **T, double dist, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io);
+EXTERN_MSC GMT_LONG GMT_export_table (void *dest, GMT_LONG dest_type, struct GMT_TABLE *T, BOOLEAN use_GMT_io);
+EXTERN_MSC void GMT_alloc_segment (struct GMT_LINE_SEGMENT *S, GMT_LONG n_rows, GMT_LONG n_columns, BOOLEAN first);
 EXTERN_MSC void GMT_free_segment (struct GMT_LINE_SEGMENT *segment);
 EXTERN_MSC void GMT_free_table (struct GMT_TABLE *table);
 EXTERN_MSC void GMT_free_dataset (struct GMT_DATASET *data);
-EXTERN_MSC void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, int mode);
-EXTERN_MSC void GMT_clock_C_format (char *form, struct GMT_CLOCK_IO *S, int mode);
-EXTERN_MSC int GMT_geo_C_format (char *form, struct GMT_GEO_IO *S);
+EXTERN_MSC void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, GMT_LONG mode);
+EXTERN_MSC void GMT_clock_C_format (char *form, struct GMT_CLOCK_IO *S, GMT_LONG mode);
+EXTERN_MSC GMT_LONG GMT_geo_C_format (char *form, struct GMT_GEO_IO *S);
 EXTERN_MSC void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S);

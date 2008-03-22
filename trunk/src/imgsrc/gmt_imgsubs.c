@@ -1,4 +1,4 @@
-/* $Id: gmt_imgsubs.c,v 1.4 2008-01-23 03:22:49 guru Exp $
+/* $Id: gmt_imgsubs.c,v 1.5 2008-03-22 11:55:36 guru Exp $
  *
  * Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  * See COPYING file for copying and redistribution conditions.
@@ -59,7 +59,7 @@ double  GMT_img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord)
 	return( R2D * GMT_img_gud_fwd( (coord->nytop - ypix) / coord->radius) );
 }
 
-int	GMT_img_setup_coord (struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c)
+GMT_LONG	GMT_img_setup_coord (struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c)
 {
 	/* Given the RANGE info, set up the COORD values.  Return (-1) on failure;
 	 * 0 on success.  */
@@ -69,11 +69,11 @@ int	GMT_img_setup_coord (struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c)
 		return (-1);
 	}
 	
-	c->nxcol  = irint (r->maxlon * 60.0 / r->mpixel);
-	c->nx360  = irint (360.0 * 60.0 / r->mpixel);
+	c->nxcol  = (GMT_LONG)irint (r->maxlon * 60.0 / r->mpixel);
+	c->nx360  = (GMT_LONG)irint (360.0 * 60.0 / r->mpixel);
 	c->radius = c->nx360 / (2.0 * M_PI);
-	c->nytop  = irint (c->radius * GMT_img_gud_inv(r->maxlat*D2R) );
-	c->nyrow  = c->nytop - irint (c->radius * GMT_img_gud_inv(r->minlat*D2R) );
+	c->nytop  = (GMT_LONG)irint (c->radius * GMT_img_gud_inv(r->maxlat*D2R) );
+	c->nyrow  = c->nytop - (GMT_LONG)irint (c->radius * GMT_img_gud_inv(r->minlat*D2R) );
 	
 	return (0);
 }

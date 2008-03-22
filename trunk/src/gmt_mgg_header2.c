@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.24 2008-03-21 00:25:51 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.25 2008-03-22 11:55:34 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -18,7 +18,7 @@
 #define SEC_PER_DEG		(SEC_PER_MIN * MIN_PER_DEG)
 #define BYTE_SIZE
 
-static double dms2degrees(int deg, int min, int sec)
+static double dms2degrees(GMT_LONG deg, GMT_LONG min, GMT_LONG sec)
 {
     double  decDeg = (double)deg;
 
@@ -43,7 +43,7 @@ static void degrees2dms(double degrees, int *deg, int *min, int *sec)
 	*sec = (int)(degrees * SEC_PER_MIN);
 }
 
-int GMT2MGG2(struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
+GMT_LONG GMT2MGG2(struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 {
 	double f;
 	memset(mgg, 0, sizeof(MGG_GRID_HEADER_2));
@@ -168,7 +168,7 @@ static void swap_header(MGG_GRID_HEADER_2 *header)
    for (i = 0; i < GRD98_N_UNUSED; i++) swap_long(&header->unused[i]);
 }
 
-int GMT_is_mgg2_grid (char *file)
+GMT_LONG GMT_is_mgg2_grid (char *file)
 {	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
@@ -187,7 +187,7 @@ int GMT_is_mgg2_grid (char *file)
 	return (GMT_grd_format_decoder ("rf"));
 }
 
-int mgg2_read_grd_info (struct GRD_HEADER *header)
+GMT_LONG mgg2_read_grd_info (struct GRD_HEADER *header)
 {
 	FILE			*fp = NULL;
 	MGG_GRID_HEADER_2	mggHeader;
@@ -221,7 +221,7 @@ int mgg2_read_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int mgg2_write_grd_info (struct GRD_HEADER *header)
+GMT_LONG mgg2_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE			*fp;
 	MGG_GRID_HEADER_2	mggHeader;
@@ -244,15 +244,15 @@ int mgg2_write_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int pad[], BOOLEAN complex)
+GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG pad[], BOOLEAN complex)
 {
 	MGG_GRID_HEADER_2	mggHeader;
 	FILE  *fp     = NULL;
 	int  *tLong  = NULL;
 	short *tShort = NULL;
 	char  *tChar  = NULL;
-	int first_col, last_col, first_row, last_row, one_or_zero;
-	int j, j2, width_in, height_in, i_0_out, inc = 1;
+	GMT_LONG first_col, last_col, first_row, last_row, one_or_zero;
+	GMT_LONG j, j2, width_in, height_in, i_0_out, inc = 1;
 	GMT_LONG i, kk, ij, nm, width_out;
 	BOOLEAN piping = FALSE, geo = FALSE;
 	double half_or_zero, x, small;
@@ -326,11 +326,11 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 	/* Get first and last row and column numbers */
 	
 	small = 0.1 * header->x_inc;
-	first_col = (int)floor ((w - header->x_min + small) / header->x_inc);
-	last_col  = (int)ceil ((e - header->x_min - small) / header->x_inc) - 1 + one_or_zero;
+	first_col = (GMT_LONG)floor ((w - header->x_min + small) / header->x_inc);
+	last_col  = (GMT_LONG)ceil ((e - header->x_min - small) / header->x_inc) - 1 + one_or_zero;
 	small = 0.1 * header->y_inc;
-	first_row = (int)floor ((header->y_max - n + small) / header->y_inc);
-	last_row  = (int)ceil ((header->y_max - s - small) / header->y_inc) - 1 + one_or_zero;
+	first_row = (GMT_LONG)floor ((header->y_max - n + small) / header->y_inc);
+	last_row  = (GMT_LONG)ceil ((header->y_max - s - small) / header->y_inc) - 1 + one_or_zero;
 
 	if ((last_col - first_col + 1) > width_in) last_col--;
 	if ((last_row - first_row + 1) > height_in) last_row--;
@@ -344,12 +344,12 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 	i_0_out = pad[0];		/* Edge offset in output */
 	
 	if (geo) {	/* Must rollover in longitudes */
-		int *k;
+		GMT_LONG *k;
 		tLong  = (int *) GMT_memory (CNULL, header->nx, sizeof (int), "mgg_read_grd");
 		tShort = (short *)tLong;
 		tChar  = (char *)tLong;
 
-		k = (int *) GMT_memory (CNULL, width_in, sizeof (int), "mgg_read_grd");
+		k = (GMT_LONG *) GMT_memory (CNULL, width_in, sizeof (GMT_LONG), "mgg_read_grd");
 		
 		half_or_zero = (header->node_offset) ? 0.5 : 0.0;
 		small = 0.1 * header->x_inc;	/* Anything smaller than 0.5 dx will do */
@@ -482,12 +482,12 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 }
 
 	
-int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {
 	MGG_GRID_HEADER_2	mggHeader;
-	int i2, kk, err, *k;
-	int j, j2, width_out, height_out, one_or_zero;
-	int first_col, last_col, first_row, last_row;
+	GMT_LONG i2, kk, err, *k;
+	GMT_LONG j, j2, width_out, height_out, one_or_zero;
+	GMT_LONG first_col, last_col, first_row, last_row;
 	GMT_LONG i, nm, ij, width_in;
 	
 	BOOLEAN geo = FALSE;
@@ -577,11 +577,11 @@ int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, 
 	/* Get first and last row and column numbers */
 	
 	small     = 0.1 * header->x_inc;
-	first_col = (int)floor ((w - header->x_min + small) / header->x_inc);
-	last_col  = (int)ceil ((e - header->x_min - small) / header->x_inc) -1 + one_or_zero;
+	first_col = (GMT_LONG)floor ((w - header->x_min + small) / header->x_inc);
+	last_col  = (GMT_LONG)ceil ((e - header->x_min - small) / header->x_inc) -1 + one_or_zero;
 	small     = 0.1 * header->y_inc;
-	first_row = (int)floor ((header->y_max - n + small) / header->y_inc);
-	last_row  = (int)ceil ((header->y_max - s - small) / header->y_inc) -1 + one_or_zero;
+	first_row = (GMT_LONG)floor ((header->y_max - n + small) / header->y_inc);
+	last_row  = (GMT_LONG)ceil ((header->y_max - s - small) / header->y_inc) -1 + one_or_zero;
 	
 	if ((last_col - first_col + 1) > width_out) last_col--;
 	if ((last_row - first_row + 1) > height_out) last_row--;
@@ -620,7 +620,7 @@ int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, 
 	tChar  = (char *)  tLong;
 	
 	if (geo) {
-		k = (int *) GMT_memory (CNULL, width_out, sizeof (int), "mgg_write_grd");
+		k = (GMT_LONG *) GMT_memory (CNULL, width_out, sizeof (GMT_LONG), "mgg_write_grd");
 		
 		half_or_zero = (header->node_offset) ? 0.5 : 0.0;
 		small = 0.1 * header->x_inc;	/* Anything smaller than 0.5 dx will do */

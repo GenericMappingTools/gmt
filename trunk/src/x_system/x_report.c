@@ -1,4 +1,4 @@
-/*	$Id: x_report.c,v 1.6 2007-03-12 19:52:27 remko Exp $
+/*	$Id: x_report.c,v 1.7 2008-03-22 11:55:37 guru Exp $
  *
  * XREPORT reads the xx_legs.b file and reports statistics for one or
  * all or the legs. The information reported are legname, year-of-cruise,
@@ -16,7 +16,7 @@
 
 int main (int argc, char *argv[])
 {
-	int end = FALSE, i, all_legs = TRUE, error = FALSE;
+	GMT_LONG end = FALSE, i, all_legs = TRUE, error = FALSE;
 	size_t legsize = sizeof(struct LEG);
 	char leg[10], gmt[3], datatype[3];
 	FILE *fp = NULL;

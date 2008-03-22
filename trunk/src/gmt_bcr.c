@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.3 2008-01-23 03:22:47 guru Exp $
+ *	$Id: gmt_bcr.c,v 1.4 2008-03-22 11:55:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -67,6 +67,7 @@
  * Authors:	Walter Smith and Remko Scharroo
  * Date:	23-SEP-1993 and 11-SEP-2007
  * Version:	4
+ * Now 64-bit enabled.
  *
  * Modules in this file:
  *
@@ -77,7 +78,7 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int interpolant, double threshold, struct GMT_BCR *bcr)
+void GMT_bcr_init (struct GRD_HEADER *grd, GMT_LONG *pad, GMT_LONG interpolant, double threshold, struct GMT_BCR *bcr)
 {
 	/* Initialize interpolant and threshold */
 	bcr->interpolant = interpolant;
@@ -92,8 +93,8 @@ void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int interpolant, double thr
 	/* Initialize ioff, joff, mx, my according to grd and pad:  */
 	bcr->ioff = pad[0];
 	bcr->joff = pad[3];
-	bcr->mx = grd->nx + pad[0] + pad[1];
-	bcr->my = grd->ny + pad[2] + pad[3];
+	bcr->mx = (GMT_LONG)(grd->nx + pad[0] + pad[1]);
+	bcr->my = (GMT_LONG)(grd->ny + pad[2] + pad[3]);
 
 	/* Initialize rx_inc, ry_inc, and offset:  */
 	bcr->rx_inc = 1.0 / grd->x_inc;
@@ -107,9 +108,13 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
 	   this routine returns the desired interpolated value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. */
 
-	int	i, j, ij;
+	GMT_LONG i, j, ij;
 	double	x, y, retval, wsum, wx[4], wy[4], w, wp, wq;
 
+	/* First check that xx,yy are not Nan - if so return NaN */
+	
+	if (GMT_is_dnan (xx) || GMT_is_dnan (yy)) return (GMT_d_NaN);
+	
 	/* First check if the xx and yy are within the grid.
 	   16-Sep-2007: Added some slack (GMT_SMALL) here to avoid setting to NaN points
 	   that are really on the edge but because of rounding errors are regarded outside.
@@ -133,8 +138,8 @@ double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,
 	else {
 		/* Find the indices (i,j) of the node to the upper left of that.
 	   	   Because of padding, i and j can be on the edge. */
-		i = (int)floor(x);
-		j = (int)floor(y);
+		i = (GMT_LONG)floor(x);
+		j = (GMT_LONG)floor(y);
 
 		/* Determine the offset of (x,y) with respect to (i,j). */
 		x -= (double)i;

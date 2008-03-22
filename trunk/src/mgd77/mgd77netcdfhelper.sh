@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.20 2008-01-23 03:22:49 guru Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.21 2008-03-22 11:55:36 guru Exp $
 #
 #	Author:		P. Wessel
 #	Date:		2005-OCT-14
@@ -27,9 +27,9 @@ cat << EOF > mgd77_functions.h
 
 struct MGD77_HEADER_LOOKUP {		/* Book-keeping for one header parameter  */
 	char name[64];		/* Name of this parameter (e.g., "Gravity_Sampling_Rate") */
-	int length;		/* Number of bytes to use */
-	int record;		/* Header record number where it occurs (1-24) */
-	int item;		/* Sequential item order in this record (1->) */
+	GMT_LONG length;		/* Number of bytes to use */
+	GMT_LONG record;		/* Header record number where it occurs (1-24) */
+	GMT_LONG item;		/* Sequential item order in this record (1->) */
 	BOOLEAN check;		/* TRUE if we actually do a test on this item */
 	char *ptr;		/* Pointer to the corresponding named variable in struct MGD77_HEADER_PARAMS */
 };
@@ -185,7 +185,7 @@ void MGD77_Get_Param (struct MGD77_CONTROL *F, char *name, char *value)
 	MGD77_nc_status (nc_get_att_text (F->nc_id, NC_GLOBAL, name, value));
 }
 
-void MGD77_Put_Param (struct MGD77_CONTROL *F, char *name, int length, char *value)
+void MGD77_Put_Param (struct MGD77_CONTROL *F, char *name, GMT_LONG length, char *value)
 {	/* Place a single revised parameter: use original attribute if requested;
 	 * otherwise use a revised attribute name.
 	 * FUnction assumes we are in define mode. */
@@ -203,13 +203,13 @@ cat << EOF >> mgd77_functions.h
 };
 
 void MGD77_Get_Param (struct MGD77_CONTROL *F, char *name, char *value);
-void MGD77_Put_Param (struct MGD77_CONTROL *F, char *name, int length, char *value);
+void MGD77_Put_Param (struct MGD77_CONTROL *F, char *name, GMT_LONG length, char *value);
 void MGD77_Read_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);
 void MGD77_Read_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);
 void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);
 void MGD77_Reset_Header_Params (struct MGD77_CONTROL *F);
 void MGD77_Init_Ptr (struct MGD77_HEADER_LOOKUP *H, struct MGD77_HEADER_PARAMS *P);
-int MGD77_Param_Key (int record, int item);
+GMT_LONG MGD77_Param_Key (GMT_LONG record, GMT_LONG item);
 
 #define MGD77_N_HEADER_PARAMS	$n_names
 

@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.8 2007-03-12 19:52:27 remko Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.9 2008-03-22 11:55:37 guru Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -31,26 +31,26 @@ struct CORR bin;
 
 size_t binsize = sizeof(struct CORR);
 size_t legsize = sizeof(struct LEG);
-int nlegs=0, nbadlegs=0, nuselegs = 0;
-int get_id (char *name);
-int findbad (char *name);
-int finduse (char *name);
+GMT_LONG nlegs=0, nbadlegs=0, nuselegs = 0;
+GMT_LONG get_id (char *name);
+GMT_LONG findbad (char *name);
+GMT_LONG finduse (char *name);
 
 char badlegs[MLEGS][10];
 char uselegs[MLEGS][10];
 
-int legsum_n[MAX_LEGS][3], sum_n[3], n[3];
+GMT_LONG legsum_n[MAX_LEGS][3], sum_n[3], n[3];
 double dc[MAX_LEGS][3], drift[MAX_LEGS][3], sum[3], sum2[3];
 double legsum_t[MAX_LEGS][3], legsum_x[MAX_LEGS][3], legsum_tt[MAX_LEGS][3], legsum_tx[MAX_LEGS][3], mean[3], stdev[3];
 double sum_t1[3], sum_t2[3], sum_x[3], sum_tt1[3], sum_tt2[3], sum_t1x[3], sum_t2x[3];
 
 int main (int argc, char **argv)
 {
-	int n_iterations = 0, iteration = 0, reset = FALSE, i, j, error = FALSE, ok, min_nx = 0;
-	int n_x, id_1, id_2, test_area = FALSE, do_gmt[3];
+	GMT_LONG n_iterations = 0, iteration = 0, reset = FALSE, i, j, error = FALSE, ok, min_nx = 0;
+	GMT_LONG n_x, id_1, id_2, test_area = FALSE, do_gmt[3];
 	double t_1, t_2, xover, div, drift_inc, dc_inc;
 	double west = 0.0, east = 360.0, south = -90.0, north = 90.0;
-	int west_i = 0, east_i = 0, south_i = 0, north_i = 0, lon_i;
+	GMT_LONG west_i = 0, east_i = 0, south_i = 0, north_i = 0, lon_i;
 	BOOLEAN bin_on = FALSE, asc_on = FALSE, verbose = FALSE;
 	char lfile[80], file[80], header[REC_SIZE], lega[10], legb[10], string[10], filea[80], fileb[80], type[3], line[BUFSIZ];
 	FILE *fpl = NULL, *fpb = NULL, *fpi = NULL, *fpbin = NULL, *fpasc = NULL, *fpu = NULL;
@@ -133,10 +133,10 @@ int main (int argc, char **argv)
 	if (west > east || south > north) error = TRUE;
 	if (west != 0.0 || east != 360.0 || south != -90.0 || north != 90.0) {
 		test_area = TRUE;
-		west_i = (int) floor (west * 1.0E6);
-		east_i = (int) ceil (east * 1.0E6);
-		south_i =(int) floor ( south * 1.0E6);
-		north_i = (int) ceil (north * 1.0E6);
+		west_i = (GMT_LONG) floor (west * 1.0E6);
+		east_i = (GMT_LONG) ceil (east * 1.0E6);
+		south_i =(GMT_LONG) floor ( south * 1.0E6);
+		north_i = (GMT_LONG) ceil (north * 1.0E6);
 	}
 	if (!bin_on && !asc_on) error = TRUE;
 
@@ -236,7 +236,7 @@ int main (int argc, char **argv)
 		fseek (fpb, (long int)REC_SIZE, SEEK_SET);
 
 		while (fread ((void *)header, REC_SIZE, 1, fpb) == 1) {
-			sscanf(header, "%s %s %d",lega, legb, &n_x);
+			sscanf(header, "%s %s %ld",lega, legb, &n_x);
 			if (!strcmp(lega, legb)) {	/* Internal crossovers, skip this pair */
 				fseek (fpb, (long int)(n_x*REC_SIZE), SEEK_CUR);
 				continue;
@@ -347,10 +347,10 @@ int main (int argc, char **argv)
 			}
 		}
 
-		printf("Before iteration # %d we have:\n", iteration);
+		printf("Before iteration # %ld we have:\n", iteration);
 		for (j = 0; j < 3; j++) {
 			if (!do_gmt[j]) continue;
-			printf("%c >>> Mean: %8.3f St.Deviation: %8.3f n: %6d\n", type[j], mean[j], stdev[j], n[j]);
+			printf("%c >>> Mean: %8.3f St.Deviation: %8.3f n: %6ld\n", type[j], mean[j], stdev[j], n[j]);
 		}
 
 		if (n_iterations == 0) {
@@ -428,9 +428,9 @@ int main (int argc, char **argv)
 	exit (EXIT_SUCCESS);
 }
 
-int get_id (char *name)
+GMT_LONG get_id (char *name)
 {
-	int left, right, mid, cmp;
+	GMT_LONG left, right, mid, cmp;
 
 	left = 0;
 	right = nlegs-1;
@@ -447,9 +447,9 @@ int get_id (char *name)
 	return (-1);
 }
 
-int findbad (char *name)
+GMT_LONG findbad (char *name)
 {
-	int left, right, mid, cmp;
+	GMT_LONG left, right, mid, cmp;
 
 	left = 0;
 	right = nbadlegs-1;
@@ -466,9 +466,9 @@ int findbad (char *name)
 	return (0);
 }
 
-int finduse (char *name)
+GMT_LONG finduse (char *name)
 {
-	int left, right, mid, cmp;
+	GMT_LONG left, right, mid, cmp;
 
 	left = 0;
 	right = nuselegs-1;

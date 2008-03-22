@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.9 2007-03-14 23:11:11 pwessel Exp $
+/*	$Id: x_over.c,v 1.10 2008-03-22 11:55:37 guru Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -55,7 +55,7 @@
 typedef int HANDLE;
 
 BOOLEAN over_lap (float xx[2][2], float yy[2][2]);
-BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, double *xvalues, int *pt, float xx[2][2], float yy[2][2]);
+BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, double *xvalues, GMT_LONG *pt, float xx[2][2], float yy[2][2]);
 
 static char *oformat = "%9.5f %9.5f %10.1f %10.1f %9.2f %9.2f %9.2f %8.1f %8.1f %8.1f %5.1f %5.1f\n";
 static int ttime[MAXPOINTS];		/* time (in seconds) at each point */
@@ -79,28 +79,28 @@ int main (int argc, char *argv[])
   char legfile[100];		/* Filename for leg */
   char info[11];		/* Info-header from input-file */
   char tmp[10];
+  
+  GMT_LONG n_pts_pr_blk[2];		/* points pr block for each leg */
+  GMT_LONG last_pt[2];		/* no of points in last section */
+  GMT_LONG pnt_begin[2];		/* first point to check in current section */
+  GMT_LONG pnt_end[2];		/* last point to check in current section */
+  GMT_LONG rec, ind, delta, rec_no;	/* misc. counters */
+  GMT_LONG pnt[2];
 
-  int n_pts_pr_blk[2];		/* points pr block for each leg */
-  int last_pt[2];		/* no of points in last section */
-  int pnt_begin[2];		/* first point to check in current section */
-  int pnt_end[2];		/* last point to check in current section */
-  int rec, ind, delta, rec_no;	/* misc. counters */
-  int pnt[2];
-
-  int nxovers;			/* no of crossovers found */
-  int nlegs;			/* 2 if external, 1 if internal */
+  GMT_LONG nxovers;			/* no of crossovers found */
+  GMT_LONG nlegs;			/* 2 if external, 1 if internal */
   int year[2];			/* year of leg */
-  int n_pts_pr_sect[2];		/* points pr section for each leg */
-  int n_sect_pr_blk[2];		/* sections pr block for each leg */
-  int last_blk[2];		/* no of blocks - 1 for each leg */
-  int last_sect[2];		/* no of sections - 1 for each leg */
-  int blk_begin[2];		/* first block to check for each leg */
-  int blk_end[2];		/* last block to check for each leg */
-  int sect_begin[2];		/* first sect to check in current block */
-  int sect_end[2];		/* last sect to check in current block */
-  int latitude, longitude;	/* lat/lon * 1.0E6 from .gmt-file */
-  int leg, sct[2], blk[2], sect, ntot = 0;
-  int arg, block, mode, i;		/* Misc. counters */
+  GMT_LONG n_pts_pr_sect[2];		/* points pr section for each leg */
+  GMT_LONG n_sect_pr_blk[2];		/* sections pr block for each leg */
+  GMT_LONG last_blk[2];		/* no of blocks - 1 for each leg */
+  GMT_LONG last_sect[2];		/* no of sections - 1 for each leg */
+  GMT_LONG blk_begin[2];		/* first block to check for each leg */
+  GMT_LONG blk_end[2];		/* last block to check for each leg */
+  GMT_LONG sect_begin[2];		/* first sect to check in current block */
+  GMT_LONG sect_end[2];		/* last sect to check in current block */
+  GMT_LONG latitude, longitude;	/* lat/lon * 1.0E6 from .gmt-file */
+  GMT_LONG leg, sct[2], blk[2], sect, ntot = 0;
+  GMT_LONG arg, block, mode, i;		/* Misc. counters */
 
   BOOLEAN shift_lon = FALSE;	/* TRUE if areas cross datumline */
   BOOLEAN internal = FALSE;	/* TRUE if leg1 = leg2 */
@@ -249,7 +249,7 @@ int main (int argc, char *argv[])
     }
     ntot += npoints[leg];
     if (ntot > MAXPOINTS) {
-      fprintf(stderr,"x_over : ntot = %d, must allocate more memory\n",ntot);
+      fprintf(stderr,"x_over : ntot = %ld, must allocate more memory\n",ntot);
       exit (EXIT_FAILURE);
     }
     n_pts_pr_sect[leg] = NPPS;
@@ -569,17 +569,17 @@ int main (int argc, char *argv[])
     }
   }
   if (verbose)
-    fprintf(stderr,"x_over: Found %5d cross-overs between %s and %s\n",nxovers,legname[0],legname[1]);
+    fprintf(stderr,"x_over: Found %5ld cross-overs between %s and %s\n",nxovers,legname[0],legname[1]);
   exit (EXIT_SUCCESS);
 }
 
-BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, double *xvalues, int *pt, float xx[2][2], float yy[2][2])
+BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, double *xvalues, GMT_LONG *pt, float xx[2][2], float yy[2][2])
 {
   double delx[2], dely[2], grad[2], xc0, t_next;
   double delt[2], dx[2][3];
   double deg_pr_rad = 57.29577951308232087680;
   double ti[6], di[6];
-  int leg, i, j, no_cross, n_int, dtype, i1, i2, n_left, n_right, first, error = 0;
+  GMT_LONG leg, i, j, no_cross, n_int, dtype, i1, i2, n_left, n_right, first, error = 0;
   for (leg = 0; leg < 2; leg++) {	/* Copy pertinent info */
     if (pt[leg] == (npoints[leg_no[leg]] + offset[leg] - 1)) return (FALSE);
     delx[leg] = (double)lon[pt[leg]+1] - (double)lon[pt[leg]];
@@ -683,8 +683,8 @@ BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, d
       error = GMT_intpol (ti, di, n_int, 1, &tc[leg], &(dx[leg][dtype]), int_mode);	/* Do the interpolation */
 
       if (error != 0) {	/* Oh shit, what could this mean... */
-        fprintf(stderr,"x_over : Error = %d returned from intpol\n",error);
-        fprintf(stderr,"(pnt[0] = %d, pnt[1] = %d\n", pt[0],pt[1]);
+        fprintf(stderr,"x_over : Error = %ld returned from intpol\n",error);
+        fprintf(stderr,"(pnt[0] = %ld, pnt[1] = %ld\n", pt[0],pt[1]);
         return (FALSE);
       }
     }

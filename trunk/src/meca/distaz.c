@@ -1,4 +1,4 @@
-/*	$Id: distaz.c,v 1.4 2008-02-22 08:49:15 guru Exp $
+/*	$Id: distaz.c,v 1.5 2008-03-22 11:55:36 guru Exp $
  *    Copyright (c) 1996-2008 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -10,7 +10,7 @@
 #define EPSILON 0.0001
 #define RAYON 6371.0
 
-void distaz(double lat1,double lon1,double lat2,double lon2,double *distrad,double *distdeg,double *distkm,double *az12rad,double *az12deg,double *az21rad,double *az21deg,int syscoord)
+void distaz(double lat1,double lon1,double lat2,double lon2,double *distrad,double *distdeg,double *distkm,double *az12rad,double *az12deg,double *az21rad,double *az21deg,GMT_LONG syscoord)
 /*
   coordonnees geographiques en degres  : syscoord = 0
   coordonnees geocentriques en radians : syscoord = 1
