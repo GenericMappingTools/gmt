@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.67 2008-03-24 08:58:30 guru Exp $
+ *	$Id: gmt_io.h,v 1.68 2008-03-24 15:35:34 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,10 +28,6 @@
  *
  */
 
-#define GMT_IO_SEGMENT_HEADER	1
-#define GMT_IO_MISMATCH		2
-#define GMT_IO_EOF		4
-
 #define GMT_COLUMN_FORMAT	1
 #define GMT_ROW_FORMAT		2
 
@@ -46,6 +42,12 @@
 #define GMT_X			0	/* x or lon is in 0th column */
 #define GMT_Y			1	/* y or lat is in 1st column */
 #define GMT_Z			2	/* z is in 2nd column */
+
+/* Error return codes */
+
+#define GMT_IO_SEGMENT_HEADER	1
+#define GMT_IO_MISMATCH		2
+#define GMT_IO_EOF		4
 
 /* Array indeces for input/output variables */
 
@@ -85,13 +87,13 @@ EXTERN_MSC size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE 
 
 EXTERN_MSC int GMT_fclose (FILE *stream);
 EXTERN_MSC FILE *GMT_fopen (const char* filename, const char *mode);
-EXTERN_MSC char *GMT_getuserpath (const char *stem, char *path);		/* Look for user file */
-EXTERN_MSC char *GMT_getdatapath (const char *stem, char *path);		/* Look for data file */
+EXTERN_MSC char *GMT_getuserpath (const char *stem, char *path);	/* Look for user file */
+EXTERN_MSC char *GMT_getdatapath (const char *stem, char *path);	/* Look for data file */
 EXTERN_MSC char *GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);	/* Look for shared file */
 EXTERN_MSC int GMT_access (const char *filename, int mode);		/* access wrapper */
 EXTERN_MSC void GMT_io_init (void);					/* Initialize pointers */
 EXTERN_MSC int GMT_parse_b_option (char *text);				/* Decode -b option and set parameters */
-EXTERN_MSC int GMT_parse_f_option (char *text);				/* Decode -i option and set parameters */
+EXTERN_MSC int GMT_parse_f_option (char *text);				/* Decode -f option and set parameters */
 EXTERN_MSC void GMT_multisegment (char *text);				/* Decode -M option */
 EXTERN_MSC void GMT_write_segmentheader (FILE *fp, int n);		/* Write multisegment header back out */
 EXTERN_MSC int GMT_scanf (char *p, int expectation, double *val);	/* Convert strings to double, handling special formats [Data records only ] */
@@ -134,7 +136,7 @@ struct GMT_DATE_IO {
 	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
 };
 
-struct GMT_GEO_IO {	/* For geographic output and plotting */
+struct GMT_GEO_IO {			/* For geographic output and plotting */
 	int order[3];			/* The relative order of degree, minute, seconds in form */
 	int range;			/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
 	BOOLEAN decimal;		/* TRUE if we want to use the D_FORMAT for decimal degrees only */
@@ -147,32 +149,33 @@ struct GMT_GEO_IO {	/* For geographic output and plotting */
 	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
 };
 
-struct GMT_IO {	/* Used to process input data records */
+struct GMT_IO {				/* Used to process input data records */
 	
 	BOOLEAN multi_segments[2];	/* TRUE if current Ascii input/output file has multiple segments */
-	BOOLEAN single_precision[2];	/* TRUE if current binary input(0) or output(1) is in single precision
-					   [Default is double] */
-	BOOLEAN swab[2];		/* TRUE if current binary input(0) or output(1) must be byte-swapped */
-	BOOLEAN binary[2];		/* TRUE if current input(0) or output(1) is in binary format */
-	BOOLEAN io_header[2];		/* Input & Output data has header records [FALSE, FALSE] */
+	BOOLEAN single_precision[2];	/* TRUE if current binary input/output is in single precision [double] */
+	BOOLEAN swab[2];		/* TRUE if current binary input/output must be byte-swapped */
+	BOOLEAN binary[2];		/* TRUE if current input/output is in native binary format */
+	BOOLEAN netcdf[2];		/* TRUE if current input/output is in netCDF format */
+	BOOLEAN io_header[2];		/* TRUE if input/output data has header records */
 	BOOLEAN skip_bad_records;	/* TRUE if records where x and/or y are NaN or Inf */
 	BOOLEAN give_report;		/* TRUE if functions should report how many bad records were skipped */
 
 	int file_no;			/* Number of current file */
-	int ncol[2];			/* Number of expected columns of input(0) and output(1)
-					   			   0 means it will be determined by program */
+	int ncol[2];			/* Number of expected columns of input/output
+					   0 means it will be determined by program */
 	int n_header_recs;		/* number of header records [0] */
 	int seg_no;			/* Number of current multi-segment */
-	GMT_LONG rec_no;			/* Number of current records */
+	GMT_LONG rec_no;		/* Number of current records */
 	GMT_LONG n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	GMT_LONG n_bad_records;		/* Number of bad records encountered during i/o */
-	int status;		/* 0	All is ok
+	int status;			/* 0	All is ok
 					   1	Current record is segment header
 					   2	Mismatch between actual and expected fields
 					   4	EOF */
 	char EOF_flag[2];		/* Character signaling start of new segment in input/output Ascii table */
 	char current_record[BUFSIZ];	/* Current ascii record */
 	char segment_header[BUFSIZ];	/* Current ascii segment header */
+	char varnames[BUFSIZ];		/* List of variable names to be input/output in netCDF mode */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
@@ -194,27 +197,27 @@ struct GMT_IO {	/* Used to process input data records */
 	struct GMT_GEO_IO geo;		/* Has all the info on how to write geographic coordinates */
 };
 
-struct GMT_Z_IO {	/* Used when processing z(x,y) table input when (x,y) is implicit */
-	BOOLEAN swab;	/* TRUE if we must swap byte-order */
+struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is implicit */
+	BOOLEAN swab;		/* TRUE if we must swap byte-order */
 	BOOLEAN x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
 	BOOLEAN y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
-	BOOLEAN binary;	/* TRUE if we are reading/writing binary data */
-	BOOLEAN input;	/* TRUE if we are reading, FALSE if we are writing */
-	int format;	/* Either GMT_COLUMN_FORMAT or GMT_ROW_FORMAT */
-	int x_step;	/* +1 if logical x values increase to right, else -1 */
-	int y_step;	/* +1 if logical y values increase upwards, else -1 */
-	int skip;	/* Number of bytes to skip before reading data */
-	int x_period;	/* length of a row in the input data ( <= nx, see x_missing) */
-	int y_period;	/* length of a col in the input data ( <= ny, see y_missing) */
-	int start_col;	/* First logical column in file */
-	int start_row;	/* First logical row in file */
+	BOOLEAN binary;		/* TRUE if we are reading/writing binary data */
+	BOOLEAN input;		/* TRUE if we are reading, FALSE if we are writing */
+	int format;		/* Either GMT_COLUMN_FORMAT or GMT_ROW_FORMAT */
+	int x_step;		/* +1 if logical x values increase to right, else -1 */
+	int y_step;		/* +1 if logical y values increase upwards, else -1 */
+	int skip;		/* Number of bytes to skip before reading data */
+	int x_period;		/* length of a row in the input data ( <= nx, see x_missing) */
+	int y_period;		/* length of a col in the input data ( <= ny, see y_missing) */
+	int start_col;		/* First logical column in file */
+	int start_row;		/* First logical row in file */
 	GMT_LONG n_expected;	/* Number of data element expected to be read */
 	GMT_LONG nx, ny;	/* Dimensions of final gridded data */
-	int gmt_i;	/* Current column number in the GMT registered grid */
-	int gmt_j;	/* Current row number in the GMT registered grid */
-	PFI read_item;	/* Pointer to function that will read 1 data point from file */
-	PFI write_item;	/* Pointer to function that will write 1 data point from file */
-	PFV get_gmt_ij;	/* Pointer to function that converts running number to GMT ij */
+	int gmt_i;		/* Current column number in the GMT registered grid */
+	int gmt_j;		/* Current row number in the GMT registered grid */
+	PFI read_item;		/* Pointer to function that will read 1 data point from file */
+	PFI write_item;		/* Pointer to function that will write 1 data point from file */
+	PFV get_gmt_ij;		/* Pointer to function that converts running number to GMT ij */
 };
 
 struct GMT_PLOT_CALCLOCK {
@@ -226,7 +229,7 @@ struct GMT_PLOT_CALCLOCK {
 struct GMT_LINE_SEGMENT {		/* For holding multisegment lines in memory */
 	char *label;			/* Label string (if applicable) */
 	char *header;			/* Multisegment header (if applicable) */
-	GMT_LONG n_rows;			/* Number of points in this segment */
+	GMT_LONG n_rows;		/* Number of points in this segment */
 	int n_columns;			/* Number of fields in each record (>= 2) */
 	int pole;			/* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
 	double dist;			/* Distance from a point to this feature */
@@ -239,15 +242,15 @@ struct GMT_TABLE {	/* To hold an array of line segment structures and header inf
 	int n_headers;				/* Number of file header records (0 if no header) */
 	char **header;				/* Array with all file header records, if any) */
 	int n_segments;				/* Number of segments in the array */
-	GMT_LONG n_records;				/* Total number of data records across all segments */
+	GMT_LONG n_records;			/* Total number of data records across all segments */
 	int n_columns;				/* Number of columns (fields) in each record */
 	struct GMT_LINE_SEGMENT **segment;	/* Pointer to array of segments */
 };
 
 struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	int n_tables;			/* The total number of tables (files) contained */
-	int n_segments;		/* The total number of segments across all tables */
-	GMT_LONG n_records;			/* The total number of data records across all tables */
+	int n_segments;			/* The total number of segments across all tables */
+	GMT_LONG n_records;		/* The total number of data records across all tables */
 	struct GMT_TABLE **table;	/* Pointer to array of tables */
 };
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.153 2008-03-24 08:58:30 guru Exp $
+ *	$Id: gmt_io.c,v 1.154 2008-03-24 15:35:34 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -196,13 +196,9 @@ int GMT_fclose (FILE *stream)
 FILE *GMT_fopen (const char *filename, const char *mode)
 {
 	char path[BUFSIZ];
-	FILE *fp;
 
-	if (strchr (filename, '?')) return (GMT_nc_fopen (filename, mode)); /* Must be netCDF */
-	if (!strcmp (filename, "/dev/null")) return (fopen (filename, mode)); /* Temporary fix */
 	if (mode[0] == 'r') {
-		/* Open file as NetCDF. If unsuccessful, try fopen instead */
-		if ((fp = GMT_nc_fopen (filename, mode))) return (fp);
+		if (GMT_io.netcdf[GMT_IN] || strchr (filename, '?')) return (GMT_nc_fopen (filename, mode));
 		return (fopen (GMT_getdatapath(filename, path), mode));
 	}
 	else
@@ -221,33 +217,33 @@ FILE *GMT_nc_fopen (const char *filename, const char *mode)
  */
 {
 	char file[BUFSIZ], path[BUFSIZ];
-	int i, j;
+	int i, j, nvars;
 	size_t n;
 	GMT_LONG tmp_pointer;	/* To avoid 64-bit warnings */
 	char varnm[10][GMT_TEXT_LEN], long_name[GMT_LONG_TEXT], units[GMT_LONG_TEXT], varname[GMT_TEXT_LEN];
 	struct GMT_TIME_SYSTEM time_system;
-	BOOLEAN get_all = FALSE;
 
 	if (mode[0] != 'r') {
 		fprintf (stderr, "%s: GMT_fopen does not support netCDF writing mode\n", GMT_program);
 		GMT_exit (EXIT_FAILURE);
 	}
 
-	GMT_io.ncid = GMT_io.nvars = GMT_io.ndim = GMT_io.nrec = 0;
-	GMT_io.nvars = sscanf (filename, "%[^?]?%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9]) - 1;
+	nvars = sscanf (filename, "%[^?]?%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9]) - 1;
 	if (nc_open (GMT_getdatapath(file, path), NC_NOWRITE, &GMT_io.ncid)) return (NULL);
-	if (GMT_io.nvars == 0) {
+	if (nvars == 0) nvars = sscanf (GMT_io.varnames, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9]);
+	if (nvars == 0)
 		nc_inq_nvars (GMT_io.ncid, &GMT_io.nvars);
-		get_all = TRUE;
-	}
+	else
+		GMT_io.nvars = nvars;
 	GMT_io.varid = (int *)GMT_memory (VNULL, (size_t)GMT_io.nvars, sizeof (int), GMT_program);
 	GMT_io.scale_factor = (double *)GMT_memory (VNULL, (size_t)GMT_io.nvars, sizeof (double), GMT_program);
 	GMT_io.add_offset = (double *)GMT_memory (VNULL, (size_t)GMT_io.nvars, sizeof (double), GMT_program);
 	GMT_io.missing_value = (double *)GMT_memory (VNULL, (size_t)GMT_io.nvars, sizeof (double), GMT_program);
+	GMT_io.ndim = GMT_io.nrec = 0;
 
 	for (i = 0; i < GMT_io.nvars; i++) {
-		/* Get variable ID */
-		if (get_all)
+		/* Get variable ID and variable name */
+		if (nvars == 0)
 			GMT_io.varid[i] = i;
 		else
 			GMT_err_fail (nc_inq_varid (GMT_io.ncid, varnm[i], &GMT_io.varid[i]), file);
@@ -490,29 +486,41 @@ int GMT_parse_b_option (char *text)
 	/* Syntax:	-b[i][o][s|S][d|D][#cols] */
 
 	int i, id = GMT_IN;
-	BOOLEAN i_or_o = FALSE, ok = TRUE, error = FALSE;
+	BOOLEAN i_or_o = FALSE, done = FALSE, error = FALSE;
 
-	for (i = 0; ok && text[i]; i++) {
+	for (i = 0; !done && text[i]; i++) {
 
 		switch (text[i]) {
 
 			case 'i':	/* Settings apply to input */
 				id = GMT_IN;
-				GMT_io.binary[id] = i_or_o = TRUE;
+				i_or_o = TRUE;
+				GMT_io.binary[id] = TRUE;
 				break;
 			case 'o':	/* Settings apply to output */
 				id = GMT_OUT;
-				GMT_io.binary[id] = i_or_o = TRUE;
+				i_or_o = TRUE;
+				GMT_io.binary[id] = TRUE;
+				break;
+			case 'c':	/* I/O is netCDF */
+				GMT_io.binary[id] = FALSE;
+				GMT_io.netcdf[id] = TRUE;
+				strcpy (GMT_io.varnames, &text[i+1]);
+				done = TRUE;
 				break;
 			case 'S':	/* Single Precision but needs byte swap */
 				GMT_io.swab[id] = TRUE;
+				GMT_io.single_precision[id] = TRUE;
+				GMT_io.binary[id] = TRUE;
 			case 's':	/* Single Precision */
 				GMT_io.single_precision[id] = TRUE;
+				GMT_io.binary[id] = TRUE;
 				break;
 			case 'D':	/* Double Precision but needs byte swap */
 				GMT_io.swab[id] = TRUE;
+				GMT_io.binary[id] = TRUE;
 			case 'd':	/* Double Precision */
-				GMT_io.single_precision[id] = FALSE;
+				GMT_io.binary[id] = TRUE;
 				break;
 			case '0':	/* Number of columns */
 			case '1':
@@ -537,7 +545,7 @@ int GMT_parse_b_option (char *text)
 	}
 
 	if (!i_or_o) {	/* Specified neither i or o so let settings apply to both */
-		GMT_io.binary[GMT_IN] = GMT_io.binary[GMT_OUT] = TRUE;
+		GMT_io.binary[GMT_OUT] = GMT_io.binary[GMT_IN];
 		GMT_io.single_precision[GMT_OUT] = GMT_io.single_precision[GMT_IN];
 		GMT_io.swab[GMT_OUT] = GMT_io.swab[GMT_IN];
 		GMT_io.ncol[GMT_OUT] = GMT_io.ncol[GMT_IN];

@@ -1,8 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.227 2008-03-24 08:58:30 guru Exp $
+	$Id: ChangeLog,v 1.228 2008-03-24 15:35:34 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-03-24	remko
+	* gmt_io.c:		Implemented -b[i|o]c[<var1>/...] option to indicate input is netCDF.
+
 2008-03-23	pwessel
-	* ALL:		More solid 64-bit support after full cleansing with -Wconversion.  All 26
+	* ALL:			More solid 64-bit support after full cleansing with -Wconversion.  All 26
 				examples runs clean in both 32-bit and 64-bit mode as do the entire GMT
 				documentation.
 
