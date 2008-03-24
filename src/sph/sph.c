@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.3 2008-03-22 22:01:04 myself Exp $
+ *	$Id: sph.c,v 1.4 2008-03-24 20:26:32 myself Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -33,7 +33,7 @@
 
 
 /* STRIPACK FORTRAN SUBROUTINES PROTOTYPES */
-extern trmesh_ (int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, double *, int *);
+extern int trmesh_ (int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, double *, int *);
 extern int trlist_ (int *, int *, int *, int *, int *, int *, int *, int *);
 extern int crlist_ (int *, int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, int *);
 extern double areas_ (double *, double *, double *);
@@ -155,7 +155,7 @@ double stripack_areas (double *V1, double *V2, double *V3)
 
 void cart_to_geo (GMT_LONG n, double *x, double *y, double *z, double *lon, double *lat)
 {	/* Convert Cartesian vectors back to lon, lat vectors */
-	GMT_LONG k;
+	int k;
 	double V[3];
 	for (k = 0; k < n; k++) {
 		V[0] = x[k];
@@ -165,7 +165,7 @@ void cart_to_geo (GMT_LONG n, double *x, double *y, double *z, double *lon, doub
 	}
 }
 
-void geo_to_cart (double alat, double alon, double *a, GMT_LONG rads)
+void geo_to_cart (double alat, double alon, double *a, int rads)
 {	/* Unlike GMT main version we leave lon,lat untouched */
 	/* Convert geographic latitude and longitude (alat, alon)
 	   to a 3-vector of unit length (a).  rads = TRUE if we
