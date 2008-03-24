@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.339 2008-03-24 08:58:30 guru Exp $
+ *	$Id: gmt_init.c,v 1.340 2008-03-24 15:35:34 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -890,9 +890,10 @@ void GMT_syntax (char option)
 
 		case 'b':	/* Binary i/o option  */
 
-			fprintf (stderr, "\t-b[i|o][s][<n>], i for input, o for output [Default is both].\n");
-			fprintf (stderr, "\t   Use s for single precision [Default is double precision]\n");
+			fprintf (stderr, "\t-b[i|o][s[<n>]|d[<n>]|c[<var1>/<var2>/...]], i for input, o for output [Default is both].\n");
+			fprintf (stderr, "\t   Use s or d for single or double precision [Default is double precision]\n");
 			fprintf (stderr, "\t   and append the number of data columns (for input only).\n");
+			fprintf (stderr, "\t   Use c for netCDF file and optionally append variable names.\n");
 			break;
 
 		case 'c':	/* Set number of plot copies option */
