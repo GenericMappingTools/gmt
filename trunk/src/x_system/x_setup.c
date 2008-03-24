@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.8 2008-03-22 11:55:37 guru Exp $
+/*	$Id: x_setup.c,v 1.9 2008-03-24 08:58:33 guru Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -132,7 +132,7 @@ int main (int argc, char *argv[])
 	n_alloc = (n_tot_legs-1) / 8 + 1;
 	for (i = 0; i < MAXLEGS; i++) {
 		if (ptr[i]) {
-			if ((ptr[i]->leglist = (unsigned char *) malloc (n_alloc)) == NULL) {
+			if ((ptr[i]->leglist = (unsigned char *) malloc ((size_t)n_alloc)) == NULL) {
 				fprintf (stderr, "xsetup: Out of memory!\n");
 				exit (EXIT_FAILURE);
 			}
@@ -150,7 +150,7 @@ int main (int argc, char *argv[])
 	 * occupy the same bin
 	 */
 
-	while (fread ((void *)&bin, 4, 1,fbin) != 0) {
+	while (fread ((void *)&bin, (size_t)4, (size_t)1,fbin) != 0) {
 		skip = FALSE;
 		lat = (bin / 360) - 90;
 		if (lat < south || lat >= north) skip = TRUE;
@@ -159,13 +159,13 @@ int main (int argc, char *argv[])
 			while (lon < west) lon += 360;
 			if (lon >= east) skip = TRUE;
 		}
-		fread ((void *)&nlegs, 4, 1, fbin);
+		fread ((void *)&nlegs, (size_t)4, (size_t)1, fbin);
 		if (skip) {
 			fseek (fbin, (long int)(nlegs*4), SEEK_CUR);
 			continue;
 		}
 		for (i = 0; i < nlegs; i++) {
-			fread ((void *)&record, 4, 1, fbin);
+			fread ((void *)&record, (size_t)4, (size_t)1, fbin);
 			leg_info[i].gmt = record & 15;
 			leg_info[i].leg_no = (record >> 4);
 		}

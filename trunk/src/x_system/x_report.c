@@ -1,4 +1,4 @@
-/*	$Id: x_report.c,v 1.7 2008-03-22 11:55:37 guru Exp $
+/*	$Id: x_report.c,v 1.8 2008-03-24 08:58:33 guru Exp $
  *
  * XREPORT reads the xx_legs.b file and reports statistics for one or
  * all or the legs. The information reported are legname, year-of-cruise,
@@ -70,7 +70,7 @@ int main (int argc, char *argv[])
   	if (gmt[0] == FALSE && gmt[1] == FALSE && gmt[2] == FALSE) gmt[0] = gmt[1] = gmt[2] = TRUE;
   
   	printf ("leg\tyear\tagency\tdata\tnx_I\tmean_I\tstdev_I\tnx_E\tmean_E\tstdev_E\n");
-	while (!end && fread((void *)&thisleg, legsize, 1, fp) == 1) {
+	while (!end && fread((void *)&thisleg, (size_t)legsize, (size_t)1, fp) == 1) {
 		if (all_legs || !strcmp(thisleg.name, leg)) {
 			for (i = 0; i < 3; i++) {
 				if (!gmt[i]) continue;

@@ -1,4 +1,4 @@
-/*	$Id: x_remove.c,v 1.6 2008-03-22 11:55:37 guru Exp $
+/*	$Id: x_remove.c,v 1.7 2008-03-24 08:58:33 guru Exp $
  *
  * XREMOVE will read a list of bad legs from a file, and then remove all
  * trace of these files from the x_system data base files. New x_system files
@@ -118,16 +118,16 @@ int main (int argc, char **argv)
 		exit (EXIT_FAILURE);
 	}
 
-	if (fread((void *)header, REC_SIZE, (size_t)1, fpb) != (size_t)1) {
+	if (fread((void *)header, (size_t)REC_SIZE, (size_t)1, fpb) != (size_t)1) {
 		fprintf (stderr, "xremove: Read error on xx_base.b\n");
 		exit (EXIT_FAILURE);
 	}
 
-	if (fwrite ((void *)header, REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
+	if (fwrite ((void *)header, (size_t)REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
 		fprintf (stderr, "xremove: Write error on xx_base.b\n");
 		exit (EXIT_FAILURE);
 	}
-	ok = fread ((void *)header, REC_SIZE, (size_t)1, fpb);
+	ok = fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fpb);
 	while (ok) {
 		sscanf(header, "%s %s %ld",lega, legb, &n_x);
 		if (findleg (lega) || findleg (legb)) {
@@ -142,11 +142,11 @@ int main (int argc, char **argv)
 				fprintf (stderr, "xremove: nx (= %ld) > MAX_X, recompile!\n", n_x);
 				exit (EXIT_FAILURE);
 			}
-			if (fread ((void *)crossover, REC_SIZE, (size_t)n_x, fpb) != (size_t)n_x) {
+			if (fread ((void *)crossover, (size_t)REC_SIZE, (size_t)n_x, fpb) != (size_t)n_x) {
           			fprintf (stderr, "xremove: Read error on xx_base.b\n");
           			exit (EXIT_FAILURE);
           		}
-          		if (fwrite ((void *)header, REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
+          		if (fwrite ((void *)header, (size_t)REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
           			fprintf (stderr, "xremove: Write error on xx_base.b\n");
           			exit (EXIT_FAILURE);
           		}
@@ -171,7 +171,7 @@ int main (int argc, char **argv)
           				}
           			}
           		}
-           		if (fwrite ((void *)crossover, REC_SIZE, (size_t)n_x, fpb2) != (size_t)n_x) {
+           		if (fwrite ((void *)crossover, (size_t)REC_SIZE, (size_t)n_x, fpb2) != (size_t)n_x) {
            			fprintf (stderr, "xremove: Write error on xx_base.b\n");
            			exit (EXIT_FAILURE);
            		}
@@ -183,12 +183,12 @@ int main (int argc, char **argv)
           		}
           		nrecs += n_x + 1;
           	}
-		ok = fread ((void*)header, REC_SIZE, (size_t)1, fpb);
+		ok = fread ((void*)header, (size_t)REC_SIZE, (size_t)1, fpb);
 	}
 	fclose (fpb);
 	sprintf (header, "%10ld xx_base.b header", nrecs);
 	fseek (fpb2, 0L, SEEK_SET);
-	if (fwrite ((void *)header, REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
+	if (fwrite ((void *)header, (size_t)REC_SIZE, (size_t)1, fpb2) != (size_t)1) {
 		fprintf (stderr, "xremove: Write error on xx_base.b\n");
 		exit (EXIT_FAILURE);
 	}

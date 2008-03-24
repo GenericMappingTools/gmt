@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.c,v 1.6 2008-03-22 11:55:34 guru Exp $
+ *    $Id: block_subs.c,v 1.7 2008-03-24 08:58:30 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,7 +42,7 @@ int BLK_compare_index_z (const void *point_1, const void *point_2)
 }
 
 /* Sort on index, then the specified item a[0,1,2] = x, y, z */
-int BLK_compare_sub (const void *point_1, const void *point_2, GMT_LONG item)
+int BLK_compare_sub (const void *point_1, const void *point_2, int item)
 {
 	struct BLK_DATA *p1, *p2;
 
@@ -77,7 +77,7 @@ int BLK_compare_sub (const void *point_1, const void *point_2, GMT_LONG item)
 void * NEW () {	/* Allocate and initialize a new control structure */
 	struct BLOCK_CTRL *C;
 	
-	C = (struct BLOCK_CTRL *) GMT_memory (VNULL, 1, sizeof (struct  BLOCK_CTRL), "New_Block_Ctrl");
+	C = (struct BLOCK_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct  BLOCK_CTRL), "New_Block_Ctrl");
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 #if defined(BLOCKMEDIAN)

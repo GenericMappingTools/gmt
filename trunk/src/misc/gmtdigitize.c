@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.19 2008-03-22 11:55:36 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.20 2008-03-24 08:58:33 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,8 +71,8 @@ int main (int argc, char **argv)
 	char *name = CNULL, *device = CNULL, *xname[2] = {"longitude", "x-coordinate"};
 	char *yname[2] = {"latitude ", "y-coordinate"};
 	
-	GMT_LONG i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, n_segments = 0, digunit;
-	GMT_LONG val_pos = 2, key_pos = 2, m_button, LPI = DIG_LPI, type, button;
+	int i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, n_segments = 0, digunit;
+	int val_pos = 2, key_pos = 2, m_button, LPI = DIG_LPI, type, button;
 	
 	gid_t gid = 0;
 	uid_t uid = 0;
@@ -88,9 +88,9 @@ int main (int argc, char **argv)
 
 	struct GMTDIGITIZE_CTRL	C;
 	
-	GMT_LONG get_digitize_raw (GMT_LONG digunit, double *xdig, double *ydig, struct GMTDIGITIZE_CTRL *C);
-	GMT_LONG get_digitize_xy (GMT_LONG digunit, double *xmap, double *ymap, struct GMTDIGITIZE_CTRL *C);
-	FILE *next_file (char *name, GMT_LONG n_segments, char *this_file);
+	int get_digitize_raw (int digunit, double *xdig, double *ydig, struct GMTDIGITIZE_CTRL *C);
+	int get_digitize_xy (int digunit, double *xmap, double *ymap, struct GMTDIGITIZE_CTRL *C);
+	FILE *next_file (char *name, int n_segments, char *this_file);
 
 	argc = GMT_begin (argc, argv);
 	
@@ -432,13 +432,13 @@ int main (int argc, char **argv)
 					z_val = atof (line);
 				}
 				if (button == MULTISEG_BUTTON1) {	/* Just write blank multisegment header */
-					sprintf (GMT_io.segment_header, "%c %ld\n", GMT_io.EOF_flag[GMT_OUT], n_segments);
+					sprintf (GMT_io.segment_header, "%c %d\n", GMT_io.EOF_flag[GMT_OUT], n_segments);
 				}
 				else {	/* Ask for what to write out */
 					fprintf (stderr, "Enter segment header: ");
 					GMT_fgets (line, BUFSIZ, GMT_stdin);
 					GMT_chop (line);
-					sprintf (GMT_io.segment_header, "%c %ld %s\n", GMT_io.EOF_flag[GMT_OUT], n_segments, line);
+					sprintf (GMT_io.segment_header, "%c %d %s\n", GMT_io.EOF_flag[GMT_OUT], n_segments, line);
 				}
 				GMT_write_segmentheader (fp, n_expected_fields);
 				if (gmtdefs.verbose) fprintf (stderr, "%s", GMT_io.segment_header);
@@ -492,8 +492,8 @@ int main (int argc, char **argv)
 		fprintf (stderr, format, GMT_program, x_in_min, x_in_max, y_in_min, y_in_max);
 		sprintf (format, "%%s: Output extreme values:  Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format, gmtdefs.d_format);
 		fprintf (stderr, format, GMT_program, x_out_min, x_out_max, y_out_min, y_out_max);
-		fprintf (stderr, "%s: Digitized %ld points\n", GMT_program, n);
-		if (suppress && n != n_read) fprintf (stderr, "%s: %ld fell outside region\n", GMT_program, n_read - n);
+		fprintf (stderr, "%s: Digitized %d points\n", GMT_program, n);
+		if (suppress && n != n_read) fprintf (stderr, "%s: %d fell outside region\n", GMT_program, n_read - n);
 	}
 
 	GMT_end (argc, argv);
@@ -501,28 +501,28 @@ int main (int argc, char **argv)
 	exit (EXIT_SUCCESS);
 }
 
-GMT_LONG get_digitize_raw (GMT_LONG digunit, double *xdig, double *ydig, struct GMTDIGITIZE_CTRL *C) {
-	GMT_LONG i, n, ix, iy;
+int get_digitize_raw (int digunit, double *xdig, double *ydig, struct GMTDIGITIZE_CTRL *C) {
+	int i, n, ix, iy;
 	char buffer[256], button;
 	
-	n = read (digunit, buffer, 255);
+	n = read (digunit, buffer, (size_t)255);
 	if (n <= 0) return (END_BUTTON);
 	n--;
 	buffer[n] = 0;
 #ifdef DEBUG
-	fprintf (stderr, "Got %ld bytes [%s]\n", n, buffer);
+	fprintf (stderr, "Got %d bytes [%s]\n", n, buffer);
 #endif
 	for (i = 0; i < n; i++) if (buffer[i] == ',') buffer[i] = ' ';
-	sscanf (buffer, "%ld %ld %c", &ix, &iy, &button);
+	sscanf (buffer, "%d %d %c", &ix, &iy, &button);
 	
 	*xdig = (double)(ix) * C->INV_LPI;	/* Convert from lines per inch to inches */
 	*ydig = (double)(iy) * C->INV_LPI;
 	
-	return ((GMT_LONG)(button - '0'));
+	return ((int)(button - '0'));
 }
 
-GMT_LONG get_digitize_xy (GMT_LONG digunit, double *xmap, double *ymap, struct GMTDIGITIZE_CTRL *C) {
-	GMT_LONG button;
+int get_digitize_xy (int digunit, double *xmap, double *ymap, struct GMTDIGITIZE_CTRL *C) {
+	int button;
 	double x_raw, y_raw;
 	
 	button = get_digitize_raw (digunit, &x_raw, &y_raw, C);
@@ -536,7 +536,7 @@ GMT_LONG get_digitize_xy (GMT_LONG digunit, double *xmap, double *ymap, struct G
 	return (button);
 }
 
-FILE *next_file (char *name, GMT_LONG n_segments, char *this_file) {
+FILE *next_file (char *name, int n_segments, char *this_file) {
 	FILE *fp;
 	
 	if (name) {
@@ -544,7 +544,7 @@ FILE *next_file (char *name, GMT_LONG n_segments, char *this_file) {
 			sprintf (this_file, name, n_segments);
 		}
 		else {
-			strncpy (this_file, name, BUFSIZ);
+			strncpy (this_file, name, (size_t)BUFSIZ);
 		}
 		if ((fp = GMT_fopen (this_file, "w")) == NULL) {
 			fprintf (stderr, "%s: Could not create file %s\n", GMT_program, this_file);

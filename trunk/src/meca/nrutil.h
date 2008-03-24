@@ -1,4 +1,4 @@
-/*	$Id: nrutil.h,v 1.4 2008-03-22 11:55:36 guru Exp $
+/*	$Id: nrutil.h,v 1.5 2008-03-24 08:58:32 guru Exp $
  *    Public Domain NR stuff.
  */
 #ifndef _NR_UTILS_H_
@@ -9,30 +9,30 @@
 #if defined(__STDC__) || defined(ANSI) || defined(NRANSI) /* ANSI */
 
 void nrerror(char error_text[]);
-float *vector(long nl, long nh);
-GMT_LONG *ivector(long nl, long nh);
-unsigned char *cvector(long nl, long nh);
-unsigned long *lvector(long nl, long nh);
-double *dvector(long nl, long nh);
-float **matrix(long nrl, long nrh, long ncl, long nch);
-double **dmatrix(long nrl, long nrh, long ncl, long nch);
-GMT_LONG **imatrix(long nrl, long nrh, long ncl, long nch);
-float **submatrix(float **a, long oldrl, long oldrh, long oldcl, long oldch,
-	long newrl, long newcl);
-float **convert_matrix(float *a, long nrl, long nrh, long ncl, long nch);
-float ***f3tensor(long nrl, long nrh, long ncl, long nch, long ndl, long ndh);
-void free_vector(float *v, long nl, long nh);
-void free_ivector(GMT_LONG *v, long nl, long nh);
-void free_cvector(unsigned char *v, long nl, long nh);
-void free_lvector(unsigned long *v, long nl, long nh);
-void free_dvector(double *v, long nl, long nh);
-void free_matrix(float **m, long nrl, long nrh, long ncl, long nch);
-void free_dmatrix(double **m, long nrl, long nrh, long ncl, long nch);
-void free_imatrix(GMT_LONG **m, long nrl, long nrh, long ncl, long nch);
-void free_submatrix(float **b, long nrl, long nrh, long ncl, long nch);
-void free_convert_matrix(float **b, long nrl, long nrh, long ncl, long nch);
-void free_f3tensor(float ***t, long nrl, long nrh, long ncl, long nch,
-	long ndl, long ndh);
+float *vector(GMT_LONG nl, GMT_LONG nh);
+int *ivector(GMT_LONG nl, GMT_LONG nh);
+unsigned char *cvector(GMT_LONG nl, GMT_LONG nh);
+size_t *lvector(GMT_LONG nl, GMT_LONG nh);
+double *dvector(GMT_LONG nl, GMT_LONG nh);
+float **matrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);
+double **dmatrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);
+int **imatrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);
+float **submatrix(float **a, GMT_LONG oldrl, GMT_LONG oldrh, GMT_LONG oldcl, GMT_LONG oldch,
+	GMT_LONG newrl, GMT_LONG newcl);
+float **convert_matrix(float *a, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);
+float ***f3tensor(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch, GMT_LONG ndl, GMT_LONG ndh);
+void free_vector(float *v, GMT_LONG nl, GMT_LONG nh);
+void free_ivector(int *v, GMT_LONG nl, GMT_LONG nh);
+void free_cvector(unsigned char *v, GMT_LONG nl, GMT_LONG nh);
+void free_lvector(size_t *v, GMT_LONG nl, GMT_LONG nh);
+void free_dvector(double *v, GMT_LONG nl, GMT_LONG nh);
+void free_matrix(float **m, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);
+void free_dmatrix(double **m, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);
+void free_imatrix(int **m, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);
+void free_submatrix(float **b, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);
+void free_convert_matrix(float **b, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);
+void free_f3tensor(float ***t, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch,
+	GMT_LONG ndl, GMT_LONG ndh);
 
 #else /* ANSI */
 /* traditional - K&R */
@@ -45,10 +45,10 @@ float **convert_matrix();
 float ***f3tensor();
 double *dvector();
 double **dmatrix();
-GMT_LONG *ivector();
-GMT_LONG **imatrix();
+int *ivector();
+int **imatrix();
 unsigned char *cvector();
-unsigned long *lvector();
+unsigned GMT_LONG *lvector();
 void free_vector();
 void free_dvector();
 void free_ivector();

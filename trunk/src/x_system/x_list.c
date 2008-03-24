@@ -1,5 +1,5 @@
 /*
- *	$Id: x_list.c,v 1.8 2008-03-22 11:55:37 guru Exp $
+ *	$Id: x_list.c,v 1.9 2008-03-24 08:58:33 guru Exp $
  *
  * XLIST produces ASCII listings of cross-over info. The xx_base.b-file
  * contains longitude(x), latitude(y), time1(t1), time2(t2),  heading1(h),
@@ -250,8 +250,8 @@ int main (int argc, char *argv[])
 
 	/* Read first record of file containing n_records */
 
-	fread ((void *)header, REC_SIZE, (size_t)1, fp);
-	ok = fread ((void *)header, REC_SIZE, (size_t)1, fp);
+	fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fp);
+	ok = fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fp);
 
 
 	if (SH_format) {
@@ -331,7 +331,7 @@ int main (int argc, char *argv[])
 			shift_ok = (id1 >=0 && id2 >= 0);
 			if (verbose) fprintf (stderr, "%s %s nx=%ld\n", lega, legb, n_x);
 			for (j = 0; j < n_x; j++) {
-				if ((ok = fread ((void *)&crossover, REC_SIZE, (size_t)1, fp)) != (size_t)1) {
+				if ((ok = fread ((void *)&crossover, (size_t)REC_SIZE, (size_t)1, fp)) != (size_t)1) {
 					fprintf (stderr, "Read error on xx_base.b\n");
 					exit (EXIT_FAILURE);
 				}
@@ -451,7 +451,7 @@ int main (int argc, char *argv[])
           			exit (EXIT_FAILURE);
           		}
           	}
-		ok = fread ((void *)header, REC_SIZE, (size_t)1, fp);
+		ok = fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fp);
 	}
 	fclose (fp);
 

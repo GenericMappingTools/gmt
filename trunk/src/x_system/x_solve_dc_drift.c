@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.9 2008-03-22 11:55:37 guru Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.10 2008-03-24 08:58:33 guru Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -189,7 +189,7 @@ int main (int argc, char **argv)
 
 	/* Read xx_legs.b file */
 	i = 0;
-	while (fread ((void *)&leg[i], legsize, 1, fpl) == 1) i++;
+	while (fread ((void *)&leg[i], (size_t)legsize, (size_t)1, fpl) == 1) i++;
 	fclose (fpl);
 	nlegs = i;
 
@@ -233,9 +233,9 @@ int main (int argc, char **argv)
 			sum2[j] = 0.0;
 		}
 
-		fseek (fpb, (long int)REC_SIZE, SEEK_SET);
+		fseek (fpb, (long)REC_SIZE, SEEK_SET);
 
-		while (fread ((void *)header, REC_SIZE, 1, fpb) == 1) {
+		while (fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fpb) == 1) {
 			sscanf(header, "%s %s %ld",lega, legb, &n_x);
 			if (!strcmp(lega, legb)) {	/* Internal crossovers, skip this pair */
 				fseek (fpb, (long int)(n_x*REC_SIZE), SEEK_CUR);
@@ -272,7 +272,7 @@ int main (int argc, char **argv)
 			/* Sum up the statistics for these crossovers */
 
 			for (i = 0; i < n_x; i++) {
-				fread ((void *)&crossover, REC_SIZE, 1, fpb);
+				fread ((void *)&crossover, (size_t)REC_SIZE, (size_t)1, fpb);
 				if (test_area) { /* Must see if xover is inside the area specified */
 					if (crossover.lat < south_i || crossover.lat > north_i) continue;
 					lon_i = crossover.lon;
@@ -355,7 +355,7 @@ int main (int argc, char **argv)
 
 		if (n_iterations == 0) {
 			printf ("One more iteration?: ");
-			fgets (string, sizeof (string), stdin);
+			fgets (string, (size_t)10, stdin);
 			if (string[0] == 'N' || string[0] == 'n') ok = FALSE;
 		}
 		else if (iteration >= n_iterations)
@@ -380,7 +380,7 @@ int main (int argc, char **argv)
 		else {
 			fpl = fopen(lfile, "w");
 			for (i = 0; i < nlegs; i++)
-				fwrite((char *)&leg[i], legsize, 1, fpl);
+				fwrite((char *)&leg[i], (size_t)legsize, (size_t)1, fpl);
 			fclose(fpl);
 		}
 	}
@@ -408,7 +408,7 @@ int main (int argc, char **argv)
 				bin.dc_shift_gmt[j] = (float) leg[i].dc_shift_gmt[j];
 				bin.drift_rate_gmt[j] = (float) leg[i].drift_rate_gmt[j];
 			}
-			fwrite ((void *)&bin, binsize, 1, fpbin);
+			fwrite ((void *)&bin, (size_t)binsize, (size_t)1, fpbin);
 		}
 		if (asc_on) {	/* Use ASCII output format */
 			fprintf (fpasc, "%s\t%d\t%.2f\t%g\t%.2f\t%g\t%.2f\t%g\n",

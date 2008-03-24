@@ -1,4 +1,4 @@
-/*	$Id: utilstrain.c,v 1.7 2008-03-22 11:55:36 guru Exp $
+/*	$Id: utilstrain.c,v 1.8 2008-03-24 08:58:32 guru Exp $
  *    Copyright (c) 1996-2008 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -10,7 +10,7 @@
 #define veclen(x, y) sqrt((x) * (x) + (y) * (y))
 
 /************************************************************************/
-GMT_LONG trace_cross (double slon,double slat,double eps1,double eps2,double theta,double sscale,double v_width,double h_length,double h_width,double vector_shape,BOOLEAN outline,struct GMT_PEN pen)
+int trace_cross (double slon,double slat,double eps1,double eps2,double theta,double sscale,double v_width,double h_length,double h_width,double vector_shape,BOOLEAN outline,struct GMT_PEN pen)
 
      /* make a Strain rate cross at(slat,slon) */
 
@@ -153,7 +153,7 @@ GMT_LONG trace_cross (double slon,double slat,double eps1,double eps2,double the
 } 
 
 /************************************************************************/
-GMT_LONG trace_wedge1 (double spin,double spinsig,double sscale,double wedge_amp,double *x,double *y)
+int trace_wedge1 (double spin,double spinsig,double sscale,double wedge_amp,double *x,double *y)
 
      /* make a rotation rate wedge and return in x,y */
 
@@ -169,11 +169,11 @@ GMT_LONG trace_wedge1 (double spin,double spinsig,double sscale,double wedge_amp
      
      {                          
 
-     GMT_LONG nstep,i1,i;
+     int nstep,i1,i;
      double th,x0,y0,spin10,sig10,th0;
      double x1,y1;
      double s, c;
-     GMT_LONG nump;
+     int nump;
 
 /*     How far would we spin */
       spin10 = wedge_amp * spin;
@@ -243,7 +243,7 @@ GMT_LONG trace_wedge1 (double spin,double spinsig,double sscale,double wedge_amp
 
 /************************************************************************/
 
-GMT_LONG trace_wedge (double spin,double sscale,double wedge_amp,GMT_LONG lines,double *x,double *y)
+int trace_wedge (double spin,double sscale,double wedge_amp,int lines,double *x,double *y)
 
      /* make a rotation rate wedge and return in x,y */
 
@@ -259,11 +259,11 @@ GMT_LONG trace_wedge (double spin,double sscale,double wedge_amp,GMT_LONG lines,
      
      {                          
 
-     GMT_LONG nstep,i1,i;
+     int nstep,i1,i;
      double th,x0,y0,spin10,th0;
      double x1,y1;
      double s, c;
-     GMT_LONG nump;
+     int nump;
 
 /*     How far would we spin */
       spin10 = wedge_amp * spin;
@@ -314,7 +314,7 @@ GMT_LONG trace_wedge (double spin,double sscale,double wedge_amp,GMT_LONG lines,
 }
 
 /************************************************************************/
-GMT_LONG trace_sigwedge (double spin,double spinsig,double sscale,double wedge_amp,double *x,double *y)
+int trace_sigwedge (double spin,double spinsig,double sscale,double wedge_amp,double *x,double *y)
 
 
      /* make a rotation rate uncertainty wedge and return in x,y */
@@ -331,11 +331,11 @@ GMT_LONG trace_sigwedge (double spin,double spinsig,double sscale,double wedge_a
      
      {                          
 
-     GMT_LONG nstep, i;
+     int nstep, i;
      double th,x0,y0,spin10,sig10,th0;
      double x1,y1;
      double s,c;
-     GMT_LONG nump;
+     int nump;
 
 /*     How far would we spin */
       spin10 = wedge_amp * spin;
@@ -374,9 +374,9 @@ GMT_LONG trace_sigwedge (double spin,double spinsig,double sscale,double wedge_a
 /********************************************************************/
 
 void paint_wedge (double x0, double y0, double spin, double spinsig, double sscale, double wedge_amp, double t11,double t12,double t21,double t22,
-		  GMT_LONG polygon, GMT_LONG rgb[3],
-                  GMT_LONG epolygon, GMT_LONG ergb[3],
-		  GMT_LONG outline)
+		  int polygon, int rgb[3],
+                  int epolygon, int ergb[3],
+		  int outline)
 
 /* Make a wedge at center x0,y0  */
 
@@ -385,7 +385,7 @@ void paint_wedge (double x0, double y0, double spin, double spinsig, double ssca
 #define NPOINTS 1000
 
      GMT_LONG    npoints = NPOINTS;
-     GMT_LONG  i;
+     int  i;
 
      /* relative to center of ellipse */
      double dxe[NPOINTS],dye[NPOINTS];

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.h,v 1.7 2008-03-22 11:55:34 guru Exp $
+ *    $Id: block_subs.h,v 1.8 2008-03-24 08:58:30 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -93,4 +93,4 @@ struct BLK_DATA {
 int BLK_compare_x (const void *point_1, const void *point_2);
 int BLK_compare_y (const void *point_1, const void *point_2);
 int BLK_compare_index_z (const void *point_1, const void *point_2);
-int BLK_compare_sub (const void *point_1, const void *point_2, GMT_LONG item);
+int BLK_compare_sub (const void *point_1, const void *point_2, int item);

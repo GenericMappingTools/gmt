@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.16 2008-03-22 11:55:37 guru Exp $
+ *	$Id: spotter.h,v 1.17 2008-03-24 08:58:33 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -54,13 +54,13 @@ struct FLOWLINE {			/* Structure with the nearest nodes for a single flowline */
 
 /* ANSI-C Function prototypes (see libspotter.c for details): */
 
-EXTERN_MSC GMT_LONG spotter_init (char *file, struct EULER **p, GMT_LONG flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max, BOOLEAN verbose);
-EXTERN_MSC GMT_LONG spotter_backtrack  (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
-EXTERN_MSC GMT_LONG spotter_forthtrack (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
+EXTERN_MSC int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max, BOOLEAN verbose);
+EXTERN_MSC int spotter_backtrack  (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
+EXTERN_MSC int spotter_forthtrack (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
 EXTERN_MSC void spotter_finite_to_stages (struct EULER p[], GMT_LONG n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 EXTERN_MSC void spotter_stages_to_finite (struct EULER p[], GMT_LONG n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 EXTERN_MSC void spotter_add_rotations (struct EULER a[], GMT_LONG n_a, struct EULER b[], GMT_LONG n_b, struct EULER *c[], GMT_LONG *n_c);
 EXTERN_MSC double spotter_t2w (struct EULER a[], GMT_LONG n, double t);
-EXTERN_MSC GMT_LONG spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT_LONG np, char conf, double out[]);
+EXTERN_MSC int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT_LONG np, char conf, double out[]);
 EXTERN_MSC void matrix_vect_mult (double a[3][3], double b[3], double c[3]);
 EXTERN_MSC void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);

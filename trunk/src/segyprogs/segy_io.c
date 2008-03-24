@@ -4,7 +4,7 @@
 
 
 /*
- *	$Id: segy_io.c,v 1.2 2007-01-31 17:00:03 pwessel Exp $
+ *	$Id: segy_io.c,v 1.3 2008-03-24 08:58:33 guru Exp $
  * segy_io.c:  A suite of functions to cover reading SEGY header variables.
  *
  * modified by T. Henstock from the PASSCAL software suite.
@@ -44,7 +44,7 @@ int get_segy_reelhd (fileptr, reelhead)
 	int igot;
 
 
-        if ((igot = fread (reelhead, 3200, 1, fileptr)) != 1) {
+        if ((igot = fread (reelhead, (size_t)3200, (size_t)1, fileptr)) != 1) {
 		fprintf(stderr,"Error reading SEGY reel header \n");
 		exit(1);
 		}
@@ -61,7 +61,7 @@ int get_segy_binhd (fileptr, binhead)
 	int igot;
 
 
-	if ((igot = fread (binhead, 400, 1, fileptr)) !=1) {
+	if ((igot = fread (binhead, (size_t)400, (size_t)1, fileptr)) !=1) {
 		fprintf(stderr, "Error reading SEGY binary header \n");
 		return(FALSE);
 		}
@@ -92,12 +92,12 @@ SEGYHEAD *get_segy_header(file_ptr)
   SEGYHEAD       *head_ptr;
 
   /* get memory for SegyHead'er */
-  if ((head_ptr = (SEGYHEAD *) calloc(1, 240)) == NULL) {
+  if ((head_ptr = (SEGYHEAD *) calloc((size_t)1, (size_t)240)) == NULL) {
     fprintf(stderr, "Error: Out of memory for SEGY Headers ");
     return (NULL);
   }
   /* read in the header */
-  if (fread(head_ptr, 240, 1, file_ptr) != 1) {
+  if (fread(head_ptr, (size_t)240, (size_t)1, file_ptr) != 1) {
     fprintf(stderr, "Error: Unable to read next trace header -- end of file?\n");
     free(head_ptr);
     return (NULL);

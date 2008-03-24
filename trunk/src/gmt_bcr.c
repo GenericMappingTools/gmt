@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.4 2008-03-22 11:55:34 guru Exp $
+ *	$Id: gmt_bcr.c,v 1.5 2008-03-24 08:58:30 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -78,7 +78,7 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-void GMT_bcr_init (struct GRD_HEADER *grd, GMT_LONG *pad, GMT_LONG interpolant, double threshold, struct GMT_BCR *bcr)
+void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int interpolant, double threshold, struct GMT_BCR *bcr)
 {
 	/* Initialize interpolant and threshold */
 	bcr->interpolant = interpolant;

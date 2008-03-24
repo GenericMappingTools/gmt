@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.76 2008-03-22 11:55:37 guru Exp $
+ *	$Id: x2sys.c,v 1.77 2008-03-24 08:58:33 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -69,12 +69,12 @@ char *x2sys_header = "> %s %ld %s %ld\n";
 struct MGD77_CONTROL M;
 
 void x2sys_set_home (void);
-GMT_LONG x2sys_record_length (struct X2SYS_INFO *s);
-GMT_LONG get_first_year (double t);
+int x2sys_record_length (struct X2SYS_INFO *s);
+int get_first_year (double t);
 
 #define MAX_DATA_PATHS 32
 char *x2sys_datadir[MAX_DATA_PATHS];	/* Directories where track data may live */
-GMT_LONG n_x2sys_paths = 0;			/* Number of these directories */
+int n_x2sys_paths = 0;			/* Number of these directories */
 
 void x2sys_path (char *fname, char *path)
 {
@@ -99,9 +99,9 @@ FILE *x2sys_fopen (char *fname, char *mode)
 	return (fp);
 }
 
-GMT_LONG x2sys_access (char *fname,  GMT_LONG mode)
+int x2sys_access (char *fname,  int mode)
 {
-	GMT_LONG k;
+	int k;
 	char file[BUFSIZ];
 	x2sys_path (fname, file);
 	if ((k = access (file, mode))) {	/* Not in X2SYS_HOME directory */
@@ -110,7 +110,7 @@ GMT_LONG x2sys_access (char *fname,  GMT_LONG mode)
 	return (k);
 }
 
-GMT_LONG x2sys_fclose (char *fname, FILE *fp)
+int x2sys_fclose (char *fname, FILE *fp)
 {
 
 	if (fclose (fp)) return (X2SYS_FCLOSE_ERR);
@@ -119,7 +119,7 @@ GMT_LONG x2sys_fclose (char *fname, FILE *fp)
 
 void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s)
 {
-	GMT_LONG i;
+	int i;
 	char line[BUFSIZ];
 
 	if (s->ascii_in) {	/* ASCII, skip records */
@@ -137,9 +137,10 @@ void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s)
  * array called data[] with each data value in it.
  */
 
-GMT_LONG x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
+int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
 {
-	GMT_LONG j, k, i, n_read = 0, pos;
+	int j, k, i, n_read = 0;
+	int pos;
 	BOOLEAN error = FALSE;
 	char line[BUFSIZ], buffer[GMT_TEXT_LEN], p[BUFSIZ], c;
 	unsigned char u;
@@ -164,7 +165,7 @@ GMT_LONG x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct
 					}
 					GMT_chop (line);	/* Remove trailing CR or LF */
 				}
-				strncpy (buffer, &line[s->info[j].start_col], s->info[j].n_cols);
+				strncpy (buffer, &line[s->info[j].start_col], (size_t)s->info[j].n_cols);
 				buffer[s->info[j].n_cols] = 0;
 				GMT_scanf (buffer, G->in_col_type[j], &data[j]);
 				break;
@@ -240,7 +241,7 @@ GMT_LONG x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct
 	return ((error || n_read != s->n_fields) ? -1 : 0);
 }
  
-GMT_LONG x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
+int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
@@ -270,8 +271,8 @@ GMT_LONG x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, str
 
 	n_alloc = GMT_CHUNK;
 
-	rec = (double *) GMT_memory (VNULL, s->n_fields, sizeof (double), "x2sys_read_file");
-	z = (double **) GMT_memory (VNULL, s->n_fields, sizeof (double *), "x2sys_read_file");
+	rec = (double *) GMT_memory (VNULL, (size_t)s->n_fields, sizeof (double), "x2sys_read_file");
+	z = (double **) GMT_memory (VNULL, (size_t)s->n_fields, sizeof (double *), "x2sys_read_file");
 	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "x2sys_read_file");
 	p->ms_rec = (GMT_LONG *) GMT_memory (VNULL, n_alloc, sizeof (GMT_LONG), "x2sys_read_file");
 	x2sys_skip_header (fp, s);
@@ -299,17 +300,17 @@ GMT_LONG x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, str
 
 	p->n_rows = j;
 	p->year = 0;
-	strncpy (p->name, fname, 32);
+	strncpy (p->name, fname, (size_t)32);
 	*n_rec = p->n_rows;
 
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
+int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
 {
 	/* Reads the format definition file and sets all information variables */
 
-	GMT_LONG i = 0, c;
+	int i = 0, c;
 	size_t n_alloc = GMT_TINY_CHUNK;
 	FILE *fp;
 	struct X2SYS_INFO *X;
@@ -348,10 +349,10 @@ GMT_LONG x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '\0') continue;
 		if (line[0] == '#') {
-			if (!strncmp (line, "#SKIP ", 6)) X->skip = atoi (&line[6]);
-			if (!strncmp (line, "#BINARY ", 7)) X->ascii_in = FALSE;
-			if (!strncmp (line, "#GEO ", 3)) X->geographic = TRUE;
-			if (!strncmp (line, "#MULTISEG ", 9)) {
+			if (!strncmp (line, "#SKIP ", (size_t)6)) X->skip = atoi (&line[6]);
+			if (!strncmp (line, "#BINARY ", (size_t)7)) X->ascii_in = FALSE;
+			if (!strncmp (line, "#GEO ", (size_t)3)) X->geographic = TRUE;
+			if (!strncmp (line, "#MULTISEG ", (size_t)9)) {
 				X->multi_segment = TRUE;
 				sscanf (line, "%*s %c", &X->ms_flag);
 			}
@@ -361,19 +362,19 @@ GMT_LONG x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I
 
 		sscanf (line, "%s %c %c %lf %lf %lf %s %s", X->info[i].name, &X->info[i].intype, &yes_no, &X->info[i].nan_proxy, &X->info[i].scale, &X->info[i].offset, X->info[i].format, cardcol);
 		if (X->info[i].intype == 'A') {	/* ASCII Card format */
-			sscanf (cardcol, "%ld-%ld", &X->info[i].start_col, &X->info[i].stop_col);
+			sscanf (cardcol, "%d-%d", &X->info[i].start_col, &X->info[i].stop_col);
 			X->info[i].n_cols = X->info[i].stop_col - X->info[i].start_col + 1;
 		}
-		c = (GMT_LONG)X->info[i].intype;
+		c = (int)X->info[i].intype;
 		if (tolower (c) != 'a') X->ascii_in = FALSE;
-		c = (GMT_LONG)yes_no;
+		c = (int)yes_no;
 		if (tolower (c) != 'Y') X->info[i].has_nan_proxy = TRUE;
 		if (!(X->info[i].scale == 1.0 && X->info[i].offset == 0.0)) X->info[i].do_scale = TRUE;
 		if (!strcmp (X->info[i].name, "x") || !strcmp (X->info[i].name, "lon"))  X->x_col = i;
 		if (!strcmp (X->info[i].name, "y") || !strcmp (X->info[i].name, "lat"))  X->y_col = i;
 		if (!strcmp (X->info[i].name, "t") || !strcmp (X->info[i].name, "time")) X->t_col = i;
 		i++;
-		if (i == (GMT_LONG)n_alloc) {
+		if (i == (int)n_alloc) {
 			n_alloc <<= 1;
 			X->info = (struct X2SYS_DATA_INFO *) GMT_memory ((void *)X->info, n_alloc, sizeof (struct X2SYS_DATA_INFO), "x2sys_initialize");
 		}
@@ -381,7 +382,7 @@ GMT_LONG x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I
 	}
 	fclose (fp);
 
-	if (i < (GMT_LONG)n_alloc) X->info = (struct X2SYS_DATA_INFO *) GMT_memory ((void *)X->info, i, sizeof (struct X2SYS_DATA_INFO), "x2sys_initialize");
+	if (i < (int)n_alloc) X->info = (struct X2SYS_DATA_INFO *) GMT_memory ((void *)X->info, (size_t)i, sizeof (struct X2SYS_DATA_INFO), "x2sys_initialize");
 	X->n_fields = X->n_out_columns = i;
 
 	if (!X->ascii_in) {	/* Binary mode needed */
@@ -389,8 +390,8 @@ GMT_LONG x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I
 		strcpy (G->w_mode, "wb");
 		strcpy (G->a_mode, "ab+");
 	}
-	X->out_order  = (GMT_LONG *) GMT_memory (VNULL, sizeof (GMT_LONG), (size_t)X->n_fields, "x2sys_initialize");
-	X->use_column = (GMT_LONG *) GMT_memory (VNULL, sizeof (GMT_LONG), (size_t)X->n_fields, "x2sys_initialize");
+	X->out_order  = (int *) GMT_memory (VNULL, sizeof (int), (size_t)X->n_fields, "x2sys_initialize");
+	X->use_column = (int *) GMT_memory (VNULL, sizeof (int), (size_t)X->n_fields, "x2sys_initialize");
 	for (i = 0; i < X->n_fields; i++) {	/* Default is same order and use all columns */
 		X->out_order[i] = i;
 		X->use_column[i] = 1;
@@ -403,9 +404,9 @@ GMT_LONG x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_record_length (struct X2SYS_INFO *s)
+int x2sys_record_length (struct X2SYS_INFO *s)
 {
-	GMT_LONG i, rec_length = 0;
+	int i, rec_length = 0;
 
 	for (i = 0; i < s->n_fields; i++) {
 		switch (s->info[i].intype) {
@@ -431,9 +432,9 @@ GMT_LONG x2sys_record_length (struct X2SYS_INFO *s)
 	return (rec_length);
 }
 
-GMT_LONG x2sys_n_data_cols (struct X2SYS_INFO *s)
+int x2sys_n_data_cols (struct X2SYS_INFO *s)
 {
-	GMT_LONG i, n = 0;
+	int i, n = 0;
 
 	for (i = 0; i < s->n_out_columns; i++) {	/* Loop over all possible fields in this data set */
 		if (i == s->x_col) continue;
@@ -445,7 +446,7 @@ GMT_LONG x2sys_n_data_cols (struct X2SYS_INFO *s)
 	return (n);
 }
 
-GMT_LONG x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
+int x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 {
 	/* Scan the -Fstring and select which columns to use and which order
 	 * they should appear on output.  Default is all columns and the same
@@ -454,11 +455,11 @@ GMT_LONG x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 	 */
 
 	char line[BUFSIZ], p[BUFSIZ];
-	GMT_LONG i = 0, j, pos = 0;
+	int i = 0, j, pos = 0;
 
-	strncpy (s->fflags, string, BUFSIZ);
-	strncpy (line, string, BUFSIZ);	/* Make copy for later use */
-	memset ((void *)s->use_column, 0, (size_t)(s->n_fields * sizeof (GMT_LONG)));
+	strncpy (s->fflags, string, (size_t)BUFSIZ);
+	strncpy (line, string, (size_t)BUFSIZ);	/* Make copy for later use */
+	memset ((void *)s->use_column, 0, (size_t)(s->n_fields * sizeof (int)));
 
 	s->x_col = s->y_col = s->t_col = -1;	/* Need to reset this to match data order */
 	while ((GMT_strtok (line, ",", &pos, p))) {
@@ -491,11 +492,11 @@ void x2sys_set_home (void)
 	if (X2SYS_HOME) return;	/* Already set elsewhere */
 
 	if ((this = getenv ("X2SYS_HOME")) != CNULL) {	/* Set user's default path */
-		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), 1, "x2sys_set_home");
+		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "x2sys_set_home");
 		strcpy (X2SYS_HOME, this);
 	}
 	else {
-		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_SHAREDIR) + 7), 1, "x2sys_set_home");
+		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_SHAREDIR) + 7), (size_t)1, "x2sys_set_home");
 		sprintf (X2SYS_HOME, "%s%cx2sys", GMT_SHAREDIR, DIR_DELIM);
 	}
 }
@@ -506,9 +507,9 @@ void x2sys_free_info (struct X2SYS_INFO *s)
 	GMT_free ((void *)s);
 }
 
-void x2sys_free_data (double **data, GMT_LONG n)
+void x2sys_free_data (double **data, int n)
 {
-	GMT_LONG i;
+	int i;
 
 	for (i = 0; i < n; i++) GMT_free ((void *)data[i]);
 	GMT_free ((void *)data);
@@ -528,7 +529,7 @@ double *x2sys_dummytimes (GMT_LONG n)
 	return (t);
 }
 
-GMT_LONG x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
+int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
@@ -551,7 +552,7 @@ GMT_LONG x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, 
 		s->flags |= 1;
 	}
 
-	strncpy (name, fname, 80);
+	strncpy (name, fname, (size_t)80);
 	if (strstr (fname, ".gmt"))	/* Name includes .gmt suffix */
 		name[strlen(fname)-4] = 0;
 
@@ -606,9 +607,10 @@ GMT_LONG x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, 
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
+int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
-	GMT_LONG i, j, col[MGD77_N_DATA_EXTENDED], n_alloc = GMT_CHUNK;
+	GMT_LONG i, j;
+	int col[MGD77_N_DATA_EXTENDED], n_alloc = GMT_CHUNK;
 	char path[BUFSIZ], *tvals[MGD77_N_STRING_FIELDS];
 	double **z, dvals[MGD77_N_DATA_EXTENDED];
 	struct MGD77_HEADER H;
@@ -630,7 +632,7 @@ GMT_LONG x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	for (i = 0; i < MGD77_N_STRING_FIELDS; i++) tvals[i] = (char *) GMT_memory (VNULL, 9, sizeof (char), "x2sys_read_mgd77file");
+	for (i = 0; i < MGD77_N_STRING_FIELDS; i++) tvals[i] = (char *) GMT_memory (VNULL, (size_t)9, sizeof (char), "x2sys_read_mgd77file");
 	z = (double **) GMT_memory (VNULL, (size_t)s->n_fields, sizeof (double *), "x2sys_read_mgd77file");
 	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "x2sys_read_mgd77file");
 	for (i = 0; i < s->n_out_columns; i++) {
@@ -651,7 +653,7 @@ GMT_LONG x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s
 	}
 	MGD77_Close_File (&M);
 
-	strncpy (p->name, fname, 32);
+	strncpy (p->name, fname, (size_t)32);
 	p->n_rows = j;
 	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)p->n_rows, sizeof (double), "x2sys_read_mgd77file");
 
@@ -665,7 +667,7 @@ GMT_LONG x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG get_first_year (double t)
+int get_first_year (double t)
 {
 	/* obtain yyyy/mm/dd and return year */
 	GMT_cal_rd rd;
@@ -676,9 +678,9 @@ GMT_LONG get_first_year (double t)
 	return (CAL.year);
 }
 
-GMT_LONG x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
+int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
-	GMT_LONG i;
+	int i;
 	double **z;
 	struct MGD77_DATASET *S;
 	struct MGD77_CONTROL M;
@@ -707,7 +709,7 @@ GMT_LONG x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, s
 	z = (double **) GMT_memory (VNULL, (size_t)M.n_out_columns, sizeof (double *), "x2sys_read_nc77file");
 	for (i = 0; i < M.n_out_columns; i++) z[i] = (double *) S->values[i];
 
-	strncpy (p->name, fname, 32);
+	strncpy (p->name, fname, (size_t)32);
 	p->n_rows = S->H.n_records;
 	p->ms_rec = NULL;
 	p->n_segments = 0;
@@ -721,7 +723,7 @@ GMT_LONG x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, s
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_xover_output (FILE *fp, GMT_LONG n, double out[])
+int x2sys_xover_output (FILE *fp, int n, double out[])
 {
 	/* Write old xover formatted output.  This assumes data files are .gmt files */
 
@@ -731,9 +733,9 @@ GMT_LONG x2sys_xover_output (FILE *fp, GMT_LONG n, double out[])
 	return (12);
 }
 
-GMT_LONG x2sys_read_list (char *file, char ***list, GMT_LONG *nf)
+int x2sys_read_list (char *file, char ***list, int *nf)
 {
-	GMT_LONG n_alloc = GMT_CHUNK, n = 0;
+	int n_alloc = GMT_CHUNK, n = 0;
 	char **p, line[BUFSIZ], name[GMT_TEXT_LEN];
 	FILE *fp;
 
@@ -742,7 +744,7 @@ GMT_LONG x2sys_read_list (char *file, char ***list, GMT_LONG *nf)
 		return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 	
-	p = (char **) GMT_memory (VNULL, n_alloc, sizeof (char *), "x2sys_read_list");
+	p = (char **) GMT_memory (VNULL, (size_t)n_alloc, sizeof (char *), "x2sys_read_list");
 
 	while (fgets (line, BUFSIZ, fp)) {
 		GMT_chop (line);	/* Remove trailing CR or LF */
@@ -752,12 +754,12 @@ GMT_LONG x2sys_read_list (char *file, char ***list, GMT_LONG *nf)
 		n++;
 		if (n == n_alloc) {
 			n_alloc <<= 1;
-			p = (char **) GMT_memory ((void *)p, n_alloc, sizeof (char *), "x2sys_read_list");
+			p = (char **) GMT_memory ((void *)p, (size_t)n_alloc, sizeof (char *), "x2sys_read_list");
 		}
 	}
 	fclose (fp);
 
-	p = (char **) GMT_memory ((void *)p, n, sizeof (char *), "x2sys_read_list");
+	p = (char **) GMT_memory ((void *)p, (size_t)n, sizeof (char *), "x2sys_read_list");
 
 	*list = p;
 	*nf = n;
@@ -765,10 +767,10 @@ GMT_LONG x2sys_read_list (char *file, char ***list, GMT_LONG *nf)
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G)
+int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
 	char tag_file[BUFSIZ], line[BUFSIZ], p[BUFSIZ], sfile[BUFSIZ], suffix[16];
-	GMT_LONG geodetic = 0, pos = 0, n;
+	int geodetic = 0, pos = 0, n;
 	double dist;
 	BOOLEAN geographic = FALSE;
 	FILE *fp;
@@ -889,7 +891,7 @@ void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc)
 	if (alloc) B->binflag = (unsigned int *) GMT_memory (VNULL, (size_t)B->nm_bin, sizeof (unsigned int), X2SYS_program);
 }
 
-struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, GMT_LONG id_no, GMT_LONG flag)
+struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, int id_no, int flag)
 {
 	struct X2SYS_BIX_TRACK_INFO *I;
 	I = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory (VNULL, (size_t)1, sizeof (struct X2SYS_BIX_TRACK_INFO), X2SYS_program);
@@ -901,7 +903,7 @@ struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, GMT_LONG id_no, G
 	return (I);
 }
 
-struct X2SYS_BIX_TRACK *x2sys_bix_make_track (GMT_LONG id, GMT_LONG flag)
+struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag)
 {
 	struct X2SYS_BIX_TRACK *T;
 	T = (struct X2SYS_BIX_TRACK *) GMT_memory (VNULL, (size_t)1, sizeof (struct X2SYS_BIX_TRACK), X2SYS_program);
@@ -911,10 +913,10 @@ struct X2SYS_BIX_TRACK *x2sys_bix_make_track (GMT_LONG id, GMT_LONG flag)
 	return (T);
 }
 
-GMT_LONG x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, GMT_LONG mode, GMT_LONG *ID)
+int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID)
 {
 	/* mode = 0 gives linked list, mode = 1 gives fixed array */
-	GMT_LONG id, flag, last_id = -1;
+	int id, flag, last_id = -1;
 	size_t n_alloc = GMT_CHUNK;
 	char track_file[BUFSIZ], track_path[BUFSIZ], line[BUFSIZ], name[BUFSIZ];
 	FILE *ftrack;
@@ -933,10 +935,10 @@ GMT_LONG x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, GMT_LONG mode, G
 	fgets (line, BUFSIZ, ftrack);	/* Skip header record */
 	while (fgets (line, BUFSIZ, ftrack)) {
 		GMT_chop (line);	/* Remove trailing CR or LF */
-		sscanf (line, "%s %ld %ld", name, &id, &flag);
+		sscanf (line, "%s %d %d", name, &id, &flag);
 		if (mode == 1) {
-			if (id >= (GMT_LONG)n_alloc) {
-				while (id >= (GMT_LONG)n_alloc) n_alloc += GMT_CHUNK;
+			if (id >= (int)n_alloc) {
+				while (id >= (int)n_alloc) n_alloc += GMT_CHUNK;
 				B->head = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory ((void *)B->head, n_alloc, sizeof (struct X2SYS_BIX_TRACK_INFO), X2SYS_program);
 			}
 			B->head[id].track_id = id;
@@ -959,11 +961,11 @@ GMT_LONG x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, GMT_LONG mode, G
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
+int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
 {
 	char index_file[BUFSIZ], index_path[BUFSIZ];
 	FILE *fbin;
-	GMT_LONG index = 0, no_of_tracks, i, id, flag;
+	int index = 0, no_of_tracks, i, id, flag;
 
 	sprintf (index_file, "%s_index.b",  TAG);
 	x2sys_path (index_file, index_path);
@@ -975,16 +977,16 @@ GMT_LONG x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
 
 	B->base = (struct X2SYS_BIX_DATABASE *) GMT_memory (VNULL, (size_t)B->nm_bin, sizeof (struct X2SYS_BIX_DATABASE), X2SYS_program);
 
-	while ((fread ((void *)(&index), sizeof (GMT_LONG), (size_t)1, fbin)) == 1) {
-		fread ((void *)(&no_of_tracks), sizeof (GMT_LONG), (size_t)1, fbin);
+	while ((fread ((void *)(&index), sizeof (int), (size_t)1, fbin)) == 1) {
+		fread ((void *)(&no_of_tracks), sizeof (int), (size_t)1, fbin);
 		if (swap) {
 			index = GMT_swab4 (index);
 			no_of_tracks = GMT_swab4 (no_of_tracks);
 		}
 		B->base[index].first_track = B->base[index].last_track = x2sys_bix_make_track (0, 0);
 		for (i = 0; i < no_of_tracks; i++) {
-			fread ((void *)(&id), sizeof (GMT_LONG), (size_t)1, fbin);
-			fread ((void *)(&flag), sizeof (GMT_LONG), (size_t)1, fbin);
+			fread ((void *)(&id), sizeof (int), (size_t)1, fbin);
+			fread ((void *)(&flag), sizeof (int), (size_t)1, fbin);
 			if (swap) {
 				id = GMT_swab4 (id);
 				flag = GMT_swab4 (flag);
@@ -998,27 +1000,27 @@ GMT_LONG x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_bix_get_ij (double x, double y, GMT_LONG *i, GMT_LONG *j, struct X2SYS_BIX *B, GMT_LONG *ID)
+int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B, int *ID)
 {
-	GMT_LONG index = 0;
+	int index = 0;
 
-	*j = (y == B->y_max) ? B->ny_bin - 1 : (GMT_LONG)floor ((y - B->y_min) * B->i_bin_y);
+	*j = (y == B->y_max) ? B->ny_bin - 1 : (int)floor ((y - B->y_min) * B->i_bin_y);
 	if ((*j) < 0 || (*j) >= B->ny_bin) {
-		fprintf (stderr, "x2sys_binlist: j (%ld) outside range implied by -R -I! [0-%ld>\n", *j, B->ny_bin);
+		fprintf (stderr, "x2sys_binlist: j (%d) outside range implied by -R -I! [0-%d>\n", *j, B->ny_bin);
 		return (X2SYS_BIX_BAD_J);
 	}
-	*i = (x == B->x_max) ? B->nx_bin - 1 : (GMT_LONG)floor ((x - B->x_min)  * B->i_bin_x);
+	*i = (x == B->x_max) ? B->nx_bin - 1 : (int)floor ((x - B->x_min)  * B->i_bin_x);
 	if (B->periodic) {
 		while (*i < 0) *i += B->nx_bin;
 		while (*i >= B->nx_bin) *i -= B->nx_bin;
 	}
 	if ((*i) < 0 || (*i) >= B->nx_bin) {
-		fprintf (stderr, "x2sys_binlist: i (%ld) outside range implied by -R -I! [0-%ld>\n", *i, B->nx_bin);
+		fprintf (stderr, "x2sys_binlist: i (%d) outside range implied by -R -I! [0-%d>\n", *i, B->nx_bin);
 		return (X2SYS_BIX_BAD_I);
 	}
 	index = (*j) * B->nx_bin + (*i);
 	if (index < 0 || index >= B->nm_bin) {
-		fprintf (stderr, "x2sys_binlist: Index (%ld) outside range implied by -R -I! [0-%ld>\n", index, B->nm_bin);
+		fprintf (stderr, "x2sys_binlist: Index (%d) outside range implied by -R -I! [0-%ld>\n", index, B->nm_bin);
 		return (X2SYS_BIX_BAD_IJ);
 	}
 
@@ -1032,7 +1034,7 @@ GMT_LONG x2sys_bix_get_ij (double x, double y, GMT_LONG *i, GMT_LONG *j, struct 
  
 void x2sys_path_init (char *TAG)
 {
-	GMT_LONG i;
+	int i;
 	char file[BUFSIZ], line[BUFSIZ];
 	FILE *fp;
 
@@ -1069,9 +1071,9 @@ void x2sys_path_init (char *TAG)
  * to where this data file can be found.  x2sys_path_init must be called first.
  */
  
-GMT_LONG x2sys_get_data_path (char *track_path, char *track, char *suffix)
+int x2sys_get_data_path (char *track_path, char *track, char *suffix)
 {
-	GMT_LONG id;
+	int id;
 	BOOLEAN add_suffix;
 	char geo_path[BUFSIZ];
 
@@ -1110,7 +1112,7 @@ GMT_LONG x2sys_get_data_path (char *track_path, char *track, char *suffix)
 	return(1);	/* Schwinehund! */
 }
 
-const char * x2sys_strerror (GMT_LONG err)
+const char * x2sys_strerror (int err)
 {
 /* Returns the error string for a given error code "err"
    Passes "err" on to nc_strerror if the error code is not one we defined */
@@ -1138,7 +1140,7 @@ const char * x2sys_strerror (GMT_LONG err)
 	}
 }
 
-GMT_LONG x2sys_err_pass (GMT_LONG err, char *file)
+int x2sys_err_pass (int err, char *file)
 {
 	if (err == X2SYS_NOERROR) return (err);
 	/* When error code is non-zero: print error message and pass error code on */
@@ -1149,7 +1151,7 @@ GMT_LONG x2sys_err_pass (GMT_LONG err, char *file)
 	return (err);
 }
 
-void x2sys_err_fail (GMT_LONG err, char *file)
+void x2sys_err_fail (int err, char *file)
 {
 	if (err == X2SYS_NOERROR) return;
 	/* When error code is non-zero: print error message and exit */

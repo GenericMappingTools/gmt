@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.226 2008-03-22 16:16:29 remko Exp $
+	$Id: ChangeLog,v 1.227 2008-03-24 08:58:30 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-03-23	pwessel
+	* ALL:		More solid 64-bit support after full cleansing with -Wconversion.  All 26
+				examples runs clean in both 32-bit and 64-bit mode as do the entire GMT
+				documentation.
+
 2008-03-22	remko
 	* gmt_nc.c:		Moved GMT_nc_get_att_text to gmt_io.c so it can be used more generally.
 	* gmt_io.c:		Implemented GMT_nc_input to support reading netCDF column data (tables).

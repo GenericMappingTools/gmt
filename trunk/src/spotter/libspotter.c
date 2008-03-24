@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.42 2008-03-22 11:55:37 guru Exp $
+ *	$Id: libspotter.c,v 1.43 2008-03-24 08:58:33 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -61,7 +61,7 @@ void set_inout_sides (double x, double y, double wesn[], GMT_LONG sideXY[2]);
 
 void spotter_finite_to_fwstages (struct EULER p[], GMT_LONG n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 
-GMT_LONG spotter_init (char *file, struct EULER **p, GMT_LONG flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max, BOOLEAN verbose)
+int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max, BOOLEAN verbose)
 {
 	/* file;	Name of file with backward stage poles */
 	/* p;		Pointer to stage pole array */
@@ -75,7 +75,7 @@ GMT_LONG spotter_init (char *file, struct EULER **p, GMT_LONG flowline, BOOLEAN 
 	GMT_LONG n, nf, i = 0, j, k, n_alloc = GMT_SMALL_CHUNK;
 	double last_t, K[8];
 
-	e = (struct EULER *) GMT_memory (VNULL, n_alloc, sizeof (struct EULER), "libspotter");
+	e = (struct EULER *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct EULER), "libspotter");
 
 	if ((fp = GMT_fopen (file, "r")) == NULL) {
 		fprintf (stderr, "libspotter: ERROR: Cannot open stage pole file: %s\n", file);
@@ -141,7 +141,7 @@ GMT_LONG spotter_init (char *file, struct EULER **p, GMT_LONG flowline, BOOLEAN 
 		i++;
 		if (i == n_alloc) {
 			n_alloc <<= 1;
-			e = (struct EULER *) GMT_memory ((void *)e, n_alloc, sizeof (struct EULER), "libspotter");
+			e = (struct EULER *) GMT_memory ((void *)e, (size_t)n_alloc, sizeof (struct EULER), "libspotter");
 		}
 	}
 	fclose (fp);
@@ -152,7 +152,7 @@ GMT_LONG spotter_init (char *file, struct EULER **p, GMT_LONG flowline, BOOLEAN 
 	if (!finite_in && finite_out) spotter_stages_to_finite (e, n, TRUE, TRUE);	/* Convert backward stage poles to finite poles */
 
 
-	e = (struct EULER *) GMT_memory ((void *)e, n, sizeof (struct EULER), "libspotter");
+	e = (struct EULER *) GMT_memory ((void *)e, (size_t)n, sizeof (struct EULER), "libspotter");
 
 	if (flowline) {	/* Get the forward stage poles from the total reconstruction poles */
 		spotter_finite_to_fwstages (e, n, TRUE, TRUE);
@@ -178,7 +178,7 @@ GMT_LONG spotter_init (char *file, struct EULER **p, GMT_LONG flowline, BOOLEAN 
  *	age t_zero.  For t_zero = 0 this means the hotspot
  */
 
-GMT_LONG spotter_backtrack (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c)
+int spotter_backtrack (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c)
 /* xp, yp;	Points, in RADIANS */
 /* tp;		Age of feature in m.y. */
 /* np;		# of points */
@@ -207,7 +207,7 @@ GMT_LONG spotter_backtrack (double xp[], double yp[], double tp[], GMT_LONG np, 
 	}
 
 	if (path) {
-		track = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "libspotter");
+		track = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "libspotter");
 		i_km = EQ_RAD / d_km;
 	}
 
@@ -380,8 +380,13 @@ BOOLEAN must_do_track (GMT_LONG sideA[], GMT_LONG sideB[]) {
 	if (sideA[0] == 0 && sideA[1] == 0) return (TRUE);
 	if (sideB[0] == 0 && sideB[1] == 0) return (TRUE);
 	/* Now check if the two points may cut a corner */
+#ifdef __LP64__
+	dx = labs (sideA[0] - sideB[0]);
+	dy = labs (sideA[1] - sideB[1]);
+#else
 	dx = abs (sideA[0] - sideB[0]);
 	dy = abs (sideA[1] - sideB[1]);
+#endif
 	if (dx && dy) return (TRUE);
 	if (dx == 2 || dy == 2) return (TRUE);	/* COuld cut across the box */
 	return (FALSE);
@@ -392,7 +397,7 @@ BOOLEAN must_do_track (GMT_LONG sideA[], GMT_LONG sideB[]) {
  *	seamount of age tp.  For t_zero = 0 this means from the hotspot.
  */
 
-GMT_LONG spotter_forthtrack (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c)
+int spotter_forthtrack (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c)
 /* xp, yp;	Points, in RADIANS */
 /* tp;		Age of feature in m.y. */
 /* np;		# of points */
@@ -421,7 +426,7 @@ GMT_LONG spotter_forthtrack (double xp[], double yp[], double tp[], GMT_LONG np,
 	}
 
 	if (path) {
-		track = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "libspotter");
+		track = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "libspotter");
 		i_km = EQ_RAD / d_km;
 	}
 
@@ -724,9 +729,13 @@ void spotter_add_rotations (struct EULER a[], GMT_LONG n_a, struct EULER b[], GM
 
 	sign_a = (n_a > 0) ? +1.0 : -1.0;
 	sign_b = (n_b > 0) ? +1.0 : -1.0;
+#ifdef __LP64__
+	n_a = labs (n_a);
+	n_b = labs (n_b);
+#else
 	n_a = abs (n_a);
 	n_b = abs (n_b);
-
+#endif
 	/* Allocate more than we need, must likely */
 
 	t = (double *) GMT_memory (VNULL, (size_t)(n_a + n_b), sizeof (double), "libspotter");
@@ -935,7 +944,7 @@ void set_rot_angle (double w, double R[3][3], double E[])
 
 void matrix_mult (double a[3][3], double b[3][3], double c[3][3])
 {	/* C = A * B */
-	GMT_LONG i, j, k;
+	int i, j, k;
 
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {
@@ -947,7 +956,7 @@ void matrix_mult (double a[3][3], double b[3][3], double c[3][3])
 
 void matrix_vect_mult (double a[3][3], double b[3], double c[3])
 {	/* c = A * b */
-	GMT_LONG i, j;
+	int i, j;
 
 	for (i = 0; i < 3; i++) for (j = 0, c[i] = 0.0; j < 3; j++) c[i] += a[i][j] * b[j];
 }
@@ -956,7 +965,7 @@ void matrix_transpose (double At[3][3], double A[3][3])
 {
 	/* Computes the matrix transpose */
 
-	GMT_LONG i, j;
+	int i, j;
 	for (j = 0; j < 3; j++) {
 		for (i = 0; i < 3; i++) {
 			At[i][j] = A[j][i];
@@ -1030,7 +1039,7 @@ void set_I_matrix (double R[3][3])
 	R[0][0] = R[1][1] = R[2][2] = 1.0;
 }
 
-GMT_LONG spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT_LONG np, char flag, double out[])
+int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT_LONG np, char flag, double out[])
 {
 	/* Given time and rotation parameters, calculate uncertainty in the
 	 * reconstructed point in the form of a confidence ellipse.  To follow
@@ -1042,7 +1051,8 @@ GMT_LONG spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p
 	 * that rotation, the covariance matrix is R * cov(r) * R^t.
 	 */
 
-	GMT_LONG matrix_dim = 3, i, j, k, kk = 3, nrots;
+	GMT_LONG matrix_dim = 3L;
+	int i, j, k, kk = 3, nrots;
 	double R[3][3], x[3], y[3], M[3][3], MtRt[3][3], Rt[3][3], RM[3][3], cov[3][3], tmp[3][3], C[9];
 	double z_unit_vector[3], EigenValue[3], EigenVector[9], work1[3], work2[3], x_in_plane[3], y_in_plane[3];
 	double x_comp, y_comp, w;
