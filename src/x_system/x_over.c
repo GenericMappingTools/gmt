@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.10 2008-03-22 11:55:37 guru Exp $
+/*	$Id: x_over.c,v 1.11 2008-03-24 08:58:33 guru Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -531,7 +531,11 @@ int main (int argc, char *argv[])
 		    ym[1][1] = lat[pnt[1]+1];
 		    if (xm[0][1] > xm[1][1]) SWAP(&xm[0][1],&xm[1][1]);
 		    if (ym[0][1] > ym[1][1]) SWAP(&ym[0][1],&ym[1][1]);
+#ifdef __LP64__
+		    delta = labs(pnt[0] - pnt[1]);
+#else
 		    delta = abs(pnt[0] - pnt[1]);
+#endif
 		    if (over_lap(xm,ym) && delta > 1) {
 		      /* Here we have found a possible crossover. We interpolate to
 		       * find the crossover values for position and time along each
@@ -680,7 +684,7 @@ BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, d
         }
       }
 
-      error = GMT_intpol (ti, di, n_int, 1, &tc[leg], &(dx[leg][dtype]), int_mode);	/* Do the interpolation */
+      error = GMT_intpol (ti, di, n_int, (GMT_LONG)1, &tc[leg], &(dx[leg][dtype]), int_mode);	/* Do the interpolation */
 
       if (error != 0) {	/* Oh shit, what could this mean... */
         fprintf(stderr,"x_over : Error = %ld returned from intpol\n",error);

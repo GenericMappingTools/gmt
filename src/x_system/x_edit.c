@@ -1,4 +1,4 @@
-/* $Id: x_edit.c,v 1.6 2008-03-22 11:55:37 guru Exp $
+/* $Id: x_edit.c,v 1.7 2008-03-24 08:58:33 guru Exp $
  *
  * X E D I T  will allow you to convert crossover tables ascii <--> binary
  *
@@ -88,12 +88,12 @@ int main (int argc, char **argv)
 		if (fp != stdin) fclose (fp);
 		nlegs = i;
 		for (i = 0; i < nlegs; i++)
-                    fwrite ((void *)&leg[i], legsize, 1, fpo);
+                    fwrite ((void *)&leg[i], legsize, (size_t)1, fpo);
             fclose(fpo);
 	}
 	else {
 		i = 0;
-		while (fread ((void *)&leg[i], legsize, 1, fp) == 1) i++;
+		while (fread ((void *)&leg[i], legsize, (size_t)1, fp) == 1) i++;
 		nlegs = i;
 		fclose (fp);
 		for (i = 0; i < nlegs; i++)

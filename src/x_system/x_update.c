@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.8 2008-03-22 11:55:37 guru Exp $
+/*	$Id: x_update.c,v 1.9 2008-03-24 08:58:33 guru Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -130,7 +130,7 @@ int main (int argc, char *argv[])
 	n_legs = read_xx_legs(fxl, &leg_head);	/* Initiate list of leg structures */
 
 	fseek (fxb, 0L, SEEK_SET);		/* Go to start of file */
-	if (fread ((void *)header,REC_SIZE, 1, fxb) != 1) {	/* Get next recno to write */
+	if (fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fxb) != 1) {	/* Get next recno to write */
 		fprintf(stderr,"x_update : Read error on xx_base.b\n");
 		exit (EXIT_FAILURE);
 	}
@@ -198,11 +198,11 @@ int main (int argc, char *argv[])
 		/* Copy this info to xx_base.b */
 
 		sprintf (header,"%s %s %10ld", lega, legb, n_x);
-		if (fwrite ((void *)header, REC_SIZE, (size_t)1, fxb) != (size_t)1) {
+		if (fwrite ((void *)header, (size_t)REC_SIZE, (size_t)1, fxb) != (size_t)1) {
 			fprintf(stderr,"x_update : Write header error at rec %ld\n", n_rec);
 			exit (EXIT_FAILURE);
 		}
-		if (fwrite((void *)crossover, REC_SIZE, (size_t)n_x, fxb) != (size_t)n_x) {
+		if (fwrite((void *)crossover, (size_t)REC_SIZE, (size_t)n_x, fxb) != (size_t)n_x) {
 			fprintf(stderr,"x_update : Write data error at rec %ld\n", n_rec);
 			exit (EXIT_FAILURE);
 		}
@@ -261,7 +261,7 @@ int main (int argc, char *argv[])
 
 	fseek (fxb, 0L, SEEK_SET);
 	sprintf(header,"%10ld xx_base.b header",n_rec);
-	if (fwrite((void *)header,REC_SIZE, (size_t)1, fxb) != (size_t)1) {
+	if (fwrite((void *)header, (size_t)REC_SIZE, (size_t)1, fxb) != (size_t)1) {
 		fprintf(stderr,"x_update : Write header error for n_rec = %ld\n",n_rec);
 		exit (EXIT_FAILURE);
 	}
@@ -304,7 +304,7 @@ GMT_LONG read_xx_legs (FILE *fxl, struct LEG **L) {
 	leg_head = make_leg("-----");
 	new_leg = make_leg("-----");
 	last_leg = leg_head;
-	while (fread((void *)new_leg, sizeof(struct LEG), 1, fxl) == 1) {
+	while (fread((void *)new_leg, sizeof(struct LEG), (size_t)1, fxl) == 1) {
 		nlegs++;
 		last_leg->next_leg = new_leg;
 		last_leg = last_leg->next_leg;

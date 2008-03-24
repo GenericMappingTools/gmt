@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.19 2008-03-22 11:55:35 guru Exp $
+ *	$Id: gmt_vector.c,v 1.20 2008-03-24 08:58:31 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -27,7 +27,7 @@
 
 #define MAX_SWEEPS 50
 
-GMT_LONG	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots) {
+int	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, int *nrots) {
 /*
  *
  * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
@@ -279,7 +279,7 @@ GMT_LONG	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, 
 	return(0);
 }
 
-GMT_LONG	GMT_jacobi_old (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots)
+int	GMT_jacobi_old (double *a, int *n, int *m, double *d, double *v, double *b, double *z, int *nrots)
 /*
  *
  * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
@@ -308,7 +308,7 @@ GMT_LONG	GMT_jacobi_old (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double 
    	       	/* Returned.  number of Givens rotations performed.  */
 
 {
-	GMT_LONG	ip, iq, nsweeps, i, j, k;
+	int	ip, iq, nsweeps, i, j, k;
 	double	sum, threshold, g, h, t, theta, c, s, tau, p;
 
 
@@ -462,7 +462,7 @@ GMT_LONG	GMT_jacobi_old (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double 
 	/* Return 0 if converged; else print warning and return -1:  */
 
 	if (nsweeps == MAX_SWEEPS) {
-		fprintf(stderr,"GMT_jacobi:  Failed to converge in %ld sweeps\n", nsweeps);
+		fprintf(stderr,"GMT_jacobi:  Failed to converge in %d sweeps\n", nsweeps);
 		return(-1);
 	}
 	return(0);
@@ -504,7 +504,7 @@ void GMT_cross3v (double *a, double *b, double *c)
 	c[2] = a[0] * b[1] - a[1] * b[0];
 }
 
-void GMT_geo_to_cart (double *alat, double *alon, double *a, GMT_LONG rads)
+void GMT_geo_to_cart (double *alat, double *alon, double *a, int rads)
 {
 	/* Convert geographic latitude and longitude (alat, alon)
 	   to a 3-vector of unit length (a).  rads = TRUE if we
@@ -522,7 +522,7 @@ void GMT_geo_to_cart (double *alat, double *alon, double *a, GMT_LONG rads)
 	a[1] = clat * slon;
 }
 
-void GMT_cart_to_geo (double *alat, double *alon, double *a, GMT_LONG rads)
+void GMT_cart_to_geo (double *alat, double *alon, double *a, int rads)
 {
 	/* Convert a 3-vector (a) of unit length into geographic
 	   coordinates (alat, alon).  rads = TRUE if we want the
@@ -538,7 +538,7 @@ void GMT_cart_to_geo (double *alat, double *alon, double *a, GMT_LONG rads)
 	}
 }
 
-GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double step, GMT_LONG mode)
+GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double step, int mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
@@ -689,7 +689,7 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 	return (n_tmp);
 }		
 
-GMT_LONG GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LONG n) {
+int GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LONG n) {
 
 	/* Given a, a symmetric positive definite matrix
 	of size n, and row dimension nr, compute a lower
@@ -745,7 +745,7 @@ GMT_LONG GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LON
 	return (0);
 }
 
-void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG nerr, GMT_LONG donly) {
+void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, int nerr, int donly) {
 
 	/* Given a, a symmetric positive definite matrix of row dimension nr,
 	and size n >= abs(nerr), one uses GMT_chol_dcmp() to attempt to find
@@ -785,7 +785,7 @@ void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG n
 	kbad = abs(nerr) - 1;
 	nrp1 = nr + 1;
 	
-	for (i = 0, ii = 0; i <=kbad; i++, ii += nrp1) {
+	for (i = 0, ii = 0; i <= kbad; i++, ii += nrp1) {
 		a[ii] = d[i];
 	}
 	

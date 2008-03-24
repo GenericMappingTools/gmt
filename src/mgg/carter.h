@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: carter.h,v 1.6 2008-03-22 11:55:36 guru Exp $
+ *	$Id: carter.h,v 1.7 2008-03-24 08:58:33 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -29,11 +29,11 @@
 
 /* Function ANSI-C prototypes */
 
-GMT_LONG carter_setup (void);
-GMT_LONG carter_get_bin (GMT_LONG lat, GMT_LONG lon, GMT_LONG *bin);
-GMT_LONG carter_get_zone (GMT_LONG bin, GMT_LONG *zone);
-GMT_LONG carter_depth_from_twt (GMT_LONG zone, short int twt_in_msec, short int *depth_in_corr_m);
-GMT_LONG carter_twt_from_depth (GMT_LONG zone, short int depth_in_corr_m, short int *twt_in_msec);
+int carter_setup (void);
+int carter_get_bin (int lat, int lon, int *bin);
+int carter_get_zone (int bin, int *zone);
+int carter_depth_from_twt (int zone, short int twt_in_msec, short int *depth_in_corr_m);
+int carter_twt_from_depth (int zone, short int depth_in_corr_m, short int *twt_in_msec);
 
 
 /* Global variables */
@@ -42,4 +42,4 @@ short int carter_zone[N_CARTER_BINS];
 short int carter_offset[N_CARTER_OFFSETS];
 short int carter_correction[N_CARTER_CORRECTIONS];
 
-GMT_LONG carter_not_initialized = 1;
+int carter_not_initialized = 1;

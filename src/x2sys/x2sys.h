@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.30 2008-03-22 11:55:37 guru Exp $
+ *	$Id: x2sys.h,v 1.31 2008-03-24 08:58:33 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -80,16 +80,16 @@ extern int _chmod (const char *path, int mode);
 
 struct X2SYS_TRK_INFO {			/* Structure with info about one track */
 	char name[32];			/* Name of track */
-	GMT_LONG year;			/* Year the track was collected */
-	GMT_LONG nx_int;			/* Total number of internal track cross-over points */
-	GMT_LONG nx_ext;			/* Total number of external track cross-over points */
-	GMT_LONG flag;			/* Processing flags */
+	int year;			/* Year the track was collected */
+	int nx_int;			/* Total number of internal track cross-over points */
+	int nx_ext;			/* Total number of external track cross-over points */
+	int flag;			/* Processing flags */
 };
 
 struct X2SYS_SET {		/* Structure with info for a data type along the track */
 	char id_set[16];		/* Name of this data type or set */
-	GMT_LONG nx_int;			/* Number of internal data crossovers */
-	GMT_LONG nx_ext;			/* Number of external data crossovers */
+	int nx_int;			/* Number of internal data crossovers */
+	int nx_ext;			/* Number of external data crossovers */
 	double mean_int;		/* Mean data internal xover value */
 	double mean_ext;		/* Mean data external xover value */
 	double stdev_int;		/* St. Dev. of the internal data crossovers */
@@ -112,7 +112,7 @@ struct X2SYS_XOVER_SET {		/* Structure with info on one data type cross-over val
 
 struct X2SYS_CORR {		/* Structure with the corrections for each leg */
 	char id_name[16];		/* Name of track */
-	GMT_LONG year;			/* Year the track was collected */
+	int year;			/* Year the track was collected */
 	double dc_shift;		/* Best fitting d.c.-shift for data set */
 	double drift_rate;		/* Best fitting drift rate for data set [units/sec] */
 };
@@ -120,16 +120,16 @@ struct X2SYS_CORR {		/* Structure with the corrections for each leg */
 struct X2SYS_INFO {
 	/* Information of this datasets particular organization */
 
-	GMT_LONG n_fields;			/* Number of input columns */
-	GMT_LONG n_out_columns;		/* Number of output columns */
-	GMT_LONG n_data_cols;		/* Number of data columns (other than x,y,t) */
+	int n_fields;			/* Number of input columns */
+	int n_out_columns;		/* Number of output columns */
+	int n_data_cols;		/* Number of data columns (other than x,y,t) */
 	size_t rec_size;		/* Number of bytes for a potential x2sys_dbase_*.b file */
-	GMT_LONG x_col, y_col, t_col;	/* Column numbers for x, y, and t */
-	GMT_LONG skip;			/* Number of header records to skip */
-	GMT_LONG flags;			/* Various processing flags for internal use */
-	GMT_LONG *out_order;			/* Array with column number in the order for output */
-	GMT_LONG *use_column;		/* Array of T/F for which columns to use */
-	GMT_LONG geodetic;			/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
+	int x_col, y_col, t_col;	/* Column numbers for x, y, and t */
+	int skip;			/* Number of header records to skip */
+	int flags;			/* Various processing flags for internal use */
+	int *out_order;			/* Array with column number in the order for output */
+	int *use_column;		/* Array of T/F for which columns to use */
+	int geodetic;			/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
 	PFI read_file;			/* Pointer to function that reads this file */
 	BOOLEAN ascii_in;		/* TRUE if input is in ascii */
 	BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
@@ -146,9 +146,9 @@ struct X2SYS_DATA_INFO {
 	double nan_proxy;	/* Value that signifies lack of data (NaN) */
 	double scale;		/* Input value should be multiplied by this value */
 	double offset;		/* And then add this value */
-	GMT_LONG start_col;		/* For cardformat: starting column */
-	GMT_LONG stop_col;		/* For cardformat: last column */
-	GMT_LONG n_cols;		/* For cardformat: number of columns */
+	int start_col;		/* For cardformat: starting column */
+	int stop_col;		/* For cardformat: last column */
+	int n_cols;		/* For cardformat: number of columns */
 	BOOLEAN has_nan_proxy;	/* TRUE if there is a special value that indicates NaN */
 	BOOLEAN has_nans;	/* TRUE if there are NaNs in this field */
 	BOOLEAN do_scale;	/* TRUE if scale != 1 or offset != 0 */
@@ -159,7 +159,7 @@ struct X2SYS_DATA_INFO {
 
 struct X2SYS_FILE_INFO {
 	/* Information for a particular data file */
-	GMT_LONG year;		/* Starting year for this leg */
+	int year;		/* Starting year for this leg */
 	GMT_LONG n_rows;		/* Number of rows */
 	GMT_LONG n_segments;		/* Number of segments in this file */
 	GMT_LONG *ms_rec;		/* Pointer to array with start record for each segment */
@@ -176,31 +176,31 @@ struct X2SYS_BIX {
 	double i_bin_y;		/* 1/dy */
 	double time_gap;	/* We have a data-gap if two records differ by this amount in time */
 	double dist_gap;	/* We have a data-gap if two records differ by this amount in distance [if there is no time column] */
-	GMT_LONG nx_bin;		/* Number of x bins */
-	GMT_LONG ny_bin;		/* Number of y bins */
+	int nx_bin;		/* Number of x bins */
+	int ny_bin;		/* Number of y bins */
 	GMT_LONG nm_bin;		/* Total number of bins */
-	GMT_LONG periodic;		/* 1 if x is periodic */
+	int periodic;		/* 1 if x is periodic */
 	unsigned int *binflag;	/* The bin array */
 	struct X2SYS_BIX_DATABASE *base;
 	struct X2SYS_BIX_TRACK_INFO *head;
 };
 
 struct X2SYS_BIX_DATABASE {
-	GMT_LONG bix;
-	GMT_LONG n_tracks;
+	int bix;
+	int n_tracks;
 	struct X2SYS_BIX_TRACK *first_track, *last_track;
 };
 
 struct X2SYS_BIX_TRACK {
-	GMT_LONG track_id;
-	GMT_LONG track_flag;
+	int track_id;
+	int track_flag;
 	struct X2SYS_BIX_TRACK *next_track;
 };
 	
 struct X2SYS_BIX_TRACK_INFO {
 	char *trackname;
-	GMT_LONG track_id;
-	GMT_LONG flag;
+	int track_id;
+	int flag;
 	struct X2SYS_BIX_TRACK_INFO *next_info;
 };
 
@@ -218,41 +218,41 @@ extern struct MGD77_CONTROL M;
 /* Function prototypes.  These can be accessed in user programs */
 
 extern FILE *x2sys_fopen (char *fname, char *mode);
-extern GMT_LONG x2sys_access (char *fname, GMT_LONG mode);
+extern int x2sys_access (char *fname, int mode);
 extern void x2sys_path (char *fname, char *path);
 
-extern GMT_LONG x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);
-extern GMT_LONG x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-extern GMT_LONG x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-extern GMT_LONG x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-extern GMT_LONG x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
-extern GMT_LONG x2sys_xover_output (FILE *fp, GMT_LONG n, double out[]);
-extern GMT_LONG x2sys_n_data_cols (struct X2SYS_INFO *s);
-extern GMT_LONG x2sys_read_list (char *file, char ***list, GMT_LONG *n);
+extern int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);
+extern int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
+extern int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
+extern int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
+extern int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
+extern int x2sys_xover_output (FILE *fp, int n, double out[]);
+extern int x2sys_n_data_cols (struct X2SYS_INFO *s);
+extern int x2sys_read_list (char *file, char ***list, int *n);
 
 extern double *x2sys_dummytimes (GMT_LONG n);
 
 extern void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s);
-extern GMT_LONG x2sys_fclose (char *fname, FILE *fp);
+extern int x2sys_fclose (char *fname, FILE *fp);
 extern void x2sys_free_info (struct X2SYS_INFO *s);
-extern void x2sys_free_data (double **data, GMT_LONG n);
-extern GMT_LONG x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
+extern void x2sys_free_data (double **data, int n);
+extern int x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
 
-extern GMT_LONG x2sys_initialize (char *fname, struct GMT_IO *G, struct X2SYS_INFO **I);
+extern int x2sys_initialize (char *fname, struct GMT_IO *G, struct X2SYS_INFO **I);
 
-extern GMT_LONG x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
+extern int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
 extern void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc);
-extern struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, GMT_LONG id_no, GMT_LONG flag);
-extern struct X2SYS_BIX_TRACK *x2sys_bix_make_track (GMT_LONG id, GMT_LONG flag);
-extern GMT_LONG x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, GMT_LONG mode, GMT_LONG *ID);
-extern GMT_LONG x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap);
-extern GMT_LONG x2sys_bix_get_ij (double x, double y, GMT_LONG *i, GMT_LONG *j, struct X2SYS_BIX *B, GMT_LONG *ID);
+extern struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, int id_no, int flag);
+extern struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag);
+extern int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID);
+extern int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap);
+extern int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B, int *ID);
 
 extern void x2sys_path_init (char *TAG);
-extern GMT_LONG x2sys_get_data_path (char *track_path, char *track, char *suffix);
-extern GMT_LONG x2sys_err_pass (GMT_LONG err, char *file);
-extern void x2sys_err_fail (GMT_LONG err, char *file);
-extern const char * x2sys_strerror (GMT_LONG err);
+extern int x2sys_get_data_path (char *track_path, char *track, char *suffix);
+extern int x2sys_err_pass (int err, char *file);
+extern void x2sys_err_fail (int err, char *file);
+extern const char * x2sys_strerror (int err);
 
 
 #define X2SYS_NOERROR		0

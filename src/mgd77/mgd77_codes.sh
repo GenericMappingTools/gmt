@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: mgd77_codes.sh,v 1.8 2008-03-22 11:55:36 guru Exp $
+#	$Id: mgd77_codes.sh,v 1.9 2008-03-24 08:58:32 guru Exp $
 #
 #	Convert the trkdas.cod file into two useable files:
 #	1. mgd77_codes.h for inclusion by mgd77info.c
@@ -35,7 +35,7 @@ cat << EOF >> mgd77_codes.h
 };
 
 struct MGD77_VESSEL {
-	GMT_LONG agent;
+	int agent;
 	char code[8];
 	char name[80];
 };

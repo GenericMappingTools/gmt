@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_symbol.h,v 1.22 2008-03-22 11:55:35 guru Exp $
+ *	$Id: gmt_symbol.h,v 1.23 2008-03-24 08:58:31 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,7 +48,7 @@
 
 struct GMT_CUSTOM_SYMBOL_ITEM {
 	double x, y, p[3];
-	GMT_LONG action;
+	int action;
 	struct GMT_FILL *fill;
 	struct GMT_PEN *pen;
 	struct GMT_CUSTOM_SYMBOL_ITEM *next;
@@ -60,7 +60,7 @@ struct GMT_CUSTOM_SYMBOL {
 	struct GMT_CUSTOM_SYMBOL_ITEM *first;
 };
 
-EXTERN_MSC GMT_LONG GMT_n_custom_symbols;
+EXTERN_MSC int GMT_n_custom_symbols;
 EXTERN_MSC struct GMT_CUSTOM_SYMBOL **GMT_custom_symbol;
 
 EXTERN_MSC struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (char *name);

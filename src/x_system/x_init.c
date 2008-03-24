@@ -1,5 +1,5 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *	$Id: x_init.c,v 1.6 2008-03-22 11:55:37 guru Exp $
+ *	$Id: x_init.c,v 1.7 2008-03-24 08:58:33 guru Exp $
  *
  * XINIT will create the xx_base.b and xx_legs.b files and write out
  * the first header record (in xx_base.b) that tells which record number
@@ -38,7 +38,7 @@ int main (int argc, char **argv)
 		fprintf(stderr,"xinit : Successfully created xx_base.b\n");
 
 	sprintf (buffer,"%10ld xx_base.b header",1L);
-	if ((i = fwrite ((void *)buffer, REC_SIZE, 1, fhandle)) != 1) {
+	if ((i = fwrite ((void *)buffer, (size_t)REC_SIZE, (size_t)1, fhandle)) != 1) {
 		fprintf (stderr,"write error on xx_base.b!");
 		exit (EXIT_FAILURE);
 	}

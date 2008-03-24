@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH PSLIB 3 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-pslib 4.0 \- A \fIPostScript\fP based plotting library
+pslib 4.3 \- A \fIPostScript\fP based plotting library
 .SH DESCRIPTION
 .LP
 \fBpslib\fP\fR was created to make the generation of \fIPostScript\fR page
@@ -41,6 +41,13 @@ user-defined resolution (DPI), making it possible to render \fIPostScript\fR on 
 and other non-\fIPostScript\fR raster devices.  Regular Sun rasterfiles created under NeWS
 from \fIPostScript\fR files can be sent to a variety of color hardcopy units.  Check
 the devices available on your network.
+.LP
+The \fBpslib\fP\fR is now fully 64-bit compliant.  However, only a few function parameters
+are affected by this (such as the number of point in an array which can now be a 64-bit
+integer).  These few parameters are here given the type \fBlong\fP to distinguish them
+from \fBint\fP.  Note that under standard 32-bit compilation they are equivalent.  Users
+of this library under 64-bit mode must make sure they pass proper \fBlong\fP variables
+(under Unix flavors) or \fB__int64\fP under Windows 64.
 .SH FUNCTION CALLS
 .LP
 The following is a list of available functions and a short description of what they do and what
@@ -96,7 +103,9 @@ void \fBps_clipon\fR (\fIxarray, yarray, npoints, rgb, flag\fP)
 .br
 \fBdouble\fR \fIxarray[], yarray[]\fP;
 .br
-\fBint\fR \fInpoints, rgb[3], flag\fP;
+\fBlong\fR \fInpoints\fP;
+.br
+\fBint\fR \fIrgb[3], flag\fP;
 .RS 10
 Sets up a user-definable clip path.  Plotting outside this polygon will be clipped
 until \fBps_clipoff\fP is called.  If \fIred\fP >= 0 the inside of the path is
@@ -297,11 +306,13 @@ will be drawn using current pen-width and -pattern.
 The symbol will fit inside a circle of given diameter.
 .RE
 .IP
-void \fBps_line\fR (\fIxarray, yarray, npoints, type, close, split\fP)
+long \fBps_line\fR (\fIxarray, yarray, npoints, type, close, split\fP)
 .br
 \fBdouble\fR \fIxarray[], yarray[]\fP;
 .br
-\fBint\fR \fInpoints, type, close, split\fP;
+\fBlong\fR \fInpoints\fP;
+.br
+\fBint\fR \fItype, close, split\fP;
 .RS 10
 Draw a continuous line from the positions in the x-y arrays.  If \fIclose\fP == 1,
 the first and last point will automatically be closed by the \fIPostScript\fP driver.
@@ -339,12 +350,14 @@ void \fBps_patch\fR (\fIxarray, yarray, npoints, rgb, outline\fP)
 .br
 \fBdouble\fR \fIxarray[], yarray[]\fP;
 .br
-\fBint\fR \fInpoints, rgb[3], outline\fP;
+\fBlong\fR \fInpoints\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
 .RS 10
 Identical to \fBps_polygon\fP except polygon must be < 20 points long and there will
 be no attempt to shorten the path by discarding unnecessary intermediate points along
 straight segments.  Primarily used when painting large number of small polygons and
-not waste output space.
+not waste output space.  If more than 20 points are given we pass the buck to \fBps_polygon\fP.
 .RE
 .IP
 void \fBps_pentagon\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
@@ -444,7 +457,9 @@ void \fBps_polygon\fR (\fIxarray, yarray, npoints, rgb, outline\fP)
 .br
 \fBdouble\fR \fIxarray[], yarray[]\fP;
 .br
-\fBint\fR \fInpoints, rgb[3], outline\fP;
+\fBlong\fR \fInpoints\fP;
+.br
+\fBint\fR \fIrgb[3], outline\fP;
 .RS 10
 Creates a colored polygon from the positions in the x-y arrays.  Polygon will
 automatically be closed by the \fIPostScript\fP driver.  If \fIoutline\fP == 0,
@@ -680,7 +695,9 @@ void \fBps_words\fR (\fIx, y, text, n_words, line_space, par_width, par_just, fo
 .br
 \fBdouble\fR \fIx, y, line_space, par_width, angle, x_off, y_off, x_gap, y_gap\fP;
 .br
-\fBint\fR \fIn_words, font, font_size, justify, draw_box, boxpen_width, boxpen_offset\fP;
+\fBlong\fR \fIn_words\fP;
+.br
+\fBint\fR \fIfont, font_size, justify, draw_box, boxpen_width, boxpen_offset\fP;
 .br
 \fBint\fR \fIboxpen_rgb[3], vecpen_width, vecpen_offset, vecpen_rgb[3], boxfill_rgb[3]\fP;
 .br
@@ -705,14 +722,6 @@ Caveat Emptor:  The author is \fBnot\fP responsible for any disasters, suicide a
 caused by correct \fBor\fP incorrect use of \fBpslib\fR.  If you find bugs, please report
 them to the author by electronic mail.  Be sure to provide enough detail so that I
 can recreate the problem.
-.SH RESTRICTIONS
-Due to the finite memory of some output devices like Laserwriters, certain restrictions due
-to limitations of the \fIPostScript\fP interpreter apply:  For now, the arrays passed to \fBps_clipon\fP
-and \fBps_polygon\fP must contain less than about 1350 points.  Also, the buffer array passed to \fBps_image\fP must
-be able to fit in the available memory.  Check the specifications of the hardcopy device you are using.
-Note that some Raster Image Processors (RIPs) do not support direct color so that the colors you get may
-not be exactly the ones you wanted.  This is a limitation of the RIP, not the underlying \fIPostScript\fP code generated
-by \fBpslib\fR.
 .SH REFERENCES
 Adobe Systems Inc., 1990, \fIPostScript\fP language reference manual, 2nd edition,
 Addison-Wesley, (ISBN 0-201-18127-4).

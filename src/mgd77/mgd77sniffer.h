@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.29 2008-03-22 11:55:36 guru Exp $	
+ *	$Id: mgd77sniffer.h,v 1.30 2008-03-24 08:58:33 guru Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2008 by P. Wessel and M. T. Chandler
@@ -86,7 +86,7 @@
 
 struct BAD_SECTION {	/* To flag a range of records as bad for given field */
 	char abbrev[8];	/* Field name */
-	GMT_LONG col;	/* Column number */
+	int col;	/* Column number */
 	GMT_LONG start;	/* First record to flag */
 	GMT_LONG stop;	/* Last record to flag */
 };
@@ -96,7 +96,7 @@ struct MGD77_GRID_INFO {
 	struct GRD_HEADER grdhdr;
 	struct GMT_EDGEINFO edgeinfo;
 	struct GMT_BCR bcr;
-	GMT_LONG one_or_zero, nx, ny, col, sign, g_pts, format, mode, mx, interpolate;
+	int one_or_zero, nx, ny, col, sign, g_pts, format, mode, mx, interpolate;
 	double scale, max_lat;
 	char abbrev[8];
 	char fname[32];
@@ -119,18 +119,18 @@ struct MGD77_ERROR {
 
 struct MGD77_MAG_RF {
 	char *model;        /* Reference field model name */
-	GMT_LONG code;           /* Reference field code       */
-	GMT_LONG start;          /* Model start year           */
-	GMT_LONG end;            /* Model end year             */
+	int code;           /* Reference field code       */
+	int start;          /* Model start year           */
+	int end;            /* Model end year             */
 };
 
 /* Local functions */
 void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n, BOOLEAN bilinear, double threshold);
-GMT_LONG sample_grid (struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, float *grid, GMT_LONG n_grid, GMT_LONG n);
-void regress_ls (double *x, double *y, GMT_LONG n, double *stat, GMT_LONG col);
-void regress_rls (double *x, double *y, GMT_LONG nvalues, double *stat, GMT_LONG col);
-void regress_lms (double *x, double *y, GMT_LONG nvalues, double *stat, GMT_LONG gridField);
-void regresslms_sub (double *x, double *y, double angle0, double angle1, GMT_LONG nvalues, GMT_LONG n_angle, double *stat, GMT_LONG gridField);
+int sample_grid (struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, float *grid, GMT_LONG n_grid, GMT_LONG n);
+void regress_ls (double *x, double *y, GMT_LONG n, double *stat, int col);
+void regress_rls (double *x, double *y, GMT_LONG nvalues, double *stat, int col);
+void regress_lms (double *x, double *y, GMT_LONG nvalues, double *stat, int gridField);
+void regresslms_sub (double *x, double *y, double angle0, double angle1, GMT_LONG nvalues, int n_angle, double *stat, int gridField);
 GMT_LONG decimate (double *x, double *y, GMT_LONG nclean, double min, double max, double delta, double **dec_new, double **dec_orig, char *fieldTest);
 double lms (double *x, GMT_LONG n);
 double median (double *x, GMT_LONG n);
