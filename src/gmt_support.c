@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.357 2008-03-24 08:58:31 guru Exp $
+ *	$Id: gmt_support.c,v 1.358 2008-03-25 03:06:29 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -461,7 +461,7 @@ int GMT_getrgb (char *line, int rgb[])
 	if (!line[0]) return (FALSE);	/* Nothing to do - accept default action */
 
 	if (line[0] == '#') {	/* #rrggbb */
-		n = sscanf (line, "#%2lx%2lx%2lx", (size_t *)&rgb[0], (size_t *)&rgb[1], (size_t *)&rgb[2]);
+		n = sscanf (line, "#%2x%2x%2x", (unsigned int *)&rgb[0], (unsigned int *)&rgb[1], (unsigned int *)&rgb[2]);
 		if (n != 3 || GMT_check_rgb (rgb)) return (TRUE);
 		return (FALSE);
 	}
@@ -528,7 +528,7 @@ int GMT_gethsv (char *line, double hsv[])
 	if (!line[0]) return (FALSE);	/* Nothing to do - accept default action */
 
 	if (line[0] == '#') {	/* #rrggbb */
-		n = sscanf (line, "#%2lx%2lx%2lx", (size_t *)&rgb[0], (size_t *)&rgb[1], (size_t *)&rgb[2]);
+		n = sscanf (line, "#%2x%2x%2x", (unsigned int *)&rgb[0], (unsigned int *)&rgb[1], (unsigned int *)&rgb[2]);
 		if (n != 3 || GMT_check_rgb (rgb)) return (TRUE);
 		GMT_rgb_to_hsv (rgb, hsv);
 		return (FALSE);
