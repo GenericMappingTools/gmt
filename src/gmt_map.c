@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.181 2008-03-24 08:58:31 guru Exp $
+ *	$Id: gmt_map.c,v 1.182 2008-03-25 05:31:16 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -130,6 +130,7 @@ int GMT_radial_crossing (double lon1, double lat1, double lon2, double lat2, dou
 int GMT_ellipse_crossing (double lon1, double lat1, double lon2, double lat2, double *clon, double *clat, double *xx, double *yy, int *sides);		/*	computes the crossing point between two lon/lat points and the map boundary between them */
 int GMT_eqdist_crossing (double lon1, double lat1, double lon2, double lat2, double *clon, double *clat, double *xx, double *yy, int *sides);		/*	computes the crossing point between two lon/lat points and the map boundary between them */
 GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx);		/*	Clips to region based on rectangular xy coordinates	*/
+GMT_LONG GMT_rect_clip_old (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx);
 GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx);		/*	Clips to region based on rectangular wesn coordinates	*/
 GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x, double **y, int *total_nx);		/*	Clips to region based on spherical distance */
 GMT_LONG GMT_radial_clip_pscoast (double *lon, double *lat, GMT_LONG np, double **x, double **y, int *total_nx);		/*	Clips to region based on spherical distance */
@@ -2154,7 +2155,7 @@ int GMT_map_init_genper (void) {
 		GMT_outside = (PFI) GMT_rect_outside2;
 		GMT_crossing = (PFI) GMT_rect_crossing;
 		GMT_overlap = (PFI) GMT_rect_overlap;
-		GMT_map_clip = (PFI) GMT_rect_clip;
+		GMT_map_clip = (PFI) GMT_rect_clip_old;
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
@@ -4778,7 +4779,7 @@ GMT_LONG GMT_clip_to_map (double *lon, double *lat, GMT_LONG np, double **x, dou
 	return (n);
 }
 
-GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
+GMT_LONG GMT_rect_clip_old (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
 {
 	GMT_LONG i, j = 0, k, nx, n_alloc = GMT_CHUNK;
 	int sides[4];
@@ -4827,6 +4828,124 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	*y = yy;
 
 	return (j);
+}
+
+/* Functions and macros used for new rectangular clipping using the Sutherland/Hodgman algorithm
+ * in which we clip the polygon against each of the 4 sides.  To avoid lots of if/switch I have
+ * two clip functions (for x and y line) and two in/out functions that tells us if a point is
+ * inside the polygon relative to the line.  Then, pointers to these functions are passed to
+ * make sure the right functions are used for each side in the loop over sides.  Unless I can
+ * figure out a more clever recursive way I need to have 2 temporary arrays to shuffle the
+ * intermediate results around.
+ *
+ * P.Wessel, March 2008
+ */
+
+/* THis macro calculates the x-coordinates where the line segment crosses the border x = border.
+ * By swapping x and y in the call we can use it for finding the y intersection. This macro is
+ * never called when (y_prev - y_curr) = 0 so we don't divide by zero.
+ */
+#define INTERSECTION_COORD(x_curr,y_curr,x_prev,y_prev,border) x_curr + (x_prev - x_curr) * (border - y_curr) / (y_prev - y_curr)
+
+int GMT_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFI inside, PFI outside)
+{	/* Clip against the south or north boundary (i.e., a horizontal line with y = border) */
+	if (outside (y_prev, border)) {	/* Previous point is outside... */
+		if (outside (y_curr, border)) return 0;	/* ...as is the current point. Do nothing. */
+		/* Here, the line segment intersects the border - return both intersection and inside point */
+		y[0] = border;	x[0] = INTERSECTION_COORD (x_curr, y_curr, x_prev, y_prev, border);
+		x[1] = x_curr;	y[1] = y_curr;	return (2);
+	}
+	/* Here x_prev is inside */
+	if (inside (y_curr, border)) {	/* Return current point only */
+		x[0] = x_curr;	y[0] = y_curr;	return (1);
+	}
+	/* Segment intersects border - return intersection only */
+	y[0] = border;	x[0] = INTERSECTION_COORD (x_curr, y_curr, x_prev, y_prev, border);	return (1);
+}
+
+int GMT_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFI inside, PFI outside)
+{	/* Clip agains the west or east boundary (i.e., a vertical line with x = border) */
+	if (outside (x_prev, border)) {	/* Previous point is outside... */
+		if (outside (x_curr, border)) return 0;	/* ...as is the current point. Do nothing. */
+		/* Here, the line segment intersects the border - return both intersection and inside point */
+		x[0] = border;	y[0] = INTERSECTION_COORD (y_curr, x_curr, y_prev, x_prev, border);
+		x[1] = x_curr;	y[1] = y_curr;	return (2);
+	}
+	/* Here x_prev is inside */
+	if (inside (x_curr, border)) {	/* Return current point only */
+		x[0] = x_curr;	y[0] = y_curr;	return (1);
+	}
+	/* Segment intersects border - return intersection only */
+	x[0] = border;	y[0] = INTERSECTION_COORD (y_curr, x_curr, y_prev, x_prev, border);	return (1);
+}
+
+/* Tiny functions to tell if a value is larger or smaller than the limit */
+int smaller_than_min (double val, double min) { return (val > min); }
+int larger_than_max (double val, double max) { return (val < max); }
+
+GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
+{
+	GMT_LONG i, m, n_alloc;
+	int side, j, np, k, in = 1, out = 0;
+	double *xtmp[2], *ytmp[2], xx[2], yy[2], border[4];
+	PFI clipper[4], inside[4], outside[4];
+
+	if (n == 0) return (0);
+
+	*total_nx = 1;	/* So that calling program will not discard the clipped polygon */
+	
+	/* Set up function pointers.  This could be done once in GMT_begin at some point */
+	
+	clipper[0] = GMT_clip_sn;	clipper[1] = GMT_clip_we; clipper[2] = GMT_clip_sn;	clipper[3] = GMT_clip_we;
+	inside[1] = inside[2] = larger_than_max;	outside[1] = outside[2] = smaller_than_min;
+	inside[0] = inside[3] = smaller_than_min;		outside[0] = outside[3] = larger_than_max;
+	border[0] = border[3] = 0.0;	border[1] = GMT_map_width;	border[2] = GMT_map_height;
+
+	n_alloc = (GMT_LONG)irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
+	
+	for (k = 0; k < 2; k++) {	/* Create a pair of arrays for holding input and output */
+		xtmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
+		ytmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
+	}
+	m = n;	/* Our intial size of input polygon length */
+	
+	/* Get Cartesian map coordinates */
+	
+	for (i = 0; i < n; i++) GMT_geo_to_xy (lon[i], lat[i], &xtmp[0][i], &ytmp[0][i]);
+
+	for (side = 0; side < 4; side++) {	/* Must clip polygon against a single border, one border at a time */
+		n = m;	/* Current size of polygon */
+		m = 0;	/* Start with nuthin' */
+		
+		i_swap (in, out);	/* Swap what is input and output for clipping against this border */
+		/* Must ensure we copy the very first point if it is inside the clip rectangle */
+		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
+		for (i = 1; i < n; i++) {	/* For each line segment */
+			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side]);	/* Returns 0, 1, or 2 points */
+			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
+				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
+				if (m == (n_alloc-1)) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
+					n_alloc <<= 1;
+					for (k = 0; k < 2; k++) {
+						xtmp[k] = (double *) GMT_memory ((void *)xtmp[k], (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
+						ytmp[k] = (double *) GMT_memory ((void *)ytmp[k], (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
+					}
+				}
+			}
+		}
+		xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Explicitly lose the polygon */
+	}
+
+	GMT_free ((void *)xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
+	GMT_free ((void *)ytmp[1]);
+	
+	/* Reallocate and return the array with the final clipped polygon */
+	xtmp[0] = (double *) GMT_memory ((void *)xtmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
+	ytmp[0] = (double *) GMT_memory ((void *)ytmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
+	*x = xtmp[0];
+	*y = ytmp[0];
+
+	return (m);
 }
 
 GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
