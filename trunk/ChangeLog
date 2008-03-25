@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.228 2008-03-24 15:35:34 remko Exp $
+	$Id: ChangeLog,v 1.229 2008-03-25 05:31:16 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-03-24	pwessel
+	* gmt_map.c:	Added new rectangular clip function using Sutherland/Hodgman algorithm
+					in order to fix incorrect results in grdlandmask.
+
 2008-03-24	remko
 	* gmt_io.c:		Implemented -b[i|o]c[<var1>/...] option to indicate input is netCDF.
 
