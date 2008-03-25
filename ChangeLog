@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.229 2008-03-25 05:31:16 guru Exp $
+	$Id: ChangeLog,v 1.230 2008-03-25 11:20:35 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-03-24	pwessel
 	* gmt_map.c:	Added new rectangular clip function using Sutherland/Hodgman algorithm
 					in order to fix incorrect results in grdlandmask.
+	* grdblend.c:	Did not pick up node registration before calculating output grid size.
 
 2008-03-24	remko
 	* gmt_io.c:		Implemented -b[i|o]c[<var1>/...] option to indicate input is netCDF.
