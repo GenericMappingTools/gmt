@@ -40,7 +40,7 @@ If no dumpprefix is given we use mask (Files will be called mask_*.d).
 .TP
 .B \-E
 Sets the viewpoint's azimuth and elevation for perspective plots [180/90].\"'
-#include "explain_-F.txt"
+#include "explain_-nodereg.txt"
 .TP
 .B \-G
 Paint the clip polygons (or tiles) with a selected fill [Default is no fill].
