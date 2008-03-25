@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.110 2008-03-24 08:58:30 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.111 2008-03-25 11:20:35 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -595,6 +595,7 @@ int GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 
 void GMT_close_grd (struct GMT_GRDFILE *G)
 {
+	GMT_free ((void *)G->v_row);
 	if (GMT_grdformats[G->header.type][0] == 'c' || GMT_grdformats[G->header.type][0] == 'n')
 		nc_close (G->fid);
 	else
