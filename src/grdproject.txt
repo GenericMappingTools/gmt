@@ -51,7 +51,7 @@ Set the grid spacing for the new grid.  Append \fBm\fP for minutes, \fBc\fP for 
 Set the resolution for the new grid in dots per inch.
 .TP
 .B \-F
-Toggle between pixel and gridline registration [Default is same as input].
+Toggle between pixel and gridline node registration [Default is same as input].
 .TP
 .B \-I
 Do the Inverse transformation, from rectangular to geographical.

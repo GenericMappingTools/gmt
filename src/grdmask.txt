@@ -30,9 +30,7 @@ If the input data are geographic (as indicated by \fB\-fi\fP) then the sides in 
 approximated by great circle arcs.  When using the \fB\-A\fP sides will be regarded as straight lines.
 Alternatively, append \fBm\fP to have sides first follow meridians, then parallels. Or append \fBp\FP
 to first follow parallels, then meridians.
-.TP
-.B \-F
-Force pixel registration.  [Default is grid registration].
+#include "explain_-F.txt"
 #include "explain_-H.txt"
 .TP
 .B \-M

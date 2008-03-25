@@ -25,9 +25,7 @@ except it must contain the string %c which on output will be replaced by r, g, o
 .TP
 .B \-C
 name of the color palette table (for 2-D binary input grid only).
-.TP
-.B \-F
- Will force pixel registration [Default is grid registration].
+#include "explain_-F.txt"
 #include "explain_-I.txt"
 .TP
 .B \-L

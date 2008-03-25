@@ -105,6 +105,9 @@ grid spacing is so small that you need more decimals in the output format used b
 \fBblockm*\fP.  You may specify more decimal places by editing the
 parameter \fBD_FORMAT\fP in your \.gmtdefaults4 file prior to running \fBblockm*\fP,
 or choose binary input and/or output using single or double precision storage.
+.br
+Note that only gridline registration is possible with \fBsurface\fP.  If you need a pixel-registered
+grid you can resample a gridline registered grid using \fBgrdsample \-T\fP.
 .SH "SEE ALSO"
 .IR blockmean (1),
 .IR blockmedian (1),

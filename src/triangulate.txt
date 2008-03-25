@@ -5,10 +5,9 @@
 .SH NAME
 triangulate \- Perform optimal Delauney triangulation and gridding of Cartesian data [method]
 .SH SYNOPSIS
-\fBtriangulate\fP \fIinfiles\fP [ OPT(Dx)|\fBy\fP ] [ OPT(E)\fIempty\fP ] [ OPT(G)\fIgrdfile\fP ] 
-[ GMT_H_OPT ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ GMT_M_OPT ] 
-[ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] 
-[ GMT_b_OPT ] [ GMT_f_OPT ]
+\fBtriangulate\fP \fIinfiles\fP [ OPT(Dx)|\fBy\fP ] [ OPT(E)\fIempty\fP ] [ OPT(F) ] 
+[ OPT(G)\fIgrdfile\fP ] [ GMT_H_OPT ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ GMT_M_OPT ] 
+[ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBtriangulate\fP reads one or more ASCII [or binary] files (or standard input) containing x,y[,z] and
 performs Delauney triangulation, i.e., it find how the points should be connected to give
@@ -33,6 +32,8 @@ by the planar facets (only used when \fB\-G\fP is set).
 .TP
 .B \-E
 Set the value assigned to empty nodes when \fB\-G\fP is set [NaN].
+#include "explain_-F.txt"
+Only valid with OPT(G)).
 .TP
 .B \-G
 Use triangulation to grid the data onto an even grid (specified with \fB\-I, \-R\fP).  Append

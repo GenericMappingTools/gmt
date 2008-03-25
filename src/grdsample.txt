@@ -28,7 +28,7 @@ The name of the output grid file.
 .SH OPTIONS
 .TP
 .B \-F
-Force pixel registration on output grid.  [Default is same registration as input grid].
+Force pixel node registration on output grid.  [Default is same registration as input grid].
 #include "explain_-I.txt"
 .TP
 .B \-L

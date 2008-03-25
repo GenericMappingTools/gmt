@@ -42,9 +42,7 @@ character (and not the equal sign) as separator by both starting and ending with
 Convert an ESRI ArcInfo ASCII interchange grid format file to a \fBGMT\fP grid.  Append \fInodata\fP which is a data
 value that should be set to NaN in the grid [Default is to read the optional 6th record in the file and get \fInodata\fP].
 The values normally given by \fB\-R\fP, \fB\-I\fP, and \fB\-F\fP are determined from the ESRI header instead.
-.TP
-.B \-F
-Force pixel registration [Default is grid registration].
+#include "explain_-F.txt"
 #include "explain_-H.txt"
 Not used with binary data.
 .TP
