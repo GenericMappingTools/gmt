@@ -34,10 +34,8 @@ Provide Extended report which includes \fBs\fP (the L1 scale of the mode),
 \fBl\fP, the lowest value, and \fBh\fP, the high value for each block. Output order
 becomes \fIx,y,z,s,l,h\fP[,\fIw\fP]. [Default outputs \fIx,y,z\fP[,\fIw\fP].
 See OPT(W) for \fIw\fP output.
-.TP
-.B \-F
-Block centers have pixel registration. [Default:  grid registration.]  (Registrations
-are defined in  \fBGMT\fP Cookbook Appendix B on grid file formats.)  Each block is the
+#include "explain_-F.txt"
+Each block is the
 locus of points nearest the grid value location.  For example, with OPT(R)10/15/10/15
 and and OPT(I)1:  with the OPT(F) option 10 <= (\fIx,y\fP) < 11 is one of 25 blocks;
 without it 9.5 <= (\fIx,y\fP) < 10.5 is one of 36 blocks.

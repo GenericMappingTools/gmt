@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.29 2008-01-23 03:22:47 guru Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.30 2008-03-25 10:56:29 guru Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2008.
@@ -109,7 +109,7 @@ from the standards used by \GMT\ can also be read.
 Conventions			& COARDS, CF-1.0 (optional) \\ \hline
 title				& Title (optional) \\ \hline
 source				& How file was created (optional) \\ \hline
-node\_offset			& 0 for grid line registration (default), 1 for pixel registration \\ \hline
+node\_offset			& 0 for gridline node registration (default), 1 for pixel registration \\ \hline
 \multicolumn{2}{|c|}{\emph{$x$- and $y$-variable attributes}} \\ \hline
 long\_name			& Coordinate name (default: ``Longitude'' and ``Latitude'') \\ \hline
 units				& Unit of the coordinate (default: ``degrees\_east'' and ``degrees\_north'') \\ \hline
@@ -151,7 +151,7 @@ for more information.
 \index{grid file!formats!COARDS|)}
 \index{grid file!formats!CF-1.0|)}
 
-\subsection{Grid line and Pixel registration} 
+\subsection{Gridline and Pixel node registration} 
 \index{grid file!registration|(}
 
 Scanline format means that the data are stored in rows (\emph{y} = constant)
@@ -164,14 +164,14 @@ The grid is always defined as the intersections of all \emph{x}
 and \emph{y} ( \( y = y_{min}, y_{min} + y_{inc}, y_{min} + 2 \cdot y_{inc}, \ldots, y_{max} \) )
 lines.  The two scenarios differ in which area each data point
 represents.
-The default registration in \GMT\ is grid line registration.  Most
+The default node registration in \GMT\ is gridline node registration.  Most
 programs can handle both types, and for some programs like \GMTprog{grdimage}
 a pixel registered file makes more sense.  Utility programs like
 \GMTprog{grdsample} and \GMTprog{grdproject} will allow you to convert
 from one format to the other; \GMTprog{grdedit} can make changes to the grid header
 and convert a pixel- to a gridline-registred grid, or \emph{vice versa}.
 
-\subsubsection{Grid line registration}
+\subsubsection{Gridline registration}
 \index{grid file!registration!grid line|(}
 
 In this registration, the nodes are centered on the grid line
@@ -188,7 +188,7 @@ ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
 
 which for the example in Figure~\ref{fig:GMT_App_B_1} yields $nx = ny = 4$.
 
-\GMTfig[h]{GMT_App_B_1}{Grid line registration of data nodes.}
+\GMTfig[h]{GMT_App_B_1}{Gridline registration of data nodes.}
 
 \index{grid file!registration!grid line|)}
 
@@ -206,7 +206,7 @@ nx & =  &       (x_{max} - x_{min}) / x_{inc}   \\
 ny & =  &       (y_{max} - y_{min}) / y_{inc}
 \end{array} \]
 
-Thus, given the same region (\Opt{R}), the pixel registered grids have one less
+Thus, given the same region (\Opt{R}), the pixel node registered grids have one less
 column and one less row than the grid line registered grids; here we
 find $nx = ny = 3$.
 

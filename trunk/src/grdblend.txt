@@ -60,6 +60,9 @@ Then run
 .br
 .sp
 \fBgrdblend\fP blend.job \fB\-G\fPblend.grd \fB\-R\fP<full_region> \fB\-I\fP<dx/dy> \fB-V\fP
+.SH RESTRICTIONS
+Currently, all grids processed must have the exact same node registration as well as grid spacing
+as the final output grid.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grd2xyz (1),

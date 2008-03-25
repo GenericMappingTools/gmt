@@ -59,9 +59,8 @@ The following symbols have special meaning:
 .br
 \fBYn \fP	Grid with normalized [-1 to +1] y-coordinates
 .SH OPTIONS
-.TP
-.B \-F
-Select pixel registration (used with \fB\-R, \-I\fP).  [Default is grid registration].
+#include "explain_-F.txt"
+Only used with \fB\-R, \-I\fP.
 #include "explain_-I.txt"
 .TP
 .B \-M

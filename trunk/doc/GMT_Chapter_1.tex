@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.85 2008-02-25 01:54:29 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.86 2008-03-25 10:56:29 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -122,8 +122,8 @@ removed. Argument "step" was found to be in degrees, not in inches as some calli
 \item [\GMTprog{grdblend.c}]: Now works with Windows DLL by using the GMT i/o functions.
 \item [\GMTprog{grdcontour.c}]: \Opt{A}{\it value} would turn off the expected default transparency.
 \item [\GMTprog{grdcut.c}]: Domain check failed for geographic 360-degree grid with \Opt{fg}.
-\item [\GMTprog{grdedit.c}]: Disallow \Opt{T} for Surfer grids since they don't support two
-kinds of registration. \Opt{N} did not take into account if \Opt{fg} was given.
+\item [\GMTprog{grdedit.c}]: Disallow \Opt{T} for Surfer grids since they don't support both
+kinds of node registration. \Opt{N} did not take into account if \Opt{fg} was given.
 \item [\GMTprog{grdfilter.c}]: \Opt{I}{\it nx+/ny+} was not propagated to the output grid setup.
 \item [\GMTprog{grdimage.c}]: Removed \Opt{T} option; no more polygon drawing (use \GMTprog{grdview}).
 \Opt{S}{\it max\_radius} changed to \Opt{S}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
@@ -196,7 +196,7 @@ in the coastline database.  We have also corrected issues that made the Windows 
 Finally, a few enhancements have been made to these programs:
 
 \begin{enumerate}
-\item NGDC's GRD98 format has been updated to handle both gridline and pixel registrations.
+\item NGDC's GRD98 format has been updated to handle both gridline and pixel node registrations.
 \item We have relaxed the restriction on latitude for \Opt{JA}, \Opt{JS} for polar aspects; now more
 than one hemisphere may be displayed.  Better warning/error messages.
 \item \GMTprog{gmtconvert} has an enhanced \Opt{E} option; append {\bf f} or {\bf l}  to only get first or last record per segment.
@@ -254,7 +254,7 @@ labeling of closed highs/lows were insensitive to pixel versus gridline grids an
 \item [\GMTprog{pscontour}]: For 3-D views, \Opt{E} projected contours (\Opt{W}) twice and mesh lines (\Opt{L}) not at all.
 Fixed contour label angles were always ignored.
 \item [\GMTprog{pslib.c}]: Only issue setdash \PS\ commands if texture has changed.  \GMTfunc{ps\_clipoff} needed to
-reset memory of last pen width/color/pattern.  \GMTfunc{ps\_color\_tiles} used wrong registration.
+reset memory of last pen width/color/pattern.  \GMTfunc{ps\_color\_tiles} used wrong node registration.
 \item [\GMTprog{psrose}]: Failed to skip pie-slice filling when no fill was selected.  \Opt{C} lead to
 SEGV as it tried to read from a non-existent file.
 \item [\GMTprog{psxy}]: When used with \Opt{S} but no \Opt{W} or \Opt{G} given, only set default \Opt{W} if \Opt{M} not used.
@@ -331,10 +331,10 @@ The \Opt{W}[+][c$|$a] option was susceptible to misinterpreting things like \Opt
 \item [\GMTprog{grdfilter}]: Should not wrap over pole unless grid extends all the way to the pole.
 \item [\GMTprog{grdinfo}]: When \Opt{C} was used there was no linefeed at the end.
 \item [\GMTprog{grdsample}]: \Opt{T} did not ignore \Opt{R} (as per manual), resulting in changed cell size.
-\Opt{F} did not use grid registration as default, rather that of input grid.
-When using pixel registration, number of cells would be one too large.
+\Opt{F} did not use gridline node registration as default, rather that of the input grid.
+When using pixel node registration, number of cells would be one too large.
 \Opt{L} worked only in very limited case: going from x=[-180;180] to x=[0;360].
-Now supports any periodicity in X and Y (as per manual). \Opt{F} again forces pixel registration.
+Now supports any periodicity in X and Y (as per manual). \Opt{F} again forces pixel node registration.
 Default is same as input.  More consistency with manual.
 \item [\GMTprog{grdtrack}]: The \Opt{Z} option failed to be set for some input configurations.
 \item [\GMTprog{grdvector}]: Added \Opt{f} option.
@@ -392,7 +392,7 @@ that we have identified and corrected in the current release:
 \GMTprog{grdedit} to rotate grids of 360-degree longitudinal extent. Also added better testing for subsets of global (0-360) grids.
 \item [\GMTprog{gmt\_init.c}]: \GMTfunc{GMT\_PS\_init} was called after --PAR=val had been decoded, resetting
 the \PS-related parameters to their default settings.
-\item [\GMTprog{gmt\_support.c}]: \GMTfunc{GMT\_set\_xy\_domain} padded region for pixel instead of grid registration,
+\item [\GMTprog{gmt\_support.c}]: \GMTfunc{GMT\_set\_xy\_domain} padded region for pixel instead of gridline node registration,
 which could cause SEGV in \GMTprog{xyz2grd} if ({\it x,y}) was less than half the grid-spacing outside region.
 \item [\GMTprog{blockmean}]: The \Opt{C} option got reversed in 4.1.2 - now fixed.
 \item [\GMTprog{blockmedian}]: The \Opt{C} option got reversed in 4.1.2 - now fixed.
@@ -510,7 +510,7 @@ Changes in \GMT\ 4.1.1 are mostly minor; a brief listing include
 A few programs or options have received minor updates and new features, such as
 
 \begin{description}
-\item [\GMTprog{grdedit}]: Added option \Opt{T} to toggle between gridline and pixel registrations (header only).
+\item [\GMTprog{grdedit}]: Added option \Opt{T} to toggle between gridline and pixel node registrations (header only).
 \item [\GMTprog{grdgradient}]: Implemented variation on Lambertian illumination.
 \item [\GMTprog{grdmask}]: Now takes \Opt{S}{\it radius}[{\bf c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
 \item [\GMTprog{gmtmath}]: If file is STDIN we read data from {\it stdin} and put the contents on the stack.
@@ -557,7 +557,7 @@ Now NaN is returned if any of the two operands is a NaN.
 \item [\GMTprog{grdview}]: Skipped nodes outside boundary but they might be needed to draw a tile.
 \item [\GMTprog{pscoast}]: With \Opt{JE} and \Opt{G}{\it r/g/b}, the painting of the antipodal bin would incorrectly
 turn off clipping, messing up the rest of the plot.  Now pass -9 to \GMTfunc{GMT\_fill} which means just fill and no end of clipping.
-\item [\GMTprog{xyz2grd}]: For geographic grids with 360\DS\ range and gridline registration,
+\item [\GMTprog{xyz2grd}]: For geographic grids with 360\DS\ range and gridline node registration,
 the west and east bin did not get replicated properly.
 Now considers data inside the first and last tiles which might stick outside w/e/s/n.
 \end{description}
