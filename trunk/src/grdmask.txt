@@ -30,7 +30,7 @@ If the input data are geographic (as indicated by \fB\-fi\fP) then the sides in 
 approximated by great circle arcs.  When using the \fB\-A\fP sides will be regarded as straight lines.
 Alternatively, append \fBm\fP to have sides first follow meridians, then parallels. Or append \fBp\FP
 to first follow parallels, then meridians.
-#include "explain_-F.txt"
+#include "explain_-nodereg.txt"
 #include "explain_-H.txt"
 .TP
 .B \-M
@@ -52,7 +52,7 @@ However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great ci
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 [Default is 2 input columns].
-#include "explain_-f.txt"
+#include "explain_-nodereg.txt"
 .SH EXAMPLES
 To set all nodes inside and on the polygons coastline_*.xy to 0, and outside points
 to 1, do

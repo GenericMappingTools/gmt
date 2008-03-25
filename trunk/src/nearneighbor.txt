@@ -43,7 +43,7 @@ However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great ci
 .TP
 .B \-E
 Set the value assigned to empty nodes [NaN].
-#include "explain_-F.txt"
+#include "explain_-nodereg.txt"
 #include "explain_-H.txt"
 Not used with binary data.
 .TP
@@ -59,7 +59,7 @@ Input data have a 4th column containing observation point weights.  These are mu
 with the geometrical weight factor to determine the actual weights used in the calculations.
 #include "explain_-bi.txt"
 [Default is 3 (or 4 if \fB\-W\fP is set) columns].
-#include "explain_-f.txt"
+#include "explain_-nodereg.txt"
 #include "explain_float.txt"
 .SH EXAMPLES
 To create a gridded data set from the file seaMARCII_bathy.lon_lat_z using a 0.5 min grid,
