@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.183 2008-03-25 10:29:27 guru Exp $
+ *	$Id: gmt_map.c,v 1.184 2008-03-26 08:32:52 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5622,7 +5622,8 @@ void GMT_get_point_from_r_az (double lon0, double lat0, double r, double azim, d
 	sincosd (r, &sinr, &cosr);
 	sincosd (lat0, &siny, &cosy);
 
-	*lon1 = lon0 + R2D * atan (sinr * sinaz / (cosy * cosr - siny * sinr * cosaz));
+/*	*lon1 = lon0 + R2D * atan (sinr * sinaz / (cosy * cosr - siny * sinr * cosaz)); */
+	*lon1 = lon0 + R2D * atan2 (sinr * sinaz, (cosy * cosr - siny * sinr * cosaz));
 	*lat1 = R2D * d_asin (siny * cosr + cosy * sinr * cosaz);
 }
 
