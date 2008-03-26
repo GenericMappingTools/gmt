@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.358 2008-03-25 03:06:29 remko Exp $
+ *	$Id: gmt_support.c,v 1.359 2008-03-26 03:07:26 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4787,16 +4787,14 @@ int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SE
 
 /*
  * New GMT_delaunay interface routine that calls the triangulate function
- * developed by Jonathan Richard Shewchuk, Berkeley University.
+ * developed by Jonathan Richard Shewchuk, University of California at Berkeley.
  * Suggested by alert GMT user Alain Coat.  You need to get triangle.c and
- * triangle.h from www.cs.cmu.edu/
+ * triangle.h from www.cs.cmu.edu/~quake/triangle.html
  */
 
-#define REAL double
-
 #include "triangle.h"
-/* Leave link as *int */
 
+/* Leave link as int**, not GMT_LONG** */
 int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 {
 	/* GMT interface to the triangle package; see above for references.
@@ -4848,7 +4846,7 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
  *   Computers & Geosciences, 8, 97-101, 1982.
  */
 
-/* Leave link as *int */
+/* Leave link as int**, not GMT_LONG** */
 int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 	/* Input point x coordinates */
 	/* Input point y coordinates */
@@ -4859,7 +4857,7 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 	int *index;	/* Must be int not GMT_LONG */
 	int ix[3], iy[3];
 	int i, j, ij, nuc, jt, km, id, isp, l1, l2, k, k1, jz, i2, kmt, kt, done, size;
-	int *index, *istack, *x_tmp, *y_tmp;
+	int *istack, *x_tmp, *y_tmp;
 	double det[2][3], *x_circum, *y_circum, *r2_circum, *x, *y;
 	double xmin, xmax, ymin, ymax, datax, dx, dy, dsq, dd;
 
