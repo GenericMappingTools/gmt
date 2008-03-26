@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.359 2008-03-26 03:07:26 remko Exp $
+ *	$Id: gmt_support.c,v 1.360 2008-03-26 08:32:52 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4792,6 +4792,7 @@ int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SE
  * triangle.h from www.cs.cmu.edu/~quake/triangle.html
  */
 
+#define REAL double
 #include "triangle.h"
 
 /* Leave link as int**, not GMT_LONG** */
