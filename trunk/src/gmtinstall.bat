@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.32 2008-03-26 20:19:54 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.33 2008-03-26 22:04:28 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
@@ -24,7 +24,7 @@ REM Microsoft Visual C/c++ tools.  It will build GMT
 REM using DLL libraries.  To make static executables
 REM you must make some edits to the setup below.
 REM
-REM Author: Paul Wessel, 02-OCT-2007
+REM Author: Paul Wessel, 25-MAR-2008
 REM ----------------------------------------------------
 REM
 REM How to make and install GMT under DOS/Win95/98:
@@ -78,27 +78,27 @@ REM ----------------------------------------------------
 
 SET DLL_NETCDF="/DDLL_NETCDF"
 IF %DLLCDF%=="no" SET DLL_NETCDF=
-SET COPT=/DWIN32 /W3 /O2 /nologo %DLL_NETCDF% /DDLL_PSL /DDLL_GMT
-SET DLL=/FD /ML
-IF %CHOICE%=="static" SET COPT=/DWIN32 /W3 /O2 /nologo %DLL_NETCDF%
-IF %CHOICE%=="static" SET DLL=
-set LOPT=/nologo /dll /incremental:no
 SET TR=
 SET TROBJ=
 IF %TRIANGLE%=="yes" SET TR="/DTRIANGLE_D"
 IF %TRIANGLE%=="yes" SET TROBJ=triangle.obj
+SET COPT=/DWIN32 /W3 /O2 /nologo %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT
+SET DLL=/FD /ML
+IF %CHOICE%=="static" SET COPT=/DWIN32 /W3 /O2 /nologo %DLL_NETCDF%
+IF %CHOICE%=="static" SET DLL=
+set LOPT=/nologo /dll /incremental:no
 REM ----------------------------------------------------
 ECHO STEP 1: Make PS library
 REM ----------------------------------------------------
-CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% pslib.c
+CL %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% pslib.c
 IF %CHOICE%=="dynamic" link %LOPT% /out:psl.dll /implib:psl.lib pslib.obj
 IF %CHOICE%=="static" lib /out:psl.lib pslib.obj
 REM ----------------------------------------------------
 ECHO STEP 2: Make GMT library
 REM ----------------------------------------------------
-CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_bcr.c gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_init.c
-CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
-CL %COPT% %TR% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
+CL %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_bcr.c gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_init.c
+CL %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
+CL %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
 IF %TRIANGLE%=="yes" CL %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
 IF %CHOICE%=="dynamic" link %LOPT% /out:gmt.dll /implib:gmt.lib gmt_*.obj %TROBJ% psl.lib netcdf.lib setargv.obj
 IF %CHOICE%=="static" lib /out:gmt.lib gmt_*.obj %TROBJ%
