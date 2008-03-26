@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.230 2008-03-25 11:20:35 guru Exp $
+	$Id: ChangeLog,v 1.231 2008-03-26 19:20:45 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-03-25	pwessel
+	* pscontour.c:	Must deallocate *ind memory according to which function was used
+	* triangulate.c: Same.  Only affects Windows's insane memory management.
+
 2008-03-24	pwessel
 	* gmt_map.c:	Added new rectangular clip function using Sutherland/Hodgman algorithm
 					in order to fix incorrect results in grdlandmask.
