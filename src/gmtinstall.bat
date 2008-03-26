@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.31 2008-01-23 03:52:12 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.32 2008-03-26 20:19:54 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
@@ -85,7 +85,7 @@ IF %CHOICE%=="static" SET DLL=
 set LOPT=/nologo /dll /incremental:no
 SET TR=
 SET TROBJ=
-IF %TRIANGLE%=="yes" SET TR="/DUSE_TRIANGLE"
+IF %TRIANGLE%=="yes" SET TR="/DTRIANGLE_D"
 IF %TRIANGLE%=="yes" SET TROBJ=triangle.obj
 REM ----------------------------------------------------
 ECHO STEP 1: Make PS library
