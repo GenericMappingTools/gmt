@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.31 2008-02-26 06:23:22 guru Exp $
+#	$Id: todo.txt,v 1.32 2008-03-27 09:35:58 guru Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -6,8 +6,6 @@ remember to add an entry in ChangeLog.
 
 ------------------------------------------------------------------------
 BUGS or "FEATURES":
-
-gmt_grdio.c	Should use GMT_getdatapath to find full pathname.
 
 psbasemap.c	Looks like the magnetic rose needs some alignment work(?)
 
