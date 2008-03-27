@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77magref.h,v 1.9 2008-02-20 06:30:47 mtchandl Exp $	
+ *	$Id: mgd77magref.h,v 1.10 2008-03-27 06:50:54 guru Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2005-2008 by P. Wessel and M. T. Chandler
