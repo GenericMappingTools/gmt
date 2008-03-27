@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.360 2008-03-26 08:32:52 guru Exp $
+ *	$Id: gmt_support.c,v 1.361 2008-03-27 00:28:21 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4829,7 +4829,7 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 
 	triangulate ("zIQB", &In, &Out, &vorOut);
 
-	*link = Out.trianglelist;	/* List of node numbers to return via link */
+	*link = Out.trianglelist;	/* List of node numbers to return via link [NOT ALLOCATED BY GMT_memory] */
 
 	if (Out.pointlist) free ((void *)Out.pointlist);
 	GMT_free ((void *)In.pointlist);
