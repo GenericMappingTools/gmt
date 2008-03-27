@@ -42,7 +42,7 @@ character (and not the equal sign) as separator by both starting and ending with
 Convert an ESRI ArcInfo ASCII interchange grid format file to a \fBGMT\fP grid.  Append \fInodata\fP which is a data
 value that should be set to NaN in the grid [Default is to read the optional 6th record in the file and get \fInodata\fP].
 The values normally given by \fB\-R\fP, \fB\-I\fP, and \fB\-F\fP are determined from the ESRI header instead.
-#include "explain_-nodereg.txt"
+#include "explain_nodereg.txt"
 #include "explain_-H.txt"
 Not used with binary data.
 .TP
@@ -92,7 +92,7 @@ Note that \fB\-Z\fP only applies to 1-column input.
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].  This option only applies to xyz input files; see \fB\-Z\fP for z tables.
-#include "explain_-nodereg.txt"
+#include "explain_nodereg.txt"
 See also \fBGEOGRAPHICAL AND TIME COORDINATES\fP below.
 #include "explain_float.txt"
 .SH GEOGRAPHICAL AND TIME COORDINATES
