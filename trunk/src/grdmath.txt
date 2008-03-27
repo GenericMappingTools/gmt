@@ -59,7 +59,7 @@ The following symbols have special meaning:
 .br
 \fBYn \fP	Grid with normalized [-1 to +1] y-coordinates
 .SH OPTIONS
-#include "explain_-nodereg.txt"
+#include "explain_nodereg.txt"
 Only used with \fB\-R, \-I\fP.
 #include "explain_-I.txt"
 .TP
@@ -74,7 +74,7 @@ Turn off strict domain match checking when multiple grids are manipulated [Defau
 that each grid domain is within 1e-4 * grid_spacing of the domain of the first grid listed].
 #include "explain_-R.txt"
 #include "explain_-V.txt"
-#include "explain_-nodereg.txt"
+#include "explain_nodereg.txt"
 .SH NOTES ON OPERATORS
 (1) The operator \fBSDIST\fP calculates spherical distances between the (lon, lat)
 point on the stack and all node positions in the grid.  The grid domain

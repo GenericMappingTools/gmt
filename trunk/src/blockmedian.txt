@@ -34,7 +34,7 @@ Provide Extended report which includes \fBs\fP (the L1 scale of the median),
 \fBl\fP, the lowest value, and \fBh\fP, the high value for each block. Output order
 becomes \fIx,y,z,s,l,h\fP[,\fIw\fP]. [Default outputs \fIx,y,z\fP[,\fIw\fP].
 See OPT(W) for \fIw\fP output.
-#include "explain_-nodereg.txt"
+#include "explain_nodereg.txt"
 Each block is the
 locus of points nearest the grid value location.  For example, with OPT(R)10/15/10/15
 and and OPT(I)1:  with the OPT(F) option 10 <= (\fIx,y\fP) < 11 is one of 25 blocks;
@@ -62,7 +62,7 @@ weighted output only.  [Default uses unweighted i/o].
 [Default is 3 (or 4 if OPT(Wi) is set)].
 #include "explain_-bo.txt"
 [Default is 3 (or 4 if OPT(Wo) is set)]. OPT(E) adds 3 additional columns.
-#include "explain_-nodereg.txt"
+#include "explain_nodereg.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
 To find 5 by 5 minute block medians from the double precision binary data in hawaii_b.xyg
