@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.154 2008-03-24 15:35:34 remko Exp $
+ *	$Id: gmt_io.c,v 1.155 2008-03-27 07:28:38 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1063,13 +1063,15 @@ int GMT_bin_double_output_swab (FILE *fp, int n, double *ptr)
 	int i, k;
 	unsigned int *ii, jj;
 	double d;
+	void *vptr;
 
 	if (gmtdefs.xy_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	for (i = k = 0; i < n; i++) {
 		if (GMT_io.out_col_type[i] == GMT_IS_LON) GMT_lon_range_adjust (GMT_io.geo.range, &ptr[i]);
 		/* Do the 8-byte swabbing */
 		d = ptr[i];
-		ii = (unsigned int *)&d;
+		vptr = (void *)&d;
+		ii = (unsigned int *)vptr;
 		jj = GMT_swab4 (ii[0]);
 		ii[0] = GMT_swab4 (ii[1]);
 		ii[1] = jj;
@@ -1336,10 +1338,13 @@ int GMT_I_read (FILE *fp, double *d)
 int GMT_l_read (FILE *fp, double *d)
 {
 	long int l;
+
 	if (!GMT_fread ((void *)&l, sizeof (long int), (size_t)1, fp)) return (0);
 	if (GMT_do_swab) {
 		unsigned int *i, k;
-		i = (unsigned int *)&l;
+		void *vptr;
+		vptr = (void *)&l;
+		i = (unsigned int *)vptr;
 		for (k = 0; k < sizeof (long int)/4; k++) i[k] = GMT_swab4 (i[k]);
 	}
 	*d = (double) l;
@@ -1352,7 +1357,9 @@ int GMT_f_read (FILE *fp, double *d)
 	if (!GMT_fread ((void *)&f, sizeof (float), (size_t)1, fp)) return (0);
 	if (GMT_do_swab) {
 		unsigned int *i;
-		i = (unsigned int *)&f;
+		void *vptr;
+		vptr = (void *)&f;
+		i = (unsigned int *)vptr;
 		*i = GMT_swab4 (*i);
 	}
 	*d = (double) f;
