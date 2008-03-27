@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.232 2008-03-27 07:55:07 guru Exp $
+	$Id: ChangeLog,v 1.233 2008-03-27 09:35:30 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-03-26	pwessel
+	* gmt_grdio.c:	Now the grd i/o support the GMT_[DATA|IMG|GRID\DIR] environment settings.
+	* grdinfo.c:	Reports actual path to the file (may change if GMT_GRIDDIR is involved).
+
 2008-03-25	pwessel
 	* pscontour.c:	Must deallocate *ind memory according to which function was used
 	* triangulate.c: Same.  Only affects Windows's insane memory management.

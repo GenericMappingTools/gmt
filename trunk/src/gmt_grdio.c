@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.111 2008-03-25 11:20:35 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.112 2008-03-27 09:35:30 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -204,7 +204,7 @@ void GMT_expand_filename (char *file, char *fname)
 			start = f_length - length;
 			found = (start < 0) ? FALSE : !strncmp (&file[start], GMT_file_suffix[i], (size_t)length);
 		}
-		if (found) {
+		if (found) {	/* file ended in a recognized shorthand extension */
 			i--;
 			sprintf (fname, "%s=%d/%g/%g/%g", file, GMT_file_id[i], GMT_file_scale[i], GMT_file_offset[i], GMT_file_nan[i]);
 		}
@@ -217,17 +217,28 @@ void GMT_expand_filename (char *file, char *fname)
 
 int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 {
+	/* This functions does two things:
+	 * 1. It tries to determine what kind of grid file this is.  If the file is for
+	 *    writing then we can only determine the format from the default setting.
+	 *    If for reading we see if (a) a particular format has been specified with
+	 *    the =<code> suffix, or (b) we are able to guess the format based on known
+	 *    characteristics of various formats.  If we cannot obtain the format we
+	 *    return an error.
+	 * 2. We set header->name to the full path of the file (+ any format suffix
+	 *    needed) by seaching in current dir and the various GMT_*DIR paths.
+	 */
+	
 	int i = 0, val, j;
-	char code[GMT_TEXT_LEN];
+	char code[GMT_TEXT_LEN], tmp[BUFSIZ];
 
-	GMT_expand_filename (file, header->name);
+	GMT_expand_filename (file, header->name);	/* May append a suffix to header->name */
 
 	/* Set default values */
 	header->z_scale_factor = GMT_d_NaN, header->z_add_offset = 0.0, header->nan_value = GMT_d_NaN;
 
 	while (header->name[i] && header->name[i] != '=') i++;
 
-	if (header->name[i]) {	/* Get format type, scale, offset and missing value from suffix */
+	if (header->name[i]) {	/* Get format type, scale, offset and missing value from suffix =xx/scl/off/nan */
 		i++;
 		sscanf (&header->name[i], "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
 		val = GMT_grd_format_decoder (code);
@@ -235,8 +246,12 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		header->type = val;
 		j = (i == 1) ? i : i - 1;
 		header->name[j] = 0;
+		strcpy (tmp, header->name);	/* Copy over the actual name of the file */
+		if (!GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
 	}
 	else if (magic) {	/* Determine file format automatically based on grid content */
+		strcpy (tmp, header->name);	/* Copy over the actual name of the file */
+		if (!GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
 		if ((header->type = GMT_is_nc_grid (header->name)) >= 0) return (GMT_NOERROR);
 		/* Continue only when file was a pipe or when nc_open didn't like the file. */
@@ -253,7 +268,7 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		if ((header->type = GMT_is_agc_grid (header->name)) >= 0) return (GMT_NOERROR);
 		return (GMT_GRDIO_UNKNOWN_FORMAT);	/* No supported format found */
 	}
-	else {			/* Get format type, scale, offset and missing value from gmtdefs.grid_format */
+	else {			/* Writing: Get format type, scale, offset and missing value from gmtdefs.grid_format */
 		sscanf (gmtdefs.grid_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
 		val = GMT_grd_format_decoder (code);
 		if (val < 0) return (val);
