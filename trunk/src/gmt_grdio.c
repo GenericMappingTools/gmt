@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.112 2008-03-27 09:35:30 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.113 2008-03-28 20:25:50 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -247,7 +247,7 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		j = (i == 1) ? i : i - 1;
 		header->name[j] = 0;
 		strcpy (tmp, header->name);	/* Copy over the actual name of the file */
-		if (!GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
+		if (magic && !GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* I reading, possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
 	}
 	else if (magic) {	/* Determine file format automatically based on grid content */
 		strcpy (tmp, header->name);	/* Copy over the actual name of the file */
