@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.185 2008-03-28 05:45:06 guru Exp $
+ *	$Id: gmt_map.c,v 1.186 2008-03-28 09:16:15 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4884,13 +4884,14 @@ int GMT_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, dou
 }
 
 /* Tiny functions to tell if a value is larger or smaller than the limit */
-int smaller_than_min (double val, double min) { return (val > min); }
-int larger_than_max (double val, double max) { return (val < max); }
+int smaller_than_min (double val, double min) {return (val > min);}
+int larger_than_max (double val, double max) {return (val < max);}
 
 GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
 {
 	GMT_LONG i, m, n_alloc;
 	int side, j, np, k, in = 1, out = 0;
+	BOOLEAN close_it;
 	double *xtmp[2], *ytmp[2], xx[2], yy[2], border[4];
 	PFI clipper[4], inside[4], outside[4];
 #ifdef DEBUG
@@ -4928,7 +4929,8 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 			ytmp[0][m] = ytmp[0][i];
 		}
 	}
-	n = m + 1;	/* Our intial length of input polygon after duplicates have been discarded */
+	m++;	/* Because m was used as index of last point */
+	n = m;	/* Our intial length of input polygon after duplicates have been discarded */
 
 #ifdef DEBUG
 	if (dump) {
@@ -4943,7 +4945,7 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 		
 		i_swap (in, out);	/* Swap what is input and output for clipping against this border */
 		/* Must ensure we copy the very first point if it is inside the clip rectangle */
-		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
+		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
 		for (i = 1; i < n; i++) {	/* For each line segment */
 			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side]);	/* Returns 0, 1, or 2 points */
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
@@ -4957,7 +4959,10 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 				}
 			}
 		}
-		xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Explicitly lose the polygon */
+		close_it = GMT_polygon_is_open (xtmp[out], ytmp[out], m);	/* Do we need to explicitly close this clipped polygon? */
+		if (close_it) {
+			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
+		}
 	}
 
 	GMT_free ((void *)xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
