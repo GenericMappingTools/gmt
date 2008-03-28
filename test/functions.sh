@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.3 2008-03-28 01:54:28 remko Exp $
+#	$Id: functions.sh,v 1.4 2008-03-28 18:53:16 remko Exp $
 #
 # Functions to be used with test scripts
 
@@ -10,14 +10,14 @@ header () {
 
 # Compare the ps file with its original. Check $1.ps (if $1 given) or $ps
 pscmp () {
-	file=${1:-`basename $ps .ps`}
-	ae=`compare -density 100 -fuzz 1% -metric AE $file.ps orig/$file.ps $file.png 2>&1`
-	if [ "$ae" == "0" ]; then
+	f=${1:-`basename $ps .ps`}
+	rms=(`compare -density 100 -metric RMSE $f.ps orig/$f.ps $f.png 2>&1`)
+	if [ ${rms[0]//.*/} -lt 10 ]; then
         	echo "[PASS]"
-        	rm -f $file.png
+        	rm -f $f.png
 	else
         	echo "[FAIL]"
-		echo $file: $ae failed pixels >> ../fail_count.d
+		echo $f: RMS Error = ${rms[*]} >> ../fail_count.d
 	fi
 }
 
