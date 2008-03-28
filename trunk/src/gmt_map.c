@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.187 2008-03-28 20:25:50 guru Exp $
+ *	$Id: gmt_map.c,v 1.188 2008-03-28 21:01:54 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4366,6 +4366,7 @@ GMT_LONG *GMT_split_line (double **xx, double **yy, GMT_LONG *nn, BOOLEAN add_cr
 
 	double *x, *y, *xin, *yin, xc[2], yc[2];
 	GMT_LONG i, j, k, n, n_seg, *split, *pos;
+	int l_or_r;
 	short int *way;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 
@@ -4375,9 +4376,9 @@ GMT_LONG *GMT_split_line (double **xx, double **yy, GMT_LONG *nn, BOOLEAN add_cr
 	pos = (GMT_LONG *) GMT_memory (VNULL, n_alloc, sizeof (GMT_LONG), GMT_program);
 	way = (short int *) GMT_memory (VNULL, n_alloc, sizeof (short int), GMT_program);
 	for (n_seg = 0, i = 1; i < *nn; i++) {
-		if ((k = GMT_map_jump_x (xin[i], yin[i], xin[i-1], yin[i-1]))) {
+		if ((l_or_r = GMT_map_jump_x (xin[i], yin[i], xin[i-1], yin[i-1]))) {
 			pos[n_seg] = i;		/* 2nd of the two points that generate the jump */
-			way[n_seg] = k;		/* Which way we jump : +1 is right to left, -1 is left to right */
+			way[n_seg] = (short int)l_or_r;		/* Which way we jump : +1 is right to left, -1 is left to right */
 			n_seg++;
 			if (n_seg == (GMT_LONG)n_alloc) {
 				n_alloc <<= 1;
