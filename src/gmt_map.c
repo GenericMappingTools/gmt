@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.184 2008-03-26 08:32:52 guru Exp $
+ *	$Id: gmt_map.c,v 1.185 2008-03-28 05:45:06 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4893,6 +4893,10 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	int side, j, np, k, in = 1, out = 0;
 	double *xtmp[2], *ytmp[2], xx[2], yy[2], border[4];
 	PFI clipper[4], inside[4], outside[4];
+#ifdef DEBUG
+	FILE *fp;
+	int dump = 0;
+#endif
 
 	if (n == 0) return (0);
 
@@ -4911,12 +4915,28 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 		xtmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 		ytmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 	}
-	m = n;	/* Our intial size of input polygon length */
 	
-	/* Get Cartesian map coordinates */
+	/* Get Cartesian map coordinates and exclude duplicate points */
 	
-	for (i = 0; i < n; i++) GMT_geo_to_xy (lon[i], lat[i], &xtmp[0][i], &ytmp[0][i]);
+	GMT_geo_to_xy (lon[0], lat[0], &xtmp[0][0], &ytmp[0][0]);
+	for (i = 1, m = 0; i < n; i++) {
+		GMT_geo_to_xy (lon[i], lat[i], &xtmp[0][i], &ytmp[0][i]);
+		if (GMT_IS_ZERO (xtmp[0][i] - xtmp[0][m]) && GMT_IS_ZERO (ytmp[0][i] - ytmp[0][m])) continue;	/* Duplicate */
+		m++;	/* Got new point */
+		if (i > m) {	/* Only copy if needed */
+			xtmp[0][m] = xtmp[0][i];
+			ytmp[0][m] = ytmp[0][i];
+		}
+	}
+	n = m + 1;	/* Our intial length of input polygon after duplicates have been discarded */
 
+#ifdef DEBUG
+	if (dump) {
+		fp = fopen ("input.d", "w");
+		for (i = 0; i < n; i++) fprintf (fp, "%g\t%g\n", xtmp[0][i], ytmp[0][i]);
+		fclose (fp);
+	}
+#endif
 	for (side = 0; side < 4; side++) {	/* Must clip polygon against a single border, one border at a time */
 		n = m;	/* Current size of polygon */
 		m = 0;	/* Start with nuthin' */
@@ -4948,6 +4968,13 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	ytmp[0] = (double *) GMT_memory ((void *)ytmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
 	*x = xtmp[0];
 	*y = ytmp[0];
+#ifdef DEBUG
+	if (dump) {
+		fp = fopen ("output.d", "w");
+		for (i = 0; i < m; i++) fprintf (fp, "%g\t%g\n", xtmp[0][i], ytmp[0][i]);
+		fclose (fp);
+	}
+#endif
 
 	return (m);
 }
