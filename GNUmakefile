@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.23 2008-03-28 01:02:47 guru Exp $
+#  $Id: GNUmakefile,v 1.24 2008-03-28 19:20:46 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -266,7 +266,14 @@ tar_progs tar_src:	ftpdir
 		gzip -c9 ftp/GMT$(VERSION)_src.tar > ftp/GMT$(VERSION)_src.tar.gz
 		echo "make GMT$(VERSION)_src.tar.bz2"
 		bzip2 -9 ftp/GMT$(VERSION)_src.tar
+		grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT$(VERSION)/:' > t.progs
+		echo "make GMT$(VERSION)_triangle.tar.gz"
+		tar -cf ftp/GMT$(VERSION)_triangle.tar -C .. -T t.progs
+		gzip -c9 ftp/GMT$(VERSION)_triangle.tar > ftp/GMT$(VERSION)_src.tar.gz
+		echo "make GMT$(VERSION)_triangle.tar.bzz"
+		bzip2 -9 ftp/GMT$(VERSION)_triangle.tar
 		rm -f t.progs
+
 
 zip_progs:	ftpdir
 		rm -f ftp/GMT_src.zip
@@ -275,6 +282,9 @@ zip_progs:	ftpdir
 		echo "make GMT_src.zip"
 		(cd ..; zip -r -9 -q -l GMT/ftp/GMT_src.zip `cat GMT/asc.lis`)
 		if [ -s bin.lis ] ; then (cd ..; zip -r -9 -q GMT/ftp/GMT_src.zip `cat GMT/bin.lis`) ; fi
+		grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT/:' > asc.lis
+		echo "make GMT_triangle.zip"
+		(cd ..; zip -r -9 -q -l GMT/ftp/GMT_triangle.zip `cat GMT/asc.lis`)
 		rm -f asc.lis bin.lis
 
 tar_share:	ftpdir
