@@ -1,11 +1,11 @@
 #!/bin/sh
-#	$Id: gmt_clip_test.sh,v 1.1 2008-03-28 03:52:09 guru Exp $
+#	$Id: gmt_clip_test.sh,v 1.2 2008-03-28 03:54:20 guru Exp $
 # Test program for new rectangular clipping.  We create N random points
 # in the x/y plane with mean 0 and sigma = 3.  Then, sort these points
 # according to the angle they make with (0,0) so we get a non-intersecting
 # polygon.  Now impose the clipping on the +-5 rectangle.  We write out
 # the original data to clip_data.d and send the clipped polygon to stdout.
-# The clip_test.sh script makes the figure.
+# The rest of the script makes the figure and views it via gv.
 #
 
 # C code driver:
@@ -70,7 +70,6 @@ gcc gmt_clip_test.o -L. -lgmt -lgmtps -lpsl -L/sw/lib -lnetcdf -o gmt_clip_test
 gmt_clip_test > clip_output.d
 psxy -R-10/10/-10/10 -JX8 -P -B2WSne clip_input.d -L -P -K  -X0.25i -Y0.5i > clip_test.ps
 psxy -R -J -O -K clip_input.d -Sc0.1i -Ggreen -Wfaint >> clip_test.ps
-
 psxy -R -J -O -K clip_output.d -L -W0.5p,red >> clip_test.ps
 psxy -R -J -O -K clip_output.d -Sc0.05i -Gred >> clip_test.ps
 psxy -R -J -O -L -W0.5p,blue << EOF >> clip_test.ps
@@ -80,4 +79,3 @@ psxy -R -J -O -L -W0.5p,blue << EOF >> clip_test.ps
 -5	5
 EOF
 gv clip_test.ps &
-
