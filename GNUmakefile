@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.22 2008-03-10 13:38:17 remko Exp $
+#  $Id: GNUmakefile,v 1.23 2008-03-28 01:02:47 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -76,8 +76,9 @@
 # by creating coying guru/gmtguru.macros.orig to guru/gmtguru.macros. Then edit
 # the latter.
 
+GMTGURU	= guru/gmtguru.macros
 include guru/gmtguru.macros.orig	# Default guru settings
-sinclude guru/gmtguru.macros		# Guru-specific settings determined by GURU
+sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is guru/gmtguru.macros]
 
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
