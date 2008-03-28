@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: run_doc_tests.sh,v 1.3 2008-03-28 01:55:15 remko Exp $
+#	$Id: run_doc_tests.sh,v 1.4 2008-03-28 18:29:29 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
@@ -24,13 +24,13 @@ touch fail_count.d
 for o in $origs ; do
         f=`basename $o .eps`
 	printf "%-32s" $f.eps
-	ae=`compare -density 100 -fuzz 1% -metric AE $f.eps orig/$f.eps $f.png 2>&1`
-	if [ "$ae" == "0" ]; then
+	rms=(`compare -density 100 -metric RMSE $f.eps orig/$f.eps $f.png 2>&1`)
+	if [ ${rms[0]//.*/} -lt 10 ]; then
         	echo "[PASS]"
         	rm -f $f.png
 	else
         	echo "[FAIL]"
-		echo $f: $ae failed pixels >> fail_count.d
+		echo $f: RMS Error = ${rms[*]} >> fail_count.d
 	fi
 done
 
