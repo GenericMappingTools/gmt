@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: run_doc_tests.sh,v 1.2 2007-11-15 04:15:48 remko Exp $
+#	$Id: run_doc_tests.sh,v 1.3 2008-03-28 01:55:15 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
@@ -24,18 +24,17 @@ touch fail_count.d
 for o in $origs ; do
         f=`basename $o .eps`
 	printf "%-32s" $f.eps
-	compare -density 100 -metric PSNR $f.eps orig/$f.eps $f.png 2>&1 | grep -v inf > fail
-	if [ -s fail ]; then
-        	echo "[FAIL]"
-		echo $f >> fail_count.d
-		mv -f fail $f.log
-	else
+	ae=`compare -density 100 -fuzz 1% -metric AE $f.eps orig/$f.eps $f.png 2>&1`
+	if [ "$ae" == "0" ]; then
         	echo "[PASS]"
-        	rm -f fail $f.log $f.png
+        	rm -f $f.png
+	else
+        	echo "[FAIL]"
+		echo $f: $ae failed pixels >> fail_count.d
 	fi
 done
 
 echo "--------------------------------------"
 wc -l fail_count.d | awk '{printf "GMT Documentation EPS file failures: %d\n", $1}'
 cat fail_count.d
-rm -f fail_count.d fail
+rm -f fail_count.d
