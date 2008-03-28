@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmt_clip_test.sh,v 1.2 2008-03-28 03:54:20 guru Exp $
+#	$Id: gmt_clip_test.sh,v 1.3 2008-03-28 03:56:24 guru Exp $
 # Test program for new rectangular clipping.  We create N random points
 # in the x/y plane with mean 0 and sigma = 3.  Then, sort these points
 # according to the angle they make with (0,0) so we get a non-intersecting
@@ -17,7 +17,9 @@ cat << EOF > gmt_clip_test.c
 struct STUFF {
 	double x, y, a;
 } P[N];
+
 GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx);
+
 int compare (const void *point_1, const void *point_2)
 {
         struct STUFF *p1, *p2;
@@ -29,8 +31,7 @@ int compare (const void *point_1, const void *point_2)
 }
 
 int main (int argc, char **argv) {
-	GMT_LONG n = N, m, j, i;
-	int nx = 0;
+	int n = N, m, j, i, nx = 0;
 	double xin[N], yin[N], x, y, *xout, *yout;
 	FILE *fp;
 	
@@ -51,13 +52,12 @@ int main (int argc, char **argv) {
 	project_info.projection = project_info.xyz_projection[0] = project_info.xyz_projection[1] = GMT_LINEAR;
 	project_info.pars[0] = project_info.pars[1] = 1.0;
 	GMT_err_fail (GMT_map_setup (-HALF, HALF, -HALF, HALF), "");
-	m = GMT_rect_clip (xin, yin, n, &xout, &yout, &nx);
+	m = GMT_rect_clip (xin, yin, (GMT_LONG)n, &xout, &yout, &nx);
 		for (j = 0; j < m; j++) {
 		GMT_xy_to_geo (&x, &y, xout[j], yout[j]);
 		printf ("%g\t%g\n", x, y);
 	}
-		GMT_free ((void *)xout);
-	GMT_free ((void *)yout);
+	GMT_free ((void *)xout);	GMT_free ((void *)yout);
 	exit (EXIT_SUCCESS);
 }
 EOF
