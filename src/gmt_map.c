@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.186 2008-03-28 09:16:15 guru Exp $
+ *	$Id: gmt_map.c,v 1.187 2008-03-28 20:25:50 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4853,6 +4853,7 @@ GMT_LONG GMT_rect_clip_old (double *lon, double *lat, GMT_LONG n, double **x, do
 
 int GMT_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFI inside, PFI outside)
 {	/* Clip against the south or north boundary (i.e., a horizontal line with y = border) */
+	if (GMT_IS_ZERO (x_prev-x_curr) && GMT_IS_ZERO (y_prev-y_curr)) return (0);	/* Do nothing for duplicates */
 	if (outside (y_prev, border)) {	/* Previous point is outside... */
 		if (outside (y_curr, border)) return 0;	/* ...as is the current point. Do nothing. */
 		/* Here, the line segment intersects the border - return both intersection and inside point */
@@ -4869,6 +4870,7 @@ int GMT_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, dou
 
 int GMT_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFI inside, PFI outside)
 {	/* Clip agains the west or east boundary (i.e., a vertical line with x = border) */
+	if (GMT_IS_ZERO (x_prev-x_curr) && GMT_IS_ZERO (y_prev-y_curr)) return (0);	/* Do nothing for duplicates */
 	if (outside (x_prev, border)) {	/* Previous point is outside... */
 		if (outside (x_curr, border)) return 0;	/* ...as is the current point. Do nothing. */
 		/* Here, the line segment intersects the border - return both intersection and inside point */
@@ -4917,20 +4919,9 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 		ytmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 	}
 	
-	/* Get Cartesian map coordinates and exclude duplicate points */
+	/* Get Cartesian map coordinates */
 	
-	GMT_geo_to_xy (lon[0], lat[0], &xtmp[0][0], &ytmp[0][0]);
-	for (i = 1, m = 0; i < n; i++) {
-		GMT_geo_to_xy (lon[i], lat[i], &xtmp[0][i], &ytmp[0][i]);
-		if (GMT_IS_ZERO (xtmp[0][i] - xtmp[0][m]) && GMT_IS_ZERO (ytmp[0][i] - ytmp[0][m])) continue;	/* Duplicate */
-		m++;	/* Got new point */
-		if (i > m) {	/* Only copy if needed */
-			xtmp[0][m] = xtmp[0][i];
-			ytmp[0][m] = ytmp[0][i];
-		}
-	}
-	m++;	/* Because m was used as index of last point */
-	n = m;	/* Our intial length of input polygon after duplicates have been discarded */
+	for (m = 0; m < n; m++) GMT_geo_to_xy (lon[m], lat[m], &xtmp[0][m], &ytmp[0][m]);
 
 #ifdef DEBUG
 	if (dump) {
@@ -4950,6 +4941,9 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side]);	/* Returns 0, 1, or 2 points */
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
 				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
+				if (GMT_is_dnan(yy[j])) {
+					k = 0;
+				}
 				if (m == (n_alloc-1)) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
 					n_alloc <<= 1;
 					for (k = 0; k < 2; k++) {

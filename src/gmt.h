@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.165 2008-03-24 08:58:30 guru Exp $
+ *	$Id: gmt.h,v 1.166 2008-03-28 20:29:38 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -190,7 +190,7 @@ extern "C" {
 #define d_log101p(x) ((x) <= -1.0 ? GMT_d_NaN : LOG2_10_SCALE * log2 (1.0+(x)))
 #endif
 #endif
-#ifndef d_log10
+#ifndef LOG2_10_SCALE
 #define d_log10(x) ((x) <= 0.0 ? GMT_d_NaN : log10 (x))
 #define d_log101p(x) ((x) <= -1.0 ? GMT_d_NaN : log10 (1.0+(x)))
 #endif
