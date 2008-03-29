@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.37 2008-03-24 08:58:31 guru Exp $
+ *	$Id: gmt_proj.c,v 1.38 2008-03-29 20:49:25 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1221,7 +1221,7 @@ void genper_tolatlong (double x, double y, double h, double *lat, double *lon)
 	if (set_exit == 1) fprintf(stderr, "genper_tolatlong - 5\n");
 	if (set_exit || project_info.g_debug > 1) {
 		fprintf (stderr, "phi    %12.7f\n", phi*R2D);
-		exit(1);
+		GMT_exit(1);
 	}
 	*lat = phi * R2D;
 	*lon = atan2 (Y, X) * R2D + project_info.g_lon0;
@@ -1711,7 +1711,7 @@ void GMT_genper (double lon, double lat, double *xt, double *yt)
 		fprintf (stderr, "genper: yt or xt nan\n");
 		fprintf (stderr, "genper: lon %6.3f lat %6.3f\n", lon, lat);
 		fprintf (stderr, "genper: xt %10.3e yt %10.3e\n", *xt, *yt);
-		exit(1);
+		GMT_exit(1);
 	}
 }
 
