@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_faq.html,v 1.22 2007-10-02 18:43:18 guru Exp $  -->
+<!--  $Id: gmt_faq.html,v 1.23 2008-03-30 00:25:56 guru Exp $  -->
 <TITLE>GMT - Frequently Asked GMT Questions</TITLE>
 <BODY bgcolor="#ffffff">
 
@@ -10,11 +10,11 @@
 <LI>	<A> Who developed GMT ? </A>
 <P>GMT was created in 1988 by <A HREF="http://www.soest.hawaii.edu/pwessel/pwessel.html">Paul Wessel</A>
 and <A HREF="http://ibis.grdl.noaa.gov/SAT/people/walter.html">Walter H. F. Smith</A>, and has undergone
-several revisions and major enhancements since then.  The current version is 4.2.1.
+several revisions and major enhancements since then.  The current version is 4.3.0.
 GMT is supported by the National Science Foundation.</P></LI>
 <HR>
 <LI>	<A> Who is using GMT ? </A>
-<P>As of April 2007 it appears that over 15,000 scientists and engineers worldwide are
+<P>As of May 2008 it appears that over 15,000 scientists and engineers worldwide are
 using GMT in their work.  This estimate is based on ftp traffic and returned
 registration forms over the last few
 years.  Most users of GMT are Earth scientists, but there are apparently no limits to
@@ -54,7 +54,7 @@ UNIX-options for Windows over DOS-style batch scripts since many tasks that GMT 
 for depend strongly on access to UNIX tools such as csh, awk, grep, sed, etc.</P></LI>
 <LI>Install GMT directly in Windows or OS/2.  You could do this from scratch if you
 have a compiler (GMT comes with instructions for Microsoft Visual C/C++ compiler), or
-simply install the precompiled Win32 executables from the ftp sites.
+simply install the pre-compiled Win32 executables from the ftp sites.
 Sorry, there is no such option for MacOS 9 or earlier.  If you have MacOS X you can
 install GMT as on any UNIX workstation.</LI>
 </OL>
@@ -76,6 +76,11 @@ of large data sets will require more memory to run.  GMT was written
 with the understanding that there would be enough memory to do a task
 without breaking it into smaller pieces.  Increasing swap space may
 overcome some memory limitations.</P></LI>
+<HR>
+<LI>	<A> Can GMT be compiled in 64-bit mode ? </A>
+<P>Yes.  Yes.  GMT now supports full 64-bit addressing and has been tested under
+OS X.  OUr automated script, however, does not yet offer the option to compile
+in 64-bit; you will have to set CFLAGS, LDFLAGS etc manually.<P>
 <HR>
 <LI>	<A> What other requirements does GMT have ? </A>
 <P>You need a C compiler to compile the package.  Your system may already
