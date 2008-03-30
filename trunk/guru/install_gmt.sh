@@ -1,16 +1,16 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.121 2007-12-20 19:38:38 guru Exp $
+#	$Id: install_gmt.sh,v 1.122 2008-03-30 00:19:11 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	02-OCT-2007
+#	29-MAR-2008
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.2
-VERSION=4.2.1
-GSHHS=1.9
+VERSION=4.3.0
+GSHHS=1.10
 GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
@@ -1027,6 +1027,7 @@ if [ "$GMT_ftp" = "y" ]; then
 	echo "cd $DIR/$sub" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
 	make_ftp_list $GMT_get_src src GMT
+	make_ftp_list $GMT_triangle triangle GMT
 	make_ftp_list $GMT_get_share share GMT
 	make_ftp_list $GMT_get_coast coast GSHHS
 	make_ftp_list $GMT_get_high high GSHHS
@@ -1070,6 +1071,7 @@ GMT_sharedir=${GMT_sharedir:-$GMT_share}
 
 install_this_gmt $GMT_get_src src
 install_this_gmt $GMT_get_share share
+install_this_gmt $GMT_triangle triangle
 install_this_gmt $GMT_get_suppl suppl
 install_this_gmt $GMT_get_scripts scripts
 install_this_gmt $GMT_get_pdf pdf

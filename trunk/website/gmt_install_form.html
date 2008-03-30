@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.49 2007-10-28 20:39:11 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.50 2008-03-30 00:19:11 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.49 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.50 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -42,16 +42,16 @@ to a file named by you, and this file can be used for background installs as sho
 <HR><B>1. Select the GMT version you want to install:</B><BR>
 
 <SELECT NAME="gmt_version">
-<OPTION SELECTED>4.2.1
+<OPTION SELECTED>4.3.0
 </SELECT><BR>
 <P>
-GMT version 4.2.1 is currently the only version supported by this web page. If you want to
+GMT version 4.3.0 is currently the only version supported by this web page. If you want to
 install an older version, you will need to grab the tarballs yourself, unpack and configure and
 make manually.
 <P>
-<I>Version 4.2.1 and earlier versions can coexist on your system since they use
+<I>Version 4.3.0 and earlier versions can coexist on your system since they use
 different default files.  In order to facilitate a simple way of switching from
-one version to another, GMT 4.2.1 comes with a Bourne shell utility called
+one version to another, GMT 4.3.0 comes with a Bourne shell utility called
 gmtswitch.  To simplify the maintenance of multiple versions we recommend that
 you install all your GMT versions you want under a parent directory called
 GMTdev.  After installing the required versions, run gmtswitch.  See the
@@ -151,7 +151,7 @@ parameters.</I>
 <INPUT TYPE="radio" VALUE="3" NAME="radio_site"> North America (Incorporated Research Institutions for Seismology, Seattle, Washington, USA)<BR>
 <INPUT TYPE="radio" VALUE="4" NAME="radio_site"> South America (IAG-USP, Dept of Geophysics, University of Sao Paulo, Brazil)<BR>
 <INPUT TYPE="radio" VALUE="5" NAME="radio_site"> Europe (Dept of Geosciences, University of Oslo, Norway)<BR>
-<INPUT TYPE="radio" VALUE="6" NAME="radio_site"> Europe (Goodie Domain Service, Vienna U of Techology, Austria)<BR>
+<INPUT TYPE="radio" VALUE="6" NAME="radio_site"> Europe (Goodie Domain Service, Vienna U of Technology, Austria)<BR>
 <INPUT TYPE="radio" VALUE="7" NAME="radio_site"> Asia (ISV, Hokkaido University, Sapporo, Japan)<BR>
 <!-- <INPUT TYPE="radio" VALUE="8" NAME="radio_site"> Australia (Charles Sturt University, Aubury, Australia)<BR>-->
 <INPUT TYPE="radio" VALUE="9" NAME="radio_site"> No FTP, archives already obtained<BR>
@@ -203,11 +203,10 @@ run the script; otherwise the script may decide that it does not need to ftp new
 <INPUT TYPE="radio" VALUE="Shewchuk" NAME="radio_triangle"> Shewchuk's algorithm<BR>
 
 <P>
-<I>Note: You may want to select Shewchuk's faster triangulation routine although it is not distributed
-under the GNU Public License.  For-profit organizations should first inspect
-<A HREF="README.TRIANGLE" target="_blank">Shewchuk's license</A>.  Both functions are included in the
-source archive; your selection only affects library linking and can be reversed later by editing the
-makegmt.macros file.</I>
+<I>Note: You may want to select Shewchuk's faster triangulation routine but as it is not distributed
+under the GNU Public License it is not included by default.  For-profit organizations should first inspect
+<A HREF="README.TRIANGLE" target="_blank">Shewchuk's license</A>.  Only Watson's algorithm is included in the
+GMT source code archive.</I>
 
 <!--  INSTALL TOOL OPTION SELECTION  -->
 
@@ -258,7 +257,7 @@ use GNU make (assuming it is installed): Select "other" and enter the path for m
 
 Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 
-<!--  GMT DESTINATION DIRECORIES SELECTION  -->
+<!--  GMT DESTINATION DIRECTORIES SELECTION  -->
 
 <HR><B>7. Select GMT final destination directories</B><BR>
 
@@ -276,12 +275,12 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 
 <I><P>
 Note: The installation will install all GMT components in several subdirectories
-under one root directory.  By default, GMT will be installed under GMT4.2.1
+under one root directory.  By default, GMT will be installed under GMT4.3.0
 in the current working directory where install_gmt is run.
 On most Unix systems, however, the preferred location of the root directory will be
 something like /usr/local or /sw, under which the installation will add
 bin, lib, include, share, man, and www.
-To select another location for the root directory than the default (GMT4.2.1),
+To select another location for the root directory than the default (GMT4.3.0),
 specify it in the first box above, or enter all subdirectories
 individually.
 Only specify alternative directories if you want to place the files elsewhere. 
@@ -363,7 +362,7 @@ directory</I>.
 
 <HR><B>11. Complete the operation:<BR>
 
-</B><INPUT TYPE="checkbox" NAME="checkbox_delete" > Delete all archives upon sucessful installation<BR>
+</B><INPUT TYPE="checkbox" NAME="checkbox_delete" > Delete all archives upon successful installation<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_run"  CHECKED> Run all example scripts (assumes scripts tar archive was chosen above)<BR>
 
 <P>

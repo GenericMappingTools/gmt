@@ -1,8 +1,8 @@
-	$Id: README.GMT,v 1.20 2007-10-03 00:35:13 guru Exp $
+	$Id: README.GMT,v 1.21 2008-03-30 00:19:11 guru Exp $
 
 Dear potential GMT users-
 
-Version 4.2.1 of GMT has recently been released.
+Version 4.3.0 of GMT has recently been released.
 GMT can be installed under Unix or Windows.
 
 For new installers of GMT under a Unix-like OS:
@@ -33,6 +33,12 @@ GMT_suppl.tar.bz2	Supplemental program source and docs
 GSHHS_high.tar.bz2	High resolution GSHHS coastline files
 GSHHS_full.tar.bz2	Full resolution GSHHS coastline files
 
+Finally, we also provide the optional Delaunay triangulation
+routine of Shewchuck.  As it is not GNU licensed it is kept
+in a separate archive:
+
+GMT_triangle.tar.bz2		Shewchuck triangulation source code
+
 The install_gmt Bourne script can be used after manual ftp as well.
 Place script in the same directory as the archives and run.
 
@@ -57,6 +63,11 @@ GMT_suppl.zip	   Supplemental program source and docs
 GSHHS_high.zip	   High resolution GSHHS coastline files
 GSHHS_full.zip	   Full resolution GSHHS coastline files
 
+Finally, we also provide the optional Delaunay triangulation
+routine of Shewchuck.  As it is not GNU licensed it is kept
+in a separate archive:
+
+GMT_triangle.zip		Shewchuck triangulation source code
 
 There are several mirror sites available.  Use the site that
 is geographically closest to you to improve transmission
