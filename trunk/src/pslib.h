@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.46 2008-03-29 20:49:25 guru Exp $
+ *	$Id: pslib.h,v 1.47 2008-03-30 01:50:05 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,16 +51,16 @@ typedef long PS_LONG;			/* A signed 4 (or 8-byte for 64-bit) integer */
 #define EXTERN_MSC extern MSC_EXTRA_PSL
 #endif
 
+/* So unless DLL_PSL is defined, EXTERN_MSC is simply extern */
+
+#endif	/* _PSLIB_INC_H */
+
 /* Macro for exit since this should be returned when called from Matlab */
 #ifdef DO_NOT_EXIT
 #define PS_exit(code) return(code)
 #else
 #define PS_exit(code) exit(code)
 #endif
-
-/* So unless DLL_PSL is defined, EXTERN_MSC is simply extern */
-
-#endif	/* _PSLIB_INC_H */
 
 #define PSL_PEN_MOVE		3
 #define PSL_PEN_DRAW		+2
