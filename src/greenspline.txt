@@ -5,8 +5,9 @@ greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data usi
 .SH SYNOPSIS
 \fBgreenspline\fP [ \fIdatafile(s)\fP ] 
 [ OPT(A)[\fB1\fP|\fB2\fP|\fB3\fP|\fB4\fP|\fB5\fP,]\fIgradfile\fP ] [ OPT(C)\fIcut\fP[/\fIfile\fP] ] 
-[ OPT(D)\fImode\fP ] [ OPT(F) ] [ OPT(G)\fIgrdfile\fP] [ GMT_H_OPT ] [ OPT(I)\fIxinc\fP[\fIyinc\fP[\fIzinc\fP]] ] [ OPT(L) ] 
-[ OPT(N)\fImaskgrid\fP ] [ OPT(Q)\fIaz\fP|\fIx/y/z\fP ] [ OPT(R)\fIxmin\fP/\fIxmax\fP[/\fIymin\fP/\fIymax\fP[/\fIzmin\fP\fIzmax\fP]] ] 
+[ OPT(D)\fImode\fP ] fP ] [ OPT(E)\fIdist\fP[/\fIfile\fP] ] [ OPT(F) ] [ OPT(G)\fIgrdfile\fP] [ GMT_H_OPT ] 
+[ OPT(I)\fIxinc\fP[\fIyinc\fP[\fIzinc\fP]] ] [ OPT(L) ] [ OPT(N)\fImaskgrid\fP ] [ OPT(Q)\fIaz\fP|\fIx/y/z\fP ] 
+[ OPT(R)\fIxmin\fP/\fIxmax\fP[/\fIymin\fP/\fIymax\fP[/\fIzmin\fP\fIzmax\fP]] ] 
 [ OPT(S)\fBc|t|g|p|q\fP[\fIpars\fP] ] [ OPT(T)\fInodefile\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBgreenspline\fP uses the Green function G(\fBx\fP; \fBx'\fP) for the chosen spline and geometry to interpolate data
@@ -69,6 +70,14 @@ Option \fImode\fP = 4 applies to spherical surface spline interpolation only:
 OPT(D)4 for (\fIx,y\fP) in degrees, use cosine of great circle (or geodesic) arcs.
 Select \fImode\fP 5 for Cartesian 3-D surface spline interpolation:
 OPT(D)5 means (\fIx,y,z\fP) in user units, Cartesian distances.
+.TP
+.B \-E
+Preprocess the input data by a nearest neighbor analysis. I.e., replacing all data point pairs
+whose distance separation is less than \fIdist\fP
+by their average value.  The \fIdist\fP cut-off distance is expected in the same units as the input coordinates
+(or degrees in the case of OPT(D)4).  Optionally, append /\fIfile\fP to save the reduced data set.  Note: This
+analysis is very slow since the analysis repeats after the nearest neighbor pair has been reduced until there
+are no pairs that triggers the distance test [Default uses all the data points].
 .TP
 .B \-F
 Force pixel registration.  [Default is gridline registration].
