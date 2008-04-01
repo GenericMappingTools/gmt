@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.38 2008-03-29 20:49:25 guru Exp $
+ *	$Id: gmt_proj.c,v 1.39 2008-04-01 14:30:13 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -608,7 +608,7 @@ void GMT_lamb_sph (double lon, double lat, double *x, double *y)
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_latc (lat);
 
 	lat *= D2R;
-	t = tan (M_PI_4 - 0.5 * lat);
+	t = MAX (0.0, tan (M_PI_4 - 0.5 * lat));	/* Guard against negative t */
 	A = pow (t, project_info.l_N);
 	rho = project_info.l_rF * A;
 	theta = project_info.l_Nr * lon;
