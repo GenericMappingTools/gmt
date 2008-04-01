@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_RGBchart.sh,v 1.5 2008-03-11 22:12:55 remko Exp $
+#	$Id: GMT_RGBchart.sh,v 1.6 2008-04-01 02:38:37 remko Exp $
 #
 # Plots a page of all 555 unique named colors
 # Usage: GMT_RGBchart.sh <size>
@@ -14,11 +14,11 @@ SIZE=$1
 COL=16
 ROW=35
 
-if [ $SIZE == letter ] ; then
+if [ $SIZE = letter ] ; then
 	WIDTH=10.5
 	HEIGHT=8.0
 	ORIENT=landscape
-elif [ $SIZE == a4 ] ; then
+elif [ $SIZE = a4 ] ; then
 	WIDTH=11.2
 	HEIGHT=7.8
 else
