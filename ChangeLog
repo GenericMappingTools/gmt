@@ -1,21 +1,24 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.234 2008-03-29 20:49:25 guru Exp $
+	$Id: ChangeLog,v 1.235 2008-04-01 14:33:13 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-04-01	remko
+	* gmt_proj.c:		Avoid error in GMT_lamb_sph when lat is 90 degrees.
+
 2008-03-29	pwessel
-	* pslib.[ch]:	Like in gmt, use PS_exit instead of exit to avoid Matlab shutdown.
+	* pslib.[ch]:		Like in gmt, use PS_exit instead of exit to avoid Matlab shutdown.
 	
 2008-03-26	pwessel
-	* gmt_grdio.c:	Now the grd i/o support the GMT_[DATA|IMG|GRID\DIR] environment settings.
-	* grdinfo.c:	Reports actual path to the file (may change if GMT_GRIDDIR is involved).
+	* gmt_grdio.c:		Now the grd i/o support the GMT_[DATA|IMG|GRID\DIR] environment settings.
+	* grdinfo.c:		Reports actual path to the file (may change if GMT_GRIDDIR is involved).
 
 2008-03-25	pwessel
-	* pscontour.c:	Must deallocate *ind memory according to which function was used
-	* triangulate.c: Same.  Only affects Windows's insane memory management.
+	* pscontour.c:		Must deallocate *ind memory according to which function was used
+	* triangulate.c:	Same.  Only affects Windows's insane memory management.
 
 2008-03-24	pwessel
-	* gmt_map.c:	Added new rectangular clip function using Sutherland/Hodgman algorithm
-					in order to fix incorrect results in grdlandmask.
-	* grdblend.c:	Did not pick up node registration before calculating output grid size.
+	* gmt_map.c:		Added new rectangular clip function using Sutherland/Hodgman algorithm
+				in order to fix incorrect results in grdlandmask.
+	* grdblend.c:		Did not pick up node registration before calculating output grid size.
 
 2008-03-24	remko
 	* gmt_io.c:		Implemented -b[i|o]c[<var1>/...] option to indicate input is netCDF.
