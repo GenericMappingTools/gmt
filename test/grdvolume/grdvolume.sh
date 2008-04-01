@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: grdvolume.sh,v 1.7 2007-11-15 04:20:42 remko Exp $
+#	$Id: grdvolume.sh,v 1.8 2008-04-01 14:42:40 remko Exp $
 
 makegrd () {
 xyz2grd -I1 -Gt.grd -Za $1 <<%
@@ -36,7 +36,7 @@ header "Test grdvolume for various grid registrations"
 
 testcase > grdvolume.log
 
-diff grdvolume.{log,out} > log
+diff grdvolume.log grdvolume.out > log
 
 if [ $? != 0 ]; then
 	touch fail
