@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.113 2008-03-28 20:25:50 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.114 2008-04-02 15:46:41 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -70,12 +70,12 @@ int GMT_grdformats[GMT_N_GRD_FORMATS][2] = {
 void GMT_grd_do_scaling (float *grid, GMT_LONG nm, double scale, double offset);
 void GMT_grd_get_units (struct GRD_HEADER *header);
 void GMT_grd_set_units (struct GRD_HEADER *header);
-int GMT_is_nc_grid (char *file);
-int GMT_is_native_grid (char *file);
-int GMT_is_ras_grid (char *file);
-int GMT_is_srf_grid (char *file);
-int GMT_is_mgg2_grid (char *file);
-int GMT_is_agc_grid (char *file);
+int GMT_is_nc_grid (struct GRD_HEADER *header);
+int GMT_is_native_grid (struct GRD_HEADER *header);
+int GMT_is_ras_grid (struct GRD_HEADER *header);
+int GMT_is_srf_grid (struct GRD_HEADER *header);
+int GMT_is_mgg2_grid (struct GRD_HEADER *header);
+int GMT_is_agc_grid (struct GRD_HEADER *header);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
@@ -217,15 +217,18 @@ void GMT_expand_filename (char *file, char *fname)
 
 int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 {
-	/* This functions does two things:
-	 * 1. It tries to determine what kind of grid file this is.  If the file is for
-	 *    writing then we can only determine the format from the default setting.
-	 *    If for reading we see if (a) a particular format has been specified with
+	/* This functions does a couple of things:
+	 * 1. It tries to determine what kind of grid file this is. If a file is openeed for
+	 *    reading we see if (a) a particular format has been specified with
 	 *    the =<code> suffix, or (b) we are able to guess the format based on known
-	 *    characteristics of various formats.  If we cannot obtain the format we
-	 *    return an error.
-	 * 2. We set header->name to the full path of the file (+ any format suffix
-	 *    needed) by seaching in current dir and the various GMT_*DIR paths.
+	 *    characteristics of various formats, or (c) assume the default grid format.
+	 *    If a file is opened for writing, only option (a) and (c) apply.
+	 *    If we cannot obtain the format we return an error.
+	 * 2. We strip the suffix off. The relevant info is stored in the header struct.
+	 * 3. In case of netCDF grids, the optional ?<varname> is stripped off as well.
+	 *    The info is stored in header->varname.
+	 * 4. We set header->name to the full path of the file by seaching in current dir
+	 *    and the various GMT_*DIR paths.
 	 */
 	
 	int i = 0, val, j;
@@ -246,26 +249,26 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		header->type = val;
 		j = (i == 1) ? i : i - 1;
 		header->name[j] = 0;
-		strcpy (tmp, header->name);	/* Copy over the actual name of the file */
-		if (magic && !GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* I reading, possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
+		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
+		if (magic && !GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Reading: possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
 	}
 	else if (magic) {	/* Determine file format automatically based on grid content */
-		strcpy (tmp, header->name);	/* Copy over the actual name of the file */
+		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (!GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
-		if ((header->type = GMT_is_nc_grid (header->name)) >= 0) return (GMT_NOERROR);
+		if (GMT_is_nc_grid (header) >= 0) return (GMT_NOERROR);
 		/* Continue only when file was a pipe or when nc_open didn't like the file. */
 		if (header->type != GMT_GRDIO_NC_NO_PIPE && header->type != GMT_GRDIO_OPEN_FAILED) return (header->type);
 		/* Then check for native GMT grid */
-		if ((header->type = GMT_is_native_grid (header->name)) >= 0) return (GMT_NOERROR);
+		if (GMT_is_native_grid (header) >= 0) return (GMT_NOERROR);
 		/* Next check for Sun raster GMT grid */
-		if ((header->type = GMT_is_ras_grid (header->name)) >= 0) return (GMT_NOERROR);
+		if (GMT_is_ras_grid (header) >= 0) return (GMT_NOERROR);
 		/* Then check for Golden Software surfer grid */
-		if ((header->type = GMT_is_srf_grid (header->name)) >= 0) return (GMT_NOERROR);
+		if (GMT_is_srf_grid (header) >= 0) return (GMT_NOERROR);
 		/* Then check for NGDC GRD98 GMT grid */
-		if ((header->type = GMT_is_mgg2_grid (header->name)) >= 0) return (GMT_NOERROR);
+		if (GMT_is_mgg2_grid (header) >= 0) return (GMT_NOERROR);
 		/* Then check for AGC GMT grid */
-		if ((header->type = GMT_is_agc_grid (header->name)) >= 0) return (GMT_NOERROR);
+		if (GMT_is_agc_grid (header) >= 0) return (GMT_NOERROR);
 		return (GMT_GRDIO_UNKNOWN_FORMAT);	/* No supported format found */
 	}
 	else {			/* Writing: Get format type, scale, offset and missing value from gmtdefs.grid_format */
@@ -274,7 +277,7 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		if (val < 0) return (val);
 		header->type = val;
 	}
-	if (val == GMT_grd_format_decoder ("af")) header->nan_value = 0.0;	/* 0 is NaN in the AGC format */
+	if (header->type == GMT_grd_format_decoder ("af")) header->nan_value = 0.0;	/* 0 is NaN in the AGC format */
 	return (GMT_NOERROR);
 }
 
@@ -693,16 +696,30 @@ int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row)
 	return (GMT_NOERROR);
 }
 
-
 void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN update)
 {	/* GMT_grd_init initializes a grd header to default values and copies the
 	 * command line to the header variable command.
 	 * update = TRUE if we only want to update command line */
 	int i, len;
 
+	if (update)	/* Only clean the command history */
+		memset ((void *)header->command, 0, (size_t)GRD_COMMAND_LEN);
+	else {		/* Wipe the slate clean */
+		memset ((void *)header, 0, (size_t)sizeof(struct GRD_HEADER));
+
+		/* Set the variables that are not initialized to 0/FALSE/NULL */
+		header->z_scale_factor		= 1.0;
+		header->type			= -1;
+		header->y_order			= 1;
+		header->z_id			= -1;
+		header->nan_value		= GMT_d_NaN;
+		strcpy (header->x_units, "x");
+		strcpy (header->y_units, "y");
+		strcpy (header->z_units, "z");
+	}
+
 	/* Always update command line history */
 
-	memset ((void *)header->command, 0, (size_t)GRD_COMMAND_LEN);
 	if (argc > 0) {
 		strcpy (header->command, argv[0]);
 		len = strlen (header->command);
@@ -714,35 +731,6 @@ void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN upd
 		}
 		header->command[len] = 0;
 	}
-
-	if (update) return;	/* Leave other variables unchanged */
-
-	/* Here we initialize the variables to default settings */
-
-	header->x_min = header->x_max	= 0.0;
-	header->y_min = header->y_max	= 0.0;
-	header->z_min = header->z_max	= 0.0;
-	header->x_inc = header->y_inc	= 0.0;
-	header->z_scale_factor		= 1.0;
-	header->z_add_offset		= 0.0;
-	header->nx = header->ny		= 0;
-	header->node_offset		= 0;
-	header->type			= -1;
-	header->y_order			= 1;
-	header->z_id			= -1;
-	header->nan_value		= GMT_d_NaN;
-	header->xy_off			= 0.0;
-
-	memset ((void *)header->name, 0, (size_t)GMT_LONG_TEXT);
-
-	memset ((void *)header->x_units, 0, (size_t)GRD_UNIT_LEN);
-	memset ((void *)header->y_units, 0, (size_t)GRD_UNIT_LEN);
-	memset ((void *)header->z_units, 0, (size_t)GRD_UNIT_LEN);
-	strcpy (header->x_units, "x");
-	strcpy (header->y_units, "y");
-	strcpy (header->z_units, "z");
-	memset ((void *)header->title, 0, (size_t)GRD_TITLE_LEN);
-	memset ((void *)header->remark, 0, (size_t)GRD_REMARK_LEN);
 }
 
 void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)

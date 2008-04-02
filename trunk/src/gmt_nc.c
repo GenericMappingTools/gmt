@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.74 2008-03-24 08:58:31 guru Exp $
+ *	$Id: gmt_nc.c,v 1.75 2008-04-02 15:46:41 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,50 +52,47 @@ void GMT_nc_get_units (int ncid, int varid, char *name_units);
 void GMT_nc_put_units (int ncid, int varid, char *name_units);
 void GMT_nc_check_step (int n, double *x, char *varname, char *file);
 
-int GMT_is_nc_grid (char *file)
+int GMT_is_nc_grid (struct GRD_HEADER *header)
 {	/* Returns type 18 (=nf) for new NetCDF grid,
 	   type 10 (=cf) for old NetCDF grids and -1 upon error */
 	int ncid, z_id = -1, i = 0, j = 0, id = 13, nvars, ndims, err;
 	nc_type z_type;
-	char filename[GMT_LONG_TEXT];
+	char varname[GRD_VARNAME_LEN];
 
-	/* Extract variable name from filename */
-	strcpy (filename, file);
-	while (filename[i] && filename[i] != '?') i++;
-	if (filename[i]) {
-		filename[i] = '\0';
-		j = i + 1;
-		while (filename[j] && filename[j] != '[' && filename[j] != '(') j++;
-		if (filename[j]) filename[j] = '\0';
+	/* Extract levels name from variable name */
+	strcpy (varname, header->varname);
+	if (varname[0]) {
+		j = 0;
+		while (varname[j] && varname[j] != '[' && varname[j] != '(') j++;
+		if (varname[j]) varname[j] = '\0';
 	}
 	else
 		i = -1;
-	if (!strcmp (filename,"=")) return (GMT_GRDIO_NC_NO_PIPE);
+	if (!strcmp (header->name, "=")) return (GMT_GRDIO_NC_NO_PIPE);
 
 	/* Open the file and look for the required variable */
-	if (GMT_access (filename, F_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
-	if (nc_open (filename, NC_NOWRITE, &ncid)) return (GMT_GRDIO_OPEN_FAILED);
-	if (!nc_inq_dimid (ncid, "xysize", &z_id)) {
+	if (GMT_access (header->name, F_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
+	if (nc_open (header->name, NC_NOWRITE, &ncid)) return (GMT_GRDIO_OPEN_FAILED);
+	if (!nc_inq_dimid (ncid, "xysize", &z_id)) {	/* Old style GMT netCDF grid */
 		id = 5;
-		nc_inq_varid (ncid, "z", &z_id);
+		if (nc_inq_varid (ncid, "z", &z_id)) return (GMT_GRDIO_NO_VAR);
 	}
-	else if (i < 0) {
+	else if (varname[0]) {	/* ?<varname> used */
+		if (nc_inq_varid (ncid, varname, &z_id)) return (GMT_GRDIO_NO_VAR);
+	else			/* Look for first 2D grid */
 		nc_inq_nvars (ncid, &nvars);
 		while (j < nvars && z_id < 0) {
 			GMT_err_trap (nc_inq_varndims (ncid, j, &ndims));
 			if (ndims == 2) z_id = j;
 			j++;
 		}
+		if (z_id < 0) return (GMT_GRDIO_NO_2DVAR);
 	}
-	else
-		nc_inq_varid (ncid, &filename[i+1], &z_id);
-
-	/* When variable can not be found */
-	if (z_id < 0) return ((i < 0) ? GMT_GRDIO_NO_2DVAR : GMT_GRDIO_NO_VAR);
 
 	GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 	id += ((z_type == NC_BYTE) ? 2 : z_type);
 	nc_close (ncid);
+	header->type = id;
 	return (id);
 }
 
@@ -128,14 +125,11 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 
 	for (i = 0; i < 3; i++) header->t_index[i] = -1, t_value[i] = GMT_d_NaN;
 
-	/* If the file name contains a ?, extract the name of the variable following it */
+	/* Extract layers IDs from variable name, if given */
 
 	i = 0;
-	varname[0] = '\0';
-	while (header->name[i] && header->name[i] != '?') i++;
-	if (header->name[i]) {
-		strcpy (varname, &header->name[i+1]);
-		header->name[i] = '\0';
+	strcpy (varname, header->varname);
+	if (varname[0]) {
 		i = 0;
 		while (varname[i] && varname[i] != '(' && varname[i] != '[') i++;
 		if (varname[i] == '(') {
@@ -449,9 +443,9 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 
 	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_nc_read_grd");
 
-	/* Load the data row by row. The data in the file is stored either "upside down"
-	 * (y_order < 0, the first row is the top row) or "upside up" (y_order > 0, the first
-	 * row is the bottom row). GMT will store the data in "upside down" mode. */
+	/* Load the data row by row. The data in the file is stored either "top down"
+	 * (y_order < 0, the first row is the top row) or "bottom up" (y_order > 0, the first
+	 * row is the bottom row). GMT will store the data in "top down" mode. */
 
 	for (i = 0; i < ndims-2; i++) {
 		start[i] = header->t_index[i];

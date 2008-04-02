@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.26 2008-03-24 08:58:31 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.27 2008-04-02 15:46:41 remko Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -168,13 +168,13 @@ static void swap_header(MGG_GRID_HEADER_2 *header)
    for (i = 0; i < GRD98_N_UNUSED; i++) swap_long(&header->unused[i]);
 }
 
-int GMT_is_mgg2_grid (char *file)
+int GMT_is_mgg2_grid (struct GRD_HEADER *header)
 {	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
 
-	if (!strcmp(file, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if ((fp = GMT_fopen(file, GMT_io.r_mode)) == NULL) return (GMT_GRDIO_OPEN_FAILED);
+	if (!strcmp(header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
+	if ((fp = GMT_fopen(header->name, GMT_io.r_mode)) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 
 	memset(&mggHeader, '\0', sizeof(MGG_GRID_HEADER_2));
 	if (GMT_fread(&mggHeader, sizeof(MGG_GRID_HEADER_2), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
@@ -184,7 +184,8 @@ int GMT_is_mgg2_grid (char *file)
 
 	/* Check the magic number and size of header */
 	if (mggHeader.version < MGG_MAGIC_NUM + VERSION) return (-1);	/* Not this kind of file */
-	return (GMT_grd_format_decoder ("rf"));
+	header->type = GMT_grd_format_decoder ("rf");
+	return (header->type);
 }
 
 int mgg2_read_grd_info (struct GRD_HEADER *header)
