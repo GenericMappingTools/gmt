@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.13 2008-04-02 20:48:13 guru Exp $
+#  $Id: Makefile,v 1.14 2008-04-02 21:05:21 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -49,7 +49,6 @@ help::
 #!update-ftp-live		: Update the LIVE ftp server
 #!update-ftp-test	: Update the LIVE ftp server test dir
 #!update-ftp-local		: Update the TEST ftp server
-#!update-bugs		: Update the errata pages
 #!clean-ftp		: Empty all local ftp archives
 #!clean-local		: Remove the local site directories
 #!clean-test		: Empty the remote test directories
@@ -140,8 +139,6 @@ update-www-local:../registration/gmt_usage.jpg gmt_mirrors.html
 		cp -R -f ../www/gmt/doc $(TESTWWWDIR)/gmt
 		cp -R -f ../www/gmt/examples $(TESTWWWDIR)/gmt
 
-update-bugs:
-		scp gmt_errata_[34].html $(WEBSERVER):$(LIVEWWWDIR)/gmt
 
 #---------------------------------------------------------------------------
 # GMT FTP UPDATE
