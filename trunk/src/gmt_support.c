@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.361 2008-03-27 00:28:21 guru Exp $
+ *	$Id: gmt_support.c,v 1.362 2008-04-02 01:31:16 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4482,7 +4482,7 @@ int	GMT_non_zero_winding (double xp, double yp, double *x, double *y, GMT_LONG n
 
 	if (n_path < 2) return (GMT_OUTSIDE_POLYGON);	/* Cannot be inside a null set or a point so default to outside */
 
-	if (!(x[n_path-1] == x[0] && y[n_path-1] == y[0])) {
+	if (GMT_polygon_is_open (x, y, n_path)) {
 		fprintf (stderr, "%s: GMT_non_zero_winding given non-closed polygon\n", GMT_program);
 		GMT_exit (EXIT_FAILURE);
 	}
@@ -8337,7 +8337,12 @@ void GMT_NaN_pen_up (double x[], double y[], int pen[], int n)
 BOOLEAN GMT_polygon_is_open (double x[], double y[], GMT_LONG n)
 {	/* Returns TRUE if the first and last point is not identical */
 
-	return (!(x[0] == x[n-1] && y[0] == y[n-1]));
+	if (!GMT_IS_ZERO (x[0] - x[n-1])) return TRUE;	/* x difference exceeds threshold */
+	if (!GMT_IS_ZERO (y[0] - y[n-1])) return TRUE;	/* y difference exceeds threshold */
+	/* Here, first and last are ~identical - to be safe we enforce exact closure */
+	x[n-1] = x[0];	y[n-1] = y[0];
+	return FALSE;
+	/* return (!(x[0] == x[n-1] && y[0] == y[n-1])); */
 }
 
 /*--------------------------------------------------------------------
