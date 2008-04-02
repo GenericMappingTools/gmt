@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.191 2008-04-02 01:33:34 guru Exp $
+ *	$Id: gmt_map.c,v 1.192 2008-04-02 02:53:18 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4455,11 +4455,11 @@ int GMT_graticule_path (double **x, double **y, int dir, double w, double e, dou
 	/* Close graticule from point 0 through point 4 */
 
 	if (GMT_IS_RECT_GRATICULE) {	/* Simple rectangle in this projection */
-		xx = (double *) GMT_memory (VNULL, (size_t)4, sizeof (double), GMT_program);
-		yy = (double *) GMT_memory (VNULL, (size_t)4, sizeof (double), GMT_program);
-		xx[0] = px0;	xx[1] = px1;	xx[2] = px2;	xx[3] = px3;
-		yy[0] = yy[1] = s;	yy[2] = yy[3] = n;
-		np = 4;
+		xx = (double *) GMT_memory (VNULL, (size_t)5, sizeof (double), GMT_program);
+		yy = (double *) GMT_memory (VNULL, (size_t)5, sizeof (double), GMT_program);
+		xx[0] = xx[4] = px0;	xx[1] = px1;	xx[2] = px2;	xx[3] = px3;
+		yy[0] = yy[1] = yy[4] = s;	yy[2] = yy[3] = n;
+		np = 5;
 	}
 	else {	/* Must assemble path from meridians and parallel pieces */
 		double *xtmp, *ytmp;
