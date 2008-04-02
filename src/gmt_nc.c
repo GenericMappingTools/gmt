@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.75 2008-04-02 15:46:41 remko Exp $
+ *	$Id: gmt_nc.c,v 1.76 2008-04-02 17:04:32 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,7 +55,7 @@ void GMT_nc_check_step (int n, double *x, char *varname, char *file);
 int GMT_is_nc_grid (struct GRD_HEADER *header)
 {	/* Returns type 18 (=nf) for new NetCDF grid,
 	   type 10 (=cf) for old NetCDF grids and -1 upon error */
-	int ncid, z_id = -1, i = 0, j = 0, id = 13, nvars, ndims, err;
+	int ncid, z_id = -1, j = 0, id = 13, nvars, ndims, err;
 	nc_type z_type;
 	char varname[GRD_VARNAME_LEN];
 
@@ -66,8 +66,6 @@ int GMT_is_nc_grid (struct GRD_HEADER *header)
 		while (varname[j] && varname[j] != '[' && varname[j] != '(') j++;
 		if (varname[j]) varname[j] = '\0';
 	}
-	else
-		i = -1;
 	if (!strcmp (header->name, "=")) return (GMT_GRDIO_NC_NO_PIPE);
 
 	/* Open the file and look for the required variable */
@@ -79,7 +77,8 @@ int GMT_is_nc_grid (struct GRD_HEADER *header)
 	}
 	else if (varname[0]) {	/* ?<varname> used */
 		if (nc_inq_varid (ncid, varname, &z_id)) return (GMT_GRDIO_NO_VAR);
-	else			/* Look for first 2D grid */
+	}
+	else {			/* Look for first 2D grid */
 		nc_inq_nvars (ncid, &nvars);
 		while (j < nvars && z_id < 0) {
 			GMT_err_trap (nc_inq_varndims (ncid, j, &ndims));
@@ -127,7 +126,6 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 
 	/* Extract layers IDs from variable name, if given */
 
-	i = 0;
 	strcpy (varname, header->varname);
 	if (varname[0]) {
 		i = 0;
@@ -217,7 +215,9 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 				z_type = NC_NAT;
 		}
 
-		GMT_err_trap (nc_def_var (ncid, "z", z_type, 2, dims, &z_id));
+		/* Variable name is given, or defaults to "z" */
+		if (!header->varname[0]) strcpy (header->varname, "z");
+		GMT_err_trap (nc_def_var (ncid, header->varname, z_type, 2, dims, &z_id));
 	}
 	header->z_id = z_id;
 	header->ncid = ncid;
@@ -340,6 +340,9 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		header->y_order = 1;
 		dummy[(1-header->y_order)/2] = header->y_min, dummy[(1+header->y_order)/2] = header->y_max;
 		GMT_err_trap (nc_put_att_double (ncid, ids[ndims-2], "actual_range", NC_DOUBLE, (size_t)2, dummy));
+
+		/* When varname is given, and z_units is default, overrule z_units with varname */
+		if (varname[0] && !strcmp (header->z_units, "z")) strcpy (header->z_units, header->varname);
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		GMT_nc_put_units (ncid, z_id, header->z_units);
