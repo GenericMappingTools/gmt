@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.189 2008-04-02 00:42:55 guru Exp $
+ *	$Id: gmt_map.c,v 1.190 2008-04-02 01:31:16 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4896,7 +4896,7 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 {
 	GMT_LONG i, m, n_alloc;
 	int side, j, np, k, in = 1, out = 0;
-	BOOLEAN close_it;
+	BOOLEAN close_it, polygon;
 	double *xtmp[2], *ytmp[2], xx[2], yy[2], border[4];
 	PFI clipper[4], inside[4], outside[4];
 #ifdef DEBUG
@@ -4905,6 +4905,7 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 #endif
 
 	if (n == 0) return (0);
+	polygon = !GMT_polygon_is_open (lon, lat, n);
 
 	*total_nx = 1;	/* So that calling program will not discard the clipped polygon */
 	
@@ -4956,7 +4957,7 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 				}
 			}
 		}
-		close_it = GMT_polygon_is_open (xtmp[out], ytmp[out], m);	/* Do we need to explicitly close this clipped polygon? */
+		close_it = (polygon && GMT_polygon_is_open (xtmp[out], ytmp[out], m));	/* Do we need to explicitly close this clipped polygon? */
 		if (close_it) {
 			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
 		}
