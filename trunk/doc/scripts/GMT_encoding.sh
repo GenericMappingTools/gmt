@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_encoding.sh,v 1.6 2007-02-08 21:46:28 remko Exp $
+#	$Id: GMT_encoding.sh,v 1.7 2008-04-02 19:14:32 remko Exp $
 #
 #	This plots the given encoding vector to stdout
 #
@@ -29,7 +29,7 @@ cat << EOF > $$.awk	# This awk script creates a file for psxy to plot a rectangl
 {
 	for (i = 1; i <= 8; i++)
 	{
-		if (\$i == "/.notdef") printf "%lg %lg 0.345 0.21\n", i + 0.5, NR-0.5
+		if (\$i == "/.notdef") printf "%g %g 0.345 0.21\n", i + 0.5, NR-0.5
 	}
 }
 EOF
@@ -40,14 +40,14 @@ BEGIN {
 	printf "0.5 -0.5 10 0 4 MC octal\n"
 	for (i = 0; i < 8; i++)
 	{
-		printf "%lg -0.5 10 0 4 MC %d\n", i + 1.5, i
+		printf "%g -0.5 10 0 4 MC %d\n", i + 1.5, i
 	}
 }
 {
-	printf "0.5 %lg 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
+	printf "0.5 %g 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
 	{
-		printf "%lg %lg 10 0 4 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
+		printf "%g %g 10 0 4 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
 	}
 }
 EOF

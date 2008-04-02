@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.10 2007-02-08 21:46:27 remko Exp $
+#	$Id: GMT_App_F.sh,v 1.11 2008-04-02 19:14:32 remko Exp $
 #
 #	Makes the octal code charts in Appendix F
 
@@ -55,14 +55,14 @@ BEGIN {
 	printf "0.5 2.5 10 0 4 MC octal\n"
 	for (i = 0; i < 8; i++)
 	{
-		printf "%lg 2.5 10 0 4 MC %d\n", i + 1.5, i
+		printf "%g 2.5 10 0 4 MC %d\n", i + 1.5, i
 	}
 }
 {
-	printf "0.5 %lg 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
+	printf "0.5 %g 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
 	{
-		printf "%lg %lg 10 0 4 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
+		printf "%g %g 10 0 4 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
 	}
 }
 EOF
@@ -273,14 +273,14 @@ BEGIN {
 	printf "0.5 3.5 10 0 4 MC octal\n"
 	for (i = 0; i < 8; i++)
 	{
-		printf "%lg 3.5 10 0 4 MC %d\n", i + 1.5, i
+		printf "%g 3.5 10 0 4 MC %d\n", i + 1.5, i
 	}
 }
 {
-	printf "0.5 %lg 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
+	printf "0.5 %g 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
 	{
-		printf "%lg %lg 10 0 12 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
+		printf "%g %g 10 0 12 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
 	}
 }
 EOF
@@ -320,10 +320,10 @@ EOF
 
 cat << EOF > $$.awk
 {
-	printf "0.5 %lg 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
+	printf "0.5 %g 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
 	{
-		printf "%lg %lg 10 0 12 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
+		printf "%g %g 10 0 12 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
 	}
 }
 EOF
@@ -376,14 +376,14 @@ BEGIN {
 	printf "0.5 3.5 10 0 4 MC octal\n"
 	for (i = 0; i < 8; i++)
 	{
-		printf "%lg 3.5 10 0 4 MC %d\n", i + 1.5, i
+		printf "%g 3.5 10 0 4 MC %d\n", i + 1.5, i
 	}
 }
 {
-	printf "0.5 %lg 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
+	printf "0.5 %g 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
 	{
-		printf "%lg %lg 10 0 34 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
+		printf "%g %g 10 0 34 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
 	}
 }
 EOF
@@ -423,10 +423,10 @@ EOF
 
 cat << EOF > $$.awk
 {
-	printf "0.5 %lg 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
+	printf "0.5 %g 10 0 4 MC \\\\\\\%2.2ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
 	{
-		printf "%lg %lg 10 0 34 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
+		printf "%g %g 10 0 34 MC \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
 	}
 }
 EOF
