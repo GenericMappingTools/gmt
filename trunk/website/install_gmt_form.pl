@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.26 2007-10-04 21:31:55 remko Exp $
+#       $Id: install_gmt_form.pl,v 1.27 2008-04-02 20:48:13 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -31,9 +31,7 @@ mkdir $PDIR;
 
 # Assign internal variables for each form item:
 
-$gmt_version	= $gmt_form{'gmt_version'};
 $form_version	= $gmt_form{'form_version'};
-$zip		= $gmt_form{'radio_format'};
 $unit		= $gmt_form{'radio_unit'};
 $eps		= $gmt_form{'radio_eps'};
 $flock		= $gmt_form{'radio_flock'};
@@ -95,14 +93,14 @@ chop($now);
 open (FILE, ">" . $OUT) || die "Sorry, cound not create tmp file\n";
 print FILE <<EOF;
 # This file contains parameters needed by the install script
-# install_gmt for GMT Version $gmt_version.  Give this file
+# install_gmt for GMT Version 4.2.1.  Give this file
 # as the argument to the install_gmt script and the whole
 # installation process can be placed in the background.
 # Default answers will be selected where none is given.
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.26 $, on
+# Processed by install_gmt_form.pl $Revision: 1.27 $, on
 #
 #	$now
 #
@@ -113,13 +111,6 @@ print FILE <<EOF;
 #---------------------------------------------
 EOF
 
-print FILE "VERSION=", $gmt_version, "\n";
-if ($zip eq "default") {
-	print FILE "GMT_expand=\n";
-}
-else {
-	print FILE "GMT_expand=", $zip, "\n";
-}
 @k = split (/\s+/, $make);
 if ($k[0] eq "1.") {
 	print FILE "GMT_make=make\n";
