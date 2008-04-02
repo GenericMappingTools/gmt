@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.190 2008-04-02 01:31:16 guru Exp $
+ *	$Id: gmt_map.c,v 1.191 2008-04-02 01:33:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4886,7 +4886,7 @@ int GMT_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, dou
 	x[0] = border;	y[0] = INTERSECTION_COORD (y_curr, x_curr, y_prev, x_prev, border);	return (1);
 }
 
-/* Tiny functions to tell if a value is larger or smaller than the limit */
+/* Tiny functions to tell if a value is <, <=, >=, > than the limit */
 int inside_lower_boundary (double val, double min) {return (val >= min);}
 int inside_upper_boundary (double val, double max) {return (val <= max);}
 int outside_lower_boundary (double val, double min) {return (val < min);}
@@ -4896,7 +4896,7 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 {
 	GMT_LONG i, m, n_alloc;
 	int side, j, np, k, in = 1, out = 0;
-	BOOLEAN close_it, polygon;
+	BOOLEAN polygon;
 	double *xtmp[2], *ytmp[2], xx[2], yy[2], border[4];
 	PFI clipper[4], inside[4], outside[4];
 #ifdef DEBUG
@@ -4905,8 +4905,9 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 #endif
 
 	if (n == 0) return (0);
-	polygon = !GMT_polygon_is_open (lon, lat, n);
 
+	polygon = !GMT_polygon_is_open (lon, lat, n);	/* TRUE if input segment is a closed polygon */
+	
 	*total_nx = 1;	/* So that calling program will not discard the clipped polygon */
 	
 	/* Set up function pointers.  This could be done once in GMT_begin at some point */
@@ -4945,9 +4946,6 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side]);	/* Returns 0, 1, or 2 points */
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
 				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
-				if (GMT_is_dnan(yy[j])) {
-					k = 0;
-				}
 				if (m == (n_alloc-1)) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
 					n_alloc <<= 1;
 					for (k = 0; k < 2; k++) {
@@ -4957,8 +4955,7 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 				}
 			}
 		}
-		close_it = (polygon && GMT_polygon_is_open (xtmp[out], ytmp[out], m));	/* Do we need to explicitly close this clipped polygon? */
-		if (close_it) {
+		if (polygon && GMT_polygon_is_open (xtmp[out], ytmp[out], m)) {	/* Do we need to explicitly close this clipped polygon? */
 			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
 		}
 	}
