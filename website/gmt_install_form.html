@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.51 2008-03-30 00:45:29 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.52 2008-04-02 20:48:13 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.51 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.52 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -26,55 +26,22 @@ is of course optional.<BR>
 in previous versions.  However, after a successful install it will write all the parameters
 to a file named by you, and this file can be used for background installs as shown above.</I><BR>
 <P>
-<b>IMPORTANT: Move or remove old GMT*.{bz2,gz} files from the current directory before running install_gmt!</b>
+<b>IMPORTANT: Move or remove old GMT*.bz2 files from the current directory before running install_gmt!</b>
 <P>
 <HR>
 <CENTER><H3>A. Basic Requirements: </H3></CENTER>
 <UL>
 <LI>You have access to the Bourne shell (Bash will also work).</LI>
+<LI>You have bzip2 on your system.  If not, use your package manager, or get source code and executables for bzip2
+	from the <A HREF="http://sources.redhat.com/bzip2" target="_blank">bzip2</A> site.</LI>
 <LI>You have write permissions in all directories you specify below.</LI>
 <LI>You have obtained and saved <A HREF="ftp://ftp.soest.hawaii.edu/gmt/install_gmt" target="ftp_window">install_gmt</A>, the GMT install script.</LI>
 <LI>If you are using Cygwin, check these <A HREF="gmt_cygwin.html" target="_blank">important notes</A> before you proceed.</LI>
 </UL>
 
-<!--  GMT VERSION SELECTION  -->
-
-<HR><B>1. Select the GMT version you want to install:</B><BR>
-
-<SELECT NAME="gmt_version">
-<OPTION SELECTED>4.3.0
-</SELECT><BR>
-<P>
-GMT version 4.3.0 is currently the only version supported by this web page. If you want to
-install an older version, you will need to grab the tarballs yourself, unpack and configure and
-make manually.
-<P>
-<I>Version 4.3.0 and earlier versions can coexist on your system since they use
-different default files.  In order to facilitate a simple way of switching from
-one version to another, GMT 4.3.0 comes with a Bourne shell utility called
-gmtswitch.  To simplify the maintenance of multiple versions we recommend that
-you install all your GMT versions you want under a parent directory called
-GMTdev.  After installing the required versions, run gmtswitch.  See the
-new Appendix P for details.</I><BR>
-<HR>
-
-<!--  DECOMPRESSION UTILITY SELECTION  -->
-
-<B>2. Select archive format:</B><BR>
-
-<INPUT TYPE="radio" VALUE="gzip" NAME="radio_format"> gzip format<BR>
-<INPUT TYPE="radio" VALUE="bzip2" NAME="radio_format"> bzip2 format<BR>
-<INPUT TYPE="radio" VALUE="default" NAME="radio_format" CHECKED> Either one, I don't care<BR>
-<P>
-<I>Note: The *.bz2 files made by bzip2 are generally much smaller than the corresponding *.gz files.
-Type bzip2 -h to determine if you have bzip2 installed.  Source code and executables for bzip2 are
-available from the <A HREF="http://sources.redhat.com/bzip2" target="_blank">bzip2</A> site.  The default option will
-determine if you have bzip2 or gzip and pick bzip2 if possible.</I><BR>
-<HR>
-
 <!--  SI OR US UNIT SELECTION  -->
 
-<B>3. Select default units in GMT:</B><BR>
+<B>1. Select default units in GMT:</B><BR>
 
 <INPUT TYPE="radio" VALUE="SI" NAME="radio_unit" CHECKED> SI units (cm)<BR>
 <INPUT TYPE="radio" VALUE="US" NAME="radio_unit"> US units (inch)<BR>
@@ -88,7 +55,7 @@ with gmtset MEASURE_UNIT cm|inch</I><BR>
 
 <!--  PS OR EPS SELECTION  -->
 
-<B>4. Select default PostScript output format for GMT:</B><BR>
+<B>2. Select default PostScript output format for GMT:</B><BR>
 
 <INPUT TYPE="radio" VALUE="PS"  NAME="radio_eps" CHECKED> Freeform PostScript (PS)<BR>
 <INPUT TYPE="radio" VALUE="EPS" NAME="radio_eps"> Encapsulated PostScript (EPS)<BR>
@@ -107,7 +74,7 @@ for more details.</I><BR>
 
 <!--  POSIX FILE LOCKING SELECTION  -->
 
-<B>5. Select POSIX Advisory File Locking:<BR></B>
+<B>3. Select POSIX Advisory File Locking:<BR></B>
 
 <INPUT TYPE="radio" VALUE="Lock" NAME="radio_flock" CHECKED> YES. Use file locking<BR>
 <INPUT TYPE="radio" VALUE="Nolock" NAME="radio_flock"> NO. Do not use file locking<BR>
@@ -176,23 +143,23 @@ Only if you have some very old ftp client, you may have to resort to active ftp
 
 <!--  GMT ARCHIVE SELECTION  -->
 
-<HR><B>3. Select the components you want (gzip/bzip2 sizes indicated):</B><BR>
+<HR><B>3. Select the components you want (bzip2 sizes indicated):</B><BR>
 
-<INPUT TYPE="checkbox" NAME="checkbox_src" CHECKED> GMT source code (1.3/1.0 Mb, the main GMT programs, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_share" CHECKED> GMT Shared Data (0.05/0.05 Mb, shared run-time files, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_pdf" CHECKED> GMT Documentation (9.7/9.7 Mb, PDF versions of Cookbook, Tutorial and Man pages)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_tut" CHECKED> GMT Tutorial (1.2/0.9 Mb, Tutorial data sets)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_scripts" CHECKED> GMT Example Scripts &amp; Data (3.4/2.8 Mb, required to run test examples)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED> GMT Supplemental Programs (1.0/0.8 Mb, see section C.10 below for details)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_coast" CHECKED> GSHHS Low-resolution Coastlines  (4.4/4.1 Mb, Basic-resolution (CLI) GSHHS coastlines, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_high"> GSHHS High-resolution Coastlines (10.7/8.6 Mb)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_full"> GSHHS Full-resolution Coastlines (46.1/28.0 Mb)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_src" CHECKED> GMT source code (1.0 Mb, the main GMT programs, REQUIRED)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_share" CHECKED> GMT Shared Data (0.05 Mb, shared run-time files, REQUIRED)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_pdf" CHECKED> GMT Documentation (9.7 Mb, PDF versions of Cookbook, Tutorial and Man pages)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_tut" CHECKED> GMT Tutorial (0.9 Mb, Tutorial data sets)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_scripts" CHECKED> GMT Example Scripts &amp; Data (2.8 Mb, required to run test examples)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED> GMT Supplemental Programs (0.8 Mb, see section C.10 below for details)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_coast" CHECKED> GSHHS Low-resolution Coastlines  (4.1 Mb, Basic-resolution (CLI) GSHHS coastlines, REQUIRED)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_high"> GSHHS High-resolution Coastlines (8.6 Mb)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_full"> GSHHS Full-resolution Coastlines (28.0 Mb)<BR>
 
 <P>
 <I>Note: The first three are required for a simple GMT install (in order to run all the examples in the cookbook).
 Many users will also prefer to get the higher resolution coastline files for map making in smaller areas.  The
 example scripts are required if you want to run the test suite.  The tutorial component is needed to run
-the tutorial examples. Make sure you remove old GMT *.bz2 or *.gz archives from the working directory before you
+the tutorial examples. Make sure you remove old GMT *.bz2 archives from the working directory before you
 run the script; otherwise the script may decide that it does not need to ftp new versions of those archives.</I>
 
 <!--  OPTIONAL TRIANGLE SELECTION  -->

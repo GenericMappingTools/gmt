@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.12 2007-12-20 19:35:16 guru Exp $
+#  $Id: Makefile,v 1.13 2008-04-02 20:48:13 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -74,7 +74,7 @@ update-version-test:	update-ftp-test update-www-test
 update-version-live:	update-ftp-live update-www-live
 		echo "Both the FTP and WEB sites will be updated automatically."
 		echo "However, the following tasks must be done manually for now:"
-		echo "1. Manually remove old GMT4.* files from $(LIVEFTPDIR)/4"
+		echo "1. Manually remove old GMT4.* files from $(LIVEFTPDIR)"
 		echo "2. Send email notification to gmt-help, gmt-group, gmt-mirrors, and gmt-team"
 		echo "For more details, see RELEASE.HOWTO"
 
@@ -154,18 +154,18 @@ update-ftp-live:	netcdf
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-	ssh $(FTPSERVER) rm -rf $(LIVEFTPDIR)/4
-	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/4
+	ssh $(FTPSERVER) rm -rf $(LIVEFTPDIR)
+	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)
 	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)/4
-	echo "cd $(LIVEFTPDIR)/4" > gmt_server_job.sh
+	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
+	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
-		echo "rm -f $(LIVEFTPDIR)/4/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR)/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
-		echo "rm -f $(LIVEFTPDIR)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR)/{GMT,GSHHS}_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
@@ -179,18 +179,18 @@ update-ftp-test:	netcdf
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/4
-	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)/4
+	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)
+	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)
 	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
-	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)/4
-	echo "cd $(LIVEFTPDIR2)/4" > gmt_server_job.sh
+	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
+	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
-		echo "rm -f $(LIVEFTPDIR2)/4/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR2)/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
-		echo "rm -f $(LIVEFTPDIR2)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR2)/{GMT,GSHHS}_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
@@ -204,19 +204,19 @@ update-ftp-local:
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-	rm -rf $(TESTFTPDIR)/4
-	mkdir -p $(TESTFTPDIR)/4
+	rm -rf $(TESTFTPDIR)
+	mkdir -p $(TESTFTPDIR)
 	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > $(TESTFTPDIR)/install_gmt
-	cp -f ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)/4
+	cp -f ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
 	for p in pdf web tut share src scripts suppl; do \
-		\rm -f $(TESTFTPDIR)/4/GMT_$$p.tar.{bz2,gz}; \
-		(cd $(TESTFTPDIR)/4; $(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
-		(cd $(TESTFTPDIR)/4; $(LN_S) GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz); \
+		\rm -f $(TESTFTPDIR)/GMT_$$p.tar.{bz2,gz}; \
+		(cd $(TESTFTPDIR); $(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
+		(cd $(TESTFTPDIR); $(LN_S) GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz); \
 	done
 	for p in coast high full; do \
-		\rm -f $(TESTFTPDIR)/4/{GMT,GSHHS}_$$p.tar.{bz2,gz}; \
-		(cd $(TESTFTPDIR)/4; $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
-		(cd $(TESTFTPDIR)/4; $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz); \
+		\rm -f $(TESTFTPDIR)/{GMT,GSHHS}_$$p.tar.{bz2,gz}; \
+		(cd $(TESTFTPDIR); $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
+		(cd $(TESTFTPDIR); $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz); \
 	done
 
 clean-ftp:

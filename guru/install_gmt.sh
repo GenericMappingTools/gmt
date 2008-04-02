@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.123 2008-03-30 00:45:29 guru Exp $
+#	$Id: install_gmt.sh,v 1.124 2008-04-02 20:48:13 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -9,8 +9,8 @@
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.2
-VERSION=4.3.0
-GSHHS=1.10
+VERSION=4.2.1
+GSHHS=1.9
 GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
@@ -53,19 +53,12 @@ echon "==> $1 [$2]: " >&2
 read answer
 echo $answer $2 | awk '{print $1}'
 }
-which_zip()
+check_for_bzip2()
 {
 if [ `bzip2 -h 2>&1 | wc -l` -lt 10 ]; then	# Dont have bzip2
-	if [ `gzip -h 2>&1 | wc -l` -lt 10 ]; then	# Dont have gzip
-		echo "ERROR: Neither gzip or bzip2 installed - exits" >&2
-		exit
-	else
-		use=gzip
-	fi
-else				# Try gzip
-	use=bzip2
+	echo "ERROR: bzip2 not installed - exits" >&2
+	exit
 fi
-echo $use
 }
 #--------------------------------------------------------------------------------
 # INTERACTIVE GMT PARAMETER REQUEST SESSION
@@ -130,26 +123,11 @@ os=`uname -s`
 
 netcdf_path=${NETCDFHOME:-}
 
-#--------------------------------------------------------------------------------
-#	DETERMINE WHICH OF GZIP AND BZIP2 FILES TO USE
-#--------------------------------------------------------------------------------
+check_for_bzip2
 
-GMT_expand=`which_zip`
-if [ "$GMT_expand" = "bzip2" ]; then	# Use bzip2
-	suffix="bz2"
-	expand="bzip2 -dc"
-	sizes=gmt_install.ftp_bzsizes
-	echo "+++ Will expand *.bz2 files made with bzip2 +++" >&2
-elif [ "$GMT_expand" = "gzip" ]; then
-	suffix="gz"
-	expand="gzip -dc"
-	sizes=gmt_install.ftp_gzsizes
-cat << EOF >&2
-+++ Will expand *.gz files make with gzip +++
-    (Consider installing bzip2 (sourceware.cygnus.com/bzip2/index.html)
-     since bzip2 files are considerably smaller\!)
-EOF
-fi
+suffix="bz2"
+expand="bzip2 -dc"
+sizes=gmt_install.ftp_bzsizes
 
 #--------------------------------------------------------------------------------
 #	MAKE UTILITY
@@ -197,9 +175,9 @@ if [ "$answer" = "n" ]; then	# Must install netcdf one way or the other
 		ok=0
 		if [ -f netcdf.tar.Z ]; then
 			ok=1
-		elif [ -f netcdf.tar.bz2 ] && [ "$GMT_expand" = "bzip2" ]; then
+		elif [ -f netcdf.tar.bz2 ]; then
 			ok=1
-		elif [ -f netcdf.tar.gz ] && [ "$GMT_expand" = "gzip" ]; then
+		elif [ -f netcdf.tar.gz ]; then
 			ok=1
 		fi
 		if [ $ok -eq 0 ]; then
@@ -877,20 +855,10 @@ fi
 topdir=`pwd`
 os=`uname -s`
 
-if [ x"$GMT_expand" = x ]; then	# Was never set by user
-	GMT_expand=`which_zip`
-fi
-if [ "$GMT_expand" = "bzip2" ]; then	# Use bzip2
-	suffix="bz2"
-	expand="bzip2 -dc"
-	echo "+++ Will expand *.bz2 files made with bzip2 +++"
-elif [ "$GMT_expand" = "gzip" ]; then
-	suffix="gz"
-	expand="gzip -dc"
-	echo "+++ Will expand *.gz files make with gzip +++" >&2
-	echo "    [Consider installing bzip2 (http://sources.redhat.com/bzip2)" >&2
-	echo "     since bzip2 files are considerably smaller\!]" >&2
-fi
+check_for_bzip2
+suffix="bz2"
+expand="bzip2 -dc"
+echo "+++ Will expand *.bz2 files made with bzip2 +++"
 
 CONFIG_SHELL=`type sh | awk '{print $NF}'`
 export CONFIG_SHELL
@@ -940,10 +908,10 @@ if [ "$netcdf_install" = "y" ]; then
 
 	if [ -f netcdf.tar.Z ]; then
 		zcat netcdf.tar.Z | tar xvf -
-	elif [ -f netcdf.tar.bz2 ] && [ "$GMT_expand" = "bzip2" ]; then
+	elif [ -f netcdf.tar.bz2 ]; then
 		$expand netcdf.tar.$suffix | tar xvf -
-	elif [ -f netcdf.tar.gz ] && [ "$GMT_expand" = "gzip" ]; then
-		$expand netcdf.tar.$suffix | tar xvf -
+	elif [ -f netcdf.tar.gz ]; then
+		gzip -dc netcdf.tar.$suffix | tar xvf -
 	else
 		echo "?? netcdf.tar.{Z,bz2,gz} not found - must abort !!"
 		exit
@@ -1020,16 +988,15 @@ if [ "$GMT_ftp" = "y" ]; then
 	active=$?
 
 #	Set-up ftp command
-	sub=`echo $VERSION | awk '{print substr($1,1,1)}'`
 	echo "user anonymous $USER@" > gmt_install.ftp_list
 	if [ "$passive_ftp" = "y" ] && [ $active -eq 1 ]; then
 		echo "passive" >> gmt_install.ftp_list
 		echo "quote pasv" >> gmt_install.ftp_list
 	fi
-	echo "cd $DIR/$sub" >> gmt_install.ftp_list
+	echo "cd $DIR" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
 	make_ftp_list $GMT_get_src src GMT
-	make_ftp_list $GMT_triangle triangle GMT
+#	make_ftp_list $GMT_triangle triangle GMT
 	make_ftp_list $GMT_get_share share GMT
 	make_ftp_list $GMT_get_coast coast GSHHS
 	make_ftp_list $GMT_get_high high GSHHS
@@ -1073,7 +1040,7 @@ GMT_sharedir=${GMT_sharedir:-$GMT_share}
 
 install_this_gmt $GMT_get_src src
 install_this_gmt $GMT_get_share share
-install_this_gmt $GMT_triangle triangle
+#install_this_gmt $GMT_triangle triangle
 install_this_gmt $GMT_get_suppl suppl
 install_this_gmt $GMT_get_scripts scripts
 install_this_gmt $GMT_get_pdf pdf
