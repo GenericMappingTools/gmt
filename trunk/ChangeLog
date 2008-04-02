@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.235 2008-04-01 14:33:13 remko Exp $
+	$Id: ChangeLog,v 1.236 2008-04-02 01:38:37 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-01	pwessel
+	* examples/ex19/*:	Next GMT conference is now in 2009.
+	* gmt_support.c:	Made GMT_polygon_is_open tolerant of round-off and if
+						polygon is not open set last to exactly equal first point.
+
 2008-04-01	remko
 	* gmt_proj.c:		Avoid error in GMT_lamb_sph when lat is 90 degrees.
 
