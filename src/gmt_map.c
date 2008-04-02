@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.188 2008-03-28 21:01:54 guru Exp $
+ *	$Id: gmt_map.c,v 1.189 2008-04-02 00:42:55 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4887,8 +4887,10 @@ int GMT_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, dou
 }
 
 /* Tiny functions to tell if a value is larger or smaller than the limit */
-int smaller_than_min (double val, double min) {return (val > min);}
-int larger_than_max (double val, double max) {return (val < max);}
+int inside_lower_boundary (double val, double min) {return (val >= min);}
+int inside_upper_boundary (double val, double max) {return (val <= max);}
+int outside_lower_boundary (double val, double min) {return (val < min);}
+int outside_upper_boundary (double val, double max) {return (val > max);}
 
 GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
 {
@@ -4909,8 +4911,8 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	/* Set up function pointers.  This could be done once in GMT_begin at some point */
 	
 	clipper[0] = GMT_clip_sn;	clipper[1] = GMT_clip_we; clipper[2] = GMT_clip_sn;	clipper[3] = GMT_clip_we;
-	inside[1] = inside[2] = larger_than_max;	outside[1] = outside[2] = smaller_than_min;
-	inside[0] = inside[3] = smaller_than_min;		outside[0] = outside[3] = larger_than_max;
+	inside[1] = inside[2] = inside_upper_boundary;	outside[1] = outside[2] = outside_upper_boundary;
+	inside[0] = inside[3] = inside_lower_boundary;		outside[0] = outside[3] = outside_lower_boundary;
 	border[0] = border[3] = 0.0;	border[1] = GMT_map_width;	border[2] = GMT_map_height;
 
 	n_alloc = (GMT_LONG)irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
