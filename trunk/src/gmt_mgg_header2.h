@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.h,v 1.7 2008-03-24 08:58:31 guru Exp $
+/*	$Id: gmt_mgg_header2.h,v 1.8 2008-04-03 20:01:18 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -7,7 +7,7 @@
 #define _H_MGG_HEADER_2
 
 #define MGG_MAGIC_NUM	1000000000
-#define VERSION			1
+#define MGG_VERSION			1
 #define MGG_NAN_VALUE	999999
 #define DEFAULT_PREC	10
 #define GRD98_N_UNUSED	10

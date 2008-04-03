@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.27 2008-04-02 15:46:41 remko Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.28 2008-04-03 20:01:18 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -48,7 +48,7 @@ int GMT2MGG2(struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	double f;
 	memset(mgg, 0, sizeof(MGG_GRID_HEADER_2));
 	
-	mgg->version     = MGG_MAGIC_NUM + VERSION;
+	mgg->version     = MGG_MAGIC_NUM + MGG_VERSION;
 	mgg->length      = sizeof(MGG_GRID_HEADER_2);
 	mgg->dataType    = 1;
 	
@@ -183,7 +183,7 @@ int GMT_is_mgg2_grid (struct GRD_HEADER *header)
 	swap_header(&mggHeader);
 
 	/* Check the magic number and size of header */
-	if (mggHeader.version < MGG_MAGIC_NUM + VERSION) return (-1);	/* Not this kind of file */
+	if (mggHeader.version < MGG_MAGIC_NUM + MGG_VERSION) return (-1);	/* Not this kind of file */
 	header->type = GMT_grd_format_decoder ("rf");
 	return (header->type);
 }
@@ -205,8 +205,8 @@ int mgg2_read_grd_info (struct GRD_HEADER *header)
 	swap_header(&mggHeader);
 
 	/* Check the magic number and size of header */
-	if (mggHeader.version < MGG_MAGIC_NUM + VERSION) {
-		fprintf(stderr, "GMT Fatal Error: Unrecognized header, expected 0x%04X saw 0x%04X\n", MGG_MAGIC_NUM + VERSION, mggHeader.version);
+	if (mggHeader.version < MGG_MAGIC_NUM + MGG_VERSION) {
+		fprintf(stderr, "GMT Fatal Error: Unrecognized header, expected 0x%04X saw 0x%04X\n", MGG_MAGIC_NUM + MGG_VERSION, mggHeader.version);
 		return (GMT_GRDIO_GRD98_BADMAGIC);
 	}
 
