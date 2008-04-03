@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.193 2008-04-03 01:31:29 guru Exp $
+ *	$Id: gmt_map.c,v 1.194 2008-04-03 03:42:09 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5160,8 +5160,10 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 		this = GMT_map_outside (lon[i], lat[i]);
 		if (GMT_break_through (lon[i-1], lat[i-1], lon[i], lat[i])) {	/* Crossed map boundary */
 			(void) GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
-			xx[n] = xc[0];	yy[n] = yc[0];	/* Add exit/entry point to the path */
-			n++;
+			if (this) {	/* Crossing boundary and leaving circle: Add exit point to the path */
+				xx[n] = xc[0];	yy[n] = yc[0];
+				n++;
+			}
 			if (n == n_alloc) {
 				n_alloc <<= 1;
 				xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
@@ -5171,6 +5173,12 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 			k++;
 			(*total_nx) ++;
 			if (k == 2) {	/* Crossed twice.  Now add arc between the two crossing points */
+				/* PW: Currently, we make the assumption that the shortest arc is the one we want.  However,
+				 * extremely large polygons could cut the boundary so that it is the longest arc we want.
+				 * The way to improve this algorithm in the future is to find the two opposite points on
+				 * the circle boundary that lies on the bisector of az1,az2, and see which point lies
+				 * inside the polygon.  This would require that GMT_inonout_sphpol be called.
+				 */
 				az1 = d_atan2 (end_y[0], end_x[0]) * R2D;	/* azimuth from map center to 1st crossing */
 				az2 = d_atan2 (end_y[1], end_x[1]) * R2D;	/* azimuth from map center to 2nd crossing */
 				d_az = az2 - az1;
@@ -5192,6 +5200,15 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 				}
 				k = 0;
 				n += n_arc - 1;	/* Number of arc points added (end points were done separately) */
+			}
+			if (!this) {	/* Crossing boundary and entering circle: Add entry point to the path */
+				xx[n] = xc[0];	yy[n] = yc[0];
+				n++;
+			}
+			if (n == n_alloc) {
+				n_alloc <<= 1;
+				xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+				yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 			}
 		}
 		GMT_geo_to_xy (lon[i], lat[i], &xr, &yr);

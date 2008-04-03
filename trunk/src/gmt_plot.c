@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.219 2008-03-24 08:58:31 guru Exp $
+ *	$Id: gmt_plot.c,v 1.220 2008-04-03 03:42:09 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4385,8 +4385,8 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 	double delta_azimuth, sin_azimuth, cos_azimuth, sinp, cosp, angle, x, y, x_prime, y_prime, rho, c;
 	double sin_c, cos_c, center, *px, *py;
 
-	px = (double *) GMT_memory (VNULL, (size_t)GMT_ELLIPSE_APPROX, sizeof (double), GMT_program);
-	py = (double *) GMT_memory (VNULL, (size_t)GMT_ELLIPSE_APPROX, sizeof (double), GMT_program);
+	px = (double *) GMT_memory (VNULL, (size_t)(GMT_ELLIPSE_APPROX+1), sizeof (double), GMT_program);
+	py = (double *) GMT_memory (VNULL, (size_t)(GMT_ELLIPSE_APPROX+1), sizeof (double), GMT_program);
 
 	delta_azimuth = 2.0 * M_PI / GMT_ELLIPSE_APPROX;
 	major *= 1000.0;	minor *= 1000.0;	/* Convert to meters */
@@ -4429,8 +4429,9 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 		while ((px[i] - center) < -180.0) px[i] += 360.0;
 		while ((px[i] - center) > +180.0) px[i] -= 360.0;
 	}
-
-	GMT_fill_polygon (px, py, z, (GMT_LONG)GMT_ELLIPSE_APPROX, &fill, outline);
+	/* Explicitly close the polygon */
+	px[GMT_ELLIPSE_APPROX] = px[0];	py[GMT_ELLIPSE_APPROX] = py[0];
+	GMT_fill_polygon (px, py, z, (GMT_LONG)(GMT_ELLIPSE_APPROX+1), &fill, outline);
 
 	GMT_free ((void *)px);
 	GMT_free ((void *)py);
