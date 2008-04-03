@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.192 2008-04-02 02:53:18 guru Exp $
+ *	$Id: gmt_map.c,v 1.193 2008-04-03 01:31:29 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5141,7 +5141,7 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 	GMT_LONG n = 0, this, i, n_alloc = GMT_CHUNK, n_arc, k, pt;
 	int sides[4];
 	double xlon[4], xlat[4], xc[4], yc[4], xr, yr, *xx, *yy;
-	double az1, az2, da, da_try, a, end_x[2], end_y[2];
+	double az1, az2, d_az, da, da_try, a, end_x[2], end_y[2];
 
 	*total_nx = 0;	/* Keep track of total of crossings */
 
@@ -5173,8 +5173,10 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 			if (k == 2) {	/* Crossed twice.  Now add arc between the two crossing points */
 				az1 = d_atan2 (end_y[0], end_x[0]) * R2D;	/* azimuth from map center to 1st crossing */
 				az2 = d_atan2 (end_y[1], end_x[1]) * R2D;	/* azimuth from map center to 2nd crossing */
-				n_arc = (GMT_LONG)ceil (fabs (az2 - az1)/ da_try);	/* Get number of increments of da_try degree */
-				da = (az2 - az1) / (n_arc - 1);			/* Reset da to get exact steps */
+				d_az = az2 - az1;
+				if (fabs(d_az) > 180.0) d_az = copysign (360.0 - fabs(d_az), -d_az);	/* Insist we take the short arc */
+				n_arc = (GMT_LONG)ceil (fabs (d_az)/ da_try);	/* Get number of increments of da_try degree */
+				da = d_az / (n_arc - 1);			/* Reset da to get exact steps */
 				n_arc--;
 				while ((n + n_arc) >= n_alloc) {	/* Preallocate space if arc exceeds the allocated memory */
 					n_alloc <<= 1;

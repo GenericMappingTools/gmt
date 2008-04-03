@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.77 2008-03-24 08:58:33 guru Exp $
+ *	$Id: x2sys.c,v 1.78 2008-04-03 01:31:30 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -404,6 +404,18 @@ int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
 	return (X2SYS_NOERROR);
 }
 
+void x2sys_end (struct X2SYS_INFO *X)
+{	/* Free allcoated memory */
+	int id;
+	if (X2SYS_HOME) GMT_free ((void *)X2SYS_HOME);
+	if (!X) return;
+	if (X->out_order) GMT_free ((void *)X->out_order);
+	if (X->use_column) GMT_free ((void *)X->use_column);
+	x2sys_free_info (X);
+	for (id = 0; id < n_x2sys_paths; id++) GMT_free  ((void *)x2sys_datadir[id]);
+	MGD77_end (&M);
+}
+
 int x2sys_record_length (struct X2SYS_INFO *s)
 {
 	int i, rec_length = 0;
@@ -652,6 +664,7 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 		}
 	}
 	MGD77_Close_File (&M);
+	MGD77_end (&M);
 
 	strncpy (p->name, fname, (size_t)32);
 	p->n_rows = j;
@@ -716,6 +729,7 @@ int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct
 	p->year = S->H.meta.Departure[0];
 	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free ((void *)S->flags[i]);
 	GMT_free ((void *)S->H.mgd77);
+	MGD77_end (&M);
 
 	*data = z;
 	*n_rec = p->n_rows;
@@ -927,6 +941,9 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID)
 
 	if ((ftrack = fopen (track_path, "r")) == NULL) return (GMT_GRDIO_FILE_NOT_FOUND);
 
+#ifdef DEBUG
+	GMT_memtrack_off (GMT_mem_keeper);
+#endif
 	if (mode == 1)
 		B->head = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory (VNULL, n_alloc, sizeof (struct X2SYS_BIX_TRACK_INFO), X2SYS_program);
 	else
@@ -955,6 +972,9 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID)
 	GMT_fclose (ftrack);
 	last_id++;
 	if (mode == 1) B->head = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory ((void *)B->head, (size_t)last_id, sizeof (struct X2SYS_BIX_TRACK_INFO), X2SYS_program);
+#ifdef DEBUG
+	GMT_memtrack_on (GMT_mem_keeper);
+#endif
 
 	*ID = last_id;
 	
@@ -974,7 +994,9 @@ int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
 		fprintf (stderr,"%s: Could not open %s\n", X2SYS_program, index_path);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
-
+#ifdef DEBUG
+	GMT_memtrack_off (GMT_mem_keeper);
+#endif
 	B->base = (struct X2SYS_BIX_DATABASE *) GMT_memory (VNULL, (size_t)B->nm_bin, sizeof (struct X2SYS_BIX_DATABASE), X2SYS_program);
 
 	while ((fread ((void *)(&index), sizeof (int), (size_t)1, fbin)) == 1) {
@@ -996,6 +1018,9 @@ int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
 			B->base[index].n_tracks++;
 		}
 	}
+#ifdef DEBUG
+	GMT_memtrack_on (GMT_mem_keeper);
+#endif
 	GMT_fclose (fbin);
 	return (X2SYS_NOERROR);
 }
