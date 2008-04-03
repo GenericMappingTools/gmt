@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.237 2008-04-03 01:31:29 guru Exp $
+	$Id: ChangeLog,v 1.238 2008-04-03 01:58:21 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-04-02	pwessel
 	* gmt_map.c:	The radial clipping would sometimes add arcs using the arc that is > 180 degrees.
+	* x2sys/x2sys_put.c:	Wrong test when replacing older track info lead to dbase loss.
 
 2008-04-01	pwessel
 	* examples/ex19/*:	Next GMT conference is now in 2009.
