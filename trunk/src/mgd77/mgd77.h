@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.86 2008-03-24 08:58:32 guru Exp $
+ *	$Id: mgd77.h,v 1.87 2008-04-03 01:31:29 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -360,7 +360,9 @@ struct MGD77_CORRTABLE {
 
 extern void MGD77_Init (struct MGD77_CONTROL *F);						/* Initialize the MGD77 machinery */
 extern void MGD77_Reset (struct MGD77_CONTROL *F);									/* Reset after finishing a file */
+extern void MGD77_end (struct MGD77_CONTROL *F);				/* Free up MGD77-related variables */
 extern int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***list);				/* Returns the full list of IDs */
+extern void MGD77_Path_Free (int n, char **list);	/* Free the list of IDs */
 extern void MGD77_Cruise_Explain (void);										/* Explains how to specify IDs */
 extern int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F);					/* Returns full path to cruise */
 extern int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw);						/* Opens a MGD77[+] file */

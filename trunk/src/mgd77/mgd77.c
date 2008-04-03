@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.169 2008-03-24 08:58:32 guru Exp $
+ *	$Id: mgd77.c,v 1.170 2008-04-03 01:31:29 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2468,6 +2468,14 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 	F->MGD77_datadir = (char **) GMT_memory ((void *)F->MGD77_datadir, (size_t)F->n_MGD77_paths, sizeof (char *), "MGD77_path_init");
 }
 
+void MGD77_end (struct MGD77_CONTROL *F)
+{	/* Free memory used by MGD77 machinery */
+	int i;
+	if (F->MGD77_HOME) GMT_free ((void *)F->MGD77_HOME);
+	for (i = 0; i < F->n_MGD77_paths; i++) GMT_free ((void *)F->MGD77_datadir[i]);
+	GMT_free ((void *)F->MGD77_datadir);
+}
+
 void MGD77_Cruise_Explain (void)
 {
 	fprintf (stderr, "\t<cruises> can be one of five kinds of specifiers:\n");
@@ -2583,6 +2591,15 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	if (n != (int)n_alloc) L = (char **)GMT_memory ((void *)L, (size_t)n, sizeof (char *), "MGD77_Path_Expand");
 	*list = L;
 	return (n);
+}
+
+void MGD77_Path_Free (int n, char **list)
+{	/* Free list of cruise IDs */
+	int i;
+	if (n == 0) return;
+	
+	for (i = 0; i < n; i++) GMT_free ((void *)list[i]);
+	GMT_free ((void *)list);
 }
 
 int compare_L (const void *p1, const void *p2)
