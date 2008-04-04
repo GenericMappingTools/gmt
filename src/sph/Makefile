@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.2 2008-02-19 19:03:52 myself Exp $
+#	$Id: Makefile,v 1.3 2008-04-04 22:11:39 myself Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -15,8 +15,7 @@ include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
 F2C	= /sw
-CFLAGS	= $(CC_OPT) $(WIN32) -I$(GMTHOME)/include -I$(NETCDF)/include -I$(F2C)/include
-CDF	= -L$(NETCDF)/lib -lnetcdf
+INCLUDES = -I$(GMTHOME)/include -I$(NETCDF_INC) -I$(F2C)/include
 F2CLIB	= -L$(F2C)/lib -lf2c
 
 CODE_C	= sphtriangulate.c sphdistance.c
@@ -97,5 +96,5 @@ spotless::	clean
 #-------------------------------------------------------------------------------
 
 $(CODE):	$(CODE_O) libstripack.a libsph.a
-	$(CC) $(CFLAGS) $@.o -L$(GMTHOME)/lib -lgmt -lpsl $(CDF) -L. -lstripack -lsph $(F2CLIB) $(LIBS) -o $@
-#	g95 -g $@.o -L$(GMTHOME)/lib -lgmt -lpsl $(CDF) -L. -lstripack $(LIBS) -o $@
+	$(CC) $(CFLAGS) $@.o -L$(GMTHOME)/lib -lgmt -lpsl $(NC_LIBS) -L. -lstripack -lsph $(F2CLIB) $(LIBS) -o $@
+#	g95 -g $@.o -L$(GMTHOME)/lib -lgmt -lpsl $(NC_LIBS) -L. -lstripack $(LIBS) -o $@
