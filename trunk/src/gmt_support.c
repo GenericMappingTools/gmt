@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.362 2008-04-02 01:31:16 guru Exp $
+ *	$Id: gmt_support.c,v 1.363 2008-04-04 21:06:19 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6538,17 +6538,16 @@ int GMT_init_track (double y[], GMT_LONG n, struct GMT_XSEGMENT **S)
 	 * line segments that have been sorted on the minimum y-coordinate
 	 */
 
-	GMT_LONG a, b;
-	size_t nl = n - 1;
+	GMT_LONG a, b, nl = n - 1;
 	struct GMT_XSEGMENT *L;
 	int GMT_ysort (const void *p1, const void *p2);
 
 	if (nl <= 0) {
-		fprintf (stderr, "GMT: ERROR in GMT_init_track; nl = %d\n", (int)nl);
+		fprintf (stderr, "GMT: ERROR in GMT_init_track; nl = %ld\n", nl);
 		GMT_exit (EXIT_FAILURE);
 	}
 
-	L = (struct GMT_XSEGMENT *) GMT_memory (VNULL, nl, sizeof (struct GMT_XSEGMENT), "GMT_init_track");
+	L = (struct GMT_XSEGMENT *) GMT_memory (VNULL, (size_t)nl, sizeof (struct GMT_XSEGMENT), "GMT_init_track");
 
 	for (a = 0, b = 1; b < n; a++, b++) {
 		if (y[b] < y[a]) {
@@ -6565,7 +6564,7 @@ int GMT_init_track (double y[], GMT_LONG n, struct GMT_XSEGMENT **S)
 
 	GMT_x2sys_Y = y;	/* Sort routine needs this pointer */
 
-	qsort ((void *)L, nl, sizeof (struct GMT_XSEGMENT), GMT_ysort);
+	qsort ((void *)L, (size_t)nl, sizeof (struct GMT_XSEGMENT), GMT_ysort);
 
 	GMT_x2sys_Y = (double *)NULL;
 
