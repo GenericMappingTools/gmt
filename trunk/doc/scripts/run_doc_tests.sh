@@ -1,11 +1,11 @@
 #!/bin/sh
-#	$Id: run_doc_tests.sh,v 1.6 2008-04-04 02:08:59 remko Exp $
+#	$Id: run_doc_tests.sh,v 1.7 2008-04-04 16:40:06 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
 # Specify archived images to check against on command line, or otherwise checks all.
 
-echo "Test documentation plots against archive"
+echo "Test GMT Documentation EPS files against archive"
 echo "--------------------------------------"
 echo "File                            STATUS"
 echo "--------------------------------------"
@@ -27,7 +27,10 @@ for o in $origs ; do
         f=`basename $o .eps`
 	printf "%-32s" $f.eps
 	rms=`compare -density 100 -metric RMSE $f.eps orig/$f.eps $f.png 2>&1`
-	if test `echo 20 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
+	if test $? -ne 0; then
+        	echo "[FAIL]"
+		echo $f: $rms >> fail_count.d
+	elif test `echo 20 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
         	echo "[PASS]"
         	rm -f $f.png
 	else
