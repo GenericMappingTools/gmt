@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.169 2008-03-29 20:49:25 guru Exp $
+ *	$Id: pslib.c,v 1.170 2008-04-04 21:22:22 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -394,7 +394,7 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], int flag)
 		PSL->internal.npath = 0;
 	}
 	else
-		strcpy (move, "moveto");
+		strcpy (move, "m");
 
 	used = 0;
 	if (n > 0) {
@@ -971,9 +971,9 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 
 PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split)
 {
-	/* type: 1 means new anchor point, 2 means stroke line, 3 = both */
-	/* TRUE if a closed polygon */
-	/* TRUE if we can split line segment into several sections */
+	/* type:  1 means new anchor point, 2 means stroke line, 3 = both */
+	/* close: TRUE if a closed polygon */
+	/* split: TRUE if we can split line segment into several sections */
 	PS_LONG i, *ix, *iy;
 	int trim = FALSE;
 	char move = 'M';
@@ -1005,7 +1005,7 @@ PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split
 		fprintf (PSL->internal.fp, "%ld %ld %c\n", ix[0], iy[0], move);
 		PSL->internal.npath = 1;
 	}
-	else
+	else if (ix[0] != PSL->internal.ix || iy[0] != PSL->internal.iy)
 		fprintf (PSL->internal.fp, "%ld %ld D\n", ix[0] - PSL->internal.ix, iy[0] - PSL->internal.iy);
 	PSL->internal.ix = ix[0];
 	PSL->internal.iy = iy[0];
@@ -1013,7 +1013,7 @@ PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split
 	if (!split) PSL->internal.max_path_length = MAX ((n + PSL->internal.clip_path_length), PSL->internal.max_path_length);
 
 	for (i = 1; i < n; i++) {
-		fprintf (PSL->internal.fp, "%ld %ld D\n", ix[i] - PSL->internal.ix, iy[i] - PSL->internal.iy);
+		if (ix[i] != PSL->internal.ix || iy[i] != PSL->internal.iy) fprintf (PSL->internal.fp, "%ld %ld D\n", ix[i] - PSL->internal.ix, iy[i] - PSL->internal.iy);
 		PSL->internal.ix = ix[i];
 		PSL->internal.iy = iy[i];
 		PSL->internal.npath++;
@@ -1028,13 +1028,15 @@ PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split
 			}
 		}
 	}
-	if (close) fprintf (PSL->internal.fp, "P");	/* Close the path */
 	if (type > 1) {
-		fprintf (PSL->internal.fp, " S\n");	/* Stroke the path */
+		if (close)
+			fprintf (PSL->internal.fp, "P S\n");	/* Close and stroke the path */
+		else
+			fprintf (PSL->internal.fp, "S\n");	/* Stroke the path */
 		PSL->internal.npath = 0;
 	}
 	else if (close)
-		fprintf (PSL->internal.fp, "\n");
+		fprintf (PSL->internal.fp, "P\n");		/* Close the path */
 
 	ps_free ((void *)ix);
 	ps_free ((void *)iy);
