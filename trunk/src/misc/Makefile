@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.29 2007-11-24 21:44:18 remko Exp $
+#	$Id: Makefile,v 1.30 2008-04-04 17:27:31 remko Exp $
 #	makefile for misc directory
 #
 #-------------------------------------------------------------------------------
@@ -9,7 +9,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) -I$(srcdir) $(NC_CFLAGS)
+INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 
 PROGS_H		=
 PROGS_O		= gmtdigitize.o gmtstitch.o nc2xy.o psmegaplot.o

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.27 2008-02-29 20:21:52 remko Exp $
+#	$Id: Makefile,v 1.28 2008-04-04 17:27:31 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -21,7 +21,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) -I$(srcdir) -I../x_system $(NC_CFLAGS)
+INCLUDES	= -I$(srcdir) -I../x_system -I$(NETCDF_INC)
 
 PROGS_H		= gmt_mgg.h ../x_system/x_system.h
 PROGS_O		= binlegs.o gmt2bin.o gmt2dat.o dat2gmt.o gmtinfo.o gmtlegs.o gmtlist.o gmtpath.o mgd77togmt.o

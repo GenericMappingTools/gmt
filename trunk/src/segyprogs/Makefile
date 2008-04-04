@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.25 2007-11-24 21:44:18 remko Exp $
+#	$Id: Makefile,v 1.26 2008-04-04 17:27:31 remko Exp $
 #
 # makefile for segyprogs directory
 #
@@ -10,7 +10,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) -I$(srcdir) $(NC_CFLAGS)
+INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 
 PROGS_H		= segy_io.h segy.h segyreel.h
 PROGS_O		= segy2grd.o

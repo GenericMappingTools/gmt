@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.52 2008-03-01 13:22:11 remko Exp $
+#	$Id: Makefile,v 1.53 2008-04-04 17:27:31 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -20,7 +20,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) -I$(srcdir) $(NC_CFLAGS)
+INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 
 PROGS_H		= mgd77.h mgd77defaults.h mgd77_IGF_coeffs.h mgd77sniffer.h mgd77snifferdefaults.h \
 		mgd77magref.h mgd77_codes.h
@@ -49,10 +49,10 @@ install:	all
 			$(INSTALL) -m 644 $(LIB:.$(LIBEXT)=.a) $(libdir); \
 			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIB) $(libdir); fi \
 		fi
-		if [ -f $(libdir)/libmgd77.dylib ]; then \
+		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f libmgd77{,.4}.dylib ; \
-			$(LN_S) libmgd77{.4,}.dylib ; \
+			\mv -f libmgd77.$(SL) libmgd77.$(SL_VERSION) ; \
+			$(LN_S) libmgd77.$(SL_VERSION) libmgd77.$(SL) ; \
 		fi
 
 uninstall:
@@ -71,7 +71,7 @@ uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
 clean:
-		\rm -f *.o *.a *.so *.sa *.sl *.dylib *% $(PROGS) $(PROGSPS)
+		\rm -f *% *.o *.a *.$(SL) $(PROGS) $(PROGSPS)
 
 spotless::	clean
 
@@ -94,7 +94,7 @@ libmgd77.a:	$(LIB_O)
 		$(RANLIB) $@
 
 libmgd77.$(SL):	libmgd77.a
-		$(LD) $(LD_OPT) $(LIB_O) -o $@
+		$(LD) $(LD_OPT) $(LIB_O) -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules

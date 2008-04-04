@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.38 2008-03-06 04:39:37 guru Exp $
+#	$Id: Makefile,v 1.39 2008-04-04 17:27:31 remko Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -28,19 +28,20 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS	= $(CC_OPT) -I$(srcdir) $(NC_CFLAGS) -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
-PREV_VERSION = 4.2
-VERSION = 4.3
+INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
+DEFINES		= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
+PREV_VERSION	= 4.2
+VERSION		= 4.3
 # PW: I incrememnted these nubmers on 3/6/08 after adding some missing islands to the database
 # These are the values to use for the next GMT version 4.2.2
 GSHHS_DATA_VERSION	= 1.10
 GSHHS_PROG_VERSION	= 1.9
 
 # Douglas-Peucker parameters:
-DP_h 	= 0.2
+DP_h 		= 0.2
 DP_i		= 1
 DP_l		= 5
-DP_c	= 25
+DP_c		= 25
 # Bin size in degrees:
 BIN_f		= 1
 BIN_h		= 2

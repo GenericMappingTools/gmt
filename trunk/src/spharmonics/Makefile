@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.7 2007-11-24 21:44:18 remko Exp $
+#	$Id: Makefile,v 1.8 2008-04-04 17:27:31 remko Exp $
 #	makefile for sph directory
 #
 #-------------------------------------------------------------------------------
@@ -7,7 +7,7 @@
 
 include ../makegmt.macros
 
-CFLAGS		= $(CC_OPT) -I$(srcdir) $(NC_CFLAGS)
+INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 
 PROGS_H		=
 PROGS_O		= grd2sph.o sph2grd.o
