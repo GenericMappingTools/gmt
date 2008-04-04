@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.5 2008-03-31 21:30:13 remko Exp $
+#	$Id: functions.sh,v 1.6 2008-04-04 16:40:06 remko Exp $
 #
 # Functions to be used with test scripts
 
@@ -12,7 +12,10 @@ header () {
 pscmp () {
 	f=${1:-`basename $ps .ps`}
 	rms=`compare -density 100 -metric RMSE $f.ps orig/$f.ps $f.png 2>&1`
-	if test `echo 20 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
+	if test $? -ne 0; then
+        	echo "[FAIL]"
+		echo $f: $rms >> ../fail_count.d
+	elif test `echo 20 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
         	echo "[PASS]"
         	rm -f $f.png
 	else
