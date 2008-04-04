@@ -1,10 +1,12 @@
 #!/bin/sh
-#	$Id: run_doc_tests.sh,v 1.5 2008-04-01 02:38:37 remko Exp $
+#	$Id: run_doc_tests.sh,v 1.6 2008-04-04 02:08:59 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
 # Specify archived images to check against on command line, or otherwise checks all.
 
+echo "Test documentation plots against archive"
+echo "--------------------------------------"
 echo "File                            STATUS"
 echo "--------------------------------------"
 
@@ -38,3 +40,4 @@ echo "--------------------------------------"
 wc -l fail_count.d | awk '{printf "GMT Documentation EPS file failures: %d\n", $1}'
 cat fail_count.d
 rm -f fail_count.d
+echo "--------------------------------------"
