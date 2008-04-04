@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.15 2008-04-04 02:08:59 remko Exp $
+#	$Id: GNUmakefile,v 1.16 2008-04-04 17:34:47 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -66,7 +66,7 @@ TUTTEX=GMT_Tutorial.tex $(ALLTEX)
 
 # EPS files to be converted from example PS files
 EX_EPS=	scripts/example_01.eps scripts/example_02.eps scripts/example_03.eps scripts/example_04.eps \
-	scripts/example_4c.eps scripts/example_05.eps scripts/example_06.eps scripts/example_07.eps \
+	scripts/example_04c.eps scripts/example_05.eps scripts/example_06.eps scripts/example_07.eps \
 	scripts/example_08.eps scripts/example_09.eps scripts/example_10.eps scripts/example_11.eps \
 	scripts/example_12.eps scripts/example_13.eps scripts/example_14.eps scripts/example_15.eps \
 	scripts/example_16.eps scripts/example_17.eps scripts/example_18.eps scripts/example_19.eps \
@@ -172,7 +172,7 @@ tutorial: GMT_Tutorial.pdf GMT_Tutorial/index.html
 $(EX_TEX:.tex=.sh):
 	$(LN_S) -f ../../share/custom/volcano.def scripts/volcano.sh
 	$(LN_S) -f ../../examples/ex20/bullseye.def scripts/bullseye.sh
-	for f in `ls ../examples/*/job*.sh` ; do $(LN_S) -f ../$$f scripts/example_`basename $$f|cut -c4-5`.sh ; done
+	for f in `ls ../examples/*/job*.sh` ; do $(LN_S) -f ../$$f scripts/example_`basename $$f|cut -c4-` ; done
 
 # Convert the PS files of the examples to EPS and PDF, while stripping off the time tag and
 # rotating landscape images back to portrait. Leave intermediate EPS behind.
