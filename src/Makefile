@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.36 2008-03-11 22:17:35 remko Exp $
+#	$Id: Makefile,v 1.37 2008-04-04 17:27:30 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -38,7 +38,8 @@
 include makegmt.macros		# GMT-specific settings determined by user & configure
 include gmtalldeps.macros	# Dependencies
 
-CFLAGS		= $(CC_OPT) $(NC_CFLAGS) -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
+DEFINES		= -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
+INCLUDES	= -I$(NETCDF_INC)
 
 PS		= -lpsl
 GMT		= -lgmt
@@ -103,14 +104,14 @@ install:	all
 			$(INSTALL) -d $(includedir) ; \
 			$(INSTALL) -m 644 $(GMT_H) $(PS_H) $(PS_I) $(includedir); \
 		fi
-		if [ -f $(libdir)/libpsl.dylib ]; then \
+		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f libpsl{,.4}.dylib ; \
-			$(LN_S) libpsl{.4,}.dylib ; \
-			\mv -f libgmt{,.4}.dylib ; \
-			$(LN_S) libgmt{.4,}.dylib ; \
-			\mv -f libgmtps{,.4}.dylib ; \
-			$(LN_S) libgmtps{.4,}.dylib ; \
+			\mv -f libpsl.$(SL) libpsl.$(SL_VERSION); \
+			$(LN_S) libpsl.$(SL_VERSION) libpsl.$(SL); \
+			\mv -f libgmt.$(SL) libgmt.$(SL_VERSION); \
+			$(LN_S) libgmt.$(SL_VERSION) libgmt.$(SL); \
+			\mv -f libgmtps.$(SL) libgmtps.$(SL_VERSION); \
+			$(LN_S) libgmtps.$(SL_VERSION) libgmtps.$(SL); \
 		fi
 
 uninstall:
@@ -119,7 +120,7 @@ uninstall:
 			cd $(libdir); \rm -f $(GMTLIB) $(GMTLIB:.$(LIBEXT)=.a); \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			cd $(includedir); \rm -f  $(GMT_H) $(PS_H) $(PS_I); \
+			cd $(includedir); \rm -f $(GMT_H) $(PS_H) $(PS_I); \
 		fi
 
 install-man:	$(MAN1) $(MAN3) $(MAN5)
@@ -134,7 +135,7 @@ uninstall-man:
 		cd $(mandir)/man5; \rm -f $(MAN5)
 
 clean:
-		\rm -f *.o *.a *.so *.sa *.sl *.dylib *% $(PROGS) $(PROGSPS)
+		\rm -f *% *.o *.a *.$(SL) $(PROGS) $(PROGSPS)
 
 spotless::	clean
 		\rm -f $(CONFIGS)
@@ -197,13 +198,13 @@ libgmtps.a:	$(LIBPS_O)
 		$(RANLIB) $@
 
 libpsl.$(SL):	libpsl.a
-		$(LD) $(LD_OPT) pslib.o -o $@
+		$(LD) $(LD_OPT) pslib.o $(NC_LIBS) $(LIBS) -o $@
 
 libgmt.$(SL):	libgmt.a
-		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) -o $@
+		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) $(NC_LIBS) $(LIBS) -o $@
 
 libgmtps.$(SL):	libgmtps.a
-		$(LD) $(LD_OPT) $(LIBPS_O) -o $@
+		$(LD) $(LD_OPT) $(LIBPS_O) libpsl.$(SL) $(NC_LIBS) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules

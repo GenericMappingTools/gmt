@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.13 2007-11-24 21:44:18 remko Exp $
+#	$Id: Makefile,v 1.14 2008-04-04 17:27:31 remko Exp $
 #
 #	makefile for gshhs directory
 #	Does not depend on GMT src or libraries
@@ -10,8 +10,6 @@
 GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
-
-CFLAGS		= $(CC_OPT)
 
 PROGS_O		= gshhs.o gshhs_dp.o gshhstograss.o
 MAN1		= $(PROGS_O:.o=.1)

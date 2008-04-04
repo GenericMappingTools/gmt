@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.38 2008-03-01 13:22:11 remko Exp $
+#	$Id: Makefile,v 1.39 2008-04-04 17:27:31 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -10,7 +10,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-CFLAGS		= $(CC_OPT) -I$(srcdir) -I../mgg -I../mgd77 $(NC_CFLAGS)
+INCLUDES	= -I$(srcdir) -I../mgg -I../mgd77 -I$(NETCDF_INC)
 ALLLIB		= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -lgmt $(NC_LIBS) $(LIBS)
 
 PROGS_H		= x2sys.h
@@ -31,10 +31,10 @@ install:	all
 			$(INSTALL) -m 644 $(LIB:.$(LIBEXT)=.a) $(libdir); \
 			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIB) $(libdir); fi \
 		fi
-		if [ -f $(libdir)/libx2sys.dylib ]; then \
+		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f libx2sys{,.4}.dylib ; \
-			$(LN_S) libx2sys{.4,}.dylib ; \
+			\mv -f libx2sys.$(SL) libx2sys.$(SL_VERSION) ; \
+			$(LN_S) libx2sys.$(SL_VERSION) libx2sys.$(SL) ; \
 		fi
 		$(INSTALL) -d $(datadir)/x2sys
 		for i in *.def; do \
@@ -55,7 +55,7 @@ uninstall-man:
 		cd $(mandir)/man1; \rm -f $(MAN1)
 
 clean:
-		\rm -f *.o *.a *.so *.sa *.sl *.dylib *% $(PROGS)
+		\rm -f *% *.o *.a *.$(SL) $(PROGS)
 
 spotless::	clean
 
@@ -77,7 +77,7 @@ libx2sys.a:	x2sys.o
 		$(RANLIB) $@
 
 libx2sys.$(SL):	libx2sys.a
-		$(LD) $(LD_OPT) x2sys.o -o $@
+		$(LD) $(LD_OPT) x2sys.o $(ALLLIB) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules
