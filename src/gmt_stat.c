@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.64 2008-03-24 08:58:31 guru Exp $
+ *	$Id: gmt_stat.c,v 1.65 2008-04-04 20:47:24 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -45,7 +45,7 @@
  *					platforms without native library support.
  *		09-MAY-2000 P. Wessel: Added GMT_chi2 and GMT_cumpoisson
  *		18-AUG-2000 P. Wessel: Moved GMT_mode and GMT_median from gmt_support to here.
- *					Added float versions of these two functions for grd data.
+ *					Added float versions of GMT_mode for grd data.
  *		27-JUL-2005 P. Wessel: Added Chebyshev polynomials Tn(x)
  *		07-SEP-2005 P. Wessel: Added GMT_corrcoeff (x,y)
  *		24-MAR-2006 P. Wessel: Added GMT_zdist (x)
@@ -2132,19 +2132,19 @@ int GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_initia
 {
 	double	lower_bound, upper_bound, m_guess, t_0, t_1, t_middle;
 	double	lub, glb, xx, temp;
-	GMT_LONG	i, n_above, n_below, n_equal, n_lub, n_glb;
-	GMT_LONG	finished = FALSE;
+	GMT_LONG	i, n_above, n_below, n_equal, n_lub, n_glb, one;	/* These must be signed integers */
 	GMT_LONG	iteration = 0;
+	BOOLEAN	finished = FALSE;
 
-	if (n == 0) {
+	if (n == (GMT_LONG)0) {
 		*med = m_initial;
 		return (1);
 	}
-	if (n == 1) {
+	if (n == (GMT_LONG)1) {
 		*med = x[0];
 		return (1);
 	}
-	if (n == 2) {
+	if (n == (GMT_LONG)2) {
 		*med = 0.5 * (x[0] + x[1]);
 		return (1);
 	}
@@ -2152,13 +2152,14 @@ int GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_initia
 	m_guess = m_initial;
 	lower_bound = xmin;
 	upper_bound = xmax;
-	t_0 = 0;
-	t_1 = n - 1;
-	t_middle = 0.5 * (n - 1);
+	one = (GMT_LONG)1;
+	t_0 = 0.0;
+	t_1 = (double)(n - one);
+	t_middle = 0.5 * t_1;
 
 	do {
 
-		n_above = n_below = n_equal = n_lub = n_glb = 0;
+		n_above = n_below = n_equal = n_lub = n_glb = (GMT_LONG)0;
 		lub = xmax;
 		glb = xmin;
 
@@ -2172,7 +2173,7 @@ int GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_initia
 				n_above++;
 				if (xx < lub) {
 					lub = xx;
-					n_lub = 1;
+					n_lub = one;
 				}
 				else if (xx == lub) {
 					n_lub++;
@@ -2182,7 +2183,7 @@ int GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_initia
 				n_below++;
 				if (xx > glb) {
 					glb = xx;
-					n_glb = 1;
+					n_glb = one;
 				}
 				else if (xx == glb) {
 					n_glb++;
@@ -2196,12 +2197,7 @@ int GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_initia
 
 		if ((labs((long)(n_above - n_below))) <= (long)n_equal) {
 
-			if (n_equal) {
-				*med = m_guess;
-			}
-			else {
-				*med = 0.5 * (lub + glb);
-			}
+			*med = (n_equal) ? m_guess : 0.5 * (lub + glb);
 			finished = TRUE;
 		}
 		else if ((labs ((long)((n_above - n_lub) - (n_below + n_equal)))) < (long)n_lub) {
@@ -2219,14 +2215,14 @@ int GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_initia
 		else if ( n_above > (n_below + n_equal) ) {  /* Guess is too low  */
 
 			lower_bound = m_guess;
-			t_0 = n_below + n_equal - 1;
+			t_0 = (double)(n_below + n_equal - one);
 			temp = lower_bound + (upper_bound - lower_bound) * (t_middle - t_0) / (t_1 - t_0);
 			m_guess = (temp > lub) ? temp : lub;	/* Move guess at least to lub  */
 		}
 		else if ( n_below > (n_above + n_equal) ) {  /* Guess is too high  */
 
 			upper_bound = m_guess;
-			t_1 = n_below + n_equal - 1;
+			t_1 = (double)(n_below + n_equal - one);
 			temp = lower_bound + (upper_bound - lower_bound) * (t_middle - t_0) / (t_1 - t_0);
 			m_guess = (temp < glb) ? temp : glb;	/* Move guess at least to glb  */
 		}

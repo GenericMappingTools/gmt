@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.239 2008-04-04 17:36:48 remko Exp $
+	$Id: ChangeLog,v 1.240 2008-04-04 20:47:24 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-04	pwessel
+	* gmt_stat.c:	Bug in GMT_median would sometime give subtle mistakes, most noticeable
+					when only a few values were passed to the function. Traced to the use
+					of size_t variables in expressions that should yield a negative value.
+					
 2008-04-04	remko
 	* GNUmakefile:		Removed creation of *.tar.gz and GMT_src.zip.
 	* configure.ac:		CFLAGS, CPPFLAGS, LDFLAGS as set by user is ADDED to anything configure
