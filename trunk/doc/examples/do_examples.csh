@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.13 2007-10-05 17:46:05 remko Exp $
+#	$Id: do_examples.csh,v 1.14 2008-04-04 17:33:55 remko Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -56,7 +56,7 @@ echo "Running examples with executables from $dir" | sed s:/psxy\$::
 
 # Loop over all examples and run each job
 
-foreach ex (ex??/job??.csh)
+foreach ex (ex??/job*.csh)
 	echo -n "Doing example $ex ... "
 	cd `dirname $ex`
 	\cp -f ../.gmtdefaults4.doc .gmtdefaults4
