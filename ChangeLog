@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.242 2008-04-05 23:12:27 remko Exp $
+	$Id: ChangeLog,v 1.243 2008-04-05 23:22:59 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-05	pwessel
+	* gmt_map.c:	Fixed final bug in GMT_radial_clip.  Also, GMT_world_map should be
+				FALSE for azimuthal projections.  This fixes the -JA -JE pscoast bugs.
+
 2008-04-05	remko
 	* gmt_map.c, gmt_proj.c:	Fixed bug in azimuthal equal area projection that had the
 				horizon shifted from where it ought to be.
