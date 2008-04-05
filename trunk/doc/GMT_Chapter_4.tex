@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.108 2008-03-13 17:26:31 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.109 2008-04-05 19:25:00 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -301,8 +301,10 @@ new calendars disagreed on whether 1700 was a leap year, so the Julian calendar 
 backward.  Note that this is not historical.
 
 \item [Relative time coordinates:]  These are coordinates which count seconds, hours, days or years relative to a
-given epoch. The parameter \textbf{TIME\_SYSTEM}, or a combination of the parameters \textbf{TIME\_EPOCH} and
-\textbf{TIME\_UNIT} define the epoch and time unit. Denote relative time coordinates by appending the optional lower case
+given epoch. A combination of the parameters \textbf{TIME\_EPOCH} and
+\textbf{TIME\_UNIT} define the epoch and time unit. The parameter \textbf{TIME\_SYSTEM} provides a few shorthands for common combinations
+of epoch and unit, like \textbf{j2000} for days since noon of 1 Jan 2000.
+Denote relative time coordinates by appending the optional lower case
 \textbf{t} after the value.  When it is otherwise apparent that the coordinate is relative time (for example by using
 the \Opt{f} switch), the \textbf{t} can be omitted.
 
