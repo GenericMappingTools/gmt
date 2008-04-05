@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.196 2008-04-05 23:22:59 guru Exp $
+ *	$Id: gmt_map.c,v 1.197 2008-04-05 23:38:53 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -221,7 +221,9 @@ double GMT_right_ellipse (double y);		/* For elliptical maps	*/
 
 PFL GMT_radial_clip;
 
+#ifdef DEBUG
 int clip_dump = 0, clip_id = 0;
+#endif
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
  *	S E C T I O N  1 :	M A P  - T R A N S F O R M A T I O N S
@@ -5253,6 +5255,7 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 }
 
 #ifdef DEBUG
+/* If we need to dump out clipped polygon then set clip_dump = 1 during execution */
 void dumppol (int n, double *x, double *y, int *id)
 {
 	GMT_LONG i;
