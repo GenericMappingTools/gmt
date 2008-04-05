@@ -25,6 +25,7 @@ arguments that includes a scale to multiply the data (usually 1 or 0.1), the mod
 return data at all points, (2) Img file with constraints coded, return data only at constrained points
 and NaN elsewhere, and (3) Img file with constraints coded, return 1 at constraints and 0 elsewhere,
 and optionally the max latitude in the IMG file [72.0059773539].
+(See GRID FILE FORMAT below.)
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 #include "explain_-H.txt"
@@ -56,6 +57,7 @@ Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [De
 [Default is one more than input].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
+#include "explain_grd_input.txt"
 .SH HINTS
 If an interpolation point is not on a node of the input grid, then a NaN at any node in the neighborhood 
 surrounding the point will yield an interpolated NaN.  Bicubic interpolation [default] yields continuous 

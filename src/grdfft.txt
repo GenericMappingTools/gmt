@@ -18,9 +18,11 @@ or scale the output with \fBgrdmath\fP.
 .TP
 \fIin_grdfile\fP
 2-D binary grid file to be operated on.
+(See GRID FILE FORMATS below).
 .TP
 .B \-G
 Specify the name of the output grid file.
+(See GRID FILE FORMATS below).
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -87,6 +89,7 @@ Compute the isostatic compensation from the topography load (input grid file) on
 of thickness \fIte\fP.  Also append densities for load, mantle, water, and infill in SI units.
 If \fIte\fP == 0 then the Airy response is returned.  \fB\-T\fP implicitly sets \fB\-L\fP.
 #include "explain_-V.txt" 
+#include "explain_grd_inout.txt"
 .SH EXAMPLES
 To upward continue the sea-level magnetic anomalies in the file mag_0.grd to a level 800 m above sealevel:
 .br

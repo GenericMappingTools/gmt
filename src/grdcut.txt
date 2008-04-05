@@ -22,6 +22,8 @@ This defines the subregion to be cut out.
 .SH OPTIONS
 #include "explain_-V.txt"
 #include "explain_-f.txt"
+#include "explain_grd_inout.txt"
+#include "explain_grd_coord.txt"
 .SH EXAMPLES
 Suppose you have used \fBsurface\fP to grid ship gravity in the region between 148E - 162E and 8N - 32N, and you 
 do not trust the gridding near the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then: 

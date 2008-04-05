@@ -22,9 +22,11 @@ have the same registration as the input grid.
 .TP
 \fIin_grdfile\fP
 The name of the input 2-D binary grid file.
+(See GRID FILE FORMAT below.)
 .TP
 .B \-G
 The name of the output grid file.
+(See GRID FILE FORMAT below.)
 .SH OPTIONS
 .TP
 .B \-F
@@ -45,6 +47,7 @@ grid-registered, the output will be pixel-registered and vice-versa.
 #include "explain_-V.txt"
 #include "explain_-f.txt"
 #include "explain_float.txt"
+#include "explain_grd_inout.txt"
 .SH HINTS
 If an interpolation point is not on a node of the input grid, then a NaN at any node in the neighborhood 
 surrounding the point will yield an interpolated NaN.  Bicubic interpolation [default] yields continuous 

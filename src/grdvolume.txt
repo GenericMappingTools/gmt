@@ -17,6 +17,7 @@ the maximum mean height is reported as well.  This feature may be used with
 .TP
 \fIgrdfile\fP
 The name of the input 2-D binary grid file.
+(See GRID FILE FORMAT below.)
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -43,6 +44,7 @@ has been selected).
 Optionally subtract \fIshift\fP before scaling data by \fIfact\fP. [Default is no scaling].
 (Numbers in \fB\-C, -L\fP refer to values after this scaling has occurred).
 #include "explain_-f.txt"
+#include "explain_grd_input.txt"
 .SH EXAMPLES
 To determine the volume in km^3 under the surface hawaii_topo.grd (height in km), use
 .br

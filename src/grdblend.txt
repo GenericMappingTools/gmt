@@ -24,6 +24,7 @@ If the ASCII file is not given \fBgrdblend\fP will read standard input.
 .TP
 .B \-G
 \fIgrdfile\fP is the name of the binary output grid file.
+(See GRID FILE FORMATS below).
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
@@ -43,6 +44,8 @@ input grid is provided [Default makes the blend].
 .B \-Z
 Scale output values by \fIscale\fP before writing to file. [1].
 #include "explain_-f.txt"
+#include "explain_grd_output.txt"
+#include "explain_grd_coord.txt"
 .SH EXAMPLES
 To create a grid file from the four gridded files piece_?.grd, make the blendfile like this
 .br

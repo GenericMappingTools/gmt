@@ -16,6 +16,7 @@ nodes set to NaN.
 .TP
 \fIgrdfile\fP
 The name of one or several 2-D grid files.
+(See GRID FILE FORMATS below.)
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -52,6 +53,7 @@ Determine min and max z-value, round off to multiples of \fIdz\fP, and report as
 \fB\-T\fP\fIzmin/zmax/dz\fP for use by \fBmakecpt\fP.
 #include "explain_-V.txt" 
 #include "explain_-f.txt"
+#include "explain_grd_input.txt"
 .SH EXAMPLES
 To obtain all the information about the data set in file hawaii_topo.grd:
 .br

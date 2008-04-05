@@ -24,6 +24,7 @@ Set all data[i] > \fIhigh\fP to \fIabove\fP.
 .B \-Sb
 Set all data[i] < \fIlow\fP to \fIbelow\fP.
 #include "explain_-V.txt"
+#include "explain_grd_inout.txt"
 .SH EXAMPLES
 To set all values > 70 to NaN and all values < 0 to 0 in file data.grd:
 .sp

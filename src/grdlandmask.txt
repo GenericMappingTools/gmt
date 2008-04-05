@@ -17,6 +17,7 @@ data from land [or water] areas.
 .TP
 .B \-G
 Name of resulting output mask grid file.
+(See GRID FILE FORMATS below).
 #include "explain_-I.txt"
 #include "explain_-Rgeo.txt"
 .SH OPTIONS
@@ -42,6 +43,7 @@ Specify this information using 1 of 2 formats:
 .br
 [Default is 0/1/0/1/0 (i.e., 0/1)].
 #include "explain_-V.txt"
+#include "explain_grd_output.txt"
 .SH EXAMPLES
 To set all nodes on land to NaN, and nodes over water to 1, using the high resolution data set, do
 .br

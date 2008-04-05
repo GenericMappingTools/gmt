@@ -21,6 +21,7 @@ The name of 1 or more ASCII [or binary, see OPT(b)] files holding the polygon(s)
 .TP
 .B \-G
 Name of resulting output mask grid file.
+(See GRID FILE FORMATS below).
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
@@ -52,7 +53,9 @@ However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great ci
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 [Default is 2 input columns].
-#include "explain_nodereg.txt"
+#include "explain_-f.txt"
+#include "explain_grd_output.txt"
+#include "explain_grd_coord.txt"
 .SH EXAMPLES
 To set all nodes inside and on the polygons coastline_*.xy to 0, and outside points
 to 1, do
