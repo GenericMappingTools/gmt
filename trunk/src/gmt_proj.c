@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.39 2008-04-01 14:30:13 remko Exp $
+ *	$Id: gmt_proj.c,v 1.40 2008-04-05 14:51:34 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -910,6 +910,7 @@ void GMT_vlambeq (double lon0, double lat0, double horizon)
 	/* GMT_check_R_J (&lon0); */
 	project_info.central_meridian = lon0;
 	project_info.pole = lat0;
+	if (project_info.GMT_convert_latitudes) lat0 = GMT_latg_to_lata (lat0);
 	sincos (lat0 * D2R, &(project_info.sinp), &(project_info.cosp));
 	project_info.f_horizon = horizon;
 	project_info.rho_max = 2.0 * sind (0.5 * horizon) * project_info.EQ_RAD;

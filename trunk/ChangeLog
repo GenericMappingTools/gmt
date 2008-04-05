@@ -1,10 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.240 2008-04-04 20:47:24 guru Exp $
+	$Id: ChangeLog,v 1.241 2008-04-05 14:51:34 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-04-05	remko
+	* gmt_map.c, gmt_proj.c:	Fixed bug in azimuthal equal area projection that had the
+				horizon shifted from where it ought to be.
+
 2008-04-04	pwessel
-	* gmt_stat.c:	Bug in GMT_median would sometime give subtle mistakes, most noticeable
-					when only a few values were passed to the function. Traced to the use
-					of size_t variables in expressions that should yield a negative value.
+	* gmt_stat.c:		Bug in GMT_median would sometime give subtle mistakes, most noticeable
+				when only a few values were passed to the function. Traced to the use
+				of size_t variables in expressions that should yield a negative value.
 					
 2008-04-04	remko
 	* GNUmakefile:		Removed creation of *.tar.gz and GMT_src.zip.

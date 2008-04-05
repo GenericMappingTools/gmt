@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.194 2008-04-03 03:42:09 guru Exp $
+ *	$Id: gmt_map.c,v 1.195 2008-04-05 14:51:34 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1898,24 +1898,17 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 
 int GMT_map_init_lambeq (void) {
 	BOOLEAN search;
-	double xmin, xmax, ymin, ymax, dummy, radius, latg, D, s, c;
+	double xmin, xmax, ymin, ymax, dummy, radius, D, s, c;
 
 	project_info.Dx = project_info.Dy = 1.0;
-	latg = project_info.pars[1];
 
 	GMT_set_polar (project_info.pars[1]);
-
 	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
-
-	if (project_info.GMT_convert_latitudes) {
-		GMT_scale_eqrad ();
-		project_info.pars[1] = GMT_latg_to_lata (project_info.pars[1]);
-	}
-
+	if (project_info.GMT_convert_latitudes) GMT_scale_eqrad ();
 	GMT_vlambeq (project_info.pars[0], project_info.pars[1], project_info.pars[2]);
 
 	if (project_info.GMT_convert_latitudes) {
-		s = sind (latg);	c = cosd (latg);	/* Need original geographic pole coordinates */
+		sincosd (project_info.pars[1], &s, &c);
 		D = (project_info.polar) ? 1.0 : (gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / project_info.GMT_lat_swap_vals.ra) * c / (project_info.cosp * d_sqrt (1.0 - project_info.ECC2 * s * s));
 		project_info.Dx = D;
 		project_info.Dy = 1.0 / D;
