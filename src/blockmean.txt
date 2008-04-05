@@ -59,7 +59,7 @@ weighted output only.  [Default uses unweighted i/o].
 [Default is 3 (or 4 if OPT(Wi) is set)].
 #include "explain_-bo.txt"
 [Default is 3 (or 4 if OPT(Wo) is set)]. OPT(E) adds 3 additional columns.
-#include "explain_nodereg.txt"
+#include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
 .sp
