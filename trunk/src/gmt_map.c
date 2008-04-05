@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.195 2008-04-05 14:51:34 remko Exp $
+ *	$Id: gmt_map.c,v 1.196 2008-04-05 23:22:59 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -206,6 +206,7 @@ double GMT_lon_to_corner (double lon);
 double GMT_lat_to_corner (double lat);
 double GMT_x_to_corner (double x);
 double GMT_y_to_corner (double y);
+GMT_LONG GMT_radial_boundary_arc (int this, double end_x[], double end_y[], double **xarc, double **yarc);
 
 double GMT_left_boundary (double y);		/* Returns x-value of left border for given y	*/
 double GMT_right_boundary (double y);		/* Returns x-value of right border for given y	*/
@@ -220,6 +221,7 @@ double GMT_right_ellipse (double y);		/* For elliptical maps	*/
 
 PFL GMT_radial_clip;
 
+int clip_dump = 0, clip_id = 0;
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
  *	S E C T I O N  1 :	M A P  - T R A N S F O R M A T I O N S
@@ -437,6 +439,7 @@ int GMT_map_setup (double west, double east, double south, double north)
 
 	/* Use old radial clip function for pscoast and gmtselect; grdlandmask sets -Jx1d so not included */
 	GMT_radial_clip = (GMT_program && (strstr (GMT_program, "pscoast") || strstr (GMT_program, "gmtselect"))) ? GMT_radial_clip_pscoast : GMT_radial_clip_new;
+	GMT_radial_clip = GMT_radial_clip_new;
 
 	switch (project_info.projection) {
 
@@ -4956,18 +4959,23 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	GMT_free ((void *)xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
 	GMT_free ((void *)ytmp[1]);
 	
-	/* Reallocate and return the array with the final clipped polygon */
-	xtmp[0] = (double *) GMT_memory ((void *)xtmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
-	ytmp[0] = (double *) GMT_memory ((void *)ytmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
-	*x = xtmp[0];
-	*y = ytmp[0];
+	if (m) {	/* Reallocate and return the array with the final clipped polygon */
+		xtmp[0] = (double *) GMT_memory ((void *)xtmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
+		ytmp[0] = (double *) GMT_memory ((void *)ytmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
+		*x = xtmp[0];
+		*y = ytmp[0];
 #ifdef DEBUG
-	if (dump) {
-		fp = fopen ("output.d", "w");
-		for (i = 0; i < m; i++) fprintf (fp, "%g\t%g\n", xtmp[0][i], ytmp[0][i]);
-		fclose (fp);
-	}
+		if (dump) {
+			fp = fopen ("output.d", "w");
+			for (i = 0; i < m; i++) fprintf (fp, "%g\t%g\n", xtmp[0][i], ytmp[0][i]);
+			fclose (fp);
+		}
 #endif
+	}
+	else {	/* Nothing survived the clipping - free the output arrays */
+		GMT_free ((void *)xtmp[0]);
+		GMT_free ((void *)ytmp[0]);
+	}
 
 	return (m);
 }
@@ -5131,10 +5139,11 @@ double GMT_y_to_corner (double y) {
 
 GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x, double **y, int *total_nx)
 {
-	GMT_LONG n = 0, this, i, n_alloc = GMT_CHUNK, n_arc, k, pt;
-	int sides[4];
-	double xlon[4], xlat[4], xc[4], yc[4], xr, yr, *xx, *yy;
-	double az1, az2, d_az, da, da_try, a, end_x[2], end_y[2];
+	GMT_LONG n = 0, this, i, n_alloc = GMT_CHUNK, n_arc;
+	int sides[4], nx;
+	BOOLEAN add_boundary = FALSE;
+	double xlon[4], xlat[4], xc[4], yc[4], xr, yr, *xx, *yy, *xarc, *yarc;
+	double end_x[3], end_y[3];
 
 	*total_nx = 0;	/* Keep track of total of crossings */
 
@@ -5147,8 +5156,7 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 		GMT_geo_to_xy (lon[0], lat[0], &xx[0], &yy[0]);
 		n++;
 	}
-	k = 0;
-	da_try = (gmtdefs.line_step * 360.0) / (TWO_PI * project_info.r);	/* Angular step in degrees */
+	nx = 0;
 	for (i = 1; i < np; i++) {
 		this = GMT_map_outside (lon[i], lat[i]);
 		if (GMT_break_through (lon[i-1], lat[i-1], lon[i], lat[i])) {	/* Crossed map boundary */
@@ -5162,37 +5170,33 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 				xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 				yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
 			}
-			end_x[k] = xc[0] - project_info.r;	end_y[k] = yc[0] - project_info.r;
-			k++;
+			end_x[nx] = xc[0] - project_info.r;	end_y[nx] = yc[0] - project_info.r;
+			nx++;
 			(*total_nx) ++;
-			if (k == 2) {	/* Crossed twice.  Now add arc between the two crossing points */
+			if (nx >= 2) {	/* Got a pair of entry+exit points */
+				add_boundary = !this;	/* We only add boundary arcs if we first exited and now entered the circle again */
+			}
+			if (add_boundary) {	/* Crossed twice.  Now add arc between the two crossing points */
 				/* PW: Currently, we make the assumption that the shortest arc is the one we want.  However,
 				 * extremely large polygons could cut the boundary so that it is the longest arc we want.
 				 * The way to improve this algorithm in the future is to find the two opposite points on
 				 * the circle boundary that lies on the bisector of az1,az2, and see which point lies
 				 * inside the polygon.  This would require that GMT_inonout_sphpol be called.
 				 */
-				az1 = d_atan2 (end_y[0], end_x[0]) * R2D;	/* azimuth from map center to 1st crossing */
-				az2 = d_atan2 (end_y[1], end_x[1]) * R2D;	/* azimuth from map center to 2nd crossing */
-				d_az = az2 - az1;
-				if (fabs(d_az) > 180.0) d_az = copysign (360.0 - fabs(d_az), -d_az);	/* Insist we take the short arc */
-				n_arc = (GMT_LONG)ceil (fabs (d_az)/ da_try);	/* Get number of increments of da_try degree */
-				da = d_az / (n_arc - 1);			/* Reset da to get exact steps */
-				n_arc--;
-				while ((n + n_arc) >= n_alloc) {	/* Preallocate space if arc exceeds the allocated memory */
-					n_alloc <<= 1;
-					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
-					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+				if ((n_arc = GMT_radial_boundary_arc (this, &end_x[nx-2], &end_y[nx-2], &xarc, &yarc)) > 0) {
+					while ((n + n_arc) >= n_alloc) {	/* Allocate more space if arc exceeds the allocated memory */
+						n_alloc <<= 1;
+						xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+						yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+					}
+				
+					memcpy ((void *)&xx[n], (void *)xarc, (size_t)(n_arc * sizeof (double)));	/* Copy longitudes of arc */
+					memcpy ((void *)&yy[n], (void *)yarc, (size_t)(n_arc * sizeof (double)));	/* Copy latitudes of arc */
+					n += n_arc;	/* Number of arc points added (end points are done separately) */
+					GMT_free ((void *) xarc);	GMT_free ((void *) yarc);
 				}
-				for (k = 1; k < n_arc; k++) {	/* Create points along arc from first to second crossing point (k-loop excludes the end points) */
-					a = az1 + k * da;
-					sincos (a * D2R, &yr, &xr);
-					pt = (this) ? n_arc - k - 1 : k - 1;	/* The order we add the arc depends if we exited or entered the inside area */
-					xx[n+pt] = project_info.r * (1.0 + xr);
-					yy[n+pt] = project_info.r * (1.0 + yr);
-				}
-				k = 0;
-				n += n_arc - 1;	/* Number of arc points added (end points were done separately) */
+				add_boundary = FALSE;
+				nx -= 2;	/* Done with those two crossings */
 			}
 			if (!this) {	/* Crossing boundary and entering circle: Add entry point to the path */
 				xx[n] = xc[0];	yy[n] = yc[0];
@@ -5216,12 +5220,82 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 		}
 	}
 
+	if (nx == 2) {	/* Must close polygon by adding boundary arc */
+		if ((n_arc = GMT_radial_boundary_arc (this, end_x, end_y, &xarc, &yarc)) > 0) {
+			while ((n + n_arc) >= n_alloc) {	/* Allocate more space if arc exceeds the allocated memory */
+				n_alloc <<= 1;
+				xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+				yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+			}
+		
+			memcpy ((void *)&xx[n], (void *)xarc, (size_t)(n_arc * sizeof (double)));	/* Copy longitudes of arc */
+			memcpy ((void *)&yy[n], (void *)yarc, (size_t)(n_arc * sizeof (double)));	/* Copy latitudes of arc */
+			n += n_arc;	/* Number of arc points added (end points are done separately) */
+			GMT_free ((void *) xarc);	GMT_free ((void *) yarc);
+		}
+		if (n == n_alloc) {
+			n_alloc <<= 1;
+			xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+			yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_radial_clip");
+		}
+		xx[n] = xx[0];	yy[n] = yy[0];	/* Close the polygon */
+		n++;
+	}
 	xx = (double *) GMT_memory ((void *)xx, (size_t)n, sizeof (double), "GMT_radial_clip");
 	yy = (double *) GMT_memory ((void *)yy, (size_t)n, sizeof (double), "GMT_radial_clip");
 	*x = xx;
 	*y = yy;
+#ifdef DEBUG
+	if (clip_dump) dumppol (n, xx, yy, &clip_id);
+#endif
 
 	return (n);
+}
+
+#ifdef DEBUG
+void dumppol (int n, double *x, double *y, int *id)
+{
+	GMT_LONG i;
+	FILE *fp;
+	char line[64];
+	sprintf (line, "dump_%d.d", *id);
+	fp = fopen (line, "w");
+	for (i = 0; i < n; i++) fprintf (fp, "%g\t%g\n", x[i], y[i]);
+	fclose (fp);
+	(*id)++;
+}
+#endif
+
+GMT_LONG GMT_radial_boundary_arc (int this, double end_x[], double end_y[], double **xarc, double **yarc) {
+	GMT_LONG n_arc, k, pt;
+	double az1, az2, d_az, da, a, xr, yr, da_try, *xx, *yy;
+	
+	/* When a polygon crosses out then in again into the circle we need to add a boundary arc
+	 * to the polygon where it is clipped.  We simply sample the circle as finely as the arc
+	 * length and the gurrent line_step demands */
+	
+	da_try = (gmtdefs.line_step * 360.0) / (TWO_PI * project_info.r);	/* Angular step in degrees */
+	az1 = d_atan2 (end_y[0], end_x[0]) * R2D;	/* azimuth from map center to 1st crossing */
+	az2 = d_atan2 (end_y[1], end_x[1]) * R2D;	/* azimuth from map center to 2nd crossing */
+	d_az = az2 - az1;							/* Arc length in degrees */
+	if (fabs(d_az) > 180.0) d_az = copysign (360.0 - fabs(d_az), -d_az);	/* Insist we take the short arc for now */
+	n_arc = (GMT_LONG)ceil (fabs (d_az)/ da_try);	/* Get number of integer increments of da_try degree */
+	da = d_az / (n_arc - 1);			/* Reset da to get exact steps */
+	n_arc -= 2;	/* We do not include the end points since these are the crossing points handled in the calling function */
+	if (n_arc <= 0) return (0);	/* Arc is too short to have intermediate points */
+	xx = (double *) GMT_memory (VNULL, (size_t)n_arc, sizeof (double), "GMT_radial_boundary_arc");
+	yy = (double *) GMT_memory (VNULL, (size_t)n_arc, sizeof (double), "GMT_radial_boundary_arc");
+	for (k = 1; k <= n_arc; k++) {	/* Create points along arc from first to second crossing point (k-loop excludes the end points) */
+		a = az1 + k * da;
+		sincos (a * D2R, &yr, &xr);
+		pt = (this) ? n_arc - k : k - 1;	/* The order we add the arc depends if we exited or entered the inside area */
+		xx[pt] = project_info.r * (1.0 + xr);
+		yy[pt] = project_info.r * (1.0 + yr);
+	}
+	
+	*xarc = xx;
+	*yarc = yy;
+	return (n_arc);
 }
 
 GMT_LONG GMT_radial_clip_pscoast (double *lon, double *lat, GMT_LONG np, double **x, double **y, int *total_nx)
