@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.197 2008-04-05 23:38:53 guru Exp $
+ *	$Id: gmt_map.c,v 1.198 2008-04-05 23:39:56 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -223,6 +223,7 @@ PFL GMT_radial_clip;
 
 #ifdef DEBUG
 int clip_dump = 0, clip_id = 0;
+void dumppol (int n, double *x, double *y, int *id);
 #endif
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
