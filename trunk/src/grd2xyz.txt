@@ -16,6 +16,7 @@ without the (x,y) in a number of formats, see OPT(E) or OPT(Z) below.
 .TP
 \fIgrdfiles\fP
 Names of 2-D binary grid files to be converted.
+(See GRID FILE FORMATS below.)
 .SH OPTIONS
 .TP
 .B \-E
@@ -77,6 +78,7 @@ This option only applies to xyz output; see \fB\-Z\fP for z table output.
 #include "explain_-f.txt"
 See also \fBTIME COORDINATES\fP below.
 #include "explain_precision.txt"
+#include "explain_grd_input.txt"
 .SH TIME COORDINATES
 Time coordinates in netCDF grids, be it the x, y, or z coordinate, will be recognized as such.
 The variable's \fBunit\fP attribute is parsed to determine the unit and epoch of the time coordinate in the grid.

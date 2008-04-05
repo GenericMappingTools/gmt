@@ -28,6 +28,7 @@ Contains the x-component of the vector field.
 .TP
 \fIcompy.grd\fP
 Contains the y-component of the vector field. 
+(See GRID FILE FORMATS below.)
 #include "explain_-J_short.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
@@ -85,6 +86,7 @@ Means the angles provided are azimuths rather than direction (requires \fB\-A\fP
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"
+#include "explain_grd_input.txt"
 .SH EXAMPLES
 To draw the vector field given by the files r.grd and theta.grd on a linear plot
 with scale LEN1 cm per data unit,

@@ -20,9 +20,11 @@ boundary conditions (see OPT(L)).
 .TP
 \fIin_grdfile\fP
 2-D grid file from which to compute directional derivative.
+(See GRID FILE FORMATS below).
 .TP
 .B \-G
 Name of the output grid file for the directional derivative.
+(See GRID FILE FORMATS below).
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -148,6 +150,7 @@ gradient grd.
 .sp
 If you simply need the \fIx\fP- or \fIy\fP-derivatives of the grid, use
 \fBgrdmath\fP.
+#include "explain_grd_inout.txt"
 .SH EXAMPLES
 To make a file for illuminating the data in geoid.grd using exp- 
 normalized gradients

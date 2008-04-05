@@ -21,6 +21,7 @@ as a numerical constant or a special symbol (see below).
 .TP
 \fIoutgrdfile\fP
 The name of a 2-D grid file that will hold the final result.
+(See GRID FILE FORMATS below).
 .TP
 .B OPERATORS
 #include "grdmath_man.i"
@@ -74,7 +75,7 @@ Turn off strict domain match checking when multiple grids are manipulated [Defau
 that each grid domain is within 1e-4 * grid_spacing of the domain of the first grid listed].
 #include "explain_-R.txt"
 #include "explain_-V.txt"
-#include "explain_nodereg.txt"
+#include "explain_-f.txt"
 .SH NOTES ON OPERATORS
 (1) The operator \fBSDIST\fP calculates spherical distances between the (lon, lat)
 point on the stack and all node positions in the grid.  The grid domain
@@ -122,6 +123,8 @@ identified by prepending the current directory (i.e., ./LOG).
 (8) All functions expecting a positive radius (e.g., \fBLOG\fP, \fBKEI\fP, etc.) are passed the
 absolute value of their argument.
 #include "explain_float.txt"
+#include "explain_grd_inout.txt"
+#include "explain_grd_coord.txt"
 .SH EXAMPLES
 To take log10 of the average of 2 files, use
 .br

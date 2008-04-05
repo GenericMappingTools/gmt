@@ -25,6 +25,7 @@ surface, and apply artificial illumination based on intensities provided in a se
 .TP
 \fIrelief_file\fP
 2-D gridded data set to be imaged (the relief of the surface).
+(See GRID FILE FORMAT below.)
 #include "explain_-J_short.txt"
 #include "explain_-Jz.txt"
 .SH OPTIONS
@@ -108,6 +109,7 @@ Sets the z-level of the basemap [0].
 #include "explain_-c.txt"
 #include "explain_pen.txt"
 #include "explain_color.txt"
+#include "explain_grd_input.txt"
 .SH EXAMPLES
 To make a mesh plot from the file hawaii_grav.grd and drawing the contours
 given in the color palette file hawaii.cpt on a Lambert map

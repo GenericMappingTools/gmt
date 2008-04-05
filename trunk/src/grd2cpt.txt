@@ -35,6 +35,7 @@ will be used.
 .TP
 \fIgrdfile\fP
 The 2-D binary grid file used to derive the color palette table.
+(See GRID FILE FORMATS below).
 .SH OPTIONS
 .TP
 .B \-C
@@ -89,6 +90,7 @@ Verbose operation.  This will write CDF(Z) estimates to stderr.  [Default is sil
 .B \-Z
 Will create a continuous color palette.
 [Default is discontinuous, i.e., constant color intervals]
+#include "explain_grd_input.txt"
 .SH EXAMPLES
 Sometimes you don't want to make a cpt file (yet) but would find it helpful\"'
 to know that 90% of your data lie between z1 and z2, something you cannot

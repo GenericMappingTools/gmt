@@ -37,8 +37,8 @@ is unnecessary since the IEEE NaN is used; however integers need a value which m
 Suppress the writing of the \fBGMT\fP header structure.  This is useful when you want to write a native grid to
 be used by \fBgrdraster\fP.  It only applies to native grids and is ignored for netCDF output.
 #include "explain_-R.txt"
-#include "explain_-f.txt"
 #include "explain_-V.txt"
+#include "explain_-f.txt"
 .SH FORMAT IDENTIFIER
 By default, grids will be written as floating point data stored in binary files using the netCDF format and
 meta-data structure. This format is conform the COARDS conventions. \fBGMT\fP versions prior to 4.1 produced

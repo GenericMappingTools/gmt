@@ -18,6 +18,7 @@ output may be less frequently sampled than the input.
 .TP
 \fIinput_file.grd\fP
 The file of points to be filtered.
+(See GRID FILE FORMATS below).
 .TP
 .B \-D
 Distance \fIflag\fP tells how grid (x,y) relates to filter \fIwidth\fP as follows:
@@ -69,6 +70,7 @@ the filter will return 0.0.
 .TP
 .B \-G
 \fIoutput_file.grd\fP is the output of the filter.
+(See GRID FILE FORMATS below).
 .SH OPTIONS
 .TP
 .B \-I
@@ -84,6 +86,8 @@ Toggle the node registration for the output grid so as to become the opposite of
 [Default gives the same registration as the input grid].
 #include "explain_-V.txt"
 #include "explain_-f.txt"
+#include "explain_grd_inout.txt"
+#include "explain_grd_coord.txt"
 .SH EXAMPLES
 Suppose that north_pacific_dbdb5.grd is a file of 5 minute bathymetry from 140E to 260E and 0N to 50N, and you want to find
 the medians of values within a 300km radius (600km full width) of the output points, which you choose to be from 150E to 250E

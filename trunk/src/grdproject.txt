@@ -27,9 +27,11 @@ implied by the extent of the grid file.
 .TP
 \fIin_grdfile\fP
 2-D binary grid file to be transformed.
+(See GRID FILE FORMATS below.)
 .TP
 .B \-G
-Specify the name of the output netCDF grid file.
+Specify the name of the output grid file.
+(See GRID FILE FORMATS below.)
 #include "explain_-J_short.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
@@ -67,6 +69,7 @@ You may ask to project only a subset of the grid by specifying a smaller input \
 [Default is the region given by the grid file].
 #include "explain_-S.txt"
 #include "explain_-V.txt"
+#include "explain_grd_inout.txt"
 .SH EXAMPLES
 To transform the geographical grid dbdb5.grd onto a pixel Mercator grid at 300 dpi, run
 .br

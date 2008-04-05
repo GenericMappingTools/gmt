@@ -21,6 +21,7 @@ have to be sorted (for binary triplets, see OPT(b)).  1-column z tables must be 
 .TP
 .B \-G
 \fIgrdfile\fP is the name of the binary output grid file.
+(See GRID FILE FORMAT below.)
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
@@ -92,15 +93,10 @@ Note that \fB\-Z\fP only applies to 1-column input.
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].  This option only applies to xyz input files; see \fB\-Z\fP for z tables.
-#include "explain_nodereg.txt"
-See also \fBGEOGRAPHICAL AND TIME COORDINATES\fP below.
+#include "explain_-f.txt"
 #include "explain_float.txt"
-.SH GEOGRAPHICAL AND TIME COORDINATES
-When the output grid type is netCDF, the coordinates will be labeled "longitude", "latitude", or "time" based on the
-OPT(f) or OPT(R) options. For example, both OPT(f0x) OPT(f1t) and OPT(R)90w/90e/0t/3t will result in a longitude/time
-grid. When the x, y, or z coordinate is time, it will be stored in the grid as relative time since epoch as 
-specified by \fBTIME_UNIT\fP and \fBTIME_EPOCH\fP in the \.gmtdefaults file or on the command line.
-In addition, the \fBunit\fP attribute of the time variable will indicate both this unit and epoch.
+#include "explain_grd_output.txt"
+#include "explain_grd_coord.txt"
 .SH EXAMPLES
 To create a grid file from the ASCII data in hawaii_grv.xyz, use
 .br

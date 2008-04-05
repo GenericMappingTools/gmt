@@ -38,6 +38,7 @@ A (color) \fIPostScript\fP file is output.
 .TP
 \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP
 2-D gridded data set (or red, green, blue grids) to be imaged
+(See GRID FILE FORMATS below.)
 .TP
 .B \-C
 name of the color palette table (for \fIgrd_z\fP only).
@@ -91,6 +92,7 @@ The option OPT(To) is no longer supported.
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+#include "explain_grd_input.txt"
 .SH EXAMPLES
 To gray-shade the file hawaii_grav.grd with shades given in shades.cpt on a Lambert map
 at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks:

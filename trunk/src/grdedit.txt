@@ -14,7 +14,8 @@ the east-west direction, and individual nodal values can be replaced from a
 table of \fIx, y, z\fP values.  \fBgrdedit\fP only operates on files containing a grdheader.
 .TP
 \fIgrdfile\fP
-Name of the 2-D grid file to modify
+Name of the 2-D grid file to modify.
+(See GRID FILE FORMATS below).
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -55,6 +56,8 @@ the same amount.
 #include "explain_-bi.txt"
 [Default is 3 input columns].
 #include "explain_-f.txt"
+#include "explain_grd_inout.txt"
+#include "explain_grd_coord.txt"
 .SH EXAMPLES
 Let us assume the file data.grd covers the area 300/310/10/30.  We want
 to change the boundaries from geodetic longitudes to geographic and put a new title in
