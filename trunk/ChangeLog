@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.241 2008-04-05 14:51:34 remko Exp $
+	$Id: ChangeLog,v 1.242 2008-04-05 23:12:27 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-04-05	remko
 	* gmt_map.c, gmt_proj.c:	Fixed bug in azimuthal equal area projection that had the
 				horizon shifted from where it ought to be.
+	* *.txt:		Added more short explanations on input and output grid formats.
+				In some man pages -F was explained instead of -f.
 
 2008-04-04	pwessel
 	* gmt_stat.c:		Bug in GMT_median would sometime give subtle mistakes, most noticeable
