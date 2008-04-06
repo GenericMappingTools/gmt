@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.30 2008-03-25 10:56:29 guru Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.31 2008-04-06 01:30:32 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2008.
@@ -22,8 +22,10 @@ column (There are, however, some exceptions to this rule, such as
 binary table data.
 
 \subsection{ASCII tables}
-\index{Table!format!ASCII}
+\index{Table!ASCII}
+\index{ASCII tables}
 \index{Table!multisegment}
+
 \subsubsection{Optional file header records}
 The first data record may be preceded by 1 or more header records.
 When using such files, make sure to use the \Opt{H} option and set
@@ -34,6 +36,7 @@ within a record must be separated by spaces, tabs, or commas.
 Each field can be an integer or floating-point number or a geographic
 coordinate string using the [+$|$-]dd[:mm[:ss]][W$|$S$|$N$|$E$|$w$|$s$|$n$|$e] format.
 Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid input strings.
+
 \subsubsection{Optional segment header records}
 When dealing with time- or (\emph{x,y})-series it is usually
 convenient to have each profile in separate files.
@@ -60,23 +63,45 @@ color via a cpt-file, or \Opt{L} for label specifications.  These settings
 (and occasionally others) will override the corresponding command line options.
 
 \subsection{Binary tables}
-\index{Table!format!binary}
+\index{Table!binary}
+\index{Binary tables}
+\index{Input!binary \Opt{bi}}
+\index{Output!binary \Opt{bo}}
+\index{\Opt{bi} (select binary input)}
+\index{\Opt{bo} (select binary output)}
 
-\GMT\ programs also support binary tables to speed up input-output
+\GMT\ programs also support native binary tables to speed up input-output
 for i/o-intensive tasks like gridding and preprocessing.  Files
 may have no header (hence the \Opt{H} option cannot be used)
 and all data must either be single or double precision (no mixing
 allowed).  Multiple segment files are allowed (\Opt{M}) and the
 segment headers are assumed to be records where all the fields equal 
 NaN.  Flags appended to \Opt{M} are ignored.  The format and number
-of fields are specified with the
-\Opt{b} option.  Thus, for input you may set \Opt{bi}[\textbf{s}][\emph{n}],
+of fields are specified with the \Opt{b} option.
+Thus, for input you may set \Opt{bi}[\textbf{s}][\emph{n}],
 where \textbf{s} designates single precision (default is \textbf{d} for double) and
 \emph{n} is the number of fields.  For output, use \Opt{bo}[\textbf{s}] 
 (the programs know how many columns to write, unless you use \Opt{M} in which
 case we need to know the number of output columns up front).  If you need
 to swap the byte-order on either input or output you must use upper case
 \textbf{S} or \textbf{D} instead.
+
+\subsection{NetCDF tables}
+\index{Table!netCDF}
+\index{NetCDF tables}
+\index{Input!binary \Opt{bi}}
+\index{\Opt{bi} (select binary input)}
+
+More and more programs are now producing binary data in the netCDF format, and so \GMT\ programs
+started to support tabular netCDF data (files containing one or more 1-dimensional arrays) starting with \GMT\ version 4.3.0.
+Because of the meta data contained in those files, reading them is much less complex than reading native binary tables,
+and even than ASCII tables. \GMT\ programs will read as many 1-dimensional columns as are needed by the program, starting with the first
+1-dimensional it can find in the file. To specifically specify which variables are to be read,
+append the suffix \textbf{?}\emph{var1}\textbf{/}\emph{var2}\textbf{/}\emph{...} to the netCDF file name
+or add the option \Opt{bic}\emph{var1}\textbf{/}\emph{var2}\textbf{/}\emph{...}, where \emph{var1}, \emph{var2}, etc.\
+are the names of the variables to be processed. The latter option is particularly practical when more
+than one file is read: the \Opt{bic} option will apply to all files.
+Currently, \GMT\ only reads, but does not write, netCDF tabular data.
 
 \section{Grid files} 
 
