@@ -1,8 +1,8 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.243 2008-04-05 23:22:59 guru Exp $
+	$Id: ChangeLog,v 1.244 2008-04-06 01:31:10 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-04-05	pwessel
-	* gmt_map.c:	Fixed final bug in GMT_radial_clip.  Also, GMT_world_map should be
+	* gmt_map.c:		Fixed final bug in GMT_radial_clip.  Also, GMT_world_map should be
 				FALSE for azimuthal projections.  This fixes the -JA -JE pscoast bugs.
 
 2008-04-05	remko
@@ -10,6 +10,7 @@
 				horizon shifted from where it ought to be.
 	* *.txt:		Added more short explanations on input and output grid formats.
 				In some man pages -F was explained instead of -f.
+	* GMT_Chapter_4.tex, GMT_Appendix_B.tex:	Added information on -bic (netCDF tables).
 
 2008-04-04	pwessel
 	* gmt_stat.c:		Bug in GMT_median would sometime give subtle mistakes, most noticeable
