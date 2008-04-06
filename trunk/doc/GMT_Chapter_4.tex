@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.109 2008-04-05 19:25:00 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.110 2008-04-06 01:30:32 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -690,17 +690,18 @@ The offsets are measured in the current coordinates system (which can
 be rotated using the initial \Opt{P} option; subsequent \Opt{P} options
 for overlays are ignored).
 
-
 \subsection{Binary table i/o: The \Opt{b} option}
 \index{Table!binary}
+\index{Table!netCDF}
 \index{Binary tables}
+\index{NetCDF tables}
 \index{Input!binary \Opt{bi}}
 \index{Output!binary \Opt{bo}}
 \index{\Opt{bi} (select binary input)}
 \index{\Opt{bo} (select binary output)}
 
-All \GMT\ programs that accept table data input may read ASCII
-or binary data.  When using binary data the user must be aware
+All \GMT\ programs that accept table data input may read ASCII, native binary, or netCDF data.
+When using native binary data the user must be aware
 of the fact that \GMT\ has no way of determining the actual
 number of columns in the file.  You must therefore pass that
 information to \GMT\ via the binary \Opt{bi}[\textbf{s}]\emph{n} option,
@@ -709,10 +710,21 @@ indicates single (4 bytes) rather than double (8 bytes) precision).  If uppercas
 \textbf{S} (or \textbf{D}) are used it implies that byte-swapping should be performed
 just prior to writing (for output) or immediately after  reading (for input).
 Note that \emph{n} may be larger than \emph{m}, the number of
-columns that the \GMT\ program requires to do its task.  If
-\emph{n} is not given then it defaults to \emph{m}.  If
-\emph{n} $<$ \emph{m} an error is generated.  For more information,
-see Appendix~\ref{app:B}.
+columns that the \GMT\ program requires to do its task.
+If \emph{n} is not given then it defaults to \emph{m}.
+If \emph{n} $<$ \emph{m} an error is generated.
+
+Because of its meta data, reading netCDF tables (i.e. netCDF files containing 1-dimensional arrays)
+is quite a bit less complex than reading native binary files. When feeding netCDF tables to programs
+like \GMTprog{psxy}, the program will automatically recognize the format and read whatever amount of
+columns are needed for that program. To steer which columns are to be read, the user can either
+append the suffix \textbf{?}\emph{var1}\textbf{/}\emph{var2}\textbf{/}\emph{...} to the netCDF file name
+or add the option \Opt{bic}\emph{var1}\textbf{/}\emph{var2}\textbf{/}\emph{...}, where \emph{var1}, \emph{var2}, etc.\
+are the names of the variables to be processed. The latter option is particularly practical when more
+than one file is read: the \Opt{bic} option will apply to all files.
+
+Currently, netCDF tables can only be input, not output.
+For more information, see Appendix~\ref{app:B}.
 
 \subsection{Data type selection: The \Opt{f} option}
 \index{Table!format}
@@ -733,7 +745,7 @@ input file has geographic coordinates (latitude, longitude) with absolute calend
 coordinates in the columns 3 and 4, we would specify \textbf{fi}0y,1x,3-4T.  All other columns
 are assumed to have the default, floating point format and need not be set individually.
 The shorthand \Opt{f}[\textbf{i}$|$\textbf{o}]\textbf{g} means \Opt{f}[\textbf{i}$|$\textbf{o}]0x,1y (geographic coordinates).
-For more information, see Section~\ref{sec:io}.
+For more information, see Sections~\ref{sec:input data} and~\ref{sec:output data}.
 
 \subsection{Number of Copies: The \Opt{c} option}
 \index{\Opt{c} (set \# of copies)}
@@ -876,14 +888,14 @@ processed, convergence of iterative solutions, and the like.
 Since these messages are written to \emph{stderr},  the
 verbose talk remains separate from your data output. 
 
-\section{Output}
+\section{Program output}
 \index{Output!standard}
 \index{Output!error}
 \index{grid file!formats!netCDF}
 
 Most programs write their results, including \PS\
 plots, to standard output.  The exceptions are those which may
-create binary netCDF grd-files such as \GMTprog{surface} (due to
+create binary netCDF grid files such as \GMTprog{surface} (due to
 the design of netCDF a filename must be provided; however,
 alternative binary output formats allowing piping are available; see Section~\ref{sec:grdformats}).
 With \UNIX\, you can redirect standard output to a file or pipe it
@@ -893,13 +905,13 @@ You can use \UNIX\ to redirect standard error as well,
 if you want to create a log file of what you are doing. 
 
 \section{Input Data Formats}
+\label{sec:input data}
 \index{Input!format}
-\label{sec:io}
 
 Most of the time, \GMT\ will know what kind of $x$ and $y$ coordinates it is reading because you have selected
 a particular coordinate transformation or map projection.  However,
 there may be times when you must explicitly specify what you are
-providing as input using the \Opt{f} switch. When binary data are expected (\Opt{b}) they must all
+providing as input using the \Opt{f} switch. When binary input data are expected (\Opt{bi}) they must all
 be floating point numbers, however for ASCII input there are numerous
 ways to encode data coordinates (which may be separated by white-space or commas).  Valid input data are generally
 of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}), with additional
@@ -929,6 +941,7 @@ the first two columns are longitude and latitude, and that the third column (e.g
 \Opt{fi}0x,1y,2T to the command line.  For more details, see the man page for the program you need to use.
 
 \section{Output Data Formats}
+\label{sec:output data}
 \index{Output!format}
 
 The numerical output from \GMT\ programs can be binary (when \Opt{bo} is used) or ASCII [Default].
