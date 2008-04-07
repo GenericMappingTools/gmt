@@ -1,7 +1,8 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.245 2008-04-07 15:43:49 remko Exp $
+	$Id: ChangeLog,v 1.246 2008-04-07 18:48:55 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-04-07	remko
+	* gmt_grdio.c:		Did not yet properly combine ?varname=suffix on output grid.
 	* ps2raster.c:		Security improvements: (1) Replaced tmpnam by mktemp, as tmpnam provides
 				a limited number of temp file names. (2) Run commands using system(cmd)
 				directly and remove file using remove(file), instead of creating a
