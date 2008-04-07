@@ -1,4 +1,4 @@
-#	$Id: Ellipsoids.txt,v 1.5 2008-03-11 18:32:50 remko Exp $
+#	$Id: Ellipsoids.txt,v 1.6 2008-04-07 20:26:16 guru Exp $
 #
 # This is the core listing of supported ellipsoids in GMT map projections.
 # Please adhere to the format.
@@ -72,5 +72,5 @@ Plessis			1817 6376523.0		308.64		: Old ellipsoid used in France
 Delambre		1810 6376428.0		311.5		: Applies to Belgium
 CPM 			1799 6375738.7		334.29		: Comm. des Poids et Mesures, France
 Maupertius		1738 6397300.0		191.0		: Really old ellipsoid used in France
-Sphere			1980 6371008.7714	0.0		: The mean radius in GRS-80 (for spherical/plate tectonics applications)
+Sphere			1984 6371008.7714	0.0		: The mean (authalic) radius in WGS-84 (for spherical/plate tectonics applications)
 #--------------------------------------------------------------------------------------------------------------------------------------
