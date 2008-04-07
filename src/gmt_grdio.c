@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.115 2008-04-02 17:04:32 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.116 2008-04-07 18:48:05 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -241,7 +241,7 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 
 	while (header->name[i] && header->name[i] != '=') i++;
 
-	if (header->name[i]) {	/* Get format type, scale, offset and missing value from suffix =xx/scl/off/nan */
+	if (header->name[i]) {	/* Reading or writing when =suffix is present: get format type, scale, offset and missing value */
 		i++;
 		sscanf (&header->name[i], "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
 		val = GMT_grd_format_decoder (code);
@@ -250,9 +250,13 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		j = (i == 1) ? i : i - 1;
 		header->name[j] = 0;
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
-		if (magic && !GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Reading: possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
+		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
+			if (!GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Reading: possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
+		}
+		else		/* Writing: store truncated pathname */
+			strcpy (header->name, tmp);
 	}
-	else if (magic) {	/* Determine file format automatically based on grid content */
+	else if (magic) {	/* Reading: determine file format automatically based on grid content */
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (!GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
@@ -271,7 +275,7 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		if (GMT_is_agc_grid (header) >= 0) return (GMT_NOERROR);
 		return (GMT_GRDIO_UNKNOWN_FORMAT);	/* No supported format found */
 	}
-	else {			/* Writing: Get format type, scale, offset and missing value from gmtdefs.grid_format */
+	else {			/* Writing: get format type, scale, offset and missing value from gmtdefs.grid_format */
 		if (sscanf (header->name, "%[^?]?%s", tmp, header->varname) > 1) strcpy (header->name, tmp);    /* Strip off variable name */
 		sscanf (gmtdefs.grid_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
 		val = GMT_grd_format_decoder (code);
