@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.11 2008-04-04 17:27:30 remko Exp $
-AC_REVISION($Revision: 1.11 $)
+dnl $Id: configure.ac,v 1.12 2008-04-07 11:47:49 remko Exp $
+AC_REVISION($Revision: 1.12 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -548,7 +548,7 @@ LIBEXT='$(SL)'
 SL_VERSION='$(SL)'
 rpath=
 if test "X$enable_rpath" != "Xno" ; then
-	rpath=' -Wl,-rpath,$(libdir),$(NETCDF_LIB)'
+	rpath=' -Wl,-rpath,$(libdir):$(NETCDF_LIB)'
 fi
 if test "$enable_shared" = "yes" ; then
 	AC_MSG_CHECKING(how to make a shared object)
