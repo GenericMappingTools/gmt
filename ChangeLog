@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.244 2008-04-06 01:31:10 remko Exp $
+	$Id: ChangeLog,v 1.245 2008-04-07 15:43:49 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-04-07	remko
+	* ps2raster.c:		Security improvements: (1) Replaced tmpnam by mktemp, as tmpnam provides
+				a limited number of temp file names. (2) Run commands using system(cmd)
+				directly and remove file using remove(file), instead of creating a
+				script first.
+
 2008-04-05	pwessel
 	* gmt_map.c:		Fixed final bug in GMT_radial_clip.  Also, GMT_world_map should be
 				FALSE for azimuthal projections.  This fixes the -JA -JE pscoast bugs.
