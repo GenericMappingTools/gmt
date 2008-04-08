@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.30 2008-03-24 08:58:33 guru Exp $	
+ *	$Id: mgd77sniffer.h,v 1.31 2008-04-08 05:24:16 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2008 by P. Wessel and M. T. Chandler
@@ -110,6 +110,8 @@ struct MGD77_SNIFFER_DEFAULTS {
 	double maxTimeGrad;  /* maximum +/- time derivative     */
 	double maxSpaceGrad; /* maximum +/- space derivative    */
 	double maxDiff;      /* maximum +/- value change        */
+	double binmin;       /* minimum possible MGD77 value    */
+	double binmax;       /* maximum possible MGD77 value    */
 	double maxArea;      /* maximum grid offset area        */
 };
 
@@ -131,6 +133,6 @@ void regress_ls (double *x, double *y, GMT_LONG n, double *stat, int col);
 void regress_rls (double *x, double *y, GMT_LONG nvalues, double *stat, int col);
 void regress_lms (double *x, double *y, GMT_LONG nvalues, double *stat, int gridField);
 void regresslms_sub (double *x, double *y, double angle0, double angle1, GMT_LONG nvalues, int n_angle, double *stat, int gridField);
-GMT_LONG decimate (double *x, double *y, GMT_LONG nclean, double min, double max, double delta, double **dec_new, double **dec_orig, char *fieldTest);
+GMT_LONG decimate (double *x, double *y, GMT_LONG nclean, double min, double max, double delta, double **dec_new, double **dec_orig, GMT_LONG *extreme, char *fieldTest);
 double lms (double *x, GMT_LONG n);
 double median (double *x, GMT_LONG n);
