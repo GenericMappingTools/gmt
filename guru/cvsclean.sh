@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: cvsclean.sh,v 1.7 2007-11-29 14:35:41 remko Exp $
+#	$Id: cvsclean.sh,v 1.8 2008-04-09 18:16:48 remko Exp $
 
 # List all backup files
-find . -name "*~" -o -name ".*~" -o -name "*.bak" -o -name ".*.bak" -o -name ".#*" -o -name ".*.swp" > $$.lis 
+find . -name "*~" -o -name ".*~" -o -name "*.bak" -o -name ".*.bak" -o -name ".#*" -o -name ".*.swp" -o -name ".DS_Store" > $$.lis 
 # List all the files in .cvsignore
 for x in `find . -name .cvsignore` ; do
     $AWK '{printf "%s/%s\n","'`dirname $x`'",$0}' $x >>$$.lis
