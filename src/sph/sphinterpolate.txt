@@ -1,14 +1,14 @@
 #include "common_options.txt"
-.TH SPHDISTANCE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH SPHINTERPOLATE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN 15
 #define SCALE \fB\-JM\fP15\fBc\fP
 .SH NAME
-sphdistance \- Calculate nearest distances from Voronoi construction of spherical data
+sphinterpolate \- Gridding in tension of spherical data
 .SH SYNOPSIS
-\fBsphdistance\fP \fIinfiles\fP OPT(G)\fIgrdfile\fP [ OPT(C) ] [ OPT(D) ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_I_OPT ] 
+\fBsphinterpolate\fP \fIinfiles\fP OPT(G)\fIgrdfile\fP [ OPT(C) ] [ OPT(D) ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_I_OPT ] 
 [ OPT(L)\fIunit\fP ] [ GMT_M_OPT ] [ OPT(Q)\fIvoronoi.d\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
 .SH DESCRIPTION
-\fBsphdistance\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat and
+\fBsphinterpolate\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat and
 performs the construction of Voronoi polygons.  These polygons are then processed to calculate the nearest
 distance to each node of the lattice and written to the specified grid.  The Voronoi algorithm used is STRIPACK.
 As an option, you may provide pre-calculated Voronoi polygon file in the format written by \fBsphtriangulate\fP,
@@ -59,7 +59,7 @@ To construct Voronoi polygons from the points in the file testdata.txt and
 then calculate distances from the data to a global 1x1 degree grid, use
 .br
 .sp
-\fBsphdistance\fP testdata.txt \fB\-Rg \-I\fP1 \fB\-G\fPglobedist.grd
+\fBsphinterpolate\fP testdata.txt \fB\-Rg \-I\fP1 \fB\-G\fPglobedist.grd
 .br
 .sp
 To generate the same grid in two steps using \fBsphtriangulate\fP separately, try
@@ -67,12 +67,16 @@ To generate the same grid in two steps using \fBsphtriangulate\fP separately, tr
 .sp
 \fBsphtriangulate\fP testdata.txt \fB\-Qv\fP > voronoi.d
 .br
-\fBsphdistance\fP \fB\-Q\fPvoronoi.d \fB\-Rg \-I\fP1 \fB\-G\fPglobedist.grd
+\fBsphinterpolate\fP \fB\-Q\fPvoronoi.d \fB\-Rg \-I\fP1 \fB\-G\fPglobedist.grd
 .SH "SEE ALSO"
 .IR GMT (1),
-.IR sphinterpolate (1)
+.IR sphdistance (1)
 .IR sphtriangulate (1)
 .IR triangulate (1)
 .SH REFERENCES
 Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and Voronoi Diagram on the Surface of a Sphere, 
 \fIAMC Trans. Math. Software, 23\fP (3), 416\-434.
+.br
+Renka, R, J,, 1997, Algorithm 773: SSRFPACK: Interpolation of scattered
+data on the Surface of a Sphere with a surface under tension,
+\fIAMC Trans. Math. Software, 23\fP (3), 435-442.
