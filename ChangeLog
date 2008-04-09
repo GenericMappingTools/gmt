@@ -1,11 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.247 2008-04-09 18:07:54 remko Exp $
+	$Id: ChangeLog,v 1.248 2008-04-09 19:21:58 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-04-09	remko
 	* gmt_init.c:		Added new gmtdefaults value UNIX_TIME_FORMAT, which sets the format for
 				the time string in the GMT time stamp (-U option). The default is
-				"%Y %b %e %H:%M:%S", which is what was printed up to now.
-				Note: %e is NOT supported by ISO C90, so we may need to use %d instead.
+				"%Y %b %d %H:%M:%S", which is what was printed up to now, except that
+				%e (which is not supported by ISO C90) is replaced by %d.
 	* gmt_defaults.txt:	---"---
 	* gmt{,_globals.h}:	---"---
 	* gmtdefaults_*.orig:	---"---
