@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.341 2008-03-25 10:56:30 guru Exp $
+ *	$Id: gmt_init.c,v 1.342 2008-04-09 18:07:54 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2040,6 +2040,9 @@ int GMT_setparameter (char *keyword, char *value)
 			gmtdefs.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
 			gmtdefs.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
 			break;
+		case GMTCASE_UNIX_TIME_FORMAT:
+			strncpy (gmtdefs.unix_time_format, value, (size_t)GMT_LONG_TEXT);
+			break;
 		case GMTCASE_VECTOR_SHAPE:
 			dval = atof (value);
 			if (dval < -2.0 || dval > 2.0)
@@ -2364,16 +2367,16 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "FRAME_PEN\t\t= %s\n", GMT_putpen (&gmtdefs.frame_pen));
 	fprintf (fp, "FRAME_WIDTH\t\t= %g%c\n", (GMT_force_resize ? save_frame_width : gmtdefs.frame_width) * s, u);
 	fprintf (fp, "GRID_CROSS_SIZE_PRIMARY\t= %g%c\n", gmtdefs.grid_cross_size[0] * s, u);
-	fprintf (fp, "GRID_CROSS_SIZE_SECONDARY\t= %g%c\n", gmtdefs.grid_cross_size[1] * s, u);
 	fprintf (fp, "GRID_PEN_PRIMARY\t= %s\n", GMT_putpen (&gmtdefs.grid_pen[0]));
+	fprintf (fp, "GRID_CROSS_SIZE_SECONDARY\t= %g%c\n", gmtdefs.grid_cross_size[1] * s, u);
 	fprintf (fp, "GRID_PEN_SECONDARY\t= %s\n", GMT_putpen (&gmtdefs.grid_pen[1]));
 	fprintf (fp, "MAP_SCALE_HEIGHT\t= %g%c\n", gmtdefs.map_scale_height * s, u);
-	fprintf (fp, "TICK_LENGTH\t\t= %g%c\n", (GMT_force_resize ? save_tick_length : gmtdefs.tick_length) * s, u);
 	fprintf (fp, "POLAR_CAP\t\t= ");
 	if (GMT_IS_ZERO (gmtdefs.polar_cap[0] - 90.0))
 		fprintf (fp, "none\n");
 	else
 		fprintf (fp, "%g/%g\n", gmtdefs.polar_cap[0], gmtdefs.polar_cap[1]);
+	fprintf (fp, "TICK_LENGTH\t\t= %g%c\n", (GMT_force_resize ? save_tick_length : gmtdefs.tick_length) * s, u);
 	fprintf (fp, "TICK_PEN\t\t= %s\n", GMT_putpen (&gmtdefs.tick_pen));
 	fprintf (fp, "X_AXIS_LENGTH\t\t= %g%c\n", gmtdefs.x_axis_length * s, u);
 	fprintf (fp, "Y_AXIS_LENGTH\t\t= %g%c\n", gmtdefs.y_axis_length * s, u);
@@ -2381,6 +2384,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "Y_ORIGIN\t\t= %g%c\n", gmtdefs.y_origin * s, u);
 	fprintf (fp, "UNIX_TIME\t\t= %s\n", ft[gmtdefs.unix_time]);
 	fprintf (fp, "UNIX_TIME_POS\t\t= %g%c/%g%c\n", gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
+	fprintf (fp, "UNIX_TIME_FORMAT\t= %s\n", gmtdefs.unix_time_format);
 	fprintf (fp, "#-------- Color System Parameters -----------\n");
 	fprintf (fp, "COLOR_BACKGROUND\t= ");
 	if (gmtdefs.background_rgb[0] == -1)

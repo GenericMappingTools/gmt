@@ -721,6 +721,10 @@ at the lower left corner of the plot  [FALSE].
 .B UNIX_TIME_POS
 (\fB* \-U\fP) Sets the position of the UNIX time stamp relative to the current plots lower left corner  [POS_SI (or POS_US)].
 .TP
+.B UNIX_TIME_FORMAT
+Defines the format of the time information in the UNIX time stamp. This format is parsed by the C function \fBstrftime\fP,
+so that virtually any text can be used (even not containing any time information)  [%Y %b %e %H:%M:%S].
+.TP
 .B VECTOR_SHAPE
 Determines the shape of the head of a vector.   Normally (i.e., for vector_shape = 0),
 the head will be triangular, but can be changed to an arrow (1) or an open V (2).
