@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.220 2008-04-03 03:42:09 guru Exp $
+ *	$Id: gmt_plot.c,v 1.221 2008-04-09 18:05:52 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2404,31 +2404,33 @@ void GMT_fill (double x[], double y[], GMT_LONG n, struct GMT_FILL *fill, BOOLEA
 void GMT_timestamp (double x, double y, char *U_label)
 {
 	time_t right_now;
-	char label[BUFSIZ], time_string[GMT_LONG_TEXT], year[8];
-	double dim[5] = {0.365, 1.15, 0.15, 0.075, 0.1};	/* God-given dimensions */
+	char label[GMT_LONG_TEXT], text[GMT_LONG_TEXT];
+	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions */
 
-	/* Plot time string in YEAR MONTH DAY HH:MM:SS format */
+	/* Plot time string in format defined by UNIX_TIME_FORMAT */
 
 	right_now = time ((time_t *)0);
-	strncpy (time_string, ctime (&right_now), (size_t)GMT_LONG_TEXT);
-	/* This gives something like: Thu Nov 24 18:22:48 1986\n\0 */
-	GMT_chop (time_string);					/* Remove trailing \n */
-	sscanf (time_string, "%*s %*s %*s %*s %s", year);	/* Get year as string */
-	time_string[19] = 0;					/* Terminate the string just after the seconds */
-	sprintf (label, "%s %s", year, &time_string[4]);	/* [4] means we skip the weekday name */
+	strftime (text, (size_t)sizeof(text), gmtdefs.unix_time_format, localtime(&right_now));
+	sprintf (label, "  %s  ", text);
 
-	ps_command ("% Begin GMT time-stamp");
+	ps_command ("% Begin GMT time-stamp\nV");
 	ps_transrotate (x, y, 0.0);
 	ps_setline (1);
-	ps_rect (0.0, 0.0, dim[0]+dim[1], dim[2], gmtdefs.foreground_rgb, TRUE);
-	ps_rect (0.0, 0.0, dim[0], dim[2], gmtdefs.background_rgb, TRUE);
-	ps_image (0.0, 0.0, dim[0], dim[2], GMT_glyph, 220, 90, 1);
-	ps_text (dim[0]+0.5*dim[1], dim[3], 8.0, label, 0.0, 6, 0);
-	ps_setfont (1);
+	ps_setfont (0);
+	ps_rect (0.0, 0.0, dim[0], dim[1], gmtdefs.background_rgb, TRUE);
+	ps_image (0.0, 0.0, dim[0], dim[1], GMT_glyph, 220, 90, 1);
+	ps_textdim ("PSL_dimx", "PSL_dimy", 8.0, 0, label, 0);
+	ps_set_length ("PSL_x0", dim[0]);
+	ps_set_length ("PSL_dimy", dim[1]);
+	ps_command ("1 PSL_dimy PSL_dimx PSL_x0 0 Ba");
+	ps_text (dim[0], dim[2], 8.0, label, 0.0, 1, 0);
 
-	if (U_label && U_label[0]) ps_text (dim[0]+dim[1]+dim[4], dim[3], 7.0, U_label, 0.0, 5, 0);
-	ps_rotatetrans  (-x, -y, 0.0);
-	ps_command ("% End GMT time-stamp");
+	if (U_label && U_label[0]) {
+		ps_setfont (1);
+		sprintf (label, "   %s", U_label);
+		ps_text (0.0, 0.0, -7.0, label, 0.0, 1, 0);
+	}
+	ps_command ("U\n% End GMT time-stamp");
 }
 
 void GMT_echo_command (int argc, char **argv)
