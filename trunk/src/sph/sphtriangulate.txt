@@ -74,6 +74,7 @@ and save the area of each triangle in the header record, try
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR triangulate (1)
+.IR sphinterpolate (1)
 .IR sphdistance (1)
 .SH REFERENCES
 Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and Voronoi Diagram on the Surface of a Sphere, 

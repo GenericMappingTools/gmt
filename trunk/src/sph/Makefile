@@ -1,10 +1,10 @@
-#	$Id: Makefile,v 1.3 2008-04-04 22:11:39 myself Exp $
+#	$Id: Makefile,v 1.4 2008-04-09 18:48:28 myself Exp $
 #
 #		Makefile for GMT supplement sph
 #
 #	Author:	Paul Wessel, SOEST, U. of Hawaii
 #
-#	Date:	17-FEB-2007
+#	Date:	7-APR-2008
 #
 
 #-------------------------------------------------------------------------------
@@ -18,10 +18,11 @@ F2C	= /sw
 INCLUDES = -I$(GMTHOME)/include -I$(NETCDF_INC) -I$(F2C)/include
 F2CLIB	= -L$(F2C)/lib -lf2c
 
-CODE_C	= sphtriangulate.c sphdistance.c
+CODE_C	= sphtriangulate.c sphdistance.c sphinterpolate.c
 MAN1		= $(CODE_C:.c=.1)
 
-STRLIB		= libstripack.a
+STRILIB		= libstripack.a
+SSRFLIB		= libssrfpack.a
 SPHLIB		= libsph.a
 #-------------------------------------------------------------------------------
 #	object file dependencies
@@ -66,17 +67,27 @@ test2:
 
 
 #-------------------------------------------------------------------------------
-#	STRLIB library
+#	STRILIB library
 #-------------------------------------------------------------------------------
 
-library:	$(STRLIB)
+library:	$(STRILIB) $(SSRFLIB)
 
-$(STRLIB):	stripack.o
+$(STRILIB):	stripack.o
 #		g95 -c -O stripack.f90
 		$(AR) cvr libstripack.a stripack.o
 		$(RANLIB) libstripack.a
 
 stripack.o:	stripack.c
+
+#-------------------------------------------------------------------------------
+#	SSRFLIB library
+#-------------------------------------------------------------------------------
+
+$(SSRFLIB):	ssrfpack.o
+		$(AR) cvr libssrfpack.a ssrfpack.o
+		$(RANLIB) libssrfpack.a
+
+ssrfpack.o:	ssrfpack.c
 
 #-------------------------------------------------------------------------------
 #       sph library
@@ -89,12 +100,11 @@ $(SPHLIB):	sph.o
 sph.o:	sph.c sph.h $(GMT_H)
 
 spotless::	clean
-#	rm -rf libstripack.a stripack.f90 772 stripack.c Fortran77
+	rm -rf libstripack.a libssrfpack.a
 	
 #-------------------------------------------------------------------------------
 #	program dependencies
 #-------------------------------------------------------------------------------
 
-$(CODE):	$(CODE_O) libstripack.a libsph.a
-	$(CC) $(CFLAGS) $@.o -L$(GMTHOME)/lib -lgmt -lpsl $(NC_LIBS) -L. -lstripack -lsph $(F2CLIB) $(LIBS) -o $@
-#	g95 -g $@.o -L$(GMTHOME)/lib -lgmt -lpsl $(NC_LIBS) -L. -lstripack $(LIBS) -o $@
+$(CODE):	$(CODE_O) libstripack.a libssrfpack.a libsph.a
+	$(CC) $(CFLAGS) $@.o -L$(GMTHOME)/lib -lgmt -lpsl $(NC_LIBS) -L. -lssrfpack  -lstripack -lsph $(F2CLIB) $(LIBS) -o $@
