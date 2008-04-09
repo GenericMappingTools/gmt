@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: run_doc_tests.sh,v 1.7 2008-04-04 16:40:06 remko Exp $
+#	$Id: run_doc_tests.sh,v 1.8 2008-04-09 19:17:39 remko Exp $
 #
 #	Test newly created plots for documentation against archive
 #
@@ -30,7 +30,7 @@ for o in $origs ; do
 	if test $? -ne 0; then
         	echo "[FAIL]"
 		echo $f: $rms >> fail_count.d
-	elif test `echo 20 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
+	elif test `echo 40 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
         	echo "[PASS]"
         	rm -f $f.png
 	else
