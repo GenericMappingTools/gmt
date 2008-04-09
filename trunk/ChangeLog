@@ -1,6 +1,19 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.246 2008-04-07 18:48:55 remko Exp $
+	$Id: ChangeLog,v 1.247 2008-04-09 18:07:54 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-04-09	remko
+	* gmt_init.c:		Added new gmtdefaults value UNIX_TIME_FORMAT, which sets the format for
+				the time string in the GMT time stamp (-U option). The default is
+				"%Y %b %e %H:%M:%S", which is what was printed up to now.
+				Note: %e is NOT supported by ISO C90, so we may need to use %d instead.
+	* gmt_defaults.txt:	---"---
+	* gmt{,_globals.h}:	---"---
+	* gmtdefaults_*.orig:	---"---
+	* gmt_plot.c:		Use gmtdefs.unix_time_format to format the time stamp. This also requires
+				the time stamp box to size with the time string and the additional label
+				to move. Tweaked the placement of the strings a bit (better vertical
+				placement and relative horizontal placement using spaces).
+
 2008-04-07	remko
 	* gmt_grdio.c:		Did not yet properly combine ?varname=suffix on output grid.
 	* ps2raster.c:		Security improvements: (1) Replaced tmpnam by mktemp, as tmpnam provides

@@ -1,4 +1,4 @@
-#	$Id: gmt_keywords.d,v 1.13 2006-04-05 06:03:47 pwessel Exp $
+#	$Id: gmt_keywords.d,v 1.14 2008-04-09 18:07:54 remko Exp $
 #
 # List of all GMT defaults parameters and their case value
 # Some parameters are spelled in two different ways and will
@@ -120,6 +120,7 @@ TIME_WEEK_START
 TIME_LANGUAGE
 UNIX_TIME
 UNIX_TIME_POS
+UNIX_TIME_FORMAT
 VECTOR_SHAPE
 VERBOSE
 WANT_EURO_FONT
