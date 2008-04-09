@@ -3,5 +3,5 @@
 Draw Unix System time stamp on plot.  User may specify where the lower left corner
 of the stamp should fall on the page relative to lower left corner of plot.  Optionally,
 append a label, or \fBc\fP (which will plot the command string.).  The \fBGMT\fP parameters
-\fBUNIX_TIME\fP and \fBUNIX_TIME_POS\fP can affect the appearance; see the \fBgmtdefaults\fP man
-page for details.
+\fBUNIX_TIME\fP, \fBUNIX_TIME_POS\fP, and \fBUNIX_TIME_FORMAT\fP can affect the appearance; see the \fBgmtdefaults\fP man
+page for details. The time string will be in the locale set by the environment variable \fBTZ\fP (generally local time).
