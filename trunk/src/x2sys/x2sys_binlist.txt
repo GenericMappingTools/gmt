@@ -41,7 +41,7 @@ given as the 5th output column (after the \fIflags\fP).
 .TP
 .B E
 Convert data to a cylindrical equal-area projection prior to binning.  Basically, we
-apply the projection OPT(JY)\fIlon0\fP/37:14:53.771726/360, where \fIlon0\fP is the
+apply the projection OPT(JY)\fIlon0\fP/37:04:17.166076/360, where \fIlon0\fP is the
 mid-longitude of the region.  Requires OPT(D), geographical data, and a global region
 (e.g., OPT(Rg) or OPT(Rd)).
 .TP

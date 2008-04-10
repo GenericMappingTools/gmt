@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.78 2008-04-03 01:31:30 guru Exp $
+ *	$Id: x2sys.c,v 1.79 2008-04-10 04:44:31 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -665,6 +665,8 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	}
 	MGD77_Close_File (&M);
 	MGD77_end (&M);
+	MGD77_free_plain_mgd77 (&H);
+	GMT_free ((void *)H.mgd77);
 
 	strncpy (p->name, fname, (size_t)32);
 	p->n_rows = j;
