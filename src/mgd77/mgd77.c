@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.170 2008-04-03 01:31:29 guru Exp $
+ *	$Id: mgd77.c,v 1.171 2008-04-10 04:44:31 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1419,6 +1419,36 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 	}
 
 	H->n_fields = H->info[MGD77_M77_SET].n_col = k;
+}
+
+void MGD77_free_plain_mgd77 (struct MGD77_HEADER *H)
+{
+	int i, k;
+	
+	/* Free allocations done by MGD77_set_plain_mgd77. */
+
+	k = 0;
+	GMT_free ((void *)H->info[MGD77_M77_SET].col[k].abbrev);
+	GMT_free ((void *)H->info[MGD77_M77_SET].col[k].name);
+	GMT_free ((void *)H->info[MGD77_M77_SET].col[k].units);
+	GMT_free ((void *)H->info[MGD77_M77_SET].col[k].comment);
+	k++;
+	
+	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Do all the numerical fields */
+		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* Skip these as time + tz represent the same information */
+		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].abbrev);
+		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].name);
+		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].units);
+		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].comment);
+		k++;
+	}
+	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Do the three text fields */
+		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].abbrev);
+		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].name);
+		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].units);
+		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].comment);
+		k++;
+	}
 }
 
 int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will read the entire 24-section header structure */
