@@ -1,7 +1,7 @@
 .TH GREENSPLINE 1 DATE VERSION VERSION
 #include "common_options.txt"
 .SH NAME
-greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data using Green function splines.
+greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data using Green's function splines.
 .SH SYNOPSIS
 \fBgreenspline\fP [ \fIdatafile(s)\fP ] 
 [ OPT(A)[\fB1\fP|\fB2\fP|\fB3\fP|\fB4\fP|\fB5\fP,]\fIgradfile\fP ] [ OPT(C)\fIcut\fP[/\fIfile\fP] ] 
@@ -10,12 +10,12 @@ greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data usi
 [ OPT(R)\fIxmin\fP/\fIxmax\fP[/\fIymin\fP/\fIymax\fP[/\fIzmin\fP\fIzmax\fP]] ] 
 [ OPT(S)\fBc|t|g|p|q\fP[\fIpars\fP] ] [ OPT(T)\fInodefile\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
-\fBgreenspline\fP uses the Green function G(\fBx\fP; \fBx'\fP) for the chosen spline and geometry to interpolate data
+\fBgreenspline\fP uses the Green's function G(\fBx\fP; \fBx'\fP) for the chosen spline and geometry to interpolate data
 at regular [or arbitrary] output locations.  Mathematically, the solution is composed as
 \fIw\fP(\fBx\fP) = sum {\fIc\fP(\fIi\fP) G(\fBx\fP; \fBx\fP(\fIi\fP))}, for \fIi\fP = 1, \fIn\fP, the number
 of data points {\fBx\fP(\fIi\fP), \fIw\fP(\fIi\fP)}.  Once the \fIn\fP coefficients \fIc\fP(\fIi\fP)
 have been found then the sum can be evaluated at any output point \fBx\fP.
-Choose between minimum curvature, regularized, or continuous curvature splines in tension for
+Choose between ten minimum curvature, regularized, or continuous curvature splines in tension for
 either 1-D, 2-D, or 3-D Cartesian coordinates or spherical surface coordinates. After first removing a linear or planar trend
 (Cartesian geometries) or mean value (spherical surface) and normalizing these residuals,
 the least-squares matrix solution for the spline coefficients \fIc\fP(\fIi\fP) is found by
@@ -129,7 +129,7 @@ The last two are spherical surface splines and both imply \fB\-D\fP4 \fB\-fg\fP:
 (\fBq\fP) Continuous curvature spline in tension [\fIWessel and Becker\fP, 2008]; append \fItension\fP (> 0).
 The G(\fBx\fP; \fBx'\fP) for the last method is slower to compute; by specifying \fB\-SQ\fP you can speed up calculations
 by first pre-calculating G(\fBx\fP; \fBx'\fP) for a dense set of \fBx\fP values (e.g., 100,001 nodes between -1 to +1)
-and store them in look-up tables.  Optionally append /\fIN\fP (an odd integer) to specify how many points in the spline to set [100001]
+and store them in look-up tables.  Optionally append /\fIN\fP (an odd integer) to specify how many points in the spline to set [5000001]
 .TP
 .B \-T
 ASCII file with coordinates of desired output locations \fBx\fP in the first column(s).  The resulting
@@ -230,7 +230,7 @@ Sandwell, D. T., 1987, Biharmonic spline interpolation of Geos-3 and Seasat alti
 .br
 Wessel, P., and D. Bercovici, 1998, Interpolation with splines in tension: a Green's function approach, \fIMath. Geol., 30\fP, 77\-93.
 .br
-Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Geren's function for a spherical surface spline in tension, \fIGeophys. J. Int, yy\fP, xx\-xx.
+Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Green's function for a spherical surface spline in tension, \fIGeophys. J. Int, yy\fP, xx\-xx.
 .br
 Wessel, P., 2008, A general-purpose Green's function interpolator, \fIComputers & Geosciences, yy\fP, xx\-xx.
 .SH "SEE ALSO"
@@ -240,4 +240,4 @@ Wessel, P., 2008, A general-purpose Green's function interpolator, \fIComputers 
 .IR psxy (1),
 .IR surface (1),
 .IR triangulate (1),
-.IR xyz2grd (1),
+.IR xyz2grd (1)
