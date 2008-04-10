@@ -4,7 +4,7 @@
 x2sys_binlist \- Create bin-index files from track data files
 .SH SYNOPSIS
 \fBx2sys_binlist\fP \fItrack(s)\fP [ OPT(T)\fITAG\fP ] [ OPT(Cc)|\fBf\fP|\fBg\fP|\fBe\fP ] 
-[ OPT(D) ] [ OPT(N)\fIunit\fP ] [ GMT_V_OPT ]
+[ OPT(D) ] [ OPT(E) ] [ OPT(N)\fIunit\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBx2sys_binlist\fP reads one or more track data files and produces a
 multi-segment ASCII track bin-index file (tbf) with the track id in the header and
@@ -38,6 +38,12 @@ calculation selected with \fB\-D\fP (see \fB\-N\fP for selecting units):
 Calculate the length of trackline segments per bin [Default skips this step].
 See \fB\-C\fP for method and \fB\-N\fP for units.  The length fragments are
 given as the 5th output column (after the \fIflags\fP).
+.TP
+.B E
+Convert data to a cylindrical equal-area projection prior to binning.  Basically, we
+apply the projection OPT(JY)\fIlon0\fP/37:14:53.771726/360, where \fIlon0\fP is the
+mid-longitude of the region.  Requires OPT(D), geographical data, and a global region
+(e.g., OPT(Rg) or OPT(Rd)).
 .TP
 .B \-N
 Append the desired distance \fIunit\fP as \fBe\fP (meter), \fBk\fP (km),
