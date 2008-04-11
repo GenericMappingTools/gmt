@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.171 2008-04-10 04:44:31 guru Exp $
+ *	$Id: mgd77.c,v 1.172 2008-04-11 19:40:12 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2503,7 +2503,7 @@ void MGD77_end (struct MGD77_CONTROL *F)
 	int i;
 	if (F->MGD77_HOME) GMT_free ((void *)F->MGD77_HOME);
 	for (i = 0; i < F->n_MGD77_paths; i++) GMT_free ((void *)F->MGD77_datadir[i]);
-	GMT_free ((void *)F->MGD77_datadir);
+	if (F->MGD77_datadir) GMT_free ((void *)F->MGD77_datadir);
 }
 
 void MGD77_Cruise_Explain (void)
