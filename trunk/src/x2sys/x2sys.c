@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.82 2008-04-12 03:33:07 guru Exp $
+ *	$Id: x2sys.c,v 1.83 2008-04-12 06:02:37 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -699,6 +699,7 @@ int get_first_year (double t)
 int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
 	int i;
+	char path[BUFSIZ];
 	double **z;
 	struct MGD77_DATASET *S;
 	struct MGD77_CONTROL M;
