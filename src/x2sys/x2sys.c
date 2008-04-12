@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.79 2008-04-10 04:44:31 guru Exp $
+ *	$Id: x2sys.c,v 1.80 2008-04-12 01:38:49 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -710,6 +710,7 @@ int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct
 	S = MGD77_Create_Dataset ();	/* Get data structure w/header */
 
 	if (MGD77_Open_File (fname, &M, 0)) return (GMT_GRDIO_FILE_NOT_FOUND);
+	strcpy (s->path, M.path);
 	if (MGD77_Read_Header_Record (fname, &M, &S->H)) {	/* Returns info on all columns */
 		fprintf (stderr, "x2sys_read_nc77file: Error reading header sequence for cruise %s\n", fname);
      		return (GMT_GRDIO_READ_FAILED);
