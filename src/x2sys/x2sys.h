@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.32 2008-04-03 01:31:30 guru Exp $
+ *	$Id: x2sys.h,v 1.33 2008-04-12 01:38:49 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -139,6 +139,7 @@ struct X2SYS_INFO {
 	char ms_flag;			/* Multi-segment header flag */
 	char suffix[16];		/* Suffix for these data files */
 	char fflags[BUFSIZ];		/* Text copy of selected columns */
+	char path[BUFSIZ];		/* Full path to current data file */
 	struct X2SYS_DATA_INFO *info;	/* Array of info for each data field */
 };
 
