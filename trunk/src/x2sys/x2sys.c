@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.80 2008-04-12 01:38:49 guru Exp $
+ *	$Id: x2sys.c,v 1.81 2008-04-12 01:41:50 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -254,6 +254,7 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	double **z, *rec;
 	char path[BUFSIZ];
 
+	strcpy (s->path, fname);
  	if (n_x2sys_paths) {
   		if (x2sys_get_data_path (path, fname, s->suffix)) {
    			fprintf (stderr, "x2sys_read_file : Cannot find track %s\n", fname);
@@ -263,6 +264,7 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
    			fprintf (stderr, "x2sys_read_file : Cannot open file %s\n", path);
      			return (-1);
   		}
+		strcpy (s->path, path);
 	}
 	else if ((fp = fopen (fname, G->r_mode)) == NULL) {
 		fprintf (stderr, "x2sys_read_file: Could not open %s\n", fname);
@@ -569,7 +571,7 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 		name[strlen(fname)-4] = 0;
 
   	if (gmtmggpath_func (gmtfile, name)) return (GMT_GRDIO_FILE_NOT_FOUND);
-
+	strcpy (s->path, gmtfile);
 	if ((fp = fopen (gmtfile, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 
 	if (fread ((void *)&year, sizeof (int), (size_t)1, fp) != 1) {
@@ -638,7 +640,8 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 	}
 	else if (MGD77_Open_File (fname, &M, 0))
 		return (GMT_GRDIO_FILE_NOT_FOUND);
-
+	strcpy (s->path, M.path);
+	
 	if (MGD77_Read_Header_Record (fname, &M, &H)) {
 		fprintf (stderr, "%s: Error reading header sequence for cruise %s\n", X2SYS_program, fname);
 		return (GMT_GRDIO_READ_FAILED);
