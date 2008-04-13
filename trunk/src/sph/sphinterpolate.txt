@@ -5,61 +5,65 @@
 .SH NAME
 sphinterpolate \- Gridding in tension of spherical data
 .SH SYNOPSIS
-\fBsphinterpolate\fP \fIinfiles\fP OPT(G)\fIgrdfile\fP [ OPT(C) ] [ OPT(D) ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_I_OPT ] 
-[ OPT(L)\fIunit\fP ] [ GMT_M_OPT ] [ OPT(Q)\fIvoronoi.d\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
+\fBsphinterpolate\fP \fIinfiles\fP OPT(G)\fIgrdfile\fP [ OPT(F) ] [ GMT_H_OPT ] [ GMT_I_OPT ] 
+[ OPT(L) ] [ GMT_M_OPT ] [ OPT(T)\fItension\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
 .SH DESCRIPTION
-\fBsphinterpolate\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat and
-performs the construction of Voronoi polygons.  These polygons are then processed to calculate the nearest
-distance to each node of the lattice and written to the specified grid.  The Voronoi algorithm used is STRIPACK.
-As an option, you may provide pre-calculated Voronoi polygon file in the format written by \fBsphtriangulate\fP,
-thus bypassing the memory- and time-consuming triangularization.
+\fBsphinterpolate\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat, f and
+performs a Delaunay triangulation to set up a spherical interpolation in tension.  The final grid is saved
+to the specified file.  Several options may be used to affect the outcome, such as choosing local versus global gradient
+estimation or optimize the tension selection to satisfy one of four criteria.
 .TP
 \fIinfiles\fP
-Data files with the point coordinates in ASCII (or binary; see \fB\-b\fP).  If no files are given the standard input is read.
+Data files with the (lon, lat, f) coordinates in ASCII (or binary; see \fB\-b\fP).  If no files are given the standard input is read.
 .SH OPTIONS
-.TP
-.B \-C
-For large data set you can save some memory (at the expense of more processing) by only storing one form of
-location coordinates (geographic or Cartesian 3-D vectors) at any given time, translating from one form to
-the other when necessary [Default keeps both arrays in memory]. Not applicable with OPT(Q).
-.TP
-.B \-D
-Used with OPT(M) to skip the last (repeated) input vertex at the end of a closed segment if it
-equals the first point in the segment.  Requires OPT(M) [Default uses all points].
 #include "explain_-H.txt"
 #include "explain_-I.txt"
 .TP
 .B \-L
-Specify the unit used for distance calculations.  Choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile),
-\fBn\fP (nautical mile), or \fBd\fP (spherical degree).  A spherical approximation is used unless
-\fBELLIPSOID\fP is set to an actual ellipsoid.
+Use a local method, in which values depend only on nearby data points, to compute
+estimated gradients at the nodes [Default uses a global method in which values depend on all the data].
 .TP
 .B \-M
 Expect input data to have multiple line segments separated by a record whose first
 character is \fIflag\fP [>].
-.B \-N
-Read the information pertaining to each Voronoi polygon (the unique node lon, lat and polygon area) from
-a separate file [Default aquires this information from the ASCII segment headers of the output file].
-Required if binary input via OPT(Q) is used.
 .TP
-.B \-Q
-Append the name of a file with pre-calculated Voronoi polygons [Default performs the Voronoi construction on input data].
-For binary data OPT(bi) you must specify the node information separately (via OPT(N)).
+.B \-T
+Specify one of four ways to calculate tension factors to preserve local shape properties or
+satisfy arc constraints [Default is no tension].
+.TP
+.B \-Ts
+Determine, for each triangulation arc, the smallest (nonnegative) tension factor such that the
+Hermite interpolatory tension spline, defined by the tension and the specified endpoint data,
+preserves local shape properties (monotonicity and convexity) of the data.
+.TP
+.B \-Tv
+Determine the smallest tension factor such that the
+Hermite interpolatory tension spline associated with a specified triangulation arc and endpoint data
+is bounded (either above of below) by a specified value.
+.TP
+.B \-Tg
+Determine the smallest tension factor such that the first derivative of the
+Hermite interpolatory tension spline associated with a specified triangulation arc and endpoint data
+is bounded (either above of below) by a specified value.
+.TP
+.B \-Tc
+Determine the smallest tension factor such that the
+Hermite interpolatory tension spline associated with a specified triangulation arc and endpoint data
+preserves convexity (or concavity) of the data on the arc.
 #include "explain_-Rgeo.txt"
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
-[Default is 2 input columns].
+[Default is 3 input columns].
 #include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_precision.txt"
 #include "explain_float.txt"
 .SH EXAMPLES
-To construct Voronoi polygons from the points in the file testdata.txt and
-then calculate distances from the data to a global 1x1 degree grid, use
+To interpolate the points in the file testdata.txt on a global 1x1 degree grid with no tension, use
 .br
 .sp
-\fBsphinterpolate\fP testdata.txt \fB\-Rg \-I\fP1 \fB\-G\fPglobedist.grd
+\fBsphinterpolate\fP testdata.txt \fB\-Rg \-I\fP1 \fB\-G\fPsolution.grd
 .br
 .sp
 To generate the same grid in two steps using \fBsphtriangulate\fP separately, try
