@@ -1,5 +1,5 @@
 /*
- *	$Id: grdinfo.c,v 1.2 2008-01-23 03:22:49 guru Exp $
+ *	$Id: grdinfo.c,v 1.3 2008-04-14 00:29:16 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -27,7 +27,6 @@
  
 #include "gmt.h"
 #include "mex.h"
-#include "matrix.h"
 
 void grdinfo (double info[], char *filein, struct GRD_HEADER *grd)
 {

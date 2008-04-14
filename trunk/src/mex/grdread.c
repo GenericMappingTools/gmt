@@ -1,5 +1,5 @@
 /*
- *	$Id: grdread.c,v 1.7 2008-01-23 03:22:49 guru Exp $
+ *	$Id: grdread.c,v 1.8 2008-04-14 00:29:16 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -29,7 +29,6 @@
  
 #include "gmt.h"
 #include "mex.h"
-#include "matrix.h"
 
 int grdread (double z_8[], double info[], char *filein, struct GRD_HEADER *grd)
 {

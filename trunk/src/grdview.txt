@@ -60,7 +60,7 @@ If no \fIflags\fP are set, use bilinear rather than the default bicubic resampli
 .TP
 .B \-N
 Draws a plane at this z-level.  If the optional \fIcolor\fP is provided, the frontal facade between
-the plane and the data perimeter is colored.
+the plane and the data perimeter is colored.  See OPT(Wf) for setting the pen used for the outline.
 (See SPECIFYING COLOR below).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
@@ -101,6 +101,10 @@ Draw contour lines on top of surface or mesh (not image).  Append pen attributes
 .B \-Wm
 Sets the pen attributes used for the mesh. [Default: width = 1, color = black, texture = solid].
 You must also select \fB\-Qm\fP or \fB\-Qsm\fP for meshlines to be drawn.
+.TP
+.B \-Wf
+Sets the pen attributes used for the facade. [Default: width = 1, color = black, texture = solid].
+You must also select OPT(N) for the facade outline to be drawn.
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
