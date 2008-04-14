@@ -1,8 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.249 2008-04-11 19:40:11 guru Exp $
+	$Id: ChangeLog,v 1.250 2008-04-14 00:29:16 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-13	pwessel
+	* grdview.c:	THe facade (-N) outline was drawn with contour pen.  Now use -Wf to change
+					the facade pen from its default value.
 2008-04-11	pwessel
 	* x2sys/x2sys_binlist.c:	Could create bad bins because of incorrect reallocation of memory.
+	* mex/*.c:	No longer need to include matrix.h separately.  This helps octave compilation.
 
 2008-04-09	remko
 	* gmt_init.c:		Added new gmtdefaults value UNIX_TIME_FORMAT, which sets the format for

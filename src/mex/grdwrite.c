@@ -1,5 +1,5 @@
 /*
- *	$Id: grdwrite.c,v 1.7 2008-01-23 03:22:49 guru Exp $
+ *	$Id: grdwrite.c,v 1.8 2008-04-14 00:29:16 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -28,8 +28,6 @@
  
 #include "gmt.h"
 #include "mex.h"
-#include "matrix.h"
-
 
 int grdwrite (double z_8[], double x[], double y[], double info[], char *fileout, char *title, int nx, int ny, int pix)
 {
