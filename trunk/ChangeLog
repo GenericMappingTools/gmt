@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.252 2008-04-15 16:05:12 remko Exp $
+	$Id: ChangeLog,v 1.253 2008-04-15 19:35:51 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-04-15	remko
 	* pslib.c, PSL_prologue.ps:	Renamed a few PostScript commands.
@@ -17,7 +17,8 @@
 	* explain_-U.txt:	---"---
 	* common_options.txt:	---"---
 	* gmt{,_globals,_common.h}:	---"---
-	* .gmtdefaults_*.orig:	---"---
+	* .gmtdefaults_*.orig:	---"---. Set PS_IMAGE_COMPRESS = lzw.
+	* .gmtdefaults4.doc, .gmtdefaults_test:	Now created on the fly from system defaults file.
 
 2008-04-14	pwessel
 	* psxy[z].c:		Drawing arrows with -SvS and time-coordinates did not work as 2nd time
