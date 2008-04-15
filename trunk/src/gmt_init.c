@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.342 2008-04-09 18:07:54 remko Exp $
+ *	$Id: gmt_init.c,v 1.343 2008-04-15 15:51:41 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -111,6 +111,10 @@ char *GMT_degree_choice[4] = {  /* Users choice for degree symbol */
 	"ring",
 	"degree",
 	"colon",
+};
+
+char *GMT_just_string[12] = {	/* Strings to specify justification */
+	"", "BL", "BC", "BR", "", "ML", "MC", "MR", "", "TL", "TC", "TR"
 };
 
 EXTERN_MSC void GMT_grdio_init (void);	/* Defined in gmt_customio.c and only used here */
@@ -492,8 +496,8 @@ void GMT_explain_option (char option)
 		case 'U':	/* Plot time mark and [optionally] command line */
 
 			fprintf (stderr, "\t-U to plot Unix System Time stamp [and optionally appended text].\n");
-			fprintf (stderr, "\t   You may also set the lower left corner position of stamp [%g/%g].\n",
-				gmtdefs.unix_time_pos[0], gmtdefs.unix_time_pos[1]);
+			fprintf (stderr, "\t   You may also set the reference points and position of stamp [%s/%g/%g].\n",
+				GMT_just_string[gmtdefs.unix_time_just], gmtdefs.unix_time_pos[0], gmtdefs.unix_time_pos[1]);
 			fprintf (stderr, "\t   Give -Uc to have the command line plotted [%s].\n",
 				GMT_choice[gmtdefs.unix_time]);
 			break;
@@ -879,7 +883,7 @@ void GMT_syntax (char option)
 
 		case 'U':	/* Set time stamp option */
 
-			fprintf (stderr, "\t-U[/<dx>/<dy>/][<string> | c], c will plot command line.\n");
+			fprintf (stderr, "\t-U[/<dx>/<dy>/][c|<label>], c will plot command line.\n");
 			break;
 
 		case ':':	/* lon/lat vs lat/lon i/o option  */
@@ -1284,30 +1288,30 @@ int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) 
 }
 
 int GMT_parse_U_option (char *item) {
-	int i, j, n = 0, n_slashes, error = 0;
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT];
+	int i, n = 0, n_slashes, error = 0;
+	char txt_j[GMT_LONG_TEXT], txt_x[GMT_LONG_TEXT], txt_y[GMT_LONG_TEXT];
 
-	/* Parse the -U option.  Full syntax:  -U[/xoff/yoff/][c|<label>] */
+	/* Parse the -U option.  Full syntax:  -U[<just>/<dx>/<dy>/][c|<label>] */
 
 	GMT_ps.unix_time = TRUE;
-	for (i = j = n_slashes = 0; item[i]; i++) if (item[i] == '/') {	/* Count slashes to detect /xoff/yoff/ presence */
-		n_slashes++;
-		if (n_slashes < 4) j = i;
+	for (i = n_slashes = 0; item[i]; i++) {
+		if (item[i] == '/') n_slashes++;	/* Count slashes to detect <just>/<dx>/<dy>/ presence */
 	}
-	if (item[2] == '/' && n_slashes == 2) {	/* Gave -U/<dx>/<dy> */
-		n = sscanf (&item[3], "%[^/]/%s", txt_a, txt_b);
-		GMT_ps.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
-		GMT_ps.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
+	if (n_slashes >= 2) {	/* Probably gave -U<just>/<dx>/<dy>[/<string>] */
+		n = sscanf (item, "%[^/]/%[^/]/%[^/]/%s", txt_j, txt_x, txt_y, GMT_ps.unix_time_label);
+		if ((i = GMT_just_decode (&txt_j[2], GMT_ps.unix_time_just)) < 0) {
+			/* Garbage before first slash: we simply have -U<string> */
+			strcpy (GMT_ps.unix_time_label, &item[2]);
+		}
+		else {
+			GMT_ps.unix_time_just = i;
+			GMT_ps.unix_time_pos[0] = GMT_convert_units (txt_x, GMT_INCH);
+			GMT_ps.unix_time_pos[1] = GMT_convert_units (txt_y, GMT_INCH);
+		}
 	}
-	else if (item[2] == '/' && n_slashes > 2) {	/* Gave -U/<dx>/<dy>/<string> */
-		n = sscanf (&item[3], "%[^/]/%[^/]/%*s", txt_a, txt_b);
-		GMT_ps.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
-		GMT_ps.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
-		strcpy (GMT_ps.unix_time_label, &item[j+1]);
-	}
-	else if (item[2] && item[2] != '/')	/* Gave -U<string> */
+	else
 		strcpy (GMT_ps.unix_time_label, &item[2]);
-	if ((item[2] == '/' && n_slashes == 1) || (item[2] == '/' && n_slashes >= 2 && n != 2)) {
+	if ((item[2] == '/' && n_slashes == 1) || (item[2] == '/' && n_slashes >= 2 && n < 2)) {
 		error++;
 		GMT_syntax ('U');
 	}
@@ -1506,7 +1510,7 @@ int GMT_setparameter (char *keyword, char *value)
 {
 	int i, ival, case_val, rgb[3];
 	BOOLEAN manual, eps, error = FALSE;
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], lower_value[BUFSIZ];
+	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], lower_value[BUFSIZ];
 	double dval;
 
 	if (!value) return (TRUE);		/* value argument missing */
@@ -2036,9 +2040,18 @@ int GMT_setparameter (char *keyword, char *value)
 			error = true_false_or_error (lower_value, &gmtdefs.unix_time);
 			break;
 		case GMTCASE_UNIX_TIME_POS:
-			sscanf (value, "%[^/]/%s", txt_a, txt_b);
-			gmtdefs.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
-			gmtdefs.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
+			i = sscanf (value, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+			if (i == 2) {
+				gmtdefs.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
+				gmtdefs.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
+			}
+			else if (i == 3) {	/* New style, includes justification, introduced in GMT 4.3.0 */
+				gmtdefs.unix_time_just = GMT_just_decode (txt_a, 12);
+				gmtdefs.unix_time_pos[0] = GMT_convert_units (txt_b, GMT_INCH);
+				gmtdefs.unix_time_pos[1] = GMT_convert_units (txt_c, GMT_INCH);
+			}
+			else
+				error = TRUE;
 			break;
 		case GMTCASE_UNIX_TIME_FORMAT:
 			strncpy (gmtdefs.unix_time_format, value, (size_t)GMT_LONG_TEXT);
@@ -2383,7 +2396,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "X_ORIGIN\t\t= %g%c\n", gmtdefs.x_origin * s, u);
 	fprintf (fp, "Y_ORIGIN\t\t= %g%c\n", gmtdefs.y_origin * s, u);
 	fprintf (fp, "UNIX_TIME\t\t= %s\n", ft[gmtdefs.unix_time]);
-	fprintf (fp, "UNIX_TIME_POS\t\t= %g%c/%g%c\n", gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
+	fprintf (fp, "UNIX_TIME_POS\t\t= %s/%g%c/%g%c\n", GMT_just_string[gmtdefs.unix_time_just], gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
 	fprintf (fp, "UNIX_TIME_FORMAT\t= %s\n", gmtdefs.unix_time_format);
 	fprintf (fp, "#-------- Color System Parameters -----------\n");
 	fprintf (fp, "COLOR_BACKGROUND\t= ");
@@ -2622,9 +2635,8 @@ double GMT_convert_units (char *from, int new_format)
 
 	old_format = GMT_unit_lookup (c);	/* Will warn if c is not 0, 'c', 'i', 'm', 'p' */
 
-	if (GMT_is_invalid_number (from)) {
+	if (GMT_is_invalid_number (from))
 		fprintf (stderr, "%s: Warning: %s not a valid number and may not be decoded properly.\n", GMT_program, from);
-	}
 
 	value = atof (from) * GMT_u2u[old_format][new_format];
 	if (have_unit) from[len-1] = c;	/* Put back what we took out temporarily */
@@ -3583,7 +3595,6 @@ void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
 	GMT_ps.absolute = FALSE;			/* TRUE if -X, -Y was absolute [FALSE] */
 	GMT_ps.last_page = TRUE;			/* Result of not -K [TRUE] */
 	GMT_ps.overlay = FALSE;				/* Result of -O [FALSE] */
-	GMT_ps.unix_time = gmtdefs.unix_time;		/* Result of -U [gmtdefs.unix_time] */
 	GMT_ps.comments = gmtdefs.ps_verbose;		/* TRUE to write comments to PS file [FALSE] */
 	GMT_ps.clip_on = GMT_ps.clip_off = FALSE;	/* Used to manage multi-process clipping operations */
 	GMT_ps.n_copies = gmtdefs.n_copies;		/* Result of -c [gmtdefs.n_copies] */
@@ -3599,6 +3610,8 @@ void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
 	GMT_ps.y_origin = gmtdefs.y_origin;		/* Result of -Y [gmtdefs.y_origin] */
 	GMT_ps.x_scale = gmtdefs.global_x_scale;	/* Copy of gmtdefs.global_y_scale */
 	GMT_ps.y_scale = gmtdefs.global_y_scale;	/* Copy of gmtdefs.global_y_scale */
+	GMT_ps.unix_time = gmtdefs.unix_time;		/* Result of -U [gmtdefs.unix_time] */
+	GMT_ps.unix_time_just = gmtdefs.unix_time_just;	/* Result of -U [gmtdefs.unit_time_justify] */
 	memcpy ((void *)GMT_ps.unix_time_pos, (void *)gmtdefs.unix_time_pos, 2*sizeof (double));/* Result of -U [gmtdefs.unix_time_pos] */
 	GMT_ps.encoding_name = gmtdefs.encoding.name;	/* Font encoding used */
 }
@@ -5752,6 +5765,7 @@ void *New_GMT_Ctrl () {	/* Allocate and initialize a new common control structur
 	C->common->P.active = gmtdefs.portrait;
 	/* [9]  -U */
 	C->common->U.active = gmtdefs.unix_time;
+	C->common->U.just = gmtdefs.unix_time_just;
 	C->common->U.x = gmtdefs.unix_time_pos[0];
 	C->common->U.y = gmtdefs.unix_time_pos[1];
 	/* [10]  -V */

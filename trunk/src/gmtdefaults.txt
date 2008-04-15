@@ -1,24 +1,25 @@
 #include "common_options.txt"
 .TH GMTDEFAULTS 1 MANDATE GMT_STRING "Generic Mapping Tools"
-#define TOL_SI	0.025\fBc\fP
+#define TOL_SI		0.025\fBc\fP
 #define LEN_1_SI	0.2\fBc\fP
+#define LEN_2_SI	2\fBc\fP
 #define LEN_3_SI	25\fBc\fP
 #define LEN_4_SI	15\fBc\fP
 #define LEN_5_SI	0.3\fBc\fP
 #define LEN_6_SI	0.5\fBc\fP
 #define DEF_XY_SI	2.5\fBc\fP
-#define POS_SI -2\fBc\fP/-2\fBc\fP
-#define CODE_SI ISOLatin1+
-#define CODE_US Standard+
-#define MY_PAPER A4
-#define TOL_US	0.01\fBi\fP
+#define CODE_SI		ISOLatin1+
+#define PAPER_SI	A4
+#define TOL_US		0.01\fBi\fP
 #define LEN_1_US	0.075\fBi\fP
+#define LEN_2_US	0.75\fBi\fP
 #define LEN_3_US	9\fBi\fP
 #define LEN_4_US	6\fBi\fP
 #define LEN_5_US	0.1125\fBi\fP
 #define LEN_6_US	0.1875\fBi\fP
 #define DEF_XY_US	1\fBi\fP
-#define POS_US -0.75\fBi\fP/-0.75\fBi\fP
+#define CODE_US		Standard+
+#define PAPER_US	Letter
 .SH NAME
 gmtdefaults \- To list current \fBGMT\fP defaults
 .SH SYNOPSIS
@@ -440,7 +441,7 @@ Give a red/green/blue triplet, with each element in the 0\-255 range. [255/255/2
 (\fB* \-P\fP) Sets the orientation of the page.  Choose portrait or landscape  [landscape].
 .TP
 .B PAPER_MEDIA
-Sets the physical format of the current plot paper [MY_PAPER].  The following
+Sets the physical format of the current plot paper [PAPER_SI (or PAPER_US)].  The following
 formats (and their widths and heights in points) are recognized (Additional
 site-specific formats may be specified in
 the gmt_custom_media.conf file in \fB$GMT_SHAREDIR\fP/conf or ~/.gmt; see that file for details):
@@ -719,7 +720,8 @@ for Gregorian calendars.  (The ISO weekly calendar always begins weeks with Mond
 at the lower left corner of the plot  [FALSE].
 .TP
 .B UNIX_TIME_POS
-(\fB* \-U\fP) Sets the position of the UNIX time stamp relative to the current plots lower left corner  [POS_SI (or POS_US)].
+(\fB* \-U\fP) Sets the justification and the position of the UNIX time stamp box relative to the current plots lower left corner
+of the plot  [BL/-LEN_2_SI/-LEN_2_SI (or BL/-LEN_2_US/-LEN_2_US)].
 .TP
 .B UNIX_TIME_FORMAT
 Defines the format of the time information in the UNIX time stamp. This format is parsed by the C function \fBstrftime\fP,
