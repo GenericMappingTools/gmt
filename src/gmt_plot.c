@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.221 2008-04-09 18:05:52 remko Exp $
+ *	$Id: gmt_plot.c,v 1.222 2008-04-15 15:59:38 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2401,8 +2401,19 @@ void GMT_fill (double x[], double y[], GMT_LONG n, struct GMT_FILL *fill, BOOLEA
 		ps_polygon (x, y, n, fill->rgb, outline);
 }
 
-void GMT_timestamp (double x, double y, char *U_label)
+void GMT_timestamp (double x, double y, int justify, char *U_label)
 {
+	/* x, y = location of the time stamp box
+	 * justify indicates the corner of the box that (x,y) refers to, see below
+	 * U_label = label to be plotted to the right of the box
+	 *
+	 *   9        10       11
+	 *   |------------------|                 
+	 *   5  GMT | <time>    7                         
+	 *   |------------------|                         
+	 *   1         2        3                                 
+	 */
+
 	time_t right_now;
 	char label[GMT_LONG_TEXT], text[GMT_LONG_TEXT];
 	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions */
@@ -2417,12 +2428,24 @@ void GMT_timestamp (double x, double y, char *U_label)
 	ps_transrotate (x, y, 0.0);
 	ps_setline (1);
 	ps_setfont (0);
+	ps_set_length ("PSL_bx0", dim[0]);	/* Size of [GMT] box */
+	ps_set_length ("PSL_by0", dim[1]);
+	ps_textdim ("PSL_bx1", "PSL_by1", 8.0, 0, label, 0);	/* Size of [timestamp] box (use only length) */
+	switch ((justify + 3) % 4) {
+		case 1:	/* Center */
+			ps_command ("PSL_bx0 PSL_bx1 add 2 div neg 0 T"); break;
+		case 2:	/* Right justify */
+			ps_command ("PSL_bx0 PSL_bx1 add neg 0 T"); break;
+	}
+	switch (justify / 4) {
+		case 1: /* Middle */
+			ps_command ("0 PSL_by0 2 div neg T"); break;
+		case 2: /* Top justify */
+			ps_command ("0 PSL_by0 neg T"); break;
+	}
 	ps_rect (0.0, 0.0, dim[0], dim[1], gmtdefs.background_rgb, TRUE);
 	ps_image (0.0, 0.0, dim[0], dim[1], GMT_glyph, 220, 90, 1);
-	ps_textdim ("PSL_dimx", "PSL_dimy", 8.0, 0, label, 0);
-	ps_set_length ("PSL_x0", dim[0]);
-	ps_set_length ("PSL_dimy", dim[1]);
-	ps_command ("1 PSL_dimy PSL_dimx PSL_x0 0 Ba");
+	ps_command ("1 PSL_by0 PSL_bx1 PSL_bx0 0 Ba");
 	ps_text (dim[0], dim[2], 8.0, label, 0.0, 1, 0);
 
 	if (U_label && U_label[0]) {
@@ -4045,7 +4068,6 @@ int GMT_plotinit (int argc, char *argv[])
 	 * and places a time stamp, if selected */
 
 	int PS_bit_settings = 0;
-	char label[BUFSIZ];
 	struct EPS *eps;
 	
 	/* Load all the bits required by ps_plotinit */
@@ -4074,22 +4096,17 @@ int GMT_plotinit (int argc, char *argv[])
 
 	/* If requested, place the timestamp */
 
-	memset (label, 0, (size_t)BUFSIZ);
 	if (GMT_ps.unix_time_label[0] == 'c' && GMT_ps.unix_time_label[1] == 0) {
 		int i;
 		/* -Uc was given as shorthand for "plot current command line" */
-		GMT_ps.unix_time_label[0] = 0;	/* Reset to 0 */
-		strcpy (label, argv[0]);
+		strcpy (GMT_ps.unix_time_label, argv[0]);
 		for (i = 1; i < argc; i++) {
 			if (argv[i][0] != '-') continue;	/* Skip file names */
-			strcat (label, " ");
-			strcat (label, argv[i]);
+			strcat (GMT_ps.unix_time_label, " ");
+			strcat (GMT_ps.unix_time_label, argv[i]);
 		}
-		strcpy (GMT_ps.unix_time_label, label);		/* Update unix label */
 	}
-	else if (GMT_ps.unix_time_label[0])	/* Use the -U supplied label */
-		strcpy (label, GMT_ps.unix_time_label);
-	if (GMT_ps.unix_time) GMT_timestamp (GMT_ps.unix_time_pos[0], GMT_ps.unix_time_pos[1], label);
+	if (GMT_ps.unix_time) GMT_timestamp (GMT_ps.unix_time_pos[0], GMT_ps.unix_time_pos[1], GMT_ps.unix_time_just, GMT_ps.unix_time_label);
 	if (eps->name) GMT_free ((void *)eps->name);
 	if (eps->title) GMT_free ((void *)eps->title);
 	if (eps) GMT_free ((void *)eps);
