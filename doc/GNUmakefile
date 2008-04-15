@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.18 2008-04-15 20:17:15 remko Exp $
+#	$Id: GNUmakefile,v 1.19 2008-04-15 20:21:30 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -181,7 +181,7 @@ $(EX_EPS) $(EX_EPS:.eps=.pdf):	../examples/ex01/example_01.ps
 
 # To convert EPS to PDF
 $(IS_EPS:.eps=.pdf) $(RGBEPS:.eps=.pdf):	%.pdf:	%.eps
-	ps2raster -P -Tf $?
+	ps2raster -P -Tf $*.eps
 
 # Graphics of Appendices F, J, N, O need special attention. One script makes several EPS and PDF files.
 $(APP_F_EPS) $(APP_F_EPS:.eps=.pdf):	scripts/GMT_App_F.sh
