@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.33 2008-03-24 08:58:31 guru Exp $
+ *	$Id: gmt_support.h,v 1.34 2008-04-15 15:44:44 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -56,7 +56,7 @@ EXTERN_MSC int GMT_getrose (char *text, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms);
 EXTERN_MSC int GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINE_SEGMENT *P);
 EXTERN_MSC int GMT_intpol (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, double *v, int mode);
-EXTERN_MSC int GMT_just_decode (char *key, int i, int j);
+EXTERN_MSC int GMT_just_decode (char *key, int def);
 EXTERN_MSC int GMT_log_array (double min, double max, double delta, double **array);
 EXTERN_MSC int GMT_minmaxinc_verify (double min, double max, double inc, double slop);
 EXTERN_MSC int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOLEAN return_mindist, double *dist_min, double *x_near, double *y_near);
