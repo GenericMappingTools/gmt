@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.250 2008-04-14 00:29:16 guru Exp $
+	$Id: ChangeLog,v 1.251 2008-04-15 08:43:27 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-14	pwessel
+	* psxy[z].c:	Drawing arrows with -SvS and time-coordinates did not work as 2nd time
+				coordinate did not get processed properly.
+
 2008-04-13	pwessel
 	* grdview.c:	THe facade (-N) outline was drawn with contour pen.  Now use -Wf to change
 					the facade pen from its default value.
