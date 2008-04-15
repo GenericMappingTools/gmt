@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-#	$Id: do_examples.csh,v 1.15 2008-04-15 19:08:50 remko Exp $
+#	$Id: do_examples.csh,v 1.16 2008-04-15 19:28:19 remko Exp $
 #
 # csh script to test all GMT examples (csh versions).
 # If one argument is passed it is assumed to be the
@@ -54,23 +54,16 @@ set dir = `which psxy`
 if ($status) exit 1
 echo "Running examples with executables from $dir" | sed s:/psxy\$::
 
-# Modify the system gmtdefaults file a bit
-
-gmtdefaults -Du > .gmtdefaults4
-gmtset PS_IMAGE_COMPRESS lzw
-
 # Loop over all examples and run each job
 
 foreach ex (ex??/job*.csh)
 	echo -n "Doing example $ex ... "
 	cd `dirname $ex`
-	\cp -f ../.gmtdefaults4 .
+	gmtdefaults -Du > .gmtdefaults4
 	csh -f `basename $ex`
 	\rm -f .gmtdefaults4 .gmtcommands4
 	cd ..
 	echo "done"
 end
-
-\rm -f .gmtdefaults4
 
 echo "Completed all examples"
