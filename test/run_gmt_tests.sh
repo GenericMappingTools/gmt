@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: run_gmt_tests.sh,v 1.11 2008-04-04 16:40:06 remko Exp $
+#	$Id: run_gmt_tests.sh,v 1.12 2008-04-15 19:33:27 remko Exp $
 #
 #	test script for GMT/test directory
 #
@@ -35,7 +35,8 @@ for dir in $dirs; do
 	if [ -s /tmp/$$.lis ]; then	# Found Bourne shell scripts
 		rm -f /tmp/$$.lis
 		for script in *.sh; do
-			cp -f $here/.gmtdefaults_test .gmtdefaults4
+			gmtdefaults -Du > .gmtdefaults4
+			gmtset PAPER_MEDIA letter
 			sh $script
 		done
 	fi
