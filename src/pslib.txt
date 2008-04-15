@@ -425,7 +425,7 @@ faster.
 more than 1 copy.  \fIdpi\fP sets the hardcopy resolution in dots pr units.  For optimum plot
 quality and processing speed, choose \fIdpi\fP to match the intended plotter resolution.  Examples are
 300 for most laserwriters, 2540 for Linotype-300, and ~85 for Sun screens.  When in
-doubt, use 300.  \fIunit\fP can be any of 0 (CM), 1 (INCH), or 2 (M), telling the plot system
+doubt, use 300.  \fIunit\fP can be any of 0 (cm), 1 (inch), or 2 (m), telling the plot system
 what units are used for distance and sizes.  Note that, regardless of choice of unit, dpi is still in
 dots-pr-inch.  \fIpagesize\fP means the physical width and height of the plotting media in points, (typically 612 by 792 for
 Letter or 595 by 842 for A4 laserwriter plotters.  The \fIrgb\fP array holds the color of the page (usually white = 255,255,255).

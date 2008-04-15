@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.170 2008-04-04 21:22:22 remko Exp $
+ *	$Id: pslib.c,v 1.171 2008-04-15 13:36:16 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1412,7 +1412,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.14 ");
+		ps_bulkcopy ("PSL_prologue", "v 1.15 ");
 		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Place code for reencoding of fonts and initialize book-keeping */
@@ -1812,22 +1812,22 @@ void ps_setpaint_ (int *rgb)
 
 void ps_textbox (double x, double y, double pointsize, char *text, double angle, int justify, int outline, double dx, double dy, int rgb[])
 {
-/* x,y = location of string
- * pointsize = fontsize in points
- * text = text to be boxed in
- * angle = angle with baseline (horizontal)
- * justify indicates what x,y refers to, see fig below
- * outline = TRUE if we should draw box outline
- * dx, dy = Space between box border and text, in inches
- * rgb = fill color
- *
- *
- *   9       10      11
- *   |----------------|
- *   5  <textstring>  7
- *   |----------------|
- *   1       2        3
- */
+	/* x,y = location of string
+	 * pointsize = fontsize in points
+	 * text = text to be boxed in
+	 * angle = angle with baseline (horizontal)
+	 * justify indicates what x,y refers to, see fig below
+	 * outline = TRUE if we should draw box outline
+	 * dx, dy = Space between box border and text, in inches
+	 * rgb = fill color
+	 *
+	 *
+	 *   9       10      11
+	 *   |----------------|
+	 *   5  <textstring>  7
+	 *   |----------------|
+	 *   1       2        3
+	 */
 	char *string, align[3][10] = {"0", "2 div neg", "neg"};
 	int i = 0, pmode, j, h_just, v_just, rounded;
 
@@ -1868,7 +1868,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 
 	if (angle != 0.0) fprintf (PSL->internal.fp, "%.3g R ", angle);
 	if (justify > 1) {	/* Move the new origin so (0,0) is lower left of box */
-		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
+		h_just = (justify + 3) % 4;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
 		(h_just) ? fprintf (PSL->internal.fp, "PSL_dimx_ur PSL_dimx_ll sub %s ", align[h_just]) : fprintf (PSL->internal.fp, "0 ");
 		(v_just) ? fprintf (PSL->internal.fp, "PSL_dimy_ur PSL_dimy_ll sub %s ", align[v_just]) : fprintf (PSL->internal.fp, "0 ");
@@ -1940,9 +1940,9 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 
 	if (!strchr (string, '@')) {	/* Plain text string */
 		if (key == 0)
-			fprintf (PSL->internal.fp, "0 0 M %ld F%d (%s) E /%s exch def bby /%s exch def\n", (PS_LONG) irint (height * PSL->internal.scale), PSL->current.font_no, string, xdim, ydim);
+			fprintf (PSL->internal.fp, "0 0 M %ld F%d (%s) E /%s exch def YP /%s exch def\n", (PS_LONG) irint (height * PSL->internal.scale), PSL->current.font_no, string, xdim, ydim);
 		else
-			fprintf (PSL->internal.fp, "0 0 M %ld F%d (%s) tcf pathbbox N /%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n" , (PS_LONG) irint (height * PSL->internal.scale), PSL->current.font_no, string, ydim, xdim, ydim, xdim);
+			fprintf (PSL->internal.fp, "0 0 M %ld F%d (%s) FP pathbbox N /%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n" , (PS_LONG) irint (height * PSL->internal.scale), PSL->current.font_no, string, ydim, xdim, ydim, xdim);
 		ps_free ((void *)string);
 		return;
 	}
@@ -1971,7 +1971,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 	ptr = strtok (tempstring, "@");
 	fprintf (PSL->internal.fp, "N 0 0 m ");	/* Initialize currentpoint */
 	if(string[0] != '@') {
-		fprintf (PSL->internal.fp, "%ld F%d (%s) tcf ", (PS_LONG)irint (size*PSL->internal.scale), font, ptr);
+		fprintf (PSL->internal.fp, "%ld F%d (%s) FP ", (PS_LONG)irint (size*PSL->internal.scale), font, ptr);
 		ptr = strtok ((char *)NULL, "@");
 	}
 
@@ -2043,7 +2043,7 @@ void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *te
 		}
 		else	/* Not recognized or @@ for a single @ */
 			strcpy (piece, ptr);
-		if (strlen (piece) > 0) fprintf (PSL->internal.fp, "%ld F%d (%s) tcf ", (PS_LONG)irint (size*PSL->internal.scale), font, piece);
+		if (strlen (piece) > 0) fprintf (PSL->internal.fp, "%ld F%d (%s) FP ", (PS_LONG)irint (size*PSL->internal.scale), font, piece);
 		ptr = strtok ((char *)NULL, "@");
 	}
 
