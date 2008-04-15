@@ -1,23 +1,41 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.251 2008-04-15 08:43:27 guru Exp $
+	$Id: ChangeLog,v 1.252 2008-04-15 16:05:12 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-04-15	remko
+	* pslib.c, PSL_prologue.ps:	Renamed a few PostScript commands.
+	* gmt_support.c (GMT_just_decode):	Bug fix: was defaulting to BC, instead of BL.
+				Also reduced to two arguments (second being default justification).
+	* ps{image,legend}.c:	Reduced arguments in GMT_just_decode.
+	* ps{scale,text}.c:	---"---
+	* gmt_support.h:	---"---
+	* gmt_plot.[ch] (GMT_timestamp):	Added "justify" argument to specify justification of
+				the time stamp box. Provided by gmtdefaults or -U option.
+	* gmt_init.c:		Added justification to GMT_UNIX_POS. Is now <just>/<dx>/<dy>.
+				Also added <just> to -U option parsing.
+				Fully backwards compatible with previous versions (default just=BL).
+	* gmtdefaults.txt:	---"---
+	* explain_-U.txt:	---"---
+	* common_options.txt:	---"---
+	* gmt{,_globals,_common.h}:	---"---
+	* .gmtdefaults_*.orig:	---"---
+
 2008-04-14	pwessel
-	* psxy[z].c:	Drawing arrows with -SvS and time-coordinates did not work as 2nd time
+	* psxy[z].c:		Drawing arrows with -SvS and time-coordinates did not work as 2nd time
 				coordinate did not get processed properly.
 
 2008-04-13	pwessel
-	* grdview.c:	THe facade (-N) outline was drawn with contour pen.  Now use -Wf to change
-					the facade pen from its default value.
+	* grdview.c:		The facade (-N) outline was drawn with contour pen.  Now use -Wf to change
+				the facade pen from its default value.
 2008-04-11	pwessel
 	* x2sys/x2sys_binlist.c:	Could create bad bins because of incorrect reallocation of memory.
-	* mex/*.c:	No longer need to include matrix.h separately.  This helps octave compilation.
+	* mex/*.c:		No longer need to include matrix.h separately.  This helps octave compilation.
 
 2008-04-09	remko
-	* gmt_init.c:		Added new gmtdefaults value UNIX_TIME_FORMAT, which sets the format for
+	* gmt_init.c (GMT_timestamp):	Added new gmtdefaults value UNIX_TIME_FORMAT, which sets the format for
 				the time string in the GMT time stamp (-U option). The default is
 				"%Y %b %d %H:%M:%S", which is what was printed up to now, except that
 				%e (which is not supported by ISO C90) is replaced by %d.
-	* gmt_defaults.txt:	---"---
+	* gmtdefaults.txt:	---"---
 	* gmt{,_globals.h}:	---"---
 	* gmtdefaults_*.orig:	---"---
 	* gmt_plot.c:		Use gmtdefs.unix_time_format to format the time stamp. This also requires
