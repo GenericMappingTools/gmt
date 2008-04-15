@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.17 2008-04-15 19:27:03 remko Exp $
+#	$Id: GNUmakefile,v 1.18 2008-04-15 20:17:15 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -153,7 +153,7 @@ clean:
 	\rm -f *% .gmt*
 	\rm -f *.aux *.lot *.lof *.toc *.pdf *.out *.dvi *.ind *.ilg *.idx *.log *.ps *.eps
 	\rm -f GMT_Appendix_N_inc.tex
-	\rm -f scripts/*.{tex,eps,pdf,csh,ps} scripts/sqrt.d* scripts/.gmtdefaults4 scripts/.gmtcommands4
+	\rm -f scripts/*.{tex,eps,pdf,csh,ps} scripts/sqrt.d* scripts/.gmtdefaults4* scripts/.gmtcommands4
 	\rm -f scripts/example_*.sh scripts/volcano.sh scripts/bullseye.sh
 	\rm -f fig/*.pdf
 	\rm -rf GMT_Docs GMT_Tutorial
@@ -196,21 +196,17 @@ $(APP_N_EPS) $(APP_N_EPS:.eps=.pdf) GMT_Appendix_N_inc.tex:	scripts/GMT_App_N.sh
 $(APP_O_EPS) $(APP_O_EPS:.eps=.pdf):	scripts/GMT_App_O.sh $(APP_O_EPS:.eps=.sh)
 	$(MAKE) APP=O run_app
 
-run_app:	scripts/.gmtdefaults4.doc
+run_app:
 	cd scripts ; cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C sh GMT_App_$(APP).sh
 	ps2raster -A -P -Tef scripts/GMT_App_$(APP)_*.ps
 	\rm -f scripts/GMT_App_$(APP)_*.ps
 
-scripts/.gmtdefaults4.doc:	../share/conf/.gmtdefaults_US
-	gmtdefaults -Du > $@
-	gmtset -G$@ ANNOT_FONT_SIZE_PRIMARY 10p ANNOT_FONT_SIZE_SECONDARY 14p LABEL_FONT_SIZE 14p FRAME_WIDTH 0.05i CHAR_ENCODING ISOLatin1+
-
 # The RGB prints should not be cropped.
-$(RGBEPS):	scripts/GMT_RGBchart.sh scripts/.gmtdefaults4.doc
+$(RGBEPS):	scripts/GMT_RGBchart.sh
 	cd scripts ; cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C sh GMT_RGBchart.sh $(word 3,$(subst _, ,$*))
 
 # How to run the scripts in the scripts directory to make EPS and PDF files
-.sh.eps .sh.pdf:	scripts/.gmtdefaults4.doc
+.sh.eps .sh.pdf:
 	cd scripts ; cp -f .gmtdefaults4.doc .gmtdefaults4 ; LANG=C sh ../$*.sh
 	ps2raster -A -P -Tef $*.ps
 	\rm -f $*.ps
@@ -222,6 +218,12 @@ $(SCRTEX) $(DOCEPS1:.eps=.tex):	%.tex:	%.sh
 # Keep the comments in the examples, but remove CVS tag.
 $(EX_TEX):	%.tex:	%.sh
 	pr -t -e $*.sh | egrep -v 'Id:' > $*.tex
+
+# Make sure gmtdefaults file is created afresh
+$(DOCEPS) $(DOCPDF) $(TUTEPS) $(TUTPDF):	scripts/.gmtdefaults4.doc
+scripts/.gmtdefaults4.doc:	../share/conf/.gmtdefaults_US
+	gmtdefaults -Du > $@
+	gmtset -G$@ ANNOT_FONT_SIZE_PRIMARY 10p ANNOT_FONT_SIZE_SECONDARY 14p LABEL_FONT_SIZE 14p FRAME_WIDTH 0.05i CHAR_ENCODING ISOLatin1+
 
 # Additional dependency for some graphs
 $(SQRT_EPS) $(SQRT_EPS:.eps=.pdf):	scripts/sqrt.d scripts/sqrt.d10
