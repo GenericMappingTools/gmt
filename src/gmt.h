@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.167 2008-04-09 18:07:54 remko Exp $
+ *	$Id: gmt.h,v 1.168 2008-04-15 15:55:29 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -353,6 +353,7 @@ struct GMT_DEFAULTS {
 	double tick_length;		/* Length of tickmarks [0.075] */
 	struct GMT_PEN tick_pen;	/* Pen attributes for tickmarks [2] */
 	BOOLEAN unix_time;		/* Plot time and map projection on map [FALSE] */
+	int unix_time_just;		/* Justification of the GMT timestamp box [1 (BL)] */
 	double unix_time_pos[2];	/* Where to plot timestamp relative to origin */
 	char unix_time_format[GMT_LONG_TEXT];	/* Specify the format for writing time stamps (see strftime) */
 	double vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
@@ -424,7 +425,8 @@ struct GMT_PS {	/* Holds the current settings that affect PS generation */
 	int miter_limit;			/* 0-180 degrees as whole integer */
 	int dpi;				/* Plotter resolution in dots-per-inch */
 	int paper_width[2];			/* Physical width and height of paper used in points */
-	int page_rgb[3];			/* array with Color of page (paper) */
+	int page_rgb[3];			/* Array with Color of page (paper) */
+	int unix_time_just;			/* Justification of the GMT time stamp box */
 	double x_origin, y_origin;		/* Result of -X -Y [gmtdefs.x|y_origin] */
 	double x_scale, y_scale;		/* Copy of gmtdefs.global_x|y_scale */
 	double unix_time_pos[2];		/* Result of -U [gmtdefs.unix_time_pos] */
