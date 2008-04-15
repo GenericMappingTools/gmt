@@ -1,5 +1,4 @@
 examples/README.SCRIPTS
-examples/.gmtdefaults4.doc
 examples/do_examples.sh
 examples/do_examples.csh
 examples/do_examples.bat
