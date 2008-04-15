@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.363 2008-04-04 21:06:19 guru Exp $
+ *	$Id: gmt_support.c,v 1.364 2008-04-15 15:44:44 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2566,7 +2566,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 
 			case 'j':	/* Justification specification */
 				txt_a[0] = p[1];	txt_a[1] = p[2];	txt_a[2] = '\0';
-				G->just = GMT_just_decode (txt_a, 2, 4);
+				G->just = GMT_just_decode (txt_a, 6);
 				break;
 
 			case 'k':	/* Font color specification */
@@ -6047,13 +6047,17 @@ double GMT_get_map_interval (int axis, int item) {
 	}
 }
 
-int GMT_just_decode (char *key, int i, int j)
+int GMT_just_decode (char *key, int def)
 {
-	int k;
-	/* i and j holds the default values - give -1 if they must be overridden */
+	/* Converts justification info (key) like BL (bottom left) to justification indices
+	 * def = default value.
+	 * When def % 4 = 0, horizontal position must be specified
+	 * When def / 4 = 3, vertical position must be specified
+	 */
+	int i, j, k;
 
-	/* Converts justification info like LL (lower left) to justification indices */
-
+	i = def % 4;
+	j = def / 4;
 	for (k = 0; k < (int)strlen (key); k++) {
 		switch (key[k]) {
 			case 'b':	/* Bottom baseline */
@@ -6062,11 +6066,11 @@ int GMT_just_decode (char *key, int i, int j)
 				break;
 			case 'm':	/* Middle baseline */
 			case 'M':
-				j = 4;
+				j = 1;
 				break;
 			case 't':	/* Top baseline */
 			case 'T':
-				j = 8;
+				j = 2;
 				break;
 			case 'l':	/* Left Justified */
 			case 'L':
@@ -6085,16 +6089,16 @@ int GMT_just_decode (char *key, int i, int j)
 		}
 	}
 
-	if (i < 0) {
+	if (i == 0) {
 		fprintf (stderr, "%s: Horizontal text justification not set, defaults to L(eft)\n", GMT_program);
 		i = 1;
 	}
-	if (j < 0) {
+	if (j == 3) {
 		fprintf (stderr, "%s: Vertical text justification not set, defaults to B(ottom)\n", GMT_program);
-		j = 1;
+		j = 0;
 	}
 
-	return (j + i);
+	return (j * 4 + i);
 }
 
 void GMT_smart_justify (int just, double angle, double dx, double dy, double *x_shift, double *y_shift)
