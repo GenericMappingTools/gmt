@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.14 2007-11-14 00:31:53 guru Exp $
+%-	$Id: PSL_prologue.ps,v 1.15 2008-04-15 13:36:16 remko Exp $
 % Begin pslib header
 250 dict begin
 /A /setgray load def
@@ -24,6 +24,8 @@
 /W /setlinewidth load def
 /Y {findfont exch scalefont setfont} bind def
 /Z /show load def
+/FP {true charpath flattenpath} bind def
+/YP {FP pathbbox N exch pop sub abs exch pop} bind def
 % Point
 /O {M W 0 0 D S} bind def
 % Cross
@@ -111,6 +113,4 @@
 /WA {arc QA} bind def /Wa {arc Qa} bind def /WC {arc QC} bind def /Wc {arc Qc} bind def
 /WK {arc QK} bind def /Wk {arc Qk} bind def /WH {arc QH} bind def /Wh {arc Qh} bind def
 /WI {arc QI} bind def /Wi {arc Qi} bind def /WQ {arc QQ} bind def
-/bby {tcf pathbbox N exch pop sub abs exch pop} bind def
-/tcf {true charpath flattenpath} bind def
 
