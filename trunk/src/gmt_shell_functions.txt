@@ -41,7 +41,7 @@ do some scripting more easily than otherwise. The functions made available are:
 Creates a temporary directory in \fB/tmp\fP or (when defined) in the directory specified by the
 environment variable \fBTMPDIR\fP. The name of the temporary directory is returned as environment
 variable \fBGMT_TMPDIR\fP. This function also causes \fBGMT\fP to run in `isolation mode', i.e. all
-temporary files will be created in \fBGMT_TMPDIR\fP and the .gmtdefaults file will not be adjusted.
+temporary files will be created in \fBGMT_TMPDIR\fP and the \.gmtdefaults file will not be adjusted.
 .TP
 .B gmt_remove_tmpdir
 Removes the temporary directory and unsets the \fBGMT_TMPDIR\fP environment variable.
