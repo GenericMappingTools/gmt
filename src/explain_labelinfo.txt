@@ -21,7 +21,7 @@ Selects opaque text boxes [Default is transparent]; optionally specify the color
 (See SPECIFYING COLOR below).
 .TP
 \fB+j\fP\fIjust\fP
-Sets label justification [Default is CM].  Ignored when -SqN|n+|-1 is used.
+Sets label justification [Default is MC].  Ignored when -SqN|n+|-1 is used.
 .TP
 \fB+k\fP\fIcolor\fP
 Sets color of text labels [Default is \fBCOLOR_BACKGROUND\fP].

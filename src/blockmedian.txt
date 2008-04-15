@@ -14,7 +14,7 @@ defined by the OPT(R) and OPT(I) arguments.  Either \fBblockmean\fP, \fBblockmed
 or \fBblockmode\fP should be used as a pre-processor before running \fBsurface\fP to
 avoid aliasing short wavelengths.  These routines are also generally useful for
 decimating or averaging (\fIx,y,z\fP) data.  You can modify the precision of the output
-format by editing the \fBD_FORMAT\fP parameter in your .gmtdefaults4 file, or
+format by editing the \fBD_FORMAT\fP parameter in your \.gmtdefaults4 file, or
 you may choose binary input and/or output using single or double precision storage.
 .TP
 \fIxyz[w]file(s)\fP

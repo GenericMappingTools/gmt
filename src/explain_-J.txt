@@ -4,7 +4,7 @@ Selects the map projection. The following character determines the projection. I
 character is upper case then the argument(s) supplied as scale(s) is interpreted to be
 the map width (or axis lengths), else the scale argument(s) is the map scale (see its
 definition for each projection). UNIT is cm, inch, or m, depending on the \fBMEASURE_UNIT\fP
-setting in .gmtdefaults4, but this can be overridden on the command line by appending
+setting in \.gmtdefaults4, but this can be overridden on the command line by appending
 \fBc\fP, \fBi\fP, or \fBm\fP to the \fIscale\fP or \fIwidth\fP values.  Append \fBh\fP, \fB+\fP, or \fB-\fP
 to the given \fIwidth\fP if you instead want to set map height, the maximum dimension, or
 the minimum dimension, respectively [Default is \fBw\fP for width].
@@ -13,10 +13,10 @@ In case the central meridian is an optional parameter and it is being omitted, t
 center of the longitude range given by the OPT(R) option is used. The default standard parallel
 is the equator.
 .br
-The ellipsoid used in the map projections is user-definable by editing the .gmtdefaults4 file
+The ellipsoid used in the map projections is user-definable by editing the \.gmtdefaults4 file
 in your home directory. 63 commonly used ellipsoids and a spheroid are currently
-supported, and users may also specify their own ellipsoid parameters (see man gmtdefaults for more details).
-\fBGMT\fP default is WGS-84. Several GMT parameters can affect the projection: \fBELLIPSOID\fP, \fBINTERPOLANT\fP,
+supported, and users may also specify their own ellipsoid parameters [Default is WGS-84].
+Several GMT parameters can affect the projection: \fBELLIPSOID\fP, \fBINTERPOLANT\fP,
 \fBMAP_SCALE_FACTOR\fP, and \fBMEASURE_UNIT\fP; see the \fBgmtdefaults\fP man page for details.
 .br
 Choose one of the following projections (The \fBE\fP or \fBC\fP after projection names
@@ -205,7 +205,7 @@ Give the central meridian \fIlon0\fP (optional) and \fIscale\fP along equator (\
 .TP
 \fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP][\fBr\fP|\fBz\fP] or \fB\-JP\fP[\fBa\fP]\fIwidth\fP[\fI/origin\fP][\fBr\fP|\fBz\fP] (Polar coordinates (theta,r))
 Optionally insert \fBa\fP after \fB\-Jp\fP [ or \fB\-JP\fP] for
-azimuths CW from North instead of directions CCW from East [default].
+azimuths CW from North instead of directions CCW from East [Default].
 Optionally append /\fIorigin\fP in degrees to indicate an angular offset [0]).
 Finally, append \fBr\fP if r is elevations in degrees (requires s >= 0 and n <= 90)
 or \fBz\fP if you want to annotate depth rather than radius [Default].
@@ -235,11 +235,9 @@ Input coordinates are time relative to \fBTIME_EPOCH\fP.
 .B T
 Input coordinates are absolute time.
 .PP
-Default axis lengths (see gmtdefaults) can be invoked
+Default axis lengths (see \fBgmtdefaults\fP) can be invoked
 using \fB\-JXh\fP (for landscape); \fB\-JXv\fP (for portrait) will swap the x- and y-axis lengths.
-The \fBGMT\fP default unit for this installation is either cm or inch, as defined in the file
-share/gmt.conf. However, you may
-change this by editing your .gmtdefaults4 file(s) (run gmtdefaults to create one
-if you do not have it).
+The default unit for this installation is either cm or inch, as defined in the file
+share/gmt.conf. However, you may change this by editing your \.gmtdefaults4 file(s).
 .RE
 .RE

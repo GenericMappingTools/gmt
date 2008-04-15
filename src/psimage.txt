@@ -42,7 +42,7 @@ No space between the option flag and the associated arguments.
 Sets position of the image in plot coordinates (inches, cm, etc.) from the current origin
 of the plot.
 By default, this defines the position of the lower left corner
-of the image, but this can be changed by specifying justification [0/0/LB].
+of the image, but this can be changed by specifying justification [0/0/BL].
 .TP
 .B \-F
 Draws a rectangular frame around the image with the given pen [no frame].
