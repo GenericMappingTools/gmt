@@ -18,12 +18,12 @@ and the NaN color (N) painted whereever values are undefined.
 .br
 If the master cpt file includes B, F, and N entries, these will be copied into the new master file.
 If not, the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP from
-the .gmtdefaults4 file or the command line will be used. This default behavior can be overruled
+the \.gmtdefaults4 file or the command line will be used. This default behavior can be overruled
 using the options OPT(D), OPT(M) or OPT(N).
 .br
 The color model (RGB, HSV or CMYK) of the palette created by \fBmakecpt\fP will be the same as
 specified in the header of the master cpt file. When there is no \fBCOLOR_MODEL\fP entry in the
-master cpt file, the \fBCOLOR_MODEL\fP specified in the .gmtdefaults4 file or on the command line
+master cpt file, the \fBCOLOR_MODEL\fP specified in the \.gmtdefaults4 file or on the command line
 will be used.
 .SH OPTIONS
 .TP
@@ -46,7 +46,7 @@ the parameters \fBCOLOR_BACKGROUND\fP and \fBCOLOR_FOREGROUND\fP.
 .B \-M
 Overrule background, foreground, and NaN colors specified in the master cpt file with the values of
 the parameters \fBCOLOR_BACKGROUND\fP, \fBCOLOR_FOREGROUND\fP, and \fBCOLOR_NAN\fP specified in
-the .gmtdefaults4 file or on the command line.
+the \.gmtdefaults4 file or on the command line.
 When combined with OPT(D), only \fBCOLOR_NAN\fP is considered.
 .TP
 .B \-N
