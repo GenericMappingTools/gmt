@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.7 2008-01-23 03:22:48 guru Exp $
+ *	$Id: gmt_common.h,v 1.8 2008-04-15 16:02:38 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -20,8 +20,8 @@
  * Holds current selections for the family of common GMT options.
  *
  * Author: Paul Wessel
- * Date:	17-OCT-2006
- * Version:	4.1.4
+ * Date:	16-APR-2006
+ * Version:	4.3.0
  */
  
 #ifndef _GMT_COMMON_H
@@ -60,6 +60,7 @@ struct GMT_COMMON {
 	} R;
 	struct U {	/* [9]  -U */
 		BOOLEAN active;
+		int just;
 		double x, y;
 		char *label;	
 	} U;
