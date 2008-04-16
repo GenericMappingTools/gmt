@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.222 2008-04-15 15:59:38 remko Exp $
+ *	$Id: gmt_plot.c,v 1.223 2008-04-16 03:01:00 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2428,9 +2428,13 @@ void GMT_timestamp (double x, double y, int justify, char *U_label)
 	ps_transrotate (x, y, 0.0);
 	ps_setline (1);
 	ps_setfont (0);
-	ps_set_length ("PSL_bx0", dim[0]);	/* Size of [GMT] box */
+	ps_set_length ("PSL_bx0", dim[0]);	/* Size of the black [GMT] box */
 	ps_set_length ("PSL_by0", dim[1]);
-	ps_textdim ("PSL_bx1", "PSL_by1", 8.0, 0, label, 0);	/* Size of [timestamp] box (use only length) */
+	ps_textdim ("PSL_bx1", "PSL_by1", 8.0, 0, label, 0);	/* Size of the white [timestamp] box (use only length) */
+	
+	/* When justification is not BL (justify == 1), add some PostScript code to move to the
+	   location where the lower left corner of the time stamp box is to be drawn */
+
 	switch ((justify + 3) % 4) {
 		case 1:	/* Center */
 			ps_command ("PSL_bx0 PSL_bx1 add 2 div neg 0 T"); break;
@@ -2443,16 +2447,22 @@ void GMT_timestamp (double x, double y, int justify, char *U_label)
 		case 2: /* Top justify */
 			ps_command ("0 PSL_by0 neg T"); break;
 	}
+
+	/* Now draw black box with GMT logo, and white box with time stamp */
+
 	ps_rect (0.0, 0.0, dim[0], dim[1], gmtdefs.background_rgb, TRUE);
 	ps_image (0.0, 0.0, dim[0], dim[1], GMT_glyph, 220, 90, 1);
 	ps_command ("1 PSL_by0 PSL_bx1 PSL_bx0 0 Ba");
 	ps_text (dim[0], dim[2], 8.0, label, 0.0, 1, 0);
+
+	/* Optionally, add additional label to the right of the box */
 
 	if (U_label && U_label[0]) {
 		ps_setfont (1);
 		sprintf (label, "   %s", U_label);
 		ps_text (0.0, 0.0, -7.0, label, 0.0, 1, 0);
 	}
+
 	ps_command ("U\n% End GMT time-stamp");
 }
 
@@ -2465,7 +2475,7 @@ void GMT_echo_command (int argc, char **argv)
 	int i, length = 0;
 	char outstring[BUFSIZ];
 
-	ps_command ("%% PostScript produced by:");
+	ps_command ("\n%% PostScript produced by:");
 	strcpy (outstring, "%%GMT:  ");
 	for (i = 0; i < argc; i++) {
 		strcat (outstring, argv[i]);
@@ -2480,7 +2490,6 @@ void GMT_echo_command (int argc, char **argv)
 	}
 	outstring[length+7]=0;
 	if (length > 0) ps_command (outstring);
-	ps_command ("");
 }
 
 void GMT_plot_line (double *x, double *y, int *pen, GMT_LONG n)
