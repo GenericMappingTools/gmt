@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_synopsis.h,v 1.4 2008-03-24 15:35:34 remko Exp $
+ *	$Id: gmt_synopsis.h,v 1.5 2008-04-16 02:57:35 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,7 +43,7 @@
 #define GMT_Rx_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[r]"
 #define GMT_M_OPT	"-M[i|o][<flag>]"
 #define GMT_Mo_OPT	"-M[<flag>]"
-#define GMT_U_OPT	"-U[/<dx>/<dy>][<label>]"
+#define GMT_U_OPT	"-U[<just>/<dx>/<dy>/][c|<label>]"
 #define GMT_X_OPT	"-X[a|c|r]<x_shift>[u]"
 #define GMT_Y_OPT	"-Y[a|c|r]<x_shift>[u]"
 #define GMT_c_OPT	"-c<ncopies>"
