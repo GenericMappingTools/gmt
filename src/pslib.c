@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.171 2008-04-15 13:36:16 remko Exp $
+ *	$Id: pslib.c,v 1.172 2008-04-16 03:00:06 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1849,9 +1849,9 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 		justify = -justify;
 	}
 
-	if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+	if (pointsize < 0.0) fprintf (PSL->internal.fp, "currentpoint /PSL_save_y exch def /PSL_save_x exch def\n");	/* Must save the current point since ps_textdim will destroy it */
 	ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), PSL->current.font_no, &text[i], 1);			/* Set the string BB dimensions in PS */
-	if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+	if (pointsize < 0.0) fprintf (PSL->internal.fp, "PSL_save_x PSL_save_y m\n");					/* Reset to the saved current point */
 	ps_set_length ("PSL_dx", dx);
 	ps_set_length ("PSL_dy", dy);
 	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
@@ -2103,9 +2103,9 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	}
 
 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
-		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
+		if (pointsize < 0.0) fprintf (PSL->internal.fp, "currentpoint /PSL_save_y exch def /PSL_save_x exch def\n");	/* Must save the current point since ps_textdim will destroy it */
 		ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), PSL->current.font_no, &text[i], 0);			/* Set the string dimensions in PS */
-		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+		if (pointsize < 0.0) fprintf (PSL->internal.fp, "PSL_save_x PSL_save_y m\n");					/* Reset to the saved current point */
 	}
 
 	string = ps_prepare_text (&text[i]);	/* Check for escape sequences */
@@ -2366,9 +2366,9 @@ void ps_textpath (double x[], double y[], PS_LONG n, PS_LONG node[], double angl
 		ps_set_length ("PSL_gap_x", offset[0]);
 		ps_set_length ("PSL_gap_y", offset[1]);
 		if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
-			if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
-			ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), PSL->current.font_no, label[0], 0);		/* Set the string dimensions in PS */
-			if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+			if (pointsize < 0.0) fprintf (PSL->internal.fp, "currentpoint /PSL_save_y exch def /PSL_save_x exch def\n");	/* Must save the current point since ps_textdim will destroy it */
+			ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), PSL->current.font_no, label[0], 0);			/* Set the string dimensions in PS */
+			if (pointsize < 0.0) fprintf (PSL->internal.fp, "PSL_save_x PSL_save_y m\n");					/* Reset to the saved current point */
 		}
 		fprintf (PSL->internal.fp, "%ld F%d\n", (PS_LONG) irint ((fabs (pointsize) / PSL->internal.points_pr_unit) * PSL->internal.scale), PSL->current.font_no);	/* Set font */
 	}
@@ -2452,9 +2452,9 @@ void ps_textclip (double x[], double y[], PS_LONG m, double angle[], char *label
 	ps_set_length ("PSL_gap_y", offset[1]);
 
 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
-		if (pointsize < 0.0) ps_command ("currentpoint /PSL_save_y exch def /PSL_save_x exch def");	/* Must save the current point since ps_textdim will destroy it */
-		ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), PSL->current.font_no, label[0], 0);		/* Set the string dimensions in PS */
-		if (pointsize < 0.0) ps_command ("PSL_save_x PSL_save_y m");					/* Reset to the saved current point */
+		if (pointsize < 0.0) fprintf (PSL->internal.fp, "currentpoint /PSL_save_y exch def /PSL_save_x exch def\n");	/* Must save the current point since ps_textdim will destroy it */
+		ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), PSL->current.font_no, label[0], 0);			/* Set the string dimensions in PS */
+		if (pointsize < 0.0) fprintf (PSL->internal.fp, "PSL_save_x PSL_save_y m\n");					/* Reset to the saved current point */
 	}
 
 	fprintf (PSL->internal.fp, "%ld F%d\n", (PS_LONG) irint ((fabs (pointsize) / PSL->internal.points_pr_unit) * PSL->internal.scale), PSL->current.font_no);	/* Set font */
