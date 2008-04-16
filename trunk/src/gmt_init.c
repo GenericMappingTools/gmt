@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.343 2008-04-15 15:51:41 remko Exp $
+ *	$Id: gmt_init.c,v 1.344 2008-04-16 02:58:24 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -179,7 +179,11 @@ void GMT_explain_option (char option)
 	 * the variable <option>.  Only the common parameter options are covered
 	 */
 
-	char *GMT_choice[2] = {"OFF", "ON"};
+	char u, *GMT_choice[2] = {"OFF", "ON"};
+	double s;
+
+	u = GMT_unit_names[gmtdefs.measure_unit][0];
+	s = GMT_u2u[GMT_INCH][gmtdefs.measure_unit];	/* Convert from internal inch to users unit */
 
 	switch (option) {
 
@@ -246,8 +250,7 @@ void GMT_explain_option (char option)
 
 		case 'H':	/* Header */
 
-			fprintf (stderr, "\t-H[i][n_rec] means input/output file has %d Header record(s) [%s]\n",
-				gmtdefs.n_header_recs, GMT_choice[gmtdefs.io_header[GMT_IN]]);
+			fprintf (stderr, "\t-H[i][n_rec] means input/output file has %d Header record(s) [%s]\n", gmtdefs.n_header_recs, GMT_choice[gmtdefs.io_header[GMT_IN]]);
 			fprintf (stderr, "\t   Optionally, append i for input only and/or number of header records\n");
 			break;
 
@@ -340,7 +343,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t       Specify region in oblique degrees OR use -R<>r\n");
 
 			fprintf (stderr, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scale|width> (Equidistant Cylindrical)\n");
-			fprintf (stderr, "\t     Give central meridian (opt), standard parallel (opt), and scale");
+			fprintf (stderr, "\t     Give central meridian (opt), standard parallel (opt), and scale\n");
 			fprintf (stderr, "\t     <lat0> = 61.7 (Min. linear distortion), 50.5 (R. Miller equirectangular),\n");
 			fprintf (stderr, "\t     45 (Gall isographic), 43.5 (Min. continental distortion), 42 (Grafarend & Niermann),\n");
 			fprintf (stderr, "\t     37.5 (Min. overall distortion), 0 (Plate Carree)\n");
@@ -452,8 +455,7 @@ void GMT_explain_option (char option)
 
 		case 'K':	/* Append-more-PostScript-later */
 
-			fprintf (stderr, "\t-K means allow for more plot code to be appended later [%s].\n",
-				GMT_choice[!GMT_ps.last_page]);
+			fprintf (stderr, "\t-K means allow for more plot code to be appended later [%s].\n", GMT_choice[!GMT_ps.last_page]);
 			break;
 
 		case 'M':	/* Multisegment option */
@@ -465,14 +467,12 @@ void GMT_explain_option (char option)
 
 		case 'O':	/* Overlay plot */
 
-			fprintf (stderr, "\t-O means Overlay plot mode [%s].\n",
-				GMT_choice[GMT_ps.overlay]);
+			fprintf (stderr, "\t-O means Overlay plot mode [%s].\n", GMT_choice[GMT_ps.overlay]);
 			break;
 
 		case 'P':	/* Portrait or landscape */
 
-			fprintf (stderr, "\t-P means Portrait page orientation [%s].\n",
-				GMT_choice[GMT_ps.portrait]);
+			fprintf (stderr, "\t-P means Portrait page orientation [%s].\n", GMT_choice[GMT_ps.portrait]);
 			break;
 
 		case 'R':	/* Region option */
@@ -496,10 +496,8 @@ void GMT_explain_option (char option)
 		case 'U':	/* Plot time mark and [optionally] command line */
 
 			fprintf (stderr, "\t-U to plot Unix System Time stamp [and optionally appended text].\n");
-			fprintf (stderr, "\t   You may also set the reference points and position of stamp [%s/%g/%g].\n",
-				GMT_just_string[gmtdefs.unix_time_just], gmtdefs.unix_time_pos[0], gmtdefs.unix_time_pos[1]);
-			fprintf (stderr, "\t   Give -Uc to have the command line plotted [%s].\n",
-				GMT_choice[gmtdefs.unix_time]);
+			fprintf (stderr, "\t   You may also set the reference points and position of stamp [%s/%g%c/%g%c].\n", GMT_just_string[gmtdefs.unix_time_just], gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
+			fprintf (stderr, "\t   Give -Uc to have the command line plotted [%s].\n", GMT_choice[gmtdefs.unix_time]);
 			break;
 
 		case 'V':	/* Verbose */
@@ -510,8 +508,7 @@ void GMT_explain_option (char option)
 		case 'X':
 		case 'Y':	/* Reset plot origin option */
 
-			fprintf (stderr, "\t-X -Y to shift origin of plot to (<xshift>, <yshift>) [a%g,a%g].\n",
-				gmtdefs.x_origin, gmtdefs.y_origin);
+			fprintf (stderr, "\t-X -Y to shift origin of plot to (<xshift>, <yshift>) [a%g%c,a%g%c].\n", gmtdefs.x_origin * s, u, gmtdefs.y_origin * s, u);
 			fprintf (stderr, "\t   Prepend a for absolute [Default r is relative]\n");
 			fprintf (stderr, "\t   (Note that for overlays (-O), the default is [r0,r0].)\n");
 			fprintf (stderr, "\t   Give c to center plot on page in x and/or y.\n");
@@ -544,8 +541,7 @@ void GMT_explain_option (char option)
 
 		case ':':	/* lon/lat or lat/lon */
 
-			fprintf (stderr, "\t-: Expect lat/lon input/output rather than lon/lat [%s/%s].\n",
-				GMT_choice[gmtdefs.xy_toggle[GMT_IN]], GMT_choice[gmtdefs.xy_toggle[GMT_OUT]]);
+			fprintf (stderr, "\t-: Expect lat/lon input/output rather than lon/lat [%s/%s].\n", GMT_choice[gmtdefs.xy_toggle[GMT_IN]], GMT_choice[gmtdefs.xy_toggle[GMT_OUT]]);
 			break;
 
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
@@ -699,6 +695,10 @@ void GMT_syntax (char option)
 	/* The function print to stderr the syntax for the option indicated by
 	 * the variable <option>.  Only the common parameter options are covered
 	 */
+	
+	char *u;
+
+	u = GMT_unit_names[gmtdefs.measure_unit];
 
 	fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
 
@@ -720,152 +720,123 @@ void GMT_syntax (char option)
 				case GMT_LAMB_AZ_EQ:
 					fprintf (stderr, "\t-Ja<lon0>/<lat0>[/<horizon>]/<scale> OR -JA<lon0>/<lat0>[/<horizon>]/<width>\n");
 					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (<= 180, default 90)\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ALBERS:
 					fprintf (stderr, "\t-Jb<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JB<lon0>/<lat0>/<lat1>/<lat2>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_CASSINI:
 					fprintf (stderr, "\t-Jc<lon0>/<lat0><scale> OR -JC<lon0>/<lat0><width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree ,or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree ,or use <width> in %s\n", u, u);
 					break;
 				case GMT_CYL_STEREO:
 					fprintf (stderr, "\t-Jcyl_stere/[<lon0>/[<lat0>/]]<scale> OR -JCyl_stere/[<lon0>/[<lat0>/]]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ECONIC:
 					fprintf (stderr, "\t-Jd<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JD<lon0>/<lat0>/<lat1>/<lat2>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_AZ_EQDIST:
 					fprintf (stderr, "\t-Je<lon0>/<lat0>[/<horizon>]/<scale> OR -JE<lon0>/<lat0>[/<horizon>/<width>\n");
 					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (<= 180, default 180)\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_GNOMONIC:
 					fprintf (stderr, "\t-Jf<lon0>/<lat0>[/<horizon>]/<scale> OR -JF<lon0>/<lat0>[/<horizon>]/<width>\n");
 					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (< 90, default 60)\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ORTHO:
 					fprintf (stderr, "\t-Jg<lon0>/<lat0>[/<horizon>]/<scale> OR -JG<lon0>/<lat0>[/<horizon>]/<width>\n");
 					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (<= 90, default 90)\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_GENPER:
 					fprintf (stderr, "\t-Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale> OR\n\t-JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_HAMMER:
 					fprintf (stderr, "\t-Jh[<lon0>/]<scale> OR -JH[<lon0>/]<width\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_SINUSOIDAL:
 					fprintf (stderr, "\t-Ji[<lon0>/]<scale> OR -JI[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_MILLER:
 					fprintf (stderr, "\t-Jj[<lon0>/]<scale> OR -JJ[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ECKERT4:
 					fprintf (stderr, "\t-Jkf[<lon0>/]<scale> OR -JKf[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ECKERT6:
 					fprintf (stderr, "\t-Jk[s][<lon0>/]<scale> OR -JK[s][<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_LAMBERT:
 					fprintf (stderr, "\t-Jl<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JL<lon0>/<lat0>/<lat1>/<lat2>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_MERCATOR:
 					fprintf (stderr, "\t-Jm[<lon0>/[<lat0>/]]<scale> OR -JM[<lon0>/[<lat0>/]]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ROBINSON:
 					fprintf (stderr, "\t-Jn[<lon0>/]<scale> OR -JN[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_OBLIQUE_MERC:
 					fprintf (stderr, "\t-Jo[a]<lon0>/<lat0>/<azimuth>/<scale> OR -JO[a]<lon0>/<lat0>/<azimuth>/<width>\n");
 					fprintf (stderr, "\t-Jo[b]<lon0>/<lat0>/<b_lon>/<b_lat>/<scale> OR -JO[b]<lon0>/<lat0>/<b_lon>/<b_lat>/<width>\n");
 					fprintf (stderr, "\t-Joc<lon0>/<lat0>/<lonp>/<latp>/<scale> OR -JOc<lon0>/<lat0>/<lonp>/<latp>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/oblique degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/oblique degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_WINKEL:
 					fprintf (stderr, "\t-Jr[<lon0>/]<scale> OR -JR[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_CYL_EQDIST:
 					fprintf (stderr, "\t-Jq[<lon0>/[<lat0>/]]<scale> OR -JQ[<lon0>/[<lat0>/]]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_STEREO:
 					fprintf (stderr, "\t-Js<lon0>/<lat0>[/<horizon>]/<scale> OR -JS<lon0>/<lat0>[/<horizon>]/<width>\n");
 					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (< 180, default 90)\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx>, <lat>/<1:xxxx>, or <radius> (in %s)/<lat>, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx>, <lat>/<1:xxxx>, or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_TM:
 					fprintf (stderr, "\t-Jt<lon0>/[<lat0>/]<scale> OR -JT<lon0>/[<lat0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_UTM:
 					fprintf (stderr, "\t-Ju<zone>/<scale> OR -JU<zone>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					fprintf (stderr, "\t  <zone is A, B, 1-60[w/ optional C-X except I, O], Y, Z\n");
 					break;
 				case GMT_VANGRINTEN:
 					fprintf (stderr, "\t-Jv<lon0>/<scale> OR -JV[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_MOLLWEIDE:
 					fprintf (stderr, "\t-Jw[<lon0>/]<scale> OR -JW[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_CYL_EQ:
 					fprintf (stderr, "\t-Jy[<lon0>/[<lat0>/]]<scale> OR -JY[<lon0>/[<lat0>/]]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_POLAR:
 					fprintf (stderr, "\t-Jp[a]<scale>[/<origin>][r] OR -JP[a]<width>[/<origin>][r]\n");
-					fprintf (stderr, "\t  <scale is %s/units, or use <width> in %s\n",
-						GMT_unit_names[gmtdefs.measure_unit], GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t  <scale is %s/units, or use <width> in %s\n", u, u);
 					fprintf (stderr, "\t  Optionally, prepend a for azimuths, append theta as origin [0],\n");
 					fprintf (stderr, "\t  or append r to reverse radial coordinates.\n");
 				case GMT_LINEAR:
-					fprintf (stderr, "\t-Jx<x-scale|width>[d|l|p<power>|t|T][/<y-scale|height>[d|l|p<power>|t|T]], scale in %s/units\n",
-						GMT_unit_names[gmtdefs.measure_unit]);
-					fprintf (stderr, "\t-Jz<z-scale>[l|p<power>], scale in %s/units\n",
-						GMT_unit_names[gmtdefs.measure_unit]);
+					fprintf (stderr, "\t-Jx<x-scale|width>[d|l|p<power>|t|T][/<y-scale|height>[d|l|p<power>|t|T]], scale in %s/units\n", u);
+					fprintf (stderr, "\t-Jz<z-scale>[l|p<power>], scale in %s/units\n", u);
 					fprintf (stderr, "\tUse / to specify separate x/y scaling (e.g., -Jx0.5/0.3.).  Not allowed with 1:xxxxx\n");
 					fprintf (stderr, "\tUse -JX (and/or -JZ) to give axes lengths rather than scales\n");
 					break;
@@ -883,7 +854,7 @@ void GMT_syntax (char option)
 
 		case 'U':	/* Set time stamp option */
 
-			fprintf (stderr, "\t-U[/<dx>/<dy>/][c|<label>], c will plot command line.\n");
+			fprintf (stderr, "\t-U[<just>/<dx>/<dy>/][c|<label>], c will plot command line.\n");
 			break;
 
 		case ':':	/* lon/lat vs lat/lon i/o option  */
@@ -1298,7 +1269,7 @@ int GMT_parse_U_option (char *item) {
 		if (item[i] == '/') n_slashes++;	/* Count slashes to detect <just>/<dx>/<dy>/ presence */
 	}
 	if (n_slashes >= 2) {	/* Probably gave -U<just>/<dx>/<dy>[/<string>] */
-		n = sscanf (item, "%[^/]/%[^/]/%[^/]/%s", txt_j, txt_x, txt_y, GMT_ps.unix_time_label);
+		n = sscanf (item, "%[^/]/%[^/]/%[^/]/%[^\n]", txt_j, txt_x, txt_y, GMT_ps.unix_time_label);
 		if ((i = GMT_just_decode (&txt_j[2], GMT_ps.unix_time_just)) < 0) {
 			/* Garbage before first slash: we simply have -U<string> */
 			strcpy (GMT_ps.unix_time_label, &item[2]);
@@ -2315,7 +2286,7 @@ void GMT_putdefaults (char *this_file)	/* Dumps the GMT parameters to file or st
 int GMT_savedefaults (char *file)
 {
 	FILE *fp;
-	char u, abbrev[4] = {'c', 'i', 'm', 'p'}, pm[2] = {'+', '-'};
+	char u, pm[2] = {'+', '-'};
 	char *ft[2] = {"FALSE", "TRUE"};
 	double s;
 
@@ -2326,7 +2297,7 @@ int GMT_savedefaults (char *file)
 		return (-1);
 	}
 
-	u = abbrev[gmtdefs.measure_unit];
+	u = GMT_unit_names[gmtdefs.measure_unit][0];
 	s = GMT_u2u[GMT_INCH][gmtdefs.measure_unit];	/* Convert from internal inch to users unit */
 
 	fprintf (fp, "#\n#\tGMT-SYSTEM %s Defaults file\n#\n", GMT_VERSION);
