@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.88 2008-04-10 04:44:31 guru Exp $
+ *	$Id: mgd77.h,v 1.89 2008-04-17 04:16:57 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -136,6 +136,12 @@
 #define MGD77_ERROR_NOSUCHCOLUMN	19
 #define MGD77_BAD_ARG			20
 #define MGD77_BAD_IGRFDATE		21
+
+/* For mgd77+ files */
+
+#define NCPOS_TIME	0
+#define NCPOS_LAT	3
+#define NCPOS_LON	4
 
 /* We will use bit flags to keep track of which data column we are referring to.
  * field 0 is rightmost bit (1), field 1 is the next bit (2), field 2 is 4 and

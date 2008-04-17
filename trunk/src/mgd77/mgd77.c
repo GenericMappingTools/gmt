@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.173 2008-04-17 01:24:29 guru Exp $
+ *	$Id: mgd77.c,v 1.174 2008-04-17 04:16:57 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3289,13 +3289,15 @@ int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 	return (MGD77_NO_ERROR);
 }
 
+#define set_bit(k) (1 << (k))
+
 int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {
 	/* Reads the entire data file and applies bitflags unless they are turned off by calling programs */
 	int nc_id;
 	int i, k, c, id;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
-	GMT_LONG rec;
+	GMT_LONG rec, rec_in;
 	BOOLEAN apply_bits[MGD77_N_SETS];
 	unsigned int *flags;
 	char *text, *flagname[MGD77_N_SETS] = {"MGD77_flags", "CDF_flags"};
@@ -3361,8 +3363,44 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 	}
 	
 	/* Possibly replace values with NaNs, according to the bitflags (if any) */
+	
 	if (apply_bits[MGD77_M77_SET] || apply_bits[MGD77_CDF_SET]) {
-		for (rec = 0; rec < S->H.n_records; rec++) MGD77_Apply_Bitflags (F, S, rec, apply_bits);
+		unsigned int bad_nav_bits;
+		GMT_LONG n_bad = 0L;
+		bad_nav_bits = (set_bit(NCPOS_LON) | set_bit(NCPOS_LAT));	/* If flags has these bits turned on we must remove the record (no nav) */
+		for (rec = 0; rec < S->H.n_records; rec++) {	/* Apply bit flags and count how many bad records (i.e., no lon, lat) we found */
+			MGD77_Apply_Bitflags (F, S, rec, apply_bits);
+			if (S->flags[MGD77_M77_SET][rec] & bad_nav_bits) n_bad++;	/* TRUE if either lon or lat is NaN */		
+		}
+		if (n_bad) {	/* Must remove records with no navigation */ 
+			count[0] = S->H.n_records - n_bad;	/* New number of clean records - must reallocate array space */
+			for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
+				c  = F->order[i].set;	/* Determine set and item */
+				id = F->order[i].item;
+				if (S->H.info[c].col[id].text) continue ;	/* Skip text variables in this section*/
+				values = (double *)S->values[i];
+				for (rec_in = rec = 0; rec_in < S->H.n_records; rec_in++) {
+					if (rec_in > rec) values[rec] = values[rec_in];	/* Must shuffle records */
+					if (! (S->flags[MGD77_M77_SET][rec_in] & bad_nav_bits)) rec++;	/* Record was OK so increment output rec number */
+				}
+				values = (double *) GMT_memory ((void *)values, count[0], sizeof (double), "MGD77_Read_File_cdf");
+				S->values[i] = (void *)values;
+			}
+			for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
+				c  = F->order[i].set;	/* Determine set and item */
+				id = F->order[i].item;
+				if (!S->H.info[c].col[id].text) continue ;	/* Skip double variables in this section*/
+				count[1] = S->H.info[c].col[id].text;	/* Get length of each string */
+				text = (char *)S->values[i];
+				for (rec_in = rec = 0; rec_in < S->H.n_records; rec_in++) {
+					if (rec_in > rec) strncpy (&text[rec*count[1]], &text[rec_in*count[1]], count[1]);	/* Must shuffle text records */
+					if (! (S->flags[MGD77_M77_SET][rec_in] & bad_nav_bits)) rec++;	/* Record was OK so increment output rec number */	
+				}
+				text = (char *) GMT_memory ((void *)text, count[0] * count[1], sizeof (char), "MGD77_Read_File_cdf");
+				S->values[i] = (void *)text;
+			}
+			S->H.n_records = count[0];
+		}	
 	}
 
 	S->n_fields = F->n_out_columns;
