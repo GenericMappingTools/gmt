@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.172 2008-04-16 03:00:06 remko Exp $
+ *	$Id: pslib.c,v 1.173 2008-04-17 01:34:06 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -966,7 +966,7 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 	 fwrite (buffer, (size_t)1, (size_t)size, PSL->internal.fp);
 	 fprintf (PSL->internal.fp, "%%%%EndDocument\n");
 	 if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of imported EPS file\n");
-	 fprintf (PSL->internal.fp, "cleartomark\ncountdictstack exch sub { end } repeat\nU\n");
+	 fprintf (PSL->internal.fp, "cleartomark\ncountdictstack exch sub { end } repeat\ngrestore\n");
 }
 
 PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split)
