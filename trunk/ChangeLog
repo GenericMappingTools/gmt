@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.253 2008-04-15 19:35:51 remko Exp $
+	$Id: ChangeLog,v 1.254 2008-04-17 01:32:46 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-04-16	remko
+	* psxy.c, psxyz.c:	Two bug fixes in both programs.
+				- If first symbol in list with size was not circle, if got rejected.
+				- When sizes of -Sr or -Sj were read from list, they were always inches.
+
 2008-04-15	remko
 	* pslib.c, PSL_prologue.ps:	Renamed a few PostScript commands.
 	* gmt_support.c (GMT_just_decode):	Bug fix: was defaulting to BC, instead of BL.
