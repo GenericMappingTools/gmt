@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.83 2008-04-12 06:02:37 guru Exp $
+ *	$Id: x2sys.c,v 1.84 2008-04-17 01:24:29 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -699,6 +699,7 @@ int get_first_year (double t)
 int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
 	int i;
+	BOOLEAN apply_bits[MGD77_N_SETS], might_need_bits;
 	char path[BUFSIZ];
 	double **z;
 	struct MGD77_DATASET *S;
@@ -734,6 +735,13 @@ int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct
 
 	z = (double **) GMT_memory (VNULL, (size_t)M.n_out_columns, sizeof (double *), "x2sys_read_nc77file");
 	for (i = 0; i < M.n_out_columns; i++) z[i] = (double *) S->values[i];
+
+	apply_bits[MGD77_M77_SET] = (S->flags[MGD77_M77_SET]); /* Will need to consider the bitflags for MGD77 set */
+	apply_bits[MGD77_CDF_SET] = (S->flags[MGD77_CDF_SET]); /* Will need to consider the bitflags for MGD77 set */
+	might_need_bits = (apply_bits[MGD77_M77_SET] || apply_bits[MGD77_CDF_SET]);	/* If FALSE we skip bit-checks entirely */
+	if (might_need_bits) {	/* Possibly replace values with NaNs, according to the bitflags (if any) */
+		for (rec = 0; rec < S->H.n_records; rec++) MGD77_Apply_Bitflags (&M, S, rec, apply_bits);
+	}
 
 	strncpy (p->name, fname, (size_t)32);
 	p->n_rows = S->H.n_records;

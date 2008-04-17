@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.172 2008-04-11 19:40:12 guru Exp $
+ *	$Id: mgd77.c,v 1.173 2008-04-17 01:24:29 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3291,9 +3291,12 @@ int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 
 int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {
+	/* Reads the entire data file and applies bitflags unless they are turned off by calling programs */
 	int nc_id;
 	int i, k, c, id;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
+	GMT_LONG rec;
+	BOOLEAN apply_bits[MGD77_N_SETS];
 	unsigned int *flags;
 	char *text, *flagname[MGD77_N_SETS] = {"MGD77_flags", "CDF_flags"};
 	double scale, offset, *values;
@@ -3345,15 +3348,23 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		}
 	}
 
-	/* Look for optional bit flags to read */
+	/* Look for optional bit flags to read and apply */
 	
+	memset ((void *)apply_bits, 0, MGD77_N_SETS * sizeof (BOOLEAN));
 	for (k = 0; k < MGD77_N_SETS; k++) {
 		if (F->use_flags[k] && nc_inq_varid (F->nc_id, flagname[k], &nc_id) == NC_NOERR) {	/* There are bitflags for this set and we want them */
 			flags = (unsigned int *) GMT_memory (VNULL, count[0], sizeof (unsigned int), "MGD77_Read_File_cdf");
 			MGD77_nc_status (nc_get_vara_int (F->nc_id, nc_id, start, count, (int *)flags));
 			S->flags[k] = flags;
+			apply_bits[k] = F->use_flags[MGD77_M77_SET]; /* Consider the bitflags for this set */
 		}
 	}
+	
+	/* Possibly replace values with NaNs, according to the bitflags (if any) */
+	if (apply_bits[MGD77_M77_SET] || apply_bits[MGD77_CDF_SET]) {
+		for (rec = 0; rec < S->H.n_records; rec++) MGD77_Apply_Bitflags (F, S, rec, apply_bits);
+	}
+
 	S->n_fields = F->n_out_columns;
 
 	return (MGD77_NO_ERROR);
