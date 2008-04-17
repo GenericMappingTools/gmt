@@ -1,4 +1,4 @@
-%-	$Id: PSL_text.ps,v 1.9 2007-12-30 21:31:17 remko Exp $
+%-	$Id: PSL_text.ps,v 1.10 2008-04-17 18:07:45 remko Exp $
 %-----------------------------------------------------------------------------
 %-	P. Wessel, version 1
 %-	Text justification for paragraphs.
@@ -32,7 +32,7 @@
   {
     /PSL_show {ashow} def
   } ifelse
-} bind def
+}!
 
 /PSL_setfont2 {	% Only set font and size
   /f exch def % Gets word flag from stack
@@ -44,13 +44,13 @@
     /PSL_lastfn fn def
     /PSL_lastfs fs def
   } if
-} bind def
+}!
 
 /PSL_wordheight {	% Gets word from stack, and calculates any adjustment to box height
-  0 0 moveto false charpath flattenpath pathbbox /up exch def pop /down exch def pop newpath
+  0 0 m false charpath flattenpath pathbbox /up exch def pop /down exch def pop newpath
   down PSL_ymin lt {/PSL_ymin down def} if
   up PSL_ymax gt {/PSL_ymax up def} if
-} bind def
+}!
 
 /PSL_ushow {
   currentpoint /y0 exch def /x0 exch def
@@ -58,7 +58,7 @@
   currentpoint pop /x1 exch def
   x0 y0 PSL_UL sub m x1 y0 PSL_UL sub L S
   x1 y0 m
-} bind def
+}!
 
 % Set font, size, and color.  Adjust baseline if needed. Place space and word
 
@@ -66,7 +66,6 @@
   /k exch def % Gets word index from stack
   /flag PSL_flag k get def
   k flag PSL_setfont
-
   /sshow {ashow} def
   PSL_col 0 eq {		% First word on a line
     /PSL_t 0 def			% 0 spaces before this word
@@ -79,11 +78,8 @@
     /PSL_t f 3 and def		% PSL_t is index into PSL_spaces and PSL_spacewidths for previous word
     f 32 and 32 eq flag 32 and 32 eq and {/sshow {PSL_ushow} def} if
   } ifelse
-
   /thisword_bshift PSL_bshift k get def	% The baseline shift
-  thisword_bshift 0.0 ne {		% Shift baseline
-    0 thisword_bshift G
-  } if
+  thisword_bshift 0.0 ne { 0 thisword_bshift G } if	% Shift baseline
   flag 8 and 8 eq {	% First composite char
     pr_char 0 PSL_spaces PSL_t get sshow
     k PSL_composite
@@ -92,10 +88,8 @@
     pr_char 0 PSL_spaces PSL_t get sshow pr_char 0 PSL_word k get PSL_show
     PSL_width k get 0 gt {/PSL_col PSL_col 1 add def} if
   } if
-  thisword_bshift 0.0 ne {	% Shift baseline
-    0 thisword_bshift neg G
-  } if
-} bind def
+  thisword_bshift 0.0 ne { 0 thisword_bshift neg G } if	% Shift baseline
+}!
 
 /PSL_composite {	% Place a composite character
   /k1 exch def % Get word index from stack
@@ -109,16 +103,15 @@
     /dx1 0 def
     /dx2 delta def
   }
-  {
-    /dx1 delta neg def
+  { /dx1 delta neg def
     /dx2 0 def
   } ifelse
   dx1 0 G currentpoint
-  pr_char 0 char1 PSL_show moveto
+  pr_char 0 char1 PSL_show m
   delta 0 G
   pr_char 0 char2 ashow
   dx2 0 G
-} bind def
+}!
 
 % Determine how much to expand text and also justify left/center/right
 
@@ -130,10 +123,10 @@
   /ndiv lsum ncomp sub def
   ndiv 0 eq {/ndiv 1 def} if
   PSL_parjust 4 eq {/pr_char spread ndiv div def} {/pr_char 0 def} ifelse
-  PSL_parjust 2 eq {extra 2 div 0 rmoveto} if
-  PSL_parjust 3 eq {extra 0 rmoveto} if
+  PSL_parjust 2 eq {extra 2 div 0 G} if
+  PSL_parjust 3 eq {extra 0 G} if
   /PSL_col 0 def
-} bind def
+}!
 
 % Calculate text paragraph height:
 
@@ -156,17 +149,14 @@
   /line 0 def
   /ncomp 0 def
   /comp_width 0 def
-
   0 1 PSL_n1 {		% Loop over all the words
-
     /i exch def		% The current loop index
     /thisflag PSL_flag i get def					% # of space chars to follow this word
     i 0 eq {
       /PSL_t 0 def
       /lastflag 0 def
     }
-    {
-      /lastflag PSL_flag i 1 sub get def
+    { /lastflag PSL_flag i 1 sub get def
       /PSL_t lastflag 3 and def
     } ifelse
     % PSL_t is index into PSL_spaces and PSL_spacewidths
@@ -183,12 +173,10 @@
     } if
     lastflag 8 and 8 eq {/PSL_t 0 def /comp_add 1 def /compw_add thisword_width def} if
     /new_linewidth previous_linewidth thisword_width add PSL_spacewidths PSL_t get add def	% Width of line if word added
-
     /PSL_CRLF thisword_width 0.0 eq thisflag 16 and 0 eq and def
     /special thisflag 16 and 16 eq {true} {thisword_width 0.0 gt} ifelse def
     new_linewidth PSL_parwidth le special and
-    {
-      % Word will fit on current line
+    { % Word will fit on current line
       PSL_col 0 eq {
         /PSL_ymin 0 def
         /PSL_ymax 0 def
@@ -199,40 +187,27 @@
       /lsum lsum ccount add PSL_t add def	% Update character count
       /ncomp ncomp comp_add add def
       /comp_width comp_width compw_add add def
-
     }
-    {
-      % Must process current line and move to next
-
+    { % Must process current line and move to next
       1 PSL_mode eq {		% Write out the first word on this line
-
 	% Determine how much to expand text and also justify left/center/right
-
         start PSL_expand
-
 	start PSL_placeword
-
       }
-      {
-        PSL_word start get PSL_wordheight
+      { PSL_word start get PSL_wordheight
       } ifelse
-
       /last stop 1 sub def
       /start start 1 add def
-
       1 PSL_mode eq {		% Write out the remaining words on this line
         start 1 last {PSL_placeword} for
       }
-      {
-        start 1 last {PSL_word exch get PSL_wordheight} for
-        line 0 eq {	% First outputline
-          /PSL_top PSL_ymax def
-        } if
+      { start 1 last {PSL_word exch get PSL_wordheight} for
+        line 0 eq { /PSL_top PSL_ymax def } if	% First outputline
       } ifelse
 
       /start stop def
       /PSL_ybase PSL_ybase PSL_linespace sub def
-      1 PSL_mode eq {0 PSL_ybase moveto} if	% CR/LF
+      1 PSL_mode eq {0 PSL_ybase m} if	% CR/LF
       /stop stop 1 add def				% Include this word
       /previous_linewidth thisword_width def
       /lsum ccount def
@@ -242,25 +217,17 @@
       /line line 1 add def
     } ifelse
   } for
-
   /last stop 1 sub def
   last PSL_n lt {	% One or more words left hanging on last line
-
     /PSL_CRLF true def
     1 PSL_mode eq {
-
       % Determine how much to expand text and also justify left/center/right
-
       start PSL_expand
-
       start PSL_placeword
-
       /start start 1 add def
       start 1 last {PSL_placeword} for
-
     }
-    {
-      /PSL_ymin 0 def
+    { /PSL_ymin 0 def
       PSL_word start get PSL_wordheight
       /start start 1 add def
       start 1 last {PSL_word exch get PSL_wordheight} for

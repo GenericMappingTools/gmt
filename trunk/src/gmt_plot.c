@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.223 2008-04-16 03:01:00 remko Exp $
+ *	$Id: gmt_plot.c,v 1.224 2008-04-17 18:07:45 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1504,7 +1504,7 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 			tilt = 90.0 - R2D * (d_atan2 (yt3 - yt1, xt3 - xt1) - d_atan2 (yt2 - yt1, xt2 - xt1));
 			tilt = tand (tilt);
 			/* Temporarily modify meaning of F0 */
-			sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+			sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont}!",
 				GMT_font[gmtdefs.annot_font[level]].name, xshrink, yshrink * tilt, yshrink);
 			ps_command (cmd);
 			ps_setfont (0);
@@ -1515,7 +1515,7 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 			if (flip) justify = GMT_flip_justify (justify);
 			/* ps_line (tick_x, tick_y, 2, 3, FALSE, TRUE); */
 			ps_text (xt1, yt1, gmtdefs.annot_font_size[level], label, text_angle, justify, 0);
-			if (project_info.three_D) ps_command ("/F0 {/Helvetica Y} bind def"); /* Reset F0 */
+			if (project_info.three_D) ps_command ("/F0 {/Helvetica Y}!"); /* Reset F0 */
 		}
 	}
 }
@@ -1779,16 +1779,16 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			del = ((gmtdefs.tick_length > 0.0) ? gmtdefs.tick_length : 0.0) + gmtdefs.header_offset;
 			del += ((move_up) ? (gmtdefs.annot_font_size[0]) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0);
 			GMT_xy_do_z_to_xy (project_info.xmax * 0.5, project_info.ymax+del, project_info.z_level, &x, &y);
-			sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+			sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont}!",
 				GMT_font[gmtdefs.header_font].name, z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
 			ps_command (cmd);
-			sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+			sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont}!",
 				z_project.xshrink[0], z_project.yshrink[0] * z_project.tilt[0], z_project.yshrink[0]);
 			ps_command (cmd);
 
 			ps_text (x, y, gmtdefs.header_font_size, frame_info.header, z_project.phi[0], -2, 0);
-			ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset F0 */
-			ps_command ("/F12 {/Symbol Y} bind def");	/* Reset F12 */
+			ps_command ("/F0 {/Helvetica Y}!");	/* Reset F0 */
+			ps_command ("/F12 {/Symbol Y}!");	/* Reset F12 */
 			ps_setfont (gmtdefs.header_font);
 		}
 		else if (!project_info.three_D) {
@@ -1932,8 +1932,8 @@ void GMT_map_annotate (double w, double e, double s, double n)
 		}
 	}
 
-	if (project_info.three_D) ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset definition of F0 */
-	if (project_info.three_D) ps_command ("/F12 {/Symbol Y} bind def");	/* Reset definition of F12 */
+	if (project_info.three_D) ps_command ("/F0 {/Helvetica Y}!");	/* Reset definition of F0 */
+	if (project_info.three_D) ps_command ("/F12 {/Symbol Y}!");	/* Reset definition of F12 */
 
 	GMT_on_border_is_outside = FALSE;	/* Reset back to default */
 	if (project_info.region) {
@@ -2173,11 +2173,11 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct GMT_PLOT_AXIS *A, int annota
 	ps_command ("gsave\n");
 	ps_comment ("Start of xyz-axis3D");
 	/* Temporarily modify meaning of F0 */
-	sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+	sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont}!",
 		GMT_font[gmtdefs.annot_font[0]].name, z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
 	ps_command (cmd);
 	/* Temporarily redefine F12 for tilted text */
-	sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+	sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont}!",
 		z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
 	ps_command (cmd);
 	ps_setfont (0);
@@ -2230,8 +2230,8 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct GMT_PLOT_AXIS *A, int annota
 		GMT_xyz_to_xy (pp[0], pp[1], pp[2], &xp, &yp);
 		if (annotate && (id < 2 || knots[i] != project_info.z_level)) ps_text (xp, yp, gmtdefs.annot_font_size[0], annotation, phi, 2, 0);
 	}
-	ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset F0 */
-	ps_command ("/F12 {/Symbol Y} bind def");	/* Reset F12 */
+	ps_command ("/F0 {/Helvetica Y}!");	/* Reset F0 */
+	ps_command ("/F12 {/Symbol Y}!");	/* Reset F12 */
 
 	if (n) GMT_free ((void *)knots);
 
@@ -2269,11 +2269,11 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct GMT_PLOT_AXIS *A, int annota
 		val_xyz[1] = z_project.corner_y[axis_no];
 		val_xyz[2] = project_info.z_level;
 		/* Temporarily redefine /F0 for tilted text */
-		sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+		sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont}!",
 			GMT_font[gmtdefs.label_font].name, z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
 		ps_command (cmd);
 		/* Temporarily redefine /F12 for tilted text */
-		sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+		sprintf (cmd, "/F12 {/Symbol findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont}!",
 			z_project.xshrink[id], z_project.yshrink[id] * z_project.tilt[id], z_project.yshrink[id]);
 		ps_command (cmd);
 		GMT_project3D (val_xyz[0], val_xyz[1], val_xyz[2], &w[0], &w[1], &w[2]);
@@ -2290,8 +2290,8 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct GMT_PLOT_AXIS *A, int annota
 		GMT_xyz_to_xy (pp[0], pp[1], pp[2], &xp, &yp);
 
 		ps_text (xp, yp, gmtdefs.label_font_size, A->label, phi, 2, 0);
-		ps_command ("/F0 {/Helvetica Y} bind def");	/* Reset F0 */
-		ps_command ("/F12 {/Symbol Y} bind def");	/* Reset F12 */
+		ps_command ("/F0 {/Helvetica Y}!");	/* Reset F0 */
+		ps_command ("/F12 {/Symbol Y}!");	/* Reset F12 */
 	}
 	ps_setpaint (gmtdefs.background_rgb);
 	ps_comment ("End of xyz-axis3D");
@@ -2635,13 +2635,13 @@ void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *t
 		}
 
 		/* Temporarily modify meaning of F */
-		sprintf (cmd, "/YY {findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont} bind def",
+		sprintf (cmd, "/YY {findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont}!",
 			 xshrink, yshrink * ca, yshrink * sa);
 		ps_command (cmd);
 
 		for (j = 0; j < i; j ++) {
 			n = used_fonts[j];
-			sprintf (cmd, "/F%d {/%s YY} bind def", n, GMT_font[n].name);
+			sprintf (cmd, "/F%d {/%s YY}!", n, GMT_font[n].name);
 			ps_command (cmd);
 		}
 
@@ -2650,7 +2650,7 @@ void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *t
 		/* Reset fonts */
 		for (j = 0; j < i; j ++) {
 			n = used_fonts[j];
-			sprintf (cmd, "/F%d {/%s Y} bind def", n, GMT_font[n].name);
+			sprintf (cmd, "/F%d {/%s Y}!", n, GMT_font[n].name);
 			ps_command (cmd);
 		}
 

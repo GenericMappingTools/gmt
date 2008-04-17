@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.173 2008-04-17 01:34:06 remko Exp $
+ *	$Id: pslib.c,v 1.174 2008-04-17 18:07:45 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1412,16 +1412,12 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.15 ");
+		ps_bulkcopy ("PSL_prologue", "v 1.16 ");
 		ps_bulkcopy (PSL->init.encoding, "");
 
-		def_font_encoding ();		/* Place code for reencoding of fonts and initialize book-keeping */
+		def_font_encoding ();		/* Initialize book-keeping for font encoding and write font macros */
 
-		/* Define font macros (see pslib.h for details on how to add fonts) */
-
-		for (i = 0; i < PSL->internal.N_FONTS; i++) fprintf (PSL->internal.fp, "/F%d {/%s Y} bind def\n", i, PSL->internal.font[i].name);
-
-		ps_bulkcopy ("PSL_label", "v 1.13 ");		/* Place code for label line annotations and clipping */
+		ps_bulkcopy ("PSL_label", "v 1.14 ");		/* Place code for label line annotations and clipping */
 		fprintf (PSL->internal.fp, "%%%%EndProlog\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginSetup\n");
@@ -1474,7 +1470,6 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	ps_setmiterlimit (PSL->internal.miter_limit);
 	ps_setpaint (no_rgb);
 	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (PSL->internal.fp, "%g %g T\n", xoff*PSL->internal.scale, yoff*PSL->internal.scale);
-
 
 	return (0);
 }
@@ -2408,10 +2403,8 @@ void ps_textclip (double x[], double y[], PS_LONG m, double angle[], char *label
 	PS_LONG i = 0, j, k;
 
 	if (key & 2) {	/* Flag to terminate clipping */
-		if (PSL->internal.comments)
-			fprintf (PSL->internal.fp, "PSL_clip_on\t\t%% If clipping is active, terminate it\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");
-		else
-			fprintf (PSL->internal.fp, "PSL_clip_on\n{\n  grestore\n  /PSL_clip_on false def\n} if\n");
+		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% If clipping is active, terminate it\n");
+		fprintf (PSL->internal.fp, "PSL_clip_on {U /PSL_clip_on false def} if\n");
 		return;
 	}
 	if (key & 8) {		/* Flag to place text already define in PSL arrays */
@@ -2830,15 +2823,15 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 	/* Load PSL_text procedures from file for now */
 
 	if (!PSL->internal.text_init) {
-		ps_bulkcopy ("PSL_text", "v 1.9 ");
+		ps_bulkcopy ("PSL_text", "v 1.10 ");
 		PSL->internal.text_init = TRUE;
 	}
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% ps_words begin:\n");
-	fprintf (PSL->internal.fp, "\ngsave\n");
+	fprintf (PSL->internal.fp, "\nV\n");
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of fonts:\n");
-	fprintf (PSL->internal.fp, "\n/PSL_fontname\n");
+	fprintf (PSL->internal.fp, "/PSL_fontname\n");
 	for (i = 0 ; i < n_font_unique; i++) fprintf (PSL->internal.fp, "/%s\n", PSL->internal.font[font_unique[i]].name);
 	fprintf (PSL->internal.fp, "%d array astore def\n", n_font_unique);
 	ps_free ((void *)font_unique);
@@ -2858,7 +2851,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 	fprintf (PSL->internal.fp, "/PSL_UL 0 def\n/PSL_show {ashow} def\n");
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of words:\n");
-	fprintf (PSL->internal.fp, "\n/PSL_word\n");
+	fprintf (PSL->internal.fp, "/PSL_word\n");
 	for (i = n = 0 ; i < (PS_LONG)n_items; i++) {
 		fprintf (PSL->internal.fp, "(%s)", word[i]->txt);
 		n += strlen (word[i]->txt) + 1;
@@ -2873,7 +2866,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word font numbers:\n");
-	fprintf (PSL->internal.fp, "\n/PSL_fnt\n");
+	fprintf (PSL->internal.fp, "/PSL_fnt\n");
 	for (i = 0 ; i < (PS_LONG)n_items; i++) {
 		fprintf (PSL->internal.fp, "%d", word[i]->font_no);
 		(!((i+1)%25)) ? fputc ('\n', PSL->internal.fp) : fputc (' ', PSL->internal.fp);
@@ -2882,7 +2875,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word fontsizes:\n");
-	fprintf (PSL->internal.fp, "\n/PSL_size\n");
+	fprintf (PSL->internal.fp, "/PSL_size\n");
 	for (i = 0 ; i < (PS_LONG)n_items; i++) {
 		fprintf (PSL->internal.fp, "%.2f", word[i]->font_size);
 		(!((i+1)%20)) ? fputc ('\n', PSL->internal.fp) : fputc (' ', PSL->internal.fp);
@@ -2891,7 +2884,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word spaces to follow:\n");
-	fprintf (PSL->internal.fp, "\n/PSL_flag\n");
+	fprintf (PSL->internal.fp, "/PSL_flag\n");
 	for (i = 0 ; i < (PS_LONG)n_items; i++) {
 		fprintf (PSL->internal.fp, "%d", word[i]->flag);
 		(!((i+1)%25)) ? fputc ('\n', PSL->internal.fp) : fputc (' ', PSL->internal.fp);
@@ -2900,7 +2893,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word baseline shifts:\n");
-	fprintf (PSL->internal.fp, "\n/PSL_bshift\n");
+	fprintf (PSL->internal.fp, "/PSL_bshift\n");
 	for (i = 0 ; i < (PS_LONG)n_items; i++) {
 		fprintf (PSL->internal.fp, "%g", word[i]->baseshift);
 		(!((i+1)%25)) ? fputc ('\n', PSL->internal.fp) : fputc (' ', PSL->internal.fp);
@@ -2909,7 +2902,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word colors indices:\n");
-	fprintf (PSL->internal.fp, "\n/PSL_color\n");
+	fprintf (PSL->internal.fp, "/PSL_color\n");
 	for (i = 0 ; i < (PS_LONG)n_items; i++) {
 		fprintf (PSL->internal.fp, "%d", word[i]->rgb[0]);
 		(!((i+1)%25)) ? fputc ('\n', PSL->internal.fp) : fputc (' ', PSL->internal.fp);
@@ -2918,7 +2911,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 	fprintf (PSL->internal.fp, "%ld array astore def\n", (PS_LONG)n_items);
 
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Define array of word colors:\n");
-	fprintf (PSL->internal.fp, "\n/PSL_rgb\n");
+	fprintf (PSL->internal.fp, "/PSL_rgb\n");
 	for (i = 0 ; i < n_rgb_unique; i++) fprintf (PSL->internal.fp, "%.3g %.3g %.3g\n", PSL_INV_255 * (rgb_unique[i] >> 16), PSL_INV_255 * ((rgb_unique[i] >> 8) & 0xFF), PSL_INV_255 * (rgb_unique[i] & 0xFF));
 	fprintf (PSL->internal.fp, "%d array astore def\n", 3 * n_rgb_unique);
 	ps_free ((void *)rgb_unique);
@@ -2964,7 +2957,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 
 	/* Adjust origin for box justification */
 
-	fprintf (PSL->internal.fp, "\n/PSL_x0 %ld def\n", -(PS_LONG)irint (0.5 * ((justify - 1) % 4) * par_width * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "/PSL_x0 %ld def\n", -(PS_LONG)irint (0.5 * ((justify - 1) % 4) * par_width * PSL->internal.scale));
 	if (justify > 8) {	/* Top row */
 		fprintf (PSL->internal.fp, "/PSL_y0 0 def\n");
 	}
@@ -2978,7 +2971,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 
 	/* Make upper left textbox corner the origin */
 
-	fprintf (PSL->internal.fp, "\nPSL_x0 PSL_y0 T\n\n");
+	fprintf (PSL->internal.fp, "PSL_x0 PSL_y0 T\n\n");
 
 	if (draw_box) {
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Start PSL box beneath text block:\n");
@@ -3064,10 +3057,10 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 
 	fprintf (PSL->internal.fp, "0 PSL_txt_y0 T");
 	(PSL->internal.comments) ? fprintf (PSL->internal.fp, "\t%% Move to col 0 on first baseline\n") : fprintf (PSL->internal.fp, "\n");
-	fprintf (PSL->internal.fp, "\n0 0 M\n\n1 PSL_textjustifier");
-	(PSL->internal.comments) ? fprintf (PSL->internal.fp, "\t%% Place the paragraph\n\n") : fprintf (PSL->internal.fp, "\n");
+	fprintf (PSL->internal.fp, "\n0 0 M\n1 PSL_textjustifier");
+	(PSL->internal.comments) ? fprintf (PSL->internal.fp, "\t%% Place the paragraph\n") : fprintf (PSL->internal.fp, "\n");
 
-	fprintf (PSL->internal.fp, "grestore\n\n");
+	fprintf (PSL->internal.fp, "U\n");
 
 	ps_free ((void *)word);
 }
@@ -3153,10 +3146,8 @@ void ps_encode_font (int font_no)
 	if (PSL->internal.font[font_no].encoded) return;	/* Already reencoded or should not be reencoded ever */
 
 	/* Reencode fonts with Standard+ or ISOLatin1[+] encodings */
-	fprintf (PSL->internal.fp, "PSL_font_encode %d get 0 eq {", font_no);
+	fprintf (PSL->internal.fp, "PSL_font_encode %d get 0 eq {%s_Encoding /%s /%s PSL_reencode PSL_font_encode %d 1 put} if", font_no, PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name, font_no);
 	(PSL->internal.comments) ? fprintf (PSL->internal.fp, "\t%% Set this font\n") : fprintf (PSL->internal.fp, "\n");
-	fprintf (PSL->internal.fp, "\t%s_Encoding /%s /%s PSL_reencode\n", PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name);
-	fprintf (PSL->internal.fp, "\tPSL_font_encode %d 1 put\n} if\n", font_no);
 	PSL->internal.font[font_no].encoded = TRUE;
 }
 
@@ -3173,16 +3164,9 @@ void init_font_encoding (struct EPS *eps)
 
 void def_font_encoding (void)
 {
-	/* Place code for reencoding of fonts and initialize book-keeping array */
+	/* Initialize book-keeping for font encoding and write font macros */
 
 	int i;
-
-	fprintf (PSL->internal.fp, "/PSL_reencode {");
-	(PSL->internal.comments) ? fprintf (PSL->internal.fp, "\t%% To reencode one font with the provided encoding vector\n") : fprintf (PSL->internal.fp, "\n");
-	fprintf (PSL->internal.fp, "\tfindfont dup length dict begin\n");
-	fprintf (PSL->internal.fp, "\t{1 index /FID ne {def} {pop pop} ifelse} forall\n");
-	fprintf (PSL->internal.fp, "\texch /Encoding exch def currentdict end definefont pop\n");
-	fprintf (PSL->internal.fp, "} bind def\n");
 
 	/* Initialize T/F array for font reencoding so that we only do it once
 	 * for each font that is used */
@@ -3191,6 +3175,10 @@ void def_font_encoding (void)
 	for (i = 0; i < PSL->internal.N_FONTS; i++) fprintf (PSL->internal.fp, "0 ");
 	fprintf (PSL->internal.fp, "%d array astore def", PSL->internal.N_FONTS);
 	(PSL->internal.comments) ? fprintf (PSL->internal.fp, "\t%% Initially zero\n") : fprintf (PSL->internal.fp, "\n");
+
+	/* Define font macros (see pslib.h for details on how to add fonts) */
+
+	for (i = 0; i < PSL->internal.N_FONTS; i++) fprintf (PSL->internal.fp, "/F%d {/%s Y}!\n", i, PSL->internal.font[i].name);
 }
 
 char *ps_prepare_text (char *text)

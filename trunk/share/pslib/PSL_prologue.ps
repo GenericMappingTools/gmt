@@ -1,116 +1,104 @@
-%-	$Id: PSL_prologue.ps,v 1.15 2008-04-15 13:36:16 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.16 2008-04-17 18:07:45 remko Exp $
 % Begin pslib header
 250 dict begin
-/A /setgray load def
-/B /setdash load def
-/C /setrgbcolor load def
-/D /rlineto load def
-/E {dup stringwidth pop} bind def
-/F /fill load def
-/G /rmoveto load def
-/H /sethsbcolor load def
-/I /setpattern load def
-/K /setcmykcolor load def
-/L /lineto load def
-/M {stroke moveto} bind def
-/m {moveto} bind def
-/N /newpath load def
-/P /closepath load def
-/R /rotate load def
-/S /stroke load def
-/T /translate load def
-/U /grestore load def
-/V /gsave load def
-/W /setlinewidth load def
-/Y {findfont exch scalefont setfont} bind def
-/Z /show load def
-/FP {true charpath flattenpath} bind def
-/YP {FP pathbbox N exch pop sub abs exch pop} bind def
+/! {bind def} bind def
+/# {load def}!
+/A /setgray #
+/B /setdash #
+/C /setrgbcolor #
+/D /rlineto #
+/E {dup stringwidth pop}!
+/F /fill #
+/G /rmoveto #
+/H /sethsbcolor #
+/I /setpattern #
+/K /setcmykcolor #
+/L /lineto #
+/M {stroke moveto}!
+/m {moveto}!
+/N /newpath #
+/P /closepath #
+/R /rotate #
+/S /stroke #
+/T /translate #
+/U /grestore #
+/V /gsave #
+/W /setlinewidth #
+/Y {findfont exch scalefont setfont}!
+/Z /show #
+/FP {true charpath flattenpath}!
+/YP {FP pathbbox N exch pop sub abs exch pop}!
 % Point
-/O {M W 0 0 D S} bind def
+/O {M W 0 0 D S}!
 % Cross
-/X {M dup 0 D dup 2 div neg dup G 0 exch D S} bind def
+/X {M dup 0 D dup 2 div neg dup G 0 exch D S}!
 % Path fill (lower case second letter with outline)
-/QA {P V A F U N} bind def /Qa {P V A F U S} bind def
-/QC {P V C F U N} bind def /Qc {P V C F U S} bind def
-/QK {P V K F U N} bind def /Qk {P V K F U S} bind def
-/QH {P V H F U N} bind def /Qh {P V H F U S} bind def
-/QI {P V I F U N} bind def /Qi {P V I F U S} bind def
-/QQ {P S} bind def
+/QA {P V A F U N}! /QC {P V C F U N}! /QK {P V K F U N}! /QH {P V H F U N}! /QI {P V I F U N}! /QQ {P S}!
+/Qa {P V A F U S}! /Qc {P V C F U S}! /Qk {P V K F U S}! /Qh {P V H F U S}! /Qi {P V I F U S}!
 % Patch fill
-/q0 {M {D} repeat} bind def
-/qA {q0 QA} bind def /qa {q0 Qa} bind def /qC {q0 QC} bind def /qc {q0 Qc} bind def
-/qK {q0 QK} bind def /qk {q0 Qk} bind def /qH {q0 QH} bind def /qh {q0 Qh} bind def
-/qI {q0 QI} bind def /qi {q0 Qi} bind def /qQ {q0 QQ} bind def
+/q0 {M {D} repeat}!
+/qA {q0 QA}! /qC {q0 QC}! /qK {q0 QK}! /qH {q0 QH}! /qI {q0 QI}! /qQ {q0 QQ}!
+/qa {q0 Qa}! /qc {q0 Qc}! /qk {q0 Qk}! /qh {q0 Qh}! /qi {q0 Qi}!
 % Single-headed vector
-/V0 {0 exch M 0 D D D D D 0 D} bind def
-/VA {V0 QA} bind def /Va {V0 Qa} bind def /VC {V0 QC} bind def /Vc {V0 Qc} bind def
-/VK {V0 QK} bind def /Vk {V0 Qk} bind def /VH {V0 QH} bind def /Vh {V0 Qh} bind def
-/VI {V0 QI} bind def /Vi {V0 Qi} bind def /VQ {V0 QQ} bind def
+/V0 {0 exch M 0 D D D D D 0 D}!
+/VA {V0 QA}! /VC {V0 QC}! /VK {V0 QK}! /VH {V0 QH}! /VI {V0 QI}! /VQ {V0 QQ}!
+/Va {V0 Qa}! /Vc {V0 Qc}! /Vk {V0 Qk}! /Vh {V0 Qh}! /Vi {V0 Qi}!
 % Double-headed vector
-/v0 {0 0 M D D 0 D D D D D 0 D D} bind def
-/vA {v0 QA} bind def /va {v0 Qa} bind def /vC {v0 QC} bind def /vc {v0 Qc} bind def
-/vK {v0 QK} bind def /vk {v0 Qk} bind def /vH {v0 QH} bind def /vh {v0 Qh} bind def
-/vI {v0 QI} bind def /vi {v0 Qi} bind def /vQ {v0 QQ} bind def
+/v0 {0 0 M D D 0 D D D D D 0 D D}!
+/vA {v0 QA}! /vC {v0 QC}! /vK {v0 QK}! /vH {v0 QH}! /vI {v0 QI}! /vQ {v0 QQ}!
+/va {v0 Qa}! /vc {v0 Qc}! /vk {v0 Qk}! /vh {v0 Qh}! /vi {v0 Qi}!
 % Box
-/B0 {M dup 0 D exch 0 exch D neg 0 D} bind def
-/BA {B0 QA} bind def /Ba {B0 Qa} bind def /BC {B0 QC} bind def /Bc {B0 Qc} bind def
-/BK {B0 QK} bind def /Bk {B0 Qk} bind def /BH {B0 QH} bind def /Bh {B0 Qh} bind def
-/BI {B0 QI} bind def /Bi {B0 Qi} bind def /BQ {B0 QQ} bind def
+/B0 {M dup 0 D exch 0 exch D neg 0 D}!
+/BA {B0 QA}! /BC {B0 QC}! /BK {B0 QK}! /BH {B0 QH}! /BI {B0 QI}! /BQ {B0 QQ}!
+/Ba {B0 Qa}! /Bc {B0 Qc}! /Bk {B0 Qk}! /Bh {B0 Qh}! /Bi {B0 Qi}!
 % Circle
-/CA {0 360 arc V A F U N} bind def /Ca {0 360 arc V A F U S} bind def
-/CC {0 360 arc V C F U N} bind def /Cc {0 360 arc V C F U S} bind def
-/CK {0 360 arc V K F U N} bind def /Ck {0 360 arc V K F U S} bind def
-/CH {0 360 arc V H F U N} bind def /Ch {0 360 arc V H F U S} bind def
-/CI {0 360 arc V I F U N} bind def /Ci {0 360 arc V I F U S} bind def
-/CQ {0 360 arc S} bind def
+/CA {0 360 arc V A F U N}! /Ca {0 360 arc V A F U S}!
+/CC {0 360 arc V C F U N}! /Cc {0 360 arc V C F U S}!
+/CK {0 360 arc V K F U N}! /Ck {0 360 arc V K F U S}!
+/CH {0 360 arc V H F U N}! /Ch {0 360 arc V H F U S}!
+/CI {0 360 arc V I F U N}! /Ci {0 360 arc V I F U S}!
+/CQ {0 360 arc S}!
 % Diamond
-/D0 {M 4 {dup} repeat 0 G neg dup dup D exch D D} bind def
-/DA {D0 QA} bind def /Da {D0 Qa} bind def /DC {D0 QC} bind def /Dc {D0 Qc} bind def
-/DK {D0 QK} bind def /Dk {D0 Qk} bind def /DH {D0 QH} bind def /Dh {D0 Qh} bind def
-/DI {D0 QI} bind def /Di {D0 Qi} bind def /DQ {D0 QQ} bind def
+/D0 {M 4 {dup} repeat 0 G neg dup dup D exch D D}!
+/DA {D0 QA}! /DC {D0 QC}! /DK {D0 QK}! /DH {D0 QH}! /DI {D0 QI}! /DQ {D0 QQ}!
+/Da {D0 Qa}! /Dc {D0 Qc}! /Dk {D0 Qk}! /Dh {D0 Qh}! /Di {D0 Qi}!
 % Rectangle
-/R0 {M V R dup -2 div 0 G exch dup -2 div 0 exch G exch dup 0 D exch 0 exch D neg 0 D} bind def
-/RA {R0 QA U} bind def /Ra {R0 Qa U} bind def /RC {R0 QC U} bind def /Rc {R0 Qc U} bind def
-/RK {R0 QK U} bind def /Rk {R0 Qk U} bind def /RH {R0 QH U} bind def /Rh {R0 Qh U} bind def
-/RI {R0 QI U} bind def /Ri {R0 Qi U} bind def /RQ {R0 QQ U} bind def
+/R0 {M V R dup -2 div 0 G exch dup -2 div 0 exch G exch dup 0 D exch 0 exch D neg 0 D}!
+/RA {R0 QA U}! /RC {R0 QC U}! /RK {R0 QK U}! /RH {R0 QH U}! /RI {R0 QI U}! /RQ {R0 QQ U}!
+/Ra {R0 Qa U}! /Rc {R0 Qc U}! /Rk {R0 Qk U}! /Rh {R0 Qh U}! /Ri {R0 Qi U}!
 % Square
-/S0 {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D} bind def
-/SA {S0 QA} bind def /Sa {S0 Qa} bind def /SC {S0 QC} bind def /Sc {S0 Qc} bind def
-/SK {S0 QK} bind def /Sk {S0 Qk} bind def /SH {S0 QH} bind def /Sh {S0 Qh} bind def
-/SI {S0 QI} bind def /Si {S0 Qi} bind def /SQ {S0 QQ} bind def
+/S0 {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D}!
+/SA {S0 QA}! /SC {S0 QC}! /SK {S0 QK}! /SH {S0 QH}! /SI {S0 QI}! /SQ {S0 QQ}!
+/Sa {S0 Qa}! /Sc {S0 Qc}! /Sk {S0 Qk}! /Sh {S0 Qh}! /Si {S0 Qi}!
 % Triangle
-/T0 {M V dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D} bind def
-/TA {T0 QA U} bind def /Ta {T0 Qa U} bind def /TC {T0 QC U} bind def /Tc {T0 Qc U} bind def
-/TK {T0 QK U} bind def /Tk {T0 Qk U} bind def /TH {T0 QH U} bind def /Th {T0 Qh U} bind def
-/TI {T0 QI U} bind def /Ti {T0 Qi U} bind def /TQ {T0 QQ U} bind def
+/T0 {M V dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D}!
+/TA {T0 QA U}! /TC {T0 QC U}! /TK {T0 QK U}! /TH {T0 QH U}! /TI {T0 QI U}! /TQ {T0 QQ U}!
+/Ta {T0 Qa U}! /Tc {T0 Qc U}! /Tk {T0 Qk U}! /Th {T0 Qh U}! /Ti {T0 Qi U}!
 % Inverted triangle
-/I0 {M V dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D} bind def
-/IA {I0 QA U} bind def /Ia {I0 Qa U} bind def /IC {I0 QC U} bind def /Ic {I0 Qc U} bind def
-/IK {I0 QK U} bind def /Ik {I0 Qk U} bind def /IH {I0 QH U} bind def /Ih {I0 Qh U} bind def
-/II {I0 QI U} bind def /Ii {I0 Qi U} bind def /IQ {I0 QQ U} bind def
+/I0 {M V dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D}!
+/IA {I0 QA U}! /IC {I0 QC U}! /IK {I0 QK U}! /IH {I0 QH U}! /II {I0 QI U}! /IQ {I0 QQ U}!
+/Ia {I0 Qa U}! /Ic {I0 Qc U}! /Ik {I0 Qk U}! /Ih {I0 Qh U}! /Ii {I0 Qi U}!
 % Star
-/A0 {M V dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop} bind def
-/AA {A0 QA U} bind def /Aa {A0 Qa U} bind def /AC {A0 QC U} bind def /Ac {A0 Qc U} bind def
-/AK {A0 QK U} bind def /Ak {A0 Qk U} bind def /AH {A0 QH U} bind def /Ah {A0 Qh U} bind def
-/AI {A0 QI U} bind def /Ai {A0 Qi U} bind def /AQ {A0 QQ U} bind def
+/A0 {M V dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop}!
+/AA {A0 QA U}! /AC {A0 QC U}! /AK {A0 QK U}! /AH {A0 QH U}! /AI {A0 QI U}! /AQ {A0 QQ U}!
+/Aa {A0 Qa U}! /Ac {A0 Qc U}! /Ak {A0 Qk U}! /Ah {A0 Qh U}! /Ai {A0 Qi U}!
 % Hexagon
-/H0 {M V dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop} bind def
-/HA {H0 QA U} bind def /Ha {H0 Qa U} bind def /HC {H0 QC U} bind def /Hc {H0 Qc U} bind def
-/HK {H0 QK U} bind def /Hk {H0 Qk U} bind def /HH {H0 QH U} bind def /Hh {H0 Qh U} bind def
-/HI {H0 QI U} bind def /Hi {H0 Qi U} bind def /HQ {H0 QQ U} bind def
+/H0 {M V dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop}!
+/HA {H0 QA U}! /HC {H0 QC U}! /HK {H0 QK U}! /HH {H0 QH U}! /HI {H0 QI U}! /HQ {H0 QQ U}!
+/Ha {H0 Qa U}! /Hc {H0 Qc U}! /Hk {H0 Qk U}! /Hh {H0 Qh U}! /Hi {H0 Qi U}!
 % Pentagon
-/N0 {M V dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop} bind def
-/NA {N0 QA U} bind def /Na {N0 Qa U} bind def /NC {N0 QC U} bind def /Nc {N0 Qc U} bind def
-/NK {N0 QK U} bind def /Nk {N0 Qk U} bind def /NH {N0 QH U} bind def /Nh {N0 Qh U} bind def
-/NI {N0 QI U} bind def /Ni {N0 Qi U} bind def /NQ {N0 QQ U} bind def
+/N0 {M V dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop}!
+/NA {N0 QA U}! /NC {N0 QC U}! /NK {N0 QK U}! /NH {N0 QH U}! /NI {N0 QI U}! /NQ {N0 QQ U}!
+/Na {N0 Qa U}! /Nc {N0 Qc U}! /Nk {N0 Qk U}! /Nh {N0 Qh U}! /Ni {N0 Qi U}!
 % Octagon
-/O0 {M V 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop} bind def
-/OA {O0 QA U} bind def /Oa {O0 Qa U} bind def /OC {O0 QC U} bind def /Oc {O0 Qc U} bind def
-/OK {O0 QK U} bind def /Ok {O0 Qk U} bind def /OH {O0 QH U} bind def /Oh {O0 Qh U} bind def
-/OI {O0 QI U} bind def /Oi {O0 Qi U} bind def /OQ {O0 QQ U} bind def
+/O0 {M V 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop}!
+/OA {O0 QA U}! /OC {O0 QC U}! /OK {O0 QK U}! /OH {O0 QH U}! /OI {O0 QI U}! /OQ {O0 QQ U}!
+/Oa {O0 Qa U}! /Oc {O0 Qc U}! /Ok {O0 Qk U}! /Oh {O0 Qh U}! /Oi {O0 Qi U}!
 % Pie Wedge
-/WA {arc QA} bind def /Wa {arc Qa} bind def /WC {arc QC} bind def /Wc {arc Qc} bind def
-/WK {arc QK} bind def /Wk {arc Qk} bind def /WH {arc QH} bind def /Wh {arc Qh} bind def
-/WI {arc QI} bind def /Wi {arc Qi} bind def /WQ {arc QQ} bind def
-
+/WA {arc QA}! /WC {arc QC}! /WK {arc QK}! /WH {arc QH}! /WI {arc QI}! /WQ {arc QQ}!
+/Wa {arc Qa}! /Wc {arc Qc}! /Wk {arc Qk}! /Wh {arc Qh}! /Wi {arc Qi}!
+% To reencode one font with the provided encoding vector
+/PSL_reencode { findfont dup length dict begin
+  {1 index /FID ne {def}{pop pop} ifelse} forall
+  exch /Encoding exch def currentdict end definefont pop
+}!
