@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.54 2007-11-14 21:04:32 remko Exp $
+#	$Id: gmtguru.macros.orig,v 1.55 2008-04-19 23:52:01 guru Exp $
 #
 #	Original GMT Guru Makefile Macro for the main GNUmakefile
 #	Gurus should make a file gmtguru.macros to overrule any setting below.
@@ -32,7 +32,8 @@ GMT_TRIANGLE	= --enable-triangle	# --enable-triangle for Shewchuk's triangulatio
 GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
 GMT_NETCDF	= --enable-netcdf=$(NETCDFHOME)		# Change if your netcdf is elsewhere
 GMT_SITE	=# --enable-update=ftp.soest.hawaii.edu	# Specify your nearest GMT ftp mirror
-GMT_MATLAB	= --enable-matlab=$(MATLAB)	# To compile the mex supplement
+GMT_MATLAB	= #--enable-matlab=$(MATLAB)	# To compile the mex supplement for Matlab
+GMT_OCTAVE	= #--enable-octave=yes	# To compile the mex supplement for Octave
 GMT_64		=# --enable-64		# Compile for 64-bit platforms
 GMT_UNIVERSAL	=# --enable-universal	# Make universal binaries under OS X
 
