@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.255 2008-04-17 18:07:45 remko Exp $
+	$Id: ChangeLog,v 1.256 2008-04-19 23:52:01 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-19	pwessel
+	* configure.ac, src/makegmt.macros.in, mex/makefile:  Added support for --enable-octave
+		as an alternative to --enable-matlab
+
 2008-04-16	remko
 	* psxy.c, psxyz.c:	Two bug fixes in both programs.
 				- If first symbol in list with size was not circle, if got rejected.
