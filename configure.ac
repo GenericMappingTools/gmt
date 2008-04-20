@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.16 2008-04-20 00:03:01 guru Exp $
-AC_REVISION($Revision: 1.16 $)
+dnl $Id: configure.ac,v 1.17 2008-04-20 00:40:17 guru Exp $
+AC_REVISION($Revision: 1.17 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -349,12 +349,12 @@ elif test ! "X$enable_matlab" = "X"; then
 	AC_MSG_RESULT([$MEX_BLD -L$MEX_LIB, extension .$MEX_EXT])
 else
 	AC_MSG_CHECKING(Compiler options for Octave)
-	MEX_BLD=mkoctfile
-	MEX_EXT='oct'
+	MEX_BLD='mkoctfile --mex'
+	MEX_EXT='mex'
 	MEX_LIB=
 	MEX_INC=
-	MEX_XDIR=`octave-config -p LOCALOCTFILEDIR`
-	MEX_MDIR=`octave-config -p LOCALFCNFILEDIR`
+	MEX_XDIR=`octave-config --oct-site-dir`
+	MEX_MDIR=`octave-config --m-site-dir`
 	AC_MSG_RESULT([$MEX_BLD, extension .$MEX_EXT])
 fi
 dnl
