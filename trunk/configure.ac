@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.14 2008-04-19 23:58:52 guru Exp $
-AC_REVISION($Revision: 1.14 $)
+dnl $Id: configure.ac,v 1.15 2008-04-20 00:01:24 guru Exp $
+AC_REVISION($Revision: 1.15 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -294,7 +294,6 @@ if test "X$MATLAB" = "XNONE" ; then
 	AC_MSG_RESULT([Octave/Matlab mex supplement will be skipped])
 elif test ! "X$enable_matlab" = "X"; then
 	AC_MSG_CHECKING(Compiler options for Matlab)
-	MATLAB=$(enable_matlab)
 	MEX_BLD=$(MATLAB)/bin/mex
 	if test "$os" = "Linux" ; then		# Linux systems
 		MEX_EXT='mexglx'
