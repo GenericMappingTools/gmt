@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.15 2008-04-20 00:01:24 guru Exp $
-AC_REVISION($Revision: 1.15 $)
+dnl $Id: configure.ac,v 1.16 2008-04-20 00:03:01 guru Exp $
+AC_REVISION($Revision: 1.16 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -294,7 +294,7 @@ if test "X$MATLAB" = "XNONE" ; then
 	AC_MSG_RESULT([Octave/Matlab mex supplement will be skipped])
 elif test ! "X$enable_matlab" = "X"; then
 	AC_MSG_CHECKING(Compiler options for Matlab)
-	MEX_BLD=$(MATLAB)/bin/mex
+	MEX_BLD=$MATLAB/bin/mex
 	if test "$os" = "Linux" ; then		# Linux systems
 		MEX_EXT='mexglx'
 		MATLAB_MEX='glnx86'
@@ -342,10 +342,10 @@ elif test ! "X$enable_matlab" = "X"; then
 		MATLAB_MEX='mex'
 		MATLAB_LIB='mex'
 	fi
-	MEX_LIB=$(MATLAB)/extern/lib/$(MATLAB_MEX) -l$(MATLAB_LIB)
-	MEX_INC=-I$(MATLAB)/extern/include
-	MEX_XDIR=$(MATLAB)/toolbox/local
-	MEX_MDIR=$(MATLAB)/toolbox/local
+	MEX_LIB=$MATLAB/extern/lib/$MATLAB_MEX -l$MATLAB_LIB
+	MEX_INC=-I$MATLAB/extern/include
+	MEX_XDIR=$MATLAB/toolbox/local
+	MEX_MDIR=$MATLAB/toolbox/local
 	AC_MSG_RESULT([$MEX_BLD -L$MEX_LIB, extension .$MEX_EXT])
 else
 	AC_MSG_CHECKING(Compiler options for Octave)
