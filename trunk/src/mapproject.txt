@@ -7,7 +7,7 @@ mapproject \- Forward and Inverse map transformation of 2-D coordinates
 .SH SYNOPSIS
 \fBmapproject\fP \fIinfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(Ab)|\fBB\fP|\fBf\fP|\fBF\fP\fIlon0\fP/\fIlat0\fP ] [ OPT(C)[\fIdx\fP/\fIdy\fP] ] [ OPT(Dc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(E)[\fIdatum\fP] ] 
-[ OPT(F)[\fBk\fP|\fBm\fP|\fBn\fP|\fBi\fP|\fBc\fP|\fBp\fP] ] [ OPT(G)[\fIx0\fP/\fIy0\fP][\fB-\fP][/\fIunit\fP] ] [ GMT_H_OPT ] [ OPT(I) ] 
+[ OPT(F)[\fBk\fP|\fBm\fP|\fBn\fP|\fBi\fP|\fBc\fP|\fBp\fP] ] [ OPT(G)[\fIx0\fP/\fIy0\fP][\fB+\fP|\fB-\fP][/\fIunit\fP] ] [ GMT_H_OPT ] [ OPT(I) ] 
 [ OPT(L)\fIline.xy\fP[/\fIunit\fP] ] [ GMT_M_OPT ] [ OPT(Q)[\fBd\fP|\fBe\fP] [ OPT(S) ] [ OPT(T)[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
 [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
@@ -65,9 +65,10 @@ Calculate distances along track OR to the optional point set with OPT(G)\fIx0/y0
 choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
 \fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
 last unit requires OPT(R) and OPT(J) to be set.  Upper case  \fBE\fP, \fBK\fP, \fBM\fP, \fBN\fP, or \fBD\fP
-will use exact methods for geodesic distances (Rudoe's method for distances in length units and emplying geocentric\"'
+will use exact methods for geodesic distances (Rudoe's method for distances in length units and employing geocentric\"'
 latitudes in degree calculations, assuming the current ellipsoid is not a sphere).  With no fixed point we
 calculate cumulate distances along track. To obtain incremental distance between successive points, use OPT(G-).
+To specify the 2nd point via two extra columns in the input file, choose OPT(G+).
 #include "explain_-H.txt"
 .TP
 .B \-I

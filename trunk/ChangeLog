@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.256 2008-04-19 23:52:01 guru Exp $
+	$Id: ChangeLog,v 1.257 2008-04-21 19:57:58 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-21	pwessel
+	* mapproject.c:		-G+ will compute distance between coordinates in first 4 columns
+
 2008-04-19	pwessel
 	* configure.ac, src/makegmt.macros.in, mex/makefile:  Added support for --enable-octave
 		as an alternative to --enable-matlab
