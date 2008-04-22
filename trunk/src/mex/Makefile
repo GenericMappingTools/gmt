@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.8 2008-04-19 23:52:01 guru Exp $
+#		$Id: Makefile,v 1.9 2008-04-22 08:51:37 guru Exp $
 #
 #	Makefile for gmt <--> octave/matlab conversion programs
 #	Use with GMT 4.3.0 or later
@@ -31,11 +31,13 @@ PROGS_MEX	= grdinfo.$(MEX_EXT) grdread.$(MEX_EXT) grdwrite.$(MEX_EXT)
 all:		$(PROGS_MEX)
 
 install:	all
+		$(INSTALL) -d $(MEX_XDIR)
 		if [ -w $(MEX_XDIR) ] ; then \
 			$(INSTALL) $(PROGS_MEX) $(MEX_XDIR); \
 		else \
 			$(INSTALL) $(PROGS_MEX) $(bindir); \
 		fi
+		$(INSTALL) -d $(MEX_MDIR)
 		if [ -w $(MEX_MDIR) ] ; then \
 			$(INSTALL) $(PROGS_M) $(MEX_MDIR); \
 		else \
