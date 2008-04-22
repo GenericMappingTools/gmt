@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.89 2008-04-17 04:16:57 guru Exp $
+ *	$Id: mgd77.h,v 1.90 2008-04-22 03:34:38 mtchandl Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -248,6 +248,7 @@ struct MGD77_DATA_RECORD {	/* See MGD77 Documentation from NGDC for details */
 	double time;				/* Time using current GMT absolute time conventions (J2000 UTC) */
 	char word[MGD77_N_STRING_FIELDS][10];	/* The 3 text strings in MGD77 records */
 	unsigned int bit_pattern;		/* Bit pattern indicating which of the 27 fields are present in current record */
+	BOOLEAN keep_nav;				/* Set to false when navigation is bad */
 };
 
 struct MGD77_DATASET {	/* Info for an entire MGD77+ data set */
