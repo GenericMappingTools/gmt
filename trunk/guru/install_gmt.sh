@@ -1,16 +1,16 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.124 2008-04-02 20:48:13 guru Exp $
+#	$Id: install_gmt.sh,v 1.125 2008-04-22 21:07:29 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	29-MAR-2008
+#	22-APR-2008
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.2
-VERSION=4.2.1
-GSHHS=1.9
+VERSION=4.3.0
+GSHHS=1.10
 GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
@@ -463,7 +463,7 @@ GMT_suppl_x_system=d
 GMT_suppl_xgrid=d
 if [ ! "X$MATLAB" = "X" ]; then
 	MATDIR=$MATLAB
-elif [ "$os" = "Rhapsody" ] || [ "$os" = "Darwin" ]; then	# Pick one from Applications folder
+elif [ "$os" = "Darwin" ]; then	# Pick one from Applications folder
 	(echo /Applications/MATLAB* | grep -v '\*' | head -1 > /tmp/$$.matlab) 2> /dev/null
 	if [ ! -s /tmp/$$.matlab ]; then
 		MATDIR=`cat /tmp/$$.matlab`
@@ -486,7 +486,7 @@ dbase:     Extracting data from NGDC DEM and other grids
 gshhs:     Global Self-consistent Hierarchical High-resolution Shoreline extractor
 imgsrc:    Extracting grids from global altimeter files (Sandwell/Smith)
 meca:      Plotting special symbols in seismology and geodesy
-mex:       Matlab interface for reading/writing GMT grdfiles (REQUIRES MATLAB)
+mex:       Interface for reading/writing GMT grdfiles (REQUIRES MATLAB or OCTAVE)
 mgd77:     Programs for handling MGD77 data files
 mgg:       Programs for making, managing, and plotting .gmt files
 misc:      Digitize or stitch line segments, read netCDF 1-D tables, and more
@@ -535,8 +535,9 @@ EOF
 	fi
 	if [ "$GMT_suppl_mex" = "y" ]; then
 		echo " " >&2
-		echo "The mex supplement requires Matlab." >&2
-		MATDIR=`get_def_answer "Enter MATLAB system directory" "$MATDIR"`
+		echo "The mex supplement requires Matlab or Octave." >&2
+		GMT_mex_type=`get_def_answer "Specify matlab or octave" "octave"`
+		MATDIR=`get_def_answer "Enter MATLAB/OCTAVE system directory" "$MATDIR"`
 	fi
 fi
 
@@ -606,6 +607,7 @@ GMT_suppl_imgsrc=$GMT_suppl_imgsrc
 GMT_suppl_gshhs=$GMT_suppl_gshhs
 GMT_suppl_meca=$GMT_suppl_meca
 GMT_suppl_mex=$GMT_suppl_mex
+GMT_mex_type=$GMT_mex_type
 GMT_suppl_mgd77=$GMT_suppl_mgd77
 GMT_suppl_mgg=$GMT_suppl_mgg
 GMT_suppl_misc=$GMT_suppl_misc
@@ -1179,7 +1181,11 @@ else
 fi
 
 if [ ! x"$MATDIR" = x ]; then	# MATDIR is set
-	enable_matlab=--enable-matlab=$MATDIR
+	if [ "X$GMT_mex_type" = "Xmatlab"]
+		enable_matlab=--enable-matlab=$MATDIR
+	else
+		enable_matlab=--enable-octave=$MATDIR
+	fi
 else
 	enable_matlab=
 fi
