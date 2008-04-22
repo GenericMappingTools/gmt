@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.52 2008-04-02 20:48:13 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.53 2008-04-22 21:07:29 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.52 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.53 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -306,7 +306,8 @@ separate from where the smaller files reside.  The selections below are only use
 <INPUT TYPE="checkbox" NAME="checkbox_gshhs"  CHECKED> GSHHS: Global Self-consistent Hierarchical High-resolution Shoreline tools<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_imgsrc"  CHECKED> IMGSRC: Extracting grids from global altimeter files (Sandwell/Smith)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_meca"  CHECKED> MECA: Plotting special symbols in seismology and geodesy<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_mex"> MEX: Matlab interface for reading/writing GMT grdfiles (REQUIRES MATLAB*)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_mex"> MEX: Interface for reading/writing GMT grdfiles for
+	<INPUT TYPE="radio" VALUE="matlab" NAME="radio_mex"> Matlab or <INPUT TYPE="radio" VALUE="octave" NAME="radio_mex" CHECKED>Octave<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_mgd77"  CHECKED> MGD77: Programs for managing and plotting MGD77 data<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED> MGG: Programs for making, managing, and plotting *.gmt data<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED> MISC: Manipulate PostScript, create bit-patterns, extract netCDF columns<BR>
@@ -318,11 +319,11 @@ separate from where the smaller files reside.  The selections below are only use
 
 <P>
 <I>Note: The selected packages will only be installed if you also selected the supplemental tar archive
-above.  The x2sys and x_system packages require the mgg package, the mex package requires Matlab (octave users
-may want to modify it), and xgrid requires various X11 libraries.</I>
+above.  The x2sys and x_system packages require the mgg package, the mex package requires Matlab or Octave,
+and xgrid requires various X11 libraries.</I>
 <BR>
-*Enter Matlab system directory if you selected mex above: <INPUT NAME="matlab_dir" TYPE="text" SIZE="30" VALUE="/usr/local/matlab"><BR>
-<I>Note: You can leave the Matlab path blank if $MATLAB is defined in your environment and points to the correct
+*Enter Matlab or Octave system directory if you selected mex above: <INPUT NAME="matlab_dir" TYPE="text" SIZE="30" VALUE="/usr/local/matlab"><BR>
+<I>Note: You can leave the path blank if $MATLAB is defined in your environment and points to the correct
 directory</I>.
 
 <!--  GMT COMPLETION SELECTION  -->

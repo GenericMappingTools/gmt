@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.27 2008-04-02 20:48:13 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.28 2008-04-22 21:07:29 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -74,6 +74,7 @@ $get_meca	= $gmt_form{'checkbox_meca'};
 $get_mgd77	= $gmt_form{'checkbox_mgd77'};
 $get_mgg	= $gmt_form{'checkbox_mgg'};
 $get_mex	= $gmt_form{'checkbox_mex'};
+$mex_type	= $gmt_form{'radio_mex'};
 $get_misc	= $gmt_form{'checkbox_misc'};
 $get_segyprogs	= $gmt_form{'checkbox_segyprogs'};
 $get_spotter	= $gmt_form{'checkbox_spotter'};
@@ -100,7 +101,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.27 $, on
+# Processed by install_gmt_form.pl $Revision: 1.28 $, on
 #
 #	$now
 #
@@ -261,6 +262,16 @@ if ($get_mex eq "on") {
 }
 else {
 	print FILE "n\n";
+}
+print FILE "GMT_mex_type=";
+if ($mex_type eq "matlab") {
+	print FILE "matlab\n";
+}
+else if ($mex_type eq "octave") {
+	print FILE "octave\n";
+}
+else {
+	print FILE "NONE\n";
 }
 print FILE "GMT_suppl_mgd77=";
 if ($get_mgd77 eq "on") {
