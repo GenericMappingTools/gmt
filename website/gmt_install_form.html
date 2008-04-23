@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.54 2008-04-23 18:21:41 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.55 2008-04-23 23:28:43 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.54 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.55 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -279,7 +279,7 @@ the enronment variable $GMT_SHAREDIR).
 Leave blank to select the shared data directory of the data resources directory given in
 C.7 [Default].</I><BR>
 
-<!--  GMT COASTLINE ALTERNATE DIRECORIES SELECTION  -->
+<!--  GMT COASTLINE ALTERNATE DIRECTORIES SELECTION  -->
 
 <HR><B>9. Alternative coastline directories</B><BR>
 
@@ -321,14 +321,20 @@ separate from where the smaller files reside.  The selections below are only use
 <I>Note: The selected packages will only be installed if you also selected the supplemental tar archive
 above.  The x2sys and x_system packages require the mgg package, the mex package requires Matlab or Octave,
 and xgrid requires various X11 libraries.</I>
+<HR><B>11. Additional information for MEX (Matlab or Octave):</B><BR>
 <BR>
-*Enter Matlab or Octave system directory if you selected mex above: <INPUT NAME="matlab_dir" TYPE="text" SIZE="30" VALUE="/usr/local/matlab"><BR>
-<I>Note: You can leave the path blank if $MATLAB is defined in your environment and points to the correct
-directory</I>.
+Enter head of the Matlab system directory if you selected Matlab above: <INPUT NAME="matlab_dir" TYPE="text" SIZE="30" VALUE="/usr/local/matlab"><BR>
+<I>Note: You can leave the path blank under OS X or if $MATLAB is defined in your environment and points to the correct directory</I>.<BR>
+Enter directory for *.m files for the GMT/Matlab-Octave interface: <INPUT NAME="mex_mdir" TYPE="text" SIZE="30"><BR>
+Enter directory for *.mex files for the GMT/Matlab-Octave interface: <INPUT NAME="mex_xdir" TYPE="text" SIZE="30"><BR>
+<I>Note: You can leave these two paths blank to select the default paths for either Matlab or Octave.  In any case
+you must have permission to create these directories (if they don't exist) and write to them.  Finally, if you chose Octave
+then it is assumed that octave is already in your executable path, in particular that the utilities mkoctfile and octave-config
+can be found when configure is run</I>.
 
 <!--  GMT COMPLETION SELECTION  -->
 
-<HR><B>11. Complete the operation:<BR>
+<HR><B>12. Complete the operation:<BR>
 
 </B><INPUT TYPE="checkbox" NAME="checkbox_delete" > Delete all archives upon successful installation<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_run"  CHECKED> Run all example scripts (assumes scripts tar archive was chosen above)<BR>

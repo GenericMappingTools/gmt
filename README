@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.44 2008-01-23 03:22:47 guru Exp $
+#		$Id: README,v 1.45 2008-04-23 23:28:43 guru Exp $
 #
 #	Copyright (c) 1991-2008, P. Wessel & W. H. F. Smith
 #
@@ -213,13 +213,16 @@ There are a few GMT-specific options in configure.  They are
 
 	--enable-netcdf=dir     Specify netCDF directory [/usr/local/netcdf]
 	--enable-matlab=dir     Specify Matlab directory [/usr/local/matlab]
+	--enable-octave		Select Octave interface (disables Matlab interface)
+	--enable-mex-mdir	Override where to place *.m functions for Matlab or Octave
+	--enable-mex-xdir	Override where to place *.mex functions for Matlab or Octave
 	--enable-shared		To make shared (dynamic) libraries
 	--enable-triangle	To use J. Shewchuk's fast triangulation
 	--enable-US		To use US (inch) instead of SI (cm) units
 	--enable-www=www-dir	Set www directory [PREFIX/www]
 	--enable-eps		Make Encapsulated PostScript by default [Freeform PS]
 	--disable-flock		Do NOT use file locking on .gmtcommands files
-	--disable-mex           Disable compilation of mex supplement which requires Matlab
+	--disable-mex           Disable compilation of mex supplement which requires Matlab or Octave
 	--disable-xgrid         Disable compilation of xgrid supplement which requires X11
 
 By default, GMT will be made with static libraries.  If you system
@@ -407,7 +410,7 @@ Currently, the supplemental archive include the directories:
 	imgsrc	  - Data extractor for Smith/Sandwell altimetry grids.
 	meca 	  - Plotting of focal mechanisms, velocity arrows,
 		    and error ellipses on maps.
-	mex	  - Matlab mex files for grid file I/O.
+	mex	  - Matlab or Octave mex files for grid file I/O.
 	mgg	  - Programs for MGD-77 data in .gmt format.
 	mgd77	  - Programs for handling of native MGD77 files.
 	misc	  - psmegaplot, makepattern, gmtdigitize,

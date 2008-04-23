@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.17 2008-04-20 00:40:17 guru Exp $
-AC_REVISION($Revision: 1.17 $)
+dnl $Id: configure.ac,v 1.18 2008-04-23 23:28:43 guru Exp $
+AC_REVISION($Revision: 1.18 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -69,21 +69,23 @@ dnl Special configure options for GMT installation
 dnl -----------------------------------------------------------------
 dnl
 AC_ARG_ENABLE(update,   [  --enable-update=site    GMT ftp site [[ftp.soest.hawaii.edu]]])
-AC_ARG_ENABLE(netcdf,   [  --enable-netcdf=dir     directory with netCDF [[/usr/local/netcdf]]])
-AC_ARG_ENABLE(matlab,   [  --enable-matlab=dir     EITHER directory with Matlab [[/usr/local/matlab]]])
-AC_ARG_ENABLE(octave,   [  --enable-octave=dir     OR directory with Octave [[/usr/local/octave]]])
-AC_ARG_ENABLE(debug,    [  --enable-debug          compile for debugging instead of optimizing code])
-AC_ARG_ENABLE(shared,   [  --enable-shared         build shared (dynamic) GMT libraries instead of static])
-AC_ARG_ENABLE(triangle, [  --enable-triangle       use J. Shewchuk's fast, non-GPL triangulation routine])
-AC_ARG_ENABLE(US,       [  --enable-US             choose US (inch) rather than SI (cm) units as default])
-AC_ARG_ENABLE(www,      [  --enable-www=dir        directory in which to install GMT www pages [[PREFIX/www]]])
-AC_ARG_ENABLE(eps,      [  --enable-eps            set Encapsulated PostScript as default output format [[Freeform PS]]])
-AC_ARG_ENABLE(universal,[  --enable-universal      make universal binaries [[OS X only]]])
-AC_ARG_ENABLE(64,       [  --enable-64             enable 64-bit compilation if supported])
-AC_ARG_ENABLE(flock,    [  --disable-flock         disable file locking on .gmtcommands4 file])
-AC_ARG_ENABLE(mex,      [  --disable-mex           disable compilation of mex supplement which requires Octave/Matlab])
-AC_ARG_ENABLE(rpath,	[  --disable-rpath         do not hardcode runtime library paths])
-AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         disable compilation of xgrid supplement which requires X11])
+AC_ARG_ENABLE(netcdf,   [  --enable-netcdf=dir     Directory with netCDF [[/usr/local/netcdf]]])
+AC_ARG_ENABLE(matlab,   [  --enable-matlab=dir     Build GMT-matlab interface, give directory with Matlab distribution [[/usr/local/matlab]]])
+AC_ARG_ENABLE(octave,   [  --enable-octave         Build GMT-octave interface (disables Matlab interface)])
+AC_ARG_ENABLE(mex_mdir, [  --enable-mex-mdir=dir   Directory in which to install GMT-octave/Matlab .m files [[auto]]])
+AC_ARG_ENABLE(mex_xdir, [  --enable-mex-xdir=dir   Directory in which to install GMT-octave/Matlab mex files [[auto]]])
+AC_ARG_ENABLE(debug,    [  --enable-debug          Compile for debugging instead of optimizing code])
+AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
+AC_ARG_ENABLE(triangle, [  --enable-triangle       Use J. Shewchuk's fast, non-GPL triangulation routine])
+AC_ARG_ENABLE(US,       [  --enable-US             Choose US (inch) rather than SI (cm) units as default])
+AC_ARG_ENABLE(www,      [  --enable-www=dir        Directory in which to install GMT www pages [[PREFIX/www]]])
+AC_ARG_ENABLE(eps,      [  --enable-eps            Set Encapsulated PostScript as default output format [[Freeform PS]]])
+AC_ARG_ENABLE(universal,[  --enable-universal      Make universal binaries [[OS X only]]])
+AC_ARG_ENABLE(64,       [  --enable-64             Enable 64-bit compilation if supported])
+AC_ARG_ENABLE(flock,    [  --disable-flock         Disable file locking on .gmtcommands4 file])
+AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
+AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
+AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 dnl
@@ -294,7 +296,7 @@ if test "X$MATLAB" = "XNONE" ; then
 	AC_MSG_RESULT([Octave/Matlab mex supplement will be skipped])
 elif test ! "X$enable_matlab" = "X"; then
 	AC_MSG_CHECKING(Compiler options for Matlab)
-	MEX_BLD=$MATLAB/bin/mex
+	MEX_BLD="$MATLAB/bin/mex -DGMT_MATLAB"
 	if test "$os" = "Linux" ; then		# Linux systems
 		MEX_EXT='mexglx'
 		MATLAB_MEX='glnx86'
@@ -342,20 +344,44 @@ elif test ! "X$enable_matlab" = "X"; then
 		MATLAB_MEX='mex'
 		MATLAB_LIB='mex'
 	fi
-	MEX_LIB=$MATLAB/extern/lib/$MATLAB_MEX -l$MATLAB_LIB
+	MEX_LIB="-L$MATLAB/extern/lib/$MATLAB_MEX -l$MATLAB_LIB"
 	MEX_INC=-I$MATLAB/extern/include
-	MEX_XDIR=$MATLAB/toolbox/local
-	MEX_MDIR=$MATLAB/toolbox/local
-	AC_MSG_RESULT([$MEX_BLD -L$MEX_LIB, extension .$MEX_EXT])
+	if test "X$enable_mex_mdir" = "X" || test "X$enable_mdir" = "Xyes" ; then
+		MEX_MDIR=$MATLAB/toolbox/local
+	else
+		MEX_MDIR=$enable_mex_mdir
+	fi
+	if test "X$enable_mex_xdir" = "X" || test "X$enable_xdir" = "Xyes" ; then
+		MEX_XDIR=$MATLAB/toolbox/local
+	else
+		MEX_XDIR=$enable_mex_xdir
+	fi
+	AC_MSG_RESULT([$MEX_BLD $MEX_LIB, extension .$MEX_EXT])
+	AC_MSG_CHECKING(Matlab install dir for .m files)
+	AC_MSG_RESULT([$MEX_MDIR])
+	AC_MSG_CHECKING(Matlab install dir for .mex files)
+	AC_MSG_RESULT([$MEX_XDIR])
 else
 	AC_MSG_CHECKING(Compiler options for Octave)
-	MEX_BLD='mkoctfile --mex'
+	MEX_BLD='mkoctfile --mex -DGMT_OCTAVE'
 	MEX_EXT='mex'
 	MEX_LIB=
 	MEX_INC=
-	MEX_XDIR=`octave-config --oct-site-dir`
-	MEX_MDIR=`octave-config --m-site-dir`
+	if test "X$enable_mex_mdir" = "X" || test "X$enable_mdir" = "Xyes" ; then
+		MEX_MDIR=`octave-config --m-site-dir`
+	else
+		MEX_MDIR=$enable_mex_mdir
+	fi
+	if test "X$enable_mex_xdir" = "X" || test "X$enable_xdir" = "Xyes" ; then
+		MEX_XDIR=`octave-config --oct-site-dir`
+	else
+		MEX_XDIR=$enable_mex_xdir
+	fi
 	AC_MSG_RESULT([$MEX_BLD, extension .$MEX_EXT])
+	AC_MSG_CHECKING(Octave install dir for .m files)
+	AC_MSG_RESULT([$MEX_MDIR])
+	AC_MSG_CHECKING(Octave install dir for .mex files)
+	AC_MSG_RESULT([$MEX_XDIR])
 fi
 dnl
 dnl -----------------------------------------------------------------

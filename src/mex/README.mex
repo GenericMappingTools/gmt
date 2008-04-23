@@ -1,4 +1,4 @@
-	$Id: README.mex,v 1.6 2007-09-15 04:34:28 remko Exp $
+	$Id: README.mex,v 1.7 2008-04-23 23:28:43 guru Exp $
 
 Distributed under the GNU Public License (see file ../COPYING)
 
@@ -57,3 +57,10 @@ Modified:	R Scharroo 15-SEP-07
 
 Configuring now done by configure in main directory.
 grdinfo2.c renamed back to grdinfo.c.
+
+Modified:	P Wessel 22-APR-08
+
+The main GMT configure now prepare either a Matlab-GMT interface
+installation or a Matlab-octave interface installation.  See
+configure --help for details.
+

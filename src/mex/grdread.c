@@ -1,5 +1,5 @@
 /*
- *	$Id: grdread.c,v 1.8 2008-04-14 00:29:16 guru Exp $
+ *	$Id: grdread.c,v 1.9 2008-04-23 23:28:43 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -25,6 +25,7 @@
  *		11/12/98 P Wessel, ANSI-C and calls GMT_begin()
  *		10/07/99 P Wessel, Did not set x,y if [x,y,z,d] was used
  *		10/20/03 P Wessel, longer path names [R Mueller]
+ *		4/22/08 P Wessel, Now works with either Matlab or Octave
  */
  
 #include "gmt.h"
@@ -161,4 +162,3 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mxFree (filein);
 	return;
 }
-

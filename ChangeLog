@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.257 2008-04-21 19:57:58 guru Exp $
+	$Id: ChangeLog,v 1.258 2008-04-23 23:28:43 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-22	pwessel
+	* configure.ac:		Added support for --enable-mex-mdir=dir and --enable-mex-xdir=dir
+				to override the Matlab/Octave preferred paths for local *.mfiles
+				and *.mex functions.
+	* install_gmt:		Now uses these new variables when running configure.
+
 2008-04-21	pwessel
 	* mapproject.c:		-G+ will compute distance between coordinates in first 4 columns
 

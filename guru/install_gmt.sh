@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.125 2008-04-22 21:07:29 guru Exp $
+#	$Id: install_gmt.sh,v 1.126 2008-04-23 23:28:43 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -537,7 +537,12 @@ EOF
 		echo " " >&2
 		echo "The mex supplement requires Matlab or Octave." >&2
 		GMT_mex_type=`get_def_answer "Specify matlab or octave" "octave"`
-		MATDIR=`get_def_answer "Enter MATLAB/OCTAVE system directory" "$MATDIR"`
+		if [ "$GMT_mex_type" = "matlab" ];then
+			MATDIR=`get_def_answer "Enter MATLAB system directory" "$MATDIR"`
+		fi
+		echo "Hit return for default paths or provide the alternative paths for matlab/Octave files:" >&2
+		mex_mdir=`get_def_answer "Enter Install directory for .m functions" ""`
+		mex_xdir=`get_def_answer "Enter Install directory for .mex functions" ""`	
 	fi
 fi
 
@@ -644,7 +649,12 @@ GMT_flock=$GMT_flock
 #---------------------------------------------
 GMT_run_examples=$GMT_run_examples
 GMT_delete=$GMT_delete
+#---------------------------------------------
+#       MEX SECTION
+#---------------------------------------------
 MATDIR=$MATDIR
+mex_mdir=$mex_mdir
+mex_xdir=$mex_xdir
 EOF
 
 echo "Session parameters written to file $file" >&2
@@ -1189,6 +1199,16 @@ if [ ! x"$MATDIR" = x ]; then	# MATDIR is set
 else
 	enable_matlab=
 fi
+if [ ! x"$mex_mdir" = x ]; then	# mex_mdir is set
+	enable_mex_mdir=--enable-mex-mdir=$mex_mdir
+else
+	enable_mex_mdir=
+fi
+if [ ! x"$mex_xdir" = x ]; then	# mex_xdir is set
+	enable_mex_xdir=--enable-mex-xdir=$mex_xdir
+else
+	enable_mex_xdir=
+fi
 
 #--------------------------------------------------------------------------------
 #	GMT installation commences here
@@ -1216,7 +1236,7 @@ fi
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   --mandir=$GMT_man --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid 
+  $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir
 
 if [ -f .gmtconfigure ]; then
 	cat .gmtconfigure

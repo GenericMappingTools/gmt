@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.28 2008-04-22 21:07:29 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.29 2008-04-23 23:28:43 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -82,6 +82,8 @@ $get_x2sys	= $gmt_form{'checkbox_x2sys'};
 $get_x_system	= $gmt_form{'checkbox_x_system'};
 $get_xgrid	= $gmt_form{'checkbox_xgrid'};
 $matlab_dir	= $gmt_form{'matlab_dir'};
+$mex_mdir	= $gmt_form{'mex_mdir'};
+$mex_xdir	= $gmt_form{'mex_xdir'};
 $delete		= $gmt_form{'checkbox_delete'};
 $run		= $gmt_form{'checkbox_run'};
 
@@ -101,7 +103,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.28 $, on
+# Processed by install_gmt_form.pl $Revision: 1.29 $, on
 #
 #	$now
 #
@@ -425,8 +427,19 @@ if ($delete eq "on") {
 else {
 	print FILE "GMT_delete=n\n";
 }
+
+print FILE "#---------------------------------------------\n";
+print FILE "#	MEX SECTION\n";
+print FILE "#---------------------------------------------\n";
+
 if ($matlab_dir ne "") {
 	print FILE "MATDIR=", $matlab_dir, "\n";
+}
+if ($mex_mdir ne "") {
+	print FILE "MEX_MDIR=", $mex_mdir, "\n";
+}
+if ($mex_xdir ne "") {
+	print FILE "MEX_XDIR=", $mex_xdir, "\n";
 }
 
 close (FILE);

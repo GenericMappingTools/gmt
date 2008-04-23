@@ -1,5 +1,5 @@
 /*
- *	$Id: grdinfo.c,v 1.3 2008-04-14 00:29:16 guru Exp $
+ *	$Id: grdinfo.c,v 1.4 2008-04-23 23:28:43 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -23,6 +23,7 @@
  *		10/06/98 P Wessel, upgrade to GMT 3.1 function calls
  *		11/12/98 P Wessel, ANSI-C and calls GMT_begin()
  *		10/20/03 P Wessel, longer path names [R Mueller]
+ *		4/22/08 P Wessel, Now works with either Matlab or Octave
  */
  
 #include "gmt.h"
