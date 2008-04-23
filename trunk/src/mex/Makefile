@@ -1,11 +1,10 @@
-#		$Id: Makefile,v 1.9 2008-04-22 08:51:37 guru Exp $
+#		$Id: Makefile,v 1.10 2008-04-23 23:28:43 guru Exp $
 #
-#	Makefile for gmt <--> octave/matlab conversion programs
+#	Makefile for gmt <--> octave/matlab interface programs
 #	Use with GMT 4.3.0 or later
 #
-# Note that if you have write permission in $MEX_XDIR and $MEX_MDIR
-# then that is where install will place the mex and m files.  Otherwise,
-# we will put them in $(bindir).
+# Note that you must have write permission to mkdir and write to $MEX_XDIR and $MEX_MDIR
+# 
 #----------------------------------------------------------------------------
 #	The rest should should be ok. NO EDITING BEYOND HERE, unless your
 #	Octave/Matlab setup was not auto-detected by the configure file
@@ -61,7 +60,7 @@ install-man uninstall-man manpages:	;
 spotless:	clean
 
 clean:
-		\rm -f .gmt* *% .mexrc.sh $(PROGS_MEX)
+		\rm -f .gmt* *% *.o .mexrc.sh $(PROGS_MEX)
 
 #-------------------------------------------------------------------------------
 #	program rules

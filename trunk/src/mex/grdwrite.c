@@ -1,5 +1,5 @@
 /*
- *	$Id: grdwrite.c,v 1.8 2008-04-14 00:29:16 guru Exp $
+ *	$Id: grdwrite.c,v 1.9 2008-04-23 23:28:43 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -24,10 +24,17 @@
  *		10/06/98 P Wessel, upgrade to GMT 3.1 function calls
  *		11/12/98 P Wessel, ANSI-C and calls GMT_begin()
  *		10/20/03 P Wessel, longer path names [R Mueller]
+ *		4/22/08 P Wessel, Now works with either Matlab or Octave
 */
  
 #include "gmt.h"
 #include "mex.h"
+
+#ifdef GMT_MATLAB
+#define MEX_PROG "Matlab"
+#else
+#define MEX_PROG "Octave"
+#endif
 
 int grdwrite (double z_8[], double x[], double y[], double info[], char *fileout, char *title, int nx, int ny, int pix)
 {
@@ -80,7 +87,7 @@ int grdwrite (double z_8[], double x[], double y[], double info[], char *fileout
 		grd.node_offset = pix;
 	}
 		
-	strcpy (grd.remark, "File written from Matlab with grdwrite");
+	sprintf (grd.remark, "File written from %s with grdwrite", MEX_PROG);
 	
 	/*  Allocate memory */
 
