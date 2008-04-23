@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.39 2008-04-04 17:27:31 remko Exp $
+#	$Id: Makefile,v 1.40 2008-04-23 21:33:04 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -33,9 +33,9 @@ DEFINES		= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
 PREV_VERSION	= 4.2
 VERSION		= 4.3
 # PW: I incrememnted these nubmers on 3/6/08 after adding some missing islands to the database
-# These are the values to use for the next GMT version 4.2.2
+# These are the values to use for the next GMT version 4.3.0
 GSHHS_DATA_VERSION	= 1.10
-GSHHS_PROG_VERSION	= 1.9
+GSHHS_PROG_VERSION	= 1.10
 
 # Douglas-Peucker parameters:
 DP_h 		= 0.2
@@ -132,6 +132,7 @@ zip-gshhs:
 		zip -r -9 -q gshhs_$(GSHHS_DATA_VERSION).zip gshhs/*_[clihf].b
 		cd $(rootdir)/src; \
 		zip -r -9 -q -l gshhs_$(GSHHS_PROG_VERSION)_src.zip gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
+		mv $(rootdir)/src/gshhs_$(GSHHS_PROG_VERSION)_src.zip .
 
 #-------------------------------------------------------------------------------
 #	object file dependencies
