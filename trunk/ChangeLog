@@ -1,8 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.259 2008-04-24 18:30:12 remko Exp $
+	$Id: ChangeLog,v 1.260 2008-04-24 21:14:37 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-04-24	remko
-	* ps2raster:		Now proper use of mkstemp to make temporary files without security issues.
+	* ps2raster:		Use PID to augment the file names of temporary files.
+				This is not totally secure, but the alternative, mkstemp, is not
+				standard enough (not ISO C90).
 				Option -N has become obsolete. Use -S and/or -Te instead.
 
 2008-04-22	pwessel
