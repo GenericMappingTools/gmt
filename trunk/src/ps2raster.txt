@@ -4,7 +4,7 @@
 ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats using GhostScript
 .SH SYNOPSIS
 \fBps2raster\fP \fIpsfile(s)\fP [ OPT(A)[\fBu\fP] ] [ OPT(D)\fIoutdir\fP ] [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] 
-[ OPT(L)\fIlistfile\fP]  [ OPT(N) ] [ OPT(P) ] [ OPT(Te)|\fBf\fP|\fBj\fP|\fBg\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ]
+[ OPT(L)\fIlistfile\fP]  [ OPT(P) ] [ OPT(S) ] [ OPT(Te)|\fBf\fP|\fBj\fP|\fBg\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ]
 .SH DESCRIPTION
 \fBps2raster\fP reads one or more \fIPostScript\fP files (or a file with a list of \fIPostScript\fP filenames) and modifies the
 page size in order that the resulting image will have a size determined by the BoundingBox.
@@ -37,19 +37,15 @@ or give the full path here. (e.g., \fB\-G\fPc:\\programs\\gs\\gs7.05\\bin\\gswin
 The \fIlistfile\fP is an ASCII file with the names of the \fIPostScript\fP files to be converted.
 .TP
 .B \-N
-Do \fInot\fP remove auxiliary files (by default it does). Auxiliary files are built using as base the input
-\fIPostScript\fP files and consist of:
-.br
-\fIpsfile\fP\fB_tmp.eps\fP -> \fIPostScript\fP with a modified BoundingBox.
-.br
-\fIpsfile\fP\fB_tmp.bat\fP -> script with the ghostscript command that does the job.
-.br
-Use this option to save the script and run it later with different settings.
+This option is obsolete. Use OPT(S) and/or OPT(Te) instead.
 .TP
 .B \-P
 Force Portrait mode. All Landscape mode plots will be rotated back so that they show unrotated in
 Portrait mode. This is practical when converting to image formats or preparing EPS or PDF plots for
 inclusion in documents.
+.TP
+.B \-S
+Print to standard output the ghostscript command after it has been executed.
 .TP
 .B \-T
 Sets the output format, where \fBe\fP means EPS, \fBf\fP means PDF, \fBj\fP means JPEG, \fBg\fP means PNG,

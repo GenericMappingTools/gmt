@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.258 2008-04-23 23:28:43 guru Exp $
+	$Id: ChangeLog,v 1.259 2008-04-24 18:30:12 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-04-24	remko
+	* ps2raster:		Now proper use of mkstemp to make temporary files without security issues.
+				Option -N has become obsolete. Use -S and/or -Te instead.
+
 2008-04-22	pwessel
 	* configure.ac:		Added support for --enable-mex-mdir=dir and --enable-mex-xdir=dir
 				to override the Matlab/Octave preferred paths for local *.mfiles
