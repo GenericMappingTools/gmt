@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.261 2008-04-25 00:42:22 guru Exp $
+	$Id: ChangeLog,v 1.262 2008-04-25 05:35:28 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-04-24	remko
 	* ps2raster:		Use PID to augment the file names of temporary files.
@@ -8,6 +8,7 @@
 				Option -N has become obsolete. Use -S and/or -Te instead.
 
 2008-04-22	pwessel
+	* psxy.c:	Now will properly clip polygon outline and not draw it along clipped border.
 	* configure.ac:		Added support for --enable-mex-mdir=dir and --enable-mex-xdir=dir
 				to override the Matlab/Octave preferred paths for local *.mfiles
 				and *.mex functions.
