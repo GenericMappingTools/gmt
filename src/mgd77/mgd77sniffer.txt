@@ -4,9 +4,9 @@
 mgd77sniffer \- Scan for errors in MGD77 data
 .SH SYNOPSIS
 \fBmgd77sniffer\fP \fINGDC-ids\fP [ OPT(A)\fIfieldabbrev\fP,\fIscale\fP,\fIoffset\fP ] [ OPT(C)\fImaxspd\fP ] 
-[ OPT(D)\fBd\fP|\fBe\fP|\fBf\fP|\fBl\fP|\fBm\fP|\fBs\fP|\fBv\fP ] [ OPT(g)\fIfieldabbrev\fP,\fIimggrid\fP,\fIscale\fP,\fImode\fP ] 
+[ OPT(D)\fBd\fP|\fBe\fP|\fBf\fP|\fBl\fP|\fBm\fP|\fBs\fP|\fBv\fP ][\fIr\fP] [ OPT(g)\fIfieldabbrev\fP,\fIimggrid\fP,\fIscale\fP,\fImode\fP ] 
 [ OPT(G)\fIfieldabbrev\fP,\fIgrid\fP ] [ GMT_H_OPT ] [ OPT(I)\fIfieldabbrev\fP,\fIrec1\fP,\fIrecN\fP ] 
-[ OPT(N) ] [ OPT(L)\fIcustom limits file\fP ]
+[ OPT(K) ] [ OPT(L)\fIcustom limits file\fP ] [ OPT(N) ]
 [ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ]
 [ GMT_Rgeo_OPT ] [ OPT(S)\fBd\fP|\fBs\fP|\fBt\fP ] 
 [ OPT(T)\fIgap\fP ] [ GMT_V_OPT ] [ OPT(W)\fBc\fP|\fBg\fP|\fBo\fP|\fBs\fP|\fBt\fP|\fBv\fP|\fBx\fP ] [ GMT_bo_OPT ]
@@ -43,7 +43,7 @@ are flagged as excessive by default.
 .B \-D
 Suppress default warning output and only dump cruise data row-by-row such as values, gradients,
 grid-cruise differences, E77 error summaries for each record, re-created MGD77 records
-or sniffer limits.
+or sniffer limits. Append r to include all records (default omits records where navigation errors were detected).
 .br
 .sp
 \fB\-Dd\fP
@@ -151,6 +151,12 @@ higher correlation regression.
 Append a field abbreviation and the first and last record in a range of records that should
 be flagged as bad (and set to NaN prior to the analysis). Repeat as many times as needed.
 May not be used for multiple cruises.
+.TP
+.B \-K
+Reverse navigation quality flags (good to bad and vice versa). May be necessary when a
+majority of navigation fixes are erroneously flagged bad, which can happen when a cruise's
+first navigation fix is extremely erroneous. Caution! This will affect sniffer output and
+should only be attempted after careful manual navigation review.
 .TP
 .B \-L
 Override mgd77sniffer default error detection limits. Supply path and filename to

@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77_e77.h,v 1.7 2008-04-22 03:34:38 mtchandl Exp $	
+ *	$Id: mgd77_e77.h,v 1.8 2008-04-25 23:57:08 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2008 by P. Wessel and M. T. Chandler
@@ -32,19 +32,20 @@
 #define N_NAV_TYPES          6
 
 /* E77 Header Errata Codes */
-#define E77_HDR_RLS          0
-#define E77_HDR_SCALE        1
-#define E77_HDR_DCSHIFT      2
-#define E77_HDR_RMS          3
-#define E77_HDR_CORR         4
-#define E77_HDR_ANOM_FAA     5
-#define E77_HDR_ANOM_MAG     6
-#define E77_HDR_GRID_OFFSET  7
-#define E77_HDR_SIGN         8
-#define E77_HDR_FLAGRANGE    9
-#define E77_HDR_BCC          10
-#define E77_HDR_PRECISION    11
-#define E77_HDR_PDR          12
+#define E77_HDR_NAV          0
+#define E77_HDR_RLS          1
+#define E77_HDR_SCALE        2
+#define E77_HDR_DCSHIFT      3
+#define E77_HDR_RMS          4
+#define E77_HDR_CORR         5
+#define E77_HDR_ANOM_FAA     6
+#define E77_HDR_ANOM_MAG     7
+#define E77_HDR_GRID_OFFSET  8
+#define E77_HDR_SIGN         9
+#define E77_HDR_FLAGRANGE    10
+#define E77_HDR_BCC          11
+#define E77_HDR_PRECISION    12
+#define E77_HDR_PDR          13
 
 /* E77 Default Warning Codes */
 #define E77_ERROR           'E'
