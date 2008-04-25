@@ -28,9 +28,9 @@ examples/ex04/geoid.cpt
 examples/ex04/job04.csh
 examples/ex04/job04.sh
 examples/ex04/job04.bat
-examples/ex04/job4c.csh
-examples/ex04/job4c.sh
-examples/ex04/job4c.bat
+examples/ex04/job04c.csh
+examples/ex04/job04c.sh
+examples/ex04/job04c.bat
 examples/ex05/job05.sh
 examples/ex05/job05.csh
 examples/ex05/job05.bat
