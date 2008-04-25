@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.260 2008-04-24 21:14:37 remko Exp $
+	$Id: ChangeLog,v 1.261 2008-04-25 00:42:22 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-04-24	remko
 	* ps2raster:		Use PID to augment the file names of temporary files.
@@ -22,7 +22,7 @@
 
 2008-04-16	remko
 	* psxy.c, psxyz.c:	Two bug fixes in both programs.
-				- If first symbol in list with size was not circle, if got rejected.
+				- If first symbol in list with size was not circle, it got rejected.
 				- When sizes of -Sr or -Sj were read from list, they were always inches.
 
 2008-04-15	remko
@@ -95,12 +95,12 @@
 	* GNUmakefile:		Removed creation of *.tar.gz and GMT_src.zip.
 	* configure.ac:		CFLAGS, CPPFLAGS, LDFLAGS as set by user is ADDED to anything configure
 				dreams up. Neither OVERRULES the other.
-				NETCDF_LIB and NETCDF_INC can be used to set netCDF locations seperately.
+				NETCDF_LIB and NETCDF_INC can be used to set netCDF locations separately.
 				Create versioned shared libraries on Linux.
 	* */makefile:		Changes made accordingly.
 	* job04c.*:		Renamed from job4c.*
 	* run_example_tests.sh:	New test script of example files
-	* run_*_tests.sh:	Avoid accessive error messages when compare fails on missing files, etc.
+	* run_*_tests.sh:	Avoid excessive error messages when compare fails on missing files, etc.
 	* ps2raster.c:		Always translate and/or rotate EPS output to origin. Not only when
 				in concert with other formats. This makes -P -Te work as -P -Tef.
 
@@ -258,7 +258,7 @@
 	* configure.ac, src/makefile, src/x2sys/makefile, src/mgd77/makefile, makegmt.macros.in:
 				Shared libraries made easy: now set LIBEXT=a for static libraries and
 				LIBEXT=$(SL) for shared libraries. Works also in supplements.
-	* nc2xy.c:		Time coordinate recognised as such. Relative time output according
+	* nc2xy.c:		Time coordinate recognized as such. Relative time output according
 				to TIME_UNIT and TIME_EPOCH set in .gmtdefaults.
 	* gmt_grdio.c:		Fixed 3 bugs in GMT_decode_grd_h_info that caused problems parsing -D
 				option. Explicitly exclude = sign from becoming separator.
@@ -376,7 +376,7 @@
 	* gmt_init.c:		Made central longitude optional in cylindrical projections.
 				Made Mercator to have 1, 2, or 3 arguments.
 				Allow optional standard parallel in cylindrical equidistant (-JQ).
-				Added cyclindrical stereographic projection.
+				Added cylindrical stereographic projection.
 				Optionally use names for projections (similar to Proj4). Updated usage info.
 	* explain_-J*.txt, psbasemap.txt:	Updated accordingly.
 	* gmt_support.[ch]:	Added GMT_strlcmp in support of GMT_project_type
@@ -385,7 +385,7 @@
 	* gmt_proj.c:		Simplified GMT_vmerc. Use central meridian and standard parallel as input.
 				Added cylindrical stereographic projection functions
 	* gmt_project.h:	Changed the numbering of projection IDs. Added GMT_CYL_STEREO
-				Consolidated all cyclindrical projection parameters into one set of four.
+				Consolidated all cylindrical projection parameters into one set of four.
 	* gmt_grdio.c, mgd77manage.c:	Use the new three parameters of Mercator initialization.
 	* *.c:			Avoid using numbers for projections and add GMT_CYL_STEREO where needed.
 

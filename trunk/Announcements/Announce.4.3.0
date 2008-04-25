@@ -2,15 +2,15 @@ Dear GMT user-
 
 We are pleased to announce the release of GMT version 4.3.0.
 For a complete list of enhancements and features, please
-see Chapter 1 in the Technical Reference & Cookbook or
-follow the RELEASES link on the updated GMT web page
+see Chapter 1 in the Technical Reference & Cookbook online
 (http://gmt.soest.hawaii.edu).  GMT 4.3.0 is a recommended
 upgrade for all users.  It also is required if you plan to
-take advantage of GMT's 64-bit support.
+take advantage of GMT's 64-bit support or use GMT with Octave.
 
 At this point, the two European site and the NOAA mirror have
 synced up, and we expect the others to follow within 24 hours.
-Note the Australia mirror is still down...
+We are also pleased to announce a new Australia mirror at the
+University of Sydney.
 
 
 Sincerely,
