@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.39 2008-04-04 17:27:31 remko Exp $
+#	$Id: Makefile,v 1.40 2008-04-25 05:43:53 guru Exp $
 #
 # makefile for x2sys directory
 #
@@ -36,17 +36,12 @@ install:	all
 			\mv -f libx2sys.$(SL) libx2sys.$(SL_VERSION) ; \
 			$(LN_S) libx2sys.$(SL_VERSION) libx2sys.$(SL) ; \
 		fi
-		$(INSTALL) -d $(datadir)/x2sys
-		for i in *.def; do \
-			cp -f -p $$i $(datadir)/x2sys; \
-		done
 
 uninstall:	
 		cd $(bindir); \rm -f $(PROGS)
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			cd $(libdir); \rm -f $(LIB) $(LIB:.$(LIBEXT)=.a)
 		fi
-		\rm -rf $(datadir)/x2sys
 
 install-man:	$(MAN1)
 		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
