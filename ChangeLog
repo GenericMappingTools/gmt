@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.262 2008-04-25 05:35:28 guru Exp $
+	$Id: ChangeLog,v 1.263 2008-04-25 05:43:53 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-24	pwessel
+	* x2sys:		Moved *.def to share/x2sys
+
 2008-04-24	remko
 	* ps2raster:		Use PID to augment the file names of temporary files.
 				This is not totally secure, but the alternative, mkstemp, is not
