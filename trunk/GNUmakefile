@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.25 2008-04-04 17:24:47 remko Exp $
+#  $Id: GNUmakefile,v 1.26 2008-04-25 02:41:30 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -252,7 +252,7 @@ zip_all:	zip_src zip_bin
 
 zip_bin:	zip_exe zip_suppl_exe
 
-zip_src:	zip_progs zip_share zip_coast zip_tut zip_web zip_pdf zip_scripts zip_suppl
+zip_src:	zip_share zip_coast zip_tut zip_web zip_pdf zip_scripts zip_suppl
 
 full:		tar_full zip_full
 
@@ -332,8 +332,9 @@ zip_web:	ftpdir
 
 tar_pdf:	ftpdir
 		echo "make GMT$(GMT_VERSION)_pdf.tar.bz2"
-		tar -cjf ftp/GMT$(GMT_VERSION)_pdf.tar.bz2 -C .. GMT$(GMT_VERSION)/COPYING \
-			GMT$(GMT_VERSION)/www/gmt/doc/pdf/GMT_*.pdf
+		ls www/gmt/doc/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
+		tar -cjf ftp/GMT$(GMT_VERSION)_pdf.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
+		rm -f tmp.lis
 
 zip_pdf:	ftpdir
 		rm -f ftp/GMT_pdf.zip

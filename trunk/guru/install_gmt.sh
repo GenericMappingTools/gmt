@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.126 2008-04-23 23:28:43 guru Exp $
+#	$Id: install_gmt.sh,v 1.127 2008-04-25 02:41:30 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -769,7 +769,7 @@ ftp.iag.usp.br
 ftp.geologi.uio.no
 gd.tuwien.ac.at
 ftp.scc.u-tokai.ac.jp
-ftp.geosci.usyd.edu.au
+mirror.geosci.usyd.edu.au
 EOF
 
 cat << EOF > gmt_install.ftp_dns
@@ -780,6 +780,7 @@ cat << EOF > gmt_install.ftp_dns
 0
 0
 1
+0
 EOF
 #--------------------------------------------------------------------------------
 
