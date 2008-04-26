@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.38 2008-04-26 05:37:58 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.39 2008-04-26 22:36:16 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
@@ -26,7 +26,7 @@ REM
 REM Author: Paul Wessel, 25-APR-2008
 REM ----------------------------------------------------
 REM
-REM How to make and install GMT under Win95/98/NT/2K/XP:
+REM How to build GMT under Windows:
 REM
 REM STEP a: Install GMT using instructions in gmtinstall.bat
 REM

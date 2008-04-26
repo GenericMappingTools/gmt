@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.33 2008-03-26 22:04:28 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.34 2008-04-26 22:36:16 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
@@ -27,9 +27,7 @@ REM
 REM Author: Paul Wessel, 25-MAR-2008
 REM ----------------------------------------------------
 REM
-REM How to make and install GMT under DOS/Win95/98:
-REM [Under NT/2000/XP you may edit the Environmental
-REM  variables from the System settings instead]
+REM How to build GMT executables under Windows:
 REM
 REM STEP a: Install netcdf 3.6.2 (compile it yourself or get
 REM	    ready-to-go binaries from www.unidata.ucar.edu
@@ -42,10 +40,15 @@ REM STEP b: Set the environment needed by MSC by running
 REM	    C:\MSVC\DEVSTUDIO\VC\BIN\VCVARS32.BAT
 REM	    (your MSVC directory may be different)
 REM
-REM STEP c: Modify GMTENV.BAT.  Later, you may want to run it
-REM	    from inside autoexec.bat so that the proper PATH is set.
-REM	    Here, we call it directly:
-CALL GMTENV.BAT
+REM STEP c: Set the environment needed by GMT.  These are
+REM	    HOME	Your home directory, perhaps C:\
+REM	    GMTHOME	Top dir of the GMT installation tree, e.g., C:\GMT
+REM	    GMT_SHAREDIR	Place to read GMT run-time files.  If not
+REM				set we use %GMTHOME%\share
+REM	    INCLUDE	Add the path to the netCDF include file netcdf.h
+REM	    LIB		Add the path to the netCDF library netcdf.lib
+REM	    PATH	Add the path to the netCDF DLL library netcdf.dll
+REM	    PATH	Add the path to the GMT executables (%GMTHOME%\bin)
 REM
 REM STEP d: Check/edit definitions of BINDIR, LIBDIR, and GMT_SHARE_PATH.
 REM	    Make sure BINDIR below points to a valid directory
