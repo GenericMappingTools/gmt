@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.26 2008-04-25 02:41:30 guru Exp $
+#  $Id: GNUmakefile,v 1.27 2008-04-26 03:55:15 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -402,6 +402,43 @@ zip_coast zip_high zip_full:	ftpdir
 		(cd ..; zip -r -9 -q -l GMT/ftp/GSHHS_$(subst zip_,,$@).zip GMT/COPYING)
 		if [ "$(subst zip_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
 		   (cd ..; zip -r -9 -q    GMT/ftp/GSHHS_$(subst zip_,,$@).zip GMT/share/coast/*_[$$suf].cdf)
+
+#	The zip_dist target is for GMT Developers to move everything onto a Windows platform
+#	for building GMT installers with Inno Setup
+
+zip_dist:
+	echo "make GMT_dist.zip"
+	rm -f ftp/GMT_dist.zip
+	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip GMT/COPYING)
+	grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' > asc.lis
+	grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' >> asc.lis
+	echo GMT/src/gmt_version.h | sed -e 's:^:GMT$(GMT_VERSION)/:' >> asc.lis
+	echo GMT/guru/*.iss | sed -e 's:^:GMT$(GMT_VERSION)/:' >> asc.lis
+	echo GMT/guru/*.txt | sed -e 's:^:GMT$(GMT_VERSION)/:' >> asc.lis
+	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
+	grep -vh '#' guru/GMT_share_files_ascii.lis | sed -e 's:^:GMT/:' > asc.lis
+	grep -vh '#' guru/GMT_share_files_bin.lis   | sed -e 's:^:GMT/:' > bin.lis
+	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
+	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip `cat GMT/bin.lis`)
+	sed -e 's:^:GMT/:' guru/GMT_tutorial.lis | grep -v '\.nc$$' > asc.lis
+	sed -e 's:^:GMT/:' guru/GMT_tutorial.lis | grep '\.nc$$' > bin.lis
+	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip GMT/COPYING `cat GMT/asc.lis`)
+	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip `cat GMT/bin.lis`)
+	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip  \
+		GMT/www/gmt/gmt_{man,services,suppl}.html GMT/www/gmt/doc/html/*.html \
+		GMT/www/gmt/doc/html/GMT_{Docs,Tutorial}/*.html)
+	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip GMT/www/gmt/gmt_back.gif \
+		GMT/www/gmt/doc/html/GMT_{Docs,Tutorial}/*.png)
+	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip GMT/www/gmt/doc/pdf/GMT_*.pdf)
+	sed -e 's:^:GMT/:' guru/GMT_examples.lis | egrep -v '\.nc$$|\.bz2$$|\.ras$$' > asc.lis
+	sed -e 's:^:GMT/:' guru/GMT_examples.lis | egrep '\.nc$$|\.bz2$$|\.ras$$' > bin.lis
+	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
+	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip `cat GMT/bin.lis`)
+	sed -e 's:^:GMT/:' guru/GMT_suppl.lis | egrep -v '\.man$$|\.html|xgrid|configure' > asc.lis
+	grep '\.html$$' guru/GMT_suppl.lis | awk -F/ '{printf "GMT/www/gmt/doc/html/%s\n", $$NF}' >> asc.lis
+	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
+	(cd ..; zip -r -9 -q GMT/ftp/GMT_dist.zip GMT/share/coast/*.cdf)
+	rm -f asc.lis bin.lis
 
 include Makefile
 
