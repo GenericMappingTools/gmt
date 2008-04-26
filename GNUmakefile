@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.27 2008-04-26 03:55:15 guru Exp $
+#  $Id: GNUmakefile,v 1.28 2008-04-26 04:34:47 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -410,19 +410,18 @@ zip_dist:
 	echo "make GMT_dist.zip"
 	rm -f ftp/GMT_dist.zip
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip GMT/COPYING)
-	grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' > asc.lis
-	grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' >> asc.lis
-	echo GMT/src/gmt_version.h | sed -e 's:^:GMT$(GMT_VERSION)/:' >> asc.lis
-	echo GMT/guru/*.iss | sed -e 's:^:GMT$(GMT_VERSION)/:' >> asc.lis
-	echo GMT/guru/*.txt | sed -e 's:^:GMT$(GMT_VERSION)/:' >> asc.lis
+	grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:GMT/:' > asc.lis
+	grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT/:' >> asc.lis
+	echo GMT/src/gmt_version.h | sed -e 's:^:GMT/:' >> asc.lis
+	ls guru/*.iss guru/*.txt | sed -e 's:^:GMT/:' >> asc.lis
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
 	grep -vh '#' guru/GMT_share_files_ascii.lis | sed -e 's:^:GMT/:' > asc.lis
 	grep -vh '#' guru/GMT_share_files_bin.lis   | sed -e 's:^:GMT/:' > bin.lis
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
 	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip `cat GMT/bin.lis`)
-	sed -e 's:^:GMT/:' guru/GMT_tutorial.lis | grep -v '\.nc$$' > asc.lis
-	sed -e 's:^:GMT/:' guru/GMT_tutorial.lis | grep '\.nc$$' > bin.lis
-	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip GMT/COPYING `cat GMT/asc.lis`)
+	grep -v '\.nc$$' guru/GMT_tutorial.lis | sed -e 's:^:GMT/:' > asc.lis
+	grep '\.nc$$' guru/GMT_tutorial.lis | sed -e 's:^:GMT/:' > bin.lis
+	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
 	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip `cat GMT/bin.lis`)
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip  \
 		GMT/www/gmt/gmt_{man,services,suppl}.html GMT/www/gmt/doc/html/*.html \
@@ -430,12 +429,12 @@ zip_dist:
 	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip GMT/www/gmt/gmt_back.gif \
 		GMT/www/gmt/doc/html/GMT_{Docs,Tutorial}/*.png)
 	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip GMT/www/gmt/doc/pdf/GMT_*.pdf)
-	sed -e 's:^:GMT/:' guru/GMT_examples.lis | egrep -v '\.nc$$|\.bz2$$|\.ras$$' > asc.lis
-	sed -e 's:^:GMT/:' guru/GMT_examples.lis | egrep '\.nc$$|\.bz2$$|\.ras$$' > bin.lis
+	egrep -v '\.nc$$|\.bz2$$|\.ras$$' guru/GMT_examples.lis | sed -e 's:^:GMT/:' > asc.lis
+	egrep '\.nc$$|\.bz2$$|\.ras$$' guru/GMT_examples.lis | sed -e 's:^:GMT/:' > bin.lis
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
 	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip `cat GMT/bin.lis`)
-	sed -e 's:^:GMT/:' guru/GMT_suppl.lis | egrep -v '\.man$$|\.html|xgrid|configure' > asc.lis
-	grep '\.html$$' guru/GMT_suppl.lis | awk -F/ '{printf "GMT/www/gmt/doc/html/%s\n", $$NF}' >> asc.lis
+	egrep -v '\.man$$|\.html|xgrid|configure' guru/GMT_suppl.lis | sed -e 's:^:GMT/:' > asc.lis
+	grep '\.html$$' guru/GMT_suppl.lis | sed -e 's:^:GMT/:' >> asc.lis
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
 	(cd ..; zip -r -9 -q GMT/ftp/GMT_dist.zip GMT/share/coast/*.cdf)
 	rm -f asc.lis bin.lis
