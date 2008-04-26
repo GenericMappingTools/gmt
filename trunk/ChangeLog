@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.264 2008-04-26 04:02:10 guru Exp $
+	$Id: ChangeLog,v 1.265 2008-04-26 18:20:18 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-26	pwessel
+	* grdview.c:		The -Qc option failed to set the "build image" flag and produced
+				garbage surface tiles.
+				
 2008-04-25	pwessel
 	* x2sys:		Moved *.def to share/x2sys
 	* mgd77/mgd77sniffer.c	Cumulative fixes & updates since August:
