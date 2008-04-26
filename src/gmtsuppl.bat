@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.35 2008-01-23 03:52:12 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.36 2008-04-26 03:49:55 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
@@ -130,7 +130,7 @@ CL %COPT% gmt2dat.c    gmt_mgg.lib %GMTLIB%
 CL %COPT% dat2gmt.c    gmt_mgg.lib %GMTLIB%
 CL %COPT% gmtinfo.c    gmt_mgg.lib %GMTLIB%
 CL %COPT% gmtlegs.c    gmt_mgg.lib %GMTLIB%
-CL %COPT% gmtlist.c    gmt_mgg.lib %GMTLIB%
+CL %COPT% /I..\x_system gmtlist.c    gmt_mgg.lib %GMTLIB%
 CL %COPT% gmtpath.c    gmt_mgg.lib %GMTLIB%
 CL %COPT% gmttrack.c   gmt_mgg.lib %GMTLIB%
 CL %COPT% mgd77togmt.c gmt_mgg.lib %GMTLIB%
