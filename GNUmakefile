@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.29 2008-04-26 05:02:37 guru Exp $
+#  $Id: GNUmakefile,v 1.30 2008-04-26 22:36:15 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -48,26 +48,12 @@
 #	To tar full coastlines		make tar_full
 #	To tar high coastlines		make tar_high
 #
-#	To generate zipfiles:		make zip_all
-#	To zip source:			make zip_progs
-#	To zip executables:		make zip_exe
-#	To zip shared data		make zip_share
-#	To zip c,l,i coastlines		make zip_coast
-#	To zip tutorial			make zip_tut
-#	To zip web docs			make zip_web
-#	To zip pdf files		make zip_pdf
-#	To zip scripts			make zip_scripts
-#	To zip supplements		make zip_suppl
-#	To zip supplements executables	make zip_suppl_exe
-#
-#	These two must be done separately:
-#	To zip full coastlines		make zip_full
-#	To zip high coastlines		make zip_high
-#
+#	To generate zipfiles:
+#	To zip everything:		make zip_dist
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		13-SEP-2007
+#	Date:		26-APR-2008
 #
 #-------------------------------------------------------------------------------
 #	DEFAULT SETTINGS
@@ -86,8 +72,7 @@ sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is gur
 #-------------------------------------------------------------------------------
 .PHONY:		FILES man manpages webman webdoc pdfman docs prep_suppl get_coast get_high get_full \
 		latest-config help update create newsite usable site archive \
-		tar_all zip_all zip_bin zip_src \
-		full high tar_full zip_full tar_high zip_high installl suppl alltests \
+		tar_all full high tar_full tar_high zip_dist installl suppl alltests \
 		doctests extests tests ex examples cvsclean
 
 help::
@@ -246,17 +231,9 @@ tar_all:	tar_progs tar_share tar_coast tar_tut tar_web tar_pdf tar_scripts tar_s
 		@echo " "
 		@echo "Completed tarring off entire archive"
 
-zip_all:	zip_src zip_bin
-		@echo " "
-		@echo "Completed zipping off entire archive"
+full:		tar_full
 
-zip_bin:	zip_exe zip_suppl_exe
-
-zip_src:	zip_share zip_coast zip_tut zip_web zip_pdf zip_scripts zip_suppl
-
-full:		tar_full zip_full
-
-high:		tar_high zip_high
+high:		tar_high
 
 ftpdir:
 		mkdir -p ftp
@@ -276,43 +253,11 @@ tar_share:	ftpdir
 		tar -cjf ftp/GMT$(GMT_VERSION)_share.tar.bz2 -C .. -T tmp.lis
 		rm -f tmp.lis
 
-zip_share:	ftpdir
-		rm -f ftp/GMT_share.zip
-		grep -vh '#' guru/GMT_share_files_ascii.lis | sed -e 's:^:GMT/:' > asc.lis
-		grep -vh '#' guru/GMT_share_files_bin.lis   | sed -e 's:^:GMT/:' > bin.lis
-		echo "make GMT_share.zip"
-		(cd ..; zip -r -9 -q -l GMT/ftp/GMT_share.zip `cat GMT/asc.lis`)
-		(cd ..; zip -r -9 -q    GMT/ftp/GMT_share.zip `cat GMT/bin.lis`)
-		rm -f asc.lis bin.lis
-
-zip_exe:	ftpdir
-		if [ -e "bin/gmt.dll" ]; then \
-		  rm -f ftp/GMT_exe.zip; \
-		  echo "make GMT_exe.zip"; \
-		  grep -v '^#' guru/GMT_programs.lis  | awk '{printf "GMT/bin/%s.exe\n", $$1}' > bin.lis; \
-		  echo "GMT/bin/libnetcdf.dll" >> bin.lis; \
-		  chmod +x bin/*.dll; \
-		  (cd ..; zip -r -9 -q -l GMT/ftp/GMT_exe.zip GMT/COPYING GMT/README.WIN32 \
-		     GMT/src/gmtenv.bat GMT/share/conf/gmt.conf); \
-		  (cd ..; zip -r -9 -q    GMT/ftp/GMT_exe.zip `cat GMT/bin.lis` \
-		     GMT/bin/{gmt,psl}.dll GMT/lib/{gmt,psl}.{lib,exp}); \
-		  rm -f asc.lis bin.lis; \
-		fi
-
 tar_tut:	ftpdir
 		echo "make GMT$(GMT_VERSION)_tut.tar.bz2"
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_tutorial.lis > tmp.lis
 		tar -cjf ftp/GMT$(GMT_VERSION)_tut.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
-
-zip_tut:	ftpdir
-		rm -f ftp/GMT_tut.zip
-		echo "make GMT_tut.zip"
-		sed -e 's:^:GMT/:' guru/GMT_tutorial.lis | grep -v '\.nc$$' > asc.lis
-		sed -e 's:^:GMT/:' guru/GMT_tutorial.lis | grep '\.nc$$' > bin.lis
-		(cd ..; zip -r -9 -q -l GMT/ftp/GMT_tut.zip GMT/COPYING `cat GMT/asc.lis`)
-		(cd ..; zip -r -9 -q    GMT/ftp/GMT_tut.zip `cat GMT/bin.lis`)
-		rm -f asc.lis bin.lis
 
 tar_web:	ftpdir
 		echo "make GMT$(GMT_VERSION)_web.tar.bz2"
@@ -321,26 +266,11 @@ tar_web:	ftpdir
 			GMT$(GMT_VERSION)/www/gmt/doc/html/GMT_{Docs,Tutorial}
 		rm -f tmp.lis
 
-zip_web:	ftpdir
-		rm -f ftp/GMT_web.zip
-		echo "make GMT_web.zip"
-		(cd ..; zip -r -9 -q -l GMT/ftp/GMT_web.zip GMT/COPYING \
-			GMT/www/gmt/gmt_{man,services,suppl}.html GMT/www/gmt/doc/html/*.html \
-			GMT/www/gmt/doc/html/GMT_{Docs,Tutorial}/*.html)
-		(cd ..; zip -r -9 -q    GMT/ftp/GMT_web.zip GMT/www/gmt/gmt_back.gif \
-			GMT/www/gmt/doc/html/GMT_{Docs,Tutorial}/*.png)
-
 tar_pdf:	ftpdir
 		echo "make GMT$(GMT_VERSION)_pdf.tar.bz2"
 		ls www/gmt/doc/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
 		tar -cjf ftp/GMT$(GMT_VERSION)_pdf.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
-
-zip_pdf:	ftpdir
-		rm -f ftp/GMT_pdf.zip
-		echo "make GMT_pdf.zip"
-		(cd ..; zip -r -9 -q -l GMT/ftp/GMT_pdf.zip GMT/COPYING)
-		(cd ..; zip -r -9 -q    GMT/ftp/GMT_pdf.zip GMT/www/gmt/doc/pdf/GMT_*.pdf)
 
 tar_scripts:	ftpdir
 		echo "make GMT$(GMT_VERSION)_scripts.tar.bz2"
@@ -349,44 +279,11 @@ tar_scripts:	ftpdir
 		tar -cjf ftp/GMT$(GMT_VERSION)_scripts.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
 
-zip_scripts:	ftpdir
-		rm -f ftp/GMT_scripts.zip
-		echo "make GMT_scripts.zip"
-		sed -e 's:^:GMT/:' guru/GMT_examples.lis | egrep -v '\.nc$$|\.bz2$$|\.ras$$' > asc.lis
-		sed -e 's:^:GMT/:' guru/GMT_examples.lis | egrep '\.nc$$|\.bz2$$|\.ras$$' > bin.lis
-		(cd ..; zip -r -9 -q -l GMT/ftp/GMT_scripts.zip GMT/COPYING `cat GMT/asc.lis`)
-		(cd ..; zip -r -9 -q    GMT/ftp/GMT_scripts.zip `cat GMT/bin.lis`)
-		rm -f asc.lis bin.lis
-
 tar_suppl:	ftpdir
 		echo "make GMT$(GMT_VERSION)_suppl.tar.bz2"
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_suppl.lis > tmp.lis
 		tar -cjf ftp/GMT$(GMT_VERSION)_suppl.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
-
-zip_suppl:	ftpdir
-		rm -f ftp/GMT_suppl.zip
-		echo "make GMT_suppl.zip"
-		sed -e 's:^:GMT/:' guru/GMT_suppl.lis | egrep -v '\.man$$|\.html|xgrid|configure' > asc.lis
-		grep '\.html$$' guru/GMT_suppl.lis | awk -F/ '{printf "GMT/www/gmt/doc/html/%s\n", $$NF}' >> asc.lis
-		(cd ..; zip -r -9 -q -l GMT/ftp/GMT_suppl.zip GMT/COPYING `cat GMT/asc.lis`)
-		rm -f asc.lis
-
-zip_suppl_exe:	ftpdir
-		if [ -e "bin/spotter.dll" ]; then \
-		  rm -f ftp/GMT_suppl_exe.zip; \
-		  echo "make GMT_suppl_exe.zip"; \
-		  sed -e 's:\.: :g' -e 's:/: :g' guru/GMT_suppl.lis \
-			| awk '{if ($$NF == "c") printf "GMT/bin/%s.exe\n", $$(NF-1)}' \
-			| egrep -vi 'lib|sub|util|distaz|grdread|grdwrite|grdinfo|gmt_|x2sys.exe|xgrid|configure' \
-		        | sort -u > bin.lis; \
-		  chmod +x bin/*.dll; \
-		  (cd ..; zip -r -9 -q -l GMT/ftp/GMT_suppl_exe.zip GMT/COPYING); \
-		  (cd ..; zip -r -9 -q    GMT/ftp/GMT_suppl_exe.zip `cat GMT/bin.lis` \
-		     GMT/bin/{gmt_mgg,mgd77,spotter,x2sys}.dll \
-		     GMT/lib/{gmt_mgg,mgd77,spotter,x2sys}.{lib,exp}); \
-		  rm -f bin.lis; \
-		fi
 
 #	Note: coastline files now stored relative to share, instead of GMT/share
 
@@ -395,13 +292,6 @@ tar_coast tar_high tar_full:	ftpdir
 		if [ "$(subst tar_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
 			tar -cjf ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2 COPYING \
 			share/coast/binned_*_[$$suf].cdf -C src/gshhs README.gshhs
-
-zip_coast zip_high zip_full:	ftpdir
-		rm -f ftp/GSHHS_$(subst zip_,,$@).zip
-		echo "make GSHHS_$(subst zip_,,$@).zip"
-		(cd ..; zip -r -9 -q -l GMT/ftp/GSHHS_$(subst zip_,,$@).zip GMT/COPYING)
-		if [ "$(subst zip_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
-		   (cd ..; zip -r -9 -q    GMT/ftp/GSHHS_$(subst zip_,,$@).zip GMT/share/coast/*_[$$suf].cdf)
 
 #	The zip_dist target is for GMT Developers to move everything onto a Windows platform
 #	for building GMT installers with Inno Setup

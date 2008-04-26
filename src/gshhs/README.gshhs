@@ -1,12 +1,12 @@
 			G S H H S
 
-Global Self-consistant Hierarchical High-resolution Shorelines
+Global Self-consistent Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../COPYING)
 
 Version 1.10 May 1, 2008
 Due to a numbering snafu the GMT 4.2.1 release started calling
 the GSHHS data set using the same numbering as the GSHHS software.
-Thus, GSHHS v 1.9 is the data set verson that follows v1.6.
+Thus, GSHHS v 1.9 is the data set version that follows v1.6.
 For the GMT 4.3.0 release the GSHHS version is 1.10 since we
 have added two missing islands off Long Island, NY.
 Also, thanx to Markus Metz the gshhstograss.c has been updated.

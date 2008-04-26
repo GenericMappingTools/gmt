@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.20 2007-11-26 02:10:50 remko Exp $
+#	$Id: RELEASE.HOWTO,v 1.21 2008-04-26 22:36:16 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -36,18 +36,15 @@ must ensure you do all the steps listed below:
 5.  Prepare the archives:
     make archive >& log
    
-6.  Goto Windows and get all *.zip files and install
-    Copy *.exe *.dll back to GMT/bin and *.exp *.lib to GMT/lib
-   
-7.  Freshen the new zip files for executables
-    make zip_exe zip_suppl_exe
-   
-8.  Determine file sizes of all archives and update these values
+6.  Determine file sizes of all archives and update these values
     in guru/install_gmt and website/gmt_install_form.html
    
-9.  In GMT/ftp, update .message, README.GMT, and VERSION
+7.  Run make zip_dist, install the zip under Windows and build
+    the three Windows installers, then place them in GMT/ftp.
 
-10.  In GMT/website:
+8.  In GMT/ftp, update .message, README.GMT, and VERSION
+
+9.  In GMT/website:
     a) Update gmt_arrrghh.html, gmt_bugs.html, gmt_faq.html,
        gmt_install_form.html, gmt_news.html, gmt_releases.html
     b) create web examples:
@@ -61,7 +58,7 @@ must ensure you do all the steps listed below:
        make update-version-live
     d) Follow the instructions given by the make update-version call
    
-11. Send email notifications:
+10. Send email notifications:
     a) Alert the mirror sites (gmt-mirrors) that a new version has been posted.
     b) Send email to gmt-help and gmt-group with the Announcement.
 

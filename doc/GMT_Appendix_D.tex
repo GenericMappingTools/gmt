@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_D.tex,v 1.22 2008-04-06 01:30:32 remko Exp $
+%	$Id: GMT_Appendix_D.tex,v 1.23 2008-04-26 22:36:16 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -18,63 +18,44 @@ ftp from several mirror sites.  We also maintain a \GMT\
 page on the World Wide Web (http://\GMTSITE);
 See this page for installation directions 
 which allow for a simplified, automatic install procedure
-(for CD-R and DVD-R solutions, see \htmladdnormallink{http://www.geoware-online.com}{http://www.geoware-online.com}.)
+(for CDVD-R solutions, see \htmladdnormallink{http://www.geoware-online.com}{http://www.geoware-online.com}.)
 
-The \GMT\ tar archives are available both in \progname{gzip}
-and \progname{bzip2} format.  If neither of these utilities
-are installed on your system, you should know that the former
-program is available from GNU\footnote{www.gnu.org} while the
-latter can be obtained from RedHat\footnote{http://sources.redhat.com/bzip2/index.html}.
-\progname{bzip2} compresses much better than \progname{gzip}:
-for example, the full resolution coastline database is only
-$\sim$29 Mb in \progname{bzip2} format compared to a hefty
-$\sim$44 Mb in \progname{gzip}.  These files have the .bz2 suffix. \\
+The \GMT\ compressed tar archives requires \progname{bzip2} to expand.  If this utility
+is not installed on your system, you must obtained it by your system's package manager
+or install it from \footnote{http://www.bzip.org}.
 
 The GMT archives are as follows:
 
 \begin{description}
 
-\item[GMT\_src.tar.\{gz,bz2\}] Contains all \GMT\ source code needed for compilation, cpt files, and \PS\ patterns.
+\item[GMT\_src.tar.bz2] Contains all \GMT\ source code needed for compilation.
 
-\item[GMT\_share.tar.\{gz,bz2\}] Contains support files needed at run-time (cpt files, and \PS\ patterns).
+\item[GMT\_share.tar.bz2] Contains support files needed at run-time (cpt files, and \PS\ patterns).
 
-\item[GMT\_coast.tar.\{gz,bz2\}] Contains the intermediate,
+\item[GMT\_coast.tar.bz2] Contains the intermediate,
 low, and crude resolutions of the GSHHS coastline database.  Required
 with GMT\_src.tar and GMT\_share.tar for minimal setup needed to run \GMT.
 
-\item[GMT\_pdf.tar.\{gz,bz2\}] Contains PDF versions all \GMT\ documentation
+\item[GMT\_pdf.tar.bz2] Contains PDF versions all \GMT\ documentation
 (man pages, Cookbook and Technical Reference, and the tutorial).
 
-\item[GMT\_web.tar.\{gz,bz2\}] Contains HTML versions all \GMT\ documentation
+\item[GMT\_web.tar.bz2] Contains HTML versions all \GMT\ documentation
 (man pages, Cookbook and Technical Reference, and the tutorial).
 
-\item[GMT\_tut.tar.\{gz,bz2\}] Contains the data files used in the tutorial.
+\item[GMT\_tut.tar.bz2] Contains the data files used in the tutorial.
 
-\item[GMT\_full.tar.\{gz,bz2\}] Contains the optional
-full-resolution coastline database.
-
-\item[GMT\_high.tar.\{gz,bz2\}] Contains the optional
-high-resolution coastline database.
-
-\item[GMT\_scripts.tar.\{gz,bz2\}] Contains all the shell scripts
+\item[GMT\_scripts.tar.bz2] Contains all the shell scripts
 and support data used in the Cookbook section.
 
-\item[GMT\_suppl.tar.\{gz,bz2\}] Contains several programs
+\item[GMT\_suppl.tar.bz2] Contains several programs
 written by us and \GMT\ users elsewhere. (See Appendix~\ref{app:A} for more
 details).
 
-\end{description}
+\item[GSHHS\_full.tar.bz2] Contains the optional GSHHS
+full-resolution coastline database.
 
-\index{GMT@\GMT!binaries for Win32}
-
-All of the above archives are also available as Windows ZIP archives, e.g., {\bf GMT\_src.zip}.
-For Windows users who do not want to compile themselves, there are two zip files with Win32 executables:
-
-\begin{description}
-
-\item[GMT\_exe.zip] ZIP archive with all main \GMT\ executables.
-
-\item[GMT\_suppl\_exe.zip] ZIP archive with all supplemental \GMT\ executables.
+\item[GSHHS\_high.tar.bz2] Contains the optional GSHHS
+high-resolution coastline database.
 
 \end{description}
 
@@ -92,5 +73,20 @@ is available for discussion of the netCDF interface and
 announcements about netCDF bugs, fixes, and enhancements.  To
 subscribe, send a request to
 \htmladdnormallink{netcdfgroup-adm@unidata.ucar.edu}{mailto:netcdfgroup-adm@unidata.ucar.edu}].
-Precompiled libraries for WIN32 are also available\footnote{Required
-with \filename{GMT\_exe.zip}}.
+
+\index{GMT@\GMT!binaries for Win32}
+
+For Windows users who do not want to compile themselves, there are three Windows installers available:
+
+\begin{description}
+
+\item[GMT\_basic\_install.exe] The basic install with all \GMT\ executables (including supplements),
+the netCDF DLL, the crude, low, and intermediate GSHHS coastlines, the example batch scripts and data, and all
+documentation in HTML format.
+
+\item[GMT\_PDF\_install.exe] Installer for the optional \GMT\ documentation in PDF format.
+
+\item[GSHHS\_fullhigh\_install.exe] Installer for the optional full- and high-resolution GSHHS coastlines.
+
+\end{description}
+

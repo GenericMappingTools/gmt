@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.45 2008-04-23 23:28:43 guru Exp $
+#		$Id: README,v 1.46 2008-04-26 22:36:15 guru Exp $
 #
 #	Copyright (c) 1991-2008, P. Wessel & W. H. F. Smith
 #
@@ -60,26 +60,24 @@ and installation details.
 
 Note there are several GMT tar archives available:
 
- 1. GMT_src.tar.gz		: Source code and Unix man pages only, no documentation
- 2. GMT_share.tar.gz		: Shared run-time support files
- 3. GSHHS_coast.tar.gz		: Standard resolution GSHHS coastline data
- 4. GMT_pdf.tar.gz		: PDF version of cookbook, tutorial, and man pages
- 5. GMT_web.tar.gz		: Web (HTML) version of docs and man pages
- 6. GMT_tut.tar.gz		: Tutorial data sets
- 7. GMT_scripts.tar.gz		: Example directory with scripts and test data
- 8. GSHHS_full.tar.gz		: Full resolution GSHHS coastline data
- 9. GSHHS_high.tar.gz		: High resolution GSHHS coastline data
-10. GMT_suppl.tar.gz		: GMT Supplemental programs that link with GMT
+ 1. GMT_src.tar.bz2		: Source code and Unix man pages only, no documentation
+ 2. GMT_share.tar.bz2		: Shared run-time support files
+ 3. GSHHS_coast.tar.bz2		: Standard resolution GSHHS coastline data
+ 4. GMT_pdf.tar.bz2		: PDF version of cookbook, tutorial, and man pages
+ 5. GMT_web.tar.bz2		: Web (HTML) version of docs and man pages
+ 6. GMT_tut.tar.bz2		: Tutorial data sets
+ 7. GMT_scripts.tar.bz2		: Example directory with scripts and test data
+ 8. GSHHS_full.tar.bz2		: Full resolution GSHHS coastline data
+ 9. GSHHS_high.tar.bz2		: High resolution GSHHS coastline data
+10. GMT_suppl.tar.bz2		: GMT Supplemental programs that link with GMT
 
 You MUST get 1-3 for a minimal GMT installation.
 
-All archives are available in gzip (*.gz) and bzip2 (*.bz2) format.
-The latter format results in much smaller files for ftp.
-[bzip2 is available from http://sourceware.cygnus.com/bzip2/index.html]
-For Windows users there are also *.zip versions of the same files,
-plus GMT_exe.zip and GMT_suppl_exe.zip which contains precompiled
-executables and libraries.  This discussion applies only to those
-installing under Unix/Linux.
+All archives are available in bzip2 (*.bz2) format.
+If you do not have bzip2 installed you can obtain source or executables
+from http://www.bzip.org.
+For Windows users there are separate Windows installers available; this
+discussion only considers UNIX/Linux/OS X installations.
 
 1. Install netCDF library
 -------------------------
@@ -110,7 +108,7 @@ After install, place the line
 	setenv NETCDFHOME /path_to_netcdf_directory
 
 in your .login file.  This path is usually something like
-/usr/local/netcdf-3.6.1 depending on where you put it.
+/usr/local/netcdf-3.6.2 depending on where you put it.
 The GMT makefiles will use $NETCDFHOME to find the library.
 
 PS! On some newer platforms, in particular MacOS X, you may have
@@ -132,8 +130,8 @@ files are supplied with this archive.  The high and full resolution
 data must be obtained separately over the net or by mail.  The
 high and full resolution files are kept in the files
 
-GSHHS_high.tar.gz	(or .bz2)
-GSHHS_full.tar.gz	(or .bz2)
+GSHHS_high.tar.bz2
+GSHHS_full.tar.bz2
 
 Note that these two files are not necessary in order to use GMT,
 only if you want to make higher-resolution coastline plots.
@@ -158,8 +156,8 @@ IRIS, Washington, US			ftp.iris.washington.edu
 IAG-USP, U. of Sao Paulo, BRAZIL	ftp.iag.usp.br
 Dep. Geology, U. in Oslo, NORWAY	ftp.geologi.uio.no
 ISV, Hokkaido U, Sapporo, JAPAN		ftp.eos.hokudai.ac.jp
-Charles Sturt U., Albury, AUSTRALIA	life.csu.edu.au
-GDS, Vienna U. of Techology, AUSTRIA	gd.tuwien.ac.at
+U of Sydney, Sydney, AUSTRALIA		mirror.geosci.usyd.edu.au
+GDS, Vienna U. of Technology, AUSTRIA	gd.tuwien.ac.at
 
 Extract the files and put them in separate directory (need not be
 where you eventually want to install GMT).
@@ -190,7 +188,11 @@ Finally, if you plan to install the Matlab extensions you
 need to
 setenv MATLAB <path to Matlab dir>
 unless it is /usr/local/matlab [the default].
-You can disable Matlab mex compilation by using the
+For building the mex supplement for Octave instead
+you select --enable-octave.  Optionally specify where
+the mex and .m files should be placed with
+--mex-enable-mdir and --mex-enable-xdir.
+You can disable Matlab/Octave mex compilation by using the
 --disable-mex option
 One supplement (xgrid) requires X11.  You can disable the
 compilation of this supplement by using the option
@@ -246,13 +248,13 @@ it is inconvenient to convert, say, 1" to 2.54 cm; we use 2.5 cm
 instead.  Although strongly discouraged, if you want to make
 permanent changes to some of the defaults you can edit the
 .gmtdefaults_{SI,US} files directly.  A much better approach is to
-create a .gmtdefaults file in your home directory and edit those
+create a .gmtdefaults4 file in your home directory and edit those
 settings since GMT will check for that file before loading system
 defaults (actually, it will first look in the current directory,
 then the home directory, and then finally in share).  See the gmtdefaults
 man page for a description of all defaults.
 
-To prevent two GMT processes writing to the same .gmtcommands file
+To prevent two GMT processes writing to the same .gmtcommands4 file
 simultaneously (thereby corrupting it), GMT implements the POSIX
 advisory file locking scheme and sets and releases locks on these
 files.  Under GNU/Linux, this does not work when the files reside
@@ -272,7 +274,7 @@ is also true of some PS to raster conversion utilities.  On the other
 hand, EPS files are intended to be included in another document and
 are not allowed to use setpagedevice.  To simplify printing, EPS files
 are allowed to contain a showpage operator which means EPS files will
-print if sent to a printer.  The PAPER_MEDIA setting in .gmtdefaults
+print if sent to a printer.  The PAPER_MEDIA setting in .gmtdefaults4
 can be set to one or the other format (see man gmtdefaults).  By
 default GMT will produce PS files.  If you do not need to take
 advantage of paper tray manipulations or expect to make mostly EPS
@@ -397,8 +399,8 @@ GMT users elsewhere have developed programs that utilize the GMT
 libraries and produce PostScript code compatible with the rest of
 GMT or simply perform data manipulation.  In addition, misc.
 code developed by us depend on GMT libraries.  Such code is available
-in the file GMT_suppl.tar.gz (or .bz2).  Note that these programs
-are not part of the official GMT package and were not all developed by
+in the file GMT_suppl.tar.bz2.  Note that these programs are
+not part of the official GMT package and were not all developed by
 us.  Please DO NOT send us bug reports or other inquiries
 regarding these programs.  The README files in the tar archive
 indicate where to direct such requests (if applicable).
@@ -421,11 +423,11 @@ Currently, the supplemental archive include the directories:
 	x_system  - Track intersection (crossover) tools (old version).
 	xgrid	  - X11 editor for grid files.
 
-Place the GMT_suppl.tar.gz (or .bz2) file in the GMT main directory
-and gunzip/tar out the contents.  You may have to modify
-makefiles or start scripts.  Each subdirectory will contain *.man files
-(Unix man files) and *.html files (HTML-version of man pages).  To compile
-and install programs, type
+Place the GMT_suppl.tar.bz2 file in the GMT main directory and
+bzip2/tar out the contents.  You may have to modify makefiles
+or start scripts.  Each subdirectory will contain *.man files
+(Unix man files) and *.html files (HTML-version of man pages).
+To compile and install programs, type
 
 	make install-suppl
 
@@ -439,7 +441,7 @@ To do all of the installations above, you can use the simple shortcut
 
 	A complete set of the example scripts used to create the
 26 example plots, including all necessary data files can be
-found in the GMT_scripts.tar.gz (or .bz2) archive.
+found in the GMT_scripts.tar.bz2 archive.
 Copy this to your gmt directory and install there if you would like
 these scripts.  After install, you can run all 26 examples from the
 src directory using
@@ -452,7 +454,7 @@ src directory using
 Before running programs, there are a few things you should do/know:
 
   - Read carefully the documentation for the gmt system.  This can be
-    found as both PS, PDF, and HTML files in the www/gmt/doc directory.
+    found as both PDF and HTML files in the www/gmt/doc directory.
     The successful operation of gmt-programs depends directly on your
     understanding of how gmt "works", its option lists, I/O, and composite
     plot mechanisms.  Then, before running individual gmt programs, read

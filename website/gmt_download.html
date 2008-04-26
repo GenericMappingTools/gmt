@@ -1,37 +1,28 @@
 <HTML>
-<!--    $Id: gmt_download.html,v 1.24 2008-04-26 21:06:43 guru Exp $      -->
+<!--    $Id: gmt_download.html,v 1.25 2008-04-26 22:36:16 guru Exp $      -->
 <HEAD>
 <TITLE>GMT - The Generic Mapping Tools</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
-<CENTER><H2>Availability of GMT source code</H2></CENTER>
+<CENTER><H1>Obtaining and Installing GMT</H1></CENTER>
 
-GMT is available via anonymous ftp from several ftp servers; they
-all contain the same files as the main server in Hawaii. Because of file
-sizes you are strongly encouraged to use the server closest to you.
-We distribute a Bourne shell script (install_gmt) that automatically will
-get the required archives from the ftp site you choose.  For users
-with a slow Internet-connection, Windows users preferring an InstallShield-based
-solution, and users who desire large amounts
-of supplemental data sets ready to be used with GMT: See the <B>GMT Companion CD-R and DVD-R</B>
+GMT is available via anonymous ftp from a global set of ftp servers; each
+contain the same files as the main server in Hawaii. File transfer
+is usually faster if you select the server closest to you.
+Our installer will automatically get the required archives from the ftp site you choose.<BR>
+Users with a slow Internet-connection and users who desire large amounts
+of supplemental data sets ready to be used with GMT: See the <B>GMT Companion DVD-R</B>
 products distributed by <A HREF="http://www.geoware-online.com" target="_blank"><B>Geoware</B></A>.
 <HR>
 <CENTER><H2>Fast-track for (repeat) UNIX/Linux/Mac OSX users</H2></CENTER>
-Take me directly to the <A HREF="gmt_install_form.html">INSTALL FORM</A>.</B>
+I've done this before.  Take me directly to the <A HREF="gmt_install_form.html">INSTALL FORM</A>.</B>
 <HR>
-<CENTER><H2>CVS installation for GMT gurus</H2></CENTER>
-To get the bleeding edge GMT version and even contribute to the development of
-GMT, consider installing the "live" GMT version following the <A HREF="gmt_cvs.html">CVS Instructions</A>.</B>
-<HR>
-<CENTER><H2>Obtaining and Installing GMT</H2></CENTER>
+<CENTER><H2>Platform-specific Instructions</H2></CENTER>
 
 <OL>
 <LI> <B><IMG SRC="unix.jpg" WIDTH="64" HEIGHT="32"> or <IMG SRC="linux.jpg" WIDTH="54" HEIGHT="64">LINUX:</B>
-Because of the size of the archives we suggest you verify that you have
-<A HREF="http://sources.redhat.com/bzip2" target="_blank">bzip2</A> on your system.
-If not, it is worth installing (executables for most platforms are available)
-since *.bz2 files are much smaller than *.gz files.  For instance, the
-entire GMT package is ~50 Mb with bzip2 and 75 Mb with gzip.
+The installation requires that you have
+<A HREF="http://www.bzip.org" target="_blank">bzip2</A> on your system.
 <P>
 <OL>
 <LI><I>Automated install [Recommended]</I>.
@@ -42,8 +33,10 @@ parameter file.  The automated install will also install netCDF if needed.
 If you prefer, you can also do the typical manual install by ftping the files, untar,
 run configure, make etc.  Read the README file for the required steps.
 For manual install you must also manually get and install the <A HREF="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.gz">Unidata
-netCDF library</A>, version 3.4 or higher, which GMT requries.
-For your convenience, the netCDF source code is also available from the GMT ftp sites.
+netCDF library</A> which GMT requires.
+<LI><I>CVS installation for GMT gurus</I>.
+To get the bleeding edge GMT version and even contribute to the development of
+GMT, consider installing the "live" GMT version by following the <A HREF="gmt_cvs.html">CVS Instructions</A>.
 </OL>
 <P>
 
@@ -57,7 +50,7 @@ Note that many of the DOS example scripts utilize GNU awk; the WIN32 executable
 has therefore been placed on all ftp sites.
 <LI><I>DOS batch files suck, part I</I>.
 Because you cannot get much done with DOS batch jobs, we strongly recommend that you install
-<A HREF="http://sources.redhat.com/cygwin" target="_blank">Cygwin</A>, a free UNIX emulation package for Windows.
+<A HREF="http://cygwin.com" target="_blank">Cygwin</A>, a free UNIX emulation package for Windows.
 Cygwin lets you open shell windows and access
 standard UNIX tools such as tcsh, gcc, etc.  You would then install GMT as described above for UNIX/Linux.
 <LI><I>DOS batch files suck, part II</I>.
@@ -72,10 +65,11 @@ general Linux/UNIX install option above within your virtual machine.
 <P>
 
 <LI> <B><IMG SRC="osx.jpg" WIDTH="56" HEIGHT="64">OS X: </B>
-GMT installs and runs under Mac OS X which is UNIX-based (follow instructions for
-UNIX/Linux in 1.1).  You must have installed the Developer Tools (the GNU compiler,
-etc; these are not installed by default but packages are available on the OS X Install DVD or
-from Apple's support site). The latest versions of GMT are also available as user-friendly
+GMT installs and runs under Apple's OS X which is UNIX-based; just follow instructions for
+UNIX/Linux above.  You must first install the Xcode Developer Tools (which
+includes the GNU C compiler, make, etc) as these are not installed by default but is an
+optional install via the OS X Install DVD. You can also download them from Apple's support site.
+Also select to install X11. Finally, the latest versions of GMT are also available as user-friendly
 <A HREF="http://pdb.finkproject.org/pdb/package.php/gmt">packages</A>
 via <A HREF="http://finkproject.org/" target="_blank">Fink</A>.
 <P>
@@ -83,8 +77,9 @@ via <A HREF="http://finkproject.org/" target="_blank">Fink</A>.
 GMT has been ported to OS/2.  For information and precompiled executables, see Allen Cogbill's
 <A HREF="http://www.geopotential.com/gmt/gmt4os2.html" target="_blank">GMT OS/2 page</A>.
 </OL>
-<CENTER><H2>Obtaining the old GMT 3.3.6 version</H2></CENTER>
+<HR>
+<CENTER><H3>Obtaining the old GMT 3.3.6 version</H3></CENTER>
 If you for whatever reason need to install the final version of the GMT 3 series you must manually ftp the tar-balls from
-<A HREF="ftp://ftp.soest.hawaii.edu/gmt3">SOEST's GMT3 archive</A>, and run the installation (follow the steps in the README file).
+<A HREF="ftp://ftp.soest.hawaii.edu/gmt3">SOEST's GMT3 archive</A> and run the installation (follow the steps in the README file).
 </BODY>
 </HTML>

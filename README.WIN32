@@ -1,33 +1,33 @@
-	$Id: README.WIN32,v 1.19 2007-10-03 00:35:13 guru Exp $
+	$Id: README.WIN32,v 1.20 2008-04-26 22:36:16 guru Exp $
 
-README file for GMT 4 Run-Time Distribution for Win32
-This version contains dynamic executables with the DLL support.
-We assume you only want to run GMT and not compile from scratch.
-To compile, see information in src/gmtinstall.bat and gmtsuppl.bat
+README file for installing GMT from scratch (i.e., compiling the
+source) under Windows.  If you only want to install executables,
+follow the GMT website link to our GMT Windows Installers.
 
 INSTALLATION:
 =============
 
-To use the precompiled GMT executables on your system you must
+To compile GMT for your Windows you must
 
-1a Win95/98/Me:
-   Edit src/gmtenv.bat and change the values for HOME and GMTROOT.
-   Execute gmtenv.bat or place it in autoexec.bat so it is run each
-   time you reboot your machine.
-
-1b WinNT/2000/XP/Vista:
-   Add HOME and GMTROOT and modify PATH in the environmental
-   parameters via the system settings.  See the gmtenv.bat
-   file for what the definitions should be.
-
-2  By default GMT is installed in C:\GMT, hence the run-time share
-   files live in C:\GMT\share.  If you move these files elsewhere
-   you must defined the environment variable GMT_SHAREDIR to point
-   to your new directory.
+1  Obtain precompiled netCDF files (netcdf.lib, netcdf.dll) and the
+   netcdf.h include file from the netCDF home page.
+2  Add HOME (your home directory, or C:\), GMTHOME (the top directory
+   where you install GMT), and GMT_SHAREDIR (where you plan to store
+   the run-time share files, typically %GMTHOME%\share) and modify
+   PATH in the environmental parameters via the system settings so
+   that %GMTHOME%\bin is included.
    
-3. To test that all is well, try some of the commands in the cookbook.
-   You are strongly urged to install the free Services For Unix from
-   Microsoft or Cygwin from RedHat to take full advantage of GMT.
+3  Also modify the entries for INCLUDE and LIB (create them if they
+   do not exist) so they include the paths to the netCDF library
+   netcdf.lib and the netCDF include file netcdf.h.  These are used
+   by the Microsoft (and other?) compilers and linkers to find these
+   files.
+
+4  Read the src/gmtinstall.bat and src\gmtsuppl.bat file instructions
+   and make whatever modifications you need to (e.g., if you want to
+   use static libraries or the optional TRIANGLE function.)
+
+5  Run gmtinstall.bat followed by gmtsuppl.bat.
 
 
 ADDITIONAL MATERIAL:
@@ -35,16 +35,16 @@ ADDITIONAL MATERIAL:
 
 For complete GMT Documentation, including a Cookbook and Technical
 Reference Manual, a Tutorial and Short Course Manual in PDF format,
-and a PDF version of all UNIX man pages, get the GMT_pdf.zip archive.
-For the HTML-only versions, get GMT_web.zip.  After installing, make
+and a PDF version of all UNIX man pages, get the GMT_pdf.bz2 archive.
+For the HTML-only versions, get GMT_web.bz2.  After installing, make
 a bookmark for the file GMT/www/gmt/gmt_sevices.html.  Should you
-want to try the tutorial examples you will need GMT_tut.zip.
-UNIX man pages are in GMT_man.zip.  Most Windows users will only
+want to try the tutorial examples you will need GMT_tut.bz2.
+UNIX man pages are in GMT_man.bz2.  Most Windows users will only
 need the HTML or PDF versions.
 
 If you want the high and/or full resolution GSHHS coastlines,
-political borders, and rivers you must obtain GSHHS_high.zip and
-GSHHS_full.zip as well. unzip from the directory that contains GMT.
+political borders, and rivers you must obtain GSHHS_high.bz2 and
+GSHHS_full.bz2 as well. Extract from the directory that contains GMT.
 
 To view your GMT PostScript or EPS plots, we recommend you install gsview
 (see www.cs.wisc.edu/~ghost/gsview). It is required to run the do_view script.

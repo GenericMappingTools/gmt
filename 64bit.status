@@ -1,4 +1,4 @@
-#	$Id: 64bit.status,v 1.1 2007-09-18 22:18:40 guru Exp $
+#	$Id: 64bit.status,v 1.2 2008-04-26 22:36:15 guru Exp $
 #
 # Udated information on how GMT currently supports 64-bit computing
 
@@ -13,3 +13,5 @@ Fall 2007: The plan is to slowly migrate from using ints for counters
 	changes to library functions.  However, for 32-bit compiling a
 	GMT_LONG equals an int so no change will take place.
 	
+Spring 2008: Fully ported to 64-bit.  We use GMT_LONG for 8-byte integers
+	that need to be signed.

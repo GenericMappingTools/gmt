@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.14 2008-04-02 21:05:21 guru Exp $
+#  $Id: Makefile,v 1.15 2008-04-26 22:36:16 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -86,7 +86,7 @@ update-www-live:	../registration/gmt_usage.jpg gmt_mirrors.html
 		ssh $(WEBSERVER) mkdir -p $(LIVEWWWDIR)/gmt
 		ssh $(WEBSERVER) rm -f $(LIVEWWWDIR)/index.html
 		scp gmt.html $(WEBSERVER):$(LIVEWWWDIR)/index.html
-		scp gmt_*.html newgmtguru gmt_*.gif GMT?.gif soest_logo_reduced2.gif gmt_*.png \
+		scp gmt_*.html newgmtguru *.gif gmt_*.png linux.jpg osx.jpg unix.jpg vista.jpg \
 		  ../src/README.TRIANGLE ../www/gmt/gmt_services.html ../www/gmt/gmt_man.html ../registration/gmt_usage.jpg \
 		  ../www/gmt/gmt_examples.html ../www/gmt/gmt_suppl.html ../www/gmt/gmt_back.gif $(WEBSERVER):$(LIVEWWWDIR)/gmt
 		ssh $(WEBSERVER) rm -r -f $(LIVEWWWDIR)/gmt/doc $(LIVEWWWDIR)/gmt/examples
@@ -104,7 +104,7 @@ update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html
 		ssh $(WEBSERVER2) mkdir -p $(LIVEWWWDIR2)/gmt
 		ssh $(WEBSERVER2) rm -f $(LIVEWWWDIR2)/index.html
 		scp gmt.html $(WEBSERVER2):$(LIVEWWWDIR2)/index.html
-		scp gmt_*.html newgmtguru gmt_*.gif GMT?.gif soest_logo_reduced2.gif gmt_*.png \
+		scp gmt_*.html newgmtguru *.gif gmt_*.png linux.jpg osx.jpg unix.jpg vista.jpg \
 		  ../src/README.TRIANGLE ../www/gmt/gmt_services.html ../www/gmt/gmt_man.html ../registration/gmt_usage.jpg \
 		  ../www/gmt/gmt_examples.html ../www/gmt/gmt_suppl.html ../www/gmt/gmt_back.gif $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 #	Change the Href to the ftp server to go to the test server dir instead
@@ -127,7 +127,7 @@ update-www-local:../registration/gmt_usage.jpg gmt_mirrors.html
 		cp -f gmt.html $(TESTWWWDIR)/index.html
 		cp -f gmt_*.html $(TESTWWWDIR)/gmt
 		cp -f newgmtguru $(TESTWWWDIR)/gmt
-		cp -f gmt_*.gif GMT?.gif soest_logo_reduced2.gif $(TESTWWWDIR)/gmt
+		cp -f *.gif linux.jpg osx.jpg unix.jpg vista.jpg $(TESTWWWDIR)/gmt
 		cp -f gmt_*.png ../registration/gmt_usage.jpg $(TESTWWWDIR)/gmt
 		cp -f ../src/README.TRIANGLE $(TESTWWWDIR)/gmt
 		cp -f ../www/gmt/gmt_services.html $(TESTWWWDIR)/gmt
@@ -154,17 +154,15 @@ update-ftp-live:	netcdf
 	ssh $(FTPSERVER) rm -rf $(LIVEFTPDIR)
 	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)
 	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
+	scp ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
-		echo "rm -f $(LIVEFTPDIR)/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR)/GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
-		echo "rm -f $(LIVEFTPDIR)/{GMT,GSHHS}_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR)/{GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
@@ -179,17 +177,15 @@ update-ftp-test:	netcdf
 	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)
 	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)
 	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
-	scp ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
-		echo "rm -f $(LIVEFTPDIR2)/GMT_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR2)/GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
-		echo "rm -f $(LIVEFTPDIR2)/{GMT,GSHHS}_$$p.tar.{bz2,gz}" >> gmt_server_job.sh; \
+		echo "rm -f $(LIVEFTPDIR2)/{GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
@@ -204,20 +200,18 @@ update-ftp-local:
 	rm -rf $(TESTFTPDIR)
 	mkdir -p $(TESTFTPDIR)
 	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > $(TESTFTPDIR)/install_gmt
-	cp -f ../ftp/*.bz2 ../ftp/*.gz ../ftp/*.zip ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
+	cp -f ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
 	for p in pdf web tut share src scripts suppl; do \
-		\rm -f $(TESTFTPDIR)/GMT_$$p.tar.{bz2,gz}; \
+		\rm -f $(TESTFTPDIR)/GMT_$$p.tar.bz2; \
 		(cd $(TESTFTPDIR); $(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
-		(cd $(TESTFTPDIR); $(LN_S) GMT$(VERSION)_$$p.tar.gz GMT_$$p.tar.gz); \
 	done
 	for p in coast high full; do \
-		\rm -f $(TESTFTPDIR)/{GMT,GSHHS}_$$p.tar.{bz2,gz}; \
+		\rm -f $(TESTFTPDIR)/{GMT,GSHHS}_$$p.tar.bz2; \
 		(cd $(TESTFTPDIR); $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
-		(cd $(TESTFTPDIR); $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.gz GSHHS_$$p.tar.gz); \
 	done
 
 clean-ftp:
-	rm -f ../ftp/G*.bz2 ../ftp/G*.gz ../ftp/G*.zip
+	rm -f ../ftp/G*.bz2
 
 clean-local:
 	rm -rf $(TESTFTPDIR)
