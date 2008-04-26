@@ -1,8 +1,39 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.263 2008-04-25 05:43:53 guru Exp $
+	$Id: ChangeLog,v 1.264 2008-04-26 04:02:10 guru Exp $
 -----------------------------------------------------------------------------------------
-2008-04-24	pwessel
+2008-04-25	pwessel
 	* x2sys:		Moved *.def to share/x2sys
+	* mgd77/mgd77sniffer.c	Cumulative fixes & updates since August:
+				Added -K option to flip navigation flags (if extreme positions
+				cause checking to flag good records rather than bad).
+				Added -D[x]r option, where x is any preexisting -D option.
+				Appending r tells sniffer to use all records in sniffer output
+				rather than omitting records flagged with bad navigation.
+				Moved speed checking algorithm to precede any other analysis of
+				mgd77 data records, including regression checking. This allows
+				extreme nav errors to be flagged and ignored in later analysis.
+				Modified speed checking algorithm to compare the current nav fix
+				to the previous good nav fix, rather than just the previous nav fix.
+				This does a better job of flagging the correct fix when excessive
+				speeds are found. Previously the current flag was compared to the
+				previous flag and whenever excessive speed was computed the current
+				record was flagged. This lead to flagging good records at times when
+				it was the previous record that was bad.
+				Modified manage to accept flags with NaN time stamps.
+				Changed speed check from speed > max_speed to fabs (speed) > max_speed
+				Bug in E77 output causing distance to be printed when cruises have time stamps
+				Track outliers in decimate function, if more than 5% outliers use the
+				maximum possible MGD77 values for the 2D bin table in the decimate function.
+				Blocked decimation algorithm when dumping values, gradients, etc., and when
+				non-regression related warnings are selected (see -W option). Removed bug
+				from excessive offset from grid print command.
+				Fixed negative array index bug in precision check code
+				Fixed an E77 RLS print bug
+				Fixed memory deallocation bug - was GMT_free on out[rec] - now on out[curr]
+				Added anomaly recalculation toggle to E77
+				Use double instead of float for everything but the GMT grids
+				Added anomaly sign tracking also fixed e77 scale and icept for A option
+				also cleared up kludgy code in grid and ship regression section
 
 2008-04-24	remko
 	* ps2raster:		Use PID to augment the file names of temporary files.
@@ -11,7 +42,7 @@
 				Option -N has become obsolete. Use -S and/or -Te instead.
 
 2008-04-22	pwessel
-	* psxy.c:	Now will properly clip polygon outline and not draw it along clipped border.
+	* psxy.c:		Now will properly clip polygon outline and not draw it along clipped border.
 	* configure.ac:		Added support for --enable-mex-mdir=dir and --enable-mex-xdir=dir
 				to override the Matlab/Octave preferred paths for local *.mfiles
 				and *.mex functions.
