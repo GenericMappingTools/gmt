@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_cvs.html,v 1.8 2007-11-26 02:10:50 remko Exp $  -->
+<!--  $Id: gmt_cvs.html,v 1.9 2008-04-27 00:19:54 guru Exp $  -->
 <title>GMT CVS Services</title>
 <body bgcolor="#ffffff">
 <center><h1>GMT CVS Services</center></h1><p>
@@ -29,15 +29,13 @@ This may be called <U>gnumake</U> or <U>gmake</U> on your system.
 The ghostscript package should also come with the scripts <U>ps2epsi</U>
 and <U>ps2pdf</U> which you also will use.
 <LI><U>latex.</U>  Needed to generate the Documentation from the GMT Latex
-files.  This package should also include <U>dvips</U> to create the
-PostScript version of the documentation.
+files.  This package should also include <U>pdflatex</U> to create the
+PDF version of the documentation.
 <LI><U>latex2html.</U>  Needed to convert the Latex documentation into HTML
 web pages.  This package also needs <U>Perl5</U> and the <U>netpbm</U>
 library.
 <LI><U>autoconf.</U>  This tools is needed to generate the configure scripts
 from the configure.ac templates.  It requires the <U>m4</U> macro pre-processor.
-<LI><U>man2html.</U>  This tools is needed to convert Unix man pages into
-HTML for the web section.
 </UL>
 See links below to obtain any of these utilities.
 <h2>Initiation of CVS service</h2>
@@ -47,7 +45,7 @@ steps manually to indicate the process.
 <OL>
 <LI><B>Make a GMTdev directory.</B>  This directory will contain all GMT development,
 including the main GMT directory tree (in which you can work on GMT programs)
-as well as previously released versions, e.g., the GMT3.4.5 release tree.  Those
+as well as previously released versions, e.g., the GMT3.4.6 release.  Those
 directories should be treated as read-only; all your GMT-related development should
 take place in the GMT tree.  Change directory to where you want to place GMTdev and type<br>
 <p>
@@ -89,10 +87,7 @@ will take effect.  Next, copy gmtguru.macros.orig to gmtguru.macros and edit the
 file.  Again, follow instructions on what to do.<P>
 <LI><B>Get Coastlines data sets.</B>  Because the GSHHS coastline files (*.cdf) are themselves created
 from more primitive forms and this process is not in CVS yet, you must install the coastline
-files separately.  If you already have a recent version (e.g., 4.2.0) on your workstation
-you can simply copy *.cdf from GMT4.2.0/share/coast to your GMT/share/coast.  If not, you can get the
-coastlines by anonymous ftp simply by running.  Note that starting 4.1.2 the coastlines files
-live in share/coast, not share.<br>
+files separately. Get the coastlines by anonymous ftp simply by running<br>
 <P>
 make get_coast
 <P>
