@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.30 2008-04-26 22:36:15 guru Exp $
+#  $Id: GNUmakefile,v 1.31 2008-04-27 03:14:55 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -319,7 +319,7 @@ zip_dist:
 	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip GMT/www/gmt/gmt_back.gif \
 		GMT/www/gmt/doc/html/GMT_{Docs,Tutorial}/*.png)
 	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip GMT/www/gmt/doc/pdf/GMT_*.pdf)
-	egrep -v '\.nc$$|\.bz2$$|\.ras$$' guru/GMT_examples.lis | sed -e 's:^:GMT/:' > asc.lis
+	egrep -v '\.sh$$\.csh$$\.nc$$|\.bz2$$|\.ras$$' guru/GMT_examples.lis | sed -e 's:^:GMT/:' > asc.lis
 	egrep '\.nc$$|\.bz2$$|\.ras$$' guru/GMT_examples.lis | sed -e 's:^:GMT/:' > bin.lis
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
 	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip `cat GMT/bin.lis`)
