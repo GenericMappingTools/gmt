@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.18 2008-04-23 23:28:43 guru Exp $
-AC_REVISION($Revision: 1.18 $)
+dnl $Id: configure.ac,v 1.19 2008-04-27 20:52:29 guru Exp $
+AC_REVISION($Revision: 1.19 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -578,6 +578,7 @@ if test "$enable_universal" = "yes" ; then
 	if test "$chip" = "powerpc" ; then
 		OSX_L="-isysroot /Developer/SDKs/MacOSX10.4u.sdk$OSX_L"
 	fi
+	LDFLAGS="$OSX_L"
 fi
 dnl
 dnl -----------------------------------------------------------------
@@ -626,7 +627,6 @@ if test "$enable_shared" = "yes" ; then
 		SL_VERSION=$LIB_MAJOR_VERSION.$SL
 		LD='$(CC)'
 		LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version 4.0.0 -current_version '$LIB_VERSION' -dynamiclib'
-		LDFLAGS="$LDFLAGS $OSX_L"
 	elif test "$os" = "HP-UX" ; then
 		LD_OPT="-b"
 		LDFLAGS=$LDFLAGS' -Wl,+b,$(libdir)'
