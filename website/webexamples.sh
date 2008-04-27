@@ -1,13 +1,13 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.13 2007-03-28 03:02:12 pwessel Exp $
+#	 $Id: webexamples.sh,v 1.14 2008-04-27 00:14:19 guru Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
 #	To be run from the GMT/website directory
 #
 #	Author:	Paul Wessel
-#	Date:	21-SEPT-2004
+#	Date:	26-APR-2008
 #
 #	Script that creates the examples web pages from
 #	the scripts files and resulting postscript files
@@ -16,14 +16,14 @@
 #	gmt/gmt_examples.html
 #	gmt/examples/gmt_example_??.html
 #	gmt/examples/gmt_example_??.ps (copy from examples directory)
-#	gmt/examples/example_??_50dpi.gif (using convert)
-#	gmt/examples/example_??_100dpi.gif (using convert)
+#	gmt/examples/example_??_50dpi.png (using ps2raster)
+#	gmt/examples/example_??_100dpi.png (using ps2raster)
 #-----------------------------------------------------------------------------
 
 n_examples=26
 
-GMT050dpi="convert -density 50x50"
-GMT100dpi="convert -density 100x100"
+GMT050dpi="ps2raster -E50 -Tg -P"
+GMT100dpi="ps2raster -E100 -Tg -P"
 
 if [ $# -eq 1 ]; then
 	gush=0
@@ -163,23 +163,20 @@ while [ $i -le $n_examples ]; do
 	mkdir -p $dir
 	cd $dir
 
-#	Extract cshell example script and rename
+#	Extract Bourne shell example script and rename
 
-	\cp -f ../../../../examples/$dir/job${number}.csh job${number}.csh.txt
+	\cp -f ../../../../examples/$dir/job${number}.sh job${number}.sh.txt
 
 #	Copy over the example PS file
 
 	\cp ../../../../examples/$dir/example_${number}.ps .
 
-#	Make the GIF at both 50 and 100 dpi, rotating the landscape ones
+#	Make the PNG at both 50 and 100 dpi, rotating the landscape ones
 
-	if [ `grep "612 0 T 90 R" example_${number}.ps | wc -l` -eq 1 ]; then
-		rot="-rotate 90"
-	else
-		rot=""
-	fi
-	$GMT100dpi $rot example_${number}.ps example_${number}_100dpi.gif
-	$GMT050dpi $rot example_${number}.ps example_${number}_50dpi.gif
+	$GMT100dpi $rot example_${number}.ps
+	mv example_${number}.png example_${number}_100dpi.png
+	$GMT050dpi $rot example_${number}.ps
+	mv example_${number}.png example_${number}_50dpi.png
 
 #	Write the html file
 
@@ -189,15 +186,15 @@ cat << EOF > gmt_example_${number}.html
 <TITLE>GMT - Example ${number}</title>
 <BODY bgcolor="#ffffff">
 <CENTER>
-<A HREF="example_${number}_100dpi.gif">
-<img src="example_${number}_50dpi.gif">
+<A HREF="example_${number}_100dpi.png">
+<img src="example_${number}_50dpi.png">
 </A><P></CENTER>
 EOF
 	tail +2 ../../../../website/job${number}.txt >> gmt_example_${number}.html
 
 cat << EOF >> gmt_example_${number}.html
 <p>
-<A HREF="job${number}.csh.txt"><IMG SRC="../../gmt_script.gif" ALT="RETURN">View GMT script.</A>
+<A HREF="job${number}.sh.txt"><IMG SRC="../../gmt_script.gif" ALT="RETURN">View GMT script.</A>
 <A HREF="example_${number}.ps"><IMG SRC="../../gmt_ps.gif" ALT="RETURN">Download PostScript version.</A>
 <A HREF="../../gmt_examples.html"><IMG SRC="../../gmt_back.gif" ALT="RETURN">Back</A>
 </BODY>

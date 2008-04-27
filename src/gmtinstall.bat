@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.34 2008-04-26 22:36:16 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.35 2008-04-27 00:14:18 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
@@ -24,7 +24,7 @@ REM Microsoft Visual C/c++ tools.  It will build GMT
 REM using DLL libraries.  To make static executables
 REM you must make some edits to the setup below.
 REM
-REM Author: Paul Wessel, 25-MAR-2008
+REM Author: Paul Wessel, 26-APR-2008
 REM ----------------------------------------------------
 REM
 REM How to build GMT executables under Windows:
@@ -73,6 +73,10 @@ REM STEP f: By default, GMT will be built dynamically  If
 REM	    you do NOT want to use Dynamic link libraries
 REM	    (DLL) change CHOICE to "static" here:
 REM
+REM STEP g: Specify your compiler (currently set to MS CL)
+SET CC=CL
+REM SET CC=icl
+
 REM SET CHOICE="static"
 SET CHOICE="dynamic"
 REM ----------------------------------------------------
@@ -93,86 +97,86 @@ set LOPT=/nologo /dll /incremental:no
 REM ----------------------------------------------------
 ECHO STEP 1: Make PS library
 REM ----------------------------------------------------
-CL %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% pslib.c
+%CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% pslib.c
 IF %CHOICE%=="dynamic" link %LOPT% /out:psl.dll /implib:psl.lib pslib.obj
 IF %CHOICE%=="static" lib /out:psl.lib pslib.obj
 REM ----------------------------------------------------
 ECHO STEP 2: Make GMT library
 REM ----------------------------------------------------
-CL %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_bcr.c gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_init.c
-CL %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
-CL %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
-IF %TRIANGLE%=="yes" CL %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
+%CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_bcr.c gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_init.c
+%CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
+%CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
+IF %TRIANGLE%=="yes" %CC% %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
 IF %CHOICE%=="dynamic" link %LOPT% /out:gmt.dll /implib:gmt.lib gmt_*.obj %TROBJ% psl.lib netcdf.lib setargv.obj
 IF %CHOICE%=="static" lib /out:gmt.lib gmt_*.obj %TROBJ%
 REM ----------------------------------------------------
 ECHO STEP 3: Make GMT programs 
 REM ----------------------------------------------------
 set GMTLIB=gmt.lib psl.lib netcdf.lib setargv.obj
-CL %COPT% blockmean.c %GMTLIB%
-CL %COPT% blockmedian.c %GMTLIB%
-CL %COPT% blockmode.c %GMTLIB%
-CL %COPT% filter1d.c %GMTLIB%
-CL %COPT% fitcircle.c %GMTLIB%
-CL %COPT% gmt2rgb.c %GMTLIB%
-CL %COPT% gmtconvert.c %GMTLIB%
-CL %COPT% gmtdefaults.c %GMTLIB%
-CL %COPT% gmtmath.c %GMTLIB%
-CL %COPT% gmtselect.c %GMTLIB%
-CL %COPT% gmtset.c %GMTLIB%
-CL %COPT% grdfilter.c %GMTLIB%
-CL %COPT% grd2cpt.c %GMTLIB%
-CL %COPT% grd2xyz.c %GMTLIB%
-CL %COPT% grdblend.c %GMTLIB%
-CL %COPT% grdclip.c %GMTLIB%
-CL %COPT% grdcontour.c %GMTLIB%
-CL %COPT% grdcut.c %GMTLIB%
-CL %COPT% grdedit.c %GMTLIB%
-CL %COPT% grdfft.c %GMTLIB%
-CL %COPT% grdgradient.c %GMTLIB%
-CL %COPT% grdhisteq.c %GMTLIB%
-CL %COPT% grdimage.c %GMTLIB%
-CL %COPT% grdinfo.c %GMTLIB%
-CL %COPT% grdlandmask.c %GMTLIB%
-CL %COPT% grdmask.c %GMTLIB%
-CL %COPT% grdmath.c %GMTLIB%
-CL %COPT% grdpaste.c %GMTLIB%
-CL %COPT% grdproject.c %GMTLIB%
-CL %COPT% grdreformat.c %GMTLIB%
-CL %COPT% grdsample.c %GMTLIB%
-CL %COPT% grdtrend.c %GMTLIB%
-CL %COPT% grdtrack.c %GMTLIB%
-CL %COPT% grdvector.c %GMTLIB%
-CL %COPT% grdview.c %GMTLIB%
-CL %COPT% grdvolume.c %GMTLIB%
-CL %COPT% makecpt.c %GMTLIB%
-CL %COPT% mapproject.c %GMTLIB%
-CL %COPT% minmax.c %GMTLIB%
-CL %COPT% nearneighbor.c %GMTLIB%
-CL %COPT% project.c %GMTLIB%
-CL %COPT% ps2raster.c %GMTLIB%
-CL %COPT% psbasemap.c %GMTLIB%
-CL %COPT% psclip.c %GMTLIB%
-CL %COPT% pscoast.c %GMTLIB%
-CL %COPT% pscontour.c %GMTLIB%
-CL %COPT% pshistogram.c %GMTLIB%
-CL %COPT% pslegend.c %GMTLIB%
-CL %COPT% psimage.c %GMTLIB%
-CL %COPT% psmask.c %GMTLIB%
-CL %COPT% psrose.c %GMTLIB%
-CL %COPT% psscale.c %GMTLIB%
-CL %COPT% pstext.c %GMTLIB%
-CL %COPT% pswiggle.c %GMTLIB%
-CL %COPT% psxy.c %GMTLIB%
-CL %COPT% psxyz.c %GMTLIB%
-CL %COPT% sample1d.c %GMTLIB%
-CL %COPT% spectrum1d.c %GMTLIB%
-CL %COPT% splitxyz.c %GMTLIB%
-CL %COPT% surface.c %GMTLIB%
-CL %COPT% trend1d.c %GMTLIB%
-CL %COPT% trend2d.c %GMTLIB%
-CL %COPT% triangulate.c %GMTLIB%
-CL %COPT% xyz2grd.c %GMTLIB%
+%CC% %COPT% blockmean.c %GMTLIB%
+%CC% %COPT% blockmedian.c %GMTLIB%
+%CC% %COPT% blockmode.c %GMTLIB%
+%CC% %COPT% filter1d.c %GMTLIB%
+%CC% %COPT% fitcircle.c %GMTLIB%
+%CC% %COPT% gmt2rgb.c %GMTLIB%
+%CC% %COPT% gmtconvert.c %GMTLIB%
+%CC% %COPT% gmtdefaults.c %GMTLIB%
+%CC% %COPT% gmtmath.c %GMTLIB%
+%CC% %COPT% gmtselect.c %GMTLIB%
+%CC% %COPT% gmtset.c %GMTLIB%
+%CC% %COPT% grdfilter.c %GMTLIB%
+%CC% %COPT% grd2cpt.c %GMTLIB%
+%CC% %COPT% grd2xyz.c %GMTLIB%
+%CC% %COPT% grdblend.c %GMTLIB%
+%CC% %COPT% grdclip.c %GMTLIB%
+%CC% %COPT% grdcontour.c %GMTLIB%
+%CC% %COPT% grdcut.c %GMTLIB%
+%CC% %COPT% grdedit.c %GMTLIB%
+%CC% %COPT% grdfft.c %GMTLIB%
+%CC% %COPT% grdgradient.c %GMTLIB%
+%CC% %COPT% grdhisteq.c %GMTLIB%
+%CC% %COPT% grdimage.c %GMTLIB%
+%CC% %COPT% grdinfo.c %GMTLIB%
+%CC% %COPT% grdlandmask.c %GMTLIB%
+%CC% %COPT% grdmask.c %GMTLIB%
+%CC% %COPT% grdmath.c %GMTLIB%
+%CC% %COPT% grdpaste.c %GMTLIB%
+%CC% %COPT% grdproject.c %GMTLIB%
+%CC% %COPT% grdreformat.c %GMTLIB%
+%CC% %COPT% grdsample.c %GMTLIB%
+%CC% %COPT% grdtrend.c %GMTLIB%
+%CC% %COPT% grdtrack.c %GMTLIB%
+%CC% %COPT% grdvector.c %GMTLIB%
+%CC% %COPT% grdview.c %GMTLIB%
+%CC% %COPT% grdvolume.c %GMTLIB%
+%CC% %COPT% makecpt.c %GMTLIB%
+%CC% %COPT% mapproject.c %GMTLIB%
+%CC% %COPT% minmax.c %GMTLIB%
+%CC% %COPT% nearneighbor.c %GMTLIB%
+%CC% %COPT% project.c %GMTLIB%
+%CC% %COPT% ps2raster.c %GMTLIB%
+%CC% %COPT% psbasemap.c %GMTLIB%
+%CC% %COPT% psclip.c %GMTLIB%
+%CC% %COPT% pscoast.c %GMTLIB%
+%CC% %COPT% pscontour.c %GMTLIB%
+%CC% %COPT% pshistogram.c %GMTLIB%
+%CC% %COPT% pslegend.c %GMTLIB%
+%CC% %COPT% psimage.c %GMTLIB%
+%CC% %COPT% psmask.c %GMTLIB%
+%CC% %COPT% psrose.c %GMTLIB%
+%CC% %COPT% psscale.c %GMTLIB%
+%CC% %COPT% pstext.c %GMTLIB%
+%CC% %COPT% pswiggle.c %GMTLIB%
+%CC% %COPT% psxy.c %GMTLIB%
+%CC% %COPT% psxyz.c %GMTLIB%
+%CC% %COPT% sample1d.c %GMTLIB%
+%CC% %COPT% spectrum1d.c %GMTLIB%
+%CC% %COPT% splitxyz.c %GMTLIB%
+%CC% %COPT% surface.c %GMTLIB%
+%CC% %COPT% trend1d.c %GMTLIB%
+%CC% %COPT% trend2d.c %GMTLIB%
+%CC% %COPT% triangulate.c %GMTLIB%
+%CC% %COPT% xyz2grd.c %GMTLIB%
 REM ----------------------------------------------------
 ECHO STEP 4: Clean up and install executables and libraries
 REM ----------------------------------------------------
