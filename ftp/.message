@@ -3,14 +3,14 @@ This server is one of 8 mirror sites for the Generic Mapping Tools (GMT).
 
 The mirror sites are:
 
-ftp.soest.hawaii.edu	 : SOEST [Master site], Honolulu, Hawaii, USA
-ibis.grdl.noaa.gov	 : NOAA, Silver Spring, Maryland, USA
-ftp.iris.washington.edu	 : IRIS, Seattle, Washington, USA
-ftp.geologi.uio.no	 : IFG, Institute for Geology, Oslo, NORWAY
-gd.tuwien.ac.at		 : GDS, Vienna U of Techology, AUSTRIA
-ftp.iag.usp.br		 : IAG-USP, Sao Paulo, BRAZIL
-ftp.eos.hokudai.ac.jp	 : ISV, Hokkaido U, Sapporo, JAPAN
-life.csu.edu.au:	 : Charles Sturt U, Albury, AUSTRALIA
+ftp.soest.hawaii.edu	  : SOEST [Master site], Honolulu, Hawaii, USA
+ibis.grdl.noaa.gov	  : NOAA, Silver Spring, Maryland, USA
+ftp.iris.washington.edu	  : IRIS, Seattle, Washington, USA
+ftp.geologi.uio.no	  : IFG, Institute for Geology, Oslo, NORWAY
+gd.tuwien.ac.at		  : GDS, Vienna U of Techology, AUSTRIA
+ftp.iag.usp.br		  : IAG-USP, Sao Paulo, BRAZIL
+ftp.eos.hokudai.ac.jp	  : ISV, Hokkaido U, Sapporo, JAPAN
+mirror.geosci.usyd.edu.au : U of Sydney, Sydney, AUSTRALIA
 
 See http://gmt.soest.hawaii.edu for automatic installation instructions.
 Alternatively, you can ftp the files manually and follow the README.

@@ -1,4 +1,4 @@
-	$Id: README.GMT,v 1.22 2008-04-25 02:41:30 guru Exp $
+	$Id: README.GMT,v 1.23 2008-04-28 02:35:03 guru Exp $
 
 Dear potential GMT users-
 
@@ -15,7 +15,7 @@ the install script that you can download from the same
 install page.
 
 Should you want to ftp the old-fashioned way then the files
-you will need are (both .bz2 and .gz versions are available):
+you will need are:
 
 GMT_src.tar.bz2		All source code
 GMT_share.tar.bz2	Support run-time files (patterns, cpt)
@@ -44,30 +44,10 @@ Place script in the same directory as the archives and run.
 
 For new installers of GMT under Windows:
 ------------------------------------------------
-You need to ftp several zip files; some are optional:
-
-GMT_exe.zip	All executables
-GMT_share.zip	Support run-time files (patterns, cpt) 
-GSHHS_coast.zip	Basic GSHHS coastlines
-
-In addition, you may want
-
-GMT_suppl_exe.zip  Supplemental executables
-GMT_pdf.zip	   PDF documentation and Unix man pages
-GMT_man.zip	   Unix man pages for GMT
-GMT_web.zip	   HTML versions of all documentation
-GMT_tut.zip	   Tutorial data sets
-GMT_src.zip	   All source code
-GMT_scripts.zip    Example scripts and data
-GMT_suppl.zip	   Supplemental program source and docs
-GSHHS_high.zip	   High resolution GSHHS coastline files
-GSHHS_full.zip	   Full resolution GSHHS coastline files
-
-Finally, we also provide the optional Delaunay triangulation
-routine of Shewchuck.  As it is not GNU licensed it is kept
-in a separate archive:
-
-GMT_triangle.zip		Shewchuck triangulation source code
+If you only want to install executables, follow the GMT website
+link to our GMT Windows Installers.  If you actually want to compile
+GMT from source under Windows, consult the README.WIN32 file
+in the main GMT directory for instructions.
 
 There are several mirror sites available.  Use the site that
 is geographically closest to you to improve transmission
@@ -80,8 +60,8 @@ ftp.iris.washington.edu		Seattle, Washington, USA
 ftp.geologi.uio.no		Oslo, Norway
 gd.tuwien.ac.at			Vienna U of Technology, AUSTRIA
 ftp.iag.usp.br			Sao Paulo, Brazil
-mirror.geosci.usyd.edu.au	Sydney, Australia
 ftp.eos.hokudai.ac.jp.		Sapporo. Japan
+mirror.geosci.usyd.edu.au	Sydney, Australia
 ----------------------------------------------------------------
 
 The GMT Team
