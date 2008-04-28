@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 20
 REM
-REM		$Id: job20.bat,v 1.8 2006-10-22 14:26:49 remko Exp $
+REM		$Id: job20.bat,v 1.9 2008-04-28 17:45:43 remko Exp $
 REM
 REM Purpose:	Extend GMT to plot custom symbols
 REM GMT progs:	pscoast, psxy
@@ -14,7 +14,7 @@ if %master%==y cd ex20
 REM Plot a world-map with volcano symbols of different sizes
 REM on top given locations and sizes in hotspots.d
 
-pscoast -Rg -JR180/9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 -K -U"Example 20 in Cookbook" > example_20.ps
+pscoast -Rg -JR9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 -K -U"Example 20 in Cookbook" > example_20.ps
 
 echo 55.5 -21.0 0.25 > hotspots.d
 echo 63.0 -49.0 0.25 >> hotspots.d

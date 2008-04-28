@@ -100,19 +100,19 @@ Give the central meridian \fIlon0\fP, standard parallel \fIlat0\fP, and \fIscale
 The standard parallel is typically one of these (but can be any value):
 .RS
 .RS
-50 - The Balthasart projection
+50 - Balthasart
 .br
-45 - The Gall-Peters projection
+45 - Gall-Peters
 .br
-37.0666 - The Caster projection
+37.0666 - Caster
 .br
-37.4 - The Trystan Edwards projection
+37.4 - Trystan Edwards
 .br
-37.5 - The Hobo-Dyer projection
+37.5 - Hobo-Dyer
 .br
-30 - The Behrman projection
+30 - Behrman
 .br
-0 - The Lambert projection
+0 - Lambert
 .RE
 .RE
 .PP

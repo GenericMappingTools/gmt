@@ -1,9 +1,9 @@
 #!/bin/sh
-#	$Id: GMT_utm_zones.sh,v 1.2 2007-08-30 16:46:47 guru Exp $
+#	$Id: GMT_utm_zones.sh,v 1.3 2008-04-28 17:45:43 remko Exp $
 #
 # Makes a plot of the global UTM zone grid including the exceptions near Norway/Spitsbergen
 
-pscoast -Rd -JQ0/9i -G200 -Dl -A2000 -K -B60f6/0wsNe -K --BASEMAP_TYPE=plain \
+pscoast -Rd -JQ9i -G200 -Dl -A2000 -K -B60f6/0wsNe -K --BASEMAP_TYPE=plain \
   --PLOT_DEGREE_FORMAT=dddF --HEADER_OFFSET=0.25i --ANNOT_OFFSET=0.15i --HEADER_FONT_SIZE=24 --ANNOT_FONT_SIZE=10 > GMT_utm_zones.ps
 cat << EOF > $$.z.d
 >  Do S pole zone
