@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.19 2008-04-15 20:21:30 remko Exp $
+#	$Id: GNUmakefile,v 1.20 2008-04-28 17:44:43 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -98,7 +98,7 @@ DOCEPS1=scripts/GMT_App_K_1.eps scripts/GMT_App_K_2.eps scripts/GMT_App_K_3.eps 
 	$(SQRT_EPS) scripts/GMT_linear_cal.eps scripts/GMT_linear_d.eps scripts/GMT_polar.eps \
 	scripts/GMT_TM.eps scripts/GMT_albers.eps scripts/GMT_az_equidistant.eps \
 	scripts/GMT_cassini.eps scripts/GMT_eckert4.eps scripts/GMT_eckert6.eps scripts/GMT_equi_cyl.eps \
-	scripts/GMT_equidistant_conic.eps scripts/GMT_general_cyl.eps \
+	scripts/GMT_equidistant_conic.eps scripts/GMT_gall_stereo.eps scripts/GMT_general_cyl.eps \
 	scripts/GMT_gnomonic.eps scripts/GMT_grinten.eps scripts/GMT_hammer.eps \
 	scripts/GMT_lambert_az_hemi.eps scripts/GMT_lambert_az_rect.eps scripts/GMT_lambert_conic.eps \
 	scripts/GMT_mercator.eps scripts/GMT_miller.eps scripts/GMT_mollweide.eps \
