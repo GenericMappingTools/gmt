@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.19 2008-04-27 20:52:29 guru Exp $
-AC_REVISION($Revision: 1.19 $)
+dnl $Id: configure.ac,v 1.20 2008-04-28 01:50:24 guru Exp $
+AC_REVISION($Revision: 1.20 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -626,7 +626,7 @@ if test "$enable_shared" = "yes" ; then
 		SL=dylib
 		SL_VERSION=$LIB_MAJOR_VERSION.$SL
 		LD='$(CC)'
-		LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version 4.0.0 -current_version '$LIB_VERSION' -dynamiclib'
+		LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version 4.0.0 -current_version '$LIB_VERSION' -dynamiclib'$OSX_L
 	elif test "$os" = "HP-UX" ; then
 		LD_OPT="-b"
 		LDFLAGS=$LDFLAGS' -Wl,+b,$(libdir)'
