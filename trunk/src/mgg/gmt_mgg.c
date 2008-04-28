@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.17 2008-03-24 08:58:33 guru Exp $
+ *	$Id: gmt_mgg.c,v 1.18 2008-04-28 21:27:37 guru Exp $
  *
  *    Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -195,7 +195,14 @@ void gmtmggpath_init (char *dir) {
 	}
 	fclose (fp);
 }
-	
+
+void gmtmgg_end ()
+{
+	int i;
+	if (MGG_SHAREDIR) GMT_free ((void *)MGG_SHAREDIR);
+	for (i = 0; i < n_gmtmgg_paths; i++) if (gmtmgg_path[i]) GMT_free ((void *)gmtmgg_path[i]);
+}
+
 /* gmtpath takes a legid as argument and returns the full path
  * to where this data file can be found.  gmtmggpath_init must be
  * called first
