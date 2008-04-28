@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.268 2008-04-28 17:45:43 remko Exp $
+	$Id: ChangeLog,v 1.269 2008-04-28 21:27:37 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-28	pwessel
+	* mgg/mgd77togmt.c:	Did not initialize MGG_SHAREDIR path.
+	
 2008-04-28	remko
 	* GMT_eckert.sh:	Removed. Was not used by anything.
 	* GMT_gall_stereo.sh:	Added example for -JCyl_stere.
