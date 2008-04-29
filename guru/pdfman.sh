@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.14 2007-09-24 00:38:01 remko Exp $
+#	 $Id: pdfman.sh,v 1.15 2008-04-29 23:21:27 guru Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT ps and pdf manual pages
 #
@@ -57,4 +57,5 @@ for package in ${MY_GMT_SUPPL}; do
 done
 [ -f $$.lis ] && man2pdf GMT_My_Manpages_suppl < $$.lis
 
+rm -rf  www/gmt/doc/ps
 rm -f $$.*
