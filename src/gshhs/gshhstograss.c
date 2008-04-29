@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.19 2008-04-10 22:29:02 guru Exp $
+/*	$Id: gshhstograss.c,v 1.20 2008-04-29 20:19:15 guru Exp $
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
@@ -66,7 +66,7 @@ int main (int argc, char **argv)
 	char source, *progname, *dataname = NULL, ascii_name[40], att1_name[40], att2_name[40];
 	static char *slevel[] = { "unknown" , "land" , "lake" , "island in lake" , "pond in island in lake"};
 	int shore_levels = 5;
-	FILE	*fp, *ascii_fp, *att1_fp, *att2_fp;
+	FILE	*fp = NULL, *ascii_fp = NULL, *att1_fp = NULL, *att2_fp = NULL;
 	int k, max = 270000000, flip, n_read, level, version, greenwich, src, shorelines;
 	struct POINT p;
 	struct GSHHS h;
