@@ -88,7 +88,7 @@ bin into a polygon which is then painted separately.  Append \fBs\fP to skip
 nodes with z = NaN.  This option is useful for categorical data where
 interpolating between values is meaningless.  Optionally, append \fBo\fP to
 draw the tile outlines, and specify a custom pen if the default pen is not to
-your liking.
+your liking.  As this option produces a flat surface it cannot be combined with OPT(JZ) or OPT(Jz).
 (See SPECIFYING PENS below).
 #include "explain_-U.txt"
 #include "explain_-V.txt"

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.224 2008-04-17 18:07:45 remko Exp $
+ *	$Id: gmt_plot.c,v 1.225 2008-04-29 19:57:06 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4303,10 +4303,15 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 	 *	       the point on the east boundary at the same latitude.
 	 * In reality it depends on the nature of the first jump in which order we do the
 	 * west and east truncation above.
+	 * If the polygon is clipped or wraps around at a periodic boundary then we must
+	 * be caseful how we draw the outline (if selected).  It is only when there is no
+	 * clipping/wrapping that we can call GMT_fill with outline set to the input argument;
+	 * Otherwise we must first fill the polygon without an outline and then separately
+	 * plot the outline as a path.
 	 */
 
 	BOOLEAN jump;
-	GMT_LONG i, k, first;
+	GMT_LONG i, k, first, n_new;
 	int jump_dir = JUMP_L;
 	double *x, *xp, *yp;
 	PFD x_on_border[2];
@@ -4316,11 +4321,20 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 		 * clip the polygon first.  The new radial clip handles this by excluding points
 		 * beyond the horizon and adding arcs along the boundary between exit points
 		 */
-		if ((n = GMT_clip_to_map (lon, lat, n, &xp, &yp)) == 0) return;		/* All outside */
-		if (project_info.three_D) GMT_2Dz_to_3D (xp, yp, z, n);			/* Project onto plane */
-		GMT_fill (xp, yp, n, F, outline);					/* Fill caresian polygon */
+		if ((n_new = GMT_clip_to_map (lon, lat, n, &xp, &yp)) == 0) return;		/* All points are outside region */
+		if (project_info.three_D) GMT_2Dz_to_3D (xp, yp, z, n_new);			/* Project onto 2-D plane first */
+		if (n_new == n)	{	/* No clipping took place, OK to fill and outline polygon in one go */
+			GMT_fill (xp, yp, n_new, F, outline);					/* Fill cartesian polygon and possibly draw outline */
+			outline = FALSE;	/* Meaning we just draw the outline (if it was TRUE) */
+		}
+		else	/* Must fill with outline = FALSE then draw the outline separately (if outline = TRUE) */
+			GMT_fill (xp, yp, n_new, F, FALSE);					/* Fill cartesian polygon but do not draw outline */
+		/* Free the memory we are done with */
 		GMT_free ((void *)xp);
 		GMT_free ((void *)yp);
+			
+		if (!outline || (n_new = GMT_geo_to_xy_line (lon, lat, n)) == 0) return;	/* Nothing further to do */
+		GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, n_new);				/* Separately plot the outline */
 		return;
 	}
 
@@ -4343,7 +4357,8 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 		return;
 	}
 
-	/* Polygon wraps and we will plot it up to three times by truncating the part that would wrap the wrong way */
+	/* Polygon wraps and we will plot it up to three times by truncating the part that would wrap the wrong way.
+	 * Here we cannot use the clipped/wrapped polygon to draw outline - that is done at the end, separately */
 
 	/* Temporary array to hold the modified x values */
 
@@ -4366,7 +4381,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 		memcpy ((void *)yp, (void *)GMT_y_plot, (size_t)(n * sizeof (double)));
 		GMT_2Dz_to_3D (x, yp, z, n);		/* Project onto plane */
 	}
-	GMT_fill (x, yp, n, F, outline);	/* Paint the truncated polygon */
+	GMT_fill (x, yp, n, F, FALSE);	/* Paint the truncated polygon */
 
 	/* Then do the Left truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
 
@@ -4382,7 +4397,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 		memcpy ((void *)yp, (void *)GMT_y_plot, (size_t)(n * sizeof (double)));
 		GMT_2Dz_to_3D (x, yp, z, n);		/* Project onto plane */
 	}
-	if (k) GMT_fill (x, yp, n, F, outline);	/* Paint the truncated polygon */
+	if (k) GMT_fill (x, yp, n, F, FALSE);	/* Paint the truncated polygon */
 
 	/* Then do the R truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
 
@@ -4398,10 +4413,14 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 		memcpy ((void *)yp, (void *)GMT_y_plot, (size_t)(n * sizeof (double)));
 		GMT_2Dz_to_3D (x, yp, z, n);		/* Project onto plane */
 	}
-	if (k) GMT_fill (x, yp, n, F, outline);	/* Paint the truncated polygon */
+	if (k) GMT_fill (x, yp, n, F, FALSE);	/* Paint the truncated polygon */
 
 	GMT_free ((void *)x);
 	if (project_info.three_D) GMT_free ((void *)yp);
+	
+	/* If outline is TRUE then we must now draw the outline */
+	if (!outline || (n_new = GMT_geo_to_xy_line (lon, lat, n)) == 0) return;	/* Nothing further to do */
+	GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, n_new);				/* Separately plot the outline */
 }
 
 void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, int outline)

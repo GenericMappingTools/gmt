@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.63 2008-03-24 08:58:31 guru Exp $
+ *	$Id: gmt_project.h,v 1.64 2008-04-29 19:57:06 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -133,6 +133,7 @@ struct GMT_MAP_PROJECTIONS {
 	BOOLEAN north_pole;		/* TRUE if projection is on northern hemisphere, FALSE on southern */
 	BOOLEAN edge[4];		/* TRUE if the edge is a map boundary */
 	BOOLEAN three_D;		/* Parameters for 3-D projections */
+	BOOLEAN JZ_set;			/* TRUE if -Jz|Z was set */
 	BOOLEAN GMT_convert_latitudes;	/* TRUE if using spherical code with authalic/conformal latitudes */
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
 
