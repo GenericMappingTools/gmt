@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.269 2008-04-28 21:27:37 guru Exp $
+	$Id: ChangeLog,v 1.270 2008-04-29 19:57:05 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-04-29	pwessel
+	* grdview.c:		Clarified that -T cannot take -JZ|z, fixed clipping.
+
 2008-04-28	pwessel
 	* mgg/mgd77togmt.c:	Did not initialize MGG_SHAREDIR path.
 	

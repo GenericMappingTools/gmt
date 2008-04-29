@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.344 2008-04-16 02:58:24 remko Exp $
+ *	$Id: gmt_init.c,v 1.345 2008-04-29 19:57:06 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4384,6 +4384,7 @@ int GMT_parse_J_option (char *args)
 				GMT_io.in_col_type[2] = (args[t_pos[0]] == 'T') ? GMT_IS_ABSTIME : GMT_IS_RELTIME;
 			}
 			if (project_info.z_pars[0] == 0.0) error = TRUE;
+			project_info.JZ_set = TRUE;
 			break;
 
 		case GMT_POLAR:		/* Polar (theta,r) */
