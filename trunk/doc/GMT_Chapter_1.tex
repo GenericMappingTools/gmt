@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.88 2008-04-25 00:42:22 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.89 2008-04-29 20:55:19 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -71,12 +71,12 @@ of the timestamp.
 \item \GMTprog{spotter/grdspotter} is a new program, like \GMTprog{hotspotter}, but using gridded data as input.
 \end{enumerate}
 
-A long list of bugs have been squashed since the last release, the most important are listed below:
+A long list of bugs has been squashed since the last release, the most important are listed below:
 
 \begin{description}
 \item [\GMTprog{gmt\_grdio.c}]:	Fixed 3 bugs in \GMTfunc{GMT\_decode\_grd\_h\_info} that caused problems parsing \Opt{D}
 option. Explicitly exclude = sign from becoming separator.
-\item [\GMTprog{gmt\_io.c}]: Now skips blank lines that has leading whitespace.  Function
+\item [\GMTprog{gmt\_io.c}]: Now skips blank lines that has leading whitespace.
 \item [\GMTprog{gmt\_init.c}]: {\bf c} for seconds was not recognized as {\bf TIME\_UNIT} (expected {\bf s},
 which is kept for backwards compatibility). \Opt{B} processing of labels used an internal string that was too short,
 which could lead to label truncation.  Fixed ``Holiday-bug'' in \GMTfunc{GMT\_parse\_J\_option} introduced 2007-12-21.
