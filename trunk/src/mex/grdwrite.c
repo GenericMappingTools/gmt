@@ -1,5 +1,5 @@
 /*
- *	$Id: grdwrite.c,v 1.9 2008-04-23 23:28:43 guru Exp $
+ *	$Id: grdwrite.c,v 1.10 2008-04-29 21:05:53 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -119,7 +119,7 @@ int grdwrite (double z_8[], double x[], double y[], double info[], char *fileout
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	double *z_8, *info = (double *)NULL, *x, *y;
+	double *z_8, *info = (double *)NULL, *x = NULL, *y = NULL;
 	char *fileout, title[80], *argv = "grdwrite-mex";
 	int error, ns, ssz, nx, ny, k, pix = 0;	/* If no info we assume gridline reg */
 
@@ -179,7 +179,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	/* Do the actual computations in a subroutine */
  
-	if (error = grdwrite (z_8, x, y, info, fileout, title, nx, ny, pix)) {
+	if ((error = grdwrite (z_8, x, y, info, fileout, title, nx, ny, pix))) {
 		if (error == 1)
 			mexErrMsgTxt ("grdwrite: failure to allocate memory\n");
 		else if (error == 2)
