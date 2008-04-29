@@ -1,5 +1,5 @@
 %-----------------------------------------
-%	$Id: GMT_Appendix_A.tex,v 1.30 2008-01-23 03:22:47 guru Exp $
+%	$Id: GMT_Appendix_A.tex,v 1.31 2008-04-29 20:55:19 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -68,10 +68,10 @@ wedges, and more.  The package is maintained by
 Kurt Feigl\footnote{Kurt.Feigl@cnes.fr} and
 Genevieve Patau\footnote{patau@ipgp.jussieu.fr}.
 
-\section{mex: Matlab--\gmt\ interface}
+\section{mex: Matlab/Octave--\gmt\ interface}
 
 Here you will find the mex files \GMTprog{grdinfo}, \GMTprog{grdread},
-and \GMTprog{grdwrite}, which can be used in Matlab to read and write
+and \GMTprog{grdwrite}, which can be used in Matlab or Octave to read and write
 grid files.  The package originated with David Sandwell, UCSD,
 and was subsequently modified by Paul Wessel and Phil Sharfstein, UCSB.
 It is now maintained by Paul Wessel.
@@ -114,7 +114,8 @@ This package contains programs to plot SEGY seismic data files using
 the \GMT\ mapping transformations and postscript library. \GMTprog{pssegy} generates
 a 2-D plot (x:location and y:time/depth) while \GMTprog{pssegyz} generates a
 3-D plot (x and y: location coordinates, z: time/depth). Locations may be
-read from predefined or arbitrary portions of each trace header.
+read from predefined or arbitrary portions of each trace header.  Finally,
+\GMTprog{segy2grd} can convert SEGY data to a \GMT\ grid file.
 The package is maintained by Tim Henstock\footnote{Timothy.J.Henstock@soc.soton.ac.uk}.
 
 \section{spotter: backtracking and hotspotting}
@@ -123,7 +124,8 @@ This package contains the plate tectonic programs \GMTprog{backtracker},
 which you can use to move geologic markers forward or backward in time, 
 \GMTprog{grdrotater} which rotates entire grids using a finite rotation,
 \GMTprog{hotspotter} which generates CVA grids based on seamount locations
-and a set of absolute plate motion stage poles, \GMTprog{originator},
+and a set of absolute plate motion stage poles (\GMTprog{grdspotter} does the
+same using a bathymetry grid instead of seamount locations), \GMTprog{originator},
 which associates seamounts with the most likely hotspot origins, and \GMTprog{rotconverter}
 which does various operations involving finite rotations on a sphere.  The package
 is maintained by Paul Wessel.
