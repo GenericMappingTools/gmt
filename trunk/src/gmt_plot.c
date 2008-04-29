@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.225 2008-04-29 19:57:06 guru Exp $
+ *	$Id: gmt_plot.c,v 1.226 2008-04-29 22:01:56 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4316,6 +4316,14 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 	double *x, *xp, *yp;
 	PFD x_on_border[2];
 
+	if (F->rgb[0] == -1 && !outline) return;	/* Wanted neither fill nor outline, i.e., nothing to do */
+
+	if (F->rgb[0] == -1 && outline) {	/* Just draw outline, no fill */
+		if ((n_new = GMT_geo_to_xy_line (lon, lat, n)) == 0) return;	/* Nothing further to do */
+		GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, n_new);		/* Separately plot the outline */
+		return;
+	}
+	
 	if (GMT_IS_AZIMUTHAL || !GMT_world_map) {
 		/* Because points way outside the map might get close to the antipode we must
 		 * clip the polygon first.  The new radial clip handles this by excluding points
