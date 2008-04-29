@@ -1,5 +1,5 @@
 /*
- *	$Id: grdread.c,v 1.9 2008-04-23 23:28:43 guru Exp $
+ *	$Id: grdread.c,v 1.10 2008-04-29 21:05:53 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -85,7 +85,7 @@ int grdread (double z_8[], double info[], char *filein, struct GRD_HEADER *grd)
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	struct GRD_HEADER grd;
-	double *z_8, *info = (double *)NULL, *x, *y, off;
+	double *z_8, *info = (double *)NULL, *x = NULL, *y = NULL, off;
 	char *filein, *argv = "grdread-mex";
 	int error, ns, ssz, pz, i;
  
@@ -148,7 +148,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  
 	/* Call grdread to get the contents of the file */
  
-	if (error = grdread (z_8, info, filein, &grd)) {
+	if ((error = grdread (z_8, info, filein, &grd))) {
 		if (error == 1)
 			mexErrMsgTxt ("grdread: failure to allocate memory\n");
 		else
