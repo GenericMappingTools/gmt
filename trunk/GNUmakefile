@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.33 2008-04-30 21:42:10 guru Exp $
+#  $Id: GNUmakefile,v 1.34 2008-04-30 22:57:18 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -53,7 +53,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		26-APR-2008
+#	Date:		30-APR-2008
 #
 #-------------------------------------------------------------------------------
 #	DEFAULT SETTINGS

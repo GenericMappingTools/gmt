@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.2 2008-04-30 21:07:17 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.3 2008-04-30 22:57:18 guru Exp $
 REM	Compiles GMT and builds installers under Windows
 REM	Paul Wessel with help from Joaquim Luis
 REM
@@ -18,10 +18,10 @@ cd C:\GMT
 mkdir bin
 mkdir lib
 cd src
-gmtinstall tri
-gmtsuppl
+call gmtinstall tri
+call gmtsuppl
 iscc /Q C:\GMT\guru\GMTsetup_basic.iss
 iscc /Q C:\GMT\guru\GMTsetup_hfcoast.iss
 iscc /Q C:\GMT\guru\GMTsetup_pdf.iss
-echo "GMT installers are now placed in C:\GMT\ftp"
-echo "copy them over to your GMT/ftp on macnut"
+echo GMT installers are now placed in C:\GMT\ftp.
+echo Copy them over to your GMT/ftp on macnut.
