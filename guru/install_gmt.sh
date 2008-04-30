@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.127 2008-04-25 02:41:30 guru Exp $
+#	$Id: install_gmt.sh,v 1.128 2008-04-30 07:52:13 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -86,21 +86,9 @@ cat << EOF > gmt_install.ftp_bzsizes
 28.0
 0.8
 2.8
-9.7
-2.8
-0.9
-EOF
-cat << EOF > gmt_install.ftp_gzsizes
-1.3
-0.05
-4.4
-10.7
-46.1
-0.8
-3.4
-9.7
-3.0
-1.2
+11.0
+3.1
+0.4
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
@@ -1195,7 +1183,7 @@ if [ ! x"$MATDIR" = x ]; then	# MATDIR is set
 	if [ "X$GMT_mex_type" = "Xmatlab"]
 		enable_matlab=--enable-matlab=$MATDIR
 	else
-		enable_matlab=--enable-octave=$MATDIR
+		enable_matlab=--enable-octave=yes
 	fi
 else
 	enable_matlab=
