@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.18 2008-04-30 01:45:53 guru Exp $
+#  $Id: Makefile,v 1.19 2008-04-30 08:04:32 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -161,12 +161,16 @@ update-ftp-live:	netcdf
 	scp ../ftp/*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
-		echo "rm -f $(LIVEFTPDIR)/GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
-		echo "rm -f $(LIVEFTPDIR)/{GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "rm -f {GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
+	done
+	for p in basic pdf highfull; do \
+		echo "rm -f windows/GMT_$$p.exe" >> gmt_server_job.sh; \
+		echo "$(LN_S) windows/GMT$(GMT_VERSION)_$$p.exe windows/GMT_$$p.exe" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
@@ -185,12 +189,16 @@ update-ftp-test:	netcdf
 	scp ../ftp/*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
-		echo "rm -f $(LIVEFTPDIR2)/GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
 	for p in coast high full; do \
-		echo "rm -f $(LIVEFTPDIR2)/{GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "rm -f {GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
+	done
+	for p in basic pdf highfull; do \
+		echo "rm -f windows/GMT_$$p.exe" >> gmt_server_job.sh; \
+		echo "$(LN_S) windows/GMT$(GMT_VERSION)_$$p.exe windows/GMT_$$p.exe" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
@@ -209,11 +217,15 @@ update-ftp-local:
 	cp -f ../ftp/*.exe $(TESTFTPDIR)/windows
 	for p in pdf web tut share src scripts suppl; do \
 		\rm -f $(TESTFTPDIR)/GMT_$$p.tar.bz2; \
-		(cd $(TESTFTPDIR); $(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
+		(cd $(TESTFTPDIR); $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
 	done
 	for p in coast high full; do \
 		\rm -f $(TESTFTPDIR)/{GMT,GSHHS}_$$p.tar.bz2; \
 		(cd $(TESTFTPDIR); $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
+	done
+	for p in basic pdf highfull; do \
+		rm -f windows/GMT_$$p.exe; \
+		(cd $(TESTFTPDIR)/windows; $(LN_S) GMT$(GMT_VERSION)_$$p.exe GMT_$$p.exe); \
 	done
 
 clean-ftp:
