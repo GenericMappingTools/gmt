@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.29 2008-04-23 23:28:43 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.30 2008-04-30 23:26:04 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -103,7 +103,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.29 $, on
+# Processed by install_gmt_form.pl $Revision: 1.30 $, on
 #
 #	$now
 #
@@ -269,7 +269,7 @@ print FILE "GMT_mex_type=";
 if ($mex_type eq "matlab") {
 	print FILE "matlab\n";
 }
-else if ($mex_type eq "octave") {
+elsif ($mex_type eq "octave") {
 	print FILE "octave\n";
 }
 else {
