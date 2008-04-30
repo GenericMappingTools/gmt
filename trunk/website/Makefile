@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.22 2008-04-30 18:23:11 guru Exp $
+#  $Id: Makefile,v 1.23 2008-04-30 21:06:13 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -58,7 +58,10 @@ help::
 # Place stuff in the GMT www directory:
 
 ../www/gmt/examples/ex01/example_01_100dpi.png:	../examples/ex01/example_01.ps
-		sh webexamples.sh -s
+	sh webexamples.sh -s
+
+../examples/ex01/example_01.ps:	../examples/ex01/job01.sh
+	( cd ..; $(MAKE) -f GNUmakefile examples)
 
 #---------------------------------------------------------------------------
 # GMT VERSION UPDATE
@@ -99,6 +102,8 @@ update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.htm
 		echo 's/"GMT_ftpsite=", \$$site/"GMT_ftpsite=0"/g' >> job.sed
 		sed -f job.sed install_gmt_form.pl > install_gmt_form_test.pl
 		scp install_gmt_form_test.pl $(WEBSERVER2):$(LIVECGIDIR2)
+		echo "sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttestBg" > job.sed
+		sed -f job.sed gmt_windows.html > gmt_windows_test.html
 		rm -f install_gmt_form_test.pl job.sed
 		ssh $(WEBSERVER2) mkdir -p $(LIVEWWWDIR2)/gmt
 		ssh $(WEBSERVER2) rm -f $(LIVEWWWDIR2)/index.html
@@ -113,6 +118,7 @@ update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.htm
 		scp -r ../www/gmt/doc $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		scp -r ../www/gmt/examples $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		scp -r contrib $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
+		scp gmt_windows_test.html $(WEBSERVER2):$(LIVEWWWDIR2)/gmt/gmt_windows.html
 		echo "cd $(LIVEWWWDIR2)/gmt" > gmt_server_job.sh
 		echo "sed -e s/install_gmt_form.pl/install_gmt_form_test.pl/g gmt_install_form.html > tmp" >> gmt_server_job.sh
 		echo "mv -f tmp gmt_install_form.html" >> gmt_server_job.sh
@@ -167,8 +173,8 @@ update-ftp-live:	netcdf
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
 	for p in basic pdf highfull; do \
-		echo "rm -f windows/GMT_$$p.exe" >> gmt_server_job.sh; \
-		echo "$(LN_S) windows/GMT$(GMT_VERSION)_$$p.exe windows/GMT_$$p.exe" >> gmt_server_job.sh; \
+		echo "rm -f windows/GMT_$$p_install.exe" >> gmt_server_job.sh; \
+		echo "$(LN_S) windows/GMT$(GMT_VERSION)_$$p_install.exe windows/GMT_$$p_install.exe" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
@@ -195,8 +201,8 @@ update-ftp-test:	netcdf
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
 	for p in basic pdf highfull; do \
-		echo "rm -f windows/GMT_$$p.exe" >> gmt_server_job.sh; \
-		echo "$(LN_S) windows/GMT$(GMT_VERSION)_$$p.exe windows/GMT_$$p.exe" >> gmt_server_job.sh; \
+		echo "rm -f windows/GMT_$$p_install.exe" >> gmt_server_job.sh; \
+		echo "$(LN_S) windows/GMT$(GMT_VERSION)_$$p_install.exe windows/GMT_$$p_install.exe" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
@@ -222,8 +228,8 @@ update-ftp-local:
 		(cd $(TESTFTPDIR); $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
 	done
 	for p in basic pdf highfull; do \
-		rm -f windows/GMT_$$p.exe; \
-		(cd $(TESTFTPDIR)/windows; $(LN_S) GMT$(GMT_VERSION)_$$p.exe GMT_$$p.exe); \
+		rm -f windows/GMT_$$p_install.exe; \
+		(cd $(TESTFTPDIR)/windows; $(LN_S) GMT$(GMT_VERSION)_$$p_install.exe GMT_$$p_install.exe); \
 	done
 
 clean-ftp:
