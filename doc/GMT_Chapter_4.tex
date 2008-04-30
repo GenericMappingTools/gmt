@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.110 2008-04-06 01:30:32 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.111 2008-04-30 03:53:30 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -15,7 +15,7 @@ in \GMT\ and summarizes the philosophy behind the system.  Some
 of the features described here may make more sense once you reach
 the cook-book section where we present actual examples of their use. 
 
-\section{\gmt\ Units}
+\section{\gmt\ units}
 \index{GMT@\GMT!units|(}
 \index{Dimensions|(}
 \index{Units|(}
@@ -109,7 +109,7 @@ associated with micro-editing of illustrations.
 
 \end{enumerate}
 
-\subsection{Changing \gmt\ Defaults}
+\subsection{Changing \gmt\ defaults}
 
 As mentioned, \GMT\ programs will attempt to open a file named
 \filename{.gmtdefaults4}.  At times it may be desirable to override
@@ -163,7 +163,7 @@ scaled down by 50\%.
 \index{GMT@\GMT!defaults|)}
 \index{Default settings|)}
 
-\section{Command Line Arguments} 
+\section{Command line arguments} 
 \index{Command line!arguments}%
 \index{Arguments, command line}%
 
@@ -236,7 +236,7 @@ these options in order of importance (some are use a lot more than others).
 \label{tbl:switches}
 \end{table} 
 
-\subsection{Data Domain or Map Region: The \Opt{R} option}
+\subsection{Data domain or map region: The \Opt{R} option}
 \index{\Opt{R} (set region)}
 \index{Region, specifying}
 \label{sec:R}
@@ -317,24 +317,33 @@ UTM coordinates clearly refer to points on the Earth, in this context they are c
 refer to ``geographical'' coordinates herein we imply longitude, latitude.}
 \end{description}
 
-\subsection{Coordinate Transformations and Map Projections: The \Opt{J} option}
+\subsection{Coordinate transformations and map projections: The \Opt{J} option}
 \index{\Opt{J} (set map projection)}
 \index{Map projections}
 
-\GMTfig[h]{GMT_-J}{The 30 map projections and coordinate transformations available in \gmt.}
-
 This option selects the coordinate transformation or map projection.  The general format is
-
 \begin{itemize}
-\item \textbf{--J}$\delta$[\emph{parameters}/]\emph{scale}.  Here, $\delta$ is a \emph{lower-case}
+\item \Opt{J}$\delta$[\emph{parameters}/]\emph{scale}.  Here, $\delta$ is a \emph{lower-case}
 letter of the alphabet that selects a particular map projection, the \emph{parameters}
 is zero or more slash-delimited projection parameter, and \emph{scale} is map scale given in
 distance units per degree or as 1:xxxxx.
-\item \textbf{--J}$\Delta$[\emph{parameters}/]\emph{width}.  Here, $\Delta$ is an \emph{upper-case}
+\item \Opt{J}$\Delta$[\emph{parameters}/]\emph{width}.  Here, $\Delta$ is an \emph{upper-case}
 letter of the alphabet that selects a particular map projection, the \emph{parameters}
 is zero or more slash-delimited projection parameter, and \emph{width} is map width (map
 height is automatically computed from the implied map scale and region).
 \end{itemize}
+Since \GMT\ version 4.3.0, there is an alternative way to specify the projections: use the same abbreviation as in the mapping package \progname{Proj4}. The options thus either look like:
+\begin{itemize}
+\item \Opt{Jabbrev/}[\emph{parameters}/]\emph{scale}.  Here, \textbf{abbrev} is a \emph{lower-case}
+abbreviation that selects a particular map projection, the \emph{parameters}
+is zero or more slash-delimited projection parameter, and \emph{scale} is map scale given in
+distance units per degree or as 1:xxxxx.
+\item \Opt{JAbbrev/}[\emph{parameters}/]\emph{width}.  Here, \textbf{Abbrev} is an \emph{capitalized} abbreviation that selects a particular map projection, the \emph{parameters}
+is zero or more slash-delimited projection parameter, and \emph{width} is map width (map
+height is automatically computed from the implied map scale and region).
+\end{itemize}
+
+\GMTfig[h]{GMT_-J}{The 30+ map projections and coordinate transformations available in \gmt.}
 
 The projections available in \GMT\ are presented in Figure~\ref{fig:GMT_-J}.
 For details on all \GMT\ projections and the required parameters, see the \GMTprog{psbasemap} man page.
@@ -626,7 +635,7 @@ when using different media, such as 11" x 17" or large format plotters
 (Figure~\ref{fig:GMT_-P}).
 
 
-\subsection{Plot Overlays: The \Opt{K} \Opt{O} options}
+\subsection{Plot overlays: The \Opt{K} \Opt{O} options}
 \index{Overlay plot \Opt{O} \Opt{K}}
 \index{Plot!overlay \Opt{O} \Opt{K}}
 \index{Plot!continue \Opt{O} \Opt{K}}
@@ -661,7 +670,7 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 
 \GMTfig[h]{GMT_-U}{The \Opt{U} option makes it easy to ``date'' a plot.}
 
-\subsection{Verbose Feedback: The \Opt{V} option} 
+\subsection{Verbose feedback: The \Opt{V} option} 
 \index{\Opt{V} (verbose mode)}
 \index{Verbose (\Opt{V})}
 \label{sec:verbose}
@@ -769,7 +778,7 @@ first (minor) dimension.
 
 \index{Command line!standardized options|)}%
 
-\section{Command Line History}
+\section{Command line history}
 \label{sec:gmtcommands}
 \index{Command line!history}
 \index{History, command line}
@@ -833,7 +842,7 @@ The error messages generally begin with the name of the
 program in which the error occurred; if you have several
 programs piped together this tells you where the trouble is. 
 
-\section{Standard Input or File, header records}
+\section{Standard input or file, header records}
 \index{Standard input}
 \index{Input!standard}
 \index{Header records \Opt{H}}
@@ -875,7 +884,7 @@ may be placed in these directories, thus eliminating the need to specify
 a full path to the file.  Program output is always written to the
 current directory unless a full path has been specified.
 
-\section{Verbose Operation}
+\section{Verbose operation}
 \index{Verbose (\Opt{V})}
 \index{\Opt{V} (verbose mode)}
 
@@ -904,7 +913,7 @@ verbose comments are written to standard error in all cases.
 You can use \UNIX\ to redirect standard error as well,
 if you want to create a log file of what you are doing. 
 
-\section{Input Data Formats}
+\section{Input data formats}
 \label{sec:input data}
 \index{Input!format}
 
@@ -940,7 +949,7 @@ formats; use \Opt{fi} and \Opt{fo} to set input and output separately).  For ins
 the first two columns are longitude and latitude, and that the third column (e.g., $z$) is absolute calendar time, we add
 \Opt{fi}0x,1y,2T to the command line.  For more details, see the man page for the program you need to use.
 
-\section{Output Data Formats}
+\section{Output data formats}
 \label{sec:output data}
 \index{Output!format}
 
@@ -955,7 +964,7 @@ the \textbf{FIELD\_SEPARATOR} parameter.  Thus, as an example, it is possible to
 FORTRAN-style card records by setting \textbf{D\_FORMAT} to \%7.3lf and \textbf{FIELD\_SEPARATOR} to
 none [Default is tab].
 
-\section{\PS\ Features}
+\section{\PS\ features}
 \index{PostScript@\PS!features}
 \PS\ is a command language for driving graphics
 devices such as laser printers.  It is ASCII text which you

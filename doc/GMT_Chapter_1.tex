@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.89 2008-04-29 20:55:19 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.90 2008-04-30 03:53:30 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -12,7 +12,7 @@
 
 While \GMT\ has served the map-making and data processing needs of scientists since 1988\footnote{Version
 1.0 was then informally released at the Lamont-Doherty Earth Observatory.}, the current global use was
-heralded by the first official release in {\it EOS Trans. AGU} in the fall of 1991.  Since then,
+heralded by the first official release in \emph{EOS Trans. AGU} in the fall of 1991.  Since then,
 \GMT\ has grown to become a standard tool for many users, particularly in the Earth and Ocean Sciences.
 Development has at times been rapid, and numerous releases have seen the light of day since the early
 versions.  For a history of the changes from release to release, see the online
@@ -38,13 +38,13 @@ history of the development milestones in the 4.x series.
 
 Changes are once again a mix of structural improvements, bug fixes, and a few enhancements.
 The coastline files (now GSHHS 1.10) have seen minor modifications, the mex supplement now offers
-support for \htmladdnormallinkfoot{Octave}{http://www.octave.org}, all source code is now fully
-64-bit compliant, we have added an isolation mode option (if {\bf GMT\_TMPDIR} is defined, write
+support for \htmladdnormallinkfoot{\progname{Octave}}{http://www.octave.org}, all source code is now fully
+64-bit compliant, we have added an isolation mode option (if \textbf{GMT\_TMPDIR} is defined, write
 temporary and hidden files to that directory),
 and the configure/make setup has been further improved (such as honoring CFLAGS and LDFLAGS set by user).
 Colors may now be specified
 as hexadecimal codes (e.g., \#ff0000 for red), and projections can be specified by name
-(similar to \htmladdnormallinkfoot{proj4}{http://proj.maptools.org}).  Finally, binary table
+(similar to \htmladdnormallinkfoot{\progname{Proj4}}{http://proj.maptools.org}).  Finally, binary table
 data can now be COARDS-compliant netCDF files. As for documentation, we have now switched from
 C shell to Bourne shell.
 
@@ -52,21 +52,20 @@ The following lists specific enhancements or new program options:
 
 % Enhancements:
 \begin{enumerate}
-\item \GMTprog{gmt\_grdio.c} is modified so the grd i/o support the {\bf GMT\_[DATA$|$IMG$|$GRID]DIR} environment settings.
-\item \GMTprog{gmt\_init.c} was enhanced so \Opt{U} can now interpret a justification (e.g., {\it just/dx/dy})
-and we introduce a new default parameter {\bf UNIX\_TIME\_FORMAT} which controls the formatting
+\item \GMTprog{gmt\_grdio.c} is modified so the grid i/o supports the \textbf{GMT\_[DATA$|$IMG$|$GRID]DIR} environment settings.
+\item \GMTprog{gmt\_init.c} was enhanced so \Opt{U} can now interpret a justification (e.g., \emph{just/dx/dy} on the command line or by setting \textbf{UNIX\_TIME\_POS}) and we introduced a new default parameter \textbf{UNIX\_TIME\_FORMAT} which controls the formatting
 of the timestamp.
-\item \GMTprog{gmt\_io.c} now implements \Opt{b}[{\bf i}$|${\bf o}]{\bf c}[{\it var1/...}] option to indicate input is netCDF.
-\item \GMTprog{gmtmath} recognizes new constants {\bf TMIN}, {\bf TMAX}, {\bf TINC}, and {\bf N}.
+\item \GMTprog{gmt\_io.c} now implements \Opt{b}[\textbf{i}$|$\textbf{o}]\textbf{c}[\emph{var1/...}] option to indicate input is netCDF.
+\item \GMTprog{gmtmath} recognizes new constants \textbf{TMIN}, \textbf{TMAX}, \textbf{TINC}, and \textbf{N}.
 \item \GMTprog{grdimage} uses \Opt{N} to not clip image at map boundary.
 \item \GMTprog{grdview} now uses \Opt{Wf} to change the facade pen from its default value.
-\item \GMTprog{grdmath} recognizes new constants {\bf XMIN}, {\bf XMAX}, {\bf XINC}, {\bf NX}, and similarly
-{\bf YMIN}, {\bf YMAX}, {\bf YINC}, {\bf NY}.
+\item \GMTprog{grdmath} recognizes new constants \textbf{XMIN}, \textbf{XMAX}, \textbf{XINC}, \textbf{NX}, and similarly
+\textbf{YMIN}, \textbf{YMAX}, \textbf{YINC}, \textbf{NY}.
 \item \GMTprog{mapproject} \Opt{G+} will compute distances between coordinates in first 4 columns.
 \item \GMTprog{ps2raster} has new option \Opt{D} to specify alternative output directory and \Opt{V} to report progress.
 \item \GMTprog{psrose} has new option \Opt{F} to disable the plotting of the scale bar.
 \item \GMTprog{psxyz} has new option \Opt{D} to match option set in \GMTprog{psxy}.
-\item \GMTprog{mgd77/mgd77list}	added \Opt{Ga}$|${\bf b}{\it rec} to limit output to a certain record range.
+\item \GMTprog{mgd77/mgd77list}	added \Opt{Ga}$|$\textbf{b}\emph{rec} to limit output to a certain record range.
 \item \GMTprog{spotter/hotspotter} added \Opt{S} to normalize output to percent of CVA maximum.
 \item \GMTprog{spotter/grdspotter} is a new program, like \GMTprog{hotspotter}, but using gridded data as input.
 \end{enumerate}
@@ -77,7 +76,7 @@ A long list of bugs has been squashed since the last release, the most important
 \item [\GMTprog{gmt\_grdio.c}]:	Fixed 3 bugs in \GMTfunc{GMT\_decode\_grd\_h\_info} that caused problems parsing \Opt{D}
 option. Explicitly exclude = sign from becoming separator.
 \item [\GMTprog{gmt\_io.c}]: Now skips blank lines that has leading whitespace.
-\item [\GMTprog{gmt\_init.c}]: {\bf c} for seconds was not recognized as {\bf TIME\_UNIT} (expected {\bf s},
+\item [\GMTprog{gmt\_init.c}]: \textbf{c} for seconds was not recognized as \textbf{TIME\_UNIT} (expected \textbf{s},
 which is kept for backwards compatibility). \Opt{B} processing of labels used an internal string that was too short,
 which could lead to label truncation.  Fixed ``Holiday-bug'' in \GMTfunc{GMT\_parse\_J\_option} introduced 2007-12-21.
 \GMTfunc{GMT\_str\_tolower} could run out of bounds. Probably only affected 32-bit compilers.
@@ -86,28 +85,28 @@ which could lead to label truncation.  Fixed ``Holiday-bug'' in \GMTfunc{GMT\_pa
 exceeds 180 degrees.  Added new rectangular clip function using Sutherland/Hodgman algorithm
 in order to fix incorrect results in \GMTprog{grdlandmask}.  Minor bug in 4th term in conformal to geodetic lat.
 Round-off could mess mapping of west/east to xmin/xmax.  Now has a safety valve for checking that this does not occur.
-\item [\GMTprog{gmt\_plot.c}]: 3-D basemap axis did not use {\bf LABEL\_OFFSET}.
+\item [\GMTprog{gmt\_plot.c}]: 3-D basemap axis did not use \textbf{LABEL\_OFFSET}.
 \item [\GMTprog{gmt\_proj.c}]: Fixed bug in azimuthal equal area projection that had the
 horizon shifted from where it ought to be.  Avoid error in \GMTfunc{GMT\_lamb\_sph} when lat is 90 degrees.
 Clip path for general perspective projection was not closed. For \Opt{JS}: Would set slice to NaN if central meridian was not Greenwich.
 For \Opt{JR}: Longitudes beyond 180 were set to 180.
 \item [\GMTprog{gmt\_stat.c}]: Bug in \GMTfunc{GMT\_median} would sometime give subtle mistakes, most noticeable
 when only a few values were passed to the function. Traced to the use
-of {\it size\_t} variables in expressions that could yield a negative value.
+of \emph{size\_t} variables in expressions that could yield a negative value.
 Fixed minor issues in \GMTfunc{GMT\_PvQv} function.
 \item [\GMTprog{gmt\_support.c}]: Made \GMTfunc{GMT\_polygon\_is\_open} tolerant of round-off and if
 polygon is not open set last to exactly equal first point.   \GMTfunc{GMT\_get\_annot\_label} did not
-properly honor the {\it ddd.xx} setting. Now implements annotation for Gnomonic maps.
+properly honor the \emph{ddd.xx} setting. Now implements annotation for Gnomonic maps.
 In \GMTfunc{GMT\_contour}, would occasionally not check internal crossings for some interior contours.
 \item [\GMTprog{pslib.c}]: Bug in \GMTfunc{ps\_shorten\_path} lead to SEGV when path resulted in a single point.
-Fixed error in applying \GMTprog{pstext}'s \Opt{Dj}{\it dx/dy} shift in paragraph mode (\Opt{M}).
+Fixed error in applying \GMTprog{pstext}'s \Opt{Dj}\emph{dx/dy} shift in paragraph mode (\Opt{M}).
 Redefine rect symbol to be less prone to round-off.
-Used internal {\it point\_code} before it was initialized.  This
-caused {\bf PAGE\_COLOR} not to work (wrote $<$NUL$>$ rather than C).
-\item [\GMTprog{gmtmath.c}]: Implemented Welford (1962) algorithm in {\bf KURT}, {\bf SKEW} and {\bf STD} operators
+Used internal \emph{point\_code} before it was initialized.  This
+caused \textbf{PAGE\_COLOR} not to work (wrote $<$NUL$>$ rather than C).
+\item [\GMTprog{gmtmath.c}]: Implemented Welford (1962) algorithm in \textbf{KURT}, \textbf{SKEW} and \textbf{STD} operators
 for more precise one-pass computation of mean and sum of squares.
 \item [\GMTprog{gmtselect.c}]: The \Opt{:o} option failed to reverse output order.
-\item [\GMTprog{grd2xyz.c}]: Do not abort with \Opt{R} exceeds grid; simply output common region.
+\item [\GMTprog{grd2xyz.c}]: Do not abort when \Opt{R} exceeds grid; simply output common region.
 For gridline oriented grids: \Opt{E} returned xll and yll one cell too large. Now writing [xy]llcenter properly.
 \item [\GMTprog{grdblend.c}]: Did not pick up node registration before calculating output grid size.
 \item [\GMTprog{grdedit.c}]: Adjust z\_min and z\_max when changing add\_offset or scale\_factor.
@@ -115,12 +114,12 @@ For gridline oriented grids: \Opt{E} returned xll and yll one cell too large. No
 \item [\GMTprog{grdinfo.c}]: Implemented Welford (1962) algorithm for more precise one-pass
 computation of mean and sum of squares.  zmin==zmax no longer forces \Opt{M} option.
 \item [\GMTprog{grdmask.c}]: Tiny bug for determining which hemisphere (N/S) unlikely to have had any effect.
-Needed to allow for some slop when comparing shrink to 0.0 since sometimes the result of {\it acos} is 1e-14 or thereabouts.
-\item [\GMTprog{grdmath.c}]: Implemented Welford (1962) algorithm in {\bf KURT}, {\bf SKEW} and {\bf STD} operators
+Needed to allow for some slop when comparing shrink to 0.0 since sometimes the result of \emph{acos} is 1e-14 or thereabouts.
+\item [\GMTprog{grdmath.c}]: Implemented Welford (1962) algorithm in \textbf{KURT}, \textbf{SKEW} and \textbf{STD} operators
 for more precise one-pass computation of mean and sum of squares.
 \item [\GMTprog{grdview.c}]: The facade (\Opt{N}) outline was drawn with contour pen.
 \item [\GMTprog{minmax.c}]: Could get confused when longitudes crossed dateline or Greenwich,
-and {\bf OUTPUT\_DEGREE\_FORMAT} could interfere with result.
+and \textbf{OUTPUT\_DEGREE\_FORMAT} could interfere with result.
 \item [\GMTprog{pscontour.c}]: \Opt{T} option was susceptible to infinite loop if bad record was found.
 \item [\GMTprog{pshistogram.c}]: The \Opt{R} option was processed separately and did not understand time coordinates.
 Bug in \Opt{F} option failed to center bins.
@@ -139,7 +138,7 @@ When sizes of \Opt{Sr} or \Opt{Sj} were read from list, they were always assumed
 \item [\GMTprog{sample1d.c}]: Calendar time knots did not get properly interpreted with \Opt{N}.
 \item [\GMTprog{mgd77/mgd77.c}]: Wrong header order written if \GMTprog{mgd77convert} ... \Opt{Tt} was used.
 \item [\GMTprog{mgd77/mgd77info.c}]: Could get confused when longitudes crossed dateline or Greenwich,
-and {\bf OUTPUT\_DEGREE\_FORMAT} could interfere with result.
+and \textbf{OUTPUT\_DEGREE\_FORMAT} could interfere with result.
 \item [\GMTprog{x2sys/x2sys.c}]: Error in determining which columns had been requested.
 \item [\GMTprog{x2sys/x2sys\_binlist.c}]: Could create bad bins because of incorrect reallocation of memory.
 \item [\GMTprog{x2sys/x2sys\_get.c}]: The \Opt{L} option did not honor any \Opt{F} or \Opt{N} settings.
@@ -167,12 +166,12 @@ Individual programs have also seen some new options or enhancements:
 \begin{enumerate}
 \item \GMTprog{gmtselect} has enhancement \Opt{Lp} to limit points beyond a line's endpoints.
 \item \GMTprog{grdfilter} has new option \Opt{D}5 to allow direct filtering of Mercator grids (img).
-\item \GMTprog{grdmask} has an enhanced \Opt{A} option; append {\bf m} or {\bf p} to design
+\item \GMTprog{grdmask} has an enhanced \Opt{A} option; append \textbf{m} or \textbf{p} to design
 a mask polygon by first following a meridian, then a parallel, or vice versa.
-\item \GMTprog{gmtmath} has several new operators, such as {\bf PLMg} (geophysical normalization
-and suitable for high degree and order), {\bf FACT, SKEW, KURT, PQUANT, EULER, PSI, PV, QV, COT,
-COTD, ACOT, SEC, SECD, ASEC, CSC, CSCD}, and {\bf ACSC}.
-\item \GMTprog{grdmath} has the same new operator as \GMTprog{gmtmath}, plus {\bf YLMg} and {\bf CBAZ}.
+\item \GMTprog{gmtmath} has several new operators, such as \textbf{PLMg} (geophysical normalization
+and suitable for high degree and order), \textbf{FACT, SKEW, KURT, PQUANT, EULER, PSI, PV, QV, COT,
+COTD, ACOT, SEC, SECD, ASEC, CSC, CSCD}, and \textbf{ACSC}.
+\item \GMTprog{grdmath} has the same new operator as \GMTprog{gmtmath}, plus \textbf{YLMg} and \textbf{CBAZ}.
 \item \GMTprog{grdproject} now considers \Opt{R} an optional setting.
 \item \GMTprog{mapproject} has an enhanced \Opt{G-} option where increments rather than 
 cumulative distances are returned.  Also, for UTM projections with \Opt{C}, the \Opt{R}
@@ -182,26 +181,26 @@ option is now optional provided the UTM zone is properly specified.
 \item \GMTprog{pstext} will now accept the @\_, @: and @; escape sequences for underline,
 font size change, and font color change regardless of mode.
 \item \GMTprog{psrose} has a new option \Opt{L} to control the labels.
-\item \GMTprog{psxy} has an enhanced \Opt{A} option; append {\bf m} or {\bf p} to draw a
+\item \GMTprog{psxy} has an enhanced \Opt{A} option; append \textbf{m} or \textbf{p} to draw a
 line by first following a meridian, then a parallel, or vice versa. Can now plot a notched
-box-and-whisker symbol, and we added {\bf +n}{\it dx/dy} to nudge placement of quoted line labels.
-Encanced\Opt{E}.../[-$|$+]{\it pen} where + means apply cpt color (\Opt{C}) to symbol and bar
-- means apply to bar only (no fill).  Likewise, \Opt{W}[+$|$-]{\it pen} controls
+box-and-whisker symbol, and we added \textbf{+n}\emph{dx/dy} to nudge placement of quoted line labels.
+Encanced\Opt{E}.../[-$|$+]\emph{pen} where + means apply cpt color (\Opt{C}) to symbol and bar
+- means apply to bar only (no fill).  Likewise, \Opt{W}[+$|$-]\emph{pen} controls
 if \Opt{C} sets outline (-) or both fill and outline (+).
-\item \GMTprog{psxyz} hass enhanced \Opt{W}[+$|$-]{\it pen} that controls if \Opt{C} sets outline (-)
+\item \GMTprog{psxyz} hass enhanced \Opt{W}[+$|$-]\emph{pen} that controls if \Opt{C} sets outline (-)
 or both fill and outline (+).
 \item \GMTprog{sample1d} now accepts \Opt{Fn} for no interpolation (returns nearest value).
 \item Two additional color maps have been added: \textbf{panoply} mimics the default colormap in
 the netCDF viewing program \progname{Panoply}; \textbf{cyclic} provides a full spectrum of 360 degrees
 in hue.
-\item \GMTprog{originator} ({\it spotter} supplement) has new option \Opt{Q} to specify constant r/t for (x,y,z) data only.
+\item \GMTprog{originator} (\emph{spotter} supplement) has new option \Opt{Q} to specify constant r/t for (x,y,z) data only.
 \end{enumerate}
 
 Below is a list of previous problems that we have identified and corrected in the current release:
 \begin{description}
 \item [\GMTprog{gmt\_agc\_io.c}]: Failed when nx and/or ny was multiple of 40 + 1.
 \item [\GMTprog{gmt\_custom\_io.c}]: Surfer grid start at lower, not upper left.
-\item [\GMTprog{gmt\_io.c}]: Combinations of {\bf OUTPUT\_DEGREE\_FORMAT}=ddd:mm:ss.xxxF and \Opt{:}
+\item [\GMTprog{gmt\_io.c}]: Combinations of \textbf{OUTPUT\_DEGREE\_FORMAT}=ddd:mm:ss.xxxF and \Opt{:}
 would add W$|$E to lat and S$|$N to lon for formatted output.
 Blank lines were not recognized under cygwin/SFU.
 When no delimiters are used for input date format (e.g., yyyymmdd) then yyyy \emph{must be} 4 characters
@@ -210,9 +209,9 @@ and we must use \%4d.  Leading zeros are required if year $<$ 1000.
 a segment header had no label specified.  Also, label would include the leading \" in a multi-word label.
 Now, UTM zones may be A,B,Y,Z or 1-60 with modifiers C-X (except I and O).
 Parsing of psxy's \Opt{Sf} incorrectly scaled a count to inches.
-Suffices {\bf h$|$+$|$-} in \Opt{J} were mistaken for units.
+Suffices \textbf{h$|$+$|$-} in \Opt{J} were mistaken for units.
 \item [\GMTprog{gmt\_map.c}]: KM\_PER\_DEG was not reset in \GMTfunc{GMT\_set\_spherical}. This may have caused
-errors in scaling when {\bf ELLIPSOID} was not set to Sphere.  \GMTfunc{GMT\_distances} function did not work with correct pointer.
+errors in scaling when \textbf{ELLIPSOID} was not set to Sphere.  \GMTfunc{GMT\_distances} function did not work with correct pointer.
 Great circle intersection did not select correct vector sign so
 points 180 degrees from a line could pass as close in \GMTprog{gmtselect}.
 Removed restriction that east and west limits can not be
@@ -229,30 +228,30 @@ and z\_high values as well as rgb values when reversing color maps.
 \item [\GMTprog{gmt\_vector.c}]: Function \GMTfunc{GMT\_fix\_up\_path}: Intermediate longitudes now wrapped based on segment,
 not on map extent.``greenwich'' argument became superfluous and was
 removed. Argument ``step'' was found to be in degrees, not in inches as some calling programs assumed.
-\item [\GMTprog{filter1d.c}]: For \Opt{Ff}{\it file}, set filter width to DBL\_MAX until filter is read.
+\item [\GMTprog{filter1d.c}]: For \Opt{Ff}\emph{file}, set filter width to DBL\_MAX until filter is read.
 \item [\GMTprog{grd2cpt.c}]: \Opt{E} flag did not work unless \Opt{T} was used.
 \item [\GMTprog{grd2xyz.c}]: Did not switch to binary i/o mode when
 \Opt{Z} specified binary output (Windows bug only).
 \item [\GMTprog{grdblend.c}]: Now works with Windows DLL by using the GMT i/o functions.
-\item [\GMTprog{grdcontour.c}]: \Opt{A}{\it value} would turn off the expected default transparency.
+\item [\GMTprog{grdcontour.c}]: \Opt{A}\emph{value} would turn off the expected default transparency.
 \item [\GMTprog{grdcut.c}]: Domain check failed for geographic 360-degree grid with \Opt{fg}.
 \item [\GMTprog{grdedit.c}]: Disallow \Opt{T} for Surfer grids since they don't support both
 kinds of node registration. \Opt{N} did not take into account if \Opt{fg} was given.
-\item [\GMTprog{grdfilter.c}]: \Opt{I}{\it nx+/ny+} was not propagated to the output grid setup.
+\item [\GMTprog{grdfilter.c}]: \Opt{I}\emph{nx+/ny+} was not propagated to the output grid setup.
 \item [\GMTprog{grdimage.c}]: Removed \Opt{T} option; no more polygon drawing (use \GMTprog{grdview}).
-\Opt{S}{\it max\_radius} changed to \Opt{S}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
+\Opt{S}\emph{max\_radius} changed to \Opt{S}[-]\textbf{b$|$c$|$l$|$n}[/\emph{threshold}] to
 take advantage of new and improved projection function \GMTfunc{GMT\_grd\_project}.
 \item [\GMTprog{grdlandmask.c}]: Failed to set rightmost, empty bin if 360-periodicity in effect;
 also needed to set repeating right column to left column.
-\item [\GMTprog{grdmask.c}]: For \Opt{S}..{\bf k}, did not properly account for latitude effect on dx.
+\item [\GMTprog{grdmask.c}]: For \Opt{S}..\textbf{k}, did not properly account for latitude effect on dx.
 SEGV error when \GMTfunc{GMT\_fix\_up\_path} returned {\emph fewer} points
 than originally allocated and the n\_alloc variable was not reduced accordingly.
-\item [\GMTprog{grdmath.c}]: When M=0, set Imaginary component of {\bf YLM} to 0 (was same as real).
-\item [\GMTprog{grdproject.c}]: \Opt{S}{\it max\_radius} changed to \Opt{S}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
+\item [\GMTprog{grdmath.c}]: When M=0, set Imaginary component of \textbf{YLM} to 0 (was same as real).
+\item [\GMTprog{grdproject.c}]: \Opt{S}\emph{max\_radius} changed to \Opt{S}[-]\textbf{b$|$c$|$l$|$n}[/\emph{threshold}] to
 take advantage of new and improved projection function \GMTfunc{GMT\_grd\_project}.
 \item [\GMTprog{grdreformat.c}]: Could not determine format of output file automatically since file
 does not yet exist (must append file-type code).
-\item [\GMTprog{grdsample.c}]: \Opt{Q}{\it value} changed to \Opt{Q}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
+\item [\GMTprog{grdsample.c}]: \Opt{Q}\emph{value} changed to \Opt{Q}[-]\textbf{b$|$c$|$l$|$n}[/\emph{threshold}] to
 take advantage of new BCR code.
 \item [\GMTprog{makecpt.c}]: Colormaps with non-equidistant intervals can now be reversed properly.
 \item [\GMTprog{project.c}]: Wrong azimuth for \Opt{N} and \Opt{G} generating lines.
@@ -272,10 +271,10 @@ A few bug-fixes applies to the supplements as well:
 Windows).
 \item [\GMTprog{img2mercgrd.c}]: Fixed AND vs OR logic in lat bounds check when \Opt{D} was set.
 Used wrong origin when \Opt{C} was used.  Now relative to lon = lat = 0.
-\item [DLL]: The {\it meca} supplements now work with Windows DLL by using the GMT i/o functions.
+\item [DLL]: The \emph{meca} supplements now work with Windows DLL by using the GMT i/o functions.
 \item [\GMTprog{utilmeca.c}]: Make sure that checks on floating point numbers work well, even
 in case of small round off errors. Thanks to Peter Lombard.
-\item [\GMTprog{mgd77manage.c}]: \Opt{Q}{\it value} changed to \Opt{Q}[-]{\bf b$|$c$|$l$|$n}[/{\it threshold}] to
+\item [\GMTprog{mgd77manage.c}]: \Opt{Q}\emph{value} changed to \Opt{Q}[-]\textbf{b$|$c$|$l$|$n}[/\emph{threshold}] to
 take advantage of new BCR code.  Added E77 status attribute to MGD77+ files.
 \item [\GMTprog{mgd77sniffer.c}]: Same.  Adjusted anomaly recalculation code so that
 cruises with m=1 and b=0 are reported to be same as expected.  Repaired 8 memory leaks. Fixed
@@ -313,15 +312,15 @@ Finally, a few enhancements have been made to these programs:
 \item NGDC's GRD98 format has been updated to handle both gridline and pixel node registrations.
 \item We have relaxed the restriction on latitude for \Opt{JA}, \Opt{JS} for polar aspects; now more
 than one hemisphere may be displayed.  Better warning/error messages.
-\item \GMTprog{gmtconvert} has an enhanced \Opt{E} option; append {\bf f} or {\bf l}  to only get first or last record per segment.
-\item \GMTprog{gmtmath} \Opt{T} can now have {\bf +} appended to indicate number of points instead of increment.
+\item \GMTprog{gmtconvert} has an enhanced \Opt{E} option; append \textbf{f} or \textbf{l}  to only get first or last record per segment.
+\item \GMTprog{gmtmath} \Opt{T} can now have \textbf{+} appended to indicate number of points instead of increment.
 \item \GMTprog{grdcontour} has a new option \Opt{F} to orient dumped contours.
-Can now append :{\it radius} to the \Opt{G} option in order to specify a minimum
+Can now append :\emph{radius} to the \Opt{G} option in order to specify a minimum
 spacing (measured in the x/y plane) between contour labels.
-\item \GMTprog{grdinfo} has an enhanced \Opt{I} option.  With no arguments we return the grid's \Opt{I}{\it dx/dy} string
-whereas \Opt{I}- will return the grid's \Opt{R}{\it w/e/s/n} string.
-\item \GMTprog{grdmath} has new option \Opt{M} for using map units in gradients and new {\bf D2DXY} operator.
-Also added {\bf SBAZ} for back-azimuths and now allow {\bf ELLIPSOID} to control if great
+\item \GMTprog{grdinfo} has an enhanced \Opt{I} option.  With no arguments we return the grid's \Opt{I}\emph{dx/dy} string
+whereas \Opt{I}- will return the grid's \Opt{R}\emph{w/e/s/n} string.
+\item \GMTprog{grdmath} has new option \Opt{M} for using map units in gradients and new \textbf{D2DXY} operator.
+Also added \textbf{SBAZ} for back-azimuths and now allow \textbf{ELLIPSOID} to control if great
 circles or geodesics should be used (Sphere selects great circles)
 \item \GMTprog{psrose} has new \Opt{D} option to center the sector bins (like \GMTprog{pshistogram} \Opt{C}).
 \item \GMTprog{psxy} understand \Opt{W-} and \Opt{W+} in multisegment headers which will turn off outline or reset to default, respectively.
@@ -340,7 +339,7 @@ Below is a list of previous problems that we have identified and corrected in th
 \begin{description}
 \item [\GMTprog{gmt\_init.c}]: Fixed unit problem with\Opt{Jx}1:xxxxx.  Erroneously added degree symbol
 to both coordinates in case of \Opt{JX}..d/.. (single d). Now properly adds only degree symbol on specified axis.
-Did not change time-system when only {\bf TIME\_UNIT} was specified.  Failed to properly parse a single PAR=ARG
+Did not change time-system when only \textbf{TIME\_UNIT} was specified.  Failed to properly parse a single PAR=ARG
 (one word) argument given  to \GMTprog{gmtset}.
 \item [\GMTprog{gmt\_io.c}]: Did not terminate a calendar string after copying it.
 \item [\GMTprog{gmt\_plot.c}]: The logic to check for seconds annotations failed if inc $<$1 arc second.
@@ -355,12 +354,12 @@ for fractional seconds annotation (the .xxx part).
 \item [\GMTprog{gmtmath}]: Fixed memory allocation bug for files with more than BUFSIZ records.
 Now works correctly with multisegment headers.  Multisegment headers now written to the output file
 and not always to stdout. Option \Opt{C} now works (used to deselect all columns).
-Fixed {\bf LSQFIT} (used wrong columns when some were skipped).
+Fixed \textbf{LSQFIT} (used wrong columns when some were skipped).
 \item [\GMTprog{grdcontour}]: Interior contours were not smoothed unless NaNs were involved.  Also the
 labeling of closed highs/lows were insensitive to pixel versus gridline grids and could get the wrong result.
 \Opt{C} need to check for``.cpt'' at END of file name.  Fixed contour label angle specifications were always ignored.
 \item [\GMTprog{grdfft}]: \Opt{D} and \Opt{I} options could have junk in the parameter arrays if given more than once.
-\item [\GMTprog{grdimage}]: \Opt{JX} with a negative scale/length and \Opt{E}{\it dpi} failed to flip the image.
+\item [\GMTprog{grdimage}]: \Opt{JX} with a negative scale/length and \Opt{E}\emph{dpi} failed to flip the image.
 \item [\GMTprog{grdinfo}]: Would not take both \Opt{L}1 and \Opt{L}2.
 \item [\GMTprog{grdview}]: Plot no mesh when \Opt{T} is used.
 \item [\GMTprog{mapproject}]: \Opt{L} option did not allocate enough output memory for extra columns.
@@ -395,7 +394,7 @@ new feature is that \GMT\ can now automatically recognize the format of the grid
 to a program.  The use of the ``=id'' mechanism is now only needed when writing an output file in
 a grid format other than the netCDF default or when reading using custom scaline and translation
 is required.  We have also added
-a new user directory pointed to by {\bf GMT\_USERDIR} (default directory is \filename{$\sim$/.gmt})
+a new user directory pointed to by \textbf{GMT\_USERDIR} (default directory is \filename{$\sim$/.gmt})
 where items such as \filename{.gmtdefaults4} will be looked for.  Additionally, a few enhancements
 have been made to overcome limitations in the previous versions:
 
@@ -405,12 +404,12 @@ have been made to overcome limitations in the previous versions:
 \item \GMTprog{grdedit} has a new option \Opt{E} to transpose the entire grid.
 \item \GMTprog{grdmath} has a new option \Opt{N} to turn off strict domain match checking when multiple grid files are involved.
 \item \GMTprog{grdreformat} now supports the \Opt{f} option.
-\item \GMTprog{nearneighbor} will now optionally accept a {\it min\_sectors} argument appended to the \Opt{N} option.
-\item \GMTprog{pshistogram}'s option \Opt{I} can now accept a modifier {\bf O} to output all bin data even if $y = 0$.
+\item \GMTprog{nearneighbor} will now optionally accept a \emph{min\_sectors} argument appended to the \Opt{N} option.
+\item \GMTprog{pshistogram}'s option \Opt{I} can now accept a modifier \textbf{O} to output all bin data even if $y = 0$.
 \item \GMTprog{psscale} will now invert the color scale if a negative length is provided, and
 \Opt{I} will now work with colormaps with non-constant interval and with gaps (\Opt{L}).
-\item \GMTprog{psxy} and \GMTprog{psxyz} have a new option \Opt{Sj}$|${\bf J} that plots a rotatable
-rectangle but otherwise behaves similarly to \Opt{Se}$|${\bf E}.
+\item \GMTprog{psxy} and \GMTprog{psxyz} have a new option \Opt{Sj}$|$\textbf{J} that plots a rotatable
+rectangle but otherwise behaves similarly to \Opt{Se}$|$\textbf{E}.
 \item \GMTprog{ps2raster} has many improvements; added EPS output; high-quality PDF output.
 Also removed -dDOINTERPOLATE option which caused inversion of colour map and had no benefits.
 \end{enumerate}
@@ -421,17 +420,17 @@ that we have identified and corrected in the current release:
 \begin{description}
 \item [\GMTprog{gmt\_agc.c}]: AGC grids use 0 to represent NaNs -- this was not implemented yet.
 \item [\GMTprog{gmt\_calclock.c}]: Proper rounding of time when converting to dates.
-\item [\GMTprog{gmt\_support.c}]: Fixed bug in \Opt{I} when modifier {\bf =} was used.
-\item [\GMTprog{gmt\_init.c}]: Fixed bug not recognizing {\bf PAGE\_ORIENTATION} as well as a bug that
-prevented proper writing of {\bf PAGE\_ORIENTATION} in defaults.  Added a check so \GMTprog{gmtset}
-will not crash if VALUE is not given.  Finally, let {\bf GMT\_HOMEDIR} default to C: under Windows
-if {\bf HOME} is not set.
+\item [\GMTprog{gmt\_support.c}]: Fixed bug in \Opt{I} when modifier \textbf{=} was used.
+\item [\GMTprog{gmt\_init.c}]: Fixed bug not recognizing \textbf{PAGE\_ORIENTATION} as well as a bug that
+prevented proper writing of \textbf{PAGE\_ORIENTATION} in defaults.  Added a check so \GMTprog{gmtset}
+will not crash if VALUE is not given.  Finally, let \textbf{GMT\_HOMEDIR} default to C: under Windows
+if \textbf{HOME} is not set.
 \item [\GMTprog{gmt\_io.c}]: \GMTfunc{GMT\_scanf\_argtime} now returns RELTIME (not ABSTIME) when relative time is found.
 \item [\GMTprog{gmt\_grdio.c}]: Set [xy]\_units also in \GMTfunc{GMT\_update\_grd\_info}.
 Fixed time-scaling bug on input (was always seconds).  Make units check case-insensitive. Check for toggled lat/lon coordinates.
 \item [\GMTprog{gmt\_nc.c}]: Made sure no garbage remains under Cygwin when using \GMTfunc{strncpy}.
 Check if x- and y-coordinates have constant step sizes; issue warning if not.
-\item [\GMTprog{gmt\_plot.c}]: Bugs related to annotations with \Opt{JPa} and its {\bf z} modifier fixed.
+\item [\GMTprog{gmt\_plot.c}]: Bugs related to annotations with \Opt{JPa} and its \textbf{z} modifier fixed.
 Log gridlines did not work for 3-D view.  3-D axis label would sometimes get misplaced due to round-off.
 3-D map scale did not project correctly.  Duplicate title could appear if \Opt{JX} was used and one axis was geographic (d).
 Needed to add secondary font to list to be encoded.
@@ -458,15 +457,15 @@ including edges; only one cell per NaN is excluded; when \Opt{C} and \Opt{L} are
 the volume is properly corrected for the baseline height.
 \item [\GMTprog{pscoast}]: \Opt{N} and \Opt{I} reset pens to default settings after initially changing them.
 Did not change output mode to binary (Windows only) if \Opt{M} and \Opt{b} were set.
-Both \Opt{Gc} and \Opt{Sc} needed to check that no letter is following the {\bf c} modifier.
+Both \Opt{Gc} and \Opt{Sc} needed to check that no letter is following the \textbf{c} modifier.
 \item [\GMTprog{pscontour}]: The \Opt{D} dump option wrote projected instead of original coordinates.
-\item [\GMTprog{psimage}]: \Opt{G}{\it colorname} (e.g., \Opt{G}black) will now be interpreted as foreground color, e.g. \Opt{Gf}black.
+\item [\GMTprog{psimage}]: \Opt{G}\emph{colorname} (e.g., \Opt{G}black) will now be interpreted as foreground color, e.g. \Opt{Gf}black.
 \item [\GMTprog{pslegend}]: Did not replace octagons with polygon form when pattern was requested.
 Did not consider if absolute coordinates were given in \Opt{X} and \Opt{Y}. Passed the wrong character code
-when {\bf M} was chosen with a plain scale modifier.
+when \textbf{M} was chosen with a plain scale modifier.
 \item [\GMTprog{psscale}]: A vertical bar with a label placed along it was mis-justified.
-\item [\GMTprog{pstext}]: Default for \Opt{G} is now {\bf BASEMAP\_FRAME\_RGB} as for other map annotations.
-The box option \Opt{W}[{\it fill}][o$|$O$|$c$|$C][{\it pen}]] is now \Opt{W}[{\it fill},][o$|$O$|$c$|$C][{\it pen}]], i.e., we now use
+\item [\GMTprog{pstext}]: Default for \Opt{G} is now \textbf{BASEMAP\_FRAME\_RGB} as for other map annotations.
+The box option \Opt{W}[\emph{fill}][o$|$O$|$c$|$C][\emph{pen}]] is now \Opt{W}[\emph{fill},][o$|$O$|$c$|$C][\emph{pen}]], i.e., we now use
 a comma to separate the fill and pen (done since fill may be a name containing o$|$c); parsing is backwards compatible.
 \item [\GMTprog{psxyz}]: \Opt{C} for symbols did not pick up color fill.
 \item [\GMTprog{trend2d}]: Processing of \Opt{F} happened after checking.
@@ -507,18 +506,18 @@ that we have identified and corrected in the current release:
 \item [\GMTprog{gmt\_init.c}]: \GMTfunc{GMT\_PS\_init} was called after --PAR=val had been decoded, resetting
 the \PS-related parameters to their default settings.
 \item [\GMTprog{gmt\_support.c}]: \GMTfunc{GMT\_set\_xy\_domain} padded region for pixel instead of gridline node registration,
-which could cause SEGV in \GMTprog{xyz2grd} if ({\it x,y}) was less than half the grid-spacing outside region.
+which could cause SEGV in \GMTprog{xyz2grd} if (\emph{x,y}) was less than half the grid-spacing outside region.
 \item [\GMTprog{blockmean}]: The \Opt{C} option got reversed in 4.1.2 - now fixed.
 \item [\GMTprog{blockmedian}]: The \Opt{C} option got reversed in 4.1.2 - now fixed.
 \item [\GMTprog{grdcontour}]: The \Opt{C} option with a non-cpt file failed to read due to lack of proper if-test.
-\item [\GMTprog{grdedit}]: The \Opt{S} option was backwards and tested {\it w-e}=360; should be {\it e-w}=360.
+\item [\GMTprog{grdedit}]: The \Opt{S} option was backwards and tested \emph{w-e}=360; should be \emph{e-w}=360.
 \item [\GMTprog{grdimage}]: Fixed bug introduced by \GMTfunc{GMT\_get\_inc} in 4.1.2. Internal projected
 grid never took node\_offset from input grid.
 \item [\GMTprog{grdmask}]: Polygons with zig-zag shape would sometimes cause a node exactly
-on a polygon vertex to be considered inside. Radius was reset to 0 after \Opt{S}{\it radius} was assigned.
+on a polygon vertex to be considered inside. Radius was reset to 0 after \Opt{S}\emph{radius} was assigned.
 \item [\GMTprog{grdvector}]: The \Opt{A} option was not properly initiated.
 \item [\GMTprog{psbasemap}]: The \Opt{L} option did not properly parse the optional :label:<just> part.
-\item [\GMTprog{pslegend}]: If the {\bf M} (for map scale) was used, the \Opt{R} and \Opt{J} options would be reset.
+\item [\GMTprog{pslegend}]: If the \textbf{M} (for map scale) was used, the \Opt{R} and \Opt{J} options would be reset.
 Also prevented the undoing of \Opt{X} and \Opt{Y} at the end of the program.
 \end{description}
 
@@ -539,12 +538,12 @@ as they do not change as frequently as the source code.  Current coastline versi
 \item The archives have been reorganized so that \filename{GMT\_share.*} contains all files needed
 at runtime whereas the standard coastline files are in the new \filename{GMT\_coast.*} archive.
 The \filename{GMT\_progs.*} archive has been renamed \filename{GMT\_src.*}.
-\item CPT files can now have {\it z}-values that are date-time strings.
-\item Optionally append {\bf z} to the \Opt{Jp} projection to annotate depths (i.e., ``north-y'') rather than radius.
+\item CPT files can now have \emph{z}-values that are date-time strings.
+\item Optionally append \textbf{z} to the \Opt{Jp} projection to annotate depths (i.e., ``north-y'') rather than radius.
 \item Two new tools added to the \progname{misc} supplement for digitizing lines (\GMTprog{gmtdigitize}) and
 to stitch digitized lines into continuous lines or polygons (\GMTprog{gmtstitch}).
-\item Extended \Opt{M} option to take optional modifiers {\bf i} or {\bf o} for input or output.
-\item Added support for custom grd format AGC from Atlantic Geoscience Center, assigned the code {\bf af} [21].
+\item Extended \Opt{M} option to take optional modifiers \textbf{i} or \textbf{o} for input or output.
+\item Added support for custom grd format AGC from Atlantic Geoscience Center, assigned the code \textbf{af} [21].
 \end{enumerate}
 
 A few programs or options have received minor updates and new features, such as
@@ -552,25 +551,25 @@ A few programs or options have received minor updates and new features, such as
 \begin{description}
 \item [\GMTprog{blockmean}]: Added \Opt{E} for reporting standard deviation, min, and max values per block.
 \item [\GMTprog{blockmedian}]: Added \Opt{E} for reporting L1 scale, min, and max values per block.
-Also added \Opt{T} to specify a particular quartile [Default {\it q} = 0.5 = median].
+Also added \Opt{T} to specify a particular quartile [Default \emph{q} = 0.5 = median].
 \item [\GMTprog{blockmode}]: Added \Opt{E} for reporting LMS scale, min, and max values per block.
 \item [\progname{configure}]: Added explicit options to bypass the installation of supplements
 that require Matlab (--disable-mex) and X11 (--disable-xgrid).
 \item [\GMTprog{gmtconvert}]: Added \Opt{D} option to write segments to individual output files.
-\item [\GMTprog{gmtdefaults}]: Support for new default {\bf PS\_VERBOSE} which controls the
-writing of comments to \PS\ files.  {\bf COLOR\_MODEL} can now accept a prefix ``+'' which
+\item [\GMTprog{gmtdefaults}]: Support for new default \textbf{PS\_VERBOSE} which controls the
+writing of comments to \PS\ files.  \textbf{COLOR\_MODEL} can now accept a prefix ``+'' which
 forces color interpolation in the selected system (RGB or HSV only).  Default remains RGB.
-{\bf PS\_COLOR} has been extended to accept HSV as well (only applies to
-polygon, symbol, pen, and text colors, not images.).  New parameter {\bf POLAR\_CAP} which
+\textbf{PS\_COLOR} has been extended to accept HSV as well (only applies to
+polygon, symbol, pen, and text colors, not images.).  New parameter \textbf{POLAR\_CAP} which
 controls the number of gridlines that converge on the poles for azimuthal and some other projections.
-Added new default {\bf HISTORY} [TRUE] which controls whether or not we maintain a common command option
+Added new default \textbf{HISTORY} [TRUE] which controls whether or not we maintain a common command option
 history via .gmtcommands4 files.
 \item [\GMTprog{gmtmath}]: Added option \Opt{M} to indicate the program can now handle multisegment files.
-Added {\bf CPOISS} for cumulative Poisson distribution.
-\item [\GMTprog{grdmath}]: Added {\bf CPOISS} for cumulative Poisson distribution.
+Added \textbf{CPOISS} for cumulative Poisson distribution.
+\item [\GMTprog{grdmath}]: Added \textbf{CPOISS} for cumulative Poisson distribution.
 \item [\GMTprog{minmax}]: \Opt{D} made obsolete by improved range checking for longitudes (but available for
 backwards compatibility).
-\item [\GMTprog{psscale}]: Enhanced \Opt{I} option for asymmetrical intensity ranges from {\it low} to {\it high}.
+\item [\GMTprog{psscale}]: Enhanced \Opt{I} option for asymmetrical intensity ranges from \emph{low} to \emph{high}.
 \item [\GMTprog{psxy}]: Added \Opt{SW} for wedges defined by azimuths rather than directions.  Polygons of large
 longitudinal extent now clip correctly.
 \item [\GMTprog{splitxyz}]: New option \Opt{Q} to specify the output columns and their order.
@@ -585,22 +584,22 @@ that we have identified and corrected in the current release:
 failed to get correct unit when ddd:mm:ss syntax was used for the position. Corner boundary conditions for grids (needed
 by \GMTprog{grdtrack}, \GMTprog{grdsample}, \GMTprog{grdview}, and \GMTprog{grdgradient}) had the wrong sign.
 \item [\GMTprog{gmt2rgb}]: Did not check name template properly, and did not initialize region.
-\item [\GMTprog{gmtselect}]: Option \Opt{F} insisted on using spherical testing for Cartesian {\it x,y} data.
-\item [\GMTprog{grd2xyz}]: The \Opt{E} option had the {\it y}-direction reversed.
+\item [\GMTprog{gmtselect}]: Option \Opt{F} insisted on using spherical testing for Cartesian \emph{x,y} data.
+\item [\GMTprog{grd2xyz}]: The \Opt{E} option had the \emph{y}-direction reversed.
 \item [\GMTprog{grdfilter}]: Needed the \Opt{f} option to process \Opt{R}ddd:mm syntax.
-\item [\GMTprog{grdimage}]: Would hang in {\it stdin} if \Opt{C} not given when one grid is plotted.
+\item [\GMTprog{grdimage}]: Would hang in \emph{stdin} if \Opt{C} not given when one grid is plotted.
 \item [\GMTprog{grdmask}]: Did not explicitly close polygons before using them.  Test for polar caps applied to the opposite pole.
-\item [\GMTprog{grdmath}]: Command {\bf INSIDE} for Cartesian data had bug (passed {\it y} where {\it x} was expected).
+\item [\GMTprog{grdmath}]: Command \textbf{INSIDE} for Cartesian data had bug (passed \emph{y} where \emph{x} was expected).
 \item [\GMTprog{grdsample}]: Failed when \Opt{I} was specified.
 \item [\GMTprog{grdview}]: Bug in plotting north facade (\Opt{N}).  Also tried to free unallocated memory if \Opt{G} was used.
-\item [\GMTprog{project}]: Cartesian projections gave incorrect results for {\it p,w,r,s}.
+\item [\GMTprog{project}]: Cartesian projections gave incorrect results for \emph{p,w,r,s}.
 Removed 0--360 restriction on azimuth.  Option \Opt{G} was susceptible to round-off and thus
 sometimes reissued the final point.
 \item [\GMTprog{psxy}]: \Opt{SV} and \Opt{SE} for \Opt{JX} did not convert azimuths to directions.
 The \Opt{Sq} option would get confused when distances between successive labels were smaller than the line's point spacing.
 \item [\GMTprog{mgd77/mgd77manage}]: Did not properly close the file after ingesting E77 information.
-\item [\GMTprog{pslib.c}]: \GMTfunc{ps\_load\_raster} did not use open mode {\bf rb} and hence failed under Windows.
-\item [\GMTprog{xyz2grd}]: The \Opt{E} option had the {\it y}-direction reversed.
+\item [\GMTprog{pslib.c}]: \GMTfunc{ps\_load\_raster} did not use open mode \textbf{rb} and hence failed under Windows.
+\item [\GMTprog{xyz2grd}]: The \Opt{E} option had the \emph{y}-direction reversed.
 \end{description}
 A few bug-fixes applies to the supplements as well:
 \begin{description}
@@ -626,16 +625,17 @@ A few programs or options have received minor updates and new features, such as
 \begin{description}
 \item [\GMTprog{grdedit}]: Added option \Opt{T} to toggle between gridline and pixel node registrations (header only).
 \item [\GMTprog{grdgradient}]: Implemented variation on Lambertian illumination.
-\item [\GMTprog{grdmask}]: Now takes \Opt{S}{\it radius}[{\bf c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
-\item [\GMTprog{gmtmath}]: If file is STDIN we read data from {\it stdin} and put the contents on the stack.
+\item [\GMTprog{grdmask}]: Now takes \Opt{S}\emph{radius}[\textbf{c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
+\item [\GMTprog{gmtmath}]: If file is STDIN we read data from \emph{stdin} and put the contents on the stack.
 Also added \Opt{F} to select which columns to use for output [all].
 \item [\GMTprog{grdtrack}]: Can now sample Sandwell/Smith IMG grids directly.
-\item [\GMTprog{psmask}]: -Now takes \Opt{S}{\it radius}[{\bf c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
+\item [\GMTprog{psmask}]: -Now takes \Opt{S}\emph{radius}[\textbf{c$|$m$|$k$|$K}] as is done in \GMTprog{nearneighbor}.
 Can now plot tiles regardless of projection and use patterns.
-\item [\GMTprog{pstext}]: \Opt{D}[...]{\bf v}{\it pen} can now be used with or without \Opt{M}.
-\item [\GMTprog{psxyz}]: \Opt{S}{\bf O}$|${\bf U} imitate \Opt{S}{\bf o}$|${\bf u} but without the 3-D color shading.
-\item [\GMTprog{mgd77.c}]: Added mechanism to search directories for files ({\it mgd77} supplement).
-\item [\GMTprog{mgd77list}]: Activated \Opt{X} option and associated machinery for applying data corrections  ({\it mgd77} supplement).
+\item [\GMTprog{pstext}]: \Opt{D}[...]\textbf{v}\emph{pen} can now be used with or without \Opt{M}.
+\item [\GMTprog{psxyz}]: \Opt{S}\textbf{O}$|$\textbf{U} imitate \Opt{S}\textbf{o}$|$\textbf{u} but without the 3-D color shading.
+\item [\GMTprog{mgd77.c}]: Added mechanism to search directories for files (\emph{mgd77} supplement).
+\item [\GMTprog{mgd77list}]: Activated \Opt{X} option and associated machinery for applying data corrections
+(\emph{mgd77} supplement).
 \end{description}
 
 Inevitably, when new features are added, new bugs come along with them.  Below is a list of problems
@@ -646,10 +646,10 @@ that we have identified and corrected in the current release:.
 \item [\GMTprog{gmt\_init.c}]: BASEMAP\_FRAME\_RGB overrode any changes to grid pens etc.  Now only
 does so if prefixed by '+'.
 \item [\GMTprog{gmt\_calclock.c}]: Did not allow \Opt{B}0 for time-axis.
-\item [\GMTprog{gmt\_map.c}]: \Opt{JX}...{\bf d} now plots with WESN or degrees:minutes as per PLOT\_DEGREE\_FORMAT.
-Map clip paths for \Opt{JE}{\it lon}/\PM 90 were no good.  Under certain circumstances, \GMTfunc{GMT\_non\_zero\_winding} might be passed
+\item [\GMTprog{gmt\_map.c}]: \Opt{JX}...\textbf{d} now plots with WESN or degrees:minutes as per PLOT\_DEGREE\_FORMAT.
+Map clip paths for \Opt{JE}\emph{lon}/\PM 90 were no good.  Under certain circumstances, \GMTfunc{GMT\_non\_zero\_winding} might be passed
 a polygon that was not closed, resulting in an error.  \Opt{JQ} would give garbage if central lon was way outside \Opt{R}.
-\item [\GMTprog{gmt\_plot.c}]: \Opt{JX}...{\bf d} now plots with WESN or degrees:minutes as per PLOT\_DEGREE\_FORMAT.
+\item [\GMTprog{gmt\_plot.c}]: \Opt{JX}...\textbf{d} now plots with WESN or degrees:minutes as per PLOT\_DEGREE\_FORMAT.
 \item [\GMTprog{gmt\_grdio.c}]: Changed logic to avoid false ``scale==0'' warning on Windows.
 \GMTfunc{GMT\_open\_grd} (used in \GMTprog{grdblend}) reset scale to NaN.
 Initialize header information at start of \GMTfunc{GMT\_read\_grd\_info}.
@@ -664,12 +664,12 @@ Fixed two bugs concerning the /MaskColor operator.
 \item [\GMTprog{grdfilter}]: Used -1 as index flag instead of INT\_MIN.
 \item [\GMTprog{grdimage}]: Fixed several issues at grid limits and inappropriate scaling of grid dimensions.
 \item [\GMTprog{grdmask}]: Only let you change the value for outside nodes.
-\item [\GMTprog{grdmath.man}]: Did not list \Opt{f} option.  Operators {\bf LT, LE, EQ, GE, GT} returned TRUE if NaNs were involved
+\item [\GMTprog{grdmath.man}]: Did not list \Opt{f} option.  Operators \textbf{LT, LE, EQ, GE, GT} returned TRUE if NaNs were involved
 Now NaN is returned if any of the two operands is a NaN.
 \item [\GMTprog{grdreformat}]: Update grd.command before writing grid
 \item [\GMTprog{grdvector}]: Did not place vectors correctly for pixel-pregistered grids.
 \item [\GMTprog{grdview}]: Skipped nodes outside boundary but they might be needed to draw a tile.
-\item [\GMTprog{pscoast}]: With \Opt{JE} and \Opt{G}{\it r/g/b}, the painting of the antipodal bin would incorrectly
+\item [\GMTprog{pscoast}]: With \Opt{JE} and \Opt{G}\emph{r/g/b}, the painting of the antipodal bin would incorrectly
 turn off clipping, messing up the rest of the plot.  Now pass -9 to \GMTfunc{GMT\_fill} which means just fill and no end of clipping.
 \item [\GMTprog{xyz2grd}]: For geographic grids with 360\DS\ range and gridline node registration,
 the west and east bin did not get replicated properly.
@@ -688,27 +688,27 @@ Most changes in \GMT\ 4.1 are improvements ``under the hood''.  The most signifi
 \item Addition of ability to both read and write netCDF files that are COARDS compliant.  This means
 that \GMT, for the first time, is able to read netCDF files created by applications other than itself,
 and that other applications capable of reading COARDS-compliant netCDF grids can directly import data
-from \GMT.  We have added the new parameter {\bf GRID\_FORMAT} to the  \GMT\ defaults with ``nf'' as default.
+from \GMT.  We have added the new parameter \textbf{GRID\_FORMAT} to the  \GMT\ defaults with ``nf'' as default.
 Users who, against our recommendation, prefer to maintain the old non-COARDS compliant format as their
 default grid format can instead select ``cf''. Support for extracting 2-D slices from 3-D netCDF grids has
 also been added.
-\item An overhaul of how the {\bf pslib} library encodes \PS\ images, resulting in vastly smaller files when
+\item An overhaul of how the \textbf{pslib} library encodes \PS\ images, resulting in vastly smaller files when
 certain conditions are met, and general shrinking overall by enabling RLE or LZW compression.  We
 have also added hooks for setting three new \PS\ parameters via \GMTprog{gmtdefaults} settings:
-{\bf PS\_LINE\_CAP}, {\bf PS\_LINE\_JOIN}, and {\bf PS\_MITER\_LIMIT}. See \GMTprog{gmtdefaults} for details.
+\textbf{PS\_LINE\_CAP}, \textbf{PS\_LINE\_JOIN}, and \textbf{PS\_MITER\_LIMIT}. See \GMTprog{gmtdefaults} for details.
 \item Improved alignment of strings ending in ``1'' in the \PS\ output.
 \item Adjustments to how native \GMT\ grid headers are read and written in order to be fully 64-bit safe.
 \GMT\ now runs in full 64-bit mode on platforms that supports it (e.g., Mac OS X G5).
-\item Making \GMT\ tread-safe by replacing {\it strtok} with our own {\it GMT\_strtok} function.
+\item Making \GMT\ tread-safe by replacing \emph{strtok} with our own \emph{GMT\_strtok} function.
 \item Implemented full inverse Winkel map projection based on a new algorithm by Ipbuker, 2002,
-{\it Cartography \& Geographical Information Science, 29}, 37-42.
-\item Extended the options that is used to specify grid spacing (usually \Opt{I}{\it xinc/yinc}) to allow for
-specifying {\it nx/ny} instead (by appending +).  Also, append ! to adjust the range so it fits exactly the
+\emph{Cartography \& Geographical Information Science, 29}, 37-42.
+\item Extended the options that is used to specify grid spacing (usually \Opt{I}\emph{xinc/yinc}) to allow for
+specifying \emph{nx/ny} instead (by appending +).  Also, append ! to adjust the range so it fits exactly the
 given increment [by default the range is kept fixed and sloppy increments are adjusted accordingly].
-Append {\bf e}$|${\bf k}$|${\bf i}$|${\bf n} for increments in meter, km, miles
+Append \textbf{e}$|$\textbf{k}$|$\textbf{i}$|$\textbf{n} for increments in meter, km, miles
 or nautical miles, respectively.  These increments are converted to degrees
 longitude (at the middle latitude) and degrees latitude.
-\item The polar $r, \theta$ projection \Opt{Jp} now takes an optional suffix {\bf r} that reverses the
+\item The polar $r, \theta$ projection \Opt{Jp} now takes an optional suffix \textbf{r} that reverses the
 radial coordinates (useful when $r$ is elevation as used by sky plots.)
 \item The \progname{misc} supplement has two new items: \GMTprog{ps2raster} uses \progname{ghostscript} to
 fascilitate the rasterization of \PS\ files, while \GMTprog{nc2xy} allows extraction of data columns from
@@ -725,39 +725,39 @@ Many programs or options have received minor updates and new features, such as
 
 \begin{description}
 \item [\Opt{b}]: Ability to specify byte-swapping for native binary input and output tables by using upper
-case {\bf S}$|${\bf D}.  This is useful if you have binary tables created on a little-endian machine (e.g.,
+case \textbf{S}$|$\textbf{D}.  This is useful if you have binary tables created on a little-endian machine (e.g.,
 Linux PC) and need to read them on a big-endian machine (e.g., most RISC-chip machines from Sun, HP, Apple).
 \item [\GMTprog{filter1d}]: Allow NaNs in all but the ``independent data'' column.
-\item [\GMTprog{grdcontour}]: Label option {\bf +ap}[{\bf u}$|${\bf d}] for always having labels be readable up or down hills.
+\item [\GMTprog{grdcontour}]: Label option \textbf{+ap}[\textbf{u}$|$\textbf{d}] for always having labels be readable up or down hills.
 \item [\GMTprog{gmtconvert}]: New \Opt{N} option suppresses output records when all fields are NaNs.
-\item [\GMTprog{gmtmath}]: Added {\bf TN} function
-for evaluating Chebyshev polynomials; new constant {\bf Tn} was added to easily select normalized {\bf T}
+\item [\GMTprog{gmtmath}]: Added \textbf{TN} function
+for evaluating Chebyshev polynomials; new constant \textbf{Tn} was added to easily select normalized \textbf{T}
 (gives coordinates from -1 to + 1 suitable for evaluating Legendre and Chebyshev polynomials).
-Finally, we added {\bf CORRCOEFF} for calculation of correlation coefficients, and \Opt{I} to reverse
+Finally, we added \textbf{CORRCOEFF} for calculation of correlation coefficients, and \Opt{I} to reverse
 the output by printing the last row first.
 \item [\GMTprog{grd2cpt}]: New option \Opt{D} sets the back- and foreground colors to the colors at the limits of the cpt file.
 \item [\GMTprog{grd2xyz}]: Added \Opt{E} for ESRI interchange ASCII grid dump.
 \item [\GMTprog{grdfilter}]: Geographic boundary conditions are now in effect if \Opt{D4} is selected.
 \item [\GMTprog{grdgradient}]: Added option \Opt{E} for Lambertian or Peuckeer illumination.
-\item [\GMTprog{grdmath}]: Allow \Opt{bi} to be used with input files for commands {\bf PDIST}, {\bf LDIST},
-and {\bf INSIDE}.  When spherical calculations are selected we now use the {\bf ELLIPSOID} setting to
-determine if distance calculations should be along geodesics or great circles.  Also added {\bf TN} function
-for evaluating Chebyshev polynomials; new constants {\bf Xn} and {\bf Yn} was added to easily select
-normalized {\bf X} and {\bf Y}.  Finally, we added {\bf CORRCOEFF} for calculation of correlation coefficients.
+\item [\GMTprog{grdmath}]: Allow \Opt{bi} to be used with input files for commands \textbf{PDIST}, \textbf{LDIST},
+and \textbf{INSIDE}.  When spherical calculations are selected we now use the \textbf{ELLIPSOID} setting to
+determine if distance calculations should be along geodesics or great circles.  Also added \textbf{TN} function
+for evaluating Chebyshev polynomials; new constants \textbf{Xn} and \textbf{Yn} was added to easily select
+normalized \textbf{X} and \textbf{Y}.  Finally, we added \textbf{CORRCOEFF} for calculation of correlation coefficients.
 \item [\GMTprog{grdraster}]: Optionally select a data set by giving a text pattern instead of data ID number.
 This makes it easier to specify a certain data set (i.e., ``ETOPO2'') than having to remember its arbitrary numerical
-ID.  Also, native grids with \GMT\ headers can also be placed in the database by appending {\bf H}{\it nbytes} to the
-corresponding \filename{grdraster.info} entry, where {\it nbytes} is the size of the header that should be skipped
+ID.  Also, native grids with \GMT\ headers can also be placed in the database by appending \textbf{H}\emph{nbytes} to the
+corresponding \filename{grdraster.info} entry, where \emph{nbytes} is the size of the header that should be skipped
 (use 892 for GMT headers).
 \item [\GMTprog{makecpt}]: New option \Opt{D} sets the back- and foreground colors to the colors at the limits of the cpt file.
 \item [\GMTprog{mapproject}]: \Opt{L} now outputs both the minimum distance and the coordinates
 of the nearest point on the line.
 \item [\GMTprog{pscoast}]: Added \Opt{Z} for 3-D map z-level (as in \GMTprog{psbasemap} and others).
-\item [\GMTprog{pshistogram}]: New option \Opt{T}{\it col} lets user select any column to be used, starting
+\item [\GMTprog{pshistogram}]: New option \Opt{T}\emph{col} lets user select any column to be used, starting
 with 0 (first).  The old \Opt{2} option is retired (but remains accessible for backwards compatibility).  
 \item [\GMTprog{psimage}]: Now support inclusion of EPS images.
-\item [\GMTprog{pslegend}]: Added layout option {\bf B} for inserting color bars via \GMTprog{psscale}.
-\item [\GMTprog{psscale}]: Now supports an optional {\bf ;}{\it label} at end of each line in cpt files.
+\item [\GMTprog{pslegend}]: Added layout option \textbf{B} for inserting color bars via \GMTprog{psscale}.
+\item [\GMTprog{psscale}]: Now supports an optional \textbf{;}\emph{label} at end of each line in cpt files.
 If present this label will replace the default annotations when option \Opt{L} is used.
 \item [\GMTprog{psxyz}]: Added \Opt{Q} to disable sorting of points based on distance.
 \item [\GMTprog{sample1d}]: Allow NaNs in all but the ``independent data'' column.
@@ -773,15 +773,15 @@ successful [e.g., under Mac OS X Tiger].
 \item [\GMTprog{gmt.h}]: \GMTfunc{GMT\_swab4} used {\tt unsigned long} instead of {\tt unsigned int} which could cause
 64-bit problems.
 \item [\GMTprog{gmt\_time\_system.h}]: Fixed MJD offsets by subtracting 10 days.
-\item [\GMTprog{gmt\_calclock.c}]: time to hr,min,sec was vulnerable to round-off when optimized.  Also, {\it hh:mm} data
-(without trailing {\it :ss}) would loose the minutes ({\it hh:mm:ss} was OK).
+\item [\GMTprog{gmt\_calclock.c}]: time to hr,min,sec was vulnerable to round-off when optimized.  Also, \emph{hh:mm} data
+(without trailing \emph{:ss}) would loose the minutes (\emph{hh:mm:ss} was OK).
 \item [\GMTprog{gmt\_grdio.c}]: Bug in scale/offset for \GMTprog{grdblend}'s row-by-row i/o.
 \item [\GMTprog{gmt\_init.c}]: Would eat number with leading plus sign without checking if it actually was
 a +\filename{gmtdefaults} file instruction; thus \GMTprog{gmtmath} could not see numbers such as +13.5.
-Command line argument --{\bf BASEMAP\_FRAME\_RGB}={\it color} was not passed through to tick-, grid- and
+Command line argument --\textbf{BASEMAP\_FRAME\_RGB}=\emph{color} was not passed through to tick-, grid- and
 annotation-properties.  \GMTfunc{GMT\_end} now frees memory used for hashing.  Did not use custom ellipsoid to set
 DEG2M parameter so we got large errors for planets with significantly different radii.
-\item [\GMTprog{gmt\_io.c}]: Bug in reading {\it yyyy}[/]{\it jjj} data fixed.  \GMTfunc{GMT\_lines\_init}
+\item [\GMTprog{gmt\_io.c}]: Bug in reading \emph{yyyy}[/]\emph{jjj} data fixed.  \GMTfunc{GMT\_lines\_init}
 had trouble if 2000 segments had no data at all.  It also allocated 2000 points for each segment but never
 deallocated the unused portions, thus running up memory fast.  \GMTfunc{GMT\_write\_segmentheader} wrote nothing
 if input was binary and output is ASCII.  Fixed a few memory leaks.
@@ -792,14 +792,14 @@ vectors in \GMTprog{psxy}. Geodesic distance calculation could get wrong quadran
 Circle and $\theta$-$r$ boundaries did not allocate enough memory for arrays.  Would plot both -180 and +180 annotations
 for periodic maps.
 \item [\GMTprog{gmt\_shore.c}]: Must explicitly close polygons since inside/outside test in other programs expects it.
-\item [\GMTprog{gmt\_support.c}]: Trouble extracting subregions of grid with {\it east} = 0.  Cartesian {\bf LDIST} failed
+\item [\GMTprog{gmt\_support.c}]: Trouble extracting subregions of grid with \emph{east} = 0.  Cartesian \textbf{LDIST} failed
 when mininum distance was requested (only done via \GMTprog{grdmath}).  Color names got truncated to 16 characters.
 Improved workings of \GMTfunc{GMT\_sample\_cpt} in support of \GMTprog{makecpt}.  Fixed more memory leaks.
 Bad LF/CR removal for \filename{coastline.conf} dir.
 \item [\GMTprog{filter1d}]: \Opt{Ff} with even number of coefficients sometimes skip a coefficient.
 \item [\GMTprog{gmtconvert}]: Missed first multisegment output header if input file was ASCII.
 \item [\GMTprog{gmtmath}]: No longer have to say \Opt{Ca} if there is only one input column.  Did not understand
-{\it date}{\bf T}{\it clock} as command line data.
+\emph{date}\textbf{T}\emph{clock} as command line data.
 \item [\GMTprog{gmtselect}]: If \Opt{M} is on and a portion of a segment is skipped, we must
 reissue the multisegment header when segment resumes.  Now handles both Cartesian
 and spherical polygons correctly.
@@ -809,15 +809,15 @@ and spherical polygons correctly.
 when normalizing the slopes.
 \item [\GMTprog{grdimage}]: Cannot use \Opt{R} to extract subset when \Opt{J} is oblique.  Reverse log-axes did not work.
 \item [\GMTprog{grdmask}]: Now handles both Cartesian and spherical correctly.
-\item [\GMTprog{grdmath}]: Wrong sign in {\bf D2DY2}, and bogus value at {\it y = ymin}.  Now handles both Cartesian
+\item [\GMTprog{grdmath}]: Wrong sign in \textbf{D2DY2}, and bogus value at \emph{y = ymin}.  Now handles both Cartesian
 and spherical polygons correctly.  Constants given on command line can now be absolute time, geographic coordinates, or
 regular floating-point numbers.
 \item [\GMTprog{grdtrack}]: Would fail to skip first two columns for ASCII input if dd:mm:ss format was used.
 \item [\GMTprog{grdview}]: Cannot use \Opt{R} to extract subset when \Opt{J} is oblique.
-\item [\GMTprog{grdvolume}]: \Opt{C}{\it low/high/delta} did not check for {\it low} < {\it high}, etc.
+\item [\GMTprog{grdvolume}]: \Opt{C}\emph{low/high/delta} did not check for \emph{low} < \emph{high}, etc.
 \item [\GMTprog{pscoast}]: Recursive painting could get tricked when boundaries were curved.
-\item [\GMTprog{pslegend}]: Did not pass +\filename{gmtdefaults} and --{\bf PAR}={\it val} onto system calls.
-\item [\GMTprog{psscale}]: Vertical annotations w/custom {\bf D\_FORMAT} were not aligned. Now uses more optimal means
+\item [\GMTprog{pslegend}]: Did not pass +\filename{gmtdefaults} and --\textbf{PAR}=\emph{val} onto system calls.
+\item [\GMTprog{psscale}]: Vertical annotations w/custom \textbf{D\_FORMAT} were not aligned. Now uses more optimal means
 to display the color bar, leading to smaller \PS\ files.  \Opt{E} did not flip sides when a negative width was used.
 \item [\GMTprog{psxy}]: \Opt{Sp} is now a true point, but can also take an optional size.  Pentagon symbol had wrong
 normalization scale.  If a fixed symbol size was given in \Opt{S}, with the symbol type supplied from file,
@@ -836,10 +836,10 @@ development.
 categories of changes that have been implemented:
 \begin{description}
 \item [Time-series support.]  \GMT\ can now read and write time-series data where
-the time coordinates are of the form {\it date}{\bf T}{\it clock}\footnote{Use standard
+the time coordinates are of the form \emph{date}\textbf{T}\emph{clock}\footnote{Use standard
 \UNIX\ tools such as \progname{awk} or \progname{perl} to reformat files should
-your {\it date} and {\it clock} components reside in separate columns.}.  The formats
-used for {\it date} and {\it clock} are under the user's control.  Both Gregorian
+your \emph{date} and \emph{clock} components reside in separate columns.}.  The formats
+used for \emph{date} and \emph{clock} are under the user's control.  Both Gregorian
 and ISO calendars are supported.  Frame annotation for time-series are now supported
 via the \Opt{B} option; there are many new modifiers reflecting the vast number of
 ways one may want to annotate time axes, including support for primary and secondary
@@ -866,9 +866,9 @@ the data sums (i.e., it duplicates the previous \Opt{S} option).
 \UNIX\ \progname{cut}, \progname{paste}, and \progname{tail} \Opt{r} (or \progname{tac}) capabilities.
 Option \Opt{E} reports first and last point per segment only, \Opt{L} lists the segment headers only,
 while \Opt{S} lists records from segments whose header matches a given text pattern.
-\item \GMTprog{gmtmath}:	Added new operators for solving least squares problems ({\bf COL, LSQFIT}),
-finding function roots ({\bf ROOTS}), and evaluating critical values ({\bf CHICRIT, FCRIT, TCRIT, ZCRIT}).
-We also added some general functions ({\bf SINC, LOG2, LRAND}) and miscellaneous operations ({\bf FLIPUD, NEQ}).
+\item \GMTprog{gmtmath}:	Added new operators for solving least squares problems (\textbf{COL, LSQFIT}),
+finding function roots (\textbf{ROOTS}), and evaluating critical values (\textbf{CHICRIT, FCRIT, TCRIT, ZCRIT}).
+We also added some general functions (\textbf{SINC, LOG2, LRAND}) and miscellaneous operations (\textbf{FLIPUD, NEQ}).
 The \Opt{S} option may now take a modifier to select first or last record only.
 \item \GMTprog{gmtselect}:	New option  \Opt{Z} to pass or skip based on input $z$-range.
 \item \GMTprog{grd2cpt}:	New options  \Opt{Q} for logarithmic scales, \Opt{E} for equidistant color
@@ -878,17 +878,17 @@ to color the background, foreground, and Not-a-Number areas.}.
 and ability to process several grid files at the same time.
 \item \GMTprog{grdcontour}:	Expanded the \Opt{G} option to handle 5 algorithms (4 new) for the placement
 of contour labels. 
-\item \GMTprog{grdedit}:	New option \Opt{N} to replace selected node values given {\it x, y, z} data
+\item \GMTprog{grdedit}:	New option \Opt{N} to replace selected node values given \emph{x, y, z} data
 in table form (options \Opt{H}, \Opt{b}, \Opt{f}, and \Opt{:} added for file support).
 \item \GMTprog{grdfilter}:	New geospatial filters \Opt{Fl$|$L$|$u$|$U} that return extreme (min, max) values. 
 \item \GMTprog{grdimage}:	New option for colormasking (\Opt{Q}; \PS\ Level 3 only), \PS\ image 
-interpolation (\Opt{E}{\it -dpi}), and false RGB color image (when given three grids), as well as a modifier to \Opt{T}
+interpolation (\Opt{E}\emph{-dpi}), and false RGB color image (when given three grids), as well as a modifier to \Opt{T}
 to draw tile outlines.
 \item \GMTprog{grdinfo}:	New option to create argument for \GMTprog{makecpt} (\Opt{T}) and to round-off
 region boundary coordinates (\Opt{I}). 
-\item \GMTprog{grdmath}:	Added new operators for critical values ({\bf CHICRIT, FCRIT, TCRIT, ZCRIT}),
-geospatial analysis ({\bf LDIST,  PDIST, INSIDE}) and for calculating azimuths ({\bf CAS, SAZ}).  We have
-also added some general functions ({\bf SINC, LOG2, LRAND}) and a few grid operations ({\bf FLIPLR, FLIPUD, ROTX, ROTY, NEQ,
+\item \GMTprog{grdmath}:	Added new operators for critical values (\textbf{CHICRIT, FCRIT, TCRIT, ZCRIT}),
+geospatial analysis (\textbf{LDIST,  PDIST, INSIDE}) and for calculating azimuths (\textbf{CAS, SAZ}).  We have
+also added some general functions (\textbf{SINC, LOG2, LRAND}) and a few grid operations (\textbf{FLIPLR, FLIPUD, ROTX, ROTY, NEQ,
 INRANGE}).  We may now create multiple output grids from a single command.
 \item \GMTprog{grdproject}: Option to supply false easting/northing or other offsets from the origin(\Opt{C}).
 \item \GMTprog{grdreformat}: Option to suppress header in raw output (\Opt{N}).
@@ -902,7 +902,7 @@ added a modifier to \Opt{T} to draw tile outlines.
 of B, F, N colors.
 \item \GMTprog{mapproject}:	New options for datum conversions (\Opt{T}, \Opt{E}, and \Opt{Q}), azimuth and
 back-azimuth (\Opt{A}), distance to point (\Opt{G}) and line  (\Opt{L})calculations, and optional false easting/northing (\Opt{C}).
-\item \GMTprog{minmax}:		Added \Opt{T}{\it dz} option to produce \Opt{T} string for \GMTprog{makecpt},
+\item \GMTprog{minmax}:		Added \Opt{T}\emph{dz} option to produce \Opt{T} string for \GMTprog{makecpt},
 \Opt{E} for returning extreme records, and the \Opt{I} option was extended to handle any number of columns when \Opt{C} is used.
 \item \GMTprog{psbasemap}:	Extended \Opt{L} to allow alternate label and justification, and added \Opt{T}
 for directional rose ornament or magnetic compass directions.
@@ -910,11 +910,11 @@ for directional rose ornament or magnetic compass directions.
 for directional rose ornament or magnetic compass directions.
 \item \GMTprog{pscontour}:	Expanded the \Opt{G} option to handle 5 algorithms (4 new) for the placement
 of contour labels. 
-\item \GMTprog{psimage}:	\PS\ image interpolation (\Opt{W}{\it -xlength}), and justification option
+\item \GMTprog{psimage}:	\PS\ image interpolation (\Opt{W}\emph{-xlength}), and justification option
 in \Opt{C}.
 \item \GMTprog{psscale}:	Options to annotate on opposite side (\Opt{A}) and to plot back or foreground
-triangle only (\Opt{E}[{\bf b$|$f}] ).  Also, draw discrete color-key table with centered annotations by appending an optional
-{\it gap} to the \Opt{L} option. 
+triangle only (\Opt{E}[\textbf{b$|$f}] ).  Also, draw discrete color-key table with centered annotations by appending an optional
+\emph{gap} to the \Opt{L} option. 
 \item \GMTprog{pstext}: 	New option \Opt{A} should azimuths rather than angles be given,
 \item \GMTprog{psxy}: 	Line color control (via \Opt{C}), symbol position offset (with \Opt{D}), custom symbols access 
 (with \Opt{Sk}; use any of the 35 (Appendix~\ref{app:N}) that come with \GMT\ or design your own), many new symbols (horizontal and vertical dashes,
@@ -938,7 +938,7 @@ errors in the Puget Sound coastline have also been corrected.
 \item Choice of unit when specifying pen thickness (cm, inch, point).
 \item Easier pen specification mechanism, with predefined names for certain pen thicknesses.
 \item Centering of plots on current page with \Opt{Xc}, \Opt{Yc}.
-\item More control over input/output table formats (\Opt{f}, \Opt{:}[{\bf i$|$o}]).
+\item More control over input/output table formats (\Opt{f}, \Opt{:}[\textbf{i$|$o}]).
 \item Ability to read and write NOAA/NGDC GRD98 grid format.
 \item Ability to add additional fonts.
 \item Custom paper media size (useful for posters and large maps).
@@ -948,8 +948,8 @@ to make space for annotation labels.
 \item New Appendices M (color tables), N (custom symbols), O (contours and ``quoted lines''), and P
 (using both \GMT\ 3 and 4).
 \item New hidden files \filename{.gmtdefaults4} and \filename{.gmtcommands4} to ensure peaceful coexistence with \GMT\ 3-series.
-\item Data files in directories pointed to by the three environmental parameters {\bf \$GMT\_DATADIR}, {\bf \$GMT\_GRIDDIR},
-and {\bf \$GMT\_IMGDIR} can be specified without their full path names when used as input files.
+\item Data files in directories pointed to by the three environmental parameters \textbf{\$GMT\_DATADIR}, \textbf{\$GMT\_GRIDDIR},
+and \textbf{\$GMT\_IMGDIR} can be specified without their full path names when used as input files.
 \item We have added five new examples for a total of 25.
 \item Bourne shell utility \progname{gmtswitch} simplifies switching between installed \GMT\ versions.
 \end{itemize}
