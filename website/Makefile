@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.23 2008-04-30 21:06:13 guru Exp $
+#  $Id: Makefile,v 1.24 2008-04-30 22:57:18 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -173,8 +173,8 @@ update-ftp-live:	netcdf
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
 	for p in basic pdf highfull; do \
-		echo "rm -f windows/GMT_$$p_install.exe" >> gmt_server_job.sh; \
-		echo "$(LN_S) windows/GMT$(GMT_VERSION)_$$p_install.exe windows/GMT_$$p_install.exe" >> gmt_server_job.sh; \
+		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
+		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
@@ -201,13 +201,13 @@ update-ftp-test:	netcdf
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
 	for p in basic pdf highfull; do \
-		echo "rm -f windows/GMT_$$p_install.exe" >> gmt_server_job.sh; \
-		echo "$(LN_S) windows/GMT$(GMT_VERSION)_$$p_install.exe windows/GMT_$$p_install.exe" >> gmt_server_job.sh; \
+		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
+		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
 	done
 	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
 	ssh $(FTPSERVER2) sh $(LIVEFTPDIR2)/gmt_server_job.sh
-	rm -f gmt_server_job.sh
+#	rm -f gmt_server_job.sh
 
 update-ftp-local:
 	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
@@ -229,7 +229,7 @@ update-ftp-local:
 	done
 	for p in basic pdf highfull; do \
 		rm -f windows/GMT_$$p_install.exe; \
-		(cd $(TESTFTPDIR)/windows; $(LN_S) GMT$(GMT_VERSION)_$$p_install.exe GMT_$$p_install.exe); \
+		(cd $(TESTFTPDIR)/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe); \
 	done
 
 clean-ftp:
