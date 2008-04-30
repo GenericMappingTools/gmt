@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.90 2008-04-30 03:53:30 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.91 2008-04-30 07:45:41 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -46,7 +46,7 @@ Colors may now be specified
 as hexadecimal codes (e.g., \#ff0000 for red), and projections can be specified by name
 (similar to \htmladdnormallinkfoot{\progname{Proj4}}{http://proj.maptools.org}).  Finally, binary table
 data can now be COARDS-compliant netCDF files. As for documentation, we have now switched from
-C shell to Bourne shell.
+C shell to Bourne shell (although the \progname{csh} examples are still distributed).
 
 The following lists specific enhancements or new program options:
 
@@ -118,6 +118,9 @@ Needed to allow for some slop when comparing shrink to 0.0 since sometimes the r
 \item [\GMTprog{grdmath.c}]: Implemented Welford (1962) algorithm in \textbf{KURT}, \textbf{SKEW} and \textbf{STD} operators
 for more precise one-pass computation of mean and sum of squares.
 \item [\GMTprog{grdview.c}]: The facade (\Opt{N}) outline was drawn with contour pen.
+The \Opt{Qc} option failed to set the ``build image'' flag and produced
+garbage surface tiles.  Also, \Opt{T}[{\bf s}] produced polygons that were
+not checked for wrapping at a periodic map boundary.  Clarified that \Opt{T} cannot take \Opt{JZ}$|${\bf z}.
 \item [\GMTprog{minmax.c}]: Could get confused when longitudes crossed dateline or Greenwich,
 and \textbf{OUTPUT\_DEGREE\_FORMAT} could interfere with result.
 \item [\GMTprog{pscontour.c}]: \Opt{T} option was susceptible to infinite loop if bad record was found.
@@ -136,9 +139,11 @@ Drawing arrows with \Opt{SvS} and time-coordinates did not work as 2nd time coor
 \item [\GMTprog{psxyz.c}]: If first symbol in list with size was not circle, it got rejected.
 When sizes of \Opt{Sr} or \Opt{Sj} were read from list, they were always assumed to be in inches.
 \item [\GMTprog{sample1d.c}]: Calendar time knots did not get properly interpreted with \Opt{N}.
+\item [\GMTprog{mgg/mgd77togmt.c}]: Did not initialize the MGG\_SHAREDIR path.
 \item [\GMTprog{mgd77/mgd77.c}]: Wrong header order written if \GMTprog{mgd77convert} ... \Opt{Tt} was used.
 \item [\GMTprog{mgd77/mgd77info.c}]: Could get confused when longitudes crossed dateline or Greenwich,
 and \textbf{OUTPUT\_DEGREE\_FORMAT} could interfere with result.
+\item [\GMTprog{mgd77/mgd77sniffer.c}]: Numerous fixes and enhancements; see ChangeLog.
 \item [\GMTprog{x2sys/x2sys.c}]: Error in determining which columns had been requested.
 \item [\GMTprog{x2sys/x2sys\_binlist.c}]: Could create bad bins because of incorrect reallocation of memory.
 \item [\GMTprog{x2sys/x2sys\_get.c}]: The \Opt{L} option did not honor any \Opt{F} or \Opt{N} settings.
