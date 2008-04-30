@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-J.sh,v 1.5 2007-10-04 12:32:58 remko Exp $
+#	$Id: GMT_-J.sh,v 1.6 2008-04-30 03:51:54 remko Exp $
 #
 
 pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
@@ -17,8 +17,9 @@ pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
 0	0.9	8	0	0	BL	Mercator [C]
 0	0.75	8	0	0	BL	Miller
 0	0.6	8	0	0	BL	Oblique Mercator [C]
-0	0.45	8	0	0	BL	Transverse Mercator [C]
-0	0.3	8	0	0	BL	UTM [C]
+0	0.45	8	0	0	BL	Stereographic
+0	0.3 	8	0	0	BL	Transverse Mercator [C]
+0	0.15	8	0	0	BL	UTM [C]
 #
 1.1	1.35	8	0	0	BL	Albers [E]
 1.1	1.2	8	0	0	BL	Lambert [C]
