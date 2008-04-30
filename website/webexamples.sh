@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.14 2008-04-27 00:14:19 guru Exp $
+#	 $Id: webexamples.sh,v 1.15 2008-04-30 18:23:12 guru Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -171,6 +171,13 @@ while [ $i -le $n_examples ]; do
 
 	\cp ../../../../examples/$dir/example_${number}.ps .
 
+#	TMP FIX FOR EX19 SINCE GS IS FUCKED
+	if [ $number -eq 19 ]; then
+		echo "webexamples.sh: Kludge to make Ex 19 pass through buggy gs"
+		grep -v showpage example_${number}.ps | sed '/ scale 0 A/ishowpage' > new.ps
+		mv -f new.ps example_${number}.ps
+	fi
+		 
 #	Make the PNG at both 50 and 100 dpi, rotating the landscape ones
 
 	$GMT100dpi $rot example_${number}.ps

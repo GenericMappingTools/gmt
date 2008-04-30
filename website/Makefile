@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.21 2008-04-30 17:51:57 guru Exp $
+#  $Id: Makefile,v 1.22 2008-04-30 18:23:11 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -21,7 +21,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		02-OCT-2007
+#	Date:		30-APR-2008
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
@@ -55,12 +55,10 @@ help::
 #!hitmap			: Creates the GMT mirror page for site links
 #!---------------------------------------------------------------
 		
-web:		../examples/ex01/example_01.ps
-# Places stuff in the GMT www directory
-		sh webexamples.sh -s
+# Place stuff in the GMT www directory:
 
-../examples/ex01/example_01.ps:
-		( cd ..; $(MAKE) -f GNUmakefile examples)
+../www/gmt/examples/ex01/example_01_100dpi.png:	../examples/ex01/example_01.ps
+		sh webexamples.sh -s
 
 #---------------------------------------------------------------------------
 # GMT VERSION UPDATE
@@ -81,7 +79,7 @@ update-version-live:	update-ftp-live update-www-live
 # GMT WEB PAGE MATERIALS
 #---------------------------------------------------------------------------
 
-update-www-live:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.html
+update-www-live:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.html ../www/gmt/examples/ex01/example_01_100dpi.png
 		scp install_gmt_form.pl $(WEBSERVER):$(LIVECGIDIR)/install_gmt_form.pl
 		ssh $(WEBSERVER) mkdir -p $(LIVEWWWDIR)/gmt
 		ssh $(WEBSERVER) rm -f $(LIVEWWWDIR)/index.html
@@ -94,7 +92,7 @@ update-www-live:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.htm
 		scp -r ../www/gmt/examples $(WEBSERVER):$(LIVEWWWDIR)/gmt
 		scp -r contrib $(WEBSERVER):$(LIVEWWWDIR)/gmt
 
-update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.html
+update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.html ../www/gmt/examples/ex01/example_01_100dpi.png
 #		For the test we want GMT_ftpsite to always be 0, and to use the test web site - hence these sed commands
 		echo "sB/gmt/B/gmttest/Bg" > job.sed
 		echo "sBgmt.soest.hawaii.edu/gmttempBwww.soest.hawaii.edu/gmttest/gmttempBg" >> job.sed
@@ -123,7 +121,7 @@ update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.htm
 		ssh $(WEBSERVER2) sh $(LIVEWWWDIR2)/gmt/gmt_server_job.sh
 		rm -f gmt_server_job.sh tmp
 
-update-www-local:../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.html
+update-www-local:../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.html ../www/gmt/examples/ex01/example_01_100dpi.png
 		rm -rf $(TESTWWWDIR)
 		mkdir -p $(TESTWWWDIR)/gmt
 		cp -f gmt.html $(TESTWWWDIR)/index.html
@@ -265,7 +263,7 @@ hitmap:
 		(cd ../registration; GMT_usage_map.sh map)
 
 gmt_releases.html:	gmt_releases_template.html ../www/gmt/doc/html/GMT_Docs/GMT_Docs.html
-	grep -H "scientists since 1988" *.html | awk -F: '{printf "s/CHAPTER1LINK/%s\n" $1}' > $$.sed
-	sed -f $$.sed < gmt_releases_template.html > gmt_releases.html
+	(cd ../www/gmt; grep -H "scientists since 1988" doc/html/GMT_Docs/*.html | awk -F: '{printf "sXCHAPTER1LINKX%sXg\n",  $$1}' > ../../website/tmp.sed)
+	sed -f tmp.sed < gmt_releases_template.html > gmt_releases.html
 	
 	
