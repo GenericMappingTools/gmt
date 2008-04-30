@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.30 2008-04-30 23:26:04 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.31 2008-04-30 23:33:01 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -103,7 +103,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.30 $, on
+# Processed by install_gmt_form.pl $Revision: 1.31 $, on
 #
 #	$now
 #
@@ -432,7 +432,7 @@ print FILE "#---------------------------------------------\n";
 print FILE "#	MEX SECTION\n";
 print FILE "#---------------------------------------------\n";
 
-if ($matlab_dir ne "") {
+if ($matlab_dir ne "" && $mex_type eq "matlab") {
 	print FILE "MATDIR=", $matlab_dir, "\n";
 }
 if ($mex_mdir ne "") {
