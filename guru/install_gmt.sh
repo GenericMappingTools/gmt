@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.130 2008-04-30 08:29:44 guru Exp $
+#	$Id: install_gmt.sh,v 1.131 2008-04-30 19:26:52 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1180,7 +1180,7 @@ else
 fi
 
 if [ ! x"$MATDIR" = x ]; then	# MATDIR is set
-	if [ "X$GMT_mex_type" = "Xmatlab"]; then
+	if [ "X$GMT_mex_type" = "Xmatlab" ]; then
 		enable_matlab=--enable-matlab=$MATDIR
 	else
 		enable_matlab=--enable-octave=yes
