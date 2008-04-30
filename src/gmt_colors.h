@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.30 2008-03-24 08:58:30 guru Exp $
+ *	$Id: gmt_colors.h,v 1.31 2008-04-30 01:32:56 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,6 +51,9 @@
 
 /* Determine if a R(=G=B) gray combination is in fact B/W */
 #define GMT_is_bw(r) ((r) == 0 || (r) == 255)
+
+/* Determine if there is any fill at all */
+#define GMT_is_nofill(F) (F->rgb[0] == -1 && !F->use_pattern)
 
 /* Here is the definition of the GMT_lut structure that is used in programs
  * that deals with coloring of grids.
