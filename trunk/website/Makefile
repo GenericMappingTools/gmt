@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.24 2008-04-30 22:57:18 guru Exp $
+#  $Id: Makefile,v 1.25 2008-04-30 23:05:47 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -153,16 +153,16 @@ update-www-local:../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.htm
 
 # Note: .message should be less than 1300-1400 bytes!
 
-update-ftp-live:	netcdf
+update-ftp-live:
 	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
 	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib $(LIVEFTPDIR)/*'
 	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib
-	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
+	scp ../guru/install_gmt $(FTPSERVER):$(LIVEFTPDIR)
+	scp ../ftp/G*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
+	scp ../ftp/G*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
@@ -181,16 +181,16 @@ update-ftp-live:	netcdf
 	ssh $(FTPSERVER) sh $(LIVEFTPDIR)/gmt_server_job.sh
 	rm -f gmt_server_job.sh
 
-update-ftp-test:	netcdf
+update-ftp-test:
 	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
 	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib $(LIVEFTPDIR2)/*'
 	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib
-	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
-	scp ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
-	scp ../ftp/*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
+	scp ../guru/install_gmt $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../ftp/G*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../ftp/G*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
@@ -217,8 +217,8 @@ update-ftp-local:
 	rm -rf $(TESTFTPDIR)
 	mkdir -p $(TESTFTPDIR)/windows $(TESTFTPDIR)/contrib
 	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > $(TESTFTPDIR)/install_gmt
-	cp -f ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
-	cp -f ../ftp/*.exe $(TESTFTPDIR)/windows
+	cp -f ../ftp/G*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
+	cp -f ../ftp/G*.exe $(TESTFTPDIR)/windows
 	for p in pdf web tut share src scripts suppl triangle; do \
 		\rm -f $(TESTFTPDIR)/GMT_$$p.tar.bz2; \
 		(cd $(TESTFTPDIR); $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
@@ -240,7 +240,7 @@ clean-local:
 	rm -rf $(TESTWWWDIR)
 
 clean-test:
-	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/[43] $(LIVEFTPDIR2)/install_gmt $(LIVEFTPDIR2)/netcdf.tar.bz2
+	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/*
 	ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/gmt.html $(LIVEWWWDIR2)/index.html
 	
 netcdf: ../ftp/netcdf.tar.bz2
