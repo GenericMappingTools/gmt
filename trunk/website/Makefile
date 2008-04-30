@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.15 2008-04-26 22:36:16 guru Exp $
+#  $Id: Makefile,v 1.16 2008-04-30 00:30:09 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -89,9 +89,10 @@ update-www-live:	../registration/gmt_usage.jpg gmt_mirrors.html
 		scp gmt_*.html newgmtguru *.gif gmt_*.png linux.jpg osx.jpg unix.jpg vista.jpg \
 		  ../src/README.TRIANGLE ../www/gmt/gmt_services.html ../www/gmt/gmt_man.html ../registration/gmt_usage.jpg \
 		  ../www/gmt/gmt_examples.html ../www/gmt/gmt_suppl.html ../www/gmt/gmt_back.gif $(WEBSERVER):$(LIVEWWWDIR)/gmt
-		ssh $(WEBSERVER) rm -r -f $(LIVEWWWDIR)/gmt/doc $(LIVEWWWDIR)/gmt/examples
+		ssh $(WEBSERVER) rm -r -f $(LIVEWWWDIR)/gmt/doc $(LIVEWWWDIR)/gmt/examples $(LIVEWWWDIR)/gmt/contrib
 		scp -r ../www/gmt/doc $(WEBSERVER):$(LIVEWWWDIR)/gmt
 		scp -r ../www/gmt/examples $(WEBSERVER):$(LIVEWWWDIR)/gmt
+		scp -r contrib $(WEBSERVER):$(LIVEWWWDIR)/gmt
 
 update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html
 #		For the test we want GMT_ftpsite to always be 0, and to use the test web site - hence these sed commands
@@ -110,9 +111,10 @@ update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html
 #	Change the Href to the ftp server to go to the test server dir instead
 		sed -e sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttestBg gmt_install_form.html > tmp
 		scp tmp $(WEBSERVER2):$(LIVEWWWDIR2)/gmt/gmt_install_form.html
-		ssh $(WEBSERVER2) rm -r -f $(LIVEWWWDIR2)/gmt/doc $(LIVEWWWDIR2)/gmt/examples
+		ssh $(WEBSERVER2) rm -r -f $(LIVEWWWDIR2)/gmt/doc $(LIVEWWWDIR2)/gmt/examples $(LIVEWWWDIR2)/gmt/contrib
 		scp -r ../www/gmt/doc $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		scp -r ../www/gmt/examples $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
+		scp -r contrib $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		echo "cd $(LIVEWWWDIR2)/gmt" > gmt_server_job.sh
 		echo "sed -e s/install_gmt_form.pl/install_gmt_form_test.pl/g gmt_install_form.html > tmp" >> gmt_server_job.sh
 		echo "mv -f tmp gmt_install_form.html" >> gmt_server_job.sh
@@ -138,6 +140,7 @@ update-www-local:../registration/gmt_usage.jpg gmt_mirrors.html
 		rm -r -f $(TESTWWWDIR)/gmt/doc $(TESTWWWDIR)/gmt/examples
 		cp -R -f ../www/gmt/doc $(TESTWWWDIR)/gmt
 		cp -R -f ../www/gmt/examples $(TESTWWWDIR)/gmt
+		cp -R -f contrib $(TESTWWWDIR)/gmt
 
 
 #---------------------------------------------------------------------------
