@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_6.tex,v 1.18 2008-01-23 03:22:47 guru Exp $
+%	$Id: GMT_Chapter_6.tex,v 1.19 2008-04-30 03:53:30 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -9,7 +9,7 @@
 \chapter{\gmt\ Map Projections}
 \label{ch:6}
 
-\GMT\ implements 25 different map projections.  They all project the input coordinates
+\GMT\ implements more than 30 different projections.  They all project the input coordinates
 longitude and latitude to positions on a map.  In general, $x' = f(x,y,z)$ and $y' = g(x,y,z)$, where
 $z$ is implicitly given as the radial vector length to the $(x,y)$ point on the chosen ellipsoid.  The functions $f$ and $g$ can be
 quite nasty and we will refrain from presenting details in this document.  The interested read is referred to
@@ -31,9 +31,11 @@ map projection code).  However, in some cases it would be more
 practical to specify map \emph{height} instead of \emph{width}, while in other situations it would be nice
 to set either the \emph{shortest} or \emph{longest} map dimension.  Users may select
 these alternatives by appending a character code to their map dimension.  To specify map \emph{height},
-append {\bf h} to the given dimension; to select the minimum map dimension, append {\bf -}, whereas you may
-append {\bf +} to select the maximum map dimension.  Without the modifier the map width is
+append \textbf{h} to the given dimension; to select the minimum map dimension, append \textbf{-}, whereas you may
+append \textbf{+} to select the maximum map dimension.  Without the modifier the map width is
 selected by default.
+
+In \GMT\ version 4.3.0 we noticed we ran out of the alphabet for 1-letter (and sometimes 2-letter) projection codes. To allow more flexibility, and to make it easier to remember the codes, we implemented the option to use the abbreviations used by the \progname{Proj4} mapping package. Since some of the \GMT\ projections are not in \progname{Proj4}, we invented some of our own as well. For a full list of both the old 1- and 2-letter codes, as well as the \progname{Proj4}-equivalents see the quick reference cards in Section~\ref{sec:purpose}. For example, \Opt{JM15c} and \Opt{JMerc/15c} have the same meaning.
 
 \input{GMT_Chapter_6.1}
 \input{GMT_Chapter_6.2}
