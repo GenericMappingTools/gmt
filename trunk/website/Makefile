@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.16 2008-04-30 00:30:09 guru Exp $
+#  $Id: Makefile,v 1.17 2008-04-30 01:42:12 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -155,9 +155,10 @@ update-ftp-live:	netcdf
 		exit; \
 	fi
 	ssh $(FTPSERVER) rm -rf $(LIVEFTPDIR)
-	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)
+	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib
 	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
+	scp ../ftp/*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
 		echo "rm -f $(LIVEFTPDIR)/GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
@@ -178,9 +179,10 @@ update-ftp-test:	netcdf
 		exit; \
 	fi
 	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)
-	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)
+	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib
 	scp ../guru/install_gmt ../ftp/netcdf.tar.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../ftp/*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl; do \
 		echo "rm -f $(LIVEFTPDIR2)/GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
@@ -201,9 +203,10 @@ update-ftp-local:
 		exit; \
 	fi
 	rm -rf $(TESTFTPDIR)
-	mkdir -p $(TESTFTPDIR)
+	mkdir -p $(TESTFTPDIR)/windows $(TESTFTPDIR)/contrib
 	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > $(TESTFTPDIR)/install_gmt
 	cp -f ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
+	cp -f ../ftp/*.exe $(TESTFTPDIR)/windows
 	for p in pdf web tut share src scripts suppl; do \
 		\rm -f $(TESTFTPDIR)/GMT_$$p.tar.bz2; \
 		(cd $(TESTFTPDIR); $(LN_S) GMT$(VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
