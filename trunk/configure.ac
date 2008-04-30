@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.21 2008-04-30 07:34:39 guru Exp $
-AC_REVISION($Revision: 1.21 $)
+dnl $Id: configure.ac,v 1.22 2008-04-30 19:56:54 remko Exp $
+AC_REVISION($Revision: 1.22 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -693,7 +693,20 @@ fi
 AC_MSG_RESULT($CPPFLAGS)
 dnl
 dnl -----------------------------------------------------------------
-dnl	Create share/conf/gmt.conf and set site defaults
+dnl Check if we have GNU make. If not, add CPPFLAGS to CFLAGS
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(if CPPFLAGS need to be added to CFLAGS)
+make -p -f /dev/null 2>&1 | grep -q CPPFLAGS
+if test "$?" = "0" ; then
+	AC_MSG_RESULT(no)
+else
+	CFLAGS="$CFLAGS "'$(CPPFLAGS)'
+	AC_MSG_RESULT(yes)
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Create share/conf/gmt.conf and set site defaults
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(for default GMT units)
