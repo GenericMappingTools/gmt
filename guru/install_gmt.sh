@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.129 2008-04-30 08:08:45 guru Exp $
+#	$Id: install_gmt.sh,v 1.130 2008-04-30 08:29:44 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -997,7 +997,7 @@ if [ "$GMT_ftp" = "y" ]; then
 	echo "cd $DIR" >> gmt_install.ftp_list
 	echo "binary" >> gmt_install.ftp_list
 	make_ftp_list $GMT_get_src src GMT
-#	make_ftp_list $GMT_triangle triangle GMT
+	make_ftp_list $GMT_triangle triangle GMT
 	make_ftp_list $GMT_get_share share GMT
 	make_ftp_list $GMT_get_coast coast GSHHS
 	make_ftp_list $GMT_get_high high GSHHS
@@ -1041,7 +1041,7 @@ GMT_sharedir=${GMT_sharedir:-$GMT_share}
 
 install_this_gmt $GMT_get_src src
 install_this_gmt $GMT_get_share share
-#install_this_gmt $GMT_triangle triangle
+install_this_gmt $GMT_triangle triangle
 install_this_gmt $GMT_get_suppl suppl
 install_this_gmt $GMT_get_scripts scripts
 install_this_gmt $GMT_get_pdf pdf
@@ -1180,7 +1180,7 @@ else
 fi
 
 if [ ! x"$MATDIR" = x ]; then	# MATDIR is set
-	if [ "X$GMT_mex_type" = "Xmatlab"]
+	if [ "X$GMT_mex_type" = "Xmatlab"]; then
 		enable_matlab=--enable-matlab=$MATDIR
 	else
 		enable_matlab=--enable-octave=yes
