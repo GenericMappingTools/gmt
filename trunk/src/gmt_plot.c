@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.227 2008-04-30 00:48:36 remko Exp $
+ *	$Id: gmt_plot.c,v 1.228 2008-04-30 01:32:56 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4316,7 +4316,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 	double *x, *xp, *yp;
 	PFD x_on_border[2];
 
-	if (F->rgb[0] == -1 && !F->use_pattern) {	/* Just draw outline, no fill, nor pattern */
+	if (GMT_is_nofill (F)) {	/* Just draw outline, no fill, nor pattern */
 		if (!outline) return;			/* No fill, no pattern, no outline. Hence nothing to do */
 		if ((n_new = GMT_geo_to_xy_line (lon, lat, n)) == 0) return;	/* Nothing further to do */
 		GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, n_new);		/* Separately plot the outline */
