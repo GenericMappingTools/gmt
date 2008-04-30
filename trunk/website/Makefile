@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.19 2008-04-30 08:04:32 guru Exp $
+#  $Id: Makefile,v 1.20 2008-04-30 08:32:29 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -160,7 +160,7 @@ update-ftp-live:	netcdf
 	scp ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
-	for p in pdf web tut share src scripts suppl; do \
+	for p in pdf web tut share src scripts suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
@@ -188,7 +188,7 @@ update-ftp-test:	netcdf
 	scp ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
-	for p in pdf web tut share src scripts suppl; do \
+	for p in pdf web tut share src scripts suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
@@ -215,7 +215,7 @@ update-ftp-local:
 	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > $(TESTFTPDIR)/install_gmt
 	cp -f ../ftp/*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
 	cp -f ../ftp/*.exe $(TESTFTPDIR)/windows
-	for p in pdf web tut share src scripts suppl; do \
+	for p in pdf web tut share src scripts suppl triangle; do \
 		\rm -f $(TESTFTPDIR)/GMT_$$p.tar.bz2; \
 		(cd $(TESTFTPDIR); $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
 	done
