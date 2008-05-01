@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.57 2008-04-04 17:27:30 remko Exp $
+#	$Id: Makefile,v 1.58 2008-05-01 17:30:48 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -98,9 +98,6 @@ uninstall:	uninstall-gmt uninstall-suppl
 
 install-all:	install-gmt install-suppl install-data install-man install-www
 uninstall-all:	uninstall-gmt uninstall-suppl uninstall-data uninstall-man uninstall-www
-
-patch:
-		bin/gmtpatch.sh 4
 
 gmt:		gmtmacros
 		cd src ; $(MAKE) all
