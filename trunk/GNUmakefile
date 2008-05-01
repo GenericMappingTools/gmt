@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.36 2008-05-01 18:40:43 remko Exp $
+#  $Id: GNUmakefile,v 1.37 2008-05-01 20:06:24 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -293,7 +293,7 @@ zip_dist:
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip GMT/COPYING)
 	grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:GMT/:' > asc.lis
 	grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT/:' >> asc.lis
-	ls src/gmt_version.h | sed -e 's:^:GMT/:' >> asc.lis
+	ls src/gmt_version.h share/conf/gmt.conf share/conf/.gmtdefaults_?? | sed -e 's:^:GMT/:' >> asc.lis
 	ls guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT/:' >> asc.lis
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
 	grep -vh '#' guru/GMT_share_files_ascii.lis | sed -e 's:^:GMT/:' > asc.lis
