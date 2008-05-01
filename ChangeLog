@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.273 2008-05-01 17:31:36 remko Exp $
+	$Id: ChangeLog,v 1.274 2008-05-01 20:06:24 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-05-01
 	* tar 4.3.0 made and released via email
 -----------------------------------------------------------------------------------------
 
 2008-05-01	remko
+	* grdsample.c:		Did not allocate enough memory, with crashes resulting.
 	* share/conf/*.orig:	Replaced by *.in, and processed by ./configure using AC_SUBST
 	* guru/GMT_share_files_ascii.lis:	share/*.orig files were actually never shipped in
 				tarballs. Now ships share/*.in files.
