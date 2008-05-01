@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.24 2008-05-01 02:05:19 remko Exp $
-AC_REVISION($Revision: 1.24 $)
+dnl $Id: configure.ac,v 1.25 2008-05-01 02:17:50 guru Exp $
+AC_REVISION($Revision: 1.25 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -712,7 +712,7 @@ dnl Check if we have GNU make. If not, add CPPFLAGS to CFLAGS
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(if CPPFLAGS need to be added to CFLAGS)
-${MAKE:-make} -p -f /dev/null 2>&1 | grep -q CPPFLAGS
+${MAKE:-make} -p -f /dev/null 2>&1 | grep CPPFLAGS > /dev/null
 if test "$?" = "0" ; then
 	AC_MSG_RESULT(no)
 else
