@@ -1,0 +1,12 @@
+@UNITS@		<- Set to SI or US
+#	$Id: gmt.conf.in,v 1.1 2008-05-01 17:26:29 remko Exp $
+#
+#	GMT configuration file
+#
+#	!! MUST contain either the word SI or US
+#	!! in the first 2 columns of the first record
+#
+#	SI will use cm as the GMT default unit
+#	and use slightly different default values,
+#	while US selects inches.  The values used are
+#	given in .gmtdefaults_SI and .gmtdefaults_US.
