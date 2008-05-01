@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.35 2007-04-03 04:25:00 pwessel Exp $
+#	$Id: GMT_usage_map.sh,v 1.36 2008-05-01 20:43:52 guru Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -18,12 +18,14 @@
 #	Paul Wessel
 #	30-SEPT-2002
 #
-# Typicall this script is run by cron on the web server:
+# Typicall this script is run by cron on Paul's computer since
+# SOEST does not want jobs to run on the web server.
 #
-# 1 0 * * * /home/aa/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/registration/GMT_usage_map.sh
+# 1 0 * * * /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/registration/GMT_usage_map.sh
 #
-# Then, to remove the gmtregistration file (which has permission that this user
-# cannot delete), a root cron script
+# It will scp the file /tmp/gmtregistrations from the SOEST web server and
+# process the data, produce an updated JPG image, and scp the file to the
+# proper GMT directory on the web server
 #
 # 5 0 * * * rm -f /tmp/gmtregistrations
 #
@@ -46,13 +48,7 @@ help	Give a brief help message
 EOF
 	exit
 fi
-#GS_LIB=/usr/share/ghostscript/7.05/lib
-#GMTHOME=/home/aa/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT
-#PATH=$GMTHOME/bin:$PATH
-#export PATH
-#export GS_LIB
 REGHOME=$GMTHOME/registration	# Where to do the work
-#CVSROOT=":pserver:pwessel@aa.soest.hawaii.edu:/home/gmt/gmt/cvs"
 
 cd $REGHOME
 if [ "X$GMTHOME" = "X" ]; then	# Must set environment
@@ -72,13 +68,12 @@ else				# Default is all tasks
 	key="all"
 fi
 if [ $key = "all" ] || [ $key = "get" ]; then
-#	Extracts new sites from my mail folder and only returns
-#	those over land.  To be run from the GMT/registration
-#	directory.
-
+#	Extracts new sites from teh web server's tmp dir and only returns
+#	those over land.  To be run from the GMT/registration directory.
 
 # Check if there is new data there
 
+	scp imina.soest.hawaii.edu:/tmp/gmtregistration /tmp
 	FILE=/tmp/gmtregistration
 	if [ ! -e $FILE ] & [ $verbose -eq 1 ]; then
 		echo "GMT_usage_map.sh: No new registrations to process" >&2
@@ -95,6 +90,7 @@ if [ $key = "all" ] || [ $key = "get" ]; then
 	if [ $n -gt 0 ] & [ $verbose -eq 1 ]; then
 		echo "GMT_usage_map.sh: Found $n new sites" >&2
 	fi
+	rm -f $FILE
 fi
 
 if [ $key = "all" ] || [ $key = "update" ]; then
@@ -129,5 +125,5 @@ if [ $key = "all" ] || [ $key = "map" ]; then
 	ps2raster -E100 -A -Tj gmt_usage.ps
 	gmtset DOTS_PR_INCH 300 PAPER_MEDIA Letter
 	rm -f gmt_usage.ps
-#	install -m 644 gmt_usage.jpg /home/gmt/gmt/www/gmt
+	scp gmt_usage.jpg imina.soest.hawaii.edu:/export/imina2/httpd/htdocs/gmt/gmt
 fi
