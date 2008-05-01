@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.25 2008-05-01 02:17:50 guru Exp $
-AC_REVISION($Revision: 1.25 $)
+dnl $Id: configure.ac,v 1.26 2008-05-01 17:29:21 remko Exp $
+AC_REVISION($Revision: 1.26 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -37,6 +37,8 @@ dnl -----------------------------------------------------------------
 dnl GMT-specific make macros
 dnl -----------------------------------------------------------------
 dnl
+AC_SUBST(UNITS)
+AC_SUBST(EPS)
 AC_SUBST(EXE)
 AC_SUBST(COMPRESS)
 AC_SUBST(MATLAB)
@@ -725,46 +727,20 @@ dnl Create share/conf/gmt.conf and set site defaults
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(for default GMT units)
-if test ! -f share/conf/gmt.conf.orig ; then
-	cp share/conf/gmt.conf share/conf/gmt.conf.orig
-fi
-if test ! -f share/conf/.gmtdefaults_SI.orig ; then
-	cp share/conf/.gmtdefaults_SI share/conf/.gmtdefaults_SI.orig
-fi
-if test ! -f share/conf/.gmtdefaults_US.orig ; then
-	cp share/conf/.gmtdefaults_US share/conf/.gmtdefaults_US.orig
-fi
-\rm -f share/conf/gmt.conf
 if test "$enable_US" = "yes" ; then
+	UNITS=US
 	AC_MSG_RESULT(US (inch))
-	paper=Letter
-	origdef=share/conf/.gmtdefaults_US.orig
-	thisdef=share/conf/.gmtdefaults_US
-	echo "US        <- Set to SI or US" > share/conf/gmt.conf
 else
+	UNITS=SI
 	AC_MSG_RESULT(SI (cm))
-	paper=A4
-	origdef=share/conf/.gmtdefaults_SI.orig
-	thisdef=share/conf/.gmtdefaults_SI
-	echo "SI        <- Set to SI or US" > share/conf/gmt.conf
 fi
-egrep -v '^SI|^US' share/conf/gmt.conf.orig >> share/conf/gmt.conf
 AC_MSG_CHECKING(for default PostScript format)
-\rm -f $thisdef
 if test "$enable_eps" = "yes" ; then
+	EPS=+
 	AC_MSG_RESULT(EPS)
-	if test "$enable_US" = "yes" ; then
-		$AWK '{if ($1 == "PAPER_MEDIA") {printf "PAPER_MEDIA\t\t= Letter+\n"} else {print $0}}' $origdef > $thisdef
-	else
-		$AWK '{if ($1 == "PAPER_MEDIA") {printf "PAPER_MEDIA\t\t= A4+\n"} else {print $0}}' $origdef > $thisdef
-	fi
 else
+	EPS=
 	AC_MSG_RESULT(PS)
-	if test "$enable_US" = "yes" ; then
-		$AWK '{if ($1 == "PAPER_MEDIA") {printf "PAPER_MEDIA\t\t= Letter\n"} else {print $0}}' $origdef > $thisdef
-	else
-		$AWK '{if ($1 == "PAPER_MEDIA") {printf "PAPER_MEDIA\t\t= A4\n"} else {print $0}}' $origdef > $thisdef
-	fi
 fi
 dnl
 dnl -----------------------------------------------------------------
@@ -775,7 +751,7 @@ morefiles=
 if test -f doc/GMT_version.tex.in ; then
 	morefiles=doc/GMT_version.tex
 fi
-AC_OUTPUT(src/makegmt.macros src/GMT src/gmt_version.h src/isogmt $morefiles)
+AC_OUTPUT(src/makegmt.macros src/GMT src/gmt_version.h src/isogmt share/conf/gmt.conf share/conf/.gmtdefaults_SI share/conf/.gmtdefaults_US $morefiles)
 dnl
 dnl -----------------------------------------------------------------
 dnl Remove and, if trouble, write the .gmtconfigure file
