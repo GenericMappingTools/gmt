@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 03
-#		$Id: job03.sh,v 1.18 2008-02-22 21:10:42 remko Exp $
+#		$Id: job03.sh,v 1.19 2008-05-01 12:35:48 remko Exp $
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT progs:	filter1d, fitcircle, minmax, project, sample1d
@@ -151,7 +151,8 @@ trend1d -Fxw -N2r samp_ship.pg > samp_ship.xw
 psxy $plotr -JX8i/4i -X2i -Y1.5i -K -Sp0.03i \
 	-Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
 	-U/-1.75i/-1.25i/"Example 3d in Cookbook" samp_ship.pg > example_03d.ps
-psxy ${plotr%/*/*}/0/1.1 -JX8i/1.1i -O -Y4.25i -Bf100/a0.5f0.1:"Weight":Wesn -Sp0.03i samp_ship.xw \
+plotr=`minmax samp_ship.xw -I100/1.1`
+psxy $plotr -JX8i/1.1i -O -Y4.25i -Bf100/a0.5f0.1:"Weight":Wesn -Sp0.03i samp_ship.xw \
 	>> example_03d.ps
 #
 # From this we see that we might want to throw away values where w < 0.6.  So we try that,
