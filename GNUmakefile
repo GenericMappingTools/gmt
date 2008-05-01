@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.35 2008-05-01 17:30:14 remko Exp $
+#  $Id: GNUmakefile,v 1.36 2008-05-01 18:40:43 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -162,15 +162,6 @@ fresh:
 		rm -f $(FILES)
 
 config:		src/makegmt.macros
-
-share/conf/gmt.conf: 	share/conf/gmt.conf.orig 
-		cp -f share/conf/gmt.conf.orig share/conf/gmt.conf
-
-share/conf/.gmtdefaults_SI:	share/conf/.gmtdefaults_SI.orig
-		cp -f share/conf/.gmtdefaults_SI.orig share/conf/.gmtdefaults_SI
-
-share/conf/.gmtdefaults_US:	share/conf/.gmtdefaults_US.orig
-		cp -f share/conf/.gmtdefaults_US.orig share/conf/.gmtdefaults_US
 
 guru/gmtguru.macros:
 		touch $@
