@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.21 2008-03-24 08:58:30 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.22 2008-05-01 03:00:38 guru Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -145,12 +145,10 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	GMT_LONG inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	GMT_LONG i, j, j_gmt, i_0_out;	/* Misc. counters */
 	int *k;				/* Array with indices */
-	GMT_LONG size;			/* Length of data type */
 	GMT_LONG block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
 	GMT_LONG datablockcol, datablockrow, rowstart, rowend, colstart, colend, row, col;
 	GMT_LONG ij;
 	FILE *fp;			/* File pointer to data or pipe */
-	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	int ReadRecord (FILE *fpi, GMT_LONG recnum, float *z);
 	
@@ -162,9 +160,6 @@ int GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	}
 	else if ((fp = GMT_fopen (header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
-
-	size = GMT_grd_data_size (header->type, &header->nan_value);
-	check = !GMT_is_dnan (header->nan_value);
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
@@ -256,11 +251,9 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	GMT_LONG inc = 1;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	GMT_LONG i, j, i2, j2;		/* Misc. counters */
 	int *k;				/* Array with indices */
-	GMT_LONG size;			/* Length of data type */
 	GMT_LONG block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
 	GMT_LONG ij;
 	FILE *fp;			/* File pointer to data or pipe */
-	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	GMT_LONG rowstart, rowend, colstart, colend = 0, datablockcol, datablockrow;
 	GMT_LONG j_gmt, row, col;
@@ -277,9 +270,6 @@ int GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double 
 	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = fopen (header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	
-	size = GMT_grd_data_size (header->type, &header->nan_value);
-	check = !GMT_is_dnan (header->nan_value);
-
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
 	width_in = width_out;		/* Physical width of input array */
