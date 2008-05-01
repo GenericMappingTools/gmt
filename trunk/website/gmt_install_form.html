@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.57 2008-04-30 07:52:13 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.58 2008-05-01 04:42:44 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.57 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.58 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -31,7 +31,9 @@ to a file named by you, and this file can be used for background installs as sho
 <HR>
 <CENTER><H3>A. Basic Requirements: </H3></CENTER>
 <UL>
-<LI>You have access to the Bourne shell (Bash will also work).</LI>
+<LI>You have access to a POSIX Bourne shell (Bash will also work).  Note that on Solaris you are advised
+to use the version in /usr/xpg4/bin since /usr/bin/sh (and things like /usr/bin/grep) are not Posix-compliant,
+and furthermore /usr/bin/awk thinks sin(1) = 1.</LI>
 <LI>You have bzip2 on your system.  If not, use your package manager, or get source code and executables for bzip2
 	from the <A HREF="http://www.bzip.org" target="_blank">bzip2</A> site.</LI>
 <LI>You have write permissions in all directories you specify below.</LI>
