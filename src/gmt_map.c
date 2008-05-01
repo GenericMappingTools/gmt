@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.198 2008-04-05 23:39:56 guru Exp $
+ *	$Id: gmt_map.c,v 1.199 2008-05-01 01:59:44 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5142,7 +5142,7 @@ double GMT_y_to_corner (double y) {
 
 GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x, double **y, int *total_nx)
 {
-	GMT_LONG n = 0, this, i, n_alloc = GMT_CHUNK, n_arc;
+	GMT_LONG n = 0, this = FALSE, i, n_alloc = GMT_CHUNK, n_arc;
 	int sides[4], nx;
 	BOOLEAN add_boundary = FALSE;
 	double xlon[4], xlat[4], xc[4], yc[4], xr, yr, *xx, *yy, *xarc, *yarc;
