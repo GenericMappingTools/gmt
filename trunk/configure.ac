@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.23 2008-04-30 22:58:19 guru Exp $
-AC_REVISION($Revision: 1.23 $)
+dnl $Id: configure.ac,v 1.24 2008-05-01 02:05:19 remko Exp $
+AC_REVISION($Revision: 1.24 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -515,7 +515,7 @@ else
 	fi
 	if test "$GCC" = "yes" || test "$os" = "Linux" || test "$os" = "AIX"; then
 		CFLAGS="$CFLAGS -O2"
-	elif test "$chip" = "alpha" || test "$os" = "AUX" || test "$os" = "HPUX"; then
+	elif test "$chip" = "alpha" || test "$os" = "AUX" || test "$os" = "HP-UX"; then
 		CFLAGS="$CFLAGS"
 	else
 		CFLAGS="$CFLAGS -O"
@@ -584,6 +584,34 @@ if test "$enable_universal" = "yes" ; then
 fi
 dnl
 dnl -----------------------------------------------------------------
+dnl Determine LDFLAGS for this platform
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(linker options)
+flag=
+if test "X$enable_rpath" == "Xno" ; then
+	flag=
+elif test "$os" = "SunOS" ; then
+	if test "$Sun_rev" = "" ; then
+		flag="-L"
+	else
+		flag="-R,"
+	fi
+elif test "$os" = "Linux" || test "$os" = "FreeBSD" || test "$os" = "NetBSD" || test "$os" = "OSF1" || test "$os" = "IRIX64" ; then
+	flag="-rpath,"
+elif test "$os" = "HP-UX" ; then
+	flag="+b,"
+fi
+if test "X$flag" = "X" ; then
+	flag=
+elif test "$enable_shared" = "yes" ; then
+	LDFLAGS=$LDFLAGS' -Wl,'$flag'$(libdir):$(NETCDF_LIB)'
+else
+	LDFLAGS=$LDFLAGS' -Wl,'$flag'$(NETCDF_LIB)'
+fi
+AC_MSG_RESULT($LDFLAGS)
+dnl
+dnl -----------------------------------------------------------------
 dnl Determine LD_OPT and LDFLAGS for this platform
 dnl -----------------------------------------------------------------
 dnl
@@ -593,35 +621,25 @@ LD=ld
 SL=so
 LIBEXT='$(SL)'
 SL_VERSION='$(SL)'
-rpath=
-if test "X$enable_rpath" != "Xno" ; then
-	rpath=' -Wl,-rpath,$(libdir):$(NETCDF_LIB)'
-fi
 if test "$enable_shared" = "yes" ; then
 	AC_MSG_CHECKING(how to make a shared object)
 	if test "$os" = "SunOS" ; then
 		if test "$Sun_rev" = "" ; then	# SunOS
 			LD_OPT="-Bdynamic"
-			LDFLAGS=$LDFLAGS' -Wl,-L$(libdir):$(NETCDF_LIB)'
 		else				# Solaris
 			LD_OPT="-G"
-			LDFLAGS=$LDFLAGS' -Wl,-R,$(libdir):$(NETCDF_LIB)'
 		fi
 	elif test "$os" = "Linux" ; then	# Need optimization when doing shared
 		LD='$(CC)'
 		SL_VERSION=$SL.$LIB_MAJOR_VERSION
 		LD_OPT='-shared -Wl,-soname=$*.'$SL_VERSION
-		LDFLAGS=$LDFLAGS$rpath
 	elif test "$os" = "FreeBSD" || test "$os" = "NetBSD" ; then
 		SL_VERSION=$SL.$LIB_MAJOR_VERSION
 		LD_OPT='-shared -Wl,-soname=$*.'$SL_VERSION
-		LDFLAGS=$LDFLAGS$rpath
 	elif test "$os" = "OSF1" ; then
 		LD_OPT='-shared -expect_unresolved "*"'
-		LDFLAGS=$LDFLAGS$rpath
 	elif test "$os" = "IRIX64" ; then
 		LD_OPT="-shared"
-		LDFLAGS=$LDFLAGS$rpath
 		# Need to remove -L/usr/lib to avoid mixing o32 and n32
 		X_LIBS=
 	elif test "$os" = "Darwin" ; then	# MacOS X
@@ -631,7 +649,6 @@ if test "$enable_shared" = "yes" ; then
 		LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version 4.0.0 -current_version '$LIB_VERSION' -dynamiclib'$OSX_L
 	elif test "$os" = "HP-UX" ; then
 		LD_OPT="-b"
-		LDFLAGS=$LDFLAGS' -Wl,+b,$(libdir)'
 		SL=sl
 	else	# Not yet implemented
 		AC_MSG_RESULT(not supported for GMT under $os)
@@ -646,8 +663,6 @@ if test "$enable_shared" = "yes" ; then
 else
 	LIBEXT='a'
 fi
-AC_MSG_CHECKING(linker options for GMT)
-AC_MSG_RESULT($LDFLAGS)
 dnl
 dnl -----------------------------------------------------------------
 dnl Determine CFLAGS for this platform
@@ -697,7 +712,7 @@ dnl Check if we have GNU make. If not, add CPPFLAGS to CFLAGS
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(if CPPFLAGS need to be added to CFLAGS)
-make -p -f /dev/null 2>&1 | grep -q CPPFLAGS
+${MAKE:-make} -p -f /dev/null 2>&1 | grep -q CPPFLAGS
 if test "$?" = "0" ; then
 	AC_MSG_RESULT(no)
 else
