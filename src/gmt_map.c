@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.199 2008-05-01 01:59:44 remko Exp $
+ *	$Id: gmt_map.c,v 1.200 2008-05-02 01:15:43 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5579,7 +5579,7 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 			for (j_in = 0; j_in < I->ny; j_in++) GMT_geo_to_xy (I->x_min, y_in[j_in], &x_proj, &y_in_proj[j_in]);
 			for (i_out = 0; i_out < O->nx; i_out++) {
 				GMT_xy_to_geo (&x_out_proj[i_out], &y_proj, x_out[i_out], I->y_min);
-				if (GMT_io.in_col_type[0] == GMT_IS_LON) {
+				if (GMT_io.in_col_type[0] == GMT_IS_LON && !GMT_is_dnan (x_out_proj[i_out])) {
 					while (x_out_proj[i_out] < I->x_min - GMT_SMALL) x_out_proj[i_out] += 360.0;
 					while (x_out_proj[i_out] > I->x_max + GMT_SMALL) x_out_proj[i_out] -= 360.0;
 				}
@@ -5637,7 +5637,7 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 				/* On 17-Sep-2007 the slack of GMT_SMALL was added to allow for round-off
 				   errors in the grid limits. */
-				if (GMT_io.in_col_type[0] == GMT_IS_LON) {
+				if (GMT_io.in_col_type[0] == GMT_IS_LON && !GMT_is_dnan (x_proj)) {
 					while (x_proj < I->x_min - GMT_SMALL) x_proj += 360.0;
 					while (x_proj > I->x_max + GMT_SMALL) x_proj -= 360.0;
 				}
