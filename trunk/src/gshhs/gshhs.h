@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.17 2008-01-23 03:22:49 guru Exp $
+/*	$Id: gshhs.h,v 1.18 2008-05-02 00:44:42 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -36,6 +36,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+#ifdef WIN32
+#pragma warning( disable : 4996 )
+#endif
 
 #ifndef M_PI
 #define M_PI          3.14159265358979323846

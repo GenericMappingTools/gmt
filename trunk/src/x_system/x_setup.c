@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.9 2008-03-24 08:58:33 guru Exp $
+/*	$Id: x_setup.c,v 1.10 2008-05-02 00:44:42 guru Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -166,7 +166,7 @@ int main (int argc, char *argv[])
 		}
 		for (i = 0; i < nlegs; i++) {
 			fread ((void *)&record, (size_t)4, (size_t)1, fbin);
-			leg_info[i].gmt = record & 15;
+			leg_info[i].gmt = (char )(record & 15);
 			leg_info[i].leg_no = (record >> 4);
 		}
 		for (i = 0; i < nlegs; i++) {
