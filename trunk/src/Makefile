@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.37 2008-04-04 17:27:30 remko Exp $
+#	$Id: Makefile,v 1.38 2008-05-02 22:37:06 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -159,7 +159,7 @@ gmt_init.o:	gmt_colornames.h gmt_datums.h gmt_ellipsoids.h gmt_globals.h \
 		gmt_keycases.h gmt_keywords.h gmt_media_name.h gmt_media_size.h \
 		gmt_unique.h
 gmt_map.o gmt_proj.o:	gmt_proj.h
-gmt_support.o:	gmt_color_rgb.h gmt_pennames.h triangle.h
+gmt_support.o:	gmt_color_rgb.h gmt_pennames.h
 gmtmath.o:	gmtmath.h gmtmath_def.h gmtmath_explain.h
 grdmath.o:	grdmath.h grdmath_def.h grdmath_explain.h
 grd2xyz.o xyz2grd.o:	gmt_parse_z_io.h
