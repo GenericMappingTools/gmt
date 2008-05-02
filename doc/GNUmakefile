@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.20 2008-04-28 17:44:43 remko Exp $
+#	$Id: GNUmakefile,v 1.21 2008-05-02 20:07:17 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -48,7 +48,7 @@ include ../src/makegmt.macros
 .SUFFIXES:	.eps .pdf .tex .ps .sh
 
 PAPER=a4
-L2H=latex2html -local_icons -white -show_section_numbers -image_type png -bottom_navigation
+L2H=latex2html -local_icons -white -show_section_numbers -image_type png -bottom_navigation −notransparent
 # NOTICE: If inline graphics shows up with underlines then you might need to edit
 # your l2hconf.pm file and remove the -Ppdf option from DVIPSOPT.
 LATEX=latex --interaction=batchmode
