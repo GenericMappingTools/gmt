@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.22 2008-01-23 03:22:49 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.23 2008-05-02 02:21:54 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -517,7 +517,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int outarg, struct GMT_DATAS
 
 int GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int inarg, struct GMT_GRID **grid)
 {
-	struct GMT_GRID *G;
+	struct GMT_GRID *G = NULL;
 	int allocated = TRUE;
 	int row, col, ij, pad[4] = {0, 0, 0, 0}, par[GMTAPI_N_ARRAY_ARGS];
 	char *argv[1] = {"GMTAPI_Import_Grid"};
@@ -583,7 +583,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int outarg, struct GMT_GRID *G)
 	 	case GMT_IS_GRID:	/* The user's 2-D grid array of some sort, + info in the args */
 			GMTAPI_grdheader_to_info (G->header, API->data[outarg]->arg);	/* Populate an array with GRD header information */
 			GMTAPI_par_to_ipar (API->data[outarg]->arg, par);
-			if (par[GMTAPI_KIND] == GMTAPI_ORDER_ROW && par[GMTAPI_FREE] == GMTAPI_FLOAT && par[GMTAPI_FREE] == 0) {	/* Can just pass the pointer */
+			if (par[GMTAPI_KIND] == GMTAPI_ORDER_ROW && par[GMTAPI_TYPE] == GMTAPI_FLOAT && par[GMTAPI_FREE] == 0) {	/* Can just pass the pointer */
 				API->data[outarg]->ptr = (void **)(&(G->data));
 			}
 			else {	/* Must convert to new array */
@@ -910,7 +910,7 @@ double GMTAPI_get_val (void *ptr, size_t i, int type)
 	int *i4;
 	float *f;
 	double *d;
-	double val;
+	double val = 0.0;
 	
 	switch (type) {
 		case GMTAPI_BYTE:

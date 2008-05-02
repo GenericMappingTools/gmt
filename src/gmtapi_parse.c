@@ -17,7 +17,7 @@ int GMTAPI_Create_Options (int n_args, char *args[], struct GMT_OPTION **list)
 	
 	BOOLEAN first_option = TRUE;	/* So we know to initialize the head of the linked list */
 	int arg;
-	struct GMT_OPTION *current, *head, *new;
+	struct GMT_OPTION *current = NULL, *head, *new;
 	
 	/* Probably make a copy of the args and sort them in the required order (R before J etc) */
 	
@@ -179,7 +179,7 @@ int GMTAPI_Update_Option (char option, char *arg, struct GMT_OPTION *head)
 	/* If the option exists we will update the arguemnts, otherwise
 	 * we create a new option and append it to the list */
 
-	struct GMT_OPTION *old, *new;
+	struct GMT_OPTION *old = NULL, *new;
 
 	GMTAPI_Make_Option (option, arg, &new);		/* What the updated option should be */
 	GMTAPI_Find_Option (option, head, old);		/* Try to see if it already existst */
