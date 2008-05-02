@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.26 2008-05-01 04:07:04 guru Exp $
+#  $Id: Makefile,v 1.27 2008-05-02 19:41:04 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -43,16 +43,16 @@ help::
 #!update-version-local	: Update the local ftp and www test dirs
 #!update-version-test	: Update the remote TEST ftp and www server
 #!update-version-live	: Update the remote LIVE ftp and www server
-#!update-www-live		: Update the LIVE www server
-#!update-www-local		: Update the local www server
-#!update-www-test		: Update the TEST www server
-#!update-ftp-live		: Update the LIVE ftp server
+#!update-www-live	: Update the LIVE www server
+#!update-www-local	: Update the local www server
+#!update-www-test	: Update the TEST www server
+#!update-ftp-live	: Update the LIVE ftp server
 #!update-ftp-test	: Update the LIVE ftp server test dir
-#!update-ftp-local		: Update the TEST ftp server
+#!update-ftp-local	: Update the TEST ftp server
 #!clean-ftp		: Empty all local ftp archives
 #!clean-local		: Remove the local site directories
 #!clean-test		: Empty the remote test directories
-#!hitmap			: Creates the GMT mirror page for site links
+#!hitmap		: Creates the GMT mirror page for site links
 #!---------------------------------------------------------------
 		
 # Place stuff in the GMT www directory:
@@ -164,6 +164,7 @@ update-ftp-live:
 	scp ../guru/install_gmt $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/G*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/G*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
+	scp ../ftp/gawk*.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
@@ -192,6 +193,7 @@ update-ftp-test:
 	scp ../guru/install_gmt $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/G*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/G*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
+	scp ../ftp/gawk*.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
@@ -220,6 +222,7 @@ update-ftp-local:
 	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > $(TESTFTPDIR)/install_gmt
 	cp -f ../ftp/G*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
 	cp -f ../ftp/G*.exe $(TESTFTPDIR)/windows
+	cp -f ../ftp/gawk*.zip $(TESTFTPDIR)/windows
 	for p in pdf web tut share src scripts suppl triangle; do \
 		\rm -f $(TESTFTPDIR)/GMT_$$p.tar.bz2; \
 		(cd $(TESTFTPDIR); $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
