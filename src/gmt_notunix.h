@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.18 2008-04-25 04:00:41 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.19 2008-05-02 00:44:42 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -61,7 +61,11 @@
 /* This section will override those in gmt_notposix.h which cannot
  * automatically be generated under Windows.
  */
- 
+
+/* Turn off some annoying "security" warnings in Vis Studio */
+
+#pragma warning( disable : 4996 )
+
 #define SET_IN_NOTUNIX	/* This forces the following not to be reset in gmt_notposix.h */
 
 /* These functions are available under Windows with MSVC compilers */
