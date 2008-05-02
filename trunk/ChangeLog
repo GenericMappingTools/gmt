@@ -1,10 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.276 2008-05-01 22:41:00 remko Exp $
+	$Id: ChangeLog,v 1.277 2008-05-02 01:15:43 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-05-01
 	* tar 4.3.0 made and released via email
 -----------------------------------------------------------------------------------------
 
+2008-05-01	pwessel
+	* gmt_map.c:		GMT_grd_project did not check if x_proj was NaN before trying
+				to add/sub 360 degrees, hanging under Windows.
+				
 2008-05-01	remko
 	* ps2raster.c:		When encountering BoundingBox: (atend), skip to the end.
 	* grdsample.c:		Did not allocate enough memory, with crashes resulting.
