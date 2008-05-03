@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.17 2008-01-23 03:22:49 guru Exp $
+ *	$Id: gmtapi.h,v 1.18 2008-05-03 21:49:47 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -134,14 +134,14 @@ struct GMT_OPTION {
  *=====================================================================================
  */
 
-EXTERN_MSC int GMTAPI_Create_Session    (struct GMTAPI_CTRL **GMT, FILE *log);
-EXTERN_MSC int GMTAPI_Destroy_Session   (struct GMTAPI_CTRL *GMT);
-EXTERN_MSC int GMTAPI_Register_Import   (struct GMTAPI_CTRL *GMT, int method, void **source,   double parameters[]);
-EXTERN_MSC int GMTAPI_Register_Export   (struct GMTAPI_CTRL *GMT, int method, void **receiver, double parameters[]);
-EXTERN_MSC int GMTAPI_Register_IO       (struct GMTAPI_CTRL *API, int method, void **resource, double parameters[], int direction);
-EXTERN_MSC int GMTAPI_Unregister_Import (struct GMTAPI_CTRL *API, int object_ID);
-EXTERN_MSC int GMTAPI_Unregister_Export (struct GMTAPI_CTRL *API, int object_ID);
-EXTERN_MSC int GMTAPI_Unregister_IO     (struct GMTAPI_CTRL *API, int object_ID, int direction);
+EXTERN_MSC int GMTAPI_Create_Session    (struct GMTAPI_CTRL **GMT, FILE *log, int *error);
+EXTERN_MSC int GMTAPI_Destroy_Session   (struct GMTAPI_CTRL *GMT, int *error);
+EXTERN_MSC int GMTAPI_Register_Import   (struct GMTAPI_CTRL *GMT, int method, void **source,   double parameters[], int *object_ID, int *error);
+EXTERN_MSC int GMTAPI_Register_Export   (struct GMTAPI_CTRL *GMT, int method, void **receiver, double parameters[], int *object_ID, int *error);
+EXTERN_MSC int GMTAPI_Register_IO       (struct GMTAPI_CTRL *API, int method, void **resource, double parameters[], int direction, int *object_ID, int *error);
+EXTERN_MSC int GMTAPI_Unregister_Import (struct GMTAPI_CTRL *API, int object_ID, int *error);
+EXTERN_MSC int GMTAPI_Unregister_Export (struct GMTAPI_CTRL *API, int object_ID, int *error);
+EXTERN_MSC int GMTAPI_Unregister_IO     (struct GMTAPI_CTRL *API, int object_ID, int direction, int *error);
 EXTERN_MSC int GMTAPI_Report_Error      (struct GMTAPI_CTRL *GMT, int error);
 
 /*=====================================================================================
@@ -149,9 +149,9 @@ EXTERN_MSC int GMTAPI_Report_Error      (struct GMTAPI_CTRL *GMT, int error);
  *=====================================================================================
  */
 
-EXTERN_MSC int GMT_read_all_write_all_records (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
-EXTERN_MSC int GMT_read_one_write_one_record  (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
-EXTERN_MSC int GMT_read_grid_write_grid (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg);
+EXTERN_MSC int GMT_read_all_write_all_records (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg, int *error);
+EXTERN_MSC int GMT_read_one_write_one_record  (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg, int *error);
+EXTERN_MSC int GMT_read_grid_write_grid (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg, int *error);
 
 #include "gmtapi_parse.h"
 

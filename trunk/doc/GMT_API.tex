@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_API.tex,v 1.6 2008-01-23 03:52:12 guru Exp $
+%       $Id: GMT_API.tex,v 1.7 2008-05-03 21:49:47 guru Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2008.
@@ -277,13 +277,13 @@ The \texttt{GMTAPI\_Create\_Session} is used to initiate the new session.  The f
 function prototype is
 
 \begin{verbatim}
-GMTAPI_Create_Session (struct GMTAPI_CTRL **C, FILE *log)
+GMTAPI_Create_Session (struct GMTAPI_CTRL **C, FILE *log, int *error)
 \end{verbatim}
 and you will typically call it thus:
 \begin{verbatim}
 struct GMTAPI_CTRL *C;
 FILE *fp_log = GMT_fopen ("errors.log", "w");
-GMTAPI_Create_Session (&C, fp_log);
+GMTAPI_Create_Session (&C, fp_log, &error);
 \end{verbatim}
 where \texttt{C} is the returned pointer to the \GMT\ API control structure.  You will need to
 pass this pointer to all subsequent \GMT\ API functions.  The main task of the initialization
@@ -309,12 +309,12 @@ discuss registering input here and later discuss how output might differ.  The p
 
 \begin{verbatim}
 GMTAPI_Register_Import  (struct GMTAPI_CTRL *GMT, int method, \
-    void **source, double parameters[])
+    void **source, double parameters[], int *ID, int *error)
 \end{verbatim}
 where \texttt{method} specifies what kind of input source is to be registered (see Table \ref{tbl:methods}),
 \texttt{source} is a pointer to the source, and \texttt{parameters} is a list of parameters needed
 when registering data already in memory (for other sources you may pass NULL for this argument).  The
-parameters are described in Table \ref{tbl:pars}.
+parameters are described in Table \ref{tbl:pars}. An unique ID is returned via the ID parameter.
 \begin{table}[h]
 \small
 \centering
@@ -336,13 +336,13 @@ For output destinations you will in similar fashion use
 
 \begin{verbatim}
 GMTAPI_Register_Export  (struct GMTAPI_CTRL *API, int method, \
-    void **destination, double parameters[])
+    void **destination, double parameters[], int *ID, int *error)
 \end{verbatim}
 As these two functions are both wrappers for the basic
 registration machinery you could alternatively call
 \begin{verbatim}
 GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, \
-    void **resource, double parameters[], int direction)
+    void **resource, double parameters[], int direction, int *ID, int *error)
 \end{verbatim}
 where \texttt{direction} is either GMT\_IN (0) or GMT\_OUT (1).
 
@@ -376,7 +376,7 @@ successive rows and columns such that each row corresponds to a particular value
 with the first row having $y$ = north.  Second, each column correspond to a particular value
 of the $x$-coordinate, with the first column having $x$ = west. Increments in $y$ and $x$ 
 between rows and columns are constant. Third, internally in \GMT\ such grids are stored as
-a 2-D float array and used in operations such as imaging, countouring, and other operations
+a 2-D float array and used in operations such as imaging, contouring, and other operations
 on grids.  In contrast, 2-D table arrays are internally stored as doubles and are used in
 operations such as plotting lines and symbols, as input for gridding procedures, and similar
 operations on line segments.  They also do not have any relationship between row/columns and $x$/$y$ coordinates;
@@ -422,7 +422,7 @@ the use of these functions and the developer may choose either one or mix and ma
 on how options are to be assembled.  The function prototype for this interface is
 
 \begin{verbatim}
-GMT_function_cmd (struct GMTAPI_CTRL *API, int argc, char *argv[])
+GMT_function_cmd (struct GMTAPI_CTRL *API, int argc, char *argv[], int *error)
 \end{verbatim}
 In addition to the API control structure pointer, we expect an array of character strings which each
 holds a single command line argument (e.g., ``\Opt{R}{\it 120:30/134:45/8S/3N}'') as well as a count
@@ -448,7 +448,7 @@ generate such arguments when needed.  The option structure is defined in Table \
 \centering
 \begin{tabular}{ll}
 \multicolumn{2}{l}{\texttt{struct GMT\_OPTION \{}} \\
-\texttt{char option;}			&       /* {\it Single character of the option (e.g., 'G' for} \Opt{G} */ \\
+\texttt{char option;}			&       /* {\it Single character of the option (e.g., ``G'' for} \Opt{G} */ \\
 \texttt{char *arg;}			&       /* {\it Pointer to string with arguments (NULL if option takes none)} */ \\
 \texttt{struct GMT\_OPTION *next;}	&       /* {\it Pointer to the next program option (NULL for last option)}  */\\ 
 \texttt{struct GMT\_OPTION *previous;}	&       /* {\it Pointer to the previous program option (NULL for first option)}  */\\ 
@@ -525,18 +525,18 @@ Once your application has finished with the input sources registered by
 \texttt{GMTAPI\_Register\_Import} you should explicitly unregister them by calling
 \texttt{GMTAPI\_Unregister\_Import}.  The full syntax is
 \begin{verbatim}
-int GMTAPI_Unregister_Import (struct GMTAPI_CTRL *API, int object_ID)
+int GMTAPI_Unregister_Import (struct GMTAPI_CTRL *API, int object_ID, int *error)
 \end{verbatim}
 where you pass the ID obtained during registration.  This frees up memory used to hold
 details about this resource.  Similarly for output resources you can use
 \begin{verbatim}
-int GMTAPI_Unregister_Export (struct GMTAPI_CTRL *API, int object_ID)
+int GMTAPI_Unregister_Export (struct GMTAPI_CTRL *API, int object_ID, int *error)
 \end{verbatim}
 to unregister output resources.  As these two functions are just wrappers for the basic
-unregistration machinery you could alternatively call
+un-registration machinery you could alternatively call
 \begin{verbatim}
 int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, \
-    int direction)
+    int direction, int *error)
 \end{verbatim}
 where \texttt{direction} is either GMT\_IN (0) or GMT\_OUT (1).
 
@@ -546,7 +546,7 @@ where \texttt{direction} is either GMT\_IN (0) or GMT\_OUT (1).
 Before your program exits it should properly terminate the \GMT\ session, which involves a call to
 
 \begin{verbatim}
-int GMTAPI_Destroy_Session (struct GMTAPI_CTRL *API)
+int GMTAPI_Destroy_Session (struct GMTAPI_CTRL *API, int *error)
 \end{verbatim}
 which simply takes the \GMT\ API control structure as its arguments.  It terminates the \GMT\ machinery
 with a call to \texttt{GMT\_end} and deallocates the memory used by the \GMT\ API book-keeping. It
@@ -570,17 +570,17 @@ items but the items themselves.
 \end{itemize}
 The list of FORTRAN prototype functions thus become
 \begin{verbatim}
-function GMTAPI_Create_Session (log)
-function GMTAPI_Destroy_Session
-function GMTAPI_Register_Import (method, source, parameters)
-function GMTAPI_Register_Export (method, receiver, parameters)
-function GMTAPI_Register_IO (method, resource, parameters, direction)
-function GMTAPI_Unregister_Import (ID)
-function GMTAPI_Unregister_Export (ID)
-function GMTAPI_Unregister_IO (ID, direction)
+function GMTAPI_Create_Session (log, error)
+function GMTAPI_Destroy_Session (error)
+function GMTAPI_Register_Import (method, source, parameters, error)
+function GMTAPI_Register_Export (method, receiver, parameters, error)
+function GMTAPI_Register_IO (method, resource, parameters, direction, error)
+function GMTAPI_Unregister_Import (ID, error)
+function GMTAPI_Unregister_Export (ID, error)
+function GMTAPI_Unregister_IO (ID, direction, error)
 function GMTAPI_Report_Error (error)
 \end{verbatim}
-where log, method, direction, and ID are 4-byte integers, parameters is a real (double precision) array,
+where log, method, direction, ID and error are 4-byte integers, parameters is a real (double precision) array,
 and source and receiver are the resource addresses.
 \chapter{References} 
 \thispagestyle{headings}
@@ -588,7 +588,7 @@ and source and receiver are the resource addresses.
 \begin{enumerate}
 
 \item Wessel, P., and W. H. F. Smith, The Generic Mapping Tools Technical Reference and Cookbook,
-{\it Version 5.0}, pp. 132, 2006.
+{\it Version 5.0}, pp. 132, 2008.
 
 \end{enumerate}
 
