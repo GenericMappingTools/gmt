@@ -1,10 +1,11 @@
-C	$Id: fprototype.f,v 1.4 2006-04-03 05:41:02 pwessel Exp $
+C	$Id: fprototype.f,v 1.5 2008-05-03 06:59:26 guru Exp $
 C	Example of using GMTAPI from Fortran
 C
 C	We will need some sort of include file to set the parameters later
 
 	program fprototype
-	parameter (GMTAPI_N_ARRAY_ARGS=8, GMTAPI_FLOAT=3, GMTAPI_ARRAY=8, GMTAPI_FDESC=4)
+	parameter (GMTAPI_N_ARRAY_ARGS=8, GMTAPI_FLOAT=3, GMTAPI_ARRAY=8,
+     +  GMTAPI_FDESC=4)
 	parameter (NROW=4, NCOL=3, NREC=6)
 	integer row, col, unit6
 	integer error
@@ -33,9 +34,10 @@ C	TEST 1: Create a 2-D array and register it with GMT
 	array_par(5) = 1
 	array_par(6) = array_par(4)
 	array_par(7) = 1
-	inarg(1) = GMTAPI_Register_Import (GMTAPI_ARRAY, matrix, array_par)
+	inarg(1) = GMTAPI_Register_Import (GMTAPI_ARRAY, matrix,
+     +	array_par)
 	inarg(2) = 0
-	write (*,30) 'fprototype.f: Registered 2D array as ID = ', inarg(1)
+	write (*,30) 'fprototype.f: Reg 2D array as ID = ', inarg(1)
    30	format (a, i2)
 	
 C	Register stdout as the output
@@ -46,7 +48,8 @@ C	Register stdout as the output
 
 C	Call the GMT function
 	
-	error = GMT_read_all_write_all_records ('no command yet', inarg, outarg)
+	error = GMT_read_all_write_all_records ('no command yet',
+     +	inarg, outarg)
 	if (error .ne. 0) then
 		call GMTAPI_Report_Error (error)
 	endif
