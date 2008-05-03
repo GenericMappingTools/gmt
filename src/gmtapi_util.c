@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.23 2008-05-02 02:21:54 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.24 2008-05-03 06:59:26 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -92,7 +92,7 @@ int GMTAPI_Create_Session (struct GMTAPI_CTRL **API, FILE *log)
 	
 	G->GMTAPI_size[GMTAPI_BYTE]   = 1;
 	G->GMTAPI_size[GMTAPI_SHORT]  = 2;
-	G->GMTAPI_size[GMTAPI_SHORT]  = 4;
+	G->GMTAPI_size[GMTAPI_INT]    = 4;
 	G->GMTAPI_size[GMTAPI_FLOAT]  = 4;
 	G->GMTAPI_size[GMTAPI_DOUBLE] = 8;
 	
