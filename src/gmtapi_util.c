@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.24 2008-05-03 06:59:26 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.25 2008-05-03 21:49:47 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -27,7 +27,6 @@
 #include "gmtapi_util.h"
 
 struct GMTAPI_CTRL *GMT_FORTRAN;	/* Global structure needed for FORTRAN-77 */
-int is_Fortran = 0;
 
 /* Private functions used by this library */
 
@@ -56,7 +55,7 @@ double GMTAPI_get_val (void *ptr, size_t i, int type);
 
 /*===>  Create a new GMT Session */
 
-int GMTAPI_Create_Session (struct GMTAPI_CTRL **API, FILE *log)
+int GMTAPI_Create_Session (struct GMTAPI_CTRL **API, FILE *log, int *error)
 {
 	/* Initializes the GMT API for a new session. */
 	
@@ -100,21 +99,20 @@ int GMTAPI_Create_Session (struct GMTAPI_CTRL **API, FILE *log)
 	
 	*API = G;
 
-	return (GMTAPI_OK);
+	return ((*error = GMTAPI_OK));
 }
 
 /* Fortran binding */
-int GMT_Create_Session_ (int *fhandle)
+void GMTAPI_Create_Session_ (int *fhandle, int *error)
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure*/
 	FILE *log = NULL;
-	is_Fortran = 1;
 	if (*fhandle) log = GMT_fdopen (*fhandle, "w");
-	return (GMTAPI_Create_Session (&GMT_FORTRAN, log));
+	(void)GMTAPI_Create_Session (&GMT_FORTRAN, log, error);
 }
 
 /*===>  Destroy a registered GMT Session */
 
-int GMTAPI_Destroy_Session (struct GMTAPI_CTRL *API)
+int GMTAPI_Destroy_Session (struct GMTAPI_CTRL *API, int *error)
 {
 	int i;
 	char *argv[1] = {"GMTAPI"};
@@ -140,19 +138,19 @@ int GMTAPI_Destroy_Session (struct GMTAPI_CTRL *API)
 	
 	GMT_end (1, argv);	/* Terminate GMT machinery */
 
-	return (GMTAPI_OK);
+	return ((*error = GMTAPI_OK));
 }
 
-int GMT_Destroy_Session_ ()
+void GMTAPI_Destroy_Session_ (int *error)
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure*/
-	return (GMTAPI_Destroy_Session (GMT_FORTRAN));
+	(void)GMTAPI_Destroy_Session (GMT_FORTRAN, error);
 }
 
 /*===>  Error message reporting */
 
 int GMTAPI_Report_Error (struct GMTAPI_CTRL *API, int error)
 {
-	fprintf (stderr, "GMT: Error returned from GMT API: %d\n",error);
+	fprintf (stderr, "GMT: Error returned from GMT API: %d\n", error);
 	GMT_exit (EXIT_FAILURE);
 }
 
@@ -163,7 +161,7 @@ void GMTAPI_Report_Error_ (int *error)
 
 /*===>  Register in input source  */
 
-int GMTAPI_Register_Import (struct GMTAPI_CTRL *API, int method, void **input, double parameters[])
+int GMTAPI_Register_Import (struct GMTAPI_CTRL *API, int method, void **input, double parameters[], int *object_ID, int *error)
 {
 	/* The main program uses this routine to pass information about input data to GMT.
 	 * The method argument specifies what we are trying to pass:
@@ -208,17 +206,17 @@ int GMTAPI_Register_Import (struct GMTAPI_CTRL *API, int method, void **input, d
 	 * a GMTAPI_DATA_OBJECT structure which is assigned to the list in GMTAPI_CTRL.
 	 */
 	
-	return (GMTAPI_Register_IO (API, method, input, parameters, GMT_IN));
+	return (GMTAPI_Register_IO (API, method, input, parameters, GMT_IN, object_ID, error));
 }
 
-int GMTAPI_Register_Import_ (int *method, void *input, double parameters[])
+void GMTAPI_Register_Import_ (int *method, void *input, double parameters[], int *object_ID, int *error)
 {	/* Fortran version */
-	return (GMTAPI_Register_Import (GMT_FORTRAN, *method, &input, parameters));
+	(void) GMTAPI_Register_Import (GMT_FORTRAN, *method, &input, parameters, object_ID, error);
 }
 
 /*===>  Register in output source  */
 
-int GMTAPI_Register_Export (struct GMTAPI_CTRL *API, int method, void **output, double parameters[])
+int GMTAPI_Register_Export (struct GMTAPI_CTRL *API, int method, void **output, double parameters[], int *object_ID, int *error)
 {
 	/* The main program uses this routine to pass information about output data from GMT.
 	 * The method argument specifies what we are trying to receive:
@@ -263,41 +261,41 @@ int GMTAPI_Register_Export (struct GMTAPI_CTRL *API, int method, void **output, 
 	 * a GMTAPI_DATA_OBJECT structure which is assigned to the list in GMTAPI_CTRL.
 	 */
 	 
-	return (GMTAPI_Register_IO (API, method, output, parameters, GMT_OUT));
+	return (GMTAPI_Register_IO (API, method, output, parameters, GMT_OUT, object_ID, error));
 }
 
-int GMTAPI_Register_Export_ (int *method, void *output, double parameters[])
+void GMTAPI_Register_Export_ (int *method, void *output, double parameters[], int *object_ID, int *error)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure*/
-	return (GMTAPI_Register_Export (GMT_FORTRAN, *method, &output, parameters));
+	(void) GMTAPI_Register_Export (GMT_FORTRAN, *method, &output, parameters, object_ID, error);
 }
 
-int GMTAPI_Unregister_Export (struct GMTAPI_CTRL *API, int object_ID)
+int GMTAPI_Unregister_Export (struct GMTAPI_CTRL *API, int object_ID, int *error)
 {
 	/* Removes a registerd export object from the list of objects.
 	 * object_ID is the registered ID of the object to be removed */
 	 
-	return (GMTAPI_Unregister_IO (API, object_ID, GMT_OUT));
+	return (GMTAPI_Unregister_IO (API, object_ID, GMT_OUT, error));
 }
 
-int GMTAPI_Unregister_Export_ (int *object_ID)
+void GMTAPI_Unregister_Export_ (int *object_ID, int *error)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure*/
-	return (GMTAPI_Unregister_Export (GMT_FORTRAN, *object_ID));
+	(void) GMTAPI_Unregister_Export (GMT_FORTRAN, *object_ID, error);
 }
 
-int GMTAPI_Unregister_Import (struct GMTAPI_CTRL *API, int object_ID)
+int GMTAPI_Unregister_Import (struct GMTAPI_CTRL *API, int object_ID, int *error)
 {
 	/* Removes a registerd import object from the list of objects.
 	 * object_ID is the registered ID of the object to be removed */
 	 
-	return (GMTAPI_Unregister_IO (API, object_ID, GMT_IN));
+	return (GMTAPI_Unregister_IO (API, object_ID, GMT_IN, error));
 }
 
-int GMTAPI_Unregister_Import_ (int *object_ID)
+void GMTAPI_Unregister_Import_ (int *object_ID, int *error)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure*/
-	return (GMTAPI_Unregister_Import (GMT_FORTRAN, *object_ID));
+	(void) GMTAPI_Unregister_Import (GMT_FORTRAN, *object_ID, error);
 }
 
-int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, double parameters[], int direction)
+int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, double parameters[], int direction, int *object_ID, int *error)
 {
 	/* Adds a new data object to the list of registered objects and returns a unique object ID.
 	 * Arguments are as listed for GMTAPI_Register_Im|Export ()
@@ -305,7 +303,7 @@ int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, doubl
 	static char *name[2] = {"Input", "Output"};
 	struct GMTAPI_DATA_OBJECT *S;
 
-	if (API == NULL) return (GMTAPI_NOT_A_SESSION);
+	if (API == NULL) return ((*error = GMTAPI_NOT_A_SESSION));
 
 	S = (struct GMTAPI_DATA_OBJECT *) GMT_memory (VNULL, 1, sizeof (struct GMTAPI_DATA_OBJECT), "GMTAPI_Register_IO");
 
@@ -331,7 +329,7 @@ int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, doubl
 			S->ptr = input;
 			if (!parameters) {
 				fprintf (stderr, "GMT: Error in GMT_Register_%s: Parameters are NULL\n", name[direction]);
-				return (GMTAPI_NO_PARAMETERS);
+				return ((*error = GMTAPI_NO_PARAMETERS));
 			}
 			memcpy ((void *)S->arg, (void *)parameters, GMTAPI_N_ARRAY_ARGS * sizeof (double));
 			S->method = GMT_IS_ARRAY;
@@ -346,7 +344,7 @@ int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, doubl
 			S->ptr = input;
 			if (!parameters) {
 				fprintf (stderr, "GMT: Error in GMT_Register_%s: Parameters are NULL\n", name[direction]);
-				return (GMTAPI_NO_PARAMETERS);
+				return ((*error = GMTAPI_NO_PARAMETERS));
 			}
 			memcpy ((void *)S->arg, (void *)parameters, GMTAPI_N_GRID_ARGS * sizeof (double));
 			S->method = GMT_IS_GRID;
@@ -359,35 +357,36 @@ int GMTAPI_Register_IO (struct GMTAPI_CTRL *API, int method, void **input, doubl
 
 		default:
 			fprintf (stderr, "GMT: Error in GMT_Register_%s: Unrecognized method %d\n", name[direction], method);
-			return (GMTAPI_NOT_A_VALID_METHOD);
+			return ((*error = GMTAPI_NOT_A_VALID_METHOD));
 			break;
 	}
 
-	return (GMTAPI_Add_Data_Object (API, S));
+	*object_ID = GMTAPI_Add_Data_Object (API, S);
+	return ((*error = GMTAPI_OK));
 }
 
-int GMTAPI_Register_IO_ (int *method, void *input, double parameters[], int *direction)
+void GMTAPI_Register_IO_ (int *method, void *input, double parameters[], int *direction, int *object_ID, int *error)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure*/
-	return (GMTAPI_Register_IO (GMT_FORTRAN, *method, &input, parameters, *direction));
+	(void) GMTAPI_Register_IO (GMT_FORTRAN, *method, &input, parameters, *direction, object_ID, error);
 }
 
-int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, int direction)
+int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, int direction, int *error)
 {	/* Remove object from internal list of objects */
 	int i, k;
 	
-	if (API == NULL) return (GMTAPI_NOT_A_SESSION);	/* GMT_New_Session has not been called */
+	if (API == NULL) return ((*error = GMTAPI_NOT_A_SESSION));	/* GMT_New_Session has not been called */
 	
 	 /* Search for the object in the list */
 	for (i = 0, k = -1; k == -1 && i < API->n_data_alloc; i++) {
 		 if (API->data[i] && API->data[i]->ID == object_ID) k = i;
 	}
-	if (k == -1) return (GMTAPI_NOT_A_VALID_ID);	/* No such object found */
+	if (k == -1) return ((*error = GMTAPI_NOT_A_VALID_ID));	/* No such object found */
 	
 	/* OK, we found the object; is it the right kind (input or output)? */
 	if (API->data[k]->direction != direction) {
 		/* Trying to free up an input but calling it output or vice versa */
-		if (direction == GMT_IN) return (GMTAPI_NOT_INPUT_OBJECT);
-		if (direction == GMT_OUT) return (GMTAPI_NOT_OUTPUT_OBJECT);
+		if (direction == GMT_IN) return ((*error = GMTAPI_NOT_INPUT_OBJECT));
+		if (direction == GMT_OUT) return ((*error = GMTAPI_NOT_OUTPUT_OBJECT));
 	}
 	
 	/* OK, now it is safe to remove the object */
@@ -396,12 +395,12 @@ int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, int direction)
 	API->data[k] = NULL;			/* Flag as unused object index */
 	API->n_data--;				/* Tally of how many data sets are left */
 	
-	return (GMTAPI_OK);
+	return ((*error = GMTAPI_OK));
 }
 
-int GMTAPI_Unregister_IO_ (int *object_ID, int *direction)
+void GMTAPI_Unregister_IO_ (int *object_ID, int *direction, int *error)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure*/
-	return (GMTAPI_Unregister_IO (GMT_FORTRAN, *object_ID, *direction));
+	(void) GMTAPI_Unregister_IO (GMT_FORTRAN, *object_ID, *direction, error);
 }
 
 /*========================================================================================================

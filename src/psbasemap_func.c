@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.10 2008-01-23 03:22:49 guru Exp $
+ *	$Id: psbasemap_func.c,v 1.11 2008-05-03 21:49:47 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,7 +26,7 @@
 
 #include "psbasemap.h"
 
-int GMT_psbasemap_cmd (struct GMTAPI_CTRL *API, int n_args, char *args[])
+int GMT_psbasemap_cmd (struct GMTAPI_CTRL *API, int n_args, char *args[], int *error)
 {
 	/* This is a front end that provides a text-command interface to psbasemap.  It is used
 	 * by the FORTRAN interface and the stand-alone application tools to prepare for the
@@ -37,41 +37,40 @@ int GMT_psbasemap_cmd (struct GMTAPI_CTRL *API, int n_args, char *args[])
 	 * args:	Array of text arguments to the program
 	 */
 
-	int error;
 	struct GMT_OPTION *options = NULL;
 	
 	/* Parse the command line text arguments and receive linked list of options */
 	
-	if ((error = GMTAPI_Create_Options (n_args, args, &options))) return (error);
+	if ((*error = GMTAPI_Create_Options (n_args, args, &options))) return (*error);
 	
 	/* Call the GMT program via the API */
 	
-	error = GMT_psbasemap (API, options);
-	return (error);
+	*error = GMT_psbasemap (API, options, error);
+	return (*error);
 }
 
-int GMT_psbasemap (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
+int GMT_psbasemap (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, int *error)
 {
 	/* API:		Pointer to the GMT API control structure for the current session */
 	/* options:	Linked list of options to use with this program */
 	
-	if (API == NULL) return (GMTAPI_NOT_A_SESSION);
+	if (API == NULL) return ((*error = GMTAPI_NOT_A_SESSION));
 	
 	if (options == NULL) {	/* Give full program usage */
 		psbasemap_usage (API, FALSE);
-		return (GMTAPI_OK);
+		return ((*error = GMTAPI_OK));
 	}
 
 	if (options->option == '\0') {	/* Give program synopsis only */
 		psbasemap_usage (API, TRUE);
-		return (GMTAPI_OK);
+		return ((*error = GMTAPI_OK));
 	}
 	
 	/* Run the program function */
 	
 	if (psbasemap_function (API, options)) return (GMTAPI_RUNTIME_ERROR);
 	
-	return (GMTAPI_OK);	/* No worries! */
+	return ((*error = GMTAPI_OK));	/* No worries! */
 }
 
 void psbasemap_usage (struct GMTAPI_CTRL *API, BOOLEAN synopsis_only)
