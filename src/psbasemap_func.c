@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.11 2008-05-03 21:49:47 guru Exp $
+ *	$Id: psbasemap_func.c,v 1.12 2008-05-03 22:57:36 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -170,29 +170,32 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 			/* Supplemental options */
 
 			case 'E':
-				sscanf (&opt->arg[2], "%lf/%lf", &z_project.view_azimuth, &z_project.view_elevation);
+				Ctrl->E.active = TRUE;
+				sscanf (&opt->arg[2], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation);
 				break;
 
 			case 'G':
-				if (GMT_getfill (&opt->arg[2], &CTRL->fill)) {
+				Ctrl->G.active = TRUE;
+				if (GMT_getfill (&opt->arg[2], &Ctrl->G.fill)) {
 					GMT_fill_syntax ('G', " ");
-					n_errors++;
+					error++;
 				}
-				CTRL->paint = TRUE;
 				break;
 
 			case 'L':
-				n_errors += GMT_getscale (&opt->arg[2], &CTRL->ms);
+				Ctrl->L.active = TRUE;
+				error += GMT_getscale (&opt->arg[2], &Ctrl->L.item);
 				break;
 
 			case 'T':
-				n_errors += GMT_getrose (&opt->arg[2], &CTRL->mr);
+				Ctrl->T.active = TRUE;
+				error += GMT_getrose (&opt->arg[2], &Ctrl->T.item);
 				break;
 
 			case 'Z':
 				if (opt->arg) {
-					CTRL->new_z_level = atof (&opt->arg[2]);
-					CTRL->set_z = TRUE;
+					Ctrl->Z.level = atof (&opt->arg[2]);
+					Ctrl->Z.active = TRUE;
 				}
 				break;
 
@@ -217,6 +220,8 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -E option:  Enter elevation in 0-90 range\n", GMT_program);
 		n_errors++;
 	}
+	z_project.view_azimuth = Ctrl->E.azimuth;
+	z_project.view_elevation = Ctrl->E.elevation;
 
 	return (n_errors);
 }
@@ -243,22 +248,22 @@ int psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 
 	if (project_info.three_D) ps_transrotate (-z_project.xmin, -z_project.ymin, 0.0);
 
-	if (CTRL.paint) {
+	if (Ctrl->G.active) {
 		double *x, *y;
 		int np, donut;
 		np = GMT_map_clip_path (&x, &y, &donut);
-		GMT_fill (x, y, (1 + donut) * np, &CTRL.fill, FALSE);
+		GMT_fill (x, y, (1 + donut) * np, &Ctrl->G.fill, FALSE);
 		GMT_free ((void *)x);
 		GMT_free ((void *)y);
 	}
 
-	if (CTRL.set_z) project_info.z_level = CTRL.new_z_level;
+	if (Ctrl->Z.active) project_info.z_level = Ctrl->Z.level;
 
 	GMT_map_basemap ();
 
-	if (CTRL.ms.plot) GMT_draw_map_scale (&CTRL.ms);
+	if (Ctrl->L.active) GMT_draw_map_scale (&Ctrl->L.item);
 
-	if (CTRL.mr.plot) GMT_draw_map_rose (&CTRL.mr);
+	if (Ctrl->T.active) GMT_draw_map_rose (&Ctrl->T.item);
 
 	if (project_info.three_D) ps_rotatetrans (z_project.xmin, z_project.ymin, 0.0);
 	
