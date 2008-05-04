@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.20 2008-05-04 01:48:00 guru Exp $
+ *	$Id: gmtapi.h,v 1.21 2008-05-04 02:32:54 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -33,18 +33,17 @@
 
 #include "gmt.h"
 #include "f2c.h"
+
 /*=====================================================================================
  *	GMT API CONSTANTS DEFINITIONS
- *=====================================================================================
- */
+ *===================================================================================*/
 
 #include "gmtapi_errno.h"		/* All error return values are defined here */
 #include "gmtapi_define.h"		/* All constant values are defined here */
 
 /*=====================================================================================
  *	GMT API STRUCTURE DEFINITIONS
- *=====================================================================================
- */
+ *===================================================================================*/
 
 struct GMTAPI_CTRL {
 	/* Master controller which holds all GMT API related information at run-time.
@@ -96,6 +95,14 @@ EXTERN_MSC int GMTAPI_Report_Error      (struct GMTAPI_CTRL *GMT, int error);
 EXTERN_MSC int GMT_read_all_write_all_records (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg, int *error);
 EXTERN_MSC int GMT_read_one_write_one_record  (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg, int *error);
 EXTERN_MSC int GMT_read_grid_write_grid (struct GMTAPI_CTRL *GMT, char *command, int inarg[], int outarg, int *error);
+EXTERN_MSC int GMT_prog (struct GMTAPI_CTRL *API, char *name, struct GMT_OPTION *options, int *error);
+EXTERN_MSC int GMT_prog_cmd (struct GMTAPI_CTRL *API, char *name, int n_args, char *args[], int *error);
+
+/*=====================================================================================
+ *	GMT API PROGRAM DEFINITIONS
+ *===================================================================================*/
+
+#include "gmtapi_progs.h"		/* All prototypes for GMT programs */
 
 #include "gmtapi_parse.h"
 
