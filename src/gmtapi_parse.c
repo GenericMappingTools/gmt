@@ -221,81 +221,11 @@ int GMTAPI_Delete_Option (struct GMT_OPTION *current)
 
 #include "gmtapi.h"	/* The only include file needed */
 
-int main (int argc, char *argv[]) {	/* This is compiled and linked to give us the usual program executable */
+int main (int argc, char *argv[])	: Compiled and linked to give us the usual program executable */
+int GMT_program_cmd (struct GMTAPI_CTRL *API, int n_args, char *args[]) : Front end for text-command interface to program
+int GMT_program (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) : Front end for option interface to program
 
-	int error = 0;				/* Stores the error code from GMT API, if any */
-	struct GMTAPI_CTRL *GMT_ctrl = NULL;	/* GMT API control structure */
-	
-	if ((error = GMTAPI_Create_Session (&GMT_ctrl, 0))) {	
-		/* Initializing new session failed */
-		GMTAPI_Report_Error (GMT_ctrl, error);
-		exit (EXIT_FAILURE);
-	}
-	
-	if ((error = GMT_program_cmd (GMT_ctrl, argc, argv))) {
-		/* An run-error occured in the program */
-		GMTAPI_Report_Error (GMT_ctrl, error);
-		exit (EXIT_FAILURE);
-	}
-	
-	if ((error = GMTAPI_Destroy_Session (GMT_ctrl))) {
-		/* Destroying the session failed */
-		GMTAPI_Report_Error (GMT_ctrl, error);
-		exit (EXIT_FAILURE);
-	}
-	
-	exit (EXIT_SUCCESS);	/* No worries! */
-}
-	
-int GMT_program_cmd (struct GMTAPI_CTRL *API, int n_args, char *args[])
-{
-	/* This is a front end that provides a text-command interface the program.  It is used
-	 * by the FORTRAN interface and the stand-alone application tools to prepare for the
-	 * execution via the GMT API version of program.
-	 * Arguments:
-	 * API:		Pointer to the GMT API control structure for the current session
-	 * n_args:	Number of text arguments in args
-	 * args:	Array of text arguments to the program
-	 */
-
-	struct GMT_OPTION *options = NULL
-	
-	/* Parse the command line text arguments and receive linked list of options */
-	
-	if ((error = GMTAPI_Create_Options (n_args, args, options))) return (error);
-	
-	/* Call the GMT program via the API */
-	
-	error = GMT_program (API, options);
-	
-	return (error);
-}
-
-int GMT_program (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
-{
-	/* API:		Pointer to the GMT API control structure for the current session */
-	/* options:	Linked list of options to use with this program */
-	
-	if (API == NULL) return (GMTAPI_NOT_A_SESSION);
-	
-	if (options == NULL) {	/* Give full program usage */
-		program_usage (FALSE);
-		return (GMTAPI_EXIT);
-	}
-
-	if (options->option = '/0') {	/* Give program synopsis only */
-		program_usage (TRUE);
-		return (GMTAPI_EXIT);
-	}
-	
-	/* Run the program function */
-	
-	if (program_function (API, CTRL)) return (GMTAPI_RUNTIME_ERROR);
-	
-	return (GMTAPI_OK);	/* No worries! */
-}
-
-/* These three functions must be hand-crafted from GMT 4 programs */
+/* These three functions must be hand-crafted for each GMT programs */
 
 int program_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *options)
 {

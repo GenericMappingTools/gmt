@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.12 2008-05-03 22:57:36 guru Exp $
+ *	$Id: psbasemap_func.c,v 1.13 2008-05-04 00:39:22 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -25,53 +25,6 @@
  */
 
 #include "psbasemap.h"
-
-int GMT_psbasemap_cmd (struct GMTAPI_CTRL *API, int n_args, char *args[], int *error)
-{
-	/* This is a front end that provides a text-command interface to psbasemap.  It is used
-	 * by the FORTRAN interface and the stand-alone application tools to prepare for the
-	 * execution via the GMT API version of psbasemap.
-	 * Arguments:
-	 * API:		Pointer to the GMT API control structure for the current session
-	 * n_args:	Number of text arguments in args
-	 * args:	Array of text arguments to the program
-	 */
-
-	struct GMT_OPTION *options = NULL;
-	
-	/* Parse the command line text arguments and receive linked list of options */
-	
-	if ((*error = GMTAPI_Create_Options (n_args, args, &options))) return (*error);
-	
-	/* Call the GMT program via the API */
-	
-	*error = GMT_psbasemap (API, options, error);
-	return (*error);
-}
-
-int GMT_psbasemap (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, int *error)
-{
-	/* API:		Pointer to the GMT API control structure for the current session */
-	/* options:	Linked list of options to use with this program */
-	
-	if (API == NULL) return ((*error = GMTAPI_NOT_A_SESSION));
-	
-	if (options == NULL) {	/* Give full program usage */
-		psbasemap_usage (API, FALSE);
-		return ((*error = GMTAPI_OK));
-	}
-
-	if (options->option == '\0') {	/* Give program synopsis only */
-		psbasemap_usage (API, TRUE);
-		return ((*error = GMTAPI_OK));
-	}
-	
-	/* Run the program function */
-	
-	if (psbasemap_function (API, options)) return (GMTAPI_RUNTIME_ERROR);
-	
-	return ((*error = GMTAPI_OK));	/* No worries! */
-}
 
 void psbasemap_usage (struct GMTAPI_CTRL *API, BOOLEAN synopsis_only)
 {
@@ -119,7 +72,7 @@ void psbasemap_usage (struct GMTAPI_CTRL *API, BOOLEAN synopsis_only)
 	GMT_explain_option ('.');
 }
 
-int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struct GMT_OPTION *options)
+int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL **CTRL_ptr, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psbasemap and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -130,10 +83,11 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 	int n_errors = 0;
 	char *this;
 	struct GMT_OPTION *opt;
+	struct PSBASEMAP_CTRL *CTRL;
 	
-	memset ((void *)CTRL, 0, sizeof (struct PSBASEMAP_CTRL));	/* Zero the control */
+	CTRL = (struct PSBASEMAP_CTRL *) GMT_memory (VNULL, 1, sizeof (struct PSBASEMAP_CTRL), "psbasemap_parse");	/* ALlocate the control */
 	
-	GMT_init_fill (&CTRL->fill, -1, -1, -1);	/* Then set non-zero default values */
+	GMT_init_fill (&CTRL->G.fill, -1, -1, -1);	/* Then set non-zero default values */
 
 	for (opt = options; opt; opt = opt->next) {
 	
@@ -170,32 +124,32 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 			/* Supplemental options */
 
 			case 'E':
-				Ctrl->E.active = TRUE;
-				sscanf (&opt->arg[2], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation);
+				CTRL->E.active = TRUE;
+				sscanf (&opt->arg[2], "%lf/%lf", &CTRL->E.azimuth, &CTRL->E.elevation);
 				break;
 
 			case 'G':
-				Ctrl->G.active = TRUE;
-				if (GMT_getfill (&opt->arg[2], &Ctrl->G.fill)) {
+				CTRL->G.active = TRUE;
+				if (GMT_getfill (&opt->arg[2], &CTRL->G.fill)) {
 					GMT_fill_syntax ('G', " ");
-					error++;
+					n_errors++;
 				}
 				break;
 
 			case 'L':
-				Ctrl->L.active = TRUE;
-				error += GMT_getscale (&opt->arg[2], &Ctrl->L.item);
+				CTRL->L.active = TRUE;
+				n_errors += GMT_getscale (&opt->arg[2], &CTRL->L.item);
 				break;
 
 			case 'T':
-				Ctrl->T.active = TRUE;
-				error += GMT_getrose (&opt->arg[2], &Ctrl->T.item);
+				CTRL->T.active = TRUE;
+				n_errors += GMT_getrose (&opt->arg[2], &CTRL->T.item);
 				break;
 
 			case 'Z':
 				if (opt->arg) {
-					Ctrl->Z.level = atof (&opt->arg[2]);
-					Ctrl->Z.active = TRUE;
+					CTRL->Z.level = atof (&opt->arg[2]);
+					CTRL->Z.active = TRUE;
 				}
 				break;
 
@@ -212,7 +166,7 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Must specify -R option\n", GMT_program);
 		n_errors++;
 	}
-	if (!(frame_info.plot || CTRL->ms.plot || CTRL->mr.plot || CTRL->paint)) {
+	if (!(frame_info.plot || CTRL->L.active || CTRL->T.active || CTRL->G.active)) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Must specify at least one of -B, -G, -L, -T\n", GMT_program);
 		n_errors++;
 	}
@@ -220,15 +174,17 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL *CTRL, struc
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -E option:  Enter elevation in 0-90 range\n", GMT_program);
 		n_errors++;
 	}
-	z_project.view_azimuth = Ctrl->E.azimuth;
-	z_project.view_elevation = Ctrl->E.elevation;
+	z_project.view_azimuth = CTRL->E.azimuth;
+	z_project.view_elevation = CTRL->E.elevation;
 
+	*CTRL_ptr = CTRL;
+	
 	return (n_errors);
 }
 
 int psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 {
-	struct PSBASEMAP_CTRL CTRL;	/* Control structure specific to program */
+	struct PSBASEMAP_CTRL *CTRL;	/* Control structure specific to program */
 	int argc;
 	char **argv;
 	
@@ -242,34 +198,36 @@ int psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	
 	if (gmtdefs.verbose) fprintf (stderr, "psbasemap: Constructing basemap\n");
 
-	GMT_err_fail (GMT_map_setup (CTRL.w, CTRL.e, CTRL.s, CTRL.n), "");
+	GMT_err_fail (GMT_map_setup (CTRL->w, CTRL->e, CTRL->s, CTRL->n), "");
 
 	GMT_plotinit (argc, argv);
 
 	if (project_info.three_D) ps_transrotate (-z_project.xmin, -z_project.ymin, 0.0);
 
-	if (Ctrl->G.active) {
+	if (CTRL->G.active) {
 		double *x, *y;
 		int np, donut;
 		np = GMT_map_clip_path (&x, &y, &donut);
-		GMT_fill (x, y, (1 + donut) * np, &Ctrl->G.fill, FALSE);
+		GMT_fill (x, y, (1 + donut) * np, &CTRL->G.fill, FALSE);
 		GMT_free ((void *)x);
 		GMT_free ((void *)y);
 	}
 
-	if (Ctrl->Z.active) project_info.z_level = Ctrl->Z.level;
+	if (CTRL->Z.active) project_info.z_level = CTRL->Z.level;
 
 	GMT_map_basemap ();
 
-	if (Ctrl->L.active) GMT_draw_map_scale (&Ctrl->L.item);
+	if (CTRL->L.active) GMT_draw_map_scale (&CTRL->L.item);
 
-	if (Ctrl->T.active) GMT_draw_map_rose (&Ctrl->T.item);
+	if (CTRL->T.active) GMT_draw_map_rose (&CTRL->T.item);
 
 	if (project_info.three_D) ps_rotatetrans (z_project.xmin, z_project.ymin, 0.0);
 	
 	GMT_plotend ();
 
 	GMTAPI_Destroy_Args (argc, argv);
+
+	GMT_free ((void *)CTRL);
 
 	return (GMTAPI_OK);
 }
