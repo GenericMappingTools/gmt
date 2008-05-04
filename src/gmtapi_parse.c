@@ -117,7 +117,7 @@ int GMTAPI_Make_Option (char option, char *arg, struct GMT_OPTION **ptr)
 	struct GMT_OPTION *new;
 
 	/* Here we have a program-specific option or a file name.  In either case we create a new option structure */
-	/* NOTE: FOr now we are keeping the leading -<opt> in arg since GMT expects it */	
+	/* NOTE: For now we are keeping the leading -<opt> in arg since GMT expects it */	
 	new = (struct GMT_OPTION *) GMT_memory (VNULL, 1, sizeof (struct GMT_OPTION), "GMTAPI_Create_Options");
 	new->option = option;		/* Assign which option character was used (* for file) */
 #ifdef WNEN_READY
@@ -176,7 +176,7 @@ int GMTAPI_Find_Option (char option, struct GMT_OPTION *head, struct GMT_OPTION 
 
 int GMTAPI_Update_Option (char option, char *arg, struct GMT_OPTION *head)
 {
-	/* If the option exists we will update the arguemnts, otherwise
+	/* If the option exists we will update the arguments, otherwise
 	 * we create a new option and append it to the list */
 
 	struct GMT_OPTION *old = NULL, *new;
