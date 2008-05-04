@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.13 2008-05-04 00:39:22 guru Exp $
+ *	$Id: psbasemap_func.c,v 1.14 2008-05-04 02:32:54 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,7 +26,7 @@
 
 #include "psbasemap.h"
 
-void psbasemap_usage (struct GMTAPI_CTRL *API, BOOLEAN synopsis_only)
+void GMT_psbasemap_usage (struct GMTAPI_CTRL *API, BOOLEAN synopsis_only)
 {
 	/* This displays the psbasemap synopsis and optionally full usage information */
 
@@ -72,7 +72,7 @@ void psbasemap_usage (struct GMTAPI_CTRL *API, BOOLEAN synopsis_only)
 	GMT_explain_option ('.');
 }
 
-int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL **CTRL_ptr, struct GMT_OPTION *options)
+int GMT_psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL **CTRL_ptr, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psbasemap and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -85,7 +85,7 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL **CTRL_ptr, 
 	struct GMT_OPTION *opt;
 	struct PSBASEMAP_CTRL *CTRL;
 	
-	CTRL = (struct PSBASEMAP_CTRL *) GMT_memory (VNULL, 1, sizeof (struct PSBASEMAP_CTRL), "psbasemap_parse");	/* ALlocate the control */
+	CTRL = (struct PSBASEMAP_CTRL *) GMT_memory (VNULL, 1, sizeof (struct PSBASEMAP_CTRL), "GMT_psbasemap_parse");	/* ALlocate the control */
 	
 	GMT_init_fill (&CTRL->G.fill, -1, -1, -1);	/* Then set non-zero default values */
 
@@ -163,15 +163,15 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL **CTRL_ptr, 
 	}
 
 	if (!project_info.region_supplied) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Must specify -R option\n", GMT_program);
+		fprintf (stderr, "psbasemap: GMT SYNTAX ERROR:  Must specify -R option\n");
 		n_errors++;
 	}
 	if (!(frame_info.plot || CTRL->L.active || CTRL->T.active || CTRL->G.active)) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Must specify at least one of -B, -G, -L, -T\n", GMT_program);
+		fprintf (stderr, "psbasemap: GMT SYNTAX ERROR:  Must specify at least one of -B, -G, -L, -T\n");
 		n_errors++;
 	}
 	if (z_project.view_elevation <= 0.0 || z_project.view_elevation > 90.0) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR -E option:  Enter elevation in 0-90 range\n", GMT_program);
+		fprintf (stderr, "psbasemap: GMT SYNTAX ERROR -E option:  Enter elevation in 0-90 range\n");
 		n_errors++;
 	}
 	z_project.view_azimuth = CTRL->E.azimuth;
@@ -182,7 +182,7 @@ int psbasemap_parse (struct GMTAPI_CTRL *API, struct PSBASEMAP_CTRL **CTRL_ptr, 
 	return (n_errors);
 }
 
-int psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
+int GMT_psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 {
 	struct PSBASEMAP_CTRL *CTRL;	/* Control structure specific to program */
 	int argc;
@@ -192,7 +192,7 @@ int psbasemap_function (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	
 	/* Parse the program-specific arguments */
 	
-	if (psbasemap_parse (API, &CTRL, head)) return (GMTAPI_PARSE_ERROR);
+	if (GMT_psbasemap_parse (API, &CTRL, head)) return (GMTAPI_PARSE_ERROR);
 	
 	GMTAPI_Create_Args (&argc, &argv, head);	/* For now, needed by echo_command and history */
 	
