@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.25 2008-05-03 21:49:47 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.26 2008-05-04 02:54:21 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,7 +51,6 @@ double GMTAPI_get_val (void *ptr, size_t i, int type);
  *          HERE ARE THE PUBLIC GMT API UTILITY FUNCTIONS, WITH FORTRAN BINDINGS
  *========================================================================================================
  */
-
 
 /*===>  Create a new GMT Session */
 
