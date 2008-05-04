@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.27 2008-05-02 19:41:04 guru Exp $
+#  $Id: Makefile,v 1.28 2008-05-04 19:08:08 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -174,10 +174,12 @@ update-ftp-live:
 		echo "rm -f {GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
-	for p in basic pdf highfull; do \
+	for p in basic pdf; do \
 		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
 		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
 	done
+	echo "rm -f windows/GSHHS_highfull_install.exe" >> gmt_server_job.sh;
+	echo "(cd windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)" >> gmt_server_job.sh;
 	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
 	ssh $(FTPSERVER) sh $(LIVEFTPDIR)/gmt_server_job.sh
@@ -203,10 +205,12 @@ update-ftp-test:
 		echo "rm -f {GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
-	for p in basic pdf highfull; do \
+	for p in basic pdf; do \
 		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
 		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
 	done
+	echo "rm -f windows/GSHHS_highfull_install.exe" >> gmt_server_job.sh;
+	echo "(cd windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)" >> gmt_server_job.sh;
 	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
 	ssh $(FTPSERVER2) sh $(LIVEFTPDIR2)/gmt_server_job.sh
@@ -231,10 +235,12 @@ update-ftp-local:
 		\rm -f $(TESTFTPDIR)/{GMT,GSHHS}_$$p.tar.bz2; \
 		(cd $(TESTFTPDIR); $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
 	done
-	for p in basic pdf highfull; do \
+	for p in basic pdf; do \
 		rm -f windows/GMT_$$p_install.exe; \
 		(cd $(TESTFTPDIR)/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe); \
 	done
+	rm -f windows/GSHHS_highfull_install.exe
+	(cd $(TESTFTPDIR)windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)
 
 clean-ftp:
 	rm -f ../ftp/G*.bz2
