@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.18 2008-05-03 21:49:47 guru Exp $
+ *	$Id: gmtapi.h,v 1.19 2008-05-04 00:39:22 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -65,6 +65,7 @@
 #define GMTAPI_NO_PARAMETERS		-19
 #define GMTAPI_NOT_A_VALID_METHOD	-20
 #define GMTAPI_PARSE_ERROR		-21
+#define GMTAPI_PROG_NOT_FOUND		-22
 
 #define GMTAPI_RUNTIME_ERROR		-99
 
