@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.131 2008-04-30 19:26:52 guru Exp $
+#	$Id: install_gmt.sh,v 1.132 2008-05-05 00:02:09 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -87,7 +87,7 @@ cat << EOF > gmt_install.ftp_bzsizes
 0.8
 2.8
 11.0
-3.1
+3.6
 0.4
 EOF
 cat << EOF >&2
