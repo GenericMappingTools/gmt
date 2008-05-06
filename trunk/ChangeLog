@@ -1,7 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.280 2008-05-06 19:16:01 guru Exp $
+	$Id: ChangeLog,v 1.281 2008-05-06 20:20:01 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-05-06	pwessel
+	* gmt_mgg2_header.c:	Passed arguments to fread in the wrong order, thus
+				preventing GRD98 grids from being read.
 	* gmt_init.c:		Now, median size Custom_WxH can use W and H in inch or ch
 				by appending i or c to each dimension.
 
