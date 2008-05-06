@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.279 2008-05-06 04:03:12 guru Exp $
+	$Id: ChangeLog,v 1.280 2008-05-06 19:16:01 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-05-06	pwessel
+	* gmt_init.c:		Now, median size Custom_WxH can use W and H in inch or ch
+				by appending i or c to each dimension.
+
 2008-05-05	pwessel
 	* psxyz.c:		Memory problem: Since realloc does not initialize we
 				must explicitly set any pointers in the structure to NULL

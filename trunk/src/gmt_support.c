@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.364 2008-04-15 15:44:44 remko Exp $
+ *	$Id: gmt_support.c,v 1.365 2008-05-06 19:16:01 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6191,7 +6191,7 @@ void GMT_list_custom_symbols (void)
 	/* Opens up GMT_custom_symbols.lis and dislays the list of custom symbols */
 
 	FILE *fp;
-	char list[GMT_LONG_TEXT], buffer[GMT_LONG_TEXT];
+	char list[GMT_LONG_TEXT], buffer[BUFSIZ];
 
 	/* Open the list in $GMT_SHAREDIR */
 

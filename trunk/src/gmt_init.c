@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.345 2008-04-29 19:57:06 guru Exp $
+ *	$Id: gmt_init.c,v 1.346 2008-05-06 19:16:01 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1479,7 +1479,7 @@ void GMT_backwards_compatibility () {
 
 int GMT_setparameter (char *keyword, char *value)
 {
-	int i, ival, case_val, rgb[3];
+	int i, ival, case_val, pos, rgb[3];
 	BOOLEAN manual, eps, error = FALSE;
 	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], lower_value[BUFSIZ];
 	double dval;
@@ -1900,8 +1900,12 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.paper_width[0] = GMT_media[i].width;
 				gmtdefs.paper_width[1] = GMT_media[i].height;
 			}
-			else if (!strncmp (lower_value, "custom_", (size_t)7)) {	/* A custom paper size in W x H points */
-				sscanf (&lower_value[7], "%dx%d", &gmtdefs.paper_width[0], &gmtdefs.paper_width[1]);
+			else if (!strncmp (lower_value, "custom_", (size_t)7)) {	/* A custom paper size in W x H points (or in inch/c if units are appended) */
+				pos = 0;
+				GMT_strtok (&lower_value[7], "x", &pos, txt_a);	/* Returns width and update pos */
+				gmtdefs.paper_width[0] = (isdigit(txt_a[strlen(txt_a)-1])) ? atoi (txt_a) : irint (GMT_convert_units (txt_a, GMT_PT));
+				GMT_strtok (&lower_value[7], "x", &pos, txt_b);	/* Returns height and update pos */
+				gmtdefs.paper_width[1] = (isdigit(txt_b[strlen(txt_b)-1])) ? atoi (txt_b) : irint (GMT_convert_units (txt_b, GMT_PT));
 				if (gmtdefs.paper_width[0] <= 0) error++;
 				if (gmtdefs.paper_width[1] <= 0) error++;
 				gmtdefs.media = -USER_MEDIA_OFFSET;
