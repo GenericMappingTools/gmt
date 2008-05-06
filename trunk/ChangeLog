@@ -1,7 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.282 2008-05-06 20:41:18 guru Exp $
+	$Id: ChangeLog,v 1.283 2008-05-06 23:53:53 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-05-06	pwessel
+	* gmtselect.c:		Did not like a variable number of columns.  Now OK if ASCII
+				i/o and at least 2 (3 with -Z) columns are found.
 	* gmt_mgg2_header.c:	Passed 2nd,3rd arguments to fread in the wrong order, thus
 				failed to read GRD98 grids.
 	* gmt_init.c:		Now, median size Custom_WxH can use W and H in inch or ch
