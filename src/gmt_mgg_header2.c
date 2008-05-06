@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.28 2008-04-03 20:01:18 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.29 2008-05-06 20:41:18 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -95,7 +95,7 @@ static void MGG2_2GMT(MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 {
 	int one_or_zero;
 	
-	memset(gmt, 0, sizeof(struct GRD_HEADER));
+	/* Do not memset the gmt header since it has the file name set */
 	
 	gmt->type = GMT_grd_format_decoder ("rf");
 	gmt->node_offset    = mgg->cellRegistration;
@@ -266,7 +266,7 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 		piping = TRUE;
 	}
 	else if ((fp = GMT_fopen (header->name, GMT_io.r_mode)) != NULL) {
-		if (GMT_fread(&mggHeader, (size_t)1, sizeof(MGG_GRID_HEADER_2), fp) != 1) return (GMT_GRDIO_READ_FAILED);
+		if (GMT_fread(&mggHeader, sizeof(MGG_GRID_HEADER_2), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
 		swap_header(&mggHeader);
 		if (mggHeader.numType == 0) mggHeader.numType = sizeof(int);
 	}
