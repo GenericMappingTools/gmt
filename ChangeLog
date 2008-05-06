@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.278 2008-05-03 21:49:46 guru Exp $
+	$Id: ChangeLog,v 1.279 2008-05-06 04:03:12 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-05-05	pwessel
+	* psxyz.c:		Memory problem: Since realloc does not initialize we
+				must explicitly set any pointers in the structure to NULL
+				since we later use the pointer to determine if we need to
+				free memory.
+	* project.c:		Same.
+
 2008-05-03	pwessel
 	* psxy.c:		The -D option erroneously gave error when used properly.
 
