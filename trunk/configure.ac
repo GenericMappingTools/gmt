@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.28 2008-05-06 19:16:01 guru Exp $
-AC_REVISION($Revision: 1.28 $)
+dnl $Id: configure.ac,v 1.29 2008-05-06 19:20:59 guru Exp $
+AC_REVISION($Revision: 1.29 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -590,7 +590,7 @@ dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(linker options)
 flag=
-if test "X$enable_rpath" == "Xno" ; then
+if test "X$enable_rpath" = "Xno" ; then
 	flag=
 elif test "$os" = "SunOS" ; then
 	if test "$Sun_rev" = "" ; then
