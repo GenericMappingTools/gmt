@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.48 2008-04-04 17:34:47 remko Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.49 2008-05-06 22:14:48 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -23,7 +23,7 @@ mostly follow the following format:
 \item We explain what we want to achieve in plain
 language.
 
-\item We present an annotated bourne shell script that contains
+\item We present an annotated Bourne shell script that contains
 all commands used to generate the illustration.
 
 \item We explain the rationale behind the commands.
@@ -373,10 +373,10 @@ region in a Mercator projection (Figure~\ref{fig:GMT_example_09}).
 \section{A geographical bar graph plot}
 \index{Example!bar graph|(}
 
-Our next and perhaps silliest example presents a
-three-dimensional bargraph plot showing the geographic
+Our next and perhaps most business-like example presents a
+three-dimensional bar graph plot showing the geographic
 distribution of the membership in the American Geophysical
-Union (AGU).  The input data was taken from the 1991 AGU
+Union (AGU).  The input data was taken from the January 2008 AGU
 member directory and added up to give total members per
 continent.  We decide to plot a 3-D column centered on
 each continent with a height that is proportional to the
@@ -515,7 +515,7 @@ portions of the area (indicated by the gray areas plotted using
 create a clip path (using \GMTprog{psmask}) based on the data coverage
 to eliminate contours outside the constrained area.
 Finally (top right) we simply employ \GMTprog{pscoast} to overlay
-gray landmasses to cover up the unwanted contours, and end by
+gray land masses to cover up the unwanted contours, and end by
 plotting a star at the deepest point on the map with \GMTprog{psxy}.
 This point was extracted from the gridded files using \GMTprog{grdinfo}.
 
@@ -585,7 +585,7 @@ and a ``skip slice'' request for interval (700,725).
 \index{Example!image clipping|(}
 
 This example demonstrates how \GMTprog{pscoast} can be used
-to set up clippaths based on coastlines.  This approach
+to set up clip paths based on coastlines.  This approach
 is well suited when different gridded data sets are to be
 merged on a plot using different color palette files.
 Merging the files themselves may not be doable since they
@@ -600,9 +600,15 @@ option \Opt{Q} (Figure~\ref{fig:GMT_example_17}):
 \script{example_17} 
 \GMTexample{17}{Clipping of images using coastlines.}
 
-We also plot a color legend on top of the land. So here we basically have three layers of ``paint'' stacked on top of each other: the underlaying geoid map, the land mask, and finally the color legend. This legend makes clear how \GMTprog{grd2cpt} distributed the colors over the range: they are not of equal length put are associated with equal amounts of area in the plot. Since the high amounts (in red) are not very prevalent, that color spans a long range.
+We also plot a color legend on top of the land. So here we basically have three
+layers of ``paint'' stacked on top of each other: the underlaying geoid map,
+the land mask, and finally the color legend. This legend makes clear how
+\GMTprog{grd2cpt} distributed the colors over the range: they are not of equal
+length put are associated with equal amounts of area in the plot. Since the high
+amounts (in red) are not very prevalent, that color spans a long range.
 
-For this image it is appropriate to use the \Opt{I} option in \GMTprog{psscale} so the legend gets shaded, similar to the geoid grid.
+For this image it is appropriate to use the \Opt{I} option in \GMTprog{psscale}
+so the legend gets shaded, similar to the geoid grid.
 See Appendix~\ref{app:M} to learn more about color palettes and ways to draw color legends.
 
 \index{Example!image clipping|)}
@@ -640,7 +646,7 @@ a few cases of how to use this new feature.  We make a phony
 poster that advertises an international conference on \GMT\
 in Honolulu.  We use \GMTprog{grdmath}, \GMTprog{makecpt}, and
 \GMTprog{grdimage} to draw pleasing color backgrounds on maps,
-and overlay \GMTprog{pscoast} clippaths to have the patterns
+and overlay \GMTprog{pscoast} clip paths to have the patterns
 change at the coastlines.  The middle panel demonstrates a
 simple \GMTprog{pscoast} call where the built-in pattern \# 86
 is drawn at 100 dpi but with the black and white pixels
@@ -674,14 +680,14 @@ engineering paper!) to set up an empty grid that goes from
 compass to draw your new symbol using straight lines,
 arcs of circles, and stand-alone geometrical objects (see \GMTprog{psxy} man page for
 a full description of symbol design).  In this Section we will create two new symbols:
-a volcano and a bullseye.
+a volcano and a bulls eye.
 
 \begin{figure}[ht]
    \centering\includegraphics{scripts/GMT_volcano}
 \end{figure}
 
 \item After designing the symbol we will encode it using a
-simple set of rules.  In our case we describe our volcano and bullseye
+simple set of rules.  In our case we describe our volcano and bulls eye
 using these three freeform polygon generators:
 
 \begin{tabbing} 
@@ -710,7 +716,7 @@ definition file \filename{volcano.def}:
 
 \script{volcano} 
 
-Without much further discussion we also make a definition file \filename{bullseye.def} for a multi-colored bullseye symbol.
+Without much further discussion we also make a definition file \filename{bullseye.def} for a multi-colored bulls eye symbol.
 Note that the symbol can be created beyond the -0.5 to +0.5 range, as shown by the red lines. There is no limit in
 \GMT\ to the size of the symbols. The center, however, will always be at (0,0). This is the point to which the
 coordinates in \GMTprog{psxy} refers.
@@ -754,7 +760,7 @@ As discussed in Section~\ref{sec:timeaxis}, the annotation of time-series
 is generally more complicated due to the extra degrees of freedom afforded
 by the dual annotation system.  In this example we will display the trend
 of the stock price of RedHat (RHAT) from their initial public offering until
-late 2006.  The datafile is a comma-separated table and the records
+late 2006.  The data file is a comma-separated table and the records
 look like this:
 \begin{verbatim}
 Date,Open,High,Low,Close,Volume,Adj.Close*
@@ -884,7 +890,7 @@ intractable expressions below where the sum of $\cos (\phi)$ for all $\phi$ is k
 In the end we obtain a funny-looking map depicting the antipodal distribution as
 well as displaying in legend form the requested percentages (Figure~\ref{fig:GMT_example_25}).
 Note that the script is set to evaluate a global 30 minute grid for expediency ($D = 30$), hence
-several smaller landmasses that do have terrestrial antipodes do not show up.  If you want
+several smaller land masses that do have terrestrial antipodes do not show up.  If you want
 a more accurate map you can set the parameter $D$ to a smaller increment (try 5 and wait a
 few minutes).
 
