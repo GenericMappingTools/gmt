@@ -513,7 +513,8 @@ ledger	1224	792
 .br
 .sp
 For a completely custom format (e.g., for large format plotters) you may also
-specify Custom_WxH, where W and H are in points.
+specify Custom_WxH, where W and H are in points; to specify dimensions in
+inches or cm you must append the unit (\fBi\fP or \fBc\fP) to each value.
 To force the printer to request a manual paper feed, append '-' to the media
 name, e.g., A3- will require the user to insert a A3 paper into the printer's\"'
 manual feed slot.  To indicate you are making an EPS file, append '+' to the

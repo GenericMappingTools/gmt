@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.27 2008-05-02 20:19:04 guru Exp $
-AC_REVISION($Revision: 1.27 $)
+dnl $Id: configure.ac,v 1.28 2008-05-06 19:16:01 guru Exp $
+AC_REVISION($Revision: 1.28 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -506,7 +506,6 @@ AC_MSG_CHECKING(if we should compile with debugging switch -g)
 CFLAGS=$ac_save_CFLAGS
 if test "X$enable_debug" = "Xyes" ; then
 	AC_MSG_RESULT(yes)
-	CPPFLAGS="$CPPFLAGS -DDEBUG"
 	CFLAGS="$CFLAGS -g"
 else
 	CFLAGS=`echo $CFLAGS | sed 's/-g//'`
