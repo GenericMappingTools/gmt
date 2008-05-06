@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.58 2008-05-01 17:30:48 remko Exp $
+#	$Id: Makefile,v 1.59 2008-05-06 04:11:52 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ uninstall-suppl:
 install-data:
 		if [ ! $(rootdir)/share = $(datadir) ]; then \
 			mkdir -p $(datadir); \
-			cp -r share/* $(datadir); \
+			cp -pr share/* $(datadir); \
 		else \
 			echo "Install share directory the same as distribution share directory - nothing copied"; \
 		fi
@@ -147,7 +147,7 @@ install-man uninstall-man:
 install-www:
 		@if [ ! $(rootdir)/www = $(wwwdir) ]; then \
 			mkdir -p $(wwwdir); \
-			cp -r www/gmt $(wwwdir); \
+			cp -pr www/gmt $(wwwdir); \
 		else \
 			echo "Install www directory the same as distribution www directory - nothing copied"; \
 		fi
