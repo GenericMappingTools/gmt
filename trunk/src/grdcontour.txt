@@ -47,7 +47,7 @@ values have the same units as the grid.
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
-\fIannot_int\fP is annotation interval in data units.  Ignored if contour levels are given in a file.
+\fIannot_int\fP is annotation interval in data units; it is ignored if contour levels are given in a file.
 [Default is no annotations].   Append \fB-\fP to disable all annotations implied by \fB\-C\fP.
 The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
