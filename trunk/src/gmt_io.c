@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.157 2008-04-25 04:00:40 guru Exp $
+ *	$Id: gmt_io.c,v 1.158 2008-05-07 01:47:18 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -41,6 +41,7 @@
  *	GMT_bin_double_input_swab:	Decode binary double precision record followed by byte-swabbing
  *	GMT_bin_float_input:	Decode binary single precision record
  *	GMT_bin_float_input_swab:	Decode binary single precision record followed by byte-swabbing
+ *	GMT_nc_input:		Decode one record of netCDF column-oriented data
  *	GMT_ascii_output:	Write ascii record
  *	GMT_bin_double_output:	Write binary double precision record
  *	GMT_bin_double_output_swab:	Write binary double precision record after first swabbing
@@ -230,8 +231,8 @@ FILE *GMT_nc_fopen (const char *filename, const char *mode)
 
 	nvars = sscanf (filename, "%[^?]?%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9]) - 1;
 	if (nc_open (GMT_getdatapath(file, path), NC_NOWRITE, &GMT_io.ncid)) return (NULL);
-	if (nvars == 0) nvars = sscanf (GMT_io.varnames, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9]);
-	if (nvars == 0)
+	if (nvars <= 0) nvars = sscanf (GMT_io.varnames, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9]);
+	if (nvars <= 0)
 		nc_inq_nvars (GMT_io.ncid, &GMT_io.nvars);
 	else
 		GMT_io.nvars = nvars;
@@ -243,7 +244,7 @@ FILE *GMT_nc_fopen (const char *filename, const char *mode)
 
 	for (i = 0; i < GMT_io.nvars; i++) {
 		/* Get variable ID and variable name */
-		if (nvars == 0)
+		if (nvars <= 0)
 			GMT_io.varid[i] = i;
 		else
 			GMT_err_fail (nc_inq_varid (GMT_io.ncid, varnm[i], &GMT_io.varid[i]), file);
