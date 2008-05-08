@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.285 2008-05-07 01:47:18 remko Exp $
+	$Id: ChangeLog,v 1.286 2008-05-08 07:41:13 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-05-08	pwessel
+	* grd2xyz.c:		For -E: The test for dx == dy was susceptible to round-off
+	
 2008-05-07	remko
 	* gmt_io.c (GMT_nc_input):	Would not read all columns when no variable names given.
 
