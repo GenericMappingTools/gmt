@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.365 2008-05-06 19:16:01 guru Exp $
+ *	$Id: gmt_support.c,v 1.366 2008-05-09 17:18:01 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7326,7 +7326,7 @@ BOOLEAN GMT_skip_second_annot (int item, double x, double x2[], int n, int prima
 	if (secondary != item) return (FALSE);		/* Not working on secondary annotation */
 	if (!x2) return (FALSE);			/* None given */
 
-	small = (x2[1] - x2[0]) * GMT_CONV_LIMIT;
+	small = (x2[1] - x2[0]) * GMT_SMALL;
 	for (i = 0, found = FALSE; !found && i < n; i++) found = (fabs (x2[i] - x) < small);
 	return (found);
 }
