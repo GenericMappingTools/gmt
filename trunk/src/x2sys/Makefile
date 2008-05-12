@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.40 2008-04-25 05:43:53 guru Exp $
+#	$Id: Makefile,v 1.41 2008-05-12 23:52:30 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -11,7 +11,7 @@ include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
 INCLUDES	= -I$(srcdir) -I../mgg -I../mgd77 -I$(NETCDF_INC)
-ALLLIB		= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -lgmt $(NC_LIBS) $(LIBS)
+ALLLIB		= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -lgmt $(LIBS)
 
 PROGS_H		= x2sys.h
 PROGS_O		= x2sys_init.o x2sys_put.o x2sys_get.o x2sys_binlist.o x2sys_datalist.o x2sys_cross.o
