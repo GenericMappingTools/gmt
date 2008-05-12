@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.287 2008-05-09 17:18:01 remko Exp $
+	$Id: ChangeLog,v 1.288 2008-05-12 20:31:30 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-05-12	pwessel
+	* mgg/*.c:		Had a mix of GMT_fopen and fread which fails with a Windows DLL
+
 2005-05-09	remko
 	* gmt_support.c:	Allow a little more slop in determining whether primary tick
 				is at same location as secondary tick.
