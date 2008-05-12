@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.347 2008-05-06 22:33:44 guru Exp $
+ *	$Id: gmt_init.c,v 1.348 2008-05-12 23:56:47 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2582,7 +2582,7 @@ int GMT_getdefpath (int get, char **P)
 		id = get;
 
 	id--;	/* Get 0 or 1 */
-	GMT_getsharepath ("conf", ".gmtdefaults_", suffix[id], line);
+	GMT_getsharepath ("conf", "gmtdefaults_", suffix[id], line);
 
 	path = (char *) GMT_memory (VNULL, (size_t)(strlen (line) + 1), sizeof (char), GMT_program);
 
