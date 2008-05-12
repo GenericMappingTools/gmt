@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.10 2008-04-23 23:28:43 guru Exp $
+#		$Id: Makefile,v 1.11 2008-05-12 19:45:54 guru Exp $
 #
 #	Makefile for gmt <--> octave/matlab interface programs
 #	Use with GMT 4.3.0 or later
@@ -38,9 +38,9 @@ install:	all
 		fi
 		$(INSTALL) -d $(MEX_MDIR)
 		if [ -w $(MEX_MDIR) ] ; then \
-			$(INSTALL) $(PROGS_M) $(MEX_MDIR); \
+			$(INSTALL) -m 644 $(PROGS_M) $(MEX_MDIR); \
 		else \
-			$(INSTALL) $(PROGS_M) $(bindir); \
+			$(INSTALL) -m 644 $(PROGS_M) $(bindir); \
 		fi
 
 uninstall:
