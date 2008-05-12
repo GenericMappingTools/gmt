@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.76 2008-04-02 17:04:32 remko Exp $
+ *	$Id: gmt_nc.c,v 1.77 2008-05-12 15:06:18 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -468,8 +468,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	for (j = first_row; j <= last_row; j++, ij -= ((size_t)header->y_order * (size_t)width_out)) {
 		start[ndims-2] = j;
 		GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
-		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
-			kk = ij+i*inc;
+		for (i = 0, kk = ij; i < width_in; i++, kk+=inc) {	/* Check for and handle NaN proxies */
 			grid[kk] = tmp[k[i]];
 			if (check && grid[kk] == header->nan_value) grid[kk] = GMT_f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
@@ -621,7 +620,7 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	}
 	else {
 		fprintf (stderr, "%s: Warning: No valid values in grid [%s]\n", GMT_program, header->name);
-		limit[0] = 0.0, limit[1] = 0.0;
+		limit[0] = limit[1] = 0.0;
 	}
 	GMT_err_trap (nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, (size_t)2, limit));
 
