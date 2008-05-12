@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.158 2008-05-07 01:47:18 remko Exp $
+ *	$Id: gmt_io.c,v 1.159 2008-05-12 22:35:47 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -176,6 +176,12 @@ size_t GMT_fwrite (const void *ptr, size_t size, size_t nmemb, FILE * stream)
 {
 	return (fwrite (ptr, size, nmemb, stream));
 }
+
+void GMT_rewind (FILE *stream)
+{
+	rewind (stream);
+}
+
 #endif
 
 int GMT_fclose (FILE *stream)
