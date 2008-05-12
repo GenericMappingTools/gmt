@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.43 2008-03-24 08:58:33 guru Exp $
+ *	$Id: libspotter.c,v 1.44 2008-05-12 22:35:47 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -85,7 +85,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	if (flowline) finite_out = TRUE;	/* Override so we get finite poles for conversion to forward stage poles at the end */
 
 	last_t = (finite_in) ? 0.0 : DBL_MAX;
-	while (fgets (buffer, 512, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
+	while (GMT_fgets (buffer, 512, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 
 		if (finite_in) {	/* The record formats is: lon lat t0 [t1] omega [covar] */
@@ -144,7 +144,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 			e = (struct EULER *) GMT_memory ((void *)e, (size_t)n_alloc, sizeof (struct EULER), "libspotter");
 		}
 	}
-	fclose (fp);
+	GMT_fclose (fp);
 
 	n = i;
 

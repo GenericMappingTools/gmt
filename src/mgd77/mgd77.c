@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.174 2008-04-17 04:16:57 guru Exp $
+ *	$Id: mgd77.c,v 1.175 2008-05-12 22:35:47 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -489,8 +489,8 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 	}
 	else {
 		/* Since we do not know the number of records, we must quickly count lines */
-		while (fgets (line, BUFSIZ, F->fp)) if (line[0] != '#') H->n_records++;	/* Count every line except comments  */
-		rewind (F->fp);						/* Go back to beginning of file */
+		while (GMT_fgets (line, BUFSIZ, F->fp)) if (line[0] != '#') H->n_records++;	/* Count every line except comments  */
+		GMT_rewind (F->fp);						/* Go back to beginning of file */
 		H->n_records -= MGD77_N_HEADER_RECORDS;			/* Adjust for the 24 records in the header block */
 	}
 	
@@ -500,7 +500,7 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 		MGD77_header[sequence] = (char *)GMT_memory (VNULL, (size_t)(MGD77_HEADER_LENGTH + 1), sizeof (char), GMT_program);
 		if ((err = MGD77_Read_Header_Sequence (F->fp, MGD77_header[sequence], sequence+1))) return (err);
 	}
-	if (F->format == MGD77_FORMAT_TBL) fgets (line, BUFSIZ, F->fp);			/* Skip the column header for tables */
+	if (F->format == MGD77_FORMAT_TBL) GMT_fgets (line, BUFSIZ, F->fp);			/* Skip the column header for tables */
 	
 	H->mgd77 = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, (size_t)1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
 	
@@ -2477,7 +2477,7 @@ void MGD77_Path_Init (struct MGD77_CONTROL *F)
 	}
 	
 	F->MGD77_datadir = (char **) GMT_memory (VNULL, n_alloc, sizeof (char *), "MGD77_path_init");
-	while (fgets (line, BUFSIZ, fp)) {
+	while (GMT_fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line, \n included in count */
 		GMT_chop (line);
@@ -2551,7 +2551,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 			fprintf (stderr, "%s: WARNING: Unable to open file list %s\n", GMT_program, &argv[flist][1]);
 			GMT_exit (EXIT_FAILURE);
 		}
-		while (fgets (line, BUFSIZ, fp)) {
+		while (GMT_fgets (line, BUFSIZ, fp)) {
 			GMT_chop (line);	/* Get rid of CR/LF issues */
 			if (line[0] == '#' || line[0] == '>' || (length = strlen (line)) == 0) continue;	/* Skip comments and blank lines */
 			if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");

@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.288 2008-05-12 20:31:30 guru Exp $
+	$Id: ChangeLog,v 1.289 2008-05-12 22:35:47 guru Exp $
 -----------------------------------------------------------------------------------------
 2005-05-12	pwessel
-	* mgg/*.c:		Had a mix of GMT_fopen and fread which fails with a Windows DLL
+	* <suppl>/*.c:		Some supplement programs had a mix of GMT_fopen and fread
+				which usually fails under Windows when a dynamic DLL is used.
 
 2005-05-09	remko
 	* gmt_support.c:	Allow a little more slop in determining whether primary tick

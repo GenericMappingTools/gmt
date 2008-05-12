@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.68 2008-03-24 15:35:34 remko Exp $
+ *	$Id: gmt_io.h,v 1.69 2008-05-12 22:35:47 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -73,8 +73,9 @@ EXTERN_MSC char *GMT_fgets (char *line, int buf, FILE *fp);
 EXTERN_MSC int GMT_fputs (const char *line, FILE *fp);
 EXTERN_MSC int GMT_fseek (FILE *stream, long offset, int whence);
 EXTERN_MSC long GMT_ftell (FILE *stream);
-EXTERN_MSC size_t GMT_fread (void * ptr, size_t size, size_t nmemb, FILE * stream);
-EXTERN_MSC size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE * stream);
+EXTERN_MSC size_t GMT_fread (void * ptr, size_t size, size_t nmemb, FILE *stream);
+EXTERN_MSC size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE *stream);
+EXTERN_MSC void GMT_rewind (FILE *stream);
 #else
 #define GMT_fdopen(handle, mode) fdopen(handle, mode)
 #define GMT_fgets(line,buf,fp) fgets(line,buf,fp)
@@ -83,6 +84,7 @@ EXTERN_MSC size_t GMT_fwrite (const void * ptr, size_t size, size_t nmemb, FILE 
 #define GMT_ftell(stream) ftell(stream)
 #define GMT_fread(ptr,size,nmemb,stream) fread(ptr,size,nmemb,stream)
 #define GMT_fwrite(ptr,size,nmemb,stream) fwrite(ptr,size,nmemb,stream)
+#define GMT_rewind(stream) rewind(stream)
 #endif
 
 EXTERN_MSC int GMT_fclose (FILE *stream);
