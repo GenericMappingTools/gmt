@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.9 2008-03-24 08:58:33 guru Exp $
+/*	$Id: x_update.c,v 1.10 2008-05-13 01:07:04 guru Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -104,7 +104,7 @@ int main (int argc, char *argv[])
 	}
 	if (fp == NULL) error = TRUE;
 	if (argc == 1 || error) {
-		fprintf(stderr,"x_update - add crossover info to xocer database\n");
+		fprintf(stderr,"x_update - add crossover info to xover database\n");
 		fprintf(stderr,"Usage : x_update xoverfile [-X<xbase> -L<legbase> -V -W<nxovers>]\n");
 		fprintf(stderr,"	-X to specify alternative xx_base.b file\n");
 		fprintf(stderr,"	-L to specify alternative xx_legs.b file\n");
