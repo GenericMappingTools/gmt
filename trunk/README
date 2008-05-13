@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.46 2008-04-26 22:36:15 guru Exp $
+#		$Id: README,v 1.47 2008-05-13 03:55:08 guru Exp $
 #
 #	Copyright (c) 1991-2008, P. Wessel & W. H. F. Smith
 #
@@ -231,7 +231,7 @@ By default, GMT will be made with static libraries.  If you system
 supports shared (dynamic) libraries you can select the option
 --enable-shared which will try to assemble shared libraries.
 
-By default, GMT will use Dave Watson's Delauney triangulation
+By default, GMT will use Dave Watson's Delaunay triangulation
 routine.  However, a much faster alternative is available from
 Jonathan Shewchuk, but his routine is not distributed under the GNU
 Public License.  If you work for a for-profit organization you should read
@@ -239,7 +239,7 @@ Shewchuk's copyright statement (in src/README.TRIANGLE) first.  If you can
 use his routine you should append --enable-triangle.
 
 At run-time, GMT will initialize all default variables by reading
-either the share/.gmtdefaults_SI or the share/.gmtdefaults_US file.
+either the share/gmtdefaults_SI or the share/gmtdefaults_US file.
 Both are installed, and the one that is read is given by the file
 share/gmt.conf.  This file will have either SI or US as the first
 two columns on a line.  SI is default, use --enable-US to switch.
@@ -247,7 +247,7 @@ The default values differ slightly between SI and US, mostly because
 it is inconvenient to convert, say, 1" to 2.54 cm; we use 2.5 cm
 instead.  Although strongly discouraged, if you want to make
 permanent changes to some of the defaults you can edit the
-.gmtdefaults_{SI,US} files directly.  A much better approach is to
+gmtdefaults_{SI,US} files directly.  A much better approach is to
 create a .gmtdefaults4 file in your home directory and edit those
 settings since GMT will check for that file before loading system
 defaults (actually, it will first look in the current directory,
