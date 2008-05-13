@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.37 2008-05-01 20:06:24 remko Exp $
+#  $Id: GNUmakefile,v 1.38 2008-05-13 00:25:59 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -153,7 +153,7 @@ webdoc:		;
 # FILES from the CVS-distributed master files:
 #-------------------------------------------------------------------------------
 
-FILES =		configure src/makegmt.macros share/conf/gmt.conf share/conf/.gmtdefaults_SI share/conf/.gmtdefaults_US
+FILES =		configure src/makegmt.macros share/conf/gmt.conf share/conf/gmtdefaults_SI share/conf/gmtdefaults_US
 
 gmtmacros FILES:		$(FILES)
 examples:	FILES
@@ -293,7 +293,7 @@ zip_dist:
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip GMT/COPYING)
 	grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:GMT/:' > asc.lis
 	grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT/:' >> asc.lis
-	ls src/gmt_version.h share/conf/gmt.conf share/conf/.gmtdefaults_?? | sed -e 's:^:GMT/:' >> asc.lis
+	ls src/gmt_version.h share/conf/gmt.conf share/conf/gmtdefaults_?? | sed -e 's:^:GMT/:' >> asc.lis
 	ls guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT/:' >> asc.lis
 	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
 	grep -vh '#' guru/GMT_share_files_ascii.lis | sed -e 's:^:GMT/:' > asc.lis

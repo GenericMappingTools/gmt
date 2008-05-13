@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.22 2008-05-06 23:38:47 guru Exp $
+#	$Id: GNUmakefile,v 1.23 2008-05-13 00:25:59 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -221,7 +221,7 @@ $(EX_TEX):	%.tex:	%.sh
 
 # Make sure gmtdefaults file is created afresh
 $(DOCEPS) $(DOCPDF) $(TUTEPS) $(TUTPDF):	scripts/.gmtdefaults4.doc
-scripts/.gmtdefaults4.doc:	../share/conf/.gmtdefaults_US
+scripts/.gmtdefaults4.doc:	../share/conf/gmtdefaults_US
 	gmtdefaults -Du > $@
 	gmtset -G$@ ANNOT_FONT_SIZE_PRIMARY 10p ANNOT_FONT_SIZE_SECONDARY 14p LABEL_FONT_SIZE 14p FRAME_WIDTH 0.05i CHAR_ENCODING ISOLatin1+
 
