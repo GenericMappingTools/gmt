@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.59 2008-05-06 04:11:52 guru Exp $
+#	$Id: Makefile,v 1.60 2008-05-13 00:00:55 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -126,15 +126,17 @@ uninstall-suppl:
 		$(MAKE) TARGET=uninstall $(SUPPL)
 
 install-data:
-		if [ ! $(rootdir)/share = $(datadir) ]; then \
-			mkdir -p $(datadir); \
-			cp -pr share/* $(datadir); \
+		@if [ ! $(rootdir)/share = $(datadir) ]; then \
+			for dir in coast conf cpt custom dbase mgd77 mgg pattern pslib time x2sys ; do \
+				mkdir -p $(datadir)/$$dir ; \
+				\cp -p `ls -d $(rootdir)/share/$$dir/* | grep -v "\.in$$" | grep -v "CVS"` $(datadir)/$$dir ; \
+			done ; \
 		else \
 			echo "Install share directory the same as distribution share directory - nothing copied"; \
 		fi
 
 uninstall-data:
-		if [ ! $(rootdir)/share = $(datadir) ]; then \
+		@if [ ! $(rootdir)/share = $(datadir) ]; then \
 			\rm -rf $(datadir); \
 		else \
 			echo "Install share directory the same as distribution share directory - nothing removed"; \
@@ -153,7 +155,7 @@ install-www:
 		fi
 
 uninstall-www:
-		if [ ! $(rootdir)/www = $(wwwdir) ]; then \
+		@if [ ! $(rootdir)/www = $(wwwdir) ]; then \
 			rm -rf $(wwwdir)/gmt; \
 		else \
 			echo "Install www directory the same as distribution www directory - nothing deleted"; \
