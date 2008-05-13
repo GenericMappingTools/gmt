@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.289 2008-05-12 22:35:47 guru Exp $
+	$Id: ChangeLog,v 1.290 2008-05-13 00:02:16 remko Exp $
 -----------------------------------------------------------------------------------------
+2005-05-12	remko
+	* conf/gmtdefaults_{SI,US}.in:	Renamed from .gmtdefaults_* (no longer hidden)
+	* configure.ac, gmt_init.c:	Changed accordingly
+	* Makefile:		"make install-data" now copies only the appropriate directories
+				and file from the share directory, i.e. not CVS directory, and
+				.cvsignore and *.in files.
+	* src/makefile:		Link libgmtps.$(SL) and libpsl.$(SL) to appropriate libraries.
+	* src/x2sys/makefile:	No need for linking against netCDF.
+
 2005-05-12	pwessel
 	* <suppl>/*.c:		Some supplement programs had a mix of GMT_fopen and fread
 				which usually fails under Windows when a dynamic DLL is used.
