@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.41 2008-05-12 23:52:30 remko Exp $
+#	$Id: Makefile,v 1.42 2008-05-13 00:29:21 guru Exp $
 #
 # makefile for x2sys directory
 #
@@ -86,5 +86,5 @@ x2sys_datalist$(EXE):	x2sys_datalist.o
 x2sys_cross$(EXE):	x2sys_cross.o
 
 $(PROGS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -o $@ -L. -lx2sys $(ALLLIB)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -o $@ -L. -lx2sys $(ALLLIB) $(NC_LIBS)
 		$(COMPRESS) $@
