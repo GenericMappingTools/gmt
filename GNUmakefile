@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.38 2008-05-13 00:25:59 remko Exp $
+#  $Id: GNUmakefile,v 1.39 2008-05-13 03:55:08 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -184,7 +184,6 @@ configure:	configure.ac
 latest-config:
 		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.sub --remote-name --silent
 		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.guess --remote-name --silent
-		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.rpath --remote-name --silent
 
 webman: 	guru/webman.sh
 		$(SHELL) guru/webman.sh -s
