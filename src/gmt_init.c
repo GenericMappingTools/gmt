@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.348 2008-05-12 23:56:47 remko Exp $
+ *	$Id: gmt_init.c,v 1.349 2008-05-13 05:28:28 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2537,8 +2537,11 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults4 file and ini
 		GMT_loaddefaults (this_file);
 	else if (GMT_getuserpath (".gmtdefaults4", file))
 		GMT_loaddefaults (file);
-	else if (GMT_getuserpath (".gmtdefaults", file))
+	else if (GMT_getuserpath (".gmtdefaults", file)) {	/* Try old GMT 3 defaults - give warning */
+		fprintf (stderr, "GMT Warning: Old GMT 3 .gmtdefaults file found.  May not be fully compatible with GMT 4.\n");
+		fprintf (stderr, "GMT Warning: It is recommended that you migrate your GMT 3 settings to GMT 4 settings.\n");
 		GMT_loaddefaults (file);
+	}
 	else {		/* No .gmtdefaults[4] files in sight; Must use GMT system defaults */
 		char *path;
 		GMT_getdefpath (0, &path);
