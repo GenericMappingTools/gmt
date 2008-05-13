@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.291 2008-05-13 00:35:38 guru Exp $
+	$Id: ChangeLog,v 1.292 2008-05-13 05:28:28 guru Exp $
 -----------------------------------------------------------------------------------------
 2005-05-12	remko
 	* conf/gmtdefaults_{SI,US}.in:	Renamed from .gmtdefaults_* (no longer hidden)
@@ -34,10 +34,10 @@
 
 2008-05-05	pwessel
 	* psxyz.c:		Memory problem: Since realloc does not initialize we
-				must explicitly set any pointers in the structure to NULL
-				since we later use the pointer to determine if we need to
-				free memory.
-	* project.c:		Same.
+				must explicitly set the pointer in the PSXYZ_DATA1 structure
+				to NULL since we later use the pointer to determine if we
+				need to free allocated memory.
+	* project.c:		Same for the 2 pointers in the PROJECT_DATA structure.
 
 2008-05-03	pwessel
 	* psxy.c:		The -D option erroneously gave error when used properly.
