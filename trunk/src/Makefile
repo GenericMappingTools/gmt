@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.39 2008-05-12 23:59:53 remko Exp $
+#	$Id: Makefile,v 1.40 2008-05-13 00:48:35 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -203,7 +203,7 @@ libpsl.$(SL):	libpsl.a
 libgmt.$(SL):	libgmt.a
 		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) $(NC_LIBS) $(LIBS) -o $@
 
-libgmtps.$(SL):	libgmtps.a
+libgmtps.$(SL):	libgmtps.a libpsl.$(SL) libgmt.$(SL)
 		$(LD) $(LD_OPT) $(LIBPS_O) libpsl.$(SL) libgmt.$(SL) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
