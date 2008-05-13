@@ -54,7 +54,7 @@ will bandpass, cutting wavelengths > 1000 km and < 10 km, passing wavelengths be
 a highpass or lowpass filter, give hyphens (-) for \fIhp\fP/\fIhc\fP or \fIlc\fP/\fIlp\fP.  E.g., \fB\-Fx\fP-/-/50/10 
 will lowpass \fIx\fP, passing wavelengths > 50 and rejecting wavelengths < 10.  \fB\-Fy\fP1000/250/-/- will highpass \fIy\fP, 
 passing wavelengths < 250 and rejecting wavelengths > 1000.  Gaussian band-pass: Append two wavelengths in correct units
-(see \fB\-M\fP) to design a bandpass filter.  At the given wavelenghts the Gaussian filter weights will be 0.5. To make
+(see \fB\-M\fP) to design a bandpass filter.  At the given wavelengths the Gaussian filter weights will be 0.5. To make
 a highpass or lowpass filter, give a hyphen (-) for the \fIhi\fP or \fIlo\fP wavelength, respectively.  E.g., \fB\-F\fP-/30
 will lowpass the data using a Gaussian filter with half-weight at 30, while \fB\-F\fP400/- will highpass the data.
 .TP

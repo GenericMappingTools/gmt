@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.349 2008-05-13 05:28:28 guru Exp $
+ *	$Id: gmt_init.c,v 1.350 2008-05-13 12:35:41 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1464,7 +1464,7 @@ void GMT_backwards_compatibility () {
 		load_encoding (&gmtdefs.encoding);
 	}
 
-	if (GMT_force_resize) {	/* Adjust fonts and offsets and ticklenghts relative to ANNOT_FONT_SIZE */
+	if (GMT_force_resize) {	/* Adjust fonts and offsets and ticklengths relative to ANNOT_FONT_SIZE */
 		gmtdefs.annot_font_size[1] = 16.0 * gmtdefs.annot_font_size[0] / 14.0;
 		gmtdefs.label_font_size = 24.0 * gmtdefs.annot_font_size[0] / 14.0;
 		gmtdefs.header_font_size = 36.0 * gmtdefs.annot_font_size[0] / 14.0;
