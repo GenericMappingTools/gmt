@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.92 2008-04-30 18:23:11 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.93 2008-05-14 19:54:48 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -34,6 +34,35 @@ will be distinguished by being completely restructured so as to allow developers
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
 
+\subsection{Overview of \gmt\ 4.3.1 [May-15, 2008]}
+
+This quick update only 2 weeks after the release of version 4.3.0 was prompted by the discovery of three
+serious bugs; two of which were quite old but had caused no harm until tested under Fedora 9.
+The third critical bug prevented the wholesale reading and writing of GRD98 format grids.  In addition
+a few minor bugs were discovered; this is the list of all corrections:
+\begin{description}
+\item [\GMTprog{gmt\_io.c}]: \GMTfunc{GMT\_nc\_input} would not read all data columns when no variable names were given.
+\item [\GMTprog{gmt\_mgg\_header2.c}]: Passed two of the arguments to {\it fread} in the wrong order. Prior to version 4.2.0
+the return code (which indicated an error) was not checked yet the read did return the correct data.
+With better error checking this latent bug now caused a refusal to read any GRD98 grid.
+\item [\GMTprog{gmt\_support.c}]: Allow a little more slop in determining whether primary tick
+is at same location as secondary tick.
+\item [\GMTprog{gmtselect.c}]: Did not like a variable number of input columns.  Now OK if both input and output is ASCII
+and there are at least 2 (3 with \Opt{Z}) input columns present.
+\item [\GMTprog{grd2xyz.c}]: For option \Opt{E}, the test for {\it xinc} == {dy}\it yinc} was susceptible to round-off.
+\item [\GMTprog{project.c}]: Now explicitly initializes the pointers in the data structure to NULL since {\it realloc} does not
+initialize new memory (yet almost all implementations of {\it realloc} appear to have done so anyway, masking the memory bug).
+\item [\GMTprog{psxy.c}]: The \Opt{D} option erroneously gave an error despite being used properly.
+\item [\GMTprog{psxyz.c}]: Similar problem as described for \GMTprog{project}.
+\end{description}
+
+In addition, many of the supplements did not work properly under Windows due to internal problems with the DLL.  Finally,
+one enhancement snuck in before the decision to issue this update was made:
+\begin{enumerate}
+\item \GMTprog{gmt\_init.c} was enhanced so that the media size Custom_WxH can use W and H in inch, cm, or m
+by appending {\bf i}, {\bf c}, or {\bf m} to each dimension [Default remains points].
+\end{enumerate}
+
 \subsection{Overview of \gmt\ 4.3.0 [May-1, 2008]}
 
 Changes are once again a mix of structural improvements, bug fixes, and a few enhancements.
@@ -53,8 +82,9 @@ The following lists specific enhancements or new program options:
 % Enhancements:
 \begin{enumerate}
 \item \GMTprog{gmt\_grdio.c} is modified so the grid i/o supports the \textbf{GMT\_[DATA$|$IMG$|$GRID]DIR} environment settings.
-\item \GMTprog{gmt\_init.c} was enhanced so \Opt{U} can now interpret a justification (e.g., \emph{just/dx/dy} on the command line or by setting \textbf{UNIX\_TIME\_POS}) and we introduced a new default parameter \textbf{UNIX\_TIME\_FORMAT} which controls the formatting
-of the timestamp.
+\item \GMTprog{gmt\_init.c} was enhanced so \Opt{U} can now interpret a justification (e.g., \emph{just/dx/dy}
+on the command line or by setting \textbf{UNIX\_TIME\_POS}) and we introduced a new default parameter \textbf{UNIX\_TIME\_FORMAT}
+which controls the formatting of the timestamp.
 \item \GMTprog{gmt\_io.c} now implements \Opt{b}[\textbf{i}$|$\textbf{o}]\textbf{c}[\emph{var1/...}] option to indicate input is netCDF.
 \item \GMTprog{gmtmath} recognizes new constants \textbf{TMIN}, \textbf{TMAX}, \textbf{TINC}, and \textbf{N}.
 \item \GMTprog{grdimage} uses \Opt{N} to not clip image at map boundary.
