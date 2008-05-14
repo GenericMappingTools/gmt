@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.28 2008-05-04 19:08:08 guru Exp $
+#  $Id: Makefile,v 1.29 2008-05-14 19:15:56 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -240,7 +240,7 @@ update-ftp-local:
 		(cd $(TESTFTPDIR)/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe); \
 	done
 	rm -f windows/GSHHS_highfull_install.exe
-	(cd $(TESTFTPDIR)windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)
+	(cd $(TESTFTPDIR)/windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)
 
 clean-ftp:
 	rm -f ../ftp/G*.bz2
