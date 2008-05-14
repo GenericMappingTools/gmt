@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.36 2008-05-01 20:43:52 guru Exp $
+#	$Id: GMT_usage_map.sh,v 1.37 2008-05-14 17:56:36 guru Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -36,6 +36,14 @@
 # to /tmp/gmtregistration on gmt.  This script
 # then acts on these records as described above.
 
+if [ "X$GMTHOME" = "X" ]; then	# Running crontab and environment is not set
+	GS_LIB=/sw/share/ghostscript/8.61/lib
+	GMTHOME=/Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT
+	PATH=$GMTHOME/bin:$PATH
+	export PATH
+	export GS_LIB
+	CVSROOT=":pserver:guru@pohaku.soest.hawaii.edu:/usr/local/cvs"
+fi
 if [ $# = 1 ] && [ $1 = "help" ]; then
 	cat << EOF >&2
 usage: GMT_usage_map.sh [-v] [all | get | update | map | help]
