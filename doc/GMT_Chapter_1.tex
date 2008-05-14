@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.93 2008-05-14 19:54:48 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.94 2008-05-14 20:02:54 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -49,7 +49,7 @@ With better error checking this latent bug now caused a refusal to read any GRD9
 is at same location as secondary tick.
 \item [\GMTprog{gmtselect.c}]: Did not like a variable number of input columns.  Now OK if both input and output is ASCII
 and there are at least 2 (3 with \Opt{Z}) input columns present.
-\item [\GMTprog{grd2xyz.c}]: For option \Opt{E}, the test for {\it xinc} == {dy}\it yinc} was susceptible to round-off.
+\item [\GMTprog{grd2xyz.c}]: For option \Opt{E}, the test for {\it xinc} == {\it yinc} was susceptible to round-off.
 \item [\GMTprog{project.c}]: Now explicitly initializes the pointers in the data structure to NULL since {\it realloc} does not
 initialize new memory (yet almost all implementations of {\it realloc} appear to have done so anyway, masking the memory bug).
 \item [\GMTprog{psxy.c}]: The \Opt{D} option erroneously gave an error despite being used properly.
@@ -59,7 +59,7 @@ initialize new memory (yet almost all implementations of {\it realloc} appear to
 In addition, many of the supplements did not work properly under Windows due to internal problems with the DLL.  Finally,
 one enhancement snuck in before the decision to issue this update was made:
 \begin{enumerate}
-\item \GMTprog{gmt\_init.c} was enhanced so that the media size Custom_WxH can use W and H in inch, cm, or m
+\item \GMTprog{gmt\_init.c} was enhanced so that the media size {\bf Custom\_WxH} can use W and H in inch, cm, or m
 by appending {\bf i}, {\bf c}, or {\bf m} to each dimension [Default remains points].
 \end{enumerate}
 

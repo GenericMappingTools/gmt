@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.23 2008-05-13 00:25:59 remko Exp $
+#	$Id: GNUmakefile,v 1.24 2008-05-14 20:02:54 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -52,7 +52,8 @@ L2H=latex2html -local_icons -white -show_section_numbers -image_type png -bottom
 # NOTICE: If inline graphics shows up with underlines then you might need to edit
 # your l2hconf.pm file and remove the -Ppdf option from DVIPSOPT.
 LATEX=latex --interaction=batchmode
-PDFLATEX=pdflatex --interaction=batchmode
+#PDFLATEX=pdflatex --interaction=batchmode
+PDFLATEX=pdflatex
 
 # EPS and TEX files used by all documents
 ALLEPS=	fig/GMT_covertext.eps scripts/GMT_coverlogo.eps
