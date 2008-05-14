@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.3 2008-04-30 22:57:18 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.4 2008-05-14 00:48:57 guru Exp $
 REM	Compiles GMT and builds installers under Windows
 REM	Paul Wessel with help from Joaquim Luis
 REM
@@ -14,14 +14,18 @@ REM	5. Inno Setup 5 has been installed and the path
 REM	   to its command line tool is added to PATH
 
 
+echo "1. Build the GMT executables, including supplements..."
 cd C:\GMT
 mkdir bin
 mkdir lib
 cd src
 call gmtinstall tri
 call gmtsuppl
+echo "2. Build the GMT Basic installer..."
 iscc /Q C:\GMT\guru\GMTsetup_basic.iss
-iscc /Q C:\GMT\guru\GMTsetup_hfcoast.iss
+echo "3. Build the GMT PDF installer..."
 iscc /Q C:\GMT\guru\GMTsetup_pdf.iss
+echo "4. Build the GSHHS full/high installer..."
+iscc /Q C:\GMT\guru\GMTsetup_hfcoast.iss
 echo GMT installers are now placed in C:\GMT\ftp.
 echo Copy them over to your GMT/ftp on macnut.
