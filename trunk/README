@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.47 2008-05-13 03:55:08 guru Exp $
+#		$Id: README,v 1.48 2008-05-15 23:40:39 guru Exp $
 #
 #	Copyright (c) 1991-2008, P. Wessel & W. H. F. Smith
 #
@@ -85,7 +85,7 @@ discussion only considers UNIX/Linux/OS X installations.
 GMT uses several functions in the netCDF library.  Copy the file
 netcdf.tar.Z from
 
-	unidata.ucar.edu (128.117.140.3)
+	ftp.unidata.ucar.edu
 
 using anonymous ftp.  Then uncompress/tar and follow their
 instructions for installation.  Make sure you have netcdf version

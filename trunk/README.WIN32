@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.20 2008-04-26 22:36:16 guru Exp $
+	$Id: README.WIN32,v 1.21 2008-05-15 23:40:39 guru Exp $
 
 README file for installing GMT from scratch (i.e., compiling the
 source) under Windows.  If you only want to install executables,
@@ -23,7 +23,7 @@ To compile GMT for your Windows you must
    by the Microsoft (and other?) compilers and linkers to find these
    files.
 
-4  Read the src/gmtinstall.bat and src\gmtsuppl.bat file instructions
+4  Read the src\gmtinstall.bat and src\gmtsuppl.bat file instructions
    and make whatever modifications you need to (e.g., if you want to
    use static libraries or the optional TRIANGLE function.)
 
