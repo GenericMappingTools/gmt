@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.6 2008-05-15 03:26:14 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.7 2008-05-15 04:32:15 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -23,7 +23,7 @@ cd src
 call gmtinstall tri
 call gmtsuppl
 echo === 2. Run all the examples...
-cd examples
+cd C:\GMT\examples
 call do_examples
 cd C:\GMT
 echo === 3. Build the GMT Basic installer...
