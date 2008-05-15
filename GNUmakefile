@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.39 2008-05-13 03:55:08 guru Exp $
+#  $Id: GNUmakefile,v 1.40 2008-05-15 03:11:58 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -217,7 +217,7 @@ get_coast get_high get_full:
 #	TARRING OFF THE NEW VERSION
 #-------------------------------------------------------------------------------
 
-tar_all:	tar_progs tar_share tar_coast tar_tut tar_web tar_pdf tar_scripts tar_suppl
+tar_all:	tar_progs tar_share tar_tut tar_web tar_pdf tar_scripts tar_suppl
 		@echo " "
 		@echo "Completed tarring off entire archive"
 
