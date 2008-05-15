@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.60 2008-05-13 00:00:55 remko Exp $
+#	$Id: Makefile,v 1.61 2008-05-15 02:00:40 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -127,10 +127,12 @@ uninstall-suppl:
 
 install-data:
 		@if [ ! $(rootdir)/share = $(datadir) ]; then \
-			for dir in coast conf cpt custom dbase mgd77 mgg pattern pslib time x2sys ; do \
-				mkdir -p $(datadir)/$$dir ; \
-				\cp -p `ls -d $(rootdir)/share/$$dir/* | grep -v "\.in$$" | grep -v "CVS"` $(datadir)/$$dir ; \
-			done ; \
+			for dir in coast conf cpt custom dbase mgd77 mgg pattern pslib time x2sys; do \
+				mkdir -p $(datadir)/$$dir; \
+				if [ -d $(rootdir)/share/$$dir ]; then \
+					\cp -p `ls -d $(rootdir)/share/$$dir/* | grep -v "\.in$$" | grep -v "CVS"` $(datadir)/$$dir ; \
+				fi; \
+			done; \
 		else \
 			echo "Install share directory the same as distribution share directory - nothing copied"; \
 		fi
