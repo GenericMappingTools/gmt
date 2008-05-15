@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.40 2008-05-15 03:11:58 guru Exp $
+#  $Id: GNUmakefile,v 1.41 2008-05-15 23:55:39 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -107,7 +107,7 @@ usable:		install-all examples
 
 site:		usable webman pdfman docs
 
-archive:	site create tar_all zip_all
+archive:	site create tar_all
 
 manpages:	FILES
 		cd src ; $(MAKE) $@
