@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.294 2008-05-15 02:00:40 remko Exp $
+	$Id: ChangeLog,v 1.295 2008-05-15 22:00:36 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-05-15
 	* tar 4.3.1 made and released via email
 -----------------------------------------------------------------------------------------
 
+2005-05-15	pwessel
+	* xyz2grd.c:		The -S option incorrectly insisted that -G needed to be set.
+	
 2005-05-12	remko
 	* conf/gmtdefaults_{SI,US}.in:	Renamed from .gmtdefaults_* (no longer hidden)
 	* configure.ac, gmt_init.c:	Changed accordingly

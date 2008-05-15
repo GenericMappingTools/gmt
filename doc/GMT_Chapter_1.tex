@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.94 2008-05-14 20:02:54 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.95 2008-05-15 22:00:36 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -54,6 +54,7 @@ and there are at least 2 (3 with \Opt{Z}) input columns present.
 initialize new memory (yet almost all implementations of {\it realloc} appear to have done so anyway, masking the memory bug).
 \item [\GMTprog{psxy.c}]: The \Opt{D} option erroneously gave an error despite being used properly.
 \item [\GMTprog{psxyz.c}]: Similar problem as described for \GMTprog{project}.
+\item [\GMTprog{xyz2grd.c}]: The \Opt{S} option incorrectly insisted that \Opt{G} must be used.
 \end{description}
 
 In addition, many of the supplements did not work properly under Windows due to internal problems with the DLL.  Finally,
