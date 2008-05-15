@@ -1,6 +1,7 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.5 2008-05-15 03:21:02 guru Exp $
-REM	Compiles GMT and builds installers under Windows
+REM	$Id: GMT_winbuild.bat,v 1.6 2008-05-15 03:26:14 guru Exp $
+REM	Compiles GMT and builds installers under Windows.
+REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
 REM
 REM	Assumptions:
@@ -29,8 +30,6 @@ echo === 3. Build the GMT Basic installer...
 iscc /Q C:\GMT\guru\GMTsetup_basic.iss
 echo === 4. Build the GMT PDF installer...
 iscc /Q C:\GMT\guru\GMTsetup_pdf.iss
-echo === 5. Build the GSHHS full/high installer...
-iscc /Q C:\GMT\guru\GMTsetup_hfcoast.iss
 echo === GMT installers are now placed in C:\GMT\ftp.
 echo === Copy them over to your GMT/ftp on macnut.
 ECHO ON
