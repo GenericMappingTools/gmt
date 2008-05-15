@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.29 2008-05-14 19:15:56 guru Exp $
+#  $Id: Makefile,v 1.30 2008-05-15 03:11:58 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -44,13 +44,16 @@ help::
 #!update-version-test	: Update the remote TEST ftp and www server
 #!update-version-live	: Update the remote LIVE ftp and www server
 #!update-www-live	: Update the LIVE www server
-#!update-www-local	: Update the local www server
 #!update-www-test	: Update the TEST www server
-#!update-ftp-live	: Update the LIVE ftp server
-#!update-ftp-test	: Update the LIVE ftp server test dir
-#!update-ftp-local	: Update the TEST ftp server
+#!update-www-local	: Update the local sitetest/web dir
+#!update-ftp-live	: Update the LIVE ftp server with latest GMT
+#!update-ftp-test	: Update the LIVE ftp server test dir with latest GMT
+#!update-ftp-local	: Update the local sitetest/ftp dir with latest GMT
+#!update-gshhs-live	: Update the LIVE ftp server with latest GSHHS
+#!update-gshhs-test	: Update the LIVE ftp server test dir with latest GSHHS
+#!update-gshhs-local	: Update the Update the local sitetest/ftp with latest GSHHS
 #!clean-ftp		: Empty all local ftp archives
-#!clean-local		: Remove the local site directories
+#!clean-local		: Remove the local sitetest directories
 #!clean-test		: Empty the remote test directories
 #!hitmap		: Creates the GMT mirror page for site links
 #!---------------------------------------------------------------
@@ -162,21 +165,30 @@ update-ftp-live:
 	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib $(LIVEFTPDIR)/*'
 	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib
 	scp ../guru/install_gmt $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/G*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
-	scp ../ftp/G*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
+	scp ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
+	scp ../ftp/GMT*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
-	for p in coast high full; do \
-		echo "rm -f {GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
-	done
 	for p in basic pdf; do \
 		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
 		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
+	done
+	echo "rm -f $(LIVEFTPDIR)/gmt_server_job.sh" >> gmt_server_job.sh
+	scp gmt_server_job.sh $(FTPSERVER):$(LIVEFTPDIR)
+	ssh $(FTPSERVER) sh $(LIVEFTPDIR)/gmt_server_job.sh
+	rm -f gmt_server_job.sh
+
+update-gshhs-live:
+	scp ../ftp/GSHHS*.bz2  $(FTPSERVER):$(LIVEFTPDIR)
+	scp ../ftp/GSHHS*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
+	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
+	for p in coast high full; do \
+		echo "rm -f {GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
 	echo "rm -f windows/GSHHS_highfull_install.exe" >> gmt_server_job.sh;
 	echo "(cd windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)" >> gmt_server_job.sh;
@@ -193,28 +205,37 @@ update-ftp-test:
 	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib $(LIVEFTPDIR2)/*'
 	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib
 	scp ../guru/install_gmt $(FTPSERVER2):$(LIVEFTPDIR2)
-	scp ../ftp/G*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
-	scp ../ftp/G*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
+	scp ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../ftp/GMT*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
 	for p in pdf web tut share src scripts suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
-	for p in coast high full; do \
-		echo "rm -f {GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
-		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
-	done
 	for p in basic pdf; do \
 		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
 		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
+	done
+	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
+	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
+	ssh $(FTPSERVER2) sh $(LIVEFTPDIR2)/gmt_server_job.sh
+	rm -f gmt_server_job.sh
+
+update-gshhs-test:
+	scp ../ftp/GSHHS*.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../ftp/GSHHS*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
+	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
+	for p in coast high full; do \
+		echo "rm -f {GMT,GSHHS}_$$p.tar.bz2" >> gmt_server_job.sh; \
+		echo "$(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
 	echo "rm -f windows/GSHHS_highfull_install.exe" >> gmt_server_job.sh;
 	echo "(cd windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)" >> gmt_server_job.sh;
 	echo "rm -f $(LIVEFTPDIR2)/gmt_server_job.sh" >> gmt_server_job.sh
 	scp gmt_server_job.sh $(FTPSERVER2):$(LIVEFTPDIR2)
 	ssh $(FTPSERVER2) sh $(LIVEFTPDIR2)/gmt_server_job.sh
-#	rm -f gmt_server_job.sh
+	rm -f gmt_server_job.sh
 
 update-ftp-local:
 	if [ `cat ../ftp/.message | wc -c | awk '{printf "%d\n", $$1}'` -ge 1300 ]; then \
@@ -224,20 +245,24 @@ update-ftp-local:
 	rm -rf $(TESTFTPDIR)
 	mkdir -p $(TESTFTPDIR)/windows $(TESTFTPDIR)/contrib
 	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > $(TESTFTPDIR)/install_gmt
-	cp -f ../ftp/G*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
-	cp -f ../ftp/G*.exe $(TESTFTPDIR)/windows
+	cp -f ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
+	cp -f ../ftp/GMT*.exe $(TESTFTPDIR)/windows
 	cp -f ../ftp/gawk*.zip $(TESTFTPDIR)/windows
 	for p in pdf web tut share src scripts suppl triangle; do \
 		\rm -f $(TESTFTPDIR)/GMT_$$p.tar.bz2; \
 		(cd $(TESTFTPDIR); $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
 	done
-	for p in coast high full; do \
-		\rm -f $(TESTFTPDIR)/{GMT,GSHHS}_$$p.tar.bz2; \
-		(cd $(TESTFTPDIR); $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
-	done
 	for p in basic pdf; do \
 		rm -f windows/GMT_$$p_install.exe; \
 		(cd $(TESTFTPDIR)/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe); \
+	done
+
+update-gshhs-local:
+	cp -f ../ftp/GSHHS*.bz2 $(TESTFTPDIR)
+	cp -f ../ftp/GSHHS*.exe $(TESTFTPDIR)/windows
+	for p in coast high full; do \
+		\rm -f $(TESTFTPDIR)/{GMT,GSHHS}_$$p.tar.bz2; \
+		(cd $(TESTFTPDIR); $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
 	done
 	rm -f windows/GSHHS_highfull_install.exe
 	(cd $(TESTFTPDIR)/windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)
