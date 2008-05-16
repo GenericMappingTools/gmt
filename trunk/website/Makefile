@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.30 2008-05-15 03:11:58 guru Exp $
+#  $Id: Makefile,v 1.31 2008-05-16 00:16:44 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -39,7 +39,6 @@ help::
 #!
 #!make <target>, where <target> can be:
 #!
-#!web			: Create the examples for the web site
 #!update-version-local	: Update the local ftp and www test dirs
 #!update-version-test	: Update the remote TEST ftp and www server
 #!update-version-live	: Update the remote LIVE ftp and www server

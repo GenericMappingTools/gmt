@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.133 2008-05-14 19:18:07 guru Exp $
+#	$Id: install_gmt.sh,v 1.134 2008-05-16 00:21:11 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1221,7 +1221,16 @@ if [ -f src/makegmt.macros ]; then
 	echo '---> Clean out old executables, *.o, *.a, and makegmt.macros' >&2
 	$GMT_make spotless || exit
 fi
-	
+
+# Echo out the exact configure command for possible reuse by the user
+
+cat << EOF >&2
+./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
+  --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
+  --mandir=$GMT_man --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip \
+  $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir
+EOF
+
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   --mandir=$GMT_man --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip \
