@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.42 2008-05-16 04:10:14 guru Exp $
+#  $Id: GNUmakefile,v 1.43 2008-05-16 19:14:31 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -287,10 +287,10 @@ tar_coast tar_high tar_full:	ftpdir
 #	and then building GMT installers with Inno Setup
 
 tar_win:	ftpdir
-		echo "make GMT$(GMT_VERSION)_win.tar.bz2"
+		echo "make WINGMT$(GMT_VERSION)_win.tar.bz2"
 		ls src/gmt_version.h share/conf/gmt.conf share/conf/gmtdefaults_?? | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
 		ls guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT$(GMT_VERSION)/:' >> tmp.lis
-		tar -cjf ftp/GMT$(GMT_VERSION)_win.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
+		tar -cjf ftp/WINGMT$(GMT_VERSION)_win.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
 
 include Makefile
