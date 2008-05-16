@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.41 2008-05-15 23:55:39 guru Exp $
+#  $Id: GNUmakefile,v 1.42 2008-05-16 04:10:14 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -283,41 +283,15 @@ tar_coast tar_high tar_full:	ftpdir
 			tar -cjf ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2 COPYING \
 			share/coast/binned_*_[$$suf].cdf -C src/gshhs README.gshhs
 
-#	The zip_dist target is for GMT Developers to move everything onto a Windows platform
-#	for building GMT installers with Inno Setup
+#	The tar_win target is for GMT Developers building GMT on a Windows platform without configure
+#	and then building GMT installers with Inno Setup
 
-zip_dist:
-	echo "make GMT_dist.zip"
-	rm -f ftp/GMT_dist.zip
-	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip GMT/COPYING)
-	grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:GMT/:' > asc.lis
-	grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT/:' >> asc.lis
-	ls src/gmt_version.h share/conf/gmt.conf share/conf/gmtdefaults_?? | sed -e 's:^:GMT/:' >> asc.lis
-	ls guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT/:' >> asc.lis
-	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
-	grep -vh '#' guru/GMT_share_files_ascii.lis | sed -e 's:^:GMT/:' > asc.lis
-	grep -vh '#' guru/GMT_share_files_bin.lis   | sed -e 's:^:GMT/:' > bin.lis
-	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
-	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip `cat GMT/bin.lis`)
-	grep -v '\.nc$$' guru/GMT_tutorial.lis | sed -e 's:^:GMT/:' > asc.lis
-	grep '\.nc$$' guru/GMT_tutorial.lis | sed -e 's:^:GMT/:' > bin.lis
-	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
-	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip `cat GMT/bin.lis`)
-	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip  \
-		GMT/www/gmt/gmt_{man,services,suppl}.html GMT/www/gmt/doc/html/*.html \
-		GMT/www/gmt/doc/html/GMT_{Docs,Tutorial}/*.html)
-	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip GMT/www/gmt/gmt_back.gif \
-		GMT/www/gmt/doc/html/GMT_{Docs,Tutorial}/*.png)
-	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip GMT/www/gmt/doc/pdf/GMT_*.pdf)
-	egrep -v '\.sh$$|\.csh$$|\.nc$$|\.bz2$$|\.ras$$' guru/GMT_examples.lis | sed -e 's:^:GMT/:' > asc.lis
-	egrep '\.nc$$|\.bz2$$|\.ras$$' guru/GMT_examples.lis | sed -e 's:^:GMT/:' > bin.lis
-	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
-	(cd ..; zip -r -9 -q    GMT/ftp/GMT_dist.zip `cat GMT/bin.lis`)
-	egrep -v '\.man$$|\.html|xgrid|configure' guru/GMT_suppl.lis | sed -e 's:^:GMT/:' > asc.lis
-	grep '\.html$$' guru/GMT_suppl.lis | sed -e 's:^:GMT/:' >> asc.lis
-	(cd ..; zip -r -9 -q -l GMT/ftp/GMT_dist.zip `cat GMT/asc.lis`)
-	(cd ..; zip -r -9 -q GMT/ftp/GMT_dist.zip GMT/share/coast/*.cdf)
-	rm -f asc.lis bin.lis
+tar_win:	ftpdir
+		echo "make GMT$(GMT_VERSION)_win.tar.bz2"
+		ls src/gmt_version.h share/conf/gmt.conf share/conf/gmtdefaults_?? | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
+		ls guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT$(GMT_VERSION)/:' >> tmp.lis
+		tar -cjf ftp/GMT$(GMT_VERSION)_win.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
+		rm -f tmp.lis
 
 include Makefile
 
