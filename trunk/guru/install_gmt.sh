@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.134 2008-05-16 00:21:11 guru Exp $
+#	$Id: install_gmt.sh,v 1.135 2008-05-16 20:30:55 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1325,7 +1325,7 @@ fi
 
 cd $topdir
 if [ "$GMT_delete" = "y" ]; then
-	rm -f GMT*.tar.$suffix
+	rm -f GMT*.tar.$suffix GSHHS*.tar.$suffix
 	if [ -f GMTfullc.bz2 ]; then	# Special files copied from CD-ROM
 		rm -f GMTfull?.bz2 GMThigh?.bz2
 	fi
