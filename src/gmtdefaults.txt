@@ -409,12 +409,13 @@ printed without leading zeros (default uses fixed width formats) [yyyy-mm-dd].
 .B OUTPUT_DEGREE_FORMAT
 Formatting template that indicates how an output geographical coordinate is to be formatted.  This template
 is then used to guide the writing of geographical coordinates in data fields.  The template is in
-general of the form [+|-]D or [+|-]ddd[:mm[:ss]][.xxx][F].  The various terms have the following purpose:
+general of the form [+|-]D or [+|-]ddd[:mm[:ss]][.xxx][F].  By default, longitudes will be reported in the -180/+180 range.
+The various terms have the following purpose:
 .sp
 .br
-+	means output longitude in the 0 to 360 range [-180/+180]
++	Output longitude in the 0 to 360 range [-180/+180]
 .br
--	means output longitude in the -360 to 0 range [-180/+180]
+-	Output longitude in the -360 to 0 range [-180/+180]
 .br
 D	Use \fBD_FORMAT\fP for floating point degrees.
 .br
