@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.32 2008-05-19 01:21:22 remko Exp $
-AC_REVISION($Revision: 1.32 $)
+dnl $Id: configure.ac,v 1.33 2008-05-19 02:00:55 remko Exp $
+AC_REVISION($Revision: 1.33 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -11,17 +11,14 @@ dnl First specify the GMT and GSHHS version and release date
 dnl -----------------------------------------------------------------
 dnl Below, set the VERSION to be created.
 dnl Also, fix the MANDATE and DOCDATE values.
-dnl For final version comment out the last two lines in this section
+dnl For final version set CVS_VERSION to 0
 dnl
 AC_INIT(GMT, 4.3.2, gmt-help@hawaii.edu)
 MANDATE="15 May 2008"
 DOCDATE="May 2008"
 DOCYEAR="2008"
 GSHHS_VERSION=1.10
-dnl
-dnl These lines only for CVS versions (comment out for FINAL versions)
-PACKAGE_VERSION="$PACKAGE_VERSION (CVS \"__DATE__\" \"__TIME__\")"
-MANDATE="\"__DATE__\""
+CVS_VERSION=1
 dnl
 dnl -----------------------------------------------------------------
 dnl The remainder should need no editing
@@ -61,6 +58,7 @@ AC_SUBST(DOCDATE)
 AC_SUBST(DOCYEAR)
 AC_SUBST(MANDATE)
 AC_SUBST(GSHHS_VERSION)
+AC_SUBST(CVS_VERSION)
 AC_SUBST(LIBEXT)
 AC_SUBST(SL)
 AC_SUBST(SL_VERSION)
