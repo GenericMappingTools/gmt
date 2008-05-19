@@ -1,5 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.295 2008-05-15 22:00:36 guru Exp $
+	$Id: ChangeLog,v 1.296 2008-05-19 01:21:22 remko Exp $
+-----------------------------------------------------------------------------------------
+
+2005-05-18	remko
+	* gmt_nc.c:		Determine x- and y-range from actual_range attributes when
+				there are no coordinate arrays, instead of vice versa.
+	* configure.ac:		Version updated to 4.3.2. Add date and time to CVS version.
+
 -----------------------------------------------------------------------------------------
 2008-05-15
 	* tar 4.3.1 made and released via email

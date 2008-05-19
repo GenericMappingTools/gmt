@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.31 2008-05-12 23:56:47 remko Exp $
-AC_REVISION($Revision: 1.31 $)
+dnl $Id: configure.ac,v 1.32 2008-05-19 01:21:22 remko Exp $
+AC_REVISION($Revision: 1.32 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -10,13 +10,18 @@ dnl -----------------------------------------------------------------
 dnl First specify the GMT and GSHHS version and release date
 dnl -----------------------------------------------------------------
 dnl Below, set the VERSION to be created.
-dnl Also, you may want to change the DATE values.
+dnl Also, fix the MANDATE and DOCDATE values.
+dnl For final version comment out the last two lines in this section
 dnl
-AC_INIT(GMT, 4.3.1, gmt-help@hawaii.edu)
+AC_INIT(GMT, 4.3.2, gmt-help@hawaii.edu)
 MANDATE="15 May 2008"
 DOCDATE="May 2008"
 DOCYEAR="2008"
 GSHHS_VERSION=1.10
+dnl
+dnl These lines only for CVS versions (comment out for FINAL versions)
+PACKAGE_VERSION="$PACKAGE_VERSION (CVS \"__DATE__\" \"__TIME__\")"
+MANDATE="\"__DATE__\""
 dnl
 dnl -----------------------------------------------------------------
 dnl The remainder should need no editing
@@ -139,12 +144,15 @@ chip=`uname -p`
 Sun_rev=`uname -r | grep '^5.'`
 dnl
 dnl -----------------------------------------------------------------
-dnl Misc. parameters
+dnl Versioning information
 dnl -----------------------------------------------------------------
 dnl
 rootdir=`pwd`
-LIB_VERSION=`echo $PACKAGE_VERSION | tr '[a-zA-Z]' ' '`
+LIB_VERSION=`echo $PACKAGE_VERSION | cut -d' ' -f1`
 LIB_MAJOR_VERSION=`echo $PACKAGE_VERSION | cut -c-1`
+#if test -d "CVS" ; then
+#	PACKAGE_VERSION="$PACKAGE_VERSION (CVS \"__DATE__\" \"__TIME__\")"
+#fi
 dnl
 dnl -----------------------------------------------------------------
 dnl Check for libraries.  Most installs will need to have
