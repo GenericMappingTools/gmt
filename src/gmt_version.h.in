@@ -1,3 +1,12 @@
+#if @CVS_VERSION@
+#ifdef __LP64__
+#define GMT_VERSION "@PACKAGE_VERSION@ (CVS "__DATE__" "__TIME__") [64-bit]"
+#else
+#define GMT_VERSION "@PACKAGE_VERSION@ (CVS "__DATE__" "__TIME__")"
+#endif
+#define GMT_STRING "@PACKAGE_STRING@ (CVS)"
+#define MANDATE __DATE__
+#else
 #ifdef __LP64__
 #define GMT_VERSION "@PACKAGE_VERSION@ [64-bit]"
 #else
@@ -5,3 +14,4 @@
 #endif
 #define GMT_STRING "@PACKAGE_STRING@"
 #define MANDATE "@MANDATE@"
+#endif
