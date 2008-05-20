@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.298 2008-05-19 19:08:50 guru Exp $
+	$Id: ChangeLog,v 1.299 2008-05-20 01:45:15 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2005-05-19	pwessel
+	* pscoast.c:		The -Q option should not require -J
 	* pstext.c:		Cannot remote blank lines when in paragraph mode as those
 				lines signal the end of each paragraph.
 2005-05-18	remko

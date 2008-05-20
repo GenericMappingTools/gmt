@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.64 2008-04-29 19:57:06 guru Exp $
+ *	$Id: gmt_project.h,v 1.65 2008-05-20 01:45:15 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -345,6 +345,8 @@ struct GMT_THREE_D {
 	double cos_az, sin_az, cos_el, sin_el;
 	double corner_x[4], corner_y[4];
 	double xmin, xmax, ymin, ymax;
+	double world_x, world_y, world_z;	/* Users coordinates of fixed point */
+	double view_x, view_y;			/* Desired projected 2-D coordinates of fixed point */
 	double phi[3];		/* Angle each axis makes with horizontal */
 	double xshrink[3];	/* Shrinkage in x-dir due to projection */
 	double yshrink[3];	/* Same for y-dir */
@@ -355,6 +357,7 @@ struct GMT_THREE_D {
 	int k;			/* For drawing-axis. 0 = plot in x dir, 1 in y */
 	int face[3];		/* Tells if this facet has normal in pos direction */
 	int draw[4];		/* axes to draw */
+	BOOLEAN fixed;		/* TRUE if we want a given point to be fixed in the projection [for animations] */
 };
 
 struct GMT_DATUM {	/* Main parameter for a particular datum */
