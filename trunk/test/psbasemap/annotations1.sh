@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: annotations1.sh,v 1.1 2008-05-21 01:31:49 guru Exp $
+#	$Id: annotations1.sh,v 1.2 2008-05-21 19:05:50 guru Exp $
 
 ps=annotations1.ps
 
@@ -15,7 +15,6 @@ $psbasemap -R-0:00:50/0:01:00/-0:01:00/0:01:00 -B0.5mwSnE -O -K  --PLOT_DEGREE_F
 $psbasemap -R-0:00:30/0:00:30/-0:01:00/0:01:00 -B30cWSne -O -K --PLOT_DEGREE_FORMAT=ddd:mm:ssF -Xa1i -Ya7.5i >> $ps
 $psbasemap -R-0:00:04/0:00:05/-0:00:05/0:00:05 -B2.5cwSnE -O -K --PLOT_DEGREE_FORMAT=ddd:mm:ss.xF -Xa4.5i -Ya7.5i >> $ps
 psxy -R -J -O /dev/null >> $ps
-gv $ps &
 
 rm -f .gmtcommands4
 
