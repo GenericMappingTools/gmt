@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.366 2008-05-09 17:18:01 remko Exp $
+ *	$Id: gmt_support.c,v 1.367 2008-05-21 01:31:49 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7680,7 +7680,7 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 /* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed */
 /* worldmap:	T/F, whatever GMT_world_map is */
 {
-	int fmt, sign, d, m, s, m_sec, level, type;
+	int k, n_items, fmt, sign, d, m, s, m_sec, level, type;
 	BOOLEAN zero_fix = FALSE;
 	char letter = 0, format[GMT_TEXT_LEN];
 
@@ -7688,6 +7688,7 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 	
 	if (GMT_plot_calclock.geo.order[1] == -1) do_minutes = FALSE;
 	if (GMT_plot_calclock.geo.order[2] == -1) do_seconds = FALSE;
+	for (k = n_items = 0; k < 3; k++) if (GMT_plot_calclock.geo.order[k] >= 0) n_items++;	/* How many of d, m, and s are requested as integers */
 	
 	if (lonlat == 0) {	/* Fix longitudes range first */
 		GMT_lon_range_adjust (GMT_plot_calclock.geo.range, &val);
@@ -7732,7 +7733,7 @@ void GMT_get_annot_label (double val, char *label, int do_minutes, int do_second
 	else if (GMT_plot_calclock.geo.decimal)
 		sprintf (label, GMT_plot_calclock.geo.x_format, val, letter);
 	else {
-		(void) GMT_geo_to_dms (val, do_seconds, GMT_plot_calclock.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
+		(void) GMT_geo_to_dms (val, n_items, GMT_plot_calclock.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 		if (d == 0 && sign == -1) {	/* Must write out -0 degrees, do so by writing -1 and change 1 to 0 */
 			d = -1;
 			zero_fix = TRUE;

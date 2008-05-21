@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.200 2008-05-02 01:15:43 guru Exp $
+ *	$Id: gmt_map.c,v 1.201 2008-05-21 01:31:49 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3412,6 +3412,8 @@ int GMT_map_jump_x (double x0, double y0, double x1, double y1)
 	/* TRUE if x-distance between points exceeds 1/2 map width at this y value */
 	double dx, map_half_size;
 
+	if (! (GMT_IS_CYLINDRICAL || GMT_IS_MISC)) return (0);	/* Only projections with peroidic boundaries may apply */
+	
 	if (!GMT_IS_MAPPING || fabs (project_info.w - project_info.e) < 90.0) return (FALSE);
 
 	map_half_size = MAX (GMT_half_map_width (y0), GMT_half_map_width (y1));
@@ -6940,11 +6942,11 @@ int GMT_map_latcross (double lat, double west, double east, struct GMT_XINGS **x
 
 	X = (struct GMT_XINGS *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_XINGS), "GMT_map_latcross");
 
-	lon_old = west - GMT_SMALL;
+	lon_old = west - 2.0 * GMT_SMALL;
 	GMT_map_outside (lon_old, lat);
 	GMT_geo_to_xy (lon_old, lat, &last_x, &last_y);
 	for (i = 1; i <= GMT_n_lon_nodes; i++) {
-		lon = (i == GMT_n_lon_nodes) ? east + GMT_SMALL : west + i * GMT_dlon;
+		lon = (i == GMT_n_lon_nodes) ? east + 2.0 * GMT_SMALL : west + i * GMT_dlon;
 		GMT_map_outside (lon, lat);
 		GMT_geo_to_xy (lon, lat, &this_x, &this_y);
 		nx = 0;
@@ -6997,8 +6999,8 @@ int GMT_map_loncross (double lon, double south, double north, struct GMT_XINGS *
 
 	X = (struct GMT_XINGS *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_XINGS), "GMT_map_loncross");
 
-	lat_old = ((south - GMT_SMALL) >= -90.0) ? south - GMT_SMALL : south;	/* Outside */
-	if ((north + GMT_SMALL) <= 90.0) north += GMT_SMALL;
+	lat_old = ((south - (2.0 * GMT_SMALL)) >= -90.0) ? south - 2.0 * GMT_SMALL : south;	/* Outside */
+	if ((north + 2.0 * GMT_SMALL) <= 90.0) north += 2.0 * GMT_SMALL;
 	GMT_map_outside (lon, lat_old);
 	GMT_geo_to_xy (lon, lat_old, &last_x, &last_y);
 	for (j = 1; j <= GMT_n_lat_nodes; j++) {
