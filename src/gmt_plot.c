@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.228 2008-04-30 01:32:56 guru Exp $
+ *	$Id: gmt_plot.c,v 1.229 2008-05-21 01:31:49 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -933,7 +933,7 @@ double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, do
 	dr = 0.5 * width;
 	s = ((project_info.north_pole && side == 2) || (!project_info.north_pole && side == 0)) ? -1.0 : +1.0;	/* North: needs shorter radius.  South: Needs longer radius (opposite in S hemi) */
 	r_inc = s*scale[0] * width;
-	if (GMT_360_RANGE (lonA, lonB)) {	/* Full 360-degree cirle */
+	if (GMT_IS_AZIMUTHAL && GMT_360_RANGE (lonA, lonB)) {	/* Full 360-degree cirle */
 		ps_arc (project_info.c_x0, project_info.c_y0, radius, 0.0, 360.0, PSL_ARC_DRAW);
 		ps_arc (project_info.c_x0, project_info.c_y0, radius + r_inc, 0.0, 360.0, PSL_ARC_DRAW);
 		if (secondary_too)  ps_arc (project_info.c_x0, project_info.c_y0, radius + 2.0 * r_inc, 0.0, 360.0, PSL_ARC_DRAW);
@@ -1069,10 +1069,6 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 		frame_info.side[0] = FALSE;
 	if (project_info.north_pole && n >= 90.0) /* Cannot have northern boundary */
 		frame_info.side[2] = FALSE;
-	if (GMT_360_RANGE (w,e) || GMT_IS_ZERO (e - w)) {
-		frame_info.side[1] = FALSE;
-		frame_info.side[3] = FALSE;
-	}
 
 	if (gmtdefs.basemap_type == GMT_IS_PLAIN) { /* Draw plain boundary and return */
 		GMT_wesn_map_boundary (w, e, s, n);

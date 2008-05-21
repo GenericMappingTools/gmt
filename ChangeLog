@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.299 2008-05-20 01:45:15 guru Exp $
+	$Id: ChangeLog,v 1.300 2008-05-21 01:31:48 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2005-05-20	pwessel
+	* gmt_io.c:		Did not properly apply PLOT_DEGREE_FORMAT=ddd.x for decimal degrees
+	* gmt_map.c:		Determining where parallels and meridians intersected the map
+				boundary where susceptible to roundoff for very small regions
+	* gmt_plot.c:		Checked for map jumps even for non-periodic map boundaries.
 
 2005-05-19	pwessel
 	* pscoast.c:		The -Q option should not require -J

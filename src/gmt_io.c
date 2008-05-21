@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.159 2008-05-12 22:35:47 guru Exp $
+ *	$Id: gmt_io.c,v 1.160 2008-05-21 01:31:49 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -971,9 +971,9 @@ BOOLEAN GMT_points_are_antipodal (double lonA, double latA, double lonB, double 
 
 void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text)
 {
-	int d, m, s, m_sec;
+	int k, n_items, d, m, s, m_sec;
 	char letter;
-	BOOLEAN seconds, minus;
+	BOOLEAN minus;
 
 	if (!is_lat) GMT_lon_range_adjust (GMT_io.geo.range, &geo);
 	if (GMT_io.geo.decimal) {	/* Easy */
@@ -991,22 +991,26 @@ void GMT_format_geo_output (BOOLEAN is_lat, double geo, char *text)
 	else	/* No letter means we print the NULL character */
 		letter = 0;
 
-	seconds = (GMT_io.geo.order[2] > 0);		/* Are we doing dd:mm:ss */
-	minus = GMT_geo_to_dms (geo, seconds, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
+	for (k = n_items = 0; k < 3; k++) if (GMT_io.geo.order[k] >= 0) n_items++;	/* How many of d, m, and s are requested as integers */
+	minus = GMT_geo_to_dms (geo, n_items, GMT_io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 	if (minus) text[0] = '-';	/* Must manually insert leading minus sign when degree == 0 */
 	if (GMT_io.geo.n_sec_decimals) {		/* Wanted fraction printed */
-		if (seconds)
+		if (n_items == 3)
 			sprintf (&text[minus], GMT_io.geo.y_format, d, m, s, m_sec, letter);
-		else
+		else if (n_items == 2)
 			sprintf (&text[minus], GMT_io.geo.y_format, d, m, m_sec, letter);
+		else
+			sprintf (&text[minus], GMT_io.geo.y_format, d, m_sec, letter);
 	}
-	else if (seconds)
+	else if (n_items == 3)
 		sprintf (&text[minus], GMT_io.geo.y_format, d, m, s, letter);
-	else
+	else if (n_items == 2)
 		sprintf (&text[minus], GMT_io.geo.y_format, d, m, letter);
+	else
+		sprintf (&text[minus], GMT_io.geo.y_format, d, letter);
 }
 
-BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix)
+BOOLEAN GMT_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int *s,  int *ix)
 {
 	/* Convert floating point degrees to dd:mm[:ss][.xxx].  Returns TRUE if d = 0 and val is negative */
 	BOOLEAN minus;
@@ -1016,7 +1020,7 @@ BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m
 	minus = (val < 0.0);
 	step = (fact == 0.0) ? GMT_CONV_LIMIT : 0.5 / fact;  	/* Precision desired in seconds (or minutes); else just deal with roundoff */
 
-	if (seconds) {		/* Want dd:mm:ss[.xxx] format */
+	if (n_items == 3) {		/* Want dd:mm:ss[.xxx] format */
 		sec = GMT_DEG2SEC_F * fabs (val) + step;	/* Convert to seconds */
 		isec = (int)floor (sec);			/* Integer seconds */
 		fsec = sec - (double)isec;  			/* Leftover fractional second */
@@ -1027,7 +1031,7 @@ BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m
 		*s = isec;					/* Integer seconds */
 		*ix = (int)floor (fsec * fact);			/* Fractional seconds scaled to integer */
 	}
-	else {		/* Want dd:mm[.xx] format */
+	else if (n_items == 2) {		/* Want dd:mm[.xx] format */
 		min = GMT_DEG2MIN_F * fabs (val) + step;	/* Convert to minutes */
 		imin = (int)floor (min);			/* Integer minutes */
 		fmin = min - (double)imin;  			/* Leftover fractional minute */
@@ -1036,6 +1040,15 @@ BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m
 		*m = imin;					/* Integer minutes */
 		*s = 0;						/* No seconds */
 		*ix = (int)floor (fmin * fact);			/* Fractional minutes scaled to integer */
+	}
+	else {		/* Want dd[.xx] format */
+		min = fabs (val) + step;			/* Convert to degrees */
+		imin = (int)floor (min);			/* Integer degrees */
+		fmin = min - (double)imin;  			/* Leftover fractional degree */
+		*d = imin;					/* Integer degrees */
+		*m = 0;						/* Integer minutes */
+		*s = 0;						/* No seconds */
+		*ix = (int)floor (fmin * fact);			/* Fractional degrees scaled to integer */
 	}
 	if (minus) {	/* OK, change sign, but watch for *d = 0 */
 		if (*d)	/* Non-zero degree term is easy */

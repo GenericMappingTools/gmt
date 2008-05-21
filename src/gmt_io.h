@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.69 2008-05-12 22:35:47 guru Exp $
+ *	$Id: gmt_io.h,v 1.70 2008-05-21 01:31:49 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -107,7 +107,7 @@ EXTERN_MSC int GMT_ascii_output_one (FILE *fp, double x, int col);
 EXTERN_MSC void GMT_ascii_format_one (char *text, double x, int type);
 EXTERN_MSC void GMT_lon_range_adjust (int range, double *lon);		/* Adjust the longitude given the desired range */
 EXTERN_MSC BOOLEAN GMT_points_are_antipodal (double lonA, double latA, double lonB, double latB);
-EXTERN_MSC BOOLEAN GMT_geo_to_dms (double val, BOOLEAN seconds, double fact, int *d, int *m,  int *s,  int *ix);
+EXTERN_MSC BOOLEAN GMT_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int *s,  int *ix);
 EXTERN_MSC BOOLEAN GMT_not_numeric (char *text);				/* Rules out _some_ text as possible numerics */
 EXTERN_MSC BOOLEAN GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 EXTERN_MSC int GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen);
