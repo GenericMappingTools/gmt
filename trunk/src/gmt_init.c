@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.350 2008-05-13 12:35:41 remko Exp $
+ *	$Id: gmt_init.c,v 1.351 2008-05-22 04:25:20 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4812,6 +4812,7 @@ void GMT_prepare_3D (void) {	/* Initialize 3-D parameters */
 	project_info.zmin = project_info.zmax = 0.0;
 	GMT_z_forward = (PFI) NULL;
 	GMT_z_inverse = (PFI) NULL;
+	memset ((void *)&z_project, 0, sizeof (struct GMT_THREE_D));
 	z_project.view_azimuth = 180.0;
 	z_project.view_elevation = 90.0;
 	project_info.z_bottom = project_info.z_top = 0.0;
