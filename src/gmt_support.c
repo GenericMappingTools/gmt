@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.367 2008-05-21 01:31:49 guru Exp $
+ *	$Id: gmt_support.c,v 1.368 2008-05-22 04:25:20 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1219,6 +1219,53 @@ double GMT_getradius (char *line)
 	if (save) line[last] = save;
 
 	return (radius * scale);
+}
+
+int GMT_get_proj3D (char *line, double *az, double *el)
+{
+	int k, pos = 0, error = 0;
+	char txt[BUFSIZ], p[GMT_LONG_TEXT], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
+	
+	if ((k = sscanf (line, "%lf/%lf", az, el)) < 2) {
+		fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+cx0[cimp]/y0[cimp]][+glon0/lat0[/z0]]\n", GMT_program, p);
+		return 1;
+	}
+	for (k = 0; line[k] && line[k] != '+'; k++);	/* Look for +<options> strings */
+	if (!line[k]) return 0;	/* OK, done here */
+	
+	/* Decode new-style +separated substrings */
+
+	z_project.fixed = TRUE;
+	k++;
+	if (!line[k]) return 0;	/* No specific settings given, we will apply default values in 3D init */
+	strcpy (txt, &line[k]);
+	while ((GMT_strtok (txt, "+", &pos, p))) {
+		switch (p[0]) {
+			case 'c':	/* Specify fixed point in 2-D projected coordinates */
+				if ((k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b)) != 2) {
+					fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+cx0[cimp]/y0[cimp]][+glon0/lat0[/z0]]\n", GMT_program, p);
+					return 1;
+				}
+				z_project.view_x = GMT_convert_units (txt_a, GMT_INCH);
+				z_project.view_y = GMT_convert_units (txt_b, GMT_INCH);
+				z_project.view_given = TRUE;
+				break;
+			case 'g':
+				if ((k = sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c)) < 2) {
+					fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+cx0[cimp]/y0[cimp]][+glon0/lat0[/z0]]\n", GMT_program, p);
+					return 1;
+				}
+				error += GMT_verify_expectations (GMT_io.in_col_type[0], GMT_scanf (txt_a, GMT_io.in_col_type[0], &z_project.world_x), txt_a);
+				error += GMT_verify_expectations (GMT_io.in_col_type[1], GMT_scanf (txt_b, GMT_io.in_col_type[1], &z_project.world_y), txt_b);
+				if (k == 3) error += GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (txt_c, GMT_io.in_col_type[2], &z_project.world_z), txt_c);
+				z_project.world_given = TRUE;
+				break;
+			default:
+				fprintf (stderr, "%s: ERROR -E: Unrecognized modifier %s\n", GMT_program, p);
+				break;
+		}
+	}
+	return (error);
 }
 
 void GMT_RI_prepare (struct GRD_HEADER *h)

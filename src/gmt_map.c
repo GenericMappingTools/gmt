@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.201 2008-05-21 01:31:49 guru Exp $
+ *	$Id: gmt_map.c,v 1.202 2008-05-22 04:25:20 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -813,6 +813,12 @@ int GMT_init_three_D (void) {
 	z_project.sign[1] = z_project.sign[2] = 1.0;
 	z_project.z_axis = (z_project.quadrant%2) ? z_project.quadrant : z_project.quadrant - 2;
 
+	if (z_project.fixed) {
+		GMT_geoz_to_xy (z_project.world_x, z_project.world_y, z_project.world_z, &x, &y);
+		z_project.x_off = z_project.view_x - x + z_project.xmin;
+		z_project.y_off = z_project.view_y - y + z_project.ymin;
+	}
+	
 	return (GMT_NOERROR);
 }
 
@@ -895,14 +901,14 @@ void GMT_geoz_to_xy (double x, double y, double z, double *x_out, double *y_out)
 	double x0, y0, z0;
 	GMT_geo_to_xy (x, y, &x0, &y0);
 	GMT_z_to_zz (z, &z0);
-	*x_out = x0 * z_project.cos_az - y0 * z_project.sin_az;
-	*y_out = (x0 * z_project.sin_az + y0 * z_project.cos_az) * z_project.sin_el + z0 * z_project.cos_el;
+	*x_out = x0 * z_project.cos_az - y0 * z_project.sin_az + z_project.x_off;
+	*y_out = (x0 * z_project.sin_az + y0 * z_project.cos_az) * z_project.sin_el + z0 * z_project.cos_el + z_project.y_off;
 }
 
 void GMT_xyz_to_xy (double x, double y, double z, double *x_out, double *y_out)
 {	/* projects xyz onto xy plane */
-	*x_out = x * z_project.cos_az - y * z_project.sin_az;
-	*y_out = (x * z_project.sin_az + y * z_project.cos_az) * z_project.sin_el + z * z_project.cos_el;
+	*x_out = x * z_project.cos_az - y * z_project.sin_az + z_project.x_off;
+	*y_out = (x * z_project.sin_az + y * z_project.cos_az) * z_project.sin_el + z * z_project.cos_el + z_project.y_off;
 }
 
 void GMT_xy_do_z_to_xy (double x, double y, double z, double *x_out, double *y_out)
@@ -910,8 +916,8 @@ void GMT_xy_do_z_to_xy (double x, double y, double z, double *x_out, double *y_o
 	double z_out;
 
 	GMT_z_to_zz (z, &z_out);
-	*x_out = x * z_project.cos_az - y * z_project.sin_az;
-	*y_out = (x * z_project.sin_az + y * z_project.cos_az) * z_project.sin_el + z_out * z_project.cos_el;
+	*x_out = x * z_project.cos_az - y * z_project.sin_az + z_project.x_off;
+	*y_out = (x * z_project.sin_az + y * z_project.cos_az) * z_project.sin_el + z_out * z_project.cos_el + z_project.y_off;
 }
 
 void GMT_project3D (double x, double y, double z, double *x_out, double *y_out, double *z_out)
