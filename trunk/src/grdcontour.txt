@@ -65,9 +65,7 @@ the file names are instead \fIC#_i\fP (interior) or \fIC#_e\fP (external) plus e
 make short file names that will work with GNU utilities under DOS.
 However, when \fB\-M\fP
 is used in conjunction with \fB\-D\fP a single multisegment file is created instead.
-.TP
-.B \-E
-Sets the viewpoint's azimuth and elevation for perspective view [180/90].\"'
+#include "explain_-E.txt"
 .TP
 .B \-F
 Force dumped contours to be oriented so that higher z-values are to the left (\fB\-Fl\fP [Default])

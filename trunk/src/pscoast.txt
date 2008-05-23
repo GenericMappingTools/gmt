@@ -9,7 +9,7 @@ pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 .SH SYNOPSIS
 \fBpscoast\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(A)\fImin_area\fP[\fI/min_level/max_level\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIfill\fP ] [ OPT(D)\fIresolution\fP ] 
-[ OPT(E)\fIazimuth/elevation\fP ] [ OPT(G)\fIfill\fP|\fBc\fP ] 
+[ GMT_E_OPT ] [ OPT(G)\fIfill\fP|\fBc\fP ] 
 [ OPT(I)\fIriver\fP[/\fIpen\fP] ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
 [ GMT_SCALE ] [ GMT_O_OPT ] [ GMT_Mo_OPT ] [ OPT(N)\fIborder\fP[/\fIpen\fP] ] [ GMT_O_OPT ] 
 [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)\fIfill\fP|\fBc\fP ] [ GMT_TROSE ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
@@ -41,9 +41,7 @@ Set the shade, color, or pattern for lakes  [Default is the fill chosen for "wet
 .B \-D
 Selects the resolution of the data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, and (\fBc\fP)rude).  The
 resolution drops off by 80% between data sets  [Default is \fBl\fP].
-.TP
-.B \-E
-Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
+#include "explain_-E.txt"
 .TP
 .B \-G
 Select filling or clipping of "dry" areas.  Append the shade, color, or pattern (see SPECIFYING FILL below);

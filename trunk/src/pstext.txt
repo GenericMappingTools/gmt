@@ -7,7 +7,7 @@ pstext \- To plot text strings on maps
 .SH SYNOPSIS
 \fBpstext\fP \fItextfile\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ GMT_B_OPT ] [ OPT(C)\fIdx/dy\fP ]  
-[ OPT(D)[\fBj\fP]\fIdx\fP[/\fIdy\fP][\fBv\fP[\fIpen\fP] ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] 
+[ OPT(D)[\fBj\fP]\fIdx\fP[/\fIdy\fP][\fBv\fP[\fIpen\fP] ] [ GMT_E_OPT ] 
 [ OPT(G)\fIcolor\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(S)\fIpen\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fIcolor\fP,][\fBo\fP|\fBO\fP|\fBc\fP|\fBC\fP[\fIpen\fP]] ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_t_OPT ]
@@ -60,9 +60,7 @@ Use \fB-Dj\fP to offset the text away from the point instead (i.e. the text's ju
 will determine the direction of the shift).  Optionally, append \fBv\fP which will draw a line
 from the original point to the shifted point; append a \fIpen\fP to change the attributes for this line.
 (See SPECIFYING PENS below).
-.TP
-.B \-E
-Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
+#include "explain_-E.txt"
 (Not implemented for paragraph mode).
 .TP
 .B \-G
