@@ -11,7 +11,7 @@
 grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D grid file
 .SH SYNOPSIS
 \fBgrdview\fP \fIrelief_file\fP GMT_J_OPT 
-[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP] [ OPT(E)\fIview_az/view_el\fP ] 
+[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP] [ GMT_E_OPT ] 
 [ OPT(G)\fIdrapefile\fP | OPT(G)\fIgrd_r\fP,\fIgrd_g\fP,\fIgrd_b\fP ] [ OPT(I)\fIintensfile\fP] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
 [ OPT(L)[\fIflags\fP] ] [ OPT(N)\fIlevel\fP[/\fIcolor\fP]] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(Q)\fItype\fP[\fBg\fP] ] [ GMT_Rgeoz_OPT ] [ OPT(S)\fIsmooth\fP ] 
@@ -37,9 +37,7 @@ name of the color palette file.  Must be present if you want (1) mesh plot with
 contours (\fB\-Qm\fP), or (2) shaded/colored perspective image (\fB\-Qs\fP or \fB\-Qi\fP).
 For \fB\-Qs\fP: You can specify that you want to skip a z-slice by setting red = -; to
 use a pattern give red = \fBP|p\fP\fIdpi/pattern\fP[:\fBF\fP\fIr/g/b\fP[\fBB\fP\fIr/g/b\fP]].
-.TP
-.B \-E
-Sets the view point by specifying azimuth and elevation in degrees. [Default is 180/90].
+#include "explain_-E.txt"
 .TP
 .B \-G
 Drape the image in \fIdrapefile\fP on top of the relief provided by \fIrelief_file\fP. [Default is \fIrelief_file\fP].

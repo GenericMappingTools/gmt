@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.202 2008-05-22 04:25:20 guru Exp $
+ *	$Id: gmt_map.c,v 1.203 2008-05-23 03:59:09 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -814,7 +814,16 @@ int GMT_init_three_D (void) {
 	z_project.z_axis = (z_project.quadrant%2) ? z_project.quadrant : z_project.quadrant - 2;
 
 	if (z_project.fixed) {
+		if (!z_project.world_given) {	/* Pick center point of region */
+			z_project.world_x = project_info.central_meridian;
+			z_project.world_y = 0.5 * (project_info.s + project_info.n);
+			z_project.world_z = project_info.z_level;
+		}
 		GMT_geoz_to_xy (z_project.world_x, z_project.world_y, z_project.world_z, &x, &y);
+		if (!z_project.view_given) {	/* Pick center of current page */
+			z_project.view_x = 0.5 * gmtdefs.paper_width[0] * GMT_u2u[GMT_PT][GMT_INCH];
+			z_project.view_y = 0.5 * gmtdefs.paper_width[1] * GMT_u2u[GMT_PT][GMT_INCH];
+		}
 		z_project.x_off = z_project.view_x - x + z_project.xmin;
 		z_project.y_off = z_project.view_y - y + z_project.ymin;
 	}

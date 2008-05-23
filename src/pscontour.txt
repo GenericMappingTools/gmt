@@ -6,7 +6,7 @@
 pscontour \- Contour xyz-data by direct triangulation [method]
 .SH SYNOPSIS
 \fBpscontour\fP \fIxyzfile\fP OPT(C)\fIcptfile\fP GMT_J_OPT GMT_Rgeo_OPT 
-[ OPT(A)[\fB-\fP][\fIlabelinfo\fP] ] [ GMT_B_OPT ] [ OPT(D)[\fIdumpfile\fP] ] [ OPT(E)\fIview_az\fP/\fIview_el\fP ] 
+[ OPT(A)[\fB-\fP][\fIlabelinfo\fP] ] [ GMT_B_OPT ] [ OPT(D)[\fIdumpfile\fP] ] [ GMT_E_OPT ] 
 [ GMT_CONTG ] [ GMT_H_OPT ] [ OPT(I) ] [ GMT_K_OPT ] 
 [ OPT(L)\fIpen\fP ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S) ] [ OPT(T)\fIindexfile\fP ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ OPT(W)[\fB+\fP]\fIpen\fP ] [ GMT_X_OPT ] 
@@ -44,9 +44,7 @@ Dump the (x,y,z) coordinates of each contour to separate files, one for each con
 files will be named \fIdumpfile_cont_segment[_i]\fP.xyz, where \fIcont\fP is the contour value and
 \fIsegment\fP is a running segment number for each contour interval (for closed contours we append _i.)
 However, when \fB\-M\fP is used in conjunction with \fB\-D\fP a single multisegment file is created instead.
-.TP
-.B \-E
-Sets the view point by specifying azimuth and elevation in degrees. [Default is 180/90].
+#include "explain_-E.txt"
 #define CONTOUR
 .TP
 .B \-G

@@ -4,7 +4,7 @@
 psmask \- To clip or mask areas of no data on a map
 .SH SYNOPSIS
 \fBpsmask\fP [\fIxyzfile\fP] GMT_I_OPT GMT_J_OPT GMT_Rgeo_OPT [ GMT_B_OPT ]  
-[ OPT(D)\fIdumpfile\fP ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] [ OPT(F) ] 
+[ OPT(D)\fIdumpfile\fP ] [ GMT_E_OPT ] [ OPT(F) ] 
 [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_K_OPT ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] 
 [ GMT_P_OPT ] [ OPT(S)\fIsearch_radius\fP[\fBm\fP|\fBc\fP|\fBk\fP|\fBK\fP] ] [ OPT(T) ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]  [ GMT_t_OPT ] [ GMT_bi_OPT ]
@@ -37,9 +37,7 @@ Mark end of existing clip path.  No input file is needed.  Implicitly sets \fB\-
 .B \-D
 Dumps out the resulting clipping polygons to disk.  Ignored if \fB\-T\fP is set.
 If no dumpprefix is given we use mask (Files will be called mask_*.d).
-.TP
-.B \-E
-Sets the viewpoint's azimuth and elevation for perspective plots [180/90].\"'
+#include "explain_-E.txt"
 #include "explain_nodereg.txt"
 .TP
 .B \-G
