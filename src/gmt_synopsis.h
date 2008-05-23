@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_synopsis.h,v 1.5 2008-04-16 02:57:35 remko Exp $
+ *	$Id: gmt_synopsis.h,v 1.6 2008-05-23 20:20:12 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -66,6 +66,9 @@
 /* Argument to *contour programs */
 
 #define GMT_CONTG	"-G[d|f|n|l|L|x|X]<params>"
+
+/* Options for pseudo perspective views */
+#define GMT_E_OPT       "-E<azim>/<elev>[+w<lon>/<lat>[<z>][+v<x0>/<y0>]"
 
 /* Used in tools that sets grdheader information via a -D option */
 

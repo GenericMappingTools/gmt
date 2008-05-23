@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.351 2008-05-22 04:25:20 guru Exp $
+ *	$Id: gmt_init.c,v 1.352 2008-05-23 20:20:12 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -517,6 +517,13 @@ void GMT_explain_option (char option)
 		case 'Z':	/* Vertical scaling for 3-D plots */
 
 			fprintf (stderr, "\t   -Jz for z component of 3-D projections.  Same syntax as -Jx.\n");
+			break;
+
+		case 'E':	/* Enhanced pseudo-perspective 3-D plot settings */
+
+			fprintf (stderr, "\t-E set azimuth and elevation of viewpoint for 3-D pseudo perspective view [180/90].\n");
+			fprintf (stderr, "\t   Optionally, append +w<lon/lat[/z] to specify a fixed point and +vx/y for its justification.\n");
+			fprintf (stderr, "\t   Just append + by itself to select default values [region center and page center]\n");
 			break;
 
 		case 'c':	/* Set number of plot copies option */
