@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.300 2008-05-21 01:31:48 guru Exp $
+	$Id: ChangeLog,v 1.301 2008-05-23 04:00:38 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-05-22	pwessel
+	* gmt_map.c, gmt_init.c:	Added support for enhanced -E option for 3-D perspective
+				views which allows the specification of a fixed point (needed for
+				creating animations)
 
 2005-05-20	pwessel
 	* gmt_io.c:		Did not properly apply PLOT_DEGREE_FORMAT=ddd.x for decimal degrees
