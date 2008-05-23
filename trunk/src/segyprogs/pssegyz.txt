@@ -5,7 +5,7 @@ pssegyz \- Create imagemasked postscript from SEGY file
 .SH SYNOPSIS
 \fBpssegyz\fP \fISEGYfile\fP GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT OPT(D)\fIdeviation\fP 
 OPT(F)[\fIrgb\fP|\fIgray\fP]|OPT(W) 
-[ OPT(B)\fIbias\fP ] [ OPT(C)\fIclip\fP ] [ OPT(E)\fIazimuth\fP/\fIelevation\fP ] 
+[ OPT(B)\fIbias\fP ] [ OPT(C)\fIclip\fP ] [ GMT_E_OPT ] 
 [ OPT(I) ] [ GMT_K_OPT ] [ OPT(L)\fInsamp\fP ] [ OPT(M)\fIntrace\fP ] [ OPT(N) ] 
 [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)\fIheader_x\fP/\fIheader_y\fP ] [ OPT(U)\fIredvel\fP ] 
 [ GMT_V_OPT ] [ OPT(X)\fIscale\fP ] [ OPT(Y)\fIsample_int\fP ] [ OPT(Z) ]
@@ -46,9 +46,7 @@ gives the deviation in X units of the plot for 1.0 on the scaled trace,
 This may
 be a single number (applied equally in X and Y directions) or devX/devY
 .br 
-.TP
-.B \-E
-Azimuth and elevation for the 3-D projection.
+#include "explain_-E.txt"
 .TP
 .B \-F[\fIrgb\fP|\fIgray\fP]
 Fill trace (variable area, defaults to filling positive). rgb or gray gives
