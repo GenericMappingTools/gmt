@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.368 2008-05-22 04:25:20 guru Exp $
+ *	$Id: gmt_support.c,v 1.369 2008-05-23 20:04:19 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1227,7 +1227,7 @@ int GMT_get_proj3D (char *line, double *az, double *el)
 	char txt[BUFSIZ], p[GMT_LONG_TEXT], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
 	
 	if ((k = sscanf (line, "%lf/%lf", az, el)) < 2) {
-		fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+cx0[cimp]/y0[cimp]][+glon0/lat0[/z0]]\n", GMT_program, p);
+		fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+wlon0/lat0[/z0]][+vx0[cimp]/y0[cimp]]\n", GMT_program, line);
 		return 1;
 	}
 	for (k = 0; line[k] && line[k] != '+'; k++);	/* Look for +<options> strings */
@@ -1241,18 +1241,18 @@ int GMT_get_proj3D (char *line, double *az, double *el)
 	strcpy (txt, &line[k]);
 	while ((GMT_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
-			case 'c':	/* Specify fixed point in 2-D projected coordinates */
+			case 'v':	/* Specify fixed view point in 2-D projected coordinates */
 				if ((k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b)) != 2) {
-					fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+cx0[cimp]/y0[cimp]][+glon0/lat0[/z0]]\n", GMT_program, p);
+					fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+wlon0/lat0[/z0]][+vx0[cimp]/y0[cimp]]\n", GMT_program, p);
 					return 1;
 				}
 				z_project.view_x = GMT_convert_units (txt_a, GMT_INCH);
 				z_project.view_y = GMT_convert_units (txt_b, GMT_INCH);
 				z_project.view_given = TRUE;
 				break;
-			case 'g':
+			case 'w':	/* Specify fixed World point in user's coordinates */
 				if ((k = sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c)) < 2) {
-					fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+cx0[cimp]/y0[cimp]][+glon0/lat0[/z0]]\n", GMT_program, p);
+					fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+wlon0/lat0[/z0]][+vx0[cimp]/y0[cimp]]\n", GMT_program, p);
 					return 1;
 				}
 				error += GMT_verify_expectations (GMT_io.in_col_type[0], GMT_scanf (txt_a, GMT_io.in_col_type[0], &z_project.world_x), txt_a);
