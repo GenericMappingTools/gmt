@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.369 2008-05-23 20:04:19 guru Exp $
+ *	$Id: gmt_support.c,v 1.370 2008-05-25 22:48:20 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5745,9 +5745,10 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 	if (text[j] == 'x') ms->gave_xy = TRUE, j++;
 	if (text[j] == 'f') ms->fancy = TRUE, j++;	/* in case we got xf instead of fx */
 
-	/* Determine if we have the optional longitude component specified */
+	/* Determine if we have the optional longitude component specified by counting slashes.
+	 * We stop counting if we reach a : (label start) or + (pen/fill attributes) */
 
-	for (n_slash = 0, i = j; text[i] && text[i] != '+'; i++) if (text[i] == '/') n_slash++;
+	for (n_slash = 0, i = j; text[i] && !(text[i] == '+' || text[i] == ':'); i++) if (text[i] == '/') n_slash++;
 
 	/* Determine if we have the optional label/justify component specified.  We search from
 	 * the end of the text until we reach the last slash, and update the colon position when
