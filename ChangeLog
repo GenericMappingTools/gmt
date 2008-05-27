@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.303 2008-05-27 00:00:57 remko Exp $
+	$Id: ChangeLog,v 1.304 2008-05-27 03:45:11 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-05-27	pwessel
+	* grdfilter.c:		The -D5 did not initialize xscale so filter search box was
+				set to region width which typically is much larger.  The bug
+				did not affect the results but unnecessarily increased runtime.
 2005-05-27	remko
 	* pslegend.c:		Let N (number of columns) also affect the printing of labels
 	* pslegend.txt:		Made clear that N only affects the printing of symbols and labels
