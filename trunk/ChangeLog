@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.302 2008-05-23 20:20:12 guru Exp $
+	$Id: ChangeLog,v 1.303 2008-05-27 00:00:57 remko Exp $
 -----------------------------------------------------------------------------------------
+2005-05-27	remko
+	* pslegend.c:		Let N (number of columns) also affect the printing of labels
+	* pslegend.txt:		Made clear that N only affects the printing of symbols and labels
+
 2005-05-22	pwessel
 	* gmt_map.c, gmt_init.c:	Added support for enhanced -E option for 3-D perspective
 				views which allows the specification of a fixed point (needed for
@@ -15,7 +19,7 @@
 
 2005-05-19	pwessel
 	* pscoast.c:		The -Q option should not require -J
-	* pstext.c:		Cannot remote blank lines when in paragraph mode as those
+	* pstext.c:		Cannot remove blank lines when in paragraph mode as those
 				lines signal the end of each paragraph.
 2005-05-18	remko
 	* configure.ac:		Version updated to 4.3.2. Added CVS_VERSION switch.
