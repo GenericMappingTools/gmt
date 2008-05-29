@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.77 2008-05-29 22:45:01 guru Exp $
+#  $Id: GNUmakefile,v 1.78 2008-05-29 23:13:48 guru Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -103,6 +103,9 @@ grdreformat.h:		Grdformats.txt
 			cat tmp0.txt >> $@
 			echo "		};" >> $@
 			rm -f tmp0.txt
+
+grdreformat_man.i:	Grdformats.txt
+			egrep -v '#' Grdformats.txt |  awk '{if ($$3 == "ID") {printf ".sp\n\\fIid\t%s\\fP\n.br\n", substr($$0, 26,length($$0)-27)} else if ($$1 != "-") {printf "\\fB%s\\fP\t%s\n.br\n", $$3, substr($$0,12,length($$0)-13)}}'  > $@
 
 # Add all the dimensions to gmt_dimensions.h
 
