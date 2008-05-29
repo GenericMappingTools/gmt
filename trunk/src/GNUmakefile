@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.78 2008-05-29 23:13:48 guru Exp $
+#  $Id: GNUmakefile,v 1.79 2008-05-29 23:18:30 guru Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -11,7 +11,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		04-NOV-2006
+#	Date:		29-MAY-2008
 #-------------------------------------------------------------------------------
 
 include makefile
@@ -51,7 +51,7 @@ uninstall2-suppl:
 FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h grdreformat.h gmt_keywords.h gmt_keycases.h \
 	gmtcolors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h \
 	gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i \
-	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i
+	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i grdreformat_man.i
 
 gmtmacros FILES:	$(FILES)
 
