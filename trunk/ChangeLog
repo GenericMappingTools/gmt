@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.304 2008-05-27 03:45:11 guru Exp $
+	$Id: ChangeLog,v 1.305 2008-05-29 22:45:01 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-05-29	pwessel
+	* grdreformat.c:	There is no longer a share/conf/gmt_formats.conf so the
+				grdreformat usage message crashes. Introduced new file
+				grdreformat.h created by GNUmakefile to include this info.
+				
 2005-05-27	pwessel
 	* grdfilter.c:		The -D5 did not initialize xscale so filter search box was
 				set to region width which typically is much larger.  The bug

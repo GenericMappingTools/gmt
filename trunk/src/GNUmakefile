@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.76 2008-03-11 22:47:05 remko Exp $
+#  $Id: GNUmakefile,v 1.77 2008-05-29 22:45:01 guru Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -48,7 +48,7 @@ uninstall2-suppl:
 
 # All the files that need to be build before compilation
 
-FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h gmt_keywords.h gmt_keycases.h \
+FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h grdreformat.h gmt_keywords.h gmt_keycases.h \
 	gmtcolors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h \
 	gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i \
 	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i
@@ -91,10 +91,18 @@ gmtdefaults.i:		Ellipsoids.txt
 gmt_datums.h:		Datums.txt
 			grep -v '^#' Datums.txt | awk -F'	' '{printf "\t\t{ \"%s\", \"%s\", \"%s\", {%s, %s, %s}},\n", $$1, $$2, $$6, $$3, $$4, $$5}' | sed '$$s/},/}/' > $@
 
-# Must create gmt_grdformats.h from Grdformats.txt
+# Must create gmt_grdformats.h and grdreformat.h from Grdformats.txt
 
 gmt_grdformats.h:	Grdformats.txt
 			(egrep DEFAULT Grdformats.txt ; (egrep -v '#|^  -' Grdformats.txt | sort -n)) | awk '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' | sed '$$s/},/}/' > $@
+
+grdreformat.h:		Grdformats.txt
+			grep -v '#' Grdformats.txt |  awk '{printf "\t\t\"%s\",\n", substr($$0,5)}'  > tmp0.txt
+			echo "/* grdreformat.h	[Created by src/GNUmakefile] */" > $@
+			wc -l tmp0.txt | awk '{printf "#define N_GRDTXT_LINES %d\n\tchar *grd_formats[N_GRDTXT_LINES] = {\n", $$1}' >> $@
+			cat tmp0.txt >> $@
+			echo "		};" >> $@
+			rm -f tmp0.txt
 
 # Add all the dimensions to gmt_dimensions.h
 

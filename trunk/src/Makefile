@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.40 2008-05-13 00:48:35 remko Exp $
+#	$Id: Makefile,v 1.41 2008-05-29 22:45:01 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -163,6 +163,7 @@ gmt_support.o:	gmt_color_rgb.h gmt_pennames.h
 gmtmath.o:	gmtmath.h gmtmath_def.h gmtmath_explain.h
 grdmath.o:	grdmath.h grdmath_def.h grdmath_explain.h
 grd2xyz.o xyz2grd.o:	gmt_parse_z_io.h
+grdreformat.o:	grdreformat.h
 
 # Jonathan Shewchuk's triangulation model (www.cs.cmu.edu/~quake)
 # Only used if TRIANGLE_D and TRIANGLE_O are set in makegmt.macros
