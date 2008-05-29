@@ -50,60 +50,7 @@ When reading files, \fBgrdreformat\fP and other \fBGMT\fP programs will automati
 of netCDF grid file. These can be in either COARDS-compliant or pre-4.1 format, and contain floating-point or
 integer data. To read other types of grid files, append the =\fIid\fP suffix to the filename \fIingrdfile\fP.
 .br
-.sp
-\fIid\fP	\fIGMT 4 netCDF standard formats\fP
-.br
-nb	GMT netCDF format (byte) (COARDS-compliant)
-.br
-ns	GMT netCDF format (short) (COARDS-compliant)
-.br
-ni	GMT netCDF format (integer) (COARDS-compliant)
-.br
-nf	GMT netCDF format (float) (COARDS-compliant)
-.br
-nd	GMT netCDF format (double) (COARDS-compliant)
-.br
-.sp
-\fIid\fP	\fIGMT 3 netCDF legacy formats\fP
-.br
-cb	GMT netCDF format (byte) (depreciated)
-.br
-cs	GMT netCDF format (short) (depreciated)
-.br
-ci	GMT netCDF format (integer) (depreciated)
-.br
-cf	GMT netCDF format (float) (depreciated)
-.br
-cd	GMT netCDF format (double) (depreciated)
-.br
-.sp
-\fIid\fP	\fIGMT native binary formats\fP
-.br
-bm	GMT native, C-binary format (bit-mask)
-.br
-bb	GMT native, C-binary format (byte)
-.br
-bs	GMT native, C-binary format (short)
-.br
-bi	GMT native, C-binary format (integer)
-.br
-bf	GMT native, C-binary format (float)
-.br
-bd	GMT native, C-binary format (double)
-.br
-.sp
-\fIid\fP	\fIMiscellaneous formats\fP
-.br
-rb	SUN rasterfile format (8-bit standard)
-.br
-rf	GEODAS grid format GRD98 (NGDC)
-.br
-sf	Golden Software Surfer format 6 (float)
-.br
-sd	Golden Software Surfer format 7 (double, read-only)
-.br
-af	Atlantic Geoscience Center format AGC (float)
-.br
+#include "grdreformat_man.i"
 .SH GMT STANDARD NETCDF FILES
 The standard format used for gdrfiles is based on netCDF and conforms to the COARDS conventions. Files written
 in this format can be read by numerous third-party programs and are platform-independent. Some disk-space
