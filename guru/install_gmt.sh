@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.135 2008-05-16 20:30:55 guru Exp $
+#	$Id: install_gmt.sh,v 1.136 2008-05-30 22:31:06 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -706,25 +706,6 @@ install_coast()
 		fi
 	fi
 	cd $here
-#	Special treatment for Companion CD-ROM with individual bzip2 files for high and full
-#	that facilitates cross-platform install with Win32
-	if [ -f GMT${file}c.bz2 ] && [ "$get_this" != "n" ] && [ $done -eq 0 ]; then	# File is present and wanted
-		if [ ! -d $dir ]; then
-			mkdir -p $dir
-		fi				
-		if [ ! -d $dir ]; then
-			echo "Could not make the directory $dir - $this not untarred"
-		else
-			t=`echo $file | awk '{print substr($1,1,1)}'`
-			echo "share/binned_GSHHS_${t}.cdf"
-			$expand $here/GMT${file}c.bz2 > $dir/binned_GSHHS_${t}.cdf
-			echo "share/binned_binned_${t}.cdf"
-			$expand $here/GMT${file}r.bz2 > $dir/binned_river_${t}.cdf
-			echo "share/binned_river_${t}.cdf"
-			$expand $here/GMT${file}b.bz2 > $dir/binned_border_${t}.cdf
-		fi
-	fi
-		
 }
 
 make_ftp_list()
@@ -1326,9 +1307,6 @@ fi
 cd $topdir
 if [ "$GMT_delete" = "y" ]; then
 	rm -f GMT*.tar.$suffix GSHHS*.tar.$suffix
-	if [ -f GMTfullc.bz2 ]; then	# Special files copied from CD-ROM
-		rm -f GMTfull?.bz2 GMThigh?.bz2
-	fi
 fi
 
 cat << EOF >&2
