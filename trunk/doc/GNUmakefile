@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.26 2008-05-30 04:27:08 guru Exp $
+#	$Id: GNUmakefile,v 1.27 2008-05-30 05:00:53 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -142,7 +142,7 @@ DOCTEX= \
 	GMT_Chapter_1.tex GMT_Chapter_2.tex GMT_Chapter_3.tex GMT_Chapter_4.tex GMT_Chapter_5.1.tex \
 	GMT_Chapter_5.2.tex GMT_Chapter_5.tex GMT_Chapter_6.1.tex GMT_Chapter_6.2.tex GMT_Chapter_6.3.tex \
 	GMT_Chapter_6.4.tex GMT_Chapter_6.tex GMT_Chapter_7.tex GMT_Chapter_8.tex \
-	GMT_Frontmatter.tex $(DOCEPS1:.eps=.tex) $(SCRTEX) $(EX_TEX) $(ALLTEX)
+	GMT_Frontmatter.tex $(DOCEPS1:.eps=.tex) $(SCRTEX) $(EX_TEX) $(AN_TEX) $(ALLTEX)
 
 all:	pdf html
 
@@ -178,7 +178,9 @@ $(EX_TEX:.tex=.sh):
 	$(LN_S) -f ../../share/custom/volcano.def scripts/volcano.sh
 	$(LN_S) -f ../../examples/ex20/bullseye.def scripts/bullseye.sh
 	for f in `ls ../examples/*/job*.sh` ; do $(LN_S) -f ../$$f scripts/example_`basename $$f|cut -c4-` ; done
-	for f in `ls ../examples/anim*/anim*.sh` ; do $(LN_S) -f ../$$f scripts/anim_`basename $$f|cut -c5-` ; done
+
+$(AN_TEX:.tex=.sh):
+	for f in `ls ../examples/anim*/anim*.sh` ; do $(LN_S) -f ../$$f scripts/anim_`basename $$f|cut -c6-` ; done
 
 # Convert the PS files of the examples to EPS and PDF, while stripping off the time tag and
 # rotating landscape images back to portrait. Leave intermediate EPS behind.
@@ -188,7 +190,7 @@ $(EX_EPS) $(EX_EPS:.eps=.pdf):	../examples/ex01/example_01.ps
 # Convert the PS files of the animations to EPS and PDF, while stripping off any time tags and
 # rotating landscape images back to portrait. Leave intermediate EPS behind.
 $(AN_EPS) $(AN_EPS:.eps=.pdf):	../examples/anim01/anim_01.ps
-	ps2raster -Au -P -Tef -Dscripts ../anim*/$(*F).ps
+	ps2raster -Au -P -Tef -Dscripts ../examples/anim*/$(*F).ps
 
 # To convert EPS to PDF
 $(IS_EPS:.eps=.pdf) $(RGBEPS:.eps=.pdf):	%.pdf:	%.eps
@@ -228,6 +230,9 @@ $(SCRTEX) $(DOCEPS1:.eps=.tex):	%.tex:	%.sh
 
 # Keep the comments in the examples, but remove CVS tag.
 $(EX_TEX):	%.tex:	%.sh
+	pr -t -e $*.sh | egrep -v 'Id:' > $*.tex
+
+$(AN_TEX):	%.tex:	%.sh
 	pr -t -e $*.sh | egrep -v 'Id:' > $*.tex
 
 # Make sure gmtdefaults file is created afresh
