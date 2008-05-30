@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.25 2008-05-14 20:06:40 guru Exp $
+#	$Id: GNUmakefile,v 1.26 2008-05-30 04:27:08 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -73,9 +73,14 @@ EX_EPS=	scripts/example_01.eps scripts/example_02.eps scripts/example_03.eps scr
 	scripts/example_20.eps scripts/example_21.eps scripts/example_22.eps scripts/example_23.eps \
 	scripts/example_24.eps scripts/example_25.eps scripts/example_26.eps
 
+# EPS files to be converted from animation PS files
+AN_EPS=	scripts/anim_01.eps scripts/anim_02.eps
+
 # TEX files of examples used in the Cookbook that are to retain the comments
 EX_TEX=	scripts/volcano.tex scripts/bullseye.tex scripts/GMT_App_M_2.tex \
 	scripts/GMT_App_P_1.tex scripts/GMT_App_P_2.tex $(EX_EPS:.eps=.tex)
+
+AN_TEX=	$(AN_EPS:.eps=.tex)
 
 # EPS files that need special attention
 APP_F_EPS=scripts/GMT_App_F_dingbats.eps scripts/GMT_App_F_iso+.eps scripts/GMT_App_F_stand+.eps \
@@ -118,7 +123,7 @@ DOCEPS2=scripts/GMT_-B_geo_1.eps scripts/GMT_-B_geo_2.eps scripts/GMT_-B_linear.
 	scripts/GMT_App_P_2.eps scripts/GMT_color_interpolate.eps
 
 # All EPS and PDF files for GMT_Docs
-DOCEPS=	$(DOCEPS1) $(DOCEPS2) $(ALLEPS) $(EX_EPS) $(IS_EPS) $(RGBEPS)
+DOCEPS=	$(DOCEPS1) $(DOCEPS2) $(ALLEPS) $(EX_EPS) $(AN_EPS) $(IS_EPS) $(RGBEPS)
 DOCPDF= $(DOCEPS:.eps=.pdf)
 
 # All PNG files for GMT_Docs
@@ -154,7 +159,7 @@ clean:
 	\rm -f *.aux *.lot *.lof *.toc *.pdf *.out *.dvi *.ind *.ilg *.idx *.log *.ps *.eps
 	\rm -f GMT_Appendix_N_inc.tex
 	\rm -f scripts/*.{tex,eps,pdf,csh,ps} scripts/sqrt.d* scripts/.gmtdefaults4* scripts/.gmtcommands4
-	\rm -f scripts/example_*.sh scripts/volcano.sh scripts/bullseye.sh
+	\rm -f scripts/anim_*.sh scripts/example_*.sh scripts/volcano.sh scripts/bullseye.sh
 	\rm -f fig/*.pdf
 	\rm -rf GMT_Docs GMT_Tutorial
 
@@ -173,11 +178,17 @@ $(EX_TEX:.tex=.sh):
 	$(LN_S) -f ../../share/custom/volcano.def scripts/volcano.sh
 	$(LN_S) -f ../../examples/ex20/bullseye.def scripts/bullseye.sh
 	for f in `ls ../examples/*/job*.sh` ; do $(LN_S) -f ../$$f scripts/example_`basename $$f|cut -c4-` ; done
+	for f in `ls ../examples/anim*/anim*.sh` ; do $(LN_S) -f ../$$f scripts/anim_`basename $$f|cut -c5-` ; done
 
 # Convert the PS files of the examples to EPS and PDF, while stripping off the time tag and
 # rotating landscape images back to portrait. Leave intermediate EPS behind.
 $(EX_EPS) $(EX_EPS:.eps=.pdf):	../examples/ex01/example_01.ps
 	ps2raster -Au -P -Tef -Dscripts ../examples/ex*/$(*F).ps
+
+# Convert the PS files of the animations to EPS and PDF, while stripping off any time tags and
+# rotating landscape images back to portrait. Leave intermediate EPS behind.
+$(AN_EPS) $(AN_EPS:.eps=.pdf):	../examples/anim01/anim_01.ps
+	ps2raster -Au -P -Tef -Dscripts ../anim*/$(*F).ps
 
 # To convert EPS to PDF
 $(IS_EPS:.eps=.pdf) $(RGBEPS:.eps=.pdf):	%.pdf:	%.eps

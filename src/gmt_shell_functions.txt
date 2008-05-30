@@ -6,7 +6,7 @@ gmt_shell_functions.sh \- Practical functions to be used in GMT bourne shell scr
 .br
 \fBgmt_remove_tmpdir\fP
 .br
-\fBgmt_clean_up\fP
+\fBgmt_clean_up\fP [\fIprefix\fP]
 .br
 \fBgmt_message\fP \fImessage\fP
 .br
@@ -27,6 +27,10 @@ br
 \fBgmt_get_map_height\fP \fB\-R \-J\fP
 .br
 \fBgmt_set_psfile\fP \fIfile\fP
+.br
+\fBgmt_set_framename\fP \fIprefix framenumber\fP
+.br
+\fBgmt_set_framenext\fP \fIframenumber\fP
 .SH DESCRIPTION
 \fBgmt_shell_functions.sh\fP provides a set of functions to bourne (again) shell scripts in support
 of \fBGMT\fP.
@@ -48,6 +52,8 @@ Removes the temporary directory and unsets the \fBGMT_TMPDIR\fP environment vari
 .TP
 .B gmt_cleanup
 Remove all files and directories in which the current process number is part of the file name.
+If the optional \fIprefix\fP is given then we also delete all files and directories that begins
+with the given prefix.
 .TP
 .B gmt_message
 Send a message to standard error.
@@ -84,6 +90,14 @@ the current measurement unit.
 .B gmt_set_psfile
 Create the output PS file name based on the base name of a given file (usually the script name
 \fB$0\fP).
+.TP
+.B gmt_set_framename
+Returns a lexically ordered filename stem (i.e., no extension) given the file prefix and the current frame number,
+using a width of 6 for the integer including leading zeros.  Useful when
+creating animations and lexically sorted filenames are required.
+.TP
+.B gmt_set_framenext
+Accepts the current frame integer counter and returns the next integer counter.
 .SH NOTES
 .br
 1. These functions only work in the bourne shell (\fBsh\fP) and their derivatives (like \fBash\fP,

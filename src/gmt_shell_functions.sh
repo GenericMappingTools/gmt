@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmt_shell_functions.sh,v 1.4 2007-12-10 21:17:06 guru Exp $
+#	$Id: gmt_shell_functions.sh,v 1.5 2008-05-30 04:27:09 guru Exp $
 #
 # These functions can be used from any sh/bash script by specifying
 # . gmt_shell_functions.sh
@@ -20,6 +20,9 @@ gmt_remove_tmpdir () {
 #	Remove all files and directories in which the current process number is part of the file name
 gmt_cleanup() {
 	rm -rf *$$*
+	if [ $# -eq 1 ]; then
+		rm -rf ${1}*
+	fi
 }
 
 #	Send a message to stderr
@@ -74,4 +77,16 @@ gmt_map_height() {
 
 gmt_set_psfile() {
 	echo `basename $1 '.sh'`.ps
+}
+
+# For animations: Create a lexically increasing file namestem (no extension) based on prefix and frame number
+# i.e., prefix_######
+gmt_set_framename() {
+	echo $1 $2 | awk '{printf "%s_%6.6d\n", $1, $2}'
+}
+
+# For animations: Increment frame counter by one
+
+gmt_set_framenext() {
+	gmtmath -Q $1 1 ADD =
 }
