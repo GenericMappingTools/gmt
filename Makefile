@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.62 2008-05-16 04:10:14 guru Exp $
+#	$Id: Makefile,v 1.63 2008-05-30 05:00:53 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -168,6 +168,13 @@ uninstall-www:
 examples run-examples:
 		@if [ -d examples ]; then \
 			cd examples; sh do_examples.sh $(srcdir) $(srcdir) $(NETCDF_LIB); \
+		else \
+			echo "examples directory not installed"; \
+		fi
+
+anim run-animations:
+		@if [ -d examples ]; then \
+			cd examples; sh do_animations.sh $(ANIMATE); \
 		else \
 			echo "examples directory not installed"; \
 		fi
