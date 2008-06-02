@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.174 2008-04-17 18:07:45 remko Exp $
+ *	$Id: pslib.c,v 1.175 2008-06-02 19:57:54 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1545,7 +1545,7 @@ void ps_polygon (double *x, double *y, PS_LONG n, int rgb[], int outline)
 	/* Draw and optionally fill polygons. */
 	int split, pmode;
 
-	split = (rgb[0] < 0);	/* Can only split if we need outline only */
+	split = (rgb[0] == -1);	/* Can only split if we need outline only */
 	if (outline >= 0) ps_line (x, y, n, 1, FALSE, split);	/* No stroke or close path yet */
 	PSL->internal.npath = 0;
 

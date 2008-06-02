@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.306 2008-06-02 01:41:18 guru Exp $
+	$Id: ChangeLog,v 1.307 2008-06-02 19:57:54 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-06-02	pwessel
+	* pslib.c:		ps_polygon can only split line when rgb[0] == -1 not < 0
+				since -3 now means to use a fill pattern.
+	
 2005-06-01	pwessel
 	* Win installer:	Now installs the GMT include files so users can build their own
 				programs that use the GMT libs
