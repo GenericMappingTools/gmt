@@ -14,9 +14,9 @@ data.  Such unconstrained nodes are set to a value specified by the user [Defaul
 Nodes with more than one value will be set to the weighted average value.
 .TP
 \fIblendfile\fP
-ASCII file with one record per grid file to include in the blend.  Each record must contain the gridfile name,
-the \fB\-R\fP-setting for the interior region, and the relative weight \fIwr\fP, separated by spaces or tabs.
-In the combined weighting scheme, this grid will be given weight = zero outside its domain, weight = \fIwr\fP
+ASCII file with one record per grid file to include in the blend.  Each record must contain three items, separated by spaces or tabs:
+the gridfile name, the \fB\-R\fP-setting for the interior region, and the relative weight \fIwr\fP.
+In the combined weighting scheme, this grid will be given zero weight outside its domain, weight = \fIwr\fP
 inside the interior region, and a 2-D cosine-tapered weight between those end-members in the boundary strip.
 However, if a negative \fIwr\fP is given then the sense of tapering is inverted (i.e., zero weight inside its
 domain).
@@ -47,26 +47,27 @@ Scale output values by \fIscale\fP before writing to file. [1].
 #include "explain_grd_output.txt"
 #include "explain_grd_coord.txt"
 .SH EXAMPLES
-To create a grid file from the four gridded files piece_?.grd, make the blendfile like this
+To create a grid file from the four gridded files piece_?.nc, make the blendfile like this
 .br
 .sp
-piece_1.grd	-R<subregion_1> 1
+piece_1.nc	-R<subregion_1> 1
 .br
-piece_2.grd	-R<subregion_2> 1
+piece_2.nc	-R<subregion_2> 1
 .br
-piece_3.grd	-R<subregion_3> 1
+piece_3.nc	-R<subregion_3> 1
 .br
-piece_4.grd	-R<subregion_4> 1
+piece_4.nc	-R<subregion_4> 1
 .br
 .sp
 Then run
 .br
 .sp
-\fBgrdblend\fP blend.job \fB\-G\fPblend.grd \fB\-R\fP<full_region> \fB\-I\fP<dx/dy> \fB-V\fP
+\fBgrdblend\fP blend.job \fB\-G\fPblend.nc \fB\-R\fP<full_region> \fB\-I\fP<dx/dy> \fB-V\fP
 .SH RESTRICTIONS
-Currently, all grids processed must have the exact same node registration as well as grid spacing
+Currently, all grids processed must have the exact same node registration and grid spacing
 as the final output grid.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grd2xyz (1),
 .IR grdedit (1)
+.IR grdraster (1)
