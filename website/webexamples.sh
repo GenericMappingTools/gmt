@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.15 2008-04-30 18:23:12 guru Exp $
+#	 $Id: webexamples.sh,v 1.16 2008-06-03 23:12:13 guru Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -20,7 +20,7 @@
 #	gmt/examples/example_??_100dpi.png (using ps2raster)
 #-----------------------------------------------------------------------------
 
-n_examples=26
+n_examples=27
 
 GMT050dpi="ps2raster -E50 -Tg -P"
 GMT100dpi="ps2raster -E100 -Tg -P"
@@ -136,6 +136,9 @@ surfaces.</A></LI>
 
 <LI>
 <A HREF="examples/ex26/gmt_example_26.html">General vertical perspective projection.</A></LI>
+
+<LI>
+<A HREF="examples/ex27/gmt_example_27.html">Plotting Sandwell/Smith Mercator grids.</A></LI>
 </OL>
 </BODY>
 </HTML>

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.43 2008-05-16 19:14:31 guru Exp $
+#  $Id: GNUmakefile,v 1.44 2008-06-03 23:12:13 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -73,7 +73,7 @@ sinclude $(GMTGURU)		# Guru-specific settings determined by GURU [Default is gur
 .PHONY:		FILES man manpages webman webdoc pdfman docs prep_suppl get_coast get_high get_full \
 		latest-config help update create newsite usable site archive \
 		tar_all full high tar_full tar_high zip_dist installl suppl alltests \
-		doctests extests tests ex examples cvsclean
+		doctests extests tests ex examples animations cvsclean
 
 help::
 		@grep '^#!' GNUmakefile | cut -c3-
@@ -83,7 +83,7 @@ help::
 #!
 #!update        : Get the latest source via cvs
 #!manpages      : Create manpages from text files
-#!usable        : Install-all and run examples
+#!usable        : Install-all and run examples & animations
 #!pdfman        : Install PDF version of manpages
 #!pdfdocs       : Install PDF documentation
 #!docs          : Install PDF and HTML documentation
@@ -103,7 +103,7 @@ GMT$(GMT_VERSION):	archive
 
 newsite:	get_coast get_high get_full site
 
-usable:		install-all examples
+usable:		install-all examples animations
 
 site:		usable webman pdfman docs
 
@@ -157,6 +157,7 @@ FILES =		configure src/makegmt.macros share/conf/gmt.conf share/conf/gmtdefaults
 
 gmtmacros FILES:		$(FILES)
 examples:	FILES
+animations:	FILES
 
 fresh:
 		rm -f $(FILES)
@@ -265,6 +266,7 @@ tar_pdf:	ftpdir
 tar_scripts:	ftpdir
 		echo "make GMT$(GMT_VERSION)_scripts.tar.bz2"
 		rm -f examples/ex??/*.ps examples/ex??/*% examples/ex??/*.txt examples/ex??/.gmt*
+		rm -f examples/anim??/*.ps examples/anim??/*% examples/anim??/*.txt examples/anim??/.gmt*
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_examples.lis > tmp.lis
 		tar -cjf ftp/GMT$(GMT_VERSION)_scripts.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis

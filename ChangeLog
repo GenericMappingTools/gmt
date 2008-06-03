@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.309 2008-06-03 21:38:59 guru Exp $
+	$Id: ChangeLog,v 1.310 2008-06-03 23:12:13 guru Exp $
 -----------------------------------------------------------------------------------------
 2005-06-03	pwessel
 	* gmt_init.[ch]:	gmtdefs.encoding.name could be freed even if never allocated.
+	* examples/ex27:	New example showing how to plot Mercator *.img grids.
 
 2005-06-02	pwessel
 	* pslib.c:		ps_polygon can only split line when rgb[0] == -1 not < 0
