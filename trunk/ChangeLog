@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.308 2008-06-02 20:34:16 guru Exp $
+	$Id: ChangeLog,v 1.309 2008-06-03 21:38:59 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-06-03	pwessel
+	* gmt_init.[ch]:	gmtdefs.encoding.name could be freed even if never allocated.
+
 2005-06-02	pwessel
 	* pslib.c:		ps_polygon can only split line when rgb[0] == -1 not < 0
 				since -3 now means to use a fill pattern.

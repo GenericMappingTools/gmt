@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.168 2008-04-15 15:55:29 remko Exp $
+ *	$Id: gmt.h,v 1.169 2008-06-03 21:38:59 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -399,7 +399,7 @@ struct GMT_DEFAULTS {
 	enum gmt_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } degree_symbol;
 	struct gmt_encoding
 	{
-		char *name;
+		char name[GMT_TEXT_LEN];
 		int code[gmt_lastsym]; /* Codes for symbols we print. */
 	} encoding;
 	BOOLEAN history;		/* TRUE to pass information via .gmtdefaults4 files */
