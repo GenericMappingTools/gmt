@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.352 2008-05-23 20:20:12 guru Exp $
+ *	$Id: gmt_init.c,v 1.353 2008-06-03 21:38:59 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1467,7 +1467,7 @@ void GMT_backwards_compatibility () {
 	}
 	else if (GMT_backward.got_old_want_euro && GMT_backward.got_new_char_encoding)  {	/* Must decode old WANT_EURO_FONT */
 		fprintf (stderr, "%s: WARNING: WANT_EURO_FONT decoded but is obsolete.  Please use CHAR_ENCODING\n", GMT_program);
-		gmtdefs.encoding.name = strdup ("Standard+");
+		strncpy (gmtdefs.encoding.name, "Standard+", (size_t)GMT_TEXT_LEN);
 		load_encoding (&gmtdefs.encoding);
 	}
 
@@ -2178,7 +2178,7 @@ int GMT_setparameter (char *keyword, char *value)
 			GMT_str_tolower (gmtdefs.time_language);
 			break;
 		case GMTCASE_CHAR_ENCODING:
-			gmtdefs.encoding.name = strdup (value);
+			strncpy (gmtdefs.encoding.name, value, (size_t)GMT_TEXT_LEN);
 			load_encoding (&gmtdefs.encoding);
 			break;
 		case GMTCASE_Y2K_OFFSET_YEAR:
@@ -3208,7 +3208,6 @@ void GMT_end (int argc, char **argv)
 
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) if (GMT_plot_format[i][j]) GMT_free ((void *)GMT_plot_format[i][j]);
 
-	if (gmtdefs.encoding.name) free (gmtdefs.encoding.name);
 	if (GMT_n_colors) {
 		for (i = 0; i < GMT_n_colors; i++) {
 			if (GMT_lut[i].label) GMT_free ((void *)GMT_lut[i].label);
