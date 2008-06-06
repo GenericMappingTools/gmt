@@ -1,6 +1,6 @@
 #!/bin/sh
 #               GMT ANIMATION 04
-#               $Id: anim_04.sh,v 1.1 2008-06-03 01:44:49 guru Exp $
+#               $Id: anim_04.sh,v 1.2 2008-06-06 00:00:23 guru Exp $
 #
 # Purpose:      Make DVD-res Quicktime movie of NY to Miami flight
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
@@ -28,7 +28,7 @@ cat << EOF >> $$.cities.d
 -80.133		25.75	0	5	5
 EOF
 frame=0
-mkdir -p $$
+mkdir -p frames
 grdgradient USEast_Coast.nc -A90 -Nt1 -G$$_int.nc
 makecpt -Cglobe -Z > $$.cpt
 while read lon lat dist; do
@@ -44,13 +44,14 @@ while read lon lat dist; do
 		gmt_abort "$0: First frame plotted to $name.ps"
 	fi
 	ps2raster $$.ps -Tt -E$dpi
-	mv $$.tif $$/$file.tif
+	mv $$.tif frames/$file.tif
         echo "Frame $file completed"
 	frame=`gmt_set_framenext $frame`
 done < $$.path.d
-exit
-echo "anim_04.sH: Made $frame frames at 480x720 pixels"
-qt_export $$/anim_0_123456.tiff --video=h263,24,100, ${name}_movie.m4v
+if [ $# -eq 1 ]; then
+	echo "anim_04.sh: Made $frame frames at 480x720 pixels placed in subdirectory frames"
+#	qt_export $$/anim_0_123456.tiff --video=h263,24,100, ${name}_movie.m4v
+fi
 # 4. Clean up temporary files
 gmtset DOTS_PR_INCH 300
 gmt_cleanup .gmt
