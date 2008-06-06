@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.310 2008-06-03 23:12:13 guru Exp $
+	$Id: ChangeLog,v 1.311 2008-06-06 00:53:28 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-06-05	pwessel
+	grdfilter.c:		Complained if -R was used and xmin was < h.xmin for full
+				360-range grid.
 2005-06-03	pwessel
 	* gmt_init.[ch]:	gmtdefs.encoding.name could be freed even if never allocated.
 	* examples/ex27:	New example showing how to plot Mercator *.img grids.
