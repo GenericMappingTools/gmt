@@ -6,8 +6,8 @@ grdgradient \- Compute directional derivative or gradient from 2-D grid file rep
 \fBgrdgradient\fP \fIin_grdfile\fP OPT(G)\fIout_grdfile\fP 
 [ OPT(A)\fIazim\fP[/\fIazim2\fP] ] [ OPT(D)[\fBc\fP][\fBo\fP][\fBn\fP] ] 
 [ OPT(E)[\fBs|p\fP]\fIazim/elev\fP[/\fIambient\fP/\fIdiffuse\fP/\fIspecular\fP/\fIshine\fP] ] 
-[ OPT(L)\fIflag\fP ] [ OPT(M) ] [ OPT(N)[\fBe\fP][\fBt\fP] 
-[\fIamp\fP][/\fIsigma\fP[/\fIoffset\fP]] ] [ OPT(S)\fIslopefile\fP ] [ GMT_V_OPT ]
+[ OPT(L)\fIflag\fP ] [ OPT(M) ] [ OPT(N)[\fBe\fP][\fBt\fP][\fIamp\fP][/\fIsigma\fP[/\fIoffset\fP]] ]
+[ OPT(S)\fIslopefile\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdgradient\fP may be used to compute the directional derivative  
 in a given direction (OPT(A)),
@@ -40,8 +40,8 @@ downhill in the \fIazim\fP direction,
 the correct sense for shading the illumination of an image (see  
 \fBgrdimage\fP and \fBgrdview\fP) by a
 light source above the x,y plane shining from the \fIazim\fP  
-direction.  Optionally, supply two azimuths, \fB\-A\fP\fIazim\fP/ 
-\fIazim2\fP, in which case the gradients in each of these directions  
+direction.  Optionally, supply two azimuths, \fB\-A\fP\fIazim\fP/\fIazim2\fP,
+in which case the gradients in each of these directions  
 are calculated
 and the one larger in magnitude is retained; this is useful for  
 illuminating data with two directions of
