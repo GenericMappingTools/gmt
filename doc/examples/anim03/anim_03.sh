@@ -1,6 +1,6 @@
 #!/bin/sh
 #               GMT ANIMATION 03
-#               $Id: anim_03.sh,v 1.2 2008-06-03 01:44:02 guru Exp $
+#               $Id: anim_03.sh,v 1.3 2008-06-09 19:30:19 guru Exp $
 #
 # Purpose:      Make web page with simple animated GIF of Iceland topo
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
@@ -22,16 +22,15 @@ name=`basename $0 '.sh'`
 mkdir -p $$
 gmtset DOTS_PR_INCH $dpi
 frame=0
-grdclip -Sb0/-1 $$.grd -GIceland.nc
-grdgradient -M -A45 -Nt1 Iceland.nc -G$$.nc
+grdclip -Sb0/-1 -G$$_above.nc Iceland.nc
+grdgradient -M -A45 -Nt1 $$_above.nc -G$$.nc
 makecpt -Crelief -Z > $$.cpt
 while [ $az -lt 360 ]; do
 	file=`gmt_set_framename $name $frame`
-	echo $file
-	if [ $# -eq 0 ]; then
+	if [ $# -eq 0 ]; then	# If a single frame is requested we pick this view
 		az=135
 	fi
-	grdview $$.grd -JM2.5 -C$$.cpt -Qi$dpi -B5g10/5g5 -E$az/${el}+w$lon/${lat}+v$x0/$y0 -P -X0.5i -Y0.5i --PAPER_MEDIA=Custom_${px}ix${py}i > $$.ps
+	grdview $$_above.nc -JM2.5 -C$$.cpt -Qi$dpi -B5g10/5g5 -E$az/${el}+w$lon/${lat}+v$x0/$y0 -P -X0.5i -Y0.5i --PAPER_MEDIA=Custom_${px}ix${py}i > $$.ps
 	if [ $# -eq 0 ]; then
 		mv $$.ps $name.ps
 		gmt_cleanup .gmt
