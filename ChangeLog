@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.311 2008-06-06 00:53:28 guru Exp $
+	$Id: ChangeLog,v 1.312 2008-06-11 00:27:24 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-06-09	pwessel
+	* xyz2grd.c:	For -E under Windows we used fscanf with a pointer from GMT DLL
+					which would fail for mysterious reasons
+
 2005-06-05	pwessel
 	grdfilter.c:		Complained if -R was used and xmin was < h.xmin for full
 				360-range grid.
