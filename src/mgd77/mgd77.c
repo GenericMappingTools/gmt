@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.175 2008-05-12 22:35:47 guru Exp $
+ *	$Id: mgd77.c,v 1.176 2008-06-11 01:22:27 mtchandl Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1002,8 +1002,8 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 			}
 		}
 		else {
-			rfStart = mgd77rf[ref_field_code-1].start;
-			rfEnd = mgd77rf[ref_field_code-1].end;
+			rfStart = mgd77rf[ref_field_code].start;
+			rfEnd = mgd77rf[ref_field_code].end;
 		}
 		(yr1 == yr2) ? sprintf (text, "%d", yr1) : sprintf (text, "%d-%d", yr1, yr2);
 		if (yr1 < rfStart || yr2 > rfEnd) {
