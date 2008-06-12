@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.313 2008-06-12 03:29:50 guru Exp $
+	$Id: ChangeLog,v 1.314 2008-06-12 22:06:19 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-06-12	pwessel
+	* examples:		Added ex27 for plotting img files and ex28 for plotting UTM
+
 2005-06-11	pwessel
 	* mgd77/mgd77sniffer.c:	Bitwise assignment error was deactivating other fields when
 				depth field was missing from a cruise.  Another bitwise error

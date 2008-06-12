@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.51 2008-06-03 23:12:13 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.52 2008-06-12 22:06:19 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -926,7 +926,7 @@ We hope to refine this further and extend the availability of the full projectio
 \section{Plotting Sandwell/Smith Mercator img grids}
 \index{Example!Mercator img grids|(}
 
-Finally, we show how to plot a data grid that is distributed in projected form.  The gravity and
+Next, we show how to plot a data grid that is distributed in projected form.  The gravity and
 predicted bathymetry grids produced by David Sandwell and Walter H. F. Smith are not geographical
 grids but instead tied to a spherical Mercator grid.  The \GMT\ supplement imgsrc has tools to
 extract subsets of these large grids.  If you need to make a non-Mercator map then you must extract
@@ -946,9 +946,42 @@ two key issues:
 
 \script{example_27}
 
-THis map of the Tasman Sea shows the marine gravity anomalies with land painted black.  A color scale bar
+This map of the Tasman Sea shows the marine gravity anomalies with land painted black.  A color scale bar
 was then added to complete the illustration.
 
 \GMTexample{27}{Plotting Sandwell/Smith Mercator img grids.}
  
 \index{Example!Mercator img grids|)}
+
+
+\section{Mixing UTM and geographic data sets}
+\index{Example!Mixing UTM and geographic data|(}
+
+Finally, we present a case where we wish to plot a data set given in UTM coordinates and make sure
+it is properly registered with overlying geographic data such as coastlines or data points.  The
+number one rookie error most \GMT\ users commit is to specify the UTM projection with their UTM
+data.  However, that data have already been projected and is now in linear meters.  The only way
+sensible to plot such data is with a linear projection, yielding a UTM map.  In this step one can
+choose to annotate or tick the map in UTM meters as well.  To plot geographic (lon/lat) data on
+the same map there are a few things you must remember:
+\begin{enumerate}
+	\item You need to know the lower left and upper right UTM coordinates of your map. Given
+	the UTM zone you can use \GMTprog{mapproject} to recover the lon/lat of those two points.
+	Conversely, if you instead know the lon/lat corners then you need to convert those
+	to UTM coordinates.  You now have the ability to specify two domains with the \Opt(R) setting:
+	The linear UTM meter domain when plotting UTM data and the geographic domain (remember to use the
+	rectangular variant of \Opt(R) that ends with the modifier {\bf r}) when plotting lon/lat data.
+	\item Make sure you use the same scale (and not width) with both the linear and UTM projection.
+\end{enumerate}
+
+\script{example_28}
+
+Our script illustrates how we would plot a UTM grid of elevations near Kilauea volcano on the Big Island
+of Hawaii.  Given we are in UTM zone 5Q, the script determines the geographic coordinates of the
+lower left and upper right corner of the UTM grid, then uses that region when overlaying the coastline
+and light blue ocean.  We place a scale bar and label Kilauea crater to complete the figure.
+
+\GMTexample{28}{Mixing UTM and geographic data sets requires knowledge of the map region domain in both
+UTM and lon/lat coordinates and consistent use of the same map scale.}
+ 
+\index{Example!Mixing UTM and geographic data|)}

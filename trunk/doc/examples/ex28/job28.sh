@@ -1,10 +1,10 @@
 #!/bin/sh
 #		GMT EXAMPLE 28
-#		$Id: job28.sh,v 1.2 2008-06-12 21:29:09 guru Exp $
+#		$Id: job28.sh,v 1.3 2008-06-12 22:06:19 guru Exp $
 #
 # Purpose:	Illustrates how to mix UTM data and UTM projection
-# GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast, pstext
-# Unix progs:	rm, grep, $AWK
+# GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast, pstext, mapproject
+# Unix progs:	rm, cut, grep, $AWK
 #
 ps=example_28.ps
 
