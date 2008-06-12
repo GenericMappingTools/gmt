@@ -1,4 +1,4 @@
-	$Id: README.SCRIPTS,v 1.7 2004-10-01 20:32:53 pwessel Exp $
+	$Id: README.SCRIPTS,v 1.8 2008-06-12 22:06:19 guru Exp $
 
 	README file for GMT Examples directory
 
@@ -19,6 +19,10 @@ take out all the exclamation points prior to running jobs.
 Examples 2 and 17 show usage of grdraster.  However, because
 the user may not have these databases the grdraster calls are
 commented out and the extracted grdfiles supplied instead.
+
+Exampe 27 shows usage of img2grd.  Again, since the user may
+not have the img data installed the img2grd call is commented
+out and the extracted img grid is supplied.
 
 It is possible that the output you may generate with these
 script will differ in subtle ways from the figures shown
