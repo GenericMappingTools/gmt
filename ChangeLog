@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.315 2008-06-13 00:31:34 guru Exp $
+	$Id: ChangeLog,v 1.316 2008-06-13 02:13:04 guru Exp $
 -----------------------------------------------------------------------------------------
 2005-06-12	pwessel
 	* examples:		Added ex27 for plotting img files and ex28 for plotting UTM
@@ -9,6 +9,7 @@
 				implemented where one or more +?[args] strings are appended
 				after the required parameters.
 	* pscoast.c:		Same.
+	* gmt.h, gmt_init.c:	Modified special checks for FreeBSD by also considering _AMD64_
 
 2005-06-11	pwessel
 	* mgd77/mgd77sniffer.c:	Bitwise assignment error was deactivating other fields when

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.353 2008-06-03 21:38:59 guru Exp $
+ *	$Id: gmt_init.c,v 1.354 2008-06-13 02:13:04 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3046,8 +3046,10 @@ int GMT_begin (int argc, char **argv)
 #endif
 
 #ifdef __FreeBSD__
+#ifdef _i386_
 	/* allow divide by zero -- Inf */
 	fpsetmask (fpgetmask () & ~(FP_X_DZ | FP_X_INV));
+#endif
 #endif
 	GMT = (struct GMT_CTRL *)New_GMT_Ctrl ();	/* Allocate and initialize a new common control structure */
 
@@ -3187,8 +3189,10 @@ void GMT_end (int argc, char **argv)
 	GMT_free ((void *)GMT_font);
 	GMT_free_custom_symbols();
 #ifdef __FreeBSD__
+#ifdef _i386_
 	fpresetsticky (FP_X_DZ | FP_X_INV);
 	fpsetmask (FP_X_DZ | FP_X_INV);
+#endif
 #endif
 
 	if (GMT_io.skip_if_NaN) GMT_free ((void *)GMT_io.skip_if_NaN);
