@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.170 2008-06-13 00:31:34 guru Exp $
+ *	$Id: gmt.h,v 1.171 2008-06-13 02:13:04 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -78,7 +78,9 @@ extern "C" {
 #include <time.h>
 
 #ifdef __FreeBSD__
+#ifdef _i386_
 #include <floatingpoint.h>
+#endif
 #endif
 
 #include "gmt_notunix.h"	/* Stuff for Windows, OS/2 etc */
