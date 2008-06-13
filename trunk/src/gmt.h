@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.169 2008-06-03 21:38:59 guru Exp $
+ *	$Id: gmt.h,v 1.170 2008-06-13 00:31:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -469,8 +469,10 @@ struct GMT_MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	BOOLEAN plot;		/* TRUE if we want to draw the scale */
 	BOOLEAN fancy;		/* TRUE for a fancy map scale */
 	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
+	BOOLEAN unit;		/* TRUE if we should append distance unit to all annotations along the scale */
+	BOOLEAN do_label;	/* TRUE if we should plot a label for the scale */
 	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
-	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight), u(nit) */
+	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
 	char label[GMT_TEXT_LEN];	/* Alternative user-specified label */
 	struct GMT_FILL fill;	/* Fill to use for background rectangle */
 	struct GMT_PEN pen;	/* Pen to use for background rectangle */

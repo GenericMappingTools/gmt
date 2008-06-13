@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.370 2008-05-25 22:48:20 guru Exp $
+ *	$Id: gmt_support.c,v 1.371 2008-06-13 00:31:35 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5729,15 +5729,12 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 {
 	/* Pass text as &argv[i][2] */
 
-	int j = 0, i, ns, n_slash, error = 0, colon, plus, k;
-	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_sx[GMT_LONG_TEXT], txt_sy[GMT_LONG_TEXT], txt_pf[2][GMT_LONG_TEXT];
-	BOOLEAN ok;
+	int j = 0, i, n_slash, error = 0, k, options;
+	char txt_cpy[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_sx[GMT_LONG_TEXT], txt_sy[GMT_LONG_TEXT], txt_len[GMT_LONG_TEXT];
 
-	ms->fancy = ms->gave_xy = FALSE;
-	ms->measure = ms->label[0] = '\0';
-	ms->length = 0.0;
+	memset ((void *)ms, 0, sizeof (struct GMT_MAP_SCALE));
+	ms->measure = 'k';
 	ms->justify = 't';
-	ms->boxdraw = ms->boxfill = FALSE;
 	memcpy ((void *)ms->fill.rgb, (void *)GMT_no_rgb, 3 * sizeof (int));
 
 	/* First deal with possible prefixes f and x (i.e., f, x, xf, fx) */
@@ -5746,53 +5743,35 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 	if (text[j] == 'f') ms->fancy = TRUE, j++;	/* in case we got xf instead of fx */
 
 	/* Determine if we have the optional longitude component specified by counting slashes.
-	 * We stop counting if we reach a : (label start) or + (pen/fill attributes) */
+	 * We stop counting if we reach a + (optional attributes) since the fill might have a slash in it */
 
-	for (n_slash = 0, i = j; text[i] && !(text[i] == '+' || text[i] == ':'); i++) if (text[i] == '/') n_slash++;
-
-	/* Determine if we have the optional label/justify component specified.  We search from
-	 * the end of the text until we reach the last slash, and update the colon position when
-	 * we find a colon.  When the loop exits the colon variable should point to the start of
-	 * the label string */
-
-	for (colon = -1, i = strlen (text) - 1, ok = TRUE; i && text[i] && ok; i--) {
-		if (text[i] == ':') colon = i+1;
-		if (text[i] == '/') ok = FALSE;	/* Do not search further than to the last slash */
+	for (n_slash = 0, i = j; text[i] && text[i] != '+'; i++) if (text[i] == '/') n_slash++;
+	options = (text[i] == '+') ? i : -1;	/* -1, or starting point of first option */
+	if (options > 0) {	/* Have optional args, make a copy and truncate text */
+		strcpy (txt_cpy, &text[options]);
+		text[options] = '\0';
 	}
-	for (plus = -1, i = j; text[i] && plus < 0; i++) if (text[i] == '+') plus = i+1;
 
-	if (n_slash == 4) {		/* -L[f][x]<x0>/<y0>/<lon>/<lat>/<length>[m|n|k][:label:<just>][+p<pen>]+[f<fill>] */
-		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%lf", txt_a, txt_b, txt_sx, txt_sy, &ms->length);
+	if (n_slash == 4) {		/* -L[f][x]<x0>/<y0>/<lon>/<lat>/<length>[m|n|k][+l<label>][+j<just>][+p<pen>][+f<fill>][+u] */
+		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_sx, txt_sy, txt_len);
 	}
-	else if (n_slash == 3) {	/* -L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k][:label:<just>][+p<pen>]+[f<fill>] */
-		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%lf", txt_a, txt_b, txt_sy, &ms->length);
+	else if (n_slash == 3) {	/* -L[f][x]<x0>/<y0>/<lat>/<length>[m|n|k][+l<label>][+j<just>][+p<pen>][+f<fill>][+u] */
+		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_sy, txt_len);
 	}
-	else {	/* Wrong number of slashes */
-		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Correct syntax\n", GMT_program);
-		fprintf (stderr, "\t-L[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[m|n|k], append m, n, or k for miles, nautical miles, or km [Default]\n");
-		k = 0;
+	else	/* Wrong number of slashes */
+		error++;
+	i = strlen (txt_len) - 1;
+	if (isalpha ((int)(txt_len[i])) && ! (txt_len[i] == 'm' || txt_len[i] == 'n' || txt_len[i] == 'k')) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Valid distance units are m, n, or k\n", GMT_program);
 		error++;
 	}
-	if (colon > 0) {	/* Get label and justification which are in :label:<just> format */
-		sscanf (&text[colon], "%[^:]:%c", ms->label, &ms->justify);
-		ms->measure = text[colon-2];
+	else {	/* Gave a valid distance unit */
+		ms->measure = txt_len[i];
+		txt_len[i] = '\0';
 	}
-	if (plus > 0) {	/* Get pen/fill for bacground rectangle */
-		ns = sscanf (&text[plus], "%[^+]+%s", txt_pf[0], txt_pf[1]);
-		if (colon <= 0) ms->measure = text[plus-2];
-		for (i = 0; i < ns; i++) {
-			if (txt_pf[i][0] == 'p') {	/* Pen specification */
-				error += GMT_getpen (&txt_pf[i][1], &ms->pen);
-				ms->boxdraw = TRUE;
-			}
-			else if (txt_pf[i][0] == 'f') {	/* Fill specification */
-				error += GMT_getfill (&txt_pf[i][1], &ms->fill);
-				ms->boxfill = TRUE;
-			}
-		}
-	}
-	if (!(colon > 0 || plus > 0)) ms->measure = text[strlen(text)-1];
-	if (ms->gave_xy) {	/* Convert user's x/y to inches */
+	ms->length = atof (txt_len);
+	
+	if (ms->gave_xy) {	/* Convert user's x/y position to inches */
 		ms->x0 = GMT_convert_units (txt_a, GMT_INCH);
 		ms->y0 = GMT_convert_units (txt_b, GMT_INCH);
 	}
@@ -5821,11 +5800,6 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Scale longitude is out of range\n", GMT_program);
 		error++;
 	}
-	if (k < 4 || k > 5) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Correct syntax\n", GMT_program);
-		fprintf (stderr, "\t-L[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[m|n|k], append m, n, or k for miles, nautical miles, or km [Default]\n");
-		error++;
-	}
 	if (ms->length <= 0.0) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Length must be positive\n", GMT_program);
 		error++;
@@ -5834,11 +5808,50 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Defining latitude is out of range\n", GMT_program);
 		error++;
 	}
-	if (isalpha ((int)(ms->measure)) && ! ((ms->measure) == 'm' || (ms->measure) == 'n' || (ms->measure) == 'k')) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Valid units are m, n, or k\n", GMT_program);
-		error++;
-	}
+	if (options > 0) {	/* Gave +?<args> which now must be processed */
+		char p[BUFSIZ];
+		int pos = 0, bad = 0;
+		while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
+			switch (p[0]) {
+				case 'f':	/* Fill specification */
+					if (GMT_getfill (&p[1], &ms->fill)) bad++;
+					ms->boxfill = TRUE;
+					break;
 
+				case 'j':	/* Label justification */
+					ms->justify = p[1];
+					if (!(ms->justify == 'l' || ms->justify == 'r' || ms->justify == 't' || ms->justify == 'b')) bad++;
+					break;
+				
+				case 'p':	/* Pen specification */
+					if (GMT_getpen (&p[1], &ms->pen)) bad++;
+					ms->boxdraw = TRUE;
+					break;
+
+				case 'l':	/* Label specification */
+					if (p[1]) strcpy (ms->label, &p[1]);
+					ms->do_label = TRUE;
+					break;
+			
+				case 'u':	/* Add units to annotations */
+					ms->unit = TRUE;
+					break;
+
+				default:
+					bad++;
+					break;
+			}
+		}
+		error += bad;
+		text[options] = '+';	/* Restore original string */
+	}
+	
+	if (error) {
+		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Correct syntax\n", GMT_program);
+		fprintf (stderr, "\t-L[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[m|n|k][+l<label>][+j<just>][+p<pen>][+f<fill>][+u]\n");
+		fprintf (stderr, "\t  Append m, n, or k for miles, nautical miles, or km [Default]\n");	
+		fprintf (stderr, "\t  Justification can be l, r, b, or t [Default]\n");	
+	}	
 	ms->plot = TRUE;
 	return (error);
 }
