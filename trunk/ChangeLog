@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.316 2008-06-13 02:13:04 guru Exp $
+	$Id: ChangeLog,v 1.317 2008-06-13 23:02:25 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-06-13	pwessel
+	* grdimage.c:	Failed to determine boundary of projected grid with enough precision.
+	* misc/gmtstitch.c:	Check to see if format was set was wrong.
+	* mgd77/mgd77track.c:	Missing newline after last source line
+	
 2005-06-12	pwessel
 	* examples:		Added ex27 for plotting img files and ex28 for plotting UTM
 	* psbasemap.c:		The syntax for the -L option had to change since one could
