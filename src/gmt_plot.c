@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.229 2008-05-21 01:31:49 guru Exp $
+ *	$Id: gmt_plot.c,v 1.230 2008-06-13 00:31:34 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2703,13 +2703,18 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 	double dlon, x1, x2, dummy, a, b, tx, ty, off, f_len, a_len, x_left, bar_length, x_label, y_label;
 	double xx[4], yy[4], bx[4], by[4], zz, base, d_base, width, half, bar_width, dx, dx_f, dx_a;
 	char txt[GMT_LONG_TEXT], *this_label;
-	char label[3][16];
+	char label[4][16], units[4][3];
 
 	if (!ms->plot) return;
 
 	strcpy (label[0], "km");
 	strcpy (label[1], "miles");
 	strcpy (label[2], "nautical miles");
+	strcpy (label[3], "m");
+	strcpy (units[0], "km");
+	strcpy (units[1], "mi");
+	strcpy (units[2], "nm");
+	strcpy (units[3], "m");
 
 	if (!GMT_IS_MAPPING) return;	/* Only for geographic projections */
 
@@ -2721,6 +2726,10 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 		case 'n':	/* Nautical miles instead */
 			unit = 2;
 			bar_length = 1.852 * ms->length;
+			break;
+		case 'e':	/* meters instead */
+			unit = 3;
+			bar_length = 0.001 * ms->length;
 			break;
 		default:	/* Default (or k) is km */
 			unit = 0;
@@ -2798,7 +2807,6 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 			GMT_xyz_to_xy (xx[1], ms->y0, zz, &a, &b);
 			ps_plot (a, b, PSL_PEN_DRAW_AND_STROKE);
 		}
-		this_label = (ms->label[0] && ms->label[0] != '-') ? ms->label : label[unit];
 		ty = ms->y0 - off;
 		for (j = 0; j <= n_a_ticks[i]; j++) {
 			tx = x_left + j * dx_a;
@@ -2806,8 +2814,8 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 			ps_plot (a, b, PSL_PEN_MOVE);
 			GMT_xyz_to_xy (tx, ms->y0, zz, &a, &b);
 			ps_plot (a, b, PSL_PEN_DRAW_AND_STROKE);
-			if (ms->justify == 'u')
-				sprintf (txt, "%g %s", j * d_base, this_label);
+			if (ms->unit)
+				sprintf (txt, "%g %s", j * d_base, units[unit]);
 			else
 				sprintf (txt, "%g", j * d_base);
 			GMT_text3D (tx, ty, zz, gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], txt, 0.0, 10, 0);
@@ -2834,7 +2842,8 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 				jj = 10;
 				break;
 		}
-		if (ms->justify != 'u') {
+		if (ms->do_label) {
+			this_label = (ms->label[0]) ? ms->label : label[unit];
 			GMT_xyz_to_xy (x_label, y_label, zz, &tx, &ty);
 			GMT_text3D (x_label, y_label, zz, gmtdefs.label_font_size, gmtdefs.label_font, this_label, 0.0, jj, 0);
 		}
