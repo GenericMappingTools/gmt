@@ -31,22 +31,22 @@ character is \fIflag\fP [>].
 Specify one of four ways to calculate tension factors to preserve local shape properties or
 satisfy arc constraints [Default is no tension].
 .TP
-.B \-Ts
+.B \-T0
 Determine, for each triangulation arc, the smallest (nonnegative) tension factor such that the
 Hermite interpolatory tension spline, defined by the tension and the specified endpoint data,
 preserves local shape properties (monotonicity and convexity) of the data.
 .TP
-.B \-Tv
+.B \-T1
 Determine the smallest tension factor such that the
 Hermite interpolatory tension spline associated with a specified triangulation arc and endpoint data
 is bounded (either above of below) by a specified value.
 .TP
-.B \-Tg
+.B \-T2
 Determine the smallest tension factor such that the first derivative of the
 Hermite interpolatory tension spline associated with a specified triangulation arc and endpoint data
 is bounded (either above of below) by a specified value.
 .TP
-.B \-Tc
+.B \-T3
 Determine the smallest tension factor such that the
 Hermite interpolatory tension spline associated with a specified triangulation arc and endpoint data
 preserves convexity (or concavity) of the data on the arc.
