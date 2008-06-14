@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 27
-#		$Id: job27.sh,v 1.1 2008-06-03 02:40:17 guru Exp $
+#		$Id: job27.sh,v 1.2 2008-06-14 01:42:08 guru Exp $
 #
 # Purpose:	Illustrates how to plot Mercator img grids
 # GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast
@@ -9,7 +9,7 @@
 #
 ps=example_27.ps
 
-# First extract a chunk of topo and retain short int precision to
+# First extract a chunk of faa and retain short int precision to
 # save disk space.  Gravity is thus in 0.1 mGal increments.
 # Next get gradients.  The grid's region is in Mercator x/y units
 
