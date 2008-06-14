@@ -1,6 +1,6 @@
 REM
 REM		GMT EXAMPLE 27
-REM		$Id: job27.bat,v 1.1 2008-06-03 03:18:12 guru Exp $
+REM		$Id: job27.bat,v 1.2 2008-06-14 01:42:08 guru Exp $
 REM
 REM Purpose:	Illustrates how to plot Mercator img grids
 REM GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast
@@ -12,7 +12,7 @@ set master=y
 if exist job27.bat set master=n
 if %master%==y cd ex27
 
-REM First extract a chunk of topo and retain short int precision to
+REM First extract a chunk of faa and retain short int precision to
 REM save disk space.  Gravity is thus in 0.1 mGal increments.
 REM Next get gradients.  The grid region is in Mercator x/y units
 
