@@ -1,14 +1,14 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.136 2008-05-30 22:31:06 guru Exp $
+#	$Id: install_gmt.sh,v 1.137 2008-06-18 02:22:51 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	14-May-2008
+#	17-June-2008
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
-NETCDF_VERSION=3.6.2
+NETCDF_VERSION=3.6.3
 VERSION=4.3.1
 GSHHS=1.10
 GMT_FTP_TEST=0
@@ -149,7 +149,7 @@ if [ "$answer" = "n" ]; then	# Must install netcdf one way or the other
 	if [ $do_ftp_qa -eq 1 ]; then
 		answer=`get_def_answer "Do you want me to ftp it for you? (y/n)" "y"`
 		if [ "$answer" = "n" ]; then
-			answer=`get_def_answer "Do you have netcdf.tar.{Z,bz2,gz} in $topdir? (y/n)" "y"`
+			answer=`get_def_answer "Do you have netcdf-${NETCDF_VERSION}.tar.{Z,bz2,gz} in $topdir? (y/n)" "y"`
 			if [ "$answer" = "n" ]; then
 				echo "Please ftp or install netcdf and then rerun install_gmt" >&2
 				exit
@@ -161,15 +161,15 @@ if [ "$answer" = "n" ]; then	# Must install netcdf one way or the other
 	netcdf_install=y
 	if [ "$netcdf_ftp" = "n" ]; then	# Check that the files are actually there
 		ok=0
-		if [ -f netcdf.tar.Z ]; then
+		if [ -f netcdf-${NETCDF_VERSION}.tar.Z ]; then
 			ok=1
-		elif [ -f netcdf.tar.bz2 ]; then
+		elif [ -f netcdf-${NETCDF_VERSION}.tar.bz2 ]; then
 			ok=1
-		elif [ -f netcdf.tar.gz ]; then
+		elif [ -f netcdf-${NETCDF_VERSION}.tar.gz ]; then
 			ok=1
 		fi
 		if [ $ok -eq 0 ]; then
-			echo "netcdf.tar.{Z,bz2,gz} not in $topdir" >&2
+			echo "netcdf-${NETCDF_VERSION}.tar.{Z,bz2,gz} not in $topdir" >&2
 			echo "Please ftp netcdf or have me do it" >&2
 			exit
 		fi
@@ -873,7 +873,7 @@ if [ "$netcdf_install" = "y" ]; then
 		fi
 		echo "cd pub/netcdf" >> $$
 		echo "binary" >> $$
-		echo "get netcdf.tar.Z" >> $$
+		echo "get netcdf-${NETCDF_VERSION}.tar.Z" >> $$
 		echo "quit" >> $$
 		echo " " >> $$
 
@@ -888,14 +888,14 @@ if [ "$netcdf_install" = "y" ]; then
 		rm -f $$
 	fi
 
-	if [ -f netcdf.tar.Z ]; then
-		zcat netcdf.tar.Z | tar xvf -
-	elif [ -f netcdf.tar.bz2 ]; then
-		$expand netcdf.tar.$suffix | tar xvf -
-	elif [ -f netcdf.tar.gz ]; then
-		gzip -dc netcdf.tar.$suffix | tar xvf -
+	if [ -f netcdf-${NETCDF_VERSION}.tar.Z ]; then
+		zcat netcdf-${NETCDF_VERSION}.tar.Z | tar xvf -
+	elif [ -f netcdf-${NETCDF_VERSION}.tar.bz2 ]; then
+		$expand netcdf-${NETCDF_VERSION}.tar.$suffix | tar xvf -
+	elif [ -f netcdf-${NETCDF_VERSION}.tar.gz ]; then
+		gzip -dc netcdf-${NETCDF_VERSION}.tar.$suffix | tar xvf -
 	else
-		echo "?? netcdf.tar.{Z,bz2,gz} not found - must abort !!"
+		echo "?? netcdf-${NETCDF_VERSION}.tar.{Z,bz2,gz} not found - must abort !!"
 		exit
 	fi
 	
