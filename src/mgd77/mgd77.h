@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.90 2008-04-22 03:34:38 mtchandl Exp $
+ *	$Id: mgd77.h,v 1.91 2008-06-19 04:18:54 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -190,6 +190,11 @@ typedef char* Text;	/* Used to indicate character strings */
 #define MGD77_COL_UNIT_LEN	64
 #define MGD77_COL_COMMENT_LEN	128
 
+#define MGD77_COL_ADJ_MAG	1	/* Compute mag from mtf1 - igrf */
+#define MGD77_COL_ADJ_FAA	2	/* Compute faa from gobs - igf */
+#define MGD77_COL_ADJ_CARTER	3	/* Compute Carter depth from twt */
+#define MGD77_COL_ADJ_TWT	4	/* Undo twt PDR wraps given PDR_wrap value */
+
 struct MGD77_COLINFO {
 	char *abbrev;		/* Short name that identifies this column */
 	char *name;		/* Longer, descriptive name for column */
@@ -204,6 +209,7 @@ struct MGD77_COLINFO {
 	nc_type type;		/* Type of representation of this data in the netCDF file (NC_SHORT, NC_INT, NC_BYTE, etc) */
 	char text;		/* length if this is a text string, else 0 */
 	int var_id;		/* netCDF variable ID */
+	int adjust;		/* Column needs some sort of adjustment before data is returned [0 means as is] */
 	BOOLEAN constant;	/* TRUE if column is constant and only 1 row is/should be stored */
 	BOOLEAN present;	/* TRUE if column is present in the file (NaN or otherwise) */
 };
@@ -233,6 +239,7 @@ struct MGD77_HEADER {
 	int n_fields;					/* Number of columns returned */
 	int errors[3];					/* Number of total errors, (warnings, errors) found when reading this header */
 	BOOLEAN no_time;				/* TRUE for those few cruises that have no time values */
+	double PDR_wrap;				/* Non-zero if we must undo PDR wrapping */
 	struct MGD77_DATA_INFO info[MGD77_N_SETS];	/* Info regarding [0] standard MGD77 columns and [1] any extra columns (max 32 each) */
 };
 

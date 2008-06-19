@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77_e77.h,v 1.8 2008-04-25 23:57:08 mtchandl Exp $	
+ *	$Id: mgd77_e77.h,v 1.9 2008-06-19 04:18:54 guru Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2008 by P. Wessel and M. T. Chandler
@@ -46,6 +46,7 @@
 #define E77_HDR_BCC          11
 #define E77_HDR_PRECISION    12
 #define E77_HDR_PDR          13
+#define E77_HDR_CARTER       14
 
 /* E77 Default Warning Codes */
 #define E77_ERROR           'E'
