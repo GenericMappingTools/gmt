@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.176 2008-06-11 01:22:27 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.177 2008-06-19 04:18:53 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1499,6 +1499,10 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	MGD77_nc_status (nc_inq_dimlen (F->nc_id, F->nc_recid, count));	/* Get number of records */
 	H->n_records = count[0];
 
+	/* GET PDR WRAP AMOUNT.  IF PRESENT AND > 0 WE MUST RECALCULATE DEPTHS FROM TWT AND APPLY UNWRAPPING */
+	
+	if (nc_get_att_double (F->nc_id, NC_GLOBAL, "PDR_wrap", &H->PDR_wrap) == NC_ENOTATT) H->PDR_wrap = 0.0;	/* No PDR wrapping to undo */
+
 	/* GET INFORMATION OF ALL COLUMNS AND STORE IN HEADER STRUCTURE */
 	
 	nc_inq_nvars (F->nc_id, &n_vars);			/* Total number of variables in this file */
@@ -1549,6 +1553,10 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 		 */
 		if (nc_get_att_double (F->nc_id, id, "corr_factor",   &H->info[c].col[c_id[c]].corr_factor) == NC_ENOTATT) H->info[c].col[c_id[c]].corr_factor = 1.0;
 		if (nc_get_att_double (F->nc_id, id, "corr_offset",   &H->info[c].col[c_id[c]].corr_offset) == NC_ENOTATT) H->info[c].col[c_id[c]].corr_offset = 0.0;
+
+		/* Some fields may have an adjustment flag which usually means an anomaly needs to be recomputed from observations and a regional field */
+		if (nc_get_att_int (F->nc_id, id, "adjust",   &H->info[c].col[c_id[c]].adjust) == NC_ENOTATT) H->info[c].col[c_id[c]].adjust = 0;
+		
 		H->info[c].col[c_id[c]].var_id = id;				/* Save the netCDF variable ID */
 		MGD77_nc_status (nc_inq_varndims (F->nc_id, id, &n_dims));	/* Get number of dimensions */
 		MGD77_nc_status (nc_inq_vardimid (F->nc_id, id, dims));		/* Get dimension id(s) of this variable */
@@ -3293,12 +3301,12 @@ int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 
 int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 {
-	/* Reads the entire data file and applies bitflags unless they are turned off by calling programs */
+	/* Reads the entire data file and applies bitflags and corrections unless they are turned off by calling programs */
 	int nc_id;
 	int i, k, c, id;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	GMT_LONG rec, rec_in;
-	BOOLEAN apply_bits[MGD77_N_SETS];
+	BOOLEAN apply_bits[MGD77_N_SETS], apply_corrections = FALSE, needed[6] = {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE};
 	unsigned int *flags;
 	char *text, *flagname[MGD77_N_SETS] = {"MGD77_flags", "CDF_flags"};
 	double scale, offset, *values;
@@ -3377,7 +3385,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
 				c  = F->order[i].set;	/* Determine set and item */
 				id = F->order[i].item;
-				if (S->H.info[c].col[id].text) continue ;	/* Skip text variables in this section*/
+				if (S->H.info[c].col[id].text) continue ;	/* Skip text variables in this section */
 				values = (double *)S->values[i];
 				for (rec_in = rec = 0; rec_in < S->H.n_records; rec_in++) {
 					if (rec_in > rec) values[rec] = values[rec_in];	/* Must shuffle records */
@@ -3389,7 +3397,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
 				c  = F->order[i].set;	/* Determine set and item */
 				id = F->order[i].item;
-				if (!S->H.info[c].col[id].text) continue ;	/* Skip double variables in this section*/
+				if (!S->H.info[c].col[id].text) continue ;	/* Skip double variables in this section */
 				count[1] = S->H.info[c].col[id].text;	/* Get length of each string */
 				text = (char *)S->values[i];
 				for (rec_in = rec = 0; rec_in < S->H.n_records; rec_in++) {
@@ -3403,6 +3411,49 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		}	
 	}
 
+	/* Possibly apply coloumn-specific corrections (if any) */
+	
+	for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
+		c  = F->order[i].set;			/* Determine set and item */
+		if (!F->use_corrections[c]) continue;	/* Do not apply any corrections for this set */
+		id = F->order[i].item;
+		/* Need to determine which auxillary columns (e.g., lon, lat) are needed and if they are not part of the output columns
+		 * then they need to be secured separately.  Once these are all obtained we should have a repeated loop when the
+		 * corrections could be calculated and applied */
+		if (S->H.info[c].col[id].adjust) apply_corrections = TRUE;
+		switch (S->H.info[c].col[id].adjust) {
+			case MGD77_COL_ADJ_MAG:
+				needed[0] = TRUE;	/* Lon */
+				needed[1] = TRUE;	/* Lat */
+				needed[2] = TRUE;	/* Time */
+				needed[3] = TRUE;	/* mtf1 */
+				break;
+			case MGD77_COL_ADJ_FAA:
+				needed[1] = TRUE;	/* Lat */
+				needed[4] = TRUE;	/* gobs */
+				break;
+			case MGD77_COL_ADJ_CARTER:
+			case MGD77_COL_ADJ_TWT:
+				needed[0] = TRUE;	/* Lon */
+				needed[1] = TRUE;	/* Lat */
+				needed[5] = TRUE;	/* twt */
+				break;
+			default:	/* Probably 0 */
+				break;
+		}
+	}
+	
+	if (apply_corrections) {	/* One or more of the depth, faa, and mag columns needs to be recomputed */
+		for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
+			c  = F->order[i].set;			/* Determine set and item */
+			if (!F->use_corrections[c]) continue;	/* Do not apply any corrections for this set */
+			id = F->order[i].item;
+			if (!S->H.info[c].col[id].adjust) continue ;	/* No adjustments required */
+			values = (double *)S->values[i];
+			/* Do the correction, somehow */
+		}
+	}
+	
 	S->n_fields = F->n_out_columns;
 
 	return (MGD77_NO_ERROR);
