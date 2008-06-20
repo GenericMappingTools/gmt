@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.177 2008-06-19 04:18:53 guru Exp $
+ *	$Id: mgd77.c,v 1.178 2008-06-20 20:54:31 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -21,6 +21,7 @@
 #include "mgd77.h"
 #include "mgd77_IGF_coeffs.h"
 #include "mgd77_init.h"
+#include "mgd77_recalc.h"
 #ifndef WIN32
 #include <dirent.h>
 #endif
@@ -91,6 +92,7 @@ double MGD77_Sind (double z);
 double MGD77_Cosd (double z);
 double MGD77_Copy (double z);
 int wrong_filler (char *field, int length);
+double *MGD77_Read_Column (int id, size_t start[], size_t count[], double scale, double offset, struct MGD77_COLINFO *col);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -3303,20 +3305,22 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 {
 	/* Reads the entire data file and applies bitflags and corrections unless they are turned off by calling programs */
 	int nc_id;
-	int i, k, c, id;
+	int i, k, c, id, col;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	GMT_LONG rec, rec_in;
-	BOOLEAN apply_bits[MGD77_N_SETS], apply_corrections = FALSE, needed[6] = {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE};
+	BOOLEAN apply_bits[MGD77_N_SETS];
 	unsigned int *flags;
 	char *text, *flagname[MGD77_N_SETS] = {"MGD77_flags", "CDF_flags"};
 	double scale, offset, *values;
+	struct MGD77_E77_APPLY E;
 	
 	if (MGD77_Open_File (file, F, MGD77_READ_MODE)) return (-1);	/* Basically sets the path */
 	
+	memset ((void *)&E, 0, sizeof (struct MGD77_E77_APPLY));
 	count[0] = S->H.n_records;
-	for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
-		c  = F->order[i].set;	/* Determine set and item */
-		id = F->order[i].item;
+	for (col = 0; col < F->n_out_columns; col++) {	/* Only loop over columns that are desired */
+		c  = F->order[col].set;	/* Determine set and item */
+		id = F->order[col].item;
 		/* Use the attribute scale & offset to adjust the values */
 		scale = S->H.info[c].col[id].factor;
 		offset = S->H.info[c].col[id].offset;
@@ -3330,34 +3334,145 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			text = (char *) GMT_memory (VNULL, count[0] * count[1], sizeof (char), "MGD77_Read_File_cdf");
 			if (S->H.info[c].col[id].constant) {	/* Scalar, must read one and then replicate */
 				MGD77_nc_status (nc_get_vara_schar (F->nc_id, S->H.info[c].col[id].var_id, start, &count[1], (signed char *)text));
-				for (k = 1; k < (int)count[0]; k++) strncpy (&text[k*count[1]], text, count[1]);	/* Replicate one string */
+				for (rec = 1; rec < (GMT_LONG)count[0]; rec++) strncpy (&text[rec*count[1]], text, count[1]);	/* Replicate one string */
 			}
 			else	/* Get all individual strings */
 				MGD77_nc_status (nc_get_vara_schar (F->nc_id, S->H.info[c].col[id].var_id, start, count, (signed char *)text));
-			S->values[i] = (void *)text;
+			S->values[col] = (void *)text;
 			S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
 		}
 		else if (S->H.no_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Fake NaN time and bit_pattern not set */
 			values = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
-			for (k = 0; k < (int)count[0]; k++) values[k] = GMT_d_NaN;
-			S->values[i] = (void *)values;
+			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = GMT_d_NaN;
+			S->values[col] = (void *)values;
 		}
 		else {
-			values = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
-			if (S->H.info[c].col[id].constant) {	/* Scalar, must read one and then replicate */
-				MGD77_nc_status (nc_get_var1_double (F->nc_id, S->H.info[c].col[id].var_id, start, values));
-				MGD77_do_scale_offset_after_read (values, (GMT_LONG)1, scale, offset, MGD77_NaN_val[S->H.info[c].col[id].type]);	/* Just modify one point */
-				for (k = 1; k < (int)count[0]; k++) values[k] = values[0];
-			}
-			else {	/* Read entire array */
-				MGD77_nc_status (nc_get_vara_double (F->nc_id, S->H.info[c].col[id].var_id, start, count, values));
-				MGD77_do_scale_offset_after_read (values, (GMT_LONG)count[0], scale, offset, MGD77_NaN_val[S->H.info[c].col[id].type]);
-			}
-			S->values[i] = (void *)values;
+			values = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
+			S->values[col] = (void *)values;
 			S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
 		}
+		if (c == MGD77_M77_SET) E.got_it[id] = TRUE;	/* Actually read this field into memory */
 	}
 
+	/* Possibly apply coloumn-specific corrections (if any) */
+	
+	for (col = 0; col < F->n_out_columns; col++) {	/* Only loop over columns that are desired */
+		c  = F->order[col].set;			/* Determine set */
+		if (!(c == MGD77_M77_SET && F->use_corrections[c])) continue;	/* Do not apply any corrections for this set */
+		id = F->order[col].item;			/* Determine item */
+		/* Need to determine which auxillary columns (e.g., lon, lat) are needed and if they are not part of the requested output columns
+		 * then they need to be secured separately.  Once these are all obtained we can apply the corrections */
+		if (S->H.info[c].col[id].adjust) E.apply_corrections = TRUE;	/* So we know if anything needs to be done in the next loop */
+		switch (S->H.info[c].col[id].adjust) {
+			case MGD77_COL_ADJ_TWT:		/* Must undo PDR wrap-around only */
+				if (GMT_IS_ZERO (S->H.PDR_wrap)) {
+					fprintf (stderr, "%s: Warning: PDR unwrapping requested but period = 0. Wrapping deactivated\n", GMT_program);
+				}
+				else {
+					E.needed[E77_AUX_FIELD_TWT] = 1;
+					E.correction_requested[E77_CORR_FIELD_TWT] = TRUE;
+					E.col[E77_CORR_FIELD_TWT] = col;
+					E.id[E77_CORR_FIELD_TWT] = id;
+				}
+				break;
+			case MGD77_COL_ADJ_DEPTH:	/* Must recalculate depth from twt using Carter(lon,lat) table lookup */
+				E.needed[E77_AUX_FIELD_LAT] = 1;
+				E.needed[E77_AUX_FIELD_LON] = 1;
+				E.needed[E77_AUX_FIELD_TWT] = 1;
+				E.correction_requested[E77_CORR_FIELD_DEPTH] = TRUE;
+				E.col[E77_CORR_FIELD_DEPTH] = col;
+				E.id[E77_CORR_FIELD_DEPTH] = id;
+				break;
+			case MGD77_COL_ADJ_MAG:	/* Must apply IGRF(lon,lat,time) correction to mtf1 */
+				E.needed[E77_AUX_FIELD_TIME] = 1;
+				E.needed[E77_AUX_FIELD_LAT] = 1;
+				E.needed[E77_AUX_FIELD_LON] = 1;
+				E.needed[E77_AUX_FIELD_MTF1] = 1;
+				E.correction_requested[E77_CORR_FIELD_MAG] = TRUE;
+				E.col[E77_CORR_FIELD_MAG] = col;
+				E.id[E77_CORR_FIELD_MAG] = id;
+				break;
+			case MGD77_COL_ADJ_FAA:	/* Must apply IGF(lat) correction to gobs */
+				E.needed[E77_AUX_FIELD_LAT] = 1;
+				E.needed[E77_AUX_FIELD_GOBS] = 1;
+				E.correction_requested[E77_CORR_FIELD_FAA] = TRUE;
+				E.col[E77_CORR_FIELD_FAA] = col;
+				E.id[E77_CORR_FIELD_FAA] = id;
+				break;
+			default:	/* Probably 0 */
+				break;
+		}
+	}
+	
+	if (E.apply_corrections) {	/* One or more of the depth, faa, and mag columns needs to be recomputed */
+		int nc_id[N_E77_AUX_FIELDS] = {NCPOS_TIME,NCPOS_LAT,NCPOS_LON,NCPOS_TWT,NCPOS_MTF1,NCPOS_GOBS};
+		char *abbrev[N_E77_AUX_FIELDS] = {"time","lat","lon","twt","mtf1","gobs"};
+		/* First make sure the auxillary data fields are set */
+		for (i = 0; i < N_E77_AUX_FIELDS; i++) {
+			if (!E.needed[i]) continue;	/* Dont need this particular column */
+			if (E.got_it[nc_id[i]]) {	/* This aux is actually one of the output columns so we have already read it - just use a pointer */
+				col =  MGD77_Info_from_Abbrev (abbrev[i], &S->H, &c, &id);	/* Which output column is it? */
+				E.aux[i] = (double *)S->values[col];
+			}
+			else {	/* Not read, must read separately */
+				E.aux[i] = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
+				E.aux[i] = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[MGD77_M77_SET].col[E.id[i]]));
+				E.needed[i] = 2;	/* So we know which aux columns to deallocate when done */
+			}
+		}
+		/* Now E.aux[i] points to the correct array of values for each auxillary column that is needed */
+		
+		if (E.correction_requested[E77_CORR_FIELD_TWT]) {	/* Must correct twt for wraps */
+			BOOLEAN has_prev_twt = FALSE;
+			double PDR_wrap_trigger, d_twt, prev_twt, twt_pdrwrap_corr = 0.0;
+			PDR_wrap_trigger = 0.5 * S->H.PDR_wrap;	/* Must exceed 50% of wrap to activate unwrapping */
+			for (rec = 0; rec < count[0]; rec++) {	/* Correct every record */
+				if (!GMT_is_dnan (E.aux[E77_AUX_FIELD_TWT][rec])) {	/* OK, valid twt */
+					if (has_prev_twt) {	/* OK, may look at change in twt */
+						d_twt = E.aux[E77_AUX_FIELD_TWT][rec] - prev_twt;
+						if (fabs (d_twt) > PDR_wrap_trigger) twt_pdrwrap_corr += copysign (S->H.PDR_wrap, -d_twt);
+					}
+					has_prev_twt = TRUE;
+					prev_twt = E.aux[E77_AUX_FIELD_TWT][rec];
+				}
+				E.aux[E77_AUX_FIELD_TWT][rec] += twt_pdrwrap_corr;	/* aux could be either auxilliary or pointer to output column */
+			}
+		}
+		
+		if (E.correction_requested[E77_CORR_FIELD_DEPTH]) {	/* Must recalculate depths from twt via Carter table lookup */
+			struct MGD77_CARTER Carter;	/* Used to calculate Carter depths */
+			MGD77_carter_init (&Carter);	/* Initialize Carter machinery */
+			values = (double *)S->values[E.col[E77_CORR_FIELD_DEPTH]];		/* Output depths */
+			for (rec = 0; rec < count[0]; rec++)	/* Correct every record */
+				MGD77_carter_depth_from_xytwt (E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], 1000.0 * E.aux[E77_AUX_FIELD_TWT][rec], &Carter, &values[rec]);
+		}
+		
+		if (E.correction_requested[E77_CORR_FIELD_MAG]) {	/* Must recalculate mag from mtf1 and IGRF */
+			int n_days;
+			double date;	/* FLoating-point year needed by IGRF function */
+			double IGRF[7];	/* The 7 components returned */
+			struct GMT_gcal cal;		/* Calendar structure needed for IGRF calculation */
+			values = (double *)S->values[E.col[E77_CORR_FIELD_MAG]];		/* Output mag */
+			for (rec = 0; rec < count[0]; rec++) {	/* Correct every record */
+				GMT_gcal_from_dt (E.aux[E77_AUX_FIELD_TIME][rec], &cal);	/* No adjust for TZ; this is GMT UTC time */
+				n_days = (GMT_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
+				/* Get date as decimal year */
+				date = cal.year + cal.day_y / n_days + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY;
+				values[rec] = E.aux[E77_AUX_FIELD_MTF1][rec] - ((MGD77_igrf10syn (0, date, 1, 0.0, E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], IGRF)) ? GMT_d_NaN : IGRF[MGD77_IGRF_F]);
+			}
+		}
+		
+		if (E.correction_requested[E77_CORR_FIELD_FAA]) {	/* Must recalculate mag from mtf1 and IGRF */
+			values = (double *)S->values[E.col[E77_CORR_FIELD_FAA]];		/* Output faa */
+			for (rec = 0; rec < count[0]; rec++)	/* Correct every record */
+			 	values[rec] = E.aux[E77_AUX_FIELD_GOBS][rec] - MGD77_Theoretical_Gravity (0.0, E.aux[E77_AUX_FIELD_LAT][rec], MGD77_IGF_1980);
+		}
+
+		for (i = 0; i < N_E77_AUX_FIELDS; i++) {	/* Free auxilliary columns not part of the output */
+			if (E.needed[i] == 2) GMT_free ((void *)E.aux[i]);
+		}
+	}
+	
 	/* Look for optional bit flags to read and apply */
 	
 	memset ((void *)apply_bits, 0, MGD77_N_SETS * sizeof (BOOLEAN));
@@ -3411,52 +3526,27 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		}	
 	}
 
-	/* Possibly apply coloumn-specific corrections (if any) */
-	
-	for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
-		c  = F->order[i].set;			/* Determine set and item */
-		if (!F->use_corrections[c]) continue;	/* Do not apply any corrections for this set */
-		id = F->order[i].item;
-		/* Need to determine which auxillary columns (e.g., lon, lat) are needed and if they are not part of the output columns
-		 * then they need to be secured separately.  Once these are all obtained we should have a repeated loop when the
-		 * corrections could be calculated and applied */
-		if (S->H.info[c].col[id].adjust) apply_corrections = TRUE;
-		switch (S->H.info[c].col[id].adjust) {
-			case MGD77_COL_ADJ_MAG:
-				needed[0] = TRUE;	/* Lon */
-				needed[1] = TRUE;	/* Lat */
-				needed[2] = TRUE;	/* Time */
-				needed[3] = TRUE;	/* mtf1 */
-				break;
-			case MGD77_COL_ADJ_FAA:
-				needed[1] = TRUE;	/* Lat */
-				needed[4] = TRUE;	/* gobs */
-				break;
-			case MGD77_COL_ADJ_CARTER:
-			case MGD77_COL_ADJ_TWT:
-				needed[0] = TRUE;	/* Lon */
-				needed[1] = TRUE;	/* Lat */
-				needed[5] = TRUE;	/* twt */
-				break;
-			default:	/* Probably 0 */
-				break;
-		}
-	}
-	
-	if (apply_corrections) {	/* One or more of the depth, faa, and mag columns needs to be recomputed */
-		for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
-			c  = F->order[i].set;			/* Determine set and item */
-			if (!F->use_corrections[c]) continue;	/* Do not apply any corrections for this set */
-			id = F->order[i].item;
-			if (!S->H.info[c].col[id].adjust) continue ;	/* No adjustments required */
-			values = (double *)S->values[i];
-			/* Do the correction, somehow */
-		}
-	}
-	
 	S->n_fields = F->n_out_columns;
 
 	return (MGD77_NO_ERROR);
+}
+
+double *MGD77_Read_Column (int id, size_t start[], size_t count[], double scale, double offset, struct MGD77_COLINFO *col) {
+	/* Reads a single double precision data column, applying the scale/offset as given */
+	double *values;
+	size_t k;
+	
+	values = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
+	if (col->constant) {	/* Scalar, must read one value and then replicate */
+		MGD77_nc_status (nc_get_var1_double (id, col->var_id, start, values));
+		MGD77_do_scale_offset_after_read (values, (GMT_LONG)1, scale, offset, MGD77_NaN_val[col->type]);	/* Just modify one point */
+		for (k = 1; k < count[0]; k++) values[k] = values[0];
+	}
+	else {	/* Read entire array */
+		MGD77_nc_status (nc_get_vara_double (id, col->var_id, start, count, values));
+		MGD77_do_scale_offset_after_read (values, (GMT_LONG)count[0], scale, offset, MGD77_NaN_val[col->type]);
+	}
+	return (values);
 }
 
 int MGD77_Read_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[])
@@ -4591,6 +4681,8 @@ double MGD77_Theoretical_Gravity (double lon, double lat, int version)
 	 * 2 : IGF 1930 :       978049       (1 + 0.0052884 sin2 (lat) - 0.0000059 sin2 (2*lat)
 	 * 3 : IAG 1967 :       978031.846   (1 + 0.0053024 sin2 (lat) - 0.0000058 sin2 (2*lat)
 	 * 4 : IAG 1980 :       978032.67714 ((1 + 0.00193185138639 sin2 (lat)) / sqrt (1 - 0.00669437999013 sin2 (lat)))
+	 *
+	 * Input value lon is only used if Heiskanen is selected.
 	 */
 
 	double slat2, clat2, s2lat, clon2, g;

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.53 2008-04-04 17:27:31 remko Exp $
+#	$Id: Makefile,v 1.54 2008-06-20 20:54:31 guru Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -10,7 +10,7 @@
 #
 #	Authors:	Paul Wessel & Mike Chandler, SOEST, U. of Hawaii
 #
-#	Date:	1-MAR-2006
+#	Date:	20-JUN-2008
 #
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
@@ -29,7 +29,7 @@ PROGSPS_O	= mgd77track.o
 MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 
 LIB_O		= mgd77.o
-LIB_H		= mgd77.h mgd77_functions.h mgd77defaults.h
+LIB_H		= mgd77.h mgd77_functions.h mgd77defaults.h mgd77_recalc.h
 LIB		= libmgd77.$(LIBEXT)
 
 #-------------------------------------------------------------------------------

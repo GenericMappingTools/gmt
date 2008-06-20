@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.317 2008-06-13 23:02:25 guru Exp $
+	$Id: ChangeLog,v 1.318 2008-06-20 20:54:30 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-06-20	pwessel
+	* mgd77/mgd77.c:	Now applies recalculation of fields requested by E77 flags
+				as part of reading netcdf mgd77+ files.
+
 2005-06-13	pwessel
 	* grdimage.c:	Failed to determine boundary of projected grid with enough precision.
 	* misc/gmtstitch.c:	Check to see if format was set was wrong.
