@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.179 2008-06-20 22:43:09 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.180 2008-06-20 22:53:13 mtchandl Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3462,7 +3462,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			}
 		}
 		
-		if (E.correction_requested[E77_CORR_FIELD_FAA]) {	/* Must recalculate mag from mtf1 and IGRF */
+		if (E.correction_requested[E77_CORR_FIELD_FAA]) {	/* Must recalculate faa from gobs and IGF */
 			values = (double *)S->values[E.col[E77_CORR_FIELD_FAA]];		/* Output faa */
 			for (rec = 0; rec < count[0]; rec++)	/* Correct every record */
 			 	values[rec] = E.aux[E77_AUX_FIELD_GOBS][rec] - MGD77_Theoretical_Gravity (0.0, E.aux[E77_AUX_FIELD_LAT][rec], MGD77_IGF_1980);
