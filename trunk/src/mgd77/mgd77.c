@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.178 2008-06-20 20:54:31 guru Exp $
+ *	$Id: mgd77.c,v 1.179 2008-06-20 22:43:09 mtchandl Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -9,7 +9,7 @@
  *  Function library for programs that plan to read/write MGD77[+] files
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
- *		Michael Chandler, Master's Candidate, SOEST, U. of Hawaii
+ *				Michael Chandler, Ph.D. Student, SOEST, U. of Hawaii
  *		
  *  Version:	1.2
  *  Revised:	1-MAR-2006

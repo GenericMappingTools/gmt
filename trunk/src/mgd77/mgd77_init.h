@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77_init.h,v 1.3 2008-01-23 03:22:49 guru Exp $
+ *	$Id: mgd77_init.h,v 1.4 2008-06-20 22:43:10 mtchandl Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -9,7 +9,7 @@
  *  Include file for mgd77.c
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
- *		Michael Chandler, Master's Candidate, SOEST, U. of Hawaii
+ *				Michael Chandler, Ph.D. Student, SOEST, U. of Hawaii
  *		
  *  This include file contains initializations for the MGD77 system.
  *  MUST BE INCUDED AFTER mgd77.h IN mgd77.c
