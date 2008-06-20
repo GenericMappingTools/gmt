@@ -66,6 +66,7 @@ src/mgd77/mgd77_functions.h
 src/mgd77/mgd77.h
 src/mgd77/mgd77_e77.h
 src/mgd77/mgd77_init.h
+src/mgd77/mgd77_recalc.h
 src/mgd77/mgd77_rls_coeffs.h
 src/mgd77/mgd77convert.c
 src/mgd77/mgd77convert.1

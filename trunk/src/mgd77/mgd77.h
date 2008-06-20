@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.91 2008-06-19 04:18:54 guru Exp $
+ *	$Id: mgd77.h,v 1.92 2008-06-20 20:54:31 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -142,6 +142,9 @@
 #define NCPOS_TIME	0
 #define NCPOS_LAT	3
 #define NCPOS_LON	4
+#define NCPOS_TWT	6
+#define NCPOS_MTF1	10
+#define NCPOS_GOBS	16
 
 /* We will use bit flags to keep track of which data column we are referring to.
  * field 0 is rightmost bit (1), field 1 is the next bit (2), field 2 is 4 and
@@ -190,10 +193,10 @@ typedef char* Text;	/* Used to indicate character strings */
 #define MGD77_COL_UNIT_LEN	64
 #define MGD77_COL_COMMENT_LEN	128
 
-#define MGD77_COL_ADJ_MAG	1	/* Compute mag from mtf1 - igrf */
-#define MGD77_COL_ADJ_FAA	2	/* Compute faa from gobs - igf */
-#define MGD77_COL_ADJ_CARTER	3	/* Compute Carter depth from twt */
-#define MGD77_COL_ADJ_TWT	4	/* Undo twt PDR wraps given PDR_wrap value */
+#define MGD77_COL_ADJ_TWT	1	/* Undo twt PDR wraps given PDR_wrap value */
+#define MGD77_COL_ADJ_DEPTH	2	/* Compute Carter depth from twt */
+#define MGD77_COL_ADJ_MAG	3	/* Compute mag from mtf1 - igrf */
+#define MGD77_COL_ADJ_FAA	4	/* Compute faa from gobs - igf */
 
 struct MGD77_COLINFO {
 	char *abbrev;		/* Short name that identifies this column */
