@@ -25,6 +25,7 @@ label is a period, then the label is used as plot title; if it is a comma then t
 appended to each annotation; if it is an equal sign (=) the the prefix is prepended to each annotation (start label/prefix
 with - to avoid space between annotation and item); else it is the axis label.
 If the label consists of more than one word, enclose the entire label in double quotes (e.g., :"my label":).
+If you need to use a colon (:) as part of your label you must specify it using its octal code (\\072).
 .br
 By default, all 4 boundaries are plotted (referred to as \fBW, E, S, N\fP).  To change the default,
 append the code for only those axes you want (e.g., \fBWS\fP for standard lower-left x- and y-axis system).
