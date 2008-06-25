@@ -30,7 +30,7 @@ will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the
 .TP
 .B \-C
 Pass all records whose location is within \fIdist\fP of any of the points in the ASCII file \fIptfile\fP.
-If \fIdist\fP is zero then the 3rd column of \fIptfile\fP must have each point's\"' individual radius of influence.
+If \fIdist\fP is zero then the 3rd column of \fIptfile\fP must have each point's individual radius of influence.\"'
 Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical distances in km.
 Use OPT(Cf) to indicate you want flat Earth distances (quicker but approximate) rather than
 geodesic distances (slower but exact).
