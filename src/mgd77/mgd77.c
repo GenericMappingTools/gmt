@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.183 2008-07-01 20:13:06 guru Exp $
+ *	$Id: mgd77.c,v 1.184 2008-07-01 21:06:10 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -93,6 +93,7 @@ double MGD77_Cosd (double z);
 double MGD77_Copy (double z);
 int wrong_filler (char *field, int length);
 double *MGD77_Read_Column (int id, size_t start[], size_t count[], double scale, double offset, struct MGD77_COLINFO *col);
+int MGD77_atoi (char *txt);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -837,11 +838,11 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	/* Process Sequence No 11: */
 
 	w = e = s = n = 9999;
-	if ((P->Topmost_Latitude[0] && (((n = atoi (P->Topmost_Latitude)) < -90 || n > +90) || n != H->meta.n)) OR_TRUE) {
+	if ((P->Topmost_Latitude[0] && (((n = MGD77_atoi (P->Topmost_Latitude)) < -90 || n > +90) || n != H->meta.n)) OR_TRUE) {
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H11-02: Invalid Topmost Latitude : (%s) [%+2.2d]\n", F->NGDC_id, P->Topmost_Latitude, H->meta.n);
 		H->errors[ERR]++;
 	}
-	if ((P->Bottommost_Latitude[0] && (((s = atoi (P->Bottommost_Latitude)) < -90 || s > +90) || s != H->meta.s)) OR_TRUE) {
+	if ((P->Bottommost_Latitude[0] && (((s = MGD77_atoi (P->Bottommost_Latitude)) < -90 || s > +90) || s != H->meta.s)) OR_TRUE) {
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H11-03: Invalid Bottommost Latitude: (%s) [%+2.2d]\n", F->NGDC_id, P->Bottommost_Latitude, H->meta.s);
 		H->errors[ERR]++;
 	}
@@ -849,18 +850,18 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H11-04: Bottommost Latitude %d exceeds Topmost Latitude %d\n", F->NGDC_id, s, n);
 		H->errors[ERR]++;
 	}
-	if ((P->Leftmost_Longitude[0] && (((w = atoi (P->Leftmost_Longitude)) < -180 || w > +180) || w != H->meta.w)) OR_TRUE) {
+	if ((P->Leftmost_Longitude[0] && (((w = MGD77_atoi (P->Leftmost_Longitude)) < -180 || w > +180) || w != H->meta.w)) OR_TRUE) {
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H11-05: Invalid Leftmost Longitude: (%s) [%+3.3d]\n", F->NGDC_id, P->Leftmost_Longitude, H->meta.w);
 		H->errors[ERR]++;
 	}
-	if ((P->Rightmost_Longitude[0] && (((e = atoi (P->Rightmost_Longitude)) < -180 || e > +180) || e != H->meta.e)) OR_TRUE) {
+	if ((P->Rightmost_Longitude[0] && (((e = MGD77_atoi (P->Rightmost_Longitude)) < -180 || e > +180) || e != H->meta.e)) OR_TRUE) {
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H11-06: Invalid Rightmost Longitude: (%s) [%+3.3d]\n", F->NGDC_id, P->Rightmost_Longitude, H->meta.e);
 		H->errors[ERR]++;
 	}
 
 	/* Process Sequence No 12: */
 
-	if ((P->Bathymetry_Digitizing_Rate[0] && ((i = atoi (P->Bathymetry_Digitizing_Rate)) <= 0 || i >= 300)) OR_TRUE) {	/* 30 min */
+	if ((P->Bathymetry_Digitizing_Rate[0] && ((i = MGD77_atoi (P->Bathymetry_Digitizing_Rate)) <= 0 || i >= 300)) OR_TRUE) {	/* 30 min */
 		kind = (wrong_filler (P->Bathymetry_Digitizing_Rate, 3)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
 			if (kind == ERR)
@@ -886,7 +887,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		H->errors[kind]++;
 	}
 	if (P->Bathymetry_Datum_Code[0] OR_TRUE) {
-		i = atoi (P->Bathymetry_Datum_Code);
+		i = MGD77_atoi (P->Bathymetry_Datum_Code);
 		if (!((i >= 0 && i <= 11) || i == 88)) {
 			kind = (i == 99) ? ERR : WARN;
 			if (i == 99) {
@@ -901,7 +902,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 
 	/* Process Sequence No 13: */
 
-	if ((P->Magnetics_Digitizing_Rate[0] && ((i = atoi (P->Magnetics_Digitizing_Rate)) < 0 || i >= 300)) OR_TRUE) {	/* 30 m */
+	if ((P->Magnetics_Digitizing_Rate[0] && ((i = MGD77_atoi (P->Magnetics_Digitizing_Rate)) < 0 || i >= 300)) OR_TRUE) {	/* 30 m */
 		kind = (wrong_filler (P->Magnetics_Digitizing_Rate, 3)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
 			if (kind == ERR)
@@ -911,7 +912,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		}
 		H->errors[kind]++;
 	}
-	if ((P->Magnetics_Sampling_Rate[0] && ((i = atoi (P->Magnetics_Sampling_Rate)) < 0 || i > 60)) OR_TRUE) {
+	if ((P->Magnetics_Sampling_Rate[0] && ((i = MGD77_atoi (P->Magnetics_Sampling_Rate)) < 0 || i > 60)) OR_TRUE) {
 		kind = (wrong_filler (P->Magnetics_Sampling_Rate, 2)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
 			if (kind == ERR)
@@ -921,7 +922,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		}
 		H->errors[kind]++;
 	}
-	if ((P->Magnetics_Sensor_Tow_Distance[0] && ((i = atoi (P->Magnetics_Sensor_Tow_Distance)) < 0)) OR_TRUE) {
+	if ((P->Magnetics_Sensor_Tow_Distance[0] && ((i = MGD77_atoi (P->Magnetics_Sensor_Tow_Distance)) < 0)) OR_TRUE) {
 		kind = (wrong_filler (P->Magnetics_Sensor_Tow_Distance, 4)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
 			if (kind == ERR)
@@ -931,7 +932,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		}
 		H->errors[kind]++;
 	}
-	if ((P->Magnetics_Sensor_Depth[0] && ((i = atoi (P->Magnetics_Sensor_Depth)) < 0)) OR_TRUE) {
+	if ((P->Magnetics_Sensor_Depth[0] && ((i = MGD77_atoi (P->Magnetics_Sensor_Depth)) < 0)) OR_TRUE) {
 		kind = (wrong_filler (P->Magnetics_Sensor_Depth, 5)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
 			if (kind == ERR)
@@ -941,7 +942,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		}
 		H->errors[kind]++;
 	}
-	if ((P->Magnetics_Sensor_Separation[0] && ((i = atoi (P->Magnetics_Sensor_Separation)) < 0)) OR_TRUE) {
+	if ((P->Magnetics_Sensor_Separation[0] && ((i = MGD77_atoi (P->Magnetics_Sensor_Separation)) < 0)) OR_TRUE) {
 		kind = (wrong_filler (P->Magnetics_Sensor_Separation, 3)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
 			if (kind == ERR)
@@ -953,8 +954,8 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	}
 	i = -1;
 	if (P->Magnetics_Ref_Field_Code[0] OR_TRUE) {
-		i = atoi (P->Magnetics_Ref_Field_Code);
-		if ((!((i >= 0 && i <= 20) || i == 88)) OR_TRUE) {	/* 20 is some future IGRF id, e.g., IGRF 2035! or whatever */
+		i = MGD77_atoi (P->Magnetics_Ref_Field_Code);
+		if ((!((i >= 0 && i <= MGD77_IGRF_LAST_ID) || i == 88)) OR_TRUE) {	/* MGD77_IGRF_LAST_ID is some future IGRF id, e.g., IGRF 2035! or whatever */
 			kind = (i == 99) ? ERR : WARN;
 			if (F->verbose_level & kind) {
 				if (i == 99)
@@ -1014,7 +1015,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 
 	/* Process Sequence No 14: */
 
-	if ((P->Gravity_Digitizing_Rate[0] && ((i = atoi (P->Gravity_Digitizing_Rate)) < 0 || i > 300)) OR_TRUE) {	/* 30 m */
+	if ((P->Gravity_Digitizing_Rate[0] && ((i = MGD77_atoi (P->Gravity_Digitizing_Rate)) < 0 || i > 300)) OR_TRUE) {	/* 30 m */
 		kind = (wrong_filler (P->Gravity_Digitizing_Rate, 3)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
 			if (kind == ERR)
@@ -1024,7 +1025,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		}
 		H->errors[kind]++;
 	}
-	if ((P->Gravity_Sampling_Rate[0] && ((i = atoi (P->Gravity_Sampling_Rate)) < 0 || i > 98)) OR_TRUE) {
+	if ((P->Gravity_Sampling_Rate[0] && ((i = MGD77_atoi (P->Gravity_Sampling_Rate)) < 0 || i > 98)) OR_TRUE) {
 		kind = (wrong_filler (P->Gravity_Sampling_Rate, 2)) ? ERR : WARN;
 		if (F->verbose_level & kind) {
 			if (kind == ERR)
@@ -1112,7 +1113,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-04-%2.2d: Invalid Ten Degree Identifier latitude: (%s)\n", F->NGDC_id, n_block+1, p);
 			k++;
 		}
-		if (((ix = atoi (&p[2])) < 0 || ix > 18) OR_TRUE) {
+		if (((ix = MGD77_atoi (&p[2])) < 0 || ix > 18) OR_TRUE) {
 			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-05-%2.2d: Invalid Ten Degree Identifier longitude: (%s)\n", F->NGDC_id, n_block+1, p);
 			k++;
 		}
@@ -4925,4 +4926,11 @@ int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises)
 		last = mid;
 	}
 	return (low);
+}
+
+int MGD77_atoi (char *txt) {
+	/* Like atoi but checks if txt is not all integers - if bad it returns -9999 */
+	int i;
+	for (i = 0; i < strlen (txt); i++) if (!isdigit((int)txt[i])) return (-9999);
+	return (atoi (txt));
 }
