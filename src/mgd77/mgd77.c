@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.181 2008-07-01 00:15:44 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.182 2008-07-01 02:08:20 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -37,7 +37,7 @@ struct MGD77_MAG_RF {
 	int end;            /* Model end year             */
 };
 
-#define MGD77_N_MAG_RF 18
+#define MGD77_N_MAG_RF 16
 struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
 #include "mgd77magref.h"
 };
@@ -954,7 +954,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	i = -1;
 	if (P->Magnetics_Ref_Field_Code[0] OR_TRUE) {
 		i = atoi (P->Magnetics_Ref_Field_Code);
-		if ((!((i >= 0 && i <= 13) || i == 88)) OR_TRUE) {
+		if ((!((i >= 0 && i <= 20) || i == 88)) OR_TRUE) {	/* 20 is some future IGRF id, e.g., IGRF 2035! or whatever */
 			kind = (i == 99) ? ERR : WARN;
 			if (F->verbose_level & kind) {
 				if (i == 99)
@@ -972,16 +972,9 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		H->errors[ERR]++;
 	}
 	ref_field_code = i;
-	if (!strcmp (P->Magnetics_Ref_Field, "IGRF") OR_TRUE) {	/* Check IGRF  number if 88 was given */
-		i = 0;
-		while (P->Magnetics_Ref_Field[i] && P->Magnetics_Ref_Field[i] != 'F') i++;
-		if (P->Magnetics_Ref_Field[i] == '-') i++;
-		n = atoi (&P->Magnetics_Ref_Field[i]);
-		if (((n == 3 || n == 4 || (n >= 11 && n < 88)) && ref_field_code != n) OR_TRUE) {
-			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H13-08: %s Ref Field code found (%d) do not match given ref field (%d) [%d]\n", F->NGDC_id, P->Magnetics_Ref_Field, n, ref_field_code, n);
-			H->errors[ERR]++;
-		}
-	}
+	
+	/* We used to have a check on Magnetics_Ref_Field that could give error ? -E-%s-H13-08 but this was eliminated June 30, 2008.
+	   case # 08 is simply untenable and never checked for in mgd77manage */
 
 	/* If cruise has magnetics check for correct IGRF */
 	
@@ -994,7 +987,12 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 				for (k = 0; P->Magnetics_Ref_Field[k] != 'F'; k++);
 				if (P->Magnetics_Ref_Field[k] == '-' || P->Magnetics_Ref_Field[k] == ' ') k++;
 				y = atoi (&P->Magnetics_Ref_Field[k]);
-				rfEnd = 1900 + y;
+				if (y < MGD77_OLDEST_YY)	/* 2-digit year, we assume 20xx */
+					rfEnd = 2000 + y;
+				else if (y >= MGD77_OLDEST_YY && y < 100)	/* 2-digit year, we assume 19xx */
+					rfEnd = 1900 + y;
+				else	/* 4-digit year given */
+					rfEnd = y;
 				rfStart = rfEnd - 5;
 			}
 			else {
