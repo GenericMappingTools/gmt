@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.182 2008-07-01 02:08:20 guru Exp $
+ *	$Id: mgd77.c,v 1.183 2008-07-01 20:13:06 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -37,7 +37,7 @@ struct MGD77_MAG_RF {
 	int end;            /* Model end year             */
 };
 
-#define MGD77_N_MAG_RF 16
+#define MGD77_N_MAG_RF 18
 struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
 #include "mgd77magref.h"
 };
