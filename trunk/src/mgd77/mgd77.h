@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.93 2008-06-20 22:43:09 mtchandl Exp $
+ *	$Id: mgd77.h,v 1.94 2008-07-01 21:06:10 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -102,6 +102,8 @@
 #define MGD77_IGF_1930		2
 #define MGD77_IGF_1967		3
 #define MGD77_IGF_1980		4
+
+#define MGD77_IGRF_LAST_ID	20	/* IGRF fields IDs in MGD77 are 3,4,11-MGD77_IGRF_LAST_ID.  Update when more fields are added */
 
 #define TWT_PDR_WRAP	10.0						/* The 10 second PDR wrap-around we see in SIO cruises */
 #define TWT_PDR_WRAP_TRIGGER	0.5 * TWT_PDR_WRAP	/* Any jump in TWT that exceeds this triggers a wrap */
