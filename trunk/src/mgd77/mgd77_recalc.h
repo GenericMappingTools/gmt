@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77_recalc.h,v 1.1 2008-06-20 20:54:31 guru Exp $
+ *	$Id: mgd77_recalc.h,v 1.2 2008-07-02 23:38:46 guru Exp $
  *
  *    Copyright (c) 2004-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -15,12 +15,14 @@
  */
 
 #define N_E77_CORR_FIELDS	4
+/* The array indeces 0-3 for these 4 fields */
 #define E77_CORR_FIELD_TWT	(MGD77_COL_ADJ_TWT-1)
 #define E77_CORR_FIELD_DEPTH	(MGD77_COL_ADJ_DEPTH-1)
 #define E77_CORR_FIELD_MAG	(MGD77_COL_ADJ_MAG-1)
 #define E77_CORR_FIELD_FAA	(MGD77_COL_ADJ_FAA-1)
 
 #define N_E77_AUX_FIELDS	6
+/* The array indices 0-5 for the 6 aux fields */
 #define E77_AUX_FIELD_TIME	0
 #define E77_AUX_FIELD_LAT	1
 #define E77_AUX_FIELD_LON	2
