@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.32 2008-07-01 20:13:06 guru Exp $	
+ *	$Id: mgd77sniffer.h,v 1.33 2008-07-02 21:04:52 guru Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2008 by P. Wessel and M. T. Chandler
@@ -38,7 +38,6 @@
 #define MGD77_FATHOMS_PER_METER     (1.0 / MGD77_METERS_PER_FATHOM)
 #define MGD77_MIN_RLS_BINS          20
 #define MGD77_MIN_RLS_PTS           100
-#define MGD77_N_MAG_RF              18
 #define MGD77_MAX_SEARCH            50
 #define MGD77_POS_BIT               (1 << 0)
 #define MGD77_ZERO_BIT              (1 << 1)

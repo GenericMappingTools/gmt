@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.94 2008-07-01 21:06:10 guru Exp $
+ *	$Id: mgd77.h,v 1.95 2008-07-02 21:04:52 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -34,6 +34,7 @@
 #define MGD77_N_NUMBER_FIELDS	24		/* Original 24 numerical data columns in MGD77 */
 #define MGD77_N_STRING_FIELDS	3		/* Original 3 text data columns in MGD77 */
 #define MGD77_N_HEADER_ITEMS	66		/* Number of individual header items in the MGD77 header */
+#define MGD77_N_MAG_RF		18		/* Number of different Mag ref fields so far in MGD77 docs */
 /* The 28 MGD77 standard types (27 original + 1 conglomerate (time)) */
 #define MGD77_RECTYPE		0
 #define MGD77_TZ		1
