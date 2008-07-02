@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.185 2008-07-02 21:04:52 guru Exp $
+ *	$Id: mgd77.c,v 1.186 2008-07-02 23:38:46 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3412,9 +3412,9 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 				col =  MGD77_Info_from_Abbrev (abbrev[i], &S->H, &c, &id);	/* Which output column is it? */
 				E.aux[i] = (double *)S->values[col];
 			}
-			else {	/* Not read, must read separately */
+			else {	/* Not read, must read separately, and use the nc_id array to get proper column number) */
 				E.aux[i] = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
-				E.aux[i] = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[MGD77_M77_SET].col[E.id[i]]));
+				E.aux[i] = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[MGD77_M77_SET].col[nc_id[i]]));
 				E.needed[i] = 2;	/* So we know which aux columns to deallocate when done */
 			}
 		}
