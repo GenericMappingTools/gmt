@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.18 2008-01-23 03:22:49 guru Exp $
+/*	$Id: gshhs.c,v 1.19 2008-07-03 20:23:22 guru Exp $
  *
  *	Copyright (c) 1996-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -36,22 +36,47 @@
 int main (int argc, char **argv)
 {
 	double w, e, s, n, area, lon, lat;
-	char source, kind[2] = {'P', 'L'}, *name[2] = {"polygon", "line"};
-	FILE	*fp;
-	int	k, line, max_east = 270000000, info, n_read, flip, level, version, greenwich, src;
+	char source, kind[2] = {'P', 'L'}, *file = NULL, *name[2] = {"polygon", "line"};
+	FILE *fp = NULL;
+	int k, line, max_east = 270000000, info, single, error, ID, n_read, flip;
+	int  OK, level, version, greenwich, src;
 	struct	POINT p;
 	struct GSHHS h;
         
-	if (argc < 2 || argc > 3) {
+	info = single = error = 0;
+	for (k = 1; k < argc; k++) {
+		if (argv[k][0] == '-') {	/* Option switch */
+			switch (argv[k][1]) {
+				case 'L':
+					info = 1;
+					break;
+				case 'I':
+					single = 1;
+					ID = atoi (&argv[k][2]);
+					break;
+				default:
+					error++;
+					break;
+			}
+		}
+		else
+			file = argv[k];
+	}
+
+	if (!name) {
+		fprintf (stderr, "gshhs: No data file given!\n");
+		error++;
+	}
+	if (argc == 1 || error) {
 		fprintf (stderr, "gshhs v. %s ASCII export tool\n", GSHHS_PROG_VERSION);
-		fprintf (stderr, "usage:  gshhs gshhs_[f|h|i|l|c].b [-L] > ascii.dat\n");
+		fprintf (stderr, "usage:  gshhs gshhs_[f|h|i|l|c].b [-L] [-I<id>] > ascii.dat\n");
 		fprintf (stderr, "-L will only list headers (no data output)\n");
+		fprintf (stderr, "-I only output data for polygon number <id> [Default is all polygons]\n");
 		exit (EXIT_FAILURE);
 	}
 
-	info = (argc == 3);
-	if ((fp = fopen (argv[1], "rb")) == NULL ) {
-		fprintf (stderr, "gshhs:  Could not find file %s.\n", argv[1]);
+	if ((fp = fopen (file, "rb")) == NULL ) {
+		fprintf (stderr, "gshhs:  Could not find file %s.\n", file);
 		exit (EXIT_FAILURE);
 	}
 		
@@ -82,9 +107,11 @@ int main (int argc, char **argv)
 		line = (h.area) ? 0 : 1;		/* Either Polygon (0) or Line (1) (if no area) */
 		area = 0.1 * h.area;			/* Now im km^2 */
 
-		printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", kind[line], h.id, h.n, level, source, area, w, e, s, n);
+		OK = (!single || h.id == ID);
+		
+		if (OK) printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", kind[line], h.id, h.n, level, source, area, w, e, s, n);
 
-		if (info) {	/* Skip data, only want headers */
+		if (info || !OK) {	/* Skip data, only want headers */
 			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
 		}
 		else {

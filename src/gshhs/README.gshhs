@@ -3,6 +3,10 @@
 Global Self-consistent Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../COPYING)
 
+Version 1.11 Jul 1, 2008
+THis version adds the -I<id> option go gshhs so that a single
+polygon can be extracted.
+
 Version 1.10 May 1, 2008
 Due to a numbering snafu the GMT 4.2.1 release started calling
 the GSHHS data set using the same numbering as the GSHHS software.

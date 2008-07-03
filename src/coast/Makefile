@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.40 2008-04-23 21:33:04 guru Exp $
+#	$Id: Makefile,v 1.41 2008-07-03 20:23:21 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -32,10 +32,9 @@ INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 DEFINES		= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
 PREV_VERSION	= 4.2
 VERSION		= 4.3
-# PW: I incrememnted these nubmers on 3/6/08 after adding some missing islands to the database
-# These are the values to use for the next GMT version 4.3.0
-GSHHS_DATA_VERSION	= 1.10
-GSHHS_PROG_VERSION	= 1.10
+# These are the values to use for the next GMT version 4.3.2
+GSHHS_DATA_VERSION	= 1.11
+GSHHS_PROG_VERSION	= 1.11
 
 # Douglas-Peucker parameters:
 DP_h 		= 0.2
