@@ -52,11 +52,12 @@ See \fB\-N\fP for chosing distance units and \fB\-C\fP for chosing how distances
 .sp
 \fBe\fP Expects to find an e77 error/correction log from \fBmgd77sniffer\fP with the name \fINGDC_ID\fP.e77 in
 the current directory or in $MGD77_HOME/E77; this file will examined and used to make modifications to the
-header values, specify a systematic correction for certain columns (such as scale and offset), and add or
+header values, specify a systematic correction for certain columns (such as scale and offset), specify that
+a certain anomaly should be recalculated from the observations (e.g., recalculate mag from mtf1 and the latest IGRF), and add or
 update the special column \fBflag\fP which may hold bitflags (0 = GOOD, 1 = BAD) for each data field in the
 standard MGD77 data set.  Any fixed correction terms found (such as needing to scale a field by 0.1 or 10 because the source
 agency used incorrect units) will be written as attributes to the netCDF MGD77+ file and applied when the
-data are read by \fBmgd77list\fP.  Emphemeral corrections such as those determined by crossover analysis are
+data are read by \fBmgd77list\fP.  Ephemeral corrections such as those determined by crossover analysis are
 not kept in the data files but reside in correction tables (see \fBmgd77list\fP for details).  By default, the
 first character of each header line in the e77 file (which is ?, Y or N) will be consulted to see if the corresponding
 adjustment should be applied.  If any undecided settings are found (i.i, ?) we will abort and make no changes.

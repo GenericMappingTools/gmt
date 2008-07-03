@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.95 2008-07-02 21:04:52 guru Exp $
+ *	$Id: mgd77.h,v 1.96 2008-07-03 01:39:16 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -445,6 +445,8 @@ extern double MGD77_carter_correction (double lon, double lat, double twt_in_mse
 extern int MGD77_igrf10syn (int isv, double date, int itype, double alt, double lon, double lat, double *out);
 extern double MGD77_Theoretical_Gravity (double lon, double lat, int version);
 extern void MGD77_IGF_text (FILE *fp, int version);
+extern double MGD77_Recalc_Mag_Anomaly (double time, double lon, double lat, double obs, BOOLEAN calc_date);
+extern double MGD77_time_to_fyear (double time);
 
 /* These are called indirectly but remain accessible for specialist programs */
 

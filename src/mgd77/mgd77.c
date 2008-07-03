@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.186 2008-07-02 23:38:46 guru Exp $
+ *	$Id: mgd77.c,v 1.187 2008-07-03 01:39:16 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3413,6 +3413,8 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 				E.aux[i] = (double *)S->values[col];
 			}
 			else {	/* Not read, must read separately, and use the nc_id array to get proper column number) */
+				scale = S->H.info[MGD77_M77_SET].col[nc_id[i]].factor;
+				offset = S->H.info[MGD77_M77_SET].col[nc_id[i]].offset;
 				E.aux[i] = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
 				E.aux[i] = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[MGD77_M77_SET].col[nc_id[i]]));
 				E.needed[i] = 2;	/* So we know which aux columns to deallocate when done */
@@ -3441,29 +3443,26 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			struct MGD77_CARTER Carter;	/* Used to calculate Carter depths */
 			MGD77_carter_init (&Carter);	/* Initialize Carter machinery */
 			values = (double *)S->values[E.col[E77_CORR_FIELD_DEPTH]];		/* Output depths */
-			for (rec = 0; rec < count[0]; rec++)	/* Correct every record */
+			for (rec = 0; rec < count[0]; rec++) {	/* Correct every record */
+				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc depth if originally flagged as a NaN */
 				MGD77_carter_depth_from_xytwt (E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], 1000.0 * E.aux[E77_AUX_FIELD_TWT][rec], &Carter, &values[rec]);
+			}
 		}
 		
 		if (E.correction_requested[E77_CORR_FIELD_MAG]) {	/* Must recalculate mag from mtf1 and IGRF */
-			int n_days;
-			double date;	/* FLoating-point year needed by IGRF function */
-			double IGRF[7];	/* The 7 components returned */
-			struct GMT_gcal cal;		/* Calendar structure needed for IGRF calculation */
 			values = (double *)S->values[E.col[E77_CORR_FIELD_MAG]];		/* Output mag */
 			for (rec = 0; rec < count[0]; rec++) {	/* Correct every record */
-				GMT_gcal_from_dt (E.aux[E77_AUX_FIELD_TIME][rec], &cal);	/* No adjust for TZ; this is GMT UTC time */
-				n_days = (GMT_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
-				/* Get date as decimal year */
-				date = cal.year + cal.day_y / n_days + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY;
-				values[rec] = E.aux[E77_AUX_FIELD_MTF1][rec] - ((MGD77_igrf10syn (0, date, 1, 0.0, E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], IGRF)) ? GMT_d_NaN : IGRF[MGD77_IGRF_F]);
+				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc mag if originally flagged as a NaN */
+				values[rec] = MGD77_Recalc_Mag_Anomaly (E.aux[E77_AUX_FIELD_TIME][rec], E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], E.aux[E77_AUX_FIELD_MTF1][rec], TRUE);
 			}
 		}
 		
 		if (E.correction_requested[E77_CORR_FIELD_FAA]) {	/* Must recalculate faa from gobs and IGF */
 			values = (double *)S->values[E.col[E77_CORR_FIELD_FAA]];		/* Output faa */
-			for (rec = 0; rec < count[0]; rec++)	/* Correct every record */
+			for (rec = 0; rec < count[0]; rec++) {	/* Correct every record */
+				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc faa if originally flagged as a NaN */
 			 	values[rec] = E.aux[E77_AUX_FIELD_GOBS][rec] - MGD77_Theoretical_Gravity (0.0, E.aux[E77_AUX_FIELD_LAT][rec], MGD77_IGF_1980);
+			}
 		}
 
 		for (i = 0; i < N_E77_AUX_FIELDS; i++) {	/* Free auxilliary columns not part of the output */
@@ -4720,6 +4719,20 @@ double MGD77_Theoretical_Gravity (double lon, double lat, int version)
 	return (g);
 }
 
+double MGD77_Recalc_Mag_Anomaly (double time, double lon, double lat, double obs, BOOLEAN calc_date)
+{	/* Compute the recalculated magnetic anomaly using IGRF.  Pass time either as a GMT time in secs
+	 * and set calc_date to TRUE or pass the floating point year that is needed by IGRF function. */
+	double IGRF[7];	/* The 7 components returned */
+	double val;	/* The recalculated anomaly */
+	
+	if (GMT_is_dnan (time) || GMT_is_dnan (lon) || GMT_is_dnan (lat) || GMT_is_dnan (obs)) return (GMT_d_NaN);
+	
+	if (calc_date) time = MGD77_time_to_fyear (time);	/* Need to convert time to floating-point year */
+	val = obs - ((MGD77_igrf10syn (0, time, 1, 0.0, lon, lat, IGRF)) ? GMT_d_NaN : IGRF[MGD77_IGRF_F]);
+	
+	return (val);
+}
+
 /* Here lies the core functions used to parse the correction table
  * and apply the corrections to data before output in mgd77list
  */
@@ -4932,4 +4945,15 @@ int MGD77_atoi (char *txt) {
 	int i;
 	for (i = 0; i < strlen (txt); i++) if (!isdigit((int)txt[i])) return (-9999);
 	return (atoi (txt));
+}
+
+double MGD77_time_to_fyear (double time) {
+	/* Convert GMT time to floating point year for use with IGRF function */
+	struct GMT_gcal cal;		/* Calendar structure needed for IGRF calculation */
+	int n_days;
+	GMT_gcal_from_dt (time, &cal);	/* No adjust for TZ; this is GMT UTC time */
+	n_days = (GMT_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
+	/* Get date as decimal year */
+	time = cal.year + cal.day_y / n_days + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY;
+	return (time);
 }
