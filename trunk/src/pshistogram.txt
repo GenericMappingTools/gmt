@@ -64,7 +64,7 @@ Draw a cumulative histogram.
 If not given, \fBpshistogram\fP will automatically find reasonable values for the region.
 .TP
 .B \-S
-Draws a stairs-step diagram instead of histogram.
+Draws a stairs-step diagram which does not include the internal bars of the default histogram.
 .TP
 .B \-T
 Specify which column to use for the histogram data.  First column is 0 [0].
