@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.11 2008-07-04 00:51:52 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.12 2008-07-04 01:06:47 guru Exp $
  */
 #include "wvs.h"
 
@@ -22,7 +22,7 @@ int main (int argc, char **argv) {
 	int i, j, k, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, n_of_this[6];
 	int n_reset = 0, old, bad = 0, ix0, off, set, fast = 0;
 	double x0, west1, west2, east1, east2, size, val;
-	FILE *fp, *fp2, *fpx, *fps;
+	FILE *fp, *fp2, *fpx;
 	struct LONGPAIR p;
 	char line[80];
 	
@@ -30,13 +30,12 @@ int main (int argc, char **argv) {
 		fprintf (stderr, "usage: polygon_findlevel final_polygons.b revised_final_dbase.b [-s]\n");
 		fprintf (stderr, "Note 1: assumes poly # 0,1,2 are Eurasia, Americas,Australia (unless -s)\n");
 		fprintf (stderr, "Note 2: Will recalculate areas unless areas.lis already exists\n");
-		exit (-1);
+		exit (EXIT_FAILURE);
 	}
 
 	fast = (argc != 4);
 
 	fpx = fopen ("still_bad.lis", "w");
-	fps = fopen ("save.b", "w");
 	
 	for (i = 0; i < 6; i++) n_of_this[i] = 0;
 	fprintf (stderr, "Read headers\n");
@@ -73,7 +72,7 @@ int main (int argc, char **argv) {
 			blob[i].h.area = fabs(size);
 			if (i != j) {
 				fprintf (stderr, "Error reading areas\n");
-				exit (-1);
+				exit (EXIT_FAILURE);
 			}
 		}
 	}
@@ -184,10 +183,8 @@ int main (int argc, char **argv) {
 		for (id2 = 0; id2 < n_id; id2++) {
 			
 			if (fabs (blob[id2].h.east - blob[id2].h.west) == 360.0) continue;	/* But skip Antarctica */
-			if (id1 == id2) continue;
+			if (id1 == id2) continue;	/* Skip self testing */
 			if (blob[id2].h.source == -1) continue;	/* Marked for deletion */
-			
-			/* if (blob[id2].h.level > 0) continue; */	/* Already know what this is */
 			
 			/* First perform simple tests based on min/max coordinates */
 			
@@ -205,29 +202,26 @@ int main (int argc, char **argv) {
 				west2 += 360.0;
 				off += M360;
 			}
-			if ((west2 > east1) || (east2 < west1)) continue;
+			if ((west2 > east1) || (east2 < west1)) continue;	/* Clearly not overlapping */
 			
 			/* Must compare with polygon boundaries */
 			
-			if (fast && id1 == 0) {	/* Eurasia, first do quick test */
+			if (fast && id1 == 0) {	/* Eurasia, first do quick coarse test */
 				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, ieur_o[0], ieur_o[1], N_EUR_O);
 				if (!intest) continue;
-				if (intest == 1) fprintf (stderr, "Point on edge!, ids = %d and eur_o, must do full test\n", id2);
 				
 				/* So point is inside crude outside. Now check if it is inside crude inside */
 				
 				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, ieur_i[0], ieur_i[1], N_EUR_I);
-				if (intest == 1) fprintf (stderr, "Point on edge!, ids = %d and eur_i, must do full test\n", id2);
 
 				if (!intest) intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, iafr_i[0], iafr_i[1], N_AFR_I);
-				if (intest == 1) fprintf (stderr, "Point on edge!, ids = %d and afr_i, must do full test\n", id2);
 
 				if (intest == 2) {	/* way inside, set levels */
 					blob[id2].inside[blob[id2].n_inside] = id1;
 					blob[id2].n_inside++;
 					if (blob[id2].n_inside == 6) {
 						fprintf (stderr, "You're fucked again!\n");
-						exit (-1);
+						exit (EXIT_FAILURE);
 					}
 					continue;
 				}
@@ -236,23 +230,20 @@ int main (int argc, char **argv) {
 			else if (fast && id1 == 1) {	/* Americas, first do quick test */
 				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, iam_o[0], iam_o[1], N_AM_O);
 				if (!intest) continue;
-				if (intest == 1) fprintf (stderr, "Point on edge!, ids = %d and am_o, do full test\n", id2);
 
 				
 				/* So point is inside crude outside. Now check if it is inside crude inside */
 				
 				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, isam_i[0], isam_i[1], N_SAM_I);
-				if (intest == 1) fprintf (stderr, "Point on edge!, ids = %d and sam_i, do full test\n", id2);
 
 				if (!intest) intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, inam_i[0], inam_i[1], N_NAM_I);
-				if (intest == 1) fprintf (stderr, "Point on edge!, ids = %d and nam_i, do full test\n", id2);
 
 				if (intest == 2) {	/* way inside, set levels */
 					blob[id2].inside[blob[id2].n_inside] = id1;
 					blob[id2].n_inside++;
 					if (blob[id2].n_inside == 6) {
 						fprintf (stderr, "You're fucked again!\n");
-						exit (-1);
+						exit (EXIT_FAILURE);
 					}
 					continue;
 				}
@@ -261,19 +252,17 @@ int main (int argc, char **argv) {
 			else if (fast && id1 == 3) {	/* Australia, first do quick test */
 				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, iaus_o[0], iaus_o[1], N_AUS_O);
 				if (!intest) continue;
-				if (intest == 1) fprintf (stderr, "Point on edge!, ids = %d and aus_o, do full test\n", id2);
 				
 				/* So point is inside crude outside. Now check if it is inside crude inside */
 				
 				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, iaus_i[0], iaus_i[1], N_AUS_I);
-				if (intest == 1) fprintf (stderr, "Point on edge!, ids = %d and aus_i, do full test\n", id2);
 
 				if (intest == 2) {	/* way inside, set levels */
 					blob[id2].inside[blob[id2].n_inside] = id1;
 					blob[id2].n_inside++;
 					if (blob[id2].n_inside == 6) {
 						fprintf (stderr, "You're fucked again!\n");
-						exit (-1);
+						exit (EXIT_FAILURE);
 					}
 					continue;
 				}
@@ -313,10 +302,12 @@ int main (int argc, char **argv) {
 				if (set) blob[id2].h.source = -1;
 			}
 			else if (blob[id2].h.source == 1) { /* WVS inside CIA or WVS! */
-				if (blob[id1].h.source == 1 && blob[id2].h.n < blob[id1].h.n) {  /* small WVS inside another WVS! */
-					fprintf (fpx, "%d is inside %d, %d reset to lake\n", id2, id1, id2);
-					blob[id2].h.level = 2;
-					fflush (fpx);
+				if (blob[id1].h.source == 1 && blob[id2].h.n < blob[id1].h.n) {  /* small WVS inside another WVS - should be lake */
+					if (blob[id2].h.level != 2) {
+						fprintf (fpx, "%d is inside %d, %d reset to lake\n", id2, id1, id2);
+						blob[id2].h.level = 2;
+						fflush (fpx);
+					}
 				}
 				else { /* WVS inside CIA, assume CIA is bad duplicate to be removed */
 					fprintf (fpx, "%d is inside %d, %d deleted\n", id2, id1, id1);
@@ -334,22 +325,15 @@ int main (int argc, char **argv) {
 				}
 			}
 			
-			if (id1 < 5) {
-				fwrite ((void *)&id1, sizeof (int), 1, fps);
-				fwrite ((void *)&id2, sizeof (int), 1, fps);
-				fflush (fps);
-			}
 			blob[id2].inside[blob[id2].n_inside] = id1;
 			blob[id2].n_inside++;
 			if (blob[id2].n_inside == 6) {
 				fprintf (stderr, "You're fucked again!\n");
-				exit (-1);
+				exit (EXIT_FAILURE);
 			}
 		}
 	}
-	
-	fclose (fps);
-	
+		
 	free ((void *)lon);
 	free ((void *)lat);
 
@@ -420,12 +404,12 @@ int main (int argc, char **argv) {
 	
 	fp = fopen ("hierarchy.lis", "w");
 	for (id = 0; id < n_id; id++) {
-		fprintf (fp, "%d:", blob[id].h.id);
+		fprintf (fp, "%d: Level %d :", blob[id].h.id, blob[id].n_inside+1);
 		for (i = 0; i < blob[id].n_inside; i++) fprintf (fp, "\t%d", blob[id].inside[i]);
 		fprintf (fp, "\n");
 	}
 	fclose (fp);
 	free ((void *)pp);
 	
-	exit (0);
+	exit (EXIT_SUCCESS);
 }	
