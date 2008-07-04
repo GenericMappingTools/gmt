@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.12 2008-07-04 01:06:47 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.13 2008-07-04 03:03:14 guru Exp $
  */
 #include "wvs.h"
 
@@ -287,8 +287,8 @@ int main (int argc, char **argv) {
 			ix0 = x0 * MILL;
 			intest = non_zero_winding2 (ix0, blob[id2].y0, lon, lat, n);
 			
-			if (!intest) continue;
-			if (intest == 1) {
+			if (!intest) continue;	/* Not inside */
+			if (intest == 1) {	/* Should not happen - duplicate polygon? */
 				set = FALSE;
 				if (blob[id1].h.source == 0 && blob[id2].h.source == 0 && blob[id1].h.n == blob[id2].h.n) { /* duplicate */
 					fprintf (fpx, "%d is duplicate of %d, %d removed\n", id2, id1, id2);
@@ -301,29 +301,8 @@ int main (int argc, char **argv) {
 				}
 				if (set) blob[id2].h.source = -1;
 			}
-			else if (blob[id2].h.source == 1) { /* WVS inside CIA or WVS! */
-				if (blob[id1].h.source == 1 && blob[id2].h.n < blob[id1].h.n) {  /* small WVS inside another WVS - should be lake */
-					if (blob[id2].h.level != 2) {
-						fprintf (fpx, "%d is inside %d, %d reset to lake\n", id2, id1, id2);
-						blob[id2].h.level = 2;
-						fflush (fpx);
-					}
-				}
-				else { /* WVS inside CIA, assume CIA is bad duplicate to be removed */
-					fprintf (fpx, "%d is inside %d, %d deleted\n", id2, id1, id1);
-					blob[id1].h.source = -1;
-					fflush (fpx);
-					bad++;
-				}
-			}
-			else if (blob[id2].h.source == 0){	/* CIA inside WVS, check if bad duplicate */
-				if ((val = blob[id2].h.area / blob[id1].h.area) > 0.95) { 
-					fprintf (fpx, "%d is inside %d but has %.1f %% of area. %d deleted\n", id2, id1, val * 100.0, id2);
-					blob[id2].h.source = -1;
-					fflush (fpx);
-					bad++;
-				}
-			}
+			
+			/* OK, here id2 is inside id1 */
 			
 			blob[id2].inside[blob[id2].n_inside] = id1;
 			blob[id2].n_inside++;
@@ -350,7 +329,10 @@ int main (int argc, char **argv) {
 		if (blob[id].h.source == -1) continue;	/* Marked for deletion */
 		old = blob[id].h.level;
 		blob[id].h.level = blob[id].n_inside + 1;
-		if (old > 0 && old != blob[id].h.level) n_reset++;
+		if (old > 0 && old != blob[id].h.level) {
+			fprintf (stderr, "Reset polygon %d level from %d to %d\n", blob[id].h.id, old, blob[id].h.level);
+			n_reset++;
+		}
 		n_of_this[blob[id].h.level]++;
 		
 		if (blob[id].h.level > max_level) {
