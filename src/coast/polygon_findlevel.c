@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.10 2007-05-09 00:30:57 pwessel Exp $
+ *	$Id: polygon_findlevel.c,v 1.11 2008-07-04 00:51:52 guru Exp $
  */
 #include "wvs.h"
 
@@ -27,7 +27,7 @@ int main (int argc, char **argv) {
 	char line[80];
 	
 	if (argc == 1) {
-		fprintf (stderr, "usage: polygon_findlevel final_x_polygons.b final_dbase.b [-s]\n");
+		fprintf (stderr, "usage: polygon_findlevel final_polygons.b revised_final_dbase.b [-s]\n");
 		fprintf (stderr, "Note 1: assumes poly # 0,1,2 are Eurasia, Americas,Australia (unless -s)\n");
 		fprintf (stderr, "Note 2: Will recalculate areas unless areas.lis already exists\n");
 		exit (-1);
@@ -108,7 +108,6 @@ int main (int argc, char **argv) {
 			fprintf (fp2, "%d\t%g\n", id, size * sign);
 		}
 
-	
 		free ((void *)flon);
 		free ((void *)flat);
 	}
@@ -160,12 +159,7 @@ int main (int argc, char **argv) {
 	
 		if (blob[id1].h.source == -1) continue;	/* Marked for deletion */
 		
-		if (fabs (blob[id1].h.east - blob[id1].h.west) == 360.0) continue;	/* But skip Antarctica */
-		
-		if (id1 == 2) {	/* deallocate some space */
-			lon = (int *) GMT_memory ((void *)lon, blob[id1].h.n+5, sizeof(int), "polygon_findlevel");
-			lat = (int *) GMT_memory ((void *)lat, blob[id1].h.n+5, sizeof(int), "polygon_findlevel");
-		}
+		if (fabs (blob[id1].h.east - blob[id1].h.west) == 360.0) continue;	/* But skip Antarctica since there are no lakes in the data set */
 		
 		if (id1%10 == 0) fprintf (stderr, "Polygon %d\r", id1);
 
@@ -424,6 +418,13 @@ int main (int argc, char **argv) {
 	fclose (fp);
 	fclose (fp2);
 	
+	fp = fopen ("hierarchy.lis", "w");
+	for (id = 0; id < n_id; id++) {
+		fprintf (fp, "%d:", blob[id].h.id);
+		for (i = 0; i < blob[id].n_inside; i++) fprintf (fp, "\t%d", blob[id].inside[i]);
+		fprintf (fp, "\n");
+	}
+	fclose (fp);
 	free ((void *)pp);
 	
 	exit (0);
