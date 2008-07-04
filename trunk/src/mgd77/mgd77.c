@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.187 2008-07-03 01:39:16 guru Exp $
+ *	$Id: mgd77.c,v 1.188 2008-07-04 00:31:04 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -982,6 +982,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	yr2 = (H->meta.Arrival[0]) ? H->meta.Arrival[0] : atoi (P->Survey_Arrival_Year);
 			
 	if (yr1 && yr2 && ref_field_code != -1 && ref_field_code != 99) {
+		char m_model[16];
 		if (ref_field_code == 88) {
 			if (!strncmp(P->Magnetics_Ref_Field,"IGRF",(size_t)4)) {
 				for (k = 0; P->Magnetics_Ref_Field[k] != 'F'; k++);
@@ -1000,14 +1001,16 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 				rfEnd = INT_MAX;
 				if (F->verbose_level | 2) fprintf (fp_err, "Y-W-%s-H13-09: Unknown IGRF specified (%s)\n", F->NGDC_id, P->Magnetics_Ref_Field);
 			}
+			strcpy (m_model, P->Magnetics_Ref_Field);
 		}
 		else {
 			rfStart = mgd77rf[ref_field_code].start;
 			rfEnd = mgd77rf[ref_field_code].end;
+			strcpy (m_model, mgd77rf[ref_field_code].model);	/* Use name corresponding to given code */
 		}
 		(yr1 == yr2) ? sprintf (text, "%d", yr1) : sprintf (text, "%d-%d", yr1, yr2);
 		if (yr1 < rfStart || yr2 > rfEnd) {
-			if (F->verbose_level | 1) fprintf (fp_err, "Y-W-%s-H13-10: Survey year (%s) outside magnetic reference field %s time range (%d-%d)\n", F->NGDC_id, text, P->Magnetics_Ref_Field, rfStart, rfEnd);
+			if (F->verbose_level | 1) fprintf (fp_err, "Y-W-%s-H13-10: Survey year (%s) outside magnetic reference field %s time range (%d-%d)\n", F->NGDC_id, text, m_model, rfStart, rfEnd);
 			H->errors[WARN]++;
 		}
 	}
