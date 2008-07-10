@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.12 2007-08-11 04:22:07 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.13 2008-07-10 20:41:08 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -14,7 +14,7 @@ int main (int argc, char **argv)
 {
 	FILE	*fp;
 	int	i, n_id, this_n, nd, nx, n_x_problems, n_s_problems, n_c_problems, n_r_problems, n_d_problems, n_a_problems, ix0, iy0, report_mismatch;
-	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x, last_y, ant_trouble = 0, found, A, B, end;
+	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x, last_y, ant_trouble = 0, found, A, B, end, n_adjust = 0, left, right;
 	struct GMT_XSEGMENT *ylist;
 	struct GMT_XOVER XC;
 	struct GMT3_POLY h;
@@ -31,7 +31,7 @@ int main (int argc, char **argv)
 	n_id = n_c_problems = n_x_problems = n_r_problems = n_d_problems = n_s_problems = n_a_problems = 0;
 	while (pol_readheader (&h, fp) == 1) {
 		if (n_id == 0 && h.n > 1000000) report_mismatch = 1;
-		if (h.id == 3817)
+		if (h.id == 71241)
 			w = 0;
 	
 		ANTARCTICA = (fabs (h.east - h.west) == 360.0);
@@ -86,9 +86,12 @@ int main (int argc, char **argv)
 			for (i = end = 0; i < nx; i++) {
 				A = irint (XC.xnode[0][i]);
 				B = irint (XC.xnode[1][i]);
-				if ((A == 0 && B == (h.n-1)) || (B == 0 && A == (h.n-1))) {
-					/* Remove the crossover caused by the duplicate start/end points */
-					end++;
+				if ((A == 0 && B == (h.n-1)) || (B == 0 && A == (h.n-1))) {	/* Involving end point */
+					if (GMT_IS_ZERO ((double)A - XC.xnode[0][i]) && GMT_IS_ZERO ((double)B - XC.xnode[1][i])) {
+						/* Remove the crossover caused by the duplicate start/end points */
+						end++;
+						n_adjust++;
+					}
 				}
 			}
 			nx -= end;
@@ -101,31 +104,33 @@ int main (int argc, char **argv)
 		}
 		/* Look for duplicate points separated by a single outlier (a non-area peninsula) */
 		
-		for (i = 1; i < (h.n-1); i++) {
-			if (GMT_IS_ZERO (lon[i-1]-lon[i+1]) && GMT_IS_ZERO (lat[i-1]-lat[i+1])) {
-				printf ("%d\tNon-area excursion on lines %d-%d\n", h.id, i-1, i+1);
+		for (i = 0; i < (h.n-1); i++) {
+			left = (i) ? i - 1 : h.n - 2;	/* Skip around and avoid duplicate end point */
+			right = i + 1;			/* Never wrap since we dont go to the end point */
+			if (GMT_IS_ZERO (lon[left]-lon[right]) && GMT_IS_ZERO (lat[left]-lat[right])) {
+				printf ("%d\tNon-area excursion on line %d-%d-%d\n", h.id, left, i, right);
 				n_s_problems++;
 			}
 			/* Also check for 3 points on a line with zero angle between them */
-			dy1 = lat[i-1] - lat[i];
-			dy2 = lat[i+1] - lat[i];
-			dx1 = lon[i-1] - lon[i];
-			dx2 = lon[i+1] - lon[i];
+			dy1 = lat[left] - lat[i];
+			dy2 = lat[right] - lat[i];
+			dx1 = lon[left] - lon[i];
+			dx2 = lon[right] - lon[i];
 			if (dy1 == 0.0 && dy2 == 0.0) {	/* Horizontal line, check x arrangement */
 				if ((dx1 * dx2) > 0.0) {
-					printf ("%d\tZero-angle excursion on lines %d-%d\n", h.id, i-1, i+1);
+					printf ("%d\tZero-angle excursion on line %d-%d-%d\n", h.id, left, i, right);
 					n_a_problems++;
 				}
 			}
 			else if (dx1 == 0.0 && dx2 == 0.0) {	/* Vertical line, check y arrangement */
 				if ((dy1 * dy2) > 0.0) {
-					printf ("%d\tZero-angle excursion on lines %d-%d\n", h.id, i-1, i+1);
+					printf ("%d\tZero-angle excursion on line %d-%d-%d\n", h.id, left, i, right);
 					n_a_problems++;
 				}
 			}
 			else if ((dx1*dx2) > 0.0 && (dy1*dy2) > 0.0) {	/* Possible alignment, must check angles */
 				if (fabs (dy1 * dx2 / (dx1 * dy2)) == 1.0) {
-					printf ("%d\tZero-angle excursion on lines %d-%d\n", h.id, i-1, i+1);
+					printf ("%d\tZero-angle excursion on line %d-%d-%d\n", h.id, left, i, right);
 					n_a_problems++;
 				}
 			}
@@ -136,6 +141,7 @@ int main (int argc, char **argv)
 	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s. %d has closure problems. %d has crossing problems. %d has region problems. %d has duplicate points. %d has non-area excursions. %d has zero-angle excursions\n",
 		n_id, argv[1], n_c_problems, n_x_problems, n_r_problems, n_d_problems, n_s_problems, n_a_problems);
 	if (ant_trouble) fprintf (stderr, "polygon_consistency: Antarctica polygon has wrong south border\n");
+	if (n_adjust) fprintf (stderr, "polygon_consistency: SKipped %d crossovers involving duplicate end points\n", n_adjust);
 	
 	fclose(fp);
 
