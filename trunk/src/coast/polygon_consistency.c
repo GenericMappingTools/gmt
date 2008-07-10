@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.13 2008-07-10 20:41:08 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.14 2008-07-10 20:42:49 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -141,7 +141,7 @@ int main (int argc, char **argv)
 	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s. %d has closure problems. %d has crossing problems. %d has region problems. %d has duplicate points. %d has non-area excursions. %d has zero-angle excursions\n",
 		n_id, argv[1], n_c_problems, n_x_problems, n_r_problems, n_d_problems, n_s_problems, n_a_problems);
 	if (ant_trouble) fprintf (stderr, "polygon_consistency: Antarctica polygon has wrong south border\n");
-	if (n_adjust) fprintf (stderr, "polygon_consistency: SKipped %d crossovers involving duplicate end points\n", n_adjust);
+	if (n_adjust) fprintf (stderr, "polygon_consistency: Skipped %d crossovers involving duplicate end points (polygon closure)\n", n_adjust);
 	
 	fclose(fp);
 
