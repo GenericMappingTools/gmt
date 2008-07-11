@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.189 2008-07-10 01:19:34 guru Exp $
+ *	$Id: mgd77.c,v 1.190 2008-07-11 01:27:07 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4946,7 +4946,9 @@ int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises)
 int MGD77_atoi (char *txt) {
 	/* Like atoi but checks if txt is not all integers - if bad it returns -9999 */
 	int i;
-	for (i = 0; i < strlen (txt) && txt[i] == ' '; i++);
+	/* First skip leading blanks and sign (we really should count signs but ...) */
+	for (i = 0; i < strlen (txt) && (txt[i] == ' ' || txt[i] == '-' || txt[i] == '+'); i++);
+	/* Now check if the remainder is just digits - if not return bad value */
 	for (; i < strlen (txt); i++) if (!isdigit((int)txt[i])) return (-9999);
 	return (atoi (txt));
 }
