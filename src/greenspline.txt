@@ -230,7 +230,7 @@ Sandwell, D. T., 1987, Biharmonic spline interpolation of Geos-3 and Seasat alti
 .br
 Wessel, P., and D. Bercovici, 1998, Interpolation with splines in tension: a Green's function approach, \fIMath. Geol., 30\fP, 77\-93.
 .br
-Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Green's function for a spherical surface spline in tension, \fIGeophys. J. Int, yy\fP, xx\-xx.
+Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Green's function for a spherical surface spline in tension, \fIGeophys. J. Int, 174\fP, 21\-28.
 .br
 Wessel, P., 2008, A general-purpose Green's function interpolator, \fIComputers & Geosciences, yy\fP, xx\-xx.
 .SH "SEE ALSO"
