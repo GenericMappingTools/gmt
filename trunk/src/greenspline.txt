@@ -118,15 +118,16 @@ See the 2-D section if your horizontal coordinates are geographical; note the sh
 be used if a 3-D domain is specified.
 .TP
 .B \-S
-Select one of five different splines.  The first two are used for 1-D, 2-D, or 3-D Cartesian splines (see OPT(D) for discussion):
+Select one of five different splines.  The first two are used for 1-D, 2-D, or 3-D Cartesian splines (see OPT(D) for discussion).
+Note that all tension values are expected to be normlized tension in the range 0 < \fIt\fP < 1:
 (\fBc\fP) Minimum curvature spline [\fISandwell\fP, 1987],
 (\fBt\fP) Continuous curvature spline in tension [\fIWessel and Bercovici\fP, 1998]; append
 \fItension\fP[/\fIscale\fP] with \fItension\fP in the 0\-1 range and optionally supply a length scale [Default is the average grid spacing].
 The next is a 2-D or 3-D spline:
-(\fBg\fP) Regularized spline in tension [\fIMitasova and Mitas\fP, 1993]; append \fIscale\fP factor (> 0).
+(\fBg\fP) Regularized spline in tension [\fIMitasova and Mitas\fP, 1993]; again, append \fItension\fP and optional \fIscale\fP.
 The last two are spherical surface splines and both imply \fB\-D\fP4 \fB\-fg\fP:
 (\fBp\fP) Minimum curvature spline [\fIParker\fP, 1994],
-(\fBq\fP) Continuous curvature spline in tension [\fIWessel and Becker\fP, 2008]; append \fItension\fP (> 0).
+(\fBq\fP) Continuous curvature spline in tension [\fIWessel and Becker\fP, 2008]; append \fItension\fP.
 The G(\fBx\fP; \fBx'\fP) for the last method is slower to compute; by specifying \fB\-SQ\fP you can speed up calculations
 by first pre-calculating G(\fBx\fP; \fBx'\fP) for a dense set of \fBx\fP values (e.g., 100,001 nodes between -1 to +1)
 and store them in look-up tables.  Optionally append /\fIN\fP (an odd integer) to specify how many points in the spline to set [5000001]
@@ -179,18 +180,18 @@ To use Cartesian generalized splines in tension and return the magnitude of the 
 the NW direction, try
 .br
 .sp
-\fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sr\fP5 \fB\-V \-D\fP1 \fB\-Q\fP-45 \fB\-G\fPslopes.grd
+\fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sr\fP0.95 \fB\-V \-D\fP1 \fB\-Q\fP-45 \fB\-G\fPslopes.grd
 Finally, to use Cartesian minimum curvature splines in recovering a surface where the input data is a single surface
 value (pt.d) and the remaining constraints specify only the surface slope and direction (slopes.d), use
 .br
 .sp
-\fBgreenspline\fP pt.d \fB\-R\fP-3.2/3.2/-3.2/3.2 \fB\-I\fP0.1 \fB\-Sc\fP5 \fB\-V \-D\fP1 \fB\-A1\fP,slopes.d \fB\-G\fPslopes.grd
+\fBgreenspline\fP pt.d \fB\-R\fP-3.2/3.2/-3.2/3.2 \fB\-I\fP0.1 \fB\-Sc\fP \fB\-V \-D\fP1 \fB\-A1\fP,slopes.d \fB\-G\fPslopes.grd
 .SH 3-D EXAMPLES
 To create a uniform 3-D Cartesian grid table based on the data in table_5.23 in Davis (1986) that contains \fIx,y,z\fP locations and
 a measure of uranium oxide concentrations (in percent), try
 .br
 .sp
-\fBgreenspline\fP table_5.23 \fB\-R\fP5/40/-5/10/5/16 \fB\-I\fP0.25 \fB\-Sr\fP2.5 \fB\-V \-D\fP5 \fB\-G\fP3D_UO2.txt
+\fBgreenspline\fP table_5.23 \fB\-R\fP5/40/-5/10/5/16 \fB\-I\fP0.25 \fB\-Sr\fP0.85 \fB\-V \-D\fP5 \fB\-G\fP3D_UO2.txt
 .SH 2-D SPHERICAL SURFACE EXAMPLES
 To recreate Parker's [1994] example on a global 1x1 degree grid, assuming the data are in file mag_obs_1990.d, try
 .sp
@@ -198,7 +199,7 @@ greenspline \fB\-V \-Rg \-fg \-Sp \-D\fP3 \fB\-I\fP1 \fB\-G\fPP1994.grd mag_obs_
 .sp
 To do the same problem but applying tension and use pre-calculated Green functions, use
 .sp
-greenspline \fB\-V \-Rg \-fg \-SQ\fP2.5 \fB\-D\fP3 \fB\-I\fP1 \fB\-G\fPWB2008.grd mag_obs_1990.d
+greenspline \fB\-V \-Rg \-fg \-SQ\fP0.85 \fB\-D\fP3 \fB\-I\fP1 \fB\-G\fPWB2008.grd mag_obs_1990.d
 .SH CONSIDERATIONS
 (1) For the Cartesian cases we use the free-space Green functions, hence no boundary conditions are
 applied at the edges of the specified domain.  For most applications this is fine as the region typically
