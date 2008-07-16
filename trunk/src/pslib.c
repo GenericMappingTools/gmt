@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.175 2008-06-02 19:57:54 guru Exp $
+ *	$Id: pslib.c,v 1.176 2008-07-16 01:00:12 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1151,19 +1151,20 @@ void ps_plotend (int lastpage)
 		if (!PSL->internal.eps_format)
 			fprintf (PSL->internal.fp, "%%%%PageTrailer\n");
 		else {
-			PS_LONG x0, y0, x1, y1;
-			x0 = MAX ((PS_LONG)irint (PSL->init.magnify[0] * PSL->internal.bb[0]), 0);
-			y0 = MAX ((PS_LONG)irint (PSL->init.magnify[1] * PSL->internal.bb[1]), 0);
-			x1 = (PS_LONG)irint (PSL->init.magnify[0] * PSL->internal.bb[2]);
-			y1 = (PS_LONG)irint (PSL->init.magnify[1] * PSL->internal.bb[3]);
+			double x0, y0, x1, y1;
+			x0 = MAX (PSL->init.magnify[0] * PSL->internal.bb[0], 0.0);
+			y0 = MAX (PSL->init.magnify[1] * PSL->internal.bb[1], 0.0);
+			x1 = PSL->init.magnify[0] * PSL->internal.bb[2];
+			y1 = PSL->init.magnify[1] * PSL->internal.bb[3];
 			fprintf (PSL->internal.fp, "%%%%Trailer\n");
-			fprintf (PSL->internal.fp, "%%%%BoundingBox: %ld %ld %ld %ld\n", x0, y0, x1, y1);
+			fprintf (PSL->internal.fp, "%%%%BoundingBox: %d %d %d %d\n", irint(x0), irint(y0), irint(x1), irint(y1));
+			fprintf (PSL->internal.fp, "%%%%HiResBoundingBox: %g %g %g %g\n", x0, y0, x1, y1);
 		}
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Reset translations and scale and call showpage\n");
 		fprintf (PSL->internal.fp, "S %g %g T", -(PSL->init.origin[0] * PSL->internal.scale), -(PSL->init.origin[1] * PSL->internal.scale));
 		fprintf (PSL->internal.fp, " %g %g scale",
 			PSL->internal.scale/(PSL->internal.points_pr_unit * PSL->init.magnify[0]), PSL->internal.scale/(PSL->internal.points_pr_unit * PSL->init.magnify[1]));
-		if (PSL->internal.landscape) fprintf (PSL->internal.fp, " -90 R %ld 0 T", -PSL->internal.p_width);
+		if (PSL->internal.landscape) fprintf (PSL->internal.fp, " -90 R %g 0 T", -PSL->internal.p_width);
 		fprintf (PSL->internal.fp, " 0 A\nshowpage\n");
 		if (!PSL->internal.eps_format) fprintf (PSL->internal.fp, "\n%%%%Trailer\n");
 		fprintf (PSL->internal.fp, "\nend\n");
@@ -1196,7 +1197,7 @@ void ps_plotend_ (int *lastpage)
 	ps_plotend (*lastpage);
 }
 
-int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_size, int *rgb, const char *encoding, struct EPS *eps)
+int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, double *page_size, int *rgb, const char *encoding, struct EPS *eps)
 /* plotfile:	Name of output file or NULL for standard output
    xoff, yoff:	Sets a new origin relative to old
    xscl, yscl:	Global scaling, usually left to 1,1
@@ -1243,7 +1244,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	PSL->init.unit = unit;
 	PSL->init.dpi = dpi;
 	memcpy ((void *)PSL->init.page_rgb, (void *)rgb, 3*sizeof(int));
-	memcpy ((void *)PSL->init.page_size, (void *)page_size, 2*sizeof(int));
+	memcpy ((void *)PSL->init.page_size, (void *)page_size, 2*sizeof(double));
 	PSL->init.origin[0] = xoff;	PSL->init.origin[1] = yoff;
 	PSL->init.magnify[0] = xscl;	PSL->init.magnify[1] = yscl;
 	/* Duplicate entire contents of EPS structure - to be freed by ps_plotend() */
@@ -1297,13 +1298,13 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	PSL->internal.line_join = (mode >> 16) & 3;
 	PSL->internal.miter_limit = (mode >> 18) & 255;
 	PSL->internal.comments = (mode >> 30) & 1;
-	if (page_size[0] < 0) {		/* Want Manual Request for paper */
-		PSL->internal.p_width  = abs (page_size[0]);
+	if (page_size[0] < 0.0) {		/* Want Manual Request for paper */
+		PSL->internal.p_width  = fabs (page_size[0]);
 		manual = TRUE;
 	}
 	else
 		PSL->internal.p_width = page_size[0];
-	if (page_size[1] < 0) {		/* Want EPS format */
+	if (page_size[1] < 0.0) {		/* Want EPS format */
 		page_size[1] = -page_size[1];
 		PSL->internal.eps_format = TRUE;
 	}
@@ -1366,9 +1367,9 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		}
 	}
 	else {		/* No info is available, default to Current Media Size */
-		PSL->internal.bb[0] = PSL->internal.bb[1] = 0;
+		PSL->internal.bb[0] = PSL->internal.bb[1] = 0.0;
 		PSL->internal.bb[2] = PSL->internal.p_width;
-		PSL->internal.bb[3] = (PSL->internal.p_height == 0) ? PSL_PAGE_HEIGHT_IN_PTS : PSL->internal.p_height;
+		PSL->internal.bb[3] = (fabs (PSL->internal.p_height) < PSL_SMALL) ? PSL_PAGE_HEIGHT_IN_PTS : PSL->internal.p_height;
 	}
 
 	if (!overlay) {
@@ -1380,11 +1381,14 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 
 		/* Write definitions of macros to plotfile */
 
-		fprintf (PSL->internal.fp, "%%%%BoundingBox: ");
-		if (PSL->internal.eps_format)
-			fprintf (PSL->internal.fp, "(atend)\n");
-		else
-			fprintf (PSL->internal.fp, "0 0 %ld %ld\n", PSL->internal.p_width, PSL->internal.p_height);
+		if (PSL->internal.eps_format) {
+			fprintf (PSL->internal.fp, "%%%%BoundingBox: (atend)\n");
+			fprintf (PSL->internal.fp, "%%%%HiResBoundingBox: (atend)\n");
+		}
+		else {
+			fprintf (PSL->internal.fp, "%%%%BoundingBox: 0 0 %d %d\n", irint (PSL->internal.p_width), irint (PSL->internal.p_height));
+			fprintf (PSL->internal.fp, "%%%%HiResBoundingBox: 0 0 %g %g\n", PSL->internal.p_width, PSL->internal.p_height);
+		}
 		if (eps) {	/* Document info is available */
 			fprintf (PSL->internal.fp, "%%%%Title: %s\n", PSL->init.eps->title);
 			fprintf (PSL->internal.fp, "%%%%Creator: GMT\n");
@@ -1424,8 +1428,8 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 		fprintf (PSL->internal.fp, "/PSLevel /languagelevel where {pop languagelevel} {1} ifelse def\n");
 		if (manual)	/* Manual media feed requested */
 			fprintf (PSL->internal.fp, "PSLevel 1 gt { << /ManualFeed true >> setpagedevice } if\n");
-		else if (!PSL->internal.eps_format && PSL->internal.p_width > 0 && PSL->internal.p_height > 0)	/* Specific media selected */
-			fprintf (PSL->internal.fp, "PSLevel 1 gt { << /PageSize [%ld %ld] /ImagingBBox null >> setpagedevice } if\n", PSL->internal.p_width, PSL->internal.p_height);
+		else if (!PSL->internal.eps_format && PSL->internal.p_width > 0.0 && PSL->internal.p_height > 0.0)	/* Specific media selected */
+			fprintf (PSL->internal.fp, "PSLevel 1 gt { << /PageSize [%g %g] /ImagingBBox null >> setpagedevice } if\n", PSL->internal.p_width, PSL->internal.p_height);
 		if (!PSL->internal.eps_format && ncopies > 1) fprintf (PSL->internal.fp, "/#copies %d def\n", ncopies);
 		fprintf (PSL->internal.fp, "%%%%EndSetup\n\n");
 
@@ -1451,7 +1455,7 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 
 		xscl *= scl;
 		yscl *= scl;
-		if (PSL->internal.landscape) fprintf (PSL->internal.fp, "%ld 0 T 90 R\n", PSL->internal.p_width);
+		if (PSL->internal.landscape) fprintf (PSL->internal.fp, "%g 0 T 90 R\n", PSL->internal.p_width);
 		fprintf (PSL->internal.fp, "%g %g scale\n", xscl, yscl);
 		fprintf (PSL->internal.fp, "%%%%EndPageSetup\n\n");
 
@@ -1472,6 +1476,16 @@ int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff
 	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (PSL->internal.fp, "%g %g T\n", xoff*PSL->internal.scale, yoff*PSL->internal.scale);
 
 	return (0);
+}
+
+/* Original ps_ploitinit used ints for paper size */
+
+int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_size, int *rgb, const char *encoding, struct EPS *eps)
+{
+	double d_page_size[2];
+	d_page_size[0] = (double)page_size[0];
+	d_page_size[1] = (double)page_size[1];
+	return (ps_plotinit_hires (plotfile, overlay, mode, xoff, yoff, xscl, yscl, ncopies, dpi, unit, d_page_size, rgb, encoding, eps));
 }
 
 /* fortran interface */

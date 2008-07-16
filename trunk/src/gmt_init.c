@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.354 2008-06-13 02:13:04 guru Exp $
+ *	$Id: gmt_init.c,v 1.355 2008-07-16 01:00:12 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -77,8 +77,8 @@ char *GMT_media_name[GMT_N_MEDIA] = {		/* Names of all paper formats */
 };
 
 struct GMT_MEDIA {	/* Holds information about paper sizes in points */
-	int width;		/* Width in points */
-	int height;		/* Height in points */
+	double width;		/* Width in points */
+	double height;		/* Height in points */
 };
 struct GMT_MEDIA GMT_media[GMT_N_MEDIA] = {			/* Sizes in points of all paper formats */
 #include "gmt_media_size.h"
@@ -1910,11 +1910,11 @@ int GMT_setparameter (char *keyword, char *value)
 			else if (!strncmp (lower_value, "custom_", (size_t)7)) {	/* A custom paper size in W x H points (or in inch/c if units are appended) */
 				pos = 0;
 				GMT_strtok (&lower_value[7], "x", &pos, txt_a);	/* Returns width and update pos */
-				gmtdefs.paper_width[0] = (isdigit(txt_a[strlen(txt_a)-1])) ? atoi (txt_a) : irint (GMT_convert_units (txt_a, GMT_PT));
+				gmtdefs.paper_width[0] = (isdigit(txt_a[strlen(txt_a)-1])) ? atof (txt_a) : GMT_convert_units (txt_a, GMT_PT);
 				GMT_strtok (&lower_value[7], "x", &pos, txt_b);	/* Returns height and update pos */
-				gmtdefs.paper_width[1] = (isdigit(txt_b[strlen(txt_b)-1])) ? atoi (txt_b) : irint (GMT_convert_units (txt_b, GMT_PT));
-				if (gmtdefs.paper_width[0] <= 0) error++;
-				if (gmtdefs.paper_width[1] <= 0) error++;
+				gmtdefs.paper_width[1] = (isdigit(txt_b[strlen(txt_b)-1])) ? atof (txt_b) : GMT_convert_units (txt_b, GMT_PT);
+				if (gmtdefs.paper_width[0] <= 0.0) error++;
+				if (gmtdefs.paper_width[1] <= 0.0) error++;
 				gmtdefs.media = -USER_MEDIA_OFFSET;
 			}
 			else {	/* Not one of the standards, try the user-specified formats, if any */
@@ -2317,14 +2317,14 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "PAGE_ORIENTATION\t= %s\n", (gmtdefs.portrait ? "portrait" : "landscape"));
 	fprintf (fp, "PAPER_MEDIA\t\t= ");
 	if (gmtdefs.media == -USER_MEDIA_OFFSET)
-		fprintf (fp, "Custom_%dx%d", (int)abs(gmtdefs.paper_width[0]), (int)abs(gmtdefs.paper_width[1]));
+		fprintf (fp, "Custom_%gx%g", fabs(gmtdefs.paper_width[0]), fabs(gmtdefs.paper_width[1]));
 	else if (gmtdefs.media >= USER_MEDIA_OFFSET)
 		fprintf (fp, "%s", GMT_user_media_name[gmtdefs.media-USER_MEDIA_OFFSET]);
 	else
 		fprintf (fp, "%s", GMT_media_name[gmtdefs.media]);
-	if (gmtdefs.paper_width[0] < 0)
+	if (gmtdefs.paper_width[0] < 0.0)
 		fprintf (fp, "-\n");
-	else if (gmtdefs.paper_width[1] < 0)
+	else if (gmtdefs.paper_width[1] < 0.0)
 		fprintf (fp, "+\n");
 	else
 		fprintf (fp, "\n");
@@ -2813,7 +2813,8 @@ int GMT_font_lookup (char *name, struct GMT_FONT *list, int n)
 }
 
 int GMT_load_user_media (void) {	/* Load any user-specified media formats */
-	int n, n_alloc, w, h;
+	int n, n_alloc;
+	double w, h;
 	char line[BUFSIZ], media[GMT_TEXT_LEN];
 	FILE *fp;
 
@@ -2828,7 +2829,7 @@ int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
 
-		sscanf (line, "%s %d %d", media, &w, &h);
+		sscanf (line, "%s %lg %lg", media, &w, &h);
 
 		/* Convert string to lower case */
 
@@ -3592,7 +3593,7 @@ void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
 	GMT_ps.line_join = gmtdefs.ps_line_join;	/* 0 (miter), 1 (round), 2 (bevel) */
 	GMT_ps.miter_limit = gmtdefs.ps_miter_limit;	/* 0-180 degrees as whole integer */
 	GMT_ps.dpi = gmtdefs.dpi;			/* Plotter resolution in dots-per-inch */
-	memcpy ((void *)GMT_ps.paper_width, (void *)gmtdefs.paper_width, 2 * sizeof (int));	/* Physical width and height of paper used in points */
+	memcpy ((void *)GMT_ps.paper_width, (void *)gmtdefs.paper_width, 2 * sizeof (double));	/* Physical width and height of paper used in points */
 	memcpy ((void *)GMT_ps.page_rgb, (void *)gmtdefs.page_rgb, 3*sizeof (int));		/* array with Color of page (paper) */
 	GMT_ps.x_origin = gmtdefs.x_origin;		/* Result of -X [gmtdefs.x_origin] */
 	GMT_ps.y_origin = gmtdefs.y_origin;		/* Result of -Y [gmtdefs.y_origin] */
