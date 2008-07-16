@@ -19,7 +19,7 @@ files and inserted into, say, a Word document on a Mac.  See Appendix F in the
 Technical Reference for detailed instructions.
 .LP
 Before any \fBpslib\fP\fR calls can be issued, the plotting system must be
-initialized.  This is done by calling \fBps_plotinit\fP, which defines macros, sets up
+initialized.  This is done by calling \fBps_plotinit\fP (or \fBps_plotinit_hires\fP), which defines macros, sets up
 the plot-coordinate system, scales, and [optionally] opens a file where all the
 \fIPostScript\fR code will be written.  Normally, the plot code is written
 to \fIstdout\fP.  The measure unit for sizes and positions can be set to be centimeter (c),
@@ -433,6 +433,20 @@ The \fIencoding\fP is the name of a character encoding scheme to be used, e.g., 
 The EPS structure is defined in the pslib.h include file and contains information that will make up the comments header of a EPS file.
 Programmers who plan to call pslib routines should read the comments in pslib.h first.  Note that the FORTRAN binding does not
 expect this last argument.
+.RE
+.IP
+void \fBps_plotinit_hires\fR (\fIplotfile, overlay, mode, xoff, yoff, xscl, yscl, ncopies, dpi, unit, pagesize, rgb, encoding, eps\fP)
+.br
+\fBchar\fR \fI*plotfile, *encoding;\fP
+.br
+\fBint\fR \fIoverlay, mode, ncopies, dpi, unit, rgb[3]\fP;
+.br
+\fBdouble\fR \fIxoff, yoff, xscl, yscl\fP;
+.br
+\fBdouble\fR \fIpagesize[2]\fP;
+\fBstruct EPS *\fR \fIeps\fP;
+.RS 10
+Same as \fBps_plotinit\fR but expects the page size to be given in double precision points.
 .RE
 .IP
 void \fBps_plotr\fR (\fIxrel, yrel, kpen\fP)
