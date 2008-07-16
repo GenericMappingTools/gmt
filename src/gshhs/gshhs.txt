@@ -3,18 +3,21 @@
 .SH NAME
 gshhs \- Extract ASCII listings from binary GSHHS or WDBII data files
 .SH SYNOPSIS
-\fBgshhs\fP \fIbinaryfile.b\fP [ OPT(L) ] > \fIasciifile.txt\fP
+\fBgshhs\fP \fIbinaryfile.b\fP [ OPT(I)\fIid\fP ] [ OPT(L) ] > \fIasciifile.txt\fP
 .SH DESCRIPTION
 \fBgshhs\fP reads the binary coastline (GSHHS) or political boundary or river (WDBII) files and
 extracts an ASCII listing.  It automatically handles byte-swabbing between different
-architectures.  Optionally, only segment header info can be displayed
+architectures.  Optionally, only segment header info can be displayed.
 .TP
 \fIbinaryfile.b\fP
 GSHHS or WDBII binary data file as distributed with the GSHHS data supplement.  Any of the
 5 standard resolutions (full, high, intermediate, low, crude) can be used.
 .TP
+.B \-I
+Only output information for the polygon that matches \fIid\fP [default outputs all polygons].
+.TP
 .B \-L
-Only outlut a listing of polygon or line segment headers [default outputs headers and data records].
+Only output a listing of polygon or line segment headers [default outputs headers and data records].
 .SH EXAMPLES
 .sp
 To convert the entire intermediate GSHHS binary data to ASCII, run

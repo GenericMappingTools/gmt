@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.19 2008-07-03 20:23:22 guru Exp $
+/*	$Id: gshhs.c,v 1.20 2008-07-16 19:00:34 guru Exp $
  *
  *	Copyright (c) 1996-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -128,7 +128,7 @@ int main (int argc, char **argv)
 				lon = p.x * GSHHS_SCL;
 				if (greenwich && p.x > max_east) lon -= 360.0;
 				lat = p.y * GSHHS_SCL;
-				printf ("%10.5f%10.5f\n", lon, lat);
+				printf ("%11.6f%11.6f\n", lon, lat);
 			}
 		}
 		max_east = 180000000;	/* Only Eurasiafrica needs 270 */
