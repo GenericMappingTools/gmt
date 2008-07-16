@@ -8,7 +8,7 @@ ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats u
 .SH DESCRIPTION
 \fBps2raster\fP reads one or more \fIPostScript\fP files (or a file with a list of \fIPostScript\fP filenames) and modifies the
 page size in order that the resulting image will have a size determined by the BoundingBox (or HiResBoundingBox, if present).
-As an option, a tight BoundingBox may be computed first.
+As an option, a tight HiResBoundingBox may be computed first.
 .TP
 \fIpsfiles\fP
 Names of \fIPostScript\fP files to be converted. The output files will have the same name but with the
@@ -17,7 +17,7 @@ OPT(D) to redirect the output to a different directory.
 .SH OPTIONS
 .TP
 .B \-A
-Adjust the BoundingBox to the minimum required by the image content.  Append \fBu\fP to first remove any
+Adjust the BoundingBox and HiResBoundingBox to the minimum required by the image content.  Append \fBu\fP to first remove any
 GMT-produced time-stamps.
 .TP
 .B \-D
@@ -65,7 +65,9 @@ creating JPEG, PNG and TIF images.
 .sp
 EPS is a vector, not a raster format. Therefore, the \fB-E\fP option has no effect on the creation
 of EPS files. Using the option \fB-Te\fP will remove PageSize commands from the \fIPostScipt\fP file and will
-adjust the BoundingBox when the \fB-A\fP option is used.
+adjust the BoundingBox when the \fB-A\fP option is used.  Note the original and required BoundingBox is limited
+to integer points, hence Adobe added the optional HiResBoundingBox to add more precision in sizing.  The OPT(A)
+option calculates both and writes both to the EPS file used in the rasterization (and output if OPT(Te) is set).
 .br
 .sp
 Although PDF is also a vector format, the \fB-E\fP option has an effect on the resolution of pattern fills
