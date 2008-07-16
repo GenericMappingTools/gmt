@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.171 2008-06-13 02:13:04 guru Exp $
+ *	$Id: gmt.h,v 1.172 2008-07-16 01:00:11 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -343,7 +343,7 @@ struct GMT_DEFAULTS {
 	int oblique_annotation;		/* Controls annotations and tick angles etc. [0] */
 	int page_rgb[3];		/* Color of the page [255/255/255 white] */
 	BOOLEAN portrait;		/* Orientation of page [FALSE = Landscape, TRUE = Portrait] */
-	int paper_width[2];		/* Width and height of paper to plot on in points [Letter or A4] */
+	double paper_width[2];		/* Width and height of paper to plot on in points [Letter or A4] */
 	double polar_cap[2];		/* Latitude of polar cap and delta_lon for gridline spacing [85/90] */
 	BOOLEAN ps_colormode;		/* 2 writes HSV in PostScript, 1 writes CMYK, 0 uses RGB [0] */
 	int ps_compress;		/* Compression of PostScript images: 0 = no, 1 = RLE, 2 = LZW [0] */
@@ -426,9 +426,9 @@ struct GMT_PS {	/* Holds the current settings that affect PS generation */
 	int line_join;				/* 0 (miter), 1 (round), 2 (bevel) */
 	int miter_limit;			/* 0-180 degrees as whole integer */
 	int dpi;				/* Plotter resolution in dots-per-inch */
-	int paper_width[2];			/* Physical width and height of paper used in points */
 	int page_rgb[3];			/* Array with Color of page (paper) */
 	int unix_time_just;			/* Justification of the GMT time stamp box */
+	double paper_width[2];			/* Physical width and height of paper used in points */
 	double x_origin, y_origin;		/* Result of -X -Y [gmtdefs.x|y_origin] */
 	double x_scale, y_scale;		/* Copy of gmtdefs.global_x|y_scale */
 	double unix_time_pos[2];		/* Result of -U [gmtdefs.unix_time_pos] */

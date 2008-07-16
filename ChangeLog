@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.319 2008-07-03 01:39:16 guru Exp $
+	$Id: ChangeLog,v 1.320 2008-07-16 01:00:10 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-07-15	pwessel
+	* pslib.*:		Now measure paper size in double precision points instead
+				of truncating to nearest integer.  To remain backwards
+				compatible for pslib users we now initialize all plotting
+				in GMT with ps_plotinit_hires.
+	* gmt_*.c:		Now use double precision for paper size rather than int.
+	
 2005-06-20	pwessel
 	* mgd77/mgd77.c:	Now applies recalculation of fields requested by E77 flags
 				as part of reading netcdf mgd77+ files.  However, if the

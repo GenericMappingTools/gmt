@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.230 2008-06-13 00:31:34 guru Exp $
+ *	$Id: gmt_plot.c,v 1.231 2008-07-16 01:00:12 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4100,7 +4100,7 @@ int GMT_plotinit (int argc, char *argv[])
 	/* Initialize the plot header and settings */
 
 	eps = GMT_epsinfo (GMT_program);
-	ps_plotinit (CNULL, GMT_ps.overlay, PS_bit_settings, GMT_ps.x_origin, GMT_ps.y_origin,
+	ps_plotinit_hires (CNULL, GMT_ps.overlay, PS_bit_settings, GMT_ps.x_origin, GMT_ps.y_origin,
 		GMT_ps.x_scale, GMT_ps.y_scale, GMT_ps.n_copies, GMT_ps.dpi, GMT_INCH,
 		GMT_ps.paper_width, GMT_ps.page_rgb, GMT_ps.encoding_name, eps);
 
@@ -4132,15 +4132,15 @@ int GMT_plotend (void) {
 	return (0);
 }
 
-#define PADDING 72	/* Amount of padding room for annotations in points */
+#define PADDING 72.0	/* Amount of padding room for annotations in points (1 inch) */
 
 struct EPS *GMT_epsinfo (char *program)
 {
 	/* Supply info about the EPS file that will be created */
 
 	int fno[5], id, i, n, n_fonts, last, move_up = FALSE;
-	GMT_LONG old_x0, old_y0, old_x1, old_y1;
-	int tick_space, frame_space, u_dx, u_dy;
+	double old_x0, old_y0, old_x1, old_y1;
+	double tick_space, frame_space, u_dx, u_dy;
 	double dy, x0, y0, orig_x0 = 0.0, orig_y0 = 0.0;
 	char info[BUFSIZ];
 	FILE *fp;
@@ -4158,7 +4158,7 @@ struct EPS *GMT_epsinfo (char *program)
 	/* First crudely estimate the boundingbox coordinates */
 
 	if (GMT_ps.overlay && (fp = fopen (info, "r")) != NULL) {	/* Must get previous boundingbox values */
-		fscanf (fp, "%d %d %lf %lf %ld %ld %ld %ld\n", &(new->portrait), &(new->clip_level), &orig_x0, &orig_y0, &old_x0, &old_y0, &old_x1, &old_y1);
+		fscanf (fp, "%d %d %lf %lf %lf %lf %lf %lf\n", &(new->portrait), &(new->clip_level), &orig_x0, &orig_y0, &old_x0, &old_y0, &old_x1, &old_y1);
 		fclose (fp);
 		x0 = orig_x0;
 		y0 = orig_y0;
@@ -4172,7 +4172,7 @@ struct EPS *GMT_epsinfo (char *program)
 		}
 	}
 	else {	/* New plot, initialize stuff */
-		old_x0 = old_y0 = old_x1 = old_y1 = 0;
+		old_x0 = old_y0 = old_x1 = old_y1 = 0.0;
 		x0 = GMT_ps.x_origin;	/* Always absolute the first time */
 		y0 = GMT_ps.y_origin;
 		new->portrait = GMT_ps.portrait;
@@ -4183,25 +4183,25 @@ struct EPS *GMT_epsinfo (char *program)
 
 	/* Estimates the bounding box for this overlay */
 
-	new->x0 = irint (GMT_u2u[GMT_INCH][GMT_PT] * x0);
-	new->y0 = irint (GMT_u2u[GMT_INCH][GMT_PT] * y0);
-	new->x1 = new->x0 + irint (GMT_u2u[GMT_INCH][GMT_PT] * (z_project.xmax - z_project.xmin));
-	new->y1 = new->y0 + irint (GMT_u2u[GMT_INCH][GMT_PT] * (z_project.ymax - z_project.ymin));
+	new->x0 = GMT_u2u[GMT_INCH][GMT_PT] * x0;
+	new->y0 = GMT_u2u[GMT_INCH][GMT_PT] * y0;
+	new->x1 = new->x0 + GMT_u2u[GMT_INCH][GMT_PT] * (z_project.xmax - z_project.xmin);
+	new->y1 = new->y0 + GMT_u2u[GMT_INCH][GMT_PT] * (z_project.ymax - z_project.ymin);
 
-	tick_space = (gmtdefs.tick_length > 0.0) ? irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.tick_length) : 0;
-	frame_space = irint (GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.frame_width);
+	tick_space = (gmtdefs.tick_length > 0.0) ? GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.tick_length : 0.0;
+	frame_space = GMT_u2u[GMT_INCH][GMT_PT] * gmtdefs.frame_width;
 	if (frame_info.header[0]) {	/* Make space for header text */
 		move_up = (GMT_IS_MAPPING || frame_info.side[2] == 2);
 		dy = ((move_up) ? (gmtdefs.annot_font_size[0] + gmtdefs.label_font_size) * GMT_u2u[GMT_PT][GMT_INCH] : 0.0) + 2.5 * gmtdefs.annot_offset[0];
-		new->y1 += tick_space + irint (GMT_u2u[GMT_INCH][GMT_PT] * dy);
+		new->y1 += tick_space + GMT_u2u[GMT_INCH][GMT_PT] * dy;
 	}
 
 	/* Find the max extent and use it if the overlay exceeds what we already have */
 
 	/* Extend box in all directions depending on what kind of frame annotations we have */
 
-	u_dx = (GMT_ps.unix_time && GMT_ps.unix_time_pos[0] < 0.0) ? -irint (GMT_u2u[GMT_INCH][GMT_PT] * GMT_ps.unix_time_pos[0]) : 0;
-	u_dy = (GMT_ps.unix_time && GMT_ps.unix_time_pos[1] < 0.0) ? -irint (GMT_u2u[GMT_INCH][GMT_PT] * GMT_ps.unix_time_pos[1]) : 0;
+	u_dx = (GMT_ps.unix_time && GMT_ps.unix_time_pos[0] < 0.0) ? -GMT_u2u[GMT_INCH][GMT_PT] * GMT_ps.unix_time_pos[0] : 0.0;
+	u_dy = (GMT_ps.unix_time && GMT_ps.unix_time_pos[1] < 0.0) ? -GMT_u2u[GMT_INCH][GMT_PT] * GMT_ps.unix_time_pos[1] : 0.0;
 	if (frame_info.plot && !project_info.three_D) {
 		if (frame_info.side[3]) new->x0 -= MAX (u_dx, ((frame_info.side[3] == 2) ? PADDING : tick_space)); else new->x0 -= MAX (u_dx, frame_space);
 		if (frame_info.side[0]) new->y0 -= MAX (u_dy, ((frame_info.side[0] == 2) ? PADDING : tick_space)); else new->y0 -= MAX (u_dy, frame_space);
@@ -4209,10 +4209,10 @@ struct EPS *GMT_epsinfo (char *program)
 		if (frame_info.side[2]) new->y1 += (frame_info.header[0] || frame_info.side[2] == 2) ? PADDING : tick_space; else new->y1 += frame_space;
 	}
 	else if (project_info.three_D) {
-		new->x0 -= MAX (u_dx, PADDING/2);
-		new->y0 -= MAX (u_dy, PADDING/2);
-		new->x1 += PADDING/2;
-		new->y1 += PADDING/2;
+		new->x0 -= MAX (u_dx, PADDING/2.0);
+		new->y0 -= MAX (u_dy, PADDING/2.0);
+		new->x1 += PADDING/2.0;
+		new->y1 += PADDING/2.0;
 	}
 	else if (GMT_ps.unix_time) {
 		new->x0 -= u_dx;
@@ -4241,7 +4241,7 @@ struct EPS *GMT_epsinfo (char *program)
 		if (new->clip_level < 0) fprintf (stderr, "%s: Warning: %d extra terminations of external clip operations!\n", GMT_program, -new->clip_level);
 	}
 	else if ((fp = fopen (info, "w")) != NULL) {	/* Update the .gmt_bb_info file */
-		fprintf (fp, "%d %d %g %g %ld %ld %ld %ld\n", new->portrait, new->clip_level, x0, y0, new->x0, new->y0, new->x1, new->y1);
+		fprintf (fp, "%d %d %g %g %g %g %g %g\n", new->portrait, new->clip_level, x0, y0, new->x0, new->y0, new->x1, new->y1);
 		fclose (fp);
 	}
 

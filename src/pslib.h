@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.47 2008-03-30 01:50:05 guru Exp $
+ *	$Id: pslib.h,v 1.48 2008-07-16 01:00:12 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -87,10 +87,10 @@ struct EPS {    /* Holds info for eps files */
  	  to -1.  E.g., if 4 fonts are used, font[0], font[1], font[2], and
 	  font[3] must contain the integer ID of these fonts; font[4] = -1
 */
-	PS_LONG x0, x1, y0, y1;		/* Bounding box values in points */
+	double x0, x1, y0, y1;		/* Bounding box values in points */
 	int portrait;			/* TRUE if start of plot was portrait */
 	int clip_level;			/* Add/sub 1 as we clip/unclip - should end at 0 */
-    int fontno[PSL_MAX_EPS_FONTS];	/* Array with font ids used (skip if -1). 6 is max fonts used in GMT anot/labels */
+	int fontno[PSL_MAX_EPS_FONTS];	/* Array with font ids used (skip if -1). 6 is max fonts used in GMT anot/labels */
 	char *name;			/* User name */
 	char *title;			/* Plot title */
 };
@@ -122,6 +122,7 @@ struct imageinfo {
 
 EXTERN_MSC PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split);
 EXTERN_MSC int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_width, int *rgb, const char *encoding, struct EPS *eps);
+EXTERN_MSC int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, double *page_width, int *rgb, const char *encoding, struct EPS *eps);
 EXTERN_MSC void ps_arc (double x, double y, double radius, double az1, double az2, int status);
 EXTERN_MSC void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, double annotpointsize, int side);
 EXTERN_MSC void ps_circle (double x, double y, double size, int rgb[], int outline);
