@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.14 2008-07-10 20:42:49 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.15 2008-07-16 19:55:40 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -19,7 +19,7 @@ int main (int argc, char **argv)
 	struct GMT_XOVER XC;
 	struct GMT3_POLY h;
 	struct LONGPAIR p;
-	double dx1, dx2, dy1, dy2;
+	double dx1, dx2, dy1, dy2, off;
 
 	if (argc != 2) {
 		fprintf(stderr,"usage:  polygon_consistency wvs_polygons.b > report.lis\n");
@@ -31,7 +31,7 @@ int main (int argc, char **argv)
 	n_id = n_c_problems = n_x_problems = n_r_problems = n_d_problems = n_s_problems = n_a_problems = 0;
 	while (pol_readheader (&h, fp) == 1) {
 		if (n_id == 0 && h.n > 1000000) report_mismatch = 1;
-		if (h.id == 71241)
+		if (h.id == 13401)
 			w = 0;
 	
 		ANTARCTICA = (fabs (h.east - h.west) == 360.0);
@@ -87,7 +87,8 @@ int main (int argc, char **argv)
 				A = irint (XC.xnode[0][i]);
 				B = irint (XC.xnode[1][i]);
 				if ((A == 0 && B == (h.n-1)) || (B == 0 && A == (h.n-1))) {	/* Involving end point */
-					if (GMT_IS_ZERO ((double)A - XC.xnode[0][i]) && GMT_IS_ZERO ((double)B - XC.xnode[1][i])) {
+					off = MAX (fabs((double)A - XC.xnode[0][i]), fabs((double)B - XC.xnode[1][i]));
+					if (GMT_IS_ZERO (off)) {
 						/* Remove the crossover caused by the duplicate start/end points */
 						end++;
 						n_adjust++;
