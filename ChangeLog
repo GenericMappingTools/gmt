@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.320 2008-07-16 01:00:10 guru Exp $
+	$Id: ChangeLog,v 1.321 2008-07-16 19:55:40 guru Exp $
 -----------------------------------------------------------------------------------------
+2005-07-16	pwessel
+	* ps2raster.c:		Now will scan for the optional comment %%HiResBoundingBox
+				which takes precedence over the values in %%BoundingBox.
+				
 2005-07-15	pwessel
 	* pslib.*:		Now measure paper size in double precision points instead
 				of truncating to nearest integer.  To remain backwards

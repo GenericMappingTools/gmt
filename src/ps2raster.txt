@@ -7,7 +7,7 @@ ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats u
 [ OPT(L)\fIlistfile\fP]  [ OPT(P) ] [ OPT(S) ] [ OPT(Te)|\fBf\fP|\fBj\fP|\fBg\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ]
 .SH DESCRIPTION
 \fBps2raster\fP reads one or more \fIPostScript\fP files (or a file with a list of \fIPostScript\fP filenames) and modifies the
-page size in order that the resulting image will have a size determined by the BoundingBox.
+page size in order that the resulting image will have a size determined by the BoundingBox (or HiResBoundingBox, if present).
 As an option, a tight BoundingBox may be computed first.
 .TP
 \fIpsfiles\fP
