@@ -19,7 +19,7 @@ the gridfile name, the \fB\-R\fP-setting for the interior region, and the relati
 In the combined weighting scheme, this grid will be given zero weight outside its domain, weight = \fIwr\fP
 inside the interior region, and a 2-D cosine-tapered weight between those end-members in the boundary strip.
 However, if a negative \fIwr\fP is given then the sense of tapering is inverted (i.e., zero weight inside its
-domain).
+domain).  If the inner region should instead exactly match the grid region then specify a - instead of the \fB\-R\fP-setting.
 If the ASCII file is not given \fBgrdblend\fP will read standard input.
 .TP
 .B \-G

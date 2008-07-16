@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.321 2008-07-16 19:55:40 guru Exp $
+	$Id: ChangeLog,v 1.322 2008-07-16 21:44:21 guru Exp $
 -----------------------------------------------------------------------------------------
 2005-07-16	pwessel
+	* grdblend.c:		A side-effect of the 2007-02-01 fix was that when the file
+				is re-opened the row range is reset.  Now the possible
+				offset is computed during initialization but applied when
+				the file is finally opened for reading.
 	* ps2raster.c:		Now will scan for the optional comment %%HiResBoundingBox
 				which takes precedence over the values in %%BoundingBox.
 				
