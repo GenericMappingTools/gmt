@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_P.tex,v 1.13 2008-02-29 03:30:34 remko Exp $
+%	$Id: GMT_Appendix_P.tex,v 1.14 2008-07-21 01:15:54 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -16,7 +16,7 @@
 \index{Isolation mode|(}
 In Chapter~\ref{ch:4} it is described how \GMT\ creates several (temporary) files to communicate between the different commands that make up the script that finally creates a plot. Among those files are:
 \begin{description}
-\item[\filename{.gmtdefaults4}.] This file covers about 100 different settings that influence the layout of your plot, from font sizes to tick lengths and date formats (See Section~\ref{sec:gmtdefaults}). Those settings can be altered by editing the file, or by running the \GMTprog{gmtset} command. A problem may arise when those settings are changed half-way the script: the next time you run the script it will start with the modified settings and hence might alter your scripts results. It is therefore often necessary to revert to the original \filename{.gmtdefaults4} file. \emph{Isolation mode} avoids that issue.
+\item[\filename{.gmtdefaults4}.] This file covers about 100 different settings that influence the layout of your plot, from font sizes to tick lengths and date formats (See Section~\ref{sec:gmtdefaults}). Those settings can be altered by editing the file, or by running the \GMTprog{gmtset} command. A problem may arise when those settings are changed half-way through the script: the next time you run the script it will start with the modified settings and hence might alter your scripts results. It is therefore often necessary to revert to the original \filename{.gmtdefaults4} file. \emph{Isolation mode} avoids that issue.
 \item[\filename{.gmtcommands4}.] This file is created to communicate the command line history from one command to the next (Section~\ref{sec:gmtcommands}) so that shorthands like \Opt{R} or \Opt{J} can be used once it has been set in a previous \GMT\ command.
 The existence of this file makes if impossible to run two \GMT\ scripts simultaneously in the same directory, since those \filename{.gmtcommand4} files may clash (contain different histories) and adversely affect the results of both scripts.
 \item[\filename{.gmt\_bb\_info}.] This file contains the information about the BoundingBox (Section~\ref{sec:eps}) of the \PS\ output. This information too has to be transferred from one \GMT\ command to the next in a script. Again, running two commands simultaneously in the same directory may have disastrous effects on that file.
