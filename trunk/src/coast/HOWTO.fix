@@ -1,4 +1,4 @@
-	$Id: HOWTO.fix,v 1.8 2007-03-30 21:40:49 pwessel Exp $
+	$Id: HOWTO.fix,v 1.9 2008-07-21 01:15:54 guru Exp $
 	
 How to fix mistakes in the GSHHS database
 
@@ -98,7 +98,7 @@ intermediate.  The outlier and one of the duplicate points have been removed.
 2) Several polygon headers had negative west and west.  This caused polygon_xover
 to make shifts in lon by +-360 and thus missing obvious crossovers.  New tool
 polygon_fixnegwesn corrects these headers and polygon_xover has been rerun which
-found a few previoulsy-missed crossovers.  These have now been fixed:
+found a few previously-missed crossovers.  These have now been fixed:
 res_f: No problems found. 4.1 copied to 4.2
 res_h: 8 headers with negative w/e corrected.  No new crossovers generated.
 res_i: 23 headers with negative w/e corrected.  Once fixed some crossovers were found:
@@ -115,7 +115,25 @@ I added tests in polygon_consistency.c to check for these case and found (6, 3, 
 cases in (f, h, i, l, c), respectively.  The middle offending points were removed
 and new zips made.
 Finally, 1 crossover involving Antarctica and a small island was found in intermediate.
-This lead me to add crossover chechecking for Antarctica by doing a simple r,theta
+This lead me to add crossover checking for Antarctica by doing a simple r,theta
 transformation first.  Now all are fixed.
 
+JULY 11. 2008
 
+Tom Krazte again found some problem polygons; these seem to be cases were three points
+form a triangle with no area.  These were generally fixed in March 27, 2008 but the
+code failed to check when this case involves the first and last point in the polygon.
+Thus a few more polygons need to be fixed.  Tom also found crossovers that on careful
+examination did not cross (7 mm short!); probably round-off on his end.  I seem to
+remember that an email pointed out a few polygons with the wrong level (lake instead
+of island or similar).  Need to rerun the inside testing and verify the results.
+At this point I have run out of time before my Norway-trip; these notes will hopefully
+get be on track once back.  THe polygon_consistency code now checks for the new case
+and I suggest you start with the 4.3_* polygons and rediscover the trouble cases Tom is
+listing in his emails.  Need to avoid duplicating efforts with the GSHHS+WDBII data base
+and remember to update the final gshhs.b files properly.  Also, might take this opportunity
+to add more info to the gshhs files: Useful to know which polygon a given polygon is inside
+so that proper hierarchies can be derived.  Perhaps GSHHS v 2.0? Perhaps try to catch ugly
+things like the near-crossing Tom though was a crossing by computing nearest distance from
+each point to the polygon?, or examine triangles with very little area or acute angles.
+Also, there are some issues with the river database.  Check with Remko.
