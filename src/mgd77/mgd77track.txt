@@ -11,7 +11,7 @@
 mgd77track \- A shiptrack plotting program
 .SH SYNOPSIS
 \fBmgd77track\fP \fINGDC-ids\fP GMT_Rgeo_OPT GMT_J_OPT 
-[ OPT(A)[\fBc\fP][\fIsize\fP] ]  [ GMT_B_OPT ] [ OPT(C)|\fBg\fP|\fBe\fP ] [ OPT(Da)\fIstartdate\fP ] [ OPT(Db)\fIstopdate\fP ] [ OPT(F) ] 
+[ OPT(A)[\fBc\fP][\fIsize\fP][,\fIspacing\fP] ]  [ GMT_B_OPT ] [ OPT(C)|\fBg\fP|\fBe\fP ] [ OPT(Da)\fIstartdate\fP ] [ OPT(Db)\fIstopdate\fP ] [ OPT(F) ] 
 [ OPT(I)\fIignore\fP ] [ GMT_K_OPT ] [ OPT(L)\fItrackticks\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Sa)\fIstartdist\fP[\fBu\fP] ] 
 [ OPT(Sb)\fIstopdist\fP[\fBu\fP] ] [ OPT(TT)|\fBt\fP|\fBd\fP\fIms,mc,mfs,mf,mfc\fP ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
@@ -25,9 +25,11 @@ map using the specified projection.  The \fIPostScript\fP code is written to sta
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
-Annotate each leg every time it enters the plot. Append \fBc\fP to annotate using the MGD77 cruise ID [Default
-uses the filename prefix].  Optional \fIsize\fP is the font size in points.
-The leg annotation font is controlled by \fBLABEL_FONT\fP.
+Append \fBc\fP to annotate using the MGD77 cruise ID [Default uses the filename prefix].
+Optional \fIsize\fP is the font size in points.  The leg annotation font is controlled by \fBLABEL_FONT\fP.
+By default, each leg is annotated every time it enters the map region. Alternatively, append ,\fIspacing\fP to place
+this label every \fIspacing\fP units apart along the track.  Append one of the units \fBk\fP (km), \fBn\fP (nautical mile),
+\fBd\fP (day), or \fBh\fP (hour).
 #include "explain_-B_short.txt"
 .TP
 .B \-C
