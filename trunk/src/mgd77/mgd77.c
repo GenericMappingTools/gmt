@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.190 2008-07-11 01:27:07 guru Exp $
+ *	$Id: mgd77.c,v 1.191 2008-07-24 03:45:57 mtchandl Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -15,7 +15,6 @@
  *  Revised:	1-MAR-2006
  * 
  *-------------------------------------------------------------------------*/
-
 
 
 #include "mgd77.h"
@@ -600,7 +599,7 @@ int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 
 	k = 8;
 	MGD77_Place_Text (dir, P->Seismic_Instrumentation, record[k], 1, 40);
-	MGD77_Place_Text (dir, P->Seismic_Add_Forms_of_Data, record[k], 41, 38);
+	MGD77_Place_Text (dir, P->Seismic_Data_Formats, record[k], 41, 38);
 
 	/* Process Sequence No 10: */
 

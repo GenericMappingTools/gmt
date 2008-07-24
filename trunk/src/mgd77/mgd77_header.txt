@@ -1,4 +1,4 @@
-#	$Id: mgd77_header.txt,v 1.1 2007-06-08 03:23:14 guru Exp $
+#	$Id: mgd77_header.txt,v 1.2 2008-07-24 03:45:57 mtchandl Exp $
 #
 # List of named items in the header sequences.  We use this file to generate
 # quite a bit of code, including structures and functions.  This is done to
@@ -56,7 +56,7 @@ Gravity_Instrumentation				08	01	41	N
 Gravity_Add_Forms_of_Data			08	02	39	N
 #--------------------Sequence No 09---------------------------------------------
 Seismic_Instrumentation				09	01	41	N
-Seismic_Add_Forms_of_Data			09	02	39	N
+Seismic_Data_Formats			09	02	39	N
 #--------------------Sequence No 10---------------------------------------------
 #	Format_Description is split across 10 and 11
 Format_Type					10	01	1	Y
