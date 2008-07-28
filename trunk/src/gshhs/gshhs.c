@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.20 2008-07-16 19:00:34 guru Exp $
+/*	$Id: gshhs.c,v 1.21 2008-07-28 22:13:12 remko Exp $
  *
  *	Copyright (c) 1996-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 	struct	POINT p;
 	struct GSHHS h;
         
-	info = single = error = 0;
+	info = single = error = ID = 0;
 	for (k = 1; k < argc; k++) {
 		if (argv[k][0] == '-') {	/* Option switch */
 			switch (argv[k][1]) {
