@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.85 2008-04-17 02:49:32 guru Exp $
+ *	$Id: x2sys.c,v 1.86 2008-08-05 15:50:55 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1014,6 +1014,7 @@ int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
 
 	while ((fread ((void *)(&index), sizeof (int), (size_t)1, fbin)) == 1) {
 		fread ((void *)(&no_of_tracks), sizeof (int), (size_t)1, fbin);
+		if (!swap && index < 0) swap = TRUE;	/* A negative index must mean that swapping is needed */
 		if (swap) {
 			index = GMT_swab4 (index);
 			no_of_tracks = GMT_swab4 (no_of_tracks);
