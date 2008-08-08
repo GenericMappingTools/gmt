@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.324 2008-08-05 15:50:55 guru Exp $
+	$Id: ChangeLog,v 1.325 2008-08-08 15:18:40 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-08-08	remko
+	* psscale.c:		Logarithmic scale did not function properly when scale bar
+				was vertical. Needed to swap more x/y properties.
+
 2008-08-05	pwessel
 	* x2sys/x2sys_get.c:	Now handles -R with longitude periodicity correctly
 	* x2sys/x2sys.c:		Swabbing of index files happens automatically
