@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.327 2008-08-14 09:17:15 guru Exp $
+	$Id: ChangeLog,v 1.328 2008-08-14 09:48:07 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-08-14	pwessel
 	* grdmath.c:	Some 2nd-order derivatives whose BC yields 0 should yield NaN
 					if one or more of the nearby nodes are NaN.
 					Added NOT operator
+	* gmtmath.c:	Same as above for D2DT2.  Added NOT operator.  Also allow data
+					columns to contain NaN, and for the time-columns to contain NaN
+					if -T is set.
 					
 2008-08-14	remko
 	* blockmedian.c, psxy.c:	Replaced word "quartile" by the proper "quantile".
