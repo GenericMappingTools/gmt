@@ -1,7 +1,7 @@
-	$Id: TRIANGLE.HOWTO,v 1.2 2001-12-20 02:56:01 ben Exp $
+	$Id: TRIANGLE.HOWTO,v 1.3 2008-08-14 02:46:36 remko Exp $
 
 GMT contains two programs (triangulate and pscontour) that
-directly or indirectly will do a Delauney optimal triangulation
+directly or indirectly will do a Delaunay optimal triangulation
 of arbitrarily spaced (x,y,z) data.  By default, GMT uses
 a public domain (published) algorithm by Dave Watson [1982] to
 to this.  Now, a new and much faster algorithm has been released

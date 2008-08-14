@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.371 2008-06-13 00:31:35 guru Exp $
+ *	$Id: gmt_support.c,v 1.372 2008-08-14 02:46:37 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -265,7 +265,7 @@ void GMT_err_fail (int err, char *file)
 
 int GMT_parse_multisegment_header (char *header, BOOLEAN use_cpt, BOOLEAN *use_fill, struct GMT_FILL *fill, struct GMT_FILL *def_fill,  BOOLEAN *use_pen, struct GMT_PEN *pen, struct GMT_PEN *def_pen, int def_outline)
 {
-	/* Scan header for occurences of -W, -G, -Z as they affect pens and fills.
+	/* Scan header for occurrences of -W, -G, -Z as they affect pens and fills.
 	 * The possibilities are:
 	 * Fill:  -G<fill>	Use the new fill and turn filling on
 	 *	 -G-		Turn filling OFF
@@ -872,7 +872,7 @@ int GMT_getpen (char *buffer, struct GMT_PEN *P)
 	char pen[GMT_LONG_TEXT], color[GMT_LONG_TEXT], texture[GMT_LONG_TEXT], line[BUFSIZ];
 
 	strcpy (line, buffer);	/* Work on a copy of the arguments */
-	GMT_chop (line);	/* Remove trailing CR, LF and propoerly NULL-terminate the string */
+	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 	if (!strchr (line, ',')) {	/* Most likely old-style pen specification.  Translate */
 		GMT_old2newpen (line);
 	}
@@ -1123,7 +1123,7 @@ int GMT_getincn (char *line, double inc[], int n)
 	char p[BUFSIZ];
 	double scale = 1.0;
 
-	/* Dechipers dx/dy/dz/dw/du/dv/... increment strings with n items */
+	/* Deciphers dx/dy/dz/dw/du/dv/... increment strings with n items */
 
 	memset ((void *)inc, 0, (size_t)(n * sizeof (double)));
 
@@ -1755,7 +1755,7 @@ void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, in
 	char format[BUFSIZ], code[3] = {'B', 'F', 'N'};
 	struct GMT_LUT *lut;
 
-	if (!GMT_continuous && continuous) fprintf (stderr, "%s: Warning: Making a continous cpt from a discrete cpt may give unexpected results!\n", GMT_program);
+	if (!GMT_continuous && continuous) fprintf (stderr, "%s: Warning: Making a continuous cpt from a discrete cpt may give unexpected results!\n", GMT_program);
 
 	if (nz < 0) {	/* Called from grd2cpt which wants equal area colors */
 		nz = -nz;
@@ -3078,7 +3078,7 @@ void GMT_contlabel_fixpath (double **xin, double **yin, double d[], GMT_LONG *n,
 	/* Sort lables based on distance along contour if more than 1 */
 	if (G->n_label > 1) qsort((void *)G->L, (size_t)G->n_label, sizeof (struct GMT_LABEL *), sort_label_struct);
 
-	np = *n + G->n_label;	/* Lenght of extended path that includes inserted label coordinates */
+	np = *n + G->n_label;	/* Length of extended path that includes inserted label coordinates */
 	xp = (double *) GMT_memory (VNULL, (size_t)np, sizeof (double), GMT_program);
 	yp = (double *) GMT_memory (VNULL, (size_t)np, sizeof (double), GMT_program);
 	x = *xin;	y = *yin;	/* Input coordinate arrays */
@@ -4007,7 +4007,7 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, GMT_LONG nn, double zval,
 		 * where curvature is large:  that way, there is no increase in distance over those patches
 		 * and the machinery for determining when we exceed the next label distance will not kick
 		 * in until after curvature drops and increments are again nonzero.  This procedure only
-		 * applyes to the algorithms based on distance along track.
+		 * applies to the algorithms based on distance along track.
 		 */
 
 		GMT_get_radii_of_curvature (xx, yy, nn, radii);
@@ -4759,9 +4759,9 @@ int GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SE
 		lon1 = P->coord[GMT_X][i];	/* Copy the two longitudes since we need to mess with them */
 		lon2 = P->coord[GMT_X][in];
 		dlon = lon2 - lon1;
-		if (dlon > 180.0)		/* Jumped across Greenwhich going westward */
+		if (dlon > 180.0)		/* Jumped across Greenwich going westward */
 			lon2 -= 360.0;
-		else if (dlon < -180.0)		/* Jumped across Greenwhich going eastward */
+		else if (dlon < -180.0)		/* Jumped across Greenwich going eastward */
 			lon1 -= 360.0;
 		if (lon1 <= lon2) {	/* Segment goes W to E (or N-S) */
 			W = lon1;
@@ -5729,7 +5729,7 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 {
 	/* Pass text as &argv[i][2] */
 
-	int j = 0, i, n_slash, error = 0, k, options;
+	int j = 0, i, n_slash, error = 0, k = 0, options;
 	char txt_cpy[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_sx[GMT_LONG_TEXT], txt_sy[GMT_LONG_TEXT], txt_len[GMT_LONG_TEXT];
 
 	memset ((void *)ms, 0, sizeof (struct GMT_MAP_SCALE));

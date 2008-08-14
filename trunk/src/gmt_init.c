@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.355 2008-07-16 01:00:12 guru Exp $
+ *	$Id: gmt_init.c,v 1.356 2008-08-14 02:46:36 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -192,7 +192,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t-B specifies Basemap frame info.  <tickinfo> is a textstring made up of one or\n");
 			fprintf (stderr, "\t   more substrings of the form [t]<stride>[+-<phase>][<unit>], where the (optional) [t] is the\n");
 			fprintf (stderr, "\t   axis item type, <stride> is the spacing between ticks or annotations, the (optional)\n");
-			fprintf (stderr, "\t   <phase> specifies phase-shifted annoations by that amount, and the (optional)\n");
+			fprintf (stderr, "\t   <phase> specifies phase-shifted annotations by that amount, and the (optional)\n");
 			fprintf (stderr, "\t   <unit> specifies the <stride> unit [Default is unit implied in -R]. There can be\n");
 			fprintf (stderr, "\t   no spaces between the substrings - just append to make one very long string.\n");
 			fprintf (stderr, "\t   -B[p] means (p)rimary annotations; use -Bs to specify (s)econdary annotations.\n");
@@ -585,7 +585,7 @@ void GMT_label_syntax (int indent, int kind)
 	fprintf (stderr, "%s +a<angle> for annotations at a fixed angle, +an for line-normal, or +ap for line-parallel [Default]\n", pad);
 	if (kind == 0) fprintf (stderr, "%s   For +ap, optionally append u for up-hill and d for down-hill cartographic annotations\n", pad);
 	fprintf (stderr, "%s +c<dx>[/<dy>] to change the clearance between label and text box [15%%]\n", pad);
-	fprintf (stderr, "%s +d turns on debug which draws helpter points and lines\n", pad);
+	fprintf (stderr, "%s +d turns on debug which draws helper points and lines\n", pad);
 	fprintf (stderr, "%s +f followed by desired label font [Default is %d].\n", pad, gmtdefs.annot_font[0]);
 	fprintf (stderr, "%s +g[<color>] for opaque text box [Default is transparent]; optionally give color [white]\n", pad);
 	fprintf (stderr, "%s +j<just> to set label justification [Default is CM]\n", pad);
@@ -641,7 +641,7 @@ void GMT_cont_syntax (int indent, int kind)
 	fprintf (stderr, "%sn|N<n_label> specifies the number of equidistant labels per %s.\n", pad, type[kind]);
 	fprintf (stderr, "%s   N: Starts labeling exactly at the start of %s [Default centers the labels].\n", pad, type[kind]);
 	fprintf (stderr, "%s   N-1 places one label at start, while N+1 places one label at the end of the %s.\n", pad, type[kind]);
-	fprintf (stderr, "%s   Append /<min_dist> to enfore a minimum distance between successive labels [0]\n", pad);
+	fprintf (stderr, "%s   Append /<min_dist> to enforce a minimum distance between successive labels [0]\n", pad);
 	fprintf (stderr, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places labels at the intersections\n", pad);
 	fprintf (stderr, "%s   between the %ss and the lines in <xfile.d>.  X: Resample the lines first.\n", pad, type[kind]);
 	fprintf (stderr, "%s   For all options, append :<radius>[unit] to specify minimum radial separation between labels [0]\n", pad);
@@ -1200,7 +1200,7 @@ int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) 
 	if (item[2] == 'g' || item[2] == 'd') {
 		if (item[2] == 'g')	/* -Rg is shorthand for -R0/360/-90/90 */
 			*w = project_info.w = 0.0, *e = project_info.e = 360.0;
-		else			/* -Rd is horthand for -R-180/+180/-90/90 */
+		else			/* -Rd is shorthand for -R-180/+180/-90/90 */
 			*w = project_info.w = -180.0, *e = project_info.e = 180.0;
 		*s = project_info.s = -90.0;	*n = project_info.n = +90.0;
 		GMT_io.in_col_type[0] = GMT_IS_LON, GMT_io.in_col_type[1] = GMT_IS_LAT;
@@ -3666,7 +3666,7 @@ void GMT_strip_wesnz (const char *in, int t_side[], BOOLEAN *draw_box, char *out
 
 	for (i = k = 0; in[i]; i++) {
 		if (in[i] == ':') mute = !mute;	/* Toggle so that mute is TRUE when we are within a :<stuff>: string */
-		if (mute) {	/* Dont look for WEST inside a label */
+		if (mute) {	/* Do not look for WEST inside a label */
 			out[k++] = in[i];
 			continue;
 		}
@@ -4954,7 +4954,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 		char s_upper;
 		n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 		s_upper = (char)toupper ((int)symbol_type);
-		if (s_upper == 'F' || s_upper == 'V' || s_upper == 'Q') {	/* "Symbols" that dont take normal symbol size */
+		if (s_upper == 'F' || s_upper == 'V' || s_upper == 'Q') {	/* "Symbols" that do not take normal symbol size */
 			p->size_y = p->given_size_y = 0.0;
 		}
 		else {

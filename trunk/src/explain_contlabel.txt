@@ -21,7 +21,7 @@ distances in map units and append the unit; choose among \fBe\fP (m), \fBk\fP (k
 GFLAG\fBf\fP\fIffile.d\fP
 Reads the ascii file \fIffile.d\fP and places labels at locations in the file
 that matches locations along the LINETYPE.
-Inexact mathces and points outside the region are skipped.
+Inexact matches and points outside the region are skipped.
 .TP
 GFLAG\fBl|L\fP\fIline1\fP[,\fIline2\fP,...]
 Give \fIstart\fP and \fIstop\fP coordinates for one or

@@ -35,7 +35,7 @@ Force creating new files if old ones are present [Default will abort if old file
 .B \-G
 Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
 Dateline (makes longitude go from -180 to + 180) or \fBg\fP for discontinuity
-at Greenwhich (makes longitude go from 0 to 360 [Default]).
+at Greenwich (makes longitude go from 0 to 360 [Default]).
 .TP
 .B \-I
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to

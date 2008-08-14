@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.176 2008-07-16 01:00:12 guru Exp $
+ *	$Id: pslib.c,v 1.177 2008-08-14 02:46:37 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,7 +48,7 @@
  * Updated January 12, 2004 by P. Wessel to add octagon symbol.
  * Updated June 2, 2004 by P. Wessel to add contour/line clipping & labeling machinery (PSL_label.ps).
  * Updated October 25, 2004 by R. Scharroo and L. Parkes to add image compression tricks.
- * Updated March 6, 2006 by P. Wessel to skip output of PS comments unless PSL->commens is TRUE.
+ * Updated March 6, 2006 by P. Wessel to skip output of PS comments unless PSL->comments is TRUE.
  * Updated May 18, 2007 by P. Wessel to allow @;, @:, and @_ also for ps_text.
  *
  * FORTRAN considerations:
@@ -2332,7 +2332,7 @@ void ps_textpath (double x[], double y[], PS_LONG n, PS_LONG node[], double angl
 	 * label	Array of text labels
 	 * m		Number of labels
 	 * pointsize	Pointsize of label text
-	 * offset	Clearences between text and textbox
+	 * offset	Clearances between text and textbox
 	 * just		Justification of text relative to label coordinates
 	 * form		bits: 1 = clip path, 2 = just place gap, 4 = draw line,
 	 *		      8 = just call labelline and reuse last set of parameters
@@ -3198,11 +3198,11 @@ void def_font_encoding (void)
 char *ps_prepare_text (char *text)
 
 /*	Adds escapes for misc parenthesis, brackets etc.
-	Will also translate to some Eurpoean characters such as the @a, @e
+	Will also translate to some European characters such as the @a, @e
 	etc escape sequences. Calling function must REMEMBER to free memory
 	allocated by string */
 {
-	char *psl_scandcodes[13][4] = {	/* Short-hand converrsion for some European characters in both Standard [0], Standard+ [1], ISOLatin1 [2], and ISOLatin1+ [2] encoding */
+	char *psl_scandcodes[13][4] = {	/* Short-hand conversion for some European characters in both Standard [0], Standard+ [1], ISOLatin1 [2], and ISOLatin1+ [2] encoding */
 		{ "AA", "\\375", "\\305", "\\305"},	/* Aring */
 		{ "AE", "\\341", "\\306", "\\306"},	/* AE */
 		{ "OE", "\\351", "\\330", "\\330"},	/* Oslash */

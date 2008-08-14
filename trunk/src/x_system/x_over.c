@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.11 2008-03-24 08:58:33 guru Exp $
+/*	$Id: x_over.c,v 1.12 2008-08-14 02:46:38 remko Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -620,7 +620,7 @@ BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, d
   if ((*yc) < yy[0][0] || (*yc) > yy[1][0] || (*yc) < yy[0][1] || (*yc) > yy[1][1]) return (FALSE);
 
   /* if the crossover coincides with one of the input points, we might end up computing this
-   * crossover twice. To avoid duplicates of this kind, allow such crossovers to occus only
+   * crossover twice. To avoid duplicates of this kind, allow such crossovers to occur only
    * at the second point (timewise)
    */
 

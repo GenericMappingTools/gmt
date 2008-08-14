@@ -43,7 +43,7 @@ as the latitude extent of the input img file.  [Default is -72.006/72.006].
 Can be used when OPT(M) is not set to force the final grid to have the exact same region
 as requested with OPT(R).  By default, the final region is a direct projection of the
 original Mercator region and will typically extend slightly beyond the requested latitude
-range, and futhermore the grid increment in latitude does not match the longitude increment.
+range, and furthermore the grid increment in latitude does not match the longitude increment.
 However, the extra resampling introduces small interpolation errors and should only
 be used if the output grid must match the requested region and have x_inc = y_inc.  In
 this case the region set by OPT(R) must be given in multiples of the increment (.e.g,

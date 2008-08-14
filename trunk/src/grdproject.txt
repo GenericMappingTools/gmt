@@ -95,7 +95,7 @@ specify a one-to-one mapping with meter as the measure unit:
 .SH RESTRICTIONS
 The boundaries of a projected (rectangular) data set will not necessarily give rectangular
 geographical boundaries (Mercator is one exception).  In those cases some nodes may be unconstrained (set to NaN).
-To get a full grid back, your input grid may have to cover a larger area than you are interrested in.
+To get a full grid back, your input grid may have to cover a larger area than you are interested in.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmtdefaults (1),

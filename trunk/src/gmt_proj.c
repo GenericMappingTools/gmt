@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.40 2008-04-05 14:51:34 remko Exp $
+ *	$Id: gmt_proj.c,v 1.41 2008-08-14 02:46:37 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1628,7 +1628,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 		fprintf (stderr, "vgenper: azimuth %5.1f tilt %5.1f\n", azimuth, tilt);
 		fprintf (stderr, "vgenper: viewpoint width %5.1f height %5.1f degrees\n", width, height);
 		fprintf (stderr, "vgenper: radius max %7.1f km\n", project_info.g_rmax/1000.0);
-		fprintf (stderr, "vgenper: eccentricty %7.4f km\n", eccen);
+		fprintf (stderr, "vgenper: eccentricity %7.4f km\n", eccen);
 		fprintf (stderr, "vgenper: eq radius max %7.1f km\n", rmax_max/1000.0);
 		fprintf (stderr, "vgenper: polar radius max %7.1f km\n", rmax_min/1000.0);
 		fprintf (stderr, "vgenper: lat0 radius max %7.1f km\n", rmax_at_lat0/1000.0);

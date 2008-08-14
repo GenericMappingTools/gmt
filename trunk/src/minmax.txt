@@ -13,7 +13,7 @@ will print warnings if the number of columns vary from record to record.
 As an option, \fBminmax\fP will find the extent of the first \fIn\fP columns rounded
 up and down to the nearest multiple of the supplied increments.  By default, this output
 will be in the form \fB\-R\fP\fIw/e/s/n\fP which can be used directly in the command line
-for other programs (hence only \fIdx\fP and \fIdy\fP are neede), or the output will be in
+for other programs (hence only \fIdx\fP and \fIdy\fP are needed), or the output will be in
 column form for as many columns as there are increments provided.
 A similar option (\fB\-T\fP) will provide a \fB\-T\fP\fIzmin/zmax/dz\fP string for makecpt.
 .TP

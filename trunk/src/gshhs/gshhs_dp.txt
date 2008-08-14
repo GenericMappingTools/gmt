@@ -35,7 +35,7 @@ of its caricature, \fICan. Cartogr., 10\fP, 112-122, 1973.
 This implementation of the D-P algorithm has been kindly provided by
 Dr. Gary J. Robinson, Environmental Systems Science Centre,
 University of Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk); his
-ssubroutine forms the basis for this program.
+subroutine forms the basis for this program.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gshhs (1)

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.96 2008-07-03 01:39:16 guru Exp $
+ *	$Id: mgd77.h,v 1.97 2008-08-14 02:46:38 remko Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -265,7 +265,7 @@ struct MGD77_DATA_RECORD {	/* See MGD77 Documentation from NGDC for details */
 };
 
 struct MGD77_DATASET {	/* Info for an entire MGD77+ data set */
-	int n_fields;				/* Number of active colums in the values table */
+	int n_fields;				/* Number of active columns in the values table */
 	int errors;				/* Number of errors encountered when writing this data */
 	struct MGD77_HEADER H;			/* The file's header information */
 	void *values[MGD77_MAX_COLS];		/* 2-D table of necessary number of columns and rows (mix of double and char pointers) */
@@ -340,7 +340,7 @@ struct MGD77_CONTROL {
 	int n_constraints;				/* Number of constraints specified */
 	int n_exact;					/* Number of exact columns to match */
 	int n_bit_tests;				/* Number of bit tests to match */
-	int no_checking;				/* TRUE if there are no constraints, extact-tests, or bit-tests to pass */
+	int no_checking;				/* TRUE if there are no constraints, exact-tests, or bit-tests to pass */
 	struct MGD77_CONSTRAINT Constraint[MGD77_MAX_COLS];		/* List of constraints, if any */
 	char desired_column[MGD77_MAX_COLS][MGD77_COL_ABBREV_LEN];	/* List of desired column names in final output order */
 	struct MGD77_PAIR Exact[MGD77_MAX_COLS];	/* List of column names whose values must be !NaN to be output, if any */
@@ -360,7 +360,7 @@ struct MGD77_CARTER {
 	short int carter_correction[N_CARTER_CORRECTIONS];
 };
 
-/* Structures for emphemeral corrections */
+/* Structures for ephemeral corrections */
 
 struct MGD77_CORRECTION {	/* Holds parameters for one term of a correction for one kind of observation */
 	int id;			/* The id - entry to give us the data column to use*/

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.c,v 1.5 2008-03-24 08:58:30 guru Exp $
+ *	$Id: gmt_bcr.c,v 1.6 2008-08-14 02:46:36 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -20,7 +20,7 @@
  *
  *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * GMT_bcr.c contains interpolation routines based on convolution kernels
- *	(BCR = bi-dimensional convolotion routines)
+ *	(BCR = bi-dimensional convolution routines)
  *
  * Designed to operate with two rows and columns around each edge,
  * to allow derivative computations.
@@ -41,7 +41,7 @@
  *   wx = 1 - |t|	for 0 <= |t| <= 1
  *	= 0		for 1 <= |t|
  *
- * - B-spline smooting
+ * - B-spline smoothing
  *   This is a smoothing kernel. I.e., the interpolated value directly
  *   at a grid node is not equal to the nodal value. This is because wx(0) < 1.
  *   The convolution kernel spans 16 vertices surrounding the interpolation point.
@@ -51,7 +51,7 @@
  *	= 0					for 2 <= |t|
  *
  * - Bi-cubic interpolation
- *   This is the prefered option. It provides a smooth interpolation that
+ *   This is the preferred option. It provides a smooth interpolation that
  *   is twice differential in both directions. The values at the grid nodes
  *   remain unchanged. The convolution kernel spans 16 vertices surrounding the
  *   interpolation point.

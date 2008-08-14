@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.172 2008-07-16 01:00:11 guru Exp $
+ *	$Id: gmt.h,v 1.173 2008-08-14 02:46:36 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -121,7 +121,7 @@ extern "C" {
 #define	M_LN2_INV	(1.0 / 0.69314718055994530942)
 #endif
 #ifndef M_EULER
-#define M_EULER 0.577215664901532860606512	/* Euler's contant (gamma) */
+#define M_EULER 0.577215664901532860606512	/* Euler's constant (gamma) */
 #endif
 
 #define GMT_CONV_LIMIT	1.0e-8	/* Fairly tight convergence limit or "close to zero" limit */

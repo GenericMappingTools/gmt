@@ -3,14 +3,14 @@
 #define LEN 15
 #define SCALE \fB\-JM\fP15\fBc\fP
 .SH NAME
-triangulate \- Perform optimal Delauney triangulation and gridding of Cartesian data [method]
+triangulate \- Perform optimal Delaunay triangulation and gridding of Cartesian data [method]
 .SH SYNOPSIS
 \fBtriangulate\fP \fIinfiles\fP [ OPT(Dx)|\fBy\fP ] [ OPT(E)\fIempty\fP ] [ OPT(F) ] 
 [ OPT(G)\fIgrdfile\fP ] [ GMT_H_OPT ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ GMT_M_OPT ] 
 [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBtriangulate\fP reads one or more ASCII [or binary] files (or standard input) containing x,y[,z] and
-performs Delauney triangulation, i.e., it find how the points should be connected to give
+performs Delaunay triangulation, i.e., it find how the points should be connected to give
 the most equilateral triangulation possible.  If a map projection (give OPT(R) and OPT(J)) is chosen then it is applied before
 the triangulation is calculated.  By default, the output is triplets of point id numbers
 that make up each triangle and is written to standard output.
@@ -74,7 +74,7 @@ make a grid for the given area and spacing, use
 \fBtriangulate\fP samples.xyz \fB\-bo\fP \fB\-R\fP0/30/0/30 \fB\-I\fP2 \fB\-G\fPsurf.grd > samples.ijk
 .br
 .sp
-To draw the optimal Delauney triangulation network based on the same file using a
+To draw the optimal Delaunay triangulation network based on the same file using a
 LEN-cm-wide Mercator map, use
 .br
 .sp

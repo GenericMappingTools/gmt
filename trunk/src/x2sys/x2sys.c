@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.86 2008-08-05 15:50:55 guru Exp $
+ *	$Id: x2sys.c,v 1.87 2008-08-14 02:46:38 remko Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -482,7 +482,7 @@ int x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 		if (j < s->n_fields) {
 			s->out_order[i] = j;
 			s->use_column[j] = 1;
-			/* Reset x,y,t indeces */
+			/* Reset x,y,t indices */
 			if (!strcmp (s->info[j].name, "x") || !strcmp (s->info[j].name, "lon"))  s->x_col = i;
 			if (!strcmp (s->info[j].name, "y") || !strcmp (s->info[j].name, "lat"))  s->y_col = i;
 			if (!strcmp (s->info[j].name, "t") || !strcmp (s->info[j].name, "time")) s->t_col = i;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.20 2008-03-24 08:58:33 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.21 2008-08-14 02:46:38 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -298,7 +298,7 @@ int main (int argc, char **argv)
 			C.map_scale[0] = sum_map_distance / sum_dig_distance;	/* Get average x scale based on ~horizontal line */
 			sum_dig_distance = hypot ((X_DIG[3] - X_DIG[0]), (Y_DIG[3] - Y_DIG[0])) + hypot ((X_DIG[2] - X_DIG[1]), (Y_DIG[2] - Y_DIG[1]));
 			sum_map_distance = hypot ((X_MAP[3] - X_MAP[0]), (Y_MAP[3] - Y_MAP[0])) + hypot ((X_MAP[2] - X_MAP[1]), (Y_MAP[2] - Y_MAP[1]));
-			C.map_scale[1] = sum_map_distance / sum_dig_distance;	/* Get average y scale based on ~vertictal line */
+			C.map_scale[1] = sum_map_distance / sum_dig_distance;	/* Get average y scale based on ~vertical line */
 		}
 		/* Then undo the scale and find mean positions */
 

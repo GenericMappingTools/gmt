@@ -312,7 +312,7 @@ Issue a header record with names for each data field.
 .B \-I
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
 MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
-be repreated to ignore more than one format.  [Default ignores none].
+be repeated to ignore more than one format.  [Default ignores none].
 .TP
 .B \-L
 Apply optimal corrections to columns where such corrections are available.  Append the correction

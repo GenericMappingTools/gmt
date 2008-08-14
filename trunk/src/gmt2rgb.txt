@@ -12,7 +12,7 @@ write out the red, green, and blue components (0-255 range) to separate grid fil
 header is limited you may use the \fB\-R, \-F, \-I\fP options to set a complete header record [Default is
 simply based on the number of rows and columns]. (2) A binary 2-D grid file; we then convert the z-values
 to red, green, blue via the provided cpt file.  Optionally, only write out one of the r, g, b, layers.
-(3) A RGB or RGBA raw raster file.  Since raw rastefiles have no header, you have to give the image
+(3) A RGB or RGBA raw raster file.  Since raw rasterfiles have no header, you have to give the image
 dimensions via the \fB\-W\fP option.
 .TP
 \fIinfile\fP

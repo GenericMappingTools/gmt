@@ -80,7 +80,7 @@ Limit range: Do not draw contours for data values below \fIlow\fP or above \fIhi
 .TP
 .B \-M
 When used in conjunction with \fB\-D\fP a single multisegment file is created, and
-each contour section is preceeded by a header record whose first column is \fIflag\fP
+each contour section is preceded by a header record whose first column is \fIflag\fP
 followed by the contour level.
 #include "explain_-O.txt"
 #include "explain_-P.txt"

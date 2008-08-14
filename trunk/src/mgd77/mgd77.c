@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.192 2008-07-28 22:13:12 remko Exp $
+ *	$Id: mgd77.c,v 1.193 2008-08-14 02:46:38 remko Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -368,7 +368,7 @@ int MGD77_Close_File (struct MGD77_CONTROL *F)  /* Closes a MGD77[+] file */
 }
 
 int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
-{	/* Reads the header structgure form a MGD77[+] file */
+{	/* Reads the header structure form a MGD77[+] file */
 	int error;
 	
 	switch (F->format) {
@@ -390,7 +390,7 @@ int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_
 }
 
 int MGD77_Write_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
-{	/* Writes the header structgure to a MGD77[+] file */
+{	/* Writes the header structure to a MGD77[+] file */
 	int error;
 	
 	switch (F->format) {
@@ -1215,7 +1215,7 @@ void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struc
 		C->w = irint (xpmin);
 		C->e = irint (xpmax);
 	}
-	else if ((xpmin - xnmax) < 90.0) {	/* Crossed Greenwhich */
+	else if ((xpmin - xnmax) < 90.0) {	/* Crossed Greenwich */
 		C->w = irint (xnmin);
 		C->e = irint (xpmax);
 	}
@@ -1286,7 +1286,7 @@ void MGD77_Verify_Prep (struct MGD77_CONTROL *F, struct MGD77_DATASET *D)
 		C->w = irint (xpmin);
 		C->e = irint (xpmax);
 	}
-	else if ((xpmin - xnmax) < 90.0) {	/* Crossed Greenwhich */
+	else if ((xpmin - xnmax) < 90.0) {	/* Crossed Greenwich */
 		C->w = irint (xnmin);
 		C->e = irint (xpmax);
 	}
@@ -2307,7 +2307,7 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 	 * First [set] are columns to be output. Upper case columns MUST be non-NaN to pass
 	 * Second [set] are logical tests on columns.  One or more tests must be passed. ALL
 	 *	UPPER CASE test MUST be passed.
-	 * Third [set] are list of comumns whose bitflag must be either be 1 (+) or 0 (-).
+	 * Third [set] are list of columns whose bitflag must be either be 1 (+) or 0 (-).
 	 * The presence of the : also turns the automatic use of ALL flags off.
 	 */
 
@@ -2656,7 +2656,7 @@ int compare_L (const void *p1, const void *p2)
  */
  
 int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
-{	/* Assemple proper path to READ a mgd77 file.
+{	/* Assemble proper path to READ a mgd77 file.
 	 * track may be:
 	 *  a) a complete hardpath, which is copied verbatim to track_path
 	 *  b) a local file with extension, which is copied to track_path
@@ -2776,7 +2776,7 @@ BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT
 	
 	if (F->no_checking) return (TRUE);	/* Nothing to check for - get outa here */
 	
-	if (F->n_exact) {	/* Must make sure that none of these key geophysical columnss are NaN */
+	if (F->n_exact) {	/* Must make sure that none of these key geophysical columns are NaN */
 		for (i = 0; i < F->n_exact; i++) {
 			value = (double *)S->values[F->Exact[i].col];
 			if (GMT_is_dnan (value[rec])) return (FALSE);	/* Sorry, one NaN and you're history */
@@ -3254,7 +3254,7 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 					MGD77_nc_status (nc_put_var1_double (F->nc_id, S->H.info[set].col[id].var_id, start, &single_val));
 				}
 				else {	/* Must write the entire array */
-					if (transform) {	/* Must use temprary storage for scalings so that original values in S->values remain unchanged */
+					if (transform) {	/* Must use temporary storage for scalings so that original values in S->values remain unchanged */
 						if (not_allocated) xtmp = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Write_Data_cdf");	/* Get mem the first time */
 						not_allocated = FALSE;	/* No longer the first time */
 						n_bad = MGD77_do_scale_offset_before_write (xtmp, values, S->H.n_records, scale, offset, S->H.info[set].col[id].type);	/* mod copy */
@@ -4814,7 +4814,7 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 				c->modifier = (PFD) MGD77_Copy;
 				c->origin = 0.0;
 				c->power = c->scale = 1.0;
-				c->id = -1;	/* Means it is jus a constant factor - no fancy calcuations needed */
+				c->id = -1;	/* Means it is jus a constant factor - no fancy calculations needed */
 			}
 			else {	/* factor*basis */
 				sscanf (word, "%[^*]*%s", factor, basis);

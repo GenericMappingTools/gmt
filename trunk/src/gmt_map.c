@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.203 2008-05-23 03:59:09 guru Exp $
+ *	$Id: gmt_map.c,v 1.204 2008-08-14 02:46:37 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -526,7 +526,7 @@ int GMT_map_setup (double west, double east, double south, double north)
 			search = GMT_map_init_cyleq ();
 			break;
 
-		case GMT_CYL_STEREO:			/* Cyclindrical Stereographic */
+		case GMT_CYL_STEREO:			/* Cylindrical Stereographic */
 			search = GMT_map_init_cylstereo ();
 			break;
 
@@ -3552,7 +3552,7 @@ BOOLEAN GMT_set_greenwich (int mode)
 {
 	BOOLEAN greenwich = FALSE;
 
-	/* Sets the boolean choice greenwhich which should be FALSE
+	/* Sets the boolean choice greenwich which should be FALSE
 	 * for Cartesian coordinates and TRUE if we have data crossing
 	 * Greenwich and it is not a global map
 	 */
@@ -4028,7 +4028,7 @@ int GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, doubl
 
 	dlon0 = lon0 - lon1;
 	dlat0 = lat0 - lat1;
-	if (fabs (dlon0) > 180.0) {	/* Adjust lon0 so there is no dateline/Greenwhich jump discontinuity */
+	if (fabs (dlon0) > 180.0) {	/* Adjust lon0 so there is no dateline/Greenwich jump discontinuity */
 		lon0 += copysign (360.0, -dlon0);
 		dlon0 = lon0 - lon1;
 	}
@@ -5293,7 +5293,7 @@ GMT_LONG GMT_radial_boundary_arc (int this, double end_x[], double end_y[], doub
 	
 	/* When a polygon crosses out then in again into the circle we need to add a boundary arc
 	 * to the polygon where it is clipped.  We simply sample the circle as finely as the arc
-	 * length and the gurrent line_step demands */
+	 * length and the current line_step demands */
 	
 	da_try = (gmtdefs.line_step * 360.0) / (TWO_PI * project_info.r);	/* Angular step in degrees */
 	az1 = d_atan2 (end_y[0], end_x[0]) * R2D;	/* azimuth from map center to 1st crossing */
@@ -6703,7 +6703,7 @@ double GMT_az_backaz_geodesic (double lonE, double latE, double lonS, double lat
 	latE *= D2R;	lonE *= D2R;
 	latS *= D2R;	lonS *= D2R;
 
-	/* (Equations are unstable for latidudes of exactly 0 degrees. */
+	/* (Equations are unstable for latitudes of exactly 0 degrees. */
 	if (latE == 0.0) latE = 1.0e-08;
 	if (latS == 0.0) latS = 1.0e-08;
 
@@ -6755,7 +6755,7 @@ double GMT_geodesic_dist_degree (double lonS, double latS, double lonE, double l
 	double thg, sc, sd, dist;
 
 	/* Convert event location to radians.
-	 * (Equations are unstable for latidudes of exactly 0 degrees.)
+	 * (Equations are unstable for latitudes of exactly 0 degrees.)
 	 */
 
 	if (latE == 0.0) latE = 1.0e-08;
@@ -6814,7 +6814,7 @@ double GMT_geodesic_dist_meter (double lonS, double latS, double lonE, double la
 
 
 	/* Convert event location to radians.
-	 * (Equations are unstable for latidudes of exactly 0 degrees.)
+	 * (Equations are unstable for latitudes of exactly 0 degrees.)
 	 */
 
 	if (latE == 0.0) latE = 1.0e-08;

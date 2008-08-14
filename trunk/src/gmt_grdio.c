@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.116 2008-04-07 18:48:05 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.117 2008-08-14 02:46:36 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -251,14 +251,14 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		header->name[j] = 0;
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
-			if (!GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Reading: possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
+			if (!GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Reading: possibly prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		}
 		else		/* Writing: store truncated pathname */
 			strcpy (header->name, tmp);
 	}
 	else if (magic) {	/* Reading: determine file format automatically based on grid content */
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
-		if (!GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possily prepended a path from GMT_[GRID|DATA|IMG]DIR */
+		if (!GMT_getdatapath (tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possibly prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
 		if ((val = GMT_is_nc_grid (header)) >= 0) return (GMT_NOERROR);
 		/* Continue only when file was a pipe or when nc_open didn't like the file. */
@@ -777,7 +777,7 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 		header->x_max -= 360.0;
 	}
 
-	if (n_warn) fprintf (stderr, "%s: Gridline-registered global grid has inconsistant values at repeated node for %ld rows\n", GMT_program, n_warn);
+	if (n_warn) fprintf (stderr, "%s: Gridline-registered global grid has inconsistent values at repeated node for %ld rows\n", GMT_program, n_warn);
 
 	GMT_free ((void *) tmp);
 }

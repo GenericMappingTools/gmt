@@ -141,7 +141,7 @@ int GMTAPI_File_Option (char option, int ID, struct GMT_OPTION **ptr)
 	struct GMT_OPTION *new;
 	char file[BUFSIZ];
 
-	/* Here we have a registred resource  ID */
+	/* Here we have a registered resource  ID */
 	new = (struct GMT_OPTION *) GMT_memory (VNULL, 1, sizeof (struct GMT_OPTION), "GMTAPI_File_Option");
 	new->option = option;		/* Assign which option character was used (* for file) */
 	sprintf (file, "GMTAPI-#-%d", ID);

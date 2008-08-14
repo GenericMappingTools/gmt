@@ -82,7 +82,7 @@ and 0.5 and leaves the other reflectance parameters untouched.
 Append \fBs\fP to use a simpler Lambertian algorithm. Note that with  
 this form
 you only have to provide the azimuth and elevation parameters.
-Append \fBp\fP to use the Peucker picewise linear  approximation  
+Append \fBp\fP to use the Peucker piecewise linear  approximation  
 (simpler but faster algorithm;
 in this case the \fIazim\fP and \fIelev\fP are hardwired to 315 and  
 45 degrees.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.231 2008-07-16 01:00:12 guru Exp $
+ *	$Id: gmt_plot.c,v 1.232 2008-08-14 02:46:37 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3754,7 +3754,7 @@ void GMT_vector (double x0, double y0, double x1, double y1, double z, double ta
 {
 	/* Plots the vector symbol */
 
-	if (project_info.three_D) {	/* Fill in local xp, yp cordinates for vector starting at (0,0) aligned horizontally */
+	if (project_info.three_D) {	/* Fill in local xp, yp coordinates for vector starting at (0,0) aligned horizontally */
 		int i, n;
 		double xp[10], yp[10], angle, length, s, c, L, x, y;
 
@@ -4309,7 +4309,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 	 * In reality it depends on the nature of the first jump in which order we do the
 	 * west and east truncation above.
 	 * If the polygon is clipped or wraps around at a periodic boundary then we must
-	 * be caseful how we draw the outline (if selected).  It is only when there is no
+	 * be careful how we draw the outline (if selected).  It is only when there is no
 	 * clipping/wrapping that we can call GMT_fill with outline set to the input argument;
 	 * Otherwise we must first fill the polygon without an outline and then separately
 	 * plot the outline as a path.
@@ -4480,7 +4480,7 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 		py[i] = d_asin (cos_c * sinp + (y_prime * sin_c * cosp / rho)) * R2D;
 		if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
 			px[i] = lon + R2D * d_atan2 (x_prime, -y_prime);
-		else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in SOuthern hemisphere */
+		else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in Southern hemisphere */
 			px[i] = lon + R2D * d_atan2 (x_prime, y_prime);
 		else
 			px[i] = lon +
@@ -4532,7 +4532,7 @@ void GMT_plot_rectangle (double lon, double lat, double z, double width, double 
 	lat_w = d_asin (cos_c * sinp + (y_prime * sin_c * cosp / rho)) * R2D;
 	if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
 		lon_w = lon + R2D * d_atan2 (x_prime, -y_prime);
-	else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in SOuthern hemisphere */
+	else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in Southern hemisphere */
 		lon_w = lon + R2D * d_atan2 (x_prime, y_prime);
 	else
 		lon_w = lon + R2D * d_atan2 (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
@@ -4554,7 +4554,7 @@ void GMT_plot_rectangle (double lon, double lat, double z, double width, double 
 	lat_h = d_asin (cos_c * sinp + (y_prime * sin_c * cosp / rho)) * R2D;
 	if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
 		lon_h = lon + R2D * d_atan2 (x_prime, -y_prime);
-	else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in SOuthern hemisphere */
+	else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in Southern hemisphere */
 		lon_h = lon + R2D * d_atan2 (x_prime, y_prime);
 	else
 		lon_h = lon + R2D * d_atan2 (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));

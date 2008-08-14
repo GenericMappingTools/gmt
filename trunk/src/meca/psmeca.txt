@@ -59,7 +59,7 @@ magnitude
 .IP \fB8,9\fP:
 longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the \fB\-C\fP option.  Using 0,0 in columns
-8 and 9 will plot the beach ball at the longtiude, latitude given in
+8 and 9 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The \fB\-:\fP option will interchange the order of
 columns (1,2) and (8,9).
 .IP \fB10\fP:
@@ -185,7 +185,7 @@ value (in 10*exponent dynes-cm), azimuth, plunge of T, N, P axis.
 .IP \fB13\fP:
 exponent
 .IP \fB14,15\fP:
-longtiude, latitude at which to place beach ball. Entries in these
+longitude, latitude at which to place beach ball. Entries in these
 columns are necessary with the \fB\-C\fP option.  Using 0,0 in columns
 9 and 10 will plot the beach ball at the longitude, latitude given in
 columns 1 and 2.  The \fB\-:\fP option will interchange the order of
@@ -319,7 +319,7 @@ END
 .br
 Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
 .br
-F. A. Dahlen and Jeoren Trom, Theoretical Seismology, Princeton, 1998, p.167.
+F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
 .br
 Cliff Frohlich, Cliff's Nodes Concerning Plotting Nodal Lines for P, Sh and Sv\"'
 .br

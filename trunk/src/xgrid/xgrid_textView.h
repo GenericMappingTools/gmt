@@ -40,7 +40,7 @@ typedef struct {
 #define XtCValueColor	"ValueColor"
 #define XtCGridColor	"GridColor"
 #define XtCShowGrid	"ShowGrid"
-#ifndef XtCMargin     	/* Many versions of X define this aready. */
+#ifndef XtCMargin     	/* Many versions of X define this already. */
 #define XtCMargin	"Margin"
 #endif
 #define XtCPrecision	"Precision"
