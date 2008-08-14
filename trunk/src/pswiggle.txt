@@ -9,7 +9,7 @@ pswiggle \- Plot anomaly along track on a map
 OPT(Z)\fIscale\fP [ OPT(A)\fIazimuth\fP ] [ GMT_B_OPT ] [ OPT(C)\fIcenter\fP ] [ OPT(D)\fIgap\fP ] 
 [ GMT_E_OPT ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
 [ OPT(I)\fIfix_az\fP ] [ GMT_K_OPT ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ OPT(S)[\fBx\fP]\fIlon0\fP/\fIlat0\fP/\fIlength\fP[\fIunits\fP] ] [ OPT(T)\fIpen\fP ] 
+[ OPT(S)[\fBx\fP]\fIlon0\fP/\fIlat0\fP/\fIlength\fP[/\fIunits\fP] ] [ OPT(T)\fIpen\fP ] 
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION

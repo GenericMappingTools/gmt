@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.h,v 1.8 2008-03-24 08:58:30 guru Exp $
+ *    $Id: block_subs.h,v 1.9 2008-08-14 01:39:28 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -55,9 +55,9 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 	} Q;
 #endif
 #if defined(BLOCKMEDIAN)
-	struct T {	/* -T<quartile> */
+	struct T {	/* -T<quantile> */
 		BOOLEAN active;
-		double quartile;
+		double quantile;
 	} T;
 #endif
 	struct S {	/* -S[w|z] */
