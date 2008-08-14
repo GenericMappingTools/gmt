@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.326 2008-08-14 02:46:36 remko Exp $
+	$Id: ChangeLog,v 1.327 2008-08-14 09:17:15 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-08-14	pwessel
+	* grdmath.c:	Some 2nd-order derivatives whose BC yields 0 should yield NaN
+					if one or more of the nearby nodes are NaN.
+					Added NOT operator
+					
 2008-08-14	remko
 	* blockmedian.c, psxy.c:	Replaced word "quartile" by the proper "quantile".
 				Same in man pages.
