@@ -65,8 +65,8 @@ attributes for error bars may also be set (see SPECIFYING PENS below) [Defaults:
 A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill and error pen color, while a leading
 \fB-\fP will set error pen color and turn off symbol fill.
 If upper case \fBX\fP and/or \fBY\fP is used we will instead draw "box-and-whisker" (or "stem-and-leaf") symbols.  The x (or y)
-coordinate is then taken as the median value, and 4 more columns are expected to contain the minimum (0% quartile), the 25%
-quartile, the 75% quartile, and the maximum (100% quartile) values.  The 25-75% box may be filled by using \fB\-G\fP.
+coordinate is then taken as the median value, and 4 more columns are expected to contain the minimum (0% quantile), the 25%
+quantile, the 75% quantile, and the maximum (100% quantile) values.  The 25-75% box may be filled by using \fB\-G\fP.
 If \fBn\fP is appended to \fBX\fP (or \fBY\fP) we draw a notched "box-and-whisker" symbol where the notch width reflects
 the uncertainty in the median.  Then a 5th extra data column is expected to contain the number of points in the distribution.
 .TP

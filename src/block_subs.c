@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.c,v 1.7 2008-03-24 08:58:30 guru Exp $
+ *    $Id: block_subs.c,v 1.8 2008-08-14 01:39:28 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -81,7 +81,7 @@ void * NEW () {	/* Allocate and initialize a new control structure */
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 #if defined(BLOCKMEDIAN)
-	C->T.quartile = 0.5;
+	C->T.quantile = 0.5;
 #endif
 	return ((void *)C);
 }
