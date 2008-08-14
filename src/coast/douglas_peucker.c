@@ -1,5 +1,5 @@
 /*
- *	$Id: douglas_peucker.c,v 1.3 2008-03-05 02:11:58 guru Exp $
+ *	$Id: douglas_peucker.c,v 1.4 2008-08-14 02:46:38 remko Exp $
  */
 
 #define COASTLIB
@@ -17,7 +17,7 @@ int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band
 int Douglas_Peucker (double x_source[], double y_source[], int n_source, double band, int index[])
 /* x/y_source	Input coordinates, n_source of them */
 /* band;		tolerance in km */
-/* index[]	output co-ordinates indeces */
+/* index[]	output co-ordinates indices */
 {
 	int	n_stack, n_dest, start, end, i, sig;
 	int	*sig_start, *sig_end;	/* indices of start&end of working section */
@@ -152,7 +152,7 @@ start point */
 int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[])
 /* x/y_source	Input coordinates, n_source of them */
 /* band;		tolerance in km */
-/* index[]	output co-ordinates indeces */
+/* index[]	output co-ordinates indices */
 {
 	int	n_stack, n_dest, start, end, i, sig;
 	int	*sig_start, *sig_end;	/* indices of start&end of working section */

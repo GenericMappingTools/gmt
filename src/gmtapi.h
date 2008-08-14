@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.21 2008-05-04 02:32:54 guru Exp $
+ *	$Id: gmtapi.h,v 1.22 2008-08-14 02:46:38 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -58,7 +58,7 @@ struct GMTAPI_CTRL {
 	int n_io_sessions;			/* Number of registered line-by-line io sessions */
 	int n_io_sessions_alloc;		/* Allocation counter for session objects */
 	struct GMTAPI_IO **io_session;		/* List of active i/o sessions */
-	int current_io_session[2];		/* Indeces into io_session for the current i/o session */
+	int current_io_session[2];		/* indices into io_session for the current i/o session */
 	int GMTAPI_size[GMTAPI_N_TYPES];	/* Size of various data types in bytes */
 	PFI GMT_2D_to_index[2];			/* Pointers to the row or column-order index functions */
 	PFV GMT_index_to_2D[2];			/* Pointers to the inverse index functions */

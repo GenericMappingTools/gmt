@@ -107,7 +107,7 @@ These modifications can be changed and saved to Preset 3 on
 the digitizer but a power outage may reset in back to the factory defaults, necessitating
 a manual reset of those two settings.
 (B) Setup tty port.  stty -F /dev/ttyS0 evenp
-(C) Run gmtdigitize.  Map scale doesnt matter; it is computed from the region and plot size.
+(C) Run gmtdigitize.  Map scale does not matter; it is computed from the region and plot size.
 .SH "SEE ALSO"
 .IR gmtdefaults (l),
 .IR gmt (l),

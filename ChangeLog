@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.325 2008-08-08 15:18:40 remko Exp $
+	$Id: ChangeLog,v 1.326 2008-08-14 02:46:36 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-08-14	remko
+	* blockmedian.c, psxy.c:	Replaced word "quartile" by the proper "quantile".
+				Same in man pages.
+	* numerous files:	Fixed numerous typos. Thanks to Dan Scheirer for listing them.
+
 2008-08-08	remko
 	* psscale.c:		Logarithmic scale did not function properly when scale bar
 				was vertical. Needed to swap more x/y properties.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.44 2008-05-12 22:35:47 guru Exp $
+ *	$Id: libspotter.c,v 1.45 2008-08-14 02:46:38 remko Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -388,7 +388,7 @@ BOOLEAN must_do_track (GMT_LONG sideA[], GMT_LONG sideB[]) {
 	dy = abs (sideA[1] - sideB[1]);
 #endif
 	if (dx && dy) return (TRUE);
-	if (dx == 2 || dy == 2) return (TRUE);	/* COuld cut across the box */
+	if (dx == 2 || dy == 2) return (TRUE);	/* Could cut across the box */
 	return (FALSE);
 }
 

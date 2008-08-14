@@ -78,7 +78,7 @@ Will not place labels where the line's radius of curvature is less than \fImin_r
 Sets the desired font size in points [Default is 9].
 .TP
 \fB+u\fP\fIunit\fP
-Appends \fIunit\fP to all line labels. If \fIunit\fP starts with a leading hypen (-) then there will be no space
+Appends \fIunit\fP to all line labels. If \fIunit\fP starts with a leading hyphen (-) then there will be no space
 between label value and the unit.
 #ifdef GRID
 If no \fIunit\fP is appended we use the units listed in the grid file.
@@ -93,6 +93,6 @@ Specifies how many (\fIx, y\fP) points will be used to estimate label angles [De
 .TP
 \fB+=\fP\fIprefix\fP
 Prepends \fIprefix\fP to all line labels.
-If \fIprefix\fP starts with a leading hypen (-) then there will be no space
+If \fIprefix\fP starts with a leading hyphen (-) then there will be no space
 between label value and the prefix. [Default is no prefix].
 .RE

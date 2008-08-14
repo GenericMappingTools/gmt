@@ -64,7 +64,7 @@ creating JPEG, PNG and TIF images.
 .br
 .sp
 EPS is a vector, not a raster format. Therefore, the \fB-E\fP option has no effect on the creation
-of EPS files. Using the option \fB-Te\fP will remove PageSize commands from the \fIPostScipt\fP file and will
+of EPS files. Using the option \fB-Te\fP will remove PageSize commands from the \fIPostScript\fP file and will
 adjust the BoundingBox when the \fB-A\fP option is used.  Note the original and required BoundingBox is limited
 to integer points, hence Adobe added the optional HiResBoundingBox to add more precision in sizing.  The OPT(A)
 option calculates both and writes both to the EPS file used in the rasterization (and output if OPT(Te) is set).

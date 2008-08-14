@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.65 2008-04-04 20:47:24 guru Exp $
+ *	$Id: gmt_stat.c,v 1.66 2008-08-14 02:46:37 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -931,7 +931,7 @@ double GMT_plm_bar (int l, int m, double x, BOOLEAN ortho)
 	for (i = 1; i <= m; i++) pmm = d_sqrt (1.0 + 0.5/i) * u * pmm;
 
 	/* If orthonormalization is requested: multiply by sqrt(1/4pi)
-	   In case of geophysical convertion : multiply by sqrt(2-delta_0m) */
+	   In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 	if (ortho) {
 		pmm *= 0.5 / d_sqrt(M_PI);
@@ -1003,7 +1003,7 @@ double GMT_dilog (double x)
 	   is needed for x in the range 0 <= x <= 1 when solving the
 	   spherical spline interpolation in section 2.07 of Parker.
 
-	   I tested this for x in range 0 to 1 by reproducting Figure
+	   I tested this for x in range 0 to 1 by reproducing Figure
 	   2.07c of Parker's book.  I also tested that the result was
 	   smooth for x out to 25.  I also checked d[dilog(x)]/dx
 	   obtained numerically from this routine against an analytic

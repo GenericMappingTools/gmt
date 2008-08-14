@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.69 2008-04-02 15:46:41 remko Exp $
+ *	$Id: gmt_customio.c,v 1.70 2008-08-14 02:46:36 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1336,7 +1336,7 @@ struct srf_header6 {	/* Surfer 6 file header structure */
    Note: I had significant troubles to be able to read correctly the Surfer 7 format. 
    In its basic and mostly used form (that is, without break-lines info) what we normally
    call a header, can be described by the srf_header7 structure bellow (but including
-   the three commented lines). This would make that the hader is composed of 2 char[4] and
+   the three commented lines). This would make that the header is composed of 2 char[4] and
    and 5 ints followed by doubles. The problem was that after the ints the doubles were not
    read correctly. It looked like everything was displaced by 4 bytes.
    I than found the note about the GMT 64-bit Modification and tried the same trick.

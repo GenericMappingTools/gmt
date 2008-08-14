@@ -104,7 +104,7 @@ contains the desired t-coordinates which may be irregular.
 .SH NOTES ON OPERATORS
 (1) The operators \fBPLM\fP and \fBPLMg\fP calculate the associated Legendre polynomial
 of degree L and order M in x which must satisfy -1 <= x <= +1 and 0 <= M <= L.
-x, L, and M are the three arguments preceeding the operator.
+x, L, and M are the three arguments preceding the operator.
 \fBPLM\fP is not normalized and includes the Condon-Shortley phase (-1)^M.
 \fBPLMg\fP is normalized in the way that is most commonly used in geophysics.
 The C-S phase can be added by using -M as argument.

@@ -47,7 +47,7 @@ You can override this behaviour by appending the desired code: 1 = Heiskanen 192
 and the second column holding data values.  If no file is given we read from stdin instead.  Records with matching
 distances in the MGD77+ file will be assigned the new values; at other distances we set them to NaN.
 Alternatively, give upper case \fBD\fP instead and we will interpolate the column at all record distances.
-See \fB\-N\fP for chosing distance units and \fB\-C\fP for chosing how distances are calculated.
+See \fB\-N\fP for choosing distance units and \fB\-C\fP for choosing how distances are calculated.
 .br
 .sp
 \fBe\fP Expects to find an e77 error/correction log from \fBmgd77sniffer\fP with the name \fINGDC_ID\fP.e77 in
@@ -232,7 +232,7 @@ violate rules such as being outside of possible ranges or in other ways violate 
 Furthermore, sequences of points that may be within valid ranges may give rise to data
 gradients that are unreasonable.  The status of every point can therefore be determined and
 this gives rise to bitflags GOOD or BAD.  Our policy is that error sources 1, 2, and 4 will
-be corrected by suppliying the information as meta-data in the relevant *.nc files, whereas
+be corrected by supplying the information as meta-data in the relevant *.nc files, whereas
 the corrections for error source 3 (because they will constantly be improved) will be
 maintained in a separate list of corrections.
 .br

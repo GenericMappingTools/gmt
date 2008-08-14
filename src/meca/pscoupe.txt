@@ -48,7 +48,7 @@ but must be present.
 .br
 \fB\-Aa\fP\fIlon1/lat1/lon2/lat2/dip/p_width/dmin/dmax\fP[\fBf\fP]
 .br
-\fIlon\fP and \fIlat\fP are the longitude and latitude of points 1 and 2 limiting the length ot the cross-section.
+\fIlon\fP and \fIlat\fP are the longitude and latitude of points 1 and 2 limiting the length of the cross-section.
 .br
 \fIdip\fP is the dip of the plane on which the cross-section is made.
 .br
@@ -64,7 +64,7 @@ Add \fBf\fP to get the frame from the cross-section parameters.
 .br
 \fIlon1\fP and \fIlat1\fP are the longitude and latitude of the beginning of the cross-section.
 .br
-\fIstrike\fP is the azimut of the direction of the cross-section.
+\fIstrike\fP is the azimuth of the direction of the cross-section.
 .br
 \fIp_length\fP is the length along which the cross-section is made.
 .br
@@ -340,7 +340,7 @@ Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
 .br
 Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
 .br
-F. A. Dahlen and Jeoren Trom, Theoretical Seismology, Princeton, 1998, p.167.
+F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
 Definition of scalar moment.
 .br
 Cliff Frohlich, Cliff's Nodes Concerning Plotting Nodal Lines for P, Sh and Sv\"'

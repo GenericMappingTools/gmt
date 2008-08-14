@@ -67,7 +67,7 @@ Only used with \fB\-R, \-I\fP.
 .B \-M
 By default any derivatives calculated are in z_units/ x(or y)_units.
 However, the user may choose this option to convert dx,dy in degrees of
-longitude,latitude into meters using a falt Earth approximation, so that
+longitude,latitude into meters using a flat Earth approximation, so that
 gradients are in z_units/meter.
 .TP
 .B \-N
@@ -97,7 +97,7 @@ least 3000).
 order M (0 <= M <= L) for all positions in the grid, which is assumed to be in degrees.
 \fBYLM\fP and \fBYLMg\fP return two grids, the real (cosine) and imaginary (sine) component
 of the complex spherical harmonic.  Use the \fBPOP\fP operator (and \fBEXCH\fP) to
-get rid of one of them, or save both by giving two consequtive = file.grd calls.
+get rid of one of them, or save both by giving two consecutive = file.grd calls.
 .br
 The orthonormalized complex harmonics \fBYLM\fP are most commonly used in physics and seismology.
 The square of \fBYLM\fP integrates to 1 over a sphere.

@@ -32,7 +32,7 @@ or current directory (if you do not have this file, run
 \fBgmtdefaults\fP -D > ~/.gmtdefaults4 to get one with the system default settings), or (3) override any parameter
 by specifying one or more \fB\-\-PARAMETER=VALUE\fP statements on the commandline of any \fBGMT\fP command
 (\fBPARAMETER\fP and \fBVALUE\fP are any combination listed below).  The
-first two options are permanent changes until explicitly changed back, while the last option is emphemeral
+first two options are permanent changes until explicitly changed back, while the last option is ephemeral
 and only applies to the single \fBGMT\fP command that received the override.
 \fBGMT\fP can provide default values in US or SI units.  This choice is determined by the contents of the
 gmt.conf file in \fBGMT\fP's share directory.\"'

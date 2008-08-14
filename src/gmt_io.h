@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.70 2008-05-21 01:31:49 guru Exp $
+ *	$Id: gmt_io.h,v 1.71 2008-08-14 02:46:37 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,7 +49,7 @@
 #define GMT_IO_MISMATCH		2
 #define GMT_IO_EOF		4
 
-/* Array indeces for input/output variables */
+/* Array indices for input/output variables */
 
 #define GMT_IN	0
 #define GMT_OUT	1

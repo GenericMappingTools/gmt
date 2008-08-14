@@ -102,7 +102,7 @@ Accepts the current frame integer counter and returns the next integer counter.
 .br
 1. These functions only work in the bourne shell (\fBsh\fP) and their derivatives (like \fBash\fP,
 \fBbash\fP, \fBksh\fP and \fBzsh\fP).
-These functions do not work in the C shell (\fBcsh\fP) or their derivarives (like \fBtcsh\fP), and
+These functions do not work in the C shell (\fBcsh\fP) or their derivatives (like \fBtcsh\fP), and
 cannot be used in DOS batch scripts either.
 .br
 2. \fBgmt_shell_functions.sh\fP were first introduced in \fBGMT\fP version 4.2.2 and have since been

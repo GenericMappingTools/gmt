@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.160 2008-05-21 01:31:49 guru Exp $
+ *	$Id: gmt_io.c,v 1.161 2008-08-14 02:46:36 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2961,7 +2961,7 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 				}
 				for (row = 0; row < T->segment[seg]->n_rows - 1; row++) {
 					dlon = T->segment[seg]->coord[GMT_X][row+1] - T->segment[seg]->coord[GMT_X][row];
-					if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwhich or Dateline, pick the shortest distance */
+					if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwich or Dateline, pick the shortest distance */
 					lon_sum += dlon;
 					lat_sum += T->segment[seg]->coord[GMT_Y][row];
 				}

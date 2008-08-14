@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.61 2008-03-24 08:58:30 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.62 2008-08-14 02:46:36 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -423,7 +423,7 @@ int	GMT_verify_time_step (int step, char unit) {
 				retval = -1;
 			}
 			break;
-		case 'R':	/* Special Gregorian days: Anotate from start of each week and not first day of month */
+		case 'R':	/* Special Gregorian days: Annotate from start of each week and not first day of month */
 			/* We are leveraging the machinery for 'K' and 'k' to step along but reset to start of week */
 		case 'd':
 		case 'D':

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.10 2008-05-08 04:37:16 guru Exp $
+ *	$Id: gmt_common.h,v 1.11 2008-08-14 02:46:36 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -106,7 +106,7 @@ struct GMT_HIDDEN {
 };
 
 struct GMT_CTRL {
-	/* Master structure for a GMT invokation.  All internal settings for GMT is accessed here */
+	/* Master structure for a GMT invocation.  All internal settings for GMT is accessed here */
 	struct GMT_COMMON *common;	/* Structure with all the common GMT command settings (-R -J ..) */
 	struct GMT_DEFAULTS *gmtdefs;	/* Structure with all the GMT defaults settings (pens, colors, fonts.. ) */
 	struct GMT_HIDDEN *hidden;	/* Internal global variables that should never be messed with by users */

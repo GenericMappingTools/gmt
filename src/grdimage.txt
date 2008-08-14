@@ -23,7 +23,7 @@ Such intensity files can be created from the
 grid using \fBgrdgradient\fP and, optionally, modified by \fBgrdmath\fP or \fBgrdhisteq\fP.
 .br
 When using map projections, the grid is first resampled on a new rectangular grid with the same
-dimensions. Higher resolution images can be optained by using the OPT(E) option.
+dimensions. Higher resolution images can be obtained by using the OPT(E) option.
 To obtain the resampled value (and hence shade or color) of each map pixel, its location
 is inversely projected back onto the input grid after which a value is interpolated between the
 surrounding input grid values. By default bi-cubic interpolation is used.

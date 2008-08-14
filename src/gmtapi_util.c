@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.26 2008-05-04 02:54:21 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.27 2008-08-14 02:46:38 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1028,7 +1028,7 @@ int col_check (struct GMT_TABLE *T, int *n_cols) {
 	return (FALSE);
 }
 
-/* Mapping of internal [row][col] indeces to a single 1-D index.
+/* Mapping of internal [row][col] indices to a single 1-D index.
  * Internally, row and col starts at 0.  We assume both row and col
  * are 4-byte integers whereas the 1-D index is possibly 8 byte. */
 

@@ -53,7 +53,7 @@ Do not apply the error bit flags if present in a MGD77+ file [Default will apply
 .B \-I
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
 MGD77 ASCII, MGD77+ netCDF, or plain table files, respectively. The option may
-be repreated to ignore more than one format.  [Default ignores none].
+be repeated to ignore more than one format.  [Default ignores none].
 #include "explain_-K.txt"
 .TP
 .B \-L
@@ -72,7 +72,7 @@ Do not plot data that are more than \fIstopdist\fP meter along track from port o
 Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is end of track].
 .TP
 .B \-T
-Controlls the attributes of the three kinds of markers (\fBT\fP for the first time marker in a new
+Controls the attributes of the three kinds of markers (\fBT\fP for the first time marker in a new
 day, \fBt\fP for additional time markers in the same day, and \fBd\fP for distance markers).  For each
 of these you can specify the 5 comma-separated attributes \fImarkersize\fP, \fImarkercolor\fP,
 \fImarkerfontsize\fP, \fImarkerfont\fP, and \fImarkerfontcolor\fP.  Repeat the \fB\-T\fP option for
