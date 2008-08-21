@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.329 2008-08-21 01:04:34 remko Exp $
+	$Id: ChangeLog,v 1.330 2008-08-21 03:43:16 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-08-21	pwessel
+	* grdblend.c:		Better treatment of longitude periodicity if -fg is selected.
+				E.g., if -Rg is used and a grid is -30/30 in longitude the
+				output grid will consider 0-30 and 330-360 correctly.
+
 2008-08-21	remko
 	* ps2raster.c:		Needed to backspace a little more to capture BoundingBox at end.
 
