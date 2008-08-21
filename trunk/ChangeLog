@@ -1,18 +1,20 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.328 2008-08-14 09:48:07 guru Exp $
+	$Id: ChangeLog,v 1.329 2008-08-21 01:04:34 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-08-21	remko
+	* ps2raster.c:		Needed to backspace a little more to capture BoundingBox at end.
+
 2008-08-14	pwessel
-	* grdmath.c:	Some 2nd-order derivatives whose BC yields 0 should yield NaN
-					if one or more of the nearby nodes are NaN.
-					Added NOT operator
-	* gmtmath.c:	Same as above for D2DT2.  Added NOT operator.  Also allow data
-					columns to contain NaN, and for the time-columns to contain NaN
-					if -T is set.
+	* grdmath.c:		Some 2nd-order derivatives whose BC yields 0 should yield NaN
+				if one or more of the nearby nodes are NaN.  Added NOT operator
+	* gmtmath.c:		Same as above for D2DT2.  Added NOT operator.  Also allow data
+				columns to contain NaN, and for the time-columns to contain NaN
+				if -T is set.
 					
 2008-08-14	remko
 	* blockmedian.c, psxy.c:	Replaced word "quartile" by the proper "quantile".
 				Same in man pages.
-	* numerous files:	Fixed numerous typos. Thanks to Dan Scheirer for listing them.
+	* *.c, *.h, *.txt:	Fixed numerous typos. Thanks to Dan Scheirer for listing them.
 
 2008-08-08	remko
 	* psscale.c:		Logarithmic scale did not function properly when scale bar
@@ -1271,7 +1273,7 @@
 	* GMT_Chapter_4.tex:	Updated table of escape sequences
 	* GMT_Tutorial.tex:	Same
 
-2007-05-17:	remko
+2007-05-17	remko
 	* ChangeLog:		Replaced CHANGES by ChangeLog (GNU requirement)
 
 2007-05-15
