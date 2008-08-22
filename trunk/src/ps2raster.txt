@@ -37,8 +37,9 @@ or give the full path here. (e.g., \fB\-G\fPc:\\programs\\gs\\gs7.05\\bin\\gswin
 The \fIlistfile\fP is an ASCII file with the names of the \fIPostScript\fP files to be converted.
 .TP
 .B \-N
-This option is obsolete. Add OPT(S) instead to print the ghostscript command and/or OPT(Te) to also produce the
-intermediate EPS file behind (if applicable).
+This option is obsolete.
+Use OPT(S) to print the ghostscript command, if applicable.
+Use OPT(Te) to save the intermediate EPS file.
 .TP
 .B \-P
 Force Portrait mode. All Landscape mode plots will be rotated back so that they show unrotated in
