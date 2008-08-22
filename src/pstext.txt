@@ -151,7 +151,7 @@ In paragraph mode, the presence of composite
 characters and other escape sequences may lead to unfortunate word splitting. 
 .br
 The \fB\-N\fP option does not adjust the BoundingBox information so you may
-have to post-process the PostScript outout with epstool or ps2epsi to obtain
+have to post-process the \fIPostScript\fP output with epstool or ps2epsi to obtain
 a correct BoundingBox.
 .SH "SEE ALSO"
 .IR GMT (1),

@@ -49,7 +49,7 @@ psbasemap \- To plot \fIPostScript\fP basemaps
 [ GMT_SCALE ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] 
 [ GMT_TROSE ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ]
 .SH DESCRIPTION
-\fBpsbasemap\fP creates PostScript code that will produce a basemap.  Several map projections
+\fBpsbasemap\fP creates \fIPostScript\fP code that will produce a basemap.  Several map projections
 are available, and the user may specify separate tickmark intervals for boundary annotation,
 ticking, and [optionally] gridlines.  A simple map scale or directional rose may also be plotted.
 #include "explain_-B.txt"

@@ -366,7 +366,7 @@ draw your symbol, centering it on (0,0).  For examples of symbols, see the set s
 \fB$GMT_SHAREDIR\fP/custom.
 .SH BUGS
 The OPT(N) option does not adjust the BoundingBox information so you may
-have to post-process the PostScript output with \fBps2raster -A\fP to obtain
+have to post-process the \fIPostScript\fP output with \fBps2raster -A\fP to obtain
 the correct BoundingBox.
 .br
 \fBpsxy\fP cannot handle filling of polygons that contain the south or north pole.  For such a polygon,

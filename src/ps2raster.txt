@@ -37,7 +37,8 @@ or give the full path here. (e.g., \fB\-G\fPc:\\programs\\gs\\gs7.05\\bin\\gswin
 The \fIlistfile\fP is an ASCII file with the names of the \fIPostScript\fP files to be converted.
 .TP
 .B \-N
-This option is obsolete. Use OPT(S) and/or OPT(Te) instead.
+This option is obsolete. Add OPT(S) instead to print the ghostscript command and/or OPT(Te) to also produce the
+intermediate EPS file behind (if applicable).
 .TP
 .B \-P
 Force Portrait mode. All Landscape mode plots will be rotated back so that they show unrotated in
@@ -57,7 +58,7 @@ a PDF file.
 Run in verbose mode and report on progress [Default is silent].
 .SH NOTES
 The conversion to raster images (JPEG, PNG, PPM or TIF) inherently results in loss of details that are
-available in the original PostScript file. Choose a resolution that is large enough for the application that
+available in the original \fIPostScript\fP file. Choose a resolution that is large enough for the application that
 the image will be used for. For web pages, smaller dpi values suffice, for Word documents and PowerPoint presentations
 a higher dpi value is recommended. \fBps2raster\fP uses the loss-less Flate compression technique when
 creating JPEG, PNG and TIF images.
@@ -73,7 +74,7 @@ option calculates both and writes both to the EPS file used in the rasterization
 Although PDF is also a vector format, the \fB-E\fP option has an effect on the resolution of pattern fills
 and fonts that are stored as bitmaps in the document. \fBps2raster\fP therefore uses a larger default
 resolution when creating PDF files. In order to obtain high-quality PDF files, the \fI/prepress\fP options
-are in effect, allowing only loss-less compression of raster images embedded in the PostScript file.
+are in effect, allowing only loss-less compression of raster images embedded in the \fIPostScript\fP file.
 .br
 .sp
 See Appendix C of the \fBGMT Technical Reference and Cookbook\fP for more information on how

@@ -213,7 +213,7 @@ void \fBps_epsimage\fR (\fIxpos, ypos, xlength, ylength, buffer, size, nx, ny, o
 .br
 \fBint\fR \fIsize, nx, ny, ox, oy\fP;
 .RS 10
-Plots an Encapsulated PostScript\fR (EPS) image. The EPS file is stored in \fIbuffer\fP and has \fIsize\fP bytes.
+Plots an Encapsulated \fIPostScript\fP\fR (EPS) image. The EPS file is stored in \fIbuffer\fP and has \fIsize\fP bytes.
 This functions simply includes the image in the \fIPostScript\fP\fR output stream within an appropriate wrapper.
 Specify position of lower left corner and size (in inches) of image.
 \fInx,ny,ox,oy\fP refers to the width, height and origin (lower left corner) of the BoundingBox.
@@ -417,7 +417,7 @@ it to some existing \fIPostScript\fP\fR file.  \fImode\fP contains three flags i
 bits.  The lowest bit controls the plot orientation and can be 0 (Landscape) or 1 (Portrait).  The
 next bit, if set to 1, will re-encode the fonts to include European accented characters using the
 now-obsolete \fBGMT\fP 3.4 encoding.  To use the ISOLatin1 encoding set the 5th bit to 1.  The third
-bit controls the format used to write PostScript images: 0 means binary, 1 means hexadecimal.  Most
+bit controls the format used to write \fIPostScript\fP images: 0 means binary, 1 means hexadecimal.  Most
 printers needs the latter while some can handle binary which are 50% smaller and therefore execute
 faster.
 \fIxoff,yoff\fP are used to move the origin from the default position in the lower left corner.

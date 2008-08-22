@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.177 2008-08-14 02:46:37 remko Exp $
+ *	$Id: pslib.c,v 1.178 2008-08-22 12:37:07 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -81,7 +81,7 @@
  *	ps_epsimage		: Inserts EPS image
  *	ps_flush		: Flushes the output buffer
  *	ps_hexagon		: Plots a hexagon and {optionally] fills it
- *	ps_image		: (depreciated: use ps_colorimage)
+ *	ps_image		: (deprecated: use ps_colorimage)
  *	ps_itriangle		: Plots an inverted triangle and [optionally] fills it
  *	ps_line			: Plots a line
  *	ps_load_eps		: Read EPS 'image'

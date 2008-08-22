@@ -33,7 +33,7 @@ Sets the dpi of the image in dots per inch, or use \fB\-W\fP.
 Sets the size of the image in plot coordinates (inches, cm, etc.).
 If not given \fIylength\fP is set to \fIxlength\fP * (ny/nx).
 If \fIxlength\fP is negative we use the absolute value and interpolate image to the
-device resolution using the PostScript image operator.
+device resolution using the \fIPostScript\fP image operator.
 Alternatively, use \fB\-E\fP.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
@@ -84,7 +84,7 @@ it to 8 by 10 cm, use
 \fBpsimage\fP scanned_face.ras \fB\-W\fP8\fBc\fP/10\fBc\fP > image.ps
 .br
 .sp
-To include an Encapsulated PostScript file tiger.eps with its upper right corner 2 inch to the right
+To include an Encapsulated \fIPostScript\fP file tiger.eps with its upper right corner 2 inch to the right
 and 1 inch up from the current location, and have its width scaled to 3 inches, use
 .br
 .sp
