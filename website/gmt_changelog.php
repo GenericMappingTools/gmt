@@ -1,4 +1,4 @@
-<!--    $Id: gmt_changelog.php,v 1.2 2008-04-25 01:31:52 guru Exp $      -->
+<!--    $Id: gmt_changelog.php,v 1.3 2008-08-22 12:48:41 remko Exp $      -->
 <!-- This simple PHP script will display the latest ChangeLog written to the gmt web directory      -->
 <!-- from the cvs server, which happens once each night      -->
 <HTML>
@@ -11,7 +11,7 @@
 <?php
 print "<pre>";
 system( "cat ChangeLog", $return );
-print "</pre";
+print "</pre>";
 ?>
 </BODY>
 </HTML>
