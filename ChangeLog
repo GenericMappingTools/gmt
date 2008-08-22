@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.330 2008-08-21 03:43:16 guru Exp $
+	$Id: ChangeLog,v 1.331 2008-08-22 12:46:27 remko Exp $
 -----------------------------------------------------------------------------------------
 2008-08-21	pwessel
 	* grdblend.c:		Better treatment of longitude periodicity if -fg is selected.
@@ -1064,7 +1064,7 @@
 	* rivers:		Added double-lined rivers to river database to improve rendering
 				of major permanent rivers.
 
-2007/08/27	mtchandl
+2007-08-27	mtchandl
 	* mgd77sniffer.c:	Adjusted anomaly recalculation code so that cruises with m=1
 				and b=0 are reported to be same as expected
 	* mgd77_rls_coeffs.h:	Updated tables to include statistics only from decimated
@@ -1101,11 +1101,11 @@
 2007-08-12	pwessel
 	* grdcut.c:		Domain check failed for geographic 360-degree grid w/ -fg
 
-.
+
 2007-08-08	pwessel
 	* grdfilter.c:		-I<nx>+/<ny>+ not propagated to output setup
-.
-2007/08/02	mtchandl
+
+2007-08-02	mtchandl
 	* mgd77sniffer.c:	Repaired 8 memory leaks. Fixed two regression bugs, one in grid
 				comparisons in which not all data were copied into the regression
 				arrays and the other in faa recomputation regression where eot
@@ -1201,7 +1201,7 @@
 	* doc/fig/*.png:	Pictures now in PNG instead of EPS.
 	* doc/makefile:		Use new -P and -Tef options of ps2raster. Changed rules for GMT_Appendix_N.tex.
 
-2007/06/07	mtchandl
+2007-06-07	mtchandl
 	* mgd77sniffer.c:	Updated e77 messages and moved along-track grid offset errors to
 				e77 header rather than having its own error class
 				
@@ -1245,7 +1245,7 @@
 
 2007-05-25	pwessel
 	* psxy[z].c:		Now, both symbols and polygons can be filled with patterns
-      				Also, psxyz now honors -W+ etc in multisegment headers
+				Also, psxyz now honors -W+ etc in multisegment headers
 	* gmt_plot.[ch]:	New GMT_<symbol> () functions to help with this.
 	* mex/configure.in:	For Intel Macs, must look in maci, not mac
 
@@ -1271,7 +1271,7 @@
 	* pslib.c:		ps_text can now use @_, @: and @; sequences
 	* pslib.txt:		Updated the documentation
 	* gmt_support.c:	Added function GMT_enforce_rgb_triplets to scan for @;color;
-      				and replace it with r/g/b if given by name, gray, h-s-v etc.
+				and replace it with r/g/b if given by name, gray, h-s-v etc.
 	* gmt_init.c:		Applies GMT_enforce_rgb_triplets to header and axes labels
 	* pstext.c:		Revised help message accordingly.  Applies GMT_enforce_rgb_triplets
 	* pstext.txt:		Updated accordingly
@@ -5665,9 +5665,6 @@
 	* *.c:			Updated memcpy 3rd argument to (size_t)
 	* *.c:			Updated fread 2nd and 3rd argument to (size_t)
 	* *.c:			Updated fwrite 2nd and 3rd argument to (size_t)
-
-    -  -
-      *
 
 1998-03-18
 	* psxy.c:		Can now accept symbol code as part of input.
