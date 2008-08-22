@@ -43,7 +43,7 @@ be used by \fBgrdraster\fP.  It only applies to native grids and is ignored for 
 By default, grids will be written as floating point data stored in binary files using the netCDF format and
 meta-data structure. This format is conform the COARDS conventions. \fBGMT\fP versions prior to 4.1 produced
 netCDF files that did not conform to these conventions. Although these files are still supported, their use is
-depreciated. To write other than floating point COARDS-compliant netCDF files, append the =\fIid\fP suffix
+deprecated. To write other than floating point COARDS-compliant netCDF files, append the =\fIid\fP suffix
 to the filename \fIoutgrdfile\fP.
 .br
 When reading files, \fBgrdreformat\fP and other \fBGMT\fP programs will automatically recognize any type

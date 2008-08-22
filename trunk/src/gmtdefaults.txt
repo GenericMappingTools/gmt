@@ -550,15 +550,15 @@ the latitudes -\fIpc_lat\fP/+\fIpc_lat\fP, and above those latitudes the gridlin
 \fIpc_dlon\fP interval; the two domains are separated by a small circle drawn at the \fIpc_lat\fP latitude [85/90].
 .TP
 .B PS_COLOR
-Determines whether PostScript output should use RGB, HSV, or CMYK when specifying color [rgb].
+Determines whether \fIPostScript\fP output should use RGB, HSV, or CMYK when specifying color [rgb].
 Note if HSV is selected it does not apply to images which in that case uses RGB.
 .TP
 .B PS_IMAGE_COMPRESS
-Determines if PostScript images are compressed using the Run-Length Encoding scheme (rle),
+Determines if \fIPostScript\fP images are compressed using the Run-Length Encoding scheme (rle),
 Lempel-Ziv-Welch compression (lzw), or not at all (none) [lzw].
 .TP
 .B PS_IMAGE_FORMAT
-Determines whether images created in PostScript should use ASCII
+Determines whether images created in \fIPostScript\fP should use ASCII
 or binary format.  The latter takes up less space and executes faster but may choke
 some printers, especially those off serial ports.  Select ascii or bin [ascii].
 .TP
@@ -579,7 +579,7 @@ is a miter join that is cut off so kinks are triangular in shape [miter].
 .TP
 .B PS_MITER_LIMIT
 Sets the threshold angle (integer in 0-180 range) used for mitered joins.  0 and 180
-are special flag values that imply the PostScript default [11] and always bevels,
+are special flag values that imply the \fIPostScript\fP default [11] and always bevels,
 respectively.  Other values sets the acute angle used to decide between mitered and bevelled.
 .TP
 .B PS_VERBOSE

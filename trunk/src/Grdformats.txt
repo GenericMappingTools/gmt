@@ -1,4 +1,4 @@
-#       $Id: Grdformats.txt,v 1.2 2008-05-29 23:13:48 guru Exp $
+#       $Id: Grdformats.txt,v 1.3 2008-08-22 12:37:07 remko Exp $
 #
 # To add new formats, read gmt_customio.c.  Entries must be
 # added in the right group and given unique 2-char code names.
@@ -13,11 +13,11 @@
   - ----------------------------------------------------------------
   - | ID | DESCRIPTION - GMT 3 netCDF legacy formats               |
   - ----------------------------------------------------------------
-  7 | cb | GMT netCDF format (byte) (depreciated)                  |
-  8 | cs | GMT netCDF format (short) (depreciated)                 |
-  9 | ci | GMT netCDF format (int) (depreciated)                   |
- 10 | cf | GMT netCDF format (float) (depreciated)                 |
- 11 | cd | GMT netCDF format (double) (depreciated)                |
+  7 | cb | GMT netCDF format (byte) (deprecated)                   |
+  8 | cs | GMT netCDF format (short) (deprecated)                  |
+  9 | ci | GMT netCDF format (int) (deprecated)                    |
+ 10 | cf | GMT netCDF format (float) (deprecated)                  |
+ 11 | cd | GMT netCDF format (double) (deprecated)                 |
   - ----------------------------------------------------------------
   - | ID | DESCRIPTION - GMT native binary formats                 |
   - ----------------------------------------------------------------
