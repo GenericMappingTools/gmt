@@ -87,12 +87,12 @@ Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 #include "explain_fill.txt"
 #include "explain_color.txt"
 .SH EXAMPLES
-To plot the magnetic anomaly stored in the file track.xym along track @ 1000 nTesla/cm (after removing a mean value of 32000 Tesla),
+To plot the magnetic anomaly stored in the file track.xym along track @ 1000 nTesla/cm (after removing a mean value of 32000 nTesla),
 using a LEN-cm-wide Polar Stereographic map ticked
 every 5 degrees in Portrait mode, with positive anomalies in red on a blue track of width 0.25 points, use
 .br
 .sp
-\fBpswiggle\fP track.xym \fB\-R\fP-20/10/-80/-60 SCALE_S \fB\-Z\fP1000 \fB\-B\fP5 \fB\-P \-G\fPred \fB\-T\fP0.25\fBp\fP,blue \fB\-S\fP1000 \fB\-V\fP > track_xym.ps
+\fBpswiggle\fP track.xym \fB\-R\fP-20/10/-80/-60 SCALE_S \fB\-Z\fP1000 \fB\-B\fP5 \fB\-C\fP32000 \fB\-P \-G\fPred \fB\-T\fP0.25\fBp\fP,blue \fB\-S\fP1000 \fB\-V\fP > track_xym.ps
 .SH BUGS
 Sometimes the (x,y) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot.  To
