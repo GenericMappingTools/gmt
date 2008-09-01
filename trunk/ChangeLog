@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.331 2008-08-22 12:46:27 remko Exp $
+	$Id: ChangeLog,v 1.332 2008-09-01 21:07:14 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-09-01	jluis
+	* mapprojet.c:		Extended mapproject's -A option by making the fixed point
+				optional; if not given we compute azimuths between points.
+
 2008-08-21	pwessel
 	* grdblend.c:		Better treatment of longitude periodicity if -fg is selected.
 				E.g., if -Rg is used and a grid is -30/30 in longitude the

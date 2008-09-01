@@ -6,7 +6,7 @@
 mapproject \- Forward and Inverse map transformation of 2-D coordinates 
 .SH SYNOPSIS
 \fBmapproject\fP \fIinfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
-[ OPT(Ab)|\fBB\fP|\fBf\fP|\fBF\fP\fIlon0\fP/\fIlat0\fP ] [ OPT(C)[\fIdx\fP/\fIdy\fP] ] [ OPT(Dc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(E)[\fIdatum\fP] ] 
+[ OPT(Ab)|\fBB\fP|\fBf\fP|\fBF\fP[\fIlon0\fP/\fIlat0\fP] ] [ OPT(C)[\fIdx\fP/\fIdy\fP] ] [ OPT(Dc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(E)[\fIdatum\fP] ] 
 [ OPT(F)[\fBk\fP|\fBm\fP|\fBn\fP|\fBi\fP|\fBc\fP|\fBp\fP] ] [ OPT(G)[\fIx0\fP/\fIy0\fP][\fB+\fP|\fB-\fP][/\fIunit\fP] ] [ GMT_H_OPT ] [ OPT(I) ] 
 [ OPT(L)\fIline.xy\fP[/\fIunit\fP] ] [ GMT_M_OPT ] [ OPT(Q)[\fBd\fP|\fBe\fP] [ OPT(S) ] [ OPT(T)[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
 [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
@@ -37,6 +37,7 @@ OPT(A)[\fBf\fP|\fBb\fP]
 OPT(A) calculates the (forward) azimuth from fixed point \fIlon/lat\fP to each data point.  Use OPT(Ab) to get
 back-azimuth from data points to fixed point.  Upper case \fBF\fP or \fBB\fP will convert from geodetic to
 geocentric latitudes and estimate azimuth of geodesics (assuming the current ellipsoid is not a sphere).
+If no fixed point is given then we compute the azimuth (or back-azimuth) from the previous point.
 .TP
 .B \-C
 Set center of projected coordinates to be at map projection center [Default is lower left corner].
