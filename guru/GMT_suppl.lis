@@ -116,6 +116,8 @@ src/misc/README.misc
 src/misc/makefile
 src/misc/gmtdigitize.c
 src/misc/gmtdigitize.1
+src/misc/gmtdp.c
+src/misc/gmtdp.1
 src/misc/gmtstitch.c
 src/misc/gmtstitch.1
 src/misc/makepattern.c
@@ -267,6 +269,7 @@ www/gmt/doc/html/gmtpath.html
 www/gmt/doc/html/gmttrack.html
 www/gmt/doc/html/mgd77togmt.html
 www/gmt/doc/html/gmtdigitize.html
+www/gmt/doc/html/gmtdp.html
 www/gmt/doc/html/gmtstitch.html
 www/gmt/doc/html/makepattern.html
 www/gmt/doc/html/nc2xy.html

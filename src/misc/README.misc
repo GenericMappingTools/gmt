@@ -1,4 +1,4 @@
-	$Id: README.misc,v 1.8 2008-08-14 02:46:38 remko Exp $
+	$Id: README.misc,v 1.9 2008-09-01 21:21:24 guru Exp $
 
 Distributed under the GNU Public License (see file ../COPYING)
 
@@ -6,6 +6,7 @@ This directory contains some miscellaneous programs
 that may come in handy for some users.
 
 	gmtdigitize - Digitize and project coordinates from dititizer
+	gmtdp - Line reduction using the Douglas-Peucker algorithm
 	gmtstitch - Assemble polygons from line segments
 	makepattern - create Sun rasterfiles from patterns
 	psmageplot - blow up plots over several pages
@@ -15,6 +16,10 @@ gmtdigitize works with a Calcomp Digiboard III digitizer and will
 read coordinates from the selected port and apply inverse map projection
 to recover the map coordinates.  Users with other digitizers or users
 of an OS other than Linux may have to make changes.
+
+gmtdp reads one or more files (including multisegment files)
+and applies the Dougles-Peucker line reduction algorithm.  Useful for
+simplifying lines or coastlines. [J Luis]
 
 gmtstitch reads one or more files (including multisegment files)
 and attempts to connect segments whose endpoints are within a

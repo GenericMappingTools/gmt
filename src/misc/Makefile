@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.30 2008-04-04 17:27:31 remko Exp $
+#	$Id: Makefile,v 1.31 2008-09-01 21:21:24 guru Exp $
 #	makefile for misc directory
 #
 #-------------------------------------------------------------------------------
@@ -12,7 +12,7 @@ include $(GMTSRCDIR)gmtalldeps.macros
 INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 
 PROGS_H		=
-PROGS_O		= gmtdigitize.o gmtstitch.o nc2xy.o psmegaplot.o
+PROGS_O		= gmtdigitize.o gmtdp.o gmtstitch.o nc2xy.o psmegaplot.o
 PROGSPS_O	= makepattern.o
 MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 
@@ -51,6 +51,7 @@ $(PROGSPS_O):	$(GMT_H) $(PS_H) $(PROGS_H)
 #-------------------------------------------------------------------------------
 
 gmtdigitize$(EXE):	gmtdigitize.o
+gmtdp$(EXE):		gmtdp.o
 gmtstitch$(EXE):	gmtstitch.o
 nc2xy$(EXE):		nc2xy.o
 psmegaplot$(EXE):	psmegaplot.o
