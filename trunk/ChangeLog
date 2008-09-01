@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.332 2008-09-01 21:07:14 guru Exp $
+	$Id: ChangeLog,v 1.333 2008-09-01 21:21:24 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-09-01	jluis
-	* mapprojet.c:		Extended mapproject's -A option by making the fixed point
+	* mapproject.c:		Extended mapproject's -A option by making the fixed point
 				optional; if not given we compute azimuths between points.
+	* misc/gmtdp.c:		New utility to apply the Douglas-Peucker line-reduction
+				algorithm to line data.
 
 2008-08-21	pwessel
 	* grdblend.c:		Better treatment of longitude periodicity if -fg is selected.
