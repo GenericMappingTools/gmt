@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.137 2008-06-18 02:22:51 guru Exp $
+#	$Id: install_gmt.sh,v 1.138 2008-09-05 04:06:46 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -75,6 +75,7 @@ cat << EOF > gmt_install.ftp_site
 6. Goodie Domain Service, Vienna U of Techology, AUSTRIA
 7. Tokai U, Shimizu, JAPAN
 8. School of Geosciences, U of Sydney, AUSTRALIA
+9. TENET, Tertiary Education & Research Networks of South Africa, SOUTH AFRICA
 EOF
 # Order (1-10) is 1:src, 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:scripts
 #		  8:pdf, 9:web, 10:tut
@@ -729,7 +730,7 @@ DIR=pub/gmt
 #	LISTING OF CURRENT FTP MIRROR SITES
 #--------------------------------------------------------------------------------
 
-N_FTP_SITES=8
+N_FTP_SITES=9
 cat << EOF > gmt_install.ftp_ip
 ftp.soest.hawaii.edu
 ibis.grdl.noaa.gov
@@ -739,6 +740,7 @@ ftp.geologi.uio.no
 gd.tuwien.ac.at
 ftp.scc.u-tokai.ac.jp
 mirror.geosci.usyd.edu.au
+gmt.mirror.ac.za
 EOF
 
 cat << EOF > gmt_install.ftp_dns
@@ -749,6 +751,7 @@ cat << EOF > gmt_install.ftp_dns
 0
 0
 1
+0
 0
 EOF
 #--------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmt_hitmap.sh,v 1.9 2008-04-23 18:21:41 guru Exp $
+#	$Id: gmt_hitmap.sh,v 1.10 2008-09-05 04:06:46 guru Exp $
 #
 # Make the GMT ftpsite hitmap PNG image and the web page that uses it.
 # The files created are gmt_hitmap.png and gmt_hitmap.map
@@ -18,6 +18,7 @@ cat << EOF > mirrors.d
 16:22	48:12	ftp://gd.tuwien.ac.at/pub/gmt	CT	VIENNA - AUSTRIA	Vienna U of Techology, Vienna, Austria	Serving Europe
 138:30	35:00	ftp://ftp.scc.u-tokai.ac.jp/pub/gmt	CB	SHIMIZU - JAPAN	Tokai U, Shimizu, Japan	Serving Asia
 151:12.6	-33:51	ftp://mirror.geosci.usyd.edu.au/pub/gmt	CT	SYDNEY - AUSTRALIA	School of Geosciences, U of Sydney	Serving Australia
+23:00	-30:00	ftp://gmt.mirror.ac.za/pub/gmt	CT	CAPE TOWN/JOHANNESBURG - S AFRICA	TENET, Tertiary Education & Research Networks of South Africa, South Africa	Serving Africa
 EOF
 cat << EOF > master.d
 -157:59	21:55	ftp://ftp.soest.hawaii.edu/gmt	CT	HONOLULU - USA	SOEST, Dept of Geology & Geophysics, Honolulu, Hawaii, USA	Serving the Pacific Rim
