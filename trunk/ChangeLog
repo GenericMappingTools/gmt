@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.333 2008-09-01 21:21:24 guru Exp $
+	$Id: ChangeLog,v 1.334 2008-09-06 04:04:34 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-09-05	pwessel
+	* mex/imgread.m:	New Matlab/Octave function to read Sandwell/Smith *.img files.
+	
 2008-09-01	jluis
 	* mapproject.c:		Extended mapproject's -A option by making the fixed point
 				optional; if not given we compute azimuths between points.

@@ -53,6 +53,7 @@ src/mex/grdread.c
 src/mex/grdread.m
 src/mex/grdwrite.c
 src/mex/grdwrite.m
+src/mex/imgread.m
 src/mex/makefile
 src/mgd77/README.mgd77
 src/mgd77/makefile
