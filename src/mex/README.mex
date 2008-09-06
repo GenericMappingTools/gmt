@@ -1,4 +1,4 @@
-	$Id: README.mex,v 1.7 2008-04-23 23:28:43 guru Exp $
+	$Id: README.mex,v 1.8 2008-09-06 04:04:34 guru Exp $
 
 Distributed under the GNU Public License (see file ../COPYING)
 
@@ -7,9 +7,12 @@ Date:	1-JAN-95
 grdinfo.c
 grdread.c
 grdwrite.c
+imgread.m
 
-These routines can be used from within Matlab 4.2 to read and
-write GMT's grdfile format.  To install, you must first
+These C routines can be used from within Matlab and Octave
+to read and write GMT's grdfile format; the imgread Matlab
+script can be used to read Sandwell/SMith *.img Mercator
+grids.  To install the C mex programs, you must first
 edit the makefile and set the directories, then make all
 or make install.  The latter probably requires you to be root.
 The routines were originally written by David Sandwell and
@@ -63,4 +66,8 @@ Modified:	P Wessel 22-APR-08
 The main GMT configure now prepare either a Matlab-GMT interface
 installation or a Matlab-octave interface installation.  See
 configure --help for details.
+
+Modified:	P. Wessel, 5-SEP-08
+
+Now includes a plain Matlab script to read Sandwell/Smith *.img grids.
 
