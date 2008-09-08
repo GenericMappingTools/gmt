@@ -1,18 +1,8 @@
-function imgread
-
-[x y z] = imgreadf ('/Volumes/MacNutHD2/UH/RESOURCES/DATA/img/topo.9.1.B.img', 190, 220, 10, 40, 1);
-
-figure(1)
-surf (lon, lat, z)
-shading interp
-lightangle (30, 30)
-%axis equal
-
-
 function [lon lat z] = imgreadf (file, west, east, south, north, scl)
 % IMGREAD  Read a section of a Sandwell/Smith Mercator img file
 %
 % [lon lat z] = imgreadf (file, west, east, south, north, scl)
+% [lon lat ym z] = imgreadf (file, west, east, south, north, scl)
 %
 % Input: file   Name of *.img file
 %        west   West boundary longitude
@@ -24,13 +14,14 @@ function [lon lat z] = imgreadf (file, west, east, south, north, scl)
 %
 % Output:
 %   lon     Array of longitudes (equidistant)
-%   lat     Array of latitudes (Mercator equidistant)
+%   lat     Array of latitudes (variable spacing)
+%   ym	    Optional array of Mercator y-coordinates (equidistant)
 %   z       Data matrix
 %
 % Example, to pull out data near Hawaii from the FAA grid:
 % [lon lat z] = imgreadf ('grav.11.1.img', 170, 220, 10, 40, 0.1);
 
-% $Id: imgread.m,v 1.1 2008-09-06 04:04:34 guru Exp $
+% $Id: imgread.m,v 1.2 2008-09-08 20:08:34 guru Exp $
 % P. Wessel, based on img2mergrd.c by Walter H.F. Smith
 
 % Determine what kind of img file we are dealing with:
@@ -51,7 +42,7 @@ elseif (d.bytes == 746496000)   % 1 min, 83 lat
 end
 minlat = -maxlat;
 
-[nxcol nx360 radius nytop nyrow] = GMT_img_setup_coord (minlat, maxlat, inc);
+[nx360 radius nytop nyrow] = GMT_img_setup_coord (minlat, maxlat, inc);
 
 % Expected edges of input image based on coordinate initialization (might
 % not exactly match user spec):
@@ -68,7 +59,7 @@ if (botlat > south)
     south = botlat + GMT_CONV_LIMIT;	% To ensure proper round-off in calculating ny */
 end
 
-% Re-adjust user's -R so that it falls on pixel coordinate boundaries:
+% Re-adjust user-selected region so that it falls on pixel coordinate boundaries:
 
 jinstart = floor (GMT_img_lat_to_ypix (north, nytop, radius));
 jinstop  = ceil  (GMT_img_lat_to_ypix (south, nytop, radius));
@@ -79,7 +70,7 @@ south = GMT_img_ypix_to_lat (jinstop,  nytop, radius);
 
 iinstart = floor (west/dx);
 iinstop  = ceil  (east/dx);
-% iinstart <= ipixelcol < iinstop, but modulo all with imgcoord.nx360
+% iinstart <= ipixelcol < iinstop, but modulo all with nx360
 % Reset left and right edges of user area:
 west = iinstart * dx;
 east = iinstop  * dx;
@@ -108,14 +99,14 @@ ix = mod ((0:(nx-1)) + iinstart, nx360) + 1;
 fp = fopen (file, 'r', 'b');
 
 if (jinstart > 0 & jinstart < nyrow)
-    fseek (fp, (2 * nxcol * jinstart), -1);
+    fseek (fp, (2 * nx360 * jinstart), -1);
 end
 
 % Now loop over output points, reading and handling data as needed
 
 
 for jout = ny:-1:1
-    row = fread(fp, nxcol, 'int16');
+    row = fread(fp, nx360, 'int16');
     k = find (mod(row,2) == 1); % Find odd values and adjust
     row(k) = row(k) - 1;
     z(jout,:) = scl * row(ix);
@@ -126,7 +117,10 @@ half = 0.5 * dx;
 x = (x_min + half) : dx : (x_max - half);
 y = (y_min + half) : dx : (y_max - half);
 [lon lat] = merc_inv (x, y);
-
+if (nargout == 4)
+	ym = y;
+end
+	
 function [x y] = merc_fwd (lon, lat)
 % MERC_FWD convert lon,lat to x,y
 x = lon;
@@ -178,12 +172,10 @@ function f = GMT_img_ypix_to_lat (ypix, nytop, radius)
 	
 f = rad2deg(GMT_img_gud_fwd ((nytop - ypix) / radius));
 
-
-function [nxcol nx360 radius nytop nyrow] = GMT_img_setup_coord (minlat, maxlat, mpixel)
+function [nx360 radius nytop nyrow] = GMT_img_setup_coord (minlat, maxlat, mpixel)
 % Given the RANGE info, set up the COORD values.  Return (-1) on failure;
 % 0 on success.  */
 
-nxcol  = round (360.0 * 60.0 / mpixel);
 nx360  = round (360.0 * 60.0 / mpixel);
 radius = nx360 / (2.0 * pi);
 nytop  = round (radius * GMT_img_gud_inv(deg2rad(maxlat)));
