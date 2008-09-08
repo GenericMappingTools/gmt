@@ -1,4 +1,4 @@
-function [lon lat z] = imgreadf (file, west, east, south, north, scl)
+function [lon lat ym z] = imgread (file, west, east, south, north, scl)
 % IMGREAD  Read a section of a Sandwell/Smith Mercator img file
 %
 % [lon lat z] = imgreadf (file, west, east, south, north, scl)
@@ -21,7 +21,7 @@ function [lon lat z] = imgreadf (file, west, east, south, north, scl)
 % Example, to pull out data near Hawaii from the FAA grid:
 % [lon lat z] = imgreadf ('grav.11.1.img', 170, 220, 10, 40, 0.1);
 
-% $Id: imgread.m,v 1.2 2008-09-08 20:08:34 guru Exp $
+% $Id: imgread.m,v 1.3 2008-09-08 20:12:17 guru Exp $
 % P. Wessel, based on img2mergrd.c by Walter H.F. Smith
 
 % Determine what kind of img file we are dealing with:
@@ -65,15 +65,11 @@ jinstart = floor (GMT_img_lat_to_ypix (north, nytop, radius));
 jinstop  = ceil  (GMT_img_lat_to_ypix (south, nytop, radius));
 % jinstart <= jinputrow < jinstop
 ny = jinstop - jinstart;
-north = GMT_img_ypix_to_lat (jinstart, nytop, radius);
-south = GMT_img_ypix_to_lat (jinstop,  nytop, radius);
 
 iinstart = floor (west/dx);
 iinstop  = ceil  (east/dx);
 % iinstart <= ipixelcol < iinstop, but modulo all with nx360
 % Reset left and right edges of user area:
-west = iinstart * dx;
-east = iinstop  * dx;
 nx = iinstop - iinstart;
 
 % Set iinstart so that it is non-negative, for use to index pixels.
@@ -84,7 +80,6 @@ x_min = iinstart * dx;
 x_max = x_min + nx * dx;
 y_max = (nyrow - jinstart - equator) * dx;
 y_min = y_max - ny * dx;
-left = 0.0; bottom = 0.0;
 if (x_max > 360.0)
     x_max = x_max - 360.0;
     x_min = x_min - 360.0;
@@ -98,7 +93,7 @@ ix = mod ((0:(nx-1)) + iinstart, nx360) + 1;
 
 fp = fopen (file, 'r', 'b');
 
-if (jinstart > 0 & jinstart < nyrow)
+if (jinstart > 0 && jinstart < nyrow)
     fseek (fp, (2 * nx360 * jinstart), -1);
 end
 
@@ -120,15 +115,6 @@ y = (y_min + half) : dx : (y_max - half);
 if (nargout == 4)
 	ym = y;
 end
-	
-function [x y] = merc_fwd (lon, lat)
-% MERC_FWD convert lon,lat to x,y
-x = lon;
-k = find (lon < 0.0);
-if (~isempty(k))
-    x(k) = x(k) + 360.0;
-end
-y = rad2deg(log (tand (0.5 * (90.0 + lat))));
 
 function [lon lat] = merc_inv (x, y)
 % MERC_INV convert x,y to lon,lat
