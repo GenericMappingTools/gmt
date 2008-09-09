@@ -9,8 +9,8 @@ function [lon lat z ym] = imgread (file, west, east, south, north, scl)
 %        east   East boundary longitude
 %        south  South boundary latitude
 %        north  North boundary latitude
-%        scl    Optional conversion scale (typically 0.1 for FAA, GEOID,
-%		0.02 for VGG and 1 for TOPO) [Default is 1]
+%        scl    Optional conversion scale (typically 0.1 for FAA
+%		0.01 for GEOID, 0.02 for VGG and 1 for TOPO) [1]
 %
 % Output:
 %   lon     Array of longitudes (equidistant)
@@ -23,7 +23,7 @@ function [lon lat z ym] = imgread (file, west, east, south, north, scl)
 % Example, to pull out data near Hawaii from the FAA grid:
 % [lon lat z] = imgreadf ('grav.16.1.img', 170, 220, 10, 40, 0.1);
 
-% $Id: imgread.m,v 1.5 2008-09-09 19:05:49 guru Exp $
+% $Id: imgread.m,v 1.6 2008-09-09 19:22:39 guru Exp $
 % P. Wessel, based on img2mergrd.c by Walter H.F. Smith
 
 if (nargin == 5)	% Must specify default scale
