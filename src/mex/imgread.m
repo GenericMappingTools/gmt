@@ -1,8 +1,8 @@
 function [lon lat ym z] = imgread (file, west, east, south, north, scl)
 % IMGREAD  Read a section of a Sandwell/Smith Mercator img file
 %
-% [lon lat z] = imgreadf (file, west, east, south, north, scl)
-% [lon lat ym z] = imgreadf (file, west, east, south, north, scl)
+% [lon lat z] = imgread (file, west, east, south, north, scl)
+% [lon lat ym z] = imgread (file, west, east, south, north, scl)
 %
 % Input: file   Name of *.img file
 %        west   West boundary longitude
@@ -10,7 +10,7 @@ function [lon lat ym z] = imgread (file, west, east, south, north, scl)
 %        south  South boundary latitude
 %        north  North boundary latitude
 %        scl    Conversion scale (typically 0.1 for FAA, 0.02 for VGG
-%               and 1 for TOPO
+%               and 1 for TOPO)
 %
 % Output:
 %   lon     Array of longitudes (equidistant)
@@ -18,25 +18,27 @@ function [lon lat ym z] = imgread (file, west, east, south, north, scl)
 %   ym	    Optional array of Mercator y-coordinates (equidistant)
 %   z       Data matrix
 %
+% W/e/s/n may be rounded off to fit nearest coordinate in the grid.
+%
 % Example, to pull out data near Hawaii from the FAA grid:
-% [lon lat z] = imgreadf ('grav.11.1.img', 170, 220, 10, 40, 0.1);
+% [lon lat z] = imgreadf ('grav.16.1.img', 170, 220, 10, 40, 0.1);
 
-% $Id: imgread.m,v 1.3 2008-09-08 20:12:17 guru Exp $
+% $Id: imgread.m,v 1.4 2008-09-09 16:36:17 guru Exp $
 % P. Wessel, based on img2mergrd.c by Walter H.F. Smith
 
 % Determine what kind of img file we are dealing with:
 
 d = dir (file);
-if (d.bytes == 136857600)       % 2 min, 72 lat
+if (d.bytes == 136857600)       % 2 min, ~72 lat
     maxlat = 72.0059773539;
     inc = 2;
-elseif (d.bytes == 186624000)   % 2 min, 83 lat
+elseif (d.bytes == 186624000)   % 2 min, ~80 lat
     maxlat = 80.738;    
     inc = 2;
-elseif (d.bytes == 547430400)   % 1 min, 72 lat
+elseif (d.bytes == 547430400)   % 1 min, ~72 lat
     maxlat = 72.0059773539;    
     inc = 1;
-elseif (d.bytes == 746496000)   % 1 min, 83 lat
+elseif (d.bytes == 746496000)   % 1 min, ~80 lat
     maxlat = 80.738;    
     inc = 1;
 end
@@ -101,7 +103,7 @@ end
 
 
 for jout = ny:-1:1
-    row = fread(fp, nx360, 'int16');
+    row = fread(fp, nx360, 'int16');	% Read entire row
     k = find (mod(row,2) == 1); % Find odd values and adjust
     row(k) = row(k) - 1;
     z(jout,:) = scl * row(ix);
