@@ -1,44 +1,51 @@
-function [lon lat ym z] = imgread (file, west, east, south, north, scl)
+function [lon lat z ym] = imgread (file, west, east, south, north, scl)
 % IMGREAD  Read a section of a Sandwell/Smith Mercator img file
 %
-% [lon lat z] = imgread (file, west, east, south, north, scl)
-% [lon lat ym z] = imgread (file, west, east, south, north, scl)
+% [lon lat z] = imgread (file, west, east, south, north[, scl])
+% [lon lat z ym] = imgread (file, west, east, south, north[, scl])
 %
 % Input: file   Name of *.img file
 %        west   West boundary longitude
 %        east   East boundary longitude
 %        south  South boundary latitude
 %        north  North boundary latitude
-%        scl    Conversion scale (typically 0.1 for FAA, 0.02 for VGG
-%               and 1 for TOPO)
+%        scl    Optional conversion scale (typically 0.1 for FAA, GEOID,
+%		0.02 for VGG and 1 for TOPO) [Default is 1]
 %
 % Output:
 %   lon     Array of longitudes (equidistant)
 %   lat     Array of latitudes (variable spacing)
-%   ym	    Optional array of Mercator y-coordinates (equidistant)
 %   z       Data matrix
+%   ym	    Optional array of Mercator y-coordinates (equidistant)
 %
 % W/e/s/n may be rounded off to fit nearest coordinate in the grid.
 %
 % Example, to pull out data near Hawaii from the FAA grid:
 % [lon lat z] = imgreadf ('grav.16.1.img', 170, 220, 10, 40, 0.1);
 
-% $Id: imgread.m,v 1.4 2008-09-09 16:36:17 guru Exp $
+% $Id: imgread.m,v 1.5 2008-09-09 19:05:49 guru Exp $
 % P. Wessel, based on img2mergrd.c by Walter H.F. Smith
+
+if (nargin == 5)	% Must specify default scale
+	scl = 1;
+end
 
 % Determine what kind of img file we are dealing with:
 
-d = dir (file);
-if (d.bytes == 136857600)       % 2 min, ~72 lat
+fp = fopen (file, 'r', 'b');
+fseek (fp, 0, 1);
+bytes = ftell (fp);
+
+if (bytes == 136857600)       % 2 min, ~72 lat
     maxlat = 72.0059773539;
     inc = 2;
-elseif (d.bytes == 186624000)   % 2 min, ~80 lat
+elseif (bytes == 186624000)   % 2 min, ~80 lat
     maxlat = 80.738;    
     inc = 2;
-elseif (d.bytes == 547430400)   % 1 min, ~72 lat
+elseif (bytes == 547430400)   % 1 min, ~72 lat
     maxlat = 72.0059773539;    
     inc = 1;
-elseif (d.bytes == 746496000)   % 1 min, ~80 lat
+elseif (bytes == 746496000)   % 1 min, ~80 lat
     maxlat = 80.738;    
     inc = 1;
 end
@@ -93,7 +100,7 @@ end
 z = zeros (ny, nx);
 ix = mod ((0:(nx-1)) + iinstart, nx360) + 1;
 
-fp = fopen (file, 'r', 'b');
+fseek (fp, 0, -1);	% Rewind
 
 if (jinstart > 0 && jinstart < nyrow)
     fseek (fp, (2 * nx360 * jinstart), -1);
