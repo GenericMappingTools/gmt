@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.334 2008-09-06 04:04:34 guru Exp $
+	$Id: ChangeLog,v 1.335 2008-09-10 18:29:09 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-09-10	remko
+	* gmt_nc.c:		Coordinate arrays are now always double precision.
+
 2008-09-05	pwessel
 	* mex/imgread.m:	New Matlab/Octave function to read Sandwell/Smith *.img files.
 	
