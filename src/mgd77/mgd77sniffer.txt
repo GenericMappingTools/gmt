@@ -86,6 +86,13 @@ the OPT(L) option. No additional arguments are required. Output columns include:
 output MGD77 format records in Y2K-compliant MGD77 format
 .br
 .sp
+\fB\-Dn\fP
+output distance to coast for each record. Requires OPT(Gnav) or OPT(gnav) option. Output columns include: 
+.br
+.sp
+\fIlat lon dist distToCoast\fP
+.br
+.sp
 \fB\-Ds\fP
 output calculated gradients for speed and geophysical fields. Gradients correspond to the gradient type
 selected in the OPT(S) option (spatial derivatives by default). Output columns include:

@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.33 2008-07-02 21:04:52 guru Exp $	
+ *	$Id: mgd77sniffer.h,v 1.34 2008-09-12 01:14:55 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2008 by P. Wessel and M. T. Chandler
@@ -39,6 +39,7 @@
 #define MGD77_MIN_RLS_BINS          20
 #define MGD77_MIN_RLS_PTS           100
 #define MGD77_MAX_SEARCH            50
+#define MGD77_DIST_FROM_COAST       100                   /* meters */
 #define MGD77_POS_BIT               (1 << 0)
 #define MGD77_ZERO_BIT              (1 << 1)
 #define MGD77_NEG_BIT               (1 << 2)
