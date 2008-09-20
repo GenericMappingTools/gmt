@@ -1,0 +1,64 @@
+#include "common_options.txt"
+.TH X2SYS_SOLVE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+x2sys_solve \- Determine systematic corrections from crossovers
+.SH SYNOPSIS
+\fBx2sys_solve\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(F)\fIflags\fP ] 
+[ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
+.SH DESCRIPTION
+\fBx2sys_solve\fP will solve for corrections. TBA.
+.TP
+\fITAG\fP
+The unique tag name of this data type system.
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+.B \-C
+Instead of reporting the track names, just output the coordinates of the
+center of each bin that has at least one track with the specified data.
+.TP
+.B \-F
+Give a comma-separated list of column names (as described in the definition
+file) that should be present. [Default selects all data columns].
+.TP
+.B \-L
+Crossover mode.  Return a list of track pairs that should be checked for possible
+crossovers.  The list is determined from the bin-index data base on the assumption
+that tracks occupying the same bin are very likely to intersect.  By default we
+return all possible pairs in the data base.  Append the name of a file with a
+list of tracks if you want to limit the output to those pairs that involve
+at least one of the track names in your list.  The output is suitable for the \fB\-K\fP
+option in \fBx2sys_cross\fP.
+.TP
+.B \-N
+Give a comma-separated list of column names (as described in the definition
+file) that must be absent.
+#include "explain_-Rgeo.txt"
+#include "explain_-V.txt"
+.SH EXAMPLES
+To find all the tracks associated with the tag mgd77, restricted to occupy
+a certain region in the south Pacific, and have at least free air anomalies
+and bathymetry, try
+.br
+.sp
+\fBx2sys_solve\fP \fB\-V \-T\fPmgd77 \fB\-R\fP180/240/-60/-30 \fB\-F\fPfaa,depth 
+.br
+.sp
+To find all the tracks associated with the tag mgd77 that have depth but not
+twt, try
+.br
+.sp
+\fBx2sys_solve\fP \fB\-V \-T\fPmgd77 \fB\-F\fPdepth \fB\-N\fPtwt
+.br
+.sp
+To find all the pairs associated with the tag mgd77 that might intersect each
+other, but only those pairs which involves tracks in your list new.lis, try
+.br
+.sp
+\fBx2sys_solve\fP \fB\-V \-T\fPmgd77 \fB\-L\fPnew.lis > xpairs.lis 
+.SH "SEE ALSO"
+.IR x2sys_binlist (1)
+.IR x2sys_cross (1)
+.IR x2sys_datalist (1)
+.IR x2sys_init (1)
+.IR x2sys_put (1)
