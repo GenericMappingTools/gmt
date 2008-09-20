@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.372 2008-08-14 02:46:37 remko Exp $
+ *	$Id: gmt_support.c,v 1.373 2008-09-20 23:08:06 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2948,7 +2948,7 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 		}
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
-		GMT_import_table ((void *)G->option, GMT_IS_FILE, &G->xp, 0.0, FALSE, FALSE, FALSE);
+		GMT_import_table ((void *)G->file, GMT_IS_FILE, &G->xp, 0.0, FALSE, FALSE, FALSE);
 		for (k = 0; k < G->xp->n_segments; k++) {
 			for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
 				GMT_geo_to_xy (G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
@@ -6581,6 +6581,7 @@ int GMT_get_arc (double x0, double y0, double r, double dir1, double dir2, doubl
 	double da, s, c, *xx, *yy;
 
 	n = irint (D2R * fabs (dir2 - dir1) * r / gmtdefs.line_step);
+	if (n < 2) n = 2;	/* To prevent division by 0 below */
 	xx = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
 	yy = (double *) GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
 	da = (dir2 - dir1) / (n - 1);
