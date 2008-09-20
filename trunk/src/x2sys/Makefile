@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.42 2008-05-13 00:29:21 guru Exp $
+#	$Id: Makefile,v 1.43 2008-09-20 22:48:38 guru Exp $
 #
 # makefile for x2sys directory
 #
@@ -14,7 +14,8 @@ INCLUDES	= -I$(srcdir) -I../mgg -I../mgd77 -I$(NETCDF_INC)
 ALLLIB		= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -lgmt $(LIBS)
 
 PROGS_H		= x2sys.h
-PROGS_O		= x2sys_init.o x2sys_put.o x2sys_get.o x2sys_binlist.o x2sys_datalist.o x2sys_cross.o
+PROGS_O		= x2sys_init.o x2sys_put.o x2sys_get.o x2sys_binlist.o x2sys_datalist.o \
+		  x2sys_cross.o x2sys_solve.o
 MAN1		= $(PROGS_O:.o=.1)
 LIB		= libx2sys.$(LIBEXT)
 
@@ -84,6 +85,7 @@ x2sys_get$(EXE):	x2sys_get.o
 x2sys_binlist$(EXE):	x2sys_binlist.o
 x2sys_datalist$(EXE):	x2sys_datalist.o
 x2sys_cross$(EXE):	x2sys_cross.o
+x2sys_solve$(EXE):	x2sys_solve.o
 
 $(PROGS):	$(LIB) $(GMTLIB)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -o $@ -L. -lx2sys $(ALLLIB) $(NC_LIBS)
