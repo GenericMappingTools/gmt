@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.337 2008-09-21 00:30:06 guru Exp $
+	$Id: ChangeLog,v 1.338 2008-09-21 20:44:44 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-09-21	jluis
+	* pslegend.c:		Now use remove function to delete script after completion;
+				this avoids a Windows problem.
+	
 2008-09-20	pwessel
 	* gmt_support.c:	Function GMT_get_arc did not check for division by zero.
 				The -Gx<file>:<radius>[unit] in grdcontour passed the entire
