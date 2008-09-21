@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.33 2008-04-12 01:38:49 guru Exp $
+ *	$Id: x2sys.h,v 1.34 2008-09-21 00:30:06 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -205,6 +205,23 @@ struct X2SYS_BIX_TRACK_INFO {
 	struct X2SYS_BIX_TRACK_INFO *next_info;
 };
 
+struct X2SYS_COE {	/* Holds the information for a single crossover */
+	double x, y;	/* Position of crossover */
+	double t[2];	/* Time along track 1 and track 2 */
+	double d[2];	/* Distance along track 1 and track 2 */
+	double h[2];	/* Heading along track 1 and track 2 */
+	double v[2];	/* Speed along track 1 and track 2 */
+	double z[2];	/* Observed values at crossover along track 1 and track 2 */
+};
+
+struct X2SYS_COE_PAIR {	/* Holds the information for COE between a pair of tracks */
+	char trk[2][GMT_TEXT_LEN];	/* Track names */
+	int id[2];			/* Internal ID track numbers */
+	int year[2];			/* Start year for each track */
+	int nx;				/* Number of crossovers */
+	struct X2SYS_COE *COE;		/* Array of nx COE structures */
+};
+
 
 /* Global variables used by x2sys functions */
 
@@ -230,6 +247,7 @@ extern int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s,
 extern int x2sys_xover_output (FILE *fp, int n, double out[]);
 extern int x2sys_n_data_cols (struct X2SYS_INFO *s);
 extern int x2sys_read_list (char *file, char ***list, int *n);
+extern int x2sys_find_track (char *name, char **list, int n);
 
 extern double *x2sys_dummytimes (GMT_LONG n);
 
@@ -256,6 +274,8 @@ extern int x2sys_err_pass (int err, char *file);
 extern void x2sys_err_fail (int err, char *file);
 extern const char * x2sys_strerror (int err);
 
+extern int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, int *nx);
+extern void x2sys_free_coe_dbase (struct X2SYS_COE_PAIR *P, int np);
 
 #define X2SYS_NOERROR		0
 #define X2SYS_FCLOSE_ERR	-1

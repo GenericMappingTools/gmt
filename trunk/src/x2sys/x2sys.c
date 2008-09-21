@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.87 2008-08-14 02:46:38 remko Exp $
+ *	$Id: x2sys.c,v 1.88 2008-09-21 00:30:06 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -36,6 +36,8 @@
  * x2sys_pick_fields	: Decodes the -F<fields> flag of desired columns
  * x2sys_free_info	: Frees the information structure
  * x2sys_free_data	: Frees the data matrix
+ * x2sys_read_coe_dbase : Reads into memory the entire COE ascii database
+ * x2sys_free_coe_dbase : Free the array of COE structures
  *------------------------------------------------------------------
  * Core crossover functions are part of GMT:
  * GMT_init_track	: Prepares a track for crossover analysis
@@ -51,7 +53,7 @@
  *
  *------------------------------------------------------------------
  * Author:	Paul Wessel
- * Date:	18-MAY-2004
+ * Date:	20-SEP-2008
  * Version:	1.1, based on the spirit of the old xsystem code
  *
  */
@@ -1199,4 +1201,208 @@ void x2sys_err_fail (int err, char *file)
 	else
 		fprintf (stderr, "%s: %s\n", X2SYS_program, x2sys_strerror(err));
 	GMT_exit (EXIT_FAILURE);
+}
+
+/* FUnctions dealing with the reading of the COE ascii database */
+
+int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, int *nx)
+{
+	/* Dbase:	Name of the crossover data file [NULL for stdin]
+	 * TAG:		The current TAG, must match what is in the file
+	 * ignorefile:	Name of file with track names to ignore [or NULL if none]
+	 * fflag:	The name of the chosen field (e.g., faa)
+	 * coe_kind: 	1 for internal, 2 for external, 3 [or 0] for both
+	 * one_trk:		NULL to get coes from all pairs; give a track name for pairs only involving that track
+	 * xpairs:	The return array of pair structures; number of pairs returned by function call
+	 */
+
+	FILE *fp;
+	struct X2SYS_COE_PAIR *P;
+	char line[BUFSIZ], txt[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], **trk_list, **ignore;
+	int i, k, p, len, n_pairs, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, our_item = -1;
+	BOOLEAN more, skip, two_values = FALSE;
+	double x, m;
+
+	fp = GMT_stdin;	/* Default to stdin if dbase is NULL */
+	if (dbase && (fp = fopen (dbase, "r")) == NULL) {
+		fprintf (stderr, "%s: ERROR: Unable to open crossover file %s\n", GMT_program, dbase);
+		exit (EXIT_FAILURE);
+	}
+
+	n_alloc_p = n_alloc_t = GMT_CHUNK;
+	P = (struct X2SYS_COE_PAIR *) GMT_memory (VNULL, (size_t)n_alloc_p, sizeof (struct X2SYS_COE_PAIR), GMT_program);
+
+	while (fgets (line, BUFSIZ, fp) && line[0] == '#') {	/* Process header recs */
+		GMT_chop (line);	/* Get rid of [CR]LF */
+		/* Looking to process these two key lines:
+		 * # Tag: MGD77
+		   # lon	lat	t_1	t_2	dist_1	dist_2	head_1	head_2	vel_1	vel_2	twt_1	twt_2	depth_1	depth_2	...
+		 */
+		if (!strncmp (line, "# Tag:", 6) && strcmp (TAG, &line[7])) {	/* -Ttag and this TAG do not match */
+			fprintf (stderr, "%s: ERROR: Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", GMT_program, dbase, &line[7], TAG);
+			exit (EXIT_FAILURE);
+		}
+		sscanf (&line[2], "%*s %*s %s", txt);	/* Get first column name after lon/x etc */
+		if (strchr (txt, '_')) {	/* A column name with underscore */
+			char ptr[BUFSIZ];
+			int pos = 0, item = 0;
+			if (txt[strlen(txt)-1] == '1') two_values = TRUE;	/* Option -2 was used */
+			while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */
+				item++;
+				i = 0;
+				while (ptr[i] && ptr[i] != '_') {
+					txt[i] = ptr[i];
+					i++;
+				}
+				txt[i] = '\0';
+				if (!strcmp (txt, fflag)) our_item = item;	/* Found the desired column */
+			}
+		}
+	}
+	/* Here, line holds the next record which will be the first > ... multisegment header for a crossing pair */
+
+	our_item -= 10;		/* Account for the 10 common items */
+	if (our_item < 0) {
+		fprintf (stderr, "%s: ERROR: Crossover file %s does not have the specified column %s - aborting\n", GMT_program, dbase, fflag);
+		exit (EXIT_FAILURE);
+	}
+
+	if (ignorefile && (k = x2sys_read_list (ignorefile, &ignore, &n_ignore)) != X2SYS_NOERROR) {
+		fprintf (stderr, "%s: ERROR: Ignore file %s cannot be read - aborting\n", GMT_program, ignorefile);
+		exit (EXIT_FAILURE);
+	}
+
+	/* OK, our file has the required column name, lets build the format statement */
+
+	sprintf (fmt, "%%lg %%lg %%s %%s %%lg %%lg %%lg %%lg %%lg %%lg");	/* The standard 10 items up front */
+	for (i = 1; i < our_item; i++) strcat (fmt, " %*s");	/* The items to skip */
+	strcat (fmt, " %lg %lg");	/* The item we want */
+
+	trk_list = (char **) GMT_memory (VNULL, (size_t)n_alloc_t, sizeof (char *), GMT_program);
+	more = TRUE;
+	n_pairs = *nx = 0;
+	while (more) {	/* Read dbase until EOF */
+		GMT_chop (line);	/* Get rid of [CR]LF */
+		sscanf (&line[2], "%s %d %s %d", trk[0], &year[0], trk[1], &year[1]);
+		for (i = 0; i < strlen (trk[0]); i++) if (trk[0][i] == '.') trk[0][i] = '\0';
+		for (i = 0; i < strlen (trk[1]); i++) if (trk[1][i] == '.') trk[1][i] = '\0';
+		skip = FALSE;
+		if (!(coe_kind & 1) && !strcmp (trk[0], trk[1])) skip = TRUE;	/* Do not want internal crossovers */
+		if (!(coe_kind & 2) && strcmp (trk[0], trk[1])) skip = TRUE;	/* Do not want external crossovers */
+		if (one_trk && !(strcmp (one_trk, trk[0]) && strcmp (one_trk, trk[1]))) skip = TRUE;	/* Looking for a specific track and these do not match */
+		if (!skip && n_ignore) {	/* See if one of the tracks are in the ignore list */
+			for (i = 0; !skip && i < n_ignore; i++) if (!strcmp (trk[0], ignore[i]) || !strcmp (trk[1], ignore[i])) skip = TRUE;
+		}
+		if (skip) {	/* Skip this pair's data records */
+			while ((more = (BOOLEAN)fgets (line, BUFSIZ, fp)) && line[0] != '>');
+			continue;	/* Back to top of loop */
+		}
+		id[0] = x2sys_find_track (trk[0], trk_list, n_tracks);	/* Return track id # for this leg */
+		if (id[0] == -1) {
+			/* Leg not in the data base yet, add it */
+			len = strlen (trk[0]) + 1;
+			trk_list[n_tracks] = (char *) GMT_memory (VNULL, len, sizeof (char ), GMT_program);
+			strcpy (trk_list[n_tracks], trk[0]);
+			id[0] = n_tracks++;
+			if (n_tracks == n_alloc_t) {
+				n_alloc_t <<= 1;
+				trk_list = (char **) GMT_memory ((void *)trk_list, (size_t)n_alloc_t, sizeof (char *), GMT_program);
+			}
+		}
+		id[1] = x2sys_find_track (trk[1], trk_list, n_tracks);	/* Return track id # for this leg */
+		if (id[1] == -1) {
+			/* Leg not in the data base yet, add it */
+			len = strlen (trk[1]) + 1;
+			trk_list[n_tracks] = (char *) GMT_memory (VNULL, len, sizeof (char ), GMT_program);
+			strcpy (trk_list[n_tracks], trk[1]);
+			id[1] = n_tracks++;
+			if (n_tracks == n_alloc_t) {
+				n_alloc_t <<= 1;
+				trk_list = (char **) GMT_memory ((void *)trk_list, (size_t)n_alloc_t, sizeof (char *), GMT_program);
+			}
+		}
+		/* Sanity check - make sure we dont already have this pair */
+		for (p = 0, skip = FALSE; !skip && p < n_pairs; p++) {
+			if ((P[p].id[0] == id[0] && P[p].id[1] == id[1]) || (P[p].id[0] == id[1] && P[p].id[1] == id[0])) {
+				fprintf (stderr, "%s: Warning: Pair %s and %s appear more than once - skipped\n", GMT_program, trk[0], trk[1]);
+				skip = TRUE;
+			}
+		}
+		if (skip) {
+			while ((more = (BOOLEAN)fgets (line, BUFSIZ, fp)) && line[0] != '>');	/* Skip this pair's data records */
+			continue;	/* Back to top of loop */
+		}
+		
+		/* OK, new pair */
+		p = n_pairs;
+		for (k = 0; k < 2; k++) {
+			strcpy (P[p].trk[k], trk[k]);
+			P[p].id[k] = id[k];
+			P[p].year[1] = year[1];
+		}
+		n_pairs++;
+		if (n_pairs == n_alloc_p) {
+			n_alloc_p <<= 1;
+			P = (struct X2SYS_COE_PAIR *) GMT_memory ((void *)P, (size_t)n_alloc_p, sizeof (struct X2SYS_COE_PAIR), GMT_program);
+		}
+		n_alloc_x = GMT_SMALL_CHUNK;
+		P[p].COE = (struct X2SYS_COE *) GMT_memory (VNULL, (size_t)n_alloc_x, sizeof (struct X2SYS_COE), GMT_program);
+		k = 0;
+		while ((more = (BOOLEAN)fgets (line, BUFSIZ, fp)) && line[0] != '>') {	/* As long as we are reading data records */
+			GMT_chop (line);	/* Get rid of [CR]LF */
+			sscanf (line, fmt, &P[p].COE[k].x, &P[p].COE[k].y, t_txt[0], t_txt[1], &P[p].COE[k].d[0], &P[p].COE[k].d[1], &P[p].COE[k].h[0], 
+				&P[p].COE[k].h[1], &P[p].COE[k].v[0], &P[p].COE[k].v[1], &P[p].COE[k].z[0], &P[p].COE[k].z[1]);
+			if (!strcmp (t_txt[0], "NaN"))
+				P[p].COE[k].t[0] = GMT_d_NaN;
+			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[0], GMT_IS_ABSTIME, &P[p].COE[k].t[0]), t_txt[0])) {
+				fprintf (stderr, "%s: ERROR: Time specification t1 (%s) in wrong format\n", GMT_program, t_txt[0]);
+				exit (EXIT_FAILURE);
+			}
+			if (!strcmp (t_txt[1], "NaN"))
+				P[p].COE[k].t[1] = GMT_d_NaN;
+			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[1], GMT_IS_ABSTIME, &P[p].COE[k].t[1]), t_txt[1])) {
+				fprintf (stderr, "%s: ERROR: Time specification t2 (%s) in wrong format\n", GMT_program, t_txt[1]);
+				exit (EXIT_FAILURE);
+			}
+			if (!two_values) {	/* Modify z to return the two values at the crossover point */
+				x = 0.5 * P[p].COE[k].z[0]; m = P[p].COE[k].z[1];
+				P[p].COE[k].z[0] = m + x;
+				P[p].COE[k].z[1] = m - x;
+			}
+			k++;
+			if (k == n_alloc_x) {
+				n_alloc_x <<= 1;
+				P[p].COE = (struct X2SYS_COE *) GMT_memory ((void *)P[p].COE, (size_t)n_alloc_x, sizeof (struct X2SYS_COE), GMT_program);
+			}
+		}
+		P[p].COE = (struct X2SYS_COE *) GMT_memory ((void *)P[p].COE, (size_t)k, sizeof (struct X2SYS_COE), GMT_program);
+		P[p].nx = k;
+		*nx += k;
+	}
+	GMT_fclose (fp);
+	P = (struct X2SYS_COE_PAIR *) GMT_memory ((void *)P, (size_t)n_pairs, sizeof (struct X2SYS_COE_PAIR), GMT_program);
+	for (k = 0; k < n_tracks; k++) GMT_free ((void *)trk_list[k]);
+	GMT_free ((void *)trk_list);
+	if (n_ignore) {
+		for (k = 0; k < n_ignore; k++) GMT_free ((void *)ignore[k]);
+		GMT_free ((void *)ignore);	
+	}
+	
+	*xpairs = P;
+	return (n_pairs);
+}
+
+void x2sys_free_coe_dbase (struct X2SYS_COE_PAIR *P, int np)
+{	/* Free up the memory associated with P as created by x2sys_read_coe_dbase */
+	int p;
+	for (p = 0; p < np; p++) GMT_free ((void *)P[p].COE);
+	GMT_free ((void *)P);
+}
+
+int x2sys_find_track (char *name, char **list, int n)
+{	/* Return track id # for this leg or -1 if not found */
+	int i;
+	if (!list) return (-1);	/* Null pointer passed */
+	for (i = 0; i < n; i++) if (!strcmp (name, list[i])) return (i);
+	return (-1);
 }

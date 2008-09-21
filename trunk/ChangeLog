@@ -1,10 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.336 2008-09-20 23:08:06 guru Exp $
+	$Id: ChangeLog,v 1.337 2008-09-21 00:30:06 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-09-20	pwessel
 	* gmt_support.c:	Function GMT_get_arc did not check for division by zero.
 				The -Gx<file>:<radius>[unit] in grdcontour passed the entire
 				argument as the file name.
+	* x2sys/x2sys_list.c:	New program [experimental] to extract a subset of crossovers
+				from the list produced by x2sys_cross.  Intended to replace
+				the old x_system/x_list.c.
+	* x2sys/x2sys_solve.c:	New program [experimental] to determine systematic trends from
+				a set of crossover errors.  Intended to replace the old
+				x_system/x_solve_dc_drift.c.
 2008-09-10	remko
 	* gmt_nc.c:		Coordinate arrays are now always double precision.
 
