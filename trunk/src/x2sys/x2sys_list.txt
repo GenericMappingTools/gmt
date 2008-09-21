@@ -1,64 +1,85 @@
 #include "common_options.txt"
-.TH X2SYS_SOLVE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH X2SYS_LIST 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-x2sys_solve \- Determine systematic corrections from crossovers
+x2sys_list \- Output a subset of crossovers from data ase
 .SH SYNOPSIS
-\fBx2sys_solve\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(F)\fIflags\fP ] 
-[ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
+\fBx2sys_list\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(F)\fIxytTiadhvz2\fP ] 
+[ OPT(I)[\fIlist\fP] [ GMT_Mo_OPT ] [ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
-\fBx2sys_solve\fP will solve for corrections. TBA.
+\fBx2sys_list\fP will read the crossover ascii data base \fIcoedbase.txt\fP (or \fIstdin\fP)
+and extract a subset of the crossovers based on the other arguments.  The output may be
+ascii or binary.
 .TP
+.B \-C
+Specify which data column you want to process.  Crossovers related to this column name must be
+present in the crossover data base.
+.TP
+.B \-T
 \fITAG\fP
 The unique tag name of this data type system.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-C
-Instead of reporting the track names, just output the coordinates of the
-center of each bin that has at least one track with the specified data.
+.I coedbase.txt
+The name of the crossover error data base as produced by \fBx2sys_cross\fP.
+If not given we read standard input.
 .TP
 .B \-F
-Give a comma-separated list of column names (as described in the definition
-file) that should be present. [Default selects all data columns].
+Specify your desired output using any combination of \fIacdhintTvxyz\fP, in any order.  Do not space between
+the letters.  Use lower case.  The output will be ASCII (or binary, see \fB\-bo\fP) columns of values.
+Description of codes: \fIa\fP is the angle (< 90) defined by the crossing tracks,
+\fBc\fP is crossover value of chosen observation (see OPT(C)),
+\fBd\fP is distance along track,
+\fBh\fP is heading along track,
+\fBi\fP is the time difference between the visit at the crossover of the two tracks involved,
+\fBn\fP is the names of the two tracks,
+\fBt\fP is time along track (NaN if not available),
+\fBT\fP is elapsed time since start of track year along track (NaN if not available),
+\fBv\fP is speed along track,
+\fBx\fP is \fIx\fP-coordinate (or longitude)
+\fBy\fP is \fIy\fP-coordinate (or latitude), and
+\fBz\fP is observed value (see OPT(C)) along track.
+If OPT(S) is not specified then \fId,h,n,t,T,v\fP results in two output columns each: first
+for track one and next for track two (in lexical order of track names); otherwise they refer to the
+specified track only (except for \fIn\fP which then refers to the other track).
+The sign convention for \fIc\fP is track one minus track two (lexically sorted).
 .TP
-.B \-L
-Crossover mode.  Return a list of track pairs that should be checked for possible
-crossovers.  The list is determined from the bin-index data base on the assumption
-that tracks occupying the same bin are very likely to intersect.  By default we
-return all possible pairs in the data base.  Append the name of a file with a
-list of tracks if you want to limit the output to those pairs that involve
-at least one of the track names in your list.  The output is suitable for the \fB\-K\fP
-option in \fBx2sys_cross\fP.
+.B \-I
+Name of ascii file with a list of tracknames (one per record) that should be excluded from consideration
+[Default includes all tracks].
 .TP
-.B \-N
-Give a comma-separated list of column names (as described in the definition
-file) that must be absent.
+.B \-M
+Multiple segment output format.  Segments with crossovers for a single track pair are separated by a
+record whose first character  is \fIflag\fP. [Default is '>'].
+.TP
+.B \-Q
+Append \fBe\fP for external crossovers only, and \fBi\fP for internal
+crossovers only [Default is all crossovers].
 #include "explain_-Rgeo.txt"
+.TP
+.B \-S
+Name of a single track.  If given we restrict output to those crossovers involving this track [Default
+output is crossovers involving any track pair].
 #include "explain_-V.txt"
+#include "explain_-bo.txt"
 .SH EXAMPLES
-To find all the tracks associated with the tag mgd77, restricted to occupy
-a certain region in the south Pacific, and have at least free air anomalies
-and bathymetry, try
+To find all the magnetic crossovers associated with the tag mgd77 from the file COE_data.txt, restricted to occupy
+a certain region in the south Pacific, and return location, time, and crossover value, try
 .br
 .sp
-\fBx2sys_solve\fP \fB\-V \-T\fPmgd77 \fB\-R\fP180/240/-60/-30 \fB\-F\fPfaa,depth 
+\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPmgd77 \fB\-R\fP180/240/-60/-30 \fB\-C\fPmag \fB\-F\fPxytz > mag_coe.txt
 .br
 .sp
-To find all the tracks associated with the tag mgd77 that have depth but not
-twt, try
+To find all the faa crossovers globally that involves track 12345678 and output time since start of the year,
+using a binary double precision format, try
 .br
 .sp
-\fBx2sys_solve\fP \fB\-V \-T\fPmgd77 \fB\-F\fPdepth \fB\-N\fPtwt
-.br
-.sp
-To find all the pairs associated with the tag mgd77 that might intersect each
-other, but only those pairs which involves tracks in your list new.lis, try
-.br
-.sp
-\fBx2sys_solve\fP \fB\-V \-T\fPmgd77 \fB\-L\fPnew.lis > xpairs.lis 
+\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPmgd77 \fB\-C\fPfaa \fB\-S\fP12345678 \fB\-F\fPTz \fB\-bod\fP > faa_coe.b
 .SH "SEE ALSO"
 .IR x2sys_binlist (1)
 .IR x2sys_cross (1)
 .IR x2sys_datalist (1)
+.IR x2sys_get (1)
 .IR x2sys_init (1)
 .IR x2sys_put (1)
+.IR x2sys_solve (1)

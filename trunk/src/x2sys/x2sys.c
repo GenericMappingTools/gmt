@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.88 2008-09-21 00:30:06 guru Exp $
+ *	$Id: x2sys.c,v 1.89 2008-09-21 03:05:17 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1205,14 +1205,16 @@ void x2sys_err_fail (int err, char *file)
 
 /* FUnctions dealing with the reading of the COE ascii database */
 
-int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, int *nx)
+int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn, BOOLEAN geo, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, int *nx)
 {
 	/* Dbase:	Name of the crossover data file [NULL for stdin]
 	 * TAG:		The current TAG, must match what is in the file
 	 * ignorefile:	Name of file with track names to ignore [or NULL if none]
+	 * wesn:	Rectangular box to limit COE locations [NULL or 4-array with all zeros means no limit]
+	 * geo:		The x/y are lon/lat
 	 * fflag:	The name of the chosen field (e.g., faa)
 	 * coe_kind: 	1 for internal, 2 for external, 3 [or 0] for both
-	 * one_trk:		NULL to get coes from all pairs; give a track name for pairs only involving that track
+	 * one_trk:	NULL to get coes from all pairs; give a track name for pairs only involving that track
 	 * xpairs:	The return array of pair structures; number of pairs returned by function call
 	 */
 
@@ -1220,8 +1222,8 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, char *fflag,
 	struct X2SYS_COE_PAIR *P;
 	char line[BUFSIZ], txt[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], **trk_list, **ignore;
 	int i, k, p, len, n_pairs, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, our_item = -1;
-	BOOLEAN more, skip, two_values = FALSE;
-	double x, m;
+	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE;
+	double x, m, lon;
 
 	fp = GMT_stdin;	/* Default to stdin if dbase is NULL */
 	if (dbase && (fp = fopen (dbase, "r")) == NULL) {
@@ -1271,6 +1273,8 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, char *fflag,
 		fprintf (stderr, "%s: ERROR: Ignore file %s cannot be read - aborting\n", GMT_program, ignorefile);
 		exit (EXIT_FAILURE);
 	}
+
+	check_box = (wesn && !(wesn[0] == wesn[1] && wesn[2] == wesn[3]));	/* Specified a rectangular box */
 
 	/* OK, our file has the required column name, lets build the format statement */
 
@@ -1369,18 +1373,44 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, char *fflag,
 				P[p].COE[k].z[0] = m + x;
 				P[p].COE[k].z[1] = m - x;
 			}
-			k++;
+			if (check_box) {	/* Must pass coordinate check */
+				keep = TRUE;
+				if (P[p].COE[k].y < wesn[2] || P[p].COE[k].y > wesn[3])	/* Cartesian y or latitude */
+					keep = FALSE;
+				else if (geo) {	/* Be cautions regarding longitude test */
+					lon = P[p].COE[k].x;
+					while (lon > wesn[0]) lon -= 360.0;
+					while (lon < wesn[0]) lon += 360.0;
+					if (lon > wesn[1]) keep = FALSE;
+				}
+				else if (P[p].COE[k].x < wesn[0] || P[p].COE[k].x > wesn[1])	/* Cartesian x */
+					keep = FALSE;
+			}
+			if (keep) k++;
 			if (k == n_alloc_x) {
 				n_alloc_x <<= 1;
 				P[p].COE = (struct X2SYS_COE *) GMT_memory ((void *)P[p].COE, (size_t)n_alloc_x, sizeof (struct X2SYS_COE), GMT_program);
 			}
 		}
-		P[p].COE = (struct X2SYS_COE *) GMT_memory ((void *)P[p].COE, (size_t)k, sizeof (struct X2SYS_COE), GMT_program);
-		P[p].nx = k;
-		*nx += k;
+		if (k == 0) {	/* No COE, probably due to wesn check */
+			GMT_free ((void *)P[p].COE);
+			p--;	/* To resue this value since the top of the loop will do p++ */
+		}
+		else {
+			P[p].COE = (struct X2SYS_COE *) GMT_memory ((void *)P[p].COE, (size_t)k, sizeof (struct X2SYS_COE), GMT_program);
+			P[p].nx = k;
+			*nx += k;
+		}
 	}
 	GMT_fclose (fp);
-	P = (struct X2SYS_COE_PAIR *) GMT_memory ((void *)P, (size_t)n_pairs, sizeof (struct X2SYS_COE_PAIR), GMT_program);
+	if (n_pairs == 0) {	/* No pairs found, probably due to wesn check */
+		GMT_free ((void *)P);
+		*xpairs = NULL;
+	}
+	else {
+		P = (struct X2SYS_COE_PAIR *) GMT_memory ((void *)P, (size_t)n_pairs, sizeof (struct X2SYS_COE_PAIR), GMT_program);
+		*xpairs = P;
+	}
 	for (k = 0; k < n_tracks; k++) GMT_free ((void *)trk_list[k]);
 	GMT_free ((void *)trk_list);
 	if (n_ignore) {
@@ -1388,7 +1418,6 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, char *fflag,
 		GMT_free ((void *)ignore);	
 	}
 	
-	*xpairs = P;
 	return (n_pairs);
 }
 
