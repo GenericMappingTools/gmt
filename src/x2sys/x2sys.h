@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.34 2008-09-21 00:30:06 guru Exp $
+ *	$Id: x2sys.h,v 1.35 2008-09-21 03:05:17 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -274,7 +274,7 @@ extern int x2sys_err_pass (int err, char *file);
 extern void x2sys_err_fail (int err, char *file);
 extern const char * x2sys_strerror (int err);
 
-extern int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, int *nx);
+extern int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn, BOOLEAN geo, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, int *nx);
 extern void x2sys_free_coe_dbase (struct X2SYS_COE_PAIR *P, int np);
 
 #define X2SYS_NOERROR		0
