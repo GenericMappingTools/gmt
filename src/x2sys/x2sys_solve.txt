@@ -6,7 +6,8 @@ x2sys_solve \- Determine systematic corrections from crossovers
 \fBx2sys_solve\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(F)\fIflags\fP ] 
 [ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
 .SH DESCRIPTION
-\fBx2sys_solve\fP will solve for corrections. TBA.
+\fBx2sys_solve\fP will solve for corrections. TBA.  The rest of this file
+is just a place holder.
 .TP
 \fITAG\fP
 The unique tag name of this data type system.

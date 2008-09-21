@@ -3,7 +3,7 @@
 .SH NAME
 x2sys_list \- Output a subset of crossovers from data ase
 .SH SYNOPSIS
-\fBx2sys_list\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(F)\fIxytTiadhvz2\fP ] 
+\fBx2sys_list\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(F)\fIfIacdhintTvxyz\fP ] 
 [ OPT(I)[\fIlist\fP] [ GMT_Mo_OPT ] [ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_list\fP will read the crossover ascii data base \fIcoedbase.txt\fP (or \fIstdin\fP)
@@ -15,8 +15,7 @@ Specify which data column you want to process.  Crossovers related to this colum
 present in the crossover data base.
 .TP
 .B \-T
-\fITAG\fP
-The unique tag name of this data type system.
+\fITAG\fP is the unique tag name of this data type system.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -26,23 +25,23 @@ If not given we read standard input.
 .TP
 .B \-F
 Specify your desired output using any combination of \fIacdhintTvxyz\fP, in any order.  Do not space between
-the letters.  Use lower case.  The output will be ASCII (or binary, see \fB\-bo\fP) columns of values.
-Description of codes: \fIa\fP is the angle (< 90) defined by the crossing tracks,
+the letters, and your selection is case-sensitive.  The output will be ASCII (or binary, see \fB\-bo\fP) columns of values.
+Description of codes: \fBa\fP is the angle (< 90) defined by the crossing tracks,
 \fBc\fP is crossover value of chosen observation (see OPT(C)),
 \fBd\fP is distance along track,
 \fBh\fP is heading along track,
-\fBi\fP is the time difference between the visit at the crossover of the two tracks involved,
+\fBi\fP is the time interval between the visit at the crossover of the two tracks involved,
 \fBn\fP is the names of the two tracks,
-\fBt\fP is time along track (NaN if not available),
+\fBt\fP is time along track in \fIdate\fP\fBT\fP\fIclock\fP format (NaN if not available),
 \fBT\fP is elapsed time since start of track year along track (NaN if not available),
 \fBv\fP is speed along track,
-\fBx\fP is \fIx\fP-coordinate (or longitude)
+\fBx\fP is \fIx\fP-coordinate (or longitude),
 \fBy\fP is \fIy\fP-coordinate (or latitude), and
 \fBz\fP is observed value (see OPT(C)) along track.
-If OPT(S) is not specified then \fId,h,n,t,T,v\fP results in two output columns each: first
-for track one and next for track two (in lexical order of track names); otherwise they refer to the
+If OPT(S) is not specified then \fBd,h,n,t,T,v\fP results in two output columns each: first
+for track one and next for track two (in lexical order of track names); otherwise, they refer to the
 specified track only (except for \fIn\fP which then refers to the other track).
-The sign convention for \fIc\fP is track one minus track two (lexically sorted).
+The sign convention for \fBc\fP is track one minus track two (lexically sorted).
 .TP
 .B \-I
 Name of ascii file with a list of tracknames (one per record) that should be excluded from consideration
@@ -50,10 +49,10 @@ Name of ascii file with a list of tracknames (one per record) that should be exc
 .TP
 .B \-M
 Multiple segment output format.  Segments with crossovers for a single track pair are separated by a
-record whose first character  is \fIflag\fP. [Default is '>'].
+record whose first character is \fIflag\fP and contains the two track names. [Default is '>'].
 .TP
 .B \-Q
-Append \fBe\fP for external crossovers only, and \fBi\fP for internal
+Append \fBe\fP for external crossovers or \fBi\fP for internal
 crossovers only [Default is all crossovers].
 #include "explain_-Rgeo.txt"
 .TP
