@@ -178,8 +178,12 @@ src/x2sys/x2sys_binlist.c
 src/x2sys/x2sys_binlist.1
 src/x2sys/x2sys_datalist.c
 src/x2sys/x2sys_datalist.1
+src/x2sys/x2sys_list.c
+src/x2sys/x2sys_list.1
 src/x2sys/x2sys_cross.c
 src/x2sys/x2sys_cross.1
+src/x2sys/x2sys_solve.c
+src/x2sys/x2sys_solve.1
 src/x2sys/x2sys_get.c
 src/x2sys/x2sys_get.1
 src/x2sys/x2sys_init.c
@@ -286,7 +290,9 @@ www/gmt/doc/html/grdspotter.html
 www/gmt/doc/html/originator.html
 www/gmt/doc/html/x2sys_binlist.html
 www/gmt/doc/html/x2sys_datalist.html
+www/gmt/doc/html/x2sys_list.html
 www/gmt/doc/html/x2sys_cross.html
+www/gmt/doc/html/x2sys_solve.html
 www/gmt/doc/html/x2sys_get.html
 www/gmt/doc/html/x2sys_init.html
 www/gmt/doc/html/x2sys_put.html
