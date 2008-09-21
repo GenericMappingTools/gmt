@@ -31,7 +31,7 @@ Description of codes: \fBa\fP is the angle (< 90) defined by the crossing tracks
 \fBd\fP is distance along track,
 \fBh\fP is heading along track,
 \fBi\fP is the signed time interval between the visit at the crossover of the two tracks involved,
-\fBI\fP is same as \fBifP but is unsigned,
+\fBI\fP is same as \fBi\fP but is unsigned,
 \fBn\fP is the names of the two tracks,
 \fBN\fP is the id numbers of the two tracks,
 \fBt\fP is time along track in \fIdate\fP\fBT\fP\fIclock\fP format (NaN if not available),
@@ -40,11 +40,11 @@ Description of codes: \fBa\fP is the angle (< 90) defined by the crossing tracks
 \fBx\fP is \fIx\fP-coordinate (or longitude),
 \fBy\fP is \fIy\fP-coordinate (or latitude), and
 \fBz\fP is observed value (see OPT(C)) along track.
-If OPT(S) is not specified then \fBd,h,n,t,T,v\fP results in two output columns each: first
+If OPT(S) is not specified then \fBd,h,n,N,t,T,v\fP results in two output columns each: first
 for track one and next for track two (in lexical order of track names); otherwise, they refer to the
-specified track only (except for \fIn\fP which then refers to the other track).
-The sign convention for \fBc\fP is track one minus track two (lexically sorted).  The time interval
-will be return according to the \fBTIME_UNIT\fP GMT defaults setting.
+specified track only (except for \fBn,N\fP which then refers to the other track).
+The sign convention for \fBc,i\fP is track one minus track two (lexically sorted).  The time interval
+will be returned according to the \fBTIME_UNIT\fP GMT defaults setting.
 .TP
 .B \-I
 Name of ascii file with a list of track names (one per record) that should be excluded from consideration
