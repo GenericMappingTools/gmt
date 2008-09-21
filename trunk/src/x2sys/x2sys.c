@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.89 2008-09-21 03:05:17 guru Exp $
+ *	$Id: x2sys.c,v 1.90 2008-09-21 07:52:15 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1339,10 +1339,10 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 		
 		/* OK, new pair */
 		p = n_pairs;
-		for (k = 0; k < 2; k++) {
+		for (k = 0; k < 2; k++) {	/* Copy the values we found */
 			strcpy (P[p].trk[k], trk[k]);
 			P[p].id[k] = id[k];
-			P[p].year[1] = year[1];
+			P[p].year[k] = year[k];
 		}
 		n_pairs++;
 		if (n_pairs == n_alloc_p) {
@@ -1394,7 +1394,7 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 		}
 		if (k == 0) {	/* No COE, probably due to wesn check */
 			GMT_free ((void *)P[p].COE);
-			p--;	/* To resue this value since the top of the loop will do p++ */
+			n_pairs--;	/* To reset this value since the top of the loop will do n_pairs++ */
 		}
 		else {
 			P[p].COE = (struct X2SYS_COE *) GMT_memory ((void *)P[p].COE, (size_t)k, sizeof (struct X2SYS_COE), GMT_program);
