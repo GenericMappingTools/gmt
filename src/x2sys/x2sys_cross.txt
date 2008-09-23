@@ -135,5 +135,6 @@ files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 .IR x2sys_init (1)
 .IR x2sys_datalist (1)
 .IR x2sys_get (1)
+.IR x2sys_list (1)
 .IR x2sys_put (1)
 

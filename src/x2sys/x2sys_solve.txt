@@ -3,63 +3,74 @@
 .SH NAME
 x2sys_solve \- Determine systematic corrections from crossovers
 .SH SYNOPSIS
-\fBx2sys_solve\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(F)\fIflags\fP ] 
-[ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
+\fBx2sys_solve\fP OPT(C)\fIcolumn\fP OPT(E)\fImode\fP [ OPT(I)\fIfinfofile\fP] [ GMT_V_OPT ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
-\fBx2sys_solve\fP will solve for corrections. TBA.  The rest of this file
-is just a place holder.
+\fBx2sys_solve\fP will use the supplied crossover information to
+solve for systematic corrections that can then be applied per track
+to improve data quality. Several systematic corrections can be solved
+for using a least-squares approach.
 .TP
-\fITAG\fP
-The unique tag name of this data type system.
+.B \-C
+Specify which data column you want to process.  Needed for proper formatting
+of the output correction table.
+.TP
+.B \-E
+The correction type you wish to model.  Choose among the following functions
+f(p), where \fIp\fP are the \fIm\fP parameters per track to fit simultaneously:
+.br
+\fBc\fP will fit f(p) = \fIa\fP (a constant); records must contain cruise ID, COE.
+.br
+\fBd\fP will fit f(p) = \fIa\fP + \fIb\fP * (\fIt - t0\fP) (linear drift; \fIt0\fP is 00:00
+on the first day of the track); records must contain cruise ID, t0, COE, and OPT(I) must be used.
+.br
+\fBh\fP will fit f(p) = \fIa\fP + \fIb\fP cos(H) + \fIc\fP cos(2H) + \fId\fP sin(H) + \fIe\fP sin(2H) (magnetic heading H);
+records must contain cruise ID, H, COE.
+.br
+\fBs\fP will fit f(p) = \fIa\fP * depth (depth unit correction); records must contain cruise ID, depth.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-C
-Instead of reporting the track names, just output the coordinates of the
-center of each bin that has at least one track with the specified data.
-.TP
-.B \-F
-Give a comma-separated list of column names (as described in the definition
-file) that should be present. [Default selects all data columns].
-.TP
-.B \-L
-Crossover mode.  Return a list of track pairs that should be checked for possible
-crossovers.  The list is determined from the bin-index data base on the assumption
-that tracks occupying the same bin are very likely to intersect.  By default we
-return all possible pairs in the data base.  Append the name of a file with a
-list of tracks if you want to limit the output to those pairs that involve
-at least one of the track names in your list.  The output is suitable for the \fB\-K\fP
-option in \fBx2sys_cross\fP.
-.TP
-.B \-N
-Give a comma-separated list of column names (as described in the definition
-file) that must be absent.
-#include "explain_-Rgeo.txt"
+.B \-I
+Name of ascii file with a list of track names and their start date; required for OPT(E)\fBd\fP.
 #include "explain_-V.txt"
+#include "explain_-bi.txt"
 .SH EXAMPLES
-To find all the tracks associated with the tag mgd77, restricted to occupy
-a certain region in the south Pacific, and have at least free air anomalies
-and bathymetry, try
+To fit a simple bias offset to faa for all tracks, try
 .br
 .sp
-\fBx2sys_solve\fP \fB\-V \-T\fPmgd77 \fB\-R\fP180/240/-60/-30 \fB\-F\fPfaa,depth 
+\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPmgd77 \fB\-C\fPfaa \fB\-F\fPnc  > faa_coe.txt
+.br
+\fBx2sys_solve\fP faa_coe.txt \fB\-V \-C\fPfaa \fB\-E\fPc > coe_table.txt
 .br
 .sp
-To find all the tracks associated with the tag mgd77 that have depth but not
-twt, try
+To fit a faa linear drift instead, try
 .br
 .sp
-\fBx2sys_solve\fP \fB\-V \-T\fPmgd77 \fB\-F\fPdepth \fB\-N\fPtwt
+\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPmgd77 \fB\-C\fPfaa \fB\-F\fPntc  > faa_coe.txt
+.br
+\fBx2sys_solve\fP faa_coe.txt \fB\-V \-C\fPfaa \fB\-E\fPd > coe_table.txt
 .br
 .sp
-To find all the pairs associated with the tag mgd77 that might intersect each
-other, but only those pairs which involves tracks in your list new.lis, try
+To estimate heading corrections based on magnetic crossovers associated with the tag mgd77
+from the file COE_data.txt, try
 .br
 .sp
-\fBx2sys_solve\fP \fB\-V \-T\fPmgd77 \fB\-L\fPnew.lis > xpairs.lis 
+\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPmgd77 \fB\-C\fPmag \fB\-F\fPnhc > mag_coe.txt
+.br
+\fBx2sys_solve\fP mag_coe.txt \fB\-V \-C\fPmag \fB\-E\fPh > coe_table.txt
+.br
+.sp
+To estimate unit scale corrections based on bathymetry crossovers, try
+.br
+.sp
+\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPmgd77 \fB\-C\fPdepth \fB\-F\fPnz > depth_coe.txt
+.br
+\fBx2sys_solve\fP depth_coe.txt \fB\-V \-C\fPdepth \fB\-E\fPs > coe_table.txt
 .SH "SEE ALSO"
 .IR x2sys_binlist (1)
 .IR x2sys_cross (1)
 .IR x2sys_datalist (1)
+.IR x2sys_get (1)
 .IR x2sys_init (1)
+.IR x2sys_list (1)
 .IR x2sys_put (1)
