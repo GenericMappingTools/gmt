@@ -43,7 +43,7 @@ Description of codes: \fBa\fP is the angle (< 90) defined by the crossing tracks
 If OPT(S) is not specified then \fBd,h,n,N,t,T,v\fP results in two output columns each: first
 for track one and next for track two (in lexical order of track names); otherwise, they refer to the
 specified track only (except for \fBn,N\fP which then refers to the other track).
-The sign convention for \fBc,i\fP is track one minus track two (lexically sorted).  The time interval
+The sign convention for \fBc,i\fP is track one minus track two (lexically sorted).  Time intervals
 will be returned according to the \fBTIME_UNIT\fP GMT defaults setting.
 .TP
 .B \-I
