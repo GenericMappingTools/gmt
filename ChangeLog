@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.338 2008-09-21 20:44:44 guru Exp $
+	$Id: ChangeLog,v 1.339 2008-09-24 23:44:37 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-09-24	pwessel
+	* grdtrend.c:		Moved the gauss matrix solver to gmt_vector.c and renamed
+				it GMT_gauss.
+	* gmt_vector.c:		Now holds general-purpose square matrix solver GMT_gauss.
+				Eliminated hardwired limit on N.
+
 2008-09-21	jluis
 	* pslegend.c:		Now use remove function to delete script after completion;
 				this avoids a Windows problem.
