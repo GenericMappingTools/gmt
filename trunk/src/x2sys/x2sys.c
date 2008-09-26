@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.91 2008-09-26 02:40:40 guru Exp $
+ *	$Id: x2sys.c,v 1.92 2008-09-26 21:49:50 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1205,7 +1205,7 @@ void x2sys_err_fail (int err, char *file)
 
 /* FUnctions dealing with the reading of the COE ascii database */
 
-int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn, BOOLEAN geo, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, int *nx)
+int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn, BOOLEAN geo, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, int *nx, int *nt)
 {
 	/* Dbase:	Name of the crossover data file [NULL for stdin]
 	 * TAG:		The current TAG, must match what is in the file
@@ -1435,6 +1435,7 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 		GMT_free ((void *)ignore);	
 	}
 	
+	*nt = n_tracks;
 	return (n_pairs);
 }
 
