@@ -11,7 +11,7 @@
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between ("external cross-overs") or within
 ("internal cross-overs") tracks, and report the time, position, distance along track,
-heading and speed along each tracksegment, and the crossover and mean values for all observables.
+heading and speed along each track segment, and the crossover and mean values for all observables.
 The names of the tracks are passed on the command line.
 By default, \fBx2sys_cross\fP will look for both external and internal cross-overs.  As an option,
 you may choose to project all data using one of the map-projections prior to calculating the crossovers.
@@ -96,12 +96,13 @@ Report the values of each track at the crossover [Default reports the crossover 
 The COEs found are printed out to standard output in ASCII format (unless
 \fB\-bo\fP is set).  When ASCII is chosen, the output format depends on
 whether or not old-style XOVER output (\fB\-L\fP) has been selected.
-If so, then the first record contains the file names and their start year,
+If ASCII, then the first record contains the file names and their start year,
 whereas subsequent records have the data for each COE encountered.  The fields
 written out are lat, lon, time along track #1 and #2,
 x_gravity, x_magnetics, x_bathymetry, average gravity, average magnetics,
 average bathymetry, heading along track #1 and #2. If
-the default format is chosen then the header record starts with "> ", and
+the default format is chosen then the same header record starts with "> " but
+also ends with the times of the first record for each cruise, and
 the output format for crossovers are first 10 columns that contain
 x, y, time along track #1 and #2, distance along track #1 and #2,
 heading along track #1 and #2, velocity along track #1 and #2, and

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.90 2008-09-21 07:52:15 guru Exp $
+ *	$Id: x2sys.c,v 1.91 2008-09-26 02:40:40 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -67,7 +67,7 @@ char *X2SYS_program;
 
 char *x2sys_xover_format = "%9.5lf %9.5lf %10.1lf %10.1lf %9.2lf %9.2lf %9.2lf %8.1lf %8.1lf %8.1lf %5.1lf %5.1lf\n";
 char *x2sys_xover_header = "%s %ld %s %ld\n";
-char *x2sys_header = "> %s %ld %s %ld\n";
+char *x2sys_header = "> %s %ld %s %ld %s %s\n";
 struct MGD77_CONTROL M;
 
 void x2sys_set_home (void);
@@ -1220,8 +1220,8 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 
 	FILE *fp;
 	struct X2SYS_COE_PAIR *P;
-	char line[BUFSIZ], txt[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], **trk_list, **ignore;
-	int i, k, p, len, n_pairs, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, our_item = -1;
+	char line[BUFSIZ], txt[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], start[2][GMT_TEXT_LEN], **trk_list, **ignore;
+	int i, k, p, len, n_pairs, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
 	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE;
 	double x, m, lon;
 
@@ -1236,31 +1236,41 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 
 	while (fgets (line, BUFSIZ, fp) && line[0] == '#') {	/* Process header recs */
 		GMT_chop (line);	/* Get rid of [CR]LF */
-		/* Looking to process these two key lines:
+		/* Looking to process these two [three] key lines:
 		 * # Tag: MGD77
+		   # Command: x2sys_cross ... [in later versions only]
 		   # lon	lat	t_1	t_2	dist_1	dist_2	head_1	head_2	vel_1	vel_2	twt_1	twt_2	depth_1	depth_2	...
 		 */
-		if (!strncmp (line, "# Tag:", 6) && strcmp (TAG, &line[7])) {	/* -Ttag and this TAG do not match */
-			fprintf (stderr, "%s: ERROR: Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", GMT_program, dbase, &line[7], TAG);
-			exit (EXIT_FAILURE);
+		if (!strncmp (line, "# Tag:", 6)) {	/* Found the # TAG record */
+			if (strcmp (TAG, &line[7])) {	/* -Ttag and this TAG do not match */
+				fprintf (stderr, "%s: ERROR: Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", GMT_program, dbase, &line[7], TAG);
+				exit (EXIT_FAILURE);
+			}
+			continue;	/* Goto next record */
 		}
-		sscanf (&line[2], "%*s %*s %s", txt);	/* Get first column name after lon/x etc */
-		if (strchr (txt, '_')) {	/* A column name with underscore */
-			char ptr[BUFSIZ];
-			int pos = 0, item = 0;
-			if (txt[strlen(txt)-1] == '1') two_values = TRUE;	/* Option -2 was used */
-			while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */
-				item++;
-				i = 0;
-				while (ptr[i] && ptr[i] != '_') {
-					txt[i] = ptr[i];
-					i++;
+		if (!strncmp (line, "# Command:", 10)) {	/* Found the # Command record */
+			continue;	/* Goto next record */
+		}
+		if (!strncmp (line, "# ", 2)) {	/* Found the possible # lon lat ... record */
+			sscanf (&line[2], "%*s %*s %s", txt);	/* Get first column name after lon/x etc */
+			if (strchr (txt, '_')) {	/* A column name with underscore */
+				char ptr[BUFSIZ];
+				int pos = 0, item = 0;
+				if (txt[strlen(txt)-1] == '1') two_values = TRUE;	/* Option -2 was used */
+				while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */
+					item++;
+					i = 0;
+					while (ptr[i] && ptr[i] != '_') {
+						txt[i] = ptr[i];
+						i++;
+					}
+					txt[i] = '\0';
+					if (!strcmp (txt, fflag)) our_item = item;	/* Found the desired column */
 				}
-				txt[i] = '\0';
-				if (!strcmp (txt, fflag)) our_item = item;	/* Found the desired column */
 			}
 		}
 	}
+	
 	/* Here, line holds the next record which will be the first > ... multisegment header for a crossing pair */
 
 	our_item -= 10;		/* Account for the 10 common items */
@@ -1287,7 +1297,7 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 	n_pairs = *nx = 0;
 	while (more) {	/* Read dbase until EOF */
 		GMT_chop (line);	/* Get rid of [CR]LF */
-		sscanf (&line[2], "%s %d %s %d", trk[0], &year[0], trk[1], &year[1]);
+		n_items = sscanf (&line[2], "%s %d %s %d %s %s", trk[0], &year[0], trk[1], &year[1], start[0], start[1]);
 		for (i = 0; i < strlen (trk[0]); i++) if (trk[0][i] == '.') trk[0][i] = '\0';
 		for (i = 0; i < strlen (trk[1]); i++) if (trk[1][i] == '.') trk[1][i] = '\0';
 		skip = FALSE;
@@ -1338,11 +1348,18 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 		}
 		
 		/* OK, new pair */
+		
 		p = n_pairs;
 		for (k = 0; k < 2; k++) {	/* Copy the values we found */
 			strcpy (P[p].trk[k], trk[k]);
 			P[p].id[k] = id[k];
 			P[p].year[k] = year[k];
+			if (n_items == 4 || !strcmp (start[k], "NaN"))
+				P[p].start[k] = GMT_d_NaN;
+			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
+				fprintf (stderr, "%s: ERROR: Header time specification t%d (%s) in wrong format\n", GMT_program, (k+1), start[k]);
+				exit (EXIT_FAILURE);
+			}
 		}
 		n_pairs++;
 		if (n_pairs == n_alloc_p) {
