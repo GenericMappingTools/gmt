@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.193 2008-08-14 02:46:38 remko Exp $
+ *	$Id: mgd77.c,v 1.194 2008-09-26 15:55:25 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4900,7 +4900,10 @@ double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux
 		}
 		else {
 			z = (current->id >= MGD77_MAX_COLS) ? aux[current->id-MGD77_MAX_COLS] : value[current->id][rec];
-			dz += current->factor * pow ((current->modifier) (current->scale * (z - current->origin)), current->power);
+			if (current->power == 1.0)
+				dz += current->factor * ((current->modifier) (current->scale * (z - current->origin)));
+			else
+				dz += current->factor * pow ((current->modifier) (current->scale * (z - current->origin)), current->power);
 		}
 	}
 	return (dz);
@@ -4913,12 +4916,12 @@ double MGD77_Copy (double z) {
 
 double MGD77_Cosd (double z) {
 	/* cosine of degrees */
-	return (cos (D2R * z));
+	return (cosd (z));
 }
 
 double MGD77_Sind (double z) {
 	/* sine of degrees */
-	return (sin (D2R * z));
+	return (sind (z));
 }
 
 int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises)

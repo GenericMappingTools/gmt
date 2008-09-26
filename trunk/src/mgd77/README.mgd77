@@ -1,4 +1,4 @@
-	$Id: README.mgd77,v 1.15 2008-01-14 22:14:52 guru Exp $
+	$Id: README.mgd77,v 1.16 2008-09-26 15:55:25 guru Exp $
 
 README file for GMT supplemental mgd77 programs.  The mgd77 supplement
 and all its files are distributed under the Gnu Public License.
@@ -28,6 +28,10 @@ they do:
 	mgd77track	A track plotter for .mgd77[+] files
 
 man-files for all the above programs can be found in the manl subdirectory.
+An overview of the package can be found in:
+
+Wessel, P., and M. T. Chandler (2007), The mgd77 supplement to the Generic
+   Mapping Tools, Computers & Geosciences, 33(1), 62-75.
 
 Note that the functionality provided by the mgg supplement's gmt2bin,
 binlegs and getlegs have now been generalized to any track data by the
