@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.37 2008-09-26 21:49:50 guru Exp $
+ *	$Id: x2sys.h,v 1.38 2008-09-29 20:47:45 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -219,10 +219,11 @@ struct X2SYS_COE_PAIR {	/* Holds the information for COE between a pair of track
 	int id[2];			/* Internal ID track numbers */
 	int year[2];			/* Start year for each track */
 	double start[2];		/* Time of first point for each track */
+	double stop[2];			/* Time of last point for each track */
+	double dist[2];			/* Length of each track */
 	int nx;				/* Number of crossovers */
 	struct X2SYS_COE *COE;		/* Array of nx COE structures */
 };
-
 
 /* Global variables used by x2sys functions */
 
