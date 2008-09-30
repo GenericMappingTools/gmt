@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-#       $Id: gmt_form.pl,v 1.9 2006-01-04 02:39:29 pwessel Exp $
+#       $Id: gmt_form.pl,v 1.10 2008-09-30 16:32:13 guru Exp $
 
 $webmaster = "gmt-team\@hawaii\.edu";
 
@@ -44,7 +44,7 @@ EOF
 printf "<B>Longitude: %g  Latitude: %g</B><P>\n", $lon_g, $lat_g;
 print <<EOF;
 The usage map is updated daily so please check back to see if your location was added to
-the map.  Thank you for participating.
+the map after we more carefully process the data.  Thank you for participating.
 <HR>
 <A HREF="http://gmt.soest.hawaii.edu">
 <IMG SRC="/gmt/gmt/gmt_small_logo.gif" ALT="RETURN">
