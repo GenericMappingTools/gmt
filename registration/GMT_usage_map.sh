@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: GMT_usage_map.sh,v 1.38 2008-05-16 04:10:14 guru Exp $
+#	$Id: GMT_usage_map.sh,v 1.39 2008-09-30 16:21:30 guru Exp $
 #
 # This script creates a fresh gmt_usage.jpg plot for the web page
 # The coordinates passed have been checked for range etc
@@ -16,14 +16,21 @@
 #	help	Give a brief help message
 #
 #	Paul Wessel
-#	30-SEPT-2002
+#	30-SEPT-2008
 #
 # Typicall this script is run by cron on Paul's computer since
-# SOEST does not want jobs to run on the web server.
+# SOEST does not want jobs to run on the web server.  These are
+# the crontab entries on macnut right now:
 #
-# 1 0 * * * /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/registration/GMT_usage_map.sh
+# Run 1 min past midnight, every day [Creates updated hit map for GMT main page]
+# 1 0 * * * /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/registration/GMT_usage_map.sh > $HOME/macnut_cron1.log 2>&1
+# Run 1 am, every night [Makes sure my local GMT tree is up-to-date with the latest changes]
+# 0 1 * * *       /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/guru/nightly_gmt_cvsupdate.sh > $HOME/cron.log 2>&1
+# Run 2 am, every day [Place the latest ChangeLog file on the SOEST web server]
+# 0 2 * * *	scp /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT/ChangeLog imina:/export/imina2/httpd/htdocs/gmt/gmt >> $HOME/cron.log 2>&1
+
 #
-# It will scp the file /tmp/gmtregistrations from the SOEST web server and
+# The first cmd will scp the file /tmp/gmtregistrations from the SOEST web server and
 # process the data, produce an updated JPG image, and scp the file to the
 # proper GMT directory on the web server
 #
