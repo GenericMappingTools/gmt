@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.356 2008-08-14 02:46:36 remko Exp $
+ *	$Id: gmt_init.c,v 1.357 2008-10-02 17:08:45 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -338,7 +338,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t       Give origin, azimuth of oblique equator, and scale at oblique equator\n");
 			fprintf (stderr, "\t     -Jo|O[b]<lon0>/<lat0>/<lon1>/<lat1>/<scale|width>\n");
 			fprintf (stderr, "\t       Give origin, second point on oblique equator, and scale at oblique equator\n");
-			fprintf (stderr, "\t     -Joc|Oc<lon0>/<lat0>/<lonp>/<latp>/<scale|width>\n");
+			fprintf (stderr, "\t     -Jo|Oc<lon0>/<lat0>/<lonp>/<latp>/<scale|width>\n");
 			fprintf (stderr, "\t       Give origin, pole of projection, and scale at oblique equator\n");
 			fprintf (stderr, "\t       Specify region in oblique degrees OR use -R<>r\n");
 
@@ -429,7 +429,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   -Jo|O (Oblique Mercator).  Specify one of three definitions:\n");
 			fprintf (stderr, "\t      -Jo|O[a]<lon0>/<lat0>/<azimuth>/<scale|width>\n");
 			fprintf (stderr, "\t      -Jo|O[b]<lon0>/<lat0>/<lon1>/<lat1>/<scale|width>\n");
-			fprintf (stderr, "\t      -Joc|Oc<lon0>/<lat0>/<lonp>/<latp>/<scale|width>\n");
+			fprintf (stderr, "\t      -Jo|Oc<lon0>/<lat0>/<lonp>/<latp>/<scale|width>\n");
 
 			fprintf (stderr, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scale|width> (Equidistant Cylindrical)\n");
 
