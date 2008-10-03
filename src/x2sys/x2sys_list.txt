@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH X2SYS_LIST 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-x2sys_list \- Output a subset of crossovers from data ase
+x2sys_list \- Output a subset of crossovers from data base
 .SH SYNOPSIS
 \fBx2sys_list\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(A)\fIasymm_max\fP ] [ OPT(F)\fIfIacdhiInNtTvxyz\fP ] 
 [ OPT(I)[\fIlist\fP] [ OPT(L)\fInx_min\fP ] [ GMT_Mo_OPT ] [ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
@@ -92,4 +92,5 @@ using a binary double precision format, try
 .IR x2sys_get (1)
 .IR x2sys_init (1)
 .IR x2sys_put (1)
+.IR x2sys_report (1)
 .IR x2sys_solve (1)
