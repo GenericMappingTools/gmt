@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.339 2008-09-24 23:44:37 guru Exp $
+	$Id: ChangeLog,v 1.340 2008-10-03 21:04:15 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-10-03	pwessel
+	* x2sys/x2sys_report.c:	New program [experimental] to report statistics of crossovers.
+
 2008-09-24	pwessel
 	* grdtrend.c:		Moved the gauss matrix solver to gmt_vector.c and renamed
 				it GMT_gauss.

@@ -1,4 +1,4 @@
-	$Id: README.x2sys,v 1.5 2008-09-21 00:30:06 guru Exp $
+	$Id: README.x2sys,v 1.6 2008-10-03 21:04:15 guru Exp $
 
 README file for GMT supplemental x2sys programs
 Distributed under the GNU Public License (see file ../COPYING)
@@ -7,10 +7,11 @@ AUTHOR:		Paul Wessel
 DATE:		15-JUN-2004
 INSTALL INFO:	The x2sys directory should install under GMT/src
 
-1.2 UPDATE [20-SEPT-2008]
+1.2 UPDATE [1-OCT-2008]
 
-Added x2sys_list.c which replaces the purpose of old x_list and
-x2sys_solve.c which replaces x_solve_dc_drift.c.  These are
+Added x2sys_list.c which replaces the purpose of old x_list,
+x2sys_solve.c which replaces x_solve_dc_drift.c, and
+x2sys_report which replaces x_report.c.  These are all
 experimental and should not be relied upon; syntax and use may
 change without notice!
 
