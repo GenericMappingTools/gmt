@@ -1,10 +1,14 @@
 #!/bin/sh
-#	$Id: test_x2sys.sh,v 1.1 2008-09-26 01:09:00 guru Exp $
+#	$Id: test_x2sys.sh,v 1.2 2008-10-05 02:03:26 guru Exp $
 #
 # Test script that exercise the various options in x2sys.
 # We generate a grid and some fake tracks and sample the
 # grid, then add various systematic errors to the tracks
 # and finally try to solve for and undo the errors.
+
+# LATEST: Now needs to be modified to use x2sys_datalist -L to get
+# the corrected data - currently not working since we are using
+# the actual x2sys_solve output format.
 
 # 1. Make a surface grid with a Mexican hat bump in the middle
 
