@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.194 2008-09-26 15:55:25 guru Exp $
+ *	$Id: mgd77.c,v 1.195 2008-10-05 01:18:35 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -70,7 +70,6 @@ int MGD77_Write_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECO
 int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 BOOLEAN MGD77_txt_are_constant (char *txt, GMT_LONG n, int width);
 BOOLEAN MGD77_dbl_are_constant (double x[], GMT_LONG n, double limits[2]);
-char *MGD77_cp_txt (char *txt);
 char *MGD77_alloc_txt (size_t len);
 void MGD77_do_scale_offset_after_read (double x[], GMT_LONG n, double scale, double offset, double nan_val);
 int MGD77_do_scale_offset_before_write (double new[], const double x[], GMT_LONG n, double scale, double offset, int type);
@@ -85,13 +84,14 @@ int MGD77_Convert_To_New_Format (char *line);
 int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir);
 void MGD77_Place_Text (int dir, char *struct_member, char *header_record, int start_pos, int n_char);
 BOOLEAN MGD77_entry_in_MGD77record (char *name, int *entry);
-int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises);
+int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises, BOOLEAN sorted);
 double MGD77_Sind (double z);
 double MGD77_Cosd (double z);
 double MGD77_Copy (double z);
 int wrong_filler (char *field, int length);
 double *MGD77_Read_Column (int id, size_t start[], size_t count[], double scale, double offset, struct MGD77_COLINFO *col);
 int MGD77_atoi (char *txt);
+int MGD77_Match_List (char *word, int n_fields, char **list);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -143,24 +143,6 @@ struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
 /* SLN */	{ NC_BYTE,	5,	1.0,	0.0, "", "For cross-referencing with seismic data" },
 /* SSPN */	{ NC_BYTE,	6,	1.0,	0.0, "", "For cross-referencing with seismic data" },
 /* GMT_TIME */	{ NC_DOUBLE,	1,	1.0,	0.0, "seconds since 1970-01-01 00:00:00 0", "UTC time, subtract TZ to get ship local time" }
-};
-
-char *aux_names[N_AUX] = {
-	"year",
-	"month",
-	"day",
-	"hour",
-	"min",
-	"sec",
-	"dist",
-	"azim",
-	"vel",
-	"weight",
-	"drt",
-	"igrf",
-	"carter",
-	"ngrav",
-	"ngdcid",
 };
 
 PFB MGD77_column_test_double[9];
@@ -1344,16 +1326,6 @@ void MGD77_Place_Text (int dir, char *struct_member, char *header_record, int st
 		MGD77_Fatal_Error (MGD77_BAD_ARG);
 }
 
-char *MGD77_cp_txt (char *txt)
-{
-	int len;
-	char *t;
-	len = strlen (txt);
-	t = (char *)GMT_memory (VNULL, (size_t)(strlen (txt)+1), sizeof (char), GMT_program);
-	strcpy (t, txt);
-	return (t);
-}
-
 char *MGD77_alloc_txt (size_t len)
 {
 	char *t;
@@ -1374,10 +1346,10 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 	/* Start with the time field */
 	
 	k = 0;
-	H->info[MGD77_M77_SET].col[k].abbrev = MGD77_cp_txt ("time");
-	H->info[MGD77_M77_SET].col[k].name = MGD77_cp_txt ("Time");
-	H->info[MGD77_M77_SET].col[k].units = MGD77_cp_txt (mgd77cdf[MGD77_TIME].units);
-	H->info[MGD77_M77_SET].col[k].comment = MGD77_cp_txt (mgd77cdf[MGD77_TIME].comment);
+	H->info[MGD77_M77_SET].col[k].abbrev = strdup ("time");
+	H->info[MGD77_M77_SET].col[k].name = strdup ("Time");
+	H->info[MGD77_M77_SET].col[k].units = strdup (mgd77cdf[MGD77_TIME].units);
+	H->info[MGD77_M77_SET].col[k].comment = strdup (mgd77cdf[MGD77_TIME].comment);
 	H->info[MGD77_M77_SET].col[k].factor = mgd77cdf[MGD77_TIME].factor;
 	H->info[MGD77_M77_SET].col[k].offset = mgd77cdf[MGD77_TIME].offset;
 	H->info[MGD77_M77_SET].col[k].corr_factor = 1.0;
@@ -1390,10 +1362,10 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 	
 	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Do all the numerical fields */
 		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* Skip these as time + tz represent the same information */
-		H->info[MGD77_M77_SET].col[k].abbrev = MGD77_cp_txt (mgd77defs[i].abbrev);
-		H->info[MGD77_M77_SET].col[k].name = MGD77_cp_txt (mgd77defs[i].fieldID);
-		H->info[MGD77_M77_SET].col[k].units = MGD77_cp_txt (mgd77cdf[i].units);
-		H->info[MGD77_M77_SET].col[k].comment = MGD77_cp_txt (mgd77cdf[i].comment);
+		H->info[MGD77_M77_SET].col[k].abbrev = strdup (mgd77defs[i].abbrev);
+		H->info[MGD77_M77_SET].col[k].name = strdup (mgd77defs[i].fieldID);
+		H->info[MGD77_M77_SET].col[k].units = strdup (mgd77cdf[i].units);
+		H->info[MGD77_M77_SET].col[k].comment = strdup (mgd77cdf[i].comment);
 		H->info[MGD77_M77_SET].col[k].factor = mgd77cdf[i].factor;
 		H->info[MGD77_M77_SET].col[k].offset = mgd77cdf[i].offset;
 		H->info[MGD77_M77_SET].col[k].corr_factor = 1.0;
@@ -1405,10 +1377,10 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 		k++;
 	}
 	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Do the three text fields */
-		H->info[MGD77_M77_SET].col[k].abbrev = MGD77_cp_txt (mgd77defs[i].abbrev);
-		H->info[MGD77_M77_SET].col[k].name = MGD77_cp_txt (mgd77defs[i].fieldID);
-		H->info[MGD77_M77_SET].col[k].units = MGD77_cp_txt (mgd77cdf[i].units);
-		H->info[MGD77_M77_SET].col[k].comment = MGD77_cp_txt (mgd77cdf[i].comment);
+		H->info[MGD77_M77_SET].col[k].abbrev = strdup (mgd77defs[i].abbrev);
+		H->info[MGD77_M77_SET].col[k].name = strdup (mgd77defs[i].fieldID);
+		H->info[MGD77_M77_SET].col[k].units = strdup (mgd77cdf[i].units);
+		H->info[MGD77_M77_SET].col[k].comment = strdup (mgd77cdf[i].comment);
 		H->info[MGD77_M77_SET].col[k].factor = 1.0;
 		H->info[MGD77_M77_SET].col[k].offset = 0.0;
 		H->info[MGD77_M77_SET].col[k].corr_factor = 1.0;
@@ -1511,10 +1483,10 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	c_id[MGD77_M77_SET] = c_id[MGD77_CDF_SET] = 0;		/* Start with zero columns for both sets */
 	
 	if (H->no_time) {	/* Create an artificial NaN entry anyway */
-		H->info[MGD77_M77_SET].col[0].abbrev = MGD77_cp_txt ("time");
-		H->info[MGD77_M77_SET].col[0].name = MGD77_cp_txt ("Time");
-		H->info[MGD77_M77_SET].col[0].units = MGD77_cp_txt (mgd77cdf[MGD77_TIME].units);
-		H->info[MGD77_M77_SET].col[0].comment = MGD77_cp_txt (mgd77cdf[MGD77_TIME].comment);
+		H->info[MGD77_M77_SET].col[0].abbrev = strdup ("time");
+		H->info[MGD77_M77_SET].col[0].name = strdup ("Time");
+		H->info[MGD77_M77_SET].col[0].units = strdup (mgd77cdf[MGD77_TIME].units);
+		H->info[MGD77_M77_SET].col[0].comment = strdup (mgd77cdf[MGD77_TIME].comment);
 		H->info[MGD77_M77_SET].col[0].factor = mgd77cdf[MGD77_TIME].factor;
 		H->info[MGD77_M77_SET].col[0].offset = mgd77cdf[MGD77_TIME].offset;
 		H->info[MGD77_M77_SET].col[0].corr_factor = 1.0;
@@ -1531,7 +1503,7 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 		MGD77_nc_status (nc_inq_varname    (F->nc_id, id, name));	/* Get column abbreviation */
 		if (!strcmp (name, "MGD77_flags") || !strcmp (name, "CDF_flags")) continue;	/* Flags are dealt with separately later */
 		c = MGD77_Get_Set (name);					/* Determine which set this column belongs to */
-		H->info[c].col[c_id[c]].abbrev = MGD77_cp_txt (name);
+		H->info[c].col[c_id[c]].abbrev = strdup (name);
 		MGD77_nc_status (nc_inq_vartype    (F->nc_id, id, &H->info[c].col[c_id[c]].type));	/* Get data type */
 		/* Look for optional attributes */
 		if (nc_inq_attlen   (F->nc_id, id, "long_name", &length) != NC_ENOTATT) {		/* Get long name */
@@ -2441,6 +2413,14 @@ int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F)
 	return (k);
 }
 
+int MGD77_Match_List (char *word, int n_fields, char **list)
+{
+	int j, k;
+	
+	for (j = 0, k = MGD77_NOT_SET; k == MGD77_NOT_SET && j < n_fields; j++) if (!strcmp (word, list[j])) k = j;
+	return (k);
+}
+
 int MGD77_Get_Set (char *word)
 {	/* If word is one of the standard 27 MGD77 columns or time, return 0, else return 1 */
 	int j, k;
@@ -2457,8 +2437,7 @@ void MGD77_Set_Home (struct MGD77_CONTROL *F)
 	if (F->MGD77_HOME) return;	/* Already set elsewhere */
 
 	if ((this = getenv ("MGD77_HOME")) != CNULL) {	/* MGD77_HOME was set */
-		F->MGD77_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "MGD77_Set_Home");
-		strcpy (F->MGD77_HOME, this);
+		F->MGD77_HOME = strdup (this);
 	}
 	else {	/* Set default path */
 		fprintf (stderr, "mgd77: Warning: MGD77_HOME not defined, set to %s/mgd77\n", GMT_SHAREDIR);
@@ -4739,7 +4718,7 @@ double MGD77_Recalc_Mag_Anomaly (double time, double lon, double lat, double obs
  * and apply the corrections to data before output in mgd77list
  */
 
-void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cruises, int n_cruises, struct MGD77_CORRTABLE ***CORR)
+void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, int mode, struct MGD77_CORRTABLE ***CORR)
 {
 	/* We seek to make the correction system very flexible, in particular
 	 * since it is difficult to anticipate exactly what systematic trends
@@ -4764,24 +4743,37 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 	
 	int cruise_id, id, i, pos;
 	GMT_LONG rec = 0;
-	BOOLEAN skip;
+	BOOLEAN sorted, mgd77;
 	char line[BUFSIZ], name[GMT_TEXT_LEN], factor[GMT_TEXT_LEN], origin[GMT_TEXT_LEN], basis[BUFSIZ];
 	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN], word[BUFSIZ], *p, *f;
 	struct MGD77_CORRTABLE **C_table;
 	struct MGD77_CORRECTION *c, **previous;
 	FILE *fp;
+	static char *aux_names[N_AUX] = {
+		"year",
+		"month",
+		"day",
+		"hour",
+		"min",
+		"sec",
+		"dist",
+		"azim",
+		"vel",
+		"weight",
+		"drt",
+		"igrf",
+		"carter",
+		"ngrav",
+		"ngdcid",
+	};
 	
-	if (!tablefile) {	/* Try default correction table */
-		sprintf (line, "%s%cmgd77_corrections.d" , F->MGD77_HOME, DIR_DELIM);
-		if ((fp = GMT_fopen (line, "r")) == NULL) {
-			fprintf (stderr, "%s: No default MGD77 Correction table (%s) found!\n", GMT_program, line);
-			GMT_exit (EXIT_FAILURE);
-		}
-	}
-	else if ((fp = GMT_fopen (tablefile, "r")) == NULL) {
+	if ((fp = GMT_fopen (tablefile, "r")) == NULL) {
 		fprintf (stderr, "%s: Correction table %s not found!\n", GMT_program, tablefile);
 		GMT_exit (EXIT_FAILURE);
 	}
+	
+	sorted = (mode & 1);	/* TRUE if we pass a sorted trackname list */
+	mgd77  = (mode & 2);	/* TRUE if this is being used with MGD77 data via mgd77list */
 	
 	/* Allocate empty correction table */
 	
@@ -4791,19 +4783,10 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 	while (GMT_fgets (line, BUFSIZ, fp)) {
 		rec++;
 		if (line[0] == '#' || line[0] == '\0') continue;
-		if (line[0] == '>') {	/* Cruise specified, get ID */
-			GMT_chop (line);	/* Deal with CR/LF issues */
-			sscanf (&line[1], "%s", name);
-			cruise_id = MGD77_Find_Cruise_ID (name, cruises, n_cruises);
-			skip = (cruise_id == -1); /* Not a cruise we are interested in at the moment */
-			continue;
-		}
+		GMT_chop (line);	/* Deal with CR/LF issues */
 		sscanf (line, "%s %s %[^\n]", cruise, name, arguments);
-		if ((cruise_id = MGD77_Find_Cruise_ID (cruise, cruises, n_cruises)) == -1) continue; /* Not a cruise we are interested in at the moment */
-		if ((id = MGD77_Get_Column (name, F)) == MGD77_NOT_SET) {
-			fprintf (stderr, "%s: Column %s not found - requested by the correction table %s!\n", GMT_program, name, tablefile);
-			GMT_exit (EXIT_FAILURE);
-		}
+		if ((cruise_id = MGD77_Find_Cruise_ID (cruise, cruises, n_cruises, sorted)) == MGD77_NOT_SET) continue; /* Not a cruise we are interested in at the moment */
+		if ((id = MGD77_Match_List (name, n_fields, field_names)) == MGD77_NOT_SET) continue; 		/* Not a column we are interested in at the moment */
 		pos = 0;
 		previous = &C_table[cruise_id][id].term;
 		while (GMT_strtok (arguments, " ,\t", &pos, word)) {
@@ -4854,8 +4837,8 @@ void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cru
 					sscanf (p, "%[^)])", name);
 					c->origin = 0.0;
 				}
-				if ((c->id = MGD77_Get_Column (name, F)) == MGD77_NOT_SET) {;	/* Not a regular column, check auxilliaries */
-					for (i = 0; i < N_AUX; i++) if (!strcmp (name, aux_names[i])) c->id = i;
+				if ((c->id = MGD77_Match_List (name, n_fields, field_names)) == MGD77_NOT_SET) {;	/* Not a recognized column */
+					for (i = 0; mgd77 && i < N_AUX; i++) if (!strcmp (name, aux_names[i])) c->id = i;	/* check MGD77 auxilliaries */
 					if (c->id == MGD77_NOT_SET) { /* Not an auxilliary column either */
 						fprintf (stderr, "%s: Column %s not found - requested by the correction table %s!\n", GMT_program, name, tablefile);
 						GMT_exit (EXIT_FAILURE);
@@ -4880,7 +4863,7 @@ void MGD77_Init_Correction (struct MGD77_CORRTABLE *CORR, double **value)
 	
 	for (col = 0; col < MGD77_SET_COLS; col++) {
 		for (current = CORR[col].term; current; current = current->next) {
-			if (GMT_is_dnan (current->origin)) current->origin = value[current->id][0];
+			if (GMT_is_dnan (current->origin) && value) current->origin = value[current->id][0];
 			if (GMT_is_dnan (current->origin)) {
 				fprintf (stderr, "%s: Correction origin = T has NaN in 1st record, reset to 0!\n", GMT_program);
 				current->origin = 0.0;
@@ -4893,7 +4876,7 @@ double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux
 {	/* Calculates the correction term for a single observation */
 	double dz = 0.0, z;
 	struct MGD77_CORRECTION *current;
-	
+		
 	for (current = C; current; current = current->next) {
 		if (current->id == -1) {	/* Just a constant */
 			dz = current->factor;
@@ -4907,6 +4890,28 @@ double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux
 		}
 	}
 	return (dz);
+}
+
+void MGD77_Free_Correction (struct MGD77_CORRTABLE **CORR, int n)
+{	/* Free up memory */
+	int i, col;
+	struct MGD77_CORRECTION *current, *past;
+	struct MGD77_CORRTABLE *C;
+	
+	for (i = 0; i < n; i++) {	/* For each table per track */
+		C = CORR[i];	/* Pointer to this track's corr table */
+		for (col = 0; col < MGD77_SET_COLS; col++) {
+			current = C[col].term;
+			while (current->next) {
+				past = current;
+				current = current->next;
+				GMT_free ((void *)past);
+			}
+			GMT_free ((void *)current);
+		}
+		GMT_free ((void *)C);
+	}
+	GMT_free ((void *)CORR);	
 }
 
 double MGD77_Copy (double z) {
@@ -4924,25 +4929,33 @@ double MGD77_Sind (double z) {
 	return (sind (z));
 }
 
-int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises)
+int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises, BOOLEAN sorted)
 {
-	int low, high, mid, last = -1, way;
+	if (!cruises) return (-1);	/* Null pointer passed */
 	
-	low = 0;
-	high = n_cruises;
-	while (low < high) {
-		mid = (low + high) / 2;
-		if (mid == last) return (-1);	/* No such cruise */
-		way = strcmp (name, cruises[mid]);
-		if (way > 0)
-			low = mid;
-		else if (way < 0)
-			high = mid;
-		else 
-			return (mid);
-		last = mid;
+	if (sorted) {	/* cruises array is lexically sorted; use binary search */
+		int low = 0, high, mid, last = MGD77_NOT_SET, way;
+
+		high = n_cruises;
+		while (low < high) {
+			mid = (low + high) / 2;
+			if (mid == last) return (MGD77_NOT_SET);	/* No such cruise */
+			way = strcmp (name, cruises[mid]);
+			if (way > 0)
+				low = mid;
+			else if (way < 0)
+				high = mid;
+			else 
+				return (mid);
+			last = mid;
+		}
+		return (low);
 	}
-	return (low);
+	else {	/* Brute force scan */
+		int i;
+		for (i = 0; i < n_cruises; i++) if (!strcmp (name, cruises[i])) return (i);
+		return (MGD77_NOT_SET);
+	}
 }
 
 int MGD77_atoi (char *txt) {

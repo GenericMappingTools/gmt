@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.93 2008-09-29 20:47:45 guru Exp $
+ *	$Id: x2sys.c,v 1.94 2008-10-05 01:18:35 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -508,8 +508,7 @@ void x2sys_set_home (void)
 	if (X2SYS_HOME) return;	/* Already set elsewhere */
 
 	if ((this = getenv ("X2SYS_HOME")) != CNULL) {	/* Set user's default path */
-		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "x2sys_set_home");
-		strcpy (X2SYS_HOME, this);
+		X2SYS_HOME = strdup (this);
 	}
 	else {
 		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_SHAREDIR) + 7), (size_t)1, "x2sys_set_home");
@@ -778,8 +777,7 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 	while (fgets (line, BUFSIZ, fp)) {
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s", name);
-		p[n] = (char *) GMT_memory (VNULL, (size_t)(strlen(name)+1), sizeof (char), "x2sys_read_list");
-		strcpy (p[n], name);
+		p[n] = strdup (name);
 		n++;
 		if (n == n_alloc) {
 			n_alloc <<= 1;
@@ -924,8 +922,7 @@ struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, int id_no, int fl
 {
 	struct X2SYS_BIX_TRACK_INFO *I;
 	I = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory (VNULL, (size_t)1, sizeof (struct X2SYS_BIX_TRACK_INFO), X2SYS_program);
-	I->trackname = (char *) GMT_memory (VNULL, (size_t)(strlen(name)+1), sizeof (char), X2SYS_program);
-	strcpy (I->trackname, name);
+	I->trackname = strdup (name);
 	I->track_id = id_no;
 	I->flag = flag;
 	I->next_info = NULL;
@@ -975,8 +972,7 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID)
 			}
 			B->head[id].track_id = id;
 			B->head[id].flag = flag;
-			B->head[id].trackname = (char *) GMT_memory (VNULL, (size_t)(strlen(name)+1), sizeof (char), X2SYS_program);
-			strcpy (B->head[id].trackname, name);
+			B->head[id].trackname = strdup (name);
 		}
 		else {
 			this_info->next_info = x2sys_bix_make_entry (name, id, flag);
@@ -1222,7 +1218,7 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 	struct X2SYS_COE_PAIR *P;
 	char line[BUFSIZ], txt[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], start[2][GMT_TEXT_LEN];
 	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list, **ignore;
-	int i, k, p, len, n_pairs, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
+	int i, k, p, n_pairs, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
 	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE;
 	double x, m, lon, dist[2];
 
@@ -1294,6 +1290,7 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 	strcat (fmt, " %lg %lg");	/* The item we want */
 
 	trk_list = (char **) GMT_memory (VNULL, (size_t)n_alloc_t, sizeof (char *), GMT_program);
+	
 	more = TRUE;
 	n_pairs = *nx = 0;
 	while (more) {	/* Read dbase until EOF */
@@ -1316,9 +1313,7 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 			id[k] = x2sys_find_track (trk[k], trk_list, n_tracks);	/* Return track id # for this leg */
 			if (id[k] == -1) {
 				/* Leg not in the data base yet, add it */
-				len = strlen (trk[k]) + 1;
-				trk_list[n_tracks] = (char *) GMT_memory (VNULL, len, sizeof (char ), GMT_program);
-				strcpy (trk_list[n_tracks], trk[k]);
+				trk_list[n_tracks] = strdup (trk[k]);
 				id[k] = n_tracks++;
 				if (n_tracks == n_alloc_t) {
 					n_alloc_t <<= 1;
