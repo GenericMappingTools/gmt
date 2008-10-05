@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.161 2008-08-14 02:46:36 remko Exp $
+ *	$Id: gmt_io.c,v 1.162 2008-10-05 01:35:10 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2901,12 +2901,10 @@ int GMT_import_table (void *source, int source_type, struct GMT_TABLE **table, d
 			else
 				sscanf (&GMT_io.segment_header[1], "%s", buffer);
 			if (strlen (buffer)) {
-				T->segment[seg]->label = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(buffer)+1), sizeof (char), GMT_program);
-				strcpy (T->segment[seg]->label, buffer);
+				T->segment[seg]->label = strdup (buffer);
 			}
 			if (strlen (GMT_io.segment_header)) {
-				T->segment[seg]->header = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(GMT_io.segment_header)+1), sizeof (char), GMT_program);
-				strcpy (T->segment[seg]->header, GMT_io.segment_header);
+				T->segment[seg]->header = strdup (GMT_io.segment_header);
 			}
 		}
 

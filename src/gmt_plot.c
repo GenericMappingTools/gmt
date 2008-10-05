@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.232 2008-08-14 02:46:37 remko Exp $
+ *	$Id: gmt_plot.c,v 1.233 2008-10-05 01:35:10 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4138,7 +4138,7 @@ struct EPS *GMT_epsinfo (char *program)
 {
 	/* Supply info about the EPS file that will be created */
 
-	int fno[5], id, i, n, n_fonts, last, move_up = FALSE;
+	int fno[5], id, i, n_fonts, last, move_up = FALSE;
 	double old_x0, old_y0, old_x1, old_y1;
 	double tick_space, frame_space, u_dx, u_dy;
 	double dy, x0, y0, orig_x0 = 0.0, orig_y0 = 0.0;
@@ -4274,20 +4274,12 @@ struct EPS *GMT_epsinfo (char *program)
 
 	/* Get user name and date */
 
-	if ((pw = getpwuid (getuid ())) != NULL) {
-
-		n = strlen (pw->pw_name) + 1;
-		new->name = (char *) GMT_memory (VNULL, (size_t)n, sizeof (char), "GMT_epsinfo");
-		strcpy (new->name, pw->pw_name);
-	}
+	if ((pw = getpwuid (getuid ())) != NULL)
+		new->name = strdup (pw->pw_name);
 	else
-	{
-		new->name = (char *) GMT_memory (VNULL, (size_t)8, sizeof (char), "GMT_epsinfo");
-		strcpy (new->name, "unknown");
-	}
+		new->name = strdup ("unknown");
 	sprintf (info, "GMT v%s Document from %s", GMT_VERSION, program);
-	new->title = (char *) GMT_memory (VNULL, (size_t)(strlen (info) + 1), sizeof (char), "GMT_epsinfo");
-	strcpy (new->title, info);
+	new->title = strdup (info);
 
 	return (new);
 }

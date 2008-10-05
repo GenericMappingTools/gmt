@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.357 2008-10-02 17:08:45 guru Exp $
+ *	$Id: gmt_init.c,v 1.358 2008-10-05 01:35:10 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2594,9 +2594,7 @@ int GMT_getdefpath (int get, char **P)
 	id--;	/* Get 0 or 1 */
 	GMT_getsharepath ("conf", "gmtdefaults_", suffix[id], line);
 
-	path = (char *) GMT_memory (VNULL, (size_t)(strlen (line) + 1), sizeof (char), GMT_program);
-
-	strcpy (path, line);
+	path = strdup (line);
 
 	*P = path;
 
@@ -2835,8 +2833,7 @@ int GMT_load_user_media (void) {	/* Load any user-specified media formats */
 
 		GMT_str_tolower (media);
 
-		GMT_user_media_name[n] = (char *) GMT_memory (VNULL, (size_t)(strlen(media)+1), sizeof (char), GMT_program);
-		strcpy (GMT_user_media_name[n], media);
+		GMT_user_media_name[n] = strdup (media);
 		GMT_user_media[n].width  = w;
 		GMT_user_media[n].height = h;
 		n++;
@@ -2987,8 +2984,7 @@ void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shortha
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
 		sscanf (line, "%s %s %s %s %s", a, b, c, d, e);
-		GMT_file_suffix[n] = (char *) GMT_memory (VNULL, (size_t)(strlen(a)+1), sizeof (char), GMT_program);
-		strcpy (GMT_file_suffix[n], a);
+		GMT_file_suffix[n] = strdup (a);
 		GMT_file_id[n] = GMT_grd_format_decoder (b);
 		GMT_file_scale[n] = (strcmp (c, "-")) ? atof (c) : 1.0;
 		GMT_file_offset[n] = (strcmp (d, "-")) ? atof (d) : 0.0;
@@ -3254,8 +3250,7 @@ void GMT_set_home (void)
 	/* Determine GMT_SHAREDIR (directory containing coast, cpt, etc. subdirectories) */
 
 	if ((this = getenv ("GMT_SHAREDIR")) != CNULL) {	/* GMT_SHAREDIR was set */
-		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-		strcpy (GMT_SHAREDIR, this);
+		GMT_SHAREDIR = strdup (this);
 	}
 	else {	/* Default is GMT_SHARE_PATH */
 		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_SHARE_PATH) + 1), sizeof (char), "GMT");
@@ -3265,8 +3260,7 @@ void GMT_set_home (void)
 	/* Determine GMT_HOMEDIR (user home directory) */
 
 	if ((this = getenv ("HOME")) != CNULL) {	/* HOME was set */
-		GMT_HOMEDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-		strcpy (GMT_HOMEDIR, this);
+		GMT_HOMEDIR = strdup (this);
 	}
 	else {
 #ifdef WIN32
@@ -3281,8 +3275,7 @@ void GMT_set_home (void)
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
 	if ((this = getenv ("GMT_USERDIR")) != CNULL) {	/* GMT_USERDIR was set */
-		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-		strcpy (GMT_USERDIR, this);
+		GMT_USERDIR = strdup (this);
 	}
 	else if (GMT_HOMEDIR) {	/* Use default path for GMT_USERDIR (~/.gmt) */
 		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_HOMEDIR) + 6), sizeof (char), "GMT");
@@ -3307,24 +3300,21 @@ void GMT_set_home (void)
 		if (access(this,R_OK))
 			GMT_DATADIR = CNULL;
 		else {
-			GMT_DATADIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-			strcpy (GMT_DATADIR, this);
+			GMT_DATADIR = strdup (this);
 		}
 	}
 	if ((this = getenv ("GMT_GRIDDIR")) != CNULL) {	/* GMT_GRIDDIR was set */
 		if (access(this,R_OK))
 			GMT_GRIDDIR = CNULL;
 		else {
-			GMT_GRIDDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-			strcpy (GMT_GRIDDIR, this);
+			GMT_GRIDDIR = strdup (this);
 		}
 	}
 	if ((this = getenv ("GMT_IMGDIR")) != CNULL) {	/* GMT_IMGDIR was set */
 		if (access(this,R_OK))
 			GMT_IMGDIR = CNULL;
 		else {
-			GMT_IMGDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-			strcpy (GMT_IMGDIR, this);
+			GMT_IMGDIR = strdup (this);
 		}
 	}
 
@@ -3337,8 +3327,7 @@ void GMT_set_home (void)
 			GMT_TMPDIR = CNULL;
 		}
 		else {
-			GMT_TMPDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
-			strcpy (GMT_TMPDIR, this);
+			GMT_TMPDIR = strdup (this);
 		}
 	}
 }
@@ -3429,8 +3418,7 @@ int GMT_history (int argc, char ** argv)
 		}
 		if (line[0] != '-') continue;	/* Possibly reading old .gmtcommands4 format or junk */
 		line[strlen(line)-1] = 0;
-		GMT_oldargv[GMT_oldargc] = (char *) GMT_memory (VNULL, (size_t)(strlen (line) + 1), (size_t)1, "GMT");
-		strcpy (GMT_oldargv[GMT_oldargc], line);
+		GMT_oldargv[GMT_oldargc] = strdup (line);
 		if (GMT_oldargv[GMT_oldargc][1] == 'j') old_j = GMT_oldargv[GMT_oldargc];
 		GMT_oldargc++;
 		if (GMT_oldargc > GMT_N_UNIQUE) {
@@ -5698,8 +5686,7 @@ int GMT_init_fonts (int *n_fonts)
 			fprintf (stderr, "GMT Fatal Error: Trouble decoding font info for font %d\n", i);
 			GMT_exit (EXIT_FAILURE);
 		}
-		GMT_font[i].name = (char *)GMT_memory (VNULL, (size_t)(strlen (fullname)+1), sizeof (char), GMT_program);
-		strcpy (GMT_font[i].name, fullname);
+		GMT_font[i].name = strdup (fullname);
 		i++;
 		if (i == n_alloc) {
 			n_alloc <<= 1;
