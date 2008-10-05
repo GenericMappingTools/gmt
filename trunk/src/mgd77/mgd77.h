@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.97 2008-08-14 02:46:38 remko Exp $
+ *	$Id: mgd77.h,v 1.98 2008-10-05 01:18:35 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -464,9 +464,10 @@ extern BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow ope
 extern double MGD77_Epoch_zero;
 extern int MGD77_pos[MGD77_N_DATA_EXTENDED];
 
-void MGD77_Parse_Corrtable (struct MGD77_CONTROL *F, char *tablefile, char **cruises, int n_cruises, struct MGD77_CORRTABLE ***CORR);
+void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, int mode, struct MGD77_CORRTABLE ***CORR);
 void MGD77_Init_Correction (struct MGD77_CORRTABLE *CORR, double **value);
 double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux, GMT_LONG rec);
+void MGD77_Free_Correction (struct MGD77_CORRTABLE **CORR, int n);
 
 #include "mgd77_functions.h"	/* These were created by mgd77netcdfhelper.sh */
 

@@ -6,7 +6,7 @@ mgd77list \- A data-extractor for MGD77[+] files
 \fBmgd77list\fP \fINGDC-ids\fP OPT(F)\fIcolumns\fP[,\fIlogic\fP][:\fIbittests\fP] 
 [ OPT(A)[\fB+\fP]\fBc\fP|\fBd\fP|\fBf\fP|\fBm\fP\fIcode\fP ] [ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] 
 [ OPT(Da)\fIstartdate\fP ] [ OPT(Db)\fIstopdate\fP ] [ OPT(E) ] [ OPT(Ga)\fIstartrec\fP ] [ OPT(Gb)\fIstoprec\fP ] 
-[ GMT_H_OPT ] [ OPT(I)\fIignore\fP ] [ OPT(X)[\fIcorrtable\fP] ] [ GMT_Mo_OPT ] 
+[ GMT_H_OPT ] [ OPT(I)\fIignore\fP ] [ OPT(L)[\fIcorrtable\fP] ] [ GMT_Mo_OPT ] 
 [ OPT(Nd)|\fBs\fP\fIunit\fP ] [ OPT(Q)\fBa\fP|\fBv\fP\fImin\fP/\fImax\fP ] [ GMT_Rgeo_OPT ] [ OPT(Sa)\fIstartdist\fP[unit] ] 
 [ OPT(Sb)\fIstopdist\fP[unit] ] [ OPT(T)[\fBm\fP|\fBe\fP] ]  [ GMT_V_OPT ] 
 [ OPT(W)\fIweight\fP ] [ OPT(Z)\fI+\fP|\fB-\fP ] [ GMT_bo_OPT ]
@@ -316,7 +316,7 @@ be repeated to ignore more than one format.  [Default ignores none].
 .TP
 .B \-L
 Apply optimal corrections to columns where such corrections are available.  Append the correction
-table to use [Default uses the correction table mgd77_corrections.d in the \fB$MGD77_HOME\fP directory].
+table to use [Default uses the correction table mgd77_corrections.txt in the \fB$MGD77_HOME\fP directory].
 For the format of this file, see CORRECTIONS below.
 .TP
 .B \-M
@@ -408,7 +408,7 @@ but recalculate the two residuals based on the latest reference fields, try:
 .br
 .sp
 \fBmgd77list\fP `cat cruises.lis` \fB\-F\fPlon,lat,mag,faa \fB\-Af\fP2,4 \fB\-Am\fP2 > data.d
-.SH RECALCUATED ANOMALIES
+.SH RECALCULATED ANOMALIES
 When recalculated anomalies are requested (either explicitly via the OPT(A) option or implicitly
 via E77 metadata in the MGD77+ file) we only do so for the records whose original anomaly was
 not a NaN.  This restriction is implemented since many anomaly columns contains corrections, usually
@@ -451,7 +451,7 @@ function).  The argument \fIabbrev\fP is one of the abbreviations for observatio
 given as \fBT\fP it means that we should replace it with the value of \fIabbrev\fP for the very
 first record in the file (this is usually only done for \fItime\fP).  If the first record entry is
 NaN we revert \fIorigin\fP to zero.  Optionally, raise the entire expression to the given \fIpower\fP,
-before multiplying by the amplitude.  The following is an example of ficticious corrections to the
+before multiplying by the amplitude.  The following is an example of fictitious corrections to the
 cruise 99999999, implying the \fBdepth\fP should have the Carter correction removed, \fBfaa\fP should have a linear
 trend removed, the magnetic anomaly (\fBmag\fP) should be corrected by a strange dependency on ship heading and latitude, and
 \fBgob\fPs needs to have 10 mGal added (hence given as -10):

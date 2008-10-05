@@ -4,7 +4,7 @@
 x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH SYNOPSIS
 \fBx2sys_datalist\fP \fItrack(s)\fP OPT(T)\fITAG\fP [ OPT(F)\fIname1,name2,...\fP ] 
-[ GMT_H_OPT ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
+[ GMT_H_OPT ] [ OPT(L)[\fIcorrtable\fP] ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_datalist\fP reads one or more files and produces a single ASCII [or binary] table. 
 The files can be of any format, which must be described and passed with the
@@ -22,6 +22,11 @@ No space between the option flag and the associated arguments.
 Give a comma-separated sub-set list of column names defined in the definition
 file. [Default selects all data columns].
 #include "explain_-H.txt"
+TP
+.B \-L
+Apply optimal corrections to columns where such corrections are available.  Append the correction
+table to use [Default uses the correction table \fITAG\fP_corrections.txt in the \fB$X2SYS_HOME\fP directory].
+For the format of this file, see CORRECTIONS below.
 .TP
 .B \-M
 Output a multisegment header between data from each track.  Note this option does not
@@ -44,8 +49,45 @@ area, and make output binary, run
 .br
 .sp
 \fBx2sys_datalist\fP `cat tracks.lis` \fB\-T\fPTRK \fB\-F\fPlon,lat,depth \fB\-R\fP-40/-30/25/35 \fB\-bo\fP > alltopo.xyz
+.SH CORRECTIONS
+The correction table is an ASCII file with coefficients and parameters needed to carry out corrections.
+This table is usually produced by \fBx2sys_solve\fP.
+Comment records beginning with # are allowed.  All correction records are of the form
+.br
+.sp
+\fItrackID observation correction\fP
+.br
+.sp
+where \fItrackID\fP is the track prefix, \fIobservation\fP is one of the abbreviations for an observed field
+listed under \fB\-F\fP above, and \fIcorrection\fP consists of one or more \fIterm\fPs that will be summed up and
+then \fBsubtracted\fP from the observation before output.  Each \fIterm\fP must have this exact syntax:
+.br
+.sp
+\fIfactor\fP[*[\fIfunction\fP]([\fIscale\fP](\fIabbrev\fP[-\fIorigin\fP]))[^\fIpower\fP]]
+.br
+.sp
+where terms in brackets are optional (the brackets themselves are not used but regular parentheses must
+be used as indicated).  No spaces are allowed except between \fIterm\fPs. The \fIfactor\fP is the amplitude
+of the basis function, while the optional \fIfunction\fP can be one of sin, cos, or exp. The
+optional \fIscale\fP and \fIorigin\fP can be used to translate the argument (before giving it to the optional
+function).  The argument \fIabbrev\fP is one of the abbreviations for observations listed above.  If \fIorigin\fP is
+given as \fBT\fP it means that we should replace it with the value of \fIabbrev\fP for the very
+first record in the file (this is usually only done for \fItime\fP).  If the first record entry is
+NaN we revert \fIorigin\fP to zero.  Optionally, raise the entire expression to the given \fIpower\fP,
+before multiplying by the amplitude.  The following is an example of fictitious corrections to the
+track ABC, implying the \fBz\fP column should have a linear
+trend removed, the field (\fBobs\fP) should be corrected by a strange dependency on latitude, and
+\fBweight\fPs needs to have 1 added (hence correction is given as -1):
+.br
+.sp
+ABC z	7.1	1e-4*((time-T))
+.br
+ABC obs	0.5*exp(-1e-3(lat))^1.5
+.br
+ABC weight	-1
 .SH "SEE ALSO"
 .IR blockmean (1),
 .IR GMT (1),
 .IR surface (1),
 .IR x2sys_cross (1)
+.IR x2sys_solve (1)
