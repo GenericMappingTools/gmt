@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.195 2008-10-05 01:18:35 guru Exp $
+ *	$Id: mgd77.c,v 1.196 2008-10-07 02:35:57 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4718,6 +4718,82 @@ double MGD77_Recalc_Mag_Anomaly (double time, double lon, double lat, double obs
  * and apply the corrections to data before output in mgd77list
  */
 
+int MGD77_Scan_Corrtable (char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, char ***item_names, int mode)
+{
+	/* This function scans the correction table to determine which named columns
+	 * are needed for corrections as well as which auxilliary variables (e.g.,
+	 * time, dist, heading) are needed.
+	 */
+
+	int cruise_id, id, pos, n_list = 0, n_alloc = GMT_SMALL_CHUNK;
+	GMT_LONG rec = 0;
+	BOOLEAN sorted, mgd77;
+	char line[BUFSIZ], name[GMT_TEXT_LEN], factor[GMT_TEXT_LEN], origin[GMT_TEXT_LEN], basis[BUFSIZ];
+	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN], word[BUFSIZ], *p, *f;
+	char **list;
+	FILE *fp;
+
+	if ((fp = GMT_fopen (tablefile, "r")) == NULL) {
+		fprintf (stderr, "%s: Correction table %s not found!\n", GMT_program, tablefile);
+		GMT_exit (EXIT_FAILURE);
+	}
+
+	list = (char **) GMT_memory (VNULL, n_alloc, sizeof (char *), GMT_program);
+	
+	sorted = (mode & 1);	/* TRUE if we pass a sorted trackname list */
+	mgd77  = (mode & 2);	/* TRUE if this is being used with MGD77 data via mgd77list */
+
+	while (GMT_fgets (line, BUFSIZ, fp)) {
+		rec++;
+		if (line[0] == '#' || line[0] == '\0') continue;
+		GMT_chop (line);	/* Deal with CR/LF issues */
+		sscanf (line, "%s %s %[^\n]", cruise, name, arguments);
+		if ((cruise_id = MGD77_Find_Cruise_ID (cruise, cruises, n_cruises, sorted)) == MGD77_NOT_SET) continue; /* Not a cruise we are interested in at the moment */
+		if ((id = MGD77_Match_List (name, n_fields, field_names)) == MGD77_NOT_SET) continue; 		/* Not a column we are interested in at the moment */
+		pos = 0;
+		while (GMT_strtok (arguments, " ,\t", &pos, word)) {
+			/* Each word p will be of the form factor*[cos|sin|exp]([<scale>](<name>[-<origin>]))[^<power>] */
+			if ((f = strchr (word, '*')) != NULL) {	/* No basis function, just a constant, the intercept term */
+				sscanf (word, "%[^*]*%s", factor, basis);
+				p = basis;
+				if (strchr ("CcSsEe", p[0])) p += 3;	/* Need cos, sin, or exp */
+				if (p[0] != '(') {
+					fprintf (stderr, "%s: Correction table format error line %ld, term = %s: Expected 1st opening parenthesis!\n", GMT_program, rec, arguments);
+					GMT_exit (EXIT_FAILURE);
+				}
+				p++;
+				while (p && *p != '(') p++;	/* Skip the opening parentheses */
+				if (p[0] != '(') {
+					fprintf (stderr, "%s: Correction table format error line %ld, term = %s: Expected 2nd opening parenthesis!\n", GMT_program, rec, arguments);
+					GMT_exit (EXIT_FAILURE);
+				}
+				p++;
+				if (strchr (p, '-'))	/* Have (value-origin) */
+					sscanf (p, "%[^-]-%[^)])", name, origin);
+				else			/* Just (value), origin == 0.0 */
+					sscanf (p, "%[^)])", name);
+				if ((id = MGD77_Match_List (name, n_list, list)) == MGD77_NOT_SET) {;	/* Not a recognized column */
+					list[n_list] = strdup (name);
+					n_list++;
+					if (n_list == n_alloc) {
+						n_alloc <<= 1;
+						list = (char **) GMT_memory ((void *)list, n_alloc, sizeof (char *), GMT_program);
+					}
+				}
+			}
+		}
+	}
+	GMT_fclose (fp);
+	if (n_list) {
+		list = (char **) GMT_memory ((void *)list, n_list, sizeof (char *), GMT_program);
+		*item_names = list;
+	}
+	else
+		GMT_free ((void *)list);
+		
+	return (n_list);
+}
+
 void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, int mode, struct MGD77_CORRTABLE ***CORR)
 {
 	/* We seek to make the correction system very flexible, in particular
@@ -4741,7 +4817,7 @@ void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int 
 	 * cruise abbrev term_1 term_2 ... term_n
 	 */
 	
-	int cruise_id, id, i, pos;
+	int cruise_id, id, i, pos, n_aux;
 	GMT_LONG rec = 0;
 	BOOLEAN sorted, mgd77;
 	char line[BUFSIZ], name[GMT_TEXT_LEN], factor[GMT_TEXT_LEN], origin[GMT_TEXT_LEN], basis[BUFSIZ];
@@ -4749,16 +4825,16 @@ void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int 
 	struct MGD77_CORRTABLE **C_table;
 	struct MGD77_CORRECTION *c, **previous;
 	FILE *fp;
-	static char *aux_names[N_AUX] = {
+	static char *aux_names[N_MGD77_AUX] = {
+		"dist",
+		"azim",
+		"vel",
 		"year",
 		"month",
 		"day",
 		"hour",
 		"min",
 		"sec",
-		"dist",
-		"azim",
-		"vel",
 		"weight",
 		"drt",
 		"igrf",
@@ -4774,6 +4850,7 @@ void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int 
 	
 	sorted = (mode & 1);	/* TRUE if we pass a sorted trackname list */
 	mgd77  = (mode & 2);	/* TRUE if this is being used with MGD77 data via mgd77list */
+	n_aux = (mgd77) ? N_MGD77_AUX : N_GENERIC_AUX;
 	
 	/* Allocate empty correction table */
 	
@@ -4791,7 +4868,7 @@ void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int 
 		previous = &C_table[cruise_id][id].term;
 		while (GMT_strtok (arguments, " ,\t", &pos, word)) {
 			c = (struct MGD77_CORRECTION *)GMT_memory (VNULL, (size_t)1, sizeof (struct MGD77_CORRECTION), "MGD77_parse_corrtable");
-			/* Each word p will be of the form factor*[cos|sin]([<scale>](<name>[-<origin>]))[^<power>] */
+			/* Each word p will be of the form factor*[cos|sin|exp]([<scale>](<name>[-<origin>]))[^<power>] */
 			if ((f = strchr (word, '*')) == NULL) {	/* No basis function, just a constant, the intercept term */
 				c->factor = atof (word);
 				c->modifier = (PFD) MGD77_Copy;
@@ -4838,7 +4915,7 @@ void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int 
 					c->origin = 0.0;
 				}
 				if ((c->id = MGD77_Match_List (name, n_fields, field_names)) == MGD77_NOT_SET) {;	/* Not a recognized column */
-					for (i = 0; mgd77 && i < N_AUX; i++) if (!strcmp (name, aux_names[i])) c->id = i;	/* check MGD77 auxilliaries */
+					for (i = 0; i < n_aux; i++) if (!strcmp (name, aux_names[i])) c->id = i;	/* check auxilliaries */
 					if (c->id == MGD77_NOT_SET) { /* Not an auxilliary column either */
 						fprintf (stderr, "%s: Column %s not found - requested by the correction table %s!\n", GMT_program, name, tablefile);
 						GMT_exit (EXIT_FAILURE);
@@ -4901,7 +4978,7 @@ void MGD77_Free_Correction (struct MGD77_CORRTABLE **CORR, int n)
 	for (i = 0; i < n; i++) {	/* For each table per track */
 		C = CORR[i];	/* Pointer to this track's corr table */
 		for (col = 0; col < MGD77_SET_COLS; col++) {
-			current = C[col].term;
+			if (!(current = C[col].term)) continue;
 			while (current->next) {
 				past = current;
 				current = current->next;

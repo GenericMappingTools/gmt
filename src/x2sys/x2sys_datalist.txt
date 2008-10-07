@@ -3,8 +3,8 @@
 .SH NAME
 x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH SYNOPSIS
-\fBx2sys_datalist\fP \fItrack(s)\fP OPT(T)\fITAG\fP [ OPT(F)\fIname1,name2,...\fP ] 
-[ GMT_H_OPT ] [ OPT(L)[\fIcorrtable\fP] ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
+\fBx2sys_datalist\fP \fItrack(s)\fP OPT(T)\fITAG\fP [ OPT(C)\fBc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(F)\fIname1,name2,...\fP ] 
+[ GMT_H_OPT ] [ OPT(L)[\fIcorrtable\fP] ] [ OPT(Nd)|\fBs\fP\fIunit\fP ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_datalist\fP reads one or more files and produces a single ASCII [or binary] table. 
 The files can be of any format, which must be described and passed with the
@@ -17,6 +17,18 @@ Only the named data fields will be output [Default selects all columns].
 Sets the data set \fITAG\fP which among other things sets the definition file.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
+.TP
+.B \-C
+Append a one-letter code to select the procedure for along-track distance
+calculation, if needed (see \fB\-N\fP for selecting units):
+.br
+	\fBc\fP Cartesian (user) distances [Default].
+.br
+	\fBf\fP Flat Earth distances.
+.br
+	\fBg\fP Great circle distances.
+.br
+	\fBe\fP Geodesic distances on current GMT ellipsoid.
 .TP
 .B \-F
 Give a comma-separated sub-set list of column names defined in the definition
@@ -31,6 +43,11 @@ For the format of this file, see CORRECTIONS below.
 .B \-M
 Output a multisegment header between data from each track.  Note this option does not
 imply anything about the input file; that information is conveyed via the system tag (\fB\-T\fP).
+.TP
+.B \-N
+Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
+\fBc\fP (userdist or userdist/usertime), \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
+\fBn\fP (nautical miles or knots).  [Default is \fB\-Ndc \-Nsc\fP (user units)].
 .TP
 .B \-S
 Suppress output records where all the data columns are NaN [Default will output all records].
