@@ -48,6 +48,7 @@ imply anything about the input file; that information is conveyed via the system
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
 \fBc\fP (userdist or userdist/usertime), \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
 \fBn\fP (nautical miles or knots).  [Default is \fB\-Ndc \-Nsc\fP (user units)].
+#include "explain_-R.txt"
 .TP
 .B \-S
 Suppress output records where all the data columns are NaN [Default will output all records].

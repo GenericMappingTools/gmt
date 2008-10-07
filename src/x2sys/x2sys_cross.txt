@@ -61,7 +61,7 @@ This option should only be used with *.gmt-formatted MGD77 files.
 .TP
 .B \-N
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
-\fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
+\fBc\fP (userdist or userdist/usertime), \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
 \fBn\fP (nautical miles or knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
 .TP
 .B \-Q
@@ -95,18 +95,19 @@ Report the values of each track at the crossover [Default reports the crossover 
 .SH REMARKS
 The COEs found are printed out to standard output in ASCII format (unless
 \fB\-bo\fP is set).  When ASCII is chosen, the output format depends on
-whether or not old-style XOVER output (\fB\-L\fP) has been selected.
-If ASCII, then the first record contains the file names and their start year,
+whether or not old-style XOVER output (\fB\-L\fP) has been selected [See
+the \fBx_over\fP man page for more details].
+If ASCII, then the first record contains the name of the tag used, the second
+records specifies the exact command line used for this run, and the third
+record contains the names of each column.  For each track pair, there will be
+a multisegment header record containing the two file names and their start/stop/dist
+information (start/stop is absolute time or NaN if unavailable while dist is the
+total track length),
 whereas subsequent records have the data for each COE encountered.  The fields
-written out are lat, lon, time along track #1 and #2,
-x_gravity, x_magnetics, x_bathymetry, average gravity, average magnetics,
-average bathymetry, heading along track #1 and #2. If
-the default format is chosen then the same header record starts with "> " but
-also ends with the times of the first record for each cruise, and
-the output format for crossovers are first 10 columns that contain
-x, y, time along track #1 and #2, distance along track #1 and #2,
-heading along track #1 and #2, velocity along track #1 and #2, and
-then pairs of (COE, average value) for each data type (or track-values #1 and #2; see \fB\-2\fP).
+written out are x, y, time along track #1 and #2, distance along track #1 and #2,
+heading along track #1 and #2, velocity along track #1 and #2, and then pairs
+of columns for each selected observable. These are either
+pairs of (COE, average value) for each data type (or track-values #1 and #2; see \fB\-2\fP).
 It is recommended that the Akima spline is used
 instead of the natural cubic spline, since it is less sensitive to outliers
 that tend to introduce wild oscillations in the interpolation.
@@ -138,4 +139,5 @@ files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 .IR x2sys_get (1)
 .IR x2sys_list (1)
 .IR x2sys_put (1)
+.IR x_over (1)
 
