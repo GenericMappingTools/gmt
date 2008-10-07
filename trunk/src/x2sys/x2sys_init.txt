@@ -229,16 +229,18 @@ which has both obs1 and obs3 inside the specified region, run
 .TP
 .B MGD77[+] or GMT:
 Definition files already exist for MGD77 files (both standard ASCII and
-enhanced netCDF-based MGD77+ files), the old *.gmt files manipulated by the
-mgg supplements, and plain x,y[,z] and lon,lat[,z] tracks.
+enhanced netCDF-based MGD77+ files) and the old *.gmt files manipulated by the
+mgg supplements; for these data sets the OPT(C) and OPT(N) will default to
+great circle distance calculation in km and speed in m/s.  There are also
+definition files for plain x,y[,z] and lon,lat[,z] tracks.
 To initiate new track databases to be used with MGD77 data from NGDC, try
 .br
 .sp
-\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-E\fPmgd77 \fB\-Rd \-Gd \-I\fP1/1 \fB\-Wt\fP900  \fB\-Wd\fP5
+\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-E\fPmgd77 \fB\-Rd \-Gd \-Nsn \-I\fP1/1 \fB\-Wt\fP900  \fB\-Wd\fP5
 .br
 .sp
-where we have chosen a 15 minute (900 sec) or 5 km threshold to indicate a data gap;
-the other steps are similar.
+where we have chosen a 15 minute (900 sec) or 5 km threshold to indicate a data gap
+and selected knots as the speed; the other steps are similar.
 .TP
 .B Binary files:
 Let us pretend that your line files actually are binary files with a
