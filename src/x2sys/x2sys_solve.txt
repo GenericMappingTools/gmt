@@ -3,7 +3,7 @@
 .SH NAME
 x2sys_solve \- Determine systematic corrections from crossovers
 .SH SYNOPSIS
-\fBx2sys_solve\fP OPT(C)\fIcolumn\fP OPT(E)\fImode\fP [ \fICOEs.d\fP ] [ OPT(I)\fIfinfofile\fP] [ GMT_V_OPT ] [ GMT_bi_OPT ]
+\fBx2sys_solve\fP OPT(C)\fIcolumn\fP OPT(E)\fImode\fP [ \fICOEs.d\fP ] [ GMT_V_OPT ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
 \fBx2sys_solve\fP will use the supplied crossover information to
 solve for systematic corrections that can then be applied per track
@@ -28,9 +28,8 @@ records must contain cruise ID, H, COE.
 .br
 \fBs\fP will fit f(p) = \fIa\fP * z (a unit correction); records must contain cruise ID, z1, z2.
 .br
-\fBt\fP will fit f(p) = \fIa\fP + \fIb\fP * (\fIt - t0\fP) (linear drift; \fIt0\fP is 00:00
-on the first day of the track); records must contain cruise ID, t1, t2, COE, and OPT(I) must be used
-to provide the t0 array.
+\fBt\fP will fit f(p) = \fIa\fP + \fIb\fP * (\fIt - t0\fP) (linear drift; \fIt0\fP is the start time of the track);
+records must contain cruise ID, t1-t0, t2-t0, COE.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -38,9 +37,6 @@ No space between the option flag and the associated arguments.
 Name of file with the required crossover columns.  NOTE: If OPT(bi) is used then the
 first two columns are expected to hold the integer track IDs; otherwise we expect
 those columns to hold the text string names of the two tracks.
-.TP
-.B \-I
-Name of ascii file with a list of track names and their start date; required for OPT(E)\fBt\fP.
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 .SH EXAMPLES
@@ -55,9 +51,9 @@ To fit a simple bias offset to faa for all tracks, try
 To fit a faa linear drift with time instead, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPmgd77 \fB\-C\fPfaa \fB\-F\fPntc  > faa_coe.txt
+\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPmgd77 \fB\-C\fPfaa \fB\-F\fPnTc  > faa_coe.txt
 .br
-\fBx2sys_solve\fP faa_coe.txt \fB\-V \-C\fPfaa \fB\-I\fPtrks_t0.lis \fB\-E\fPt > coe_table.txt
+\fBx2sys_solve\fP faa_coe.txt \fB\-V \-C\fPfaa \fB\-E\fPt > coe_table.txt
 .br
 .sp
 To estimate heading corrections based on magnetic crossovers associated with the tag mgd77
@@ -83,3 +79,4 @@ To estimate unit scale corrections based on bathymetry crossovers, try
 .IR x2sys_init (1)
 .IR x2sys_list (1)
 .IR x2sys_put (1)
+.IR x2sys_report (1)
