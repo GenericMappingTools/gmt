@@ -45,7 +45,7 @@ No space between the option flag and the associated arguments.
 .TP
 .B \-E
 Specifies the file extension (suffix) for these data files.  If not given we use the
-definition file prefix as the suffix (see \fB\-D\fP).
+definition file prefix as the suffix (see OPT(D)).
 .TP
 .B \-F
 Force creating new files if old ones are present [Default will abort if old files are found].
@@ -68,7 +68,8 @@ For binary files all fields must be NaN.
 .B \-N
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
 \fBc\fP (userdist or userdist/usertime), \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
-\fBn\fP (nautical miles or knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
+\fBn\fP (nautical miles or knots).  [Default is OPT(Ndk) OPT(Nse) (km and m/s) if OPT(G) is set
+and OPT(Ndc) and OPT(Nsc) otherwise (Cartesian units)].
 #include "explain_-Rgeo.txt"
 #include "explain_-V.txt"
 .TP
