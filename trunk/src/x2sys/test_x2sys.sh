@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: test_x2sys.sh,v 1.4 2008-10-07 02:50:17 guru Exp $
+#	$Id: test_x2sys.sh,v 1.5 2008-10-07 18:49:33 guru Exp $
 #
 # Test script that exercise the various options in x2sys.
 # We generate a grid and some fake tracks and sample the
@@ -48,9 +48,9 @@ d	a	N		0		1	0	-
 z	a	N		0		1	0	-
 EOF
 
-x2sys_init FAKE -Dxydz -V -F -R-5/5/-5/5 -I1
+x2sys_init FAKE -Dxydz -V -F -R-5/5/-5/5 -I1 -Cc
 
-x2sys_cross -TFAKE track[ABC].xydz -Qe -Cc -V -2 > fake_COE_orig.txt
+x2sys_cross -TFAKE track[ABC].xydz -Qe -V -2 > fake_COE_orig.txt
 
 makecpt -T-1/1/0.1 -Cpolar -Z > hat.cpt
 PS=x2sys_1.ps
@@ -77,7 +77,7 @@ gmtmath trackC.xydz -C3 0.05 ADD -Ca = trackCc.xydz
 
 # Obtain all external crossovers
 
-x2sys_cross -TFAKE track[ABC]c.xydz -Qe -Cc -V -2 > fake_COE_constant.txt
+x2sys_cross -TFAKE track[ABC]c.xydz -Qe -V -2 > fake_COE_constant.txt
 x2sys_list -TFAKE -Cz fake_COE_constant.txt -Fnc > COE.txt
 
 # Make track plots for shifted tracks
@@ -111,7 +111,7 @@ x2sys_datalist -TFAKE -Lcorr_const.lis trackBc.xydz > trackBcc.xydz
 x2sys_datalist -TFAKE -Lcorr_const.lis trackCc.xydz > trackCcc.xydz
 
 # Make track plots for corrected tracks
-x2sys_cross -TFAKE track[ABC]cc.xydz -Qe -Cc -V -2 > fake_COE_constant_corr.txt
+x2sys_cross -TFAKE track[ABC]cc.xydz -Qe -V -2 > fake_COE_constant_corr.txt
 
 PS=x2sys_3.ps
 cut -f3,4 trackA.xydz | psxy -R0/16/-1.5/1.5 -JX6i/2.25i -X1.25i -P -Y7.25i -B5f1/0.2g10:."X2SYS 3\072 Constants resolved":WSne -K -W0.25p,red,- > $PS
@@ -139,7 +139,7 @@ awk '{printf "%s\t%s\t%s\t%g\n", $1, $2, $3, $4 + 0.05 - 0.025*$3}' trackC.xydz 
 
 # Obtain all external crossovers
 
-x2sys_cross -TFAKE track[ABC]d.xydz -Qe -Cc -V -2 > fake_COE_drift.txt
+x2sys_cross -TFAKE track[ABC]d.xydz -Qe -V -2 > fake_COE_drift.txt
 x2sys_list -TFAKE -Cz fake_COE_drift.txt -Fndc > COE.txt
 
 # Make track plots for shifted tracks
@@ -170,7 +170,7 @@ x2sys_datalist -TFAKE -Lcorr_trend.lis trackBd.xydz > trackBdc.xydz
 x2sys_datalist -TFAKE -Lcorr_trend.lis trackCd.xydz > trackCdc.xydz
 
 # Make track plots for corrected tracks
-x2sys_cross -TFAKE track[ABC]dc.xydz -Qe -Cc -V -2 > fake_COE_drift_corr.txt
+x2sys_cross -TFAKE track[ABC]dc.xydz -Qe -V -2 > fake_COE_drift_corr.txt
 
 PS=x2sys_5.ps
 cut -f3,4 trackA.xydz | psxy -R0/16/-1.5/1.5 -JX6i/2.25i -X1.25i -P -Y7.25i -B5f1/0.2g10:."X2SYS 5\072 Drifts resolved":WSne -K -W0.25p,red,- > $PS

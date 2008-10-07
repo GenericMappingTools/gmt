@@ -4,13 +4,13 @@
 \fBx2sys_cross\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS
 \fBx2sys_cross\fP \fItrack(s)\fP OPT(T)\fITAG\fP 
-[ OPT(Cc)|\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(F)\fIflags\fP ] [ OPT(Il)|\fBa\fP|\fBc\fP ] 
-[ GMT_J_OPT ] [ OPT(K)\fIcombi.lis\fP] [ OPT(O) ] 
-[ OPT(Nd)|\fBs\fP\fIunit\fP ] [ OPT(Qe)|\fBi\fP ] [ OPT(Sl)|\fBu\fP|\fBh\fP\fIspeed\fP ] 
+[ OPT(F)\fIflags\fP ] [ OPT(Il)|\fBa\fP|\fBc\fP ] 
+[ GMT_J_OPT ] [ OPT(K)\fIcombi.lis\fP] [ OPT(L) ] 
+[ OPT(Qe)|\fBi\fP ] [ OPT(Sl)|\fBu\fP|\fBh\fP\fIspeed\fP ] 
 [ GMT_V_OPT ][ OPT(Wt)|\fBd\fP|\fBn\fP\fIsize\fP ] [ OPT(2) ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between ("external cross-overs") or within
-("internal cross-overs") tracks, and report the time, position, distance along track,
+("internal cross-overs") tracks (Cartesian or geographic), and report the time, position, distance along track,
 heading and speed along each track segment, and the crossover and mean values for all observables.
 The names of the tracks are passed on the command line.
 By default, \fBx2sys_cross\fP will look for both external and internal cross-overs.  As an option,
@@ -21,17 +21,6 @@ you may choose to project all data using one of the map-projections prior to cal
 Sets the data set \fITAG\fP which, among other things, sets the definition file.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-.TP
-.B \-C
-Select procedure for along-track distance calculation:
-.br
-\fBc\fP Cartesian distances [Default].
-.br
-\fBf\fP Flat Earth distances.
-.br
-\fBg\fP Great circle distances.
-.br
-\fBe\fP Geodesic distances on current \fBGMT\fP ellipsoid.
 .TP
 .B \-F
 Sets which columns to use.  Give a comma-separated list of column names;
@@ -59,15 +48,11 @@ Only process the pair-combinations found in the file \fIcombi.lis\fP
 Output results using the old XOVER format [Default is X2SYS format].
 This option should only be used with *.gmt-formatted MGD77 files.
 .TP
-.B \-N
-Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
-\fBc\fP (userdist or userdist/usertime), \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
-\fBn\fP (nautical miles or knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
-.TP
 .B \-Q
 Append \fBe\fP for external crossovers only, and \fBi\fP for internal
 crossovers only [Default is all crossovers].
 #include "explain_-Rgeo.txt"
+For Cartesian data just give minimum and maximum \fIx\fP and \fIy\fP values.
 .TP
 .B \-S
 Defines window of track speeds.  If speeds are outside this window we do not

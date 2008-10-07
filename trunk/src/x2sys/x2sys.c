@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.96 2008-10-07 16:11:27 guru Exp $
+ *	$Id: x2sys.c,v 1.97 2008-10-07 18:49:33 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -22,6 +22,7 @@
  * The following functions are external and user-callable form other
  * programs:
  *
+ * x2sys_set_system	: Initialize X2SYS via the specified TAG
  * x2sys_initialize	: Reads the definition info file for current data files
  * x2sys_read_file	: Reads and returns the entire data matrix
  * x2sys_read_gmtfile	: Specifically reads an old .gmt file
@@ -328,28 +329,38 @@ int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
 	X->x_col = X->y_col = X->t_col = -1;
 	X->ms_flag = '>';	/* Default multisegment header flag */
 	sprintf (line, "%s.def", fname);
+	X->dist_flag = 0;	/* Cartesian distances */
 
 	if ((fp = x2sys_fopen (line, "r")) == NULL) return (X2SYS_BAD_DEF);
 
+	X->unit[X2SYS_DIST_SELECTION][0] = 'k';		X->unit[X2SYS_DIST_SELECTION][1] = '\0';	/* Initialize for geographic data (km ad m/s) */
+	X->unit[X2SYS_SPEED_SELECTION][0] = 'e';	X->unit[X2SYS_SPEED_SELECTION][1] = '\0';
 	if (!strcmp (fname, "gmt")) {
 		X->read_file = (PFI) x2sys_read_gmtfile;
 		X->geographic = TRUE;
 		X->geodetic = 0;
+		X->dist_flag = 2;	/* Creat circle distances */
 	}
 	else if (!strcmp (fname, "mgd77+")) {
 		X->read_file = (PFI) x2sys_read_ncfile;
 		X->geographic = TRUE;
 		X->geodetic = 0;
-		MGD77_Init (&M);			/* Initialize MGD77 Machinery */
+		X->dist_flag = 2;	/* Creat circle distances */
+		MGD77_Init (&M);	/* Initialize MGD77 Machinery */
 	}
 	else if (!strcmp (fname, "mgd77")) {
 		X->read_file = (PFI) x2sys_read_mgd77file;
 		X->geographic = TRUE;
 		X->geodetic = 0;
-		MGD77_Init (&M);			/* Initialize MGD77 Machinery */
+		X->dist_flag = 2;	/* Creat circle distances */
+		MGD77_Init (&M);	/* Initialize MGD77 Machinery */
 	}
-	else
+	else {
 		X->read_file = (PFI) x2sys_read_file;
+		X->dist_flag = 0;			/* Cartesian distances */
+		X->unit[X2SYS_DIST_SELECTION][0] = 'c';	/* Reset to Cartesian */
+		X->unit[X2SYS_SPEED_SELECTION][0] = 'c';	/* Reset to Cartesian */
+	}
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '\0') continue;
 		if (line[0] == '#') {
@@ -796,10 +807,10 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 
 int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
-	char tag_file[BUFSIZ], line[BUFSIZ], p[BUFSIZ], sfile[BUFSIZ], suffix[16];
-	int geodetic = 0, pos = 0, n;
+	char tag_file[BUFSIZ], line[BUFSIZ], p[BUFSIZ], sfile[BUFSIZ], suffix[16], unit[2][2];
+	int geodetic = 0, pos = 0, n, k, dist_flag = 0;
 	double dist;
-	BOOLEAN geographic = FALSE;
+	BOOLEAN geographic = FALSE, n_given[2] = {FALSE, FALSE}, c_given = FALSE;
 	FILE *fp;
 	struct X2SYS_INFO *s;
 	
@@ -808,6 +819,7 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 	x2sys_set_home ();
 
 	memset ((void *)B, 0, sizeof (struct X2SYS_BIX));
+	memset ((void *)unit, 0, 4*sizeof (char));
 	B->bin_x = B->bin_y = 1.0;
 	B->x_min = 0.0;	B->x_max = 360.0;	B->y_min = -90.0;	B->y_max = +90.0;
 	B->time_gap = B->dist_gap = dist = DBL_MAX;	/* Default is no data gap */
@@ -822,7 +834,7 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 	while (fgets (line, BUFSIZ, fp) && line[0] == '#');	/* Skip comment records */
 	GMT_chop (line);	/* Remove trailing CR or LF */
 
-	while ((GMT_strtok (line, " \t", &pos, p))) {	/* Process the -D -I -R -G -W arguments from the header */
+	while ((GMT_strtok (line, " \t", &pos, p))) {	/* Process the -C -D -G -I -N -M -R -W arguments from the header */
 		if (p[0] == '-') {
 			switch (p[1]) {
 				/* Common parameters */
@@ -835,6 +847,17 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 
 				/* Supplemental parameters */
 
+				case 'C':	/* Distance calculation flag */
+					if (p[2] == 'c') dist_flag = 0;
+					if (p[2] == 'f') dist_flag = 1;
+					if (p[2] == 'g') dist_flag = 2;
+					if (p[2] == 'e') dist_flag = 3;
+					if (dist_flag < 0 || dist_flag > 3) {
+						fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
+						return (X2SYS_BAD_ARG);
+					}
+					c_given = TRUE;
+					break;
 				case 'D':
 					strcpy (sfile, &p[2]);
 					break;
@@ -854,6 +877,28 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 					break;
 				case 'M':	/* Multisegment files */
 					GMT_multisegment (&p[2]);
+					break;
+				case 'N':	/* Distance and speed unit selection */
+					switch (p[2]) {
+						case 'd':	/* Distance unit selection */
+							k = X2SYS_DIST_SELECTION;
+							break;
+						case 's':	/* Speed unit selection */
+							k = X2SYS_SPEED_SELECTION;
+							break;
+						default:
+							fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
+							return (X2SYS_BAD_ARG);
+							break;
+					}
+					if (k == X2SYS_DIST_SELECTION || k == X2SYS_SPEED_SELECTION) {
+						unit[k][0] = p[3];
+						if (!strchr ("cekmn", (int)unit[k][0])) {
+							fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
+							return (X2SYS_BAD_ARG);
+						}
+						n_given[k] = TRUE;
+					}
 					break;
 				case 'W':
 					switch (p[2]) {
@@ -889,10 +934,25 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 			fprintf (stderr, "%s: Your -R and -G settings are contradicting each other!\n", X2SYS_program);
 			return (X2SYS_CONFLICTING_ARGS);
 		}
+		if (c_given && dist_flag == 0) {
+			fprintf (stderr, "%s: Your -C and -G settings are contradicting each other!\n", X2SYS_program);
+			return (X2SYS_CONFLICTING_ARGS);
+		}
+		if (n_given[X2SYS_DIST_SELECTION] && unit[X2SYS_DIST_SELECTION][0] == 'c') {
+			fprintf (stderr, "%s: Your -Nd and -G settings are contradicting each other!\n", X2SYS_program);
+			return (X2SYS_CONFLICTING_ARGS);
+		}
+		if (n_given[X2SYS_SPEED_SELECTION] && unit[X2SYS_SPEED_SELECTION][0] == 'c') {
+			fprintf (stderr, "%s: Your -Ns and -G settings are contradicting each other!\n", X2SYS_program);
+			return (X2SYS_CONFLICTING_ARGS);
+		}
 		s->geographic = TRUE;
 		s->geodetic = geodetic;	/* Override setting */
 		if (GMT_360_RANGE (B->x_max, B->x_min)) B->periodic = 1;
 	}
+	if (n_given[X2SYS_DIST_SELECTION]) s->unit[X2SYS_DIST_SELECTION][0] = unit[X2SYS_DIST_SELECTION][0];
+	if (n_given[X2SYS_SPEED_SELECTION]) s->unit[X2SYS_SPEED_SELECTION][0] = unit[X2SYS_SPEED_SELECTION][0];
+	if (c_given) s->dist_flag = dist_flag;
 	if (GMT_io.multi_segments[GMT_IN]) {	/* Files have multiple segments; make sure this is also set in s */
 		s->multi_segment = TRUE;
 		s->ms_flag = GMT_io.EOF_flag[GMT_IN];
@@ -941,6 +1001,7 @@ struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag)
 
 int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID)
 {
+	/* Reads the binned track listing which is ASCII */
 	/* mode = 0 gives linked list, mode = 1 gives fixed array */
 	int id, flag, last_id = -1;
 	size_t n_alloc = GMT_CHUNK;
@@ -994,6 +1055,7 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID)
 
 int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
 {
+	/* Reads the binned index file which is native binary and thus swab is an issue */
 	char index_file[BUFSIZ], index_path[BUFSIZ];
 	FILE *fbin;
 	int index = 0, no_of_tracks, i, id, flag;
@@ -1012,7 +1074,7 @@ int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
 
 	while ((fread ((void *)(&index), sizeof (int), (size_t)1, fbin)) == 1) {
 		fread ((void *)(&no_of_tracks), sizeof (int), (size_t)1, fbin);
-		if (!swap && index < 0) swap = TRUE;	/* A negative index must mean that swapping is needed */
+		if (!swap && (index < 0 || no_of_tracks < 0)) swap = TRUE;	/* A negative index or no_of_tracks must mean that swapping is needed */
 		if (swap) {
 			index = GMT_swab4 (index);
 			no_of_tracks = GMT_swab4 (no_of_tracks);

@@ -27,11 +27,11 @@ If not given we read standard input.
 Specifies maximum asymmetry in the distribution of crossovers relative to the mid point in time (or distance if
 not time is available).  Asymmetry is computed as (n_right - n_left)/(n_right + n_left), referring the the number
 of crossovers that falls in the left or right half of the range.  Symmetric distributions will have values close
-to zero.  If specified, we tracks whose asymmetry exceeds the specify cutoff in absolute value [1].
+to zero.  If specified, we exclude tracks whose asymmetry exceeds the specify cutoff in absolute value [1, i.e., include all].
 .TP
 .B \-F
-Specify your desired output using any combination of \fIacdhiInNtTvxyz\fP, in any order.  Do not space between
-the letters, and your selection is case-sensitive.  The output will be ASCII (or binary, see \fB\-bo\fP) columns of values.
+Specify your desired output using any combination of \fIacdhiInNtTvxyz\fP, in any order.  Do not use space between
+the letters, and note your selection is case-sensitive.  The output will be ASCII (or binary, see \fB\-bo\fP) columns of values.
 Description of codes: \fBa\fP is the angle (< 90) defined by the crossing tracks,
 \fBc\fP is crossover value of chosen observation (see OPT(C)),
 \fBd\fP is distance along track,
@@ -57,7 +57,7 @@ Name of ASCII file with a list of track names (one per record) that should be ex
 [Default includes all tracks].
 .TP
 .B \-L
-Only report data from pairs that generated at least \fInx_min\fP crossovers [all pairs].
+Only report data from pairs that generated at least \fInx_min\fP crossovers between them [use all pairs].
 .TP
 .B \-M
 Multiple segment output format.  Segments with crossovers for a single track pair are separated by a

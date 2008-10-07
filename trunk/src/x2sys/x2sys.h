@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.39 2008-10-07 16:11:27 guru Exp $
+ *	$Id: x2sys.h,v 1.40 2008-10-07 18:49:33 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -130,12 +130,15 @@ struct X2SYS_INFO {
 	int *out_order;			/* Array with column number in the order for output */
 	int *use_column;		/* Array of T/F for which columns to use */
 	int geodetic;			/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
+	int dist_flag;			/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
 	PFI read_file;			/* Pointer to function that reads this file */
 	BOOLEAN ascii_in;		/* TRUE if input is in ascii */
 	BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
 	BOOLEAN multi_segment;		/* TRUE if there are multiple segments in this file */
 	BOOLEAN geographic;		/* TRUE if x/y data are lon/lat */
 	BOOLEAN ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
+	char unit[2][2];		/* Units for distance (c = Cartesian, e = meter, k = km, m = miles, n = nautical miles)
+	 				   and speed (c = Cartesian, e = m/s, k = km/hr, m = miles/hr, n = knots) */
 	char ms_flag;			/* Multi-segment header flag */
 	char suffix[16];		/* Suffix for these data files */
 	char fflags[BUFSIZ];		/* Text copy of selected columns */
@@ -289,3 +292,6 @@ extern void x2sys_free_coe_dbase (struct X2SYS_COE_PAIR *P, GMT_LONG np);
 #define X2SYS_BIX_BAD_J		-7
 #define X2SYS_BIX_BAD_I		-8
 #define X2SYS_BIX_BAD_IJ	-9
+
+#define X2SYS_DIST_SELECTION	0
+#define X2SYS_SPEED_SELECTION	1
