@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.342 2008-10-07 17:20:01 remko Exp $
+	$Id: ChangeLog,v 1.343 2008-10-07 18:49:33 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-10-08	remko
 	* gmtmath.c:		Added INRANGE operator. Was added to grdmath on 2004-03-28,
@@ -8,6 +8,8 @@
 2008-10-06	pwessel
 	* x2sys/x2sys_datalist.c:	Now has [experimental] support for using a correction
 				table and can compute auxiliary data such as distance and az.
+	* x2sys/x2sys_init.c:	Now, the dist and speed unit settings (-C -N) are set here
+				and are kept with the TAG for use in other x2sys programs
 				
 2008-10-03	pwessel
 	* x2sys/x2sys_report.c:	New program [experimental] to report statistics of crossovers.

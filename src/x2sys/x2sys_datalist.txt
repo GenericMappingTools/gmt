@@ -3,8 +3,8 @@
 .SH NAME
 x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH SYNOPSIS
-\fBx2sys_datalist\fP \fItrack(s)\fP OPT(T)\fITAG\fP [ OPT(C)\fBc\fP|\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(F)\fIname1,name2,...\fP ] 
-[ GMT_H_OPT ] [ OPT(L)[\fIcorrtable\fP] ] [ GMT_Mo_OPT ] [ OPT(Nd)|\fBs\fP\fIunit\fP ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
+\fBx2sys_datalist\fP \fItrack(s)\fP OPT(T)\fITAG\fP [ OPT(F)\fIname1,name2,...\fP ] 
+[ GMT_H_OPT ] [ OPT(L)[\fIcorrtable\fP] ] [ GMT_Mo_OPT ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_datalist\fP reads one or more files and produces a single ASCII [or binary] table. 
 The files can be of any format, which must be described and passed with the
@@ -17,18 +17,6 @@ Only the named data fields will be output [Default selects all columns].
 Sets the data set \fITAG\fP which among other things sets the definition file.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-.TP
-.B \-C
-Append a one-letter code to select the procedure for along-track distance
-calculation, if needed (see \fB\-N\fP for selecting units):
-.br
-	\fBc\fP Cartesian (user) distances [Default].
-.br
-	\fBf\fP Flat Earth distances.
-.br
-	\fBg\fP Great circle distances.
-.br
-	\fBe\fP Geodesic distances on current GMT ellipsoid.
 .TP
 .B \-F
 Give a comma-separated sub-set list of column names defined in the definition
@@ -43,11 +31,6 @@ For the format of this file, see CORRECTIONS below.
 .B \-M
 Output a multisegment header between data from each track.  Note this option does not
 imply anything about the input file; that information is conveyed via the system tag (\fB\-T\fP).
-.TP
-.B \-N
-Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
-\fBc\fP (userdist or userdist/usertime), \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
-\fBn\fP (nautical miles or knots).  [Default is \fB\-Ndc \-Nsc\fP (user units)].
 #include "explain_-R.txt"
 .TP
 .B \-S
@@ -58,7 +41,7 @@ Suppress output records where all the data columns are NaN [Default will output 
 To extract all data from the old-style MGG supplement file c2104.gmt, recognized by the tag MGG:
 .br
 .sp
-\fBx2sys_datalist\fP c2104.gmt \fB\-T\fPmgg > myfile
+\fBx2sys_datalist\fP c2104.gmt \fB\-T\fPMGG > myfile
 .br
 .sp
 To make lon,lat, and depth input for \fBblockmean\fP and \fBsurface\fP using all the files
@@ -76,8 +59,8 @@ Comment records beginning with # are allowed.  All correction records are of the
 \fItrackID observation correction\fP
 .br
 .sp
-where \fItrackID\fP is the track prefix, \fIobservation\fP is one of the abbreviations for an observed field
-listed under \fB\-F\fP above, and \fIcorrection\fP consists of one or more \fIterm\fPs that will be summed up and
+where \fItrackID\fP is the track name, \fIobservation\fP is one of the abbreviations for an observed field
+contained in files under this TAG, and \fIcorrection\fP consists of one or more white-space-separated \fIterm\fPs that will be summed up and
 then \fBsubtracted\fP from the observation before output.  Each \fIterm\fP must have this exact syntax:
 .br
 .sp
@@ -88,14 +71,18 @@ where terms in brackets are optional (the brackets themselves are not used but r
 be used as indicated).  No spaces are allowed except between \fIterm\fPs. The \fIfactor\fP is the amplitude
 of the basis function, while the optional \fIfunction\fP can be one of sin, cos, or exp. The
 optional \fIscale\fP and \fIorigin\fP can be used to translate the argument (before giving it to the optional
-function).  The argument \fIabbrev\fP is one of the abbreviations for observations listed above.  If \fIorigin\fP is
+function).  The argument \fIabbrev\fP is one of the abbreviations for columns known to this TAG.
+However, it can also be one of three ausiliary terms \fBdist\fP (for along-track distances), \fBazim\fP for
+along-track azimuths, and \fBvel\fP (for along-track speed); these are all sensitive to OPT(C) and OPT(N) and
+\fBvel\fP requires \fBtime\fP to be present in the data.  If \fIorigin\fP is
 given as \fBT\fP it means that we should replace it with the value of \fIabbrev\fP for the very
-first record in the file (this is usually only done for \fItime\fP).  If the first record entry is
+first record in the file (this is usually only done for \fItime\fP).  If the first data record entry is
 NaN we revert \fIorigin\fP to zero.  Optionally, raise the entire expression to the given \fIpower\fP,
-before multiplying by the amplitude.  The following is an example of fictitious corrections to the
+before multiplying by \fIfactor\fP.  The following is an example of fictitious corrections to the
 track ABC, implying the \fBz\fP column should have a linear
-trend removed, the field (\fBobs\fP) should be corrected by a strange dependency on latitude, and
-\fBweight\fPs needs to have 1 added (hence correction is given as -1):
+trend removed, the field \fBobs\fP should be corrected by a strange dependency on latitude,
+\fBweight\fP needs to have 1 added (hence correction is given as -1), and \fBfuel\fP should be
+reduced by a distance term:
 .br
 .sp
 ABC z	7.1	1e-4*((time-T))
@@ -103,6 +90,8 @@ ABC z	7.1	1e-4*((time-T))
 ABC obs	0.5*exp(-1e-3(lat))^1.5
 .br
 ABC weight	-1
+.br
+ABC fuel 0.02*((dist))
 .SH "SEE ALSO"
 .IR blockmean (1),
 .IR GMT (1),

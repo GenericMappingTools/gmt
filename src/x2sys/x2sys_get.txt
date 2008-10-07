@@ -64,4 +64,7 @@ other, but only those pairs which involves tracks in your list new.lis, try
 .IR x2sys_cross (1)
 .IR x2sys_datalist (1)
 .IR x2sys_init (1)
+.IR x2sys_list (1)
 .IR x2sys_put (1)
+.IR x2sys_report (1)
+.IR x2sys_solve (1)

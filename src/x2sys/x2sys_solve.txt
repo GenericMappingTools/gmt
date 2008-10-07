@@ -12,21 +12,23 @@ for using a least-squares approach.
 .TP
 .B \-C
 Specify which data column you want to process.  Needed for proper formatting
-of the output correction table.
+of the output correction table and should match the same option used in
+\fBx2sys_list\fP when preparing the input data.
 .TP
 .B \-E
 The correction type you wish to model.  Choose among the following functions
-f(p), where \fIp\fP are the \fIm\fP parameters per track to fit simultaneously:
+f(p), where \fIp\fP are the \fIm\fP parameters per track that we will fit simultaneously
+using a least squares approach:
 .br
-\fBc\fP will fit f(p) = \fIa\fP (a constant); records must contain cruise ID, COE.
+\fBc\fP will fit f(p) = \fIa\fP (a constant offset); records must contain cruise ID, COE.
 .br
 \fBd\fP will fit f(p) = \fIa\fP + \fIb\fP * \fId\fP (linear drift; \fId\fP is distance;
 records must contain cruise ID, d1, d2, COE.
 .br
-\fBh\fP will fit f(p) = \fIa\fP + \fIb\fP cos(H) + \fIc\fP cos(2H) + \fId\fP sin(H) + \fIe\fP sin(2H) (magnetic heading H);
-records must contain cruise ID, H, COE.
+\fBh\fP will fit f(p) = \fIa\fP + \fIb\fP cos(H) + \fIc\fP cos(2H) + \fId\fP sin(H) + \fIe\fP sin(2H) (magnetic heading correction);
+records must contain cruise ID, heading H, COE.
 .br
-\fBs\fP will fit f(p) = \fIa\fP * z (a unit correction); records must contain cruise ID, z1, z2.
+\fBs\fP will fit f(p) = \fIa\fP * z (a unit scale correction); records must contain cruise ID, z1, z2.
 .br
 \fBt\fP will fit f(p) = \fIa\fP + \fIb\fP * (\fIt - t0\fP) (linear drift; \fIt0\fP is the start time of the track);
 records must contain cruise ID, t1-t0, t2-t0, COE.
