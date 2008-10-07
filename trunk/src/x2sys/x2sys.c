@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.94 2008-10-05 01:18:35 guru Exp $
+ *	$Id: x2sys.c,v 1.95 2008-10-07 02:35:57 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1216,10 +1216,10 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 
 	FILE *fp;
 	struct X2SYS_COE_PAIR *P;
-	char line[BUFSIZ], txt[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], start[2][GMT_TEXT_LEN];
+	char line[BUFSIZ], txt[BUFSIZ], kind[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], start[2][GMT_TEXT_LEN];
 	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list, **ignore;
 	int i, k, p, n_pairs, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
-	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE;
+	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time;
 	double x, m, lon, dist[2];
 
 	fp = GMT_stdin;	/* Default to stdin if dbase is NULL */
@@ -1236,7 +1236,7 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 		/* Looking to process these two [three] key lines:
 		 * # Tag: MGD77
 		   # Command: x2sys_cross ... [in later versions only]
-		   # lon	lat	t_1	t_2	dist_1	dist_2	head_1	head_2	vel_1	vel_2	twt_1	twt_2	depth_1	depth_2	...
+		   # lon	lat	t_1|i_1	t_2|i_2	dist_1	dist_2	head_1	head_2	vel_1	vel_2	twt_1	twt_2	depth_1	depth_2	...
 		 */
 		if (!strncmp (line, "# Tag:", 6)) {	/* Found the # TAG record */
 			if (strcmp (TAG, &line[7])) {	/* -Ttag and this TAG do not match */
@@ -1249,10 +1249,11 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 			continue;	/* Goto next record */
 		}
 		if (!strncmp (line, "# ", 2)) {	/* Found the possible # lon lat ... record */
-			sscanf (&line[2], "%*s %*s %s", txt);	/* Get first column name after lon/x etc */
-			if (strchr (txt, '_')) {	/* A column name with underscore */
+			sscanf (&line[2], "%*s %*s %s %*s %*s %*s %*s %*s %*s %*s %s", kind, txt);	/* Get first column name after lon/x etc */
+			if (strchr (txt, '_')) {	/* A column name with underscore; we thus assume this is the correct record */
 				char ptr[BUFSIZ];
 				int pos = 0, item = 0;
+				no_time = !strcmp (kind, "i_1");	/* No time in this database */
 				if (txt[strlen(txt)-1] == '1') two_values = TRUE;	/* Option -2 was used */
 				while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */
 					item++;
@@ -1341,8 +1342,10 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 			strcpy (P[p].trk[k], trk[k]);
 			P[p].id[k] = id[k];
 			P[p].year[k] = year[k];
-			if (n_items == 4 || !strcmp (start[k], "NaN"))
-				P[p].start[k] = P[p].stop[k] = P[p].dist[k] = GMT_d_NaN;
+			if (n_items == 4)	/* Old format with no start/dist stuff */
+				P[p].start[k] = P[p].stop[k] = dist[k] = GMT_d_NaN;
+			else if (!strcmp (start[k], "NaN"))	/* No time for this track */
+				P[p].start[k] = P[p].stop[k] = GMT_d_NaN;
 			else {
 				if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
 					fprintf (stderr, "%s: ERROR: Header time specification tstart%d (%s) in wrong format\n", GMT_program, (k+1), start[k]);
@@ -1352,8 +1355,8 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 					fprintf (stderr, "%s: ERROR: Header time specification tstop%d (%s) in wrong format\n", GMT_program, (k+1), stop[k]);
 					exit (EXIT_FAILURE);
 				}
-				P[p].dist[k] = dist[k];
 			}
+			P[p].dist[k] = dist[k];
 		}
 		n_pairs++;
 		if (n_pairs == n_alloc_p) {
@@ -1367,13 +1370,13 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 			GMT_chop (line);	/* Get rid of [CR]LF */
 			sscanf (line, fmt, &P[p].COE[k].x, &P[p].COE[k].y, t_txt[0], t_txt[1], &P[p].COE[k].d[0], &P[p].COE[k].d[1], &P[p].COE[k].h[0], 
 				&P[p].COE[k].h[1], &P[p].COE[k].v[0], &P[p].COE[k].v[1], &P[p].COE[k].z[0], &P[p].COE[k].z[1]);
-			if (!strcmp (t_txt[0], "NaN"))
+			if (no_time || !strcmp (t_txt[0], "NaN"))
 				P[p].COE[k].t[0] = GMT_d_NaN;
 			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[0], GMT_IS_ABSTIME, &P[p].COE[k].t[0]), t_txt[0])) {
 				fprintf (stderr, "%s: ERROR: Time specification t1 (%s) in wrong format\n", GMT_program, t_txt[0]);
 				exit (EXIT_FAILURE);
 			}
-			if (!strcmp (t_txt[1], "NaN"))
+			if (no_time || !strcmp (t_txt[1], "NaN"))
 				P[p].COE[k].t[1] = GMT_d_NaN;
 			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[1], GMT_IS_ABSTIME, &P[p].COE[k].t[1]), t_txt[1])) {
 				fprintf (stderr, "%s: ERROR: Time specification t2 (%s) in wrong format\n", GMT_program, t_txt[1]);

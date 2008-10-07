@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.340 2008-10-03 21:04:15 guru Exp $
+	$Id: ChangeLog,v 1.341 2008-10-07 02:35:57 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-10-06	pwessel
+	* x2sys/x2sys_datalist.c:	Now has [experimental] support for using a correction
+				table and can compute auxiliary data such as distance and az.
+				
 2008-10-03	pwessel
 	* x2sys/x2sys_report.c:	New program [experimental] to report statistics of crossovers.
 

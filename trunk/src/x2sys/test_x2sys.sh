@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: test_x2sys.sh,v 1.2 2008-10-05 02:03:26 guru Exp $
+#	$Id: test_x2sys.sh,v 1.3 2008-10-07 02:35:57 guru Exp $
 #
 # Test script that exercise the various options in x2sys.
 # We generate a grid and some fake tracks and sample the
@@ -44,13 +44,13 @@ cat << EOF > xydz.def
 #SKIP 0		# The number of header records to skip
 #---------------------------------------------------------------------
 #name	intype	NaN-proxy?	NaN-proxy	scale	offset	oformat
-x	a	N		0		1	0	%10.5lf
-y	a	N		0		1	0	%9.5lf
-d	a	N		0		1	0	%6.1lf
-z	a	N		0		1	0	%6.1lf
+x	a	N		0		1	0	-
+y	a	N		0		1	0	-
+d	a	N		0		1	0	-
+z	a	N		0		1	0	-
 EOF
 
-x2sys_init FAKE -Dxydz -V -F
+x2sys_init FAKE -Dxydz -V -F -R-5/5/-5/5 -I1
 
 x2sys_cross -TFAKE track[ABC].xydz -Qe -Cc -V -2 > fake_COE_orig.txt
 
@@ -102,15 +102,15 @@ psxy -R -J -O /dev/null >> $PS
 gv $PS &
 
 # Solve for constants
-x2sys_solve COE.txt -Cz -Ec -V > corr.lis
+x2sys_solve COE.txt -Cz -Ec -V > corr_const.lis
 A=`grep trackA corr.lis | cut -f3`
 B=`grep trackB corr.lis | cut -f3`
 C=`grep trackC corr.lis | cut -f3`
 
 # Correct tracks
-gmtmath trackAc.xydz -C3 $A SUB -Ca = trackAcc.xydz
-gmtmath trackBc.xydz -C3 $B SUB -Ca = trackBcc.xydz
-gmtmath trackCc.xydz -C3 $C SUB -Ca = trackCcc.xydz
+x2sys_datalist -TFAKE -Lcorr_const.lis trackAc.xydz > trackAcc.xydz
+x2sys_datalist -TFAKE -Lcorr_const.lis trackBc.xydz > trackBcc.xydz
+x2sys_datalist -TFAKE -Lcorr_const.lis trackCc.xydz > trackCcc.xydz
 
 # Make track plots for corrected tracks
 x2sys_cross -TFAKE track[ABC]cc.xydz -Qe -Cc -V -2 > fake_COE_constant_corr.txt
@@ -131,7 +131,6 @@ cut -f3,4 trackCcc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,black 
 x2sys_list -TFAKE -Cz fake_COE_constant_corr.txt -Fdc -StrackC | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
 psxy -R -J -O /dev/null >> $PS
 gv $PS &
-
 #---------------------------------------------------------
 # Test 2: Add some linear drifts and try to resolve them
 #---------------------------------------------------------
@@ -165,21 +164,12 @@ psxy -R -J -O /dev/null >> $PS
 gv $PS &
 
 # Solve for constants
-x2sys_solve COE.txt -Cz -Ed -V > corr.lis
-Ac=`grep trackA corr.lis | cut -f3`
-As=`grep trackA corr.lis | cut -f4`
-Bc=`grep trackB corr.lis | cut -f3`
-Bs=`grep trackB corr.lis | cut -f4`
-Cc=`grep trackC corr.lis | cut -f3`
-Cs=`grep trackC corr.lis | cut -f4`
+x2sys_solve COE.txt -Cz -Ed -V > corr_trend.lis
 
 # Correct tracks
-gmtmath trackAc.xydz -C3 $A SUB -Ca = trackAcc.xydz
-gmtmath trackBc.xydz -C3 $B SUB -Ca = trackBcc.xydz
-gmtmath trackCc.xydz -C3 $C SUB -Ca = trackCcc.xydz
-awk '{printf "%s\t%s\t%s\t%g\n", $1, $2, $3, $4 - '$Ac' - '$As'*$3}' trackAd.xydz > trackAdc.xydz
-awk '{printf "%s\t%s\t%s\t%g\n", $1, $2, $3, $4 - '$Bc' - '$Bs'*$3}' trackBd.xydz > trackBdc.xydz
-awk '{printf "%s\t%s\t%s\t%g\n", $1, $2, $3, $4 - '$Cc' - '$Cs'*$3}' trackCd.xydz > trackCdc.xydz
+x2sys_datalist -TFAKE -Lcorr_trend.lis trackAd.xydz > trackAdc.xydz
+x2sys_datalist -TFAKE -Lcorr_trend.lis trackBd.xydz > trackBdc.xydz
+x2sys_datalist -TFAKE -Lcorr_trend.lis trackCd.xydz > trackCdc.xydz
 
 # Make track plots for corrected tracks
 x2sys_cross -TFAKE track[ABC]dc.xydz -Qe -Cc -V -2 > fake_COE_drift_corr.txt

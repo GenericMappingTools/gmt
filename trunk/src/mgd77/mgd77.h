@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.98 2008-10-05 01:18:35 guru Exp $
+ *	$Id: mgd77.h,v 1.99 2008-10-07 02:35:57 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -180,7 +180,6 @@
 #define MGD77_BIT		6
 #define MGD77_NEQ		8
 
-#define N_AUX	15		/* Number of auxilliary columns in mgd77list */
 
 typedef char byte;	/* Used to indicate 1-byte long integer */
 typedef char* Text;	/* Used to indicate character strings */
@@ -249,6 +248,44 @@ struct MGD77_HEADER {
 	struct MGD77_DATA_INFO info[MGD77_N_SETS];	/* Info regarding [0] standard MGD77 columns and [1] any extra columns (max 32 each) */
 };
 
+
+/* We may want to output columns that themselves are not stored in the MGD77[+] files but
+ * rather are computed based on data that are stored in the file.  We consider such information
+ * as AUXILLARY columns and insert them between the observed columns when needed.  The following
+ * structures are used to facilitate this process. */
+
+#define N_MGD77_AUX	15		/* Number of auxilliary derived columns for MGD77 data */
+#define N_GENERIC_AUX	3		/* Number of auxilliary derived columns for general files (dist, azim, vel) */
+
+#define MGD77_AUX_DS	0
+#define MGD77_AUX_AZ	1
+#define MGD77_AUX_SP	2
+#define MGD77_AUX_YR	3
+#define MGD77_AUX_MO	4
+#define MGD77_AUX_DY	5
+#define MGD77_AUX_HR	6
+#define MGD77_AUX_MI	7
+#define MGD77_AUX_SC	8
+#define MGD77_AUX_WT	9
+#define MGD77_AUX_RT	10
+#define MGD77_AUX_MG	11
+#define MGD77_AUX_CT	12
+#define MGD77_AUX_GR	13
+#define MGD77_AUX_ID	14
+
+struct MGD77_AUXLIST {
+	char name[MGD77_COL_ABBREV_LEN];
+	GMT_LONG type;
+	GMT_LONG text;
+	GMT_LONG requested;
+	char header[GMT_TEXT_LEN];
+};
+
+struct MGD77_AUX_INFO {
+	GMT_LONG type;
+	GMT_LONG text;
+	GMT_LONG pos;
+};
 
 /* The data records in the MGD77 file consist of records that are 120 characters.
  * This information can be read and stored internally in the structure MGD77_DATA_RECORD.
@@ -464,6 +501,7 @@ extern BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow ope
 extern double MGD77_Epoch_zero;
 extern int MGD77_pos[MGD77_N_DATA_EXTENDED];
 
+int MGD77_Scan_Corrtable (char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, char ***item_names, int mode);
 void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, int mode, struct MGD77_CORRTABLE ***CORR);
 void MGD77_Init_Correction (struct MGD77_CORRTABLE *CORR, double **value);
 double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux, GMT_LONG rec);
