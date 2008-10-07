@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.21 2008-09-24 23:44:37 guru Exp $
+ *	$Id: gmt_vector.c,v 1.22 2008-10-07 16:24:36 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -468,7 +468,7 @@ int	GMT_jacobi_old (double *a, int *n, int *m, double *d, double *v, double *b, 
 	return(0);
 }
 
-void GMT_gauss (double *a, double *vec, int n, int nstore, double test, int *ierror, int itriag)
+void GMT_gauss (double *a, double *vec, int n_in, int nstore_in, double test, int *ierror, int itriag)
 {
  
 /* subroutine gauss, by william menke */
@@ -485,13 +485,15 @@ void GMT_gauss (double *a, double *vec, int n, int nstore, double test, int *ier
 /*                                               on TRUE useful when solving*/
 /*                                               multiple systems with same a */
         static int l1;
-        int *line, *isub, iet, ieb, i = 0, j, k, l, j2;
+        GMT_LONG *line, *isub, iet, ieb, i = 0, j, k, l, j2, n, nstore;
         double big, testa, b, sum;
 
         iet=0;  /* initial error flags, one for triagularization*/
         ieb=0;  /* one for backsolving */
-	line = (int *) GMT_memory (VNULL, (size_t)n, sizeof (int), "GMT_gauss");
-	isub = (int *) GMT_memory (VNULL, (size_t)n, sizeof (int), "GMT_gauss");
+	n = (GMT_LONG)n_in;
+	nstore = (GMT_LONG)nstore_in;
+	line = (GMT_LONG *) GMT_memory (VNULL, (size_t)n, sizeof (GMT_LONG), "GMT_gauss");
+	isub = (GMT_LONG *) GMT_memory (VNULL, (size_t)n, sizeof (GMT_LONG), "GMT_gauss");
 
 /* triangularize the matrix a*/
 /* replacing the zero elements of the triangularized matrix */
