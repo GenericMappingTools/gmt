@@ -3,17 +3,17 @@
 .SH NAME
 x2sys_binlist \- Create bin-index files from track data files
 .SH SYNOPSIS
-\fBx2sys_binlist\fP \fItrack(s)\fP [ OPT(T)\fITAG\fP ] [ OPT(Cc)|\fBf\fP|\fBg\fP|\fBe\fP ] 
-[ OPT(D) ] [ OPT(E) ] [ OPT(N)\fIunit\fP ] [ GMT_V_OPT ]
+\fBx2sys_binlist\fP \fItrack(s)\fP [ OPT(T)\fITAG\fP ] 
+[ OPT(D) ] [ OPT(E) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBx2sys_binlist\fP reads one or more track data files and produces a
 multi-segment ASCII track bin-index file (tbf) with the track id in the header and
 one data record per bin crossed; these records contain \fIlon, lat, index, flags\fP[, \fIdist\fP],
 where \fIlon, lat\fP is the coordinates of the center of the bin, the \fIindex\fP is
 the 1-D number of the bin, and \fIflags\fP is a bitflag that describes which data
-fields were available in each bin.  The optional \fIdist\fP requires \fB\-D\fP.
+fields were available in each bin.  The optional \fIdist\fP requires OPT(D).
 The input files can be of any format, which must be described and passed with the
-\fB\-T\fP option.  The bin-index listing is a crude representation of where
+OPT(T) option.  The bin-index listing is a crude representation of where
 the track goes and is used by the data archivist to build a track data base for
 track queries such as to determine which tracks
 need to be compared for crossover analysis.  You must run \fBx2ys_init\fP
@@ -22,33 +22,15 @@ to initialize the tag before you can run the indexing.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-C
-Append a one-letter code to select the procedure for along-track distance
-calculation selected with \fB\-D\fP (see \fB\-N\fP for selecting units):
-.br
-	\fBc\fP Cartesian distances in user units [Default].
-.br
-	\fBf\fP Flat Earth distances.
-.br
-	\fBg\fP Great circle distances.
-.br
-	\fBe\fP Geodesic distances on current \fBGMT\fP ellipsoid.
-.TP
 .B \-D
 Calculate the length of trackline segments per bin [Default skips this step].
-See \fB\-C\fP for method and \fB\-N\fP for units.  The length fragments are
-given as the 5th output column (after the \fIflags\fP).
+The length fragments are given as the 5th output column (after the \fIflags\fP).
 .TP
 .B \-E
 Convert data to a cylindrical equal-area projection prior to binning.  Basically, we
 apply the projection OPT(JY)\fIlon0\fP/37:04:17.166076/360, where \fIlon0\fP is the
 mid-longitude of the region.  Requires OPT(D), geographical data, and a global region
 (e.g., OPT(Rg) or OPT(Rd)).
-.TP
-.B \-N
-Append the desired distance \fIunit\fP as \fBe\fP (meter), \fBk\fP (km),
-\fBm\fP (miles), or \fBn\fP (nautical miles).  [Default is \fB\-Nk\fP (km)].
-Requires \fB\-D\fP.
 .TP
 .B \-T
 Sets the data set \fITAG\fP which among other things sets the definition file.
@@ -61,10 +43,10 @@ To create a bin index table from the MGD77 file 01030061.mgd77 using a global, 1
 .br
 .sp
 To create a track bin index file of all MGD77+ files residing in the current directory at a bin resolution
-of 30 x 30 minutes, calculating the geodesic distance lengths for each bin in km, run
+of 30 x 30 minutes ad calculating track distances, run
 .br
 .sp
-\fBx2sys_binlist\fP *.nc \fB\-T\fPMGD77+ \fB\-Ce \-D\fP > all.tbf
+\fBx2sys_binlist\fP *.nc \fB\-T\fPMGD77+ \-D\fP > all.tbf
 .SH "SEE ALSO"
 .IR gmtdefaults (1)
 .IR x2sys_init (1)
