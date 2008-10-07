@@ -6,9 +6,9 @@ x2sys_list \- Output a subset of crossovers from data base
 \fBx2sys_list\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(A)\fIasymm_max\fP ] [ OPT(F)\fIfIacdhiInNtTvxyz\fP ] 
 [ OPT(I)[\fIlist\fP] [ OPT(L)\fInx_min\fP ] [ GMT_Mo_OPT ] [ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
-\fBx2sys_list\fP will read the crossover ascii data base \fIcoedbase.txt\fP (or \fIstdin\fP)
+\fBx2sys_list\fP will read the crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)
 and extract a subset of the crossovers based on the other arguments.  The output may be
-ascii or binary.
+ASCII or binary.
 .TP
 .B \-C
 Specify which data column you want to process.  Crossovers related to this column name must be
@@ -53,7 +53,7 @@ The sign convention for \fBc,i\fP is track one minus track two (lexically sorted
 will be returned according to the \fBTIME_UNIT\fP GMT defaults setting.
 .TP
 .B \-I
-Name of ascii file with a list of track names (one per record) that should be excluded from consideration
+Name of ASCII file with a list of track names (one per record) that should be excluded from consideration
 [Default includes all tracks].
 .TP
 .B \-L

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.95 2008-10-07 02:35:57 guru Exp $
+ *	$Id: x2sys.c,v 1.96 2008-10-07 16:11:27 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1199,9 +1199,9 @@ void x2sys_err_fail (int err, char *file)
 	GMT_exit (EXIT_FAILURE);
 }
 
-/* FUnctions dealing with the reading of the COE ascii database */
+/* Functions dealing with the reading of the COE ascii database */
 
-int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn, BOOLEAN geo, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, int *nx, int *nt)
+GMT_LONG x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn, BOOLEAN geo, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, GMT_LONG *nx, int *nt)
 {
 	/* Dbase:	Name of the crossover data file [NULL for stdin]
 	 * TAG:		The current TAG, must match what is in the file
@@ -1218,7 +1218,8 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 	struct X2SYS_COE_PAIR *P;
 	char line[BUFSIZ], txt[BUFSIZ], kind[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], start[2][GMT_TEXT_LEN];
 	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list, **ignore;
-	int i, k, p, n_pairs, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
+	GMT_LONG p, n_pairs;
+	int i, k, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
 	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time;
 	double x, m, lon, dist[2];
 
@@ -1436,9 +1437,9 @@ int x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn
 	return (n_pairs);
 }
 
-void x2sys_free_coe_dbase (struct X2SYS_COE_PAIR *P, int np)
+void x2sys_free_coe_dbase (struct X2SYS_COE_PAIR *P, GMT_LONG np)
 {	/* Free up the memory associated with P as created by x2sys_read_coe_dbase */
-	int p;
+	GMT_LONG p;
 	for (p = 0; p < np; p++) GMT_free ((void *)P[p].COE);
 	GMT_free ((void *)P);
 }
