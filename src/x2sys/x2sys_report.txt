@@ -6,7 +6,7 @@ x2sys_report \- Report statistics from crossover data base
 \fBx2sys_report\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] 
 [ OPT(I)[\fIlist\fP] [ OPT(N)\fInx_min\fP ] [ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
-\fBx2sys_report\fP will read the crossover ascii data base \fIcoedbase.txt\fP (or \fIstdin\fP)
+\fBx2sys_report\fP will read the crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)
 and report on the statistics of crossovers (n, mean, stdev, rms) for each track.  Options are
 available to let you exclude tracks and limit the output.
 .TP
@@ -24,7 +24,7 @@ The name of the crossover error data base as produced by \fBx2sys_cross\fP.
 If not given we read standard input.
 .TP
 .B \-I
-Name of ascii file with a list of track names (one per record) that should be excluded from consideration
+Name of ASCII file with a list of track names (one per record) that should be excluded from consideration
 [Default includes all tracks].
 .TP
 .B \-N
