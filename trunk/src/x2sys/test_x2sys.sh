@@ -1,16 +1,14 @@
 #!/bin/sh
-#	$Id: test_x2sys.sh,v 1.3 2008-10-07 02:35:57 guru Exp $
+#	$Id: test_x2sys.sh,v 1.4 2008-10-07 02:50:17 guru Exp $
 #
 # Test script that exercise the various options in x2sys.
 # We generate a grid and some fake tracks and sample the
 # grid, then add various systematic errors to the tracks
 # and finally try to solve for and undo the errors.
 
-# LATEST: Now needs to be modified to use x2sys_datalist -L to get
-# the corrected data - currently not working since we are using
-# the actual x2sys_solve output format.
-
 # 1. Make a surface grid with a Mexican hat bump in the middle
+
+delete=1	# Set to 0 for debug where files are not removed
 
 grdmath -R-4/4/-4/4 -I0.1 0 0 CDIST DUP DUP MUL NEG 4 DIV EXP EXCH 3 MUL COS MUL = hat.nc
 
@@ -190,3 +188,4 @@ cut -f3,4 trackCdc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,black 
 x2sys_list -TFAKE -Cz fake_COE_drift_corr.txt -Fdc -StrackC | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
 psxy -R -J -O /dev/null >> $PS
 gv $PS &
+rm -f hat.nc hat.cpt track[ABC]*.xydz fake_COE_*.txt COE.txt corr_const.lis corr_trend.lis
