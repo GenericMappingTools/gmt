@@ -22,7 +22,7 @@ No space between the option flag and the associated arguments.
 Give a comma-separated sub-set list of column names defined in the definition
 file. [Default selects all data columns].
 #include "explain_-H.txt"
-TP
+.TP
 .B \-L
 Apply optimal corrections to columns where such corrections are available.  Append the correction
 table to use [Default uses the correction table \fITAG\fP_corrections.txt in the \fB$X2SYS_HOME\fP directory].

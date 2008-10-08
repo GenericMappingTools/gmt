@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.197 2008-10-08 00:55:38 guru Exp $
+ *	$Id: mgd77.c,v 1.198 2008-10-08 03:28:41 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1041,9 +1041,9 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 
 	/* Process Sequence No 15: */
 
-	if ((P->Gravity_Departure_Base_Station[0] && ((i = atoi (P->Gravity_Departure_Base_Station)) < 9750000 || i > 9850000)) OR_TRUE) {
+	if ((P->Gravity_Departure_Base_Station[0] && ((i = atoi (P->Gravity_Departure_Base_Station)) < 9700000 || i > 9900000)) OR_TRUE) {	/* Check in mGal*10 */
 		kind = (wrong_filler (P->Gravity_Departure_Base_Station, 7)) ? ERR : WARN;
-		if ((i > 975000 && i < 985000) OR_TRUE) {	/* Off by factor of 10? */
+		if ((i > 970000 && i < 990000) OR_TRUE) {	/* Off by factor of 10? */
 			if (F->verbose_level & kind) fprintf (fp_err, "?-E-%s-H15-01: Invalid Gravity Departure Base Station Value: (%s) [%d0]\n", F->NGDC_id, P->Gravity_Departure_Base_Station, i);
 		}
 		else if (F->verbose_level & kind) {
@@ -1054,9 +1054,9 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		}
 		H->errors[kind]++;
 	}
-	if ((P->Gravity_Arrival_Base_Station[0] && ((i = atoi (P->Gravity_Arrival_Base_Station)) < 9750000 || i > 9850000))) {
+	if ((P->Gravity_Arrival_Base_Station[0] && ((i = atoi (P->Gravity_Arrival_Base_Station)) < 9700000 || i > 9900000))) {
 		kind = (wrong_filler (P->Gravity_Departure_Base_Station, 7)) ? ERR : WARN;
-		if (i > 975000 && i < 985000) {	/* Off by factor of 10? */
+		if (i > 970000 && i < 990000) {	/* Off by factor of 10? */
 			if (F->verbose_level & kind) fprintf (fp_err, "?-E-%s-H15-03: Invalid Gravity Arrival Base Station Value: (%s) [%d0]\n", F->NGDC_id, P->Gravity_Arrival_Base_Station, i);
 		}
 		else if (F->verbose_level & kind) {
