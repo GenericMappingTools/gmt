@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtsite.macros,v 1.15 2007-10-03 00:35:13 guru Exp $
+#	$Id: gmtsite.macros,v 1.16 2008-10-08 00:51:45 guru Exp $
 #
 #	Original GMT Site Makefile Macro for makefile
 #-------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ LIVEWWWDIR	= /export/imina2/httpd/htdocs/gmt
 LIVECGIDIR	= /export/imina2/httpd/cgi-bin
 # Live ftp server (now main SOEST ftp server)
 FTPSERVER	= ftp.soest.hawaii.edu
-LIVEFTPDIR	= /export/ftp/ftp/pub/gmt
+LIVEFTPDIR	= /export/ftp1/ftp/pub/gmt
 #-------------------------------------------------
 # THE BACKUP WWW AND FTP SITES FOR TESTING
 # Live GMT web server TEST dir (live2)
@@ -31,7 +31,7 @@ LIVEWWWDIR2	= /export/imina2/httpd/htdocs/gmttest
 LIVECGIDIR2	= /export/imina2/httpd/cgi-bin
 # Live ftp server TEST directory (live2)
 FTPSERVER2	= ftp.soest.hawaii.edu
-LIVEFTPDIR2	= /export/ftp/ftp/pub/gmttest
+LIVEFTPDIR2	= /export/ftp1/ftp/pub/gmttest
 #-------------------------------------------------
 # For local testing only (no cgi-bin service)
 TESTFTPDIR	= ../sitetest/ftp
