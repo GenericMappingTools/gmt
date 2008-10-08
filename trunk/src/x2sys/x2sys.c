@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.97 2008-10-07 18:49:33 guru Exp $
+ *	$Id: x2sys.c,v 1.98 2008-10-08 03:28:41 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1431,39 +1431,43 @@ GMT_LONG x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double 
 		k = 0;
 		while ((more = (BOOLEAN)fgets (line, BUFSIZ, fp)) && line[0] != '>') {	/* As long as we are reading data records */
 			GMT_chop (line);	/* Get rid of [CR]LF */
-			sscanf (line, fmt, &P[p].COE[k].x, &P[p].COE[k].y, t_txt[0], t_txt[1], &P[p].COE[k].d[0], &P[p].COE[k].d[1], &P[p].COE[k].h[0], 
-				&P[p].COE[k].h[1], &P[p].COE[k].v[0], &P[p].COE[k].v[1], &P[p].COE[k].z[0], &P[p].COE[k].z[1]);
+			sscanf (line, fmt, &P[p].COE[k].data[0][COE_X], &P[p].COE[k].data[0][COE_Y], t_txt[0], t_txt[1], &P[p].COE[k].data[0][COE_D], &P[p].COE[k].data[1][COE_D], &P[p].COE[k].data[0][COE_H], 
+				&P[p].COE[k].data[1][COE_H], &P[p].COE[k].data[0][COE_V], &P[p].COE[k].data[1][COE_V], &P[p].COE[k].data[0][COE_Z], &P[p].COE[k].data[1][COE_Z]);
 			if (no_time || !strcmp (t_txt[0], "NaN"))
-				P[p].COE[k].t[0] = GMT_d_NaN;
-			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[0], GMT_IS_ABSTIME, &P[p].COE[k].t[0]), t_txt[0])) {
+				P[p].COE[k].data[0][COE_T] = GMT_d_NaN;
+			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[0], GMT_IS_ABSTIME, &P[p].COE[k].data[0][COE_T]), t_txt[0])) {
 				fprintf (stderr, "%s: ERROR: Time specification t1 (%s) in wrong format\n", GMT_program, t_txt[0]);
 				exit (EXIT_FAILURE);
 			}
 			if (no_time || !strcmp (t_txt[1], "NaN"))
-				P[p].COE[k].t[1] = GMT_d_NaN;
-			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[1], GMT_IS_ABSTIME, &P[p].COE[k].t[1]), t_txt[1])) {
+				P[p].COE[k].data[1][COE_T] = GMT_d_NaN;
+			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[1], GMT_IS_ABSTIME, &P[p].COE[k].data[1][COE_T]), t_txt[1])) {
 				fprintf (stderr, "%s: ERROR: Time specification t2 (%s) in wrong format\n", GMT_program, t_txt[1]);
 				exit (EXIT_FAILURE);
 			}
 			if (!two_values) {	/* Modify z to return the two values at the crossover point */
-				x = 0.5 * P[p].COE[k].z[0]; m = P[p].COE[k].z[1];
-				P[p].COE[k].z[0] = m + x;
-				P[p].COE[k].z[1] = m - x;
+				x = 0.5 * P[p].COE[k].data[0][COE_Z]; m = P[p].COE[k].data[1][COE_Z];
+				P[p].COE[k].data[0][COE_Z] = m + x;
+				P[p].COE[k].data[1][COE_Z] = m - x;
 			}
 			if (check_box) {	/* Must pass coordinate check */
 				keep = TRUE;
-				if (P[p].COE[k].y < wesn[2] || P[p].COE[k].y > wesn[3])	/* Cartesian y or latitude */
+				if (P[p].COE[k].data[0][COE_Y] < wesn[2] || P[p].COE[k].data[0][COE_Y] > wesn[3])	/* Cartesian y or latitude */
 					keep = FALSE;
 				else if (geo) {	/* Be cautions regarding longitude test */
-					lon = P[p].COE[k].x;
+					lon = P[p].COE[k].data[0][COE_X];
 					while (lon > wesn[0]) lon -= 360.0;
 					while (lon < wesn[0]) lon += 360.0;
 					if (lon > wesn[1]) keep = FALSE;
 				}
-				else if (P[p].COE[k].x < wesn[0] || P[p].COE[k].x > wesn[1])	/* Cartesian x */
+				else if (P[p].COE[k].data[0][COE_X] < wesn[0] || P[p].COE[k].data[0][COE_X] > wesn[1])	/* Cartesian x */
 					keep = FALSE;
 			}
-			if (keep) k++;
+			if (keep) {	/* Duplicate the coordinates at the crossover and increment k */
+				P[p].COE[k].data[1][COE_X] = P[p].COE[k].data[0][COE_X];
+				P[p].COE[k].data[1][COE_Y] = P[p].COE[k].data[0][COE_Y];
+				k++;
+			}
 			if (k == n_alloc_x) {
 				n_alloc_x <<= 1;
 				P[p].COE = (struct X2SYS_COE *) GMT_memory ((void *)P[p].COE, (size_t)n_alloc_x, sizeof (struct X2SYS_COE), GMT_program);

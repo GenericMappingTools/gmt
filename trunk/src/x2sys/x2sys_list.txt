@@ -3,8 +3,9 @@
 .SH NAME
 x2sys_list \- Output a subset of crossovers from data base
 .SH SYNOPSIS
-\fBx2sys_list\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(A)\fIasymm_max\fP ] [ OPT(F)\fIfIacdhiInNtTvxyz\fP ] 
-[ OPT(I)[\fIlist\fP] [ OPT(L)\fInx_min\fP ] [ GMT_Mo_OPT ] [ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
+\fBx2sys_list\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(A)\fIasymm_max\fP ] 
+[ OPT(F)\fIfIacdhiInNtTvxyz\fP ] [ OPT(I)[\fIlist\fP] [ OPT(L)[\fIcorrtable\fP] ] [ OPT(N)\fInx_min\fP ] 
+[ GMT_Mo_OPT ] [ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_list\fP will read the crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)
 and extract a subset of the crossovers based on the other arguments.  The output may be
@@ -57,6 +58,11 @@ Name of ASCII file with a list of track names (one per record) that should be ex
 [Default includes all tracks].
 .TP
 .B \-L
+Apply optimal corrections to the chosen observable.  Append the correction
+table to use [Default uses the correction table \fITAG\fP_corrections.txt in the \fB$X2SYS_HOME\fP directory].
+For the format of this file, see \fBx2sys_solve\fP.
+.TP
+.B \-N
 Only report data from pairs that generated at least \fInx_min\fP crossovers between them [use all pairs].
 .TP
 .B \-M

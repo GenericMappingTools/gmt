@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.40 2008-10-07 18:49:33 guru Exp $
+ *	$Id: x2sys.h,v 1.41 2008-10-08 03:28:41 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -208,13 +208,16 @@ struct X2SYS_BIX_TRACK_INFO {
 	struct X2SYS_BIX_TRACK_INFO *next_info;
 };
 
+#define COE_X	0	/* Position of crossover x in data array */
+#define COE_Y	1	/* Position of crossover y in data array */
+#define COE_T	2	/* Time at crossover in data array */
+#define COE_Z	3	/* Observed z value at crossover in data array */
+#define COE_D	4	/* Distance at crossover in data array */
+#define COE_H	5	/* Azimuth at crossover in data array */
+#define COE_V	6	/* Velocity at crossover in data array */
+
 struct X2SYS_COE {	/* Holds the information for a single crossover */
-	double x, y;	/* Position of crossover */
-	double t[2];	/* Time along track 1 and track 2 */
-	double d[2];	/* Distance along track 1 and track 2 */
-	double h[2];	/* Heading along track 1 and track 2 */
-	double v[2];	/* Speed along track 1 and track 2 */
-	double z[2];	/* Observed values at crossover along track 1 and track 2 */
+	double data[2][7];
 };
 
 struct X2SYS_COE_PAIR {	/* Holds the information for COE between a pair of tracks */

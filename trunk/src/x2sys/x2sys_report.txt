@@ -4,7 +4,8 @@
 x2sys_report \- Report statistics from crossover data base
 .SH SYNOPSIS
 \fBx2sys_report\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] 
-[ OPT(I)[\fIlist\fP] [ OPT(N)\fInx_min\fP ] [ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ]
+[ OPT(I)[\fIlist\fP] [ OPT(L)[\fIcorrtable\fP] ] [ OPT(N)\fInx_min\fP ] [ OPT(Qe)|\fBi\fP ] 
+[ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBx2sys_report\fP will read the crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)
 and report on the statistics of crossovers (n, mean, stdev, rms) for each track.  Options are
@@ -26,6 +27,11 @@ If not given we read standard input.
 .B \-I
 Name of ASCII file with a list of track names (one per record) that should be excluded from consideration
 [Default includes all tracks].
+.TP
+.B \-L
+Apply optimal corrections to the chosen observable.  Append the correction
+table to use [Default uses the correction table \fITAG\fP_corrections.txt in the \fB$X2SYS_HOME\fP directory].
+For the format of this file, see \fBx2sys_solve\fP.
 .TP
 .B \-N
 Only report data from tracks involved in at least \fInx_min\fP crossovers [all tracks].
