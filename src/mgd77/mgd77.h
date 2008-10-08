@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.99 2008-10-07 02:35:57 guru Exp $
+ *	$Id: mgd77.h,v 1.100 2008-10-08 00:55:38 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -505,6 +505,7 @@ int MGD77_Scan_Corrtable (char *tablefile, char **cruises, int n_cruises, int n_
 void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int n_fields, char **field_names, int mode, struct MGD77_CORRTABLE ***CORR);
 void MGD77_Init_Correction (struct MGD77_CORRTABLE *CORR, double **value);
 double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux, GMT_LONG rec);
+double MGD77_Correction_Rec (struct MGD77_CORRECTION *C, double *value, double *aux);
 void MGD77_Free_Correction (struct MGD77_CORRTABLE **CORR, int n);
 
 #include "mgd77_functions.h"	/* These were created by mgd77netcdfhelper.sh */

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.196 2008-10-07 02:35:57 guru Exp $
+ *	$Id: mgd77.c,v 1.197 2008-10-08 00:55:38 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4950,7 +4950,8 @@ void MGD77_Init_Correction (struct MGD77_CORRTABLE *CORR, double **value)
 }
 
 double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux, GMT_LONG rec)
-{	/* Calculates the correction term for a single observation */
+{	/* Calculates the correction term for a single observation
+	 * when data are given in a 2-D array and aux in a 1-D array for current record */
 	double dz = 0.0, z;
 	struct MGD77_CORRECTION *current;
 		
@@ -4960,6 +4961,27 @@ double MGD77_Correction (struct MGD77_CORRECTION *C, double **value, double *aux
 		}
 		else {
 			z = (current->id >= MGD77_MAX_COLS) ? aux[current->id-MGD77_MAX_COLS] : value[current->id][rec];
+			if (current->power == 1.0)
+				dz += current->factor * ((current->modifier) (current->scale * (z - current->origin)));
+			else
+				dz += current->factor * pow ((current->modifier) (current->scale * (z - current->origin)), current->power);
+		}
+	}
+	return (dz);
+}
+
+double MGD77_Correction_Rec (struct MGD77_CORRECTION *C, double *value, double *aux)
+{	/* Calculates the correction term for a single observation 
+	 * when both data and aux are given in a 1-D array for the current record. */
+	double dz = 0.0, z;
+	struct MGD77_CORRECTION *current;
+		
+	for (current = C; current; current = current->next) {
+		if (current->id == -1) {	/* Just a constant */
+			dz = current->factor;
+		}
+		else {
+			z = (current->id >= MGD77_MAX_COLS) ? aux[current->id-MGD77_MAX_COLS] : value[current->id];
 			if (current->power == 1.0)
 				dz += current->factor * ((current->modifier) (current->scale * (z - current->origin)));
 			else
