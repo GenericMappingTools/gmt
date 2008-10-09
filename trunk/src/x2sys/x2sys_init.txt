@@ -1,45 +1,46 @@
 #include "common_options.txt"
 .TH X2SYS_INIT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-x2sys_init \- Initialize data base for track data files
+x2sys_init \- Initialize x2sys data base for track data files
 .SH SYNOPSIS
 \fBx2sys_init\fP \fITAG\fP OPT(D)\fIdeffile\fP [ OPT(Cc)|\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(E)\fIsuffix\fP ] 
 [ OPT(F) ] [ OPT(Gd)|\fBg\fP ] [ OPT(I)\fIdx\fP[/\fIdy\fP] ] [ GMT_M_OPT ] [ OPT(Nd)|\fBs\fP\fIunit\fP ] 
 [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Wt)|\fBd\fP\fIgap\fP ]
 .SH DESCRIPTION
-\fBx2sys_init\fP initializes a set of data bases that are particular to one kind
-of track data.  These data, their associated data bases, and key parameters are given a short-hand
-notation called a system TAG.   The TAG remembers settings such as file format,
-whether the data are geographic or not, and the binning resolution for track indexes.
+\fBx2sys_init\fP is the starting point for anyone wishing to use x2sys; it initializes
+a set of data bases that are particular to one kind of track data.  These data,
+their associated data bases, and key parameters are given a short-hand
+notation called an x2sys TAG.   The TAG keeps track of settings such as file format,
+whether the data are geographic or not, and the binning resolution for track indices.
 Running \fBx2sys_init\fP is a prerequisite to running any of the other x2sys programs,
 such as \fBx2sys_binlist\fP, which will
-create a crude representation of where data track go and which observations are
-available; this information serves as input to
+create a crude representation of where each data track go within the domain
+and which observations are available; this information serves as input to
 \fBx2sys_put\fP which updates the track data base. Then, \fBx2sys_get\fP can
 be used to find which tracks and data are available inside a given region.
 With that list of tracks you can use \fBx2sys_cross\fP to calculate track
 crossovers, use \fBx2sys_report\fP to report crossover statistics or
 \fBx2sys_list\fP to pull out selected crossover information
-that \fBx2sys_solve\fP can use to determine systematic corrections.  These
+that \fBx2sys_solve\fP can use to determine track-specific systematic corrections.  These
 corrections may be used with \fBx2sys_datalist\fP to extract corrected
 data values for use in subsequent work.
 .TP
 \fITAG\fP
-The unique name of this data type system.
+The unique name of this data type x2sys TAG.
 .TP
 .B \-C
-Select procedure for along-track distance calculation:
+Select procedure for along-track distance calculation when needed by other programs:
 .br
-\fBc\fP Cartesian distances [Default].
+\fBc\fP Cartesian distances [Default, unless OPT(G) is set].
 .br
 \fBf\fP Flat Earth distances.
 .br
-\fBg\fP Great circle distances.
+\fBg\fP Great circle distances [Default if OPT(G) is set].
 .br
 \fBe\fP Geodesic distances on current \fBGMT\fP ellipsoid.
 .TP
 .B \-D
-Definition file for this data set.
+Definition file prefix for this data set [See DEFINITION FILES below for more information].
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -48,7 +49,7 @@ Specifies the file extension (suffix) for these data files.  If not given we use
 definition file prefix as the suffix (see OPT(D)).
 .TP
 .B \-F
-Force creating new files if old ones are present [Default will abort if old files are found].
+Force creating new files if old ones are present [Default will abort if old TAG files are found].
 .TP
 .B \-G
 Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
@@ -58,7 +59,8 @@ assume the data are Cartesian.
 .TP
 .B \-I
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to
-indicate minutes or \fBc\fP to indicate seconds.
+indicate minutes or \fBc\fP to indicate seconds for geographic data.  These
+spacings refer to the binning used in the track bin-index data base.
 .TP
 .B \-M
 Multiple segment file(s).  Segments are separated by a special record.
@@ -66,20 +68,24 @@ For ASCII files the first character must be \fIflag\fP [Default is '>'].
 For binary files all fields must be NaN.
 .TP
 .B \-N
+Sets the units used for distance and speed when requested by other programs.
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
-\fBc\fP (userdist or userdist/usertime), \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
+\fBc\fP (Cartesian userdist or userdist/usertime), \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
 \fBn\fP (nautical miles or knots).  [Default is OPT(Ndk) OPT(Nse) (km and m/s) if OPT(G) is set
 and OPT(Ndc) and OPT(Nsc) otherwise (Cartesian units)].
 #include "explain_-Rgeo.txt"
+For Cartesian data just give \fIxin/xmax/ymin/ymax\fP.  This sets the complete domain
+for the relevant track data set.
 #include "explain_-V.txt"
 .TP
 .B \-W
 Give \fBt\fP or \fBd\fP and append the corresponding
 maximum time gap (in user units; this is typically seconds [Infinity]), or distance gap
-(in user units; this is typically km [Infinity]) allowed between
-the two points immediately on either side of a crossover.
+(for units, see OPT(N) [Infinity]) allowed between
+the two points immediately on either side of a crossover.  If these limits are
+exceeded then a data gap is assumed and no COE will be determined.
 .SH DEFINITION FILES
-The *.def files contain information about the data file format.  The *.def files
+These *.def files contain information about the data file format and
 have two sections: (1) header information and (2) column information.  All
 header information starts with the character # in the first column, immediately
 followed by an upper-case directive.  If the directive takes an argument it is
@@ -89,14 +95,14 @@ Five directives are recognized:
 .sp
 \fBASCII\fP states that the data files are in ASCII format.
 .br
-\fBBINARY\fP states that the data files are binary files.
+\fBBINARY\fP states that the data files are native binary files.
 .br
 \fBSKIP\fP takes an integer argument which is either the number of lines to
 skip (when reading ASCII files) or the number of bytes to skip (when reading
 binary files).
 .br
-\fBGEO\fP indicates that these are geographic data set, with periodicities in
-the \fIx\fP-coordinate (longitudes).
+\fBGEO\fP indicates that these files are geographic data sets, with periodicities in
+the \fIx\fP-coordinate (longitudes).  Alternatively, use OPT(G).
 .br
 \fBMULTISEG\fP means each track consists of multiple segments separated
 by a \fBGMT\fP multisegment header (alternatively,
@@ -117,7 +123,7 @@ for the two required coordinate columns, and \fItime\fP when optional time data
 are present.
 .br
 \fItype\fP is \fBa\fP for ASCII representations of numbers, whereas for
-binary files you may choose from
+binary files you may choose among
 \fBc\fP for signed 1-byte character (-127,+128), \fBu\fP for unsigned
 byte (0-255), \fBh\fP for signed 2-byte integers (-32768,+32767),
 \fBi\fP for  signed 4-byte integers (-2,147,483,648,+2,147,483,647),
@@ -142,12 +148,12 @@ accordingly (otherwise it is ignored).  The \fIscale\fP and \fIoffset\fP are
 applied to the data values after they are read (first scaled, then offset), 
 whereas the \fIoformat\fP is used by some programs for formatted output.
 If you give - as the \fIoformat\fP then \fBGMT\fP's formatting machinery will be used\"'
-instead (i.e., \fBPLOT_DEGREE_FORMAT\fP, \fBPLOT_DATE_FORMAT\fP, \fBPLOT_CLOCK_FORMAT\fP).
+instead (i.e., \fBD_FORMAT\fP, \fBPLOT_DEGREE_FORMAT\fP, \fBPLOT_DATE_FORMAT\fP, \fBPLOT_CLOCK_FORMAT\fP).
 Some file formats already have definition files premade.  These include
 mgd77 (for plain ASCII MGD77 data files), mgd77+ (for enhanced MGD77+
 netCDF files), gmt (for old mgg supplement binary files), xy (for plain ASCII
-x, y tables), xyz (same, with z-column), geo (for plain ASCII longitude,
-latitude files), and geoz (same, with z-column).
+x, y tables), xyz (same, with one z-column), geo (for plain ASCII longitude,
+latitude files), and geoz (same, with one z-column).
 .SH EXAMPLES
 If you have a large set of track data files you can organize them using the
 x2sys tools.  Here we will outline the steps.  Let us assume that your track
@@ -167,9 +173,9 @@ this the "line" format.  First, we create the line.def file:
 .br
 \fB\fP#name	type 	NaN	NaN-proxy	scale offset oformat
 .br
-lon	a	N	0	1	0	%10.5f
-.br
 lat	a	N	0	1	0	%9.5f
+.br
+lon	a	N	0	1	0	%10.5f
 .br
 time	a	N	0	1	0	%7.1f
 .br
@@ -183,23 +189,24 @@ obs3	a	N	0	1	0	%7.2f
 .br
 Next we create the TAG and the databases for these line track files.
 Assuming these contain geographic data and that we want to keep track of the
-data distribution at a 1 x 1 degree resolution, we may run
+data distribution at a 1 x 1 degree resolution, with distances in km calculated
+along geodesics and with speeds given in knots, we may run
 .br
 .sp
-\fBx2sys_init\fP LINE \fB\-V \-G \-D\fPline \fB\-R\fP0/360/-90/90 \fB\-I\fP1/1 \fB\-E\fPtrk
+\fBx2sys_init\fP LINE \fB\-V \-G \-D\fPline \fB\-Rg \-Ce \-Ndk \-Nsn \-I\fP1/1 \fB\-E\fPtrk
 .br
 .sp
-where we have used LINE as our system tag.  When x2sys tools try to read your
+where we have selected LINE to be our x2sys tag.  When x2sys tools try to read your
 line data files they will first look in the current directory and second look
 in the file \fITAG\fP_paths.txt for a list of additional directories to examine.
 Therefore, create such a file (here LINE_paths.txt) and stick the full paths to
 your data directories there.  All TAG-related files (definition files, tag files,
-and track data bases built) will be expected to be in the directory pointed to
+and track data bases created) will be expected to be in the directory pointed to
 by \fB$X2SYS_HOME\fP.
 .br
 .TP
 .B Create tbf file(s):
-Once the (empty) TAG database have been initialized we go through a
+Once the (empty) TAG databases have been initialized we go through a
 two-step process to populate them.  First we run \fBx2sys_binlist\fP on
 all our track files to create one (or more) multi-segment track bin-index
 files (tbf).  These contain information on which 1 x 1 degree bins (or any
@@ -279,5 +286,9 @@ obs3	h	N	0	0.1	0	%6.1f
 The rest of the steps are identical.  
 .SH "SEE ALSO"
 .IR x2sys_binlist (1)
+.IR x2sys_datalist (1)
 .IR x2sys_get (1)
+.IR x2sys_list (1)
 .IR x2sys_put (1)
+.IR x2sys_report (1)
+.IR x2sys_solve (1)

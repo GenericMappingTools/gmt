@@ -8,15 +8,13 @@ x2sys_report \- Report statistics from crossover data base
 [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBx2sys_report\fP will read the crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)
-and report on the statistics of crossovers (n, mean, stdev, rms) for each track.  Options are
+and report on the statistics of crossovers (\fIn, mean, stdev, rms, weight\fP) for each track.  Options are
 available to let you exclude tracks and limit the output.
 .TP
 .B \-C
 Specify which data column you want to process.  Crossovers related to this column name must be
 present in the crossover data base.
-.TP
-.B \-T
-\fITAG\fP is the unique tag name of this data type system.
+#include "explain_tag.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -39,23 +37,25 @@ Only report data from tracks involved in at least \fInx_min\fP crossovers [all t
 .B \-Q
 Append \fBe\fP for external crossovers or \fBi\fP for internal crossovers only [Default is external].
 #include "explain_-Rgeo.txt"
+For Cartesian data just give \fIxin/xmax/ymin/ymax\fP.  This option bases the statistics
+on those COE that fall inside the specified domain.
 .TP
 .B \-S
 Name of a single track.  If given we restrict output to those crossovers involving this track [Default
 output is crossovers involving any track pair].
 #include "explain_-V.txt"
 .SH EXAMPLES
-To report statistics of all the external magnetic crossovers associated with the tag mgd77 from the file COE_data.txt,
+To report statistics of all the external magnetic crossovers associated with the tag MGD77 from the file COE_data.txt,
 restricted to occupy a certain region in the south Pacific, try
 .br
 .sp
-\fBx2sys_report\fP COE_data.txt \fB\-V \-T\fPmgd77 \fB\-R\fP180/240/-60/-30 \fB\-C\fPmag \fB\-F\fPxytz > mag_report.txt
+\fBx2sys_report\fP COE_data.txt \fB\-V \-T\fPMGD77 \fB\-R\fP180/240/-60/-30 \fB\-C\fPmag \fB\-F\fPxytz > mag_report.txt
 .br
 .sp
 To report on the faa crossovers globally that involves track 12345678, try
 .br
 .sp
-\fBx2sys_report\fP COE_data.txt \fB\-V \-T\fPmgd77 \fB\-C\fPfaa \fB\-S\fP12345678  > faa_report.txt
+\fBx2sys_report\fP COE_data.txt \fB\-V \-T\fPMGD77 \fB\-C\fPfaa \fB\-S\fP12345678  > faa_report.txt
 .SH "SEE ALSO"
 .IR x2sys_binlist (1)
 .IR x2sys_cross (1)
