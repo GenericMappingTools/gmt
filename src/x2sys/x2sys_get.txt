@@ -1,18 +1,16 @@
 #include "common_options.txt"
 .TH X2SYS_GET 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-x2sys_get \- Get track listing from track index databases
+x2sys_get \- Get track listing from the x2sys track index databases
 .SH SYNOPSIS
 \fBx2sys_get\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(F)\fIflags\fP ] 
 [ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
 .SH DESCRIPTION
 \fBx2sys_get\fP will return the names of the track data files that match the given
-requirements.  You may choose a geographic region and optionally ask
+requirements.  You may choose a geographic [or Cartesian] region and optionally ask
 only for tracks that meet certain data criteria.  Finally, you may
 select an option to list all possible pairs that might generate crossovers.
-.TP
-\fITAG\fP
-The unique tag name of this data type system.
+#include "explain_tag.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -37,28 +35,30 @@ option in \fBx2sys_cross\fP.
 Give a comma-separated list of column names (as described in the definition
 file) that must be absent.
 #include "explain_-Rgeo.txt"
+For Cartesian data just give \fIxin/xmax/ymin/ymax\fP.  This option limits
+the tracks to those that fall at least partly inside the specified domain.
 #include "explain_-V.txt"
 .SH EXAMPLES
-To find all the tracks associated with the tag mgd77, restricted to occupy
+To find all the tracks associated with the tag MGD77, restricted to occupy
 a certain region in the south Pacific, and have at least free air anomalies
 and bathymetry, try
 .br
 .sp
-\fBx2sys_get\fP \fB\-V \-T\fPmgd77 \fB\-R\fP180/240/-60/-30 \fB\-F\fPfaa,depth 
+\fBx2sys_get\fP \fB\-V \-T\fPMGD77 \fB\-R\fP180/240/-60/-30 \fB\-F\fPfaa,depth 
 .br
 .sp
-To find all the tracks associated with the tag mgd77 that have depth but not
+To find all the tracks associated with the tag MGD77 that have depth but not
 twt, try
 .br
 .sp
-\fBx2sys_get\fP \fB\-V \-T\fPmgd77 \fB\-F\fPdepth \fB\-N\fPtwt
+\fBx2sys_get\fP \fB\-V \-T\fPMGD77 \fB\-F\fPdepth \fB\-N\fPtwt
 .br
 .sp
-To find all the pairs associated with the tag mgd77 that might intersect each
+To find all the pairs associated with the tag MGD77 that might intersect each
 other, but only those pairs which involves tracks in your list new.lis, try
 .br
 .sp
-\fBx2sys_get\fP \fB\-V \-T\fPmgd77 \fB\-L\fPnew.lis > xpairs.lis 
+\fBx2sys_get\fP \fB\-V \-T\fPMGD77 \fB\-L\fPnew.lis > xpairs.lis 
 .SH "SEE ALSO"
 .IR x2sys_binlist (1)
 .IR x2sys_cross (1)

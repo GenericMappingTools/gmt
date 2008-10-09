@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.98 2008-10-08 03:28:41 guru Exp $
+ *	$Id: x2sys.c,v 1.99 2008-10-09 01:30:58 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1516,4 +1516,40 @@ int x2sys_find_track (char *name, char **list, int n)
 	if (!list) return (-1);	/* Null pointer passed */
 	for (i = 0; i < n; i++) if (!strcmp (name, list[i])) return (i);
 	return (-1);
+}
+
+int x2sys_get_filenames (int argc, char **argv, char ***filelist, BOOLEAN *cmdline)
+{	/* Return list of trackfiles given on command line or via :list mechanism */
+	int i, A, list = 0, add_chunk, n_alloc;
+	char **file;
+	
+	for (A = 1; !list && A < argc; A++) if (argv[A][0] == ':') list = A;
+
+	if (list) {	/* Got a file with a list of filenames */
+		*cmdline = FALSE;
+		if (x2sys_read_list (&argv[list][1], filelist, &A) == X2SYS_NOERROR) {
+			fprintf (stderr, "%s: Error: Could not open list with filenames %s!\n", GMT_program, &argv[list][1]);
+			exit (EXIT_FAILURE);
+		}
+	}
+	else {		/* Get files from command line */
+		add_chunk = n_alloc = GMT_CHUNK;
+		file = (char **)GMT_memory (VNULL, (size_t)n_alloc, sizeof (char *), GMT_program);
+
+		*cmdline = TRUE;
+		for (i = 1, A = 0; i < argc; i++) {
+			if (argv[i][0] == '-') continue;	/* Skip options */
+
+			file[A++] = strdup (argv[i]);
+			if (A == n_alloc) {
+				add_chunk <<= 1;
+				n_alloc += add_chunk;
+				file = (char **)GMT_memory ((void *)file, (size_t)n_alloc, sizeof (char *), GMT_program);
+			}
+		}
+		file = (char **)GMT_memory ((void *)file, (size_t)A, sizeof (char *), GMT_program);
+		*filelist = file;
+	}
+
+	return (A);
 }

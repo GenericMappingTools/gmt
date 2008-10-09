@@ -1,24 +1,22 @@
 #include "common_options.txt"
 .TH X2SYS_CROSS 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-\fBx2sys_cross\fP \- Find and compute Cross-Over Errors
+\fBx2sys_cross\fP \- Find and compute crossover errors
 .SH SYNOPSIS
 \fBx2sys_cross\fP \fItrack(s)\fP OPT(T)\fITAG\fP 
 [ OPT(F)\fIflags\fP ] [ OPT(Il)|\fBa\fP|\fBc\fP ] 
 [ GMT_J_OPT ] [ OPT(K)\fIcombi.lis\fP] [ OPT(L) ] 
 [ OPT(Qe)|\fBi\fP ] [ OPT(Sl)|\fBu\fP|\fBh\fP\fIspeed\fP ] 
-[ GMT_V_OPT ][ OPT(Wt)|\fBd\fP|\fBn\fP\fIsize\fP ] [ OPT(2) ] [ GMT_bo_OPT ]
+[ GMT_V_OPT ][ OPT(W)\fIsize\fP ] [ OPT(2) ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_cross\fP is used to determine all intersections between ("external cross-overs") or within
 ("internal cross-overs") tracks (Cartesian or geographic), and report the time, position, distance along track,
-heading and speed along each track segment, and the crossover and mean values for all observables.
+heading and speed along each track segment, and the crossover error (COE) and mean values for all observables.
 The names of the tracks are passed on the command line.
-By default, \fBx2sys_cross\fP will look for both external and internal cross-overs.  As an option,
-you may choose to project all data using one of the map-projections prior to calculating the crossovers.
+By default, \fBx2sys_cross\fP will look for both external and internal COEs.  As an option,
+you may choose to project all data using one of the map-projections prior to calculating the COE.
 #include "explain_track.txt"
-.TP
-.B \-T
-Sets the data set \fITAG\fP which, among other things, sets the definition file.
+#include "explain_tag.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -30,7 +28,7 @@ this list must include \fBx\fP, \fBy\fP or \fBlon\fP, \fBlat\fP and ideally
 proxy times (e.g., floating point record numbers) instead of \fBtime\fP.
 .TP
 .B \-I
-Sets the interpolation mode. Choose among:
+Sets the interpolation mode for estimating values at the crossover. Choose among:
 .br
 \fBl\fP Linear interpolation [Default].
 .br
@@ -49,14 +47,15 @@ Output results using the old XOVER format [Default is X2SYS format].
 This option should only be used with *.gmt-formatted MGD77 files.
 .TP
 .B \-Q
-Append \fBe\fP for external crossovers only, and \fBi\fP for internal
-crossovers only [Default is all crossovers].
+Append \fBe\fP for external COEs only, and \fBi\fP for internal
+COEs only [Default is all COEs].
 #include "explain_-Rgeo.txt"
-For Cartesian data just give minimum and maximum \fIx\fP and \fIy\fP values.
+For Cartesian data just give \fIxin/xmax/ymin/ymax\fP.  This option limits
+the COEs to those that fall inside the specified domain.
 .TP
 .B \-S
 Defines window of track speeds.  If speeds are outside this window we do not
-calculate a crossover. Specify
+calculate a COE. Specify
 .br
 	\fB\-Sl\fP sets lower speed [Default is 0].
 .br
@@ -68,11 +67,8 @@ will not be computed (i.e., set to NaN) [Default calculates headings regardless 
 #include "explain_-V.txt"
 .TP
 .B \-W
-Give \fBt\fP, \fBd\fP, or \fBn\fP and append the corresponding
-maximum time gap [Infinity], or distance gap [Infinity] (both in user units) allowed between
-the two points immediately on either side of a crossover.  If the gap exceeds this maximum
-gap we skip the crossover calculation.  For \fB\-Wn\fP, give the maximum number of points on
-either side to use in the interpolation [3].
+Give the maximum number of data points on
+either side of the crossover to use in the spline interpolation [3].
 .TP
 .B \-2
 Report the values of each track at the crossover [Default reports the crossover value and the mean value].
@@ -106,23 +102,26 @@ geographic coordinates (\fBOUTPUT_DEGREE_FORMAT\fP) and absolute calendar time
 give you enough significant digits to achieve the desired precision.
 .SH EXAMPLES
 To compute all internal crossovers in the gmt-formatted file c2104.gmt, and
-output in the old XOVER format, using the tag MGG, try
+output in the old XOVER format, using the tag GMT, try
 .br
 .sp
-\fBx2sys_cross\fP c2104.gmt \fB\-L \-T\fPMGG > c2104.d
+\fBx2sys_cross\fP c2104.gmt \fB\-L \-T\fPGMT > c2104.d
 .br
 .sp
 To find the crossover locations with bathymetry between the two MGD77
 files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 .br
 .sp
-\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Qe \-T\fPNGD77 \fB\-F\fPlon,lat,depth > crossovers.d
+\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Qe \-T\fPMGD77 \fB\-F\fPlon,lat,depth > crossovers.d
 .SH "SEE ALSO"
 .IR GMT (1),
+.IR x2sys_binlist (1)
 .IR x2sys_init (1)
 .IR x2sys_datalist (1)
 .IR x2sys_get (1)
 .IR x2sys_list (1)
 .IR x2sys_put (1)
+.IR x2sys_report (1)
+.IR x2sys_solve (1)
 .IR x_over (1)
 

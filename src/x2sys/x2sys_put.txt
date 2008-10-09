@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH X2SYS_PUT 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-x2sys_put \- Update track data bases
+x2sys_put \- Update x2sys track data bases
 .SH SYNOPSIS
 \fBx2sys_put\fP [ \fIinfo.tbf\fP ] OPT(T)\fITAG\fP [ GMT_V_OPT ]
 .SH DESCRIPTION
@@ -9,9 +9,7 @@ x2sys_put \- Update track data bases
 adds this information about the data tracks to the relevant data base.
 The system \fITAG\fP must match the tag encoded in the \fIinfo.tbf\fP file.  To
 inquire about tracks in the data base, use \fBx2sys_get\fP.
-.TP
-.B \-T
-Give \fITAG\fP, the unique name of this data type system.
+#include "explain_tag.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP

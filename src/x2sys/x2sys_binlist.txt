@@ -3,7 +3,7 @@
 .SH NAME
 x2sys_binlist \- Create bin-index files from track data files
 .SH SYNOPSIS
-\fBx2sys_binlist\fP \fItrack(s)\fP [ OPT(T)\fITAG\fP ] 
+\fBx2sys_binlist\fP \fItrack(s)\fP OPT(T)\fITAG\fP 
 [ OPT(D) ] [ OPT(E) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBx2sys_binlist\fP reads one or more track data files and produces a
@@ -19,34 +19,40 @@ track queries such as to determine which tracks
 need to be compared for crossover analysis.  You must run \fBx2ys_init\fP
 to initialize the tag before you can run the indexing.
 #include "explain_track.txt"
+#include "explain_tag.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
 .B \-D
 Calculate the length of trackline segments per bin [Default skips this step].
 The length fragments are given as the 5th output column (after the \fIflags\fP).
+The length units are obtained via the TAB setting (see \fBx2sys_init\fP).
 .TP
 .B \-E
-Convert data to a cylindrical equal-area projection prior to binning.  Basically, we
+Convert geographic data to a cylindrical equal-area projection prior to binning.  Basically, we
 apply the projection OPT(JY)\fIlon0\fP/37:04:17.166076/360, where \fIlon0\fP is the
 mid-longitude of the region.  Requires OPT(D), geographical data, and a global region
-(e.g., OPT(Rg) or OPT(Rd)).
-.TP
-.B \-T
-Sets the data set \fITAG\fP which among other things sets the definition file.
+(e.g., OPT(Rg) or OPT(Rd)).  This option is useful for statistics related to trackline
+density but should not be used when preparing bin-index files for the x2sys track data bases.
 #include "explain_-V.txt"
 .SH EXAMPLES
-To create a bin index table from the MGD77 file 01030061.mgd77 using a global, 1x1 degree bin system, do
+To create a bin index file from the MGD77 file 01030061.mgd77 using the settings associated
+with the tag MGD77, do
 .br
 .sp
 \fBx2sys_binlist\fP 01030061.mgd77 \fB\-T\fPMGD77 > 01030061.tbf
 .br
 .sp
-To create a track bin index file of all MGD77+ files residing in the current directory at a bin resolution
-of 30 x 30 minutes ad calculating track distances, run
+To create a track bin index file of all MGD77+ files residing in the current directory
+using the settings associated with the tag MGD77+ and calculate track distances, run
 .br
 .sp
 \fBx2sys_binlist\fP *.nc \fB\-T\fPMGD77+ \-D\fP > all.tbf
 .SH "SEE ALSO"
-.IR gmtdefaults (1)
+.IR x2sys_cross (1)
+.IR x2sys_datalist (1)
+.IR x2sys_get (1)
 .IR x2sys_init (1)
+.IR x2sys_put (1)
+.IR x2sys_report (1)
+.IR x2sys_solve (1)
