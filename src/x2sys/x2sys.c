@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.99 2008-10-09 01:30:58 guru Exp $
+ *	$Id: x2sys.c,v 1.100 2008-10-09 02:05:50 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -925,6 +925,14 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 	
 	x2sys_err_pass (x2sys_initialize (sfile, G, &s), sfile);	/* Initialize X2SYS and info structure */
 
+	if (B->time_gap < 0.0) {
+		fprintf (stderr, "%s: Error -Wt: maximum gap must be > 0!\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
+	if (B->dist_gap < 0.0) {
+		fprintf (stderr, "%s: Error -Wd: maximum gap must be > 0!\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
 	if (geographic) {
 		if (geodetic == 0 && (B->x_min < 0 || B->x_max < 0)) {
 			fprintf (stderr, "%s: Your -R and -G settings are contradicting each other!\n", X2SYS_program);
