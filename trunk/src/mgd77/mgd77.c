@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.198 2008-10-08 03:28:41 guru Exp $
+ *	$Id: mgd77.c,v 1.199 2008-10-09 02:41:48 mtchandl Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1055,7 +1055,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		H->errors[kind]++;
 	}
 	if ((P->Gravity_Arrival_Base_Station[0] && ((i = atoi (P->Gravity_Arrival_Base_Station)) < 9700000 || i > 9900000))) {
-		kind = (wrong_filler (P->Gravity_Departure_Base_Station, 7)) ? ERR : WARN;
+		kind = (wrong_filler (P->Gravity_Arrival_Base_Station, 7)) ? ERR : WARN;
 		if (i > 970000 && i < 990000) {	/* Off by factor of 10? */
 			if (F->verbose_level & kind) fprintf (fp_err, "?-E-%s-H15-03: Invalid Gravity Arrival Base Station Value: (%s) [%d0]\n", F->NGDC_id, P->Gravity_Arrival_Base_Station, i);
 		}
