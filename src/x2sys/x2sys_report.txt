@@ -3,7 +3,7 @@
 .SH NAME
 x2sys_report \- Report statistics from crossover data base
 .SH SYNOPSIS
-\fBx2sys_report\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] 
+\fBx2sys_report\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] OPT(A) 
 [ OPT(I)[\fIlist\fP] [ OPT(L)[\fIcorrtable\fP] ] [ OPT(N)\fInx_min\fP ] [ OPT(Qe)|\fBi\fP ] 
 [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
@@ -21,6 +21,11 @@ No space between the option flag and the associated arguments.
 .I coedbase.txt
 The name of the crossover error data base as produced by \fBx2sys_cross\fP.
 If not given we read standard input.
+.TP
+.B \-A
+Distribute the COE between the two tracks according to track weight and produce track adjustment
+spline knots files for each track.  These adjustments may be used by \fBx2sys_datalist\fP.  The
+adjustment files are called \fITAG.track.column.adj\fP and are placed in the \fB$X2SYS_HOME\fP directory.
 .TP
 .B \-I
 Name of ASCII file with a list of track names (one per record) that should be excluded from consideration

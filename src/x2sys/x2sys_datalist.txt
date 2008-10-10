@@ -3,7 +3,7 @@
 .SH NAME
 x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH SYNOPSIS
-\fBx2sys_datalist\fP \fItrack(s)\fP OPT(T)\fITAG\fP [ OPT(F)\fIname1,name2,...\fP ] 
+\fBx2sys_datalist\fP \fItrack(s)\fP OPT(T)\fITAG\fP [ OPT(A) ] [ OPT(F)\fIname1,name2,...\fP ] 
 [ GMT_H_OPT ] [ OPT(L)[\fIcorrtable\fP] ] [ GMT_Mo_OPT ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_datalist\fP reads one or more files and produces a single ASCII [or binary] table. 
@@ -15,6 +15,11 @@ Only the named data fields will be output [Default selects all columns].
 #include "explain_tag.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
+.TP
+.B \-A
+Distribute the COE between the two tracks according to track weight based on track adjustment
+spline knots files for each track.  These
+adjustment files are called \fITAG.track.column.adj\fP and are expected to be in the \fB$X2SYS_HOME\fP directory.
 .TP
 .B \-F
 Give a comma-separated sub-set list of column names defined in the definition
