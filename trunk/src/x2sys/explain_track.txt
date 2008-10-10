@@ -1,9 +1,9 @@
 .TP
 \fItracks\fP
-Can be one or more binary or ASCII data files. To give a list of names,
-use `cat tracks.lis` or give the name of the track list after a colon
-(e.g., :tracks.lis).  If the names are missing the suffix we will
-append the suffix that goes with this \fITAG\fP.  Track files will be looked
+Can be one or more binary or ASCII data files. To use a file with a list of tracks,
+specify the name of the track list after a colon
+(e.g., :tracks.lis).  If the names are missing their file extension we will
+append the suffix specified for this \fITAG\fP.  Track files will be looked
 for first in the current directory and second in all directories listed in
 \fB$X2SYS_HOME\fP/\fITAG\fP_paths.txt (if it exists). [If \fB$X2SYS_HOME\fP
 is not set it will default to \fB$GMT_SHAREDIR\fP/x2sys].

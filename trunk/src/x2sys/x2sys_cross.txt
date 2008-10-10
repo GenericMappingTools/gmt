@@ -45,6 +45,7 @@ Only process the pair-combinations found in the file \fIcombi.lis\fP
 .B \-L
 Output results using the old XOVER format [Default is X2SYS format].
 This option should only be used with *.gmt-formatted MGD77 files.
+See \fIWessel\fP [1989] for details.
 .TP
 .B \-Q
 Append \fBe\fP for external COEs only, and \fBi\fP for internal
@@ -113,6 +114,8 @@ files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 .br
 .sp
 \fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 \fB\-Qe \-T\fPMGD77 \fB\-F\fPlon,lat,depth > crossovers.d
+.SH REFERENCES
+Wessel, P. (1989), XOVER: A cross-over error detector for track data, \fIComputers and Geosciences, 15\fP(3), 333-346.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR x2sys_binlist (1)

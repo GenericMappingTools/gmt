@@ -26,6 +26,7 @@ If not given we read standard input.
 Eliminate COEs by distributing the COE between the two tracks in proportion to track weight and produce
 (dist, adjustment) spline knots files for each track.  These adjustments may be used by \fBx2sys_datalist\fP.  The
 adjustment files are called \fITAG.track.column.adj\fP and are placed in the \fB$X2SYS_HOME\fP directory.
+For background, see \fIMittal\fP [1984].
 .TP
 .B \-I
 Name of ASCII file with a list of track names (one per record) that should be excluded from consideration
@@ -61,6 +62,8 @@ To report on the faa crossovers globally that involves track 12345678, try
 .br
 .sp
 \fBx2sys_report\fP COE_data.txt \fB\-V \-T\fPMGD77 \fB\-C\fPfaa \fB\-S\fP12345678  > faa_report.txt
+.SH REFERENCES
+Mittal, P. K. (1984), Algorithm for error adjustment of potential field data along a survey network, \fIGeophysics, 49\fP(4), 467-469.
 .SH "SEE ALSO"
 .IR x2sys_binlist (1)
 .IR x2sys_cross (1)
