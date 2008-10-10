@@ -17,10 +17,10 @@ Only the named data fields will be output [Default selects all columns].
 No space between the option flag and the associated arguments.
 .TP
 .B \-A
-Distribute the COE between the two tracks according to track weight based on track adjustment
-spline knots files for each track and data column.  These residual
-adjustment files are called \fITAG.track.column.adj\fP and are expected to be in the \fB$X2SYS_HOME\fP directory.
-THe adjustments are only applied if the corresponding adjust file can be found [No residual adjustments]
+Eliminate COEs by distributing the COE between the two tracks in proportion to track weight.
+These (dist, adjustment) spline knots files for each track  
+are called \fITAG.track.column.adj\fP and are expected to be in the \fB$X2SYS_HOME\fP directory.
+The adjustments are only applied if the corresponding adjust file can be found [No residual adjustments]
 .TP
 .B \-F
 Give a comma-separated sub-set list of column names defined in the definition
