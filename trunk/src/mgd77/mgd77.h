@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.100 2008-10-08 00:55:38 guru Exp $
+ *	$Id: mgd77.h,v 1.101 2008-10-10 02:57:09 guru Exp $
  * 
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -468,6 +468,7 @@ extern BOOLEAN MGD77_txt_are_constant (char *txt, GMT_LONG n, int width);
 extern int MGD77_do_scale_offset_before_write (double new[], const double x[], GMT_LONG n, double scale, double offset, int type);
 extern void MGD77_select_high_resolution ();
 extern void MGD77_free_plain_mgd77 (struct MGD77_HEADER *H);
+extern int MGD77_Match_List (char *word, int n_fields, char **list);
 
 /* User functions for direct use of Carter corrections */
 

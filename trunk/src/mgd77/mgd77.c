@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.199 2008-10-09 02:41:48 mtchandl Exp $
+ *	$Id: mgd77.c,v 1.200 2008-10-10 02:57:09 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -91,7 +91,6 @@ double MGD77_Copy (double z);
 int wrong_filler (char *field, int length);
 double *MGD77_Read_Column (int id, size_t start[], size_t count[], double scale, double offset, struct MGD77_COLINFO *col);
 int MGD77_atoi (char *txt);
-int MGD77_Match_List (char *word, int n_fields, char **list);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
