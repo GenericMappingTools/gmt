@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_synopsis.h,v 1.6 2008-05-23 20:20:12 guru Exp $
+ *	$Id: gmt_synopsis.h,v 1.7 2008-10-10 21:42:53 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -60,8 +60,8 @@
 
 /* Options for map rose and scale, used in pscoast and psbasemap */
 
-#define GMT_TROSE	"-T[f|m][x]<lon0>/<lat0>/<size>[/<info>][:w,e,s,n:][+<gint>[/<mint>]]"
-#define GMT_SCALE	"-L[f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[m|n|k][:<label>:<just>][+p<pen>][+f<fill>]"
+#define GMT_TROSE	"-T[f|m][x]<lon0>/<lat0>/<diameter>[/<info>][:w,e,s,n:][+<gint>[/<mint>]]"
+#define GMT_SCALE	"-L[f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[m|n|k][+l<label>][+j<just>][+p<pen>][+f<fill>][+u]"
 
 /* Argument to *contour programs */
 

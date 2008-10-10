@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.373 2008-09-20 23:08:06 guru Exp $
+ *	$Id: gmt_support.c,v 1.374 2008-10-10 21:42:53 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5733,7 +5733,7 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 	char txt_cpy[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_sx[GMT_LONG_TEXT], txt_sy[GMT_LONG_TEXT], txt_len[GMT_LONG_TEXT];
 
 	memset ((void *)ms, 0, sizeof (struct GMT_MAP_SCALE));
-	ms->measure = 'k';
+	ms->measure = 'k';	/* Default distance unit is km */
 	ms->justify = 't';
 	memcpy ((void *)ms->fill.rgb, (void *)GMT_no_rgb, 3 * sizeof (int));
 
@@ -5761,13 +5761,15 @@ int GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 	else	/* Wrong number of slashes */
 		error++;
 	i = strlen (txt_len) - 1;
-	if (isalpha ((int)(txt_len[i])) && ! (txt_len[i] == 'm' || txt_len[i] == 'n' || txt_len[i] == 'k')) {
-		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Valid distance units are m, n, or k\n", GMT_program);
-		error++;
-	}
-	else {	/* Gave a valid distance unit */
-		ms->measure = txt_len[i];
-		txt_len[i] = '\0';
+	if (isalpha ((int)txt_len[i])) {	/* Letter at end of distance value */
+		if ((txt_len[i] == 'm' || txt_len[i] == 'n' || txt_len[i] == 'k')) {	/* Gave a valid distance unit */
+			ms->measure = txt_len[i];
+			txt_len[i] = '\0';
+		}
+		else {
+			fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Valid distance units are m, n, or k\n", GMT_program);
+			error++;
+		}
 	}
 	ms->length = atof (txt_len);
 	

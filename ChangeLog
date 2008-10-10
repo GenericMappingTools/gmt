@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.343 2008-10-07 18:49:33 guru Exp $
+	$Id: ChangeLog,v 1.344 2008-10-10 21:42:53 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-10-10	pwessel
+	* psbasemap.c		The -L syntax and description was out of date regarding
+				how the options are to be specified.  Added new syntax
+				explain functions for both map scale and map rose so these
+				are consistently described for both psbasemap and pscoast.
+				Also corrected the syntax and description in the man pages.
 2008-10-08	remko
 	* gmtmath.c:		Added INRANGE operator. Was added to grdmath on 2004-03-28,
 				but was not available to gmtmath.

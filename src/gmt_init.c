@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.358 2008-10-05 01:35:10 guru Exp $
+ *	$Id: gmt_init.c,v 1.359 2008-10-10 21:42:53 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -697,6 +697,32 @@ void GMT_rgb_syntax (char option, char *string)
 	fprintf (stderr, "\t   4) any valid color name.\n");
 }
 
+void GMT_mapscale_syntax (char option, char *string)
+{
+	if (string[0] == ' ') fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
+	fprintf (stderr, "\t-%c %s\n", option, string);
+	fprintf (stderr, "\t   Use -%cx to specify Cartesian coordinates instead.  Scale is calculated at latitude <slat>;\n", option);
+	fprintf (stderr, "\t   optionally give longitude <slon> [Default is central longitude].  <length> is in km [Default]\n");
+	fprintf (stderr, "\t   or [nautical] miles if [n] m is appended.  -%cf draws a \"fancy\" scale [Default is plain].\n", option);
+	fprintf (stderr, "\t   By default, the label is set to the distance unit and placed on top [+jt].  Use the +l<label>\n");
+	fprintf (stderr, "\t   and +j<just> mechanisms to specify another label and placement (t,b,l,r).  +u sets the label as a unit.\n");
+	fprintf (stderr, "\t   Append +p<pen> and/or +f<fill> to draw/paint a rectangle behind the scale [no rectangle]\n");
+}
+
+void GMT_maprose_syntax (char option, char *string)
+{
+	if (string[0] == ' ') fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
+	fprintf (stderr, "\t-%c %s\n", option, string);
+	fprintf (stderr, "\t   Use -%cx to specify Cartesian coordinates instead.  -Tf draws a \"fancy\" rose [Default is plain].\n", option);
+	fprintf (stderr, "\t   Give rose <diameter> and optionally the west, east, south, north labels desired [W,E,S,N].\n");
+	fprintf (stderr, "\t   For fancy rose, specify as <info> the kind you want: 1 draws E-W, N-S directions [Default],\n");
+	fprintf (stderr, "\t   2 adds NW-SE and NE-SW, while 3 adds WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW.\n");
+	fprintf (stderr, "\t   For Magnetic compass rose, specify -%cm.  Use the optional <info> = <dec>/<dlabel> (where <dec> is\n", option);
+	fprintf (stderr, "\t   the magnetic declination and <dlabel> is a label for the magnetic compass needle) to plot\n");
+	fprintf (stderr, "\t   directions to both magnetic and geographic north [Default is just geographic].\n");
+	fprintf (stderr, "\t   If the North label = \'*\' then a north star is plotted instead of the label.\n");
+	fprintf (stderr, "\t   Append +<gints>/<mints> to override default annotation/tick interval(s) [10/5/1/30/5/1].\n");
+}
 void GMT_syntax (char option)
 {
 	/* The function print to stderr the syntax for the option indicated by
@@ -2553,7 +2579,7 @@ void GMT_getdefaults (char *this_file)	/* Read user's .gmtdefaults4 file and ini
 		char *path;
 		GMT_getdefpath (0, &path);
 		GMT_loaddefaults (path);
-		GMT_free ((void *)path);
+		free ((void *)path);
 	}
 }
 
@@ -3011,7 +3037,7 @@ void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shortha
 void GMT_freeshorthand (void) {/* Free memory used by shorthand arrays */
 	int i;
 
-	for (i = 0; i < GMT_n_file_suffix; i++) GMT_free ((void *)GMT_file_suffix[i]);
+	for (i = 0; i < GMT_n_file_suffix; i++) free ((void *)GMT_file_suffix[i]);
 	GMT_free ((void *)GMT_file_id);
 	GMT_free ((void *)GMT_file_scale);
 	GMT_free ((void *)GMT_file_offset);
@@ -3177,12 +3203,12 @@ void GMT_end (int argc, char **argv)
 
 	int i, j;
 
-	for (i = 0; i < GMT_N_UNIQUE; i++) if (GMT_oldargv[i]) GMT_free ((void *)GMT_oldargv[i]);
+	for (i = 0; i < GMT_N_UNIQUE; i++) if (GMT_oldargv[i]) free ((void *)GMT_oldargv[i]);
 	GMT_free_plot_array ();
 	/* Remove allocated hash structures */
 	GMT_free_hash (GMT_month_hashnode, 12);
 	GMT_free_hash (GMT_rgb_hashnode, GMT_N_COLOR_NAMES);
-	for (i = 0; i < GMT_N_FONTS; i++) GMT_free ((void *)GMT_font[i].name);
+	for (i = 0; i < GMT_N_FONTS; i++) free ((void *)GMT_font[i].name);
 	GMT_free ((void *)GMT_font);
 	GMT_free_custom_symbols();
 #ifdef __FreeBSD__
@@ -3199,10 +3225,10 @@ void GMT_end (int argc, char **argv)
 	GMT_free ((void *)GMT_SHAREDIR);
 	GMT_free ((void *)GMT_HOMEDIR);
 	if (GMT_USERDIR) GMT_free ((void *)GMT_USERDIR);
-	if (GMT_GRIDDIR) GMT_free ((void *)GMT_GRIDDIR);
-	if (GMT_IMGDIR) GMT_free ((void *)GMT_IMGDIR);
-	if (GMT_DATADIR) GMT_free ((void *)GMT_DATADIR);
-	if (GMT_TMPDIR) GMT_free ((void *)GMT_TMPDIR);
+	if (GMT_GRIDDIR) free ((void *)GMT_GRIDDIR);
+	if (GMT_IMGDIR) free ((void *)GMT_IMGDIR);
+	if (GMT_DATADIR) free ((void *)GMT_DATADIR);
+	if (GMT_TMPDIR) free ((void *)GMT_TMPDIR);
 	if (project_info.n_x_coeff) GMT_free ((void *)project_info.n_x_coeff);
 	if (project_info.n_y_coeff) GMT_free ((void *)project_info.n_y_coeff);
 	if (project_info.n_iy_coeff) GMT_free ((void *)project_info.n_iy_coeff);
@@ -3250,7 +3276,8 @@ void GMT_set_home (void)
 	/* Determine GMT_SHAREDIR (directory containing coast, cpt, etc. subdirectories) */
 
 	if ((this = getenv ("GMT_SHAREDIR")) != CNULL) {	/* GMT_SHAREDIR was set */
-		GMT_SHAREDIR = strdup (this);
+		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
+		strcpy (GMT_SHAREDIR, this);
 	}
 	else {	/* Default is GMT_SHARE_PATH */
 		GMT_SHAREDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_SHARE_PATH) + 1), sizeof (char), "GMT");
@@ -3260,7 +3287,8 @@ void GMT_set_home (void)
 	/* Determine GMT_HOMEDIR (user home directory) */
 
 	if ((this = getenv ("HOME")) != CNULL) {	/* HOME was set */
-		GMT_HOMEDIR = strdup (this);
+		GMT_HOMEDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this)+1), sizeof (char), "GMT");
+		strcpy (GMT_HOMEDIR, this);
 	}
 	else {
 #ifdef WIN32
@@ -3275,7 +3303,8 @@ void GMT_set_home (void)
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
 	if ((this = getenv ("GMT_USERDIR")) != CNULL) {	/* GMT_USERDIR was set */
-		GMT_USERDIR = strdup (this);
+		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), sizeof (char), "GMT");
+		strcpy (GMT_USERDIR, this);
 	}
 	else if (GMT_HOMEDIR) {	/* Use default path for GMT_USERDIR (~/.gmt) */
 		GMT_USERDIR = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_HOMEDIR) + 6), sizeof (char), "GMT");
@@ -5707,11 +5736,11 @@ int GMT_init_fonts (int *n_fonts)
 
 		while (fgets (buf, BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-			GMT_font[i].name = (char *)GMT_memory (VNULL, strlen (buf), sizeof (char), GMT_program);
-			if (sscanf (buf, "%s %lf %*d", GMT_font[i].name, &GMT_font[i].height) != 2) {
+			if (sscanf (buf, "%s %lf %*d", fullname, &GMT_font[i].height) != 2) {
 				fprintf (stderr, "GMT Fatal Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
 				GMT_exit (EXIT_FAILURE);
 			}
+			GMT_font[i].name = strdup (fullname);
 			i++;
 			if (i == n_alloc) {
 				n_alloc <<= 1;
