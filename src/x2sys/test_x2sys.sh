@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: test_x2sys.sh,v 1.7 2008-10-10 02:57:09 guru Exp $
+#	$Id: test_x2sys.sh,v 1.8 2008-10-10 04:31:31 guru Exp $
 #
 # Test script that exercise the various options in x2sys.
 # We generate a grid and some fake tracks and sample the
@@ -25,12 +25,15 @@ cat << EOF | mapproject -Gc | sample1d -Fl -T2 -I0.1 | grdtrack -Ghat.nc > track
 0	-2
 -2	0
 EOF
-cat << EOF | mapproject -Gc | sample1d -Fl -T2 -I0.1 | grdtrack -Ghat.nc > trackC.xydz
+# THrow in a wrench by scaling the grid by 1.1 before sampling track C:
+grdmath hat.nc 1.1 MUL = $$.nc
+cat << EOF | mapproject -Gc | sample1d -Fl -T2 -I0.1 | grdtrack -G$$.nc > trackC.xydz
 -3	-1
 2	-1
 2	3
 -2	-1
 EOF
+rm -f $$.nc
 
 # Create a *.def file and initialize the tag
 

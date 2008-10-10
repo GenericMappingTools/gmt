@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.100 2008-10-09 02:05:50 guru Exp $
+ *	$Id: x2sys.c,v 1.101 2008-10-10 04:31:31 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -257,22 +257,15 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	double **z, *rec;
 	char path[BUFSIZ];
 
-	strcpy (s->path, fname);
- 	if (n_x2sys_paths) {
-  		if (x2sys_get_data_path (path, fname, s->suffix)) {
-   			fprintf (stderr, "x2sys_read_file : Cannot find track %s\n", fname);
-     			return (-1);
-  		}
-  		if ((fp = fopen (path, G->r_mode)) == NULL) {
-   			fprintf (stderr, "x2sys_read_file : Cannot open file %s\n", path);
-     			return (-1);
-  		}
-		strcpy (s->path, path);
+	if (x2sys_get_data_path (path, fname, s->suffix)) {
+		fprintf (stderr, "x2sys_read_file : Cannot find track %s\n", fname);
+  		return (-1);
 	}
-	else if ((fp = fopen (fname, G->r_mode)) == NULL) {
-		fprintf (stderr, "x2sys_read_file: Could not open %s\n", fname);
-		return (-1);
+	if ((fp = fopen (path, G->r_mode)) == NULL) {
+		fprintf (stderr, "x2sys_read_file : Cannot open file %s\n", path);
+  		return (-1);
 	}
+	strcpy (s->path, path);
 
 	n_alloc = GMT_CHUNK;
 
@@ -1526,10 +1519,11 @@ int x2sys_find_track (char *name, char **list, int n)
 	return (-1);
 }
 
-int x2sys_get_filenames (int argc, char **argv, char ***filelist, BOOLEAN *cmdline)
-{	/* Return list of trackfiles given on command line or via :list mechanism */
+int x2sys_get_tracknames (int argc, char **argv, char ***filelist, BOOLEAN *cmdline)
+{	/* Return list of track names given on command line or via :list mechanism.
+	 * The names do not have the track extension. */
 	int i, A, list = 0, add_chunk, n_alloc;
-	char **file;
+	char **file, *p;
 	
 	for (A = 1; !list && A < argc; A++) if (argv[A][0] == ':') list = A;
 
@@ -1539,6 +1533,7 @@ int x2sys_get_filenames (int argc, char **argv, char ***filelist, BOOLEAN *cmdli
 			fprintf (stderr, "%s: Error: Could not open list with filenames %s!\n", GMT_program, &argv[list][1]);
 			exit (EXIT_FAILURE);
 		}
+		file = *filelist;
 	}
 	else {		/* Get files from command line */
 		add_chunk = n_alloc = GMT_CHUNK;
@@ -1557,6 +1552,11 @@ int x2sys_get_filenames (int argc, char **argv, char ***filelist, BOOLEAN *cmdli
 		}
 		file = (char **)GMT_memory ((void *)file, (size_t)A, sizeof (char *), GMT_program);
 		*filelist = file;
+	}
+	/* Strip off any extensions */
+	
+	for (i = 0; i < A; i++) {
+		if ((p = strchr (file[i], '.'))) file[i][(int)(p-file[i])] = '\0';
 	}
 
 	return (A);

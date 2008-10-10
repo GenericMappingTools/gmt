@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.42 2008-10-09 01:30:58 guru Exp $
+ *	$Id: x2sys.h,v 1.43 2008-10-10 04:31:31 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -256,7 +256,7 @@ extern int x2sys_xover_output (FILE *fp, int n, double out[]);
 extern int x2sys_n_data_cols (struct X2SYS_INFO *s);
 extern int x2sys_read_list (char *file, char ***list, int *n);
 extern int x2sys_find_track (char *name, char **list, int n);
-int x2sys_get_filenames (int argc, char **argv, char ***filelist, BOOLEAN *cmdline);
+int x2sys_get_tracknames (int argc, char **argv, char ***tracklist, BOOLEAN *cmdline);
 
 extern double *x2sys_dummytimes (GMT_LONG n);
 
