@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.233 2008-10-05 01:35:10 guru Exp $
+ *	$Id: gmt_plot.c,v 1.234 2008-10-10 21:42:53 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4121,8 +4121,8 @@ int GMT_plotinit (int argc, char *argv[])
 		}
 	}
 	if (GMT_ps.unix_time) GMT_timestamp (GMT_ps.unix_time_pos[0], GMT_ps.unix_time_pos[1], GMT_ps.unix_time_just, GMT_ps.unix_time_label);
-	if (eps->name) GMT_free ((void *)eps->name);
-	if (eps->title) GMT_free ((void *)eps->title);
+	if (eps->name) free ((void *)eps->name);
+	if (eps->title) free ((void *)eps->title);
 	if (eps) GMT_free ((void *)eps);
 	return (0);
 }

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.101 2008-10-10 04:31:31 guru Exp $
+ *	$Id: x2sys.c,v 1.102 2008-10-10 21:42:53 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -512,7 +512,8 @@ void x2sys_set_home (void)
 	if (X2SYS_HOME) return;	/* Already set elsewhere */
 
 	if ((this = getenv ("X2SYS_HOME")) != CNULL) {	/* Set user's default path */
-		X2SYS_HOME = strdup (this);
+		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "x2sys_set_home");
+		strcpy (X2SYS_HOME, this);
 	}
 	else {
 		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_SHAREDIR) + 7), (size_t)1, "x2sys_set_home");
@@ -526,12 +527,13 @@ void x2sys_free_info (struct X2SYS_INFO *s)
 	GMT_free ((void *)s);
 }
 
-void x2sys_free_data (double **data, int n)
+void x2sys_free_data (double **data, int n, struct X2SYS_FILE_INFO *p)
 {
 	int i;
 
 	for (i = 0; i < n; i++) GMT_free ((void *)data[i]);
 	GMT_free ((void *)data);
+	GMT_free ((void *)p->ms_rec);
 }
 
 double *x2sys_dummytimes (GMT_LONG n)
@@ -1493,7 +1495,7 @@ GMT_LONG x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double 
 		P = (struct X2SYS_COE_PAIR *) GMT_memory ((void *)P, (size_t)n_pairs, sizeof (struct X2SYS_COE_PAIR), GMT_program);
 		*xpairs = P;
 	}
-	for (k = 0; k < n_tracks; k++) GMT_free ((void *)trk_list[k]);
+	for (k = 0; k < n_tracks; k++) free ((void *)trk_list[k]);
 	GMT_free ((void *)trk_list);
 	if (n_ignore) {
 		for (k = 0; k < n_ignore; k++) GMT_free ((void *)ignore[k]);

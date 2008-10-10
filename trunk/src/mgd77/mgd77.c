@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.200 2008-10-10 02:57:09 guru Exp $
+ *	$Id: mgd77.c,v 1.201 2008-10-10 21:42:53 guru Exp $
  *
  *    Copyright (c) 2005-2008 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2436,7 +2436,8 @@ void MGD77_Set_Home (struct MGD77_CONTROL *F)
 	if (F->MGD77_HOME) return;	/* Already set elsewhere */
 
 	if ((this = getenv ("MGD77_HOME")) != CNULL) {	/* MGD77_HOME was set */
-		F->MGD77_HOME = strdup (this);
+		F->MGD77_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "MGD77_Set_Home");
+		strcpy (F->MGD77_HOME, this);
 	}
 	else {	/* Set default path */
 		fprintf (stderr, "mgd77: Warning: MGD77_HOME not defined, set to %s/mgd77\n", GMT_SHAREDIR);

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: legend.sh,v 1.9 2007-11-15 04:20:42 remko Exp $
+#	$Id: legend.sh,v 1.10 2008-10-10 21:42:53 guru Exp $
 #
 # Testing pslegend capabilities
 
@@ -31,8 +31,8 @@ V 0 1p
 N 1
 D 0.2i 1p
 I SOEST_block4.ras 3 CT
-G 0.05i
-M 5 5 600:km:u f
+G -0.35i
+M 5 5 600+u f
 G 0.1i
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 G 0.1i
@@ -41,7 +41,7 @@ T Let us just try some simple text that can go on a few lines.
 T There is no way to predetermine how many lines may be required,
 T so we may have to adjust the height to get the right size box.
 EOF
-#pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F -S > script.sh
+pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F -S > script.sh
 #sh -xv script.sh >> $ps
 # rm -f script.sh
 pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F >> $ps

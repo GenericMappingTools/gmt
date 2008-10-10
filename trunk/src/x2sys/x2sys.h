@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.43 2008-10-10 04:31:31 guru Exp $
+ *	$Id: x2sys.h,v 1.44 2008-10-10 21:42:53 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -263,7 +263,7 @@ extern double *x2sys_dummytimes (GMT_LONG n);
 extern void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s);
 extern int x2sys_fclose (char *fname, FILE *fp);
 extern void x2sys_free_info (struct X2SYS_INFO *s);
-extern void x2sys_free_data (double **data, int n);
+extern void x2sys_free_data (double **data, int n, struct X2SYS_FILE_INFO *p);
 extern int x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
 
 extern int x2sys_initialize (char *fname, struct GMT_IO *G, struct X2SYS_INFO **I);
