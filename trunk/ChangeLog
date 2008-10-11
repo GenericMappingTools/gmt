@@ -1,7 +1,8 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.344 2008-10-10 21:42:53 guru Exp $
+	$Id: ChangeLog,v 1.345 2008-10-11 08:03:32 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-10-10	pwessel
+	* x2sys.c:		Can now also handle netCDF 1-D COARDS files.
 	* psbasemap.c		The -L syntax and description was out of date regarding
 				how the options are to be specified.  Added new syntax
 				explain functions for both map scale and map rose so these

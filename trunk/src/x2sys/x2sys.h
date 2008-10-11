@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.45 2008-10-11 04:12:19 guru Exp $
+ *	$Id: x2sys.h,v 1.46 2008-10-11 08:03:33 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -133,7 +133,7 @@ struct X2SYS_INFO {
 	int geodetic;			/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
 	int dist_flag;			/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
 	PFI read_file;			/* Pointer to function that reads this file */
-	BOOLEAN ascii_in;		/* TRUE if input is in ascii */
+	int file_type;			/* 0 = ASCII, 1 = native binary, 2 = netCDF */
 	BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
 	BOOLEAN multi_segment;		/* TRUE if there are multiple segments in this file */
 	BOOLEAN geographic;		/* TRUE if x/y data are lon/lat */
@@ -252,6 +252,7 @@ extern int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, stru
 extern int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
 extern int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
 extern int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
+extern int x2sys_read_mgd77ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
 extern int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec);
 extern int x2sys_xover_output (FILE *fp, int n, double out[]);
 extern int x2sys_n_data_cols (struct X2SYS_INFO *s);
@@ -287,6 +288,10 @@ extern const char * x2sys_strerror (int err);
 extern GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *s, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, GMT_LONG *nx, int *ntracks);
 extern void x2sys_free_coe_dbase (struct X2SYS_COE_PAIR *P, GMT_LONG np);
 extern void x2sys_get_corrtable (struct X2SYS_INFO *s, char *table, int ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR);
+
+#define X2SYS_ASCII		0
+#define X2SYS_BINARY		1
+#define X2SYS_NETCDF		2
 
 #define X2SYS_NOERROR		0
 #define X2SYS_FCLOSE_ERR	-1
