@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.104 2008-10-11 08:03:33 guru Exp $
+ *	$Id: x2sys.c,v 1.105 2008-10-11 10:13:48 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1638,8 +1638,8 @@ int separate_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *
 void x2sys_get_corrtable (struct X2SYS_INFO *S, char *ctable, int ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR)
 {	/* Load an ephemeral correction table */
 	/* Pass aux as NULL if the auxillary columns do not matter (only used by x2sys_datalist) */
-	int i, n_items, n_aux, n_cols, missing;
-	char path[BUFSIZ], **item_names = NULL, **col_name = NULL;
+	int i, k, n_items, n_aux, n_cols, missing;
+	char path[BUFSIZ], **item_names = NULL, **col_name = NULL, **aux_name = NULL;
 	
 	if (!ctable) {	/* Try default correction table */
 		sprintf (path, "%s%c%s%c%s_corrections.txt", X2SYS_HOME, DIR_DELIM, S->TAG, DIR_DELIM, S->TAG);
@@ -1666,16 +1666,25 @@ void x2sys_get_corrtable (struct X2SYS_INFO *S, char *ctable, int ntracks, char 
 		for (i = 0; i < n_cols; i++) col_name[i] = strdup (S->info[S->out_order[i]].name);
 	}
 	n_items = MGD77_Scan_Corrtable (ctable, trk_name, ntracks, n_cols, col_name, &item_names, 0);
-	if (aux) n_aux = separate_aux_columns (n_items, item_names, aux, auxlist);	/* Determine which auxillary columns are requested (if any) */
+	if (aux && (n_aux = separate_aux_columns (n_items, item_names, aux, auxlist))) {	/* Determine which auxillary columns are requested (if any) */
+		aux_name = (char **) GMT_memory (VNULL, n_aux, sizeof (char *), GMT_program);
+		for (i = 0; i < n_aux; i++) aux_name[i] = strdup (auxlist[i].name);
+	}
 	for (i = missing = 0; i < n_items; i++) {
-		if (MGD77_Match_List (item_names[i], n_cols, col_name) == MGD77_NOT_SET) {
-			fprintf (stderr, "%s: X2SYS Correction table (%s) requires a column (%s) not present in COE database\n", GMT_program, ctable, item_names[i]);
-			missing++;
+		if (MGD77_Match_List (item_names[i], n_cols, col_name) == MGD77_NOT_SET) {	/* Requested column not among data cols */
+			if (n_aux && (k = MGD77_Match_List (item_names[i], n_aux, aux_name)) == MGD77_NOT_SET) {
+				fprintf (stderr, "%s: X2SYS Correction table (%s) requires a column (%s) not present in COE database or auxillary columns\n", GMT_program, ctable, item_names[i]);
+				missing++;
+			}
+			else
+				auxlist[k].requested = TRUE;
 		}
 		GMT_free ((void *)item_names[i]);
 	}
 	if (n_items) GMT_free ((void *)item_names);
-	if (!missing) MGD77_Parse_Corrtable (ctable, trk_name, ntracks, 7, col_name, 0, CORR);
+	for (i = 0; i < n_aux; i++) GMT_free ((void *)aux_name[i]);
+	if (n_aux) GMT_free ((void *)aux_name);
+	if (!missing) MGD77_Parse_Corrtable (ctable, trk_name, ntracks, n_cols, col_name, 0, CORR);
 	for (i = 0; i < n_cols; i++) GMT_free ((void *)col_name[i]);
 	GMT_free ((void *)col_name);
 	if (missing) exit (EXIT_FAILURE);

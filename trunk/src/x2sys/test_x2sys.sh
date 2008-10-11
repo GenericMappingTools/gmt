@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: test_x2sys.sh,v 1.9 2008-10-11 04:12:19 guru Exp $
+#	$Id: test_x2sys.sh,v 1.10 2008-10-11 10:13:48 guru Exp $
 #
 # Test script that exercise the various options in x2sys.
 # We generate a grid and some fake tracks and sample the
@@ -104,7 +104,7 @@ psxy -R -J -O /dev/null >> $PS
 gv $PS &
 
 # Solve for constants
-x2sys_solve COE.txt -TFAKE -Cz -Ec -V > corr_const.lis
+x2sys_solve COE.txt -TFAKE -Cz -Ec -V > $X2SYS_HOME/FAKE/corr_const.lis
 A=`grep trackA corr.lis | cut -f3`
 B=`grep trackB corr.lis | cut -f3`
 C=`grep trackC corr.lis | cut -f3`
@@ -166,7 +166,7 @@ psxy -R -J -O /dev/null >> $PS
 gv $PS &
 
 # Solve for trends
-x2sys_solve COE.txt -TFAKE -Cz -Ed -V > corr_trend.lis
+x2sys_solve COE.txt -TFAKE -Cz -Ed -V > $X2SYS_HOME/FAKE/corr_trend.lis
 
 # Correct tracks
 x2sys_datalist -TFAKE -Lcorr_trend.lis trackAd.xydz > trackAdc.xydz
