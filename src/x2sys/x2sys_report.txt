@@ -23,8 +23,8 @@ The name of the input ASCII crossover error data base as produced by \fBx2sys_cr
 If not given we read standard input instead.
 .TP
 .B \-A
-Eliminate COEs by distributing the COE between the two tracks in proportion to track weight and produce
-(dist, adjustment) spline knots files for each track (for the selected \fIcolumn\fP).  These adjustments
+Eliminate COEs by distributing the COE between the two tracks in proportion to track weight and producing
+(dist, adjustment) spline knots files for each track (for the selected \fIcolumn\fP).  Such adjustments
 may be used by \fBx2sys_datalist\fP.  The adjustment files are called \fItrack.column\fP.adj and are
 placed in the \fB$X2SYS_HOME\fP/\fITAG\fP directory. For background information on how these adjustments
 are designed, see \fIMittal\fP [1984].
@@ -35,7 +35,8 @@ Name of ASCII file with a list of track names (one per record) that should be ex
 .TP
 .B \-L
 Apply optimal corrections to the chosen observable.  Append the correction
-table to use [Default uses the correction table \fITAG\fP_corrections.txt in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
+table to use [Default uses the correction table \fITAG\fP_corrections.txt which is expected to reside
+in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
 For the format of this file, see \fBx2sys_solve\fP.
 .TP
 .B \-N

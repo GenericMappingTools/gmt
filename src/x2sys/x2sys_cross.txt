@@ -44,15 +44,15 @@ Only process the pair-combinations found in the file \fIcombi.lis\fP
 .TP
 .B \-L
 Output results using the old XOVER format [Default is x2sys format].
-This option should only be used with *.gmt-formatted MGD77 files [see
-the GMT mgg supplement for file description]; see \fIWessel\fP [1989] for
+This option should only be used with *.gmt-formatted MGD77 files.  See
+the GMT mgg supplement for file description; see \fIWessel\fP [1989] for
 details on the XOVER format.
 .TP
 .B \-Q
 Append \fBe\fP for external COEs only, and \fBi\fP for internal
 COEs only [Default is all COEs].
 #include "explain_-Rgeo.txt"
-For Cartesian data just give \fIxnin/xmax/ymin/ymax\fP.  This option limits
+For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
 the COEs to those that fall inside the specified domain.
 .TP
 .B \-S
@@ -95,8 +95,8 @@ It is recommended that the Akima spline is used
 instead of the natural cubic spline, since it is less sensitive to outliers
 that tend to introduce wild oscillations in the interpolation.
 .SH SIGN CONVENTION
-If lega and legb are passed on the command line, then the COE value is Value
-(lega) - Value (legb).
+If track_a and track_b are passed on the command line, then the COE value is Value
+(track_a) - Value (track_b).
 .SH PRECISION AND FORMAT
 The output format of individual columns are controlled by \fBD_FORMAT\fP except for
 geographic coordinates (\fBOUTPUT_DEGREE_FORMAT\fP) and absolute calendar time

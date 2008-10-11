@@ -309,11 +309,11 @@ lat	d	N	0	1	0	%9.5f
 .br
 time	d	N	0	1	0	%7.1f
 .br
-obs1	h	N	0	1	0	%6.1f
+obs1	d	N	0	1	0	%6.1f
 .br
-obs2	h	N	0	1	0	%6.1f
+obs2	d	N	0	1	0	%6.1f
 .br
-obs3	h	N	0	1	0	%6.1f
+obs3	d	N	0	1	0	%6.1f
 .br
 .sp
 Note we use no scaling or NAN proxies since those issues are usually
