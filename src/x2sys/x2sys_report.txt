@@ -7,7 +7,7 @@ x2sys_report \- Report statistics from crossover data base
 [ OPT(I)[\fIlist\fP] [ OPT(L)[\fIcorrtable\fP] ] [ OPT(N)\fInx_min\fP ] [ OPT(Qe)|\fBi\fP ] 
 [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ]
 .SH DESCRIPTION
-\fBx2sys_report\fP will read the crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)
+\fBx2sys_report\fP will read the input crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)
 and report on the statistics of crossovers (\fIn, mean, stdev, rms, weight\fP) for each track.  Options are
 available to let you exclude tracks and limit the output.
 .TP
@@ -19,14 +19,15 @@ present in the crossover data base.
 No space between the option flag and the associated arguments.
 .TP
 .I coedbase.txt
-The name of the crossover error data base as produced by \fBx2sys_cross\fP.
-If not given we read standard input.
+The name of the input ASCII crossover error data base as produced by \fBx2sys_cross\fP.
+If not given we read standard input instead.
 .TP
 .B \-A
 Eliminate COEs by distributing the COE between the two tracks in proportion to track weight and produce
-(dist, adjustment) spline knots files for each track.  These adjustments may be used by \fBx2sys_datalist\fP.  The
-adjustment files are called \fITAG.track.column.adj\fP and are placed in the \fB$X2SYS_HOME\fP directory.
-For background, see \fIMittal\fP [1984].
+(dist, adjustment) spline knots files for each track (for the selected \fIcolumn\fP).  These adjustments
+may be used by \fBx2sys_datalist\fP.  The adjustment files are called \fItrack.column\fP.adj and are
+placed in the \fB$X2SYS_HOME\fP/\fITAG\fP directory. For background information on how these adjustments
+are designed, see \fIMittal\fP [1984].
 .TP
 .B \-I
 Name of ASCII file with a list of track names (one per record) that should be excluded from consideration
@@ -34,7 +35,7 @@ Name of ASCII file with a list of track names (one per record) that should be ex
 .TP
 .B \-L
 Apply optimal corrections to the chosen observable.  Append the correction
-table to use [Default uses the correction table \fITAG\fP_corrections.txt in the \fB$X2SYS_HOME\fP directory].
+table to use [Default uses the correction table \fITAG\fP_corrections.txt in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
 For the format of this file, see \fBx2sys_solve\fP.
 .TP
 .B \-N
@@ -43,7 +44,7 @@ Only report data from tracks involved in at least \fInx_min\fP crossovers [all t
 .B \-Q
 Append \fBe\fP for external crossovers or \fBi\fP for internal crossovers only [Default is external].
 #include "explain_-Rgeo.txt"
-For Cartesian data just give \fIxin/xmax/ymin/ymax\fP.  This option bases the statistics
+For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option bases the statistics
 on those COE that fall inside the specified domain.
 .TP
 .B \-S

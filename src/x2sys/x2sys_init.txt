@@ -80,9 +80,9 @@ for the relevant track data set.
 .TP
 .B \-W
 Give \fBt\fP or \fBd\fP and append the corresponding
-maximum time gap (in user units; this is typically seconds [Infinity]), or distance gap
-(for units, see OPT(N) [Infinity]) allowed between
-the two points immediately on either side of a crossover.  If these limits are
+maximum time gap (in user units; this is typically seconds [Infinity]), or distance
+(for units, see OPT(N)) gap [Infinity]) allowed between
+the two data points immediately on either side of a crossover.  If these limits are
 exceeded then a data gap is assumed and no COE will be determined.
 .SH DEFINITION FILES
 These *.def files contain information about the data file format and
@@ -97,16 +97,18 @@ Five directives are recognized:
 .br
 \fBBINARY\fP states that the data files are native binary files.
 .br
+\fBNETCDF\fP states that the data files are COARDS-compliant 1-D netCDF files.
+.br
 \fBSKIP\fP takes an integer argument which is either the number of lines to
 skip (when reading ASCII files) or the number of bytes to skip (when reading
-binary files).
+native binary files). Not used with netCDF files.
 .br
 \fBGEO\fP indicates that these files are geographic data sets, with periodicities in
 the \fIx\fP-coordinate (longitudes).  Alternatively, use OPT(G).
 .br
 \fBMULTISEG\fP means each track consists of multiple segments separated
-by a \fBGMT\fP multisegment header (alternatively,
-use \fB\-M\fP when defining the system TAG).
+by a \fBGMT\fP multisegment header (alternatively, use \fB\-M\fP when defining
+the system TAG). Not used with netCDF files.
 .br
 .sp
 The column information consists of one line per column in the order the
@@ -128,7 +130,8 @@ binary files you may choose among
 byte (0-255), \fBh\fP for signed 2-byte integers (-32768,+32767),
 \fBi\fP for  signed 4-byte integers (-2,147,483,648,+2,147,483,647),
 \fBf\fP for 4-byte floating points and \fBd\fP for 8-byte double
-precision floating points.
+precision floating points.  For netCDF, simply use \fBd\fP as netCDF
+will automatically handle type-conversions during reading.
 .br
 \fINaN\fP is Y if certain values are to be replaced by NAN, and N otherwise.
 .br
@@ -187,7 +190,7 @@ obs3	a	N	0	1	0	%7.2f
 .br
 .sp
 .br
-Next we create the TAG and the databases for these line track files.
+Next we create the TAG and the TAG directory with the databases for these line track files.
 Assuming these contain geographic data and that we want to keep track of the
 data distribution at a 1 x 1 degree resolution, with distances in km calculated
 along geodesics and with speeds given in knots, we may run
@@ -202,7 +205,7 @@ in the file \fITAG\fP_paths.txt for a list of additional directories to examine.
 Therefore, create such a file (here LINE_paths.txt) and stick the full paths to
 your data directories there.  All TAG-related files (definition files, tag files,
 and track data bases created) will be expected to be in the directory pointed to
-by \fB$X2SYS_HOME\fP.
+by \fB$X2SYS_HOME\fP/\fITAG\fP (in our case \fB$X2SYS_HOME\fP/LINE).
 .br
 .TP
 .B Create tbf file(s):
@@ -217,7 +220,7 @@ observations everywhere).  For instance, if your tracks are listed in
 the file tracks.lis we may run this command:
 .br
 .sp
-\fBx2sys_binlist\fP \fB\-V \-T\fPLINE `cat tracks.lis` > tracks.tbf
+\fBx2sys_binlist\fP \fB\-V \-T\fPLINE :tracks.lis > tracks.tbf
 .TP
 .B Update index data base:
 Next, the track bin-index files are fed to \fBx2sys_put\fP
@@ -284,6 +287,37 @@ obs3	h	N	0	0.1	0	%6.1f
 .br
 .sp
 The rest of the steps are identical.  
+.TP
+.B COARDS 1-D netCDF files:
+Finally, suppose that your line files actually are netCDF files that
+conform to the COARDS convention, with data columns named
+\fIlon\fP, \fIlat\fP, \fItime\fP, \fIobs1\fP, \fIobs2\fP, and \fIobs3\fP.
+All that is needed is a different line.def file:
+.br
+.sp
+\fB\fP# Define file for the netCDF COARDS line format
+.br
+\fB\fP#NETCDF	# File is now netCDF
+.br
+\fB\fP#GEO		# Data are geographic
+.br
+\fB\fP#name	type	 NaN?	NaN-proxy	scale offset oformat
+.br
+lon	d	N	0	1	0	%10.5f
+.br
+lat	d	N	0	1	0	%9.5f
+.br
+time	d	N	0	1	0	%7.1f
+.br
+obs1	h	N	0	1	0	%6.1f
+.br
+obs2	h	N	0	1	0	%6.1f
+.br
+obs3	h	N	0	1	0	%6.1f
+.br
+.sp
+Note we use no scaling or NAN proxies since those issues are usually
+handled internally in the netCDF format description.
 .SH "SEE ALSO"
 .IR x2sys_binlist (1)
 .IR x2sys_datalist (1)
