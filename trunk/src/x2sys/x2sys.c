@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.102 2008-10-10 21:42:53 guru Exp $
+ *	$Id: x2sys.c,v 1.103 2008-10-11 04:12:19 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -304,7 +304,7 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
+int x2sys_initialize (char *TAG, char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
 {
 	/* Reads the format definition file and sets all information variables */
 
@@ -317,11 +317,12 @@ int x2sys_initialize (char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
 	x2sys_set_home ();
 
 	X = (struct X2SYS_INFO *) GMT_memory (VNULL, n_alloc, sizeof (struct X2SYS_INFO), "x2sys_initialize");
+	X->TAG = strdup (TAG);
 	X->info = (struct X2SYS_DATA_INFO *) GMT_memory (VNULL, n_alloc, sizeof (struct X2SYS_DATA_INFO), "x2sys_initialize");
 	X->ascii_in = TRUE;
 	X->x_col = X->y_col = X->t_col = -1;
 	X->ms_flag = '>';	/* Default multisegment header flag */
-	sprintf (line, "%s.def", fname);
+	sprintf (line, "%s%c%s.def", TAG, DIR_DELIM, fname);
 	X->dist_flag = 0;	/* Cartesian distances */
 
 	if ((fp = x2sys_fopen (line, "r")) == NULL) return (X2SYS_BAD_DEF);
@@ -419,6 +420,7 @@ void x2sys_end (struct X2SYS_INFO *X)
 	if (!X) return;
 	if (X->out_order) GMT_free ((void *)X->out_order);
 	if (X->use_column) GMT_free ((void *)X->use_column);
+	free ((void *)X->TAG);
 	x2sys_free_info (X);
 	for (id = 0; id < n_x2sys_paths; id++) GMT_free  ((void *)x2sys_datadir[id]);
 	MGD77_end (&M);
@@ -820,7 +822,7 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 	B->time_gap = B->dist_gap = dist = DBL_MAX;	/* Default is no data gap */
 	B->periodic = sfile[0] = suffix[0] = 0;
 
-	sprintf (tag_file, "%s.tag", TAG);
+	sprintf (tag_file, "%s%c%s.tag", TAG, DIR_DELIM, TAG);
 	if ((fp = x2sys_fopen (tag_file, "r")) == NULL) {	/* Not in current directory */
 		fprintf (stderr,"%s: Could not find/open file %s either in current of X2SYS_HOME directories\n", X2SYS_program, tag_file);
 		return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -918,7 +920,7 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 	}
 	x2sys_err_pass (x2sys_fclose (tag_file, fp), tag_file);
 	
-	x2sys_err_pass (x2sys_initialize (sfile, G, &s), sfile);	/* Initialize X2SYS and info structure */
+	x2sys_err_pass (x2sys_initialize (TAG, sfile, G, &s), sfile);	/* Initialize X2SYS and info structure */
 
 	if (B->time_gap < 0.0) {
 		fprintf (stderr, "%s: Error -Wt: maximum gap must be > 0!\n", GMT_program);
@@ -965,7 +967,7 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 	else
 		strcpy (s->suffix, sfile);
 		
-	x2sys_path_init (TAG);		/* Prepare directory paths to data */
+	x2sys_path_init (s);		/* Prepare directory paths to data */
 	
 	*S = s;
 	return (X2SYS_NOERROR);
@@ -1002,7 +1004,7 @@ struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag)
 	return (T);
 }
 
-int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID)
+int x2sys_bix_read_tracks (struct X2SYS_INFO *S, struct X2SYS_BIX *B, int mode, int *ID)
 {
 	/* Reads the binned track listing which is ASCII */
 	/* mode = 0 gives linked list, mode = 1 gives fixed array */
@@ -1012,7 +1014,7 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID)
 	FILE *ftrack;
 	struct X2SYS_BIX_TRACK_INFO *this_info = VNULL;
 
-	sprintf (track_file, "%s_tracks.d", TAG);
+	sprintf (track_file, "%s%c%s_tracks.d", S->TAG, DIR_DELIM, S->TAG);
 	x2sys_path (track_file, track_path);
 
 	if ((ftrack = fopen (track_path, "r")) == NULL) return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -1056,14 +1058,14 @@ int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID)
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap)
+int x2sys_bix_read_index (struct X2SYS_INFO *S, struct X2SYS_BIX *B, BOOLEAN swap)
 {
 	/* Reads the binned index file which is native binary and thus swab is an issue */
 	char index_file[BUFSIZ], index_path[BUFSIZ];
 	FILE *fbin;
 	int index = 0, no_of_tracks, i, id, flag;
 
-	sprintf (index_file, "%s_index.b",  TAG);
+	sprintf (index_file, "%s%c%s_index.b", S->TAG, DIR_DELIM, S->TAG);
 	x2sys_path (index_file, index_path);
 
 	if ((fbin = fopen (index_path, "rb")) == NULL) {
@@ -1130,11 +1132,11 @@ int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B, i
 	return (X2SYS_NOERROR);
 }
 
-/* gmtmggpath_init reads the SHAREDIR/mgg/gmtfile_paths file and gets all
- * the gmtfile directories.
+/* x2sys_path_init reads the X2SYS_HOME/TAG/TAG_paths.txt file and gets all
+ * the data directories (if any) for this TAG.
  */
  
-void x2sys_path_init (char *TAG)
+void x2sys_path_init (struct X2SYS_INFO *S)
 {
 	int i;
 	char file[BUFSIZ], line[BUFSIZ];
@@ -1142,13 +1144,15 @@ void x2sys_path_init (char *TAG)
 
 	x2sys_set_home ();
 
-	sprintf (file, "%s%c%s_paths.txt", X2SYS_HOME, DIR_DELIM, TAG);
+	sprintf (file, "%s%c%s%c%s_paths.txt", X2SYS_HOME, DIR_DELIM, S->TAG, DIR_DELIM, S->TAG);
 
 	n_x2sys_paths = 0;
 
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf (stderr, "%s: Warning: path file %s for %s files not found\n", X2SYS_program, file, TAG);
-		fprintf (stderr, "%s: (Will only look in current directory for such files)\n", X2SYS_program);
+		if (gmtdefs.verbose) {
+			fprintf (stderr, "%s: Warning: path file %s for %s files not found\n", X2SYS_program, file, S->TAG);
+			fprintf (stderr, "%s: (Will only look in current directory for such files)\n", X2SYS_program);
+		}
 		return;
 	}
 
@@ -1266,13 +1270,12 @@ void x2sys_err_fail (int err, char *file)
 
 /* Functions dealing with the reading of the COE ascii database */
 
-GMT_LONG x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn, BOOLEAN geo, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, GMT_LONG *nx, int *nt)
+GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, GMT_LONG *nx, int *nt)
 {
-	/* Dbase:	Name of the crossover data file [NULL for stdin]
-	 * TAG:		The current TAG, must match what is in the file
+	 /* S:		The X2SYS_INFO structure
+	 * dbase:	Name of the crossover data file [NULL for stdin]
 	 * ignorefile:	Name of file with track names to ignore [or NULL if none]
 	 * wesn:	Rectangular box to limit COE locations [NULL or 4-array with all zeros means no limit]
-	 * geo:		The x/y are lon/lat
 	 * fflag:	The name of the chosen field (e.g., faa)
 	 * coe_kind: 	1 for internal, 2 for external, 3 [or 0] for both
 	 * one_trk:	NULL to get coes from all pairs; give a track name for pairs only involving that track
@@ -1305,8 +1308,8 @@ GMT_LONG x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double 
 		   # lon	lat	t_1|i_1	t_2|i_2	dist_1	dist_2	head_1	head_2	vel_1	vel_2	twt_1	twt_2	depth_1	depth_2	...
 		 */
 		if (!strncmp (line, "# Tag:", 6)) {	/* Found the # TAG record */
-			if (strcmp (TAG, &line[7])) {	/* -Ttag and this TAG do not match */
-				fprintf (stderr, "%s: ERROR: Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", GMT_program, dbase, &line[7], TAG);
+			if (strcmp (S->TAG, &line[7])) {	/* -Ttag and this TAG do not match */
+				fprintf (stderr, "%s: ERROR: Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", GMT_program, dbase, &line[7], S->TAG);
 				exit (EXIT_FAILURE);
 			}
 			continue;	/* Goto next record */
@@ -1457,7 +1460,7 @@ GMT_LONG x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double 
 				keep = TRUE;
 				if (P[p].COE[k].data[0][COE_Y] < wesn[2] || P[p].COE[k].data[0][COE_Y] > wesn[3])	/* Cartesian y or latitude */
 					keep = FALSE;
-				else if (geo) {	/* Be cautions regarding longitude test */
+				else if (S->geographic) {	/* Be cautions regarding longitude test */
 					lon = P[p].COE[k].data[0][COE_X];
 					while (lon > wesn[0]) lon -= 360.0;
 					while (lon < wesn[0]) lon += 360.0;
@@ -1562,4 +1565,67 @@ int x2sys_get_tracknames (int argc, char **argv, char ***filelist, BOOLEAN *cmdl
 	}
 
 	return (A);
+}
+
+int separate_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist)
+{	/* Used in x2sys_get_corrtable */
+	int i, j, k, this_aux, n_aux;
+	
+	for (i = k = n_aux = 0; i < n_items; i++) {
+		for (j = 0, this_aux = MGD77_NOT_SET; j < N_GENERIC_AUX && this_aux == MGD77_NOT_SET; j++) if (!strcmp (auxlist[j].name, item_name[i])) this_aux = j;
+		if (this_aux != MGD77_NOT_SET) {	/* Found a request for an auxillary column  */
+			aux[n_aux].type = auxlist[this_aux].type;
+			aux[n_aux].text = auxlist[this_aux].text;
+			aux[n_aux].pos = k;
+			auxlist[this_aux].requested = TRUE;
+			n_aux++;
+		}
+	}
+	return (n_aux);
+}
+
+void x2sys_get_corrtable (struct X2SYS_INFO *S, char *ctable, int ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR)
+{	/* Load an ephemeral correction table */
+	/* Pass aux as NULL if the auxillary columns do not matter (only used by x2sys_datalist) */
+	int i, n_items, n_aux, n_cols, missing;
+	char path[BUFSIZ], **item_names = NULL, **col_name = NULL;
+	
+	if (!ctable) {	/* Try default correction table */
+		sprintf (path, "%s%c%s%c%s_corrections.txt", X2SYS_HOME, DIR_DELIM, S->TAG, DIR_DELIM, S->TAG);
+		if (access (path, R_OK)) {
+			fprintf (stderr, "%s: No default X2SYS Correction table (%s) for %s found!\n", GMT_program, path, S->TAG);
+			exit (EXIT_FAILURE);
+		}
+		ctable = path;
+	}
+	if (column) {	/* Must build list of the 7 standard COE database column names */
+		n_cols = 7;
+		col_name = (char **) GMT_memory (VNULL, n_cols, sizeof (char *), GMT_program);
+		col_name[COE_X] = (S->geographic) ? strdup ("lon") : strdup ("x");
+		col_name[COE_Y] = (S->geographic) ? strdup ("lat") : strdup ("y");
+		col_name[COE_T] = strdup ("time");
+		col_name[COE_Z] = strdup (column);
+		col_name[COE_D] = strdup ("dist");
+		col_name[COE_H] = strdup ("azim");
+		col_name[COE_V] = strdup ("vel");
+	}
+	else {	/* Use what is available in the data files */
+		n_cols = S->n_out_columns;
+		col_name = (char **) GMT_memory (VNULL, n_cols, sizeof (char *), GMT_program);
+		for (i = 0; i < n_cols; i++) col_name[i] = strdup (S->info[S->out_order[i]].name);
+	}
+	n_items = MGD77_Scan_Corrtable (ctable, trk_name, ntracks, n_cols, col_name, &item_names, 0);
+	if (aux) n_aux = separate_aux_columns (n_items, item_names, aux, auxlist);	/* Determine which auxillary columns are requested (if any) */
+	for (i = missing = 0; i < n_items; i++) {
+		if (MGD77_Match_List (item_names[i], n_cols, col_name) == MGD77_NOT_SET) {
+			fprintf (stderr, "%s: X2SYS Correction table (%s) requires a column (%s) not present in COE database\n", GMT_program, ctable, item_names[i]);
+			missing++;
+		}
+		GMT_free ((void *)item_names[i]);
+	}
+	if (n_items) GMT_free ((void *)item_names);
+	if (!missing) MGD77_Parse_Corrtable (ctable, trk_name, ntracks, 7, col_name, 0, CORR);
+	for (i = 0; i < n_cols; i++) GMT_free ((void *)col_name[i]);
+	GMT_free ((void *)col_name);
+	if (missing) exit (EXIT_FAILURE);
 }
