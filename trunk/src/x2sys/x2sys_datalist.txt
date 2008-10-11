@@ -29,7 +29,8 @@ file. [Default selects all data columns].
 .TP
 .B \-L
 Apply optimal corrections to columns where such corrections are available.  Append the correction
-table to use [Default uses the correction table \fITAG\fP_corrections.txt in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
+table to use [Default uses the correction table \fITAG\fP_corrections.txt which is expected to reside
+in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
 For the format of this file, see CORRECTIONS below.
 .TP
 .B \-M

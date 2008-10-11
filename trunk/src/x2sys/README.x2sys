@@ -1,4 +1,4 @@
-	$Id: README.x2sys,v 1.6 2008-10-03 21:04:15 guru Exp $
+	$Id: README.x2sys,v 1.7 2008-10-11 09:39:32 guru Exp $
 
 README file for GMT supplemental x2sys programs
 Distributed under the GNU Public License (see file ../COPYING)
@@ -13,7 +13,8 @@ Added x2sys_list.c which replaces the purpose of old x_list,
 x2sys_solve.c which replaces x_solve_dc_drift.c, and
 x2sys_report which replaces x_report.c.  These are all
 experimental and should not be relied upon; syntax and use may
-change without notice!
+change without notice!  Furthermore, x2sys can now read COARDS
+1-D netCDF data files.
 
 1.1 UPDATE
 Added x2sys_binlist.c which replicates the purpose of the old gmt2bin.c

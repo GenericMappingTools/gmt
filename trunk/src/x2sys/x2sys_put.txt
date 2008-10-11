@@ -25,11 +25,11 @@ associated with the tag MGD77, try
 .SH X2SYS DATABASES
 The \fBx2sys_put\fP utility adds new information to the x2sys data bases.  These consists of
 two files: The first file contains a listing of all the tracks that have been added to the system;
-it is named \fITAG\fP_tracks.d and is in ASCII format.  The second file is in native binary format
-and contains information on which tracks cross each of the bins, and what data sets were observed
-while crossing the bin.  The bins are defined by the OPT(R) and OPT(I) options passed to
-\fBx2sys_init\fP when the \fITAG\fP was first initiated.  Both data base files are stored in the
-\fB$X2SYS_HOME\fP/\fITAG\fP directory.  Do not attempt to edit these files by hand.
+it is named \fITAG\fP_tracks.d and is in ASCII format.  The second file is named \fITAG\fP_index.b
+and is in native binary format.  It contains information on which tracks cross each of the bins,
+and what data sets were observed while crossing the bin.  The bins are defined by the OPT(R) and
+OPT(I) options passed to \fBx2sys_init\fP when the \fITAG\fP was first initiated.  Both data base
+files are stored in the \fB$X2SYS_HOME\fP/\fITAG\fP directory.  Do not attempt to edit these files by hand.
 .SH "SEE ALSO"
 .IR x2sys_binlist (1)
 .IR x2sys_get (1)

@@ -23,7 +23,7 @@ The name of the input ASCII crossover error data base as produced by \fBx2sys_cr
 If not given we read standard input instead.
 .TP
 .B \-A
-Specifies maximum asymmetry in the distribution of crossovers relative to the mid point in time (or distance if
+Specifies maximum asymmetry in the distribution of crossovers relative to the mid point in time (or distance, if
 not time is available).  Asymmetry is computed as (n_right - n_left)/(n_right + n_left), referring the the number
 of crossovers that falls in the left or right half of the range.  Symmetric distributions will have values close
 to zero.  If specified, we exclude tracks whose asymmetry exceeds the specify cutoff in absolute value [1, i.e., include all].
@@ -57,7 +57,8 @@ Name of ASCII file with a list of track names (one per record) that should be ex
 .TP
 .B \-L
 Apply optimal corrections to the chosen observable.  Append the correction
-table to use [Default uses the correction table \fITAG\fP_corrections.txt in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
+table to use [Default uses the correction table \fITAG\fP_corrections.txt which is expected to reside
+in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
 For the format of this file, see \fBx2sys_solve\fP.
 .TP
 .B \-N

@@ -8,13 +8,13 @@ x2sys_solve \- Determine systematic corrections from crossovers
 \fBx2sys_solve\fP will use the supplied crossover information to
 solve for systematic corrections that can then be applied per track
 to improve data quality. Several systematic corrections can be solved
-for using a least-squares approach.  Note: Only one data filed can be
+for using a least-squares approach.  Note: Only one data column can be
 processed at the time.
 #include "explain_tag.txt"
 .TP
 .B \-C
 Specify which data column you want to process.  Needed for proper formatting
-of the output correction table and should match the same option used in
+of the output correction table and must match the same option used in
 \fBx2sys_list\fP when preparing the input data.
 .TP
 .B \-E
@@ -22,21 +22,21 @@ The correction type you wish to model.  Choose among the following functions
 \fIf\fP(\fIp\fP), where \fIp\fP are the \fIm\fP parameters per track that we will fit simultaneously
 using a least squares approach:
 .br
-\fBc\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP (a constant offset); records must contain cruise ID, COE.
+\fBc\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP (a constant offset); records must contain cruise ID1, ID2, COE.
 .br
 \fBd\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP + \fIb\fP * \fId\fP (linear drift; \fId\fP is distance;
-records must contain cruise ID, d1, d2, COE.
+records must contain cruise ID1, ID2, d1, d2, COE.
 .br
 \fBg\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP + \fIb\fP sin(y)^2  (1980-1930 gravity correction);
-records must contain cruise ID, latitude y, COE.
+records must contain cruise ID1, ID2, latitude y, COE.
 .br
 \fBh\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP + \fIb\fP cos(H) + \fIc\fP cos(2H) + \fId\fP sin(H) + \fIe\fP sin(2H) (magnetic heading correction);
-records must contain cruise ID, heading H, COE.
+records must contain cruise ID1, ID2, heading H, COE.
 .br
-\fBs\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP * z (a unit scale correction); records must contain cruise ID, z1, z2.
+\fBs\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP * z (a unit scale correction); records must contain cruise ID1, ID2, z1, z2.
 .br
 \fBt\fP will fit \fIf\fP(\fIp\fP) = \fIa\fP + \fIb\fP * (\fIt - t0\fP) (linear drift; \fIt0\fP is the start time of the track);
-records must contain cruise ID, t1-t0, t2-t0, COE.
+records must contain cruise ID1, ID2, t1-t0, t2-t0, COE.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
