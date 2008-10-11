@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.163 2008-10-10 21:42:53 guru Exp $
+ *	$Id: gmt_io.c,v 1.164 2008-10-11 08:03:32 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -490,7 +490,7 @@ void GMT_io_init (void)
 
 int GMT_parse_b_option (char *text)
 {
-	/* Syntax:	-b[i][o][s|S][d|D][#cols] */
+	/* Syntax:	-b[i][o][s|S][d|D][#cols][cvar1/var2/...] */
 
 	int i, id = GMT_IN;
 	BOOLEAN i_or_o = FALSE, done = FALSE, error = FALSE;
