@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: test_x2sys.sh,v 1.8 2008-10-10 04:31:31 guru Exp $
+#	$Id: test_x2sys.sh,v 1.9 2008-10-11 04:12:19 guru Exp $
 #
 # Test script that exercise the various options in x2sys.
 # We generate a grid and some fake tracks and sample the
@@ -52,6 +52,7 @@ z	a	N		0		1	0	-
 EOF
 
 x2sys_init FAKE -Dxydz -V -F -R-5/5/-5/5 -I1 -Cc
+rm -f xydz.def
 
 x2sys_cross -TFAKE track[ABC].xydz -Qe -V -2 > fake_COE_orig.txt
 

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.44 2008-10-10 21:42:53 guru Exp $
+ *	$Id: x2sys.h,v 1.45 2008-10-11 04:12:19 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -120,6 +120,7 @@ struct X2SYS_CORR {		/* Structure with the corrections for each leg */
 struct X2SYS_INFO {
 	/* Information of this datasets particular organization */
 
+	char *TAG;			/* The system TAG */
 	int n_fields;			/* Number of input columns */
 	int n_out_columns;		/* Number of output columns */
 	int n_data_cols;		/* Number of data columns (other than x,y,t) */
@@ -266,25 +267,26 @@ extern void x2sys_free_info (struct X2SYS_INFO *s);
 extern void x2sys_free_data (double **data, int n, struct X2SYS_FILE_INFO *p);
 extern int x2sys_pick_fields (char *string, struct X2SYS_INFO *s);
 
-extern int x2sys_initialize (char *fname, struct GMT_IO *G, struct X2SYS_INFO **I);
+extern int x2sys_initialize (char *TAG, char *fname, struct GMT_IO *G, struct X2SYS_INFO **I);
 extern void x2sys_end (struct X2SYS_INFO *X);
 
 extern int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
 extern void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc);
 extern struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, int id_no, int flag);
 extern struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag);
-extern int x2sys_bix_read_tracks (char *TAG, struct X2SYS_BIX *B, int mode, int *ID);
-extern int x2sys_bix_read_index (char *TAG, struct X2SYS_BIX *B, BOOLEAN swap);
+extern int x2sys_bix_read_tracks (struct X2SYS_INFO *s, struct X2SYS_BIX *B, int mode, int *ID);
+extern int x2sys_bix_read_index (struct X2SYS_INFO *s, struct X2SYS_BIX *B, BOOLEAN swap);
 extern int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B, int *ID);
 
-extern void x2sys_path_init (char *TAG);
+extern void x2sys_path_init (struct X2SYS_INFO *s);
 extern int x2sys_get_data_path (char *track_path, char *track, char *suffix);
 extern int x2sys_err_pass (int err, char *file);
 extern void x2sys_err_fail (int err, char *file);
 extern const char * x2sys_strerror (int err);
 
-extern GMT_LONG x2sys_read_coe_dbase (char *dbase, char *TAG, char *ignorefile, double *wesn, BOOLEAN geo, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, GMT_LONG *nx, int *ntracks);
+extern GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *s, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, GMT_LONG *nx, int *ntracks);
 extern void x2sys_free_coe_dbase (struct X2SYS_COE_PAIR *P, GMT_LONG np);
+extern void x2sys_get_corrtable (struct X2SYS_INFO *s, char *table, int ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR);
 
 #define X2SYS_NOERROR		0
 #define X2SYS_FCLOSE_ERR	-1
