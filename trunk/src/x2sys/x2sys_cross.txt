@@ -43,15 +43,16 @@ Only process the pair-combinations found in the file \fIcombi.lis\fP
 [Default process all possible combinations among the specified files].
 .TP
 .B \-L
-Output results using the old XOVER format [Default is X2SYS format].
-This option should only be used with *.gmt-formatted MGD77 files.
-See \fIWessel\fP [1989] for details.
+Output results using the old XOVER format [Default is x2sys format].
+This option should only be used with *.gmt-formatted MGD77 files [see
+the GMT mgg supplement for file description]; see \fIWessel\fP [1989] for
+details on the XOVER format.
 .TP
 .B \-Q
 Append \fBe\fP for external COEs only, and \fBi\fP for internal
 COEs only [Default is all COEs].
 #include "explain_-Rgeo.txt"
-For Cartesian data just give \fIxin/xmax/ymin/ymax\fP.  This option limits
+For Cartesian data just give \fIxnin/xmax/ymin/ymax\fP.  This option limits
 the COEs to those that fall inside the specified domain.
 .TP
 .B \-S

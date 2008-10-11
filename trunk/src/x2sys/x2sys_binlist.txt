@@ -7,16 +7,16 @@ x2sys_binlist \- Create bin-index files from track data files
 [ OPT(D) ] [ OPT(E) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBx2sys_binlist\fP reads one or more track data files and produces a
-multi-segment ASCII track bin-index file (tbf) with the track id in the header and
+multi-segment ASCII track bin-index file (tbf) with the track name in the header and
 one data record per bin crossed; these records contain \fIlon, lat, index, flags\fP[, \fIdist\fP],
-where \fIlon, lat\fP is the coordinates of the center of the bin, the \fIindex\fP is
+where \fIlon, lat\fP are the coordinates of the center of the bin, the \fIindex\fP is
 the 1-D number of the bin, and \fIflags\fP is a bitflag that describes which data
-fields were available in each bin.  The optional \fIdist\fP requires OPT(D).
+fields were available in this bin.  The optional \fIdist\fP requires OPT(D).
 The input files can be of any format, which must be described and passed with the
 OPT(T) option.  The bin-index listing is a crude representation of where
-the track goes and is used by the data archivist to build a track data base for
-track queries such as to determine which tracks
-need to be compared for crossover analysis.  You must run \fBx2ys_init\fP
+the track goes and is used by the data archivist to build an x2sys track data base for
+miscellaneous track queries, such as when needing to determine which tracks
+should be compared in a crossover analysis.  You must run \fBx2ys_init\fP
 to initialize the tag before you can run the indexing.
 #include "explain_track.txt"
 #include "explain_tag.txt"

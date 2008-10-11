@@ -6,8 +6,9 @@ x2sys_get \- Get track listing from the x2sys track index databases
 \fBx2sys_get\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(F)\fIflags\fP ] 
 [ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
 .SH DESCRIPTION
-\fBx2sys_get\fP will return the names of the track data files that match the given
-requirements.  You may choose a geographic [or Cartesian] region and optionally ask
+\fBx2sys_get\fP will return the names of the track data files in the x2sys data
+base for this TAG that match the given
+requirements.  You may choose a specific region and optionally ask
 only for tracks that meet certain data criteria.  Finally, you may
 select an option to list all possible pairs that might generate crossovers.
 #include "explain_tag.txt"
@@ -35,7 +36,7 @@ option in \fBx2sys_cross\fP.
 Give a comma-separated list of column names (as described in the definition
 file) that must be absent.
 #include "explain_-Rgeo.txt"
-For Cartesian data just give \fIxin/xmax/ymin/ymax\fP.  This option limits
+For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
 the tracks to those that fall at least partly inside the specified domain.
 #include "explain_-V.txt"
 .SH EXAMPLES
