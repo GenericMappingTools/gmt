@@ -60,6 +60,7 @@ int main (argc, argv)
   XEvent event;
 
   GMT_grdio_init ();
+  GMT_io_init ();			/* Init the table i/o structure */
   GMT_program = argv[0];
   GMT_make_dnan (GMT_d_NaN);
 
