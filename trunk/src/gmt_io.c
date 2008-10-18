@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.164 2008-10-11 08:03:32 guru Exp $
+ *	$Id: gmt_io.c,v 1.165 2008-10-18 00:31:22 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,7 +49,8 @@
  *	GMT_bin_float_output_swab:	Write binary single precision record after first swabbing
  *	GMT_set_z_io:		Set GMT_Z_IO structure based on -Z
  *	GMT_check_z_io:		Fill in implied missing row/column
- *	GMT_a_read:		Read 1 ascii item
+ *	GMT_A_read:		Read the next ascii item from input stream (may be more than one per line) z must be regular float
+ *	GMT_a_read:		Read 1 ascii item per input record
  *	GMT_c_read:		Read 1 binary char item
  *	GMT_u_read:		Read 1 binary unsigned char item
  *	GMT_h_read:		Read 1 binary short int item
@@ -83,6 +84,7 @@
 
 BOOLEAN GMT_do_swab = FALSE;	/* Used to indicate swab'ing during binary read */
 
+int GMT_A_read (FILE *fp, double *d);
 int GMT_a_read (FILE *fp, double *d);
 int GMT_c_read (FILE *fp, double *d);
 int GMT_u_read (FILE *fp, double *d);
@@ -1195,6 +1197,11 @@ int GMT_init_z_io (char format[], BOOLEAN repeat[], BOOLEAN swab, int skip, char
 	r->swab = swab;
 
 	switch (type) {	/* Set read pointer depending on data format */
+		case 'A':	/* ASCII with more than one per record */
+			r->read_item = GMT_A_read;	r->write_item = GMT_a_write;
+			r->binary = FALSE;
+			break;
+
 		case 'a':	/* ASCII */
 			r->read_item = GMT_a_read;	r->write_item = GMT_a_write;
 			r->binary = FALSE;
@@ -1291,6 +1298,13 @@ void GMT_check_z_io (struct GMT_Z_IO *r, float *a)
  * We use column 3 ([2]) instead of the first ([0]) since we really are dealing with the z in z (x,y) here
  * and the x,y are implicit from the -R -I arguments.
  */
+
+int GMT_A_read (FILE *fp, double *d)
+{	/* Can read one or more items from input records. Limitation is that they must be floating point values (no dates or ddd:mm:ss) */
+	int i;
+	if ((i = fscanf (fp, "%lg", d)) <= 0) return (0);	/* Read was unsuccessful */
+	return (1);
+}
 
 int GMT_a_read (FILE *fp, double *d)
 {

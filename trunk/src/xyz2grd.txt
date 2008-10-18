@@ -71,7 +71,9 @@ of bytes (probably a header).  If the byte-order needs to be swapped, append \fB
 one of several data types (all binary except \fBa\fP):
 .br
 .sp
-	\fBa\fP  ASCII representation
+	\fBA\fP  ASCII representation of one or more floating point values per record
+.sp
+	\fBa\fP  ASCII representation of a single item per record
 .br
 	\fBc\fP  signed 1-byte character
 .br
@@ -89,7 +91,9 @@ one of several data types (all binary except \fBa\fP):
 .br
 .sp
 Default format is scanline orientation of ASCII numbers: \fB\-ZTLa\fP.
-Note that \fB\-Z\fP only applies to 1-column input.
+Note that \fB\-Z\fP only applies to 1-column input.  The difference between \fBA\fP and \fBa\fP is that
+the latter can decode both \fIdate\fPT\fIclock\fP and \fIddd:mm:ss[.xx]\fP formats while the former is
+strictly for regular floating point values.
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].  This option only applies to xyz input files; see \fB\-Z\fP for z tables.
