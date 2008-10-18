@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.346 2008-10-15 03:08:04 guru Exp $
+	$Id: ChangeLog,v 1.347 2008-10-18 00:31:22 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-10-17	pwessel
+	* xyz2grd.c:		New format (A) for -Z which allows more than one floating
+				point value per input record.  Cannot be used if the z-
+				values are in dateTclock or ddd:mm:ss format.
 2008-10-14	pwessel
 	* xgrid/xGridEdit.c:	Needs GMT_io_init to get all pieces needed to read grids.
 
