@@ -213,6 +213,11 @@ sets you can process with \fBgreenspline\fP.  Pre-processing your data with \fBb
 or \fBblockmode\fP is recommended to avoid aliasing and may also control the size of \fIn\fP. For information,
 if \fIn\fP = 1024 then only 8 Mb memory is needed, but for \fIn\fP = 10240 we need 800 Mb. Note that
 \fBgreenspline\fP is fully 64-bit compliant if compiled as such.
+.br
+(3) The inversion for coefficients can become numerically unstable when data neighbors are very close
+compared to the overall span of the data.  You can remedy this by pre-processing the data, e.g., by
+averaging closely spaced neighbors.  Alternatively, you can improve stability by using the SVD solution and
+discard information associated with the smallest eigen-values (see OPT(C)).
 .SH TENSION
 Tension is generally used to suppress spurious oscillations caused by the minimum curvature requirement, in particular
 when rapid gradient changes are present in the data.  The proper amount of tension can only be determined by experimentation.
