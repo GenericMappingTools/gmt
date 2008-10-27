@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.45 2008-08-14 02:46:38 remko Exp $
+ *	$Id: libspotter.c,v 1.46 2008-10-27 22:47:42 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -171,6 +171,46 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	*p = e;
 
 	return (n);
+}
+
+/* hotspot_init: Reads a file with hotspot information and returns pointer to
+ * array of structures */
+
+int hotspot_init (char *file, struct HOTSPOT **p)
+{
+	FILE *fp;
+	struct HOTSPOT *e;
+	char buffer[BUFSIZ], create, fit, plot;
+	int i = 0, n;
+	size_t n_alloc = GMT_CHUNK;
+
+	if ((fp = GMT_fopen (file, "r")) == NULL) {
+		fprintf (stderr, "%s: Cannot open file %s - aborts\n", GMT_program, file);
+		exit (EXIT_FAILURE);
+	}
+
+	e = (struct HOTSPOT *) GMT_memory (VNULL, n_alloc, sizeof (struct HOTSPOT), GMT_program);
+
+	while (GMT_fgets (buffer, 512, fp) != NULL) {
+		if (buffer[0] == '#' || buffer[0] == '\n') continue;
+		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &e[i].id, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
+		if (n == 3) e[i].id = i;	/* Minimal lon, lat, abbrev */
+		if (n >= 10) {
+			e[i].create = (create == 'Y');
+			e[i].fit = (fit == 'Y');
+			e[i].plot = (plot == 'Y');
+		}
+		i++;
+		if ((size_t)i == n_alloc) {
+			n_alloc <<= 1;
+			e = (struct HOTSPOT *) GMT_memory ((void *)e, n_alloc, sizeof (struct HOTSPOT), GMT_program);
+		}
+	}
+	GMT_fclose (fp);
+	e = (struct HOTSPOT *) GMT_memory ((void *)e, (size_t)i, sizeof (struct HOTSPOT), GMT_program);
+	*p = e;
+
+	return (i);
 }
 
 /* spotter_backtrack: Given a seamount location and age, trace the

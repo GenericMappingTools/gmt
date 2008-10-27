@@ -21,18 +21,7 @@ option flags and lower case for modifiers.
 .TP
 \fIinfile(s)\fP
 Data file(s) to be processed.  If not given, standard input is read.
-.TP
-.B \-E
-Give file with stage poles and opening angles.  This file must contain
-one record for each stage; each record must be of the following format:
-.br
-.sp
-	lon lat tstart tstop ccw-angle
-.br
-.sp
-where tstart and tstop are in Ma and the rest is in degrees.  The oldest stage
-must be listed first.  tstart (tstop) is the age of the old (young) end of the
-stage.  Blank lines and records whose first column contains # will be ignored.
+#include "euler.txt"
 .TP
 .B \-G
 Specify name for output grid file.

@@ -20,18 +20,7 @@ option flags and lower case for modifiers.
 .TP
 \fIgrdfile\fP
 Data grid to be processed, typically residual bathymetry or free-air anomalies.
-.TP
-.B \-E
-Give file with rotation poles and opening angles.  This file must contain
-one record for each stage; each record must be of the following format:
-.br
-.sp
-	lon lat tstart tstop ccw-angle
-.br
-.sp
-where tstart and tstop are in Ma and the rest is in degrees.  The oldest stage
-must be listed first.  tstart (tstop) is the age of the old (young) end of the
-stage.  Blank lines and records whose first column contains # will be ignored.
+#include "euler.txt"
 However, see OPT(C) for total reconstruction poles.
 .TP
 .B \-G
