@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.17 2008-03-24 08:58:33 guru Exp $
+ *	$Id: spotter.h,v 1.18 2008-10-27 22:47:42 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -52,9 +52,24 @@ struct FLOWLINE {			/* Structure with the nearest nodes for a single flowline */
 	unsigned short *PA;		/* Predicted Ages along flowline (t = PI/250, to nearest 0.004 My) */
 };
 
+struct HOTSPOT {	/* Structure holding all the information about a hotspot */
+	/* Record is lon lat abbrev id [radius toff t_on create fit plot name] */
+        double lon, lat;        /* Current location of hot spot (degrees)*/
+	char abbrev[4];         /* Max 3-char abbreviation of hotspot name */
+        int id;                 /* Hot spot id flag */
+	double radius;		/* Uncertainty radius (in km) for hotspot location */
+	double t_off, t_on;	/* Time interval hotspot was active */
+	BOOLEAN create, fit, plot;	/* TRUE if we want to create, fit, or plot hotspot */
+        char name[32];          /* Full name of hotspot */
+	/* Secondary (derived) quantities */
+        double lonr, latr;      /* Current location of hot spot in radians */
+        double x, y, z;         /* Cartesian Current location of hot spot */
+};
+
 /* ANSI-C Function prototypes (see libspotter.c for details): */
 
 EXTERN_MSC int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max, BOOLEAN verbose);
+EXTERN_MSC int hotspot_init (char *file, struct HOTSPOT **p);
 EXTERN_MSC int spotter_backtrack  (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
 EXTERN_MSC int spotter_forthtrack (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
 EXTERN_MSC void spotter_finite_to_stages (struct EULER p[], GMT_LONG n, BOOLEAN finite_rates, BOOLEAN stage_rates);

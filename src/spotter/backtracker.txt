@@ -22,21 +22,7 @@ option flags and lower case for modifiers.
 .TP
 \fIinfile(s)\fP
 Data file(s) to be projected.  If not given, standard input is read.
-.TP
-.B \-E
-Give file with rotation poles and opening angles.  This file must contain
-one record for each rotation; each record must be of the following format:
-.br
-.sp
-	lon lat tstart [tstop] ccw-angle [k a b c d e f g]
-.br
-.sp
-where tstart [and tstop] are in Ma, with lon, lat, and angle in degrees.  For
-stage rotations, the oldest stage
-must be listed first, whereas for total reconstruction rotations the youngest
-rotation is listed first.  tstart (tstop) is the age of the old (young) end of the
-stage.  A covariance matrix, if present, may be given in the given format.
-Blank lines and records whose first column contains # will be ignored.
+#include "euler.txt"
 .SH OPTIONS
 .TP
 .B \-A
