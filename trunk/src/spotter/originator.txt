@@ -6,7 +6,7 @@ originator \- Associate seamounts with hotspot point sources
 \fBoriginator\fP [\fIinfile(s)\fP] OPT(E)\fIstage_file\fP 
 OPT(F)\fIhs_file\fP 
 [ OPT(C) ] [ OPT(D)\fId_km\fP ] [ GMT_H_OPT ] [ OPT(L)[\fBflag\fP ] [ OPT(N)\fIupper_age\fP ] [ OPT(Q)\fIr/t\fP ] 
-[ OPT(S)[\fIn_hs\fP] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)\fImaxdist\fP ] [ GMT_t_OPT ] 
+[ OPT(S)[\fIn_hs\fP] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)\fImaxdist\fP ] [ OPT(Z) ] [ GMT_t_OPT ] 
 [ GMT_bi_OPT ]
 .SH DESCRIPTION
 \fBoriginator\fP reads (longitude, latitude, height, radius, crustal_age) records from \fIinfiles\fP 
@@ -87,6 +87,9 @@ Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation
 .B \-W
 Only report those seamounts whose flowlines came within \fImaxdist\fP to any hotspot
 [Default reports all seamounts].
+.TP
+.B \-Z
+Use the hotspot ID number rather than the name tag in output records.
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 5 input columns].
