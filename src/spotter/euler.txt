@@ -1,12 +1,16 @@
 .TP
 .B \-E
-Give file with stage poles and opening angles.  This file must contain
-one record for each stage; each record must be of the following format:
+Give file with rotation poles and opening angles.  This file must contain
+one record for each rotation; each record must be of the following format:
 .br
 .sp
-	lon lat tstart tstop ccw-angle
+	\fIlon lat tstart [tstop] ccw-angle\fP [ \fIkhat a b c d e f g\fP ]
 .br
 .sp
-where tstart and tstop are in Ma and the rest is in degrees.  The oldest stage
-must be listed first.  tstart (tstop) is the age of the old (young) end of the
-stage.  Blank lines and records whose first column contains # will be ignored.
+where \fItstart\fP and \fItstop\fP are in Ma and \fIlon lat ccw-angle\fP are
+in degrees.  The oldest stage must be listed first.  \fItstart\fP (\fItstop\fP)
+is the age of the old (young) end of the stage.  If OPT(C) is set then a total
+reconstruction rotation is expected and \fItstop\fP is implicitly set to 0 and
+show not be in the file.  If a covariance matrix for the rotation is available
+it must be specified using the eight optional terms listed in brackets.
+Blank lines and records whose first column contains # will be ignored.
