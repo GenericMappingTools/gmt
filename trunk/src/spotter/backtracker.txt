@@ -4,7 +4,7 @@
 backtracker \- Forward and Backward flowlines and hotspot tracks 
 .SH SYNOPSIS
 \fBbacktracker\fP [\fIinfile(s)\fP] OPT(E)\fIstage_file\fP 
-[ OPT(A)[\fIyoung\fP/\fIold\fP] ] [ OPT(C) ] [ OPT(Df)|\fBb\fP ] [ GMT_H_OPT ] 
+[ OPT(A)[\fIyoung\fP/\fIold\fP] ] [ OPT(C) ] [ OPT(Df)|\fBb\fP ] [ OPT(F)\fIlon\fP/\fIlat\fP/\fIangle\fP] [ GMT_H_OPT ] 
 [ OPT(Lf)|\fBb\fP\fIstep\fP ] [ GMT_M_OPT ] [ OPT(N)\fIupper_age\fP ] 
 [ OPT(Q)\fIfixed_age\fP ] [ OPT(S)\fIfilestem\fP ] [ OPT(T)\fIzero_age\fP ] [ GMT_V_OPT ] 
 [ OPT(W)[\fBa\fP|\fBt\fP] ] [ GMT_t_OPT ] [ GMT_b_OPT ]
@@ -34,11 +34,16 @@ then individual limits for each seamount are expected in columns 4 and 5 of the 
 .B \-C
 Expect Total Reconstruction Poles rather than Backward Stage Poles [Default].
 File format is similar to the stage pole format except the youngest rotation must be listed
-first and that the tstart column is optional (assumed to be 0 Ma).
+first and that the \fItstart\fP column is optional (assumed to be 0 Ma).  Requires OPT(E).
 .TP
 .B \-D
 Set the direction to go: \fB\-Df\fP will go forward in time (from younger to older positions), while
 \fB\-Db\fP will go backward in time (from older to younger positions) [Default].
+.TP
+.B \-F
+Specify the longitude, latitude, and opening angle (all in degrees) for a single total reconstruction
+rotation that should be applied to all input points.  First two input columns must have longitude
+and latitude of the points to projection.
 #include "explain_-H.txt"
 .TP
 .B \-L
