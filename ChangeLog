@@ -1,9 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.348 2008-11-03 03:40:16 guru Exp $
+	$Id: ChangeLog,v 1.349 2008-11-03 20:36:36 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-11-02	pwessel
-	* spotter/backtracker.c:	New option -F to specify a fixed total reconstruction
-				rotation to apply to all input points.
+	* spotter/backtracker.c:	New option -e to specify a single fixed total
+				reconstruction rotation to apply to all input points.
 				
 2008-10-17	pwessel
 	* xyz2grd.c:		New format (A) for -Z which allows more than one floating
