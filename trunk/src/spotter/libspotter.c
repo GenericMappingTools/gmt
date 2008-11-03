@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.46 2008-10-27 22:47:42 guru Exp $
+ *	$Id: libspotter.c,v 1.47 2008-11-03 20:36:36 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -50,14 +50,14 @@
 /* Internal functions */
 
 void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w);
-void matrix_transpose (double At[3][3], double A[3][3]);
-void matrix_mult (double a[3][3], double b[3][3], double c[3][3]);
 void make_rot_matrix_sub (double E[3], double w, double R[3][3]);
 void reverse_rotation_order (struct EULER *p, GMT_LONG n);
 void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[], GMT_LONG n, BOOLEAN stages, BOOLEAN convert);
 void set_I_matrix (double R[3][3]);
 BOOLEAN must_do_track (GMT_LONG sideA[], GMT_LONG sideB[]);
 void set_inout_sides (double x, double y, double wesn[], GMT_LONG sideXY[2]);
+void record_to_covar (struct EULER *e, double K[8]);
+void covar_of_transpose (double A[3][3], double C[3][3], double Ct[3][3]);
 
 void spotter_finite_to_fwstages (struct EULER p[], GMT_LONG n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 
@@ -72,8 +72,8 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	FILE *fp;
 	struct EULER *e;
 	char  buffer[BUFSIZ];
-	GMT_LONG n, nf, i = 0, j, k, n_alloc = GMT_SMALL_CHUNK;
-	double last_t, K[8];
+	GMT_LONG n, nf, i = 0, k, n_alloc = GMT_SMALL_CHUNK;
+	double last_t, K[9];
 
 	e = (struct EULER *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct EULER), "libspotter");
 
@@ -88,24 +88,17 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	while (GMT_fgets (buffer, 512, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 
-		if (finite_in) {	/* The record formats is: lon lat t0 [t1] omega [covar] */
-			nf = sscanf (buffer, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-				&e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega, &K[0], &K[1], &K[2], &K[3], &K[4], &K[5], &K[6], &K[7]);
-			if (nf == 4 || 12) {	/* Got lon lat t0 omega [covars], must shift the K's by one */
-				for (k = 7; k > 0; k--) K[k] = K[k-1];
+		if (finite_in) {	/* The minimalist record formats is: lon lat t0 [t1] omega [covar] */
+			nf = sscanf (buffer, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+				&e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega, &K[0], &K[1], &K[2], &K[3], &K[4], &K[5], &K[6], &K[7], &K[8]);
+			if (nf == 4 || nf == 5 || nf == 12 || nf == 13) {	/* Got lon lat t0 omega [covars], must shift the K's by one */
+				for (k = 8; k > 0; k--) K[k] = K[k-1];
 				K[0] = e[i].omega;
 				e[i].omega = e[i].t_stop;
 				e[i].t_stop = 0.0;
 			}
-			if (nf > 5) { /* [K = covars] is stored as [k_hat a b c d e f g] */
-				e[i].k_hat   = K[0];
-				e[i].C[0][0] = K[1];
-				e[i].C[0][1] = e[i].C[1][0] = K[2];
-				e[i].C[0][2] = e[i].C[2][0] = K[4];
-				e[i].C[1][1] = K[3];
-				e[i].C[1][2] = e[i].C[2][1] = K[5];
-				e[i].C[2][2] = K[6];
-				for (k = 0; k < 3; k++) for (j = 0; j < 3; j++) e[i].C[k][j] *= (K[7] / K[0]);
+			if (nf > 5) { /* [K = covars] is stored as [k_hat a b c d e f g df] */
+				record_to_covar (&e[i], K);
 			}
 		}
 		else {	/* Stage rotations */
@@ -642,11 +635,11 @@ void spotter_finite_to_fwstages (struct EULER p[], GMT_LONG n, BOOLEAN finite_ra
 	t_old = 0.0;
 	for (i = 0; i < n; i++) {
 		if (finite_rates) p[i].omega *= p[i].duration;			/* Convert opening rate to opening angle */
-		make_rot_matrix (p[i].lon, p[i].lat, -p[i].omega, R_old);	/* Make rotation matrix from rotation parameters, take transpose by passing -omega */
-		matrix_mult (R_young, R_old, R_stage);				/* This is R_stage = R_young * R_old^t */
+		spotter_make_rot_matrix (p[i].lon, p[i].lat, -p[i].omega, R_old);	/* Make rotation matrix from rotation parameters, take transpose by passing -omega */
+		spotter_matrix_mult (R_young, R_old, R_stage);				/* This is R_stage = R_young * R_old^t */
 		matrix_to_pole (R_stage, &elon[i], &elat[i], &ew[i]);		/* Get rotation parameters from matrix */
 		if (elon[i] > 180.0) elon[i] -= 360.0;				/* Adjust lon */
-		matrix_transpose (R_young, R_old);				/* Set R_young = (R_old^t)^t = R_old */
+		spotter_matrix_transpose (R_young, R_old);				/* Set R_young = (R_old^t)^t = R_old */
 		p[i].t_stop = t_old;
 		t_old = p[i].t_start;
 	}
@@ -688,11 +681,11 @@ void spotter_finite_to_stages (struct EULER p[], GMT_LONG n, BOOLEAN finite_rate
 	t_old = 0.0;
 	for (i = 0; i < n; i++) {
 		if (finite_rates) p[i].omega *= p[i].duration;			/* Convert opening rate to opening angle */
-		make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_old);	/* Get rotation matrix from pole and angle */
-		matrix_mult (R_young, R_old, R_stage);				/* This is R_stage = R_young^t * R_old */
+		spotter_make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_old);	/* Get rotation matrix from pole and angle */
+		spotter_matrix_mult (R_young, R_old, R_stage);				/* This is R_stage = R_young^t * R_old */
 		matrix_to_pole (R_stage, &elon[i], &elat[i], &ew[i]);		/* Get rotation parameters from matrix */
 		if (elon[i] > 180.0) elon[i] -= 360.0;				/* Adjust lon */
-		matrix_transpose (R_young, R_old);				/* Sets R_young = transpose (R_old) for next round */
+		spotter_matrix_transpose (R_young, R_old);				/* Sets R_young = transpose (R_old) for next round */
 		p[i].t_stop = t_old;
 		t_old = p[i].t_start;
 	}
@@ -733,8 +726,8 @@ void spotter_stages_to_finite (struct EULER p[], GMT_LONG n, BOOLEAN finite_rate
 
 	for (i = 0; i < n; i++) {
 		if (stage_rates) p[i].omega *= p[i].duration;				/* Convert opening rate to opening angle */
-		make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_stage);		/* Make matrix from rotation parameters */
-		matrix_mult (R_old, R_stage, R_young);					/* Set R_young = R_old * R_stage */
+		spotter_make_rot_matrix (p[i].lon, p[i].lat, p[i].omega, R_stage);		/* Make matrix from rotation parameters */
+		spotter_matrix_mult (R_old, R_stage, R_young);					/* Set R_young = R_old * R_stage */
 		memcpy ((void *)R_old, (void *)R_young, (size_t)(9 * sizeof (double)));	/* Set R_old = R_young for next time around */
 		matrix_to_pole (R_young, &elon[i], &elat[i], &ew[i]);			/* Get rotation parameters from matrix */
 		if (elon[i] > 180.0) elon[i] -= 360.0;					/* Adjust lon */
@@ -764,6 +757,7 @@ void spotter_add_rotations (struct EULER a[], GMT_LONG n_a, struct EULER b[], GM
 
 	struct EULER *a2, *b2, *c2;
 	double *t, t_min, t_max, Ra[3][3], Rb[3][3], Rab[3][3], lon, lat, w, sign_a, sign_b;
+	double tmp[3][3], RaT[3][3], Ca[3][3], Cb[3][3];
 	GMT_LONG i, j, k, n_k = 0;
 	BOOLEAN a_ok = TRUE, b_ok = TRUE;
 
@@ -851,9 +845,9 @@ void spotter_add_rotations (struct EULER a[], GMT_LONG n_a, struct EULER b[], GM
 	spotter_stages_to_finite (b2, n_k, FALSE, TRUE);
 
 	for (i = 0; i < n_k; i++) {	/* Add each pair of rotations */
-		make_rot_matrix (a2[i].lon, a2[i].lat, sign_a * a2[i].omega, Ra);
-		make_rot_matrix (b2[i].lon, b2[i].lat, sign_b * b2[i].omega, Rb);
-		matrix_mult (Rb, Ra, Rab);	/* Rot a + Rot b = RB * Ra ! */
+		spotter_make_rot_matrix (a2[i].lon, a2[i].lat, sign_a * a2[i].omega, Ra);
+		spotter_make_rot_matrix (b2[i].lon, b2[i].lat, sign_b * b2[i].omega, Rb);
+		spotter_matrix_mult (Rb, Ra, Rab);	/* Rot a + Rot b = RB * Ra ! */
 		matrix_to_pole (Rab, &lon, &lat, &w);
 		c2[i].lon = lon;
 		c2[i].lat = lat;
@@ -861,6 +855,34 @@ void spotter_add_rotations (struct EULER a[], GMT_LONG n_a, struct EULER b[], GM
 		c2[i].t_stop  = 0.0;
 		c2[i].duration = c2[i].t_start;
 		c2[i].omega = w / c2[i].duration;	/* Return rates again */
+		if (a2[i].has_cov && b2[i].has_cov) {	/* May compute combined covariance matrix, assuming khats = 1 */
+			double fa, fb;
+			c2[i].df = a2[i].df + b2[i].df;
+			if (a2[i].k_hat != 1.0 || b2[i].k_hat != 1.0) {	/* Kappas are not one, use pooled estimate */
+				c2[i].k_hat = (c2[i].df / (a2[i].df / a2[i].k_hat + b2[i].df / b2[i].k_hat));
+				fa = a2[i].k_hat / c2[i].k_hat;
+				fb = b2[i].k_hat / c2[i].k_hat;
+			}
+			else
+				c2[i].k_hat = fa = fb = 1.0;
+
+			spotter_matrix_transpose (RaT, Ra);
+			if (sign_a < 0.0)
+				spotter_cov_of_inverse (&a2[i], Ca);
+			else
+				memcpy ((void *)Ca, (void *)a2[i].C, 9*sizeof (double));
+			if (sign_b < 0.0)
+				spotter_cov_of_inverse (&b2[i], Cb);
+			else
+				memcpy ((void *)Cb, (void *)b2[i].C, 9*sizeof (double));
+			spotter_matrix_mult (Cb, Ra, tmp);
+			spotter_matrix_mult (RaT, tmp, c2[i].C);
+			for (k = 0; k < 3; k++) for (j = 0; j < 3; j++) c2[i].C[k][j] *= fb;
+			for (k = 0; k < 3; k++) for (j = 0; j < 3; j++) tmp[k][j] = fa * Ca[k][j];
+			spotter_matrix_add (c2[i].C, tmp, c2[i].C);
+			c2[i].has_cov = TRUE;
+			c2[i].g = MIN(a2[i].g, b2[i].g);
+		}
 	}
 	GMT_free ((void *)a2);
 	GMT_free ((void *)b2);
@@ -888,7 +910,7 @@ double spotter_t2w (struct EULER a[], GMT_LONG n, double t)
 	return (w);
 }
 
-void make_rot_matrix (double lonp, double latp, double w, double R[3][3])
+void spotter_make_rot_matrix (double lonp, double latp, double w, double R[3][3])
 {
 /*	lonp, latp	Euler pole in degrees
  *	w		angular rotation in degrees
@@ -982,7 +1004,7 @@ void set_rot_angle (double w, double R[3][3], double E[])
 	R[2][2] = R[2][2] * c + cos_w;
 }
 
-void matrix_mult (double a[3][3], double b[3][3], double c[3][3])
+void spotter_matrix_mult (double a[3][3], double b[3][3], double c[3][3])
 {	/* C = A * B */
 	int i, j, k;
 
@@ -994,14 +1016,14 @@ void matrix_mult (double a[3][3], double b[3][3], double c[3][3])
 	}
 }
 
-void matrix_vect_mult (double a[3][3], double b[3], double c[3])
+void spotter_matrix_vect_mult (double a[3][3], double b[3], double c[3])
 {	/* c = A * b */
 	int i, j;
 
 	for (i = 0; i < 3; i++) for (j = 0, c[i] = 0.0; j < 3; j++) c[i] += a[i][j] * b[j];
 }
 
-void matrix_transpose (double At[3][3], double A[3][3])
+void spotter_matrix_transpose (double At[3][3], double A[3][3])
 {
 	/* Computes the matrix transpose */
 
@@ -1009,6 +1031,18 @@ void matrix_transpose (double At[3][3], double A[3][3])
 	for (j = 0; j < 3; j++) {
 		for (i = 0; i < 3; i++) {
 			At[i][j] = A[j][i];
+		}
+	}
+}
+
+void spotter_matrix_add (double A[3][3], double B[3][3], double C[3][3])
+{
+	/* Computes the matrix addition */
+
+	int i, j;
+	for (j = 0; j < 3; j++) {
+		for (i = 0; i < 3; i++) {
+			C[i][j] = A[i][j] + B[i][j];
 		}
 	}
 }
@@ -1105,7 +1139,7 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 	/* Generate R, the rotation matrix.  This is actually R^t since w is -ve */
 
 	w = p[k].omega * p[k].duration;
-	make_rot_matrix (p[k].lon, p[k].lat, -w, R);
+	spotter_make_rot_matrix (p[k].lon, p[k].lat, -w, R);
 
 	/* Make M(x), the skew-symmetric matrix needed to compute cov of rotated point */
 
@@ -1121,16 +1155,16 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 	/* Since we are using the inverse rotation (-ve w) we must rotate the covariance: cov(r^t) = R cov(r) R^t.
 	   Here, R actually contains R^t so we need the original R (which we will call R^t) as well. */
 
-	matrix_mult (p[k].C, R, tmp);			/* Calculate the cov(r) *R^t product */
-	matrix_transpose (Rt, R);			/* Get the transpose of R^t which is R*/
-	matrix_mult (Rt, tmp, cov);			/* cov(r^t) = R^t cov(r) R */
+	spotter_matrix_mult (p[k].C, R, tmp);			/* Calculate the cov(r) *R^t product */
+	spotter_matrix_transpose (Rt, R);			/* Get the transpose of R^t which is R*/
+	spotter_matrix_mult (Rt, tmp, cov);			/* cov(r^t) = R^t cov(r) R */
 
 	/* Calculate cov(y) = (R * M) * cov_R * (R * M)^T */
 
-	matrix_mult (R, M, RM);			/* Calculate the R * M product */
-	matrix_transpose (MtRt, RM);		/* Get the transpose (R*M)^T = M^T * R^T */
-	matrix_mult (cov, MtRt, tmp);		/* Get C * M^T * R^T */
-	matrix_mult (RM, tmp, M);		/* Finally get R * M * C * M^T * R^T, store in M */
+	spotter_matrix_mult (R, M, RM);			/* Calculate the R * M product */
+	spotter_matrix_transpose (MtRt, RM);		/* Get the transpose (R*M)^T = M^T * R^T */
+	spotter_matrix_mult (cov, MtRt, tmp);		/* Get C * M^T * R^T */
+	spotter_matrix_mult (RM, tmp, M);		/* Finally get R * M * C * M^T * R^T, store in M */
 
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) C[3*i+j] = M[i][j];	/* Reformat to 1-D format for GMT_jacobi */
 
@@ -1162,3 +1196,52 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 	return (0);
 }
 
+void spotter_covar_to_record (struct EULER *e, double K[])
+{
+	/* Translates an Euler covariance matrix to the 9 values needed for printout
+	 * covariance matrix is stored as [k_hat a b c d e f g df] */
+	
+	int k;
+	K[0] = e->k_hat;
+	K[7] = e->g;
+	K[8] = e->df;
+	K[1] = e->C[0][0];
+	K[2] = e->C[0][1];
+	K[4] = e->C[0][2];
+	K[3] = e->C[1][1];
+	K[5] = e->C[1][2];
+	K[6] = e->C[2][2];
+	for (k = 1; k < 7; k++) K[k] *= (e->k_hat / e->g);
+}
+
+void record_to_covar (struct EULER *e, double K[])
+{
+	/* Translates the 9 values read from plate motion file [k_hat a b c d e f g df]
+	 * into the Euler covariance matrix */
+	
+	int k, j;
+	e->has_cov = TRUE;
+	e->k_hat   = K[0];
+	e->g       = K[7];
+	e->df	   = K[8];
+	e->C[0][0] = K[1];
+	e->C[0][1] = e->C[1][0] = K[2];
+	e->C[0][2] = e->C[2][0] = K[4];
+	e->C[1][1] = K[3];
+	e->C[1][2] = e->C[2][1] = K[5];
+	e->C[2][2] = K[6];
+	for (k = 0; k < 3; k++) for (j = 0; j < 3; j++) e->C[k][j] *= (e->g / e->k_hat);
+}
+
+void spotter_cov_of_inverse (struct EULER *e, double Ct[3][3])
+{	/* If A and cov(u) is a rotation and its covariance matrix and
+	 * let A' and cov(v) be the inverse rotation and its covariacne matrix,
+	 * then cov(v) = A*cov(u)*A' */
+	
+	double A[3][3], At[3][3], tmp[3][3];
+	
+	spotter_make_rot_matrix (e->lon, e->lat, e->omega, A);
+	spotter_matrix_transpose (At, A);	/* Get A' */
+	spotter_matrix_mult (e->C, At, tmp);	/* Calculate the cov(u)*A' product */
+	spotter_matrix_mult (A, tmp, Ct);	/* Calculate the cov(v) = A*cov(u)*A' product */
+}

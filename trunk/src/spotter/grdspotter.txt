@@ -21,7 +21,6 @@ option flags and lower case for modifiers.
 \fIgrdfile\fP
 Data grid to be processed, typically residual bathymetry or free-air anomalies.
 #include "euler.txt"
-However, see OPT(C) for total reconstruction poles.
 .TP
 .B \-G
 Specify name for output CVA grid file.

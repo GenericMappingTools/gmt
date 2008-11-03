@@ -28,7 +28,7 @@ finite rotation without any time information, give \fIlon/lat/angle\fP only.
 .SH OPTIONS
 .TP
 .B \-C
-Write out a column header record indentifying the various columns [Default is no header record].
+Write out a column header record identifying the various columns [Default is no header record].
 Append \fBa\fP to indicate opening angles and \fBt\fP to indicate opening rates [Default].
 .TP
 .B \-D

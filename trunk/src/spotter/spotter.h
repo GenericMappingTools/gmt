@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.18 2008-10-27 22:47:42 guru Exp $
+ *	$Id: spotter.h,v 1.19 2008-11-03 20:36:36 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -43,6 +43,9 @@ struct EULER {	/* Structure with info on each Euler (stage) pole */
 	double sin_lat, cos_lat;	/* Sine and Cosine of pole latitude */
 	double C[3][3];			/* Covariance matrix for this rotation */
 	double k_hat;			/* k_hat uncertainty scale */
+	double g;			/* g magnitude scale */
+	double df;			/* Degrees of freedom in the estimate of rotation */
+	BOOLEAN has_cov;		/* TRUE if there is a covariance matrix for this R */
 };
 
 struct FLOWLINE {			/* Structure with the nearest nodes for a single flowline */
@@ -77,5 +80,10 @@ EXTERN_MSC void spotter_stages_to_finite (struct EULER p[], GMT_LONG n, BOOLEAN 
 EXTERN_MSC void spotter_add_rotations (struct EULER a[], GMT_LONG n_a, struct EULER b[], GMT_LONG n_b, struct EULER *c[], GMT_LONG *n_c);
 EXTERN_MSC double spotter_t2w (struct EULER a[], GMT_LONG n, double t);
 EXTERN_MSC int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT_LONG np, char conf, double out[]);
-EXTERN_MSC void matrix_vect_mult (double a[3][3], double b[3], double c[3]);
-EXTERN_MSC void make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
+EXTERN_MSC void spotter_matrix_vect_mult (double a[3][3], double b[3], double c[3]);
+EXTERN_MSC void spotter_matrix_transpose (double At[3][3], double A[3][3]);
+EXTERN_MSC void spotter_matrix_add (double A[3][3], double B[3][3], double C[3][3]);
+EXTERN_MSC void spotter_matrix_mult (double A[3][3], double B[3][3], double C[3][3]);
+EXTERN_MSC void spotter_make_rot_matrix (double lonp, double latp, double w, double R[3][3]);
+EXTERN_MSC void spotter_covar_to_record (struct EULER *e, double K[]);
+EXTERN_MSC void spotter_cov_of_inverse (struct EULER *e, double Ct[3][3]);
