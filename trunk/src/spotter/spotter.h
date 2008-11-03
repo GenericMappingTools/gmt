@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.19 2008-11-03 20:36:36 guru Exp $
+ *	$Id: spotter.h,v 1.20 2008-11-03 21:30:48 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -72,7 +72,7 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
 /* ANSI-C Function prototypes (see libspotter.c for details): */
 
 EXTERN_MSC int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max, BOOLEAN verbose);
-EXTERN_MSC int hotspot_init (char *file, struct HOTSPOT **p);
+EXTERN_MSC int spotter_hotspot_init (char *file, struct HOTSPOT **p);
 EXTERN_MSC int spotter_backtrack  (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
 EXTERN_MSC int spotter_forthtrack (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
 EXTERN_MSC void spotter_finite_to_stages (struct EULER p[], GMT_LONG n, BOOLEAN finite_rates, BOOLEAN stage_rates);
