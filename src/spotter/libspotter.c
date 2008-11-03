@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.47 2008-11-03 20:36:36 guru Exp $
+ *	$Id: libspotter.c,v 1.48 2008-11-03 20:51:27 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -91,13 +91,18 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 		if (finite_in) {	/* The minimalist record formats is: lon lat t0 [t1] omega [covar] */
 			nf = sscanf (buffer, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
 				&e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega, &K[0], &K[1], &K[2], &K[3], &K[4], &K[5], &K[6], &K[7], &K[8]);
-			if (nf == 4 || nf == 5 || nf == 12 || nf == 13) {	/* Got lon lat t0 omega [covars], must shift the K's by one */
+			if (! (nf == 4 || nf == 5 || nf == 13 || nf == 14)) {
+				fprintf (stderr, "libspotter: ERROR: Rotation file format must be lon lat t0 [t1] omega [k_hat a b c d e f g df]\n");
+				GMT_exit (EXIT_FAILURE);
+			}
+			if (nf == 4 || nf == 13) {	/* Got lon lat t0 omega [covars], must shift the K's by one */
 				for (k = 8; k > 0; k--) K[k] = K[k-1];
 				K[0] = e[i].omega;
 				e[i].omega = e[i].t_stop;
 				e[i].t_stop = 0.0;
 			}
 			if (nf > 5) { /* [K = covars] is stored as [k_hat a b c d e f g df] */
+				if (K[8] == 0.0) K[9] = 10000.0;	/* No d.f. given */
 				record_to_covar (&e[i], K);
 			}
 		}

@@ -8,17 +8,12 @@ one record for each rotation; each record must be of the following format:
 .br
 .sp
 where \fItstart\fP and \fItstop\fP are in Ma and \fIlon lat ccw-angle\fP are
-in degrees.  For state rotations the oldest stage must be listed first.  \fItstart\fP (\fItstop\fP)
-is the age of the old (young) end of a stage.  If OPT(C) is set then a total
+in degrees.  For stage rotations the oldest stage must be listed first.  \fItstart\fP
+and \fItstop\fP are the ages of the old and young ends of a stage.  If OPT(C) is set then a total
 reconstruction rotation is expected and \fItstop\fP is implicitly set to 0 and
 should not be in the file.  If a covariance matrix \fBC\fP for the rotation is available
 it must be specified in a format using the nine optional terms listed in brackets.
 Here, \fBC\fP = (\fIg\fP/\fIkhat\fP)*[ \fIa b d; b c e; d e f\fP ] which shows \fBC\fP
 made up of three row vectors.
-If the degrees of freedom (\fIdf\fP) is not listed it is set to 10000.
+If the degrees of freedom (\fIdf\fP) is 0 or not listed it is set to 10000.
 Blank lines and records whose first column contains # will be ignored.
-.TP
-.B \-e
-Alternatively, specify the longitude, latitude, and opening angle (all in degrees
-and separated by /) for a single total reconstruction
-rotation that should be applied to all input points.
