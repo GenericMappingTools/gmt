@@ -15,7 +15,7 @@ should not be in the file.  If a covariance matrix \fBC\fP for the rotation is a
 it must be specified in a format using the nine optional terms listed in brackets.
 Here, \fBC\fP = (\fIg\fP/\fIkhat\fP)*[ \fIa b d; b c e; d e f\fP ] which shows \fBC\fP
 made up of three row vectors.
-If the degrees of freedom (\fIdf\fP) is not listed it is set to 1000.
+If the degrees of freedom (\fIdf\fP) is not listed it is set to 10000.
 Blank lines and records whose first column contains # will be ignored.
 .TP
 .B \-e
