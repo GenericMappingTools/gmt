@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.48 2008-11-03 20:51:27 guru Exp $
+ *	$Id: libspotter.c,v 1.49 2008-11-03 21:30:48 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -174,13 +174,14 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 /* hotspot_init: Reads a file with hotspot information and returns pointer to
  * array of structures */
 
-int hotspot_init (char *file, struct HOTSPOT **p)
+int spotter_hotspot_init (char *file, struct HOTSPOT **p)
 {
 	FILE *fp;
 	struct HOTSPOT *e;
 	char buffer[BUFSIZ], create, fit, plot;
 	int i = 0, n;
 	size_t n_alloc = GMT_CHUNK;
+	double P[3];
 
 	if ((fp = GMT_fopen (file, "r")) == NULL) {
 		fprintf (stderr, "%s: Cannot open file %s - aborts\n", GMT_program, file);
@@ -198,6 +199,12 @@ int hotspot_init (char *file, struct HOTSPOT **p)
 			e[i].fit = (fit == 'Y');
 			e[i].plot = (plot == 'Y');
 		}
+		e[i].lonr = D2R * e[i].lon;
+		e[i].latr = D2R * e[i].lat;
+		GMT_geo_to_cart (&e[i].latr, &e[i].lonr, P, FALSE);
+		e[i].x = P[0];
+		e[i].y = P[1];
+		e[i].z = P[2];
 		i++;
 		if ((size_t)i == n_alloc) {
 			n_alloc <<= 1;
