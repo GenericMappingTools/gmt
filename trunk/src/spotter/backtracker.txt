@@ -23,6 +23,11 @@ option flags and lower case for modifiers.
 \fIinfile(s)\fP
 Data file(s) to be projected.  If not given, standard input is read.
 #include "euler.txt"
+.TP
+.B \-e
+Alternatively, specify the longitude, latitude, and opening angle (all in degrees
+and separated by /) for a single total reconstruction
+rotation that should be applied to all input points.
 .SH OPTIONS
 .TP
 .B \-A
