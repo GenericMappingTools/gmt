@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.350 2008-11-14 00:03:15 guru Exp $
+	$Id: ChangeLog,v 1.351 2008-11-14 19:24:07 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-11-14	pwessel
+	* ps2raster.c:		New format -TG turns on transparency for PNG output.
+	
 2008-11-13	pwessel
 	* psxy[z].c:		New option -I<intens> to modulate fill color via illumination.
 
