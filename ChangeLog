@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.351 2008-11-14 19:24:07 guru Exp $
+	$Id: ChangeLog,v 1.352 2008-11-17 19:46:11 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-11-17	pwessel
+	* ps2raster.c:		New format -Tb for MicroSoft BMP output.  Also, formats
+				b, g, j, and t accept modifier '-' to produce grayscale
+				images.  Finally, added -Cgs-command to add one or more
+				custom switches to ghostscript, and -Q[g|t]<bits> to
+				set the level of anti-aliasing for graphics and text.
 2008-11-14	pwessel
 	* ps2raster.c:		New format -TG turns on transparency for PNG output.
 	

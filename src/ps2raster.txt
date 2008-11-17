@@ -3,8 +3,10 @@
 .SH NAME
 ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats using GhostScript
 .SH SYNOPSIS
-\fBps2raster\fP \fIpsfile(s)\fP [ OPT(A)[\fBu\fP] ] [ OPT(D)\fIoutdir\fP ] [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] 
-[ OPT(L)\fIlistfile\fP]  [ OPT(P) ] [ OPT(S) ] [ OPT(Te)|\fBf\fP|\fBj\fP|\fBg\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ]
+\fBps2raster\fP \fIpsfile(s)\fP [ OPT(A)[\fBu\fP] ] [ OPT(C)\fIgs-option\fP] [ OPT(D)\fIoutdir\fP ] 
+[ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] [ OPT(L)\fIlistfile\fP] [ OPT(P) ] 
+[ OPT(Q)[\fBg\fP|\fBt\fP][1|2|4] ] [ OPT(S) ] 
+[ OPT(Tb)|\fBe\fP|\fBf\fP|\fBj\fP|\fBg\fP|\fBG\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ]
 .SH DESCRIPTION
 \fBps2raster\fP reads one or more \fIPostScript\fP files (or a file with a list of \fIPostScript\fP filenames) and modifies the
 page size in order that the resulting image will have a size determined by the BoundingBox (or HiResBoundingBox, if present).
@@ -20,6 +22,9 @@ OPT(D) to redirect the output to a different directory.
 Adjust the BoundingBox and HiResBoundingBox to the minimum required by the image content.  Append \fBu\fP to first remove any
 GMT-produced time-stamps.
 .TP
+.B \-C
+Specify a single, custom option that will be passed on to GhostScript as is.  Repeat to add several options [none].
+.TP
 .B \-D
 Sets an alternative output directory (which must exist) [Default is the same directory as the PS files].
 Use OPT(D.) to place the output in the current directory instead.
@@ -28,7 +33,7 @@ Use OPT(D.) to place the output in the current directory instead.
 Set raster resolution in dpi [default = 720 for PDF, 300 for others].
 .TP
 .B \-G
-Full path to your ghostscript executable.
+Full path to your GhostScript executable.
 NOTE: For Unix systems this is generally not necessary.
 However, under Windows, GhostScript is not added to the system's path. So either you do it yourself,\"'
 or give the full path here. (e.g., \fB\-G\fPc:\\programs\\gs\\gs7.05\\bin\\gswin32c).
@@ -38,7 +43,7 @@ The \fIlistfile\fP is an ASCII file with the names of the \fIPostScript\fP files
 .TP
 .B \-N
 This option is obsolete.
-Use OPT(S) to print the ghostscript command, if applicable.
+Use OPT(S) to print the GhostScript command, if applicable.
 Use OPT(Te) to save the intermediate EPS file.
 .TP
 .B \-P
@@ -46,19 +51,24 @@ Force Portrait mode. All Landscape mode plots will be rotated back so that they 
 Portrait mode. This is practical when converting to image formats or preparing EPS or PDF plots for
 inclusion in documents.
 .TP
+.B \-Q
+Set the anti-aliasing options for \fBg\fPraphics or \fBt\fPext.  Append the size of the subsample
+box (1, 2, or 4) [4].  Default is no anti-aliasing (same as \fIbits\fP = 1).
+.TP
 .B \-S
-Print to standard output the ghostscript command after it has been executed.
+Print to standard output the GhostScript command after it has been executed.
 .TP
 .B \-T
-Sets the output format, where \fBe\fP means EPS, \fBf\fP means PDF, \fBj\fP means JPEG, \fBg\fP means PNG,
+Sets the output format, where \fBb\fP means BMP, \fBe\fP means EPS, \fBf\fP means PDF, \fBj\fP means JPEG, \fBg\fP means PNG,
 \fBG\fP means transparent PNG (untouched regions are transparent), \fBm\fP means PPM, and \fBt\fP means TIF [default is JPEG].
+For \fBbjgt\fP you can append - to get a grayscale image only.
 The EPS format can be combined with any of the other formats. For example, OPT(Tef) creates both an EPS and
 a PDF file.
 .TP
 .B \-V
 Run in verbose mode and report on progress [Default is silent].
 .SH NOTES
-The conversion to raster images (JPEG, PNG, PPM or TIF) inherently results in loss of details that are
+The conversion to raster images (BMP, JPEG, PNG, PPM or TIF) inherently results in loss of details that are
 available in the original \fIPostScript\fP file. Choose a resolution that is large enough for the application that
 the image will be used for. For web pages, smaller dpi values suffice, for Word documents and PowerPoint presentations
 a higher dpi value is recommended. \fBps2raster\fP uses the loss-less Flate compression technique when
@@ -90,5 +100,12 @@ orientation in case it was in Landscape mode:
 .br
 .sp
 (This command assumes that ghostscript can be found in your system's path.)\"'
+.SH GHOSTSCRIPT OPTIONS
+GhostScript accepts a rich selection of command-line options that modify its behavior.  Many of these are
+set indirectly by the options available above.  However, hard-core usage may require some users to add additional
+options to fine-tune the result.  Use OPT(S) to examine the actual command used, and add custom options
+via one or more instances of the OPT(C) option.  For instance, to turn on image interpolation for all images,
+improving image quality for scaled images at the expense of speed, use OPT(C)-dDOINTERPOLATE.
+See www.ghostscript.com for complete documentation.
 .SH "SEE ALSO"
 .IR GMT (1)
