@@ -1,7 +1,8 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.352 2008-11-17 19:46:11 guru Exp $
+	$Id: ChangeLog,v 1.353 2008-11-18 00:11:31 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-11-17	pwessel
+	* psscale.c:		When -I and -Li was used we did not draw box outlines.
 	* ps2raster.c:		New format -Tb for MicroSoft BMP output.  Also, formats
 				b, g, j, and t accept modifier '-' to produce grayscale
 				images.  Finally, added -Cgs-command to add one or more
