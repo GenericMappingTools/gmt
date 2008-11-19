@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.49 2008-11-03 21:30:48 guru Exp $
+ *	$Id: libspotter.c,v 1.50 2008-11-19 02:10:01 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -102,7 +102,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 				e[i].t_stop = 0.0;
 			}
 			if (nf > 5) { /* [K = covars] is stored as [k_hat a b c d e f g df] */
-				if (K[8] == 0.0) K[9] = 10000.0;	/* No d.f. given */
+				if (K[8] == 0.0) K[8] = 10000.0;	/* No d.f. given */
 				record_to_covar (&e[i], K);
 			}
 		}
