@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.19 2008-05-02 00:44:42 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.20 2008-11-19 02:10:01 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -109,7 +109,7 @@
 #define strdup(s) _strdup(s)
 #define STAT _stat
 
-typedef int mode_t;		/* mdoe_t not defined under Windows; assumed a signed 4-byte integer */
+typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byte integer */
 #ifdef _WIN64
 typedef __int64 GMT_LONG;		/* A signed 8-byte integer; otherwise set in gmt.h */
 #endif
@@ -170,6 +170,9 @@ extern char *_getcwd (const char *path, int len);
 
 extern int _access (const char *path, int mode);
 #define access(path, mode) _access(path, mode)
+
+extern int mkdir (const char *path, int mode);
+#define mkdir(path,mode) _mkdir(path,mode)
 
 /* fileno and setmode have leading _ under WIN32 */
 
