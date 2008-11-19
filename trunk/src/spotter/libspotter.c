@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.50 2008-11-19 02:10:01 guru Exp $
+ *	$Id: libspotter.c,v 1.51 2008-11-19 03:02:25 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -184,11 +184,11 @@ int spotter_hotspot_init (char *file, struct HOTSPOT **p)
 	double P[3];
 
 	if ((fp = GMT_fopen (file, "r")) == NULL) {
-		fprintf (stderr, "%s: Cannot open file %s - aborts\n", GMT_program, file);
+		fprintf (stderr, "%s: Cannot open file %s - aborts\n", "libspotter", file);
 		exit (EXIT_FAILURE);
 	}
 
-	e = (struct HOTSPOT *) GMT_memory (VNULL, n_alloc, sizeof (struct HOTSPOT), GMT_program);
+	e = (struct HOTSPOT *) GMT_memory (VNULL, n_alloc, sizeof (struct HOTSPOT), "libspotter");
 
 	while (GMT_fgets (buffer, 512, fp) != NULL) {
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
@@ -208,11 +208,11 @@ int spotter_hotspot_init (char *file, struct HOTSPOT **p)
 		i++;
 		if ((size_t)i == n_alloc) {
 			n_alloc <<= 1;
-			e = (struct HOTSPOT *) GMT_memory ((void *)e, n_alloc, sizeof (struct HOTSPOT), GMT_program);
+			e = (struct HOTSPOT *) GMT_memory ((void *)e, n_alloc, sizeof (struct HOTSPOT), "libspotter");
 		}
 	}
 	GMT_fclose (fp);
-	e = (struct HOTSPOT *) GMT_memory ((void *)e, (size_t)i, sizeof (struct HOTSPOT), GMT_program);
+	e = (struct HOTSPOT *) GMT_memory ((void *)e, (size_t)i, sizeof (struct HOTSPOT), "libspotter");
 	*p = e;
 
 	return (i);
