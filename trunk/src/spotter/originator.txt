@@ -17,7 +17,7 @@ the closest approach to all hotspots.  The output consists of the input records 
 four additional fields added for each of the \fIn_hs\fP closest hotspots.  The four fields
 are the hotspot id (e.g., HWI), the stage id of the flowline segment that came closest,
 the pseudo-age of the seamount, and the closest distance to the hotspot (in km).
-See option \fB\-:\fP on how to read (latitude, longitude,height, radius, crustal_ag) files.
+See option \fB\-:\fP on how to read (latitude, longitude,height, radius, crustal_age) files.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
@@ -29,9 +29,9 @@ Seamount data file(s) to be analyzed.  If not given, standard input is read.
 .SH OPTIONS
 .TP
 .B \-C
-Expect Total Reconstruction Poles rather than Backward Stage Poles [Default].
-File format is similar to the stage pole format except the youngest rotation must be listed
-first and that the tstart column is optional (assumed to be 0 Ma).
+Expect Total Reconstruction Rotations rather than Forward Stage Rotations [Default].
+File format is similar to the stage pole format except that the \fItstart\fP column
+is not present (assumed to be 0 Ma).
 .TP
 .B \-D
 Sets the flowline sampling interval in km.  [Default is 5].

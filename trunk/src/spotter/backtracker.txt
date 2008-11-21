@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH BACKTRACKER 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-backtracker \- Forward and Backward flowlines and hotspot tracks 
+backtracker \- Reconstruct points, flowlines and hotspot tracks 
 .SH SYNOPSIS
 \fBbacktracker\fP [\fIinfile(s)\fP] OPT(E)\fIrotations.txt\fP | OPT(e)\fIlon\fP/\fIlat\fP/\fIangle\fP
 [ OPT(A)[\fIyoung\fP/\fIold\fP] ] [ OPT(C) ] [ OPT(Df)|\fBb\fP ] [ GMT_H_OPT ] 
@@ -10,9 +10,9 @@ backtracker \- Forward and Backward flowlines and hotspot tracks
 [ OPT(W)[\fBa\fP|\fBt\fP] ] [ GMT_t_OPT ] [ GMT_b_OPT ]
 .SH DESCRIPTION
 \fBbacktracker\fP reads (longitude, latitude, age) positions from \fIinfiles\fP 
-[or standard input] and computes projected (x,y,t) coordinates using the 
+[or standard input] and computes rotated (x,y,t) coordinates using the 
 specified rotation parameters.  It can either calculate final
-positions [Default] or create a sampled track between the initial and final
+positions [Default] or create a sampled track (flowline or hotspot track) between the initial and final
 positions.  The former mode allows additional data fields after the first 3
 columns which must have (longitude,latitude,age).
 See option \fB\-:\fP on how to read (latitude,longitude,age) files.
@@ -32,34 +32,36 @@ rotation that should be applied to all input points.
 .TP
 .B \-A
 Used in conjunction with \fB\-Lb|f\fP to limit the track output to those sections
-whose predicted ages fit between the \fIyoung\fP and \fIold\fP limits.  If \fB\-LB|F\fP
-is used instead then the limits apply to the stage ids.  If no limits are supplied
-then individual limits for each seamount are expected in columns 4 and 5 of the input file.
+whose predicted ages lie between the specified \fIyoung\fP and \fIold\fP limits.  If \fB\-LB|F\fP
+is used instead then the limits apply to the stage ids (id 1 is the youngest stage).  If no limits are specified
+then individual limits for each record are expected in columns 4 and 5 of the input file.
 .TP
 .B \-C
-Expect Total Reconstruction Poles rather than Backward Stage Poles [Default].
-File format is similar to the stage pole format except the youngest rotation must be listed
-first and that the \fItstart\fP column is optional (assumed to be 0 Ma).  Requires OPT(E).
+Expect Total Reconstruction Rotations rather than Forward Stage Rotations [Default].
+File format is similar to the stage pole format except that the \fItstart\fP column
+is not present (assumed to be 0 Ma).  Requires OPT(E).
 .TP
 .B \-D
-Set the direction to go: \fB\-Df\fP will go forward in time (from younger to older positions), while
-\fB\-Db\fP will go backward in time (from older to younger positions) [Default].
+Set the direction to go: \fB\-Df\fP sets flowline mode and will go backward in time (from younger to older positions), while
+\fB\-Db\fP sets backtrack (reconstruction) mode and will go forward in time (from older to younger positions) [Default].
 #include "explain_-H.txt"
 .TP
 .B \-L
 Specify a sampled path between initial and final position: \fB\-Lf\fP will
 draw flowlines, while \fB\-Lb\fP will draw backtrack (hotspot track) paths.
-Append sampling interval in km.  If \fIstep\fP < 0 then only the bend-times (knots)
+Append sampling interval in km.  If \fIstep\fP < 0 then only the rotation times
 will be returned.  When \fB\-LF\fP or \fB\-LB\fP is used, the
 third output column will contain the stage id (1 is youngest) [Default is
-along-track ages].
+along-track predicted ages].  You can control the direction of the paths
+by using OPT(D).
 #include "explain_-M.txt"
 .TP
 .B \-N
-Set the maximum age to extend the oldest stage back in time [Default is no extension].
+Set the maximum age to extend the oldest stage rotation back in time [Default is no extension].
 .TP
 .B \-Q
-Assign a fixed age to all positions.  Only lon, lat input is expected.
+Assign a fixed age to all positions.  Only lon, lat input is expected [Default expects longitude, latitude, age].
+Useful when the input are points defining isochrons.
 .TP
 .B \-S
 When \fB\-L\fP is set, the tracks are normally written to stdout as a multisegment
@@ -72,11 +74,11 @@ Set the current time [Default is 0 Ma].
 .TP
 .B \-W
 Rotates the given input (lon,lat,t) and calculates the confidence ellipse for the
-projected point.  The input point \fImust\fP have a time coordinate that matches
+projected point.  The input point \fImust\fP have a time coordinate that exactly matches
 a particular finite rotation time, otherwise the point will be skipped.  Append
 \fBt\fP or \fBa\fP to output time or angle, respectively, after the projected
 lon, lat.  After these 2-3 items, we write azimuth, major, minor (in km) for the
-95% confidence ellipse.
+95% confidence ellipse.  See OPT(D) for the direction of rotation.
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].

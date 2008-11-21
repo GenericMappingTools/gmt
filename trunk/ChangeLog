@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.353 2008-11-18 00:11:31 guru Exp $
+	$Id: ChangeLog,v 1.354 2008-11-21 18:26:40 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-11-21	pwessel
+	* spotter/backtracker.c:	The -W option always assumed the reverse rotation
+				(from hotspot to seamount).  Now obeys the -D option.
+				
 2008-11-17	pwessel
 	* psscale.c:		When -I and -Li was used we did not draw box outlines.
 	* ps2raster.c:		New format -Tb for MicroSoft BMP output.  Also, formats

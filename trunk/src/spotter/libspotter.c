@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.51 2008-11-19 03:02:25 guru Exp $
+ *	$Id: libspotter.c,v 1.52 2008-11-21 18:26:40 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -58,6 +58,7 @@ BOOLEAN must_do_track (GMT_LONG sideA[], GMT_LONG sideB[]);
 void set_inout_sides (double x, double y, double wesn[], GMT_LONG sideXY[2]);
 void record_to_covar (struct EULER *e, double K[8]);
 void covar_of_transpose (double A[3][3], double C[3][3], double Ct[3][3]);
+void spotter_set_M (double lon, double lat, double M[3][3]);
 
 void spotter_finite_to_fwstages (struct EULER p[], GMT_LONG n, BOOLEAN finite_rates, BOOLEAN stage_rates);
 
@@ -73,7 +74,9 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	struct EULER *e;
 	char  buffer[BUFSIZ];
 	GMT_LONG n, nf, i = 0, k, n_alloc = GMT_SMALL_CHUNK;
-	double last_t, K[9];
+	double K[9];
+	int spotter_comp_stage (const void *p_1, const void *p_2);
+	int spotter_comp_finite (const void *p_1, const void *p_2);
 
 	e = (struct EULER *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct EULER), "libspotter");
 
@@ -84,7 +87,6 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 
 	if (flowline) finite_out = TRUE;	/* Override so we get finite poles for conversion to forward stage poles at the end */
 
-	last_t = (finite_in) ? 0.0 : DBL_MAX;
 	while (GMT_fgets (buffer, 512, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 
@@ -116,20 +118,6 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 			GMT_exit (EXIT_FAILURE);
 		}
 		e[i].duration = e[i].t_start - e[i].t_stop;
-		if (finite_in) {
-			if (e[i].t_start < last_t) {
-				fprintf (stderr, "libspotter: ERROR: Finite rotations must go from youngest to oldest\n");
-				GMT_exit (EXIT_FAILURE);
-			}
-			last_t = e[i].t_start;
-		}
-		else {
-			if (e[i].t_stop > last_t) {
-				fprintf (stderr, "libspotter: ERROR: Stage rotations must go from oldest to youngest\n");
-				GMT_exit (EXIT_FAILURE);
-			}
-			last_t = e[i].t_stop;
-		}
 		e[i].omega /= e[i].duration;	/* Convert to opening rate */
 
 		e[i].omega_r = e[i].omega * D2R;
@@ -144,13 +132,18 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	}
 	GMT_fclose (fp);
 
+	/* Sort the rotations to make sure they are in the expected order */
+	
 	n = i;
+	if (finite_in)
+		qsort ((void *)e, (size_t)n, sizeof (struct EULER), spotter_comp_finite);
+	else
+		qsort ((void *)e, (size_t)n, sizeof (struct EULER), spotter_comp_stage);
+	
+	if (finite_in && !finite_out) spotter_finite_to_stages (e, n, TRUE, TRUE);	/* Convert total reconstruction poles to forward stage poles */
+	if (!finite_in && finite_out) spotter_stages_to_finite (e, n, TRUE, TRUE);	/* Convert forward stage poles to total reconstruction poles */
 
-	if (finite_in && !finite_out) spotter_finite_to_stages (e, n, TRUE, TRUE);	/* Convert finite poles to backward stage poles */
-	if (!finite_in && finite_out) spotter_stages_to_finite (e, n, TRUE, TRUE);	/* Convert backward stage poles to finite poles */
-
-
-	e = (struct EULER *) GMT_memory ((void *)e, (size_t)n, sizeof (struct EULER), "libspotter");
+	e = (struct EULER *) GMT_memory ((void *)e, (size_t)n, sizeof (struct EULER *), "libspotter");
 
 	if (flowline) {	/* Get the forward stage poles from the total reconstruction poles */
 		spotter_finite_to_fwstages (e, n, TRUE, TRUE);
@@ -171,6 +164,37 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	return (n);
 }
 
+/* Sort functions used to order the rotations */
+
+int spotter_comp_stage (const void *p_1, const void *p_2)
+{
+	/* Returns -1 if rotation pointed to by p_1 is older that point_2,
+	   +1 if the reverse it true, and 0 if they are equal
+	*/
+	struct EULER *point_1, *point_2;
+
+	point_1 = (struct EULER *)p_1;
+	point_2 = (struct EULER *)p_2;
+
+	if (point_1->t_start > point_2->t_start) return (-1);
+	if (point_1->t_start < point_2->t_start) return (1);
+	return (0);
+}
+
+int spotter_comp_finite (const void *p_1, const void *p_2)
+{
+	/* Returns -1 if rotation pointed to by p_1 is older that point_2,
+	   +1 if the reverse it true, and 0 if they are equal
+	*/
+	struct EULER *point_1, *point_2;
+
+	point_1 = (struct EULER *)p_1;
+	point_2 = (struct EULER *)p_2;
+
+	if (point_1->t_start < point_2->t_start) return (-1);
+	if (point_1->t_start > point_2->t_start) return (1);
+	return (0);
+}
 /* hotspot_init: Reads a file with hotspot information and returns pointer to
  * array of structures */
 
@@ -1125,7 +1149,7 @@ void set_I_matrix (double R[3][3])
 	R[0][0] = R[1][1] = R[2][2] = 1.0;
 }
 
-int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT_LONG np, char flag, double out[])
+int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT_LONG np, char flag, BOOLEAN forward, double out[])
 {
 	/* Given time and rotation parameters, calculate uncertainty in the
 	 * reconstructed point in the form of a confidence ellipse.  To follow
@@ -1135,11 +1159,13 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 	 * context (the error in a reconstructed point along the chain) we are
 	 * actually using the inverse rotation R^t (negative opening angle).  For
 	 * that rotation, the covariance matrix is R * cov(r) * R^t.
+	 * forward is TRUE if we rotate from past to now and FALSE if we
+	 * rotate from now to the past (e.g., move a hotspot up the chain).
 	 */
 
 	GMT_LONG matrix_dim = 3L;
 	int i, j, k, kk = 3, nrots;
-	double R[3][3], x[3], y[3], M[3][3], MtRt[3][3], Rt[3][3], RM[3][3], cov[3][3], tmp[3][3], C[9];
+	double R[3][3], x[3], y[3], M[3][3], RMt[3][3], Rt[3][3], MRt[3][3], cov[3][3], tmp[3][3], C[9];
 	double z_unit_vector[3], EigenValue[3], EigenVector[9], work1[3], work2[3], x_in_plane[3], y_in_plane[3];
 	double x_comp, y_comp, w;
 
@@ -1148,40 +1174,39 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 	for (i = 0, k = -1; k < 0 && i < np; i++) if (GMT_IS_ZERO (p[i].t_start - t)) k = i;
 	if (k == -1) return (1);	/* Did not match finite rotation time */
 
-	/* Generate R, the rotation matrix.  This is actually R^t since w is -ve */
-
-	w = p[k].omega * p[k].duration;
-	spotter_make_rot_matrix (p[k].lon, p[k].lat, -w, R);
-
 	/* Make M(x), the skew-symmetric matrix needed to compute cov of rotated point */
 
-        GMT_geo_to_cart (&lat, &lon, x, TRUE);
-	M[0][0] = M[1][1] = M[2][2] = 0.0;
-	M[0][1] = -x[2];
-	M[0][2] = x[1];
-	M[1][0] = x[2];
-	M[1][2] = -x[0];
-	M[2][0] = -x[1];
-	M[2][1] = x[0];
+	spotter_set_M (lon, lat, M);
 
-	/* Since we are using the inverse rotation (-ve w) we must rotate the covariance: cov(r^t) = R cov(r) R^t.
-	   Here, R actually contains R^t so we need the original R (which we will call R^t) as well. */
+	w = p[k].omega * p[k].duration;
+	if (forward) w = -w;	/* Want the inverse rotation */
+	spotter_make_rot_matrix (p[k].lon, p[k].lat, w, R);
+	spotter_matrix_transpose (Rt, R);			/* Get the transpose of R^t */
+	if (!forward) {		/* Rotate the point into the present */
+		memcpy ((void *)cov, p[k].C, 9*sizeof (double));	/* The rotation's covarience matrix */
+	}
+	else {	/* Use inverse rotation to rotate the point from the present to past rotations */
+		/* We change the sign of w so then R is actually R^t */
+		/* Since we are using the inverse rotation we must first get the cov matrix of the
+		   inverse rotation: cov(r^t) = R cov(r) R^t.
+		   Here, R actually contains R^t so we need the original R (which we will call R^t) as well. */
 
-	spotter_matrix_mult (p[k].C, R, tmp);			/* Calculate the cov(r) *R^t product */
-	spotter_matrix_transpose (Rt, R);			/* Get the transpose of R^t which is R*/
-	spotter_matrix_mult (Rt, tmp, cov);			/* cov(r^t) = R^t cov(r) R */
+		spotter_matrix_mult (p[k].C, R, tmp);			/* Calculate the cov(r) *R^t product */
+		spotter_matrix_mult (Rt, tmp, cov);			/* cov(r^t) = R^t cov(r) R */
+	}
 
-	/* Calculate cov(y) = (R * M) * cov_R * (R * M)^T */
+	/* Calculate cov(y) = R * M^T * cov_R * M * R^T */
 
-	spotter_matrix_mult (R, M, RM);			/* Calculate the R * M product */
-	spotter_matrix_transpose (MtRt, RM);		/* Get the transpose (R*M)^T = M^T * R^T */
-	spotter_matrix_mult (cov, MtRt, tmp);		/* Get C * M^T * R^T */
-	spotter_matrix_mult (RM, tmp, M);		/* Finally get R * M * C * M^T * R^T, store in M */
+	spotter_matrix_mult (M, Rt, MRt);		/* Calculate the M * R^T product */
+	spotter_matrix_transpose (RMt, MRt);		/* Get the transpose (M*R^T)^T = R * M^T */
+	spotter_matrix_mult (cov, MRt, tmp);		/* Get C * M * R^T */
+	spotter_matrix_mult (RMt, tmp, M);		/* Finally get R * M * C * M^T * R^T, store result in M */
 
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) C[3*i+j] = M[i][j];	/* Reformat to 1-D format for GMT_jacobi */
 
 	/* Get projected point y = R*x */
 
+	GMT_geo_to_cart (&lat, &lon, x, TRUE);
 	for (i = 0; i < 3; i++) y[i] = R[i][0] * x[0] + R[i][1] * x[1] + R[i][2] * x[2];
         GMT_cart_to_geo (&out[1], &out[0], y, TRUE);
 	if (flag == 't')
@@ -1206,6 +1231,19 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 	out[++kk] = sqrt (EigenValue[1]) * EQ_RAD * SQRT_CHI2;
 
 	return (0);
+}
+
+void spotter_set_M (double lon, double lat, double M[3][3])
+{	/* Just initializes the M(x), the skew-symmetric matrix needed to compute cov of rotated point */
+	double x[3];
+        GMT_geo_to_cart (&lat, &lon, x, TRUE);	/* Get Cartesian vector for this point */
+	M[0][0] = M[1][1] = M[2][2] = 0.0;
+	M[0][1] = -x[2];
+	M[0][2] = x[1];
+	M[1][0] = x[2];
+	M[1][2] = -x[0];
+	M[2][0] = -x[1];
+	M[2][1] = x[0];
 }
 
 void spotter_covar_to_record (struct EULER *e, double K[])
