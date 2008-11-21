@@ -30,9 +30,9 @@ Specify name for output grid file.
 .SH OPTIONS
 .TP
 .B \-C
-Expect Total Reconstruction Poles rather than Backward Stage Poles [Default].
-File format is similar to the stage pole format except the youngest rotation must be listed
-first and that the tstart column is optional (assumed to be 0 Ma).
+Expect Total Reconstruction Rotations rather than Forward Stage Rotations [Default].
+File format is similar to the stage pole format except that the \fItstart\fP column
+is not present (assumed to be 0 Ma).
 .TP
 .B \-D
 Modify the sampling interval along flowlines.  Default [0.5] gives approximately 2 points within

@@ -38,9 +38,9 @@ Get \fIn_try\fP bootstrap estimates of the maximum CVA location; the longitude a
 results are written to stdout [Default is no bootstrapping].  Cannot be used with OPT(M).
 .TP
 .B \-C
-Expect Total Reconstruction Poles rather than Backward Stage Poles [Default].
-File format is similar to the stage pole format except the youngest rotation must be listed
-first and that the tstart column is optional (assumed to be 0 Ma).
+Expect Total Reconstruction Rotations rather than Forward Stage Rotations [Default].
+File format is similar to the stage pole format except that the \fItstart\fP column
+is not present (assumed to be 0 Ma).
 .TP
 .B \-D
 Use flowlines to determine the maximum CVA encountered along each flowline and create a Data
