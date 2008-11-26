@@ -6,9 +6,9 @@ greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data usi
 \fBgreenspline\fP [ \fIdatafile(s)\fP ] 
 [ OPT(A)[\fB1\fP|\fB2\fP|\fB3\fP|\fB4\fP|\fB5\fP,]\fIgradfile\fP ] [ OPT(C)\fIcut\fP[/\fIfile\fP] ] 
 [ OPT(D)\fImode\fP ] fP ] [ OPT(F) ] [ OPT(G)\fIgrdfile\fP] [ GMT_H_OPT ] 
-[ OPT(I)\fIxinc\fP[\fIyinc\fP[\fIzinc\fP]] ] [ OPT(L) ] [ OPT(N)\fImaskgrid\fP ] [ OPT(Q)\fIaz\fP|\fIx/y/z\fP ] 
+[ OPT(I)\fIxinc\fP[\fIyinc\fP[\fIzinc\fP]] ] [ OPT(L) ] [ OPT(N)\fInodefile\fP ] [ OPT(Q)\fIaz\fP|\fIx/y/z\fP ] 
 [ OPT(R)\fIxmin\fP/\fIxmax\fP[/\fIymin\fP/\fIymax\fP[/\fIzmin\fP\fIzmax\fP]] ] 
-[ OPT(S)\fBc|t|g|p|q\fP[\fIpars\fP] ] [ OPT(T)\fInodefile\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ]
+[ OPT(S)\fBc|t|g|p|q\fP[\fIpars\fP] ] [ OPT(T)\fImaskgrid\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
 \fBgreenspline\fP uses the Green's function G(\fBx\fP; \fBx'\fP) for the chosen spline and geometry to interpolate data
 at regular [or arbitrary] output locations.  Mathematically, the solution is composed as
@@ -77,9 +77,9 @@ Force pixel registration.  [Default is gridline registration].
 .B \-G
 Name of resulting output file.  (1) If options OPT(R), OPT(I), and possibly OPT(F) are set we produce
 an equidistant output table.  This will be written to stdout unless OPT(G) is specified.  Note: for 2-D
-grids the OPT(G) option is required.  (2) If option OPT(N) is selected then OPT(G) is required and the
+grids the OPT(G) option is required.  (2) If option OPT(T) is selected then OPT(G) is required and the
 output file is a 2-D binary gridded file.  Applies to 2-D interpolation only.
-(3) If OPT(T) is selected then the output is an ASCII (or binary; see OPT(bo)) table;
+(3) If OPT(N) is selected then the output is an ASCII (or binary; see OPT(bo)) table;
 if OPT(G) is not given then this table is written to standard output.  Ignored if OPT(C) or OPT(C)0
 is given.
 #include "explain_-H.txt"
@@ -94,7 +94,9 @@ cases with both data values and gradients, or for spherical surface data, only t
 (and later and restored).
 .TP
 .B \-N
-For 2-D interpolation only.  Only evaluate the solution at the nodes in the \fImaskgrid\fP that are not equal to NaN. This option eliminates the need to
+ASCII file with coordinates of desired output locations \fBx\fP in the first column(s).  The resulting
+\fIw\fP values are appended to each record and written to the file given in OPT(G) [or stdout if not specified];
+see OPT(bo) for binary output instead.  This option eliminates the need to
 specify options OPT(R), OPT(I), and OPT(F).
 .TP
 .B \-Q
@@ -133,9 +135,7 @@ by first pre-calculating G(\fBx\fP; \fBx'\fP) for a dense set of \fBx\fP values 
 and store them in look-up tables.  Optionally append /\fIN\fP (an odd integer) to specify how many points in the spline to set [5000001]
 .TP
 .B \-T
-ASCII file with coordinates of desired output locations \fBx\fP in the first column(s).  The resulting
-\fIw\fP values are appended to each record and written to the file given in OPT(G) [or stdout if not specified];
-see OPT(bo) for binary output instead.  This option eliminates the need to
+For 2-D interpolation only.  Only evaluate the solution at the nodes in the \fImaskgrid\fP that are not equal to NaN. This option eliminates the need to
 specify options OPT(R), OPT(I), and OPT(F).
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
@@ -146,7 +146,7 @@ To resample the \fIx,y\fP Gaussian random data created by \fBgmtmath\fP and stor
 every 0.1 step from 0 to 10, and using a minimum cubic spline, try
 .br
 .sp
-\fBgmtmath\fP \fB\-T\fP0/10/1 0 1 \fBNRAND\fP = 1D.txt
+\fBgmtmath\fP \fB\-N\fP0/10/1 0 1 \fBNRAND\fP = 1D.txt
 .br
 \fBpsxy \-R\fP0/10/-5/5 \fB\-JX\fP6i/3i \fB\-B\fP2f1/1 \fB\-Sc\fP0.1 \fB\-G\fPblack 1D.txt \fB\-K\fP > 1D.ps
 .br
@@ -173,7 +173,7 @@ used in the GMT Cookbook example 16, try
 To use Cartesian splines in tension but only evaluate the solution where the input mask grid is not NaN, try
 .br
 .sp
-\fBgreenspline\fP table_5.11 \fB\-N\fPmask.grd \fB\-St\fP0.5 \fB\-V \-D\fP1 \fB\-G\fPWB1998.grd
+\fBgreenspline\fP table_5.11 \fB\-T\fPmask.grd \fB\-St\fP0.5 \fB\-V \-D\fP1 \fB\-G\fPWB1998.grd
 .br
 .sp
 To use Cartesian generalized splines in tension and return the magnitude of the surface slope in
