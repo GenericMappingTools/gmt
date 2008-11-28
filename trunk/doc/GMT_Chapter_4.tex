@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.111 2008-04-30 03:53:30 remko Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.112 2008-11-28 23:29:11 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -244,7 +244,7 @@ these options in order of importance (some are use a lot more than others).
 for each dimension, or (b) coordinates of lower left and upper right corners.}
 
 The \Opt{R} option defines the map region or data domain of interest.  It may be specified
-in one of two ways (Figure~\ref{fig:GMT_-R}):
+in one of three ways (Figure~\ref{fig:GMT_-R}):
 \begin{enumerate}
 \item \Opt{R}\emph{xmin}/\emph{xmax}/\emph{ymin}/\emph{ymax}.  This is the standard way to specify
 Cartesian data domains and geographical regions when using map projections where meridians and
@@ -253,8 +253,11 @@ parallels are rectilinear.
 This form is used with map projections that are oblique, making meridians and parallels poor
 choices for map boundaries.  Here, we instead specify the lower left corner and upper right
 corner geographic coordinates, followed by the suffix \textbf{r}.
+\item \Opt{R}\emph{gridfile}.  This will copy the domain settings found for the grid in specified
+file.  Note that depending on the nature of the calling program, this mechanism will also set grid spacing
+and possibly the grid registration (see Appendix~\ref{sec:node_registration}).
 \end{enumerate}
-For rectilinear projections the two forms give identical results.  Depending on the selected map
+For rectilinear projections the first two forms give identical results.  Depending on the selected map
 projection (or the kind of expected input data), the boundary coordinates may take on three different
 formats:
 

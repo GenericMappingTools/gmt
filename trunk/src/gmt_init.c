@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.359 2008-10-10 21:42:53 guru Exp $
+ *	$Id: gmt_init.c,v 1.360 2008-11-28 23:29:11 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -483,6 +483,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   Append r if -R specifies the longitudes/latitudes of the lower left\n");
 			fprintf (stderr, "\t   and upper right corners of a rectangular area.\n");
 			fprintf (stderr, "\t   -Rg -Rd are accepted shorthands for -R0/360/-90/90 -R-180/180/-90/90\n");
+			fprintf (stderr, "\t   Alternatively, give a gridfile and use its limits (and increments if applicable).\n");
 			break;
 
 		case 'r':	/* Region option for 3-D */
@@ -491,6 +492,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   Use dd:mm[:ss] format for regions given in degrees and minutes [and seconds].\n");
 			fprintf (stderr, "\t   Append r if first 4 arguments to -R specify the longitudes/latitudes\n");
 			fprintf (stderr, "\t   of the lower left and upper right corners of a rectangular area\n");
+			fprintf (stderr, "\t   Alternatively, give a gridfile and use its limits (and increments if applicable).\n");
 			break;
 
 		case 'U':	/* Plot time mark and [optionally] command line */
@@ -656,6 +658,7 @@ void GMT_inc_syntax (char option, int error)
 	fprintf (stderr, "\t   Append = to adjust the domain to fit the increment [Default adjusts increment to fit domain].\n");
 	fprintf (stderr, "\t   Alternatively, specify number of nodes by appending +. Then, the increments are calculated\n");
 	fprintf (stderr, "\t   from the given domain and node-registration settings (see Appendix B for details).\n");
+	fprintf (stderr, "\t   Note: If -R<grdfile> was used the increments were set as well; use -I to override.\n");
 }
 
 void GMT_fill_syntax (char option, char *string)
@@ -1221,7 +1224,7 @@ int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) 
 	char text[BUFSIZ], string[BUFSIZ];
 	double *p[6];
 
-	/* Parse the -R option.  Full syntax:  -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
+	/* Parse the -R option.  Full syntax:  -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
 
 	if (item[2] == 'g' || item[2] == 'd') {
 		if (item[2] == 'g')	/* -Rg is shorthand for -R0/360/-90/90 */
@@ -1234,6 +1237,15 @@ int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) 
 		project_info.region_supplied = TRUE;
 		if (!item[3]) return (0);
 		strcpy (string, &item[3]);
+	}
+	else if (!GMT_access (&item[2], R_OK)) {	/* Gave a readable file, presumably a grid */		
+		GMT_err_fail (GMT_read_grd_info (&item[2], &GMT_grd_info.grd), &item[2]);
+		*w = project_info.w = GMT_grd_info.grd.x_min; *e = project_info.e = GMT_grd_info.grd.x_max;
+		*s = project_info.s = GMT_grd_info.grd.y_min; *n =project_info.n = GMT_grd_info.grd.y_max;
+		project_info.z_bottom = GMT_grd_info.grd.z_min;	project_info.z_top = GMT_grd_info.grd.z_max;
+		GMT_grd_info.active = TRUE;
+		project_info.region_supplied = TRUE;
+		return (0);
 	}
 	else
 		strcpy (string, &item[2]);
@@ -1289,6 +1301,24 @@ int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) 
 	project_info.s = *p[2];	project_info.n = *p[3];
 
 	return (error);
+}
+
+void GMT_check_lattice (double *x_inc, double *y_inc, BOOLEAN *pixel, BOOLEAN *active)
+{	/* Uses provided settings to initialize the lattice settings from
+	 * the -R<grdfile> if it was given; else it does nothing.
+	 */
+	if (!GMT_grd_info.active) return;	/* -R<grdfile> was not used; use existing settings */
+	
+	/* Here, -R<grdfile> was used and we will use the settings supplied by the grid file (unless overridden) */
+	if (!active || *active == FALSE) {	/* -I not set separately */
+		*x_inc = GMT_grd_info.grd.x_inc;
+		*y_inc = GMT_grd_info.grd.y_inc;
+	}
+	if (pixel) {	/* An pointer not NULL was passed that indicates grid registration */
+		/* If a -F like option was set then toggle grid setting, else use grid setting */
+		*pixel = (*pixel) ? !GMT_grd_info.grd.node_offset : GMT_grd_info.grd.node_offset;
+	}
+	if (active) *active = TRUE;	/* When 4th arg is not NULL it is set to TRUE (for Ctrl->active args) */
 }
 
 int GMT_parse_U_option (char *item) {
@@ -3099,6 +3129,7 @@ int GMT_begin (int argc, char **argv)
 	project_info.xmin = project_info.ymin = 0.0;
 	project_info.z_level = DBL_MAX;	/* Will be set in map_setup */
 	project_info.xyz_pos[0] = project_info.xyz_pos[1] = TRUE;
+	memset ((void *)&GMT_grd_info, 0, sizeof (struct GMT_GRD_INFO));
 	GMT_prepare_3D ();
 	GMT_dlon = (project_info.e - project_info.w) / GMT_n_lon_nodes;
 	GMT_dlat = (project_info.n - project_info.s) / GMT_n_lat_nodes;

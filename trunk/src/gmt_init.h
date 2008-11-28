@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.76 2008-10-10 21:42:53 guru Exp $
+ *	$Id: gmt_init.h,v 1.77 2008-11-28 23:29:11 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -70,5 +70,6 @@ EXTERN_MSC int GMT_getdefpath (int get, char **path);
 EXTERN_MSC int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN cmd);
 EXTERN_MSC void GMT_extract_label (char *line, char *label);
 EXTERN_MSC int GMT_setparameter(char *keyword, char *value);
+EXTERN_MSC void GMT_check_lattice (double *x_inc, double *y_inc, BOOLEAN *pixel, BOOLEAN *active);
 
 #endif /* GMT_INIT_H */
