@@ -13,4 +13,5 @@ the corresponding max \fIx\fP (\fIeast\fP) or \fIy\fP (\fInorth\fP) may be sligh
 of giving an increment you may specify the \fInumber of nodes\fP desired by appending \fB+\fP to
 the supplied integer argument; the increment is then recalculated from the number of nodes and the domain.
 The resulting increment value depends on whether you have selected a gridline-registered
-or pixel-registered grid; see Appendix B for details.
+or pixel-registered grid; see Appendix B for details.  Note: if OPT(R)\fIgrdfile\fP is used then
+grid spacing has already been initialized; use OPT(I) to override the values.
