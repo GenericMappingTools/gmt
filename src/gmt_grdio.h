@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.41 2008-03-24 08:58:30 guru Exp $
+ *	$Id: gmt_grdio.h,v 1.42 2008-11-28 23:29:11 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -57,6 +57,11 @@ EXTERN_MSC PFI GMT_io_readgrd[GMT_N_GRD_FORMATS];
 EXTERN_MSC PFI GMT_io_writegrd[GMT_N_GRD_FORMATS];
 
 #include "gmt_customio.h"
+
+struct GMT_GRD_INFO {	/* Holds any -R -I -F settings passed indirectly via -R<grdfile> */
+	struct GRD_HEADER grd;	/* Header of grid file passed via -R */
+	BOOLEAN active;		/* TRUE if initialized via -R */
+};
 
 struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 	struct GRD_HEADER *header;	/* Pointer to full GMT header for the grid */

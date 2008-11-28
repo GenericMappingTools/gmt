@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.7 2008-02-22 08:49:16 guru Exp $
+ *    $Id: sph2grd.c,v 1.8 2008-11-28 23:29:12 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -172,6 +172,8 @@ int main (int argc, char **argv)
 		exit (EXIT_FAILURE);
 	}
 	
+	GMT_check_lattice (&Ctrl->I.xinc, &Ctrl->I.yinc, &Ctrl->F.active, &Ctrl->I.active);
+
 	if (n_files > 1) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR:  Can only handle one input coefficient file\n", GMT_program);
 		error++;
