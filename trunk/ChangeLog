@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.355 2008-11-28 23:29:11 guru Exp $
+	$Id: ChangeLog,v 1.356 2008-11-29 23:44:55 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-11-29	pwessel
+	* minmax.c:		Optional /<col> may be added to -T<dz> to select a column.
+	
 2008-11-28	pwessel
 	* gmt_init.c:		Now, -R may take the name of an existing grid file. Then,
 				the grid domain is used to set -R as well as the grid

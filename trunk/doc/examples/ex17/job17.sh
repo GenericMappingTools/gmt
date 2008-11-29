@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 17
-#		$Id: job17.sh,v 1.8 2008-02-22 21:10:42 remko Exp $
+#		$Id: job17.sh,v 1.9 2008-11-29 23:44:56 guru Exp $
 #
 # Purpose:	Illustrates clipping of images using coastlines
 # GMT progs:	grd2cpt, grdgradient, grdimage, pscoast, pstext
@@ -17,7 +17,7 @@ grdimage india_geoid.nc -Iindia_geoid_i.grd -JM6.5i -Cgeoid.cpt -P -K \
 
 # Then use pscoast to initiate clip path for land
 
-pscoast -R60/90/-10/25 -J -O -K -Dl -Gc >> $ps
+pscoast -Rindia_geoid.nc -J -O -K -Dl -Gc >> $ps
 
 # Now generate topography image w/shading
 

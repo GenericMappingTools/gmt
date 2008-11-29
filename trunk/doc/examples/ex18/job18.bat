@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 18
 REM
-REM		$Id: job18.bat,v 1.11 2007-08-23 02:34:44 remko Exp $
+REM		$Id: job18.bat,v 1.12 2008-11-29 23:44:56 guru Exp $
 REM
 REM Purpose:	Illustrates volumes of grids inside contours and spatial
 REM		selection of data
@@ -25,7 +25,7 @@ REM of radius = 200 km centered on Pratt.
 makecpt -Crainbow -T-60/60/10 -Z > grav.cpt
 grdgradient AK_gulf_grav.nc -Nt1 -A45 -GAK_gulf_grav_i.grd
 grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.grd -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i > example_18.ps
-pscoast -R-149/-135/52.5/58 -J -O -K -Di -Ggray -Wthinnest >> example_18.ps
+pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> example_18.ps
 psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -B20f10/:mGal: -O -K >> example_18.ps
 echo {print $1, $2, 12, 0, 1, "LB", "Pratt"} > t
 gawk -f t pratt.d | pstext -R -J -O -K -D0.1i/0.1i >> example_18.ps
@@ -57,7 +57,7 @@ REM Then report the volume and area of these seamounts only
 REM by masking out data outside the 200 km-radius circle
 REM and then evaluate area/volume for the 50 mGal contour
 
-grdmath -R -I2m -F -142.65 56.25 GDIST = mask.grd
+grdmath -R -142.65 56.25 GDIST = mask.grd
 grdclip mask.grd -Sa200/NaN -Sb200/1 -Gmask.grd
 grdmath AK_gulf_grav.nc mask.grd MUL = tmp.grd
 echo -148.5	52.75 > tmp

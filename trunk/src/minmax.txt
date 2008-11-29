@@ -5,7 +5,7 @@ minmax \- Find extreme values in data tables
 .SH SYNOPSIS
 \fBminmax\fP [ \fIfiles\fP] [ OPT(C) ] [ OPT(EL)|\fBl\fP|\fBH\fP|\fBh\fP\fIcol\fP ] 
 [ GMT_H_OPT ] [ OPT(I)[\fBp\fP]\fIdx\fP[/\fIdy\fP[/\fIdz\fP...] ] 
-[ GMT_Mo_OPT ] [ OPT(T)\fIdz\fP ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ]
+[ GMT_Mo_OPT ] [ OPT(T)\fIdz\fP[/\fIcol\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBminmax\fP reads its standard input [or from files] and finds the
 extreme values in each of the columns.  It recognizes NaNs and
@@ -38,8 +38,8 @@ column (for backwards compatibility).  To override this behaviour, use \fB\-Ip\f
 #include "explain_-M.txt"
 .TP
 .B \-T
-Report the min/max of the first column to the nearest multiple of \fIdz\fP and output this in
-the form \fB\-T\fP\fIzmin/zmax/dz\fP.
+Report the min/max of the first (0'th) column to the nearest multiple of \fIdz\fP and output this in
+the form \fB\-T\fP\fIzmin/zmax/dz\fP.  To use another column, append /\fIcol\fP.
 #include "explain_-t.txt"
 Only works when \fB\-I\fP is selected.
 #include "explain_-bi.txt"
