@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.53 2008-06-13 00:31:34 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.54 2008-11-29 23:44:56 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -437,8 +437,8 @@ the node values, and call \GMTprog{pscontour} to make a contour
 map and image directly from the raw data.  Thus, in this
 example we do not actually make gridded files but still
 are able to contour and image the data.  We use a color
-palette table \filename{topo.cpt} (supplied with the script data
-separately).  The script becomes:
+palette table \filename{topo.cpt} (created via \GMTprog{minmax} and \GMTprog{makecpt}).
+The script becomes:
 
 \script{example_12} 
 \GMTexample{12}{Optimal triangulation of data.}
