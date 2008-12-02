@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.360 2008-11-28 23:29:11 guru Exp $
+ *	$Id: gmt_init.c,v 1.361 2008-12-02 03:47:17 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1226,6 +1226,15 @@ int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) 
 
 	/* Parse the -R option.  Full syntax:  -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
 
+	if (!GMT_access (&item[2], R_OK)) {	/* Gave a readable file, presumably a grid */		
+		GMT_err_fail (GMT_read_grd_info (&item[2], &GMT_grd_info.grd), &item[2]);
+		*w = project_info.w = GMT_grd_info.grd.x_min; *e = project_info.e = GMT_grd_info.grd.x_max;
+		*s = project_info.s = GMT_grd_info.grd.y_min; *n =project_info.n = GMT_grd_info.grd.y_max;
+		project_info.z_bottom = GMT_grd_info.grd.z_min;	project_info.z_top = GMT_grd_info.grd.z_max;
+		GMT_grd_info.active = TRUE;
+		project_info.region_supplied = TRUE;
+		return (0);
+	}
 	if (item[2] == 'g' || item[2] == 'd') {
 		if (item[2] == 'g')	/* -Rg is shorthand for -R0/360/-90/90 */
 			*w = project_info.w = 0.0, *e = project_info.e = 360.0;
@@ -1237,15 +1246,6 @@ int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) 
 		project_info.region_supplied = TRUE;
 		if (!item[3]) return (0);
 		strcpy (string, &item[3]);
-	}
-	else if (!GMT_access (&item[2], R_OK)) {	/* Gave a readable file, presumably a grid */		
-		GMT_err_fail (GMT_read_grd_info (&item[2], &GMT_grd_info.grd), &item[2]);
-		*w = project_info.w = GMT_grd_info.grd.x_min; *e = project_info.e = GMT_grd_info.grd.x_max;
-		*s = project_info.s = GMT_grd_info.grd.y_min; *n =project_info.n = GMT_grd_info.grd.y_max;
-		project_info.z_bottom = GMT_grd_info.grd.z_min;	project_info.z_top = GMT_grd_info.grd.z_max;
-		GMT_grd_info.active = TRUE;
-		project_info.region_supplied = TRUE;
-		return (0);
 	}
 	else
 		strcpy (string, &item[2]);
