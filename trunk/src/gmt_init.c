@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.361 2008-12-02 03:47:17 guru Exp $
+ *	$Id: gmt_init.c,v 1.362 2008-12-02 22:36:26 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1226,16 +1226,7 @@ int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) 
 
 	/* Parse the -R option.  Full syntax:  -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
 
-	if (!GMT_access (&item[2], R_OK)) {	/* Gave a readable file, presumably a grid */		
-		GMT_err_fail (GMT_read_grd_info (&item[2], &GMT_grd_info.grd), &item[2]);
-		*w = project_info.w = GMT_grd_info.grd.x_min; *e = project_info.e = GMT_grd_info.grd.x_max;
-		*s = project_info.s = GMT_grd_info.grd.y_min; *n =project_info.n = GMT_grd_info.grd.y_max;
-		project_info.z_bottom = GMT_grd_info.grd.z_min;	project_info.z_top = GMT_grd_info.grd.z_max;
-		GMT_grd_info.active = TRUE;
-		project_info.region_supplied = TRUE;
-		return (0);
-	}
-	if (item[2] == 'g' || item[2] == 'd') {
+	if ((item[2] == 'g' || item[2] == 'd') && item[3] == '\0') {	/* Check -Rd|g separately in case user has files called d or g */
 		if (item[2] == 'g')	/* -Rg is shorthand for -R0/360/-90/90 */
 			*w = project_info.w = 0.0, *e = project_info.e = 360.0;
 		else			/* -Rd is shorthand for -R-180/+180/-90/90 */
@@ -1244,12 +1235,27 @@ int GMT_parse_R_option (char *item, double *w, double *e, double *s, double *n) 
 		GMT_io.in_col_type[0] = GMT_IS_LON, GMT_io.in_col_type[1] = GMT_IS_LAT;
 		project_info.degree[0] = project_info.degree[1] = TRUE;
 		project_info.region_supplied = TRUE;
-		if (!item[3]) return (0);
+		return (0);
+	}
+	if (!GMT_access (&item[2], R_OK)) {	/* Gave a readable file, presumably a grid */		
+		GMT_err_fail (GMT_read_grd_info (&item[2], &GMT_grd_info.grd), &item[2]);
+		*w = project_info.w = GMT_grd_info.grd.x_min; *e = project_info.e = GMT_grd_info.grd.x_max;
+		*s = project_info.s = GMT_grd_info.grd.y_min; *n =project_info.n = GMT_grd_info.grd.y_max;
+		project_info.z_bottom = GMT_grd_info.grd.z_min;	project_info.z_top = GMT_grd_info.grd.z_max;
+		GMT_grd_info.active = project_info.region_supplied = TRUE;
+		return (0);
+	}
+	if (item[2] == 'g' || item[2] == 'd') {	/* Here we have a region appended to -Rd|g */
+		GMT_io.in_col_type[0] = GMT_IS_LON, GMT_io.in_col_type[1] = GMT_IS_LAT;
+		project_info.degree[0] = project_info.degree[1] = TRUE;
+		project_info.region_supplied = TRUE;
 		strcpy (string, &item[3]);
 	}
 	else
 		strcpy (string, &item[2]);
 
+	/* Now decode the string */
+	
 	p[0] = w;	p[1] = e;	p[2] = s;	p[3] = n;
 	p[4] = &project_info.z_bottom;	p[5] = &project_info.z_top;
 	col_type[0] = col_type[1] = 0;
