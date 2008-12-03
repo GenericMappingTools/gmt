@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.52 2008-11-21 18:26:40 guru Exp $
+ *	$Id: libspotter.c,v 1.53 2008-12-03 01:17:28 guru Exp $
  *
  *   Copyright (c) 1999-2008 by P. Wessel
  *
@@ -143,7 +143,7 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	if (finite_in && !finite_out) spotter_finite_to_stages (e, n, TRUE, TRUE);	/* Convert total reconstruction poles to forward stage poles */
 	if (!finite_in && finite_out) spotter_stages_to_finite (e, n, TRUE, TRUE);	/* Convert forward stage poles to total reconstruction poles */
 
-	e = (struct EULER *) GMT_memory ((void *)e, (size_t)n, sizeof (struct EULER *), "libspotter");
+	e = (struct EULER *) GMT_memory ((void *)e, (size_t)n, sizeof (struct EULER), "libspotter");
 
 	if (flowline) {	/* Get the forward stage poles from the total reconstruction poles */
 		spotter_finite_to_fwstages (e, n, TRUE, TRUE);
