@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.16 2008-04-17 18:07:45 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.17 2008-12-04 22:38:36 remko Exp $
 % Begin pslib header
 250 dict begin
 /! {bind def} bind def
@@ -52,12 +52,9 @@
 /BA {B0 QA}! /BC {B0 QC}! /BK {B0 QK}! /BH {B0 QH}! /BI {B0 QI}! /BQ {B0 QQ}!
 /Ba {B0 Qa}! /Bc {B0 Qc}! /Bk {B0 Qk}! /Bh {B0 Qh}! /Bi {B0 Qi}!
 % Circle
-/CA {0 360 arc V A F U N}! /Ca {0 360 arc V A F U S}!
-/CC {0 360 arc V C F U N}! /Cc {0 360 arc V C F U S}!
-/CK {0 360 arc V K F U N}! /Ck {0 360 arc V K F U S}!
-/CH {0 360 arc V H F U N}! /Ch {0 360 arc V H F U S}!
-/CI {0 360 arc V I F U N}! /Ci {0 360 arc V I F U S}!
-/CQ {0 360 arc S}!
+/C0 {S 0 360 arc}!
+/CA {C0 QA}! /CC {C0 QC}! /CK {C0 QK}! /CH {C0 QH}! /CI {C0 QI}! /CQ {C0 QQ}!
+/Ca {C0 Qa}! /Cc {C0 Qc}! /Ck {C0 Qk}! /Ch {C0 Qh}! /Ci {C0 Qi}!
 % Diamond
 /D0 {M 4 {dup} repeat 0 G neg dup dup D exch D D}!
 /DA {D0 QA}! /DC {D0 QC}! /DK {D0 QK}! /DH {D0 QH}! /DI {D0 QI}! /DQ {D0 QQ}!

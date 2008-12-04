@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.178 2008-08-22 12:37:07 remko Exp $
+ *	$Id: pslib.c,v 1.179 2008-12-04 22:38:36 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1416,7 +1416,7 @@ int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, doubl
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.16 ");
+		ps_bulkcopy ("PSL_prologue", "v 1.17 ");
 		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Initialize book-keeping for font encoding and write font macros */
