@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.356 2008-11-29 23:44:55 guru Exp $
+	$Id: ChangeLog,v 1.357 2008-12-04 22:38:36 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-12-03	remko
+	* PSL_prologue.ps:	Redefined code for circle. Needed a stroke (S) first, otherwise
+				a line would be drawn from the previous symbol.
+	* pslib.c:		Updated PSL_prologue.ps version.
+
 2008-11-29	pwessel
 	* minmax.c:		Optional /<col> may be added to -T<dz> to select a column.
 	
@@ -8,10 +13,11 @@
 	* gmt_init.c:		Now, -R may take the name of an existing grid file. Then,
 				the grid domain is used to set -R as well as the grid
 				increment for those program that has such an option.
+
 2008-11-21	pwessel
-	* spotter/backtracker.c:	The -W option always assumed the reverse rotation
-				(from hotspot to seamount).  Now obeys the -D option.
-				
+	* spotter/backtracker.c:	The -W option always assumed the reverse rotation,
+				i.e. from hotspot to seamount.  Now obeys the -D option.
+
 2008-11-17	pwessel
 	* psscale.c:		When -I and -Li was used we did not draw box outlines.
 	* ps2raster.c:		New format -Tb for MicroSoft BMP output.  Also, formats
@@ -19,6 +25,7 @@
 				images.  Finally, added -Cgs-command to add one or more
 				custom switches to ghostscript, and -Q[g|t]<bits> to
 				set the level of anti-aliasing for graphics and text.
+
 2008-11-14	pwessel
 	* ps2raster.c:		New format -TG turns on transparency for PNG output.
 	
@@ -38,11 +45,12 @@
 
 2008-10-10	pwessel
 	* x2sys.c:		Can now also handle netCDF 1-D COARDS files.
-	* psbasemap.c		The -L syntax and description was out of date regarding
+	* psbasemap.c:		The -L syntax and description was out of date regarding
 				how the options are to be specified.  Added new syntax
 				explain functions for both map scale and map rose so these
 				are consistently described for both psbasemap and pscoast.
 				Also corrected the syntax and description in the man pages.
+
 2008-10-08	remko
 	* gmtmath.c:		Added INRANGE operator. Was added to grdmath on 2004-03-28,
 				but was not available to gmtmath.
@@ -76,6 +84,7 @@
 	* x2sys/x2sys_solve.c:	New program [experimental] to determine systematic trends from
 				a set of crossover errors.  Intended to replace the old
 				x_system/x_solve_dc_drift.c.
+
 2008-09-10	remko
 	* gmt_nc.c:		Coordinate arrays are now always double precision.
 
