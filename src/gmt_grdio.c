@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.117 2008-08-14 02:46:36 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.118 2008-12-05 08:24:36 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -939,7 +939,7 @@ int GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GR
 			break;
 	}
 	global = GMT_grd_is_global (header);
-	if (GMT_io.in_col_type[0] != GMT_IS_LON || GMT_360_RANGE (*w, *e)) {	/* Do this unless a 360 longitude wrap */
+	if (!(GMT_io.in_col_type[0] == GMT_IS_LON && GMT_360_RANGE (*w, *e))) {    /* Do this unless a 360 longitude wrap */
 		small = GMT_SMALL * header->x_inc;
 		start = (GMT_io.in_col_type[0] == GMT_IS_LON && GMT_360_RANGE (*w, header->x_min)) ? *w : header->x_min;
 
