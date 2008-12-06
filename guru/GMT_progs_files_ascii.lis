@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.57 2008-05-29 22:45:01 guru Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.58 2008-12-06 03:17:42 guru Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_src tar/zip files.  See GMT_progs_files_bin.lis for binary files.
@@ -132,6 +132,7 @@ src/grdtrend.c
 src/grdvector.c
 src/grdview.c
 src/grdvolume.c
+src/greenspline.c
 src/makecpt.c
 src/mapproject.c
 src/minmax.c
@@ -200,6 +201,7 @@ src/grdtrend.1
 src/grdvector.1
 src/grdview.1
 src/grdvolume.1
+src/greenspline.1
 src/isogmt.1
 src/makecpt.1
 src/mapproject.1

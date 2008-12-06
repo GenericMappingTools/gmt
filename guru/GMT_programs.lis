@@ -1,4 +1,4 @@
-#	$Id: GMT_programs.lis,v 1.2 2007-04-01 21:30:08 remko Exp $
+#	$Id: GMT_programs.lis,v 1.3 2008-12-06 03:17:42 guru Exp $
 #
 # GMT_programs.lis contains a list of actual GMT programs written in C
 # It excludes scripts (such as GMT) and libraries (pslib etc).  We can
@@ -40,6 +40,7 @@ grdtrend
 grdvector
 grdview
 grdvolume
+greenspline
 makecpt
 mapproject
 minmax
