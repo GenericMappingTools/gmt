@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.29 2008-06-12 22:06:19 guru Exp $
+#	$Id: GNUmakefile,v 1.30 2008-12-06 02:40:10 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -72,7 +72,7 @@ EX_EPS=	scripts/example_01.eps scripts/example_02.eps scripts/example_03.eps scr
 	scripts/example_16.eps scripts/example_17.eps scripts/example_18.eps scripts/example_19.eps \
 	scripts/example_20.eps scripts/example_21.eps scripts/example_22.eps scripts/example_23.eps \
 	scripts/example_24.eps scripts/example_25.eps scripts/example_26.eps scripts/example_27.eps \
-	scripts/example_28.eps
+	scripts/example_28.eps scripts/example_29.eps
 
 # EPS files to be converted from animation PS files
 AN_EPS=	scripts/anim_01.eps scripts/anim_02.eps
