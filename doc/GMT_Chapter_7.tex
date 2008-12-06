@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.54 2008-11-29 23:44:56 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.55 2008-12-06 02:40:10 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -958,7 +958,7 @@ was then added to complete the illustration.
 \section{Mixing UTM and geographic data sets}
 \index{Example!Mixing UTM and geographic data|(}
 
-Finally, we present a similar case: We wish to plot a data set given in UTM coordinates and want it
+Next, we present a similar case: We wish to plot a data set given in UTM coordinates and want it
 to be properly registered with overlying geographic data, such as coastlines or data points.  The
 mistake many \GMT\ rookies make is to specify the UTM projection with their UTM
 data.  However, that data have already been projected and is now in linear meters.  The only
@@ -986,3 +986,26 @@ and light blue ocean.  We place a scale bar and label Kilauea crater to complete
 UTM and lon/lat coordinates and consistent use of the same map scale.}
  
 \index{Example!Mixing UTM and geographic data|)}
+
+\section{Gridding spherical surface data using splines}
+\index{Example!Gridding spherical surface data using splines|(}
+
+Finally, we demonstrate how gridding on a spherical surface can be accomplished using Green's functions
+of surface splines, with or without tension.  Global gridding does not work particularly well in
+Cartesian coordinates hence the chosen approach.  We use \GMTProf{greenspline} to produce a crude
+topography grid for Mars based on radii estimates from the Mariner 9 and Viking Orbiter spacecrafts.
+This data comes from \emph{Smith and Zuber} [Science, 1996] and is used here as a small (\emph{N} = 370) data set we
+can use to demonstrate spherical surface gridding.  Since \GMTProf{greenspline} must solve a \emph{N} by \emph{N}
+matrix system your system memory may impose limits on how large data sets you can handle.
+
+\script{example_29}
+
+Our script must first estimate the ellipsoidal shape of Mars from the parameters given by \emph{Smith and Zuber}
+so that we can remove this reference surface from the gridded radii.  We run the gridding twice: First with
+no tension using \emph{Parker}'s [1990] method and then with tension using the \emph{Wessel and Becker} [2008] method.
+The grids are then imaged with \GMTprog{grdimage} and \GMTprog{grdcontour} and a color scale is placed between
+them.
+
+\GMTexample{29}{Gridding of spherical surface data using Green's function splines.}
+ 
+\index{Example!Gridding spherical surface data using splines|)}

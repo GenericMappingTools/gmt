@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.49 2008-06-12 22:06:19 guru Exp $
+#		$Id: README,v 1.50 2008-12-06 02:40:10 guru Exp $
 #
 #	Copyright (c) 1991-2008, P. Wessel & W. H. F. Smith
 #
@@ -439,11 +439,11 @@ To do all of the installations above, you can use the simple shortcut
 11. Example Scripts
 -------------------
 
-	A complete set of the example scripts used to create the
-28 example plots, including all necessary data files can be
+	A complete set of the example scripts used to create all the
+example plots, including all necessary data files can be
 found in the GMT_scripts.tar.bz2 archive.
 Copy this to your gmt directory and install there if you would like
-these scripts.  After install, you can run all 28 examples from the
+these scripts.  After install, you can run all the examples from the
 src directory using
 
 	make examples

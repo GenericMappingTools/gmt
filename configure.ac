@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.33 2008-05-19 02:00:55 remko Exp $
-AC_REVISION($Revision: 1.33 $)
+dnl $Id: configure.ac,v 1.34 2008-12-06 02:40:10 guru Exp $
+AC_REVISION($Revision: 1.34 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -82,6 +82,7 @@ AC_ARG_ENABLE(octave,   [  --enable-octave         Build GMT-octave interface (d
 AC_ARG_ENABLE(mex_mdir, [  --enable-mex-mdir=dir   Directory in which to install GMT-octave/Matlab .m files [[auto]]])
 AC_ARG_ENABLE(mex_xdir, [  --enable-mex-xdir=dir   Directory in which to install GMT-octave/Matlab mex files [[auto]]])
 AC_ARG_ENABLE(debug,    [  --enable-debug          Compile for debugging instead of optimizing code])
+AC_ARG_ENABLE(devdebug, [  --enable-devdebug       Extra debugging for developers])
 AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
 AC_ARG_ENABLE(triangle, [  --enable-triangle       Use J. Shewchuk's fast, non-GPL triangulation routine])
 AC_ARG_ENABLE(US,       [  --enable-US             Choose US (inch) rather than SI (cm) units as default])
@@ -528,6 +529,13 @@ else
 		CFLAGS="$CFLAGS -O"
 	fi
 	AC_MSG_RESULT(no)
+fi
+dnl -----------------------------------------------------------------
+dnl Allow developers to set --enable-devdebug to pass -DDEBUG
+dnl -----------------------------------------------------------------
+dnl
+if test "X$enable_devdebug" = "Xyes" ; then
+	CFLAGS="$CFLAGS -DDEBUG"
 fi
 dnl
 dnl -----------------------------------------------------------------

@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.17 2008-06-12 22:06:19 guru Exp $
+#	 $Id: webexamples.sh,v 1.18 2008-12-06 02:40:10 guru Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -20,7 +20,7 @@
 #	gmt/examples/example_??_100dpi.png (using ps2raster)
 #-----------------------------------------------------------------------------
 
-n_examples=28
+n_examples=29
 
 GMT050dpi="ps2raster -E50 -Tg -P"
 GMT100dpi="ps2raster -E100 -Tg -P"
@@ -142,6 +142,9 @@ surfaces.</A></LI>
 
 <LI>
 <A HREF="examples/ex28/gmt_example_28.html">Mixing UTM and geographic data.</A></LI>
+
+<LI>
+<A HREF="examples/ex29/gmt_example_29.html">Spherical surface gridding using Green's functions.</A></LI>
 </OL>
 </BODY>
 </HTML>

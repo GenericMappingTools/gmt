@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.357 2008-12-04 22:38:36 remko Exp $
+	$Id: ChangeLog,v 1.358 2008-12-06 02:40:09 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-12-05	pwessel
+	* greenspline.c:	New interpolation/gridding program for 1-3 dimensions using
+				Green's functions for various splines.  Added new example 29.
+
 2008-12-03	remko
 	* PSL_prologue.ps:	Redefined code for circle. Needed a stroke (S) first, otherwise
 				a line would be drawn from the previous symbol.
