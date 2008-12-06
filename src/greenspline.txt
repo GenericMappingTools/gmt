@@ -5,7 +5,7 @@ greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data usi
 .SH SYNOPSIS
 \fBgreenspline\fP [ \fIdatafile(s)\fP ] 
 [ OPT(A)[\fB1\fP|\fB2\fP|\fB3\fP|\fB4\fP|\fB5\fP,]\fIgradfile\fP ] [ OPT(C)\fIcut\fP[/\fIfile\fP] ] 
-[ OPT(D)\fImode\fP ] fP ] [ OPT(F) ] [ OPT(G)\fIgrdfile\fP] [ GMT_H_OPT ] 
+[ OPT(D)\fImode\fP ] [ OPT(F) ] [ OPT(G)\fIgrdfile\fP] [ GMT_H_OPT ] 
 [ OPT(I)\fIxinc\fP[\fIyinc\fP[\fIzinc\fP]] ] [ OPT(L) ] [ OPT(N)\fInodefile\fP ] [ OPT(Q)\fIaz\fP|\fIx/y/z\fP ] 
 [ OPT(R)\fIxmin\fP/\fIxmax\fP[/\fIymin\fP/\fIymax\fP[/\fIzmin\fP\fIzmax\fP]] ] 
 [ OPT(S)\fBc|t|g|p|q\fP[\fIpars\fP] ] [ OPT(T)\fImaskgrid\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_bo_OPT ]
@@ -203,7 +203,7 @@ greenspline \fB\-V \-Rg \-fg \-SQ\fP0.85 \fB\-D\fP3 \fB\-I\fP1 \fB\-G\fPWB2008.g
 .SH CONSIDERATIONS
 (1) For the Cartesian cases we use the free-space Green functions, hence no boundary conditions are
 applied at the edges of the specified domain.  For most applications this is fine as the region typically
-is arbitrarily set to reflect the extent of your data.  However, if you require
+is arbitrarily set to reflect the extent of your data.  However, if your application requires
 particular boundary conditions then you may consider using \fBsurface\fP instead.
 .br
 (2) In all cases, the solution is obtained by inverting a \fIn\fP x \fIn\fP double precision matrix for the Green
@@ -217,7 +217,7 @@ if \fIn\fP = 1024 then only 8 Mb memory is needed, but for \fIn\fP = 10240 we ne
 (3) The inversion for coefficients can become numerically unstable when data neighbors are very close
 compared to the overall span of the data.  You can remedy this by pre-processing the data, e.g., by
 averaging closely spaced neighbors.  Alternatively, you can improve stability by using the SVD solution and
-discard information associated with the smallest eigen-values (see OPT(C)).
+discard information associated with the smallest eigenvalues (see OPT(C)).
 .SH TENSION
 Tension is generally used to suppress spurious oscillations caused by the minimum curvature requirement, in particular
 when rapid gradient changes are present in the data.  The proper amount of tension can only be determined by experimentation.
@@ -238,7 +238,7 @@ Wessel, P., and D. Bercovici, 1998, Interpolation with splines in tension: a Gre
 .br
 Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Green's function for a spherical surface spline in tension, \fIGeophys. J. Int, 174\fP, 21\-28.
 .br
-Wessel, P., 2008, A general-purpose Green's function interpolator, \fIComputers & Geosciences, yy\fP, xx\-xx.
+Wessel, P., 2009, A general-purpose Green's function interpolator, \fIComputers & Geosciences, yy\fP, xx\-xx, in press.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmtmath (1),

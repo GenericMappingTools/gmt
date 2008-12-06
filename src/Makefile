@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.41 2008-05-29 22:45:01 guru Exp $
+#	$Id: Makefile,v 1.42 2008-12-06 00:33:18 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -54,7 +54,7 @@ PROGS_O		= blockmean.o blockmedian.o blockmode.o filter1d.o fitcircle.o gmtconve
 		gmtdefaults.o gmtmath.o gmtselect.o gmtset.o grd2cpt.o grd2xyz.o grdblend.o grdcut.o \
 		grdclip.o grdedit.o grdfft.o grdfilter.o grdgradient.o grdhisteq.o grdinfo.o grdlandmask.o \
 		grdmask.o grdtrack.o grdreformat.o grdmath.o grdpaste.o grdproject.o grdsample.o grdtrend.o \
-		grdvolume.o makecpt.o mapproject.o minmax.o nearneighbor.o project.o ps2raster.o \
+		grdvolume.o greenspline.o makecpt.o mapproject.o minmax.o nearneighbor.o project.o ps2raster.o \
 		sample1d.o spectrum1d.o splitxyz.o surface.o trend1d.o trend2d.o triangulate.o xyz2grd.o
 
 PROGSPS_O	= gmt2rgb.o grdcontour.o grdimage.o grdvector.o grdview.o psbasemap.o psclip.o \
@@ -247,6 +247,7 @@ grdtrend$(EXE):		grdtrend.o
 grdvector$(EXE):	grdvector.o
 grdview$(EXE):		grdview.o
 grdvolume$(EXE):	grdvolume.o
+greenspline$(EXE):	greenspline.o
 makecpt$(EXE):		makecpt.o
 mapproject$(EXE):	mapproject.o
 minmax$(EXE):		minmax.o
