@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.55 2008-12-06 02:40:10 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.56 2008-12-06 03:17:42 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -992,10 +992,10 @@ UTM and lon/lat coordinates and consistent use of the same map scale.}
 
 Finally, we demonstrate how gridding on a spherical surface can be accomplished using Green's functions
 of surface splines, with or without tension.  Global gridding does not work particularly well in
-Cartesian coordinates hence the chosen approach.  We use \GMTProf{greenspline} to produce a crude
+Cartesian coordinates hence the chosen approach.  We use \GMTprog{greenspline} to produce a crude
 topography grid for Mars based on radii estimates from the Mariner 9 and Viking Orbiter spacecrafts.
 This data comes from \emph{Smith and Zuber} [Science, 1996] and is used here as a small (\emph{N} = 370) data set we
-can use to demonstrate spherical surface gridding.  Since \GMTProf{greenspline} must solve a \emph{N} by \emph{N}
+can use to demonstrate spherical surface gridding.  Since \GMTprog{greenspline} must solve a \emph{N} by \emph{N}
 matrix system your system memory may impose limits on how large data sets you can handle.
 
 \script{example_29}
