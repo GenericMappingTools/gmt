@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.105 2008-10-11 10:13:48 guru Exp $
+ *	$Id: x2sys.c,v 1.106 2008-12-07 23:50:09 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1339,7 +1339,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list, **ignore;
 	GMT_LONG p, n_pairs;
 	int i, k, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
-	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time;
+	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
 	double x, m, lon, dist[2];
 
 	fp = GMT_stdin;	/* Default to stdin if dbase is NULL */
@@ -1638,7 +1638,7 @@ int separate_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *
 void x2sys_get_corrtable (struct X2SYS_INFO *S, char *ctable, int ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR)
 {	/* Load an ephemeral correction table */
 	/* Pass aux as NULL if the auxillary columns do not matter (only used by x2sys_datalist) */
-	int i, k, n_items, n_aux, n_cols, missing;
+	int i, k = 0, n_items, n_aux = 0, n_cols, missing;
 	char path[BUFSIZ], **item_names = NULL, **col_name = NULL, **aux_name = NULL;
 	
 	if (!ctable) {	/* Try default correction table */
