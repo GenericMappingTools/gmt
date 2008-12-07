@@ -132,7 +132,7 @@ The last two are spherical surface splines and both imply \fB\-D\fP4 \fB\-fg\fP:
 (\fBq\fP) Continuous curvature spline in tension [\fIWessel and Becker\fP, 2008]; append \fItension\fP.
 The G(\fBx\fP; \fBx'\fP) for the last method is slower to compute; by specifying \fB\-SQ\fP you can speed up calculations
 by first pre-calculating G(\fBx\fP; \fBx'\fP) for a dense set of \fBx\fP values (e.g., 100,001 nodes between -1 to +1)
-and store them in look-up tables.  Optionally append /\fIN\fP (an odd integer) to specify how many points in the spline to set [5000001]
+and store them in look-up tables.  Optionally append /\fIN\fP (an odd integer) to specify how many points in the spline to set [100001]
 .TP
 .B \-T
 For 2-D interpolation only.  Only evaluate the solution at the nodes in the \fImaskgrid\fP that are not equal to NaN. This option eliminates the need to
