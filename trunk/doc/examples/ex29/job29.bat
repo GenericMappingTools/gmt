@@ -1,5 +1,5 @@
 REM             GMT EXAMPLE 29
-REM             $Id: job29.bat,v 1.1 2008-12-06 00:59:35 guru Exp $
+REM             $Id: job29.bat,v 1.2 2008-12-07 23:24:00 guru Exp $
 REM
 REM Purpose:	Illustrates spherical surface gridding with Green's function of splines
 REM GMT progs:	makecpt, grdcontour, grdgradient, grdimage, grdmath greenspline, psscale, pstext
@@ -23,7 +23,7 @@ grdmath -Rg -I2 X COSD %a% DIV DUP MUL X SIND %b% DIV DUP MUL ADD Y COSD DUP MUL
 
 REM  Do both Parker and Wessel/Becker solutions (tension = 0.9975)
 greenspline -Rellipsoid.nc mars370.in -D4 -Sp -Gmars.nc
-greenspline -Rellipsoid.nc mars370.in -D4 -SQ0.9975/500001 -Gmars2.nc
+greenspline -Rellipsoid.nc mars370.in -D4 -SQ0.9975/10001 -Gmars2.nc
 REM Scale to km and remove ellipsoid
 grdmath mars.nc 1000 DIV ellipsoid.nc SUB = mars.nc
 grdmath mars2.nc 1000 DIV ellipsoid.nc SUB = mars2.nc
