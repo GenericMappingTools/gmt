@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 29
-#		$Id: job29.sh,v 1.2 2008-12-07 23:24:00 guru Exp $
+#		$Id: job29.sh,v 1.3 2008-12-07 23:34:20 guru Exp $
 #
 # Purpose:	Illustrates spherical surface gridding with Green's function of splines
 # GMT progs:	makecpt, grdcontour, grdgradient, grdimage, grdmath greenspline, psscale, pstext
@@ -16,24 +16,24 @@ ps=example_29.ps
 a=3399.472
 b=3394.329
 c=3376.502
-grdmath -Rg -I2 -F X COSD $a DIV DUP MUL X SIND $b DIV DUP MUL ADD Y COSD DUP MUL MUL Y SIND $c DIV \
+grdmath -Rg -I4 -F X COSD $a DIV DUP MUL X SIND $b DIV DUP MUL ADD Y COSD DUP MUL MUL Y SIND $c DIV \
 	DUP MUL ADD SQRT INV = ellipsoid.nc
 
 #  Do both Parker and Wessel/Becker solutions (tension = 0.9975)
 greenspline -Rellipsoid.nc mars370.in -D4 -Sp -Gmars.nc
-greenspline -Rellipsoid.nc mars370.in -D4 -SQ0.9975/10001 -Gmars2.nc
+greenspline -Rellipsoid.nc mars370.in -D4 -SQ0.9975/5001 -Gmars2.nc
 # Scale to km and remove ellipsoid
 grdmath mars.nc 1000 DIV ellipsoid.nc SUB = mars.nc
 grdmath mars2.nc 1000 DIV ellipsoid.nc SUB = mars2.nc
 makecpt -Crainbow -T-7/15/1 -Z > mars.cpt
 grdgradient mars2.nc -M -Ne0.75 -A45 -Gmars2_i.nc
-grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30Wsne -JH0/6i -P -K \
+grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30Wsne -JH0/6i -P -K -Ei \
 	-U"Example 29 in Cookbook" --ANNOT_FONT_SIZE=12 > $ps
 grdcontour mars2.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
 psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.in  >> $ps
 echo "0 90 14 0 1 LB b)" | pstext -R -J -O -K -N -D-3i/-0.2i >> $ps
 grdgradient mars.nc -M -Ne0.75 -A45 -Gmars_i.nc
-grdimage mars.nc -Imars_i.nc -Cmars.cpt -B30g30Wsne -J -O -K -Y3.6i  --ANNOT_FONT_SIZE=12 >> $ps
+grdimage mars.nc -Imars_i.nc -Cmars.cpt -B30g30Wsne -J -O -K -Y3.6i -Ei --ANNOT_FONT_SIZE=12 >> $ps
 grdcontour mars.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
 psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.in  >> $ps
 psscale -Cmars.cpt -O -K -D3i/-0.1i/5i/0.1ih -I --ANNOT_FONT_SIZE=12 -B2f1/:km: >> $ps
