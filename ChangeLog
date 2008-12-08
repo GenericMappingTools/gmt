@@ -1,6 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.358 2008-12-06 02:40:09 guru Exp $
+	$Id: ChangeLog,v 1.359 2008-12-08 20:56:36 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-12-08	pwessel
+	* gmt_plot.c:		Bug in GMT_fill_polygon that affected polygon outline
+	* gmt_map.c:		Added improved clipping for geographic polygons using
+				the Sutherland/Hodgman algorithm when there are no map
+				jumps in longitude.  Fixes problem with tiny strips of
+				"land" along map perimeter for some projections.
+	* gmt_math.h:		Removed unnecessary prototypes for system math functions.
+	
 2008-12-05	pwessel
 	* greenspline.c:	New interpolation/gridding program for 1-3 dimensions using
 				Green's functions for various splines.  Added new example 29.

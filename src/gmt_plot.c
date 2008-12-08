@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.234 2008-10-10 21:42:53 guru Exp $
+ *	$Id: gmt_plot.c,v 1.235 2008-12-08 20:56:36 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4308,7 +4308,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 	 */
 
 	BOOLEAN jump;
-	GMT_LONG i, k, first, n_new;
+	GMT_LONG i, k, first, n_new, n_orig;
 	int jump_dir = JUMP_L;
 	double *x, *xp, *yp;
 	PFD x_on_border[2];
@@ -4344,6 +4344,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 
 	/* Here we come for all non-azimuthal projections */
 
+	n_orig = n;	/* Number of points in lon, lat array (needed at end to draw line) */
 	if ((n = GMT_geo_to_xy_line (lon, lat, n)) == 0) return;		/* Convert to (x,y,pen) - return if nothing to do */
 
 	if (!GMT_IS_MAPPING) {		/* Not geographic data so there are no periodic boundaries to worry about */
@@ -4423,7 +4424,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 	if (project_info.three_D) GMT_free ((void *)yp);
 	
 	/* If outline is TRUE then we must now draw the outline */
-	if (!outline || (n_new = GMT_geo_to_xy_line (lon, lat, n)) == 0) return;	/* Nothing further to do */
+	if (!outline || (n_new = GMT_geo_to_xy_line (lon, lat, n_orig)) == 0) return;	/* Nothing further to do */
 	GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, n_new);				/* Separately plot the outline */
 }
 

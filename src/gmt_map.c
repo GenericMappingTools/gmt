@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.204 2008-08-14 02:46:37 remko Exp $
+ *	$Id: gmt_map.c,v 1.205 2008-12-08 20:56:36 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -132,6 +132,7 @@ int GMT_eqdist_crossing (double lon1, double lat1, double lon2, double lat2, dou
 GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx);		/*	Clips to region based on rectangular xy coordinates	*/
 GMT_LONG GMT_rect_clip_old (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx);
 GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx);		/*	Clips to region based on rectangular wesn coordinates	*/
+GMT_LONG GMT_wesn_clip_old (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx);		/*	Clips to region based on rectangular wesn coordinates	*/
 GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x, double **y, int *total_nx);		/*	Clips to region based on spherical distance */
 GMT_LONG GMT_radial_clip_pscoast (double *lon, double *lat, GMT_LONG np, double **x, double **y, int *total_nx);		/*	Clips to region based on spherical distance */
 int GMT_wesn_overlap (double lon0, double lat0, double lon1, double lat1);		/* Checks if two wesn regions overlap */
@@ -5002,6 +5003,117 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 
 GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
 {
+	GMT_LONG i, m, n_alloc;
+	int side, j, np, k, in = 1, out = 0;
+	BOOLEAN polygon, jump = FALSE;
+	double *xtmp[2], *ytmp[2], xx[2], yy[2], border[4];
+	double x1, x2, y1, y2;
+	PFI clipper[4], inside[4], outside[4];
+#ifdef DEBUG
+	FILE *fp;
+	int dump = 0;
+#endif
+	
+	if (n == 0) return (0);
+
+	/* If there are jumps etc call the old clipper, else we try the new clipper */
+	
+	GMT_geo_to_xy (lon[0], lat[0], &x1, &y1);
+	for (i = 1; !jump && i < n; i++) {
+		GMT_geo_to_xy (lon[i], lat[i], &x2, &y2);
+		jump = GMT_map_jump_x (x2, y2, x1, y1);
+		x1 = x2;	y1 = y2;
+	}
+	
+	if (jump) return (GMT_wesn_clip_old (lon, lat, n, x, y, total_nx));	/* Must do the old way for now */
+	
+	/* Here we can try the Sutherland/Hodgman algorithm */
+	
+	polygon = !GMT_polygon_is_open (lon, lat, n);	/* TRUE if input segment is a closed polygon */
+
+	*total_nx = 1;	/* So that calling program will not discard the clipped polygon */
+
+	/* Set up function pointers.  This could be done once in GMT_begin at some point */
+
+	clipper[0] = GMT_clip_sn;	clipper[1] = GMT_clip_we; clipper[2] = GMT_clip_sn;	clipper[3] = GMT_clip_we;
+	inside[1] = inside[2] = inside_upper_boundary;	outside[1] = outside[2] = outside_upper_boundary;
+	inside[0] = inside[3] = inside_lower_boundary;		outside[0] = outside[3] = outside_lower_boundary;
+	border[0] = project_info.s; border[3] = project_info.w;	border[1] = project_info.e;	border[2] = project_info.n;
+
+	n_alloc = (GMT_LONG)irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
+
+	for (k = 0; k < 2; k++) {	/* Create a pair of arrays for holding input and output */
+		xtmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
+		ytmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
+	}
+
+	/* Make copy of lon/lat coordinates */
+
+	memcpy ((void *)xtmp[0], (void *)lon, n*sizeof (double));
+	memcpy ((void *)ytmp[0], (void *)lat, n*sizeof (double));
+	m = n;
+
+#ifdef DEBUG
+	if (dump) {
+		fp = fopen ("input.d", "w");
+		for (i = 0; i < n; i++) fprintf (fp, "%g\t%g\n", xtmp[0][i], ytmp[0][i]);
+		fclose (fp);
+	}
+#endif
+	for (side = 0; side < 4; side++) {	/* Must clip polygon against a single border, one border at a time */
+		n = m;	/* Current size of polygon */
+		m = 0;	/* Start with nuthin' */
+
+		i_swap (in, out);	/* Swap what is input and output for clipping against this border */
+		/* Must ensure we copy the very first point if it is inside the clip rectangle */
+		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
+		for (i = 1; i < n; i++) {	/* For each line segment */
+			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side]);	/* Returns 0, 1, or 2 points */
+			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
+				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
+				if (m == (n_alloc-1)) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
+					n_alloc <<= 1;
+					for (k = 0; k < 2; k++) {
+						xtmp[k] = (double *) GMT_memory ((void *)xtmp[k], (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
+						ytmp[k] = (double *) GMT_memory ((void *)ytmp[k], (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
+					}
+				}
+			}
+		}
+		if (polygon && GMT_polygon_is_open (xtmp[out], ytmp[out], m)) {	/* Do we need to explicitly close this clipped polygon? */
+			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
+		}
+	}
+
+	GMT_free ((void *)xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
+	GMT_free ((void *)ytmp[1]);
+
+	if (m) {	/* Reallocate and return the array with the final clipped polygon */
+		xtmp[0] = (double *) GMT_memory ((void *)xtmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
+		ytmp[0] = (double *) GMT_memory ((void *)ytmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
+		/* Convert to map coordinates */
+		for (i = 0; i < m; i++) GMT_geo_to_xy (xtmp[0][i], ytmp[0][i], &xtmp[0][i], &ytmp[0][i]);
+		
+		*x = xtmp[0];
+		*y = ytmp[0];
+#ifdef DEBUG
+		if (dump) {
+			fp = fopen ("output.d", "w");
+			for (i = 0; i < m; i++) fprintf (fp, "%g\t%g\n", xtmp[0][i], ytmp[0][i]);
+			fclose (fp);
+		}
+#endif
+	}
+	else {	/* Nothing survived the clipping - free the output arrays */
+		GMT_free ((void *)xtmp[0]);
+		GMT_free ((void *)ytmp[0]);
+	}
+
+	return (m);
+}
+
+GMT_LONG GMT_wesn_clip_old (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
+{
 	GMT_LONG i, j = 0, k, nx, n_alloc = GMT_CHUNK;
 	int sides[4];
 	double xlon[4], xlat[4], xc[4], yc[4], *xx, *yy;
@@ -5046,6 +5158,20 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	*x = xx;
 	*y = yy;
 
+#ifdef CRAP
+{
+	FILE *fp;
+	double out[2];
+	fp = fopen ("crap.d", "a");
+	fprintf (fp, "> N = %d\n", (int)j);
+	for (i = 0; i < j; i++) {
+		out[GMT_X] = xx[i];
+		out[GMT_Y] = yy[i];
+		GMT_output (fp, 2, out);
+	}
+	fclose (fp);
+}
+#endif
 	return (j);
 }
 
