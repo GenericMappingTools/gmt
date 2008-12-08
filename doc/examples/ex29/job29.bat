@@ -1,5 +1,5 @@
 REM             GMT EXAMPLE 29
-REM             $Id: job29.bat,v 1.3 2008-12-07 23:34:20 guru Exp $
+REM             $Id: job29.bat,v 1.4 2008-12-08 16:12:14 guru Exp $
 REM
 REM Purpose:	Illustrates spherical surface gridding with Green's function of splines
 REM GMT progs:	makecpt, grdcontour, grdgradient, grdimage, grdmath greenspline, psscale, pstext
@@ -19,7 +19,7 @@ REM Make Mars ellipsoid given their three best-fitting axes:
 set a=3399.472
 set b=3394.329
 set c=3376.502
-grdmath -Rg -I4 X COSD %a% DIV DUP MUL X SIND %b% DIV DUP MUL ADD Y COSD DUP MUL MUL Y SIND %c% DIV DUP MUL ADD SQRT INV = ellipsoid.nc
+grdmath -Rg -I4 -F X COSD %a% DIV DUP MUL X SIND %b% DIV DUP MUL ADD Y COSD DUP MUL MUL Y SIND %c% DIV DUP MUL ADD SQRT INV = ellipsoid.nc
 
 REM  Do both Parker and Wessel/Becker solutions (tension = 0.9975)
 greenspline -Rellipsoid.nc mars370.in -D4 -Sp -Gmars.nc
