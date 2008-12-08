@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.95 2008-05-15 22:00:36 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.96 2008-12-08 02:22:00 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -33,6 +33,130 @@ reach a stable point from which we can initiate the \GMT\ 5 development branch. 
 will be distinguished by being completely restructured so as to allow developers to call
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
+
+% Complete up to 2008-12-5:
+
+\subsection{Overview of \gmt\ 4.3.2 [Jan-15, 2009]}
+
+This is a routine refresh of the official distribution and hence has a mix of bug fixes
+and program enhancements.  We have added a new program (\GMTprog{greenspline.c}) which
+offers interpolation and gridding in 1--3 dimensions using Green's functions of various
+splines.  Also, the {\bf misc} supplement has a new tool (\GMTprog{gmtdp.c}) which offers
+line-reduction using the Douglas-Peucker algorithm we used for the various shoreline
+resolutions.  The {\bf mex} supplement has a new Matlab/Octave function
+(\GMTprog{imgread.m}) to directly read Sandwell/Smith *.img files.  The {\bf x2sys}
+supplement has three new programs: \GMTprog{x2sys\_list.c} can extract a subset of crossovers
+from the list produced by \GMTprog{x2sys\_cross.c}, \GMTprog{x2sys\_report.c} reports statistics
+of crossovers, whereas \GMTprog{x2sys\_solve.c} will
+determine systematic trends from a set of crossover errors.  These programs are intended
+to replace the old {\bf x\_system} tools \GMTprog{x\_list.c}, \GMTprog{x\_report.c} and \GMTprog{x\_solve\_dc\_drift.c}.
+
+Here is the list of bug corrections:
+\begin{description}
+	\item [\GMTprog{gmt\_init.c}]: Modified special checks for FreeBSD by also considering \_AMD64\_.
+	\item [\GMTprog{gmt\_io.c}]: Did not properly apply {\bf PLOT\_DEGREE\_FORMAT}=ddd.x for decimal degrees.
+	\item [\GMTprog{gmt\_map.c}]: Determining where parallels and meridians intersected the map
+		boundary was susceptible to roundoff for very small regions.
+	\item [\GMTprog{gmt\_plot.c}]: Wrongly checked for map jumps for non-periodic map boundaries.
+	\item [\GMTprog{gmt\_support.c}]: Function \GMTfunc{GMT\_get\_arc} did not check for division by zero.
+			The \Opt{Gx}{\it file:radius}[unit] option in \GMTprog{grdcontour.c} passed the entire
+			argument as the file name.
+	\item [\GMTprog{pslib.c}]: \GMTfunc{ps\_polygon} can only split line when rgb[0] == -1 not $<$ 0
+		since -3 now means to use a fill pattern.  Redefined \PS code for circle which needed a stroke (S) first, otherwise
+		a line would be drawn from the previous symbol.  Updated \filename{PSL\_prologue.ps} version.
+	\item [\GMTprog{grdfilter.c}]: \Opt{D}5 did not initialize {\it xscale} so filter search box was
+		set to region width which typically is much larger.  The bug
+		did not affect the results but unnecessarily increased runtime.
+		Complained if \Opt{R} was used and {\it xmin} was less than grid {\it xmin} for a full 360-range grid.
+	\item [\GMTprog{grdreformat.c}]: Since there is no longer a \filename{share/conf/gmt\_formats.conf} the usage message crashed.
+	\item [\GMTprog{psbasemap.c}]: The syntax for the \Opt{L} option had to change since one could
+		not easily use the :label: specification if the coordinates
+		were given in dd:mm[:ss] format.  A new syntax has been
+		implemented where one or more +?[args] strings are appended
+		after the required parameters (see man page).
+	\item [\GMTprog{pscoast.c}]: The \Opt{Q} option incorrectly required \Opt{J}.
+		Also, see revised \Opt{L} as for \GMTprog{psbasemap.c}.
+	\item [\GMTprog{pslegend.c}]: Now use Unix \GMTfunc{remove} function to delete script after completion;
+		this avoids a Windows problem.
+	\item [\GMTprog{psscale.c}]: Logarithmic scale did not function properly when scale bar was vertical.
+		When \Opt{I} and \Opt{Li} was used we did not draw box outlines.
+	\item [\GMTprog{pstext.c}]: We incorrectly removed blank lines but those mark new
+		paragraphs when in \Opt{M} mode.
+	\item [\GMTprog{gmtmath.c}]: The {\bf D2DT2} operator whose boundary condition yields 0 should yield NaN
+		if one or more of the nearby nodes are NaN.
+	\item [\GMTprog{grdblend.c}]: A side-effect of the 2007-02-01 fix was that when the file
+		is re-opened the row range is reset.  Now the possible
+		offset is computed during initialization but applied when
+		the file is finally opened for reading.
+		Better treatment of longitude periodicity if \Opt{fg} is selected.
+		E.g., if \Opt{Rg} is used and a grid is -30/30 in longitude the
+		output grid will consider 0-30 and 330-360 correctly
+	\item [\GMTprog{grdimage.c}]: Failed to determine boundary of projected grid with enough precision.
+	\item [\GMTprog{grdmath.c}]: Some 2nd-order derivatives whose boundary condition yields 0 should yield NaN
+		if one or more of the nearby nodes are NaN.
+	\item [\GMTprog{xyz2grd.c}]: For \Opt{E} under Windows we used \GMTfunc{fscanf} with a pointer from GMT DLL
+		which would fail for mysterious reasons.
+	\item [\GMTprog{misc/gmtstitch.c}]: Check to see if format was set was wrong.
+	\item [\GMTprog{mgd77/mgd77.c}]: Index array error resulting in wrong IGRF start and stop years was fixed.
+		Now applies recalculation of fields requested by E77 flags
+		as part of reading netcdf mgd77+ files.  However, if the
+		original anomaly was NaN then we leave it as is.
+	\item [\GMTprog{mgd77/mgd77sniffer.c}]: Bitwise assignment error was deactivating other fields when
+		depth field was missing from a cruise.  Another bitwise error
+		was overwriting E77 nav flags when navigation was found on land
+		Updated sample grid function to handle longitudes for img files.
+	\item [\GMTprog{mgd77/mgd77track.c}]: Missing newline after last source line.
+	\item [\GMTprog{spotter/backtracker.c}]: The \Opt{W} option always assumed the reverse rotation,
+		i.e. from hotspot to seamount.  Now obeys the \Opt{D} option.
+	\item [\GMTprog{x2sys/x2sys\_get.c}]: Now handles \Opt{R} with longitude periodicity correctly.
+	\item [\GMTprog{xgrid/xGridEdit.c}]: Needed \GMTfunc{GMT\_io\_init} to get all pieces needed to read grids.
+\end{description}
+
+Here is a list of the recent enhancement to various programs:
+
+\begin{enumerate}
+\item \GMTprog{gmt\_init.c} has added support for enhanced \Opt{E} option for 3-D perspective
+	views which allows the specification of a fixed point (needed for
+	creating animations).  Updated all programs to use the new option
+	and added updated man page and synopsis to all programs.
+	Now, \Opt{R} may take the name of an existing grid file. Then,
+	the grid domain is used to set \Opt{R} as well as the grid
+	increment (and registration) for those programs that have such options.
+\item \GMTprog{gmt\_map.c} also has added support for enhanced \Opt{E} option for 3-D perspective views.
+\item \GMTprog{gmtmath.c} has added new operators {\bf NOT} and {\bf INRANGE}.
+\item \GMTprog{mapproject.c} has extended the \Opt{A} option by making the fixed point
+	optional; if not given we compute azimuths between successive data points.
+\item \GMTprog{minmax.c} has optional /{\it col} that may be added to \Opt{T}{\it dz} to select another column [third].
+\item \GMTprog{pslegend.c} lets {\bf N} (number of columns) also affect the printing of labels.
+\item \GMTprog{pstext.c} has enhanced \Opt{Z}+ option expects z-level values in 3rd column.
+\item \GMTprog{pslib.c} internals now measure paper size in double precision points instead
+	of truncating to nearest integer.  To remain backwards
+	compatible for \GMTprog{pslib.c} users we now initialize all plotting
+	in GMT with \GMTfunc{ps\_plotinit\_hires} instead of \GMTfunc{ps\_plotinit}.
+\item \GMTprog{ps2raster.c} now will scan for the optional comment \verb+%%HiResBoundingBox+
+	which takes precedence over the values in \verb+%%BoundingBox+.
+	New format \Opt{TG} turns on transparency for PNG output, and \Opt{Tb} selects Microsoft BMP output.
+	Formats {\bf b}, {\bf g}, {\bf j}, and {\bf t} accept modifier ``-'' to produce grayscale
+	images.  Finally, added \Opt{C}{\it gs-command} to pass one or more
+	custom switches directly to \progname{ghostscript}, and \Opt{Q}[{\bf g}$|${\bf t}]{\it bits} to
+	set the level of anti-aliasing for graphics and text, respectively.
+\item \GMTprog{psxy.c} has new option \Opt{I}{\it intens} to modulate fill color via a fixed illumination value.
+\item \GMTprog{psxyz.c} has the same new option \Opt{I}{\it intens}.
+\item \GMTprog{xyz2grd.c} has new format ({\bf A}) for \Opt{Z} which allows more than one floating
+	point value per input record.  Cannot be used if the z-values are in dateTclock or ddd:mm:ss format.
+\item \GMTprog{mgd77/mgd77track.c} has enhanced \Opt{A} option to place cruise ID equidistantly (distance or time) along the track.
+\item \GMTprog{spotter/backtracker.c} has new option \Opt{e} to specify a single fixed total
+	reconstruction rotation that will be applied to all input points.
+\item \GMTprog{x2sys/x2sys.c} internals now has automatic swabbing of index files, if required.
+	Can now handle netCDF 1-D COARDS files.
+\item \GMTprog{x2sys/x2sys\_init.c} Now, the distance and speed unit settings (\Opt{C}, \Opt{N}) are set here
+	and kept with the TAG for use in other {\bf x2sys} programs.
+\item \GMTprog{x2sys/x2sys\_datalist.c} now has [experimental] support for using a correction
+	table and can compute auxiliary data such as distance and azimuth.
+\end{enumerate}
+
+Finally, we have added three new examples to demonstrate plotting of *.img grids, mixing UTM grids and geographic projections,
+and using \GMTprog{greenspline.c} for gridding on a spherical surface.
 
 \subsection{Overview of \gmt\ 4.3.1 [May-15, 2008]}
 

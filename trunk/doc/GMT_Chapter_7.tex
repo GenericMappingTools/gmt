@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.56 2008-12-06 03:17:42 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.57 2008-12-08 02:22:00 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -996,7 +996,8 @@ Cartesian coordinates hence the chosen approach.  We use \GMTprog{greenspline} t
 topography grid for Mars based on radii estimates from the Mariner 9 and Viking Orbiter spacecrafts.
 This data comes from \emph{Smith and Zuber} [Science, 1996] and is used here as a small (\emph{N} = 370) data set we
 can use to demonstrate spherical surface gridding.  Since \GMTprog{greenspline} must solve a \emph{N} by \emph{N}
-matrix system your system memory may impose limits on how large data sets you can handle.
+matrix system your system memory may impose limits on how large data sets you can handle; also note that
+the spherical surface spline in tension is particularly slow to compute.
 
 \script{example_29}
 
