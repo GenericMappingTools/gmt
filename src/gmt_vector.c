@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.22 2008-10-07 16:24:36 guru Exp $
+ *	$Id: gmt_vector.c,v 1.23 2008-12-08 23:03:07 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -696,6 +696,7 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 	 */
       
 	GMT_LONG i, j, n_tmp, n_step = 0, n_alloc;
+	BOOLEAN meridian;
 	double *lon_tmp, *lat_tmp, *old;
 	double a[3], b[3], x[3], *lon, *lat;
 	double c, d, fraction, theta, minlon, maxlon;
@@ -783,6 +784,7 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 			fraction = 1.0 / (float) n_step;
 			minlon = MIN(lon[i-1],lon[i]);
 			maxlon = MAX(lon[i-1],lon[i]);
+			meridian = GMT_IS_ZERO (maxlon - minlon);	/* A meridian; make a gap so tests below will give right range */
 			for (j = 1; j < n_step; j++) {
 				c = j * fraction;
 				d = 1 - c;
@@ -791,7 +793,9 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 				x[2] = a[2] * d + b[2] * c;
 				GMT_normalize3v (x);
 				GMT_cart_to_geo (&lat_tmp[n_tmp], &lon_tmp[n_tmp], x, FALSE);
-				if (lon_tmp[n_tmp] < minlon)
+				if (meridian)
+					lon_tmp[n_tmp] = minlon;
+				else if (lon_tmp[n_tmp] < minlon)
 					lon_tmp[n_tmp] += TWO_PI;
 				else if (lon_tmp[n_tmp] > maxlon)
 					lon_tmp[n_tmp] -= TWO_PI;
