@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.360 2008-12-08 23:03:07 guru Exp $
+	$Id: ChangeLog,v 1.361 2008-12-09 00:28:26 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-12-08	pwessel
 	* gmt_plot.c:		Bug in GMT_fill_polygon that affected polygon outline
+				3D text box was computed incorrectly.
 	* gmt_map.c:		Added improved clipping for geographic polygons using
 				the Sutherland/Hodgman algorithm when there are no map
 				jumps in longitude.  Fixes problem with tiny strips of
