@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.362 2008-12-02 22:36:26 guru Exp $
+ *	$Id: gmt_init.c,v 1.363 2008-12-09 00:51:16 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4263,16 +4263,18 @@ int GMT_parse_J_option (char *args)
 
 	last_pos = strlen (args) - 1;	/* Position of last character in this string */
 	last_char = args[last_pos];
-	switch (last_char) {	/* Check for what kind of width is given (only used if upper case is given below */
-		case 'h':	/* Want map HEIGHT instead */
-			width_given = 2;
-			break;
-		case '+':	/* Want this to be the MAX dimension of map */
-			width_given = 3;
-			break;
-		case '-':	/* Want this to be the MIN dimension of map */
-			width_given = 4;
-			break;
+	if (project != GMT_LINEAR) {	/* Avoid having -JXh|v be misinterpreted */
+		switch (last_char) {	/* Check for what kind of width is given (only used if upper case is given below */
+			case 'h':	/* Want map HEIGHT instead */
+				width_given = 2;
+				break;
+			case '+':	/* Want this to be the MAX dimension of map */
+				width_given = 3;
+				break;
+			case '-':	/* Want this to be the MIN dimension of map */
+				width_given = 4;
+				break;
+		}
 	}
 	if (width_given > 1) args[last_pos] = '\0';	/* Temporarily chop off modifier */
 
