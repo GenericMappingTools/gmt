@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2sph.c,v 1.7 2008-02-22 08:49:16 guru Exp $
+ *	$Id: grd2sph.c,v 1.8 2008-12-09 17:45:22 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -146,6 +146,7 @@ int main (int argc, char **argv)
 	GMT_setmode (GMT_OUT);
 #endif
 
+	GMT_grd_init (&header, 0, NULL, FALSE);
 	GMT_err_fail (GMT_read_grd_info (argv[f_arg], &header), argv[f_arg]);
 
 	if (!(GMT_360_RANGE (header.x_min, header.x_max) && GMT_180_RANGE (header.y_min, header.y_max))) {

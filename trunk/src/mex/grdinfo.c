@@ -1,5 +1,5 @@
 /*
- *	$Id: grdinfo.c,v 1.4 2008-04-23 23:28:43 guru Exp $
+ *	$Id: grdinfo.c,v 1.5 2008-12-09 17:45:22 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -105,6 +105,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	/* Read the header */
  
+	GMT_grd_init (&grd, 0, NULL, FALSE);
 	if (GMT_read_grd_info (filein, &grd))
 		mexErrMsgTxt ("grdinfo: Failure to read header\n");
 

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.9 2007-03-12 19:52:26 remko Exp $
+ *	$Id: polygon_to_bins.c,v 1.10 2008-12-09 17:45:22 guru Exp $
  */
 #include "wvs.h"
 
@@ -484,6 +484,7 @@ int main (int argc, char **argv) {
 	
 	bin_head = (struct GMT3_BIN_HEADER *) GMT_memory (VNULL, nbins, sizeof (struct GMT3_BIN_HEADER), "polygon_to_bins");
 	
+	GMT_grd_init (&n_head, argc, argv, FALSE);
 	GMT_err_fail (GMT_read_grd_info (node_file, &n_head), node_file);
 	node = (float *) GMT_memory (VNULL, n_head.nx * n_head.ny, sizeof (float), "polygon_to_bins");
 	GMT_err_fail (GMT_read_grd (node_file, &n_head, node, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), node_file);
