@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.205 2008-12-08 20:56:36 guru Exp $
+ *	$Id: gmt_map.c,v 1.206 2008-12-09 00:28:26 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -911,8 +911,7 @@ void GMT_geoz_to_xy (double x, double y, double z, double *x_out, double *y_out)
 	double x0, y0, z0;
 	GMT_geo_to_xy (x, y, &x0, &y0);
 	GMT_z_to_zz (z, &z0);
-	*x_out = x0 * z_project.cos_az - y0 * z_project.sin_az + z_project.x_off;
-	*y_out = (x0 * z_project.sin_az + y0 * z_project.cos_az) * z_project.sin_el + z0 * z_project.cos_el + z_project.y_off;
+	GMT_xyz_to_xy (x0, y0, z0, x_out, y_out);
 }
 
 void GMT_xyz_to_xy (double x, double y, double z, double *x_out, double *y_out)
@@ -926,8 +925,7 @@ void GMT_xy_do_z_to_xy (double x, double y, double z, double *x_out, double *y_o
 	double z_out;
 
 	GMT_z_to_zz (z, &z_out);
-	*x_out = x * z_project.cos_az - y * z_project.sin_az + z_project.x_off;
-	*y_out = (x * z_project.sin_az + y * z_project.cos_az) * z_project.sin_el + z_out * z_project.cos_el + z_project.y_off;
+	GMT_xyz_to_xy (x, y, z_out, x_out, y_out);
 }
 
 void GMT_project3D (double x, double y, double z, double *x_out, double *y_out, double *z_out)

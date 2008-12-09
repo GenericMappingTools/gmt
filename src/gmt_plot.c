@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.235 2008-12-08 20:56:36 guru Exp $
+ *	$Id: gmt_plot.c,v 1.236 2008-12-09 00:28:26 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2659,35 +2659,38 @@ void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *t
 
 void GMT_textbox3D (double x, double y, double z, double size, int font, char *label, double angle, int just, BOOLEAN outline, double dx, double dy, int rgb[])
 {
+	double xoff, yoff;
 	if (project_info.three_D) {
 		int i, len, ndig = 0, ndash = 0, nperiod = 0;
 		double xx[4], yy[4], h, w, xa, ya, cosa, sina;
+		/* Need to estimate the approximate width and height of text string */
 		len = strlen (label);
-		for (i = 0; label[i]; i++) {
+		for (i = 0; label[i]; i++) {	/* . - [0-9] are narrower than letters */
 			if (isdigit ((int)label[i])) ndig++;
 			if (strchr (label, '.')) nperiod++;
 			if (strchr (label, '-')) ndash++;
 		}
 		len -= (ndig + nperiod + ndash);
-		w = ndig * 0.78 + nperiod * 0.38 + ndash * 0.52 + len;
-
-		h = 0.58 * GMT_font[font].height * size * GMT_u2u[GMT_PT][GMT_INCH];
-		w *= (0.81 * h);
+		w = ndig * 0.78 + nperiod * 0.38 + ndash * 0.52 + len;	/* Estiamte of the number of "normal width" characters */
+		h = 0.58 * GMT_font[font].height * size * GMT_u2u[GMT_PT][GMT_INCH];	/* Approximate half-height */
+		w *= (0.81 * h);	/* Approximate half-width of string (inch) */
+		w *= 0.95;		/* Shave off 5 % */
+		/* Determine shift due to justification */
 		just = abs (just);
-		y -= (((just/4) - 1) * h);
-		x -= (((just-1)%4 - 1) * w);
-		xx[0] = xx[3] = -w - dx;
-		xx[1] = xx[2] = w + dx;
-		yy[0] = yy[1] = -h - dy;
-		yy[2] = yy[3] = h + dy;
-		angle *= D2R;
-		sincos (angle, &sina, &cosa);
-		for (i = 0; i < 4; i++) {
+		yoff = (((just/4) - 1) * h);
+		xoff = (((just-1)%4 - 1) * w);
+		/* OK, get coordinates for text box before rotation and translation */
+		xx[0] = xx[3] = -w - dx - xoff;
+		xx[1] = xx[2] = w + dx - xoff;
+		yy[0] = yy[1] = -h - dy - yoff;
+		yy[2] = yy[3] = h + dy - yoff;
+		sincosd (angle, &sina, &cosa);
+		for (i = 0; i < 4; i++) {	/* Rotate and translate to (x,y) */
 			xa = xx[i] * cosa - yy[i] * sina;
 			ya = xx[i] * sina + yy[i] * cosa;
 			xx[i] = x + xa;	yy[i] = y + ya;
 		}
-		GMT_2D_to_3D (xx, yy, z, (GMT_LONG)4);
+		GMT_2Dz_to_3D (xx, yy, z, (GMT_LONG)4);
 		if (rgb[0] < 0)
 			ps_clipon (xx, yy, (GMT_LONG)4, rgb, 0);
 		else
