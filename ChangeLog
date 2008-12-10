@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.366 2008-12-10 20:39:02 guru Exp $
+	$Id: ChangeLog,v 1.367 2008-12-10 21:27:38 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-14-08	pwessel
 	* psxyz.c:		Did not pick up y-size for column from input data file.
 	* gmt_support.c:	GMT_polygon_is_open did not test for empty polygons (n = 0).
+	* grdfilter.c:		New option -N to honor any NaNs found so output can be NaN.
 	
 2008-13-08	pwessel
 	* grdreformat.c:	Did not initialize grid header structure and could get
