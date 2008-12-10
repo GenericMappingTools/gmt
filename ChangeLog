@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.363 2008-12-09 17:45:22 guru Exp $
+	$Id: ChangeLog,v 1.364 2008-12-10 01:40:45 guru Exp $
 -----------------------------------------------------------------------------------------
 2008-13-08	pwessel
 	* grdreformat.c:	Did not initialize grid header structure and could get
@@ -15,15 +15,15 @@
 	
 2008-12-08	pwessel
 	* gmt_init.c:		-JXh was misinterpreted but -JXv was OK.  Now fixed.
-	* gmt_plot.c:		Bug in GMT_fill_polygon that affected polygon outline
+	* gmt_plot.c:		Bug in GMT_fill_polygon that affected polygon outline.
 				3D text box was computed incorrectly.
 	* gmt_map.c:		Added improved clipping for geographic polygons using
-				the Sutherland/Hodgman algorithm when there are no map
+				the Sutherland & Hodgman algorithm when there are no map
 				jumps in longitude.  Fixes problem with tiny strips of
 				"land" along map perimeter for some projections.
 	* gmt_math.h:		Check for macro definitions for system math functions.
 	* gmt_vector.c:		GMT_resample_path would add 360 to points along meridians.
-	* pslegend.c:		Can low use rectangle among the symbols.
+	* pslegend.c:		Can now use rectangle among the symbols.
 	
 2008-12-05	pwessel
 	* greenspline.c:	New interpolation/gridding program for 1-3 dimensions using
