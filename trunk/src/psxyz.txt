@@ -184,7 +184,8 @@ pe\fBn\fPtagon.  \fIsize\fP is diameter of circumscribing circle.
 .TP
 .B \-So
 c\fBo\fPlumn (3-D) extending from \fIbase\fP to z.  \fIsize\fP sets base width (Use \fIxsize/ysize\fP if not the same).  Append \fBu\fP if \fIsize\fP is in x-units
-[Default is plot-distance units].  By default, \fIbase\fP = 0.  Append b\fIbase\fP to change this value.  The facet colors will be modified to simulate shading.
+[Default is plot-distance units].  If no \fIsize\fP is given we expect both \fIxsize\fP and \fIysize\fP as two extra data columns.
+By default, \fIbase\fP = 0.  Append b\fIbase\fP to change this value.  The facet colors will be modified to simulate shading.
 Use \fB\-SO\fP to disable such 3-D illumination.
 .TP
 .B \-Sp

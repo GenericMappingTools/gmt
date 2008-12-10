@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.364 2008-12-10 01:40:45 guru Exp $
+	$Id: ChangeLog,v 1.365 2008-12-10 19:39:31 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-14-08	pwessel
+	* psxyz.c:		Did not pick up y-size for column from input data file.
+	
 2008-13-08	pwessel
 	* grdreformat.c:	Did not initialize grid header structure and could get
 				netCDF error "Named variable does not exist in file"

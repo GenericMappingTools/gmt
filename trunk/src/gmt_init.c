@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.363 2008-12-09 00:51:16 guru Exp $
+ *	$Id: gmt_init.c,v 1.364 2008-12-10 19:39:31 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5340,6 +5340,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 	if (p->given_size_x == 0.0 && check) {
 		p->read_size = TRUE;
 		p->n_required++;
+		if (p->symbol == GMT_SYMBOL_COLUMN) p->n_required++;
 	}
 	else
 		p->read_size = FALSE;
