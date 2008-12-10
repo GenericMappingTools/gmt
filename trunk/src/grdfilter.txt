@@ -4,10 +4,10 @@
 grdfilter \- Filter a 2-D gridded file in the space (or time) domain
 .SH SYNOPSIS
 \fBgrdfilter\fP \fIinput_file.grd\fP OPT(D)\fIdistance_flag\fP \fB\-F\fP\fI<filtertype><width>\fP[\fImode\fP] 
-OPT(G)\fIoutput_file.grd\fP [ GMT_I_OPT ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+OPT(G)\fIoutput_file.grd\fP [ GMT_I_OPT ] [ OPT(N) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using one
-of the selected convolution or non-convolution filters and
+of the selected convolution or non-convolution isotropic filters and
 compute distances using Cartesian or Spherical geometries.
 The output \fI.grd\fP file can optionally be generated as a
 sub\fB\-R\fPegion of the input and/or with a new \fB\-I\fPncrement.  In this
@@ -77,6 +77,10 @@ the filter will return 0.0.
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the output Increment. Append \fBm\fP to indicate minutes, or \fBc\fP to indicate seconds.
 If  the new \fIx_inc, y_inc\fP are NOT integer multiples of the old ones (in the input data), filtering will be considerably slower.
 [Default:  Same as input.]
+.TP
+.B \-N
+Force the filtered value to be NaN if any grid-nodes with NaN-values are found inside the filter circle [By default,
+we skip all NaNs found and base the calculation on the actual values found.
 .TP
 .B \-R
 \fIwest, east, south, \fPand \fInorth\fP defines the Region of the output points.  [Default:  Same as input.]
