@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.375 2008-12-10 20:31:42 guru Exp $
+ *	$Id: gmt_support.c,v 1.376 2008-12-10 20:34:14 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8404,7 +8404,7 @@ void GMT_NaN_pen_up (double x[], double y[], int pen[], int n)
 
 BOOLEAN GMT_polygon_is_open (double x[], double y[], GMT_LONG n)
 {	/* Returns TRUE if the first and last point is not identical */
-	if (n < 2) return TRUE;	/*	A point is open */
+	if (n < 2) return FALSE;	/*	A point is closed */
 	if (!GMT_IS_ZERO (x[0] - x[n-1])) return TRUE;	/* x difference exceeds threshold */
 	if (!GMT_IS_ZERO (y[0] - y[n-1])) return TRUE;	/* y difference exceeds threshold */
 	/* Here, first and last are ~identical - to be safe we enforce exact closure */
