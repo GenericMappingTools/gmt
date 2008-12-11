@@ -4,7 +4,7 @@
 grdfilter \- Filter a 2-D gridded file in the space (or time) domain
 .SH SYNOPSIS
 \fBgrdfilter\fP \fIinput_file.grd\fP OPT(D)\fIdistance_flag\fP \fB\-F\fP\fI<filtertype><width>\fP[\fImode\fP] 
-OPT(G)\fIoutput_file.grd\fP [ GMT_I_OPT ] [ OPT(N) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+OPT(G)\fIoutput_file.grd\fP [ GMT_I_OPT ] [ OPT(N)\fBi\fP|\fBp\fP|\fBr\fP ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using one
 of the selected convolution or non-convolution isotropic filters and
@@ -79,8 +79,10 @@ If  the new \fIx_inc, y_inc\fP are NOT integer multiples of the old ones (in the
 [Default:  Same as input.]
 .TP
 .B \-N
-Force the filtered value to be NaN if any grid-nodes with NaN-values are found inside the filter circle [By default,
-we skip all NaNs found and base the calculation on the actual values found.
+Determine how NaN-values in the input grid affects the filtered outout:  Append \fBi\fP to ignore all NaNs in
+the calculation of filtered value [Default], \fBr\fP is same as \fBi\fP except if the input node was NaN then the
+output node will be set to NaN (only applies if both grids are coregistered), and \fBp\fP which will
+force the filtered value to be NaN if any grid-nodes with NaN-values are found inside the filter circle.
 .TP
 .B \-R
 \fIwest, east, south, \fPand \fInorth\fP defines the Region of the output points.  [Default:  Same as input.]
