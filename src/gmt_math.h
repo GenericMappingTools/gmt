@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.23 2008-12-08 22:02:59 guru Exp $
+ *	$Id: gmt_math.h,v 1.24 2008-12-12 18:31:31 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -34,6 +34,11 @@
 
 #ifndef SET_IN_NOTUNIX
 #include "gmt_notposix.h"
+#endif
+
+#ifdef GMT_QSORT
+/* Must replace the system qsort with ours which is 64-bit compliant */
+#define qsort GMT_qsort
 #endif
 
 #if defined(copysign)

@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.35 2008-12-06 03:43:19 guru Exp $
-AC_REVISION($Revision: 1.35 $)
+dnl $Id: configure.ac,v 1.36 2008-12-12 18:31:31 guru Exp $
+AC_REVISION($Revision: 1.36 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -581,7 +581,7 @@ dnl Determine optional CPPFLAGS and LDFLAGS additions for OS X
 dnl -----------------------------------------------------------------
 dnl
 if test "$enable_64" = "yes" ; then
-	OSX_C=" -m64"
+	OSX_C=" -m64 -DGMT_QSORT"
 	LDFLAGS="$LDFLAGS -m64"
 fi
 if test "$enable_universal" = "yes" ; then

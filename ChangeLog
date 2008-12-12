@@ -1,14 +1,20 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.368 2008-12-11 02:18:36 guru Exp $
+	$Id: ChangeLog,v 1.369 2008-12-12 18:31:31 guru Exp $
 -----------------------------------------------------------------------------------------
-2008-14-08	pwessel
+2008-12-12	pwessel
+	* gmt_qsort.c:		We have added GMT_qsort which is a 64-bit compliant version
+				of qsort.  The latter is broken under OS X 64-bit and is
+				thus substituted on that platform for 64-bit compilations
+				until Apple fixes the problem.
+				
+2008-12-10	pwessel
 	* psxyz.c:		Did not pick up y-size for column from input data file.
 	* gmt_support.c:	GMT_polygon_is_open did not test for empty polygons (n = 0).
 	* grdfilter.c:		New options -Np to honor any NaNs found so output can be NaN,
 				-Nr to replace output node with NaN if input node is NaN, and
 				-Ni to ignore NaNs [Default].
 	
-2008-13-08	pwessel
+2008-12-09	pwessel
 	* grdreformat.c:	Did not initialize grid header structure and could get
 				netCDF error "Named variable does not exist in file"
 	* grd2cpt.c:		---"---

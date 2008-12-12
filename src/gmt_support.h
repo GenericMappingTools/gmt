@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.35 2008-05-22 04:25:20 guru Exp $
+ *	$Id: gmt_support.h,v 1.36 2008-12-12 18:31:31 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -94,6 +94,10 @@ EXTERN_MSC void GMT_free_func (void *addr, char *fname, int line);
 #else
 EXTERN_MSC void *GMT_memory (void *prev_addr, size_t nelem, size_t size, char *progname);
 EXTERN_MSC void GMT_free (void *addr);
+#endif
+#ifdef GMT_QSORT
+/* Need to replace OS X's qsort with one that works for 64-bit data */
+EXTERN_MSC void GMT_qsort(void *a, size_t n, size_t es, int (*cmp) (const void *, const void *));
 #endif
 
 /* Backwards macro for MB-system support */
