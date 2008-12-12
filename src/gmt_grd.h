@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.32 2008-04-02 15:47:08 remko Exp $
+ *	$Id: gmt_grd.h,v 1.33 2008-12-12 02:44:29 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -104,10 +104,14 @@ struct GRD_HEADER {
 #define GMT_i_to_x(i,x0,x1,dx,off,nx) (((i) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((i) + (off)) * (dx))
 #define GMT_j_to_y(j,y0,y1,dy,off,ny) (((j) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((j) + (off)) * (dy))
 
-/* These macros calculate the number of nodes in x or y  or the increment dx, dy*/
+/* These macros calculate the number of nodes in x or y or the increment dx, dy*/
 
 #define GMT_get_n(min,max,inc,off) ((GMT_LONG)irint (((max) - (min)) / (inc)) + 1 - (off))
 #define GMT_get_inc(min,max,n,off) (((max) - (min)) / ((n) + (off) - 1))
+
+/* 64-bit-safe macro to return the number of points in the grid given dimensions */
+
+#define GMT_get_nm(nx,ny) (((GMT_LONG)(nx)) * ((GMT_LONG)(ny)))
 
 /* Calculate 1-D index a[ij] corresponding to 2-D array a[row][col], with 64-bit precision.
  * Use GMT_IJbc when array is padded by BC rows/cols, else use GMT_IJ */
