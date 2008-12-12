@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.179 2008-12-04 22:38:36 remko Exp $
+ *	$Id: pslib.c,v 1.180 2008-12-12 18:31:31 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -216,6 +216,10 @@ int ps_get_boundingbox (FILE *fp, PS_LONG *llx, PS_LONG *lly, PS_LONG *trx, PS_L
 char *ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);
 int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[]);
 
+#ifdef GMT_QSORT
+/* Need to replace OS X's qsort with one that works for 64-bit data */
+void GMT_qsort(void *a, size_t n, size_t es, int (*cmp) (const void *, const void *));
+#endif
 
 /*------------------- PUBLIC PSLIB FUNCTIONS--------------------- */
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.376 2008-12-10 20:34:14 guru Exp $
+ *	$Id: gmt_support.c,v 1.377 2008-12-12 18:31:31 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -142,6 +142,12 @@ void GMT_cmyk_to_hsv (double hsv[], double cmyk[]);
 void get_rgb_lookup (int index, double value, int *rgb);
 
 double *GMT_x2sys_Y;
+
+/*----------------------------------------------------------------------------- */
+#ifdef GMT_QSORT
+/* Need to replace OS X's qsort with one that works for 64-bit data */
+#include "gmt_qsort.c"
+#endif
 
 const char * GMT_strerror (int err)
 {

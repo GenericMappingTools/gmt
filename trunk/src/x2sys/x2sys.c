@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.106 2008-12-07 23:50:09 guru Exp $
+ *	$Id: x2sys.c,v 1.107 2008-12-12 18:31:31 guru Exp $
  *
  *      Copyright (c) 1999-2008 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1336,7 +1336,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 	FILE *fp;
 	struct X2SYS_COE_PAIR *P;
 	char line[BUFSIZ], txt[BUFSIZ], kind[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], start[2][GMT_TEXT_LEN];
-	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list, **ignore;
+	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list, **ignore, *t = NULL;
 	GMT_LONG p, n_pairs;
 	int i, k, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
 	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
@@ -1427,7 +1427,8 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 			for (i = 0; !skip && i < n_ignore; i++) if (!strcmp (trk[0], ignore[i]) || !strcmp (trk[1], ignore[i])) skip = TRUE;
 		}
 		if (skip) {	/* Skip this pair's data records */
-			while ((more = (BOOLEAN)fgets (line, BUFSIZ, fp)) && line[0] != '>');
+			while ((t = fgets (line, BUFSIZ, fp)) && line[0] != '>');
+			more = (t != NULL);
 			continue;	/* Back to top of loop */
 		}
 		for (k = 0; k < 2; k++) {	/* Process each track */
@@ -1450,7 +1451,8 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 			}
 		}
 		if (skip) {
-			while ((more = (BOOLEAN)fgets (line, BUFSIZ, fp)) && line[0] != '>');	/* Skip this pair's data records */
+			while ((t = fgets (line, BUFSIZ, fp)) && line[0] != '>');	/* Skip this pair's data records */
+			more = (t != NULL);
 			continue;	/* Back to top of loop */
 		}
 		
@@ -1486,7 +1488,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 		n_alloc_x = GMT_SMALL_CHUNK;
 		P[p].COE = (struct X2SYS_COE *) GMT_memory (VNULL, (size_t)n_alloc_x, sizeof (struct X2SYS_COE), GMT_program);
 		k = 0;
-		while ((more = (BOOLEAN)fgets (line, BUFSIZ, fp)) && line[0] != '>') {	/* As long as we are reading data records */
+		while ((t = fgets (line, BUFSIZ, fp)) && line[0] != '>') {	/* As long as we are reading data records */
 			GMT_chop (line);	/* Get rid of [CR]LF */
 			sscanf (line, fmt, &P[p].COE[k].data[0][COE_X], &P[p].COE[k].data[0][COE_Y], t_txt[0], t_txt[1], &P[p].COE[k].data[0][COE_D], &P[p].COE[k].data[1][COE_D], &P[p].COE[k].data[0][COE_H], 
 				&P[p].COE[k].data[1][COE_H], &P[p].COE[k].data[0][COE_V], &P[p].COE[k].data[1][COE_V], &P[p].COE[k].data[0][COE_Z], &P[p].COE[k].data[1][COE_Z]);
@@ -1530,6 +1532,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 				P[p].COE = (struct X2SYS_COE *) GMT_memory ((void *)P[p].COE, (size_t)n_alloc_x, sizeof (struct X2SYS_COE), GMT_program);
 			}
 		}
+		more = (t != NULL);
 		if (k == 0) {	/* No COE, probably due to wesn check */
 			GMT_free ((void *)P[p].COE);
 			n_pairs--;	/* To reset this value since the top of the loop will do n_pairs++ */
