@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.369 2008-12-12 18:31:31 guru Exp $
+	$Id: ChangeLog,v 1.370 2008-12-17 18:42:55 guru Exp $
 -----------------------------------------------------------------------------------------
+2008-12-17	pwessel
+	* GMT.in:		Added in greenspline in the list of programs
+	
 2008-12-12	pwessel
 	* gmt_qsort.c:		We have added GMT_qsort which is a 64-bit compliant version
 				of qsort.  The latter is broken under OS X 64-bit and is
