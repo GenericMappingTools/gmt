@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.370 2008-12-17 18:42:55 guru Exp $
+	$Id: ChangeLog,v 1.371 2008-12-20 17:46:39 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-12-20	remko
+	* pslib.c:		New implementation of ps_textdim to ensure proper alignment
+				of texts and the optional surrounding boxes.
+	* pslib.h, gmt_plot.c:	---"---
+
 2008-12-17	pwessel
 	* GMT.in:		Added in greenspline in the list of programs
 	

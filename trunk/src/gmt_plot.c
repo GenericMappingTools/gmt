@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.236 2008-12-09 00:28:26 guru Exp $
+ *	$Id: gmt_plot.c,v 1.237 2008-12-20 17:46:39 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -347,8 +347,13 @@ void GMT_linear_map_boundary (double w, double e, double s, double n)
 	ps_set_length ("PSL_x", 0.5 * x_length);
 	ps_set_length ("PSL_y", y_length);
 	ps_set_height ("PSL_HF", gmtdefs.header_font_size);
+#ifdef OLD_TEXTDIM
 	ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);	/* Get and set string dimensions in PostScript */
 	ps_command ("PSL_x PSL_dimx 2 div sub PSL_y PSL_H_y add M");
+#else
+	ps_textdim ("PSL_dim", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header);	/* Get and set string dimensions in PostScript */
+	ps_command ("PSL_x PSL_dim_w 2 div sub PSL_y PSL_H_y add M");
+#endif
 	ps_setfont (gmtdefs.header_font);
 	ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
 	frame_info.plotted_header = TRUE;
@@ -372,7 +377,11 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	struct GMT_PLOT_AXIS_ITEM *T;	/* Pointer to the current axis item */
 	char string[GMT_CALSTRING_LENGTH];	/* Annotation string */
 	char format[GMT_LONG_TEXT];		/* format used for non-time annotations */
+#ifdef OLD_TEXTDIM
 	char xy[2] = {'y', 'x'};
+#else
+	char xy[2] = {'h', 'w'};
+#endif
 	char cmd[BUFSIZ];
 	int rot[2], font;
 	/* Initialize parameters for this axis */
@@ -444,8 +453,13 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 				if (GMT_skip_second_annot (k, knots[i], knots_p, np, primary, secondary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				(axis == 0) ? GMT_coordinate_to_x (t_use, &x) : GMT_coordinate_to_y (t_use, &x);	/* Get annotation position */
 				GMT_get_coordinate_label (string, &GMT_plot_calclock, format, T, knots[i]);		/* Get annotation string */
+#ifdef OLD_TEXTDIM
 				ps_textdim ("PSL_dimx", "PSL_dimy", font_size, font, string, 0);				/* Get and set string dimensions in PostScript */
 				sprintf (cmd, "PSL_dim%c PSL_AH%d gt {/PSL_AH%d PSL_dim%c def} if", (int)xy[rot[annot_pos]], annot_pos, annot_pos, (int)xy[rot[annot_pos]]);		/* Update the longest annotation */
+#else
+				ps_textdim ("PSL_dim", font_size, font, string);				/* Get and set string dimensions in PostScript */
+				sprintf (cmd, "PSL_dim_%c PSL_AH%d gt {/PSL_AH%d PSL_dim_%c def} if", xy[rot[annot_pos]], annot_pos, annot_pos, xy[rot[annot_pos]]);		/* Update the longest annotation */
+#endif
 				ps_command (cmd);
 			}
 		}
@@ -498,7 +512,11 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 
 	if (A->label[0] && annotate && !project_info.degree[axis]) {
 		ps_set_length ("PSL_x", 0.5 * length);
+#ifdef OLD_TEXTDIM
 		ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.label_font_size, gmtdefs.label_font, A->label, 0);				/* Get and set string dimensions in PostScript */
+#else
+		ps_textdim ("PSL_dim", gmtdefs.label_font_size, gmtdefs.label_font, A->label);	/* Get and set string dimensions in PostScript */
+#endif
 		ps_command ("PSL_x PSL_L_y M");				/* Move to new anchor point */
 		ps_setfont (gmtdefs.label_font);
 		ps_text (0.0, 0.0, -gmtdefs.label_font_size, A->label, 0.0, 2, 0);
@@ -548,7 +566,12 @@ void GMT_define_PS_items (struct GMT_PLOT_AXIS *A, int below, int annotate)
 	ps_set_height ("PSL_LF",  gmtdefs.label_font_size);	/* Label font size */
 	ps_set_length ("PSL_AH0", 0.0);	/* The loop over level 0 annotations will reset this to the tallest annotation */
 	ps_set_length ("PSL_AH1", 0.0);	/* The loop over level 1 annotations will reset this to the tallest annotation */
+#ifdef OLD_TEXTDIM
 	ps_textdim ("PSL_dimx", "PSL_LH", gmtdefs.label_font_size, gmtdefs.label_font, "M", 0);		/* Get and set string dimensions in PostScript */
+#else
+	ps_textdim ("PSL_dim", gmtdefs.label_font_size, gmtdefs.label_font, "M");	/* Get and set string dimensions in PostScript */
+	ps_command ("PSL_dim_h PSL_dim_d sub /PSL_LH exch def"); /* XXX Might just need to be PSL_dim_h XXX */
+#endif
 }
 
 void GMT_define_baselines ()
@@ -1793,7 +1816,12 @@ void GMT_map_annotate (double w, double e, double s, double n)
 				ps_set_length ("PSL_TL", gmtdefs.tick_length);
 				ps_set_length ("PSL_AO0", gmtdefs.annot_offset[0]);
 				ps_set_length ("PSL_HO", gmtdefs.header_offset);
+#ifdef OLD_TEXTDIM
 				ps_textdim ("PSL_dimx", "PSL_AF0", gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], "100\\312", 0);			/* Get and set typical annotation dimensions in PostScript */
+#else
+				ps_textdim ("PSL_dim", gmtdefs.annot_font_size[0], gmtdefs.annot_font[0], "100\\312");	/* Get and set typical annotation dimensions in PostScript */
+				ps_command ("PSL_dim_h PSL_dim_d sub /PSL_AF0 exch def"); /* XXX Might just need to be PSL_dim_h XXX */
+#endif
 			}
 			else {
 				ps_set_length ("PSL_TL", gmtdefs.tick_length);
@@ -1803,8 +1831,13 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			ps_command ("/PSL_H_y PSL_TL PSL_AO0 add PSL_AF0 add PSL_HO add def");						/* PSL_H was not set by linear axis */
 			ps_set_length ("PSL_x", project_info.xmax * 0.5);
 			ps_set_length ("PSL_y", project_info.ymax);
+#ifdef OLD_TEXTDIM
 			ps_textdim ("PSL_dimx", "PSL_dimy", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header, 0);			/* Get and set string dimensions in PostScript */
 			ps_command ("PSL_x PSL_dimx 2 div sub PSL_y PSL_H_y add M");
+#else
+			ps_textdim ("PSL_dim", gmtdefs.header_font_size, gmtdefs.header_font, frame_info.header);	/* Get and set string dimensions in PostScript */
+			ps_command ("PSL_x PSL_dim_w 2 div sub PSL_y PSL_H_y add M");
+#endif
 			ps_setfont (gmtdefs.header_font);
 			ps_text (0.0, 0.0, -gmtdefs.header_font_size, frame_info.header, 0.0, 0, 0);
 		}
@@ -2424,13 +2457,20 @@ void GMT_timestamp (double x, double y, int justify, char *U_label)
 	ps_transrotate (x, y, 0.0);
 	ps_setline (1);
 	ps_setfont (0);
+#ifdef OLD_TEXTDIM
 	ps_set_length ("PSL_bx0", dim[0]);	/* Size of the black [GMT] box */
 	ps_set_length ("PSL_by0", dim[1]);
 	ps_textdim ("PSL_bx1", "PSL_by1", 8.0, 0, label, 0);	/* Size of the white [timestamp] box (use only length) */
+#else
+	ps_set_length ("PSL_g_w", dim[0]);	/* Size of the black [GMT] box */
+	ps_set_length ("PSL_g_h", dim[1]);
+	ps_textdim ("PSL_b", 8.0, 0, label);	/* Size of the white [timestamp] box (use only length) */
+#endif
 	
 	/* When justification is not BL (justify == 1), add some PostScript code to move to the
 	   location where the lower left corner of the time stamp box is to be drawn */
 
+#ifdef OLD_TEXTDIM
 	switch ((justify + 3) % 4) {
 		case 1:	/* Center */
 			ps_command ("PSL_bx0 PSL_bx1 add 2 div neg 0 T"); break;
@@ -2443,12 +2483,30 @@ void GMT_timestamp (double x, double y, int justify, char *U_label)
 		case 2: /* Top justify */
 			ps_command ("0 PSL_by0 neg T"); break;
 	}
+#else
+	switch ((justify + 3) % 4) {
+		case 1:	/* Center */
+			ps_command ("PSL_g_w PSL_b_w add 2 div neg 0 T"); break;
+		case 2:	/* Right justify */
+			ps_command ("PSL_g_w PSL_b_w add neg 0 T"); break;
+	}
+	switch (justify / 4) {
+		case 1: /* Middle */
+			ps_command ("0 PSL_g_h 2 div neg T"); break;
+		case 2: /* Top justify */
+			ps_command ("0 PSL_g_h neg T"); break;
+	}
+#endif
 
 	/* Now draw black box with GMT logo, and white box with time stamp */
 
 	ps_rect (0.0, 0.0, dim[0], dim[1], gmtdefs.background_rgb, TRUE);
 	ps_image (0.0, 0.0, dim[0], dim[1], GMT_glyph, 220, 90, 1);
+#ifdef OLD_TEXTDIM
 	ps_command ("1 PSL_by0 PSL_bx1 PSL_bx0 0 Ba");
+#else
+	ps_command ("1 PSL_g_h PSL_b_w PSL_g_w 0 Ba");
+#endif
 	ps_text (dim[0], dim[2], 8.0, label, 0.0, 1, 0);
 
 	/* Optionally, add additional label to the right of the box */
