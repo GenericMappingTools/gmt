@@ -50,9 +50,9 @@ can be found in the separate manual pages.
 .br
 \fBgrdfilter\fP		Filter 2-D data sets in the space domain
 .br
-\fBgrd2cpt\fP		Make a color palette table from a grid file
+\fBgrd2cpt\fP		Make a color palette table from grid files
 .br
-\fBgrd2xyz\fP		Conversion from 2-D gridded file to table data
+\fBgrd2xyz\fP		Conversion from 2-D grid file to table data
 .br
 \fBgrdblend\fP		Blend several partially over-lapping grid files onto one grid
 .br
@@ -62,7 +62,7 @@ can be found in the separate manual pages.
 .br
 \fBgrdcut\fP		Cut a sub-region from a grid file
 .br
-\fBgrdedit\fP		Modify header information in a 2-D gridded file
+\fBgrdedit\fP		Modify header information in a 2-D grid file
 .br
 \fBgrdfft\fP		Operate on grid files in the wavenumber (or frequency) domain
 .br
@@ -98,7 +98,7 @@ can be found in the separate manual pages.
 .br
 \fBgrdvolume\fP		Volume calculations from 2-D gridded data
 .br
-\fBmakecpt\fP		Make \fBGMT\fP color palette tables
+\fBmakecpt\fP		Make color palette tables
 .br
 \fBmapproject\fP	Forward or inverse map projections of table data
 .br
