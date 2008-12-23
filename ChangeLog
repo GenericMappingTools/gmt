@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.371 2008-12-20 17:46:39 remko Exp $
+	$Id: ChangeLog,v 1.372 2008-12-23 23:07:03 remko Exp $
 -----------------------------------------------------------------------------------------
+2008-12-23	remko
+	* grd2cpt.c:		Allow multiple files input
+	* grd2cpt.txt:		---"---
+	* GMT.in, GMT.txt:	Updated to reflect change in grd2cpt.c
+	* *.txt, *.tex:		---"--- and replaced all "gridded file" by "grid file"
+
 2008-12-20	remko
 	* pslib.c:		New implementation of ps_textdim to ensure proper alignment
 				of texts and the optional surrounding boxes.
