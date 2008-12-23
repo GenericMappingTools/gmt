@@ -7,7 +7,7 @@ grdtrend \- Fit and/or remove a polynomial trend in a grid file
 [ OPT(D)\fIdiff.grd\fP ] [ OPT(T)\fItrend.grd\fP ] [ GMT_V_OPT ] 
 [ OPT(W)\fIweight.grd\fP ]
 .SH DESCRIPTION
-\fBgrdtrend\fP reads a 2-D gridded file and fits a low-order polynomial
+\fBgrdtrend\fP reads a 2-D grid file and fits a low-order polynomial
 trend to these data by [optionally weighted] least-squares.  The trend surface is 
 defined by:
 .sp

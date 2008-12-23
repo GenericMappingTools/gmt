@@ -18,7 +18,7 @@ grdview \- Create 3-D perspective grayshaded/colored image or mesh from a 2-D gr
 [ OPT(T)[\fBs\fP][\fBo\fP[\fIpen\fP]] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fItype/pen\fP ] [ GMT_X_OPT ]
 [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ]
 .SH DESCRIPTION
-\fBgrdview\fP reads a 2-D gridded file and produces a 3-D perspective plot by 
+\fBgrdview\fP reads a 2-D grid file and produces a 3-D perspective plot by 
 drawing a mesh, painting a colored/grayshaded surface made up of polygons, or by scanline conversion of these polygons
 to a rasterimage.  Options include draping a data set on top of a surface, plotting of contours on top of the
 surface, and apply artificial illumination based on intensities provided in a separate grid file.

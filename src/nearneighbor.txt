@@ -69,7 +69,7 @@ a 5 km search radius, using an octant search, and set empty nodes to -9999:
 \fB\-S\fP5k \fB\-N\fP8
 .br
 .sp
-To make a global gridded file from the data in geoid.xyz using a 1 degree grid,
+To make a global grid file from the data in geoid.xyz using a 1 degree grid,
 a 200 km search radius, spherical distances, using an quadrant search, and set nodes to NaN
 only when fewer than two quadrants contain at least one value:
 .sp

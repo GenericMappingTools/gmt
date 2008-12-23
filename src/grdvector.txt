@@ -16,7 +16,7 @@ grdvector \- Plot vector fields from grid files
 [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
 [ GMT_Y_OPT ] [ OPT(Z) ] [ GMT_c_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-\fBgrdvector\fP reads two 2-D gridded files which represents the x- and y-components of a vector field and
+\fBgrdvector\fP reads two 2-D grid files which represents the x- and y-components of a vector field and
 produces a vector field plot by 
 drawing vectors with orientation and length according to the information in the files.  Alternatively,
 polar coordinate components may be used (r, theta).

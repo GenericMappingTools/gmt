@@ -7,7 +7,7 @@ grdblend \- Blend several partially over-lapping grids into one large grid
 [ OPT(N)\fInodata\fP ] [ OPT(Q) ] [ OPT(Z)\fIscale\fP ] 
 [ GMT_V_OPT ] [ OPT(W) ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
-\fBgrdblend\fP reads a listing of gridded files and blend parameters and
+\fBgrdblend\fP reads a listing of grid files and blend parameters and
 creates a binary grid file by blending the other grids using cosine-taper weights.
 \fBgrdblend\fP will report if some of the nodes are not filled in with
 data.  Such unconstrained nodes are set to a value specified by the user [Default is NaN].
@@ -47,7 +47,7 @@ Scale output values by \fIscale\fP before writing to file. [1].
 #include "explain_grd_output.txt"
 #include "explain_grd_coord.txt"
 .SH EXAMPLES
-To create a grid file from the four gridded files piece_?.nc, make the blendfile like this
+To create a grid file from the four grid files piece_?.nc, make the blendfile like this
 .br
 .sp
 piece_1.nc	-R<subregion_1> 1
