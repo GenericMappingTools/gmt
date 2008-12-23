@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.57 2008-12-08 02:22:00 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.58 2008-12-23 23:08:39 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -93,7 +93,7 @@ Figure~\ref{fig:GMT_example_01}.
 
 As our second example we will demonstrate how to make color
 images from gridded data sets (again, we will defer the
-actual making of gridded files to later examples).  We will
+actual making of grid files to later examples).  We will
 use the supplemental program \GMTprog{grdraster} to extract 2-D
 grid files of bathymetry and Geosat geoid heights and put the
 two images on the same page.  The region of interest is the
@@ -435,7 +435,7 @@ Delaunay triangulation, then use the output to draw the
 resulting network.  We label the node numbers as well as
 the node values, and call \GMTprog{pscontour} to make a contour
 map and image directly from the raw data.  Thus, in this
-example we do not actually make gridded files but still
+example we do not actually make grid files but still
 are able to contour and image the data.  We use a color
 palette table \filename{topo.cpt} (created via \GMTprog{minmax} and \GMTprog{makecpt}).
 The script becomes:
@@ -486,7 +486,7 @@ units.  A most important point here is that \GMTprog{blockmean},
 prior to running \GMTprog{surface}, and both of these steps must use the same
 grid interval.  We use \GMTprog{grdtrend} to fit a bicubic trend
 surface to the gridded data, contour it as well, and sample
-both gridded files along a diagonal transect using \GMTprog{grdtrack}.
+both grid files along a diagonal transect using \GMTprog{grdtrack}.
 The bottom panel compares the gridded (solid line) and bicubic
 trend (dashed line) along the transect using \GMTprog{psxy}
 (Figure~\ref{fig:GMT_example_14}):
@@ -517,7 +517,7 @@ to eliminate contours outside the constrained area.
 Finally (top right) we simply employ \GMTprog{pscoast} to overlay
 gray land masses to cover up the unwanted contours, and end by
 plotting a star at the deepest point on the map with \GMTprog{psxy}.
-This point was extracted from the gridded files using \GMTprog{grdinfo}.
+This point was extracted from the grid files using \GMTprog{grdinfo}.
 
 \script{example_15} 
 \GMTexample[scale=0.6]{15}{Gridding, contouring, and masking of data.}

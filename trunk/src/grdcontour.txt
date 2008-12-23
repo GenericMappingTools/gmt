@@ -13,7 +13,7 @@ grdcontour \- Contouring of 2-D gridded data sets
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)[\fIfactor\fP[/\fIshift\fP]][\fBp\fP] ] 
 [ GMT_c_OPT ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
-\fBgrdcontour\fP reads a 2-D gridded file and produces a contour map by tracing
+\fBgrdcontour\fP reads a 2-D grid file and produces a contour map by tracing
 each contour through the grid.  As an option, the x/y/z positions of the contour lines may be dumped to
 a single multisegment file or many separate files.  \fIPostScript\fP code is generated and sent to standard output.  Various options
 that affect the plotting are available.

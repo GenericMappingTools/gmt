@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.32 2008-11-28 23:29:11 guru Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.33 2008-12-23 23:08:39 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2008.
@@ -149,7 +149,7 @@ actual\_range			& Minimum and maximum $z$ (optional) \\ \hline
 \_FillValue			& Value associated with missing data points; if absent an\\
 (or missing\_value)		& appropriate default value is assumed, depending on data type. \\ \hline
 \end{tabular} 
-\caption{Attributes of default \gmt\ gridded file in COARDS-compliant netCDF format.}
+\caption{Attributes of default \gmt\ grid file in COARDS-compliant netCDF format.}
 \label{tbl:netcdf-format}
 \end{table}
 
@@ -349,7 +349,7 @@ is not part of the header structure, but makes up the rest of the file).
 \textbf{char} \emph{remark}[160]    &       Any additional comments \\ \hline \hline
 \textbf{TYPE} \emph{z}[nx*ny]      &       1-D array with $z$-values in scanline format \\ \hline
 \end{tabular}
-\caption{\gmt\ gridded file header record. \textbf{TYPE} can be \textbf{char}, \textbf{short}, \textbf{int},
+\caption{\gmt\ grid file header record. \textbf{TYPE} can be \textbf{char}, \textbf{short}, \textbf{int},
 \textbf{float}, or {\bf
 double}.}
 \label{tbl:grdheader}

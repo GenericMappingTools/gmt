@@ -78,7 +78,7 @@ Force pixel registration.  [Default is gridline registration].
 Name of resulting output file.  (1) If options OPT(R), OPT(I), and possibly OPT(F) are set we produce
 an equidistant output table.  This will be written to stdout unless OPT(G) is specified.  Note: for 2-D
 grids the OPT(G) option is required.  (2) If option OPT(T) is selected then OPT(G) is required and the
-output file is a 2-D binary gridded file.  Applies to 2-D interpolation only.
+output file is a 2-D binary grid file.  Applies to 2-D interpolation only.
 (3) If OPT(N) is selected then the output is an ASCII (or binary; see OPT(bo)) table;
 if OPT(G) is not given then this table is written to standard output.  Ignored if OPT(C) or OPT(C)0
 is given.

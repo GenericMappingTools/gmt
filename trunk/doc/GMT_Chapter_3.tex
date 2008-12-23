@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_3.tex,v 1.39 2008-12-06 02:40:10 guru Exp $
+%	$Id: GMT_Chapter_3.tex,v 1.40 2008-12-23 23:08:39 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -30,28 +30,28 @@ nearneighborxxxxx \=					\kill
 \GMTprog{gmtmath}	\>	Mathematical operations on table data \\ 
 \GMTprog{gmtselect}	\>	Select subsets of table data based on multiple spatial criteria \\ 
 \GMTprog{gmtset}	\>	Change selected parameters in current \filename{.gmtdefaults4} file \\ 
-\GMTprog{grd2cpt}	\>	Generate a color palette table from a gridded file \\ 
-\GMTprog{grd2xyz}	\>	Conversion from 2-D gridded file to table data \\ 
+\GMTprog{grd2cpt}	\>	Make color palette table from a grid files \\ 
+\GMTprog{grd2xyz}	\>	Conversion from 2-D grid file to table data \\ 
 \GMTprog{grdblend}	\>	Blend several partially over-lapping grid files onto one grid \\ 
 \GMTprog{grdclip}	\>	Limit the \emph{z}-range in gridded data sets \\ 
 \GMTprog{grdcontour}	\>	Contouring of 2-D gridded data sets \\ 
-\GMTprog{grdcut}	\>	Cut a sub-region from a gridded file \\ 
-\GMTprog{grdedit}	\>	Modify header information in a 2-D gridded file \\ 
-\GMTprog{grdfft}	\>	Perform operations on gridded files in the frequency domain \\ 
+\GMTprog{grdcut}	\>	Cut a sub-region from a grid file \\ 
+\GMTprog{grdedit}	\>	Modify header information in a 2-D grid file \\ 
+\GMTprog{grdfft}	\>	Perform operations on grid files in the frequency domain \\ 
 \GMTprog{grdfilter}	\>	Filter 2-D gridded data sets in the space domain \\ 
-\GMTprog{grdgradient}	\>	Compute directional gradient from gridded files \\ 
-\GMTprog{grdhisteq}	\>	Histogram equalization for gridded files \\ 
+\GMTprog{grdgradient}	\>	Compute directional gradient from grid files \\ 
+\GMTprog{grdhisteq}	\>	Histogram equalization for grid files \\ 
 \GMTprog{grdimage}	\>	Produce images from 2-D gridded data sets \\ 
-\GMTprog{grdinfo}	\>	Get information about gridded files \\ 
-\GMTprog{grdlandmask}	\>	Create masking gridded files from shoreline data base \\ 
+\GMTprog{grdinfo}	\>	Get information about grid files \\ 
+\GMTprog{grdlandmask}	\>	Create masking grid files from shoreline data base \\ 
 \GMTprog{grdmask}	\>	Reset grid nodes in/outside a clip path to constants \\ 
-\GMTprog{grdmath}	\>	Mathematical operations on gridded files \\ 
-\GMTprog{grdpaste}	\>	Paste together gridded files along a common edge \\ 
+\GMTprog{grdmath}	\>	Mathematical operations on grid files \\ 
+\GMTprog{grdpaste}	\>	Paste together grid files along a common edge \\ 
 \GMTprog{grdproject}	\>	Project gridded data sets onto a new coordinate system \\ 
-\GMTprog{grdreformat}	\>	Converts gridded files into other grid formats \\ 
+\GMTprog{grdreformat}	\>	Converts grid files into other grid formats \\ 
 \GMTprog{grdsample}	\>	Resample a 2-D gridded data set onto a new grid \\ 
 \GMTprog{grdtrack}	\>	Sampling of 2-D gridded data set along 1-D track \\ 
-\GMTprog{grdtrend}	\>	Fits polynomial trends to gridded files \\ 
+\GMTprog{grdtrend}	\>	Fits polynomial trends to grid files \\ 
 \GMTprog{grdvector}	\>	Plotting of 2-D gridded vector fields \\ 
 \GMTprog{grdview}	\>	3-D perspective imaging of 2-D gridded data sets \\ 
 \GMTprog{grdvolume}	\>	Calculate volumes under a surface within specified contour \\ 
@@ -83,7 +83,7 @@ nearneighborxxxxx \=					\kill
 \GMTprog{trend1d}	\>	Fits polynomial or Fourier trends to $y = f(x)$ series \\ 
 \GMTprog{trend2d}	\>	Fits polynomial trends to $z = f(x,y)$ series \\ 
 \GMTprog{triangulate}	\>	Perform optimal Delauney triangulation and gridding \\ 
-\GMTprog{xyz2grd}	\>	Convert an equidistant table \emph{xyz} file to a 2-D gridded file
+\GMTprog{xyz2grd}	\>	Convert an equidistant table \emph{xyz} file to a 2-D grid file
 \end{tabbing}
 \index{GMT@\GMT!overview|)}
 
@@ -142,7 +142,7 @@ for each of the over 30 projections available in \GMT. \\
 \multicolumn{2}{c}{\bf INFORMATION} \\ \hline
 \GMTprog{gmtdefaults}	&	List the current default settings \\ \hline
 \GMTprog{gmtset}	&	Command-line editing of parameters in the \filename{.gmtdefaults4} file \\ \hline
-\GMTprog{grdinfo}	&	Get information about the content of gridded files \\ \hline
+\GMTprog{grdinfo}	&	Get information about the content of grid files \\ \hline
 \GMTprog{minmax}	&	Report extreme values in table data files \\ \hline
 \multicolumn{2}{c}{\bf MISCELLANEOUS} \\ \hline
 \GMTprog{gmtmath}	&	Reverse Polish Notation (RPN) calculator for table data \\ \hline
@@ -154,27 +154,27 @@ for each of the over 30 projections available in \GMT. \\
 \GMTprog{gmtconvert}	&	Convert table data from one format to another \\ \hline
 \GMTprog{gmtselect}	&	Select table data subsets based on multiple spatial criteria \\ \hline
 \GMTprog{grd2xyz}	&	Convert 2-D gridded data to table data \\ \hline
-\GMTprog{grdcut}	&	Cut a sub-region from a gridded file \\ \hline
+\GMTprog{grdcut}	&	Cut a sub-region from a grid file \\ \hline
 \GMTprog{grdblend}	&	Blend several partially over-lapping grid files onto one grid \\ \hline
-\GMTprog{grdpaste}	&	Paste together gridded files along common edge \\ \hline
+\GMTprog{grdpaste}	&	Paste together grid files along common edge \\ \hline
 \GMTprog{grdreformat}	&	Convert from one grid format to another \\ \hline
 \GMTprog{splitxyz}	&	Split ($x, y, z$) table data into several segments \\ \hline
-\GMTprog{xyz2grd}	&	Convert table data to 2-D gridded file \\ \hline
+\GMTprog{xyz2grd}	&	Convert table data to 2-D grid file \\ \hline
 \multicolumn{2}{c}{\bf DETERMINE TRENDS IN 1-D AND 2-D DATA} \\ \hline
 \GMTprog{fitcircle}	&	Finds best-fitting great or small circles \\ \hline
-\GMTprog{grdtrend}	&	Fits polynomial trends to gridded files ($z = f(x, y)$) \\ \hline
+\GMTprog{grdtrend}	&	Fits polynomial trends to grid files ($z = f(x, y)$) \\ \hline
 \GMTprog{trend1d}	&	Fits polynomial or Fourier trends to $y = f(x)$ series \\ \hline
 \GMTprog{trend2d}	&	Fits polynomial trends to $z = f(x, y)$ series \\ \hline
 \multicolumn{2}{c}{\bf OTHER OPERATIONS ON 2-D GRIDS} \\ \hline
-\GMTprog{grd2cpt}	&	Make color palette table from gridded file \\ \hline
+\GMTprog{grd2cpt}	&	Make color palette table from grid file \\ \hline
 \GMTprog{grdclip}	&	Limit the $z$--range in gridded data sets \\ \hline
 \GMTprog{grdedit}	&	Modify grid header information \\ \hline
-\GMTprog{grdfft}	&	Operate on gridded files in frequency domain \\ \hline
-\GMTprog{grdgradient}	&	Compute directional gradients from gridded files \\ \hline
-\GMTprog{grdhisteq}	&	Histogram equalization for gridded files \\ \hline
-\GMTprog{grdlandmask}	&	Creates mask gridded file from coastline database \\ \hline
+\GMTprog{grdfft}	&	Operate on grid files in frequency domain \\ \hline
+\GMTprog{grdgradient}	&	Compute directional gradients from grid files \\ \hline
+\GMTprog{grdhisteq}	&	Histogram equalization for grid files \\ \hline
+\GMTprog{grdlandmask}	&	Creates mask grid file from coastline database \\ \hline
 \GMTprog{grdmask}	&	Set grid nodes in/outside a clip path to constants \\ \hline
-\GMTprog{grdmath}	&	Reverse Polish Notation (RPN) calculator for gridded files \\ \hline
+\GMTprog{grdmath}	&	Reverse Polish Notation (RPN) calculator for grid files \\ \hline
 \GMTprog{grdvolume}	&	Calculate volume under a surface within a contour \\ \hline
 \multicolumn{2}{c}{\bf MANIPULATING \GMT\ POSTSCRIPT FILES} \\ \hline
 \GMTprog{ps2raster}	&	Crop and convert PostScript files to raster images, EPS and PDF \\ \hline
