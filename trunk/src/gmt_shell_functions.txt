@@ -88,7 +88,7 @@ Expects the user to give the desired \fB-R \-J\fP settings and returns the map h
 the current measurement unit.
 .TP
 .B gmt_set_psfile
-Create the output PS file name based on the base name of a given file (usually the script name
+Create the output \fIPostScript\fP file name based on the base name of a given file (usually the script name
 \fB$0\fP).
 .TP
 .B gmt_set_framename
