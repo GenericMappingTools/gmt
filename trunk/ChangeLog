@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.372 2008-12-23 23:07:03 remko Exp $
+	$Id: ChangeLog,v 1.373 2009-01-02 17:04:20 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-01-02	remko
+	* ps2raster.c:		Include -F option to force file name.
+
 2008-12-23	remko
 	* grd2cpt.c:		Allow multiple files input
 	* grd2cpt.txt:		---"---

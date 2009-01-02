@@ -14,7 +14,7 @@ The size of the resulting images is determined by the BoundingBox (or HiResBound
 As an option, a tight (HiRes)BoundingBox may be computed first.
 .TP
 \fIpsfiles\fP
-Names of \fIPostScript\fP files to be converted. The output files will have the same name but with the
+Names of \fIPostScript\fP files to be converted. The output files will have the same name (unless OPT(F) is used) but with the
 conventional extension name associated to the raster format (e.g. .jpg for the jpeg format).  Use
 OPT(D) to redirect the output to a different directory.
 .SH OPTIONS
@@ -33,11 +33,16 @@ Use OPT(D.) to place the output in the current directory instead.
 .B \-E
 Set raster resolution in dpi [default = 720 for PDF, 300 for others].
 .TP
+.B \-F
+Force the output file name. By default output names are constructed using the
+input names as base, which are appended with an appropriate extension. Use this option
+to provide a different name, but without extension. Extension is still determined automatically.
+.TP
 .B \-G
 Full path to your GhostScript executable.
 NOTE: For Unix systems this is generally not necessary.
 However, under Windows, GhostScript is not added to the system's path. So either you do it yourself,\"'
-or give the full path here. (e.g., \fB\-G\fPc:\\programs\\gs\\gs7.05\\bin\\gswin32c).
+or give the full path here. (e.g., OPT(G)c:\\programs\\gs\\gs7.05\\bin\\gswin32c).
 .TP
 .B \-L
 The \fIlistfile\fP is an ASCII file with the names of the \fIPostScript\fP files to be converted.
@@ -77,13 +82,13 @@ creating JPEG, PNG and TIFF images.
 .br
 .sp
 EPS is a vector, not a raster format. Therefore, the \fB-E\fP option has no effect on the creation
-of EPS files. Using the option \fB-Te\fP will remove PageSize commands from the \fIPostScript\fP file and will
-adjust the BoundingBox when the \fB-A\fP option is used.  Note the original and required BoundingBox is limited
+of EPS files. Using the option OPT(Te) will remove PageSize commands from the \fIPostScript\fP file and will
+adjust the BoundingBox when the OPT(A) option is used.  Note the original and required BoundingBox is limited
 to integer points, hence Adobe added the optional HiResBoundingBox to add more precision in sizing.  The OPT(A)
 option calculates both and writes both to the EPS file used in the rasterization (and output if OPT(Te) is set).
 .br
 .sp
-Although PDF is also a vector format, the \fB-E\fP option has an effect on the resolution of pattern fills
+Although PDF is also a vector format, the OPT(E) option has an effect on the resolution of pattern fills
 and fonts that are stored as bitmaps in the document. \fBps2raster\fP therefore uses a larger default
 resolution when creating PDF files. In order to obtain high-quality PDF files, the \fI/prepress\fP options
 are in effect, allowing only loss-less compression of raster images embedded in the \fIPostScript\fP file.
