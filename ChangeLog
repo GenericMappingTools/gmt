@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.375 2009-01-05 04:56:24 guru Exp $
+	$Id: ChangeLog,v 1.376 2009-01-05 19:15:45 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-01-05	remko
+	* ps2raster.c, pslib.c:	Lower bounds of BBox written with floor(), upper bounds with ceil().
+
 2009-01-04	jluis
 	* gmt_customio.c:	Fixed row bug in Surfer format
 	
