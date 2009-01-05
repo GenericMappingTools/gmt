@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.181 2008-12-20 17:46:40 remko Exp $
+ *	$Id: pslib.c,v 1.182 2009-01-05 19:13:12 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1161,7 +1161,7 @@ void ps_plotend (int lastpage)
 			x1 = PSL->init.magnify[0] * PSL->internal.bb[2];
 			y1 = PSL->init.magnify[1] * PSL->internal.bb[3];
 			fprintf (PSL->internal.fp, "%%%%Trailer\n");
-			fprintf (PSL->internal.fp, "%%%%BoundingBox: %d %d %d %d\n", irint(x0), irint(y0), irint(x1), irint(y1));
+			fprintf (PSL->internal.fp, "%%%%BoundingBox: %d %d %d %d\n", (int)floor(x0), (int)floor(y0), (int)ceil(x1), (int)ceil(y1));
 			fprintf (PSL->internal.fp, "%%%%HiResBoundingBox: %g %g %g %g\n", x0, y0, x1, y1);
 		}
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Reset translations and scale and call showpage\n");
