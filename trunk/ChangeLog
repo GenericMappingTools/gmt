@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.373 2009-01-02 17:04:20 remko Exp $
+	$Id: ChangeLog,v 1.374 2009-01-05 04:55:49 guru Exp $
 -----------------------------------------------------------------------------------------
+2009-01-04	jlouis
+	* gmt_customio.c:	Fixed row bug in Surfer format
+	
 2009-01-02	remko
 	* ps2raster.c:		Include -F option to force file name.
 

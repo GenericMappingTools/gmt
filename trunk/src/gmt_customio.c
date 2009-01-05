@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.70 2008-08-14 02:46:36 remko Exp $
+ *	$Id: gmt_customio.c,v 1.71 2009-01-05 04:55:49 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1565,7 +1565,7 @@ int GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	if ( (last_row - first_row + 1) != header->ny) {    /* We have a sub-region */
 		/* Surfer grids are stored starting from Lower Left, which is contrary to
 		   the rest of GMT grids that start at Top Left. So we must do a shift here */
-		first_row = header->ny - height_in;
+		first_row = header->ny - height_in - first_row;
 		last_row = first_row + height_in - 1;
 	}
 
