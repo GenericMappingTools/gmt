@@ -3,9 +3,9 @@
 .SH NAME
 psimage \- To plot images (EPS files or Sun raster files) on maps
 .SH SYNOPSIS
-\fBpsimage\fP \fIimagefile\fP [ OPT(W)[\fB-\fP]\fIxlength\fP[/\fIylength\fP] | OPT(E)\fIdpi\fP ] [ OPT(C)\fIxpos\fP/\fIypos\fP[/\fIjustify\fP] ] 
+\fBpsimage\fP \fIimagefile\fP [ OPT(W)[\fB-\fP]\fIwidth\fP[/\fIheight\fP] | OPT(E)\fIdpi\fP ] [ OPT(C)\fIxpos\fP/\fIypos\fP[/\fIjustify\fP] ] 
 [ OPT(F)\fIpen\fP ] [ OPT(G)[\fBf\fP|\fBb\fP]\fIcolor\fP ] [ OPT(I) ] [ GMT_K_OPT ] [ OPT(M) ] 
-[ OPT(N)\fInxrep\fP[/\fInyrep\fP] ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] 
+[ OPT(N)\fInx\fP[/\fIny\fP] ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
 .SH DESCRIPTION
 \fBpsimage\fP reads an Encapsulated \fIPostScript\fP\fR file or
@@ -30,9 +30,9 @@ to Sun format via a variety of public-domain software (e.g., convert, xv).
 Sets the dpi of the image in dots per inch, or use \fB\-W\fP.
 .TP
 .B \-W
-Sets the size of the image in plot coordinates (inches, cm, etc.).
-If not given \fIylength\fP is set to \fIxlength\fP * (ny/nx).
-If \fIxlength\fP is negative we use the absolute value and interpolate image to the
+Sets the width (and height) of the image in plot coordinates (inches, cm, etc.).
+If \fIheight\fP is not given, the original aspect ratio of the image is maintained.
+If \fIwidth\fP is negative we use the absolute value and interpolate image to the
 device resolution using the \fIPostScript\fP image operator.
 Alternatively, use \fB\-E\fP.
 .SH OPTIONS
@@ -67,7 +67,8 @@ when you use \fB\-GP\fP in other GMT programs.
 Convert color image to monochrome grayshades using the (television) YIQ-transformation.
 .TP
 .B \-N
-Replicate the image \fInxrep\fP in x and \fInyrep\fP in y [Default is 1/1].
+Replicate the image \fInx\fP times horizontally and \fIny\fP times vertically.
+If \fIny\fP is omitted, it will be identical to \fInx\fP [Default is 1/1].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 #include "explain_-U.txt"
@@ -78,23 +79,24 @@ Replicate the image \fInxrep\fP in x and \fInyrep\fP in y [Default is 1/1].
 #include "explain_color.txt"
 .SH EXAMPLES
 To plot the image contained in the 8-bit raster file scanned_face.ras, scaling
-it to 8 by 10 cm, use
+it to 8 by 10 cm (thereby possibly changing the aspect ratio), use
 .br
 .sp
 \fBpsimage\fP scanned_face.ras \fB\-W\fP8\fBc\fP/10\fBc\fP > image.ps
 .br
 .sp
 To include an Encapsulated \fIPostScript\fP file tiger.eps with its upper right corner 2 inch to the right
-and 1 inch up from the current location, and have its width scaled to 3 inches, use
+and 1 inch up from the current location, and have its width scaled to 3 inches, while keeping the aspect ratio, use
 .br
 .sp
 \fBpsimage\fP tiger.eps \fB\-C\fP2\fBi\fP/1\fBi\fP/TR \fB\-W\fP3\fBi\fP > image.ps
 .br
 .sp
-To replicate the image template 1_bit.ras over a 5 by 5 inch area, colorize it (brown background and
-red foreground), and setting each piece to be 1 by 1 cm, use
+To replicate the 1-bit raster image template 1_bit.ras, colorize it (brown background and
+red foreground), and setting each of 5 by 5 tiles to be 1 cm wide, use
 .br
 .sp
-\fBpsimage\fP 1_bit.ras \fB\-Gb\fPbrown \fB\-Gf\fPred \fB\-N\fP5\fBi\fP/5\fBi\fP \fB\-W\fP1\fBc\fP > image.ps
+\fBpsimage\fP 1_bit.ras \fB\-Gb\fPbrown \fB\-Gf\fPred \fB\-N\fP5 \fB\-W\fP1\fBc\fP > image.ps
 .SH "SEE ALSO"
 .IR GMT (1)
+.IR psxy (1)
