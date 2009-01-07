@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.49 2008-12-20 17:46:40 remko Exp $
+ *	$Id: pslib.h,v 1.50 2009-01-07 01:33:22 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -120,11 +120,9 @@ struct imageinfo {
 
 /* Public functions */
 
-EXTERN_MSC PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split);
-EXTERN_MSC int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_width, int *rgb, const char *encoding, struct EPS *eps);
-EXTERN_MSC int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, double *page_width, int *rgb, const char *encoding, struct EPS *eps);
 EXTERN_MSC void ps_arc (double x, double y, double radius, double az1, double az2, int status);
 EXTERN_MSC void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, double annotpointsize, int side);
+EXTERN_MSC void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int invert, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_circle (double x, double y, double size, int rgb[], int outline);
 EXTERN_MSC void ps_clipoff (void);
 EXTERN_MSC void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], int flag);
@@ -139,16 +137,19 @@ EXTERN_MSC void ps_diamond (double x, double y, double side, int rgb[], int outl
 EXTERN_MSC void ps_ellipse (double x, double y, double angle, double major, double minor, int rgb[], int outline);
 EXTERN_MSC void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG size, int nx, int ny, PS_LONG ox, PS_LONG oy); 
 EXTERN_MSC void ps_flush (void);
+EXTERN_MSC void *ps_memory (void *prev_addr, size_t nelem, size_t size);
 EXTERN_MSC void ps_free (void *addr);
 EXTERN_MSC void ps_hexagon (double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_image (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int nbits);
-EXTERN_MSC int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[]);
-EXTERN_MSC void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char *buffer, int nx, int ny, int invert, int f_rgb[], int b_rgb[]);
+EXTERN_MSC PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split);
 EXTERN_MSC void ps_itriangle (double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_octagon (double x, double y, double side, int rgb[], int outline);
 EXTERN_MSC void ps_pentagon (double x, double y, double side, int rgb[], int outline);
+EXTERN_MSC int ps_pattern (int image_no, char *imagefile, int invert, int image_dpi, int outline, int f_rgb[], int b_rgb[]);
 EXTERN_MSC void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[], int outline);
 EXTERN_MSC void ps_plot (double x, double y, int pen);
+EXTERN_MSC int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, int *page_size, int *rgb, const char *encoding, struct EPS *eps);
+EXTERN_MSC int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, double *page_size, int *rgb, const char *encoding, struct EPS *eps);
 EXTERN_MSC void ps_plotend (int lastpage);
 EXTERN_MSC void ps_plotr (double x, double y, int pen);
 EXTERN_MSC void ps_point (double x, double y, double diameter);
