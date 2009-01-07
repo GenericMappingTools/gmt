@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.182 2009-01-05 19:13:12 remko Exp $
+ *	$Id: pslib.c,v 1.183 2009-01-07 01:33:22 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -187,7 +187,6 @@ unsigned char *ps_lzw_encode (PS_LONG *nbytes, unsigned char *input);
 byte_stream_t ps_lzw_putcode (byte_stream_t stream, short int incode);
 void ps_stream_dump (unsigned char *buffer, int nx, int ny, int depth, int compress, int encode, int mask);
 void ps_a85_encode (unsigned char quad[], PS_LONG nbytes);
-void *ps_memory (void *prev_addr, size_t nelem, size_t size);
 PS_LONG ps_shorten_path (double *x, double *y, PS_LONG n, PS_LONG *ix, PS_LONG *iy);
 int ps_comp_int_asc (const void *p1, const void *p2);
 static void ps_bulkcopy (const char *fname, const char *version);
@@ -1480,6 +1479,12 @@ int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, doubl
 	if (!(xoff == 0.0 && yoff == 0.0)) fprintf (PSL->internal.fp, "%g %g T\n", xoff*PSL->internal.scale, yoff*PSL->internal.scale);
 
 	return (0);
+}
+
+/* fortran interface */
+void ps_plotinit_hires_ (char *plotfile, int *overlay, int *mode, double *xoff, double *yoff, double *xscl, double *yscl, int *ncopies, int *dpi, int *unit, double *page_size, int *rgb, const char *encoding, int nlen1, int nlen2)
+{
+	 ps_plotinit_hires (plotfile, *overlay, *mode, *xoff, *yoff, *xscl, *yscl, *ncopies, *dpi, *unit, page_size, rgb, encoding, (struct EPS *)NULL);
 }
 
 /* Original ps_ploitinit used ints for paper size */
@@ -4350,7 +4355,7 @@ void *ps_memory (void *prev_addr, size_t nelem, size_t size)
 	}
 	else {
 		if ((tmp = calloc ((size_t) nelem, size)) == VNULL) {
-			fprintf (stderr, "PSL Fatal Error: Could not allocate memory, n = \n");
+			fprintf (stderr, "PSL Fatal Error: Could not allocate memory, n = ");
 			PRINT_SIZE_T (stderr, nelem);	fprintf (stderr, "\n");
 			PS_exit (EXIT_FAILURE);
 		}
