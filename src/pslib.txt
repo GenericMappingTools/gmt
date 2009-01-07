@@ -134,8 +134,9 @@ The rowlength of \fIbuffer\fP must be an integral number of 8/\fIdepth\fP.
 E.g. if \fIdepth\fP = 4, then \fIbuffer[j]\fP/16
 gives shade for pixel[2j-1] and \fIbuffer[j]\fP%16 (mod 16) gives shade for pixel[2j].
 When \fI-depth\fP is passed instead then "hardware" interpolation of the image is requested.
-If \fI-nx\fP is passed then the first three bytes of \fIbuffer\fP holds the r/g/b color
-for pixels that are to be masked out using the \fIPostScript\fP Level 3 Color Mask method.
+If \fI-nx\fP is passed with 8- or 24-bit images then the first one or three bytes of \fIbuffer\fP
+holds the gray or r/g/b color for pixels that are to be masked out using the \fIPostScript\fP
+Level 3 Color Mask method.
 See the Adobe Systems \fIPostScript\fP\fR Reference Manual for more details.
 .RE
 .IP

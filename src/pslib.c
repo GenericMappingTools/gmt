@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.183 2009-01-07 01:33:22 remko Exp $
+ *	$Id: pslib.c,v 1.184 2009-01-07 02:55:28 remko Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -446,7 +446,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	 * nbits	: number of bits per pixel (1, 2, 4, 8, 24)
 	 *
 	 * Special cases:
-	 * nx < 0	: 24-bit image contains a color mask (first 3 bytes)
+	 * nx < 0	: 8- or 24-bit image contains a color mask (first 1 or 3 bytes)
 	 * nbits < 0	: "Hardware" interpolation requested
 	 */
 	PS_LONG lx, ly;
@@ -460,7 +460,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	lx = (PS_LONG)irint (xsize * PSL->internal.scale);
 	ly = (PS_LONG)irint (ysize * PSL->internal.scale);
 	id = ((PSL->internal.color_mode & PSL_CMYK) && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
-	it = (nx < 0 && abs(nbits) == 24) ? 1 : (nbits < 0 ? 2 : 0);	/* Colormask or interpolate */
+	it = nx < 0 ? 1 : (nbits < 0 ? 2 : 0);	/* Colormask or interpolate */
 
 	if ((image = ps_makecolormap (buffer, nx, ny, nbits))) {
 		/* Creation of colormap was successful */
@@ -486,9 +486,13 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[PSL->internal.ascii], colorspace[id], nbits);
 		fprintf (PSL->internal.fp, "V N %g %g T %ld %ld scale /Device%s setcolorspace", x * PSL->internal.scale, y * PSL->internal.scale, lx, ly, colorspace[id]);
 
-		if (it == 1) {	/* Do PS Level 3 image type 4 with colormask */
+		if (it == 1 && nbits == 24) {	/* Do PS Level 3 image type 4 with colormask */
 			fprintf (PSL->internal.fp, "\n<< /ImageType 4 /MaskColor[%d %d %d]", (int)buffer[0], (int)buffer[1], (int)buffer[2]);
 			buffer += 3;
+		}
+		else if (it == 1 && nbits == 8) {	/* Do PS Level 3 image type 4 with colormask */
+			fprintf (PSL->internal.fp, "\n<< /ImageType 4 /MaskColor[%d]", (int)buffer[0]);
+			buffer ++;
 		}
 		else		/* Do PS Level 2 image, optionally with interpolation */
 			fprintf (PSL->internal.fp, "\n<< /ImageType %s", type[it]);
@@ -3532,15 +3536,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 			}
 		}
 	}
-	else if (header->depth == (size_t)8 && header->maplength == (size_t)0) {	/* 8-bit without color table (implicit grayramp) */
-		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
-		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
-			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
-			PS_exit (EXIT_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
-	}
-	else if (header->depth == 8) {	/* 8-bit with color table */
+	else if (header->depth == 8 && header->maplength) {	/* 8-bit with color table */
 		get = header->maplength / 3;
 		red   = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
 		green = (unsigned char *) ps_memory (VNULL, (size_t)get, sizeof (unsigned char));
@@ -3570,6 +3566,14 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 			if (odd) ij++;
 		}
 		header->depth = 24;
+	}
+	else if (header->depth == (size_t)8) {	/* 8-bit without color table (implicit grayramp) */
+		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
+		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
+			fprintf (stderr, "pslib: Trouble reading 8-bit Sun rasterfile!\n");
+			PS_exit (EXIT_FAILURE);
+		}
+		if (header->type == RT_BYTE_ENCODED) ps_rle_decode (header, &buffer);
 	}
 	else if (header->depth == 24 && header->maplength) {	/* 24-bit raster with colormap */
 		unsigned char r, b;
@@ -3603,7 +3607,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 			if (odd && (j+3)%oddlength == 0) i++;
 		}
 	}
-	else if (header->depth == (size_t)24 && header->maplength == (size_t)0) {	/* 24-bit raster, no colormap */
+	else if (header->depth == (size_t)24) {	/* 24-bit raster, no colormap */
 		unsigned char r, b;
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
@@ -3656,7 +3660,7 @@ unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header)
 		}
 		header->depth = 24;
 	}
-	else if (header->depth == (size_t)32 && header->maplength == (size_t)0) {	/* 32-bit raster, no colormap */
+	else if (header->depth == (size_t)32) {	/* 32-bit raster, no colormap */
 		unsigned char b;
 		buffer = (unsigned char *) ps_memory (VNULL, (size_t)header->length, sizeof (unsigned char));
 		if (fread ((void *)buffer, (size_t)1, (size_t)header->length, fp) != (size_t)header->length) {
