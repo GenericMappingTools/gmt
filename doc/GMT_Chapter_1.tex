@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.96 2008-12-08 02:22:00 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.97 2009-01-07 19:29:35 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2008.
@@ -124,22 +124,28 @@ Here is a list of the recent enhancement to various programs:
 	increment (and registration) for those programs that have such options.
 \item \GMTprog{gmt\_map.c} also has added support for enhanced \Opt{E} option for 3-D perspective views.
 \item \GMTprog{gmtmath.c} has added new operators {\bf NOT} and {\bf INRANGE}.
+\item \GMTprog{grd2cpt.c} can now accept multiple grid files at once.
 \item \GMTprog{mapproject.c} has extended the \Opt{A} option by making the fixed point
 	optional; if not given we compute azimuths between successive data points.
 \item \GMTprog{minmax.c} has optional /{\it col} that may be added to \Opt{T}{\it dz} to select another column [third].
+\item \GMTprog{psimage.c} has new \Opt{Gt} option, with assignment of color to be made transparent.
 \item \GMTprog{pslegend.c} lets {\bf N} (number of columns) also affect the printing of labels.
 \item \GMTprog{pstext.c} has enhanced \Opt{Z}+ option expects z-level values in 3rd column.
 \item \GMTprog{pslib.c} internals now measure paper size in double precision points instead
 	of truncating to nearest integer.  To remain backwards
 	compatible for \GMTprog{pslib.c} users we now initialize all plotting
 	in GMT with \GMTfunc{ps\_plotinit\_hires} instead of \GMTfunc{ps\_plotinit}.
+	Allow transparency when plotting 8-bit images (as well as 24-bit).
+	Finally, we use a new implementation of \GMTfunc{ps\_textdim} to ensure proper alignment
+	of texts and the optional surrounding boxes.
 \item \GMTprog{ps2raster.c} now will scan for the optional comment \verb+%%HiResBoundingBox+
 	which takes precedence over the values in \verb+%%BoundingBox+.
 	New format \Opt{TG} turns on transparency for PNG output, and \Opt{Tb} selects Microsoft BMP output.
 	Formats {\bf b}, {\bf g}, {\bf j}, and {\bf t} accept modifier ``-'' to produce grayscale
-	images.  Finally, added \Opt{C}{\it gs-command} to pass one or more
+	images.  Added \Opt{C}{\it gs-command} to pass one or more
 	custom switches directly to \progname{ghostscript}, and \Opt{Q}[{\bf g}$|${\bf t}]{\it bits} to
-	set the level of anti-aliasing for graphics and text, respectively.
+	set the level of anti-aliasing for graphics and text, respectively.  Finally, we added a new
+	option \Opt{F} to force a specified output file name.
 \item \GMTprog{psxy.c} has new option \Opt{I}{\it intens} to modulate fill color via a fixed illumination value.
 \item \GMTprog{psxyz.c} has the same new option \Opt{I}{\it intens}.
 \item \GMTprog{xyz2grd.c} has new format ({\bf A}) for \Opt{Z} which allows more than one floating
