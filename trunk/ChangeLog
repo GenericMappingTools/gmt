@@ -1,7 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.379 2009-01-07 22:37:03 jluis Exp $
+	$Id: ChangeLog,v 1.380 2009-01-07 23:21:47 jluis Exp $
 -----------------------------------------------------------------------------------------
 2009-01-07	jluis
+	* grdcut.c:		If needed, change new limits so that they do not raise the 
+				"Old and new x_min|y_min do not differ by N * dx|dy" error message
 	* gmt_customio.c:	Fixed sub-region access in Surfer format. This bug would 
 				manifest mainly when doing a grdcut with a N-S sub-region
 
