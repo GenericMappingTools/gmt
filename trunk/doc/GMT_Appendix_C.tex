@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_C.tex,v 1.24 2009-01-09 04:02:32 guru Exp $
+%	$Id: GMT_Appendix_C.tex,v 1.25 2009-01-09 23:23:44 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -93,7 +93,7 @@ Here are some notorious pitfalls with \progname{ghostscript} (and other renderin
 
 Clearly, this can lead to some unwanted results. First, all edges and lines get blurry and second, the assumption of a white background causes the gray shades to stand out when transferring the image to background with a different color (like the popular blue in \progname{PowerPoint} presentations). A more surprising effect of anti-aliasing is that the seams between tiles that make up the land mask when using \GMTprog{pscoast} will become visible. The anti-aliasing somehow decides to blur the edges of all polygons, even when they are seamlessly connected to other polygons.
 
-It is therefore wise to overrule the default anti-aliasing option and oversample the image yourself by choosing a higher resolution.
+It is therefore wise to overrule the default anti-aliasing option and over-sample the image yourself by choosing a higher resolution.
 
 \item[Including fonts.] When you are producing print-ready copy to publishers, they will often (and justifiably) ask that you include all fonts in your PDF document. Again, \progname{ghostscript} (and all converters relying on that engine) will not do so by default.
 \end{description}
@@ -164,7 +164,7 @@ In Figure~\ref{fig:rendering} we have attempted to include Figure~\ref{fig:GMT_e
 
 On the central column of Figure~\ref{fig:rendering} we have included PNG versions of a portion of the same example. This shows the workings of anti-aliasing and different resolutions. All samples were obtained with \progname{convert}. The one on the top uses all default settings, resulting in an anti-aliased image at 72 dpi resolution (very much like the PDF included directly into \progname{PowerPoint}).
 
-Just switching anti-aliasing off (middle) is clearly not an option either. It is true that we got rid of the gray blurring and the seams between the tiles, but without anti-aliasing the image becomes very blocky. The solution is to render the image at a higher resolution (e.g., 300 dpi) without anti-aliasing and then shrink the image to the appropriate size (bottom of the central column in Figure~\ref{fig:rendering}). The scaling, rotation as well as the selection of the transparent color can be accomplished through the ``Formatting'' tool bar and the "Format Picture" dialogue box of \progname{PowerPoint} (Figure~\ref{fig:formatpicture}), which can be found by double clicking the included image (or selecting and right-clicking or control-clicking on a one-button mouse).
+Just switching anti-aliasing off (middle) is clearly not an option either. It is true that we got rid of the gray blurring and the seams between the tiles, but without anti-aliasing the image becomes very blocky. The solution is to render the image at a higher resolution (e.g., 300 dpi) without anti-aliasing and then shrink the image to the appropriate size (bottom of the central column in Figure~\ref{fig:rendering}). The scaling, rotation as well as the selection of the transparent color can be accomplished through the ``Formatting'' tool bar and the ``Format Picture'' dialogue box of \progname{PowerPoint} (Figure~\ref{fig:formatpicture}), which can be found by double clicking the included image (or selecting and right-clicking or control-clicking on a one-button mouse).
 
 \section{Concluding remarks}
 
