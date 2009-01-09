@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.52 2009-01-09 04:02:31 guru Exp $
+#		$Id: README,v 1.53 2009-01-09 23:39:54 guru Exp $
 #
 #	Copyright (c) 1991-2009, P. Wessel & W. H. F. Smith
 #
@@ -418,7 +418,7 @@ Currently, the supplemental archive include the directories:
 	mgg	  - Programs for MGD-77 data in .gmt format.
 	mgd77	  - Programs for handling of native MGD77 files.
 	misc	  - psmegaplot, makepattern, gmtdigitize,
-		    gmtstitch, and nc2xy
+		    gmtstitch, gmtdp, and nc2xy
 	segyprogs - Plotting SEGY seismic data sets.
 	spotter	  - Plate tectonic & kinematics applications.
 	x2sys	  - Track intersection (crossover) tools.
