@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.36 2008-12-12 18:31:31 guru Exp $
-AC_REVISION($Revision: 1.36 $)
+dnl $Id: configure.ac,v 1.37 2009-01-09 20:51:13 guru Exp $
+AC_REVISION($Revision: 1.37 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -13,7 +13,7 @@ dnl Below, set the VERSION to be created.
 dnl Also, fix the MANDATE and DOCDATE values.
 dnl For final version set CVS_VERSION to 0
 dnl
-AC_INIT(GMT, 4.3.2, gmt-help@hawaii.edu)
+AC_INIT(GMT, 4.4.0, gmt-help@hawaii.edu)
 MANDATE="15 Jan 2009"
 DOCDATE="Jan 2009"
 DOCYEAR="2009"
