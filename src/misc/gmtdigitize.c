@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.21 2008-08-14 02:46:38 remko Exp $
+ *    $Id: gmtdigitize.c,v 1.22 2009-01-09 04:02:35 guru Exp $
  *
- *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

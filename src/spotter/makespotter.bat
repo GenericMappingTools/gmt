@@ -1,10 +1,10 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: makespotter.bat,v 1.4 2008-01-23 03:52:12 guru Exp $
+REM	$Id: makespotter.bat,v 1.5 2009-01-09 04:02:36 guru Exp $
 REM
 REM
-REM	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
+REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 REM	See COPYING file for copying and redistribution conditions.
 REM
 REM	This program is free software; you can redistribute it and/or modify

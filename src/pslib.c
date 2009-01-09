@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.184 2009-01-07 02:55:28 remko Exp $
+ *	$Id: pslib.c,v 1.185 2009-01-09 04:02:34 guru Exp $
  *
- *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
