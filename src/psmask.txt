@@ -37,6 +37,9 @@ Mark end of existing clip path.  No input file is needed.  Implicitly sets \fB\-
 .B \-D
 Dumps out the resulting clipping polygons to disk.  Ignored if \fB\-T\fP is set.
 If no dumpprefix is given we use mask (Files will be called mask_*.d).
+Append \fB\+n<n_pts>\fP to limit the number of points in files to a minimum of \fIn_pts\fP.
+That is, do not write individual polygon files if they do not have at least \fIn_pts\fP vertices.
+Use \fB\+q\fP to not output ps code to stdout (Windows replacement of /dev/null).
 #include "explain_-E.txt"
 #include "explain_nodereg.txt"
 .TP
