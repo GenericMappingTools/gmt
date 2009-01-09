@@ -1,11 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.381 2009-01-09 19:20:23 jluis Exp $
+	$Id: ChangeLog,v 1.382 2009-01-09 20:50:17 guru Exp $
 -----------------------------------------------------------------------------------------
+2009-01-07	pwessel
+	* surface.c:		Abort with message if nx or ny is < 4.
+	
 2009-01-09	jluis
 	* psmask.c:		Added +n<n_points> and +q options to -D to limit the min number of
-				points a polygon must have and, the +q, to supress ps output.
-				Fixed also a bug on -D-<file> which was to writing the '>' char
-
+				points a polygon must have and, the +q, to suppress ps output.
+				Fixed also a bug on -D-<file> which did not write the '>' char
+				
 2009-01-07	jluis
 	* grdcut.c:		If needed, change new limits so that they do not raise the 
 				"Old and new x_min|y_min do not differ by N * dx|dy" error message
