@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.59 2009-01-09 04:02:32 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.60 2009-01-09 23:23:44 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -272,7 +272,7 @@ Figure~\ref{fig:GMT_example_05}.
 \GMT\ provides two tools to render histograms: \GMTprog{pshistogram}
 and \GMTprog{psrose}.  The former takes care of regular histograms
 whereas the latter deals with polar histograms (rose diagrams,
-sector diagrams, and windrose diagrams).  We will show an
+sector diagrams, and wind rose diagrams).  We will show an
 example that involves both programs.  The file \filename{fractures.yx}
 contains a compilation of fracture lengths and directions as
 digitized from geological maps.  The file \filename{v3206.t} contains
@@ -592,7 +592,7 @@ Merging the files themselves may not be doable since they
 may represent different data sets, as we show in this example.
 Here, we lay down a color map of the geoid field near India
 with \GMTprog{grdimage}, use \GMTprog{pscoast} to set up land
-clippaths, and then overlay topography from the ETOPO5 data
+clip paths, and then overlay topography from the ETOPO5 data
 set with another call to \GMTprog{grdimage}.  We finally undo
 the clippath with a second call to \GMTprog{pscoast} with the
 option \Opt{Q} (Figure~\ref{fig:GMT_example_17}): 
@@ -732,7 +732,7 @@ We are now ready to give it a try.  Based on the hotspot
 locations in the file \filename{hotspots.d} (with a 3rd column
 giving the desired symbol sizes in inches) we lay down a
 world map and overlay red volcano symbols using our custom-built
-volcano symbol and \GMTprog{psxy}. We do something similar with the bullseye symbols.
+volcano symbol and \GMTprog{psxy}. We do something similar with the bulls eye symbols.
 Without the \Opt{G} option, however, they get the colors defined in \filename{bullseye.def}.
 
 Here is our final map script that produces Figure~\ref{fig:GMT_example_20}:
