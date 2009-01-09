@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.380 2009-01-07 23:21:47 jluis Exp $
+	$Id: ChangeLog,v 1.381 2009-01-09 19:20:23 jluis Exp $
 -----------------------------------------------------------------------------------------
+2009-01-09	jluis
+	* psmask.c:		Added +n<n_points> and +q options to -D to limit the min number of
+				points a polygon must have and, the +q, to supress ps output.
+				Fixed also a bug on -D-<file> which was to writing the '>' char
+
 2009-01-07	jluis
 	* grdcut.c:		If needed, change new limits so that they do not raise the 
 				"Old and new x_min|y_min do not differ by N * dx|dy" error message
