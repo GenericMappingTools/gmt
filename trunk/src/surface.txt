@@ -29,7 +29,7 @@ a fixed value, a grid with values, or simply be the minimum/maximum input data v
 standard input.
 .TP
 .B \-G
-Output file name.  Output is a binary 2-D \fI.grd\fP file.
+Output file name.  Output is a binary 2-D \fI.grd\fP file.  Note that the smallest grid dimension must be at least 4.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
