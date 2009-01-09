@@ -1,5 +1,5 @@
-/*	$Id: utilvelo.c,v 1.8 2008-03-24 08:58:32 guru Exp $
- *    Copyright (c) 1996-2008 by G. Patau
+/*	$Id: utilvelo.c,v 1.9 2009-01-09 04:02:35 guru Exp $
+ *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
  */
