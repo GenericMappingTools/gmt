@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.383 2009-01-09 23:23:44 guru Exp $
+	$Id: ChangeLog,v 1.384 2009-01-10 03:49:13 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-01-10	remko
+	* pslib.c, PS_prologue.ps:	New implementation of code for ellipse (provides
+				constant pen width). Changed code for circle and
+				pie wedge (made similar to other symbols).
+	* pslib.[ch], gmt_plot.c:	Removed OLD_TEXTDIM code (obsolete after change of 2008-12-20).
+
 2009-01-09	pwessel
 	* surface.c:		Abort with message if nx or ny is < 4.
 	
