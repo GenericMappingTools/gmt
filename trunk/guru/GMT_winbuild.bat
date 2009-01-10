@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.9 2008-05-16 04:27:27 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.10 2009-01-10 01:09:30 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -15,7 +15,7 @@ REM	   to its command line tool is added to PATH
 REM	6. 7zip has been installed and the path
 REM	   to its command line tool is added to PATH
 
-SET GVER=4.3.1
+SET GVER=4.4.0
 
 echo === 1. Get all GMT%GVER% bzipped tar balls and extract files...
 
