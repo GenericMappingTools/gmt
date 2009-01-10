@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.185 2009-01-09 04:02:34 guru Exp $
+ *	$Id: pslib.c,v 1.186 2009-01-10 03:43:39 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -352,7 +352,6 @@ void ps_circle (double x, double y, double size, int rgb[], int outline)
 	ix = (PS_LONG)irint (x * PSL->internal.scale);
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
 	ir = (PS_LONG)irint (0.5 * size * PSL->internal.scale);
-	fprintf (PSL->internal.fp, "N ");
 	pmode = ps_place_color (rgb);
 	fprintf (PSL->internal.fp, "%ld %ld %ld C%c\n", ix, iy, ir, PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
@@ -743,7 +742,6 @@ void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[
 	ix = (PS_LONG)irint (x * PSL->internal.scale);
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
 	ir = (PS_LONG)irint (radius * PSL->internal.scale);
-	fprintf (PSL->internal.fp, "%ld %ld M ", ix, iy);
 	pmode = ps_place_color (rgb);
 	fprintf (PSL->internal.fp, "%ld %ld %ld %g %g W%c\n", ix, iy, ir, az1, az2, PSL->internal.paint_code[pmode+outline]);
 	PSL->internal.npath = 0;
@@ -757,21 +755,17 @@ void ps_pie_ (double *x, double *y, double *radius, double *az1, double *az2, in
 
 void ps_ellipse (double x, double y, double angle, double major, double minor, int rgb[], int outline)
 {
-	PS_LONG ix, iy, ir;
+	PS_LONG ix, iy, i1, i2;
 	int pmode;
-	double aspect;
 
 	/* Feature: Pen thickness also affected by aspect ratio */
 
 	ix = (PS_LONG)irint (x * PSL->internal.scale);
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
-	fprintf (PSL->internal.fp, "V %ld %ld T", ix, iy);
-	if (angle != 0.0) fprintf (PSL->internal.fp, " %g R", angle);
-	aspect = minor / major;
-	fprintf (PSL->internal.fp, " 1 %g scale\n", aspect);
-	ir = (PS_LONG)irint (major * PSL->internal.scale);
+	i1 = (PS_LONG)irint (major * PSL->internal.scale);
+	i2 = (PS_LONG)irint (minor * PSL->internal.scale);
 	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "0 0 %ld C%c U\n", ir, PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %g %ld %ld E%c\n", i1, i2, angle, ix, iy, PSL->internal.paint_code[pmode+outline]);
 }
 
 /* fortran interface */
@@ -1423,7 +1417,7 @@ int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, doubl
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.17 ");
+		ps_bulkcopy ("PSL_prologue", "v 1.18 ");
 		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Initialize book-keeping for font encoding and write font macros */
@@ -1872,11 +1866,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	}
 
 	if (pointsize < 0.0) fprintf (PSL->internal.fp, "currentpoint /PSL_save_y exch def /PSL_save_x exch def\n");	/* Must save the current point since ps_textdim will destroy it */
-#ifdef OLD_TEXTDIM
-	ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), PSL->current.font_no, &text[i], 1);			/* Set the string BB dimensions in PS */
-#else
 	ps_textdim ("PSL_dim", fabs (pointsize), PSL->current.font_no, &text[i]);	/* Set the string dimensions in PS */
-#endif
 	if (pointsize < 0.0) fprintf (PSL->internal.fp, "PSL_save_x PSL_save_y m\n");					/* Reset to the saved current point */
 	ps_set_length ("PSL_dx", dx);
 	ps_set_length ("PSL_dy", dy);
@@ -1896,13 +1886,8 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	if (justify > 1) {	/* Move the new origin so (0,0) is lower left of box */
 		h_just = (justify + 3) % 4;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
-#ifdef OLD_TEXTDIM
-		(h_just) ? fprintf (PSL->internal.fp, "PSL_dimx_ur PSL_dimx_ll sub %s ", align[h_just]) : fprintf (PSL->internal.fp, "0 ");
-		(v_just) ? fprintf (PSL->internal.fp, "PSL_dimy_ur PSL_dimy_ll sub %s ", align[v_just]) : fprintf (PSL->internal.fp, "0 ");
-#else
 		(h_just) ? fprintf (PSL->internal.fp, "PSL_dim_w %s ", align[h_just]) : fprintf (PSL->internal.fp, "0 ");
 		(v_just) ? fprintf (PSL->internal.fp, "PSL_dim_h %s ", align[v_just]) : fprintf (PSL->internal.fp, "0 ");
-#endif
 		fprintf (PSL->internal.fp, "T ");
 	}
 	/* Here, (0,0) is lower point of textbox with no clearance yet */
@@ -1910,34 +1895,20 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 		fprintf (PSL->internal.fp, "\n/PSL_r %ld def\n", (PS_LONG)irint (MIN (dx, dy) * PSL->internal.scale));
 		fprintf (PSL->internal.fp, "/PSL_dx2 %ld def\n", (PS_LONG)irint ((dx - MIN (dx, dy)) * PSL->internal.scale));
 		fprintf (PSL->internal.fp, "/PSL_dy2 %ld def\n", (PS_LONG)irint ((dy - MIN (dx, dy)) * PSL->internal.scale));
-#ifdef OLD_TEXTDIM
-		ps_command ("/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx2 2 mul add def");
-		ps_command ("/PSL_y_side PSL_dimy_ur PSL_dimy_ll sub PSL_dy2 2 mul add def");
-		ps_command ("/PSL_bx0 PSL_dimx_ll PSL_dx2 sub def");
-		ps_command ("/PSL_by0 PSL_dimy_ll PSL_dy2 sub def");
-		ps_command ("PSL_dimx_ll PSL_dx2 sub PSL_dimy_ll PSL_dy sub M PSL_x_side 0 D");
-#else
 		ps_command ("/PSL_x_side PSL_dim_w PSL_dx2 2 mul add def");
 		ps_command ("/PSL_y_side PSL_dim_h PSL_dim_d sub PSL_dy2 2 mul add def");
 		ps_command ("/PSL_bx0 PSL_dx2 neg def");
 		ps_command ("/PSL_by0 PSL_dim_d PSL_dy2 sub def");
 		ps_command ("PSL_dx2 neg PSL_dim_d PSL_dy sub M PSL_x_side 0 D");
-#endif
 		ps_command ("PSL_bx0 PSL_x_side add PSL_by0 PSL_r 270 360 arc");
 		ps_command ("0 PSL_y_side D PSL_bx0 PSL_x_side add PSL_by0 PSL_y_side add PSL_r 0 90 arc");
 		ps_command ("PSL_x_side neg 0 D PSL_bx0 PSL_by0 PSL_y_side add PSL_r 90 180 arc");
 		ps_command ("0 PSL_y_side neg D PSL_bx0 PSL_by0 PSL_r 180 270 arc P");
 	}
 	else {
-#ifdef OLD_TEXTDIM
-		ps_command ("\n/PSL_x_side PSL_dimx_ur PSL_dimx_ll sub PSL_dx 2 mul add def");
-		ps_command ("/PSL_y_side PSL_dimy_ur PSL_dimy_ll sub PSL_dy 2 mul add def");
-		ps_command ("PSL_dimx_ll PSL_dx sub PSL_dimy_ll PSL_dy sub M PSL_x_side 0 D 0 PSL_y_side D PSL_x_side neg 0 D 0 PSL_y_side neg D P");
-#else
 		ps_command ("\n/PSL_x_side PSL_dim_w PSL_dx 2 mul add def");
 		ps_command ("/PSL_y_side PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add def");
 		ps_command ("PSL_dx neg PSL_dim_d PSL_dy sub M PSL_x_side 0 D 0 PSL_y_side D PSL_x_side neg 0 D 0 PSL_y_side neg D P");
-#endif
 	}
 	if (rgb[0] >= 0) {	/* Paint the textbox */
 		fprintf (PSL->internal.fp, "V ");
@@ -1957,17 +1928,6 @@ void ps_textbox_ (double *x, double *y, double *pointsize, char *text, double *a
 	 ps_textbox (*x, *y, *pointsize, text, *angle, *justify, *outline, *dx, *dy, rgb);
 }
 
-#ifdef OLD_TEXTDIM
-void ps_textdim (char *xdim, char *ydim, double pointsize, int in_font, char *text, int key)
-{
-	/* key = 0: Will calculate the exact dimensions (xdim, ydim) of the given text string.
-	 * Because of possible escape sequences we need to examine the string
-	 * carefully.  The dimensions will be set in PostScript and can be
-	 * used by addressing the variables xdim and ydim.
-	 * key = 1: Will return bounding box of the text string instead.  Will append
-	 * _ll and _ur to the xdim and ydim strings and initialize 4 variables in PS.
-	 */
-#else
 void ps_textdim (char *dim, double pointsize, int in_font, char *text)
 {
 	/* Will calculate the dimension of the given text string.
@@ -1980,7 +1940,6 @@ void ps_textdim (char *dim, double pointsize, int in_font, char *text)
 	 * We try to produce the "stringwidth" result also when the string includes
 	 * escape sequences.
 	 */
-#endif
 
 	char *tempstring, *piece, *piece2, *ptr, *string;
 	int i = 0, font;
@@ -1999,14 +1958,7 @@ void ps_textdim (char *dim, double pointsize, int in_font, char *text)
 	height = pointsize / PSL->internal.points_pr_unit;
 
 	if (!strchr (string, '@')) {	/* Plain text string */
-#ifdef OLD_TEXTDIM
-		if (key == 0)
-			fprintf (PSL->internal.fp, "0 0 M %ld F%d (%s) E /%s exch def YP /%s exch def\n", (PS_LONG) irint (height * PSL->internal.scale), PSL->current.font_no, string, xdim, ydim);
-		else
-			fprintf (PSL->internal.fp, "0 0 M %ld F%d (%s) FP pathbbox N /%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n" , (PS_LONG) irint (height * PSL->internal.scale), PSL->current.font_no, string, ydim, xdim, ydim, xdim);
-#else
 		fprintf (PSL->internal.fp, "0 0 M %ld F%d (%s) E /%s_w exch def FP pathbbox N /%s_h exch def pop /%s_d exch def pop\n" , (PS_LONG) irint (height * PSL->internal.scale), PSL->current.font_no, string, dim, dim, dim);
-#endif
 		ps_free ((void *)string);
 		return;
 	}
@@ -2112,14 +2064,7 @@ void ps_textdim (char *dim, double pointsize, int in_font, char *text)
 	}
 
 	fprintf (PSL->internal.fp, "pathbbox N ");
-#ifdef OLD_TEXTDIM
-	if (key == 0)
-		fprintf (PSL->internal.fp, "exch 2 {3 1 roll sub abs} repeat /%s exch def /%s exch def\n", xdim, ydim);
-	else
-		fprintf (PSL->internal.fp, "/%s_ur exch def /%s_ur exch def /%s_ll exch def /%s_ll exch def\n", ydim, xdim, ydim, xdim);
-#else
 	fprintf (PSL->internal.fp, "/%s_h exch def exch /%s_d exch def add /%s_w exch def\n", dim, dim, dim);
-#endif
 
 	ps_free ((void *)tempstring);
 	ps_free ((void *)piece);
@@ -2172,11 +2117,7 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 
 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
 		if (pointsize < 0.0) fprintf (PSL->internal.fp, "currentpoint /PSL_save_y exch def /PSL_save_x exch def\n");	/* Must save the current point since ps_textdim will destroy it */
-#ifdef OLD_TEXTDIM
-		ps_textdim ("PSL_dimx", "PSL_dimy", fabs (pointsize), PSL->current.font_no, &text[i], 0);			/* Set the string dimensions in PS */
-#else
 		ps_textdim ("PSL_dim", fabs (pointsize), PSL->current.font_no, &text[i]);			/* Set the string dimensions in PS */
-#endif
 		if (pointsize < 0.0) fprintf (PSL->internal.fp, "PSL_save_x PSL_save_y m\n");					/* Reset to the saved current point */
 	}
 
@@ -2196,13 +2137,8 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 	if (justify > 1) {
 		h_just = (justify % 4) - 1;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		v_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
-#ifdef OLD_TEXTDIM
-		(h_just) ? fprintf (PSL->internal.fp, "PSL_dimx %s ", align[h_just]) : fprintf (PSL->internal.fp, "0 ");
-		(v_just) ? fprintf (PSL->internal.fp, "PSL_dimy %s ", align[v_just]) : fprintf (PSL->internal.fp, "0 ");
-#else
 		(h_just) ? fprintf (PSL->internal.fp, "PSL_dim_w %s ", align[h_just]) : fprintf (PSL->internal.fp, "0 ");
 		(v_just) ? fprintf (PSL->internal.fp, "PSL_dim_h %s ", align[v_just]) : fprintf (PSL->internal.fp, "0 ");
-#endif
 		fprintf (PSL->internal.fp, "G ");
 	}
 
@@ -2444,12 +2380,8 @@ void ps_textpath (double x[], double y[], PS_LONG n, PS_LONG node[], double angl
 		ps_set_length ("PSL_gap_y", offset[1]);
 		if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
 			if (pointsize < 0.0) fprintf (PSL->internal.fp, "currentpoint /PSL_save_y exch def /PSL_save_x exch def\n");	/* Must save the current point since ps_textdim will destroy it */
-#ifdef OLD_TEXTDIM
-			ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), PSL->current.font_no, label[0], 0);			/* Set the string dimensions in PS */
-#else
 			ps_textdim ("PSL_dim", fabs (pointsize), PSL->current.font_no, label[0]);			/* Set the string dimensions in PS */
 			fprintf (PSL->internal.fp, "PSL_dim_h PSL_dim_d sub /PSL_height exch def\n");
-#endif
 			if (pointsize < 0.0) fprintf (PSL->internal.fp, "PSL_save_x PSL_save_y m\n");					/* Reset to the saved current point */
 		}
 		fprintf (PSL->internal.fp, "%ld F%d\n", (PS_LONG) irint ((fabs (pointsize) / PSL->internal.points_pr_unit) * PSL->internal.scale), PSL->current.font_no);	/* Set font */
@@ -2533,12 +2465,8 @@ void ps_textclip (double x[], double y[], PS_LONG m, double angle[], char *label
 
 	if (justify > 1) {	/* Only Lower Left (1) is already justified - all else must move */
 		if (pointsize < 0.0) fprintf (PSL->internal.fp, "currentpoint /PSL_save_y exch def /PSL_save_x exch def\n");	/* Must save the current point since ps_textdim will destroy it */
-#ifdef OLD_TEXTDIM
-		ps_textdim ("PSL_dimx", "PSL_height", fabs (pointsize), PSL->current.font_no, label[0], 0);			/* Set the string dimensions in PS */
-#else
 		ps_textdim ("PSL_dim", fabs (pointsize), PSL->current.font_no, label[0]);			/* Set the string dimensions in PS */
 		fprintf (PSL->internal.fp, "PSL_dim_h PSL_dim_d sub /PSL_height exch def\n");
-#endif
 		if (pointsize < 0.0) fprintf (PSL->internal.fp, "PSL_save_x PSL_save_y m\n");					/* Reset to the saved current point */
 	}
 
