@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.384 2009-01-10 03:49:13 remko Exp $
+	$Id: ChangeLog,v 1.385 2009-01-10 15:40:04 jluis Exp $
 -----------------------------------------------------------------------------------------
 2009-01-10	remko
 	* pslib.c, PS_prologue.ps:	New implementation of code for ellipse (provides
@@ -11,8 +11,8 @@
 	* surface.c:		Abort with message if nx or ny is < 4.
 	
 2009-01-09	jluis
-	* psmask.c:		Added +n<n_points> and +q options to -D to limit the min number of
-				points a polygon must have and, the +q, to suppress ps output.
+	* psmask.c:		Added +n<n_points> option to -D to limit the minimum number of
+				points a polygon must have in order to saved.
 				Fixed also a bug on -D-<file> which did not write the '>' char
 				
 2009-01-07	jluis
