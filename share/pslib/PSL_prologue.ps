@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.17 2008-12-04 22:38:36 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.18 2009-01-10 03:47:45 remko Exp $
 % Begin pslib header
 250 dict begin
 /! {bind def} bind def
@@ -27,7 +27,6 @@
 /Y {findfont exch scalefont setfont}!
 /Z /show #
 /FP {true charpath flattenpath}!
-/YP {FP pathbbox N exch pop sub abs exch pop}!
 % Point
 /O {M W 0 0 D S}!
 % Cross
@@ -55,6 +54,10 @@
 /C0 {S 0 360 arc}!
 /CA {C0 QA}! /CC {C0 QC}! /CK {C0 QK}! /CH {C0 QH}! /CI {C0 QI}! /CQ {C0 QQ}!
 /Ca {C0 Qa}! /Cc {C0 Qc}! /Ck {C0 Qk}! /Ch {C0 Qh}! /Ci {C0 Qi}!
+% Ellipse
+/E0 {S /savematrix matrix currentmatrix def translate rotate scale 0 0 1 0 360 arc savematrix setmatrix}!
+/EA {E0 QA}! /EC {E0 QC}! /EK {E0 QK}! /EH {E0 QH}! /EI {E0 QI}! /EQ {E0 QQ}!
+/Ea {E0 Qa}! /Ec {E0 Qc}! /Ek {E0 Qk}! /Eh {E0 Qh}! /Ei {E0 Qi}!
 % Diamond
 /D0 {M 4 {dup} repeat 0 G neg dup dup D exch D D}!
 /DA {D0 QA}! /DC {D0 QC}! /DK {D0 QK}! /DH {D0 QH}! /DI {D0 QI}! /DQ {D0 QQ}!
@@ -92,8 +95,9 @@
 /OA {O0 QA U}! /OC {O0 QC U}! /OK {O0 QK U}! /OH {O0 QH U}! /OI {O0 QI U}! /OQ {O0 QQ U}!
 /Oa {O0 Qa U}! /Oc {O0 Qc U}! /Ok {O0 Qk U}! /Oh {O0 Qh U}! /Oi {O0 Qi U}!
 % Pie Wedge
-/WA {arc QA}! /WC {arc QC}! /WK {arc QK}! /WH {arc QH}! /WI {arc QI}! /WQ {arc QQ}!
-/Wa {arc Qa}! /Wc {arc Qc}! /Wk {arc Qk}! /Wh {arc Qh}! /Wi {arc Qi}!
+/W0 {S /a1 exch def /a0 exch def /r exch def /y exch def dup y r a0 a1 arc y L}!
+/WA {W0 QA}! /WC {W0 QC}! /WK {W0 QK}! /WH {W0 QH}! /WI {W0 QI}! /WQ {W0 QQ}!
+/Wa {W0 Qa}! /Wc {W0 Qc}! /Wk {W0 Qk}! /Wh {W0 Qh}! /Wi {W0 Qi}!
 % To reencode one font with the provided encoding vector
 /PSL_reencode { findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
