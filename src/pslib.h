@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.51 2009-01-09 04:02:34 guru Exp $
+ *	$Id: pslib.h,v 1.52 2009-01-10 03:45:43 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -179,11 +179,7 @@ EXTERN_MSC void ps_vector (double xtail, double ytail, double xtip, double ytip,
 EXTERN_MSC unsigned char *ps_load_image (char *file, struct imageinfo *header);
 EXTERN_MSC void ps_words (double x, double y, char **text, PS_LONG n_words, double line_space, double par_width, int par_just, int font, double font_size, double angle, int rgb[3], int justify, int draw_box, double x_off, double y_off, double x_gap, double y_gap, int boxpen_width, char *boxpen_texture, int boxpen_offset, int boxpen_rgb[], int vecpen_width, char *vecpen_texture, int vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3]);
 EXTERN_MSC void ps_setline (int linewidth);
-#ifdef OLD_TEXTDIM
-EXTERN_MSC void ps_textdim (char *xdim, char *ydim, double pointsize, int font, char *text, int key);
-#else
 EXTERN_MSC void ps_textdim (char *dim, double pointsize, int font, char *text);
-#endif
 EXTERN_MSC void ps_set_length (char *param, double value);
 EXTERN_MSC void ps_set_height (char *param, double fontsize);
 EXTERN_MSC void ps_define_rgb (char *param, int rgb[]);
