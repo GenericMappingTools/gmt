@@ -132,6 +132,9 @@ Choose between these symbol codes:
 .B \-S-
 x-dash.  \fIsize\fP is the length of a short horizontal line segment.
 .TP
+.B \-S+
+plus.  \fIsize\fP is diameter of circumscribing circle.
+.TP
 .B \-Sa
 st\fBa\fPr.  \fIsize\fP is diameter of circumscribing circle.
 .TP
@@ -333,8 +336,6 @@ to your custom symbol, add any number of the following plot code records (each a
 [ \fB\-W\fP\fIpen\fP ] and [ \fB\-G\fP\fIfill\fP ] at the end):
 .br
 .sp
-star:	\fIx	y	size\fP	\fBa\fP
-.br
 circle:	\fIx	y	size\fP	\fBc\fP
 .br
 cross:	\fIx	y	size\fP	\fBx\fP
@@ -353,13 +354,21 @@ octagon:	\fIx	y	size\fP	\fBg\fP
 .br
 pentagon:	\fIx	y	size\fP	\fBn\fP
 .br
+plus:	\fIx	y	size\fP	\fB+\fP
+.br
 rect:	\fIx	y	xwidth	ywidth\fP	\fBr\fP
 .br
 square:	\fIx	y	size\fP	\fBs\fP
 .br
+star:	\fIx	y	size\fP	\fBa\fP
+.br
 triangle:	\fIx	y	size\fP	\fBt\fP
 .br
 wedge:	\fIx	y	radius	dir1	dir2\fP	\fBw\fP
+.br
+x-dash:	\fIx	y	size\fP	\fB-\fP
+.br
+y-dash:	\fIx	y	size\fP	\fBy\fP
 .br
 .sp
 When designing your symbol, the \fIx, y\fP and other dimensions are relative to a symbol of size 1, and all the

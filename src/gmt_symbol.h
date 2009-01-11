@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_symbol.h,v 1.24 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_symbol.h,v 1.25 2009-01-11 02:52:38 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -32,6 +32,7 @@
 #define GMT_ACTION_ARC		300
 
 #define GMT_ACTION_CROSS	2
+#define GMT_ACTION_PLUS		3
 #define GMT_ACTION_CIRCLE	4
 #define GMT_ACTION_SQUARE	5
 #define GMT_ACTION_TRIANGLE	6

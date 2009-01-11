@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.365 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_init.c,v 1.366 2009-01-11 02:52:38 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4891,7 +4891,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 	int decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon;
 	BOOLEAN check, old_style;
 	char symbol_type, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], text_cp[GMT_LONG_TEXT], *c;
-	static char *allowed_symbols[2] = {"-aAbBCcDdeEfGgHhIijJNnpqrSsTtVvwWxy", "-aAbCcDdeEfGgHhIijJNnoOpqrSsTtuUVvwWxy"};
+	static char *allowed_symbols[2] = {"-+aAbBCcDdeEfGgHhIijJNnpqrSsTtVvwWxy", "-+aAbCcDdeEfGgHhIijJNnoOpqrSsTtuUVvwWxy"};
 	static char *bar_symbols[2] = {"bB", "-bBoOuU"};
 
 	p->n_required = p->convert_angles = 0;
@@ -4899,7 +4899,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 
 	if (!text[0]) {	/* No symbol or size given */
 		p->size_x = p->size_y = 0.0;
-		symbol_type = '+';
+		symbol_type = '*';
 	}
 	else if (isdigit ((int)text[0]) || text[0] == '.') {	/* Size, but no symbol given */
 		n = sscanf (text, "%[^/]/%s", txt_a, txt_b);
@@ -4910,7 +4910,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 			p->size_y = p->given_size_y = p->size_x;
 		else
 			decode_error = TRUE;
-		symbol_type = '+';
+		symbol_type = '*';
 	}
 	else if (text[0] == 'l') {	/* Letter symbol is special case */
 		strcpy (text_cp, text);
@@ -5027,7 +5027,7 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 
 	check = TRUE;
 	switch (symbol_type) {
-		case '+':
+		case '*':
 			p->symbol = GMT_SYMBOL_NOT_SET;
 			break;
 		case '-':
@@ -5318,6 +5318,9 @@ int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mode, BOOLEAN
 			p->symbol = GMT_SYMBOL_RECT;
 			p->n_required = 2;
 			check = FALSE;
+			break;
+		case '+':
+			p->symbol = GMT_SYMBOL_PLUS;
 			break;
 		case 'x':
 			p->symbol = GMT_SYMBOL_CROSS;
