@@ -2,7 +2,7 @@
 .TH PSXYZ 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define PARAMS_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
 #define LEN_1 1.25
-#define OPT_1	\fB\-Jx\fP1.25\fBc \-Jz\fP0.125\fBc \-So\fP1.25\fBc\fP
+#define OPT_1	OPT(Jx)1.25\fBc\fP OPT(Jz)0.125\fBc\fP OPT(So)1.25\fBc\fP
 #define PARAMS_US 0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP
 .SH NAME
 psxyz \- Plot lines, polygons, and symbols in 3-D
@@ -35,7 +35,7 @@ List one or more file-names. If no files are given, \fBpsxyz\fP will read standa
 No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
-.B \-C
+OPT(C)
 Give a color palette file.  If OPT(S) is set, let symbol fill color be determined by the
 t-value in the fourth column. Additional fields are shifted over by one column
 (optional size would be in 5th rather than 4th field, etc.).
@@ -43,11 +43,11 @@ If OPT(S) is not set, then \fBpsxyz\fP expects the user to supply a multisegment
 (requires OPT(M)) where each segment header contains a OPT(Z)\fIval\fP string.  The \fIval\fP
 will control the color of the line or polygon (if OPT(L) is set) via the cpt file.
 .TP
-.B \-D
+OPT(D)
 Offset the plot symbol or line locations by the given amounts \fIdx/dy\fP[\fIdz\fP] [Default is no offset].
 #include "explain_-E.txt"
 .TP
-.B \-G
+OPT(G)
 Select color or pattern for filling of symbols or polygons [Default is no fill].
 (See SPECIFYING FILL below).
 .br
@@ -56,16 +56,16 @@ strings in all the subheaders and let any values thus found over-ride the comman
 (see OPT(M) below).
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Use the supplied \fIintens\fP value (nominally in the -1 to + 1 range) to modulate the fill color by simulating illumination [none].
 #include "explain_-K.txt"
 .TP
-.B \-L
+OPT(L)
 Force closed polygons: connect the endpoints of the line-segment(s) and draw polygons.
 Also, in concert with OPT(C), OPT(M), and OPT(Z) settings in the headers will use the implied
 color for polygon fill [Default is polygon pen color].
 .TP
-.B \-M
+OPT(M)
 Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP
 [Default is '>']. On these segment header records one or more of the following options can be added:
 .br
@@ -85,20 +85,20 @@ OPT(Z)\fIzval\fP Obtain fill via cpt lookup using z-value \fIzval\fP
 .br
 OPT(ZNaN) Get the NaN color from the cpt file
 .TP
-.B \-N
+OPT(N)
 Do NOT skip symbols that fall outside map border [Default plots points inside border only].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-Q
+OPT(Q)
 Turn off the automatic sorting of items based on their distance from the viewer.  The default is
 to sort the items so that items in the foreground are plotted after items in the background.
 .TP
-.B \-S
+OPT(S)
 Plot symbols.  If present, \fIsize\fP is symbol size in the unit set in \.gmtdefaults4
 (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
 If the symbol code (see below) is not given it will be read from the last column in the input data;
-this cannot be used in conjunction with \fB\-b\fP.  Optionally, append
+this cannot be used in conjunction with OPT(b).  Optionally, append
 \fBc\fP, \fBi\fP, \fBm\fP, \fBp\fP to indicate that the size information in the
 input data is in units of cm, inch, meter, or point, respectively [Default is \fBMEASURE_UNIT\fP].
 Note: if you give both size and symbol via the input file you must use \fBMEASURE_UNIT\fP to
@@ -108,90 +108,94 @@ are normalized to have the same area as a circle with diameter \fIsize\fP,
 while the size of the corresponding lowercase symbols refers to the diameter of a circumscribed circle.
 Choose between these symbol codes:
 .TP
-.B \-S-
-x-dash.  \fIsize\fP is the length of a short horizontal (x-dir) line segment.
+OPT(S-)
+x-dash (-).  \fIsize\fP is the length of a short horizontal (x-dir) line segment.
 .TP
-.B \-Sa
+OPT(S+)
+plus (+).  \fIsize\fP is diameter of circumscribing circle.
+.br
+.TP
+OPT(Sa)
 st\fBa\fPr.  \fIsize\fP is diameter of circumscribing circle.
 .TP
-.B \-Sb
+OPT(Sb)
 Vertical \fBb\fPar extending from \fIbase\fP to y.  \fIsize\fP is bar width. Append \fBu\fP
 if \fIsize\fP is in x-units [Default is plot-distance units]. By default,
 \fIbase\fP = ymin.  Append \fBb\fP\fIbase\fP to change this value.
 .TP
-.B \-SB
+OPT(SB)
 Horizontal \fBb\fPar extending from \fIbase\fP to x.  \fIsize\fP is bar width. Append \fBu\fP
 if \fIsize\fP is in y-units [Default is plot-distance units]. By default,
 \fIbase\fP = xmin.  Append \fBb\fP\fIbase\fP to change this value.
 .TP
-.B \-Sc
+OPT(Sc)
 \fBc\fPircle.  \fIsize\fP is diameter of circle.
 .TP
-.B \-Sd
+OPT(Sd)
 \fBd\fPiamond.  \fIsize\fP is diameter of circumscribing circle.
 .TP
-.B \-Se
+OPT(Se)
 \fBe\fPllipse.  Direction (in degrees counter-clockwise from horizontal), major_axis, and minor_axis must
 be found in columns 4, 5, and 6.
 .TP
-.B \-SE
-Same as \fB\-Se\fP, except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
-be mapped into an angle based on the chosen map projection (\fB\-Se\fP leaves the directions
+OPT(SE)
+Same as OPT(Se), except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
+be mapped into an angle based on the chosen map projection (OPT(Se) leaves the directions
 unchanged.)  Furthermore, the axes lengths must be given in km instead of plot-distance units.  An exception occurs for
-a linear projection in which we assume the ellipse axes are given in the same units as \fB\-R\fP.
+a linear projection in which we assume the ellipse axes are given in the same units as OPT(R).
 .TP
-.B \-Sf
-\fBf\fPront.  \fB\-Sf\fP\fIgap/size\fP[\fIdir\fP][\fItype\fP][:\fIoffset\fP].  Supply distance gap between symbols and symbol size.
+OPT(Sf)
+\fBf\fPront.  OPT(Sf)\fIgap/size\fP[\fIdir\fP][\fItype\fP][:\fIoffset\fP].  Supply distance gap between symbols and symbol size.
 If \fIgap\fP is negative, it is interpreted to mean the number of symbols along the front instead.  Append \fIdir\fP to plot symbols
 on the \fBl\fPeft or \fBr\fPight side of the front [Default is centered].  Append \fItype\fP to specify which symbol
 to plot: \fBb\fPox, \fBc\fPircle, \fBf\fPault, \fBs\fPlip, or \fBt\fPriangle.  [Default is fault].
 Slip means left-lateral or right-lateral strike-slip arrows (centered is not an option).  Append :\fIoffset\fP to offset
 the first symbol from the beginning of the front by that amount [Default is 0].
 .TP
-.B \-Sg
+OPT(Sg)
 octa\fBg\fPon.  \fIsize\fP is diameter of circumscribing circle.
 .TP
-.B \-Sh
+OPT(Sh)
 \fBh\fPexagon.  \fIsize\fP is diameter of circumscribing circle.
 .TP
-.B \-Si
+OPT(Si)
 \fBi\fPnverted triangle.  \fIsize\fP is diameter of circumscribing circle.
 .TP
-.B \-Sj
+OPT(Sj)
 Rotated rectangle.  Direction (in degrees counter-clockwise from horizontal), x-dimension, and y-dimension must be found in columns 4, 5, and 6.
 .TP
-.B \-SJ
-Same as \fB\-Sj\fP, except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
-be mapped into an angle based on the chosen map projection (\fB\-Sj\fP leaves the directions
+OPT(SJ)
+Same as OPT(Sj), except azimuth (in degrees east of north) should be given instead of direction.  The azimuth will
+be mapped into an angle based on the chosen map projection (OPT(Sj) leaves the directions
 unchanged.)  Furthermore, the dimensions must be given in km instead of plot-distance units.  An exception occurs for
-a linear projection in which we assume the dimensions are given in the same units as \fB\-R\fP.
+a linear projection in which we assume the dimensions are given in the same units as OPT(R).
 .TP
-.B \-Sk
+OPT(Sk)
 \fBk\fPustom symbol.  Append <name>/\fIsize\fP, and we will look for a definition file called
 <name>.def in (1) the current directory or (2) in ~/.gmt or (3) in \fB$GMT_SHAREDIR\fP/custom.  The symbol as defined
 in that file is of size 1.0 by default; the appended \fIsize\fP will scale symbol accordingly.
 The symbols are plotted in the \fIx-y\fP plane.
 Users may add their own custom *.def files; see CUSTOM SYMBOLS in the \fBpsxy\fP man page.
 .TP
-.B \-Sl
+OPT(Sl)
 \fBl\fPetter or text string (less than 64 characters).  Give size, and append /\fIstring\fP after the size.
 Note that the size is only approximate; no individual scaling
 is done for different characters.  Remember to escape special characters like *.  Optionally, you may append %\fIfont\fP
 to select a particular font [Default is \fBANNOT_FONT_PRIMARY\fP].
 .TP
-.B \-Sn
+OPT(Sn)
 pe\fBn\fPtagon.  \fIsize\fP is diameter of circumscribing circle.
 .TP
-.B \-So
+OPT(So)
 c\fBo\fPlumn (3-D) extending from \fIbase\fP to z.  \fIsize\fP sets base width (Use \fIxsize/ysize\fP if not the same).  Append \fBu\fP if \fIsize\fP is in x-units
 [Default is plot-distance units].  If no \fIsize\fP is given we expect both \fIxsize\fP and \fIysize\fP as two extra data columns.
 By default, \fIbase\fP = 0.  Append b\fIbase\fP to change this value.  The facet colors will be modified to simulate shading.
-Use \fB\-SO\fP to disable such 3-D illumination.
+Use OPT(SO) to disable such 3-D illumination.
 .TP
-.B \-Sp
+OPT(Sp)
 \fBp\fPoint.  No size needs to be specified (1 pixel is used).
 .TP
-.B \-Sq
+OPT(Sq)
 \fBq\fPuoted line, i.e., lines with annotations such as contours.
 It is assumed that each individual line has a constant \fIz\fP level (i.e., each line must lie in the \fIx-y\fP plane).
 Append [\fBd|f|n|l|x\fP]\fIinfo\fP[:\fIlabelinfo\fP].
@@ -203,22 +207,22 @@ made up of any of the following control arguments:
 .RE
 #include "explain_labelinfo.txt"
 .TP
-.B \-Sr
+OPT(Sr)
 \fBr\fPectangle.  No size needs to be specified, but the x- and y-dimensions must be found in columns
 4 and 5.
 .TP
-.B \-Ss
+OPT(Ss)
 \fBs\fPquare.  \fIsize\fP is diameter of circumscribing circle.
 .TP
-.B \-St
+OPT(St)
 \fBt\fPriangle.  \fIsize\fP is diameter of circumscribing circle.
 .TP
-.B \-Su
+OPT(Su)
 c\fBu\fPbe (3-D).  \fIsize\fP sets length of all sides. Append \fBu\fP if \fIsize\fP
 is in x-units [Default is plot-distance units].  The facet colors will be modified to simulate shading.
-Use \fB\-SU\fP to disable such 3-D illumination.
+Use OPT(SU) to disable such 3-D illumination.
 .TP
-.B \-Sv
+OPT(Sv)
 \fBv\fPector.  Direction and length must be found in columns 4 and 5.
 \fIsize\fP, if present, will be interpreted as \fIarrowwidth/headlength/headwidth\fP
 [Default unit is PARAMS_SI (or PARAMS_US)].
@@ -226,44 +230,44 @@ By default arrow attributes remains invariant to the length
 of the arrow.  To have the size of the vector scale down with decreasing size,
 append \fBn\fP\fInorm\fP, where vectors shorter than \fInorm\fP will have their
 attributes scaled by length/\fInorm\fP.
-To center vector on balance point, use \fB\-Svb\fP; to align point with the vector head,
-use \fB\-Svh\fP; to align point with the vector tail, use \fB\-Svt\fP [Default].
+To center vector on balance point, use OPT(Svb); to align point with the vector head,
+use OPT(Svh); to align point with the vector tail, use OPT(Svt) [Default].
 To give the head point's \fIx, y, z\fP coordinates\"'
-instead of direction and length, use \fB\-Svs\fP.  Upper case \fBB, H, T, S\fP will draw a double-headed vector [Default is single head].
+instead of direction and length, use OPT(Svs).  Upper case \fBB, H, T, S\fP will draw a double-headed vector [Default is single head].
 .TP
-.B \-SV
-Same as \fB\-Sv\fP, except azimuth should be given instead of direction.  The azimuth will
-be mapped into an angle based on the chosen map projection (\fB\-Sv\fP leaves the directions
+OPT(SV)
+Same as OPT(Sv), except azimuth should be given instead of direction.  The azimuth will
+be mapped into an angle based on the chosen map projection (OPT(Sv) leaves the directions
 unchanged.)
 .TP
-.B \-Sw
+OPT(Sw)
 pie \fBw\fPedge.  Start and stop directions (in degrees counter-clockwise from horizontal) for pie slice
 must be found in columns 4 and 5.
 .TP
-.B \-SW
-Same as \fB\-Sw\fP, except azimuths (in degrees east of north) should be given instead of the two directions.  The azimuths will
-be mapped into angles based on the chosen map projection (\fB\-Sw\fP leaves the directions unchanged.)
+OPT(SW)
+Same as OPT(Sw), except azimuths (in degrees east of north) should be given instead of the two directions.  The azimuths will
+be mapped into angles based on the chosen map projection (OPT(Sw) leaves the directions unchanged.)
 .TP
-.B \-Sx
-cross.  \fIsize\fP is diameter of circumscribing circle.
+OPT(Sx)
+cross (x).  \fIsize\fP is diameter of circumscribing circle.
 .br
 .TP
-.B \-Sy
-y-dash.  \fIsize\fP is the length of a short horizontal (y-dir) line segment.
+OPT(Sy)
+y-dash (|).  \fIsize\fP is the length of a short horizontal (y-dir) line segment.
 .TP
-.B \-Sz
+OPT(Sz)
 zdash.  \fIsize\fP is the length of a short vertical (z-dir) line segment.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Set pen attributes for lines or the outline of symbols [Defaults: width = 1, color = black, texture = solid].
 A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill and outline pen color, while a leading
 \fB-\fP will set outline pen color and turn off symbol fill.
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
-.B \-Z
+OPT(Z)
 For 3-D projections:  Sets the z-level of the basemap [0].
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
@@ -279,9 +283,8 @@ To plot blue columns (width = LEN_1 cm) at the positions listed in the file heig
 viewing it from the southeast at 30 degree elevation, use:
 .br
 .sp
-\fBpsxyz\fP heights.xyz \fB\-R\fP0/10/0/10/0/100 OPT_1
-\fB\-G\fPblue \fB\-B\fP2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 \fB\-E\fP135/30 \fB\-Uc
-\-W\fP \fB\-P\fP > heights.ps
+\fBpsxyz\fP heights.xyz OPT(R)0/10/0/10/0/100 OPT_1
+OPT(G)blue OPT(B)2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 OPT(E)135/30 OPT(Uc) OPT(W) OPT(P) > heights.ps
 .SH BUGS
 No hidden line removal is employed for polygons and lines.  Symbols, however, are first sorted
 according to their distance from the viewpoint so that nearby symbols will overprint more distant
