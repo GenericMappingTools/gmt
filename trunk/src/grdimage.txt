@@ -1,9 +1,9 @@
 #include "common_options.txt"
 .TH GRDIMAGE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_L   1.5
-#define SCALE1	\fB\-Jl\fP18/24/1.5\fBc\fP
+#define SCALE1	OPT(Jl)18/24/1.5\fBc\fP
 #define LEN_X   10
-#define SCALE2	\fB\-Jx\fP10\fBi\fP
+#define SCALE2	OPT(Jx)10\fBi\fP
 .SH NAME
 grdimage \- Create grayshaded or colored image from a 2-D netCDF grid file
 .SH SYNOPSIS
@@ -40,40 +40,40 @@ A (color) \fIPostScript\fP file is output.
 2-D gridded data set (or red, green, blue grids) to be imaged
 (See GRID FILE FORMATS below.)
 .TP
-.B \-C
+OPT(C)
 name of the color palette table (for \fIgrd_z\fP only).
 #include "explain_-J_short.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
-.B \-E
+OPT(E)
 Sets the resolution of the projected grid that will be created if
 a map projection other than Linear or Mercator was selected.  By default,
 the projected grid will be of the same size (rows and columns) as the
 input file.  Specify \fBi\fP to use the \fIPostScript\fP
 image operator to interpolate the image at the device resolution.
 .TP
-.B \-G
+OPT(G)
 This option only applies when the resulting image otherwise would consist
 of only two colors: black (0) and white (255).  If so, this option will
 instead use the image as a transparent mask and paint the mask (or its
-inverse, with \fB\-Gb\fP) with the given color combination.
+inverse, with OPT(Gb)) with the given color combination.
 (See SPECIFYING COLOR below).
 .TP
-.B \-I
+OPT(I)
 Gives the name of a grid file with intensities in the (-1,+1) range. [Default is no illumination].
 #include "explain_-K.txt"
 .TP
-.B \-M
+OPT(M)
 Force conversion to monochrome image using the (television) YIQ transformation.
 .TP
-.B \-N
+OPT(N)
 Do not clip the image at the map boundary (only relevant for non-rectangular maps).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-Q
+OPT(Q)
 Make grid nodes with z = NaN transparent, using the colormasking feature in \fIPostScript\fP Level 3
 (the PS device must support PS Level 3).
 #include "explain_-R.txt"
@@ -82,7 +82,7 @@ A smaller region than specified in the grid file will result in a subset of the 
 [Default is the region given by the grid file].
 #include "explain_-S.txt"
 .TP
-.B \-T
+OPT(T)
 This option has become OBSOLETE. Use \fBgrdview\fP OPT(T) instead.
 Use OPT(Sn) to plot near-neighbor values only (use OPT(E) to increase the resolution).
 Use OPT(Sn) OPT(Q) to obtain something similar to the old option OPT(Ts).
@@ -98,7 +98,7 @@ To gray-shade the file hawaii_grav.grd with shades given in shades.cpt on a Lamb
 at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks:
 .br
 .sp
-\fBgrdimage\fP hawaii_grav.grd SCALE1 \fB\-C\fPshades.cpt \fB\-B\fP1 > hawaii_grav_image.ps
+\fBgrdimage\fP hawaii_grav.grd SCALE1 OPT(C)shades.cpt OPT(B)1 > hawaii_grav_image.ps
 .br
 .sp
 To create an illuminated color \fIPostScript\fP plot of the gridded data set image.grd, using the
@@ -106,14 +106,14 @@ intensities provided by the file intens.grd, and color
 levels in the file colors.cpt, with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
 .br
 .sp
-\fBgrdimage\fP image.grd SCALE2 \fB\-C\fPcolors.cpt \fB\-I\fPintens.grd \fB\-B\fP5 > image.ps
+\fBgrdimage\fP image.grd SCALE2 OPT(C)colors.cpt OPT(I)intens.grd OPT(B)5 > image.ps
 .br
 .sp
 To create an false color \fIPostScript\fP plot from the three grid files red.grd, green.grd, and blue.grd,
 with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
 .br
 .sp
-\fBgrdimage\fP red.grd green.grd blue.grd SCALE2 \fB\-B\fP5 > rgbimage.ps
+\fBgrdimage\fP red.grd green.grd blue.grd SCALE2 OPT(B)5 > rgbimage.ps
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmt2rgb (1),

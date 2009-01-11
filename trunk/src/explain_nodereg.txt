@@ -1,4 +1,4 @@
 .TP
-.B \-F
+OPT(F)
 Force pixel node registration [Default is gridline registration].
 (Node registrations are defined in \fBGMT\fP Cookbook Appendix B on grid file formats.)

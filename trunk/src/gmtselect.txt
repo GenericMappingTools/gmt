@@ -16,19 +16,19 @@ Records can be selected based on whether or not they are 1) inside a rectangular
 any line in \fIlinefile\fP, 4) inside one of the polygons in the \fIpolygonfile\fP, 5) inside
 geographical features (based on coastlines), or 6) has z-values within a given range.
 The sense of the tests can be reversed for each of these 6 criteria by using the OPT(I) option.
-See option \fB\-:\fP on how to read (latitude,longitude) files.
+See option OPT(:) on how to read (latitude,longitude) files.
 .TP
 \fIinfiles\fP
 ASCII (or binary, see OPT(b)) data file(s) to be operated on.  If not given, standard input is read.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
-Ignored unless \fB\-N\fP is set.  Geographical features with an area smaller than \fImin_area\fP
+OPT(A)
+Ignored unless OPT(N) is set.  Geographical features with an area smaller than \fImin_area\fP
 in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP
 will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the \fBpscoast\fP man-pages for more details.
 .TP
-.B \-C
+OPT(C)
 Pass all records whose location is within \fIdist\fP of any of the points in the ASCII file \fIptfile\fP.
 If \fIdist\fP is zero then the 3rd column of \fIptfile\fP must have each point's individual radius of influence.\"'
 Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical distances in km.
@@ -38,18 +38,18 @@ If \fBELLIPSOID\fP is Sphere then geodesics become great circles (faster to comp
 Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
 (in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \fIdist\fP.
 .TP
-.B \-D
-Ignored unless \fB\-N\fP is set.  Selects the resolution of the coastline data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The
+OPT(D)
+Ignored unless OPT(N) is set.  Selects the resolution of the coastline data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The
 resolution drops off by ~80% between data sets. [Default is \fBl\fP].  Note that because the coastlines differ in details it is not guaranteed that a point will remain inside [or outside] when a different resolution is selected.
 .TP
-.B \-F
+OPT(F)
 Pass all records whose location is within one of the closed polygons in the multiple-segment
 file \fIpolygonfile\fP.  For spherical polygons (lon, lat), make sure no consecutive points
 are separated by 180 degrees or more in longitude.  Note that \fIpolygonfile\fP must be in ASCII regardless
-of whether \fB\-b\fP is used.
+of whether OPT(b) is used.
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Reverses the sense of the test for each of the criteria specified:
 .br
 	\fBc\fP  select records NOT inside any point's circle of influence.\"'
@@ -60,38 +60,38 @@ Reverses the sense of the test for each of the criteria specified:
 .br
 	\fBr\fP  select records NOT inside the specified rectangular region.
 .br
-	\fBs\fP  select records NOT considered inside as specified by \fB\-A, \-D, \-N\fP.
+	\fBs\fP  select records NOT considered inside as specified by OPT(A) OPT(D) OPT(N).
 .br
-	\fBz\fP  select records NOT within the range specified by \fB\-Z\fP.
+	\fBz\fP  select records NOT within the range specified by OPT(Z).
 #include "explain_-J_short.txt"
 .TP
-.B \-L
+OPT(L)
 Pass all records whose location is within \fIdist\fP of any of the line segments in the ASCII multiple-segment
 file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each
 sub-header in the \fIptfile\fP must have each lines's individual distance value.\"'
 Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical distances in km.
 Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
 (in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \fIdist\fP.
-Use \fB\-Lp\fP to ensure only points whose orthogonal projections onto the nearest line-segment
+Use OPT(Lp) to ensure only points whose orthogonal projections onto the nearest line-segment
 fall within the segments endpoints [Default considers points "beyond" the line's endpoints.\"'
 #include "explain_-M.txt"
 The OPT(M) option make sure that segment headers in the input files are copied to output, but it has no effect
 on the data selection. Selection is always done point by point, not by segment.
 .TP
-.B \-N
+OPT(N)
 Pass all records whose location is inside specified geographical features.
 Specify if records should be skipped (s) or kept (k) using 1 of 2 formats:
 .br
-	\fB\-N\fP\fIwet/dry\fP.
+	OPT(N)\fIwet/dry\fP.
 .br
-	\fB\-N\fP\fIocean/land/lake/island/pond\fP.
+	OPT(N)\fIocean/land/lake/island/pond\fP.
 .br
 Append \fBo\fP to let points exactly on feature boundaries be considered outside the feature [Default is inside]. [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
 #include "explain_-R.txt"
-If no map projection is supplied we implicitly set \fB\-Jx\fP1.
+If no map projection is supplied we implicitly set OPT(Jx)1.
 #include "explain_-V.txt"
 .TP
-.B \-Z
+OPT(Z)
 Pass all records whose 3rd colum (z) lies within the given range.  Input file must have at least
 three columns.  To indicate no limit on min or max, specify a hyphen (-).
 #include "explain_-t.txt"
@@ -116,10 +116,10 @@ To extract the subset of data set that is within 300 km of any of the points in 
 100 km away from the lines in lines.d, run
 .br
 .sp
-\fBgmtselect\fP lonlatfile \fB\-fg\fP \fB\-C\fP300/pts.d \fB\-L\fP100/lines.d \fB\-Il\fP > subset
+\fBgmtselect\fP lonlatfile OPT(fg) OPT(C)300/pts.d OPT(L)100/lines.d OPT(Il) > subset
 .br
 .sp
-Here, you must specify \fB\-fg\fP so the program knows you are processing geographical data (otherwise
+Here, you must specify OPT(fg) so the program knows you are processing geographical data (otherwise
 300 would be interpreted as Cartesian distance in x-y units instead of km).
 .br
 .sp
@@ -127,19 +127,19 @@ To keep all points in data.d within the specified region, except the points on l
 coastlines), use
 .br
 .sp
-\fBgmtselect\fP data.d \fB\-R\fP120/121/22/24 \fB\-Dh\fP \fB\-Nk\fP/\fBs\fP > subset
+\fBgmtselect\fP data.d OPT(R)120/121/22/24 OPT(Dh) OPT(Nk)/\fBs\fP > subset
 .br
 .sp
 To return all points in quakes.d that are inside the spherical polygon lonlatpath.d, try
 .br
 .sp
-\fBgmtselect\fP quakes.d \fB\-F\fPlonlatpath.d \fB\-fg\fP > subset1
+\fBgmtselect\fP quakes.d OPT(F)lonlatpath.d OPT(fg) > subset1
 .br
 .sp
 To return all points in stations.d that are within 5 cm of the point in origin.d for a certain projection, try
 .br
 .sp
-\fBgmtselect\fP stations.d \fB\-F\fPorigin.d OPT(R)20/50/-10/20 OPT(JM)20c > subset2
+\fBgmtselect\fP stations.d OPT(F)origin.d OPT(R)20/50/-10/20 OPT(JM)20c > subset2
 .SH "SEE ALSO"
 .IR gmtdefaults (1),
 .IR GMT (1),

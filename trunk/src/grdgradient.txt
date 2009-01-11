@@ -22,13 +22,13 @@ boundary conditions (see OPT(L)).
 2-D grid file from which to compute directional derivative.
 (See GRID FILE FORMATS below).
 .TP
-.B \-G
+OPT(G)
 Name of the output grid file for the directional derivative.
 (See GRID FILE FORMATS below).
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Azimuthal direction for a directional derivative; \fIazim\fP is the  
 angle in the x,y plane
 measured in degrees positive clockwise from north (the +y direction)  
@@ -40,18 +40,18 @@ downhill in the \fIazim\fP direction,
 the correct sense for shading the illumination of an image (see  
 \fBgrdimage\fP and \fBgrdview\fP) by a
 light source above the x,y plane shining from the \fIazim\fP  
-direction.  Optionally, supply two azimuths, \fB\-A\fP\fIazim\fP/\fIazim2\fP,
+direction.  Optionally, supply two azimuths, OPT(A)\fIazim\fP/\fIazim2\fP,
 in which case the gradients in each of these directions  
 are calculated
 and the one larger in magnitude is retained; this is useful for  
 illuminating data with two directions of
-lineated structures, e.g. \fB\-A\fP\fI0\fP/\fI270\fP illuminates from  
+lineated structures, e.g. OPT(A)\fI0\fP/\fI270\fP illuminates from  
 the north (top) and west (left).
 .TP
-.B \-D
+OPT(D)
 Find the direction of the gradient of the data.  By default, the  
 directions
-are measured clockwise from north, as \fIazim\fP in \fB\-A\fP above.   
+are measured clockwise from north, as \fIazim\fP in OPT(A) above.   
 Append
 \fBc\fP to use conventional Cartesian angles measured  
 counterclockwise from
@@ -61,7 +61,7 @@ rather than directions (0-360).  Append \fBn\fP to add 90 degrees to
 all angles
 (e.g., to give orientation of lineated features).
 .TP
-.B \-E
+OPT(E)
 Compute Lambertian radiance appropriate to use with \fBgrdimage\fP  
 and \fBgrdview\fP.
 The Lambertian Reflection assumes an ideal surface that reflects all  
@@ -76,7 +76,7 @@ reflectance properties of the surface. Default values are: \fI0.55\fP/
 \fI0.6\fP/\fI0.4\fP/\fI10\fP
 To leave some of the values untouched, specify = as the new value.  
 For example
-\fB\-E\fP\fI60\fP/\fI30\fP/\fI=\fP/\fI0.5\fP sets the \fIazim\fP  
+OPT(E)\fI60\fP/\fI30\fP/\fI=\fP/\fI0.5\fP sets the \fIazim\fP  
 \fIelev\fP and \fIdiffuse\fP to 60, 30
 and 0.5 and leaves the other reflectance parameters untouched.
 Append \fBs\fP to use a simpler Lambertian algorithm. Note that with  
@@ -88,7 +88,7 @@ in this case the \fIazim\fP and \fIelev\fP are hardwired to 315 and
 45 degrees.
 This means that even if you provide other values they will be ignored.)
 .TP
-.B \-L
+OPT(L)
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP  
 indicating data is periodic in range of
 x or y or both, or \fIflag\fP may be \fIg\fP indicating geographical  
@@ -96,14 +96,14 @@ conditions (x and y are
 lon and lat).  [Default uses "natural" conditions (second partial  
 derivative normal to edge is zero).]
 .TP
-.B \-M
+OPT(M)
 By default the units of \fBgrdgradient\fP are in units_of_z/ 
 units_of_dx_and_dy.
 However, the user may choose this option to convert dx,dy in degrees of
 longitude,latitude into meters, so that the units of \fBgrdgradient\fP are in
 z_units/meter.
 .TP
-.B \-N
+OPT(N)
 Normalization.  [Default:  no normalization.]  The actual gradients  
 \fIg\fP
 are offset and scaled to produce normalized gradients \fIgn\fP with a  
@@ -111,15 +111,15 @@ maximum
 output magnitude of \fIamp\fP.  If \fIamp\fP is not given, default  
 \fIamp\fP = 1.
 If \fIoffset\fP is not given, it is set to the average of \fIg\fP.   
-\fB\-N\fP
+OPT(N)
 yields \fIgn\fP = \fIamp\fP * (\fIg\fP - \fIoffset\fP)/max(abs(\fIg 
 \fP - \fIoffset\fP)).
-\fB\-Ne\fP normalizes using a cumulative Laplace distribution yielding
+OPT(Ne) normalizes using a cumulative Laplace distribution yielding
 \fIgn\fP = \fIamp\fP * (1.0 - exp(sqrt(2) * (\fIg\fP - \fIoffset\fP)/ 
 \fIsigma\fP))
 where \fIsigma\fP is estimated using the L1 norm of (\fIg\fP -  
 \fIoffset\fP) if it is
-not given.   \fB\-Nt\fP normalizes using a cumulative Cauchy  
+not given.   OPT(Nt) normalizes using a cumulative Cauchy  
 distribution yielding
 \fIgn\fP = (2 * \fIamp\fP / PI) * atan( (\fIg\fP - \fIoffset\fP)/ 
 \fIsigma\fP)
@@ -127,24 +127,24 @@ where \fIsigma\fP is estimated using the L2 norm of (\fIg\fP -
 \fIoffset\fP) if it is
 not given.
 .TP
-.B \-S
+OPT(S)
 Name of output grid file with scalar magnitudes of gradient vectors.   
-Requires \fB\-D\fP.
+Requires OPT(D).
 #include "explain_-V.txt"
 .SH HINTS
-If you don't know what \fB\-N\fP options to use to make an intensity file for\"'
-\fBgrdimage\fP or \fBgrdview\fP, a good first try is \fB\-Ne\fP0.6.
+If you don't know what OPT(N) options to use to make an intensity file for\"'
+\fBgrdimage\fP or \fBgrdview\fP, a good first try is OPT(Ne)0.6.
 .br
 .sp
 If you want to make several illuminated maps of subregions of a large  
 data set,
 and you need the illumination effects to be consistent across all the  
 maps, use
-the \fB\-N\fP option and supply the same value of \fIsigma\fP and  
+the OPT(N) option and supply the same value of \fIsigma\fP and  
 \fIoffset\fP
 to \fBgrdgradient\fP for each map.  A good guess is \fIoffset\fP = 0  
 and \fIsigma\fP
-found by \fBgrdinfo \-L2\fP or \fB\-L1\fP applied to an unnormalized  
+found by \fBgrdinfo\fP OPT(L2) or OPT(L1) applied to an unnormalized  
 gradient grd.
 .br
 .sp
@@ -157,7 +157,7 @@ normalized gradients
 imitating light sources in the north and west directions:
 .br
 .sp
-\fBgrdgradient\fP geoid.grd \fB\-A\fP0/270 \fB\-G\fPgradients.grd \fB 
+\fBgrdgradient\fP geoid.grd OPT(A)0/270 OPT(G)gradients.grd \fB 
 \-Ne\fP0.6 \fP\-V\fP
 .br
 .sp
@@ -165,7 +165,7 @@ To find the azimuth orientations of seafloor fabric in the file
 topo.grd:
 .br
 .sp
-\fBgrdgradient\fP topo.grd \fB\-Dno \-G\fPazimuths.grd \fB\-V\fP
+\fBgrdgradient\fP topo.grd OPT(Dno) OPT(G)azimuths.grd OPT(V)
 .br
 .sp
 .SH REFERENCES

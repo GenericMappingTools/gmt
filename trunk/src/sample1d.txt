@@ -14,39 +14,39 @@ be selected.  All columns are resampled based on the new sampling interval.
 Several interpolation schemes are available.  Extrapolation outside the range of the input data is not supported.
 .TP
 \fIinfile\fP
-This is a multi-column ASCII [of binary, see \fB\-b\fP] file with one column containing the independent variable (which must
+This is a multi-column ASCII [of binary, see OPT(b)] file with one column containing the independent variable (which must
 be monotonically in/de-creasing) and the remaining columns holding misc. data values.
 If no file is provided, \fBsample1d\fP reads from standard input.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-F
+OPT(F)
 Choose from \fBl\fP (Linear), \fBa\fP (Akima spline), \fBc\fP (natural cubic spline),
-and \fBn\fP (no interpolation: nearest point) [Default is \fB\-Fa\fP].
+and \fBn\fP (no interpolation: nearest point) [Default is OPT(Fa)].
 You may change the default interpolant; see \fBINTERPOLANT\fP in your \.gmtdefaults4 file.
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 \fIxinc\fP defines the sampling interval. [Default is the separation between the first and
 second abscissa point in the \fIinfile\fP]
 .TP
-.B \-M
+OPT(M)
 Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
 [Default is '>'].
 .TP
-.B \-N
+OPT(N)
 \fIknotfile\fP is an optional ASCII file with the x locations where the data set will be resampled in the first column.
 Note: if OPT(H) is selected it applies to both \fIinfile\fP and \fIknotfile\fP.
 .TP
-.B \-S
+OPT(S)
 For equidistant sampling, \fIxstart\fP indicates the location of the first output value. [Default
 is the smallest even multiple of \fIxinc\fP inside the range of \fIinfile\fP]
 .TP
-.B \-T
+OPT(T)
 Sets the column number of the independent variable [Default is 0 (first)].
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
-[Default is 2 (or at least the number of columns implied by \fB\-T\fP)].
+[Default is 2 (or at least the number of columns implied by OPT(T))].
 #include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_-f.txt"
@@ -60,14 +60,14 @@ To resample the file profiles.tdgmb, which contains (time,distance,gravity,magne
 at 1km equidistant intervals using Akima's spline, use\"'
 .br
 .sp
-\fBsample1d\fP profiles.tdgmb \fB\-I\fP1 \fB\-Fa\fP \fB\-T\fP1 > profiles_equi_d.tdgmb
+\fBsample1d\fP profiles.tdgmb OPT(I)1 OPT(Fa) OPT(T)1 > profiles_equi_d.tdgmb
 .br
 .sp
 To resample the file depths.dt at positions listed in the file grav_pos.dg, using a cubic spline
 for the interpolation, use
 .br
 .sp
-\fBsample1d\fP depths.dt \fB\-N\fPgrav_pos.dg \fB\-Fc\fP > new_depths.dt
+\fBsample1d\fP depths.dt OPT(N)grav_pos.dg OPT(Fc) > new_depths.dt
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR filter1d (1)

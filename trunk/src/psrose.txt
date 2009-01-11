@@ -3,9 +3,9 @@
 #define PARAM_SI 0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP/0/0/0
 #define PARAM_US 0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP/0/0/0
 #define LEN_1	3
-#define SCALE_1	\fB\-S\fP3\fBi\fP
+#define SCALE_1	OPT(S)3\fBi\fP
 #define LEN_2	5
-#define SCALE_2	\fB\-S\fP5\fBc\fP
+#define SCALE_2	OPT(S)5\fBc\fP
 .SH NAME
 psrose \- Plot (length, azimuth) as windrose diagram or polar histogram (sector or rose diagram).
 .SH SYNOPSIS
@@ -18,77 +18,77 @@ psrose \- Plot (length, azimuth) as windrose diagram or polar histogram (sector 
 [ GMT_Y_OPT ] [ OPT(Z)\fIscale\fP ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
 \fBpsrose\fP reads (length,azimuth) pairs from \fIfile\fP [or standard input] and
-generates \fIPostScript\fP code that will plot a windrose diagram.  Optionally (with \fB\-A\fP), polar histograms
+generates \fIPostScript\fP code that will plot a windrose diagram.  Optionally (with OPT(A)), polar histograms
 may be drawn (sector diagram or rose diagram).  Options include full circle and half circle plots.
 The \fIPostScript\fP code is written to standard output. 
 .TP
 \fIfile\fP
-Name of ASCII [or binary, see \fB\-b\fP] data file.  If no file is given, psrose will read standard input.
+Name of ASCII [or binary, see OPT(b)] data file.  If no file is given, psrose will read standard input.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Gives the sector width in degrees for sector and rose diagram.  [Default 0 means windrose diagram].  Append \fBr\fP to draw
 rose diagram instead of sector diagram.
 #include "explain_-B_short.txt"
 Remember that "x" here is radial distance and
 "y" is azimuth.  The ylabel may be used to plot a figure caption.
 .TP
-.B \-C
+OPT(C)
 Plot vectors showing the principal directions given in the \fImodes\fP file.  If no file is
 given, compute and plot mean direction.
 .TP
-.B \-D
+OPT(D)
 Shift sectors so that they are centered on the bin interval (e.g., first sector is centered on 0 degrees).
 .TP
-.B \-E
+OPT(E)
 Sets the viewpoint's azimuth and elevation [180/90]\"'
 .TP
-.B \-F
+OPT(F)
 Do not draw the scale length bar [Default plots scale in lower right corner]
 .TP
-.B \-G
+OPT(G)
 Selects shade, color or pattern for filling the sectors [Default is no fill].
 (See SPECIFYING FILL below).
 #include "explain_-H.txt"
 .TP
-.B \-I
-Inquire.  Computes statistics needed to specify useful \fB\-R\fP.  No plot is generated.
+OPT(I)
+Inquire.  Computes statistics needed to specify useful OPT(R).  No plot is generated.
 #include "explain_-K.txt"
 .TP
-.B \-L
+OPT(L)
 Specify labels for the 0, 90, 180, and 270 degree marks.  For full-circle plot the default
 is WEST/EAST/SOUTH/NORTH and for half-circle the default is 90W/90E/-/0.  A - in any entry
 disables that label.  Use OPT(L) with no argument to disable all four labels
 .TP
-.B \-M
+OPT(M)
 Specify new arrow attributes tailwidth/headlength/headwidth/r/g/b to change
-the appearance of arrows (Only if \fB\-C\fP is set). [Default is PARAM_SI (or PARAM_US)].
+the appearance of arrows (Only if OPT(C) is set). [Default is PARAM_SI (or PARAM_US)].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-R
+OPT(R)
 Specifies the 'region' of interest in (r,azimuth) space.  r0 is 0, r1 is max length in units.  For azimuth, specify
 -90/90 for half circle plot or 0/360 for full circle.
 .TP
-.B \-S
+OPT(S)
 Specifies radius of circle.  Append \fBn\fP to normalize input radii to go from 0 to 1.
 .TP
-.B \-T
+OPT(T)
 Specifies that the input data is orientation data (has a 180 degree ambiguity) instead of true
 0-360 degree directions [Default].
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Set pen attributes for sector outline or rose plot.  [Default is no outline].
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
-.B \-Z
-Multiply the data radii by \fIscale\fP.  E.g., use \fB\-Z\fP0.001 to convert your data from m to km [Default is no scaling].
+OPT(Z)
+Multiply the data radii by \fIscale\fP.  E.g., use OPT(Z)0.001 to convert your data from m to km [Default is no scaling].
 .TP
-.B \-:
+OPT(:)
 Input file has (azimuth,radius) pairs rather than the expected (radius,azimuth).
 #include "explain_-bi.txt"
 [Default is 2 input columns].
@@ -104,8 +104,8 @@ sector interval, radial direction annotated every 50 km, using a light blue shad
 by a solid red pen (width = 0.75 points), draw the mean azimuth, and shown in Portrait orientation, use:
 .br
 .sp
-\fBpsrose\fP fault_segments.az_r \fB\-R\fP0/150/-90/90 \fB\-B\fP50g25:"Fault length":/g30:."Rose diagram":
-SCALE_1 \fB\-A\fP10\fBr \-G\fPlightblue \fB\-W\fP0.75\fBp\fP,red \fB\-Z\fP0.001 \fB\-C\fP \fB\-P \-T\fP \fB\-:\fP | lpr
+\fBpsrose\fP fault_segments.az_r OPT(R)0/150/-90/90 OPT(B)50g25:"Fault length":/g30:."Rose diagram":
+SCALE_1 OPT(A)10\fBr\fP OPT(G)lightblue OPT(W)0.75\fBp\fP,red OPT(Z)0.001 OPT(C) OPT(P) OPT(T) OPT(:) | lpr
 .br
 .sp
 To plot a full circle wind rose diagram of the data in the file lines.r_az, on a circle of radius = LEN_2 cm, 
@@ -113,7 +113,7 @@ grid going out to radius = 500 units in steps of 100 with a 45 degree sector int
 and shown in landscape [Default] orientation with UNIX timestamp and command line plotted, use:
 .br
 .sp
-\fBpsrose\fP lines.az_r \fB\-R\fP0/500/0/360 SCALE_2 \fB\-Bg\fP100/\fBg\fP45:."Windrose diagram": \fB\-W\fP0.5\fBp\fP \fB\-Uc\fP | lpr
+\fBpsrose\fP lines.az_r OPT(R)0/500/0/360 SCALE_2 OPT(Bg)100/\fBg\fP45:."Windrose diagram": OPT(W)0.5\fBp\fP OPT(Uc) | lpr
 .SH BUGS
 No default radial scale and grid settings for polar histograms.  User must run \fBpsrose \-I\fP to find max length in
 binned data set.

@@ -13,9 +13,9 @@ defined by:
 .sp
 m1 + m2*x + m3*y + m4*x*y + m5*x*x + m6*y*y + m7*x*x*x + m8*x*x*y + m9*x*y*y + m10*y*y*y.
 .sp
-The user must specify \fB\-N\fP\fIn_model\fP, the number of model parameters to use; 
-thus, \fB\-N\fP\fI4\fP fits a bilinear trend, \fB\-N\fP\fI6\fP a quadratic surface, 
-and so on.  Optionally, append \fBr\fP to the \fB\-N\fP option to perform a 
+The user must specify OPT(N)\fIn_model\fP, the number of model parameters to use; 
+thus, OPT(N)\fI4\fP fits a bilinear trend, OPT(N)\fI6\fP a quadratic surface, 
+and so on.  Optionally, append \fBr\fP to the OPT(N) option to perform a 
 robust fit.  In this case, the program will iteratively reweight the data based on 
 a robust scale estimate, in order to converge to a solution insensitive to outliers.  
 This may be handy when separating a "regional" field from a "residual" which should 
@@ -29,21 +29,19 @@ No space between the option flag and the associated arguments.
 \fIgrdfile\fP
 The name of a 2-D binary grid file.
 .TP
-.B \-N
+OPT(N)
 [\fBr\fP]\fIn_model\fP sets the number of model parameters to fit.  Append \fBr\fP for robust fit.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-D
+OPT(D)
 Write the difference (input data - trend) to the file \fIdiff.grd\fP.
 .TP
-.B \-T
+OPT(T)
 Write the fitted trend to the file \fItrend.grd\fP.
+#include "explain_-V.txt"
 .TP
-.B \-V
-Selects verbose mode, which will send progress reports to stderr [Default runs "silently"].
-.TP
-.B \-W
+OPT(W)
 If \fIweight.grd\fP exists, it will be read and used to solve a weighted 
 least-squares problem.  [Default:  Ordinary least-squares fit.]  If the robust 
 option has been selected, the weights used in the robust fit will be written to 
@@ -51,24 +49,23 @@ option has been selected, the weights used in the robust fit will be written to
 .SH REMARKS
 The domain of x and y will be shifted and scaled to [-1, 1] and the basis functions are built from 
 Legendre polynomials.  These have a numerical advantage in the form of the matrix which must be 
-inverted and allow more accurate solutions.  NOTE: The model parameters listed with \fB\-V\fP are 
+inverted and allow more accurate solutions.  NOTE: The model parameters listed with OPT(V) are 
 Legendre polynomial coefficients; they are not numerically equivalent to the m#s in the equation 
-described above.  The description above is to allow the user to match \fB\-N\fP with the order of the 
+described above.  The description above is to allow the user to match OPT(N) with the order of the 
 polynomial surface.  See \fBgrdmath\fP if you need to evaluate the trend using the reported coefficients. 
 #include "explain_grd_inout.txt"
 .SH EXAMPLES
 To remove a planar trend from hawaii_topo.grd and write result in hawaii_residual.grd:
 .br
 .sp
-\fBgrdtrend\fP hawaii_topo.grd \fB\-N\fP3 \fB\-D\fPhawaii_residual.grd
+\fBgrdtrend\fP hawaii_topo.grd OPT(N)3 OPT(D)hawaii_residual.grd
 .br
 .sp
 To do a robust fit of a bicubic surface to hawaii_topo.grd, writing the result in 
 hawaii_trend.grd and the weights used in hawaii_weight.grd, and reporting the progress:
 .br
 .sp
-\fBgrdtrend\fP hawaii_topo.grd \fB\-N\fP10\fBr \-T\fPhawaii_trend.grd 
-\fB\-W\fPhawaii_weight.grd \fB\-V\fP
+\fBgrdtrend\fP hawaii_topo.grd OPT(N)10\fBr\fP OPT(T)hawaii_trend.grd OPT(W)hawaii_weight.grd OPT(V)
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdfft (1),

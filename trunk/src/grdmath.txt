@@ -61,16 +61,16 @@ The following symbols have special meaning:
 \fBYn \fP	Grid with normalized [-1 to +1] y-coordinates
 .SH OPTIONS
 #include "explain_nodereg.txt"
-Only used with \fB\-R, \-I\fP.
+Only used with OPT(R) OPT(I).
 #include "explain_-I.txt"
 .TP
-.B \-M
+OPT(M)
 By default any derivatives calculated are in z_units/ x(or y)_units.
 However, the user may choose this option to convert dx,dy in degrees of
 longitude,latitude into meters using a flat Earth approximation, so that
 gradients are in z_units/meter.
 .TP
-.B \-N
+OPT(N)
 Turn off strict domain match checking when multiple grids are manipulated [Default will insist
 that each grid domain is within 1e-4 * grid_spacing of the domain of the first grid listed].
 #include "explain_-R.txt"
@@ -151,7 +151,7 @@ To calculate the fully normalized spherical harmonic of degree 8 and order
 imaginary amplitude 1.1:
 .br
 .sp
-\fBgrdmath\fP \fB\-R\fP0/360/-90/90 \fB\-I\fP1 8 4 \fBYML\fP 1.1 \fBMUL EXCH\fP 0.4 \fBMUL ADD\fP = harm.grd
+\fBgrdmath\fP OPT(R)0/360/-90/90 OPT(I)1 8 4 \fBYML\fP 1.1 \fBMUL EXCH\fP 0.4 \fBMUL ADD\fP = harm.grd
 .br
 .sp
 To extract the locations of local maxima that exceed 100 mGal in the file faa.grd:
@@ -159,7 +159,7 @@ To extract the locations of local maxima that exceed 100 mGal in the file faa.gr
 .sp
 \fBgrdmath\fP faa.grd \fBDUP EXTREMA\fP 2 \fBEQ MUL DUP\fP 100 \fBGT MUL\fP 0 \fBNAN\fP = z.grd
 .br
-\fBgrd2xyz\fP z.grd \fB\-S\fP > max.xyz
+\fBgrd2xyz\fP z.grd OPT(S) > max.xyz
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
 Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.

@@ -4,9 +4,9 @@
 \fBx_list\fP \- Extract Cross-Over Information from the Data Base.
 .SH SYNOPSIS
 \fBx_list\fP [ \fIleg1\fP ] [ \fIleg2\fP ] [ \fB\-\fP\fIdataflags\fP ] 
-[ \fB\-R\fP\fIwest/east/south/north\fP ] 
-[ \fB\-X\fP\fIxbase\fP ] [ \fB\-H\fP ] [ \fB\-I\fP ] 
-[ \fB\-V\fP ] [ \fB\-C\fP\fIcorrfile\fP ] [ \fB\-Z\fP\fIignorefile\fP ]
+[ OPT(R)\fIwest/east/south/north\fP ] 
+[ OPT(X)\fIxbase\fP ] [ OPT(H) ] [ OPT(I) ] 
+[ OPT(V) ] [ OPT(C)\fIcorrfile\fP ] [ OPT(Z)\fIignorefile\fP ]
 .SH DESCRIPTION
 \fBx_list\fP will allow the user to extract information from the xx_base.b and xx_legs.b files.
 Several options can be passed on the command line in order to specify which parameters to
@@ -45,32 +45,30 @@ This is a string of any combination of the following:
 	\fBh\fP means list heading of ship at cross-over.
 .br
 The components are written out in the order they appear in \fIdataflags\fP. The default output is
-\fB\-txygmbGMBhl\fP.  When internal COEs are desired, the time reported is the elapsed time since
+OPT(txygmbGMBhl).  When internal COEs are desired, the time reported is the elapsed time since
 the ship first occupied the cross-over point. For external COEs the time means time from the start
 of the year in seconds.
 .TP
-.B \-R
+OPT(R)
 Only return cross-overs inside the specified region \fIwest, east, south, \fPand \fInorth\fP.  [Default is world].
 .TP
-.B \-X
+OPT(X)
 Indicate alternate \fIxx_base.b\fP file.
 .TP
-.B \-H
+OPT(H)
 Issue one header record on output.
 .TP
-.B \-I
+OPT(I)
 Report on internal COEs [Default is external COEs].
 .TP
-.B \-C
+OPT(C)
 Apply cross-over correction to the data (i.e. reports the cross-over value after the best-fitting
 corrections have been applied to both legs). If no \fIcorrfile\fP is given, the default correction file
 is assumed.
 .TP
-.B \-Z
+OPT(Z)
 Ignore those legs that appear in the \fIignorefile\fP.
-.TP
-.B \-V
-Operate in verbose mode.
+#include "explain_-V.txt"
 .SH SEE ALSO
 .IR GMT (1),
 .IR x_system (1)

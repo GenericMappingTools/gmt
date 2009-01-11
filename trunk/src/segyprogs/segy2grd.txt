@@ -17,45 +17,45 @@ Nodes with more than one value will be set to the average value.
 .TP
 \fIsegyfile\fP
 ASCII [or binary] file holding z or (x,y,z) values. xyz triplets do not
-have to be sorted (for binary triplets, see \fB\-b\fP). 1-column z tables must be sorted and the \fB\-Z\fP must be set).
+have to be sorted (for binary triplets, see OPT(b)). 1-column z tables must be sorted and the OPT(Z) must be set).
 .TP
-.B \-G
+OPT(G)
 \fIgrdfile\fP is the name of the binary output grid file.
 .TP
-.B \-I
+OPT(I)
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to indicate minutes or \fBc\fP to indicate seconds.
 #include "explain_-Rgeo.txt"
 .SH OPTIONS
 .TP
-.B \-A
-Add up multiple values that belong to the same node (same as \fB\-Az\fP).
+OPT(A)
+Add up multiple values that belong to the same node (same as OPT(Az)).
 Append \fBn\fP to simply count the number of data points that were assigned to each node.
-[Default (no \fB\-A\fP option) will calculate mean value]. Not used for simple mapping.
+[Default (no OPT(A) option) will calculate mean value]. Not used for simple mapping.
 .TP
-.B \-D
+OPT(D)
 Give values for \fIxname, yname, zname, scale, offset, title,\fP and \fIremark\fP.
 To leave some of these values untouched, specify = as the value.
 .TP
-.B \-F
+OPT(F)
 Force pixel registration [Default is grid registration].
 .TP
-.B \-N
+OPT(N)
 No data. Set nodes with no input sample to this value [Default is NaN].
 .TP
-.B \-S
+OPT(S)
 set variable spacing \fIheader\fP is c for cdp, o for offset, b<number> for 4-byte float starting at byte number
 If -S not set, assumes even spacing of samples at the dx, dy supplied with -I
 .TP
-.B \-L
+OPT(L)
 Override number of samples in each trace
 .TP
-.B \-X
+OPT(X)
 applies scalar \fIx-scale\fP to coordinates in trace header to match the coordinates specified in -R
 .TP
-.B \-Y
+OPT(Y)
 Specifies sample interval as \fIs_int\fP if incorrect in the SEGY file
 .TP
-.B \-M
+OPT(M)
 Fix number of traces to read in. Default tries to read 10000 traces.
 -M0 will read number in binary header, -Mn will attempt to read only n traces.
 #include "explain_-V.txt"
@@ -64,8 +64,8 @@ Fix number of traces to read in. Default tries to read 10000 traces.
 To create a grid file from an even spaced SEGY file test.segy, try
 .br
 .sp
-segy2grd test.segy \fB\-I\fP0.1/0.1
-\fB\-G\fPtest.grd \fB\-R\fP198/208/18/25 \fB\-V\fP
+segy2grd test.segy OPT(I)0.1/0.1
+OPT(G)test.grd OPT(R)198/208/18/25 OPT(V)
 .br
 .sp
 Note that this will read in 18-25s (or km) on each trace, but the first trace will be assumed to be at
@@ -76,7 +76,7 @@ To create a grid file from the SEGY file test.segy, locating traces according to
 there are 10 CDPs per km and the sample interval is 0.1, try
 .br
 .sp
-segy2grd test.segy  \fB\-G\fPtest.grd \fB\-R\fP0/100/0/10 \fB\-I\fP0.5/0.2 \fB\-V \-X\fP0.1  \fB\-Y\fP0.1
+segy2grd test.segy  OPT(G)test.grd OPT(R)0/100/0/10 OPT(I)0.5/0.2 OPT(V) OPT(X)0.1  OPT(Y)0.1
 .br
 .sp
 Because the grid interval is larger than the SEGY file sampling, the individual samples will be averaged

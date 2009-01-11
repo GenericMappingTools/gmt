@@ -1,8 +1,8 @@
 .TP
-.B \-M
+OPT(M)
 Multiple segment file(s).  Segments are separated by a special record.
 For ASCII files the first character must be \fIflag\fP [Default is '>'].
-For binary files all fields must be NaN and \fB\-b\fP must
-set the number of output columns explicitly.  By default the \fB\-M\fP
-setting applies to both input and output.  Use \fB\-Mi\fP and \fB\-Mo\fP
+For binary files all fields must be NaN and OPT(b) must
+set the number of output columns explicitly.  By default the OPT(M)
+setting applies to both input and output.  Use OPT(Mi) and OPT(Mo)
 to give separate settings.

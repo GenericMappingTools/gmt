@@ -14,43 +14,43 @@ iterative reweighting of the data.  The user may also search for the number of t
 significantly reduce the variance in y.
 .SH REQUIRED ARGUMENTS
 .TP
-.B \-F
+OPT(F)
 Specify up to five letters from the set {x y m r w} in any order to create columns of 
 ASCII [or binary] output.  x = x, y = y, m = model f(x), r = residual y - m, w = weight used in fitting.
 .TP
-.B \-N
+OPT(N)
 Specify the number of terms in the model, \fIn_model\fP, whether to fit 
-a Fourier (\fB\-Nf\fP) or polynomial [Default] model, and append \fBr\fP to do a robust fit.  E.g., a robust 
-quadratic model is \fB\-N\fP\fI3\fP\fBr\fP.
+a Fourier (OPT(Nf)) or polynomial [Default] model, and append \fBr\fP to do a robust fit.  E.g., a robust 
+quadratic model is OPT(N)\fI3\fP\fBr\fP.
 .SH OPTIONS
 .TP
 \fIxy[w]file\fP
-ASCII [or binary, see \fB\-b\fP] file containing x,y [w] values in the first 2 [3] columns.  If no file is specified, \fBtrend1d\fP 
+ASCII [or binary, see OPT(b)] file containing x,y [w] values in the first 2 [3] columns.  If no file is specified, \fBtrend1d\fP 
 will read from standard input.
 .TP
-.B \-C
+OPT(C)
 Set the maximum allowed condition number for the matrix solution.  \fBtrend1d\fP 
 fits a damped least squares model, retaining only that part of the eigenvalue spectrum such that 
 the ratio of the largest eigenvalue to the smallest eigenvalue is \fIcondition_#\fP.   
 [Default:  \fIcondition_#\fP = 1.0e06. ].
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Iteratively increase the number of model parameters, starting at one, until 
 \fIn_model\fP is reached or the reduction in variance of the model is not significant at the 
-\fIconfidence_level\fP level.  You may set \fB\-I\fP only, without an attached number; in this 
+\fIconfidence_level\fP level.  You may set OPT(I) only, without an attached number; in this 
 case the fit will be iterative with a default confidence level of 0.51.  Or choose your own level 
 between 0 and 1.  See remarks section.
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Weights are supplied in input column 3.  Do a weighted least squares fit [or start with these weights 
 when doing the iterative robust fit].  [Default reads only the first 2 columns.]
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
-[Default is 2 (or 3 if \fB\-W\fP is set) columns].
+[Default is 2 (or 3 if OPT(W) is set) columns].
 #include "explain_-bo.txt"
-[Default is 1-5 columns as given by \fB\-F\fP].
+[Default is 1-5 columns as given by OPT(F)].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH REMARKS
@@ -65,9 +65,9 @@ a + bx + cxx + ...  are also given in Verbose mode but users must realize that t
 degree 7 or 8. See Numerical Recipes for more discussion.  For evaluating Chebyshev polynomials,
 see \fBgmtmath\fP.
 .sp
-The \fB\-Nr\fP (robust) and \fB\-I\fP (iterative) options evaluate the significance of the improvement 
+The OPT(Nr) (robust) and OPT(I) (iterative) options evaluate the significance of the improvement 
 in model misfit Chi-Squared by an F test.  The default confidence limit is set at 0.51; it can be changed 
-with the \fB\-I\fP option.  The user may be surprised to find that in most cases the reduction in variance 
+with the OPT(I) option.  The user may be surprised to find that in most cases the reduction in variance 
 achieved by increasing the number of terms in a model is not significant at a very high degree of 
 confidence.  For example, with 120 degrees of freedom, Chi-Squared must decrease by 26% or more to be significant 
 at the 95% confidence level.  If you want to keep iterating as long as Chi-Squared is decreasing, set 
@@ -83,15 +83,15 @@ attenuate their effect, the significance level of the F test must be kept low.
 .SH EXAMPLES
 To remove a linear trend from data.xy by ordinary least squares, use:  
 .sp
-\fBtrend1d\fP data.xy \fB\-F\fPxr \fB\-N\fP2 > detrended_data.xy 
+\fBtrend1d\fP data.xy OPT(F)xr OPT(N)2 > detrended_data.xy 
 .sp
 To make the above linear trend robust with respect to outliers, use:
 .sp
-\fBtrend1d\fP data.xy \fB\-F\fPxr \fB\-N\fP2\fBr\fP > detrended_data.xy 
+\fBtrend1d\fP data.xy OPT(F)xr OPT(N)2\fBr\fP > detrended_data.xy 
 .sp
 To find out how many terms (up to 20, say) in a robust Fourier interpolant are significant in fitting data.xy, use:
 .sp
-\fBtrend1d\fP data.xy \fB\-Nf\fP20\fBr \-I\fP \fB\-V\fP
+\fBtrend1d\fP data.xy OPT(Nf)20\fBr\fP OPT(I) OPT(V)
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmtmath (1),

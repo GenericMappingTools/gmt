@@ -20,7 +20,7 @@ tolerance is maximum mismatch in km.  The larger the value the more reduction wi
 The reducted data set.
 .SH OPTIONS
 .TP
-.B \-v
+OPT(v)
 Reports progress and statistics while running.
 .SH EXAMPLES
 .sp
@@ -38,5 +38,5 @@ University of Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk); his
 subroutine forms the basis for this program.
 .SH "SEE ALSO"
 .IR GMT (1),
-.IR gshhs (1)
+.IR gshhs (1),
 .IR gshhstograss (1)

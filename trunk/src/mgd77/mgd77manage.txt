@@ -11,7 +11,7 @@ mgd77manage \- Manage extra columns in MGD77+ files
 \fBmgd77manage\fP deals with maintaining extra custom columns in MGD77+ netCDF files.
 You can either delete one or more columns, add a new column, update an existing
 column with new data, or supply error correction information (*.e77 files).  New data may come
-from a table (ASCII unless \fB\-b\fP is used), be based on existing columns and certain
+from a table (ASCII unless OPT(b) is used), be based on existing columns and certain
 theoretical expressions, or they may be obtained by sampling a grid
 (choose between GMT grid or a Sandwell/Smith Mercator *.img grid) along track.  The new data
 will be appended to the MGD77+ file in the form of an extra data column of specified type.
@@ -21,9 +21,9 @@ section below.
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
-.B \-A
+OPT(A)
 Add a new data column.  If an existing column with the same abbreviation already exists in the file
-we will cowardly refuse to update the file. Specifying \fB\-A+\fP overcomes this reluctance (However,
+we will cowardly refuse to update the file. Specifying OPT(A+) overcomes this reluctance (However,
 sometimes an existing column cannot be upgraded without first deleting it; if so you will be warned).
 Select a column source code among \fBa\fP, \fBc\fP, \fBd\fP, \fBD\fP, \fBe\fP, \fBg\fP, \fBi\fP,
 \fBn\fP, \fBt\fP, or \fBT\fP; detailed descriptions for each choice follow:
@@ -47,7 +47,7 @@ You can override this behaviour by appending the desired code: 1 = Heiskanen 192
 and the second column holding data values.  If no file is given we read from stdin instead.  Records with matching
 distances in the MGD77+ file will be assigned the new values; at other distances we set them to NaN.
 Alternatively, give upper case \fBD\fP instead and we will interpolate the column at all record distances.
-See \fB\-N\fP for choosing distance units and \fB\-C\fP for choosing how distances are calculated.
+See OPT(N) for choosing distance units and OPT(C) for choosing how distances are calculated.
 .br
 .sp
 \fBe\fP Expects to find an e77 error/correction log from \fBmgd77sniffer\fP with the name \fINGDC_ID\fP.e77 in
@@ -61,18 +61,18 @@ data are read by \fBmgd77list\fP.  Ephemeral corrections such as those determine
 not kept in the data files but reside in correction tables (see \fBmgd77list\fP for details).  By default, the
 first character of each header line in the e77 file (which is ?, Y or N) will be consulted to see if the corresponding
 adjustment should be applied.  If any undecided settings are found (i.i, ?) we will abort and make no changes.
-Only records marked Y will be porcessed.  You can override this behavior by appending one or more modifiers to the \fB\-Ae\fP command:
+Only records marked Y will be porcessed.  You can override this behavior by appending one or more modifiers to the OPT(Ae) command:
 \fBh\fP will ignore all header corrections, \fBf\fP will ignore all fixed systematic trend corrections, 
 \fBn\fP, \fBv\fP, and \fBs\fP will ignore bitflags pertaining to navigation, data values, and data slopes,
-respectively.  Use \fB\-A+e\fP to replace any existing E77 corrections in the file with the new values.
+respectively.  Use OPT(A+e) to replace any existing E77 corrections in the file with the new values.
 .br
 .sp
 \fBg\fP Sample a GMT geographic (lon, lat) grid along the track given by the MGD77+ file using
-bicubic interpolation (however, see \fB\-Q\fP).  Append name of a GMT grid file.
+bicubic interpolation (however, see OPT(Q)).  Append name of a GMT grid file.
 .br
 .sp
 \fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77+ file using
-bicubic interpolation (however, see \fB\-Q\fP).  Append the gridded data scale (typically 1 or 0.1),
+bicubic interpolation (however, see OPT(Q)).  Append the gridded data scale (typically 1 or 0.1),
 the IMG file mode (0-3), and finally the img grid filename.  The modes stand for the following:
 (0) Img files with no constraint code, returns data at all points, (1) Img file with constraints coded,
 return data at all points, (2) Img file with constraints coded, return data only at constrained points
@@ -89,9 +89,9 @@ and the second column holding data values.  If no file is given we read from std
 times in the MGD77+ file will be assigned the new values; at other times we set them to NaN.
 Alternatively, give upper case \fBT\fP instead and we will interpolate the column at all record times.
 .TP
-.B \-C
+OPT(C)
 Append a one-letter code to select the procedure for along-track distance
-calculation when using \fB\-Ad\fP|\fBD\fP (see \fB\-N\fP for selecting distance units):
+calculation when using OPT(Ad)|\fBD\fP (see OPT(N) for selecting distance units):
 .br
 	\fBf\fP Flat Earth distances.
 .br
@@ -99,63 +99,63 @@ calculation when using \fB\-Ad\fP|\fBD\fP (see \fB\-N\fP for selecting distance 
 .br
 	\fBe\fP Geodesic distances on current GMT ellipsoid.
 .TP
-.B \-D
+OPT(D)
 Give a comma-separated list of column abbreviations that you want to delete from the MGD77+ files.
-Do NOT use this option to remove columns that you are replacing with new data (use \fB\-A+\fP instead).
+Do NOT use this option to remove columns that you are replacing with new data (use OPT(A+) instead).
 Because we cannot remove variables from netCDF files we must create a new file without the columns
 to be deleted.  Once the file is successfully created we temporarily rename the old file, change
 the new filename to the old filename, and finally remove the old, renamed file.
 .TP
-.B \-E
+OPT(E)
 Give a single character that will be repeated to fill empty string values, e.g., '9' will yield
 a string like "99999..." [9].
 .TP
-.B \-I
+OPT(I)
 In addition to file information we must specify additional information about the extra column.
 Specify a short (16 char or less, using lower case letters, digits, or underscores only) abbreviation for the
 selected data, its more descriptive name, the data unit, the data type 1-character code (\fBb\fPyte, \fBs\fPhort,
 \fBf\fPloat, \fBi\fPnt, \fBd\fPouble, or \fBt\fPext) you want used for storage in the netCDF file,
 any scale and offset we should apply to the data to make them fit inside the range implied by the chosen
 storage type, and a general comment (< 128 characters) regarding what these data represent.  Note:
-If text data type is selected then the terms "values" in the \fB\-A\fP discussion refer to your
+If text data type is selected then the terms "values" in the OPT(A) discussion refer to your
 text data.  Furthermore, the discussion on interpolation does not apply and the NaN value becomes
-a "no string" value (see \fB\-E\fP for what this is).  Place quotes around terms with more than
+a "no string" value (see OPT(E) for what this is).  Place quotes around terms with more than
 one word (e.g., "Corrected Depth").
 .TP
-.B \-N
-Specify the distance unit used when using \fB\-Ad\fP|\fBD\fP by appending \fBe\fP (meter), \fBk\fP (km),
-\fBm\fP (miles), or \fBn\fP (nautical miles). [Default is \fB\-Nk\fP (km)].
+OPT(N)
+Specify the distance unit used when using OPT(Ad)|\fBD\fP by appending \fBe\fP (meter), \fBk\fP (km),
+\fBm\fP (miles), or \fBn\fP (nautical miles). [Default is OPT(Nk) (km)].
 #include "explain_-Q.txt"
-Only relevant when \fB\-Ag\fP|\fBi\fP is selected.  
+Only relevant when OPT(Ag)|\fBi\fP is selected.  
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
-This applies to the input 1- or 2-column data files specified under some of the \fB\-A\fP options.
+This applies to the input 1- or 2-column data files specified under some of the OPT(A) options.
 The binary input option is only available for numerical data columns.
 .SH EXAMPLES
 To append Geosat/ERS-1 gravity version 11.2 as an extra data column in the cruises
 01010047.nc and 01010008.nc, storing the values as mGal*10 in a 2-byte short integer, try
 .br
 .sp
-\fBmgd77manage\fP 01010047 01010008 \fB\-Ai\fP10/1/grav.11.2.img \fB\-I\fPsatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" \fB\-V\fP
+\fBmgd77manage\fP 01010047 01010008 OPT(Ai)10/1/grav.11.2.img OPT(I)satgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" OPT(V)
 .br
 .sp
 To append a filtered version of magnetics as an extra data column of type float for the cruise 01010047.nc, and
 interpolate the filtered data at the times given in the MGD77+ file, try
 .br
 .sp
-\fBmgd77manage\fP 01010047 \fB\-AT\fPmymag.tm \fB\-I\fPfiltmag/"Intermediate-wavelength magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" \fB\-V\fP
+\fBmgd77manage\fP 01010047 OPT(AT)mymag.tm OPT(I)filtmag/"Intermediate-wavelength magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" OPT(V)
 .br
 .sp
 To delete the existing extra columns satfaa, coastdist, and satvgg from all MGD77+ files, try
 .br
 .sp
-\fBmgd77manage\fP `cat allmgd77.lis` \fB\-D\fPsatfaa,coastdist,satvgg \fB\-V\fP
+\fBmgd77manage\fP `cat allmgd77.lis` OPT(D)satfaa,coastdist,satvgg OPT(V)
 .br
 .sp
 To create a 4-byte float column with the correct IGRF reference field in all MGD77+ files, try
 .br
 .sp
-\fBmgd77manage\fP `cat allmgd77.lis` \fB\-Acm \-I\fPigrf/"IGRF reference field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" \fB\-V\fP
+\fBmgd77manage\fP `cat allmgd77.lis` OPT(Acm) OPT(I)igrf/"IGRF reference field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" OPT(V)
 .br
 .sp
 .SH DISCUSSION
@@ -195,7 +195,7 @@ The verbose settings will ensure that all problems found during conversion will 
 The new *.nc files may also be placed in one or more separate sub-directories and these
 should also be listed in the mgd77_paths.txt file.  We suggest you place the directories
 with *.nc files ahead of the *.mgd77 directories.  When you later want to limit a search
-to files of a certain extension you should use the \fB\-I\fP option.
+to files of a certain extension you should use the OPT(I) option.
 .br
 .sp
 \fB4. Adding new columns\fP

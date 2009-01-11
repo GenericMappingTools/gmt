@@ -1,6 +1,6 @@
 .TP
-.B \-H
+OPT(H)
 Input file(s) has Header record(s).  Number of header records can be changed by editing
-your \.gmtdefaults4 file.  If used, \fBGMT\fP default is 1 header record. Use \fB\-Hi\fP
+your \.gmtdefaults4 file.  If used, \fBGMT\fP default is 1 header record. Use OPT(Hi)
 if only input data should have header records [Default will write out header records if the
 input data have them]. Blank lines and lines starting with # are always skipped.

@@ -1,5 +1,5 @@
 .TP
-.B \-I
+OPT(I)
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Optionally, append a suffix
 modifier.  \fBGeographical (degrees) coordinates\fP: Append \fBm\fP to
 indicate arc minutes or \fBc\fP to indicate arc seconds.  If one of the units \fBe\fP, \fBk\fP, \fBi\fP,

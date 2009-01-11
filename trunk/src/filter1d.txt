@@ -10,14 +10,14 @@ filter1d \- Time domain filtering of 1-D time series
 .SH DESCRIPTION
 \fBfilter1d\fP is a general time domain filter for multiple column time series data.
 The user specifies the number of columns of input and which column is the time.
-(See \fB\-N\fP option below).  The fastest operation occurs when the input time series are
+(See OPT(N) option below).  The fastest operation occurs when the input time series are
 equally spaced and have no gaps or outliers and the special options are not needed.
 \fBfilter1d\fP has options \fB-L\fP, \fB-Q\fP, and \fB-S\fP for unevenly sampled data with gaps.
 .TP
 \fIinfile\fP
-Multi-column ASCII (or binary, see \fB\-b\fP) file holding data values to be filtered.
+Multi-column ASCII (or binary, see OPT(b)) file holding data values to be filtered.
 .TP
-.B \-F
+OPT(F)
 Sets the filter type.  Choose among convolution and non-convolution filters.  Append the filter code followed
 by the full filter \fIwidth\fP in same units as time column. Available convolution filters are:
 .br
@@ -100,7 +100,7 @@ and distance (in m) with a 10 km Gaussian filter, removing outliers, and output 
 value every 2 km between 0 and 100 km:
 .br
 .sp
-\fBfilter1d\fP cruise.gmtd \fB\-T\fP0/1.0e5/2000 \fB\-FG\fP10000 \fB\-N\fP4/3 \fB\-V\fP > filtered_cruise.gmtd
+\fBfilter1d\fP cruise.gmtd OPT(T)0/1.0e5/2000 OPT(FG)10000 OPT(N)4/3 OPT(V) > filtered_cruise.gmtd
 .br
 .sp
 Data along track often have uneven sampling and gaps which we do not want to interpolate using \fBsample1d\fP.
@@ -108,7 +108,7 @@ To find the median depth in a 50 km window every 25 km along the track of cruise
 checking for gaps of 10km and asymmetry of 0.3:
 .br
 .sp
-\fBfilter1d\fP v3312.dt \fB\-FM\fP50 \fB\-T\fP0/100000/25 \fB\-L\fP10 \fB\-S\fP0.3 > v3312_filt.dt
+\fBfilter1d\fP v3312.dt OPT(FM)50 OPT(T)0/100000/25 OPT(L)10 OPT(S)0.3 > v3312_filt.dt
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR sample1d (1)

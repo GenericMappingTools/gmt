@@ -12,21 +12,22 @@ the MGD-77 documentation may or may not be present.  If two-way travel times are
 available, \fBmgd77togmt\fP will convert those to corrected depths using the Carter
 tables.  Both old and new (Y2K-compliant) MGD-77 files are supported.
 .TP
-.B \-L
-Name of file with several records of the format \fImgd77file legid start_year\fP.  For multiple files, use this option rather than the \fB\-F \-Y\fP combination.
+OPT(L)
+Name of file with several records of the format \fImgd77file legid start_year\fP.  For multiple files, use this option rather
+than the OPT(F) OPT(Y) combination.
 .TP
-.B \-F
+OPT(F)
 Leg id that will be used in file name (\fIlegid\fP.gmt).
 .TP
-.B \-Y
+OPT(Y)
 The year of the first data point in the file.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Set an optional 10 character information string to be stored in the header  [Default is blank].
 .TP
-.B \-I
+OPT(I)
 Used for files where time is missing.  The increment is used to calculate
 fake times.
 #include "explain_-V.txt"
@@ -34,13 +35,13 @@ fake times.
 To create a gmt file from the ASCII file c2104.mgd77, run
 .br
 .sp
-\fBmgd77togmt\fP c2104.mgd77 \fB\-Y\fP1977 \fB\-F\fPc2104
+\fBmgd77togmt\fP c2104.mgd77 OPT(Y)1977 OPT(F)c2104
 .br
 .sp
 To create new gmt files from all the mgd77 files listed in \fIlist.d\fP:
 .br
 .sp
-\fBmgd77togmt\fP \fB\-L\fPlist.d \fB\-V\fP
+\fBmgd77togmt\fP OPT(L)list.d OPT(V)
 .SH SEE ALSO
 .IR dat2gmt (1),
 .IR GMT (1)

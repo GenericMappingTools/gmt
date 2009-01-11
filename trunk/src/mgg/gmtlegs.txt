@@ -12,29 +12,29 @@ reported.
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
-.B \-G
+OPT(G)
 Report cruises that collected Gravity data. [Default is any data].
 .TP
-.B \-M
+OPT(M)
 Report cruises that collected Magnetics. [Default is any data].
 .TP
-.B \-T
+OPT(T)
 Report cruises that collected Topography. [Default is any data].
 .TP
-.B \-L
+OPT(L)
 Long output, i.e. cruisenames and data types available. [Default is cruisenames only].
 #include "explain_-V.txt"
 .SH EXAMPLES
 To find all cruises around Hawaii that collected gravity and topography:
 .br
 .sp
-\fBgmtlegs\fP \fB\-R\fR-162/-152/18/25 \fB\-G \-T\fP > hawaii_gt.legs
+\fBgmtlegs\fP OPT(R)-162/-152/18/25 OPT(G) OPT(T) > hawaii_gt.legs
 .br
 .sp
 To find all cruises with magnetics:
 .br
 .sp
-\fBgmtlegs\fP \fB\-R\fR0/360/-90/90 \fB\-M\fP > all_m.legs
+\fBgmtlegs\fP OPT(R)0/360/-90/90 OPT(M) > all_m.legs
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmt2bin (1),

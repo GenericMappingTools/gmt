@@ -1,5 +1,5 @@
 .TP
-.B \-R
+OPT(R)
 \fIwest, east, south,\fP and \fInorth\fP specify the Region of interest, and you may specify them
 in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  Append \fBr\fP if lower left and upper right
 map coordinates are given instead of w/e/s/n.  The two shorthands OPT(Rg) and OPT(Rd) stand for global domain

@@ -1,5 +1,5 @@
 .TP
-.B \-R
+OPT(R)
 \fIxmin\fP, \fIxmax\fP, \fIymin\fP, and \fIymax\fP specify the Region of interest.  For geographic
 regions, these limits correspond to \fIwest, east, south,\fP and \fInorth\fP and you may specify them
 in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  Append \fBr\fP if lower left and upper right

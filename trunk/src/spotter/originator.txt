@@ -17,7 +17,7 @@ the closest approach to all hotspots.  The output consists of the input records 
 four additional fields added for each of the \fIn_hs\fP closest hotspots.  The four fields
 are the hotspot id (e.g., HWI), the stage id of the flowline segment that came closest,
 the pseudo-age of the seamount, and the closest distance to the hotspot (in km).
-See option \fB\-:\fP on how to read (latitude, longitude,height, radius, crustal_age) files.
+See option OPT(:) on how to read (latitude, longitude,height, radius, crustal_age) files.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
@@ -28,40 +28,40 @@ Seamount data file(s) to be analyzed.  If not given, standard input is read.
 #include "hotspot.txt"
 .SH OPTIONS
 .TP
-.B \-C
+OPT(C)
 Expect Total Reconstruction Rotations rather than Forward Stage Rotations [Default].
 File format is similar to the stage pole format except that the \fItstart\fP column
 is not present (assumed to be 0 Ma).
 .TP
-.B \-D
+OPT(D)
 Sets the flowline sampling interval in km.  [Default is 5].
 #include "explain_-H.txt"
 .TP
-.B \-L
+OPT(L)
 Output closest approach for nearest hotspot only (ignores OPT(S)).
 Choose OPT(Lt) for (\fItime, dist, z\fP) [Default], OPT(Lw) for (\fIomega, dist, z\fP),
 and OPT(Ll) for (lon, lat, time, dist, z).  Normally, \fIdist\fP is in km; use
 upper case modifiers \fBTWL\fP to get \fIdist\fP in spherical degrees.
 .TP
-.B \-N
+OPT(N)
 Set the maximum age to extend the oldest stage back in time [no extension].
 .TP
-.B \-Q
+OPT(Q)
 .TP
 INput files only has (\fIx,y,z\fP); specify constant values for \fIr,t\fP that
 will be implied for each record.
-.B \-S
+OPT(S)
 Set the number of closest hotspots to report [Default is 1].
 .TP
-.B \-T
-Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation].
+OPT(T)
+Truncate seamount ages exceeding the upper age set with OPT(N) [no truncation].
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Only report those seamounts whose flowlines came within \fImaxdist\fP to any hotspot
 [Default reports all seamounts].
 .TP
-.B \-Z
+OPT(Z)
 Use the hotspot ID number rather than the name tag in output records.
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
@@ -72,14 +72,14 @@ in the file seamounts.d, using the DC85.d Euler poles and the pac_hs.d list of p
 and report the 2 most likely hotspot candidates for each seamount, run
 .br
 .sp
-\fBoriginator\fP seamounts.d \fB\-S\fP2 \fB\-E\fPDC85.d \fB\-F\fPpac_hs.d > origins.d
+\fBoriginator\fP seamounts.d OPT(S)2 OPT(E)DC85.d OPT(F)pac_hs.d > origins.d
 .br
 .sp
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR project (1),
 .IR mapproject (1),
-.IR backtracker (1)
+.IR backtracker (1),
 .IR hotspotter (1)
 .SH REFERENCES
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.

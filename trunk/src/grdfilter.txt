@@ -3,14 +3,14 @@
 .SH NAME
 grdfilter \- Filter a 2-D grid file in the space (or time) domain
 .SH SYNOPSIS
-\fBgrdfilter\fP \fIinput_file.grd\fP OPT(D)\fIdistance_flag\fP \fB\-F\fP\fI<filtertype><width>\fP[\fImode\fP] 
+\fBgrdfilter\fP \fIinput_file.grd\fP OPT(D)\fIdistance_flag\fP OPT(F)\fI<filtertype><width>\fP[\fImode\fP] 
 OPT(G)\fIoutput_file.grd\fP [ GMT_I_OPT ] [ OPT(N)\fBi\fP|\fBp\fP|\fBr\fP ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdfilter\fP will filter a \fI.grd\fP file in the time domain using one
 of the selected convolution or non-convolution isotropic filters and
 compute distances using Cartesian or Spherical geometries.
 The output \fI.grd\fP file can optionally be generated as a
-sub\fB\-R\fPegion of the input and/or with a new \fB\-I\fPncrement.  In this
+subOPT(R)egion of the input and/or with a new OPT(I)ncrement.  In this
 way, one may have "extra space" in the input data so that the
 edges will not be used and the output can be within one-half-
 width of the input edges.  If the filter is low-pass, then the
@@ -20,7 +20,7 @@ output may be less frequently sampled than the input.
 The file of points to be filtered.
 (See GRID FILE FORMATS below).
 .TP
-.B \-D
+OPT(D)
 Distance \fIflag\fP tells how grid (x,y) relates to filter \fIwidth\fP as follows:
 .sp
 \fIflag\fP = 0:  grid (x,y) same units as \fIwidth\fP, Cartesian distances.
@@ -38,7 +38,7 @@ The next three options are slower because they recompute weights for each latitu
 .br
 \fIflag\fP = 5:  grid (x,y) in Mercator -Jm1 img units, \fIwidth\fP in km, Spherical distance calculation.
 .TP
-.B \-F
+OPT(F)
 Sets the filter type.  Choose among convolution and non-convolution filters.  Append the filter code followed
 by the full diameter \fIwidth\fP. Available convolution filters are:
 .br
@@ -68,26 +68,26 @@ values.
 In the case of \fBL|U\fP it is possible that no data passes the initial sign test; in that case
 the filter will return 0.0.
 .TP
-.B \-G
+OPT(G)
 \fIoutput_file.grd\fP is the output of the filter.
 (See GRID FILE FORMATS below).
 .SH OPTIONS
 .TP
-.B \-I
+OPT(I)
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the output Increment. Append \fBm\fP to indicate minutes, or \fBc\fP to indicate seconds.
 If  the new \fIx_inc, y_inc\fP are NOT integer multiples of the old ones (in the input data), filtering will be considerably slower.
 [Default:  Same as input.]
 .TP
-.B \-N
+OPT(N)
 Determine how NaN-values in the input grid affects the filtered outout:  Append \fBi\fP to ignore all NaNs in
 the calculation of filtered value [Default], \fBr\fP is same as \fBi\fP except if the input node was NaN then the
 output node will be set to NaN (only applies if both grids are coregistered), and \fBp\fP which will
 force the filtered value to be NaN if any grid-nodes with NaN-values are found inside the filter circle.
 .TP
-.B \-R
+OPT(R)
 \fIwest, east, south, \fPand \fInorth\fP defines the Region of the output points.  [Default:  Same as input.]
 .TP
-.B \-T
+OPT(T)
 Toggle the node registration for the output grid so as to become the opposite of the input grid
 [Default gives the same registration as the input grid].
 #include "explain_-V.txt"
@@ -99,7 +99,7 @@ Suppose that north_pacific_dbdb5.grd is a file of 5 minute bathymetry from 140E 
 the medians of values within a 300km radius (600km full width) of the output points, which you choose to be from 150E to 250E
 and 10N to 40N, and you want the output values every 0.5 degree.  Using spherical distance calculations, you need:
 .sp
-\fBgrdfilter\fP north_pacific_dbdb5.grd \fB\-G\fPfiltered_pacific.grd \fB\-Fm\fP600 \fB\-D\fP4 \fB\-R\fP150/250/10/40 \fB\-I\fP0.5 \fB\-V\fP
+\fBgrdfilter\fP north_pacific_dbdb5.grd OPT(G)filtered_pacific.grd OPT(Fm)600 OPT(D)4 OPT(R)150/250/10/40 OPT(I)0.5 OPT(V)
 .SH LIMITATIONS
 When working with geographic (lat, lon) grids, all three convolution filters (boxcar, cosine arch, and gaussian) will properly normalize
 the filter weights for the variation in gridbox size with latitude, and correctly determine which nodes are needed for the convolution
@@ -107,7 +107,7 @@ when the filter "circle" crosses a periodic (0-360) boundary or contains a geogr
 do not use weights and thus should only be used on Cartesian grids (or at very low latitudes) only.  If you want to apply such spatial
 filters you should project your data to an equal-area projection and run grdfilter on the resulting Cartesian grid.
 .br
-To use the \fB\-D\fP5 option the input Mercator grid must be created by img2mercgrd using the \fB\-C\fP option so the origin of the
+To use the OPT(D)5 option the input Mercator grid must be created by img2mercgrd using the OPT(C) option so the origin of the
 y-values is the Equator (i.e., x = y = 0 correspond to lon = lat = 0).
 .SH "SEE ALSO"
 .IR GMT (1),

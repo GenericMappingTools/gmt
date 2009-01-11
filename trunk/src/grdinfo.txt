@@ -20,37 +20,37 @@ The name of one or several 2-D grid files.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-C
+OPT(C)
 Formats the report using tab-separated fields on a single line.  The output is
 \fIw e s n z0 z1 dx dy nx ny \fP[ \fIx0 y0 x1 y1\fP ] [ \fImed scale\fP ] [\fI mean std rms\fP] [\fIn_nan\fP].
 The data in brackets are output only if the corresponding options
-\fB\-M, \-L1\fP, \fB\-L2\fP, and \fB\-M\fP are used, respectively.
-If the \fB\-I\fP option is used, the output format is instead
-\fINF w e s n z0 z1\fP, where \fINF\fP is the total number of grids read and \fIw e s n\fP are rounded off (see \fB\-I\fP).
+OPT(M), OPT(L1), OPT(L2), and OPT(M) are used, respectively.
+If the OPT(I) option is used, the output format is instead
+\fINF w e s n z0 z1\fP, where \fINF\fP is the total number of grids read and \fIw e s n\fP are rounded off (see OPT(I)).
 .TP
-.B \-F
+OPT(F)
 Report grid domain and x/y-increments in world mapping format [Default is generic].
-Does not apply to the \fB\-C\fP option.
+Does not apply to the OPT(C) option.
 .TP
-.B \-I
+OPT(I)
 Report the min/max of the region to the nearest multiple of \fIdx\fP and \fIdy\fP,
-and output this in the form \fB\-R\fP\fIw/e/s/n\fP (unless \fB\-C\fP is set).
-To report the actual grid region, select \fB\-I-\fP.  If no argument is given
-then we report the grid increment in the form \fB\-I\fP\fIxinc/yinc\fP.
+and output this in the form OPT(R)\fIw/e/s/n\fP (unless OPT(C) is set).
+To report the actual grid region, select OPT(I-).  If no argument is given
+then we report the grid increment in the form OPT(I)\fIxinc/yinc\fP.
 .TP
-.B \-L1
+OPT(L1)
 Report median and L1 scale of z (L1 scale = 1.4826 * Median Absolute Deviation (MAD)).
 .TP
-.B \-L2
+OPT(L2)
 Report mean, standard deviation, and rms of z.
 .TP
-.B \-M
+OPT(M)
 Find and report the location of min/max z-values, and count and report the number of nodes
 set to NaN, if any.
 .TP
-.B \-T
+OPT(T)
 Determine min and max z-value, round off to multiples of \fIdz\fP, and report as the text string
-\fB\-T\fP\fIzmin/zmax/dz\fP for use by \fBmakecpt\fP.
+OPT(T)\fIzmin/zmax/dz\fP for use by \fBmakecpt\fP.
 #include "explain_-V.txt" 
 #include "explain_-f.txt"
 #include "explain_grd_input.txt"
@@ -58,7 +58,7 @@ Determine min and max z-value, round off to multiples of \fIdz\fP, and report as
 To obtain all the information about the data set in file hawaii_topo.grd:
 .br
 .sp
-\fBgrdinfo\fP \fB\-L1 \-L2 \-M\fP hawaii_topo.grd
+\fBgrdinfo\fP OPT(L1) OPT(L2) OPT(M) hawaii_topo.grd
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grd2cpt (1),

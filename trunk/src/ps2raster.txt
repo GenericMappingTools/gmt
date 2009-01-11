@@ -19,60 +19,58 @@ conventional extension name associated to the raster format (e.g. .jpg for the j
 OPT(D) to redirect the output to a different directory.
 .SH OPTIONS
 .TP
-.B \-A
+OPT(A)
 Adjust the BoundingBox and HiResBoundingBox to the minimum required by the image content.  Append \fBu\fP to first remove any
 GMT-produced time-stamps.
 .TP
-.B \-C
+OPT(C)
 Specify a single, custom option that will be passed on to GhostScript as is.  Repeat to add several options [none].
 .TP
-.B \-D
+OPT(D)
 Sets an alternative output directory (which must exist) [Default is the same directory as the PS files].
 Use OPT(D.) to place the output in the current directory instead.
 .TP
-.B \-E
+OPT(E)
 Set raster resolution in dpi [default = 720 for PDF, 300 for others].
 .TP
-.B \-F
+OPT(F)
 Force the output file name. By default output names are constructed using the
 input names as base, which are appended with an appropriate extension. Use this option
 to provide a different name, but without extension. Extension is still determined automatically.
 .TP
-.B \-G
+OPT(G)
 Full path to your GhostScript executable.
 NOTE: For Unix systems this is generally not necessary.
 However, under Windows, GhostScript is not added to the system's path. So either you do it yourself,\"'
 or give the full path here. (e.g., OPT(G)c:\\programs\\gs\\gs7.05\\bin\\gswin32c).
 .TP
-.B \-L
+OPT(L)
 The \fIlistfile\fP is an ASCII file with the names of the \fIPostScript\fP files to be converted.
 .TP
-.B \-N
+OPT(N)
 This option is obsolete.
 Use OPT(S) to print the GhostScript command, if applicable.
 Use OPT(Te) to save the intermediate EPS file.
 .TP
-.B \-P
+OPT(P)
 Force Portrait mode. All Landscape mode plots will be rotated back so that they show unrotated in
 Portrait mode. This is practical when converting to image formats or preparing EPS or PDF plots for
 inclusion in documents.
 .TP
-.B \-Q
+OPT(Q)
 Set the anti-aliasing options for \fBg\fPraphics or \fBt\fPext.  Append the size of the subsample
 box (1, 2, or 4) [4].  Default is no anti-aliasing (same as \fIbits\fP = 1).
 .TP
-.B \-S
+OPT(S)
 Print to standard output the GhostScript command after it has been executed.
 .TP
-.B \-T
+OPT(T)
 Sets the output format, where \fBb\fP means BMP, \fBe\fP means EPS, \fBf\fP means PDF, \fBj\fP means JPEG, \fBg\fP means PNG,
 \fBG\fP means transparent PNG (untouched regions are transparent), \fBm\fP means PPM, and \fBt\fP means TIFF [default is JPEG].
 For \fBbjgt\fP you can append - to get a grayscale image only.
 The EPS format can be combined with any of the other formats. For example, OPT(Tef) creates both an EPS and
 a PDF file.
-.TP
-.B \-V
-Run in verbose mode and report on progress [Default is silent].
+#include "explain_-V.txt"
 .SH NOTES
 The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently results in loss of details that are
 available in the original \fIPostScript\fP file. Choose a resolution that is large enough for the application that
@@ -106,7 +104,7 @@ To convert a the file psfile.ps to PNG using a tight BoundingBox and rotating it
 orientation in case it was in Landscape mode:
 .br
 .sp
-\fBps2raster\fP psfile.ps \fB\-A \-P \-Tg\fP
+\fBps2raster\fP psfile.ps OPT(A) OPT(P) OPT(Tg)
 .br
 .sp
 (This command assumes that ghostscript can be found in your system's path.)\"'

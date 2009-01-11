@@ -15,44 +15,44 @@ corresponding records from multiple files into a single file, (3)
 extract a subset of the columns, (4) only extract segments whose header
 matches a text pattern search, (5) just list all multisegment headers and no data
 records, and (6) extract first and last data record for each segment.  Input (and hence output) may have multiple
-subheaders if \fB\-M\fP is selected, and ASCII tables may have regular headers as well.
+subheaders if OPT(M) is selected, and ASCII tables may have regular headers as well.
 .TP
 \fIdatafile(s)\fP
-ASCII (or binary, see \fB\-bi\fP) file(s) holding a number of data columns. 
+ASCII (or binary, see OPT(bi)) file(s) holding a number of data columns. 
 .SH OPTIONS
 .TP
-.B \-A
+OPT(A)
 The records from the input files should be pasted horizontally, not appended vertically.  [Default
 processes one file at the time].  Note for binary input, all the files you want to paste must
-have the same number of columns (as set with \fB\-bi\fP).
+have the same number of columns (as set with OPT(bi)).
 .TP
-.B \-D
+OPT(D)
 For multiple segment data, dump each segment to a separate output file [Default writes a multiple segment
 file to stdout].  Append a format template for the individual file names; this template \fBmust\fP contain a
 C format specifier that can format an integer argument (the segment number); this is usually %d but could
 be %8.8d which gives leading zeros, etc. [Default is gmtconvert_segment_%d.d].
 .TP
-.B \-E
+OPT(E)
 Only extract the first and last record for each segment of interest [Default extracts
 all records].  Optionally, append \fBf\fP or \fBl\fP to only extract the first or last
 record of each segment, respectively.
 .TP
-.B \-F
+OPT(F)
 Give a comma-separated list of desired columns or ranges (0 is first column) [Default outputs all columns].
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Invert the order of rows, i.e., output the final records in reverse order, starting with the last and ending
 up with the first input row [Default goes forward].
 .TP
-.B \-L
-Only output a listing of all multisegment header records and no data records (requires \fB\-M\fP and ASCII data).
+OPT(L)
+Only output a listing of all multisegment header records and no data records (requires OPT(M) and ASCII data).
 #include "explain_-M.txt"
 .TP
-.B \-N
+OPT(N)
 Do not write records that only contain NaNs in every field [Default writes all records].
 .TP
-.B \-S
+OPT(S)
 Only output those segments whose header record contains the specified text string [Default output all segments].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
@@ -65,38 +65,38 @@ Only output those segments whose header record contains the specified text strin
 To convert the binary file test.b (single precision) with 4 columns to ASCII:
 .br
 .sp
-\fBgmtconvert\fP test.b \fB\-bis\fP4 > test.dat
+\fBgmtconvert\fP test.b OPT(bis)4 > test.dat
 .br
 .sp
 To convert the multiple segment ASCII table test.d to a double precision binary file:
 .br
 .sp
-\fBgmtconvert\fP test.d \fB\-M \-bo\fP > test.b
+\fBgmtconvert\fP test.d OPT(M) OPT(bo) > test.b
 .br
 .sp
 You have an ASCII table with 6 columns and you want to plot column 5 versus column 0.  Try
 .br
 .sp
-\fBgmtconvert\fP table.d \fB\-F\fP5,0 | psxy ...
+\fBgmtconvert\fP table.d OPT(F)5,0 | psxy ...
 .br
 .sp
 If the file instead is the binary file results.b which has 9 single-precision values per record,
 we extract the last column and columns 4-6 and write ASCII with the command
 .br
 .sp
-\fBgmtconvert\fP results.b \fB\-F\fP8,4-6 -bi9s | psxy ...
+\fBgmtconvert\fP results.b OPT(F)8,4-6 -bi9s | psxy ...
 .br
 .sp
 You want to plot the 2nd column of a 2-column file left.d versus the first column of a file right.d:
 .br
 .sp
-\fBgmtconvert\fP left.d right.d \fB\-A \-F\fP1,2 | psxy ...
+\fBgmtconvert\fP left.d right.d OPT(A) OPT(F)1,2 | psxy ...
 .br
 .sp
 To extract all segments in the file big_file.d whose headers contain the string "RIDGE AXIS", try
 .br
 .sp
-\fBgmtconvert\fP big_file.d \fB\-M \-S\fP"RIDGE AXIS" > subset.d
+\fBgmtconvert\fP big_file.d OPT(M) OPT(S)"RIDGE AXIS" > subset.d
 .br
 .SH "SEE ALSO"
 .IR GMT (1),

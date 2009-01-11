@@ -19,34 +19,34 @@ If the distance specified is zero then only the nodes nearest each data point ar
 \fIpathfiles\fP
 The name of 1 or more ASCII [or binary, see OPT(b)] files holding the polygon(s) or data points.
 .TP
-.B \-G
+OPT(G)
 Name of resulting output mask grid file.
 (See GRID FILE FORMATS below).
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 .TP
-.B \-A
-If the input data are geographic (as indicated by \fB\-fi\fP) then the sides in the polygons will be
-approximated by great circle arcs.  When using the \fB\-A\fP sides will be regarded as straight lines.
+OPT(A)
+If the input data are geographic (as indicated by OPT(fi)) then the sides in the polygons will be
+approximated by great circle arcs.  When using the OPT(A) sides will be regarded as straight lines.
 Alternatively, append \fBm\fP to have sides first follow meridians, then parallels. Or append \fBp\FP
 to first follow parallels, then meridians.
 #include "explain_nodereg.txt"
 #include "explain_-H.txt"
 .TP
-.B \-M
+OPT(M)
 Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
 [Default is '>'].
 .TP
-.B \-N
+OPT(N)
 Sets the values that will be assigned to nodes that are \fIout\fPside the polygons,
 on the \fIedge\fP, or \fIin\fPside.  Values can be any number, including the
 textstring NaN  [Default is 0/0/1].
 .TP
-.B \-S
+OPT(S)
 Set nodes depending on their distance from the nearest data point.  Nodes within \fIradius\fP [0] from
 a data point are considered inside.  Append \fBm\fP to indicate minutes
-or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies \fB\-R\fP and \fB\-I\fP are in degrees, and
+or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies OPT(R) and OPT(I) are in degrees, and
 we will use a fast flat Earth approximation to calculate distance).  For more accuracy, use uppercase \fBK\fP
 if distances should be calculated along geodesics.
 However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great circle calculations are used.
@@ -60,12 +60,12 @@ However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great ci
 To set all nodes inside and on the polygons coastline_*.xy to 0, and outside points
 to 1, do
 .sp
-\fBgrdmask\fP coastline_*.xy \fB\-R\fP-60/-40/-40/-30 \fB\-I\fP5\fBm \-N\fP1/0/0 \fB\-G\fPland_mask.grd  \fB\-V\fP
+\fBgrdmask\fP coastline_*.xy OPT(R)-60/-40/-40/-30 OPT(I)5\fBm\fP OPT(N)1/0/0 OPT(G)land_mask.grd OPT(V)
 .br
 .sp
 To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 .sp
-\fBgrdmask\fP data.xyz \fB\-R\fP-60/-40/-40/-30 \fB\-I\fP5m \fB\-N\fPNaN/1/1 \fB\-S\fP50\fBk\fP \fB\-G\fPdata_mask.grd  \fB\-V\fP
+\fBgrdmask\fP data.xyz OPT(R)-60/-40/-40/-30 OPT(I)5\fBm\fP OPT(N)NaN/1/1 OPT(S)50\fBk\fP OPT(G)data_mask.grd OPT(V)
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdlandmask (1),

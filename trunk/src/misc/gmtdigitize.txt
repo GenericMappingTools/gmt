@@ -3,7 +3,7 @@
 #define	DIG_PORT	/dev/ttyS0
 #define	DIG_LPI		2540
 #define	LEN1	0.5
-#define SCALE1	\fB\-Jm\fP1:1
+#define SCALE1	OPT(Jm)1:1
 .SH NAME
 gmtdigitize \- Digitizing and Inverse map transformation of map x/y coordinates 
 .SH SYNOPSIS
@@ -25,51 +25,51 @@ For geographic projections you can give 1 as the scale will be solved for anyway
 #include "explain_-R.txt"
 .SH OPTIONS
 .TP
-.B \-A
+OPT(A)
 Give an audible signal each time the digitizer mouse/puck is clicked [Default is silent].
 .TP
-.B \-C
+OPT(C)
 Specify the device (port) to read from [Default is DIG_PORT].
 .TP
-.B \-D
+OPT(D)
 Only output a point if it is further than \fIlimit\fP units from the previous point.  Append
 \fBc, i, m, p\fP for cm, inch, meter, or point, respectively [Default is no limit].
 .TP
-.B \-F
+OPT(F)
 Force the program to ask for 4 arbitrary calibration points [Default is to use the
 4 corners of the map, if possible].
 .TP
-.B \-H
+OPT(H)
 This option allows you to write out any number of header records to the beginning of the
 output file.  Each record will automatically start with a #-character to indicate comment.
-Headers are not written if multiple output files are selected with \fB\-N \-M\fP.
+Headers are not written if multiple output files are selected with OPT(N) OPT(M).
 .TP
-.B \-L
+OPT(L)
 Set the digitizer table resolution in lines per inch [DIG_LPI].
 #include "explain_-M.txt"
 .TP
-.B \-N
+OPT(N)
 Set name for output file(s).  If a regular filename is given, then all digitized data will be written to that
 file.  If the file contains a C-format for an integer (i.e., %d) then the file is used as a format statement
 to create unique filenames based on the current segment number (e.g., line_%d.d will yield files line_0.d, line_1.d, etc).
-By default, all output is written to stdout.  Multiple segment files requires specifying the \fB\-M\fP option.
+By default, all output is written to stdout.  Multiple segment files requires specifying the OPT(M) option.
 .TP
-.B \-S
+OPT(S)
 Suppress points that fall outside the specified map region [Default outputs all points].
 #include "explain_-V.txt"
 The program will also duplicate data output to stderr for monitoring.
 .TP
-.B \-Z
+OPT(Z)
 Append \fBv\fP to prompt for a \fIz\fP-value and output it as a third data column.
-Append \fBk\fP to output the button key as the final data column.  Both \fB\-Zk\fP and
-\fB\-Zv\fP can be specified. [Default is just 2 column x,y output].
+Append \fBk\fP to output the button key as the final data column.  Both OPT(Zk) and
+OPT(Zv) can be specified. [Default is just 2 column x,y output].
 #include "explain_-bo.txt"
 .SH EXAMPLES
 To digitize lines from a mercator map made for a given region, and
 save each line segment in individual files called segment_000.xy, segment_001.xy etc, try
 .br
 .sp
-gmtdigitize \fB\-R\fP20/50/12/25 SCALE1 \fB\-M \-N\fPsegment_%3.3d.xy
+gmtdigitize OPT(R)20/50/12/25 SCALE1 OPT(M) OPT(N)segment_%3.3d.xy
 .br
 .sp
 To digitize seismically defined interfaces from a multichannel seismic section, with horizontal
@@ -77,7 +77,7 @@ distances from 130 to 970, and vertical times from 0 to 10 seconds, write out th
 save all line segment to a single multisegment file, and beep at each click, try
 .br
 .sp
-gmtdigitize \fB\-R\fP130/970/0/10 \fB\-Jx\fP1/-1 \fB\-M \-A \-Z\fP > interfaces.d
+gmtdigitize OPT(R)130/970/0/10 OPT(Jx)1/-1 OPT(M) OPT(A) OPT(Z) > interfaces.d
 .br
 .SH SYSTEM SETUP
 This applies to the Calcomp DrawingBoard III hooked up to a RedHat Linux workstation.

@@ -30,18 +30,18 @@ gmtdefaults \- To list current \fBGMT\fP defaults
 (1) Use the command \fBgmtset\fP, (2) use any texteditor to edit the file \.gmtdefaults4 in your home, ~/.gmt
 or current directory (if you do not have this file, run 
 \fBgmtdefaults\fP -D > ~/.gmtdefaults4 to get one with the system default settings), or (3) override any parameter
-by specifying one or more \fB\-\-PARAMETER=VALUE\fP statements on the commandline of any \fBGMT\fP command
+by specifying one or more PAR(PARAMETER,VALUE) statements on the commandline of any \fBGMT\fP command
 (\fBPARAMETER\fP and \fBVALUE\fP are any combination listed below).  The
 first two options are permanent changes until explicitly changed back, while the last option is ephemeral
 and only applies to the single \fBGMT\fP command that received the override.
 \fBGMT\fP can provide default values in US or SI units.  This choice is determined by the contents of the
 gmt.conf file in \fBGMT\fP's share directory.\"'
 .TP
-.B \-D
+OPT(D)
 Print the system \fBGMT\fP defaults to standard output.  Append \fBu\fP for US
-defaults or \fBs\fP for SI defaults. [\fB\-D\fP alone gives current choice in gmt.conf].
+defaults or \fBs\fP for SI defaults. [OPT(D) alone gives current choice in gmt.conf].
 .TP
-.B \-L
+OPT(L)
 Print the user's currently active defaults to standard output.\"'
 .br
 .sp
@@ -342,7 +342,7 @@ no interpolation (none) should be used for 1-D interpolations in various program
 (\fB* \-H\fP) Specifies whether input/output ASCII files have header record(s) or not  [FALSE].
 .TP
 .B N_HEADER_RECS
-Specifies how many header records to expect if \fB\-H\fP is turned on  [1].
+Specifies how many header records to expect if OPT(H) is turned on  [1].
 .TP
 .B LABEL_FONT
 Font to use when plotting labels below axes.  See \fBANNOT_FONT_PRIMARY\fP for available fonts  [Helvetica].
@@ -778,7 +778,7 @@ or vertically (ver_text)  [hor_text].
 To get a copy of the \fBGMT\fP parameter defaults in your home directory, run
 .br
 .sp
-\fBgmtdefaults\fP \fB\-D\fP > ~/.gmtdefaults4
+\fBgmtdefaults\fP OPT(D) > ~/.gmtdefaults4
 .br
 .sp
 You may now change the settings by editing this file using a text editor of your choice, or

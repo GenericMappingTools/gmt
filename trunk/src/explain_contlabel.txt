@@ -2,7 +2,7 @@
 #define G_OPT_US 4\fBi\fP
 #ifdef CONTOUR
 #define LINETYPE contours
-#define GFLAG \fB\-G\fP
+#define GFLAG OPT(G)
 Controls the placement of labels along the LINETYPE.
 #else
 #define LINETYPE quoted lines

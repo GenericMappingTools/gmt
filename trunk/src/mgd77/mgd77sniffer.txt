@@ -31,22 +31,22 @@ cruise data may be downloaded via the web.
 
 .SH OPTIONS
 .TP
-.B \-A
+OPT(A)
 Apply scale factor and DC adjustment to specified data field. Allows adjustment of cruise data prior
 to along-track analysis. CAUTION: data must be thoroughly examined before applying these global data
 adjustments. May not be used for multiple cruises.
 .TP
-.B \-C
+OPT(C)
 Set maximum ship speed in m/s, or knots with OPT(N) option. Ship speeds exceeding 10 m/s (~20 knots)
 are flagged as excessive by default.
 .TP
-.B \-D
+OPT(D)
 Suppress default warning output and only dump cruise data row-by-row such as values, gradients,
 grid-cruise differences, E77 error summaries for each record, re-created MGD77 records
 or sniffer limits. Append r to include all records (default omits records where navigation errors were detected).
 .br
 .sp
-\fB\-Dd\fP
+OPT(Dd)
 output differences between cruise and grid data. Requires OPT(G) option. Output columns include: 
 .br
 .sp
@@ -57,14 +57,14 @@ Note: grid values are subtracted from cruise data so a positive difference impli
 For multiple grid comparison, \fIcruiseZ gridZ diff\fP are repeated for each grid comparison in command line order.
 .br
 .sp
-\fB\-De\fP
+OPT(De)
 output E77 error classification format. Error output is divided into (1) a header containing
 information globally applicable to the cruise and (2) individual error records summarizing all
 errors encountered in each cruise record. mgd77sniffer writes E77 directly to <ngdc_id.e77>
 file handle. See \fBE77 ERROR FORMAT\fP below for additional details.
 .br
 .sp
-\fB\-Df\fP
+OPT(Df)
 output delta Z (change in geophysical field) column and delta S (change in distance) for each
 geophysical field. Distance between observations often differ for different fields depending
 on instrument sampling rate, so ds is included for each geophysical observation. Output
@@ -74,7 +74,7 @@ columns include:
 \fId[twt] ds d[depth] ds d[mtf1] ds d[mtf2] ds d[mag] ds d[diur] ds d[msd] ds d[gobs] ds d[eot] ds d[faa] ds\fP
 .br
 .sp
-\fB\-Dl\fP
+OPT(Dl)
 display mgd77sniffer limits. Customize this output to create a custom limits file for 
 the OPT(L) option. No additional arguments are required. Output columns include:
 .br
@@ -82,18 +82,18 @@ the OPT(L) option. No additional arguments are required. Output columns include:
 \fIfieldabbrev min max maxSlope maxArea\fP
 .br
 .sp
-\fB\-Dm\fP
+OPT(Dm)
 output MGD77 format records in Y2K-compliant MGD77 format
 .br
 .sp
-\fB\-Dn\fP
+OPT(Dn)
 output distance to coast for each record. Requires OPT(Gnav) or OPT(gnav) option. Output columns include: 
 .br
 .sp
 \fIlat lon dist distToCoast\fP
 .br
 .sp
-\fB\-Ds\fP
+OPT(Ds)
 output calculated gradients for speed and geophysical fields. Gradients correspond to the gradient type
 selected in the OPT(S) option (spatial derivatives by default). Output columns include:
 .br
@@ -104,7 +104,7 @@ selected in the OPT(S) option (spatial derivatives by default). Output columns i
 See \fBMGD77 FIELD INFO\fP below for field and abbreviations descriptions.
 .br
 .sp
-\fB\-Dv\fP
+OPT(Dv)
 display values for the twelve position and geophysical fields for each MGD77 data record (in this order):
 .br
 .sp
@@ -113,7 +113,7 @@ display values for the twelve position and geophysical fields for each MGD77 dat
 .sp
 See below for \fBMGD77 FIELD INFO\fP.
 .TP
-.B \-g
+OPT(g)
 Compare cruise data to the specified grid in Sandwell/Smith Mercator format. Requires a valid MGD77 field abbreviation (see 
 \fBMGD77 FIELD INFO\fP below) followed by a comma, the path (if not in current directory)
 and grid filename, a scale to multiply the data (1 or 0.1), and mode which stand for the following:
@@ -121,7 +121,7 @@ and grid filename, a scale to multiply the data (1 or 0.1), and mode which stand
 return data at all points, (2) Img file with constraints coded, return data only at constrained points
 and NaN elsewhere, and (3) Img file with constraints coded, return 1 at constraints and 0 elsewhere.
 .TP
-.B \-G
+OPT(G)
 Compare cruise data to the specified grid. Requires a valid MGD77 field abbreviation (see 
 \fBMGD77 FIELD INFO\fP below) followed by a comma, then the path (if not in current directory)
 and grid filename. Multiple grid comparison is supported by using separate OPT(g) or OPT(G) calls for each 
@@ -140,32 +140,32 @@ check.
 .br
 .sp
 .TP
-.B \-H
-(with \fB\-G\fP|\fBg\fP only) disable (or force) decimation during RLS analysis of ship and gridded data.
+OPT(H)
+(with OPT(G)|\fBg\fP only) disable (or force) decimation during RLS analysis of ship and gridded data.
 By default mgd77sniffer analyses both the full and decimated data sets then reports RLS statistics for the
 higher correlation regression.
 .br
 .sp
-\fB\-Hb\fP analyze both (default), report better of two.
+OPT(Hb) analyze both (default), report better of two.
 .br
 .sp
-\fB\-Hd\fP to disable data decimation (equivalent to -H with no argument).
+OPT(Hd) to disable data decimation (equivalent to -H with no argument).
 .br
 .sp
-\fB\-Hf\fP to force data decimation.
+OPT(Hf) to force data decimation.
 .TP
-.B \-I
+OPT(I)
 Append a field abbreviation and the first and last record in a range of records that should
 be flagged as bad (and set to NaN prior to the analysis). Repeat as many times as needed.
 May not be used for multiple cruises.
 .TP
-.B \-K
+OPT(K)
 Reverse navigation quality flags (good to bad and vice versa). May be necessary when a
 majority of navigation fixes are erroneously flagged bad, which can happen when a cruise's
 first navigation fix is extremely erroneous. Caution! This will affect sniffer output and
 should only be attempted after careful manual navigation review.
 .TP
-.B \-L
+OPT(L)
 Override mgd77sniffer default error detection limits. Supply path and filename to
 the custom limits file. Rows not beginning with a valid MGD77 field abbreviation are
 ignored. Field abbreviations are listed below in exact form under MGD77 FIELD INFO.
@@ -192,44 +192,42 @@ faa     -300    300     100     2500
 Use a dash '-' to retain a default limit.
 Hint: to test your custom limits, try: mgd77sniffer OPT(Dl) OPT(L)<yourlimitsfile>
 .TP
-.B \-N
+OPT(N)
 Use nautical units.
 .TP
-.B \-P
+OPT(P)
 Flag regression statistics that are outside the specified confidence level.
 (i.e., -P5 flags coefficients m, b, rms, and r that fall outside 95%.)
 #include "explain_-Q.txt"
 #include "explain_-Rgeo.txt"
 .TP
-.B \-S
+OPT(S)
 Specify gradient type for along-track excessive slope checking.
 .br
-\fB\-Sd\fP
+OPT(Sd)
 Calculate change in z values along track (dz). Output is given in geophysical units,
 e.g. mGal.
 .br
-\fB\-Ss\fP
+OPT(Ss)
 Calculate spatial gradients (dz/ds). Output is given in geophysical units per km along the
 survey track, e.g. mGal/km.
 .br
-\fB\-St\fP Calculate time gradients (dz/dt)  [default]. Output is given in geophysical units
+OPT(St) Calculate time gradients (dz/dt)  [default]. Output is given in geophysical units
 per second along the survey track, e.g. mGal/sec.
 .TP
-.B \-T
+OPT(T)
 Adjusts mgd77sniffer gap handling. By default, data gaps greater than 5 km are skipped. Set to
 zero to de-activate gap skipping.
 .TP
-.B \-W
+OPT(W)
 Print out only certain warning types for verbose error messages. Comma delimit any combination of
 \fBc|g|o|s|t|v|x\fP: where (\fBc\fP) type code warnings, (\fBg\fP)radient out of range, (\fBo\fP)ffsets
-from grid (requires \fB\-G\fP|\fBg\fP), (\fBs\fP)peed out of range, (\fBt\fP)ime warnings, (\fBv\fP)alue out of 
+from grid (requires OPT(G)|\fBg\fP), (\fBs\fP)peed out of range, (\fBt\fP)ime warnings, (\fBv\fP)alue out of 
 range, (\fBx\fP) warning summaries. By default ALL warning messages are printed.Not compatible with any
-\fB\-D\fP options.
+OPT(D) options.
+#include "explain_-V.txt"
 .TP
-.B \-V
-runs in verbose mode.
-.TP
-.B \-b
+OPT(b)
 output binary data for OPT(D)d|f|s|v option.  Append \fBs\fP for single and \fBd\fB for double
 precision [Default is double].
 

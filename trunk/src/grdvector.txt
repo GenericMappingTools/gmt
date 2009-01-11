@@ -2,10 +2,10 @@
 .TH GRDVECTOR 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define PARAMS_SI	0.075\fBc\fP/0.3\fBc\fP/0.25\fBc\fP
 #define LEN1	5
-#define SCALE	\fB\-Jx\fP5\fBc\fP
+#define SCALE	OPT(Jx)5\fBc\fP
 #define PARAMS_US	0.03\fBi\fP/0.12\fBi\fP/0.1\fBi\fP
 #define LEN2	10
-#define SCL2	\fB\-S\fP10\fBi\fP
+#define SCL2	OPT(S)10\fBi\fP
 .SH NAME
 grdvector \- Plot vector fields from grid files
 .SH SYNOPSIS
@@ -33,54 +33,54 @@ Contains the y-component of the vector field.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Means grid files have polar (r, theta) components instead of Cartesian (x, y).
 #include "explain_-B_short.txt"
 .TP
-.B \-C
+OPT(C)
 Use \fIcptfile\fP to assign colors based on vector length.
 .TP
-.B \-E
+OPT(E)
 Center vectors on grid nodes [Default draws from grid node].
 .TP
-.B \-G
+OPT(G)
 Sets color or shade for vector interiors [Default is no fill].
 (See SPECIFYING FILL below).
 .TP
-.B \-I
+OPT(I)
 Only plot vectors at nodes every \fIx_inc, y_inc\fP apart (must be multiples of
 original grid spacing).  Append \fBm\fP for minutes or \fBc\fP for seconds. [Default plots every node].
 #include "explain_-K.txt"
 .TP
-.B \-N
+OPT(N)
 Do NOT clip vectors at map boundaries [Default will clip].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-Q
+OPT(Q)
 Select vector plot [Default is stick-plot].  Optionally, specify \fIparameters\fP which
 are \fIarrowwidth/headlength/headwidth\fP [Default is PARAMS_SI (or PARAMS_US)].  Append \fBn\fP\fIsize\fP
 which will cause vectors shorter than \fIsize\fP to have their appearance scaled by length/\fIsize\fP.
 #include "explain_-R.txt"
 Specify a subset of the grid.
 .TP
-.B \-S
+OPT(S)
 Sets scale for vector length in data units per distance measurement unit [1].  Append \fBc\fP, \fBi\fP, \fBm\fP, \fBp\fP
 to indicate the measurement unit (cm, inch, m, point).  Prepend \fBl\fP to indicate a fixed length for
 all vectors.
 .TP
-.B \-T
+OPT(T)
 Means azimuth should be converted to angles based on the selected map projection.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Set pen attributes used for vector outlines [Default: width = 1, color = black, texture = solid].
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
-.B \-Z
-Means the angles provided are azimuths rather than direction (requires \fB\-A\fP).
+OPT(Z)
+Means the angles provided are azimuths rather than direction (requires OPT(A)).
 #include "explain_-c.txt"
 #include "explain_-f.txt"
 #include "explain_pen.txt"
@@ -94,7 +94,7 @@ using vector rather than stick plot, and scale vector magnitudes so that LEN2 un
 equal 1 inch, run 
 .br
 .sp
-\fBgrdvector\fP r.grd theta.grd SCALE \fB\-A \-Q\fP SCL2 > gradient.ps
+\fBgrdvector\fP r.grd theta.grd SCALE OPT(A) OPT(Q) SCL2 > gradient.ps
 .br
 .sp
 .SH "SEE ALSO"

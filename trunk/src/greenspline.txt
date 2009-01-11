@@ -31,7 +31,7 @@ restored when evaluating the output.
 The name of one or more ASCII [or binary, see OPT(bi)] files holding the \fBx\fP, \fIw\fP
 data points.  If no file is given then we read standard input instead.
 .TP
-.B \-A
+OPT(A)
 The solution will partly be constrained by surface gradients \fBv\fP = \fIv\fP*\fBn\fP, where \fIv\fP is the
 gradient magnitude and \fBn\fP its unit vector direction.  The gradient direction may be specified either by
 Cartesian components (either unit vector \fBn\fP and magnitude \fIv\fP separately or gradient components \fBv\fP directly)
@@ -48,7 +48,7 @@ counter-clockwise from the horizontal (and for 3-D the vertical axis).
 \fB5\fP: records contain \fBx\fP, \fBn\fP, \fIv\fP.
 Append name of ASCII file with the surface gradients (following a comma if a format is specified).  
 .TP
-.B \-C
+OPT(C)
 Find an approximate surface fit: Solve the linear system for the spline coefficients by SVD and eliminate the contribution
 from all eigenvalues whose ratio to the largest
 eigenvalue is less than \fIcut\fP [Default uses Gauss-Jordan elimination to solve the
@@ -57,7 +57,7 @@ save the eigenvalue ratios to the specified file for further analysis.
 Finally, if a negative \fIcut\fP is given then /\fIfile\fP is required and execution
 will stop after saving the eigenvalues, i.e., no surface output is produced.
 .TP
-.B \-D
+OPT(D)
 Sets the distance flag that determines how we calculate distances between data points.  
 Select \fImode\fP 0 for Cartesian 1-D spline interpolation:
 OPT(D)0 means (\fIx\fP) in user units, Cartesian distances,
@@ -71,10 +71,10 @@ OPT(D)4 for (\fIx,y\fP) in degrees, use cosine of great circle (or geodesic) arc
 Select \fImode\fP 5 for Cartesian 3-D surface spline interpolation:
 OPT(D)5 means (\fIx,y,z\fP) in user units, Cartesian distances.
 .TP
-.B \-F
+OPT(F)
 Force pixel registration.  [Default is gridline registration].
 .TP
-.B \-G
+OPT(G)
 Name of resulting output file.  (1) If options OPT(R), OPT(I), and possibly OPT(F) are set we produce
 an equidistant output table.  This will be written to stdout unless OPT(G) is specified.  Note: for 2-D
 grids the OPT(G) option is required.  (2) If option OPT(T) is selected then OPT(G) is required and the
@@ -84,27 +84,27 @@ if OPT(G) is not given then this table is written to standard output.  Ignored i
 is given.
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Specify equidistant sampling intervals, on for each dimension, separated by slashes.
 .TP
-.B \-L
-Do \fInot\fP remove a linear (1-D) or planer (2-D) trend when \fB\-D\fP selects mode 0-3 [For those Cartesian cases a least-squares
+OPT(L)
+Do \fInot\fP remove a linear (1-D) or planer (2-D) trend when OPT(D) selects mode 0-3 [For those Cartesian cases a least-squares
 line or plane is modeled and removed, then restored after fitting a spline to the residuals].  However, in mixed
 cases with both data values and gradients, or for spherical surface data, only the mean data value is removed
 (and later and restored).
 .TP
-.B \-N
+OPT(N)
 ASCII file with coordinates of desired output locations \fBx\fP in the first column(s).  The resulting
 \fIw\fP values are appended to each record and written to the file given in OPT(G) [or stdout if not specified];
 see OPT(bo) for binary output instead.  This option eliminates the need to
 specify options OPT(R), OPT(I), and OPT(F).
 .TP
-.B \-Q
+OPT(Q)
 Rather than evaluate the surface, take the directional derivative in the \fIaz\fP azimuth and return the magnitude of this
 derivative instead.  For 3-D interpolation, specify the three components of the desired vector direction (the vector will
 be normalized before use).
 .TP
-.B \-R
+OPT(R)
 Specify the domain for an equidistant lattice where output predictions are required.  Requires OPT(I) and optionally OPT(F).
 .br
 \fI1-D:\fP  Give \fIxmin/xmax\fP, the minimum and maximum \fIx\fP coordinates.
@@ -119,7 +119,7 @@ in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  The two shorthands
 See the 2-D section if your horizontal coordinates are geographical; note the shorthands OPT(Rg) and OPT(Rd) cannot
 be used if a 3-D domain is specified.
 .TP
-.B \-S
+OPT(S)
 Select one of five different splines.  The first two are used for 1-D, 2-D, or 3-D Cartesian splines (see OPT(D) for discussion).
 Note that all tension values are expected to be normlized tension in the range 0 < \fIt\fP < 1:
 (\fBc\fP) Minimum curvature spline [\fISandwell\fP, 1987],
@@ -127,14 +127,14 @@ Note that all tension values are expected to be normlized tension in the range 0
 \fItension\fP[/\fIscale\fP] with \fItension\fP in the 0\-1 range and optionally supply a length scale [Default is the average grid spacing].
 The next is a 2-D or 3-D spline:
 (\fBg\fP) Regularized spline in tension [\fIMitasova and Mitas\fP, 1993]; again, append \fItension\fP and optional \fIscale\fP.
-The last two are spherical surface splines and both imply \fB\-D\fP4 \fB\-fg\fP:
+The last two are spherical surface splines and both imply OPT(D)4 OPT(fg):
 (\fBp\fP) Minimum curvature spline [\fIParker\fP, 1994],
 (\fBq\fP) Continuous curvature spline in tension [\fIWessel and Becker\fP, 2008]; append \fItension\fP.
-The G(\fBx\fP; \fBx'\fP) for the last method is slower to compute; by specifying \fB\-SQ\fP you can speed up calculations
+The G(\fBx\fP; \fBx'\fP) for the last method is slower to compute; by specifying OPT(SQ) you can speed up calculations
 by first pre-calculating G(\fBx\fP; \fBx'\fP) for a dense set of \fBx\fP values (e.g., 100,001 nodes between -1 to +1)
 and store them in look-up tables.  Optionally append /\fIN\fP (an odd integer) to specify how many points in the spline to set [100001]
 .TP
-.B \-T
+OPT(T)
 For 2-D interpolation only.  Only evaluate the solution at the nodes in the \fImaskgrid\fP that are not equal to NaN. This option eliminates the need to
 specify options OPT(R), OPT(I), and OPT(F).
 #include "explain_-V.txt"
@@ -146,60 +146,60 @@ To resample the \fIx,y\fP Gaussian random data created by \fBgmtmath\fP and stor
 every 0.1 step from 0 to 10, and using a minimum cubic spline, try
 .br
 .sp
-\fBgmtmath\fP \fB\-N\fP0/10/1 0 1 \fBNRAND\fP = 1D.txt
+\fBgmtmath\fP OPT(N)0/10/1 0 1 \fBNRAND\fP = 1D.txt
 .br
-\fBpsxy \-R\fP0/10/-5/5 \fB\-JX\fP6i/3i \fB\-B\fP2f1/1 \fB\-Sc\fP0.1 \fB\-G\fPblack 1D.txt \fB\-K\fP > 1D.ps
+\fBpsxy \-R\fP0/10/-5/5 OPT(JX)6i/3i OPT(B)2f1/1 OPT(Sc)0.1 OPT(G)black 1D.txt OPT(K) > 1D.ps
 .br
-\fBgreenspline\fP 1D.txt \fB\-R\fP0/10 \fB\-I\fP0.1 \fB\-Sc \-V\fP | \fBpsxy \-R \-J \-O \-W\fPthin >> 1D.ps
+\fBgreenspline\fP 1D.txt OPT(R)0/10 OPT(I)0.1 OPT(Sc) OPT(V) | \fBpsxy\fP OPT(R) OPT(J) OPT(O) OPT(W)thin >> 1D.ps
 .br
 .sp
 To apply a spline in tension instead, using a tension of 0.7, try
 .br
 .sp
-\fBpsxy \-R\fP0/10/-5/5 \fB\-JX\fP6i/3i \fB\-B\fP2f1/1 \fB\-Sc\fP0.1 \fB\-G\fPblack 1D.txt \fB\-K\fP > 1Dt.ps
+\fBpsxy \-R\fP0/10/-5/5 OPT(JX)6i/3i OPT(B)2f1/1 OPT(Sc)0.1 OPT(G)black 1D.txt OPT(K) > 1Dt.ps
 .br
-\fBgreenspline\fP 1D.txt \fB\-R\fP0/10 \fB\-I\fP0.1 \fB\-St\fP0.7 \fB\-V\fP | \fBpsxy \-R \-J \-O \-W\fPthin >> 1Dt.ps
+\fBgreenspline\fP 1D.txt OPT(R)0/10 OPT(I)0.1 OPT(St)0.7 OPT(V) | \fBpsxy\fP OPT(R) OPT(J) OPT(O) OPT(W)thin >> 1Dt.ps
 .SH 2-D EXAMPLES
 To make a uniform grid using the minimum curvature spline for the same Cartesian data set from Davis (1986) that is
 used in the GMT Cookbook example 16, try
 .sp
-\fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sc \-V \-D\fP1 \fB\-G\fPS1987.grd
+\fBgreenspline\fP table_5.11 OPT(R)0/6.5/-0.2/6.5 OPT(I)0.1 OPT(Sc) OPT(V) OPT(D)1 OPT(G)S1987.grd
 .br
-\fBpsxy \-R\fP0/6.5/-0.2/6.5 \fB\-JX\fP6i \fB\-B\fP2f1 \fB\-Sc\fP0.1 \fB\-G\fPblack table_5.11 \fB\-K\fP > 2D.ps
+\fBpsxy \-R\fP0/6.5/-0.2/6.5 OPT(JX)6i OPT(B)2f1 OPT(Sc)0.1 OPT(G)black table_5.11 OPT(K) > 2D.ps
 .br
-\fBgrdcontour \-JX\fP6i \fB\-B\fP2f1 \fB\-O -C\fP25 \fB\-A\fP50 S1987.grd >> 2D.ps
+\fBgrdcontour \-JX\fP6i OPT(B)2f1 OPT(O) OPT(C)25 OPT(A)50 S1987.grd >> 2D.ps
 .br
 .sp
 To use Cartesian splines in tension but only evaluate the solution where the input mask grid is not NaN, try
 .br
 .sp
-\fBgreenspline\fP table_5.11 \fB\-T\fPmask.grd \fB\-St\fP0.5 \fB\-V \-D\fP1 \fB\-G\fPWB1998.grd
+\fBgreenspline\fP table_5.11 OPT(T)mask.grd OPT(St)0.5 OPT(V) OPT(D)1 OPT(G)WB1998.grd
 .br
 .sp
 To use Cartesian generalized splines in tension and return the magnitude of the surface slope in
 the NW direction, try
 .br
 .sp
-\fBgreenspline\fP table_5.11 \fB\-R\fP0/6.5/-0.2/6.5 \fB\-I\fP0.1 \fB\-Sr\fP0.95 \fB\-V \-D\fP1 \fB\-Q\fP-45 \fB\-G\fPslopes.grd
+\fBgreenspline\fP table_5.11 OPT(R)0/6.5/-0.2/6.5 OPT(I)0.1 OPT(Sr)0.95 OPT(V) OPT(D)1 OPT(Q)-45 OPT(G)slopes.grd
 Finally, to use Cartesian minimum curvature splines in recovering a surface where the input data is a single surface
 value (pt.d) and the remaining constraints specify only the surface slope and direction (slopes.d), use
 .br
 .sp
-\fBgreenspline\fP pt.d \fB\-R\fP-3.2/3.2/-3.2/3.2 \fB\-I\fP0.1 \fB\-Sc\fP \fB\-V \-D\fP1 \fB\-A1\fP,slopes.d \fB\-G\fPslopes.grd
+\fBgreenspline\fP pt.d OPT(R)-3.2/3.2/-3.2/3.2 OPT(I)0.1 OPT(Sc) OPT(V) OPT(D)1 OPT(A)1,slopes.d OPT(G)slopes.grd
 .SH 3-D EXAMPLES
 To create a uniform 3-D Cartesian grid table based on the data in table_5.23 in Davis (1986) that contains \fIx,y,z\fP locations and
 a measure of uranium oxide concentrations (in percent), try
 .br
 .sp
-\fBgreenspline\fP table_5.23 \fB\-R\fP5/40/-5/10/5/16 \fB\-I\fP0.25 \fB\-Sr\fP0.85 \fB\-V \-D\fP5 \fB\-G\fP3D_UO2.txt
+\fBgreenspline\fP table_5.23 OPT(R)5/40/-5/10/5/16 OPT(I)0.25 OPT(Sr)0.85 OPT(V) OPT(D)5 OPT(G)3D_UO2.txt
 .SH 2-D SPHERICAL SURFACE EXAMPLES
 To recreate Parker's [1994] example on a global 1x1 degree grid, assuming the data are in file mag_obs_1990.d, try
 .sp
-greenspline \fB\-V \-Rg \-fg \-Sp \-D\fP3 \fB\-I\fP1 \fB\-G\fPP1994.grd mag_obs_1990.d
+greenspline OPT(V) OPR(Rg) OPT(fg) OPT(Sp) OPT(D)3 OPT(I)1 OPT(G)P1994.grd mag_obs_1990.d
 .sp
 To do the same problem but applying tension and use pre-calculated Green functions, use
 .sp
-greenspline \fB\-V \-Rg \-fg \-SQ\fP0.85 \fB\-D\fP3 \fB\-I\fP1 \fB\-G\fPWB2008.grd mag_obs_1990.d
+greenspline OPT(V) OPR(Rg) OPT(fg) OPT(SQ)0.85 OPT(D)3 OPT(I)1 OPT(G)WB2008.grd mag_obs_1990.d
 .SH CONSIDERATIONS
 (1) For the Cartesian cases we use the free-space Green functions, hence no boundary conditions are
 applied at the edges of the specified domain.  For most applications this is fine as the region typically

@@ -1,3 +1,3 @@
 .TP
-.B \-K
+OPT(K)
 More \fIPostScript\fP code will be appended later [Default terminates the plot system].

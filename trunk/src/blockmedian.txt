@@ -25,11 +25,11 @@ data values.  [\fIw\fP] is an optional weight for the data.  If no file is speci
 #include "explain_-R.txt"
 .SH OPTIONS
 .TP
-.B \-C
+OPT(C)
 Use the center of the block as the output location [Default uses the median location
 (but see OPT(Q))].  OPT(C) overrides OPT(Q).
 .TP
-.B \-E
+OPT(E)
 Provide Extended report which includes \fBs\fP (the L1 scale of the median),
 \fBl\fP, the lowest value, and \fBh\fP, the high value for each block. Output order
 becomes \fIx,y,z,s,l,h\fP[,\fIw\fP]. [Default outputs \fIx,y,z\fP[,\fIw\fP].
@@ -42,16 +42,16 @@ without it 9.5 <= (\fIx,y\fP) < 10.5 is one of 36 blocks.
 #include "explain_-H.txt"
 Not used with binary data.
 .TP
-.B \-Q
+OPT(Q)
 (Quicker) Finds median \fIz\fP and (\fIx, y\fP) at that \fIz\fP [Default finds median
 \fIx\fP, median \fIy\fP, median \fIz\fP].
 .TP
-.B \-T
+OPT(T)
 Sets the \fIquantile\fP of the distribution to be returned [Default is 0.5 which returns the
 median \fIz\fP].  Here, 0 < \fIquantile\fP < 1.
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Weighted modifier[s].  Unweighted input and output has 3 columns \fIx,y,z\fP; Weighted
 i/o has 4 columns \fIx,y,z,w\fP.  Weights can be used in input to construct weighted
 mean values in blocks.  Weight sums can be reported in output for later combining several
@@ -68,7 +68,7 @@ weighted output only.  [Default uses unweighted i/o].
 To find 5 by 5 minute block medians from the double precision binary data in hawaii_b.xyg
 and output an ASCII table, run
 .sp
-\fBblockmedian\fP hawaii_b.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-bi\fP3 > hawaii_5x5.xyg
+\fBblockmedian\fP hawaii_b.xyg OPT(R)198/208/18/25 OPT(I)5\fBm\fP OPT(bi)3 > hawaii_5x5.xyg
 .SH "SEE ALSO"
 .IR blockmean (1),
 .IR blockmode (1),

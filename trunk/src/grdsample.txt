@@ -24,16 +24,16 @@ have the same registration as the input grid.
 The name of the input 2-D binary grid file.
 (See GRID FILE FORMAT below.)
 .TP
-.B \-G
+OPT(G)
 The name of the output grid file.
 (See GRID FILE FORMAT below.)
 .SH OPTIONS
 .TP
-.B \-F
+OPT(F)
 Force pixel node registration on output grid.  [Default is same registration as input grid].
 #include "explain_-I.txt"
 .TP
-.B \-L
+OPT(L)
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
 x or y or both set by OPT(R), or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless the grid is
@@ -41,7 +41,7 @@ automatically recognised as periodic.]
 #include "explain_-Q.txt"
 #include "explain_-R.txt"
 .TP
-.B \-T
+OPT(T)
 Translate between grid and pixel registration;  if the input is 
 grid-registered, the output will be pixel-registered and vice-versa.
 #include "explain_-V.txt"
@@ -58,14 +58,14 @@ important.  Use bilinear to minimize the propagation of NaNs.
 To resample the 5 x 5 minute grid in hawaii_5by5_topo.grd onto a 1 minute grid:
 .br
 .sp
-\fBgrdsample\fP hawaii_5by5_topo.grd \fB\-I\fP1\fBm \-G\fPhawaii_1by1_topo.grd
+\fBgrdsample\fP hawaii_5by5_topo.grd OPT(I)1\fBm \-G\fPhawaii_1by1_topo.grd
 .br
 .sp
 To translate the gridline-registered file surface.grd to pixel registration while
 keeping the same region and grid interval:
 .br
 .sp
-\fBgrdsample\fP surface.grd \fB\-T \-G\fPpixel.grd
+\fBgrdsample\fP surface.grd OPT(T) OPT(G)pixel.grd
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdedit (1),

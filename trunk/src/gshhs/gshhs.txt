@@ -13,10 +13,10 @@ architectures.  Optionally, only segment header info can be displayed.
 GSHHS or WDBII binary data file as distributed with the GSHHS data supplement.  Any of the
 5 standard resolutions (full, high, intermediate, low, crude) can be used.
 .TP
-.B \-I
+OPT(I)
 Only output information for the polygon that matches \fIid\fP [default outputs all polygons].
 .TP
-.B \-L
+OPT(L)
 Only output a listing of polygon or line segment headers [default outputs headers and data records].
 .SH EXAMPLES
 .sp

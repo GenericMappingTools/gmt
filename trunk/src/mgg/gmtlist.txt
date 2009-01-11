@@ -11,7 +11,7 @@ gmtlist \- A data-extractor for <legid>.gmt files
 contain time(\fBs\fP), latitude(\fBy\fP), longitude(\fBx\fP), gravity(\fBg/G\fP),
 magnetics(\fBm/M\fP), and bathymetry(\fBt/T\fP),
 and the user may extract any combination of these 6 parameters + distance(\fBd\fP),
-heading (\fBh\fP), velocity (\fBv\fP), and weight (\fBw\fP, see \fB\-W\fP).  A sub-section can be
+heading (\fBh\fP), velocity (\fBv\fP), and weight (\fBw\fP, see OPT(W)).  A sub-section can be
 specified by passing time- or distance-intervals along track or by selecting a region.
 .TP
 \fIleg-ids\fP
@@ -19,17 +19,17 @@ Can be one or more cruisenames. To give a list of names, use `cat list_of_legs`.
 .SH OPTIONS
 No space between the option flag and the associated arguments
 .TP
-.B \-C
+OPT(C)
 Apply crossover Corrections to the data. If no correction file is given, gmtlist reads the
 default correction file. (See \fBXSYSTEM\fP for how to set up your own correction file).
 .TP
-.B \-Da
+OPT(Da)
 Do not list data collected before \fIstartdate\fP (mm/dd/yyyy/hh:mm)  [Default is first day].
 .TP
-.B \-Db
+OPT(Db)
 Do not list data collected after \fIstopdate\fP (mm/dd/yyyy/hh:mm). [Default is last day].
 .TP
-.B \-F
+OPT(F)
 Can be any combination of \fBsyxgmtdhv\fP to indicate the desired output data. The data will
 appear in the order indicated by flags. If \fBG\fP, \fBM\fP, or \fBT\fP is substituted for \fBg\fP, \fBm\fP, \fBt\fP, only records that
 have that combination of data are written out. If \fBs\fP is followed by \fBc\fP (calendar),
@@ -37,41 +37,41 @@ then yyyy/mm/dd/hh/mm/ss is written out, if \fBs\fP is
 followed by \fBj\fP (julian), then yyyy/jd/hh/mm/ss is written out.  Default is seconds from start
 of year.
 .TP
-.B \-G
+OPT(G)
 Force Geographical longitudes (-180/+180) rather than geodetic (0-360) [Default].
 .TP
-.B \-H
+OPT(H)
 Issue a header record with names for each data field.
 #include "explain_-Rgeo.txt"
 .TP
-.B \-Sa
+OPT(Sa)
 Do not list data that are less than \fIstartdist\fP km along track from port of departure. [Default is 0].
 .TP
-.B \-Sb
+OPT(Sb)
 Do not list data that are more than \fIstopdist\fP km along track from port of departure. [Default is length of track].
 #include "explain_-V.txt"
 .TP
-.B \-W
-Set the weight for these data.  Weight output option must be set in \fB\-F\fP.  This is
+OPT(W)
+Set the weight for these data.  Weight output option must be set in OPT(F).  This is
 useful if the data are to be processed with the weighted averaging techniques offered by
 \fBblockmean\fP, \fBblockmedian\fP, and \fBblockmode\fP.
 .TP
-.B \-b
-Selects binary output mode (in double precision) [Default is ASCII].  \fB\-H\fP is ignored if \fB\-b\fP is selected.
+OPT(b)
+Selects binary output mode (in double precision) [Default is ASCII].  OPT(H) is ignored if OPT(b) is selected.
 Julian and calendar dates are not supported for binary time output (i.e., you get seconds from start of year).
 .SH EXAMPLES
 To get a (distance, heading, crossover-corrected gravity, bathymetry) listing from c2104.gmt,
 starting at June 3 1971 20:45 and ending at distance = 5000 km, use the following command:
 .br
 .sp
-\fBgmtlist\fP c2104 \fB\-Da\fP6/3/1971/20:45 \fB\-Sb\fP5000 \fB\-F\fPdhgt \fB\-C\fP > myfile
+\fBgmtlist\fP c2104 OPT(Da)6/3/1971/20:45 OPT(Sb)5000 OPT(F)dhgt OPT(C) > myfile
 .br
 .sp
 To make input for \fBblockmean\fP and \fBsurface\fP using all the cruises listed in the file gmt.list,
 but only the data that are inside the specified area, and make output binary:
 .br
 .sp
-\fBgmtlist\fP `cat gmt.list` \fB\-F\fPxyg \fB\-R\fP-40/-30/25/35 \fB\-b\fP > allgrav.xyg
+\fBgmtlist\fP `cat gmt.list` OPT(F)xyg OPT(R)-40/-30/25/35 OPT(b) > allgrav.xyg
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR x_system (1)

@@ -19,14 +19,14 @@ a tracks index data base (see \fBx2sys_init\fP for more information).
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-C
+OPT(C)
 List abbreviations for all columns present in the MGD77[+] files.
 Append \fBm\fP or \fBe\fP to limit the display to the MGD77 standard or MGD77+ extended set only.
 .TP
-.B \-E
+OPT(E)
 Give a one-line summary for each cruise listed.
 .TP
-.B \-M
+OPT(M)
 List the meta-data (header) and (if present) the MGD77+ history for each cruise.  Append \fBf\fP for
 a formatted display.  This will list individual
 parameters and their values, one entry per output line, in a format
@@ -37,12 +37,12 @@ For the raw, punchcard-formatted MGD77 original header block, append \fBr\fP ins
 For the MGD77+ E77 status, append \fBe\fP instead. 
 Finally, for the MGD77+ history, append \fBh\fP instead. 
 .TP
-.B \-I
+OPT(I)
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
 MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
 be repeated to ignore more than one format.  [Default ignores none].
 .TP
-.B \-L
+OPT(L)
 No cruise information is listed.  Instead, we just display a list of the GEODAS institution 2-character codes
 and their names.  Optionally, append \fBv\fP to also display the vessels and their 4-character codes for each
 institution.  The following is the list of institutions:
@@ -53,37 +53,37 @@ institution.  The following is the list of institutions:
 To get one-line summary information about the cruises 01010047.mgd77 and 01010008.mgd77, try
 .br
 .sp
-\fBmgd77info\fP 01010047 01010008 \fB\-E\fP > listing.lis
+\fBmgd77info\fP 01010047 01010008 OPT(E) > listing.lis
 .br
 .sp
 To see the original raw MGD77 header meta-data for cruise 01010047.mgd77, run
 .br
 .sp
-\fBmgd77info\fP 01010047 \fB\-Mr\fP
+\fBmgd77info\fP 01010047 OPT(Mr)
 .br
 .sp
 To determine all the parameters related to Gravity during cruise 01010047.mgd77, run
 .br
 .sp
-\fBmgd77info\fP 01010047 \fB\-Mf\fP | grep Gravity
+\fBmgd77info\fP 01010047 OPT(Mf) | grep Gravity
 .br
 .sp
 To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run
 .br
 .sp
-\fBmgd77info\fP 01010047 \fB\-Mf\fPMagnetics_Sampling_Rate
+\fBmgd77info\fP 01010047 OPT(Mf)Magnetics_Sampling_Rate
 .br
 .sp
 To see all the columns that the MGD77+ cruise 01010047.nc contains, run
 .br
 .sp
-\fBmgd77info\fP 01010047 \fB\-C\fP
+\fBmgd77info\fP 01010047 OPT(C)
 .br
 .sp
 To see the E77 status of all MGD77+ cruises collected by the University of Hawaii, run
 .br
 .sp
-\fBmgd77info\fP 08 \fB\-Ia \-Me\fP
+\fBmgd77info\fP 08 OPT(Ia) OPT(Me)
 .SH "SEE ALSO"
 .IR mgd77list (1),
 .IR mgd77manage (1),

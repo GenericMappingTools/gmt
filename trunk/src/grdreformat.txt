@@ -33,7 +33,7 @@ are supplied you may also append a value that represents 'Not-a-Number' (for flo
 is unnecessary since the IEEE NaN is used; however integers need a value which means no data available.)
 .SH OPTIONS
 .TP
-.B \-N
+OPT(N)
 Suppress the writing of the \fBGMT\fP header structure.  This is useful when you want to write a native grid to
 be used by \fBgrdraster\fP.  It only applies to native grids and is ignored for netCDF output.
 #include "explain_-R.txt"
@@ -100,27 +100,27 @@ climate.grd:
 To create a 4-byte native floating point grid from the COARDS-compliant netCDF file data.grd:
 .br
 .sp
-\fBgrdreformat\fP data.grd ras_data.b4=bf \fB\-V\fP
+\fBgrdreformat\fP data.grd ras_data.b4=bf OPT(V)
 .br
 .sp
 To make a 2-byte short integer file, scale it by 10, subtract 32000, setting
 NaNs to -9999, do
 .br
 .sp
-\fBgrdreformat\fP values.grd shorts.i2=bs/10/-32000/-9999 \fB\-V\fP
+\fBgrdreformat\fP values.grd shorts.i2=bs/10/-32000/-9999 OPT(V)
 .br
 .sp
 To create a Sun standard 8-bit rasterfile for a subset of the data file image.grd,
 assuming the range in image.grd is 0-1 and we need 0-255, run
 .br
 .sp
-\fBgrdreformat\fP image.grd \fB\-R\fP-60/-40/-40/-30 image.ras8=rb/255/0 \fB\-V\fP
+\fBgrdreformat\fP image.grd OPT(R)-60/-40/-40/-30 image.ras8=rb/255/0 OPT(V)
 .br
 .sp
 To convert etopo2.grd to etopo2.i2 that can be used by \fBgrdraster\fP, try
 .br
 .sp
-\fBgrdreformat\fP etopo2.grd etopo2.i2=bs \fB\-N \-V\fP
+\fBgrdreformat\fP etopo2.grd etopo2.i2=bs OPT(N) OPT(V)
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdmath (1)

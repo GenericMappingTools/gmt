@@ -23,12 +23,12 @@ to initialize the tag before you can run the indexing.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-D
+OPT(D)
 Calculate the length of trackline segments per bin [Default skips this step].
 The length fragments are given as the 5th output column (after the \fIflags\fP).
 The length units are obtained via the TAB setting (see \fBx2sys_init\fP).
 .TP
-.B \-E
+OPT(E)
 Convert geographic data to a cylindrical equal-area projection prior to binning.  Basically, we
 apply the projection OPT(JY)\fIlon0\fP/37:04:17.166076/360, where \fIlon0\fP is the
 mid-longitude of the region.  Requires OPT(D), geographical data, and a global region
@@ -40,19 +40,19 @@ To create a bin index file from the MGD77 file 01030061.mgd77 using the settings
 with the tag MGD77, do
 .br
 .sp
-\fBx2sys_binlist\fP 01030061.mgd77 \fB\-T\fPMGD77 > 01030061.tbf
+\fBx2sys_binlist\fP 01030061.mgd77 OPT(T)MGD77 > 01030061.tbf
 .br
 .sp
 To create a track bin index file of all MGD77+ files residing in the current directory
 using the settings associated with the tag MGD77+ and calculate track distances, run
 .br
 .sp
-\fBx2sys_binlist\fP *.nc \fB\-T\fPMGD77+ \-D\fP > all.tbf
+\fBx2sys_binlist\fP *.nc OPT(T)MGD77+ \-D\fP > all.tbf
 .SH "SEE ALSO"
-.IR x2sys_cross (1)
-.IR x2sys_datalist (1)
-.IR x2sys_get (1)
-.IR x2sys_init (1)
-.IR x2sys_put (1)
-.IR x2sys_report (1)
+.IR x2sys_cross (1),
+.IR x2sys_datalist (1),
+.IR x2sys_get (1),
+.IR x2sys_init (1),
+.IR x2sys_put (1),
+.IR x2sys_report (1),
 .IR x2sys_solve (1)

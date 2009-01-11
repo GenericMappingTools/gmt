@@ -16,65 +16,64 @@ weighting function used is w(r) = 1 / (1 + d ^ 2), where d = 3 * r / search_radi
 distance from the node.  This weight is modulated by the observation points' weights [if supplied].\"'
 .TP
 \fIxyzfile(s)\fP
-3 [or 4, see \fB\-W\fP] column ASCII file(s) [or binary, see \fB\-b\fP] holding (x,y,z[,w]) data values.  If no file is specified, \fBnearneighbor\fP
+3 [or 4, see OPT(W)] column ASCII file(s) [or binary, see OPT(b)] holding (x,y,z[,w]) data values.  If no file is specified, \fBnearneighbor\fP
 will read from standard input.
 .TP
-.B \-G
+OPT(G)
 Give the name of the output grid file.
 #include "explain_-I.txt"
 .TP
-.B \-N
+OPT(N)
 The circular area centered on each node is divided into \fIsectors\fP sectors.  Average values
 will only be computed if there is at least one value inside at least \fImin_sectors\fP of the sectors for a
-given node.  Nodes that fail this test are assigned the value NaN (but see \fB\-E\fP).
+given node.  Nodes that fail this test are assigned the value NaN (but see OPT(E)).
 If \fImin_sectors\fP is omitted, each sector needs to have at least one
 value inside it.
 [Default is quadrant search, i.e., \fIsectors\fP = \fImin_sectors\fP = 4].
 Note that only the nearest value per sector enters into the averaging, not all values inside the circle.
 #include "explain_-R.txt"
 .TP
-.B \-S
+OPT(S)
 Sets the \fIsearch_radius\fP in same units as the grid spacing; append \fBm\fP to indicate minutes
-or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies \fB\-R\fP and \fB\-I\fP are in degrees, and
+or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies OPT(R) and OPT(I) are in degrees, and
 we will use a fast flat Earth approximation to calculate distance).  For more accuracy, use uppercase \fBK\fP
 if distances should be calculated along geodesics.
 However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great circle calculations are used.
 .SH OPTIONS
 .TP
-.B \-E
+OPT(E)
 Set the value assigned to empty nodes [NaN].
 #include "explain_nodereg.txt"
 #include "explain_-H.txt"
 Not used with binary data.
 .TP
-.B \-L
+OPT(L)
 Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating data is periodic in range of 
-x or y or both set by \fB\-R\fP, or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
+x or y or both set by OPT(R), or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
 lon and lat).  [Default is no boundary conditions].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 .TP
-.B \-W
+OPT(W)
 Input data have a 4th column containing observation point weights.  These are multiplied
 with the geometrical weight factor to determine the actual weights used in the calculations.
 #include "explain_-bi.txt"
-[Default is 3 (or 4 if \fB\-W\fP is set) columns].
+[Default is 3 (or 4 if OPT(W) is set) columns].
 #include "explain_-f.txt"
 #include "explain_float.txt"
 .SH EXAMPLES
 To create a gridded data set from the file seaMARCII_bathy.lon_lat_z using a 0.5 min grid,
 a 5 km search radius, using an octant search, and set empty nodes to -9999:
 .sp
-\fBnearneighbor\fP seaMARCII_bathy.lon_lat_z \fB\-R\fP242/244/-22/-20 \fB\-I\fP.5\fBm \-E\fP-9999 \fB\-G\fPbathymetry.grd
-\fB\-S\fP5k \fB\-N\fP8
+\fBnearneighbor\fP seaMARCII_bathy.lon_lat_z OPT(R)242/244/-22/-20 OPT(I)0.5\fBm\fP OPT(E)-9999 OPT(G)bathymetry.grd
+OPT(S)5\fBkfP OPT(N)8
 .br
 .sp
 To make a global grid file from the data in geoid.xyz using a 1 degree grid,
 a 200 km search radius, spherical distances, using an quadrant search, and set nodes to NaN
 only when fewer than two quadrants contain at least one value:
 .sp
-\fBnearneighbor\fP geoid.xyz \fB\-R\fP0/360/-90/90 \fB\-I\fP1 \fB\-L\fPg \fB\-G\fPgeoid.grd
-\fB\-S\fP200K \fB\-N\fP4/2
+\fBnearneighbor\fP geoid.xyz OPT(R)0/360/-90/90 OPT(I)1 OPT(L)g OPT(G)geoid.grd OPT(S)200K OPT(N)4/2
 .SH "SEE ALSO"
 .IR blockmean (1),
 .IR blockmedian (1),

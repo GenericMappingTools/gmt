@@ -29,40 +29,40 @@ implied by the extent of the grid file.
 2-D binary grid file to be transformed.
 (See GRID FILE FORMATS below.)
 .TP
-.B \-G
+OPT(G)
 Specify the name of the output grid file.
 (See GRID FILE FORMATS below.)
 #include "explain_-J_short.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
-Force 1:1 scaling, i.e., output (or input, see \fB\-I\fP) data are in actual projected meters.  To specify other units,
+OPT(A)
+Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projected meters.  To specify other units,
 append \fBk\fP (km), \fBm\fP (mile),\fBn\fP (nautical mile), \fBi\fP (inch), \fBc\fP (cm), or \fBp\fP (points).
-Without \fB\-A\fP, the output (or input, see \fB\-I\fP) are in the units specified by \fBMEASURE_UNIT\fP (but see \fB\-M\fP).
+Without OPT(A), the output (or input, see OPT(I)) are in the units specified by \fBMEASURE_UNIT\fP (but see OPT(M)).
 .TP
-.B \-C
+OPT(C)
 Let projected coordinates be relative to projection center [Default is relative to lower left corner].
-Optionally, add offsets in the projected units to be added (or subtracted when \fB\-I\fP is set) to (from)
+Optionally, add offsets in the projected units to be added (or subtracted when OPT(I) is set) to (from)
 the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
 .TP
-.B \-D
+OPT(D)
 Set the grid spacing for the new grid.  Append \fBm\fP for minutes, \fBc\fP for seconds.
 .TP
-.B \-E
+OPT(E)
 Set the resolution for the new grid in dots per inch.
 .TP
-.B \-F
+OPT(F)
 Toggle between pixel and gridline node registration [Default is same as input].
 .TP
-.B \-I
+OPT(I)
 Do the Inverse transformation, from rectangular to geographical.
 .TP
-.B \-M
+OPT(M)
 Append \fBc\fP, \fBi\fP, or \fBm\fP to indicate that cm, inch, or meter should be the projected measure unit
-[Default is set by \fBMEASURE_UNIT\fP in \.gmtdefaults4].  Cannot be used with \fB\-A\fP.
+[Default is set by \fBMEASURE_UNIT\fP in \.gmtdefaults4].  Cannot be used with OPT(A).
 .TP
-.B \-N
+OPT(N)
 Set the number of grid nodes in the new grid.
 #include "explain_-R.txt"
 You may ask to project only a subset of the grid by specifying a smaller input \fIw/e/s/n\fP region
@@ -74,14 +74,14 @@ You may ask to project only a subset of the grid by specifying a smaller input \
 To transform the geographical grid dbdb5.grd onto a pixel Mercator grid at 300 dpi, run
 .br
 .sp
-\fBgrdproject\fP dbdb5.grd \fB\-R\fP20/50/12/25 \fB\-Jm\fP0.25\fBi\fP \fB\-E\fP300 \fB\-F\fP
-\fB\-G\fPdbdb5_merc.grd 
+\fBgrdproject\fP dbdb5.grd OPT(R)20/50/12/25 OPT(Jm)0.25\fBi\fP OPT(E)300 OPT(F)
+OPT(G)dbdb5_merc.grd 
 .br
 .sp
 To inversely transform the file topo_tm.grd back onto a geographical grid, use
 .br
 .sp
-\fBgrdproject\fP topo_tm.grd \fB\-R\fP-80/-70/20/40 \fB\-Jt\fP-75/1:500000 \fB\-I\fP \fB\-D\fP5\fBm \-V\fP \fB\-G\fPtopo.grd
+\fBgrdproject\fP topo_tm.grd OPT(R)-80/-70/20/40 OPT(Jt)-75/1:500000 OPT(I) OPT(D)5\fBm \-V\fP OPT(G)topo.grd
 .br
 .sp
 This assumes, of course, that the coordinates in topo_tm.grd were created with the same projection parameters.
@@ -90,7 +90,7 @@ To inversely transform the file topo_utm.grd (which is in UTM meters) back to a 
 specify a one-to-one mapping with meter as the measure unit:
 .br
 .sp
-\fBgrdproject\fP topo_utm.grd \fB\-R\fP203/205/60/65 \fB\-Ju\fP5/1:1 \fB\-I\fP \fB\-Mm \-V \-G\fPtopo.grd
+\fBgrdproject\fP topo_utm.grd OPT(R)203/205/60/65 OPT(Ju)5/1:1 OPT(I) OPT(Mm) OPT(G)topo.grd OPT(V)
 .br
 .SH RESTRICTIONS
 The boundaries of a projected (rectangular) data set will not necessarily give rectangular

@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH PSWIGGLE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN 15
-#define SCALE_S \fB\-JS\fP0/90/15\fBc\fP
+#define SCALE_S OPT(JS)0/90/15\fBc\fP
 .SH NAME
 pswiggle \- Plot anomaly along track on a map
 .SH SYNOPSIS
@@ -26,54 +26,54 @@ List one or more file-names. If no files are given, \fBpswiggle\fP will read sta
 #include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .TP
-.B \-Z
+OPT(Z)
 Gives anomaly scale in data-units/distance-unit.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Sets the preferred positive azimuth.  Positive wiggles will "gravitate" towards that
 direction.
 #include "explain_-B_short.txt"
 .TP
-.B \-C
+OPT(C)
 Subtract \fIcenter\fP from the data set before plotting [0].
 .TP
-.B \-D
+OPT(D)
 Means there is a data gap if 2 consecutive points are more than \fIgap\fP distance
 units apart.  For longitude/latitude data \fIgap\fP is in km, else it is in the
 user's units.\"'
 #include "explain_-E.txt"
 .TP
-.B \-G
+OPT(G)
 Set fill shade, color or pattern of positive wiggles [Default is black]
 (See SPECIFYING FILL below).
 #include "explain_-H.txt"
 .TP
-.B \-I
-Set a fixed azimuth projection for wiggles [Default uses track azimuth, but see \fB\-A\fP].
+OPT(I)
+Set a fixed azimuth projection for wiggles [Default uses track azimuth, but see OPT(A)].
 #include "explain_-K.txt"
 .TP
-.B \-M
+OPT(M)
 Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
 [Default is '>'].
 .TP
-.B \-N
+OPT(N)
 Paint negative wiggles instead of positive [Default].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-S
-Draws a simple vertical scale centered on \fIlon0/lat0\fP.  Use \fB\-Sx\fP to specify cartesian coordinates instead.
+OPT(S)
+Draws a simple vertical scale centered on \fIlon0/lat0\fP.  Use OPT(Sx) to specify cartesian coordinates instead.
 \fIlength\fP is in z units, append unit name for labeling
 .TP
-.B \-T
+OPT(T)
 Draw track  [Default is no track].  Append pen attributes to use [Defaults: width = 1, color = black, texture = solid].
 (See SPECIFYING PENS below).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 [Defaults: width = 1, color = black, texture = solid].
 (See SPECIFYING PENS below).
@@ -92,7 +92,8 @@ using a LEN-cm-wide Polar Stereographic map ticked
 every 5 degrees in Portrait mode, with positive anomalies in red on a blue track of width 0.25 points, use
 .br
 .sp
-\fBpswiggle\fP track.xym \fB\-R\fP-20/10/-80/-60 SCALE_S \fB\-Z\fP1000 \fB\-B\fP5 \fB\-C\fP32000 \fB\-P \-G\fPred \fB\-T\fP0.25\fBp\fP,blue \fB\-S\fP1000 \fB\-V\fP > track_xym.ps
+\fBpswiggle\fP track.xym OPT(R)-20/10/-80/-60 SCALE_S OPT(Z)1000 OPT(B)5 OPT(C)32000 OPT(P) OPT(G)red OPT(T)0.25\fBp\fP,blue
+OPT(S)1000 OPT(V) > track_xym.ps
 .SH BUGS
 Sometimes the (x,y) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot.  To
@@ -106,7 +107,7 @@ awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz | more
 Then if these numbers jump around a lot, you may do this:
 .br
 .sp
-awk '{ print NR, $0 }' yourdata.xyz | \fBfilter1d\fP \fB\-Fb\fP5 \fB\-N\fP4/0 \fB\-\-D_FORMAT\fP=%.12lg > smoothed.xyz
+awk '{ print NR, $0 }' yourdata.xyz | \fBfilter1d\fP OPT(Fb)5 OPT(N)4/0 PAR(D_FORMAT,\fP%.12lg) > smoothed.xyz
 .br
 .sp
 and plot this data set instead.

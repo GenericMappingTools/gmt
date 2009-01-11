@@ -1,5 +1,5 @@
 .TP
-.B \-F
+OPT(F)
 Give file with hotspot locations.  This file must contain
 one record for each hotspot to be considered; each record must be of the
 following format:
