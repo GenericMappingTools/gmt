@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.18 2009-01-10 03:47:45 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.19 2009-01-11 02:43:54 remko Exp $
 % Begin pslib header
 250 dict begin
 /! {bind def} bind def
@@ -30,7 +30,9 @@
 % Point
 /O {M W 0 0 D S}!
 % Cross
-/X {M dup 0 D dup 2 div neg dup G 0 exch D S}!
+/X {M 0.707106781 mul 5 {dup} repeat 2 div neg dup G D neg 0 G neg D S}!
+% Plus
+/x {M dup dup 2 div neg dup 0 D exch 0 D dup G 0 exch D S}!
 % Path fill (lower case second letter with outline)
 /QA {P V A F U N}! /QC {P V C F U N}! /QK {P V K F U N}! /QH {P V H F U N}! /QI {P V I F U N}! /QQ {P S}!
 /Qa {P V A F U S}! /Qc {P V C F U S}! /Qk {P V K F U S}! /Qh {P V H F U S}! /Qi {P V I F U S}!
