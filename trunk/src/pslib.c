@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.186 2009-01-10 03:43:39 remko Exp $
+ *	$Id: pslib.c,v 1.187 2009-01-11 02:47:02 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -73,7 +73,7 @@
  *	ps_colortiles		: Plots a 24-bit 2-D image using tiling
  *	ps_command		: Writes a given PostScript statement to the plot file
  *	ps_comment		: Writes a comment statement to the plot file
- *	ps_cross		: Plots a +
+ *	ps_cross		: Plots a cross (x)
  *	ps_dash			: Plots a short horizontal line segment (dash)
  *	ps_diamond		: Plots a diamond and [optionally] fills it
  *	ps_ellipse		: Plots an ellipse and [optionally] fills it
@@ -95,6 +95,7 @@
  *	ps_plotend		: Close plotfile
  *	ps_plotinit		: Initialize parameters/open plotfile etc.
  *	ps_plotr		: Relative move to a new position (pen up or down)
+ *      ps_plus			: Plots a plus (+)
  *	ps_polygon		: Creates a polygon and optionally fills it
  *	ps_read_rasheader	: Portable reading of Sun rasterfile headers
  *	ps_write_rasheader	: Portable writing of Sun rasterfile headers
@@ -572,9 +573,21 @@ void ps_comment_ (char *text, int nlen)
 	ps_comment (text);
 }
 
+void ps_plus (double x, double y, double diameter)
+{	/* Draw plus sign using current color. Fit inside circle of given diameter. */
+	fprintf (PSL->internal.fp, "%ld %ld %ld x\n", (PS_LONG) irint (diameter * PSL->internal.scale), (PS_LONG) irint (x * PSL->internal.scale), (PS_LONG) irint (y * PSL->internal.scale));
+	PSL->internal.npath = 0;
+}
+
+/* fortran interface */
+void ps_plus_ (double *x, double *y, double *diameter)
+{
+	ps_plus (*x, *y, *diameter);
+}
+
 void ps_cross (double x, double y, double diameter)
-{	/* Fit inside circle of given diameter; draw using current color */
-	fprintf (PSL->internal.fp, "%ld %ld %ld X\n", (PS_LONG) irint (diameter * PSL->internal.scale), (PS_LONG) irint ((x - 0.5 * diameter) * PSL->internal.scale), (PS_LONG ) irint (y * PSL->internal.scale));
+{	/* Draw cross sign using current color. Fit inside circle of given diameter. */
+	fprintf (PSL->internal.fp, "%ld %ld %ld X\n", (PS_LONG) irint (diameter * PSL->internal.scale), (PS_LONG) irint (x * PSL->internal.scale), (PS_LONG) irint (y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -1417,7 +1430,7 @@ int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, doubl
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.18 ");
+		ps_bulkcopy ("PSL_prologue", "v 1.19 ");	/* Version number should match that of PSL_prologue.ps */
 		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Initialize book-keeping for font encoding and write font macros */
