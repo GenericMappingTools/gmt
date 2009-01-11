@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.37 2009-01-09 20:51:13 guru Exp $
-AC_REVISION($Revision: 1.37 $)
+dnl $Id: configure.ac,v 1.38 2009-01-11 06:18:42 guru Exp $
+AC_REVISION($Revision: 1.38 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -57,6 +57,7 @@ AC_SUBST(NETCDF_INC)
 AC_SUBST(DOCDATE)
 AC_SUBST(DOCYEAR)
 AC_SUBST(MANDATE)
+AC_SUBST(FTPSITE)
 AC_SUBST(GSHHS_VERSION)
 AC_SUBST(CVS_VERSION)
 AC_SUBST(LIBEXT)
