@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.45 2009-01-11 19:50:17 guru Exp $
+#  $Id: GNUmakefile,v 1.46 2009-01-11 22:39:35 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -268,6 +268,7 @@ tar_scripts:	ftpdir
 		rm -f examples/ex??/*.ps examples/ex??/*% examples/ex??/*.txt examples/ex??/.gmt*
 		rm -f examples/anim??/*.ps examples/anim??/*% examples/anim??/*.txt examples/anim??/.gmt*
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_examples.lis > tmp.lis
+		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_animations.lis >> tmp.lis
 		tar -cjf ftp/GMT$(GMT_VERSION)_scripts.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
 

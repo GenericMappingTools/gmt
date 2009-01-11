@@ -1,6 +1,6 @@
 #!/bin/sh
 #               GMT ANIMATION 04
-#               $Id: anim_04.sh,v 1.2 2008-06-06 00:00:23 guru Exp $
+#               $Id: anim_04.sh,v 1.3 2009-01-11 22:39:35 guru Exp $
 #
 # Purpose:      Make DVD-res Quicktime movie of NY to Miami flight
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
@@ -23,10 +23,6 @@ name=`basename $0 '.sh'`
 
 # Set up flight path
 project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d
-cat << EOF >> $$.cities.d
--73.8333	40.75	0	5	5
--80.133		25.75	0	5	5
-EOF
 frame=0
 mkdir -p frames
 grdgradient USEast_Coast.nc -A90 -Nt1 -G$$_int.nc

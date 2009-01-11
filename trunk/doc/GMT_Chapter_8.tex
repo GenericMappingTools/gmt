@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_8.tex,v 1.17 2009-01-09 04:02:32 guru Exp $
+%	$Id: GMT_Chapter_8.tex,v 1.18 2009-01-11 22:39:35 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -19,7 +19,8 @@ to frame we will be following some general guidelines when writing
 our scripts.  Since there is no ``movie'' mode in \GMT\ we must take
 care of all the book-keeping in our script.  Thus, animations may
 require a bit of planning and may use more advanced scripting than the
-previous static examples.
+previous static examples.  Note: This is a new chapter introduced with the
+4.4.0 version and should be considered work in progress.
 
 Most, if not all, animation scripts must deal with several specific
 phases of movie making:
@@ -142,8 +143,43 @@ red arrow points in the direction of the illumination.
 As you can see, these sorts of animations are not terribly difficult to
 put together, especially since our vantage point is fixed.  In the next
 example we will move the ``camera'' around and must therefore deal with
-how to frame perspective view.
+how to frame perspective views.
 
 \GMTanimation{02}{Animation of a DEM using variable illumination.}
 
 \index{Example!examining DEMs using variable illumination|)}
+
+\section{Orbiting a static map}
+\index{Example!Orbiting a static map|(}
+
+Our third animation keeps a fixed gridded data set but moves the camera
+angle around the full 360\DS.  We use \GMTprog{grdview} to generate a
+shaded-relief image sequence using the new enhanced \Opt{E} option.
+No additional information is plotted on the image.  As before we produce
+an animated GIF image and a simple HTML wrapper for it.
+
+\script{anim_03}
+
+\GMTanimation{03}{Orbiting a static map.}
+
+\index{Example!Orbiting a static map|)}
+
+\section{Flying over topography}
+\index{Example!Flying over topography|(}
+
+Our next animation simulates what an imaginary satellite might see as it passes
+in a great circle from New York to Miami at an altitude of 160 km.
+We use the general perspective view projection with \GMTprog{grdimage} and
+use \GMTprog{project} to create a great circle path between the two cities,
+sampled every 5 km.  The main part of the script will make the DVD-quality frames from
+different view points, draw the path on the ground, and add frame numbers to
+each frame.  As this animation generates 355 frames we can use 3rd party tools
+to turn the image sequence into a MPEG-4 movie\footnote{QuickTime Pro can do this,
+as can most video-editing programs.}. Note: At the moment, \GMTprog{grdview} cannot
+use general perspective view projection to allow ``fly-through'' animations like
+Fledermaus; we expect to add this functionality in a future version.
+\script{anim_04}
+
+\GMTanimation{04}{Flying over topography.}
+
+\index{Example!Flying over topography|)}
