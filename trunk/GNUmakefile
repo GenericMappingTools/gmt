@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.44 2008-06-03 23:12:13 guru Exp $
+#  $Id: GNUmakefile,v 1.45 2009-01-11 19:50:17 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -204,7 +204,7 @@ get_coast get_high get_full:
 #		Set-up ftp command & get coast file
 		echo "Getting coasts/rivers (GSHHS$(GSHHS_VERSION)_$(subst get_,,$@)) by anonymous ftp (be patient)..."
 		echo "user anonymous $(USER)@" > ftp.job
-		echo "cd gmt/$(firstword $(subst ., ,$(GMT_VERSION)))" >> ftp.job
+		echo "cd gmt" >> ftp.job
 		echo "binary" >> ftp.job
 		echo "get GSHHS$(GSHHS_VERSION)_$(subst get_,,$@).tar.bz2" >> ftp.job
 		echo "quit" >> ftp.job
