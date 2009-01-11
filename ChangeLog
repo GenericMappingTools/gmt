@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.387 2009-01-11 18:12:57 remko Exp $
+	$Id: ChangeLog,v 1.388 2009-01-11 23:21:08 guru Exp $
 -----------------------------------------------------------------------------------------
+2009-01-11	pwessel
+	* gmt_custom_symbols.conf:	Removed the standard symbols from this list but kept
+				the actual custom *.def files for backwards compatibility.
+
 2009-01-11	remko
 	* gmt_custom_symbols.conf:	Replaced all "Like -S.. but fillable with pattern" by
 				"Same as -S..", since all these symbols are already fillable
