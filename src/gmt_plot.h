@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.16 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_plot.h,v 1.17 2009-01-11 02:49:19 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,6 +51,7 @@
 #define GMT_SYMBOL_OCTAGON	24
 #define GMT_SYMBOL_CUSTOM	25
 #define GMT_SYMBOL_ROTATERECT	26
+#define GMT_SYMBOL_PLUS		27
 
 #define GMT_SYMBOL_FRONT	-100
 #define GMT_SYMBOL_QUOTED_LINE	-200
@@ -158,6 +159,7 @@ EXTERN_MSC void GMT_hexagon (double x, double y, double z, double size[], struct
 EXTERN_MSC void GMT_pentagon (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_octagon (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_star (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
+EXTERN_MSC void GMT_plus (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_cross (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_rect (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_ellipse (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);

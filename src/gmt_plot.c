@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.239 2009-01-10 03:45:43 remko Exp $
+ *	$Id: gmt_plot.c,v 1.240 2009-01-11 02:49:19 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3620,9 +3620,9 @@ void GMT_star (double x, double y, double z, double size[], struct GMT_FILL *fil
 		ps_star (x, y, size[0], fill->rgb, outline);
 }
 
-void GMT_cross (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_plus (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
 {
-	/* Plots the cross symbol (fill, outline not accessed) */
+	/* Plots the plus symbol (fill, outline not accessed) */
 
 	if (project_info.three_D) {
 		int i;
@@ -3631,6 +3631,25 @@ void GMT_cross (double x, double y, double z, double size[], struct GMT_FILL *fi
 		S = size[0] * 0.5;
 		xp[0] = xp[1] = x;	xp[2] = x - S;	xp[3] = x + S;
 		yp[2] = yp[3] = y;	yp[0] = y - S;	yp[1] = y + S;
+		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+		ps_segment (xp[0], yp[0], xp[1], yp[1]);
+		ps_segment (xp[2], yp[2], xp[3], yp[3]);
+	}
+	else
+		ps_plus (x, y, size[0]);
+}
+
+void GMT_cross (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+{
+	/* Plots the cross symbol (fill, outline not accessed) */
+
+	if (project_info.three_D) {
+		int i;
+		double S, xp[4], yp[4];
+
+		S = size[0] * 0.353553391;
+		xp[0] = xp[2] = x - S;	xp[1] = xp[3] = x + S;
+		yp[0] = yp[3] = y - S;	yp[1] = yp[2] = y + S;
 		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		ps_segment (xp[0], yp[0], xp[1], yp[1]);
 		ps_segment (xp[2], yp[2], xp[3], yp[3]);
