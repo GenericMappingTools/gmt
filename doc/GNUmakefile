@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.30 2008-12-06 02:40:10 guru Exp $
+#	$Id: GNUmakefile,v 1.31 2009-01-11 22:46:43 guru Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -75,7 +75,7 @@ EX_EPS=	scripts/example_01.eps scripts/example_02.eps scripts/example_03.eps scr
 	scripts/example_28.eps scripts/example_29.eps
 
 # EPS files to be converted from animation PS files
-AN_EPS=	scripts/anim_01.eps scripts/anim_02.eps
+AN_EPS=	scripts/anim_01.eps scripts/anim_02.eps scripts/anim_03.eps scripts/anim_04.eps
 
 # TEX files of examples used in the Cookbook that are to retain the comments
 EX_TEX=	scripts/volcano.tex scripts/bullseye.tex scripts/GMT_App_M_2.tex \
