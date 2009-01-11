@@ -84,6 +84,28 @@ A negative \fItickval\fP will reverse the sense of positive direction, e.g., to 
 y-axis be positive down.
 .RE
 .IP
+void \fBps_bitimage\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, invert, f_rgb, b_rgb\fP)
+.br
+\fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
+.br
+\fBunsigned char\fR \fIbuffer[]\fP;
+.br
+\fBint\fR \fInx, ny, invert, f_rgb[3], b_rgb[3]\fP;
+.RS 10
+Plots a 1-bit image using the given foreground color \fIf_rgb\fP and background color \fIb_rgb\fP.
+Specify position of lower left corner and size (in inches) of image.  \fIbuffer\fP
+is an unsigned character array with 8 pixels per byte.  \fInx,ny\fP
+refers to the number of pixels in image.  The rowlength of \fIbuffer\fP must
+be an integral number of 8.  \fIbuffer\fP[0] is upper left corner.  \fIbuffer\fP
+values are stored as columns, starting at the lower left corner and ending at
+the upper right corner.  If \fIinvert\fP is 0 then the bits that are 1 are
+painted with the foreground color, while bits that are 0 are painted with the
+backgound color.  If \fIinvert\fP is 1, foreground and background are switched.
+To get a partly transparent image, set the first index of the foreground or
+background color to -1, i.e. f_rgb[0]=-1 or b_rgb[0]=1.
+See the Adobe Systems \fIPostScript\fP\fR Reference Manual for more details.
+.RE
+.IP
 void \fBps_circle\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
 .br
 \fBdouble\fR \fIxcenter, ycenter, diameter\fP;
@@ -174,8 +196,8 @@ void \fBps_cross\fR (\fIxcenter, ycenter, diameter\fP)
 .br
 \fBdouble\fR \fIxcenter, ycenter, diameter\fP;
 .RS 10
-Plots a cross at the specified point using current pen-width and -pattern
-that fits inside a circle of given diameter.
+Plots a cross (x) at the specified point using current pen-width and -pattern
+that fits inside a circle of given diameter. No fill possible.
 .RE
 .IP
 void \fBps_diamond\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
@@ -195,7 +217,7 @@ void \fBps_ellipse\fR (\fIxcenter, ycenter, angle, major, minor, rgb, outline\fP
 .br
 \fBint\fR \fIrgb[3], outline\fP;
 .RS 10
-Plots a ellipse with its major semiaxis rotated by \fIangle\fP degrees and fills it
+Plots a ellipse with its major axis rotated by \fIangle\fP degrees and fills it
 with the specified color.  If \fIoutline\fP == 1, the outline will be drawn using current pen-width and -pattern.
 .RE
 .IP
@@ -272,28 +294,6 @@ The unit size of the image is
 controlled by \fIdpi\fP (in dots-per-inch).  If set to zero, the image is plotted at the device
 resolution.  If \fIoutline\fP is TRUE, the current penwidth is used to draw the
 polygon outline.
-.RE
-.IP
-void \fBps_bitimage\fR (\fIxpos, ypos, xlength, ylength, buffer, nx, ny, invert, f_rgb, b_rgb\fP)
-.br
-\fBdouble\fR \fIxpos, ypos, xlength, ylength\fP;
-.br
-\fBunsigned char\fR \fIbuffer[]\fP;
-.br
-\fBint\fR \fInx, ny, invert, f_rgb[3], b_rgb[3]\fP;
-.RS 10
-Plots a 1-bit image using the given foreground color \fIf_rgb\fP and background color \fIb_rgb\fP.
-Specify position of lower left corner and size (in inches) of image.  \fIbuffer\fP
-is an unsigned character array with 8 pixels per byte.  \fInx,ny\fP
-refers to the number of pixels in image.  The rowlength of \fIbuffer\fP must
-be an integral number of 8.  \fIbuffer\fP[0] is upper left corner.  \fIbuffer\fP
-values are stored as columns, starting at the lower left corner and ending at
-the upper right corner.  If \fIinvert\fP is 0 then the bits that are 1 are
-painted with the foreground color, while bits that are 0 are painted with the
-backgound color.  If \fIinvert\fP is 1, foreground and background are switched.
-To get a partly transparent image, set the first index of the foreground or
-background color to -1, i.e. f_rgb[0]=-1 or b_rgb[0]=1.
-See the Adobe Systems \fIPostScript\fP\fR Reference Manual for more details.
 .RE
 .IP
 void \fBps_itriangle\fR (\fIxcenter, ycenter, diameter, rgb, outline\fP)
@@ -460,11 +460,19 @@ Move (\fIkpen\fP = 3) or draw (\fIkpen\fP = 2) relative to current point (see \f
 Use (\fIkpen=\fP-2) to make sure the line is stroked.
 .RE
 .IP
+void \fBps_plus\fR (\fIxcenter, ycenter, diameter\fP)
+.br
+\fBdouble\fR \fIxcenter, ycenter, diameter\fP;
+.RS 10
+Plots a plus (+) at the specified point using current pen-width and -pattern
+that fits inside a circle of given diameter. No fill possible.
+.RE
+.IP
 void \fBps_point\fR (\fIxcenter, ycenter, diameter\fP)
 .br
 \fBdouble\fR \fIxcenter, ycenter, diameter\fP;
 .RS 10
-Plots a point using current pen with given diameter.
+Plots a point (dot) using current pen with given diameter.
 Note the linecap setting must first be set to 1 for this function to work.
 .RE
 .IP

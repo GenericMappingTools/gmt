@@ -3,7 +3,7 @@
 .SH NAME
 trend2d \- Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data.
 .SH SYNOPSIS
-\fBtrend2d\fP OPT(F)\fBxyzmrw\fP \fB\-N\fP\fIn_model\fP[\fBr\fP] [ \fIxyz[w]file\fP ] 
+\fBtrend2d\fP OPT(F)\fBxyzmrw\fP OPT(N)\fIn_model\fP[\fBr\fP] [ \fIxyz[w]file\fP ] 
 [ OPT(C)\fIcondition_number\fP ] [ GMT_H_OPT ][ OPT(I)[\fIconfidence_level\fP] ] [ GMT_V_OPT ] [ OPT(W) ] 
 [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
@@ -15,50 +15,50 @@ a model of the following form (similar to grdtrend):
 .sp
 m1 + m2*x + m3*y + m4*x*y + m5*x*x + m6*y*y + m7*x*x*x + m8*x*x*y + m9*x*y*y + m10*y*y*y.
 .sp
-The user must specify \fB\-N\fP\fIn_model\fP, the number of model parameters to use; 
-thus, \fB\-N\fP\fI4\fP fits a bilinear trend, \fB\-N\fP\fI6\fP a quadratic surface, 
+The user must specify OPT(N)\fIn_model\fP, the number of model parameters to use; 
+thus, OPT(N)\fI4\fP fits a bilinear trend, OPT(N)\fI6\fP a quadratic surface, 
 and so on.  Optionally, append \fBr\fP to perform a robust fit.  In 
 this case, the program will iteratively reweight the data based on a robust scale estimate, 
 in order to converge to a solution insensitive to outliers.  This may be handy when separating 
 a "regional" field from a "residual" which should have non-zero mean, such as a local mountain 
 on a regional surface.
 .TP
-.B \-F
+OPT(F)
 Specify up to six letters from the set {x y z m r w} in any order to create columns of 
 ASCII [or binary] output.  x = x, y = y, z = z, m = model f(x,y), r = residual z - m, w = weight used in fitting.
 .TP
-.B \-N
+OPT(N)
 Specify the number of terms in the model, \fIn_model\fP, and append \fBr\fP 
-to do a robust fit.  E.g., a robust bilinear model is \fB\-N\fP\fI4\fP\fBr\fP.
+to do a robust fit.  E.g., a robust bilinear model is OPT(N)\fI4\fP\fBr\fP.
 .SH OPTIONS
 .TP
 \fIxyz[w]file\fP
-ASCII [or binary, see \fB\-b\fP] file containing x,y,z [w] values in the first 3 [4] columns.  If no file is specified, \fBtrend2d\fP 
+ASCII [or binary, see OPT(b)] file containing x,y,z [w] values in the first 3 [4] columns.  If no file is specified, \fBtrend2d\fP 
 will read from standard input.
 .TP
-.B \-C
+OPT(C)
 Set the maximum allowed condition number for the matrix solution.  \fBtrend2d\fP 
 fits a damped least squares model, retaining only that part of the eigenvalue spectrum such that 
 the ratio of the largest eigenvalue to the smallest eigenvalue is \fIcondition_#\fP.   
 [Default:  \fIcondition_#\fP = 1.0e06. ].
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Iteratively increase the number of model parameters, starting at one, until 
 \fIn_model\fP is reached or the reduction in variance of the model is not significant at the 
-\fIconfidence_level\fP level.  You may set \fB\-I\fP only, without an attached number; in this 
+\fIconfidence_level\fP level.  You may set OPT(I) only, without an attached number; in this 
 case the fit will be iterative with a default confidence level of 0.51.  Or choose your own level 
 between 0 and 1.  See remarks section.
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Weights are supplied in input column 4.  Do a weighted least squares fit [or start with these weights 
 when doing the iterative robust fit].  [Default reads only the first 3 columns.]
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
-[Default is 3 (or 4 if \fB\-W\fP is set) input columns].
+[Default is 3 (or 4 if OPT(W) is set) input columns].
 #include "explain_-bo.txt"
-[Default is 1-6 columns as set by \fB\-F\fP].
+[Default is 1-6 columns as set by OPT(F)].
 #include "explain_-f.txt"
 .SH REMARKS
 The domain of x and y will be shifted and scaled to [-1, 1] and the basis functions are built from 
@@ -69,13 +69,13 @@ along a road or ship track).  In this case the accuracy could be improved by a r
 \fBtrend2d\fP does not search for such a rotation; instead, it may find that the matrix problem has deficient 
 rank.  However, the solution is computed using the generalized inverse and should still work out OK.  
 The user should check the results graphically if \fBtrend2d\fP shows deficient rank.  NOTE: The model 
-parameters listed with \fB\-V\fP are Chebyshev coefficients; they are not numerically equivalent to the m#s 
-in the equation described above.  The description above is to allow the user to match \fB\-N\fP with the 
+parameters listed with OPT(V) are Chebyshev coefficients; they are not numerically equivalent to the m#s 
+in the equation described above.  The description above is to allow the user to match OPT(N) with the 
 order of the polynomial surface.  For evaluating Chebyshev polynomials, see \fBgrdmath\fP.
 .sp
-The \fB\-N\fP\fIn_model\fP\fBr\fP (robust) and \fB\-I\fP (iterative) options evaluate the significance of the improvement 
+The OPT(N)\fIn_model\fP\fBr\fP (robust) and OPT(I) (iterative) options evaluate the significance of the improvement 
 in model misfit Chi-Squared by an F test.  The default confidence limit is set at 0.51; it can be changed 
-with the \fB\-I\fP option.  The user may be surprised to find that in most cases the reduction in variance 
+with the OPT(I) option.  The user may be surprised to find that in most cases the reduction in variance 
 achieved by increasing the number of terms in a model is not significant at a very high degree of 
 confidence.  For example, with 120 degrees of freedom, Chi-Squared must decrease by 26% or more to be significant 
 at the 95% confidence level.  If you want to keep iterating as long as Chi-Squared is decreasing, set 
@@ -92,15 +92,15 @@ attenuate their effect, the significance level of the F test must be kept low.
 .SH EXAMPLES
 To remove a planar trend from data.xyz by ordinary least squares, use:  
 .sp
-\fBtrend2d\fP data.xyz \fB\-F\fPxyr \fB\-N\fP2 > detrended_data.xyz 
+\fBtrend2d\fP data.xyz OPT(F)xyr OPT(N)2 > detrended_data.xyz 
 .sp
 To make the above planar trend robust with respect to outliers, use:
 .sp
-\fBtrend2d\fP data.xzy \fB\-F\fPxyr \fB\-N\fP2\fBr\fP > detrended_data.xyz 
+\fBtrend2d\fP data.xzy OPT(F)xyr OPT(N)2\fBr\fP > detrended_data.xyz 
 .sp
 To find out how many terms (up to 10) in a robust interpolant are significant in fitting data.xyz, use:
 .sp
-\fBtrend2d\fP data.xyz \fB\-N\fP10\fBr \-I\fP \fB\-V\fP
+\fBtrend2d\fP data.xyz OPT(N)10\fBr\fP OPT(I) OPT(V)
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdmath (1),

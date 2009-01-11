@@ -1,5 +1,5 @@
 .TP
-.B \-Q
+OPT(Q)
 Quick mode, use bilinear rather than bicubic interpolation [Default].
 Alternatively, select the interpolation mode by adding \fBb\fP for B-spline smoothing,
 \fBc\fP for bicubic interpolation, \fBl\fP for bilinear interpolation or \fBn\fP for

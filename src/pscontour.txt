@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH PSCONTOUR 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_L 0.5
-#define SCALE_L \fB\-Jl\fP18/24/0.5\fBi\fP
+#define SCALE_L OPT(Jl)18/24/0.5\fBi\fP
 .SH NAME
 pscontour \- Contour xyz-data by direct triangulation [method]
 .SH SYNOPSIS
@@ -21,17 +21,17 @@ network information, such as a triangular mesh used for finite element modeling.
 the color palette file.
 .TP
 \fIxyzfile\fP
-Raw ASCII (or binary, see \fB\-b\fP) xyz data to be contoured.
+Raw ASCII (or binary, see OPT(b)) xyz data to be contoured.
 .TP
-.B \-C
+OPT(C)
 name of the color palette file.  Must have discrete colors if you want to paint the
-surface (\fB\-I\fP).  Only contours that have annotation flags set will be annotated.
+surface (OPT(I)).  Only contours that have annotation flags set will be annotated.
 #include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Give - to disable all annotations.
 The optional \fIlabelinfo\fP controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
@@ -39,55 +39,55 @@ made up of any of the following control arguments:
 #include "explain_labelinfo.txt"
 #include "explain_-B_short.txt"
 .TP
-.B \-D
+OPT(D)
 Dump the (x,y,z) coordinates of each contour to separate files, one for each contour segment. The
 files will be named \fIdumpfile_cont_segment[_i]\fP.xyz, where \fIcont\fP is the contour value and
 \fIsegment\fP is a running segment number for each contour interval (for closed contours we append _i.)
-However, when \fB\-M\fP is used in conjunction with \fB\-D\fP a single multisegment file is created instead.
+However, when OPT(M) is used in conjunction with OPT(D) a single multisegment file is created instead.
 #include "explain_-E.txt"
 #define CONTOUR
 .TP
-.B \-G
+OPT(G)
 #include "explain_contlabel.txt"
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Color the triangles using the color palette table.
 #include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP
-.B \-L
+OPT(L)
 Draw the underlying triangular mesh using the specified pen attributes [Default is no mesh].
 (See SPECIFYING PENS below).
 .TP
-.B \-M
-When used in conjunction with \fB\-D\fP a single multisegment file is created, and
+OPT(M)
+When used in conjunction with OPT(D) a single multisegment file is created, and
 each contour section is preceded by a header record whose first column is \fIflag\fP
 followed by the contour level.
 .TP
-.B \-N
-Do NOT clip contours or image at the boundaries [Default will clip to fit inside region \fB\-R\fP].
+OPT(N)
+Do NOT clip contours or image at the boundaries [Default will clip to fit inside region OPT(R)].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-S
+OPT(S)
 Skip all input \fIxyz\fP points that fall outside the region [Default uses all the data in the triangulation].
 .TP
-.B \-T
+OPT(T)
 Give name of file with network information.  Each record must contain triplets of
 node numbers for a triangle [Default computes these using Delaunay triangulation (see \fBtriangulate\fP)].
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Select contouring and set contour pen attributes.  If the \fB+\fP flag is set then
-the contour lines are colored according to the cpt file (see \fB\-C\fP).
+the contour lines are colored according to the cpt file (see OPT(C)).
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].
-Use 4-byte integer triplets for node ids (\fB\-T\fP).
+Use 4-byte integer triplets for node ids (OPT(T)).
 #include "explain_-bo.txt"
 [Default is 3 output columns].
 #include "explain_-c.txt"
@@ -99,7 +99,7 @@ given in the color palette file topo.cpt on a Lambert map
 at LEN_L inch/degree along the standard parallels 18 and 24, use 
 .br
 .sp
-\fBpscontour\fP topo.xyz \fB\-R\fP320/330/20/30 SCALE_L \fB\-C\fPtopo.cpt \fB\-W\fP0.5\fBp\fP > topo.ps
+\fBpscontour\fP topo.xyz OPT(R)320/330/20/30 SCALE_L OPT(C)topo.cpt OPT(W)0.5\fBp\fP > topo.ps
 .br
 .sp
 To create a color \fIPostScript\fP plot of the numerical temperature solution obtained on a triangular mesh
@@ -107,7 +107,7 @@ whose node coordinates and temperatures are stored in temp.xyz and mesh arrangem
 the colors in temp.cpt, run
 .br
 .sp
-\fBpscontour\fP temp.xyz \fB\-R\fP0/150/0/100 \fB\-Jx\fP0.1 \fB\-C\fPtemp.cpt \fB\-G \-W\fP0.25\fBp\fP > temp.ps
+\fBpscontour\fP temp.xyz OPT(R)0/150/0/100 OPT(Jx)0.1 OPT(C)temp.cpt OPT(G) OPT(W)0.25\fBp\fP > temp.ps
 .SH BUGS
 Sometimes there will appear to be thin lines of the wrong color in the image.
 This is a round-off problem which may be remedied by using a higher value of

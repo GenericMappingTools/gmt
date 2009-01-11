@@ -1,5 +1,5 @@
 .TP
-.B \-bo
+OPT(bo)
 Selects binary output.
 Append \fBs\fP for single precision [Default is \fBd\fP (double)].
 Uppercase \fBS\fP or \fBD\fP will force byte-swapping.

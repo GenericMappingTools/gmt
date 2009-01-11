@@ -15,7 +15,7 @@ specified rotation parameters.  It can either calculate final
 positions [Default] or create a sampled track (flowline or hotspot track) between the initial and final
 positions.  The former mode allows additional data fields after the first 3
 columns which must have (longitude,latitude,age).
-See option \fB\-:\fP on how to read (latitude,longitude,age) files.
+See option OPT(:) on how to read (latitude,longitude,age) files.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
@@ -24,55 +24,55 @@ option flags and lower case for modifiers.
 Data file(s) to be projected.  If not given, standard input is read.
 #include "euler.txt"
 .TP
-.B \-e
+OPT(e)
 Alternatively, specify the longitude, latitude, and opening angle (all in degrees
 and separated by /) for a single total reconstruction
 rotation that should be applied to all input points.
 .SH OPTIONS
 .TP
-.B \-A
-Used in conjunction with \fB\-Lb|f\fP to limit the track output to those sections
-whose predicted ages lie between the specified \fIyoung\fP and \fIold\fP limits.  If \fB\-LB|F\fP
+OPT(A)
+Used in conjunction with OPT(Lb)|\fBf\fP to limit the track output to those sections
+whose predicted ages lie between the specified \fIyoung\fP and \fIold\fP limits.  If OPT(LB)|\fBF\fP
 is used instead then the limits apply to the stage ids (id 1 is the youngest stage).  If no limits are specified
 then individual limits for each record are expected in columns 4 and 5 of the input file.
 .TP
-.B \-C
+OPT(C)
 Expect Total Reconstruction Rotations rather than Forward Stage Rotations [Default].
 File format is similar to the stage pole format except that the \fItstart\fP column
 is not present (assumed to be 0 Ma).  Requires OPT(E).
 .TP
-.B \-D
-Set the direction to go: \fB\-Df\fP sets flowline mode and will go backward in time (from younger to older positions), while
-\fB\-Db\fP sets backtrack (reconstruction) mode and will go forward in time (from older to younger positions) [Default].
+OPT(D)
+Set the direction to go: OPT(Df) sets flowline mode and will go backward in time (from younger to older positions), while
+OPT(Db) sets backtrack (reconstruction) mode and will go forward in time (from older to younger positions) [Default].
 #include "explain_-H.txt"
 .TP
-.B \-L
-Specify a sampled path between initial and final position: \fB\-Lf\fP will
-draw flowlines, while \fB\-Lb\fP will draw backtrack (hotspot track) paths.
+OPT(L)
+Specify a sampled path between initial and final position: OPT(Lf) will
+draw flowlines, while OPT(Lb) will draw backtrack (hotspot track) paths.
 Append sampling interval in km.  If \fIstep\fP < 0 then only the rotation times
-will be returned.  When \fB\-LF\fP or \fB\-LB\fP is used, the
+will be returned.  When OPT(LF) or OPT(LB) is used, the
 third output column will contain the stage id (1 is youngest) [Default is
 along-track predicted ages].  You can control the direction of the paths
 by using OPT(D).
 #include "explain_-M.txt"
 .TP
-.B \-N
+OPT(N)
 Set the maximum age to extend the oldest stage rotation back in time [Default is no extension].
 .TP
-.B \-Q
+OPT(Q)
 Assign a fixed age to all positions.  Only lon, lat input is expected [Default expects longitude, latitude, age].
 Useful when the input are points defining isochrons.
 .TP
-.B \-S
-When \fB\-L\fP is set, the tracks are normally written to stdout as a multisegment
+OPT(S)
+When OPT(L) is set, the tracks are normally written to stdout as a multisegment
 file.  Specify a \fIfilestem\fP to have each track written to \fIfilestem.#\fP, where
 \fI#\fP is the track number.  The track number is also copied to the 4th output column.
 .TP
-.B \-T
+OPT(T)
 Set the current time [Default is 0 Ma].
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Rotates the given input (lon,lat,t) and calculates the confidence ellipse for the
 projected point.  The input point \fImust\fP have a time coordinate that exactly matches
 a particular finite rotation time, otherwise the point will be skipped.  Append
@@ -89,14 +89,14 @@ To backtrack the (x,y,t) points in the file seamounts.d to their origin
 (presumably the hotspot), using the DC85.d Euler poles, run
 .br
 .sp
-\fBbacktracker\fP seamounts.d \fB\-Db \-E\fPDC85.d > newpos.d
+\fBbacktracker\fP seamounts.d OPT(Db) OPT(E)DC85.d > newpos.d
 .br
 .sp
 To project flowlines forward from the (x,y,t) points stored in several 3-column,
 binary, double precision files, run
 .br
 .sp
-\fBbacktracker\fP points.* \fB\-Df \-E\fPDC85.d \fB\-Lf\fP25 \fB\-bo \-bi\fP\fI3\fP > lines.b
+\fBbacktracker\fP points.* OPT(Df) OPT(E)DC85.d OPT(Lf)25 OPT(bo) OPT(bi)\fI3\fP > lines.b
 .br
 .sp
 This file can then be plotted with \fBpsxy \-M\fP.

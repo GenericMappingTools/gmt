@@ -14,21 +14,21 @@ You must choose at least one of OPT(Sa) or OPT(Sb).
 \fIinput_file.grd\fP
 The input 2-D binary grid file.
 .TP
-.B \-G
+OPT(G)
 \fIoutput_file.grd\fP is the modified output grid file.
 .SH OPTIONS
 .TP
-.B \-Sa
+OPT(Sa)
 Set all data[i] > \fIhigh\fP to \fIabove\fP.
 .TP
-.B \-Sb
+OPT(Sb)
 Set all data[i] < \fIlow\fP to \fIbelow\fP.
 #include "explain_-V.txt"
 #include "explain_grd_inout.txt"
 .SH EXAMPLES
 To set all values > 70 to NaN and all values < 0 to 0 in file data.grd:
 .sp
-\fBgrdclip\fP data.grd \fB\-G\fPnew_data.grd \fB\-Sa\fP70/NaN \fB\-Sb\fP0/0 \fB\-V\fP
+\fBgrdclip\fP data.grd OPT(G)new_data.grd OPT(Sa)70/NaN OPT(Sb)0/0 OPT(V)
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdlandmask (1),

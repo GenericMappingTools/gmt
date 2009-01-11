@@ -20,13 +20,13 @@ also contain additional user columns (for a listing of available columns, use \f
 user may extract any combination of these parameters, any of six computed quantities (distance,
 heading, velocity, Carter correction, and gravity and magnetic global reference fields),
 calendar sub-units of time (year, month, day, hour, min, sec), the NGDC id, and finally a
-preset weight (see \fB\-W\fP).  A sub-section can be specified by passing time- or
+preset weight (see OPT(W)).  A sub-section can be specified by passing time- or
 distance-intervals along track or by selecting a geographical region.  Finally, each output
 record may be required to pass any number of logical tests involving data values or bit flags.
 #include "mgd77_IGF_coeffs.h"
 #include "explain_ncid.txt"
 .TP
-.B \-F
+OPT(F)
 The required \fIcolumns\fP string must be a comma-separated list of parameter abbreviations
 given in the desired output order.  Any parameters given in UPPER case must not be NaN in
 a record for output to occur.  Unless specified separately, the output format (if ASCII) is
@@ -132,17 +132,17 @@ The minutes of each record.
 The decimal seconds of each record.
 .TP
 .B dist
-Along-track distance from start of leg.  For method of calculation, see \fB\-C\fP [spherical great circle distances], and
-for distance units, see \fB\-N\fP [km].
+Along-track distance from start of leg.  For method of calculation, see OPT(C) [spherical great circle distances], and
+for distance units, see OPT(N) [km].
 .TP
 .B az
 Ship azimuth (heading) measured clockwise from north (in degrees).
 .TP
 .B vel
-Ship speed; see \fB\-N\fP for units [m/s]. 
+Ship speed; see OPT(N) for units [m/s]. 
 .TP
 .B weight
-Weight assigned to this data set (see \fB\-W\fP).
+Weight assigned to this data set (see OPT(W)).
 .TP
 .B carter
 Carter depth correction, if \fBtwt\fP is present in file (in m).  Sign: Correction
@@ -155,7 +155,7 @@ International geomagnetic reference field (total field) (in nTesla).
 International Gravity reference Field ("normal gravity") (in mGal).
 Field is selected based on the parameter Gravity Theoretical
 Formula Code in the cruise's MGD77 header.  If this is not set or is invalid we default to the IGF 1980.\"'
-Alternatively, specify the field directly using \fB\-Af\fP (see that option for more details).
+Alternatively, specify the field directly using OPT(Af) (see that option for more details).
 .br
 .sp
 The following short-hand flags are also recognized:
@@ -183,7 +183,7 @@ must be turned on in \fIpar\fP.  At least one of the tests must be true for the 
 tests using UPPER case parameters which all must be true for output to occur.  Note that
 specifying a test does not imply that the corresponding column will be included in the output stream;
 it must be present in \fIcolumns\fP for that to occur. Note: some of the operators are special UNIX characters
-and you are advised to place quotes around the entire argument to \fB\-F\fP.
+and you are advised to place quotes around the entire argument to OPT(F).
 .br
 .sp
 Finally, for MGD77+ files you may optionally append :\fIbittests\fP which is : (a colon) followed by one or more comma-separated
@@ -195,23 +195,23 @@ to turn this behavior off (i.e., no bit flags will be consulted).
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 By default, corrected depth (\fBdepth\fP),
 magnetic residual anomaly (\fBmag\fP), free-air gravity anomaly (\fBfaa\fP),
 and the derived quantity Carter depth correction (\fBcarter\fP) are all
-output as is (if selected in \fB\-F\fP); this option adjusts that behavior.
+output as is (if selected in OPT(F)); this option adjusts that behavior.
 For each of these columns there are 2\-4 ways to adjust the data.  Append
 \fBc\fP(arter), \fBd\fP(epth), \fBf\fP(aa), or \fBm\fP(ag) and select the
 \fIcode\fP for the procedure you want applied.  You may select more than
 one procedure for a data column by summing their numerical \fIcode\fPs
-(1, 2, 4, and 8). E.g., \fB\-Ac\fP3 will first try method \fB\-Ac\fP1 to
+(1, 2, 4, and 8). E.g., OPT(Ac)3 will first try method OPT(Ac)1 to
 estimate a Carter correction but if \fBdepth\fP is NaN we will next try
-\fB\-Ac\fP2 which only uses \fBtwt\fP.  In all cases, if any of the values
+OPT(Ac)2 which only uses \fBtwt\fP.  In all cases, if any of the values
 required by an adjustment procedure is NaN then the result will be NaN.
 This is also true if the original anomaly is NaN.  Specify OPT(A+) to
 recalculate anomalies even if the anomaly in the file is NaN.
 .TP
-.B \-Ac
+OPT(Ac)
 Determines how the \fBcarter\fP correction term is calculated.  Below, 
 C(\fBtwt\fP) stands for the Carter-corrected depth (it also depends on
 \fBlon\fP, \fBlat\fP), U(\fBtwt\fP, \fIv\fP) is the uncorrected depth
@@ -224,65 +224,65 @@ TU(\fBdepth\fP, \fIv\fP) is the 2-way travel time estimated from the
 using the Carter correction formula.
 Select from
 .br
-\fB\-Ac1\fP[,\fIv\fP]
+OPT(Ac1)[,\fIv\fP]
 returns difference between U(\fBtwt\fP, \fIv\fP) and \fBdepth\fP [Default].
 .br
-\fB\-Ac2\fP[,\fIv\fP]
+OPT(Ac2)[,\fIv\fP]
 returns difference between U(\fBtwt\fP, \fIv\fP) and Carter (\fBtwt\fP).
 .br
-\fB\-Ac4\fP[,\fIv\fP]
+OPT(Ac4)[,\fIv\fP]
 returns difference between (assumed uncorrected) \fBdepth\fP and Carter (TU(\fBdepth\fP)).
 .br
-\fB\-Ac8\fP[,\fIv\fP]
+OPT(Ac8)[,\fIv\fP]
 returns difference between U(TC(\fBdepth\fP), \fIv\fP) and \fBdepth\fP.
 .TP
-.B \-Ad
+OPT(Ad)
 Determines how the \fBdepth\fP column output is obtained:
 .br
-\fB\-Ad1\fP
+OPT(Ad1)
 returns \fBdepth\fP as stored in the data set [Default].
 .br
-\fB\-Ad2\fP[,\fIv\fP]
+OPT(Ad2)[,\fIv\fP]
 returns calculated uncorrected depth U(\fBtwt\fP, \fIv\fP).
 .br
-\fB\-Ad4\fP
+OPT(Ad4)
 returns calculated corrected depth C(\fBtwt\fP).
 .TP
-.B \-Af
+OPT(Af)
 Determines how the \fBfaa\fP column output is obtained. If \fBngrav\fP (i.e., the International
 Gravity reference Field (IGF), or "normal gravity") is required
 it is selected based on the MGD77 header parameter "Theoretical Gravity Formula Code";
 if this code is not present or is invalid we default to 4.  Alternatively, append the preferred \fIfield\fP
 (1\-4) to select 1 (Heiskanen 1924), 2 (IGF 1930), 3 (IGF 1967) or 4 (IGF 1980).  Select from
 .br
-\fB\-Af1\fP[,\fIfield\fP]
+OPT(Af1)[,\fIfield\fP]
 returns \fBfaa\fP as stored in the data set [Default]. Optionally, sets the IGF \fIfield\fP
-to use if you also have requested \fBngrav\fP as an output column in \fB\-F\fP.
+to use if you also have requested \fBngrav\fP as an output column in OPT(F).
 .br
-\fB\-Af2\fP[,\fIfield\fP]
+OPT(Af2)[,\fIfield\fP]
 returns the difference between \fBgobs\fP and \fBngrav\fP (with optional \fIfield\fP directive).
 .TP
-.B \-Am
+OPT(Am)
 Determines how the \fBmag\fP column output is obtained.  There may be one or two
 total field measurements in the file (\fBmtf1\fP and \fBmtf2\fP), and the column \fBmsens\fP
 may state which one is the leading sensor (1 or 2; it may also be undefined).  Select from
 .br
-\fB\-Am1\fP
+OPT(Am1)
 returns \fBmag\fP as stored in the data set [Default].
 .br
-\fB\-Am2\fP
+OPT(Am2)
 returns the difference between \fBmgfx\fP and \fBigrf\fP, where
 \fBx\fP is the leading sensor (\fB1\fP or \fB2\fP) indicated by the \fBmsens\fP data field
 (defaults to \fB1\fP if unspecified).
 .br
-\fB\-Am4\fP
+OPT(Am4)
 returns the difference between \fBmgfx\fP and \fBigrf\fP, where
 \fBx\fP is the sensor (\fB2\fP or \fB1\fP) \fInot\fP indicated by the \fBmsens\fP data field
 (defaults to \fB2\fP if unspecified).
 .TP
-.B \-C
+OPT(C)
 Append a one-letter code to select the procedure for along-track distance
-calculation (see \fB\-N\fP for selecting units):
+calculation (see OPT(N) for selecting units):
 .br
 	\fBf\fP Flat Earth distances.
 .br
@@ -290,61 +290,61 @@ calculation (see \fB\-N\fP for selecting units):
 .br
 	\fBe\fP Geodesic distances on current GMT ellipsoid.
 .TP
-.B \-Da
+OPT(Da)
 Do not list data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss])  [Default is start of cruise].
 .TP
-.B \-Db
+OPT(Db)
 Do not list data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [Default is end of cruise].
 .TP
-.B \-E
+OPT(E)
 Exact match: Only output records that match all the requested geophysical columns
 [Default outputs records that matches at least one of the observed columns].
 .TP
-.B \-Ga
+OPT(Ga)
 Do not list records before \fIstartrec\fP  [Default is 0, the first record].
 .TP
-.B \-Gb
+OPT(Gb)
 Do not list data after \fIstoprec\fP. [Default is the last record].
 .TP
-.B \-H
+OPT(H)
 Issue a header record with names for each data field.
 .TP
-.B \-I
+OPT(I)
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
 MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
 be repeated to ignore more than one format.  [Default ignores none].
 .TP
-.B \-L
+OPT(L)
 Apply optimal corrections to columns where such corrections are available.  Append the correction
 table to use [Default uses the correction table mgd77_corrections.txt in the \fB$MGD77_HOME\fP directory].
 For the format of this file, see CORRECTIONS below.
 .TP
-.B \-M
+OPT(M)
 Issue a multi-segment header record with cruise ID for each cruise.
 .TP
-.B \-N
+OPT(N)
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
 \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
-\fBn\fP (nautical miles or knots).  [Default is \fB\-Ndk \-Nse\fP (km and m/s)].
+\fBn\fP (nautical miles or knots).  [Default is OPT(Ndk) OPT(Nse) (km and m/s)].
 .TP
-.B \-Qa
+OPT(Qa)
 Specify an accepted range (\fImin\fP/\fImax\fP) of azimuths.  Records whose track azimuth falls
 outside this range are ignored [0-360].
 .TP
-.B \-Qv
+OPT(Qv)
 Specify an accepted range (\fImin\fP/\fImax\fP; or just \fImin\fP if there is no upper limit)
 of velocities.  Records whose track speed falls outside this range are ignored [0-infinity].
 #include "explain_-Rgeo.txt"
 .TP
-.B \-Sa
+OPT(Sa)
 Do not list data that are less than \fIstartdist\fP meter along track from port of departure.
 Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is 0 meters].
 .TP
-.B \-Sb
+OPT(Sb)
 Do not list data that are more than \fIstopdist\fP meters along track from port of departure.
 Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is end of track].
 .TP
-.B \-T
+OPT(T)
 Turns OFF the otherwise automatic adjustment of values based on correction terms that are
 stored in the MGD77+ file and used to counteract such things as wrong units used by the source
 institution when creating the original MGD77 file from which the MGD77+ file derives (the
@@ -352,39 +352,39 @@ option has no effect on plain MGD77 ASCII files).  Append \fBm\fP or \fBe\fP to 
 option to the MGD77 or extended columns set only [Default applies to both].
 #include "explain_-V.txt"
 .TP
-.B \-W
-Set the weight for these data.  Weight output option must be set in \fB\-F\fP.  This is
+OPT(W)
+Set the weight for these data.  Weight output option must be set in OPT(F).  This is
 useful if the data are to be processed with the weighted averaging techniques offered by
 \fBblockmean\fP, \fBblockmedian\fP, and \fBblockmode\fP [1].
 .TP
-.B \-Z
+OPT(Z)
 Append the sign you want for \fBdepth\fP, \fBcarter\fP, and \fBmsd\fP values below sea level
-(\fB\-Z-\fP gives negative bathymetry) [Default is positive down].
+(OPT(Z-) gives negative bathymetry) [Default is positive down].
 .TP
-.B \-bo
+OPT(bo)
 Selects binary output mode (single precision; append \fBd\fP for double precision, or use \fBS\fP|\fBD\fP
 to swap bytes on output) [Default is ASCII].
-\fB\-H\fP is ignored if \fB\-bo\fP is selected.  Likewise, string-fields cannot be selected.
+OPT(H) is ignored if OPT(bo) is selected.  Likewise, string-fields cannot be selected.
 .SH EXAMPLES
 To get a (distance, heading, gravity, bathymetry) listing from 01010047.mgd77,
 starting at June 3 1971 20:45 and ending at distance = 5000 km, use the following command:
 .br
 .sp
-\fBmgd77list\fP 01010047 \fB\-Da\fP1971-06-03T20:45 \fB\-Sb\fP5000 \fB\-F\fPdist,azim,faa,depth > myfile.d
+\fBmgd77list\fP 01010047 OPT(Da)1971-06-03T20:45 OPT(Sb)5000 OPT(F)dist,azim,faa,depth > myfile.d
 .br
 .sp
 To make input for \fBblockmean\fP and \fBsurface\fP using free-air anomalies from all the cruises listed in the file cruises.lis,
 but only the data that are inside the specified area, and make the output binary:
 .br
 .sp
-\fBmgd77list\fP `cat cruises.lis` \fB\-F\fPlon,lat,faa \fB\-R\fP-40/-30/25/35 \fB\-bo\fP > allgrav.b
+\fBmgd77list\fP `cat cruises.lis` OPT(F)lon,lat,faa OPT(R)-40/-30/25/35 OPT(bo) > allgrav.b
 .br
 .sp
 To extract the locations of depths exceeding 9000 meter that were not interpolated (\fBbtc\fP != 1)
 from all the cruises listed in the file cruises.lis:
 .br
 .sp
-\fBmgd77list\fP `cat cruises.lis` \fB\-F\fP"depth,DEPTH>9000,BTC!=1" > really_deep.d
+\fBmgd77list\fP `cat cruises.lis` OPT(F)"depth,DEPTH>9000,BTC!=1" > really_deep.d
 .br
 .sp
 To extract dist, faa, and grav12_2 from records whose depths are shallower than 3 km
@@ -392,7 +392,7 @@ and where none of the requested fields are NaN, from all the MGD77+ netCDF files
 cruise ids are listed in the file cruises.lis, we try
 .br
 .sp
-\fBmgd77list\fP `cat cruises.lis` \fB\-E \-Ia \-F\fP"dist,faa,grav12_2,depth<3000" > shallow_grav.d
+\fBmgd77list\fP `cat cruises.lis` OPT(E) OPT(Ia) OPT(F)"dist,faa,grav12_2,depth<3000" > shallow_grav.d
 .br
 .sp
 To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files whose
@@ -400,14 +400,14 @@ cruise ids are listed in the file cruises.lis, but only retrieve records
 whose bitflag for faa indicates BAD values, we try
 .br
 .sp
-\fBmgd77list\fP `cat cruises.lis` \fB\-E \-Ia \-F\fP"dist,faa,grav12_2:+faa" > bad_grav.d
+\fBmgd77list\fP `cat cruises.lis` OPT(E) OPT(Ia) OPT(F)"dist,faa,grav12_2:+faa" > bad_grav.d
 .br
 .sp
 To output lon, lat, mag, and faa from all the cruises listed in the file cruises.lis,
 but recalculate the two residuals based on the latest reference fields, try:
 .br
 .sp
-\fBmgd77list\fP `cat cruises.lis` \fB\-F\fPlon,lat,mag,faa \fB\-Af\fP2,4 \fB\-Am\fP2 > data.d
+\fBmgd77list\fP `cat cruises.lis` OPT(F)lon,lat,mag,faa OPT(Af)2,4 OPT(Am)2 > data.d
 .SH RECALCULATED ANOMALIES
 When recalculated anomalies are requested (either explicitly via the OPT(A) option or implicitly
 via E77 metadata in the MGD77+ file) we only do so for the records whose original anomaly was
@@ -436,7 +436,7 @@ Comment records beginning with # are allowed.  All correction records are of the
 .br
 .sp
 where \fIcruiseID\fP is a NGDC prefix, \fIobservation\fP is one of the abbreviations for geophysical observations
-listed under \fB\-F\fP above, and \fIcorrection\fP consists of one or more \fIterm\fPs that will be summed up and
+listed under OPT(F) above, and \fIcorrection\fP consists of one or more \fIterm\fPs that will be summed up and
 then \fBsubtracted\fP from the observation before output.  Each \fIterm\fP must have this exact syntax:
 .br
 .sp

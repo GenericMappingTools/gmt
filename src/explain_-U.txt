@@ -1,5 +1,5 @@
 .TP
-.B \-U
+OPT(U)
 Draw Unix System time stamp on plot.
 By adding \fIjust/dx/dy/\fP, the user may specify the justification of the stamp and
 where the stamp should fall on the page relative to lower left corner of the plot.

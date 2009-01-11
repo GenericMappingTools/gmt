@@ -8,7 +8,7 @@ x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH DESCRIPTION
 \fBx2sys_datalist\fP reads one or more files and produces a single ASCII [or binary] table. 
 The files can be of any format, which must be described and passed with the
-\fB\-T\fP option.  You may limit the output to a geographic region, and insist
+OPT(T) option.  You may limit the output to a geographic region, and insist
 that the output from several files be separated by a multiple segment header.
 Only the named data fields will be output [Default selects all columns].
 #include "explain_track.txt"
@@ -16,31 +16,31 @@ Only the named data fields will be output [Default selects all columns].
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Eliminate COEs by distributing the COE between the two tracks in proportion to track weight.
 These (dist, adjustment) spline knots files for each track and data column
 are called \fItrack.column\fP.adj and are expected to be in the \fB$X2SYS_HOME\fP/\fITAG\fP directory.
 The adjustments are only applied if the corresponding adjust file can be found [No residual adjustments]
 .TP
-.B \-F
+OPT(F)
 Give a comma-separated sub-set list of column names defined in the definition
 file. [Default selects all data columns].
 #include "explain_-H.txt"
 .TP
-.B \-L
+OPT(L)
 Apply optimal corrections to columns where such corrections are available.  Append the correction
 table to use [Default uses the correction table \fITAG\fP_corrections.txt which is expected to reside
 in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
 For the format of this file, see CORRECTIONS below.
 .TP
-.B \-M
+OPT(M)
 Output a multisegment header between data from each track.  Note this option does not
-imply anything about the input file; that information is conveyed via the system tag (\fB\-T\fP).
+imply anything about the input file; that information is conveyed via the system tag (OPT(T)).
 #include "explain_-Rgeo.txt"
 For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
 the COEs to those that fall inside the specified domain.
 .TP
-.B \-S
+OPT(S)
 Suppress output records where all the data columns are NaN [Default will output all records].
 #include "explain_-V.txt"
 #include "explain_-bo.txt"
@@ -48,7 +48,7 @@ Suppress output records where all the data columns are NaN [Default will output 
 To extract all data from the old-style MGG supplement file c2104.gmt, recognized by the tag GMT:
 .br
 .sp
-\fBx2sys_datalist\fP c2104.gmt \fB\-T\fPGMT > myfile
+\fBx2sys_datalist\fP c2104.gmt OPT(T)GMT > myfile
 .br
 .sp
 To make lon,lat, and depth input for \fBblockmean\fP and \fBsurface\fP using all the files
@@ -56,7 +56,7 @@ listed in the file tracks.lis and define by the tag TRK, but only the data that 
 area, and make output binary, run
 .br
 .sp
-\fBx2sys_datalist\fP :tracks.lis \fB\-T\fPTRK \fB\-F\fPlon,lat,depth \fB\-R\fP-40/-30/25/35 \fB\-bo\fP > alltopo_bin.xyz
+\fBx2sys_datalist\fP :tracks.lis OPT(T)TRK OPT(F)lon,lat,depth OPT(R)-40/-30/25/35 OPT(bo) > alltopo_bin.xyz
 .SH CORRECTIONS
 The correction table is an ASCII file with coefficients and parameters needed to carry out corrections.
 This table is usually produced by \fBx2sys_solve\fP.
@@ -103,11 +103,10 @@ ABC fuel 0.02*((dist))
 .IR blockmean (1),
 .IR GMT (1),
 .IR surface (1),
-.IR x2sys_init (1)
-.IR x2sys_datalist (1)
-.IR x2sys_get (1)
-.IR x2sys_list (1)
-.IR x2sys_put (1)
-.IR x2sys_report (1)
+.IR x2sys_init (1),
+.IR x2sys_datalist (1),
+.IR x2sys_get (1),
+.IR x2sys_list (1),
+.IR x2sys_put (1),
+.IR x2sys_report (1),
 .IR x2sys_solve (1)
-.

@@ -3,9 +3,9 @@
 .SH NAME
 \fBx_over\fP \- Find and compute Cross-Over Errors
 .SH SYNOPSIS
-\fBx_over\fP \fIleg_1\fP [ \fIleg_2\fP ] [ \fB\-A\fP ] [ \fB\-C\fP ] [ \fB\-L\fP ] [ \fB\-V\fP ] 
-[ \fB\-W\fP\fItimegap\fP ] [ \fB\-G\fP\fIfact\fP ] [ \fB\-M\fP\fIfact\fP ] 
-[ \fB\-T\fP\fIfact\fP ] [ \fB\-N\fP\fInp_int\fP ]
+\fBx_over\fP \fIleg_1\fP [ \fIleg_2\fP ] [ OPT(A) ] [ OPT(C) ] [ OPT(L) ] [ OPT(V) ] 
+[ OPT(W)\fItimegap\fP ] [ OPT(G)\fIfact\fP ] [ OPT(M)\fIfact\fP ] 
+[ OPT(T)\fIfact\fP ] [ OPT(N)\fInp_int\fP ]
 .SH DESCRIPTION
 \fBx_over\fP is used to inspect two cruises to see if they intersect, and if so report the time, position,
 discrepancies in gravity/magnetics/bathymetry, heading for each track segment, and the average
@@ -13,32 +13,31 @@ values of the geophysical observables at the cross-over point. The names of the 
 on the command line. If they are identical or only one name is passed, then \fBx_over\fP looks for
 internal cross-overs. The optional parameters are:
 .TP
-.B \-A
+OPT(A)
 Use an Akima spline to interpolate the geophysical field at the cross-over point.
 .TP
-.B \-C
+OPT(C)
 Use a Natural Cubic spline function instead.
 .TP
-.B \-L
+OPT(L)
 Use a linear interpolant [Default].
 .TP
-.B \-W
+OPT(W)
 Do not compute cross-overs if the 2 nearest points are more than \fItimegap\fP minutes apart.
 .TP
-.B \-G
+OPT(G)
 Scale gravity by \fIfact\fP [Default is 0.1 since gmt-files store gravity in g.u.]
 .TP
-.B \-M
+OPT(M)
 Scale magnetic anomaly by \fIfact\fP [1.0].
 .TP
-.B \-T
+OPT(T)
 Scale bathymetry by \fIfact\fP [1.0].
 .TP
-.B \-N
+OPT(N)
 Specify how many points to use in the interpolation [Default is 6].
-.TP
-.B \-V
-Verbose, report the number of cross-overs for this pair of legs.
+#include "explain_-V.txt"
+Report the number of cross-overs for this pair of legs.
 .br
 .SH BEWARE
 The COEs found are printed out to standard output in ASCII format. The first record contains the

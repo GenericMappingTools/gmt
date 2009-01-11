@@ -3,7 +3,7 @@
 .SH NAME
 \fBx_report\fP \- Report Cross-Over Error Statistics for Cruises
 .SH SYNOPSIS
-\fBx_report\fP [ \fIleg\fP ] [ \fB\-X\fP\fIlegbase\fP ] [ \fB\-G \-M \-T\fP ]
+\fBx_report\fP [ \fIleg\fP ] [ OPT(X)\fIlegbase\fP ] [ OPT(G) ] [ OPT(M) ] [ OPT(T) ]
 .SH DESCRIPTION
 \fBx_report\fP reads the x_system data base file and prints out statistics for each leg. The statistics
 are the number of, means, and standard deviations of COEs for both the internal and external
@@ -12,16 +12,16 @@ cases. One or more data types (GMT) may be specified.
 \fIleg\fP
 Report on \fIleg\fP only. [Default is all legs].
 .TP
-.B \-X
+OPT(X)
 Specify alternate leg data base [Default is \fIxx_legs.b\fP].
 .TP
-.B \-G
+OPT(G)
 Give information for Gravity cross-overs only. [Default is G, M, and T].
 .TP
-.B \-M
+OPT(M)
 Give information for Magnetics cross-overs only. [Default is G, M, and T].
 .TP
-.B \-T
+OPT(T)
 Give information for Topography cross-overs only. [Default is G, M, and T].
 .SH SEE ALSO
 .IR GMT (1),

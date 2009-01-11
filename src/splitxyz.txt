@@ -8,34 +8,34 @@ splitxyz \- filter to divide (x,y,z[,distance,heading]) data into (x,y,z) track 
 [ GMT_H_OPT ] [ OPT(M) ] [ OPT(N)\fInamestem\fP ] [ OPT(Q)\fIflags\fP ] [ OPT(S) ] [ GMT_V_OPT ] 
 [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
-\fBsplitxyz\fP reads a series of (x,y[,z]) records [or optionally (x,y,z,d,h); see \fB\-S\fP 
+\fBsplitxyz\fP reads a series of (x,y[,z]) records [or optionally (x,y,z,d,h); see OPT(S) 
 option] from standard input [or \fIxyz[dh]file\fP] and splits this into separate lists 
 of (x,y[,z]) series, such that each series has a nearly constant azimuth through the x,y plane.  
 There are options to choose only those series which have a certain orientation, to set a 
 minimum length for series, and to high\- or low\-pass filter the z values and/or the x,y 
 values.  \fBsplitxyz\fP is a useful filter between data extraction and \fBpswiggle\fP plotting, 
 and can also be used to divide a large x,y,z dataset into segments.  The output is always
-in the ASCII format; input may be ASCII or binary (see \fB\-b\fP).
+in the ASCII format; input may be ASCII or binary (see OPT(b)).
 .TP
 \fIxyz[dh]file(s)\fP
-3 (but see \fB\-Z\fP) [or 5] column ASCII file [or binary, see \fB\-b\fP] holding (x,y,z[,d,h]) data values.  To use (x,y,z,d,h) input, 
-sorted so that d is non-decreasing, specify the \fB\-S\fP option; default expects (x,y,z) only.  
+3 (but see OPT(Z)) [or 5] column ASCII file [or binary, see OPT(b)] holding (x,y,z[,d,h]) data values.  To use (x,y,z,d,h) input, 
+sorted so that d is non-decreasing, specify the OPT(S) option; default expects (x,y,z) only.  
 If no file is specified, \fBsplitxyz\fP will read from standard input.
 .TP
-.B \-C
+OPT(C)
 Terminate a segment when a course change exceeding \fIcourse_change\fP degrees of heading 
 is detected.
 .SH OPTIONS
 .TP
-.B \-A
+OPT(A)
 Write out only those segments which are within +/- \fItolerance\fP degrees of \fIazimuth\fP 
 in heading, measured clockwise from North, [0 - 360].  [Default writes all acceptable 
 segments, regardless of orientation].
 .TP
-.B \-D
+OPT(D)
 Do not write a segment out unless it is at least \fIminimum_distance\fP units long [0]
 .TP
-.B \-F
+OPT(F)
 Filter the z values and/or the x,y values, assuming these are functions of d coordinate.  
 \fIxy_filter\fP and  \fIz_filter\fP are filter widths in distance units.  If a filter width 
 is zero, the filtering is not performed.  The absolute value of the width is the 
@@ -49,40 +49,40 @@ segments and then the x,y values of each segment are filtered separately.  This 
 edge effects at the ends of each segment, but prevents a low\-pass x,y filter from rounding 
 off the corners of track segments.  [Default = no filtering].
 .TP
-.B \-G
+OPT(G)
 Do not let a segment  have a gap exceeding \fIgap_distance\fP; instead, split it into two 
 segments.  [Default ignores gaps].
 #include "explain_-H.txt"
 Not used with binary data.
 .TP
-.B \-M
+OPT(M)
 Use Map units.  Then x,y are in degrees of longitude, latitude, distances are
 in kilometers, and angles are azimuths.  [Default:  distances are cartesian in same
 units as x,y adn angles are counter-clockwise from horizontal].
 .TP
-.B \-N
+OPT(N)
 Create Named output files, writing each segment to a separate file in the working directory 
 named \fInamestem\fP.profile\fI#\fP, where \fI#\fP increases consecutively from 1.  [Default 
 writes entire output to stdout, separating segments by sub-headings that start with > marks].
 .TP
-.B \-Q
+OPT(Q)
 Specify your desired output using any combination of \fIxyzdh\fP, in any order.  Do not space between
-the letters.  Use lower case.  The output will be ASCII (or binary, see \fB\-bo\fP) columns of values corresponding 
-to \fIxyzdh\fP [Default is \fB\-Q\fP\fIxyzdh\fP (\fB\-Q\fP\fIxydh\fP if \fB\-Z\fP is set)].
+the letters.  Use lower case.  The output will be ASCII (or binary, see OPT(bo)) columns of values corresponding 
+to \fIxyzdh\fP [Default is OPT(Q)\fIxyzdh\fP (OPT(Q)\fIxydh\fP if OPT(Z) is set)].
 .TP
-.B \-S
+OPT(S)
 d and h is supplied.  In this case, input contains x,y,z,d,h.
 [Default expects (x,y,z) input, and d,h are computed from delta x, 
-delta y, according to \fB\-M\fP option]
+delta y, according to OPT(M) option]
 #include "explain_-V.txt"
 .TP
-.B \-Z
+OPT(Z)
 Data have x,y only (no z-column).
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
-[Default is 2, 3, or 5 input columns as set by \fB\-S, \-Z\fP].
+[Default is 2, 3, or 5 input columns as set by OPT(S), OPT(Z)].
 #include "explain_-bo.txt"
-[Default is 1-5 output columns as set by \fB\-Q\fP].
+[Default is 1-5 output columns as set by OPT(Q)].
 #include "explain_-f.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
@@ -92,9 +92,9 @@ You want to use a 100km low\-pass filter to smooth the tracks and a 500km high\-
 filter to detrend the magnetic anomalies.  Try this:
 .br
 .sp
-\fBgmtlist\fP cag71 \fB\-R\fP300/315/12/20 \fB\-F\fPxyzdh | 
-\fBsplitxyz\fP \fB\-A\fP90/15 \fB\-F\fP100/-500 \fB\-M -D\fP100 \fB\-S\fP \fB\-V\fP | 
-\fBpswiggle\fP \fB\-R\fP300/315/12/20 \fB\-Jm\fP0.6 \fB\-Ba\fP5\fBf\fP1:.cag71: \fB\-T\fP1 \fB\-W\fP0.75p \fB\-G\fPgray \fB\-Z\fP200 > cag71_wiggles.ps
+\fBgmtlist\fP cag71 OPT(R)300/315/12/20 OPT(F)xyzdh | 
+\fBsplitxyz\fP OPT(A)90/15 OPT(F)100/-500 OPT(M) OPT(D)100 OPT(S) OPT(V) | 
+\fBpswiggle\fP OPT(R)300/315/12/20 OPT(Jm)0.6 OPT(Ba)5\fBf\fP1:.cag71: OPT(T)1 OPT(W)0.75p OPT(G)gray OPT(Z)200 > cag71_wiggles.ps
 .br
 .sp
 MGD-77 users: For this application we recommend that you extract d, h from \fBmgd77list\fP rather than
@@ -104,7 +104,7 @@ have \fBsplitxyz\fP compute them separately.
 Suppose you have been given a binary, double-precision file containing lat, lon, gravity values from a survey, 
 and you want to split it into profiles named \fIsurvey\fP.profile\fI#\fP (when gap exceeds 100 km).  Try this:
 .sp
-\fBsplitxyz\fP survey.bin \fB\-N\fPsurvey \fB\-V \-G\fP100 \fB\-D\fP100 \fB\-: \-M \-bi\fP3
+\fBsplitxyz\fP survey.bin OPT(N)survey OPT(V) OPT(G)100 OPT(D)100 OPT(:) OPT(M) OPT(bi)\fP3
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR mgd77list (1),

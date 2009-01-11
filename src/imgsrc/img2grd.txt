@@ -18,11 +18,11 @@ satellite altimeter data by Sandwell and Smith.  If the user has set an environm
 \fB$GMT_IMGDIR\fP, then \fBimg2mercgrd\fP will try to find \fIimgfile\fP in \fB$GMT_IMGDIR\fP; else it 
 will try to open \fIimgfile\fP directly.
 .TP
-.B \-G
+OPT(G)
 \fIgrdfile\fP is the name of the output grid file.
 #include "explain_-Rgeo.txt"
 .TP
-.B \-T
+OPT(T)
 \fItype\fP handles the encoding of constraint information.  \fItype\fP = 0 indicates that no 
 such information is encoded in the img file (used for pre-1995 versions of the gravity data) 
 and gets all data.  \fItype\fP > 0 indicates that constraint information is encoded (1995 and 
@@ -32,14 +32,14 @@ constrained points and NaN at interpolated points; OPT(T)\fI3\fP gets 1 at const
 points and 0 at interpolated points. 
 .SH OPTIONS
 .TP
-.B \-C
+OPT(C)
 Set the x and y Mercator coordinates relative to projection center [Default is relative to
 lower left corner of grid].  Requires OPT(M).
 .TP
-.B \-D
+OPT(D)
 Use the extended latitude range -80.738/+80.738.  Alternatively, append \fIminlat/maxlat\fP
 as the latitude extent of the input img file.  [Default is -72.006/72.006].
-.B \-E
+OPT(E)
 Can be used when OPT(M) is not set to force the final grid to have the exact same region
 as requested with OPT(R).  By default, the final region is a direct projection of the
 original Mercator region and will typically extend slightly beyond the requested latitude
@@ -49,15 +49,15 @@ be used if the output grid must match the requested region and have x_inc = y_in
 this case the region set by OPT(R) must be given in multiples of the increment (.e.g,
 OPT(R)0/45/45/72).
 .TP
-.B \-L
+OPT(L)
 With no other arguments, list all *.img files found in the directory pointed to by
 \fB$GMT_IMGDIR\fP, or the current directory if not defined.  Ignored if other options are
 present on the command line.
 .TP
-.B \-M
+OPT(M)
 Output a Spherical Mercator grid [Default is a geographic lon/lat grid].
 .TP
-.B \-N
+OPT(N)
 Average the values in the input img pixels into \fInavg\fP by \fInavg\fP squares, and 
 create one output pixel for each such square.  If used with OPT(T)\fI3\fP it will 
 report an average constraint between 0 and 1.  If used with OPT(T)\fI2\fP the output 
@@ -65,32 +65,30 @@ will be average data value or NaN according to whether average constraint is > 0
 \fInavg\fP must evenly divide into the dimensions of the imgfile in pixels.  
 [Default \fI1\fP does no averaging].
 .TP
-.B \-S
+OPT(S)
 Multiply the img file values by \fIscale\fP before storing in grid file.  [Default is 1.0].  
 (img topo files are stored in (corrected) meters; gravity files in mGal*10; vertical 
 deflection files in microradians*10, vertical gravity gradient files in Eotvos*10.)
-.TP
-.B \-V
-Selects verbose mode, which will send progress reports to stderr [Default runs "silently"].  
+#include "explain_-V.txt"
 Particularly recommended here, as it is helpful to see how the coordinates are adjusted.
 .TP
-.B \-m
+OPT(m)
 Indicate \fIminutes\fP as the width of an input img pixel in minutes of longitude.  
 [Default is 2.0].
 .TP
-.B \-W
+OPT(W)
 Indicate \fImaxlon\fP as the maximum longitude extent of the input img file.  Versions 
 since 1995 have had \fImaxlon\fP = 360.0, while some earlier files had \fImaxlon\fP = 
 390.0.  [Default is 360.0].
 .SH EXAMPLES
-To extract data in the region \fB\-R\fP-40/40/-70/-30 from \fIworld_grav.img.7.2\fP and preserve
+To extract data in the region OPT(R)-40/40/-70/-30 from \fIworld_grav.img.7.2\fP and preserve
 the Mercator gridding:
 .br
 .sp
-\fBimg2grd\fP world_grav.img.7.2 \fB\-G\fPmerc_grav.grd \fB\-R\fP-40/40/-70/-30 \fB\-M \-T\fP1 \fB\-V\fP
+\fBimg2grd\fP world_grav.img.7.2 OPT(G)merc_grav.grd OPT(R)-40/40/-70/-30 OPT(M) OPT(T)1 OPT(V)
 .br
 .sp
-Without the \fB\-M\fP option the same command will yield a geographic grid.
+Without the OPT(M) option the same command will yield a geographic grid.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR img2mercgrd (1)

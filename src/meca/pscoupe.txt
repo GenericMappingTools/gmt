@@ -44,9 +44,9 @@ A \fI file\fP  is created with extracted events.
 If frame is defined from cross-section parameters (see \fB-A\fP) this option is not taken into account,
 but must be present.
 .TP
-\fB\-A\fP  selects the cross-section.
+OPT(A)  selects the cross-section.
 .br
-\fB\-Aa\fP\fIlon1/lat1/lon2/lat2/dip/p_width/dmin/dmax\fP[\fBf\fP]
+OPT(Aa)\fIlon1/lat1/lon2/lat2/dip/p_width/dmin/dmax\fP[\fBf\fP]
 .br
 \fIlon\fP and \fIlat\fP are the longitude and latitude of points 1 and 2 limiting the length of the cross-section.
 .br
@@ -60,7 +60,7 @@ along steepest descent direction.
 .br
 Add \fBf\fP to get the frame from the cross-section parameters.
 .br
-\fB\-Ab\fP\fIlon1/lat1/strike/p_length/dip/p_width/dmin/dmax\fP[\fBf\fP]
+OPT(Ab)\fIlon1/lat1/strike/p_length/dip/p_width/dmin/dmax\fP[\fBf\fP]
 .br
 \fIlon1\fP and \fIlat1\fP are the longitude and latitude of the beginning of the cross-section.
 .br
@@ -72,31 +72,31 @@ The other parameters are the same as for \fB-Aa\fP option.
 .br
 \fP\-Ac\fP\fIx1/y1/x2/y2/dip/p_width/dmin/dmax\fP[\fBf\fP]
 .br
-The same as \fB\-Aa\fP option with \fIx\fP and \fIy\fP cartesian coordinates.
+The same as OPT(Aa) option with \fIx\fP and \fIy\fP cartesian coordinates.
 .br
-\fB\-Ad\fP\fIx1/y1/strike/p_length/dip/p_width/dmin/dmax\fP[\fBf\fP]
+OPT(Ad)\fIx1/y1/strike/p_length/dip/p_width/dmin/dmax\fP[\fBf\fP]
 .br
-The same as \fB\-Ab\fP option with \fIx\fP and \fIy\fP cartesian coordinates.
+The same as OPT(Ab) option with \fIx\fP and \fIy\fP cartesian coordinates.
 .br
 .TP
-.B \-S
+OPT(S)
 selects the meaning of the columns in the data file and the figure to be plotted.
 .TP
-\fB\-Sa\fP\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
+OPT(Sa)\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
 Focal mechanisms in Aki and Richard convention.
 \fIscale\fP adjusts the scaling of the radius of the "beach ball",
 which will be proportional to the magnitude.  The \fIscale\fP is the size for
 magnitude = 5 in \fBMEASURE_UNIT\fP (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is
 appended to indicate that the size information is in units of cm, inches,
-meters, or points, respectively).  Use the \fB\-T\fP option
+meters, or points, respectively).  Use the OPT(T) option
 to render the beach ball transparent by drawing only the nodal planes
 and the circumference.  The color or shade of the compressive
-quadrants can be specified with the \fB\-G\fP option.  The color or shade
-of the extensive quadrants can be specified with the \fB\-E\fP option.
+quadrants can be specified with the OPT(G) option.  The color or shade
+of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .sp
 .IP \fB1,2\fP:
-longitude, latitude of event (\fB\-:\fP option interchanges order)
+longitude, latitude of event (OPT(:) option interchanges order)
 .IP \fB3\fP:
 depth of event in kilometers
 .IP \fB4,5,6\fP:
@@ -109,20 +109,20 @@ not used; can be 0 0; allows use of the psmeca file format
 text string to appear above the beach ball (default) or under (add \fBu\fP).
 .sp
 .TP
-\fB\-Sc\fIscale\fP
+OPT(Sc)scale\fP
 Focal mechanisms in Harvard CMT convention.  
 \fIscale\fP adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude. The \fIscale\fP is the size for magnitude = 5
 (that is M0 = 4E+23 dynes-cm.) in \fBMEASURE_UNIT\fP (unless \fBc\fP, \fBi\fP,
 \fBm\fP, or \fBp\fP is appended to indicate that the size information is in
-units of cm, inches, meters, or points, respectively).  Use the \fB\-T\fP option
+units of cm, inches, meters, or points, respectively).  Use the OPT(T) option
 to render the beach ball transparent by drawing only the nodal planes
 and the circumference. The color or shade of the compressive quadrants
-can be specified with the \fB\-G\fP option.  The color or shade
-of the extensive quadrants can be specified with the \fB\-E\fP option.
+can be specified with the OPT(G) option.  The color or shade
+of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .IP \fB1,2\fP:
-longitude, latitude of event (\fB\-:\fP option interchanges order)
+longitude, latitude of event (OPT(:) option interchanges order)
 .IP \fB3\fP:
 depth of event in kilometers
 .IP \fB4,5,6\fP:
@@ -137,18 +137,18 @@ not used; can be 0 0; allows use of the psmeca file format
 text string to appear above the beach ball (default) or under (add \fBu\fP).
 .sp
 .TP
-\fB\-Sp\fB\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
+OPT(Sp)\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
 Focal mechanisms given with partial data on both planes.
 \fIscale\fP adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude.  The \fIscale\fP is the size for magnitude
 = 5 in \fBMEASURE_UNIT\fP (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended
 to indicate that the size information is in units of cm, inches, meters, or
 points, respectively).  The color or shade of the compressive quadrants
-can be specified with the \fB\-G\fP option.  The color or shade of the extensive
-quadrants can be specified with the \fB\-E\fP option.
+can be specified with the OPT(G) option.  The color or shade of the extensive
+quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .IP \fB1,2\fP:
-longitude, latitude of event (\fB\-:\fP option interchanges order)
+longitude, latitude of event (OPT(:) option interchanges order)
 .IP \fB3\fP:
 depth
 .IP \fB4,5\fP:
@@ -165,22 +165,22 @@ not used; can be 0 0; allows use of the psmeca file format
 text string to appear above the beach ball (default) or under (add \fBu\fP).
 .sp
 .TP
-\fB\-Sm\fP\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
+OPT(Sm)\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
 Seismic moment tensor.
 \fIscale\fP adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude. The \fIscale\fP is the size for magnitude = 5
 (that is seismic scalar moment = 4E+23 dynes-cm) in \fBMEASURE_UNIT\fP (unless
 \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended to indicate that the size
 information is in units of cm, inches, meters, or points, respectively).
-(\fB\-T\fP\fI0\fP option overlays best double couple transparently.) Put
-\fB\-Sd\fP\fIscale[/fontsize[/offset\fP[\fBu\fP]]] to plot the only double couple part
-of moment tensor.  Put \fB\-Sz\fP\fIscale[/fontsize[/offset\fP[\fBu\fP]]] to plot
+(OPT(T)\fI0\fP option overlays best double couple transparently.) Put
+OPT(Sd)\fIscale[/fontsize[/offset\fP[\fBu\fP]]] to plot the only double couple part
+of moment tensor.  Put OPT(Sz)\fIscale[/fontsize[/offset\fP[\fBu\fP]]] to plot
 anisotropic part of moment tensor (zero trace).  The color or shade of the
-compressive quadrants can be specified with the \fB\-G\fP option.  The color or
-shade of the extensive quadrants can be specified with the \fB\-E\fP option.
+compressive quadrants can be specified with the OPT(G) option.  The color or
+shade of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .IP \fB1,2\fP:
-longitude, latitude of event (\fB\-:\fP option interchanges order)
+longitude, latitude of event (OPT(:) option interchanges order)
 .IP \fB3\fP:
 depth of event in kilometers
 .IP \fB4,5,6,7,8,9\fP:
@@ -194,7 +194,7 @@ Text string to appear above the beach ball (default) or under (add \fBu\fP).
 .br
 .sp
 .TP
-\fB\-Sx\fP\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
+OPT(Sx)\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
 Principal axis.
 \fIscale\fP adjusts the scaling of the radius of the "beach ball", which will
 be proportional to the magnitude. The \fIscale\fP is the size for magnitude = 5
@@ -202,14 +202,14 @@ be proportional to the magnitude. The \fIscale\fP is the size for magnitude = 5
 \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended to indicate that the size
 information is in units of cm, inches, meters, or points, respectively).
 (\fB-T\fP\fI0\fP option overlays best double couple transparently.) Put
-\fB\-Sy\fP\fIscale[/fontsize[/offset\fP[\fBu\fP]]] to plot the only double couple part
-of moment tensor.  Put \fB\-St\fP\fIscale[/fontsize[/offset\fP[\fBu\fP]]] to plot
+OPT(Sy)\fIscale[/fontsize[/offset\fP[\fBu\fP]]] to plot the only double couple part
+of moment tensor.  Put OPT(St)\fIscale[/fontsize[/offset\fP[\fBu\fP]]] to plot
 anisotropic part of moment tensor (zero trace).  The color or shade of the
-compressive quadrants can be specified with the \fB\-G\fP option.  The color or
-shade of the extensive quadrants can be specified with the \fB\-E\fP option.
+compressive quadrants can be specified with the OPT(G) option.  The color or
+shade of the extensive quadrants can be specified with the OPT(E) option.
 Parameters are expected to be in the following columns:
 .IP \fB1,2\fP:
-longitude, latitude of event (\fB\-:\fP option interchanges order)
+longitude, latitude of event (OPT(:) option interchanges order)
 .IP \fB3\fP:
 depth of event in kilometers
 .IP \fB4,5,6,7,8,9,10,11,12\fP:
@@ -218,15 +218,15 @@ value (in 10*exponent dynes-cm), azimuth, plunge of the T, N, and P axes.
 exponent
 .IP \fB14,15\fP:
 longitude, latitude at which to place beach ball. Entries in these
-columns are necessary with the \fB\-C\fP option.  Using 0,0 in columns
+columns are necessary with the OPT(C) option.  Using 0,0 in columns
 9 and 10 will plot the beach ball at the longitude, latitude given in
-columns 1 and 2.  The \fB\-:\fP option will interchange the order of
+columns 1 and 2.  The OPT(:) option will interchange the order of
 columns (1,2) and (9,10).
 .IP \fB16\fP:
 Text string to appear above the beach ball (optional).
 .br
 .TP
-\fB\-s\fP\fIsymbol[size[/fontsize[/offset\fP[\fBu\fP]]]
+OPT(s)\fIsymbol[size[/fontsize[/offset\fP[\fBu\fP]]]
 selects a symbol instead of mechanism.
 Choose from the following:
 (\fBc\fP) circle, (\fBd\fP) diamond, (\fBi\fP) itriangle, (\fBs\fP) square, (\fBt\fP) triangle, (\fBx\fP) cross.
@@ -236,7 +236,7 @@ units of cm, inches, meters, or points, respectively).  If \fIsize\fP must be
 read, it must be in column 4 and the text string will start in column 5.
 Parameters are expected to be in the following columns:
 .IP \fB1,2\fP:
-longitude, latitude of event (\fB\-:\fP option interchanges order)
+longitude, latitude of event (OPT(:) option interchanges order)
 .IP \fB3\fP:
 depth of event in kilometers
 .IP \fB4\fP:
@@ -247,38 +247,38 @@ No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .br
 .TP
-\fB\-E\fP\fIfill\fP
+OPT(E)\fIfill\fP
 \fRSelects filling of extensive quadrants. Usually white.
 Set the shade (0\-255) or color (r/g/b) [Default is 255/255/255].
 .br
 .TP
-\fB\-G\fP\fIfill\fP
+OPT(G)\fIfill\fP
 Selects filling of focal mechanisms. By convention, the
 compressional quadrants are shaded.  Set the shade (0\-255) or color
 (\fIr/g/b\fP) [Default is \fP0/0/0\fP].  Optionally, specify
-\fB\-Gp\fP\fIicon_size/pattern\fP, where \fPpattern\fP gives the
+OPT(Gp)\fIicon_size/pattern\fP, where \fPpattern\fP gives the
 number of the image pattern (1-90) OR the name of a Sun rasterfile.
 \fPicon_size\fP sets the unit size in inches.  To invert black and
-white pixels, use \fB\-GP\fP instead of \fP\-Gp\fP.  See
+white pixels, use OPT(GP) instead of \fP\-Gp\fP.  See
 Appendix E for information on individual patterns.
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
-\fB\-L\fP[\fIpen\fP]
-\fRDraws the "beach ball" outline using current pen (see \fB\-W\fP) or sets pen attributes.
+OPT(L)[\fIpen\fP]
+\fRDraws the "beach ball" outline using current pen (see OPT(W)) or sets pen attributes.
 .br
 .TP
-.B \-M
+OPT(M)
 Same size for any magnitude.
 .br
 .TP
-\fB\-N
+OPT(N)
 \fRDoes \fBNOT \fRskip symbols that fall outside map border [Default plots points inside border only].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .br
 .TP
-\fB\-T\fP[\fInum_of_planes\fP]
+OPT(T)[\fInum_of_planes\fP]
 \fRPlots the nodal planes and outlines the bubble which is transparent.
 If \fInum_of_planes\fP is
 .br
@@ -290,16 +290,16 @@ If \fInum_of_planes\fP is
 #include "explain_-V.txt"
 .br
 .TP
-.B \-W
+OPT(W)
 set pen attributes for text string or default pen attributes for fault plane edges. [Defaults: width = \fI1\fP, color = \fP0/0/0\fP, texture = \fPsolid\fP]. 
 #include "explain_-XY.txt"
 .TP
-\fB\-Z\fIcptfile
+OPT(Z)cptfile
 \fRGive a color palette file and let compressive part color be determined by the z-value in the
 third column.
 .br
 .TP
-\fB\-a\fP[\fIsize\fP/[\fIP_axis_symbol\fP/[\fIT_axis_symbol\fP]]]
+OPT(a)[\fIsize\fP/[\fIP_axis_symbol\fP/[\fIT_axis_symbol\fP]]]
 Computes and plots P and T axes with symbols. Optionally specify \fIsize\fP
 and (separate) P and T axis symbols from the following:
 (\fBc\fP) circle, (\fBd\fP) diamond, (\fBh\fP) hexagon,
@@ -308,23 +308,23 @@ and (separate) P and T axis symbols from the following:
 (\fBx\fP) cross. [Defaults: 0.2\fBc\fP/\fBc\fP/\fBc\fP or 0.08\fBi\fP/\fBc\fP/\fBc\fP.]
 .br
 .TP
-\fB\-e\fP\fIfill\fP
+OPT(e)\fIfill\fP
 \fRSelects filling of T axis symbol.
 Set the shade (0\-255) or color (r/g/b) [Default is color of extensive parts.] 
 .br
 .TP
-\fB\-g\fP\fIfill\fP
+OPT(g)\fIfill\fP
 \fRSelects filling of P axis symbol.
 Set the shade (0\-255) or color (r/g/b) [Default is color of compressive parts.]
 .br
 .TP
-\fB\-p\fP[\fIpen\fP]
-\fRDraws the P axis outline using current pen (see \fB\-W\fP), or sets
+OPT(p)[\fIpen\fP]
+\fRDraws the P axis outline using current pen (see OPT(W)), or sets
 pen attributes.
 .br
 .TP
-\fB\-t\fP[\fIpen\fP]
-\fRDraws the T axis outline using current pen (see \fB\-W\fP), or sets
+OPT(t)[\fIpen\fP]
+\fRDraws the T axis outline using current pen (see OPT(W)), or sets
 pen attributes.
 #include "explain_-t.txt"
 #include "explain_-c.txt"

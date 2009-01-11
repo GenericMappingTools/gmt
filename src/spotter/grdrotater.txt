@@ -20,34 +20,34 @@ option flags and lower case for modifiers.
 \fIingrdfile\fP
 Name of a grid file in geographical (lon, lat) coordinates.
 .TP
-.B \-G
+OPT(G)
 Name of output grid.  This is the grid with the data reconstructed according to the specified
 rotation.
 .TP
-.B \-T
+OPT(T)
 Finite rotation.  Specify the longitude and latitude of the rotation pole and the opening
 angle, all in degrees.
 .SH OPTIONS
 .TP
-.B \-F
+OPT(F)
 Specify a multi-segment closed polygon file that describes the inside area of the grid
 that should be projected [Default projects entire grid].
 #include "explain_-H.txt"
 .TP
-.B \-M
+OPT(M)
 Multiple segment file.  Segment separator is a record beginning with \fIflag\fP.
 [Default is '>'].
 .TP
-.B \-N
+OPT(N)
 Do Not output the rotated polygon outline [Default will write it to stdout].
 #include "explain_-Q.txt"
 #include "explain_-Rgeo.txt"
 .TP
-.B \-S
-Skip the rotation of the grid, just rotate the polygon outline (requires \fB\-F\fP).
+OPT(S)
+Skip the rotation of the grid, just rotate the polygon outline (requires OPT(F)).
 #include "explain_-V.txt"
 .TP
-.B \-:
+OPT(:)
 Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [Default is (longitude,latitude)].
 #include "explain_-bi.txt"
 [Default is 2 input columns].
@@ -58,20 +58,20 @@ To rotate the data defined by grid topo.grd and the polygon outline clip_path.d,
 with pole at (135.5, -33.0) and a rotation angle of 37.3 degrees and bicubic interpolation, try
 .br
 .sp
-grdrotater topo.grd \fB\-T\fP135.5/-33/37.3 \fB\-V \-F\fPclip_path.d \fB\-G\fProt_topo.grd > rot_clip_path.d
+\fBgrdrotater\fP topo.grd OPT(T)135.5/-33/37.3 OPT(V) OPT(F)clip_path.d OPT(G)rot_topo.grd > rot_clip_path.d
 .br
 .sp
 To rotate the entire grid faa.grd using a finite rotation pole at (67:45W, 22:35S) and a rotation angle of 19.6
 degrees using a bilinear interpolation, try
 .br
 .sp
-grdrotater faa.grd \fB\-T\fP67:45W/22:35S/19.6 \fB\-V \-Q \-G\fProt_faa.grd > rot_faa_path.d
+\fBgrdrotater\fP faa.grd OPT(T)67:45W/22:35S/19.6 OPT(V) OPT(Q) OPT(G)rot_faa.grd > rot_faa_path.d
 .br
 .sp
 To just see how the outline of the grid large.grd will plot after the same rotation, try
 .br
 .sp
-grdrotater large.grd \fB\-T\fP67:45W/22:35S/19.6 \fB\-V \-S\fP | psxy \fB\-Rg \-JH\fP180/6i \fB\-B\fP30 \fB\-M -W\fP0.5p | gv -
+\fBgrdrotater\fP large.grd OPT(T)67:45W/22:35S/19.6 OPT(V) OPT(S) | psxy OPT(Rg) OPT(JH)180/6i OPT(B)30 OPT(M) OPT(W)0.5\fBpfP | gv -
 .br
 .sp
 Let say you have rotated gridA.grd and gridB.grd, restricting each rotation to nodes inside polygons polyA.d and polyB.d, respectively,

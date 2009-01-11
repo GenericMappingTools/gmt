@@ -14,7 +14,7 @@ the data archivist will need to be concerned with these operations.
 This is a one column ASCII file with one leg id pr line.
 .SH OPTIONS
 .TP
-.B \-P
+OPT(P)
 Sets full path to directory with gmtfiles.  [Default is current directory].
 #include "explain_-V.txt"
 .SH "SEE ALSO"

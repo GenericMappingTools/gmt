@@ -1,5 +1,5 @@
 .TP
-.B \-E
+OPT(E)
 Give file with rotation parameters.  This file must contain
 one record for each rotation; each record must be of the following format:
 .br

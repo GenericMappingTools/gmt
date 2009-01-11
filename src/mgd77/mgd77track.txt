@@ -2,10 +2,10 @@
 .TH MGD77TRACK 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #ifdef SI
 #define SCALE1 0.25cm/degree
-#define SCALE2 \fB\-Jm\fP0.25
+#define SCALE2 OPT(Jm)0.25
 #else
 #define SCALE1 0.1inch/degree
-#define SCALE2 \fB\-Jm\fP0.1
+#define SCALE2 OPT(Jm)0.1
 #endif
 .SH NAME
 mgd77track \- A shiptrack plotting program
@@ -24,7 +24,7 @@ map using the specified projection.  The \fIPostScript\fP code is written to sta
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Append \fBc\fP to annotate using the MGD77 cruise ID [Default uses the filename prefix].
 Optional \fIsize\fP is the font size in points.  The leg annotation font is controlled by \fBLABEL_FONT\fP.
 By default, each leg is annotated every time it enters the map region. Alternatively, append ,\fIspacing\fP to place
@@ -32,7 +32,7 @@ this label every \fIspacing\fP units apart along the track.  Append one of the u
 \fBd\fP (day), or \fBh\fP (hour).
 #include "explain_-B_short.txt"
 .TP
-.B \-C
+OPT(C)
 Select procedure for along-track distance calculation:
 .br
 	\fBf\fP Flat Earth distances.
@@ -41,45 +41,45 @@ Select procedure for along-track distance calculation:
 .br
 	\fBe\fP Geodesic distances on current GMT ellipsoid.
 .TP
-.B \-Da
+OPT(Da)
 Do not plot data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss])  [Default is first day].
 .TP
-.B \-Db
+OPT(Db)
 Do not plot data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [Default is last day].
 .TP
-.B \-F
+OPT(F)
 Do not apply the error bit flags if present in a MGD77+ file [Default will apply these flags upon reading the data].
 .TP
-.B \-I
+OPT(I)
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
 MGD77 ASCII, MGD77+ netCDF, or plain table files, respectively. The option may
 be repeated to ignore more than one format.  [Default ignores none].
 #include "explain_-K.txt"
 .TP
-.B \-L
+OPT(L)
 To put time/distance log-marks on the track. E.g. \fBa\fP500\fBka\fP24\fBht\fP6\fBh\fP means (\fBa\fP)nnotate
 every 500 km (\fBk\fP) and 24 \fBh\fP(ours), with (\fBt\fP)ickmarks every 500 km and 6 hours.
 Alternatively you may use the modifiers \fBd\fP (days) and \fBn\fP (nautical miles).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-Sa
+OPT(Sa)
 Do not plot data that are less than \fIstartdist\fP meter along track from port of departure.
 Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is 0 meters].
 .TP
-.B \-Sb
+OPT(Sb)
 Do not plot data that are more than \fIstopdist\fP meter along track from port of departure.
 Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is end of track].
 .TP
-.B \-T
+OPT(T)
 Controls the attributes of the three kinds of markers (\fBT\fP for the first time marker in a new
 day, \fBt\fP for additional time markers in the same day, and \fBd\fP for distance markers).  For each
 of these you can specify the 5 comma-separated attributes \fImarkersize\fP, \fImarkercolor\fP,
-\fImarkerfontsize\fP, \fImarkerfont\fP, and \fImarkerfontcolor\fP.  Repeat the \fB\-T\fP option for
+\fImarkerfontsize\fP, \fImarkerfont\fP, and \fImarkerfontcolor\fP.  Repeat the OPT(T) option for
 each marker type.
 #include "explain_-U.txt"
 .TP
-.B \-W
+OPT(W)
 Append \fIpen\fP used for the trackline. [Default is 0.25p,black]. 
 [Default is solid].
 #include "explain_-XY.txt"
@@ -93,7 +93,7 @@ with ticks every 6 hours and 250 km, and send the plot to the default printer,
 enter the following command:
 .br
 .sp
-\fBmgd77track\fP 01010007 \fB\-R\fP70W/20E/40S/20N SCALE2 \fB\-B\fP10\fBg\fP5 \fB\-A\fP10 \fB\-L\fPa1da1000kf6hf250k | lpr
+\fBmgd77track\fP 01010007 OPT(R)70W/20E/40S/20N SCALE2 OPT(B)10\fBg\fP5 OPT(A)10 OPT(L)a1da1000kf6hf250k | lpr
 .SH "SEE ALSO"
 .IR mgd77info (1),
 .IR psbasemap (1)

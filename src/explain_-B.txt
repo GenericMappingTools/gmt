@@ -1,5 +1,5 @@
 .TP
-.B \-B
+OPT(B)
 Sets map boundary annotation and tickmark intervals. The format of \fItickinfo\fP is
 [\fBp\fP|\fBs\fP]\fIxinfo\fP[/\fIyinfo\fP[/\fIzinfo\fP]][:."Title":][\fBW\fP|\fBw\fP][\fBE\fP|\fBe\fP][\fBS\fP|\fBs\fP][\fBN\fP|\fBn\fP][\fBZ\fP|\fBz\fP[\fB+\fP]].
 The leading \fBp\fP [Default] or \fBs\fP selects the primary or secondary annotation information.
@@ -18,8 +18,8 @@ interval by that amount.  The optional \fBu\fP indicates the unit of the \fIstri
 \fBC\fP (second, plot using \fBPLOT_CLOCK_FORMAT\fP), \fBc\fP (second, plot with 2 digits).  Note for geographic axes
 \fBm\fP and \fBc\fP instead mean arc minutes and arc seconds.  All entities that are language-specific are under control
 by \fBTIME_LANGUAGE\fP.  To specify separate x and y ticks, separate the substrings that apply to the x and y
-axes with a slash [/] (If a 3-D basemap is selected with \fB\-E\fP and \fB\-Jz\fP, a third substring pertaining
-to the vertical axis may be appended.)  For linear/log/power projections (\fB\-Jx\fP|\fBX\fP): Labels
+axes with a slash [/] (If a 3-D basemap is selected with OPT(E) and OPT(Jz), a third substring pertaining
+to the vertical axis may be appended.)  For linear/log/power projections (OPT(Jx)|\fBX\fP): Labels
 for each axis can be added by surrounding them with colons.  If the first character in the
 label is a period, then the label is used as plot title; if it is a comma then the label is
 appended to each annotation; if it is an equal sign (=) the the prefix is prepended to each annotation (start label/prefix
@@ -30,13 +30,13 @@ If you need to use a colon (:) as part of your label you must specify it using i
 By default, all 4 boundaries are plotted (referred to as \fBW, E, S, N\fP).  To change the default,
 append the code for only those axes you want (e.g., \fBWS\fP for standard lower-left x- and y-axis system).
 Upper case (e.g., \fBW\fP) means draw axis/tickmarks AND annotate it, whereas lower case
-(e.g., \fBw\fP) will only draw axis/tickmarks.  (If a 3-D basemap is selected with \fB\-E\fP and
-\fB\-Jz\fP, append \fBZ\fP or \fBz\fP to control the appearance
-of the vertical axis.  Append '+' to draw the outline of the cube defined by \fB\-R\fP.  Note
+(e.g., \fBw\fP) will only draw axis/tickmarks.  (If a 3-D basemap is selected with OPT(E) and
+OPT(Jz), append \fBZ\fP or \fBz\fP to control the appearance
+of the vertical axis.  Append '+' to draw the outline of the cube defined by OPT(R).  Note
 that for 3-D views the title, if given, will be suppressed.)
 .br
 For non-geographical projections:
-Give negative scale (in \fB\-Jx\fP) or axis length (in \fB\-JX\fP) to change the direction
+Give negative scale (in OPT(Jx)) or axis length (in OPT(JX)) to change the direction
 of increasing coordinates (i.e., to make the y-axis positive down).  For log10 axes:  Annotations
 can be specified in one of three ways:  (1) \fIstride\fP can be 1, 2, or 3.  Annotations will then
 occur at 1, 1\-2\-5, or 1\-2\-3\-4\-...\-9, respectively.  This option can also be used for

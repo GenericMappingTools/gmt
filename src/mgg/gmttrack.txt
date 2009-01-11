@@ -2,17 +2,17 @@
 .TH GMTTRACK 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #ifdef SI
 #define SCALE1 4cm/degree
-#define SCALE2 \fB\-Jm\fP4
+#define SCALE2 OPT(Jm)4
 #else
 #define SCALE1 1.5inch/degree
-#define SCALE2 \fB\-Jm\fP1.5
+#define SCALE2 OPT(Jm)1.5
 #endif
 .SH NAME
 gmttrack \- A shiptrack plotting program
 .SH SYNOPSIS
 \fBgmttrack\fP \fIleg-ids\fP GMT_Rgeo_OPT GMT_J_OPT 
-[ GMT_B_OPT ] [ \fB\-M\fP\fItrackticks\fP ] [ \fB\-W\fP\fIpen\fP[\fIred/green/blue\fP][\fBOA\fP] ] 
-[ \fB\-A\fP[\fIsize\fP] ] [ GMT_K_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
+[ GMT_B_OPT ] [ OPT(M)\fItrackticks\fP ] [ OPT(W)\fIpen\fP[\fIred/green/blue\fP][\fBOA\fP] ] 
+[ OPT(A)[\fIsize\fP] ] [ GMT_K_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]
 .SH DESCRIPTION
 \fBgmttrack\fP reads gmt cruises and creates \fIPostScript\fP code that will plot one or more ship tracks on a
@@ -26,30 +26,30 @@ Can be one or more gmtleg-names, like c2104 v3206 etc.
 No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
-.B \-A
+OPT(A)
 Annotate each leg every time it enters the plot. Optional \fIsize\fP is character size in points.
 .TP
-.B \-Da
+OPT(Da)
 Do not plot data collected before \fIstartdate\fP (mm/dd/yyyy/hh:mm)  [Default is first day].
 .TP
-.B \-Db
+OPT(Db)
 Do not plot data collected after \fIstopdate\fP (mm/dd/yyyy/hh:mm). [Default is last day].
 #include "explain_-K.txt"
 .TP
-.B \-M
+OPT(M)
 To put time/distance Marks on the track. E.g. \fBa\fP500\fBka\fP24\fBht\fP6\fBh\fP means (\fBa\fP)nnotate
 every 500 km (\fBk\fP) and 24 \fBh\fP(ours), with (\fBt\fP)ickmarks every 500 km and 6 hours.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-Sa
+OPT(Sa)
 Do not plot data that are less than \fIstartdist\fP km along track from port of departure. [Default is 0].
 .TP
-.B \-Sb
+OPT(Sb)
 Do not plot data that are more than \fIstopdist\fP km along track from port of departure. [Default is length of track].
 #include "explain_-U.txt"
 .TP
-.B \-W
+OPT(W)
 \fIpen\fP is thickness of the trackline. [Default is 1].  Optionally, specify the rgb combination
 to obtain a colored trackline [Default is black].  Append \fBo\fP for d\fBo\fPtted line, \fBa\fP for d\fBa\fPshed. 
 [Default is solid].
@@ -62,7 +62,7 @@ To generate a Mercator plot of the track of cruises C2610 and V1512 in the area 
 the boundaries every degree, and draw gridlines every 30 minutes, and send the plot to the default printer, enter the following command:
 .br
 .sp
-\fBgmttrack\fP c2610 v1512 \fB\-R\fP150/154/18/23 SCALE2 \fB\-B\fP1\fBg\fP30\fBm \-A\fP10 | lpr
+\fBgmttrack\fP c2610 v1512 OPT(R)150/154/18/23 SCALE2 OPT(B)1\fBg\fP30\fBm \-A\fP10 | lpr
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR psbasemap (1)

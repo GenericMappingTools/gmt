@@ -12,36 +12,36 @@ extreme values in each of the columns.  It recognizes NaNs and
 will print warnings if the number of columns vary from record to record.
 As an option, \fBminmax\fP will find the extent of the first \fIn\fP columns rounded
 up and down to the nearest multiple of the supplied increments.  By default, this output
-will be in the form \fB\-R\fP\fIw/e/s/n\fP which can be used directly in the command line
+will be in the form OPT(R)\fIw/e/s/n\fP which can be used directly in the command line
 for other programs (hence only \fIdx\fP and \fIdy\fP are needed), or the output will be in
 column form for as many columns as there are increments provided.
-A similar option (\fB\-T\fP) will provide a \fB\-T\fP\fIzmin/zmax/dz\fP string for makecpt.
+A similar option (OPT(T)) will provide a OPT(T)\fIzmin/zmax/dz\fP string for makecpt.
 .TP
 \fIxyzfile\fP
-ASCII [or binary, see \fB\-b\fP] file(s) holding a fixed number of data columns. 
+ASCII [or binary, see OPT(b)] file(s) holding a fixed number of data columns. 
 .SH OPTIONS
 .TP
-.B \-C
+OPT(C)
 Report the min/max values per column in separate columns [Default uses <min/max> format].
 .TP
-.B \-E
+OPT(E)
 Returns the record whose column \fIcol\fP contains the minimum (\fBl\fP) or maximum (\fBh\fP)
 value.  Upper case (\fBL|H\fP) works on absolute value of the data.  In case of multiple
 matches, only the first record is returned.
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Report the min/max of the first \fIn\fP columns to the nearest multiple of the provided
-increments (separate the \fIn\fP increments by slashes), and output results in the form \fB\-R\fP\fIw/e/s/n\fP
-(unless \fB\-C\fP is set).  If only one increment is given we also use it for the second
-column (for backwards compatibility).  To override this behaviour, use \fB\-Ip\fB\fIdx\fP.
+increments (separate the \fIn\fP increments by slashes), and output results in the form OPT(R)\fIw/e/s/n\fP
+(unless OPT(C) is set).  If only one increment is given we also use it for the second
+column (for backwards compatibility).  To override this behaviour, use OPT(Ip)\fIdx\fP.
 #include "explain_-M.txt"
 .TP
-.B \-T
+OPT(T)
 Report the min/max of the first (0'th) column to the nearest multiple of \fIdz\fP and output this in
-the form \fB\-T\fP\fIzmin/zmax/dz\fP.  To use another column, append /\fIcol\fP.
+the form OPT(T)\fIzmin/zmax/dz\fP.  To use another column, append /\fIcol\fP.
 #include "explain_-t.txt"
-Only works when \fB\-I\fP is selected.
+Only works when OPT(I) is selected.
 #include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"
@@ -63,15 +63,15 @@ To find the extreme values in the file track.xy to the nearest 5 units and use t
 region to draw a line using psxy, run
 .br
 .sp
-\fBpsxy\fP `\fBminmax\fP \fB\-I\fP5 track.xy` track.xy \fB\-Jx\fP1 \fB\-B\fP5 \fB\-P\fP > track.ps
+\fBpsxy\fP `\fBminmax\fP OPT(I)5 track.xy` track.xy OPT(Jx)1 OPT(B)5 OPT(P) > track.ps
 .br
 .sp
 To find the min and max values for each of the first 4 columns, but rounded to integers, use
 .br
 .sp
-\fBminmax\fP junkfile \fB\-C \-I\fP1/1/1/1
+\fBminmax\fP junkfile OPT(C) OPT(I)1/1/1/1
 .SH BUGS
-The \fB\-I\fP option does not yet work properly with time series data (e.g., \fB\-f\fP0T).  Thus, such
+The OPT(I) option does not yet work properly with time series data (e.g., OPT(f)0T).  Thus, such
 variable intervals as months and years are not calculated.  Instead, specify your interval in the
 same units as the current setting of \fBTIME_UNIT\fP.
 .SH "SEE ALSO"

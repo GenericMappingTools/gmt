@@ -19,35 +19,35 @@ Name of the 2-D grid file to modify.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 If necessary, adjust the file's \fIx_inc, y_inc\fP to be compatible with\"'
-its domain (or a new domain set with \fB\-R\fP).  Older grid files (i.e., created
+its domain (or a new domain set with OPT(R)).  Older grid files (i.e., created
 prior to \fBGMT\fP 3.1) often had excessive slop in
 \fIx_inc, y_inc\fP and an adjustment is necessary.  Newer files are created correctly.
 .TP
-.B \-D
+OPT(D)
 Give new values for \fIxname, yname, zname, scale, offset, title,\fP and \fIremark\fP.
 To leave some of the values untouched, specify = as the new value.
 Alternatively, to allow "/" to be part of one of the values, use any non-alphanumeric
 character (and not the equal sign) as separator by both starting and ending with it. For example:
-\fB\-D\fP:\fIxname\fP:\fIyname\fP:\fIzname\fP:\fIscale\fP:\fIoffset\fP:\fItitle\fP:\fIremark\fP:
+OPT(D):\fIxname\fP:\fIyname\fP:\fIzname\fP:\fIscale\fP:\fIoffset\fP:\fItitle\fP:\fIremark\fP:
 .TP
-.B \-E
+OPT(E)
 Transpose the grid and exchange the \fIx\fP and \fIy\fP information.  Incompatible with the other options.
 #include "explain_-H.txt"
 .TP
-.B \-N
-Read the ASCII (or binary; see \fB\-bi\fP) file \fIxyzfile\fP and replace the corresponding
+OPT(N)
+Read the ASCII (or binary; see OPT(bi)) file \fIxyzfile\fP and replace the corresponding
 nodal values in the grid with these \fIz\fP values.
 #include "explain_-R.txt"
 The new w/e/s/n values will replace those in the grid, and the \fIx_inc, y_inc\fP
 values are adjusted, if necessary.
 .TP
-.B \-S
+OPT(S)
 For global, geographical grids only.  Grid values will be shifted longitudinally according to
-the new borders given in \fB\-R\fP.
+the new borders given in OPT(R).
 .TP
-.B \-T
+OPT(T)
 Make necessary changes in the header to convert a gridline-registered grid to a pixel-registered
 grid, or vice-versa.  Basically, gridline-registered grids will have their domain extended by
 half the x- and y-increments whereas pixel-registered grids will have their domain shrunk by
@@ -64,29 +64,29 @@ to change the boundaries from geodetic longitudes to geographic and put a new ti
 the header.  We accomplish this by
 .br
 .sp
-\fBgrdedit\fP data.grd \fB\-R\fP-60/-50/10/30 \fB\-D\fP=/=/=/=/=/"Gravity Anomalies"/=
+\fBgrdedit\fP data.grd OPT(R)-60/-50/10/30 OPT(D)=/=/=/=/=/"Gravity Anomalies"/=
 .br
 .sp
 The grid world.grd has the limits 0/360/-72/72.  To shift the
 data so that the limits would be -180/180/-72/72, use
 .br
 .sp
-\fBgrdedit\fP world.grd \fB\-R\fP-180/180/-72/72 \fB\-S\fP
+\fBgrdedit\fP world.grd OPT(R)-180/180/-72/72 OPT(S)
 .br
 .sp
 The file junk.grd was created prior to \fBGMT\fP 3.1 with incompatible
-\fB\-R\fP and \fB\-I\fP arguments.  To reset the x- and y-increments
+OPT(R) and OPT(I) arguments.  To reset the x- and y-increments
 we run
 .br
 .sp
-\fBgrdedit\fP junk.grd \fB\-A\fP
+\fBgrdedit\fP junk.grd OPT(A)
 .br
 .sp
 The file junk.grd was created prior to \fBGMT\fP 4.1.3 and does not contain the required
 information to indicate that the grid is geographic.  To add this information, run
 .br
 .sp
-\fBgrdedit\fP junk.grd \fB\-fg\fP
+\fBgrdedit\fP junk.grd OPT(fg)
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grd2xyz (1),

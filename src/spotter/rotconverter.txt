@@ -12,7 +12,7 @@ given files.  If more than one plate motion model is given we will add or subtra
 them in the order they were listed.  The minus sign means we should first transpose the
 rotation and then add it to the previous rotation.  The input files must all be of the
 same type (stage poles or finite rotations) which may differ from the desired output
-format; see \fB\-F\fP.  If a file cannot be opened we will attempt to decode the file name
+format; see OPT(F).  If a file cannot be opened we will attempt to decode the file name
 as a single rotation whose parameters are separated by slashes.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
@@ -27,35 +27,34 @@ on the command line.  The \fItstop\fP argument is required for stage poles only.
 finite rotation without any time information, give \fIlon/lat/angle\fP only.
 .SH OPTIONS
 .TP
-.B \-C
+OPT(C)
 Write out a column header record identifying the various columns [Default is no header record].
 Append \fBa\fP to indicate opening angles and \fBt\fP to indicate opening rates [Default].
 .TP
-.B \-D
+OPT(D)
 Report longitudes use the -180/+180 range [Default is 0/360].
 .TP
-.B \-F
+OPT(F)
 Specify both the input and output format for rotations.  The \fIin\fP and \fIout\fP flags
 must be either \fBf\fP or \fBs\fP for finite or stage rotations, respectively.  Note that
-both must be specified if \fB\-F\fP is set [Default is \fB\-Fff\fP (both input and output
+both must be specified if OPT(F) is set [Default is OPT(Fff) (both input and output
 are finite rotations)].
 .TP
-.B \-N
+OPT(N)
 Place all output poles in the northern hemisphere [Default reports positive rotation angles].
 .TP
-.B \-S
+OPT(S)
 Place all output poles in the southern hemisphere [Default reports positive rotation angles].
 .TP
-.B \-T
+OPT(T)
 Transpose the final result, i.e., change the sign of the rotation angles.
-.TP
-.B \-V
-Verbose option: Report statistics of extracted rotations [Default is silent].
+#include "explain_-V.txt"
+Report statistics of extracted rotations.
 .SH EXAMPLES
 To convert the finite rotations in the file model_finite.APM to stage poles, run
 .br
 .sp
-\fBrotconverter\fP model_finite.APM \fB\-Ffs\fP > model_stages.APM
+\fBrotconverter\fP model_finite.APM OPT(Ffs) > model_stages.APM
 .br
 .sp
 To obtain Nazca motion relative to Pacific hotspots by adding the motion
@@ -63,7 +62,7 @@ of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference model DC85
 and report the result as finite reconstruction poles in the northern hemisphere, try
 .br
 .sp
-\fBrotconverter\fP DC85_stages.APM + Pac_Naz_stages.RPM \fB\-N \-Fsf\fP > Naz_HS_finite.APM
+\fBrotconverter\fP DC85_stages.APM + Pac_Naz_stages.RPM OPT(N) OPT(Fsf) > Naz_HS_finite.APM
 .br
 .sp
 To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0, 11.4),  try

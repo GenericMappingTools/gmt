@@ -28,7 +28,7 @@ data values for use in subsequent work.
 \fITAG\fP
 The unique name of this data type x2sys TAG.
 .TP
-.B \-C
+OPT(C)
 Select procedure for along-track distance calculation when needed by other programs:
 .br
 \fBc\fP Cartesian distances [Default, unless OPT(G) is set].
@@ -39,35 +39,35 @@ Select procedure for along-track distance calculation when needed by other progr
 .br
 \fBe\fP Geodesic distances on current \fBGMT\fP ellipsoid.
 .TP
-.B \-D
+OPT(D)
 Definition file prefix for this data set [See DEFINITION FILES below for more information].
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-E
+OPT(E)
 Specifies the file extension (suffix) for these data files.  If not given we use the
 definition file prefix as the suffix (see OPT(D)).
 .TP
-.B \-F
+OPT(F)
 Force creating new files if old ones are present [Default will abort if old TAG files are found].
 .TP
-.B \-G
+OPT(G)
 Selects geographical coordinates.  Append \fBd\fP for discontinuity at the
 Dateline (makes longitude go from -180 to + 180) or \fBg\fP for discontinuity
 at Greenwich (makes longitude go from 0 to 360 [Default]).  If not given we
 assume the data are Cartesian.
 .TP
-.B \-I
+OPT(I)
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to
 indicate minutes or \fBc\fP to indicate seconds for geographic data.  These
 spacings refer to the binning used in the track bin-index data base.
 .TP
-.B \-M
+OPT(M)
 Multiple segment file(s).  Segments are separated by a special record.
 For ASCII files the first character must be \fIflag\fP [Default is '>'].
 For binary files all fields must be NaN.
 .TP
-.B \-N
+OPT(N)
 Sets the units used for distance and speed when requested by other programs.
 Append \fBd\fP for distance or \fBs\fP for speed, then give the desired \fIunit\fP as
 \fBc\fP (Cartesian userdist or userdist/usertime), \fBe\fP (meter or m/s), \fBk\fP (km or km/hr), \fBm\fP (miles or miles/hr), or
@@ -78,7 +78,7 @@ For Cartesian data just give \fIxin/xmax/ymin/ymax\fP.  This sets the complete d
 for the relevant track data set.
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Give \fBt\fP or \fBd\fP and append the corresponding
 maximum time gap (in user units; this is typically seconds [Infinity]), or distance
 (for units, see OPT(N)) gap [Infinity]) allowed between
@@ -107,7 +107,7 @@ native binary files). Not used with netCDF files.
 the \fIx\fP-coordinate (longitudes).  Alternatively, use OPT(G).
 .br
 \fBMULTISEG\fP means each track consists of multiple segments separated
-by a \fBGMT\fP multisegment header (alternatively, use \fB\-M\fP when defining
+by a \fBGMT\fP multisegment header (alternatively, use OPT(M) when defining
 the system TAG). Not used with netCDF files.
 .br
 .sp
@@ -196,7 +196,7 @@ data distribution at a 1 x 1 degree resolution, with distances in km calculated
 along geodesics and with speeds given in knots, we may run
 .br
 .sp
-\fBx2sys_init\fP LINE \fB\-V \-G \-D\fPline \fB\-Rg \-Ce \-Ndk \-Nsn \-I\fP1/1 \fB\-E\fPtrk
+\fBx2sys_init\fP LINE OPT(V) OPT(G) OPT(D)line OPT(Rg) OPT(Ce) OPT(Ndk) OPT(NsN) OPT(I)1/1 OPT(E)trk
 .br
 .sp
 where we have selected LINE to be our x2sys tag.  When x2sys tools try to read your
@@ -213,21 +213,21 @@ Once the (empty) TAG databases have been initialized we go through a
 two-step process to populate them.  First we run \fBx2sys_binlist\fP on
 all our track files to create one (or more) multi-segment track bin-index
 files (tbf).  These contain information on which 1 x 1 degree bins (or any
-other blocksize; see \fB\-I\fP) each
+other blocksize; see OPT(I)) each
 track has visited and which observations (in your case obs1, obs2, obs3)
 were actually observed (not all tracks may have all three kinds of
 observations everywhere).  For instance, if your tracks are listed in
 the file tracks.lis we may run this command:
 .br
 .sp
-\fBx2sys_binlist\fP \fB\-V \-T\fPLINE :tracks.lis > tracks.tbf
+\fBx2sys_binlist\fP OPT(V) OPT(T)LINE :tracks.lis > tracks.tbf
 .TP
 .B Update index data base:
 Next, the track bin-index files are fed to \fBx2sys_put\fP
 which will insert the information into the TAG databases:
 .br
 .sp
-\fBx2sys_put\fP \fB\-V \-T\fPLINE tracks.tbf
+\fBx2sys_put\fP OPT(V) OPT(T)LINE tracks.tbf
 .TP
 .B Search for data:
 You may now use \fBx2sys_get\fP to find all the tracks within a certain
@@ -236,7 +236,7 @@ a particular combination of observables.  E.g., to find all the tracks
 which has both obs1 and obs3 inside the specified region, run
 .br
 .sp
-\fBx2sys_get\fP \fB\-V \-T\fPLINE \fB\-R\fP20/40/-40/-20 \fB\-F\fPobs1,obs3 > tracks.tbf
+\fBx2sys_get\fP OPT(V) OPT(T)LINE OPT(R)20/40/-40/-20 OPT(F)obs1,obs3 > tracks.tbf
 .TP
 .B MGD77[+] or GMT:
 Definition files already exist for MGD77 files (both standard ASCII and
@@ -247,7 +247,7 @@ definition files for plain x,y[,z] and lon,lat[,z] tracks.
 To initiate new track databases to be used with MGD77 data from NGDC, try
 .br
 .sp
-\fBx2sys_init\fP MGD77 \fB\-V \-D\fPmgd77 \fB\-E\fPmgd77 \fB\-Rd \-Gd \-Nsn \-I\fP1/1 \fB\-Wt\fP900  \fB\-Wd\fP5
+\fBx2sys_init\fP MGD77 OPT(V) OPT(D)mgd77 OPT(E)mgd77 OPT(Rd) OPT(Gd) OPT(Nsn) OPT(I)1/1 OPT(Wt)900  OPT(Wd)5
 .br
 .sp
 where we have chosen a 15 minute (900 sec) or 5 km threshold to indicate a data gap
@@ -319,10 +319,10 @@ obs3	d	N	0	1	0	%6.1f
 Note we use no scaling or NAN proxies since those issues are usually
 handled internally in the netCDF format description.
 .SH "SEE ALSO"
-.IR x2sys_binlist (1)
-.IR x2sys_datalist (1)
-.IR x2sys_get (1)
-.IR x2sys_list (1)
-.IR x2sys_put (1)
-.IR x2sys_report (1)
+.IR x2sys_binlist (1),
+.IR x2sys_datalist (1),
+.IR x2sys_get (1),
+.IR x2sys_list (1),
+.IR x2sys_put (1),
+.IR x2sys_report (1),
 .IR x2sys_solve (1)

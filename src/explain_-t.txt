@@ -1,4 +1,4 @@
 .TP
-.B \-:
+OPT(:)
 Toggles between (longitude,latitude) and (latitude,longitude) input and/or output.  [Default is (longitude,latitude)].
 Append \fBi\fP to select input only or \fBo\fP to select output only.  [Default affects both].

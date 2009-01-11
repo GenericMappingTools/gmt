@@ -43,21 +43,21 @@ value, and so on.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-C
+OPT(C)
 Sets how many cells (or divisions) of data range to make.
 .TP
-.B \-D
+OPT(D)
 Dump level information to standard output.
 .TP
-.B \-G
-Name of output 2-D grid file.  Used with \fB\-N\fP only.
+OPT(G)
+Name of output 2-D grid file.  Used with OPT(N) only.
 (See GRID FILE FORMATS below).
 .TP
-.B \-N
-Gaussian output.  Use with \fB\-G\fP to make an output grid with standard normal scores.
+OPT(N)
+Gaussian output.  Use with OPT(G) to make an output grid with standard normal scores.
 Append \fInorm\fP to force the scores to fall in the <-1,+1> range [Default is standard normal scores].
 .TP
-.B \-Q
+OPT(Q)
 Use quadratic intensity scaling.  [Default is linear].
 #include "explain_-V.txt"
 #include "explain_grd_inout.txt"
@@ -66,14 +66,14 @@ To find the height intervals that divide the file heights.grd into 16 divisions 
 equal area:
 .br
 .sp
-\fBgrdhisteq\fP heights.grd \fB\-C\fP16 \fB\-D\fP > levels.d
+\fBgrdhisteq\fP heights.grd OPT(C)16 OPT(D) > levels.d
 .br
 .sp
 To make the poorly distributed intensities in the file raw_intens.grd suitable for use
 with \fBgrdimage\fP or \fBgrdview\fP, run
 .br
 .sp
-\fBgrdhisteq\fP raw_intens.grd \fB\-G\fPsmooth_intens.grd \fB\-N \-V\fP
+\fBgrdhisteq\fP raw_intens.grd OPT(G)smooth_intens.grd OPT(N) OPT(V)
 .SH RESTRICTIONS
 If you use \fBgrdhisteq\fP to make a gaussian output for gradient shading
 in \fBgrdimage\fP or \fBgrdview\fP, you should be aware of the following:  the output will be
@@ -89,7 +89,7 @@ to -1 and 16% of them clipped to +1.  If this makes too much of the image
 too light or too dark, you should take the output of \fBgrdhisteq\fP and rescale
 it using \fBgrdmath\fP and multiplying by something less than 1.0, to shrink
 the range of the values, thus bringing more than 68% of the image into the
-range [-1, 1].  Alternatively, supply a normalization factor with \fB\-N\fP.
+range [-1, 1].  Alternatively, supply a normalization factor with OPT(N).
 .SH "SEE ALSO"
 .IR gmtdefaults (1),
 .IR GMT (1),

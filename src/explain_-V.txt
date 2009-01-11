@@ -1,3 +1,3 @@
 .TP
-.B \-V
+OPT(V)
 Selects verbose mode, which will send progress reports to stderr [Default runs "silently"].

@@ -3,18 +3,18 @@
 .SH NAME
 \fBx_edit\fP \- convert between binary and ASCII crossover correction tables.
 .SH SYNOPSIS
-\fBx_edit\fP \fB\-A\fP|\fBX\fP[\fIname\fP]  \fB\-O\fP[\fIoutname\fP]
+\fBx_edit\fP OPT(A)|\fBX\fP[\fIname\fP]  OPT(O)[\fIoutname\fP]
 .SH DESCRIPTION
 The purpose of \fBx_edit\fP is to convert between ASCII and binary versions
 of the crossover correction tables.
 .TP
-.B \-A
-Name of ASCII correction table [stdin], write binary table to file given by \fB\-O\fP [stdout].
+OPT(A)
+Name of ASCII correction table [stdin], write binary table to file given by OPT(O) [stdout].
 .TP
-.B \-X
-Name of binary correction table [stdin], write ASCII table to file given by \fB\-O\fP [stdout].
+OPT(X)
+Name of binary correction table [stdin], write ASCII table to file given by OPT(O) [stdout].
 .TP
-.B \-O
+OPT(O)
 Name of output correction table [stdout].
 .SH EXAMPLES
 To convert the binary file crossover_corr.b to ASCII and write to stdout, run

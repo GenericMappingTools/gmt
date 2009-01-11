@@ -31,7 +31,7 @@ Records starting with # and blank lines are skipped.
 \fBB\fP \fIcptname offset height\fP [ \fIoptional arguments\fP ]
 The B record will plot a horizontal color bar, \fBpsscale\fP-style in the middle, starting at \fIoffset\fP from
 the left edge, and of the given \fIheight\fP.  You may add any additional \fPpsscale\fP options from the list:
-\fB\-A \-B \-E \-I \-L \-M \-N \-S \fPand \fB\-Z\fP.
+OPT(A) OPT(B) OPT(E) OPT(I) OPT(L) OPT(M) OPT(N) OPT(S) and OPT(Z).
 .TP
 \fBC\fP \fItextcolor\fP
 The C record specifies the color with which the remaining text is to be printed.
@@ -56,12 +56,12 @@ image \fIwidth\fP determines the size of the image on the page.
 \fBL\fP \fIfontsize font justification Label\fP
 The L record plots a (L)eft, (C)entered, or (R)ight-justified text string within a column using the specified font parameters.
 .TP
-\fBM\fP \fIslon\fP\fB|\fP- slat length\fP \fBf|p\fP [ \fB\-R\fP\fIw/e/s/n\fP \fB\-J\fP\fIparam\fP ]
+\fBM\fP \fIslon\fP\fB|\fP- slat length\fP \fBf|p\fP [ OPT(R)\fIw/e/s/n\fP OPT(J)\fIparam\fP ]
 Place a map scale in the legend.  Specify \fIslon slat\fP, the point on the map where the scale applies (\fIslon\fP
 is only meaningful for certain oblique projections.  If not needed, you must specify - instead),
 \fIlength\fP, the length of the scale in km (append \fBm\fP or \fBn\fP for miles or nautical miles), and
-\fBf|p\fP for fancy or plain scale.  If the \fB\-R \-J\fP supplied to \fBpslegend\fP is different than the
-projection needed for the scale, supply the optional \fB\-R \-J\fP settings as well.  Note that \fIlength\fP
+\fBf|p\fP for fancy or plain scale.  If the OPT(R) OPR(J) supplied to \fBpslegend\fP is different than the
+projection needed for the scale, supply the optional OPT(R) OPT(J) settings as well.  Note that \fIlength\fP
 can have \fI:label:just\fP appended, where \fIlabel\fP replaces the default label (unless - is given) and
 \fIjust\fP (\fBl|r|t|b\fP) dictates where the label is placed [Default is \fBt\fP].  Use \fBu\fP to treat the
 label as distance units appended to each annotation.
@@ -91,32 +91,32 @@ The V record draws a vertical line between columns (if more than one) using the 
 (See SPECIFYING PENS below).
 \fIoffset\fP is analogous to the offset for the D records but in the vertical direction.
 .TP
-.B \-D
+OPT(D)
 Positions the legend and specifies its size.  The \fIjust\fP is a 2-char justification string (see \fBpstext\fP)
 that relates the given position to a point on the rectangular legend box.  If you want to specify the position
-in projected units (i.e., inches or cm), use \fB\-Dx\fP.
+in projected units (i.e., inches or cm), use OPT(Dx).
 #include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-C
+OPT(C)
 Sets the clearance between the legend frame and the internal items [CLEARENCE_SI (or CLEARENCE_US)].
 .TP
-.B \-F
+OPT(F)
 Draws a border around the legend using \fBFRAME_PEN\fP.
 .TP
-.B \-G
+OPT(G)
 Select fill shade, color or pattern of the legend box [Default is no fill].
 (See SPECIFYING FILL below).
 #include "explain_-K.txt"
 .TP
-.B \-L
+OPT(L)
 Sets the linespacing factor in units of the current annotation font size [1.1].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-S
+OPT(S)
 Instead of writing the \fIPostScript\fP plot [Default], output the \fBGMT\fP script used to make the legend
 to standard output, or optionally to the file \fIscript\fP.
 #include "explain_-U.txt"
@@ -130,7 +130,7 @@ to standard output, or optionally to the file \fIscript\fP.
 To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br
 .sp
-\fBpslegend\fP \fB\-R\fP-10/10/-10/10 \fB\-JM\fP4i \fB\-G\fP255 \-D0/0/4i/3i/BL << EOF >> map.ps
+\fBpslegend\fP OPT(R)-10/10/-10/10 OPT(JM)4i OPT(G)255 \-D0/0/4i/3i/BL << EOF >> map.ps
 .br
 \# Legend test for pslegend
 .br

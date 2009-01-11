@@ -14,7 +14,7 @@ from \fIinfiles\fP  [or standard input] and calculates flowlines using the
 specified stage pole (Euler) rotations.  These flowlines are convolved with
 the shape of the seamount (using a Gaussian shape given amplitude and radius
 = 6 sigma) and added up to give a Cumulative Volcano Amplitude grid (CVA).
-See option \fB\-:\fP on how to read (latitude,longitude,...) files.
+See option OPT(:) on how to read (latitude,longitude,...) files.
 .br
 	No space between the option flag and the associated arguments.  Use upper case for the
 option flags and lower case for modifiers.
@@ -23,33 +23,33 @@ option flags and lower case for modifiers.
 Data file(s) to be processed.  If not given, standard input is read.
 #include "euler.txt"
 .TP
-.B \-G
+OPT(G)
 Specify name for output grid file.
 #include "explain_-I.txt"
 #include "explain_-Rgeo.txt"
 .SH OPTIONS
 .TP
-.B \-C
+OPT(C)
 Expect Total Reconstruction Rotations rather than Forward Stage Rotations [Default].
 File format is similar to the stage pole format except that the \fItstart\fP column
 is not present (assumed to be 0 Ma).
 .TP
-.B \-D
+OPT(D)
 Modify the sampling interval along flowlines.  Default [0.5] gives approximately 2 points within
 each grid box.  Smaller factors gives higher resolutions at the expense of longer processing time.
 .TP
-.B \-F
+OPT(F)
 Force pixel registration [Default is grid registration].
 #include "explain_-H.txt"
 .TP
-.B \-N
+OPT(N)
 Set the upper age to assign seamounts whose crustal age is unknown (i.e. NaN) [no upper age].
 .TP
-.B \-S
+OPT(S)
 Normalize the resulting CVA grid to percentages of the CVA maximum.
 .TP
-.B \-T
-Truncate seamount ages exceeding the upper age set with \fB\-N\fP [no truncation].
+OPT(T)
+Truncate seamount ages exceeding the upper age set with OPT(N) [no truncation].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
@@ -59,7 +59,7 @@ To create a CVA image from the Pacific (x,y,z,r,t) data in the file seamounts.d,
 using the DC85.d Euler poles, run
 .br
 .sp
-\fBhotspotter\fP seamounts.d \fB\-E\fPDC85.d \fB\-G\fPCVA.grd \fB\-R\fP130/260/-66/60 \fB\-I\fP10\fBm \-N\fP145 \fB\-T \-V\fP
+\fBhotspotter\fP seamounts.d OPT(E)DC85.d OPT(G)CVA.grd OPT(R)130/260/-66/60 OPT(I)10\fBm\fP OPT(N)145 OPT(T) OPT(V)
 .br
 .sp
 This file can then be plotted with \fBgrdimage\fP.

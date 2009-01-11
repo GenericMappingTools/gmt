@@ -1,5 +1,5 @@
 .TP
-.B \-J
+OPT(J)
 Selects the map projection. Scale is UNIT/degree, 1:xxxxx, or width in UNIT (upper case modifier).
 UNIT is cm, inch, or m, depending on the \fBMEASURE_UNIT\fP setting in \.gmtdefaults4, but this can be
 overridden on the command line by appending \fBc\fP, \fBi\fP, or \fBm\fP to the scale/width value.
@@ -14,81 +14,81 @@ More details can be found in the \fBpsbasemap\fP man pages.
 \fBCYLINDRICAL PROJECTIONS:\fP
 .br
 .sp
-\fB\-Jc\fP\fIlon0/lat0/scale\fP (Cassini)
+OPT(Jc)\fIlon0/lat0/scale\fP (Cassini)
 .br
-\fB\-Jcyl_stere\fP/[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP (Cylindrical Stereographic)
+OPT(Jcyl_stere)/[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP (Cylindrical Stereographic)
 .br
-\fB\-Jj\fP[\fIlon0/\fP]\fIscale\fP (Miller)
+OPT(Jj)[\fIlon0/\fP]\fIscale\fP (Miller)
 .br
-\fB\-Jm\fP[\fIlon0\fP/[\fIlat0/\fP]]\fIscale\fP (Mercator)
+OPT(Jm)[\fIlon0\fP/[\fIlat0/\fP]]\fIscale\fP (Mercator)
 .br
-\fB\-Jm\fP\fIlon0/lat0/scale\fP (Mercator - Give meridian and standard parallel)
+OPT(Jm)\fIlon0/lat0/scale\fP (Mercator - Give meridian and standard parallel)
 .br
-\fB\-Jo\fP[\fBa\fP]\fIlon0/lat0/azimuth/scale\fP (Oblique Mercator - point and azimuth)
+OPT(Jo)[\fBa\fP]\fIlon0/lat0/azimuth/scale\fP (Oblique Mercator - point and azimuth)
 .br
-\fB\-Jo\fP[\fBb\fP]\fIlon0/lat0/lon1/lat1/scale\fP (Oblique Mercator - two points)
+OPT(Jo)[\fBb\fP]\fIlon0/lat0/lon1/lat1/scale\fP (Oblique Mercator - two points)
 .br
-\fB\-Joc\fP\fIlon0/lat0/lonp/latp/scale\fP (Oblique Mercator - point and pole)
+OPT(Joc)\fIlon0/lat0/lonp/latp/scale\fP (Oblique Mercator - point and pole)
 .br
-\fB\-Jq\fP[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP (Cylindrical Equidistant)
+OPT(Jq)[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP (Cylindrical Equidistant)
 .br
-\fB\-Jt\fP\fIlon0/\fP[\fIlat0/\fP]\fIscale\fP (TM - Transverse Mercator)
+OPT(Jt)\fIlon0/\fP[\fIlat0/\fP]\fIscale\fP (TM - Transverse Mercator)
 .br
-\fB\-Ju\fP\fIzone/scale\fP (UTM - Universal Transverse Mercator)
+OPT(Ju)\fIzone/scale\fP (UTM - Universal Transverse Mercator)
 .br
-\fB\-Jy\fP[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP (Cylindrical Equal-Area) 
+OPT(Jy)[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP (Cylindrical Equal-Area) 
 .br
 .sp
 \fBCONIC PROJECTIONS:\fP
 .br
 .sp
-\fB\-Jb\fP\fIlon0/lat0/lat1/lat2/scale\fP (Albers)
+OPT(Jb)\fIlon0/lat0/lat1/lat2/scale\fP (Albers)
 .br
-\fB\-Jd\fP\fIlon0/lat0/lat1/lat2/scale\fP (Conic Equidistant)
+OPT(Jd)\fIlon0/lat0/lat1/lat2/scale\fP (Conic Equidistant)
 .br
-\fB\-Jl\fP\fIlon0/lat0/lat1/lat2/scale\fP (Lambert Conic Conformal)
+OPT(Jl)\fIlon0/lat0/lat1/lat2/scale\fP (Lambert Conic Conformal)
 .br
 .sp
 \fBAZIMUTHAL PROJECTIONS:\fP
 .br
 .sp
-\fB\-Ja\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Lambert Azimuthal Equal-Area)
+OPT(Ja)\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Lambert Azimuthal Equal-Area)
 .br
-\fB\-Je\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Azimuthal Equidistant)
+OPT(Je)\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Azimuthal Equidistant)
 .br
-\fB\-Jf\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Gnomonic)
+OPT(Jf)\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Gnomonic)
 .br
-\fB\-Jg\fP\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Orthographic)
+OPT(Jg)\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Orthographic)
 .br
-\fB\-Jg\fP\fIlon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale\fP (General Perspective).
+OPT(Jg)\fIlon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale\fP (General Perspective).
 .br
-\fB\-Js\fP\fIlon0/lat0\fP[\fI/horizon\fP][\fI/slat\fP]\fI/scale\fP (General Stereographic)
+OPT(Js)\fIlon0/lat0\fP[\fI/horizon\fP][\fI/slat\fP]\fI/scale\fP (General Stereographic)
 .br
 .sp
 \fBMISCELLANEOUS PROJECTIONS:\fP
 .br
 .sp
-\fB\-Jh\fP[\fIlon0/\fP]\fIscale\fP (Hammer)
+OPT(Jh)[\fIlon0/\fP]\fIscale\fP (Hammer)
 .br
-\fB\-Ji\fP[\fIlon0/\fP]\fIscale\fP (Sinusoidal)
+OPT(Ji)[\fIlon0/\fP]\fIscale\fP (Sinusoidal)
 .br
-\fB\-Jkf\fP[\fIlon0/\fP]\fIscale\fP (Eckert IV)
+OPT(Jkf)[\fIlon0/\fP]\fIscale\fP (Eckert IV)
 .br
-\fB\-Jk\fP[\fBs\fP][\fIlon0/\fP]\fIscale\fP (Eckert IV)
+OPT(Jk)[\fBs\fP][\fIlon0/\fP]\fIscale\fP (Eckert IV)
 .br
-\fB\-Jn\fP[\fIlon0/\fP]\fIscale\fP (Robinson)
+OPT(Jn)[\fIlon0/\fP]\fIscale\fP (Robinson)
 .br
-\fB\-Jr\fP[\fIlon0/\fP]\fIscale\fP (Winkel Tripel)
+OPT(Jr)[\fIlon0/\fP]\fIscale\fP (Winkel Tripel)
 .br
-\fB\-Jv\fP[\fIlon0/\fP]\fIscale\fP (Van der Grinten)
+OPT(Jv)[\fIlon0/\fP]\fIscale\fP (Van der Grinten)
 .br
-\fB\-Jw\fP[\fIlon0/\fP]\fIscale\fP (Mollweide)
+OPT(Jw)[\fIlon0/\fP]\fIscale\fP (Mollweide)
 .br
 .sp
 \fBNON-GEOGRAPHICAL PROJECTIONS:\fP
 .br
 .sp
-\fB\-Jp\fP[\fBa\fP]\fIscale\fP[\fI/origin\fP][\fBr\fP|\fBz\fP] (Polar coordinates (theta,r))
+OPT(Jp)[\fBa\fP]\fIscale\fP[\fI/origin\fP][\fBr\fP|\fBz\fP] (Polar coordinates (theta,r))
 .br
-\fB\-Jx\fP\fIx-scale\fP[\fBd|l|p\fP\fIpow\fP\fB|t|T\fP][\fI/y-scale\fP[\fBd|l|p\fP\fIpow\fP\fB|t|T\fP]] (Linear, log, and power scaling)
+OPT(Jx)\fIx-scale\fP[\fBd|l|p\fP\fIpow\fP\fB|t|T\fP][\fI/y-scale\fP[\fBd|l|p\fP\fIpow\fP\fB|t|T\fP]] (Linear, log, and power scaling)
 .br

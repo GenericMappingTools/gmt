@@ -1,9 +1,9 @@
 #include "common_options.txt"
 .TH PSCOAST 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_1   0.1
-#define SCALE_M1   \fB\-Jm\fP0.1\fBi\fP
+#define SCALE_M1   OPT(Jm)0.1\fBi\fP
 #define LEN_2   1
-#define SCALE_M2   \fB\-Jm\fP1\fBc\fP
+#define SCALE_M2   OPT(Jm)1\fBc\fP
 .SH NAME
 pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 .SH SYNOPSIS
@@ -29,31 +29,31 @@ will be transparent.  A map projection must be supplied.  The \fIPostScript\fP c
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Features with an area smaller than \fImin_area\fP in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP
 will not be plotted [Default is 0/0/4 (all features)]. See DATABASE INFORMATION below for more details.
 #include "explain_-B_short.txt"
 .TP
-.B \-C
-Set the shade, color, or pattern for lakes  [Default is the fill chosen for "wet" areas (\fB\-S\fP)].
+OPT(C)
+Set the shade, color, or pattern for lakes  [Default is the fill chosen for "wet" areas (OPT(S))].
 (See SPECIFYING FILL below).
 .TP
-.B \-D
+OPT(D)
 Selects the resolution of the data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, and (\fBc\fP)rude).  The
 resolution drops off by 80% between data sets  [Default is \fBl\fP].
 #include "explain_-E.txt"
 .TP
-.B \-G
+OPT(G)
 Select filling or clipping of "dry" areas.  Append the shade, color, or pattern (see SPECIFYING FILL below);
-or use \fB\-Gc\fP for clipping [Default is no fill].
+or use OPT(Gc) for clipping [Default is no fill].
 .TP
-.B \-I
+OPT(I)
 Draw rivers.  Specify the type of rivers and [optionally] append pen attributes  [Default pen:
 width = 1, color = black, texture = solid].
 (See SPECIFYING PENS below).
 .br
 Choose from the list of river types below.
-Repeat option \fB\-I\fP as often as necessary.
+Repeat option OPT(I) as often as necessary.
 .br
 	 1 = Permanent major rivers
 .br
@@ -87,18 +87,18 @@ Repeat option \fB\-I\fP as often as necessary.
 #include "explain_-K.txt"
 #include "explain_-L_scale.txt"
 .TP
-.B \-M
-Dumps a single multisegment ASCII (or binary, see \fB\-bo\fP) file to standard output.  No plotting occurs.
-Specify any combination of \fB\-W, \-I, \-N\fP.  Optionally, you may append the
+OPT(M)
+Dumps a single multisegment ASCII (or binary, see OPT(bo)) file to standard output.  No plotting occurs.
+Specify any combination of OPT(W), OPT(I), OPT(N).  Optionally, you may append the
 \fIflag\fP character that is written at the start of each segment header ['>'].
 .TP
-.B \-N
+OPT(N)
 Draw political boundaries.  Specify the type of boundary and [optionally] append pen attributes  [Default pen:
 width = 1, color = black, texture = solid]. (See SPECIFYING PENS below).
 (See SPECIFYING PENS below).
 .br
 Choose from the list of boundaries below.
-Repeat option \fB\-N\fP as often as necessary.
+Repeat option OPT(N) as often as necessary.
 .br
 	1 = National boundaries
 .br
@@ -111,23 +111,23 @@ Repeat option \fB\-N\fP as often as necessary.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-Q
+OPT(Q)
 Mark end of existing clip path.  No projection information is needed.
 .TP
-.B \-S
+OPT(S)
 Select filling or clipping of "wet" areas.  Append the shade, color, or pattern (see SPECIFYING FILL below);
-or use \fB\-Sc\fP for clipping [Default is no fill].
+or use OPT(Sc) for clipping [Default is no fill].
 #include "explain_-T_rose.txt"
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Draw coastlines [Default is no coastlines].  Append pen attributes  [Defaults:
 width = 1, color = black, texture = solid].
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
-.B \-Z
+OPT(Z)
 For 3-D projections:  Sets the z-level of the coastlines [0].
 #include "explain_-bo.txt"
 #include "explain_-c.txt"
@@ -139,25 +139,25 @@ To plot a green Africa with white outline on blue background, with permanent maj
 on a Mercator map at scale LEN_1 inch/degree, use
 .br
 .sp
-\fBpscoast\fP \fB\-R\fP-30/30/-40/40 SCALE_M1 \fB\-B\fP5 \fB\-I\fP1/1p,blue \fB\-I\fP2/0.25p,blue 
-\fB\-N\fP1/0.25p,- \fB\-W\fP0.25p,white \fB\-G\fPgreen \fB\-S\fPblue \fB\-P\fP > africa.ps
+\fBpscoast\fP OPT(R)-30/30/-40/40 SCALE_M1 OPT(B)5 OPT(I)1/1p,blue OPT(I)2/0.25p,blue 
+OPT(N)1/0.25p,- OPT(W)0.25p,white OPT(G)green OPT(S)blue OPT(P) > africa.ps
 .br
 .sp
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a Mercator map at scale LEN_2 cm/degree, run
 .br
 .sp
-\fBpscoast\fP \fB\-R\fP-30/-10/60/65 SCALE_M2 \fB\-B\fP5 \fB\-Gp\fP100/28 > iceland.ps
+\fBpscoast\fP OPT(R)-30/-10/60/65 SCALE_M2 OPT(B)5 OPT(Gp)100/28 > iceland.ps
 .br
 .sp
 To initiate a clip path for Africa so that the subsequent colorimage of gridded topography is only
 seen over land, using a Mercator map at scale LEN_1 inch/degree, use
 .br
 .sp
-\fBpscoast\fP \fB\-R\fP-30/30/-40/40 SCALE_M1 \fB\-B\fP5 \fB\-Gc \-P \-K\fP > africa.ps
+\fBpscoast\fP OPT(R)-30/30/-40/40 SCALE_M1 OPT(B)5 OPT(Gc) OPT(P) OPT(K) > africa.ps
 .br
-\fBgrdimage\fP SCALE_M1 etopo5.grd \fB\-C\fPcolors.cpt \fB\-O \-K\fP >> africa.ps
+\fBgrdimage\fP SCALE_M1 etopo5.grd OPT(C)colors.cpt OPT(O) OPT(K) >> africa.ps
 .br
-\fBpscoast\fP \fB\-Q \-O\fP >> africa.ps
+\fBpscoast\fP OPT(Q) OPT(O) >> africa.ps
 .SH DATABASE INFORMATION
 The coastline database is GSHHS which is compiled from two sources: World Vector Shorelines (WVS) and CIA World Data Bank II (WDBII).
 In particular, all level-1 polygons (ocean-land boundary) are derived from the more accurate WVS while all higher level polygons
@@ -165,7 +165,7 @@ In particular, all level-1 polygons (ocean-land boundary) are derived from the m
 taken from WDBII.  Much processing has taken place to convert WVS and WDBII data into usable form for \fBGMT\fP:
 assembling closed polygons from line segments, checking for duplicates, and correcting for crossings between
 polygons.  The area of each polygon has been determined so that the user
-may choose not to draw features smaller than a minimum area (see \fB\-A\fP); one may also limit the highest hierarchical level of
+may choose not to draw features smaller than a minimum area (see OPT(A)); one may also limit the highest hierarchical level of
 polygons to be included (4 is the maximum).  The 4 lower-resolution databases were derived from the full resolution
 database using the Douglas-Peucker line-simplification algorithm.  The classification of rivers and borders follow
 that of the WDBII.  See the \fBGMT\fP Cookbook and Technical Reference Appendix K for
@@ -178,8 +178,8 @@ If the desired file is not found, it will look for the file
 each holds the full pathname of an alternative directory.  Comment lines (#) and blank lines
 are allowed.  The desired file is then sought for in the alternate directories.
 .SH BUGS
-The options to fill (\fB\-C \-G \-S\fP) may not always work if the Azimuthal equidistant projection is
-chosen (\fB\-Je|E\fP).  If the antipole of the projection is in the oceans it will most likely work.
+The options to fill (OPT(C) OPT(G) OPT(S)) may not always work if the Azimuthal equidistant projection is
+chosen (OPT(Je)|\fBE\fP).  If the antipole of the projection is in the oceans it will most likely work.
 If not, try to avoid using projection center coordinates that are even multiples of the coastline
 bin size (1, 2, 5, 10, and 20 degrees for \fBf, h, i, l, c\fP, respectively).  This projection is
 not supported for clipping.

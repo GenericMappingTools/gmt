@@ -15,26 +15,26 @@ Contains the list of legs to be worked on.
 No space between the option flag and the associated arguments
 .sp
 .TP
-.B \-R
+OPT(R)
 Replace the current information if a leg already is in the system.  [Default is append].
 .TP
-.B \-D
+OPT(D)
 Delete information for these legs from the system index files.
 .TP
-.B \-P
+OPT(P)
 Set the path to where the \fIgmt_legs.d\fP and \fIgmt_index.b\fP files reside.  [Default is the \fB$GMT_SHAREDIR\fP/mgg directory].
 #include "explain_-V.txt"
 .SH EXAMPLES
 To add new cruises to the system:
 .br
 .sp
-\fBbinlegs\fP \fInewlegs.lis\fP \fB\-V\fR \fB\-P\fR\fI/usr/lib/gmt\fP
+\fBbinlegs\fP \fInewlegs.lis\fP OPT(V) OPT(P)\fI/usr/lib/gmt\fP
 .br
 .sp
 To remove bad legs from the system:
 .br
 .sp
-\fBbinlegs\fP \fIbadlegs.lis\fP \fB\-D\fR \fB\-V\fR \fB\-P\fR\fI/usr/lib/gmt\fP
+\fBbinlegs\fP \fIbadlegs.lis\fP OPT(D) OPT(V) OPT(P)\fI/usr/lib/gmt\fP
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmtlegs (1),

@@ -37,7 +37,7 @@ Sets the label text according to the specified flag:
 .TP
 \fB+Lh\fP
 Take the label from the current multisegment header (first scan for an embedded
-\fB\-L\fP\fIlabel\fP option, if not use the first word following the segment flag).
+OPT(L)\fIlabel\fP option, if not use the first word following the segment flag).
 For multiple-word labels, enclose entire label in double quotes.
 .TP
 \fB+Ld\fP

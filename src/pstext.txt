@@ -28,9 +28,9 @@ each other.  To learn the octal codes for symbols not available on the keyboard
 and some accented European characters, see Section 4.16 and Appendix F in the
 \fBGMT\fP Technical Reference and Cookbook.  Note that \fBCHAR_ENCODING\fP must be
 set to an extended character set in your \.gmtdefaults4 file in order to use the accented characters.
-Using the \fB\-W\fP option, a colored rectangle underlying the text may
+Using the OPT(W) option, a colored rectangle underlying the text may
 be plotted  (Does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (\fB\-M\fP)).
+characters, except in paragraph mode (OPT(M))).
 .TP
 \fItextfile\fP
 This file contains 1 or more records with (\fIx, y, size, angle, fontno, justify, text\fP).
@@ -48,12 +48,12 @@ of L, C, R (for left, center, or right) and T, M, B for top, middle, or bottom. 
 No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
-.B \-C
+OPT(C)
 Sets the clearance between the text and the surrounding box [15%].
-Only used if \fB\-W\fP is specified.  Append the unit you want (\fBc\fPm, \fBi\fPnch, \fBm\fPeter.
+Only used if OPT(W) is specified.  Append the unit you want (\fBc\fPm, \fBi\fPnch, \fBm\fPeter.
 or \fBp\fPoint; if not given we consult \fBMEASURE_UNIT\fP) or % for a percentage of the font size.
 .TP
-.B \-D
+OPT(D)
 Offsets the text from the projected (\fIx,y\fP) point by \fIdx,dy\fP [0/0].  If \fIdy\fP is not
 specified then it is set equal to \fIdx\fP.
 Use \fB-Dj\fP to offset the text away from the point instead (i.e. the text's justification\"'
@@ -63,16 +63,16 @@ from the original point to the shifted point; append a \fIpen\fP to change the a
 #include "explain_-E.txt"
 (Not implemented for paragraph mode).
 .TP
-.B \-G
+OPT(G)
 Sets the shade or color used for drawing the text  [Default is BASEMAP_FRAME_RGB, the current frame color (by default black)]
 (See SPECIFYING COLOR below).
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
-.B \-L
+OPT(L)
 Lists the font-numbers and font-names available, then exits.
 .TP
-.B \-M
+OPT(M)
 Paragraph mode.  Files must be multiple segment files.  Segments are separated by
 a special record whose first character must be \fIflag\fP [Default is '>'].
 Starting in the 3rd column, we expect to find information pertaining to the
@@ -85,18 +85,18 @@ of the text paragraph is governed by \fIparjust\fP which may be \fBl\fP(eft), \f
 with paragraph text.  Text may contain the escape sequences discussed above.
 Separate paragraphs with a blank line.
 .TP
-.B \-N
+OPT(N)
 Do NOT clip text at map boundaries [Default will clip].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-S
+OPT(S)
 Draw text outline. Append pen attributes.
 (Not implemented for paragraph mode).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Paint a rectangle beneath the text string.  Set color [Default is no fill].
 Append \fBo\fP to draw rectangle outline, add a \fIpen\fP to specify pen attributes [width = 1, color = black,
 texture = solid].  use a comma to separate the fill information from the outline information if both are present.
@@ -106,7 +106,7 @@ Choose upper case \fBC\fP to get a convex rectangle (only in paragraph mode).
 (See also SPECIFYING PENS and SPECIFYING COLOR below).
 #include "explain_-XY.txt"
 .TP
-.B \-Z
+OPT(Z)
 For 3-D projections:  Sets the z-level of the basemap [0].  If OPT(Z+) is given we expect each item
 to have its own level given in the 3rd column, and OPT(N) is implicitly set.
 (Not implemented for paragraph mode).
@@ -119,13 +119,13 @@ To plot the outlines of the text strings stored in the file text.d on a Mercator
 the given specifications, use
 .br
 .sp
-\fBpstext\fP text.d \fB\-R\fP-30/30/-10/20 \fB\-Jm\fP0.1\fBi\fP \fB\-P \-B\fP5 \fB\-S\fP0.5\fBp\fP > plot.ps
+\fBpstext\fP text.d OPT(R)-30/30/-10/20 OPT(Jm)0.1\fBi\fP OPT(P) OPT(B)5 OPT(S)0.5\fBp\fP > plot.ps
 .br
 .sp
 To add a typeset figure caption for a 3-inch wide illustration, use
 .br
 .sp
-\fBpstext\fP \fB\-R\fP0/3/0/5 \fB\-JX\fP3\fBi\fP \fB\-O \-H \-M \-N\fP << EOF >> figure.ps
+\fBpstext\fP OPT(R)0/3/0/5 OPT(JX)3\fBi\fP OPT(O) OPT(H) OPT(M) OPT(N) << EOF >> figure.ps
 .br
 This is an optional header record
 .br
@@ -150,7 +150,7 @@ is processed by DOS.  Data files that are opened and read by \fBpstext\fP do not
 In paragraph mode, the presence of composite
 characters and other escape sequences may lead to unfortunate word splitting. 
 .br
-The \fB\-N\fP option does not adjust the BoundingBox information so you may
+The OPT(N) option does not adjust the BoundingBox information so you may
 have to post-process the \fIPostScript\fP output with epstool or ps2epsi to obtain
 a correct BoundingBox.
 .SH "SEE ALSO"

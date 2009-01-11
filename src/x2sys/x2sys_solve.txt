@@ -12,12 +12,12 @@ for using a least-squares approach.  Note: Only one data column can be
 processed at the time.
 #include "explain_tag.txt"
 .TP
-.B \-C
+OPT(C)
 Specify which data column you want to process.  Needed for proper formatting
 of the output correction table and must match the same option used in
 \fBx2sys_list\fP when preparing the input data.
 .TP
-.B \-E
+OPT(E)
 The correction type you wish to model.  Choose among the following functions
 \fIf\fP(\fIp\fP), where \fIp\fP are the \fIm\fP parameters per track that we will fit simultaneously
 using a least squares approach:
@@ -50,40 +50,40 @@ those columns to hold the text string names of the two tracks.
 To fit a simple bias offset to faa for all tracks under the MGD77 tag, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPMGD77 \fB\-C\fPfaa \fB\-F\fPnc  > faa_coe.txt
+\fBx2sys_list\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(F)nc  > faa_coe.txt
 .br
-\fBx2sys_solve\fP faa_coe.txt \fB\-T\fPMGD77 \fB\-V \-C\fPfaa \fB\-E\fPc > coe_table.txt
+\fBx2sys_solve\fP faa_coe.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(E)c > coe_table.txt
 .br
 .sp
 To fit a faa linear drift with time instead, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPMGD77 \fB\-C\fPfaa \fB\-F\fPnTc  > faa_coe.txt
+\fBx2sys_list\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(F)nTc  > faa_coe.txt
 .br
-\fBx2sys_solve\fP faa_coe.txt \fB\-T\fPMGD77 \fB\-V \-C\fPfaa \fB\-E\fPt > coe_table.txt
+\fBx2sys_solve\fP faa_coe.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(E)t > coe_table.txt
 .br
 .sp
 To estimate heading corrections based on magnetic crossovers associated with the tag MGD77
 from the file COE_data.txt, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPMGD77 \fB\-C\fPmag \fB\-F\fPnhc > mag_coe.txt
+\fBx2sys_list\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)mag OPT(F)nhc > mag_coe.txt
 .br
-\fBx2sys_solve\fP mag_coe.txt \fB\-T\fPMGD77 \fB\-V \-C\fPmag \fB\-E\fPh > coe_table.txt
+\fBx2sys_solve\fP mag_coe.txt OPT(V) OPT(T)MGD77 OPT(C)mag OPT(E)h > coe_table.txt
 .br
 .sp
 To estimate unit scale corrections based on bathymetry crossovers, try
 .br
 .sp
-\fBx2sys_list\fP COE_data.txt \fB\-V \-T\fPMGD77 \fB\-C\fPdepth \fB\-F\fPnz > depth_coe.txt
+\fBx2sys_list\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)depth OPT(F)nz > depth_coe.txt
 .br
-\fBx2sys_solve\fP depth_coe.txt \fB\-T\fPMGD77 \fB\-V \-C\fPdepth \fB\-E\fPs > coe_table.txt
+\fBx2sys_solve\fP depth_coe.txt OPT(V) OPT(T)MGD77 OPT(C)depth OPT(E)s > coe_table.txt
 .SH "SEE ALSO"
-.IR x2sys_binlist (1)
-.IR x2sys_cross (1)
-.IR x2sys_datalist (1)
-.IR x2sys_get (1)
-.IR x2sys_init (1)
-.IR x2sys_list (1)
-.IR x2sys_put (1)
+.IR x2sys_binlist (1),
+.IR x2sys_cross (1),
+.IR x2sys_datalist (1),
+.IR x2sys_get (1),
+.IR x2sys_init (1),
+.IR x2sys_list (1),
+.IR x2sys_put (1),
 .IR x2sys_report (1)

@@ -17,15 +17,15 @@ the point on the profile (\fIq\fP = 0 path) closest to (\fIx, y\fP), and \fIz\fP
 all remaining columns in the input (beyond the required \fIx\fP and \fIy\fP columns).
 
 Alternatively, \fBproject\fP may be used to generate (\fIr, s, p\fP) triples at equal increments \fIdist\fP 
-along a profile.  In this case ( \fB\-G\fP option), no input is read.
+along a profile.  In this case ( OPT(G) option), no input is read.
 
 Projections are defined in any (but only) one of three ways:
 
-(Definition 1)  By a Center \fB\-C\fP and an Azimuth \fB\-A\fP in degrees clockwise from North.
+(Definition 1)  By a Center OPT(C) and an Azimuth OPT(A) in degrees clockwise from North.
 
-(Definition 2)  By a Center \fB\-C\fP and end point E of the projection path \fB\-E\fP.
+(Definition 2)  By a Center OPT(C) and end point E of the projection path OPT(E).
 
-(Definition 3)  By a Center \fB\-C\fP and a roTation pole position \fB\-T\fP.
+(Definition 3)  By a Center OPT(C) and a roTation pole position OPT(T).
 
 To spherically project data along a great circle path, an oblique coordinate system 
 is created which has its equator along that path, and the zero meridian through the 
@@ -35,87 +35,87 @@ perpendicular to the great circle path.  When moving in the increasing (\fIp\fP)
 (toward \fIB\fP or in the \fIazimuth\fP direction), the positive (\fIq\fP) direction is to your left.  
 If a Pole has been specified, then the positive (\fIq\fP) direction is toward the pole.
 .br
-To specify an oblique projection, use the \fB\-T\fP option to set the Pole.  Then the 
-equator of the projection is already determined and the \fB\-C\fP option is used to locate 
+To specify an oblique projection, use the OPT(T) option to set the Pole.  Then the 
+equator of the projection is already determined and the OPT(C) option is used to locate 
 the \fIp\fP = 0 meridian.  The Center \fIcx/cy\fP will be taken as a point through which
 the \fIp\fP = 0 meridian passes.  If you do not care to choose a particular point, use the 
 South pole (\fIox\fP = 0, \fIoy\fP = -90).
 .br
-Data can be selectively windowed by using the \fB\-L\fP and \fB\-W\fP options.  If 
-\fB\-W\fP is used, the projection Width is set to use only points with 
-\fIw_min\fP < q < \fIw_max\fP.  If \fB\-L\fP is set, then the Length is set to use 
-only those points with \fIl_min\fP < p < \fIl_max\fP.  If the \fB\-E\fP option 
-has been used to define the projection, then \fB\-Lw\fP may be selected to window 
+Data can be selectively windowed by using the OPT(L) and OPT(W) options.  If 
+OPT(W) is used, the projection Width is set to use only points with 
+\fIw_min\fP < q < \fIw_max\fP.  If OPT(L) is set, then the Length is set to use 
+only those points with \fIl_min\fP < p < \fIl_max\fP.  If the OPT(E) option 
+has been used to define the projection, then OPT(Lw) may be selected to window 
 the length of the projection to exactly the span from \fBO\fP to \fBB\fP.
 .br
-Flat Earth (Cartesian) coordinate transformations can also be made.  Set \fB\-N\fP  
+Flat Earth (Cartesian) coordinate transformations can also be made.  Set OPT(N)  
 and remember that \fIazimuth\fP is clockwise from North (the \fIy\fP axis), NOT 
 the usual cartesian theta, which is counterclockwise from the \fIx\fP axis.  \fIazimuth\fP = 90 - theta. 
 .br
 No assumptions are made regarding the units for \fIx, y, r, s, p, q, dist, l_min, l_max, w_min, w_max\fP.
-If \fB\-Q\fP is selected, map units are assumed and \fIx, y, r, s\fP must be in degrees and
+If OPT(Q) is selected, map units are assumed and \fIx, y, r, s\fP must be in degrees and
 \fIp, q, dist, l_min, l_max, w_min, w_max\fP will be in km.
 .br
 Calculations of specific great-circle and geodesic distances or for back-azimuths or azimuths are better done using \fBmapproject\fP.
 .br
 \fBproject\fP is CASE SENSITIVE.  Use UPPER CASE for all one-letter designators which begin optional arguments.  Use 
-lower case for the xyzpqrs letters in \fB\-flags\fP. 
+lower case for the xyzpqrs letters in OPT(flags). 
 .br
 .sp
 .TP
-.B \-C
-\fIcx/cy\fP sets the origin of the projection, in Definition 1 or 2.  If Definition 3 is used (\fB\-T\fP), then
+OPT(C)
+\fIcx/cy\fP sets the origin of the projection, in Definition 1 or 2.  If Definition 3 is used (OPT(T)), then
 \fIcx/cy\fP are the coordinates of a point through which the oblique zero meridian (\fIp\fP = 0) should pass.
 .SH OPTIONS
 .TP
 \fIinfile\fP
-name of ASCII (or binary, see \fB\-bi\fP) file(s) with 2 or more columns holding (x,y,[z]) data values.
+name of ASCII (or binary, see OPT(bi)) file(s) with 2 or more columns holding (x,y,[z]) data values.
 If no filenames are given, \fBproject\fP will read from standard input.
-If the \fB\-G\fP option is selected, no input data are read.
+If the OPT(G) option is selected, no input data are read.
 .TP
-.B \-F
+OPT(F)
 Specify your desired output using any combination of \fIxyzpqrs\fP, in any order.  Do not space between
-the letters.  Use lower case.  The output will be ASCII (or binary, see \fB\-bo\fP) columns of values corresponding 
+the letters.  Use lower case.  The output will be ASCII (or binary, see OPT(bo)) columns of values corresponding 
 to \fIxyzpqrs\fP [Default].  If both input and output are using ASCII format then the \fIz\fP data are treated as
 textstring(s).
-If the \fB\-G\fP option is selected, the output will be \fIrsp\fP.
+If the OPT(G) option is selected, the output will be \fIrsp\fP.
 .TP
-.B \-A
+OPT(A)
 \fIazimuth\fP defines the azimuth of the projection (Definition 1).
 .TP
-.B \-D
-Set the location of the Discontinuity in longitude (\fIr\fP coordinate).  \fB\-Dd\fP will place the
-discontinuity at the Dateline, (-180 < \fIr\fP < 180); \fB\-Dg\fP will place it at Greenwich, (0 < \fIr\fP < 360).  
+OPT(D)
+Set the location of the Discontinuity in longitude (\fIr\fP coordinate).  OPT(Dd) will place the
+discontinuity at the Dateline, (-180 < \fIr\fP < 180); OPT(Dg) will place it at Greenwich, (0 < \fIr\fP < 360).  
 Default usually falls at dateline due to \fIatan2\fP calls.
 .TP
-.B \-E
+OPT(E)
 \fIbx/by\fP defines the end point of the projection path (Definition 2).
 .TP
-.B \-G
+OPT(G)
 \fIdist\fP Generate mode.  No input is read.  Create (\fIr, s, p\fP) output points every \fIdist\fP units of \fIp\fP.  See 
-\fB\-Q\fP option.
+OPT(Q) option.
 #include "explain_-H.txt"
 .TP
-.B \-L
+OPT(L)
 Length controls.  Project only those points whose \fIp\fP coordinate is within \fIl_min\fP < \fIp\fP < \fIl_max\fP.  
-If \fB\-E\fP has been set, then you may use \fB\-Lw\fP to stay within the distance from \fBC\fP to \fBE\fP.
+If OPT(E) has been set, then you may use OPT(Lw) to stay within the distance from \fBC\fP to \fBE\fP.
 #include "explain_-M.txt"
 .TP
-.B \-N
+OPT(N)
 Flat Earth.  Make a Cartesian coordinate transformation in the plane.  [Default uses spherical trigonometry.]
 .TP
-.B \-Q
+OPT(Q)
 Map type units, i.e., project assumes \fIx, y, r, s\fP are in degrees while
-\fIp, q, dist, l_min, l_max, w_min, w_max\fP are in km.  If \fB\-Q\fP is not set, then all these are assumed to be in the same units.
+\fIp, q, dist, l_min, l_max, w_min, w_max\fP are in km.  If OPT(Q) is not set, then all these are assumed to be in the same units.
 .TP
-.B \-S
+OPT(S)
 Sort the output into increasing \fIp\fP order.  Useful when projecting random data into a sequential profile.
 .TP
-.B \-T
+OPT(T)
 \fIpx/py\fP sets the position of the roTation pole of the projection.  (Definition 3).
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Width controls.  Project only those points whose \fIq\fP coordinate is within \fIw_min\fP < \fIq\fP < \fIw_max\fP.  
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
@@ -127,33 +127,33 @@ Width controls.  Project only those points whose \fIq\fP coordinate is within \f
 .SH EXAMPLES
 To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 .sp
-\fBproject\fP \fB\-C\fP-50/10 \fB\-E\fP-10/30 \fB\-G\fP10 \fB\-Q\fP > great_circle_points.xyp
+\fBproject\fP OPT(C)-50/10 OPT(E)-10/30 OPT(G)10 OPT(Q) > great_circle_points.xyp
 .sp
 (Note that great_circle_points.xyp could now be used as input for \fBgrdtrack\fP, etc. ).
 .sp
 To project the shiptrack gravity, magnetics, and bathymetry in c2610.xygmb along a great circle through an origin at 30S, 30W, the great circle having 
 an azimuth of N20W at the origin, keeping only the data from NE of the profile and within +/- 500 km of the origin, run:
 .sp 
-\fBproject\fP c2610.xygmb \fB\-C\fP-30/-30 \fB\-A\fP-20 \fB\-W\fP-10000/0 \fB\-L\fP-500/500 \fB\-F\fPpz \fB\-Q\fP > c2610_projected.pgmb
+\fBproject\fP c2610.xygmb OPT(C)-30/-30 OPT(A)-20 OPT(W)-10000/0 OPT(L)-500/500 OPT(F)pz OPT(Q) > c2610_projected.pgmb
 .sp
-(Note in this example that \fB\-W\fP-10000/0 is used to admit any value with a large negative \fIq\fP coordinate.  This 
+(Note in this example that OPT(W)-10000/0 is used to admit any value with a large negative \fIq\fP coordinate.  This 
 will take those points which are on our right as we walk along the great circle path, or to the NE in this example.)
 .sp
 To make a Cartesian coordinate transformation of mydata.xy so that the new origin is at 5,3 and the new \fIx\fP axis (\fIp\fP) 
 makes an angle of 20 degrees with the old \fIx\fP axis, use:
 .sp
-\fBproject\fP mydata.xy \fB\-C\fP5/3 \fB\-A\fP70 \fB\-F\fPpq > mydata.pq
+\fBproject\fP mydata.xy OPT(C)5/3 OPT(A)70 OPT(F)pq > mydata.pq
 .sp
 To take data in the file pacific.lonlat and transform it into oblique coordinates using a pole from the hotspot reference 
 frame and placing the oblique zero meridian (\fIp\fP = 0 line) through Tahiti, run:
 .sp
-\fBproject\fP pacific.lonlat \fB\-T\fP-75/68 \fB\-C\fP-149:26/-17:37 \fB\-F\fPpq > pacific.pq
+\fBproject\fP pacific.lonlat OPT(T)-75/68 OPT(C)-149:26/-17:37 OPT(F)pq > pacific.pq
 .sp
 Suppose that pacific_topo.grd is a grid file of bathymetry, and you want to make a file of flowlines in the hotspot reference 
 frame.  If you run:
 .sp
-\fBgrd2xyz\fP pacific_topo.grd | \fBproject\fP \fB\-T\fP-75/68 \fB\-C\fP0/-90 \fB\-F\fPxyq | \fBxyz2grd\fP 
-\fB\-R\fP\fIetc\fP \fB\-I\fP\fIetc\fP \fB\-C\fPflow.grd
+\fBgrd2xyz\fP pacific_topo.grd | \fBproject\fP OPT(T)-75/68 OPT(C)0/-90 OPT(F)xyq | \fBxyz2grd\fP 
+OPT(R)\fIetc\fP OPT(I)\fIetc\fP OPT(C)flow.grd
 .sp
 then flow.grd is a file in the same area as pacific_topo.grd, but flow contains the latitudes about the pole of the projection.  
 You now can use grdcontour on flow.grd to draw lines of constant oblique latitude, which are flow lines in the hotspot frame.

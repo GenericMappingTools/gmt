@@ -54,47 +54,47 @@ The following symbols have special meaning:
 .br
 .SH OPTIONS
 .TP
-.B \-A
-Requires \fB\-N\fP and will partially initialize a table with values from the given file containing
+OPT(A)
+Requires OPT(N) and will partially initialize a table with values from the given file containing
 \fIt\fP and \fIf(t)\fP only.  The \fIt\fP is placed in column \fIt_col\fP while \fIf(t)\fP goes into
-column \fIn_col\fP - 1 (see \fB\-N\fP).
+column \fIn_col\fP - 1 (see OPT(N)).
 .TP
-.B \-C
-Select the columns that will be operated on until next occurrence of \fB\-C\fP.
-List columns separated by commas; ranges like 1,3-5,7 are allowed.  \fB\-C\fP
-(no arguments) resets the default action of using all columns except time column (see \fB\-N\fP). 
-\fB\-Ca\fP selects all columns, including time column, while \fB\-Cr\fP reverses (toggles) the current
+OPT(C)
+Select the columns that will be operated on until next occurrence of OPT(C).
+List columns separated by commas; ranges like 1,3-5,7 are allowed.  OPT(C)
+(no arguments) resets the default action of using all columns except time column (see OPT(N)). 
+OPT(Ca) selects all columns, including time column, while OPT(Cr) reverses (toggles) the current
 choices.
 .TP
-.B \-F
+OPT(F)
 Give a comma-separated list of desired columns or ranges that should be part of the output
 (0 is first column) [Default outputs all columns].
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Reverses the output row sequence from ascending time to descending [ascending].
 #include "explain_-M.txt"
 .TP
-.B \-N
+OPT(N)
 Select the number of columns and the column number that contains the
 "time" variable.  Columns are numbered starting at 0 [2/0].
 .TP
-.B \-Q
-Quick mode for scalar calculation.  Shorthand for \fB\-Ca \-N\fP1/0 \fB\-T\fP0/0/1.
+OPT(Q)
+Quick mode for scalar calculation.  Shorthand for OPT(Ca) OPT(N)1/0 OPT(T)0/0/1.
 .TP
-.B \-S
+OPT(S)
 Only report the first or last row of the results [Default is all rows].  This is useful if
 you have computed a statistic (say the \fBMODE\fP) and only want to report a single number
 instead of numerous records with identical values.
 Append \fBl\fP to get the last row and \fBf\fP to get the first row only
 [Default].
 .TP
-.B \-T
+OPT(T)
 Required when no input files are given.  Sets the t-coordinates of the first
-and last point and the equidistant sampling interval for the "time" column (see \fB\-N\fP).
+and last point and the equidistant sampling interval for the "time" column (see OPT(N)).
 Append \fB+\fP if you are specifying the number of equidistant points instead.
-If there is no time column (only data columns), give \fB\-T\fP with no arguments; this
-also implies \fB\-Ca\fP.  Alternatively, give the name of a file whose first column
+If there is no time column (only data columns), give OPT(T) with no arguments; this
+also implies OPT(Ca).  Alternatively, give the name of a file whose first column
 contains the desired t-coordinates which may be irregular.
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
@@ -155,50 +155,50 @@ depth(in m) = 2500 + 350 * sqrt (age) to print the depth anomalies:
 To take the average of columns 1 and 4-6 in the three data sets sizes.1, sizes.2, and sizes.3, use
 .br
 .sp
-\fBgmtmath\fP \fB\-C\fP1,4-6 sizes.1 sizes.2 \fBADD\fP sizes.3 \fBADD 3 DIV \=\fP ave.d
+\fBgmtmath\fP OPT(C)1,4-6 sizes.1 sizes.2 \fBADD\fP sizes.3 \fBADD 3 DIV \=\fP ave.d
 .br
 .sp
 To take the 1-column data set ages.d and calculate the modal value and assign it to a variable, try
 .br
 .sp
-set mode_age = `\fBgmtmath\fP \fB\-S \-T\fP ages.d \fBMODE \=\fP`
+set mode_age = `\fBgmtmath\fP OPT(S) OPT(T) ages.d \fBMODE \=\fP`
 .br
 .sp
 To evaluate the dilog(x) function for coordinates given in the file t.d:
 .br
 .sp
-\fBgmtmath\fP \fB\-T\fPt.d \fBT DILOG \=\fP dilog.d
+\fBgmtmath\fP OPT(T)t.d \fBT DILOG \=\fP dilog.d
 .br
 .sp
 To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no input
-files) and calculate arbitrary expressions, use the \fB\-Q\fP option.
+files) and calculate arbitrary expressions, use the OPT(Q) option.
 As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) + cos (60))
 and store the result in the shell variable z:
 .br
 .sp
-set z = `\fBgmtmath\fP \fB\-Q\fP 1 1.75 \fBADD\fP 2.2 \fBDIV\fP 60 \fBCOSD ADD KEI \=\fP`
+set z = `\fBgmtmath\fP OPT(Q) 1 1.75 \fBADD\fP 2.2 \fBDIV\fP 60 \fBCOSD ADD KEI \=\fP`
 .br
 .sp
 To use \fBgmtmath\fP as a general least squares equation solver, imagine that the current table is the
 augmented matrix [ A | b ] and you want the least squares solution x to the matrix equation A * x = b.
-The operator \fBLSQFIT\fP does this; it is your job to populate the matrix correctly first.  The \fB\-A\fP
+The operator \fBLSQFIT\fP does this; it is your job to populate the matrix correctly first.  The OPT(A)
 option will facilitate this.  Suppose you have a 2-column file ty.d with \fIt\fP and \fIb(t)\fP and you would
 like to fit a the model y(t) = a + b*t + c*H(t-t0), where H is the Heaviside step function for a given t0 = 1.55.
 Then, you need a 4-column augmented table loaded with t in column 0 and your observed y(t) in column 3.
 The calculation becomes
 .br
 .sp
-\fBgmtmath\fP \fB\-N\fP4/1 \fB\-A\fPty.d \fB-C\fP0 1 \fBADD \-C\fP2 1.55 \fBSTEPT ADD \-Ca LSQFIT \=\fP solution.d
+\fBgmtmath\fP OPT(N)4/1 OPT(A)ty.d \fB-C\fP0 1 \fBADD \-C\fP2 1.55 \fBSTEPT ADD \-Ca LSQFIT \=\fP solution.d
 .br
 .sp
-Note we use the \fB\-C\fP option to select which columns we are working on, then make active all the
-columns we need (here all of them, with \fB\-Ca\fP) before calling \fBLSQFIT\fP.  The second and fourth
+Note we use the OPT(C) option to select which columns we are working on, then make active all the
+columns we need (here all of them, with OPT(Ca)) before calling \fBLSQFIT\fP.  The second and fourth
 columns (col numbers 1 and 3) are preloaded with t and y(t), respectively, the other columns are zero.  If you already have
 a precalculated table with the augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
 solution is simply
 .br
 .sp
-\fBgmtmath\fP \fB\-T\fP lsqsys.d \fBLSQFIT \=\fP solution.d
+\fBgmtmath\fP OPT(T) lsqsys.d \fBLSQFIT \=\fP solution.d
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, \fIHandbook of Mathematical
 Functions\fP, Applied Mathematics Series, vol. 55, Dover, New York.

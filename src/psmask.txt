@@ -31,20 +31,20 @@ is given, standard input is read.  For binary files, see OPT(b).
 No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
-.B \-C
-Mark end of existing clip path.  No input file is needed.  Implicitly sets \fB\-O\fP.
+OPT(C)
+Mark end of existing clip path.  No input file is needed.  Implicitly sets OPT(O).
 .TP
-.B \-D
-Dumps out the resulting clipping polygons to disk.  Ignored if \fB\-T\fP is set.
+OPT(D)
+Dumps out the resulting clipping polygons to disk.  Ignored if OPT(T) is set.
 If no dumpprefix is given we use mask (Files will be called mask_*.d).
 Append \fB\+n<n_pts>\fP to limit the number of points in files to a minimum of \fIn_pts\fP.
 That is, do not write individual polygon files if they do not have at least \fIn_pts\fP vertices.
-Often, when one uses the \fB\-D\fP option it is not wished to output any ps code to stdout.
+Often, when one uses the OPT(D) option it is not wished to output any ps code to stdout.
 In such cases redirect the output to > /dev/null on *nix systems or to > nul on Windows.
 #include "explain_-E.txt"
 #include "explain_nodereg.txt"
 .TP
-.B \-G
+OPT(G)
 Paint the clip polygons (or tiles) with a selected fill [Default is no fill].
 (See SPECIFYING FILL below).
 #include "explain_-H.txt"
@@ -52,21 +52,21 @@ Not used with binary data.
 #include "explain_-K.txt"
 #include "explain_-M.txt"
 .TP
-.B \-N
+OPT(N)
 Invert the sense of the test, i.e. clip regions where there is data coverage.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-S
+OPT(S)
 Sets radius of influence. Grid nodes within \fIradius\fP of a data point are considered reliable. [Default is 0, which
 means that only grid cells with data in them are reliable].  Append \fBm\fP to indicate minutes
-or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies \fB\-R\fP and \fB\-I\fP are in degrees, and
+or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies OPT(R) and OPT(I) are in degrees, and
 we will use a fast flat Earth approximation to calculate distance).  For more accuracy, use uppercase \fBK\fP
 if distances should be calculated along geodesics.
 However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great circle calculations are used.
 .TP
-.B \-T
-Plot tiles instead of clip polygons.  Use \fB\-G\fP to set tile color or pattern.
+OPT(T)
+Plot tiles instead of clip polygons.  Use OPT(G) to set tile color or pattern.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
@@ -81,13 +81,13 @@ To make an overlay \fIPostScript\fP file that will mask out the regions of a con
 where there is no control data using clip polygons, use:
 .br
 .sp
-\fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-O \-K\fP > mask.ps
+\fBpsmask\fP africa_grav.xyg OPT(R)20/40/20/40 OPT(I)5\fBm\fP OPT(JM)10\fBi\fP OPT(O) OPT(K) > mask.ps
 .br
 .sp
 The same example but this time we use white tiling:
 .br
 .sp
-\fBpsmask\fP africa_grav.xyg \fB\-R\fP20/40/20/40 \fB\-I\fP5\fBm \-J\fPM10\fBi\fP \fB\-T \-O \-K \-G\fPwhite > mask.ps
+\fBpsmask\fP africa_grav.xyg OPT(R)20/40/20/40 OPT(I)5\fBm\fP OPT(JM)10\fBi\fP OPT(T) OPT(O) OPT(K) OPT(G)white > mask.ps
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdmask (1),

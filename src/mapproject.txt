@@ -39,29 +39,29 @@ back-azimuth from data points to fixed point.  Upper case \fBF\fP or \fBB\fP wil
 geocentric latitudes and estimate azimuth of geodesics (assuming the current ellipsoid is not a sphere).
 If no fixed point is given then we compute the azimuth (or back-azimuth) from the previous point.
 .TP
-.B \-C
+OPT(C)
 Set center of projected coordinates to be at map projection center [Default is lower left corner].
 Optionally, add offsets in the projected units to be added (or subtracted when OPT(I) is set) to (from)
 the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
 The unit used for the offsets is the plot distance unit in effect (see \fBMEASURE_UNIT\fP) unless OPT(F) is used,
 in which case the offsets are in meters.
 .TP
-.B \-D
+OPT(D)
 Temporarily override \fBMEASURE_UNIT\fP and use \fBc\fP (cm), \fBi\fP (inch),
 \fBm\fP (meter), or \fBp\fP (points) instead.  Cannot be used with OPT(F).
 .TP
-.B \-E
+OPT(E)
 Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates (add OPT(I) for the
 inverse conversion).  Append datum ID (see OPT(Qd)) or give \fIellipsoid\fP:\fIdx,dy,dz\fP
 where \fIellipsoid\fP may be an ellipsoid ID (see OPT(Qe)) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not
 given we assume WGS-84.
 .TP
-.B \-F
+OPT(F)
 Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projected meters.  To specify other units,
 append \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBi\fP (inch), \fBc\fP (cm), or \fBp\fP (points).
 Without OPT(F), the output (or input, see OPT(I)) are in the units specified by \fBMEASURE_UNIT\fP (but see OPT(D)).
 .TP
-.B \-G
+OPT(G)
 Calculate distances along track OR to the optional point set with OPT(G)\fIx0/y0\fP.  Append the distance unit;
 choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
 \fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
@@ -72,10 +72,10 @@ calculate cumulate distances along track. To obtain incremental distance between
 To specify the 2nd point via two extra columns in the input file, choose OPT(G+).
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Do the Inverse transformation, i.e. get (longitude,latitude) from (x,y) data.
 .TP
-.B \-L
+OPT(L)
 Determine the shortest distance from the input data points to the line(s) given in the ASCII multi-segment file \fIline.xy\fP.
 The distance and the coordinates of the nearest point will be appended to the output as three new columns.
 Append the distance unit; choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
@@ -83,13 +83,13 @@ Append the distance unit; choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile)
 last unit requires OPT(R) and OPT(J) to be set.  A spherical approximation is used for geographic data.
 #include "explain_-M.txt"
 .TP
-.B \-Q
+OPT(Q)
 List all projection parameters.  To only list datums, use OPT(Qd).  To only list ellipsoids, use OPT(Qe).
 .TP
-.B \-S
+OPT(S)
 Suppress points that fall outside the region.
 .TP
-.B \-T
+OPT(T)
 Coordinate conversions between datums \fIfrom\fP and \fIto\fP using the standard Molodensky transformation.  Use OPT(Th) if 3rd input column has
 height above ellipsoid [Default assumes height = 0, i.e., on the ellipsoid].  Specify datums using the
 ID (see OPT(Qd)) or give \fIellipsoid\fP:\fIdx,dy,dz\fP, where \fIellipsoid\fP may be an ellipsoid
@@ -118,7 +118,7 @@ a Transverse Mercator grid (central longitude 75W) for scale = 1:500000 and supp
 that would fall outside the map area, run
 .br
 .sp
-\fBmapproject\fP tracks.* OPT(R)-80/-70/20/40 OPT(Jt)-75/1:500000 \fB\-: \-S \-Di \-bo \-bi\fP\fI2\fP > tmfile.b
+\fBmapproject\fP tracks.* OPT(R)-80/-70/20/40 OPT(Jt)-75/1:500000 OPT(:) OPT(S) OPT(Di) OPT(bo) OPT(bi)2 > tmfile.b
 .br
 .sp
 To convert the geodetic coordinates (lon, lat, height) in the file old.dat from the NAD27 CONUS datum

@@ -42,16 +42,16 @@ List one or more file-names. If no files are given, pspolar will read standard i
 #include "explain_-J_short.txt"
 #include "explain_-Rgeo.txt"
 .TP
-\fB\-D\fIlongitude/latitude\fP
+OPT(D)longitude/latitude\fP
 Maps the bubble at given longitude and latitude point.
 .br
 .TP
-\fB\-M\fIsize\fP
+OPT(M)size\fP
 Sets the size of the beach ball to plot polarities in.  \fISize\fP is in inch
 (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
 .br
 .TP
-\fB\-S\fI<symbol_type><size>\fP
+OPT(S)<symbol_type><size>\fP
 Selects \fIsymbol_type\fP and symbol \fIsize\fP.  
 Size is in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
 Choose symbol type from
@@ -64,50 +64,50 @@ st(\fIa\fP)r, (\fIc\fP)ircle, (\fId\fP)iamond, (\fIh\fP)exagon,
 No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
-\fB\-C\fP
+OPT(C)
 Offsets focal mechanisms to the latitude and longitude specified in the last
 two columns of the input file.
 .br
 .TP
-\fB\-E\fIfill\fP
+OPT(E)fill\fP
 \fRSelects filling of symbols for stations in extensive quadrants.
 Set the shade (0\-255) or color (r/g/b) [Default is 250/250/250].
-If \fB\-E\fP\fIfill\fP is the same as \fB\-F\fP\fIfill\fP, use \fB\-e\fP to outline.
+If OPT(E)\fIfill\fP is the same as OPT(F)\fIfill\fP, use OPT(e) to outline.
 .br
 .TP
-\fB\-e\fI[pen]\fP
+OPT(e)[pen]\fP
 Outline symbols in extensive quadrants using \fIpen\fP or the default pen (see
-\fB\-W\fP).
+OPT(W)).
 .br
 .TP
-\fB\-F\fP\fIfill\fP
+OPT(F)\fIfill\fP
 Sets background color of the beach ball. Default is no fill.
 .br
 .TP
-\fB\-f\fI[pen]\fP
-Outline the beach ball using \fIpen\fP or the default pen (see \fB\-W\fP).
+OPT(f)[pen]\fP
+Outline the beach ball using \fIpen\fP or the default pen (see OPT(W)).
 .br
 .TP
-\fB\-G\fP\fIfill\fP
+OPT(G)\fIfill\fP
 Selects filling of symbols for stations in compressional quadrants.
 Set the shade (0\-255) or color (r/g/b) [Default is 0/0/0].
 .br
 .TP
-\fB\-g\fI[pen]\fP
+OPT(g)[pen]\fP
 Outline symbols in compressional quadrants using \fIpen\fP or the default pen
-(see \fB\-W\fP).
+(see OPT(W)).
 #include "explain_-H.txt"
 .TP
-\fB\-h\fP
+OPT(h)
 Use special format derived from HYPO71 output
 #include "explain_-K.txt"
 .TP
-\fB\-N
+OPT(N)
 \fRDoes \fBNOT \fRskip symbols that fall outside map border [Default plots points inside border only].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-\fB\-s\fP\fIhalf\-size/[\fBV\fP[\fIv_width/h_length/h_width/shape\fP]][\fBG\fP\fIr/g/b\fP][\fBL\fP]
+OPT(s)\fIhalf\-size/[\fBV\fP[\fIv_width/h_length/h_width/shape\fP]][\fBG\fP\fIr/g/b\fP][\fBL\fP]
 .br
 Plots S polarity azimuth.
 .br
@@ -118,18 +118,18 @@ Give half\-size,v_width,h_length,h_width in inch
 [\fBL\fP] option is for outline.
 .br
 .TP
-\fB\-T\fP\fIangle/form/justify/fontsize in points\fP
+OPT(T)\fIangle/form/justify/fontsize in points\fP
 .br
 To write station code. [Default is 0.0/0/5/12].
 .br
 .TP
-\fB\-t\fIpen\fP
+OPT(t)pen\fP
 Set pen color to write station code. Default uses the default pen (see
-\fB\-W\fP).
+OPT(W)).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
-\fB\-W\fP
+OPT(W)
 Set current pen attributes 
  [Defaults: width = 1, color = 0/0/0, texture = solid].
 #include "explain_-XY.txt"
@@ -138,7 +138,7 @@ Set current pen attributes
 .br
 .SH EXAMPLES
 .sp
-\fBpspolar\fP \fB\-R\fP239/240/34/35.2 \fB\-JM\fP8 \fB\-N\fP \fB\-Sc\fP0.4 \fB\-H\fP1 \fB\-D\fP239.5/34.5 \fB\-M\fP5 <<END>! test.ps
+\fBpspolar\fP OPT(R)239/240/34/35.2 OPT(JM)8 OPT(N) OPT(Sc)0.4 OPT(H)1 OPT(D)239.5/34.5 OPT(M)5 <<END>! test.ps
 .br
 stat azim  ih pol
 .br
@@ -156,7 +156,7 @@ END
 .br
 or
 .br
-\fBpspolar\fP \fB\-R\fP239/240/34/35.2 \fB\-JM\fP8 \fB\-N\fP \fB\-Sc\fP0.4 \fB\-H\fP1 \fB\-D\fP239.5/34.5 \fB\-M\fP5 \fB\-h\fP <<END>! test.ps
+\fBpspolar\fP OPT(R)239/240/34/35.2 OPT(JM)8 OPT(N) OPT(Sc)0.4 OPT(H)1 OPT(D)239.5/34.5 OPT(M)5 OPT(h) <<END>! test.ps
 .br
 Date   Or. time stat azim  ih                                    
 .br

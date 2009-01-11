@@ -25,10 +25,10 @@ data values.  [\fIw\fP] is an optional weight for the data.  If no file is speci
 #include "explain_-R.txt"
 .SH OPTIONS
 .TP
-.B \-C
+OPT(C)
 Use the center of the block as the output location [Default uses the mean location].
 .TP
-.B \-E
+OPT(E)
 Provide Extended report which includes \fBs\fP (the standard deviation of the mean),
 \fBl\fP, the lowest value, and \fBh\fP, the high value for each block. Output order
 becomes \fIx,y,z,s,l,h\fP[,\fIw\fP]. [Default outputs \fIx,y,z\fP[,\fIw\fP].
@@ -41,14 +41,14 @@ without it 9.5 <= (\fIx,y\fP) < 10.5 is one of 36 blocks.
 #include "explain_-H.txt"
 Not used with binary data.
 .TP
-.B \-S
+OPT(S)
 Use OPT(Sz) to report the sum of all \fIz\fP-values inside a block, or OPT(Sw) to report the
 sum of weights [Default reports mean value]. If OPT(Sw) is selected and no weights are
 supplied (i.e., no OPT(W) given), then the weight sum will equal the number of points
 inside each block.
 #include "explain_-V.txt"
 .TP
-.B \-W
+OPT(W)
 Weighted modifier[s].  Unweighted input and output has 3 columns \fIx,y,z\fP; Weighted
 i/o has 4 columns \fIx,y,z,w\fP.  Weights can be used in input to construct weighted
 mean values in blocks.  Weight sums can be reported in output for later combining several
@@ -65,7 +65,7 @@ weighted output only.  [Default uses unweighted i/o].
 .sp
 To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, run
 .sp
-\fBblockmean\fP hawaii.xyg \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm\fP > hawaii_5x5.xyg
+\fBblockmean\fP hawaii.xyg OPT(R)198/208/18/25 OPT(I)5\fBm\fP > hawaii_5x5.xyg
 .SH "SEE ALSO"
 .IR blockmedian (1),
 .IR blockmode (1),

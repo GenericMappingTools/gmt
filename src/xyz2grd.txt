@@ -17,47 +17,47 @@ number of formats, see OPT(Z) below.)
 .TP
 \fI[xy]zfile\fP
 ASCII [or binary] file holding z or (x,y,z) values.  xyz triplets do not
-have to be sorted (for binary triplets, see OPT(b)).  1-column z tables must be sorted and the \fB\-Z\fP must be set). 
+have to be sorted (for binary triplets, see OPT(b)).  1-column z tables must be sorted and the OPT(Z) must be set). 
 .TP
-.B \-G
+OPT(G)
 \fIgrdfile\fP is the name of the binary output grid file.
 (See GRID FILE FORMAT below.)
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 .TP
-.B \-A
-Add up multiple values that belong to the same node (same as \fB\-Az\fP).
+OPT(A)
+Add up multiple values that belong to the same node (same as OPT(Az)).
 Append \fBn\fP to simply count the number of data points that were assigned to each node.
 Append \fBl\fP or \fBu\fP to find the lowest (minimum) or upper (maximum) value at each node, respectively. 
-[Default (no \fB\-A\fP option) will calculate mean value].  Ignored if \fB\-Z\fP is given.
+[Default (no OPT(A) option) will calculate mean value].  Ignored if OPT(Z) is given.
 .TP
-.B \-D
+OPT(D)
 Give values for \fIxname, yname, zname, scale, offset, title,\fP and \fIremark\fP.
 To leave some of these values untouched, specify = as the value.
 Alternatively, to allow "/" to be part of one of the values, use any non-alphanumeric
 character (and not the equal sign) as separator by both starting and ending with it. For example:
-\fB\-D\fP:\fIxname\fP:\fIyname\fP:\fIzname\fP:\fIscale\fP:\fIoffset\fP:\fItitle\fP:\fIremark\fP:
+OPT(D):\fIxname\fP:\fIyname\fP:\fIzname\fP:\fIscale\fP:\fIoffset\fP:\fItitle\fP:\fIremark\fP:
 .TP
-.B \-E
+OPT(E)
 Convert an ESRI ArcInfo ASCII interchange grid format file to a \fBGMT\fP grid.  Append \fInodata\fP which is a data
 value that should be set to NaN in the grid [Default is to read the optional 6th record in the file and get \fInodata\fP].
-The values normally given by \fB\-R\fP, \fB\-I\fP, and \fB\-F\fP are determined from the ESRI header instead.
+The values normally given by OPT(R), OPT(I), and OPT(F) are determined from the ESRI header instead.
 #include "explain_nodereg.txt"
 #include "explain_-H.txt"
 Not used with binary data.
 .TP
-.B \-N
+OPT(N)
 No data.  Set nodes with no input xyz triplet to this value [Default is NaN].  For z-tables, this
 option is used to replace z-values that equal \fInodata\fP with NaN.
 .TP
-.B \-S
+OPT(S)
 Swap the byte-order of the input only.  No grid file is produced.  You must
-also supply the \fB\-Z\fP option.  The output is written to \fIzfile\fP (or
+also supply the OPT(Z) option.  The output is written to \fIzfile\fP (or
 stdout if not supplied).
 #include "explain_-V.txt"
 .TP
-.B \-Z
+OPT(Z)
 Read a 1-column ASCII [or binary] table.  This assumes that all the nodes are
 present and sorted according to specified ordering convention contained in \fIflags\fP.
 If incoming data represents rows, make \fIflags\fP start with \fBT\fP(op) if first row is y = ymax
@@ -90,13 +90,13 @@ one of several data types (all binary except \fBa\fP):
 	\fBd\fP  8-byte floating point double precision
 .br
 .sp
-Default format is scanline orientation of ASCII numbers: \fB\-ZTLa\fP.
-Note that \fB\-Z\fP only applies to 1-column input.  The difference between \fBA\fP and \fBa\fP is that
+Default format is scanline orientation of ASCII numbers: OPT(ZTLa).
+Note that OPT(Z) only applies to 1-column input.  The difference between \fBA\fP and \fBa\fP is that
 the latter can decode both \fIdate\fPT\fIclock\fP and \fIddd:mm:ss[.xx]\fP formats while the former is
 strictly for regular floating point values.
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
-[Default is 3 input columns].  This option only applies to xyz input files; see \fB\-Z\fP for z tables.
+[Default is 3 input columns].  This option only applies to xyz input files; see OPT(Z) for z tables.
 #include "explain_-f.txt"
 #include "explain_float.txt"
 #include "explain_grd_output.txt"
@@ -105,21 +105,21 @@ strictly for regular floating point values.
 To create a grid file from the ASCII data in hawaii_grv.xyz, use
 .br
 .sp
-\fBxyz2grd\fP hawaii_grv.xyz \fB\-D\fPdegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
-\fB\-G\fPhawaii_grv_new.grd \fB\-R\fP198/208/18/25 \fB\-I\fP5\fBm \-V\fP
+\fBxyz2grd\fP hawaii_grv.xyz OPT(D)degree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
+OPT(G)hawaii_grv_new.grd OPT(R)198/208/18/25 OPT(I)5\fBm\fP OPT(V)
 .br
 .sp
 To create a grid file from the raw binary (3-column, single-precision) scanline-oriented data raw.b, use
 .br
 .sp
-\fBxyz2grd\fP raw.b \fB\-D\fPm/m/m/1/0/=/= \fB\-G\fPraw.grd \fB\-R\fP0/100/0/100 \fB\-I\fP1 \fB\-V \-Z \-b\fP3
+\fBxyz2grd\fP raw.b OPT(D)m/m/m/1/0/=/= OPT(G)raw.grd OPT(R)0/100/0/100 OPT(I)1 OPT(V) OPT(Z) OPT(b)3
 .br
 .sp
 To make a grid file from the raw binary USGS DEM (short integer) scanline-oriented data topo30. on the NGDC
 global relief Data CD-ROM, with values of -9999 indicate missing data, one must on some machine reverse the byte-order.  On such machines (like Sun), use
 .br
 .sp
-\fBxyz2grd\fP topo30. \fB\-D\fPm/m/m/1/0/=/= \fB\-G\fPustopo.grd \fB\-R\fP234/294/24/50 \fB\-I\fP30c \fB\-N\fP-9999 \fB\-V \-ZTLhw\fP
+\fBxyz2grd\fP topo30. OPT(D)m/m/m/1/0/=/= OPT(G)ustopo.grd OPT(R)234/294/24/50 OPT(I)30c OPT(N)-9999 OPT(B) OPT(ZTLhw)
 .br
 .sp
 Say you have received a binary file with 4-byte floating points that were
@@ -127,7 +127,7 @@ written on a machine of different byte-order than yours.  You can swap the
 byte-order with
 .br
 .sp
-\fBxyz2grd\fP floats.bin \fB\-S\fPnew_floats.bin \fB\-V \-Zf\fP
+\fBxyz2grd\fP floats.bin OPT(S)new_floats.bin OPT(V) OPT(Zf)
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grd2xyz (1),

@@ -3,7 +3,7 @@
 .SH NAME
 \fBx_init\fP \- Initialization of Cross-Over Data Bases.
 .SH SYNOPSIS
-\fBx_init\fP \fB\-I\fP
+\fBx_init\fP OPT(I)
 .SH DESCRIPTION
 The purpose of \fBx_init\fP is to create two key files that will be holding all the cross-over
 information for all the cruises tested. These files are called \fIxx_base.b\fP and \fIxx_legs.b\fP, and
@@ -12,7 +12,7 @@ they will contain data for each cross-over and totals for each leg, respectively
 fileheader with a 1 as the next record number in the case of xx_base.b. NB! Any previous files
 with the same names in the current directory will be erased, so use with caution.
 .TP
-.B \-I
+OPT(I)
 Must be present form initialization to take effect.
 .SH BEWARE
 Both files are binary and have fixed record lengths. The formats of the files are as follows:

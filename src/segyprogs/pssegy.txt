@@ -40,75 +40,75 @@ Seismic data set to be imaged
 #include "explain_-Rgeo.txt"
 .br
 .TP
-.B \-D
+OPT(D)
 gives the deviation in X units of the plot for 1.0 on the scaled trace.
 .br 
 .TP
-.B \-F[\fIrgb\fP|\fIgray\fP]
+OPT(F)[\fIrgb\fP|\fIgray\fP]
 Fill trace (variable area, defaults to filling positive). rgb or gray gives
 the color with which the imagemask is filled.
 .TP
-.B \-W
+OPT(W)
 Draw wiggle trace.
 .TP
-You \fImust\fP specify at least one of \fB\-W\fP and \fB\-F\fP.
+You \fImust\fP specify at least one of OPT(W) and OPT(F).
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-B
+OPT(B)
 Bias to apply to data (added to sample values).
 .TP
-.B \-C
+OPT(C)
 Sample value at which to clip data (clipping is applied to both positive and
 negative values).
 .TP
-.B \-E
+OPT(E)
 Allow \fIerror\fP difference between requested and actual trace locations
 when using \fB-T\fP option.
 .TP
-.B \-I
+OPT(I)
 Fill negative rather than positive excursions.
 #include "explain_-K.txt"
 .TP
-.B \-L
+OPT(L)
 Override number of samples per trace in reel header (program attempts to
 determine number of samples from each trace header if possible to
 allow for variable length traces).
 .TP
-.B \-M
+OPT(M)
 Override number of traces specified in reel header. Program detects
 end of file (relatively) gracefully, but this parameter limits number
 of traces that the program attempts to read.
 .TP
-.B \-N
+OPT(N)
 Normalize trace by dividing by rms amplitude over full trace length.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-S
+OPT(S)
 Read trace locations from trace headers: header is either c for CDP,
 o for offset, or b<num> to read a long starting at byte <num> in the
 header (first byte corresponds to num=0). Default has location given by
 trace number.
 .TP
-.B \-T
+OPT(T)
 Plot only traces whose location corresponds to a list given in \fIfilename\fP.
 Order in which traces are listed is not significant - the entire space is
 checked for each trace.
 .TP
-.B \-U
+OPT(U)
 Apply reduction velocity by shifting traces \fIupwards\fP by redvel/|offset|.
 Negative velocity removes existing reduction. Units should be consistent with
 offset in trace header and sample interval.
 #include "explain_-V.txt"
 .TP
-.B \-X
+OPT(X)
 Multiply trace locations by scale before plotting.
 .TP
-.B \-Y
+OPT(Y)
 Override sample interval in reel header.
 .TP
-.B \-Z
+OPT(Z)
 Do not plot traces with zero rms amplitude.
 .SH EXAMPLES
 To plot the SEGY file wa1.segy with normalized traces plotted at true offset 
@@ -116,14 +116,14 @@ locations, clipped at +-3 and with wiggle trace and positive variable area
 shading in black, use
 .br
 .sp
-\fBpssegy\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-R\fP0/100/0/10 \fB\-D\fP1 \fB\-C\fP3 \fB\-N\fP \fB\-S\fPo \fB\-W\fP \fB\-F\fPblack > segy.ps
+\fBpssegy\fP wa1.segy OPT(JX)5/\-5 OPT(R)0/100/0/10 OPT(D)1 OPT(C)3 OPT(N) OPT(S)o OPT(W) OPT(F)black > segy.ps
 .br
 .sp
 To plot the SEGY file wa1.segy with traces plotted at true cdp*0.1, clipped
 at +-3, with bias -1 and negative variable area shaded red, use
 .br
 .sp
-\fBpssegy\fP wa1.segy \fB\-JX\fP5/\-5 \fB\-R\fP0/100/0/10 \fB\-D\fP1 \fB\-C\fP3 \fB\-S\fPc \fB\-X\fP0.1 \fB\-F\fPred \fB\-B\fP\-1 \fB\-I\fP > segy.ps
+\fBpssegy\fP wa1.segy OPT(JX)5/\-5 OPT(R)0/100/0/10 OPT(D)1 OPT(C)3 OPT(S)c OPT(X)0.1 OPT(F)red OPT(B)\-1 OPT(I) > segy.ps
 
 .SH "SEE ALSO"
 .IR GMT (1),

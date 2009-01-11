@@ -10,14 +10,14 @@ mgd77convert \- Translate between different formats of MGD77 files
 data in (probably) another format to a new file in the current directory.
 #include "explain_ncid.txt"
 .TP
-.B \-F
+OPT(F)
 Specifies the format of the input (From) files.  Choose from \fBa\fP for standard
 MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF format
 (with extension .nc), and \fBt\fP for a plain ASCII tab-separated table dump
 (with extension .dat).  Use OPT(FC) to recover the original MGD77 setting from
 the MGD77+ file [Default will apply any E77 corrections encoded in the file].
 .TP
-.B \-T
+OPT(T)
 Specifies the format of the output (To) files.  Choose from \fBa\fP for standard
 MGD77 ASCII table (with extension .mgd77), \fBc\fP for the new MGD77+ netCDF format
 (with extension .nc), and \fBt\fP for a plain ASCII tab-separated table dump
@@ -26,13 +26,13 @@ exist in the current directory.  Prepend \fB+\fP to override this policy.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-L
+OPT(L)
 Set the level of verification reporting [none] and where to send such reports [stderr].
 Append a combination of \fBw\fP for warnings, \fBe\fP for errors, and \fB+\fP to send
 such log information to stdout.
 #include "explain_-V.txt"
 .TP
-.B \-4
+OPT(4)
 By default, the storage types used in a MGD77+ netCDF file greatly exceed the precision
 imposed by the ASCII MGD77 format.  However, for the five items \fBfaa\fP, \fBeot\fP,
 \fBmag\fP, \fBdiur\fP and \fBmsd\fP we use 2-byte integers with implied precisions of 0.1 mGal,
@@ -44,16 +44,16 @@ To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files, and
 capture all verification messages, try
 .br
 .sp
-\fBmgd77convert\fP 01010047 01010008 \fB\-Fa \-Tc \-V \-Lew+\fP > log.lis
+\fBmgd77convert\fP 01010047 01010008 OPT(Fa) OPT(Tc) OPT(V) OPT(Lew+) > log.lis
 .br
 .sp
 To convert 01010047.nc back to MGD77 ASCII and make sure it is identical to the
 original file, try (Bourne shell syntax)
 .br
 .sp
-orig=`\fBmgd77path\fP 01010047 \fB\-Ic\fP`
+orig=`\fBmgd77path\fP 01010047 OPT(Ic)`
 .br
-\fBmgd77convert\fP 01010047 \fB\-Fc \-Ta \-V\fP
+\fBmgd77convert\fP 01010047 OPT(Fc) OPT(Ta) OPT(V)
 .br
 diff $orig 01010047.mgd77
 .br
@@ -61,13 +61,13 @@ diff $orig 01010047.mgd77
 To convert 01010047.nc to a plain ASCII table for manual editing, overwriting any existing table, try
 .br
 .sp
-\fBmgd77convert\fP 01010047 \fB\-Fc \-T+t \-V\fP
+\fBmgd77convert\fP 01010047 OPT(Fc) OPT(T+t) OPT(V)
 .br
 .sp
 To recover the original NGDC MGD77 version of 01020051.nc and ignore any E77 corrections,
 use
 .br
-\fBmgd77convert\fP 01020051 \fB\-FC \-Ta \-V\fP
+\fBmgd77convert\fP 01020051 OPT(FC) OPT(Ta) OPT(V)
 .br
 .SH FILE FORMATS
 \fBmgd77convert\fP handles three different formats. (1) The MGD77 ASCII tables are

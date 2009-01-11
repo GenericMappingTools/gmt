@@ -20,59 +20,59 @@ A cumulative histogram may also be specified.
 \fIfile\fP
 ASCII [or binary, see OPT(b)] datafile. If no file is given, \fBpshistogram\fP will read standard input.
 .TP
-.B \-Jx
+OPT(Jx)
 \fIxscale[/yscale]\fP (Linear scale(s) in distance unit/data unit).
 .TP
-.B \-W
+OPT(W)
 Sets the bin width used for histogram calculations.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Plot the histogram horizontally from x = 0 [Default is vertically from y = 0].
 #include "explain_-B_short.txt"
 .TP
-.B \-C
+OPT(C)
 Give a color palette file.  The mid x-value for each bar is used to look-up the bar color.
 .TP
-.B \-E
+OPT(E)
 Sets the viewpoint's azimuth and elevation (for perspective view) [180/90].\"'
 .TP
-.B \-F
+OPT(F)
 Center bin on each value. [Default is left edge].
 .TP
-.B \-G
+OPT(G)
 Select filling of bars [Default is no fill].
 (See SPECIFYING FILL below).
 #include "explain_-H.txt"
 .TP
-.B \-I
+OPT(I)
 Inquire about min/max x and y after binning.  No plotting is done.  Append \fBo\fP
 to output an ASCII table of the resulting x,y data to stdout.  Alternatively, append
 \fBO\fP to output all x,y bin data even when y == 0.
 #include "explain_-K.txt"
 .TP
-.B \-L
+OPT(L)
 Draw bar outline using the specified pen thickness.  [Default is no outline].
 (See SPECIFYING PENS below).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-Q
+OPT(Q)
 Draw a cumulative histogram.
 #include "explain_-R.txt"
 If not given, \fBpshistogram\fP will automatically find reasonable values for the region.
 .TP
-.B \-S
+OPT(S)
 Draws a stairs-step diagram which does not include the internal bars of the default histogram.
 .TP
-.B \-T
+OPT(T)
 Specify which column to use for the histogram data.  First column is 0 [0].
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 .TP
-.B \-Z
+OPT(Z)
 Choose between 6 types of histograms: 0 = counts [Default], 1 = frequency_percent,
 2 = log (1.0 + count), 3 = log (1.0 + frequency_percent),
 4 = log10 (1.0 + count), 5 = log10 (1.0 + frequency_percent).

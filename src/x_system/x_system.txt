@@ -92,7 +92,7 @@ and create correction tables (ASCII and/or binary). We have now completed the CO
 our initial GMT data bank.
 .br
 	At some later time, however, we will get a new batch of cruises. We will then follow the
-the same recipe and go back and run \fBx_setup\fP, but this time we will use the \fB\-L\fP option so that only the
+the same recipe and go back and run \fBx_setup\fP, but this time we will use the OPT(L) option so that only the
 pairs involving new cruises are returned. Then we would run the remaining programs exactly as
 described above.
 .SH SEE ALSO

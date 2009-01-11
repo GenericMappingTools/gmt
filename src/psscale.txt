@@ -2,7 +2,7 @@
 .TH PSSCALE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_1	7.5
 #define LEN_2	1.25
-#define SCALE	\fB\-D\fP6.5\fBi\fP/2\fBi\fP/7.5\fBc\fP/1.25\fBc\fP
+#define SCALE	OPT(D)6.5\fBi\fP/2\fBi\fP/7.5\fBc\fP/1.25\fBc\fP
 #define LEN_3	6
 #define LEN_4	4
 .SH NAME
@@ -19,10 +19,10 @@ psscale \- Plot gray scale or color scale on maps
 are supported.  For cpt_files with gradational colors (i.e., the lower and upper
 boundary of an interval have different r/g/b values) \fBpsscale\fP will interpolate to give
 a continuous scale.  Variations in intensity due to shading/illumination may be
-displayed by setting the option \fB\-I\fP.  Colors may be spaced according to a linear
+displayed by setting the option OPT(I).  Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile widths.
 .TP
-.B \-D
+OPT(D)
 Defines the position of the center/top (for horizontal scale) or center/left (for
 vertical scale) and the dimensions of the scale.
 Give a negative length to reverse the scalebar.
@@ -30,11 +30,11 @@ Append \fIh\fP to get a horizontal scale [Default is vertical].
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-.B \-A
+OPT(A)
 Place annotations above (instead of below) horizontal scalebars and to the left
 (instead of the right) of vertical scalebars.
 .TP
-.B \-B
+OPT(B)
 Set annotation, tick, and gridline interval for the colorbar.  The
 xaxis label will plot beneath a horizontal bar (or vertically
 to the right of a vertical bar).  As an option, use the yaxis label to
@@ -47,61 +47,61 @@ Text with such characters will be plotted horizontally (relative to the color sc
 By default, labels are generated from the numerical entries.  To specify custom text
 labels for intervals, you must append ;\fIlabel\fP to each z-slice in the cpt file.
 .TP
-.B \-C
+OPT(C)
 \fIcpt_file\fP is the color palette file to be used.
 By default all color changes are annotated.  To use a subset, add an extra column to the
-cpt-file with a L, U, or B to annotate Lower, Upper, or Both color segment boundaries (but see \fB\-B\fP).
+cpt-file with a L, U, or B to annotate Lower, Upper, or Both color segment boundaries (but see OPT(B)).
 If not given, \fBpsscale\fP will read stdin.  As for \fBgrdview\fP, \fBpsscale\fP can understand
 pattern specifications in the cpt file.
 .TP
-.B \-E
+OPT(E)
 Add sidebar triangles for \fBb\fPack- and/or \fBf\fPoreground colors.  Add \fBf\fP or \fBb\fP for
 only one sidebar triangle [Default gives both].  Optionally, append
 triangle height [Default is half the barwidth].
 .TP
-.B \-I
+OPT(I)
 Add illumination effects.  Optionally, set the range of intensities from
 - to + \fImax_intens\fP.  If not specified, 1 is used.  Alternatively,
 append \fIlow/high\fP intensities to specify an asymmetric range [Default is no illumination].
 #include "explain_-K.txt"
 .TP
-.B \-L
+OPT(L)
 Gives equal-sized color rectangles.  Default scales rectangles according to the
-z-range in the cpt-file  (Also see \fB\-Z\fP).  If set, any equal interval annotation
-set with \fB\-B\fP will be ignored.  If \fIgap\fP is appended and the cpt table is
+z-range in the cpt-file  (Also see OPT(Z)).  If set, any equal interval annotation
+set with OPT(B) will be ignored.  If \fIgap\fP is appended and the cpt table is
 discrete we will center each annotation on each rectangle, using the lower boundary
 z-value for the annotation.  If \fBi\fP is prepended we annotate the interval range instead.
 If OPT(I) is used then each rectangle will have its constant color modified by the specified intensity.
 .TP
-.B \-M
+OPT(M)
 Force a monochrome graybar using the (television) YIQ transformation.
 .TP
-.B \-N
+OPT(N)
 Effective dots-per-inch for the rectangular image making up the color scale [300].
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
-.B \-Q
+OPT(Q)
 Select logarithmic scale and power of ten annotations.  All z-values in the cpt file
 will be converted to p = log10(z) and only integer p values will be annotated using
 the 10^p format [Default is linear scale].
 .TP
-.B \-S
+OPT(S)
 Do not separate different colour intervals with black lines.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
 .TP
-.B \-Z
+OPT(Z)
 File with colorbar-width per color entry.  By default, width of entry is scaled
-to color range, i.e., z = 0-100 gives twice the width as z = 100-150 (Also see \fB\-L\fP).
+to color range, i.e., z = 0-100 gives twice the width as z = 100-150 (Also see OPT(L)).
 #include "explain_-c.txt"
 .SH EXAMPLES
 To append a vertical color scale (LEN_1 cm long; LEN_2 cm wide) to the right of a plot that is LEN_3 inch wide and LEN_4 inch
 high, using illumination, and show back- and foreground colors, and annotating every 5 units, use
 .br
 .sp
-\fBpsscale\fP SCALE \fB\-O \-C\fPcolors.cpt \fB\-I \-E\fP \fB\-B\fP5:BATHYMETRY:/:m: >> map.ps
+\fBpsscale\fP SCALE OPT(O) OPT(C)colors.cpt OPT(I) OPT(E) OPT(B)5:BATHYMETRY:/:m: >> map.ps
 .SH NOTES
 When the cpt file is discrete and no illumination is specified, the color bar will be painted
 using polygons.  For all other cases we must paint with an image.  Some color printers may give

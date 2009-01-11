@@ -28,58 +28,58 @@ a fixed value, a grid with values, or simply be the minimum/maximum input data v
 3 column ASCII file [or binary, see OPT(b)] holding (x,y,z) data values.  If no file is specified, \fBsurface\fP will read from
 standard input.
 .TP
-.B \-G
+OPT(G)
 Output file name.  Output is a binary 2-D \fI.grd\fP file.  Note that the smallest grid dimension must be at least 4.
 #include "explain_-I.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
 .TP
-.B \-A
+OPT(A)
 Aspect ratio.  If desired, grid anisotropy can be added to the equations.  Enter \fIaspect_ratio\fP,
 where dy = dx / \fIaspect_ratio\fP relates the grid dimensions.  [Default = 1 assumes isotropic grid.]
 .TP
-.B \-C
+OPT(C)
 Convergence limit.  Iteration is assumed to have converged when the maximum absolute change in 
 any grid value is less than \fIconvergence_limit\fP.  (Units same as data z units).  [Default is scaled
 to 0.1 percent of typical gradient in input data.]
 #include "explain_-H.txt"
 Not used with binary data.
 .TP
-.B \-L
+OPT(L)
 Impose limits on the output solution.  \fBl\fP\fIlower\fP sets the lower bound.  \fIlower\fP can be the name of a
 grid file with lower bound values, a fixed value, \fBd\fP to set to minimum input value, or \fBu\fP for unconstrained [Default].
 \fBu\fP\fIupper\fP sets the upper bound and can be the name of a
 grid file with upper bound values, a fixed value, \fBd\fP to set to maximum input value, or \fBu\fP for unconstrained [Default].
 .TP
-.B \-N
+OPT(N)
 Number of iterations.  Iteration will cease when \fIconvergence_limit\fP is reached or when number of
 iterations reaches \fImax_iterations\fP. [Default is 250.]
 .TP
-.B \-Q
+OPT(Q)
 Suggest grid dimensions which have a highly composite greatest
 common factor. This allows surface to use several intermediate steps in the
 solution, yielding faster run times and better results. The sizes suggested by
-\fB\-Q\fP can be achieved by altering \fB\-R\fP and/or \fB\-I\fP. You can
-recover the \fB\-R\fP and \fB\-I\fP you want later by using \fBgrdsample\fP or \fBgrdcut\fP on the output of \fBsurface\fP.
+OPT(Q) can be achieved by altering OPT(R) and/or OPT(I). You can
+recover the OPT(R) and OPT(I) you want later by using \fBgrdsample\fP or \fBgrdcut\fP on the output of \fBsurface\fP.
 .TP
-.B \-S
+OPT(S)
 Search radius.  Enter \fIsearch_radius\fP in same units as x,y data; append \fBm\fP to indicate minutes.
 This is used to initialize the grid before the first iteration; it is not worth the time unless the
 grid lattice is prime and cannot have regional stages.  [Default = 0.0 and no search is made.]
 .TP
-.B \-T
+OPT(T)
 Tension factor[s].  These must be between 0 and 1.  Tension may be used in the interior solution
 (above equation, where it suppresses spurious oscillations) and in the boundary conditions (where
 it tends to flatten the solution approaching the edges).  Using zero for both values results in
 a minimum curvature surface with free edges, i.e. a natural bicubic spline.
-Use \fB\-T\fP\fItension_factor\fP\fBi\fP to set interior tension, and \fB\-T\fP\fItension_factor\fP\fBb\fP
+Use OPT(T)\fItension_factor\fP\fBi\fP to set interior tension, and OPT(T)\fItension_factor\fP\fBb\fP
 to set boundary tension.  If you do not append \fBi\fP or \fBb\fP, both will be set to the same value.
 [Default = 0 for both gives minimum curvature solution.]
 #include "explain_-V.txt"
-\fB\-Vl\fP will report the convergence after each iteration;  \fB\-V\fP will report only after 
+OPT(Vl) will report the convergence after each iteration;  OPT(V) will report only after 
 each regional grid is converged.
 .TP
-.B \-Z
+OPT(Z)
 Over-relaxation factor.  This parameter is used to accelerate the convergence; it is a number between
 1 and 2.  A value of 1 iterates the equations exactly, and will always assure stable convergence.  Larger
 values overestimate the incremental changes during convergence, and will reach a solution more rapidly but may

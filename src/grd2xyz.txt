@@ -10,7 +10,7 @@ grd2xyz \- Converting grid file(s) to ASCII or binary data
 \fBgrd2xyz\fP reads one or more binary 2-D grid files and writes out xyz-triplets in
 ASCII [or binary] format to standard output.  Modify the precision of the ASCII
 output format by editing the \fBD_FORMAT\fP parameter in your \.gmtdefaults4 file or
-use \fB\-\-D_FORMAT=\fP\fIformat\fP on the command line, or choose binary output
+use PAR(D_FORMAT,format) on the command line, or choose binary output
 using single or double precision storage.  As an option you may output z-values
 without the (x,y) in a number of formats, see OPT(E) or OPT(Z) below.
 .TP
@@ -19,27 +19,27 @@ Names of 2-D binary grid files to be converted.
 (See GRID FILE FORMATS below.)
 .SH OPTIONS
 .TP
-.B \-E
+OPT(E)
 Output an ESRI ArcInfo ASCII interchange grid format file.  Append \fInodata\fP which will be used wherever
 the grid value equals NaN [-9999].  Note that all data values are written as integers.
 .TP
-.B \-H
+OPT(H)
 Output 1 header record based on information in the first grid file header.
 Ignored if binary output is selected.  [Default is no header].
 #include "explain_-R.txt" 
 Using the OPT(R) option will select a subsection of the grid. If this subsection exceeds the
 boundaries of the grid, only the common region will be output.
 .TP
-.B \-S
+OPT(S)
 Suppress output for nodes whose z-value equals NaN [Default outputs all nodes].
 Append \fBr\fP to reverse the suppression, i.e., only output the nodes whose
 z-value equals NaN.
 #include "explain_-V.txt" 
 .TP
-.B \-W
+OPT(W)
 Write out x,y,z,w, where w is the supplied \fIweight\fP (or 1 if not supplied) [Default writes x,y,z only].
 .TP
-.B \-Z
+OPT(Z)
 Write a 1-column ASCII [or binary] table.  Output will be organized according to the specified ordering convention contained in \fIflags\fP.
 If data should be written by rows, make \fIflags\fP start with \fBT\fP(op) if first row is y = ymax
 or \fBB\fP(ottom) if first row is y = ymin.  Then, append \fBL\fP or \fBR\fP to indicate that first element should start at left
@@ -69,12 +69,12 @@ one of several data types (all binary except \fBa\fP):
 \fBd\fP  8-byte floating point double precision
 .br
 .sp
-Default format is scanline orientation of ASCII numbers: \fB\-ZTLa\fP.
-Note that \fB\-Z\fP only applies to 1-column output.
+Default format is scanline orientation of ASCII numbers: OPT(ZTLa).
+Note that OPT(Z) only applies to 1-column output.
 .RE
 #include "explain_-bo.txt"
 [Default is 3].
-This option only applies to xyz output; see \fB\-Z\fP for z table output.
+This option only applies to xyz output; see OPT(Z) for z table output.
 #include "explain_-f.txt"
 See also \fBTIME COORDINATES\fP below.
 #include "explain_precision.txt"
@@ -97,7 +97,7 @@ to ASCII:
 To write a single precision binary file without the x,y positions from the file raw_data.grd file, using scanline orientation, run
 .br
 .sp
-\fBgrd2xyz\fP raw_data.grd \fB\-ZTLf\fP > hawaii_grv.b
+\fBgrd2xyz\fP raw_data.grd OPT(ZTLf) > hawaii_grv.b
 .SH "SEE ALSO"
 .IR gmtdefaults (1),
 .IR GMT (1),

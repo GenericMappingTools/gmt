@@ -9,7 +9,7 @@ gmtset \- To change individual \fBGMT\fP default parameters
 file.  If no such file exists one will be created.  The main purpose of \fBgmtset\fP is
 temporarily to change certain parameters inside a shell script, e.g., set the dots-per-inch
 to 600, run the script, and reset to 300 dpi.  Optionally, you can specify one or more temporary changes
-directly on any \fBGMT\fP command line with the syntax \fB\-\-PARAMETER=VALUE\fP; such changes are
+directly on any \fBGMT\fP command line with the syntax PAR(PARAMETER,VALUE); such changes are
 only in effect for that command and do not permanently change the default settings on disk.
 .TP
 PARAMETER \fIvalue\fP
@@ -17,7 +17,7 @@ Provide one or several pairs of parameter/value combinations that you want to mo
 complete listing of available parameters and their meaning, see the \fBgmtdefaults\fP man page.
 .SH OPTIONS
 .TP
-.B \-G
+OPT(G)
 Name of specific \.gmtdefaults4 file to modify [Default looks first in current directory, then in your
 home directory, then in ~/.gmt and finally in the system defaults].
 .SH EXAMPLES
