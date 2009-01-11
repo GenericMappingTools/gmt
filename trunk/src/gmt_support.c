@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.378 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_support.c,v 1.379 2009-01-11 02:52:38 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -8321,6 +8321,12 @@ int GMT_init_custom_symbol (char *name, struct GMT_CUSTOM_SYMBOL **S) {
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
 				s->action = GMT_ACTION_TRIANGLE;
+				break;
+
+			case '+':		/* Draw plus symbol */
+				if (last != 3) error++;
+				s->p[0] = atof (col[2]);
+				s->action = GMT_ACTION_PLUS;
 				break;
 
 			case 'x':		/* Draw cross symbol */
