@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.52 2009-01-10 03:45:43 remko Exp $
+ *	$Id: pslib.h,v 1.53 2009-01-11 02:47:02 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -152,6 +152,7 @@ EXTERN_MSC int ps_plotinit (char *plotfile, int overlay, int mode, double xoff, 
 EXTERN_MSC int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, double yoff, double xscl, double yscl, int ncopies, int dpi, int unit, double *page_size, int *rgb, const char *encoding, struct EPS *eps);
 EXTERN_MSC void ps_plotend (int lastpage);
 EXTERN_MSC void ps_plotr (double x, double y, int pen);
+EXTERN_MSC void ps_plus (double x, double y, double size);
 EXTERN_MSC void ps_point (double x, double y, double diameter);
 EXTERN_MSC void ps_polygon (double *x, double *y, PS_LONG n, int rgb[], int outline);
 EXTERN_MSC void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline);
