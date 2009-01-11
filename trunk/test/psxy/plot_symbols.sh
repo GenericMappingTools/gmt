@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: plot_symbols.sh,v 1.8 2007-11-15 04:20:42 remko Exp $
+#	$Id: plot_symbols.sh,v 1.9 2009-01-11 02:57:56 remko Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
@@ -30,10 +30,12 @@ psxy -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 1.5	2.5	s
 2.5	2.5	t
 > Blue arrow -Gblue
-0.5	1.5	30	80	w
 3.5	2.5	30	1	vb
-> Fat pen -W2p
+0.5	1.5	30	80	w
+> Fat red pen -W2p,red
 1.5	1.5	x
+> Fat pen -W2p
+1.5	1.5	+
 2.5	1.5	y
 > Dual-colored pattern # 12 -Gp100/12:FredBgreen -W3p,orange
 3.5	1.5	a
