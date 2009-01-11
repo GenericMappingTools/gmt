@@ -1,6 +1,6 @@
 #!/bin/sh
 #               GMT ANIMATION 04
-#               $Id: anim_04.sh,v 1.3 2009-01-11 22:39:35 guru Exp $
+#               $Id: anim_04.sh,v 1.4 2009-01-11 23:03:56 guru Exp $
 #
 # Purpose:      Make DVD-res Quicktime movie of NY to Miami flight
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
@@ -30,8 +30,9 @@ makecpt -Cglobe -Z > $$.cpt
 while read lon lat dist; do
 	file=`gmt_set_framename $name $frame`
 	ID=`echo $frame | awk '{printf "%4.4d\n", $1}'`
-	grdimage ${VERBOSE} $REGION -JG${lon}/${lat}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+ \
-		-P -Y0.1i -X0.1i USEast_Coast.nc -I$$_int.nc -C$$.cpt --PAPER_MEDIA=Custom_${px}ix${py}i -K > $$.ps
+	grdimage -JG${lon}/${lat}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+ \
+		$REGION -P -Y0.1i -X0.1i USEast_Coast.nc -I$$_int.nc -C$$.cpt \
+		--PAPER_MEDIA=Custom_${px}ix${py}i -K > $$.ps
 	psxy -R -J -O -K -W1p $$.path.d >> $$.ps
 	echo 0 4.6 14 0 1 TL $ID | pstext -R0/$px/0/$py -Jx1i -O >> $$.ps
 	if [ $# -eq 0 ]; then
