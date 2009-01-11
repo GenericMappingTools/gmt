@@ -176,3 +176,7 @@ examples/ex28/job28.sh
 examples/ex28/job28.csh
 examples/ex28/job28.bat
 examples/ex28/Kilauea.utm.nc
+examples/ex29/job29.sh
+examples/ex29/job29.csh
+examples/ex29/job29.bat
+examples/ex29/mars370.in
