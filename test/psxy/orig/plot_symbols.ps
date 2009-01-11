@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v4.4.0 (CVS Jan  9 2009 22:12:37) Document from psxy
+%%Title: GMT v4.4.0 (CVS Jan 10 2009 21:13:53) Document from psxy
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Jan  9 22:26:15 2009
+%%CreationDate: Sat Jan 10 21:15:14 2009
 %%LanguageLevel: 1
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -41,7 +41,8 @@
 /Z /show #
 /FP {true charpath flattenpath}!
 /O {M W 0 0 D S}!
-/X {M dup 0 D dup 2 div neg dup G 0 exch D S}!
+/X {M 0.707106781 mul 5 {dup} repeat 2 div neg dup G D neg 0 G neg D S}!
+/x {M dup dup 2 div neg dup 0 D exch 0 D dup G 0 exch D S}!
 /QA {P V A F U N}! /QC {P V C F U N}! /QK {P V K F U N}! /QH {P V H F U N}! /QI {P V I F U N}! /QQ {P S}!
 /Qa {P V A F U S}! /Qc {P V C F U S}! /Qk {P V K F U S}! /Qh {P V H F U S}! /Qi {P V I F U S}!
 /q0 {M {D} repeat}!
@@ -614,10 +615,13 @@ FeoV7[qW[+9~>
 pattern20 150 300 0 375 Bi
 pattern20 150 450 450 Si
 pattern20 150 750 450 Ti
-0 0 1 150 150 150 30 80 Wc
 V 920 375 T 30 R 0 0 1 -264 0 -26 -36 30 36 30 0 -26 264 -4 Vc U
+0 0 1 150 150 150 30 80 Wc
 S 8 W
-300 300 150 X
+S 1 0 0 C
+300 450 150 X
+S 0 A
+300 450 150 x
 750 0 M 0 300 D S
 S 12 W
 S 1 0.647 0 C

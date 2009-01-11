@@ -1,8 +1,20 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.385 2009-01-10 15:40:04 jluis Exp $
+	$Id: ChangeLog,v 1.386 2009-01-11 02:57:56 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-01-11	remko
+	* gmt_custom_symbols.conf:	Replaced all "Like -S.. but fillable with pattern" by
+				"Same as -S..", since all these symbols are already fillable
+	* PSL_prologue.ps:	New implementation of cross (was actually a plus). Introduced
+				plus sign. Both are positioned now on the center of the symbol.
+	* pslib.[ch]:		Renamed ps_cross to ps_plus. Implemented new ps_cross.
+	* gmt_plot.[ch]:	Renamed GMT_cross to GMT_plus. Implemented new GMT_cross.
+	* psxy.{c,txt}:		-Sx now makes a cross (x) not a plus (+). -S+ makes a plus (+).
+	* gmt_init.c:		---"---
+	* gmt_support.c:	---"---
+	* gmt_symbol.h:		---"---
+
 2009-01-10	remko
-	* pslib.c, PS_prologue.ps:	New implementation of code for ellipse (provides
+	* pslib.c, PSL_prologue.ps:	New implementation of code for ellipse (provides
 				constant pen width). Changed code for circle and
 				pie wedge (made similar to other symbols).
 	* pslib.[ch], gmt_plot.c:	Removed OLD_TEXTDIM code (obsolete after change of 2008-12-20).
