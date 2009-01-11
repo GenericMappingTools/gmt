@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.65 2009-01-09 04:02:31 guru Exp $
+#	$Id: Makefile,v 1.66 2009-01-11 06:18:42 guru Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -175,7 +175,7 @@ examples run-examples:
 
 animations run-animations:
 		@if [ -d examples ]; then \
-			cd examples; sh do_animations.sh $(ANIMATE); \
+			cd examples; sh do_animations.sh $(srcdir) $(srcdir); \
 		else \
 			echo "examples directory not installed"; \
 		fi
