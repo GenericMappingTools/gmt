@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.388 2009-01-11 23:21:08 guru Exp $
+	$Id: ChangeLog,v 1.389 2009-01-12 04:32:24 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-01-12	remko
+	* grdview.c:		Made outline part of paint_it(). Significantly shortens PS file
+				when plotting mesh.
+	* pslib.[ch]:		Significantly simplified the PostScript specification of symbols.
+				ps_setfill introduced to set symbol fill and outline.
+	* gmt_plot.c:		---"---
+
 2009-01-11	pwessel
 	* gmt_custom_symbols.conf:	Removed the standard symbols from this list but kept
 				the actual custom *.def files for backwards compatibility.

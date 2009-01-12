@@ -541,6 +541,13 @@ etc, where x is starting point (The x is not plotted).  That is, the line is mad
 specify \fIpattern\fP = NULL ("") and \fIoffset\fP = 0.  Units are in dpi units.
 .RE
 .IP
+void \fBps_setfill\fR (\fIrgb, outline\fP)
+.br
+\fBint\fR \fIrgb[3], outline\fP;
+.RS 10
+Sets the current fill color and whether or not outline is needed for symbols.
+.RE
+.IP
 void \fBps_setfont\fR (\fIfontnr\fP)
 .br
 \fBint\fR \fIfontnr\fP;
