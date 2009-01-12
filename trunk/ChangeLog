@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.389 2009-01-12 04:32:24 remko Exp $
+	$Id: ChangeLog,v 1.390 2009-01-12 19:19:22 jluis Exp $
 -----------------------------------------------------------------------------------------
+2009-01-12	jluis
+	* gmt_plot.c:		Example 8 was crashing with Intel compiled binaries because the
+				fno variale in GMT_epsinfo was declared to 5 elements but in cases
+				like example08 a fno[5] adress is inquired.
+
 2009-01-12	remko
 	* grdview.c:		Made outline part of paint_it(). Significantly shortens PS file
 				when plotting mesh.
