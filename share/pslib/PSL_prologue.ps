@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.20 2009-01-12 04:25:57 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.21 2009-01-12 22:02:05 remko Exp $
 %-	Make sure that the version number matches the one mentioned in pslib.c
 % Begin pslib header
 250 dict begin
@@ -28,47 +28,52 @@
 /Y {findfont exch scalefont setfont}!
 /Z /show #
 /FP {true charpath flattenpath}!
+/MS {/savematrix matrix currentmatrix def}!
+/MR {savematrix setmatrix}!
 % Point
 /O {M W 0 0 D S}!
 % Cross
 /X {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
 % Plus
 /x {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
-% Path fill (lower case second letter with outline)
-/FA {P V A F U N}! /FC {P V C F U N}! /FK {P V K F U N}! /FH {P V H F U N}! /FI {P V I F U N}!
-/Fa {P V A F U S}! /Fc {P V C F U S}! /Fk {P V K F U S}! /Fh {P V H F U S}! /Fi {P V I F U S}! /FQ {P S}!
+% Path fill
+/FS {/fc exch def /fs {V fc F U}!}!
+/FQ {/fs {} def}!
+% Outline off or on
+/O0 {/os {N} def}!
+/O1 {/os {S} def}!
 % Patch fill
-/SP {M {D} repeat FS}!
+/SP {M {D} repeat P fs os}!
 % Single-headed vector
-/SV {0 exch M 0 D D D D D 0 D FS}!
+/SV {0 exch M 0 D D D D D 0 D P fs os}!
 % Double-headed vector
-/Sv {0 0 M D D 0 D D D D D 0 D D FS}!
+/Sv {0 0 M D D 0 D D D D D 0 D D P fs os}!
 % Box
-/SB {M dup 0 D exch 0 exch D neg 0 D FS}!
+/SB {M dup 0 D exch 0 exch D neg 0 D P fs os}!
 % Circle
-/SC {S 0 360 arc FS}!
+/SC {S 0 360 arc P fs os}!
 % Ellipse
-/SE {S /savematrix matrix currentmatrix def T R scale 0 0 1 0 360 arc savematrix setmatrix FS}!
+/SE {S MS T R scale 0 0 1 0 360 arc MR P fs os}!
 % Diamond
-/SD {M 4 {dup} repeat 0 G neg dup dup D exch D D FS}!
+/SD {M 4 {dup} repeat 0 G neg dup dup D exch D D P fs os}!
 % Rectangle
-/SR {M V R dup -2 div 0 G exch dup -2 div 0 exch G exch dup 0 D exch 0 exch D neg 0 D FS U}!
+/SR {M MS R dup -2 div 0 G exch dup -2 div 0 exch G exch dup 0 D exch 0 exch D neg 0 D MR P fs os}!
 % Square
-/SS {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FS}!
+/SS {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D P fs os}!
 % Triangle
-/ST {M V dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D FS U}!
+/ST {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR P fs os}!
 % Inverted triangle
-/SI {M V dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D FS U}!
+/SI {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR P fs os}!
 % Star
-/SA {M V dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop FS U}!
+/SA {M MS dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop MR P fs os}!
 % Hexagon
-/SH {M V dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop FS U}!
+/SH {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR P fs os}!
 % Pentagon
-/SN {M V dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop FS U}!
+/SN {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR P fs os}!
 % Octagon
-/SO {M V 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop FS U}!
+/SO {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR P fs os}!
 % Pie Wedge
-/SW {S /a1 exch def /a0 exch def /r exch def /y exch def dup y r a0 a1 arc y L FS}!
+/SW {S /a1 exch def /a0 exch def /r exch def /y exch def dup y r a0 a1 arc y L P fs os}!
 % To reencode one font with the provided encoding vector
 /PSL_reencode { findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall

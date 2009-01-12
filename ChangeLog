@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.390 2009-01-12 19:19:22 jluis Exp $
+	$Id: ChangeLog,v 1.391 2009-01-12 22:02:05 remko Exp $
 -----------------------------------------------------------------------------------------
 2009-01-12	jluis
 	* gmt_plot.c:		Example 8 was crashing with Intel compiled binaries because the
@@ -11,6 +11,9 @@
 				when plotting mesh.
 	* pslib.[ch]:		Significantly simplified the PostScript specification of symbols.
 				ps_setfill introduced to set symbol fill and outline.
+				Bug fix in ps_bitimage_cmap(): uncolored (B/W) 1-bit images caused
+				errors in ghostscript when the pen color was not black; now plots
+				using /DeviceGray.
 	* gmt_plot.c:		---"---
 
 2009-01-11	pwessel
