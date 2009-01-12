@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.242 2009-01-12 04:25:57 remko Exp $
+ *	$Id: gmt_plot.c,v 1.243 2009-01-12 22:02:05 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2466,7 +2466,7 @@ void GMT_timestamp (double x, double y, int justify, char *U_label)
 	ps_command ("U\n% End GMT time-stamp");
 
 	/* Reset fill style so that it will be repeated outside file stamp */
-	ps_setfill (unset_rgb, FALSE);
+	ps_setfill (unset_rgb, -2);
 }
 
 void GMT_echo_command (int argc, char **argv)

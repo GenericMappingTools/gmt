@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.189 2009-01-12 17:11:21 remko Exp $
+ *	$Id: pslib.c,v 1.190 2009-01-12 22:02:05 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -644,19 +644,22 @@ void ps_setfill (int rgb[], int outline)
 {
 	int pmode;
 
-	if (rgb[0] == -3) {
-		pmode = ps_place_color (rgb);
-		fprintf (PSL->internal.fp, " ");
-		if (outline > 0) pmode += outline;
-		if (PSL->current.fill_rgb[0] != -3 || PSL->current.outline != outline) fprintf (PSL->internal.fp, "/FS {F%c} def\n", PSL->internal.paint_code[pmode]);
+	if (rgb[0] == -2)
+		{ /* Skipped, no fill specified */ }
+	else if (PSL->current.fill_rgb[0] == rgb[0] && PSL->current.fill_rgb[1] == rgb[1] && PSL->current.fill_rgb[2] == rgb[2])
+		{ /* Skipped, fill already set */ }
+	else {
+		if (rgb[0] == -1)
+			ps_command ("FQ");
+		else {
+			fprintf (PSL->internal.fp, "{");
+			pmode = ps_place_color (rgb);
+			fprintf (PSL->internal.fp, " %c} FS\n", PSL->internal.paint_code[pmode]);
+		}
 	}
-	else if (rgb[0] != -2) {
-		if (PSL->current.fill_rgb[0] == rgb[0] && PSL->current.fill_rgb[1] == rgb[1] && PSL->current.fill_rgb[2] == rgb[2] && PSL->current.outline == outline) return;
-		fprintf (PSL->internal.fp, "/FS {");
-		pmode = ps_place_color (rgb);
-		if (outline > 0) pmode += outline;
-		fprintf (PSL->internal.fp, " F%c} def\n", PSL->internal.paint_code[pmode]);
-	}
+
+	if (outline == -1) outline = 0;
+	if (outline >= 0 && PSL->current.outline != outline) fprintf (PSL->internal.fp, "O%d\n", outline);
 
 	PSL->current.fill_rgb[0] = rgb[0];
 	PSL->current.fill_rgb[1] = rgb[1];
@@ -1442,7 +1445,7 @@ int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, doubl
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.20 ");	/* Version number should match that of PSL_prologue.ps */
+		ps_bulkcopy ("PSL_prologue", "v 1.21 ");	/* Version number should match that of PSL_prologue.ps */
 		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Initialize book-keeping for font encoding and write font macros */
@@ -1601,11 +1604,11 @@ void ps_polygon (double *x, double *y, PS_LONG n, int rgb[], int outline)
 		fprintf (PSL->internal.fp, "S\n");
 	else {
 		ps_setfill (rgb, outline);
-		ps_command ("FS");
+		ps_command ("P fs os");
 	}
 	if (outline < 0) {
 		if (outline == -1) {
-			fprintf (PSL->internal.fp, "N U\n");
+			fprintf (PSL->internal.fp, "U\n");
 			if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Clipping is currently OFF\n");
 		}
 		PSL->internal.clip_path_length = 0;
