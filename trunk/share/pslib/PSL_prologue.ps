@@ -1,4 +1,5 @@
-%-	$Id: PSL_prologue.ps,v 1.19 2009-01-11 02:43:54 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.20 2009-01-12 04:25:57 remko Exp $
+%-	Make sure that the version number matches the one mentioned in pslib.c
 % Begin pslib header
 250 dict begin
 /! {bind def} bind def
@@ -30,76 +31,44 @@
 % Point
 /O {M W 0 0 D S}!
 % Cross
-/X {M 0.707106781 mul 5 {dup} repeat 2 div neg dup G D neg 0 G neg D S}!
+/X {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
 % Plus
-/x {M dup dup 2 div neg dup 0 D exch 0 D dup G 0 exch D S}!
+/x {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
 % Path fill (lower case second letter with outline)
-/QA {P V A F U N}! /QC {P V C F U N}! /QK {P V K F U N}! /QH {P V H F U N}! /QI {P V I F U N}! /QQ {P S}!
-/Qa {P V A F U S}! /Qc {P V C F U S}! /Qk {P V K F U S}! /Qh {P V H F U S}! /Qi {P V I F U S}!
+/FA {P V A F U N}! /FC {P V C F U N}! /FK {P V K F U N}! /FH {P V H F U N}! /FI {P V I F U N}!
+/Fa {P V A F U S}! /Fc {P V C F U S}! /Fk {P V K F U S}! /Fh {P V H F U S}! /Fi {P V I F U S}! /FQ {P S}!
 % Patch fill
-/q0 {M {D} repeat}!
-/qA {q0 QA}! /qC {q0 QC}! /qK {q0 QK}! /qH {q0 QH}! /qI {q0 QI}! /qQ {q0 QQ}!
-/qa {q0 Qa}! /qc {q0 Qc}! /qk {q0 Qk}! /qh {q0 Qh}! /qi {q0 Qi}!
+/SP {M {D} repeat FS}!
 % Single-headed vector
-/V0 {0 exch M 0 D D D D D 0 D}!
-/VA {V0 QA}! /VC {V0 QC}! /VK {V0 QK}! /VH {V0 QH}! /VI {V0 QI}! /VQ {V0 QQ}!
-/Va {V0 Qa}! /Vc {V0 Qc}! /Vk {V0 Qk}! /Vh {V0 Qh}! /Vi {V0 Qi}!
+/SV {0 exch M 0 D D D D D 0 D FS}!
 % Double-headed vector
-/v0 {0 0 M D D 0 D D D D D 0 D D}!
-/vA {v0 QA}! /vC {v0 QC}! /vK {v0 QK}! /vH {v0 QH}! /vI {v0 QI}! /vQ {v0 QQ}!
-/va {v0 Qa}! /vc {v0 Qc}! /vk {v0 Qk}! /vh {v0 Qh}! /vi {v0 Qi}!
+/Sv {0 0 M D D 0 D D D D D 0 D D FS}!
 % Box
-/B0 {M dup 0 D exch 0 exch D neg 0 D}!
-/BA {B0 QA}! /BC {B0 QC}! /BK {B0 QK}! /BH {B0 QH}! /BI {B0 QI}! /BQ {B0 QQ}!
-/Ba {B0 Qa}! /Bc {B0 Qc}! /Bk {B0 Qk}! /Bh {B0 Qh}! /Bi {B0 Qi}!
+/SB {M dup 0 D exch 0 exch D neg 0 D FS}!
 % Circle
-/C0 {S 0 360 arc}!
-/CA {C0 QA}! /CC {C0 QC}! /CK {C0 QK}! /CH {C0 QH}! /CI {C0 QI}! /CQ {C0 QQ}!
-/Ca {C0 Qa}! /Cc {C0 Qc}! /Ck {C0 Qk}! /Ch {C0 Qh}! /Ci {C0 Qi}!
+/SC {S 0 360 arc FS}!
 % Ellipse
-/E0 {S /savematrix matrix currentmatrix def translate rotate scale 0 0 1 0 360 arc savematrix setmatrix}!
-/EA {E0 QA}! /EC {E0 QC}! /EK {E0 QK}! /EH {E0 QH}! /EI {E0 QI}! /EQ {E0 QQ}!
-/Ea {E0 Qa}! /Ec {E0 Qc}! /Ek {E0 Qk}! /Eh {E0 Qh}! /Ei {E0 Qi}!
+/SE {S /savematrix matrix currentmatrix def T R scale 0 0 1 0 360 arc savematrix setmatrix FS}!
 % Diamond
-/D0 {M 4 {dup} repeat 0 G neg dup dup D exch D D}!
-/DA {D0 QA}! /DC {D0 QC}! /DK {D0 QK}! /DH {D0 QH}! /DI {D0 QI}! /DQ {D0 QQ}!
-/Da {D0 Qa}! /Dc {D0 Qc}! /Dk {D0 Qk}! /Dh {D0 Qh}! /Di {D0 Qi}!
+/SD {M 4 {dup} repeat 0 G neg dup dup D exch D D FS}!
 % Rectangle
-/R0 {M V R dup -2 div 0 G exch dup -2 div 0 exch G exch dup 0 D exch 0 exch D neg 0 D}!
-/RA {R0 QA U}! /RC {R0 QC U}! /RK {R0 QK U}! /RH {R0 QH U}! /RI {R0 QI U}! /RQ {R0 QQ U}!
-/Ra {R0 Qa U}! /Rc {R0 Qc U}! /Rk {R0 Qk U}! /Rh {R0 Qh U}! /Ri {R0 Qi U}!
+/SR {M V R dup -2 div 0 G exch dup -2 div 0 exch G exch dup 0 D exch 0 exch D neg 0 D FS U}!
 % Square
-/S0 {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D}!
-/SA {S0 QA}! /SC {S0 QC}! /SK {S0 QK}! /SH {S0 QH}! /SI {S0 QI}! /SQ {S0 QQ}!
-/Sa {S0 Qa}! /Sc {S0 Qc}! /Sk {S0 Qk}! /Sh {S0 Qh}! /Si {S0 Qi}!
+/SS {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FS}!
 % Triangle
-/T0 {M V dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D}!
-/TA {T0 QA U}! /TC {T0 QC U}! /TK {T0 QK U}! /TH {T0 QH U}! /TI {T0 QI U}! /TQ {T0 QQ U}!
-/Ta {T0 Qa U}! /Tc {T0 Qc U}! /Tk {T0 Qk U}! /Th {T0 Qh U}! /Ti {T0 Qi U}!
+/ST {M V dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D FS U}!
 % Inverted triangle
-/I0 {M V dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D}!
-/IA {I0 QA U}! /IC {I0 QC U}! /IK {I0 QK U}! /IH {I0 QH U}! /II {I0 QI U}! /IQ {I0 QQ U}!
-/Ia {I0 Qa U}! /Ic {I0 Qc U}! /Ik {I0 Qk U}! /Ih {I0 Qh U}! /Ii {I0 Qi U}!
+/SI {M V dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D FS U}!
 % Star
-/A0 {M V dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop}!
-/AA {A0 QA U}! /AC {A0 QC U}! /AK {A0 QK U}! /AH {A0 QH U}! /AI {A0 QI U}! /AQ {A0 QQ U}!
-/Aa {A0 Qa U}! /Ac {A0 Qc U}! /Ak {A0 Qk U}! /Ah {A0 Qh U}! /Ai {A0 Qi U}!
+/SA {M V dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop FS U}!
 % Hexagon
-/H0 {M V dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop}!
-/HA {H0 QA U}! /HC {H0 QC U}! /HK {H0 QK U}! /HH {H0 QH U}! /HI {H0 QI U}! /HQ {H0 QQ U}!
-/Ha {H0 Qa U}! /Hc {H0 Qc U}! /Hk {H0 Qk U}! /Hh {H0 Qh U}! /Hi {H0 Qi U}!
+/SH {M V dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop FS U}!
 % Pentagon
-/N0 {M V dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop}!
-/NA {N0 QA U}! /NC {N0 QC U}! /NK {N0 QK U}! /NH {N0 QH U}! /NI {N0 QI U}! /NQ {N0 QQ U}!
-/Na {N0 Qa U}! /Nc {N0 Qc U}! /Nk {N0 Qk U}! /Nh {N0 Qh U}! /Ni {N0 Qi U}!
+/SN {M V dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop FS U}!
 % Octagon
-/O0 {M V 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop}!
-/OA {O0 QA U}! /OC {O0 QC U}! /OK {O0 QK U}! /OH {O0 QH U}! /OI {O0 QI U}! /OQ {O0 QQ U}!
-/Oa {O0 Qa U}! /Oc {O0 Qc U}! /Ok {O0 Qk U}! /Oh {O0 Qh U}! /Oi {O0 Qi U}!
+/SO {M V 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop FS U}!
 % Pie Wedge
-/W0 {S /a1 exch def /a0 exch def /r exch def /y exch def dup y r a0 a1 arc y L}!
-/WA {W0 QA}! /WC {W0 QC}! /WK {W0 QK}! /WH {W0 QH}! /WI {W0 QI}! /WQ {W0 QQ}!
-/Wa {W0 Qa}! /Wc {W0 Qc}! /Wk {W0 Qk}! /Wh {W0 Qh}! /Wi {W0 Qi}!
+/SW {S /a1 exch def /a0 exch def /r exch def /y exch def dup y r a0 a1 arc y L FS}!
 % To reencode one font with the provided encoding vector
 /PSL_reencode { findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall

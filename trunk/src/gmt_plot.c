@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.241 2009-01-11 18:12:04 jluis Exp $
+ *	$Id: gmt_plot.c,v 1.242 2009-01-12 04:25:57 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2415,6 +2415,7 @@ void GMT_timestamp (double x, double y, int justify, char *U_label)
 	time_t right_now;
 	char label[GMT_LONG_TEXT], text[GMT_LONG_TEXT];
 	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions */
+	int unset_rgb[3] = {-2, -2, -2};
 
 	/* Plot time string in format defined by UNIX_TIME_FORMAT */
 
@@ -2450,7 +2451,8 @@ void GMT_timestamp (double x, double y, int justify, char *U_label)
 
 	ps_rect (0.0, 0.0, dim[0], dim[1], gmtdefs.background_rgb, TRUE);
 	ps_image (0.0, 0.0, dim[0], dim[1], GMT_glyph, 220, 90, 1);
-	ps_command ("1 PSL_g_h PSL_b_w PSL_g_w 0 Ba");
+	ps_setfill (gmtdefs.foreground_rgb, TRUE);
+	ps_command ("PSL_g_h PSL_b_w PSL_g_w 0 SB");
 	ps_text (dim[0], dim[2], 8.0, label, 0.0, 1, 0);
 
 	/* Optionally, add additional label to the right of the box */
@@ -2462,6 +2464,9 @@ void GMT_timestamp (double x, double y, int justify, char *U_label)
 	}
 
 	ps_command ("U\n% End GMT time-stamp");
+
+	/* Reset fill style so that it will be repeated outside file stamp */
+	ps_setfill (unset_rgb, FALSE);
 }
 
 void GMT_echo_command (int argc, char **argv)
