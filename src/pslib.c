@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.187 2009-01-11 02:47:02 remko Exp $
+ *	$Id: pslib.c,v 1.188 2009-01-12 04:25:57 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -346,15 +346,14 @@ void ps_bitimage_ (double *x, double *y, double *xsize, double *ysize, unsigned 
 void ps_circle (double x, double y, double size, int rgb[], int outline)
 {
 	PS_LONG ix, iy, ir;
-	int pmode;
 
 	/* size is assumed to be diameter */
 
 	ix = (PS_LONG)irint (x * PSL->internal.scale);
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
 	ir = (PS_LONG)irint (0.5 * size * PSL->internal.scale);
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %ld C%c\n", ix, iy, ir, PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %ld SC\n", ix, iy, ir);
 	PSL->internal.npath = 0;
 }
 
@@ -370,7 +369,7 @@ void ps_clipoff (void) {
 	PSL->internal.npath = PSL->internal.clip_path_length = 0;
 	PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = -1;	/* Reset to -1 so ps_setpaint will update the current paint */
 	PSL->current.linewidth = -1;			/* Reset to -1 so ps_setline will update the current width */
-	PSL->current.offset = -1;				/* Reset to -1 so ps_setdash will update the current pattern */
+	PSL->current.offset = -1;			/* Reset to -1 so ps_setdash will update the current pattern */
 }
 
 /* fortran interface */
@@ -575,7 +574,7 @@ void ps_comment_ (char *text, int nlen)
 
 void ps_plus (double x, double y, double diameter)
 {	/* Draw plus sign using current color. Fit inside circle of given diameter. */
-	fprintf (PSL->internal.fp, "%ld %ld %ld x\n", (PS_LONG) irint (diameter * PSL->internal.scale), (PS_LONG) irint (x * PSL->internal.scale), (PS_LONG) irint (y * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "%ld %ld %ld x\n", (PS_LONG) irint (0.5 * diameter * PSL->internal.scale), (PS_LONG) irint (x * PSL->internal.scale), (PS_LONG) irint (y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -587,7 +586,7 @@ void ps_plus_ (double *x, double *y, double *diameter)
 
 void ps_cross (double x, double y, double diameter)
 {	/* Draw cross sign using current color. Fit inside circle of given diameter. */
-	fprintf (PSL->internal.fp, "%ld %ld %ld X\n", (PS_LONG) irint (diameter * PSL->internal.scale), (PS_LONG) irint (x * PSL->internal.scale), (PS_LONG) irint (y * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "%ld %ld %ld X\n", (PS_LONG) irint (0.5 * diameter * PSL->internal.scale), (PS_LONG) irint (x * PSL->internal.scale), (PS_LONG) irint (y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -611,10 +610,9 @@ void ps_point_ (double *x, double *y, double *diameter)
 
 void ps_diamond (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
-	int pmode;
 
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %ld D%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %ld SD\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -642,12 +640,39 @@ void ps_segment_ (double *x0, double *y0, double *x1, double *y1)
 	 ps_segment (*x0, *y0, *x1, *y1);
 }
 
-void ps_star (double x, double y, double diameter, int rgb[], int outline)
-{	/* Fit inside circle of given diameter */
+void ps_setfill (int rgb[], int outline)
+{
 	int pmode;
 
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %ld A%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	if (rgb[0] == -3) {
+		pmode = ps_place_color (rgb);
+		if (outline > 0) pmode += outline;
+		if (PSL->current.fill_rgb[0] != -3 || PSL->current.outline != outline) fprintf (PSL->internal.fp, "/FS {F%c} def\n", PSL->internal.paint_code[pmode]);
+	}
+	else if (rgb[0] != -2) {
+		if (PSL->current.fill_rgb[0] == rgb[0] && PSL->current.fill_rgb[1] == rgb[1] && PSL->current.fill_rgb[2] == rgb[2] && PSL->current.outline == outline) return;
+		fprintf (PSL->internal.fp, "/FS {");
+		pmode = ps_place_color (rgb);
+		if (outline > 0) pmode += outline;
+		fprintf (PSL->internal.fp, "F%c} def\n", PSL->internal.paint_code[pmode]);
+	}
+
+	PSL->current.fill_rgb[0] = rgb[0];
+	PSL->current.fill_rgb[1] = rgb[1];
+	PSL->current.fill_rgb[2] = rgb[2];
+	PSL->current.outline = outline;
+}
+
+/* fortran interface */
+void ps_setfill_ (int *rgb, int *outline)
+{
+	 ps_setfill (rgb, *outline);
+}
+
+void ps_star (double x, double y, double diameter, int rgb[], int outline)
+{	/* Fit inside circle of given diameter */
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %ld SA\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -659,10 +684,8 @@ void ps_star_ (double *x, double *y, double *diameter, int *rgb, int *outline)
 
 void ps_square (double x, double y, double diameter, int rgb[], int outline)
 {	/* give diameter of circumscribing circle */
-	int pmode;
-
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %ld S%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %ld SS\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -674,10 +697,8 @@ void ps_square_ (double *x, double *y, double *diameter, int *rgb, int *outline)
 
 void ps_triangle (double x, double y, double diameter, int rgb[], int outline)
 {	/* Give diameter of circumscribing circle */
-	int pmode;
-
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %ld T%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %ld ST\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -689,10 +710,8 @@ void ps_triangle_ (double *x, double *y, double *diameter, int *rgb, int *outlin
 
 void ps_itriangle (double x, double y, double diameter, int rgb[], int outline)	/* Inverted triangle */
 {	/* Give diameter of circumscribing circle */
-	int pmode;
-
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %ld I%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %ld SI\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -704,10 +723,8 @@ void ps_itriangle_ (double *x, double *y, double *diameter, int *rgb, int *outli
 
 void ps_hexagon (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
-	int pmode;
-
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %ld H%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %ld SH\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -719,10 +736,8 @@ void ps_hexagon_ (double *x, double *y, double *diameter, int *rgb, int *outline
 
 void ps_pentagon (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
-	int pmode;
-
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %ld N%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %ld SN\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -734,10 +749,8 @@ void ps_pentagon_ (double *x, double *y, double *diameter, int *rgb, int *outlin
 
 void ps_octagon (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
-	int pmode;
-
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %ld O%c\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %ld SO\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -750,13 +763,11 @@ void ps_octagon_ (double *x, double *y, double *diameter, int *rgb, int *outline
 void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[], int outline)
 {
 	PS_LONG ix, iy, ir;
-	int pmode;
-
 	ix = (PS_LONG)irint (x * PSL->internal.scale);
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
 	ir = (PS_LONG)irint (radius * PSL->internal.scale);
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %ld %g %g W%c\n", ix, iy, ir, az1, az2, PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %ld %g %g SW\n", ix, iy, ir, az1, az2);
 	PSL->internal.npath = 0;
 }
 
@@ -769,7 +780,6 @@ void ps_pie_ (double *x, double *y, double *radius, double *az1, double *az2, in
 void ps_ellipse (double x, double y, double angle, double major, double minor, int rgb[], int outline)
 {
 	PS_LONG ix, iy, i1, i2;
-	int pmode;
 
 	/* Feature: Pen thickness also affected by aspect ratio */
 
@@ -777,8 +787,8 @@ void ps_ellipse (double x, double y, double angle, double major, double minor, i
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
 	i1 = (PS_LONG)irint (major * PSL->internal.scale);
 	i2 = (PS_LONG)irint (minor * PSL->internal.scale);
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %g %ld %ld E%c\n", i1, i2, angle, ix, iy, PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %g %ld %ld SE\n", i1, i2, angle, ix, iy);
 }
 
 /* fortran interface */
@@ -1326,6 +1336,7 @@ int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, doubl
 	PSL->internal.p_height = page_size[1];
 	PSL->current.linewidth = -1;	/* Will be changed by ps_setline */
 	PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = -1;	/* Will be changed by ps_setpaint */
+	PSL->current.fill_rgb[0] = PSL->current.fill_rgb[1] = PSL->current.fill_rgb[2] = PSL->current.outline = -2;	/* Will be changed by ps_setfill */
 	PSL->internal.scale = (double)dpi;	/* Dots pr. unit resolution of output device */
 	PSL->internal.points_pr_unit = 72.0;
 	if (unit == 0) PSL->internal.points_pr_unit /= 2.54;
@@ -1430,7 +1441,7 @@ int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, doubl
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.19 ");	/* Version number should match that of PSL_prologue.ps */
+		ps_bulkcopy ("PSL_prologue", "v 1.20 ");	/* Version number should match that of PSL_prologue.ps */
 		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Initialize book-keeping for font encoding and write font macros */
@@ -1577,7 +1588,7 @@ void ps_plotr_ (double *x, double *y, int *pen)
 void ps_polygon (double *x, double *y, PS_LONG n, int rgb[], int outline)
 {
 	/* Draw and optionally fill polygons. */
-	int split, pmode;
+	int split;
 
 	split = (rgb[0] == -1);	/* Can only split if we need outline only */
 	if (outline >= 0) ps_line (x, y, n, 1, FALSE, split);	/* No stroke or close path yet */
@@ -1588,9 +1599,8 @@ void ps_polygon (double *x, double *y, PS_LONG n, int rgb[], int outline)
 	if (split && PSL->internal.split == 1)	/* Outline only */
 		fprintf (PSL->internal.fp, "S\n");
 	else {
-		pmode = ps_place_color (rgb);
-		if (outline > 0) pmode += outline;
-		fprintf (PSL->internal.fp, "Q%c\n", PSL->internal.paint_code[pmode]);
+		ps_setfill (rgb, outline);
+		ps_command ("FS");
 	}
 	if (outline < 0) {
 		if (outline == -1) {
@@ -1625,7 +1635,6 @@ void ps_patch (double *x, double *y, PS_LONG np, int rgb[], int outline)
 	 */
 
 	PS_LONG ix[20], iy[20], i, n, n1;
- 	int pmode;
 
 	if (np > 20) {	/* Must call ps_polygon instead */
 		ps_polygon (x, y, np, rgb, outline);
@@ -1644,12 +1653,12 @@ void ps_patch (double *x, double *y, PS_LONG np, int rgb[], int outline)
 
 	if (n < 3) return;	/* 2 points or less don't make a polygon */
 
-	pmode = ps_place_color (rgb) + outline;	/* Returns 0-11 */
+	ps_setfill (rgb, outline);	/* Returns 0-11 */
 
 	n--;
 	n1 = n;
 	for (i = n - 1; i != -1; i--, n--) fprintf (PSL->internal.fp, "%ld %ld ", ix[n] - ix[i], iy[n] - iy[i]);
-	fprintf (PSL->internal.fp, "%ld %ld %ld q%c\n", n1, ix[0], iy[0], PSL->internal.paint_code[pmode]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld SP\n", n1, ix[0], iy[0]);
 }
 
 /* fortran interface */
@@ -1661,12 +1670,11 @@ void ps_patch_ (double *x, double *y, PS_LONG *n, int *rgb, int *outline)
 
 void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline)
 {
-	int pmode;
 	PS_LONG xll, yll;
-	pmode = ps_place_color (rgb);
+	ps_setfill (rgb, outline);
 	xll = (PS_LONG)irint (x1 * PSL->internal.scale);	/* Get lower left point with minimum round-off */
 	yll = (PS_LONG)irint (y1 * PSL->internal.scale);
-	fprintf (PSL->internal.fp, "%ld %ld %ld %ld B%c\n", (PS_LONG)irint(y2 * PSL->internal.scale) - yll, (PS_LONG)irint(x2 * PSL->internal.scale) - xll, xll, yll, PSL->internal.paint_code[pmode+outline]);
+	fprintf (PSL->internal.fp, "%ld %ld %ld %ld SB\n", (PS_LONG)irint(y2 * PSL->internal.scale) - yll, (PS_LONG)irint(x2 * PSL->internal.scale) - xll, xll, yll);
 	PSL->internal.npath = 0;
 }
 
@@ -1678,9 +1686,8 @@ void ps_rect_ (double *x1, double *y1, double *x2, double *y2, int *rgb, int *ou
 
 void ps_rotaterect (double x, double y, double angle, double x_len, double y_len, int rgb[], int outline)
 {
-	int pmode;
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, "%ld %ld %g %ld %ld R%c\n", (PS_LONG)irint(y_len * PSL->internal.scale), (PS_LONG)irint(x_len * PSL->internal.scale), angle, (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale), PSL->internal.paint_code[pmode+outline]);
+	ps_setfill (rgb, outline);
+	fprintf (PSL->internal.fp, "%ld %ld %g %ld %ld SR\n", (PS_LONG)irint(y_len * PSL->internal.scale), (PS_LONG)irint(x_len * PSL->internal.scale), angle, (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
 	PSL->internal.npath = 0;
 }
 
@@ -2526,11 +2533,14 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 
 	double angle;
 	PS_LONG w2, length, hw, hl, hl2, hw2, l2;
-	int pmode;
 
 	length = (PS_LONG)irint (hypot ((xtail-xtip), (ytail-ytip)) * PSL->internal.scale);	/* Vector length in PS units */
 	if (length == 0) return;					/* NULL vector */
 
+	if (outline & 8)
+		ps_setfill (rgb, outline - 8);
+	else
+		ps_setfill (rgb, outline);
 	angle = atan2 ((ytip-ytail),(xtip-xtail)) * R2D;					/* Angle vector makes with horizontal, in radians */
 	fprintf (PSL->internal.fp, "V %ld %ld T ", (PS_LONG)irint (xtail * PSL->internal.scale), (PS_LONG)irint (ytail * PSL->internal.scale));	/* Temporarily set tail point the local origin (0, 0) */
 	if (angle != 0.0) fprintf (PSL->internal.fp, "%g R ", angle);					/* Rotate so vector is horizontal in local coordinate system */
@@ -2540,17 +2550,14 @@ void ps_vector (double xtail, double ytail, double xtip, double ytip, double tai
 	hl2 = (PS_LONG)irint (0.5 * headshape * headlength * PSL->internal.scale);					/* Cut-in distance due to slanted back-side of arrow head */
 	hw2 = hw - w2;										/* Distance from tail side to head side (vertically) */
 	if (outline & 8) {	/* Double-headed vector */
-		outline -= 8;	/* Remove the flag */
 		l2 = length - 2 * hl + 2 * hl2;							/* Inside length between start of heads */
-		pmode = ps_place_color (rgb);
-		fprintf (PSL->internal.fp, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld v%c U\n",
-				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw, PSL->internal.paint_code[pmode+outline]);
+		fprintf (PSL->internal.fp, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld Sv U\n",
+				hl2, hw2, -l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -hl2, hw2, hl, -hw);
 	}
 	else {			/* Single-headed vector */
 		l2 = length - hl + hl2;								/* Length from tail to start of slanted head */
-		pmode = ps_place_color (rgb);
-		fprintf (PSL->internal.fp, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld V%c U\n",
-			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2, PSL->internal.paint_code[pmode+outline]);
+		fprintf (PSL->internal.fp, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld SV U\n",
+			-l2, hl2, -hw2, -hl, hw, hl, hw, -hl2, -hw2, l2, -w2);
 	}
 }
 

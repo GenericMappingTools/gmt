@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.53 2009-01-11 02:47:02 remko Exp $
+ *	$Id: pslib.h,v 1.54 2009-01-12 04:25:57 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -161,6 +161,7 @@ EXTERN_MSC void ps_patch (double *x, double *y, PS_LONG np, int rgb[], int outli
 EXTERN_MSC void ps_rotatetrans (double x, double y, double angle);
 EXTERN_MSC void ps_segment (double x0, double y0, double x1, double y1);
 EXTERN_MSC void ps_setdash (char *pattern, int offset);
+EXTERN_MSC void ps_setfill (int rgb[], int outline);
 EXTERN_MSC void ps_setfont (int font_no);
 EXTERN_MSC void ps_setformat (int n_decimals);
 EXTERN_MSC void ps_setline (int linewidth);
