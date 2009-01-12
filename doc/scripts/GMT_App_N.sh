@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_N.sh,v 1.10 2007-09-10 20:07:28 guru Exp $
+#	$Id: GMT_App_N.sh,v 1.11 2009-01-12 04:21:02 remko Exp $
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
@@ -14,7 +14,7 @@ n=`cat $$.lis | wc -l`
 # Because of text, the first page figure will contain less symbol rows than
 # subsequent pages.
 
-width=0.85i
+width=0.85
 n_cols=6
 n_rows=6
 n_rows_p1=6
@@ -71,15 +71,13 @@ EOF
 			echo "$x $ys k${symbol}" >> $$.symbols
 			name=`echo $symbol | tr 'a-z' 'A-Z'`
 			echo "$x $yt $fs 0 0 CM $name" >> $$.text
-			echo "$x $yt 1 $dy" >> $$.bars
+			echo "$x $yt $width $dy" >> $$.bars
 		done
 	done
-	psxy -R0/$n_cols/0/$H -Jx$width -P -K -M $$.lines -Wthick -B0 > GMT_App_N_$p.ps
-	psxy -R -J -O -K -S$width -Wthinnest $$.symbols >> GMT_App_N_$p.ps
+	psxy -R0/$n_cols/0/$H -Jx${width}i -P -K -M $$.lines -Wthick -B0 > GMT_App_N_$p.ps
+	psxy -R -J -O -K -S${width}i -Wthinnest $$.symbols >> GMT_App_N_$p.ps
 	psxy -R -J -O -K -Sr -Gblack $$.bars >> GMT_App_N_$p.ps
 	pstext -R -J -O $$.text -Gwhite >> GMT_App_N_$p.ps
 	rm -f $$.lines $$.symbols $$.text $$.bars
 done
 rm -f $$.*
-
-	
