@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.139 2009-01-09 23:39:54 guru Exp $
+#	$Id: install_gmt.sh,v 1.140 2009-01-13 01:59:26 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1283,6 +1283,7 @@ if [ -d examples ] && [ "$GMT_run_examples" = "y" ]; then
 	GMT_SHAREDIR=$GMT_sharedir
 	export GMT_SHAREDIR
 	$GMT_make run-examples || exit
+	$GMT_make run-animations || exit
 fi
 
 cd $here/src
