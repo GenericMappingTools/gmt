@@ -113,6 +113,7 @@ Repeat option OPT(N) as often as necessary.
 .TP
 OPT(Q)
 Mark end of existing clip path.  No projection information is needed.
+However, you must supply OPT(Xa) and OPT(Ya) settings if you are using absolute positioning.
 .TP
 OPT(S)
 Select filling or clipping of "wet" areas.  Append the shade, color, or pattern (see SPECIFYING FILL below);

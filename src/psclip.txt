@@ -25,6 +25,7 @@ standard input is read.
 .TP
 OPT(C)
 Mark end of existing clip path.  No input file or projection information are needed.
+However, you must supply OPT(Xa) and OPT(Ya) settings if you are using absolute positioning.
 #include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS

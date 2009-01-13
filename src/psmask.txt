@@ -33,6 +33,7 @@ No space between the option flag and the associated arguments.
 .TP
 OPT(C)
 Mark end of existing clip path.  No input file is needed.  Implicitly sets OPT(O).
+However, you must supply OPT(Xa) and OPT(Ya) settings if you are using absolute positioning.
 .TP
 OPT(D)
 Dumps out the resulting clipping polygons to disk.  Ignored if OPT(T) is set.
