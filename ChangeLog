@@ -1,14 +1,20 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.392 2009-01-14 14:30:57 remko Exp $
+	$Id: ChangeLog,v 1.393 2009-01-14 23:11:36 guru Exp $
 -----------------------------------------------------------------------------------------
+2009-01-14	pwessel
+	* pslib.c:		Adherence to ancient PS Level 1 caused trouble with max path
+				length.  Now moving to PS Level 2; if anyone has printers from
+				the 1950ies pls just use GhostScript.  Specifically, this fixes
+				problems with dashed lines within long clip paths (e.g., circular
+				map boundaries).
 2009-01-14	remko
 	* gmt_init.c:		Fixed some errors in descriptions of -J option
 	* explain_-J_short.txt:	---"---
 
 2009-01-12	jluis
 	* gmt_plot.c:		Example 8 was crashing with Intel compiled binaries because the
-				fno variale in GMT_epsinfo was declared to 5 elements but in cases
-				like example08 a fno[5] adress is inquired.
+				fno variable in GMT_epsinfo was declared to 5 elements but in cases
+				like example08 a fno[5] address is inquired.
 
 2009-01-12	remko
 	* grdview.c:		Made outline part of paint_it(). Significantly shortens PS file
