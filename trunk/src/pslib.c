@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.190 2009-01-12 22:02:05 remko Exp $
+ *	$Id: pslib.c,v 1.191 2009-01-14 23:11:36 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -232,12 +232,8 @@ void ps_arc (double x, double y, double radius, double az1, double az2, int stat
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
 	ir = (PS_LONG)irint (radius * PSL->internal.scale);
 	if (fabs (az1 - az2) > 360.0) az1 = 0.0, az2 = 360.0;
-	if (status%2) {	/* Beginning of new segment */
+	if (status%2)	/* Beginning of new segment */
 		fprintf (PSL->internal.fp, "S ");
-		PSL->internal.npath = 0;
-	}
-	else
-		PSL->internal.npath++;
 	if (az1 < az2)	/* Forward positive arc */
 		fprintf (PSL->internal.fp, "%ld %ld %ld %g %g arc", ix ,iy, ir, az1, az2);
 	else	/* Negative arc */
@@ -354,7 +350,6 @@ void ps_circle (double x, double y, double size, int rgb[], int outline)
 	ir = (PS_LONG)irint (0.5 * size * PSL->internal.scale);
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %ld SC\n", ix, iy, ir);
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -366,7 +361,6 @@ void ps_circle_ (double *x, double *y, double *size, int *rgb, int *outline)
 void ps_clipoff (void) {
 	fprintf (PSL->internal.fp, "S U\n");
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Clipping is currently OFF\n");
-	PSL->internal.npath = PSL->internal.clip_path_length = 0;
 	PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = -1;	/* Reset to -1 so ps_setpaint will update the current paint */
 	PSL->current.linewidth = -1;			/* Reset to -1 so ps_setline will update the current width */
 	PSL->current.offset = -1;			/* Reset to -1 so ps_setdash will update the current pattern */
@@ -393,7 +387,6 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], int flag)
 		strcpy (move, "M");
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of clip path\n");
 		fprintf (PSL->internal.fp, "S V\n");
-		PSL->internal.npath = 0;
 	}
 	else
 		strcpy (move, "m");
@@ -402,14 +395,11 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], int flag)
 	if (n > 0) {
 		PSL->internal.ix = (PS_LONG)irint (x[0]*PSL->internal.scale);
 		PSL->internal.iy = (PS_LONG)irint (y[0]*PSL->internal.scale);
-		PSL->internal.npath++;
 		used++;
 		fprintf (PSL->internal.fp, "%ld %ld %s\n", PSL->internal.ix, PSL->internal.iy, move);
 		used += ps_line (&x[1], &y[1], n-1, 0, FALSE, FALSE);	/* Must pass close = FALSE since first point not given ! */
 		fprintf (PSL->internal.fp, "P\n");
 	}
-	PSL->internal.clip_path_length += used;
-	PSL->internal.max_path_length = MAX (PSL->internal.clip_path_length, PSL->internal.max_path_length);
 
 	if (flag & 2) {	/* End path and [optionally] fill */
 		if (rgb[0] >= 0) {	/* fill is desired */
@@ -422,7 +412,6 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], int flag)
 		else
 			fprintf (PSL->internal.fp, "eoclip N\n");
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of clip path.  Clipping is currently ON\n");
-		PSL->internal.npath = 0;
 	}
 }
 
@@ -575,7 +564,6 @@ void ps_comment_ (char *text, int nlen)
 void ps_plus (double x, double y, double diameter)
 {	/* Draw plus sign using current color. Fit inside circle of given diameter. */
 	fprintf (PSL->internal.fp, "%ld %ld %ld x\n", (PS_LONG) irint (0.5 * diameter * PSL->internal.scale), (PS_LONG) irint (x * PSL->internal.scale), (PS_LONG) irint (y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -587,7 +575,6 @@ void ps_plus_ (double *x, double *y, double *diameter)
 void ps_cross (double x, double y, double diameter)
 {	/* Draw cross sign using current color. Fit inside circle of given diameter. */
 	fprintf (PSL->internal.fp, "%ld %ld %ld X\n", (PS_LONG) irint (0.5 * diameter * PSL->internal.scale), (PS_LONG) irint (x * PSL->internal.scale), (PS_LONG) irint (y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -599,7 +586,6 @@ void ps_cross_ (double *x, double *y, double *diameter)
 void ps_point (double x, double y, double diameter)
 {     /* Fit inside circle of given diameter; draw using current color */
 	fprintf (PSL->internal.fp, "%ld %ld %ld O\n", (PS_LONG)irint (diameter * PSL->internal.scale), (PS_LONG)irint (x * PSL->internal.scale), (PS_LONG)irint (y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -613,7 +599,6 @@ void ps_diamond (double x, double y, double diameter, int rgb[], int outline)
 
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %ld SD\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -631,7 +616,6 @@ void ps_segment (double x0, double y0, double x1, double y1)
 	dx = (PS_LONG)irint (x1 * PSL->internal.scale) - ix;
 	dy = (PS_LONG)irint (y1 * PSL->internal.scale) - iy;
 	fprintf (PSL->internal.fp, "%ld %ld M %ld %ld D S\n", ix, iy, dx, dy);
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -677,7 +661,6 @@ void ps_star (double x, double y, double diameter, int rgb[], int outline)
 {	/* Fit inside circle of given diameter */
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %ld SA\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -690,7 +673,6 @@ void ps_square (double x, double y, double diameter, int rgb[], int outline)
 {	/* give diameter of circumscribing circle */
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %ld SS\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -703,7 +685,6 @@ void ps_triangle (double x, double y, double diameter, int rgb[], int outline)
 {	/* Give diameter of circumscribing circle */
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %ld ST\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -716,7 +697,6 @@ void ps_itriangle (double x, double y, double diameter, int rgb[], int outline)	
 {	/* Give diameter of circumscribing circle */
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %ld SI\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -729,7 +709,6 @@ void ps_hexagon (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %ld SH\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -742,7 +721,6 @@ void ps_pentagon (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %ld SN\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -755,7 +733,6 @@ void ps_octagon (double x, double y, double diameter, int rgb[], int outline)
 {	/* diameter is diameter of circumscribing circle */
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %ld SO\n", (PS_LONG)irint(0.5 * diameter * PSL->internal.scale), (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -772,7 +749,6 @@ void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[
 	ir = (PS_LONG)irint (radius * PSL->internal.scale);
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %ld %g %g SW\n", ix, iy, ir, az1, az2);
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -1001,12 +977,10 @@ PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split
 {
 	/* type:  1 means new anchor point, 2 means stroke line, 3 = both */
 	/* close: TRUE if a closed polygon */
-	/* split: TRUE if we can split line segment into several sections */
+	/* split: TRUE if we can split line segment into several sections [NOW OBSOLETE] */
 	PS_LONG i, *ix, *iy;
 	int trim = FALSE;
 	char move = 'M';
-
-	PSL->internal.split = 0;	/* No splitting yet... */
 
 	/* First remove unnecessary points that have zero curvature */
 
@@ -1031,37 +1005,22 @@ PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split
 
 	if (type%2) {
 		fprintf (PSL->internal.fp, "%ld %ld %c\n", ix[0], iy[0], move);
-		PSL->internal.npath = 1;
 	}
 	else if (ix[0] != PSL->internal.ix || iy[0] != PSL->internal.iy)
 		fprintf (PSL->internal.fp, "%ld %ld D\n", ix[0] - PSL->internal.ix, iy[0] - PSL->internal.iy);
 	PSL->internal.ix = ix[0];
 	PSL->internal.iy = iy[0];
 
-	if (!split) PSL->internal.max_path_length = MAX ((n + PSL->internal.clip_path_length), PSL->internal.max_path_length);
-
 	for (i = 1; i < n; i++) {
 		if (ix[i] != PSL->internal.ix || iy[i] != PSL->internal.iy) fprintf (PSL->internal.fp, "%ld %ld D\n", ix[i] - PSL->internal.ix, iy[i] - PSL->internal.iy);
 		PSL->internal.ix = ix[i];
 		PSL->internal.iy = iy[i];
-		PSL->internal.npath++;
-		if ((PSL->internal.npath + PSL->internal.clip_path_length) > PSL_MAX_L1_PATH && split) {
-			fprintf (PSL->internal.fp, "S %ld %ld M\n", PSL->internal.ix, PSL->internal.iy);
-			PSL->internal.npath = 1;
-			PSL->internal.split = 1;
-			close = FALSE;
-			if (trim) {	/* Restore the duplicate point since close no longer is TRUE */
-				n++;
-				trim = FALSE;
-			}
-		}
 	}
 	if (type > 1) {
 		if (close)
 			fprintf (PSL->internal.fp, "P S\n");	/* Close and stroke the path */
 		else
 			fprintf (PSL->internal.fp, "S\n");	/* Stroke the path */
-		PSL->internal.npath = 0;
 	}
 	else if (close)
 		fprintf (PSL->internal.fp, "P\n");		/* Close the path */
@@ -1145,21 +1104,15 @@ void ps_plot (double x, double y, int pen)
 		idy = iy - PSL->internal.iy;
 		if (idx == 0 && idy == 0) return;
 		fprintf (PSL->internal.fp, "%ld %ld D\n", idx, idy);
-		PSL->internal.npath++;
 	}
 	else {
 		idx = ix;
 		idy = iy;
 		fprintf (PSL->internal.fp, "%ld %ld M\n", idx, idy);
-		PSL->internal.npath = 1;
 	}
 	if (pen == PSL_PEN_DRAW_AND_STROKE) fprintf (PSL->internal.fp, "S\n");
 	PSL->internal.ix = ix;
 	PSL->internal.iy = iy;
-	if ((PSL->internal.npath + PSL->internal.clip_path_length) > PSL_MAX_L1_PATH) {
-		fprintf (PSL->internal.fp, "S %ld %ld M\n", ix, iy);
-		PSL->internal.npath = 1;
-	}
 }
 
 /* fortran interface */
@@ -1432,7 +1385,7 @@ int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, doubl
 		}
 
 		fprintf (PSL->internal.fp, "%%%%CreationDate: %s", ctime(&right_now));
-		fprintf (PSL->internal.fp, "%%%%LanguageLevel: 1\n");
+		fprintf (PSL->internal.fp, "%%%%LanguageLevel: %d\n", PS_LANGUAGE_LEVEL);
 		if (PSL->internal.ascii)
 			fprintf (PSL->internal.fp, "%%%%DocumentData: Clean7Bit\n");
 		else
@@ -1571,13 +1524,10 @@ void ps_plotr (double x, double y, int pen)
 	ix = (PS_LONG)irint (x * PSL->internal.scale);
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
 	if (ix == 0 && iy == 0) return;
-	PSL->internal.npath++;
 	if (abs (pen) == 2)
 		fprintf (PSL->internal.fp, "%ld %ld D\n", ix, iy);
-	else {
+	else
 		fprintf (PSL->internal.fp, "%ld %ld G\n", ix, iy);
-		PSL->internal.npath = 1;
-	}
 	if (pen == PSL_PEN_DRAW_AND_STROKE) fprintf (PSL->internal.fp, "S\n");
 	PSL->internal.ix += ix;	/* Update absolute position */
 	PSL->internal.iy += iy;
@@ -1592,15 +1542,12 @@ void ps_plotr_ (double *x, double *y, int *pen)
 void ps_polygon (double *x, double *y, PS_LONG n, int rgb[], int outline)
 {
 	/* Draw and optionally fill polygons. */
-	int split;
+	int outline_only;
 
-	split = (rgb[0] == -1);	/* Can only split if we need outline only */
-	if (outline >= 0) ps_line (x, y, n, 1, FALSE, split);	/* No stroke or close path yet */
-	PSL->internal.npath = 0;
+	outline_only = (rgb[0] == -1);
+	if (outline >= 0) ps_line (x, y, n, 1, FALSE, outline_only);	/* No stroke or close path yet */
 
-	PSL->internal.max_path_length = MAX ((n + PSL->internal.clip_path_length), PSL->internal.max_path_length);
-
-	if (split && PSL->internal.split == 1)	/* Outline only */
+	if (outline_only)	/* Outline only */
 		fprintf (PSL->internal.fp, "S\n");
 	else {
 		ps_setfill (rgb, outline);
@@ -1611,7 +1558,6 @@ void ps_polygon (double *x, double *y, PS_LONG n, int rgb[], int outline)
 			fprintf (PSL->internal.fp, "U\n");
 			if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Clipping is currently OFF\n");
 		}
-		PSL->internal.clip_path_length = 0;
 	}
 }
 
@@ -1679,7 +1625,6 @@ void ps_rect (double x1, double y1, double x2, double y2, int rgb[], int outline
 	xll = (PS_LONG)irint (x1 * PSL->internal.scale);	/* Get lower left point with minimum round-off */
 	yll = (PS_LONG)irint (y1 * PSL->internal.scale);
 	fprintf (PSL->internal.fp, "%ld %ld %ld %ld SB\n", (PS_LONG)irint(y2 * PSL->internal.scale) - yll, (PS_LONG)irint(x2 * PSL->internal.scale) - xll, xll, yll);
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -1692,7 +1637,6 @@ void ps_rotaterect (double x, double y, double angle, double x_len, double y_len
 {
 	ps_setfill (rgb, outline);
 	fprintf (PSL->internal.fp, "%ld %ld %g %ld %ld SR\n", (PS_LONG)irint(y_len * PSL->internal.scale), (PS_LONG)irint(x_len * PSL->internal.scale), angle, (PS_LONG)irint(x * PSL->internal.scale), (PS_LONG)irint(y * PSL->internal.scale));
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -1747,7 +1691,6 @@ void ps_setdash (char *pattern, int offset)
 	fputs ("S ", PSL->internal.fp);
 	ps_place_setdash (pattern, offset);
 	fputs ("\n", PSL->internal.fp);
-	PSL->internal.npath = 0;
 }
 
 void ps_place_setdash (char *pattern, int offset)
@@ -2149,8 +2092,6 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, in
 
 	height = fabs (pointsize) / PSL->internal.points_pr_unit;
 
-	PSL->internal.npath = 0;
-
 	if (pointsize > 0.0) {	/* Set a new anchor point */
 		PSL->internal.ix = (PS_LONG)irint (x * PSL->internal.scale);
 		PSL->internal.iy = (PS_LONG)irint (y * PSL->internal.scale);
@@ -2420,8 +2361,6 @@ void ps_textpath (double x[], double y[], PS_LONG n, PS_LONG node[], double angl
 	ps_set_integer ("PSL_m", m);
 
 	fprintf (PSL->internal.fp, "%d PSL_curved_text_labels\n", form);
-
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */
@@ -2496,8 +2435,6 @@ void ps_textclip (double x[], double y[], PS_LONG m, double angle[], char *label
 
 	fprintf (PSL->internal.fp, "%ld F%d\n", (PS_LONG) irint ((fabs (pointsize) / PSL->internal.points_pr_unit) * PSL->internal.scale), PSL->current.font_no);	/* Set font */
 	fprintf (PSL->internal.fp, "%d PSL_straight_text_labels\n", key);
-
-	PSL->internal.npath = 0;
 }
 
 /* fortran interface */

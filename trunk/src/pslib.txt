@@ -307,22 +307,20 @@ will be drawn using current pen-width and -pattern.
 The symbol will fit inside a circle of given diameter.
 .RE
 .IP
-long \fBps_line\fR (\fIxarray, yarray, npoints, type, close, split\fP)
+long \fBps_line\fR (\fIxarray, yarray, npoints, type, close, dummy\fP)
 .br
 \fBdouble\fR \fIxarray[], yarray[]\fP;
 .br
 \fBlong\fR \fInpoints\fP;
 .br
-\fBint\fR \fItype, close, split\fP;
+\fBint\fR \fItype, close, dummy\fP;
 .RS 10
 Draw a continuous line from the positions in the x-y arrays.  If \fIclose\fP == 1,
 the first and last point will automatically be closed by the \fIPostScript\fP driver.
 If this is the first segment in a multi-segment path, set \fItype\fP == 1.  To end
 the segments and have the line(s) drawn,  set \fItype\fP == 2.  Thus, for a single
 segment, \fItype\fP must be 3.  The line is drawn using the current penwidth.
-Only if \fIsplit\fP is TRUE may ps_line use multiple strokes to draw lines longer that MAX_PATH.
-ps_polygon will call ps_line with \fIsplit\fP = FALSE since the path must be continuous.
-If \fIsplit\fP is FALSE and the pathlength exceeds MAX_PATH a warning will be issued.
+The \fIdummy\fP is an obsolete parameter no longer used internally.
 .RE
 .IP
 unsigned char \fB*ps_load_image\fP (\fIfp, header\fP)
