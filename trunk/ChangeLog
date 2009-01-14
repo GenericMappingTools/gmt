@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.391 2009-01-12 22:02:05 remko Exp $
+	$Id: ChangeLog,v 1.392 2009-01-14 14:30:57 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-01-14	remko
+	* gmt_init.c:		Fixed some errors in descriptions of -J option
+	* explain_-J_short.txt:	---"---
+
 2009-01-12	jluis
 	* gmt_plot.c:		Example 8 was crashing with Intel compiled binaries because the
 				fno variale in GMT_epsinfo was declared to 5 elements but in cases

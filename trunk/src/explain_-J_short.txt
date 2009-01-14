@@ -62,7 +62,7 @@ OPT(Jg)\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (Orthographic)
 .br
 OPT(Jg)\fIlon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale\fP (General Perspective).
 .br
-OPT(Js)\fIlon0/lat0\fP[\fI/horizon\fP][\fI/slat\fP]\fI/scale\fP (General Stereographic)
+OPT(Js)\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP (General Stereographic)
 .br
 .sp
 \fBMISCELLANEOUS PROJECTIONS:\fP
