@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.366 2009-01-11 02:52:38 remko Exp $
+ *	$Id: gmt_init.c,v 1.367 2009-01-14 14:30:57 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -266,8 +266,9 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   longitude range specified by -R is used. The default standard parallel is the equator\n");
 			fprintf (stderr, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is given.\n");
 
-			fprintf (stderr, "\t   -Ja|A<lon0>/<lat0>/<scale|width> (Lambert Azimuthal Equal Area)\n");
+			fprintf (stderr, "\t   -Ja|A<lon0>/<lat0>[/<horizon>]/<scale|width> (Lambert Azimuthal Equal Area)\n");
 			fprintf (stderr, "\t     lon0/lat0 is the center of the projection.\n");
+			fprintf (stderr, "\t     horizon is max distance from center of the projection (<= 180, default 90).\n");
 			fprintf (stderr, "\t     Scale can also be given as <radius>/<lat>, where <radius> is the distance\n");
 			fprintf (stderr, "\t     in %s to the oblique parallel <lat>.\n", GMT_unit_names[gmtdefs.measure_unit]);
 
@@ -284,14 +285,15 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Equidistant Conic)\n");
 			fprintf (stderr, "\t     Give origin, 2 standard parallels, and true scale\n");
 
-			fprintf (stderr, "\t   -Je|E<lon0>/<lat0>/<scale|width> (Azimuthal Equidistant)\n");
+			fprintf (stderr, "\t   -Je|E<lon0>/<lat0>[/<horizon>]/<scale|width> (Azimuthal Equidistant)\n");
 			fprintf (stderr, "\t     lon0/lat0 is the center of the projection.\n");
+			fprintf (stderr, "\t     horizon is max distance from center of the projection (<= 180, default 180).\n");
 			fprintf (stderr, "\t     Scale can also be given as <radius>/<lat>, where <radius> is the distance\n");
 			fprintf (stderr, "\t     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
 
-			fprintf (stderr, "\t   -Jf|F<lon0>/<lat0>/<horizon>/<scale|width> (Gnomonic)\n");
+			fprintf (stderr, "\t   -Jf|F<lon0>/<lat0>[/<horizon>]/<scale|width> (Gnomonic)\n");
 			fprintf (stderr, "\t     lon0/lat0 is the center of the projection.\n");
-			fprintf (stderr, "\t     horizon is max distance from center of the projection (< 90).\n");
+			fprintf (stderr, "\t     horizon is max distance from center of the projection (< 90, default 60).\n");
 			fprintf (stderr, "\t     Scale can also be given as <radius>/<lat>, where <radius> is distance\n");
 			fprintf (stderr, "\t     in %s to the oblique parallel <lat>. \n", GMT_unit_names[gmtdefs.measure_unit]);
 
@@ -350,8 +352,9 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jr|R[<lon0>/]<scale|width> (Winkel Tripel)\n\t     Give central meridian and scale\n");
 
-			fprintf (stderr, "\t   -Js|S<lon0>/<lat0>/<scale|width> (Stereographic)\n");
+			fprintf (stderr, "\t   -Js|S<lon0>/<lat0>[/<horizon>]/<scale|width> (Stereographic)\n");
 			fprintf (stderr, "\t     lon0/lat0 is the center or the projection.\n");
+			fprintf (stderr, "\t     horizon is max distance from center of the projection (< 180, default 90).\n");
 			fprintf (stderr, "\t     Scale is either <1:xxxx> (true at pole) or <slat>/<1:xxxx> (true at <slat>)\n");
 			fprintf (stderr, "\t     or <radius>/<lat> (distance in %s to the [oblique] parallel <lat>.\n", GMT_unit_names[gmtdefs.measure_unit]);
 
@@ -392,7 +395,7 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   Append h for map height, + for max map dimension, and - for min map dimension.\n");
 			fprintf (stderr, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>r is given.\n\n");
 
-			fprintf (stderr, "\t   -Ja|A<lon0>/<lat0>/<scale (or radius/lat)|width> (Lambert Azimuthal Equal Area)\n");
+			fprintf (stderr, "\t   -Ja|A<lon0>/<lat0>[/<horizon>]/<scale (or radius/lat)|width> (Lambert Azimuthal Equal Area)\n");
 
 			fprintf (stderr, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Albers Equal-Area Conic)\n");
 
@@ -402,13 +405,13 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale|width> (Equidistant Conic)\n");
 
-			fprintf (stderr, "\t   -Je|E<lon0>/<lat0>/<scale (or radius/lat)|width>  (Azimuthal Equidistant)\n");
+			fprintf (stderr, "\t   -Je|E<lon0>/<lat0>[/<horizon>]/<scale (or radius/lat)|width>  (Azimuthal Equidistant)\n");
 
-			fprintf (stderr, "\t   -Jf|F<lon0>/<lat0>/<horizon>/<scale (or radius/lat)|width>  (Gnomonic)\n");
+			fprintf (stderr, "\t   -Jf|F<lon0>/<lat0>[/<horizon>]/<scale (or radius/lat)|width>  (Gnomonic)\n");
 
 			fprintf (stderr, "\t   -Jg|G<lon0>/<lat0>/<scale (or radius/lat)|width>  (Orthographic)\n");
 
-			fprintf (stderr, "\t   -Jg|G[<lon0>/]<lat0>[/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>]/<scale|width> (General Perspective)\n");
+			fprintf (stderr, "\t   -Jg|G[<lon0>/]<lat0>[/<horizon>|/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>]/<scale|width> (General Perspective)\n");
 
 			fprintf (stderr, "\t   -Jh|H[<lon0>/]<scale|width> (Hammer-Aitoff)\n");
 
@@ -435,7 +438,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jr|R[<lon0>/]<scale|width> (Winkel Tripel)\n");
 
-			fprintf (stderr, "\t   -Js|S<lon0>/<lat0>/[<slat>/]<scale (or radius/lat)|width> (Stereographic)\n");
+			fprintf (stderr, "\t   -Js|S<lon0>/<lat0>/[<horizon>/]<scale (or slat/scale or radius/lat)|width> (Stereographic)\n");
 
 			fprintf (stderr, "\t   -Jt|T<lon0>/[<lat0>/]<scale|width> (Transverse Mercator).\n");
 
@@ -756,118 +759,118 @@ void GMT_syntax (char option)
 				case GMT_LAMB_AZ_EQ:
 					fprintf (stderr, "\t-Ja<lon0>/<lat0>[/<horizon>]/<scale> OR -JA<lon0>/<lat0>[/<horizon>]/<width>\n");
 					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (<= 180, default 90)\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ALBERS:
 					fprintf (stderr, "\t-Jb<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JB<lon0>/<lat0>/<lat1>/<lat2>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_CASSINI:
 					fprintf (stderr, "\t-Jc<lon0>/<lat0><scale> OR -JC<lon0>/<lat0><width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree ,or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree ,or use <width> in %s\n", u, u);
 					break;
 				case GMT_CYL_STEREO:
 					fprintf (stderr, "\t-Jcyl_stere/[<lon0>/[<lat0>/]]<scale> OR -JCyl_stere/[<lon0>/[<lat0>/]]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ECONIC:
 					fprintf (stderr, "\t-Jd<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JD<lon0>/<lat0>/<lat1>/<lat2>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_AZ_EQDIST:
 					fprintf (stderr, "\t-Je<lon0>/<lat0>[/<horizon>]/<scale> OR -JE<lon0>/<lat0>[/<horizon>/<width>\n");
 					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (<= 180, default 180)\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_GNOMONIC:
 					fprintf (stderr, "\t-Jf<lon0>/<lat0>[/<horizon>]/<scale> OR -JF<lon0>/<lat0>[/<horizon>]/<width>\n");
 					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (< 90, default 60)\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ORTHO:
 					fprintf (stderr, "\t-Jg<lon0>/<lat0>[/<horizon>]/<scale> OR -JG<lon0>/<lat0>[/<horizon>]/<width>\n");
 					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (<= 90, default 90)\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_GENPER:
 					fprintf (stderr, "\t-Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale> OR\n\t-JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_HAMMER:
 					fprintf (stderr, "\t-Jh[<lon0>/]<scale> OR -JH[<lon0>/]<width\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_SINUSOIDAL:
 					fprintf (stderr, "\t-Ji[<lon0>/]<scale> OR -JI[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_MILLER:
 					fprintf (stderr, "\t-Jj[<lon0>/]<scale> OR -JJ[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ECKERT4:
 					fprintf (stderr, "\t-Jkf[<lon0>/]<scale> OR -JKf[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ECKERT6:
 					fprintf (stderr, "\t-Jk[s][<lon0>/]<scale> OR -JK[s][<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_LAMBERT:
 					fprintf (stderr, "\t-Jl<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JL<lon0>/<lat0>/<lat1>/<lat2>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_MERCATOR:
 					fprintf (stderr, "\t-Jm[<lon0>/[<lat0>/]]<scale> OR -JM[<lon0>/[<lat0>/]]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_ROBINSON:
 					fprintf (stderr, "\t-Jn[<lon0>/]<scale> OR -JN[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_OBLIQUE_MERC:
 					fprintf (stderr, "\t-Jo[a]<lon0>/<lat0>/<azimuth>/<scale> OR -JO[a]<lon0>/<lat0>/<azimuth>/<width>\n");
 					fprintf (stderr, "\t-Jo[b]<lon0>/<lat0>/<b_lon>/<b_lat>/<scale> OR -JO[b]<lon0>/<lat0>/<b_lon>/<b_lat>/<width>\n");
 					fprintf (stderr, "\t-Joc<lon0>/<lat0>/<lonp>/<latp>/<scale> OR -JOc<lon0>/<lat0>/<lonp>/<latp>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/oblique degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/oblique degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_WINKEL:
 					fprintf (stderr, "\t-Jr[<lon0>/]<scale> OR -JR[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_CYL_EQDIST:
 					fprintf (stderr, "\t-Jq[<lon0>/[<lat0>/]]<scale> OR -JQ[<lon0>/[<lat0>/]]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_STEREO:
 					fprintf (stderr, "\t-Js<lon0>/<lat0>[/<horizon>]/<scale> OR -JS<lon0>/<lat0>[/<horizon>]/<width>\n");
 					fprintf (stderr, "\t  <horizon> is distance from center to perimeter (< 180, default 90)\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx>, <lat>/<1:xxxx>, or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx>, <lat>/<1:xxxx>, or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
 					break;
 				case GMT_TM:
 					fprintf (stderr, "\t-Jt<lon0>/[<lat0>/]<scale> OR -JT<lon0>/[<lat0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_UTM:
 					fprintf (stderr, "\t-Ju<zone>/<scale> OR -JU<zone>/<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					fprintf (stderr, "\t  <zone is A, B, 1-60[w/ optional C-X except I, O], Y, Z\n");
 					break;
 				case GMT_VANGRINTEN:
 					fprintf (stderr, "\t-Jv<lon0>/<scale> OR -JV[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_MOLLWEIDE:
 					fprintf (stderr, "\t-Jw[<lon0>/]<scale> OR -JW[<lon0>/]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_CYL_EQ:
 					fprintf (stderr, "\t-Jy[<lon0>/[<lat0>/]]<scale> OR -JY[<lon0>/[<lat0>/]]<width>\n");
-					fprintf (stderr, "\t  <scale is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_POLAR:
 					fprintf (stderr, "\t-Jp[a]<scale>[/<origin>][r] OR -JP[a]<width>[/<origin>][r]\n");
-					fprintf (stderr, "\t  <scale is %s/units, or use <width> in %s\n", u, u);
+					fprintf (stderr, "\t  <scale> is %s/units, or use <width> in %s\n", u, u);
 					fprintf (stderr, "\t  Optionally, prepend a for azimuths, append theta as origin [0],\n");
 					fprintf (stderr, "\t  or append r to reverse radial coordinates.\n");
 				case GMT_LINEAR:
