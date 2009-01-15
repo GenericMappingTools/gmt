@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.393 2009-01-14 23:11:36 guru Exp $
+	$Id: ChangeLog,v 1.394 2009-01-15 19:49:54 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-01-15	remko
+	* pslib.c:		Fixed minor bug in ps_polygon (missing P in some cases)
+
 2009-01-14	pwessel
 	* pslib.c:		Adherence to ancient PS Level 1 caused trouble with max path
 				length.  Now moving to PS Level 2; if anyone has printers from
