@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.191 2009-01-14 23:11:36 guru Exp $
+ *	$Id: pslib.c,v 1.192 2009-01-15 19:49:54 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1542,22 +1542,14 @@ void ps_plotr_ (double *x, double *y, int *pen)
 void ps_polygon (double *x, double *y, PS_LONG n, int rgb[], int outline)
 {
 	/* Draw and optionally fill polygons. */
-	int outline_only;
 
-	outline_only = (rgb[0] == -1);
-	if (outline >= 0) ps_line (x, y, n, 1, FALSE, outline_only);	/* No stroke or close path yet */
+	ps_setfill (rgb, outline);
+	if (outline >= 0) ps_line (x, y, n, 1, FALSE, FALSE);	/* No stroke or close path yet */
+	ps_command ("P fs os");
 
-	if (outline_only)	/* Outline only */
-		fprintf (PSL->internal.fp, "S\n");
-	else {
-		ps_setfill (rgb, outline);
-		ps_command ("P fs os");
-	}
-	if (outline < 0) {
-		if (outline == -1) {
-			fprintf (PSL->internal.fp, "U\n");
-			if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Clipping is currently OFF\n");
-		}
+	if (outline == -1) {
+		fprintf (PSL->internal.fp, "U\n");
+		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Clipping is currently OFF\n");
 	}
 }
 
