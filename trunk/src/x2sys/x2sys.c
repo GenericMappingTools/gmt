@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.108 2009-01-09 04:02:36 guru Exp $
+ *	$Id: x2sys.c,v 1.109 2009-01-15 01:22:55 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -766,7 +766,8 @@ int x2sys_read_mgd77ncfile (char *fname, double ***data, struct X2SYS_INFO *s, s
 
 int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
-	int i, j, n_fields, n_expect = BUFSIZ;
+	int i, n_fields, n_expect = BUFSIZ;
+	GMT_LONG j;
 	char path[BUFSIZ];
 	double **z, *in;
 	FILE *fp;
@@ -1417,8 +1418,8 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 	while (more) {	/* Read dbase until EOF */
 		GMT_chop (line);	/* Get rid of [CR]LF */
 		n_items = sscanf (&line[2], "%s %d %s %d %s %s", trk[0], &year[0], trk[1], &year[1], info[0], info[1]);
-		for (i = 0; i < strlen (trk[0]); i++) if (trk[0][i] == '.') trk[0][i] = '\0';
-		for (i = 0; i < strlen (trk[1]); i++) if (trk[1][i] == '.') trk[1][i] = '\0';
+		for (i = 0; i < (int)strlen (trk[0]); i++) if (trk[0][i] == '.') trk[0][i] = '\0';
+		for (i = 0; i < (int)strlen (trk[1]); i++) if (trk[1][i] == '.') trk[1][i] = '\0';
 		skip = FALSE;
 		if (!(coe_kind & 1) && !strcmp (trk[0], trk[1])) skip = TRUE;	/* Do not want internal crossovers */
 		if (!(coe_kind & 2) && strcmp (trk[0], trk[1])) skip = TRUE;	/* Do not want external crossovers */
