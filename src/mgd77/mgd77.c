@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.202 2009-01-09 04:02:35 guru Exp $
+ *	$Id: mgd77.c,v 1.203 2009-01-15 01:22:55 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3407,7 +3407,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			BOOLEAN has_prev_twt = FALSE;
 			double PDR_wrap_trigger, d_twt, prev_twt = 0.0, twt_pdrwrap_corr = 0.0;
 			PDR_wrap_trigger = 0.5 * S->H.PDR_wrap;	/* Must exceed 50% of wrap to activate unwrapping */
-			for (rec = 0; rec < count[0]; rec++) {	/* Correct every record */
+			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (!GMT_is_dnan (E.aux[E77_AUX_FIELD_TWT][rec])) {	/* OK, valid twt */
 					if (has_prev_twt) {	/* OK, may look at change in twt */
 						d_twt = E.aux[E77_AUX_FIELD_TWT][rec] - prev_twt;
@@ -3424,7 +3424,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			struct MGD77_CARTER Carter;	/* Used to calculate Carter depths */
 			MGD77_carter_init (&Carter);	/* Initialize Carter machinery */
 			values = (double *)S->values[E.col[E77_CORR_FIELD_DEPTH]];		/* Output depths */
-			for (rec = 0; rec < count[0]; rec++) {	/* Correct every record */
+			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc depth if originally flagged as a NaN */
 				MGD77_carter_depth_from_xytwt (E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], 1000.0 * E.aux[E77_AUX_FIELD_TWT][rec], &Carter, &values[rec]);
 			}
@@ -3432,7 +3432,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		
 		if (E.correction_requested[E77_CORR_FIELD_MAG]) {	/* Must recalculate mag from mtf1 and IGRF */
 			values = (double *)S->values[E.col[E77_CORR_FIELD_MAG]];		/* Output mag */
-			for (rec = 0; rec < count[0]; rec++) {	/* Correct every record */
+			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc mag if originally flagged as a NaN */
 				values[rec] = MGD77_Recalc_Mag_Anomaly (E.aux[E77_AUX_FIELD_TIME][rec], E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], E.aux[E77_AUX_FIELD_MTF1][rec], TRUE);
 			}
@@ -3440,7 +3440,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		
 		if (E.correction_requested[E77_CORR_FIELD_FAA]) {	/* Must recalculate faa from gobs and IGF */
 			values = (double *)S->values[E.col[E77_CORR_FIELD_FAA]];		/* Output faa */
-			for (rec = 0; rec < count[0]; rec++) {	/* Correct every record */
+			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc faa if originally flagged as a NaN */
 			 	values[rec] = E.aux[E77_AUX_FIELD_GOBS][rec] - MGD77_Theoretical_Gravity (0.0, E.aux[E77_AUX_FIELD_LAT][rec], MGD77_IGF_1980);
 			}
@@ -5061,16 +5061,16 @@ int MGD77_atoi (char *txt) {
 	/* Like atoi but checks if txt is not all integers - if bad it returns -9999 */
 	int i;
 	/* First skip leading blanks and sign (we really should count signs but ...) */
-	for (i = 0; i < strlen (txt) && (txt[i] == ' ' || txt[i] == '-' || txt[i] == '+'); i++);
+	for (i = 0; i < (int)strlen (txt) && (txt[i] == ' ' || txt[i] == '-' || txt[i] == '+'); i++);
 	/* Now check if the remainder is just digits - if not return bad value */
-	for (; i < strlen (txt); i++) if (!isdigit((int)txt[i])) return (-9999);
+	for (; i < (int)strlen (txt); i++) if (!isdigit((int)txt[i])) return (-9999);
 	return (atoi (txt));
 }
 
 double MGD77_time_to_fyear (double time) {
 	/* Convert GMT time to floating point year for use with IGRF function */
 	struct GMT_gcal cal;		/* Calendar structure needed for IGRF calculation */
-	int n_days;
+	double n_days;
 	GMT_gcal_from_dt (time, &cal);	/* No adjust for TZ; this is GMT UTC time */
 	n_days = (GMT_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
 	/* Get date as decimal year */
