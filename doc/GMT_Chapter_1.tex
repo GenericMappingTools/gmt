@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.100 2009-01-10 00:12:18 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.101 2009-01-16 00:10:37 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -69,7 +69,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{gmt\_math.h}]: Check for macro definitions for system math functions.
 	\item [\GMTprog{gmt\_plot.c}]: Wrongly checked for map jumps for non-periodic map boundaries.
 		Bug in \GMTfunc{GMT\_fill\_polygon} that affected polygon outline.
-		3D text box was computed incorrectly.
+		3D text box was computed incorrectly.  Could exceeded array size in \GMTfunc{GMT\_epsinfo}.
 	\item [\GMTprog{gmt\_support.c}]: Function \GMTfunc{GMT\_get\_arc} did not check for division by zero.
 			The \Opt{Gx}{\it file:radius}[unit] option in \GMTprog{grdcontour.c} passed the entire
 			argument as the file name. Function \GMTfunc{GMT\_polygon\_is\_open} did not test for empty polygons (n = 0).
@@ -160,8 +160,10 @@ Here is a list of the recent enhancement to various programs:
 	compatible for \GMTprog{pslib.c} users we now initialize all plotting
 	in GMT with \GMTfunc{ps\_plotinit\_hires} instead of \GMTfunc{ps\_plotinit}.
 	Allow transparency when plotting 8-bit images (as well as 24-bit).
-	Finally, we use a new implementation of \GMTfunc{ps\_textdim} to ensure proper alignment
-	of texts and the optional surrounding boxes.
+	We now use a new implementation of \GMTfunc{ps\_textdim} to ensure proper alignment
+	of texts and the optional surrounding boxes.  Finally, wehave simplified the \PS\ code
+	for symbols and removed some limitations on plotting by officially moving to \PS\
+	language level 2.
 \item \GMTprog{ps2raster.c} now will scan for the optional comment \verb+%%HiResBoundingBox+
 	which takes precedence over the values in \verb+%%BoundingBox+.
 	New format \Opt{TG} turns on transparency for PNG output, and \Opt{Tb} selects Microsoft BMP output.

@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.12 2009-01-15 02:42:18 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.13 2009-01-16 00:10:37 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -26,6 +26,8 @@ copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS*coast.tar.bz2 C:\
 7z x GSHHS*coast.tar.bz2
 7z x GMT*.tar -aoa
 7z x GSHHS*coast.tar -oGMT%GVER% -aoa
+7z x GSHHS*high.tar -oGMT%GVER% -aoa
+7z x GSHHS*full.tar -oGMT%GVER% -aoa
 del *.tar.bz2
 del *.tar
 rename GMT%GVER% GMT
@@ -63,4 +65,6 @@ echo === 6. Place the GMT installers on macnut...
 copy C:\GMT\ftp\*.exe Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp
 
 echo === 7. DONE
+cd C:
+
 ECHO ON
