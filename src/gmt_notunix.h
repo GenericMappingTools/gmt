@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.21 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.22 2009-01-16 00:23:23 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -135,6 +135,7 @@ typedef __int64 GMT_LONG;		/* A signed 8-byte integer; otherwise set in gmt.h */
 #define DIR_DELIM '\\'	/* Backslash as directory delimiter */
 
 #include <io.h>
+#include <dirent.h>
 
 /* GMT normally gets these macros from unistd.h */
 
