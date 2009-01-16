@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.110 2009-01-16 00:23:23 guru Exp $
+ *	$Id: x2sys.c,v 1.111 2009-01-16 20:35:53 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -793,7 +793,7 @@ int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s, struct
 
 	for (j = 0; j < GMT_io.ndim; j++) {
 		if ((n_fields = GMT_input (fp, &n_expect, &in)) != s->n_out_columns) {
-			fprintf (stderr, "x2sys_read_ncfile: Error reading file %s at record %d\n", fname, j);
+			fprintf (stderr, "x2sys_read_ncfile: Error reading file %s at record %ld\n", fname, (GMT_LONG)j);
 	     		return (GMT_GRDIO_READ_FAILED);
 		}
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = in[i];
