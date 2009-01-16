@@ -1,5 +1,5 @@
 REM		GMT EXAMPLE 28
-REM		$Id: job28.bat,v 1.2 2008-06-13 00:31:34 guru Exp $
+REM		$Id: job28.bat,v 1.3 2009-01-16 21:43:10 guru Exp $
 REM
 REM Purpose:	Illustrates how to mix UTM data and UTM projection
 REM GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast, pstext, mapproject
@@ -24,7 +24,7 @@ set UR=-155:05:44.2/19:27:54.6
 REM Lay down the UTM topo grid using a 1:17,000 scale
 grdimage Kilauea.utm.nc -IKilauea.utm_i.nc -CKilauea.cpt -Jx1:170000 -P -K -B5000g5000WSne -U"Example 28 in Cookbook" --D_FORMAT=%%.10g --ANNOT_FONT_SIZE=9 --GRID_CROSS_SIZE=0.1i > example_28.ps
 REM Overlay geographic data and coregister by using correct region and projection with the same scale
-pscoast -R%LL%/%UR%r -Ju5Q/1:170000 -O -K -Df -Slightblue -W0.5p -B5mg5mNE --PLOT_DEGREE_FORMAT=ddd:mmF --ANNOT_FONT_SIZE=12 >> example_28.ps
+pscoast -R%LL%/%UR%r -Ju5Q/1:170000 -O -K -Df+ -Slightblue -W0.5p -B5mg5mNE --PLOT_DEGREE_FORMAT=ddd:mmF --ANNOT_FONT_SIZE=12 >> example_28.ps
 psbasemap -R -J -O -K -Lf155:07:30W/19:15:40N/19:23N/5k+l1:17,000+u --ANNOT_FONT_SIZE=10 --LABEL_FONT_SIZE=12 >> example_28.ps
 echo 155:16:20W 19:26:20N 12 0 1 CB KILAUEA | pstext -R -J -O >> example_28.ps
 REM Clean up

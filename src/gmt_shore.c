@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.37 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_shore.c,v 1.38 2009-01-16 21:43:11 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -57,6 +57,8 @@ void shore_prepare_sides(struct GMT_SHORE *c, int dir);
 int GMT_shore_asc_sort (const void *a, const void *b);
 int GMT_shore_desc_sort(const void *a, const void *b);
 char *GMT_shore_getpathname (char *name, char *path);
+void GMT_shore_check (BOOLEAN ok[5]);
+int GMT_res_to_int (char res);
 
 int GMT_set_resolution (char *res, char opt)
 {
@@ -88,6 +90,44 @@ int GMT_set_resolution (char *res, char opt)
 	}
 
 	return (base);
+}
+
+void GMT_shore_check (BOOLEAN ok[5])
+/* Sets ok to TRUE for those resolutions available in share for
+ * resolution (f, h, i, l, c) */
+{
+	int i, j, n_found;
+	char stem[GMT_TEXT_LEN], path[BUFSIZ], *res = "clihf", *kind[3] = {"GSHHS", "river", "border"};
+	
+	for (i = 0; i < 5; i++) {	/* For each resolution... */
+		ok[i] = FALSE;
+		for (j = n_found = 0; j < 3; j++) {	/* For each data type... */
+			sprintf (stem, "binned_%s_%c", kind[j], res[i]);
+	        	if (!GMT_shore_getpathname (stem, path)) continue;	/* Failed to find file */
+			n_found++;	/* Increment how many found so far for this resolution */
+		}
+		ok[i] = (n_found == 3);	/* Need all three sets to say this resolution is covered */
+	}
+}
+
+int GMT_res_to_int (char res)
+{	/* Turns a resolution letter into a 0-4 integer */
+	int i, j;
+	char *type = "clihf";
+	
+	for (i = -1, j = 0; i == -1 && j < 5; j++) if (res == type[j]) i = j;
+	return (i);
+}
+
+char GMT_shore_adjust_res (char res) {	/* Returns the highest available resolution <= to specified resolution */
+	int k, orig;
+	BOOLEAN ok[5];	
+	char *type = "clihf";
+	(void)GMT_shore_check (ok);		/* See which resolutions we have */
+	k = orig = GMT_res_to_int (res);	/* Get integer value of requested resolution */
+	while (!ok[k] && k >= 0) k--;		/* Drop down one level to see if we have a lower resolution available */
+	if (k >= 0 && k != orig) fprintf (stderr, "%s: Warning: Resolution %c not available, substituting resolution %c\n", GMT_program, res, type[k]);
+	return ((k == -1) ? res : type[k]);	/* Return the chosen resolution */
 }
 
 int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s, double n)

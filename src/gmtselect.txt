@@ -4,7 +4,7 @@
 gmtselect \- Select data subsets based on multiple spatial criteria 
 .SH SYNOPSIS
 \fBgmtselect\fP [ \fIinfiles\fP ] [ OPT(A)\fImin_area\fP[/\fImin_level/max_level\fP] ] 
-[ OPT(C)[\fBf\fP]\fIdist/ptfile\fP ] [ OPT(D)\fIresolution\fP ] [ OPT(F)\fIpolygonfile\fP ] 
+[ OPT(C)[\fBf\fP]\fIdist/ptfile\fP ] [ OPT(D)\fIresolution\fP[\fB+\fP] ] [ OPT(F)\fIpolygonfile\fP ] 
 [ GMT_H_OPT ] [ OPT(I)[\fBcflrs\fP] ] [ GMT_J_OPT ] [ OPT(L)[\fBp\fP]\fIdist/linefile\fP ] [ GMT_M_OPT ] 
 [ OPT(N)\fImaskvalues\fP[\fBo\fP] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z)\fImin/max\fP] ] 
 [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
@@ -40,7 +40,8 @@ Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are pro
 .TP
 OPT(D)
 Ignored unless OPT(N) is set.  Selects the resolution of the coastline data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The
-resolution drops off by ~80% between data sets. [Default is \fBl\fP].  Note that because the coastlines differ in details it is not guaranteed that a point will remain inside [or outside] when a different resolution is selected.
+resolution drops off by ~80% between data sets. [Default is \fBl\fP].  Append \fP+\fP to automatically select a lower resolution should
+the one requested not be available [abort if not found].  Note that because the coastlines differ in details it is not guaranteed that a point will remain inside [or outside] when a different resolution is selected.
 .TP
 OPT(F)
 Pass all records whose location is within one of the closed polygons in the multiple-segment
