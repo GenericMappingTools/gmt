@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.37 2009-01-09 04:02:33 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.38 2009-01-16 01:27:09 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -60,6 +60,7 @@ REM	    It is ONLY used if the user does not set %GMT_SHAREDIR%.
 REM
 SET BINDIR="..\bin"
 SET LIBDIR="..\lib"
+SET INCDIR="..\include"
 SET GMT_SHARE_PATH="\"C:\\GMT\\share\""
 REM
 REM STEP e: If you WANT TO  use Shewchuk's triangulation
@@ -184,5 +185,6 @@ REM ----------------------------------------------------
 DEL *.obj
 MOVE *.exe %BINDIR%
 MOVE *.lib %LIBDIR%
+COPY *.h %INCDIR%
 IF %CHOICE%=="dynamic" MOVE *.dll %BINDIR%
 IF %CHOICE%=="dynamic" MOVE *.exp %LIBDIR%
