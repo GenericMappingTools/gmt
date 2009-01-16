@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.24 2009-01-16 00:49:13 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.25 2009-01-16 01:03:31 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -155,29 +155,41 @@ struct passwd {
 };
 
 /* These two functions prototypes are normally in pwd.h & unistd.h;
- * Here, they are defined as dummies at the bottom of gmt_init.c */
+ * Here, they are defined as dummies at the bottom of gmt_init.c
+ * since there are no equivalents under Windows. */
 
 EXTERN_MSC struct passwd *getpwuid (const int uid);
 EXTERN_MSC int getuid (void);
 
 /* getcwd is usually in unistd.h; we use a macro here
- * since the same function under WIN32 is prefixed with _ */
+ * since the same function under WIN32 is prefixed with _;
+ * it is defined in direct.h */
 
-extern char *_getcwd (const char *path, int len);
 #define getcwd(path, len) _getcwd(path, len)
 
 /* access is usually in unistd.h; we use a macro here
- * since the same function under WIN32 is prefixed with _ */
+ * since the same function under WIN32 is prefixed with _
+ * and defined in io.h */
 
-extern int _access (const char *path, int mode);
 #define access(path, mode) _access(path, mode)
 
-extern int _mkdir (const char *path);
+/* mkdir is usually in sys/stat.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and furthermore does not pass the mode argument;
+ * it is defined in direct.h */
+
 #define mkdir(path,mode) _mkdir(path)
 
-/* fileno and setmode have leading _ under WIN32 */
+/* fileno is usually in stdio.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and defined in stdio.h */
 
 #define fileno(stream) _fileno(stream)
+
+/* setmode is usually in unistd.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and defined in io.h */
+
 #define setmode(fd,mode) _setmode(fd,mode)
 
 EXTERN_MSC void GMT_setmode (int i_or_o);
