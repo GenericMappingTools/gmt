@@ -1,6 +1,6 @@
 REM
 REM		GMT EXAMPLE 27
-REM		$Id: job27.bat,v 1.2 2008-06-14 01:42:08 guru Exp $
+REM		$Id: job27.bat,v 1.3 2009-01-16 03:58:11 guru Exp $
 REM
 REM Purpose:	Illustrates how to plot Mercator img grids
 REM GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast
@@ -30,7 +30,7 @@ grdimage tasman_grav.nc=ns/0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K -U"E
 REM Then use pscoast to plot land; get original -R from grid remark
 REM and use Mercator projection with same scale as above on a spherical Earth
 
-pscoast -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Ba10f5WSne -O -K -Gblack --ELLIPSOID=Sphere -Cwhite -Dh --PLOT_DEGREE_FORMAT=dddF >> example_27.ps
+pscoast -R145/170/-50.0163575733/-24.9698584055 -Jm0.25i -Ba10f5WSne -O -K -Gblack --ELLIPSOID=Sphere -Cwhite -Di --PLOT_DEGREE_FORMAT=dddF >> example_27.ps
 
 REM Put a color legend on top of the land mask justified with 147E,31S
 
