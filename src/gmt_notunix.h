@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.23 2009-01-16 00:41:36 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.24 2009-01-16 00:49:13 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -172,8 +172,8 @@ extern char *_getcwd (const char *path, int len);
 extern int _access (const char *path, int mode);
 #define access(path, mode) _access(path, mode)
 
-extern int mkdir (const char *path, int mode);
-#define mkdir(path,mode) _mkdir(path,mode)
+extern int _mkdir (const char *path);
+#define mkdir(path,mode) _mkdir(path)
 
 /* fileno and setmode have leading _ under WIN32 */
 
