@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 27
-#		$Id: job27.sh,v 1.3 2009-01-16 03:58:11 guru Exp $
+#		$Id: job27.sh,v 1.4 2009-01-16 21:43:10 guru Exp $
 #
 # Purpose:	Illustrates how to plot Mercator img grids
 # GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast
@@ -31,7 +31,7 @@ grdimage tasman_grav.nc=ns/0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K \
 R=`grdinfo tasman_grav.nc | grep Remark | awk '{print $NF}'`
 
 pscoast $R -Jm0.25i -Ba10f5WSne -O -K -Gblack --ELLIPSOID=Sphere \
-	-Cwhite -Di --PLOT_DEGREE_FORMAT=dddF >> $ps
+	-Cwhite -Dh+ --PLOT_DEGREE_FORMAT=dddF >> $ps
 
 # Put a color legend on top of the land mask justified with 147E,31S
 

@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.394 2009-01-15 19:49:54 remko Exp $
+	$Id: ChangeLog,v 1.395 2009-01-16 21:43:10 guru Exp $
 -----------------------------------------------------------------------------------------
+2009-01-16	pwessel
+	* pscoast.c:		Enhanced -D<res>+ where the + lets the application determine the
+				next lower resolution should the selected one not be available.
+	* gmtselect.c:		Same.
+	* grdlandmask.c:	Same.
+	* gmt_shore.c:		New public function GMT_shore_adjust_res to handle the above.
+
 2009-01-15	remko
 	* pslib.c:		Fixed minor bug in ps_polygon (missing P in some cases)
 

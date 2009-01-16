@@ -5,7 +5,7 @@ grdlandmask \- Create "wet-dry" mask grid file from shoreline data base.
 .SH SYNOPSIS
 \fBgrdlandmask\fP OPT(G)\fImask_grd_file\fP] GMT_I_OPT 
 GMT_Rgeo_OPT [ OPT(A)\fImin_area\fP[/\fImin_level/max_level\fP] ] 
-[ OPT(D)\fIresolution\fP ] [ OPT(F) ] [ OPT(N)\fImaskvalues\fP[\fBo\fP] ] 
+[ OPT(D)\fIresolution\fP[\fB+\fP] ] [ OPT(F) ] [ OPT(N)\fImaskvalues\fP[\fBo\fP] ] 
 [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBgrdlandmask\fP reads the selected shoreline database and uses that information to decide which
@@ -28,7 +28,8 @@ will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the
 .TP
 OPT(D)
 Selects the resolution of the data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The
-resolution drops off by ~80% between data sets. [Default is \fBl\fP].  Note that because the coastlines differ in details a
+resolution drops off by ~80% between data sets. [Default is \fBl\fP].    Append \fP+\fP to automatically select a lower resolution should
+the one requested not be available [abort if not found].  Note that because the coastlines differ in details a
 node in a mask file using one resolution is not guaranteed to remain inside [or outside] when a different resolution is selected.
 #include "explain_nodereg.txt"
 .TP
