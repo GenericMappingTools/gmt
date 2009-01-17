@@ -5,13 +5,14 @@ ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats u
 .SH SYNOPSIS
 \fBps2raster\fP \fIpsfile(s)\fP [ OPT(A)[\fBu\fP] ] [ OPT(C)\fIgs_option\fP] [ OPT(D)\fIoutdir\fP ] 
 [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] [ OPT(L)\fIlistfile\fP] [ OPT(P) ] 
-[ OPT(Q)[\fBg\fP|\fBt\fP][1|2|4] ] [ OPT(S) ] 
-[ OPT(Tb)|\fBe\fP|\fBf\fP|\fBj\fP|\fBg\fP|\fBG\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ]
+[ OPT(Q)[\fBg\fP|\fBt\fP][1|2|4] ] [ OPT(R) ][ OPT(S) ]  
+[ OPT(Tb)|\fBe\fP|\fBf\fP|\fBj\fP|\fBg\fP|\fBG\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ] [ OPT(W) ] 
 .SH DESCRIPTION
 \fBps2raster\fP converts one or more \fIPostScript\fP files to other formats (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF)
 using GhostScript. Input file names are read from the command line or from a file that lists them.
 The size of the resulting images is determined by the BoundingBox (or HiResBoundingBox, if present).
-As an option, a tight (HiRes)BoundingBox may be computed first.
+As an option, a tight (HiRes)BoundingBox may be computed first. As another option, it can compute 
+ESRI type world files used to reference, for instance, tif files and make them be recognized as geotiff.
 .TP
 \fIpsfiles\fP
 Names of \fIPostScript\fP files to be converted. The output files will have the same name (unless OPT(F) is used) but with the
@@ -61,6 +62,17 @@ OPT(Q)
 Set the anti-aliasing options for \fBg\fPraphics or \fBt\fPext.  Append the size of the subsample
 box (1, 2, or 4) [4].  Default is no anti-aliasing (same as \fIbits\fP = 1).
 .TP
+OPT(R)
+Provide true coordinates image limits to be used within the computation of world files.
+This option takes precedence over OPT(W) as it trust more on user input but otherwise it
+behaves like the OPT(W) option (see below). In principle it can also be used with non \fBGMT\fP
+PostScript files but obviously subject to the same restrictions as explained in OPT(W) option
+An IMPORTANT difference of using this as compared to OPT(W) is that one can enter here the
+TRUE image limits, whilst OPT(W) captures only the non projected (e.g. geographical) coordinates.
+In fact when the file being processed contains a projected image it is necessary to know its
+exact limits and projection parameters. With that knowledge one can use mapproject to compute
+the projected region and enter it here. This option sets OPT(A)
+
 OPT(S)
 Print to standard output the GhostScript command after it has been executed.
 .TP
@@ -71,6 +83,28 @@ For \fBbjgt\fP you can append - to get a grayscale image only.
 The EPS format can be combined with any of the other formats. For example, OPT(Tef) creates both an EPS and
 a PDF file.
 #include "explain_-V.txt"
+
+OPT(W)
+Write a ESRI type world file suitable to make (e.g) .tif files be recognized as geotiff by
+softwares that know how to do it. Be aware, however, that this is a limited functionality
+as it only works correctly with LINEAR plots produced by \fBGMT\fP. Furthermore, different results
+are obtained depending on the image contents and if the OPT(B) option has been used or not.
+The complication introduced by the -B option is that it creates a frame that complicates
+the necessary computations. A good solution is to use --FRAME_WIDTH=0.001 to reduce the frame
+to a bare minimum. In any case, DO NOT plot annotations or tick marks on the outer side of
+the image. If absolutely necessary use negative values in annotation parameters, like for
+instances --TICK_LENGTH=-0.075i --ANNOT_OFFSET=-0.05i. However, if the plot has any of the sides
+with whites only than the algorithm will fail miserably as those whites will be eaten by
+ghostscript. In that case one really must use OPT(B).
+
+When the image was built using projected coordinates, the computations here will be totally
+wrong because what is stored in the PostScript file are the geographical coordinates and not
+the projected ones that we actually need. In that case, the only escape is to use the OPT(R)
+option together with a little help from mapproject.
+
+The world file naming follows the convention of jamming a 'w' in the file extension. So, if
+output is tif OPT(Tt) the world file is a .tfw, for jpeg we have a .jgw and so on.
+This option sets OPT(A)
 .SH NOTES
 The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently results in loss of details that are
 available in the original \fIPostScript\fP file. Choose a resolution that is large enough for the application that
@@ -105,6 +139,29 @@ orientation in case it was in Landscape mode:
 .br
 .sp
 \fBps2raster\fP psfile.ps OPT(A) OPT(P) OPT(Tg)
+.br
+.sp
+To create a simple linear map with pascoast and convert it to tif with a .tfw The PS_LINE_JOIN plays here an 
+important role in avoiding that line kinks (the coastlines) get slightly out of the map thus confusing
+the tight BoundingBox computation.
+.br
+.sp
+\fBpscoast\fP OPT(JX)12cd OPT(R)-10/-4/37/43 OPT(W)1 OPT(Di) OPT(B)g30m OPT(P) OPT(G200) --FRAME_WIDTH=0.001 --PS_LINE_JOIN=round > cara.ps
+\fBps2raster\fP cara OPT(Tt) OPT(W)
+.br
+.sp
+To create a Mercator version of the above example and use GDAL to produce a true geotiff file. In this case we
+need also to convert the map limits in geographical coords into Mercator.
+.br
+.sp
+\fBpscoast\fP OPT(JM)12c OPT(R)-10/-4/37/43 OPT(W)1 OPT(Di) OPT(B)g30m OPT(P) OPT(G200) --FRAME_WIDTH=0.001 --PS_LINE_JOIN=round > cara.ps
+\fBmapproject\fP OPT(Jm)1:1 OPT(C) OPT(F) OPT(R)-10/10/0/45 --D_FORMAT=%.3f
+-10 37
+-1113194.908    4413389.889
+-4 43
+-445277.963     5282821.824
+\fBps2raster\fP cara OPT(Tt) OPT(R)-333958.472/333958.472/4413389.889/5282821.824 
+gdalwarp -s_srs +proj=merc -co TFW=YES cara.tif carageo.tiff 
 .br
 .sp
 (This command assumes that ghostscript can be found in your system's path.)\"'
