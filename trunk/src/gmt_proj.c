@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.42 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_proj.c,v 1.43 2009-01-17 02:05:18 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -581,7 +581,7 @@ void GMT_ilamb (double *lon, double *lat, double x, double y)
 	int i;
 	double theta, rho, t, tphi, phi, delta, dy, r;
 
-	theta = d_atan2 (x, project_info.l_rho0 - y);
+	theta = (project_info.l_N < 0.0) ? d_atan2 (-x, y - project_info.l_rho0) : d_atan2 (x, project_info.l_rho0 - y);
 	*lon = theta * project_info.l_i_Nr + project_info.central_meridian;
 
 	dy = project_info.l_rho0 - y;
