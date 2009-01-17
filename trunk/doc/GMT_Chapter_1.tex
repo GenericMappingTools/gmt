@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.101 2009-01-16 00:10:37 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.102 2009-01-17 02:55:04 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -70,6 +70,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{gmt\_plot.c}]: Wrongly checked for map jumps for non-periodic map boundaries.
 		Bug in \GMTfunc{GMT\_fill\_polygon} that affected polygon outline.
 		3D text box was computed incorrectly.  Could exceeded array size in \GMTfunc{GMT\_epsinfo}.
+	\item [\GMTprog{gmt\_proj.c}]: Fixed bug in Lambert conformal conic projection for southern hemisphere.
 	\item [\GMTprog{gmt\_support.c}]: Function \GMTfunc{GMT\_get\_arc} did not check for division by zero.
 			The \Opt{Gx}{\it file:radius}[unit] option in \GMTprog{grdcontour.c} passed the entire
 			argument as the file name. Function \GMTfunc{GMT\_polygon\_is\_open} did not test for empty polygons (n = 0).
@@ -149,6 +150,9 @@ Here is a list of the recent enhancement to various programs:
 \item \GMTprog{mapproject.c} has extended the \Opt{A} option by making the fixed point
 	optional; if not given we compute azimuths between successive data points.
 \item \GMTprog{minmax.c} has optional /{\it col} that may be added to \Opt{T}{\it dz} to select another column [third].
+\item \GMTprog{pscoast.c} has a new modifier {\bf +} to the \Opt{D} option, which determines the
+	next lower resolution should the selected one not be available.  This enhancement also affects
+	both \GMTprog{gmtselect.c} and \GMTprog{grdlandmask.c}.
 \item \GMTprog{psimage.c} has new \Opt{Gt} option, with assignment of color to be made transparent.
 \item \GMTprog{pslegend.c} lets {\bf N} (number of columns) also affect the printing of labels.
 	Can now use rectangle among the symbols.
