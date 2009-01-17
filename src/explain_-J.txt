@@ -174,6 +174,7 @@ OPT(Js)\fIlon0/lat0\fP[\fI/horizon\fP]\fI/scale\fP or OPT(JS)\fIlon0/lat0\fP[\fI
 \fIhorizon\fP specifies the max distance from projection center (in degrees, < 180, default 90).
 Give \fIscale\fP as \fB1:\fP\fIxxxx\fP (true at pole) or \fIlat0\fP/\fB1:\fP\fIxxxx\fP (true at standard parallel \fIlat0\fP)
 or \fIradius/lat\fP (\fIradius\fP in UNIT from origin to the oblique latitude \fIlat\fP).
+Note if \fB1:\fP\fIxxxx\fP is used then to specify \fIhorizon\fP you must also specify the \fIlat0\fP as +-90 to avoid ambiguity.
 .PP
 \fBMISCELLANEOUS PROJECTIONS:\fP
 .TP
