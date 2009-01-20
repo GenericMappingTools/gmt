@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.244 2009-01-20 03:35:21 guru Exp $
+ *	$Id: gmt_plot.c,v 1.245 2009-01-20 20:19:27 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4186,7 +4186,7 @@ int GMT_plotinit (int argc, char *argv[])
 		Cartesian_m[1] = (project_info.xmax - project_info.x0) * project_info.i_x_scale;
 		Cartesian_m[2] = (project_info.ymax - project_info.y0) * project_info.i_y_scale;
 		Cartesian_m[3] = (project_info.xmin - project_info.x0) * project_info.i_x_scale;
-		sprintf (cmd, "%%%%PROJ: %s %.7f %.7f %.7f %.7f %.3f %.3f %.3f %.3f", GMT_proj4[id].proj4name,
+		sprintf (cmd, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f", GMT_proj4[id].proj4name,
 			project_info.w, project_info.e, project_info.s, project_info.n,
 			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2]);
 		ps_command (cmd);
