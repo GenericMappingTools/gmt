@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.397 2009-01-18 00:38:00 jluis Exp $
+	$Id: ChangeLog,v 1.398 2009-01-20 08:57:37 guru Exp $
 -----------------------------------------------------------------------------------------
 2009-01-17	jluis
 	* ps2raster.c:		Added -A & -R options to help create world files
@@ -11,6 +11,7 @@
 	* grdlandmask.c:	Same.
 	* gmt_shore.c:		New public function GMT_shore_adjust_res to handle the above.
 	* gmt_proj.c:		Fixed bug in Lambert Conformal Conic for southern hemisphere.
+	* explain_-J.txt:	Clarified how to set horizon and standard latitude/scale for -Js
 
 2009-01-15	remko
 	* pslib.c:		Fixed minor bug in ps_polygon (missing P in some cases)
