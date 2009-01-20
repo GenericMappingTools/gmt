@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.243 2009-01-12 22:02:05 remko Exp $
+ *	$Id: gmt_plot.c,v 1.244 2009-01-20 03:35:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -310,6 +310,45 @@ unsigned char GMT_glyph[2520] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f,
+};
+
+struct GMT_PROJ {
+	char *proj4name;
+	int id;
+};
+
+#define GMT_N_PROJ4 30
+struct GMT_PROJ GMT_proj4[GMT_N_PROJ4] = {
+	{ "aea"      , GMT_ALBERS },
+	{ "aeqd"     , GMT_AZ_EQDIST },
+	{ "cyl_stere", GMT_CYL_STEREO },
+	{ "cass"     , GMT_CASSINI },
+	{ "cea"      , GMT_CYL_EQ },
+	{ "eck4"     , GMT_ECKERT4 },
+	{ "eck6"     , GMT_ECKERT6 },
+	{ "eqc"      , GMT_CYL_EQDIST },
+	{ "eqdc"     , GMT_ECONIC },
+	{ "gnom"     , GMT_GNOMONIC },
+	{ "hammer"   , GMT_HAMMER },
+	{ "laea"     , GMT_LAMB_AZ_EQ },
+	{ "lcc"      , GMT_LAMBERT },
+	{ "merc"     , GMT_MERCATOR },
+	{ "mill"     , GMT_MILLER },
+	{ "moll"     , GMT_MOLLWEIDE },
+	{ "nsper"    , GMT_GENPER },
+	{ "omerc"    , GMT_OBLIQUE_MERC },
+	{ "omercp"   , GMT_OBLIQUE_MERC_POLE },
+	{ "ortho"    , GMT_ORTHO },
+	{ "polar"    , GMT_POLAR },
+	{ "robin"    , GMT_ROBINSON },
+	{ "sinu"     , GMT_SINUSOIDAL },
+	{ "stere"    , GMT_STEREO },
+	{ "tmerc"    , GMT_TM },
+	{ "utm"      , GMT_UTM },
+	{ "vandg"    , GMT_VANGRINTEN },
+	{ "wintri"   , GMT_WINKEL },
+	{ "xy"       , GMT_LINEAR },
+	{ "z"        , GMT_ZAXIS }
 };
 
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
@@ -4110,7 +4149,7 @@ int GMT_plotinit (int argc, char *argv[])
 	/* Shuffles parameters and calls ps_plotinit, issues PS comments regarding the GMT options
 	 * and places a time stamp, if selected */
 
-	int PS_bit_settings = 0;
+	int PS_bit_settings = 0, k, id;
 	struct EPS *eps;
 	
 	/* Load all the bits required by ps_plotinit */
@@ -4136,6 +4175,22 @@ int GMT_plotinit (int argc, char *argv[])
 	/* Issue the comments that allow us to trace down what command created this layer */
 
 	GMT_echo_command (argc, argv);
+
+	/* Create %%PROJ tag that ps2raster can use to prepare a ESRI world file */
+	
+	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (GMT_proj4[k].id == project_info.projection) id = k;
+	if (id >= 0) {			/* Valid projection for creating world file info */
+		double Cartesian_m[4];	/* WESN equivalents in projected meters */
+		char cmd[BUFSIZ];
+		Cartesian_m[0] = (project_info.ymin - project_info.y0) * project_info.i_y_scale;
+		Cartesian_m[1] = (project_info.xmax - project_info.x0) * project_info.i_x_scale;
+		Cartesian_m[2] = (project_info.ymax - project_info.y0) * project_info.i_y_scale;
+		Cartesian_m[3] = (project_info.xmin - project_info.x0) * project_info.i_x_scale;
+		sprintf (cmd, "%%%%PROJ: %s %.7f %.7f %.7f %.7f %.3f %.3f %.3f %.3f", GMT_proj4[id].proj4name,
+			project_info.w, project_info.e, project_info.s, project_info.n,
+			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2]);
+		ps_command (cmd);
+	}
 
 	/* If requested, place the timestamp */
 
