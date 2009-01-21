@@ -104,7 +104,7 @@ option together with a little help from mapproject.
 .br
 The world file naming follows the convention of jamming a 'w' in the file extension. So, if
 output is tif OPT(Tt) the world file is a .tfw, for jpeg we have a .jgw and so on.
-This option sets OPT(A).
+This option automatically sets OPT(A) OPT(P).
 .SH NOTES
 The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently results in loss of details that are
 available in the original \fIPostScript\fP file. Choose a resolution that is large enough for the application that
