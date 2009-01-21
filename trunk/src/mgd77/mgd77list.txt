@@ -261,6 +261,9 @@ to use if you also have requested \fBngrav\fP as an output column in OPT(F).
 .br
 OPT(Af2)[,\fIfield\fP]
 returns the difference between \fBgobs\fP and \fBngrav\fP (with optional \fIfield\fP directive).
+.br
+OPT(Af3)[,\fIfield\fP]
+returns the combination of \fBgobs\fP + \fBeot\fP - \fBngrav\fP (with optional \fIfield\fP directive).
 .TP
 OPT(Am)
 Determines how the \fBmag\fP column output is obtained.  There may be one or two

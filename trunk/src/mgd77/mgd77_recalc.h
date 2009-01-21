@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: mgd77_recalc.h,v 1.4 2009-01-09 04:02:35 guru Exp $
+ *	$Id: mgd77_recalc.h,v 1.5 2009-01-21 02:01:50 guru Exp $
  *
  *    Copyright (c) 2004-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -14,21 +14,23 @@
  * been turned OFF [Default is ON].
  */
 
-#define N_E77_CORR_FIELDS	4
+#define N_E77_CORR_FIELDS	5
 /* The array indices 0-3 for these 4 fields */
 #define E77_CORR_FIELD_TWT	(MGD77_COL_ADJ_TWT-1)
 #define E77_CORR_FIELD_DEPTH	(MGD77_COL_ADJ_DEPTH-1)
 #define E77_CORR_FIELD_MAG	(MGD77_COL_ADJ_MAG-1)
 #define E77_CORR_FIELD_FAA	(MGD77_COL_ADJ_FAA-1)
+#define E77_CORR_FIELD_FAA_EOT	(MGD77_COL_ADJ_FAA_EOT-1)
 
-#define N_E77_AUX_FIELDS	6
-/* The array indices 0-5 for the 6 aux fields */
+#define N_E77_AUX_FIELDS	7
+/* The array indices 0-6 for the 7 aux fields */
 #define E77_AUX_FIELD_TIME	0
 #define E77_AUX_FIELD_LAT	1
 #define E77_AUX_FIELD_LON	2
 #define E77_AUX_FIELD_TWT	3
 #define E77_AUX_FIELD_MTF1	4
 #define E77_AUX_FIELD_GOBS	5
+#define E77_AUX_FIELD_EOT	6
 
 struct MGD77_E77_APPLY {
 	/* Structure with information about specific corrections to data columns:
