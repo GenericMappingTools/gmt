@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.203 2009-01-15 01:22:55 guru Exp $
+ *	$Id: mgd77.c,v 1.204 2009-01-21 02:01:50 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3378,14 +3378,22 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 				E.col[E77_CORR_FIELD_FAA] = col;
 				E.id[E77_CORR_FIELD_FAA] = id;
 				break;
+			case MGD77_COL_ADJ_FAA_EOT:	/* Must apply IGF(lat) and eot correction to gobs */
+				E.needed[E77_AUX_FIELD_LAT] = 1;
+				E.needed[E77_AUX_FIELD_GOBS] = 1;
+				E.needed[E77_AUX_FIELD_EOT] = 1;
+				E.correction_requested[E77_CORR_FIELD_FAA_EOT] = TRUE;
+				E.col[E77_CORR_FIELD_FAA_EOT] = col;
+				E.id[E77_CORR_FIELD_FAA_EOT] = id;
+				break;
 			default:	/* Probably 0 */
 				break;
 		}
 	}
 	
 	if (E.apply_corrections) {	/* One or more of the depth, faa, and mag columns needs to be recomputed */
-		int nc_id[N_E77_AUX_FIELDS] = {NCPOS_TIME,NCPOS_LAT,NCPOS_LON,NCPOS_TWT,NCPOS_MTF1,NCPOS_GOBS};
-		char *abbrev[N_E77_AUX_FIELDS] = {"time","lat","lon","twt","mtf1","gobs"};
+		int nc_id[N_E77_AUX_FIELDS] = {NCPOS_TIME,NCPOS_LAT,NCPOS_LON,NCPOS_TWT,NCPOS_MTF1,NCPOS_GOBS,NCPOS_EOT};
+		char *abbrev[N_E77_AUX_FIELDS] = {"time","lat","lon","twt","mtf1","gobs","eot"};
 		/* First make sure the auxillary data fields are set */
 		for (i = 0; i < N_E77_AUX_FIELDS; i++) {
 			if (!E.needed[i]) continue;	/* Dont need this particular column */
@@ -3443,6 +3451,14 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc faa if originally flagged as a NaN */
 			 	values[rec] = E.aux[E77_AUX_FIELD_GOBS][rec] - MGD77_Theoretical_Gravity (0.0, E.aux[E77_AUX_FIELD_LAT][rec], MGD77_IGF_1980);
+			}
+		}
+
+		if (E.correction_requested[E77_CORR_FIELD_FAA_EOT]) {	/* Must recalculate faa from gobs, eot and IGF */
+			values = (double *)S->values[E.col[E77_CORR_FIELD_FAA_EOT]];		/* Output faa */
+			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
+				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc faa if originally flagged as a NaN */
+			 	values[rec] = E.aux[E77_AUX_FIELD_GOBS][rec] + E.aux[E77_AUX_FIELD_EOT][rec] - MGD77_Theoretical_Gravity (0.0, E.aux[E77_AUX_FIELD_LAT][rec], MGD77_IGF_1980);
 			}
 		}
 

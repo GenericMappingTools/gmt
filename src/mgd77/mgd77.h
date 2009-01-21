@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.102 2009-01-09 04:02:35 guru Exp $
+ *	$Id: mgd77.h,v 1.103 2009-01-21 02:01:50 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -148,6 +148,7 @@
 #define NCPOS_TWT	6
 #define NCPOS_MTF1	10
 #define NCPOS_GOBS	16
+#define NCPOS_EOT	21
 
 /* We will use bit flags to keep track of which data column we are referring to.
  * field 0 is rightmost bit (1), field 1 is the next bit (2), field 2 is 4 and
@@ -199,6 +200,7 @@ typedef char* Text;	/* Used to indicate character strings */
 #define MGD77_COL_ADJ_DEPTH	2	/* Compute Carter depth from twt */
 #define MGD77_COL_ADJ_MAG	3	/* Compute mag from mtf1 - igrf */
 #define MGD77_COL_ADJ_FAA	4	/* Compute faa from gobs - igf */
+#define MGD77_COL_ADJ_FAA_EOT	5	/* Compute faa from gobs - igf + eot */
 
 struct MGD77_COLINFO {
 	char *abbrev;		/* Short name that identifies this column */

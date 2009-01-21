@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.398 2009-01-20 08:57:37 guru Exp $
+	$Id: ChangeLog,v 1.399 2009-01-21 02:01:50 guru Exp $
 -----------------------------------------------------------------------------------------
+2009-01-20	pwessel
+	* mgd77/mgd77manage.c:	Can now request faa to be computed from gobs + eot - ngrav
+
 2009-01-17	jluis
 	* ps2raster.c:		Added -A & -R options to help create world files
 
