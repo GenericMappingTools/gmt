@@ -1,9 +1,10 @@
 .TP
 OPT(B)
 Sets map boundary annotation and tickmark intervals. The format of \fItickinfo\fP is
-[\fBp\fP|\fBs\fP]\fIxinfo\fP[/\fIyinfo\fP[/\fIzinfo\fP]][:."Title":][\fBW\fP|\fBw\fP][\fBE\fP|\fBe\fP][\fBS\fP|\fBs\fP][\fBN\fP|\fBn\fP][\fBZ\fP|\fBz\fP[\fB+\fP]].
+[\fBp\fP|\fBs\fP]\fIxinfo\fP[/\fIyinfo\fP[/\fIzinfo\fP]][\fB:.\fP"Title"\fB:\fP][\fBW\fP|\fBw\fP][\fBE\fP|\fBe\fP][\fBS\fP|\fBs\fP][\fBN\fP|\fBn\fP][\fBZ\fP|\fBz\fP[\fB+\fP]].
 The leading \fBp\fP [Default] or \fBs\fP selects the primary or secondary annotation information.
-Each of the \fI?info\fP segments are textstrings of the form \fIinfo\fP[:"Axis label":][:="prefix":][:,"unit label":].
+Each of the \fI?info\fP segments are textstrings of the form
+\fIinfo\fP[\fB:\fP"Axis label"\fB:\fP][\fB:=\fP"prefix"\fB:\fP][\fB:,\fP"unit label"\fB:\fP].
 The \fIinfo\fP string is made up of one or more concatenated substrings of the form [\fBwhich\fP]\fIstride\fP[+-\fIphase\fP][\fBu\fP].
 The optional \fBwhich\fP can be either \fBa\fP for annotation tick spacing [Default], \fBf\fP for frame tick spacing, and
 \fBg\fP for gridline spacing.  If frame interval is not set, it is assumed to be the same
@@ -20,11 +21,12 @@ interval by that amount.  The optional \fBu\fP indicates the unit of the \fIstri
 by \fBTIME_LANGUAGE\fP.  To specify separate x and y ticks, separate the substrings that apply to the x and y
 axes with a slash [/] (If a 3-D basemap is selected with OPT(E) and OPT(Jz), a third substring pertaining
 to the vertical axis may be appended.)  For linear/log/power projections (OPT(Jx)|\fBX\fP): Labels
-for each axis can be added by surrounding them with colons.  If the first character in the
-label is a period, then the label is used as plot title; if it is a comma then the label is
-appended to each annotation; if it is an equal sign (=) the the prefix is prepended to each annotation (start label/prefix
+for each axis can be added by surrounding them with colons (\fB:\fP).  If the first character in the
+label is a period, then the label is used as plot title; if it is a comma (\fB,\fP) then the label is
+appended to each annotation; if it is an equal sign (\fB=\fP) the the prefix is prepended to each annotation (start label/prefix
 with - to avoid space between annotation and item); else it is the axis label.
-If the label consists of more than one word, enclose the entire label in double quotes (e.g., :"my label":).
+If the label consists of more than one word, enclose the entire label in double quotes (e.g.,
+\fB:\fP"my label"\fB:\fP).
 If you need to use a colon (:) as part of your label you must specify it using its octal code (\\072).
 .br
 By default, all 4 boundaries are plotted (referred to as \fBW, E, S, N\fP).  To change the default,
@@ -32,7 +34,7 @@ append the code for only those axes you want (e.g., \fBWS\fP for standard lower-
 Upper case (e.g., \fBW\fP) means draw axis/tickmarks AND annotate it, whereas lower case
 (e.g., \fBw\fP) will only draw axis/tickmarks.  (If a 3-D basemap is selected with OPT(E) and
 OPT(Jz), append \fBZ\fP or \fBz\fP to control the appearance
-of the vertical axis.  Append '+' to draw the outline of the cube defined by OPT(R).  Note
+of the vertical axis.  Append \fB+\fP to draw the outline of the cube defined by OPT(R).  Note
 that for 3-D views the title, if given, will be suppressed.)
 .br
 For non-geographical projections:

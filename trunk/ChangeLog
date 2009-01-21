@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.399 2009-01-21 02:01:50 guru Exp $
+	$Id: ChangeLog,v 1.400 2009-01-21 18:30:31 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-01-21	remko
+	* psbasemap.{c,txt}:	Erroneously suggested that base was plotted at z=0, instead of
+				at the bottom end of the z-axis.
+
 2009-01-20	pwessel
 	* mgd77/mgd77manage.c:	Can now request faa to be computed from gobs + eot - ngrav
 
 2009-01-17	jluis
-	* ps2raster.c:		Added -A & -R options to help create world files
+	* ps2raster.c:		Added -W option to help create world files
 
 2009-01-16	pwessel
 	* pscoast.c:		Enhanced -D<res>+ where the + lets the application determine the
@@ -90,7 +94,6 @@
 
 2009-01-05	remko
 	* ps2raster.c, pslib.c:	Lower bounds of BBox written with floor(), upper bounds with ceil().
-				manifest mainly when doing a grdcut with a N-S sub-region
 	
 2009-01-02	remko
 	* ps2raster.c:		Include -F option to force file name.
@@ -144,7 +147,7 @@
 				"land" along map perimeter for some projections.
 	* gmt_math.h:		Check for macro definitions for system math functions.
 	* gmt_vector.c:		GMT_resample_path would add 360 to points along meridians.
-	* pslegend.c:		Can now use rectangle among the symbols.
+	r pslegend.c:		Can now use rectangle among the symbols.
 	
 2008-12-05	pwessel
 	* greenspline.c:	New interpolation/gridding program for 1-3 dimensions using
@@ -679,7 +682,7 @@
 	* bin/gmtlogo:		Pushed text back up into 2 x 1 inch box. Put in isolation mode
 	* src/Colors.txt:	Reorganized list of RGB colors and names.
 	* gmt_color{name,_rgb}.h:	Removed from CVS. Now created from Colors.txt
-	* doc/sctipts/GMT_RGBchart.sh:	Added GMT logo. All sizes horizontal.
+	* doc/scripts/GMT_RGBchart.sh:	Added GMT logo. All sizes horizontal.
 	* src/gmtcolors.txt:	New man page with color information.
 	* src/Grdformats.txt:	Renamed from share/conf/gmt_formats.conf
 
