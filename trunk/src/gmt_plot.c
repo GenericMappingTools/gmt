@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.245 2009-01-20 20:19:27 guru Exp $
+ *	$Id: gmt_plot.c,v 1.246 2009-01-23 03:01:23 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4181,15 +4181,16 @@ int GMT_plotinit (int argc, char *argv[])
 	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (GMT_proj4[k].id == project_info.projection) id = k;
 	if (id >= 0) {			/* Valid projection for creating world file info */
 		double Cartesian_m[4];	/* WESN equivalents in projected meters */
-		char cmd[BUFSIZ];
+		char cmd[BUFSIZ], *pstr = NULL;
 		Cartesian_m[0] = (project_info.ymin - project_info.y0) * project_info.i_y_scale;
 		Cartesian_m[1] = (project_info.xmax - project_info.x0) * project_info.i_x_scale;
 		Cartesian_m[2] = (project_info.ymax - project_info.y0) * project_info.i_y_scale;
 		Cartesian_m[3] = (project_info.xmin - project_info.x0) * project_info.i_x_scale;
-		sprintf (cmd, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f", GMT_proj4[id].proj4name,
+		sprintf (cmd, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s", GMT_proj4[id].proj4name,
 			project_info.w, project_info.e, project_info.s, project_info.n,
-			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2]);
+			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], GMT_export2proj4(pstr));
 		ps_command (cmd);
+		free((void *)pstr);
 	}
 
 	/* If requested, place the timestamp */
@@ -4855,3 +4856,147 @@ BOOLEAN set_do_seconds (double inc)
 	if (fabs (60.0 * fmod (fmod (inc, 1.0) * 60.0, 1.0)) >= 1.0) return (TRUE);	/* Multiples of >= 1 sec intervals */
 	return (FALSE);
 }
+
+char *GMT_export2proj4(char *pStrOut) {
+	char	szProj4[512];
+	double	scale_factor = 1., false_easting = 0, false_northing = 0, a, b, f;
+
+	/* Cylindrical projections */
+	if (project_info.projection == GMT_UTM) {
+		sprintf( szProj4, "+proj=utm +zone=%d", (int)project_info.pars[0]);
+		if (project_info.utm_hemisphere < 0)
+			sprintf( szProj4, " +south");
+	}
+	else if (project_info.projection == GMT_MERCATOR) {
+		sprintf( szProj4, "+proj=merc +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[0],
+			scale_factor, false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_CYL_EQ) {
+		sprintf( szProj4, "+proj=cea +lon_0=%.16g +lat_ts=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[1], project_info.pars[0],
+			false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_CYL_EQDIST) {
+                 sprintf( szProj4, "+proj=eqc +lat_ts=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[1], 0.0, project_info.pars[0],
+			false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_CYL_STEREO) {
+	}
+	else if (project_info.projection == GMT_MILLER) {
+		sprintf( szProj4, "+proj=mill +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
+			project_info.pars[1], project_info.pars[0],
+			false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_TM) {
+		sprintf( szProj4, "+proj=tmerc +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[1], project_info.pars[0],
+			scale_factor, false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_CASSINI) {
+		sprintf( szProj4, "+proj=cass +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[1], project_info.pars[0],
+			false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_OBLIQUE_MERC) {
+		sprintf( szProj4, "+unavailable");
+		/*sprintf( szProj4, "+proj=omerc +lat_0=%.16g +lonc=%.16g +alpha=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+		0.0,0.0,0.0,0.0,0.0,0.0 );*/
+	}
+	else if (project_info.projection == GMT_OBLIQUE_MERC_POLE) {
+		sprintf( szProj4, "+unavailable");
+	}
+
+	/* Conic projections */
+	else if (project_info.projection == GMT_ALBERS) {
+		sprintf( szProj4, "+proj=aea +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[2], project_info.pars[3],
+			project_info.pars[1], project_info.pars[0],
+			false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_ECONIC) {
+		sprintf( szProj4, "+proj=eqdc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[2], project_info.pars[3],
+			project_info.pars[1], project_info.pars[0],
+			false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_LAMBERT) {
+		sprintf( szProj4, "+proj=lcc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[2], project_info.pars[3],
+			project_info.pars[1], project_info.pars[0],
+			false_easting, false_northing);
+	}
+
+	/* Azimuthal projections */
+	else if (project_info.projection == GMT_STEREO) {
+		sprintf( szProj4, "+proj=stere +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[1], project_info.pars[0],
+			scale_factor, false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_LAMB_AZ_EQ) {
+		sprintf( szProj4, "+proj=laea +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[1], project_info.pars[0],
+			false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_ORTHO) {
+                 sprintf( szProj4, "+unavailable");
+	}
+	else if (project_info.projection == GMT_AZ_EQDIST) {
+		sprintf( szProj4, "+proj=aeqd +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[1], project_info.pars[0],
+			false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_GNOMONIC) {
+		sprintf( szProj4, "+proj=gnom +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[1], project_info.pars[0],
+			false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_GENPER) {
+                 sprintf( szProj4, "+unavailable");
+	}
+	else if (project_info.projection == GMT_POLAR) {
+                 sprintf( szProj4, "+unavailable");
+	}
+
+	/* Misc projections */
+	else if (project_info.projection == GMT_MOLLWEIDE) {
+                 sprintf( szProj4, "+proj=moll +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[0], false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_HAMMER) {
+                 sprintf( szProj4, "+unavailable");
+	}
+	else if (project_info.projection == GMT_SINUSOIDAL) {
+                 sprintf( szProj4, "+proj=sinu +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[0], false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_VANGRINTEN) {
+                 sprintf( szProj4, "+proj=vandg +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
+			project_info.pars[0], false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_ROBINSON) {
+                 sprintf( szProj4, "+proj=robin +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[0], false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_ECKERT4) {
+                 sprintf( szProj4, "+proj=eck4 +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[0], false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_ECKERT6) {
+                 sprintf( szProj4, "+proj=eck6 +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[0], false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_WINKEL) {
+                 sprintf( szProj4, "+unavailable");
+	}
+
+	a = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
+	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
+	b = a * (1 - f);
+        sprintf( szProj4+strlen(szProj4), " +a=%.3f +b=%.6f", a, b);
+
+	pStrOut = strdup(szProj4);
+	return(pStrOut);
+}
+
