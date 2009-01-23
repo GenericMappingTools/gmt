@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.17 2009-01-11 02:49:19 remko Exp $
+ *	$Id: gmt_plot.h,v 1.18 2009-01-23 03:02:00 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -166,4 +166,5 @@ EXTERN_MSC void GMT_ellipse (double x, double y, double z, double size[], struct
 EXTERN_MSC void GMT_pie (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_rotrect (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_vector (double x0, double y0, double x1, double y1, double z0, double tailwidth, double headlength, double headwidth, double shape, struct GMT_FILL *fill, BOOLEAN outline);
+EXTERN_MSC char *GMT_export2proj4(char *pStrOut);
 #endif /* _GMT_PLOT_H */
