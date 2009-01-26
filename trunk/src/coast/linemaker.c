@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.9 2007-08-28 18:29:12 guru Exp $
+ *	$Id: linemaker.c,v 1.10 2009-01-26 14:10:41 guru Exp $
  */
 /*
  *
@@ -243,15 +243,15 @@ int main (int argc, char **argv)
 				
         GMT_err_fail (nc_close (s.cdfid), file);
 	
-	free ((void *)bin_firstseg);
-	free ((void *)bin_nseg);
+	GMT_free ((void *)bin_firstseg);
+	GMT_free ((void *)bin_nseg);
 	
-	free ((void *)seg_n);
-	free ((void *)seg_level);
-	free ((void *)seg_start);
+	GMT_free ((void *)seg_n);
+	GMT_free ((void *)seg_level);
+	GMT_free ((void *)seg_start);
 	
-	free ((void *)pt_dx);
-	free ((void *)pt_dy);
+	GMT_free ((void *)pt_dx);
+	GMT_free ((void *)pt_dy);
 
 	for (i = 0; i < 16; i++) {
 		if (counts[i]) fprintf (stderr, "linemaker: Level %2d: %d items\n", i, counts[i]);
