@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.14 2009-01-26 14:25:04 guru Exp $
+ *	$Id: lines_to_bins.c,v 1.15 2009-01-26 14:37:27 guru Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -115,6 +115,7 @@ int main (int argc, char **argv)
 			h.level = 1;
 			n_dbl_riv++;
 		}
+		count[h.level]++;
 		h.id = n_id;
 		n_id++;
 		n_init += h.n;
@@ -127,8 +128,6 @@ int main (int argc, char **argv)
 		xx = (int *) GMT_memory (VNULL, n_alloc, sizeof (int), "lines_to_bins");
 		yy = (int *) GMT_memory (VNULL, n_alloc, sizeof (int), "lines_to_bins");
 		
-		if (h.id == 130)
-			n_seg = 0;
 		if (pol_fread (&p, 1, fp_in) != 1) {
 			fprintf(stderr,"lines_to_bins:  ERROR  reading file.\n");
 			exit (EXIT_FAILURE);
@@ -209,14 +208,10 @@ int main (int argc, char **argv)
 		
 		new += n_int;
 		h.n = kk;
-		if (n_int > 10)
-			n_seg = 0;
 		i_x_1 = (ix[0] / B_WIDTH);
 		i_y_1=  (iy[0] / B_WIDTH);
 		xx[0] = ix[0];	yy[0] = iy[0];
 		nn = 1;
-		if (h.id == 252)
-			n_seg = 0;
 		first = TRUE;
 		for (i = 1; i < h.n; i++) {	/* Find grid crossings */
 			dx = ix[i] - ix[i-1];
@@ -364,7 +359,6 @@ int main (int argc, char **argv)
 			
 			s->n = nn;
 			s->level = h.level;
-			count[h.level]++;
 			s->p = (struct SHORT_PAIR *)GMT_memory(VNULL, (size_t)s->n, sizeof(struct SHORT_PAIR), "lines_to_bins");
 			for (k = 0; k < s->n; k++) {
 				/* Don't forget that this modulo calculation for DX doesn't work when you have a right/top edge (this wont happen for this polygon though !!!   */
