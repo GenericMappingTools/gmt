@@ -38,7 +38,7 @@ without depth in third column using the \fB-o\fP option.
 .br
 .TP
 OPT(Sa)scale[c/i][/fontsize[/offset\fP[\fBu\fP]]]
-Focal mechanisms in Aki and Richard convention.
+Focal mechanisms in Aki and Richards convention.
 \fIscale\fP adjusts the scaling of the radius of the "beach ball",
 which will be proportional to the magnitude.  Scale is the size for 
 magnitude = 5 in inch (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
