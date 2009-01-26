@@ -83,7 +83,7 @@ OPT(S)
 selects the meaning of the columns in the data file and the figure to be plotted.
 .TP
 OPT(Sa)\fIscale[/fontsize[/offset\fP[\fBu\fP]]]
-Focal mechanisms in Aki and Richard convention.
+Focal mechanisms in Aki and Richards convention.
 \fIscale\fP adjusts the scaling of the radius of the "beach ball",
 which will be proportional to the magnitude.  The \fIscale\fP is the size for
 magnitude = 5 in \fBMEASURE_UNIT\fP (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is
