@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.246 2009-01-23 03:01:23 jluis Exp $
+ *	$Id: gmt_plot.c,v 1.247 2009-01-26 01:29:45 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4859,7 +4859,9 @@ BOOLEAN set_do_seconds (double inc)
 
 char *GMT_export2proj4(char *pStrOut) {
 	char	szProj4[512];
-	double	scale_factor = 1., false_easting = 0, false_northing = 0, a, b, f;
+	double	scale_factor, false_easting = 0, false_northing = 0, a, b, f;
+
+	scale_factor = gmtdefs.map_scale_factor;
 
 	/* Cylindrical projections */
 	if (project_info.projection == GMT_UTM) {
@@ -4999,4 +5001,3 @@ char *GMT_export2proj4(char *pStrOut) {
 	pStrOut = strdup(szProj4);
 	return(pStrOut);
 }
-
