@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.13 2007-08-28 18:29:12 guru Exp $
+ *	$Id: lines_to_bins.c,v 1.14 2009-01-26 14:25:04 guru Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 	
 	int i, k, kk, test_long, nn, np, j, i_x_1, i_x_2, i_y_1, i_y_2, nbins, b, BSIZE, BIN_NX, BIN_NY, B_WIDTH;
 	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod, new = 0;
-	int x_x_c, x_y_c, y_x_c, y_y_c, last_x_bin, x_x_index, i_x_3, i_y_3, x_origin, y_origin;
+	int x_x_c, x_y_c, y_x_c, y_y_c, last_x_bin, x_x_index, i_x_3, i_y_3, x_origin, y_origin, n_dbl_riv = 0;
 	int noise, n, n_id = 0, n_corner = 0, nx, ny, jump = 0, n_seg = 0, add = 0, n_int, ns = 0, count[16];
 	
 	size_t n_alloc;
@@ -111,7 +111,10 @@ int main (int argc, char **argv)
 	last_x_bin = BIN_NX - 1;
 	
 	while (pol_readheader (&h, fp_in) == 1) {
-		if (h.level == DOUBLE_RIVER) h.level = 1;	/* Large double-rivers are permanent major rivers here */
+		if (h.level == DOUBLE_RIVER) {	/* Large double-rivers are permanent major rivers here */
+			h.level = 1;
+			n_dbl_riv++;
+		}
 		h.id = n_id;
 		n_id++;
 		n_init += h.n;
@@ -561,6 +564,7 @@ int main (int argc, char **argv)
 
 	for (i = 0; i < 16; i++) {
 		if (count[i]) fprintf (stderr, "lines_to_bins: Level %2d: %d items\n", i, count[i]);
+		if (i == DOUBLE_RIVER && n_dbl_riv) fprintf (stderr, "lines_to_bins: Level %2d: %d items (moved to level 1)\n", i, n_dbl_riv);
 	}
 	exit (EXIT_SUCCESS);
 }
