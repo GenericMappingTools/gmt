@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.368 2009-01-27 09:16:37 guru Exp $
+ *	$Id: gmt_init.c,v 1.369 2009-01-27 09:17:53 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3036,7 +3036,9 @@ void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shortha
 	char file[BUFSIZ], line[BUFSIZ], a[10], b[20], c[20], d[20], e[20];
 	FILE *fp;
 
-	GMT_file_id = GMT_file_scale = GMT_file_offset = GMT_file_nan = GMT_file_suffix = NULL;
+	GMT_file_id = NULL;
+	GMT_file_scale = GMT_file_offset = GMT_file_nan = NULL;
+	GMT_file_suffix = NULL;
 	GMT_n_file_suffix = 0;
 	
 	if (!GMT_getuserpath (".gmt_io", file)) return;
