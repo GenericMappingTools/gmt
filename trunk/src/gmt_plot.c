@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.247 2009-01-26 01:29:45 jluis Exp $
+ *	$Id: gmt_plot.c,v 1.248 2009-02-02 19:13:04 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4992,6 +4992,9 @@ char *GMT_export2proj4(char *pStrOut) {
 	else if (project_info.projection == GMT_WINKEL) {
                  sprintf( szProj4, "+unavailable");
 	}
+	else 
+                 sprintf( szProj4, "+xy");	/* Probably useless as a info, but put there something */
+
 
 	a = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
 	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
