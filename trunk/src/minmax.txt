@@ -5,7 +5,7 @@ minmax \- Find extreme values in data tables
 .SH SYNOPSIS
 \fBminmax\fP [ \fIfiles\fP] [ OPT(C) ] [ OPT(EL)|\fBl\fP|\fBH\fP|\fBh\fP\fIcol\fP ] 
 [ GMT_H_OPT ] [ OPT(I)[\fBp\fP]\fIdx\fP[/\fIdy\fP[/\fIdz\fP...] ] 
-[ GMT_Mo_OPT ] [ OPT(T)\fIdz\fP[/\fIcol\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ]
+[ GMT_Mo_OPT ] [ OPT(S)[\fBx\fP][\fBy\fP] ] [ OPT(T)\fIdz\fP[/\fIcol\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBminmax\fP reads its standard input [or from files] and finds the
 extreme values in each of the columns.  It recognizes NaNs and
@@ -36,6 +36,12 @@ increments (separate the \fIn\fP increments by slashes), and output results in t
 (unless OPT(C) is set).  If only one increment is given we also use it for the second
 column (for backwards compatibility).  To override this behaviour, use OPT(Ip)\fIdx\fP.
 #include "explain_-M.txt"
+.TP
+OPT(S)
+Add extra space for error bars. Useful together with OPT(I) option and when later plotting with \fBpsxy\fP OPT(E).
+OPT(Sx) leaves space for horizontal error bars using the values in third (2) column.
+OPT(Sy) leaves space for vertical error bars using the values in third (2) column.
+OPT(S) or OPT(Sxy) leaves space for both error bars using the values in third and fourth (2 and 3) columns.
 .TP
 OPT(T)
 Report the min/max of the first (0'th) column to the nearest multiple of \fIdz\fP and output this in
