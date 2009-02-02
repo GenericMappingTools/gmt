@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.400 2009-01-21 18:30:31 remko Exp $
+	$Id: ChangeLog,v 1.401 2009-02-02 22:04:51 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-02-02	remko
+	* minmax.c:		Added -S option to leave space for error bars. Useful with
+				-I option and subsequent psxy -E.
+
 2009-01-21	remko
 	* psbasemap.{c,txt}:	Erroneously suggested that base was plotted at z=0, instead of
 				at the bottom end of the z-axis.
