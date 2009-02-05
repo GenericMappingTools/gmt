@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.103 2009-01-20 03:44:49 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.104 2009-02-05 17:48:31 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -74,6 +74,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{gmt\_support.c}]: Function \GMTfunc{GMT\_get\_arc} did not check for division by zero.
 			The \Opt{Gx}{\it file:radius}[unit] option in \GMTprog{grdcontour.c} passed the entire
 			argument as the file name. Function \GMTfunc{GMT\_polygon\_is\_open} did not test for empty polygons (n = 0).
+			Avoid interpolating hue (converted from RGB) over more than 180 degrees.
 	\item [\GMTprog{gmt\_vector.c}]: Function \GMTfunc{GMT\_resample\_path} would add 360 to points along meridians.
 	\item [\GMTprog{pslib.c}]: \GMTfunc{ps\_polygon} can only split line when rgb[0] == -1 not $<$ 0
 		since -3 now means to use a fill pattern.  Redefined \PS code for circle which needed a stroke (S) first, otherwise
@@ -103,6 +104,7 @@ Here is the list of bug corrections:
 		were given in dd:mm[:ss] format.  A new syntax has been
 		implemented where one or more +?[args] strings are appended
 		after the required parameters (see man page).
+		Erroneously suggested that 3-D base was plotted at z=0, instead of at the bottom end of the z-axis.
 	\item [\GMTprog{pscoast.c}]: The \Opt{Q} option incorrectly required \Opt{J}.
 		Also, see revised \Opt{L} as for \GMTprog{psbasemap.c}.
 	\item [\GMTprog{pslegend.c}]: Now use Unix \GMTfunc{remove} function to delete script after completion;
@@ -110,6 +112,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{psmask.c}]: Fixed a bug for \Opt{D-}{\it file} which did not write multi-segment headers.
 	\item [\GMTprog{psscale.c}]: Logarithmic scale did not function properly when scale bar was vertical.
 		When \Opt{I} and \Opt{Li} was used we did not draw box outlines.
+		Did not check if \Opt{D} was not given, and had wrong test for \Opt{E}.
 	\item [\GMTprog{pstext.c}]: We incorrectly removed blank lines but those mark new
 		paragraphs when in \Opt{M} mode.
 	\item [\GMTprog{psxyz.c}]: Did not pick up y-size for column from input data file.
@@ -150,6 +153,7 @@ Here is a list of the recent enhancement to various programs:
 \item \GMTprog{mapproject.c} has extended the \Opt{A} option by making the fixed point
 	optional; if not given we compute azimuths between successive data points.
 \item \GMTprog{minmax.c} has optional /{\it col} that may be added to \Opt{T}{\it dz} to select another column [third].
+	Added \Opt{S} to leave space for error bars. Useful with \Opt{I} and subsequent \GMTprog{psxy} \Opt{E}.
 \item \GMTprog{pscoast.c} has a new modifier {\bf +} to the \Opt{D} option, which determines the
 	next lower resolution should the selected one not be available.  This enhancement also affects
 	both \GMTprog{gmtselect.c} and \GMTprog{grdlandmask.c}.
@@ -174,8 +178,9 @@ Here is a list of the recent enhancement to various programs:
 	Formats {\bf b}, {\bf g}, {\bf j}, and {\bf t} accept modifier ``-'' to produce grayscale
 	images.  Added \Opt{C}{\it gs-command} to pass one or more
 	custom switches directly to \progname{ghostscript}, and \Opt{Q}[{\bf g}$|${\bf t}]{\it bits} to
-	set the level of anti-aliasing for graphics and text, respectively.  Finally, we added a new
-	option \Opt{F} to force a specified output file name.
+	set the level of anti-aliasing for graphics and text, respectively.  We also added a new
+	option \Opt{F} to force a specified output file name.  Finally, added \Opt{W} to help create world files
+	and geotiff output.
 \item \GMTprog{psxy.c} has new option \Opt{I}{\it intens} to modulate fill color via a fixed illumination value.
 \item \GMTprog{psxyz.c} has the same new option \Opt{I}{\it intens}.
 \item \GMTprog{xyz2grd.c} has new format ({\bf A}) for \Opt{Z} which allows more than one floating
