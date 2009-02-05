@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.105 2009-02-05 19:19:37 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.106 2009-02-05 20:30:45 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -100,7 +100,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{grdmath.c}]: Some 2nd-order derivatives whose boundary condition yields 0 should yield NaN
 		if one or more of the nearby nodes are NaN.
 	\item [\GMTprog{grdreformat.c}]: Since there is no longer a \filename{share/conf/gmt\_formats.conf} the usage message crashed.
-		Did not initialize grid header structure and could getnetCDF error ``Named variable does not exist in file''.  This
+		Did not initialize grid header structure and could get netCDF error ``Named variable does not exist in file''.  This
 		could also occur in \GMTprog{grd2cpt.c}, \GMTprog{grdedit.c}, \GMTprog{grdtrack.c}, \GMTprog{grdvector.c},
 		\GMTprog{grdview.c}, and \GMTprog{grdvolume.c}.
 	\item [\GMTprog{psbasemap.c}]: The syntax for the \Opt{L} option had to change since one could
