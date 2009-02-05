@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.404 2009-02-05 17:11:57 remko Exp $
+	$Id: ChangeLog,v 1.405 2009-02-05 18:45:59 remko Exp $
 -----------------------------------------------------------------------------------------
 2009-02-05	pwessel
 	* psscale.c:		Did not check if -D was not given, and had wrong test for -E.
@@ -9,6 +9,8 @@
 				setting was found.
 	* gmt_support.c:	Avoid interpolating hue (converted from RGB) over more than
 				180 degrees.
+				Changed GMT_rgb_to_hsv to integer logic to avoid errors on
+				some compilers. As a result: much shorter code as well.
 	* ex04/*.cpt:		Added comments and COLOR_MODEL = RGB
 	* GMT_drywet.cpt:	Added COLOR_MODEL = RGB
 	* pslib.c:		Image placement now in integers. Ensures that placement is
