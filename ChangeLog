@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.403 2009-02-05 16:43:14 guru Exp $
+	$Id: ChangeLog,v 1.404 2009-02-05 17:11:57 remko Exp $
 -----------------------------------------------------------------------------------------
 2009-02-05	pwessel
 	* psscale.c:		Did not check if -D was not given, and had wrong test for -E.
@@ -9,6 +9,12 @@
 				setting was found.
 	* gmt_support.c:	Avoid interpolating hue (converted from RGB) over more than
 				180 degrees.
+	* ex04/*.cpt:		Added comments and COLOR_MODEL = RGB
+	* GMT_drywet.cpt:	Added COLOR_MODEL = RGB
+	* pslib.c:		Image placement now in integers. Ensures that placement is
+				consistent with e.g. box drawn with the same coordinates.
+				Does not produce colormap with number of pixels and colors
+				is the same.
 
 2009-02-02	remko
 	* minmax.c:		Added -S option to leave space for error bars. Useful with
