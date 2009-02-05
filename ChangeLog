@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.401 2009-02-02 22:04:51 remko Exp $
+	$Id: ChangeLog,v 1.402 2009-02-05 04:48:42 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-02-05	remko
+	* gmt_plot.c:		Initialize szProj4[0]=0, to avoid ugly surprises when no
+				setting was found.
+	* gmt_support.c:	Avoid interpolating hue (converted from RGB) over more than
+				180 degrees.
+
 2009-02-02	remko
 	* minmax.c:		Added -S option to leave space for error bars. Useful with
 				-I option and subsequent psxy -E.
