@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.371 2009-02-05 22:10:29 guru Exp $
+ *	$Id: gmt_init.c,v 1.372 2009-02-05 22:12:12 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3309,7 +3309,6 @@ void GMT_end (int argc, char **argv)
 void GMT_set_inside_border (void)
 {
 	if (gmtdefs.basemap_type == GMT_IS_INSIDE) {	/* Prepare for inside map annotations/ticking */
-		gmtdefs.frame_pen.width = 0.1;	/* For very thin border that does not exceed region */
 		gmtdefs.annot_offset[0] = -fabs (gmtdefs.annot_offset[0]);
 		gmtdefs.annot_offset[1] = -fabs (gmtdefs.annot_offset[1]);
 		gmtdefs.label_offset = -fabs (gmtdefs.label_offset);
