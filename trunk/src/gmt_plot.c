@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.250 2009-02-05 22:10:29 guru Exp $
+ *	$Id: gmt_plot.c,v 1.251 2009-02-05 22:53:06 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2076,17 +2076,17 @@ void GMT_map_basemap (void) {
 
 	if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
 
-	GMT_map_gridlines (w, e, s, n);
-	GMT_map_gridcross (w, e, s, n);
-
-	GMT_map_tickmarks (w, e, s, n);
-
 	if (gmtdefs.basemap_type == GMT_IS_INSIDE) {
 		GMT_map_clip_on (GMT_no_rgb, 3);	/* Must clip to ensure things are inside */
 		clip_on = TRUE;
 		gmtdefs.basemap_type = GMT_IS_PLAIN;
 	}
 	
+	GMT_map_gridlines (w, e, s, n);
+	GMT_map_gridcross (w, e, s, n);
+
+	GMT_map_tickmarks (w, e, s, n);
+
 	GMT_map_annotate (w, e, s, n);
 
 	if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Undo swap */
