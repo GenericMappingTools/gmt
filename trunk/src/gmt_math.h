@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.25 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_math.h,v 1.26 2009-02-05 04:16:01 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,7 +42,7 @@
 #endif
 
 #if defined(copysign)
-/* Macro already takes care of copysign - probably from Win32 */
+/* Macro already takes care of copysign - probably from BSD */
 #elif HAVE_COPYSIGN == 0
 #define copysign(x,y) ((y) < 0.0 ? -fabs(x) : fabs(x))
 #else
@@ -57,7 +57,7 @@ extern double log1p(double x);
 #endif
 
 #if defined(hypot)
-/* Macro already takes care of hypot - probably from Win32 */
+/* Macro already takes care of hypot - probably from BSD */
 #elif HAVE_HYPOT == 0
 #define hypot(x,y) GMT_hypot(x,y)
 EXTERN_MSC double GMT_hypot(double x, double y);
@@ -102,7 +102,7 @@ extern int irint(double x);
  * replacements from gmt_stat.c */
 
 #if defined(j0)
-/* Macro already takes care of j0 - probably from Win32 */
+/* Macro already takes care of j0 - probably from BSD */
 #elif HAVE_J0 == 0
 #define j0(x) GMT_j0(x)
 EXTERN_MSC double GMT_j0(double x);
@@ -111,7 +111,7 @@ extern double j0(double x);
 #endif
 
 #if defined(j1)
-/* Macro already takes care of j1 - probably from Win32 */
+/* Macro already takes care of j1 - probably from BSD */
 #elif HAVE_J1 == 0
 #define j1(x) GMT_j1(x)
 EXTERN_MSC double GMT_j1(double x);
@@ -120,7 +120,7 @@ extern double j1(double x);
 #endif
 
 #if defined(jn)
-/* Macro already takes care of jn - probably from Win32 */
+/* Macro already takes care of jn - probably from BSD */
 #elif HAVE_JN == 0
 #define jn(n, x) GMT_jn(n, x)
 EXTERN_MSC double GMT_jn(int n, double x);
@@ -129,7 +129,7 @@ extern double jn(int n, double x);
 #endif
 
 #if defined(y0)
-/* Macro already takes care of y0 - probably from Win32 */
+/* Macro already takes care of y0 - probably from BSD */
 #elif HAVE_Y0 == 0
 #define y0(x) GMT_y0(x)
 EXTERN_MSC double GMT_y0(double x);
@@ -138,7 +138,7 @@ extern double y0(double x);
 #endif
 
 #if defined(y1)
-/* Macro already takes care of y1 - probably from Win32 */
+/* Macro already takes care of y1 - probably from BSD */
 #elif HAVE_Y1 == 0
 #define y1(x) GMT_y1(x)
 EXTERN_MSC double GMT_y1(double x);
@@ -147,7 +147,7 @@ extern double y1(double x);
 #endif
 
 #if defined(yn)
-/* Macro already takes care of yn - probably from Win32 */
+/* Macro already takes care of yn - probably from BSD */
 #elif HAVE_YN == 0
 #define yn(n, x) GMT_yn(n, x)
 EXTERN_MSC double GMT_yn(int n, double x);
@@ -156,7 +156,7 @@ extern double yn(int n, double x);
 #endif
 
 #if defined(erf)
-/* Macro already takes care of erf - probably from Win32 */
+/* Macro already takes care of erf - probably from BSD */
 #elif HAVE_ERF == 0
 #define erf(x) GMT_erf(x)
 EXTERN_MSC double GMT_erf(double x);
@@ -165,7 +165,7 @@ extern double erf(double x);
 #endif
 
 #if defined(erfc)
-/* Macro already takes care of erfc - probably from Win32 */
+/* Macro already takes care of erfc - probably from BSD */
 #elif HAVE_ERFC == 0
 #define erfc(x) GMT_erfc(x)
 EXTERN_MSC double GMT_erfc(double x);
@@ -174,7 +174,7 @@ extern double erfc(double x);
 #endif
 
 #if defined(strdup)
-/* Macro already takes care of strdup - probably from Win32 */
+/* Macro already takes care of strdup - probably from BSD */
 #elif HAVE_STRDUP == 0
 #define strdup(s) GMT_strdup(s)
 EXTERN_MSC char *GMT_strdup(const char *s);
@@ -183,7 +183,7 @@ extern char *strdup(const char *s);
 #endif
 
 #if defined(strtod)
-/* Macro already takes care of strtod - probably from Win32 */
+/* Macro already takes care of strtod - probably from BSD */
 #elif HAVE_STRTOD == 0
 #define strtod(p, e) GMT_strtod(p, e)
 EXTERN_MSC double GMT_strtod(const char *nptr, char **endptr);
@@ -200,7 +200,7 @@ extern double strtod(const char *nptr, char **endptr);
 #define sincos(x,s,c) alpha_sincos (x, s, c)
 extern void alpha_sincos (double x, double *s, double *c);
 #elif defined(sincos)
-/* Macro already takes care of strtod - probably from Win32 */
+/* Macro already takes care of strtod - probably from BSD */
 #elif HAVE_SINCOS == 1
 extern void sincos (double x, double *s, double *c);
 #else
