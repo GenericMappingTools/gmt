@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.104 2009-02-05 17:48:31 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.105 2009-02-05 19:19:37 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -75,10 +75,14 @@ Here is the list of bug corrections:
 			The \Opt{Gx}{\it file:radius}[unit] option in \GMTprog{grdcontour.c} passed the entire
 			argument as the file name. Function \GMTfunc{GMT\_polygon\_is\_open} did not test for empty polygons (n = 0).
 			Avoid interpolating hue (converted from RGB) over more than 180 degrees.
+			Changed \GMTfunc{GMT\_rgb\_to\_hsv} to integer logic to avoid errors on
+			some compilers. As a result: much shorter code as well.
 	\item [\GMTprog{gmt\_vector.c}]: Function \GMTfunc{GMT\_resample\_path} would add 360 to points along meridians.
 	\item [\GMTprog{pslib.c}]: \GMTfunc{ps\_polygon} can only split line when rgb[0] == -1 not $<$ 0
 		since -3 now means to use a fill pattern.  Redefined \PS code for circle which needed a stroke (S) first, otherwise
 		a line would be drawn from the previous symbol.  Updated \filename{PSL\_prologue.ps} version.
+		Image placement now in integers. Ensures that placement is consistent with e.g. box drawn with the same coordinates.
+		Does not produce colormap with number of pixels and colors is the same.
 	\item [\GMTprog{gmtmath.c}]: The {\bf D2DT2} operator whose boundary condition yields 0 should yield NaN
 		if one or more of the nearby nodes are NaN.
 	\item [\GMTprog{grdblend.c}]: A side-effect of the 2007-02-01 fix was that when the file
