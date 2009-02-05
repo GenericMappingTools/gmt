@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.192 2009-01-15 19:49:54 remko Exp $
+ *	$Id: pslib.c,v 1.193 2009-02-05 16:40:11 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -437,7 +437,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	 * nx < 0	: 8- or 24-bit image contains a color mask (first 1 or 3 bytes)
 	 * nbits < 0	: "Hardware" interpolation requested
 	 */
-	PS_LONG lx, ly;
+	PS_LONG llx, lly, urx, ury;
 	int id, it;
 	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
 	char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
@@ -445,8 +445,13 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	char *type[3] = {"1", "4 /MaskColor[0]", "1 /Interpolate true"};
 	indexed_image_t image;
 
-	lx = (PS_LONG)irint (xsize * PSL->internal.scale);
-	ly = (PS_LONG)irint (ysize * PSL->internal.scale);
+	/* Convert lower left and upper right coordinates to integers.
+	   This ensures that the image is located in the same place as a box drawn with the same coordinates. */
+	llx = (PS_LONG)irint (x * PSL->internal.scale);
+	lly = (PS_LONG)irint (y * PSL->internal.scale);
+	urx = (PS_LONG)irint ((x + xsize) * PSL->internal.scale);
+	ury = (PS_LONG)irint ((y + ysize) * PSL->internal.scale);
+
 	id = ((PSL->internal.color_mode & PSL_CMYK) && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
 	it = nx < 0 ? 1 : (nbits < 0 ? 2 : 0);	/* Colormask or interpolate */
 
@@ -455,7 +460,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		nbits = ps_bitreduce (image->buffer, nx, ny, image->colormap->ncolors);
 
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of %s Adobe Indexed %s image [%d bit]\n", kind[PSL->internal.ascii], colorspace[id], nbits);
-		fprintf (PSL->internal.fp, "V N %g %g T %ld %ld scale [/Indexed /Device%s %d <\n", x * PSL->internal.scale, y * PSL->internal.scale, lx, ly, colorspace[id], image->colormap->ncolors - 1);
+		fprintf (PSL->internal.fp, "V N %ld %ld T %ld %ld scale [/Indexed /Device%s %d <\n", llx, lly, urx-llx, ury-lly, colorspace[id], image->colormap->ncolors - 1);
 		ps_stream_dump (&image->colormap->colors[0][0], image->colormap->ncolors, 1, 24, 0, 2, 2);
 		fprintf (PSL->internal.fp, ">] setcolorspace\n<< /ImageType %s /Decode [0 %d] ", type[it], (1<<nbits)-1);
 		ps_stream_dump (image->buffer, nx, ny, nbits, PSL->internal.compress, PSL->internal.ascii, 0);
@@ -472,7 +477,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		nbits = abs(nbits);
 
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of %s Adobe %s image [%d bit]\n", kind[PSL->internal.ascii], colorspace[id], nbits);
-		fprintf (PSL->internal.fp, "V N %g %g T %ld %ld scale /Device%s setcolorspace", x * PSL->internal.scale, y * PSL->internal.scale, lx, ly, colorspace[id]);
+		fprintf (PSL->internal.fp, "V N %ld %ld T %ld %ld scale /Device%s setcolorspace", llx, lly, urx-llx, ury-lly, colorspace[id]);
 
 		if (it == 1 && nbits == 24) {	/* Do PS Level 3 image type 4 with colormask */
 			fprintf (PSL->internal.fp, "\n<< /ImageType 4 /MaskColor[%d %d %d]", (int)buffer[0], (int)buffer[1], (int)buffer[2]);
@@ -487,7 +492,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 
 		fprintf (PSL->internal.fp, " /Decode [%s] ", decode[id]);
 		ps_stream_dump (buffer, nx, ny, nbits, PSL->internal.compress, PSL->internal.ascii, 0);
-		fprintf (PSL->internal.fp, "U\n\n");
+		fprintf (PSL->internal.fp, "U\n");
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of %s Adobe %s image\n", kind[PSL->internal.ascii], colorspace[id]);
 	}
 }
@@ -3736,6 +3741,17 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, int nx, int ny, int nbit
 		}
 		buffer += 3;
 	}
+
+	/* There's no need for a color map when the number of colors is the same as the number of pixels.
+	   Then you're better off with a compressed 24-bit color image instead. */
+	if (colormap->ncolors >= npixels)  {
+		ps_free (image->buffer);
+		ps_free (image);
+		ps_free (colormap);
+		if (PSL->internal.verbose) fprintf (stderr, "pslib: Use of colormap is inefficient - using 24-bit direct color instead.\n");
+		return (NULL);
+	}
+
 	if (PSL->internal.verbose) fprintf (stderr, "pslib: Colormap of %d colors created\n", colormap->ncolors);
 	return (image);
 }
