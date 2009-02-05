@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.249 2009-02-05 04:47:09 remko Exp $
+ *	$Id: gmt_plot.c,v 1.250 2009-02-05 22:10:29 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2054,6 +2054,7 @@ void GMT_map_boundary (double w, double e, double s, double n)
 
 void GMT_map_basemap (void) {
 	int i;
+	BOOLEAN clip_on = FALSE;
 	double w, e, s, n;
 
 	if (!frame_info.plot) return;
@@ -2080,11 +2081,18 @@ void GMT_map_basemap (void) {
 
 	GMT_map_tickmarks (w, e, s, n);
 
+	if (gmtdefs.basemap_type == GMT_IS_INSIDE) {
+		GMT_map_clip_on (GMT_no_rgb, 3);	/* Must clip to ensure things are inside */
+		clip_on = TRUE;
+		gmtdefs.basemap_type = GMT_IS_PLAIN;
+	}
+	
 	GMT_map_annotate (w, e, s, n);
 
 	if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Undo swap */
 
 	GMT_map_boundary (w, e, s, n);
+	if (clip_on) GMT_map_clip_off ();
 
 	ps_comment ("End of basemap");
 
