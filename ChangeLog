@@ -1,22 +1,24 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.405 2009-02-05 18:45:59 remko Exp $
+	$Id: ChangeLog,v 1.406 2009-02-05 20:52:16 remko Exp $
 -----------------------------------------------------------------------------------------
 2009-02-05	pwessel
-	* psscale.c:		Did not check if -D was not given, and had wrong test for -E.
+	* psscale.c:		Now checks if -D is given, and replaced wrong test for -E.
 
 2009-02-05	remko
-	* gmt_plot.c:		Initialize szProj4[0]=0, to avoid ugly surprises when no
-				setting was found.
-	* gmt_support.c:	Avoid interpolating hue (converted from RGB) over more than
-				180 degrees.
-				Changed GMT_rgb_to_hsv to integer logic to avoid errors on
+	* gmt_plot.c (GMT_export2proj4):	Initialize szProj4[0]=0, to avoid ugly
+				surprises when no setting was found.
+	* gmt_support.c (GMT_read_cpt):	Avoid interpolating hue (converted from RGB) over
+				more than 180 degrees.
+	* gmt_support.c (GMT_rgb_to_hsv):	Changed to integer logic to avoid errors on
 				some compilers. As a result: much shorter code as well.
+	* pslib.c (ps_rgb_to_hsv):	---"---
+	* pslib.c (ps_color_image):	Image placement now in integers. This nsures that
+				placement is consistent with e.g. box drawn with the same
+				coordinates.
+	* pslib.c (ps_makecolormap):	No longer produce colormap when the number of pixels
+				and colors is the same.
 	* ex04/*.cpt:		Added comments and COLOR_MODEL = RGB
 	* GMT_drywet.cpt:	Added COLOR_MODEL = RGB
-	* pslib.c:		Image placement now in integers. Ensures that placement is
-				consistent with e.g. box drawn with the same coordinates.
-				Does not produce colormap with number of pixels and colors
-				is the same.
 
 2009-02-02	remko
 	* minmax.c:		Added -S option to leave space for error bars. Useful with
