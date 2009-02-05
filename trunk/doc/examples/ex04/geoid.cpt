@@ -1,3 +1,9 @@
+#	$Id: geoid.cpt,v 1.2 2009-02-05 13:19:28 remko Exp $
+#
+# Hand-crafted RGB file for representation of geoid in example 04c.
+#
+# COLOR_MODEL = RGB
+#
 -1	40	0	150	0	40	0	150
 0	0	10	200	1	0	10	200
 1	0	40	224	2	0	40	224
