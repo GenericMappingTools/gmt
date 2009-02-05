@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.370 2009-02-05 21:54:42 guru Exp $
+ *	$Id: gmt_init.c,v 1.371 2009-02-05 22:10:29 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3315,7 +3315,6 @@ void GMT_set_inside_border (void)
 		gmtdefs.label_offset = -fabs (gmtdefs.label_offset);
 		gmtdefs.header_offset = -fabs (gmtdefs.header_offset);
 		gmtdefs.tick_length = -fabs (gmtdefs.tick_length);
-		gmtdefs.basemap_type = GMT_IS_PLAIN;
 	}
 }
 
