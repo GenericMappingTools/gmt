@@ -3,9 +3,16 @@
 Global Self-consistent Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../COPYING)
 
-Version 1.11 Jul 1, 2008
-THis version adds the -I<id> option go gshhs so that a single
+Version 1.11 Feb 15, 2009
+This version adds the -I<id> option go gshhs so that a single
 polygon can be extracted.
+Also, thanx to Markus Metz,GSHHS shorelines can now be imported
+directly into GRASS with v.in.gshhs, a GRASS AddOn available on
+http://grass.osgeo.org/wiki/GRASS_AddOns. This module
+works with GRASS 6.4 and GSHHS databases version 1.4 and above.
+As an alternative there is still gshhstograss, a standalone program
+creating a simple GRASS ASCII vector. It is recommended to use
+v.in.gshhs instead.
 
 Version 1.10 May 1, 2008
 Due to a numbering snafu the GMT 4.2.1 release started calling
