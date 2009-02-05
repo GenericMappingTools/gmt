@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.380 2009-02-05 04:47:41 remko Exp $
+ *	$Id: gmt_support.c,v 1.381 2009-02-05 18:45:59 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2105,29 +2105,22 @@ int GMT_get_fill_from_z (double value, struct GMT_FILL *fill)
 
 void GMT_rgb_to_hsv (int rgb[], double hsv[])
 {
-	double xr, xg, xb, r_dist, g_dist, b_dist, max_v, min_v, diff, idiff;
+	double diff;
+	int i, imax = 0, imin = 0;
 
-	xr = rgb[0] * I_255;
-	xg = rgb[1] * I_255;
-	xb = rgb[2] * I_255;
-	max_v = MAX (MAX (xr, xg), xb);
-	min_v = MIN (MIN (xr, xg), xb);
-	diff = max_v - min_v;
+	/* This had checks using rgb value in doubles (e.g. (max_v == xr)), which failed always on some compilers.
+	   Changed to integer logic: 2009-02-05 by RS.
+	*/
+	for (i = 1; i < 3; i++) {
+		if (rgb[i] > rgb[imax]) imax = i;
+		if (rgb[i] < rgb[imin]) imin = i;
+	}
+	diff = (double)(rgb[imax] - rgb[imin]);
 	hsv[0] = 0.0;
-	hsv[1] = (max_v == 0.0) ? 0.0 : diff / max_v;
-	hsv[2] = max_v;
+	hsv[1] = (rgb[imax] == 0) ? 0.0 : diff / rgb[imax];
+	hsv[2] = rgb[imax] * I_255;
 	if (hsv[1] == 0.0) return;	/* Hue is undefined */
-	idiff = 1.0 / diff;
-	r_dist = (max_v - xr) * idiff;
-	g_dist = (max_v - xg) * idiff;
-	b_dist = (max_v - xb) * idiff;
-	if (xr == max_v)
-		hsv[0] = b_dist - g_dist;
-	else if (xg == max_v)
-		hsv[0] = 2.0 + r_dist - b_dist;
-	else
-		hsv[0] = 4.0 + g_dist - r_dist;
-	hsv[0] *= 60.0;
+	hsv[0] = 120.0 * imax + 60.0 * (rgb[(imax + 1) % 3] - rgb[(imax + 2) % 3]) / diff;
 	if (hsv[0] < 0.0) hsv[0] += 360.0;
 	if (hsv[0] > 360.0) hsv[0] -= 360.0;
 }
