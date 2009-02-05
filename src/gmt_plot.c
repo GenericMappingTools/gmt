@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.248 2009-02-02 19:13:04 jluis Exp $
+ *	$Id: gmt_plot.c,v 1.249 2009-02-05 04:47:09 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4862,44 +4862,38 @@ char *GMT_export2proj4(char *pStrOut) {
 	double	scale_factor, false_easting = 0, false_northing = 0, a, b, f;
 
 	scale_factor = gmtdefs.map_scale_factor;
+	szProj4[0] = 0;
 
 	/* Cylindrical projections */
 	if (project_info.projection == GMT_UTM) {
 		sprintf( szProj4, "+proj=utm +zone=%d", (int)project_info.pars[0]);
-		if (project_info.utm_hemisphere < 0)
-			sprintf( szProj4, " +south");
+		if (project_info.utm_hemisphere < 0) sprintf( szProj4, " +south");
 	}
 	else if (project_info.projection == GMT_MERCATOR) {
 		sprintf( szProj4, "+proj=merc +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[0],
-			scale_factor, false_easting, false_northing);
+			project_info.pars[0], scale_factor, false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_CYL_EQ) {
 		sprintf( szProj4, "+proj=cea +lon_0=%.16g +lat_ts=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[1], project_info.pars[0],
-			false_easting, false_northing);
+			project_info.pars[1], project_info.pars[0], false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_CYL_EQDIST) {
                  sprintf( szProj4, "+proj=eqc +lat_ts=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[1], 0.0, project_info.pars[0],
-			false_easting, false_northing);
+			project_info.pars[1], 0.0, project_info.pars[0], false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_CYL_STEREO) {
 	}
 	else if (project_info.projection == GMT_MILLER) {
 		sprintf( szProj4, "+proj=mill +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
-			project_info.pars[1], project_info.pars[0],
-			false_easting, false_northing);
+			project_info.pars[1], project_info.pars[0], false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_TM) {
 		sprintf( szProj4, "+proj=tmerc +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[1], project_info.pars[0],
-			scale_factor, false_easting, false_northing);
+			project_info.pars[1], project_info.pars[0], scale_factor, false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_CASSINI) {
 		sprintf( szProj4, "+proj=cass +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[1], project_info.pars[0],
-			false_easting, false_northing);
+			project_info.pars[1], project_info.pars[0], false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_OBLIQUE_MERC) {
 		sprintf( szProj4, "+unavailable");
@@ -4913,46 +4907,36 @@ char *GMT_export2proj4(char *pStrOut) {
 	/* Conic projections */
 	else if (project_info.projection == GMT_ALBERS) {
 		sprintf( szProj4, "+proj=aea +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[2], project_info.pars[3],
-			project_info.pars[1], project_info.pars[0],
-			false_easting, false_northing);
+			project_info.pars[2], project_info.pars[3], project_info.pars[1], project_info.pars[0], false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_ECONIC) {
 		sprintf( szProj4, "+proj=eqdc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[2], project_info.pars[3],
-			project_info.pars[1], project_info.pars[0],
-			false_easting, false_northing);
+			project_info.pars[2], project_info.pars[3], project_info.pars[1], project_info.pars[0], false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_LAMBERT) {
 		sprintf( szProj4, "+proj=lcc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[2], project_info.pars[3],
-			project_info.pars[1], project_info.pars[0],
-			false_easting, false_northing);
+			project_info.pars[2], project_info.pars[3], project_info.pars[1], project_info.pars[0], false_easting, false_northing);
 	}
 
 	/* Azimuthal projections */
 	else if (project_info.projection == GMT_STEREO) {
 		sprintf( szProj4, "+proj=stere +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[1], project_info.pars[0],
-			scale_factor, false_easting, false_northing);
+			project_info.pars[1], project_info.pars[0], scale_factor, false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_LAMB_AZ_EQ) {
 		sprintf( szProj4, "+proj=laea +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[1], project_info.pars[0],
-			false_easting, false_northing);
+			project_info.pars[1], project_info.pars[0], false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_ORTHO) {
                  sprintf( szProj4, "+unavailable");
 	}
 	else if (project_info.projection == GMT_AZ_EQDIST) {
 		sprintf( szProj4, "+proj=aeqd +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[1], project_info.pars[0],
-			false_easting, false_northing);
+			project_info.pars[1], project_info.pars[0], false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_GNOMONIC) {
 		sprintf( szProj4, "+proj=gnom +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
-			project_info.pars[1], project_info.pars[0],
-			false_easting, false_northing);
+			project_info.pars[1], project_info.pars[0], false_easting, false_northing);
 	}
 	else if (project_info.projection == GMT_GENPER) {
                  sprintf( szProj4, "+unavailable");
