@@ -1,3 +1,9 @@
+#	$Id: topo.cpt,v 1.2 2009-02-05 13:19:28 remko Exp $
+#
+# Hand-crafted RGB file for representation of topography in example 04c.
+#
+# COLOR_MODEL = RGB
+#
 -7.1	0	27	255	-4	0	255	120
 -4	0	255	120	-2.5	120	255	0
 -2.5	120	255	0	-0.5	255	220	0
