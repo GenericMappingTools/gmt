@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.379 2009-01-11 02:52:38 remko Exp $
+ *	$Id: gmt_support.c,v 1.380 2009-02-05 04:47:41 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1667,9 +1667,18 @@ int GMT_read_cpt (char *cpt_file)
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_low[0]))  GMT_b_and_w = FALSE;
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_high[0])) GMT_b_and_w = FALSE;
 			for (i = 0; !GMT_continuous && i < 3; i++) if (GMT_lut[n].rgb_low[i] != GMT_lut[n].rgb_high[i]) GMT_continuous = TRUE;
+
 			/* Differences used in GMT_get_rgb_from_z */
 			for (i = 0; i < 3; i++) GMT_lut[n].rgb_diff[i] = GMT_lut[n].rgb_high[i] - GMT_lut[n].rgb_low[i];
 			for (i = 0; i < 3; i++) GMT_lut[n].hsv_diff[i] = GMT_lut[n].hsv_high[i] - GMT_lut[n].hsv_low[i];
+
+			/* When HSV is converted from RGB: avoid interpolation over hue differences larger than 180 degrees;
+			   take the shorter distance instead. This does not apply for HSV color tables, since there we assume
+			   that the H values are intentional and one might WANT to interpolate over more than 180 degrees. */
+			if (!(gmtdefs.color_model & GMT_READ_HSV)) {
+				if (GMT_lut[n].hsv_diff[i] < -180.0) GMT_lut[n].hsv_diff[i] += 360.0;
+				if (GMT_lut[n].hsv_diff[i] >  180.0) GMT_lut[n].hsv_diff[i] -= 360.0;
+			}
 		}
 
 		n++;
@@ -2120,6 +2129,7 @@ void GMT_rgb_to_hsv (int rgb[], double hsv[])
 		hsv[0] = 4.0 + g_dist - r_dist;
 	hsv[0] *= 60.0;
 	if (hsv[0] < 0.0) hsv[0] += 360.0;
+	if (hsv[0] > 360.0) hsv[0] -= 360.0;
 }
 
 void GMT_hsv_to_rgb (int rgb[], double hsv[])
@@ -2134,7 +2144,7 @@ void GMT_hsv_to_rgb (int rgb[], double hsv[])
 		while (h >= 360.0) h -= 360.0;
 		while (h < 0.0) h += 360.0;
 		h /= 60.0;
-		i = (int)h;
+		i = (int) floor (h);
 		f = h - i;
 		p = hsv[2] * (1.0 - hsv[1]);
 		q = hsv[2] * (1.0 - (hsv[1] * f));
