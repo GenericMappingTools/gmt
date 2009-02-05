@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.402 2009-02-05 04:48:42 remko Exp $
+	$Id: ChangeLog,v 1.403 2009-02-05 16:43:14 guru Exp $
 -----------------------------------------------------------------------------------------
+2009-02-05	pwessel
+	* psscale.c:		Did not check if -D was not given, and had wrong test for -E.
+
 2009-02-05	remko
 	* gmt_plot.c:		Initialize szProj4[0]=0, to avoid ugly surprises when no
 				setting was found.
