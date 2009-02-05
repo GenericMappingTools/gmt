@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.407 2009-02-05 21:54:42 guru Exp $
+	$Id: ChangeLog,v 1.408 2009-02-05 23:36:48 jluis Exp $
 -----------------------------------------------------------------------------------------
+2009-02-15	jluis
+	* ps2raster.{c,txt}:	Update info for the usefulness of the new --BASEMAP_TYPE=inside 
+				option
+
 2009-02-05	pwessel
 	* psscale.c:		Now checks if -D is given, and replaced wrong test for -E.
 	* gmt_init.c:		Added BASEMAP_FRAME=inside to set several parameters so that
