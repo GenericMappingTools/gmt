@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.369 2009-01-27 09:17:53 guru Exp $
+ *	$Id: gmt_init.c,v 1.370 2009-02-05 21:54:42 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -149,6 +149,7 @@ int GMT_loaddefaults (char *file);
 int GMT_savedefaults (char *file);
 void GMT_setshorthand (void);
 void GMT_freeshorthand (void);
+void GMT_set_inside_border (void);
 
 /* Local variables to gmt_init.c */
 
@@ -1664,6 +1665,8 @@ int GMT_setparameter (char *keyword, char *value)
 				gmtdefs.basemap_type = GMT_IS_FANCY;
 			else if (!strcmp (lower_value, "fancy+"))
 				gmtdefs.basemap_type = GMT_IS_ROUNDED;
+			else if (!strcmp (lower_value, "inside"))
+				gmtdefs.basemap_type = GMT_IS_INSIDE;
 			else
 				error = TRUE;
 			break;
@@ -3219,6 +3222,8 @@ int GMT_begin (int argc, char **argv)
 		memcpy ((void *)gmtdefs.grid_pen[1].rgb, (void *)gmtdefs.basemap_frame_rgb, (size_t)(3 * sizeof (int)));
 	}
 
+	GMT_set_inside_border ();
+	
 	GMT_io_init ();			/* Init the table i/o structure */
 
 	GMT_get_time_language (gmtdefs.time_language);
@@ -3299,6 +3304,19 @@ void GMT_end (int argc, char **argv)
 #ifdef DEBUG
 	GMT_memtrack_report (GMT_mem_keeper);
 #endif
+}
+
+void GMT_set_inside_border (void)
+{
+	if (gmtdefs.basemap_type == GMT_IS_INSIDE) {	/* Prepare for inside map annotations/ticking */
+		gmtdefs.frame_pen.width = 0.1;	/* For very thin border that does not exceed region */
+		gmtdefs.annot_offset[0] = -fabs (gmtdefs.annot_offset[0]);
+		gmtdefs.annot_offset[1] = -fabs (gmtdefs.annot_offset[1]);
+		gmtdefs.label_offset = -fabs (gmtdefs.label_offset);
+		gmtdefs.header_offset = -fabs (gmtdefs.header_offset);
+		gmtdefs.tick_length = -fabs (gmtdefs.tick_length);
+		gmtdefs.basemap_type = GMT_IS_PLAIN;
+	}
 }
 
 void GMT_free_hash (struct GMT_HASH *hashnode, int n_items) {

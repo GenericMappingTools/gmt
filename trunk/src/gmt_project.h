@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.67 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_project.h,v 1.68 2009-02-05 21:54:42 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -287,6 +287,7 @@ struct GMT_MAP_PROJECTIONS {
 #define GMT_IS_PLAIN	0	/* Plain baseframe */
 #define GMT_IS_FANCY	1	/* Fancy baseframe */
 #define GMT_IS_ROUNDED	2	/* Rounded, fancy baseframe */
+#define GMT_IS_INSIDE	3	/* Draws frame ticks/annotations on the inside of boundary */
 
 /* Define the 6 axis items that each axis can have (some are mutually exclusive: only one ANNOT/INTV for upper and lower) */
 

@@ -1,8 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.406 2009-02-05 20:52:16 remko Exp $
+	$Id: ChangeLog,v 1.407 2009-02-05 21:54:42 guru Exp $
 -----------------------------------------------------------------------------------------
 2009-02-05	pwessel
 	* psscale.c:		Now checks if -D is given, and replaced wrong test for -E.
+	* gmt_init.c:		Added BASEMAP_FRAME=inside to set several parameters so that
+				basemap ticks and annotations are inside the map boundary.
 
 2009-02-05	remko
 	* gmt_plot.c (GMT_export2proj4):	Initialize szProj4[0]=0, to avoid ugly
