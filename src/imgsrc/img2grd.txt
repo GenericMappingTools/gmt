@@ -39,6 +39,7 @@ lower left corner of grid].  Requires OPT(M).
 OPT(D)
 Use the extended latitude range -80.738/+80.738.  Alternatively, append \fIminlat/maxlat\fP
 as the latitude extent of the input img file.  [Default is -72.006/72.006].
+.TP
 OPT(E)
 Can be used when OPT(M) is not set to force the final grid to have the exact same region
 as requested with OPT(R).  By default, the final region is a direct projection of the
