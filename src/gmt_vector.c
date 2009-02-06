@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.24 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_vector.c,v 1.25 2009-02-06 23:00:08 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -279,6 +279,7 @@ int	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, doubl
 	return(0);
 }
 
+#ifdef OBSOLETE
 int	GMT_jacobi_old (double *a, int *n, int *m, double *d, double *v, double *b, double *z, int *nrots)
 /*
  *
@@ -467,6 +468,7 @@ int	GMT_jacobi_old (double *a, int *n, int *m, double *d, double *v, double *b, 
 	}
 	return(0);
 }
+#endif
 
 void GMT_gauss (double *a, double *vec, int n_in, int nstore_in, double test, int *ierror, int itriag)
 {
