@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.409 2009-02-06 03:48:55 guru Exp $
+	$Id: ChangeLog,v 1.410 2009-02-06 19:01:23 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-02-06	remko
+	* utilmeca.c:		Fixed dangerous ifs that caused "random" rotations of beach balls
+				and too small or too large black beach ball segments.
+	* psmeca.{c,txt}:	Some polishing.
+
 2009-02-05	jluis
 	* ps2raster.{c,txt}:	Update info for the usefulness of the new --BASEMAP_TYPE=inside 
 				option
