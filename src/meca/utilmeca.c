@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.13 2009-01-09 04:02:35 guru Exp $
+/*	$Id: utilmeca.c,v 1.14 2009-02-06 18:46:40 remko Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -84,7 +84,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
 
 /* compute null axis strike and dip */
     N_axis.dip = null_axis_dip(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip);
-    if(fabs(90. - N_axis.dip) < EPSIL) 
+    if (fabs(90. - N_axis.dip) < EPSIL) 
         N_axis.str = meca.NP1.str;
     else
         N_axis.str = null_axis_strike(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip);
@@ -97,14 +97,14 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
 /*  argument is DIAMETER!!*/
     ps_circle(x0, y0, radius_size*2., ergb, lineout); 
  
-    if(fabs(pos_NP1_NP2) < EPSIL) {
+    if (fabs(pos_NP1_NP2) < EPSIL) {
 /* pure normal or inverse fault (null axis strike is determined
    with + or - 180 degrees. */
         /* first nodal plane part */
         i = -1;
-        increment = 1;
+        increment = 1.;
         str = meca.NP1.str;
-        while(str <= meca.NP1.str + 180. + EPSIL) {
+        while (str <= meca.NP1.str + 180. + EPSIL) {
             i++;
             radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -112,10 +112,10 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
             y[i] = y0 + radius * co;
             str += increment;
         }
-        if(fabs(fault + 1.) < EPSIL) {
+        if (fault < 0.) {
             /* normal fault, close first compressing part */
             str = meca.NP1.str + 180.; 
-            while(str >= meca.NP1.str - EPSIL) {
+            while (str >= meca.NP1.str - EPSIL) {
                 i++;
                 sincosd (str, &si, &co);
                 x[i] = x0 + si * radius_size;
@@ -128,7 +128,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         }
         /* second nodal plane part */
         str = meca.NP2.str;
-        while(str <= meca.NP2.str + 180. + EPSIL) {
+        while (str <= meca.NP2.str + 180. + EPSIL) {
             i++;
             radius = proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -136,7 +136,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
             y[i] = y0 + radius * co;
             str += increment;
         }
-        if(fabs(fault - 1.) < EPSIL) {
+        if (fault > 0.) {
             /* inverse fault, close compressing part */
             npoints = i+1;
             ps_polygon(x, y, npoints, rgb, outline);
@@ -144,7 +144,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         else {
             /* normal fault, close second compressing part */
             str = meca.NP2.str + 180.;
-            while(str >= meca.NP2.str - EPSIL) {
+            while (str >= meca.NP2.str - EPSIL) {
                 i++;
                 sincosd (str, &si, &co);
                 x[i] = x0 + si * radius_size;
@@ -156,12 +156,12 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         }
     }
 /* pure strike-slip */
-    else if((90. - meca.NP1.dip) < EPSIL && (90. - meca.NP2.dip) < EPSIL) {
+    else if ((90. - meca.NP1.dip) < EPSIL && (90. - meca.NP2.dip) < EPSIL) {
         increment = fabs(meca.NP1.rake) < EPSIL ? 1. : -1.;
         /* first compressing part */
         i = 0; 
         str = meca.NP1.str;
-        while(increment == 1 ? str <= meca.NP1.str + 90. : str >= meca.NP1.str - 90.) {
+        while (increment > 0. ? str <= meca.NP1.str + 90. : str >= meca.NP1.str - 90.) {
             sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
             y[i] = y0 + co * radius_size;
@@ -175,9 +175,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         /* second compressing part */
         i = 0;
         str = meca.NP1.str + 180.;
-        while(increment == 1 ? 
-	      str <= meca.NP1.str + 270. + EPSIL : 
-	      str >= meca.NP1.str + 90. - EPSIL) {
+        while (increment > 0. ?  str <= meca.NP1.str + 270. + EPSIL : str >= meca.NP1.str + 90. - EPSIL) {
             sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
             y[i] = y0 + co * radius_size;
@@ -193,11 +191,11 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
 /* other cases */
         /* first nodal plane till null axis */
         i = -1;
-        increment = 1;
-        if(meca.NP1.str > N_axis.str)
+        increment = 1.;
+        if (meca.NP1.str > N_axis.str)
             meca.NP1.str -= 360.;
         str = meca.NP1.str;
-        while(fabs(90. - meca.NP1.dip) < EPSIL ? 
+        while (fabs(90. - meca.NP1.dip) < EPSIL ? 
 	      str <= meca.NP1.str + EPSIL : str <= N_axis.str + EPSIL) {
             i++;
             radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
@@ -209,14 +207,11 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         
         /* second nodal plane from null axis */ 
         meca.NP2.str += (1. + fault) * 90.;
-        if(meca.NP2.str >= 360.)
-            meca.NP2.str -= 360.;
+        if (meca.NP2.str >= 360.) meca.NP2.str -= 360.;
         increment = fault;
-        if(fault * (meca.NP2.str - N_axis.str) < -EPSIL)
-            meca.NP2.str += fault * 360.;
+        if (fault * (meca.NP2.str - N_axis.str) < -EPSIL) meca.NP2.str += fault * 360.;
         str = fabs(90. - meca.NP2.dip) < EPSIL ? meca.NP2.str : N_axis.str;
-        while(increment == 1. ? 
-	      str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
+        while (increment > 0. ? str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
             i++;
             radius = proj_radius(meca.NP2.str - (1. + fault) * 90., meca.NP2.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -229,11 +224,9 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         meca.NP1.str = zero_360(meca.NP1.str);
         meca.NP2.str = zero_360(meca.NP2.str);
         increment = pos_NP1_NP2 >= 0. ? -fault : fault;
-        if(increment * (meca.NP1.str - meca.NP2.str) < - EPSIL)
-            meca.NP1.str += increment * 360.;
+        if (increment * (meca.NP1.str - meca.NP2.str) < - EPSIL) meca.NP1.str += increment * 360.;
         str = meca.NP2.str;
-        while(increment == 1. ? 
-	      str <= meca.NP1.str + EPSIL : str >= meca.NP1.str - EPSIL) {
+        while (increment > 0. ? str <= meca.NP1.str + EPSIL : str >= meca.NP1.str - EPSIL) {
             i++;
             sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
@@ -247,12 +240,10 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         /* first nodal plane till null axis */
         i = -1;
         meca.NP1.str = zero_360(meca.NP1.str + 180.);
-        if(meca.NP1.str - N_axis.str < - EPSIL)
-            meca.NP1.str += 360.;
+        if (meca.NP1.str - N_axis.str < - EPSIL) meca.NP1.str += 360.;
         increment = -1.;
         str = meca.NP1.str;
-        while(fabs(90. - meca.NP1.dip) < EPSIL ? 
-	      str >= meca.NP1.str -EPSIL : str >= N_axis.str - EPSIL) {
+        while (fabs(90. - meca.NP1.dip) < EPSIL ? str >= meca.NP1.str -EPSIL : str >= N_axis.str - EPSIL) {
             i++;
             radius = proj_radius(meca.NP1.str - 180., meca.NP1.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -264,11 +255,9 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         /* second nodal plane from null axis */
         meca.NP2.str = zero_360(meca.NP2.str + 180.);
         increment = -fault;
-        if(fault * (N_axis.str - meca.NP2.str) < - EPSIL)
-            meca.NP2.str -= fault * 360.; 
+        if (fault * (N_axis.str - meca.NP2.str) < - EPSIL) meca.NP2.str -= fault * 360.; 
         str = fabs(90. - meca.NP2.dip) < EPSIL ? meca.NP2.str : N_axis.str;
-        while(increment == 1. ? 
-	      str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
+        while (increment > 0. ? str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
             i++;
             radius = proj_radius(meca.NP2.str - (1. - fault) * 90., meca.NP2.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -281,11 +270,9 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         meca.NP1.str = zero_360(meca.NP1.str);
         meca.NP2.str = zero_360(meca.NP2.str);
         increment = pos_NP1_NP2 >= 0. ? -fault : fault;
-        if(increment * (meca.NP1.str - meca.NP2.str) < - EPSIL)
-            meca.NP1.str += increment * 360.;
+        if (increment * (meca.NP1.str - meca.NP2.str) < - EPSIL) meca.NP1.str += increment * 360.;
         str = meca.NP2.str;
-        while(increment == 1. ? 
-	      str <= meca.NP1.str + EPSIL : str >= meca.NP1.str - EPSIL) {
+        while (increment > 0. ? str <= meca.NP1.str + EPSIL : str >= meca.NP1.str - EPSIL) {
             i++;
             sincosd (str, &si, &co);
             x[i] = x0 + si * radius_size;
@@ -306,8 +293,8 @@ double ps_meca(double x0,double y0,st_me meca,double size)
 
 {
 
-	int i;
-	GMT_LONG npoints;
+    int i;
+    GMT_LONG npoints;
 
     double proj_radius();
 
@@ -333,9 +320,9 @@ double ps_meca(double x0,double y0,st_me meca,double size)
     ps_circle(x0, y0, radius_size*2., no_fill, lineout);
 
         i = -1;
-        increment = 1;
+        increment = 1.;
         str = meca.NP1.str;
-        while(str <= meca.NP1.str + 180. + EPSIL) {
+        while (str <= meca.NP1.str + 180. + EPSIL) {
             i++;
             radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;   
             sincosd (str, &si, &co);
@@ -347,9 +334,9 @@ double ps_meca(double x0,double y0,st_me meca,double size)
         ps_line(x, y, npoints, 1, FALSE, FALSE);
 
         i = -1;
-        increment = 1;
+        increment = 1.;
         str = meca.NP2.str;
-        while(str <= meca.NP2.str + 180. + EPSIL) {
+        while (str <= meca.NP2.str + 180. + EPSIL) {
             i++;
             radius = proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
             sincosd (str, &si, &co);
@@ -397,9 +384,9 @@ double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
       switch (num_of_plane) {
         case 1:
                i = -1;
-               increment = 1;
+               increment = 1.;
                str = meca.NP1.str;
-               while(str <= meca.NP1.str + 180. + EPSIL) {
+               while (str <= meca.NP1.str + 180. + EPSIL) {
                    i++;
                    radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
                    sincosd (str, &si, &co);
@@ -413,9 +400,9 @@ double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
 
         case 2:
                i = -1;
-               increment = 1;
+               increment = 1.;
                str = meca.NP2.str;
-               while(str <= meca.NP2.str + 180. + EPSIL) {
+               while (str <= meca.NP2.str + 180. + EPSIL) {
                    i++;
                    radius = proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
                    sincosd (str, &si, &co);
@@ -438,9 +425,9 @@ double zero_360(double str)
   /* Genevieve Patau */
 
 {
-    if(str >= 360.)
+    if (str >= 360.)
         str -= 360.;
-    else if(str < 0.)
+    else if (str < 0.)
         str += 360.;
     return(str);
 }
@@ -462,7 +449,7 @@ p. 384
 {
     double mw;
 
-    if(moment.exponent == 0)
+    if (moment.exponent == 0)
         mw = ms;
     else
         mw = (log10(moment.mant) + (double)moment.exponent - 16.1) * 2. / 3.;
@@ -481,8 +468,8 @@ double datan2(double y,double x)
     double arctg;
     double rdeg = 180. / 3.14159265;
   
-    if(fabs(x) < EPSIL) {
-        if(fabs(y) < EPSIL) {
+    if (fabs(x) < EPSIL) {
+        if (fabs(y) < EPSIL) {
 /*
             fprintf(stderr, "undetermined form 0. / 0.");
             exit(EXIT_FAILURE);
@@ -492,7 +479,7 @@ double datan2(double y,double x)
         else
             arctg = y < 0. ? -90. : 90.;
     }
-    else if(x < 0.)
+    else if (x < 0.)
         arctg = y < 0. ? atan(y / x) * rdeg - 180. : atan(y / x) * rdeg + 180.;
     else 
         arctg = atan(y / x) * rdeg;
@@ -522,7 +509,7 @@ double computed_strike1(struct nodal_plane NP1)
 
     sincosd (NP1.rake, &sr, &cr);
     sincosd (NP1.str, &ss, &cs);
-    if(cd1 < EPSIL && fabs(cr) < EPSIL) {
+    if (cd1 < EPSIL && fabs(cr) < EPSIL) {
 /*
         fprintf(stderr, "\nThe second plane is horizontal;");
         fprintf(stderr, "\nStrike is undetermined.");
@@ -589,7 +576,7 @@ double computed_rake1(struct nodal_plane NP1)
     sincosd (NP1.dip, &sd, &cd);
     sincosd (NP1.str - str2, &ss, &cs);
 
-    if(fabs(dip2 - 90.) < EPSIL)
+    if (fabs(dip2 - 90.) < EPSIL)
         sinrake2 = am * cd;
     else
         sinrake2 = -am * sd * cs / cd;
@@ -618,7 +605,7 @@ double computed_dip2(double str1,double dip1,double str2)
     double dip2;
     double cosdp12 = cosd(str1 - str2);
 
-    if(fabs(dip1 - 90.) < EPSIL && fabs(cosdp12) < EPSIL) {
+    if (fabs(dip1 - 90.) < EPSIL && fabs(cosdp12) < EPSIL) {
             dip2 = 1000.; /* (only first plane will be plotted) */
     }
     else {
@@ -649,7 +636,7 @@ double computed_rake2(double str1,double dip1,double str2,double dip2,double fau
     sincosd (str1 - str2, &ss, &cs);
 
     sd = sind(dip1);        cd = cosd(dip2);
-    if(fabs(dip2 - 90.) < EPSIL)
+    if (fabs(dip2 - 90.) < EPSIL)
         sinrake2 = fault * cd;
     else
         sinrake2 = -fault * sd * cs / cd;
@@ -717,12 +704,12 @@ double null_axis_strike(double str1,double dip1,double str2,double dip2)
 
     cosphn = sd1 * cs1 * cd2 - sd2 * cs2 * cd1;
     sinphn = sd1 * ss1 * cd2 - sd2 * ss2 * cd1;
-    if(sind(str1 - str2) < 0.) {
+    if (sind(str1 - str2) < 0.) {
         cosphn = -cosphn;
         sinphn = -sinphn;
     } 
     phn = datan2(sinphn, cosphn);
-    if(phn < 0.)
+    if (phn < 0.)
         phn += 360.;
     return(phn);
 }
@@ -741,7 +728,7 @@ double proj_radius(double str1,double dip1,double str)
 {
     double dip, r;
  
-    if(fabs(dip1 - 90.) < EPSIL) {
+    if (fabs(dip1 - 90.) < EPSIL) {
 /*
         printf("\nVertical plane : strike is constant.");
         printf("\nFor ps_mechanism r == 1 for str = str1");
@@ -888,19 +875,19 @@ void momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P)
 
 /* sort eigenvalues */
     max = -10000.;
-    for(j=1;j<=num;j++) if(max<=d[j]) {max=d[j];jj[0]=j;}
+    for (j=1;j<=num;j++) if (max<=d[j]) {max=d[j];jj[0]=j;}
     min = 10000.;
-    for(j=1;j<=num;j++) if(min>=d[j]) {min=d[j];jj[2]=j;}
+    for (j=1;j<=num;j++) if (min>=d[j]) {min=d[j];jj[2]=j;}
     mid = 0.;
-    for(j=1;j<=num;j++) if(j!=jj[0]&&j!=jj[2]) jj[1]=j;
+    for (j=1;j<=num;j++) if (j!=jj[0]&&j!=jj[2]) jj[1]=j;
 
     for (j=1;j<=num;j++) {
         kk=jj[j-1];
         pl[kk]=(float)(asin(- v[1][kk]));
         az[kk]=(float)(atan2(v[3][kk],- v[2][kk]));
-        if(pl[kk]<=0.) {pl[kk]=-pl[kk]; az[kk]+=(float)(M_PI);}
-        if(az[kk]<0.) az[kk]+=(float)(2.*M_PI);
-        else if(az[kk]>(float)(2.*M_PI)) az[kk]-=(float)(2.*M_PI);
+        if (pl[kk]<=0.) {pl[kk]=-pl[kk]; az[kk]+=(float)(M_PI);}
+        if (az[kk]<0.) az[kk]+=(float)(2.*M_PI);
+        else if (az[kk]>(float)(2.*M_PI)) az[kk]-=(float)(2.*M_PI);
         pl[kk]*=(float)(180./M_PI);
         az[kk]*=(float)(180./M_PI);
         val[j-1] = d[kk]; azi[j-1] = az[kk]; plu[j-1] = pl[kk];
@@ -939,11 +926,11 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
     v[0] = T.val; v[1] = N.val; v[2] = P.val;
 
     vi = (v[0] + v[1] + v[2]) / 3.;
-    for(i=0; i<=2; i++) v[i] = v[i] - vi;
+    for (i=0; i<=2; i++) v[i] = v[i] - vi;
 
     radius_size = size * 0.5;
 
-    if(fabs(squared(v[0]) + squared(v[1]) + squared(v[2])) < EPSIL) {
+    if (fabs(squared(v[0]) + squared(v[1]) + squared(v[2])) < EPSIL) {
         /* pure implosion-explosion */
         if (vi > 0.) {
             ps_circle(x0, y0, radius_size*2., c_rgb, lineout);
@@ -954,7 +941,7 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
         return(radius_size*2.);
     }
 
-    if(fabs(v[0]) >= fabs(v[2])) {
+    if (fabs(v[0]) >= fabs(v[2])) {
         d = 0;
         m = 2;
     }
@@ -963,7 +950,7 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
         m = 0;
     }
 
-    if(plot_zerotrace) vi = 0.;
+    if (plot_zerotrace) vi = 0.;
 
     f = - v[1] / v[d];
     iso = vi / v[d];
@@ -973,11 +960,11 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
  * Unless the isotropic parameter lies in the range
  * between -1 and 1 - f there will be no nodes whatsoever */
 
-    if(iso < -1) {
+    if (iso < -1) {
         ps_circle(x0, y0, radius_size*2., e_rgb, lineout);
         return(radius_size*2.);
     }
-    else if(iso > 1-f) {
+    else if (iso > 1-f) {
         ps_circle(x0, y0, radius_size*2., c_rgb, lineout);
         return(radius_size*2.);
     }
@@ -989,10 +976,10 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
     sincosd (a[b], &sab, &cab);
     sincosd (a[m], &sam, &cam);
 
-    for(i=0; i<360; i++) {
+    for (i=0; i<360; i++) {
         fir = (double) i * D2R;
         s2alphan = (2. + 2. * iso) / (3. + (1. - 2. * f) * cos(2. * fir));
-        if(s2alphan > 1.) big_iso++;
+        if (s2alphan > 1.) big_iso++;
         else {
             alphan = asin(sqrt(s2alphan));
             sincos (fir, &sfi, &cfi);
@@ -1002,35 +989,35 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
             xn = can * cpd * cad + san * sfi * cpb * cab + san * cfi * cpm * cam;
             xe = can * cpd * sad + san * sfi * cpb * sab + san * cfi * cpm * sam;
 
-            if(fabs(xn) < EPSIL && fabs(xe) < EPSIL) {
+            if (fabs(xn) < EPSIL && fabs(xe) < EPSIL) {
                 takeoff = 0.;
                 az = 0.;
             }
             else {
                 az = atan2(xe, xn);
-                if(az < 0.) az += M_PI * 2.;
+                if (az < 0.) az += M_PI * 2.;
                 takeoff = acos(xz / sqrt(xz * xz + xn * xn + xe * xe));
             }
-            if(takeoff > M_PI_2) {
+            if (takeoff > M_PI_2) {
                 takeoff = M_PI - takeoff;
                 az += M_PI;
-                if(az > M_PI * 2.) az -= M_PI * 2.;
+                if (az > M_PI * 2.) az -= M_PI * 2.;
             }
             r = M_SQRT2 * sin(takeoff / 2.);
             sincos (az, &si, &co);
-            if(i == 0) {
+            if (i == 0) {
                 azi[i][0] = az;
                 x[i] = x0 + radius_size * r * si;
                 y[i] = y0 + radius_size * r * co;
                 azp = az;
             }
             else {
-                if(fabs(fabs(az - azp) - M_PI) < D2R * 10.) {
+                if (fabs(fabs(az - azp) - M_PI) < D2R * 10.) {
                         azi[n][1] = azp;
                         azi[++n][0] = az;
                 }
-                if(fabs(fabs(az -azp) - M_PI * 2.) < D2R * 2.) {
-                        if(azp < az) azi[n][0] += M_PI * 2.;
+                if (fabs(fabs(az -azp) - M_PI * 2.) < D2R * 2.) {
+                        if (azp < az) azi[n][0] += M_PI * 2.;
                         else azi[n][0] -= M_PI * 2.;
                 }
                 switch (n) {
@@ -1056,51 +1043,51 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
     }
     azi[n][1] = az;
 
-    if(v[1] < 0.) for(i=0;i<=2;i++) {rgb1[i] = c_rgb[i]; rgb2[i] = e_rgb[i];}
-    else for(i=0;i<=2;i++) {rgb1[i] = e_rgb[i]; rgb2[i] = c_rgb[i];}
+    if (v[1] < 0.) for (i=0;i<=2;i++) {rgb1[i] = c_rgb[i]; rgb2[i] = e_rgb[i];}
+    else for (i=0;i<=2;i++) {rgb1[i] = e_rgb[i]; rgb2[i] = c_rgb[i];}
 
     ps_circle(x0, y0, radius_size*2., rgb2, lineout);
     switch(n) {
         case 0 :
-            for(i=0; i<360; i++) {
+            for (i=0; i<360; i++) {
                 xp1[i] = x[i]; yp1[i] = y[i];
             }
             npoints = i;
             ps_polygon(xp1, yp1, npoints, rgb1, outline);
             break;
         case 1 :
-            for(i=0; i<j; i++) {
+            for (i=0; i<j; i++) {
                 xp1[i] = x[i]; yp1[i] = y[i];
             }
-            if(azi[0][0] - azi[0][1] > M_PI) azi[0][0] -= M_PI * 2.;
-            else if(azi[0][1] - azi[0][0] > M_PI) azi[0][0] += M_PI * 2.;
-            if(azi[0][0] < azi[0][1])
-                for(az = azi[0][1] - D2R; az > azi[0][0]; az -= D2R) {
+            if (azi[0][0] - azi[0][1] > M_PI) azi[0][0] -= M_PI * 2.;
+            else if (azi[0][1] - azi[0][0] > M_PI) azi[0][0] += M_PI * 2.;
+            if (azi[0][0] < azi[0][1])
+                for (az = azi[0][1] - D2R; az > azi[0][0]; az -= D2R) {
                     sincos (az, &si, &co);
                     xp1[i] = x0 + radius_size * si;
                     yp1[i++] = y0 + radius_size * co;
                 }
             else
-                for(az = azi[0][1] + D2R; az < azi[0][0]; az += D2R) {
+                for (az = azi[0][1] + D2R; az < azi[0][0]; az += D2R) {
                     sincos (az, &si, &co);
                     xp1[i] = x0 + radius_size * si; 
                     yp1[i++] = y0 + radius_size * co;
                 }
             npoints = i;
             ps_polygon(xp1, yp1, npoints, rgb1, outline);
-            for(i=0; i<j2; i++) {
+            for (i=0; i<j2; i++) {
                 xp2[i] = x2[i]; yp2[i] = y2[i];
             }
-            if(azi[1][0] - azi[1][1] > M_PI) azi[1][0] -= M_PI * 2.;
-            else if(azi[1][1] - azi[1][0] > M_PI) azi[1][0] += M_PI * 2.;
-            if(azi[1][0] < azi[1][1])
-                for(az = azi[1][1] - D2R; az > azi[1][0]; az -= D2R) {
+            if (azi[1][0] - azi[1][1] > M_PI) azi[1][0] -= M_PI * 2.;
+            else if (azi[1][1] - azi[1][0] > M_PI) azi[1][0] += M_PI * 2.;
+            if (azi[1][0] < azi[1][1])
+                for (az = azi[1][1] - D2R; az > azi[1][0]; az -= D2R) {
                     sincos (az, &si, &co);
                     xp2[i] = x0 + radius_size * si; 
                     yp2[i++] = y0 + radius_size * co;
                 }
             else
-                for(az = azi[1][1] + D2R; az < azi[1][0]; az += D2R) {
+                for (az = azi[1][1] + D2R; az < azi[1][0]; az += D2R) {
                     sincos (az, &si, &co);
                     xp2[i] = x0 + radius_size * si; 
                     yp2[i++] = y0 + radius_size * co;
@@ -1109,15 +1096,15 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
             ps_polygon(xp2, yp2, npoints, rgb1, outline);
             break;
         case 2 :
-            for(i=0; i<j3; i++) {
+            for (i=0; i<j3; i++) {
                 xp1[i] = x3[i]; yp1[i] = y3[i];
             }
-            for(ii=0; ii<j; ii++) {
+            for (ii=0; ii<j; ii++) {
                 xp1[i] = x[ii]; yp1[i++] = y[ii];
             }
 
-            if(big_iso) {
-                for(ii=j2-1; ii>=0; ii--) {
+            if (big_iso) {
+                for (ii=j2-1; ii>=0; ii--) {
                     xp1[i] = x2[ii]; yp1[i++] = y2[ii];
                 }
                 npoints = i;
@@ -1125,35 +1112,35 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
                 break;
             }
 
-            if(azi[2][0] - azi[0][1] > M_PI) azi[2][0] -= M_PI * 2.;
-            else if(azi[0][1] - azi[2][0] > M_PI) azi[2][0] += M_PI * 2.;
-            if(azi[2][0] < azi[0][1])
-                for(az = azi[0][1] - D2R; az > azi[2][0]; az -= D2R) {
+            if (azi[2][0] - azi[0][1] > M_PI) azi[2][0] -= M_PI * 2.;
+            else if (azi[0][1] - azi[2][0] > M_PI) azi[2][0] += M_PI * 2.;
+            if (azi[2][0] < azi[0][1])
+                for (az = azi[0][1] - D2R; az > azi[2][0]; az -= D2R) {
                     sincos (az, &si, &co);
                     xp1[i] = x0+ radius_size * si; 
                     yp1[i++] = y0+ radius_size * co;
                 }
             else
-                for(az = azi[0][1] + D2R; az < azi[2][0]; az += D2R) {
+                for (az = azi[0][1] + D2R; az < azi[2][0]; az += D2R) {
                     sincos (az, &si, &co);
                     xp1[i] = x0+ radius_size * si; 
                     yp1[i++] = y0+ radius_size * co;
                 }
             npoints = i;
             ps_polygon(xp1, yp1, npoints, rgb1, outline);
-            for(i=0; i<j2; i++) {
+            for (i=0; i<j2; i++) {
                 xp2[i] = x2[i]; yp2[i] = y2[i];
             }
-            if(azi[1][0] - azi[1][1] > M_PI) azi[1][0] -= M_PI * 2.;
-            else if(azi[1][1] - azi[1][0] > M_PI) azi[1][0] += M_PI * 2.;
-            if(azi[1][0] < azi[1][1])
-                for(az = azi[1][1] - D2R; az > azi[1][0]; az -= D2R) {
+            if (azi[1][0] - azi[1][1] > M_PI) azi[1][0] -= M_PI * 2.;
+            else if (azi[1][1] - azi[1][0] > M_PI) azi[1][0] += M_PI * 2.;
+            if (azi[1][0] < azi[1][1])
+                for (az = azi[1][1] - D2R; az > azi[1][0]; az -= D2R) {
                     sincos (az, &si, &co);
                     xp2[i] = x0+ radius_size * si; 
                     yp2[i++] = y0+ radius_size * co;
                 }
             else
-                for(az = azi[1][1] + D2R; az < azi[1][0]; az += D2R) {
+                for (az = azi[1][1] + D2R; az < azi[1][0]; az += D2R) {
                     sincos (az, &si, &co);
                     xp2[i] = x0+ radius_size * si; 
                     yp2[i++] = y0+ radius_size * co;
@@ -1199,28 +1186,28 @@ void axe2dc(struct AXIS T,struct AXIS P,struct nodal_plane *NP1,struct nodal_pla
      amz = sdt + sdp; amx = spt + spp; amy = cpt + cpp;
      d1 = atan2(sqrt(amx*amx + amy*amy), amz);
      p1 = atan2(amy, -amx);
-     if(d1 > M_PI_2) {
+     if (d1 > M_PI_2) {
           d1 = M_PI - d1;
           p1 += M_PI;
-          if(p1 > PII) p1 -= PII;
+          if (p1 > PII) p1 -= PII;
      }
-     if(p1 < 0.) p1 += PII;
+     if (p1 < 0.) p1 += PII;
 
      amz = sdt - sdp; amx = spt - spp; amy = cpt - cpp;
      d2 = atan2(sqrt(amx*amx + amy*amy), amz);
      p2 = atan2(amy, -amx);
-     if(d2 > M_PI_2) {
+     if (d2 > M_PI_2) {
           d2 = M_PI - d2;
           p2 += M_PI;
-          if(p2 > PII) p2 -= PII;
+          if (p2 > PII) p2 -= PII;
      }
-     if(p2 < 0.) p2 += PII;
+     if (p2 < 0.) p2 += PII;
 
      NP1->dip = d1 / D2R; NP1->str = p1 / D2R;
      NP2->dip = d2 / D2R; NP2->str = p2 / D2R;
 
      im = 1;
-     if(dp > dt) im = -1;
+     if (dp > dt) im = -1;
      NP1->rake = computed_rake2(NP2->str,NP2->dip,NP1->str,NP1->dip,im);
      NP2->rake = computed_rake2(NP1->str,NP1->dip,NP2->str,NP2->dip,im);
 }
@@ -1242,14 +1229,14 @@ from nodal plane strikes, dips and rakes.
         double amz, amx, amy, dx, px, dy, py;
         double radius;
 
-        if(fabs(sin(meca.NP1.rake * D2R)) > EPSIL) im = (int) (meca.NP1.rake / fabs(meca.NP1.rake));
-        else if(fabs(sin(meca.NP2.rake * D2R)) > EPSIL) im = (int) (meca.NP2.rake / fabs(meca.NP2.rake));
+        if (fabs(sin(meca.NP1.rake * D2R)) > EPSIL) im = (int) (meca.NP1.rake / fabs(meca.NP1.rake));
+        else if (fabs(sin(meca.NP2.rake * D2R)) > EPSIL) im = (int) (meca.NP2.rake / fabs(meca.NP2.rake));
         else pure_strike_slip = 1;
 
         size *= 0.5;
 
-        if(pure_strike_slip) {
-            if(cos(meca.NP1.rake * D2R) < 0.) {
+        if (pure_strike_slip) {
+            if (cos(meca.NP1.rake * D2R) < 0.) {
                 *pp = zero_360(meca.NP1.str + 45.);
                 *pt = zero_360(meca.NP1.str - 45.);
             }
@@ -1280,17 +1267,17 @@ from nodal plane strikes, dips and rakes.
             amy = cp1 + cp2;
             dx = atan2(sqrt(amx * amx + amy * amy), amz) - M_PI_2;
             px = atan2(amy, - amx);
-            if(px < 0.) px += TWO_PI;
+            if (px < 0.) px += TWO_PI;
 
             amz = cd1 - cd2;
             amx = sp1 - sp2;
             amy = - cp1 + cp2;
             dy = atan2(sqrt(amx * amx + amy * amy), - fabs(amz)) - M_PI_2;
             py = atan2(amy, - amx);
-            if(amz > 0.) py -= M_PI;
-            if(py < 0.) py += TWO_PI;
+            if (amz > 0.) py -= M_PI;
+            if (py < 0.) py += TWO_PI;
 
-            if(im == 1) {
+            if (im == 1) {
                     *dp = dy;
                     *pp = py;
                     *dt = dx;
@@ -1303,11 +1290,11 @@ from nodal plane strikes, dips and rakes.
                     *pt = py;
             }
             radius = sqrt(1. - sin(*dp));
-            if(radius >= 0.97) radius = 0.97;
+            if (radius >= 0.97) radius = 0.97;
             *xp = radius * sin(*pp) * size + x0;
             *yp = radius * cos(*pp) * size + y0;
             radius = sqrt(1. - sin(*dt));
-            if(radius >= 0.97) radius = 0.97;
+            if (radius >= 0.97) radius = 0.97;
             *xt = radius * sin(*pt) * size + x0;
             *yt = radius * cos(*pt) * size + y0;
             *pp *= 180. / M_PI;
@@ -1333,12 +1320,12 @@ from nodal plane strikes, dips and rakes.
         double cp1, sp1, cp2, sp2;
         double amz, amx, amy, dx, px, dy, py;
 
-        if(fabs(sind(meca.NP1.rake)) > EPSIL) im = (int) (meca.NP1.rake / fabs(meca.NP1.rake));
-        else if(fabs(sind(meca.NP2.rake)) > EPSIL) im = (int) (meca.NP2.rake / fabs(meca.NP2.rake));
+        if (fabs(sind(meca.NP1.rake)) > EPSIL) im = (int) (meca.NP1.rake / fabs(meca.NP1.rake));
+        else if (fabs(sind(meca.NP2.rake)) > EPSIL) im = (int) (meca.NP2.rake / fabs(meca.NP2.rake));
         else pure_strike_slip = 1;
 
-        if(pure_strike_slip) {
-            if(cosd(meca.NP1.rake) < 0.) {
+        if (pure_strike_slip) {
+            if (cosd(meca.NP1.rake) < 0.) {
                 P->str = zero_360(meca.NP1.str + 45.);
                 T->str = zero_360(meca.NP1.str - 45.);
             }
@@ -1364,17 +1351,17 @@ from nodal plane strikes, dips and rakes.
             amy = cp1 + cp2;
             dx = atan2(sqrt(amx * amx + amy * amy), amz) - M_PI_2;
             px = atan2(amy, - amx);
-            if(px < 0.) px += TWO_PI;
+            if (px < 0.) px += TWO_PI;
 
             amz = cd1 - cd2;
             amx = sp1 - sp2;
             amy = - cp1 + cp2;
             dy = atan2(sqrt(amx * amx + amy * amy), - fabs(amz)) - M_PI_2;
             py = atan2(amy, - amx);
-            if(amz > 0.) py -= M_PI;
-            if(py < 0.) py += TWO_PI;
+            if (amz > 0.) py -= M_PI;
+            if (py < 0.) py += TWO_PI;
 
-            if(im == 1) {
+            if (im == 1) {
                     P->dip = dy;
                     P->str = py;
                     T->dip = dx;
@@ -1410,11 +1397,11 @@ void axis2xy(double x0,double y0,double size,double pp,double dp,double pt,doubl
 
             size *= 0.5;
             radius = sqrt(1. - sind(dp));
-            if(radius >= 0.97) radius = 0.97;
+            if (radius >= 0.97) radius = 0.97;
             *xp = radius * spp * size + x0;
             *yp = radius * cpp * size + y0;
             radius = sqrt(1. - sind(dt));
-            if(radius >= 0.97) radius = 0.97;
+            if (radius >= 0.97) radius = 0.97;
             *xt = radius * spt * size + x0;
             *yt = radius * cpt * size + y0;
 }
