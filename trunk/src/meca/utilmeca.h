@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.h,v 1.7 2009-01-09 04:02:35 guru Exp $
+/*	$Id: utilmeca.h,v 1.8 2009-02-06 23:25:31 jluis Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -16,4 +16,5 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
 void axe2dc(struct AXIS T,struct AXIS P,struct nodal_plane *NP1,struct nodal_plane *NP2);
 void ps_pt_axis(double x0,double y0,st_me meca,double size,double *pp,double *dp,double *pt,double *dt,double *xp,double *yp,double *xt,double *yt);
 void momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P);
+void GMT_momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P);
 void axis2xy(double x0,double y0,double size,double pp,double dp,double pt,double dt,double *xp,double *yp,double *xt,double *yt);
