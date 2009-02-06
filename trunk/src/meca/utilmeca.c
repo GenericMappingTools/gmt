@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.15 2009-02-06 22:55:44 guru Exp $
+/*	$Id: utilmeca.c,v 1.16 2009-02-06 23:24:49 jluis Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -883,8 +883,8 @@ void momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P)
 
     for (j=1;j<=num;j++) {
         kk=jj[j-1];
-        pl[kk]=(float)(asin(- v[1][kk]));
-        az[kk]=(float)(atan2(v[3][kk],- v[2][kk]));
+        pl[kk]=(float)(asin(-v[1][kk]));
+        az[kk]=(float)(atan2(v[3][kk],-v[2][kk]));
         if (pl[kk]<=0.) {pl[kk]=-pl[kk]; az[kk]+=(float)(M_PI);}
         if (az[kk]<0.) az[kk]+=(float)(2.*M_PI);
         else if (az[kk]>(float)(2.*M_PI)) az[kk]-=(float)(2.*M_PI);
@@ -896,7 +896,51 @@ void momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P)
     N->val = (double)val[1]; N->e = mt.expo; N->str = (double)azi[1]; N->dip = (double)plu[1];
     P->val = (double)val[2]; P->e = mt.expo; P->str = (double)azi[2]; P->dip = (double)plu[2];
 }
-
+
+/***************************************************************************************/
+void GMT_momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P) {
+	/* This version uses GMT_jacobi and does not suffer from the convert_matrix bug */
+	int j, nrots;
+	GMT_LONG np = 3;
+	double *a, *d, *b, *z, *v;
+	double az[3], pl[3];
+
+	a = (double *) GMT_memory (VNULL, (size_t)np*np, sizeof(double), GMT_program);
+	d = (double *) GMT_memory (VNULL, (size_t)np, sizeof(double), GMT_program);
+	b = (double *) GMT_memory (VNULL, (size_t)np, sizeof(double), GMT_program);
+	z = (double *) GMT_memory (VNULL, (size_t)np, sizeof(double), GMT_program);
+	v = (double *) GMT_memory (VNULL, (size_t)np*np, sizeof(double), GMT_program);
+
+	a[0]=mt.f[0];	a[1]=mt.f[3];	a[2]=mt.f[4];
+	a[3]=mt.f[3];	a[4]=mt.f[1];	a[5]=mt.f[5];
+	a[6]=mt.f[4];	a[7]=mt.f[5];	a[8]=mt.f[2];
+
+	if (GMT_jacobi (a, &np, &np, d, v, b, z, &nrots))
+		fprintf(stderr,"%s: Eigenvalue routine failed to converge in 50 sweeps.\n", GMT_program);
+
+	for (j = 0; j < np; j++) {
+		pl[j] = asin(-v[j*np]);
+		az[j] = atan2(v[j*np+2], -v[j*np+1]);
+		if (pl[j] <= 0.) {
+			pl[j] = -pl[j];
+			az[j] += M_PI;
+		}
+		if (az[j] < 0)
+			az[j] += TWO_PI;
+		else if (az[j] > TWO_PI)
+			az[j] -= TWO_PI;
+		pl[j] *= R2D;
+		az[j] *= R2D;
+	}
+	T->val = d[0];	T->e = mt.expo;	T->str = az[0]; T->dip = pl[0];
+	N->val = d[1];	N->e = mt.expo; N->str = az[1]; N->dip = pl[1];
+	P->val = d[2];	P->e = mt.expo; P->str = az[2]; P->dip = pl[2];
+
+	GMT_free((void *) a);	GMT_free((void *) d);
+	GMT_free((void *) b);	GMT_free((void *) z);
+	GMT_free((void *) v);
+}
+
 /***************************************************************************************/
 double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,struct AXIS P,int c_rgb[3],int e_rgb[3], int outline, int plot_zerotrace)
 {
