@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.14 2009-02-06 18:46:40 remko Exp $
+/*	$Id: utilmeca.c,v 1.15 2009-02-06 22:55:44 guru Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -72,7 +72,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
 
     double x[1000], y[1000];
     double pos_NP1_NP2 = sind(meca.NP1.str - meca.NP2.str);
-    double fault = meca.NP1.rake == 0. ? meca.NP2.rake / fabs(meca.NP2.rake) : meca.NP1.rake / fabs(meca.NP1.rake);
+    double fault = (GMT_IS_ZERO (meca.NP1.rake) ? meca.NP2.rake / fabs(meca.NP2.rake) : meca.NP1.rake / fabs(meca.NP1.rake));
     double radius_size;
     double str, radius, increment;
     double si, co;
@@ -504,7 +504,7 @@ double computed_strike1(struct nodal_plane NP1)
     double cd1 = cosd(NP1.dip);
     double temp;
     double cp2, sp2;
-    double am = NP1.rake == 0 ? 1. : NP1.rake /fabs(NP1.rake); 
+    double am = (GMT_IS_ZERO (NP1.rake) ? 1. : NP1.rake /fabs(NP1.rake)); 
     double ss, cs, sr, cr;
 
     sincosd (NP1.rake, &sr, &cr);
@@ -544,7 +544,7 @@ double computed_dip1(struct nodal_plane NP1)
 /* Genevieve Patau */
 
 {
-    double am = NP1.rake == 0 ? 1. : NP1.rake / fabs(NP1.rake);
+    double am = (GMT_IS_ZERO (NP1.rake) ? 1. : NP1.rake / fabs(NP1.rake));
     double dip2;
   
     dip2 = acos(am * sind(NP1.rake) * sind(NP1.dip)) / D2R;
@@ -571,7 +571,7 @@ double computed_rake1(struct nodal_plane NP1)
     double rake2, sinrake2;
     double str2 = computed_strike1(NP1);
     double dip2 = computed_dip1(NP1);
-    double am = NP1.rake == 0. ? 1. : NP1.rake / fabs(NP1.rake);
+    double am = (GMT_IS_ZERO (NP1.rake) ? 1. : NP1.rake / fabs(NP1.rake));
     double sd, cd, ss, cs;
     sincosd (NP1.dip, &sd, &cd);
     sincosd (NP1.str - str2, &ss, &cs);
