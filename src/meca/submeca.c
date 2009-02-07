@@ -1,4 +1,4 @@
-/*	$Id: submeca.c,v 1.9 2009-01-09 04:02:35 guru Exp $
+/*	$Id: submeca.c,v 1.10 2009-02-07 15:45:52 remko Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -112,7 +112,7 @@ void rot_nodal_plane(struct nodal_plane PLAN,struct nodal_plane PREF,struct noda
 
      cr = - sd * sdfi / sdr;
      sr = (sd * crd * cdfi - cd * srd) / sdr;
-     PLANR->str = datan2(sr, cr);
+     PLANR->str = d_atan2(sr, cr);
      if(cdr < 0.) {
           PLANR->str += PIDEG;
      }
@@ -120,7 +120,7 @@ void rot_nodal_plane(struct nodal_plane PLAN,struct nodal_plane PREF,struct noda
      PLANR->dip = acos(fabs(cdr)) / D2R;
      cr = cr * (sir * (cd * crd * cdfi + sd * srd) - cor * crd * sdfi) + sr * ( cor * cdfi + sir * cd * sdfi);
      sr = (cor * srd * sdfi + sir * (sd * crd - cd * srd * cdfi)) / sdr;
-     PLANR->rake = datan2(sr, cr);
+     PLANR->rake = d_atan2(sr, cr);
      if(cdr < 0.) {
           PLANR->rake +=  PIDEG;
           if(PLANR->rake > PIDEG)

@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.411 2009-02-07 00:38:33 jluis Exp $
+	$Id: ChangeLog,v 1.412 2009-02-07 15:45:52 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-02-07	remko
+	* utilmeca.c, submeca.c:	Replaced datan2() function with d_atan2() macro (which uses
+				standard atan2() function. This also to avoid some possible bugs.
+
 2009-02-07	jluis
 	* utilmeca.c:		Replaced momten2axe() function with GMT_momten2axe() which uses
 				GMT_jacobi and fixes a bug due to the use of convert_matrix()
