@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.17 2009-02-07 00:30:21 jluis Exp $
+/*	$Id: utilmeca.c,v 1.18 2009-02-07 15:45:52 remko Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -18,19 +18,19 @@ void get_trans (double slon,double slat,double *t11,double *t12,double *t21,doub
      /* this is useful for drawing velocity vectors in X,Y coordinates */
      /* even on a map which is not a Cartesian projection */
 
-     /* Kurt Feigl, from code by T. Herring */                                       
-                                                                                    
-     /* INPUT */                                                                    
+     /* Kurt Feigl, from code by T. Herring */
+
+     /* INPUT */
      /*   slat        - latitude, in degrees  */
      /*   slon        - longitude in degrees  */
 
-     /* OUTPUT (returned) */                     
+     /* OUTPUT (returned) */
      /*   t11,t12,t21,t22 transformation matrix */
 
-{                          
-                                                                                    
+{
 
-     /* LOCAL VARIABLES */                                                          
+
+     /* LOCAL VARIABLES */
      double su,sv,udlat,vdlat,udlon,vdlon,dudlat,dvdlat,dudlon,dvdlon;
      double dl;
 
@@ -58,7 +58,7 @@ void get_trans (double slon,double slat,double *t11,double *t12,double *t21,doub
 
 
 }
-
+
 /***********************************************************************************************************/
 double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], int ergb[3], BOOLEAN outline)
 
@@ -77,26 +77,26 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
     double str, radius, increment;
     double si, co;
 
-	int lineout = 1, i;
-	GMT_LONG npoints;
+    int lineout = 1, i;
+    GMT_LONG npoints;
 
     struct AXIS N_axis;
 
 /* compute null axis strike and dip */
     N_axis.dip = null_axis_dip(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip);
-    if (fabs(90. - N_axis.dip) < EPSIL) 
+    if (fabs(90. - N_axis.dip) < EPSIL)
         N_axis.str = meca.NP1.str;
     else
         N_axis.str = null_axis_strike(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip);
- 
+
 /* compute radius size of the bubble */
     radius_size = size * 0.5;
 
 /* outline the bubble */
-    ps_plot(x0 + radius_size, y0, 3); 
+    ps_plot(x0 + radius_size, y0, 3);
 /*  argument is DIAMETER!!*/
-    ps_circle(x0, y0, radius_size*2., ergb, lineout); 
- 
+    ps_circle(x0, y0, radius_size*2., ergb, lineout);
+
     if (fabs(pos_NP1_NP2) < EPSIL) {
 /* pure normal or inverse fault (null axis strike is determined
    with + or - 180 degrees. */
@@ -114,7 +114,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         }
         if (fault < 0.) {
             /* normal fault, close first compressing part */
-            str = meca.NP1.str + 180.; 
+            str = meca.NP1.str + 180.;
             while (str >= meca.NP1.str - EPSIL) {
                 i++;
                 sincosd (str, &si, &co);
@@ -150,7 +150,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
                 x[i] = x0 + si * radius_size;
                 y[i] = y0 + co * radius_size;
                 str -= increment;
-            } 
+            }
             npoints = i + 1;
             ps_polygon(x, y, npoints, rgb, outline);
         }
@@ -159,7 +159,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
     else if ((90. - meca.NP1.dip) < EPSIL && (90. - meca.NP2.dip) < EPSIL) {
         increment = fabs(meca.NP1.rake) < EPSIL ? 1. : -1.;
         /* first compressing part */
-        i = 0; 
+        i = 0;
         str = meca.NP1.str;
         while (increment > 0. ? str <= meca.NP1.str + 90. : str >= meca.NP1.str - 90.) {
             sincosd (str, &si, &co);
@@ -195,17 +195,16 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         if (meca.NP1.str > N_axis.str)
             meca.NP1.str -= 360.;
         str = meca.NP1.str;
-        while (fabs(90. - meca.NP1.dip) < EPSIL ? 
-	      str <= meca.NP1.str + EPSIL : str <= N_axis.str + EPSIL) {
+        while (fabs(90. - meca.NP1.dip) < EPSIL ? str <= meca.NP1.str + EPSIL : str <= N_axis.str + EPSIL) {
             i++;
             radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
             sincosd (str, &si, &co);
             x[i] = x0 + radius * si;
             y[i] = y0 + radius * co;
             str += increment;
-        }    
-        
-        /* second nodal plane from null axis */ 
+        }
+
+        /* second nodal plane from null axis */
         meca.NP2.str += (1. + fault) * 90.;
         if (meca.NP2.str >= 360.) meca.NP2.str -= 360.;
         increment = fault;
@@ -255,7 +254,7 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
         /* second nodal plane from null axis */
         meca.NP2.str = zero_360(meca.NP2.str + 180.);
         increment = -fault;
-        if (fault * (N_axis.str - meca.NP2.str) < - EPSIL) meca.NP2.str -= fault * 360.; 
+        if (fault * (N_axis.str - meca.NP2.str) < - EPSIL) meca.NP2.str -= fault * 360.;
         str = fabs(90. - meca.NP2.dip) < EPSIL ? meca.NP2.str : N_axis.str;
         while (increment > 0. ? str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
             i++;
@@ -282,10 +281,10 @@ double  ps_mechanism(double x0, double y0, st_me meca, double size, int rgb[3], 
 
         npoints = i + 1;
         ps_polygon(x, y, npoints, rgb, outline);
-    } 
+    }
     return(radius_size*2.);
-} 
-
+}
+
 /*********************************************************************/
 double ps_meca(double x0,double y0,st_me meca,double size)
 
@@ -314,7 +313,7 @@ double ps_meca(double x0,double y0,st_me meca,double size)
     radius_size = size * 0.5;
 
 /* outline the bubble */
-    ps_plot(x0 + radius_size, y0, 3); 
+    ps_plot(x0 + radius_size, y0, 3);
 /*    ps_circonf(x0, y0, radius_size); */
 /*  argument is DIAMETER!!*/
     ps_circle(x0, y0, radius_size*2., no_fill, lineout);
@@ -324,7 +323,7 @@ double ps_meca(double x0,double y0,st_me meca,double size)
         str = meca.NP1.str;
         while (str <= meca.NP1.str + 180. + EPSIL) {
             i++;
-            radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;   
+            radius = proj_radius(meca.NP1.str, meca.NP1.dip, str) * radius_size;
             sincosd (str, &si, &co);
             x[i] = x0 + radius * si;
             y[i] = y0 + radius * co;
@@ -348,7 +347,7 @@ double ps_meca(double x0,double y0,st_me meca,double size)
         ps_line(x, y, npoints, 1, FALSE, FALSE);
         return(radius_size*2.);
 }
-
+
 /*********************************************************************/
 double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
 
@@ -356,8 +355,8 @@ double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
 
 {
 
-	int i;
-	GMT_LONG npoints;
+    int i;
+    GMT_LONG npoints;
 
     double proj_radius();
 
@@ -416,7 +415,7 @@ double ps_plan(double x0,double y0,st_me meca,double size,int num_of_plane)
       }
       return(radius_size*2.);
 }
-
+
 /*********************************************************************/
 double zero_360(double str)
 
@@ -431,7 +430,7 @@ double zero_360(double str)
         str += 360.;
     return(str);
 }
-
+
 /**********************************************************************/
 double computed_mw(struct MOMENT moment,double ms)
 
@@ -456,37 +455,7 @@ p. 384
 
     return(mw);
 }
-
-/*********************************************************************/
-double datan2(double y,double x)
- 
-  /*  compute arctg in degrees, between -180 et +180. */
 
-  /* Genevieve Patau */
-
-{
-    double arctg;
-    double rdeg = 180. / 3.14159265;
-  
-    if (fabs(x) < EPSIL) {
-        if (fabs(y) < EPSIL) {
-/*
-            fprintf(stderr, "undetermined form 0. / 0.");
-            exit(EXIT_FAILURE);
-*/
-            arctg = 0.;
-        }
-        else
-            arctg = y < 0. ? -90. : 90.;
-    }
-    else if (x < 0.)
-        arctg = y < 0. ? atan(y / x) * rdeg - 180. : atan(y / x) * rdeg + 180.;
-    else 
-        arctg = atan(y / x) * rdeg;
-
-    return(arctg);
-}
-
 /*********************************************************************/
 double computed_strike1(struct nodal_plane NP1)
 
@@ -504,7 +473,7 @@ double computed_strike1(struct nodal_plane NP1)
     double cd1 = cosd(NP1.dip);
     double temp;
     double cp2, sp2;
-    double am = (GMT_IS_ZERO (NP1.rake) ? 1. : NP1.rake /fabs(NP1.rake)); 
+    double am = (GMT_IS_ZERO (NP1.rake) ? 1. : NP1.rake /fabs(NP1.rake));
     double ss, cs, sr, cr;
 
     sincosd (NP1.rake, &sr, &cr);
@@ -525,12 +494,12 @@ double computed_strike1(struct nodal_plane NP1)
         temp = ss * cr;
         temp -= sr *  cs * cd1;
         cp2 = am * temp;
-        str2 = datan2(sp2, cp2);
+        str2 = d_atan2(sp2, cp2);
         str2 = zero_360(str2);
     }
     return(str2);
 }
-
+
 /*********************************************************************/
 double computed_dip1(struct nodal_plane NP1)
 
@@ -546,18 +515,18 @@ double computed_dip1(struct nodal_plane NP1)
 {
     double am = (GMT_IS_ZERO (NP1.rake) ? 1. : NP1.rake / fabs(NP1.rake));
     double dip2;
-  
+
     dip2 = acos(am * sind(NP1.rake) * sind(NP1.dip)) / D2R;
 
     return(dip2);
 }
-
+
 /*********************************************************************/
 double computed_rake1(struct nodal_plane NP1)
 
-/* 
+/*
    Compute rake in the second nodal plane when strike ,dip
-   and rake are given for the first nodal plane with AKI & 
+   and rake are given for the first nodal plane with AKI &
    RICHARD's convention.
    Angles are in degrees.
 */
@@ -567,7 +536,7 @@ double computed_rake1(struct nodal_plane NP1)
 {
     double computed_strike1();
     double computed_dip1();
-  
+
     double rake2, sinrake2;
     double str2 = computed_strike1(NP1);
     double dip2 = computed_dip1(NP1);
@@ -581,24 +550,24 @@ double computed_rake1(struct nodal_plane NP1)
     else
         sinrake2 = -am * sd * cs / cd;
 
-    rake2 = datan2(sinrake2, -am * sd * ss);
+    rake2 = d_atan2(sinrake2, -am * sd * ss);
 
     return(rake2);
 }
-
+
 /*********************************************************************/
 double computed_dip2(double str1,double dip1,double str2)
 
-/* 
+/*
    Compute second nodal plane dip when are given
-   strike and dip for the first plane and strike for 
+   strike and dip for the first plane and strike for
    the second plane.
    Angles are in degrees.
    Warning : if dip1 == 90 and cos(str1 - str2) == 0
              the second plane dip is undetermined
              and the only first plane will be plotted.
 */
- 
+
 /* Genevieve Patau */
 
 {
@@ -609,16 +578,16 @@ double computed_dip2(double str1,double dip1,double str2)
             dip2 = 1000.; /* (only first plane will be plotted) */
     }
     else {
-        dip2 = datan2(cosd(dip1), -sind(dip1) * cosdp12);
+        dip2 = d_atan2(cosd(dip1), -sind(dip1) * cosdp12);
     }
 
     return(dip2);
 }
-
+
 /*********************************************************************/
 double computed_rake2(double str1,double dip1,double str2,double dip2,double fault)
 
-/* 
+/*
    Compute rake in the second nodal plane when strike and dip
    for first and second nodal plane are given with a double
    characterizing the fault :
@@ -641,11 +610,11 @@ double computed_rake2(double str1,double dip1,double str2,double dip2,double fau
     else
         sinrake2 = -fault * sd * cs / cd;
 
-    rake2 = datan2(sinrake2, - fault * sd * ss);
+    rake2 = d_atan2(sinrake2, - fault * sd * ss);
 
     return(rake2);
 }
-
+
 /*********************************************************************/
 void define_second_plane(struct nodal_plane NP1,struct nodal_plane *NP2)
 
@@ -661,11 +630,11 @@ void define_second_plane(struct nodal_plane NP1,struct nodal_plane *NP2)
     NP2->dip = computed_dip1(NP1);
     NP2->rake  = computed_rake1(NP1);
 }
-
+
 /*********************************************************************/
 double null_axis_dip(double str1,double dip1,double str2,double dip2)
 
-/* 
+/*
    compute null axis dip when strike and dip are given
    for each nodal plane.
    Angles are in degrees.
@@ -675,13 +644,13 @@ double null_axis_dip(double str1,double dip1,double str2,double dip2)
 
 {
     double den;
-  
-    den = asin(sind(dip1) * sind(dip2) * sind(str1 - str2)) / D2R; 
+
+    den = asin(sind(dip1) * sind(dip2) * sind(str1 - str2)) / D2R;
     if (den < 0.)
         den = -den;
     return(den);
 }
-
+
 /*********************************************************************/
 double null_axis_strike(double str1,double dip1,double str2,double dip2)
 
@@ -696,7 +665,7 @@ double null_axis_strike(double str1,double dip1,double str2,double dip2)
 {
     double phn, cosphn, sinphn;
     double sd1, cd1, sd2, cd2, ss1, cs1, ss2, cs2;
-    
+
     sincosd (dip1, &sd1, &cd1);
     sincosd (dip2, &sd2, &cd2);
     sincosd (str1, &ss1, &cs1);
@@ -707,13 +676,13 @@ double null_axis_strike(double str1,double dip1,double str2,double dip2)
     if (sind(str1 - str2) < 0.) {
         cosphn = -cosphn;
         sinphn = -sinphn;
-    } 
-    phn = datan2(sinphn, cosphn);
+    }
+    phn = d_atan2(sinphn, cosphn);
     if (phn < 0.)
         phn += 360.;
     return(phn);
 }
-
+
 /*********************************************************************/
 double proj_radius(double str1,double dip1,double str)
 
@@ -727,7 +696,7 @@ double proj_radius(double str1,double dip1,double str)
 
 {
     double dip, r;
- 
+
     if (fabs(dip1 - 90.) < EPSIL) {
 /*
         printf("\nVertical plane : strike is constant.");
@@ -742,106 +711,6 @@ double proj_radius(double str1,double dip1,double str)
     }
     return(r);
 }
-
-/*********************************************************************/
-/*
-Compute p-T axis strikes and dips from seismic moment tensor components.
-Input moment tensor components mrr mtt mff mrt mrf mtf.
-
-Angles are in degrees.
-value, azimuth (en degres), plunge (in degrees) for T, N, P axis.
-
-Genevieve Patau, 18 mars 1999
-*/
-
-#define NP 3
-#define NMAT 1
-#define NRANSI
-#define ROTATE(a,i,j,k,l) g=a[i][j];h=a[k][l];a[i][j]=g-s*(h+g*tau);\
-        a[k][l]=h+s*(g-h*tau);
-
-void jacobi(float **a, GMT_LONG n, float d[], float **v, int *nrot)
-{
-        GMT_LONG j,iq,ip,i;
-        float tresh,theta,tau,t,sm,s,h,g,c,*b,*z;
-
-        b=vector((size_t)1,n);
-        z=vector((size_t)1,n);
-        for (ip=1;ip<=n;ip++) {
-                for (iq=1;iq<=n;iq++) v[ip][iq]=0.0;
-                v[ip][ip]=1.0;
-        }
-        for (ip=1;ip<=n;ip++) {
-                b[ip]=d[ip]=a[ip][ip];
-                z[ip]=0.0;
-        }
-        *nrot=0;
-        for (i=1;i<=50;i++) {
-                sm=0.0;
-                for (ip=1;ip<=n-1;ip++) {
-                        for (iq=ip+1;iq<=n;iq++)
-                                sm += (float)fabs((double)a[ip][iq]);
-                }
-                if (sm == 0.0) {
-                        free_vector(z,(size_t)1,n);
-                        free_vector(b,(size_t)1,n);
-                        return;
-                }
-                if (i < 4)
-                        tresh=(float)0.2*sm/((float)(n*n));
-                else
-                        tresh=0.0;
-                for (ip=1;ip<=n-1;ip++) {
-                        for (iq=ip+1;iq<=n;iq++) {
-                                g=(float)(100.0*fabs(a[ip][iq]));
-                                if (i > 4 && (float)(fabs(d[ip])+g) == (float)fabs(d[ip])
-                                        && (float)(fabs(d[iq])+g) == (float)fabs(d[iq]))
-                                        a[ip][iq]=0.0;
-                                else if (fabs(a[ip][iq]) > tresh) {
-                                        h=d[iq]-d[ip];
-                                        if ((float)(fabs(h)+g) == (float)fabs(h))
-                                                t=(a[ip][iq])/h;
-                                        else {
-                                                theta=(float)0.5*h/(a[ip][iq]);
-                                                t=(float)(1.0/(fabs(theta)+sqrt(1.0+theta*theta)));
-                                                if (theta < 0.0) t = -t;
-                                        }
-                                        c=(float)(1.0/sqrt(1+t*t));
-                                        s=t*c;
-                                        tau=s/((float)1.0+c);
-                                        h=t*a[ip][iq];
-                                        z[ip] -= h;
-                                        z[iq] += h;
-                                        d[ip] -= h;
-                                        d[iq] += h;
-                                        a[ip][iq]=0.0;
-                                        for (j=1;j<=ip-1;j++) {
-                                                ROTATE(a,j,ip,j,iq)
-                                        }
-                                        for (j=ip+1;j<=iq-1;j++) {
-                                                ROTATE(a,ip,j,j,iq)
-                                        }
-                                        for (j=iq+1;j<=n;j++) {
-                                                ROTATE(a,ip,j,iq,j)
-                                        }
-                                        for (j=1;j<=n;j++) {
-                                                ROTATE(v,j,ip,j,iq)
-                                        }
-                                        ++(*nrot);
-                                }
-                        }
-                }
-                for (ip=1;ip<=n;ip++) {
-                        b[ip] += z[ip];
-                        d[ip]=b[ip];
-                        z[ip]=0.0;
-                }
-        }
-        nrerror("Too many iterations in routine jacobi");
-}
-
-#undef ROTATE
-#undef NRANSI
 
 /***************************************************************************************/
 void GMT_momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P) {
@@ -1060,7 +929,7 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
             else
                 for (az = azi[0][1] + D2R; az < azi[0][0]; az += D2R) {
                     sincos (az, &si, &co);
-                    xp1[i] = x0 + radius_size * si; 
+                    xp1[i] = x0 + radius_size * si;
                     yp1[i++] = y0 + radius_size * co;
                 }
             npoints = i;
@@ -1073,13 +942,13 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
             if (azi[1][0] < azi[1][1])
                 for (az = azi[1][1] - D2R; az > azi[1][0]; az -= D2R) {
                     sincos (az, &si, &co);
-                    xp2[i] = x0 + radius_size * si; 
+                    xp2[i] = x0 + radius_size * si;
                     yp2[i++] = y0 + radius_size * co;
                 }
             else
                 for (az = azi[1][1] + D2R; az < azi[1][0]; az += D2R) {
                     sincos (az, &si, &co);
-                    xp2[i] = x0 + radius_size * si; 
+                    xp2[i] = x0 + radius_size * si;
                     yp2[i++] = y0 + radius_size * co;
                 }
             npoints = i;
@@ -1107,13 +976,13 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
             if (azi[2][0] < azi[0][1])
                 for (az = azi[0][1] - D2R; az > azi[2][0]; az -= D2R) {
                     sincos (az, &si, &co);
-                    xp1[i] = x0+ radius_size * si; 
+                    xp1[i] = x0+ radius_size * si;
                     yp1[i++] = y0+ radius_size * co;
                 }
             else
                 for (az = azi[0][1] + D2R; az < azi[2][0]; az += D2R) {
                     sincos (az, &si, &co);
-                    xp1[i] = x0+ radius_size * si; 
+                    xp1[i] = x0+ radius_size * si;
                     yp1[i++] = y0+ radius_size * co;
                 }
             npoints = i;
@@ -1126,13 +995,13 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
             if (azi[1][0] < azi[1][1])
                 for (az = azi[1][1] - D2R; az > azi[1][0]; az -= D2R) {
                     sincos (az, &si, &co);
-                    xp2[i] = x0+ radius_size * si; 
+                    xp2[i] = x0+ radius_size * si;
                     yp2[i++] = y0+ radius_size * co;
                 }
             else
                 for (az = azi[1][1] + D2R; az < azi[1][0]; az += D2R) {
                     sincos (az, &si, &co);
-                    xp2[i] = x0+ radius_size * si; 
+                    xp2[i] = x0+ radius_size * si;
                     yp2[i++] = y0+ radius_size * co;
                 }
             npoints = i;
@@ -1141,7 +1010,7 @@ double ps_tensor(double x0,double y0,double size,struct AXIS T,struct AXIS N,str
     }
     return(radius_size*2.);
 }
-
+
 /***************************************************************************************/
 /*
 Calculate double couple from principal axes.
@@ -1201,7 +1070,7 @@ void axe2dc(struct AXIS T,struct AXIS P,struct nodal_plane *NP1,struct nodal_pla
      NP1->rake = computed_rake2(NP2->str,NP2->dip,NP1->str,NP1->dip,im);
      NP2->rake = computed_rake2(NP1->str,NP1->dip,NP2->str,NP2->dip,im);
 }
-
+
 /*********************************************************************/
 void ps_pt_axis(double x0,double y0,st_me meca,double size,double *pp,double *dp,double *pt,double *dt,double *xp,double *yp,double *xt,double *yt)
 
@@ -1293,7 +1162,7 @@ from nodal plane strikes, dips and rakes.
             *dt *= 180. / M_PI;
         }
 }
-
+
 /*********************************************************************/
 void dc_to_axe(st_me meca,struct AXIS *T,struct AXIS *N,struct AXIS *P)
 
@@ -1327,10 +1196,10 @@ from nodal plane strikes, dips and rakes.
             T->dip = 0.;
         }
         else {
-            cd1 = cosd(meca.NP1.dip) *  M_SQRT2;
-            sd1 = sind(meca.NP1.dip) *  M_SQRT2;
-            cd2 = cosd(meca.NP2.dip) *  M_SQRT2;
-            sd2 = sind(meca.NP2.dip) *  M_SQRT2;
+            cd1 = cosd(meca.NP1.dip) * M_SQRT2;
+            sd1 = sind(meca.NP1.dip) * M_SQRT2;
+            cd2 = cosd(meca.NP2.dip) * M_SQRT2;
+            sd2 = sind(meca.NP2.dip) * M_SQRT2;
             cp1 = - cosd(meca.NP1.str) * sd1;
             sp1 = sind(meca.NP1.str) * sd1;
             cp2 = - cosd(meca.NP2.str) * sd2;
@@ -1374,7 +1243,7 @@ from nodal plane strikes, dips and rakes.
         N->str = null_axis_strike(T->str, T->dip, P->str, P->dip);
         N->dip = null_axis_dip(T->str, T->dip, P->str, P->dip);
 }
-
+
 /*********************************************************************/
 void axis2xy(double x0,double y0,double size,double pp,double dp,double pt,double dt,double *xp,double *yp,double *xt,double *yt)
 /* angles are in degrees */
