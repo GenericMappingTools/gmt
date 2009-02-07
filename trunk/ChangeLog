@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.410 2009-02-06 19:01:23 remko Exp $
+	$Id: ChangeLog,v 1.411 2009-02-07 00:38:33 jluis Exp $
 -----------------------------------------------------------------------------------------
+2009-02-07	jluis
+	* utilmeca.c:		Replaced momten2axe() function with GMT_momten2axe() which uses
+				GMT_jacobi and fixes a bug due to the use of convert_matrix()
+
 2009-02-06	remko
 	* utilmeca.c:		Fixed dangerous ifs that caused "random" rotations of beach balls
 				and too small or too large black beach ball segments.
