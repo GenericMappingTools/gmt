@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.412 2009-02-07 15:45:52 remko Exp $
+	$Id: ChangeLog,v 1.413 2009-02-07 16:17:28 jluis Exp $
 -----------------------------------------------------------------------------------------
+2009-02-07	jluis
+	* pscoupe.c:		Fixed bug in the tensor case in which it was deviding by (unintialized)
+				meca.moment.mant instead of moment.mant
+
 2009-02-07	remko
 	* utilmeca.c, submeca.c:	Replaced datan2() function with d_atan2() macro (which uses
 				standard atan2() function. This also to avoid some possible bugs.
