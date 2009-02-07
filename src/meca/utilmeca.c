@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.16 2009-02-06 23:24:49 jluis Exp $
+/*	$Id: utilmeca.c,v 1.17 2009-02-07 00:30:21 jluis Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -839,63 +839,9 @@ void jacobi(float **a, GMT_LONG n, float d[], float **v, int *nrot)
         }
         nrerror("Too many iterations in routine jacobi");
 }
-
+
 #undef ROTATE
 #undef NRANSI
-/* (C) Copr. 1986-92 Numerical Recipes Software W".. */
-
-void momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P)
-
-{
-/*
- * routine jacobi from Numerical Recipes is used.
- * W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery
- * Numerical Recipes in C
- * Cambridge University press
- */
-    int j,kk,nrot;
-    int jj[3];
-    float a[3][3];
-    float *d,*r,**v,**e;
-    float val[3], azi[3], plu[3];
-    static int num=3;
-
-    float min,max,mid;
-    float az[3], pl[3];
-
-    a[0][0]=(float)mt.f[0]; a[0][1]=(float)mt.f[3]; a[0][2]=(float)mt.f[4];
-    a[1][0]=(float)mt.f[3]; a[1][1]=(float)mt.f[1]; a[1][2]=(float)mt.f[5];
-    a[2][0]=(float)mt.f[4]; a[2][1]=(float)mt.f[5]; a[2][2]=(float)mt.f[2];
-
-    d=vector((GMT_LONG)1,(GMT_LONG)NP);
-    r=vector((GMT_LONG)1,(GMT_LONG)NP);
-    v=matrix((GMT_LONG)1,(GMT_LONG)NP,(GMT_LONG)1,(GMT_LONG)NP);
-    e=convert_matrix(&a[0][0],(GMT_LONG)1,(GMT_LONG)num,(GMT_LONG)1,(GMT_LONG)num);
-    jacobi(e,(GMT_LONG)num,d,v,&nrot);
-
-/* sort eigenvalues */
-    max = -10000.;
-    for (j=1;j<=num;j++) if (max<=d[j]) {max=d[j];jj[0]=j;}
-    min = 10000.;
-    for (j=1;j<=num;j++) if (min>=d[j]) {min=d[j];jj[2]=j;}
-    mid = 0.;
-    for (j=1;j<=num;j++) if (j!=jj[0]&&j!=jj[2]) jj[1]=j;
-
-    for (j=1;j<=num;j++) {
-        kk=jj[j-1];
-        pl[kk]=(float)(asin(-v[1][kk]));
-        az[kk]=(float)(atan2(v[3][kk],-v[2][kk]));
-        if (pl[kk]<=0.) {pl[kk]=-pl[kk]; az[kk]+=(float)(M_PI);}
-        if (az[kk]<0.) az[kk]+=(float)(2.*M_PI);
-        else if (az[kk]>(float)(2.*M_PI)) az[kk]-=(float)(2.*M_PI);
-        pl[kk]*=(float)(180./M_PI);
-        az[kk]*=(float)(180./M_PI);
-        val[j-1] = d[kk]; azi[j-1] = az[kk]; plu[j-1] = pl[kk];
-    }
-    T->val = (double)val[0]; T->e = mt.expo; T->str = (double)azi[0]; T->dip = (double)plu[0];
-    N->val = (double)val[1]; N->e = mt.expo; N->str = (double)azi[1]; N->dip = (double)plu[1];
-    P->val = (double)val[2]; P->e = mt.expo; P->str = (double)azi[2]; P->dip = (double)plu[2];
-}
 
 /***************************************************************************************/
 void GMT_momten2axe(struct M_TENSOR mt,struct AXIS *T,struct AXIS *N,struct AXIS *P) {
