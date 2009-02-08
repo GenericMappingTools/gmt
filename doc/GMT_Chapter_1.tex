@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.108 2009-02-06 03:48:25 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.109 2009-02-08 20:43:42 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -53,6 +53,7 @@ to replace the old {\bf x\_system} tools \GMTprog{x\_list.c}, \GMTprog{x\_report
 We have also temporarily added \GMTfunc{GMT\_qsort} which is a 64-bit compliant version
 of \GMTfunc{qsort}.  The latter is broken under OS X 64-bit and is
 thus substituted on that platform only for 64-bit compilations until Apple fixes the problem.
+FInally \GMTprog{ps2raster.c} can now be used to create geotiff images if \progname{gdal} is installed on your system.
 Here is the list of bug corrections:
 \begin{description}
 	\item [\GMTprog{gmt\_customio.c}]: Fixed sub-region access in Surfer format. This bug would 
@@ -122,6 +123,8 @@ Here is the list of bug corrections:
 	\item [\GMTprog{psxyz.c}]: Did not pick up y-size for column from input data file.
 	\item [\GMTprog{xyz2grd.c}]: For \Opt{E} under Windows we used \GMTfunc{fscanf} with a pointer from GMT DLL
 		which would fail for mysterious reasons.
+	\item [\GMTprog{meca/psmeca.c}]: Fixed bugs that would give strange beach balls for some input.
+	\item [\GMTprog{meca/pscoupe.c}]: Fixed bugs that would give strange beach balls for some input.
 	\item [\GMTprog{misc/gmtstitch.c}]: Check to see if format was set was wrong.
 	\item [\GMTprog{mgd77/mgd77.c}]: Index array error resulting in wrong IGRF start and stop years was fixed.
 		Now applies recalculation of fields requested by E77 flags
