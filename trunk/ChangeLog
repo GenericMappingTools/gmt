@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.413 2009-02-07 16:17:28 jluis Exp $
+	$Id: ChangeLog,v 1.414 2009-02-08 16:42:30 jluis Exp $
 -----------------------------------------------------------------------------------------
+2009-02-08	jluis
+	* ps2raster.c:		For the +proj=latlong case use the original coordinates in %%PROJ line
+	* gmt_plot.c:		Create the +proj=latlong case when GMT_LINEAR && GMT_IS_MAPPING 
+
 2009-02-07	jluis
 	* pscoupe.c:		Fixed bug in the tensor case in which it was deviding by (unintialized)
 				meca.moment.mant instead of moment.mant
