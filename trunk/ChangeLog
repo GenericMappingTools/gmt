@@ -1,12 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.414 2009-02-08 16:42:30 jluis Exp $
+	$Id: ChangeLog,v 1.415 2009-02-08 20:43:42 guru Exp $
+-----------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
+2009-02-15
+	* GMT 4.4.0 finalized and released
 -----------------------------------------------------------------------------------------
 2009-02-08	jluis
 	* ps2raster.c:		For the +proj=latlong case use the original coordinates in %%PROJ line
 	* gmt_plot.c:		Create the +proj=latlong case when GMT_LINEAR && GMT_IS_MAPPING 
 
 2009-02-07	jluis
-	* pscoupe.c:		Fixed bug in the tensor case in which it was deviding by (unintialized)
+	* pscoupe.c:		Fixed bug in the tensor case in which it was dividing by (unintialized)
 				meca.moment.mant instead of moment.mant
 
 2009-02-07	remko
@@ -39,7 +43,7 @@
 	* gmt_support.c (GMT_rgb_to_hsv):	Changed to integer logic to avoid errors on
 				some compilers. As a result: much shorter code as well.
 	* pslib.c (ps_rgb_to_hsv):	---"---
-	* pslib.c (ps_color_image):	Image placement now in integers. This nsures that
+	* pslib.c (ps_color_image):	Image placement now in integers. This ensures that
 				placement is consistent with e.g. box drawn with the same
 				coordinates.
 	* pslib.c (ps_makecolormap):	No longer produce colormap when the number of pixels
@@ -222,7 +226,7 @@
 
 2008-11-17	pwessel
 	* psscale.c:		When -I and -Li was used we did not draw box outlines.
-	* ps2raster.c:		New format -Tb for MicroSoft BMP output.  Also, formats
+	* ps2raster.c:		New format -Tb for Microsoft BMP output.  Also, formats
 				b, g, j, and t accept modifier '-' to produce grayscale
 				images.  Finally, added -Cgs-command to add one or more
 				custom switches to ghostscript, and -Q[g|t]<bits> to
