@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.109 2009-02-08 20:43:42 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.110 2009-02-09 21:47:46 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -36,7 +36,7 @@ history of the development milestones in the 4.x series.
 
 % Complete up to 2009-1-9:
 
-\subsection{Overview of \gmt\ 4.4.0 [Jan-15, 2009]}
+\subsection{Overview of \gmt\ 4.4.0 [Feb-15, 2009]}
 
 This is a significant update of the official distribution and hence has a mix of bug fixes
 and program enhancements.  We have added a new program (\GMTprog{greenspline.c}) which
@@ -53,11 +53,11 @@ to replace the old {\bf x\_system} tools \GMTprog{x\_list.c}, \GMTprog{x\_report
 We have also temporarily added \GMTfunc{GMT\_qsort} which is a 64-bit compliant version
 of \GMTfunc{qsort}.  The latter is broken under OS X 64-bit and is
 thus substituted on that platform only for 64-bit compilations until Apple fixes the problem.
-FInally \GMTprog{ps2raster.c} can now be used to create geotiff images if \progname{gdal} is installed on your system.
+Finally \GMTprog{ps2raster.c} can now be used to create geotiff images if \progname{gdal} is installed on your system.
 Here is the list of bug corrections:
 \begin{description}
 	\item [\GMTprog{gmt\_customio.c}]: Fixed sub-region access in Surfer format. This bug would 
-		manifest itself mainly when doing a GMTprog{grdcut} with a N-S sub-region.
+		manifest itself mainly when doing a \GMTprog{grdcut} with a N-S sub-region.
 	\item [\GMTprog{gmt\_init.c}]: Modified special checks for FreeBSD by also considering \_AMD64\_.
 	\Opt{JXh} was misinterpreted whereas \Opt{JXv} was OK.
 	\item [\GMTprog{gmt\_io.c}]: Did not properly apply {\bf PLOT\_DEGREE\_FORMAT}=ddd.x for decimal degrees.
