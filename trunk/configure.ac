@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.40 2009-02-05 16:47:56 guru Exp $
-AC_REVISION($Revision: 1.40 $)
+dnl $Id: configure.ac,v 1.41 2009-02-09 16:16:56 guru Exp $
+AC_REVISION($Revision: 1.41 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -18,7 +18,7 @@ MANDATE="15 Feb 2009"
 DOCDATE="Feb 2009"
 DOCYEAR="2009"
 GSHHS_VERSION=1.10
-CVS_VERSION=1
+CVS_VERSION=0
 dnl
 dnl -----------------------------------------------------------------
 dnl The remainder should need no editing
