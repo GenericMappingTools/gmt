@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webman.sh,v 1.44 2007-09-24 00:38:01 remko Exp $
+#	 $Id: webman.sh,v 1.45 2009-02-12 23:44:46 remko Exp $
 #
 #	webman.sh - Automatic generation of the GMT web manual pages
 #
@@ -16,7 +16,9 @@
 #
 #-----------------------------------------------------------------------------
 
-trap 'rm -f $$.*;exit 1' 1 2 3 15
+tmp=${TMPDIR:-/tmp}/gmt.$$
+
+trap 'rm -rf $tmp;exit 1' 1 2 3 15
 
 if [ $# = 1 ]; then	# If -s is given we run silently with defaults
 	gush=0
@@ -25,17 +27,18 @@ else			# else we make alot of noise
 fi
 
 echo "Creating HTML man pages ..."
-mkdir -p www/gmt/doc/html
+
+mkdir -p share/doc/html/man $tmp
 
 # Make a list of all manpages
-grep -h ".[135]\$" guru/GMT_progs_files_ascii.lis guru/GMT_suppl.lis > $$.lis
+grep -h ".[135]\$" guru/GMT_progs_files_ascii.lis guru/GMT_suppl.lis > $tmp/pages.lis
 
 # Gurus who have their own supplemental packages can have them processed too by
 # defining an environmental parameter MY_GMT_SUPPL which contains a list of these
 # supplements.  They must all be in src of course
 
 for package in ${MY_GMT_SUPPL}; do
-	ls src/$package/*.[135] >> $$.lis
+	ls src/$package/*.[135] >> $tmp/pages.lis
 done
 
 # Now make sed script that will replace the bold and italic versions of GMT program names with
@@ -43,34 +46,34 @@ done
 
 while read f; do
 	prog=`basename $f|cut -d. -f1`
-	echo $prog | awk '{printf "s%%<b>%s</b>%%<A HREF=%c%s.html%c><b>%s</b></A>%%g\n", $1, 34, $1, 34, $1}' >> $$.w0.sed
-	echo $prog | awk '{printf "s%%<i>%s</i>%%<A HREF=%c%s.html%c><i>%s</i></A>%%g\n", $1, 34, $1, 34, $1}' >> $$.w0.sed
-done < $$.lis
+	echo $prog | awk '{printf "s%%<b>%s</b>%%<b><A HREF=%c%s.html%c>%s</A></b>%%g\n", $1, 34, $1, 34, $1}' >> $tmp/pages.w0.sed
+	echo $prog | awk '{printf "s%%<i>%s</i>%%<i><A HREF=%c%s.html%c>%s</A></i>%%g\n", $1, 34, $1, 34, $1}' >> $tmp/pages.w0.sed
+done < $tmp/pages.lis
 
 # Make sed script that adds active links to gmtdefault for all GMT defaults parameters.
 # all.sed is run on all programs except gmtdefaults and add links to the relevant anchors in gmtdefaults.html
 # def.sed adds the anchors needed in gmtdefaults.html
 
-cat > $$.all.sed <<END
+cat > $tmp/pages.all.sed <<END
 s%<body>%<body bgcolor="#ffffff">%g
 END
-grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%<b>%s</b>%%<A HREF=%cgmtdefaults.html#%s%c><b>%s</b></A>%%g\n", $1, 34, $1, 34, $1}' >> $$.all.sed
-grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%<p><b>%s</b></p></td>%%<A NAME=%c%s%c><p><b>%s</b></p></td>%%g\n", $1, 34, $1, 34, $1}' > $$.def.sed
+grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%<b>%s</b>%%<b><A HREF=%cgmtdefaults.html#%s%c>%s</A></b>%%g\n", $1, 34, $1, 34, $1}' >> $tmp/pages.all.sed
+grep -v '^#' src/gmt_keywords.d | awk '{printf "s%%><b>%s</b>%%><b><A NAME=%c%s%c>%s</A></b>%%g\n", $1, 34, $1, 34, $1}' > $tmp/pages.def.sed
 
 # Do all the manpage conversions
 
 while read f; do
 	prog=`basename $f|cut -d. -f1`
-	rm -f www/gmt/doc/html/$prog.html
+	rm -f share/doc/html/man/$prog.html
 	[ $gush = 1 ] && echo "Making $prog.html"
-	grep -v "${prog}<" $$.w0.sed > $$.t0.sed
+	grep -v "${prog}<" $tmp/pages.w0.sed > $tmp/pages.t0.sed
 	if [ "X$prog" = "Xgmtdefaults" ]; then
-		groff -man -T html $f | sed -f $$.t0.sed -f $$.def.sed -f $$.all.sed > www/gmt/doc/html/$prog.html
+		groff -man -T html $f | sed -f $tmp/pages.t0.sed -f $tmp/pages.def.sed -f $tmp/pages.all.sed > share/doc/html/man/$prog.html
 	else
-		groff -man -T html $f | sed -f $$.t0.sed -f $$.all.sed > www/gmt/doc/html/$prog.html
+		groff -man -T html $f | sed -f $tmp/pages.t0.sed -f $tmp/pages.all.sed > share/doc/html/man/$prog.html
 	fi
-done < $$.lis
+done < $tmp/pages.lis
 
 # Clean up
 
-rm -f $$.*
+rm -rf $tmp
