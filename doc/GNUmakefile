@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.31 2009-01-11 22:46:43 guru Exp $
+#	$Id: GNUmakefile,v 1.32 2009-02-12 23:50:20 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -22,7 +22,7 @@
 #	make all	: same as : make pdf html
 #	make pdf	: Create GMT_Docs.pdf and GMT_Tutorial.pdf
 #	make html	: Create the HTML versions of GMT_Docs and GMT_Tutorial
-#	make install	: First makes the above, then installs it in the right place
+#	make install	: same as : make all
 #
 #	All the above commands prepare all the necessary graphs and text to be included.
 #	Make sure, however, that the examples are already made by running "make examples"
@@ -47,6 +47,7 @@ include ../src/makegmt.macros
 
 .SUFFIXES:	.eps .pdf .tex .ps .sh
 
+DOC=../share/doc
 PAPER=a4
 L2H=latex2html -local_icons -white -show_section_numbers -image_type png -bottom_navigation -notransparent
 # NOTICE: If inline graphics shows up with underlines then you might need to edit
@@ -145,7 +146,7 @@ DOCTEX= \
 	GMT_Chapter_6.4.tex GMT_Chapter_6.tex GMT_Chapter_7.tex GMT_Chapter_8.tex \
 	GMT_Frontmatter.tex $(DOCEPS1:.eps=.tex) $(SCRTEX) $(EX_TEX) $(AN_TEX) $(ALLTEX)
 
-all:	pdf html
+all install:	pdf html
 
 # Shortcut, just to preprocess all required files
 prepro:		$(DOCTEX) $(DOCEPS) $(DOCPDF) $(DOCPNG) $(TUTTEX) $(TUTEPS) $(TUTPDF) $(RGBEPS) $(RGBPDF)
@@ -168,11 +169,10 @@ spotless:	clean
 	\rm -f GMT_version.tex
 
 # Shortcuts, just to do a couple of things
-ps:	GMT_Docs.ps GMT_Tutorial.ps
-pdf:	GMT_Docs.pdf GMT_Tutorial.pdf
-html:	GMT_Docs/index.html GMT_Tutorial/index.html
-docs:	GMT_Docs.pdf GMT_Docs/index.html
-tutorial: GMT_Tutorial.pdf GMT_Tutorial/index.html
+pdf:	$(DOC)/pdf/GMT_Docs.pdf $(DOC)/pdf/GMT_Tutorial.pdf
+html:	$(DOC)/html/GMT_Docs/GMT_Docs.html $(DOC)/html/GMT_Tutorial/GMT_Tutorial.html
+docs:	$(DOC)/pdf/GMT_Docs.pdf $(DOC)/html/GMT_Docs/GMT_Docs.html
+tutorial: $(DOC)/pdf/GMT_Tutorial.pdf $(DOC)/html/GMT_Tutorial/GMT_Tutorial.html
 
 # Create links to script files elsewhere on the system
 $(EX_TEX:.tex=.sh):
@@ -252,40 +252,39 @@ GMT_version.tex:	GMT_version.tex.in
 	@echo "You must first run configure in the main GMT directory"; exit 1
 
 # Dependencies and rules to make PDF documentation
-GMT_Docs.pdf:	$(DOCPDF) $(DOCPNG) $(DOCTEX)
-GMT_Tutorial.pdf:	$(TUTPDF) $(TUTTEX)
-GMT_Docs.pdf GMT_Tutorial.pdf:
-	\rm -f $*.{aux,ind,lot,lof,toc,out,dvi}
-	$(PDFLATEX) $*
-	$(PDFLATEX) $*
-	makeindex -s GMT.ist $*.idx
-	$(PDFLATEX) $*
-	$(PDFLATEX) $*
-
-# Dependencies and rules to make PS documentation
-GMT_Docs.ps:	$(DOCEPS) $(DOCPNG) $(DOCTEX)
-GMT_Tutorial.ps:	$(TUTEPS) $(TUTTEX)
-GMT_Docs.ps GMT_Tutorial.ps:
-	\rm -f $*.{aux,ind,lot,lof,toc,out,dvi}
-	$(LATEX) $*
-	$(LATEX) $*
-	makeindex -s GMT.ist $*.idx
-	$(LATEX) $*
-	$(LATEX) $*
-	dvips -t $(PAPER) -o tmp.ps $*.dvi
-	cat fig/GMT_glyph10_proc.eps tmp.ps > $@
-	\rm -f tmp.ps
+$(DOC)/pdf/GMT_Docs.pdf:	$(DOCPDF) $(DOCPNG) $(DOCTEX)
+	\rm -f GMT_{Docs,Frontmatter,Chapter*}.{aux,ind,lot,lof,toc,out,dvi}
+	$(PDFLATEX) GMT_Docs
+	$(PDFLATEX) GMT_Docs
+	makeindex -s GMT.ist GMT_Docs.idx
+	$(PDFLATEX) GMT_Docs
+	$(PDFLATEX) GMT_Docs
+	\mv GMT_Docs.pdf $@
+	\cp -p scripts/GMT_RGBchart_*.pdf $(DOC)/pdf
+	\rm -f GMT_{Docs,Frontmatter,Chapter*}.{aux,ind,lot,lof,toc,out,dvi}
+$(DOC)/pdf/GMT_Tutorial.pdf:	$(TUTPDF) $(TUTTEX)
+	\rm -f GMT_Tutorial.{aux,ind,lot,lof,toc,out,dvi}
+	$(PDFLATEX) GMT_Tutorial
+	$(PDFLATEX) GMT_Tutorial
+	makeindex -s GMT.ist GMT_Tutorial.idx
+	$(PDFLATEX) GMT_Tutorial
+	$(PDFLATEX) GMT_Tutorial
+	\mv GMT_Tutorial.pdf $@
+	\rm -f GMT_Tutorial.{aux,ind,lot,lof,toc,out,dvi}
 
 # Dependencies and rules to make HTML documentation
-GMT_Docs/index.html:	$(DOCEPS) $(DOCPNG) $(DOCTEX)
-	\rm -f GMT_Docs.{aux,ind,lot,lof,toc,out,dvi}
+$(DOC)/html/GMT_Docs/GMT_Docs.html:	$(DOCEPS) $(DOCPNG) $(DOCTEX)
+	\rm -f GMT_{Docs,Frontmatter,Chapter*}.{aux,ind,lot,lof,toc,out,dvi}
 	\rm -rf GMT_Docs
 	$(LATEX) GMT_Docs.tex
 	$(LATEX) GMT_Docs.tex
 	makeindex -s GMT.ist GMT_Docs.idx
 	$(LATEX) GMT_Docs.tex
 	$(L2H) -t "GMT -- Technical Reference and Cookbook" GMT_Docs
-GMT_Tutorial/index.html:	$(TUTEPS) $(TUTTEX)
+	\rm -rf GMT_Docs/{index.html,images.*,*.pl,WARNINGS} $(DOC)/html/GMT_Docs
+	\mv GMT_Docs $(DOC)/html
+	\rm -f GMT_{Docs,Frontmatter,Chapter*}.{aux,ind,lot,lof,toc,out,dvi}
+$(DOC)/html/GMT_Tutorial/GMT_Tutorial.html:	$(TUTEPS) $(TUTTEX)
 	\rm -f GMT_Tutorial.{aux,ind,lot,lof,toc,out,dvi}
 	\rm -rf GMT_Tutorial
 	$(LATEX) GMT_Tutorial.tex
@@ -293,14 +292,6 @@ GMT_Tutorial/index.html:	$(TUTEPS) $(TUTTEX)
 	makeindex -s GMT.ist GMT_Tutorial.idx
 	$(LATEX) GMT_Tutorial.tex
 	$(L2H) -t "GMT -- A Map-making Tutorial" GMT_Tutorial
-
-# Finally, install all in the right place
-install install-all:	install-pdf install-html
-install-pdf:	pdf
-	mkdir -p ../www/gmt/doc/pdf
-	mv -f GMT_{Docs,Tutorial}.pdf ../www/gmt/doc/pdf
-	\cp -p scripts/GMT_RGBchart_*.pdf ../www/gmt/doc/pdf
-install-html:	html
-	\rm -rf ../www/gmt/doc/html/GMT_{Docs,Tutorial}
-	\rm -f GMT_{Docs,Tutorial}/{index.html,images.*,*.pl,WARNINGS}
-	mv GMT_{Docs,Tutorial} ../www/gmt/doc/html
+	\rm -rf GMT_Tutorial/{index.html,images.*,*.pl,WARNINGS} $(DOC)/html/GMT_Tutorial
+	\mv GMT_Tutorial $(DOC)/html
+	\rm -f GMT_Tutorial.{aux,ind,lot,lof,toc,out,dvi}
