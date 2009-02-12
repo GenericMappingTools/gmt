@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.103 2009-01-21 02:01:50 guru Exp $
+ *	$Id: mgd77.h,v 1.104 2009-02-12 04:45:55 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -234,6 +234,7 @@ struct MGD77_META {	/* Information about a cruise as derived from navigation dat
 	int Departure[3];	/* yyyy, mm, dd of departure */
 	int Arrival[3];		/* yyyy, mm, dd of arrival */
 	signed char ten_box[20][38];	/* Set to 1 for each box visited */
+	double G1980_1930;	/* Average difference between 1980 and 1930 gravity reference field for this cruise */
 };
 
 struct MGD77_HEADER {	
