@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.204 2009-01-21 02:01:50 guru Exp $
+ *	$Id: mgd77.c,v 1.205 2009-02-12 04:45:54 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1170,6 +1170,7 @@ void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struc
 	memset ((void *) C, 0, sizeof (struct MGD77_META));
 	
 	C->verified = TRUE;
+	C->G1980_1930 = 0.0;
 	for (i = 0; i < nrec; i++) {
 		lon = D[i].number[MGD77_LONGITUDE];
 		lat = D[i].number[MGD77_LATITUDE];
@@ -1185,7 +1186,10 @@ void MGD77_Verify_Prep_m77 (struct MGD77_CONTROL *F, struct MGD77_META *C, struc
 		if (lon >= 0.0 && lon > xpmax) xpmax = lon;
 		if (lon < 0.0 && lon < xnmin) xnmin = lon;
 		if (lon < 0.0 && lon > xnmax) xnmax = lon;
+		if (!GMT_is_dnan (D[i].number[MGD77_FAA])) C->G1980_1930 += (MGD77_Theoretical_Gravity (lon, dlat, MGD77_IGF_1980) - MGD77_Theoretical_Gravity (lon, dlat, MGD77_IGF_1930));
 	}
+	C->G1980_1930 /= nrec;	/* Get average difference */
+	
 	xpmin = floor (xpmin);	xnmin = floor (xnmin);	ymin = floor (ymin);
 	xpmax = ceil (xpmax);	xnmax = ceil (xnmax);	ymax = ceil (ymax);
 	if (xpmin == DBL_MAX) {	/* Only negative longitudes found */
