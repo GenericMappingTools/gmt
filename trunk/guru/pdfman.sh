@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: pdfman.sh,v 1.15 2008-04-29 23:21:27 guru Exp $
+#	 $Id: pdfman.sh,v 1.16 2009-02-12 23:48:03 remko Exp $
 #
 #	pdfman.sh - Automatic generation of the GMT ps and pdf manual pages
 #
@@ -16,7 +16,9 @@
 #
 #-----------------------------------------------------------------------------
 
-trap 'rm -f $$.*;exit 1' 1 2 3 15
+tmp=${TMPDIR:-/tmp}/gmt.$$
+
+trap 'rm -rf $tmp;exit 1' 1 2 3 15
 
 if [ $# = 1 ]; then	# If -s is given we run silently with defaults
 	gush=0
@@ -24,21 +26,22 @@ else			# else we make alot of noise
 	gush=1
 fi
 
-mkdir -p www/gmt/doc/ps
-mkdir -p www/gmt/doc/pdf
+echo "Creating PDF man pages ..."
+
+mkdir -p share/doc/pdf $tmp
 
 man2pdf () {
-	rm -f www/gmt/doc/ps/$1.ps
+	rm -f $tmp/$1.ps
 	add=0
 	echo "Creating $1.ps ..."
 	while read f; do
 		[ $gush = 1 ] && echo "Appending $f"
-		[ $add = 1 ] && echo "false 0 startjob pop" >> www/gmt/doc/ps/$1.ps
+		[ $add = 1 ] && echo "false 0 startjob pop" >> $tmp/$1.ps
 		add=1
-		groff -man $f >> www/gmt/doc/ps/$1.ps
+		groff -man $f >> $tmp/$1.ps
 	done
 	echo "Converting $1.ps to $1.pdf"
-	ps2pdf www/gmt/doc/ps/$1.ps www/gmt/doc/pdf/$1.pdf
+	ps2pdf $tmp/$1.ps share/doc/pdf/$1.pdf
 }
 
 # Convert all program manuals to PS and PDF
@@ -51,11 +54,10 @@ grep -h ".[135]\$" guru/GMT_suppl.lis | man2pdf GMT_Manpages_suppl
 # defining an environmental parameter MY_GMT_SUPPL which contains a list of these
 # supplements.  They must all be in src of course
 
-rm -f $$.lis
+rm -f $tmp/suppl.lis
 for package in ${MY_GMT_SUPPL}; do
-	ls src/$package/*.[135] >> $$.lis
+	ls src/$package/*.[135] >> $tmp/suppl.lis
 done
-[ -f $$.lis ] && man2pdf GMT_My_Manpages_suppl < $$.lis
+[ -f $tmp/suppl.lis ] && man2pdf GMT_My_Manpages_suppl < $tmp/suppl.lis
 
-rm -rf  www/gmt/doc/ps
-rm -f $$.*
+rm -rf $tmp
