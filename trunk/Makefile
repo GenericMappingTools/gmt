@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.70 2009-02-13 21:09:37 remko Exp $
+#	$Id: Makefile,v 1.71 2009-02-13 22:20:21 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -84,12 +84,12 @@ help::
 #!gmt           : Compile main GMT source only
 #!suppl         : Compile supplements only
 #!install       : Compile & install GMT and supplements
-#!install-gmt   : Compile & install main GMT programs
-#!install-suppl : Compile & install supplements
+#!install-gmt   : Compile & install main GMT programs only
+#!install-suppl : Compile & install supplements only
 #!install-data  : Install GMT data files
 #!install-man   : Install man pages
-#!install-doc	: Install PDF and HTML documentation
-#!install-all   : Compile & install everything, including data & man pages
+#!install-doc   : Install PDF and HTML documentation
+#!install-all   : Compile & install everything, including data, man pages, documentation
 #!examples      : Run examples
 #!animations    : Run animations
 #!spotless      : Clean up and remove created files of all types
@@ -118,14 +118,14 @@ install-suppl suppl-install:	gmtmacros
 		cd src ; $(MAKE) libs
 		$(MAKE) TARGET=install $(SUPPL)
 
+uninstall-suppl:
+		$(MAKE) TARGET=uninstall $(SUPPL)
+
 gmtmacros:
 		@if [ ! -s src/makegmt.macros ]; then \
 			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
 			exit 1; \
 		fi
-
-uninstall-suppl:
-		$(MAKE) TARGET=uninstall $(SUPPL)
 
 install-data:
 		@if [ ! $(rootdir)/share = $(datadir) ]; then \
@@ -152,8 +152,8 @@ install-man uninstall-man:
 
 install-doc::
 		@if [ ! $(rootdir)/share/doc/gmt = $(docdir) ]; then \
-			mkdir -p $(docdir)
-			cp -pr $(rootdir)/{html,pdf,examples,tutorial} $(docdir)
+			mkdir -p $(docdir); \
+			cp -pr $(rootdir)/{html,pdf,examples,tutorial} $(docdir); \
 			rm -rf $(docdir)/*/{CVS,orig} $(docdir)/*/*/{CVS,.gmt*,*.ps,.cvs*}; \
 		else \
 			echo "Install doc directory the same as distribution doc directory - nothing copied"; \
