@@ -1,21 +1,38 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.415 2009-02-08 20:43:42 guru Exp $
+	$Id: ChangeLog,v 1.416 2009-02-13 00:19:14 remko Exp $
 -----------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------
 2009-02-15
 	* GMT 4.4.0 finalized and released
 -----------------------------------------------------------------------------------------
+
+2009-02-13	remko
+	* share/doc:		New directory moved from www/gmt
+	* share/doc/html/index.html:	Copy of gmt_services.html (for practicality)
+	* share/doc/html/man:	New location for html manpages
+	* guru/webman.sh:	Fixed broken links to #anchor in gmtdefaults.html
+	* guru/*man.sh:		Moving output to new location: share/doc/html/{man,pdf}
+	* guru/*.lis:		Manpages in new location
+	* doc/GNUmakefile:	No more "make install". Directly puts html and pdf output in new
+				location share/doc/pdf
+	* configure.ac:		Removed --enable-www option. Had no effect.
+	* makegmt.macros.in:	Removed wwwdir, introduced docdir variable.
+	* GMT.in:		Replaced "web documents" by "documentation".
+	* Makefile:		Replaced "(un)install-www" by "(un)install-doc"
+	* GNUmakefile:		Make "install-doc" depend on "webman" and "pdfman".
+				New origins for pdf tarball.
+
+2009-02-07	jluis
+
 2009-02-08	jluis
 	* ps2raster.c:		For the +proj=latlong case use the original coordinates in %%PROJ line
 	* gmt_plot.c:		Create the +proj=latlong case when GMT_LINEAR && GMT_IS_MAPPING 
 
-2009-02-07	jluis
-	* pscoupe.c:		Fixed bug in the tensor case in which it was dividing by (unintialized)
-				meca.moment.mant instead of moment.mant
-
 2009-02-07	remko
 	* utilmeca.c, submeca.c:	Replaced datan2() function with d_atan2() macro (which uses
 				standard atan2() function. This also to avoid some possible bugs.
+	* pscoupe.c:		Fixed bug in the tensor case in which it was dividing by (unintialized)
+				meca.moment.mant instead of moment.mant
 
 2009-02-07	jluis
 	* utilmeca.c:		Replaced momten2axe() function with GMT_momten2axe() which uses
