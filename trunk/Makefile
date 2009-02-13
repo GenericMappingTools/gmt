@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.71 2009-02-13 22:20:21 remko Exp $
+#	$Id: Makefile,v 1.72 2009-02-13 23:08:06 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -153,7 +153,7 @@ install-man uninstall-man:
 install-doc::
 		@if [ ! $(rootdir)/share/doc/gmt = $(docdir) ]; then \
 			mkdir -p $(docdir); \
-			cp -pr $(rootdir)/{html,pdf,examples,tutorial} $(docdir); \
+			cp -pr $(rootdir)/share/doc/gmt/{html,pdf,examples,tutorial} $(docdir); \
 			rm -rf $(docdir)/*/{CVS,orig} $(docdir)/*/*/{CVS,.gmt*,*.ps,.cvs*}; \
 		else \
 			echo "Install doc directory the same as distribution doc directory - nothing copied"; \
