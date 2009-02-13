@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.67 2009-02-13 00:04:03 remko Exp $
+#	$Id: Makefile,v 1.68 2009-02-13 01:10:26 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -89,6 +89,7 @@ help::
 #!install-data  : Install GMT data files
 #!install-man   : Install man pages
 #!install-all   : Compile & install everything, including data & man pages
+#!install-doc	: Install PDF and HTML documentation (not part of install-all)
 #!examples      : Run examples
 #!animations    : Run animations
 #!spotless      : Clean up and remove created files of all types
@@ -129,8 +130,8 @@ uninstall-suppl:
 install-data:
 		@if [ ! $(rootdir)/share = $(datadir) ]; then \
 			for dir in coast conf cpt custom dbase mgd77 mgg pattern pslib time x2sys; do \
-				mkdir -p $(datadir)/$$dir; \
 				if [ -d $(rootdir)/share/$$dir ]; then \
+					mkdir -p $(datadir)/$$dir; \
 					\cp -p `ls -d $(rootdir)/share/$$dir/* | grep -v "\.in$$" | grep -v "CVS"` $(datadir)/$$dir ; \
 				fi; \
 			done; \
@@ -150,15 +151,17 @@ install-man uninstall-man:
 		$(MAKE) TARGET=$@ $(SUPPL)
 
 install-doc::
-		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
-			mkdir -p $(docdir); \
-			\cp -pr $(rootdir)/doc/{html,pdf} $(docdir); \
+		@if [ ! $(rootdir)/share/doc = $(docdir) ]; then \
+			echo $(docdir) $(datadir); \
+			mkdir -p $(docdir)/{html,pdf}; \
+			\cp -pr $(rootdir)/share/doc/html/{GMT_*,*.html,man} $(docdir)/html; \
+			\cp -pr $(rootdir)/share/doc/pdf/*.pdf $(docdir)/pdf; \
 		else \
 			echo "Install www directory the same as distribution www directory - nothing copied"; \
 		fi
 
 uninstall-doc:
-		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
+		@if [ ! $(rootdir)/share/doc = $(docdir) ]; then \
 			\rm -rf $(docdir); \
 		else \
 			echo "Install www directory the same as distribution www directory - nothing deleted"; \

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.48 2009-02-13 00:07:27 remko Exp $
+#  $Id: GNUmakefile,v 1.49 2009-02-13 01:10:26 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -183,13 +183,13 @@ configure:	configure.ac
 		$(AUTOCONF)
 
 latest-config:
-		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.sub --remote-name --silent
-		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.guess --remote-name --silent
+		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.sub --remote-name --silent -R
+		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.guess --remote-name --silent -R
 
 install-doc::	webman pdfman docs
 
-webman:		share/doc/html/blockmean.html
-share/doc/html/blockmean.html:	guru/webman.sh src/blockmean.1
+webman:		share/doc/html/man/blockmean.html
+share/doc/html/man/blockmean.html:	guru/webman.sh src/blockmean.1
 		$(SHELL) guru/webman.sh -s
 
 pdfman: 	share/doc/pdf/GMT_Manpages.pdf
