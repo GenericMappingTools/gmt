@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.68 2009-02-13 01:10:26 remko Exp $
+#	$Id: Makefile,v 1.69 2009-02-13 19:54:52 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -34,7 +34,7 @@
 #	make install-suppl
 #	make install-data
 #	make install-man
-#	make install-www
+#	make install-doc
 #
 #	When done, clean out directory with "make clean".  To clean
 #	the entire build distribution, do "make distclean"
@@ -49,7 +49,7 @@
 #	make uninstall-suppl
 #	make uninstall-data
 #	make uninstall-man
-#	make uninstall-www
+#	make uninstall-doc
 #
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
@@ -70,7 +70,7 @@ SUPPL_M	=	dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
 .PHONY:		all gmt suppl update gmtmacros \
 		install uninstall install-all uninstall-all install-gmt uninstall-gmt \
 		install-suppl uninstall-suppl install-data uninstall-data install-man uninstall-man \
-		install-www uninstall-www examples run-examples animations run-animations clean spotless distclean $(SUPPL)
+		install-doc uninstall-doc examples run-examples animations run-animations clean spotless distclean $(SUPPL)
 
 all:		gmt suppl
 
@@ -88,8 +88,8 @@ help::
 #!install-suppl : Compile & install supplements
 #!install-data  : Install GMT data files
 #!install-man   : Install man pages
+#!install-doc	: Install PDF and HTML documentation
 #!install-all   : Compile & install everything, including data & man pages
-#!install-doc	: Install PDF and HTML documentation (not part of install-all)
 #!examples      : Run examples
 #!animations    : Run animations
 #!spotless      : Clean up and remove created files of all types
@@ -98,8 +98,8 @@ help::
 install:	install-gmt install-suppl
 uninstall:	uninstall-gmt uninstall-suppl
 
-install-all:	install-gmt install-suppl install-data install-man install-www
-uninstall-all:	uninstall-gmt uninstall-suppl uninstall-data uninstall-man uninstall-www
+install-all:	install-gmt install-suppl install-data install-man install-doc
+uninstall-all:	uninstall-gmt uninstall-suppl uninstall-data uninstall-man uninstall-doc
 
 gmt:		gmtmacros
 		cd src ; $(MAKE) all
@@ -151,20 +151,19 @@ install-man uninstall-man:
 		$(MAKE) TARGET=$@ $(SUPPL)
 
 install-doc::
-		@if [ ! $(rootdir)/share/doc = $(docdir) ]; then \
-			echo $(docdir) $(datadir); \
-			mkdir -p $(docdir)/{html,pdf}; \
-			\cp -pr $(rootdir)/share/doc/html/{GMT_*,*.html,man} $(docdir)/html; \
-			\cp -pr $(rootdir)/share/doc/pdf/*.pdf $(docdir)/pdf; \
+		@if [ ! $(rootdir)/share/doc/gmt = $(docdir) ]; then \
+			mkdir -p $(docdir)
+			cp -pr $(rootdir)/{html,pdf,examples,tutorial} $(docdir)
+			rm -rf $(docdir)/*/{CVS,orig} $(docdir)/*/*/{CVS,.gmt*,*.ps,.cvs*}; \
 		else \
-			echo "Install www directory the same as distribution www directory - nothing copied"; \
+			echo "Install doc directory the same as distribution doc directory - docs not copied"; \
 		fi
 
 uninstall-doc:
 		@if [ ! $(rootdir)/share/doc = $(docdir) ]; then \
 			\rm -rf $(docdir); \
 		else \
-			echo "Install www directory the same as distribution www directory - nothing deleted"; \
+			echo "Install doc directory the same as distribution doc directory - nothing deleted"; \
 		fi
 
 # Run examples with the binaries from the src directory, not the installation directory.
