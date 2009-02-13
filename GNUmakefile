@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.49 2009-02-13 01:10:26 remko Exp $
+#  $Id: GNUmakefile,v 1.50 2009-02-13 21:09:37 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -121,14 +121,11 @@ all:		FILES
 #-------------------------------------------------------------------------------
 alltests:	extests tests doctests
 
-extests:
-		@cd examples ; sh run_example_tests.sh
+extests doctests:
+		@cd doc ; $(MAKE) $@
 
 tests:
 		@cd test ; sh run_gmt_tests.sh
-
-doctests:	
-		@cd doc ; $(MAKE) tests
 
 #-------------------------------------------------------------------------------
 # Cleaning
@@ -263,16 +260,13 @@ tar_web:	ftpdir
 
 tar_pdf:	ftpdir
 		echo "make GMT$(GMT_VERSION)_pdf.tar.bz2"
-		ls share/doc/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages > tmp.lis
+		ls share/doc/gmt/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages > tmp.lis
 		tar -cjf ftp/GMT$(GMT_VERSION)_pdf.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
 
 tar_scripts:	ftpdir
 		echo "make GMT$(GMT_VERSION)_scripts.tar.bz2"
-		rm -f examples/ex??/*.ps examples/ex??/*% examples/ex??/*.txt examples/ex??/.gmt*
-		rm -f examples/anim??/*.ps examples/anim??/*% examples/anim??/*.txt examples/anim??/.gmt*
-		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_examples.lis > tmp.lis
-		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_animations.lis >> tmp.lis
+		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples}.lis > tmp.lis
 		tar -cjf ftp/GMT$(GMT_VERSION)_scripts.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
 
@@ -295,8 +289,8 @@ tar_coast tar_high tar_full:	ftpdir
 
 tar_win:	ftpdir
 		echo "make WINGMT$(GMT_VERSION)_win.tar.bz2"
-		ls src/gmt_version.h share/conf/gmt.conf share/conf/gmtdefaults_?? | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
-		ls guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT$(GMT_VERSION)/:' >> tmp.lis
+		ls src/gmt_version.h share/conf/gmt.conf share/conf/gmtdefaults_?? \
+			guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
 		tar -cjf ftp/WINGMT$(GMT_VERSION)_win.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
 
