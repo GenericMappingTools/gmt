@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.114 2009-02-13 21:22:08 guru Exp $
+ *	$Id: x2sys.c,v 1.115 2009-02-13 21:31:56 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1693,13 +1693,13 @@ void x2sys_get_corrtable (struct X2SYS_INFO *S, char *ctable, int ntracks, char 
 			else
 				auxlist[k].requested = TRUE;
 		}
-		GMT_free ((void *)item_names[i]);
+		free ((void *)item_names[i]);
 	}
 	if (n_items) GMT_free ((void *)item_names);
 	for (i = 0; i < n_aux; i++) GMT_free ((void *)aux_name[i]);
 	if (n_aux) GMT_free ((void *)aux_name);
 	if (!missing) MGD77_Parse_Corrtable (ctable, trk_name, ntracks, n_cols, col_name, 0, CORR);
-	for (i = 0; i < n_cols; i++) GMT_free ((void *)col_name[i]);
+	for (i = 0; i < n_cols; i++) free ((void *)col_name[i]);
 	GMT_free ((void *)col_name);
 	if (missing) exit (EXIT_FAILURE);
 }
