@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.111 2009-01-16 20:35:53 guru Exp $
+ *	$Id: x2sys.c,v 1.112 2009-02-13 19:07:43 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -983,6 +983,15 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 		exit (EXIT_FAILURE);
 	}
 	if (geographic) {
+		if (! (n_given[X2SYS_DIST_SELECTION] || n_given[X2SYS_SPEED_SELECTION])) {	/* Set defaults for geographic data */
+			unit[X2SYS_DIST_SELECTION][0] = 'k';
+			unit[X2SYS_SPEED_SELECTION][0] = 'e';
+			n_given[X2SYS_DIST_SELECTION] = n_given[X2SYS_SPEED_SELECTION] = TRUE;
+		}
+		if (!c_given) {	/* Default is great circle distances */
+			dist_flag = 2;
+			c_given = TRUE;
+		}
 		if (geodetic == 0 && (B->x_min < 0 || B->x_max < 0)) {
 			fprintf (stderr, "%s: Your -R and -G settings are contradicting each other!\n", X2SYS_program);
 			return (X2SYS_CONFLICTING_ARGS);
