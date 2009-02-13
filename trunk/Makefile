@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.66 2009-01-11 06:18:42 guru Exp $
+#	$Id: Makefile,v 1.67 2009-02-13 00:04:03 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -149,17 +149,17 @@ install-man uninstall-man:
 		cd src ; $(MAKE) $@
 		$(MAKE) TARGET=$@ $(SUPPL)
 
-install-www:
-		@if [ ! $(rootdir)/www = $(wwwdir) ]; then \
-			mkdir -p $(wwwdir); \
-			cp -pr www/gmt $(wwwdir); \
+install-doc::
+		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
+			mkdir -p $(docdir); \
+			\cp -pr $(rootdir)/doc/{html,pdf} $(docdir); \
 		else \
 			echo "Install www directory the same as distribution www directory - nothing copied"; \
 		fi
 
-uninstall-www:
-		@if [ ! $(rootdir)/www = $(wwwdir) ]; then \
-			rm -rf $(wwwdir)/gmt; \
+uninstall-doc:
+		@if [ ! $(rootdir)/doc = $(docdir) ]; then \
+			\rm -rf $(docdir); \
 		else \
 			echo "Install www directory the same as distribution www directory - nothing deleted"; \
 		fi
