@@ -1,12 +1,12 @@
 #!/bin/sh
-#	$Id: GMT_App_O.sh,v 1.9 2008-02-29 03:24:30 remko Exp $
+#	$Id: GMT_App_O.sh,v 1.10 2009-02-13 21:05:14 remko Exp $
 #
 #	Makes the inserts for Appendix O (labeled lines)
 #	This first script just gets the data ready and run the various scripts
 #
 
 gmtset FRAME_WIDTH 0.04i PLOT_DEGREE_FORMAT ddd:mm:ssF ANNOT_FONT_SIZE_PRIMARY +9p
-grdcut ../../examples/ex01/osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.grd
+grdcut ../../share/doc/gmt/examples/ex01/osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.grd
 # fixed algorithm points
 cat << EOF > fix.d
 80	-8.5
