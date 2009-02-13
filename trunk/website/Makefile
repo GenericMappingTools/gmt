@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.32 2008-05-16 19:14:31 guru Exp $
+#  $Id: Makefile,v 1.33 2009-02-13 03:25:24 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -44,22 +44,22 @@ help::
 #!update-version-live	: Update the remote LIVE ftp and www server
 #!update-www-live	: Update the LIVE www server
 #!update-www-test	: Update the TEST www server
-#!update-www-local	: Update the local sitetest/web dir
+#!update-www-local	: Update the local www dir
 #!update-ftp-live	: Update the LIVE ftp server with latest GMT
 #!update-ftp-test	: Update the LIVE ftp server test dir with latest GMT
-#!update-ftp-local	: Update the local sitetest/ftp dir with latest GMT
+#!update-ftp-local	: Update the local ftp dir with latest GMT
 #!update-gshhs-live	: Update the LIVE ftp server with latest GSHHS
 #!update-gshhs-test	: Update the LIVE ftp server test dir with latest GSHHS
-#!update-gshhs-local	: Update the Update the local sitetest/ftp with latest GSHHS
+#!update-gshhs-local	: Update the Update the local ftp with latest GSHHS
 #!clean-ftp		: Empty all local ftp archives
-#!clean-local		: Remove the local sitetest directories
+#!clean-local		: Remove the local ftp and www directories
 #!clean-test		: Empty the remote test directories
 #!hitmap		: Creates the GMT mirror page for site links
 #!---------------------------------------------------------------
 		
-# Place stuff in the GMT www directory:
+# Place stuff in the GMT website/www directory:
 
-../www/gmt/examples/ex01/example_01_100dpi.png:	../examples/ex01/example_01.ps
+www/gmt/examples/ex01/example_01_100dpi.png:	../examples/ex01/example_01.ps
 	sh webexamples.sh -s
 
 ../examples/ex01/example_01.ps:	../examples/ex01/job01.sh
@@ -84,21 +84,20 @@ update-version-live:	update-ftp-live update-www-live
 # GMT WEB PAGE MATERIALS
 #---------------------------------------------------------------------------
 
-update-www-live:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.html ../www/gmt/examples/ex01/example_01_100dpi.png
+update-www-live:	update-www-local
+#	First completely remove the live www files then copy them from the www-local files
+		ssh $(WEBSERVER) rm -rf $(LIVEWWWDIR)/gmt $(LIVEWWWDIR)/index.html
+		scp -r www/gmt $(WEBSERVER):$(LIVEWWWDIR)
+		scp www/index.html $(WEBSERVER):$(LIVEWWWDIR)
+#	Update the Perl script in the CGI bin dir
 		scp install_gmt_form.pl $(WEBSERVER):$(LIVECGIDIR)/install_gmt_form.pl
-		ssh $(WEBSERVER) mkdir -p $(LIVEWWWDIR)/gmt
-		ssh $(WEBSERVER) rm -f $(LIVEWWWDIR)/index.html
-		scp gmt.html $(WEBSERVER):$(LIVEWWWDIR)/index.html
-		scp gmt_*.php gmt_*.html newgmtguru *.gif gmt_*.png linux.jpg osx.jpg unix.jpg vista.jpg \
-		  ../src/README.TRIANGLE ../www/gmt/gmt_services.html ../www/gmt/gmt_man.html ../registration/gmt_usage.jpg \
-		  ../www/gmt/gmt_examples.html ../www/gmt/gmt_suppl.html ../www/gmt/gmt_back.gif $(WEBSERVER):$(LIVEWWWDIR)/gmt
-		ssh $(WEBSERVER) rm -r -f $(LIVEWWWDIR)/gmt/doc $(LIVEWWWDIR)/gmt/examples $(LIVEWWWDIR)/gmt/contrib
-		scp -r ../www/gmt/doc $(WEBSERVER):$(LIVEWWWDIR)/gmt
-		scp -r ../www/gmt/examples $(WEBSERVER):$(LIVEWWWDIR)/gmt
-		scp -r contrib $(WEBSERVER):$(LIVEWWWDIR)/gmt
 
-update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.html ../www/gmt/examples/ex01/example_01_100dpi.png
-#		For the test we want GMT_ftpsite to always be 0, and to use the test web site - hence these sed commands
+update-www-test:	update-www-local
+#	First completely remove the test www files then copy then from the www-local files
+		ssh $(WEBSERVER2) rm -rf $(LIVEWWWDIR2)/gmt $(LIVEWWWDIR2)/index.html
+		scp -r www/gmt $(WEBSERVER2):$(LIVEWWWDIR2)
+		scp www/index.html $(WEBSERVER2):$(LIVEWWWDIR2)
+#	For the test we want GMT_ftpsite to always be 0, and to use the test web site - hence these sed commands
 		echo "sB/gmt/B/gmttest/Bg" > job.sed
 		echo "sBgmt.soest.hawaii.edu/gmttempBwww.soest.hawaii.edu/gmttest/gmttempBg" >> job.sed
 		echo 's/"GMT_ftpsite=", \$$site/"GMT_ftpsite=0"/g' >> job.sed
@@ -107,19 +106,9 @@ update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.htm
 		echo "sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttestBg" > job.sed
 		sed -f job.sed gmt_windows.html > gmt_windows_test.html
 		rm -f install_gmt_form_test.pl job.sed
-		ssh $(WEBSERVER2) mkdir -p $(LIVEWWWDIR2)/gmt
-		ssh $(WEBSERVER2) rm -f $(LIVEWWWDIR2)/index.html
-		scp gmt.html $(WEBSERVER2):$(LIVEWWWDIR2)/index.html
-		scp gmt_*.php gmt_*.html newgmtguru *.gif gmt_*.png linux.jpg osx.jpg unix.jpg vista.jpg \
-		  ../src/README.TRIANGLE ../www/gmt/gmt_services.html ../www/gmt/gmt_man.html ../registration/gmt_usage.jpg \
-		  ../www/gmt/gmt_examples.html ../www/gmt/gmt_suppl.html ../www/gmt/gmt_back.gif $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 #	Change the Href to the ftp server to go to the test server dir instead
 		sed -e sBftp.soest.hawaii.edu/gmtBftp.soest.hawaii.edu/gmttestBg gmt_install_form.html > tmp
 		scp tmp $(WEBSERVER2):$(LIVEWWWDIR2)/gmt/gmt_install_form.html
-		ssh $(WEBSERVER2) rm -r -f $(LIVEWWWDIR2)/gmt/doc $(LIVEWWWDIR2)/gmt/examples $(LIVEWWWDIR2)/gmt/contrib
-		scp -r ../www/gmt/doc $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
-		scp -r ../www/gmt/examples $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
-		scp -r contrib $(WEBSERVER2):$(LIVEWWWDIR2)/gmt
 		scp gmt_windows_test.html $(WEBSERVER2):$(LIVEWWWDIR2)/gmt/gmt_windows.html
 		echo "cd $(LIVEWWWDIR2)/gmt" > gmt_server_job.sh
 		echo "sed -e s/install_gmt_form.pl/install_gmt_form_test.pl/g gmt_install_form.html > tmp" >> gmt_server_job.sh
@@ -130,24 +119,18 @@ update-www-test:	../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.htm
 		ssh $(WEBSERVER2) sh $(LIVEWWWDIR2)/gmt/gmt_server_job.sh
 		rm -f gmt_server_job.sh tmp
 
-update-www-local:../registration/gmt_usage.jpg gmt_mirrors.html gmt_releases.html ../www/gmt/examples/ex01/example_01_100dpi.png
-		rm -rf $(TESTWWWDIR)
-		mkdir -p $(TESTWWWDIR)/gmt
-		cp -f gmt.html $(TESTWWWDIR)/index.html
-		cp -f gmt_*.php gmt_*.html $(TESTWWWDIR)/gmt
-		cp -f newgmtguru $(TESTWWWDIR)/gmt
-		cp -f *.gif linux.jpg osx.jpg unix.jpg vista.jpg $(TESTWWWDIR)/gmt
-		cp -f gmt_*.png ../registration/gmt_usage.jpg $(TESTWWWDIR)/gmt
-		cp -f ../src/README.TRIANGLE $(TESTWWWDIR)/gmt
-		cp -f ../www/gmt/gmt_services.html $(TESTWWWDIR)/gmt
-		cp -f ../www/gmt/gmt_man.html $(TESTWWWDIR)/gmt
-		cp -f ../www/gmt/gmt_examples.html $(TESTWWWDIR)/gmt
-		cp -f ../www/gmt/gmt_suppl.html $(TESTWWWDIR)/gmt
-		cp -f ../www/gmt/gmt_back.gif $(TESTWWWDIR)/gmt
-		rm -r -f $(TESTWWWDIR)/gmt/doc $(TESTWWWDIR)/gmt/examples
-		cp -R -f ../www/gmt/doc $(TESTWWWDIR)/gmt
-		cp -R -f ../www/gmt/examples $(TESTWWWDIR)/gmt
-		cp -R -f contrib $(TESTWWWDIR)/gmt
+update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_releases.html www/gmt/examples/ex01/example_01_100dpi.png
+		mkdir -p www/gmt
+		cp -f gmt.html www/index.html
+		cp -f gmt_*.php gmt_*.html www/gmt
+		rm -f www/gmt/gmt_releases_template.html
+		cp -f newgmtguru www/gmt
+		cp -f *.gif linux.jpg osx.jpg unix.jpg vista.jpg www/gmt
+		cp -f gmt_*.png ../registration/gmt_usage.jpg www/gmt
+		cp -f ../src/README.TRIANGLE www/gmt
+		rm -r -f www/gmt/doc
+		cp -R -f ../share/doc www/gmt
+		cp -R -f contrib www/gmt
 
 
 #---------------------------------------------------------------------------
@@ -241,37 +224,37 @@ update-ftp-local:
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-	rm -rf $(TESTFTPDIR)
-	mkdir -p $(TESTFTPDIR)/windows $(TESTFTPDIR)/contrib
-	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > $(TESTFTPDIR)/install_gmt
-	cp -f ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(TESTFTPDIR)
-	cp -f ../ftp/GMT*.exe $(TESTFTPDIR)/windows
-	cp -f ../ftp/gawk*.zip $(TESTFTPDIR)/windows
+	rm -rf ftp
+	mkdir -p ftp/windows ftp/contrib
+	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > ftp/install_gmt
+	cp -f ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION ftp
+	cp -f ../ftp/GMT*.exe ftp/windows
+	cp -f ../ftp/gawk*.zip ftp/windows
 	for p in pdf web tut share src scripts suppl triangle; do \
-		\rm -f $(TESTFTPDIR)/GMT_$$p.tar.bz2; \
-		(cd $(TESTFTPDIR); $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
+		\rm -f ftp/GMT_$$p.tar.bz2; \
+		(cd ftp; $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
 	done
 	for p in basic pdf; do \
 		rm -f windows/GMT_$$p_install.exe; \
-		(cd $(TESTFTPDIR)/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe); \
+		(cd ftp/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe); \
 	done
 
 update-gshhs-local:
-	cp -f ../ftp/GSHHS*.bz2 $(TESTFTPDIR)
-	cp -f ../ftp/GSHHS*.exe $(TESTFTPDIR)/windows
+	cp -f ../ftp/GSHHS*.bz2 ftp
+	cp -f ../ftp/GSHHS*.exe ftp/windows
 	for p in coast high full; do \
-		\rm -f $(TESTFTPDIR)/{GMT,GSHHS}_$$p.tar.bz2; \
-		(cd $(TESTFTPDIR); $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
+		\rm -f ftp/{GMT,GSHHS}_$$p.tar.bz2; \
+		(cd ftp; $(LN_S) GSHHS$(GSHHS_VERSION)_$$p.tar.bz2 GSHHS_$$p.tar.bz2); \
 	done
 	rm -f windows/GSHHS_highfull_install.exe
-	(cd $(TESTFTPDIR)/windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)
+	(cd ftp/windows; $(LN_S) GSHHS$(GSHHS_VERSION)_highfull_install.exe GSHHS_highfull_install.exe)
 
 clean-ftp:
 	rm -f ../ftp/G*.bz2
 
 clean-local:
-	rm -rf $(TESTFTPDIR)
-	rm -rf $(TESTWWWDIR)
+	rm -rf ftp
+	rm -rf www
 
 clean-test:
 	ssh $(FTPSERVER2) rm -rf $(LIVEFTPDIR2)/*
@@ -302,8 +285,9 @@ hitmap:
 ../registration/gmt_usage.jpg:		../registration/GMT_old_unique_sites.d
 		(cd ../registration; GMT_usage_map.sh map)
 
-gmt_releases.html:	gmt_releases_template.html ../www/gmt/doc/html/GMT_Docs/GMT_Docs.html
-	(cd ../www/gmt; grep -H "scientists since 1988" doc/html/GMT_Docs/*.html | awk -F: '{printf "sXCHAPTER1LINKX%sXg\n",  $$1}' > ../../website/tmp.sed)
-	sed -f tmp.sed < gmt_releases_template.html > gmt_releases.html
+www/gmt/gmt_releases.html:	gmt_releases_template.html ../share/doc/html/GMT_Docs/GMT_Docs.html
+	mkdir -p www/gmt
+	(cd www/gmt; grep -H "scientists since 1988" ../../../share/doc/html/GMT_Docs/*.html | awk -F: '{printf "sXCHAPTER1LINKX%sXg\n",  $$1}' > /tmp/tmp.sed)
+	sed -f /tmp/tmp.sed < gmt_releases_template.html > www/gmt/gmt_releases.html
 	
 	
