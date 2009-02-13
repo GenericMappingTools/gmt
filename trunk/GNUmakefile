@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.47 2009-02-12 19:42:43 guru Exp $
+#  $Id: GNUmakefile,v 1.48 2009-02-13 00:07:27 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -186,17 +186,21 @@ latest-config:
 		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.sub --remote-name --silent
 		curl http://cvs.savannah.gnu.org/viewvc/*checkout*/config/config/config.guess --remote-name --silent
 
-webman: 	guru/webman.sh
+install-doc::	webman pdfman docs
+
+webman:		share/doc/html/blockmean.html
+share/doc/html/blockmean.html:	guru/webman.sh src/blockmean.1
 		$(SHELL) guru/webman.sh -s
 
-pdfman: 	guru/pdfman.sh
+pdfman: 	share/doc/pdf/GMT_Manpages.pdf
+share/doc/pdf/GMT_Manpages.pdf:	guru/pdfman.sh src/blockmean.1
 		$(SHELL) guru/pdfman.sh -s
 
 docs:		FILES
-		cd doc ; $(MAKE) install-all
+		cd doc ; $(MAKE) all
 
 pdfdocs:	FILES
-		cd doc ; $(MAKE) install-pdf
+		cd doc ; $(MAKE) pdf
 
 prep_suppl:	clean config
 
@@ -254,12 +258,12 @@ tar_web:	ftpdir
 		echo "make GMT$(GMT_VERSION)_web.tar.bz2"
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_www.lis > tmp.lis
 		tar -cjf ftp/GMT$(GMT_VERSION)_web.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING \
-			GMT$(GMT_VERSION)/www/gmt/doc/html/GMT_{Docs,Tutorial}
+			GMT$(GMT_VERSION)/share/doc/html/GMT_{Docs,Tutorial}
 		rm -f tmp.lis
 
 tar_pdf:	ftpdir
 		echo "make GMT$(GMT_VERSION)_pdf.tar.bz2"
-		ls www/gmt/doc/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages > tmp.lis
+		ls share/doc/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages > tmp.lis
 		tar -cjf ftp/GMT$(GMT_VERSION)_pdf.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
 
