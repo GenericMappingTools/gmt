@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.112 2009-02-13 19:07:43 guru Exp $
+ *	$Id: x2sys.c,v 1.113 2009-02-13 21:13:02 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1589,12 +1589,13 @@ int x2sys_find_track (char *name, char **list, int n)
 }
 
 int x2sys_get_tracknames (int argc, char **argv, char ***filelist, BOOLEAN *cmdline)
-{	/* Return list of track names given on command line or via :list mechanism.
+{	/* Return list of track names given on command line or via =list mechanism.
 	 * The names do not have the track extension. */
 	int i, A, list = 0, add_chunk, n_alloc;
 	char **file, *p;
 	
-	for (A = 1; !list && A < argc; A++) if (argv[A][0] == ':') list = A;
+	/* Backwards checking for :list in addition to the new 9as in mgd77) =list mechanism */
+	for (A = 1; !list && A < argc; A++) if (argv[A][0] == ':' || argv[A][0] == '=') list = A;
 
 	if (list) {	/* Got a file with a list of filenames */
 		*cmdline = FALSE;
