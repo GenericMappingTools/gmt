@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.33 2009-02-13 01:16:24 remko Exp $
+#	$Id: GNUmakefile,v 1.34 2009-02-13 19:47:58 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -39,7 +39,7 @@
 #    pstoimg: Error: "/sw/bin/pnmcrop -verbose  < /tmp/l2h29411/p29461.pnm | /sw/bin/ppmquant -floyd 256 | \
 #    /sw/bin/pnmtopng -interlace -trans 'gray85'  > img294.png" failed: Invalid argument
 #    it means that we must set export RGBDEF=/usr/X11/share/X11/rgb.txt
-#    as for some reason it cannot be found where it is expected (usr/X11R6/lib/X11)
+#    as for some reason it cannot be found where it is expected (/usr/X11R6/lib/X11)
 # 2. If latex complains that it cannot find html.sty you need to run mktexlsr (as admin)
 #
 
@@ -47,7 +47,7 @@ include ../src/makegmt.macros
 
 .SUFFIXES:	.eps .pdf .tex .ps .sh
 
-DOC=../share/doc
+DOC=../share/doc/gmt
 PAPER=a4
 L2H=latex2html -local_icons -white -show_section_numbers -image_type png -bottom_navigation -notransparent
 # NOTICE: If inline graphics shows up with underlines then you might need to edit
