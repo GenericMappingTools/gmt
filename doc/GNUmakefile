@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.32 2009-02-12 23:50:20 remko Exp $
+#	$Id: GNUmakefile,v 1.33 2009-02-13 01:16:24 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -253,7 +253,7 @@ GMT_version.tex:	GMT_version.tex.in
 
 # Dependencies and rules to make PDF documentation
 $(DOC)/pdf/GMT_Docs.pdf:	$(DOCPDF) $(DOCPNG) $(DOCTEX)
-	\rm -f GMT_{Docs,Frontmatter,Chapter*}.{aux,ind,lot,lof,toc,out,dvi}
+	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 	$(PDFLATEX) GMT_Docs
 	$(PDFLATEX) GMT_Docs
 	makeindex -s GMT.ist GMT_Docs.idx
@@ -261,20 +261,20 @@ $(DOC)/pdf/GMT_Docs.pdf:	$(DOCPDF) $(DOCPNG) $(DOCTEX)
 	$(PDFLATEX) GMT_Docs
 	\mv GMT_Docs.pdf $@
 	\cp -p scripts/GMT_RGBchart_*.pdf $(DOC)/pdf
-	\rm -f GMT_{Docs,Frontmatter,Chapter*}.{aux,ind,lot,lof,toc,out,dvi}
+	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 $(DOC)/pdf/GMT_Tutorial.pdf:	$(TUTPDF) $(TUTTEX)
-	\rm -f GMT_Tutorial.{aux,ind,lot,lof,toc,out,dvi}
+	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 	$(PDFLATEX) GMT_Tutorial
 	$(PDFLATEX) GMT_Tutorial
 	makeindex -s GMT.ist GMT_Tutorial.idx
 	$(PDFLATEX) GMT_Tutorial
 	$(PDFLATEX) GMT_Tutorial
 	\mv GMT_Tutorial.pdf $@
-	\rm -f GMT_Tutorial.{aux,ind,lot,lof,toc,out,dvi}
+	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 
 # Dependencies and rules to make HTML documentation
 $(DOC)/html/GMT_Docs/GMT_Docs.html:	$(DOCEPS) $(DOCPNG) $(DOCTEX)
-	\rm -f GMT_{Docs,Frontmatter,Chapter*}.{aux,ind,lot,lof,toc,out,dvi}
+	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 	\rm -rf GMT_Docs
 	$(LATEX) GMT_Docs.tex
 	$(LATEX) GMT_Docs.tex
@@ -283,9 +283,9 @@ $(DOC)/html/GMT_Docs/GMT_Docs.html:	$(DOCEPS) $(DOCPNG) $(DOCTEX)
 	$(L2H) -t "GMT -- Technical Reference and Cookbook" GMT_Docs
 	\rm -rf GMT_Docs/{index.html,images.*,*.pl,WARNINGS} $(DOC)/html/GMT_Docs
 	\mv GMT_Docs $(DOC)/html
-	\rm -f GMT_{Docs,Frontmatter,Chapter*}.{aux,ind,lot,lof,toc,out,dvi}
+	\rm -f GMT_{Docs,Frontmatter,Chapter*,Appendix*}.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 $(DOC)/html/GMT_Tutorial/GMT_Tutorial.html:	$(TUTEPS) $(TUTTEX)
-	\rm -f GMT_Tutorial.{aux,ind,lot,lof,toc,out,dvi}
+	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
 	\rm -rf GMT_Tutorial
 	$(LATEX) GMT_Tutorial.tex
 	$(LATEX) GMT_Tutorial.tex
@@ -294,4 +294,4 @@ $(DOC)/html/GMT_Tutorial/GMT_Tutorial.html:	$(TUTEPS) $(TUTTEX)
 	$(L2H) -t "GMT -- A Map-making Tutorial" GMT_Tutorial
 	\rm -rf GMT_Tutorial/{index.html,images.*,*.pl,WARNINGS} $(DOC)/html/GMT_Tutorial
 	\mv GMT_Tutorial $(DOC)/html
-	\rm -f GMT_Tutorial.{aux,ind,lot,lof,toc,out,dvi}
+	\rm -f GMT_Tutorial.{aux,idx,ilg,ind,log,lof,lot,toc,out,dvi}
