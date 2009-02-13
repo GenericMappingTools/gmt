@@ -1,36 +1,38 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.419 2009-02-13 21:13:02 guru Exp $
+	$Id: ChangeLog,v 1.420 2009-02-13 21:16:07 remko Exp $
 -----------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------
 2009-02-15
 	* GMT 4.4.0 finalized and released
 -----------------------------------------------------------------------------------------
-2009-02-14	pwessel
+
+2009-02-13	pwessel
 	* x2sys/x2sys_init.c:	Failed to set units/method defaults if -G was set and no -C/N specified.
 	* x2sys/*.c:		Use =list rather than :list to specify a list with tracks (as in mgd77)
 				[but keep processing :list also for backwards compatibility]
-
-2009-02-13	pwessel
 	* website/*:		Scripts and makefile modified to deal with new arrangement
 				of files in share/doc.  Simplified web site test and update.
 
 2009-02-13	remko
-	* share/doc:		New directory moved from www/gmt
-	* share/doc/html/index.html:	Copy of gmt_services.html (for practicality)
-	* share/doc/html/man:	New location for html manpages
+	* share/doc/gmt:	New directory moved from www/gmt
+	* share/doc/gmt/{examples,tutorial}:	Directories moved here
+	* share/doc/gmt/html/index.html:	Copy of gmt_services.html (for practicality)
+	* share/doc/gmt/html/man:	New location for html manpages
 	* guru/webman.sh:	Fixed broken links to #anchor in gmtdefaults.html
 	* guru/*man.sh:		Moving output to new location: share/doc/html/{man,pdf}
-	* guru/*.lis:		Manpages in new location
+	* guru/*.lis:		Examples, tutorial and manpages in new location
 	* doc/GNUmakefile:	No more "make install". Directly puts html and pdf output in new
-				location share/doc/pdf
+				location share/doc/gmt/pdf. "make extests" checks examples.
+				Updated for new location of examples and tutorial.
+	* doc/script/GMT_{atan,App_O}.sh:	Update for new location of examples and tutorial.
 	* configure.ac:		Removed --enable-www option. Had no effect.
 	* makegmt.macros.in:	Removed wwwdir, introduced docdir variable.
 	* GMT.in:		Replaced "web documents" by "documentation".
 	* Makefile:		Replaced "(un)install-www" by "(un)install-doc"
 	* GNUmakefile:		Make "install-doc" depend on "webman" and "pdfman".
-				New origins for pdf tarball.
-
-2009-02-07	jluis
+				New origins for pdf tarball. New location of examples.
+				"make extests" now does "cd doc ; make extest"
+	* examples/run_example_test.sh:	Removed. Now covered by "make extest" in doc directory.
 
 2009-02-08	jluis
 	* ps2raster.c:		For the +proj=latlong case use the original coordinates in %%PROJ line
