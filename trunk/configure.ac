@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.41 2009-02-09 16:16:56 guru Exp $
-AC_REVISION($Revision: 1.41 $)
+dnl $Id: configure.ac,v 1.42 2009-02-13 00:01:47 remko Exp $
+AC_REVISION($Revision: 1.42 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -70,7 +70,6 @@ AC_SUBST(MEX_EXT)
 AC_SUBST(MEX_XDIR)
 AC_SUBST(MEX_MDIR)
 AC_SUBST(rootdir)
-AC_SUBST(wwwdir)
 dnl
 dnl -----------------------------------------------------------------
 dnl Special configure options for GMT installation
@@ -87,7 +86,6 @@ AC_ARG_ENABLE(devdebug, [  --enable-devdebug       Extra debugging for developer
 AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
 AC_ARG_ENABLE(triangle, [  --enable-triangle       Use J. Shewchuk's fast, non-GPL triangulation routine])
 AC_ARG_ENABLE(US,       [  --enable-US             Choose US (inch) rather than SI (cm) units as default])
-AC_ARG_ENABLE(www,      [  --enable-www=dir        Directory in which to install GMT www pages [[PREFIX/www]]])
 AC_ARG_ENABLE(eps,      [  --enable-eps            Set Encapsulated PostScript as default output format [[Freeform PS]]])
 AC_ARG_ENABLE(universal,[  --enable-universal      Make universal binaries [[OS X only]]])
 AC_ARG_ENABLE(64,       [  --enable-64             Enable 64-bit compilation if supported])
@@ -421,18 +419,6 @@ AC_MSG_RESULT($NETCDF_LIB)
 if test ! -d $NETCDF_LIB; then
 	AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
 fi
-dnl
-dnl -----------------------------------------------------------------
-dnl Allow user to set --enable-www to set install www dir
-dnl -----------------------------------------------------------------
-dnl
-AC_MSG_CHECKING(for www directory)
-if test "X$enable_www" = "X" || test "X$enable_www" = "Xyes" ; then
-	wwwdir='${prefix}/www'
-else
-	wwwdir=$enable_www
-fi
-AC_MSG_RESULT($wwwdir)
 dnl
 dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-eps to set EPS as default format
