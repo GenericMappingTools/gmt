@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.69 2009-02-13 19:54:52 remko Exp $
+#	$Id: Makefile,v 1.70 2009-02-13 21:09:37 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -156,7 +156,7 @@ install-doc::
 			cp -pr $(rootdir)/{html,pdf,examples,tutorial} $(docdir)
 			rm -rf $(docdir)/*/{CVS,orig} $(docdir)/*/*/{CVS,.gmt*,*.ps,.cvs*}; \
 		else \
-			echo "Install doc directory the same as distribution doc directory - docs not copied"; \
+			echo "Install doc directory the same as distribution doc directory - nothing copied"; \
 		fi
 
 uninstall-doc:
@@ -169,15 +169,15 @@ uninstall-doc:
 # Run examples with the binaries from the src directory, not the installation directory.
 
 examples run-examples:
-		@if [ -d examples ]; then \
-			cd examples; sh do_examples.sh $(srcdir) $(srcdir) $(NETCDF_LIB); \
+		@if [ -d share/doc/gmt/examples ]; then \
+			cd share/doc/gmt/examples; sh do_examples.sh $(srcdir) $(srcdir) $(NETCDF_LIB); \
 		else \
 			echo "examples directory not installed"; \
 		fi
 
 animations run-animations:
-		@if [ -d examples ]; then \
-			cd examples; sh do_animations.sh $(srcdir) $(srcdir); \
+		@if [ -d share/doc/gmt/examples ]; then \
+			cd share/doc/gmt/examples; sh do_animations.sh $(srcdir) $(srcdir); \
 		else \
 			echo "examples directory not installed"; \
 		fi
