@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.113 2009-02-13 21:13:02 guru Exp $
+ *	$Id: x2sys.c,v 1.114 2009-02-13 21:22:08 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1599,7 +1599,7 @@ int x2sys_get_tracknames (int argc, char **argv, char ***filelist, BOOLEAN *cmdl
 
 	if (list) {	/* Got a file with a list of filenames */
 		*cmdline = FALSE;
-		if (x2sys_read_list (&argv[list][1], filelist, &A) == X2SYS_NOERROR) {
+		if (x2sys_read_list (&argv[list][1], filelist, &A) != X2SYS_NOERROR) {
 			fprintf (stderr, "%s: Error: Could not open list with filenames %s!\n", GMT_program, &argv[list][1]);
 			exit (EXIT_FAILURE);
 		}
