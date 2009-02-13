@@ -1,6 +1,6 @@
-tutorial/bermuda.nc
-tutorial/data
-tutorial/quakes.cpt
-tutorial/quakes.ngdc
-tutorial/topo.cpt
-tutorial/us.nc
+share/doc/gmt/tutorial/bermuda.nc
+share/doc/gmt/tutorial/data
+share/doc/gmt/tutorial/quakes.cpt
+share/doc/gmt/tutorial/quakes.ngdc
+share/doc/gmt/tutorial/topo.cpt
+share/doc/gmt/tutorial/us.nc
