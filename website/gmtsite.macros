@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtsite.macros,v 1.16 2008-10-08 00:51:45 guru Exp $
+#	$Id: gmtsite.macros,v 1.17 2009-02-13 03:25:24 guru Exp $
 #
 #	Original GMT Site Makefile Macro for makefile
 #-------------------------------------------------------------------------------
@@ -12,7 +12,7 @@
 # for harmless off-line, testing, one for on-line testing and one for the
 # active and live sites.
 # The on-line sites use ssh so only those with account/password can do that.
-# The test sites are created locally under GMT/sitetest
+# The ftp and www test directories are created locally under GMT/website
 
 #-------------------------------------------------
 # THE ACTIVE WWW AND FTP SITES
@@ -32,7 +32,3 @@ LIVECGIDIR2	= /export/imina2/httpd/cgi-bin
 # Live ftp server TEST directory (live2)
 FTPSERVER2	= ftp.soest.hawaii.edu
 LIVEFTPDIR2	= /export/ftp1/ftp/pub/gmttest
-#-------------------------------------------------
-# For local testing only (no cgi-bin service)
-TESTFTPDIR	= ../sitetest/ftp
-TESTWWWDIR	= ../sitetest/web

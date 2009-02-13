@@ -1,4 +1,4 @@
-	$Id: README.x2sys,v 1.7 2008-10-11 09:39:32 guru Exp $
+	$Id: README.x2sys,v 1.8 2009-02-13 03:25:24 guru Exp $
 
 README file for GMT supplemental x2sys programs
 Distributed under the GNU Public License (see file ../COPYING)
@@ -27,7 +27,7 @@ revisions and will be unstable for a while.
 1.0 INFORMATION
 
 X2SYS is a set of tools for the calculation of track crossovers.
-Crossovers occur when spatial timeseries tracks intersect themselves or
+Crossovers occur when spatial time-series tracks intersect themselves or
 other tracks.  At these crossover points one would ideally find that
 the data measurements agree, but due to navigational uncertainties,
 instrument imprecision or drift, or temporal changes in the fields,
@@ -66,7 +66,7 @@ or binary files.  Common for both formats is the need for a logical
 structure.  Data files may consist of a header block that can be
 any number of ASCII record or BINARY bytes, followed by any number
 of data records.  For ASCII files, the data columns are separated
-by tabs, spaces, or commas, or they are given in the oldstyle FORTRAN
+by tabs, spaces, or commas, or they are given in the old-style FORTRAN
 card format.  In that format, all the columns are given back to back
 with no intervening spaces (Such files were usually written
 back in the dark ages when nobody put much emphasis on human
@@ -74,7 +74,7 @@ readability).  One example of such a format is the MGD-77 format for
 marine underway geophysical data from NGDC.  For BINARY files, 
 each column can be of stored as any of the standard data types
 (e.g., int, char, short int, double, float).  Regardless of format,
-the structure of the input spatial timeseries track data files
+the structure of the input spatial time-series track data files
 must be conveyed to the X2SYS programs (using the -D switch) via
 an X2SYS definition file.  A few definition files are provided with
 the package; from these, users can design their own based on the format
@@ -82,7 +82,7 @@ of their particular data sets.  Definition files should be given
 the suffix .def and must be prepared according to the following
 specifications:
 
-1. You may have any numer of comment lines starting with #.  They
+1. You may have any number of comment lines starting with #.  They
    can appear anywhere in the file.
 
 2. Three special comments are defined:
@@ -131,7 +131,7 @@ NaN-proxy?	This is either Y or N, indicating whether this column
 	indicate lack of data, then this flag should be Y.
 
 NaN-proxy	The special value that represents NaN for this column.
-	It is only used if NaN-proxy? is set to Y. Then, all occurences
+	It is only used if NaN-proxy? is set to Y. Then, all occurrences
 	of column values that equal the proxy are reset to NaN.
 
 scale	Factor to multiply each value with.

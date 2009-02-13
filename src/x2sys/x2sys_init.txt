@@ -124,7 +124,7 @@ the special names \fIlon\fP (or \fIx\fP if Cartesian) and \fIlat\fP (or \fIy\fP)
 for the two required coordinate columns, and \fItime\fP when optional time data
 are present.
 .br
-\fItype\fP is \fBa\fP for ASCII representations of numbers, whereas for
+\fItype\fP is always \fBa\fP for ASCII representations of numbers, whereas for
 binary files you may choose among
 \fBc\fP for signed 1-byte character (-127,+128), \fBu\fP for unsigned
 byte (0-255), \fBh\fP for signed 2-byte integers (-32768,+32767),
@@ -133,9 +133,9 @@ byte (0-255), \fBh\fP for signed 2-byte integers (-32768,+32767),
 precision floating points.  For netCDF, simply use \fBd\fP as netCDF
 will automatically handle type-conversions during reading.
 .br
-\fINaN\fP is Y if certain values are to be replaced by NAN, and N otherwise.
+\fINaN\fP is Y if certain values (e.g, -9999) are to be replaced by NAN, and N otherwise.
 .br
-\fINaN-proxy\fP is that special value.
+\fINaN-proxy\fP is that special value (e.g., -9999).
 .br
 \fIscale\fP is used to multiply the data after reading.
 .br
@@ -144,12 +144,6 @@ will automatically handle type-conversions during reading.
 \fIoformat\fP is a C-style format string used to print values from this column.
 .br
 .sp
-For ASCII data the \fItype\fP format is always \fBa\fP. \fINaN\fP should be Y
-if there is a certain value (e.g., -9999) that is used to represent
-missing data (NaNs).  If so, the \fINaN-proxy\fP value should be set
-accordingly (otherwise it is ignored).  The \fIscale\fP and \fIoffset\fP are
-applied to the data values after they are read (first scaled, then offset), 
-whereas the \fIoformat\fP is used by some programs for formatted output.
 If you give - as the \fIoformat\fP then \fBGMT\fP's formatting machinery will be used\"'
 instead (i.e., \fBD_FORMAT\fP, \fBPLOT_DEGREE_FORMAT\fP, \fBPLOT_DATE_FORMAT\fP, \fBPLOT_CLOCK_FORMAT\fP).
 Some file formats already have definition files premade.  These include
