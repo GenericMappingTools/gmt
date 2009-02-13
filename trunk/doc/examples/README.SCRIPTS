@@ -1,4 +1,4 @@
-	$Id: README.SCRIPTS,v 1.8 2008-06-12 22:06:19 guru Exp $
+	$Id: README.SCRIPTS,v 1.9 2009-02-13 20:44:29 remko Exp $
 
 	README file for GMT Examples directory
 
@@ -20,7 +20,7 @@ Examples 2 and 17 show usage of grdraster.  However, because
 the user may not have these databases the grdraster calls are
 commented out and the extracted grdfiles supplied instead.
 
-Exampe 27 shows usage of img2grd.  Again, since the user may
+Example 27 shows usage of img2grd.  Again, since the user may
 not have the img data installed the img2grd call is commented
 out and the extracted img grid is supplied.
 
