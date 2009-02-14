@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.53 2009-01-09 23:39:54 guru Exp $
+#		$Id: README,v 1.54 2009-02-14 19:08:24 guru Exp $
 #
 #	Copyright (c) 1991-2009, P. Wessel & W. H. F. Smith
 #
@@ -41,11 +41,7 @@ already completed the installation unless something went wrong.
 You do not need to read these instructions unless you plan to
 install and make the programs manually.
 
-[the install_gmt script is mailed to you if you send email to
-listproc@hawaii.edu with the single message
-information gmt-group
-Or, see gmt.soest.hawaii.edu for how to get the script as well
-as filling out installation parameters via a web form]
+Visit gmt.soest.hawaii.edu and click DOWNLOAD to do the simple installation.
 
 GMT has been installed successfully under Unix/Linux/OS X on workstations
 from Sun, Silicon Graphics, Cray, DEC, HP, Data General, IBM, Apple, NEXT,
@@ -109,11 +105,11 @@ After install, place the line
 	setenv NETCDFHOME /path_to_netcdf_directory
 
 in your .login file.  This path is usually something like
-/usr/local/netcdf-3.6.2 depending on where you put it.
+/usr/local/netcdf-3.6.3 depending on where you put it.
 The GMT makefiles will use $NETCDFHOME to find the library.
 
 PS! On some newer platforms, in particular MacOS X, you may have
-to get a very recent version of netCDF. Version 3.6.2 available on the
+to get a very recent version of netCDF. Version 3.6.3 available on the
 Unidata web site or through Fink (unstable) works well.
 
 2. Install support data
@@ -170,7 +166,8 @@ you may order a CD-ROM from Geoware.  See section 15 below for details.
 3. Configure
 ------------
 
-You must first create the two files src/makegmt.macros and src/gmt_math.h
+You must first create the files src/makegmt.macros, src/GMT,
+src/isogmt, src/gmt_notposix.h and src/gmt_version.h
 by running the configure script.  If you have several C compilers on your
 system, or using one that is not called cc or gcc, you should first do a
 
@@ -212,6 +209,7 @@ you should pass these directories on the configure command line.
 	--includedir=your-includedir	Set include directory [PREFIX/include]
 	--mandir=your-mandir		Set man directory [PREFIX/man]
 	--datadir=your-datadir		Set GMT share directory for coastlines [PREFIX/share]
+	--docdir=your-docdir		Set directory for documentation [PREFIX/share]
 
 There are a few GMT-specific options in configure.  They are
 
@@ -223,7 +221,6 @@ There are a few GMT-specific options in configure.  They are
 	--enable-shared		To make shared (dynamic) libraries
 	--enable-triangle	To use J. Shewchuk's fast triangulation
 	--enable-US		To use US (inch) instead of SI (cm) units
-	--enable-www=www-dir	Set www directory [PREFIX/www]
 	--enable-eps		Make Encapsulated PostScript by default [Freeform PS]
 	--disable-flock		Do NOT use file locking on .gmtcommands files
 	--disable-mex           Disable compilation of mex supplement which requires Matlab or Octave
@@ -283,7 +280,6 @@ advantage of paper tray manipulations or expect to make mostly EPS
 files you may want to use --enable-eps to make EPS the default.  Note
 that this can be changed at any time via the PAPER_MEDIA parameter.
 
-
 	In the main GMT directory, type
 
 ./configure [options]
@@ -295,9 +291,9 @@ and you will be asked to edit src/makegmt.macros to set macros manually.
 Once this step is completed you may move on to the Makefile section.
 
 If for some reason the configure step fails on your system, you may
-have to manually create the two files from the two templates
-src/makegmt.macros.in and src/gmt_math.h.in.  If you run into this
-problem, pls let us know so we may improve this processes further.
+have to manually create the files from above from the *.in templates
+If you run into this problem, pls let us know so we may improve this
+processes further.
 [Note: For PCs running WIN?? or DOS you must copy the file
 gmt_math_win32.h to gmt_math.h instead; see Appendix L in the docs]
 
