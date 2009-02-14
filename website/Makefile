@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.33 2009-02-13 03:25:24 guru Exp $
+#  $Id: Makefile,v 1.34 2009-02-14 01:05:03 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -59,10 +59,10 @@ help::
 		
 # Place stuff in the GMT website/www directory:
 
-www/gmt/examples/ex01/example_01_100dpi.png:	../examples/ex01/example_01.ps
+www/gmt/examples/ex01/example_01_100dpi.png:	../share/doc/gmt/examples/ex01/example_01.ps
 	sh webexamples.sh -s
 
-../examples/ex01/example_01.ps:	../examples/ex01/job01.sh
+../share/doc/gmt/examples/ex01/example_01.ps:	../share/doc/gmt/examples/ex01/job01.sh
 	( cd ..; $(MAKE) -f GNUmakefile examples)
 
 #---------------------------------------------------------------------------
@@ -285,9 +285,9 @@ hitmap:
 ../registration/gmt_usage.jpg:		../registration/GMT_old_unique_sites.d
 		(cd ../registration; GMT_usage_map.sh map)
 
-www/gmt/gmt_releases.html:	gmt_releases_template.html ../share/doc/html/GMT_Docs/GMT_Docs.html
+www/gmt/gmt_releases.html:	gmt_releases_template.html ../share/doc/gmt/html/GMT_Docs/GMT_Docs.html
 	mkdir -p www/gmt
-	(cd www/gmt; grep -H "scientists since 1988" ../../../share/doc/html/GMT_Docs/*.html | awk -F: '{printf "sXCHAPTER1LINKX%sXg\n",  $$1}' > /tmp/tmp.sed)
+	(cd www/gmt; grep -H "scientists since 1988" ../../../share/doc/gmt/html/GMT_Docs/*.html | awk -F: '{printf "sXCHAPTER1LINKX%sXg\n",  $$1}' > /tmp/tmp.sed)
 	sed -f /tmp/tmp.sed < gmt_releases_template.html > www/gmt/gmt_releases.html
 	
 	
