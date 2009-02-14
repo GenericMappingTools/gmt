@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.19 2009-02-13 03:25:24 guru Exp $
+#	 $Id: webexamples.sh,v 1.20 2009-02-14 01:05:03 guru Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -38,6 +38,7 @@ if [ ! -d src ]; then
 fi
 
 date=`date`
+TOP=`pwd`
 mkdir -p website/www/gmt
 cd website/www/gmt
 
@@ -152,7 +153,7 @@ EOF
 
 mkdir -p examples
 cd examples
-
+E=
 i=1
 
 #	Go over all examples and generate HTML, GIF etc
@@ -174,11 +175,11 @@ while [ $i -le $n_examples ]; do
 
 #	Extract Bourne shell example script and rename
 
-	\cp -f ../../../../../examples/$dir/job${number}.sh job${number}.sh.txt
+	cp -f $TOP/share/doc/gmt/examples/$dir/job${number}.sh job${number}.sh.txt
 
 #	Copy over the example PS file
 
-	\cp ../../../../../examples/$dir/example_${number}.ps .
+	cp -f $TOP/share/doc/gmt/examples/$dir/example_${number}.ps .
 
 #	TMP FIX FOR EX19 SINCE GS IS FUCKED
 	if [ $number -eq 19 ]; then
