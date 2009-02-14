@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.35 2009-02-14 01:26:20 guru Exp $
+#  $Id: Makefile,v 1.36 2009-02-14 18:49:20 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -288,7 +288,7 @@ hitmap:
 
 www/gmt/gmt_releases.html:	gmt_releases_template.html ../share/doc/gmt/html/GMT_Docs/GMT_Docs.html
 	mkdir -p www/gmt
-	(cd www/gmt; grep -H "scientists since 1988" ../../../share/doc/gmt/html/GMT_Docs/*.html | awk -F: '{printf "sXCHAPTER1LINKX%sXg\n",  $$1}' > /tmp/tmp.sed)
+	(cd www/gmt; grep -H "scientists since 1988" ../../../share/doc/gmt/html/GMT_Docs/*.html | awk '{print $$1}' | tr '/:' '  ' | awk '{printf "sXCHAPTER1LINKXdoc/gmt/html/GMT_Docs/%sXg\n", $$NF}' > /tmp/tmp.sed)
 	sed -f /tmp/tmp.sed < gmt_releases_template.html > www/gmt/gmt_releases.html
 	
 	
