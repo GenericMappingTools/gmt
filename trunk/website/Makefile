@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.34 2009-02-14 01:05:03 guru Exp $
+#  $Id: Makefile,v 1.35 2009-02-14 01:26:20 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -130,6 +130,7 @@ update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_rel
 		cp -f ../src/README.TRIANGLE www/gmt
 		rm -r -f www/gmt/doc
 		cp -R -f ../share/doc www/gmt
+		rm -rf www/gmt/doc/gmt/examples
 		cp -R -f contrib www/gmt
 
 
