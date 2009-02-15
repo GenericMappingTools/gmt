@@ -540,7 +540,7 @@ setting.  [yyyy-mm-dd].
 Formatting template that indicates how an output geographical coordinate is to be plotted.  This template
 is then used to guide the plotting of geographical coordinates in data fields.  See 
 \fBOUTPUT_DEGREE_FORMAT\fP for details.  In addition, you can append A which plots the absolute value of 
-the coordinate.  The default is +ddd:mm:ss.  Not all items may be plotted as this depends on the annotation 
+the coordinate.  The default is ddd:mm:ss.  Not all items may be plotted as this depends on the annotation 
 interval.
 .TP
 .B POLAR_CAP
