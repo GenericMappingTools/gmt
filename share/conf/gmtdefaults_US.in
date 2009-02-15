@@ -1,6 +1,6 @@
-#	$Id: gmtdefaults_US.in,v 1.1 2008-05-12 23:54:17 remko Exp $
+#	$Id: gmtdefaults_US.in,v 1.2 2009-02-15 19:12:40 remko Exp $
 #
-#	GMT-SYSTEM 4.3.0 Defaults file
+#	GMT-SYSTEM 4.4.0 Defaults file
 #	US Version
 #
 #-------- Plot Media Parameters -------------
@@ -26,7 +26,7 @@ LABEL_OFFSET		= 0.1125i
 OBLIQUE_ANNOTATION	= 1
 PLOT_CLOCK_FORMAT	= hh:mm:ss
 PLOT_DATE_FORMAT	= yyyy-mm-dd
-PLOT_DEGREE_FORMAT	= +ddd:mm:ss
+PLOT_DEGREE_FORMAT	= ddd:mm:ss
 Y_AXIS_TYPE		= hor_text
 #-------- Basemap Layout Parameters ---------
 BASEMAP_AXES		= WESN
