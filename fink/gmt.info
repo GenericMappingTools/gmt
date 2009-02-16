@@ -1,22 +1,16 @@
 Package: gmt
 Version: 4.4.0
 Revision: 1
-Source:  ftp://ftp.soest.hawaii.edu/gmt/GMT%v_pdf.tar.bz2
-Source2: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_scripts.tar.bz2
-Source3: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_share.tar.bz2
-Source4: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_src.tar.bz2
-Source5: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_suppl.tar.bz2
-Source6: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_triangle.tar.bz2
-Source7: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_tut.tar.bz2
-Source8: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_web.tar.bz2
-Source-MD5:  0c8617b302f94e8cd60b620e361a4863
-Source2-MD5: d01a88907e5987aff2b08beea280c9a4
-Source3-MD5: 6c5667e85d4b4057318174450482b980
-Source4-MD5: 8094b660c430a8dcaa52f1d7d49089b6
-Source5-MD5: 99a99abdda7051a0d147917e27fb2e9f
-Source6-MD5: e0ecda5af967043e8abe02cefad7eece
-Source7-MD5: 647016e3b7e5155f0a0be2f6d8c12968
-Source8-MD5: 980a9a3612ce1e6b6a40cff559a5abb1
+Source:  ftp://ftp.soest.hawaii.edu/gmt/GMT%v_doc.tar.bz2
+Source2: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_share.tar.bz2
+Source3: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_src.tar.bz2
+Source4: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_suppl.tar.bz2
+Source5: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_triangle.tar.bz2
+Source-MD5:  b9d93804d7dabeea325f94064f6ddb94
+Source2-MD5: e37256c2c0e710a207d3788a84795ad5
+Source3-MD5: 89c8bad09db6f2b6f06e510937095a25
+Source4-MD5: 4f71195b2d18f90fdd8a862378b424c1
+Source5-MD5: 1f1789e0f18f90aae20e211b2aa31d20
 SourceDirectory: GMT%v
 BuildDepends: netcdf (>= 3.6.2-6)
 Depends: netcdf-shlibs (>= 3.6.2-6), %n-shlibs (= %v-%r), gshhs-lores
@@ -32,6 +26,12 @@ InstallScript: <<
  make install-all prefix=%i
 <<
 SplitOff: <<
+  Package: %N-doc
+  BuildDependsOnly: True
+  Files: share/doc/gmt
+  DocFiles: COPYING
+<<
+SplitOff2: <<
   Package: %N-shlibs
   Files: lib/*.4.dylib
   Shlibs: <<
@@ -43,17 +43,11 @@ SplitOff: <<
   <<
   DocFiles: ChangeLog COPYING README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
-SplitOff2: <<
+SplitOff3: <<
   Package: %N-dev
   BuildDependsOnly: True
   Files: include lib/*.a lib/*.dylib
   DocFiles: ChangeLog COPYING README src/README.TRIANGLE src/TRIANGLE.HOWTO
-<<
-SplitOff3: <<
-  Package: %N-doc
-  BuildDependsOnly: True
-  Files: share/doc/gmt
-  DocFiles: COPYING
 <<
 Description: Generic Mapping Tools
 DescDetail: <<
