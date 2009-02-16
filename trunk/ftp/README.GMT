@@ -1,4 +1,4 @@
-	$Id: README.GMT,v 1.25 2009-01-09 23:39:54 guru Exp $
+	$Id: README.GMT,v 1.26 2009-02-16 02:08:17 guru Exp $
 
 Dear potential GMT users-
 
@@ -24,11 +24,7 @@ install_gmt		Bourne shell install script
 
 In addition, you may want
 
-GMT_pdf.tar.bz2		PDF documentation and Unix PDF man pages
-GMT_man.tar.bz2		Unix man pages for GMT
-GMT_web.tar.bz2		HTML versions of all documentation
-GMT_tut.tar.bz2		Tutorial data sets
-GMT_scripts.tar.bz2	Example scripts and data
+GMT_doc.tar.bz2		All documentation, examples, and tutorial
 GMT_suppl.tar.bz2	Supplemental program source and docs
 GSHHS_high.tar.bz2	High resolution GSHHS coastline files
 GSHHS_full.tar.bz2	Full resolution GSHHS coastline files

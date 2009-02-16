@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.140 2009-01-13 01:59:26 guru Exp $
+#	$Id: install_gmt.sh,v 1.141 2009-02-16 02:08:17 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -77,8 +77,7 @@ cat << EOF > gmt_install.ftp_site
 8. School of Geosciences, U of Sydney, AUSTRALIA
 9. TENET, Tertiary Education & Research Networks of South Africa, SOUTH AFRICA
 EOF
-# Order (1-10) is 1:src, 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:scripts
-#		  8:pdf, 9:web, 10:tut
+# Order (1-7) is 1:src, 2:share, 3:coast, 4:high, 5:full, 6:suppl, 7:doc
 cat << EOF > gmt_install.ftp_bzsizes
 1.0
 0.05
@@ -86,10 +85,7 @@ cat << EOF > gmt_install.ftp_bzsizes
 8.6
 28.0
 0.8
-2.8
-11.0
-3.6
-0.4
+24.0
 EOF
 cat << EOF >&2
 ====>>>> Interactive installation of GMT <<<<====
@@ -189,12 +185,8 @@ fi
 GMT_get_src=d
 GMT_get_share=d
 GMT_get_coast=d
-GMT_get_scripts=d
 GMT_get_suppl=d
-GMT_get_pdf=d
-GMT_get_man=d
-GMT_get_web=d
-GMT_get_tut=d
+GMT_get_doc=d
 GMT_get_high=d
 GMT_get_full=d
 GMT_triangle=n
@@ -254,19 +246,13 @@ EOF
 	GMT_get_coast=`get_def_answer "Want the basic support data (GSHHS coastlines) [$size Mb] (y/n)?" "y"`
 
 	echo " " >&2
-	echo " The next six archives are optional but recommended for a typical GMT install" >&2
+	echo " The next three archives are optional but recommended for a typical GMT install" >&2
 	echo " " >&2
 
 	size=`sed -n 6p $sizes`
 	GMT_get_suppl=`get_def_answer "Want optional GMT supplemental programs [$size Mb] (y/n)?" "y"`
 	size=`sed -n 7p $sizes`
-	GMT_get_scripts=`get_def_answer "Want optional GMT example scripts and data [$size Mb] (y/n)?" "y"`
-	size=`sed -n 8p $sizes`
-	GMT_get_pdf=`get_def_answer "Want optional GMT Documentation (PDF version) [$size Mb] (y/n)?" "y"`
-	size=`sed -n 9p $sizes`
-	GMT_get_web=`get_def_answer "Want optional GMT Web Documentation (HTML of all Docs) [$size Mb] (y/n)?" "y"`
-	size=`sed -n 10p $sizes`
-	GMT_get_tut=`get_def_answer "Want optional GMT tutorial data sets [$size Mb] (y/n)?" "y"`
+	GMT_get_doc=`get_def_answer "Want optional GMT Documentation [$size Mb] (y/n)?" "y"`
 
 	echo " " >&2
 	echo " The next two archives are larger and contain more accurate coastline data:" >&2
@@ -324,7 +310,7 @@ the /manX will be appended automatically, so do not answer /usr/man/man1.
 
 EOF
 GMT_man=`get_def_answer "Directory for GMT man pages?" "$GMT_prefix/man"`
-GMT_web=`get_def_answer "Directory for GMT www pages?" "$GMT_prefix/www"`
+GMT_doc=`get_def_answer "Directory for GMT doc pages?" "$GMT_prefix/share"`
 
 cat << EOF >&2
 
@@ -588,11 +574,7 @@ GMT_get_coast=$GMT_get_coast
 GMT_get_high=$GMT_get_high
 GMT_get_full=$GMT_get_full
 GMT_get_suppl=$GMT_get_suppl
-GMT_get_scripts=$GMT_get_scripts
-GMT_get_pdf=$GMT_get_pdf
-GMT_get_man=$GMT_get_man
-GMT_get_web=$GMT_get_web
-GMT_get_tut=$GMT_get_tut
+GMT_get_doc=$GMT_get_doc
 #---------------------------------------------
 #       GMT SUPPLEMENTS SELECT SECTION
 #---------------------------------------------
@@ -621,7 +603,7 @@ GMT_lib=$GMT_lib
 GMT_share=$GMT_share
 GMT_include=$GMT_include
 GMT_man=$GMT_man
-GMT_web=$GMT_web
+GMT_doc=$GMT_doc
 GMT_sharedir=$GMT_sharedir
 GMT_dir_full=$GMT_dir_full
 GMT_dir_high=$GMT_dir_high
@@ -987,11 +969,7 @@ if [ "$GMT_ftp" = "y" ]; then
 	make_ftp_list $GMT_get_high high GSHHS
 	make_ftp_list $GMT_get_full full GSHHS
 	make_ftp_list $GMT_get_suppl suppl GMT
-	make_ftp_list $GMT_get_scripts scripts GMT
-	make_ftp_list $GMT_get_pdf pdf GMT
-	make_ftp_list $GMT_get_man man GMT
-	make_ftp_list $GMT_get_web web GMT
-	make_ftp_list $GMT_get_tut tut GMT
+	make_ftp_list $GMT_get_doc doc GMT
 	echo "quit" >> gmt_install.ftp_list
 	echo " " >> gmt_install.ftp_list
 
@@ -1016,7 +994,7 @@ GMT_lib=${GMT_lib:-$GMT_prefix/lib}
 GMT_share=${GMT_share:-$GMT_prefix/share}
 GMT_include=${GMT_include:-$GMT_prefix/include}
 GMT_man=${GMT_man:-$GMT_prefix/man}
-GMT_web=${GMT_web:-$GMT_prefix/www}
+GMT_doc=${GMT_doc:-$GMT_prefix/share/doc/gmt}
 GMT_sharedir=${GMT_sharedir:-$GMT_share}
 
 #--------------------------------------------------------------------------------
@@ -1027,11 +1005,7 @@ install_this_gmt $GMT_get_src src
 install_this_gmt $GMT_get_share share
 install_this_gmt $GMT_triangle triangle
 install_this_gmt $GMT_get_suppl suppl
-install_this_gmt $GMT_get_scripts scripts
-install_this_gmt $GMT_get_pdf pdf
-install_this_gmt $GMT_get_man man
-install_this_gmt $GMT_get_web web
-install_this_gmt $GMT_get_tut tut
+install_this_gmt $GMT_get_doc doc
 
 #--------------------------------------------------------------------------------
 # Now do coastline archives
@@ -1107,13 +1081,13 @@ else
 	write_man=0
 fi
 
-# Are we allowed to write in $GMT_web?
+# Are we allowed to write in $GMT_doc?
 
-mkdir -p $GMT_web
-if [ -w $GMT_web ]; then
-	write_web=1
+mkdir -p $GMT_doc
+if [ -w $GMT_doc ]; then
+	write_doc=1
 else
-	write_web=0
+	write_doc=0
 fi
 
 #--------------------------------------------------------------------------------
@@ -1211,13 +1185,13 @@ fi
 cat << EOF >&2
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
-  --mandir=$GMT_man --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip \
+  --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
   $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir
 EOF
 
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
-  --mandir=$GMT_man --enable-www=$GMT_web --datadir=$GMT_share --enable-update=$ftp_ip \
+  --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
   $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir
 
 if [ -f .gmtconfigure ]; then
@@ -1263,13 +1237,13 @@ fi
 # INSTALL WWW PAGES
 #--------------------------------------------------------------------------------
 
-if [ $write_web -eq 1 ]; then
-	if [ -d www ]; then
-		$GMT_make install-www || exit
-		echo "All users should add $GMT_web/gmt/gmt_services.html to their browser bookmarks" >&2
+if [ $write_doc -eq 1 ]; then
+	if [ -d share/doc ]; then
+		$GMT_make install-doc || exit
+		echo "All users should add $GMT_doc/gmt/gmt_services.html to their browser bookmarks" >&2
 	fi
 else
-	echo "You do not have write permission to create $GMT_web" >&2
+	echo "You do not have write permission to create $GMT_doc" >&2
 fi
 
 #--------------------------------------------------------------------------------
@@ -1279,7 +1253,7 @@ fi
 # Run examples with /src as binary path in case the user did
 # not have permission to place files in GMT_bin
 
-if [ -d examples ] && [ "$GMT_run_examples" = "y" ]; then
+if [ -d share/doc/gmt/examples ] && [ "$GMT_run_examples" = "y" ]; then
 	GMT_SHAREDIR=$GMT_sharedir
 	export GMT_SHAREDIR
 	$GMT_make run-examples || exit
@@ -1302,10 +1276,10 @@ if [ $write_man -eq 0 ]; then
 	echo "Go to the main GMT directory and say:" >&2
 	echo "make install-man" >&2
 fi
-if [ $write_web -eq 0 ]; then
-	echo "Manually do the www page install as another user (root?)" >&2
+if [ $write_doc -eq 0 ]; then
+	echo "Manually do the doc page install as another user (root?)" >&2
 	echo "Go to the main GMT directory and say:" >&2
-	echo "make install-www" >&2
+	echo "make install-doc" >&2
 fi
 
 cd $topdir
@@ -1340,8 +1314,8 @@ EOF
 if [ ! x"$GMT_man" = x ]; then
 	echo "Add $GMT_man to MANPATH" >&2
 fi
-if [ ! x"$GMT_web" = x ]; then
-	echo "Add $GMT_web/gmt/gmt_services.html as browser bookmark" >&2
+if [ ! x"$GMT_doc" = x ]; then
+	echo "Add $GMT_doc/gmt/gmt_services.html as browser bookmark" >&2
 fi
 echo "-----------------------------------------------------------------------" >&2
 rm -f gmt_install.ftp_*

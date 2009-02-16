@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.35 2009-01-16 03:58:11 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.36 2009-02-16 02:08:17 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -42,10 +42,7 @@ $site		= $gmt_form{'radio_site'};
 $get_src	= $gmt_form{'checkbox_src'};
 $get_share	= $gmt_form{'checkbox_share'};
 $get_coast	= $gmt_form{'checkbox_coast'};
-$get_pdf	= $gmt_form{'checkbox_pdf'};
-$get_tut	= $gmt_form{'checkbox_tut'};
-$get_web	= $gmt_form{'checkbox_web'};
-$get_scripts	= $gmt_form{'checkbox_scripts'};
+$get_doc	= $gmt_form{'checkbox_doc'};
 $get_suppl	= $gmt_form{'checkbox_suppl'};
 $get_high	= $gmt_form{'checkbox_high'};
 $get_full	= $gmt_form{'checkbox_full'};
@@ -61,7 +58,7 @@ $gmt_lib	= $gmt_form{'gmt_lib'};
 $gmt_include	= $gmt_form{'gmt_include'};
 $gmt_share	= $gmt_form{'gmt_share'};
 $gmt_man	= $gmt_form{'gmt_man'};
-$gmt_web	= $gmt_form{'gmt_web'};
+$gmt_doc	= $gmt_form{'gmt_doc'};
 $gmt_sharedir	= $gmt_form{'gmt_sharedir'};
 $gmt_coast	= $gmt_form{'radio_coast'};
 $gmt_cli_dir	= $gmt_form{'gmt_cli_dir'};
@@ -103,7 +100,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.35 $, on
+# Processed by install_gmt_form.pl $Revision: 1.36 $, on
 #
 #	$now
 #
@@ -197,29 +194,8 @@ if ($get_suppl eq "on") {
 else {
 	print FILE "n\n";
 }
-print FILE "GMT_get_scripts=";
-if ($get_scripts eq "on") {
-	print FILE "y\n";
-}
-else {
-	print FILE "n\n";
-}
-print FILE "GMT_get_pdf=";
-if ($get_pdf eq "on") {
-	print FILE "y\n";
-}
-else {
-	print FILE "n\n";
-}
-print FILE "GMT_get_tut=";
-if ($get_tut eq "on") {
-	print FILE "y\n";
-}
-else {
-	print FILE "n\n";
-}
-print FILE "GMT_get_web=";
-if ($get_web eq "on") {
+print FILE "GMT_get_doc=";
+if ($get_doc eq "on") {
 	print FILE "y\n";
 }
 else {
@@ -363,7 +339,7 @@ print FILE "GMT_lib=", $gmt_lib, "\n";
 print FILE "GMT_share=", $gmt_share, "\n";
 print FILE "GMT_include=", $gmt_include, "\n";
 print FILE "GMT_man=", $gmt_man, "\n";
-print FILE "GMT_web=", $gmt_web, "\n";
+print FILE "GMT_doc=", $gmt_doc, "\n";
 print FILE "GMT_sharedir=", $gmt_sharedir, "\n";
 
 if ($gmt_coast eq "all") {
