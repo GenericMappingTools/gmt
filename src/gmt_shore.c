@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.38 2009-01-16 21:43:11 guru Exp $
+ *	$Id: gmt_shore.c,v 1.39 2009-02-16 20:58:10 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -130,10 +130,7 @@ char GMT_shore_adjust_res (char res) {	/* Returns the highest available resoluti
 	return ((k == -1) ? res : type[k]);	/* Return the chosen resolution */
 }
 
-int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s, double n)
-/* res: Resolution (f, h, i, l, c */
-                
-{
+int GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s, double n) {	/* res: Resolution (f, h, i, l, c */
 	int i, nb, idiv, iw, ie, is, in, this_south, this_west, err;
 	short *stmp;
 	int *itmp;
