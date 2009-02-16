@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.65 2009-02-16 02:08:17 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.66 2009-02-16 03:38:47 remko Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.65 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.66 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -246,10 +246,9 @@ under one root directory.  By default, GMT will be installed under GMT4.4.0
 in the current working directory where install_gmt is run.
 On most Unix systems, however, the preferred location of the root directory will be
 something like /usr/local or /sw, under which the installation will add
-bin, lib, include, share, man, and www.
+bin, lib, include, share, share/man, and share/doc/gmt, respectively.
 To select another location for the root directory than the default (GMT4.4.0),
-specify it in the first box above, or enter all subdirectories
-individually.
+specify it in the first box above, or enter subdirectories individually.
 Only specify alternative directories if you want to place the files elsewhere. 
 <P>
 Note that the man pages will be be placed in the sub-directories man1 and man3 of the directory
@@ -337,10 +336,10 @@ can be found when configure is run</I>.
 <HR><B>12. Complete the operation:<BR>
 
 </B><INPUT TYPE="checkbox" NAME="checkbox_delete" > Delete all archives upon successful installation<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_run"  CHECKED> Run all example scripts (assumes scripts tar archive was chosen above)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_run"  CHECKED> Run all example scripts (assumes doc tar archive was chosen above)<BR>
 
 <P>
-<I>Note: Examples will only be run if you also ftp'ed the example scripts archive.</I>
+<I>Note: Examples will only be run if you also ftp'ed the doc archive.</I>
 
 <!--  SUBMIT OR RESET FORM  -->
 
