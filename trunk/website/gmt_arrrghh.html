@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_arrrghh.html,v 1.22 2009-02-09 21:47:47 guru Exp $  -->
+<!--  $Id: gmt_arrrghh.html,v 1.23 2009-02-16 19:22:25 guru Exp $  -->
 <TITLE>GMT Incompatibilities Notes</title>
 <BODY bgcolor="#ffffff">
 <CENTER><H2>GMT Incompatibilities Notes</CENTER></H2><P>
@@ -8,7 +8,9 @@
 4.4.0 scripts are for the most part fully backward compatible with 4.3.1.  One
 exception is the map scale option <B>-L</B> in psbasemap and pscoast which
 had difficulties parsing ddd:mm:ss coordinates in the presence of the optional
-:label: modifier.  For a list of all the new
+:label: modifier.  Also, we have now made -180/+180 the default annotation range
+for geographic maps (it used to be 0-360).  You can change this by editing the
+PLOT_DEGRE_FORMAT.  For a list of all the new
 capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
 page.
 <HR>
