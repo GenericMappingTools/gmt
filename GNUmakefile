@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.51 2009-02-13 22:20:21 remko Exp $
+#  $Id: GNUmakefile,v 1.52 2009-02-16 02:08:16 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -38,10 +38,7 @@
 #	To tar source:			make tar_progs
 #	To tar shared data		make tar_share
 #	To tar c,l,i coastlines		make tar_coast
-#	To tar tutorial			make tar_tut
-#	To tar web docs			make tar_web
-#	To tar pdf files		make tar_pdf
-#	To tar scripts			make tar_scripts
+#	To tar docs			make tar_doc
 #	To tar supplements		make tar_suppl
 #
 #	These two must be done separately:
@@ -219,7 +216,7 @@ get_coast get_high get_full:
 #	TARRING OFF THE NEW VERSION
 #-------------------------------------------------------------------------------
 
-tar_all:	tar_progs tar_share tar_tut tar_web tar_pdf tar_scripts tar_suppl
+tar_all:	tar_progs tar_share tar_doc tar_suppl
 		@echo " "
 		@echo "Completed tarring off entire archive"
 
@@ -245,28 +242,13 @@ tar_share:	ftpdir
 		tar -cjf ftp/GMT$(GMT_VERSION)_share.tar.bz2 -C .. -T tmp.lis
 		rm -f tmp.lis
 
-tar_tut:	ftpdir
-		echo "make GMT$(GMT_VERSION)_tut.tar.bz2"
-		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_tutorial.lis > tmp.lis
-		tar -cjf ftp/GMT$(GMT_VERSION)_tut.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
-		rm -f tmp.lis
-
-tar_web:	ftpdir
+tar_doc:	ftpdir
 		echo "make GMT$(GMT_VERSION)_web.tar.bz2"
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_www.lis > tmp.lis
-		tar -cjf ftp/GMT$(GMT_VERSION)_web.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
-		rm -f tmp.lis
-
-tar_pdf:	ftpdir
-		echo "make GMT$(GMT_VERSION)_pdf.tar.bz2"
-		ls share/doc/gmt/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages > tmp.lis
-		tar -cjf ftp/GMT$(GMT_VERSION)_pdf.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
-		rm -f tmp.lis
-
-tar_scripts:	ftpdir
-		echo "make GMT$(GMT_VERSION)_scripts.tar.bz2"
-		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples}.lis > tmp.lis
-		tar -cjf ftp/GMT$(GMT_VERSION)_scripts.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
+		ls share/doc/gmt/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages >> tmp.lis
+		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples}.lis >> tmp.lis
+		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_tutorial.lis >> tmp.lis
+		tar -cjf ftp/GMT$(GMT_VERSION)_doc.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/COPYING
 		rm -f tmp.lis
 
 tar_suppl:	ftpdir

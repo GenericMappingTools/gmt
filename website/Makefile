@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.36 2009-02-14 18:49:20 guru Exp $
+#  $Id: Makefile,v 1.37 2009-02-16 02:08:17 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -152,7 +152,7 @@ update-ftp-live:
 	scp ../ftp/GMT*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
-	for p in pdf web tut share src scripts suppl triangle; do \
+	for p in doc share src suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
@@ -192,7 +192,7 @@ update-ftp-test:
 	scp ../ftp/GMT*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
-	for p in pdf web tut share src scripts suppl triangle; do \
+	for p in doc share src suppl triangle; do \
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
@@ -231,7 +231,7 @@ update-ftp-local:
 	cp -f ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION ftp
 	cp -f ../ftp/GMT*.exe ftp/windows
 	cp -f ../ftp/gawk*.zip ftp/windows
-	for p in pdf web tut share src scripts suppl triangle; do \
+	for p in doc share src suppl triangle; do \
 		\rm -f ftp/GMT_$$p.tar.bz2; \
 		(cd ftp; $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
 	done

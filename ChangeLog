@@ -1,11 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.421 2009-02-15 19:18:29 remko Exp $
+	$Id: ChangeLog,v 1.422 2009-02-16 02:08:16 guru Exp $
 -----------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------
 2009-02-15
 	* GMT 4.4.0 finalized and released
 -----------------------------------------------------------------------------------------
 
+2009-02-15	pwessel
+	* GTM_doc.tar:		Now combines all documentation, tutorials, and examples: No
+				more separate _tut, _web, _pdf, _scripts tarballs.
 2009-02-15	remko
 	* conf/gmtdefaults*.in, gmt_globals.h, gmtdefaults.txt:	Changed default PLOT_DEGREE_FORMAT from
 				+ddd:mm:ss to ddd:mm:ss. This produces degrees in range +-180 instead

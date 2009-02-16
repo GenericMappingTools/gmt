@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.54 2009-02-14 19:08:24 guru Exp $
+#		$Id: README,v 1.55 2009-02-16 02:08:17 guru Exp $
 #
 #	Copyright (c) 1991-2009, P. Wessel & W. H. F. Smith
 #
@@ -56,17 +56,14 @@ and installation details.
 
 Note there are several GMT tar archives available:
 
- 1. GMT_src.tar.bz2		: Source code and Unix man pages only, no documentation
- 2. GMT_share.tar.bz2		: Shared run-time support files
- 3. GSHHS_coast.tar.bz2		: Standard resolution GSHHS coastline data
- 4. GMT_pdf.tar.bz2		: PDF version of cookbook, tutorial, and man pages
- 5. GMT_web.tar.bz2		: Web (HTML) version of docs and man pages
- 6. GMT_tut.tar.bz2		: Tutorial data sets
- 7. GMT_scripts.tar.bz2		: Example directory with scripts and test data
- 8. GSHHS_full.tar.bz2		: Full resolution GSHHS coastline data
- 9. GSHHS_high.tar.bz2		: High resolution GSHHS coastline data
-10. GMT_suppl.tar.bz2		: GMT Supplemental programs that link with GMT
-11. GMT_triangle.tar.bz2	: Optional source code for Shewchuk's triangularization.
+1. GMT_src.tar.bz2		: Source code and Unix man pages only, no documentation
+2. GMT_share.tar.bz2		: Shared run-time support files
+3. GSHHS_coast.tar.bz2		: Standard resolution GSHHS coastline data
+4. GMT_doc.tar.bz2		: All documentation, examples, and tutorial
+5. GSHHS_full.tar.bz2		: Full resolution GSHHS coastline data
+6. GSHHS_high.tar.bz2		: High resolution GSHHS coastline data
+7. GMT_suppl.tar.bz2		: GMT Supplemental programs that link with GMT
+8. GMT_triangle.tar.bz2		: Optional source code for Shewchuk's triangularization.
 
 You MUST get 1-3 for a minimal GMT installation.
 
@@ -357,40 +354,33 @@ install the entire set of man pages to the chosen directory with
 or set the environment variable MANPATH in your .login file to
 include the man directory that holds the desired gmt man pages.
 
-7. WWW Documentation
+7. Documentation
 ____________________
 
-In the directory www/gmt you will find html files for online
+In the directory share/doc/gmt/html you will find html files for online
 browsing of GMT documentation (Cookbook) and manual pages.
+The Documentation also contains the GMT_Tutorial.ps
+file which is a short course in how to use GMT.  It can be
+followed individually or in a lab setting by a group of users.
 While these are available from the main GMT home page in
 Hawaii, users may find it convenient to install these
 pages locally for added speed.  The subdirectories
 contain both HTML and PS versions of the cookbook, and
 HTML versions of the manual pages.  All users need to do
 is to add a browser bookmark to the top-level file
-www/gmt/gmt_services.html.
-To install the web-pages in your chosen directory, type
+share/doc/gmt/html/gmt_services.html.
+To install all documentation in your chosen directory, type
 
-	make install-www
+	make install-doc
 
-8. GMT Tutorial
-_______________
-
-The Documentation also contains the GMT_Tutorial.ps
-file which is a short course in how to use GMT.  It can be
-followed individually or in a lab setting by a group of users.
-The tutorial directory contains a few support files for the
-lab exercises.  The tutorial is also available in HTML form
-under the www/gmt/doc directory (See 7).
-
-9. Set path
+8. Set path
 -----------
 
 Make sure users set their PATH to include the directory containing
 the gmt executables (BINDIR) if this is not a standard directory
 like /usr/local/bin.  You should now be able to run gmt programs.
 
-10. GMT supplemental Code
+9. GMT supplemental Code
 -------------------------
 
 GMT users elsewhere have developed programs that utilize the GMT
@@ -434,19 +424,18 @@ To do all of the installations above, you can use the simple shortcut
 	make install-all
 
 
-11. Example Scripts
+10. Example Scripts
 -------------------
 
 	A complete set of the example scripts used to create all the
 example plots, including all necessary data files can be
-found in the GMT_scripts.tar.bz2 archive.
-Copy this to your gmt directory and install there if you would like
-these scripts.  After install, you can run all the examples from the
+found as part of the GMT_doc.tar.bz2 archive.
+If you installed the documentation, you can run all the examples from the
 src directory using
 
 	make examples
 
-12. Misc
+11. Misc
 --------
 
 Before running programs, there are a few things you should do/know:

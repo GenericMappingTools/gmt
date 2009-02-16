@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.64 2009-02-13 03:25:24 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.65 2009-02-16 02:08:17 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.64 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.65 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -150,10 +150,7 @@ Only if you have some very old ftp client, you may have to resort to active ftp
 
 <INPUT TYPE="checkbox" NAME="checkbox_src" CHECKED> GMT source code (1.0 Mb, the main GMT programs, REQUIRED)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_share" CHECKED> GMT Shared Data (0.05 Mb, shared run-time files, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_pdf" CHECKED> GMT Documentation (11 Mb, PDF versions of Cookbook, Tutorial and Man pages)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_web" CHECKED> GMT Documentation (3.6 Mb, HTML versions of Cookbook, Tutorial and Man pages)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_tut" CHECKED> GMT Tutorial (0.4 Mb, Tutorial data sets)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_scripts" CHECKED> GMT Example Scripts &amp; Data (2.8 Mb, required to run test examples)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_doc" CHECKED> GMT Documentation (24 Mb, PDF & HTML versions of Cookbook, Tutorial and Man pages, examples)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED> GMT Supplemental Programs (0.8 Mb, see section C.10 below for details)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_coast" CHECKED> GSHHS Low-resolution Coastlines  (4.1 Mb, Basic-resolution (CLI) GSHHS coastlines, REQUIRED)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_high"> GSHHS High-resolution Coastlines (8.6 Mb)<BR>
@@ -161,14 +158,13 @@ Only if you have some very old ftp client, you may have to resort to active ftp
 
 <P>
 <I>Note: The first three are required for a simple GMT install (in order to run all the examples in the cookbook).
-Many users will also prefer to get the higher resolution coastline files for map making in smaller areas.  The
-example scripts are required if you want to run the test suite.  The tutorial component is needed to run
-the tutorial examples. Make sure you remove old GMT *.bz2 archives from the working directory before you
+Many users will also prefer to get the higher resolution coastline files for map making in smaller areas.
+Make sure you remove old GMT *.bz2 archives from the working directory before you
 run the script; otherwise the script may decide that it does not need to ftp new versions of those archives.</I>
 
 <!--  OPTIONAL TRIANGLE SELECTION  -->
 
-<HR><B>3. Select which triangulation algorithm to use:</B><BR>
+<HR><B>4. Select which triangulation algorithm to use:</B><BR>
 
 <INPUT TYPE="radio" VALUE="Watson" NAME="radio_triangle" CHECKED> Watson's algorithm<BR>
 <INPUT TYPE="radio" VALUE="Shewchuk" NAME="radio_triangle"> Shewchuk's algorithm<BR>
@@ -181,7 +177,7 @@ GMT source code archive.</I>
 
 <!--  INSTALL TOOL OPTION SELECTION  -->
 
-<HR><B>4. Select library build type:<BR></B>
+<HR><B>5. Select library build type:<BR></B>
 
 <INPUT TYPE="radio" VALUE="Static" NAME="radio_link" CHECKED> Static Libraries<BR>
 <INPUT TYPE="radio" VALUE="Shared" NAME="radio_link"> Shared (dynamic) Libraries<BR>
@@ -196,7 +192,7 @@ the default static libraries.</I><BR>
 
 <!--  COMPILER SELECTION  -->
 
-<HR><B>5. Select the C compiler you want to use:</B><BR>
+<HR><B>6. Select the C compiler you want to use:</B><BR>
 
 <SELECT NAME="cc">
 <OPTION SELECTED>1. cc
@@ -214,7 +210,7 @@ Custom C Compiler: <INPUT NAME="custom_cc" TYPE="text" SIZE="30"><BR>
 
 <!--  MAKE SELECTION  -->
 
-<HR><B>6. Select the make program you want to use:</B><BR>
+<HR><B>7. Select the make program you want to use:</B><BR>
 
 <SELECT NAME="make">
 <OPTION SELECTED>1. make
@@ -230,7 +226,7 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 
 <!--  GMT DESTINATION DIRECTORIES SELECTION  -->
 
-<HR><B>7. Select GMT final destination directories</B><BR>
+<HR><B>8. Select GMT final destination directories</B><BR>
 
 <TABLE border=0 cellspacing=2 cellpadding=2>
 <TR><TD>Place GMT in subdirectories of:</TD><TD><INPUT NAME="gmt_prefix" TYPE="text" SIZE="45"></TD></TR>
@@ -241,7 +237,7 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 <TR><TD>Place GMT include files in:</TD><TD><INPUT NAME="gmt_include" TYPE="text" SIZE="45"></TD></TR>
 <TR><TD>Place GMT data resources in:</TD><TD><INPUT NAME="gmt_share" TYPE="text" SIZE="45"></TD></TR>
 <TR><TD>Place GMT man pages in:</TD><TD><INPUT NAME="gmt_man" TYPE="text" SIZE="45">
-<TR><TD>Place GMT web pages in:</TD><TD><INPUT NAME="gmt_web" TYPE="text" SIZE="45"></TD></TR>
+<TR><TD>Place GMT doc pages in:</TD><TD><INPUT NAME="gmt_doc" TYPE="text" SIZE="45"></TD></TR>
 </TABLE>
 
 <I><P>
@@ -256,18 +252,18 @@ specify it in the first box above, or enter all subdirectories
 individually.
 Only specify alternative directories if you want to place the files elsewhere. 
 <P>
-Note that the man pages will be be placed in the subdirectories man1 and man3 of the directory
+Note that the man pages will be be placed in the sub-directories man1 and man3 of the directory
 specified above.
 The man utility will find the GMT man pages if the chosen man directory is included in the
 users' MANPATH environmental variable.
 Make sure the users' search path contains the directory where you place the executables.  
 Finally, advise users to add a browser bookmark for the
-file gmt/doc/html/gmt_services.html in the web directory you chose above; that page provides links to online
-GMT documentation and man pages (assuming you selected the web archive in Section C.3).</I><BR>
+file gmt/doc/html/gmt_services.html in the doc directory you chose above; that page provides links to online
+GMT documentation and man pages (assuming you selected the doc archive in Section C.3).</I><BR>
 
 <!--  GMT_SHAREDIR DIRECTORY SELECTION  -->
 
-<HR><B>8. Select alternative GMT_SHAREDIR directory</B><BR>
+<HR><B>9. Select alternative GMT_SHAREDIR directory</B><BR>
 
 Alternative GMT_SHAREDIR directory: <INPUT NAME="gmt_sharedir" TYPE="text" SIZE="30"><BR>
 
@@ -285,7 +281,7 @@ C.7 [Default].</I><BR>
 
 <!--  GMT COASTLINE ALTERNATE DIRECTORIES SELECTION  -->
 
-<HR><B>9. Alternative coastline directories</B><BR>
+<HR><B>10. Alternative coastline directories</B><BR>
 
 <INPUT TYPE="radio" VALUE="all" NAME="radio_coast" CHECKED> Install all selected coastline files in $GMT_SHAREDIR/coast<BR>
 <INPUT TYPE="radio" VALUE="dir" NAME="radio_coast"> Place coastline files in several directories<BR>
@@ -304,7 +300,7 @@ separate from where the smaller files reside.  The selections below are only use
 
 <!--  GMT SUPPLEMENTAL PACKAGE SELECTION  -->
 
-<HR><B>10. Select supplemental packages to install:</B><BR>
+<HR><B>11. Select supplemental packages to install:</B><BR>
 
 <INPUT TYPE="checkbox" NAME="checkbox_dbase"  CHECKED> DBASE: Extracting data from NGDC DEM and other grids<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_gshhs"  CHECKED> GSHHS: Global Self-consistent Hierarchical High-resolution Shoreline tools<BR>

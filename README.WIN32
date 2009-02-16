@@ -1,4 +1,4 @@
-	$Id: README.WIN32,v 1.21 2008-05-15 23:40:39 guru Exp $
+	$Id: README.WIN32,v 1.22 2009-02-16 02:08:17 guru Exp $
 
 README file for installing GMT from scratch (i.e., compiling the
 source) under Windows.  If you only want to install executables,
@@ -34,13 +34,11 @@ ADDITIONAL MATERIAL:
 ====================
 
 For complete GMT Documentation, including a Cookbook and Technical
-Reference Manual, a Tutorial and Short Course Manual in PDF format,
-and a PDF version of all UNIX man pages, get the GMT_pdf.bz2 archive.
-For the HTML-only versions, get GMT_web.bz2.  After installing, make
-a bookmark for the file GMT/www/gmt/gmt_sevices.html.  Should you
-want to try the tutorial examples you will need GMT_tut.bz2.
-UNIX man pages are in GMT_man.bz2.  Most Windows users will only
-need the HTML or PDF versions.
+Reference Manual, a Tutorial and Short Course Manual, all examples,
+and UNIX man pages, all in HTML and PDF format, get the GMT_doc.bz2
+archive.  After installing, make a bookmark for the file
+
+	GMT/share/doc/gmt/html/gmt_sevices.html.
 
 If you want the high and/or full resolution GSHHS coastlines,
 political borders, and rivers you must obtain GSHHS_high.bz2 and
