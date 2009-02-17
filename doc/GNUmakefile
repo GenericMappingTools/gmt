@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.35 2009-02-13 21:05:14 remko Exp $
+#	$Id: GNUmakefile,v 1.36 2009-02-17 16:37:46 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -40,7 +40,9 @@
 #    /sw/bin/pnmtopng -interlace -trans 'gray85'  > img294.png" failed: Invalid argument
 #    it means that we must set export RGBDEF=/usr/X11/share/X11/rgb.txt
 #    as for some reason it cannot be found where it is expected (/usr/X11R6/lib/X11)
-# 2. If latex complains that it cannot find html.sty you need to run mktexlsr (as admin)
+# 2. If inline graphics shows up with underlines then you might need to edit
+#    your l2hconf.pm file and remove the -Ppdf option from DVIPSOPT.
+# 3. If latex complains that it cannot find html.sty you need to run mktexlsr (as admin)
 #
 
 include ../src/makegmt.macros
@@ -50,8 +52,6 @@ include ../src/makegmt.macros
 DOC=../share/doc/gmt
 PAPER=a4
 L2H=latex2html -local_icons -white -show_section_numbers -image_type png -bottom_navigation -notransparent
-# NOTICE: If inline graphics shows up with underlines then you might need to edit
-# your l2hconf.pm file and remove the -Ppdf option from DVIPSOPT.
 LATEX=latex --interaction=batchmode
 PDFLATEX=pdflatex --interaction=batchmode
 
