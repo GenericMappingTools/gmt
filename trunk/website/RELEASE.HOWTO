@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.21 2008-04-26 22:36:16 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.22 2009-02-17 07:38:12 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -39,8 +39,8 @@ must ensure you do all the steps listed below:
 6.  Determine file sizes of all archives and update these values
     in guru/install_gmt and website/gmt_install_form.html
    
-7.  Run make zip_dist, install the zip under Windows and build
-    the three Windows installers, then place them in GMT/ftp.
+7.  Run GMT_winbuild.bat under Parallels which will build
+    the three Windows installers and place them in GMT/ftp.
 
 8.  In GMT/ftp, update .message, README.GMT, and VERSION
 
