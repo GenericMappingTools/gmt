@@ -6,11 +6,12 @@ Source2: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_share.tar.bz2
 Source3: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_src.tar.bz2
 Source4: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_suppl.tar.bz2
 Source5: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_triangle.tar.bz2
-Source-MD5:  b9d93804d7dabeea325f94064f6ddb94
+Source-MD5:  247e62f8468339b12d73f17dd5dbb0ad
 Source2-MD5: e37256c2c0e710a207d3788a84795ad5
-Source3-MD5: 89c8bad09db6f2b6f06e510937095a25
-Source4-MD5: 4f71195b2d18f90fdd8a862378b424c1
+Source3-MD5: e5aa473a2bb93001942730f3da7c915f
+Source4-MD5: ca3c570645c4159a1f6c048ff8c2a7b1
 Source5-MD5: 1f1789e0f18f90aae20e211b2aa31d20
+
 SourceDirectory: GMT%v
 BuildDepends: netcdf (>= 3.6.2-6)
 Depends: netcdf-shlibs (>= 3.6.2-6), %n-shlibs (= %v-%r), gshhs-lores
