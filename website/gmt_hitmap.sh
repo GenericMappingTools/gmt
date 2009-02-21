@@ -1,8 +1,8 @@
 #!/bin/sh
-#	$Id: gmt_hitmap.sh,v 1.11 2009-02-21 01:06:51 guru Exp $
+#	$Id: gmt_hitmap.sh,v 1.12 2009-02-21 01:09:19 guru Exp $
 #
 # Make the GMT ftpsite hitmap PNG image and the web page that uses it.
-# The files created are gmt_hitmap.png and gmt_hitmap.map
+# The files created are gmt_hitmap.png and gmt_mirrors.html
 #
 dpi=100
 yoff=1
