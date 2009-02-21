@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmt_hitmap.sh,v 1.10 2008-09-05 04:06:46 guru Exp $
+#	$Id: gmt_hitmap.sh,v 1.11 2009-02-21 01:06:51 guru Exp $
 #
 # Make the GMT ftpsite hitmap PNG image and the web page that uses it.
 # The files created are gmt_hitmap.png and gmt_hitmap.map
@@ -17,8 +17,8 @@ cat << EOF > mirrors.d
 10:44	59:55	ftp://ftp.geologi.uio.no/pub/gmt	CB	OSLO - NORWAY	IFG, Dept of Geosciences, Oslo, Norway	Serving Europe
 16:22	48:12	ftp://gd.tuwien.ac.at/pub/gmt	CT	VIENNA - AUSTRIA	Vienna U of Techology, Vienna, Austria	Serving Europe
 138:30	35:00	ftp://ftp.scc.u-tokai.ac.jp/pub/gmt	CB	SHIMIZU - JAPAN	Tokai U, Shimizu, Japan	Serving Asia
-151:12.6	-33:51	ftp://mirror.geosci.usyd.edu.au/pub/gmt	CT	SYDNEY - AUSTRALIA	School of Geosciences, U of Sydney	Serving Australia
-23:00	-30:00	ftp://gmt.mirror.ac.za/pub/gmt	CT	CAPE TOWN/JOHANNESBURG - S AFRICA	TENET, Tertiary Education & Research Networks of South Africa, South Africa	Serving Africa
+151:12.6	-33:51	ftp://mirror.geosci.usyd.edu.au/pub/gmt	LT	SYDNEY - AUSTRALIA	School of Geosciences, U of Sydney	Serving Australia
+23:00	-30:00	ftp://gmt.mirror.ac.za/pub/gmt	LT	CAPE TOWN - S AFRICA	TENET, Tertiary Education & Research Networks of South Africa, South Africa	Serving Africa
 EOF
 cat << EOF > master.d
 -157:59	21:55	ftp://ftp.soest.hawaii.edu/gmt	CT	HONOLULU - USA	SOEST, Dept of Geology & Geophysics, Honolulu, Hawaii, USA	Serving the Pacific Rim
@@ -47,7 +47,7 @@ done < mirror_sites.d
 psxy -R -J -O -K -Sc${dia}i -Gyellow -Wthin mirror_sites.d >> gmt_hitmap.ps
 psxy -R -J -O -K -Sc${dia}i -Gred -Wthin master_site.d >> gmt_hitmap.ps
 # Add site labels
-pstext -R -J -O -K mirror_sites.d -W255O -N -Dj0.15i/0.175i >> gmt_hitmap.ps
+pstext -R -J -O -K mirror_sites.d -W255O -N -Dj0i/0.175i >> gmt_hitmap.ps
 pstext -R -J -O -K master_site.d -W0O -Gwhite -N -Dj0.15i/0.2i >> gmt_hitmap.ps
 # Draw the legend
 pslegend -R0/5/0/1 -Jx1i -O -K -D3/0/2.1i/0.6i/CT -Gtan -Y-0.1i -F2p -L1.25 --ANNOT_FONT_PRIMARY=Helvetica-Bold << EOF >> gmt_hitmap.ps
@@ -82,7 +82,7 @@ install described under the <A HREF="gmt_download.html">Download</A> section. Th
 if you just want to obtain Windows executables. To connect to your preferred ftp server, click on the
 location that is physically nearest you:<P>
 <P><CENTER><IMG SRC="gmt_hitmap.png" WIDTH="$IW" HEIGHT="$IH" ALIGN=bottom NATURALSIZEFLAG="3" USEMAP="#GMTmap"> </A></CENTER>
-<MAP name="#GMTmap">
+<MAP name="GMTmap">
 EOF
 cat mirrors.d master.d | mapproject -JN180/$width -Rd | awk -F'\t' '{printf "\t<AREA HREF=\"%s\" SHAPE=\"circle\" COORDS=\"%d,%d,%d\">\n", $3, int($1+0.5), int('$height'-$2+0.5), int('$rad'+0.5)}' >> gmt_mirrors.html
 cat << EOF >> gmt_mirrors.html
