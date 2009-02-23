@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 23
-#		$Id: job23.sh,v 1.14 2008-02-22 21:10:43 remko Exp $
+#		$Id: job23.sh,v 1.15 2009-02-23 01:19:22 remko Exp $
 #
 # Purpose:	Plot distances from Rome and draw shortest paths
 # GMT progs:	grdmath, grdcontour, pscoast, psxy, pstext, grdtrack
@@ -20,13 +20,13 @@ grdmath -Rg -I1 $lon $lat SDIST 111.13 MUL = dist.grd
 
 # Location info for 5 other cities + label justification
 
-cat << EOF > cities.d
+cat << END > cities.d
 105.87	21.02	HANOI		LM
 282.95	-12.1	LIMA		LM
 178.42	-18.13	SUVA		LM
 237.67	47.58	SEATTLE		RM
 28.20	-25.75	PRETORIA	LM
-EOF
+END
 
 pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 \
 	-B0g30:."Distances from $name to the World": -K -Dc -Wthinnest > $ps

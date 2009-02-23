@@ -1,9 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.423 2009-02-21 01:06:50 guru Exp $
+	$Id: ChangeLog,v 1.424 2009-02-23 01:19:22 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-02-23	remko
+	* examples/*[c]sh:	Replaced EOF by END for consistency.
+
 2009-02-20	pwessel
 	* web site:		The script generating the mirror site PNG and hitmap had some
 				bugs that prevented a proper hitmap and image.  Now fixed.
+
 -----------------------------------------------------------------------------------------
 2009-02-15
 	* GMT 4.4.0 finalized and released

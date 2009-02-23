@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 25
-#		$Id: job25.sh,v 1.6 2008-02-22 21:10:43 remko Exp $
+#		$Id: job25.sh,v 1.7 2009-02-23 01:19:22 remko Exp $
 #
 # Purpose:	Display distribution of antipode types
 # GMT progs:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
@@ -24,11 +24,11 @@ grdmath key.grd 0 EQ 0 NAN scale.grd MUL = tmp.grd
 grd2xyz tmp.grd -S -ZTLf > key.b
 mixed=`gmtmath -bi1s -Ca -S key.b SUM UPPER RINT =`
 # Generate corresponding color table
-cat << EOF > key.cpt
+cat << END > key.cpt
 -1.5	blue	-0.5	blue
 -0.5	gray	0.5	gray
 0.5	red	1.5	red
-EOF
+END
 # Create the final plot and overlay coastlines
 gmtset ANNOT_FONT_SIZE_PRIMARY +10p PLOT_DEGREE_FORMAT dddF
 grdimage key.grd -Sn -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i \

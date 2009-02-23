@@ -1,6 +1,6 @@
 #!/bin/sh
 #               GMT ANIMATION 01
-#               $Id: anim_01.sh,v 1.1 2008-05-30 04:27:08 guru Exp $
+#               $Id: anim_01.sh,v 1.2 2009-02-23 01:19:22 remko Exp $
 #
 # Purpose:      Make web page with simple animated GIF of sine function
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
@@ -55,7 +55,7 @@ while [ $frame -le $n_frames ]; do
 done
 # 3. Create animated GIF file and HTML for web page
 convert -delay 20 -loop 0 $$/*.tif $name.gif
-cat << EOF > $name.html
+cat << END > $name.html
 <HTML>
 <TITLE>GMT Trigonometry: The sine movie</TITLE>
 <BODY bgcolor="#ffffff">
@@ -74,7 +74,7 @@ with a 0.2 second pause between frames, set to repeat forever.
 <I>$name.sh: Created by $USER on `date`</I>
 </BODY>
 </HTML>
-EOF
+END
 # 4. Clean up temporary files
 gmtset DOTS_PR_INCH 300
 gmt_cleanup .gmt

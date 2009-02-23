@@ -1,6 +1,6 @@
 #!/bin/sh
 #               GMT ANIMATION 03
-#               $Id: anim_03.sh,v 1.3 2008-06-09 19:30:19 guru Exp $
+#               $Id: anim_03.sh,v 1.4 2009-02-23 01:19:22 remko Exp $
 #
 # Purpose:      Make web page with simple animated GIF of Iceland topo
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
@@ -43,7 +43,7 @@ while [ $az -lt 360 ]; do
 	frame=`gmt_set_framenext $frame`
 done
 convert -delay 10 -loop 0 $$/*.tif $name.gif
-cat << EOF > $name.html
+cat << END > $name.html
 <HTML>
 <TITLE>GMT 3-D perspective of Iceland</TITLE>
 <BODY bgcolor="#ffffff">
@@ -57,7 +57,7 @@ point around the island.
 <I>$name.sh: Created by $USER on `date`</I>
 </BODY>      
 </HTML>
-EOF
+END
 # 4. Clean up temporary files
 gmtset DOTS_PR_INCH 300
 gmt_cleanup .gmt
