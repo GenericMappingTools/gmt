@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 22
 REM
-REM             $Id: job22.bat,v 1.11 2007-02-26 04:00:52 pwessel Exp $
+REM             $Id: job22.bat,v 1.12 2009-02-23 01:19:22 remko Exp $
 REM
 REM Purpose:    Automatic map of last 7 days of world-wide seismicity
 REM
@@ -91,7 +91,7 @@ REM OK, now we can actually run pslegend.  We center the legend below the map.
 REM Trial and error shows that 1.7i is a good legend height:
 
 if %master%==n echo off
-pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -Jx1i -R0/8/0/8 -O -F neis.legend -Glightyellow -Slegend.bat
+pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -J -R -O -F neis.legend -Glightyellow -Slegend.bat
 call legend.bat >> example_22.ps
 if %master%==n echo on
 

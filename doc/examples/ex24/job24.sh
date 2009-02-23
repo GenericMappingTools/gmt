@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 24
-#		$Id: job24.sh,v 1.5 2009-01-11 03:12:14 remko Exp $
+#		$Id: job24.sh,v 1.6 2009-02-23 01:19:22 remko Exp $
 #
 # Purpose:	Extract subsets of data based on geospatial criteria
 # GMT progs:	gmtselect, pscoast, psxy, minmax
@@ -9,11 +9,11 @@
 # Highlight oceanic earthquakes within 3000 km of Hobart and > 1000 km from dateline
 ps=example_24.ps
 echo "147:13 -42:48 3000 Hobart" > point.d
-cat << EOF > dateline.d
+cat << END > dateline.d
 > Our proxy for the dateline
 180	0
 180	-90
-EOF
+END
 R=`minmax -I10 oz_quakes.d`
 pscoast $R -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10WeSn \
 	-U"Example 24 in Cookbook" > $ps

@@ -1,6 +1,6 @@
 #!/bin/sh
 #               GMT ANIMATION 02
-#               $Id: anim_02.sh,v 1.1 2008-05-30 04:27:08 guru Exp $
+#               $Id: anim_02.sh,v 1.2 2009-02-23 01:19:22 remko Exp $
 #
 # Purpose:      Make web page with simple animated GIF of sine function
 # GMT progs:    gmtset, gmtmath, grdgradient, makecpt, grdimage psxy, ps2raster
@@ -46,7 +46,7 @@ while [ $frame -lt $n_frames ]; do
 done
 # 3. Create animated GIF file and HTML for web page
 convert -delay 10 -loop 0 $$/*.tif $name.gif
-cat << EOF > $name.html
+cat << END > $name.html
 <HTML>
 <TITLE>GMT shading: A tool for feature detection</TITLE>
 <BODY bgcolor="#ffffff">
@@ -66,7 +66,7 @@ with a 0.1 second pause between the 36 frames.
 <I>$name.sh: Created by $USER on `date`</I>
 </BODY>
 </HTML>
-EOF
+END
 # 4. Clean up temporary files
 gmtset DOTS_PR_INCH 300
 gmt_cleanup .gmt
