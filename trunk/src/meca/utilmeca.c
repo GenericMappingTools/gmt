@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.18 2009-02-07 15:45:52 remko Exp $
+/*	$Id: utilmeca.c,v 1.19 2009-02-24 17:33:42 jluis Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -494,7 +494,7 @@ double computed_strike1(struct nodal_plane NP1)
         temp = ss * cr;
         temp -= sr *  cs * cd1;
         cp2 = am * temp;
-        str2 = d_atan2(sp2, cp2);
+        str2 = d_atan2(sp2, cp2) * R2D;
         str2 = zero_360(str2);
     }
     return(str2);
@@ -550,7 +550,7 @@ double computed_rake1(struct nodal_plane NP1)
     else
         sinrake2 = -am * sd * cs / cd;
 
-    rake2 = d_atan2(sinrake2, -am * sd * ss);
+    rake2 = d_atan2(sinrake2, -am * sd * ss) * R2D;
 
     return(rake2);
 }
@@ -578,7 +578,7 @@ double computed_dip2(double str1,double dip1,double str2)
             dip2 = 1000.; /* (only first plane will be plotted) */
     }
     else {
-        dip2 = d_atan2(cosd(dip1), -sind(dip1) * cosdp12);
+        dip2 = d_atan2(cosd(dip1), -sind(dip1) * cosdp12) * R2D;
     }
 
     return(dip2);
@@ -610,7 +610,7 @@ double computed_rake2(double str1,double dip1,double str2,double dip2,double fau
     else
         sinrake2 = -fault * sd * cs / cd;
 
-    rake2 = d_atan2(sinrake2, - fault * sd * ss);
+    rake2 = d_atan2(sinrake2, - fault * sd * ss) * R2D;
 
     return(rake2);
 }
@@ -677,7 +677,7 @@ double null_axis_strike(double str1,double dip1,double str2,double dip2)
         cosphn = -cosphn;
         sinphn = -sinphn;
     }
-    phn = d_atan2(sinphn, cosphn);
+    phn = d_atan2(sinphn, cosphn) * R2D;
     if (phn < 0.)
         phn += 360.;
     return(phn);
