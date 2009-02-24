@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.424 2009-02-23 01:19:22 remko Exp $
+	$Id: ChangeLog,v 1.425 2009-02-24 17:43:12 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-02-24	jluis
+	* utilmeca.c:		Needed to convert the output from d_atan2() to degrees
 
 2009-02-23	remko
 	* examples/*[c]sh:	Replaced EOF by END for consistency.
