@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.22 2009-01-09 04:02:36 guru Exp $
+ *	$Id: spotter.h,v 1.23 2009-02-25 19:33:16 remko Exp $
  *
  *   Copyright (c) 1999-2009 by P. Wessel
  *
@@ -65,7 +65,6 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
 	BOOLEAN create, fit, plot;	/* TRUE if we want to create, fit, or plot hotspot */
         char name[32];          /* Full name of hotspot */
 	/* Secondary (derived) quantities */
-        double lonr, latr;      /* Current location of hot spot in radians */
         double x, y, z;         /* Cartesian Current location of hot spot */
 };
 
