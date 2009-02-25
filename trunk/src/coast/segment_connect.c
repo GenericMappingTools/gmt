@@ -1,7 +1,7 @@
 /*
- *	$Id: segment_connect.c,v 1.3 2006-04-10 04:53:48 pwessel Exp $
- */
-/* segment_connect clean_segment_file.b tmp_poly_segment_file.b closed_poly.b
+ *	$Id: segment_connect.c,v 1.4 2009-02-25 12:37:40 remko Exp $
+ *
+ * segment_connect clean_segment_file.b tmp_poly_segment_file.b closed_poly.b
  *
  * Finds neighboring segments and combines them into longer chains [possibly
  * polygons] provided the endpoints are closer than some cutoff distance.
@@ -279,30 +279,14 @@ int main (int argc, char **argv)
 
 int i_great_circle_dist(struct LONGPAIR A, struct LONGPAIR B )
 {
-	/* great circle distance on a sphere in degrees */
-	double sin(), cos(), tan(), asin(), acos(), atan(), fabs();
-	double C, a, b, c;
-	double cosC, cosa, cosb, cosc;
-	double sina, sinb;
+	/* great circle distance on a sphere in meters */
+	double c;
 
+	if (A.x == B.x && A.y == B.y) return(0);
 
-	if ( A.x == B.x && A.y == B.y) return( 0 );
+	c = GMT_great_circle_dist((double)A.x*1e-6, (double)A.y*1e-6, (double)B.x*1e-6, (double)B.y*1e-6);
 
-	a=D2R*(90.0-(B.y*1.0e-6));
-	b=D2R*(90.0-(A.y*1.0e-6));
-
-	C = D2R*( B.x - A.x )*1.0e-6;
-
-	cosa = cos(a);
-	cosb = cos(b);
-	sina = sin(a);
-	sinb = sin(b);
-	cosC = cos(C);
-
-	cosc = cosa*cosb + sina*sinb*cosC;
-	if (cosc<-1.0) c=M_PI; else if (cosc>1) c=0.0; else c=acos(cosc);
-
-	return( (int)(c * R2D * M_PR_DEG));
+	return((int)(c * M_PR_DEG));
 }
 
 void gwrite (struct LONGPAIR p[], int n) {
