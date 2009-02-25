@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.253 2009-02-25 04:25:51 remko Exp $
+ *	$Id: gmt_plot.c,v 1.254 2009-02-25 19:34:57 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2802,7 +2802,7 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 	}
 
 	if (project_info.projection == GMT_OBLIQUE_MERC) {	/* Set latitude to the oblique latitude */
-		a = fabs (GMT_great_circle_dist (project_info.o_pole_lon * R2D, project_info.o_pole_lat * R2D, ms->scale_lon, ms->scale_lat));	/* Colatitude */
+		a = fabs (GMT_great_circle_dist (project_info.o_pole_lon, project_info.o_pole_lat, ms->scale_lon, ms->scale_lat));	/* Colatitude */
 		if (a > 90.0) a = 180.0 - 90.0;	/* Flip hemisphere */
 		ms->scale_lat = 90.0 - a;
 	}

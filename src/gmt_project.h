@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.68 2009-02-05 21:54:42 guru Exp $
+ *	$Id: gmt_project.h,v 1.69 2009-02-25 19:30:49 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -180,9 +180,8 @@ struct GMT_MAP_PROJECTIONS {
 	/* Oblique Mercator Projection (Spherical version )*/
 
 	double o_sin_pole_lat, o_cos_pole_lat;	/* Pole of rotation */
-	double o_pole_lon;	/* In Radians */
-	double o_pole_lat;	/* In Radians */
-	double o_beta;		/* lon' = beta for central_meridian (In Radians) */
+	double o_pole_lon, o_pole_lat;	/* In degrees */
+	double o_beta;			/* lon' = beta for central_meridian (degrees) */
 	double o_FP[3], o_FC[3], o_IP[3], o_IC[3];
 
 	/* TM and UTM Projections */
