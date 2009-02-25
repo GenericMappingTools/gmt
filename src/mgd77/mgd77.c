@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.206 2009-02-12 04:46:33 guru Exp $
+ *	$Id: mgd77.c,v 1.207 2009-02-25 04:32:59 remko Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4499,7 +4499,7 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 	int i, j, k, l, m, n, ll, lm, kmx, nmx, nc;
 	double cd, cl[13], tc, ct, sd, fn = 0.0, gn = 0.0, fm, sl[13];
 	double rr, st, one, gmm, rho, two, three, ratio;
-	double p[105], q[105], r, t, a2, b2, colat;
+	double p[105], q[105], r, t, a2, b2;
 	double H, F, X = 0, Y = 0, Z = 0, dec, dip;
 	
 	if (date < 1900.0 || date > 2015.0) {
@@ -4543,13 +4543,8 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 		kmx = (nmx + 1) * (nmx + 2) / 2;
 	}
 	r = alt;
-	colat = 90. - lat;
-	one = colat * D2R;
-	ct = cos(one);
-	st = sin(one);
-	one = elong * D2R;
-	cl[0] = cos(one);
-	sl[0] = sin(one);
+	sincosd (90.0 - lat, &st, &ct);
+	sincosd (elong, &(sl[0]), &(cl[0]));
 	cd = 1.;
 	sd = 0.;
 	l = 1;
@@ -4639,11 +4634,11 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 	Z = Z * cd - one * sd;
 	H = sqrt(X*X + Y*Y);
 	F = sqrt(H*H + Z*Z);
-	dec = atan2(Y,X)*R2D;   dip = atan2(Z,H)*R2D;
+	dec = atan2d(Y,X);	dip = atan2d(Z,H);
 	out[0] = F;		out[1] = H;
 	out[2] = X;		out[3] = Y;
 	out[4] = Z;
-	out[5] = dec;	out[6] = dip;
+	out[5] = dec;		out[6] = dip;
 	
 	return (MGD77_NO_ERROR);
 }
