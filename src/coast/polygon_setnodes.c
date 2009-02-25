@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.6 2007-03-12 19:52:26 remko Exp $
+ *	$Id: polygon_setnodes.c,v 1.7 2009-02-25 12:36:29 remko Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -125,7 +125,7 @@ int main (int argc, char **argv)
 		
 		if (id == ANTARCTICA) {	/* Antarctica : Switch to polar coordinates r, theta */
 			for (i = 0; i < n; i++) {
-				sincos (1e-6 * lon[i] * D2R, &slon, &clon);
+				sincosd (1e-6 * lon[i], &slon, &clon);
 				r0 = 90.0 + (1e-6 * lat[i]);
 				x0 = r0 * clon;
 				y0 = r0 * slon;
@@ -224,7 +224,7 @@ int main (int argc, char **argv)
 				}
 
 				if (id == ANTARCTICA) {
-					sincos (blon * D2R, &slon, &clon);
+					sincosd (blon, &slon, &clon);
 					r0 = 90.0 + blat;
 					x0 = r0 * clon;
 					y0 = r0 * slon;

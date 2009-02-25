@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.9 2007-08-11 04:22:07 guru Exp $
+ *	$Id: polygon_xover.c,v 1.10 2009-02-25 12:36:29 remko Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -173,7 +173,7 @@ int main (int argc, char **argv)
 			if (id1 == ANTARCTICA) {	/* Undo projection for crossover results */
 				for (i = 0; i < nx; i++) {
 					r = hypot (XC.x[i], XC.y[i]);
-					theta = R2D * atan2 (XC.y[i], XC.x[i]);
+					theta = atan2d (XC.y[i], XC.x[i]);
 					if (theta < 0.0) theta += 360.0;
 					XC.x[i] = theta;
 					XC.y[i] = r - 90.0;
