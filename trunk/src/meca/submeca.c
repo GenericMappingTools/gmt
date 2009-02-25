@@ -1,4 +1,4 @@
-/*	$Id: submeca.c,v 1.10 2009-02-07 15:45:52 remko Exp $
+/*	$Id: submeca.c,v 1.11 2009-02-25 04:38:39 remko Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -40,8 +40,8 @@ void rot_axis(struct AXIS A,struct nodal_plane PREF,struct AXIS *Ar)
     x2 = xn * cosd(PREF.str) + xe * sind(PREF.str);
     x3 = xn * sind(PREF.str) * sind(PREF.dip) - xe * cosd(PREF.str) * sind(PREF.dip) + xz * cosd(PREF.dip);
 
-    Ar->dip = asin(x3) / D2R;
-    Ar->str = atan2(x2, x1) / D2R;
+    Ar->dip = asind(x3);
+    Ar->str = atan2d(x2, x1);
     if(Ar->dip < 0.) {
         Ar->dip += 180.;
         Ar->str = zero_360((Ar->str += 180));
@@ -117,7 +117,7 @@ void rot_nodal_plane(struct nodal_plane PLAN,struct nodal_plane PREF,struct noda
           PLANR->str += PIDEG;
      }
      PLANR->str = zero_360(PLANR->str);
-     PLANR->dip = acos(fabs(cdr)) / D2R;
+     PLANR->dip = acosd(fabs(cdr));
      cr = cr * (sir * (cd * crd * cdfi + sd * srd) - cor * crd * sdfi) + sr * ( cor * cdfi + sir * cd * sdfi);
      sr = (cor * srd * sdfi + sir * (sd * crd - cd * srd * cdfi)) / sdr;
      PLANR->rake = d_atan2(sr, cr);
