@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.25 2009-02-06 23:00:08 guru Exp $
+ *	$Id: gmt_vector.c,v 1.26 2009-02-25 03:56:23 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -672,8 +672,8 @@ void GMT_cart_to_geo (double *alat, double *alon, double *a, int rads)
 	   lat and lon converted from radians into degrees.  */
 
 	if(rads) {
-		*alat = R2D * d_asin(a[2]);
-		*alon = R2D * d_atan2(a[1], a[0]);
+		*alat = d_asind(a[2]);
+		*alon = d_atan2d(a[1], a[0]);
 	}
 	else {
 		*alat = d_asin(a[2]);

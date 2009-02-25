@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.372 2009-02-05 22:12:12 guru Exp $
+ *	$Id: gmt_init.c,v 1.373 2009-02-25 03:56:23 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4799,8 +4799,8 @@ int GMT_parse_J_option (char *args)
 				error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
 				error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
 				c = 10.0;	/* compute point 10 degrees from origin along azimuth */
-				project_info.pars[2] = project_info.pars[0] + R2D * atan (sind (c) * sind (az) / (cosd (project_info.pars[1]) * cosd (c) - sind (project_info.pars[1]) * sind (c) * cosd (az)));
-				project_info.pars[3] = R2D * d_asin (sind (project_info.pars[1]) * cosd (c) + cosd (project_info.pars[1]) * sind (c) * cosd (az));
+				project_info.pars[2] = project_info.pars[0] + atand (sind (c) * sind (az) / (cosd (project_info.pars[1]) * cosd (c) - sind (project_info.pars[1]) * sind (c) * cosd (az)));
+				project_info.pars[3] = d_asind (sind (project_info.pars[1]) * cosd (c) + cosd (project_info.pars[1]) * sind (c) * cosd (az));
 			}
 			else if (n_slashes == 4) {
 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
