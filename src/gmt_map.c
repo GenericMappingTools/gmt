@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.209 2009-02-25 14:13:13 remko Exp $
+ *	$Id: gmt_map.c,v 1.210 2009-02-25 19:29:52 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1516,8 +1516,8 @@ int GMT_map_init_oblique (void) {
 	if (irint (project_info.pars[6]) == 1) {	/* Must get correct origin, then get second point */
 		p_x = project_info.pars[2];	p_y = project_info.pars[3];
 
-		project_info.o_pole_lon = D2R * p_x;
-		project_info.o_pole_lat = D2R * p_y;
+		project_info.o_pole_lon = p_x;
+		project_info.o_pole_lat = p_y;
 		project_info.o_sin_pole_lat = sind (p_y);
 		project_info.o_cos_pole_lat = cosd (p_y);
 
@@ -1539,15 +1539,16 @@ int GMT_map_init_oblique (void) {
 	/* Here we have pole and origin */
 
 	/* Get forward pole and origin vectors FP, FC */
-	GMT_geo_to_cart (&project_info.o_pole_lat, &project_info.o_pole_lon, project_info.o_FP, FALSE);
-	GMT_geo_to_cart (&o_y, &o_x, P, TRUE);	/* P points to origin  */
+	GMT_geo_to_cart (p_y, p_x, project_info.o_FP, TRUE);
+	GMT_geo_to_cart (o_y, o_x, P, TRUE);	/* P points to origin  */
 	GMT_cross3v (project_info.o_FP, P, project_info.o_FC);
 	GMT_normalize3v (project_info.o_FC);
+
 	/* Get inverse pole and origin vectors FP, FC */
 	GMT_obl (0.0, M_PI_2, &p_x, &p_y);
-	GMT_geo_to_cart (&p_y, &p_x, project_info.o_IP, FALSE);
+	GMT_geo_to_cart (p_y, p_x, project_info.o_IP, FALSE);
 	GMT_obl (0.0, 0.0, &c_x, &c_y);
-	GMT_geo_to_cart (&c_y, &c_x, P, FALSE);	/* P points to origin  */
+	GMT_geo_to_cart (c_y, c_x, P, FALSE);	/* P points to origin  */
 	GMT_cross3v (project_info.o_IP, P, project_info.o_IC);
 	GMT_normalize3v (project_info.o_IC);
 
@@ -1593,75 +1594,67 @@ void GMT_pole_rotate_forward (double lon, double lat, double *tlon, double *tlat
 {
 	/* Given the pole position in project_info, geographical coordinates
 	 * are computed from oblique coordinates assuming a spherical earth.
+	 * Latitutes and longitudes are in degrees.
 	 */
 
 	double sin_lat, cos_lat, cos_lon, sin_lon, cc;
 
-	lon *= D2R;	lat *= D2R;
-	lon -= project_info.o_pole_lon;
-	sincos (lat, &sin_lat, &cos_lat);
-	sincos (lon, &sin_lon, &cos_lon);
+	sincosd (lat, &sin_lat, &cos_lat);
+	sincosd (lon - project_info.o_pole_lon, &sin_lon, &cos_lon);
 	cc = cos_lat * cos_lon;
 	*tlat = d_asind (project_info.o_sin_pole_lat * sin_lat + project_info.o_cos_pole_lat * cc);
-	*tlon = R2D * project_info.o_beta + d_atan2d (cos_lat * sin_lon, project_info.o_sin_pole_lat * cc - project_info.o_cos_pole_lat * sin_lat);
+	*tlon = project_info.o_beta + d_atan2d (cos_lat * sin_lon, project_info.o_sin_pole_lat * cc - project_info.o_cos_pole_lat * sin_lat);
 }
 
 void GMT_pole_rotate_inverse (double *lon, double *lat, double tlon, double tlat)
 {
 	/* Given the pole position in project_info, geographical coordinates
 	 * are computed from oblique coordinates assuming a spherical earth.
+	 * Latitutes and longitudes are in degrees.
 	 */
 
 	double sin_tlat, cos_tlat, cos_tlon, sin_tlon, cc;
 
-	tlon *= D2R;	tlat *= D2R;
-	tlon -= project_info.o_beta;
-	sincos (tlat, &sin_tlat, &cos_tlat);
-	sincos (tlon, &sin_tlon, &cos_tlon);
+	sincosd (tlat, &sin_tlat, &cos_tlat);
+	sincosd (tlon - project_info.o_beta, &sin_tlon, &cos_tlon);
 	cc = cos_tlat * cos_tlon;
 	*lat = d_asind (project_info.o_sin_pole_lat * sin_tlat - project_info.o_cos_pole_lat * cc);
-	*lon = R2D * project_info.o_pole_lon + d_atan2d (cos_tlat * sin_tlon, project_info.o_sin_pole_lat * cc + project_info.o_cos_pole_lat * sin_tlat);
+	*lon = project_info.o_pole_lon + d_atan2d (cos_tlat * sin_tlon, project_info.o_sin_pole_lat * cc + project_info.o_cos_pole_lat * sin_tlat);
 }
 
 void GMT_get_rotate_pole (double lon1, double lat1, double lon2, double lat2)
 {
-	double plon, plat, beta, dummy, sin_lat1, cos_lat1, sin_lat2, cos_lat2;
-	double aix_cpp_sucks1, aix_cpp_sucks2;
+	double plon, plat, beta, dummy, x, y;
+	double sin_lon1, cos_lon1, sin_lon2, cos_lon2, sin_lat1, cos_lat1, sin_lat2, cos_lat2;
 
-	lat1 *= D2R;	lat2 *= D2R;
-	lon1 *= D2R;	lon2 *= D2R;
-	sincos (lat1, &sin_lat1, &cos_lat1);
-	sincos (lat2, &sin_lat2, &cos_lat2);
+	sincosd (lon1, &sin_lon1, &cos_lon1);
+	sincosd (lon2, &sin_lon2, &cos_lon2);
+	sincosd (lat1, &sin_lat1, &cos_lat1);
+	sincosd (lat2, &sin_lat2, &cos_lat2);
 
-	aix_cpp_sucks1 = cos_lat1 * sin_lat2 * cos (lon1) - sin_lat1 * cos_lat2 * cos (lon2);
-	aix_cpp_sucks2 = sin_lat1 * cos_lat2 * sin (lon2) - cos_lat1 * sin_lat2 * sin (lon1);
-	plon = d_atan2 (aix_cpp_sucks1, aix_cpp_sucks2);
-	plat = atan (-cos (plon - lon1) / tan (lat1));
+	y = cos_lat1 * sin_lat2 * cos_lon1 - sin_lat1 * cos_lat2 * cos_lon2;
+	x = sin_lat1 * cos_lat2 * sin_lon2 - cos_lat1 * sin_lat2 * sin_lon1;
+	plon = d_atan2d (y, x);
+	plat = atand (-cosd (plon - lon1) / tand (lat1));
 	if (plat < 0.0) {
 		plat = -plat;
-		plon += M_PI;
-		if (plon >= TWO_PI) plon -= TWO_PI;
+		plon += 180.0;
+		if (plon >= 360.0) plon -= 360.0;
 	}
 	project_info.o_pole_lon = plon;
 	project_info.o_pole_lat = plat;
-	project_info.o_sin_pole_lat = sin (plat);
-	project_info.o_cos_pole_lat = cos (plat);
+	sincosd (plat, &project_info.o_sin_pole_lat, &project_info.o_cos_pole_lat);
 	GMT_pole_rotate_forward (lon1, lat1, &beta, &dummy);
-	project_info.o_beta = -beta * D2R;
+	project_info.o_beta = -beta;
 }
 
 void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, double *lon2, double *lat2)
 {
 	double beta, dummy, d, az, c;
 
-
 	/* Now find origin that is 90 degrees from pole, let oblique lon=0 go through lon1/lat1 */
-#ifdef aix
 	c = cosd (lat_p) * cosd (lat1) * cosd (lon1-lon_p);
 	c = d_acosd (sind (lat_p) * sind (lat1) + c);
-#else
-	c = d_acosd (sind (lat_p) * sind (lat1) + cosd (lat_p) * cosd (lat1) * cosd (lon1-lon_p));
-#endif
 
 	if (c != 90.0) {	/* Not true origin */
 		d = fabs (90.0 - c);
@@ -1678,7 +1671,7 @@ void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, doubl
 
 	GMT_pole_rotate_forward (*lon2, *lat2, &beta, &dummy);
 
-	project_info.o_beta = -beta * D2R;
+	project_info.o_beta = -beta;
 }
 
 /*
