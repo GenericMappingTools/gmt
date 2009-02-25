@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.55 2009-02-25 04:32:59 remko Exp $
+ *	$Id: libspotter.c,v 1.56 2009-02-25 19:37:49 remko Exp $
  *
  *   Copyright (c) 1999-2009 by P. Wessel
  *
@@ -223,9 +223,7 @@ int spotter_hotspot_init (char *file, struct HOTSPOT **p)
 			e[i].fit = (fit == 'Y');
 			e[i].plot = (plot == 'Y');
 		}
-		e[i].lonr = D2R * e[i].lon;
-		e[i].latr = D2R * e[i].lat;
-		GMT_geo_to_cart (&e[i].latr, &e[i].lonr, P, FALSE);
+		GMT_geo_to_cart (e[i].lat, e[i].lon, P, TRUE);
 		e[i].x = P[0];
 		e[i].y = P[1];
 		e[i].z = P[2];
@@ -956,7 +954,7 @@ void spotter_make_rot_matrix (double lonp, double latp, double w, double R[3][3]
 
 	double E[3];
 
-        GMT_geo_to_cart (&latp, &lonp, E, TRUE);
+        GMT_geo_to_cart (latp, lonp, E, TRUE);
 	make_rot_matrix_sub (E, w, R);
 }
 
@@ -1001,7 +999,7 @@ void make_rot0_matrix (double lonp, double latp, double R[3][3], double E[])
 	 *	R		the rotation matrix without terms depending on omega
 	 */
 
-        GMT_geo_to_cart (&latp, &lonp, E, TRUE);
+        GMT_geo_to_cart (latp, lonp, E, TRUE);
 
 	R[0][0] = E[0] * E[0];
 	R[0][1] = E[0] * E[1];
@@ -1206,7 +1204,7 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 
 	/* Get projected point y = R*x */
 
-	GMT_geo_to_cart (&lat, &lon, x, TRUE);
+	GMT_geo_to_cart (lat, lon, x, TRUE);
 	for (i = 0; i < 3; i++) y[i] = R[i][0] * x[0] + R[i][1] * x[1] + R[i][2] * x[2];
         GMT_cart_to_geo (&out[1], &out[0], y, TRUE);
 	if (flag == 't')
@@ -1236,7 +1234,7 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 void spotter_set_M (double lon, double lat, double M[3][3])
 {	/* Just initializes the M(x), the skew-symmetric matrix needed to compute cov of rotated point */
 	double x[3];
-        GMT_geo_to_cart (&lat, &lon, x, TRUE);	/* Get Cartesian vector for this point */
+        GMT_geo_to_cart (lat, lon, x, TRUE);	/* Get Cartesian vector for this point */
 	M[0][0] = M[1][1] = M[2][2] = 0.0;
 	M[0][1] = -x[2];
 	M[0][2] = x[1];
