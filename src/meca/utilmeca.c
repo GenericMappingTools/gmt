@@ -1,4 +1,4 @@
-/*	$Id: utilmeca.c,v 1.19 2009-02-24 17:33:42 jluis Exp $
+/*	$Id: utilmeca.c,v 1.20 2009-02-25 04:38:39 remko Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -494,7 +494,7 @@ double computed_strike1(struct nodal_plane NP1)
         temp = ss * cr;
         temp -= sr *  cs * cd1;
         cp2 = am * temp;
-        str2 = d_atan2(sp2, cp2) * R2D;
+        str2 = d_atan2d(sp2, cp2);
         str2 = zero_360(str2);
     }
     return(str2);
@@ -516,7 +516,7 @@ double computed_dip1(struct nodal_plane NP1)
     double am = (GMT_IS_ZERO (NP1.rake) ? 1. : NP1.rake / fabs(NP1.rake));
     double dip2;
 
-    dip2 = acos(am * sind(NP1.rake) * sind(NP1.dip)) / D2R;
+    dip2 = acosd(am * sind(NP1.rake) * sind(NP1.dip));
 
     return(dip2);
 }
@@ -550,7 +550,7 @@ double computed_rake1(struct nodal_plane NP1)
     else
         sinrake2 = -am * sd * cs / cd;
 
-    rake2 = d_atan2(sinrake2, -am * sd * ss) * R2D;
+    rake2 = d_atan2d(sinrake2, -am * sd * ss);
 
     return(rake2);
 }
@@ -578,7 +578,7 @@ double computed_dip2(double str1,double dip1,double str2)
             dip2 = 1000.; /* (only first plane will be plotted) */
     }
     else {
-        dip2 = d_atan2(cosd(dip1), -sind(dip1) * cosdp12) * R2D;
+        dip2 = d_atan2d(cosd(dip1), -sind(dip1) * cosdp12);
     }
 
     return(dip2);
@@ -610,7 +610,7 @@ double computed_rake2(double str1,double dip1,double str2,double dip2,double fau
     else
         sinrake2 = -fault * sd * cs / cd;
 
-    rake2 = d_atan2(sinrake2, - fault * sd * ss) * R2D;
+    rake2 = d_atan2d(sinrake2, - fault * sd * ss);
 
     return(rake2);
 }
@@ -645,7 +645,7 @@ double null_axis_dip(double str1,double dip1,double str2,double dip2)
 {
     double den;
 
-    den = asin(sind(dip1) * sind(dip2) * sind(str1 - str2)) / D2R;
+    den = asind(sind(dip1) * sind(dip2) * sind(str1 - str2));
     if (den < 0.)
         den = -den;
     return(den);
@@ -677,9 +677,8 @@ double null_axis_strike(double str1,double dip1,double str2,double dip2)
         cosphn = -cosphn;
         sinphn = -sinphn;
     }
-    phn = d_atan2(sinphn, cosphn) * R2D;
-    if (phn < 0.)
-        phn += 360.;
+    phn = d_atan2d(sinphn, cosphn);
+    if (phn < 0.) phn += 360.;
     return(phn);
 }
 
@@ -1062,8 +1061,8 @@ void axe2dc(struct AXIS T,struct AXIS P,struct nodal_plane *NP1,struct nodal_pla
      }
      if (p2 < 0.) p2 += PII;
 
-     NP1->dip = d1 / D2R; NP1->str = p1 / D2R;
-     NP2->dip = d2 / D2R; NP2->str = p2 / D2R;
+     NP1->dip = d1 * R2D; NP1->str = p1 * R2D;
+     NP2->dip = d2 * R2D; NP2->str = p2 * R2D;
 
      im = 1;
      if (dp > dt) im = -1;
@@ -1088,14 +1087,14 @@ from nodal plane strikes, dips and rakes.
         double amz, amx, amy, dx, px, dy, py;
         double radius;
 
-        if (fabs(sin(meca.NP1.rake * D2R)) > EPSIL) im = (int) (meca.NP1.rake / fabs(meca.NP1.rake));
-        else if (fabs(sin(meca.NP2.rake * D2R)) > EPSIL) im = (int) (meca.NP2.rake / fabs(meca.NP2.rake));
+        if (fabs(sind(meca.NP1.rake)) > EPSIL) im = (int) (meca.NP1.rake / fabs(meca.NP1.rake));
+        else if (fabs(sind(meca.NP2.rake)) > EPSIL) im = (int) (meca.NP2.rake / fabs(meca.NP2.rake));
         else pure_strike_slip = 1;
 
         size *= 0.5;
 
         if (pure_strike_slip) {
-            if (cos(meca.NP1.rake * D2R) < 0.) {
+            if (cosd(meca.NP1.rake) < 0.) {
                 *pp = zero_360(meca.NP1.str + 45.);
                 *pt = zero_360(meca.NP1.str - 45.);
             }
@@ -1106,20 +1105,20 @@ from nodal plane strikes, dips and rakes.
             *dp = 0.;
             *dt = 0.;
             radius = 0.97;
-            *xp = radius * sin(*pp * D2R) * size + x0;
-            *yp = radius * cos(*pp * D2R) * size + y0;
-            *xt = radius * sin(*pt * D2R) * size + x0;
-            *yt = radius * cos(*pt * D2R) * size + y0;
+            *xp = radius * sind(*pp) * size + x0;
+            *yp = radius * cosd(*pp) * size + y0;
+            *xt = radius * sind(*pt) * size + x0;
+            *yt = radius * cosd(*pt) * size + y0;
         }
         else {
-            cd1 = cos(meca.NP1.dip * D2R) *  M_SQRT2;
-            sd1 = sin(meca.NP1.dip * D2R) *  M_SQRT2;
-            cd2 = cos(meca.NP2.dip * D2R) *  M_SQRT2;
-            sd2 = sin(meca.NP2.dip * D2R) *  M_SQRT2;
-            cp1 = - cos(meca.NP1.str * D2R) *  sd1;
-            sp1 = sin(meca.NP1.str * D2R) *  sd1;
-            cp2 = - cos(meca.NP2.str * D2R) *  sd2;
-            sp2 = sin(meca.NP2.str * D2R) *  sd2;
+            cd1 = cosd(meca.NP1.dip) * M_SQRT2;
+            sd1 = sind(meca.NP1.dip) * M_SQRT2;
+            cd2 = cosd(meca.NP2.dip) * M_SQRT2;
+            sd2 = sind(meca.NP2.dip) * M_SQRT2;
+            cp1 = -cosd(meca.NP1.str) * sd1;
+            sp1 = sind(meca.NP1.str) * sd1;
+            cp2 = -cosd(meca.NP2.str) * sd2;
+            sp2 = sin(meca.NP2.str) * sd2;
 
             amz = - (cd1 + cd2);
             amx = - (sp1 + sp2);
@@ -1235,10 +1234,10 @@ from nodal plane strikes, dips and rakes.
 
         }
 
-        T->str /= D2R;
-        T->dip /= D2R;
-        P->str /= D2R;
-        P->dip /= D2R;
+        T->str *= R2D;
+        T->dip *= R2D;
+        P->str *= R2D;
+        P->dip *= R2D;
 
         N->str = null_axis_strike(T->str, T->dip, P->str, P->dip);
         N->dip = null_axis_dip(T->str, T->dip, P->str, P->dip);
