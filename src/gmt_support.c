@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.382 2009-02-25 04:25:51 remko Exp $
+ *	$Id: gmt_support.c,v 1.383 2009-02-25 19:31:53 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6504,7 +6504,7 @@ int GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOL
 int GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, BOOLEAN return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	int seg, row, j0;
-	double d, A[3], B[3], C[3], X[3], plon, plat, xlon, xlat, cx_dist, cos_dist, dist_AB, fraction;
+	double d, A[3], B[3], C[3], X[3], xlon, xlat, cx_dist, cos_dist, dist_AB, fraction;
 	BOOLEAN perpendicular_only = FALSE, interior;
 
 	/* return_mindist is 1, 2, or 3.  All return the minimum distance. 2 also returns the coordinate of nearest point,
@@ -6515,8 +6515,7 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, BOOL
 		perpendicular_only = TRUE;
 		return_mindist -= 10;
 	}
-	plon = lon;	plat = lat;
-	GMT_geo_to_cart (&plat, &plon, C, TRUE);	/* Our point to test is now C */
+	GMT_geo_to_cart (lat, lon, C, TRUE);	/* Our point to test is now C */
 	if (return_mindist) *dist_min = DBL_MAX;
 
 	for (seg = 0; seg < T->n_segments; seg++) {	/* Loop over each line segment */
@@ -6543,13 +6542,11 @@ int GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, BOOL
 		/* If we get here we must check for intermediate points along the great circle lines between segment nodes.*/
 
 		cos_dist = (return_mindist) ? 2.0 : cosd (T->segment[seg]->dist * KM_TO_DEG);		/* Cosine of the great circle distance we are checking for. 2 ensures failure to be closer */
-		plon = T->segment[seg]->coord[GMT_X][0];	plat = T->segment[seg]->coord[GMT_Y][0];
-		GMT_geo_to_cart (&plat, &plon, B, TRUE);		/* 3-D vector of end of last segment */
+		GMT_geo_to_cart (T->segment[seg]->coord[GMT_Y][0], T->segment[seg]->coord[GMT_X][0], B, TRUE);		/* 3-D vector of end of last segment */
 
 		for (row = 1; row < T->segment[seg]->n_rows; row++) {				/* loop over great circle segments on current line */
 			memcpy ((void *)A, (void *)B, (size_t)(3 * sizeof (double)));	/* End of last segment is start of new segment */
-			plon = T->segment[seg]->coord[GMT_X][row];	plat = T->segment[seg]->coord[GMT_Y][row];
-			GMT_geo_to_cart (&plat, &plon, B, TRUE);	/* 3-D vector of end of this segment */
+			GMT_geo_to_cart (T->segment[seg]->coord[GMT_Y][row], T->segment[seg]->coord[GMT_X][row], B, TRUE);	/* 3-D vector of end of this segment */
 			if (GMT_great_circle_intersection (A, B, C, X, &cx_dist)) continue;	/* X not between A and B */
 			if (return_mindist) {		/* Get lon, lat of X, calculate distance, and update min_dist if needed */
 				GMT_cart_to_geo (&xlat, &xlon, X, TRUE);

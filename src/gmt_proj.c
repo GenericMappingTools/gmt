@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.44 2009-02-25 14:09:50 remko Exp $
+ *	$Id: gmt_proj.c,v 1.45 2009-02-25 19:31:53 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -662,7 +662,7 @@ void GMT_obl (double lon, double lat, double *olon, double *olat)
 	/* Convert a longitude/latitude point to Oblique lon/lat (all in rads) */
 	double p_cross_x[3], X[3];
 
-	GMT_geo_to_cart (&lat, &lon, X, FALSE);
+	GMT_geo_to_cart (lat, lon, X, FALSE);
 
 	*olat = d_asin (GMT_dot3v (X, project_info.o_FP));
 
@@ -677,7 +677,7 @@ void GMT_iobl (double *lon, double *lat, double olon, double olat)
 	/* Convert a longitude/latitude point from Oblique lon/lat  (all in rads) */
 	double p_cross_x[3], X[3];
 
-	GMT_geo_to_cart (&olat, &olon, X, FALSE);
+	GMT_geo_to_cart (olat, olon, X, FALSE);
 	*lat = d_asin (GMT_dot3v (X, project_info.o_IP));
 
 	GMT_cross3v (project_info.o_IP, X, p_cross_x);
