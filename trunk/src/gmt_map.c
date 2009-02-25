@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.208 2009-02-05 22:10:29 guru Exp $
+ *	$Id: gmt_map.c,v 1.209 2009-02-25 14:13:13 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -653,15 +653,13 @@ int GMT_init_three_D (void) {
 	if (z_project.view_azimuth < 0.0) z_project.view_azimuth += 360.0;
 	z_project.view_azimuth *= D2R;
 	z_project.view_elevation *= D2R;
-	z_project.cos_az = cos (z_project.view_azimuth);
-	z_project.sin_az = sin (z_project.view_azimuth);
-	z_project.cos_el = cos (z_project.view_elevation);
-	z_project.sin_el = sin (z_project.view_elevation);
+	sincos (z_project.view_azimuth, &z_project.sin_az, &z_project.cos_az);
+	sincos (z_project.view_elevation, &z_project.sin_el, &z_project.cos_el);
 	GMT_geoz_to_xy (project_info.w, project_info.s, project_info.z_bottom, &x0, &y0);
 	GMT_geoz_to_xy (project_info.e, project_info.s, project_info.z_bottom, &x1, &y1);
 	GMT_geoz_to_xy (project_info.w, project_info.n, project_info.z_bottom, &x2, &y2);
-	z_project.phi[0] = d_atan2 (y1 - y0, x1 - x0) * R2D;
-	z_project.phi[1] = d_atan2 (y2 - y0, x2 - x0) * R2D;
+	z_project.phi[0] = d_atan2d (y1 - y0, x1 - x0);
+	z_project.phi[1] = d_atan2d (y2 - y0, x2 - x0);
 	z_project.phi[2] = 90.0;
 	tilt_angle = (z_project.phi[0] + 90.0 - z_project.phi[1]) * D2R;
 	z_project.k = (fabs (z_project.cos_az) > fabs (z_project.sin_az)) ? 0 : 1;
@@ -675,7 +673,7 @@ int GMT_init_three_D (void) {
 	z_project.yshrink[2] = (fabs (z_project.cos_az) > fabs (z_project.sin_az)) ? fabs (z_project.cos_az) : fabs (z_project.sin_az);
 	z_project.tilt[0] = tan (tilt_angle);
 	z_project.tilt[1] = -z_project.tilt[0];
-	z_project.tilt[2] = (fabs (z_project.cos_az) > fabs (z_project.sin_az)) ? tan (-z_project.phi[0] * D2R) : tan (-z_project.phi[1] * D2R);
+	z_project.tilt[2] = (fabs (z_project.cos_az) > fabs (z_project.sin_az)) ? tand (-z_project.phi[0]) : tand (-z_project.phi[1]);
 
 	/* Determine min/max y of plot */
 
@@ -1337,7 +1335,7 @@ int GMT_map_init_stereo (void) {
 			if (irint (project_info.pars[5]) == 1) {	/* Gave true scale at given parallel */
 				double k_p, m_c, t_c, es;
 
-				sincos (fabs (project_info.pars[4]) * D2R, &s, &c);
+				sincosd (fabs (project_info.pars[4]), &s, &c);
 				es = project_info.ECC * s;
 				m_c = c / d_sqrt (1.0 - project_info.ECC2 * s * s);
 				t_c = d_sqrt (((1.0 - s) / (1.0 + s)) * pow ((1.0 + es) / (1.0 - es), project_info.ECC));
@@ -1346,7 +1344,7 @@ int GMT_map_init_stereo (void) {
 			}
 		}
 		else {
-			sincos (latg * D2R, &s, &c);	/* Need original geographic pole coordinates */
+			sincosd (latg, &s, &c);	/* Need original geographic pole coordinates */
 			D *= (c / (project_info.cosp * d_sqrt (1.0 - project_info.ECC2 * s * s)));
 		}
 	}
@@ -1526,10 +1524,10 @@ int GMT_map_init_oblique (void) {
 		/* Find azimuth to pole, add 90, and compute second point 10 degrees away */
 
 		GMT_get_origin (o_x, o_y, p_x, p_y, &o_x, &o_y);
-		az = R2D * atan (cosd (p_y) * sind (p_x - o_x) / (cosd (o_y) * sind (p_y) - sind (o_y) * cosd (p_y) * cosd (p_x - o_x))) + 90.0;
+		az = atand (cosd (p_y) * sind (p_x - o_x) / (cosd (o_y) * sind (p_y) - sind (o_y) * cosd (p_y) * cosd (p_x - o_x))) + 90.0;
 		c = 10.0;	/* compute point 10 degrees from origin along azimuth */
-		b_x = o_x + R2D * atan (sind (c) * sind (az) / (cosd (o_y) * cosd (c) - sind (o_y) * sind (c) * cosd (az)));
-		b_y = R2D * d_asin (sind (o_y) * cosd (c) + cosd (o_y) * sind (c) * cosd (az));
+		b_x = o_x + atand (sind (c) * sind (az) / (cosd (o_y) * cosd (c) - sind (o_y) * sind (c) * cosd (az)));
+		b_y = d_asind (sind (o_y) * cosd (c) + cosd (o_y) * sind (c) * cosd (az));
 		project_info.pars[0] = o_x;	project_info.pars[1] = o_y;
 		project_info.pars[2] = b_x;	project_info.pars[3] = b_y;
 	}
@@ -1604,8 +1602,8 @@ void GMT_pole_rotate_forward (double lon, double lat, double *tlon, double *tlat
 	sincos (lat, &sin_lat, &cos_lat);
 	sincos (lon, &sin_lon, &cos_lon);
 	cc = cos_lat * cos_lon;
-	*tlat = R2D * d_asin (project_info.o_sin_pole_lat * sin_lat + project_info.o_cos_pole_lat * cc);
-	*tlon = R2D * (project_info.o_beta + d_atan2 (cos_lat * sin_lon, project_info.o_sin_pole_lat * cc - project_info.o_cos_pole_lat * sin_lat));
+	*tlat = d_asind (project_info.o_sin_pole_lat * sin_lat + project_info.o_cos_pole_lat * cc);
+	*tlon = R2D * project_info.o_beta + d_atan2d (cos_lat * sin_lon, project_info.o_sin_pole_lat * cc - project_info.o_cos_pole_lat * sin_lat);
 }
 
 void GMT_pole_rotate_inverse (double *lon, double *lat, double tlon, double tlat)
@@ -1621,8 +1619,8 @@ void GMT_pole_rotate_inverse (double *lon, double *lat, double tlon, double tlat
 	sincos (tlat, &sin_tlat, &cos_tlat);
 	sincos (tlon, &sin_tlon, &cos_tlon);
 	cc = cos_tlat * cos_tlon;
-	*lat = R2D * d_asin (project_info.o_sin_pole_lat * sin_tlat - project_info.o_cos_pole_lat * cc);
-	*lon = R2D * (project_info.o_pole_lon + d_atan2 (cos_tlat * sin_tlon, project_info.o_sin_pole_lat * cc + project_info.o_cos_pole_lat * sin_tlat));
+	*lat = d_asind (project_info.o_sin_pole_lat * sin_tlat - project_info.o_cos_pole_lat * cc);
+	*lon = R2D * project_info.o_pole_lon + d_atan2d (cos_tlat * sin_tlon, project_info.o_sin_pole_lat * cc + project_info.o_cos_pole_lat * sin_tlat);
 }
 
 void GMT_get_rotate_pole (double lon1, double lat1, double lon2, double lat2)
@@ -1632,10 +1630,8 @@ void GMT_get_rotate_pole (double lon1, double lat1, double lon2, double lat2)
 
 	lat1 *= D2R;	lat2 *= D2R;
 	lon1 *= D2R;	lon2 *= D2R;
-	sin_lat1 = sin (lat1);
-	sin_lat2 = sin (lat2);
-	cos_lat1 = cos (lat1);
-	cos_lat2 = cos (lat2);
+	sincos (lat1, &sin_lat1, &cos_lat1);
+	sincos (lat2, &sin_lat2, &cos_lat2);
 
 	aix_cpp_sucks1 = cos_lat1 * sin_lat2 * cos (lon1) - sin_lat1 * cos_lat2 * cos (lon2);
 	aix_cpp_sucks2 = sin_lat1 * cos_lat2 * sin (lon2) - cos_lat1 * sin_lat2 * sin (lon1);
@@ -1662,17 +1658,17 @@ void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, doubl
 	/* Now find origin that is 90 degrees from pole, let oblique lon=0 go through lon1/lat1 */
 #ifdef aix
 	c = cosd (lat_p) * cosd (lat1) * cosd (lon1-lon_p);
-	c = R2D * d_acos (sind (lat_p) * sind (lat1) + c);
+	c = d_acosd (sind (lat_p) * sind (lat1) + c);
 #else
-	c = R2D * d_acos (sind (lat_p) * sind (lat1) + cosd (lat_p) * cosd (lat1) * cosd (lon1-lon_p));
+	c = d_acosd (sind (lat_p) * sind (lat1) + cosd (lat_p) * cosd (lat1) * cosd (lon1-lon_p));
 #endif
 
 	if (c != 90.0) {	/* Not true origin */
 		d = fabs (90.0 - c);
-		az = R2D * d_asin (sind (lon_p-lon1) * cosd (lat_p) / sind (c));
+		az = d_asind (sind (lon_p-lon1) * cosd (lat_p) / sind (c));
 		if (c < 90.0) az += 180.0;
-		*lat2 = R2D * d_asin (sind (lat1) * cosd (d) + cosd (lat1) * sind (d) * cosd (az));
-		*lon2 = lon1 + R2D * d_atan2 (sind (d) * sind (az), cosd (lat1) * cosd (d) - sind (lat1) * sind (d) * cosd (az));
+		*lat2 = d_asind (sind (lat1) * cosd (d) + cosd (lat1) * sind (d) * cosd (az));
+		*lon2 = lon1 + d_atan2d (sind (d) * sind (az), cosd (lat1) * cosd (d) - sind (lat1) * sind (d) * cosd (az));
 		if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Correct projection origin = %g/%g\n", GMT_program, *lon2, *lat2);
 	}
 	else {
@@ -1681,7 +1677,6 @@ void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, doubl
 	}
 
 	GMT_pole_rotate_forward (*lon2, *lat2, &beta, &dummy);
-
 
 	project_info.o_beta = -beta * D2R;
 }
@@ -3258,14 +3253,14 @@ int GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double
 			yy[0] = yy[1] = last_y + (GMT_map_width - last_x) * dy / dx;
 			xx[0] = GMT_right_boundary (yy[0]);	xx[1] = GMT_left_boundary (yy[0]);
 			sides[0] = 1;	sides[1] = 3;
-			angle[0] = R2D * d_atan2 (dy, dx);
+			angle[0] = d_atan2d (dy, dx);
 		}
 		else {	/* Crossed left boundary */
 			dx = last_x + GMT_map_width - this_x;
 			yy[0] = yy[1] = last_y + last_x * dy / dx;
 			xx[0] = GMT_left_boundary (yy[0]);	xx[1] = GMT_right_boundary (yy[0]);
 			sides[0] = 3;	sides[1] = 1;
-			angle[0] = R2D * d_atan2 (dy, -dx);
+			angle[0] = d_atan2d (dy, -dx);
 		}
 		angle[1] = angle[0] + 180.0;
 		if (yy[0] >= 0.0 && yy[0] <= project_info.ymax) wrap = TRUE;
@@ -3277,14 +3272,14 @@ int GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double
 			yy[0] = yy[1] = last_y + (GMT_map_width - last_x) * dy / dx;
 			xx[0] = GMT_right_boundary (yy[0]);	xx[1] = GMT_left_boundary (yy[0]);
 			sides[0] = 1;	sides[1] = 3;
-			angle[0] = R2D * d_atan2 (dy, dx);
+			angle[0] = d_atan2d (dy, dx);
 		}
 		else {	/* Crossed left boundary */
 			dx = last_x + GMT_map_width - this_x;
 			yy[0] = yy[1] = last_y + last_x * dy / dx;
 			xx[0] = GMT_left_boundary (yy[0]);	xx[1] = GMT_right_boundary (yy[0]);
 			sides[0] = 3;	sides[1] = 1;
-			angle[0] = R2D * d_atan2 (dy, -dx);
+			angle[0] = d_atan2d (dy, -dx);
 		}
 		if (yy[0] >= 0.0 && yy[0] <= project_info.ymax) wrap = TRUE;
 		angle[1] = angle[0] + 180.0;
@@ -3315,14 +3310,14 @@ int GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, doubl
 			dy = this_y + GMT_map_height - last_y;
 			xx[0] = xx[1] = last_x + (GMT_map_height - last_y) * dx / dy;
 			sides[0] = 2;	sides[1] = 0;
-			angle[0] = R2D * d_atan2 (dy, dx);
+			angle[0] = d_atan2d (dy, dx);
 		}
 		else {	/* Crossed bottom boundary */
 			yy[0] = 0.0;	yy[1] = GMT_map_height;
 			dy = last_y + GMT_map_height - this_y;
 			xx[0] = xx[1] = last_x + last_y * dx / dy;
 			sides[0] = 0;	sides[1] = 2;
-			angle[0] = R2D * d_atan2 (dy, -dx);
+			angle[0] = d_atan2d (dy, -dx);
 		}
 		angle[1] = angle[0] + 180.0;
 		if (xx[0] >= 0.0 && xx[0] <= project_info.xmax) wrap = TRUE;
@@ -3334,14 +3329,14 @@ int GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, doubl
 			dy = this_y + GMT_map_height - last_y;
 			xx[0] = xx[1] = last_x + (GMT_map_height - last_y) * dx / dy;
 			sides[0] = 2;	sides[1] = 0;
-			angle[0] = R2D * d_atan2 (dy, dx);
+			angle[0] = d_atan2d (dy, dx);
 		}
 		else {	/* Crossed bottom boundary */
 			yy[0] = 0.0;	yy[1] = GMT_map_height;
 			dy = last_y + GMT_map_height - this_y;
 			xx[0] = xx[1] = last_x + last_y * dx / dy;
 			sides[0] = 0;	sides[1] = 2;
-			angle[0] = R2D * d_atan2 (dy, -dx);
+			angle[0] = d_atan2d (dy, -dx);
 		}
 		if (xx[0] >= 0.0 && xx[0] <= project_info.xmax) wrap = TRUE;
 		angle[1] = angle[0] + 180.0;
@@ -3734,27 +3729,21 @@ double GMT_great_circle_dist (double lon1, double lat1, double lon2, double lat2
 
 	cos_c = GMT_great_circle_dist_cos (lon1, lat1, lon2, lat2);
 
-	if (cos_c <= -1.0) return (180.0);
-	if (cos_c >= +1.0) return (0.0);
-	return (R2D * acos (cos_c));
+	return (d_acosd (cos_c));
 }
 
 double GMT_great_circle_dist_cos (double lon1, double lat1, double lon2, double lat2)
 {
 	/* great circle distance on a sphere in cos (angle) */
 
-	double a, b, cosC, cosa, cosb, sina, sinb;
+	double cosa, cosb, sina, sinb;
 
-	if ((lat1==lat2) && (lon1==lon2)) return (1.0);
+	if (lat1==lat2 && lon1==lon2) return (1.0);
 
-	a=D2R*(90.0-lat2);
-	b=D2R*(90.0-lat1);
-	cosC = cosd (lon2 - lon1);
+	sincosd (lat1, &sina, &cosa);
+	sincosd (lat2, &sinb, &cosb);
 
-	sincos (a, &sina, &cosa);
-	sincos (b, &sinb, &cosb);
-
-	return (cosa*cosb + sina*sinb*cosC);
+	return (sina*sinb + cosa*cosb*cosd(lon1-lon2));
 }
 
 int GMT_great_circle_intersection (double A[], double B[], double C[], double X[], double *CX_dist)
@@ -3927,8 +3916,7 @@ int GMT_eqdist_outside (double lon, double lat)
 	lon -= project_info.central_meridian;
 	while (lon < -180.0) lon += 360.0;
 	while (lon > 180.0) lon -= 360.0;
-	lat *= D2R;
-	sincos (lat, &s, &c);
+	sincosd (lat, &s, &c);
 	cc = project_info.sinp * s + project_info.cosp * c * cosd (lon);
 	if (cc < -1.0) {
 		GMT_y_status_new = -1;
@@ -5420,8 +5408,8 @@ GMT_LONG GMT_radial_boundary_arc (int this, double end_x[], double end_y[], doub
 	 * length and the current line_step demands */
 	
 	da_try = (gmtdefs.line_step * 360.0) / (TWO_PI * project_info.r);	/* Angular step in degrees */
-	az1 = d_atan2 (end_y[0], end_x[0]) * R2D;	/* azimuth from map center to 1st crossing */
-	az2 = d_atan2 (end_y[1], end_x[1]) * R2D;	/* azimuth from map center to 2nd crossing */
+	az1 = d_atan2d (end_y[0], end_x[0]);	/* azimuth from map center to 1st crossing */
+	az2 = d_atan2d (end_y[1], end_x[1]);	/* azimuth from map center to 2nd crossing */
 	d_az = az2 - az1;							/* Arc length in degrees */
 	if (fabs(d_az) > 180.0) d_az = copysign (360.0 - fabs(d_az), -d_az);	/* Insist we take the short arc for now */
 	n_arc = (GMT_LONG)ceil (fabs (d_az)/ da_try);	/* Get number of integer increments of da_try degree */
@@ -5432,7 +5420,7 @@ GMT_LONG GMT_radial_boundary_arc (int this, double end_x[], double end_y[], doub
 	yy = (double *) GMT_memory (VNULL, (size_t)n_arc, sizeof (double), "GMT_radial_boundary_arc");
 	for (k = 1; k <= n_arc; k++) {	/* Create points along arc from first to second crossing point (k-loop excludes the end points) */
 		a = az1 + k * da;
-		sincos (a * D2R, &yr, &xr);
+		sincosd (a, &yr, &xr);
 		pt = (this) ? n_arc - k : k - 1;	/* The order we add the arc depends if we exited or entered the inside area */
 		xx[pt] = project_info.r * (1.0 + xr);
 		yy[pt] = project_info.r * (1.0 + yr);
@@ -5842,8 +5830,8 @@ void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *a
 	if (GMT_IS_LINEAR) {	/* Trivial case */
 		*angle = 90.0 - azim;
 		if (project_info.x_scale != project_info.y_scale) {
-			sincos (*angle * D2R, &sinaz, &cosaz);
-			*angle = d_atan2 (sinaz * project_info.y_scale, cosaz * project_info.x_scale) * R2D;
+			sincosd (*angle, &sinaz, &cosaz);
+			*angle = d_atan2d (sinaz * project_info.y_scale, cosaz * project_info.x_scale);
 		}
 		return;
 	}
@@ -5868,7 +5856,7 @@ void GMT_azim_to_angle (double lon, double lat, double c, double azim, double *a
 		else
 			x0 += width;
 	}
-	*angle = d_atan2 (y1 - y0, x1 - x0) * R2D;
+	*angle = d_atan2d (y1 - y0, x1 - x0);
 }
 
 void GMT_get_point_from_r_az (double lon0, double lat0, double r, double azim, double *lon1, double *lat1)
@@ -5880,9 +5868,9 @@ void GMT_get_point_from_r_az (double lon0, double lat0, double r, double azim, d
 	sincosd (r, &sinr, &cosr);
 	sincosd (lat0, &siny, &cosy);
 
-/*	*lon1 = lon0 + R2D * atan (sinr * sinaz / (cosy * cosr - siny * sinr * cosaz)); */
-	*lon1 = lon0 + R2D * atan2 (sinr * sinaz, (cosy * cosr - siny * sinr * cosaz));
-	*lat1 = R2D * d_asin (siny * cosr + cosy * sinr * cosaz);
+/*	*lon1 = lon0 + atand (sinr * sinaz / (cosy * cosr - siny * sinr * cosaz)); */
+	*lon1 = lon0 + atan2d (sinr * sinaz, (cosy * cosr - siny * sinr * cosaz));
+	*lat1 = d_asind (siny * cosr + cosy * sinr * cosaz);
 }
 
 void GMT_set_spherical (void) {	/* Force spherical solution */
@@ -6235,7 +6223,7 @@ double	GMT_lat_swap_quick (double lat, double c[])
 {
 	/* Return latitude, in degrees, given latitude, in degrees, based on coefficients c */
 
-	double	rl2, delta, cos2phi, sin2phi;
+	double	delta, cos2phi, sin2phi;
 
 	/* First deal with trivial cases */
 
@@ -6243,9 +6231,7 @@ double	GMT_lat_swap_quick (double lat, double c[])
 	if (lat <= -90.0) return (-90.0);
 	if (GMT_IS_ZERO (lat)) return (0.0);
 
-	rl2 = 2.0 * lat * D2R;
-
-	sincos (rl2, &sin2phi, &cos2phi);
+	sincosd (2.0 * lat, &sin2phi, &cos2phi);
 
 	delta = sin2phi * (c[0] + cos2phi * (c[1] + cos2phi * (c[2] + cos2phi * c[3])));
 
@@ -6256,7 +6242,7 @@ double	GMT_lat_swap (double lat, int itype)
 {
 	/* Return latitude, in degrees, given latitude, in degrees, based on itype */
 
-	double	rl2, delta, cos2phi, sin2phi;
+	double	delta, cos2phi, sin2phi;
 
 	/* First deal with trivial cases */
 
@@ -6273,9 +6259,7 @@ double	GMT_lat_swap (double lat, int itype)
 		return(lat);
 	}
 
-	rl2 = 2.0 * lat * D2R;
-
-	sincos (rl2, &sin2phi, &cos2phi);
+	sincosd (2.0 * lat, &sin2phi, &cos2phi);
 
 	delta = sin2phi * (project_info.GMT_lat_swap_vals.c[itype][0]
 		+ cos2phi * (project_info.GMT_lat_swap_vals.c[itype][1]
@@ -6682,8 +6666,8 @@ void GMT_conv_datum (double in[], double out[])
 	double delta_lat, delta_lon, delta_h, sc_lat;
 
 	h = (GMT_datum.h_given) ? in[2] : 0.0;
-	sincos (in[0] * D2R, &sin_lon, &cos_lon);
-	sincos (in[1] * D2R, &sin_lat, &cos_lat);
+	sincosd (in[0], &sin_lon, &cos_lon);
+	sincosd (in[1], &sin_lat, &cos_lat);
 	sin_lat2 = sin_lat * sin_lat;
 	sc_lat = sin_lat * cos_lat;
 	M = GMT_datum.from.a * (1.0 - GMT_datum.from.e_squared) / pow (1.0 - GMT_datum.from.e_squared * sin_lat2, 1.5);
@@ -6713,8 +6697,8 @@ void GMT_ECEF_forward (double in[], double out[])
 
 	double sin_lon, cos_lon, sin_lat, cos_lat, N, tmp;
 
-	sincos (in[0] * D2R, &sin_lon, &cos_lon);
-	sincos (in[1] * D2R, &sin_lat, &cos_lat);
+	sincosd (in[0], &sin_lon, &cos_lon);
+	sincosd (in[1], &sin_lat, &cos_lat);
 
 	N = GMT_datum.from.a / d_sqrt (1.0 - GMT_datum.from.e_squared * sin_lat * sin_lat);
 	tmp = (N + in[2]) * cos_lat;
@@ -6738,10 +6722,9 @@ void GMT_ECEF_inverse (double in[], double out[])
 	p = hypot (in_p[0], in_p[1]);
 	theta = atan (in_p[2] * GMT_datum.from.a / (p * GMT_datum.from.b));
 	sincos (theta, &sin_theta, &cos_theta);
-	out[0] = d_atan2 (in_p[1], in_p[0]) * R2D;
-	out[1] = atan ((in_p[2] + GMT_datum.from.ep_squared * GMT_datum.from.b * pow (sin_theta, 3.0)) / (p - GMT_datum.from.e_squared * GMT_datum.from.a * pow (cos_theta, 3.0)));
-	sincos (out[1], &sin_lat, &cos_lat);
-	out[1] *= R2D;
+	out[0] = d_atan2d (in_p[1], in_p[0]);
+	out[1] = atand ((in_p[2] + GMT_datum.from.ep_squared * GMT_datum.from.b * pow (sin_theta, 3.0)) / (p - GMT_datum.from.e_squared * GMT_datum.from.a * pow (cos_theta, 3.0)));
+	sincosd (out[1], &sin_lat, &cos_lat);
 	N = GMT_datum.from.a / sqrt (1.0 - GMT_datum.from.e_squared * sin_lat * sin_lat);
 	out[2] = (p / cos_lat) - N;
 }
@@ -6761,7 +6744,7 @@ double GMT_az_backaz_cartesian (double lonE, double latE, double lonS, double la
 	}
 	dx = lonE - lonS;
 	dy = latE - latS;
-	az = (dx == 0.0 && dy == 0.0) ? GMT_d_NaN : 90.0 - R2D * atan2 (dy, dx);
+	az = (dx == 0.0 && dy == 0.0) ? GMT_d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);
 }
@@ -6775,9 +6758,6 @@ double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double la
 
 	double az, dx, dy, dlon;
 
-	latE *= D2R;	lonE *= D2R;
-	latS *= D2R;	lonS *= D2R;
-
 	if (baz) {	/* exchange point one and two */
 		d_swap (lonS, lonE);
 		d_swap (latS, latE);
@@ -6786,7 +6766,7 @@ double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double la
 	if (fabs (dlon) > 180.0) dlon = copysign ((360.0 - fabs (dlon)), dlon);
 	dx = dlon * cosd (0.5 * (latE + latS));
 	dy = latE - latS;
-	az = (dx == 0.0 && dy == 0.0) ? GMT_d_NaN : 90.0 - R2D * atan2 (dy, dx);
+	az = (dx == 0.0 && dy == 0.0) ? GMT_d_NaN : 90.0 - atan2d (dy, dx);
 	if (az < 0.0) az += 360.0;
 	return (az);
 }
@@ -6810,7 +6790,7 @@ double GMT_az_backaz_sphere (double lonE, double latE, double lonS, double latS,
 	sincos (latS, &sin_yS, &cos_yS);
 	sincos (latE, &sin_yE, &cos_yE);
 	sincos (lonS - lonE, &sin_dlon, &cos_dlon);
-	az = (atan2 (cos_yS * sin_dlon, cos_yE * sin_yS - sin_yE * cos_yS * cos_dlon) * R2D);
+	az = atan2d (cos_yS * sin_dlon, cos_yE * sin_yS - sin_yE * cos_yS * cos_dlon);
 	if (az < 0.0) az += 360.0;
 	return (az);
 }
@@ -6864,7 +6844,7 @@ double GMT_az_backaz_geodesic (double lonE, double latE, double lonS, double lat
 		ss = (pow(a1-d, 2.0) + pow(b1-e, 2.0) + c1 * c1 - 2.0);
 		sc = (pow(a1-g, 2.0) + pow(b1-h, 2.0) + pow(c1-f, 2.0) - 2.0);
 	}
-	az = atan2 (ss,sc) * R2D;
+	az = atan2d (ss,sc);
 	if (az < 0.0) az += 360.0;
 	return (az);
 }
@@ -6907,7 +6887,7 @@ double GMT_geodesic_dist_degree (double lonS, double latS, double lonE, double l
 
 	thg = atan (project_info.one_m_ECC2 * tan(latS));
 	sincos (lonS, &d1, &e1);	e1 = -e1;
-	sincos (thg, &c1, &f1);	f1 = -f1;
+	sincos (thg, &c1, &f1);		f1 = -f1;
 	a1 = f1 * e1;
 	b1 = -f1 * d1;
 	sc = a * a1 + b * b1 + c * c1;
@@ -6915,7 +6895,7 @@ double GMT_geodesic_dist_degree (double lonS, double latS, double lonE, double l
 	/* Spherical trig relationships used to compute angles. */
 
 	sd = 0.5 * sqrt ((pow(a-a1,2.0) + pow(b-b1,2.0) + pow(c-c1,2.0)) * (pow(a+a1,2.0) + pow(b+b1, 2.0) + pow(c+c1, 2.0)));
-	dist = atan2 (sd, sc) * R2D;
+	dist = atan2d (sd, sc);
 	if (dist < 0.0) dist += 360.0;
 
 	return (dist);
