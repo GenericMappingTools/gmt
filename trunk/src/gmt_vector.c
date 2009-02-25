@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.26 2009-02-25 03:56:23 remko Exp $
+ *	$Id: gmt_vector.c,v 1.27 2009-02-25 19:26:04 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -647,37 +647,37 @@ void GMT_cross3v (double *a, double *b, double *c)
 	c[2] = a[0] * b[1] - a[1] * b[0];
 }
 
-void GMT_geo_to_cart (double *alat, double *alon, double *a, int rads)
+void GMT_geo_to_cart (double lat, double lon, double *a, BOOLEAN degrees)
 {
-	/* Convert geographic latitude and longitude (alat, alon)
-	   to a 3-vector of unit length (a).  rads = TRUE if we
-	   need to convert alat, alon from degrees to radians  */
+	/* Convert geographic latitude and longitude (lat, lon)
+	   to a 3-vector of unit length (a). If degrees = TRUE,
+	   input coordinates are in degrees, otherwise in radian */
 
 	double clat, clon, slon;
 
-	if (rads) {
-		*alat *= D2R;
-		*alon *= D2R;
+	if (degrees) {
+		lat *= D2R;
+		lon *= D2R;
 	}
-	sincos (*alat, &a[2], &clat);
-	sincos (*alon, &slon, &clon);
+	sincos (lat, &a[2], &clat);
+	sincos (lon, &slon, &clon);
 	a[0] = clat * clon;
 	a[1] = clat * slon;
 }
 
-void GMT_cart_to_geo (double *alat, double *alon, double *a, int rads)
+void GMT_cart_to_geo (double *lat, double *lon, double *a, BOOLEAN degrees)
 {
 	/* Convert a 3-vector (a) of unit length into geographic
-	   coordinates (alat, alon).  rads = TRUE if we want the
-	   lat and lon converted from radians into degrees.  */
+	   coordinates (lat, lon). If degrees = TRUE, the output coordinates
+	   are in degrees, otherwise in radian. */
 
-	if(rads) {
-		*alat = d_asind(a[2]);
-		*alon = d_atan2d(a[1], a[0]);
+	if (degrees) {
+		*lat = d_asind (a[2]);
+		*lon = d_atan2d (a[1], a[0]);
 	}
 	else {
-		*alat = d_asin(a[2]);
-		*alon = d_atan2(a[1],a[0]);
+		*lat = d_asin (a[2]);
+		*lon = d_atan2 (a[1], a[0]);
 	}
 }
 
@@ -710,18 +710,18 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 	lon_tmp = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 	lat_tmp = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 	
-	GMT_geo_to_cart (&lat[0], &lon[0], a, TRUE);
+	GMT_geo_to_cart (lat[0], lon[0], a, TRUE);
 	lon_tmp[0] = lon[0];	lat_tmp[0] = lat[0];
 	n_tmp = 1;
 	if (step <= 0.0) step = 1.0;
 	
 	for (i = 1; i < n; i++) {
 		
-		GMT_geo_to_cart (&lat[i],&lon[i], b, TRUE);
+		GMT_geo_to_cart (lat[i], lon[i], b, TRUE);
 
 		if (mode == 1) {	/* First follow meridian, then parallel */
-			theta = fabs(lon[i]-lon[i-1]) * cos(lat[i-1]);
-			n_step = irint (theta * R2D / step);
+			theta = fabs(lon[i]-lon[i-1]) * cosd(lat[i-1]);
+			n_step = irint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
@@ -734,7 +734,7 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 				}
 			}
 			theta = fabs(lat[i]-lat[i-1]);
-			n_step = irint (theta * R2D / step);
+			n_step = irint (theta / step);
 			for (j = 0; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
 				lon_tmp[n_tmp] = lon[i];
@@ -750,7 +750,7 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 
 		else if (mode == 2) {	/* First follow parallel, then meridian */
 			theta = fabs(lat[i]-lat[i-1]);
-			n_step = irint (theta * R2D / step);
+			n_step = irint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
 				lon_tmp[n_tmp] = lon[i-1];
@@ -762,8 +762,8 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
 				}
 			}
-			theta = fabs(lon[i]-lon[i-1]) * cos(lat[i]);
-			n_step = irint (theta * R2D / step);
+			theta = fabs(lon[i]-lon[i-1]) * cosd(lat[i]);
+			n_step = irint (theta / step);
 			for (j = 0; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
@@ -778,11 +778,11 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 		}
 
 		/* Follow great circle */
-		else if ((theta = d_acos (GMT_dot3v (a, b))) == M_PI) {	/* trouble, no unique great circle */
+		else if ((theta = d_acosd (GMT_dot3v (a, b))) == 180.0) {	/* trouble, no unique great circle */
 			if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Two points in input list are antipodal - no resampling taken place!\n", GMT_program);
 		}
 
-		else if ((n_step = irint (theta * R2D / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+		else if ((n_step = irint (theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			fraction = 1.0 / (float) n_step;
 			minlon = MIN(lon[i-1],lon[i]);
 			maxlon = MAX(lon[i-1],lon[i]);
@@ -794,13 +794,13 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 				x[1] = a[1] * d + b[1] * c;
 				x[2] = a[2] * d + b[2] * c;
 				GMT_normalize3v (x);
-				GMT_cart_to_geo (&lat_tmp[n_tmp], &lon_tmp[n_tmp], x, FALSE);
+				GMT_cart_to_geo (&lat_tmp[n_tmp], &lon_tmp[n_tmp], x, TRUE);
 				if (meridian)
 					lon_tmp[n_tmp] = minlon;
 				else if (lon_tmp[n_tmp] < minlon)
-					lon_tmp[n_tmp] += TWO_PI;
+					lon_tmp[n_tmp] += 360.0;
 				else if (lon_tmp[n_tmp] > maxlon)
-					lon_tmp[n_tmp] -= TWO_PI;
+					lon_tmp[n_tmp] -= 360.0;
 				n_tmp++;
 				if (n_tmp == n_alloc) {
 					n_alloc <<= 1;
@@ -827,10 +827,6 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 	old = lat;
 	lat = lat_tmp;
 	GMT_free ((void *) old);
-	for (i = 0; i < n_tmp; i++) {
-		lon[i] *= R2D;
-		lat[i] *= R2D;
-	}
 	*a_lon = lon;
 	*a_lat = lat;
 	return (n_tmp);
