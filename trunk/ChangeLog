@@ -1,15 +1,25 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.426 2009-02-25 14:15:25 remko Exp $
+	$Id: ChangeLog,v 1.427 2009-02-25 19:38:46 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-02-25	remko
 	* gmt.h:		Introduced degree-based inverse trig functions: asind, acosd,
 				atand, atan2d as well as their "safe" equivalents.
-	* *.c:			Use degree-based trig function macros where appropriate.
 	* coast/segment_connect.c:	Simplified i_great_circle_dist() by calling
 				GMT_great_circle_dist().
-	* gmt_map.c:		Fixed serious bug in GMT_az_backaz_flatearth
-				(incorrectly converted degrees to radians)
+	* gmt_map.c:		Fixed serious bug in GMT_az_backaz_flatearth: incorrectly
+				converted degrees to radians. Fixed bug in GMT_get_rotate_pole:
+				called GMT_rotate_pole_forward with radians instead of degrees.
+				project_info.o_{beta,pole_lat,pole_lon} now in degrees.
+				GMT_fix_up_path: all arithmatic now in degrees.
+	* project.c:		Avoid changing variables in the control list (Ctrl);
+				this may have been harmful in the future (GMT5).
+				Removed "rads" argument from internal routines since it was
+				always TRUE anyhow. All routines are now in degrees.
+	* gmt_vector.[ch]:	GMT_geo_to_cart no longer alters the input coordinates.
+				This is a lot safer in usage.
+	* *.c:			Use degree-based trig function macros where appropriate.
+				Changed calls to GMT_geo_to_cart.
 
 2009-02-24	jluis
 	* utilmeca.c:		Needed to convert the output from d_atan2() to degrees
