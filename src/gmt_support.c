@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.381 2009-02-05 18:45:59 remko Exp $
+ *	$Id: gmt_support.c,v 1.382 2009-02-25 04:25:51 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3052,7 +3052,7 @@ void GMT_contlabel_angle (double x[], double y[], GMT_LONG start, GMT_LONG stop,
 	else if (sum_x2 < GMT_CONV_LIMIT)	/* Line is vertical */
 		L->line_angle = 90.0;
 	else
-		L->line_angle = (GMT_IS_ZERO (sum_xy)) ? 90.0 : d_atan2 (sum_xy, sum_x2) * R2D;
+		L->line_angle = (GMT_IS_ZERO (sum_xy)) ? 90.0 : d_atan2d (sum_xy, sum_x2);
 	this_angle_type = G->angle_type;
 	if (this_angle_type == 2) {	/* Just return the fixed angle given (unless NaN) */
 		if (GMT_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
@@ -4112,11 +4112,11 @@ void GMT_hold_contour_sub (double **xxx, double **yyy, GMT_LONG nn, double zval,
 				if (G->number_placement && !closed) {
 					e_val = G->number_placement;
 					if (G->number_placement == -1 && G->n_cont == 1) {	/* Label justified with start of segment */
-						f = d_atan2 (xx[0] - xx[1], yy[0] - yy[1]) * R2D + 180.0;	/* 0-360 */
+						f = d_atan2d (xx[0] - xx[1], yy[0] - yy[1]) + 180.0;	/* 0-360 */
 						G->end_just[0] = (f >= 90.0 && f <= 270) ? 7 : 5;
 					}
 					else if (G->number_placement == +1 && G->n_cont == 1) {	/* Label justified with end of segment */
-						f = d_atan2 (xx[nn-1] - xx[nn-2], yy[nn-1] - yy[nn-2]) * R2D + 180.0;	/* 0-360 */
+						f = d_atan2d (xx[nn-1] - xx[nn-2], yy[nn-1] - yy[nn-2]) + 180.0;	/* 0-360 */
 						G->end_just[1] = (f >= 90.0 && f <= 270) ? 7 : 5;
 					}
 					else if (G->number_placement && G->n_cont > 1)	/* One of the end labels */
@@ -7941,11 +7941,11 @@ double GMT_get_angle (double lon1, double lat1, double lon2, double lat2)
 			GMT_geo_to_xy (project_info.w, project_info.n, &x2, &y2);
 			GMT_corner = 3;
 		}
-		angle = d_atan2 (y2-y1, x2-x1) * R2D - 90.0;
+		angle = d_atan2d (y2-y1, x2-x1) - 90.0;
 		if (project_info.got_azimuths) angle += 180.0;
 	}
 	else
-		angle = d_atan2 (dy, dx) * R2D;
+		angle = d_atan2d (dy, dx);
 
 	if (abs (GMT_x_status_old) == 2 && abs (GMT_y_status_old) == 2)	/* Last point outside */
 		direction = angle + 180.0;
