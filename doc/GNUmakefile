@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.36 2009-02-17 16:37:46 remko Exp $
+#	$Id: GNUmakefile,v 1.37 2009-02-25 18:04:00 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -154,7 +154,7 @@ prepro:		$(DOCTEX) $(DOCEPS) $(DOCPDF) $(DOCPNG) $(TUTTEX) $(TUTEPS) $(TUTPDF) $
 
 # Test if plots are OK
 tests:	doctests extests
-doctests:	$(DOCEPS)
+doctests:	$(DOCEPS) $(TUTEPS)
 	@cd scripts ; sh run_doc_tests.sh orig/GMT_*.eps
 extests:	$(EX_EPS)
 	@cd scripts ; sh run_doc_tests.sh orig/example_*.eps
