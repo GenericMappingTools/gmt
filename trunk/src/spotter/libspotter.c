@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.54 2009-01-09 04:02:35 guru Exp $
+ *	$Id: libspotter.c,v 1.55 2009-02-25 04:32:59 remko Exp $
  *
  *   Copyright (c) 1999-2009 by P. Wessel
  *
@@ -1095,10 +1095,10 @@ void matrix_to_pole (double T[3][3], double *plon, double *plat, double *w)
 	H = sqrt (H);
 	tr = T[0][0] + T[1][1] + T[2][2];
 
-	*plon = atan2 (T13_m_T31, T32_m_T23) * R2D;
+	*plon = atan2d (T13_m_T31, T32_m_T23);
 	if (*plon < 0.0) (*plon) += 360.0;
-	*plat = atan2 (T21_m_T12, H) * R2D;
-	*w = atan2 (L, (tr - 1.0)) * R2D;
+	*plat = atan2d (T21_m_T12, H);
+	*w = atan2d (L, tr - 1.0);
 	if (*plat < 0.0) {	/* Make N hemisphere pole */
 		*plat = -(*plat);
 		*(plon) += 180.0;
@@ -1135,8 +1135,8 @@ void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[
 		p[i].omega = w[i];
 		if (convert) p[i].omega /= p[i].duration;	/* Convert opening angle to opening rate */
 		p[i].omega_r = p[i].omega * D2R;
-		p[i].sin_lat = sin (p[i].lat * D2R);
-		p[i].cos_lat = cos (p[i].lat * D2R);
+		p[i].sin_lat = sind (p[i].lat);
+		p[i].cos_lat = cosd (p[i].lat);
 		p[i].lon_r = p[i].lon * D2R;
 		p[i].lat_r = p[i].lat * D2R;
 	}
@@ -1225,7 +1225,7 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 	GMT_cross3v (y, x_in_plane, y_in_plane);	/* Local y-axis in plane normal to mean pole */
 	x_comp = GMT_dot3v (EigenVector, x_in_plane);	/* x-component of major axis in tangent plane */
 	y_comp = GMT_dot3v (EigenVector, y_in_plane);	/* y-component of major axis in tangent plane */
-	out[kk] = fmod (360.0 + (90.0 - atan2 (y_comp, x_comp) * R2D), 360.0);	/* Azimuth of major axis */
+	out[kk] = fmod (360.0 + (90.0 - atan2d (y_comp, x_comp)), 360.0);	/* Azimuth of major axis */
 	if (out[kk] > 180.0) out[kk] -= 180.0;
 	out[++kk] = sqrt (EigenValue[0]) * EQ_RAD * SQRT_CHI2;
 	out[++kk] = sqrt (EigenValue[1]) * EQ_RAD * SQRT_CHI2;
