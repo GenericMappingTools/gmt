@@ -1,5 +1,5 @@
 /*
- *	$Id: string_check_subs.c,v 1.4 2007-04-04 22:51:39 pwessel Exp $
+ *	$Id: string_check_subs.c,v 1.5 2009-02-25 12:36:29 remko Exp $
  */
 /* string_check_subs.c
  * Subroutines for testing WVS string quality.
@@ -266,7 +266,7 @@ double ds (struct LONGPAIR p1, struct LONGPAIR p2)
 	double	xscale;
 	int	idx;
 
-	xscale = cos(0.5e-06 * (p1.y + p2.y) * D2R);
+	xscale = cosd (0.5e-6 * (p1.y + p2.y));
 	idx = abs(p1.x - p2.x);
 	if (idx > 180000000) idx = 360000000 - idx;
 	return(D2R * 6.371 * hypot(xscale * idx, (double)(p1.y - p2.y) ) );

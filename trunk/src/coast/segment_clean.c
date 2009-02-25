@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_clean.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: segment_clean.c,v 1.3 2009-02-25 12:36:29 remko Exp $
  */
 /* segment_clean.c <raw_wvs_segment_file.b>  <clean_wvs_segment_file.b>
  *
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
 			if (dx > 180000000) dx = 360000000 - dx;
 			dy = abs (p[j].y - p[j-1].y);
 			meanlat = 0.5e-06 * (p[j].y + p[j-1].y);
-			xscale = cos(meanlat * D2R);
+			xscale = cosd(meanlat);
 			ds = 111.1949e-06 * hypot(dx*xscale, (double)dy);
 			avgds += ds;
 			if (maxds < ds) {

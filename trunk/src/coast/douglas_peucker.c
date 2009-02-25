@@ -1,5 +1,5 @@
 /*
- *	$Id: douglas_peucker.c,v 1.4 2008-08-14 02:46:38 remko Exp $
+ *	$Id: douglas_peucker.c,v 1.5 2009-02-25 12:36:29 remko Exp $
  */
 
 #define COASTLIB
@@ -68,7 +68,7 @@ int Douglas_Peucker (double x_source[], double y_source[], int n_source, double 
                 x12 = x_source[end] - x_source[start];
                 if (fabs (x12) > 180.0) x12 = 360.0 - fabs (x12);
                 y12 = y_source[end] - y_source[start];
-		x12 *= cos (D2R * 0.5 * (y_source[end] + y_source[start]));
+		x12 *= cosd (0.5 * (y_source[end] + y_source[start]));
 		d12 = sqr(x12) + sqr(y12);
 
                 for ( i = start + 1, sig = start, max_dev_sqr = -1.0; i <
@@ -82,8 +82,8 @@ end; i++ )
                			if (fabs (x23) > 180.0) x23 = 360.0 - fabs (x23);
 				y23 = y_source[i] - y_source[end];
                                 
-                                x13 *= cos (D2R * 0.5 * (y_source[i] + y_source[end]));
-                                x23 *= cos (D2R * 0.5 * (y_source[i] + y_source[end]));
+                                x13 *= cosd (0.5 * (y_source[i] + y_source[end]));
+                                x23 *= cosd (0.5 * (y_source[i] + y_source[end]));
                                 
                                 d13 = sqr(x13) + sqr(y13);
                                 d23 = sqr(x23) + sqr(y23);
