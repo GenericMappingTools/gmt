@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.43 2009-01-17 02:05:18 guru Exp $
+ *	$Id: gmt_proj.c,v 1.44 2009-02-25 14:09:50 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -191,7 +191,7 @@ void GMT_polar (double x, double y, double *x_i, double *y_i)
 
 void GMT_ipolar (double *x, double *y, double x_i, double y_i)
 {	/* Inversely transform both x and y from polar(cylindrical) coordinates */
-	*x = R2D * d_atan2 (y_i, x_i) + project_info.p_base_angle;
+	*x = d_atan2d (y_i, x_i) + project_info.p_base_angle;
 	if (project_info.got_azimuths) *x = 90.0 - (*x);		/* azimuths, not directions */
 	*y = hypot (x_i, y_i);
 	if (project_info.got_elevations) *y = 90.0 - (*y);    /* elevations, presumably */
@@ -218,7 +218,7 @@ void GMT_merc_sph (double lon, double lat, double *x, double *y)
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_latc (lat);
 
 	*x = project_info.j_x * D2R * lon;
-	*y = (fabs (lat) < 90.0) ? project_info.j_x * d_log (tan (M_PI_4 + 0.5 * D2R * lat)) : copysign (DBL_MAX, lat);
+	*y = (fabs (lat) < 90.0) ? project_info.j_x * d_log (tand (45.0 + 0.5 * lat)) : copysign (DBL_MAX, lat);
 }
 
 void GMT_imerc_sph (double *lon, double *lat, double x, double y)
@@ -226,7 +226,7 @@ void GMT_imerc_sph (double *lon, double *lat, double x, double y)
 	/* Convert Mercator x/y to lon/lat  (project_info.EQ_RAD in project_info.j_ix) */
 
 	*lon = x * project_info.j_ix * R2D + project_info.central_meridian;
-	*lat = atan (sinh (y * project_info.j_ix)) * R2D;
+	*lat = atand (sinh (y * project_info.j_ix));
 	if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 }
 
@@ -268,7 +268,7 @@ void GMT_icyleq (double *lon, double *lat, double x, double y)
 		y *= project_info.iDy;
 	}
 	*lon = x * project_info.j_ix + project_info.central_meridian;
-	*lat = R2D * d_asin (y * project_info.j_iy);
+	*lat = d_asind (y * project_info.j_iy);
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 
@@ -324,7 +324,7 @@ void GMT_miller (double lon, double lat, double *x, double *y)
 
 	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	*x = lon * project_info.j_x;
-	*y = project_info.j_y * d_log (tan (M_PI_4 + 0.4 * lat * D2R));
+	*y = project_info.j_y * d_log (tand (45.0 + 0.4 * lat));
 }
 
 void GMT_imiller (double *lon, double *lat, double x, double y)
@@ -333,7 +333,7 @@ void GMT_imiller (double *lon, double *lat, double x, double y)
 	/* Convert Miller Cylindrical x/y to lon/lat */
 
 	*lon = x * project_info.j_ix + project_info.central_meridian;
-	*lat = 2.5 * R2D * atan (exp (y * project_info.j_iy)) - 112.5;
+	*lat = 2.5 * atand (exp (y * project_info.j_iy)) - 112.5;
 }
 
 /* -JCyl_stere CYLINDRICAL STEREOGRAPHIC PROJECTION */
@@ -365,7 +365,7 @@ void GMT_icylstereo (double *lon, double *lat, double x, double y)
 	/* Convert Cylindrical Stereographic x/y to lon/lat */
 
 	*lon = x * project_info.j_ix + project_info.central_meridian;
-	*lat = 2.0 * R2D * atan (y * project_info.j_iy);
+	*lat = 2.0 * atand (y * project_info.j_iy);
 }
 
 
@@ -404,12 +404,12 @@ void GMT_plrs_sph (double lon, double lat, double *x, double *y)
 
 	sincosd (lon, &slon, &clon);
 	if (project_info.north_pole) {
-		rho = project_info.s_c * tan (M_PI_4 - 0.5 * D2R * lat);
+		rho = project_info.s_c * tand (45.0 - 0.5 * lat);
 		*y = -rho * clon;
 		*x =  rho * slon;
 	}
 	else {
-		rho = project_info.s_c * tan (M_PI_4 + 0.5 * D2R * lat);
+		rho = project_info.s_c * tand (45.0 + 0.5 * lat);
 		*y = rho * clon;
 		*x = rho * slon;
 	}
@@ -438,12 +438,12 @@ void GMT_iplrs_sph (double *lon, double *lat, double x, double y)
 	c = 2.0 * atan (hypot (x, y) * project_info.s_ic);
 
 	if (project_info.north_pole) {
-		*lon = project_info.central_meridian + d_atan2 (x, -y) * R2D;
-		*lat = d_asin (cos (c)) * R2D;
+		*lon = project_info.central_meridian + d_atan2d (x, -y);
+		*lat = d_asind (cos (c));
 	}
 	else {
-		*lon = project_info.central_meridian + d_atan2 (x, y) * R2D;
-		*lat = d_asin (-cos (c)) * R2D;
+		*lon = project_info.central_meridian + d_atan2d (x, y);
+		*lat = d_asind (-cos (c));
 	}
 	if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 
@@ -451,15 +451,13 @@ void GMT_iplrs_sph (double *lon, double *lat, double x, double y)
 
 void GMT_stereo1_sph (double lon, double lat, double *x, double *y)
 {
-	double dlon, sin_dlon, cos_dlon, s, c, cc, A;
+	double sin_dlon, cos_dlon, s, c, cc, A;
 
 	/* Convert lon/lat to x/y using Spherical stereographic projection, oblique view */
 
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_latc (lat);
-	dlon = D2R * (lon - project_info.central_meridian);
-	lat *= D2R;
-	sincos (dlon, &sin_dlon, &cos_dlon);
-	sincos (lat, &s, &c);
+	sincosd (lon - project_info.central_meridian, &sin_dlon, &cos_dlon);
+	sincosd (lat, &s, &c);
 	cc = c * cos_dlon;
 	A = project_info.s_c / (1.0 + project_info.sinp * s + project_info.cosp * cc);
 	*x = A * c * sin_dlon;
@@ -486,8 +484,8 @@ void GMT_istereo_sph (double *lon, double *lat, double x, double y)
 	c = 2.0 * atan (rho * project_info.s_ic);
 	sincos (c, &sin_c, &cos_c);
 	if (rho != 0.0) sin_c /= rho;
-	*lat = asin (cos_c * project_info.sinp + y * sin_c * project_info.cosp) * R2D;
-	*lon = d_atan2 (x * sin_c, cos_c * project_info.cosp - y * sin_c * project_info.sinp) * R2D + project_info.central_meridian;
+	*lat = asind (cos_c * project_info.sinp + y * sin_c * project_info.cosp);
+	*lon = d_atan2d (x * sin_c, cos_c * project_info.cosp - y * sin_c * project_info.sinp) + project_info.central_meridian;
 	if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 }
 
@@ -523,25 +521,23 @@ void GMT_vlamb (double rlong0, double rlat0, double pha, double phb)
 {
 	/* Set up a Lambert Conformal Conic projection (Spherical when e = 0) */
 
-	double t_pha, m_pha, t_phb, m_phb, t_rlat0;
+	double sin_pha, cos_pha, sin_phb, cos_phb, t_pha, m_pha, t_phb, m_phb, t_rlat0;
 
 	GMT_check_R_J (&rlong0);
 	project_info.north_pole = (rlat0 > 0.0);
 	project_info.pole = (project_info.north_pole) ? 90.0 : -90.0;
-	pha *= D2R;
-	phb *= D2R;
-
-	t_pha = tan (M_PI_4 - 0.5 * pha) / pow ((1.0 - project_info.ECC *
-		sin (pha)) / (1.0 + project_info.ECC * sin (pha)), project_info.half_ECC);
-	m_pha = cos (pha) / d_sqrt (1.0 - project_info.ECC2
-		* pow (sin (pha), 2.0));
-	t_phb = tan (M_PI_4 - 0.5 * phb) / pow ((1.0 - project_info.ECC *
-		sin (phb)) / (1.0 + project_info.ECC * sin (phb)), project_info.half_ECC);
-	m_phb = cos (phb) / d_sqrt (1.0 - project_info.ECC2
-		* pow (sin (phb), 2.0));
-	t_rlat0 = tan (M_PI_4 - 0.5 * rlat0 * D2R) /
-		pow ((1.0 - project_info.ECC * sin (rlat0 * D2R)) /
-		(1.0 + project_info.ECC * sin (rlat0 * D2R)), project_info.half_ECC);
+	sincosd (pha, &sin_pha, &cos_pha);
+	sincosd (phb, &sin_phb, &cos_phb);
+	
+	t_pha = tand (45.0 - 0.5 * pha) / pow ((1.0 - project_info.ECC *
+		sin_pha) / (1.0 + project_info.ECC * sin_pha), project_info.half_ECC);
+	m_pha = cos_pha / d_sqrt (1.0 - project_info.ECC2 * sin_pha * sin_pha);
+	t_phb = tand (45.0 - 0.5 * phb) / pow ((1.0 - project_info.ECC *
+		sin_phb) / (1.0 + project_info.ECC * sin_phb), project_info.half_ECC);
+	m_phb = cos_phb / d_sqrt (1.0 - project_info.ECC2 * sin_phb * sin_phb);
+	t_rlat0 = tand (45.0 - 0.5 * rlat0) /
+		pow ((1.0 - project_info.ECC * sind (rlat0)) /
+		(1.0 + project_info.ECC * sind (rlat0)), project_info.half_ECC);
 
 	if(pha != phb)
 		project_info.l_N = (d_log(m_pha) - d_log(m_phb))/(d_log(t_pha) - d_log(t_phb));
@@ -628,7 +624,7 @@ void GMT_ilamb_sph (double *lon, double *lat, double x, double y)
 	t = pow (rho * project_info.l_i_rF, -project_info.l_i_N);
 
 	*lon = theta * project_info.l_i_Nr + project_info.central_meridian;
-	*lat = 2.0 * R2D * atan (t) - 90.0;
+	*lat = 2.0 * atand (t) - 90.0;
 	if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 }
 
@@ -849,10 +845,10 @@ void GMT_itm_sph (double *lon, double *lat, double x, double y)
 	coshxx = cosh (xx);
 
 	sincos (yy, &sind, &cosd);
-	phi = R2D * asin (sind / coshxx);
+	phi = asind (sind / coshxx);
 	*lat = phi;
 
-	lambda = R2D * atan2 (sinhxx, cosd);
+	lambda = atan2d (sinhxx, cosd);
 	*lon = lambda + project_info.central_meridian;
 	if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 }
@@ -911,7 +907,7 @@ void GMT_vlambeq (double lon0, double lat0, double horizon)
 	project_info.central_meridian = lon0;
 	project_info.pole = lat0;
 	if (project_info.GMT_convert_latitudes) lat0 = GMT_latg_to_lata (lat0);
-	sincos (lat0 * D2R, &(project_info.sinp), &(project_info.cosp));
+	sincosd (lat0, &(project_info.sinp), &(project_info.cosp));
 	project_info.f_horizon = horizon;
 	project_info.rho_max = 2.0 * sind (0.5 * horizon) * project_info.EQ_RAD;
 }
@@ -959,8 +955,8 @@ void GMT_ilambeq (double *lon, double *lat, double x, double y)
 	a *= a;							/* a = sin(c/2)**2	*/
 	cos_c = 1.0 - 2.0 * a;					/* cos_c = cos(c)	*/
 	sin_c = sqrt (1.0 - a) * project_info.i_EQ_RAD;		/* sin_c = sin(c)/rho	*/
-	*lat = d_asin (cos_c * project_info.sinp + y * sin_c * project_info.cosp) * R2D;
-	*lon = d_atan2 (x * sin_c, project_info.cosp * cos_c - y * project_info.sinp * sin_c) * R2D + project_info.central_meridian;
+	*lat = d_asind (cos_c * project_info.sinp + y * sin_c * project_info.cosp);
+	*lon = d_atan2d (x * sin_c, project_info.cosp * cos_c - y * project_info.sinp * sin_c) + project_info.central_meridian;
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 
@@ -981,12 +977,12 @@ void genper_to_xtyt (double angle, double x, double y, double offset, double *xt
 		yp = (y * project_info.g_cos_azimuth + x * project_info.g_sin_azimuth) / A;
 		if (fabs(yp) > fabs(project_info.g_max_yt)) {
 			yp = -project_info.g_max_yt;
-			xp = -yp*tan(theta*D2R);
+			xp = -yp * tand(theta);
 		}
 	}
 	else {
 		yp = -project_info.g_max_yt;
-		xp = -yp*tan(theta*D2R);
+		xp = -yp * tand(theta);
 	}
 
 	yp -= offset;
@@ -1003,11 +999,11 @@ double genper_getgeocentric (double phi, double h)
 {
 	double phig, sphi, cphi, N1;
 
-	sincos (phi*D2R, &sphi, &cphi);
+	sincosd (phi, &sphi, &cphi);
 
 	N1 = project_info.EQ_RAD/sqrt(1.0 - (project_info.ECC2*sphi*sphi));
 
-	phig = phi - asin(N1*project_info.ECC2*sphi*cphi/((h/project_info.EQ_RAD+1.0)*project_info.EQ_RAD))*R2D;
+	phig = phi - asind(N1*project_info.ECC2*sphi*cphi/((h/project_info.EQ_RAD+1.0)*project_info.EQ_RAD));
 
 	return (phig);
 }
@@ -1029,13 +1025,13 @@ void genper_toxy (double lat, double lon, double h, double *x, double *y)
 	sphi1 = project_info.g_sphi1;
 	h *= 1e3;
 
-	sincos (lat*D2R, &sphi, &cphi);
+	sincosd (lat, &sphi, &cphi);
 
 	N = project_info.g_R/sqrt(1.0 - (project_info.ECC2*sphi*sphi));
 	C = ((N+h)/project_info.g_R)*cphi;
 	S = ((N*project_info.one_m_ECC2 + h)/project_info.g_R)*sphi;
 
-	sincos ((lon - project_info.g_lon0)*D2R, &sdlon, &cdlon);
+	sincosd (lon - project_info.g_lon0, &sdlon, &cdlon);
 
 	K = project_info.g_H / (project_info.g_P*cdphi - S*sphi1 - C*cphi1*cdlon);
 
@@ -1162,12 +1158,6 @@ void genper_tolatlong (double x, double y, double h, double *lat, double *lon)
 		niter = 0;
 		t2 = h*h/(R*R*one_m_e2);
 
-#if 0		/* XXX */
-		phi = asin(S);
-		sphi = sin(phi);
-		phi = asin(S/(one_m_e2/sqrt(1.0 - e2*sphi*sphi) + h/R));
-		sphi = sin(phi);
-#endif
 		sphi = S/(one_m_e2/sqrt(1.0 - e2*S*S) + h/R);
 		phi = asin(sphi);
 
@@ -1178,7 +1168,7 @@ void genper_tolatlong (double x, double y, double h, double *lat, double *lon)
 
 		if (set_exit == 1) fprintf (stderr, "genper_tolatlong - 3\n");
 		if (project_info.g_debug > 1 || set_exit) {
-			fprintf (stderr, "asinS %12.7f\n", R2D*asin(S));
+			fprintf (stderr, "asinS %12.7f\n", asind(S));
 			fprintf (stderr, "phi   %12.7f\n", R2D*phi);
 			fprintf (stderr, "E     %12.7f\n", E);
 		}
@@ -1195,10 +1185,6 @@ void genper_tolatlong (double x, double y, double h, double *lat, double *lon)
 			X = R*((B-H/Kp)*cphi1 - (y/Kp - D)*sphi1);
 			Y = R*x/Kp;
 			S = (y/Kp-D)*cphi1 + (B-H/Kp)*sphi1;
-#if 0			/* XXX */
-			phi = asin(S/(one_m_e2/sqrt(1.0 - e2*sphi*sphi) + h/R));
-			sphi = sin(phi);
-#endif
 			sphi = S/(one_m_e2/sqrt(1.0 - e2*sphi*sphi) + h/R);
 			phi = asin(sphi);
 			t1 = (1.0/sqrt(1.0 - e2*sphi*sphi) + h/R);
@@ -1225,7 +1211,7 @@ void genper_tolatlong (double x, double y, double h, double *lat, double *lon)
 		GMT_exit(1);
 	}
 	*lat = phi * R2D;
-	*lon = atan2 (Y, X) * R2D + project_info.g_lon0;
+	*lon = atan2d (Y, X) + project_info.g_lon0;
 	return;
 }
 
@@ -1245,7 +1231,7 @@ void genper_setup (double h0, double altitude, double lat, double lon0)
 
 	h0 *= 1e3;
 
-	sincos (lat*D2R, &sphi1, &cphi1);
+	sincosd (lat, &sphi1, &cphi1);
 	sphig = sphi1; cphig = cphi1;
 
 	N1 = a/sqrt(1.0 - (e2*sphi1*sphi1));
@@ -1262,8 +1248,8 @@ void genper_setup (double h0, double altitude, double lat, double lon0)
 		double temp = 86164.1/TWO_PI;
 		H = pow(3.98603e14*temp*temp, 0.3333) - a;
 		P = H/a + 1.0;
-		phig = lat - asin(N1*e2*sphi1*cphi1/(P*a))*R2D;
-		sincos (phig*D2R, &sphig, &cphig);
+		phig = lat - asind(N1*e2*sphi1*cphi1/(P*a));
+		sincosd (phig, &sphig, &cphig);
 		if (cphi1 != 0.0)
 			H = P*a*cphig/cphi1 - N1 - h0;
 		else
@@ -1272,8 +1258,8 @@ void genper_setup (double h0, double altitude, double lat, double lon0)
 	else if (altitude < 10) {
 		P = altitude;
 		/* need to setup H from P equation */
-		phig = lat - asin(N1*e2*sphi1*cphi1/(P*a))*R2D;
-		sincos (phig*D2R, &sphig, &cphig);
+		phig = lat - asind(N1*e2*sphi1*cphi1/(P*a));
+		sincosd (phig, &sphig, &cphig);
 		if (cphi1 != 0.0)
 			H = P*a*cphig/cphi1 - N1 - h0;
 		else
@@ -1286,14 +1272,14 @@ void genper_setup (double h0, double altitude, double lat, double lon0)
 		phig = lat;
 		do {
 				niter++;
-				sincos (phig*D2R, &sphig, &cphig);
+				sincosd (phig, &sphig, &cphig);
 				P = (cphi1/cphig) * (H + N1 + h0)/a;
 				phig_last = phig;
-				phig = lat - asin(N1*e2*sphi1*cphi1/(P*a))*R2D;
+				phig = lat - asind(N1*e2*sphi1*cphi1/(P*a));
 				/* fprintf (stderr, "%2d P %12.7f phig %12.7f\n", niter, P, phig); */
 		}
 		while (fabs(phig - phig_last) > 1e-9);
-		sincos (phig*D2R, &sphig, &cphig);
+		sincosd (phig, &sphig, &cphig);
 		P = (cphi1/cphig)*(H + N1 + h0)/a;
 	}
 
@@ -1312,7 +1298,7 @@ void genper_setup (double h0, double altitude, double lat, double lon0)
 	project_info.g_sphig = sphig;
 	project_info.g_cphig = cphig;
 
-	sincos ((lat-phig)*D2R, &(project_info.g_sdphi), &(project_info.g_cdphi));
+	sincosd (lat-phig, &(project_info.g_sdphi), &(project_info.g_cdphi));
 
 	project_info.g_L = 1.0 - e2*cphi1*cphi1;
 	project_info.g_G = 1.0 - e2*sphi1*sphi1;
@@ -1373,7 +1359,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 	Req = R = project_info.EQ_RAD;
 	Rpolar = Req * sqrt(project_info.one_m_ECC2);
 
-	sincos (lat0*D2R, &t2, &t1);
+	sincosd (lat0, &t2, &t1);
 
 	t1 *= R;
 	t12 = R*t1;
@@ -1383,7 +1369,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 	Rlat0 = sqrt((t12*t12 + t22*t22)/(t1*t1 + t2*t2));
 
 	lat0 = genper_getgeocentric (lat0, 0.0);
-	sincos (lat0*D2R, &(project_info.sinp), &(project_info.cosp));
+	sincosd (lat0, &(project_info.sinp), &(project_info.cosp));
 
 	if (project_info.ECC2 != 0.0) {
 		genper_setup (0.0, altitude, lat0_save, lon0);
@@ -1456,9 +1442,9 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 			rho2 = P*P + 1.0 - 2.0*P*cos_eca;
 			rho = sqrt(rho2);
 
-			tilt = d_acos((rho2 + P*P - 1.0)/(2.0*rho*P)) * R2D;
+			tilt = d_acosd((rho2 + P*P - 1.0)/(2.0*rho*P));
 
-			azimuth = d_acos((cos(rlat1) - cos(rlat0)*cos_eca)/(sin(rlat0)*sin_eca)) * R2D;
+			azimuth = d_acosd((cos(rlat1) - cos(rlat0)*cos_eca)/(sin(rlat0)*sin_eca));
 
 			if (dlong < 0) azimuth = 360.0 - azimuth;
 
@@ -1472,10 +1458,10 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 		fprintf (stderr, " input twist %6.3f\n", twist);
 	}
 
-	if (tilt < 0.0) tilt = d_asin(project_info.g_P_inverse)*R2D;
+	if (tilt < 0.0) tilt = d_asind(project_info.g_P_inverse);
 
-	sincos (tilt*D2R, &(project_info.g_sin_tilt), &(project_info.g_cos_tilt));
-	sincos (twist*D2R, &(project_info.g_sin_twist), &(project_info.g_cos_twist));
+	sincosd (tilt, &(project_info.g_sin_tilt), &(project_info.g_cos_tilt));
+	sincosd (twist, &(project_info.g_sin_twist), &(project_info.g_cos_twist));
 
 	project_info.g_box = !(fabs(width) < GMT_SMALL);
 
@@ -1484,7 +1470,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 	project_info.g_width = width/2.0;
 
 	project_info.g_azimuth = azimuth;
-	sincos (azimuth*D2R, &(project_info.g_sin_azimuth), &(project_info.g_cos_azimuth));
+	sincosd (azimuth, &(project_info.g_sin_azimuth), &(project_info.g_cos_azimuth));
 
 	PP = sqrt((P - 1.0)/(P + 1.0));
 	rmax = R*PP;
@@ -1496,18 +1482,18 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 
 	kp = R*(P - 1.0) / (P - project_info.g_P_inverse);
 
-	omega_max = d_acos(project_info.g_P_inverse)*R2D;
+	omega_max = d_acosd(project_info.g_P_inverse);
 	project_info.g_rmax = rmax;
 
 	/* project_info.f_horizon = project_info.g_P_inverse; */
 	project_info.f_horizon = omega_max;
 	/* XXX Which one is it ? */
 
-	max_yt = 2.0*R*sin(omega_max/2.0*D2R);
+	max_yt = 2.0*R*sind(0.5*omega_max);
 
-	eccen = sin(tilt*D2R)/sqrt(1.0 - 1.0/(P*P));
+	eccen = sind(tilt)/sqrt(1.0 - 1.0/(P*P));
 
-	gamma = 180.0 - d_asin(project_info.g_sin_tilt * P)*R2D;
+	gamma = 180.0 - d_asind(project_info.g_sin_tilt * P);
 	Omega = 180.0 - tilt - gamma;
 
 	if (project_info.g_debug > 0) fprintf (stderr, "vgenper: tilt %6.3f sin_tilt %10.6f P %6.4f gamma %6.4f\n   Omega %6.4f eccen %10.4f\n", tilt, project_info.g_sin_tilt, P, gamma, Omega, eccen);
@@ -1527,7 +1513,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 	}
 	else if (eccen > 0.5) {
 		if (width != 0.0) {
-			double t = sin(tilt*D2R), Pecc, maxecc = 0.5;
+			double t = sind(tilt), Pecc, maxecc = 0.5;
 			Pecc = sqrt(1.0/(1.0 - (t*t/maxecc)));
 			max_yt = R*sqrt((Pecc-1.0)/(Pecc+1.0));
 			if (project_info.g_debug > 1) fprintf (stderr, "vgenper: Projected map is an enlongated ellipse (eccentricity of %6.4f) with requested tilt %6.3f\nwill truncate plot at rmax %8.2f\n", eccen, tilt, max_yt);
@@ -1540,23 +1526,16 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 
 	project_info.g_max_yt = max_yt;
 
-	sincos (Omega*D2R, &sinOmega, &cosOmega);
+	sincosd (Omega, &sinOmega, &cosOmega);
 
 	rho2 = P*P + 1.0 - 2.0*P*cosOmega;
 	rho = sqrt(rho2);
 
-#if 0	/* XXX Weird switch of sinlatvp and coslatvp */
-	coslatvp = project_info.sinp*cosOmega + project_info.cosp*sinOmega*project_info.g_cos_azimuth;
-	latvp = 90.0 - d_acos(coslatvp)*R2D;
-	sinlatvp = sin((90.0 - latvp)*D2R);
-
-	lonvp = acos((cosOmega - coslatvp*project_info.sinp)/(project_info.cosp*sinlatvp))*R2D;
-#endif
 	sinlatvp = project_info.sinp*cosOmega + project_info.cosp*sinOmega*project_info.g_cos_azimuth;
-	latvp = d_asin(sinlatvp)*R2D;
+	latvp = d_asind(sinlatvp);
 	coslatvp = sqrt (1.0 - sinlatvp*sinlatvp);
 
-	lonvp = acos((cosOmega - sinlatvp*project_info.sinp)/(project_info.cosp*coslatvp))*R2D;
+	lonvp = acosd((cosOmega - sinlatvp*project_info.sinp)/(project_info.cosp*coslatvp));
 	if (azimuth > 180.0) lonvp = -lonvp;
 	lonvp += lon0;
 
@@ -1566,9 +1545,9 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 
 	if (height != 0.0) {
 		project_info.g_yoffset = project_info.g_sin_tilt * H ;
-		xt_max = R*rho*sin(width/2.0*D2R);
+		xt_max = R * rho * sind(0.5*width);
 		xt_min = -xt_max;
-		yt_max = R*rho*sin(height/2.0*D2R);
+		yt_max = R * rho * sind(0.5*height);
 		yt_min = -yt_max;
 	}
 	else {
@@ -1587,7 +1566,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 		}
 
 		for (az = 0 ; az < 360 ; az++) {
-			sincos (az*D2R, &x, &y);
+			sincosd (az, &x, &y);
 			x *= rmax;
 			y *= rmax;
 			genper_to_xtyt ((double)az, x, y, project_info.g_yoffset, &xt, &yt);
@@ -1601,10 +1580,10 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 		}
 		if (project_info.g_debug > 2) fclose(fp);
 		if (eccen > 0.5) {
-			height = width = 2.0*atan(2.0*rmax/H)*R2D;
-			xt_max = yt_max = R*rho*sin(width/2.0*D2R);
+			project_info.g_width = atand(2.0*rmax/H);
+			height = width = 2.0 * project_info.g_width;
+			xt_max = yt_max = R * rho * sind(project_info.g_width);
 			xt_min = yt_min = -xt_max;
-			project_info.g_width = width/2.0;
 		}
 	}
 	if (project_info.g_debug > 1) {
@@ -1665,7 +1644,7 @@ void GMT_genper (double lon, double lat, double *xt, double *yt)
 
 	lat = genper_getgeocentric (lat, 0.0);
 
-	sincos (lat*D2R, &sin_lat, &cos_lat);
+	sincosd (lat, &sin_lat, &cos_lat);
 	sincos (dlon, &sin_dlon, &cos_dlon);
 
 	cosc = project_info.sinp * sin_lat + project_info.cosp * cos_lat * cos_dlon;
@@ -1694,7 +1673,7 @@ void GMT_genper (double lon, double lat, double *xt, double *yt)
 	else if (project_info.ECC2 != 0.0) { /* within field of view, ellipsoidal earth */
 		genper_toxy (lat, lon, 0.0, &x, &y);
 		/* angle = project_info.g_azimuth; */
-		angle = atan2(x, y) * R2D;
+		angle = atan2d(x, y);
 		/* XXX Which one is it? Forgotten R2D. Switched x and y. */
 	}
 	else { /* within field of view, spherical earth */
@@ -1702,7 +1681,7 @@ void GMT_genper (double lon, double lat, double *xt, double *yt)
 		x = kp * cos_lat * sin_dlon;
 		y = kp * (project_info.cosp * sin_lat - project_info.sinp * cos_lat * cos_dlon);
 		/* angle = project_info.g_azimuth; */
-		angle = atan2(x, y) * R2D;
+		angle = atan2d(x, y);
 		/* XXX Which one is it? Forgotten R2D. Switched x and y. */
 	}
 
@@ -1767,8 +1746,8 @@ void GMT_igenper (double *lon, double *lat, double xt, double yt)
 		sin_c = (P - d_sqrt(1.0 - (rho * rho * com)/(R*R*con))) / (R * con / rho + rho/(R*con));
 		cos_c = d_sqrt(1.0 - sin_c * sin_c);
 		sin_c /= rho;
-		*lat = d_asin (cos_c * project_info.sinp + y * sin_c * project_info.cosp) * R2D;
-		*lon = d_atan2 (x * sin_c, cos_c * project_info.cosp - y * sin_c * project_info.sinp) * R2D + project_info.central_meridian;
+		*lat = d_asind (cos_c * project_info.sinp + y * sin_c * project_info.cosp);
+		*lon = d_atan2d (x * sin_c, cos_c * project_info.cosp - y * sin_c * project_info.sinp) + project_info.central_meridian;
 	}
 	return;
 }
@@ -1821,7 +1800,7 @@ void GMT_vortho (double lon0, double lat0, double horizon)
 	/* GMT_check_R_J (&lon0); */
 	project_info.central_meridian = lon0;
 	project_info.pole = lat0;
-	sincos (lat0 * D2R, &(project_info.sinp), &(project_info.cosp));
+	sincosd (lat0, &(project_info.sinp), &(project_info.cosp));
 	project_info.f_horizon = horizon;
 	project_info.rho_max = sind (horizon);
 }
@@ -1852,8 +1831,8 @@ void GMT_iortho (double *lon, double *lat, double x, double y)
 		return;
 	}
 	cos_c = sqrt (1.0 - rho * rho);	/* Produces NaN for rho > 1: beyond horizon */
-	*lat = d_asin (cos_c * project_info.sinp + y * project_info.cosp) * R2D;
-	*lon = d_atan2 (x, cos_c * project_info.cosp - y * project_info.sinp) * R2D + project_info.central_meridian;
+	*lat = d_asind (cos_c * project_info.sinp + y * project_info.cosp);
+	*lon = d_atan2d (x, cos_c * project_info.cosp - y * project_info.sinp) + project_info.central_meridian;
 }
 
 /* -JF GNOMONIC PROJECTION */
@@ -1868,7 +1847,7 @@ void GMT_vgnomonic (double lon0, double lat0, double horizon)
 	project_info.rho_max = tand (project_info.f_horizon);
 	project_info.pole = lat0;
 	project_info.north_pole = (lat0 > 0.0);
-	sincos (lat0 * D2R, &(project_info.sinp), &(project_info.cosp));
+	sincosd (lat0, &(project_info.sinp), &(project_info.cosp));
 }
 
 void GMT_gnomonic (double lon, double lat, double *x, double *y)
@@ -1899,8 +1878,8 @@ void GMT_ignomonic (double *lon, double *lat, double x, double y)
 		return;
 	}
 	c = atan (rho);
-	*lat = d_asin (cos(c) * (project_info.sinp + y * project_info.cosp)) * R2D;
-	*lon = d_atan2 (x, project_info.cosp - y * project_info.sinp) * R2D + project_info.central_meridian;
+	*lat = d_asind (cos(c) * (project_info.sinp + y * project_info.cosp));
+	*lon = d_atan2d (x, project_info.cosp - y * project_info.sinp) + project_info.central_meridian;
 }
 
 /* -JE AZIMUTHAL EQUIDISTANT PROJECTION */
@@ -1912,7 +1891,7 @@ void GMT_vazeqdist (double lon0, double lat0, double horizon)
 	/* GMT_check_R_J (&lon0); */
 	project_info.central_meridian = lon0;
 	project_info.pole = lat0;
-	sincos (lat0 * D2R, &(project_info.sinp), &(project_info.cosp));
+	sincosd (lat0, &(project_info.sinp), &(project_info.cosp));
 	project_info.f_horizon = horizon;
 	project_info.rho_max = horizon * D2R;
 }
@@ -1955,8 +1934,8 @@ void GMT_iazeqdist (double *lon, double *lat, double x, double y)
 	if (rho != 0.0) sin_c /= rho;
 	/* Since in the rest we only have sin_c in combination with x or y, it is not necessary to set
 	   sin_c = 1 when rho == 0. In that case x*sin_c and y*sin_c or 0 anyhow. */
-	*lat = d_asin (cos_c * project_info.sinp + y * sin_c * project_info.cosp) * R2D;
-	*lon = d_atan2 (x * sin_c, cos_c * project_info.cosp - y * sin_c * project_info.sinp) * R2D + project_info.central_meridian;
+	*lat = d_asind (cos_c * project_info.sinp + y * sin_c * project_info.cosp);
+	*lon = d_atan2d (x * sin_c, cos_c * project_info.cosp - y * sin_c * project_info.sinp) + project_info.central_meridian;
 }
 
 /* -JW MOLLWEIDE EQUAL AREA PROJECTION */
@@ -2018,7 +1997,7 @@ void GMT_imollweide (double *lon, double *lat, double x, double y)
 	}
 	*lon += project_info.central_meridian;
 	phi2 = 2.0 * phi;
-	*lat = R2D * asin ((phi2 + sin (phi2)) / M_PI);
+	*lat = asind ((phi2 + sin (phi2)) / M_PI);
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 
@@ -2046,10 +2025,8 @@ void GMT_hammer (double lon, double lat, double *x, double *y)
 
 	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_lata (lat);
-	lat *= D2R;
-	lon *= (0.5 * D2R);
-	sincos (lat, &slat, &clat);
-	sincos (lon, &slon, &clon);
+	sincosd (lat, &slat, &clat);
+	sincosd (0.5 * lon, &slon, &clon);
 
 	D = project_info.EQ_RAD * sqrt (2.0 / (1.0 + clat * clon));
 	*x = 2.0 * D * clat * slon;
@@ -2071,8 +2048,8 @@ void GMT_ihammer (double *lon, double *lat, double x, double y)
 		return;
 	}
 	sin_c = sqrt (1.0 - a) * project_info.i_EQ_RAD;		/* sin_c = sin(c)/rho	*/
-	*lat = asin (y * sin_c) * R2D;
-	*lon = 2.0 * d_atan2 (x * sin_c, cos_c) * R2D + project_info.central_meridian;
+	*lat = asind (y * sin_c);
+	*lon = 2.0 * d_atan2d (x * sin_c, cos_c) + project_info.central_meridian;
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
 
@@ -2340,7 +2317,7 @@ void GMT_ieckert4 (double *lon, double *lat, double x, double y)
 		return;
 	}
 	*lon += project_info.central_meridian;
-	*lat = d_asin ((phi + s * c + 2.0 * s) / (2.0 + M_PI_2)) * R2D;
+	*lat = d_asind ((phi + s * c + 2.0 * s) / (2.0 + M_PI_2));
 }
 
 double GMT_left_eckert4 (double y)
@@ -2764,8 +2741,8 @@ void GMT_icassini_sph (double *lon, double *lat, double x, double y)
 	sincos (D, &sD, &cD);
 	sincos (x, &sx, &cx);
 	tx = sx / cx;
-	*lat = R2D * d_asin (sD * cx);
-	*lon = project_info.central_meridian + R2D * atan (tx / cD);
+	*lat = d_asind (sD * cx);
+	*lon = project_info.central_meridian + atand (tx / cD);
 }
 
 /* -JB ALBERS PROJECTION */
@@ -2780,8 +2757,7 @@ void GMT_valbers (double lon0, double lat0, double ph1, double ph2)
 	project_info.central_meridian = lon0;
 	project_info.north_pole = (lat0 > 0.0);
 	project_info.pole = (project_info.north_pole) ? 90.0 : -90.0;
-	lat0 *= D2R;
-	ph1 *= D2R;	ph2 *= D2R;
+	lat0 *= D2R;	ph1 *= D2R;	ph2 *= D2R;
 
 	s0 = sin (lat0);	s1 = sin (ph1);		s2 = sin (ph2);
 	m1 = cos (ph1) * cos (ph1) / (1.0 - project_info.ECC2 * s1 * s1);	/* Actually m1 and m2 squared */
@@ -2810,17 +2786,14 @@ void GMT_valbers_sph (double lon0, double lat0, double ph1, double ph2)
 	project_info.north_pole = (lat0 > 0.0);
 	project_info.pole = (project_info.north_pole) ? 90.0 : -90.0;
 
-	ph1 *= D2R;
+	sincosd (ph1, &s1, &c1);
 
-	s1 = sin (ph1);		c1 = cos (ph1);
-
-	project_info.a_n = (GMT_IS_ZERO (ph1 - ph2)) ? s1 : 0.5 * (s1 + sind (ph2));
+	project_info.a_n = 0.5 * (s1 + sind (ph2));
 	project_info.a_i_n = 1.0 / project_info.a_n;
 	project_info.a_C = c1 * c1 + 2.0 * project_info.a_n * s1;
 	project_info.a_rho0 = project_info.EQ_RAD * sqrt (project_info.a_C - 2.0 * project_info.a_n * sind (lat0)) * project_info.a_i_n;
 	project_info.a_n2ir2 = 0.5 * project_info.a_n / (project_info.EQ_RAD * project_info.EQ_RAD);
 	project_info.a_Cin = 0.5 * project_info.a_C / project_info.a_n;
-
 }
 
 void GMT_albers (double lon, double lat, double *x, double *y)
@@ -2909,7 +2882,7 @@ void GMT_ialbers_sph (double *lon, double *lat, double x, double y)
 	dy = project_info.a_rho0 - y;
 	A = (x * x + dy * dy) * project_info.a_n2ir2;
 
-	*lat = R2D * d_asin (project_info.a_Cin - A);
+	*lat = d_asind (project_info.a_Cin - A);
 	*lon = project_info.central_meridian + R2D * theta * project_info.a_i_n;
 	if (project_info.GMT_convert_latitudes) *lat = GMT_lata_to_latg (*lat);
 }
