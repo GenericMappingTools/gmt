@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.425 2009-02-24 17:43:12 jluis Exp $
+	$Id: ChangeLog,v 1.426 2009-02-25 14:15:25 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-02-25	remko
+	* gmt.h:		Introduced degree-based inverse trig functions: asind, acosd,
+				atand, atan2d as well as their "safe" equivalents.
+	* *.c:			Use degree-based trig function macros where appropriate.
+	* coast/segment_connect.c:	Simplified i_great_circle_dist() by calling
+				GMT_great_circle_dist().
+	* gmt_map.c:		Fixed serious bug in GMT_az_backaz_flatearth
+				(incorrectly converted degrees to radians)
 
 2009-02-24	jluis
 	* utilmeca.c:		Needed to convert the output from d_atan2() to degrees
