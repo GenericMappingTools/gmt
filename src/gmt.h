@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.174 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt.h,v 1.175 2009-02-25 03:52:26 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -197,19 +197,28 @@ extern "C" {
 #define d_log101p(x) ((x) <= -1.0 ? GMT_d_NaN : log10 (1.0+(x)))
 #endif
 #define d_sqrt(x) ((x) < 0.0 ? 0.0 : sqrt (x))
-#define d_acos(x) (fabs (x) >= 1.0 ? ((x) < 0.0 ? M_PI : 0.0) : acos (x))
-#define d_asin(x) (fabs (x) >= 1.0 ? copysign (M_PI_2, (x)) : asin (x))
-#define d_atan2(y,x) ((x) == 0.0 && (y) == 0.0 ? 0.0 : atan2 (y, x))
+#define d_acos(x) (fabs(x) >= 1.0 ? ((x) < 0.0 ? M_PI : 0.0) : acos(x))
+#define d_asin(x) (fabs(x) >= 1.0 ? copysign (M_PI_2, (x)) : asin(x))
+#define d_atan2(y,x) ((x) == 0.0 && (y) == 0.0 ? 0.0 : atan2(y, x))
 #define d_log(x) ((x) <= 0.0 ? GMT_d_NaN : log (x))
 #define d_log1p(x) ((x) <= -1.0 ? GMT_d_NaN : log1p (x))
 
-
 /* Macros for degree-based trig */
 
-#define sind(x) sin ((x) * D2R)
-#define cosd(x) cos ((x) * D2R)
-#define tand(x) tan ((x) * D2R)
+#define sind(x) sin((x) * D2R)
+#define cosd(x) cos((x) * D2R)
+#define tand(x) tan((x) * D2R)
 #define sincosd(x,s,c) sincos((x) * D2R,s,c)
+#define asind(x) (asin(x) * R2D)
+#define acosd(x) (acos(x) * R2D)
+#define atand(x) (atan(x) * R2D)
+#define atan2d(y,x) (atan2(y,x) * R2D)
+
+/* Safe versions of the degree-based trig */
+
+#define d_acosd(x) (fabs(x) >= 1.0 ? ((x) < 0.0 ? 180.0 : 0.0) : acosd(x))
+#define d_asind(x) (fabs(x) >= 1.0 ? copysign (90.0, (x)) : asind(x))
+#define d_atan2d(y,x) ((x) == 0.0 && (y) == 0.0 ? 0.0 : atan2d(y,x))
 
 /* Macros for swapping misc data types */
 
