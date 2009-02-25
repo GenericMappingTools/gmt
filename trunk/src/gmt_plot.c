@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.252 2009-02-08 16:33:27 jluis Exp $
+ *	$Id: gmt_plot.c,v 1.253 2009-02-25 04:25:51 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -896,8 +896,8 @@ void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n,
 					if (do_it && frame_info.side[0]) {
 						GMT_geo_to_xy (v2, s, &x1, &y1);
 						GMT_geo_to_xy (v1, s, &x2, &y2);
-						az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
-						az2 = d_atan2 (y2 - project_info.c_y0, x2 - project_info.c_x0) * R2D;
+						az1 = d_atan2d (y1 - project_info.c_y0, x1 - project_info.c_x0);
+						az2 = d_atan2d (y2 - project_info.c_y0, x2 - project_info.c_x0);
 						if (project_info.north_pole) {
 							if (az1 < az2) az1 += 360.0;
 							ps_arc (project_info.c_x0, project_info.c_y0, radius_s+scale[k]*dr, az2, az1, PSL_ARC_DRAW);
@@ -910,8 +910,8 @@ void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n,
 					if (do_it && frame_info.side[2]) {
 						GMT_geo_to_xy (v2, n, &x1, &y1);
 						GMT_geo_to_xy (v1, n, &x2, &y2);
-						az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
-						az2 = d_atan2 (y2 - project_info.c_y0, x2 - project_info.c_x0) * R2D;
+						az1 = d_atan2d (y1 - project_info.c_y0, x1 - project_info.c_x0);
+						az2 = d_atan2d (y2 - project_info.c_y0, x2 - project_info.c_x0);
 						if (project_info.north_pole) {
 							if (az1 < az2) az1 += 360.0;
 							ps_arc (project_info.c_x0, project_info.c_y0, radius_n-scale[k]*dr, az2, az1, PSL_ARC_DRAW);
@@ -979,8 +979,8 @@ double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, do
 		if (secondary_too)  ps_arc (project_info.c_x0, project_info.c_y0, radius + 2.0 * r_inc, 0.0, 360.0, PSL_ARC_DRAW);
 	}
 	else {
-		az1 = d_atan2 (y1 - project_info.c_y0, x1 - project_info.c_x0) * R2D;
-		az2 = d_atan2 (y2 - project_info.c_y0, x2 - project_info.c_x0) * R2D;
+		az1 = d_atan2d (y1 - project_info.c_y0, x1 - project_info.c_x0);
+		az2 = d_atan2d (y2 - project_info.c_y0, x2 - project_info.c_x0);
 		if (!project_info.north_pole) d_swap (az1, az2);	/* In S hemisphere, must draw in opposite direction */
 		while (az1 < 0.0) az1 += 360.0;	/* Wind az1 to be in the 0-360 range */
 		while (az2 < az1) az2 += 360.0;	/* Likewise ensure az1 > az1 and is now in the 0-720 range */
@@ -1525,8 +1525,7 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 						a = line_angle - 90.0;
 						break;
 				}
-				a *= D2R;
-				sincos (a, &sa, &ca);
+				sincosd (a, &sa, &ca);
 				xx[i] += del_y * ca;	yy[i] += del_y * sa;
 				GMT_xyz_to_xy (xx[i], yy[i], zz, &xt1, &yt1);
 			}
@@ -1536,15 +1535,15 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 			GMT_xyz_to_xy (xp[1], yp[1], zz, &xt3, &yt3);
 			xshrink = hypot (xt2-xt1, yt2-yt1) / hypot (xp[0]-xx[i], yp[0]-yy[i]);
 			yshrink = hypot (xt3-xt1, yt3-yt1) / hypot (xp[1]-xx[i], yp[1]-yy[i]);
-			baseline_shift = d_atan2 (yt2 - yt1, xt2 - xt1) - d_atan2 (yp[0] - yy[i], xp[0] - xx[i]);
-			tilt = 90.0 - R2D * (d_atan2 (yt3 - yt1, xt3 - xt1) - d_atan2 (yt2 - yt1, xt2 - xt1));
+			baseline_shift = d_atan2d (yt2 - yt1, xt2 - xt1) - d_atan2d (yp[0] - yy[i], xp[0] - xx[i]);
+			tilt = 90.0 - (d_atan2d (yt3 - yt1, xt3 - xt1) - d_atan2d (yt2 - yt1, xt2 - xt1));
 			tilt = tand (tilt);
 			/* Temporarily modify meaning of F0 */
 			sprintf (cmd, "/F0 {/%s findfont [%g 0 %g %g 0 0] makefont exch scalefont setfont}!",
 				GMT_font[gmtdefs.annot_font[level]].name, xshrink, yshrink * tilt, yshrink);
 			ps_command (cmd);
 			ps_setfont (0);
-			text_angle += (R2D * baseline_shift);
+			text_angle += baseline_shift;
 		}
 		if (annot) {
 			if (GMT_annot_too_crowded (xt1, yt1, sides[i])) continue;
@@ -2662,7 +2661,7 @@ void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *t
 		GMT_xyz_to_xy (xt, yt, z, &xt3, &yt3);
 		xshrink = hypot (xt2-xt1, yt2-yt1);	/* How lines in baseline-direction shrink */
 		yshrink = hypot (xt3-xt1, yt3-yt1);	/* How lines _|_ to baseline-direction shrink */
-		baseline_shift = R2D * (d_atan2 (yt2 - yt1, xt2 - xt1) - d_atan2 (yb - y, xb - x));	/* Rotation of baseline */
+		baseline_shift = d_atan2d (yt2 - yt1, xt2 - xt1) - d_atan2d (yb - y, xb - x);	/* Rotation of baseline */
 		tilt = (xt2-xt1)*(xt3-xt1) + (yt2-yt1)*(yt3-yt1);	/* inner product */
 		ca = tilt / (xshrink * yshrink);
 		sa = sqrt(1. - ca*ca);
@@ -4541,9 +4540,7 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 
 	delta_azimuth = 2.0 * M_PI / GMT_ELLIPSE_APPROX;
 	major *= 1000.0;	minor *= 1000.0;	/* Convert to meters */
-	azimuth = 90.0 - azimuth;	/* Because the code below originally used directions instead */
-	azimuth *= D2R;
-	sincos (azimuth, &sin_azimuth, &cos_azimuth);
+	sincosd (90.0 - azimuth, &sin_azimuth, &cos_azimuth);
 	sincosd (lat, &sinp, &cosp);	/* Set up azimuthal equidistant projection */
 
 	center = (project_info.central_meridian < project_info.w || project_info.central_meridian > project_info.e) ? 0.5 * (project_info.w + project_info.e) :  project_info.central_meridian;
@@ -4569,14 +4566,13 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 
 		c = rho / project_info.EQ_RAD;
 		sincos (c, &sin_c, &cos_c);
-		py[i] = d_asin (cos_c * sinp + (y_prime * sin_c * cosp / rho)) * R2D;
+		py[i] = d_asind (cos_c * sinp + (y_prime * sin_c * cosp / rho));
 		if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
-			px[i] = lon + R2D * d_atan2 (x_prime, -y_prime);
+			px[i] = lon + d_atan2d (x_prime, -y_prime);
 		else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in Southern hemisphere */
-			px[i] = lon + R2D * d_atan2 (x_prime, y_prime);
+			px[i] = lon + d_atan2d (x_prime, y_prime);
 		else
-			px[i] = lon +
-				R2D * d_atan2 (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
+			px[i] = lon + d_atan2d (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
 		while ((px[i] - center) < -180.0) px[i] += 360.0;
 		while ((px[i] - center) > +180.0) px[i] -= 360.0;
 	}
@@ -4602,10 +4598,8 @@ void GMT_plot_rectangle (double lon, double lat, double z, double width, double 
 
 	width *= 0.5;		height *= 0.5;		/* Get half-dimensions */
 	width *= 1000.0;	height *= 1000.0;	/* Convert to meters */
-	/* azimuth = 90.0 - azimuth; */			/* Because the code below originally used directions instead */
 	dim[0] = azimuth;
-	azimuth *= D2R;
-	sincos (azimuth, &sin_azimuth, &cos_azimuth);
+	sincosd (azimuth, &sin_azimuth, &cos_azimuth);
 	sincosd (lat, &sinp, &cosp);		/* Set up azimuthal equidistant projection */
 
 	center = (project_info.central_meridian < project_info.w || project_info.central_meridian > project_info.e) ? 0.5 * (project_info.w + project_info.e) :  project_info.central_meridian;
@@ -4621,13 +4615,13 @@ void GMT_plot_rectangle (double lon, double lat, double z, double width, double 
 	rho = hypot (x_prime, y_prime);
 	c = rho / project_info.EQ_RAD;
 	sincos (c, &sin_c, &cos_c);
-	lat_w = d_asin (cos_c * sinp + (y_prime * sin_c * cosp / rho)) * R2D;
+	lat_w = d_asind (cos_c * sinp + (y_prime * sin_c * cosp / rho));
 	if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
-		lon_w = lon + R2D * d_atan2 (x_prime, -y_prime);
+		lon_w = lon + d_atan2d (x_prime, -y_prime);
 	else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in Southern hemisphere */
-		lon_w = lon + R2D * d_atan2 (x_prime, y_prime);
+		lon_w = lon + d_atan2d (x_prime, y_prime);
 	else
-		lon_w = lon + R2D * d_atan2 (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
+		lon_w = lon + d_atan2d (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
 	while ((lon_w - center) < -180.0) lon_w += 360.0;
 	while ((lon_w - center) > +180.0) lon_w -= 360.0;
 	GMT_geo_to_xy (lon_w, lat_w, &xw, &yw);	/* Get projected x,y coordinates */
@@ -4643,13 +4637,13 @@ void GMT_plot_rectangle (double lon, double lat, double z, double width, double 
 	rho = hypot (x_prime, y_prime);
 	c = rho / project_info.EQ_RAD;
 	sincos (c, &sin_c, &cos_c);
-	lat_h = d_asin (cos_c * sinp + (y_prime * sin_c * cosp / rho)) * R2D;
+	lat_h = d_asind (cos_c * sinp + (y_prime * sin_c * cosp / rho));
 	if ((lat - 90.0) > -GMT_CONV_LIMIT)	/* origin in Northern hemisphere */
-		lon_h = lon + R2D * d_atan2 (x_prime, -y_prime);
+		lon_h = lon + d_atan2d (x_prime, -y_prime);
 	else if ((lat + 90.0) < GMT_CONV_LIMIT)	/* origin in Southern hemisphere */
-		lon_h = lon + R2D * d_atan2 (x_prime, y_prime);
+		lon_h = lon + d_atan2d (x_prime, y_prime);
 	else
-		lon_h = lon + R2D * d_atan2 (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
+		lon_h = lon + d_atan2d (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
 	while ((lon_h - center) < -180.0) lon_h += 360.0;
 	while ((lon_h - center) > +180.0) lon_h -= 360.0;
 	GMT_geo_to_xy (lon_h, lat_h, &xh, &yh);
