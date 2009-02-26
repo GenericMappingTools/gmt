@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.254 2009-02-25 19:34:57 remko Exp $
+ *	$Id: gmt_plot.c,v 1.255 2009-02-26 01:09:43 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1402,8 +1402,8 @@ void GMT_map_tick (double *xx, double *yy, int *sides, double *angles, int nx, i
 		if (!project_info.edge[sides[i]]) continue;
 		if (!frame_info.side[sides[i]]) continue;
 		if (!(gmtdefs.oblique_annotation & 1) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
-		angle = ((gmtdefs.oblique_annotation & 16) ? (sides[i] - 1) * 90.0 : angles[i]) * D2R;
-		sincos (angle, &s, &c);
+		angle = ((gmtdefs.oblique_annotation & 16) ? (sides[i] - 1) * 90.0 : angles[i]);
+		sincosd (angle, &s, &c);
 		tick_length = len;
 		if (gmtdefs.oblique_annotation & 8) {
 			if (sides[i] % 2) {
@@ -1449,7 +1449,7 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 {
 	/* type = 0 for lon and 1 for lat */
 
-	double line_angle, text_angle, div, tick_length, o_len, len, dx, dy, angle, ca, sa, xt1, yt1, zz, tick_x[2], tick_y[2];
+	double line_angle, text_angle, div, tick_length, o_len, len, dx, dy, ca, sa, xt1, yt1, zz, tick_x[2], tick_y[2];
 	int i, justify;
 	BOOLEAN flip;
 	char cmd[BUFSIZ];
@@ -1459,8 +1459,7 @@ void GMT_map_symbol (double *xx, double *yy, int *sides, double *line_angles, ch
 
 		if (GMT_prepare_label (line_angles[i], sides[i], xx[i], yy[i], type, &line_angle, &text_angle, &justify)) continue;
 
-		angle = line_angle * D2R;
-		sincos (angle, &sa, &ca);
+		sincosd (line_angle, &sa, &ca);
 		tick_length = gmtdefs.tick_length;
 		o_len = len;
 		if ((type == 0 && gmtdefs.oblique_annotation & 2) || (type == 1 && gmtdefs.oblique_annotation & 4)) {

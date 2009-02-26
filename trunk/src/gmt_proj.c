@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.45 2009-02-25 19:31:53 remko Exp $
+ *	$Id: gmt_proj.c,v 1.46 2009-02-26 01:09:43 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -183,8 +183,7 @@ void GMT_polar (double x, double y, double *x_i, double *y_i)
 {	/* Transform x and y to polar(cylindrical) coordinates */
 	if (project_info.got_azimuths) x = 90.0 - x;		/* azimuths, not directions */
 	if (project_info.got_elevations) y = 90.0 - y;		/* elevations */
-	x = (x - project_info.p_base_angle) * D2R;		/* Change base line angle and convert to radians */
-	sincos (x, y_i, x_i);
+	sincosd (x - project_info.p_base_angle, y_i, x_i);	/* Change base line angle */
 	(*x_i) *= y;
 	(*y_i) *= y;
 }
