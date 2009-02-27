@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.427 2009-02-25 19:38:46 remko Exp $
+	$Id: ChangeLog,v 1.428 2009-02-27 17:31:11 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-02-27	remko
+	* pswiggle.c:		Ctrl->I.value used to change internally. Considered harmful.
+	* gmt_proj.c:		Rid ourselves of a few more D2R and R2D. Using degree-based
+				trig instead.
+	* gmt_map.c:		---"---  z_project.view_{azimuth,elevation} used to change to
+				radians at end of GMT_init_threeD. Potential bug.
+	* psxyz.c:		In sort_on_distance: speed up by replacing tan(az) by ratio
+				of pre-computed sin_az and cos_az.
 
 2009-02-25	remko
 	* gmt.h:		Introduced degree-based inverse trig functions: asind, acosd,
