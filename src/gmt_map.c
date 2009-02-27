@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.210 2009-02-25 19:29:52 remko Exp $
+ *	$Id: gmt_map.c,v 1.211 2009-02-27 17:20:12 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -651,10 +651,8 @@ int GMT_init_three_D (void) {
 	z_project.quadrant = (int)ceil (z_project.view_azimuth / 90.0);
 	z_project.view_azimuth -= 180.0;	/* Turn into direction instead */
 	if (z_project.view_azimuth < 0.0) z_project.view_azimuth += 360.0;
-	z_project.view_azimuth *= D2R;
-	z_project.view_elevation *= D2R;
-	sincos (z_project.view_azimuth, &z_project.sin_az, &z_project.cos_az);
-	sincos (z_project.view_elevation, &z_project.sin_el, &z_project.cos_el);
+	sincosd (z_project.view_azimuth, &z_project.sin_az, &z_project.cos_az);
+	sincosd (z_project.view_elevation, &z_project.sin_el, &z_project.cos_el);
 	GMT_geoz_to_xy (project_info.w, project_info.s, project_info.z_bottom, &x0, &y0);
 	GMT_geoz_to_xy (project_info.e, project_info.s, project_info.z_bottom, &x1, &y1);
 	GMT_geoz_to_xy (project_info.w, project_info.n, project_info.z_bottom, &x2, &y2);
@@ -6773,16 +6771,13 @@ double GMT_az_backaz_sphere (double lonE, double latE, double lonS, double latS,
 
 	double az, sin_yS, cos_yS, sin_yE, cos_yE, sin_dlon, cos_dlon;
 
-	latE *= D2R;	lonE *= D2R;
-	latS *= D2R;	lonS *= D2R;
-
 	if (baz) {	/* exchange point one and two */
 		d_swap (lonS, lonE);
 		d_swap (latS, latE);
 	}
-	sincos (latS, &sin_yS, &cos_yS);
-	sincos (latE, &sin_yE, &cos_yE);
-	sincos (lonS - lonE, &sin_dlon, &cos_dlon);
+	sincosd (latS, &sin_yS, &cos_yS);
+	sincosd (latE, &sin_yE, &cos_yE);
+	sincosd (lonS - lonE, &sin_dlon, &cos_dlon);
 	az = atan2d (cos_yS * sin_dlon, cos_yE * sin_yS - sin_yE * cos_yS * cos_dlon);
 	if (az < 0.0) az += 360.0;
 	return (az);
@@ -6797,10 +6792,7 @@ double GMT_az_backaz_geodesic (double lonE, double latE, double lonS, double lat
 
 	double az, a, b, c, d, e, f, g, h, a1, b1, c1, d1, e1, f1, g1, h1, thg, ss, sc;
 
-	latE *= D2R;	lonE *= D2R;
-	latS *= D2R;	lonS *= D2R;
-
-	/* (Equations are unstable for latitudes of exactly 0 degrees. */
+	/* Equations are unstable for latitudes of exactly 0 degrees. */
 	if (latE == 0.0) latE = 1.0e-08;
 	if (latS == 0.0) latS = 1.0e-08;
 
@@ -6809,9 +6801,9 @@ double GMT_az_backaz_geodesic (double lonE, double latE, double lonS, double lat
 	 * correction given by: 1-ECC2=1-2*f + f*f = project_info.one_m_ECC2
 	 */
 
-	thg = atan (project_info.one_m_ECC2 * tan (latE));
-	sincos (lonE, &d, &e);	e = -e;
-	sincos (thg, &c, &f);	f = -f;
+	thg = atan (project_info.one_m_ECC2 * tand (latE));
+	sincos (thg, &c, &f);		f = -f;
+	sincosd (lonE, &d, &e);		e = -e;
 	a = f * e;
 	b = -f * d;
 	g = -c * e;
@@ -6819,9 +6811,9 @@ double GMT_az_backaz_geodesic (double lonE, double latE, double lonS, double lat
 
 	/* Calculating some trig constants. */
 
-	thg = atan (project_info.one_m_ECC2 * tan(latS));
-	sincos (lonS, &d1, &e1);	e1 = -e1;
+	thg = atan (project_info.one_m_ECC2 * tand (latS));
 	sincos (thg, &c1, &f1);		f1 = -f1;
+	sincosd (lonS, &d1, &e1);	e1 = -e1;
 	a1 = f1 * e1;
 	b1 = -f1 * d1;
 	g1 = -c1 * e1;
@@ -6830,12 +6822,12 @@ double GMT_az_backaz_geodesic (double lonE, double latE, double lonS, double lat
 	/* Spherical trig relationships used to compute angles. */
 
 	if (baz) {	/* Get Backazimuth */
-		ss = (pow(a-d1,2.0) + pow(b-e1,2.0) + c * c - 2.0);
-		sc = (pow(a-g1,2.0) + pow(b-h1,2.0) + pow(c-f1,2.0) - 2.0);
+		ss = pow(a-d1,2.0) + pow(b-e1,2.0) + c * c - 2.0;
+		sc = pow(a-g1,2.0) + pow(b-h1,2.0) + pow(c-f1,2.0) - 2.0;
 	}
 	else {		/* Get Azimuth */
-		ss = (pow(a1-d, 2.0) + pow(b1-e, 2.0) + c1 * c1 - 2.0);
-		sc = (pow(a1-g, 2.0) + pow(b1-h, 2.0) + pow(c1-f, 2.0) - 2.0);
+		ss = pow(a1-d, 2.0) + pow(b1-e, 2.0) + c1 * c1 - 2.0;
+		sc = pow(a1-g, 2.0) + pow(b1-h, 2.0) + pow(c1-f, 2.0) - 2.0;
 	}
 	az = atan2d (ss,sc);
 	if (az < 0.0) az += 360.0;
@@ -6848,45 +6840,35 @@ double GMT_geodesic_dist_degree (double lonS, double latS, double lonE, double l
 	 * Earth.  We do this by converting to geocentric coordinates.
 	 */
 
-	double a, b, c, d, e, f, a1, b1, c1, d1, e1, f1;
-	double thg, sc, sd, dist;
+	double a, b, c, d, e, f, a1, b1, c1, d1, e1, f1, thg, sc, sd, dist;
 
-	/* Convert event location to radians.
-	 * (Equations are unstable for latitudes of exactly 0 degrees.)
-	 */
+	/* Equations are unstable for latitudes of exactly 0 degrees. */
 
 	if (latE == 0.0) latE = 1.0e-08;
-	latE *= D2R;
-	lonE *= D2R;
+	if (latS == 0.0) latS = 1.0e-08;
 
 	/* Must convert from geographic to geocentric coordinates in order
 	 * to use the spherical trig equations.  This requires a latitude
 	 * correction given by: 1-ECC2=1-2*F + F*F = project_info.one_m_ECC2
 	 */
 
-	thg = atan (project_info.one_m_ECC2 * tan (latE));
-	sincos (lonE, &d, &e);	e = -e;
-	sincos (thg, &c, &f);	f = -f;
+	thg = atan (project_info.one_m_ECC2 * tand (latE));
+	sincos (thg, &c, &f);		f = -f;
+	sincosd (lonE, &d, &e);		e = -e;
 	a = f * e;
 	b = -f * d;
 
-	/* Convert to radians */
-
-	if (latS == 0.0) latS = 1.0e-08;
-	latS *= D2R;
-	lonS *= D2R;
-
 	/* Calculate some trig constants. */
 
-	thg = atan (project_info.one_m_ECC2 * tan(latS));
-	sincos (lonS, &d1, &e1);	e1 = -e1;
+	thg = atan (project_info.one_m_ECC2 * tand (latS));
 	sincos (thg, &c1, &f1);		f1 = -f1;
+	sincosd (lonS, &d1, &e1);	e1 = -e1;
 	a1 = f1 * e1;
 	b1 = -f1 * d1;
-	sc = a * a1 + b * b1 + c * c1;
 
 	/* Spherical trig relationships used to compute angles. */
 
+	sc = a * a1 + b * b1 + c * c1;
 	sd = 0.5 * sqrt ((pow(a-a1,2.0) + pow(b-b1,2.0) + pow(c-c1,2.0)) * (pow(a+a1,2.0) + pow(b+b1, 2.0) + pow(c+c1, 2.0)));
 	dist = atan2d (sd, sc);
 	if (dist < 0.0) dist += 360.0;
@@ -6905,21 +6887,15 @@ double GMT_geodesic_dist_meter (double lonS, double latS, double lonE, double la
 	 * We use Rudoe's equation from Bomford.
 	 */
 
-	double t1, t2, p1, p2, e1, el, sinthi, costhi, sinthk, costhk, tanthi, tanthk, sina12, cosa12;
-	double al, dl, a12top, a12bot, a12, e2, e3, c0, c2, c4, v1, v2, z1, z2, x2, y2, dist;
+	double e1, el, sinthi, costhi, sinthk, costhk, tanthi, tanthk, sina12, cosa12;
+	double al, a12top, a12bot, a12, e2, e3, c0, c2, c4, v1, v2, z1, z2, x2, y2, dist;
 	double e1p1, sqrte1p1, sin_dl, cos_dl, u1bot, u1, u2top, u2bot, u2, b0, du, pdist;
 
 
-	/* Convert event location to radians.
-	 * (Equations are unstable for latitudes of exactly 0 degrees.)
-	 */
+	/* Equations are unstable for latitudes of exactly 0 degrees. */
 
 	if (latE == 0.0) latE = 1.0e-08;
-	latE *= D2R;
-	lonE *= D2R;
 	if (latS == 0.0) latS = 1.0e-08;
-	latS *= D2R;
-	lonS *= D2R;
 
 	/* Now compute the distance between the two points using Rudoe's
 	 * formula given in Bomford's GEODESY, section 2.15(b).
@@ -6933,26 +6909,17 @@ double GMT_geodesic_dist_meter (double lonS, double latS, double lonE, double la
 	 */
 
 	if (latS < 0.0) {	/* Station in southern hemisphere, swap */
-		t1 = latS;
-		p1 = lonS;
-		t2 = latE;
-		p2 = lonE;
-	}
-	else {
-		t1 = latE;
-		p1 = lonE;
-		t2 = latS;
-		p2 = lonS;
+		d_swap (lonS, lonE);
+		d_swap (latS, latE);
 	}
 	el = project_info.ECC2 / project_info.one_m_ECC2;
 	e1 = 1.0 + el;
-	sincos (t1, &sinthi, &costhi);
-	sincos (t2, &sinthk, &costhk);
+	sincosd (latE, &sinthi, &costhi);
+	sincosd (latS, &sinthk, &costhk);
+	sincosd (lonE - lonS, &sin_dl, &cos_dl);
 	tanthi = sinthi / costhi;
 	tanthk = sinthk / costhk;
 	al = tanthi / (e1 * tanthk) + project_info.ECC2 * sqrt((e1 + tanthi * tanthi) / (e1 + tanthk * tanthk));
-	dl = p1 - p2;
-	sincos (dl, &sin_dl, &cos_dl);
 	a12top = sin_dl;
 	a12bot = (al - cos_dl) * sinthk;
 	a12 = atan2 (a12top,a12bot);
