@@ -1,8 +1,8 @@
 #!/bin/sh
 #               GMT ANIMATION 02
-#               $Id: anim_02.sh,v 1.2 2009-02-23 01:19:22 remko Exp $
+#               $Id: anim_02.sh,v 1.3 2009-03-04 17:42:59 guru Exp $
 #
-# Purpose:      Make web page with simple animated GIF of sine function
+# Purpose:      Make web page with simple animated GIF of a DEM grid
 # GMT progs:    gmtset, gmtmath, grdgradient, makecpt, grdimage psxy, ps2raster
 # Unix progs:   awk, mkdir, rm, mv, echo, convert, cat
 #

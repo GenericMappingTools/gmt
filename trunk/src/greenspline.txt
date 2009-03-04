@@ -1,5 +1,5 @@
-.TH GREENSPLINE 1 DATE VERSION VERSION
 #include "common_options.txt"
+.TH GREENSPLINE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 greenspline \- Interpolate 1-D, 2-D, 3-D Cartesian or spherical surface data using Green's function splines.
 .SH SYNOPSIS
