@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.47 2009-02-27 17:30:24 remko Exp $
+ *	$Id: gmt_proj.c,v 1.48 2009-03-04 03:35:54 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -573,21 +573,19 @@ void GMT_lamb (double lon, double lat, double *x, double *y)
 void GMT_ilamb (double *lon, double *lat, double x, double y)
 {
 	int i;
-	double theta, rho, t, tphi, phi, delta, dy, r;
-
-	theta = (project_info.l_N < 0.0) ? d_atan2 (-x, y - project_info.l_rho0) : d_atan2 (x, project_info.l_rho0 - y);
-	*lon = theta * project_info.l_i_Nr + project_info.central_meridian;
+	double theta, rho, t, tphi, phi, dy, r;
 
 	dy = project_info.l_rho0 - y;
+	theta = (project_info.l_N < 0.0) ? d_atan2 (-x, -dy) : d_atan2 (x, dy);
+	*lon = theta * project_info.l_i_Nr + project_info.central_meridian;
+
 	rho = copysign (hypot (x, dy), project_info.l_N);
 	t = pow (rho * project_info.l_i_rF, project_info.l_i_N);
-	phi = tphi = M_PI_2 - 2.0 * atan (t);
-	delta = 1.0;
-	for (i = 0; i < 100 && delta > GMT_CONV_LIMIT; i++) {
-		r = project_info.ECC * sin (tphi);
-		phi = M_PI_2 - 2.0 * atan (t * pow ((1.0 - r) / (1.0 + r), project_info.half_ECC));
-		delta = fabs (fabs (tphi) - fabs (phi));
+	phi = 0.0; tphi = 999.0;	/* Initialize phi = 0 */
+	for (i = 0; i < 100 && fabs(tphi - phi) > GMT_CONV_LIMIT; i++) {
 		tphi = phi;
+		r = project_info.ECC * sin (phi);
+		phi = M_PI_2 - 2.0 * atan (t * pow ((1.0 - r) / (1.0 + r), project_info.half_ECC));
 	}
 	*lat = phi * R2D;
 }
@@ -596,14 +594,13 @@ void GMT_ilamb (double *lon, double *lat, double x, double y)
 
 void GMT_lamb_sph (double lon, double lat, double *x, double *y)
 {
-	double rho, theta, A, t, s, c;
+	double rho, theta, t, s, c;
 
 	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (project_info.GMT_convert_latitudes) lat = GMT_latg_to_latc (lat);
 
 	t = MAX (0.0, tand (45.0 - 0.5 * lat));	/* Guard against negative t */
-	A = pow (t, project_info.l_N);
-	rho = project_info.l_rF * A;
+	rho = project_info.l_rF * pow (t, project_info.l_N);
 	theta = project_info.l_Nr * lon;
 
 	sincos (theta, &s, &c);
@@ -613,15 +610,15 @@ void GMT_lamb_sph (double lon, double lat, double *x, double *y)
 
 void GMT_ilamb_sph (double *lon, double *lat, double x, double y)
 {
-	double theta, rho, t;
+	double theta, rho, t, dy;
 
-	theta = d_atan2 (x, project_info.l_rho0 - y);
-	rho = hypot (x, project_info.l_rho0 - y);
-	if (project_info.l_N < 0.0) rho = -rho;
-	t = pow (rho * project_info.l_i_rF, -project_info.l_i_N);
-
+	dy = project_info.l_rho0 - y;
+	theta = (project_info.l_N < 0.0) ? d_atan2 (-x, -dy) : d_atan2 (x, dy);
 	*lon = theta * project_info.l_i_Nr + project_info.central_meridian;
-	*lat = 2.0 * atand (t) - 90.0;
+
+	rho = copysign (hypot (x, dy), project_info.l_N);
+	t = pow (rho * project_info.l_i_rF, project_info.l_i_N);
+	*lat = 90.0 - 2.0 * atand (t);
 	if (project_info.GMT_convert_latitudes) *lat = GMT_latc_to_latg (*lat);
 }
 
