@@ -5,7 +5,7 @@ mgd77list \- A data-extractor for MGD77[+] files
 .SH SYNOPSIS
 \fBmgd77list\fP \fINGDC-ids\fP OPT(F)\fIcolumns\fP[,\fIlogic\fP][:\fIbittests\fP] 
 [ OPT(A)[\fB+\fP]\fBc\fP|\fBd\fP|\fBf\fP|\fBm\fP\fIcode\fP ] [ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] 
-[ OPT(Da)\fIstartdate\fP ] [ OPT(Db)\fIstopdate\fP ] [ OPT(E) ] [ OPT(Ga)\fIstartrec\fP ] [ OPT(Gb)\fIstoprec\fP ] 
+[ OPT(D)\fBA\fP|\fBa\fP\fIstartdate\fP ] [ OPT(D)\fBB\fP|\fBb\fP\fIstopdate\fP ] [ OPT(E) ] [ OPT(Ga)\fIstartrec\fP ] [ OPT(Gb)\fIstoprec\fP ] 
 [ GMT_H_OPT ] [ OPT(I)\fIignore\fP ] [ OPT(L)[\fIcorrtable\fP] ] [ GMT_Mo_OPT ] 
 [ OPT(Nd)|\fBs\fP\fIunit\fP ] [ OPT(Q)\fBa\fP|\fBv\fP\fImin\fP/\fImax\fP ] [ GMT_Rgeo_OPT ] [ OPT(Sa)\fIstartdist\fP[unit] ] 
 [ OPT(Sb)\fIstopdist\fP[unit] ] [ OPT(T)[\fBm\fP|\fBe\fP] ]  [ GMT_V_OPT ] 
@@ -295,9 +295,11 @@ calculation (see OPT(N) for selecting units):
 .TP
 OPT(Da)
 Do not list data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss])  [Default is start of cruise].
+Use OPT(DA) to exclude records whose time is undefined (i.e., NaN). [Default reports those records].
 .TP
 OPT(Db)
 Do not list data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [Default is end of cruise].
+Use OPT(DB) to exclude records whose time is undefined (i.e., NaN). [Default reports those records].
 .TP
 OPT(E)
 Exact match: Only output records that match all the requested geophysical columns

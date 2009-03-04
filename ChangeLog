@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.429 2009-03-04 03:36:35 remko Exp $
+	$Id: ChangeLog,v 1.430 2009-03-04 23:47:21 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-03-04	pwessel
+	* mgd77/mgd77list.c:	Now can specify -DA and -DB which, in the presence of time = NaN,
+				will not output such records [-Da|b will]
 2009-03-04	remko
 	* gmt_map.c (GMT_grd_project):	Incorrectly attempted to free array only used when
 				antialias is on.
