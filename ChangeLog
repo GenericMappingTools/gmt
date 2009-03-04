@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.428 2009-02-27 17:31:11 remko Exp $
+	$Id: ChangeLog,v 1.429 2009-03-04 03:36:35 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-03-04	remko
+	* gmt_map.c (GMT_grd_project):	Incorrectly attempted to free array only used when
+				antialias is on.
+	* gmt_proj.c (GMT_ilamb_sph):	Fixed bug in longitude computation when standard
+				parallel is on Southern Hemisphere.
 
 2009-02-27	remko
 	* pswiggle.c:		Ctrl->I.value used to change internally. Considered harmful.
