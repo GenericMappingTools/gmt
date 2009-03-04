@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.60 2009-01-09 23:23:44 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.61 2009-03-04 18:36:46 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -89,6 +89,7 @@ Figure~\ref{fig:GMT_example_01}.
 \index{Example!contour maps|)}
 
 \section{Image presentations}
+\label{sec:example_02}
 \index{Example!image presentations|(}
 
 As our second example we will demonstrate how to make color
@@ -228,7 +229,7 @@ the color \PS\ file.  Note that the size of the
 resulting output file is directly dependent on the square of
 the dpi chosen for the scanline conversion.  A higher value
 for dpi in \Opt{Qi} would have resulted in a much larger
-output file.  The cpt files were taken from Example 2.
+output file.  The cpt files were taken from Section~\ref{sec:example_02}.
 
 \script{example_04c} 
 
@@ -424,6 +425,7 @@ Here is the shell script to generate the RGB cube in Figure~\ref{fig:GMT_example
 \index{Example!3-D RGB color cube|)}
 
 \section{Optimal triangulation of data}
+\label{sec:example_12}
 \index{Example!triangulation|(}
 
 Our next example (Figure~\ref{fig:GMT_example_12})
@@ -473,8 +475,8 @@ A \GMTprog{pstext} call to place a header finishes the plot
 
 This example shows how one goes from randomly spaced data
 points to an evenly sampled surface.  First we plot the
-distribution and values of our raw data set (table 5.11
-from example 12).  We choose an equidistant grid and run
+distribution and values of our raw data set (same as in
+Section~\ref{sec:example_12}).  We choose an equidistant grid and run
 \GMTprog{blockmean} which preprocesses the data to avoid aliasing.
 The dashed lines indicate the logical blocks used by
 \GMTprog{blockmean}; all points inside a given bin will be averaged.
@@ -497,6 +499,7 @@ trend (dashed line) along the transect using \GMTprog{psxy}
 \index{Example!gridding and trend surfaces|)}
 
 \section{Gridding, contouring, and masking of unconstrained areas}
+\label{sec:example_15}
 \index{Example!gridding, contouring, and masking|(}
 
 This example (Figure~\ref{fig:GMT_example_15}) demonstrates
@@ -529,7 +532,7 @@ This point was extracted from the grid files using \GMTprog{grdinfo}.
 
 \GMTprog{pscontour} (for contouring) and \GMTprog{triangulate}
 (for gridding) use the simplest method of interpolating
-data:  a Delaunay triangulation (see Example 12) which
+data:  a Delaunay triangulation (see Section~\ref{sec:example_12}) which
 forms $z(x, y)$ as a union of planar triangular facets.
 One advantage of this method is that it will not extrapolate
 $z(x, y)$ beyond the convex hull of the input ({\it x, y})
@@ -545,7 +548,7 @@ a grid, after which the grid may be illustrated (\GMTprog{grdcontour},
 \GMTprog{grdimage}, \GMTprog{grdview}).  \GMTprog{surface} will interpolate
 to all ({\it x, y}) points in a rectangular region, and thus
 will extrapolate beyond the convex hull of the data.  However,
-this can be masked out in various ways (see Example 15).
+this can be masked out in various ways (see Section~\ref{sec:example_15}).
 
 A more serious objection is that \GMTprog{surface} may estimate
 {\it z} values outside the local range of the data (note area
@@ -813,6 +816,7 @@ where these and similar data can be obtained.
 \index{Example!world-wide seismicity|)}
 
 \section{All great-circle paths lead to Rome}
+\label{sec:example_23}
 \index{Example!paths to Rome|(}
 
 While motorists recently have started to question the old saying ``all roads lead to Rome'',
@@ -832,7 +836,7 @@ Rome to its antipode, and request curved labels that follows the shape of the co
 The script produces the plot in Figure~\ref{fig:GMT_example_23}; note how
 interesting the path to Seattle appears in this particular projection (Hammer).
 We also note that Rome's antipode lies somewhere near the Chatham plateau (antipodes
-will be revisited in Example 25).
+will be revisited in Section~\ref{sec:example_25}).
 
 \index{Example!paths to Rome|)}
 
@@ -866,9 +870,10 @@ which remains constant at 1000 km.
 \index{Example!geospatial criteria|)}
 
 \section{Global distribution of antipodes}
+\label{sec:example_25}
 \index{Example!distribution of antipodes|(}
 
-As promised in Example 23, we will study antipodes.  The antipode of a point at
+As promised in Section~\ref{sec:example_23}, we will study antipodes.  The antipode of a point at
 $(\phi, \lambda)$ is the point at $(-\phi, \lambda + 180)$.  We seek an answer
 to the question that has plagued so many for so long: Given the distribution of
 land and ocean, how often is the antipode of a point on land also on land? And
