@@ -1,3 +1,4 @@
+#include "common_options.txt"
 .TH GMT_SHELL_FUNCTIONS.SH 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
 gmt_shell_functions.sh \- Practical functions to be used in GMT bourne shell scripts
