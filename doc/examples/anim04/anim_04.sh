@@ -1,10 +1,10 @@
 #!/bin/sh
 #               GMT ANIMATION 04
-#               $Id: anim_04.sh,v 1.4 2009-01-11 23:03:56 guru Exp $
+#               $Id: anim_04.sh,v 1.5 2009-03-04 17:42:59 guru Exp $
 #
 # Purpose:      Make DVD-res Quicktime movie of NY to Miami flight
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
-# Unix progs:   awk, mkdir, rm, mv, echo, convert, cat
+# Unix progs:   awk, mkdir, rm, mv, echo, qt_export, cat
 #
 # 1. Initialization
 # 1a) Assign movie parameters
