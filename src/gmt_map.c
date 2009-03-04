@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.211 2009-02-27 17:20:12 remko Exp $
+ *	$Id: gmt_map.c,v 1.212 2009-03-04 02:05:47 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5780,7 +5780,6 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 
 	/* Time to clean up our mess */
 
-	GMT_free ((void *)nz);
 	GMT_free ((void *)x_in);
 	GMT_free ((void *)y_in);
 	GMT_free ((void *)x_out);
@@ -5791,6 +5790,7 @@ int GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD
 		GMT_free ((void *)x_out_proj);
 		GMT_free ((void *)y_out_proj);
 	}
+	if (antialias) GMT_free ((void *)nz);
 
 	return (GMT_NOERROR);
 }
