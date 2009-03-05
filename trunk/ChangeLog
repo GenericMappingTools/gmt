@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.433 2009-03-05 07:06:05 guru Exp $
+	$Id: ChangeLog,v 1.434 2009-03-05 19:01:23 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2009-03-05	jluis
+	* ps2raster.c:		Added -Wg option which creates a simpe KML file to load in GE.
 	* ps2raster.c:		Recognize -Jx<scale> (e.g. no 'd') as a linear geographic
 				projection when -R<region> fits inside a sane ([-180 360][-90 90])
 				interval (when -W is used).
