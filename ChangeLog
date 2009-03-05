@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.432 2009-03-05 05:44:22 guru Exp $
+	$Id: ChangeLog,v 1.433 2009-03-05 07:06:05 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-03-05	jluis
@@ -11,6 +11,8 @@
 	* mgd77/mgd77list.c:	Now can specify -DA and -DB which, in the presence of time = NaN,
 				will not output such records [-Da|b will].  Also clarified the
 				ranges implied by -D/-S.
+	* blockm*.c:		Gave bogus usage about number of input columns when -E is set
+				but -E only affects output.  Input is always 3 or 4 cols.
 
 2009-03-04	remko
 	* gmt_map.c (GMT_grd_project):	Incorrectly attempted to free array only used when
