@@ -370,6 +370,9 @@ OPT(bo)
 Selects binary output mode (single precision; append \fBd\fP for double precision, or use \fBS\fP|\fBD\fP
 to swap bytes on output) [Default is ASCII].
 OPT(H) is ignored if OPT(bo) is selected.  Likewise, string-fields cannot be selected.
+Note that if time is one of the binary output columns it will be stored as Unix-time (seconds
+since 1970).  To read this information in GMT to obtain absolute calendar time will require you
+to use --TIME_SYSTEM=unix.
 .SH EXAMPLES
 To get a (distance, heading, gravity, bathymetry) listing from 01010047.mgd77,
 starting at June 3 1971 20:45 and ending at distance = 5000 km, use the following command:
