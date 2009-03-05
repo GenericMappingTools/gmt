@@ -1,15 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.431 2009-03-05 00:36:28 jluis Exp $
+	$Id: ChangeLog,v 1.432 2009-03-05 05:44:22 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-03-05	jluis
 	* ps2raster.c:		Recognize -Jx<scale> (e.g. no 'd') as a linear geographic
 				projection when -R<region> fits inside a sane ([-180 360][-90 90])
-				interval.
+				interval (when -W is used).
 
 2009-03-04	pwessel
 	* mgd77/mgd77list.c:	Now can specify -DA and -DB which, in the presence of time = NaN,
-				will not output such records [-Da|b will]
+				will not output such records [-Da|b will].  Also clarified the
+				ranges implied by -D/-S.
 
 2009-03-04	remko
 	* gmt_map.c (GMT_grd_project):	Incorrectly attempted to free array only used when

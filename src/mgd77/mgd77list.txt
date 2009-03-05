@@ -298,7 +298,7 @@ Do not list data collected before \fIstartdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]) 
 Use OPT(DA) to exclude records whose time is undefined (i.e., NaN). [Default reports those records].
 .TP
 OPT(Db)
-Do not list data collected after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [Default is end of cruise].
+Do not list data collected on or after \fIstopdate\fP (yyyy-mm-dd\fBT\fP[hh:mm:ss]). [Default is end of cruise].
 Use OPT(DB) to exclude records whose time is undefined (i.e., NaN). [Default reports those records].
 .TP
 OPT(E)
@@ -346,7 +346,7 @@ Do not list data that are less than \fIstartdist\fP meter along track from port 
 Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is 0 meters].
 .TP
 OPT(Sb)
-Do not list data that are more than \fIstopdist\fP meters along track from port of departure.
+Do not list data that are \fIstopdist\fP or more meters along track from port of departure.
 Append \fBk\fP for km, \fBm\fP for miles, or \fBn\fP for nautical miles [Default is end of track].
 .TP
 OPT(T)
