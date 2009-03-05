@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.434 2009-03-05 19:01:23 jluis Exp $
+	$Id: ChangeLog,v 1.435 2009-03-05 20:30:59 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-03-05	pwessel
+	* gmtselect.c:		The -Z option can now handle dateTclock strings for used with
+				data whose 3rd column contains time.
 
 2009-03-05	jluis
 	* ps2raster.c:		Added -Wg option which creates a simpe KML file to load in GE.
