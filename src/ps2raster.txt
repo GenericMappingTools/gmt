@@ -86,12 +86,16 @@ miserably as those whites will be eaten by the Ghostscript. In that case you rea
 or use a slightly off-white color.
 .br
 Together with OPT(V) it prints on screen the gdal_translate (gdal_translate is a command line tool from the GDAL package)
-command that reads the raster + world file and creates a true geotiff file. Use -W+ to do a system call 
+command that reads the raster + world file and creates a true geotiff file. Use OPT(W+) to do a system call 
 to gdal_translate and create a geoTIFF image right away. The output file will have a .tiff extension.
 .br
 The world file naming follows the convention of jamming a 'w' in the file extension. So, if
 output is tif OPT(Tt) the world file is a .tfw, for jpeg we have a .jgw and so on.
 This option automatically sets OPT(A) OPT(P).
+.br
+Use OPT(Wg) to create a minimalist KML file that allows loading the image in
+GoogleEarth. Note that for this option the image must be in geographical
+coordinates. If not, a warning is issued but the KML file is created anyway.
 .SH NOTES
 The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently results in loss of details that are
 available in the original \fIPostScript\fP file. Choose a resolution that is large enough for the application that
@@ -147,7 +151,7 @@ To create a Mercator version of the above example and use GDAL to produce a true
 \fBgdalwarp\fP -s_srs +proj=merc cara.tif carageo.tiff 
 .br
 .sp
-To create a Polar Sterographic geotiff file of Patagonia
+To create a Polar Stereographic geotiff file of Patagonia
 .br
 .sp
 pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --BASEMAP_TYPE=inside > patagonia.ps
