@@ -93,8 +93,9 @@ If no map projection is supplied we implicitly set OPT(Jx)1.
 #include "explain_-V.txt"
 .TP
 OPT(Z)
-Pass all records whose 3rd colum (z) lies within the given range.  Input file must have at least
-three columns.  To indicate no limit on min or max, specify a hyphen (-).
+Pass all records whose 3rd column (z) lies within the given range.  Input file must have at least
+three columns.  To indicate no limit on min or max, specify a hyphen (-).  If your 3rd column
+is absolute time then remember to supply OPT(f)2T.
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 2 input columns].
