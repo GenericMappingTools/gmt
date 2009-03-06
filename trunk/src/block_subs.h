@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.h,v 1.10 2009-01-09 04:02:32 guru Exp $
+ *    $Id: block_subs.h,v 1.11 2009-03-06 03:49:35 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -41,6 +41,7 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 	} C;
 	struct E {	/* -E */
 		BOOLEAN active;
+		int mode;	/* Used in blockmedian to select box-and-whisker output (-Eb) */
 	} E;
 	struct F {	/* -F */
 		BOOLEAN active;
@@ -86,8 +87,8 @@ void *New_Blockmode_Ctrl (), Free_Blockmode_Ctrl (struct BLOCKMODE_CTRL *C);
 #endif
 
 struct BLK_DATA {
-	double		a[4];	/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
-	GMT_LONG	i;	/* Index to data value */
+	double	 a[4];	/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
+	GMT_LONG i;	/* Index to data value */
 };
 
 int BLK_compare_x (const void *point_1, const void *point_2);
