@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.c,v 1.9 2009-01-09 04:02:32 guru Exp $
+ *    $Id: block_subs.c,v 1.10 2009-03-06 03:49:35 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,18 +49,14 @@ int BLK_compare_sub (const void *point_1, const void *point_2, int item)
 	p1 = (struct BLK_DATA *)point_1;
 	p2 = (struct BLK_DATA *)point_2;
 
-	if (p1->i < p2->i)
-		return (-1);
-	else if (p1->i > p2->i)
-		return (1);
-	else {
-		if (p1->a[item] < p2->a[item])
-			return (-1);
-		else if (p1->a[item] > p2->a[item])
-			return (1);
-		else
-			return (0);
-	}
+	/* First sort on bin index i */
+	if (p1->i < p2->i) return (-1);
+	if (p1->i > p2->i) return (+1);
+	/* OK, comparing values in the same bin */
+	if (p1->a[item] < p2->a[item]) return (-1);
+	if (p1->a[item] > p2->a[item]) return (+1);
+	/* Values are the same, return 0 */
+	return (0);
 }
 
 #if defined(BLOCKMEAN)
