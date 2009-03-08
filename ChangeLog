@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.437 2009-03-08 01:13:00 jluis Exp $
+	$Id: ChangeLog,v 1.438 2009-03-08 01:25:00 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2009-03-08	jluis
 	* gmt_support.{c,h}:	New function GMT_chop_ext() to remove the extension from filename string
+	* mgd77togmt.c		New -T and -W options to store total field and account for the
+	  gmt_mgg.c		magnetometer tow distance. Also tries to get info from header file.
 
 2009-03-05	pwessel
 	* gmtselect.c:		The -Z option can now handle dateTclock strings for used with
@@ -13,7 +15,7 @@
 
 2009-03-05	jluis
 	* ps2raster.c:		Added -Wg to create a simple KML file for Google Earth.
-	* ps2raster.c:		Recognize -Jx<scale> (e.g. no 'd') as a linear geographic
+				Recognize -Jx<scale> (e.g. no 'd') as a linear geographic
 				projection when -R<region> fits inside a sane ([-180 360][-90 90])
 				interval (when -W is used).
 
