@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.19 2009-01-09 04:02:35 guru Exp $
+ *	$Id: gmt_mgg.c,v 1.20 2009-03-08 01:19:29 jluis Exp $
  *
  *    Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -233,7 +233,7 @@ int gmtmggpath_func (char *leg_path, char *leg)
 	return(1);
 }
 	
-int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, struct GMTMGG_TIME **gmt)
+int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, struct GMTMGG_TIME **gmt, int anom_offset)
 {
 	int year, month, day, hour, min, sec, l_mag, l_top, test, bin, zone, l_twt;
 	short int twt;
@@ -328,14 +328,23 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 		record->gmt[0] = -record->gmt[0];
 		
 	/* Get magnetics */
-	
-	strncpy (s_mag, &string[73], (size_t) 5);	s_mag[5] = 0;
-	l_mag = atoi (s_mag);
-	if (l_mag == 99999 || (s_mag[0] == ' ' && s_mag[1] == ' ' && s_mag[2] == ' ' && s_mag[3] == ' ' && s_mag[4] == ' '))
-		l_mag = GMTMGG_NODATA;
-	else if (string[72] == '-')
-		l_mag = -l_mag;
-	if (l_mag != GMTMGG_NODATA) l_mag = irint (0.1 * l_mag);
+
+	if (anom_offset) {		/* Read total field and subtract 'anom_ofset' */
+		strncpy (s_mag, &string[60], (size_t) 5);	s_mag[5] = 0;
+		l_mag = atoi (s_mag);
+		if (l_mag == 99999 || (s_mag[0] == ' ' && s_mag[1] == ' ' && s_mag[2] == ' ' && s_mag[3] == ' ' && s_mag[4] == ' '))
+			l_mag = GMTMGG_NODATA;
+		if (l_mag != GMTMGG_NODATA) l_mag -= anom_offset;
+	}
+	else {
+		strncpy (s_mag, &string[73], (size_t) 5);	s_mag[5] = 0;
+		l_mag = atoi (s_mag);
+		if (l_mag == 99999 || (s_mag[0] == ' ' && s_mag[1] == ' ' && s_mag[2] == ' ' && s_mag[3] == ' ' && s_mag[4] == ' '))
+			l_mag = GMTMGG_NODATA;
+		else if (string[72] == '-')
+			l_mag = -l_mag;
+		if (l_mag != GMTMGG_NODATA) l_mag = irint (0.1 * l_mag);
+	}
 	record->gmt[1] = l_mag;
 	
 	/* Get Bathymetry */
