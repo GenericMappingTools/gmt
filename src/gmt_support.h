@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.37 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_support.h,v 1.38 2009-03-08 01:05:13 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,6 +71,7 @@ EXTERN_MSC int GMT_strtok (const char *string, const char *sep, int *start, char
 EXTERN_MSC int GMT_verify_expectations (int wanted, int got, char *item);
 EXTERN_MSC void GMT_RI_prepare (struct GRD_HEADER *h);
 EXTERN_MSC void GMT_chop (char *string);
+EXTERN_MSC char *GMT_chop_ext (char *string);
 EXTERN_MSC void GMT_dump_contour (double *xx, double *yy, GMT_LONG nn, double cval, int id, BOOLEAN interior, char *file);
 EXTERN_MSC void GMT_get_plot_array (void);
 EXTERN_MSC void GMT_get_primary_annot (struct GMT_PLOT_AXIS *A, int *primary, int *secondary);
