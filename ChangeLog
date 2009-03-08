@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.436 2009-03-06 03:49:35 guru Exp $
+	$Id: ChangeLog,v 1.437 2009-03-08 01:13:00 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-03-08	jluis
+	* gmt_support.{c,h}:	New function GMT_chop_ext() to remove the extension from filename string
 
 2009-03-05	pwessel
 	* gmtselect.c:		The -Z option can now handle dateTclock strings for used with
