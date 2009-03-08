@@ -35,7 +35,7 @@ Used for files where time is missing.  The increment is used to calculate
 fake times.
 .TP
 OPT(T)
-Extracts Total field instead of anomaly. Since F does not hold in a 2 byte unsigned variable
+Extracts Total field instead of anomaly. Since F does not hold in a 2 byte signed variable
 we subtract a constant [default = 40000] but you can provide another value in \fI<offset>\fP.
 .TP
 OPT(W)
