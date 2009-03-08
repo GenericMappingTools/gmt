@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.h,v 1.10 2009-01-09 04:02:35 guru Exp $
+ *	$Id: gmt_mgg.h,v 1.11 2009-03-08 13:59:40 jluis Exp $
  *
  *    Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -30,7 +30,7 @@ EXTERN_MSC struct GMTMGG_TIME *gmtmgg_init (int year1);
 EXTERN_MSC int gmtmgg_time (int *time, int year, int month, int day, int hour, int minute, int second, struct GMTMGG_TIME *gmt_struct);
 EXTERN_MSC void gmtmggpath_init (char *dir);
 EXTERN_MSC int gmtmggpath_func (char *leg_path, char *leg);
-EXTERN_MSC int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, struct GMTMGG_TIME **gmt_struct);
+EXTERN_MSC int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, struct GMTMGG_TIME **gmt_struct, int anom_offset);
 EXTERN_MSC void gmtmgg_end ();
 
 EXTERN_MSC char *MGG_SHAREDIR;	/* Copies GMT_SHAREDIR */
