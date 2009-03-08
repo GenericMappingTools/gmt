@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.383 2009-02-25 19:31:53 remko Exp $
+ *	$Id: gmt_support.c,v 1.384 2009-03-08 01:04:38 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -34,6 +34,8 @@
  *	GMT_boundcond_param_prep	Set struct GMT_EDGEINFO to what is doable
  *	GMT_boundcond_set	Set two rows of padding according to bound cond
  *	GMT_check_rgb		Check rgb for valid range
+ *	GMT_chop 		Chops off any CR or LF at end of string
+ *	GMT_chop_ext 		Chops off the trailing .xxx (file extension) 
  *	GMT_comp_double_asc	Used when sorting doubles into ascending order [checks for NaN]
  *	GMT_comp_float_asc	Used when sorting floats into ascending order [checks for NaN]
  *	GMT_comp_int_asc	Used when sorting ints into ascending order
@@ -6039,6 +6041,27 @@ void GMT_str_toupper (char *value)
 		c = (int)value[i];
 		value[i] = (char) toupper (c);
 	}
+}
+
+char *GMT_chop_ext (char *string)
+{
+	/* Chops off the extension (the .xxx ) in string and returns it, icluding the leading '.' */
+	int i, n, pos_ext = 0;
+	if (!string) return (NULL);	/* NULL pointer */
+	if ((n = strlen (string)) == 0) return (NULL);	/* Empty string */
+
+	for (i = n - 1; i > 0; i--) {
+		if (string[i] == '.') { 	/* Beginning of file extension */
+			pos_ext = i;
+			break;
+		}
+	}
+	if (pos_ext) {
+		string[pos_ext] = '\0';		/* Remove the extension */
+		return (strdup(&string[pos_ext]));
+	}
+	else
+		return (NULL);
 }
 
 void GMT_chop (char *string)
