@@ -75,6 +75,9 @@ Turn off strict domain match checking when multiple grids are manipulated [Defau
 that each grid domain is within 1e-4 * grid_spacing of the domain of the first grid listed].
 #include "explain_-R.txt"
 #include "explain_-V.txt"
+#include "explain_-bi.txt"
+The binary input option only applies to the data files needed by operators \fBLDIST\fP, \fPPDIST\fP,
+and \fBINSIDE\fP.
 #include "explain_-f.txt"
 .SH NOTES ON OPERATORS
 (1) The operator \fBSDIST\fP calculates spherical distances between the (lon, lat)
