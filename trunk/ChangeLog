@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.438 2009-03-08 01:25:00 jluis Exp $
+	$Id: ChangeLog,v 1.439 2009-03-10 01:07:17 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-03-09	pwessel
+	* grdmath.c:		The PDIST operator did not handle binary input files (as LDIST does).
 
 2009-03-08	jluis
 	* gmt_support.{c,h}:	New function GMT_chop_ext() to remove the extension from filename string
