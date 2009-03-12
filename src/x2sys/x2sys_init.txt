@@ -199,7 +199,10 @@ in the file \fITAG\fP_paths.txt for a list of additional directories to examine.
 Therefore, create such a file (here LINE_paths.txt) and stick the full paths to
 your data directories there.  All TAG-related files (definition files, tag files,
 and track data bases created) will be expected to be in the directory pointed to
-by \fB$X2SYS_HOME\fP/\fITAG\fP (in our case \fB$X2SYS_HOME\fP/LINE).
+by \fB$X2SYS_HOME\fP/\fITAG\fP (in our case \fB$X2SYS_HOME\fP/LINE).  Note that
+the argument to OPT(D) must contain the full path if the *.def file is not in
+the current directory.  \fBx2sys_init\fP will copy this file to the \fB$X2SYS_HOME\fP/\fITAG\fP
+directory where all other x2sys tools will expect to find it.
 .br
 .TP
 .B Create tbf file(s):
