@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.34 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_grd.h,v 1.35 2009-03-12 20:27:30 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -54,6 +54,7 @@ struct GRD_HEADER {
 	int z_id;			/* NetCDF: id of z field */
 	int ncid;			/* NetCDF: file ID */
 	int t_index[3];			/* NetCDF: index of higher coordinates */
+	int xy_dim[2];			/* NetCDF: dimension order of x and y; normally {1, 0} */
 	double nan_value;		/* Missing value as stored in grid file */
 	double xy_off;			/* 0.0 (node_offset == 0) or 0.5 ( == 1) */
 /* The following elements should not be changed. They are copied verbatim to the native grid header */
