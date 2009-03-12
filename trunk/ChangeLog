@@ -1,14 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.439 2009-03-10 01:07:17 guru Exp $
+	$Id: ChangeLog,v 1.440 2009-03-12 20:28:13 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-03-12	remko
+	* gmt_nc.c, gmt_grd.h:	Properly handle netCDF that have LatLon = 0, 1: flip x and y.
 
 2009-03-09	pwessel
 	* grdmath.c:		The PDIST operator did not handle binary input files (as LDIST does).
 
 2009-03-08	jluis
 	* gmt_support.{c,h}:	New function GMT_chop_ext() to remove the extension from filename string
-	* mgd77togmt.c		New -T and -W options to store total field and account for the
-	  gmt_mgg.c		magnetometer tow distance. Also tries to get info from header file.
+	* mgd77togmt.c, gmt_mgg.c:	New -T and -W options to store total field and account for the
+				magnetometer tow distance. Also tries to get info from header file.
 
 2009-03-05	pwessel
 	* gmtselect.c:		The -Z option can now handle dateTclock strings for used with
