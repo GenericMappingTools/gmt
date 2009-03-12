@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.79 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_nc.c,v 1.80 2009-03-12 20:28:12 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -186,15 +186,24 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 			GMT_err_trap (nc_inq_dim (ncid, dims[i], varname, &lens[i]));
 			if (nc_inq_varid (ncid, varname, &ids[i])) ids[i] = -1;
 		}
-		header->nx = (int) lens[ndims-1];
-		header->ny = (int) lens[ndims-2];
+		header->xy_dim[0] = ndims-1;
+		header->xy_dim[1] = ndims-2;
+
+		/* Check if LatLon variable exists, then we may need to flip x and y */
+		if (nc_inq_varid (ncid, "LatLon", &i) == NC_NOERR) nc_get_var_int (ncid, i, header->xy_dim);
+		header->nx = (int) lens[header->xy_dim[0]];
+		header->ny = (int) lens[header->xy_dim[1]];
 	}
 	else {
 		/* Define dimensions of z variable */
 		ndims = 2;
+		header->xy_dim[0] = 1;
+		header->xy_dim[1] = 0;
+
 		strcpy (coord, (GMT_io.out_col_type[0] == GMT_IS_LON) ? "lon" : (GMT_io.out_col_type[0] & GMT_IS_RATIME) ? "time" : "x");
 		GMT_err_trap (nc_def_dim (ncid, coord, (size_t) header->nx, &dims[1]));
 		GMT_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[1], &ids[1]));
+
 		strcpy (coord, (GMT_io.out_col_type[1] == GMT_IS_LAT) ? "lat" : (GMT_io.out_col_type[1] & GMT_IS_RATIME) ? "time" : "y");
 		GMT_err_trap (nc_def_dim (ncid, coord, (size_t) header->ny, &dims[0]));
 		GMT_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0], &ids[0]));
@@ -238,9 +247,9 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		xy = (double *)GMT_memory (VNULL, (size_t)(MAX(header->nx,header->ny)), sizeof(double), GMT_program);
 
 		/* Get information about x variable */
-		GMT_nc_get_units (ncid, ids[ndims-1], header->x_units);
-		if (!(j = nc_get_var_double (ncid, ids[ndims-1], xy))) GMT_nc_check_step (header->nx, xy, header->x_units, header->name);
-		if (!nc_get_att_double (ncid, ids[ndims-1], "actual_range", dummy))
+		GMT_nc_get_units (ncid, ids[header->xy_dim[0]], header->x_units);
+		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy))) GMT_nc_check_step (header->nx, xy, header->x_units, header->name);
+		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy))
 			header->x_min = dummy[0], header->x_max = dummy[1];
 		else if (!j) {
 			header->x_min = xy[0], header->x_max = xy[header->nx-1];
@@ -254,9 +263,9 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		if (GMT_is_dnan(header->x_inc)) header->x_inc = 1.0;
 
 		/* Get information about y variable */
-		GMT_nc_get_units (ncid, ids[ndims-2], header->y_units);
-		if (!(j = nc_get_var_double (ncid, ids[ndims-2], xy))) GMT_nc_check_step (header->ny, xy, header->y_units, header->name);
-		if (!nc_get_att_double (ncid, ids[ndims-2], "actual_range", dummy))
+		GMT_nc_get_units (ncid, ids[header->xy_dim[1]], header->y_units);
+		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[1]], xy))) GMT_nc_check_step (header->ny, xy, header->y_units, header->name);
+		if (!nc_get_att_double (ncid, ids[header->xy_dim[1]], "actual_range", dummy))
 			header->y_min = dummy[0], header->y_max = dummy[1];
 		else if (!j) {
 			header->y_min = xy[0], header->y_max = xy[header->ny-1];
@@ -330,15 +339,15 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		GMT_err_trap (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, (size_t)1, &header->node_offset));
 
 		/* Define x variable */
-		GMT_nc_put_units (ncid, ids[ndims-1], header->x_units);
+		GMT_nc_put_units (ncid, ids[header->xy_dim[0]], header->x_units);
 		dummy[0] = header->x_min, dummy[1] = header->x_max;
-		GMT_err_trap (nc_put_att_double (ncid, ids[ndims-1], "actual_range", NC_DOUBLE, (size_t)2, dummy));
+		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[0]], "actual_range", NC_DOUBLE, (size_t)2, dummy));
 
 		/* Define y variable */
-		GMT_nc_put_units (ncid, ids[ndims-2], header->y_units);
+		GMT_nc_put_units (ncid, ids[header->xy_dim[1]], header->y_units);
 		header->y_order = 1;
 		dummy[(1-header->y_order)/2] = header->y_min, dummy[(1+header->y_order)/2] = header->y_max;
-		GMT_err_trap (nc_put_att_double (ncid, ids[ndims-2], "actual_range", NC_DOUBLE, (size_t)2, dummy));
+		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[1]], "actual_range", NC_DOUBLE, (size_t)2, dummy));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
 		if (varname[0] && !strcmp (header->z_units, "z")) strcpy (header->z_units, header->varname);
@@ -376,14 +385,14 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		GMT_err_trap (nc_enddef (ncid));
 		xy = (double *) GMT_memory (VNULL, (size_t) MAX (header->nx,header->ny), sizeof (double), "GMT_nc_grd_info");
 		for (i = 0; i < header->nx; i++) xy[i] = (double) GMT_i_to_x (i, header->x_min, header->x_max, header->x_inc, 0.5 * header->node_offset, header->nx);
-		GMT_err_trap (nc_put_var_double (ncid, ids[ndims-1], xy));
+		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[0]], xy));
 		if (header->y_order > 0) {
 			for (i = 0; i < header->ny; i++) xy[i] = (double) GMT_i_to_x (i, header->y_min, header->y_max, header->y_inc, 0.5 * header->node_offset, header->ny);
 		}
 		else {
 			for (i = 0; i < header->ny; i++) xy[i] = (double) GMT_j_to_y (i, header->y_min, header->y_max, header->y_inc, 0.5 * header->node_offset, header->ny);
 		}
-		GMT_err_trap (nc_put_var_double (ncid, ids[ndims-2], xy));
+		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[1]], xy));
 		GMT_free ((void *)xy);
 	}
 
@@ -449,10 +458,9 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	 * (y_order < 0, the first row is the top row) or "bottom up" (y_order > 0, the first
 	 * row is the bottom row). GMT will store the data in "top down" mode. */
 
-	for (i = 0; i < ndims-2; i++) {
-		start[i] = header->t_index[i];
-	}
-	edge[ndims-1] = header->nx;
+	for (i = 0; i < ndims-2; i++) start[i] = header->t_index[i];
+
+	edge[header->xy_dim[0]] = header->nx;
 	if (header->y_order < 0)
 		ij = (size_t)pad[3] * (size_t)width_out + (size_t)i_0_out;
 	else {		/* Flip around the meaning of first and last row */
@@ -465,7 +473,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	header->z_max = -DBL_MAX;
 
 	for (j = first_row; j <= last_row; j++, ij -= ((size_t)header->y_order * (size_t)width_out)) {
-		start[ndims-2] = j;
+		start[header->xy_dim[1]] = j;
 		GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
 		for (i = 0, kk = ij; i < width_in; i++, kk+=inc) {	/* Check for and handle NaN proxies */
 			grid[kk] = tmp[k[i]];
