@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.8 2009-03-13 03:07:08 myself Exp $
+ *	$Id: sph.c,v 1.9 2009-03-13 16:55:48 myself Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -261,7 +261,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 		ist = 1;
 		for (j = 0; j < h->ny; j++) {
 			for (i = 0; i < h->nx; i++) {
-				ij = GMT_IJ(i,j,h->nx);
+				ij = GMT_IJ(j,i,h->nx);
 				intrc0_ (&n4, &plat[j], &plon[i], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 	            		if (ierror < 0) {
