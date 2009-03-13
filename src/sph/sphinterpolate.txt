@@ -6,7 +6,7 @@
 sphinterpolate \- Gridding in tension of spherical data
 .SH SYNOPSIS
 \fBsphinterpolate\fP \fIinfiles\fP OPT(G)\fIgrdfile\fP [ OPT(F) ] [ GMT_H_OPT ] [ GMT_I_OPT ] 
-[ OPT(L) ] [ GMT_M_OPT ] [ OPT(T)\fItension\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
+[ OPT(L) ] [ GMT_M_OPT ] [ OPT(Q)\fImode\fP[/\fIE\fP/\fIU\fP] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ]
 .SH DESCRIPTION
 \fBsphinterpolate\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat, f and
 performs a Delaunay triangulation to set up a spherical interpolation in tension.  The final grid is saved
@@ -14,44 +14,44 @@ to the specified file.  Several options may be used to affect the outcome, such 
 estimation or optimize the tension selection to satisfy one of four criteria.
 .TP
 \fIinfiles\fP
-Data files with the (lon, lat, f) coordinates in ASCII (or binary; see \fB\-b\fP).  If no files are given the standard input is read.
+Data files with the (lon, lat, f) coordinates in ASCII (or binary; see \OPT(b)).  If no files are given the standard input is read.
 .SH OPTIONS
 #include "explain_-H.txt"
 #include "explain_-I.txt"
 .TP
-.B \-L
+\OPT(L)
 Use a local method, in which values depend only on nearby data points, to compute
 estimated gradients at the nodes [Default uses a global method in which values depend on all the data].
 .TP
-.B \-M
+\OPT(M)
 Expect input data to have multiple line segments separated by a record whose first
 character is \fIflag\fP [>].
 .TP
-.B \-T
+\OPT(Q)
 Specify one of four ways to calculate tension factors to preserve local shape properties or
 satisfy arc constraints [Default is no tension].
 .TP
-.B \-T0
-Determine, for each triangulation arc, the smallest (nonnegative) tension factor such that the
-Hermite interpolatory tension spline, defined by the tension and the specified endpoint data,
-preserves local shape properties (monotonicity and convexity) of the data.
+\OPT(Q)0
+Piecewise linear interpolation; no tension is applied.
 .TP
-.B \-T1
-Determine the smallest tension factor such that the
-Hermite interpolatory tension spline associated with a specified triangulation arc and endpoint data
-is bounded (either above of below) by a specified value.
+\OPT(Q)Q1
+Smooth interpolation with local gradient estimates.
 .TP
-.B \-T2
-Determine the smallest tension factor such that the first derivative of the
-Hermite interpolatory tension spline associated with a specified triangulation arc and endpoint data
-is bounded (either above of below) by a specified value.
+\OPT(Q)Q2
+Smooth interpolation with global gradient estimates.
 .TP
-.B \-T3
-Determine the smallest tension factor such that the
-Hermite interpolatory tension spline associated with a specified triangulation arc and endpoint data
-preserves convexity (or concavity) of the data on the arc.
+\OPT(Q)Q3
+Smoothing.  Optionally append \fI/E/U\fP [/0/0], where
+\fIE\fP is Expected squared error in a typical (scaled) data value, and
+\fIU\fP is Upper bound on  weighted sum of squares of deviations from data.
 #include "explain_-Rgeo.txt"
+.TP
+\OPT(T)
+Use variable tension (ignored with \OPT(Q)0 [constant]
 #include "explain_-V.txt"
+.TP
+\OPT(Z)
+Before interpolation, scale data by the maximum data range [no scaling].
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.4 2008-04-09 18:48:28 myself Exp $
+#  $Id: GNUmakefile,v 1.5 2009-03-13 02:02:11 myself Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	
@@ -11,7 +11,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		7-APR-2008
+#	Date:		12-MAR-2009
 #-------------------------------------------------------------------------------
 
 include makefile
@@ -19,7 +19,7 @@ include $(GMTSRCDIR)manpages.mk
 
 D772/Fortran77/Src/Sp/src.f:	772
 
-D773/Fortran77/Src/Sp/src.f:	773
+D773/Src/Sp/src.f:	773
 
 772:
 		wget http://www.netlib.org/toms/772
@@ -38,8 +38,8 @@ stripack.c:	D772/Fortran77/Src/Sp/src.f
 		f2c -r8 D772/Fortran77/Src/Sp/src.f
 		mv -f src.c stripack.c
 
-ssrfpack.c:	D773/Fortran77/Src/Sp/src.f
-		f2c -r8 D772/Fortran77/Src/Sp/src.f
+ssrfpack.c:	D773/Src/Sp/src.f
+		f2c -r8 D773/Src/Sp/src.f
 		mv -f src.c ssrfpack.c
 
 spotless::
