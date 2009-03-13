@@ -1,10 +1,10 @@
-#	$Id: Makefile,v 1.5 2009-03-13 01:48:27 myself Exp $
+#	$Id: Makefile,v 1.6 2009-03-13 02:02:11 myself Exp $
 #
 #		Makefile for GMT supplement sph
 #
 #	Author:	Paul Wessel, SOEST, U. of Hawaii
 #
-#	Date:	7-APR-2008
+#	Date:	12-MAR-2009
 #
 
 #-------------------------------------------------------------------------------
