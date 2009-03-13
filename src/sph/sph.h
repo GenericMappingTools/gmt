@@ -1,21 +1,32 @@
 #define DELAUNAY	0
 #define VORONOI		1
+#define INTERPOLATE	2
+
 #define TRI_NROW	6	/* Don't request arc indeces from STRIPACK  */
 
 struct STRIPACK_DELAUNAY {	/* Information about Delaunay triangulation */
 	int n;	/* Number of Delaunay triangles */
 	int *tri;	/* Delaunay triplet node numbers and more */
 };
+
 struct STRIPACK_VORONOI {	/* Information about Voronoi polygons */
 	double *lon, *lat;	/* Voronoi polygon vertices */
 	int n;				/* Number of boundary nodes for Voronoi */
-	int *lend, *listc, *lptr;	/* Voronoi vertex lists and pointers */			
+	int *lend, *listc, *lptr;	/* Voronoi vertex lists and pointers */
+	int *list;		/* Additional list from trmesh */		
 };
+
+struct STRIPACK_INTERPOLATE {	/* Information about triangles */
+	int *lend, *list, *lptr;	/* lists and pointers */
+};
+
 struct STRIPACK {
-	int mode;	/* VORONOI or DELAUNAY */
+	int mode;	/* VORONOI, DELAUNAY, or INTERPOLATE */
 	struct STRIPACK_DELAUNAY D;
 	struct STRIPACK_VORONOI V;
+	struct STRIPACK_INTERPOLATE T;
 };
+
 struct STRPACK_ARC {
 	int begin, end;
 };
