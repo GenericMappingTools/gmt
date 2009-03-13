@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.7 2009-03-13 02:16:29 myself Exp $
+ *	$Id: sph.c,v 1.8 2009-03-13 03:07:08 myself Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -96,9 +96,9 @@ void stripack_lists (GMT_LONG n, double *x, double *y, double *z, struct STRIPAC
 	}
 
 	if (T->mode == INTERPOLATE) {	/* Pass back the three lists from trmesh_ */
-		T->T.lend = lend;	/* Save these for output */
-		T->T.lptr = lptr;
-		T->T.lptr = lend;
+		T->I.list = list;	/* Save these for output */
+		T->I.lptr = lptr;
+		T->I.lend = lend;
 		return;
 	}
 	
@@ -231,20 +231,16 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 	int ierror, n4, nm, k, k1, i, j, n_sig, nxp, ist, ij, iflgs, itgs, iter, nitg;
 	int maxit = 10, plus = 1, minus = -1, lsig = 4;
 	int *list, *lptr, *lend;
-	size_t n_alloc;
-	double *sigma, *grad, *plon, *plat;
+	double *sigma = NULL, *grad = NULL, *plon, *plat;
 	double dgmax = 0.01, tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
 	
-	lend = (int *)GMT_memory (VNULL, (size_t)n, sizeof (int), GMT_program);
-	n_alloc = 6 * (n - 2);
-	lptr = (int *)GMT_memory (VNULL, (size_t)n_alloc, sizeof (int), GMT_program);
-	list = (int *)GMT_memory (VNULL, (size_t)n_alloc, sizeof (int), GMT_program);
-	n_sig = (vartens) ? n_alloc : 1;
+	n_sig = (vartens) ? 6 * (n - 2) : 1;
 
-	/* Create the triangulation. Main output is (list, lptr, lend) */
+	/* Create the triangulation. Main output is (P.I->(list, lptr, lend) */
 
 	n4 = (int)n;
+	P.mode = INTERPOLATE;
 	stripack_lists ((GMT_LONG)n, x, y, z, &P);
 	
 	/* Set out output nodes */
@@ -263,13 +259,13 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 	if (mode == 0) {	 /* C-0 interpolation (INTRC0). */
 		nxp = 0;
 		ist = 1;
-		for (j = 0; j < h->nx; j++) {
-			for (i = 0; i < h->ny; i++) {
-				ij = j * h->nx + i;
-				intrc0_ (&n4, &plat[i], &plon[j], x, y, z, w, list, lptr, lend, &ist, &f[ij], &ierror);
+		for (j = 0; j < h->ny; j++) {
+			for (i = 0; i < h->nx; i++) {
+				ij = GMT_IJ(i,j,h->nx);
+				intrc0_ (&n4, &plat[j], &plon[i], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 	            		if (ierror < 0) {
-					fprintf (stderr, "%s: Error in INTRC0:  I = %d, J = %d, IER = %d\n", GMT_program, i, j, ierror);
+					fprintf (stderr, "%s: Error in INTRC0:  I = %d, J = %d, IER = %d\n", GMT_program, j, i, ierror);
 					GMT_exit (EXIT_FAILURE);
 	            		}
 			}
@@ -281,7 +277,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 		double sum = 0.0;
 		for (k = 0; k < n; k++) {
 			k1 = k + 1;
-			gradl_ (&n4, &k1, x, y, z, w, list, lptr, lend, &grad[k], &ierror);
+			gradl_ (&n4, &k1, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &grad[k], &ierror);
 			if (ierror < 0) {
 				fprintf (stderr, "%s: Error in GRADL:  K = %d IER = %d\n", GMT_program, k1, ierror);
 				GMT_exit (EXIT_FAILURE);
@@ -291,7 +287,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 		sum /= n;
 		if (gmtdefs.verbose) fprintf (stderr, "%s: GRADL:  Average number of nodes used in the least squares fits = %g\n", GMT_program, sum);
 	        if (vartens) {	/* compute tension factors sigma (getsig). */
-			getsig_ (&n4, x, y, z, w, list, lptr, lend, grad, &tol, sigma, &dsm, &ierror);
+			getsig_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 			if (ierror < 0) {
 				fprintf (stderr, "%s: Error in GETSIG:  ier = %d\n", GMT_program, ierror);
 				GMT_exit (EXIT_FAILURE);
@@ -307,7 +303,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 
 		iflgs = 0;
 		if (vartens) iflgs = 1;
-		unif_ (&n4, x, y, z, w, list, lptr, lend, &iflgs, sigma, &h->ny, &h->ny, &h->nx, plat, plon, &plus, grad, f, &ierror);
+		unif_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &h->ny, &h->ny, &h->nx, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
 			fprintf (stderr, "%s: Error in UNIF:  ier = %d\n", GMT_program, ierror);
 			GMT_exit (EXIT_FAILURE);
@@ -325,7 +321,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 		for (iter = 0; iter < itgs; iter++) {
 			nitg = maxit;
 			dgmx = dgmax;
-			gradg_ (&n4, x, y, z, w, list, lptr, lend, &iflgs, sigma, &nitg, &dgmx, grad, &ierror);
+			gradg_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &nitg, &dgmx, grad, &ierror);
 			if (ierror < 0) {
 				fprintf (stderr, "%s: Error in GRADG:  ier = %d\n", GMT_program, ierror);
 				GMT_exit (EXIT_FAILURE);
@@ -337,7 +333,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 			if (vartens) {
 				/* compute tension factors sigma (getsig).  iflgs > 0 if vartens = true */
 				iflgs = 1;
-				getsig_ (&n4, x, y, z, w, list, lptr, lend, grad, &tol, sigma, &dsm, &ierror);
+				getsig_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
 					fprintf (stderr, "%s: Error in GETSIG:  ier = %d\n", GMT_program, ierror);
 					GMT_exit (EXIT_FAILURE);
@@ -348,7 +344,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 		}
 		/* compute interpolated values on the uniform grid (unif). */
 
-		unif_ (&n4, x, y, z, w, list, lptr, lend, &iflgs, sigma, &h->ny, &h->ny, &h->nx, plat, plon, &plus, grad, f, &ierror);
+		unif_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &h->ny, &h->ny, &h->nx, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
 			fprintf (stderr, "%s: Error in UNIF:  IER = %d\n", GMT_program, ierror);
 			GMT_exit (EXIT_FAILURE);
@@ -375,7 +371,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 		/* loop on smsurf/getsig iterations. */
 		iflgs = 0;
 		for (iter = 0; iter < itgs; iter++) {
-			smsurf_ (&n4, x, y, z, w, list, lptr, lend, &iflgs, sigma, wt, &sm, &smtol, &gstol, &minus, f, grad, &ierror);
+			smsurf_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, wt, &sm, &smtol, &gstol, &minus, f, grad, &ierror);
 			if (ierror < 0) {
 				fprintf (stderr, "%s: Error in SMSURF:  IER = %d\n", GMT_program, ierror);
 				GMT_exit (EXIT_FAILURE);
@@ -383,7 +379,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 			if (ierror == 1) fprintf (stderr, "%s: UNIF: inactive constraint in smsurf.  f is a constant function\n", GMT_program);
 			if (vartens) {	/* compute tension factors sigma (getsig).  iflgs > 0 if vt = true. */
 				iflgs = 1;
-				getsig_ (&n4, x, y, z, f, list, lptr, lend, grad, &tol, sigma, &dsm, &ierror);
+				getsig_ (&n4, x, y, z, f, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
 					fprintf (stderr, "%s: Error in GETSIG:  ier = %d\n", GMT_program, ierror);
 					GMT_exit (EXIT_FAILURE);
@@ -393,7 +389,8 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 			}
 		}
 		/* compute interpolated values on the uniform grid (unif). */
-		unif_ (&n4, x, y, z, w, list, lptr, lend, &iflgs, sigma, &h->ny, &h->ny, &h->nx, plat, plon, &plus, grad, f, &ierror);
+		unif_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &h->ny, &h->ny, &h->nx, plat, plon, &plus, grad, f, &ierror);
+		GMT_free ((void *)wt);
 		if (ierror < 0) {
 			fprintf (stderr, "%s: Error in UNIF:  ier = %d\n", GMT_program, ierror);
 			GMT_exit (EXIT_FAILURE);
@@ -403,4 +400,9 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 	
 	GMT_free ((void *)plon);
 	GMT_free ((void *)plat);
+	GMT_free ((void *)P.I.list);
+	GMT_free ((void *)P.I.lptr);
+	GMT_free ((void *)P.I.lend);
+	if (sigma) GMT_free ((void *)sigma);
+	if (grad) GMT_free ((void *)grad);
 }
