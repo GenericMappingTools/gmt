@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.6 2009-03-13 01:48:27 myself Exp $
+ *	$Id: sph.c,v 1.7 2009-03-13 02:16:29 myself Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -72,8 +72,6 @@ void stripack_lists (GMT_LONG n, double *x, double *y, double *z, struct STRIPAC
 	ds = (double *)GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
 	lend = (int *)GMT_memory (VNULL, (size_t)n, sizeof (int), GMT_program);
  	iwk = (int *)GMT_memory (VNULL, (size_t)(2*n), sizeof (int), GMT_program);
-	n_alloc = 2 * (n - 2);
-	T->D.tri = (int *)GMT_memory (VNULL, (size_t)(TRI_NROW*n_alloc), sizeof (int), GMT_program);
 	n_alloc = 6 * (n - 2);
 	lptr = (int *)GMT_memory (VNULL, (size_t)n_alloc, sizeof (int), GMT_program);
 	list = (int *)GMT_memory (VNULL, (size_t)n_alloc, sizeof (int), GMT_program);
@@ -97,8 +95,17 @@ void stripack_lists (GMT_LONG n, double *x, double *y, double *z, struct STRIPAC
 		GMT_exit (EXIT_FAILURE);
 	}
 
+	if (T->mode == INTERPOLATE) {	/* Pass back the three lists from trmesh_ */
+		T->T.lend = lend;	/* Save these for output */
+		T->T.lptr = lptr;
+		T->T.lptr = lend;
+		return;
+	}
+	
 	/* Create a triangle list which returns the number of triangles and their node list tri */
 
+	n_alloc = 2 * (n - 2);
+	T->D.tri = (int *)GMT_memory (VNULL, (size_t)(TRI_NROW*n_alloc), sizeof (int), GMT_program);
 	if (gmtdefs.verbose) fprintf (stderr, "%s: Call STRIPACK TRLIST subroutine...", GMT_program);
 	trlist_ (&n4, list, lptr, lend, &nrow, &T->D.n, T->D.tri, &ierror);
 	if (gmtdefs.verbose) fprintf (stderr, "OK\n");
@@ -221,17 +228,15 @@ int compare_arc (const void *p1, const void *p2)
 
 void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f)
 {
-	int lnew, ierror, n4, nm, k, k1, i, j, n_sig, nxp, ist, ij, iflgs, itgs, iter, nitg;
-	int *iwk, *list, *lptr, *lend;
-	size_t n_alloc;
-	double *ds, *sigma, *grad;
-	double *plon, *plat;
-	double dgmax = 0.01, tol = 0.01, dsm, dgmx;
+	int ierror, n4, nm, k, k1, i, j, n_sig, nxp, ist, ij, iflgs, itgs, iter, nitg;
 	int maxit = 10, plus = 1, minus = -1, lsig = 4;
-
-	ds = (double *)GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
+	int *list, *lptr, *lend;
+	size_t n_alloc;
+	double *sigma, *grad, *plon, *plat;
+	double dgmax = 0.01, tol = 0.01, dsm, dgmx;
+	struct STRIPACK P;
+	
 	lend = (int *)GMT_memory (VNULL, (size_t)n, sizeof (int), GMT_program);
-	iwk = (int *)GMT_memory (VNULL, (size_t)(2*n), sizeof (int), GMT_program);
 	n_alloc = 6 * (n - 2);
 	lptr = (int *)GMT_memory (VNULL, (size_t)n_alloc, sizeof (int), GMT_program);
 	list = (int *)GMT_memory (VNULL, (size_t)n_alloc, sizeof (int), GMT_program);
@@ -240,18 +245,14 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 	/* Create the triangulation. Main output is (list, lptr, lend) */
 
 	n4 = (int)n;
-	if (gmtdefs.verbose) fprintf (stderr, "%s: Call STRIPACK TRMESH subroutine...", GMT_program);
-	trmesh_ (&n4, x, y, z, list, lptr, lend, &lnew, iwk, &iwk[n], ds, &ierror);
-	if (gmtdefs.verbose) fprintf (stderr, "done\n");
-	GMT_free ((void *)ds);
-	GMT_free ((void *)iwk);
+	stripack_lists ((GMT_LONG)n, x, y, z, &P);
 	
 	/* Set out output nodes */
 	
 	plon = (double *) GMT_memory (VNULL, h->nx, sizeof (double), GMT_program);
 	plat = (double *) GMT_memory (VNULL, h->ny, sizeof (double), GMT_program);
-	for (i = 0; i < h->nx; i++) plon[i] = GMT_i_to_x (i, h->x_min, h->x_max, h->x_inc, h->xy_off, h->nx);
-	for (j = 0; j < h->ny; j++) plat[j] = GMT_j_to_y (j, h->y_min, h->y_max, h->y_inc, h->xy_off, h->ny);
+	for (i = 0; i < h->nx; i++) plon[i] = D2R * GMT_i_to_x (i, h->x_min, h->x_max, h->x_inc, h->xy_off, h->nx);
+	for (j = 0; j < h->ny; j++) plat[j] = D2R * GMT_j_to_y (j, h->y_min, h->y_max, h->y_inc, h->xy_off, h->ny);
 	nm = h->nx * h->ny;
 	
 	/* Time to work on the interpolation */
