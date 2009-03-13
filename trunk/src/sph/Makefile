@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.4 2008-04-09 18:48:28 myself Exp $
+#	$Id: Makefile,v 1.5 2009-03-13 01:48:27 myself Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -100,11 +100,11 @@ $(SPHLIB):	sph.o
 sph.o:	sph.c sph.h $(GMT_H)
 
 spotless::	clean
-	rm -rf libstripack.a libssrfpack.a
+	rm -rf $(STRILIB) $(SSRFLIB) $(SPHLIB)
 	
 #-------------------------------------------------------------------------------
 #	program dependencies
 #-------------------------------------------------------------------------------
 
-$(CODE):	$(CODE_O) libstripack.a libssrfpack.a libsph.a
+$(CODE):	$(CODE_O) $(STRILIB) $(SSRFLIB) $(SPHLIB)
 	$(CC) $(CFLAGS) $@.o -L$(GMTHOME)/lib -lgmt -lpsl $(NC_LIBS) -L. -lssrfpack  -lstripack -lsph $(F2CLIB) $(LIBS) -o $@
