@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.116 2009-02-13 23:04:07 guru Exp $
+ *	$Id: x2sys.c,v 1.117 2009-03-13 03:33:24 jluis Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1107,7 +1107,7 @@ int x2sys_bix_read_tracks (struct X2SYS_INFO *S, struct X2SYS_BIX *B, int mode, 
 		}
 		if (id > last_id) last_id = id;
 	}
-	GMT_fclose (ftrack);
+	fclose (ftrack);
 	last_id++;
 	if (mode == 1) B->head = (struct X2SYS_BIX_TRACK_INFO *) GMT_memory ((void *)B->head, (size_t)last_id, sizeof (struct X2SYS_BIX_TRACK_INFO), X2SYS_program);
 #ifdef DEBUG
@@ -1161,7 +1161,7 @@ int x2sys_bix_read_index (struct X2SYS_INFO *S, struct X2SYS_BIX *B, BOOLEAN swa
 #ifdef DEBUG
 	GMT_memtrack_on (GMT_mem_keeper);
 #endif
-	GMT_fclose (fbin);
+	fclose (fbin);
 	return (X2SYS_NOERROR);
 }
 
