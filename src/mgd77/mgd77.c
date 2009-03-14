@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.209 2009-03-14 19:33:57 guru Exp $
+ *	$Id: mgd77.c,v 1.210 2009-03-14 21:35:38 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2518,7 +2518,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	int i, j, k, n = 0, flist = 0, length;
 	BOOLEAN all;
 	size_t n_alloc = 0;
-	char **L = NULL, *d_name, line[BUFSIZ];
+	char **L = NULL, *d_name, line[BUFSIZ], this_arg[BUFSIZ];
 #ifdef WIN32
 	FILE *fp;
 #else
@@ -2556,11 +2556,19 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 
 	for (j = 1; j < argc; j++) {
 		if (!all && argv[j][0] == '-') continue;	/* Skip command line options, except first time if all */
-		length = (all) ? 0 : strlen (argv[j]);		/* length == 0 means get all */
+		/* Strip off any extension in case a user gave 12345678.mgd77 */
+		for (i = strlen (argv[j])-1; i >= 0 && argv[j][i] != '.'; i--);;	/* Wind back to last period (or get i == -1) */
+		if (i == -1) 
+			strcpy (this_arg, argv[j]);
+		else {
+			strncpy (this_arg, argv[j], i);
+			this_arg[i] = '\0';
+		}
+		length = (all) ? 0 : strlen (this_arg);		/* length == 0 means get all */
 		if (length == 8) {	/* Full NGDC ID length, append to list */
 			if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
 			L[n] = (char *)GMT_memory (VNULL, (size_t)9, sizeof (char), "MGD77_Path_Expand");
-			strcpy (L[n++], argv[j]);
+			strcpy (L[n++], this_arg);
 			continue;
 		}
 		/* Here we have either <agency> or <agency><vessel> code or blank for all */	
@@ -2583,7 +2591,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 			while ((entry = readdir (dir)) != NULL) {
 				d_name = entry->d_name;
 #endif
-				if (length && strncmp (d_name, argv[j], (size_t)length)) continue;
+				if (length && strncmp (d_name, this_arg, (size_t)length)) continue;
 				k = strlen (d_name) - 1;
 				while (k && d_name[k] != '.') k--;	/* Strip off file extension */
 				if (k < 8) continue;	/* Not a NGDC 8-char ID */
