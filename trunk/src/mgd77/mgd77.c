@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.208 2009-03-14 03:31:12 jluis Exp $
+ *	$Id: mgd77.c,v 1.209 2009-03-14 19:33:57 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -687,7 +687,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 		fp_err = ufp;
 	}
 	else {
-		fp_err = (F->verbose_dest == 1) ? GMT_stdout : stderr;
+		fp_err = (F->verbose_dest == 1) ? stdout : stderr;
 	}
 	
 	H->errors[TOTAL] = H->errors[WARN] = H->errors[ERR] = 0;
