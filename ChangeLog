@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.440 2009-03-12 20:28:13 remko Exp $
+	$Id: ChangeLog,v 1.441 2009-03-14 03:57:59 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-03-14	jluis
+	* gmt_io.{c,h}:		Created GMT_fgetc & GMT_ungetc to use with mgd77 supplements.
+	* mgd77.c		Now works on Windows (but still crashes if use -L option) 
+	* x2sys_put.c		Fixed -D option (was falling in a endless loop)
 
 2009-03-12	remko
 	* gmt_nc.c, gmt_grd.h:	Properly handle netCDF that have LatLon = 0, 1: flip x and y.
