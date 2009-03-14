@@ -36,7 +36,7 @@ double stripack_areas (double *V1, double *V2, double *V3);
 void cart_to_geo (GMT_LONG n, double *x, double *y, double *z, double *lon, double *lat);
 int compare_arc (const void *p1, const void *p2);
 void geo_to_cart (double alat, double alon, double *a, int rads);
-void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f);
+void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f);
 
 #ifdef G95
 /* If linking via g95 instead we need to use these start/stop functions */

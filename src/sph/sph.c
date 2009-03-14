@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.9 2009-03-13 16:55:48 myself Exp $
+ *	$Id: sph.c,v 1.10 2009-03-14 02:48:19 myself Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -226,13 +226,13 @@ int compare_arc (const void *p1, const void *p2)
 
 /* Functions for spherical surface interpolation */
 
-void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f)
+void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f)
 {
-	int ierror, n4, nm, k, k1, i, j, n_sig, nxp, ist, ij, iflgs, itgs, iter, nitg;
-	int maxit = 10, plus = 1, minus = -1, lsig = 4;
+	int ierror, n4, nm, k, k1, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs;
+	int plus = 1, minus = -1, lsig = 4;
 	int *list, *lptr, *lend;
 	double *sigma = NULL, *grad = NULL, *plon, *plat;
-	double dgmax = 0.01, tol = 0.01, dsm, dgmx;
+	double tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
 	
 	n_sig = (vartens) ? 6 * (n - 2) : 1;
@@ -289,7 +289,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 	        if (vartens) {	/* compute tension factors sigma (getsig). */
 			getsig_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 			if (ierror < 0) {
-				fprintf (stderr, "%s: Error in GETSIG:  ier = %d\n", GMT_program, ierror);
+				fprintf (stderr, "%s: Error in GETSIG:  IER = %d\n", GMT_program, ierror);
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (gmtdefs.verbose) {
@@ -305,14 +305,19 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 		if (vartens) iflgs = 1;
 		unif_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &h->ny, &h->ny, &h->nx, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
-			fprintf (stderr, "%s: Error in UNIF:  ier = %d\n", GMT_program, ierror);
+			fprintf (stderr, "%s: Error in UNIF:  IER = %d\n", GMT_program, ierror);
 			GMT_exit (EXIT_FAILURE);
 		}
 		if (gmtdefs.verbose) fprintf (stderr, "%s: UNIF:  Number of evaluation points = %d, number of extrapolation points = %d\n", GMT_program, nm, ierror);
 	}
 	else if (mode == 2) {	/* c-1 interpolation (intrc1) with global gradients gradg. */
+		int maxit, nitg;
+		double dgmax;
 		/* initialize gradients grad to zeros. */
 		memset ((void *)grad, 0, (size_t)(3*n*sizeof(double)));
+		itgs  = (par[0] == 0.0) ? 3    : irint (par[0]);
+		maxit = (par[1] == 0.0) ? 10   : irint (par[1]);
+		dgmax = (par[2] == 0.0) ? 0.01 : par[2];
 		if (!vartens) itgs = 1;
 
 		/* loop on gradg/getsig iterations. */
@@ -323,22 +328,22 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 			dgmx = dgmax;
 			gradg_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &nitg, &dgmx, grad, &ierror);
 			if (ierror < 0) {
-				fprintf (stderr, "%s: Error in GRADG:  ier = %d\n", GMT_program, ierror);
+				fprintf (stderr, "%s: Error in GRADG (iteration %d):  IER = %d\n", GMT_program, iter, ierror);
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (gmtdefs.verbose) {
-				fprintf (stderr, "%s: GRADG:  tolerance = %g max change = %g  maxit = %d no. iterations = %d ier = %d\n",
-					GMT_program, dgmax, dgmx, maxit, nitg, ierror);
+				fprintf (stderr, "%s: GRADG (iteration %d):  tolerance = %g max change = %g  maxit = %d no. iterations = %d ier = %d\n",
+					GMT_program, iter, dgmax, dgmx, maxit, nitg, ierror);
 			}
 			if (vartens) {
 				/* compute tension factors sigma (getsig).  iflgs > 0 if vartens = true */
 				iflgs = 1;
 				getsig_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
-					fprintf (stderr, "%s: Error in GETSIG:  ier = %d\n", GMT_program, ierror);
+					fprintf (stderr, "%s: Error in GETSIG (iteration %d):  ier = %d\n", GMT_program, iter, ierror);
 					GMT_exit (EXIT_FAILURE);
 				}
-				if (gmtdefs.verbose) fprintf (stderr, "%s: GETSIG:  %d tension factors altered;  Max change = %g\n", GMT_program, ierror, dsm);
+				if (gmtdefs.verbose) fprintf (stderr, "%s: GETSIG (iteration %d):  %d tension factors altered;  Max change = %g\n", GMT_program, iter, ierror, dsm);
 				sgprnt_ (&n4, &lsig, list, lptr, lend, sigma);	/* write the tension factors to disk (sgprnt). */
 			}
 		}
@@ -354,37 +359,36 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, int n, int mode,
 	else if (mode == 3) {	/* c-1 smoothing method smsurf. */
 		double wtk, smtol, gstol, e, sm, *wt;
 		wt = (double *)GMT_memory (VNULL, (size_t)n, sizeof (double), GMT_program);
-		e = (par[0] == 0.0) ? 0.01 : par[0];
-		sm = (par[1] <= 0.0) ? (double)n : par[1];
+		e    = (par[0] == 0.0) ? 0.01 : par[0];
+		sm   = (par[1] <= 0.0) ? (double)n : par[1];
+		itgs = (par[2] == 0.0) ? 3 : irint (par[2]);
+		if (!vartens) itgs = 1;
 		wtk = 1.0/e;
-		/* store the weights wt. */
-		for (k = 0; k < n; k++) wt[k] = wtk;
+		for (k = 0; k < n; k++) wt[k] = wtk;	/* store the weights wt. */
 		/* compute and print smsurf parameters. */
-
 		smtol = sqrt (2.0 / sm);
-		gstol = 0.05*e;
+		gstol = 0.05 * e;
 		if (gmtdefs.verbose) {
-			fprintf (stderr, "%s: smsurf parameters:\n\texpected squared error = %g\n\tsmoothing parameter sm = %g\n", GMT_program, e, sm);
+			fprintf (stderr, "%s: SMSURF parameters:\n\texpected squared error = %g\n\tsmoothing parameter sm = %g\n", GMT_program, e, sm);
 			fprintf (stderr, "\tgauss-seidel tolerance = %g\n\tsmoothing tolerance = %g\n\tweights = %g\n", gstol, smtol, wtk);
 		}
-		if (!vartens) itgs = 1;
 		/* loop on smsurf/getsig iterations. */
 		iflgs = 0;
 		for (iter = 0; iter < itgs; iter++) {
 			smsurf_ (&n4, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, wt, &sm, &smtol, &gstol, &minus, f, grad, &ierror);
 			if (ierror < 0) {
-				fprintf (stderr, "%s: Error in SMSURF:  IER = %d\n", GMT_program, ierror);
+				fprintf (stderr, "%s: Error in SMSURF (iteration %d):  IER = %d\n", GMT_program, iter, ierror);
 				GMT_exit (EXIT_FAILURE);
 			}
-			if (ierror == 1) fprintf (stderr, "%s: UNIF: inactive constraint in smsurf.  f is a constant function\n", GMT_program);
+			if (ierror == 1) fprintf (stderr, "%s: UNIF: inactive constraint in SMSURF (iteration %d).  f is a constant function\n", GMT_program, iter);
 			if (vartens) {	/* compute tension factors sigma (getsig).  iflgs > 0 if vt = true. */
 				iflgs = 1;
 				getsig_ (&n4, x, y, z, f, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
-					fprintf (stderr, "%s: Error in GETSIG:  ier = %d\n", GMT_program, ierror);
+					fprintf (stderr, "%s: Error in GETSIG (iteration %d):  IER = %d\n", GMT_program, iter, ierror);
 					GMT_exit (EXIT_FAILURE);
 				}
-				if (gmtdefs.verbose) fprintf (stderr, "%s: GETSIG:  %d tension factors altered;  Max change = %g\n", GMT_program, ierror, dsm);
+				if (gmtdefs.verbose) fprintf (stderr, "%s: GETSIG (iteration %d):  %d tension factors altered;  Max change = %g\n", GMT_program, iter, ierror, dsm);
 				sgprnt_ (&n4, &lsig, list, lptr, lend, sigma);	/* write the tension factors to disk (sgprnt). */
 			}
 		}
