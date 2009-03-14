@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.441 2009-03-14 03:57:59 jluis Exp $
+	$Id: ChangeLog,v 1.442 2009-03-14 21:14:46 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-03-14	pwessel
+	* x2sys/x2sys_init.c:	Now properly copies the *.def file to the TAG dir.
+	* x2sys/x2sys_cross.c:	Removed the -F option which was not honored anyway.
+	
 2009-03-14	jluis
 	* gmt_io.{c,h}:		Created GMT_fgetc & GMT_ungetc to use with mgd77 supplements.
-	* mgd77.c		Now works on Windows (but still crashes if use -L option) 
-	* x2sys_put.c		Fixed -D option (was falling in a endless loop)
+	* mgd77/mgd77.c		Now works on Windows (but still crashes if use -L option) 
+	* x2sys/x2sys_put.c	Fixed -D option (was falling in a endless loop)
 
 2009-03-12	remko
 	* gmt_nc.c, gmt_grd.h:	Properly handle netCDF that have LatLon = 0, 1: flip x and y.
@@ -15,8 +19,9 @@
 
 2009-03-08	jluis
 	* gmt_support.{c,h}:	New function GMT_chop_ext() to remove the extension from filename string
-	* mgd77togmt.c, gmt_mgg.c:	New -T and -W options to store total field and account for the
+	* mgg/gmt_mgg.c:	New -T and -W options to store total field and account for the
 				magnetometer tow distance. Also tries to get info from header file.
+	* mgg/mgd77togmt.c:	--"--"
 
 2009-03-05	pwessel
 	* gmtselect.c:		The -Z option can now handle dateTclock strings for used with

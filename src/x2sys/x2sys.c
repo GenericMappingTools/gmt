@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.117 2009-03-13 03:33:24 jluis Exp $
+ *	$Id: x2sys.c,v 1.118 2009-03-14 21:14:46 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -369,7 +369,7 @@ void x2sys_free_data (double **data, int n, struct X2SYS_FILE_INFO *p)
 
 	for (i = 0; i < n; i++) GMT_free ((void *)data[i]);
 	GMT_free ((void *)data);
-	GMT_free ((void *)p->ms_rec);
+	if (p->ms_rec) GMT_free ((void *)p->ms_rec);
 }
 
 double *x2sys_dummytimes (GMT_LONG n)
