@@ -6,7 +6,7 @@
 sphinterpolate \- Gridding in tension of spherical data
 .SH SYNOPSIS
 \fBsphinterpolate\fP \fIinfiles\fP OPT(G)\fIgrdfile\fP [ OPT(F) ] [ GMT_H_OPT ] [ GMT_I_OPT ] 
-[ OPT(L) ] [ GMT_M_OPT ] [ OPT(Q)\fImode\fP[/\fIE\fP/\fIU\fP] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ]
+[ GMT_M_OPT ] [ OPT(Q)\fImode\fP[/\fIoptions\fP] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ]
 .SH DESCRIPTION
 \fBsphinterpolate\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat, f and
 performs a Delaunay triangulation to set up a spherical interpolation in tension.  The final grid is saved
@@ -18,10 +18,6 @@ Data files with the (lon, lat, f) coordinates in ASCII (or binary; see \OPT(b)).
 .SH OPTIONS
 #include "explain_-H.txt"
 #include "explain_-I.txt"
-.TP
-\OPT(L)
-Use a local method, in which values depend only on nearby data points, to compute
-estimated gradients at the nodes [Default uses a global method in which values depend on all the data].
 .TP
 \OPT(M)
 Expect input data to have multiple line segments separated by a record whose first
@@ -38,7 +34,10 @@ Piecewise linear interpolation; no tension is applied.
 Smooth interpolation with local gradient estimates.
 .TP
 \OPT(Q)Q2
-Smooth interpolation with global gradient estimates.
+Smooth interpolation with global gradient estimates.  You may optionally append /\fIN\fP/\fIM\fP/\fIU\fP, where
+\fIN\fP is the number of iterations used to converge at solutions for gradients when variable tensions are selected (e.g., OPT(T) only) [3],
+\fIM\fP is the number of Gauss-Seidel iterations used when determining the global gradients [10], and
+\fIU\fP is the maximum change in a gradient at the last iteration [0.01].
 .TP
 \OPT(Q)Q3
 Smoothing.  Optionally append \fI/E/U\fP [/0/0], where
@@ -64,16 +63,9 @@ To interpolate the points in the file testdata.txt on a global 1x1 degree grid w
 .br
 .sp
 \fBsphinterpolate\fP testdata.txt \fB\-Rg \-I\fP1 \fB\-G\fPsolution.grd
-.br
-.sp
-To generate the same grid in two steps using \fBsphtriangulate\fP separately, try
-.br
-.sp
-\fBsphtriangulate\fP testdata.txt \fB\-Qv\fP > voronoi.d
-.br
-\fBsphinterpolate\fP \fB\-Q\fPvoronoi.d \fB\-Rg \-I\fP1 \fB\-G\fPglobedist.grd
 .SH "SEE ALSO"
 .IR GMT (1),
+.IR greenspline (1)
 .IR sphdistance (1)
 .IR sphtriangulate (1)
 .IR triangulate (1)
