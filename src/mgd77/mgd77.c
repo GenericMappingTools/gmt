@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.207 2009-02-25 04:32:59 remko Exp $
+ *	$Id: mgd77.c,v 1.208 2009-03-14 03:31:12 jluis Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1813,7 +1813,7 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	BOOLEAN may_convert;
 	double secs, tz;
 
-	if (!(fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
+	if (!(GMT_fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
 
 	if (!(line[0] == '3' || line[0] == '5')) return (MGD77_NO_DATA_REC);			/* Only process data records */
 
@@ -2014,14 +2014,14 @@ int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq)
 	int got;
 	
 	if (seq == 1) {	/* Check for MGD77 file header */
-		got = fgetc (fp);		/* Read the first character from the file stream */
-		ungetc (got, fp);		/* Put the character back on the stream */
+		got = GMT_fgetc (fp);		/* Read the first character from the file stream */
+		GMT_ungetc (got, fp);		/* Put the character back on the stream */
 		if (got != '4') {
 			fprintf (stderr, "MGD77_Read_Header: No header record present\n");
 			return (MGD77_NO_HEADER_REC);
 		}
 	}
-	if (fgets (record, MGD77_RECORD_LENGTH, fp) == NULL) {
+	if (GMT_fgets (record, MGD77_RECORD_LENGTH, fp) == NULL) {
 		fprintf (stderr, "MGD77_Read_Header: Failure to read header sequence %2.2d\n", seq);
 		return (MGD77_ERROR_READ_HEADER_ASC);
 	}
@@ -2037,7 +2037,7 @@ int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq)
 
 int MGD77_Read_Data_Sequence (FILE *fp, char *record)
 {
-	if (fgets (record, MGD77_RECORD_LENGTH, fp)) return (1);
+	if (GMT_fgets (record, MGD77_RECORD_LENGTH, fp)) return (1);
 	return (MGD77_NO_ERROR);
 }
 
