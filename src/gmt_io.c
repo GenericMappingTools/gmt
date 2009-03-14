@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.166 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_io.c,v 1.167 2009-03-14 02:57:09 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -152,6 +152,16 @@ FILE *GMT_fdopen (int handle, const char *mode)
 char *GMT_fgets (char *str, int size, FILE *stream)
 {
 	return (fgets (str, size, stream));
+}
+
+char *GMT_fgetc (FILE *stream)
+{
+	return (fgetc (stream));
+}
+
+char *GMT_ungetc (int c, FILE *stream)
+{
+	return (ungetc (c, stream));
 }
 
 int GMT_fputs (const char *str, FILE *stream)
