@@ -4,7 +4,7 @@
 \fBx2sys_cross\fP \- Find and compute crossover errors
 .SH SYNOPSIS
 \fBx2sys_cross\fP \fItrack(s)\fP OPT(T)\fITAG\fP 
-[ OPT(F)\fIflags\fP ] [ OPT(Il)|\fBa\fP|\fBc\fP ] 
+[ OPT(Il)|\fBa\fP|\fBc\fP ] 
 [ GMT_J_OPT ] [ OPT(K)\fIcombi.lis\fP] [ OPT(L) ] 
 [ OPT(Qe)|\fBi\fP ] [ OPT(Sl)|\fBu\fP|\fBh\fP\fIspeed\fP ] 
 [ GMT_V_OPT ][ OPT(W)\fIsize\fP ] [ OPT(2) ] [ GMT_bo_OPT ]
@@ -19,13 +19,6 @@ you may choose to project all data using one of the map-projections prior to cal
 #include "explain_tag.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-.TP
-OPT(F)
-Sets which columns to use.  Give a comma-separated list of column names;
-this list must include \fBx\fP, \fBy\fP or \fBlon\fP, \fBlat\fP and ideally
-\fBtime\fP [Default selects all columns].  If \fBtime\fP is not selected
-(or selected but the cruises do not have time information), then we output
-proxy times (e.g., floating point record numbers) instead of \fBtime\fP.
 .TP
 OPT(I)
 Sets the interpolation mode for estimating values at the crossover. Choose among:
@@ -114,7 +107,7 @@ To find the crossover locations with bathymetry between the two MGD77
 files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 .br
 .sp
-\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 OPT(Qe) OPT(T)MGD77 OPT(F)lon,lat,depth > crossovers.d
+\fBx2sys_cross\fP A13232.mgd77 A99938.mgd77 OPT(Qe) OPT(T)MGD77 > crossovers.d
 .SH REFERENCES
 Wessel, P. (1989), XOVER: A cross-over error detector for track data, \fIComputers and Geosciences, 15\fP(3), 333-346.
 .SH "SEE ALSO"

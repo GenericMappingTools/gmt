@@ -41,6 +41,7 @@ Select procedure for along-track distance calculation when needed by other progr
 .TP
 OPT(D)
 Definition file prefix for this data set [See DEFINITION FILES below for more information].
+Specify full path if the file is not in the current directory.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
