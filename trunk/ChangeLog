@@ -1,10 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.443 2009-03-14 21:35:38 guru Exp $
+	$Id: ChangeLog,v 1.444 2009-03-15 00:58:13 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-03-14	pwessel
 	* x2sys/x2sys_init.c:	Now properly copies the *.def file to the TAG dir.
 	* x2sys/x2sys_cross.c:	Removed the -F option which was not honored anyway.
+	* x2sys/x2sys.c:	Use the TAG_paths.txt file to get directories for gmt files
+				before looking in old share/mgg.
 	* mgd77/mgd77convert.c:	Allow users to give file.ext on command line.
 	
 2009-03-14	jluis

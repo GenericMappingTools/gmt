@@ -7,4 +7,6 @@ specify the name of the track list after a leading equal-sign
 append the suffix specified for this \fITAG\fP.  Track files will be searched
 for first in the current directory and second in all directories listed in
 \fB$X2SYS_HOME\fP/\fITAG\fP/\fITAG\fP_paths.txt (if it exists). [If \fB$X2SYS_HOME\fP
-is not set it will default to \fB$GMT_SHAREDIR\fP/x2sys].
+is not set it will default to \fB$GMT_SHAREDIR\fP/x2sys]. (Note: MGD77 files will
+also be looked for via \fBMGD77_HOME\fP/mgd77_paths.txt and *.gmt files will be
+searched for via \fB$GMT_SHAREDIR\fP/mgg/gmtfile_paths).

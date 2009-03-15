@@ -1,7 +1,8 @@
-#	$Id: gmtfile_paths,v 1.7 2006-12-05 16:04:57 remko Exp $
+#	$Id: gmtfile_paths,v 1.8 2009-03-15 00:58:13 guru Exp $
 #
 #	Directories with gmtfiles
 #	Currently set for SOEST data library
 #	Paul Wessel, January-2002
 #
 /home/gmt3/pwessel/DATA/NGDC/gmt
+/Users/pwessel/this_gmt/src/mgg
