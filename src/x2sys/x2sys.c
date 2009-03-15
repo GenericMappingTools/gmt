@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.118 2009-03-14 21:14:46 guru Exp $
+ *	$Id: x2sys.c,v 1.119 2009-03-15 00:58:13 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -565,43 +565,54 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 	 * MGG format from old Lamont by Wessel and Smith.
 	 */
 
-	int year, n_records;
+	int year, n_records, rata_day;
 	GMT_LONG i, j;
-	char gmtfile[BUFSIZ], name[80];
+	char path[BUFSIZ];
 	FILE *fp;
 	double **z;
-	double NaN;
+	double NaN, t_off;
 	struct GMTMGG_REC record;
 
 	GMT_make_dnan(NaN);
 
-	if (!(s->flags & 1)) {	/* Must init gmt file paths */
-		gmtmggpath_init (GMT_SHAREDIR);
-		s->flags |= 1;
+ 	if (n_x2sys_paths) {
+  		if (x2sys_get_data_path (path, fname, s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
+	}
+	else {
+		char name[80];
+		if (!(s->flags & 1)) {	/* Must init gmt file paths */
+			gmtmggpath_init (GMT_SHAREDIR);
+			s->flags |= 1;
+		}
+		strncpy (name, fname, (size_t)80);
+		if (strstr (fname, ".gmt")) name[strlen(fname)-4] = 0;	/* Name includes .gmt suffix, remove it */
+	  	if (gmtmggpath_func (path, name)) return (GMT_GRDIO_FILE_NOT_FOUND);
+		
+	}
+	strcpy (s->path, path);
+	if ((fp = fopen (path, G->r_mode)) == NULL) {
+		fprintf (stderr, "x2sys_read_file : Cannot open file %s\n", path);
+  		return (-1);
 	}
 
-	strncpy (name, fname, (size_t)80);
-	if (strstr (fname, ".gmt"))	/* Name includes .gmt suffix */
-		name[strlen(fname)-4] = 0;
-
-  	if (gmtmggpath_func (gmtfile, name)) return (GMT_GRDIO_FILE_NOT_FOUND);
-	strcpy (s->path, gmtfile);
-	if ((fp = fopen (gmtfile, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
-
 	if (fread ((void *)&year, sizeof (int), (size_t)1, fp) != 1) {
-		fprintf (stderr, "x2sys_read_gmtfile: Could not read leg year from %s\n", gmtfile);
+		fprintf (stderr, "x2sys_read_gmtfile: Could not read leg year from %s\n", path);
 		return (-1);
 	}
 	p->year = year;
+	rata_day = GMT_rd_from_gymd (year, 1, 1);	/* Get the rata day for start of cruise year */
+	t_off = GMT_rdc2dt (rata_day, 0.0);		/* Secs to start of day */
+	
+	
 	if (fread ((void *)&n_records, sizeof (int), (size_t)1, fp) != 1) {
-		fprintf (stderr, "x2sys_read_gmtfile: Could not read n_records from %s\n", gmtfile);
+		fprintf (stderr, "x2sys_read_gmtfile: Could not read n_records from %s\n", path);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	p->n_rows = n_records;
 	memset ((void *)p->name, 0, (size_t)32);
 
 	if (fread ((void *)p->name, (size_t)10, sizeof (char), fp) != 1) {
-		fprintf (stderr, "x2sys_read_gmtfile: Could not read agency from %s\n", gmtfile);
+		fprintf (stderr, "x2sys_read_gmtfile: Could not read agency from %s\n", path);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
@@ -611,11 +622,11 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 	for (j = 0; j < p->n_rows; j++) {
 
 		if (fread ((void *)&record, (size_t)18, (size_t)1, fp) != 1) {
-			fprintf (stderr, "x2sys_read_gmtfile: Could not read record %ld from %s\n", j, gmtfile);
+			fprintf (stderr, "x2sys_read_gmtfile: Could not read record %ld from %s\n", j, path);
 			return (GMT_GRDIO_READ_FAILED);
 		}
 
-		z[0][j] = record.time;
+		z[0][j] = record.time * gmtdefs.time_system.i_scale + t_off;	/* To get GMT time keeping */
 		z[1][j] = record.lat * MDEG2DEG;
 		z[2][j] = record.lon * MDEG2DEG;
 		z[3][j] = (record.gmt[0] == GMTMGG_NODATA) ? NaN : 0.1 * record.gmt[0];
@@ -1213,6 +1224,7 @@ void x2sys_path_init (struct X2SYS_INFO *S)
 		if (gmtdefs.verbose) {
 			fprintf (stderr, "%s: Warning: path file %s for %s files not found\n", X2SYS_program, file, S->TAG);
 			fprintf (stderr, "%s: (Will only look in current directory for such files)\n", X2SYS_program);
+			fprintf (stderr, "%s: (mgd77[+] also looks in MGD77_HOME and mgg looks in GMTSHARE/mgg)\n", X2SYS_program);
 		}
 		return;
 	}
