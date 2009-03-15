@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.444 2009-03-15 00:58:13 guru Exp $
+	$Id: ChangeLog,v 1.445 2009-03-15 21:34:33 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-03-15	pwessel
+	* grdgradient.c:	For geographic grids, make sure N and S pole only has
+				a single value on output.
 2009-03-14	pwessel
 	* x2sys/x2sys_init.c:	Now properly copies the *.def file to the TAG dir.
 	* x2sys/x2sys_cross.c:	Removed the -F option which was not honored anyway.
