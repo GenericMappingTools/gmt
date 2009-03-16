@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.10 2009-03-14 02:48:19 myself Exp $
+ *	$Id: sph.c,v 1.11 2009-03-16 22:12:33 myself Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -228,7 +228,7 @@ int compare_arc (const void *p1, const void *p2)
 
 void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f)
 {
-	int ierror, n4, nm, k, k1, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs;
+	int ierror, n4, nm, k, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs;
 	int plus = 1, minus = -1, lsig = 4;
 	int *list, *lptr, *lend;
 	double *sigma = NULL, *grad = NULL, *plon, *plat;
@@ -261,7 +261,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 		ist = 1;
 		for (j = 0; j < h->ny; j++) {
 			for (i = 0; i < h->nx; i++) {
-				ij = GMT_IJ(j,i,h->nx);
+				ij = i * h->ny + (h->ny - j -1); /* Use Fortran indexing since calling program will transpose to GMT order */
 				intrc0_ (&n4, &plat[j], &plon[i], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 	            		if (ierror < 0) {
@@ -274,10 +274,11 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 	}
 	else if (mode == 1) {	/* C-1 interpolation (INTRC1) with local gradients GRADL. */
 	   	/* Accumulate the sum of the numbers of nodes used in the least squares fits in sum. */
+		int k1;
 		double sum = 0.0;
 		for (k = 0; k < n; k++) {
-			k1 = k + 1;
-			gradl_ (&n4, &k1, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &grad[k], &ierror);
+			k1 = k + 1;	/* Since gradl expects Fortran indexing */
+			gradl_ (&n4, &k1, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &grad[3*k], &ierror);
 			if (ierror < 0) {
 				fprintf (stderr, "%s: Error in GRADL:  K = %d IER = %d\n", GMT_program, k1, ierror);
 				GMT_exit (EXIT_FAILURE);
