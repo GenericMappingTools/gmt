@@ -1,4 +1,4 @@
-src/sph/README.sph
+src/sph/README.TXT
 src/sph/sphdistance.c
 src/sph/sphdistance.1
 src/sph/sphtriangulate.c
@@ -12,5 +12,10 @@ src/sph/ssrfpack.c
 src/sph/makefile
 src/sph/sph_ex_1.sh
 src/sph/sph_ex_2.sh
+src/sph/sph_ex_3.sh
+src/sph/sph_ex_4.sh
 src/sph/mars370.txt
 src/sph/lun2.txt
+src/sph/hotspots.d
+src/sph/gshhs_c.txt
+
