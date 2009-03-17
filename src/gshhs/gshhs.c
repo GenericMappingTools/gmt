@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.22 2009-01-09 04:02:35 guru Exp $
+/*	$Id: gshhs.c,v 1.23 2009-03-17 00:06:59 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -36,10 +36,10 @@
 int main (int argc, char **argv)
 {
 	double w, e, s, n, area, lon, lat;
-	char source, kind[2] = {'P', 'L'}, *file = NULL, *name[2] = {"polygon", "line"};
+	char source, kind[2] = {'P', 'L'}, c = '>', *file = NULL, *name[2] = {"polygon", "line"};
 	FILE *fp = NULL;
 	int k, line, max_east = 270000000, info, single, error, ID, n_read, flip;
-	int  OK, level, version, greenwich, src;
+	int  OK, level, version, greenwich, src, msformat = 0;
 	struct	POINT p;
 	struct GSHHS h;
         
@@ -49,6 +49,9 @@ int main (int argc, char **argv)
 			switch (argv[k][1]) {
 				case 'L':
 					info = 1;
+					break;
+				case 'M':
+					msformat = 1;
 					break;
 				case 'I':
 					single = 1;
@@ -69,9 +72,10 @@ int main (int argc, char **argv)
 	}
 	if (argc == 1 || error) {
 		fprintf (stderr, "gshhs v. %s ASCII export tool\n", GSHHS_PROG_VERSION);
-		fprintf (stderr, "usage:  gshhs gshhs_[f|h|i|l|c].b [-L] [-I<id>] > ascii.dat\n");
+		fprintf (stderr, "usage:  gshhs gshhs_[f|h|i|l|c].b [-I<id>] [-L] [-M] > ascii.dat\n");
 		fprintf (stderr, "-L will only list headers (no data output)\n");
 		fprintf (stderr, "-I only output data for polygon number <id> [Default is all polygons]\n");
+		fprintf (stderr, "-M will write '>' at start of each segment header [P or L]\n");
 		exit (EXIT_FAILURE);
 	}
 
@@ -109,7 +113,8 @@ int main (int argc, char **argv)
 
 		OK = (!single || h.id == ID);
 		
-		if (OK) printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", kind[line], h.id, h.n, level, source, area, w, e, s, n);
+		if (!msformat) c = kind[line];
+		if (OK) printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", c, h.id, h.n, level, source, area, w, e, s, n);
 
 		if (info || !OK) {	/* Skip data, only want headers */
 			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
