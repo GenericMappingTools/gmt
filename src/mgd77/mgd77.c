@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.210 2009-03-14 21:35:38 guru Exp $
+ *	$Id: mgd77.c,v 1.211 2009-03-17 05:49:04 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3454,7 +3454,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			values = (double *)S->values[E.col[E77_CORR_FIELD_MAG]];		/* Output mag */
 			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc mag if originally flagged as a NaN */
-				values[rec] = MGD77_Recalc_Mag_Anomaly (E.aux[E77_AUX_FIELD_TIME][rec], E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], E.aux[E77_AUX_FIELD_MTF1][rec], TRUE);
+				values[rec] = MGD77_Recalc_Mag_Anomaly_IGRF (E.aux[E77_AUX_FIELD_TIME][rec], E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], E.aux[E77_AUX_FIELD_MTF1][rec], TRUE);
 			}
 		}
 		
@@ -4723,7 +4723,7 @@ double MGD77_Theoretical_Gravity (double lon, double lat, int version)
 	return (g);
 }
 
-double MGD77_Recalc_Mag_Anomaly (double time, double lon, double lat, double obs, BOOLEAN calc_date)
+double MGD77_Recalc_Mag_Anomaly_IGRF (double time, double lon, double lat, double obs, BOOLEAN calc_date)
 {	/* Compute the recalculated magnetic anomaly using IGRF.  Pass time either as a GMT time in secs
 	 * and set calc_date to TRUE or pass the floating point year that is needed by IGRF function. */
 	double IGRF[7];	/* The 7 components returned */
@@ -4736,6 +4736,56 @@ double MGD77_Recalc_Mag_Anomaly (double time, double lon, double lat, double obs
 	
 	return (val);
 }
+
+#ifdef USE_CM4 
+void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4)
+{
+	int i;
+	char file[BUFSIZ];
+	MGD77_Set_Home (F);
+
+	memset ((void *)CM4, 0, sizeof (struct MGD77_CM4));	/* All is set to 0/FALSE */
+	sprintf (file, "%s%cumdl.CM4", F->MGD77_HOME, DIR_DELIM);
+	CM4->path[0] = strdup (file);
+	sprintf (file, "%s%cDst_all.wdc", F->MGD77_HOME, DIR_DELIM);
+	CM4->path[1] = strdup (file);
+	sprintf (file, "%s%cF107_mon.plt", F->MGD77_HOME, DIR_DELIM);
+	CM4->path[2] = strdup (file);
+	for (i = 0; i < 3; i++) {	/* Just set to 11,12,13 */
+		CM4->unit[i] = 11 + i;
+	}
+	CM4->cord = TRUE;	/* Geodetic */
+	CM4->pred[0] = TRUE;	/* Get main field */
+	/* Presumably allocate space for coefficients */
+}
+
+void MGD77_CM4_end (struct MGD77_CM4 *CM4)
+{
+	int i;
+	/* Free space */
+	for (i = 0; i < 3; i++) free ((void *) CM4->path[i]);
+}
+
+double MGD77_Calc_CM4 (double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4)
+{
+	/* New code goes here */
+	if (GMT_is_dnan (time) || GMT_is_dnan (lon) || GMT_is_dnan (lat)) return (GMT_d_NaN);
+	
+	if (calc_date) time = MGD77_time_to_fyear (time);	/* Need to convert time to floating-point year */
+	return (0.0);
+}
+
+double MGD77_Recalc_Mag_Anomaly_CM4 (double time, double lon, double lat, double obs, BOOLEAN calc_date, struct MGD77_CM4 *CM4)
+{
+	double val, cm4;
+	
+	if (GMT_is_dnan (obs)) return (GMT_d_NaN);
+	cm4 = MGD77_Calc_CM4 (time, lon, lat, calc_date, CM4);
+	val = obs - cm4;
+	
+	return (val);
+}
+#endif
 
 /* Here lies the core functions used to parse the correction table
  * and apply the corrections to data before output in mgd77list

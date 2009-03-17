@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.104 2009-02-12 04:45:55 guru Exp $
+ *	$Id: mgd77.h,v 1.105 2009-03-17 05:49:04 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -251,13 +251,43 @@ struct MGD77_HEADER {
 	struct MGD77_DATA_INFO info[MGD77_N_SETS];	/* Info regarding [0] standard MGD77 columns and [1] any extra columns (max 32 each) */
 };
 
+#ifdef USE_CM4
+typedef int logical;
+struct MGD77_CM4 {	/* For use with cm4field.c and initialized by MGD77_CM4_init () */
+	char *path[3];		/* Paths to the three coefficient files */
+	int unit[3];		/* IDs of logical units */
+	logical load[3];	/* TRUE if the file has been read into memory */
+	logical index[2];	/* Index acquisition flags/ TRUE from file, FALSE from argument */
+	logical gmut;		/* Magnetic dipole universal time (MUT) acquisition flag: TRUE, compute from UT, FALSE, from arg */
+	logical cord;		/* TRUE for geodetic, FALSE for geocentric */
+	logical pred[6];	/* TRUE to compute, FALSE not: 1 = main field, 2 magnetispheric, 3 ionospheric, etc */
+	logical curr;		/* Model J current field prediction flag: TRUE, compute, FALSE not */
+	logical coef;		/* Model coefficient generation flag: TRUE, compute, FALSE not */
+	int nhmf[2];		/* Maximum main field spherical harmonic degree (0 for main field 1, 1 for main field 2) */
+	int nlmf[2];		/* Minimum main field spherical harmonic degree (0 for main field 1, 1 for main field 2) */
+	double mut;		/* Magnetic dipole universal time (hours 0-24), computed from UT and returned as gmut = TRUE */
+	double alt;		/* Altitude [0] */
+	double dst;		/* Linearly interpolated hourly Dst magnetic index, returned from file as index[0] = TRUE */
+	double f107;		/* Linearly interpolated 3-monthly means of absolute F10.7 solar radiation flux value, returned */
+	double bmdl[3][7];	/* Array storing computed B field vectors from various sources (nT) */
+	double jmdl[3][4];	/* Array storing computed J field vectors from certain external sources */
+	double *gmdl;		/* Array storing coefficients from various sources */
+	int perr;		/* Error message print flag: 0 do not print */
+	int oerr;		/* Unit to print to */
+	int cerr;		/* Error return code (0 = normal, 1-49 warning, > 50 fatal */
+};
+#endif
 
 /* We may want to output columns that themselves are not stored in the MGD77[+] files but
  * rather are computed based on data that are stored in the file.  We consider such information
  * as AUXILLARY columns and insert them between the observed columns when needed.  The following
  * structures are used to facilitate this process. */
 
+#ifdef USE_CM4
+#define N_MGD77_AUX	16		/* Number of auxilliary derived columns for MGD77 data, including optional CM4 */
+#else
 #define N_MGD77_AUX	15		/* Number of auxilliary derived columns for MGD77 data */
+#endif
 #define N_GENERIC_AUX	3		/* Number of auxilliary derived columns for general files (dist, azim, vel) */
 
 #define MGD77_AUX_DS	0
@@ -275,6 +305,9 @@ struct MGD77_HEADER {
 #define MGD77_AUX_CT	12
 #define MGD77_AUX_GR	13
 #define MGD77_AUX_ID	14
+#ifdef USE_CM4
+#define MGD77_AUX_CM	15
+#endif
 
 struct MGD77_AUXLIST {
 	char name[MGD77_COL_ABBREV_LEN];
@@ -486,8 +519,14 @@ extern double MGD77_carter_correction (double lon, double lat, double twt_in_mse
 extern int MGD77_igrf10syn (int isv, double date, int itype, double alt, double lon, double lat, double *out);
 extern double MGD77_Theoretical_Gravity (double lon, double lat, int version);
 extern void MGD77_IGF_text (FILE *fp, int version);
-extern double MGD77_Recalc_Mag_Anomaly (double time, double lon, double lat, double obs, BOOLEAN calc_date);
+extern double MGD77_Recalc_Mag_Anomaly_IGRF (double time, double lon, double lat, double obs, BOOLEAN calc_date);
 extern double MGD77_time_to_fyear (double time);
+#ifdef USE_CM4 
+extern double MGD77_Calc_CM4 (double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
+extern double MGD77_Recalc_Mag_Anomaly_CM4 (double time, double lon, double lat, double obs, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
+extern void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4);
+extern void MGD77_CM4_end (struct MGD77_CM4 *CM4);
+#endif
 
 /* These are called indirectly but remain accessible for specialist programs */
 
