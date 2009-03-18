@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.384 2009-03-08 01:04:38 jluis Exp $
+ *	$Id: gmt_support.c,v 1.385 2009-03-18 03:08:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2356,17 +2356,20 @@ double GMT_csplint (double *x, double *y, double *c, double xp, GMT_LONG klo)
  * PS. v must have space allocated before calling GMT_intpol
  *
  * Programmer:	Paul Wessel
- * Date:	16-JAN-1987
- * Ver:		v.2
+ * Date:	16-MAR-2009
+ * Ver:		v.3.0
+ * Now y can contain NaNs and we will interpolate within segments of clean data
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
 
 int GMT_intpol (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, double *v, int mode)
 {
-	GMT_LONG i, j;
+	GMT_LONG i, this_n, this_m, start_i, start_j, stop_i, stop_j;
 	int err_flag = 0;
-	BOOLEAN down = FALSE, check = TRUE;
-	double dx, x_min, x_max, *c = VNULL, GMT_csplint (double *x, double *y, double *c, double xp, GMT_LONG klo);
+	BOOLEAN down = FALSE, check = TRUE, clean = TRUE;
+	double dx, GMT_csplint (double *x, double *y, double *c, double xp, GMT_LONG klo);
+	int GMT_intpol_sub (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, double *v, int mode);
+	void GMT_intpol_reverse (double *x, double *u, GMT_LONG n, GMT_LONG m);
 
 	if (mode < 0) {	/* No need to check for sanity */
 		check = FALSE;
@@ -2384,15 +2387,18 @@ int GMT_intpol (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, double 
 		/* Check to see if x-values are monotonically increasing/decreasing */
 
 		dx = x[1] - x[0];
+		if (GMT_is_dnan (y[0])) clean = FALSE;
 		if (dx > 0.0) {
 			for (i = 2; i < n && err_flag == 0; i++) {
 				if ((x[i] - x[i-1]) <= 0.0) err_flag = i;
+				if (clean && GMT_is_dnan (y[i])) clean = FALSE;
 			}
 		}
 		else {
 			down = TRUE;
 			for (i = 2; i < n && err_flag == 0; i++) {
 				if ((x[i] - x[i-1]) >= 0.0) err_flag = i;
+				if (clean && GMT_is_dnan (y[i])) clean = FALSE;
 			}
 		}
 
@@ -2401,12 +2407,55 @@ int GMT_intpol (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, double 
 			return (err_flag);
 		}
 
-		if (down) {	/* Must flip directions temporarily */
-			for (i = 0; i < n; i++) x[i] = -x[i];
-			for (i = 0; i < m; i++) u[i] = -u[i];
-		}
 	}
 
+	if (down) GMT_intpol_reverse (x, u, n, m);	/* Must flip directions temporarily */	
+	
+	if (clean) {	/* No NaNs to worry about */
+		err_flag = GMT_intpol_sub (x, y, n, m, u, v, mode);
+		if (err_flag != GMT_NOERROR) return (err_flag);
+		if (down) GMT_intpol_reverse (x, u, n, m);	/* Must flip directions back */	
+		return (GMT_NOERROR);
+	}
+	
+	/* Here input has NaNs so we need to treat it section by section */
+	
+	for (i = 0; i < m; i++) v[i] = GMT_d_NaN;	/* Initialize all output to NaN */
+	start_i = start_j = 0;
+	while (start_i < n && GMT_is_dnan (y[start_i])) start_i++;	/* First non-NaN data point */
+	while (start_i < n && start_j < m) {
+		stop_i = start_i + 1;
+		while (stop_i < n && !GMT_is_dnan (y[stop_i])) stop_i++;	/* Wind to next NaN point (or past end of array) */
+		this_n = stop_i - start_i;	/* Number of clean points to interpolate from */
+		stop_i--;			/* Now stop_i is the ID of the last usable point */
+		if (this_n == 1) {		/* Not enough to interpolate, just skip this single point */
+			start_i++;	/* Skip to next point (which is NaN) */
+			while (start_i < n && GMT_is_dnan (y[start_i])) start_i++;	/* Wind to next non-NaN data point */
+			continue;
+		}
+		/* OK, have enough points to interpolate; find corresponding output section */
+		while (start_j < m && u[start_j] < x[start_i]) start_j++;
+		if (start_j == m) continue;	/* Ran out of points */
+		stop_j = start_j;
+		while (stop_j < m && u[stop_j] <= x[stop_i]) stop_j++;
+		this_m = stop_j - start_j;	/* Number of output points to interpolate to */
+		err_flag = GMT_intpol_sub (&x[start_i], &y[start_i], this_n, this_m, &u[start_j], &v[start_j], mode);
+		if (err_flag != GMT_NOERROR) return (err_flag);
+		start_i = stop_i + 1;	/* Move to point after last usable point in current section */
+		while (start_i < n && GMT_is_dnan (y[start_i])) start_i++;	/* Next section's first non-NaN data point */
+	}
+
+	if (down) GMT_intpol_reverse (x, u, n, m);	/* Must flip directions back */	
+
+	return (GMT_NOERROR);
+}
+
+int GMT_intpol_sub (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, double *v, int mode)
+{	/* Does the main work of interpolating a section that has no NaNs */
+	GMT_LONG i, j;
+	int err_flag = 0;
+	double dx, x_min, x_max, *c = VNULL;
+	
 	/* Set minimum and maximum */
 
 	if (mode == 3) {
@@ -2464,12 +2513,14 @@ int GMT_intpol (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, double 
 	}
 	if (c) GMT_free ((void *)c);
 
-	if (down) {	/* Must reverse directions */
-		for (i = 0; i < n; i++) x[i] = -x[i];
-		for (i = 0; i < m; i++) u[i] = -u[i];
-	}
-
 	return (GMT_NOERROR);
+}
+
+void GMT_intpol_reverse (double *x, double *u, GMT_LONG n, GMT_LONG m)
+{	/* Changes sign on x and u */
+	GMT_LONG i;
+	for (i = 0; i < n; i++) x[i] = -x[i];
+	for (i = 0; i < m; i++) u[i] = -u[i];
 }
 
 #ifdef DEBUG

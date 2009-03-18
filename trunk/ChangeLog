@@ -1,9 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.446 2009-03-18 02:04:45 jluis Exp $
+	$Id: ChangeLog,v 1.447 2009-03-18 03:08:58 guru Exp $
 -----------------------------------------------------------------------------------------
 	
-2009-03-18	jluis
-	* mgd77/mgd77.c		Was failing to read Windows terminated ASCII files
+2009-03-18	pwessel
+	* gmt_support.c		Enabled GMT_intpol to handle NaNs by treating them as segment
+				boundaries.
+	* sample1d.c:		Upper case -FL|C|A|N will honor NaNs when interpolating.
+	* psxy[z].c:		New option -F to treat NaNs in the input as indicators of
+				data gaps for continuous lines [Default skips NaNs].
+	2009-03-18	jluis
+		* mgd77/mgd77.c		Was failing to read Windows terminated ASCII files
 
 2009-03-15	pwessel
 	* grdgradient.c:	For geographic grids, make sure N and S pole only has
