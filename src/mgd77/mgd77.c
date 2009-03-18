@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.214 2009-03-18 08:27:31 guru Exp $
+ *	$Id: mgd77.c,v 1.215 2009-03-18 23:36:30 jluis Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -455,9 +455,11 @@ int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, do
 int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77 files */
 	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[BUFSIZ];
-	int sequence, err;
+	int sequence, err, n_eols, c, n;
 	struct STAT buf;
-	
+
+	n_eols = c = n = 0;	/* Also shuts up the boring compiler warnings */
+
 	/* argument file is generally ignored since file is already open */
 	
 	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
@@ -466,13 +468,28 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 			fprintf (stderr, "%s: Unable to stat file %s\n", GMT_program, F->path);
 			GMT_exit (EXIT_FAILURE);
 		}
-		/* Not tested under Windoze: Do we use +2 because of \r\n ? */
-		H->n_records = irint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + 1))) / (double)(MGD77_RECORD_LENGTH + 1));
+#ifdef WIN32
+		/* Count number of records by counting number of new line characters. The non-Windows solution does not work here
+		   because the '\r' characters which are present on Win terminated EOLs are apparently stripped by the stdio and 
+		   so if we cannt find their traces (!!!) */
+		while ( (c = GMT_fgetc( F->fp )) != EOF ) {
+			if (c == '\n') n++;
+		}
+		H->n_records = n - 24;					/* 24 is the header size */
+		GMT_rewind (F->fp);					/* Go back to beginning of file */
+#else
+
+		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
+		GMT_fgets (line, BUFSIZ, F->fp);
+		GMT_rewind (F->fp);					/* Go back to beginning of file */
+		n_eols = (line[strlen(line)-1] == '\n' && line[strlen(line)-2] == '\r') ? 2 : 1; 
+		H->n_records = irint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + n_eols))) / (double)(MGD77_RECORD_LENGTH + n_eols));
+#endif
 	}
 	else {
 		/* Since we do not know the number of records, we must quickly count lines */
 		while (GMT_fgets (line, BUFSIZ, F->fp)) if (line[0] != '#') H->n_records++;	/* Count every line except comments  */
-		GMT_rewind (F->fp);						/* Go back to beginning of file */
+		GMT_rewind (F->fp);					/* Go back to beginning of file */
 		H->n_records -= MGD77_N_HEADER_RECORDS;			/* Adjust for the 24 records in the header block */
 	}
 	
@@ -1813,14 +1830,14 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	BOOLEAN may_convert;
 	double secs, tz;
 
-	if (!(GMT_fgets (line, BUFSIZ, F->fp)) && !feof(F->fp)) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
+	if (!(GMT_fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
 
 	if (!(line[0] == '3' || line[0] == '5')) return (MGD77_NO_DATA_REC);			/* Only process data records */
 
 	GMT_chop (line);	/* Get rid of CR or LF */
 	
 	if ((len = (int)strlen(line)) != MGD77_RECORD_LENGTH) {
-		fprintf (stderr, "Incorrect record length (%d), skipped\n",len);
+		fprintf (stderr, "Incorrect record length (%d), skipped\n%s\n",len,line);
 		return (MGD77_WRONG_DATA_REC_LEN);
 	}
 	
@@ -1887,7 +1904,7 @@ int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	char line[BUFSIZ], p[BUFSIZ];
 	double tz, secs;
 
-	if (!(GMT_fgets (line, BUFSIZ, F->fp)) && !feof(F->fp)) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
+	if (!(GMT_fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
 	GMT_chop (line);	/* Get rid of CR or LF */
 
 	MGD77Record->bit_pattern = 0;
