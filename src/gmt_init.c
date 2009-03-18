@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.373 2009-02-25 03:56:23 remko Exp $
+ *	$Id: gmt_init.c,v 1.374 2009-03-18 18:41:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1927,6 +1927,14 @@ int GMT_setparameter (char *keyword, char *value)
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_NAN_RECORDS:
+			if (!strcmp (lower_value, "gap"))
+				gmtdefs.nan_is_gap = TRUE;
+			else if (!strcmp (lower_value, "bad"))
+				gmtdefs.nan_is_gap = FALSE;
+			else
+				error = TRUE;
+			break;
 		case GMTCASE_N_COPIES:
 			ival = atoi (value);
 			if (ival > 0)
@@ -2485,6 +2493,11 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "#-------- PostScript Parameters -------------\n");
 	fprintf (fp, "CHAR_ENCODING\t\t= %s\n", gmtdefs.encoding.name);
 	fprintf (fp, "DOTS_PR_INCH\t\t= %d\n", gmtdefs.dpi);
+	fprintf (fp, "NAN_RECORDS\t\t= ");
+	if (gmtdefs.nan_is_gap)
+		fprintf (fp, "gap\n");
+	else
+		fprintf (fp, "bad\n");
 	fprintf (fp, "N_COPIES\t\t= %d\n", gmtdefs.n_copies);
 	fprintf (fp, "PS_COLOR\t\t= ");
 	if (gmtdefs.ps_colormode == 0)

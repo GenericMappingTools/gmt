@@ -370,6 +370,13 @@ that, in \fBGMT\fP, one point is defined as 1/72 inch (the \fIPostScript\fP defi
 is often defined as 1/72.27 inch in the typesetting industry.  There is no
 universal definition.
 .TP
+.B NAN_RECORDS
+Determines what happens when input records containing NaNs for \fIx\fP or \fIy\fP (and in some
+cases \fIz\fP) are read.  These records are skipped, but may still affect execution.  Choose between \fIbad\fP, which
+will simply report how many bad records were found, or \fIgap\fP [Default], which will consider these
+records as signaling gaps in a series; programs may then use that information to detect segmentation (if
+applicable).
+.TP
 .B N_COPIES
 (\fB* \-c\fP) Number of plot copies to make  [1].
 .TP

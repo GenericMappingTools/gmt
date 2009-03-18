@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.168 2009-03-14 02:59:45 jluis Exp $
+ *	$Id: gmt_io.c,v 1.169 2009-03-18 18:41:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -485,7 +485,7 @@ void GMT_io_init (void)
 	GMT_io.skip_if_NaN = (BOOLEAN *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (BOOLEAN), GMT_program);
 	GMT_io.in_col_type  = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
 	GMT_io.out_col_type = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
-	for (i = 0; i < 2; i++) GMT_io.skip_if_NaN[i] = TRUE;						/* x/y must be non-NaN */
+	if (!gmtdefs.nan_is_gap) for (i = 0; i < 2; i++) GMT_io.skip_if_NaN[i] = TRUE;						/* x/y must be non-NaN */
 	for (i = 0; i < 2; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_UNKNOWN;	/* Must be told [or find out] what x/y are */
 	for (i = 2; i < BUFSIZ; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_FLOAT;	/* Other columns default to floats */
 	GMT_io.n_header_recs = gmtdefs.n_header_recs;
