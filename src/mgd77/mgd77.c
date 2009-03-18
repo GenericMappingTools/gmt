@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.212 2009-03-18 01:25:26 jluis Exp $
+ *	$Id: mgd77.c,v 1.213 2009-03-18 02:01:12 jluis Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1887,7 +1887,7 @@ int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	char line[BUFSIZ], p[BUFSIZ];
 	double tz, secs;
 
-	if (!fgets (line, BUFSIZ, F->fp)) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
+	if (!(GMT_fgets (line, BUFSIZ, F->fp)) && !feof(F->fp)) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
 	GMT_chop (line);	/* Get rid of CR or LF */
 
 	MGD77Record->bit_pattern = 0;
