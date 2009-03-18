@@ -7,7 +7,8 @@ mgd77convert \- Translate between different formats of MGD77 files
 [ OPT(L)[\fBw\fP][\fBe\fP][\fB+\fP] ] [ GMT_V_OPT ] [ OPT(4) ]
 .SH DESCRIPTION
 \fBmgd77convert\fP reads versions of MGD77 files and writes the same
-data in (probably) another format to a new file in the current directory.
+data in (probably) another format to a new file in the current directory.  Both pre-
+and post-Y2K MGD77 formats can be processed.
 #include "explain_ncid.txt"
 .TP
 OPT(F)
