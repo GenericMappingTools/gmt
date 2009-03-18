@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.213 2009-03-18 02:01:12 jluis Exp $
+ *	$Id: mgd77.c,v 1.214 2009-03-18 08:27:31 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -513,7 +513,7 @@ int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 	/* Process Sequence No 01: */
 
 	k = 0;
-	if (dir == MGD77_FROM_HEADER && record[k][0] != '4') return (MGD77_NO_HEADER_REC);
+	if (dir == MGD77_FROM_HEADER && ! (record[k][0] == '1' || record[k][0] == '4')) return (MGD77_NO_HEADER_REC);
 	
 	MGD77_Place_Text (dir, &P->Record_Type, record[k], 1, 1);
 	MGD77_Place_Text (dir, P->Survey_Identifier, record[k], 2, 8);
@@ -2016,7 +2016,7 @@ int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq)
 	if (seq == 1) {	/* Check for MGD77 file header */
 		got = GMT_fgetc (fp);		/* Read the first character from the file stream */
 		GMT_ungetc (got, fp);		/* Put the character back on the stream */
-		if (got != '4') {
+		if (! (got == '4' || got == '1')) {	/* 4 means pre-Y2K header/file */
 			fprintf (stderr, "MGD77_Read_Header: No header record present\n");
 			return (MGD77_NO_HEADER_REC);
 		}
