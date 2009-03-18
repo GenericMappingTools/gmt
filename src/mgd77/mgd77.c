@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.211 2009-03-17 05:49:04 guru Exp $
+ *	$Id: mgd77.c,v 1.212 2009-03-18 01:25:26 jluis Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1813,7 +1813,7 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	BOOLEAN may_convert;
 	double secs, tz;
 
-	if (!(GMT_fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
+	if (!(GMT_fgets (line, BUFSIZ, F->fp)) && !feof(F->fp)) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
 
 	if (!(line[0] == '3' || line[0] == '5')) return (MGD77_NO_DATA_REC);			/* Only process data records */
 
