@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.175 2009-02-25 03:52:26 remko Exp $
+ *	$Id: gmt.h,v 1.176 2009-03-18 18:41:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -348,6 +348,7 @@ struct GMT_DEFAULTS {
 	double map_scale_height;	/* Height of map scale drawn on a map [0.075] */
 	int measure_unit;		/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
 	int media;			/* Default paper media [25(Letter)] */
+	BOOLEAN nan_is_gap;		/* Determines what NaNs in input records should mean (beyond skipping the record) */
 	int n_copies;			/* Number of copies pr plot [1] */
 	int oblique_annotation;		/* Controls annotations and tick angles etc. [0] */
 	int page_rgb[3];		/* Color of the page [255/255/255 white] */

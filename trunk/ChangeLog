@@ -1,14 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.448 2009-03-18 03:18:02 guru Exp $
+	$Id: ChangeLog,v 1.449 2009-03-18 18:41:58 guru Exp $
 -----------------------------------------------------------------------------------------
 	
 2009-03-18	pwessel
 	* gmt_support.c		Enabled GMT_intpol to handle NaNs by treating them as segment
 				boundaries.
-	* sample1d.c:		Upper case -FL|C|A|N will honor NaNs when interpolating.
-	* psxy[z].c:		New option -F to treat NaNs in the input as indicators of
-				data gaps for continuous lines [Default skips NaNs].
-	* mgd77/mgd77manage.c:	Now honors NaNs in tables given to -A.
+	* gmt_init.c:		New Default setting NAN_RECORDS = bad|gap [gap].
+				If gap we treat NaNs in input record as indicators of
+				data gaps for continuous lines.  If bad we report them
+				as bad records.  In both cases the records are skipped.
+	* mgd77/mgd77manage.c:	Now honors NAN_RECORDS in tables given to -A.
 
 	2009-03-18	jluis
 	* mgd77/mgd77.c		Was failing to read Windows terminated ASCII files

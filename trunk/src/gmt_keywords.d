@@ -1,4 +1,4 @@
-#	$Id: gmt_keywords.d,v 1.14 2008-04-09 18:07:54 remko Exp $
+#	$Id: gmt_keywords.d,v 1.15 2009-03-18 18:41:58 guru Exp $
 #
 # List of all GMT defaults parameters and their case value
 # Some parameters are spelled in two different ways and will
@@ -84,6 +84,7 @@ LINE_STEP
 MAP_SCALE_FACTOR
 MAP_SCALE_HEIGHT
 MEASURE_UNIT
+NAN_RECORDS
 N_COPIES
 OBLIQUE_ANNOTATION
 OBLIQUE_ANOTATION

@@ -3,7 +3,7 @@
 .SH NAME
 sample1d \- Resampling of 1-D data sets
 .SH SYNOPSIS
-\fBsample1d\fP \fIinfile\fP [ OPT(Fl)|\fBa\fP|\fBc\fP|\fBn\fP\fBL\fP|\fBA\fP|\fBCn\fP|\fBCB\fP ] [ GMT_H_OPT ] [ OPT(I)\fIxinc\fP ] 
+\fBsample1d\fP \fIinfile\fP [ OPT(Fl)|\fBa\fP|\fBc\fP|\fBn\fP ] [ GMT_H_OPT ] [ OPT(I)\fIxinc\fP ] 
 [ GMT_M_OPT ] [ OPT(N)\fIknotfile\fP ] [ OPT(S)\fIxstart\fP ] [ OPT(T)\fIx_col\fP] 
 [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
@@ -24,9 +24,6 @@ OPT(F)
 Choose from \fBl\fP (Linear), \fBa\fP (Akima spline), \fBc\fP (natural cubic spline),
 and \fBn\fP (no interpolation: nearest point) [Default is OPT(Fa)].
 You may change the default interpolant; see \fBINTERPOLANT\fP in your \.gmtdefaults4 file.
-Use upper case \fBL\fP|\fBA\fP|\fBCn\fP|\fBCB\fP to indicate that input data may contain
-NaNs and that you want those data gaps to be honored [Default will interpolate through
-gaps].
 #include "explain_-H.txt"
 .TP
 OPT(I)
