@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.374 2009-03-18 18:41:58 guru Exp $
+ *	$Id: gmt_init.c,v 1.375 2009-03-18 18:56:03 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2493,11 +2493,6 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "#-------- PostScript Parameters -------------\n");
 	fprintf (fp, "CHAR_ENCODING\t\t= %s\n", gmtdefs.encoding.name);
 	fprintf (fp, "DOTS_PR_INCH\t\t= %d\n", gmtdefs.dpi);
-	fprintf (fp, "NAN_RECORDS\t\t= ");
-	if (gmtdefs.nan_is_gap)
-		fprintf (fp, "gap\n");
-	else
-		fprintf (fp, "bad\n");
 	fprintf (fp, "N_COPIES\t\t= %d\n", gmtdefs.n_copies);
 	fprintf (fp, "PS_COLOR\t\t= ");
 	if (gmtdefs.ps_colormode == 0)
@@ -2550,6 +2545,11 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "INPUT_CLOCK_FORMAT\t= %s\n", gmtdefs.input_clock_format);
 	fprintf (fp, "INPUT_DATE_FORMAT\t= %s\n", gmtdefs.input_date_format);
 	fprintf (fp, "IO_HEADER\t\t= %s\n", ft[gmtdefs.io_header[GMT_IN]]);
+	fprintf (fp, "NAN_RECORDS\t\t= ");
+	if (gmtdefs.nan_is_gap)
+		fprintf (fp, "gap\n");
+	else
+		fprintf (fp, "bad\n");
 	fprintf (fp, "N_HEADER_RECS\t\t= %d\n", gmtdefs.n_header_recs);
 	fprintf (fp, "OUTPUT_CLOCK_FORMAT\t= %s\n", gmtdefs.output_clock_format);
 	fprintf (fp, "OUTPUT_DATE_FORMAT\t= %s\n", gmtdefs.output_date_format);
