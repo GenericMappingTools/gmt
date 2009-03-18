@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.115 2009-01-09 23:23:44 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.116 2009-03-18 18:56:03 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -1710,7 +1710,8 @@ value, it is missing''.  The problem with this scheme is that -9999.99 (or any o
 floating point value) may be a perfectly reasonable data value and in such a scenario
 would be skipped.  The solution adopted in \GMT\ is to use the IEEE concept Not-a-Number
 (NaN) for this purpose.  Mathematically, a NaN is what you get if you do an undefined
-mathematical operation like $0/0$.  This value is stored with a particular bit pattern
+mathematical operation like $0/0$; in ASCII data files they appear as the textstring NaN.
+This value is internally stored with a particular bit pattern
 defined by IEEE so that special action can be taken when it is encountered by programs.
 In particular, a library function called \texttt{isnan} is used to test if a floating point
 is a NaN.  \GMT\ uses these tests extensively to determine if a value is suitable for plotting
@@ -1721,3 +1722,12 @@ whose value is NaN are not normally plotted (or plotted with the special NaN col
 masking and clipping of data sets.  Note that a few computers do not have native IEEE hardware
 support.  At this point, this applies to some of the Cray super-computers.  Users on such
 machines may have to adopt the old `-9999.99'' scheme to achieve the desired results.
+
+Data records that contain NaN values for the {\it x} or {\it y} columns (or the {\it z} column
+for cases when 3-D Cartesian data are expected) are always skipped during reading.  However,
+the presence of these bad records can be interpreted in two different ways, and this behavior
+is controlled by the {\bf NAN\_RECORDS} defaults parameter.  The default setting (\emph{gap})
+considers such records to indicate a gap in an otherwise continuous series of points (e.g., a line),
+and programs can act upon this information, e.g., not to draw a line across the gap or to break the line
+into separate segments.  The alternative setting (\emph{bad}) makes no such interpretation and
+simply reports back how many bad records were skipped during reading.

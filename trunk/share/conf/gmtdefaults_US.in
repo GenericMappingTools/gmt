@@ -1,4 +1,4 @@
-#	$Id: gmtdefaults_US.in,v 1.2 2009-02-15 19:12:40 remko Exp $
+#	$Id: gmtdefaults_US.in,v 1.3 2009-03-18 18:56:03 guru Exp $
 #
 #	GMT-SYSTEM 4.4.0 Defaults file
 #	US Version
@@ -80,6 +80,7 @@ GRID_FORMAT		= nf
 INPUT_CLOCK_FORMAT	= hh:mm:ss
 INPUT_DATE_FORMAT	= yyyy-mm-dd
 IO_HEADER		= FALSE
+NAN_RECORDS		= gap
 N_HEADER_RECS		= 1
 OUTPUT_CLOCK_FORMAT	= hh:mm:ss
 OUTPUT_DATE_FORMAT	= yyyy-mm-dd
