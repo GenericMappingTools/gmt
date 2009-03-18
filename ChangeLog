@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.445 2009-03-15 21:34:33 guru Exp $
+	$Id: ChangeLog,v 1.446 2009-03-18 02:04:45 jluis Exp $
 -----------------------------------------------------------------------------------------
+	
+2009-03-18	jluis
+	* mgd77/mgd77.c		Was failing to read Windows terminated ASCII files
 
 2009-03-15	pwessel
 	* grdgradient.c:	For geographic grids, make sure N and S pole only has
