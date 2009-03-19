@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.169 2009-03-18 18:41:58 guru Exp $
+ *	$Id: gmt_io.c,v 1.170 2009-03-19 07:18:19 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -485,7 +485,7 @@ void GMT_io_init (void)
 	GMT_io.skip_if_NaN = (BOOLEAN *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (BOOLEAN), GMT_program);
 	GMT_io.in_col_type  = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
 	GMT_io.out_col_type = (int *)GMT_memory (VNULL, (size_t)BUFSIZ, sizeof (int), GMT_program);
-	if (!gmtdefs.nan_is_gap) for (i = 0; i < 2; i++) GMT_io.skip_if_NaN[i] = TRUE;						/* x/y must be non-NaN */
+	for (i = 0; i < 2; i++) GMT_io.skip_if_NaN[i] = TRUE;						/* x/y must be non-NaN */
 	for (i = 0; i < 2; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_UNKNOWN;	/* Must be told [or find out] what x/y are */
 	for (i = 2; i < BUFSIZ; i++) GMT_io.in_col_type[i] = GMT_io.out_col_type[i] = GMT_IS_FLOAT;	/* Other columns default to floats */
 	GMT_io.n_header_recs = gmtdefs.n_header_recs;
@@ -621,7 +621,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 {
 	char line[BUFSIZ], *p, token[BUFSIZ];
 	int i, pos, col_no, len, n_convert;
-	BOOLEAN done = FALSE, bad_record;
+	BOOLEAN done = FALSE, bad_record, set_nan_flag;
 	double val;
 
 	/* GMT_ascii_input will skip blank lines and cshell comment lines which start
@@ -668,20 +668,20 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)line[i]); i--);
 		line[++i] = '\n';	line[++i] = '\0';	/* Now have clean C string with \n\0 at end */
 
-		bad_record = FALSE;
+		bad_record = set_nan_flag = FALSE;
 		strcpy (GMT_io.current_record, line);
 		line[i-1] = '\0';		/* Chop off newline at end of string */
 		col_no = pos = 0;
 		while (!bad_record && col_no < *n && (GMT_strtok (line, " \t,", &pos, token))) {	/* Get each field in turn */
 			if ((n_convert = GMT_scanf (token, GMT_io.in_col_type[col_no], &val)) == GMT_IS_NAN) {	/* Got NaN or it failed to decode */
-				if (GMT_io.skip_if_NaN[col_no])	/* This field cannot be NaN so we must skip the entire record */
-					bad_record = TRUE;
-				else				/* OK to have NaN in this field, continue processing of record */
+				if (gmtdefs.nan_is_gap || !GMT_io.skip_if_NaN[col_no])	/* This field (or all fields) can be NaN so we pass it on */
 					GMT_data[col_no] = GMT_d_NaN;
+				else	/* Cannot have NaN in this column, set flag */
+					bad_record = TRUE;
+				if (GMT_io.skip_if_NaN[col_no]) set_nan_flag = TRUE;
 			}
-			else {					/* Successful decode, assign to array */
+			else					/* Successful decode, assign to array */
 				GMT_data[col_no] = val;
-			}
 			col_no++;		/* Goto next field */
 		}
 		if (bad_record) {
@@ -700,6 +700,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	}
 	*ptr = GMT_data;
 	GMT_io.status = (col_no == *n || *n == BUFSIZ) ? 0 : GMT_IO_MISMATCH;
+	if (set_nan_flag) GMT_io.status |= GMT_IO_NAN;
 	if (*n == BUFSIZ) *n = col_no;
 
 	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
