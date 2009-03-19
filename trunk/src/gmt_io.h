@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.73 2009-03-14 02:57:37 jluis Exp $
+ *	$Id: gmt_io.h,v 1.74 2009-03-19 07:18:19 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,6 +48,7 @@
 #define GMT_IO_SEGMENT_HEADER	1
 #define GMT_IO_MISMATCH		2
 #define GMT_IO_EOF		4
+#define GMT_IO_NAN		8
 
 /* Array indices for input/output variables */
 
@@ -177,7 +178,8 @@ struct GMT_IO {				/* Used to process input data records */
 	int status;			/* 0	All is ok
 					   1	Current record is segment header
 					   2	Mismatch between actual and expected fields
-					   4	EOF */
+					   4	EOF
+					   8	NaNs encountered in first 2/3 cols */
 	char EOF_flag[2];		/* Character signaling start of new segment in input/output Ascii table */
 	char current_record[BUFSIZ];	/* Current ascii record */
 	char segment_header[BUFSIZ];	/* Current ascii segment header */
