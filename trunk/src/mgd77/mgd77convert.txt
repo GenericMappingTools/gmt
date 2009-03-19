@@ -3,7 +3,7 @@
 .SH NAME
 mgd77convert \- Translate between different formats of MGD77 files
 .SH SYNOPSIS
-\fBmgd77convert\fP \fINGDC-ids\fP OPT(Fa)|\fBb\fP|\fBt\fP OPT(T)[\fB+\fP]\fBa\fP|\fBb\fP|\fBt\fP 
+\fBmgd77convert\fP \fINGDC-ids\fP OPT(Fa)|\fBc\fP|\fBt\fP OPT(T)[\fB+\fP]\fBa\fP|\fBb\fP|\fBt\fP 
 [ OPT(L)[\fBw\fP][\fBe\fP][\fB+\fP] ] [ GMT_V_OPT ] [ OPT(4) ]
 .SH DESCRIPTION
 \fBmgd77convert\fP reads versions of MGD77 files and writes the same
@@ -13,7 +13,7 @@ and post-Y2K MGD77 formats can be processed.
 .TP
 OPT(F)
 Specifies the format of the input (From) files.  Choose from \fBa\fP for standard
-MGD77 ASCII table (with extension .mgd77), \fBb\fP for the new MGD77+ netCDF format
+MGD77 ASCII table (with extension .mgd77), \fBc\fP for the new MGD77+ netCDF format
 (with extension .nc), and \fBt\fP for a plain ASCII tab-separated table dump
 (with extension .dat).  Use OPT(FC) to recover the original MGD77 setting from
 the MGD77+ file [Default will apply any E77 corrections encoded in the file].
