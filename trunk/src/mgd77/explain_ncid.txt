@@ -12,7 +12,7 @@ Can be one or more of five kinds of specifiers:
 .br
 5) If nothing is specified we return all cruises in the data base.
 .br
-(See mgd77info OPT(F) for agency and vessel codes).
+(See mgd77info OPT(L) for agency and vessel codes).
 The ".mgd77" or ".nc" extensions will automatically be appended, if needed (use OPT(I)
 to ignore certain file types).  Cruise files will be looked for first in the current directory
 and second in all directories listed in \fB$MGD77_HOME\fP/mgd77_paths.txt [If \fB$MGD77_HOME\fP
