@@ -372,9 +372,10 @@ universal definition.
 .TP
 .B NAN_RECORDS
 Determines what happens when input records containing NaNs for \fIx\fP or \fIy\fP (and in some
-cases \fIz\fP) are read.  These records are skipped, but may still affect execution.  Choose between \fIbad\fP, which
-will simply report how many bad records were found, or \fIgap\fP [Default], which will consider these
-records as signaling gaps in a series; programs may then use that information to detect segmentation (if
+cases \fIz\fP) are read.  Choose between \fIskip\fP [default], which will simply report how many bad
+records were skipped, and \fIpass\fP, which will pass these records on to the calling programs.
+For most programs this will result in output records with NaNs as well, but some will interpret these
+NaN records to indicate gaps in a series; programs may then use that information to detect segmentation (if
 applicable).
 .TP
 .B N_COPIES
