@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.212 2009-03-04 02:05:47 remko Exp $
+ *	$Id: gmt_map.c,v 1.213 2009-03-23 22:48:27 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -887,6 +887,7 @@ void GMT_geo_to_xy (double lon, double lat, double *x, double *y)
 {
 	/* Converts lon/lat to x/y using the current projection */
 
+	if (GMT_is_dnan (lon) || GMT_is_dnan (lat)) {(*x) = (*y) = GMT_d_NaN; return;}	/* Quick and safe way to ensure NaN-input results in NaNs */
 	(*GMT_forward) (lon, lat, x, y);
 	(*x) = (*x) * project_info.x_scale + project_info.x0;
 	(*y) = (*y) * project_info.y_scale + project_info.y0;
@@ -896,6 +897,7 @@ void GMT_xy_to_geo (double *lon, double *lat, double x, double y)
 {
 	/* Converts x/y to lon/lat using the current projection */
 
+	if (GMT_is_dnan (x) || GMT_is_dnan (y)) {(*lon) = (*lat) = GMT_d_NaN; return;}	/* Quick and safe way to ensure NaN-input results in NaNs */
 	x = (x - project_info.x0) * project_info.i_x_scale;
 	y = (y - project_info.y0) * project_info.i_y_scale;
 
