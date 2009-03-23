@@ -1,12 +1,12 @@
 #!/bin/sh
-#	$Id: sph_ex_3.sh,v 1.1 2009-03-17 00:18:42 myself Exp $
+#	$Id: sph_ex_3.sh,v 1.2 2009-03-23 21:12:11 myself Exp $
 # Example of computing distances with sphdistance
 PS=`basename $0 '.sh'`.ps
 PDF=`basename $0 '.sh'`.pdf
-# Get the crude GSHHS data and select GMT -M format:
-# gshhs $GMTHOME/src/coast/gshhs/gshhs_c.b -M > gshhs_c.txt
+# Get the crude GSHHS data, select GMT -M format, and decimate to ~20%:
+# gshhs $GMTHOME/src/coast/gshhs/gshhs_c.b -M | awk '{if ($1 == ">" || NR%5 == 0) print $0}' > gshhs_c.txt
 # Get Voronoi polygons
-sphtriangulate gshhs_f.txt -Qv -M -D > $$.pol
+sphtriangulate gshhs_c.txt -Qv -M -D > $$.pol
 # Compute distances in km
 sphdistance -Rg -I1 -Q$$.pol -G$$.nc -Lk -M
 # Make a basic contour plot and overlay voronoi polygons and coastlines

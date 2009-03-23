@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.6 2009-03-13 02:02:11 myself Exp $
+#	$Id: Makefile,v 1.7 2009-03-23 21:12:11 myself Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -18,9 +18,9 @@ F2C	= /sw
 INCLUDES = -I$(GMTHOME)/include -I$(NETCDF_INC) -I$(F2C)/include
 F2CLIB	= -L$(F2C)/lib -lf2c
 
-CODE_C	= sphtriangulate.c sphdistance.c sphinterpolate.c
+CODE_C		= sphtriangulate.c sphdistance.c sphinterpolate.c
 MAN1		= $(CODE_C:.c=.1)
-
+SCRIPTS		= sph_ex_1.sh sph_ex_2.sh sph_ex_3.sh sph_ex_4.sh
 STRILIB		= libstripack.a
 SSRFLIB		= libssrfpack.a
 SPHLIB		= libsph.a
@@ -53,19 +53,11 @@ clean:
 			rm -f $$i$(EXE); \
 		done
 
-test1:
-		sphtriangulate testdata.txt -Qv -A > testresults.txt
-		psxy -Rg -JG30/30/6i -M -L -W1.5p,red testresults.txt -B0:."Test of 32 points": -K -P > testresults.ps
-		psxy testdata.txt -R -J -O -Sc0.02i -Gblack >> testresults.ps
-		gv testresults.ps &
-
-test2:
-		sphtriangulate tritest.txt > tritestres.txt
-		psxy -Rg -JG40/25/6i -M -L -W0.25p tritestres.txt -B0:."Test of 15 points": -K -P > tritestres.ps
-		psxy tritest.txt -R -J -O -Sc0.02i -Gblack >> tritestres.ps
-		gv tritestres.ps &
-
-
+ex:		$(SCRIPTS)
+		for i in $(SCRIPTS); do \
+			sh $$i; \
+		done
+		
 #-------------------------------------------------------------------------------
 #	STRILIB library
 #-------------------------------------------------------------------------------
