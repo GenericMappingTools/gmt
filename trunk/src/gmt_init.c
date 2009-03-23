@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.375 2009-03-18 18:56:03 guru Exp $
+ *	$Id: gmt_init.c,v 1.376 2009-03-23 21:46:57 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1928,9 +1928,9 @@ int GMT_setparameter (char *keyword, char *value)
 				error = TRUE;
 			break;
 		case GMTCASE_NAN_RECORDS:
-			if (!strcmp (lower_value, "gap"))
+			if (!strcmp (lower_value, "pass"))
 				gmtdefs.nan_is_gap = TRUE;
-			else if (!strcmp (lower_value, "bad"))
+			else if (!strcmp (lower_value, "skip"))
 				gmtdefs.nan_is_gap = FALSE;
 			else
 				error = TRUE;
@@ -2547,9 +2547,9 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "IO_HEADER\t\t= %s\n", ft[gmtdefs.io_header[GMT_IN]]);
 	fprintf (fp, "NAN_RECORDS\t\t= ");
 	if (gmtdefs.nan_is_gap)
-		fprintf (fp, "gap\n");
+		fprintf (fp, "pass\n");
 	else
-		fprintf (fp, "bad\n");
+		fprintf (fp, "skip\n");
 	fprintf (fp, "N_HEADER_RECS\t\t= %d\n", gmtdefs.n_header_recs);
 	fprintf (fp, "OUTPUT_CLOCK_FORMAT\t= %s\n", gmtdefs.output_clock_format);
 	fprintf (fp, "OUTPUT_DATE_FORMAT\t= %s\n", gmtdefs.output_date_format);
