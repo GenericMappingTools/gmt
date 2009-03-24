@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.170 2009-03-19 07:18:19 guru Exp $
+ *	$Id: gmt_io.c,v 1.171 2009-03-24 19:47:03 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -134,6 +134,7 @@ GMT_LONG GMT_n_segment_points (struct GMT_LINE_SEGMENT *S, int n_segments);
 
 FILE *GMT_nc_fopen (const char *filename, const char *mode);
 int GMT_nc_input (FILE *fp, int *n, double **ptr);
+BOOLEAN GMT_process_binary_input (int n_read);
 
 /* Library functions needed for WIndows DLL to work properly.
  * THese are only compiled under Windows - under other OS the
@@ -750,14 +751,14 @@ int GMT_nc_input (FILE *fp, int *n, double **ptr)
 	*ptr = GMT_data;
 
 	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();		/* Must account for periodicity in 360 */
 
 	return (i);
 }
 
 int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 {
-	int n_read, i;
+	int n_read;
 
 	GMT_io.status = 0;
 	if ((n_read = GMT_fread ((void *) GMT_data, sizeof (double), (size_t)(*n), fp)) != (*n)) {
@@ -766,19 +767,7 @@ int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
 
 	*ptr = GMT_data;
 
-	/* Read ok, how about multisegment? */
-
-	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs */
-		BOOLEAN is_bad = TRUE;
-		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
-		if (is_bad) {
-			GMT_io.status = GMT_IO_SEGMENT_HEADER;
-			strcpy (GMT_io.segment_header, "> Binary multisegment header\n");
-			return (0);
-		}
-	}
-	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (GMT_process_binary_input (n_read)) return (0);	/* Found a multisegment header */
 
 	return (n_read);
 }
@@ -801,19 +790,7 @@ int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr)
 	}
 	*ptr = GMT_data;
 
-	/* Read ok, how about multisegment? */
-
-	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs */
-		BOOLEAN is_bad = TRUE;
-		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
-		if (is_bad) {
-			GMT_io.status = GMT_IO_SEGMENT_HEADER;
-			strcpy (GMT_io.segment_header, "> Binary multisegment header\n");
-			return (0);
-		}
-	}
-	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (GMT_process_binary_input (n_read)) return (0);	/* Found a multisegment header */
 
 	return (n_read);
 }
@@ -834,19 +811,7 @@ int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
 
 	*ptr = GMT_data;
 
-	/* Read ok, how about multisegment? */
-
-	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs */
-		BOOLEAN is_bad = TRUE;
-		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
-		if (is_bad) {
-			GMT_io.status = GMT_IO_SEGMENT_HEADER;
-			strcpy (GMT_io.segment_header, "> Binary multisegment header\n");
-			return (0);
-		}
-	}
-	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (GMT_process_binary_input (n_read)) return (0);	/* Found a multisegment header */
 
 	return (n_read);
 }
@@ -871,21 +836,26 @@ int GMT_bin_float_input_swab (FILE *fp, int *n, double **ptr)
 
 	*ptr = GMT_data;
 
-	/* Read ok, how about multisegment? */
+	if (GMT_process_binary_input (n_read)) return (0);	/* Found a multisegment header */
 
-	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs */
+	return (n_read);
+}
+
+BOOLEAN GMT_process_binary_input (int n_read) {
+	/* Determine if this was a multisegment header, and if so return */
+	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs to qualify as -M */
+		int i;
 		BOOLEAN is_bad = TRUE;
 		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
 		if (is_bad) {
 			GMT_io.status = GMT_IO_SEGMENT_HEADER;
 			strcpy (GMT_io.segment_header, "> Binary multisegment header\n");
-			return (0);
+			return (TRUE);
 		}
 	}
 	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
-
-	return (n_read);
+	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();		/* Must account for periodicity in 360 */
+	return (FALSE);
 }
 
 void GMT_adjust_periodic (void) {
