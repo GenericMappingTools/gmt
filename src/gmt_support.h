@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.38 2009-03-08 01:05:13 jluis Exp $
+ *	$Id: gmt_support.h,v 1.39 2009-03-24 01:59:01 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -41,6 +41,7 @@ EXTERN_MSC int GMT_comp_int_asc (const void *p_1, const void *p_2);
 EXTERN_MSC int GMT_contours (float *grd, struct GRD_HEADER *header, int smooth_factor, int int_scheme, int orient, int *side, int *edge, int first, double **x_array, double **y_array);
 EXTERN_MSC int GMT_cspline (double *x, double *y, GMT_LONG n, double *c);
 EXTERN_MSC int GMT_delaunay (double *x_in, double *y_in, int n, int **link);
+EXTERN_MSC int GMT_voronoi (double *x_in, double *y_in, int n, double *we, double **x_out, double **y_out);
 EXTERN_MSC int GMT_flip_justify (int justify);
 EXTERN_MSC int GMT_get_dist_scale (char c, double *d_scale, int *proj_type, PFD *distance_func);
 EXTERN_MSC int GMT_get_format (double interval, char *unit, char *prefix, char *format);

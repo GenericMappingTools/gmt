@@ -6,7 +6,7 @@
 triangulate \- Perform optimal Delaunay triangulation and gridding of Cartesian data [method]
 .SH SYNOPSIS
 \fBtriangulate\fP \fIinfiles\fP [ OPT(Dx)|\fBy\fP ] [ OPT(E)\fIempty\fP ] [ OPT(F) ] 
-[ OPT(G)\fIgrdfile\fP ] [ GMT_H_OPT ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ GMT_M_OPT ] 
+[ OPT(G)\fIgrdfile\fP ] [ GMT_H_OPT ] [ GMT_I_OPT ] [ GMT_J_OPT ] [ GMT_M_OPT ] [ OPT(Q) ] 
 [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBtriangulate\fP reads one or more ASCII [or binary] files (or standard input) containing x,y[,z] and
@@ -51,6 +51,10 @@ Append \fBm\fP to indicate minutes or \fBc\fP to indicate seconds.
 OPT(M)
 Output triangulation network as multiple line segments separated by a record whose first
 character is \fIflag\fP [>].  To plot, use \fBpsxy\fP with the OPT(M) option (see Examples).
+.TP
+OPT(Q)
+Output the edges of the Voronoi cells instead [Default is Delaunay triangle edges].  Requires
+both OPT(M) and OPT(R) and is only available if linked with the Shewchuk [1996] library.
 #include "explain_-R.txt"
 #include "explain_-V.txt"
 .TP
@@ -80,6 +84,12 @@ LEN-cm-wide Mercator map, use
 .sp
 \fBtriangulate\fP samples.xyz OPT(M) OPT(R)-100/-90/30/34 SCALE | \fBpsxy\fP OPT(M) OPR(R)-100/-90/30/34 SCALE
 OPT(W)0.5\fBp\fP OPT(B)1 > network.ps
+.br
+.sp
+To instead plot the Voronoi cell outlines, try
+.br
+\fBtriangulate\fP samples.xyz OPT(M) OPT(Q) OPT(R)-100/-90/30/34 SCALE | \fBpsxy\fP OPT(M) OPR(R)-100/-90/30/34 SCALE
+OPT(W)0.5\fBp\fP OPT(B)1 > cells.ps
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR pscontour (1)

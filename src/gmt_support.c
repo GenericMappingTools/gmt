@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.385 2009-03-18 03:08:58 guru Exp $
+ *	$Id: gmt_support.c,v 1.386 2009-03-24 01:59:01 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4946,6 +4946,78 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 	return (Out.numberoftriangles);
 }
 
+int GMT_voronoi (double *x_in, double *y_in, int n, double *we, double **x_out, double **y_out)
+{
+	/* GMT interface to the triangle package; see above for references.
+	 * All that is done is reformatting of parameters and calling the
+	 * main triangulate routine.  Here we return Voronoi information
+	 * and package the coordinates of the edges in the output arrays.
+	 * The we[] array contains the min/max x (or lon) coordinates.
+	 */
+
+	int i, j, k, j2, n_edges;
+	struct triangulateio In, Out, vorOut;
+	double *x_edge, *y_edge, dy;
+
+	/* Set everything to 0 and NULL */
+
+	memset ((void *)&In,	 0, sizeof (struct triangulateio));
+	memset ((void *)&Out,	 0, sizeof (struct triangulateio));
+	memset ((void *)&vorOut, 0, sizeof (struct triangulateio));
+
+	/* Allocate memory for input points */
+
+	In.numberofpoints = n;
+	In.pointlist = (double *) GMT_memory ((void *)NULL, (size_t)(2 * n), sizeof (double), "GMT_voronoi");
+
+	/* Copy x,y points to In structure array */
+
+	for (i = j = 0; i < n; i++) {
+		In.pointlist[j++] = x_in[i];
+		In.pointlist[j++] = y_in[i];
+	}
+
+	/* Call Jonathan Shewchuk's triangulate algorithm.  This is 64-bit safe since
+	 * all the structures use 4-byte ints (longs are used internally). */
+
+	triangulate ("zIQBv", &In, &Out, &vorOut);
+	
+	/* Determine output size for all edges */
+	
+	n_edges = vorOut.numberofedges;
+ 	x_edge = (double *) GMT_memory ((void *)NULL, (size_t)(2*n_edges), sizeof (double), "GMT_voronoi");
+ 	y_edge = (double *) GMT_memory ((void *)NULL, (size_t)(2*n_edges), sizeof (double), "GMT_voronoi");
+	
+	for (i = k = 0; i < n_edges; i++, k++) {
+		/* Always start at a Voronoi vertex so j is never -1 */
+		j2 = 2*vorOut.edgelist[k];
+		x_edge[k] = vorOut.pointlist[j2++];
+		y_edge[k++] = vorOut.pointlist[j2];
+		if (vorOut.edgelist[k] == -1) {	/* Infinite ray; calc intersection with region boundary */
+			j2--;	/* Previous point */
+			x_edge[k] = (vorOut.normlist[k-1] < 0.0) ? we[0] : we[1];
+			dy = fabs ((vorOut.normlist[k] / vorOut.normlist[k-1]) * (x_edge[k] - vorOut.pointlist[j2++]));
+			y_edge[k] = vorOut.pointlist[j2] + dy * copysign (1.0, vorOut.normlist[k]);
+		}
+		else {
+			j2 = 2*vorOut.edgelist[k];
+			x_edge[k] = vorOut.pointlist[j2++];
+			y_edge[k] = vorOut.pointlist[j2];
+		}
+	}
+
+	*x_out = x_edge;	/* List of x-coordinates for all edges */
+	*y_out = y_edge;	/* List of x-coordinates for all edges */
+
+	if (Out.pointlist) free ((void *)Out.pointlist);
+	if (vorOut.pointlist) free ((void *)vorOut.pointlist);
+	if (vorOut.edgelist) free ((void *)vorOut.edgelist);
+	if (vorOut.normlist) free ((void *)vorOut.normlist);
+	GMT_free ((void *)In.pointlist);
+
+	return (n_edges);
+}
+
 #else
 
 /*
@@ -5119,7 +5191,11 @@ int GMT_delaunay (double *x_in, double *y_in, int n, int **link)
 
 	return (i/3);
 }
-
+int GMT_voronoi (double *x_in, double *y_in, int n, double *we, double **x_out, double **y_out)
+{
+	fprintf (stderr, "GMT: No Voronoi unless you select Shewchucs triangle option");
+	return (0);
+}
 #endif
 
 /*
