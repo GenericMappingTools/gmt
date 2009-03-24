@@ -1,4 +1,4 @@
-src/sph/README.TXT
+src/sph/README.sph
 src/sph/sphdistance.c
 src/sph/sphdistance.1
 src/sph/sphtriangulate.c
