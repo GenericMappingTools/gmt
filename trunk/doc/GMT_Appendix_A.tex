@@ -1,5 +1,5 @@
 %-----------------------------------------
-%	$Id: GMT_Appendix_A.tex,v 1.34 2009-01-09 23:23:44 guru Exp $
+%	$Id: GMT_Appendix_A.tex,v 1.35 2009-03-24 23:06:38 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -108,7 +108,7 @@ The package is maintained by Paul Wessel.
 The increasingly popular utility \GMTprog{ps2raster}, which simplifies the rasterization of \GMT
 \PS\ to raster formats (see Appendix~\ref{app:C}), was moved to the general tools starting with \GMT\ 4.2.0.
 
-\section{segyprogs: Plotting SEGY seismic data}
+\section{segyprogs: plotting SEGY seismic data}
 
 This package contains programs to plot SEGY seismic data files using
 the \GMT\ mapping transformations and postscript library. \GMTprog{pssegy} generates
@@ -117,6 +117,18 @@ a 2-D plot (x:location and y:time/depth) while \GMTprog{pssegyz} generates a
 read from predefined or arbitrary portions of each trace header.  Finally,
 \GMTprog{segy2grd} can convert SEGY data to a \GMT\ grid file.
 The package is maintained by Tim Henstock\footnote{Timothy.J.Henstock@soc.soton.ac.uk}.
+
+\section{sph: spherical triangulation and gridding}
+
+This package contains the main programs \GMTprog{sphtriangulate},
+which you can use to generate data for Delaunay or Voronoi diagrams, 
+\GMTprog{sphdistance} which calculates distances from lines to grid
+nodes using Voronoi decomposition of the data, and
+\GMTprog{sphinterpolate} which performs gridding under tension on
+a sphere.  These programs passes the heavy work onto the two Fortran-77
+packages SSRFPACK and STRIPACK by Robert Renka; here they have been
+translated to C and require the f2c library and include file to install.
+The package is maintained by Paul Wessel.
 
 \section{spotter: backtracking and hotspotting}
 
@@ -130,7 +142,7 @@ which associates seamounts with the most likely hotspot origins, and \GMTprog{ro
 which does various operations involving finite rotations on a sphere.  The package
 is maintained by Paul Wessel.
 
-\section{x2sys: Track crossover error estimation}
+\section{x2sys: track crossover error estimation}
 
 This package contains the tools \GMTprog{x2sys\_datalist},
 which allows you to extract data from almost any binary or ASCII
@@ -144,7 +156,7 @@ This package represents a new generation of tools intended to replace the old
 ``X\_SYSTEM'' crossover tools (below).  The package is maintained
 by Paul Wessel.
 
-\section{x\_system: Track crossover error estimation}
+\section{x\_system: track crossover error estimation}
 
 This package contains the tools \GMTprog{x\_edit},
 \GMTprog{x\_init}, \GMTprog{x\_list}, \GMTprog{x\_over}, \GMTprog{x\_remove},

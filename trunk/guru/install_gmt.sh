@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.141 2009-02-16 02:08:17 guru Exp $
+#	$Id: install_gmt.sh,v 1.142 2009-03-24 23:06:38 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -9,7 +9,7 @@
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.3
-VERSION=4.4.0
+VERSION=4.4.1
 GSHHS=1.10
 GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
@@ -432,6 +432,7 @@ GMT_suppl_mgd77=d
 GMT_suppl_mgg=d
 GMT_suppl_misc=d
 GMT_suppl_segyprogs=d
+GMT_suppl_sph=d
 GMT_suppl_spotter=d
 GMT_suppl_x2sys=d
 GMT_suppl_x_system=d
@@ -466,6 +467,7 @@ mgd77:     Programs for handling MGD77 data files
 mgg:       Programs for making, managing, and plotting .gmt files
 misc:      Digitize or stitch line segments, read netCDF 1-D tables, and more
 segyprogs: Plot SEGY seismic data files
+sph:       Spherical triangulation and gridding (REQUIRES f2c library/include file)
 spotter:   Plate tectonic backtracking and hotspotting
 x2sys:     New (Generic) Track intersection (crossover) tools
 x_system:  Old (MGG-specific) Track intersection (crossover) tools
@@ -489,6 +491,7 @@ EOF
 		GMT_suppl_mgg=$y_or_n
 		GMT_suppl_misc=$y_or_n
 		GMT_suppl_segyprogs=$y_or_n
+		GMT_suppl_sph=$y_or_n
 		GMT_suppl_spotter=$y_or_n
 		GMT_suppl_x2sys=$y_or_n
 		GMT_suppl_x_system=$y_or_n
@@ -503,6 +506,7 @@ EOF
 		GMT_suppl_mgg=`get_def_answer "Install the mgg supplemental package? (y/n)?" "y"`
 		GMT_suppl_misc=`get_def_answer "Install the misc supplemental package? (y/n)?" "y"`
 		GMT_suppl_segyprogs=`get_def_answer "Install the segyprogs supplemental package? (y/n)?" "y"`
+		GMT_suppl_sph=`get_def_answer "Install the sph supplemental package? (y/n)?" "y"`
 		GMT_suppl_spotter=`get_def_answer "Install the spotter supplemental package? (y/n)?" "y"`
 		GMT_suppl_x2sys=`get_def_answer "Install the x2sys supplemental package? (y/n)?" "y"`
 		GMT_suppl_x_system=`get_def_answer "Install the x_system supplemental package? (y/n)?" "y"`
@@ -588,6 +592,7 @@ GMT_suppl_mgd77=$GMT_suppl_mgd77
 GMT_suppl_mgg=$GMT_suppl_mgg
 GMT_suppl_misc=$GMT_suppl_misc
 GMT_suppl_segyprogs=$GMT_suppl_segyprogs
+GMT_suppl_sph=$GMT_suppl_sph
 GMT_suppl_spotter=$GMT_suppl_spotter
 GMT_suppl_x2sys=$GMT_suppl_x2sys
 GMT_suppl_x_system=$GMT_suppl_x_system

@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.41 2009-01-09 04:02:33 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.42 2009-03-24 23:06:38 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -170,7 +170,24 @@ move segy_io.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 10: Make spotter
+ECHO STEP 10: Make sph
+REM ----------------------------------------------------
+cd sph
+IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c sph.c
+IF %CHOICE%=="dynamic" LINK %LOPT% /out:sph.dll /implib:sph.lib sph.obj %GMTLIB%
+IF %CHOICE%=="static"  %CC% %COPT% %DLL_NETCDF% /DDLL_EXPORT /c sph.c
+IF %CHOICE%=="static"  lib /out:sph.lib sph.obj
+%CC% %COPT% sphtriangulate.c sph.lib %GMTLIB%
+%CC% %COPT% sphdistance.c    sph.lib %GMTLIB%
+%CC% %COPT% sphinterpolate.c sph.lib %GMTLIB%
+del *.obj
+IF %CHOICE%=="dynamic" move sph.dll %BINDIR%
+IF %CHOICE%=="dynamic" move sph.exp %LIBDIR%
+move sph.lib %LIBDIR%
+move *.exe %BINDIR%
+cd ..
+REM ----------------------------------------------------
+ECHO STEP 11: Make spotter
 REM ----------------------------------------------------
 cd spotter
 IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c libspotter.c
@@ -190,7 +207,7 @@ move spotter.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 11: Make x2sys
+ECHO STEP 12: Make x2sys
 REM ----------------------------------------------------
 cd x2sys
 %CC% %COPT2% /I..\mgd77 /I..\mgg /c x2sys.c
@@ -206,7 +223,7 @@ move x2sys.lib %LIBDIR%
 move *.exe %BINDIR%
 cd ..
 REM ----------------------------------------------------
-ECHO STEP 12: Make x_system
+ECHO STEP 13: Make x_system
 REM ----------------------------------------------------
 cd x_system
 SET COPT2=%COPT% /I..\mgg

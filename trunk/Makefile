@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.73 2009-02-16 22:40:00 guru Exp $
+#	$Id: Makefile,v 1.74 2009-03-24 23:06:38 guru Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -64,8 +64,8 @@ include src/makegmt.macros	# GMT-specific settings determined by user & install_
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
-SUPPL	=	dbase gshhs imgsrc meca mex mgd77 mgg misc segyprogs spotter x2sys x_system xgrid
-SUPPL_M	=	dbase imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system
+SUPPL	=	dbase gshhs imgsrc meca mex mgd77 mgg misc segyprogs sph spotter x2sys x_system xgrid
+SUPPL_M	=	dbase imgsrc meca mgd77 mgg misc segyprogs sph spotter x2sys x_system
 
 .PHONY:		all gmt suppl update gmtmacros \
 		install uninstall install-all uninstall-all install-gmt uninstall-gmt \

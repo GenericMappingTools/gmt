@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.66 2009-02-16 03:38:47 remko Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.67 2009-03-24 23:06:38 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.66 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.67 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -311,6 +311,7 @@ separate from where the smaller files reside.  The selections below are only use
 <INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED> MGG: Programs for making, managing, and plotting *.gmt data<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED> MISC: Manipulate PostScript, create bit-patterns, extract netCDF columns<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_segyprogs"  CHECKED> SEGYPROGS: Plot SEGY seismic data files<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_sph"  CHECKED> SPH: Spherical triangulation and gridding (REQUIRES f2c lib/include file)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_spotter"  CHECKED> SPOTTER: Plate tectonic backtracking and hotspotting<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED> X2SYS: Track intersection (crossover) tools (REQUIRES MGG and MGD77)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_x_system"  CHECKED> X_SYSTEM: MGG-specific Track intersection (crossover) tools (REQUIRES MGG)<BR>
