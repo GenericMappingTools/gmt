@@ -1,7 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.451 2009-03-24 01:59:01 guru Exp $
+	$Id: ChangeLog,v 1.452 2009-03-24 23:06:38 guru Exp $
 -----------------------------------------------------------------------------------------
 	
+2009-03-24	pwessel
+	* sph:			Introduce new GMT supplement sph which provide GMT-like
+				front-ends for Robert Renka's Fortran SSRFPACK and STRIPACK
+				libraries.  They are here translated to C via f2c and requires
+				the f2c library and include file to compile and link.
+				Tools include sphtriangulate (Delaunay and Voronoi spherical
+				diagrams), sphdistance (spherical distances from lines to
+				grid nodes using Voronoi partitioning), and spinterpolate
+				(spherical gridding in tension).
 2009-03-23	pwessel
 	* triangulate.c:	New option -Q to generate Voronoi polygon edges.
 	* gmt_support.c:	Rely on Shewchuk's triangle function to get Voronoi output.
