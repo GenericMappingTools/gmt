@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.450 2009-03-23 22:48:27 guru Exp $
+	$Id: ChangeLog,v 1.451 2009-03-24 01:59:01 guru Exp $
 -----------------------------------------------------------------------------------------
 	
+2009-03-23	pwessel
+	* triangulate.c:	New option -Q to generate Voronoi polygon edges.
+	* gmt_support.c:	Rely on Shewchuk's triangle function to get Voronoi output.
 2009-03-18	pwessel
 	* gmt_support.c		Enabled GMT_intpol to handle NaNs by treating them as segment
 				boundaries.
