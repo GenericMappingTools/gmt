@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.8 2009-03-17 00:18:42 myself Exp $
+#  $Id: GNUmakefile,v 1.9 2009-03-24 22:28:20 myself Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	
@@ -48,4 +48,4 @@ tarsph:
 		tar -cjf ../../ftp/GMT$(GMT_VERSION)_sph.tar.bz2 -C ../.. -T GMT_sph.lis
 
 spotless::
-		rm -rf D772 D773
+		rm -rf D772 D773 sph_ex_?.pdf
