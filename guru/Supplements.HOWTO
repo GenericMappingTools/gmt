@@ -1,4 +1,4 @@
-#	$Id: Supplements.HOWTO,v 1.1 2009-03-24 23:06:38 guru Exp $
+#	$Id: Supplements.HOWTO,v 1.2 2009-03-24 23:21:21 guru Exp $
 
 This document discusses what you need to do in order to add a new supplement to GMT.
 
@@ -10,3 +10,4 @@ This document discusses what you need to do in order to add a new supplement to 
    and website/gmt_install_form.html
 4. Add the supplement nake to SUPPL and SUPPL_M in the main GMT Makefile.
 5. Add info to doc/GMT_Appendix_A.txt.
+6. Add new entries to GMT/share/doc/gmt/html/gmt_suppl.html
