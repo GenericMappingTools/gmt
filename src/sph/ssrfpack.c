@@ -11,6 +11,7 @@
 */
 
 #include "f2c.h"
+extern void sincos (double x, double *s, double *c);
 
 /* Table of constant values */
 
@@ -1102,7 +1103,7 @@ L2:
 /*   property. */
 
 	sig = sbig;
-	if (d1d2 == 0. && s1 != s2 || s == 0. && s1 * s2 > 0.) {
+	if ((d1d2 == 0. && s1 != s2) || (s == 0. && s1 * s2 > 0.)) {
 	    goto L8;
 	}
 
@@ -1170,7 +1171,7 @@ L3:
 	    goto L8;
 	}
 	dsig = -f / fp;
-	if (abs(dsig) <= rtol * sig || f >= 0. && f <= ftol || abs(f) <= rtol)
+	if (abs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || abs(f) <= rtol)
 		 {
 	    goto L8;
 	}
@@ -1304,7 +1305,7 @@ L6:
 /*   Test for convergence. */
 
 	stol = rtol * sig;
-	if (abs(dmax__) <= stol || f >= 0. && f <= ftol || abs(f) <= rtol) {
+	if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
 	    goto L8;
 	}
 	dmax__ += dsig;
@@ -2510,7 +2511,7 @@ doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, doublereal *
 	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
 	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
 	    integer *, integer *);
-static doublereal cos_plat;
+    static doublereal cos_plat;
 
 
 /* *********************************************************** */
@@ -2622,10 +2623,10 @@ static doublereal cos_plat;
 
 /* Transform (PLAT,PLON) to Cartesian coordinates. */
 
-sincos (*plat, &p[2], &cos_plat);
-sincos (*plon, &p[1], &p[0]);
-p[0] *= cos_plat;
-p[1] *= cos_plat;
+    sincos (*plat, &p[2], &cos_plat);
+    sincos (*plon, &p[1], &p[0]);
+    p[0] *= cos_plat;
+    p[1] *= cos_plat;
 
 /* Find the vertex indexes of a triangle containing P. */
 
@@ -2957,7 +2958,7 @@ L13:
 
     /* Function Body */
     nn = *n;
-    if (nn < 3 || *iflgg <= 0 && nn < 7 || *ist < 1 || *ist > nn) {
+    if (nn < 3 || (*iflgg <= 0 && nn < 7) || *ist < 1 || *ist > nn) {
 	goto L11;
     }
 
@@ -3915,7 +3916,7 @@ L4:
     h1 = h__[*n1];
     h2 = h__[*n2];
     *ier = -3;
-    if (rf < 0. && min(h1,h2) < bnd || rf > 0. && bnd < max(h1,h2)) {
+    if ((rf < 0. && min(h1,h2) < bnd) || (rf > 0. && bnd < max(h1,h2))) {
 	goto L11;
     }
 
@@ -3929,7 +3930,7 @@ L4:
 	    n2 * 3 + 3] * p1[2]) / unorm;
     *ier = 1;
     sig = sbig;
-    if (h1 == bnd && rf * s1 > 0. || h2 == bnd && rf * s2 < 0.) {
+    if ((h1 == bnd && rf * s1 > 0.) || (h2 == bnd && rf * s2 < 0.)) {
 	goto L10;
     }
 
@@ -4141,7 +4142,7 @@ L7:
 /*   Test for convergence. */
 
     stol = rtol * sig;
-    if (abs(dmax__) <= stol || f >= 0. && f <= ftol || abs(f) <= rtol) {
+    if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
 	goto L10;
     }
 
@@ -4499,7 +4500,7 @@ L4:
     d__1 = min(s1,s2);
 /* Computing MAX */
     d__2 = max(s1,s2);
-    if (rf < 0. && min(d__1,s) < bnd || rf > 0. && bnd < max(d__2,s)) {
+    if ((rf < 0. && min(d__1,s) < bnd) || (rf > 0. && bnd < max(d__2,s))) {
 	goto L11;
     }
 
@@ -4666,7 +4667,7 @@ L6:
 /*   Test for convergence. */
 
     stol = rtol * sig;
-    if (abs(dmax__) <= stol || f >= 0. && f <= ftol || abs(f) <= rtol) {
+    if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
 	goto L10;
     }
     if (f0 * f < 0. || abs(f) < abs(f0)) {
@@ -5079,7 +5080,7 @@ L6:
 	goto L10;
     }
     dsig = -f / fp;
-    if (abs(dsig) <= rtol * sig || f >= 0. && f <= ftol || abs(f) <= rtol) {
+    if (abs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
 	goto L10;
     }
 
