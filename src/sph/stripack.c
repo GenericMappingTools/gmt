@@ -661,7 +661,7 @@ L4:
 
     *nb = 0;
     *na = (nn - 2) * 3;
-    *nt = nn - 2 << 1;
+    *nt = (nn - 2) << 1;
     return 0;
 
 /* NST is the first boundary node encountered.  Initialize */
@@ -2854,8 +2854,8 @@ L12:
     swap_(&next, &n0, &nl, &nr, &list[1], &lptr[1], &lend[1], &lp21);
     i__1 = iwl;
     for (i__ = iwcp1; i__ <= i__1; ++i__) {
-	iwk[(i__ - 1 << 1) + 1] = iwk[(i__ << 1) + 1];
-	iwk[(i__ - 1 << 1) + 2] = iwk[(i__ << 1) + 2];
+	iwk[((i__ - 1) << 1) + 1] = iwk[(i__ << 1) + 1];
+	iwk[((i__ - 1) << 1) + 2] = iwk[(i__ << 1) + 2];
 /* L13: */
     }
     iwk[(iwl << 1) + 1] = n0;
@@ -2911,8 +2911,8 @@ L17:
     swap_(&next, &n0, &nl, &nr, &list[1], &lptr[1], &lend[1], &lp21);
     i__1 = iwf;
     for (i__ = iwc - 1; i__ >= i__1; --i__) {
-	iwk[(i__ + 1 << 1) + 1] = iwk[(i__ << 1) + 1];
-	iwk[(i__ + 1 << 1) + 2] = iwk[(i__ << 1) + 2];
+	iwk[((i__ + 1) << 1) + 1] = iwk[(i__ << 1) + 1];
+	iwk[((i__ + 1) << 1) + 2] = iwk[(i__ << 1) + 2];
 /* L18: */
     }
     iwk[(iwf << 1) + 1] = n0;
@@ -2974,8 +2974,8 @@ L22:
     swap_(&n2, &n0, &nl, &nr, &list[1], &lptr[1], &lend[1], &lp21);
     i__ = iwl;
 L23:
-    iwk[(i__ << 1) + 1] = iwk[(i__ - 1 << 1) + 1];
-    iwk[(i__ << 1) + 2] = iwk[(i__ - 1 << 1) + 2];
+	iwk[(i__ << 1) + 1] = iwk[((i__ - 1) << 1) + 1];
+	iwk[(i__ << 1) + 2] = iwk[((i__ - 1) << 1) + 2];
     --i__;
     if (i__ > iwf) {
 	goto L23;
@@ -3000,7 +3000,7 @@ L24:
 
 /*   Optimize the set of new arcs to the left of IN1->IN2. */
 
-	nit = iwc - 1 << 2;
+	nit = (iwc - 1) << 2;
 	i__1 = iwc - 1;
 	optim_(&x[1], &y[1], &z__[1], &i__1, &list[1], &lptr[1], &lend[1], &
 		nit, &iwk[3], &ierr);
@@ -3015,10 +3015,10 @@ L24:
 
 /*   Optimize the set of new arcs to the right of IN1->IN2. */
 
-	nit = iwend - iwc << 2;
+	nit = (iwend - iwc) << 2;
 	i__1 = iwend - iwc;
 	optim_(&x[1], &y[1], &z__[1], &i__1, &list[1], &lptr[1], &lend[1], &
-		nit, &iwk[(iwc + 1 << 1) + 1], &ierr);
+		nit, &iwk[((iwc + 1) << 1) + 1], &ierr);
 	if (ierr != 0 && ierr != 1) {
 	    goto L34;
 	}
@@ -5748,7 +5748,7 @@ L14:
     ltri -= ltri_offset;
 
     /* Function Body */
-    if (*n < 3 || *nrow != 6 && *nrow != 9) {
+    if (*n < 3 || (*nrow != 6 && *nrow != 9)) {
 	goto L11;
     }
 
@@ -6092,7 +6092,7 @@ L12:
     do_fio(&c__1, (char *)&(*n), (ftnlen)sizeof(integer));
     e_wsfe();
     nl = 3;
-    if (*n < 3 || *n > nmax || *nrow != 6 && *nrow != 9 || *nt < 1 || *nt > 
+    if (*n < 3 || *n > nmax || (*nrow != 6 && *nrow != 9) || *nt < 1 || *nt > 
 	    nmax) {
 
 /* Print an error message and exit. */
@@ -8449,7 +8449,7 @@ L1:
 /*   the window and KV2 > KV1, or KV1 is inside and KV2 is */
 /*   outside (so that the edge is drawn only once). */
 
-	if (! in1 || in2 && kv2 <= kv1) {
+    	if (! in1 || (in2 && kv2 <= kv1)) {
 	    goto L2;
 	}
 	if (z2 < 0.) {

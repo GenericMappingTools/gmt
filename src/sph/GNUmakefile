@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.12 2009-03-25 18:46:09 guru Exp $
+#  $Id: GNUmakefile,v 1.13 2009-03-25 21:02:11 guru Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	
@@ -26,8 +26,8 @@ stripack.c:
 		mv 772 D772
 		(cd D772; sh 772)
 		f2c -r8 D772/Fortran77/Src/Sp/src.f
-		mv -f src.c stripack.c
-		rm -rf D772
+		sed -f stripack.sed src.c > stripack.c
+		rm -rf src.c D772
 
 ssrfpack.c:
 		wget http://www.netlib.org/toms/773
