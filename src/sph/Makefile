@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.7 2009-03-23 21:12:11 myself Exp $
+#	$Id: Makefile,v 1.8 2009-03-25 15:16:42 remko Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -69,8 +69,6 @@ $(STRILIB):	stripack.o
 		$(AR) cvr libstripack.a stripack.o
 		$(RANLIB) libstripack.a
 
-stripack.o:	stripack.c
-
 #-------------------------------------------------------------------------------
 #	SSRFLIB library
 #-------------------------------------------------------------------------------
@@ -78,8 +76,6 @@ stripack.o:	stripack.c
 $(SSRFLIB):	ssrfpack.o
 		$(AR) cvr libssrfpack.a ssrfpack.o
 		$(RANLIB) libssrfpack.a
-
-ssrfpack.o:	ssrfpack.c
 
 #-------------------------------------------------------------------------------
 #       sph library
