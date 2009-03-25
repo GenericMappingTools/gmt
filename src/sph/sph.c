@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.11 2009-03-16 22:12:33 myself Exp $
+ *	$Id: sph.c,v 1.12 2009-03-25 20:35:44 jluis Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
