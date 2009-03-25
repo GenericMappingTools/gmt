@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.10 2009-03-25 15:16:42 remko Exp $
+#  $Id: GNUmakefile,v 1.11 2009-03-25 18:36:33 guru Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	
@@ -37,10 +37,6 @@ ssrfpack.c:
 		f2c -r8 D773/Src/Sp/src.f
 		sed -f ssrfpack.sed src.c > ssrfpack.c
 		rm -rf src.c 773 D773
-
-tarsph:
-		echo "make GMT$(GMT_VERSION)_sph.tar.bz2"
-		tar -cjf ../../ftp/GMT$(GMT_VERSION)_sph.tar.bz2 -C ../.. -T GMT_sph.lis
 
 spotless::
 		rm -rf D772 D773 sph_ex_?.pdf
