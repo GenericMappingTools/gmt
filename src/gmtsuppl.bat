@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.42 2009-03-24 23:06:38 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.43 2009-03-25 22:23:06 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -177,9 +177,9 @@ IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c sph.c
 IF %CHOICE%=="dynamic" LINK %LOPT% /out:sph.dll /implib:sph.lib sph.obj %GMTLIB%
 IF %CHOICE%=="static"  %CC% %COPT% %DLL_NETCDF% /DDLL_EXPORT /c sph.c
 IF %CHOICE%=="static"  lib /out:sph.lib sph.obj
-%CC% %COPT% sphtriangulate.c sph.lib %GMTLIB%
-%CC% %COPT% sphdistance.c    sph.lib %GMTLIB%
-%CC% %COPT% sphinterpolate.c sph.lib %GMTLIB%
+%CC% %COPT% sphtriangulate.c sph.lib vcf2c.lib %GMTLIB%
+%CC% %COPT% sphdistance.c    sph.lib vcf2c.lib %GMTLIB%
+%CC% %COPT% sphinterpolate.c sph.lib vcf2c.lib %GMTLIB%
 del *.obj
 IF %CHOICE%=="dynamic" move sph.dll %BINDIR%
 IF %CHOICE%=="dynamic" move sph.exp %LIBDIR%
