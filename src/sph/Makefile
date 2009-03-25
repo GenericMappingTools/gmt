@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.8 2009-03-25 15:16:42 remko Exp $
+#	$Id: Makefile,v 1.9 2009-03-25 20:01:41 jluis Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -95,4 +95,4 @@ spotless::	clean
 #-------------------------------------------------------------------------------
 
 $(CODE):	$(CODE_O) $(STRILIB) $(SSRFLIB) $(SPHLIB)
-	$(CC) $(CFLAGS) $@.o -L$(GMTHOME)/lib -lgmt -lpsl $(NC_LIBS) -L. -lssrfpack  -lstripack -lsph $(F2CLIB) $(LIBS) -o $@
+	$(CC) $(CFLAGS) $@.o -L$(GMTHOME)/lib -lgmt -lpsl $(NC_LIBS) -L. -lsph -lssrfpack  -lstripack $(F2CLIB) $(LIBS) -o $@
