@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.386 2009-03-24 01:59:01 guru Exp $
+ *	$Id: gmt_support.c,v 1.387 2009-03-26 21:04:30 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4954,6 +4954,13 @@ int GMT_voronoi (double *x_in, double *y_in, int n, double *we, double **x_out, 
 	 * and package the coordinates of the edges in the output arrays.
 	 * The we[] array contains the min/max x (or lon) coordinates.
 	 */
+
+	/* Currently we only write the edges of a Voronoi cell but we want polygons later.
+	 * Info from triangle re Voronoi polygons: "Triangle does not write a list of
+	 * the edges adjoining each Voronoi cell, but you can reconstructed it straightforwardly.
+	 * For instance, to find all the edges of Voronoi cell 1, search the output .edge file
+	 * for every edge that has input vertex 1 as an endpoint.  The corresponding dual
+	 * edges in the output .v.edge file form the boundary of Voronoi cell 1." */
 
 	int i, j, k, j2, n_edges;
 	struct triangulateio In, Out, vorOut;
