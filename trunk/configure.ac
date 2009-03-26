@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.43 2009-02-18 23:16:44 guru Exp $
-AC_REVISION($Revision: 1.43 $)
+dnl $Id: configure.ac,v 1.44 2009-03-26 05:30:52 guru Exp $
+AC_REVISION($Revision: 1.44 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -14,8 +14,8 @@ dnl Also, fix the MANDATE and DOCDATE values.
 dnl For final version set CVS_VERSION to 0
 dnl
 AC_INIT(GMT, 4.4.1, gmt-help@hawaii.edu)
-MANDATE="15 Feb 2009"
-DOCDATE="Feb 2009"
+MANDATE="1 Jun 2009"
+DOCDATE="Jun 2009"
 DOCYEAR="2009"
 GSHHS_VERSION=1.10
 CVS_VERSION=1
@@ -54,6 +54,8 @@ AC_SUBST(LD_OPT)
 AC_SUBST(LDFLAGS)
 AC_SUBST(NETCDF_LIB)
 AC_SUBST(NETCDF_INC)
+AC_SUBST(F2C_LIB)
+AC_SUBST(F2C_INC)
 AC_SUBST(DOCDATE)
 AC_SUBST(DOCYEAR)
 AC_SUBST(MANDATE)
@@ -95,6 +97,8 @@ AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library 
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
+AC_ARG_VAR(F2C_INC,Location of F2C headers (compile-time))
+AC_ARG_VAR(F2C_LIB,Location of F2C library (compile-time))
 dnl
 dnl -----------------------------------------------------------------
 dnl Check for ar, csh/bash, ld, awk, and ranlib
