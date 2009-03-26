@@ -5,7 +5,7 @@
 .SH NAME
 sphdistance \- Calculate nearest distances from Voronoi construction of spherical data
 .SH SYNOPSIS
-\fBsphdistance\fP \fIinfiles\fP OPT(G)\fIgrdfile\fP [ OPT(C) ] [ OPT(D) ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_I_OPT ] 
+\fBsphdistance\fP \fIinfiles\fP OPT(G)\fIgrdfile\fP [ OPT(C) ] [ OPT(D) ] [ OPT(E) ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_I_OPT ] 
 [ OPT(L)\fIunit\fP ] [ GMT_M_OPT ] [ OPT(Q)\fIvoronoi.d\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
 .SH DESCRIPTION
 \fBsphdistance\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat and
@@ -26,6 +26,10 @@ the other when necessary [Default keeps both arrays in memory]. Not applicable w
 .B \-D
 Used with OPT(M) to skip the last (repeated) input vertex at the end of a closed segment if it
 equals the first point in the segment.  Requires OPT(M) [Default uses all points].
+.TP
+.B \-E
+Instead of computing distances, return the ID numbers of the Voronoi polygons that each grid node is inside
+[Default computes distances].
 #include "explain_-H.txt"
 #include "explain_-I.txt"
 .TP

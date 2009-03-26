@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.44 2009-03-26 05:30:52 guru Exp $
-AC_REVISION($Revision: 1.44 $)
+dnl $Id: configure.ac,v 1.45 2009-03-26 20:27:44 guru Exp $
+AC_REVISION($Revision: 1.45 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -83,6 +83,7 @@ AC_ARG_ENABLE(matlab,   [  --enable-matlab=dir     Build GMT-matlab interface, g
 AC_ARG_ENABLE(octave,   [  --enable-octave         Build GMT-octave interface (disables Matlab interface)])
 AC_ARG_ENABLE(mex_mdir, [  --enable-mex-mdir=dir   Directory in which to install GMT-octave/Matlab .m files [[auto]]])
 AC_ARG_ENABLE(mex_xdir, [  --enable-mex-xdir=dir   Directory in which to install GMT-octave/Matlab mex files [[auto]]])
+AC_ARG_ENABLE(libf2c,   [  --enable-libf2c=dir     Directory with libf2c [[/usr/local]]])
 AC_ARG_ENABLE(debug,    [  --enable-debug          Compile for debugging instead of optimizing code])
 AC_ARG_ENABLE(devdebug, [  --enable-devdebug       Extra debugging for developers])
 AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
@@ -95,6 +96,7 @@ AC_ARG_ENABLE(flock,    [  --disable-flock         Disable file locking on .gmtc
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
+AC_ARG_ENABLE(sph,      [  --disable-sph           Disable compilation of sph supplement which requires f2c library])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 AC_ARG_VAR(F2C_INC,Location of F2C headers (compile-time))
@@ -422,6 +424,56 @@ fi
 AC_MSG_RESULT($NETCDF_LIB)
 if test ! -d $NETCDF_LIB; then
 	AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --disable-sph for turning off sph compilation
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(if OK to compile sph)
+if test "X$enable_sph" = "Xno" || test "X$have_x" != "Xyes" ; then
+	enable_sph="no"
+else
+	enable_sph="yes"
+fi
+AC_MSG_RESULT($enable_sph)
+if test "X$enable_sph" = "Xno" && test -d src/sph; then
+	touch src/sph/.skip
+	AC_MSG_WARN([[Disabling sph compilation]])
+else
+	rm -f src/sph/.skip
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --enable-libf2c to set libf2c dir
+dnl But only check these if --disable-sph has not been set
+dnl -----------------------------------------------------------------
+dnl
+if test "X$enable_libf2c" = "X" || test "X$enable_libf2c" = "Xyes" ; then
+	F2C='/usr/local'
+else
+	F2C=$enable_libf2c
+fi
+if test "X$enable_sph" = "Xyes" ; then
+	AC_MSG_CHECKING(for libf2c include directory)
+	if test "X$F2C_INC" = "X"; then
+		F2C_INC=$F2C/include
+	fi
+	AC_MSG_RESULT($F2C_INC)
+	if test ! -f $F2C_INC/f2c.h; then
+		AC_MSG_WARN([[f2c.h can not be found in $F2C_INC]])
+	fi
+	AC_MSG_CHECKING(for netCDF library directory)
+	if test "X$F2C_LIB" = "X"; then
+		F2C_LIB=$F2C/lib
+	fi
+	AC_MSG_RESULT($F2C_LIB)
+	if test ! -d $F2C_LIB; then
+		AC_MSG_WARN([[No such directory: $F2C_LIB]])
+	fi
+else
+	F2C_INC=$F2C/include
+	F2C_LIB=$F2C/lib
 fi
 dnl
 dnl -----------------------------------------------------------------
