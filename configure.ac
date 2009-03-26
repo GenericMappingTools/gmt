@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.46 2009-03-26 20:44:03 guru Exp $
-AC_REVISION($Revision: 1.46 $)
+dnl $Id: configure.ac,v 1.47 2009-03-26 21:28:31 remko Exp $
+AC_REVISION($Revision: 1.47 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -78,12 +78,12 @@ dnl Special configure options for GMT installation
 dnl -----------------------------------------------------------------
 dnl
 AC_ARG_ENABLE(update,   [  --enable-update=site    GMT ftp site [[ftp.soest.hawaii.edu]]])
-AC_ARG_ENABLE(netcdf,   [  --enable-netcdf=dir     Directory with netCDF [[/usr/local/netcdf]]])
+AC_ARG_ENABLE(netcdf,   [  --enable-netcdf=dir     Directory with netCDF [[auto]]])
 AC_ARG_ENABLE(matlab,   [  --enable-matlab=dir     Build GMT-matlab interface, give directory with Matlab distribution [[/usr/local/matlab]]])
 AC_ARG_ENABLE(octave,   [  --enable-octave         Build GMT-octave interface (disables Matlab interface)])
 AC_ARG_ENABLE(mex_mdir, [  --enable-mex-mdir=dir   Directory in which to install GMT-octave/Matlab .m files [[auto]]])
 AC_ARG_ENABLE(mex_xdir, [  --enable-mex-xdir=dir   Directory in which to install GMT-octave/Matlab mex files [[auto]]])
-AC_ARG_ENABLE(f2c,      [  --enable-f2c=dir        Directory with f2c lib and include [[/usr/local]]])
+AC_ARG_ENABLE(f2c,      [  --enable-f2c=dir        Directory with f2c lib and include [[auto]]])
 AC_ARG_ENABLE(debug,    [  --enable-debug          Compile for debugging instead of optimizing code])
 AC_ARG_ENABLE(devdebug, [  --enable-devdebug       Extra debugging for developers])
 AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
@@ -405,7 +405,9 @@ dnl Allow user to set --enable-netcdf to set netCDF dir
 dnl -----------------------------------------------------------------
 dnl
 if test "X$enable_netcdf" = "X" || test "X$enable_netcdf" = "Xyes" ; then
-	NETCDF='/usr/local/netcdf'
+	AC_PATH_PROG([NETCDF], [ncdump], [/usr/local/netcdf/bin/ncdump])
+	NETCDF=`dirname $NETCDF`
+	NETCDF=`dirname $NETCDF`
 else
 	NETCDF=$enable_netcdf
 fi
@@ -450,7 +452,9 @@ dnl But only check these if --disable-sph has not been set
 dnl -----------------------------------------------------------------
 dnl
 if test "X$enable_f2c" = "X" || test "X$enable_f2c" = "Xyes" ; then
-	F2C='/usr/local'
+	AC_PATH_PROG([F2C], [f2c], [/usr/local/bin/f2c])
+	F2C=`dirname $F2C`
+	F2C=`dirname $F2C`
 else
 	F2C=$enable_f2c
 fi
@@ -463,7 +467,7 @@ if test "X$enable_sph" = "Xyes" ; then
 	if test ! -f $F2C_INC/f2c.h; then
 		AC_MSG_WARN([[f2c.h can not be found in $F2C_INC]])
 	fi
-	AC_MSG_CHECKING(for netCDF library directory)
+	AC_MSG_CHECKING(for f2c library directory)
 	if test "X$F2C_LIB" = "X"; then
 		F2C_LIB=$F2C/lib
 	fi
