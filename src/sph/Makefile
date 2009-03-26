@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.10 2009-03-26 05:30:52 guru Exp $
+#	$Id: Makefile,v 1.11 2009-03-26 20:27:45 guru Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -14,7 +14,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-INCLUDES = -I$(GMTHOME)/include -I$(NETCDF_INC) -I$(F2C_INC)
+INCLUDES = -I$(srcdir) -I$(NETCDF_INC) -I$(F2C_INC)
 F2CLIB	= -L$(F2C_LIB) -lf2c
 
 CODE_C		= sphtriangulate.c sphdistance.c sphinterpolate.c
