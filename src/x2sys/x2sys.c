@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.119 2009-03-15 00:58:13 guru Exp $
+ *	$Id: x2sys.c,v 1.120 2009-03-26 05:36:21 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1399,12 +1399,10 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 				if (txt[strlen(txt)-1] == '1') two_values = TRUE;	/* Option -2 was used */
 				while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */
 					item++;
-					i = 0;
-					while (ptr[i] && ptr[i] != '_') {
-						txt[i] = ptr[i];
-						i++;
-					}
-					txt[i] = '\0';
+					i = strlen (ptr) - 1;
+					while (i >= 0 && ptr[i] != '_') i--;	/* Start at end and find last underscore */
+					strncpy (txt, ptr, i);
+					txt[++i] = '\0';
 					if (!strcmp (txt, fflag)) our_item = item;	/* Found the desired column */
 				}
 			}
