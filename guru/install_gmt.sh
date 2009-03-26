@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.142 2009-03-24 23:06:38 guru Exp $
+#	$Id: install_gmt.sh,v 1.143 2009-03-26 20:44:03 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -523,6 +523,12 @@ EOF
 		mex_mdir=`get_def_answer "Enter Install directory for .m functions" ""`
 		mex_xdir=`get_def_answer "Enter Install directory for .mex functions" ""`	
 	fi
+	if [ "$GMT_suppl_sph" = "y" ]; then
+		echo " " >&2
+		echo "The sph supplement requires the f2c include and library." >&2
+		echo "Specify top directory (e.g., /usr/local) or leave blank if you have defined F2C_INC and F2C_LIB." >&2
+		F2CDIR=`get_def_answer "Enter f2c top directory" "$F2CDIR"`
+	fi
 fi
 
 file=`get_def_answer "Enter name of the parameter file that will now be created" "GMTparam.txt"`
@@ -631,6 +637,10 @@ GMT_delete=$GMT_delete
 MATDIR=$MATDIR
 mex_mdir=$mex_mdir
 mex_xdir=$mex_xdir
+#---------------------------------------------
+#       F2C SECTION
+#---------------------------------------------
+F2CDIR=$F2CDIR
 EOF
 
 echo "Session parameters written to file $file" >&2
@@ -1129,6 +1139,11 @@ if [ "$GMT_suppl_xgrid" = "y" ]; then
 else
 	disable_xgrid=--disable-xgrid
 fi
+if [ "$GMT_suppl_sph" = "y" ]; then
+	disable_sph=
+else
+	disable_sph=--disable-sph
+fi
 
 if [ "$GMT_sharedlib" = "y" ]; then
 	enable_shared=--enable-shared
@@ -1161,6 +1176,11 @@ if [ ! x"$mex_xdir" = x ]; then	# mex_xdir is set
 else
 	enable_mex_xdir=
 fi
+if [ ! x"$F2CDIR" = x ]; then	# F2CDIR is set
+	enable_f2c=--enable-f2c=$F2CDIR
+else
+	enable_f2c=
+fi
 
 #--------------------------------------------------------------------------------
 #	GMT installation commences here
@@ -1191,13 +1211,13 @@ cat << EOF >&2
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir
+  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_f2c
 EOF
 
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid $enable_mex_mdir $enable_mex_xdir
+  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_f2c
 
 if [ -f .gmtconfigure ]; then
 	cat .gmtconfigure
