@@ -57,7 +57,7 @@ To report statistics of all the external magnetic crossovers associated with the
 restricted to occupy a certain region in the south Pacific, try
 .br
 .sp
-\fBx2sys_report\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(R)180/240/-60/-30 OPT(C)mag OPT(F)xytz > mag_report.txt
+\fBx2sys_report\fP COE_data.txt OPT(V) OPT(T)MGD77 OPT(R)180/240/-60/-30 OPT(C)mag > mag_report.txt
 .br
 .sp
 To report on the faa crossovers globally that involves track 12345678, try
