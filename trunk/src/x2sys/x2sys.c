@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.120 2009-03-26 05:36:21 guru Exp $
+ *	$Id: x2sys.c,v 1.121 2009-03-26 19:18:43 jluis Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1401,8 +1401,9 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 					item++;
 					i = strlen (ptr) - 1;
 					while (i >= 0 && ptr[i] != '_') i--;	/* Start at end and find last underscore */
+					if (i < 0) continue;		/* First records 'lon' & 'lat' have no '_' */
 					strncpy (txt, ptr, i);
-					txt[++i] = '\0';
+					txt[i] = '\0';
 					if (!strcmp (txt, fflag)) our_item = item;	/* Found the desired column */
 				}
 			}
