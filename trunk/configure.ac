@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.45 2009-03-26 20:27:44 guru Exp $
-AC_REVISION($Revision: 1.45 $)
+dnl $Id: configure.ac,v 1.46 2009-03-26 20:44:03 guru Exp $
+AC_REVISION($Revision: 1.46 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -83,7 +83,7 @@ AC_ARG_ENABLE(matlab,   [  --enable-matlab=dir     Build GMT-matlab interface, g
 AC_ARG_ENABLE(octave,   [  --enable-octave         Build GMT-octave interface (disables Matlab interface)])
 AC_ARG_ENABLE(mex_mdir, [  --enable-mex-mdir=dir   Directory in which to install GMT-octave/Matlab .m files [[auto]]])
 AC_ARG_ENABLE(mex_xdir, [  --enable-mex-xdir=dir   Directory in which to install GMT-octave/Matlab mex files [[auto]]])
-AC_ARG_ENABLE(libf2c,   [  --enable-libf2c=dir     Directory with libf2c [[/usr/local]]])
+AC_ARG_ENABLE(f2c,      [  --enable-f2c=dir        Directory with f2c lib and include [[/usr/local]]])
 AC_ARG_ENABLE(debug,    [  --enable-debug          Compile for debugging instead of optimizing code])
 AC_ARG_ENABLE(devdebug, [  --enable-devdebug       Extra debugging for developers])
 AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
@@ -445,17 +445,17 @@ else
 fi
 dnl
 dnl -----------------------------------------------------------------
-dnl Allow user to set --enable-libf2c to set libf2c dir
+dnl Allow user to set --enable-f2c to set f2c dir
 dnl But only check these if --disable-sph has not been set
 dnl -----------------------------------------------------------------
 dnl
-if test "X$enable_libf2c" = "X" || test "X$enable_libf2c" = "Xyes" ; then
+if test "X$enable_f2c" = "X" || test "X$enable_f2c" = "Xyes" ; then
 	F2C='/usr/local'
 else
-	F2C=$enable_libf2c
+	F2C=$enable_f2c
 fi
 if test "X$enable_sph" = "Xyes" ; then
-	AC_MSG_CHECKING(for libf2c include directory)
+	AC_MSG_CHECKING(for f2c include directory)
 	if test "X$F2C_INC" = "X"; then
 		F2C_INC=$F2C/include
 	fi
