@@ -1,11 +1,17 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.454 2009-03-27 01:24:13 guru Exp $
+	$Id: ChangeLog,v 1.455 2009-03-27 01:32:25 remko Exp $
 -----------------------------------------------------------------------------------------
-	
+
 2009-03-26	pwessel
 	* gmt_support.c:	Exceeded array bounds in GMT_read_cpt for hsv conversion.
 	* mgd77/mgd77track.c:	Added -Gt|d<gap> to recognize gaps in tracks based on
 				distance or time between successive points.
+	
+2009-03-26	remko
+	* configure.ac:		Now looks automatically for ncdump and f2c to guess the
+				home directories of netcdf and f2c. This makes it possible
+				to just use --enable-netcdf and --enable-f2c without anything
+				else. Or leave them off altogether!
 	
 2009-03-24	pwessel
 	* sph:			Introduce new GMT supplement sph which provide GMT-like
@@ -16,11 +22,13 @@
 				diagrams), sphdistance (spherical distances from lines to
 				grid nodes using Voronoi partitioning), and spinterpolate
 				(spherical gridding in tension).
+
 2009-03-23	pwessel
 	* triangulate.c:	New option -Q to generate Voronoi polygon edges.
 	* gmt_support.c:	Rely on Shewchuk's triangle function to get Voronoi output.
+
 2009-03-18	pwessel
-	* gmt_support.c		Enabled GMT_intpol to handle NaNs by treating them as segment
+	* gmt_support.c:	Enabled GMT_intpol to handle NaNs by treating them as segment
 				boundaries.
 	* gmt_init.c:		New Default setting NAN_RECORDS = skip|pass [skip].
 				If "pass" we treat let the programs handle the NaNs; for some
@@ -29,12 +37,13 @@
 				as bad records.  In both cases the records are skipped.
 	* mgd77/mgd77manage.c:	Now honors NAN_RECORDS in tables given to -A.
 
-	2009-03-18	jluis
-	* mgd77/mgd77.c		Was failing to read Windows terminated ASCII files
+2009-03-18	jluis
+	* mgd77/mgd77.c:	Was failing to read Windows terminated ASCII files
 
 2009-03-15	pwessel
 	* grdgradient.c:	For geographic grids, make sure N and S pole only has
 				a single value on output.
+
 2009-03-14	pwessel
 	* x2sys/x2sys_init.c:	Now properly copies the *.def file to the TAG dir.
 	* x2sys/x2sys_cross.c:	Removed the -F option which was not honored anyway.
@@ -44,8 +53,8 @@
 	
 2009-03-14	jluis
 	* gmt_io.{c,h}:		Created GMT_fgetc & GMT_ungetc to use with mgd77 supplements.
-	* mgd77/mgd77.c		Now works on Windows (but still crashes if use -L option) 
-	* x2sys/x2sys_put.c	Fixed -D option (was falling in a endless loop)
+	* mgd77/mgd77.c:	Now works on Windows (but still crashes if use -L option) 
+	* x2sys/x2sys_put.c:	Fixed -D option (was falling in a endless loop)
 
 2009-03-12	remko
 	* gmt_nc.c, gmt_grd.h:	Properly handle netCDF that have LatLon = 0, 1: flip x and y.
