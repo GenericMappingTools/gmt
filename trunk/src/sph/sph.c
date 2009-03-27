@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.13 2009-03-27 22:54:47 guru Exp $
+ *	$Id: sph.c,v 1.14 2009-03-27 23:26:54 guru Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -232,8 +232,8 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 {
 	int ierror, n4, nm, k, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs;
 	int plus = 1, minus = -1, lsig = 4;
-	int *list, *lptr, *lend;
-	double *sigma = NULL, *grad = NULL, *plon, *plat;
+	int *list = NULL, *lptr = NULL, *lend = NULL;
+	double *sigma = NULL, *grad = NULL, *plon = NULL, *plat = NULL;
 	double tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
 	
