@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.452 2009-03-24 23:06:38 guru Exp $
+	$Id: ChangeLog,v 1.453 2009-03-27 00:47:00 guru Exp $
 -----------------------------------------------------------------------------------------
+	
+2009-03-26	pwessel
+	* gmt_support.c:	Exceeded array bounds in GMT_read_cpt for hsv conversion.
 	
 2009-03-24	pwessel
 	* sph:			Introduce new GMT supplement sph which provide GMT-like
