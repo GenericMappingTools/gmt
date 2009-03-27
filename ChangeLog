@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.453 2009-03-27 00:47:00 guru Exp $
+	$Id: ChangeLog,v 1.454 2009-03-27 01:24:13 guru Exp $
 -----------------------------------------------------------------------------------------
 	
 2009-03-26	pwessel
 	* gmt_support.c:	Exceeded array bounds in GMT_read_cpt for hsv conversion.
+	* mgd77/mgd77track.c:	Added -Gt|d<gap> to recognize gaps in tracks based on
+				distance or time between successive points.
 	
 2009-03-24	pwessel
 	* sph:			Introduce new GMT supplement sph which provide GMT-like
