@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.12 2009-03-25 20:35:44 jluis Exp $
+ *	$Id: sph.c,v 1.13 2009-03-27 22:54:47 guru Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,6 +51,8 @@ extern int intrc1_ (int *, double *, double *, double *, double *, double *, dou
 extern int sgprnt_ (int *, int *, int *, int *, int *, double *);
 extern int smsurf_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, double *, double *, double *, double *, int *, double *, double *, int *);
 extern int unif_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, int *, int *, double *, double *, int *, double *, double *, int *);
+
+int MAIN__ () { return(0);}	/* Seems needed under Linux when libf2c is a shared library */
 
 void stripack_lists (GMT_LONG n, double *x, double *y, double *z, struct STRIPACK *T)
 {
