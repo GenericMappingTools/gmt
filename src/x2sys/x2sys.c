@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.121 2009-03-26 19:18:43 jluis Exp $
+ *	$Id: x2sys.c,v 1.122 2009-03-27 21:09:32 jluis Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1443,7 +1443,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 		skip = FALSE;
 		if (!(coe_kind & 1) && !strcmp (trk[0], trk[1])) skip = TRUE;	/* Do not want internal crossovers */
 		if (!(coe_kind & 2) && strcmp (trk[0], trk[1])) skip = TRUE;	/* Do not want external crossovers */
-		if (one_trk && !(strcmp (one_trk, trk[0]) && strcmp (one_trk, trk[1]))) skip = TRUE;	/* Looking for a specific track and these do not match */
+		if (one_trk && (strcmp (one_trk, trk[0]) && strcmp (one_trk, trk[1]))) skip = TRUE;	/* Looking for a specific track and these do not match */
 		if (!skip && n_ignore) {	/* See if one of the tracks are in the ignore list */
 			for (i = 0; !skip && i < n_ignore; i++) if (!strcmp (trk[0], ignore[i]) || !strcmp (trk[1], ignore[i])) skip = TRUE;
 		}
