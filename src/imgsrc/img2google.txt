@@ -1,0 +1,41 @@
+#include "common_options.txt"
+.TH IMG2GOOGLE 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+img2google \- Create Google Earth overlay tiles from bathymetry Mercator img grid 
+.SH SYNOPSIS
+\fBimg2google\fP GMT_Rgeo_OPT [ \fIimgfile\fP ] [ OPT(G)\fIprefix\fP ] [ GMT_V_OPT ]
+.SH DESCRIPTION
+\fBimg2google\fP reads a 1x1 minute Mercator surface relief img file and creates a
+Google Earth overlay tile for the specified region.  If no input file is given we
+use topo.11.1.img.
+#include "explain_-Rgeo.txt"
+.SH OPTIONS
+.TP
+\fIimgfile\fP
+An img format bathymetry/topography file such as those created by Sandwell and Smith.  If this
+files does not exist in the current directory and the user has set the environment variable 
+\fB$GMT_IMGDIR\fP, then \fBimg2mercgrd\fP will try to find \fIimgfile\fP in \fB$GMT_IMGDIR\fP.
+.TP
+OPT(G)
+Specify the prefix for the output image file (the extensions are set automatically). Default uses
+the naming topoN<\fI<north>\fPE<\fIwest\fP>.
+#include "explain_-V.txt"
+.SH EXAMPLES
+To create a 10x10 degree Google Earth tile for the region OPT(R)170/180/20/30 using the default
+\fItopo.11.1.img\fP and output naming convention, try:
+.br
+.sp
+\fBimg2google\fP OPT(R)170/180/20/30
+.br
+.sp
+To make the same tile with the previous
+\fItopo.10.1.img\fP, run in verbose mode, and name the output oldimage, try:
+.br
+.sp
+\fBimg2google\fP \fItopo.10.1.img\fP OPT(R)170/180/20/30 OPT(G)\fIoldimage\fP OPT(V)
+.br
+.sp
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR img2grd (1)
+.IR img2mercgrd (1)

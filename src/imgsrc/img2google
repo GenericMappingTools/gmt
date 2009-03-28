@@ -1,0 +1,108 @@
+#!/bin/sh
+#	$Id: img2google,v 1.1 2009-03-28 22:01:49 guru Exp $
+# Shell script that will generate a Google Earth geotiff tile from
+# Sandwell/Smith's 1x1 min Mercator topo.11.1img grid.
+# David Sandwell and Paul Wessel, March 2009
+# Credit to Joaquim Luis for adding geotiff output from ps2raster
+
+# Change these only if you know what you are doing!  Note this script
+# is hardwired to do bathymetry.  You must change many things to have
+# it plot crustal ages or gravity.
+#------------------
+TOPO=topo.11.1.img
+INC=1
+DPI=240
+#------------------
+
+if [ $# -eq 0 ]; then
+	cat <<- EOF >&2
+	img2google - Create Google Earth tiles from the $TOPO bathymetry grid
+	Usage: img2google -Rwest/east/south/north [-V]
+	
+		-R Specify the region of interest
+		-V Optionally run in verbose mode
+	EOF
+	exit
+fi
+
+# Process the command line arguments
+
+R=""
+V=""
+while [ ! x"$1" = x ]; do
+	case $1
+	in
+		-R*)	R=$1;		# Got the region
+			shift;;
+		-V)	V=$1;		# Verbose run
+			shift;;
+		-*)	echo "$0: Unrecognized option $1" 1>&2;	# Bad option argument
+			exit 1;;
+	esac
+done
+if [ X"$R" = "X" ]; then
+	echo "$0: ERROR: Must specify the region:" 1>&2
+fi
+
+w=`echo $R | awk -F/ '{print substr($1,3)}'`
+n=`echo $R | awk -F/ '{print $4}'`
+
+# 1. Make sure we have the img file either locally or via $GMT_IMGDIR
+
+if [ ! -f $TOPO ]; then
+	if [ "X$GMT_IMGDIR" = "X" ] || [ ! -f $GMT_IMGDIR/$TOPO ]; then
+		echo "img2google: Cannot find $TOPO - exiting"
+		exit 1
+	fi
+fi
+
+# 2. Extract the (x,y,z) of constrained nodes by extracting a grid with
+#    NaNs were unconstrained, exclude NaNs, and capture points whose z < 0
+
+img2grd $TOPO $R -T2 -S1 -m${INC} -E -D $V -G$$.tile.nc
+grd2xyz $$.tile.nc -S -bod | gmtselect -Z-15000/-0.00001 -bi3d > $$.track.xyz
+
+# 3. get the topo data, this time including unconstrained estimates
+
+img2grd $TOPO $R -T1 -S1 -m${INC} -E -D $V -G$$.tile.nc
+
+#  4. make the image
+
+# Create list of desired, irregular contours
+cat << EOF > $$.intervals
+-10000 C
+-9000 C
+-8000 C
+-7000 C
+-6000 C
+-5000 C
+-4000 C
+-3000 C
+-2000 C
+-1000 C
+-5500 C
+-4500 C
+-3500 C
+-2500 C
+-1500 C
+-500 C
+EOF
+# -2000 contour drawn separately with black, heavier line
+echo "-2000 C" > $$.int2000
+makecpt -Ctopo -Z > $$.cpt
+grdgradient $$.tile.nc $V -A340 -G$$.nc
+grdmath $$.nc 12000 DIV = $$.tile_grad.nc
+grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -Jx1id -Y0 -X0 -K -P $V --DOTS_PR_INCH=${DPI} > $$.ps
+psxy $$.track.xyz -J $R -Sc.005i -G80 $V -O -K --DOTS_PR_INCH=${DPI} >> $$.ps
+grdcontour $$.tile.nc -J -C$$.intervals -Wfaint,80 -O -K $V --DOTS_PR_INCH=${DPI} >> $$.ps
+grdcontour $$.tile.nc -J -C$$.int2000 -W1p,black -O $V --DOTS_PR_INCH=${DPI} >> $$.ps
+#
+#  5. make the geotiff file
+#
+ps2raster $$.ps -A -E${DPI} -Tt -W+ $V
+mv -f $$.tiff topoN${n}E${w}.tiff
+#
+#  clean up
+#
+rm -f $$.*
+exit 0

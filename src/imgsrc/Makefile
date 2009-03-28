@@ -1,4 +1,5 @@
-
+#	$Id: Makefile,v 1.22 2009-03-28 22:01:49 guru Exp $
+#
 #
 #	makefile for imgsrc directory
 #
@@ -13,7 +14,7 @@ include $(GMTSRCDIR)gmtalldeps.macros
 INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 
 PROGS_O		= img2mercgrd.o
-MAN1		= $(PROGS_O:.o=.1) img2grd.1
+MAN1		= $(PROGS_O:.o=.1) img2grd.1 img2google.1
 
 #-------------------------------------------------------------------------------
 #	software targets
@@ -22,10 +23,10 @@ MAN1		= $(PROGS_O:.o=.1) img2grd.1
 all:		$(PROGS)
 
 install:	all
-		$(INSTALL) $(PROGS) img2grd $(bindir)
+		$(INSTALL) $(PROGS) img2grd img2google $(bindir)
 
 uninstall:
-		cd $(bindir); \rm -f $(PROGS) img2grd
+		cd $(bindir); \rm -f $(PROGS) img2grd img2google
 
 install-man:	$(MAN1)
 		$(INSTALL) -m 644 $(MAN1) $(mandir)/man1
