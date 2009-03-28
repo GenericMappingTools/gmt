@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.48 2009-03-28 00:12:58 guru Exp $
-AC_REVISION($Revision: 1.48 $)
+dnl $Id: configure.ac,v 1.49 2009-03-28 00:46:20 guru Exp $
+AC_REVISION($Revision: 1.49 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -740,9 +740,9 @@ if test "$GCC" = "yes"; then		# GNU cc options
 	else
 		CFLAGS="$CFLAGS -pedantic -Wall$GCC_64"
 	fi
-	if test "$enable_shared" = "yes" ; then
+dnl	if test "$enable_shared" = "yes" ; then
 		CFLAGS="$CFLAGS -fPIC"
-	fi
+dnl	fi
 elif test "$os" = "SunOS" ; then	# Sun Workshop CC options
 	CFLAGS="$CFLAGS -Xc"
 elif test "$os" = "HP-UX" ; then	# HP cc options
