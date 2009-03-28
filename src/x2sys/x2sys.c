@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.122 2009-03-27 21:09:32 jluis Exp $
+ *	$Id: x2sys.c,v 1.123 2009-03-28 00:04:29 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -254,7 +254,7 @@ void x2sys_end (struct X2SYS_INFO *X)
 	if (!X) return;
 	if (X->out_order) GMT_free ((void *)X->out_order);
 	if (X->use_column) GMT_free ((void *)X->use_column);
-	free ((void *)X->TAG);
+	free ((void *)X->TAG);	/* free since allocated by strdup */
 	x2sys_free_info (X);
 	for (id = 0; id < n_x2sys_paths; id++) GMT_free  ((void *)x2sys_datadir[id]);
 	MGD77_end (&M);
@@ -865,6 +865,13 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 	return (X2SYS_NOERROR);
 }
 
+void x2sys_free_list (char **list, int n)
+{	/* Properly free memory allocated by x2sys_read_list */
+	int i;
+	for (i = 0; i < n; i++) free ((void *)list[i]);
+	if (list) GMT_free ((void *)list);
+}
+
 int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
 	char tag_file[BUFSIZ], line[BUFSIZ], p[BUFSIZ], sfile[BUFSIZ], suffix[16], unit[2][2];
@@ -1358,7 +1365,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 	FILE *fp;
 	struct X2SYS_COE_PAIR *P;
 	char line[BUFSIZ], txt[BUFSIZ], kind[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], start[2][GMT_TEXT_LEN];
-	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list, **ignore, *t = NULL;
+	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list, **ignore = NULL, *t = NULL;
 	GMT_LONG p, n_pairs;
 	int i, k, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
 	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
@@ -1573,12 +1580,8 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 		P = (struct X2SYS_COE_PAIR *) GMT_memory ((void *)P, (size_t)n_pairs, sizeof (struct X2SYS_COE_PAIR), GMT_program);
 		*xpairs = P;
 	}
-	for (k = 0; k < n_tracks; k++) free ((void *)trk_list[k]);
-	GMT_free ((void *)trk_list);
-	if (n_ignore) {
-		for (k = 0; k < n_ignore; k++) GMT_free ((void *)ignore[k]);
-		GMT_free ((void *)ignore);	
-	}
+	x2sys_free_list (trk_list, n_tracks);
+	x2sys_free_list (ignore, n_ignore);
 	
 	*nt = n_tracks;
 	return (n_pairs);
@@ -1704,13 +1707,10 @@ void x2sys_get_corrtable (struct X2SYS_INFO *S, char *ctable, int ntracks, char 
 			else
 				auxlist[k].requested = TRUE;
 		}
-		free ((void *)item_names[i]);
 	}
-	if (n_items) GMT_free ((void *)item_names);
-	for (i = 0; i < n_aux; i++) free ((void *)aux_name[i]);
-	if (n_aux) GMT_free ((void *)aux_name);
+	x2sys_free_list (item_names, n_items);
+	x2sys_free_list (aux_name, n_aux);
+	x2sys_free_list (col_name, n_cols);
 	if (!missing) MGD77_Parse_Corrtable (ctable, trk_name, ntracks, n_cols, col_name, 0, CORR);
-	for (i = 0; i < n_cols; i++) free ((void *)col_name[i]);
-	GMT_free ((void *)col_name);
 	if (missing) exit (EXIT_FAILURE);
 }

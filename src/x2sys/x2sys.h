@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.47 2009-01-09 04:02:36 guru Exp $
+ *	$Id: x2sys.h,v 1.48 2009-03-28 00:04:29 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -257,6 +257,7 @@ extern int x2sys_read_ncfile (char *fname, double ***data, struct X2SYS_INFO *s,
 extern int x2sys_xover_output (FILE *fp, int n, double out[]);
 extern int x2sys_n_data_cols (struct X2SYS_INFO *s);
 extern int x2sys_read_list (char *file, char ***list, int *n);
+extern void x2sys_free_list (char **list, int n);
 extern int x2sys_find_track (char *name, char **list, int n);
 int x2sys_get_tracknames (int argc, char **argv, char ***tracklist, BOOLEAN *cmdline);
 
