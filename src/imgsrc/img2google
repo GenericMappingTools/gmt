@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: img2google,v 1.3 2009-03-28 22:20:18 guru Exp $
+#	$Id: img2google,v 1.4 2009-03-28 22:21:54 guru Exp $
 # Shell script that will generate a Google Earth geotiff tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid.
 # David Sandwell and Paul Wessel, March 2009
@@ -111,7 +111,8 @@ ps2raster $$.ps -A -E${DPI} -Tt -W+ $V
 if [ "X$G" = "X" ]; then
 	mv -f $$.tiff topoN${n}E${w}.tiff
 else
-	mv -f $$.tiff $G.tiff
+	stem=`echo $G | awk '{print substr($1,3)}'`
+	mv -f $$.tiff $stem.tiff
 fi
 #  6. clean up
 rm -f $$.*
