@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.13 2009-03-25 21:02:11 guru Exp $
+#  $Id: GNUmakefile,v 1.14 2009-03-28 01:33:59 guru Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	
@@ -16,6 +16,21 @@
 
 include makefile
 include $(GMTSRCDIR)manpages.mk
+
+getf2c:
+		wget http://www.netlib.org/f2c/libf2c.zip
+		mkdir f2c
+		unzip libf2c.zip -d f2c
+		
+libf2c64:
+		sed -f f2c64.sed f2c/makefile.u > f2c/makefile.u64
+		$(MAKE) -C f2c -f makefile.u64 all
+		echo "Copy the 64-bit f2c/libf2c.a and f2c/f2c.h to where you need them"
+
+libf2c:	
+		sed -f f2c32.sed f2c/makefile.u > f2c/makefile.u32
+		$(MAKE) -C f2c -f makefile.u32 all
+		echo "Copy the 32-bit f2c/libf2c.a and f2c/f2c.h to where you need them"
 
 toms:
 		$(MAKE) -B stripack.c ssrfpack.c
@@ -39,4 +54,4 @@ ssrfpack.c:
 		rm -rf src.c 773 D773
 
 spotless::
-		rm -rf D772 D773 sph_ex_?.pdf
+		rm -rf D772 D773 f2c sph_ex_?.ps
