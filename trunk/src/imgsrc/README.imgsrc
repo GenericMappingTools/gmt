@@ -1,8 +1,13 @@
-	$Id: README.imgsrc,v 1.7 2007-09-24 00:38:02 remko Exp $
+	$Id: README.imgsrc,v 1.8 2009-03-28 22:01:49 guru Exp $
 
 Maintained by: W H F Smith
 All code files are explicitly distributed under the
 GNU Public License, see file COPYING for more details.
+
+==> CHANGES IN GMT 4.4.1 <==
+
+Added img2google which creates Google Earth tiles from
+the topo.11.1.img bathymetry grid.
 
 ==> CHANGES IN GMT 4.1.2 <==
 

@@ -19,6 +19,8 @@ src/imgsrc/img2mercgrd.c
 src/imgsrc/img2mercgrd.1
 src/imgsrc/img2grd
 src/imgsrc/img2grd.1
+src/imgsrc/img2google
+src/imgsrc/img2google.1
 src/imgsrc/makefile
 src/meca/README.meca
 src/meca/makefile

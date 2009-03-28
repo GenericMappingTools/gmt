@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.455 2009-03-27 01:32:25 remko Exp $
+	$Id: ChangeLog,v 1.456 2009-03-28 22:01:49 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-03-28	pwessel
+	* imgsrc/img2google:	Added new script (modified from David Sandwell's prototype)
+				that creates Google Earth overlay tiles from topo.11.1.img
 2009-03-26	pwessel
 	* gmt_support.c:	Exceeded array bounds in GMT_read_cpt for hsv conversion.
 	* mgd77/mgd77track.c:	Added -Gt|d<gap> to recognize gaps in tracks based on
