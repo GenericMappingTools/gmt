@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: img2google,v 1.4 2009-03-28 22:21:54 guru Exp $
+#	$Id: img2google,v 1.5 2009-03-28 23:13:35 guru Exp $
 # Shell script that will generate a Google Earth geotiff tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid.
 # David Sandwell and Paul Wessel, March 2009
@@ -67,12 +67,12 @@ fi
 # 2. Extract the (x,y,z) of constrained nodes by extracting a grid with
 #    NaNs were unconstrained, exclude NaNs, and capture points whose z < 0
 
-img2grd $TOPO $R -T2 -S1 -m${INC} -E -D $V -G$$.tile.nc
+img2grd $TOPO $R -T2 -S1 -m${INC} -E -D $V -G$$.tile.nc --ELLIPSOID=sphere
 grd2xyz $$.tile.nc -S -bod | gmtselect -Z-15000/-0.00001 -bi3d > $$.track.xyz
 
 # 3. get the topo data, this time including unconstrained estimates
 
-img2grd $TOPO $R -T1 -S1 -m${INC} -E -D $V -G$$.tile.nc
+img2grd $TOPO $R -T1 -S1 -m${INC} -E -D $V -G$$.tile.nc --ELLIPSOID=sphere
 
 #  4. make the image
 
@@ -100,10 +100,10 @@ echo "-2000 C" > $$.int2000
 makecpt -Ctopo -Z > $$.cpt
 grdgradient $$.tile.nc $V -A340 -G$$.nc
 grdmath $$.nc 12000 DIV = $$.tile_grad.nc
-grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -Jx1id -Y0 -X0 -K -P $V --DOTS_PR_INCH=${DPI} > $$.ps
-psxy $$.track.xyz -J $R -Sc.005i -G80 $V -O -K --DOTS_PR_INCH=${DPI} >> $$.ps
-grdcontour $$.tile.nc -J -C$$.intervals -Wfaint,80 -O -K $V --DOTS_PR_INCH=${DPI} >> $$.ps
-grdcontour $$.tile.nc -J -C$$.int2000 -W1p,black -O $V --DOTS_PR_INCH=${DPI} >> $$.ps
+grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -Jx1id -Y0 -X0 -K -P $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 > $$.ps
+psxy $$.track.xyz -J $R -Sc.005i -G80 $V -O -K --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
+grdcontour $$.tile.nc -J -C$$.intervals -Wfaint,80 -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
+grdcontour $$.tile.nc -J -C$$.int2000 -W1p,black -O $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 #
 #  5. make the geotiff file
 #
