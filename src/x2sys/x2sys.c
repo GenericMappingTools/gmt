@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.123 2009-03-28 00:04:29 guru Exp $
+ *	$Id: x2sys.c,v 1.124 2009-03-28 00:42:29 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1371,7 +1371,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
 	double x, m, lon, dist[2];
 
-	fp = GMT_stdin;	/* Default to stdin if dbase is NULL */
+	fp = stdin;	/* Default to stdin if dbase is NULL */
 	if (dbase && (fp = fopen (dbase, "r")) == NULL) {
 		fprintf (stderr, "%s: ERROR: Unable to open crossover file %s\n", GMT_program, dbase);
 		exit (EXIT_FAILURE);
@@ -1571,7 +1571,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 			*nx += k;
 		}
 	}
-	GMT_fclose (fp);
+	fclose (fp);
 	if (n_pairs == 0) {	/* No pairs found, probably due to wesn check */
 		GMT_free ((void *)P);
 		*xpairs = NULL;
