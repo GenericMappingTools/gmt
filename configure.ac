@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.47 2009-03-26 21:28:31 remko Exp $
-AC_REVISION($Revision: 1.47 $)
+dnl $Id: configure.ac,v 1.48 2009-03-28 00:12:58 guru Exp $
+AC_REVISION($Revision: 1.48 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -630,6 +630,7 @@ dnl
 if test "$enable_64" = "yes" ; then
 	OSX_C=" -m64 -DGMT_QSORT"
 	LDFLAGS="$LDFLAGS -m64"
+	GCC_64=" -m64"
 fi
 if test "$enable_universal" = "yes" ; then
 	if test "$enable_64" = "yes" ; then
@@ -733,11 +734,11 @@ dnl
 AC_MSG_CHECKING(compiler options for GMT)
 if test "$GCC" = "yes"; then		# GNU cc options
 	if test "$chip" = "alpha" ; then	# Alpha PC
-		CFLAGS="$CFLAGS -mieee -Wall"
+		CFLAGS="$CFLAGS -mieee -Wall$GCC_64"
 	elif test "$os" = "Darwin" ; then	# MacOS X
 		CFLAGS="$CFLAGS -pedantic -fno-common -Wall$OSX_C"
 	else
-		CFLAGS="$CFLAGS -pedantic -Wall"
+		CFLAGS="$CFLAGS -pedantic -Wall$GCC_64"
 	fi
 	if test "$enable_shared" = "yes" ; then
 		CFLAGS="$CFLAGS -fPIC"
