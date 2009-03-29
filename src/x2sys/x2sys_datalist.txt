@@ -56,7 +56,7 @@ listed in the file tracks.lis and define by the tag TRK, but only the data that 
 area, and make output binary, run
 .br
 .sp
-\fBx2sys_datalist\fP :tracks.lis OPT(T)TRK OPT(F)lon,lat,depth OPT(R)-40/-30/25/35 OPT(bo) > alltopo_bin.xyz
+\fBx2sys_datalist\fP =tracks.lis OPT(T)TRK OPT(F)lon,lat,depth OPT(R)-40/-30/25/35 OPT(bo) > alltopo_bin.xyz
 .SH CORRECTIONS
 The correction table is an ASCII file with coefficients and parameters needed to carry out corrections.
 This table is usually produced by \fBx2sys_solve\fP.
