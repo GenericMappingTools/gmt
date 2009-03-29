@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: img2google,v 1.10 2009-03-29 21:20:25 guru Exp $
+#	$Id: img2google,v 1.11 2009-03-29 22:17:35 guru Exp $
 # Shell script that will generate a Google Earth png tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid and add
 # a basic KML wrapper for use in any Google Earth version.
@@ -19,7 +19,7 @@ if [ $# -eq 0 ]; then
 cat << EOF >&2
 	img2google - Create Google Earth KML tiles from the $TOPO bathymetry grid
 	
-	Usage: img2google -Rwest/east/south/north [imgfile] [-C] [-Gprefix] [-Qdocname/layername/altmode] [-V]
+	Usage: img2google -Rwest/east/south/north [imgfile] [-C] [-Gprefix] [-Qdocname/layername/altmode] [-V] [-Z[+]]
 	
 		-R Specify the region of interest
 	OPTIONAL ARGUMENTS:
@@ -28,6 +28,7 @@ cat << EOF >&2
 		-G Set output file prefix [Default is topoN|S<north>E|W<west>]
 		-Q Append KML docname/layername/altmode ["Predicted bathymetry"/"topoN|S<north>E|W<west>"/S]
 		-V Optionally run in verbose mode
+		-Z Create a zipped *.kmz file; append + to remove original KML/PNG files [no zipping]
 EOF
 	exit
 fi
@@ -39,22 +40,25 @@ G=""
 C=""
 Q=""
 V=""
+Z=""
 while [ ! x"$1" = x ]; do
 	case $1
 	in
 		-R*)	R=$1;		# Got the region
 			shift;;
-		-C*)	C=$1;		# use clipping
+		-C)		C=$1;		# use clipping
 			shift;;
 		-G*)	G=$1;		# Got the output namestem
 			shift;;
 		-Q*)	Q=$1;		# Got the KML infostrings
 			shift;;
-		-V)	V=$1;		# Verbose run
+		-V)		V=$1;		# Verbose run
 			shift;;
-		-*)	echo "$0: Unrecognized option $1" 1>&2;	# Bad option argument
+		-Z*)	Z=$1;		# Make KMZ file
+			shift;;
+		-*)		echo "$0: Unrecognized option $1" 1>&2;	# Bad option argument
 			exit 1;;
-		*)	TOPO=$1;		# The input file name
+		*)		TOPO=$1;	# The input file name
 			shift;;
 	esac
 done
@@ -149,6 +153,12 @@ else
 	mv -f $$.ps $name.ps
 fi
 ps2raster $name.ps -A -E${DPI} -TG -Wg"$KML" $V
+if [ ! "X$Z" = "X" ]; then	# zip up as one archive
+	zip -rq9 $name.kmz $name.kml $name.png
+	if [ "X$Z" = "X-Z+" ]; then
+		rm -f $name.kml $name.png
+	fi
+fi
 #  6. clean up
 rm -f $$.* $name.ps
 exit 0
