@@ -97,7 +97,8 @@ This option automatically sets OPT(A) OPT(P).
 Use OPT(Wg) to create a minimalist KML file that allows loading the image in
 GoogleEarth. Note that for this option the image must be in geographical
 coordinates. If not, a warning is issued but the KML file is created anyway. Append
-\fIdocname/layername/altmode\fP where the first two are free-form text strings and \fIaltmode\fP
+\fIdocname/layername/altmode\fP where the first two are free-form text strings (use quotes
+if white-space is used and do not use slashes as part of the string) and \fIaltmode\fP
 selects one of 5 altitude modes recognized by Google Earth that determines the altitude of the
 image: \fBG\fP clamped to the ground, \fBg\fP append altitude relative to ground, \fBa\fP append absolute
 altitude, \fBs\fP append altitude relative to seafloor, and \fBS]fP clamp it to the seafloor.
