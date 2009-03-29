@@ -6,7 +6,8 @@ ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats u
 \fBps2raster\fP \fIpsfile(s)\fP [ OPT(A)[\fBu\fP] ] [ OPT(C)\fIgs_option\fP] [ OPT(D)\fIoutdir\fP ] 
 [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] [ OPT(L)\fIlistfile\fP] [ OPT(P) ] 
 [ OPT(Q)[\fBg\fP|\fBt\fP][1|2|4] ] [ OPT(S) ]  
-[ OPT(Tb)|\fBe\fP|\fBf\fP|\fBj\fP|\fBg\fP|\fBG\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ] [ OPT(W)[\fB+\fP|\fBg\fP|\fBG\fP] ] 
+[ OPT(Tb)|\fBe\fP|\fBf\fP|\fBj\fP|\fBg\fP|\fBG\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ] 
+[ OPT(W)[\fB+\fP|\fBg\fP[\fIdocname/layername/altmode\fP]] ]
 .SH DESCRIPTION
 \fBps2raster\fP converts one or more \fIPostScript\fP files to other formats (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF)
 using GhostScript. Input file names are read from the command line or from a file that lists them.
@@ -95,8 +96,12 @@ This option automatically sets OPT(A) OPT(P).
 .br
 Use OPT(Wg) to create a minimalist KML file that allows loading the image in
 GoogleEarth. Note that for this option the image must be in geographical
-coordinates. If not, a warning is issued but the KML file is created anyway. By default the image
-will be clamped to th Ground (using Google Earth parlance); use OPT(WG) to clamp it to the Seafloor instead.
+coordinates. If not, a warning is issued but the KML file is created anyway. Append
+\fIdocname/layername/altmode\fP where the first two are free-form text strings and \fIaltmode\fP
+selects one of 5 altitude modes recognized by Google Earth that determines the altitude of the
+image: \fBG\fP clamped to the ground, \fBg\fP append altitude relative to ground, \fBa\fP append absolute
+altitude, \fBs\fP append altitude relative to seafloor, and \fBS]fP clamp it to the seafloor.
+["GMT KML Document"/"GMT Image Overlay"/G].
 .SH NOTES
 The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently results in loss of details that are
 available in the original \fIPostScript\fP file. Choose a resolution that is large enough for the application that
@@ -119,7 +124,7 @@ are in effect, allowing only loss-less Flate compression of raster images embedd
 .br
 .sp
 Although \fBps2raster\fP was developed as part of the \fBGMT\fP, it can be used to convert \fIPostScript\fP files created
-by nearly any graphics program.
+by nearly any graphics program. However, OPT(Au) is \fBGMT\fP-specific.
 .br
 .sp
 See Appendix C of the \fBGMT Technical Reference and Cookbook\fP for more information on how
@@ -133,7 +138,7 @@ orientation in case it was in Landscape mode:
 \fBps2raster\fP psfile.ps OPT(A) OPT(P) OPT(Tg)
 .br
 .sp
-To create a simple linear map with pascoast and convert it to tif with a .tfw
+To create a simple linear map with pscoast and convert it to tif with a .tfw
 the tight BoundingBox computation.
 .br
 .sp
