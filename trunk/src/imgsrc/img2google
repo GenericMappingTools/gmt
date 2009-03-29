@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: img2google,v 1.6 2009-03-29 19:53:16 guru Exp $
+#	$Id: img2google,v 1.7 2009-03-29 19:54:28 guru Exp $
 # Shell script that will generate a Google Earth geotiff tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid.
 # David Sandwell and Paul Wessel, March 2009
@@ -72,7 +72,7 @@ grd2xyz $$.tile.nc -S -bod | gmtselect -Z-15000/-0.00001 -bi3d > $$.track.xyz
 
 # 3. get the topo data, this time including unconstrained estimates
 
-img2grd $TOPO $R -T1 -S1 -m${INC} -E -D $V -G$$.tile.nc --ELLIPSOID=sphere
+img2grd $TOPO $R -T1 -S1 -m${INC} -E -D $V -G$$.tile.nc
 
 #  4. make the image
 
