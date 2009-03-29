@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.126 2009-03-29 16:34:35 jluis Exp $
+ *	$Id: x2sys.c,v 1.127 2009-03-29 17:27:04 jluis Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1538,7 +1538,6 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 				if (GMT_scanf (z_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT_d_NaN;
 				P[p].COE[k].data[i][COE_Z] = d_val;
 
-//fprintf(stderr, "MERDA %s\t%g\t%g\n", z_txt[i], P[p].COE[k].data[0][COE_Z], P[p].COE[k].data[i][COE_Z]);
 				if (no_time || !strcmp (t_txt[i], "NaN"))
 					P[p].COE[k].data[i][COE_T] = GMT_d_NaN;
 				else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
