@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.124 2009-03-28 00:42:29 guru Exp $
+ *	$Id: x2sys.c,v 1.125 2009-03-29 04:38:33 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1365,6 +1365,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 	FILE *fp;
 	struct X2SYS_COE_PAIR *P;
 	char line[BUFSIZ], txt[BUFSIZ], kind[BUFSIZ], fmt[BUFSIZ], trk[2][GMT_TEXT_LEN], t_txt[2][GMT_TEXT_LEN], start[2][GMT_TEXT_LEN];
+	char x_txt[GMT_TEXT_LEN], y_txt[GMT_TEXT_LEN], d_txt[2][GMT_TEXT_LEN], h_txt[2][GMT_TEXT_LEN], v_txt[2][GMT_TEXT_LEN], z_txt[2][GMT_TEXT_LEN];
 	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list, **ignore = NULL, *t = NULL;
 	GMT_LONG p, n_pairs;
 	int i, k, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
@@ -1518,19 +1519,20 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 		k = 0;
 		while ((t = fgets (line, BUFSIZ, fp)) && line[0] != '>') {	/* As long as we are reading data records */
 			GMT_chop (line);	/* Get rid of [CR]LF */
-			sscanf (line, fmt, &P[p].COE[k].data[0][COE_X], &P[p].COE[k].data[0][COE_Y], t_txt[0], t_txt[1], &P[p].COE[k].data[0][COE_D], &P[p].COE[k].data[1][COE_D], &P[p].COE[k].data[0][COE_H], 
-				&P[p].COE[k].data[1][COE_H], &P[p].COE[k].data[0][COE_V], &P[p].COE[k].data[1][COE_V], &P[p].COE[k].data[0][COE_Z], &P[p].COE[k].data[1][COE_Z]);
-			if (no_time || !strcmp (t_txt[0], "NaN"))
-				P[p].COE[k].data[0][COE_T] = GMT_d_NaN;
-			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[0], GMT_IS_ABSTIME, &P[p].COE[k].data[0][COE_T]), t_txt[0])) {
-				fprintf (stderr, "%s: ERROR: Time specification t1 (%s) in wrong format\n", GMT_program, t_txt[0]);
-				exit (EXIT_FAILURE);
-			}
-			if (no_time || !strcmp (t_txt[1], "NaN"))
-				P[p].COE[k].data[1][COE_T] = GMT_d_NaN;
-			else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[1], GMT_IS_ABSTIME, &P[p].COE[k].data[1][COE_T]), t_txt[1])) {
-				fprintf (stderr, "%s: ERROR: Time specification t2 (%s) in wrong format\n", GMT_program, t_txt[1]);
-				exit (EXIT_FAILURE);
+			sscanf (line, fmt, x_txt, y_txt, t_txt[0], t_txt[1], d_txt[0], d_txt[1], h_txt[0], h_txt[1], v_txt[0], v_txt[1], z_txt[0], z_txt[1]);
+			GMT_scanf (x_txt, GMT_io.in_col_type[GMT_X], &P[p].COE[k].data[0][COE_X]);
+			GMT_scanf (y_txt, GMT_io.in_col_type[GMT_Y], &P[p].COE[k].data[0][COE_Y]);
+			for (i = 0; i < 2; i++) {
+				GMT_scanf (d_txt[i], GMT_IS_FLOAT, &P[p].COE[k].data[i][COE_D]);
+				GMT_scanf (h_txt[i], GMT_IS_FLOAT, &P[p].COE[k].data[i][COE_H]); 
+				GMT_scanf (v_txt[i], GMT_IS_FLOAT, &P[p].COE[k].data[i][COE_V]);
+				GMT_scanf (z_txt[i], GMT_IS_FLOAT, &P[p].COE[k].data[i][COE_Z]);
+				if (no_time || !strcmp (t_txt[i], "NaN"))
+					P[p].COE[k].data[i][COE_T] = GMT_d_NaN;
+				else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
+					fprintf (stderr, "%s: ERROR: Time specification t%d (%s) in wrong format\n", GMT_program, (i+1), t_txt[i]);
+					exit (EXIT_FAILURE);
+				}
 			}
 			if (!two_values) {	/* Modify z to return the two values at the crossover point */
 				x = 0.5 * P[p].COE[k].data[0][COE_Z]; m = P[p].COE[k].data[1][COE_Z];
