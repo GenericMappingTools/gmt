@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.125 2009-03-29 04:38:33 guru Exp $
+ *	$Id: x2sys.c,v 1.126 2009-03-29 16:34:35 jluis Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -423,7 +423,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 				}
 				strncpy (buffer, &line[s->info[j].start_col], (size_t)s->info[j].n_cols);
 				buffer[s->info[j].n_cols] = 0;
-				GMT_scanf (buffer, G->in_col_type[j], &data[j]);
+				if (GMT_scanf (buffer, G->in_col_type[j], &data[j]) == GMT_IS_NAN) data[j] = GMT_d_NaN;
 				break;
 
 			case 'a':	/* ASCII Record, get all columns directly */
@@ -437,7 +437,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 				GMT_chop (line);	/* Remove trailing CR or LF */
 				pos = 0;
 				while ((GMT_strtok (line, " ,\t\n", &pos, p)) && k < s->n_fields) {
-					GMT_scanf (p, G->in_col_type[k], &data[k]);
+					if (GMT_scanf (p, G->in_col_type[k], &data[k]) == GMT_IS_NAN) data[k] = GMT_d_NaN;
 					k++;;
 				}
 				return ((k != s->n_fields) ? -1 : 0);
@@ -1370,7 +1370,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 	GMT_LONG p, n_pairs;
 	int i, k, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
 	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
-	double x, m, lon, dist[2];
+	double x, m, lon, dist[2], d_val;
 
 	fp = stdin;	/* Default to stdin if dbase is NULL */
 	if (dbase && (fp = fopen (dbase, "r")) == NULL) {
@@ -1435,9 +1435,9 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 
 	/* OK, our file has the required column name, lets build the format statement */
 
-	sprintf (fmt, "%%lg %%lg %%s %%s %%lg %%lg %%lg %%lg %%lg %%lg");	/* The standard 10 items up front */
+	sprintf (fmt, "%%s %%s %%s %%s %%s %%s %%s %%s %%s %%s");	/* The standard 10 items up front */
 	for (i = 1; i < our_item; i++) strcat (fmt, " %*s");	/* The items to skip */
-	strcat (fmt, " %lg %lg");	/* The item we want */
+	strcat (fmt, " %s %s");	/* The item we want */
 
 	trk_list = (char **) GMT_memory (VNULL, (size_t)n_alloc_t, sizeof (char *), GMT_program);
 	
@@ -1520,13 +1520,25 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 		while ((t = fgets (line, BUFSIZ, fp)) && line[0] != '>') {	/* As long as we are reading data records */
 			GMT_chop (line);	/* Get rid of [CR]LF */
 			sscanf (line, fmt, x_txt, y_txt, t_txt[0], t_txt[1], d_txt[0], d_txt[1], h_txt[0], h_txt[1], v_txt[0], v_txt[1], z_txt[0], z_txt[1]);
-			GMT_scanf (x_txt, GMT_io.in_col_type[GMT_X], &P[p].COE[k].data[0][COE_X]);
-			GMT_scanf (y_txt, GMT_io.in_col_type[GMT_Y], &P[p].COE[k].data[0][COE_Y]);
+			if (GMT_scanf (x_txt, GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT_d_NaN;
+			P[p].COE[k].data[0][COE_X] = d_val;
+			if (GMT_scanf (y_txt, GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT_d_NaN;
+			P[p].COE[k].data[0][COE_Y] = d_val;
+
 			for (i = 0; i < 2; i++) {
-				GMT_scanf (d_txt[i], GMT_IS_FLOAT, &P[p].COE[k].data[i][COE_D]);
-				GMT_scanf (h_txt[i], GMT_IS_FLOAT, &P[p].COE[k].data[i][COE_H]); 
-				GMT_scanf (v_txt[i], GMT_IS_FLOAT, &P[p].COE[k].data[i][COE_V]);
-				GMT_scanf (z_txt[i], GMT_IS_FLOAT, &P[p].COE[k].data[i][COE_Z]);
+				if (GMT_scanf (d_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT_d_NaN;
+				P[p].COE[k].data[i][COE_D] = d_val;
+
+				if (GMT_scanf (h_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT_d_NaN;
+				P[p].COE[k].data[i][COE_H] = d_val;
+
+				if (GMT_scanf (v_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT_d_NaN;
+				P[p].COE[k].data[i][COE_V] = d_val;
+
+				if (GMT_scanf (z_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT_d_NaN;
+				P[p].COE[k].data[i][COE_Z] = d_val;
+
+//fprintf(stderr, "MERDA %s\t%g\t%g\n", z_txt[i], P[p].COE[k].data[0][COE_Z], P[p].COE[k].data[i][COE_Z]);
 				if (no_time || !strcmp (t_txt[i], "NaN"))
 					P[p].COE[k].data[i][COE_T] = GMT_d_NaN;
 				else if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
@@ -1598,7 +1610,7 @@ void x2sys_free_coe_dbase (struct X2SYS_COE_PAIR *P, GMT_LONG np)
 
 int x2sys_find_track (char *name, char **list, int n)
 {	/* Return track id # for this leg or -1 if not found */
-	int i;
+	int i = 0;
 	if (!list) return (-1);	/* Null pointer passed */
 	for (i = 0; i < n; i++) if (!strcmp (name, list[i])) return (i);
 	return (-1);
