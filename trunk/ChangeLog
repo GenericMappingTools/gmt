@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.456 2009-03-28 22:01:49 guru Exp $
+	$Id: ChangeLog,v 1.457 2009-03-29 00:30:37 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-03-28	pwessel
 	* imgsrc/img2google:	Added new script (modified from David Sandwell's prototype)
 				that creates Google Earth overlay tiles from topo.11.1.img
+	* ps2raster.c:	Introduced -WG to create KML that clamps the image to the Seafloor;
+					The original -Wg clamps it to the Ground.
+					
 2009-03-26	pwessel
 	* gmt_support.c:	Exceeded array bounds in GMT_read_cpt for hsv conversion.
 	* mgd77/mgd77track.c:	Added -Gt|d<gap> to recognize gaps in tracks based on
