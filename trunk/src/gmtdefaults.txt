@@ -238,15 +238,23 @@ The (case sensitive) name of the ellipsoid used for the map projections  [WGS-84
 .sp
 #include "gmtdefaults.i"
 .sp
-Note that for some global projections, \fBGMT\fP may default to GRS-80 Sphere regardless
-of ellipsoid actually chosen.  A warning will be given when this happens.  If a different
-ellipsoid name than those mentioned here is given, \fBGMT\fP will attempt to open
-a file with that name in the current directory, and read a single record that contains
-the ellipsoid name, year, semi-major axis (in m), semi-minor axis (in m), and flattening (f) from
-the first record, where the fields must be separated by white-space (not commas).  This way a
-custom ellipsoid (e.g., those used for other planets) may be used.  A zero minor axis or flattening
-will make \fBGMT\fP calculate them from the other two parameters.
-Further note that coordinate
+Note that for some global projections, \fBGMT\fP may use a spherical approximation of the
+ellipsoid chosen, setting the flattening to zero, and using a mean radius.
+A warning will be given when this happens.
+If a different
+ellipsoid name than those mentioned here is given, \fBGMT\fP will attempt to parse the
+name to extract the semi-major axis (\fIa\fP in m) and the flattening. Formats allowed are:
+.br
+\fIa\fP		implies a zero flattening
+.br
+\fIa\fP/\fIi\fP		where \fIi\fP is the inverse flattening
+.br
+\fIa\fP/\fBb=\fP\fIb\fP	where \fIb\fP is the semi-minor axis (in m)
+.br
+\fIa\fP/\fBf=\fP\fIf\fP	where \fIf\fP is the flattening
+.br
+This way a
+custom ellipsoid (e.g., those used for other planets) may be used. Further note that coordinate
 transformations in \fBmapproject\fP can also specify specific datums; see the \fBmapproject\fP
 man page for further details and how to view ellipsoid and datum parameters.
 .TP
@@ -280,11 +288,11 @@ instead [0].
 .TP
 .B GRID_FORMAT
 Default file format for grids, with optional scale, offset and invalid value, written as
-ff/scale/offset/invalid. The 2-letter format indicator can be one of [bcnsr][bsifd]. The first
+\fIff\fP/\fIscale\fP/\fIoffset\fP/\fIinvalid\fP. The 2-letter format indicator can be one of [\fBbcnsr\fP][\fBbsifd\fP]. The first
 letter indicates native \fBGMT\fP binary, old format netCDF, COARDS-compliant netCDF, Surfer format or Sun
 Raster format. The second letter stands for byte, short, int, float and double, respectively. When
-/invalid is omitted the appropriate value for the given format is used (NaN or largest negative).
-When /scale/offset is omitted, /1.0/0.0 is used. [nf].
+/\fIinvalid\fP is omitted the appropriate value for the given format is used (NaN or largest negative).
+When /\fIscale\fP/\fIoffset\fP is omitted, /1.0/0.0 is used. [nf].
 .TP
 .B GRID_PEN_SECONDARY
 Pen thickness used to draw grid lines in dpi units or points (append p) [0.5p].
