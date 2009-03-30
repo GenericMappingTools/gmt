@@ -1,4 +1,4 @@
-#	$Id: Ellipsoids.txt,v 1.7 2008-08-14 02:46:36 remko Exp $
+#	$Id: Ellipsoids.txt,v 1.8 2009-03-30 19:09:55 remko Exp $
 #
 # This is the core listing of supported ellipsoids in GMT map projections.
 # Please adhere to the format.
@@ -72,5 +72,14 @@ Plessis			1817 6376523.0		308.64		: Old ellipsoid used in France
 Delambre		1810 6376428.0		311.5		: Applies to Belgium
 CPM 			1799 6375738.7		334.29		: Comm. des Poids et Mesures, France
 Maupertius		1738 6397300.0		191.0		: Really old ellipsoid used in France
+Moon			2000 1737400.0		0.0		: Moon (IAU2000)
+Mercury			2000 2439700.0		0.0		: Mercury (IAU2000)
+Venus			2000 6051800.0		0.0		: Venus (IAU2000)
+Mars			2000 3396190.0		169.89444722361	: Mars (IAU2000)
+Jupiter			2000 71492000.0		15.41440275981	: Jupiter (IAU2000)
+Saturn			2000 60268000.0		10.207994579946	: Saturn (IAU2000)
+Uranus			2000 25559000.0		43.616040955631	: Uranus (IAU2000)
+Neptune			2000 24764000.0		58.543735224586	: Neptune (IAU2000)
+Pluto			2000 1195000.0		0.0		: Pluto (IAU2000)
 Sphere			1984 6371008.7714	0.0		: The mean (authalic) radius in WGS-84 (for spherical/plate tectonics applications)
 #--------------------------------------------------------------------------------------------------------------------------------------
