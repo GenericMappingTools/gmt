@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.376 2009-03-23 21:46:57 guru Exp $
+ *	$Id: gmt_init.c,v 1.377 2009-03-30 16:45:30 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2847,18 +2847,16 @@ int GMT_get_ellipsoid (char *name)
 				GMT_exit (EXIT_FAILURE);
 			}
 
-			if (gmtdefs.ref_ellipsoid[i].pol_radius > 0.0 && gmtdefs.ref_ellipsoid[i].flattening < 0.0) {
-				/* negative flattening means we must compute flattening from the polar and equatorial radii: */
+			if (gmtdefs.ref_ellipsoid[i].pol_radius == 0.0) {} /* Ignore semi-minor axis */
+			else if (gmtdefs.ref_ellipsoid[i].flattening == 0.0) {
+				/* zero flattening means we must compute flattening from the polar and equatorial radii: */
 
 				gmtdefs.ref_ellipsoid[i].flattening = 1.0 - (gmtdefs.ref_ellipsoid[i].pol_radius / gmtdefs.ref_ellipsoid[i].eq_radius);
-				fprintf (stderr, "GMT: user-supplied ellipsoid has implicit flattening of %.8f\n", gmtdefs.ref_ellipsoid[i].flattening);
-				if (gmtdefs.verbose) fprintf (stderr, "GMT: user-supplied ellipsoid has flattening of %s%.8f\n",
-					gmtdefs.ref_ellipsoid[i].flattening != 0.0 ? "1/" : "", gmtdefs.ref_ellipsoid[i].flattening != 0.0 ? 1./gmtdefs.ref_ellipsoid[i].flattening : 0.0);
+				if (gmtdefs.verbose) fprintf (stderr, "GMT: user-supplied ellipsoid has implicit flattening of %.8f\n", gmtdefs.ref_ellipsoid[i].flattening);
 			}
 			/* else check consistency: */
-			else if (gmtdefs.ref_ellipsoid[i].pol_radius > 0.0 && (slop = fabs(gmtdefs.ref_ellipsoid[i].flattening - 1.0 + (gmtdefs.ref_ellipsoid[i].pol_radius/gmtdefs.ref_ellipsoid[i].eq_radius))) > 1.0e-8) {
+			else if ((slop = fabs(gmtdefs.ref_ellipsoid[i].flattening - 1.0 + (gmtdefs.ref_ellipsoid[i].pol_radius/gmtdefs.ref_ellipsoid[i].eq_radius))) > 1.0e-8) {
 				fprintf (stderr, "GMT Warning: Possible inconsistency in user ellipsoid parameters (%s) [off by %g]\n", line, slop);
-				/* GMT_exit (EXIT_FAILURE); */
 			}
 		}
 	}
