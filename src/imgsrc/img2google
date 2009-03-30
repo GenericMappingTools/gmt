@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: img2google,v 1.11 2009-03-29 22:17:35 guru Exp $
+#	$Id: img2google,v 1.12 2009-03-30 17:27:22 guru Exp $
 # Shell script that will generate a Google Earth png tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid and add
 # a basic KML wrapper for use in any Google Earth version.
@@ -87,7 +87,7 @@ H=`gmtmath -Q -fg $n $s SUB =`
 #    NaNs were unconstrained, exclude NaNs, and capture points whose z < 0
 
 img2grd $TOPO $R -T2 -S1 -m${INC} -E -D $V -G$$.tile.nc
-grd2xyz $$.tile.nc -S -bod | gmtselect -Z-15000/-0.00001 -bi3d > $$.track.xyz
+grd2xyz $$.tile.nc -S -bod | gmtselect -Z-15000/-2.0 -bi3d > $$.track.xyz
 
 # 3. get the topo data, this time including unconstrained estimates
 
@@ -125,8 +125,8 @@ else	# Use GSHHS high clip path to only show ocean areas
 	pscoast $R -Jx1id -Y0 -X0 -K -P $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 --PAPER_MEDIA=Custom_${W}ix${H}i -Dh -Sc > $$.ps
 	grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -J -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 fi
-psxy $$.track.xyz -J $R -Sc.005i -G80 $V -O -K --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
-grdcontour $$.tile.nc -J -C$$.intervals -Wfaint,80 -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
+psxy $$.track.xyz -J $R -Sc.005i -G00 $V -O -K --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
+grdcontour $$.tile.nc -J -C$$.intervals -W.34p,80 -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 grdcontour $$.tile.nc -J -C$$.int2000 -W1p,black -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 if [ X"$C" = "X" ]; then
 	psxy -R -J -O /dev/null >> $$.ps
