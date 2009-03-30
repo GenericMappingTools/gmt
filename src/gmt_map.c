@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.214 2009-03-24 02:26:43 guru Exp $
+ *	$Id: gmt_map.c,v 1.215 2009-03-30 23:39:50 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -178,6 +178,7 @@ int GMT_init_three_D (void);
 void GMT_map_setxy (double xmin, double xmax, double ymin, double ymax);
 void GMT_map_setinfo (double xmin, double xmax, double ymin, double ymax, double scl);
 void GMT_set_spherical (void);
+void GMT_init_project_info (BOOLEAN spherical);
 void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, double *lon2, double *lat2);
 void GMT_get_rotate_pole (double lon1, double lat1, double lon2, double lat2);
 void GMT_pole_rotate_forward (double lon, double lat, double *tlon, double *tlat);
@@ -5867,19 +5868,6 @@ void GMT_get_point_from_r_az (double lon0, double lat0, double r, double azim, d
 	*lat1 = d_asind (siny * cosr + cosy * sinr * cosaz);
 }
 
-void GMT_set_spherical (void) {	/* Force spherical solution */
-	gmtdefs.ellipsoid = GMT_N_ELLIPSOIDS - 1;	/* Use equatorial radius */
-	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
-	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
-	project_info.M_PR_DEG = TWO_PI * project_info.EQ_RAD / 360.0;
-	project_info.KM_PR_DEG = 0.001 * project_info.M_PR_DEG;
-	project_info.ECC = project_info.ECC2 = project_info.ECC4 = project_info.ECC6 = 0.0;
-	project_info.one_m_ECC2 = project_info.i_one_m_ECC2 = 1.0;
-	project_info.half_ECC = project_info.i_half_ECC = 0.0;
-
-	if (gmtdefs.verbose) fprintf (stderr, "%s: GMT Warning: Spherical approximation used!\n", GMT_program);
-}
-
 void GMT_map_setinfo (double xmin, double xmax, double ymin, double ymax, double scl)
 {	/* Set [and rescale] parameters */
 	double factor = 1.0, w, h;
@@ -6519,17 +6507,21 @@ void GMT_scale_eqrad ()
 
 	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
 	project_info.M_PR_DEG = TWO_PI * project_info.EQ_RAD / 360.0;
-
+	project_info.KM_PR_DEG = 0.001 * project_info.M_PR_DEG;
 }
+
+
+/* Compute mean radius r = (2a + b)/3 = a (1 - f/3) */
+#define GMT_mean_radius(a, f) (a * (1.0 - f / 3.0))
 
 void GMT_init_ellipsoid (void)
 {
-	double f, mean_r;
+	double f;
 
-	/* Now set up ellipsoid parameters for the selected ellipsoid since .gmtdefaults could have changed them */
+	/* Set up ellipsoid parameters for the selected ellipsoid since .gmtdefaults could have changed them */
 
 	f = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening;
-	project_info.ECC2 = 2 * f - f * f;
+	project_info.ECC2 = 2.0 * f - f * f;
 	project_info.ECC4 = project_info.ECC2 * project_info.ECC2;
 	project_info.ECC6 = project_info.ECC2 * project_info.ECC4;
 	project_info.one_m_ECC2 = 1.0 - project_info.ECC2;
@@ -6539,14 +6531,23 @@ void GMT_init_ellipsoid (void)
 	project_info.i_half_ECC = 0.5 / project_info.ECC;
 	project_info.EQ_RAD = gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius;
 	project_info.i_EQ_RAD = 1.0 / project_info.EQ_RAD;
-	/* We also need to set things that relate to spheres only.  If current ellipsoid is not a sphere
-	 * then we calculate the mean radius and derive spherical properties from it */
 
-	/* Must compute mean radius r = (2a + b)/3 = a (1 - f/3)  */
+	/* Spherical degrees to m or km */
+	project_info.M_PR_DEG = TWO_PI * GMT_mean_radius (project_info.EQ_RAD, f) / 360.0;
+	project_info.KM_PR_DEG = 0.001 * project_info.M_PR_DEG;
+}
 
-	mean_r = project_info.EQ_RAD * (1.0 - f / 3.0);
-	project_info.M_PR_DEG = TWO_PI * mean_r / 360.0;		/* Sphere degree -> m  */
-	project_info.KM_PR_DEG = 0.001 * project_info.M_PR_DEG;		/* Sphere degree -> km */
+void GMT_set_spherical (void)
+{
+	/* Set up ellipsoid parameters using spherical approximation */
+
+	gmtdefs.ref_ellipsoid[GMT_N_ELLIPSOIDS - 1].eq_radius =
+		GMT_mean_radius (gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius, gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening);
+	gmtdefs.ellipsoid = GMT_N_ELLIPSOIDS - 1;	/* Custom ellipsoid */
+	gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening = 0.0;
+	if (gmtdefs.verbose) fprintf (stderr, "%s: Warning: spherical approximation used!\n", GMT_program);
+
+	GMT_init_ellipsoid ();
 }
 
 void GMT_set_polar (double plat)
