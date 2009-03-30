@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.176 2009-03-18 18:41:58 guru Exp $
+ *	$Id: gmt.h,v 1.177 2009-03-30 23:32:14 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -382,7 +382,6 @@ struct GMT_DEFAULTS {
 		char name[GMT_TEXT_LEN];
 		int date;
 		double eq_radius;
-		double pol_radius;
 		double flattening;
 	} ref_ellipsoid[GMT_N_ELLIPSOIDS];	/* Ellipsoid parameters */
 	struct DATUM {	/* Information about a particular datum */
