@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.79 2008-05-29 23:18:30 guru Exp $
+#  $Id: GNUmakefile,v 1.80 2009-03-30 23:35:12 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -77,7 +77,9 @@ gmt_colornames.h:	Colors.txt
 # Must create gmt_ellipsoids.h and gmtdefaults.i from Ellipsoids.txt
 
 gmt_ellipsoids.h:	Ellipsoids.txt
-			grep -v '^#' Ellipsoids.txt | LANG=C awk '{if ($$4 == 0.0) {printf "\t\t{ \"%s\", %d, %s, 0.0, 0.0 },\n", $$1, $$2, $$3} else {printf "\t\t{ \"%s\", %d, %s, 0.0, 1.0/%s},\n", $$1, $$2, $$3, $$4}}' | sed '$$s/},/}/' > $@
+			grep -v '^#' Ellipsoids.txt | LANG=C awk '{{printf "\t\t{ \"%s\", %d, %s, ", $$1, $$2, $$3}; \
+			if ($$4 == 0) {printf "0.0},\n"} else if ($$4 < 0.5*$$3) {printf "1.0/%s},\n", $$4} else \
+			{printf "1.0-%s/%s},\n", $$4, $$3}} END{printf "\t\t{ \"Custom\", 0, 6371008.7714, 0.0}\n"}' > $@
 
 gmtdefaults.i:		Ellipsoids.txt
 			grep -v '^#' Ellipsoids.txt > tmp0.txt
