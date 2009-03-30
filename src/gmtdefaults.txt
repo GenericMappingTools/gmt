@@ -242,10 +242,11 @@ Note that for some global projections, \fBGMT\fP may default to GRS-80 Sphere re
 of ellipsoid actually chosen.  A warning will be given when this happens.  If a different
 ellipsoid name than those mentioned here is given, \fBGMT\fP will attempt to open
 a file with that name in the current directory, and read a single record that contains
-the ellipsoid name, year, major-axis (in m), minor-axis (in m), and flattening (f) from
+the ellipsoid name, year, semi-major axis (in m), semi-minor axis (in m), and flattening (f) from
 the first record, where the fields must be separated by white-space (not commas).  This way a
-custom ellipsoid (e.g., those used for other planets) may be used.  A negative flattening means
-\fBGMT\fP will recalculate flattening from the two radii.  Further note that coordinate
+custom ellipsoid (e.g., those used for other planets) may be used.  A zero minor axis or flattening
+will make \fBGMT\fP calculate them from the other two parameters.
+Further note that coordinate
 transformations in \fBmapproject\fP can also specify specific datums; see the \fBmapproject\fP
 man page for further details and how to view ellipsoid and datum parameters.
 .TP
