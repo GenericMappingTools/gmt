@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.377 2009-03-30 16:45:30 remko Exp $
+ *	$Id: gmt_init.c,v 1.378 2009-03-30 23:30:38 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2811,53 +2811,64 @@ int GMT_hash (char *v, int n_hash)
 int GMT_get_ellipsoid (char *name)
 {
 	int i, n;
+	FILE *fp;
+	char line[BUFSIZ], path[BUFSIZ];
+	double slop, pol_radius;
 
-	for (i = 0; i < GMT_N_ELLIPSOIDS && strcmp (name, gmtdefs.ref_ellipsoid[i].name); i++);
+	/* Try to ge ellipsoid from the default list */
 
-	if (i == GMT_N_ELLIPSOIDS) {	/* Try to open as file first in (1) current dir, then in (2) $GMT_SHAREDIR */
-		FILE *fp;
-		char line[BUFSIZ], path[BUFSIZ];
-		double slop;
+	for (i = 0; i < GMT_N_ELLIPSOIDS; i++) {
+		if (!strcmp(name, gmtdefs.ref_ellipsoid[i].name)) return (i);
+	}
 
-		GMT_getsharepath (CNULL, name, "", path);
+	i = GMT_N_ELLIPSOIDS - 1;
 
-		if (!strcmp ("Sphere", name)) {
-			/* Special case where previous setting in .gmtdefaults4 is a custom ellipse which
-			 * is now stored in the place of "Sphere".  Hence the entry for "Sphere" is no longer
-			 * there and we must reinsert manually here */
-			i = GMT_N_ELLIPSOIDS - 1;
-			strcpy (gmtdefs.ref_ellipsoid[i].name, "Sphere");
-			gmtdefs.ref_ellipsoid[i].date = 1980;
-			gmtdefs.ref_ellipsoid[i].eq_radius = 6371008.7714;
-			gmtdefs.ref_ellipsoid[i].pol_radius = gmtdefs.ref_ellipsoid[i].eq_radius;
-			gmtdefs.ref_ellipsoid[i].flattening = 0.0;
+	/* Try to open as file first in (1) current dir, then in (2) $GMT_SHAREDIR */
+
+	GMT_getsharepath (CNULL, name, "", path);
+
+	if ((fp = fopen (name, "r")) == NULL && (fp = fopen (path, "r")) == NULL) {
+		/* No file of that name, so parse argument instead */
+		n = sscanf (name, "%lf/%s", &gmtdefs.ref_ellipsoid[i].eq_radius, line);
+		if (n < 1)
+			return (-1);	/* Failed to read arguments */
+		else if (n == 1)
+			gmtdefs.ref_ellipsoid[i].flattening = 0.0; /* Read equatorial radius only ... spherical */
+		else if (line[0] == 'b') {	/* Read semi-minor axis */
+			n = sscanf (&line[2], "%lf", &pol_radius);
+			gmtdefs.ref_ellipsoid[i].flattening = 1.0 - (pol_radius / gmtdefs.ref_ellipsoid[i].eq_radius);
 		}
-		else if ((fp = fopen (name, "r")) == NULL && (fp = fopen (path, "r")) == NULL) {
-			i = -1;	/* Failed, give error */
+		else if (line[0] == 'f') {	/* Read flattening */
+			n = sscanf (&line[2], "%lf", &gmtdefs.ref_ellipsoid[i].flattening);
 		}
-		else {	/* Found file, now get parameters */
-			i = GMT_N_ELLIPSOIDS - 1;
-			while (fgets (line, BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));
-			fclose (fp);
-			n = sscanf (line, "%s %d %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name,
-				&gmtdefs.ref_ellipsoid[i].date, &gmtdefs.ref_ellipsoid[i].eq_radius,
-				&gmtdefs.ref_ellipsoid[i].pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
-			if (n != 5) {
-				fprintf (stderr, "GMT: Error decoding user ellipsoid parameters (%s)\n", line);
-				GMT_exit (EXIT_FAILURE);
-			}
+		else {				/* Read inverse flattening */
+			n = sscanf (line, "%lf", &gmtdefs.ref_ellipsoid[i].flattening);
+			if (gmtdefs.ref_ellipsoid[i].flattening != 0.0) gmtdefs.ref_ellipsoid[i].flattening = 1.0 / gmtdefs.ref_ellipsoid[i].flattening;
+		}
+		if (n < 1) return (-1);
+	}
+	else {	/* Found file, now get parameters */
+		i = GMT_N_ELLIPSOIDS - 1;
+		while (fgets (line, BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));
+		fclose (fp);
+		n = sscanf (line, "%s %d %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name,
+			&gmtdefs.ref_ellipsoid[i].date, &gmtdefs.ref_ellipsoid[i].eq_radius,
+			&pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
+		if (n != 5) {
+			fprintf (stderr, "GMT: Error decoding user ellipsoid parameters (%s)\n", line);
+			GMT_exit (EXIT_FAILURE);
+		}
 
-			if (gmtdefs.ref_ellipsoid[i].pol_radius == 0.0) {} /* Ignore semi-minor axis */
-			else if (gmtdefs.ref_ellipsoid[i].flattening == 0.0) {
-				/* zero flattening means we must compute flattening from the polar and equatorial radii: */
+		if (pol_radius == 0.0) {} /* Ignore semi-minor axis */
+		else if (gmtdefs.ref_ellipsoid[i].flattening == 0.0) {
+			/* zero flattening means we must compute flattening from the polar and equatorial radii: */
 
-				gmtdefs.ref_ellipsoid[i].flattening = 1.0 - (gmtdefs.ref_ellipsoid[i].pol_radius / gmtdefs.ref_ellipsoid[i].eq_radius);
-				if (gmtdefs.verbose) fprintf (stderr, "GMT: user-supplied ellipsoid has implicit flattening of %.8f\n", gmtdefs.ref_ellipsoid[i].flattening);
-			}
-			/* else check consistency: */
-			else if ((slop = fabs(gmtdefs.ref_ellipsoid[i].flattening - 1.0 + (gmtdefs.ref_ellipsoid[i].pol_radius/gmtdefs.ref_ellipsoid[i].eq_radius))) > 1.0e-8) {
-				fprintf (stderr, "GMT Warning: Possible inconsistency in user ellipsoid parameters (%s) [off by %g]\n", line, slop);
-			}
+			gmtdefs.ref_ellipsoid[i].flattening = 1.0 - (pol_radius / gmtdefs.ref_ellipsoid[i].eq_radius);
+			if (gmtdefs.verbose) fprintf (stderr, "GMT: user-supplied ellipsoid has implicit flattening of %.8f\n", gmtdefs.ref_ellipsoid[i].flattening);
+		}
+		/* else check consistency: */
+		else if ((slop = fabs(gmtdefs.ref_ellipsoid[i].flattening - 1.0 + (pol_radius/gmtdefs.ref_ellipsoid[i].eq_radius))) > 1.0e-8) {
+			fprintf (stderr, "GMT Warning: Possible inconsistency in user ellipsoid parameters (%s) [off by %g]\n", line, slop);
 		}
 	}
 
