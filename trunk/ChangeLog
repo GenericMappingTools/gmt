@@ -1,6 +1,20 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.458 2009-03-29 04:12:22 guru Exp $
+	$Id: ChangeLog,v 1.459 2009-03-30 23:41:25 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-03-30	remko
+	* gmt_init.c (GMT_get_ellipsoid):	When importing ellipsoid file, allow a,0,0;
+				a,0,f; a,b,0; or a,b,f as ellipsoid parameters.
+				If file does not exist, attempt to read name as a[/[b=|f=]f],
+				meaning <semi-major axis>, b=<semi-minor axis>, f=<flattening>,
+				or <inverse flattening>.
+	* gmt_defaults.txt:	Adjusted accordingly. Also specified SEMI-major/minor axis.
+	* gmt.h:		Removed pol_radius from ELLIPSOID structure. Never used.
+	* Ellipsoids.txt:	Added Moon and planets (IAU2000).
+				Allow 0, b, or 1/f as second ellipsoid parameter.
+	* src/GNUmakefile:	Adjusted accordingly.
+	* gmt_map.c (GMT_set_spherical):	Take mean radius from CURRENT ellipsoid setting.
+				Call GMT_init_ellipsoid again, so also GMT_[K]M_PR_DEG get set.
 
 2009-03-28	pwessel
 	* imgsrc/img2google:	Added new script (modified from David Sandwell's prototype)
