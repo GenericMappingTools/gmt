@@ -46,13 +46,13 @@ To create a 10x10 degree Google Earth KML tile for the region OPT(R)170/180/20/3
 .sp
 To make the same tile with the previous
 \fItopo.10.1.img\fP, run in verbose mode, clip so only oceanic areas are visible, name the output oldimage, 
-and specify the KML metadata directly (including setting the image altitude to 10 km), and make a single *.kmz file, try:
+specify the KML metadata directly (including setting the image altitude to 10 km), and make a single *.kmz file, try:
 .br
 .sp
 \fBimg2google\fP \fItopo.10.1.img\fP OPT(R)170/180/20/30 OPT(C) OPT(G)\fIoldimage\fP OPT(Q)"My KML title"/"Some image name"/\fBA\fP10000 OPT(V) OPT(Z)
 .br
 .sp
-.SH EXAMPLES
+.SH DATA SETS
 For topo.11.1.img and other Sandwell/Smith altimetry-derived Mercator grids, visit http://topex.ucsd.edu.
 .SH "SEE ALSO"
 .IR GMT (1),
