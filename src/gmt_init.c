@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.379 2009-03-31 15:36:22 remko Exp $
+ *	$Id: gmt_init.c,v 1.380 2009-03-31 19:00:46 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2566,7 +2566,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "#-------- Projection Parameters -------------\n");
 	if (gmtdefs.ellipsoid < GMT_N_ELLIPSOIDS - 1)	/* Custom ellipse */
 		fprintf (fp, "ELLIPSOID\t\t= %s\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].name);
-	else if (gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening == 0.0)
+	else if (GMT_IS_SPHERICAL)
 		fprintf (fp, "ELLIPSOID\t\t= %f\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius);
 	else
 		fprintf (fp, "ELLIPSOID\t\t= %f,%f\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius,
@@ -2849,7 +2849,7 @@ int GMT_get_ellipsoid (char *name)
 		}
 		else {				/* Read inverse flattening */
 			n = sscanf (line, "%lf", &gmtdefs.ref_ellipsoid[i].flattening);
-			if (gmtdefs.ref_ellipsoid[i].flattening != 0.0) gmtdefs.ref_ellipsoid[i].flattening = 1.0 / gmtdefs.ref_ellipsoid[i].flattening;
+			if (!GMT_IS_SPHERICAL) gmtdefs.ref_ellipsoid[i].flattening = 1.0 / gmtdefs.ref_ellipsoid[i].flattening;
 		}
 		if (n < 1) return (-1);
 	}
@@ -2866,7 +2866,7 @@ int GMT_get_ellipsoid (char *name)
 		}
 
 		if (pol_radius == 0.0) {} /* Ignore semi-minor axis */
-		else if (gmtdefs.ref_ellipsoid[i].flattening == 0.0) {
+		else if (GMT_IS_SPHERICAL) {
 			/* zero flattening means we must compute flattening from the polar and equatorial radii: */
 
 			gmtdefs.ref_ellipsoid[i].flattening = 1.0 - (pol_radius / gmtdefs.ref_ellipsoid[i].eq_radius);
