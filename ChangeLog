@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.460 2009-03-31 03:30:15 guru Exp $
+	$Id: ChangeLog,v 1.461 2009-03-31 15:41:00 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-03-31	remko
+	* gmt_map.c (GMT_get_datum):	Reuse GMT_get_ellipsoid to capture <a>,<inv_f> format.
+	* gmt_init.c:		Changed custom ELLIPSOID format to <a>[,<inv_f|b=<b>|f=<f>].
+				Properly write out custom ELLIPSOID into .gmtdefaults4.
 
 2009-03-30	pwessel
 	* mgd77/mgd77.c:	To avoid Windows crashes, made sure free and GMT_free are
