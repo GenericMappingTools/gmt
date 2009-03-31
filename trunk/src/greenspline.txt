@@ -64,8 +64,8 @@ OPT(D)0 means (\fIx\fP) in user units, Cartesian distances,
 Select \fImode\fP 1-3 for Cartesian 2-D surface spline interpolation:
 OPT(D)1 means (\fIx,y\fP) in user units, Cartesian distances,
 OPT(D)2 for (\fIx,y\fP) in degrees, flat Earth distances, and
-OPT(D)3 for (\fIx,y\fP) in degrees, spherical distances in km.  Then, the setting of \fBELLIPSOID\fP determines if we
-compute great circle arcs or geodesics.
+OPT(D)3 for (\fIx,y\fP) in degrees, spherical distances in km.
+Then, if \fBELLIPSOID\fP is spherical, we compute great circle arcs, otherwise geodesics.
 Option \fImode\fP = 4 applies to spherical surface spline interpolation only:
 OPT(D)4 for (\fIx,y\fP) in degrees, use cosine of great circle (or geodesic) arcs.
 Select \fImode\fP 5 for Cartesian 3-D surface spline interpolation:

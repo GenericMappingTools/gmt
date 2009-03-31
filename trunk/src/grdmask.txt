@@ -49,7 +49,7 @@ a data point are considered inside.  Append \fBm\fP to indicate minutes
 or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies OPT(R) and OPT(I) are in degrees, and
 we will use a fast flat Earth approximation to calculate distance).  For more accuracy, use uppercase \fBK\fP
 if distances should be calculated along geodesics.
-However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great circle calculations are used.
+However, if the current \fBELLIPSOID\fP is spherical then great circle calculations are used.
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 [Default is 2 input columns].
