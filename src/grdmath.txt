@@ -84,7 +84,7 @@ and \fBINSIDE\fP.
 point on the stack and all node positions in the grid.  The grid domain
 and the (lon, lat) point are expected to be in degrees.  Similarly, the \fBSAZ\fP and \fBSBAZ\fP
 operators calculate spherical azimuth and backazimuths in degrees, respectively.
-Note: If the current \fBELLIPSOID\fP is not Sphere then geodesics are used in the calculations.
+Note: If the current \fBELLIPSOID\fP is not spherical then geodesics are used in the calculations.
 .br
 .sp
 (2) The operator \fBPLM\fP calculates the associated Legendre polynomial

@@ -52,9 +52,11 @@ Temporarily override \fBMEASURE_UNIT\fP and use \fBc\fP (cm), \fBi\fP (inch),
 .TP
 OPT(E)
 Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates (add OPT(I) for the
-inverse conversion).  Append datum ID (see OPT(Qd)) or give \fIellipsoid\fP:\fIdx,dy,dz\fP
-where \fIellipsoid\fP may be an ellipsoid ID (see OPT(Qe)) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not
-given we assume WGS-84.
+inverse conversion).  Append
+datum ID (see OPT(Qd)) or give \fIellipsoid\fP:\fIdx,dy,dz\fP
+where \fIellipsoid\fP may be an ellipsoid ID (see OPT(Qe)) or given as \fIa\fP[,\fIinv_f\fP], where \fIa\fP is the
+semi-major axis and \fIinv_f\fP is the inverse flattening (0 if omitted).
+If \fIdatum\fP is - or not given we assume WGS-84.
 .TP
 OPT(F)
 Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projected meters.  To specify other units,
@@ -67,7 +69,7 @@ choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile),
 \fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
 last unit requires OPT(R) and OPT(J) to be set.  Upper case  \fBE\fP, \fBK\fP, \fBM\fP, \fBN\fP, or \fBD\fP
 will use exact methods for geodesic distances (Rudoe's method for distances in length units and employing geocentric\"'
-latitudes in degree calculations, assuming the current ellipsoid is not a sphere).  With no fixed point we
+latitudes in degree calculations, assuming the current ellipsoid is not spherical).  With no fixed point we
 calculate cumulate distances along track. To obtain incremental distance between successive points, use OPT(G-).
 To specify the 2nd point via two extra columns in the input file, choose OPT(G+).
 #include "explain_-H.txt"
@@ -92,8 +94,10 @@ Suppress points that fall outside the region.
 OPT(T)
 Coordinate conversions between datums \fIfrom\fP and \fIto\fP using the standard Molodensky transformation.  Use OPT(Th) if 3rd input column has
 height above ellipsoid [Default assumes height = 0, i.e., on the ellipsoid].  Specify datums using the
-ID (see OPT(Qd)) or give \fIellipsoid\fP:\fIdx,dy,dz\fP, where \fIellipsoid\fP may be an ellipsoid
-ID (see OPT(Qe)) or given as \fIa,1/f\fP.  If \fIdatum\fP is - or not given we use WGS-84.
+datum ID (see OPT(Qd)) or give \fIellipsoid\fP:\fIdx,dy,dz\fP
+where \fIellipsoid\fP may be an ellipsoid ID (see OPT(Qe)) or given as \fIa\fP[,\fIinv_f\fP], where \fIa\fP is the
+semi-major axis and \fIinv_f\fP is the inverse flattening (0 if omitted).
+If \fIdatum\fP is - or not given we assume WGS-84.
 OPT(T) may be used in conjunction with OPT(R) OPT(J) to change the datum before coordinate projection
 (add OPT(I) to apply the datum conversion after the inverse projection).  Make sure that the
 \fBELLIPSOID\fP setting is correct for your case.

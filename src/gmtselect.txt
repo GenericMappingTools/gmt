@@ -34,7 +34,7 @@ If \fIdist\fP is zero then the 3rd column of \fIptfile\fP must have each point's
 Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical distances in km.
 Use OPT(Cf) to indicate you want flat Earth distances (quicker but approximate) rather than
 geodesic distances (slower but exact).
-If \fBELLIPSOID\fP is Sphere then geodesics become great circles (faster to compute than geodesic).
+If \fBELLIPSOID\fP is spherical then geodesics become great circles (faster to compute than geodesic).
 Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
 (in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \fIdist\fP.
 .TP
@@ -71,6 +71,7 @@ Pass all records whose location is within \fIdist\fP of any of the line segments
 file \fIlinefile\fP.  If \fIdist\fP is zero then the 2nd column of each
 sub-header in the \fIptfile\fP must have each lines's individual distance value.\"'
 Distances are Cartesian and in user units; specify OPT(fg) to indicate spherical distances in km.
+If \fBELLIPSOID\fP is spherical then geodesics become great circles (faster to compute than geodesic).
 Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are projected to map coordinates
 (in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \fIdist\fP.
 Use OPT(Lp) to ensure only points whose orthogonal projections onto the nearest line-segment

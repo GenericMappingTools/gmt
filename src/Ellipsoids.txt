@@ -1,4 +1,4 @@
-#	$Id: Ellipsoids.txt,v 1.9 2009-03-30 23:34:16 remko Exp $
+#	$Id: Ellipsoids.txt,v 1.10 2009-03-31 15:13:24 remko Exp $
 #
 # This is the core listing of supported ellipsoids in GMT map projections.
 # Please adhere to the format.
@@ -9,7 +9,7 @@
 #
 # Tab-ID		Year a [m]		0, 1/f, or b	Info
 #--------------------------------------------------------------------------------------------------------------------------------------
-WGS-84			1984 6378137.0		298.2572235630	: World Geodetic System [Default]
+WGS-84			1984 6378137.0		298.257223563	: World Geodetic System [Default]
 OSU91A			1991 6378136.3		298.25722	: Ohio State University
 OSU86F			1986 6378136.2		298.25722	: Ohio State University
 Engelis			1985 6378136.05		298.2566	: Goddard Earth Models
@@ -72,7 +72,7 @@ Plessis			1817 6376523.0		308.64		: Old ellipsoid used in France
 Delambre		1810 6376428.0		311.5		: Applies to Belgium
 CPM 			1799 6375738.7		334.29		: Comm. des Poids et Mesures, France
 Maupertius		1738 6397300.0		191.0		: Really old ellipsoid used in France
-Sphere			1984 6371008.7714	0		: The mean (authalic) radius in WGS-84 (for spherical/plate tectonics applications)
+Sphere			1984 6371008.7714	0		: The mean radius in WGS-84 (for spherical/plate tectonics applications)
 Moon			2000 1737400.0		0		: Moon (IAU2000)
 Mercury			2000 2439700.0		0		: Mercury (IAU2000)
 Venus			2000 6051800.0		0		: Venus (IAU2000)

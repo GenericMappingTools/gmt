@@ -14,8 +14,8 @@ center of the longitude range given by the OPT(R) option is used. The default st
 is the equator.
 .br
 The ellipsoid used in the map projections is user-definable by editing the \.gmtdefaults4 file
-in your home directory. 63 commonly used ellipsoids and a spheroid are currently
-supported, and users may also specify their own ellipsoid parameters [Default is WGS-84].
+in your home directory. 73 commonly used ellipsoids and spheroids are currently
+supported, and users may also specify their own custum ellipsoid parameters [Default is WGS-84].
 Several GMT parameters can affect the projection: \fBELLIPSOID\fP, \fBINTERPOLANT\fP,
 \fBMAP_SCALE_FACTOR\fP, and \fBMEASURE_UNIT\fP; see the \fBgmtdefaults\fP man page for details.
 .br

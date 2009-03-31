@@ -245,14 +245,16 @@ If a different
 ellipsoid name than those mentioned here is given, \fBGMT\fP will attempt to parse the
 name to extract the semi-major axis (\fIa\fP in m) and the flattening. Formats allowed are:
 .br
-\fIa\fP		implies a zero flattening
+.sp
+	\fIa\fP		implies a zero flattening
 .br
-\fIa\fP/\fIi\fP		where \fIi\fP is the inverse flattening
+	\fIa\fP,\fIinv_f\fP	where \fIinv_f\fP is the inverse flattening
 .br
-\fIa\fP/\fBb=\fP\fIb\fP	where \fIb\fP is the semi-minor axis (in m)
+	\fIa\fP,\fBb=\fP\fIb\fP	where \fIb\fP is the semi-minor axis (in m)
 .br
-\fIa\fP/\fBf=\fP\fIf\fP	where \fIf\fP is the flattening
+	\fIa\fP,\fBf=\fP\fIf\fP	where \fIf\fP is the flattening
 .br
+.sp
 This way a
 custom ellipsoid (e.g., those used for other planets) may be used. Further note that coordinate
 transformations in \fBmapproject\fP can also specify specific datums; see the \fBmapproject\fP

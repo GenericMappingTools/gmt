@@ -64,7 +64,7 @@ means that only grid cells with data in them are reliable].  Append \fBm\fP to i
 or \fBc\fP to indicate seconds.  Append \fBk\fP to indicate km (implies OPT(R) and OPT(I) are in degrees, and
 we will use a fast flat Earth approximation to calculate distance).  For more accuracy, use uppercase \fBK\fP
 if distances should be calculated along geodesics.
-However, if the current \fBELLIPSOID\fP is set to Sphere then spherical great circle calculations are used.
+However, if the current \fBELLIPSOID\fP is spherical then great circle calculations are used.
 .TP
 OPT(T)
 Plot tiles instead of clip polygons.  Use OPT(G) to set tile color or pattern.
