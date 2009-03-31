@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.128 2009-03-29 22:42:16 jluis Exp $
+ *	$Id: x2sys.c,v 1.129 2009-03-31 03:30:15 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -367,7 +367,9 @@ void x2sys_free_data (double **data, int n, struct X2SYS_FILE_INFO *p)
 {
 	int i;
 
-	for (i = 0; i < n; i++) GMT_free ((void *)data[i]);
+	for (i = 0; i < n; i++) {
+		if (data[i]) GMT_free ((void *)data[i]);
+	}
 	GMT_free ((void *)data);
 	if (p->ms_rec) GMT_free ((void *)p->ms_rec);
 }
@@ -692,9 +694,8 @@ int x2sys_read_mgd77file (char *fname, double ***data, struct X2SYS_INFO *s, str
 		}
 	}
 	MGD77_Close_File (&M);
+	MGD77_Free_Header_Record (&M, &H);	/* Free up header structure */
 	MGD77_end (&M);
-	MGD77_free_plain_mgd77 (&H);
-	GMT_free ((void *)H.mgd77);
 
 	strncpy (p->name, fname, (size_t)32);
 	p->n_rows = j;
@@ -766,7 +767,8 @@ int x2sys_read_mgd77ncfile (char *fname, double ***data, struct X2SYS_INFO *s, s
 	p->n_segments = 0;
 	p->year = S->H.meta.Departure[0];
 	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free ((void *)S->flags[i]);
-	GMT_free ((void *)S->H.mgd77);
+	MGD77_Free_Header_Record (&M, &(S->H));	/* Free up header structure */
+	GMT_free ((void *)S);
 	MGD77_end (&M);
 
 	*data = z;
@@ -839,7 +841,7 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 	FILE *fp;
 
 	if ((fp = x2sys_fopen (file, "r")) == NULL) {
-  		fprintf (stderr, "x2sys_read_list : Cannot find track list file %s in either current or X2SYS_HOME directories\n", line);
+  		fprintf (stderr, "x2sys_read_list : Cannot find track list file %s in either current or X2SYS_HOME directories\n", file);
 		return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 	
@@ -1662,7 +1664,7 @@ int x2sys_get_tracknames (int argc, char **argv, char ***filelist, BOOLEAN *cmdl
 int separate_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist)
 {	/* Used in x2sys_get_corrtable */
 	int i, j, k, this_aux, n_aux;
-	
+	/* Based on what item_name contains, we copy over info on the 3 aux fields (dist, azim, vel) from auxlist to aux */
 	for (i = k = n_aux = 0; i < n_items; i++) {
 		for (j = 0, this_aux = MGD77_NOT_SET; j < N_GENERIC_AUX && this_aux == MGD77_NOT_SET; j++) if (!strcmp (auxlist[j].name, item_name[i])) this_aux = j;
 		if (this_aux != MGD77_NOT_SET) {	/* Found a request for an auxillary column  */
@@ -1709,7 +1711,7 @@ void x2sys_get_corrtable (struct X2SYS_INFO *S, char *ctable, int ntracks, char 
 	n_items = MGD77_Scan_Corrtable (ctable, trk_name, ntracks, n_cols, col_name, &item_names, 0);
 	if (aux && (n_aux = separate_aux_columns (n_items, item_names, aux, auxlist))) {	/* Determine which auxillary columns are requested (if any) */
 		aux_name = (char **) GMT_memory (VNULL, n_aux, sizeof (char *), GMT_program);
-		for (i = 0; i < n_aux; i++) aux_name[i] = strdup (auxlist[i].name);
+		for (i = 0; i < n_aux; i++) aux_name[i] = strdup (auxlist[aux[i].type].name);
 	}
 	for (i = missing = 0; i < n_items; i++) {
 		if (MGD77_Match_List (item_names[i], n_cols, col_name) == MGD77_NOT_SET) {	/* Requested column not among data cols */
@@ -1718,7 +1720,7 @@ void x2sys_get_corrtable (struct X2SYS_INFO *S, char *ctable, int ntracks, char 
 				missing++;
 			}
 			else
-				auxlist[k].requested = TRUE;
+				auxlist[aux[k].type].requested = TRUE;
 		}
 	}
 	x2sys_free_list (item_names, n_items);

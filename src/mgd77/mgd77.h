@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.105 2009-03-17 05:49:04 guru Exp $
+ *	$Id: mgd77.h,v 1.106 2009-03-31 03:30:15 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -464,6 +464,7 @@ extern int MGD77_Read_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DA
 extern int MGD77_Write_File (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Write entire file (all columns) */
 extern int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Read the header record */
 extern int MGD77_Write_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Write the header record */
+extern int MGD77_Free_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);					/* Frees up header memory */
 extern int MGD77_Read_Data (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Allocate & Read all data (selected columns only); Header already read */
 extern int MGD77_Write_Data (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Write all data (all columns); Header already written */
 extern int MGD77_Read_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Read a single data record (selected columns only) */
