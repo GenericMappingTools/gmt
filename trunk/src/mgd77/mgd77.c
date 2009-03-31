@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.215 2009-03-18 23:36:30 jluis Exp $
+ *	$Id: mgd77.c,v 1.216 2009-03-31 03:30:15 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -70,7 +70,6 @@ int MGD77_Write_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECO
 int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 BOOLEAN MGD77_txt_are_constant (char *txt, GMT_LONG n, int width);
 BOOLEAN MGD77_dbl_are_constant (double x[], GMT_LONG n, double limits[2]);
-char *MGD77_alloc_txt (size_t len);
 void MGD77_do_scale_offset_after_read (double x[], GMT_LONG n, double scale, double offset, double nan_val);
 int MGD77_do_scale_offset_before_write (double new[], const double x[], GMT_LONG n, double scale, double offset, int type);
 void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H);
@@ -159,6 +158,8 @@ int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER *H, int format)
 void MGD77_Write_Sequence (FILE *fp, int seq);
 int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *set, int *item);
 int get_quadrant (int x, int y);
+int MGD77_Free_Header_Record_asc (struct MGD77_HEADER *H);
+int MGD77_Free_Header_Record_cdf (struct MGD77_HEADER *H);
 
 #include "mgd77_functions.c"	/* Get netCDF MGD77 header attribute i/o functions */
 
@@ -370,6 +371,26 @@ int MGD77_Read_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_
 	return (error);
 }
 
+int MGD77_Free_Header_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
+{	/* Frees the header structure form a MGD77[+] file */
+	int error;
+	
+	switch (F->format) {
+		case MGD77_FORMAT_M77:	/* Will read MGD77 headers from MGD77 files or ascii tables */
+		case MGD77_FORMAT_TBL:
+			error = MGD77_Free_Header_Record_asc (H);
+			break;
+		case MGD77_FORMAT_CDF:	/* Will read MGD77 headers from a netCDF file */
+			error = MGD77_Free_Header_Record_cdf (H);
+			break;
+		default:
+			error = MGD77_UNKNOWN_FORMAT;
+			break;
+	}
+	
+	return (error);
+}
+
 int MGD77_Write_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Writes the header structure to a MGD77[+] file */
 	int error;
@@ -511,6 +532,14 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 	MGD77_set_plain_mgd77 (H);				/* Set the info for the standard 27 data fields in MGD-77 files */
 	if ((err = MGD77_Order_Columns (F, H))) return (err);	/* Make sure requested columns are OK; if not given set defaults */
 	
+	return (MGD77_NO_ERROR);	/* Success, it seems */
+}
+
+int MGD77_Free_Header_Record_asc (struct MGD77_HEADER *H)
+{	/* Applies to MGD77 files */
+	
+	if (H->mgd77) GMT_free ((void *)H->mgd77);
+	MGD77_free_plain_mgd77 (H);
 	return (MGD77_NO_ERROR);	/* Success, it seems */
 }
 
@@ -1346,13 +1375,6 @@ void MGD77_Place_Text (int dir, char *struct_member, char *header_record, int st
 		MGD77_Fatal_Error (MGD77_BAD_ARG);
 }
 
-char *MGD77_alloc_txt (size_t len)
-{
-	char *t;
-	t = (char *)GMT_memory (VNULL, len, sizeof (char), GMT_program);
-	return (t);
-}
-
 void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 {
 	int i, k;
@@ -1417,31 +1439,17 @@ void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H)
 
 void MGD77_free_plain_mgd77 (struct MGD77_HEADER *H)
 {
-	int i, k;
+	int c, id;
 	
-	/* Free allocations done by MGD77_set_plain_mgd77. */
+	/* Free allocations of header info text items allocated by strdup */
 
-	k = 0;
-	GMT_free ((void *)H->info[MGD77_M77_SET].col[k].abbrev);
-	GMT_free ((void *)H->info[MGD77_M77_SET].col[k].name);
-	GMT_free ((void *)H->info[MGD77_M77_SET].col[k].units);
-	GMT_free ((void *)H->info[MGD77_M77_SET].col[k].comment);
-	k++;
-	
-	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Do all the numerical fields */
-		if (i >= MGD77_YEAR && i <= MGD77_MIN) continue;	/* Skip these as time + tz represent the same information */
-		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].abbrev);
-		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].name);
-		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].units);
-		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].comment);
-		k++;
-	}
-	for (i = MGD77_N_NUMBER_FIELDS; i < MGD77_N_DATA_FIELDS; i++) {	/* Do the three text fields */
-		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].abbrev);
-		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].name);
-		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].units);
-		GMT_free ((void *)H->info[MGD77_M77_SET].col[k].comment);
-		k++;
+	for (c = 0; c < MGD77_N_SETS; c++) {
+		for (id = 0; id < MGD77_SET_COLS ; id++) {
+			if (H->info[c].col[id].abbrev) free ((void *)H->info[c].col[id].abbrev);
+			if (H->info[c].col[id].name) free ((void *)H->info[c].col[id].name);
+			if (H->info[c].col[id].units) free ((void *)H->info[c].col[id].units);
+			if (H->info[c].col[id].comment) free ((void *)H->info[c].col[id].comment);
+		}
 	}
 }
 
@@ -1450,7 +1458,7 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	int n_vars, n_dims, dims[2];
 	int id, c, c_id[2], err;
 	size_t count[2] = {0, 0}, length;
-	char name[32];
+	char name[32], text[BUFSIZ];
 	
 	if (MGD77_Open_File (file, F, MGD77_READ_MODE)) return (-1);			/* Basically sets the path */
 	
@@ -1527,16 +1535,16 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 		MGD77_nc_status (nc_inq_vartype    (F->nc_id, id, &H->info[c].col[c_id[c]].type));	/* Get data type */
 		/* Look for optional attributes */
 		if (nc_inq_attlen   (F->nc_id, id, "long_name", &length) != NC_ENOTATT) {		/* Get long name */
-			H->info[c].col[c_id[c]].name = MGD77_alloc_txt (length);
-			MGD77_nc_status (nc_get_att_text   (F->nc_id, id, "long_name", H->info[c].col[c_id[c]].name));
+			MGD77_nc_status (nc_get_att_text   (F->nc_id, id, "long_name", text));	text[length] = '\0';
+			H->info[c].col[c_id[c]].name = strdup (text);
 		}
 		if (nc_inq_attlen   (F->nc_id, id, "units", &length) != NC_ENOTATT) {	/* Get units */
-			H->info[c].col[c_id[c]].units = MGD77_alloc_txt (length);
-			MGD77_nc_status (nc_get_att_text   (F->nc_id, id, "units", H->info[c].col[c_id[c]].units));
+			MGD77_nc_status (nc_get_att_text   (F->nc_id, id, "units", text));	text[length] = '\0';
+			H->info[c].col[c_id[c]].units = strdup (text);
 		}
 		if (nc_inq_attlen   (F->nc_id, id, "comment", &length) != NC_ENOTATT) {	/* get comments */
-			H->info[c].col[c_id[c]].comment = MGD77_alloc_txt (length);
-			MGD77_nc_status (nc_get_att_text   (F->nc_id, id, "comment", H->info[c].col[c_id[c]].comment));
+			MGD77_nc_status (nc_get_att_text   (F->nc_id, id, "comment", text));	text[length] = '\0';
+			H->info[c].col[c_id[c]].comment = strdup (text);
 		}
 		if (nc_get_att_double (F->nc_id, id, "scale_factor", &H->info[c].col[c_id[c]].factor) == NC_ENOTATT) H->info[c].col[c_id[c]].factor = 1.0;	/* Get scale for reading */
 		if (nc_get_att_double (F->nc_id, id, "add_offset",   &H->info[c].col[c_id[c]].offset) == NC_ENOTATT) H->info[c].col[c_id[c]].offset = 0.0;	/* Get offset for reading */
@@ -1578,6 +1586,17 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 	if ((err = MGD77_Order_Columns (F, H))) return (err);	/* Make sure requested columns are OK; if not give set defaults */
 	
 	return (MGD77_NO_ERROR); /* Success, unless failure! */
+}
+
+int MGD77_Free_Header_Record_cdf (struct MGD77_HEADER *H)  /* Will free the entire 24-section header structure */
+{
+	if (H->author) GMT_free ((void *)H->author);
+	if (H->history) GMT_free ((void *)H->history);
+	if (H->E77) GMT_free ((void *)H->E77);
+	if (H->mgd77) GMT_free ((void *)H->mgd77);
+
+	MGD77_free_plain_mgd77 (H);
+	return (MGD77_NO_ERROR);	/* Success, it seems */
 }
 
 int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will write the entire 24-section header structure */

@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.459 2009-03-30 23:41:25 remko Exp $
+	$Id: ChangeLog,v 1.460 2009-03-31 03:30:15 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-03-30	pwessel
+	* mgd77/mgd77.c:	To avoid Windows crashes, made sure free and GMT_free are
+				used on the items allocated by strdup or GMT_memory, resp.
+	* x2sys/x2sys.c:	---"---
+				Wrong array argument passed for correction aux values.
+	* x2sys/x2sys_datalist.c:	Only ASCII output had corrections (-L) applied.
 
 2009-03-30	remko
 	* gmt_init.c (GMT_get_ellipsoid):	When importing ellipsoid file, allow a,0,0;
@@ -131,7 +138,7 @@
 				converted degrees to radians. Fixed bug in GMT_get_rotate_pole:
 				called GMT_rotate_pole_forward with radians instead of degrees.
 				project_info.o_{beta,pole_lat,pole_lon} now in degrees.
-				GMT_fix_up_path: all arithmatic now in degrees.
+				GMT_fix_up_path: all arithmetic now in degrees.
 	* project.c:		Avoid changing variables in the control list (Ctrl);
 				this may have been harmful in the future (GMT5).
 				Removed "rads" argument from internal routines since it was
