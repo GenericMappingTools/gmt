@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.215 2009-03-30 23:39:50 remko Exp $
+ *	$Id: gmt_map.c,v 1.216 2009-03-31 15:31:11 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6593,8 +6593,8 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 
 	if (text[0] == '\0' || text[0] == '-') {	/* Shortcut for WGS-84 */
 		memset ((void *)D->xyz, 0, (size_t)(3 * sizeof (double)));
-		D->a = 6378137.0;
-		D->f = (1.0 / 298.2572235630);
+		D->a = gmtdefs.ref_ellipsoid[0].eq_radius;
+		D->f = gmtdefs.ref_ellipsoid[0].flattening;
 		D->ellipsoid_id = 0;
 	}
 	else if (strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
@@ -6607,22 +6607,14 @@ int GMT_set_datum (char *text, struct GMT_DATUM *D)
 			fprintf (stderr, "%s: Malformed <x>,<y>,<z> argument!\n", GMT_program);
 			return (-1);
 		}
-		if (strchr (ellipsoid, ',')) {	/* Has major, inv_f instead of name */
-			if (sscanf (ellipsoid, "%lf,%lf", &D->a, &D->f) != 2) {
-				fprintf (stderr, "%s: Malformed <a>,<1/f> argument!\n", GMT_program);
-				return (-1);
-			}
-			if (D->f != 0.0) D->f = 1.0 / D->f;	/* Get f from 1/f */
-			D->ellipsoid_id = -1;
-		}
-		else {	/* Get the ellipsoid # and then the parameters */
-			if ((i = GMT_get_ellipsoid (ellipsoid)) < 0) {
-				fprintf (stderr, "%s: Ellipsoid %s not recognized!\n", GMT_program, ellipsoid);
-				return (-1);
-			}
+		if ((i = GMT_get_ellipsoid (ellipsoid)) >= 0) {	/* This includes looking for format <a>,<1/f> */
 			D->a = gmtdefs.ref_ellipsoid[i].eq_radius;
 			D->f = gmtdefs.ref_ellipsoid[i].flattening;
 			D->ellipsoid_id = i;
+		}
+		else {
+			fprintf (stderr, "%s: Ellipsoid %s not recognized!\n", GMT_program, ellipsoid);
+			return (-1);
 		}
 	}
 	else {		/* Gave a Datum ID tag [ 0-(GMT_N_DATUMS-1)] */
