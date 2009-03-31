@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.378 2009-03-30 23:30:38 remko Exp $
+ *	$Id: gmt_init.c,v 1.379 2009-03-31 15:36:22 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2564,7 +2564,13 @@ int GMT_savedefaults (char *file)
 	else
 		fprintf (fp, "OUT\n");
 	fprintf (fp, "#-------- Projection Parameters -------------\n");
-	fprintf (fp, "ELLIPSOID\t\t= %s\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].name);
+	if (gmtdefs.ellipsoid < GMT_N_ELLIPSOIDS - 1)	/* Custom ellipse */
+		fprintf (fp, "ELLIPSOID\t\t= %s\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].name);
+	else if (gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening == 0.0)
+		fprintf (fp, "ELLIPSOID\t\t= %f\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius);
+	else
+		fprintf (fp, "ELLIPSOID\t\t= %f,%f\n", gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius,
+			1.0/gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].flattening);
 	fprintf (fp, "MAP_SCALE_FACTOR\t= ");
 	if (gmtdefs.map_scale_factor == -1.0)
 		fprintf (fp, "default\n");
@@ -2829,7 +2835,7 @@ int GMT_get_ellipsoid (char *name)
 
 	if ((fp = fopen (name, "r")) == NULL && (fp = fopen (path, "r")) == NULL) {
 		/* No file of that name, so parse argument instead */
-		n = sscanf (name, "%lf/%s", &gmtdefs.ref_ellipsoid[i].eq_radius, line);
+		n = sscanf (name, "%lf,%s", &gmtdefs.ref_ellipsoid[i].eq_radius, line);
 		if (n < 1)
 			return (-1);	/* Failed to read arguments */
 		else if (n == 1)
