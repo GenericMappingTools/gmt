@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: img2google,v 1.12 2009-03-30 17:27:22 guru Exp $
+#	$Id: img2google,v 1.13 2009-03-31 08:05:27 guru Exp $
 # Shell script that will generate a Google Earth png tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid and add
 # a basic KML wrapper for use in any Google Earth version.
@@ -126,7 +126,7 @@ else	# Use GSHHS high clip path to only show ocean areas
 	grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -J -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 fi
 psxy $$.track.xyz -J $R -Sc.005i -G00 $V -O -K --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
-grdcontour $$.tile.nc -J -C$$.intervals -W.34p,80 -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
+grdcontour $$.tile.nc -J -C$$.intervals -W1,80 -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 grdcontour $$.tile.nc -J -C$$.int2000 -W1p,black -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 if [ X"$C" = "X" ]; then
 	psxy -R -J -O /dev/null >> $$.ps
