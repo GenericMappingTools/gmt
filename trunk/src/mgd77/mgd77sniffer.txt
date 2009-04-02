@@ -14,7 +14,7 @@ mgd77sniffer \- Scan for errors in MGD77 data
 
 .SH DESCRIPTION
 
-\fBmgd77sniffer\fP scans old (pre-Y2K) and new format MGD77 files for errors using point-by-point
+\fBmgd77sniffer\fP scans old (pre-Y2K) and new format ASCII MGD77 files for errors using point-by-point
 sanity checking, along-track detection of excessive slopes, and optional comparison of
 cruise data with global gravity and predicted bathymetry grids. Detected data problems are output
 by default as verbose descriptions of each detected error, often resulting in multiple messages per 
