@@ -146,7 +146,7 @@ To resample the \fIx,y\fP Gaussian random data created by \fBgmtmath\fP and stor
 every 0.1 step from 0 to 10, and using a minimum cubic spline, try
 .br
 .sp
-\fBgmtmath\fP OPT(N)0/10/1 0 1 \fBNRAND\fP = 1D.txt
+\fBgmtmath\fP OPT(T)0/10/1 0 1 \fBNRAND\fP = 1D.txt
 .br
 \fBpsxy \-R\fP0/10/-5/5 OPT(JX)6i/3i OPT(B)2f1/1 OPT(Sc)0.1 OPT(G)black 1D.txt OPT(K) > 1D.ps
 .br
