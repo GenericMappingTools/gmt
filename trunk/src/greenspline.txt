@@ -195,11 +195,11 @@ a measure of uranium oxide concentrations (in percent), try
 .SH 2-D SPHERICAL SURFACE EXAMPLES
 To recreate Parker's [1994] example on a global 1x1 degree grid, assuming the data are in file mag_obs_1990.d, try
 .sp
-greenspline OPT(V) OPR(Rg) OPT(fg) OPT(Sp) OPT(D)3 OPT(I)1 OPT(G)P1994.grd mag_obs_1990.d
+greenspline OPT(V) OPT(Rg) OPT(fg) OPT(Sp) OPT(D)3 OPT(I)1 OPT(G)P1994.grd mag_obs_1990.d
 .sp
 To do the same problem but applying tension and use pre-calculated Green functions, use
 .sp
-greenspline OPT(V) OPR(Rg) OPT(fg) OPT(SQ)0.85 OPT(D)3 OPT(I)1 OPT(G)WB2008.grd mag_obs_1990.d
+greenspline OPT(V) OPT(Rg) OPT(fg) OPT(SQ)0.85 OPT(D)3 OPT(I)1 OPT(G)WB2008.grd mag_obs_1990.d
 .SH CONSIDERATIONS
 (1) For the Cartesian cases we use the free-space Green functions, hence no boundary conditions are
 applied at the edges of the specified domain.  For most applications this is fine as the region typically
