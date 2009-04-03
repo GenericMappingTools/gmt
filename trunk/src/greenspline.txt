@@ -121,7 +121,7 @@ be used if a 3-D domain is specified.
 .TP
 OPT(S)
 Select one of five different splines.  The first two are used for 1-D, 2-D, or 3-D Cartesian splines (see OPT(D) for discussion).
-Note that all tension values are expected to be normlized tension in the range 0 < \fIt\fP < 1:
+Note that all tension values are expected to be normalized tension in the range 0 < \fIt\fP < 1:
 (\fBc\fP) Minimum curvature spline [\fISandwell\fP, 1987],
 (\fBt\fP) Continuous curvature spline in tension [\fIWessel and Bercovici\fP, 1998]; append
 \fItension\fP[/\fIscale\fP] with \fItension\fP in the 0\-1 range and optionally supply a length scale [Default is the average grid spacing].
