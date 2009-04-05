@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77_e77.h,v 1.12 2009-01-21 02:16:53 mtchandl Exp $	
+ *	$Id: mgd77_e77.h,v 1.13 2009-04-05 02:26:56 mtchandl Exp $	
  *      See COPYING file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2009 by P. Wessel and M. T. Chandler
@@ -39,7 +39,6 @@
 #define E77_HDR_RMS          4
 #define E77_HDR_CORR         5
 #define E77_HDR_ANOM_FAA     6
-#define E77_HDR_ANOM_FAA_EOT     15
 #define E77_HDR_ANOM_MAG     7
 #define E77_HDR_GRID_OFFSET  8
 #define E77_HDR_SIGN         9
@@ -49,6 +48,7 @@
 #define E77_HDR_PDR          13
 #define E77_HDR_CARTER       14
 #define E77_HDR_ANOM_FAA_EOT 15
+#define E77_HDR_ANOM_FAA_IGF 16
 
 /* E77 Default Warning Codes */
 #define E77_ERROR           'E'
