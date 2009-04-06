@@ -1,4 +1,4 @@
-#	$Id: mgd77_header.txt,v 1.2 2008-07-24 03:45:57 mtchandl Exp $
+#	$Id: mgd77_header.txt,v 1.3 2009-04-06 02:14:42 guru Exp $
 #
 # List of named items in the header sequences.  We use this file to generate
 # quite a bit of code, including structures and functions.  This is done to
@@ -100,4 +100,10 @@ Number_of_Ten_Degree_Identifiers		16	01	3	Y
 Ten_Degree_Identifier				16	02	151	Y
 #--------------------Sequence No 18-24------------------------------------------
 # These are called Additional_Documentation_# (1-7) in netcdf
-Additional_Documentation			18	01	7*79	N
+Additional_Documentation_1			18	01	79	N
+Additional_Documentation_2			19	01	79	N
+Additional_Documentation_3			20	01	79	N
+Additional_Documentation_4			21	01	79	N
+Additional_Documentation_5			22	01	79	N
+Additional_Documentation_6			23	01	79	N
+Additional_Documentation_7			24	01	79	N
