@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.216 2009-03-31 03:30:15 guru Exp $
+ *	$Id: mgd77.c,v 1.217 2009-04-06 02:14:42 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -90,6 +90,7 @@ double MGD77_Copy (double z);
 int wrong_filler (char *field, int length);
 double *MGD77_Read_Column (int id, size_t start[], size_t count[], double scale, double offset, struct MGD77_COLINFO *col);
 int MGD77_atoi (char *txt);
+int MGD77_Get_Header_Item (struct MGD77_CONTROL *F, char *item);
 
 struct MGD77_DATA_RECORD *MGD77Record;
  
@@ -169,7 +170,6 @@ int MGD77_Param_Key (GMT_LONG record, int item) {
 	 * If not found return BAD_HEADER if record is outside range, or BAD_ITEM if no such item */
 	 
 	if (record < 0 || record > 24) return (MGD77_BAD_HEADER_RECNO);	/* Outside range */
-	if (record >= 18) record = 18;	/* Special processing for 18-24 */
 	
 	for (i = 0; status < 0 && i < MGD77_N_HEADER_PARAMS; i++) {
 		if (MGD77_Header_Lookup[i].record != record) continue;
@@ -476,7 +476,7 @@ int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, do
 int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77 files */
 	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[BUFSIZ];
-	int sequence, err, n_eols, c, n;
+	int i, sequence, err, n_eols, c, n;
 	struct STAT buf;
 
 	n_eols = c = n = 0;	/* Also shuts up the boring compiler warnings */
@@ -522,9 +522,9 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 	}
 	if (F->format == MGD77_FORMAT_TBL) GMT_fgets (line, BUFSIZ, F->fp);			/* Skip the column header for tables */
 	
-	H->mgd77 = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, (size_t)1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
+	for (i = 0; i < 2; i++) H->mgd77[i] = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, (size_t)1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
 	
-	if ((err = MGD77_Decode_Header (H->mgd77, MGD77_header, MGD77_FROM_HEADER))) return (err);	/* Decode individual items in the text headers */
+	if ((err = MGD77_Decode_Header (H->mgd77[MGD77_ORIG], MGD77_header, MGD77_FROM_HEADER))) return (err);	/* Decode individual items in the text headers */
 	for (sequence = 0; sequence < MGD77_N_HEADER_RECORDS; sequence++) GMT_free ((void *)MGD77_header[sequence]);
 
 	/* Fill in info in F */
@@ -537,8 +537,9 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 
 int MGD77_Free_Header_Record_asc (struct MGD77_HEADER *H)
 {	/* Applies to MGD77 files */
+	int i;
 	
-	if (H->mgd77) GMT_free ((void *)H->mgd77);
+	for (i = 0; i < 2; i++) if (H->mgd77[i]) GMT_free ((void *)H->mgd77[i]);
 	MGD77_free_plain_mgd77 (H);
 	return (MGD77_NO_ERROR);	/* Success, it seems */
 }
@@ -546,7 +547,7 @@ int MGD77_Free_Header_Record_asc (struct MGD77_HEADER *H)
 int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 {
 	/* Copies information between the header structure and the header records */
-	int i, k;
+	int k;
 
 	if (dir == MGD77_TO_HEADER) {	/* Set all records to space-filled records */
 		for (k = 0; k < MGD77_N_HEADER_RECORDS; k++) {
@@ -696,7 +697,13 @@ int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
 
 	/* Process Sequence No 18-24: */
 
-	for (i = 0, k = 17; i < 7; i++, k++) MGD77_Place_Text (dir, P->Additional_Documentation[i], record[k], 1, 78);
+	MGD77_Place_Text (dir, P->Additional_Documentation_1, record[17], 1, 78);
+	MGD77_Place_Text (dir, P->Additional_Documentation_2, record[18], 1, 78);
+	MGD77_Place_Text (dir, P->Additional_Documentation_3, record[19], 1, 78);
+	MGD77_Place_Text (dir, P->Additional_Documentation_4, record[20], 1, 78);
+	MGD77_Place_Text (dir, P->Additional_Documentation_5, record[21], 1, 78);
+	MGD77_Place_Text (dir, P->Additional_Documentation_6, record[22], 1, 78);
+	MGD77_Place_Text (dir, P->Additional_Documentation_7, record[23], 1, 78);
 
 	return (NC_NOERR);
 }
@@ -738,7 +745,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	
 	H->errors[TOTAL] = H->errors[WARN] = H->errors[ERR] = 0;
 	
-	P = H->mgd77;
+	P = (F->original) ? H->mgd77[MGD77_ORIG] : H->mgd77[MGD77_REVISED];
 	
 	if (!H->meta.verified) {
 		fprintf (stderr, "%s: ERROR: MGD77_Verify_Header called before MGD77_Verify_Prep\n", GMT_program);
@@ -1456,7 +1463,7 @@ void MGD77_free_plain_mgd77 (struct MGD77_HEADER *H)
 int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will read the entire 24-section header structure */
 {
 	int n_vars, n_dims, dims[2];
-	int id, c, c_id[2], err;
+	int id, c, i, c_id[2], err;
 	size_t count[2] = {0, 0}, length;
 	char name[32], text[BUFSIZ];
 	
@@ -1486,7 +1493,7 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 
 	/* GET MGD77 HEADER INFORMATION */
 		
-	H->mgd77 = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, (size_t)1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
+	for (i = 0; i < 2; i++) H->mgd77[i] = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, (size_t)1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
 	MGD77_Read_Header_Params (F, H->mgd77);	/* Get all the MGD77 header attributes */
 
 	/* DETERMINE DIMENSION OF GMT_TIME-SERIES */
@@ -1590,10 +1597,11 @@ int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MG
 
 int MGD77_Free_Header_Record_cdf (struct MGD77_HEADER *H)  /* Will free the entire 24-section header structure */
 {
+	int i;
 	if (H->author) GMT_free ((void *)H->author);
 	if (H->history) GMT_free ((void *)H->history);
 	if (H->E77) GMT_free ((void *)H->E77);
-	if (H->mgd77) GMT_free ((void *)H->mgd77);
+	for (i = 0; i < 2; i++) if (H->mgd77[i]) GMT_free ((void *)H->mgd77[i]);
 
 	MGD77_free_plain_mgd77 (H);
 	return (MGD77_NO_ERROR);	/* Success, it seems */
@@ -1601,11 +1609,12 @@ int MGD77_Free_Header_Record_cdf (struct MGD77_HEADER *H)  /* Will free the enti
 
 int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will write the entire 24-section header structure */
 {
-	int i, err;
+	int i, err, use;
 	char *MGD77_header[MGD77_N_HEADER_RECORDS];
 	
+	use = (F->original) ? MGD77_ORIG : MGD77_REVISED;
 	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) MGD77_header[i] = (char *)GMT_memory (VNULL, (size_t)(MGD77_HEADER_LENGTH + 1), sizeof (char), GMT_program);
-	if ((err = MGD77_Decode_Header (H->mgd77, MGD77_header, MGD77_TO_HEADER))) return (err);	/* Encode individual header attributes in the text headers */
+	if ((err = MGD77_Decode_Header (H->mgd77[use], MGD77_header, MGD77_TO_HEADER))) return (err);	/* Encode individual header attributes in the text headers */
 
 	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) {
 		fprintf (F->fp, "%s\n", MGD77_header[i]);
@@ -1707,13 +1716,30 @@ int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
 	return 0;
 }
 
+int MGD77_Get_Header_Item (struct MGD77_CONTROL *F, char *item)
+{	/* Used internally where item is known to be a single full name of a header item.
+	 * The id returned can used to get stuff in MGD77_Header_Lookup. */
+	int i, id;
+	
+	/* Search for matching text strings.  We only look for the first n characters where n is length of item */
+	
+	for (i = 0, id = MGD77_NOT_SET; id < 0 && i < MGD77_N_HEADER_ITEMS; i++) if (!strcmp (MGD77_Header_Lookup[i].name, item)) id = i;
+	
+	if (id == MGD77_NOT_SET) {
+		fprintf (stderr, "%s: INTERNAL ERROR: MGD77_Get_Header_Item returns %d for item %s\n", GMT_program, id, item);
+		exit (EXIT_FAILURE);
+	}
+	
+	return id;
+}
+
 int MGD77_Read_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will read all MGD77 records in current file */
 {
 	int err;
 	
 	err = MGD77_Open_File (file, F, MGD77_READ_MODE);
 	if (err) return (err);
-	err = MGD77_Read_Header_Record_asc (file, F, &S->H);  /* Will read the entire 24-section header structure */
+	err = MGD77_Read_Header_Record (file, F, &S->H);  /* Will read the entire 24-section header structure */
 	if (err) return (err);
 	
 	MGD77_Select_All_Columns (F, &S->H);	/* We know we only deal with items from set 0 here */
@@ -3122,7 +3148,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	 */
 	
 	int dims[2] = {0, 0}, var_id, time_id;
-	int id, j, k, set, entry;
+	int id, j, k, set, entry, use;
 	time_t now;
 	char string[128];
 	FILE *fp_err;
@@ -3135,10 +3161,11 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	
 	/* Put attributes header, author, title and history */
 	
+	use = (F->original) ? MGD77_ORIG : MGD77_REVISED;
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Conventions", strlen (MGD77_CDF_CONVENTION) + 1, (const char *)MGD77_CDF_CONVENTION));
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Version",     strlen(MGD77_CDF_VERSION), (const char *)MGD77_CDF_VERSION));
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Author",      strlen (H->author), H->author));
-	sprintf (string, "Cruise %s (NGDC ID %s)", H->mgd77->Survey_Identifier, F->NGDC_id);
+	sprintf (string, "Cruise %s (NGDC ID %s)", H->mgd77[use]->Survey_Identifier, F->NGDC_id);
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "title", strlen (string), string));
 	if (!H->history) {	/* Blank history, set initial message */
 		(void) time (&now);
@@ -3313,7 +3340,7 @@ int MGD77_Read_File_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 {
 	int err;
 	
-	err = MGD77_Read_Header_Record_cdf (file, F, &S->H);  /* Read all meta information from header */
+	err = MGD77_Read_Header_Record (file, F, &S->H);  /* Read all meta information from header */
 	if (err) return (err);
 	
 	MGD77_Select_All_Columns (F, &S->H);
@@ -3652,9 +3679,10 @@ int MGD77_Remove_E77 (struct MGD77_CONTROL *F)
 	MGD77_Reset_Header_Params (F);				/* Remove any previously revised header parameters */
 
 	MGD77_nc_status (nc_inq_nvars (F->nc_id, &n_vars));
-	for (var_id = 0; var_id < n_vars; var_id++) {		/* For all variables, try to remove factor & offset attributes */
+	for (var_id = 0; var_id < n_vars; var_id++) {		/* For all variables, try to remove factor, offset, and adjust attributes */
 		nc_del_att (F->nc_id, var_id, "corr_factor");
 		nc_del_att (F->nc_id, var_id, "corr_offset");
+		nc_del_att (F->nc_id, var_id, "adjust");
 	}
 	
 	return (nc_inq_varid (F->nc_id, "MGD77_flags", &var_id) == NC_NOERR);	/* TRUE if there are old E77 bitflags */
@@ -3666,7 +3694,7 @@ void MGD77_Free (struct MGD77_DATASET *S)
 	
 	for (i = 0; i < S->n_fields; i++) GMT_free ((void *)S->values[i]);
 	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free ((void *)S->flags[i]);
-	GMT_free ((void *)S->H.mgd77);
+	for (i = 0; i < 2; i++) if (S->H.mgd77[i]) GMT_free ((void *)S->H.mgd77[i]);
 }
 
 struct MGD77_DATASET *MGD77_Create_Dataset ()

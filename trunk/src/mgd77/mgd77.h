@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.106 2009-03-31 03:30:15 guru Exp $
+ *	$Id: mgd77.h,v 1.107 2009-04-06 02:14:42 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -114,6 +114,9 @@
 
 #define MGD77_BAD_HEADER_RECNO		-1
 #define MGD77_BAD_HEADER_ITEM		-2
+
+#define MGD77_ORIG			0
+#define MGD77_REVISED			1
 
 /* Return error numbers */
 
@@ -238,7 +241,7 @@ struct MGD77_META {	/* Information about a cruise as derived from navigation dat
 };
 
 struct MGD77_HEADER {	
-	struct MGD77_HEADER_PARAMS *mgd77;		/* See MGD-77 Documentation from NGDC for details */
+	struct MGD77_HEADER_PARAMS *mgd77[2];		/* See MGD-77 Documentation from NGDC for details; [0] is ORIG, [1] is REVISED */
 	struct MGD77_META meta;				/* Holds some meta-data derived directly from data records */
 	char *author;					/* Name of author of last creation/modification */
 	char *history;					/* History of creation/modifications */

@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.461 2009-03-31 15:41:00 remko Exp $
+	$Id: ChangeLog,v 1.462 2009-04-06 02:14:42 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-04-5	pwessel
+	* mgd77/mgd77manage.c:		The -D option would remove original attributes.  Now
+				both original and revised attributes are carried in memory.
+				This problem also affected mgd77convert -FC if used on a
+				file after mgd77manage -D had been run.
 2009-03-31	remko
 	* gmt_map.c (GMT_get_datum):	Reuse GMT_get_ellipsoid to capture <a>,<inv_f> format.
 	* gmt_init.c:		Changed custom ELLIPSOID format to <a>[,<inv_f|b=<b>|f=<f>].
