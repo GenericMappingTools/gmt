@@ -1,8 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.462 2009-04-06 02:14:42 guru Exp $
+	$Id: ChangeLog,v 1.463 2009-04-07 19:36:05 remko Exp $
 -----------------------------------------------------------------------------------------
 
-2009-04-5	pwessel
+2009-04-07	remko
+	* configure.ac:		Auto detect octave and/or matlab directories.
+				Do not say "yes" to compilation when supplement not available.
+
+2009-04-05	pwessel
 	* mgd77/mgd77manage.c:		The -D option would remove original attributes.  Now
 				both original and revised attributes are carried in memory.
 				This problem also affected mgd77convert -FC if used on a
