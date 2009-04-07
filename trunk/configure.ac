@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.50 2009-04-07 08:37:21 guru Exp $
-AC_REVISION($Revision: 1.50 $)
+dnl $Id: configure.ac,v 1.51 2009-04-07 18:34:44 guru Exp $
+AC_REVISION($Revision: 1.51 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -457,8 +457,6 @@ if test "X$enable_f2c" = "X" || test "X$enable_f2c" = "Xyes" ; then
 	F2C=`dirname $F2C`
 else
 	F2C=$enable_f2c
-	F2C_INC=$F2C/include
-	F2C_LIB=$F2C/lib
 fi
 if test "X$enable_sph" = "Xyes" ; then
 	AC_MSG_CHECKING(for f2c include directory)
