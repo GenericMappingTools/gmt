@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.52 2009-04-07 19:36:05 remko Exp $
-AC_REVISION($Revision: 1.52 $)
+dnl $Id: configure.ac,v 1.53 2009-04-07 23:34:28 guru Exp $
+AC_REVISION($Revision: 1.53 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -646,10 +646,12 @@ fi
 if test "$enable_universal" = "yes" ; then
 	if test "$enable_64" = "yes" ; then
 		ppc=ppc64
+		i386=x86_64
 	else
 		ppc=ppc
+		i386=i386
 	fi
-	OSX_L=" -arch i386 -arch $ppc"
+	OSX_L=" -arch $i386 -arch $ppc"
 	OSX_C="$OSX_C$OSX_L"
 	if test "$chip" = "powerpc" ; then
 		OSX_L="-isysroot /Developer/SDKs/MacOSX10.4u.sdk$OSX_L"
