@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.49 2009-03-28 00:46:20 guru Exp $
-AC_REVISION($Revision: 1.49 $)
+dnl $Id: configure.ac,v 1.50 2009-04-07 08:37:21 guru Exp $
+AC_REVISION($Revision: 1.50 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -433,7 +433,7 @@ dnl Allow user to set --disable-sph for turning off sph compilation
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(if OK to compile sph)
-if test "X$enable_sph" = "Xno" || test "X$have_x" != "Xyes" ; then
+if test "X$enable_sph" = "Xno" ; then
 	enable_sph="no"
 else
 	enable_sph="yes"
@@ -457,6 +457,8 @@ if test "X$enable_f2c" = "X" || test "X$enable_f2c" = "Xyes" ; then
 	F2C=`dirname $F2C`
 else
 	F2C=$enable_f2c
+	F2C_INC=$F2C/include
+	F2C_LIB=$F2C/lib
 fi
 if test "X$enable_sph" = "Xyes" ; then
 	AC_MSG_CHECKING(for f2c include directory)
