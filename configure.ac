@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.51 2009-04-07 18:34:44 guru Exp $
-AC_REVISION($Revision: 1.51 $)
+dnl $Id: configure.ac,v 1.52 2009-04-07 19:36:05 remko Exp $
+AC_REVISION($Revision: 1.52 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -79,8 +79,8 @@ dnl -----------------------------------------------------------------
 dnl
 AC_ARG_ENABLE(update,   [  --enable-update=site    GMT ftp site [[ftp.soest.hawaii.edu]]])
 AC_ARG_ENABLE(netcdf,   [  --enable-netcdf=dir     Directory with netCDF [[auto]]])
-AC_ARG_ENABLE(matlab,   [  --enable-matlab=dir     Build GMT-matlab interface, give directory with Matlab distribution [[/usr/local/matlab]]])
-AC_ARG_ENABLE(octave,   [  --enable-octave         Build GMT-octave interface (disables Matlab interface)])
+AC_ARG_ENABLE(matlab,   [  --enable-matlab=dir     Build GMT-matlab interface, give directory with Matlab distribution [[auto]]])
+AC_ARG_ENABLE(octave,   [  --enable-octave=dir     Build GMT-octave interface, give directory with Octave distribution [[auto]] (disables Matlab interface)])
 AC_ARG_ENABLE(mex_mdir, [  --enable-mex-mdir=dir   Directory in which to install GMT-octave/Matlab .m files [[auto]]])
 AC_ARG_ENABLE(mex_xdir, [  --enable-mex-xdir=dir   Directory in which to install GMT-octave/Matlab mex files [[auto]]])
 AC_ARG_ENABLE(f2c,      [  --enable-f2c=dir        Directory with f2c lib and include [[auto]]])
@@ -291,18 +291,26 @@ if test "X$enable_matlab" = "Xyes" && test "X$enable_octave" = "Xyes"; then
 	enable_matlab="no"
 fi
 if test "X$enable_octave" = "Xyes" ; then
-	MATLAB=${OCTAVE:-/usr/local/octave}
+	AC_PATH_PROG([MATLAB], [octave], [${OCTAVE:-/usr/local/octave}/bin/octave])
+	MATLAB=`dirname $MATLAB`
+	MATLAB=`dirname $MATLAB`
+	AC_MSG_RESULT([setting Octave directory... $MATLAB])
 elif test "X$enable_matlab" = "Xyes" ; then
-	MATLAB=${MATLAB:-/usr/local/matlab}
+	AC_PATH_PROG([MATLAB], [matlab], [${MATLAB:-/usr/local/matlab}/bin/matlab])
+	MATLAB=`dirname $MATLAB`
+	MATLAB=`dirname $MATLAB`
+	AC_MSG_RESULT([setting Matlab directory... $MATLAB])
 elif test ! "X$enable_octave" = "X"; then
 	MATLAB=$enable_octave
+	AC_MSG_RESULT([setting Octave directory... $MATLAB])
 elif test ! "X$enable_matlab" = "X"; then
 	MATLAB=$enable_matlab
+	AC_MSG_RESULT([setting Matlab directory... $MATLAB])
 else
 	MATLAB='NONE'
 	enable_mex="no"
+	AC_MSG_RESULT([[none... mex compilation disabled]])
 fi
-AC_MSG_RESULT($MATLAB)
 dnl
 dnl -----------------------------------------------------------------
 dnl Determine Octave/Matlab mex extensions and dirs for this platform
@@ -429,24 +437,6 @@ if test ! -d $NETCDF_LIB; then
 fi
 dnl
 dnl -----------------------------------------------------------------
-dnl Allow user to set --disable-sph for turning off sph compilation
-dnl -----------------------------------------------------------------
-dnl
-AC_MSG_CHECKING(if OK to compile sph)
-if test "X$enable_sph" = "Xno" ; then
-	enable_sph="no"
-else
-	enable_sph="yes"
-fi
-AC_MSG_RESULT($enable_sph)
-if test "X$enable_sph" = "Xno" && test -d src/sph; then
-	touch src/sph/.skip
-	AC_MSG_WARN([[Disabling sph compilation]])
-else
-	rm -f src/sph/.skip
-fi
-dnl
-dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-f2c to set f2c dir
 dnl But only check these if --disable-sph has not been set
 dnl -----------------------------------------------------------------
@@ -458,26 +448,43 @@ if test "X$enable_f2c" = "X" || test "X$enable_f2c" = "Xyes" ; then
 else
 	F2C=$enable_f2c
 fi
-if test "X$enable_sph" = "Xyes" ; then
-	AC_MSG_CHECKING(for f2c include directory)
-	if test "X$F2C_INC" = "X"; then
-		F2C_INC=$F2C/include
-	fi
-	AC_MSG_RESULT($F2C_INC)
-	if test ! -f $F2C_INC/f2c.h; then
-		AC_MSG_WARN([[f2c.h can not be found in $F2C_INC]])
-	fi
-	AC_MSG_CHECKING(for f2c library directory)
-	if test "X$F2C_LIB" = "X"; then
-		F2C_LIB=$F2C/lib
-	fi
-	AC_MSG_RESULT($F2C_LIB)
-	if test ! -d $F2C_LIB; then
-		AC_MSG_WARN([[No such directory: $F2C_LIB]])
-	fi
-else
+AC_MSG_CHECKING(for f2c include directory)
+if test "X$F2C_INC" = "X"; then
 	F2C_INC=$F2C/include
+fi
+AC_MSG_RESULT($F2C_INC)
+if test ! -f $F2C_INC/f2c.h; then
+	enable_sph=no
+	AC_MSG_WARN([[f2c.h can not be found in $F2C_INC... sph compilation disabled]])
+fi
+AC_MSG_CHECKING(for f2c library directory)
+if test "X$F2C_LIB" = "X"; then
 	F2C_LIB=$F2C/lib
+fi
+AC_MSG_RESULT($F2C_LIB)
+if test ! -d $F2C_LIB; then
+	enable_sph=no
+	AC_MSG_WARN([[No such directory: $F2C_LIB... sph compilation disabled]])
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --disable-sph for turning off sph compilation
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(if OK to compile sph)
+if test "X$enable_sph" = "Xno" ; then
+	enable_sph="no"
+else
+	enable_sph="yes"
+fi
+if test ! -d src/sph; then
+	AC_MSG_RESULT([[not available]])
+elif test "X$enable_sph" = "Xno"; then
+	touch src/sph/.skip
+	AC_MSG_RESULT([[no... sph compilation disabled]])
+else
+	rm -f src/sph/.skip
+	AC_MSG_RESULT(yes)
 fi
 dnl
 dnl -----------------------------------------------------------------
@@ -526,9 +533,11 @@ dnl Allow user to set --disable-mex for turning off mex compilation
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(if OK to compile mex)
-if test "$enable_mex" = "no" && test -d src/mex; then
+if test ! -d src/mex; then
+	AC_MSG_RESULT([[not available]])
+elif test "X$enable_mex" = "Xno"; then
 	touch src/mex/.skip
-	AC_MSG_RESULT(no - mex compilation disabled)
+	AC_MSG_RESULT([[no... mex compilation disabled]])
 else
 	rm -f src/mex/.skip
 	AC_MSG_RESULT(yes)
@@ -544,12 +553,14 @@ if test "X$enable_xgrid" = "Xno" || test "X$have_x" != "Xyes" ; then
 else
 	enable_xgrid="yes"
 fi
-AC_MSG_RESULT($enable_xgrid)
-if test "X$enable_xgrid" = "Xno" && test -d src/xgrid; then
+if test ! -d src/xgrid; then
+	AC_MSG_RESULT([not available])
+elif test "X$enable_xgrid" = "Xno"; then
 	touch src/xgrid/.skip
-	AC_MSG_WARN([[Disabling xgrid compilation]])
+	AC_MSG_RESULT([[no... xgrid compilation disabled]])
 else
 	rm -f src/xgrid/.skip
+	AC_MSG_RESULT(yes)
 fi
 dnl
 dnl -----------------------------------------------------------------
