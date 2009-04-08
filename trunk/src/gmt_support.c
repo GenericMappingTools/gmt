@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.388 2009-03-27 00:44:14 guru Exp $
+ *	$Id: gmt_support.c,v 1.389 2009-04-08 18:46:31 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1231,15 +1231,16 @@ double GMT_getradius (char *line)
 
 int GMT_get_proj3D (char *line, double *az, double *el)
 {
-	int k, pos = 0, error = 0;
+	int k, s, pos = 0, error = 0;
 	char txt[BUFSIZ], p[GMT_LONG_TEXT], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
 	
 	if ((k = sscanf (line, "%lf/%lf", az, el)) < 2) {
 		fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+wlon0/lat0[/z0]][+vx0[cimp]/y0[cimp]]\n", GMT_program, line);
 		return 1;
 	}
+	for (s = 0; line[s] && line[s] != '/'; s++);	/* Look for position of slash / */
 	for (k = 0; line[k] && line[k] != '+'; k++);	/* Look for +<options> strings */
-	if (!line[k]) return 0;	/* OK, done here */
+	if (!line[k] || k < s) return 0;	/* No + or a = before the slash, so we are done here */
 	
 	/* Decode new-style +separated substrings */
 
@@ -1268,8 +1269,8 @@ int GMT_get_proj3D (char *line, double *az, double *el)
 				if (k == 3) error += GMT_verify_expectations (GMT_io.in_col_type[2], GMT_scanf (txt_c, GMT_io.in_col_type[2], &z_project.world_z), txt_c);
 				z_project.world_given = TRUE;
 				break;
-			default:
-				fprintf (stderr, "%s: ERROR -E: Unrecognized modifier %s\n", GMT_program, p);
+			default:	/* If followed by an integer we assume this might be an exponential notation picked up by mistake */
+				if (!isdigit ((int)p[0])) fprintf (stderr, "%s: Warning -E: Unrecognized modifier %s (ignored)\n", GMT_program, p);
 				break;
 		}
 	}
