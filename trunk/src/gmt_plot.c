@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.255 2009-02-26 01:09:43 guru Exp $
+ *	$Id: gmt_plot.c,v 1.256 2009-04-09 23:39:16 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2776,11 +2776,11 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 	switch (ms->measure) {
 		case 'm':	/* Statute miles instead */
 			unit = 1;
-			bar_length = 1.609344 * ms->length;
+			bar_length = 0.001 * METERS_IN_A_MILE * ms->length;
 			break;
 		case 'n':	/* Nautical miles instead */
 			unit = 2;
-			bar_length = 1.852 * ms->length;
+			bar_length = 0.001 * METERS_IN_A_NAUTICAL_MILE * ms->length;
 			break;
 		case 'e':	/* meters instead */
 			unit = 3;
