@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.390 2009-04-09 23:39:17 guru Exp $
+ *	$Id: gmt_support.c,v 1.391 2009-04-09 23:47:01 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6230,6 +6230,9 @@ BOOLEAN GMT_set_gap_param (char *txt, struct GMT_GAP_INFO *G)
 				break;
 			case 'p':	/* Points */
 				G->gap /= 72.0;
+				break;
+			case 'm':	/* m */
+				G->gap /= 0.0254;
 				break;
 			default:	/* E.g., inch or junk */
 				break;
