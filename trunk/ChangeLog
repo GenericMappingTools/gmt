@@ -1,10 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.464 2009-04-08 18:46:30 guru Exp $
+	$Id: ChangeLog,v 1.465 2009-04-09 04:52:39 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-04-08	pwessel
 	* gmt_support.c:	The 3-D view -E option used in many programs (such as psxyz)
 				could not handle exponential notations.
+	* gmt_init.c:		Tke NAN_RECORDS = skip|pass setting now also applies to binary input.
+				
 				
 2009-04-07	remko
 	* configure.ac:		Auto detect octave and/or matlab directories.

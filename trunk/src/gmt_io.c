@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.172 2009-03-28 19:51:08 guru Exp $
+ *	$Id: gmt_io.c,v 1.173 2009-04-09 04:52:39 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -83,7 +83,7 @@
 #include "gmt.h"
 
 BOOLEAN GMT_do_swab = FALSE;	/* Used to indicate swab'ing during binary read */
-
+PFB GMT_read_binary;		/* Set to handle double|float w/wo swab */
 int GMT_A_read (FILE *fp, double *d);
 int GMT_a_read (FILE *fp, double *d);
 int GMT_c_read (FILE *fp, double *d);
@@ -108,6 +108,7 @@ int GMT_d_write (FILE *fp, double d);
 void GMT_col_ij (struct GMT_Z_IO *r, GMT_LONG ij, GMT_LONG *gmt_ij);
 void GMT_row_ij (struct GMT_Z_IO *r, GMT_LONG ij, GMT_LONG *gmt_ij);
 int GMT_ascii_input (FILE *fp, int *n, double **ptr);		/* Decode ASCII input records */
+int GMT_bin_input (FILE *fp, int *n, double **ptr);		/* Decode binary input records */
 int GMT_bin_double_input (FILE *fp, int *n, double **ptr);	/* Decode binary double input records */
 int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr);	/* Decode binary double input records */
 int GMT_bin_float_input (FILE *fp, int *n, double **ptr);	/* Decode binary float input records */
@@ -134,7 +135,12 @@ GMT_LONG GMT_n_segment_points (struct GMT_LINE_SEGMENT *S, int n_segments);
 
 FILE *GMT_nc_fopen (const char *filename, const char *mode);
 int GMT_nc_input (FILE *fp, int *n, double **ptr);
-BOOLEAN GMT_process_binary_input (int n_read);
+int GMT_process_binary_input (int n_read);
+BOOLEAN GMT_get_binary_d_input (FILE *fp, int n);
+BOOLEAN GMT_get_binary_d_input_swab (FILE *fp, int n);
+BOOLEAN GMT_get_binary_f_input (FILE *fp, int n);
+BOOLEAN GMT_get_binary_f_input_swab (FILE *fp, int n);
+BOOLEAN GMT_read_binary_f_input (FILE *fp, float *GMT_f, int n);
 
 /* Library functions needed for WIndows DLL to work properly.
  * THese are only compiled under Windows - under other OS the
@@ -572,10 +578,11 @@ int GMT_parse_b_option (char *text)
 	}
 
 	if (GMT_io.binary[GMT_IN]) {
+		GMT_input = GMT_bin_input;
 		if (GMT_io.swab[GMT_IN])
-			GMT_input  = (GMT_io.single_precision[GMT_IN]) ? GMT_bin_float_input_swab  : GMT_bin_double_input_swab;
+			GMT_read_binary  = (GMT_io.single_precision[GMT_IN]) ? GMT_get_binary_f_input_swab  : GMT_get_binary_d_input_swab;
 		else
-			GMT_input  = (GMT_io.single_precision[GMT_IN]) ? GMT_bin_float_input  : GMT_bin_double_input;
+			GMT_read_binary  = (GMT_io.single_precision[GMT_IN]) ? GMT_get_binary_f_input  : GMT_get_binary_d_input;
 		strcpy (GMT_io.r_mode, "rb");
 	}
 
@@ -756,106 +763,126 @@ int GMT_nc_input (FILE *fp, int *n, double **ptr)
 	return (i);
 }
 
-int GMT_bin_double_input (FILE *fp, int *n, double **ptr)
-{
-	int n_read;
+int GMT_bin_input (FILE *fp, int *n, double **ptr)
+{	/* General binary read function which calls function pointed to by GMT_read_binary to handle actual reading (and possbily swabbing) */
+	int status;
+	BOOLEAN keep_trying = TRUE;
 
 	GMT_io.status = 0;
-	if ((n_read = GMT_fread ((void *) GMT_data, sizeof (double), (size_t)(*n), fp)) != (*n)) {
-		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
+	while (keep_trying) {	/* Keep reading until (1) EOF, (2) got a multisegment record, or (3) a valid data record */
+		if ((*GMT_read_binary) (fp, *n)) return (-1);	/* EOF */
+		status = GMT_process_binary_input (*n);
+		if (status == 1) return (0);		/* A multisegment header */
+		if (status == 0) keep_trying = FALSE;	/* A data record  will exit the loop */
 	}
-
 	*ptr = GMT_data;
 
-	if (GMT_process_binary_input (n_read)) return (0);	/* Found a multisegment header */
-
-	return (n_read);
+	return (*n);
 }
 
-int GMT_bin_double_input_swab (FILE *fp, int *n, double **ptr)
-{	/* Same, but must perform byte swabbing on 8-byte double after read */
-	int n_read, i;
-	unsigned int *ii, jj;
+/* Sub functions for GMT_bin_input */
 
-	GMT_io.status = 0;
-	if ((n_read = GMT_fread ((void *) GMT_data, sizeof (double), (size_t)(*n), fp)) != (*n)) {
+BOOLEAN GMT_get_binary_d_input (FILE *fp, int n) {
+	/* Reads the n binary doubles from input */
+	int n_read;
+	if ((n_read = GMT_fread ((void *) GMT_data, sizeof (double), (size_t)n, fp)) != n) {	/* EOF or came up short */
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
+		if (GMT_io.give_report && GMT_io.n_bad_records) {	/* Report summary and reset */
+			fprintf (stderr, "%s: This file had %ld records with invalid x and/or y values\n", GMT_program, GMT_io.n_bad_records);
+			GMT_io.n_bad_records = GMT_io.rec_no = GMT_io.n_clean_rec = 0;
+		}
+		return (TRUE);	/* Done with this file */
 	}
+	return (FALSE);	/* OK so far */
+}
 
-	for (i = 0; i < (*n); i++) {
+BOOLEAN GMT_get_binary_d_input_swab (FILE *fp, int n) {
+	/* Reads and swabs the n binary doubles from input */
+	unsigned int i, *ii, jj;
+	if (GMT_get_binary_d_input (fp, n)) return (TRUE);	/* Return immediately if EOF */
+	/* Swab the bytes for each double */
+	for (i = 0; i < n; i++) {
 		ii = (unsigned int *)&GMT_data[i];	/* These 4 lines do the swab */
 		jj = GMT_swab4 (ii[0]);
 		ii[0] = GMT_swab4 (ii[1]);
 		ii[1] = jj;
 	}
-	*ptr = GMT_data;
-
-	if (GMT_process_binary_input (n_read)) return (0);	/* Found a multisegment header */
-
-	return (n_read);
+	return (FALSE);
 }
 
-
-int GMT_bin_float_input (FILE *fp, int *n, double **ptr)
-{
-	int i, n_read;
+BOOLEAN GMT_get_binary_f_input (FILE *fp, int n) {
+	/* Reads the n binary floats, then converts them to doubles */
+	int i;
 	static float GMT_f[BUFSIZ];
-
-	GMT_io.status = 0;
-	if ((n_read = GMT_fread ((void *) GMT_f, sizeof (float), (size_t)(*n), fp)) != (*n)) {
-		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
-	}
-	else {
-		for (i = 0; i < n_read; i++) GMT_data[i] = (double)GMT_f[i];
-	}
-
-	*ptr = GMT_data;
-
-	if (GMT_process_binary_input (n_read)) return (0);	/* Found a multisegment header */
-
-	return (n_read);
+	if (GMT_read_binary_f_input (fp, GMT_f, n)) return (TRUE);	/* EOF or came up short */
+	for (i = 0; i < n; i++) GMT_data[i] = (double)GMT_f[i];
+	return (FALSE);	/* OK so far */
 }
 
-int GMT_bin_float_input_swab (FILE *fp, int *n, double **ptr)
-{	/* Same, but must do the 4-byte swab after read */
-	int i, n_read;
-	unsigned int *ii;
+BOOLEAN GMT_get_binary_f_input_swab (FILE *fp, int n) {
+	/* Reads the n binary floats, byte-swabs them, then converts the result to doubles */
+	unsigned i, *ii;
 	static float GMT_f[BUFSIZ];
-
-	GMT_io.status = 0;
-	if ((n_read = GMT_fread ((void *) GMT_f, sizeof (float), (size_t)(*n), fp)) != (*n)) {
-		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
+	
+	if (GMT_read_binary_f_input (fp, GMT_f, n)) return (TRUE);	/* EOF or came up short */
+	for (i = 0; i < n; i++) {	/* Do the float swab, then assign to the double */
+		ii = (unsigned int *)&GMT_f[i];	/* These 2 lines do the swab */
+		*ii = GMT_swab4 (*ii);
+		GMT_data[i] = (double)GMT_f[i];
 	}
-	else {
-		for (i = 0; i < n_read; i++) {
-			ii = (unsigned int *)&GMT_f[i];	/* These 2 lines do the swab */
-			*ii = GMT_swab4 (*ii);
-			GMT_data[i] = (double)GMT_f[i];
+	return (FALSE);	/* OK so far */
+}
+
+BOOLEAN GMT_read_binary_f_input (FILE *fp, float *GMT_f, int n) {
+	/* Reads the n floats */
+	int n_read;
+	if ((n_read = GMT_fread ((void *) GMT_f, sizeof (float), (size_t)n, fp)) != n) {	/* EOF or came up short */
+		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
+		if (GMT_io.give_report && GMT_io.n_bad_records) {	/* Report summary and reset */
+			fprintf (stderr, "%s: This file had %ld records with invalid x and/or y values\n", GMT_program, GMT_io.n_bad_records);
+			GMT_io.n_bad_records = GMT_io.rec_no = GMT_io.n_clean_rec = 0;
 		}
+		return (TRUE);	/* Done with this file since we got EOF */
 	}
-
-	*ptr = GMT_data;
-
-	if (GMT_process_binary_input (n_read)) return (0);	/* Found a multisegment header */
-
-	return (n_read);
+	return (FALSE);	/* OK so far */
 }
 
-BOOLEAN GMT_process_binary_input (int n_read) {
+int GMT_process_binary_input (int n_read) {
+	/* Process a binary record to determine what kind of record it is */
+	int col_no, n_NaN;
+	BOOLEAN bad_record = FALSE, set_nan_flag = FALSE;
+	/* Here, GMT_data has been filled in by fread */
+	
 	/* Determine if this was a multisegment header, and if so return */
-	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs to qualify as -M */
-		int i;
-		BOOLEAN is_bad = TRUE;
-		for (i = 0; i < n_read && is_bad; i++) is_bad = GMT_is_dnan (GMT_data[i]);
-		if (is_bad) {
+	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {
+		if (!GMT_is_dnan (GMT_data[col_no])) continue;	/* Clean data, do nothing */
+		/* We end up here if we found a NaN */
+		if (!gmtdefs.nan_is_gap && GMT_io.skip_if_NaN[col_no]) bad_record = TRUE;	/* This field is not allowed to be NaN */
+		if (GMT_io.skip_if_NaN[col_no]) set_nan_flag = TRUE;
+		n_NaN++;
+	}
+	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs and -M set to qualify as segment header */
+		if (n_NaN == n_read) {
 			GMT_io.status = GMT_IO_SEGMENT_HEADER;
 			strcpy (GMT_io.segment_header, "> Binary multisegment header\n");
-			return (TRUE);
+			GMT_io.seg_no++;
+			return (1);	/* 1 means segment header */
 		}
+	}
+	if (bad_record) {
+		GMT_io.n_bad_records++;
+		if (GMT_io.give_report && (GMT_io.n_bad_records == 1)) {	/* Report 1st occurrence */
+			fprintf (stderr, "%s: Encountered first invalid binary record near/at line # %ld\n", GMT_program, GMT_io.rec_no);
+			fprintf (stderr, "%s: Likely causes:\n", GMT_program);
+			fprintf (stderr, "%s: (1) Invalid x and/or y values, i.e. NaNs.\n", GMT_program);
+			fprintf (stderr, "%s: (2) Input file in multiple segment format but the -M switch is not set.\n", GMT_program);
+		}
+		return (2);	/* 2 means skip this record and try again */
 	}
 	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();		/* Must account for periodicity in 360 */
-	return (FALSE);
+	if (set_nan_flag) GMT_io.status |= GMT_IO_NAN;
+	return (0);	/* 0 means OK regular record */
 }
 
 void GMT_adjust_periodic (void) {
