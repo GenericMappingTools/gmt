@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.465 2009-04-09 04:52:39 guru Exp $
+	$Id: ChangeLog,v 1.466 2009-04-09 23:39:16 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-04-09	pwessel
+	* psxy[z].c:		Added new option -F to detect breaks in lines based on use
+				criteria on what constitutes a gap in continuity.
+	* gmt_support.c:	Added support functions for the -F option.
+	
 2009-04-08	pwessel
 	* gmt_support.c:	The 3-D view -E option used in many programs (such as psxyz)
 				could not handle exponential notations.

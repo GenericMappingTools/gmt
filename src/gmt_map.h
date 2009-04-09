@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.28 2009-03-24 02:26:43 guru Exp $
+ *	$Id: gmt_map.h,v 1.29 2009-04-09 23:39:16 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -18,6 +18,9 @@
 
 #ifndef _GMT_MAP_H
 #define _GMT_MAP_H
+
+#define METERS_IN_A_MILE		1609.433
+#define METERS_IN_A_NAUTICAL_MILE	1852.0
 
 EXTERN_MSC double GMT_az_backaz_cartesian (double lonE, double latE, double lonS, double latS, BOOLEAN baz);
 EXTERN_MSC double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double latS, BOOLEAN baz);

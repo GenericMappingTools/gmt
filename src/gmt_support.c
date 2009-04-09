@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.389 2009-04-08 18:46:31 guru Exp $
+ *	$Id: gmt_support.c,v 1.390 2009-04-09 23:39:17 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1307,10 +1307,10 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 				s = 1000.0;
 				break;
 			case GMT_INC_IS_MILES:	/* miles */
-				s = 1609.433;
+				s = METERS_IN_A_MILE;
 				break;
 			case GMT_INC_IS_NMILES:	/* nmiles */
-				s = 1852.0;
+				s = METERS_IN_A_NAUTICAL_MILE;
 				break;
 		}
 		if (GMT_inc_code[0] & GMT_INC_IS_EXACT && !(GMT_inc_code[0] & GMT_INC_UNITS)) {
@@ -1362,10 +1362,10 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 				s = 1000.0;
 				break;
 			case GMT_INC_IS_MILES:	/* miles */
-				s = 1609.433;
+				s = METERS_IN_A_MILE;
 				break;
 			case GMT_INC_IS_NMILES:	/* nmiles */
-				s = 1852.0;
+				s = METERS_IN_A_NAUTICAL_MILE;
 				break;
 		}
 		if (GMT_inc_code[1] & GMT_INC_IS_EXACT && !(GMT_inc_code[1] & GMT_INC_UNITS))
@@ -3031,8 +3031,8 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 			error++;
 		}
 		n_col = (G->label_type == 5) ? 3 : 2;
-		G->f_xy[0] = (double *) GMT_memory ((void *)VNULL, n_alloc, sizeof (double), GMT_program);
-		G->f_xy[1] = (double *) GMT_memory ((void *)VNULL, n_alloc, sizeof (double), GMT_program);
+		G->f_xy[GMT_X] = (double *) GMT_memory ((void *)VNULL, n_alloc, sizeof (double), GMT_program);
+		G->f_xy[GMT_Y] = (double *) GMT_memory ((void *)VNULL, n_alloc, sizeof (double), GMT_program);
 		if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)VNULL, n_alloc, sizeof (char *), GMT_program);
 		G->f_n = 0;
 		while (GMT_fgets (buffer, BUFSIZ, fp)) {
@@ -3041,8 +3041,8 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 			for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)buffer[i]); i--);
 			buffer[++i] = '\n';	buffer[++i] = '\0';	/* Now have clean C string with \n\0 at end */
 			sscanf (buffer, "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
-			if (GMT_scanf (txt_a, GMT_io.in_col_type[0], &xy[0]) == GMT_IS_NAN) bad_record = TRUE;	/* Got NaN or it failed to decode */
-			if (GMT_scanf (txt_b, GMT_io.in_col_type[1], &xy[1]) == GMT_IS_NAN) bad_record = TRUE;	/* Got NaN or it failed to decode */
+			if (GMT_scanf (txt_a, GMT_io.in_col_type[GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = TRUE;	/* Got NaN or it failed to decode */
+			if (GMT_scanf (txt_b, GMT_io.in_col_type[GMT_Y], &xy[GMT_Y]) == GMT_IS_NAN) bad_record = TRUE;	/* Got NaN or it failed to decode */
 			if (bad_record) {
 				GMT_io.n_bad_records++;
 				if (GMT_io.give_report && (GMT_io.n_bad_records == 1)) {	/* Report 1st occurrence */
@@ -3057,11 +3057,11 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 			}
 			/* Got here if data are OK */
 
-			if (gmtdefs.xy_toggle[0]) d_swap (xy[0], xy[1]);				/* Got lat/lon instead of lon/lat */
-			GMT_map_outside (xy[0], xy[1]);
+			if (gmtdefs.xy_toggle[GMT_IN]) d_swap (xy[GMT_X], xy[GMT_Y]);				/* Got lat/lon instead of lon/lat */
+			GMT_map_outside (xy[GMT_X], xy[GMT_Y]);
 			if ( abs (GMT_x_status_new) > 1 || abs (GMT_y_status_new) > 1) continue;	/* Outside map region */
 
-			GMT_geo_to_xy (xy[0], xy[1], &G->f_xy[0][G->f_n], &G->f_xy[1][G->f_n]);		/* Project -> xy inches */
+			GMT_geo_to_xy (xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][G->f_n], &G->f_xy[GMT_Y][G->f_n]);		/* Project -> xy inches */
 			if (n_col == 3) {	/* The label part if asked for */
 				G->f_label[G->f_n] = (char *) GMT_memory ((void *)VNULL, (size_t)(strlen(txt_c)+1), sizeof (char), GMT_program);
 				strcpy (G->f_label[G->f_n], txt_c);
@@ -3069,8 +3069,8 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 			G->f_n++;
 			if (G->f_n == (int)n_alloc) {
 				n_alloc <<= 1;
-				G->f_xy[0] = (double *) GMT_memory ((void *)G->f_xy[0], n_alloc, sizeof (double), GMT_program);
-				G->f_xy[1] = (double *) GMT_memory ((void *)G->f_xy[1], n_alloc, sizeof (double), GMT_program);
+				G->f_xy[GMT_X] = (double *) GMT_memory ((void *)G->f_xy[GMT_X], n_alloc, sizeof (double), GMT_program);
+				G->f_xy[GMT_Y] = (double *) GMT_memory ((void *)G->f_xy[GMT_Y], n_alloc, sizeof (double), GMT_program);
 				if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)G->f_label, n_alloc, sizeof (char *), GMT_program);
 			}
 		}
@@ -6136,6 +6136,108 @@ int GMT_getrose (char *text, struct GMT_MAP_ROSE *ms)
 	return (error);
 }
 
+BOOLEAN GMT_gap_detected (int rec, double this_x, double this_y, double prev_x, double prev_y, struct GMT_GAP_INFO *G)
+{	/* Determine if two consecutive points are "far enough apart" to constitude a data gap and thus "pen up"*/
+	double xx[2], yy[2];
+	if (rec == 0)  return (FALSE);	/* No previous point */
+	/* OK, here we must determine if the selected gap criteria [see GMT_set_gap_param] is met */
+	
+	switch (G->method) {
+		case GMT_GAP_IN_X:	/* Difference in user's x-coordinates used for test */
+			if (fabs (this_x - prev_x) > G->gap) return (TRUE);
+			break;
+		case GMT_GAP_IN_Y:	/* Difference in user's y-coordinates used for test */
+			if (fabs (this_y - prev_y) > G->gap) return (TRUE);
+			break;
+		case GMT_GAP_IN_GDIST:	/* Great circle distance used for test */
+			if (GMT_distance_func (this_x, this_y, prev_x, prev_y) > G->gap) return (TRUE);
+			break;
+		case GMT_GAP_IN_CDIST:	/* Cartesian distance used for test */
+			if (GMT_distance_func (this_x, this_y, prev_x, prev_y) > G->gap) return (TRUE);
+			break;
+		case GMT_GAP_IN_PDIST:	/* Cartesian distance between mapped points used for test */
+			GMT_geo_to_xy (this_x, this_y, &xx[0], &yy[0]);
+			GMT_geo_to_xy (prev_x, prev_y, &xx[1], &yy[1]);
+			if (GMT_distance_func (xx[0], yy[0], xx[1], yy[1]) > G->gap) return (TRUE);
+			break;
+		default:
+			fprintf (stderr, "GMT ERROR: Bad case in GMT_gap_detected (notify developers)\n");
+			exit (EXIT_FAILURE);
+			break;
+	}
+	return (FALSE);	/* No gap detected */
+}
+
+BOOLEAN GMT_set_gap_param (char *txt, struct GMT_GAP_INFO *G)
+{
+	/* Process the GMT gap detection option for parameters */
+	/* Syntax, e.g., -F[x|y|d|m]<gap>[d|e|m|n|k|i|c|p] */
+	
+	memset ((void *)G, 0, sizeof (struct GMT_GAP_INFO));
+	
+	switch (txt[0]) {	/* Determine method used for gap detection */
+		case 'x':	/* Difference in user's x-coordinates used for test */
+			G->method = GMT_GAP_IN_X;
+			break;
+		case 'y':	/* Difference in user's y-coordinates used for test */
+			G->method = GMT_GAP_IN_Y;
+			break;
+		case 'd':	/* Great circle (if geographic data) or Cartesian distance used for test */
+			if (GMT_io.in_col_type[GMT_X] == GMT_IS_LON && GMT_io.in_col_type[GMT_Y] == GMT_IS_LAT) {
+				G->method = GMT_GAP_IN_GDIST;
+				GMT_distance_func = (PFD) GMT_great_circle_dist_meter;
+			}
+			else {
+				G->method = GMT_GAP_IN_CDIST;
+				GMT_distance_func = (PFD) GMT_great_circle_dist;
+			}
+			break;
+		case 'm':	/* Cartesian distance used for test */
+			G->method = GMT_GAP_IN_PDIST;
+			GMT_distance_func = (PFD) GMT_cartesian_dist;
+			break;
+		default:
+			fprintf (stderr, "%s: GMT ERROR: Bad gap selector (%c).  Choose from xydm\n", GMT_program, txt[0]);
+			return (TRUE);
+			break;
+	}
+	if ((G->gap = atof (&txt[1])) <= 0.0) {
+		fprintf (stderr, "%s: GMT ERROR: Gap value must be non-zero\n", GMT_program);
+		return (TRUE);
+	}
+	if (G->method == GMT_GAP_IN_GDIST) {	/* Convert any gap given to meters */
+		switch (txt[strlen(txt)-1]) {	/* Process unit information */
+			case 'd':	/* Degrees */
+				GMT_distance_func = (PFD) GMT_great_circle_dist;
+				break;
+			case 'k':	/* Km  */
+				G->gap *= 1000.0;
+				break;
+			case 'm':	/* Miles */
+				G->gap *= METERS_IN_A_MILE;
+				break;
+			case 'n':	/* Nautical miles */
+				G->gap *= METERS_IN_A_NAUTICAL_MILE;
+				break;
+			default:	/* E.g., meters or junk */
+				break;
+		}
+	}
+	else if (G->method == GMT_GAP_IN_PDIST){	/* Cartesian plot distance stuff */
+		switch (txt[strlen(txt)-1]) {	/* Process unit information */
+			case 'c':	/* cm*/
+				G->gap /= 2.54;
+				break;
+			case 'p':	/* Points */
+				G->gap /= 72.0;
+				break;
+			default:	/* E.g., inch or junk */
+				break;
+		}
+	}
+	return (FALSE);
+}
+
 int GMT_minmaxinc_verify (double min, double max, double inc, double slop)
 {
 	double checkval, range;
@@ -7232,19 +7334,19 @@ int GMT_get_dist_scale (char c, double *d_scale, int *proj_type, PFD *distance_f
 			break;
 		case 'm':	/* Miles along great circle */
 			*distance_func = GMT_great_circle_dist;
-			*d_scale = project_info.M_PR_DEG / 1609.334;
+			*d_scale = project_info.M_PR_DEG / METERS_IN_A_MILE;
 			break;
 		case 'M':	/* Miles along geodesic */
 			*distance_func = (GMT_IS_SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
-			*d_scale = ((GMT_IS_SPHERICAL) ? project_info.M_PR_DEG : 1.0) / 1609.334;
+			*d_scale = ((GMT_IS_SPHERICAL) ? project_info.M_PR_DEG : 1.0) / METERS_IN_A_MILE;
 			break;
 		case 'n':	/* Nautical miles along great circle */
 			*distance_func = GMT_great_circle_dist;
-			*d_scale = project_info.M_PR_DEG / 1852.0;
+			*d_scale = project_info.M_PR_DEG / METERS_IN_A_NAUTICAL_MILE;
 			break;
 		case 'N':	/* Nautical miles along geodesic */
 			*distance_func = (GMT_IS_SPHERICAL) ? GMT_great_circle_dist : GMT_geodesic_dist_meter;
-			*d_scale = ((GMT_IS_SPHERICAL) ? project_info.M_PR_DEG : 1.0) / 1852.0;
+			*d_scale = ((GMT_IS_SPHERICAL) ? project_info.M_PR_DEG : 1.0) / METERS_IN_A_NAUTICAL_MILE;
 			break;
 		case 'C':	/* Cartesian distances in projected units */
 			*d_scale = 1.0;
