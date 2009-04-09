@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.173 2009-04-09 04:52:39 guru Exp $
+ *	$Id: gmt_io.c,v 1.174 2009-04-09 21:08:36 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -759,6 +759,42 @@ int GMT_nc_input (FILE *fp, int *n, double **ptr)
 
 	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();		/* Must account for periodicity in 360 */
+
+	return (i);
+}
+
+int GMT_nc_input_new (FILE *fp, int *n, double **ptr)
+{
+	int i, status;
+	BOOLEAN keep_trying = TRUE;
+
+	GMT_io.status = 0;
+	if (*n == BUFSIZ)
+		*n = GMT_io.nvars;
+	else if (*n > GMT_io.nvars) {
+		fprintf (stderr, "%s: GMT_nc_input is asking for %d columns, but file has only %d\n", GMT_program, *n, GMT_io.nvars);
+		GMT_io.status = GMT_IO_MISMATCH;
+	}
+
+	while (keep_trying) {	/* Keep reading until (1) EOF, (2) got a multisegment record, or (3) a valid data record */
+
+		for (i = 0; i < GMT_io.nvars && i < *n; i++) {
+			nc_get_var1_double (GMT_io.ncid, GMT_io.varid[i], &GMT_io.nrec, &GMT_data[i]);
+			if (GMT_data[i] == GMT_io.missing_value[i])
+				GMT_data[i] = GMT_d_NaN;
+			else
+				GMT_data[i] = GMT_data[i] * GMT_io.scale_factor[i] + GMT_io.add_offset[i];
+		}
+		if (GMT_io.nrec == GMT_io.ndim) {
+			GMT_io.status = GMT_IO_EOF;
+			return (-1);
+		}
+		GMT_io.nrec++;
+		status = GMT_process_binary_input (*n);
+		if (status == 1) return (0);		/* A multisegment header */
+		if (status == 0) keep_trying = FALSE;	/* A data record  will exit the loop */
+	}
+	*ptr = GMT_data;
 
 	return (i);
 }
