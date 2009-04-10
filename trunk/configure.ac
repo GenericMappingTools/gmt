@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.53 2009-04-07 23:34:28 guru Exp $
-AC_REVISION($Revision: 1.53 $)
+dnl $Id: configure.ac,v 1.54 2009-04-10 01:29:47 remko Exp $
+AC_REVISION($Revision: 1.54 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -19,6 +19,12 @@ DOCDATE="Jun 2009"
 DOCYEAR="2009"
 GSHHS_VERSION=1.10
 CVS_VERSION=1
+dnl
+dnl -----------------------------------------------------------------
+dnl Specify the minimal supplement directories
+dnl -----------------------------------------------------------------
+dnl
+SUPPL="dbase gshhs imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system"
 dnl
 dnl -----------------------------------------------------------------
 dnl The remainder should need no editing
@@ -71,6 +77,7 @@ AC_SUBST(MEX_INC)
 AC_SUBST(MEX_EXT)
 AC_SUBST(MEX_XDIR)
 AC_SUBST(MEX_MDIR)
+AC_SUBST(SUPPL)
 AC_SUBST(rootdir)
 dnl
 dnl -----------------------------------------------------------------
@@ -480,10 +487,9 @@ fi
 if test ! -d src/sph; then
 	AC_MSG_RESULT([[not available]])
 elif test "X$enable_sph" = "Xno"; then
-	touch src/sph/.skip
-	AC_MSG_RESULT([[no... sph compilation disabled]])
+	AC_MSG_RESULT([[no]])
 else
-	rm -f src/sph/.skip
+	SUPPL=$SUPPL" sph"
 	AC_MSG_RESULT(yes)
 fi
 dnl
@@ -536,10 +542,9 @@ AC_MSG_CHECKING(if OK to compile mex)
 if test ! -d src/mex; then
 	AC_MSG_RESULT([[not available]])
 elif test "X$enable_mex" = "Xno"; then
-	touch src/mex/.skip
-	AC_MSG_RESULT([[no... mex compilation disabled]])
+	AC_MSG_RESULT([[no]])
 else
-	rm -f src/mex/.skip
+	SUPPL=$SUPPL" mex"
 	AC_MSG_RESULT(yes)
 fi
 dnl
@@ -556,10 +561,9 @@ fi
 if test ! -d src/xgrid; then
 	AC_MSG_RESULT([not available])
 elif test "X$enable_xgrid" = "Xno"; then
-	touch src/xgrid/.skip
-	AC_MSG_RESULT([[no... xgrid compilation disabled]])
+	AC_MSG_RESULT([[no]])
 else
-	rm -f src/xgrid/.skip
+	SUPPL=$SUPPL" xgrid"
 	AC_MSG_RESULT(yes)
 fi
 dnl
