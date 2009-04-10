@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.467 2009-04-10 01:29:47 remko Exp $
+	$Id: ChangeLog,v 1.468 2009-04-10 04:18:22 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-04-10	remko
@@ -8,7 +8,7 @@
 				supplements (mex, sph, xgrid).
 
 2009-04-09	pwessel
-	* psxy[z].c:		Added new option -F to detect breaks in lines based on use
+	* psxy[z].c:		Added new option -F to detect breaks in lines based on user
 				criteria on what constitutes a gap in continuity.
 	* gmt_support.c:	Added support functions for the -F option.
 	
