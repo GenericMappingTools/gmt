@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.381 2009-04-09 23:39:16 guru Exp $
+ *	$Id: gmt_init.c,v 1.382 2009-04-10 00:51:23 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -502,7 +502,7 @@ void GMT_explain_option (char option)
 		case 'U':	/* Plot time mark and [optionally] command line */
 
 			fprintf (stderr, "\t-U to plot Unix System Time stamp [and optionally appended text].\n");
-			fprintf (stderr, "\t   You may also set the reference points and position of stamp [%s/%g%c/%g%c].\n", GMT_just_string[gmtdefs.unix_time_just], gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
+			fprintf (stderr, "\t   You may also set the reference points and position of stamp [%s/%g%c/%g%c].\n", GMT_just_string[gmtdefs.unix_time_just], gmtdefs.unix_time_pos[GMT_X] * s, u, gmtdefs.unix_time_pos[GMT_Y] * s, u);
 			fprintf (stderr, "\t   Give -Uc to have the command line plotted [%s].\n", GMT_choice[gmtdefs.unix_time]);
 			break;
 
@@ -1349,8 +1349,8 @@ int GMT_parse_U_option (char *item) {
 		}
 		else {
 			GMT_ps.unix_time_just = i;
-			GMT_ps.unix_time_pos[0] = GMT_convert_units (txt_x, GMT_INCH);
-			GMT_ps.unix_time_pos[1] = GMT_convert_units (txt_y, GMT_INCH);
+			GMT_ps.unix_time_pos[GMT_X] = GMT_convert_units (txt_x, GMT_INCH);
+			GMT_ps.unix_time_pos[GMT_Y] = GMT_convert_units (txt_y, GMT_INCH);
 		}
 	}
 	else
@@ -2100,13 +2100,13 @@ int GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_UNIX_TIME_POS:
 			i = sscanf (value, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 			if (i == 2) {
-				gmtdefs.unix_time_pos[0] = GMT_convert_units (txt_a, GMT_INCH);
-				gmtdefs.unix_time_pos[1] = GMT_convert_units (txt_b, GMT_INCH);
+				gmtdefs.unix_time_pos[GMT_X] = GMT_convert_units (txt_a, GMT_INCH);
+				gmtdefs.unix_time_pos[GMT_Y] = GMT_convert_units (txt_b, GMT_INCH);
 			}
 			else if (i == 3) {	/* New style, includes justification, introduced in GMT 4.3.0 */
 				gmtdefs.unix_time_just = GMT_just_decode (txt_a, 12);
-				gmtdefs.unix_time_pos[0] = GMT_convert_units (txt_b, GMT_INCH);
-				gmtdefs.unix_time_pos[1] = GMT_convert_units (txt_c, GMT_INCH);
+				gmtdefs.unix_time_pos[GMT_X] = GMT_convert_units (txt_b, GMT_INCH);
+				gmtdefs.unix_time_pos[GMT_Y] = GMT_convert_units (txt_c, GMT_INCH);
 			}
 			else
 				error = TRUE;
@@ -2454,7 +2454,7 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "X_ORIGIN\t\t= %g%c\n", gmtdefs.x_origin * s, u);
 	fprintf (fp, "Y_ORIGIN\t\t= %g%c\n", gmtdefs.y_origin * s, u);
 	fprintf (fp, "UNIX_TIME\t\t= %s\n", ft[gmtdefs.unix_time]);
-	fprintf (fp, "UNIX_TIME_POS\t\t= %s/%g%c/%g%c\n", GMT_just_string[gmtdefs.unix_time_just], gmtdefs.unix_time_pos[0] * s, u, gmtdefs.unix_time_pos[1] * s, u);
+	fprintf (fp, "UNIX_TIME_POS\t\t= %s/%g%c/%g%c\n", GMT_just_string[gmtdefs.unix_time_just], gmtdefs.unix_time_pos[GMT_X] * s, u, gmtdefs.unix_time_pos[GMT_Y] * s, u);
 	fprintf (fp, "UNIX_TIME_FORMAT\t= %s\n", gmtdefs.unix_time_format);
 	fprintf (fp, "#-------- Color System Parameters -----------\n");
 	fprintf (fp, "COLOR_BACKGROUND\t= ");
@@ -5862,16 +5862,16 @@ void *New_GMT_Ctrl () {	/* Allocate and initialize a new common control structur
 	/* Initialize values whose defaults are not necessarily 0/FALSE/NULL */
 
 	/* [2]  -H[i][<nrecs>] */
-	C->common->H.active[0] = gmtdefs.io_header[0];
-	C->common->H.active[1] = gmtdefs.io_header[1];
+	C->common->H.active[GMT_IN] = gmtdefs.io_header[GMT_IN];
+	C->common->H.active[GMT_OUT] = gmtdefs.io_header[GMT_OUT];
 	C->common->H.n_recs = gmtdefs.n_header_recs;
 	/* [7]  -P */
 	C->common->P.active = gmtdefs.portrait;
 	/* [9]  -U */
 	C->common->U.active = gmtdefs.unix_time;
 	C->common->U.just = gmtdefs.unix_time_just;
-	C->common->U.x = gmtdefs.unix_time_pos[0];
-	C->common->U.y = gmtdefs.unix_time_pos[1];
+	C->common->U.x = gmtdefs.unix_time_pos[GMT_X];
+	C->common->U.y = gmtdefs.unix_time_pos[GMT_Y];
 	/* [10]  -V */
 	C->common->V.active = gmtdefs.verbose;
 	/* [11]  -X */
@@ -5881,8 +5881,8 @@ void *New_GMT_Ctrl () {	/* Allocate and initialize a new common control structur
 	/* [13]  -c */
 	C->common->c.copies = gmtdefs.n_copies;
 	/* [14]  -:[i|o] */
-	C->common->t.toggle[0] = gmtdefs.xy_toggle[GMT_IN];
-	C->common->t.toggle[1] = gmtdefs.xy_toggle[GMT_OUT];
+	C->common->t.toggle[GMT_IN] = gmtdefs.xy_toggle[GMT_IN];
+	C->common->t.toggle[GMT_OUT] = gmtdefs.xy_toggle[GMT_OUT];
 
 	return ((void *)C);
 }
