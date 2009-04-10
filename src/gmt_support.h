@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.40 2009-04-09 23:39:17 guru Exp $
+ *	$Id: gmt_support.h,v 1.41 2009-04-10 04:18:22 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -19,16 +19,23 @@
 #ifndef _GMT_SUPPORT_H
 #define _GMT_SUPPORT_H
 
+#define GMT_N_GAP_METHODS	7
+
 struct GMT_GAP_INFO {
-	int method;	/* How distances are computed */
-	double gap;	/* The critical distance */
+	int n_methods;				/* How many different criteria to apply */
+	BOOLEAN match_all;			/* If TRUE then all specified criteria must be met to be a gap [default is any of them] */
+	int method[GMT_N_GAP_METHODS];		/* How distances are computed for each criteria */
+	double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
+	PFD get_dist[GMT_N_GAP_METHODS];	/* Pointers to functiosn that compute those distances */
 };
 
 #define GMT_GAP_IN_X		1
-#define GMT_GAP_IN_Y		2
-#define GMT_GAP_IN_GDIST	3
-#define GMT_GAP_IN_CDIST	4
-#define GMT_GAP_IN_PDIST	5
+#define GMT_GAP_IN_MAP_X	2
+#define GMT_GAP_IN_Y		3
+#define GMT_GAP_IN_MAP_Y	4
+#define GMT_GAP_IN_GDIST	5
+#define GMT_GAP_IN_CDIST	6
+#define GMT_GAP_IN_PDIST	7
 
 EXTERN_MSC int GMT_err_pass (int err, char *file);
 EXTERN_MSC void GMT_err_fail (int err, char *file);

@@ -15,7 +15,7 @@ psxy \- Plot lines, polygons, and symbols on maps
 .SH SYNOPSIS
 \fBpsxy\fP \fIfiles\fP GMT_J_OPT GMT_Rgeo_OPT
 [ OPT(A)[\fBm\fP|\fBp\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP ] [ OPT(E)[\fBx\fP|\fBy\fP|\fBX\fP|\fBY\fP][\fBn\fP][\fIcap\fP][/[\fB-\fP|\fB+\fP]\fIpen\fP] ]
-[ OPT(F)\fBx\fP|\fBy\fP|\fBd\fP|\fBm\fP\fIgap\fP[\fBu\fP]] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ OPT(I)\fIintens\fP ] [ GMT_K_OPT ] [ OPT(L) ]
+[ OPT(F)[+]\fBx\fP|\fBy\fP|\fBd\fP|\fBX\fP|\fBY\fP|\fBD\fP\fIgap\fP[\fBu\fP]] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ OPT(I)\fIintens\fP ] [ GMT_K_OPT ] [ OPT(L) ]
 [ OPT(N) ] [ GMT_Mo_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ]
 [ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_t_OPT ] [ GMT_c_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
 .SH DESCRIPTION
@@ -69,14 +69,7 @@ coordinate is then taken as the median value, and 4 more columns are expected to
 quantile, the 75% quantile, and the maximum (100% quantile) values.  The 25-75% box may be filled by using OPT(G).
 If \fBn\fP is appended to \fBX\fP (or \fBY\fP) we draw a notched "box-and-whisker" symbol where the notch width reflects
 the uncertainty in the median.  Then a 5th extra data column is expected to contain the number of points in the distribution.
-.TP
-OPT(F)
-Ignored if OPT(S) is set.  Examine the spacing between consecutive data points in order to impose breaks in the line.  Append
-\fBx\fP|\fBy\fP to define a gap when there is a large enough change in the x or y coordinates, respectively,
-Append \fBd\fP for distance gaps, and \fBm\fP for projected distance gap.  Append \fIgap\fP and optionally a unit.
-For geographic data, The unit \fBu\fP may be m\fBe\fPter [Default], \fBk\fPilometer, \fBm\fPiles, or \fBn\fPautical miles.
-For OPT(Fm), choose from \fBi\fPnch, \fBc\f)entimeter, \fBm\fPeter, or \fBp\fPoints [Default unit set by MEASURE_UNIT].
-Note: For OPT(Fx)|\fBy\fP with time data the unit is instead controlled by TIME_UNIT.
+#include "explain_usergap.txt"
 .TP
 OPT(G)
 Select color or pattern for filling of symbols or polygons [Default is no fill].
