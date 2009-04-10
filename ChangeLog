@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.466 2009-04-09 23:39:16 guru Exp $
+	$Id: ChangeLog,v 1.467 2009-04-10 01:29:47 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-10	remko
+	* Makefile, configure.ac, makegmt.macros.in:	Moved definition of SUPPL from Makefile
+				to makegmt.macros.in. No more need to use .skip file for skipped
+				supplements (mex, sph, xgrid).
 
 2009-04-09	pwessel
 	* psxy[z].c:		Added new option -F to detect breaks in lines based on use
