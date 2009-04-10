@@ -7,8 +7,8 @@
 .SH NAME
 psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS
-\fBpsxyz\fB \fIfiles\fP GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
-[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP[\fIdz\fP] ] [ GMT_E_OPT ] [ OPT(F)[+]\fBx\fP|\fBy\fP|\fBd\fP|\fBX\fP|\fBY\fP|\fBD\fP\fIgap\fP[\fBu\fP]]
+\fBpsxyz\fP \fIfiles\fP GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
+[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP[\fIdz\fP] ] [ GMT_E_OPT ] [ OPT(F)[+]\fBx\fP|\fBy\fP|\fBd\fP|\fBX\fP|\fBY\fP|\fBD\fP\fIgap\fP[\fBu\fP] ]
 [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ OPT(I)\fIintens\fP ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ]
 [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ]
 [ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_t_OPT ] [ GMT_c_OPT ]
