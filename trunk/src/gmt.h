@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.177 2009-03-30 23:32:14 remko Exp $
+ *	$Id: gmt.h,v 1.178 2009-04-11 22:55:48 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -179,6 +179,9 @@ extern "C" {
 #endif
 #ifndef MAX
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#endif
+#ifndef MOD			/* Knuth-style modulo function (remainder after floored division) */
+#define MOD(x, y) (x - y * floor((double)(x)/(double)(y)))
 #endif
 
 /* Safe math macros that check arguments */
