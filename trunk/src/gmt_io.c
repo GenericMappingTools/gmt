@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.174 2009-04-09 21:08:36 guru Exp $
+ *	$Id: gmt_io.c,v 1.175 2009-04-11 02:06:36 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -726,47 +726,10 @@ BOOLEAN GMT_is_a_blank_line (char *line) {
 	return (FALSE);
 }
 
-#ifdef DONOTUSE
-char *GMT_fgets (char *record, int maxlength, FILE *fp)
-{
-	return (fgets (record, maxlength, fp));
-}
-#endif
 
 int GMT_nc_input (FILE *fp, int *n, double **ptr)
 {
-	int i;
-
-	GMT_io.status = 0;
-	if (*n == BUFSIZ)
-		*n = GMT_io.nvars;
-	else if (*n > GMT_io.nvars) {
-		fprintf (stderr, "%s: GMT_nc_input is asking for %d columns, but file has only %d\n", GMT_program, *n, GMT_io.nvars);
-		GMT_io.status = GMT_IO_MISMATCH;
-	}
-
-	for (i = 0; i < GMT_io.nvars && i < *n; i++) {
-		nc_get_var1_double (GMT_io.ncid, GMT_io.varid[i], &GMT_io.nrec, &GMT_data[i]);
-		if (GMT_data[i] == GMT_io.missing_value[i])
-			GMT_data[i] = GMT_d_NaN;
-		else
-			GMT_data[i] = GMT_data[i] * GMT_io.scale_factor[i] + GMT_io.add_offset[i];
-	}
-	if (GMT_io.nrec == GMT_io.ndim) GMT_io.status = GMT_IO_EOF;
-	GMT_io.nrec++;
-
-	*ptr = GMT_data;
-
-	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();		/* Must account for periodicity in 360 */
-
-	return (i);
-}
-
-int GMT_nc_input_new (FILE *fp, int *n, double **ptr)
-{
 	int i, status;
-	BOOLEAN keep_trying = TRUE;
 
 	GMT_io.status = 0;
 	if (*n == BUFSIZ)
@@ -776,8 +739,12 @@ int GMT_nc_input_new (FILE *fp, int *n, double **ptr)
 		GMT_io.status = GMT_IO_MISMATCH;
 	}
 
-	while (keep_trying) {	/* Keep reading until (1) EOF, (2) got a multisegment record, or (3) a valid data record */
+	do {	/* Keep reading until (1) EOF, (2) got a multisegment record, or (3) a valid data record */
 
+		if (GMT_io.nrec == GMT_io.ndim) {
+			GMT_io.status = GMT_IO_EOF;
+			return (-1);
+		}
 		for (i = 0; i < GMT_io.nvars && i < *n; i++) {
 			nc_get_var1_double (GMT_io.ncid, GMT_io.varid[i], &GMT_io.nrec, &GMT_data[i]);
 			if (GMT_data[i] == GMT_io.missing_value[i])
@@ -785,15 +752,10 @@ int GMT_nc_input_new (FILE *fp, int *n, double **ptr)
 			else
 				GMT_data[i] = GMT_data[i] * GMT_io.scale_factor[i] + GMT_io.add_offset[i];
 		}
-		if (GMT_io.nrec == GMT_io.ndim) {
-			GMT_io.status = GMT_IO_EOF;
-			return (-1);
-		}
 		GMT_io.nrec++;
 		status = GMT_process_binary_input (*n);
 		if (status == 1) return (0);		/* A multisegment header */
-		if (status == 0) keep_trying = FALSE;	/* A data record  will exit the loop */
-	}
+	} while (status == 2);	/* Continue reading when record is to be skipped */
 	*ptr = GMT_data;
 
 	return (i);
@@ -802,15 +764,13 @@ int GMT_nc_input_new (FILE *fp, int *n, double **ptr)
 int GMT_bin_input (FILE *fp, int *n, double **ptr)
 {	/* General binary read function which calls function pointed to by GMT_read_binary to handle actual reading (and possbily swabbing) */
 	int status;
-	BOOLEAN keep_trying = TRUE;
 
 	GMT_io.status = 0;
-	while (keep_trying) {	/* Keep reading until (1) EOF, (2) got a multisegment record, or (3) a valid data record */
+	do {	/* Keep reading until (1) EOF, (2) got a multisegment record, or (3) a valid data record */
 		if ((*GMT_read_binary) (fp, *n)) return (-1);	/* EOF */
 		status = GMT_process_binary_input (*n);
 		if (status == 1) return (0);		/* A multisegment header */
-		if (status == 0) keep_trying = FALSE;	/* A data record  will exit the loop */
-	}
+	} while (status == 2);	/* Continue reading when record is to be skipped */
 	*ptr = GMT_data;
 
 	return (*n);
@@ -884,7 +844,9 @@ BOOLEAN GMT_read_binary_f_input (FILE *fp, float *GMT_f, int n) {
 }
 
 int GMT_process_binary_input (int n_read) {
-	/* Process a binary record to determine what kind of record it is */
+	/* Process a binary record to determine what kind of record it is. Return values:
+	 * 0 = regular record; 1 = segment header (all NaNs); 2 = skip this record
+	*/
 	int col_no, n_NaN;
 	BOOLEAN bad_record = FALSE, set_nan_flag = FALSE;
 	/* Here, GMT_data has been filled in by fread */
