@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.8 2008-04-09 19:17:39 remko Exp $
+#	$Id: functions.sh,v 1.9 2009-04-12 15:29:21 remko Exp $
 #
 # Functions to be used with test scripts
 
@@ -15,7 +15,7 @@ pscmp () {
 	if test $? -ne 0; then
         	echo "[FAIL]"
 		echo $f: $rms >> ../fail_count.d
-	elif test `echo 40 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
+	elif test `echo 200 \> $rms|cut -d' ' -f-3|bc` -eq 1; then
         	echo "[PASS]"
         	rm -f $f.png $f.ps
 	else
