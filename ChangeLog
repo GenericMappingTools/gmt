@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.468 2009-04-10 04:18:22 guru Exp $
+	$Id: ChangeLog,v 1.469 2009-04-12 15:31:46 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-11	remko
+	* gmt.h, gmtmath.c, grdmath.c:	Added MOD function (remainder after floored division,
+				Knuth style). This is in constrast to FMOD which gives the
+				remainder after (horror) truncated division.
+	* gmtmath.c:		For check if argument is file: remove suffix ?fields first.
 
 2009-04-10	remko
 	* Makefile, configure.ac, makegmt.macros.in:	Moved definition of SUPPL from Makefile
