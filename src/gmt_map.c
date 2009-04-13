@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.216 2009-03-31 15:31:11 remko Exp $
+ *	$Id: gmt_map.c,v 1.217 2009-04-13 15:24:05 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2928,7 +2928,7 @@ int GMT_map_init_albers (void) {
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[4]);
 
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
-	GMT_geo_to_xy (project_info.w, project_info.pole, &x1, &y1);
+	GMT_geo_to_xy (project_info.central_meridian + 90., project_info.pole, &x1, &y1);
 	dy = y1 - project_info.c_y0;
 	az = 2.0 * d_atan2 (dy, x1 - project_info.c_x0);
 	dy /= (1.0 - cos (az));
@@ -2983,7 +2983,7 @@ int GMT_map_init_econic (void) {
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[4]);
 
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
-	GMT_geo_to_xy (project_info.w, project_info.pole, &x1, &y1);
+	GMT_geo_to_xy (project_info.central_meridian + 90., project_info.pole, &x1, &y1);
 	dy = y1 - project_info.c_y0;
 	az = 2.0 * d_atan2 (dy, x1 - project_info.c_x0);
 	dy /= (1.0 - cos (az));
