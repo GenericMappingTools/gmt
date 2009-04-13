@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.469 2009-04-12 15:31:46 remko Exp $
+	$Id: ChangeLog,v 1.470 2009-04-13 15:24:05 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-13	remko
+	* gmt_map.c (GMT_map_init_{albers,econic}):	Fixed inability to determine projection
+				pole when central_meridian and western boundary are the same.
 
 2009-04-11	remko
 	* gmt.h, gmtmath.c, grdmath.c:	Added MOD function (remainder after floored division,
