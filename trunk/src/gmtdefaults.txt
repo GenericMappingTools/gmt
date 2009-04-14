@@ -598,9 +598,12 @@ circular arc is used to fill in the cracks at the kinks, and \fIbevel\fP join wh
 is a miter join that is cut off so kinks are triangular in shape [miter].
 .TP
 .B PS_MITER_LIMIT
-Sets the threshold angle (integer in 0-180 range) used for mitered joins.  0 and 180
-are special flag values that imply the \fIPostScript\fP default [11] and always bevels,
-respectively.  Other values sets the acute angle used to decide between mitered and bevelled.
+Sets the threshold angle in degrees (integer in 0-180 range) used for mitered joins only.
+When the angle between joining line segments is smaller than the threshold the corner will
+be bevelled instead of mitered.
+The default threshold is 35 degrees.
+Setting the threshold angle to 0 implies the \fIPostScript\fP default of about 11 degrees.
+Setting the threshold angle to 180 causes all joins to be beveled.
 .TP
 .B PS_VERBOSE
 If TRUE we will issue comments in the \fIPostScript\fP file that explain the logic of operations.
