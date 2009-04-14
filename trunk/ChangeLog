@@ -1,13 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.472 2009-04-14 04:55:29 guru Exp $
+	$Id: ChangeLog,v 1.473 2009-04-14 20:08:57 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-04-14	pwessel
 	* mgd77/mgd77list.c:	Added -Fytime which gives decimal absolute year for time output.
 
 2009-04-14	remko
+	* gmtdefaults_??.in:	Increased PS_MITER_LIMIT to 35 degrees to get rid of some
+				extremely long miters.
+	* gmt_plot.c (GMT_draw_map_rose):	Force "0 setlinejoin 10 setmiterlimit".
 	* psxy[z].c:		Bug fix in -F option: should only check from 2nd record onwards
-			(n > 0), otherwise crash when using xx[n-1].
+				(n > 0), otherwise crash when using xx[n-1].
 
 2009-04-13	remko
 	* gmt_map.c (GMT_map_init_{albers,econic}):	Fixed inability to determine projection
