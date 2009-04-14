@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.53 2009-03-26 20:27:44 guru Exp $
+#  $Id: GNUmakefile,v 1.54 2009-04-14 20:03:55 remko Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -147,7 +147,8 @@ webdoc:		;
 # FILES from the CVS-distributed master files:
 #-------------------------------------------------------------------------------
 
-FILES =		configure src/makegmt.macros share/conf/gmt.conf share/conf/gmtdefaults_SI share/conf/gmtdefaults_US
+FILES =		src/makegmt.macros share/conf/gmt.conf share/conf/gmtdefaults_SI share/conf/gmtdefaults_US \
+		src/gmt_version.h src/GMT
 
 gmtmacros FILES:		$(FILES)
 examples:	FILES
@@ -164,10 +165,10 @@ guru/gmtguru.macros:
 # When doing spotless or TARGET=spotless, make sure a dummy src/makegmt.macros exists
 
 ifeq "$(findstring spotless,$(MAKECMDGOALS)$(TARGET))" "spotless"
-src/makegmt.macros:
+$(FILES):
 		touch $@
 else
-src/makegmt.macros:	guru/gmtguru.macros src/makegmt.macros.in configure config.sub config.guess
+$(FILES):	guru/gmtguru.macros configure config.sub config.guess $(addsuffix .in,$(FILES))
 		rm -f config.cache config.log config.status
 		./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) $(GMT_DIST) $(GMT_EXDIST) \
 		$(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL) $(GMT_F2C) $(GMT_OTHER)
