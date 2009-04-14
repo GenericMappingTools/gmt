@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.217 2009-04-06 02:14:42 guru Exp $
+ *	$Id: mgd77.c,v 1.218 2009-04-14 04:55:29 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2424,6 +2424,10 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 		else if (!strcmp (word, "rtime")) {	/* Time relative to EPOCH */
 			strcpy (word, "time");
 			F->time_format = GMT_IS_RELTIME;	/* Alternate time format is time relative to EPOCH */
+		}
+		else if (!strcmp (word, "ytime")) {	/* Floating point year */
+			strcpy (word, "time");
+			F->time_format = GMT_IS_FLOAT;	/* Alternate time format is floating point year */
 		}
 
 		/* OK, here we are ready to update the structures */

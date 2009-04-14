@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.471 2009-04-14 02:03:20 remko Exp $
+	$Id: ChangeLog,v 1.472 2009-04-14 04:55:29 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-14	pwessel
+	* mgd77/mgd77list.c:	Added -Fytime which gives decimal absolute year for time output.
 
 2009-04-14	remko
 	* psxy[z].c:		Bug fix in -F option: should only check from 2nd record onwards
-				(n > 0), otherwise crash when using xx[n-1].
+			(n > 0), otherwise crash when using xx[n-1].
 
 2009-04-13	remko
 	* gmt_map.c (GMT_map_init_{albers,econic}):	Fixed inability to determine projection
