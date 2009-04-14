@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.256 2009-04-09 23:39:16 guru Exp $
+ *	$Id: gmt_plot.c,v 1.257 2009-04-14 19:21:54 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -126,6 +126,7 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n, double radius_s, double radius_n, BOOLEAN secondary_too);
 void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double n, double angle_s, double angle_n, BOOLEAN secondary_too);
 void GMT_label_trim (char *label, int stage);
+void GMT_draw_dir_rose (struct GMT_MAP_ROSE *mr);
 void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr);
 void GMT_Nstar (double x0, double y0, double r);
 void GMT_contlabel_debug (struct GMT_CONTOUR *G);
@@ -2930,6 +2931,34 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 	}
 }
 
+void GMT_draw_map_rose (struct GMT_MAP_ROSE *mr)
+{
+	if (!mr->plot) return;
+
+	if (!GMT_IS_MAPPING) return;	/* Only for geographic projections */
+
+	if (mr->gave_xy)	/* Also get lon/lat coordinates */
+		GMT_xy_to_geo (&mr->lon, &mr->lat, mr->x0, mr->y0);
+	else {	/* Must convert lon/lat to location on map */
+		mr->lon = mr->x0;
+		mr->lat = mr->y0;
+		GMT_geo_to_xy (mr->lon, mr->lat, &mr->x0, &mr->y0);
+	}
+
+	/* Temporarily use miter to get sharp points to compass rose */
+	if (gmtdefs.ps_line_join != 0) ps_setlinejoin (0);
+	if (gmtdefs.ps_miter_limit != 0) ps_setmiterlimit (0);
+
+	if (mr->fancy == 2)	/* Do magnetic compass rose */
+		GMT_draw_mag_rose (mr);
+	else
+		GMT_draw_dir_rose (mr);
+
+	/* Switch line join style back */
+	if (gmtdefs.ps_line_join != 0) ps_setlinejoin (gmtdefs.ps_line_join);
+	if (gmtdefs.ps_miter_limit != 0) ps_setmiterlimit (gmtdefs.ps_miter_limit);
+}
+
 /* These are used to scale the plain arrow given rose size */
 
 #define F_VW	0.01
@@ -2944,30 +2973,13 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 
 #define DIST_TO_2ND_POINT 1.0
 
-void GMT_draw_map_rose (struct GMT_MAP_ROSE *mr)
+void GMT_draw_dir_rose (struct GMT_MAP_ROSE *mr)
 {
 	int i, kind, just[4] = {10, 5, 2, 7};
 	double angle, L[4], R[4], x[8], y[8], xp[8], yp[8], tx[3], ty[3], s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
 	struct GMT_FILL f;
 
-	if (!mr->plot) return;
-
-	if (!GMT_IS_MAPPING) return;	/* Only for geographic projections */
-
 	GMT_init_fill (&f, gmtdefs.background_rgb[0], gmtdefs.background_rgb[1], gmtdefs.background_rgb[2]);       /* Initialize fill structure */
-
-	if (mr->gave_xy)	/* Also get lon/lat coordinates */
-		GMT_xy_to_geo (&mr->lon, &mr->lat, mr->x0, mr->y0);
-	else {	/* Must convert lon/lat to location on map */
-		mr->lon = mr->x0;
-		mr->lat = mr->y0;
-		GMT_geo_to_xy (mr->lon, mr->lat, &mr->x0, &mr->y0);
-	}
-
-	if (mr->fancy == 2) {	/* Do magnetic compass rose */
-		GMT_draw_mag_rose (mr);
-		return;
-	}
 
 	GMT_azim_to_angle (mr->lon, mr->lat, DIST_TO_2ND_POINT, 90.0, &angle);	/* Get angle of E-W direction at this location */
 
