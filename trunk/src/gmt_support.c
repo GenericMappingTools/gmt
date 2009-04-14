@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.392 2009-04-10 04:18:22 guru Exp $
+ *	$Id: gmt_support.c,v 1.393 2009-04-14 12:24:20 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6141,22 +6141,15 @@ int GMT_getrose (char *text, struct GMT_MAP_ROSE *ms)
 	return (error);
 }
 
-BOOLEAN GMT_gap_detected (int rec, double this_x, double this_y, double prev_x, double prev_y, struct GMT_GAP_INFO *G)
-{	/* Determine if two consecutive points are "far enough apart" to constitude a data gap and thus "pen up" */
-	int i, n_matched;
-	BOOLEAN met_this_criteria, gap_possible = TRUE;
-	if (rec == 0)  return (FALSE);	/* No previous point yet */
+BOOLEAN GMT_gap_detected (double this_x, double this_y, double prev_x, double prev_y, struct GMT_GAP_INFO *G)
+{	/* Determine if two points are "far enough apart" to constitude a data gap and thus "pen up" */
+	int i;
 	
-	/* OK, here we must determine if any or all of the the selected gap criteria [see GMT_set_gap_param] are met */
-	
-	for (i = n_matched = 0; gap_possible && i < G->n_methods; i++) {	/* Go through each criteria as long as a gap is viable */
-		met_this_criteria = (G->get_dist[i] (this_x, this_y, prev_x, prev_y) > G->gap[i]) ? TRUE : FALSE;
-		if (met_this_criteria)		/* Met this critieria, update the total tally */
-			n_matched++;
-		else if (G->match_all)		/* This test is only applied if met_this_criteria was FALSE, and if this test is TRUE */
-			gap_possible = FALSE;	/* then we failed to meet all required criteria [so we might as well bail] */
+	/* Here we must determine if any or all of the selected gap criteria [see GMT_set_gap_param] are met */
+	for (i = 0; i < G->n_methods; i++) {	/* Go through each criterion */
+		if ((G->get_dist[i] (this_x, this_y, prev_x, prev_y) > G->gap[i]) != G->match_all) return (!G->match_all);
 	}
-	return (gap_possible && n_matched);	/* Unless we failed a key test we return TRUE if we met any of the criteria */
+	return (G->match_all);
 }
 
 BOOLEAN GMT_set_gap_param (char *txt, struct GMT_GAP_INFO *G)
