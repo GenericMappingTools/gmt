@@ -1,6 +1,5 @@
 .TP
-OPT(F)
-Ignored if OPT(S) is set.
+OPT(g)
 Examine the spacing between consecutive data points in order to impose breaks in the line.
 Append \fBx\fP|\fBX\fP or \fBy\fP|\fBY\fP to define a gap when there is a large enough change in the x or y coordinates, respectively,
 or \fBd\fP|\fBD\fP for distance gaps; use upper case to calculate gaps from projected coordinates.

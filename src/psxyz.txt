@@ -8,11 +8,11 @@
 psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS
 \fBpsxyz\fP \fIfiles\fP GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
-[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP[\fIdz\fP] ] [ GMT_E_OPT ] [ GMT_g_OPT ] 
+[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP[\fIdz\fP] ] [ GMT_E_OPT ]
 [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ OPT(I)\fIintens\fP ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ]
 [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ]
-[ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_t_OPT ] [ GMT_c_OPT ]
-[ GMT_bi_OPT ] [ GMT_fi_OPT ]
+[ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ]
+[ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ] 
 .SH DESCRIPTION
 \fBpsxyz\fP reads (x,y,z) triplets from \fIfiles\fP [or standard input] and
 generates \fIPostScript\fP code that will plot lines, polygons, or symbols at those locations in 3-D.
@@ -275,6 +275,7 @@ For 3-D projections:  Sets the z-level of the basemap [0].
 #include "explain_-c.txt"
 #include "explain_-f.txt"
 #include "explain_-g.txt"
+The OPT(g) option is ignored if OPT(S) is set.
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"

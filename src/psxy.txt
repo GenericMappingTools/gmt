@@ -14,10 +14,12 @@
 psxy \- Plot lines, polygons, and symbols on maps
 .SH SYNOPSIS
 \fBpsxy\fP \fIfiles\fP GMT_J_OPT GMT_Rgeo_OPT
-[ OPT(A)[\fBm\fP|\fBp\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP ] [ OPT(E)[\fBx\fP|\fBy\fP|\fBX\fP|\fBY\fP][\fBn\fP][\fIcap\fP][/[\fB-\fP|\fB+\fP]\fIpen\fP] ]
-[ GMT_g_OPT ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ OPT(I)\fIintens\fP ] [ GMT_K_OPT ] [ OPT(L) ]
+[ OPT(A)[\fBm\fP|\fBp\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP ]
+[ OPT(E)[\fBx\fP|\fBy\fP|\fBX\fP|\fBY\fP][\fBn\fP][\fIcap\fP][/[\fB-\fP|\fB+\fP]\fIpen\fP] ]
+[ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ OPT(I)\fIintens\fP ] [ GMT_K_OPT ] [ OPT(L) ]
 [ OPT(N) ] [ GMT_Mo_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ]
-[ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_t_OPT ] [ GMT_c_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
+[ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ]
+[ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ]
 .SH DESCRIPTION
 \fBpsxy\fP reads (\fIx\fP,\fIy\fP) pairs from \fIfiles\fP [or standard input] and
 generates \fIPostScript\fP code that will plot lines, polygons, or symbols at those locations on a map.
@@ -275,6 +277,7 @@ A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill an
 #include "explain_-c.txt"
 #include "explain_-f.txt"
 #include "explain_-g.txt"
+The OPT(g) option is ignored if OPT(S) is set.
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"
