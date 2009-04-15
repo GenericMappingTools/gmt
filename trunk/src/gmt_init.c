@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.384 2009-04-15 17:22:13 guru Exp $
+ *	$Id: gmt_init.c,v 1.385 2009-04-15 19:53:56 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -990,7 +990,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 int GMT_parse_common_options (char *item, double *w, double *e, double *s, double *n)
 {
 	/* GMT_parse_common_options interprets the command line for the common, unique options
-	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -:, -
+	 * -B, -H, -J, -K, -M, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -m, -:, -
 	 */
 
 	int i, error = 0, j_type, opt;
@@ -1221,6 +1221,10 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 			}
 			if (i) GMT_syntax ('g');
 			error += i;
+			break;
+		case 'M':
+		case 'm':
+			GMT_multisegment (&item[2]);
 			break;
 			
 		default:	/* Should never get here, but... */
