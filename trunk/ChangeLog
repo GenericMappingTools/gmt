@@ -1,14 +1,19 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.474 2009-04-15 06:11:05 guru Exp $
+	$Id: ChangeLog,v 1.475 2009-04-15 19:56:03 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-15	remko
+	* gmt_init.c:		Add handling of -M|m by GMT_parse_common_options.
+	* *.c:			Removed call to GMT_multisegment. -M|m now handled as common option.
+				-m is allowed silently. Not mentioned in manpages.
 
 2009-04-14	pwessel
 	* mgd77/mgd77list.c:	Added -Fytime which gives decimal absolute year for time output.
 	* *.c:			Promoted new gap-detection option (-F) to a global -g option.
 
 2009-04-14	remko
-	* gmtdefaults_??.in:	Increased PS_MITER_LIMIT to 35 degrees to get rid of some
-				extremely long miters.
+	* gmtdefaults_??.in, gmt_globals.h:	Increased PS_MITER_LIMIT to 35 degrees to get
+				rid of some extremely long miters.
 	* gmt_plot.c (GMT_draw_map_rose):	Force "0 setlinejoin 10 setmiterlimit".
 	* psxy[z].c:		Bug fix in -F option: should only check from 2nd record onwards
 				(n > 0), otherwise crash when using xx[n-1].

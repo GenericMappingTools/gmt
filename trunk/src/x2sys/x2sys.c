@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.129 2009-03-31 03:30:15 guru Exp $
+ *	$Id: x2sys.c,v 1.130 2009-04-15 19:56:03 remko Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -907,7 +907,9 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 		if (p[0] == '-') {
 			switch (p[1]) {
 				/* Common parameters */
+				case 'M':
 				case 'R':
+				case 'm':
 					if (GMT_parse_common_options (p, &B->x_min, &B->x_max, &B->y_min, &B->y_max)) {
 						fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
 						return (GMT_GRDIO_READ_FAILED);
@@ -943,9 +945,6 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 						fprintf (stderr, "%s: Error processing %s setting in %s!\n", X2SYS_program, &p[1], tag_file);
 						return (GMT_GRDIO_READ_FAILED);
 					}
-					break;
-				case 'M':	/* Multisegment files */
-					GMT_multisegment (&p[2]);
 					break;
 				case 'N':	/* Distance and speed unit selection */
 					switch (p[2]) {
