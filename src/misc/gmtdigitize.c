@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.22 2009-01-09 04:02:35 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.23 2009-04-15 19:56:03 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -102,10 +102,12 @@ int main (int argc, char **argv)
 			
 				case 'H':
 				case 'J':
+				case 'M':
 				case 'R':
 				case 'V':
 				case 'b':
 				case 'f':
+				case 'm':
 				case ':':
 				case '\0':
 					error += GMT_parse_common_options (argv[i], &west, &east, &south, &north);
@@ -131,9 +133,6 @@ int main (int argc, char **argv)
 				case 'Z':
 					if (argv[i][2] == 'k') output_key = TRUE;
 					if (argv[i][2] == 'v') output_val = TRUE;
-					break;
-				case 'M':               /* Multiple line segments */
-					GMT_multisegment (&argv[i][2]);
 					break;
 				case 'N':               /* Multiple line segments */
 					name = &argv[i][2];
