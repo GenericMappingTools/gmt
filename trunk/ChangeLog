@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.473 2009-04-14 20:08:57 remko Exp $
+	$Id: ChangeLog,v 1.474 2009-04-15 06:11:05 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-04-14	pwessel
 	* mgd77/mgd77list.c:	Added -Fytime which gives decimal absolute year for time output.
+	* *.c:			Promoted new gap-detection option (-F) to a global -g option.
 
 2009-04-14	remko
 	* gmtdefaults_??.in:	Increased PS_MITER_LIMIT to 35 degrees to get rid of some

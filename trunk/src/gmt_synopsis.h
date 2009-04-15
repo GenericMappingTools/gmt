@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_synopsis.h,v 1.8 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_synopsis.h,v 1.9 2009-04-15 06:11:05 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -57,6 +57,7 @@
 #define GMT_f_OPT	"-f[i|o]<colinfo>"
 #define GMT_fi_OPT	"-f<colinfo>"
 #define GMT_fo_OPT	"-f<colinfo>"
+#define GMT_g_OPT	"-g[+]x|y|d|X|Y|D<gap>[unit]"
 
 /* Options for map rose and scale, used in pscoast and psbasemap */
 
