@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.382 2009-04-10 00:51:23 guru Exp $
+ *	$Id: gmt_init.c,v 1.383 2009-04-15 06:11:05 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -567,6 +567,16 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t   -f[i|o]g means -f[i|o]0x,1y (geographic coordinates).\n");
 			break;
 
+		case 'g':	/* -g option to tell GMT to identify data gaps based on point separation */
+			fprintf (stderr, "\t-g Use point separation to identify data gaps.\n");
+			fprintf (stderr, "\t   Append x|X or y|Y to flag gaps in x or y coordinates, respectively, and d|D for distance gaps.\n");
+			fprintf (stderr, "\t   Upper case means we first project the points.  Append <gap> and optionally a unit.\n");
+			fprintf (stderr, "\t   For geographic data, choose from m(e)ter [Default], (k)ilometer, (m)iles), or (n)autical miles).\n");
+			fprintf (stderr, "\t   For gaps based on mapped coordinates, choose from (i)nch, (c)entimeter, (m)eter, or (p)oints [%s].\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t   Note: For x|y with time data the unit is instead controlled by TIME_UNIT\n");
+			fprintf (stderr, "\t   Repeat option to specify multiple criteria, and prepend + to indicate all critera must be met [any].\n");
+			break;
+	
 		case '.':	/* Trailer message */
 
 			fprintf (stderr, "\t(See gmtdefaults man page for hidden GMT default parameters)\n");
@@ -730,6 +740,7 @@ void GMT_maprose_syntax (char option, char *string)
 	fprintf (stderr, "\t   If the North label = \'*\' then a north star is plotted instead of the label.\n");
 	fprintf (stderr, "\t   Append +<gints>/<mints> to override default annotation/tick interval(s) [10/5/1/30/5/1].\n");
 }
+
 void GMT_syntax (char option)
 {
 	/* The function print to stderr the syntax for the option indicated by

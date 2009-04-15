@@ -8,7 +8,7 @@
 psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS
 \fBpsxyz\fP \fIfiles\fP GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
-[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP[\fIdz\fP] ] [ GMT_E_OPT ] [ OPT(F)[+]\fBx\fP|\fBy\fP|\fBd\fP|\fBX\fP|\fBY\fP|\fBD\fP\fIgap\fP[\fBu\fP] ]
+[ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP[\fIdz\fP] ] [ GMT_E_OPT ] [ GMT_g_OPT ] 
 [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ OPT(I)\fIintens\fP ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ]
 [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ]
 [ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_t_OPT ] [ GMT_c_OPT ]
@@ -46,7 +46,6 @@ will control the color of the line or polygon (if OPT(L) is set) via the cpt fil
 OPT(D)
 Offset the plot symbol or line locations by the given amounts \fIdx/dy\fP[\fIdz\fP] [Default is no offset].
 #include "explain_-E.txt"
-#include "explain_usergap.txt"
 .TP
 OPT(G)
 Select color or pattern for filling of symbols or polygons [Default is no fill].
@@ -275,6 +274,7 @@ For 3-D projections:  Sets the z-level of the basemap [0].
 [Default is the required number of columns given the chosen settings].
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+#include "explain_-g.txt"
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"
