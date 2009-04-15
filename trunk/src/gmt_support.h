@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.42 2009-04-14 12:24:20 remko Exp $
+ *	$Id: gmt_support.h,v 1.43 2009-04-15 17:22:13 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -18,24 +18,6 @@
 
 #ifndef _GMT_SUPPORT_H
 #define _GMT_SUPPORT_H
-
-#define GMT_N_GAP_METHODS	7
-
-struct GMT_GAP_INFO {
-	int n_methods;				/* How many different criteria to apply */
-	BOOLEAN match_all;			/* If TRUE then all specified criteria must be met to be a gap [default is any of them] */
-	int method[GMT_N_GAP_METHODS];		/* How distances are computed for each criteria */
-	double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
-	PFD get_dist[GMT_N_GAP_METHODS];	/* Pointers to functiosn that compute those distances */
-};
-
-#define GMT_GAP_IN_X		1
-#define GMT_GAP_IN_MAP_X	2
-#define GMT_GAP_IN_Y		3
-#define GMT_GAP_IN_MAP_Y	4
-#define GMT_GAP_IN_GDIST	5
-#define GMT_GAP_IN_CDIST	6
-#define GMT_GAP_IN_PDIST	7
 
 EXTERN_MSC int GMT_err_pass (int err, char *file);
 EXTERN_MSC void GMT_err_fail (int err, char *file);
@@ -108,8 +90,7 @@ EXTERN_MSC char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, i
 EXTERN_MSC void GMT_fourt (float *data, GMT_LONG *nn, int ndim, int ksign, int iform, float *work);
 EXTERN_MSC int GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 EXTERN_MSC int GMT_get_proj3D (char *line, double *az, double *el);
-EXTERN_MSC BOOLEAN GMT_set_gap_param (char *txt, struct GMT_GAP_INFO *G);
-EXTERN_MSC BOOLEAN GMT_gap_detected (double this_x, double this_y, double prev_x, double prev_y, struct GMT_GAP_INFO *G);
+EXTERN_MSC BOOLEAN GMT_gap_detected (double this_x, double this_y, double prev_x, double prev_y);
 
 #ifdef DEBUG
 EXTERN_MSC void *GMT_memory_func (void *prev_addr, size_t nelem, size_t size, char *progname, char *fname, int line);

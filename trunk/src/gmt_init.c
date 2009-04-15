@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.383 2009-04-15 06:11:05 guru Exp $
+ *	$Id: gmt_init.c,v 1.384 2009-04-15 17:22:13 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -145,11 +145,17 @@ int GMT_parse_B_option (char *in);
 int GMT_parse_H_option (char *item);
 int GMT_parse_U_option (char *item);
 int GMT_parse_t_option (char *item);
+int GMT_parse_g_option (char *item);
 int GMT_loaddefaults (char *file);
 int GMT_savedefaults (char *file);
 void GMT_setshorthand (void);
 void GMT_freeshorthand (void);
 void GMT_set_inside_border (void);
+double GMT_x_distance (double x0, double y0, double x1, double y1);
+double GMT_y_distance (double x0, double y0, double x1, double y1);
+double GMT_mapped_x_distance (double x0, double y0, double x1, double y1);
+double GMT_mapped_y_distance (double x0, double y0, double x1, double y1);
+double GMT_mapped_xy_distance (double x0, double y0, double x1, double y1);
 
 /* Local variables to gmt_init.c */
 
@@ -984,7 +990,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 int GMT_parse_common_options (char *item, double *w, double *e, double *s, double *n)
 {
 	/* GMT_parse_common_options interprets the command line for the common, unique options
-	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -:, -
+	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -:, -
 	 */
 
 	int i, error = 0, j_type, opt;
@@ -1195,6 +1201,28 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 				error += i;
 			}
 			break;
+		case 'g':	/* Gap detection settings */
+			i = 0;
+			if (processed[opt]) {
+				fprintf (stderr, "%s: Error: Option -g given more than once\n", GMT_program);
+				error++;
+				break;
+			}
+			if (item[2]) {
+				GMT->common->g.active = TRUE;
+				if (GMT_parse_g_option (&item[2])) {
+					fprintf (stderr, "%s: Error: Bad -g option arguments\n", GMT_program);
+					i = 1;
+				}
+			}
+			else {
+				fprintf (stderr, "%s: Error: No arguments given to -g option\n", GMT_program);
+				i = 1;
+			}
+			if (i) GMT_syntax ('g');
+			error += i;
+			break;
+			
 		default:	/* Should never get here, but... */
 			error++;
 			fprintf (stderr, "GMT: Warning: bad case in GMT_parse_common_options (ignored)\n");
@@ -1397,6 +1425,132 @@ int GMT_parse_t_option (char *item) {
 
 	}
 	return (error);
+}
+
+int GMT_parse_g_option (char *txt)
+{
+	int i, k = 0;
+	/* Process the GMT gap detection option for parameters */
+	/* Syntax, e.g., -F[x|X|y|Y|d|D]<gap>[d|e|m|n|k|i|c|p] */
+	
+	if ((i = GMT->common->g.n_methods) == GMT_N_GAP_METHODS) {
+		fprintf (stderr, "%s: ERROR: Cannot specify more than %d gap criteria\n", GMT_program, GMT_N_GAP_METHODS);
+		return (1);
+	}
+	
+	if (txt[0] == '+') {	/* For multiple criteria, specify that all criteria be met [default is any] */
+		k++;
+		GMT->common->g.match_all = TRUE;
+	}
+	switch (txt[k]) {	/* Determine method used for gap detection */
+		case 'x':	/* Difference in user's x-coordinates used for test */
+			GMT->common->g.method[i] = GMT_GAP_IN_X;
+			GMT->common->g.get_dist[i] = (PFD) GMT_x_distance;
+			break;
+		case 'X':	/* Difference in user's mapped x-coordinates used for test */
+			GMT->common->g.method[i] = GMT_GAP_IN_MAP_X;
+			GMT->common->g.get_dist[i] = (PFD) GMT_mapped_x_distance;
+			break;
+		case 'y':	/* Difference in user's y-coordinates used for test */
+			GMT->common->g.method[i] = GMT_GAP_IN_Y;
+			GMT->common->g.get_dist[i] = (PFD) GMT_y_distance;
+			break;
+		case 'Y':	/* Difference in user's mapped y-coordinates used for test */
+			GMT->common->g.method[i] = GMT_GAP_IN_MAP_Y;
+			GMT->common->g.get_dist[i] = (PFD) GMT_mapped_y_distance;
+			break;
+		case 'd':	/* Great circle (if geographic data) or Cartesian distance used for test */
+			if (GMT_io.in_col_type[GMT_X] == GMT_IS_LON && GMT_io.in_col_type[GMT_Y] == GMT_IS_LAT) {
+				GMT->common->g.method[i] = GMT_GAP_IN_GDIST;
+				GMT->common->g.get_dist[i] = (PFD) GMT_great_circle_dist_meter;
+			}
+			else {
+				GMT->common->g.method[i] = GMT_GAP_IN_CDIST;
+				GMT->common->g.get_dist[i] = (PFD) GMT_cartesian_dist;
+			}
+			break;
+		case 'D':	/* Cartesian mapped distance used for test */
+			GMT->common->g.method[i] = GMT_GAP_IN_PDIST;
+			GMT->common->g.get_dist[i] = (PFD) GMT_mapped_xy_distance;
+			break;
+		default:
+			fprintf (stderr, "%s: GMT ERROR: Bad gap selector (%c).  Choose from x|y|d|X|Y|D\n", GMT_program, txt[0]);
+			return (1);
+			break;
+	}
+	if ((GMT->common->g.gap[i] = atof (&txt[k+1])) <= 0.0) {
+		fprintf (stderr, "%s: GMT ERROR: Gap value must be non-zero\n", GMT_program);
+		return (1);
+	}
+	if (GMT->common->g.method[i] == GMT_GAP_IN_GDIST) {	/* Convert any gap given to meters */
+		switch (txt[strlen(txt)-1]) {	/* Process unit information */
+			case 'd':	/* Degrees, reset pointer */
+				GMT->common->g.get_dist[i] = (PFD) GMT_great_circle_dist;
+				break;
+			case 'k':	/* Km  */
+				GMT->common->g.gap[i] *= 1000.0;
+				break;
+			case 'm':	/* Miles */
+				GMT->common->g.gap[i] *= METERS_IN_A_MILE;
+				break;
+			case 'n':	/* Nautical miles */
+				GMT->common->g.gap[i] *= METERS_IN_A_NAUTICAL_MILE;
+				break;
+			default:	/* E.g., meters or junk */
+				break;
+		}
+	}
+	else if (GMT->common->g.method[i] == GMT_GAP_IN_PDIST){	/* Cartesian plot distance stuff */
+		switch (txt[strlen(txt)-1]) {	/* Process unit information */
+			case 'c':	/* cm*/
+				GMT->common->g.gap[i] /= 2.54;
+				break;
+			case 'p':	/* Points */
+				GMT->common->g.gap[i] /= 72.0;
+				break;
+			case 'm':	/* m */
+				GMT->common->g.gap[i] /= 0.0254;
+				break;
+			default:	/* E.g., inch or junk */
+				break;
+		}
+	}
+	GMT->common->g.n_methods++;
+	return (0);
+}
+
+double GMT_x_distance (double x0, double y0, double x1, double y1)
+{	/* Compute x-separation before mapping */
+	return (fabs (x0 - x1));
+}
+	
+double GMT_y_distance (double x0, double y0, double x1, double y1)
+{	/* Compute y-separation before mapping */
+	return (fabs (y0 - y1));
+}
+	
+double GMT_mapped_x_distance (double x0, double y0, double x1, double y1)
+{	/* Compute x-separation after mapping */
+	double xx[2], dummy;
+	GMT_geo_to_xy (x0, y0, &xx[0], &dummy);
+	GMT_geo_to_xy (x1, y1, &xx[1], &dummy);
+	return (fabs (xx[0] - xx[1]));
+}
+	
+double GMT_mapped_y_distance (double x0, double y0, double x1, double y1)
+{	/* Compute x-separation after mapping */
+	double yy[2], dummy;
+	GMT_geo_to_xy (x0, y0, &dummy, &yy[0]);
+	GMT_geo_to_xy (x1, y1, &dummy, &yy[1]);
+	return (fabs (yy[0] - yy[1]));
+}
+	
+double GMT_mapped_xy_distance (double x0, double y0, double x1, double y1)
+{	/* Compute x-separation after mapping */
+	double xx[2], yy[2];
+	GMT_geo_to_xy (x0, y0, &xx[0], &yy[0]);
+	GMT_geo_to_xy (x1, y1, &xx[1], &yy[1]);
+	return (GMT_cartesian_dist (xx[0], yy[0], xx[1], yy[1]));
 }
 
 int GMT_loaddefaults (char *file)

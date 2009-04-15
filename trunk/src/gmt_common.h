@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.12 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_common.h,v 1.13 2009-04-15 17:22:12 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -26,6 +26,16 @@
  
 #ifndef _GMT_COMMON_H
 #define _GMT_COMMON_H
+
+#define GMT_N_GAP_METHODS	7
+
+#define GMT_GAP_IN_X		1
+#define GMT_GAP_IN_MAP_X	2
+#define GMT_GAP_IN_Y		3
+#define GMT_GAP_IN_MAP_Y	4
+#define GMT_GAP_IN_GDIST	5
+#define GMT_GAP_IN_CDIST	6
+#define GMT_GAP_IN_PDIST	7
 
 struct GMT_COMMON {
 	/* Structure with all information given via the 16 common GMT command-line options -R -J .. */
@@ -85,17 +95,25 @@ struct GMT_COMMON {
 		BOOLEAN active;
 		BOOLEAN toggle[2];
 	} t;
-	struct b {	/* -b[i|o][<n>][s|S|d|D] */
+	struct b {	/* [15]   -b[i|o][<n>][s|S|d|D] */
 		BOOLEAN active;
 		BOOLEAN binary[2];
 		BOOLEAN sincle[2];
 		BOOLEAN swab[2];
 		int ncol[2];
 	} b;
-	struct f {	/* [15]  -f[i|o]<col>|<colrange>[t|T|g],.. */
+	struct f {	/* [16]  -f[i|o]<col>|<colrange>[t|T|g],.. */
 		BOOLEAN active;
 		char col_type[2][BUFSIZ];
 	} f;
+	struct g {	/* [17]  -g[+]x|x|y|Y|d|Y<gap>[unit]  */
+		BOOLEAN active;
+		int n_methods;				/* How many different criteria to apply */
+		BOOLEAN match_all;			/* If TRUE then all specified criteria must be met to be a gap [default is any of them] */
+		int method[GMT_N_GAP_METHODS];		/* How distances are computed for each criteria */
+		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
+		PFD get_dist[GMT_N_GAP_METHODS];	/* Pointers to functiosn that compute those distances */
+	} g;
 };
 
 struct GMT_HIDDEN {

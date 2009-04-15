@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.393 2009-04-14 12:24:20 remko Exp $
+ *	$Id: gmt_support.c,v 1.394 2009-04-15 17:22:13 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -142,11 +142,6 @@ void GMT_near_zero_roundoff_fixer_upper (double *ww, int axis);
 int GMT_gethsv (char *line, double hsv[]);
 void GMT_cmyk_to_hsv (double hsv[], double cmyk[]);
 void get_rgb_lookup (int index, double value, int *rgb);
-double GMT_x_distance (double x0, double y0, double x1, double y1);
-double GMT_y_distance (double x0, double y0, double x1, double y1);
-double GMT_mapped_x_distance (double x0, double y0, double x1, double y1);
-double GMT_mapped_y_distance (double x0, double y0, double x1, double y1);
-double GMT_mapped_xy_distance (double x0, double y0, double x1, double y1);
 
 double *GMT_x2sys_Y;
 
@@ -6141,141 +6136,15 @@ int GMT_getrose (char *text, struct GMT_MAP_ROSE *ms)
 	return (error);
 }
 
-BOOLEAN GMT_gap_detected (double this_x, double this_y, double prev_x, double prev_y, struct GMT_GAP_INFO *G)
+BOOLEAN GMT_gap_detected (double this_x, double this_y, double prev_x, double prev_y)
 {	/* Determine if two points are "far enough apart" to constitude a data gap and thus "pen up" */
 	int i;
 	
 	/* Here we must determine if any or all of the selected gap criteria [see GMT_set_gap_param] are met */
-	for (i = 0; i < G->n_methods; i++) {	/* Go through each criterion */
-		if ((G->get_dist[i] (this_x, this_y, prev_x, prev_y) > G->gap[i]) != G->match_all) return (!G->match_all);
+	for (i = 0; i < GMT->common->g.n_methods; i++) {	/* Go through each criterion */
+		if ((GMT->common->g.get_dist[i] (this_x, this_y, prev_x, prev_y) > GMT->common->g.gap[i]) != GMT->common->g.match_all) return (!GMT->common->g.match_all);
 	}
-	return (G->match_all);
-}
-
-BOOLEAN GMT_set_gap_param (char *txt, struct GMT_GAP_INFO *G)
-{
-	int i, k = 0;
-	/* Process the GMT gap detection option for parameters */
-	/* Syntax, e.g., -F[x|X|y|Y|d|D]<gap>[d|e|m|n|k|i|c|p] */
-	
-	if ((i = G->n_methods) == GMT_N_GAP_METHODS) {
-		fprintf (stderr, "%s: ERROR: Cannot specify more than %d gap criteria\n", GMT_program, GMT_N_GAP_METHODS);
-		return (TRUE);
-	}
-	
-	if (txt[0] == '+') {	/* For multiple criteria, specify that all criteria be met [default is any] */
-		k++;
-		G->match_all = TRUE;
-	}
-	switch (txt[k]) {	/* Determine method used for gap detection */
-		case 'x':	/* Difference in user's x-coordinates used for test */
-			G->method[i] = GMT_GAP_IN_X;
-			G->get_dist[i] = (PFD) GMT_x_distance;
-			break;
-		case 'X':	/* Difference in user's mapped x-coordinates used for test */
-			G->method[i] = GMT_GAP_IN_MAP_X;
-			G->get_dist[i] = (PFD) GMT_mapped_x_distance;
-			break;
-		case 'y':	/* Difference in user's y-coordinates used for test */
-			G->method[i] = GMT_GAP_IN_Y;
-			G->get_dist[i] = (PFD) GMT_y_distance;
-			break;
-		case 'Y':	/* Difference in user's mapped y-coordinates used for test */
-			G->method[i] = GMT_GAP_IN_MAP_Y;
-			G->get_dist[i] = (PFD) GMT_mapped_y_distance;
-			break;
-		case 'd':	/* Great circle (if geographic data) or Cartesian distance used for test */
-			if (GMT_io.in_col_type[GMT_X] == GMT_IS_LON && GMT_io.in_col_type[GMT_Y] == GMT_IS_LAT) {
-				G->method[i] = GMT_GAP_IN_GDIST;
-				G->get_dist[i] = (PFD) GMT_great_circle_dist_meter;
-			}
-			else {
-				G->method[i] = GMT_GAP_IN_CDIST;
-				G->get_dist[i] = (PFD) GMT_cartesian_dist;
-			}
-			break;
-		case 'D':	/* Cartesian mapped distance used for test */
-			G->method[i] = GMT_GAP_IN_PDIST;
-			G->get_dist[i] = (PFD) GMT_mapped_xy_distance;
-			break;
-		default:
-			fprintf (stderr, "%s: GMT ERROR: Bad gap selector (%c).  Choose from x|y|d|X|Y|D\n", GMT_program, txt[0]);
-			return (TRUE);
-			break;
-	}
-	if ((G->gap[i] = atof (&txt[k+1])) <= 0.0) {
-		fprintf (stderr, "%s: GMT ERROR: Gap value must be non-zero\n", GMT_program);
-		return (TRUE);
-	}
-	if (G->method[i] == GMT_GAP_IN_GDIST) {	/* Convert any gap given to meters */
-		switch (txt[strlen(txt)-1]) {	/* Process unit information */
-			case 'd':	/* Degrees, reset pointer */
-				G->get_dist[i] = (PFD) GMT_great_circle_dist;
-				break;
-			case 'k':	/* Km  */
-				G->gap[i] *= 1000.0;
-				break;
-			case 'm':	/* Miles */
-				G->gap[i] *= METERS_IN_A_MILE;
-				break;
-			case 'n':	/* Nautical miles */
-				G->gap[i] *= METERS_IN_A_NAUTICAL_MILE;
-				break;
-			default:	/* E.g., meters or junk */
-				break;
-		}
-	}
-	else if (G->method[i] == GMT_GAP_IN_PDIST){	/* Cartesian plot distance stuff */
-		switch (txt[strlen(txt)-1]) {	/* Process unit information */
-			case 'c':	/* cm*/
-				G->gap[i] /= 2.54;
-				break;
-			case 'p':	/* Points */
-				G->gap[i] /= 72.0;
-				break;
-			case 'm':	/* m */
-				G->gap[i] /= 0.0254;
-				break;
-			default:	/* E.g., inch or junk */
-				break;
-		}
-	}
-	G->n_methods++;
-	return (FALSE);
-}
-
-double GMT_x_distance (double x0, double y0, double x1, double y1)
-{	/* Compute x-separation before mapping */
-	return (fabs (x0 - x1));
-}
-	
-double GMT_y_distance (double x0, double y0, double x1, double y1)
-{	/* Compute y-separation before mapping */
-	return (fabs (y0 - y1));
-}
-	
-double GMT_mapped_x_distance (double x0, double y0, double x1, double y1)
-{	/* Compute x-separation after mapping */
-	double xx[2], dummy;
-	GMT_geo_to_xy (x0, y0, &xx[0], &dummy);
-	GMT_geo_to_xy (x1, y1, &xx[1], &dummy);
-	return (fabs (xx[0] - xx[1]));
-}
-	
-double GMT_mapped_y_distance (double x0, double y0, double x1, double y1)
-{	/* Compute x-separation after mapping */
-	double yy[2], dummy;
-	GMT_geo_to_xy (x0, y0, &dummy, &yy[0]);
-	GMT_geo_to_xy (x1, y1, &dummy, &yy[1]);
-	return (fabs (yy[0] - yy[1]));
-}
-	
-double GMT_mapped_xy_distance (double x0, double y0, double x1, double y1)
-{	/* Compute x-separation after mapping */
-	double xx[2], yy[2];
-	GMT_geo_to_xy (x0, y0, &xx[0], &yy[0]);
-	GMT_geo_to_xy (x1, y1, &xx[1], &yy[1]);
-	return (GMT_cartesian_dist (xx[0], yy[0], xx[1], yy[1]));
+	return (GMT->common->g.match_all);
 }
 	
 int GMT_minmaxinc_verify (double min, double max, double inc, double slop)
