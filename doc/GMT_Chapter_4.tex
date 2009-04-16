@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.117 2009-04-16 19:38:18 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.118 2009-04-16 20:53:57 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -774,22 +774,22 @@ For more information, see Sections~\ref{sec:input data} and~\ref{sec:output data
 \subsection{Data gap detection: The \Opt{g} option}
 \index{\Opt{g} (activate data gap detection)}
 
-\GMT\ has several mechanisms to determine line segmentation.  Typically, data segments are
-separated by multiple segment header records (see \Opt{m} below).  However, if key data
+\GMT\ has several mechanisms that can determine line segmentation.  Typically, data segments are
+separated by multiple segment header records (see section \ref{sec:multsegments} on \Opt{m} below).  However, if key data
 columns contain a NaN we may also use that information to break lines into multiple
-segments.  This behavior is modified by the default parameter {\bf NAN\_RECORDS} which
-by default is set to {\it skip}, meaning such records are considered bad and are simply
+segments.  This behavior is modified by the parameter {\bf NAN\_RECORDS} which
+by default is set to {\it skip}, meaning such records are considered bad and simply
 skipped.  If you wish such records to indicate a segment boundary then set this parameter
-to {\pass}.  Finally, you may wish to indicate gaps based on the data values themselves.
+to {\it pass}.  Finally, you may wish to indicate gaps based on the data values themselves.
 The \Opt{g} option is used to detect gaps based on one or more criteria (use \Opt{g+} if
-\emph{all} the criteria must be met; otherwise only one of the specified criteria need
-to be met to signify a data gap).  Gaps can be based on excessive jumps in the {\fi x}- or
-{\fi y}-coordinates (\Opt{gx} or \Opt{gy}), or on the distance between points (\Opt{gd}).
-Append the {\it gap} distance and optionally a unit for actual distances.  For programs
-that maps data to map coordinates you can optionally specify these criteria to apply to
-the projected coordinates (by using upper-case \Opt{gX}, \Opt{gY} or\Opt{gD}).
+\emph{all} the criteria must be met; otherwise only one of the specified criteria needs
+to be met to signify a data gap).  Gaps can be based on excessive jumps in the {\it x}- or
+{\it y}-coordinates (\Opt{gx} or \Opt{gy}), or on the distance between points (\Opt{gd}).
+Append the {\it gap} distance and optionally a unit for actual distances.
 For geographic data the optional unit may be m{\bf e}ter [Default], {\bf k}ilometer, {\bf m}iles, or {\bf n}autical miles.
-For projected data , choose from {\bf i}nch, {\bf c}entimeter, {\bf m}eter, or {\bf p}oints.
+For programs that maps data to map coordinates you can optionally specify these criteria to apply to
+the projected coordinates (by using upper-case \Opt{gX}, \Opt{gY} or\Opt{gD}).
+In that case, choose from {\bf i}nch, {\bf c}entimeter, {\bf m}eter, or {\bf p}oints.
 [Default unit is controlled by {\bf MEASURE\_UNIT}].
 Note: For \Opt{gx} or \Opt{gy} with time data the unit is instead controlled by {\bf TIME\_UNIT}.
 
@@ -803,10 +803,10 @@ Note: For \Opt{gx} or \Opt{gy} with time data the unit is instead controlled by 
 
 The \Opt{m} option states that the input and output table data will contain special records
 that marks the start of new line segments.  These records are identified by their first
-character, which can be specified as an argument to \Opt{m} [The default is ``>''].
+character, which can be specified as an argument to \Opt{m} [The default is $>$].
 Append the modifiers {\bf i} or {\bf o} if the option should only apply to input or output,
 respectively.  For binary data a multiple segment header is identified as a data record
-where all fields equal NaN.  See section \ref{sec:multsegments} and Appendix \ref{app.B} for more details.
+where all fields equal NaN.  See section~\ref{sec:multsegments} and Appendix~\ref{app:B} for more details.
 
 \subsection{Lat/Lon or Lon/Lat?: The \Opt{:} option}
 \index{\Opt{:} (input and/or output is $y,x$, not $x,y$)}

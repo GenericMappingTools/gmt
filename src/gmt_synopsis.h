@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_synopsis.h,v 1.9 2009-04-15 06:11:05 guru Exp $
+ *	$Id: gmt_synopsis.h,v 1.10 2009-04-16 20:53:57 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -41,8 +41,6 @@
 #define GMT_Rgeo_OPT	"-R<west>/<east>/<south>/<north>[r]"
 #define GMT_Rgeoz_OPT	"-R<west>/<east>/<south>/<north>[/<zmin/zmax>][r]"
 #define GMT_Rx_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[r]"
-#define GMT_M_OPT	"-M[i|o][<flag>]"
-#define GMT_Mo_OPT	"-M[<flag>]"
 #define GMT_U_OPT	"-U[<just>/<dx>/<dy>/][c|<label>]"
 #define GMT_X_OPT	"-X[a|c|r]<x_shift>[u]"
 #define GMT_Y_OPT	"-Y[a|c|r]<x_shift>[u]"
@@ -58,6 +56,9 @@
 #define GMT_fi_OPT	"-f<colinfo>"
 #define GMT_fo_OPT	"-f<colinfo>"
 #define GMT_g_OPT	"-g[+]x|y|d|X|Y|D<gap>[unit]"
+#define GMT_m_OPT	"-m[i|o][<flag>]"
+#define GMT_mi_OPT	"-m[<flag>]"
+#define GMT_mo_OPT	"-m[<flag>]"
 
 /* Options for map rose and scale, used in pscoast and psbasemap */
 

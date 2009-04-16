@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.385 2009-04-15 19:53:56 remko Exp $
+ *	$Id: gmt_init.c,v 1.386 2009-04-16 20:53:57 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -468,11 +468,11 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t-K means allow for more plot code to be appended later [%s].\n", GMT_choice[!GMT_ps.last_page]);
 			break;
 
-		case 'M':	/* Multisegment option */
+		case 'm':	/* Multisegment option */
 
-			fprintf (stderr, "\t-M Input/output file(s) contain multiple segments separated by a record\n");
+			fprintf (stderr, "\t-m Input/output file(s) contain multiple segments separated by a record\n");
 			fprintf (stderr, "\t   whose first character is <flag> [%c]\n", GMT_io.EOF_flag[GMT_IN]);
-			fprintf (stderr, "\t   Use -Mi or -Mo to give different settings for input and output [Same]\n");
+			fprintf (stderr, "\t   Use -mi or -mo to give different settings for input and output [Same]\n");
 			break;
 
 		case 'O':	/* Overlay plot */
@@ -990,7 +990,7 @@ int GMT_get_common_args (char *item, double *w, double *e, double *s, double *n)
 int GMT_parse_common_options (char *item, double *w, double *e, double *s, double *n)
 {
 	/* GMT_parse_common_options interprets the command line for the common, unique options
-	 * -B, -H, -J, -K, -M, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -m, -:, -
+	 * -B, -H, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -m, -:, -
 	 */
 
 	int i, error = 0, j_type, opt;
@@ -1223,6 +1223,7 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 			error += i;
 			break;
 		case 'M':
+			if (gmtdefs.verbose) fprintf (stderr, "%s: Option -M is depricated (but is processed correctly).  Please use -m instead\n", GMT_program);
 		case 'm':
 			GMT_multisegment (&item[2]);
 			break;

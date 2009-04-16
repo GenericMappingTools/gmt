@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.175 2009-04-11 02:06:36 remko Exp $
+ *	$Id: gmt_io.c,v 1.176 2009-04-16 20:53:57 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -18,7 +18,7 @@
 /*
  * Table input/output in GMT can be either ascii or binary (where supported)
  * and ASCII tables may consist of single or multiple segments.  When the
- * latter is the case usually there is a -M option to signal this case.
+ * latter is the case usually there is a -m option to signal this case.
  * The structure GMT_IO holds parameters that are used during the reading
  * and processing of ascii tables.  For compliance with a wide variety of
  * binary data formats for grids and their internal nesting the GMT_Z_IO
@@ -33,7 +33,7 @@
  *	GMT_fclose:		Close a file
  *	GMT_io_init:		Init GMT_IO structure
  *	GMT_parse_b_option:	Decode the -b switch
- *	GMT_multisegment:	Decode the -M switch
+ *	GMT_multisegment:	Decode the -m switch
  *	GMT_write_segmentheader	Write header record for multisegment files
  *	GMT_ascii_input:	Decode ascii input record
  *	GMT_scanf:		Robust scanf function with optional dd:mm:ss conversion
@@ -607,11 +607,11 @@ void GMT_multisegment (char *text)
 	if (text && text[0]) {
 		GMT_io.multi_segments[GMT_IN] = GMT_io.multi_segments[GMT_OUT] = FALSE;
 		switch (text[0]) {
-			case 'i':	/* -M for input files only */
+			case 'i':	/* -m for input files only */
 				GMT_io.multi_segments[GMT_IN] = TRUE;
 				if (text[1]) GMT_io.EOF_flag[GMT_IN] = text[1];
 				break;
-			case 'o':	/* -M for output files only */
+			case 'o':	/* -m for output files only */
 				GMT_io.multi_segments[GMT_OUT] = TRUE;
 				if (text[1]) GMT_io.EOF_flag[GMT_OUT] = text[1];
 				break;
@@ -633,7 +633,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	double val;
 
 	/* GMT_ascii_input will skip blank lines and cshell comment lines which start
-	 * with # except when -M# is used of course.  Fields may be separated by
+	 * with # except when -m# is used of course.  Fields may be separated by
 	 * spaces, tabs, or commas.  The routine returns the actual
 	 * number of items read [or 0 for segment header and -1 for EOF]
 	 * If *n is passed as BUFSIZ it will be reset to the actual number of fields */
@@ -700,7 +700,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 				fprintf (stderr, "%s: (1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n", GMT_program);
 				fprintf (stderr, "%s: (2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n", GMT_program);
 				fprintf (stderr, "%s: (3) The -: switch is implied but not set.\n", GMT_program);
-				fprintf (stderr, "%s: (4) Input file in multiple segment format but the -M switch is not set.\n", GMT_program);
+				fprintf (stderr, "%s: (4) Input file in multiple segment format but the -m switch is not set.\n", GMT_program);
 			}
 		}
 		else
@@ -859,7 +859,7 @@ int GMT_process_binary_input (int n_read) {
 		if (GMT_io.skip_if_NaN[col_no]) set_nan_flag = TRUE;
 		n_NaN++;
 	}
-	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs and -M set to qualify as segment header */
+	if (!GMT_io.status && GMT_io.multi_segments[GMT_IN]) {	/* Must have n_read NaNs and -m set to qualify as segment header */
 		if (n_NaN == n_read) {
 			GMT_io.status = GMT_IO_SEGMENT_HEADER;
 			strcpy (GMT_io.segment_header, "> Binary multisegment header\n");
@@ -873,7 +873,7 @@ int GMT_process_binary_input (int n_read) {
 			fprintf (stderr, "%s: Encountered first invalid binary record near/at line # %ld\n", GMT_program, GMT_io.rec_no);
 			fprintf (stderr, "%s: Likely causes:\n", GMT_program);
 			fprintf (stderr, "%s: (1) Invalid x and/or y values, i.e. NaNs.\n", GMT_program);
-			fprintf (stderr, "%s: (2) Input file in multiple segment format but the -M switch is not set.\n", GMT_program);
+			fprintf (stderr, "%s: (2) Input file in multiple segment format but the -m switch is not set.\n", GMT_program);
 		}
 		return (2);	/* 2 means skip this record and try again */
 	}
