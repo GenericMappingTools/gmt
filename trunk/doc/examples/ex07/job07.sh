@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 07
-#		$Id: job07.sh,v 1.8 2008-02-22 21:10:42 remko Exp $
+#		$Id: job07.sh,v 1.9 2009-04-16 19:38:18 guru Exp $
 #
 # Purpose:	Make a basemap with earthquakes and isochrons etc
 # GMT progs:	pscoast, pstext, psxy
@@ -8,10 +8,10 @@
 #
 ps=example_07.ps
 pscoast -R-50/0/-10/20 -JM9i -K -GP300/26 -Dl -Wthinnest -B10 -U"Example 7 in Cookbook" > $ps
-psxy -R -J -O -K -M fz.xy -Wthinner,- >> $ps
+psxy -R -J -O -K -m fz.xy -Wthinner,- >> $ps
 $AWK '{print $1-360.0, $2, $3*0.01}' quakes.xym | psxy -R -J -O -K -H1 -Sci -Gwhite -Wthinnest >> $ps
-psxy -R -J -O -K -M isochron.xy -Wthin >> $ps
-psxy -R -J -O -K -M ridge.xy -Wthicker >> $ps
+psxy -R -J -O -K -m isochron.xy -Wthin >> $ps
+psxy -R -J -O -K -m ridge.xy -Wthicker >> $ps
 psxy -R -J -O -K -Gwhite -Wthick -A >> $ps << END
 -14.5	15.2
  -2	15.2

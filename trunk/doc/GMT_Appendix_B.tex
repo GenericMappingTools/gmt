@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.34 2009-01-09 04:02:32 guru Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.35 2009-04-16 19:38:18 guru Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2009.
@@ -51,10 +51,10 @@ just outlined except that they have subheaders interspersed with
 data records that signal the start of a segment.
 The subheaders may be of any format, but all must have the same
 character in the first column.  When using such files, you must
-specify the \Opt{M} option.  The unique character is by default
+specify the \Opt{m} option.  The unique character is by default
 '$>$', but you can override that by appending your chosen character
-to the M option.  E.g., \Opt{MH} will look for subheaders starting
-with H, whereas \Opt{M'*'} will check for asterisks (The quotes
+to the M option.  E.g., \Opt{mH} will look for subheaders starting
+with H, whereas \Opt{m'*'} will check for asterisks (The quotes
 are necessary since * has special meaning to \UNIX).  Some programs
 such as \GMTprog{psxy} will examine the subheaders to see if they
 contain \Opt{W} and \Opt{G} options for specifying pen and
@@ -74,14 +74,14 @@ color via a cpt-file, or \Opt{L} for label specifications.  These settings
 for i/o-intensive tasks like gridding and preprocessing.  Files
 may have no header (hence the \Opt{H} option cannot be used)
 and all data must either be single or double precision (no mixing
-allowed).  Multiple segment files are allowed (\Opt{M}) and the
+allowed).  Multiple segment files are allowed (\Opt{m}) and the
 segment headers are assumed to be records where all the fields equal 
-NaN.  Flags appended to \Opt{M} are ignored.  The format and number
+NaN.  Flags appended to \Opt{m} are ignored.  The format and number
 of fields are specified with the \Opt{b} option.
 Thus, for input you may set \Opt{bi}[\textbf{s}][\emph{n}],
 where \textbf{s} designates single precision (default is \textbf{d} for double) and
 \emph{n} is the number of fields.  For output, use \Opt{bo}[\textbf{s}] 
-(the programs know how many columns to write, unless you use \Opt{M} in which
+(the programs know how many columns to write, unless you use \Opt{m} in which
 case we need to know the number of output columns up front).  If you need
 to swap the byte-order on either input or output you must use upper case
 \textbf{S} or \textbf{D} instead.

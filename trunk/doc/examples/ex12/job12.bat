@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 12
 REM
-REM		$Id: job12.bat,v 1.9 2006-10-30 19:09:11 remko Exp $
+REM		$Id: job12.bat,v 1.10 2009-04-16 19:38:18 guru Exp $
 REM
 REM Purpose:	Illustrates Delaunay triangulation of points, and contouring
 REM GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
@@ -13,14 +13,14 @@ echo GMT EXAMPLE 12
 set master=y
 if exist job12.bat set master=n
 if %master%==y cd ex12
-triangulate table_5.11 -M > net.xy
-psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1WSNe -M net.xy -Wthinner -P -K -X0.9i -Y4.65i > example_12.ps
+triangulate table_5.11 -m > net.xy
+psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1WSNe -m net.xy -Wthinner -P -K -X0.9i -Y4.65i > example_12.ps
 psxy table_5.11 -R -J -O -K -Sc0.12i -Gwhite -Wthinnest >> example_12.ps
 gawk "{print $1, $2, 6, 0, 0, 6, NR-1}" table_5.11 | pstext -R -J -O -K >> example_12.ps
 REM
 REM Then draw network and print the node values
 REM
-psxy -R -J -B2f1eSNw -M net.xy -Wthinner -O -K -X3.25i >> example_12.ps
+psxy -R -J -B2f1eSNw -m net.xy -Wthinner -O -K -X3.25i >> example_12.ps
 psxy -R -J -O -K table_5.11 -Sc0.03i -Gblack >> example_12.ps
 gawk "{print $1, $2, 6, 0, 0, 5, $3}" table_5.11 | pstext -R -J -O -K -Wwhite,o -C0.01i/0.01i -D0.08i/0i -N >> example_12.ps
 REM

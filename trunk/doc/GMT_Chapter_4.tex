@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.116 2009-03-18 18:56:03 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.117 2009-04-16 19:38:18 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -189,7 +189,7 @@ sometimes a number or character string immediately after the letter.
 
 Most of the programs take many of the same arguments like those
 related to setting the data region, the map projection, etc.
-The 15 switches in Table~\ref{tbl:switches} have the same meaning
+The 17 switches in Table~\ref{tbl:switches} have the same meaning
 in all the programs (although some programs may not use all of them).
 These options will be described here as well as in the manual pages,
 as is vital that you understand how to use these options.  We will present
@@ -212,6 +212,8 @@ these options in order of importance (some are use a lot more than others).
 \index{\Opt{b} (binary i/o)}%
 \index{\Opt{c} (set \# of copies)}%
 \index{\Opt{f} (formatting of i/o)}%
+\index{\Opt{g} (detect data gaps)}%
+\index{\Opt{m} (multiple segment files)}%
 \index{\Opt{:} (input and/or output is $y,x$, not $x,y$)}%
 
 \begin{tabular}{|l|l|} \hline
@@ -230,9 +232,11 @@ these options in order of importance (some are use a lot more than others).
 \Opt{b}	&	Selects binary input and/or output  \\ \hline
 \Opt{c}	&	Specifies the number of plot copies  \\ \hline
 \Opt{f}	&	Specifies the data format on a per column basis  \\ \hline
+\Opt{g}	&	Identify data gaps based on supplied criteria  \\ \hline
+\Opt{m}	&	Specifies data in multiple segment format  \\ \hline
 \Opt{:}	&	Assumes input geographic data are (\emph{lat,lon}) and not (\emph{lon,lat})  \\ \hline
 \end{tabular}
-\caption{The 15 standardized \gmt\ command line switches.}
+\caption{The 17 standardized \gmt\ command line switches.}
 \label{tbl:switches}
 \end{table} 
 
@@ -738,6 +742,14 @@ than one file is read: the \Opt{bic} option will apply to all files.
 Currently, netCDF tables can only be input, not output.
 For more information, see Appendix~\ref{app:B}.
 
+\subsection{Number of Copies: The \Opt{c} option}
+\index{\Opt{c} (set \# of copies)}
+\index{Number of copies}
+
+The \Opt{c} option specifies the number of plot copies [Default is 1].  This
+value is embedded in the \PS\ file and will make a printer issue the chosen
+number of copies without respooling.
+
 \subsection{Data type selection: The \Opt{f} option}
 \index{Table!format}
 \index{Input!format \Opt{fi}}
@@ -759,13 +771,42 @@ are assumed to have the default, floating point format and need not be set indiv
 The shorthand \Opt{f}[\textbf{i}$|$\textbf{o}]\textbf{g} means \Opt{f}[\textbf{i}$|$\textbf{o}]0x,1y (geographic coordinates).
 For more information, see Sections~\ref{sec:input data} and~\ref{sec:output data}.
 
-\subsection{Number of Copies: The \Opt{c} option}
-\index{\Opt{c} (set \# of copies)}
-\index{Number of copies}
+\subsection{Data gap detection: The \Opt{g} option}
+\index{\Opt{g} (activate data gap detection)}
 
-The \Opt{c} option specifies the number of plot copies [Default is 1].  This
-value is embedded in the \PS\ file and will make a printer issue the chosen
-number of copies without respooling.
+\GMT\ has several mechanisms to determine line segmentation.  Typically, data segments are
+separated by multiple segment header records (see \Opt{m} below).  However, if key data
+columns contain a NaN we may also use that information to break lines into multiple
+segments.  This behavior is modified by the default parameter {\bf NAN\_RECORDS} which
+by default is set to {\it skip}, meaning such records are considered bad and are simply
+skipped.  If you wish such records to indicate a segment boundary then set this parameter
+to {\pass}.  Finally, you may wish to indicate gaps based on the data values themselves.
+The \Opt{g} option is used to detect gaps based on one or more criteria (use \Opt{g+} if
+\emph{all} the criteria must be met; otherwise only one of the specified criteria need
+to be met to signify a data gap).  Gaps can be based on excessive jumps in the {\fi x}- or
+{\fi y}-coordinates (\Opt{gx} or \Opt{gy}), or on the distance between points (\Opt{gd}).
+Append the {\it gap} distance and optionally a unit for actual distances.  For programs
+that maps data to map coordinates you can optionally specify these criteria to apply to
+the projected coordinates (by using upper-case \Opt{gX}, \Opt{gY} or\Opt{gD}).
+For geographic data the optional unit may be m{\bf e}ter [Default], {\bf k}ilometer, {\bf m}iles, or {\bf n}autical miles.
+For projected data , choose from {\bf i}nch, {\bf c}entimeter, {\bf m}eter, or {\bf p}oints.
+[Default unit is controlled by {\bf MEASURE\_UNIT}].
+Note: For \Opt{gx} or \Opt{gy} with time data the unit is instead controlled by {\bf TIME\_UNIT}.
+
+\subsection{Multiple segment data: The \Opt{m} option}
+\label{sec:multsegments}
+\index{Table!format}
+\index{Input!format \Opt{mi}}
+\index{Output!format \Opt{mo}}
+\index{\Opt{mi} (set input segment data)}
+\index{\Opt{mo} (set output segment data)}
+
+The \Opt{m} option states that the input and output table data will contain special records
+that marks the start of new line segments.  These records are identified by their first
+character, which can be specified as an argument to \Opt{m} [The default is ``>''].
+Append the modifiers {\bf i} or {\bf o} if the option should only apply to input or output,
+respectively.  For binary data a multiple segment header is identified as a data record
+where all fields equal NaN.  See section \ref{sec:multsegments} and Appendix \ref{app.B} for more details.
 
 \subsection{Lat/Lon or Lon/Lat?: The \Opt{:} option}
 \index{\Opt{:} (input and/or output is $y,x$, not $x,y$)}
@@ -868,7 +909,7 @@ records, you must use the \Opt{H} option (see Section~\ref{sec:header}).
 For binary table data no headers are allowed.
 ASCII files may in many cases also contain sub-headers
 separating data segments.  These are called ``multi-segment files''
-and requires a special option (typically \Opt{M}); see Appendix~\ref{app:B} for complete
+and requires a special option (typically \Opt{m}); see Appendix~\ref{app:B} for complete
 documentation. 
 
 If filenames are given for reading, \GMT\ programs will first look for them in the
