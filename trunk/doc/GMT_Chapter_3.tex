@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_3.tex,v 1.41 2009-01-09 04:02:32 guru Exp $
+%	$Id: GMT_Chapter_3.tex,v 1.42 2009-04-16 21:04:43 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -279,6 +279,8 @@ for each of the over 30 projections available in \GMT. \\
 \index{\Opt{b} (binary i/o)|(}
 \index{\Opt{c} (set \# of copies)|(}
 \index{\Opt{f} (formatting of i/o)|(}
+\index{\Opt{g} (detect gaps in i/o)|(}
+\index{\Opt{m} (use multi-segment i/o)|(}
 \index{\Opt{:} (input and/or output is $y,x$, not $x,y$)|(}
 
 
@@ -311,6 +313,8 @@ for each of the over 30 projections available in \GMT. \\
 \Opt{b}[\textbf{i}$|$\textbf{o}][\textbf{c}$|$\textbf{s}$|$\textbf{S}$|$\textbf{d}$|$\textbf{D}][\emph{ncol}]	&	Select binary input or output \\ \hline
 \Opt{c}\emph{copies}	&	Set number of plot copies [1] \\ \hline
 \Opt{f}[\textbf{i}$|$\textbf{o}]\emph{colinfo}	&	Set formatting of ASCII input or output \\ \hline
+\Opt{g}[\textbf{+}]\textbf{x}$|$\textbf{X}$|$\textbf{y}$|$\textbf{Y}$|$\textbf{d}$|$\textbf{D}\emph{gap}[\textbf{u}]	&	Segment data by detecting gaps \\ \hline
+\Opt{m}[\textbf{i}$|$\textbf{o}]\emph{flag}	&	Set multi-segment data mode \\ \hline
 \Opt{:}[\textbf{i}$|$\textbf{o}]	&	Expect \emph{y}/\emph{x} input rather than \emph{x}/\emph{y} \\ \hline
 \end{tabular}
 }
@@ -478,6 +482,8 @@ for each of the over 30 projections available in \GMT. \\
 \index{\Opt{b} (binary i/o)|)}
 \index{\Opt{c} (set \# of copies)|)}
 \index{\Opt{f} (formatting of i/o)|)}
+\index{\Opt{g} (detect gaps in i/o)|)}
+\index{\Opt{m} (use multi-segment i/o)|)}
 \index{\Opt{:} (input and/or output is $y,x$, not $x,y$)|)}
 
 \index{GMT@\GMT!quick reference|)}
