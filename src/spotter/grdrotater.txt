@@ -4,9 +4,9 @@
 grdrotater \- Rotate a grid using a finite rotation
 .SH SYNOPSIS
 \fBgrdrotate\fP \fIingrdfile\fP OPT(G)\fIoutgrdfile\fP OPT(T)\fIplon\fP/\fIplat\fP/\fIomega\fP 
-[ OPT(F)\fIpolygonfile\fP ] [ GMT_H_OPT ] [ GMT_Mo_OPT ] [ OPT(N) ] 
+[ OPT(F)\fIpolygonfile\fP ] [ GMT_H_OPT ] [ OPT(N) ] 
 [ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ] [ GMT_Rgeo_OPT ] [ OPT(S) ]
-[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
+[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_mo_OPT ]
 .SH DESCRIPTION
 \fBgrdrotater\fP reads a geographical grid and reconstructs it given
 a total reconstruction rotation.  Optionally, the user may supply a clipping polygon
@@ -34,10 +34,6 @@ Specify a multi-segment closed polygon file that describes the inside area of th
 that should be projected [Default projects entire grid].
 #include "explain_-H.txt"
 .TP
-OPT(M)
-Multiple segment file.  Segment separator is a record beginning with \fIflag\fP.
-[Default is '>'].
-.TP
 OPT(N)
 Do Not output the rotated polygon outline [Default will write it to stdout].
 #include "explain_-Q.txt"
@@ -53,6 +49,7 @@ Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [De
 [Default is 2 input columns].
 #include "explain_-bo.txt"
 [Default is same as input].
+#include "explain_-m.txt"
 .SH EXAMPLES
 To rotate the data defined by grid topo.grd and the polygon outline clip_path.d, using a finite rotation
 with pole at (135.5, -33.0) and a rotation angle of 37.3 degrees and bicubic interpolation, try
@@ -71,7 +68,7 @@ degrees using a bilinear interpolation, try
 To just see how the outline of the grid large.grd will plot after the same rotation, try
 .br
 .sp
-\fBgrdrotater\fP large.grd OPT(T)67:45W/22:35S/19.6 OPT(V) OPT(S) | psxy OPT(Rg) OPT(JH)180/6i OPT(B)30 OPT(M) OPT(W)0.5\fBpfP | gv -
+\fBgrdrotater\fP large.grd OPT(T)67:45W/22:35S/19.6 OPT(V) OPT(S) | psxy OPT(Rg) OPT(JH)180/6i OPT(B)30 OPT(m) OPT(W)0.5\fBpfP | gv -
 .br
 .sp
 Let say you have rotated gridA.grd and gridB.grd, restricting each rotation to nodes inside polygons polyA.d and polyB.d, respectively,

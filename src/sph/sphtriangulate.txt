@@ -6,7 +6,7 @@
 sphtriangulate \- Perform optimal Delauney triangulation or Voronoi construction of spherical data
 .SH SYNOPSIS
 \fBsphtriangulate\fP \fIinfiles\fP [ OPT(A) ] [ OPT(C) ] [ OPT(D) ] [ GMT_H_OPT ] [ OPT(L)\fIunit\fP ] 
-[ GMT_M_OPT ] [ OPT(N)\fInfile\fP ] [ OPT(Q)\fBd\fP|\fBv\fP ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
+[ OPT(N)\fInfile\fP ] [ OPT(Q)\fBd\fP|\fBv\fP ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBsphtriangulate\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat and
 performs a spherical Delauney triangulation, i.e., it find how the points should be connected to give
@@ -29,18 +29,14 @@ location coordinates (geographic or Cartesian 3-D vectors) at any given time, tr
 the other when necessary [Default keeps both arrays in memory].
 .TP
 .B \-D
-Used with OPT(M) to skip the last (repeated) input vertex at the end of a closed segment if it
-equals the first point in the segment.  Requires OPT(M) [Default uses all points].
+Used with OPT(m) to skip the last (repeated) input vertex at the end of a closed segment if it
+equals the first point in the segment.  Requires OPT(m) [Default uses all points].
 #include "explain_-H.txt"
 .TP
 .B \-L
 Specify the unit used for distance and area calculations.  Choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile),
 \fBn\fP (nautical mile), or \fBd\fP (spherical degree).  A spherical approximation is used unless
 \fBELLIPSOID\fP is set to an actual ellipsoid.  When degree is selected the areas are given in steradians.
-.TP
-.B \-M
-Expect input data to have multiple line segments separated by a record whose first
-character is \fIflag\fP [>].
 .TP
 .B \-N
 Write the information pertaining to each polygon (for Delauney: the three node number and the triangle area;
@@ -56,6 +52,7 @@ When used with OPT(A) we store arc lenght in the segment header in chosen unit (
 [Default is 2 input columns].
 #include "explain_-bo.txt"
 [Default is same as input].
+#include "explain_-m.txt"
 #include "explain_precision.txt"
 #include "explain_float.txt"
 .SH EXAMPLES

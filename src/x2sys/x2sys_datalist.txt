@@ -4,7 +4,7 @@
 x2sys_datalist \- A generic data-extractor for ASCII or binary files
 .SH SYNOPSIS
 \fBx2sys_datalist\fP \fItrack(s)\fP OPT(T)\fITAG\fP [ OPT(A) ] [ OPT(F)\fIname1,name2,...\fP ] 
-[ GMT_H_OPT ] [ OPT(L)[\fIcorrtable\fP] ] [ GMT_Mo_OPT ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
+[ GMT_H_OPT ] [ OPT(L)[\fIcorrtable\fP] ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_datalist\fP reads one or more files and produces a single ASCII [or binary] table. 
 The files can be of any format, which must be described and passed with the
@@ -32,10 +32,6 @@ Apply optimal corrections to columns where such corrections are available.  Appe
 table to use [Default uses the correction table \fITAG\fP_corrections.txt which is expected to reside
 in the \fB$X2SYS_HOME\fP/\fITAG\fP directory].
 For the format of this file, see CORRECTIONS below.
-.TP
-OPT(M)
-Output a multisegment header between data from each track.  Note this option does not
-imply anything about the input file; that information is conveyed via the system tag (OPT(T)).
 #include "explain_-Rgeo.txt"
 For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
 the COEs to those that fall inside the specified domain.
@@ -44,6 +40,10 @@ OPT(S)
 Suppress output records where all the data columns are NaN [Default will output all records].
 #include "explain_-V.txt"
 #include "explain_-bo.txt"
+.TP
+OPT(m)
+Output a multisegment header between data from each track.  Note this option does not
+imply anything about the input file; that information is conveyed via the system tag (OPT(T)).
 .SH EXAMPLES
 To extract all data from the old-style MGG supplement file c2104.gmt, recognized by the tag GMT:
 .br

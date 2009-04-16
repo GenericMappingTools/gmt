@@ -4,9 +4,9 @@
 gmtmath \- Reverse Polish Notation calculator for data tables
 .SH SYNOPSIS
 \fBgmtmath\fP [ OPT(A)\fIt_f(t).d\fP ] [ OPT(C)\fIcols\fP ] [ OPT(F)\fIcols\fP ] [ GMT_H_OPT ] [ OPT(I) ] 
-[ GMT_M_OPT ] [ OPT(N)\fIn_col\fP/\fIt_col\fP ] [ OPT(Q) ] [ OPT(S)[\fBf\fP|\fBl\fP] ] 
+[ OPT(N)\fIn_col\fP/\fIt_col\fP ] [ OPT(Q) ] [ OPT(S)[\fBf\fP|\fBl\fP] ] 
 [ OPT(T)\fIt_min\fP/\fIt_max\fP/\fIt_inc\fP[\fB+\fP]|\fItfile\fP ] [ GMT_V_OPT ] [ GMT_b_OPT ] 
-[ GMT_f_OPT ] \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] 
+[ GMT_f_OPT ] [ GMT_m_OPT ] \fIoperand\fP [ \fIoperand\fP ] \fBOPERATOR\fP [ \fIoperand\fP ] 
 \fBOPERATOR\fP ... \fB=\fP [ \fIoutfile\fP ]
 .SH DESCRIPTION
 \fBgmtmath\fP will perform operations like add, subtract, multiply, and divide
@@ -73,7 +73,6 @@ Give a comma-separated list of desired columns or ranges that should be part of 
 .TP
 OPT(I)
 Reverses the output row sequence from ascending time to descending [ascending].
-#include "explain_-M.txt"
 .TP
 OPT(N)
 Select the number of columns and the column number that contains the
@@ -100,6 +99,7 @@ contains the desired t-coordinates which may be irregular.
 #include "explain_-bi.txt"
 #include "explain_-bo.txt"
 [Default is same as input, but see OPT(F)]
+#include "explain_-m.txt"
 #include "explain_precision.txt"
 .SH NOTES ON OPERATORS
 (1) The operators \fBPLM\fP and \fBPLMg\fP calculate the associated Legendre polynomial

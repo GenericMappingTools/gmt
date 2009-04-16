@@ -6,12 +6,12 @@ grdcontour \- Contouring of 2-D gridded data sets
 \fBgrdcontour\fP \fIgrdfile\fP OPT(C)\fIcont_int\fP GMT_J_OPT 
 [ OPT(A)[\fB-\fP|\fIannot_int\fP][\fIlabelinfo\fP] ] 
 [ GMT_B_OPT ] [ OPT(D)\fIdumpfile\fP ] [ OPT(E)\fIazimuth/elevation\fP ] [ OPT(F)[\fBl\fP|\fBr\fP] ] 
-[ GMT_CONTG ] [ GMT_K_OPT ] [ OPT(L)\fIlow/high\fP ] [ GMT_Mo_OPT ] 
+[ GMT_CONTG ] [ GMT_K_OPT ] [ OPT(L)\fIlow/high\fP ] 
 [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q)\fIcut\fP ] [ GMT_Rgeo_OPT ] 
 [ OPT(S)\fIsmoothfactor\fP ] [ OPT(T)[\fB+|-\fP][\fIgap/length\fP][\fB:\fP\fILH\fP] ] 
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fB+\fP][\fItype\fP]\fIpen\fP ] 
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)[\fIfactor\fP[/\fIshift\fP]][\fBp\fP] ] 
-[ GMT_c_OPT ] [ GMT_bo_OPT ]
+[ GMT_c_OPT ] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
 .SH DESCRIPTION
 \fBgrdcontour\fP reads a 2-D grid file and produces a contour map by tracing
 each contour through the grid.  As an option, the x/y/z positions of the contour lines may be dumped to
@@ -63,7 +63,7 @@ files will be named \fIdumpfile_cont_segment[_i]\fP.xyz (or \fI.b\fP is OPT(b) i
 \fIsegment\fP is a running segment number for each contour interval (for closed contours we append _i.)  If the prefix is given as '-'
 the file names are instead \fIC#_i\fP (interior) or \fIC#_e\fP (external) plus extension, and # is just a running number.  This allows us to
 make short file names that will work with GNU utilities under DOS.
-However, when OPT(M)
+However, when OPT(m)
 is used in conjunction with OPT(D) a single multisegment file is created instead.
 #include "explain_-E.txt"
 .TP
@@ -77,11 +77,6 @@ OPT(G)
 .TP
 OPT(L)
 Limit range: Do not draw contours for data values below \fIlow\fP or above \fIhigh\fP.
-.TP
-OPT(M)
-When used in conjunction with OPT(D) a single multisegment file is created, and
-each contour section is preceded by a header record whose first column is \fIflag\fP
-followed by the contour level.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
@@ -123,6 +118,11 @@ special precautions must be taken when determining 0-contours.
 #include "explain_-bo.txt"
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+.TP
+OPT(m)
+When used in conjunction with OPT(D) a single multisegment file is created, and
+each contour section is preceded by a header record whose first column is \fIflag\fP
+followed by the contour level.
 #include "explain_pen.txt"
 #include "explain_color.txt"
 #include "explain_precision.txt"

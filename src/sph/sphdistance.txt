@@ -6,7 +6,7 @@
 sphdistance \- Calculate nearest distances from Voronoi construction of spherical data
 .SH SYNOPSIS
 \fBsphdistance\fP \fIinfiles\fP OPT(G)\fIgrdfile\fP [ OPT(C) ] [ OPT(D) ] [ OPT(E) ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_I_OPT ] 
-[ OPT(L)\fIunit\fP ] [ GMT_M_OPT ] [ OPT(Q)\fIvoronoi.d\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
+[ OPT(L)\fIunit\fP ] [ OPT(Q)\fIvoronoi.d\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBsphdistance\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat and
 performs the construction of Voronoi polygons.  These polygons are then processed to calculate the nearest
@@ -24,8 +24,8 @@ location coordinates (geographic or Cartesian 3-D vectors) at any given time, tr
 the other when necessary [Default keeps both arrays in memory]. Not applicable with OPT(Q).
 .TP
 .B \-D
-Used with OPT(M) to skip the last (repeated) input vertex at the end of a closed segment if it
-equals the first point in the segment.  Requires OPT(M) [Default uses all points].
+Used with OPT(m) to skip the last (repeated) input vertex at the end of a closed segment if it
+equals the first point in the segment.  Requires OPT(m) [Default uses all points].
 .TP
 .B \-E
 Instead of computing distances, return the ID numbers of the Voronoi polygons that each grid node is inside
@@ -37,10 +37,6 @@ Instead of computing distances, return the ID numbers of the Voronoi polygons th
 Specify the unit used for distance calculations.  Choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile),
 \fBn\fP (nautical mile), or \fBd\fP (spherical degree).  A spherical approximation is used unless
 \fBELLIPSOID\fP is set to an actual ellipsoid.
-.TP
-.B \-M
-Expect input data to have multiple line segments separated by a record whose first
-character is \fIflag\fP [>].
 .B \-N
 Read the information pertaining to each Voronoi polygon (the unique node lon, lat and polygon area) from
 a separate file [Default aquires this information from the ASCII segment headers of the output file].
@@ -56,6 +52,7 @@ For binary data OPT(bi) you must specify the node information separately (via OP
 [Default is 2 input columns].
 #include "explain_-bo.txt"
 [Default is same as input].
+#include "explain_-m.txt"
 #include "explain_precision.txt"
 #include "explain_float.txt"
 .SH EXAMPLES

@@ -4,8 +4,8 @@
 x2sys_init \- Initialize x2sys data base for track data files
 .SH SYNOPSIS
 \fBx2sys_init\fP \fITAG\fP OPT(D)\fIdeffile\fP [ OPT(Cc)|\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(E)\fIsuffix\fP ] 
-[ OPT(F) ] [ OPT(Gd)|\fBg\fP ] [ OPT(I)\fIdx\fP[/\fIdy\fP] ] [ GMT_M_OPT ] [ OPT(Nd)|\fBs\fP\fIunit\fP ] 
-[ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Wt)|\fBd\fP\fIgap\fP ]
+[ OPT(F) ] [ OPT(Gd)|\fBg\fP ] [ OPT(I)\fIdx\fP[/\fIdy\fP] ] [ OPT(Nd)|\fBs\fP\fIunit\fP ] 
+[ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Wt)|\fBd\fP\fIgap\fP ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBx2sys_init\fP is the starting point for anyone wishing to use x2sys; it initializes
 a set of data bases that are particular to one kind of track data.  These data,
@@ -62,11 +62,7 @@ OPT(I)
 \fIx_inc\fP [and optionally \fIy_inc\fP] is the grid spacing. Append \fBm\fP to
 indicate minutes or \fBc\fP to indicate seconds for geographic data.  These
 spacings refer to the binning used in the track bin-index data base.
-.TP
-OPT(M)
-Multiple segment file(s).  Segments are separated by a special record.
-For ASCII files the first character must be \fIflag\fP [Default is '>'].
-For binary files all fields must be NaN.
+#include "explain_-m.txt"
 .TP
 OPT(N)
 Sets the units used for distance and speed when requested by other programs.
@@ -108,7 +104,7 @@ native binary files). Not used with netCDF files.
 the \fIx\fP-coordinate (longitudes).  Alternatively, use OPT(G).
 .br
 \fBMULTISEG\fP means each track consists of multiple segments separated
-by a \fBGMT\fP multisegment header (alternatively, use OPT(M) when defining
+by a \fBGMT\fP multisegment header (alternatively, use OPT(m) when defining
 the system TAG). Not used with netCDF files.
 .br
 .sp

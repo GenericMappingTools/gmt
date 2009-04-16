@@ -5,9 +5,9 @@ gmtselect \- Select data subsets based on multiple spatial criteria
 .SH SYNOPSIS
 \fBgmtselect\fP [ \fIinfiles\fP ] [ OPT(A)\fImin_area\fP[/\fImin_level/max_level\fP] ] 
 [ OPT(C)[\fBf\fP]\fIdist/ptfile\fP ] [ OPT(D)\fIresolution\fP[\fB+\fP] ] [ OPT(F)\fIpolygonfile\fP ] 
-[ GMT_H_OPT ] [ OPT(I)[\fBcflrs\fP] ] [ GMT_J_OPT ] [ OPT(L)[\fBp\fP]\fIdist/linefile\fP ] [ GMT_M_OPT ] 
+[ GMT_H_OPT ] [ OPT(I)[\fBcflrs\fP] ] [ GMT_J_OPT ] [ OPT(L)[\fBp\fP]\fIdist/linefile\fP ] 
 [ OPT(N)\fImaskvalues\fP[\fBo\fP] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z)\fImin/max\fP] ] 
-[ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
+[ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBgmtselect\fP is a filter that reads (longitude, latitude) positions from the first 2 columns of
 \fIinfiles\fP [or standard input] and uses a combination of 1-6 criteria to pass or reject the records.
@@ -76,9 +76,6 @@ Alternatively, if OPT(R) and OPT(J) are used then geographic coordinates are pro
 (in cm, inch, m, or points, as determined by \fBMEASURE_UNIT\fP) before Cartesian distances are compared to \fIdist\fP.
 Use OPT(Lp) to ensure only points whose orthogonal projections onto the nearest line-segment
 fall within the segments endpoints [Default considers points "beyond" the line's endpoints.\"'
-#include "explain_-M.txt"
-The OPT(M) option make sure that segment headers in the input files are copied to output, but it has no effect
-on the data selection. Selection is always done point by point, not by segment.
 .TP
 OPT(N)
 Pass all records whose location is inside specified geographical features.
@@ -103,6 +100,9 @@ is absolute time then remember to supply OPT(f)2T.
 #include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_-f.txt"
+#include "explain_-m.txt"
+The OPT(m) option make sure that segment headers in the input files are copied to output, but it has no effect
+on the data selection. Selection is always done point by point, not by segment.
 #include "explain_precision.txt"
 .SH NOTE ON DISTANCES
 If options OPT(C) or OPT(L) are selected then distances are Cartesian and in user units;

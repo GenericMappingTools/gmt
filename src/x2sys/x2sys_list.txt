@@ -5,7 +5,7 @@ x2sys_list \- Output a subset of crossovers from data base
 .SH SYNOPSIS
 \fBx2sys_list\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(A)\fIasymm_max\fP ] 
 [ OPT(F)\fIacdhiInNtTvxyz\fP ] [ OPT(I)[\fIlist\fP] [ OPT(L)[\fIcorrtable\fP] ] [ OPT(N)\fInx_min\fP ] 
-[ GMT_Mo_OPT ] [ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ GMT_bo_OPT ]
+[ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_list\fP will read the crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)
 and extract a subset of the crossovers based on the other arguments.  The output may be
@@ -64,10 +64,6 @@ For the format of this file, see \fBx2sys_solve\fP.
 OPT(N)
 Only report data from pairs that generated at least \fInx_min\fP crossovers between them [use all pairs].
 .TP
-OPT(M)
-Multiple segment output format.  Segments with crossovers for a single track pair are separated by a
-record whose first character is \fIflag\fP and contains the two track names. [Default is '>'].
-.TP
 OPT(Q)
 Append \fBe\fP for external crossovers or \fBi\fP for internal crossovers only [Default is all crossovers].
 #include "explain_-Rgeo.txt"
@@ -79,6 +75,10 @@ Name of a single track.  If given we restrict output to those crossovers involvi
 output is crossovers involving any track pair].
 #include "explain_-V.txt"
 #include "explain_-bo.txt"
+.TP
+OPT(m)
+Multiple segment output format.  Segments with crossovers for a single track pair are separated by a
+record whose first character is \fIflag\fP and contains the two track names. [Default is '>'].
 .SH EXAMPLES
 To find all the magnetic crossovers associated with the tag MGD77 from the file COE_data.txt, restricted to occupy
 a certain region in the south Pacific, and return location, time, and crossover value, try

@@ -5,7 +5,7 @@ minmax \- Find extreme values in data tables
 .SH SYNOPSIS
 \fBminmax\fP [ \fIfiles\fP] [ OPT(C) ] [ OPT(EL)|\fBl\fP|\fBH\fP|\fBh\fP\fIcol\fP ] 
 [ GMT_H_OPT ] [ OPT(I)[\fBp\fP]\fIdx\fP[/\fIdy\fP[/\fIdz\fP...] ] 
-[ GMT_Mo_OPT ] [ OPT(S)[\fBx\fP][\fBy\fP] ] [ OPT(T)\fIdz\fP[/\fIcol\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ]
+[ OPT(S)[\fBx\fP][\fBy\fP] ] [ OPT(T)\fIdz\fP[/\fIcol\fP] ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBminmax\fP reads its standard input [or from files] and finds the
 extreme values in each of the columns.  It recognizes NaNs and
@@ -35,7 +35,6 @@ Report the min/max of the first \fIn\fP columns to the nearest multiple of the p
 increments (separate the \fIn\fP increments by slashes), and output results in the form OPT(R)\fIw/e/s/n\fP
 (unless OPT(C) is set).  If only one increment is given we also use it for the second
 column (for backwards compatibility).  To override this behaviour, use OPT(Ip)\fIdx\fP.
-#include "explain_-M.txt"
 .TP
 OPT(S)
 Add extra space for error bars. Useful together with OPT(I) option and when later plotting with \fBpsxy\fP OPT(E).
@@ -51,6 +50,7 @@ Only works when OPT(I) is selected.
 #include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"
+#include "explain_-m.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
 To find the extreme values in the file ship_gravity.xygd:

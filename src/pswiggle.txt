@@ -8,10 +8,10 @@ pswiggle \- Plot anomaly along track on a map
 \fBpswiggle\fP \fIxyz_files\fP GMT_J_OPT GMT_Rgeo_OPT 
 OPT(Z)\fIscale\fP [ OPT(A)\fIazimuth\fP ] [ GMT_B_OPT ] [ OPT(C)\fIcenter\fP ] [ OPT(D)\fIgap\fP ] 
 [ GMT_E_OPT ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
-[ OPT(I)\fIfix_az\fP ] [ GMT_K_OPT ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(I)\fIfix_az\fP ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(S)[\fBx\fP]\fIlon0\fP/\fIlat0\fP/\fIlength\fP[/\fIunits\fP] ] [ OPT(T)\fIpen\fP ] 
 [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] 
-[ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
+[ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBpswiggle\fP reads (\fIx\fP,\fIy\fP,\fIz\fP) triplets from files [or standard input] and plots z as a function of
 distance along track.  This means that two consecutive (\fIx\fP,\fIy\fP) points define the local distance axis,
@@ -54,10 +54,6 @@ OPT(I)
 Set a fixed azimuth projection for wiggles [Default uses track azimuth, but see OPT(A)].
 #include "explain_-K.txt"
 .TP
-OPT(M)
-Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
-[Default is '>'].
-.TP
 OPT(N)
 Paint negative wiggles instead of positive [Default].
 #include "explain_-O.txt"
@@ -83,6 +79,7 @@ Draw wiggle outline  [Default is no outline].  Append pen attributes to use
 [Default is 3 input columns].
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+#include "explain_-m.txt"
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"

@@ -11,9 +11,9 @@ pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 [ OPT(A)\fImin_area\fP[\fI/min_level/max_level\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIfill\fP ] [ OPT(D)\fIresolution\fP[\fB+\fP] ] 
 [ GMT_E_OPT ] [ OPT(G)\fIfill\fP|\fBc\fP ] 
 [ OPT(I)\fIriver\fP[/\fIpen\fP] ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
-[ GMT_SCALE ] [ GMT_O_OPT ] [ GMT_Mo_OPT ] [ OPT(N)\fIborder\fP[/\fIpen\fP] ] [ GMT_O_OPT ] 
+[ GMT_SCALE ] [ GMT_O_OPT ] [ OPT(N)\fIborder\fP[/\fIpen\fP] ] [ GMT_O_OPT ] 
 [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)\fIfill\fP|\fBc\fP ] [ GMT_TROSE ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
-[ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_bo_OPT ]
+[ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
 .SH DESCRIPTION
 \fBpscoast\fP plots grayshaded, colored, or textured land-masses [or water-masses] on maps and [optionally]
 draws coastlines, rivers, and political boundaries.  Alternatively, it can (1) issue clip paths that will
@@ -88,11 +88,6 @@ Repeat option OPT(I) as often as necessary.
 #include "explain_-K.txt"
 #include "explain_-L_scale.txt"
 .TP
-OPT(M)
-Dumps a single multisegment ASCII (or binary, see OPT(bo)) file to standard output.  No plotting occurs.
-Specify any combination of OPT(W), OPT(I), OPT(N).  Optionally, you may append the
-\fIflag\fP character that is written at the start of each segment header ['>'].
-.TP
 OPT(N)
 Draw political boundaries.  Specify the type of boundary and [optionally] append pen attributes  [Default pen:
 width = 1, color = black, texture = solid]. (See SPECIFYING PENS below).
@@ -133,6 +128,11 @@ OPT(Z)
 For 3-D projections:  Sets the z-level of the coastlines [0].
 #include "explain_-bo.txt"
 #include "explain_-c.txt"
+.TP
+OPT(m)
+Dumps a single multisegment ASCII (or binary, see OPT(bo)) file to standard output.  No plotting occurs.
+Specify any combination of OPT(W), OPT(I), OPT(N).  Optionally, you may append the
+\fIflag\fP character that is written at the start of each segment header ['>'].
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"

@@ -8,9 +8,9 @@ pstext \- To plot text strings on maps
 \fBpstext\fP \fItextfile\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ GMT_B_OPT ] [ OPT(C)\fIdx/dy\fP ]  
 [ OPT(D)[\fBj\fP]\fIdx\fP[/\fIdy\fP][\fBv\fP[\fIpen\fP] ] [ GMT_E_OPT ] 
-[ OPT(G)\fIcolor\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
+[ OPT(G)\fIcolor\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] [ OPT(L) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(S)\fIpen\fP ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ OPT(W)[\fIcolor\fP,][\fBo\fP|\fBO\fP|\fBc\fP|\fBC\fP[\fIpen\fP]] ] 
-[ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)[\fIzlevel\fP|\fB+\fP] ] [ GMT_c_OPT ] [ GMT_t_OPT ]
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)[\fIzlevel\fP|\fB+\fP] ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_mo_OPT ]
 .SH DESCRIPTION
 \fBpstext\fP plots text strings of variable size, font type, and orientation.
 Various map projections are provided, with the option to draw and annotate the
@@ -30,7 +30,7 @@ and some accented European characters, see Section 4.16 and Appendix F in the
 set to an extended character set in your \.gmtdefaults4 file in order to use the accented characters.
 Using the OPT(W) option, a colored rectangle underlying the text may
 be plotted  (Does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (OPT(M))).
+characters, except in paragraph mode (OPT(m))).
 .TP
 \fItextfile\fP
 This file contains 1 or more records with (\fIx, y, size, angle, fontno, justify, text\fP).
@@ -72,19 +72,6 @@ Sets the shade or color used for drawing the text  [Default is BASEMAP_FRAME_RGB
 OPT(L)
 Lists the font-numbers and font-names available, then exits.
 .TP
-OPT(M)
-Paragraph mode.  Files must be multiple segment files.  Segments are separated by
-a special record whose first character must be \fIflag\fP [Default is '>'].
-Starting in the 3rd column, we expect to find information pertaining to the
-typesetting of a text paragraph (the remaining lines until next segment header).
-The information expected is (x y size angle fontno justify linespace parwidth parjust),
-where \fIx y size angle fontno justify\fP are defined above, while \fIlinespace\fP
-and \fIparwidth\fP are the linespacing and paragraph width, respectively.  The justification
-of the text paragraph is governed by \fIparjust\fP which may be \fBl\fP(eft), \fBc\fP(enter),
-\fBr\fP(ight), or \fBj\fP(ustified).  The segment header is followed by one or more lines
-with paragraph text.  Text may contain the escape sequences discussed above.
-Separate paragraphs with a blank line.
-.TP
 OPT(N)
 Do NOT clip text at map boundaries [Default will clip].
 #include "explain_-O.txt"
@@ -112,6 +99,19 @@ to have its own level given in the 3rd column, and OPT(N) is implicitly set.
 (Not implemented for paragraph mode).
 #include "explain_-t.txt"
 #include "explain_-c.txt"
+.TP
+OPT(m)
+Paragraph mode.  Files must be multiple segment files.  Segments are separated by
+a special record whose first character must be \fIflag\fP [Default is '>'].
+Starting in the 3rd column, we expect to find information pertaining to the
+typesetting of a text paragraph (the remaining lines until next segment header).
+The information expected is (x y size angle fontno justify linespace parwidth parjust),
+where \fIx y size angle fontno justify\fP are defined above, while \fIlinespace\fP
+and \fIparwidth\fP are the linespacing and paragraph width, respectively.  The justification
+of the text paragraph is governed by \fIparjust\fP which may be \fBl\fP(eft), \fBc\fP(enter),
+\fBr\fP(ight), or \fBj\fP(ustified).  The segment header is followed by one or more lines
+with paragraph text.  Text may contain the escape sequences discussed above.
+Separate paragraphs with a blank line.
 #include "explain_pen.txt"
 #include "explain_color.txt"
 .SH EXAMPLES
@@ -125,7 +125,7 @@ the given specifications, use
 To add a typeset figure caption for a 3-inch wide illustration, use
 .br
 .sp
-\fBpstext\fP OPT(R)0/3/0/5 OPT(JX)3\fBi\fP OPT(O) OPT(H) OPT(M) OPT(N) << EOF >> figure.ps
+\fBpstext\fP OPT(R)0/3/0/5 OPT(JX)3\fBi\fP OPT(O) OPT(H) OPT(m) OPT(N) << EOF >> figure.ps
 .br
 This is an optional header record
 .br

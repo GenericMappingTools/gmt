@@ -4,9 +4,9 @@
 gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-D tables
 .SH SYNOPSIS
 \fBgmtconvert\fP [ \fIinputfiles\fP ] [ OPT(A) ] [ OPT(D)[\fItemplate\fP] ] [ OPT(E)[\fBf\fP|\fBl\fP] ] 
-[ OPT(F)\fIcols\fP ] [ GMT_H_OPT ] [ OPT(L) ] [ OPT(I) ] [ GMT_M_OPT ] [ OPT(N) ] 
+[ OPT(F)\fIcols\fP ] [ GMT_H_OPT ] [ OPT(L) ] [ OPT(I) ] [ OPT(N) ] 
 [ OPT(S)\fI"search string"\fP) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] 
-[ GMT_f_OPT ]
+[ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
 the desired information to standard output.  It can do a combination of
@@ -15,7 +15,7 @@ corresponding records from multiple files into a single file, (3)
 extract a subset of the columns, (4) only extract segments whose header
 matches a text pattern search, (5) just list all multisegment headers and no data
 records, and (6) extract first and last data record for each segment.  Input (and hence output) may have multiple
-subheaders if OPT(M) is selected, and ASCII tables may have regular headers as well.
+subheaders if OPT(m) is selected, and ASCII tables may have regular headers as well.
 .TP
 \fIdatafile(s)\fP
 ASCII (or binary, see OPT(bi)) file(s) holding a number of data columns. 
@@ -46,8 +46,7 @@ Invert the order of rows, i.e., output the final records in reverse order, start
 up with the first input row [Default goes forward].
 .TP
 OPT(L)
-Only output a listing of all multisegment header records and no data records (requires OPT(M) and ASCII data).
-#include "explain_-M.txt"
+Only output a listing of all multisegment header records and no data records (requires OPT(m) and ASCII data).
 .TP
 OPT(N)
 Do not write records that only contain NaNs in every field [Default writes all records].
@@ -60,6 +59,7 @@ Only output those segments whose header record contains the specified text strin
 #include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_-f.txt"
+#include "explain_-m.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
 To convert the binary file test.b (single precision) with 4 columns to ASCII:
@@ -71,7 +71,7 @@ To convert the binary file test.b (single precision) with 4 columns to ASCII:
 To convert the multiple segment ASCII table test.d to a double precision binary file:
 .br
 .sp
-\fBgmtconvert\fP test.d OPT(M) OPT(bo) > test.b
+\fBgmtconvert\fP test.d OPT(m) OPT(bo) > test.b
 .br
 .sp
 You have an ASCII table with 6 columns and you want to plot column 5 versus column 0.  Try
@@ -96,7 +96,7 @@ You want to plot the 2nd column of a 2-column file left.d versus the first colum
 To extract all segments in the file big_file.d whose headers contain the string "RIDGE AXIS", try
 .br
 .sp
-\fBgmtconvert\fP big_file.d OPT(M) OPT(S)"RIDGE AXIS" > subset.d
+\fBgmtconvert\fP big_file.d OPT(m) OPT(S)"RIDGE AXIS" > subset.d
 .br
 .SH "SEE ALSO"
 .IR GMT (1),

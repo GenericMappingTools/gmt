@@ -5,9 +5,9 @@ psmask \- To clip or mask areas of no data on a map
 .SH SYNOPSIS
 \fBpsmask\fP [\fIxyzfile\fP] GMT_I_OPT GMT_J_OPT GMT_Rgeo_OPT [ GMT_B_OPT ]  
 [ OPT(D)\fIdumpfile\fP ] [ GMT_E_OPT ] [ OPT(F) ] 
-[ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_K_OPT ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] 
+[ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] 
 [ GMT_P_OPT ] [ OPT(S)\fIsearch_radius\fP[\fBm\fP|\fBc\fP|\fBk\fP|\fBK\fP] ] [ OPT(T) ] [ GMT_U_OPT ] 
-[ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]  [ GMT_t_OPT ] [ GMT_bi_OPT ]
+[ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ]  [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_mo_OPT ]
 .br
 .sp
 \fBpsmask\fP OPT(C) [ GMT_K_OPT ] [ GMT_O_OPT ]
@@ -51,7 +51,6 @@ Paint the clip polygons (or tiles) with a selected fill [Default is no fill].
 #include "explain_-H.txt"
 Not used with binary data.
 #include "explain_-K.txt"
-#include "explain_-M.txt"
 .TP
 OPT(N)
 Invert the sense of the test, i.e. clip regions where there is data coverage.
@@ -75,6 +74,7 @@ Plot tiles instead of clip polygons.  Use OPT(G) to set tile color or pattern.
 #include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-c.txt"
+#include "explain_-m.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"
 .SH EXAMPLES

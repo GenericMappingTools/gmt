@@ -4,8 +4,8 @@
 sample1d \- Resampling of 1-D data sets
 .SH SYNOPSIS
 \fBsample1d\fP \fIinfile\fP [ OPT(Fl)|\fBa\fP|\fBc\fP|\fBn\fP ] [ GMT_H_OPT ] [ OPT(I)\fIxinc\fP ] 
-[ GMT_M_OPT ] [ OPT(N)\fIknotfile\fP ] [ OPT(S)\fIxstart\fP ] [ OPT(T)\fIx_col\fP] 
-[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
+[ OPT(N)\fIknotfile\fP ] [ OPT(S)\fIxstart\fP ] [ OPT(T)\fIx_col\fP] 
+[ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBsample1d\fP reads a multi-column ASCII [or binary] data set from file [or standard input] and interpolates the
 timeseries/profile at locations where the user needs the values.  The user must provide
@@ -30,10 +30,6 @@ OPT(I)
 \fIxinc\fP defines the sampling interval. [Default is the separation between the first and
 second abscissa point in the \fIinfile\fP]
 .TP
-OPT(M)
-Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
-[Default is '>'].
-.TP
 OPT(N)
 \fIknotfile\fP is an optional ASCII file with the x locations where the data set will be resampled in the first column.
 Note: if OPT(H) is selected it applies to both \fIinfile\fP and \fIknotfile\fP.
@@ -50,6 +46,7 @@ Sets the column number of the independent variable [Default is 0 (first)].
 #include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_-f.txt"
+#include "explain_-m.txt"
 #include "explain_precision.txt"
 .SH CALENDAR TIME SAMPLING
 If the abscissa are calendar times then you must use the OPT(f) option to indicate this.  Furthermore,
