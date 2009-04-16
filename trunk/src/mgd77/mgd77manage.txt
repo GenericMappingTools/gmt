@@ -4,7 +4,7 @@
 mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
 \fBmgd77manage\fP \fINGDC-ids\fP [ OPT(A)[\fB+\fP]\fBa\fP|\fBc\fP|\fBd\fP|\fBD\fP|\fBe\fP|\fBg\fP|\fBi\fP|\fBn\fP|\fBt\fP|\fBT\fP\fIfileinfo\fP ] 
-[ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(D)\fIabbrev1,abbrev2,...\fP ] [ OPT(E)\fIempty\fP ] 
+[ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(D)\fIabbrev1,abbrev2,...\fP ] [ OPT(E)\fIempty\fP ] [ OPT(F) ] 
 [ OPT(I)\fIabbrev\fP/\fIname\fP/\fIunit\fP/\fBt\fP/\fIscale\fP/\fIoffset\fP/\fIcomment\fP ] [ OPT(Ne)|\fBk\fP|\fBm\fP|\fBn\fP ] 
 [ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ] [ GMT_V_OPT ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
@@ -109,6 +109,10 @@ the new filename to the old filename, and finally remove the old, renamed file.
 OPT(E)
 Give a single character that will be repeated to fill empty string values, e.g., '9' will yield
 a string like "99999..." [9].
+.TP
+OPT(F)
+Force mode.  When this mode is active you are empowered to delete or replace even the standard MGD77 set of columns.
+You better know what you are doing!
 .TP
 OPT(I)
 In addition to file information we must specify additional information about the extra column.
