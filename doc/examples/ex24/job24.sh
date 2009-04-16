@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 24
-#		$Id: job24.sh,v 1.6 2009-02-23 01:19:22 remko Exp $
+#		$Id: job24.sh,v 1.7 2009-04-16 19:38:18 guru Exp $
 #
 # Purpose:	Extract subsets of data based on geospatial criteria
 # GMT progs:	gmtselect, pscoast, psxy, minmax
@@ -23,5 +23,5 @@ gmtselect oz_quakes.d -L1000/dateline.d -Nk/s -C3000/point.d -fg -R -Il \
 awk '{print $1, $2, 0, $3, $3}' point.d | psxy -R -J -O -K -SE -Wfat,white >> $ps
 awk '{print $1, $2, 14, 0, 1, "LT", $4}' point.d | pstext -R -J -O -K -Gwhite -D0.1i/-0.1i >> $ps
 psxy -R -J -O -K point.d -Wfat,white -S+0.2i >> $ps
-psxy -R -J -O -M dateline.d -Wfat,white -A >> $ps
+psxy -R -J -O -m dateline.d -Wfat,white -A >> $ps
 rm -f point.d dateline.d .gmt*

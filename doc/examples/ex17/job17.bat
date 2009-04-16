@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 17
 REM
-REM		$Id: job17.bat,v 1.9 2008-11-29 23:44:56 guru Exp $
+REM		$Id: job17.bat,v 1.10 2009-04-16 19:38:18 guru Exp $
 REM
 REM Purpose:	Illustrates clipping of images using coastlines
 REM GMT progs:	grd2cpt, grdgradient, grdimage, pscoast, pstext
@@ -41,7 +41,7 @@ echo @_@%%5%%Example 17.@%%%%@_  We first plot the color geoid image >> tmp
 echo for the entire region, followed by a gray-shaded @#etopo5@# >> tmp
 echo image that is clipped so it is only visible inside the coastlines. >> tmp
 
-pstext -R -J -O -M# -Wwhite,Othinner -D-0.1i/0.1i tmp >> example_17.ps
+pstext -R -J -O -m# -Wwhite,Othinner -D-0.1i/0.1i tmp >> example_17.ps
 
 REM Clean up
 
