@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.23 2009-04-15 19:56:03 remko Exp $
+ *    $Id: gmtdigitize.c,v 1.24 2009-04-16 20:53:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -151,8 +151,8 @@ int main (int argc, char **argv)
 	if (argc == 1 || GMT_give_synopsis_and_exit) {
 		fprintf (stderr, "gmtdigitize %s - Digitizing and inverse map transformation of map x/y coordinates\n\n", GMT_VERSION);
 		fprintf (stderr, "usage: gmtdigitize %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
-		fprintf (stderr, "\t[-A] [-C<device>] [-D<limit>] [-F] [-H] [-L<lpi>] [%s] [-N<namestem>] [-S]\n", GMT_Mo_OPT);
-		fprintf (stderr, "\t[-V] [-Zk|v] [%s] [%s]\n\n", GMT_bo_OPT, GMT_f_OPT);
+		fprintf (stderr, "\t[-A] [-C<device>] [-D<limit>] [-F] [-H] [-L<lpi>] [-N<namestem>] [-S]\n");
+		fprintf (stderr, "\t[-V] [-Zk|v] [%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_f_OPT, GMT_mo_OPT);
 		
 		if (GMT_give_synopsis_and_exit) exit (EXIT_FAILURE);
 		
@@ -168,7 +168,6 @@ int main (int argc, char **argv)
 		fprintf (stderr, "\t   the corners of the map if they are known to the program]\n");
 		GMT_explain_option ('H');
 		fprintf (stderr, "\t-L sets the lines-pr-inch resolution of the digitizer [%d]\n", DIG_LPI);
-		GMT_explain_option ('M');
 		fprintf (stderr, "\t-N sets name for output file(s).  If name contains a C-format\n");
 		fprintf (stderr, "\t   for integer (e.g., line_%%d.d) then each segment will be written\n");
 		fprintf (stderr, "\t   to separate files [Default is stdout]\n");
@@ -179,6 +178,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "\t-Zk means append button key id as a final column\n");
 		GMT_explain_option ('o');
 		GMT_explain_option ('f');
+		GMT_explain_option ('m');
 		GMT_explain_option ('.');
 		exit (EXIT_FAILURE);
 	}
