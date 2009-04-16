@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.475 2009-04-15 19:56:03 remko Exp $
+	$Id: ChangeLog,v 1.476 2009-04-16 02:19:36 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-16	remko
+	* gmt_plot.c (GMT_xyz_axis3D):	Bug fix: Call GMT_get_coordinate_label() with
+				&GMT_plot_calclock instead of NULL. Crashed when using time labels
+				in 3D plot.
 
 2009-04-15	remko
 	* gmt_init.c:		Add handling of -M|m by GMT_parse_common_options.
