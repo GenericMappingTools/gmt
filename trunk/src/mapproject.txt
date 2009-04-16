@@ -8,8 +8,8 @@ mapproject \- Forward and Inverse map transformation of 2-D coordinates
 \fBmapproject\fP \fIinfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(Ab)|\fBB\fP|\fBf\fP|\fBF\fP[\fIlon0\fP/\fIlat0\fP] ] [ OPT(C)[\fIdx\fP/\fIdy\fP] ] [ OPT(Dc)|\fBi\fP|\fBm\fP|\fBp\fP ] [ OPT(E)[\fIdatum\fP] ] 
 [ OPT(F)[\fBk\fP|\fBm\fP|\fBn\fP|\fBi\fP|\fBc\fP|\fBp\fP] ] [ OPT(G)[\fIx0\fP/\fIy0\fP][\fB+\fP|\fB-\fP][/\fIunit\fP] ] [ GMT_H_OPT ] [ OPT(I) ] 
-[ OPT(L)\fIline.xy\fP[/\fIunit\fP] ] [ GMT_M_OPT ] [ OPT(Q)[\fBd\fP|\fBe\fP] [ OPT(S) ] [ OPT(T)[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
-[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
+[ OPT(L)\fIline.xy\fP[/\fIunit\fP] ] [ OPT(Q)[\fBd\fP|\fBe\fP] [ OPT(S) ] [ OPT(T)[\fBh\fP]\fIfrom\fP[/\fIto\fP] ] 
+[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBmapproject\fP reads (longitude, latitude) positions from \fIinfiles\fP [or standard input] and
 computes (x,y) coordinates using the specified map projection and scales.
@@ -83,7 +83,6 @@ The distance and the coordinates of the nearest point will be appended to the ou
 Append the distance unit; choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP (nautical mile), \fBd\fP (spherical degree),
 \fBc\fP (Cartesian distance using input coordinates) or \fBC\fP (Cartesian distance using projected coordinates).  The
 last unit requires OPT(R) and OPT(J) to be set.  A spherical approximation is used for geographic data.
-#include "explain_-M.txt"
 .TP
 OPT(Q)
 List all projection parameters.  To only list datums, use OPT(Qd).  To only list ellipsoids, use OPT(Qe).
@@ -108,6 +107,7 @@ OPT(T) may be used in conjunction with OPT(R) OPT(J) to change the datum before 
 #include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_-f.txt"
+#include "explain_-m.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
 To transform a file with (longitude,latitude) into (x,y) positions in cm on

@@ -9,17 +9,17 @@ psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS
 \fBpsxyz\fP \fIfiles\fP GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
 [ GMT_B_OPT ] [ OPT(C)\fIcptfile\fP ] [ OPT(D)\fIdx\fP/\fIdy\fP[\fIdz\fP] ] [ GMT_E_OPT ]
-[ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ OPT(I)\fIintens\fP ] [ GMT_K_OPT ] [ OPT(L) ] [ GMT_Mo_OPT ]
+[ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ OPT(I)\fIintens\fP ] [ GMT_K_OPT ] [ OPT(L) ]
 [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[\fIsymbol\fP][\fIsize\fP] ] [ GMT_U_OPT ]
 [ GMT_V_OPT ] [ OPT(W)[\fB-\fP|\fB+\fP][\fIpen\fP] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ]
-[ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ] 
+[ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_c_OPT ] [ GMT_fi_OPT ] [ GMT_g_OPT ]  [ GMT_mi_OPT ]
 .SH DESCRIPTION
 \fBpsxyz\fP reads (x,y,z) triplets from \fIfiles\fP [or standard input] and
 generates \fIPostScript\fP code that will plot lines, polygons, or symbols at those locations in 3-D.
 If a symbol is selected and no symbol size given, then \fBpsxyz\fP will interpret the fourth column of the
 input data as symbol size.  Symbols whose \fIsize\fP is <= 0 are skipped.
 If no symbols are specified then the symbol code (see OPT(S) below)
-must be present as last column in the input.  Multiple segment files may be plotted using the OPT(M) option.
+must be present as last column in the input.  Multiple segment files may be plotted using the OPT(m) option.
 If OPT(S) is not used, a line connecting the data points will be drawn instead.
 To explicitly close polygons, use OPT(L).  Select a fill with OPT(G).
 If OPT(G) is set, OPT(W) will control whether the polygon outline is drawn or not.
@@ -40,7 +40,7 @@ Give a color palette file.  If OPT(S) is set, let symbol fill color be determine
 t-value in the fourth column. Additional fields are shifted over by one column
 (optional size would be in 5th rather than 4th field, etc.).
 If OPT(S) is not set, then \fBpsxyz\fP expects the user to supply a multisegment line or polygon file
-(requires OPT(M)) where each segment header contains a OPT(Z)\fIval\fP string.  The \fIval\fP
+(requires OPT(m)) where each segment header contains a OPT(Z)\fIval\fP string.  The \fIval\fP
 will control the color of the line or polygon (if OPT(L) is set) via the cpt file.
 .TP
 OPT(D)
@@ -51,9 +51,9 @@ OPT(G)
 Select color or pattern for filling of symbols or polygons [Default is no fill].
 (See SPECIFYING FILL below).
 .br
-Note when OPT(M) is chosen, \fBpsxyz\fP will search for OPT(G) and OPT(W)
+Note when OPT(m) is chosen, \fBpsxyz\fP will search for OPT(G) and OPT(W)
 strings in all the subheaders and let any values thus found over-ride the command line settings
-(see OPT(M) below).
+(see OPT(m) below).
 #include "explain_-H.txt"
 .TP
 OPT(I)
@@ -62,29 +62,8 @@ Use the supplied \fIintens\fP value (nominally in the -1 to + 1 range) to modula
 .TP
 OPT(L)
 Force closed polygons: connect the endpoints of the line-segment(s) and draw polygons.
-Also, in concert with OPT(C), OPT(M), and OPT(Z) settings in the headers will use the implied
+Also, in concert with OPT(C), OPT(m), and OPT(Z) settings in the headers will use the implied
 color for polygon fill [Default is polygon pen color].
-.TP
-OPT(M)
-Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP
-[Default is '>']. On these segment header records one or more of the following options can be added:
-.br
-OPT(G)\fIfill\fP Use the new \fIfill\fP and turn filling on
-.br
-OPT(G-) Turn filling off
-.br
-OPT(G+) Revert to default fill (none if not set on command line)
-.br
-OPT(W)\fIpen\fP Use the new \fIpen\fP and turn outline on
-.br
-OPT(W-) Turn outline off
-.br
-OPT(W+) Revert to default pen (none if not set on command line)
-.br
-OPT(Z)\fIzval\fP Obtain fill via cpt lookup using z-value \fIzval\fP
-.br
-OPT(ZNaN) Get the NaN color from the cpt file
-.TP
 OPT(N)
 Do NOT skip symbols that fall outside map border [Default plots points inside border only].
 #include "explain_-O.txt"
@@ -276,6 +255,27 @@ For 3-D projections:  Sets the z-level of the basemap [0].
 #include "explain_-f.txt"
 #include "explain_-g.txt"
 The OPT(g) option is ignored if OPT(S) is set.
+.TP
+OPT(m)
+Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP
+[Default is '>']. On these segment header records one or more of the following options can be added:
+.br
+OPT(G)\fIfill\fP Use the new \fIfill\fP and turn filling on
+.br
+OPT(G-) Turn filling off
+.br
+OPT(G+) Revert to default fill (none if not set on command line)
+.br
+OPT(W)\fIpen\fP Use the new \fIpen\fP and turn outline on
+.br
+OPT(W-) Turn outline off
+.br
+OPT(W+) Revert to default pen (none if not set on command line)
+.br
+OPT(Z)\fIzval\fP Obtain fill via cpt lookup using z-value \fIzval\fP
+.br
+OPT(ZNaN) Get the NaN color from the cpt file
+.TP
 #include "explain_pen.txt"
 #include "explain_fill.txt"
 #include "explain_color.txt"

@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.478 2009-04-16 16:44:21 remko Exp $
+	$Id: ChangeLog,v 1.479 2009-04-16 18:53:43 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-16	pwessel
+	* *.txt:		We now discuss -m rather than -M (but are backwards compatible)
 
 2009-04-16	remko
 	* psclip.c, pscoast.c:	Produce at least "S V" when clippath is empty.

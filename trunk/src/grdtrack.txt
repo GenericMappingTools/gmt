@@ -3,9 +3,9 @@
 .SH NAME
 grdtrack \- Sampling of a 2-D grid file along 1-D trackline (a sequence of x,y points)
 .SH SYNOPSIS
-\fBgrdtrack\fP \fIxyfile\fP OPT(G)\fIgrdfile\fP [ GMT_H_OPT ] [ OPT(L)\fIflag\fP ] [ GMT_M_OPT ] 
+\fBgrdtrack\fP \fIxyfile\fP OPT(G)\fIgrdfile\fP [ GMT_H_OPT ] [ OPT(L)\fIflag\fP ] 
 [ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ] [ GMT_Rgeo_OPT ] [ OPT(S) ]
-[ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ]
+[ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBgrdtrack\fP reads a grid file (or a Sandwell/Smith IMG file) and a table (from file or standard input) with (x,y) positions 
 in the first two columns (more columns may be present). It interpolates the grid at the positions 
@@ -35,10 +35,6 @@ Boundary condition \fIflag\fP may be \fIx\fP or \fIy\fP or \fIxy\fP indicating d
 x or y or both set by OPT(R), or \fIflag\fP may be \fIg\fP indicating geographical conditions (x and y are 
 lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless
 the grid is automatically recognised as periodic.]
-.TP
-OPT(M)
-Multiple segment file.  Segment separator is a record beginning with \fIflag\fP.
-[Default is '>'].
 #include "explain_-Q.txt"
 #include "explain_-R.txt"
 .TP
@@ -56,6 +52,7 @@ Toggles between (longitude,latitude) and (latitude,longitude) input/output.  [De
 #include "explain_-bo.txt"
 [Default is one more than input].
 #include "explain_-f.txt"
+#include "explain_-m.txt"
 #include "explain_precision.txt"
 #include "explain_grd_input.txt"
 .SH HINTS

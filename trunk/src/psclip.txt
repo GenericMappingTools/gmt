@@ -5,9 +5,8 @@ psclip \- To set up polygonal clip paths
 .SH SYNOPSIS
 \fBpsclip\fP \fIxyfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ GMT_B_OPT ] [ OPT(E)\fIazim\fP/\fIelev\fP ] [ GMT_K_OPT ] [ OPT(N) ] 
-[ GMT_Mo_OPT ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
-[ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
-[ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
+[ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_mo_OPT ]
 .br
 .sp
 \fBpsclip\fP OPT(C) [ GMT_K_OPT ] [ GMT_O_OPT ]
@@ -38,10 +37,6 @@ Sets the viewpoint's azimuth and elevation [180/90].\"'
 #include "explain_-H.txt"
 #include "explain_-K.txt"
 .TP
-OPT(M)
-Multiple segment file.  Segments are separated by a record whose first character is \fI<flag>\fP.
-[Default is '>'].
-.TP
 OPT(N)
 Invert the sense of what is inside and outside, i.e., use the outside of the polygons for clipping.
 #include "explain_-O.txt"
@@ -57,6 +52,7 @@ For 3-D projections:  Sets the z-level of the polygons [0].
 [Default is 2 input columns].
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+#include "explain_-m.txt"
 .SH EXAMPLES
 To make an overlay \fIPostScript\fP file that will set up a complex clip area to which
 subsequent plotting will be confined, run:

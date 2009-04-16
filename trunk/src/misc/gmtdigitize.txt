@@ -9,8 +9,8 @@ gmtdigitize \- Digitizing and Inverse map transformation of map x/y coordinates
 .SH SYNOPSIS
 \fBgmtdigitize\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(A) ] [ OPT(C)\fIdevice\fP ] [ OPT(D)\fIlimit\fP ] [ OPT(F) ] [ GMT_H_OPT ] 
-[ OPT(L)\fIlpi\fP ] [ GMT_Mo_OPT ] [ OPT(N)\fInamestem\fP ] [ OPT(S) ] 
-[ GMT_V_OPT ] [ OPT(Zk)|\fBv\fP ] [ GMT_bo_OPT ] [ > output.d ]
+[ OPT(L)\fIlpi\fP ] [ OPT(N)\fInamestem\fP ] [ OPT(S) ] 
+[ GMT_V_OPT ] [ OPT(Zk)|\fBv\fP ] [ GMT_bo_OPT ] [ GMT_mo_OPT ] [ > output.d ]
 .SH DESCRIPTION
 \fBgmtdigitize\fP digitizes points from a digitizer via a serial line connection and
 computes map coordinates using the specified map projection.  The program is interactive
@@ -42,17 +42,16 @@ Force the program to ask for 4 arbitrary calibration points [Default is to use t
 OPT(H)
 This option allows you to write out any number of header records to the beginning of the
 output file.  Each record will automatically start with a #-character to indicate comment.
-Headers are not written if multiple output files are selected with OPT(N) OPT(M).
+Headers are not written if multiple output files are selected with OPT(N) OPT(m).
 .TP
 OPT(L)
 Set the digitizer table resolution in lines per inch [DIG_LPI].
-#include "explain_-M.txt"
 .TP
 OPT(N)
 Set name for output file(s).  If a regular filename is given, then all digitized data will be written to that
 file.  If the file contains a C-format for an integer (i.e., %d) then the file is used as a format statement
 to create unique filenames based on the current segment number (e.g., line_%d.d will yield files line_0.d, line_1.d, etc).
-By default, all output is written to stdout.  Multiple segment files requires specifying the OPT(M) option.
+By default, all output is written to stdout.  Multiple segment files requires specifying the OPT(m) option.
 .TP
 OPT(S)
 Suppress points that fall outside the specified map region [Default outputs all points].
@@ -64,12 +63,13 @@ Append \fBv\fP to prompt for a \fIz\fP-value and output it as a third data colum
 Append \fBk\fP to output the button key as the final data column.  Both OPT(Zk) and
 OPT(Zv) can be specified. [Default is just 2 column x,y output].
 #include "explain_-bo.txt"
+#include "explain_-m.txt"
 .SH EXAMPLES
 To digitize lines from a mercator map made for a given region, and
 save each line segment in individual files called segment_000.xy, segment_001.xy etc, try
 .br
 .sp
-gmtdigitize OPT(R)20/50/12/25 SCALE1 OPT(M) OPT(N)segment_%3.3d.xy
+gmtdigitize OPT(R)20/50/12/25 SCALE1 OPT(m) OPT(N)segment_%3.3d.xy
 .br
 .sp
 To digitize seismically defined interfaces from a multichannel seismic section, with horizontal
@@ -77,7 +77,7 @@ distances from 130 to 970, and vertical times from 0 to 10 seconds, write out th
 save all line segment to a single multisegment file, and beep at each click, try
 .br
 .sp
-gmtdigitize OPT(R)130/970/0/10 OPT(Jx)1/-1 OPT(M) OPT(A) OPT(Z) > interfaces.d
+gmtdigitize OPT(R)130/970/0/10 OPT(Jx)1/-1 OPT(m) OPT(A) OPT(Z) > interfaces.d
 .br
 .SH SYSTEM SETUP
 This applies to the Calcomp DrawingBoard III hooked up to a RedHat Linux workstation.

@@ -4,9 +4,9 @@
 grdmask \- Create mask grid files from xy paths.
 .SH SYNOPSIS
 \fBgrdmask\fP \fIpathfiles\fP OPT(G)\fImask_grd_file\fP] GMT_I_OPT 
-GMT_Rgeo_OPT [ OPT(A)[\fBm\fP|\fBp\fP] ] [ OPT(F) ] [ GMT_H_OPT ] [ GMT_Mo_OPT ] 
+GMT_Rgeo_OPT [ OPT(A)[\fBm\fP|\fBp\fP] ] [ OPT(F) ] [ GMT_H_OPT ] 
 [ OPT(N)\fIout/edge/in\fP ] [ OPT(S)\fIsearch_radius\fP[\fBm|c|k|K\fP] ] 
-[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ]
+[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_mi_OPT ]
 .SH DESCRIPTION
 \fBgrdmask\fP can operate in two different modes. 1. It reads one or more xy-files that each define a closed polygon.
 The nodes defined by the specified region and lattice spacing will be set equal to one of three possible values
@@ -34,10 +34,6 @@ to first follow parallels, then meridians.
 #include "explain_nodereg.txt"
 #include "explain_-H.txt"
 .TP
-OPT(M)
-Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
-[Default is '>'].
-.TP
 OPT(N)
 Sets the values that will be assigned to nodes that are \fIout\fPside the polygons,
 on the \fIedge\fP, or \fIin\fPside.  Values can be any number, including the
@@ -54,6 +50,10 @@ However, if the current \fBELLIPSOID\fP is spherical then great circle calculati
 #include "explain_-bi.txt"
 [Default is 2 input columns].
 #include "explain_-f.txt"
+.TP
+OPT(m)
+Multiple segment file.  Segments are separated by a record whose first character is \fIflag\fP.
+[Default is '>'].
 #include "explain_grd_output.txt"
 #include "explain_grd_coord.txt"
 .SH EXAMPLES

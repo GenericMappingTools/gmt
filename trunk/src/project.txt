@@ -5,9 +5,9 @@ project \- project data along a line or great circle, generate a profile track, 
 .SH SYNOPSIS
 \fBproject\fP [ \fIinfile\fP ] OPT(C)\fIcx\fP/\fIcy\fP [ OPT(A)\fIazimuth\fP ] 
 [ OPT(Dd)|\fBg\fP ] [ OPT(E)\fIbx\fP/\fIby\fP ] [ OPT(F)\fIflags\fP ] [ OPT(G)\fIdist\fP ] [ GMT_H_OPT ] 
-[ OPT(L)[\fBw\fP][\fIl_min\fP/\fIl_max\fP] ] [ GMT_M_OPT ] [ OPT(N) ] [ OPT(Q) ] [ OPT(S) ] 
+[ OPT(L)[\fBw\fP][\fIl_min\fP/\fIl_max\fP] ] [ OPT(N) ] [ OPT(Q) ] [ OPT(S) ] 
 [ OPT(T)\fIpx\fP/\fIpy\fP ] [ GMT_V_OPT ] [ OPT(W)\fIw_min\fP/\fIw_max\fP ] [ GMT_t_OPT ] 
-[ GMT_b_OPT ] [ GMT_f_OPT ]
+[ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBproject\fP reads arbitrary (\fIx, y\fP[,\fI z\fP]) data from standard input 
 [or \fIinfile\fP ] and writes to standard output any combination of 
@@ -99,7 +99,6 @@ OPT(Q) option.
 OPT(L)
 Length controls.  Project only those points whose \fIp\fP coordinate is within \fIl_min\fP < \fIp\fP < \fIl_max\fP.  
 If OPT(E) has been set, then you may use OPT(Lw) to stay within the distance from \fBC\fP to \fBE\fP.
-#include "explain_-M.txt"
 .TP
 OPT(N)
 Flat Earth.  Make a Cartesian coordinate transformation in the plane.  [Default uses spherical trigonometry.]
@@ -123,6 +122,7 @@ Width controls.  Project only those points whose \fIq\fP coordinate is within \f
 #include "explain_-bo.txt"
 [Default is given by OPT(F) or OPT(G)].
 #include "explain_-f.txt"
+#include "explain_-m.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
 To generate points every 10km along a great circle from 10N,50W to 30N,10W:

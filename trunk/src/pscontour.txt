@@ -8,9 +8,9 @@ pscontour \- Contour xyz-data by direct triangulation [method]
 \fBpscontour\fP \fIxyzfile\fP OPT(C)\fIcptfile\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(A)[\fB-\fP][\fIlabelinfo\fP] ] [ GMT_B_OPT ] [ OPT(D)[\fIdumpfile\fP] ] [ GMT_E_OPT ] 
 [ GMT_CONTG ] [ GMT_H_OPT ] [ OPT(I) ] [ GMT_K_OPT ] 
-[ OPT(L)\fIpen\fP ] [ GMT_Mo_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S) ] [ OPT(T)\fIindexfile\fP ] [ GMT_U_OPT ] 
+[ OPT(L)\fIpen\fP ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S) ] [ OPT(T)\fIindexfile\fP ] [ GMT_U_OPT ] 
 [ GMT_V_OPT ] [ OPT(W)[\fB+\fP]\fIpen\fP ] [ GMT_X_OPT ] 
-[ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ]
+[ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_mo_OPT ]
 .SH DESCRIPTION
 \fBpscontour\fP reads an ASCII [or binary] xyz-file and produces a raw contour plot by triangulation.  By default, the
 optimal Delaunay triangulation is performed (using either Shewchuk's [1996]\"'
@@ -43,7 +43,7 @@ OPT(D)
 Dump the (x,y,z) coordinates of each contour to separate files, one for each contour segment. The
 files will be named \fIdumpfile_cont_segment[_i]\fP.xyz, where \fIcont\fP is the contour value and
 \fIsegment\fP is a running segment number for each contour interval (for closed contours we append _i.)
-However, when OPT(M) is used in conjunction with OPT(D) a single multisegment file is created instead.
+However, when OPT(m) is used in conjunction with OPT(D) a single multisegment file is created instead.
 #include "explain_-E.txt"
 #define CONTOUR
 .TP
@@ -59,11 +59,6 @@ Color the triangles using the color palette table.
 OPT(L)
 Draw the underlying triangular mesh using the specified pen attributes [Default is no mesh].
 (See SPECIFYING PENS below).
-.TP
-OPT(M)
-When used in conjunction with OPT(D) a single multisegment file is created, and
-each contour section is preceded by a header record whose first column is \fIflag\fP
-followed by the contour level.
 .TP
 OPT(N)
 Do NOT clip contours or image at the boundaries [Default will clip to fit inside region OPT(R)].
@@ -91,6 +86,11 @@ Use 4-byte integer triplets for node ids (OPT(T)).
 #include "explain_-bo.txt"
 [Default is 3 output columns].
 #include "explain_-c.txt"
+.TP
+OPT(m)
+When used in conjunction with OPT(D) a single multisegment file is created, and
+each contour section is preceded by a header record whose first column is \fIflag\fP
+followed by the contour level.
 #include "explain_pen.txt"
 #include "explain_color.txt"
 .SH EXAMPLES

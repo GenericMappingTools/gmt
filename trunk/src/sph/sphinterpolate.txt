@@ -6,7 +6,7 @@
 sphinterpolate \- Gridding in tension of spherical data
 .SH SYNOPSIS
 \fBsphinterpolate\fP \fIinfiles\fP OPT(G)\fIgrdfile\fP [ OPT(F) ] [ GMT_H_OPT ] [ GMT_I_OPT ] 
-[ GMT_M_OPT ] [ OPT(Q)\fImode\fP[/\fIoptions\fP] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ]
+[ OPT(Q)\fImode\fP[/\fIoptions\fP] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z) ] [ GMT_t_OPT ] [ GMT_b_OPT ][ GMT_m_OPT ] 
 .SH DESCRIPTION
 \fBsphinterpolate\fP reads one or more ASCII [or binary] files (or standard input) containing lon, lat, f and
 performs a Delaunay triangulation to set up a spherical interpolation in tension.  The final grid is saved
@@ -18,10 +18,6 @@ Data files with the (lon, lat, f) coordinates in ASCII (or binary; see \OPT(b)).
 .SH OPTIONS
 #include "explain_-H.txt"
 #include "explain_-I.txt"
-.TP
-\OPT(M)
-Expect input data to have multiple line segments separated by a record whose first
-character is \fIflag\fP [>].
 .TP
 \OPT(Q)
 Specify one of four ways to calculate tension factors to preserve local shape properties or
@@ -56,6 +52,7 @@ Before interpolation, scale data by the maximum data range [no scaling].
 [Default is 3 input columns].
 #include "explain_-bo.txt"
 [Default is same as input].
+#include "explain_-m.txt"
 #include "explain_precision.txt"
 #include "explain_float.txt"
 .SH EXAMPLES
