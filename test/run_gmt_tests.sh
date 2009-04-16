@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: run_gmt_tests.sh,v 1.12 2008-04-15 19:33:27 remko Exp $
+#	$Id: run_gmt_tests.sh,v 1.13 2009-04-16 16:53:21 remko Exp $
 #
 #	test script for GMT/test directory
 #
@@ -31,15 +31,13 @@ for dir in $dirs; do
 	echo "Directory: $dir"
 	echo "------------------------------------------------------------------------------"
 	# Look for Bourne shell scripts
-	ls *.sh > /tmp/$$.lis
-	if [ -s /tmp/$$.lis ]; then	# Found Bourne shell scripts
-		rm -f /tmp/$$.lis
-		for script in *.sh; do
-			gmtdefaults -Du > .gmtdefaults4
-			gmtset PAPER_MEDIA letter
-			sh $script
-		done
-	fi
+	list=`ls *.sh 2> /dev/null`
+	for script in $list; do
+		gmtdefaults -Du > .gmtdefaults4
+		gmtset PAPER_MEDIA letter
+		sh $script
+		rm -f .gmtdefaults4 .gmtcommands4
+	done
 done
 cd $here
 echo "------------------------------------------------------------------------------"
