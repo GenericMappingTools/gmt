@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.476 2009-04-16 02:19:36 remko Exp $
+	$Id: ChangeLog,v 1.477 2009-04-16 02:43:11 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-16	pwessel
+	* pslib.c:		Keep track of clip level in PS file to prevent disabling of
+				clipping when no path had been laid down in the first place.
 
 2009-04-16	remko
 	* gmt_plot.c (GMT_xyz_axis3D):	Bug fix: Call GMT_get_coordinate_label() with

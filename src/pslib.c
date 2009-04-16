@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.194 2009-02-05 20:52:16 remko Exp $
+ *	$Id: pslib.c,v 1.195 2009-04-16 02:43:11 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -359,7 +359,7 @@ void ps_circle_ (double *x, double *y, double *size, int *rgb, int *outline)
 }
 
 void ps_clipoff (void) {
-	fprintf (PSL->internal.fp, "S U\n");
+	fprintf (PSL->internal.fp, "PSL_clip_level 0 gt {S U /PSL_clip_level PSL_clip_level 1 sub def} if\n");
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Clipping is currently OFF\n");
 	PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = -1;	/* Reset to -1 so ps_setpaint will update the current paint */
 	PSL->current.linewidth = -1;			/* Reset to -1 so ps_setline will update the current width */
@@ -411,6 +411,7 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], int flag)
 			fprintf (PSL->internal.fp, "eoclip\n");
 		else
 			fprintf (PSL->internal.fp, "eoclip N\n");
+		fprintf (PSL->internal.fp, "/PSL_clip_level PSL_clip_level 1 add def\n");
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of clip path.  Clipping is currently ON\n");
 	}
 }

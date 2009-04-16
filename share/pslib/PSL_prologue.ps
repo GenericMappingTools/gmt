@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.21 2009-01-12 22:02:05 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.22 2009-04-16 02:43:11 guru Exp $
 %-	Make sure that the version number matches the one mentioned in pslib.c
 % Begin pslib header
 250 dict begin
@@ -74,6 +74,8 @@
 /SO {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR P fs os}!
 % Pie Wedge
 /SW {S /a1 exch def /a0 exch def /r exch def /y exch def dup y r a0 a1 arc y L P fs os}!
+% Initialize clip level
+/PSL_clip_level 0 def
 % To reencode one font with the provided encoding vector
 /PSL_reencode { findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
