@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.257 2009-04-14 19:21:54 remko Exp $
+ *	$Id: gmt_plot.c,v 1.258 2009-04-16 02:19:36 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2259,7 +2259,7 @@ void GMT_xyz_axis3D (int axis_no, char axis, struct GMT_PLOT_AXIS *A, int annota
 	for (i = 0; i < n; i++) {
 		val_xyz[id] = knots[i];
 
-		GMT_get_coordinate_label (annotation, NULL, format, &A->item[GMT_ANNOT_UPPER], knots[i]);
+		GMT_get_coordinate_label (annotation, &GMT_plot_calclock, format, &A->item[GMT_ANNOT_UPPER], knots[i]);
 
 		GMT_project3D (val_xyz[0], val_xyz[1], val_xyz[2], &w[0], &w[1], &w[2]);
 		pp[0] = w[0];
