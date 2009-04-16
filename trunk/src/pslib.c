@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.196 2009-04-16 04:32:48 guru Exp $
+ *	$Id: pslib.c,v 1.197 2009-04-16 16:38:39 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -359,7 +359,7 @@ void ps_circle_ (double *x, double *y, double *size, int *rgb, int *outline)
 }
 
 void ps_clipoff (void) {
-	fprintf (PSL->internal.fp, "PSL_clip_level 0 gt {S U /PSL_clip_level PSL_clip_level 1 sub def} if\n");
+	fprintf (PSL->internal.fp, "S U\n");
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Clipping is currently OFF\n");
 	PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = -1;	/* Reset to -1 so ps_setpaint will update the current paint */
 	PSL->current.linewidth = -1;			/* Reset to -1 so ps_setline will update the current width */
@@ -379,7 +379,6 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], int flag)
 	/* Any plotting outside the path defined by x,y will be clipped.
 	   use clipoff to restore the original clipping path. */
 
-	PS_LONG used;
 	int pmode;
 	char move[7];
 
@@ -391,13 +390,11 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], int flag)
 	else
 		strcpy (move, "m");
 
-	used = 0;
 	if (n > 0) {
 		PSL->internal.ix = (PS_LONG)irint (x[0]*PSL->internal.scale);
 		PSL->internal.iy = (PS_LONG)irint (y[0]*PSL->internal.scale);
-		used++;
 		fprintf (PSL->internal.fp, "%ld %ld %s\n", PSL->internal.ix, PSL->internal.iy, move);
-		used += ps_line (&x[1], &y[1], n-1, 0, FALSE, FALSE);	/* Must pass close = FALSE since first point not given ! */
+		ps_line (&x[1], &y[1], n-1, 0, FALSE, FALSE);	/* Must pass close = FALSE since first point not given ! */
 		fprintf (PSL->internal.fp, "P\n");
 	}
 
@@ -411,7 +408,6 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], int flag)
 			fprintf (PSL->internal.fp, "eoclip\n");
 		else
 			fprintf (PSL->internal.fp, "eoclip N\n");
-		fprintf (PSL->internal.fp, "/PSL_clip_level PSL_clip_level 1 add def\n");
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of clip path.  Clipping is currently ON\n");
 	}
 }
@@ -1404,7 +1400,7 @@ int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, doubl
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.22 ");	/* Version number should match that of PSL_prologue.ps */
+		ps_bulkcopy ("PSL_prologue", "v 1.23 ");	/* Version number should match that of PSL_prologue.ps */
 		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Initialize book-keeping for font encoding and write font macros */
