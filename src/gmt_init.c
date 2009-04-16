@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.387 2009-04-16 21:27:14 guru Exp $
+ *	$Id: gmt_init.c,v 1.388 2009-04-16 21:45:11 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1223,7 +1223,7 @@ int GMT_parse_common_options (char *item, double *w, double *e, double *s, doubl
 			error += i;
 			break;
 		case 'M':
-			fprintf (stderr, "%s: Option -M is depricated (but is processed correctly).  Please use -m instead\n", GMT_program);
+			fprintf (stderr, "%s: Option -M is deprecated (but is processed correctly).  Please use -m instead\n", GMT_program);
 		case 'm':
 			GMT_multisegment (&item[2]);
 			break;
