@@ -1,12 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.477 2009-04-16 02:43:11 guru Exp $
+	$Id: ChangeLog,v 1.478 2009-04-16 16:44:21 remko Exp $
 -----------------------------------------------------------------------------------------
 
-2009-04-16	pwessel
-	* pslib.c:		Keep track of clip level in PS file to prevent disabling of
-				clipping when no path had been laid down in the first place.
-
 2009-04-16	remko
+	* psclip.c, pscoast.c:	Produce at least "S V" when clippath is empty.
 	* gmt_plot.c (GMT_xyz_axis3D):	Bug fix: Call GMT_get_coordinate_label() with
 				&GMT_plot_calclock instead of NULL. Crashed when using time labels
 				in 3D plot.
