@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_pstext_justify.sh,v 1.3 2007-02-08 21:46:28 remko Exp $
+#	$Id: GMT_pstext_justify.sh,v 1.4 2009-04-17 00:31:29 remko Exp $
 #
 
 B=0.2
@@ -9,7 +9,7 @@ gmtset GLOBAL_X_SCALE 0.8 GLOBAL_Y_SCALE 0.8
 pstext -R0/3/0/1.5 -Jx1 -P -K -N -C0/0 -Wothin,- << EOF > GMT_pstext_justify.ps
 0	0	36	0	1	LB	My Text
 EOF
-psxy -R -J -O -K -M -N -X-0.1 -Y-0.2 << EOF >> GMT_pstext_justify.ps
+psxy -R -J -O -K -m -N -X-0.1 -Y-0.2 << EOF >> GMT_pstext_justify.ps
 >
 0.05	$B
 2.04	$B
@@ -29,7 +29,7 @@ psxy -R -J -O -K -M -N -X-0.1 -Y-0.2 << EOF >> GMT_pstext_justify.ps
 1.945	0
 1.945	0.65
 EOF
-psxy -R -J -O -K -M -N -Wthinner << EOF >> GMT_pstext_justify.ps
+psxy -R -J -O -K -m -N -Wthinner << EOF >> GMT_pstext_justify.ps
 >
 0.7	-0.1
 0.135	$M

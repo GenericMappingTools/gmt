@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: arcs.sh,v 1.2 2009-01-14 22:52:12 guru Exp $
+#	$Id: arcs.sh,v 1.3 2009-04-17 00:31:30 remko Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
@@ -7,7 +7,7 @@
 header "Test psxy with various circles, ellipses and wedges"
 
 ps=arcs.ps
-psxy -R0/4/0/4 -Jx1i -P -M -W5p -S1i -X2i -Y2i << EOF > $ps
+psxy -R0/4/0/4 -Jx1i -P -m -W5p -S1i -X2i -Y2i << EOF > $ps
 1 1 1 c
 1 3.2 0 0.8 0.4 e
 > -W3p,blue -Ggreen

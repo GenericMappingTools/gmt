@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: near_a_line.sh,v 1.8 2007-11-15 04:20:41 remko Exp $
+#	$Id: near_a_line.sh,v 1.9 2009-04-17 00:31:30 remko Exp $
 #
 # Making sure both forms of "near a line" works:
 # Default (old) behavior is to think of a line as
@@ -29,23 +29,23 @@ grd2xyz $$.grd > $$.xyz
 # CARTESIAN DATA: distance D = 1 unit
 D=1
 # Old behavior
-psxy -R0/5/0/5 -JX3.25i -P -B1g1WSne -K -Sc0.02 -Gred $$.xyz -M -X0.75i -Y1i > $ps
+psxy -R0/5/0/5 -JX3.25i -P -B1g1WSne -K -Sc0.02 -Gred $$.xyz -m -X0.75i -Y1i > $ps
 gmtselect $$.xyz -L${D}/$$.d | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O -K $$.d -M -W1p >> $ps
+psxy -R -J -O -K $$.d -m -W1p >> $ps
 # New behavior
-psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -M -X3.75i >> $ps
+psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -m -X3.75i >> $ps
 gmtselect $$.xyz -Lp${D}/$$.d | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O -K $$.d -M -W1p >> $ps
+psxy -R -J -O -K $$.d -m -W1p >> $ps
 # SPHERICAL DATA (-fg): distance D = 1 degree ~= 111.13 km
 D=111.13
 # Old behavior
-psxy -R -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -M -X-3.75i -Y4i >> $ps
+psxy -R -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -m -X-3.75i -Y4i >> $ps
 gmtselect $$.xyz -L${D}/$$.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O -K $$.d -M -W1p >> $ps
+psxy -R -J -O -K $$.d -m -W1p >> $ps
 # New behavior
-psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -M -X3.75i >> $ps
+psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -m -X3.75i >> $ps
 gmtselect $$.xyz -Lp${D}/$$.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
-psxy -R -J -O $$.d -M -W1p >> $ps
+psxy -R -J -O $$.d -m -W1p >> $ps
 rm -f $$.grd $$.xyz $$.d
 
 pscmp
