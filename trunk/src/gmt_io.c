@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.176 2009-04-16 20:53:57 guru Exp $
+ *	$Id: gmt_io.c,v 1.177 2009-04-17 23:42:52 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -141,8 +141,10 @@ BOOLEAN GMT_get_binary_d_input_swab (FILE *fp, int n);
 BOOLEAN GMT_get_binary_f_input (FILE *fp, int n);
 BOOLEAN GMT_get_binary_f_input_swab (FILE *fp, int n);
 BOOLEAN GMT_read_binary_f_input (FILE *fp, float *GMT_f, int n);
+int GMT_n_cols_needed_for_gaps (int n);
+int GMT_set_gap ();
 
-/* Library functions needed for WIndows DLL to work properly.
+/* Library functions needed for Windows DLL to work properly.
  * THese are only compiled under Windows - under other OS the
  * macros in gmt_io.h will kick in instead.
  */
@@ -628,7 +630,7 @@ void GMT_multisegment (char *text)
 int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 {
 	char line[BUFSIZ], *p, token[BUFSIZ];
-	int i, pos, col_no, len, n_convert;
+	int i, pos, col_no, len, n_convert, n_use;
 	BOOLEAN done = FALSE, bad_record, set_nan_flag;
 	double val;
 
@@ -636,20 +638,24 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 	 * with # except when -m# is used of course.  Fields may be separated by
 	 * spaces, tabs, or commas.  The routine returns the actual
 	 * number of items read [or 0 for segment header and -1 for EOF]
-	 * If *n is passed as BUFSIZ it will be reset to the actual number of fields */
+	 * If *n is passed as BUFSIZ it will be reset to the actual number of fields.
+	 * If gap checking is in effect and one of the checks involves a column beyond
+	 * the ones otherwise needed by the program we extend the reading so we may
+	 * examin the column needed in the gap test.
+	 */
 
 	while (!done) {	/* Done becomes TRUE when we successfully have read a data record */
 
 		/* First read until we get a non-blank, non-comment record, or reach EOF */
 
-		GMT_io.rec_no++;
+		GMT_io.rec_no++;	/* Counts up, regardless of what this record is (data, junk, multisegment header, etc) */
 		while ((p = GMT_fgets (line, BUFSIZ, fp)) && GMT_is_a_blank_line(line)) GMT_io.rec_no++;	/* Skip comments and blank lines */
 
-		if (!p) {
+		if (!p) {	/* Ran out of records */
 			GMT_io.status = GMT_IO_EOF;
 			if (GMT_io.give_report && GMT_io.n_bad_records) {	/* Report summary and reset */
 				fprintf (stderr, "%s: This file had %ld records with invalid x and/or y values\n", GMT_program, GMT_io.n_bad_records);
-				GMT_io.n_bad_records = GMT_io.rec_no = GMT_io.n_clean_rec = 0;
+				GMT_io.n_bad_records = GMT_io.rec_no = GMT_io.pt_no = GMT_io.n_clean_rec = 0;
 			}
 			return (-1);
 		}
@@ -662,6 +668,8 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		}
 
 		/* Normal data record */
+
+		n_use = GMT_n_cols_needed_for_gaps (*n);	/* Gives is the actual columns we need (which may > *n if gap checking is active; if gap check we also update prev_rec) */
 
 		/* First chop off trailing whitespace and commas */
 
@@ -680,16 +688,16 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		strcpy (GMT_io.current_record, line);
 		line[i-1] = '\0';		/* Chop off newline at end of string */
 		col_no = pos = 0;
-		while (!bad_record && col_no < *n && (GMT_strtok (line, " \t,", &pos, token))) {	/* Get each field in turn */
+		while (!bad_record && col_no < n_use && (GMT_strtok (line, " \t,", &pos, token))) {	/* Get each field in turn */
 			if ((n_convert = GMT_scanf (token, GMT_io.in_col_type[col_no], &val)) == GMT_IS_NAN) {	/* Got NaN or it failed to decode */
 				if (gmtdefs.nan_is_gap || !GMT_io.skip_if_NaN[col_no])	/* This field (or all fields) can be NaN so we pass it on */
-					GMT_data[col_no] = GMT_d_NaN;
+					GMT_curr_rec[col_no] = GMT_d_NaN;
 				else	/* Cannot have NaN in this column, set flag */
 					bad_record = TRUE;
 				if (GMT_io.skip_if_NaN[col_no]) set_nan_flag = TRUE;
 			}
 			else					/* Successful decode, assign to array */
-				GMT_data[col_no] = val;
+				GMT_curr_rec[col_no] = val;
 			col_no++;		/* Goto next field */
 		}
 		if (bad_record) {
@@ -706,15 +714,26 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 		else
 			done = TRUE;
 	}
-	*ptr = GMT_data;
-	GMT_io.status = (col_no == *n || *n == BUFSIZ) ? 0 : GMT_IO_MISMATCH;
+	*ptr = GMT_curr_rec;
+	GMT_io.status = (col_no == n_use || *n == BUFSIZ) ? 0 : GMT_IO_MISMATCH;
 	if (set_nan_flag) GMT_io.status |= GMT_IO_NAN;
 	if (*n == BUFSIZ) *n = col_no;
 
-	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();	/* Must account for periodicity in 360 */
+	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_curr_rec[GMT_X], GMT_curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();			/* Must account for periodicity in 360 */
 
+	if (GMT_gap_detected()) return (GMT_set_gap());
+
+	GMT_io.pt_no++;	/* Got a valid data record */
 	return (col_no);
+}
+
+int GMT_set_gap () {	/* Data gaps are special since there is no multiple-segment header flagging the gap; thus next time the record is already read */
+	GMT_io.status = GMT_IO_GAP;
+	GMT_io.seg_no++;
+	sprintf (GMT_io.segment_header, "%c Data gap detected", GMT_io.EOF_flag[GMT_IN]);
+	GMT_io.pt_no = 0;
+	return (0);
 }
 
 BOOLEAN GMT_is_a_blank_line (char *line) {
@@ -726,10 +745,18 @@ BOOLEAN GMT_is_a_blank_line (char *line) {
 	return (FALSE);
 }
 
+int GMT_n_cols_needed_for_gaps (int n) {
+	int n_use;
+	/* Return the actual items needed (which may be more than n if gap testing demands it) and update previous record */
+	if (!GMT->common->g.active) return (n);	/* No gap checking, n it is */
+	n_use = MAX (n, GMT->common->g.n_col);
+	memcpy ((void *)GMT_prev_rec, (void *)GMT_curr_rec, (size_t)(n_use*sizeof (double)));
+	return (n_use);
+}
 
 int GMT_nc_input (FILE *fp, int *n, double **ptr)
 {
-	int i, status;
+	int i, status, n_use;
 
 	GMT_io.status = 0;
 	if (*n == BUFSIZ)
@@ -738,40 +765,46 @@ int GMT_nc_input (FILE *fp, int *n, double **ptr)
 		fprintf (stderr, "%s: GMT_nc_input is asking for %d columns, but file has only %d\n", GMT_program, *n, GMT_io.nvars);
 		GMT_io.status = GMT_IO_MISMATCH;
 	}
-
+	n_use = GMT_n_cols_needed_for_gaps (*n);
 	do {	/* Keep reading until (1) EOF, (2) got a multisegment record, or (3) a valid data record */
 
 		if (GMT_io.nrec == GMT_io.ndim) {
 			GMT_io.status = GMT_IO_EOF;
 			return (-1);
 		}
-		for (i = 0; i < GMT_io.nvars && i < *n; i++) {
-			nc_get_var1_double (GMT_io.ncid, GMT_io.varid[i], &GMT_io.nrec, &GMT_data[i]);
-			if (GMT_data[i] == GMT_io.missing_value[i])
-				GMT_data[i] = GMT_d_NaN;
+		for (i = 0; i < GMT_io.nvars && i < n_use; i++) {
+			nc_get_var1_double (GMT_io.ncid, GMT_io.varid[i], &GMT_io.nrec, &GMT_curr_rec[i]);
+			if (GMT_curr_rec[i] == GMT_io.missing_value[i])
+				GMT_curr_rec[i] = GMT_d_NaN;
 			else
-				GMT_data[i] = GMT_data[i] * GMT_io.scale_factor[i] + GMT_io.add_offset[i];
+				GMT_curr_rec[i] = GMT_curr_rec[i] * GMT_io.scale_factor[i] + GMT_io.add_offset[i];
 		}
 		GMT_io.nrec++;
-		status = GMT_process_binary_input (*n);
+		GMT_io.rec_no++;
+		status = GMT_process_binary_input (n_use);
 		if (status == 1) return (0);		/* A multisegment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
-	*ptr = GMT_data;
-
-	return (i);
+	*ptr = GMT_curr_rec;
+	if (GMT_gap_detected()) return (GMT_set_gap());
+	GMT_io.pt_no++;
+	return (*n);
 }
 
 int GMT_bin_input (FILE *fp, int *n, double **ptr)
 {	/* General binary read function which calls function pointed to by GMT_read_binary to handle actual reading (and possbily swabbing) */
-	int status;
+	int status, n_use;
 
 	GMT_io.status = 0;
+	n_use = GMT_n_cols_needed_for_gaps (*n);
 	do {	/* Keep reading until (1) EOF, (2) got a multisegment record, or (3) a valid data record */
-		if ((*GMT_read_binary) (fp, *n)) return (-1);	/* EOF */
-		status = GMT_process_binary_input (*n);
+		if ((*GMT_read_binary) (fp, n_use)) return (-1);	/* EOF */
+		GMT_io.rec_no++;
+		status = GMT_process_binary_input (n_use);
 		if (status == 1) return (0);		/* A multisegment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
-	*ptr = GMT_data;
+	*ptr = GMT_curr_rec;
+	if (GMT_gap_detected()) return (GMT_set_gap());
+	GMT_io.pt_no++;
 
 	return (*n);
 }
@@ -781,11 +814,11 @@ int GMT_bin_input (FILE *fp, int *n, double **ptr)
 BOOLEAN GMT_get_binary_d_input (FILE *fp, int n) {
 	/* Reads the n binary doubles from input */
 	int n_read;
-	if ((n_read = GMT_fread ((void *) GMT_data, sizeof (double), (size_t)n, fp)) != n) {	/* EOF or came up short */
+	if ((n_read = GMT_fread ((void *) GMT_curr_rec, sizeof (double), (size_t)n, fp)) != n) {	/* EOF or came up short */
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 		if (GMT_io.give_report && GMT_io.n_bad_records) {	/* Report summary and reset */
 			fprintf (stderr, "%s: This file had %ld records with invalid x and/or y values\n", GMT_program, GMT_io.n_bad_records);
-			GMT_io.n_bad_records = GMT_io.rec_no = GMT_io.n_clean_rec = 0;
+			GMT_io.n_bad_records = GMT_io.rec_no = GMT_io.pt_no = GMT_io.n_clean_rec = 0;
 		}
 		return (TRUE);	/* Done with this file */
 	}
@@ -798,7 +831,7 @@ BOOLEAN GMT_get_binary_d_input_swab (FILE *fp, int n) {
 	if (GMT_get_binary_d_input (fp, n)) return (TRUE);	/* Return immediately if EOF */
 	/* Swab the bytes for each double */
 	for (i = 0; i < n; i++) {
-		ii = (unsigned int *)&GMT_data[i];	/* These 4 lines do the swab */
+		ii = (unsigned int *)&GMT_curr_rec[i];	/* These 4 lines do the swab */
 		jj = GMT_swab4 (ii[0]);
 		ii[0] = GMT_swab4 (ii[1]);
 		ii[1] = jj;
@@ -811,7 +844,7 @@ BOOLEAN GMT_get_binary_f_input (FILE *fp, int n) {
 	int i;
 	static float GMT_f[BUFSIZ];
 	if (GMT_read_binary_f_input (fp, GMT_f, n)) return (TRUE);	/* EOF or came up short */
-	for (i = 0; i < n; i++) GMT_data[i] = (double)GMT_f[i];
+	for (i = 0; i < n; i++) GMT_curr_rec[i] = (double)GMT_f[i];
 	return (FALSE);	/* OK so far */
 }
 
@@ -824,7 +857,7 @@ BOOLEAN GMT_get_binary_f_input_swab (FILE *fp, int n) {
 	for (i = 0; i < n; i++) {	/* Do the float swab, then assign to the double */
 		ii = (unsigned int *)&GMT_f[i];	/* These 2 lines do the swab */
 		*ii = GMT_swab4 (*ii);
-		GMT_data[i] = (double)GMT_f[i];
+		GMT_curr_rec[i] = (double)GMT_f[i];
 	}
 	return (FALSE);	/* OK so far */
 }
@@ -836,7 +869,7 @@ BOOLEAN GMT_read_binary_f_input (FILE *fp, float *GMT_f, int n) {
 		GMT_io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 		if (GMT_io.give_report && GMT_io.n_bad_records) {	/* Report summary and reset */
 			fprintf (stderr, "%s: This file had %ld records with invalid x and/or y values\n", GMT_program, GMT_io.n_bad_records);
-			GMT_io.n_bad_records = GMT_io.rec_no = GMT_io.n_clean_rec = 0;
+			GMT_io.n_bad_records = GMT_io.rec_no = GMT_io.pt_no = GMT_io.n_clean_rec = 0;
 		}
 		return (TRUE);	/* Done with this file since we got EOF */
 	}
@@ -849,11 +882,11 @@ int GMT_process_binary_input (int n_read) {
 	*/
 	int col_no, n_NaN;
 	BOOLEAN bad_record = FALSE, set_nan_flag = FALSE;
-	/* Here, GMT_data has been filled in by fread */
+	/* Here, GMT_curr_rec has been filled in by fread */
 	
 	/* Determine if this was a multisegment header, and if so return */
 	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {
-		if (!GMT_is_dnan (GMT_data[col_no])) continue;	/* Clean data, do nothing */
+		if (!GMT_is_dnan (GMT_curr_rec[col_no])) continue;	/* Clean data, do nothing */
 		/* We end up here if we found a NaN */
 		if (!gmtdefs.nan_is_gap && GMT_io.skip_if_NaN[col_no]) bad_record = TRUE;	/* This field is not allowed to be NaN */
 		if (GMT_io.skip_if_NaN[col_no]) set_nan_flag = TRUE;
@@ -864,6 +897,7 @@ int GMT_process_binary_input (int n_read) {
 			GMT_io.status = GMT_IO_SEGMENT_HEADER;
 			strcpy (GMT_io.segment_header, "> Binary multisegment header\n");
 			GMT_io.seg_no++;
+			GMT_io.pt_no = 0;
 			return (1);	/* 1 means segment header */
 		}
 	}
@@ -877,17 +911,17 @@ int GMT_process_binary_input (int n_read) {
 		}
 		return (2);	/* 2 means skip this record and try again */
 	}
-	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_data[GMT_X], GMT_data[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_curr_rec[GMT_X], GMT_curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();		/* Must account for periodicity in 360 */
 	if (set_nan_flag) GMT_io.status |= GMT_IO_NAN;
 	return (0);	/* 0 means OK regular record */
 }
 
 void GMT_adjust_periodic (void) {
-	/* while (GMT_data[GMT_X] > project_info.e) GMT_data[GMT_X] -= 360.0;
-	while (GMT_data[GMT_X] < project_info.w) GMT_data[GMT_X] += 360.0; */
-	while (GMT_data[GMT_X] > project_info.e && (GMT_data[GMT_X] - 360.0) >= project_info.w) GMT_data[GMT_X] -= 360.0;
-	while (GMT_data[GMT_X] < project_info.w && (GMT_data[GMT_X] + 360.0) <= project_info.w) GMT_data[GMT_X] += 360.0;
+	/* while (GMT_curr_rec[GMT_X] > project_info.e) GMT_curr_rec[GMT_X] -= 360.0;
+	while (GMT_curr_rec[GMT_X] < project_info.w) GMT_curr_rec[GMT_X] += 360.0; */
+	while (GMT_curr_rec[GMT_X] > project_info.e && (GMT_curr_rec[GMT_X] - 360.0) >= project_info.w) GMT_curr_rec[GMT_X] -= 360.0;
+	while (GMT_curr_rec[GMT_X] < project_info.w && (GMT_curr_rec[GMT_X] + 360.0) <= project_info.w) GMT_curr_rec[GMT_X] += 360.0;
 	/* If data is not inside the given range it will satisfy (lon > east) */
 	/* Now it will be outside the region on the same side it started out at */
 }

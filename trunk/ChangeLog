@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.481 2009-04-16 20:53:57 guru Exp $
+	$Id: ChangeLog,v 1.482 2009-04-17 23:42:52 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-17	pwessel
+	* gmt_*.c:		The gap check -g is now done inside the i/o library
 
 2009-04-16	pwessel
 	* *.txt:		We now discuss -m rather than -M (but are backwards compatible)

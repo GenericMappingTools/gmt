@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.395 2009-04-16 20:53:57 guru Exp $
+ *	$Id: gmt_support.c,v 1.396 2009-04-17 23:42:53 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6136,13 +6136,14 @@ int GMT_getrose (char *text, struct GMT_MAP_ROSE *ms)
 	return (error);
 }
 
-BOOLEAN GMT_gap_detected (double this_x, double this_y, double prev_x, double prev_y)
+BOOLEAN GMT_gap_detected (void)
 {	/* Determine if two points are "far enough apart" to constitude a data gap and thus "pen up" */
 	int i;
 	
+	if (!GMT->common->g.active || GMT_io.pt_no == 0) return (FALSE);	/* Not active or on first point in a segment */ 
 	/* Here we must determine if any or all of the selected gap criteria [see GMT_set_gap_param] are met */
 	for (i = 0; i < GMT->common->g.n_methods; i++) {	/* Go through each criterion */
-		if ((GMT->common->g.get_dist[i] (this_x, this_y, prev_x, prev_y) > GMT->common->g.gap[i]) != GMT->common->g.match_all) return (!GMT->common->g.match_all);
+		if ((GMT->common->g.get_dist[i] (GMT->common->g.col[i]) > GMT->common->g.gap[i]) != GMT->common->g.match_all) return (!GMT->common->g.match_all);
 	}
 	return (GMT->common->g.match_all);
 }
