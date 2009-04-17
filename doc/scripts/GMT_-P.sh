@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-P.sh,v 1.4 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_-P.sh,v 1.5 2009-04-17 00:16:11 remko Exp $
 #
 
 pstext -R0/2.5/0/1.7 -Jx1 -P -K -N << EOF > GMT_-P.ps
@@ -22,7 +22,7 @@ psxy -R -J -O -K -Sv0.005/0.025/0.015 -Gblack << EOF >> GMT_-P.ps
 2.15	0.1	180	0.7
 2.15	0.1	90	1
 EOF
-psxy -R -J -O -M -L -N -Wthinner << EOF >> GMT_-P.ps
+psxy -R -J -O -m -L -N -Wthinner << EOF >> GMT_-P.ps
 >
 0	0
 1	0

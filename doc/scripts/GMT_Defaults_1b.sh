@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_Defaults_1b.sh,v 1.8 2006-10-24 01:53:19 remko Exp $
+#	$Id: GMT_Defaults_1b.sh,v 1.9 2009-04-17 00:16:11 remko Exp $
 #
 gmtset BASEMAP_TYPE plain PLOT_DEGREE_FORMAT ddd:mm:ssF GRID_CROSS_SIZE_PRIMARY 0i \
 ANNOT_FONT_SIZE_PRIMARY +8p OBLIQUE_ANNOTATION 1
@@ -34,7 +34,7 @@ psxy -R -J -O -K -Svs0.005i/0.04i/0.03i -N -Gblack << EOF >> GMT_Defaults_1b.ps
 0.37 1.9 0.15 1.6
 1.45 1.8 1 1.6
 EOF
-psxy -R -J -O -Wthinnest,- -X-0.5 -Y-0.5 -M << EOF >> GMT_Defaults_1b.ps
+psxy -R -J -O -Wthinnest,- -X-0.5 -Y-0.5 -m << EOF >> GMT_Defaults_1b.ps
 >
 0.1	0.1
 0.1	0.6

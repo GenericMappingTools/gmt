@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_G.sh,v 1.6 2007-02-08 21:46:27 remko Exp $
+#	$Id: GMT_App_G.sh,v 1.7 2009-04-17 00:16:11 remko Exp $
 #
 #	Makes the insert for Appendix G (fonts)
 #
@@ -12,7 +12,7 @@ dy=-0.2222
 y0=4.3
 grep -v '^#' ../../share/pslib/PS_font_info.d | $AWK '{print $1}' > $$.d
 gmtset FRAME_PEN thinner
-psxy -R0/5.4/0/$y0 -Jx1i -P -K -B0 -M <<EOF > GMT_App_G.ps
+psxy -R0/5.4/0/$y0 -Jx1i -P -K -B0 -m <<EOF > GMT_App_G.ps
 >
 0.3	0
 0.3	$y0
