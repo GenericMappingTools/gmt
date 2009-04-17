@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-J.sh,v 1.6 2008-04-30 03:51:54 remko Exp $
+#	$Id: GMT_-J.sh,v 1.7 2009-04-17 00:16:11 remko Exp $
 #
 
 pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
@@ -50,7 +50,7 @@ pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
 0.05	2.6	8	0	0	BL	E = Equal Area
 EOF
 
-psxy -R -J -O -M -Wthinner << EOF >> GMT_-J.ps
+psxy -R -J -O -m -Wthinner << EOF >> GMT_-J.ps
 >
 2.3	2.75
 2	2.4

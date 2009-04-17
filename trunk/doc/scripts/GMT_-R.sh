@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-R.sh,v 1.8 2009-02-15 20:22:05 remko Exp $
+#	$Id: GMT_-R.sh,v 1.9 2009-04-17 00:16:11 remko Exp $
 #
 
 gmtset BASEMAP_TYPE PLAIN ANNOT_FONT_PRIMARY 0 ANNOT_FONT_SIZE_PRIMARY 8 TICK_LENGTH 0.05i \
@@ -14,7 +14,7 @@ psxy -R -J -O -K -N -Sc0.1 -Wthinner << EOF >> GMT_-R.ps
 1	2
 2	1
 EOF
-psxy -R -J -O -K -N -M -Wthinner << EOF >> GMT_-R.ps
+psxy -R -J -O -K -N -m -Wthinner << EOF >> GMT_-R.ps
 >
 0	1
 0.675	-0.35
@@ -37,7 +37,7 @@ psxy -R -J -O -K -N -Sc0.1 -Wthinner << EOF >> GMT_-R.ps
 0	0
 2	2
 EOF
-psxy -R -J -O -N -M -Wthinner << EOF >> GMT_-R.ps
+psxy -R -J -O -N -m -Wthinner << EOF >> GMT_-R.ps
 >
 0	0
 0.56	-0.35
