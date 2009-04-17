@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_atan.sh,v 1.6 2009-02-13 21:05:14 remko Exp $
+#	$Id: GMT_atan.sh,v 1.7 2009-04-17 00:31:29 remko Exp $
 #
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
@@ -18,7 +18,7 @@ psxy -R -J -O -K -Sv0.004/0.03/0.02 -Gblack << EOF >> GMT_atan.ps
 3	0.8	180	0.45
 3	0.8	-90	0.4
 EOF
-psxy -R -J -O -K -M -Wthinnest << EOF >> GMT_atan.ps
+psxy -R -J -O -K -m -Wthinnest << EOF >> GMT_atan.ps
 >
 -5	0
 5	0

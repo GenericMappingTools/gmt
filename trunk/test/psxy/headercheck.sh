@@ -1,12 +1,12 @@
 #!/bin/sh
-#	$Id: headercheck.sh,v 1.8 2007-11-15 04:20:42 remko Exp $
+#	$Id: headercheck.sh,v 1.9 2009-04-17 00:31:29 remko Exp $
 # Test that symbols pick up correct -W -G from command line or header
 
 . ../functions.sh
 header "Test psxy and operation of -W -G in headers"
 
 ps=headercheck.ps
-psxy -R-1/10/-1/10 -JX6/4 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -M -K << EOF > $ps
+psxy -R-1/10/-1/10 -JX6/4 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -m -K << EOF > $ps
 > -Ggreen -W1p
 0	0
 1	1
@@ -29,7 +29,7 @@ cat << EOF > $$.cpt
 3	p100/9	6	-
 6	cyan	9	yellow
 EOF
-psxy -R -J -O -Y4.75i -Gred -L -M -B2g1 -C$$.cpt << EOF >> $ps
+psxy -R -J -O -Y4.75i -Gred -L -m -B2g1 -C$$.cpt << EOF >> $ps
 > -Ggreen -W+
 0	0
 2	2

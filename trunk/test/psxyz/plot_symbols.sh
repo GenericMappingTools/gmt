@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: plot_symbols.sh,v 1.9 2009-01-12 04:23:11 remko Exp $
+#	$Id: plot_symbols.sh,v 1.10 2009-04-17 00:31:30 remko Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
@@ -7,7 +7,7 @@
 header "Test psxyz and all the symbols with fill"
 
 ps=plot_symbols.ps
-psxyz -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -E155/35 -S1i -X1i -Y1i -K << EOF > $ps
+psxyz -R0/4/1/6 -Jx1i -P -B0g1 -m -Gred -W0.25p -E155/35 -S1i -X1i -Y1i -K << EOF > $ps
 > Fat pen -W2p
 0.5	5.5	0	-
 > Plain red symbols -W- -Gred
@@ -40,7 +40,7 @@ psxyz -R0/4/1/6 -Jx1i -P -B0g1 -M -Gred -W0.25p -E155/35 -S1i -X1i -Y1i -K << EO
 > Dual-colored pattern # 12 -Gp100/12:FredBgreen -W3p,orange
 3.5	1.5	0	a
 EOF
-psxyz -R0/4/1/6/0/3 -Jx1i -Jz1i -O -B0g1/0g1/0g1 -M -G0 -W0.25p -E155/35 -S1i -Y4i -Q << EOF >> $ps
+psxyz -R0/4/1/6/0/3 -Jx1i -Jz1i -O -B0g1/0g1/0g1 -m -G0 -W0.25p -E155/35 -S1i -Y4i -Q << EOF >> $ps
 > Blue column -Gblue
 2.5	2.5	2	o
 > Red cube -Gred

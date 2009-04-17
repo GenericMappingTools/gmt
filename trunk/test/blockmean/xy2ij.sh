@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: xy2ij.sh,v 1.9 2007-11-15 04:20:41 remko Exp $
+#	$Id: xy2ij.sh,v 1.10 2009-04-17 00:31:30 remko Exp $
 #
 # Test to make sure the (x,y) <--> (i,j) macros work correctly
 # We use -R0/5/0/5 -I1 for pixel and gridline registrations
@@ -55,7 +55,7 @@ header "Test blockmean's (x,y) <--> (i,j) conversions (plot)"
 
 # Connect the original point and the corresponding tile center
 paste pixel_xy.d pixel_ij.d | awk '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \
-	| psxy -R -JX4.5 -P -B1g1WSne -Wdefault -K -M -Y0.5i -X2i > $ps
+	| psxy -R -JX4.5 -P -B1g1WSne -Wdefault -K -m -Y0.5i -X2i > $ps
 # Plot and label the points
 psxy -R -J pixel.d -Sc0.125 -Gwhite -Wfaint -O -K -N >> $ps
 awk '{print $1, $2, 8, 0, 0, "CM", $3}' pixel.d | pstext -R -J -O -K -N >> $ps
@@ -65,7 +65,7 @@ awk '{print $1, $2, 8, 0, 0, "CM", $3}' pixel_ij.d | pstext -R -J -O -K -Gwhite 
 # Now do the same with gridline orientation
 psbasemap -R0.5/5.5/0.5/5.5 -J -O -B0g1 -K -Y4.7 >> $ps
 paste grid_xy.d grid_ij.d | awk '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \
-	| psxy -R0/5/0/5 -J -O -B1Wsne -Wdefault -K -M >> $ps
+	| psxy -R0/5/0/5 -J -O -B1Wsne -Wdefault -K -m >> $ps
 psxy -R -J grid.d -Sc0.125 -Gwhite -Wfaint -O -K -N >> $ps
 awk '{print $1, $2, 8, 0, 0, "CM", $3}' grid.d | pstext -R -J -O -K -N >> $ps
 psxy -R -J grid_ij.d -Sc0.15 -Gblack -O -K -N >> $ps

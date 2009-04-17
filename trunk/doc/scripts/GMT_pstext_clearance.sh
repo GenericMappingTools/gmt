@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_pstext_clearance.sh,v 1.4 2007-02-08 21:46:28 remko Exp $
+#	$Id: GMT_pstext_clearance.sh,v 1.5 2009-04-17 00:31:29 remko Exp $
 #
 
 gmtset GLOBAL_X_SCALE 0.8 GLOBAL_Y_SCALE 0.8
@@ -13,7 +13,7 @@ pstext -R -J -O -K << EOF >> GMT_pstext_clearance.ps
 2	0.75	9	0	0	LM	@~D@~y
 2.53	0.65	9	0	0	CB	@~D@~x
 EOF
-psxy -R -J -O -M << EOF >> GMT_pstext_clearance.ps
+psxy -R -J -O -m << EOF >> GMT_pstext_clearance.ps
 >
 1.95	0.63
 1.95	0.82

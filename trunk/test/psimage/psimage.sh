@@ -29,8 +29,8 @@ psxy -R0/3/0/5 -Jx1.5i -Gp128/../../share/doc/gmt/examples/ex16/circuit.ras -P -
 awk '{ x0=$1;x1=x0+1;y0=$2;y1=y0+1;c=$3; \
 	printf "> -Gp80/10%s\n%i %i\n%i %i\n%i %i\n",c,x0,y0,x1,y1,x0,y1 ; \
 	printf "> -GP80/10%s\n%i %i\n%i %i\n%i %i\n",c,x0,y0,x1,y1,x1,y0}' < $$.in \
-	| psxy -R -J -M -O -K >> $ps
-psxy -R -J -M -O -K <<% >> $ps
+	| psxy -R -J -m -O -K >> $ps
+psxy -R -J -m -O -K <<% >> $ps
 > -Gyellow
 2 4
 2.5 4

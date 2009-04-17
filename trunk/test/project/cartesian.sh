@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: cartesian.sh,v 1.10 2007-11-15 04:20:42 remko Exp $
+#	$Id: cartesian.sh,v 1.11 2009-04-17 00:31:30 remko Exp $
 #
 # Tests project in Cartesian manipulations
 
@@ -34,7 +34,7 @@ echo "$4 $5" | project -N -C$2/$3 -A$1 -Fpqrs
 }
 makeaxis () {
 # Expects azimuth cx cy file
-project -N -C$2/$3 -A-$1 -Fpq $4 -M
+project -N -C$2/$3 -A-$1 -Fpq $4 -m
 }
 
 ps=cartesian.ps
@@ -51,7 +51,7 @@ while read az; do
 		makeproj $az $cx $cy $x $y > $$.d
 		psbasemap -R-2/2/-2/2 -JX1.5i -B2g1${Bx}${By} -O -K -Xa$xpos -Ya$ypos >> $ps
 		echo "0 0 $az 0" | psxy -R -J -O -K -SW0.2 -W0.25p -Xa$xpos -Ya$ypos >> $ps
-		makeaxis $az $cx $cy axes.$$ | psxy -R -J -O -K -M -W1p,red -Xa$xpos -Ya$ypos >> $ps
+		makeaxis $az $cx $cy axes.$$ | psxy -R -J -O -K -m -W1p,red -Xa$xpos -Ya$ypos >> $ps
 		echo "$cx $cy $az 0.75" | psxy -R -J -O -K -SV0.01/0.15/0.1 -Gred -Xa$xpos -Ya$ypos >> $ps
 		echo "$cx $cy $az90 0.75" | psxy -R -J -O -K -SV0.01/0.15/0.1 -Gred -Xa$xpos -Ya$ypos >> $ps
 		makeproj -$az $cx $cy 1.75 0 > $$.x
@@ -62,7 +62,7 @@ while read az; do
 		echo "$cx $cy 90 0.75" | psxy -R -J -O -K -SV0.01/0.15/0.1 -Gblack -Xa$xpos -Ya$ypos >> $ps
 		echo "1.75 0 7 0 0 CM x" | pstext -R -J -O -K -Gwhite -Xa$xpos -Ya$ypos >> $ps
 		echo "0 1.8 7 0 0 CM y"  | pstext -R -J -O -K -Gwhite -Xa$xpos -Ya$ypos >> $ps
-		awk '{printf ">\n%s %s\n%s %s\n", "'$x'", "'$y'", $3, $4}' $$.d | psxy -R -J -O -K -M -W0.5p,- -Xa$xpos -Ya$ypos >> $ps
+		awk '{printf ">\n%s %s\n%s %s\n", "'$x'", "'$y'", $3, $4}' $$.d | psxy -R -J -O -K -m -W0.5p,- -Xa$xpos -Ya$ypos >> $ps
 		echo $x $y | psxy -R -J -O -K -Xa$xpos -Ya$ypos -Sc0.075i -Gblack >> $ps
 		cut -f3,4 $$.d | psxy -R -J -O -K -Xa$xpos -Ya$ypos -Sc0.075i -Gred >> $ps
 		awk '{printf "0 2 8 0 0 CB [%s,%s] (%.2f,%.2f) (%.2f,%.2f)\n", "'$x'", "'$y'", $1, $2, $3, $4}' $$.d | pstext -R -J -O -K -Xa$xpos -Ya$ypos -N -D0/0.2i >> $ps
