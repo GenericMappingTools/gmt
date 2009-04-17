@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.43 2009-04-15 17:22:13 guru Exp $
+ *	$Id: gmt_support.h,v 1.44 2009-04-17 23:42:53 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -90,7 +90,7 @@ EXTERN_MSC char *GMT_convertpen (struct GMT_PEN *pen, int *width, int *offset, i
 EXTERN_MSC void GMT_fourt (float *data, GMT_LONG *nn, int ndim, int ksign, int iform, float *work);
 EXTERN_MSC int GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 EXTERN_MSC int GMT_get_proj3D (char *line, double *az, double *el);
-EXTERN_MSC BOOLEAN GMT_gap_detected (double this_x, double this_y, double prev_x, double prev_y);
+EXTERN_MSC BOOLEAN GMT_gap_detected (void);
 
 #ifdef DEBUG
 EXTERN_MSC void *GMT_memory_func (void *prev_addr, size_t nelem, size_t size, char *progname, char *fname, int line);

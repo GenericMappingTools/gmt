@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.178 2009-04-11 22:55:48 remko Exp $
+ *	$Id: gmt.h,v 1.179 2009-04-17 23:42:52 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -550,7 +550,7 @@ EXTERN_MSC int GMT_no_rgb[];
 
 EXTERN_MSC FILE *GMT_stdin, *GMT_stdout;
 EXTERN_MSC PFI GMT_input, GMT_output, GMT_input_ascii, GMT_output_ascii;
-EXTERN_MSC double GMT_data[BUFSIZ];
+EXTERN_MSC double GMT_curr_rec[BUFSIZ], GMT_prev_rec[BUFSIZ];
 EXTERN_MSC int GMT_n_file_suffix;
 EXTERN_MSC int *GMT_file_id;
 EXTERN_MSC double *GMT_file_scale, *GMT_file_offset, *GMT_file_nan;
