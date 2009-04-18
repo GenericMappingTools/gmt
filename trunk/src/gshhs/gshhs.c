@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.23 2009-03-17 00:06:59 guru Exp $
+/*	$Id: gshhs.c,v 1.24 2009-04-18 03:26:53 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -66,7 +66,7 @@ int main (int argc, char **argv)
 			file = argv[k];
 	}
 
-	if (!name) {
+	if (!file) {
 		fprintf (stderr, "gshhs: No data file given!\n");
 		error++;
 	}
