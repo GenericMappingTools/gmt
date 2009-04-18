@@ -11,4 +11,4 @@ For geographic data (\fBx\fP|\fBy\fP|\fBd\fP), the unit \fBu\fP may be m\fBe\fPt
 For projected data (\fBX\fP|\fBY\fP|\fBD\fP), choose from \fBi\fPnch, \fBc\fPentimeter, \fBm\fPeter, or \fBp\fPoints [Default unit set by MEASURE_UNIT].
 Note: For \fBx\fP|\fBy\fP|\fBz\fP with time data the unit is instead controlled by TIME_UNIT.
 Repeat the option to specify multiple criteria, of which any can be met to produce a line break.
-Issue an additional OPT(ga) to indicate instead that all criteria must be met.
+Issue an additional OPT(ga) to indicate that all criteria must be met instead.
