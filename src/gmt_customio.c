@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.72 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_customio.c,v 1.73 2009-04-18 03:26:52 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -338,7 +338,7 @@ int GMT_ras_read_grd_info (struct GRD_HEADER *header)
 	if (h.type != 1 || h.depth != 8) return (GMT_GRDIO_NOT_8BIT_RAS);
 
 	for (i = 0; i < h.maplength; i++) {
-		if (GMT_fread ((void *)&u, sizeof (unsigned char *), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED);	/* Skip colormap by reading since fp could be stdin */
+		if (GMT_fread ((void *)&u, sizeof (unsigned char), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED);	/* Skip colormap by reading since fp could be stdin */
 	}
 	if (fp != GMT_stdin) GMT_fclose (fp);
 

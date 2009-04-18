@@ -1,9 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.482 2009-04-17 23:42:52 guru Exp $
+	$Id: ChangeLog,v 1.483 2009-04-18 03:26:52 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-04-17	pwessel
 	* gmt_*.c:		The gap check -g is now done inside the i/o library
+	* gshhs/gshhs.c:	Checked wrong variable to test if a file was given.
+	* gmt_customio.c:	In GMT_ras_read_grd_info, wrong size was passed to fread.
+	* mgd77/mgd77list.c:	Used GMT_LONG in memset for an array allocated as int.
 
 2009-04-16	pwessel
 	* *.txt:		We now discuss -m rather than -M (but are backwards compatible)
