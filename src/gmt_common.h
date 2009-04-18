@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.14 2009-04-17 23:42:52 guru Exp $
+ *	$Id: gmt_common.h,v 1.15 2009-04-18 00:22:29 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -39,6 +39,8 @@
 #define GMT_GAP_IN_CDIST	8
 #define GMT_GAP_IN_PDIST	9
 #define GMT_GAP_IN_DDIST	10
+
+#define GMT_IO_GAP_CHECKING	(GMT->common->g.active)
 
 struct GMT_COMMON {
 	/* Structure with all information given via the 16 common GMT command-line options -R -J .. */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.177 2009-04-17 23:42:52 guru Exp $
+ *	$Id: gmt_io.c,v 1.178 2009-04-18 00:22:29 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -731,7 +731,7 @@ int GMT_ascii_input (FILE *fp, int *n, double **ptr)
 int GMT_set_gap () {	/* Data gaps are special since there is no multiple-segment header flagging the gap; thus next time the record is already read */
 	GMT_io.status = GMT_IO_GAP;
 	GMT_io.seg_no++;
-	sprintf (GMT_io.segment_header, "%c Data gap detected", GMT_io.EOF_flag[GMT_IN]);
+	sprintf (GMT_io.segment_header, "%c Data gap detected\n", GMT_io.EOF_flag[GMT_IN]);
 	GMT_io.pt_no = 0;
 	return (0);
 }
