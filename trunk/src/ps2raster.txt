@@ -7,7 +7,7 @@ ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats u
 [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] [ OPT(L)\fIlistfile\fP] [ OPT(P) ] 
 [ OPT(Q)[\fBg\fP|\fBt\fP][1|2|4] ] [ OPT(S) ]  
 [ OPT(Tb)|\fBe\fP|\fBf\fP|\fBj\fP|\fBg\fP|\fBG\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ] 
-[ OPT(W)[\fB+\fP|\fBg\fP[\fIdocname/layername/altmode\fP]] ]
+[ OPT(W)[\fB+g\fP][\fB+t\fP\fIdocname\fP][\fB+n\fP\fIlayername\fP][\fB+a\fP\fIaltmode\fP[\fIalt\fP]][\fB+l\fP\fIminLOD/maxLOD\fP][\fB+f\fP\fIminfade/maxfade\fP][\fB+u\fP\fIURL\fP] ]
 .SH DESCRIPTION
 \fBps2raster\fP converts one or more \fIPostScript\fP files to other formats (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF)
 using GhostScript. Input file names are read from the command line or from a file that lists them.
@@ -87,22 +87,26 @@ miserably as those whites will be eaten by the GhostScript. In that case you rea
 or use a slightly off-white color.
 .br
 Together with OPT(V) it prints on screen the gdal_translate (gdal_translate is a command line tool from the GDAL package)
-command that reads the raster + world file and creates a true geotiff file. Use OPT(W+) to do a system call 
+command that reads the raster + world file and creates a true geotiff file. Use OPT(W+g) to do a system call 
 to gdal_translate and create a geoTIFF image right away. The output file will have a .tiff extension.
 .br
 The world file naming follows the convention of jamming a 'w' in the file extension. So, if
 output is tif OPT(Tt) the world file is a .tfw, for jpeg we have a .jgw and so on.
 This option automatically sets OPT(A) OPT(P).
 .br
-Use OPT(Wg) to create a minimalist KML file that allows loading the image in
+Use OPT(W+k) to create a minimalist KML file that allows loading the image in
 GoogleEarth. Note that for this option the image must be in geographical
-coordinates. If not, a warning is issued but the KML file is created anyway. Append
-\fIdocname/layername/altmode\fP where the first two are free-form text strings (use quotes
-if white-space is used and do not use slashes as part of the string) and \fIaltmode\fP
-selects one of 5 altitude modes recognized by Google Earth that determines the altitude of the
+coordinates. If not, a warning is issued but the KML file is created anyway. Several modifier
+options are available to customize the KML file in the form of \fB+\fP\fIopt\fP strings.
+Append \fB+t\fP\fItitle\fP to set the document title [GMT KML Document],
+\fB+n\fP\fIlayername\fP to set the layer name, and \fB+a\fP\fI/altmode\fP[\fIaltitude\fP] to
+select one of 5 altitude modes recognized by Google Earth that determines the altitude (in m) of the
 image: \fBG\fP clamped to the ground, \fBg\fP append altitude relative to ground, \fBa\fP append absolute
 altitude, \fBs\fP append altitude relative to seafloor, and \fBS]fP clamp it to the seafloor.
-["GMT KML Document"/"GMT Image Overlay"/G].
+Control visibility of the layer with the \fB+l\fP\fIminLOD/maxLOD\fP and \fB+f\fP\fIminfade/maxfade\fP
+options.  FInally, if you plan to leave the image itself on a server and only distribute the KML,
+use \fB+u\fP\fIURL\fP to prepend the URL to the image reference.
+See the KML documentation for further explanation (http://code.google.com/apis/kml/documentation/).
 .SH NOTES
 The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently results in loss of details that are
 available in the original \fIPostScript\fP file. Choose a resolution that is large enough for the application that
@@ -164,10 +168,23 @@ To create a Polar Stereographic geotiff file of Patagonia
 pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --BASEMAP_TYPE=inside > patagonia.ps
 .br
 .sp
-ps2raster patagonia.ps -Tt -W+ -V 
+ps2raster patagonia.ps -Tt -W+g -V 
+.br
+.sp
+To create a simple KMZ file for use in Google Earth, try
+.br
+.sp
+grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2 --BASEMAP_TYPE=inside > tile.ps
+.br
+.sp
+ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V 
 .br
 .sp
 (These commands assume that GhostScript can be found in your system's path.)\"'
+.SH BINARY DATA
+\fBGMT\fP programs can produce binary \fIPostScript\fP image data and this is determined by the default setting PS_IMAGE_FORMAT.
+Because \fBps2raster\fP needs to process the input files on a line-by-line basis you need to make sure the
+image format is set to \fIascii\fP and not \fIbin\fP.
 .SH GHOSTSCRIPT OPTIONS
 Most of the conversions done in \fBps2raster\fP are handled by GhostScript. On most Unixes this program
 is available as \fBgs\fP; for Windows there is a version called \fBgswin32c\fP.
