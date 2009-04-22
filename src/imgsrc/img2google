@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: img2google,v 1.17 2009-04-22 01:50:36 guru Exp $
+#	$Id: img2google,v 1.18 2009-04-22 20:30:26 guru Exp $
 # Shell script that will generate a Google Earth png tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid and add
 # a basic KML wrapper for use in any Google Earth version.
@@ -186,7 +186,7 @@ else
 	T=+t`echo $T | awk '{print substr($0,3)}'`
 fi
 mv -f $$.ps $name.ps
-ps2raster $name.ps -E${DPI} -TG -W+k${A}${F}${L}"${N}${T}"${U} $V
+ps2raster $name.ps -E${DPI} -A- -TG -W+k${A}${F}${L}"${N}${T}"${U} $V
 if [ ! "X$Z" = "X" ]; then	# zip up as one archive
 	zip -rq9 $name.kmz $name.kml $name.png
 	if [ "X$Z" = "X-Z+" ]; then
