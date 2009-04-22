@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.486 2009-04-22 01:50:36 guru Exp $
+	$Id: ChangeLog,v 1.487 2009-04-22 05:37:30 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-04-21	pwessel
@@ -50,7 +50,7 @@
 
 2009-04-11	remko
 	* gmt.h, gmtmath.c, grdmath.c:	Added MOD function (remainder after floored division,
-				Knuth style). This is in constrast to FMOD which gives the
+				Knuth style). This is in contrast to FMOD which gives the
 				remainder after (horror) truncated division.
 	* gmtmath.c:		For check if argument is file: remove suffix ?fields first.
 
@@ -67,7 +67,7 @@
 2009-04-08	pwessel
 	* gmt_support.c:	The 3-D view -E option used in many programs (such as psxyz)
 				could not handle exponential notations.
-	* gmt_init.c:		Tke NAN_RECORDS = skip|pass setting now also applies to binary input.
+	* gmt_init.c:		The NAN_RECORDS = skip|pass setting now also applies to binary input.
 				
 				
 2009-04-07	remko
