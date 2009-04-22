@@ -3,7 +3,7 @@
 .SH NAME
 ps2raster \- Converts one or several \fIPostScript\fP file(s) to other formats using GhostScript
 .SH SYNOPSIS
-\fBps2raster\fP \fIpsfile(s)\fP [ OPT(A)[\fBu\fP] ] [ OPT(C)\fIgs_option\fP] [ OPT(D)\fIoutdir\fP ] 
+\fBps2raster\fP \fIpsfile(s)\fP [ OPT(A)[\fBu\fP|-] ] [ OPT(C)\fIgs_option\fP] [ OPT(D)\fIoutdir\fP ] 
 [ OPT(E)\fIresolution\fP ] [ OPT(G)\fIghost_path\fP ] [ OPT(L)\fIlistfile\fP] [ OPT(P) ] 
 [ OPT(Q)[\fBg\fP|\fBt\fP][1|2|4] ] [ OPT(S) ]  
 [ OPT(Tb)|\fBe\fP|\fBf\fP|\fBj\fP|\fBg\fP|\fBG\fP|\fBm\fP|\fBt\fP ] [ OPT(V) ] 
@@ -23,7 +23,7 @@ OPT(D) to redirect the output to a different directory.
 .TP
 OPT(A)
 Adjust the BoundingBox and HiResBoundingBox to the minimum required by the image content.  Append \fBu\fP to first remove any
-GMT-produced time-stamps.
+GMT-produced time-stamps.  Use OPT(A-) to override any automatic setting of OPT(A) by OPT(W).
 .TP
 OPT(C)
 Specify a single, custom option that will be passed on to GhostScript as is.  Repeat to add several options [none].
