@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.112 2009-04-22 05:42:17 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.113 2009-04-22 16:56:21 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -36,33 +36,33 @@ history of the development milestones in the 4.x series.
 
 \subsection{Overview of \gmt\ 4.4.1 [May-1, 2009]}
 
-This is another significant update of the official distribution and hence has a mix of bug fixes
-and program enhancements.  We have added a new supplement (\bf{ sph}) which
+This is another significant update of the official distribution and hence it has a mix of bug fixes
+and program enhancements.  We have added a new supplement ({\bf sph}) which
 offers interpolation, triangulation (Delaunay and Voronoi), and distance calculations on a 
-spherical surface.  The hard work is done by the original work of Robert Renka who developed
+spherical surface.  The hard work is done by the original effort of Robert Renka who developed
 the Fortran-77 SSRFPACK and STRIPACK libraries; these are here supplied via a \progname{f2c}
-translation and requires the \progname{f2c} library and include file to be installed.
+translation and require the \progname{f2c} library and include file to be installed.
 The {\bf imgsrc} supplement has a new Bourne script \GMTprog{img2google}, which simplifies
 making Google Earth tiles from Sandwell and Smith bathymetry.
-Finally, \GMTprog{ps2raster.c} has evolved further and can now be used to create KML files for Google Earth,
-assuming \progname{gdal} is installed on your system.
+Finally, \GMTprog{ps2raster.c} has evolved further and can now be used to create KML files for Google Earth.
 
-A major new enhancement is the global option \Opt{g} which is used to control if excessive spacing (``gaps'')
-between data points (defined in a variety of ways) should be used to segment an otherwise continuous
-line.  We expect to enable \Opt{g} in several programs during the next revision.
+A major new enhancement is the global option \Opt{g}, which is used to determine if excessive spacing (``gaps'')
+between data points (gaps can be defined in a variety of ways) should be used to segment an otherwise continuous
+line.  We expect to enable \Opt{g} in several programs during the next revision; at the moment it is
+only available in \GMTprog{psxy} and \GMTprog{psxyz}.
 Given that all the lower-case \gmt\ options deal with low-level data i/o settings we have decided
 to rename the \Opt{M} option (which controls the presence of multiple segment headers) to \Opt{m}; this
-allows us to promote this option to global status (same meaning in all \gmt\ programs).
-Use of \Opt{M} will remain valid for the rest of \gmt\ 3.x but results in a warning about the new usage.
+allows us to promote this ubiquitous option to global status (same meaning in all \gmt\ programs).
+Use of \Opt{M} will remain valid for the rest of \gmt\ 4.x but results in a warning about the new usage.
 Related to this is the introduction of a new parameter ({\bf NAN\_RECORDS}) that determines if NaNs in
-key columns (such as longitude, latitude) should constitute a line break or bad data.
+key columns (such as longitude, latitude) should constitute a line break or bad data to be skipped.
 
-We have revised how ellipsoids are specified.  When importing an ellipsoid file, allow a,b,f as ellipsoid parameters,
-where b or f could both be zero.  If file does not exist, attempt to read name as a[/[b=|f=]f],
-meaning <semi-major axis>, b=<semi-minor axis>, f=<flattening>, or <inverse flattening>.  We have also
+We have revised how ellipsoids are specified.  When importing an ellipsoid file, we allow a,b,f as ellipsoid parameters,
+where b or f could both be zero.  If file does not exist, attempt to read name as a[/[b=$|$f=]f],
+meaning {\it semi-major axis}, b={\it semi-minor axis}, f = {\it flattening}, or {\it inverse flattening}.  We have also
 added parameters for the Moon and planets (IAU2000).
 
-FInally, our configure script continuous to evolve and now better supports installation on 64-bit systems and
+Finally, our configure script continues to evolve and now better supports installation on 64-bit systems and
 can automatically detect where netCDF and f2c exists on your system.
 
 Here is the list of bug corrections:
