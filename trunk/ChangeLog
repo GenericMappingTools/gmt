@@ -1,10 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.485 2009-04-21 21:40:49 guru Exp $
+	$Id: ChangeLog,v 1.486 2009-04-22 01:50:36 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-04-21	pwessel
 	* ps2raster.c:		Reformatted the -W option to allow for a long list of KML-related
 				settings.
+	* imgsrc/img2google:	Updated to reflect new ps2raster -W usage.
+
 2009-04-19	pwessel
 	* grdcut.c:		New option -Z which is used to determine a rectangular subregion
 				so that the rejected area have values entirely outside the given
