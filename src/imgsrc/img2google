@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: img2google,v 1.16 2009-04-16 18:04:06 guru Exp $
+#	$Id: img2google,v 1.17 2009-04-22 01:50:36 guru Exp $
 # Shell script that will generate a Google Earth png tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid and add
 # a basic KML wrapper for use in any Google Earth version.
@@ -19,15 +19,22 @@ if [ $# -eq 0 ]; then
 cat << EOF >&2
 	img2google - Create Google Earth KML tiles from the $TOPO bathymetry grid
 	
-	Usage: img2google -Rwest/east/south/north [imgfile] [-C] [-Gprefix] [-Qdocname/layername/altmode] [-V] [-Z[+]]
+	Usage: img2google -Rwest/east/south/north [imgfile] [-A<mode>[<altitude>]] [-C] [-F<fademin/fademax>]
+	 	[-Gprefix] [-L<LODmin/LODmax] [-N<name] [-T<title>] [U<url>] [-V] [-Z[+]]
 	
 		-R Specify the region of interest
 	OPTIONAL ARGUMENTS:
 		imgfile is the 1x1 min topo img to use [topo.11.1.img]
+		-A Altitude mode [S].  Append altitude in m if mode = g|A|s.
 		-C clip data above sealevel [No clipping]
+		-F sets distances over which we fade from opaque to transparent [no fading]
 		-G Set output file prefix [Default is topoN|S<north>E|W<west>]
-		-Q Append KML docname/layername/altmode ["Predicted bathymetry"/"topoN|S<north>E|W<west>"/S]
+		-L Set level of detail (LOD) in pixels.  Image goes inactive in GE when there are fewer
+		   than minLOD pixels or more than maxLOD pixels visible.  -1 means never invisible.
+		-N Append KML document layer name ["topoN|S<north>E|W<west>"]
+		-T Append KML document title name ["Predicted bathymetry"]
 		-V Optionally run in verbose mode
+		-U Specify a remote URL for the image [local]
 		-Z Create a zipped *.kmz file; append + to remove original KML/PNG files [no zipping]
 EOF
 	exit
@@ -35,10 +42,15 @@ fi
 
 # Process the command line arguments
 
-R=""
-G=""
+A="S"
 C=""
-Q=""
+F=""
+G=""
+L=""
+N=""
+R=""
+T=""
+U=""
 V=""
 Z=""
 while [ ! x"$1" = x ]; do
@@ -46,13 +58,23 @@ while [ ! x"$1" = x ]; do
 	in
 		-R*)	R=$1;		# Got the region
 			shift;;
-		-C)		C=$1;		# use clipping
+		-A*)	A=$1;		# use clipping
+			shift;;
+		-C)	C=$1;		# use clipping
+			shift;;
+		-F*)	F=$1;		# Got fade settings
 			shift;;
 		-G*)	G=$1;		# Got the output namestem
 			shift;;
-		-Q*)	Q=$1;		# Got the KML infostrings
+		-L*)	L=$1;		# Got level of detail settings
 			shift;;
-		-V)		V=$1;		# Verbose run
+		-N*)	N=$1;		# Got the KML layername string
+			shift;;
+		-T*)	T=$1;		# Got the KML title string
+			shift;;
+		-V)	V=$1;		# Verbose run
+			shift;;
+		-U*)	U=$1;		# Got a URL prefix
 			shift;;
 		-Z*)	Z=$1;		# Make KMZ file
 			shift;;
@@ -140,19 +162,31 @@ if [ X"$G" = "X" ]; then
 	xtag=`echo $w | awk '{if ($1 < 0.0) {printf "W%g\n", -$1} else if ($1 > 180.0) {printf ("W%g\n", 360-$1)} else {printf "E%g\n", $1}}'`
 	ytag=`echo $n | awk '{if ($1 < 0.0) {printf "S%g\n", -$1} else {printf "N%g\n", $1}}'`
 	name="topo${ytag}${xtag}"
-fi
-if [ X"$Q" = "X" ]; then
-	KML="Predicted bathymetry"/$name/S
-else
-	KML=`echo $Q | awk '{print substr($0,3)}'`
-fi
-if [ "X$G" = "X" ]; then
-	mv -f $$.ps $name.ps
 else
 	name=`echo $G | awk '{print substr($1,3)}'`
-	mv -f $$.ps $name.ps
 fi
-ps2raster $name.ps -E${DPI} -TG -Wg"$KML" $V
+A=+a`echo $A | awk '{print substr($1,3)}'`
+if [ ! X"$F" = "X" ]; then
+	F=+f`echo $F | awk '{print substr($1,3)}'`
+fi
+if [ ! X"$L" = "X" ]; then
+	L=+l`echo $L | awk '{print substr($1,3)}'`
+fi
+if [ ! X"$U" = "X" ]; then
+	U=+u`echo $U | awk '{print substr($1,3)}'`
+fi
+if [ X"$N" = "X" ]; then
+	N="+n$name"
+else
+	N=+n`echo $N | awk '{print substr($0,3)}'`
+fi
+if [ X"$T" = "X" ]; then
+	T="+tPredicted bathymetry"
+else
+	T=+t`echo $T | awk '{print substr($0,3)}'`
+fi
+mv -f $$.ps $name.ps
+ps2raster $name.ps -E${DPI} -TG -W+k${A}${F}${L}"${N}${T}"${U} $V
 if [ ! "X$Z" = "X" ]; then	# zip up as one archive
 	zip -rq9 $name.kmz $name.kml $name.png
 	if [ "X$Z" = "X-Z+" ]; then
