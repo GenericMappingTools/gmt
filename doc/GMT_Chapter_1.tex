@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.111 2009-04-22 05:37:31 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.112 2009-04-22 05:42:17 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -54,7 +54,7 @@ Given that all the lower-case \gmt\ options deal with low-level data i/o setting
 to rename the \Opt{M} option (which controls the presence of multiple segment headers) to \Opt{m}; this
 allows us to promote this option to global status (same meaning in all \gmt\ programs).
 Use of \Opt{M} will remain valid for the rest of \gmt\ 3.x but results in a warning about the new usage.
-Related to this is the introduction of a new parameter ({\bf NAN_RECORDS}) that determines if NaNs in
+Related to this is the introduction of a new parameter ({\bf NAN\_RECORDS}) that determines if NaNs in
 key columns (such as longitude, latitude) should constitute a line break or bad data.
 
 We have revised how ellipsoids are specified.  When importing an ellipsoid file, allow a,b,f as ellipsoid parameters,
@@ -71,10 +71,10 @@ Here is the list of bug corrections:
 	\item [\GMTprog{gmt\_map.c}]: Fixed serious bug in \GMTfunc{GMT\_az\_backaz\_flatearth}: incorrectly
 	converted degrees to radians. Fixed bug in \GMTfunc{GMT\_get\_rotate\_pole}: called \GMTfunc{GMT\_rotate\_pole\_forward} with radians instead of degrees.
 	Incorrectly attempted to free array only used when antialias is on.
-	Fixed inability to determine projection pole when central_meridian and western boundary are the same (Albers, Conic equidistant).
+	Fixed inability to determine projection pole when central meridian and western boundary are the same (Albers, Conic equidistant).
 	\item [\GMTprog{gmt\_plot.c}]: Crashed when using time labels in 3D plot.
 	\item [\GMTprog{gmt\_proj.c}]: Fixed bug in longitude computation when standard parallel is on Southern Hemisphere.
-	\item [\GMTprog{gmt_support.c}]: Exceeded array bounds in \GMTfunc{GMT\_read\_cpt} for hsv conversion.
+	\item [\GMTprog{gmt\_support.c}]: Exceeded array bounds in \GMTfunc{GMT\_read\_cpt} for hsv conversion.
 		The 3-D view \Opt{E} option used in many programs (such as \GMTprog{psxyz}) could not handle exponential notations.
 	\item [\GMTprog{blockmean.c}]: Gave bogus usage about number of input columns when \Opt{E} is set
 		but \Opt{E} only affects output.  Same for  \GMTprog{blockmedian.c} and \GMTprog{blockmode.c}.
@@ -83,17 +83,17 @@ Here is the list of bug corrections:
 		\item [\GMTprog{pscoast.c}]: Produce at least ``S V'' when the clippath is empty.
 		\item [\GMTprog{psclip.c}]: Produce at least ``S V'' when the clippath is empty.
 	\item [\GMTprog{gshhs/gshhs.c}]: Checked wrong variable to test if a file was given.
-	\item [\GMTprog{meca/util\_meca.c}]: Needed to convert the output from d_atan2() to degrees.
+	\item [\GMTprog{meca/util\_meca.c}]: Needed to convert the output from \GMTfunc{d\_atan2} to degrees.
 	\item [\GMTprog{mgd77/mgd77.c}]: Was failing to read Windows terminated ASCII files.
 	\item [\GMTprog{mgd77/mgd77list.c}]: Used GMT\_LONG in memset for an array allocated as int.
 	\item [\GMTprog{mgd77/mgd77manage.c}]: The \Opt{D} option would remove original attributes.  Now
 		both original and revised attributes are carried in memory.
 		This problem also affected \GMTprog{mgd77convert} \Opt{FC} if used on a
 		file after \GMTprog{mgd77manage} \Opt{D} had been run.
-	\item [\GMTprog{x2sys/x2sys.c]: Wrong array argument passed for correction aux values
+	\item [\GMTprog{x2sys/x2sys.c}]: Wrong array argument passed for correction aux values.
 	\item [\GMTprog{x2sys/x2sys\_cross.c}]: Removed the \Opt{F} option which was not honored anyway.
 	\item [\GMTprog{x2sys/x2sys\_init.c}]: Now properly copies the *.def file to the TAG dir.
-	\item [\GMTprog{x2sys/x2sys\_datalist.c]: Only ASCII output had corrections (\Opt{L}) applied.
+	\item [\GMTprog{x2sys/x2sys\_datalist.c}]: Only ASCII output had corrections (\Opt{L}) applied.
 	\item [\GMTprog{x2sys/x2sys\_put.c}]: Fixed \Opt{D} option (was falling in a endless loop).
 \end{description}
 
@@ -107,8 +107,8 @@ Here is a list of the recent enhancement to various programs:
 		programs the NaNs in input record will act as indicators of
 		data gaps for continuous lines.  If ``skip'' we report them
 		as bad records.  In both cases the records are skipped.
-	\item \GMTprog{gmt_nc.c} will properly handle netCDF that have LatLon = 0, 1: flip x and y.
-	\item \GMTprog{gmt_support.c} enables GMT_intpol to handle NaNs by treating them as segment
+	\item \GMTprog{gmt\_nc.c} will properly handle netCDF that have LatLon = 0, 1: flip x and y.
+	\item \GMTprog{gmt\_support.c} enables \GMTfunc{GMT\_intpol} to handle NaNs by treating them as segment
 		boundaries.  Rely on Shewchuk's triangle function to get Voronoi output.
 	\item \GMTprog{blockmedian.c} now returns the quantile(x), quantile(y) location when \Opt{T} is used.
 		Added \Opt{Eb} to get box-and-whisker output (0. 25, 50, 75, and 100\% quantiles).
@@ -132,7 +132,7 @@ Here is a list of the recent enhancement to various programs:
 			distance or time between successive points.
 	\item \GMTprog{mgg/mgd77togmt.c} added new \Opt{T} and \Opt{W} options to store total field and account for the
 		magnetometer tow distance. Also tries to get info from header file.
-\end{description}
+\end{enumerate}
 
 % 4.4.0
 
