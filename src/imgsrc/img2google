@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: img2google,v 1.18 2009-04-22 20:30:26 guru Exp $
+#	$Id: img2google,v 1.19 2009-04-23 03:00:41 guru Exp $
 # Shell script that will generate a Google Earth png tile from
 # Sandwell/Smith's 1x1 min Mercator topo.11.1img grid and add
 # a basic KML wrapper for use in any Google Earth version.
@@ -42,7 +42,7 @@ fi
 
 # Process the command line arguments
 
-A="S"
+A=""
 C=""
 F=""
 G=""
@@ -102,18 +102,26 @@ w=`echo $R | awk -F/ '{print substr($1,3)}'`
 e=`echo $R | awk -F/ '{print $2}'`
 s=`echo $R | awk -F/ '{print $3}'`
 n=`echo $R | awk -F/ '{print $4}'`
-W=`gmtmath -Q -fg $e $w SUB =`
-H=`gmtmath -Q -fg $n $s SUB =`
+
+# Extend by two boundary rows/cols
+
+w2=`gmtmath -Q -fg --OUTPUT_DEGREE_FORMAT=ddd:mm $w $INC 60 DIV 2 MUL SUB =`
+e2=`gmtmath -Q -fg --OUTPUT_DEGREE_FORMAT=ddd:mm $e $INC 60 DIV 2 MUL ADD =`
+s2=`gmtmath -Q -fg --OUTPUT_DEGREE_FORMAT=ddd:mm $s $INC 60 DIV 2 MUL SUB =`
+n2=`gmtmath -Q -fg --OUTPUT_DEGREE_FORMAT=ddd:mm $n $INC 60 DIV 2 MUL ADD =`
+W=`gmtmath -Q -fg $e2 $w2 SUB =`
+H=`gmtmath -Q -fg $n2 $s2 SUB =`
+R2=-R$w2/$e2/$s2/$n2
 
 # 2. Extract the (x,y,z) of constrained nodes by extracting a grid with
 #    NaNs were unconstrained, exclude NaNs, and capture points whose z < 0
 
-img2grd $TOPO $R -T2 -S1 -m${INC} -E -D $V -G$$.tile.nc
+img2grd $TOPO $R2 -T2 -S1 -m${INC} -E -D $V -G$$.tile.nc
 grd2xyz $$.tile.nc -S -bod | gmtselect -Z-15000/-2.0 -bi3d > $$.track.xyz
 
 # 3. get the topo data, this time including unconstrained estimates
 
-img2grd $TOPO $R -T1 -S1 -m${INC} -E -D $V -G$$.tile.nc
+img2grd $TOPO $R2 -T1 -S1 -m${INC} -E -D $V -G$$.tile.nc
 
 #  4. make the image
 
@@ -141,20 +149,24 @@ echo "-2000 C" > $$.int2000
 makecpt -Ctopo -Z > $$.cpt
 grdgradient $$.tile.nc $V -A340 -G$$.nc
 grdmath $$.nc 12000 DIV = $$.tile_grad.nc
+psclip $R -Jx1id -Y0 -X0 -P -K -N /dev/null $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 --PAPER_MEDIA=Custom_${W}ix${H}i > $$.ps
+#Set up (0,0) to match the even LL corner
+off=`gmtmath $INC 2 MUL NEG =`
 if [ X"$C" = "X" ]; then	# No clipping, just lay down image
-	grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -Jx1id -Y0 -X0 -K -P $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 --PAPER_MEDIA=Custom_${W}ix${H}i > $$.ps
+	grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -Jx1id -Y$off -X$off -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 else	# Use GSHHS high clip path to only show ocean areas
-	pscoast $R -Jx1id -Y0 -X0 -K -P $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 --PAPER_MEDIA=Custom_${W}ix${H}i -Dh -Sc > $$.ps
+	pscoast $R -Jx1id Y$off -X$off -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 -Dh -Sc >> $$.ps
 	grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -J -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 fi
 psxy $$.track.xyz -J $R -Sc.005i -G00 $V -O -K --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 grdcontour $$.tile.nc -J -C$$.intervals -W1,80 -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 grdcontour $$.tile.nc -J -C$$.int2000 -W1p,black -O -K $V --DOTS_PR_INCH=${DPI} --ELLIPSOID=WGS-84 >> $$.ps
 if [ X"$C" = "X" ]; then
-	psxy -R -J -O /dev/null >> $$.ps
+	psxy -R -J -O -K /dev/null >> $$.ps
 else
-	pscoast -O -Q >> $$.ps
+	pscoast -O -K -Q >> $$.ps
 fi
+psclip -C -O >> $$.ps
 #
 #  5. make the geotiff file
 #
@@ -165,7 +177,11 @@ if [ X"$G" = "X" ]; then
 else
 	name=`echo $G | awk '{print substr($1,3)}'`
 fi
-A=+a`echo $A | awk '{print substr($1,3)}'`
+if [ X"$A" = "X" ]; then
+	A=+aS
+else
+	A=+a`echo $A | awk '{print substr($1,3)}'`
+fi
 if [ ! X"$F" = "X" ]; then
 	F=+f`echo $F | awk '{print substr($1,3)}'`
 fi
