@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.68 2009-03-26 20:44:03 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.69 2009-04-24 03:36:29 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.68 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.69 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -199,7 +199,6 @@ the default static libraries.</I><BR>
 <OPTION>2. gcc
 <OPTION>3. other
 </SELECT><BR>
-
 <P>
 <I>Note: The default cc should work unless you are on a system with several C compilers.  E.g., you
 may run Solaris and have purchased Sun's compiler but have also installed GNU gcc.  To ensure you
@@ -207,6 +206,12 @@ get the GNU you should select gcc.  If your C compiler has another name or lives
 directory not in your path, please select "other" and enter the value for CC below.</I><BR>
 
 Custom C Compiler: <INPUT NAME="custom_cc" TYPE="text" SIZE="30"><BR>
+
+Produce executables that are: <INPUT TYPE="checkbox" NAME="checkbox_64"> 64-bit  <INPUT TYPE="checkbox" NAME="checkbox_univ"> universal (OS X)<BR>
+<I>Note: If 64-bit is selected we will attempt to create 64-bit executables.  Note that this has been tested with gcc
+and with a precompiled 64-bit netCDF library.  Because the netCDF install is not set up to do 64-bit you may want to
+install it separately before running the GMT installer.  If universal is checked we will build universal binaries
+under OS X.<I><BR>
 
 <!--  MAKE SELECTION  -->
 
@@ -274,7 +279,7 @@ is used or a symbolic link is set.
 GMT can use the environment variable $GMT_SHAREDIR to point to the right place.
 If users see a different location for the shared data files, specify it here.
 (It will be used only to remind you at the end of the installation to set
-the enronment variable $GMT_SHAREDIR).
+the environment variable $GMT_SHAREDIR).
 Leave blank to select the shared data directory of the data resources directory given in
 C.7 [Default].</I><BR>
 
