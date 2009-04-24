@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.h,v 1.17 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_bcr.h,v 1.18 2009-04-24 01:39:28 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -39,10 +39,10 @@ struct GMT_BCR {	/* Used mostly in gmt_support.c */
 	double	threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
 	int	interpolant;		/* Interpolation function used (0, 1, 2, 3) */
 	int	n;			/* Width of the interpolation function */
-	GMT_LONG	ioff;			/* Padding on west side of array  */
-	GMT_LONG	joff;			/* Padding on north side of array  */
-	GMT_LONG	mx;			/* Padded array dimension  */
-	GMT_LONG	my;			/* Ditto  */
+	GMT_LONG	ioff;		/* Padding on west side of array  */
+	GMT_LONG	joff;		/* Padding on north side of array  */
+	GMT_LONG	mx;		/* Padded array dimension  */
+	GMT_LONG	my;		/* Ditto  */
 };
 
 EXTERN_MSC void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int bilinear, double threshold, struct GMT_BCR *bcr);

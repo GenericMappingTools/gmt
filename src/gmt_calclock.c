@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.63 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.64 2009-04-24 01:39:28 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -200,7 +200,7 @@ int	GMT_gyear_from_rd (GMT_cal_rd date) {
 
 	int d0, d1, d2, d3, n400, n100, n4, n1, year;
 	
-	d0 = date - 1;
+	d0 = (int)date - 1;
 	n400 = (int) floor (d0 / 146097.0);
 	d1 = GMT_cal_imod (d0, 146097);
 	n100 = (int) floor (d1 / 36524.0);
@@ -251,7 +251,7 @@ void GMT_gcal_from_rd (GMT_cal_rd date, struct GMT_gcal *gcal) {
 	
 	prior_days = date - GMT_rd_from_gymd (gcal->year, 1, 1);
 
-	gcal->day_y = prior_days + 1;
+	gcal->day_y = (int)prior_days + 1;
 	
 	tempdate = GMT_rd_from_gymd (gcal->year, 3, 1);
 	
@@ -271,7 +271,7 @@ void GMT_gcal_from_rd (GMT_cal_rd date, struct GMT_gcal *gcal) {
 	
 	tempdate = GMT_rd_from_gymd (gcal->year, gcal->month, 1);
 	
-	gcal->day_m = date - tempdate + 1;
+	gcal->day_m = (int)(date - tempdate) + 1;
 	
 	/* ISO operations:  */
 	
