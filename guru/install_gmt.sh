@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.143 2009-03-26 20:44:03 guru Exp $
+#	$Id: install_gmt.sh,v 1.144 2009-04-24 03:36:29 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -375,6 +375,8 @@ otherwise just hit return to use the default compiler.
 
 EOF
 GMT_cc=`get_answer "Enter name of C compiler (include path if not in search path)"`
+GMT_64=`get_def_answer "Produce 64-bit executables? (y/n)" "n"`
+GMT_univ=`get_def_answer "Produce universal executables (OS X)? (y/n)" "n"`
 
 cat << EOF >&2
 
@@ -624,6 +626,8 @@ GMT_dir_cli=$GMT_dir_cli
 #---------------------------------------------
 GMT_sharedlib=$GMT_sharedlib
 GMT_cc=$GMT_cc
+GMT_64=$GMT_64
+GMT_univ=$GMT_univ
 GMT_triangle=$GMT_triangle
 GMT_flock=$GMT_flock
 #---------------------------------------------
@@ -1156,6 +1160,11 @@ if [ "$GMT_64" = "y" ]; then
 else
 	enable_64=
 fi
+if [ "$GMT_univ" = "y" ]; then
+	enable_univ=--enable-universal
+else
+	enable_univ=
+fi
 
 if [ ! x"$MATDIR" = x ]; then	# MATDIR is set
 	if [ "X$GMT_mex_type" = "Xmatlab" ]; then
@@ -1210,13 +1219,13 @@ fi
 cat << EOF >&2
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
-  --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
+  $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
   $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_f2c
 EOF
 
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
-  --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
+  $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
   $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_f2c
 
 if [ -f .gmtconfigure ]; then
