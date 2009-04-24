@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.42 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_contour.h,v 1.43 2009-04-24 01:39:28 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -94,7 +94,7 @@ struct GMT_CONTOUR {
 	double min_dist;		/* Do not place labels closer than this value [0] */
 	BOOLEAN number;			/* TRUE if we have constraints on the number of labels to apply */
 	int number_placement;		/* How the n_cont labels are distributed */
-	GMT_LONG n_cont;			/* Number of labels per segment */
+	GMT_LONG n_cont;		/* Number of labels per segment */
 	char file[BUFSIZ];		/* File with crossing lines, if specified */
 	BOOLEAN do_interpolate;		/* TRUE if we must resample the crossing lines */
 	int crossing;			/* 1 for crossing simple lines, 2 for file with crossing lines */
@@ -102,7 +102,7 @@ struct GMT_CONTOUR {
 	struct GMT_XSEGMENT *ylist_XP;	/* Sorted y-segments for crossing-lines */
 	struct GMT_XSEGMENT *ylist;	/* y-indices sorted in increasing order */
 	struct GMT_XOVER XC;		/* Structure with resulting crossovers */
-	GMT_LONG nx;				/* Number of crossovers at any time */
+	GMT_LONG nx;			/* Number of crossovers at any time */
 	BOOLEAN fixed;			/* TRUE if we chose fixed positions */
 	double slop;			/* slop distance in being close to points */
 	double *f_xy[2];		/* Array for fixed points */
@@ -123,10 +123,10 @@ struct GMT_CONTOUR {
 	struct GMT_PEN pen;		/* Pen for drawing textbox outline */
 	struct GMT_PEN line_pen;	/* Pen for drawing the contour line */
 	struct GMT_LABEL **L;		/* Pointers to sorted list of labels */
-	GMT_LONG n_label;			/* Length of list */
+	GMT_LONG n_label;		/* Length of list */
 	char unit[GMT_TEXT_LEN];	/* Unit for labels */
 	char prefix[GMT_TEXT_LEN];	/* prefix for labels */
-	int just;				/* Label justification */
+	int just;			/* Label justification */
 	int end_just[2];		/* Justification for end of lines */
 	int angle_type;			/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
 	int hill_label;			/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
@@ -138,7 +138,7 @@ struct GMT_CONTOUR {
 	/* Contour line section */
 	
 	struct GMT_CONTOUR_LINE **segment;	/* Array of segments */
-	GMT_LONG n_segments;				/* The number of segments */
+	GMT_LONG n_segments;			/* The number of segments */
 	size_t n_alloc;				/* How many allocated so far */
 };
 

@@ -238,7 +238,7 @@ Wessel, P., and D. Bercovici, 1998, Interpolation with splines in tension: a Gre
 .br
 Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Green's function for a spherical surface spline in tension, \fIGeophys. J. Int, 174\fP, 21\-28.
 .br
-Wessel, P., 2009, A general-purpose Green's function interpolator, \fIComputers & Geosciences, yy\fP, xxx\-xxx, doi:10.1016/j.cageo.2008.08.012.
+Wessel, P., 2009, A general-purpose Green's function interpolator, \fIComputers & Geosciences, 35\fP, 1247\-1254, doi:10.1016/j.cageo.2008.08.012.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmtmath (1),

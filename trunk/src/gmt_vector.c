@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.27 2009-02-25 19:26:04 remko Exp $
+ *	$Id: gmt_vector.c,v 1.28 2009-04-24 01:39:28 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -486,8 +486,9 @@ void GMT_gauss (double *a, double *vec, int n_in, int nstore_in, double test, in
 /*      itriag          (sent)                  matrix triangularized only*/
 /*                                               on TRUE useful when solving*/
 /*                                               multiple systems with same a */
-        static int l1;
-        GMT_LONG *line, *isub, iet, ieb, i = 0, j, k, l, j2, n, nstore;
+        static GMT_LONG l1;
+        GMT_LONG *line, *isub, i = 0, j, k, l, j2, n, nstore;
+	int iet, ieb;
         double big, testa, b, sum;
 
         iet=0;  /* initial error flags, one for triagularization*/
@@ -832,7 +833,7 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 	return (n_tmp);
 }		
 
-int GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LONG n) {
+GMT_LONG GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LONG n) {
 
 	/* Given a, a symmetric positive definite matrix
 	of size n, and row dimension nr, compute a lower
@@ -888,7 +889,7 @@ int GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LONG n) 
 	return (0);
 }
 
-void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, int nerr, int donly) {
+void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG nerr, int donly) {
 
 	/* Given a, a symmetric positive definite matrix of row dimension nr,
 	and size n >= abs(nerr), one uses GMT_chol_dcmp() to attempt to find
@@ -925,7 +926,7 @@ void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, int nerr, 
 	
 	GMT_LONG	kbad, i, j, ii, ij, ji, nrp1;
 	
-	kbad = abs(nerr) - 1;
+	kbad = labs((long)nerr) - 1;
 	nrp1 = nr + 1;
 	
 	for (i = 0, ii = 0; i <= kbad; i++, ii += nrp1) {

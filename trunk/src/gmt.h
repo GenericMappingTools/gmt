@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.179 2009-04-17 23:42:52 guru Exp $
+ *	$Id: gmt.h,v 1.180 2009-04-24 01:39:28 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -569,7 +569,7 @@ EXTERN_MSC double *GMT_x_plot;			/* Holds the x/y (inches) of a line to be plott
 EXTERN_MSC double *GMT_y_plot;
 EXTERN_MSC int *GMT_pen;			/* Pen (3 = up, 2 = down) for these points */
 EXTERN_MSC GMT_LONG GMT_n_plot;			/* Number of such points */
-EXTERN_MSC GMT_LONG GMT_n_alloc;			/* Current size of allocated arrays */
+EXTERN_MSC GMT_LONG GMT_n_alloc;		/* Current size of allocated arrays */
 EXTERN_MSC int GMT_x_status_new;		/* Tells us what quadrant old and new points are in */
 EXTERN_MSC int GMT_y_status_new;
 EXTERN_MSC int GMT_x_status_old;
@@ -599,8 +599,8 @@ EXTERN_MSC BOOLEAN GMT_meridian_straight;	/* TRUE if meridians plot as straight 
 EXTERN_MSC BOOLEAN GMT_parallel_straight;	/* TRUE if parallels plot as straight lines */
 EXTERN_MSC int GMT_3D_mode;			/* Determines if we draw fore and/or back 3-D box lines */
 EXTERN_MSC char *GMT_plot_format[3][2];		/* Keeps the 6 formats for dd:mm:ss plot output */
-EXTERN_MSC GMT_LONG GMT_n_lon_nodes;			/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
-EXTERN_MSC GMT_LONG GMT_n_lat_nodes;			/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
+EXTERN_MSC GMT_LONG GMT_n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
+EXTERN_MSC GMT_LONG GMT_n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
 EXTERN_MSC double GMT_dlon;			/* Steps taken in longitude along gridlines (gets reset in gmt_init.c) */
 EXTERN_MSC double GMT_dlat;			/* Steps taken in latitude along gridlines (gets reset in gmt_init.c) */
 
