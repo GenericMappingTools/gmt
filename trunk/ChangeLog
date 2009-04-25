@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.487 2009-04-22 05:37:30 guru Exp $
+	$Id: ChangeLog,v 1.488 2009-04-25 00:58:25 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-04-24	pwessel
+	* gmtconvert.c:		Now has -g option.
+	* mapproject.c:		Now has -g option.
+	
 2009-04-21	pwessel
 	* ps2raster.c:		Reformatted the -W option to allow for a long list of KML-related
 				settings.
@@ -4797,7 +4801,7 @@
 
 2000-03-29
 	* xyz2grd.c:		Still did 360-check even without -L
-	* triangulate.c:	Did not validate that grd-indeces were inside
+	* triangulate.c:	Did not validate that grd-indices were inside
 				the region when -R -I -G was used.
 	* gmt_init.c:		-Js<lon>/<lat>/<lats>/1:xxxx for true scale at
 				specified standard parallel implemented.

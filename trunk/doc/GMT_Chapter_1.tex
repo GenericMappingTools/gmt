@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.114 2009-04-25 00:04:24 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.115 2009-04-25 00:58:25 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -49,7 +49,7 @@ Finally, \GMTprog{ps2raster.c} has evolved further and can now be used to create
 A major new enhancement is the global option \Opt{g}, which is used to determine if excessive spacing
 between data points (``gaps'', defined in a variety of ways) should be used to segment an otherwise continuous
 line.  We expect to enable \Opt{g} in several programs during the next revision; at the moment it is
-only available in \GMTprog{psxy} and \GMTprog{psxyz}.
+available in \GMTprog{gmtconvert}, \GMTprog{mapproject}, \GMTprog{psxy} and \GMTprog{psxyz}.
 Given that all the lower-case \gmt\ options deal with low-level data i/o settings we have decided
 to rename the \Opt{M} option (which controls the presence of multiple segment headers) to \Opt{m}; this
 allows us to promote this ubiquitous option to global status (same meaning in all \gmt\ programs).
