@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.113 2009-04-22 16:56:21 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.114 2009-04-25 00:04:24 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -34,7 +34,7 @@ will be distinguished by being completely restructured so as to allow developers
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
 
-\subsection{Overview of \gmt\ 4.4.1 [May-1, 2009]}
+\subsection{Overview of \gmt\ 4.4.1 [June-1, 2009]}
 
 This is another significant update of the official distribution and hence it has a mix of bug fixes
 and program enhancements.  We have added a new supplement ({\bf sph}) which
@@ -46,8 +46,8 @@ The {\bf imgsrc} supplement has a new Bourne script \GMTprog{img2google}, which 
 making Google Earth tiles from Sandwell and Smith bathymetry.
 Finally, \GMTprog{ps2raster.c} has evolved further and can now be used to create KML files for Google Earth.
 
-A major new enhancement is the global option \Opt{g}, which is used to determine if excessive spacing (``gaps'')
-between data points (gaps can be defined in a variety of ways) should be used to segment an otherwise continuous
+A major new enhancement is the global option \Opt{g}, which is used to determine if excessive spacing
+between data points (``gaps'', defined in a variety of ways) should be used to segment an otherwise continuous
 line.  We expect to enable \Opt{g} in several programs during the next revision; at the moment it is
 only available in \GMTprog{psxy} and \GMTprog{psxyz}.
 Given that all the lower-case \gmt\ options deal with low-level data i/o settings we have decided
@@ -102,7 +102,7 @@ Here is a list of the recent enhancement to various programs:
 \begin{enumerate}
 	\item \GMTprog{gmt\_init.c} has added support for enhanced \Opt{E} option for 3-D perspective
 		views which allows the specification of a fixed point (needed for
-		New Default setting {\bf NAN\_RECORDS} = skip$|$pass [skip].
+		new Default setting {\bf NAN\_RECORDS} = skip$|$pass [skip].
 		If ``pass'' we treat let the programs handle the NaNs; for some
 		programs the NaNs in input record will act as indicators of
 		data gaps for continuous lines.  If ``skip'' we report them
@@ -114,11 +114,11 @@ Here is a list of the recent enhancement to various programs:
 		Added \Opt{Eb} to get box-and-whisker output (0. 25, 50, 75, and 100\% quantiles).
 	\item \GMTprog{gmtselect.c} can now handle dateTclock strings in \Opt{Z} when used with
 		data whose 3rd column contains time.
-	\item \GMTprog{gmtmath.c} added MOD function (remainder after floored division,
-		Knuth style). This is in contrast to FMOD which gives the remainder after (horror) truncated division.
+	\item \GMTprog{gmtmath.c} added {\bf MOD} function (remainder after floored division,
+		Knuth style). This is in contrast to {\bf FMOD} which gives the remainder after (horror) truncated division.
 	\item \GMTprog{grdcut.c} has new option \Opt{Z} which is used to determine a rectangular subregion
 		so that the rejected area have values entirely outside the given z-range.
-	\item \GMTprog{grdmath.c} added MOD function (remainder after floored division).
+	\item \GMTprog{grdmath.c} added {\bf MOD} function (remainder after floored division).
 	\item \GMTprog{ps2raster.c} takes \Opt{W+k} to create a simple KML file for Google Earth.  Several
 		other modifiers help to populate the KML file.
 	\item \GMTprog{psxy.c} added \Opt{g} to break lines into segments based on gap criteria.
