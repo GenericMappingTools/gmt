@@ -6,7 +6,7 @@ gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-
 \fBgmtconvert\fP [ \fIinputfiles\fP ] [ OPT(A) ] [ OPT(D)[\fItemplate\fP] ] [ OPT(E)[\fBf\fP|\fBl\fP] ] 
 [ OPT(F)\fIcols\fP ] [ GMT_H_OPT ] [ OPT(L) ] [ OPT(I) ] [ OPT(N) ] 
 [ OPT(S)\fI"search string"\fP) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] 
-[ GMT_f_OPT ] [ GMT_m_OPT ]
+[ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
 the desired information to standard output.  It can do a combination of
@@ -59,6 +59,7 @@ Only output those segments whose header record contains the specified text strin
 #include "explain_-bo.txt"
 [Default is same as input].
 #include "explain_-f.txt"
+#include "explain_-g.txt"
 #include "explain_-m.txt"
 #include "explain_precision.txt"
 .SH EXAMPLES
