@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.488 2009-04-25 00:58:25 guru Exp $
+	$Id: ChangeLog,v 1.489 2009-04-26 20:19:16 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-26	pwessel
+	* grdinfo.c:		Now tells us in plain text what the grid format is.
 
 2009-04-24	pwessel
 	* gmtconvert.c:		Now has -g option.
