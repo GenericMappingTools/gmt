@@ -1,7 +1,12 @@
-#	$Id: CUSTOM_font_info.d,v 1.3 2004-06-09 21:54:10 pwessel Exp $
+#	$Id: CUSTOM_font_info.d,v 1.4 2009-04-26 19:10:53 guru Exp $
 #
 #	Listing of additional PostScript fonts than those found on most PS printers.
-#	Add your extra font information there.
+#	Add your extra font information there.  This is the only required change as
+#	far as GMT goes.  However, you most likely will have to modify GhostScript
+#	font tables, place font files in certain system directories, and possibly
+#	upload purchased fonts to a PostScript printer.  Search for help on how
+#	to install new fonts on your particular system.
+#
 #	The fontheight below is the height of A for unit fontsize.
 #	Encoded = 0 if we may reencode this font as needed.
 #
