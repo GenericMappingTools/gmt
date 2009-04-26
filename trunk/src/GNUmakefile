@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.80 2009-03-30 23:35:12 remko Exp $
+#  $Id: GNUmakefile,v 1.81 2009-04-26 20:19:16 guru Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -49,7 +49,7 @@ uninstall2-suppl:
 # All the files that need to be build before compilation
 
 FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h grdreformat.h gmt_keywords.h gmt_keycases.h \
-	gmtcolors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h \
+	gmtcolors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h grdinfo.h \
 	gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i \
 	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i grdreformat_man.i
 
@@ -93,7 +93,7 @@ gmtdefaults.i:		Ellipsoids.txt
 gmt_datums.h:		Datums.txt
 			grep -v '^#' Datums.txt | awk -F'	' '{printf "\t\t{ \"%s\", \"%s\", \"%s\", {%s, %s, %s}},\n", $$1, $$2, $$6, $$3, $$4, $$5}' | sed '$$s/},/}/' > $@
 
-# Must create gmt_grdformats.h and grdreformat.h from Grdformats.txt
+# Must create gmt_grdformats.h, grdreformat.h, and grdinfo.h from Grdformats.txt
 
 gmt_grdformats.h:	Grdformats.txt
 			(egrep DEFAULT Grdformats.txt ; (egrep -v '#|^  -' Grdformats.txt | sort -n)) | awk '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' | sed '$$s/},/}/' > $@
@@ -108,6 +108,14 @@ grdreformat.h:		Grdformats.txt
 
 grdreformat_man.i:	Grdformats.txt
 			egrep -v '#' Grdformats.txt |  awk '{if ($$3 == "ID") {printf ".sp\n\\fIid\t%s\\fP\n.br\n", substr($$0, 26,length($$0)-27)} else if ($$1 != "-") {printf "\\fB%s\\fP\t%s\n.br\n", $$3, substr($$0,12,length($$0)-13)}}'  > $@
+
+grdinfo.h:		Grdformats.txt
+			grep -v '#' Grdformats.txt |  awk '{if ($$1 != "-") {printf "%d\t\"%s\",\n", $$1-1, substr($$0,12,length($$0)-12)}}' | sort -n -k1 | cut -f2 > tmp0.txt
+			echo "/* grdinfo.h	[Created by src/GNUmakefile] */" > $@
+			wc -l tmp0.txt | awk '{printf "#define N_GRD_TYPES %d\nchar *GMT_grd_type[N_GRD_TYPES] = {\n", $$1}' >> $@
+			cat tmp0.txt >> $@
+			echo "};" >> $@
+			rm -f tmp0.txt
 
 # Add all the dimensions to gmt_dimensions.h
 
