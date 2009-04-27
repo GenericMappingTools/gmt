@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.489 2009-04-26 20:19:16 guru Exp $
+	$Id: ChangeLog,v 1.490 2009-04-27 18:43:10 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-04-27	pwessel
+	* dbase/grdraster.c:	Added sanity check on file size.
+	
 2009-04-26	pwessel
 	* grdinfo.c:		Now tells us in plain text what the grid format is.
 
