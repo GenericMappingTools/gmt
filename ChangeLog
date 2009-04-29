@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.490 2009-04-27 18:43:10 guru Exp $
+	$Id: ChangeLog,v 1.491 2009-04-29 13:13:35 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-29	remko
+	* PSL_proogue.ps:	Changed "bind def" to "def" in function /FS. The "bind def" slowed
+				things down significantly when there are a lot of color changes.
+	* pslib.c:		Changed accordingly (PSL_prologue version number).
 
 2009-04-27	pwessel
 	* dbase/grdraster.c:	Added sanity check on file size.
