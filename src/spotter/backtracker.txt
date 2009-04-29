@@ -42,13 +42,15 @@ File format is similar to the stage pole format except that the \fItstart\fP col
 is not present (assumed to be 0 Ma).  Requires OPT(E).
 .TP
 OPT(D)
-Set the direction to go: OPT(Df) sets flowline mode and will go backward in time (from younger to older positions), while
-OPT(Db) sets backtrack (reconstruction) mode and will go forward in time (from older to younger positions) [Default].
+Set the direction to go: OPT(Df) will go backward in time (from younger to older positions), while
+OPT(Db) will go forward in time (from older to younger positions) [Default].  Note: For OPT(Db) you
+are specifying the age at the given location, whereas for OPT(Df)
+you are not; instead you specify the age at the reconstructed point.
 #include "explain_-H.txt"
 .TP
 OPT(L)
 Specify a sampled path between initial and final position: OPT(Lf) will
-draw flowlines, while OPT(Lb) will draw backtrack (hotspot track) paths.
+draw particle flowlines, while OPT(Lb) will draw backtrack (hotspot track) paths.
 Append sampling interval in km.  If \fIstep\fP < 0 then only the rotation times
 will be returned.  When OPT(LF) or OPT(LB) is used, the
 third output column will contain the stage id (1 is youngest) [Default is
