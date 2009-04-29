@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.23 2009-04-16 16:38:39 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.24 2009-04-29 13:13:35 remko Exp $
 %-	Make sure that the version number matches the one mentioned in pslib.c
 % Begin pslib header
 250 dict begin
@@ -37,7 +37,7 @@
 % Plus
 /x {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
 % Path fill
-/FS {/fc exch def /fs {V fc F U}!}!
+/FS {/fc exch def /fs {V fc F U} def}!
 /FQ {/fs {} def}!
 % Outline off or on
 /O0 {/os {N} def}!
