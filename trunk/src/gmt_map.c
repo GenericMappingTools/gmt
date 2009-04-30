@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.217 2009-04-13 15:24:05 remko Exp $
+ *	$Id: gmt_map.c,v 1.218 2009-04-30 19:49:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -813,7 +813,7 @@ int GMT_init_three_D (void) {
 
 	if (z_project.fixed) {
 		if (!z_project.world_given) {	/* Pick center point of region */
-			z_project.world_x = project_info.central_meridian;
+			z_project.world_x = (GMT_IS_MAPPING) ? project_info.central_meridian : 0.5 * (project_info.w + project_info.e);
 			z_project.world_y = 0.5 * (project_info.s + project_info.n);
 			z_project.world_z = project_info.z_level;
 		}
