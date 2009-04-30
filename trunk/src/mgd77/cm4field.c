@@ -19,10 +19,56 @@
 #define D2R   M_PI/180.
 #define R2D   180./M_PI
 
-int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr, int coef,
-	int *nhmf, int *nlmf, double *ut, int n_times, double *theta, double *phi, double *alt, 
-	double *dst, double *f107, double *bmdl, double *jmdl, double *gmdl, int cerr, int *no, int *nf, 
-	int n_pts, int nval, int nfval, double *out_field);
+struct CM4_CTRL {
+	struct C {	/*  */
+		int curr;
+	} C;
+	struct D {	/*  */
+		int active;
+		int index; 
+		int load;
+		double *dst;
+		char *path;
+	} D;
+	struct f {	/*  */
+		int active;
+		int index; 
+		int load;
+		double F107;
+		char *path;
+	} f;
+	struct F {	/* -F<xymrw> */
+		int active;
+		int field_components[7];
+		int n_field_components;
+		int field_sources[7];
+		int n_field_sources;
+	} F;
+	struct G {	/*  */
+		int geodetic;
+	} G;
+	struct M {	/*  */
+		char *path;
+	} M;
+	struct DATA {	/* */
+		int pred[6];
+		int n_pts;
+		int n_times;
+		int coef;
+		double	gmdl[1];
+		double	bmdl[21];
+		double	jmdl[12];
+		double	*lon, *lat, *date, alt;
+		double	*out_field;
+		double	*out_current;
+	} DATA;
+	struct S {	/*  */
+		int nlmf[2];
+		int nhmf[2];
+	} S;
+};
+
+int cm4field(struct CM4_CTRL *Ctrl);
 void ymdtomjd(int yearad, int month, int dayofmonth, int *mjd, int *dayofyear);
 void ydtomjdx(int yearad, int dayofyear, int * mjd, int *month, int *dayofmonth, int *daysinmonth);
 double intdst(int mjdl, int mjdh, int mjdy, int msec, double *dstx, int *cerr);
@@ -111,39 +157,36 @@ void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b);
 void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, double *b, double *c);
 void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b);
 double d_mod(double x, double y);
-double pow_di(double *ap, int *bp);
+double pow_di(double ap, int bp);
 int i_dnnt(double x);
 
 /* --------------------------------------------------------------------------- */
 int main(int argc, char **argv) {
 
 	int	i, j, ijour, imon, ian, multiple_date = 0, multiple_alt = 0, n_pts, pos_slash = 0;
-	int	nval = 0, nfval = 0, no[7], nf[7] = {0,1,2,3,4,5,6}, n_arg_no_char = 0;
-
+	int	nval = 0, nfval = 0, n_arg_no_char = 0;
 	int	date_mmddyyyy = 0, date_year = 1, date_year_jul = 0;
-	int	DstF107_index[2] = {TRUE, TRUE};
-	int	CM4_load[3] = {TRUE, TRUE, TRUE}; 
-	int	pred[6] = {TRUE, TRUE, TRUE, TRUE, FALSE, FALSE};
-	int	nlmf[2] = {1,  14};
-	int	nhmf[2] = {13, 65};
-	int	geodetic = FALSE;
-	int	curr = FALSE;
-	int	coef = FALSE;		/* no coefficients generated */
-	int	cerr = 0;		/* error flag */
-	int	n_times;		/* Number of time elements */
 	int	got_point = FALSE;
-	char	*path[3];
-	double	*Dst, F107;
-	double	gmdl[1];
-	double	bmdl[21];
-	double	jmdl[12];
-	double	lon[2], lat[2], alt[1], year[2], *out;
+	double	lon, lat, alt, date;
+	struct	CM4_CTRL *Ctrl;
+	void	*New_CM4_Ctrl (), Free_CM4_Ctrl (struct CM4_CTRL *C);
 
-	path[0] = path[1] = path[2] = NULL;
+	Ctrl = (struct CM4_CTRL *)New_CM4_Ctrl ();	/* Allocate and initialize a new control structure */
 
-	path[0] = "C:\\a1\\gmt\\CM4\\umdl.CM4";
-	path[1] = "C:\\a1\\gmt\\CM4\\Dst_all.wdc";
-	path[2] = "C:\\a1\\gmt\\CM4\\F107_mon.plt";
+	Ctrl->D.index = TRUE;
+	Ctrl->D.load = TRUE;
+	Ctrl->D.path = "C:\\a1\\gmt\\CM4\\Dst_all.wdc";
+	Ctrl->f.index = TRUE;
+	Ctrl->f.load = TRUE;
+	Ctrl->f.path = "C:\\a1\\gmt\\CM4\\F107_mon.plt";
+	Ctrl->G.geodetic = FALSE;
+	Ctrl->M.path = "C:\\a1\\gmt\\CM4\\umdl.CM4";
+	Ctrl->S.nlmf[0] = 1;
+	Ctrl->S.nlmf[1] = 14;
+	Ctrl->S.nhmf[0] = 13;
+	Ctrl->S.nhmf[1] = 65;
+	Ctrl->DATA.pred[0] = Ctrl->DATA.pred[1] = Ctrl->DATA.pred[2] = Ctrl->DATA.pred[3] = TRUE;
+	Ctrl->DATA.pred[4] = Ctrl->DATA.pred[5] = FALSE;
 
 	if (FALSE) {
 		fprintf (stderr, "usage: cm4field [-F<thxyzdi[/1234567]>] -Plon/lat/alt/date -S[cMin/Max][lMin/Max] \n");
@@ -180,29 +223,32 @@ int main(int argc, char **argv) {
 		return;
 	}
 
-	Dst = (double *) calloc((size_t)(1), sizeof(double));	/* We need at least a size of one in case a value is given in input */
+	Ctrl->D.dst = (double *) calloc((size_t)(1), sizeof(double));	/* We need at least a size of one in case a value is given in input */
 
 	for (i = 0; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			switch (argv[i][1]) {
+				case 'C':
+					Ctrl->C.curr = TRUE;
+					break;
 				case 'D':
 					if ((argv[i][2] > 47) && (argv[i][2] < 58)) {	/* arg is numeric -> Dst Index */
-						Dst[0] = atof(&argv[i][2]);
-						DstF107_index[0] = FALSE;
+						Ctrl->D.dst[0] = atof(&argv[i][2]);
+						Ctrl->D.index = FALSE; 
 					}
 					else {
-						path[1] = &argv[i][2];
-						if (!CM4_load[1]) CM4_load[1] = TRUE;
+						Ctrl->D.path = &argv[i][2];
+						Ctrl->D.load = TRUE;
 					}
 					break;
 				case 'f':
 					if ((argv[i][2] > 47) && (argv[i][2] < 58)) {	/* arg is numeric -> Dst Index */
-						F107 = atof(&argv[i][2]);
-						DstF107_index[1] = FALSE;
+						Ctrl->f.F107 = atof(&argv[i][2]);
+						Ctrl->f.index = FALSE;
 					}
 					else {
-						path[2] = &argv[i][2];
-						if (!CM4_load[2]) CM4_load[2] = TRUE;
+						Ctrl->f.path = &argv[i][2];
+						Ctrl->f.load = TRUE;
 					}
 					break;
 				case 'F':
@@ -213,75 +259,78 @@ int main(int argc, char **argv) {
 						}
 						switch (argv[i][j]) {
 							case 't':		/* Total field is requested */
-								no[nval++] = 0;
+								Ctrl->F.field_components[nval++] = 0; 
 								break;
 							case 'h':		/* Horizontal field is requested */
-								no[nval++] = 1;
+								Ctrl->F.field_components[nval++] = 1; 
 								break;
 							case 'x':		/* X component is requested */
-								no[nval++] = 2;
+								Ctrl->F.field_components[nval++] = 2; 
 								break;
 							case 'y':		/* Y component is requested */
-								no[nval++] = 3;
+								Ctrl->F.field_components[nval++] = 3; 
 								break;
 							case 'z':		/* Z component is requested */
-								no[nval++] = 4;
+								Ctrl->F.field_components[nval++] = 4; 
 								break;
 							case 'd':		/* Declination is requested */
-								no[nval++] = 5;
+								Ctrl->F.field_components[nval++] = 5; 
 								break;
 							case 'i':		/* Innclination is requested */
-								no[nval++] = 6;
+								Ctrl->F.field_components[nval++] = 6; 
 								break;
 						}
 					}
+					Ctrl->F.n_field_components = nval; 
+
 					if (pos_slash) {
 						for (j = pos_slash; argv[i][j]; j++) {
 							switch (argv[i][j]) {
 								case '1':		/* Main field 1 */
-									nf[nfval++] = 0;
+									Ctrl->F.field_sources[nfval++] = 0; 
 									break;
 								case '2':		/* Main field 2 */
-									nf[nfval++] = 1;
+									Ctrl->F.field_sources[nfval++] = 1; 
 									break;
 								case '3':		/* Primary Magnetospheric field */
-									nf[nfval++] = 2;
+									Ctrl->F.field_sources[nfval++] = 2; 
 									break;
 								case '4':		/* Induced Magnetospheric field */
-									nf[nfval++] = 3;
+									Ctrl->F.field_sources[nfval++] = 3; 
 									break;
 								case '5':		/* Primary ionospheric field */
-									nf[nfval++] = 4;
+									Ctrl->F.field_sources[nfval++] = 4; 
 									break;
 								case '6':		/* Induced ionospheric field */
-									nf[nfval++] = 5;
+									Ctrl->F.field_sources[nfval++] = 5; 
 									break;
 								case '7':		/* Toroidal field */
-									nf[nfval++] = 6;
+									Ctrl->F.field_sources[nfval++] = 6; 
 									break;
 							}
 						}
+						Ctrl->F.n_field_sources = nfval; 
 					}
 					break;
 				case 'G':
-					geodetic = TRUE;
+					Ctrl->G.geodetic = TRUE;
 					break;
 				case 'M':
-					path[0] = &argv[i][2];
+					Ctrl->M.path = &argv[i][2];
 					break;
 				case 'P':
-					j = sscanf (&argv[i][2], "%lf/%lf/%lf/%lf", &lon[0], &lat[0], &alt[0], &year[0]);
-					n_pts = n_times = 1;
+					j = sscanf (&argv[i][2], "%lf/%lf/%lf/%lf", &lon, &lat, &alt, &date);
+					Ctrl->DATA.n_pts = Ctrl->DATA.n_times = 1;
 					got_point = TRUE;
 					break;
 				case 'S':
 					if (argv[i][2] == 'c') {
-						j = sscanf (&argv[i][3], "%d/%d", &nlmf[0], &nhmf[0]);
+						j = sscanf (&argv[i][3], "%d/%d", &Ctrl->S.nlmf[0], &Ctrl->S.nhmf[0]);
 						if (j != 2) 
 							fprintf (stderr, "CM4 -S option ERROR, usage: -Sc<low/high>\n");
 					}
 					if (argv[i][2] == 'l') {
-						j = sscanf (&argv[i][3], "%d/%d", &nlmf[1], &nhmf[1]);
+						j = sscanf (&argv[i][3], "%d/%d", &Ctrl->S.nlmf[1], &Ctrl->S.nhmf[1]);
 						if (j != 2) 
 							fprintf (stderr, "CM4 -S option ERROR, usage: -Sl<low/high>\n");
 					}
@@ -291,67 +340,71 @@ int main(int argc, char **argv) {
 	}
 
 	/* --------- CODE TO INPUT DATA FROM FILE GOES HERE ---------------- */
-	if (!got_point) {
-		lon[0] = -10;
-		lat[0] = 45;
-		lon[1] = -10;
-		lat[1] = 45;
-		n_pts = 2;		/* Number of data points */
-		alt[0] = 0;		/* Currently altitude must be constant */
-		year[0] = 2000;
-		year[1] = 2000.3;
-		n_times = 2;		/* Number of time values. Time may be constant and than n_times = 1 */
+	Ctrl->DATA.lon = (double *) calloc((size_t)(2), sizeof(double));
+	Ctrl->DATA.lat = (double *) calloc((size_t)(2), sizeof(double));
+	Ctrl->DATA.date = (double *) calloc((size_t)(2), sizeof(double));
+	if (got_point) {
+		Ctrl->DATA.lon[0] = lon;
+		Ctrl->DATA.lat[0] = lat;
+		Ctrl->DATA.date[0] = date;
+		Ctrl->DATA.alt = alt;
+	}
+	else {
+		Ctrl->DATA.lon[0] = -10;	Ctrl->DATA.lon[1] = -10; 
+		Ctrl->DATA.lat[0] = 45;		Ctrl->DATA.lat[1] = 45;
+		Ctrl->DATA.date[0] = 2000;	Ctrl->DATA.date[1] = 2000.3;
+		Ctrl->DATA.alt = 0;
+		Ctrl->DATA.n_pts = Ctrl->DATA.n_times = 2;
 	}
 	/* ------------------------------------------------------------------ */
 
 	/* Sort the order in which the parameters appear */
 	if (nval == 0) {		/* Nothing selected, default used */
-		nval = 7;
-		for (i = 0; i < 7; i++) no[i] = i;
+		Ctrl->F.n_field_components = 7;
+		for (i = 0; i < 7; i++) Ctrl->F.field_components[i] = i;
 	}
-	if (nval > 7) nval = 7;		/* Can happen with a missuse of -F */
-	if (nfval == 0) 		/* Nothing selected, retain only the main field */
-		nfval = 1;
+	if (nfval == 0) {		/* Nothing selected, retain only the main field */
+		Ctrl->F.field_sources[0] = 0; 
+		Ctrl->F.n_field_sources = 1;
+	}
 
-	out = (double *) calloc((size_t)(n_pts * nval), sizeof(double));	/* To hold the complete output (field only) */
+	Ctrl->DATA.out_field = (double *) calloc((size_t)(Ctrl->DATA.n_pts * Ctrl->F.n_field_components), sizeof(double));
 
-	cm4field_(path, CM4_load, DstF107_index, geodetic, pred, curr, coef, nhmf, nlmf, year, 
-		n_times, lat, lon, alt, Dst, &F107, bmdl, jmdl, gmdl, cerr, no, nf, n_pts, nval, nfval, out);
+	cm4field(Ctrl);
 
 	/* One should not need to transmit back the bmdl variable since output data is in 'out' array but it
 	   makes it easy to test against the original fortran version */
-	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", bmdl[0], bmdl[1], bmdl[2]);
-	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", bmdl[3],bmdl[4],bmdl[5]);
-	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", bmdl[6],bmdl[7],bmdl[8]);
-	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", bmdl[9],bmdl[10],bmdl[11]);
-	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", bmdl[12],bmdl[13],bmdl[14]);
-	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", bmdl[15],bmdl[16],bmdl[17]);
-	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", bmdl[18],bmdl[19],bmdl[20]);
+	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", Ctrl->DATA.bmdl[0], Ctrl->DATA.bmdl[1], Ctrl->DATA.bmdl[2]);
+	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", Ctrl->DATA.bmdl[3],Ctrl->DATA.bmdl[4],Ctrl->DATA.bmdl[5]);
+	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", Ctrl->DATA.bmdl[6],Ctrl->DATA.bmdl[7],Ctrl->DATA.bmdl[8]);
+	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", Ctrl->DATA.bmdl[9],Ctrl->DATA.bmdl[10],Ctrl->DATA.bmdl[11]);
+	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", Ctrl->DATA.bmdl[12],Ctrl->DATA.bmdl[13],Ctrl->DATA.bmdl[14]);
+	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", Ctrl->DATA.bmdl[15],Ctrl->DATA.bmdl[16],Ctrl->DATA.bmdl[17]);
+	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", Ctrl->DATA.bmdl[18],Ctrl->DATA.bmdl[19],Ctrl->DATA.bmdl[20]);
 
 	/* Temporary - for testing only */
-	if (n_pts > 0) {
-		for (i = 0; i < n_pts; i++) {
-			for (j = 0; j < nval; j++)
-				fprintf(stderr, "%.2f\t", out[i*nval+j]);
+	if (Ctrl->DATA.n_pts > 0) {
+		for (i = 0; i < Ctrl->DATA.n_pts; i++) {
+			for (j = 0; j < Ctrl->F.n_field_components; j++)
+				fprintf(stderr, "%.2f\t", Ctrl->DATA.out_field[i*nval+j]);
 			fprintf(stderr,"\n");
 		}
 	}
+ 
+	Free_CM4_Ctrl (Ctrl);	/* Deallocate control structure */
 }
 
 
-int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
-	int coef, int *nhmf, int *nlmf, double *ut, int n_times, double *theta, double *phi, double *alt, 
-	double *dst, double *f107, double *bmdl, double *jmdl, double *gmdl, int cerr, int *no, int *nf, 
-	int n_pts, int nval, int nfval, double *out_field) {
+int cm4field(struct CM4_CTRL *Ctrl) {
 
 	int c__1356 = 1356, c__13680 = 13680;
-	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr, jyr, jf107;
+	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr, jyr, jf107, cerr = 0;
 	int lum1, lum2, lum3, lum4, lum5, lum6, lum7, nsm1, nsm2, lcmf, idim[12], omdl;
 	int lsmf, lpos, lcmg, lsmg, lcsq, lssq, lcto, lsto, lrto, idoy, n_Dst_rows;
 	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd, jdoy, mjdl, mjdh, iyrl, imol, iyrh, imoh;
-	int nout, nygo, igen, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
+	int nout, nygo, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
-	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb;
+	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb, bmdl[21];
 	double bc[28], re, hq[53040], wb[58], ht[17680], xd, yd, rm, xg, ro, rp, yg, zg, zd;
 	double ru, rt, rse[9], doy, fyr, ws[4355], gamf[8840], cego, epch, bkpo[12415];
 	double trig[132], epmg[1356], esmg[1356];
@@ -363,8 +416,12 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 	double *gssq;		/* was [13680][5] */
 	double *gpmg;		/* was [1356][5][2] */ 
 	double *gsmg;		/* was [1356][5][2] */  
-	static double hysq[82080];	/* was [13680][6] */ 
-	static double epsq[13680], essq[13680], ecto[16416], hyto[49248], pleg[4422], rcur[9104];
+	double *hysq;		/* was [1356][6] */  
+	double *epsq;		/* was [13680] */
+	double *essq;		/* was [13680] */
+	double *ecto;		/* was [16416] */
+	double *hyto;		/* was [49248] */
+	double pleg[4422], rcur[9104];
 	double rlgm[15], rrgt[9], tsmg[6], tssq[6], tsto[6], tdmg[12], tdsq[10], tdto[10];
 	double rtay_dw, rtay_or, sinp, fsrf, rtay, frto, frho, thetas, rtay_dk;
 	double cnmp, enmp, omgs, omgd, hion, cpol, epol, ctmp, stmp, cemp, semp, rion, fdoy, clat, elon;
@@ -373,110 +430,113 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 
 	FILE *fp;
 
-/* ======================================================================= */
-/* Main Field potential expansion parameters */
-/* ======================================================================= */
-/* Magnetospheric and coupled Induction potential expansion parameters */
-/* ======================================================================= */
-/* Sq and coupled Induction potential expansion parameters */
-/* ======================================================================= */
-/* Toroidal scalar or stream function expansion parameters */
-/* ======================================================================= */
-/* Set maximum number of years for index table limits */
+/* =====  FORTRAN SOUVENIRS ==============================================
+   =======================================================================
+   Main Field potential expansion parameters
+      PARAMETER (NXMF=65,NYMF=8840,NXOR=4,NXKN=19,NXPO=12415)
+   =======================================================================
+   Magnetospheric and coupled Induction potential expansion parameters
+      PARAMETER (PBMG=0,PEMG=5,PSMG=2,NXMG=11,MXMG=6,IXMG=226)
+   =======================================================================
+   Sq and coupled Induction potential expansion parameters
+      PARAMETER (PBSQ=0,PESQ=4,PSSQ=2,NXSQ=60,MXSQ=12,IXSQ=2736)
+   =======================================================================
+   Toroidal scalar or stream function expansion parameters
+      PARAMETER (PBTO_MG=0,PETO_MG=0,PBTO_OR=0,PETO_OR=4)
+      PARAMETER (PSTO=2,NXTO=60,MXTO=12,IXTO=2736)
+      PARAMETER (NTAY_MG=1,NTAY_OR=1)
 /* ======================================================================= */
 
-	if (load[0]) {
-		if ((fp = fopen(path[0], "r")) == NULL) {
-			fprintf (stderr, "CM4: Could not open file %s\n", path[0]);
-			return 1;
-		}
+	if ((fp = fopen(Ctrl->M.path, "r")) == NULL) {
+		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->M.path);
+		return 1;
+	}
 
-		fgets(line, BUFSIZ, fp);
-		sscanf (line, "%d %d %d", &lsmf, &lpos, &lcmf);
-		fgets(line, BUFSIZ, fp);
-		sscanf (line, "%d", &lum1);
-		fgets(line, BUFSIZ, fp);
-		sscanf (line, "%lf %lf %lf %lf", &epch, &re, &rp, &rm);
-		for (j = 0; j < lsmf; ++j)
-			fscanf (fp, "%d", &bord[j]);
-		for (j = 0; j < lsmf; ++j)
-			fscanf (fp, "%d", &bkno[j]);
-		for (j = 0; j < lpos; ++j)
-			fscanf (fp, "%lf", &bkpo[j]);
-		for (j = 0; j < lcmf; ++j)
-			fscanf (fp, "%lf", &gamf[j]);
+	fgets(line, BUFSIZ, fp);
+	sscanf (line, "%d %d %d", &lsmf, &lpos, &lcmf);
+	fgets(line, BUFSIZ, fp);
+	sscanf (line, "%d", &lum1);
+	fgets(line, BUFSIZ, fp);
+	sscanf (line, "%lf %lf %lf %lf", &epch, &re, &rp, &rm);
+	for (j = 0; j < lsmf; ++j)
+		fscanf (fp, "%d", &bord[j]);
+	for (j = 0; j < lsmf; ++j)
+		fscanf (fp, "%d", &bkno[j]);
+	for (j = 0; j < lpos; ++j)
+		fscanf (fp, "%lf", &bkpo[j]);
+	for (j = 0; j < lcmf; ++j)
+		fscanf (fp, "%lf", &gamf[j]);
 
-		fscanf (fp, "%d %d", &lcmg, &lsmg);
-		fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
-		fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm);
-		gpmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
-		for (k = 0; k < 2; ++k)
-			for (j = 0; j < lsmg; ++j)
-				for (i = 0; i < lcmg; ++i)
-					fscanf (fp, "%lf", &gpmg[i + (j + k * 5) * 1356]);
+	fscanf (fp, "%d %d", &lcmg, &lsmg);
+	fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
+	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm);
+	gpmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
+	for (k = 0; k < 2; ++k)
+		for (j = 0; j < lsmg; ++j)
+			for (i = 0; i < lcmg; ++i)
+				fscanf (fp, "%lf", &gpmg[i + (j + k * 5) * 1356]);
 
-		gsmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
-		for (k = 0; k < 2; ++k)
-			for (j = 0; j < lsmg; ++j)
-				for (i = 0; i < lcmg; ++i)
-					fscanf (fp, "%lf", &gsmg[i + (j + k * 5) * 1356]);
+	gsmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
+	for (k = 0; k < 2; ++k)
+		for (j = 0; j < lsmg; ++j)
+			for (i = 0; i < lcmg; ++i)
+				fscanf (fp, "%lf", &gsmg[i + (j + k * 5) * 1356]);
 
-		fscanf (fp, "%d %d", &lcsq, &lssq);
-		fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
-		fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &hion);
-		gpsq = (double *) calloc((size_t)(2 * lssq * lcsq), sizeof(double));
-		for (k = 0; k < 2; ++k)
-			for (j = 0; j < lssq; ++j)
-				for (i = 0; i < lcsq; ++i)
-					fscanf (fp, "%lf", &gpsq[i + (j + k * 5) * 13680]);
-
-		gssq = (double *) calloc((size_t)(lssq * lcsq), sizeof(double));
+	fscanf (fp, "%d %d", &lcsq, &lssq);
+	fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
+	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &hion);
+	gpsq = (double *) calloc((size_t)(2 * lssq * lcsq), sizeof(double));
+	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lssq; ++j)
 			for (i = 0; i < lcsq; ++i)
-				fscanf (fp, "%lf", &gssq[i + j * 13680]);
+				fscanf (fp, "%lf", &gpsq[i + (j + k * 5) * 13680]);
 
-		fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
-		fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
-		fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_dw, &rtay_dk);
-		if (pred[3]) { 		/* In other cases the next coefficients are not used, so no waist time/memory with them */
-			gcto_mg = (double *) calloc((size_t)(2 * lrto * lsto * lcto), sizeof(double));
-			for (l = 0; l < 2; ++l)
-				for (k = 0; k < lrto; ++k)
-					for (j = 0; j < lsto; ++j)
-						for (i = 0; i < lcto; ++i)
-							fscanf (fp, "%lf", &gcto_mg[i + (j + (k + (l << 1)) * 3) * 2736]);
-		}
-		else			/* Jump the unused coeffs */
-			for (l = 0; l < 2 * lrto * lsto * lcto; ++l)
-				fscanf (fp, "%lf", &dumb);
+	gssq = (double *) calloc((size_t)(lssq * lcsq), sizeof(double));
+	for (j = 0; j < lssq; ++j)
+		for (i = 0; i < lcsq; ++i)
+			fscanf (fp, "%lf", &gssq[i + j * 13680]);
 
-		fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
-		fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
-		fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_or);
-		if (pred[3] && !pred[4]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
-			gcto_or = (double *) calloc((size_t)(lrto * lsto * lcto), sizeof(double));
+	fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
+	fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
+	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_dw, &rtay_dk);
+	if (Ctrl->DATA.pred[3]) { 		/* In other cases the next coefficients are not used, so no waist time/memory with them */
+		gcto_mg = (double *) calloc((size_t)(2 * lrto * lsto * lcto), sizeof(double));
+		for (l = 0; l < 2; ++l)
 			for (k = 0; k < lrto; ++k)
 				for (j = 0; j < lsto; ++j)
 					for (i = 0; i < lcto; ++i)
-						fscanf (fp, "%lf", &gcto_or[i + (j + k * 5) * 13680]);
-		}
+						fscanf (fp, "%lf", &gcto_mg[i + (j + (k + (l << 1)) * 3) * 2736]);
+	}
+	else			/* Jump the unused coeffs */
+		for (l = 0; l < 2 * lrto * lsto * lcto; ++l)
+			fscanf (fp, "%lf", &dumb);
 
-		fclose(fp);
-		cpol = cnmp * D2R;
-		epol = enmp * D2R;
-		ctmp = cos(cpol);
-		stmp = sin(cpol);
-		cemp = cos(epol);
-		semp = sin(epol);
-		rion = rm + hion;
+	fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
+	fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
+	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_or);
+	if (Ctrl->DATA.pred[3] && !Ctrl->DATA.pred[4]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
+		gcto_or = (double *) calloc((size_t)(lrto * lsto * lcto), sizeof(double));
+		for (k = 0; k < lrto; ++k)
+			for (j = 0; j < lsto; ++j)
+				for (i = 0; i < lcto; ++i)
+					fscanf (fp, "%lf", &gcto_or[i + (j + k * 5) * 13680]);
 	}
 
-	mut = (double *) calloc((size_t)(n_times), sizeof(double));
-	msec = (int *) calloc((size_t)(n_times), sizeof(int));
-	mjdy = (int *) calloc((size_t)(n_times), sizeof(int));
-	for (n = 0; n < n_times; ++n) {		/* If time is not constant compute the mut array */
-		iyr = (int) (ut[n]);
-		fyr = ut[n] - (double) iyr;
+	fclose(fp);
+	cpol = cnmp * D2R;
+	epol = enmp * D2R;
+	ctmp = cos(cpol);
+	stmp = sin(cpol);
+	cemp = cos(epol);
+	semp = sin(epol);
+	rion = rm + hion;
+
+	mut = (double *) calloc((size_t)(Ctrl->DATA.n_times), sizeof(double));
+	msec = (int *) calloc((size_t)(Ctrl->DATA.n_times), sizeof(int));
+	mjdy = (int *) calloc((size_t)(Ctrl->DATA.n_times), sizeof(int));
+	for (n = 0; n < Ctrl->DATA.n_times; ++n) {		/* If time is not constant compute the mut array */
+		iyr = (int)(Ctrl->DATA.date[n]);
+		fyr = Ctrl->DATA.date[n] - (double) iyr;
 		doy = fyr * (double) (366 - MIN(1, iyr % 4));
 		idoy = (int) doy;
 		fdoy = doy - (double) idoy;
@@ -487,12 +547,12 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 	}
 
 	csys = 1;
-	if (cord) csys = 0;
-	if (indx[0]) {
-		if (load[1]) {
+	if (Ctrl->G.geodetic) csys = 0;
+	if (Ctrl->D.index) {
+		if (Ctrl->D.load) {
 			int k;
-			if ((fp = fopen(path[1], "r")) == NULL) {
-				fprintf (stderr, "CM4: Could not open file %s\n", path[1]);
+			if ((fp = fopen(Ctrl->D.path, "r")) == NULL) {
+				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->D.path);
 				return 1;
 			}
 			jaft = 0;
@@ -519,25 +579,25 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 				}
 				k = (jmjd - mjdl) * 24;
 				for (j = 0; j < 24; ++j)
-					dstx[k + j] = (double) jdst[j];
+					dstx[k + j] = (double)jdst[j];
 				n++;
 			}
 			fclose(fp);
 			mjdh = jmjd;
     		}
-		if (n_times > 1)	/* Need to re-allocate memory for all n_times in dst array */
-			dst = (double *) realloc(dst, (size_t)(n_times) * sizeof(double));
+		if (Ctrl->DATA.n_times > 1)	/* Need to re-allocate memory for all n_times in dst array */
+			Ctrl->D.dst = (double *) realloc(Ctrl->D.dst, (size_t)(Ctrl->DATA.n_times) * sizeof(double));
 
-		for (n = 0; n < n_times; ++n)
-			dst[n] = intdst(mjdl, mjdh, mjdy[n], msec[n], dstx, &cerr);
+		for (n = 0; n < Ctrl->DATA.n_times; ++n)
+			Ctrl->D.dst[n] = intdst(mjdl, mjdh, mjdy[n], msec[n], dstx, &cerr);
 
 		free((void *) dstx);
 		if (cerr > 49) return 1;
 	}
-	if (indx[1]) {
-		if (load[2]) {
-			if ((fp = fopen(path[2], "r")) == NULL) {
-				fprintf (stderr, "CM4: Could not open file %s\n", path[2]);
+	if (Ctrl->f.index) {
+		if (Ctrl->f.load) {
+			if ((fp = fopen(Ctrl->f.path, "r")) == NULL) {
+				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->f.path);
 				return 1;
 			}
 			jaft = 0;
@@ -557,70 +617,78 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 			imoh = jmon;
 		}
 		/* MUST INVESTIGATE IF IT WORTH HAVING AN ARRAY OF f107 LIKE IN THE DST CASE */
-		*f107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
+		Ctrl->f.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
 		if (cerr > 49) return 1;
 	}
 	free ((void *) msec);
 	free ((void *) mjdy);
 
-	/* LOOP over number of input points (many computations below are useless repeated - room for improvment */
-	for (n = 0; n < n_pts; ++n) {
-		r8vset(1, 21, 0., &bmdl[0]);
-		if (curr) r8vset(1, 12, 0., &jmdl[0]);
-		clat = (90 - theta[n]) * D2R;
-		elon = phi[n] * D2R;
+	/* Most oddly those had to be declared "static" on Windows otherwise ... BOOM */
+	hysq = (double *) calloc((size_t)(82080), sizeof(double));
+	epsq = (double *) calloc((size_t)(13680), sizeof(double));
+	essq = (double *) calloc((size_t)(13680), sizeof(double));
+	ecto = (double *) calloc((size_t)(16416), sizeof(double));
+	hyto = (double *) calloc((size_t)(49248), sizeof(double));
 
-		if (coef) {
+	/* LOOP over number of input points (many computations below are useless repeated - room for improvment */
+	for (n = 0; n < Ctrl->DATA.n_pts; ++n) {
+		r8vset(1, 21, 0., &bmdl[0]);
+		if (Ctrl->C.curr) r8vset(1, 12, 0., &Ctrl->DATA.jmdl[0]);
+		clat = (90 - Ctrl->DATA.lat[n]) * D2R;
+		elon = Ctrl->DATA.lon[n] * D2R;
+
+		if (Ctrl->DATA.coef) {
 			nout = 1;	nygo = 0;
-			if (pred[1]) nygo = MAX(nygo,113);
-			if (pred[2]) nygo = MAX(nygo,1368);
-			if (pred[3]) nygo = MAX(nygo,1368);
+			if (Ctrl->DATA.pred[1]) nygo = MAX(nygo,113);
+			if (Ctrl->DATA.pred[2]) nygo = MAX(nygo,1368);
+			if (Ctrl->DATA.pred[3]) nygo = MAX(nygo,1368);
 		}
-		if (pred[0]) {
-			igen = 1;
-			nmax = MAX(nhmf[0],nhmf[1]);
-			nmin = MIN(nlmf[0],nlmf[1]);
+		if (Ctrl->DATA.pred[0]) {
+			nmax = MAX(Ctrl->S.nhmf[0], Ctrl->S.nhmf[1]);
+			nmin = MIN(Ctrl->S.nlmf[0], Ctrl->S.nlmf[1]);
 			nobo = nshx(nmin - 1, 1, nmin - 1, 0);
 			nopo = i8ssum(1, nobo, bkno) + (nobo << 1);
-			bfield(igen, nmax, 0, nmin, 1, nmax, 0, 0, 0, 0, csys, 3, 2, 0, 
-				epch, re, rp, rm, ut[n], clat, elon, alt[0], dst[n], dstt, rse, &nz, 
+			bfield(1, nmax, 0, nmin, 1, nmax, 0, 0, 0, 0, csys, 3, 2, 0, 
+				epch, re, rp, rm, Ctrl->DATA.date[n], clat, elon, Ctrl->DATA.alt, Ctrl->D.dst[n], dstt, rse, &nz, 
 				&mz, &ro, &thetas, us, us, &bord[nobo], &bkno[nobo], &bkpo[nopo], us, us, us, us, 
 				ws, us, gamf, bc, gamf, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
-			nomn = nshx(nlmf[0] - 1, 1, nlmf[0] - 1, 0);
-			nomx = nshx(nhmf[0], 1, nhmf[0], 0);
+			nomn = nshx(Ctrl->S.nlmf[0] - 1, 1, Ctrl->S.nlmf[0] - 1, 0);
+			nomx = nshx(Ctrl->S.nhmf[0], 1, Ctrl->S.nhmf[0], 0);
 			noff = nomn - nobo;
 			nsm1 = I_DIM(nomx, nomn);
 			noga = i8ssum(1, nomn, bord) + i8ssum(1, nomn, bkno) + nomn;
 			nohq = i8ssum(nobo + 1, noff, bord) + i8ssum(nobo + 1, noff, bkno) + noff;
 			nimf = i8ssum(nobo + 1, nsm1, bord) + i8ssum(nobo + 1, nsm1, bkno) + nsm1;
 			blsgen(nimf, nz, 3, &bmdl[0], &gamf[noga], &hq[nohq]);
-			if (coef) {
+			if (Ctrl->DATA.coef) {
 				nopo = i8ssum(1, nomn, bkno) + (nomn << 1);
-				getgmf(4, nsm1, &epch, &ut[n], wb, &gamf[noga], &gmdl[nout-1], &bkno[nomn], &bord[nomn], &bkpo[nopo]);
+				getgmf(4, nsm1, &epch, &Ctrl->DATA.date[n], wb, &gamf[noga], &Ctrl->DATA.gmdl[nout-1], 
+					&bkno[nomn], &bord[nomn], &bkpo[nopo]);
 				if (cerr > 49) return 1;
 			}
-			nomn = nshx(nlmf[1] - 1, 1, nlmf[1] - 1, 0);
-			nomx = nshx(nhmf[1], 1, nhmf[1], 0);
+			nomn = nshx(Ctrl->S.nlmf[1] - 1, 1, Ctrl->S.nlmf[1] - 1, 0);
+			nomx = nshx(Ctrl->S.nhmf[1], 1, Ctrl->S.nhmf[1], 0);
 			noff = nomn - nobo;
 			nsm2 = I_DIM(nomx, nomn);
 			noga = i8ssum(1, nomn, bord) + i8ssum(1, nomn, bkno) + nomn;
 			nohq = i8ssum(nobo + 1, noff, bord) + i8ssum(nobo + 1, noff, bkno) + noff;
 			nimf = i8ssum(nomn + 1, nsm2, bord) + i8ssum(nomn + 1, nsm2, bkno) + nsm2;
 			blsgen(nimf, nz, 3, &bmdl[3], &gamf[noga], &hq[nohq]);
-			if (coef) {
+			if (Ctrl->DATA.coef) {
 				nygo = MAX(nygo,nsm1 * 5);
 				nygo = MAX(nygo,nsm2 * 5);
 				nout += nygo * MIN(1,nsm1);
 				nopo = i8ssum(1, nomn, bkno) + (nomn << 1);
-				getgmf(4, nsm2, &epch, &ut[n], wb, &gamf[noga], &gmdl[nout-1], &bkno[nomn], &bord[nomn], &bkpo[nopo]);
+				getgmf(4, nsm2, &epch, &Ctrl->DATA.date[n], wb, &gamf[noga], &Ctrl->DATA.gmdl[nout-1], 
+					&bkno[nomn], &bord[nomn], &bkpo[nopo]);
 				if (cerr > 49) return 1;
 				nout += nygo * MIN(1,nsm2);
 			}
 		}
-		if (pred[1] || pred[2] || pred[3]) {
-			if (!pred[0])
-				geocen_(&csys, &re, &rp, &rm, alt, &clat, &ro, &thetas, &sthe, &cthe);
+		if (Ctrl->DATA.pred[1] || Ctrl->DATA.pred[2] || Ctrl->DATA.pred[3]) {
+			if (!Ctrl->DATA.pred[0])
+				geocen_(&csys, &re, &rp, &rm, &Ctrl->DATA.alt, &clat, &ro, &thetas, &sthe, &cthe);
 
 			psiz = thetas - clat;
 			cpsi = cos(psiz);
@@ -654,13 +722,12 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 			rrgt[1] = -semo;	rrgt[4] = cemo;		rrgt[7] = 0.;
 			rrgt[2] = -cemo * stmo; rrgt[5] = -semo * stmo; rrgt[8] = -ctmo;
 			rmerge_(rlgm, rrgt);
-			taus = omgs * ut[n];
+			taus = omgs * Ctrl->DATA.date[n];
 			taud = omgd * mut[n];
 		}
-		if (pred[1]) {
-			igen = 1;
-			bfield(igen, 11, 11, 1, 1, 6, 6, 0, 0, 0, 1, 3, 0, 0,
-				epch, re, rp, rm, ut[n], cdip, edip, alt[0], dst[n], dstt, rse, &nu, &mu, 
+		if (Ctrl->DATA.pred[1]) {
+			bfield(1, 11, 11, 1, 1, 6, 6, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
+				Ctrl->DATA.date[n], cdip, edip, Ctrl->DATA.alt, Ctrl->D.dst[n], dstt, rse, &nu, &mu, 
 				&ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gsmg, bc, gsmg, pleg, rcur, 
 				trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
@@ -676,32 +743,31 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 				jy += 226;
 			}
 			bc[0] = bc[1] = bc[2] = 0.;
-			mseason(2, 5, c__1356, dst[n], tsmg, epmg, gpmg);
+			mseason(2, 5, c__1356, Ctrl->D.dst[n], tsmg, epmg, gpmg);
 			blsgen(c__1356, c__1356, 3, bc, epmg, &hymg[4068]);
 			ltrans(1, 1, bc, rlgm, &bmdl[6]);
 			bc[0] = bc[1] = bc[2] = 0.;
-			mseason(2, 5, c__1356, dst[n], tsmg, esmg, gsmg);
+			mseason(2, 5, c__1356, Ctrl->D.dst[n], tsmg, esmg, gsmg);
 			blsgen(c__1356, c__1356, 3, bc, esmg, hymg);
 			ltrans(1, 1, bc, rlgm, &bmdl[9]);
-			if (curr) {
+			if (Ctrl->C.curr) {
 				bc[0] = bc[1] = bc[2] = 0.;
 				jtbelow(0, 5, 11, 6, ro, rm, c__1356, hymg);
 				blsgen(c__1356, c__1356, 3, bc, esmg, hymg);
-				ltrans(1, 1, bc, rlgm, &jmdl[0]);
+				ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[0]);
 			}
-			if (coef) {
-				getgxf(0, 5, 11, 6, &js, epmg, &gmdl[nout-1], tdmg);
+			if (Ctrl->DATA.coef) {
+				getgxf(0, 5, 11, 6, &js, epmg, &Ctrl->DATA.gmdl[nout-1], tdmg);
 				nout += nygo;
-				getgxf(0, 5, 11, 6, &js, esmg, &gmdl[nout-1], tdmg);
+				getgxf(0, 5, 11, 6, &js, esmg, &Ctrl->DATA.gmdl[nout-1], tdmg);
 				nout += nygo;
 			}
 		}
-		if (pred[2]) {
-			igen = 1;
-			fsrf = *f107 * .01485 + 1.;
+		if (Ctrl->DATA.pred[2]) {
+			fsrf = Ctrl->f.F107 * .01485 + 1.;
 			if (ro < rion) {
-				bfield(igen, 60, 60, 1, 1, 12, 12, 0, 0, 0, 1, 3, 0, 0,  
-					epch, re, rp, rm, ut[n], cdip, edip, alt[0], dst[n], dstt, rse, &nu,
+				bfield(1, 60, 60, 1, 1, 12, 12, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
+					Ctrl->DATA.date[n], cdip, edip, Ctrl->DATA.alt, Ctrl->D.dst[n], dstt, rse, &nu,
 					&mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq, 
 					bc, gssq, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 				if (cerr > 49) return 1;
@@ -724,26 +790,26 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 				iseason(2, 5, c__13680, fsrf, tssq, essq, gssq);
 				blsgen(c__13680, c__13680, 3, bc, essq, hysq);
 				ltrans(1, 1, bc, rlgm, &bmdl[15]);
-				if (curr) {
+				if (Ctrl->C.curr) {
 					bc[0] = bc[1] = bc[2] = 0.;
 					jtabove(0, 4, 60, 12, ro, rion, c__13680, &hysq[41040]);
 					blsgen(c__13680, c__13680, 3, bc, epsq, &hysq[41040]);
-					ltrans(1, 1, bc, rlgm, &jmdl[3]);
+					ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[3]);
 					bc[0] = bc[1] = bc[2] = 0.;
 					jtbelow(0, 4, 60, 12, ro, rm, c__13680, hysq);
 					blsgen(c__13680, c__13680, 3, bc, essq, hysq);
-					ltrans(1, 1, bc, rlgm, &jmdl[6]);
+					ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[6]);
 				}
-				if (coef) {
-					getgxf(0, 4, 60, 12, &js, epsq, &gmdl[nout-1], tdsq);
+				if (Ctrl->DATA.coef) {
+					getgxf(0, 4, 60, 12, &js, epsq, &Ctrl->DATA.gmdl[nout-1], tdsq);
 					nout += nygo;
-					getgxf(0, 4, 60, 12, &js, essq, &gmdl[nout-1], tdsq);
+					getgxf(0, 4, 60, 12, &js, essq, &Ctrl->DATA.gmdl[nout-1], tdsq);
 					nout += nygo;
 				}
 			}
 			else {
-				bfield(igen, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0,  
-					epch, re, rp, rm, ut[n], cdip, edip, alt[0], dst[n], dstt, 
+				bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
+					Ctrl->DATA.date[n], cdip, edip, Ctrl->DATA.alt, Ctrl->D.dst[n], dstt, 
 					rse, &nu, &mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq, 
 					bc, gssq, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 				if (cerr > 49) return 1;
@@ -764,27 +830,27 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 				iseason(2, 5, c__13680, fsrf, tssq, essq, gssq);
 				blsgen(c__13680, c__13680, 3, bc, essq, hysq);
 				ltrans(1, 1, bc, rlgm, &bmdl[15]);
-				if (curr) {
+				if (Ctrl->C.curr) {
 					bc[0] = bc[1] = bc[2] = 0.;
 					jtbelow(0, 4, 60, 12, ro, rion, c__13680, hysq);
 					blsgen(c__13680, c__13680, 3, bc, epsq, hysq);
-					ltrans(1, 1, bc, rlgm, &jmdl[3]);
+					ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[3]);
 					bc[0] = bc[1] = bc[2] = 0.;
 					jtbcont(0, 4, 60, 12, rion, rm, c__13680, hysq);
 					blsgen(c__13680, c__13680, 3, bc, essq, hysq);
-					ltrans(1, 1, bc, rlgm, &jmdl[6]);
+					ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[6]);
 				}
-				if (coef) {
-					getgxf(0, 4, 60, 12, &nu, epsq, &gmdl[nout-1], tdsq);
+				if (Ctrl->DATA.coef) {
+					getgxf(0, 4, 60, 12, &nu, epsq, &Ctrl->DATA.gmdl[nout-1], tdsq);
 					nout += nygo;
-					getgxf(0, 4, 60, 12, &nu, essq, &gmdl[nout-1], tdsq);
+					getgxf(0, 4, 60, 12, &nu, essq, &Ctrl->DATA.gmdl[nout-1], tdsq);
 					nout += nygo;
 				}
 			}
 		}
-		if (pred[3]) {
-			if (pred[4]) {
-				if (pred[5]) {
+		if (Ctrl->DATA.pred[3]) {
+			if (Ctrl->DATA.pred[4]) {
+				if (Ctrl->DATA.pred[5]) {
 					pbto = peto = 0;
 					nyto = 2736;
 					nsto = 3;
@@ -811,9 +877,8 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 				omdl = TRUE;
 				mmdl = 1;
 			}
-			igen = 1;
-			bfield(igen, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0,
-				epch, re, rp, rm, ut[n], cdip, edip, 0., dst[n], dstt, rse, &nt, &mt,
+			bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
+				Ctrl->DATA.date[n], cdip, edip, 0., Ctrl->D.dst[n], dstt, rse, &nt, &mt,
 				&rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gcto_mg, bc, gcto_mg, 
 				pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
@@ -836,10 +901,10 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 
 			blsgen(nyto, nyto, 2, bc, ecto, hyto);
 			ltrans(1, 1, bc, rlgm, &bmdl[18]);
-			if (coef)
-				getgxf(pbto, peto, 60, 12, &nt, ecto, &gmdl[nout-1], tdto);
+			if (Ctrl->DATA.coef)
+				getgxf(pbto, peto, 60, 12, &nt, ecto, &Ctrl->DATA.gmdl[nout-1], tdto);
 
-			if (curr) {
+			if (Ctrl->C.curr) {
 	        		bc[0] = bc[1] = bc[2] = 0.;
 				jpoloid(pbto, peto, 60, 12, ro, rm, nt, nyto, tdto, hq, hyto);
 				blsgen(nyto, nyto, 1, &bc[2], ecto, &hyto[nyto * 2]);
@@ -849,45 +914,47 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 					tseardr(omdl, 2, ntay, nsto, nyto, frho, tsto, ecto, &gcto_mg[(((mmdl << 1) + 1) * 3 + 1) * 2736 - 27360]);
 
 				blsgen(nyto, nyto, 2, bc, ecto, hyto);
-				ltrans(1, 1, bc, rlgm, &jmdl[9]);
+				ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[9]);
 			}
 		}
 
 		x = y = z = 0.0;
-		for (k = 0; k < nfval; k++) {			/* Sum all field sources */
-			x += bmdl[nf[k]*3]; 
-			y += bmdl[nf[k]*3+1]; 
-			z += bmdl[nf[k]*3+2]; 
+		for (k = 0; k < Ctrl->F.n_field_sources; k++) {		/* Sum all field sources */
+			x += bmdl[Ctrl->F.field_sources[k]*3]; 
+			y += bmdl[Ctrl->F.field_sources[k]*3+1]; 
+			z += bmdl[Ctrl->F.field_sources[k]*3+2]; 
 		}
-		for (j = 0; j < nval; j++) {			/* Loop over vector field components */
+		for (j = 0; j < Ctrl->F.n_field_components; j++) {	/* Loop over vector field components */
 			h = 0.;
-			if (no[j] == 0) {
+			if (Ctrl->F.field_components[j] == 0) {
 				t = sqrt(x*x + y*y + z*z); 
-				out_field[n*nval+j] = t;
+				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = t;
 			}
-			else if (no[j] == 1) {
+			else if (Ctrl->F.field_components[j] == 1) {
 				h = sqrt(x*x + y*y); 
-				out_field[n*nval+j] = h;
+				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = h;
 			}
-			else if (no[j] == 2)
-				out_field[n*nval+j] = x; 
-			else if (no[j] == 3)
-				out_field[n*nval+j] = y; 
-			else if (no[j] == 4)
-				out_field[n*nval+j] = z; 
-			else if (no[j] == 5)
-				out_field[n*nval+j] = atan2(y,x) * R2D; 
-			else if (no[j] == 6) {
+			else if (Ctrl->F.field_components[j] == 2)
+				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = x; 
+			else if (Ctrl->F.field_components[j] == 3)
+				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = y; 
+			else if (Ctrl->F.field_components[j] == 4)
+				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = z; 
+			else if (Ctrl->F.field_components[j] == 5)
+				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = atan2(y,x) * R2D; 
+			else if (Ctrl->F.field_components[j] == 6) {
 				if (!h) h = sqrt(x*x + y*y);
-				out_field[n*nval+j] = atan2(z,h) * R2D; 
+				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = atan2(z,h) * R2D; 
 			}
 		}
 	}
+	for (i = 0; i < 21; i++)		/* This is mostly for testing */
+		Ctrl->DATA.bmdl[i] = bmdl[i]; 
+
 	free ((void *) mut);
-	free ((void *) gpsq);
-	free ((void *) gssq);
-	free ((void *) gpmg);
-	free ((void *) gsmg);
+	free ((void *) gpsq);	free ((void *) gssq);	free ((void *) gpmg);
+	free ((void *) gsmg);	free ((void *) hysq);	free ((void *) epsq);
+	free ((void *) essq);	free ((void *) ecto);	free ((void *) hyto);
 	if (gcto_or) free((void *) gcto_or);
 	if (gcto_mg) free((void *) gcto_mg);
 	return 0;
@@ -1726,15 +1793,12 @@ void dbspln_(int *l, double *t, int *n, int * d__, int *k, double *x, double *b,
 }
 
 void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *g, double *t) {
-
-    /* Local variables */
     int m, n, p, ie, ig;
     double cosp, sinp;
 
     /* Parameter adjustments */
     --t;
     --g;
-    --e;
 
     /* Function Body */
     r8vset(1, *ng, 0., &g[1]);
@@ -1744,13 +1808,13 @@ void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *
 	cosp = t[p + 1];
 	sinp = t[p + 2 + pmax];
 	for (n = 1; n <= nmax; ++n) {
-	    g[ig] = g[ig] + e[ie + 1] * cosp + e[ie + 2] * sinp;
+	    g[ig] = g[ig] + e[ie] * cosp + e[ie + 1] * sinp;
 	    ++ig;
 	    ie += 2;
 	    for (m = 1; m <= MIN(n,mmax); ++m) {
-		g[ig] = g[ig] + (e[ie + 1] + e[ie + 3]) * cosp + (e[ie + 4] - e[ie + 2]) * sinp;
+		g[ig] = g[ig] + (e[ie] + e[ie + 2]) * cosp + (e[ie + 3] - e[ie + 1]) * sinp;
 		++ig;
-		g[ig] = g[ig] + (e[ie + 4] + e[ie + 2]) * cosp + (e[ie + 1] - e[ie + 3]) * sinp;
+		g[ig] = g[ig] + (e[ie + 3] + e[ie + 1]) * cosp + (e[ie] - e[ie + 2]) * sinp;
 		++ig;
 		ie += 4;
 	    }
@@ -1926,9 +1990,6 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
     static double thetao = 0.;
     static double clato = 0.;
 
-    /* System generated locals */
-    int i__1, i__2;
-
     /* Local variables */
     int m, n, ic, id, ip, lend, pgen, tgen;
     double fa, fc, fd, ar, fm, ra, fp, fr, fs, fn, fnm1, fnp1, fnp2, fnfp;
@@ -1992,8 +2053,7 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
 	id = 1;
 	ip = *ii;
 	ar = *rm / *ro;
-	i__1 = *nmni + 1;
-	fa = pow_di(&ar, &i__1);
+	fa = pow_di(ar, *nmni + 1);
 	for (n = *nmni; n <= *nmxi; ++n) {
 	    fnp1 = (double) (n + 1);
 	    fnp2 = (double) (n + 2);
@@ -2060,8 +2120,7 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
 	}
 	ip = *ie;
 	ra = *ro / *rm;
-	i__2 = *nmne - 2;
-	fr = pow_di(&ra, &i__2);
+	fr = pow_di(ra, *nmne - 2);
 	for (n = *nmne; n <= *nmxe; ++n) {
 	    fnm1 = (double) (n - 1);
 	    fn = (double) n;
@@ -3455,14 +3514,14 @@ double d_mod(double x, double y) {
 	return(x - y * quotient );
 }
 
-double pow_di(double *ap, int *bp) {
+double pow_di(double ap, int bp) {
 	double pow, x;
 	int n;
 	unsigned long u;
 
 	pow = 1;
-	x = *ap;
-	n = *bp;
+	x = ap;
+	n = bp;
 
 	if(n != 0) {
 		if(n < 0) {
@@ -3483,4 +3542,15 @@ double pow_di(double *ap, int *bp) {
 
 int i_dnnt(double x) {
 	return (int)(x >= 0. ? floor(x + .5) : -floor(.5 - x));
+}
+
+void *New_CM4_Ctrl () {	/* Allocate and initialize a new control structure */
+	struct CM4_CTRL *C;
+	
+	C = (struct CM4_CTRL *) calloc ((size_t)1, sizeof (struct CM4_CTRL));
+	return ((void *)C);
+}
+
+void Free_CM4_Ctrl (struct CM4_CTRL *C) {	/* Deallocate control structure */
+	free ((void *)C);	
 }
