@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.491 2009-04-29 13:13:35 remko Exp $
+	$Id: ChangeLog,v 1.492 2009-04-30 19:49:02 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-04-30	pwessel
+	* gmt_map.c:		Incorrectly used central longitude to set default midpoint for 3-D maps
+				using the -E...+ mechanism when data were not geographic.
 
 2009-04-29	remko
 	* PSL_proogue.ps:	Changed "bind def" to "def" in function /FS. The "bind def" slowed
