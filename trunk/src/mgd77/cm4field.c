@@ -107,7 +107,7 @@ void r8vsub(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double
 void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c);
 void r8vscale(int abeg, int alen, double s, double *a);
 void r8vscats(int qbeg, int qlen, double s, int *q, double *a);
-void r8vlinkt(int abeg, int bbeg, int vlen, double *s, double *a, double *b);
+void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b);
 void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, double *b, double *c);
 void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b);
 double d_mod(double x, double y);
@@ -338,35 +338,33 @@ int main(int argc, char **argv) {
 	}
 }
 
-static int c__1356 = 1356;
-static int c__13680 = 13680;
 
 int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 	int coef, int *nhmf, int *nlmf, double *ut, int n_times, double *theta, double *phi, double *alt, 
 	double *dst, double *f107, double *bmdl, double *jmdl, double *gmdl, int cerr, int *no, int *nf, 
 	int n_pts, int nval, int nfval, double *out_field) {
 
-	/* Local variables */
+	int c__1356 = 1356, c__13680 = 13680;
 	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr, jyr, jf107;
 	int lum1, lum2, lum3, lum4, lum5, lum6, lum7, nsm1, nsm2, lcmf, idim[12], omdl;
 	int lsmf, lpos, lcmg, lsmg, lcsq, lssq, lcto, lsto, lrto, idoy, n_Dst_rows;
 	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd, jdoy, mjdl, mjdh, iyrl, imol, iyrh, imoh;
 	int nout, nygo, igen, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
-	double *mut, dstt = 0., x, y, z, h, t;
+	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb;
 	double bc[28], re, hq[53040], wb[58], ht[17680], xd, yd, rm, xg, ro, rp, yg, zg, zd;
 	double ru, rt, rse[9], doy, fyr, ws[4355], gamf[8840], cego, epch, bkpo[12415];
-	double f107x[1200]	/* was [100][12] */;
-	double gpmg[13560]	/* was [1356][5][2] */; 
-	double *dstx;
-	static double gsmg[13560]	/* was [1356][5][2] */;  
-	static double hysq[82080]	/* was [13680][6] */; 
-	static double gpsq[136800]	/* was [13680][5][2] */;	/* IF NOT STATIC, PROGRAM CRASHES ???? */
-	static double gcto_or[136800]	/* was [13680][5][2] */;	/* IF NOT STATIC, PROGRAM CRASHES ???? */
-	static double gssq[68400]	/* was [13680][5] */;
-	static double hymg[8136]	/* was [1356][6] */;
-	static double gcto_mg[32832]	/* was [2736][3][2][2] */;
-	static double epmg[1356], esmg[1356], epsq[13680], essq[13680], ecto[16416], hyto[49248], pleg[4422], rcur[9104], trig[132];
+	double trig[132], epmg[1356], esmg[1356];
+	double f107x[1200];	/* was [100][12] */
+	double hymg[8136];	/* was [1356][6] */
+	double *gcto_or = NULL;	/* was [13680][5][2] */ 
+	double *gcto_mg = NULL;	/* was [2736][3][2][2] */ 
+	double *gpsq;		/* was [13680][5][2] */
+	double *gssq;		/* was [13680][5] */
+	double *gpmg;		/* was [1356][5][2] */ 
+	double *gsmg;		/* was [1356][5][2] */  
+	static double hysq[82080];	/* was [13680][6] */ 
+	static double epsq[13680], essq[13680], ecto[16416], hyto[49248], pleg[4422], rcur[9104];
 	double rlgm[15], rrgt[9], tsmg[6], tssq[6], tsto[6], tdmg[12], tdsq[10], tdto[10];
 	double rtay_dw, rtay_or, sinp, fsrf, rtay, frto, frho, thetas, rtay_dk;
 	double cnmp, enmp, omgs, omgd, hion, cpol, epol, ctmp, stmp, cemp, semp, rion, fdoy, clat, elon;
@@ -387,7 +385,6 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 /* Set maximum number of years for index table limits */
 /* ======================================================================= */
 
-/* ======================================================================= */
 	if (load[0]) {
 		if ((fp = fopen(path[0], "r")) == NULL) {
 			fprintf (stderr, "CM4: Could not open file %s\n", path[0]);
@@ -412,42 +409,57 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 		fscanf (fp, "%d %d", &lcmg, &lsmg);
 		fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
 		fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm);
-		for (k = 1; k <= 2; ++k)
-			for (j = 1; j <= lsmg; ++j)
-				for (i = 1; i <= lcmg; ++i)
-					fscanf (fp, "%lf", &gpmg[i + (j + k * 5) * 1356 - 8137]);
-		for (k = 1; k <= 2; ++k)
-			for (j = 1; j <= lsmg; ++j)
-				for (i = 1; i <= lcmg; ++i)
-					fscanf (fp, "%lf", &gsmg[i + (j + k * 5) * 1356 - 8137]);
+		gpmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
+		for (k = 0; k < 2; ++k)
+			for (j = 0; j < lsmg; ++j)
+				for (i = 0; i < lcmg; ++i)
+					fscanf (fp, "%lf", &gpmg[i + (j + k * 5) * 1356]);
+
+		gsmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
+		for (k = 0; k < 2; ++k)
+			for (j = 0; j < lsmg; ++j)
+				for (i = 0; i < lcmg; ++i)
+					fscanf (fp, "%lf", &gsmg[i + (j + k * 5) * 1356]);
 
 		fscanf (fp, "%d %d", &lcsq, &lssq);
 		fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
 		fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &hion);
-		for (k = 1; k <= 2; ++k)
-			for (j = 1; j <= lssq; ++j)
-				for (i = 1; i <= lcsq; ++i)
-					fscanf (fp, "%lf", &gpsq[i + (j + k * 5) * 13680 - 82081]);
-		for (j = 1; j <= lssq; ++j)
-			for (i = 1; i <= lcsq; ++i)
-				fscanf (fp, "%lf", &gssq[i + j * 13680 - 13681]);
+		gpsq = (double *) calloc((size_t)(2 * lssq * lcsq), sizeof(double));
+		for (k = 0; k < 2; ++k)
+			for (j = 0; j < lssq; ++j)
+				for (i = 0; i < lcsq; ++i)
+					fscanf (fp, "%lf", &gpsq[i + (j + k * 5) * 13680]);
+
+		gssq = (double *) calloc((size_t)(lssq * lcsq), sizeof(double));
+		for (j = 0; j < lssq; ++j)
+			for (i = 0; i < lcsq; ++i)
+				fscanf (fp, "%lf", &gssq[i + j * 13680]);
 
 		fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
 		fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
 		fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_dw, &rtay_dk);
-		for (l = 1; l <= 2; ++l)
-			for (k = 1; k <= lrto; ++k)
-				for (j = 1; j <= lsto; ++j)
-					for (i = 1; i <= lcto; ++i)
-						fscanf (fp, "%lf", &gcto_mg[i + (j + (k + (l << 1)) * 3) * 2736 - 27361]);
+		if (pred[3]) { 		/* In other cases the next coefficients are not used, so no waist time/memory with them */
+			gcto_mg = (double *) calloc((size_t)(2 * lrto * lsto * lcto), sizeof(double));
+			for (l = 0; l < 2; ++l)
+				for (k = 0; k < lrto; ++k)
+					for (j = 0; j < lsto; ++j)
+						for (i = 0; i < lcto; ++i)
+							fscanf (fp, "%lf", &gcto_mg[i + (j + (k + (l << 1)) * 3) * 2736]);
+		}
+		else			/* Jump the unused coeffs */
+			for (l = 0; l < 2 * lrto * lsto * lcto; ++l)
+				fscanf (fp, "%lf", &dumb);
 
 		fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
 		fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
 		fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_or);
-		for (k = 1; k <= lrto; ++k)
-			for (j = 1; j <= lsto; ++j)
-				for (i = 1; i <= lcto; ++i)
-					fscanf (fp, "%lf", &gcto_or[i + (j + k * 5) * 13680 - 82081]);
+		if (pred[3] && !pred[4]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
+			gcto_or = (double *) calloc((size_t)(lrto * lsto * lcto), sizeof(double));
+			for (k = 0; k < lrto; ++k)
+				for (j = 0; j < lsto; ++j)
+					for (i = 0; i < lcto; ++i)
+						fscanf (fp, "%lf", &gcto_or[i + (j + k * 5) * 13680]);
+		}
 
 		fclose(fp);
 		cpol = cnmp * D2R;
@@ -872,6 +884,12 @@ int cm4field_(char **path, int *load, int *indx, int cord, int *pred, int curr,
 		}
 	}
 	free ((void *) mut);
+	free ((void *) gpsq);
+	free ((void *) gssq);
+	free ((void *) gpmg);
+	free ((void *) gsmg);
+	if (gcto_or) free((void *) gcto_or);
+	if (gcto_mg) free((void *) gcto_mg);
 	return 0;
 }
 
@@ -1121,30 +1139,30 @@ void tsearad(int full, int ks, int kr, int ns, int ng, double f, double *t, doub
     r8vset(1, ng, 0., &e[0]);
     j = 1;
     s = 1.;
-    r8vlinkt(1, 1, ng, &s, &g[(j + ns) * ng + 1], &e[0]);
+    r8vlinkt(1, 1, ng, s, &g[(j + ns) * ng + 1], &e[0]);
     for (i = 1; i <= ks; ++i) {
 	++j;
 	s = t[i + 1];
-	r8vlinkt(1, 1, ng, &s, &g[(j + ns) * ng + 1], &e[0]);
+	r8vlinkt(1, 1, ng, s, &g[(j + ns) * ng + 1], &e[0]);
 	if (full) {
 	    ++j;
 	    s = t[i + ks + 2];
-	    r8vlinkt(1, 1, ng, &s, &g[(j + ns) * ng + 1], &e[0]);
+	    r8vlinkt(1, 1, ng, s, &g[(j + ns) * ng + 1], &e[0]);
 	}
     }
     z = 1.;
     for (k = 1; k <= kr; ++k) {
 	j = 1;
 	z = z * f / (double) k;
-	r8vlinkt(1, 1, ng, &z, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
+	r8vlinkt(1, 1, ng, z, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
 	for (i = 1; i <= ks; ++i) {
 	    ++j;
 	    s = t[i + 1] * z;
-	    r8vlinkt(1, 1, ng, &s, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
+	    r8vlinkt(1, 1, ng, s, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
 	    if (full) {
 		++j;
 		s = t[i + ks + 2] * z;
-		r8vlinkt(1, 1, ng, &s, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
+		r8vlinkt(1, 1, ng, s, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
 	    }
 	}
     }
@@ -1163,15 +1181,15 @@ void tseardr(int full, int ks, int kr, int ns, int ng, double f, double *t, doub
     z = 1.;
     for (k = 1; k <= kr; ++k) {
 	j = 1;
-	r8vlinkt(1, 1, ng, &z, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
+	r8vlinkt(1, 1, ng, z, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
 	for (i = 1; i <= ks; ++i) {
 	    ++j;
 	    s = t[i + 1] * z;
-	    r8vlinkt(1, 1, ng, &s, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
+	    r8vlinkt(1, 1, ng, s, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
 	    if (full) {
 		++j;
 		s = t[i + ks + 2] * z;
-		r8vlinkt(1, 1, ng, &s, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
+		r8vlinkt(1, 1, ng, s, &g[(j + (k + 1) * ns) * ng + 1], &e[0]);
 	    }
 	}
 	z = z * f / (double) k;
@@ -1184,48 +1202,42 @@ void mseason(int ks, int ns, int ng, double d, double *t, double *e, double *g) 
 
     /* Parameter adjustments */
     g -= (1 + ng * (1 + ns));
-    --e;
-    --t;
-
-    /* Function Body */
-    r8vset(1, ng, 0., &e[1]);
-    j = 1;
-    s = 1.;
-    r8vlinkt(1, 1, ng, &s, &g[(j + ns) * ng + 1], &e[1]);
-    r8vlinkt(1, 1, ng, &d, &g[(j + (ns << 1)) * ng + 1], &e[1]);
-    for (i = 1; i <= ks; ++i) {
-	++j;
-	s = t[i + 1];
-	r8vlinkt(1, 1, ng, &s, &g[(j + ns) * ng + 1], &e[1]);
-	s *= d;
-	r8vlinkt(1, 1, ng, &s, &g[(j + (ns << 1)) * ng + 1], &e[1]);
-	++j;
-	s = t[i + ks + 2];
-	r8vlinkt(1, 1, ng, &s, &g[(j + ns) * ng + 1], &e[1]);
-	s *= d;
-	r8vlinkt(1, 1, ng, &s, &g[(j + (ns << 1)) * ng + 1], &e[1]);
-    }
-}
-
-void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g) {
-    int i, j;
-    double s;
-
-    /* Parameter adjustments */
-    g -= (1 + ng);
 
     /* Function Body */
     r8vset(1, ng, 0., &e[0]);
     j = 1;
-    r8vlinkt(1, 1, ng, &f, &g[j * ng + 1], &e[0]);
+    s = 1.;
+    r8vlinkt(1, 1, ng, s, &g[(j + ns) * ng + 1], &e[0]);
+    r8vlinkt(1, 1, ng, d, &g[(j + (ns << 1)) * ng + 1], &e[0]);
     for (i = 1; i <= ks; ++i) {
 	++j;
-	s = f * t[i];
-	r8vlinkt(1, 1, ng, &s, &g[j * ng + 1], &e[0]);
+	s = t[i];
+	r8vlinkt(1, 1, ng, s, &g[(j + ns) * ng + 1], &e[0]);
+	s *= d;
+	r8vlinkt(1, 1, ng, s, &g[(j + (ns << 1)) * ng + 1], &e[0]);
 	++j;
-	s = f * t[i + ks + 1];
-	r8vlinkt(1, 1, ng, &s, &g[j * ng + 1], &e[0]);
+	s = t[i + ks + 1];
+	r8vlinkt(1, 1, ng, s, &g[(j + ns) * ng + 1], &e[0]);
+	s *= d;
+	r8vlinkt(1, 1, ng, s, &g[(j + (ns << 1)) * ng + 1], &e[0]);
     }
+}
+
+void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g) {
+	int i, j;
+	double s;
+
+	r8vset(1, ng, 0., &e[0]);
+	j = 0;
+	r8vlinkt(1, 1, ng, f, &g[j * ng], &e[0]);
+	for (i = 1; i <= ks; ++i) {
+		++j;
+		s = f * t[i];
+		r8vlinkt(1, 1, ng, s, &g[j * ng], &e[0]);
+		++j;
+		s = f * t[i + ks + 1];
+		r8vlinkt(1, 1, ng, s, &g[j * ng], &e[0]);
+	}
 }
 
 void mpotent(int nmax, int mmax, int nd, int nz, double cphi, double sphi, double *d, double *z) {
@@ -2146,14 +2158,11 @@ void geocen_(int *ctyp, double *re, double *rp, double *rm, double *h, double *c
 }
 
 void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sinthe, double *costhe, double *p, double *r) {
-    /* Initialized data */
 
-    static double root3 = 1.732050807568877;
-
-    /* Local variables */
     int l, n, np, kd0, kd1, kd2, kp0, kp1, kp2, kq2, kq1, kq0, ksm2, ktm2, ksec, ktes, knnp, nd0sec;
     int np1sec, nd0tes, nd1tes, np1tes, np2tes, nq0nnp, nq0msq;
-    double d__1, cscth2, costh2, sinth2, cscthe, cotthe, cthsth;
+    double cscth2, costh2, sinth2, cscthe, cotthe, cthsth;
+    double root3 = 1.732050807568877;
 
     /* Parameter adjustments */
     --r;
@@ -2271,10 +2280,8 @@ void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sint
 			if (*grad == 1) {
 			    r8vset(kq0, l, 0., &p[1]);
 			    r8vlinkq(kp0, nq0msq + ktm2, kq0, l, cscth2, &p[1], &r[1], &p[1]);
-			    d__1 = -r[nq0nnp + knnp];
-			    r8vlinkt(kp0, kq0, l, &d__1, &p[1], &p[1]);
-			    d__1 = -cotthe;
-			    r8vlinkt(kd0, kq0, l, &d__1, &p[1], &p[1]);
+			    r8vlinkt(kp0, kq0, l, -r[nq0nnp + knnp], &p[1], &p[1]);
+			    r8vlinkt(kd0, kq0, l, -cotthe, &p[1], &p[1]);
 			}
 			ktes += l;
 		    }
@@ -3156,16 +3163,16 @@ void ltranv(int rfac, int n, int m, double *r, double *v) {
 	    r[13] -= r[10] * r[14];
 	}
 	r8vscale(1, m, r[1], &v[0]);
-	r8vlinkt(n+1, 1, m, &r[2], &v[0], &v[0]);
-	r8vlinkt(n + n + 1, 1, m, &r[3], &v[0], &v[0]);
+	r8vlinkt(n+1, 1, m, r[2], &v[0], &v[0]);
+	r8vlinkt(n + n + 1, 1, m, r[3], &v[0], &v[0]);
 	i__1 = n + 1;
 	r8vscale(i__1, m, r[11], &v[0]);
-	r8vlinkt(1, i__1, m, &r[10], &v[0], &v[0]);
+	r8vlinkt(1, i__1, m, r[10], &v[0], &v[0]);
 	i__1 = n + n + 1;
-	r8vlinkt(i__1, n+1, m, &r[12], &v[0], &v[0]);
+	r8vlinkt(i__1, n+1, m, r[12], &v[0], &v[0]);
 	r8vscale(i__1, m, r[15], &v[0]);
-	r8vlinkt(1, i__1, m, &r[13], &v[0], &v[0]);
-	r8vlinkt(n+1, i__1, m, &r[14], &v[0], &v[0]);
+	r8vlinkt(1, i__1, m, r[13], &v[0], &v[0]);
+	r8vlinkt(n+1, i__1, m, r[14], &v[0], &v[0]);
     }
 }
 
@@ -3397,7 +3404,7 @@ void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
 
 }
 
-void r8vlinkt(int abeg, int bbeg, int vlen, double *s, double *a, double *b) {
+void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b) {
     int i, aadr, badr;
 
     /* Parameter adjustments */
@@ -3407,7 +3414,7 @@ void r8vlinkt(int abeg, int bbeg, int vlen, double *s, double *a, double *b) {
     aadr = abeg;
     badr = bbeg;
     for (i = 1; i <= vlen; ++i)
-	b[badr++] += *s * a[aadr++];
+	b[badr++] += s * a[aadr++];
 }
 
 void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, double *b, double *c) {
