@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.198 2009-04-29 13:13:35 remko Exp $
+ *	$Id: pslib.c,v 1.199 2009-05-01 17:35:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1232,11 +1232,13 @@ int ps_plotinit_hires (char *plotfile, int overlay, int mode, double xoff, doubl
 	PSL->init.magnify[0] = xscl;	PSL->init.magnify[1] = yscl;
 	/* Duplicate entire contents of EPS structure - to be freed by ps_plotend() */
 	PSL->init.eps = (struct EPS *) ps_memory (VNULL, 1L, sizeof (struct EPS));
-	memcpy ((void *)PSL->init.eps, (void *)eps,sizeof(struct EPS));
-	PSL->init.eps->name = (char *) ps_memory (VNULL, (size_t)(strlen (eps->name) + 1), sizeof (char));
-	strcpy (PSL->init.eps->name, eps->name);
-	PSL->init.eps->title = (char *) ps_memory (VNULL, (size_t)(strlen (eps->title) + 1), sizeof (char));
-	strcpy (PSL->init.eps->title, eps->title);
+	if (eps) {	/* Copy over user's settings */
+		memcpy ((void *)PSL->init.eps, (void *)eps,sizeof(struct EPS));
+		PSL->init.eps->name = (char *) ps_memory (VNULL, (size_t)(strlen (eps->name) + 1), sizeof (char));
+		strcpy (PSL->init.eps->name, eps->name);
+		PSL->init.eps->title = (char *) ps_memory (VNULL, (size_t)(strlen (eps->title) + 1), sizeof (char));
+		strcpy (PSL->init.eps->title, eps->title);
+	}
 		
 	/* Determine SHAREDIR (directory containing pslib and pattern subdirectories) */
 
