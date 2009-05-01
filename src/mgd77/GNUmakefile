@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.12 2008-03-05 02:11:58 guru Exp $
+#  $Id: GNUmakefile,v 1.13 2009-05-01 23:06:41 guru Exp $
 #
 #	Guru Makefile for GMT Version 4.x mgd77 directory
 #	
@@ -22,12 +22,6 @@ mgd77_functions.h mgd77_functions.c:	mgd77netcdfhelper.sh mgd77_header.txt
 
 mgd77_codes.h mgd77_codes.txt:		mgd77_codes.sh
 		$(SHELL) mgd77_codes.sh
-
-cm4field.c:	cm4field.f
-
-cm4field.f:
-	wget http://core2.gsfc.nasa.gov/CM/cm4field.f
-	f2c cm4field.f
 
 CM4:
 	wget http://core2.gsfc.nasa.gov/CM/umdl.CM4

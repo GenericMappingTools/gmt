@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.218 2009-04-14 04:55:29 guru Exp $
+ *	$Id: mgd77.c,v 1.219 2009-05-01 23:06:42 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4806,27 +4806,6 @@ double MGD77_Recalc_Mag_Anomaly_IGRF (double time, double lon, double lat, doubl
 }
 
 #ifdef USE_CM4 
-void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4)
-{
-	int i;
-	char file[BUFSIZ];
-	MGD77_Set_Home (F);
-
-	memset ((void *)CM4, 0, sizeof (struct MGD77_CM4));	/* All is set to 0/FALSE */
-	sprintf (file, "%s%cumdl.CM4", F->MGD77_HOME, DIR_DELIM);
-	CM4->path[0] = strdup (file);
-	sprintf (file, "%s%cDst_all.wdc", F->MGD77_HOME, DIR_DELIM);
-	CM4->path[1] = strdup (file);
-	sprintf (file, "%s%cF107_mon.plt", F->MGD77_HOME, DIR_DELIM);
-	CM4->path[2] = strdup (file);
-	for (i = 0; i < 3; i++) {	/* Just set to 11,12,13 */
-		CM4->unit[i] = 11 + i;
-	}
-	CM4->cord = TRUE;	/* Geodetic */
-	CM4->pred[0] = TRUE;	/* Get main field */
-	/* Presumably allocate space for coefficients */
-}
-
 void MGD77_CM4_end (struct MGD77_CM4 *CM4)
 {
 	int i;
@@ -5218,3 +5197,30 @@ double MGD77_time_to_fyear (double time) {
 	time = cal.year + cal.day_y / n_days + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY;
 	return (time);
 }
+
+void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4)
+{
+	char file[BUFSIZ];
+	MGD77_Set_Home (F);
+
+	memset ((void *)CM4, 0, sizeof (struct MGD77_CM4));	/* All is set to 0/FALSE */
+	GMT_getsharepath ("mgd77", "umdl", ".CM4", file);
+	CM4->M.path = strdup (file);
+	GMT_getsharepath ("mgd77", "Dst_all", ".wdc", file);
+	CM4->D.path = strdup (file);
+	GMT_getsharepath ("mgd77", "F107_mon", ".plt", file);
+	CM4->I.path = strdup (file);
+	CM4->D.index = TRUE;
+	CM4->D.load = TRUE;
+	CM4->I.index = TRUE;
+	CM4->I.load = TRUE;
+	CM4->G.geodetic = FALSE;
+	CM4->S.nlmf[0] = 1;
+	CM4->S.nlmf[1] = 14;
+	CM4->S.nhmf[0] = 13;
+	CM4->S.nhmf[1] = 65;
+	CM4->DATA.pred[0] = CM4->DATA.pred[1] = CM4->DATA.pred[2] = CM4->DATA.pred[3] = TRUE;
+	CM4->DATA.pred[4] = CM4->DATA.pred[5] = FALSE;
+}
+
+#include "cm4_functions.c"
