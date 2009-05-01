@@ -116,7 +116,7 @@ void fdsdc_(int *rgen, int *ityp, int *etyp, int *nsi, int *nse, int *nc, int *n
 	double *tb, double *dst, double *dstt, int *dsti, int *bori, int *bkni, double *bkpi, int *tdgi, 
 	int *dste, int *bore, int *bkne, double *bkpe, int *tdge, int *u, double *w, double *dsdc, int *cerr);
 void taylor(int nc, int ns, double ta, double tb, int *tdeg, int *u, double *dsdt, double *dsdc);
-void bsplyn(int nc, int ns, double *ta, double *tb, int *bord, int *bkno, double *bkpo, int *u, double *dtdb, double *dsdc, int cerr);
+void bsplyn(int nc, int ns, double *ta, double *tb, int *bord, int *bkno, double *bkpo, int *u, double *dtdb, double *dsdc, int *cerr);
 void sbspln_(double *ta, double *tb, int *n, int *k, double *bkpo, double *dtdb, double *dsdc, int *cerr);
 void tbspln_(double *t, int *n, int *k, double *bkpo, double *dtdb, int *cerr);
 void dstorm(int nc, int ns, double *dst, double *dstt, int *dstm, int *u, double *dsdc);
@@ -386,7 +386,7 @@ int main(int argc, char **argv) {
 	if (Ctrl->DATA.n_pts > 0) {
 		for (i = 0; i < Ctrl->DATA.n_pts; i++) {
 			for (j = 0; j < Ctrl->F.n_field_components; j++)
-				fprintf(stderr, "%.2f\t", Ctrl->DATA.out_field[i*nval+j]);
+				fprintf(stderr, "%.2f\t", Ctrl->DATA.out_field[i*Ctrl->F.n_field_components+j]);
 			fprintf(stderr,"\n");
 		}
 	}
@@ -394,6 +394,7 @@ int main(int argc, char **argv) {
 	Free_CM4_Ctrl (Ctrl);	/* Deallocate control structure */
 }
 
+#include <time.h>
 
 int cm4field(struct CM4_CTRL *Ctrl) {
 
@@ -2516,7 +2517,7 @@ void fdsdc_(int *rgen, int *ityp, int *etyp, int *nsi, int *nse, int *nc, int *n
 	    if (isvr == 1)
 		taylor(*nc, *nsi, *ta, *tb, &tdgi[1], &u[1], &w[1], &dsdc[1]);
 	    else if (isvr == 2) {
-		bsplyn(*nc, *nsi, ta, tb, &bori[1], &bkni[1], &bkpi[1], &u[1], &w[1], &dsdc[1], *cerr);
+		bsplyn(*nc, *nsi, ta, tb, &bori[1], &bkni[1], &bkpi[1], &u[1], &w[1], &dsdc[1], cerr);
 		if (*cerr >= 50) goto L10;
 	    }
 	    if (idst == 1)
@@ -2536,7 +2537,7 @@ L10:
 	    if (esvr == 1)
 		taylor(*nc, *nse, *ta, *tb, &tdge[1], &u[*nsi + 1], &w[1], &dsdc[*nci + 1]);
 	    else if (esvr == 2) {
-		bsplyn(*nc, *nse, ta, tb, &bore[1], &bkne[1], &bkpe[1], &u[*nsi + 1], &w[1], &dsdc[*nci + 1], *cerr);
+		bsplyn(*nc, *nse, ta, tb, &bore[1], &bkne[1], &bkpe[1], &u[*nsi + 1], &w[1], &dsdc[*nci + 1], cerr);
 		if (*cerr >= 50) goto L20;
 	    }
 	    if (edst == 1)
@@ -2574,7 +2575,7 @@ void taylor(int nc, int ns, double ta, double tb, int *tdeg, int *u, double *dsd
     }
 }
 
-void bsplyn(int nc, int ns, double *ta, double *tb, int *bord, int *bkno, double *bkpo, int *u, double *dtdb, double *dsdc, int cerr) {
+void bsplyn(int nc, int ns, double *ta, double *tb, int *bord, int *bkno, double *bkpo, int *u, double *dtdb, double *dsdc, int *cerr) {
     int i, k, l, m, n, ik, iu;
 
     /* Parameter adjustments */
@@ -2594,11 +2595,11 @@ void bsplyn(int nc, int ns, double *ta, double *tb, int *bord, int *bkno, double
 	iu = u[i];
 	if (n > 0) {
 	    m = n + 1;
-	    sbspln_(ta, tb, &m, &k, &bkpo[ik], &dtdb[1], &dsdc[iu], &cerr);
-	    if (cerr >= 50) return;
+	    sbspln_(ta, tb, &m, &k, &bkpo[ik], &dtdb[1], &dsdc[iu], cerr);
+	    if (*cerr >= 50) return;
 	    r8vset(1, l + 1, 0., &dtdb[1]);
-	    tbspln_(tb, &n, &k, &bkpo[ik], &dtdb[1], &cerr);
-	    if (cerr >= 50) return;
+	    tbspln_(tb, &n, &k, &bkpo[ik], &dtdb[1], cerr);
+	    if (*cerr >= 50) return;
 	    r8vgathp(1, 1, nc + iu, l, &dtdb[1], &dsdc[1]);
 	} else if (k > 0) {
 	    r8vset(iu, l, 0., &dsdc[1]);
@@ -2703,8 +2704,10 @@ void tbspln_(double *t, int *n, int *k, double *bkpo, double *dtdb, int *cerr) {
 		++m;
 	    }
 	}
-    } else
+    } else {
 	fprintf (stderr, "SUBROUTINE TBSPLN -- ERROR CODE 54 -- T LIES OUTSIDE OF KNOT DOMAIN -- ABORT\n");
+	*cerr = 50;
+    }
 }
 
 void dstorm(int nc, int ns, double *dst, double *dstt, int *dstm, int *u, double *dsdc) {
