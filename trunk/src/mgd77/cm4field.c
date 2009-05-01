@@ -106,7 +106,7 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
 	double *rp, double *rm, double *ro, int *nsi, int *nc, int *nci, int *np, int *ii, int *ie, int *
 	nmni, int *nmxi, int *nmne, int *nmxe, int *nmax, int *mmni, int *mmxi, int *mmne, int *mmxe, int *
 	mmin, int *mmax, double *theta, double *p, double *r, double *t, int *u, double *w, double *dldc, int *cerr);
-void geocen_(int *ctyp, double *re, double *rp, double *rm, double *h, double *clat, double *r, double *theta, double *sinthe, double *costhe);
+void geocen(int ctyp, double re, double rp, double rm, double h, double clat, double *r, double *theta, double *sinthe, double *costhe);
 void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sinthe, double *costhe, double *p, double *r);
 void srecur_(int *grad, int *nmax, int *mmin, int *mmax, int *ksm2, int *ktm2, int *npall, int *
 	nad1, int *nad2, int *nad3, int *nad4, int *nad5, int *nad6, int *nad7, int *nad8, double *r);
@@ -163,7 +163,7 @@ int i_dnnt(double x);
 /* --------------------------------------------------------------------------- */
 int main(int argc, char **argv) {
 
-	int	i, j, ijour, imon, ian, multiple_date = 0, multiple_alt = 0, n_pts, pos_slash = 0;
+	int	i, j, ijour, imon, ian, multiple_date = 0, multiple_alt = 0, pos_slash = 0;
 	int	nval = 0, nfval = 0, n_arg_no_char = 0;
 	int	date_mmddyyyy = 0, date_year = 1, date_year_jul = 0;
 	int	got_point = FALSE;
@@ -352,6 +352,10 @@ int main(int argc, char **argv) {
 	else {
 		Ctrl->DATA.lon[0] = -10;	Ctrl->DATA.lon[1] = -10; 
 		Ctrl->DATA.lat[0] = 45;		Ctrl->DATA.lat[1] = 45;
+	//Ctrl->DATA.n_pts = 1e4;
+	//Ctrl->DATA.lon = (double *) calloc((size_t)(Ctrl->DATA.n_pts), sizeof(double));
+	//Ctrl->DATA.lat = (double *) calloc((size_t)(Ctrl->DATA.n_pts), sizeof(double));
+
 		Ctrl->DATA.date[0] = 2000;	//Ctrl->DATA.date[1] = 2000.3;
 		Ctrl->DATA.alt = 0;
 		Ctrl->DATA.n_pts = 2;
@@ -384,7 +388,7 @@ int main(int argc, char **argv) {
 	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", Ctrl->DATA.bmdl[18],Ctrl->DATA.bmdl[19],Ctrl->DATA.bmdl[20]);
 
 	/* Temporary - for testing only */
-	if (Ctrl->DATA.n_pts > 0) {
+	if (Ctrl->DATA.n_pts < 0) {
 		for (i = 0; i < Ctrl->DATA.n_pts; i++) {
 			for (j = 0; j < Ctrl->F.n_field_components; j++)
 				fprintf(stderr, "%.2f\t", Ctrl->DATA.out_field[i*Ctrl->F.n_field_components+j]);
@@ -406,7 +410,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd, jdoy, mjdl, mjdh, iyrl, imol, iyrh, imoh;
 	int nout, nygo, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
-	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb, bmdl[21], date, dst;
+	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb, bmdl[21], date, dst, mut_now;
 	double bc[28], re, hq[53040], wb[58], ht[17680], xd, yd, rm, xg, ro, rp, yg, zg, zd;
 	double ru, rt, rse[9], doy, fyr, ws[4355], gamf[8840], cego, epch, bkpo[12415];
 	double trig[132], epmg[1356], esmg[1356];
@@ -643,10 +647,12 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 		if (Ctrl->DATA.n_times > 1) {
 			date = Ctrl->DATA.date[n];
 			dst = Ctrl->D.dst[n];
+			mut_now = mut[n];
 		}
 		else {
 			date = Ctrl->DATA.date[0];
 			dst = Ctrl->D.dst[0];
+			mut_now = mut[0];
 		}
 
 		if (Ctrl->DATA.coef) {
@@ -700,7 +706,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 		}
 		if (Ctrl->DATA.pred[1] || Ctrl->DATA.pred[2] || Ctrl->DATA.pred[3]) {
 			if (!Ctrl->DATA.pred[0])
-				geocen_(&csys, &re, &rp, &rm, &Ctrl->DATA.alt, &clat, &ro, &thetas, &sthe, &cthe);
+				geocen(csys, re, rp, rm, Ctrl->DATA.alt, clat, &ro, &thetas, &sthe, &cthe);
 
 			psiz = thetas - clat;
 			cpsi = cos(psiz);
@@ -735,7 +741,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 			rrgt[2] = -cemo * stmo; rrgt[5] = -semo * stmo; rrgt[8] = -ctmo;
 			rmerge_(rlgm, rrgt);
 			taus = omgs * date;
-			taud = omgd * mut[n];
+			taud = omgd * mut_now;
 		}
 		if (Ctrl->DATA.pred[1]) {
 			bfield(1, 11, 11, 1, 1, 6, 6, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
@@ -889,10 +895,9 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 				omdl = TRUE;
 				mmdl = 1;
 			}
-			bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-				date, cdip, edip, 0., dst, dstt, rse, &nt, &mt,
-				&rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gcto_mg, bc, gcto_mg, 
-				pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
+			bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm, date, cdip, edip, 0., 
+				dst, dstt, rse, &nt, &mt, &rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, 
+				us, gcto_mg, bc, gcto_mg, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
 			frto = rm / ro;
 			frho = (ro - rtay) / rm;
@@ -901,7 +906,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 			trigmp(peto, taud, tdto);
 			for (p = pbto; p <= peto; ++p) {
 				cosp = tdto[p];
-				sinp = tdto[p + 2 + peto - 1];
+				sinp = tdto[p + 1 + peto];
 				mstream(60, 12, nt, nyto, cosp, sinp, frto, hq, &hyto[jy - 1]);
 				jy += 2736;
 			}
@@ -1320,7 +1325,8 @@ void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g) 
 }
 
 void mpotent(int nmax, int mmax, int nd, int nz, double cphi, double sphi, double *d, double *z) {
-    int m, n, id, iz, nd2;
+    int m, n, id, iz, nd2, ii;
+	double d1, d2, d3;
 
     /* Parameter adjustments */
     z -= (1 + nz);
@@ -1479,7 +1485,7 @@ void jtbelow(int pmin, int pmax, int nmax, int mmax, double r, double rref, int 
 }
 
 void jtbcont(int pmin, int pmax, int nmax, int mmax, double rold, double rnew, int nz, double *z) {
-    int m, n, p, iz;
+    int m, n, p, iz, ii;
     double frbg, fcur, fpsi, frmu;
 
     /* Parameter adjustments */
@@ -1494,30 +1500,30 @@ void jtbcont(int pmin, int pmax, int nmax, int mmax, double rold, double rnew, i
 	for (n = 1; n <= nmax; ++n) {
 	    fcur = fpsi * frmu;
 	    ++iz;
-	    z[iz + nz] = fcur * z[iz + nz];
-	    z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-	    z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+		ii = iz + nz;		z[ii] = fcur * z[ii];
+		ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+		ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 	    ++iz;
-	    z[iz + nz] = fcur * z[iz + nz];
-	    z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-	    z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+		ii = iz + nz;		z[ii] = fcur * z[ii];
+		ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+		ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 	    for (m = 1; m <= MIN(n,mmax); ++m) {
 		++iz;
-		z[iz + nz] = fcur * z[iz + nz];
-		z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-		z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+			ii = iz + nz;		z[ii] = fcur * z[ii];
+			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 		++iz;
-		z[iz + nz] = fcur * z[iz + nz];
-		z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-		z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+			ii = iz + nz;		z[ii] = fcur * z[ii];
+			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 		++iz;
-		z[iz + nz] = fcur * z[iz + nz];
-		z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-		z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+			ii = iz + nz;		z[ii] = fcur * z[ii];
+			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 		++iz;
-		z[iz + nz] = fcur * z[iz + nz];
-		z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-		z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+			ii = iz + nz;		z[ii] = fcur * z[ii];
+			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 	    }
 	    fpsi *= frmu;
 	}
@@ -1808,26 +1814,18 @@ void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *
     int m, n, p, ie, ig;
     double cosp, sinp;
 
-    /* Parameter adjustments */
-    --t;
-    --g;
-
-    /* Function Body */
-    r8vset(1, *ng, 0., &g[1]);
+    r8vset(1, *ng, 0., &g[0]);
     ie = 0;
     for (p = pmin; p <= pmax; ++p) {
-	ig = 1;
-	cosp = t[p + 1];
-	sinp = t[p + 2 + pmax];
+	ig = 0;
+	cosp = t[p];
+	sinp = t[p + 1 + pmax];
 	for (n = 1; n <= nmax; ++n) {
-	    g[ig] = g[ig] + e[ie] * cosp + e[ie + 1] * sinp;
-	    ++ig;
+	    g[ig++] += (e[ie] * cosp + e[ie + 1] * sinp);
 	    ie += 2;
 	    for (m = 1; m <= MIN(n,mmax); ++m) {
-		g[ig] = g[ig] + (e[ie] + e[ie + 2]) * cosp + (e[ie + 3] - e[ie + 1]) * sinp;
-		++ig;
-		g[ig] = g[ig] + (e[ie + 3] + e[ie + 1]) * cosp + (e[ie] - e[ie + 2]) * sinp;
-		++ig;
+		g[ig++] += ((e[ie] + e[ie + 2]) * cosp + (e[ie + 3] - e[ie + 1]) * sinp);
+		g[ig++] += ((e[ie + 3] + e[ie + 1]) * cosp + (e[ie] - e[ie + 2]) * sinp);
 		ie += 4;
 	    }
 	}
@@ -1911,13 +1909,11 @@ void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, in
 
     /* Function Body */
     if (*rgen == 1) {
-	i__1 = MIN(MIN(*nmni,*nmxi), *nmne);
-	if (MIN(i__1,*nmxe) < 0) {
+	if (MIN(MIN(MIN(*nmni,*nmxi), *nmne),*nmxe) < 0) {
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 50 -- NMNI, NMXI, NMNE, OR NMXE < 0 -- ABORT\n");
 		return;
 	}
-	i__1 = MIN(MIN(*mmni,*mmxi), *mmne);
-	if (MIN(i__1,*mmxe) < 0) {
+	if (MIN(MIN(MIN(*mmni,*mmxi), *mmne), *mmxe) < 0) {
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 51 -- MMNI, MMXI, MMNE, OR MMXE < 0 -- ABORT\n");
 		return;
 	}
@@ -2017,7 +2013,7 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
     --p;
 
     /* Function Body */
-    geocen_(ctyp, re, rp, rm, h__, clat, ro, theta, &sinthe, &costhe);
+    geocen(*ctyp, *re, *rp, *rm, *h__, *clat, ro, theta, &sinthe, &costhe);
     pgen = *rgen - 6;
     tgen = pgen;
     if (phio != *phi) {
@@ -2201,26 +2197,25 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
     }
 }
 
-void geocen_(int *ctyp, double *re, double *rp, double *rm, double *h, double *clat, double *r, double *theta, double *sinthe, double *costhe) {
-
-    int ifirst = 1;
+void geocen(int ctyp, double re, double rp, double rm, double h, double clat, double *r, double *theta, double *sinthe, double *costhe) {
+    static int ifirst = 1;
     double re2, rp2, kappa, rhoew, rhons, costh2, sinth2;
 
-    *theta = *clat;
-    *r = *rm + *h;
+    *theta = clat;
+    *r = rm + h;
     *sinthe = sin(*theta);
     *costhe = cos(*theta);
-    if (*ctyp == 0) {
+    if (ctyp == 0) {
 	if (ifirst == 1) {
 	    ifirst = 0;
-	    re2 = *re * *re;
-	    rp2 = *rp * *rp;
+	    re2 = re * re;
+	    rp2 = rp * rp;
 	}
 	sinth2 = *sinthe * *sinthe;
 	costh2 = *costhe * *costhe;
-	kappa = sqrt(re2 * sinth2 + rp2 * costh2);
-	rhoew = re2 / kappa + *h;
-	rhons = rp2 / kappa + *h;
+	kappa = 1. / sqrt(re2 * sinth2 + rp2 * costh2) + h;
+	rhoew = re2 * kappa;
+	rhons = rp2 * kappa;
 	*theta = atan2(rhoew * *sinthe, rhons * *costhe);
 	*r = sqrt(rhoew * rhoew * sinth2 + rhons * rhons * costh2);
 	*sinthe = sin(*theta);
@@ -2576,9 +2571,9 @@ void taylor(int nc, int ns, double ta, double tb, int *tdeg, int *u, double *dsd
 	if (n > 0) {
 	    iu = u[i];
 	    dsdt[1] = 1.;
-	    for (j = 1; j <= n; ++j) {
+	    for (j = 1; j <= n; ++j)
 		dsdt[j + 1] = dsdt[j] * dt / (double) j;
-	    }
+
 	    r8vgathp(2, 1, iu, n, &dsdt[1], &dsdc[0]);
 	    r8vgathp(1, 1, nc + iu, n, &dsdt[1], &dsdc[0]);
 	    u[i] += n;
@@ -2969,9 +2964,7 @@ void fdldeu_(int *k, int *na, int *ia, double *seulx, double *ceulx, double *seu
 	    i += *na;
 	}
     } else {
-	r[0] = 0.;
-	r[1] = 0.;
-	r[2] = 0.;
+	r[0] = r[1] = r[2] = 0.;
 	r[3] = -(*ceuly) * *seulx * *seulz + *seuly * *ceulx;
 	r[4] = -(*seulx) * *ceulz;
 	r[5] = *ceuly * *ceulx + *seuly * *seulz * *seulx;
@@ -3106,13 +3099,9 @@ void tvn_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, do
 	slpz = a[*ia + 2];
 	fdldsl_(k, na, ia, &b[0], &dlda[0]);
 	r[0] = slpx;
-	r[1] = 0.;
-	r[2] = 0.;
-	r[3] = 0.;
+	r[1] = r[2] = r[3] = 0.;
 	r[4] = slpy;
-	r[5] = 0.;
-	r[6] = 0.;
-	r[7] = 0.;
+	r[5] = r[6] = r[7] = 0.;
 	r[8] = slpz;
 	ltrans(1, 1, &b[0], &r[0], &b[0]);
 	ltrans(1, 1, &b[3], &r[0], &b[3]);
@@ -3207,14 +3196,12 @@ void fdldbi_(int *k, int *na, int *ia, double *dlda) {
 }
 
 void ltrans(int n, int m, double *q, double *r, double *s) {
-    double q1, q2, q3;
+    double q3;
 
-    q1 = q[0];
-    q2 = q[m];
     q3 = q[m + m];
-    s[0] = q1 * r[0] + q2 * r[1] + q3 * r[2];
-    s[n] = q1 * r[3] + q2 * r[4] + q3 * r[5];
-    s[n + n] = q1 * r[6] + q2 * r[7] + q3 * r[8];
+    s[0] = q[0] * r[0] + q[m] * r[1] + q3 * r[2];
+    s[n] = q[0] * r[3] + q[m] * r[4] + q3 * r[5];
+    s[n + n] = q[0] * r[6] + q[m] * r[7] + q3 * r[8];
 }
 
 void ltranv(int rfac, int n, int m, double *r, double *v) {
