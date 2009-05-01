@@ -352,9 +352,10 @@ int main(int argc, char **argv) {
 	else {
 		Ctrl->DATA.lon[0] = -10;	Ctrl->DATA.lon[1] = -10; 
 		Ctrl->DATA.lat[0] = 45;		Ctrl->DATA.lat[1] = 45;
-		Ctrl->DATA.date[0] = 2000;	Ctrl->DATA.date[1] = 2000.3;
+		Ctrl->DATA.date[0] = 2000;	//Ctrl->DATA.date[1] = 2000.3;
 		Ctrl->DATA.alt = 0;
-		Ctrl->DATA.n_pts = Ctrl->DATA.n_times = 2;
+		Ctrl->DATA.n_pts = 2;
+		Ctrl->DATA.n_times = 1;
 	}
 	/* ------------------------------------------------------------------ */
 
@@ -405,7 +406,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd, jdoy, mjdl, mjdh, iyrl, imol, iyrh, imoh;
 	int nout, nygo, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
-	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb, bmdl[21];
+	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb, bmdl[21], date, dst;
 	double bc[28], re, hq[53040], wb[58], ht[17680], xd, yd, rm, xg, ro, rp, yg, zg, zd;
 	double ru, rt, rse[9], doy, fyr, ws[4355], gamf[8840], cego, epch, bkpo[12415];
 	double trig[132], epmg[1356], esmg[1356];
@@ -638,6 +639,16 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 		clat = (90 - Ctrl->DATA.lat[n]) * D2R;
 		elon = Ctrl->DATA.lon[n] * D2R;
 
+		/* See if we are using a constant time or an array */
+		if (Ctrl->DATA.n_times > 1) {
+			date = Ctrl->DATA.date[n];
+			dst = Ctrl->D.dst[n];
+		}
+		else {
+			date = Ctrl->DATA.date[0];
+			dst = Ctrl->D.dst[0];
+		}
+
 		if (Ctrl->DATA.coef) {
 			nout = 1;	nygo = 0;
 			if (Ctrl->DATA.pred[1]) nygo = MAX(nygo,113);
@@ -650,7 +661,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 			nobo = nshx(nmin - 1, 1, nmin - 1, 0);
 			nopo = i8ssum(1, nobo, bkno) + (nobo << 1);
 			bfield(1, nmax, 0, nmin, 1, nmax, 0, 0, 0, 0, csys, 3, 2, 0, 
-				epch, re, rp, rm, Ctrl->DATA.date[n], clat, elon, Ctrl->DATA.alt, Ctrl->D.dst[n], dstt, rse, &nz, 
+				epch, re, rp, rm, date, clat, elon, Ctrl->DATA.alt, dst, dstt, rse, &nz, 
 				&mz, &ro, &thetas, us, us, &bord[nobo], &bkno[nobo], &bkpo[nopo], us, us, us, us, 
 				ws, us, gamf, bc, gamf, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
@@ -664,7 +675,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 			blsgen(nimf, nz, 3, &bmdl[0], &gamf[noga], &hq[nohq]);
 			if (Ctrl->DATA.coef) {
 				nopo = i8ssum(1, nomn, bkno) + (nomn << 1);
-				getgmf(4, nsm1, &epch, &Ctrl->DATA.date[n], wb, &gamf[noga], &Ctrl->DATA.gmdl[nout-1], 
+				getgmf(4, nsm1, &epch, &date, wb, &gamf[noga], &Ctrl->DATA.gmdl[nout-1], 
 					&bkno[nomn], &bord[nomn], &bkpo[nopo]);
 				if (cerr > 49) return 1;
 			}
@@ -681,7 +692,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 				nygo = MAX(nygo,nsm2 * 5);
 				nout += nygo * MIN(1,nsm1);
 				nopo = i8ssum(1, nomn, bkno) + (nomn << 1);
-				getgmf(4, nsm2, &epch, &Ctrl->DATA.date[n], wb, &gamf[noga], &Ctrl->DATA.gmdl[nout-1], 
+				getgmf(4, nsm2, &epch, &date, wb, &gamf[noga], &Ctrl->DATA.gmdl[nout-1], 
 					&bkno[nomn], &bord[nomn], &bkpo[nopo]);
 				if (cerr > 49) return 1;
 				nout += nygo * MIN(1,nsm2);
@@ -723,12 +734,12 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 			rrgt[1] = -semo;	rrgt[4] = cemo;		rrgt[7] = 0.;
 			rrgt[2] = -cemo * stmo; rrgt[5] = -semo * stmo; rrgt[8] = -ctmo;
 			rmerge_(rlgm, rrgt);
-			taus = omgs * Ctrl->DATA.date[n];
+			taus = omgs * date;
 			taud = omgd * mut[n];
 		}
 		if (Ctrl->DATA.pred[1]) {
 			bfield(1, 11, 11, 1, 1, 6, 6, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-				Ctrl->DATA.date[n], cdip, edip, Ctrl->DATA.alt, Ctrl->D.dst[n], dstt, rse, &nu, &mu, 
+				date, cdip, edip, Ctrl->DATA.alt, dst, dstt, rse, &nu, &mu, 
 				&ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gsmg, bc, gsmg, pleg, rcur, 
 				trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
@@ -744,11 +755,11 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 				jy += 226;
 			}
 			bc[0] = bc[1] = bc[2] = 0.;
-			mseason(2, 5, c__1356, Ctrl->D.dst[n], tsmg, epmg, gpmg);
+			mseason(2, 5, c__1356, dst, tsmg, epmg, gpmg);
 			blsgen(c__1356, c__1356, 3, bc, epmg, &hymg[4068]);
 			ltrans(1, 1, bc, rlgm, &bmdl[6]);
 			bc[0] = bc[1] = bc[2] = 0.;
-			mseason(2, 5, c__1356, Ctrl->D.dst[n], tsmg, esmg, gsmg);
+			mseason(2, 5, c__1356, dst, tsmg, esmg, gsmg);
 			blsgen(c__1356, c__1356, 3, bc, esmg, hymg);
 			ltrans(1, 1, bc, rlgm, &bmdl[9]);
 			if (Ctrl->C.curr) {
@@ -768,7 +779,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 			fsrf = Ctrl->f.F107 * .01485 + 1.;
 			if (ro < rion) {
 				bfield(1, 60, 60, 1, 1, 12, 12, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-					Ctrl->DATA.date[n], cdip, edip, Ctrl->DATA.alt, Ctrl->D.dst[n], dstt, rse, &nu,
+					date, cdip, edip, Ctrl->DATA.alt, dst, dstt, rse, &nu,
 					&mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq, 
 					bc, gssq, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 				if (cerr > 49) return 1;
@@ -810,7 +821,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 			}
 			else {
 				bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-					Ctrl->DATA.date[n], cdip, edip, Ctrl->DATA.alt, Ctrl->D.dst[n], dstt, 
+					date, cdip, edip, Ctrl->DATA.alt, dst, dstt, 
 					rse, &nu, &mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq, 
 					bc, gssq, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 				if (cerr > 49) return 1;
@@ -879,7 +890,7 @@ int cm4field(struct CM4_CTRL *Ctrl) {
 				mmdl = 1;
 			}
 			bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-				Ctrl->DATA.date[n], cdip, edip, 0., Ctrl->D.dst[n], dstt, rse, &nt, &mt,
+				date, cdip, edip, 0., dst, dstt, rse, &nt, &mt,
 				&rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gcto_mg, bc, gcto_mg, 
 				pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
