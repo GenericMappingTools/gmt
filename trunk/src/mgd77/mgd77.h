@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.108 2009-04-12 23:55:02 jluis Exp $
+ *	$Id: mgd77.h,v 1.109 2009-05-01 23:06:42 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -528,7 +528,6 @@ extern double MGD77_time_to_fyear (double time);
 #ifdef USE_CM4 
 extern double MGD77_Calc_CM4 (double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
 extern double MGD77_Recalc_Mag_Anomaly_CM4 (double time, double lon, double lat, double obs, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
-extern void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4);
 extern void MGD77_CM4_end (struct MGD77_CM4 *CM4);
 #endif
 
@@ -556,5 +555,7 @@ double MGD77_Correction_Rec (struct MGD77_CORRECTION *C, double *value, double *
 void MGD77_Free_Correction (struct MGD77_CORRTABLE **CORR, int n);
 
 #include "mgd77_functions.h"	/* These were created by mgd77netcdfhelper.sh */
+#include "cm4_functions.h"
+extern void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4);
 
 #endif	/* _MGD77_H */
