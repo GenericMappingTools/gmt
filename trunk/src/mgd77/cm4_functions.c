@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.6 2009-05-02 21:54:33 jluis Exp $
+ *	$Id: cm4_functions.c,v 1.7 2009-05-02 22:10:49 guru Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -16,7 +16,6 @@
 
 #define I_DIM(x, y) (((x) > (y)) ? (x) - (y) : 0)
 
-int cm4field(struct CM4_CTRL *Ctrl);
 void ymdtomjd(int yearad, int month, int dayofmonth, int *mjd, int *dayofyear);
 void ydtomjdx(int yearad, int dayofyear, int * mjd, int *month, int *dayofmonth, int *daysinmonth);
 double intdst(int mjdl, int mjdh, int mjdy, int msec, double *dstx, int *cerr);
@@ -158,7 +157,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
       PARAMETER (PBTO_MG=0,PETO_MG=0,PBTO_OR=0,PETO_OR=4)
       PARAMETER (PSTO=2,NXTO=60,MXTO=12,IXTO=2736)
       PARAMETER (NTAY_MG=1,NTAY_OR=1)
-   ======================================================================= */
+/* ======================================================================= */
 
 	if ((fp = fopen(Ctrl->M.path, "r")) == NULL) {
 		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->M.path);
@@ -3005,7 +3004,7 @@ void i8vset(int abeg, int alen, int s, int *a) {
 
     /* Function Body */
     aadr = abeg;
-    for (i = 0; i < alen; ++i)
+    for (i = 1; i <= alen; ++i)
 	a[aadr++] = s;
 }
 
@@ -3048,7 +3047,7 @@ void i8vcum(int abas, int abeg, int alen, int *a) {
     aprv = a[abeg];
     a[abeg] = abas;
     aadr = abeg + 1;
-    for (i = 0; i < alen - 1; ++i) {
+    for (i = 1; i <= alen - 1; ++i) {
 	acur = a[aadr];
 	a[aadr] = a[aadr - 1] + aprv;
 	aprv = acur;
@@ -3064,7 +3063,7 @@ void i8vdel(int abas, int abeg, int alen, int *a) {
 
     aprv = abas;
     aadr = abeg;
-    for (i = 0; i < alen; ++i) {
+    for (i = 1; i <= alen; ++i) {
 	acur = a[aadr];
 	a[aadr] = acur - aprv;
 	aprv = acur;
@@ -3110,7 +3109,7 @@ double r8ssum_(int *abeg, int *alen, double *a) {
     /* Function Body */
     ret_val = 0.;
     aadr = *abeg;
-    for (i = 0; i < *alen; ++i) {
+    for (i = 1; i <= *alen; ++i) {
 	ret_val += a[aadr];
 	++aadr;
     }
@@ -3120,10 +3119,14 @@ double r8ssum_(int *abeg, int *alen, double *a) {
 void r8slt(int abeg, int alen, double s, double *a, int *j) {
     int i, aadr;
 
-    aadr = abeg - 1;
-    for (i = 0; i < alen; ++i) {
+    /* Parameter adjustments */
+    --a;
+
+    /* Function Body */
+    aadr = abeg;
+    for (i = 1; i <= alen; ++i) {
 	if (s < a[aadr]) {
-	    *j = i;
+	    *j = i - 1;
 	    return;
 	}
 	++aadr;
@@ -3134,19 +3137,30 @@ void r8slt(int abeg, int alen, double s, double *a, int *j) {
 void r8vsub(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    aadr = abeg - 1;
-    badr = bbeg - 1;
-    cadr = cbeg - 1;
-    for (i = 0; i < vlen; ++i)
+    /* Parameter adjustments */
+    --c;
+    --b;
+    --a;
+
+    /* Function Body */
+    aadr = abeg;
+    badr = bbeg;
+    cadr = cbeg;
+    for (i = 1; i <= vlen; ++i)
 	c[cadr++] = b[badr++] - a[aadr++];
 }
 
 void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    aadr = abeg - 1;
-    badr = bbeg - 1;
-    cadr = cbeg - 1;
+    /* Parameter adjustments */
+    --c;
+    --b;
+    --a;
+
+    aadr = abeg;
+    badr = bbeg;
+    cadr = cbeg;
     for (i = 0; i < vlen; ++i)
 	c[cadr++] = b[badr++] * a[aadr++];
 }
@@ -3154,7 +3168,10 @@ void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double
 void r8vscale(int abeg, int alen, double s, double *a) {
     int i, aadr;
 
-    aadr = abeg - 1;
+    /* Parameter adjustments */
+    --a;
+
+    aadr = abeg;
     for (i = 0; i < alen; ++i) {
 	a[aadr] = s * a[aadr];
 	++aadr;
@@ -3164,8 +3181,12 @@ void r8vscale(int abeg, int alen, double s, double *a) {
 void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
     int i, qadr;
 
+    /* Parameter adjustments */
+    --a;
+    --q;
+
     qadr = qbeg;
-    for (i = 0; i < qlen; ++i)
+    for (i = 1; i <= qlen; ++i)
 	a[q[qadr++]] = s;
 
 }
@@ -3173,27 +3194,39 @@ void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
 void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b) {
     int i, aadr, badr;
 
-    aadr = abeg - 1;
-    badr = bbeg - 1;
-    for (i = 0; i < vlen; ++i)
+    /* Parameter adjustments */
+    --b;
+    --a;
+
+    aadr = abeg;
+    badr = bbeg;
+    for (i = 1; i <= vlen; ++i)
 	b[badr++] += s * a[aadr++];
 }
 
 void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    aadr = abeg - 1;
-    badr = bbeg - 1;
-    cadr = cbeg - 1;
-    for (i = 0; i < vlen; ++i)
+    /* Parameter adjustments */
+    --c;
+    --b;
+    --a;
+
+    aadr = abeg;
+    badr = bbeg;
+    cadr = cbeg;
+    for (i = 1; i <= vlen; ++i)
 	c[cadr++] += s * a[aadr++] * b[badr++];
 }
 
 void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b) {
     int i, aadr, badr;
 
-    aadr = abeg - 1;
-    badr = bbeg - 1;
+    /* Parameter adjustments */
+    --b;	--a;
+
+    aadr = abeg;
+    badr = bbeg;
     for (i = 0; i < blen; ++i) {
 	b[badr++] = a[aadr];
 	aadr += ainc;
