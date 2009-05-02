@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.7 2009-05-02 22:10:49 guru Exp $
+ *	$Id: cm4_functions.c,v 1.8 2009-05-02 23:51:03 jluis Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -116,7 +116,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd, jdoy, mjdl, mjdh, iyrl, imol, iyrh, imoh;
 	int nout, nygo, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
-	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb, bmdl[21], date, dst, mut_now;
+	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb, bmdl[21], date, dst, mut_now, alt;
 	double bc[28], re, hq[53040], wb[58], ht[17680], xd, yd, rm, xg, ro, rp, yg, zg, zd;
 	double ru, rt, rse[9], doy, fyr, ws[4355], gamf[8840], cego, epch, bkpo[12415];
 	double trig[132], epmg[1356], esmg[1356];
@@ -219,7 +219,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 	fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
 	fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
 	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_dw, &rtay_dk);
-	if (Ctrl->DATA.pred[3]) { 		/* In other cases the next coefficients are not used, so no waist time/memory with them */
+	if (Ctrl->DATA.pred[3]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
 		gcto_mg = (double *) calloc((size_t)(2 * lrto * lsto * lcto), sizeof(double));
 		for (l = 0; l < 2; ++l)
 			for (k = 0; k < lrto; ++k)
@@ -318,10 +318,10 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 		free((void *) dstx);
 		if (cerr > 49) return 1;
 	}
-	if (Ctrl->I.index) {
-		if (Ctrl->I.load) {
-			if ((fp = fopen(Ctrl->I.path, "r")) == NULL) {
-				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->I.path);
+	if (Ctrl->f.index) {
+		if (Ctrl->f.load) {
+			if ((fp = fopen(Ctrl->f.path, "r")) == NULL) {
+				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->f.path);
 				return 1;
 			}
 			jaft = 0;
@@ -341,7 +341,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			imoh = jmon;
 		}
 		/* MUST INVESTIGATE IF IT WORTH HAVING AN ARRAY OF f107 LIKE IN THE DST CASE */
-		Ctrl->I.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
+		Ctrl->f.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
 		if (cerr > 49) return 1;
 	}
 	free ((void *) msec);
@@ -373,6 +373,9 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			mut_now = mut[0];
 		}
 
+		/* See if we are using a constant altitude or an array */
+		alt = (Ctrl->DATA.n_altitudes > 1) ? Ctrl->DATA.alt[n] : Ctrl->DATA.alt[0];
+
 		if (Ctrl->DATA.coef) {
 			nout = 1;	nygo = 0;
 			if (Ctrl->DATA.pred[1]) nygo = MAX(nygo,113);
@@ -385,7 +388,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			nobo = nshx(nmin - 1, 1, nmin - 1, 0);
 			nopo = i8ssum(1, nobo, bkno) + (nobo << 1);
 			bfield(1, nmax, 0, nmin, 1, nmax, 0, 0, 0, 0, csys, 3, 2, 0, 
-				epch, re, rp, rm, date, clat, elon, Ctrl->DATA.alt, dst, dstt, rse, &nz, 
+				epch, re, rp, rm, date, clat, elon, alt, dst, dstt, rse, &nz, 
 				&mz, &ro, &thetas, us, us, &bord[nobo], &bkno[nobo], &bkpo[nopo], us, us, us, us, 
 				ws, us, gamf, bc, gamf, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
@@ -424,7 +427,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 		}
 		if (Ctrl->DATA.pred[1] || Ctrl->DATA.pred[2] || Ctrl->DATA.pred[3]) {
 			if (!Ctrl->DATA.pred[0])
-				geocen(csys, re, rp, rm, Ctrl->DATA.alt, clat, &ro, &thetas, &sthe, &cthe);
+				geocen(csys, re, rp, rm, alt, clat, &ro, &thetas, &sthe, &cthe);
 
 			psiz = thetas - clat;
 			cpsi = cos(psiz);
@@ -463,7 +466,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 		}
 		if (Ctrl->DATA.pred[1]) {
 			bfield(1, 11, 11, 1, 1, 6, 6, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-				date, cdip, edip, Ctrl->DATA.alt, dst, dstt, rse, &nu, &mu, 
+				date, cdip, edip, alt, dst, dstt, rse, &nu, &mu, 
 				&ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gsmg, bc, gsmg, pleg, rcur, 
 				trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
@@ -500,10 +503,10 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			}
 		}
 		if (Ctrl->DATA.pred[2]) {
-			fsrf = Ctrl->I.F107 * .01485 + 1.;
+			fsrf = Ctrl->f.F107 * .01485 + 1.;
 			if (ro < rion) {
 				bfield(1, 60, 60, 1, 1, 12, 12, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-					date, cdip, edip, Ctrl->DATA.alt, dst, dstt, rse, &nu,
+					date, cdip, edip, alt, dst, dstt, rse, &nu,
 					&mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq, 
 					bc, gssq, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 				if (cerr > 49) return 1;
@@ -545,7 +548,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			}
 			else {
 				bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-					date, cdip, edip, Ctrl->DATA.alt, dst, dstt, 
+					date, cdip, edip, alt, dst, dstt, 
 					rse, &nu, &mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq, 
 					bc, gssq, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 				if (cerr > 49) return 1;
