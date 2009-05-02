@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.3 2009-05-02 18:38:56 guru Exp $
+ *	$Id: cm4_functions.c,v 1.4 2009-05-02 20:29:45 guru Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -107,8 +107,7 @@ double d_mod(double x, double y);
 double pow_di(double ap, int bp);
 int i_dnnt(double x);
 
-int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
-
+int MGD77_cm4field (struct MGD77_CM4 *Ctrl) {
 	int c__1356 = 1356, c__13680 = 13680;
 	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr, jyr, jf107, cerr = 0;
 	int lum1, lum2, lum3, lum4, lum5, lum6, lum7, nsm1, nsm2, lcmf, idim[12], omdl;
@@ -835,7 +834,7 @@ double intf107(int iyrl, int imol, int iyrh, int imoh, int iyr, int imon, int id
 	    mbot = 12;
 	}
     }
-	if (ybot < iyrl || ytop > iyrh || (ybot == iyrl && mbot < imol) || (ytop == iyrh && mtop > imoh)) {
+	if (ybot < iyrl || ytop > iyrh || ybot == iyrl && mbot < imol || ytop == iyrh && mtop > imoh) {
 		fprintf(stderr, "SUBROUTINE INTF107 -- ERROR CODE 50 -- T LIES OUTSIDE OF F10.7 TABLE TIME SPAN -- ABORT\n");
 		f107 = -1.;
 		*cerr = 50;
@@ -1031,7 +1030,8 @@ void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g) 
 }
 
 void mpotent(int nmax, int mmax, int nd, int nz, double cphi, double sphi, double *d, double *z) {
-    int m, n, id, iz, nd2;
+    int m, n, id, iz, nd2, ii;
+	double d1, d2, d3;
 
     /* Parameter adjustments */
     z -= (1 + nz);
@@ -1942,7 +1942,7 @@ void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sint
     /* Function Body */
     if (*rgen > 6)
 	srecur_(grad, nmax, mmin, mmax, &ksm2, &ktm2, &np, &np1sec, &nd0sec, &np1tes, &np2tes, &nd0tes, &nd1tes, &nq0nnp, &nq0msq, &r[1]);
- 
+
     if (*nmax >= 1) {
 	kp0 = 1;
 	kp2 = kp0;
@@ -2982,7 +2982,7 @@ void i8vset(int abeg, int alen, int s, int *a) {
 
     /* Function Body */
     aadr = abeg;
-    for (i = 0; i < alen; ++i)
+    for (i = 1; i <= alen; ++i)
 	a[aadr++] = s;
 }
 
@@ -3025,7 +3025,7 @@ void i8vcum(int abas, int abeg, int alen, int *a) {
     aprv = a[abeg];
     a[abeg] = abas;
     aadr = abeg + 1;
-    for (i = 0; i < alen - 1; ++i) {
+    for (i = 1; i <= alen - 1; ++i) {
 	acur = a[aadr];
 	a[aadr] = a[aadr - 1] + aprv;
 	aprv = acur;
@@ -3041,7 +3041,7 @@ void i8vdel(int abas, int abeg, int alen, int *a) {
 
     aprv = abas;
     aadr = abeg;
-    for (i = 0; i < alen; ++i) {
+    for (i = 1; i <= alen; ++i) {
 	acur = a[aadr];
 	a[aadr] = acur - aprv;
 	aprv = acur;
@@ -3073,7 +3073,7 @@ double r8sdot(int abeg, int bbeg, int vlen, double *a, double *b) {
     badr = bbeg;
     for (i = 0; i < vlen; ++i)
 	ret_val += a[aadr++] * b[badr++];
- 
+
     return ret_val;
 }
 
@@ -3087,7 +3087,7 @@ double r8ssum_(int *abeg, int *alen, double *a) {
     /* Function Body */
     ret_val = 0.;
     aadr = *abeg;
-    for (i = 0; i < *alen; ++i) {
+    for (i = 1; i <= *alen; ++i) {
 	ret_val += a[aadr];
 	++aadr;
     }
@@ -3097,10 +3097,14 @@ double r8ssum_(int *abeg, int *alen, double *a) {
 void r8slt(int abeg, int alen, double s, double *a, int *j) {
     int i, aadr;
 
-    aadr = abeg - 1;
-    for (i = 0; i < alen; ++i) {
+    /* Parameter adjustments */
+    --a;
+
+    /* Function Body */
+    aadr = abeg;
+    for (i = 1; i <= alen; ++i) {
 	if (s < a[aadr]) {
-	    *j = i;
+	    *j = i - 1;
 	    return;
 	}
 	++aadr;
@@ -3111,19 +3115,30 @@ void r8slt(int abeg, int alen, double s, double *a, int *j) {
 void r8vsub(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    aadr = abeg - 1;
-    badr = bbeg - 1;
-    cadr = cbeg - 1;
-    for (i = 0; i < vlen; ++i)
+    /* Parameter adjustments */
+    --c;
+    --b;
+    --a;
+
+    /* Function Body */
+    aadr = abeg;
+    badr = bbeg;
+    cadr = cbeg;
+    for (i = 1; i <= vlen; ++i)
 	c[cadr++] = b[badr++] - a[aadr++];
 }
 
 void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    aadr = abeg - 1;
-    badr = bbeg - 1;
-    cadr = cbeg - 1;
+    /* Parameter adjustments */
+    --c;
+    --b;
+    --a;
+
+    aadr = abeg;
+    badr = bbeg;
+    cadr = cbeg;
     for (i = 0; i < vlen; ++i)
 	c[cadr++] = b[badr++] * a[aadr++];
 }
@@ -3131,7 +3146,10 @@ void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double
 void r8vscale(int abeg, int alen, double s, double *a) {
     int i, aadr;
 
-    aadr = abeg - 1;
+    /* Parameter adjustments */
+    --a;
+
+    aadr = abeg;
     for (i = 0; i < alen; ++i) {
 	a[aadr] = s * a[aadr];
 	++aadr;
@@ -3141,8 +3159,12 @@ void r8vscale(int abeg, int alen, double s, double *a) {
 void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
     int i, qadr;
 
+    /* Parameter adjustments */
+    --a;
+    --q;
+
     qadr = qbeg;
-    for (i = 0; i < qlen; ++i)
+    for (i = 1; i <= qlen; ++i)
 	a[q[qadr++]] = s;
 
 }
@@ -3150,27 +3172,39 @@ void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
 void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b) {
     int i, aadr, badr;
 
-    aadr = abeg - 1;
-    badr = bbeg - 1;
-    for (i = 0; i < vlen; ++i)
+    /* Parameter adjustments */
+    --b;
+    --a;
+
+    aadr = abeg;
+    badr = bbeg;
+    for (i = 1; i <= vlen; ++i)
 	b[badr++] += s * a[aadr++];
 }
 
 void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    aadr = abeg - 1;
-    badr = bbeg - 1;
-    cadr = cbeg - 1;
-    for (i = 0; i < vlen; ++i)
+    /* Parameter adjustments */
+    --c;
+    --b;
+    --a;
+
+    aadr = abeg;
+    badr = bbeg;
+    cadr = cbeg;
+    for (i = 1; i <= vlen; ++i)
 	c[cadr++] += s * a[aadr++] * b[badr++];
 }
 
 void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b) {
     int i, aadr, badr;
 
-    aadr = abeg - 1;
-    badr = bbeg - 1;
+    /* Parameter adjustments */
+    --b;	--a;
+
+    aadr = abeg;
+    badr = bbeg;
     for (i = 0; i < blen; ++i) {
 	b[badr++] = a[aadr];
 	aadr += ainc;
