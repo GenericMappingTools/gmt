@@ -1,4 +1,4 @@
-/* $Id: cm4field.c,v 1.7 2009-05-02 20:29:45 guru Exp $	*/
+/* $Id: cm4field.c,v 1.8 2009-05-02 21:02:02 jluis Exp $	*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -222,7 +222,7 @@ int main(int argc, char **argv) {
 		fprintf (stderr, "\t	The data is written out in the order specified in <dataflags>\n");
 		fprintf (stderr, "\t	[Default is -Fthxyzdi/1]\n");
 		fprintf (stderr, "\t-Plon/lat/alt/date full name of the 'Dst_all.wdc' file.\n");
-		return;
+		return 1;
 	}
 
 	Ctrl->D.dst = (double *) calloc((size_t)(1), sizeof(double));	/* We need at least a size of one in case a value is given in input */
@@ -358,10 +358,10 @@ int main(int argc, char **argv) {
 	//Ctrl->DATA.lon = (double *) calloc((size_t)(Ctrl->DATA.n_pts), sizeof(double));
 	//Ctrl->DATA.lat = (double *) calloc((size_t)(Ctrl->DATA.n_pts), sizeof(double));
 
-		Ctrl->DATA.date[0] = 2000;	//Ctrl->DATA.date[1] = 2000.3;
+		Ctrl->DATA.date[0] = 2000;	Ctrl->DATA.date[1] = 2000.3;
 		Ctrl->DATA.alt = 0;
 		Ctrl->DATA.n_pts = 2;
-		Ctrl->DATA.n_times = 1;
+		Ctrl->DATA.n_times = 2;
 	}
 	/* ------------------------------------------------------------------ */
 
@@ -390,7 +390,7 @@ int main(int argc, char **argv) {
 	fprintf(stderr, "%8.2f\t%8.2f\t%8.2f\n", Ctrl->DATA.bmdl[18],Ctrl->DATA.bmdl[19],Ctrl->DATA.bmdl[20]);
 
 	/* Temporary - for testing only */
-	if (Ctrl->DATA.n_pts < 0) {
+	if (Ctrl->DATA.n_pts > 0) {
 		for (i = 0; i < Ctrl->DATA.n_pts; i++) {
 			for (j = 0; j < Ctrl->F.n_field_components; j++)
 				fprintf(stderr, "%.2f\t", Ctrl->DATA.out_field[i*Ctrl->F.n_field_components+j]);
@@ -399,6 +399,7 @@ int main(int argc, char **argv) {
 	}
  
 	Free_CM4_Ctrl (Ctrl);	/* Deallocate control structure */
+	return 0;
 }
 
 #include <time.h>
@@ -3279,7 +3280,7 @@ void i8vset(int abeg, int alen, int s, int *a) {
 
     /* Function Body */
     aadr = abeg;
-    for (i = 1; i <= alen; ++i)
+    for (i = 0; i < alen; ++i)
 	a[aadr++] = s;
 }
 
@@ -3322,7 +3323,7 @@ void i8vcum(int abas, int abeg, int alen, int *a) {
     aprv = a[abeg];
     a[abeg] = abas;
     aadr = abeg + 1;
-    for (i = 1; i <= alen - 1; ++i) {
+    for (i = 0; i < alen - 1; ++i) {
 	acur = a[aadr];
 	a[aadr] = a[aadr - 1] + aprv;
 	aprv = acur;
@@ -3338,7 +3339,7 @@ void i8vdel(int abas, int abeg, int alen, int *a) {
 
     aprv = abas;
     aadr = abeg;
-    for (i = 1; i <= alen; ++i) {
+    for (i = 0; i < alen; ++i) {
 	acur = a[aadr];
 	a[aadr] = acur - aprv;
 	aprv = acur;
@@ -3384,7 +3385,7 @@ double r8ssum_(int *abeg, int *alen, double *a) {
     /* Function Body */
     ret_val = 0.;
     aadr = *abeg;
-    for (i = 1; i <= *alen; ++i) {
+    for (i = 0; i < *alen; ++i) {
 	ret_val += a[aadr];
 	++aadr;
     }
@@ -3394,14 +3395,10 @@ double r8ssum_(int *abeg, int *alen, double *a) {
 void r8slt(int abeg, int alen, double s, double *a, int *j) {
     int i, aadr;
 
-    /* Parameter adjustments */
-    --a;
-
-    /* Function Body */
-    aadr = abeg;
-    for (i = 1; i <= alen; ++i) {
+    aadr = abeg - 1;
+    for (i = 0; i < alen; ++i) {
 	if (s < a[aadr]) {
-	    *j = i - 1;
+	    *j = i;
 	    return;
 	}
 	++aadr;
@@ -3412,30 +3409,19 @@ void r8slt(int abeg, int alen, double s, double *a, int *j) {
 void r8vsub(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    /* Parameter adjustments */
-    --c;
-    --b;
-    --a;
-
-    /* Function Body */
-    aadr = abeg;
-    badr = bbeg;
-    cadr = cbeg;
-    for (i = 1; i <= vlen; ++i)
+    aadr = abeg - 1;
+    badr = bbeg - 1;
+    cadr = cbeg - 1;
+    for (i = 0; i < vlen; ++i)
 	c[cadr++] = b[badr++] - a[aadr++];
 }
 
 void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    /* Parameter adjustments */
-    --c;
-    --b;
-    --a;
-
-    aadr = abeg;
-    badr = bbeg;
-    cadr = cbeg;
+    aadr = abeg - 1;
+    badr = bbeg - 1;
+    cadr = cbeg - 1;
     for (i = 0; i < vlen; ++i)
 	c[cadr++] = b[badr++] * a[aadr++];
 }
@@ -3443,10 +3429,7 @@ void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double
 void r8vscale(int abeg, int alen, double s, double *a) {
     int i, aadr;
 
-    /* Parameter adjustments */
-    --a;
-
-    aadr = abeg;
+    aadr = abeg - 1;
     for (i = 0; i < alen; ++i) {
 	a[aadr] = s * a[aadr];
 	++aadr;
@@ -3456,12 +3439,8 @@ void r8vscale(int abeg, int alen, double s, double *a) {
 void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
     int i, qadr;
 
-    /* Parameter adjustments */
-    --a;
-    --q;
-
     qadr = qbeg;
-    for (i = 1; i <= qlen; ++i)
+    for (i = 0; i < qlen; ++i)
 	a[q[qadr++]] = s;
 
 }
@@ -3469,39 +3448,27 @@ void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
 void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b) {
     int i, aadr, badr;
 
-    /* Parameter adjustments */
-    --b;
-    --a;
-
-    aadr = abeg;
-    badr = bbeg;
-    for (i = 1; i <= vlen; ++i)
+    aadr = abeg - 1;
+    badr = bbeg - 1;
+    for (i = 0; i < vlen; ++i)
 	b[badr++] += s * a[aadr++];
 }
 
 void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    /* Parameter adjustments */
-    --c;
-    --b;
-    --a;
-
-    aadr = abeg;
-    badr = bbeg;
-    cadr = cbeg;
-    for (i = 1; i <= vlen; ++i)
+    aadr = abeg - 1;
+    badr = bbeg - 1;
+    cadr = cbeg - 1;
+    for (i = 0; i < vlen; ++i)
 	c[cadr++] += s * a[aadr++] * b[badr++];
 }
 
 void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b) {
     int i, aadr, badr;
 
-    /* Parameter adjustments */
-    --b;	--a;
-
-    aadr = abeg;
-    badr = bbeg;
+    aadr = abeg - 1;
+    badr = bbeg - 1;
     for (i = 0; i < blen; ++i) {
 	b[badr++] = a[aadr];
 	aadr += ainc;
