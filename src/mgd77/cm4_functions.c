@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.1 2009-05-01 23:06:42 guru Exp $
+ *	$Id: cm4_functions.c,v 1.2 2009-05-02 15:37:55 jluis Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -53,7 +53,7 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
 	double *rp, double *rm, double *ro, int *nsi, int *nc, int *nci, int *np, int *ii, int *ie, int *
 	nmni, int *nmxi, int *nmne, int *nmxe, int *nmax, int *mmni, int *mmxi, int *mmne, int *mmxe, int *
 	mmin, int *mmax, double *theta, double *p, double *r, double *t, int *u, double *w, double *dldc, int *cerr);
-void geocen_(int *ctyp, double *re, double *rp, double *rm, double *h, double *clat, double *r, double *theta, double *sinthe, double *costhe);
+void geocen(int ctyp, double re, double rp, double rm, double h, double clat, double *r, double *theta, double *sinthe, double *costhe);
 void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sinthe, double *costhe, double *p, double *r);
 void srecur_(int *grad, int *nmax, int *mmin, int *mmax, int *ksm2, int *ktm2, int *npall, int *
 	nad1, int *nad2, int *nad3, int *nad4, int *nad5, int *nad6, int *nad7, int *nad8, double *r);
@@ -116,7 +116,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd, jdoy, mjdl, mjdh, iyrl, imol, iyrh, imoh;
 	int nout, nygo, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
-	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb, bmdl[21], date, dst;
+	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb, bmdl[21], date, dst, mut_now;
 	double bc[28], re, hq[53040], wb[58], ht[17680], xd, yd, rm, xg, ro, rp, yg, zg, zd;
 	double ru, rt, rse[9], doy, fyr, ws[4355], gamf[8840], cego, epch, bkpo[12415];
 	double trig[132], epmg[1356], esmg[1356];
@@ -157,7 +157,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
       PARAMETER (PBTO_MG=0,PETO_MG=0,PBTO_OR=0,PETO_OR=4)
       PARAMETER (PSTO=2,NXTO=60,MXTO=12,IXTO=2736)
       PARAMETER (NTAY_MG=1,NTAY_OR=1)
- ======================================================================= */
+/* ======================================================================= */
 
 	if ((fp = fopen(Ctrl->M.path, "r")) == NULL) {
 		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->M.path);
@@ -306,10 +306,10 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 		free((void *) dstx);
 		if (cerr > 49) return 1;
 	}
-	if (Ctrl->I.index) {
-		if (Ctrl->I.load) {
-			if ((fp = fopen(Ctrl->I.path, "r")) == NULL) {
-				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->I.path);
+	if (Ctrl->f.index) {
+		if (Ctrl->f.load) {
+			if ((fp = fopen(Ctrl->f.path, "r")) == NULL) {
+				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->f.path);
 				return 1;
 			}
 			jaft = 0;
@@ -329,7 +329,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			imoh = jmon;
 		}
 		/* MUST INVESTIGATE IF IT WORTH HAVING AN ARRAY OF f107 LIKE IN THE DST CASE */
-		Ctrl->I.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
+		Ctrl->f.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
 		if (cerr > 49) return 1;
 	}
 	free ((void *) msec);
@@ -353,10 +353,12 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 		if (Ctrl->DATA.n_times > 1) {
 			date = Ctrl->DATA.date[n];
 			dst = Ctrl->D.dst[n];
+			mut_now = mut[n];
 		}
 		else {
 			date = Ctrl->DATA.date[0];
 			dst = Ctrl->D.dst[0];
+			mut_now = mut[0];
 		}
 
 		if (Ctrl->DATA.coef) {
@@ -410,7 +412,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 		}
 		if (Ctrl->DATA.pred[1] || Ctrl->DATA.pred[2] || Ctrl->DATA.pred[3]) {
 			if (!Ctrl->DATA.pred[0])
-				geocen_(&csys, &re, &rp, &rm, &Ctrl->DATA.alt, &clat, &ro, &thetas, &sthe, &cthe);
+				geocen(csys, re, rp, rm, Ctrl->DATA.alt, clat, &ro, &thetas, &sthe, &cthe);
 
 			psiz = thetas - clat;
 			cpsi = cos(psiz);
@@ -445,7 +447,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			rrgt[2] = -cemo * stmo; rrgt[5] = -semo * stmo; rrgt[8] = -ctmo;
 			rmerge_(rlgm, rrgt);
 			taus = omgs * date;
-			taud = omgd * mut[n];
+			taud = omgd * mut_now;
 		}
 		if (Ctrl->DATA.pred[1]) {
 			bfield(1, 11, 11, 1, 1, 6, 6, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
@@ -486,7 +488,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			}
 		}
 		if (Ctrl->DATA.pred[2]) {
-			fsrf = Ctrl->I.F107 * .01485 + 1.;
+			fsrf = Ctrl->f.F107 * .01485 + 1.;
 			if (ro < rion) {
 				bfield(1, 60, 60, 1, 1, 12, 12, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
 					date, cdip, edip, Ctrl->DATA.alt, dst, dstt, rse, &nu,
@@ -599,10 +601,9 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 				omdl = TRUE;
 				mmdl = 1;
 			}
-			bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
-				date, cdip, edip, 0., dst, dstt, rse, &nt, &mt,
-				&rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gcto_mg, bc, gcto_mg, 
-				pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
+			bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm, date, cdip, edip, 0., 
+				dst, dstt, rse, &nt, &mt, &rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, 
+				us, gcto_mg, bc, gcto_mg, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
 			frto = rm / ro;
 			frho = (ro - rtay) / rm;
@@ -611,7 +612,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			trigmp(peto, taud, tdto);
 			for (p = pbto; p <= peto; ++p) {
 				cosp = tdto[p];
-				sinp = tdto[p + 2 + peto - 1];
+				sinp = tdto[p + 1 + peto];
 				mstream(60, 12, nt, nyto, cosp, sinp, frto, hq, &hyto[jy - 1]);
 				jy += 2736;
 			}
@@ -834,7 +835,7 @@ double intf107(int iyrl, int imol, int iyrh, int imoh, int iyr, int imon, int id
 	    mbot = 12;
 	}
     }
-	if (ybot < iyrl || ytop > iyrh || (ybot == iyrl && mbot < imol) || (ytop == iyrh && mtop > imoh)) {
+	if (ybot < iyrl || ytop > iyrh || ybot == iyrl && mbot < imol || ytop == iyrh && mtop > imoh) {
 		fprintf(stderr, "SUBROUTINE INTF107 -- ERROR CODE 50 -- T LIES OUTSIDE OF F10.7 TABLE TIME SPAN -- ABORT\n");
 		f107 = -1.;
 		*cerr = 50;
@@ -1030,7 +1031,8 @@ void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g) 
 }
 
 void mpotent(int nmax, int mmax, int nd, int nz, double cphi, double sphi, double *d, double *z) {
-    int m, n, id, iz, nd2;
+    int m, n, id, iz, nd2, ii;
+	double d1, d2, d3;
 
     /* Parameter adjustments */
     z -= (1 + nz);
@@ -1189,7 +1191,7 @@ void jtbelow(int pmin, int pmax, int nmax, int mmax, double r, double rref, int 
 }
 
 void jtbcont(int pmin, int pmax, int nmax, int mmax, double rold, double rnew, int nz, double *z) {
-    int m, n, p, iz;
+    int m, n, p, iz, ii;
     double frbg, fcur, fpsi, frmu;
 
     /* Parameter adjustments */
@@ -1204,30 +1206,30 @@ void jtbcont(int pmin, int pmax, int nmax, int mmax, double rold, double rnew, i
 	for (n = 1; n <= nmax; ++n) {
 	    fcur = fpsi * frmu;
 	    ++iz;
-	    z[iz + nz] = fcur * z[iz + nz];
-	    z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-	    z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+		ii = iz + nz;		z[ii] = fcur * z[ii];
+		ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+		ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 	    ++iz;
-	    z[iz + nz] = fcur * z[iz + nz];
-	    z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-	    z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+		ii = iz + nz;		z[ii] = fcur * z[ii];
+		ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+		ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 	    for (m = 1; m <= MIN(n,mmax); ++m) {
 		++iz;
-		z[iz + nz] = fcur * z[iz + nz];
-		z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-		z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+			ii = iz + nz;		z[ii] = fcur * z[ii];
+			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 		++iz;
-		z[iz + nz] = fcur * z[iz + nz];
-		z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-		z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+			ii = iz + nz;		z[ii] = fcur * z[ii];
+			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 		++iz;
-		z[iz + nz] = fcur * z[iz + nz];
-		z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-		z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+			ii = iz + nz;		z[ii] = fcur * z[ii];
+			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 		++iz;
-		z[iz + nz] = fcur * z[iz + nz];
-		z[iz + (nz << 1)] = fcur * z[iz + (nz << 1)];
-		z[iz + nz * 3] = fpsi * z[iz + nz * 3];
+			ii = iz + nz;		z[ii] = fcur * z[ii];
+			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
+			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 	    }
 	    fpsi *= frmu;
 	}
@@ -1518,26 +1520,18 @@ void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *
     int m, n, p, ie, ig;
     double cosp, sinp;
 
-    /* Parameter adjustments */
-    --t;
-    --g;
-
-    /* Function Body */
-    r8vset(1, *ng, 0., &g[1]);
+    r8vset(1, *ng, 0., &g[0]);
     ie = 0;
     for (p = pmin; p <= pmax; ++p) {
-	ig = 1;
-	cosp = t[p + 1];
-	sinp = t[p + 2 + pmax];
+	ig = 0;
+	cosp = t[p];
+	sinp = t[p + 1 + pmax];
 	for (n = 1; n <= nmax; ++n) {
-	    g[ig] = g[ig] + e[ie] * cosp + e[ie + 1] * sinp;
-	    ++ig;
+	    g[ig++] += (e[ie] * cosp + e[ie + 1] * sinp);
 	    ie += 2;
 	    for (m = 1; m <= MIN(n,mmax); ++m) {
-		g[ig] = g[ig] + (e[ie] + e[ie + 2]) * cosp + (e[ie + 3] - e[ie + 1]) * sinp;
-		++ig;
-		g[ig] = g[ig] + (e[ie + 3] + e[ie + 1]) * cosp + (e[ie] - e[ie + 2]) * sinp;
-		++ig;
+		g[ig++] += ((e[ie] + e[ie + 2]) * cosp + (e[ie + 3] - e[ie + 1]) * sinp);
+		g[ig++] += ((e[ie + 3] + e[ie + 1]) * cosp + (e[ie] - e[ie + 2]) * sinp);
 		ie += 4;
 	    }
 	}
@@ -1621,13 +1615,11 @@ void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, in
 
     /* Function Body */
     if (*rgen == 1) {
-	i__1 = MIN(MIN(*nmni,*nmxi), *nmne);
-	if (MIN(i__1,*nmxe) < 0) {
+	if (MIN(MIN(MIN(*nmni,*nmxi), *nmne),*nmxe) < 0) {
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 50 -- NMNI, NMXI, NMNE, OR NMXE < 0 -- ABORT\n");
 		return;
 	}
-	i__1 = MIN(MIN(*mmni,*mmxi), *mmne);
-	if (MIN(i__1,*mmxe) < 0) {
+	if (MIN(MIN(MIN(*mmni,*mmxi), *mmne), *mmxe) < 0) {
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 51 -- MMNI, MMXI, MMNE, OR MMXE < 0 -- ABORT\n");
 		return;
 	}
@@ -1727,7 +1719,7 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
     --p;
 
     /* Function Body */
-    geocen_(ctyp, re, rp, rm, h__, clat, ro, theta, &sinthe, &costhe);
+    geocen(*ctyp, *re, *rp, *rm, *h__, *clat, ro, theta, &sinthe, &costhe);
     pgen = *rgen - 6;
     tgen = pgen;
     if (phio != *phi) {
@@ -1911,26 +1903,25 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
     }
 }
 
-void geocen_(int *ctyp, double *re, double *rp, double *rm, double *h, double *clat, double *r, double *theta, double *sinthe, double *costhe) {
-
-    int ifirst = 1;
+void geocen(int ctyp, double re, double rp, double rm, double h, double clat, double *r, double *theta, double *sinthe, double *costhe) {
+    static int ifirst = 1;
     double re2, rp2, kappa, rhoew, rhons, costh2, sinth2;
 
-    *theta = *clat;
-    *r = *rm + *h;
+    *theta = clat;
+    *r = rm + h;
     *sinthe = sin(*theta);
     *costhe = cos(*theta);
-    if (*ctyp == 0) {
+    if (ctyp == 0) {
 	if (ifirst == 1) {
 	    ifirst = 0;
-	    re2 = *re * *re;
-	    rp2 = *rp * *rp;
+	    re2 = re * re;
+	    rp2 = rp * rp;
 	}
 	sinth2 = *sinthe * *sinthe;
 	costh2 = *costhe * *costhe;
-	kappa = sqrt(re2 * sinth2 + rp2 * costh2);
-	rhoew = re2 / kappa + *h;
-	rhons = rp2 / kappa + *h;
+	kappa = 1. / sqrt(re2 * sinth2 + rp2 * costh2) + h;
+	rhoew = re2 * kappa;
+	rhons = rp2 * kappa;
 	*theta = atan2(rhoew * *sinthe, rhons * *costhe);
 	*r = sqrt(rhoew * rhoew * sinth2 + rhons * rhons * costh2);
 	*sinthe = sin(*theta);
@@ -1952,7 +1943,7 @@ void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sint
     /* Function Body */
     if (*rgen > 6)
 	srecur_(grad, nmax, mmin, mmax, &ksm2, &ktm2, &np, &np1sec, &nd0sec, &np1tes, &np2tes, &nd0tes, &nd1tes, &nq0nnp, &nq0msq, &r[1]);
-
+ 
     if (*nmax >= 1) {
 	kp0 = 1;
 	kp2 = kp0;
@@ -2286,9 +2277,9 @@ void taylor(int nc, int ns, double ta, double tb, int *tdeg, int *u, double *dsd
 	if (n > 0) {
 	    iu = u[i];
 	    dsdt[1] = 1.;
-	    for (j = 1; j <= n; ++j) {
+	    for (j = 1; j <= n; ++j)
 		dsdt[j + 1] = dsdt[j] * dt / (double) j;
-	    }
+
 	    r8vgathp(2, 1, iu, n, &dsdt[1], &dsdc[0]);
 	    r8vgathp(1, 1, nc + iu, n, &dsdt[1], &dsdc[0]);
 	    u[i] += n;
@@ -2679,9 +2670,7 @@ void fdldeu_(int *k, int *na, int *ia, double *seulx, double *ceulx, double *seu
 	    i += *na;
 	}
     } else {
-	r[0] = 0.;
-	r[1] = 0.;
-	r[2] = 0.;
+	r[0] = r[1] = r[2] = 0.;
 	r[3] = -(*ceuly) * *seulx * *seulz + *seuly * *ceulx;
 	r[4] = -(*seulx) * *ceulz;
 	r[5] = *ceuly * *ceulx + *seuly * *seulz * *seulx;
@@ -2816,13 +2805,9 @@ void tvn_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, do
 	slpz = a[*ia + 2];
 	fdldsl_(k, na, ia, &b[0], &dlda[0]);
 	r[0] = slpx;
-	r[1] = 0.;
-	r[2] = 0.;
-	r[3] = 0.;
+	r[1] = r[2] = r[3] = 0.;
 	r[4] = slpy;
-	r[5] = 0.;
-	r[6] = 0.;
-	r[7] = 0.;
+	r[5] = r[6] = r[7] = 0.;
 	r[8] = slpz;
 	ltrans(1, 1, &b[0], &r[0], &b[0]);
 	ltrans(1, 1, &b[3], &r[0], &b[3]);
@@ -2917,14 +2902,12 @@ void fdldbi_(int *k, int *na, int *ia, double *dlda) {
 }
 
 void ltrans(int n, int m, double *q, double *r, double *s) {
-    double q1, q2, q3;
+    double q3;
 
-    q1 = q[0];
-    q2 = q[m];
     q3 = q[m + m];
-    s[0] = q1 * r[0] + q2 * r[1] + q3 * r[2];
-    s[n] = q1 * r[3] + q2 * r[4] + q3 * r[5];
-    s[n + n] = q1 * r[6] + q2 * r[7] + q3 * r[8];
+    s[0] = q[0] * r[0] + q[m] * r[1] + q3 * r[2];
+    s[n] = q[0] * r[3] + q[m] * r[4] + q3 * r[5];
+    s[n + n] = q[0] * r[6] + q[m] * r[7] + q3 * r[8];
 }
 
 void ltranv(int rfac, int n, int m, double *r, double *v) {
@@ -3000,7 +2983,7 @@ void i8vset(int abeg, int alen, int s, int *a) {
 
     /* Function Body */
     aadr = abeg;
-    for (i = 1; i <= alen; ++i)
+    for (i = 0; i < alen; ++i)
 	a[aadr++] = s;
 }
 
@@ -3043,7 +3026,7 @@ void i8vcum(int abas, int abeg, int alen, int *a) {
     aprv = a[abeg];
     a[abeg] = abas;
     aadr = abeg + 1;
-    for (i = 1; i <= alen - 1; ++i) {
+    for (i = 0; i < alen - 1; ++i) {
 	acur = a[aadr];
 	a[aadr] = a[aadr - 1] + aprv;
 	aprv = acur;
@@ -3059,7 +3042,7 @@ void i8vdel(int abas, int abeg, int alen, int *a) {
 
     aprv = abas;
     aadr = abeg;
-    for (i = 1; i <= alen; ++i) {
+    for (i = 0; i < alen; ++i) {
 	acur = a[aadr];
 	a[aadr] = acur - aprv;
 	aprv = acur;
@@ -3091,7 +3074,7 @@ double r8sdot(int abeg, int bbeg, int vlen, double *a, double *b) {
     badr = bbeg;
     for (i = 0; i < vlen; ++i)
 	ret_val += a[aadr++] * b[badr++];
-
+ 
     return ret_val;
 }
 
@@ -3105,7 +3088,7 @@ double r8ssum_(int *abeg, int *alen, double *a) {
     /* Function Body */
     ret_val = 0.;
     aadr = *abeg;
-    for (i = 1; i <= *alen; ++i) {
+    for (i = 0; i < *alen; ++i) {
 	ret_val += a[aadr];
 	++aadr;
     }
@@ -3115,14 +3098,10 @@ double r8ssum_(int *abeg, int *alen, double *a) {
 void r8slt(int abeg, int alen, double s, double *a, int *j) {
     int i, aadr;
 
-    /* Parameter adjustments */
-    --a;
-
-    /* Function Body */
-    aadr = abeg;
-    for (i = 1; i <= alen; ++i) {
+    aadr = abeg - 1;
+    for (i = 0; i < alen; ++i) {
 	if (s < a[aadr]) {
-	    *j = i - 1;
+	    *j = i;
 	    return;
 	}
 	++aadr;
@@ -3133,30 +3112,19 @@ void r8slt(int abeg, int alen, double s, double *a, int *j) {
 void r8vsub(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    /* Parameter adjustments */
-    --c;
-    --b;
-    --a;
-
-    /* Function Body */
-    aadr = abeg;
-    badr = bbeg;
-    cadr = cbeg;
-    for (i = 1; i <= vlen; ++i)
+    aadr = abeg - 1;
+    badr = bbeg - 1;
+    cadr = cbeg - 1;
+    for (i = 0; i < vlen; ++i)
 	c[cadr++] = b[badr++] - a[aadr++];
 }
 
 void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    /* Parameter adjustments */
-    --c;
-    --b;
-    --a;
-
-    aadr = abeg;
-    badr = bbeg;
-    cadr = cbeg;
+    aadr = abeg - 1;
+    badr = bbeg - 1;
+    cadr = cbeg - 1;
     for (i = 0; i < vlen; ++i)
 	c[cadr++] = b[badr++] * a[aadr++];
 }
@@ -3164,10 +3132,7 @@ void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double
 void r8vscale(int abeg, int alen, double s, double *a) {
     int i, aadr;
 
-    /* Parameter adjustments */
-    --a;
-
-    aadr = abeg;
+    aadr = abeg - 1;
     for (i = 0; i < alen; ++i) {
 	a[aadr] = s * a[aadr];
 	++aadr;
@@ -3177,12 +3142,8 @@ void r8vscale(int abeg, int alen, double s, double *a) {
 void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
     int i, qadr;
 
-    /* Parameter adjustments */
-    --a;
-    --q;
-
     qadr = qbeg;
-    for (i = 1; i <= qlen; ++i)
+    for (i = 0; i < qlen; ++i)
 	a[q[qadr++]] = s;
 
 }
@@ -3190,39 +3151,27 @@ void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
 void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b) {
     int i, aadr, badr;
 
-    /* Parameter adjustments */
-    --b;
-    --a;
-
-    aadr = abeg;
-    badr = bbeg;
-    for (i = 1; i <= vlen; ++i)
+    aadr = abeg - 1;
+    badr = bbeg - 1;
+    for (i = 0; i < vlen; ++i)
 	b[badr++] += s * a[aadr++];
 }
 
 void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, double *b, double *c) {
     int i, aadr, badr, cadr;
 
-    /* Parameter adjustments */
-    --c;
-    --b;
-    --a;
-
-    aadr = abeg;
-    badr = bbeg;
-    cadr = cbeg;
-    for (i = 1; i <= vlen; ++i)
+    aadr = abeg - 1;
+    badr = bbeg - 1;
+    cadr = cbeg - 1;
+    for (i = 0; i < vlen; ++i)
 	c[cadr++] += s * a[aadr++] * b[badr++];
 }
 
 void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b) {
     int i, aadr, badr;
 
-    /* Parameter adjustments */
-    --b;	--a;
-
-    aadr = abeg;
-    badr = bbeg;
+    aadr = abeg - 1;
+    badr = bbeg - 1;
     for (i = 0; i < blen; ++i) {
 	b[badr++] = a[aadr];
 	aadr += ainc;
