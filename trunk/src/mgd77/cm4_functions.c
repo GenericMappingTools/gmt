@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.2 2009-05-02 15:37:55 jluis Exp $
+ *	$Id: cm4_functions.c,v 1.3 2009-05-02 18:38:56 guru Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -157,7 +157,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
       PARAMETER (PBTO_MG=0,PETO_MG=0,PBTO_OR=0,PETO_OR=4)
       PARAMETER (PSTO=2,NXTO=60,MXTO=12,IXTO=2736)
       PARAMETER (NTAY_MG=1,NTAY_OR=1)
-/* ======================================================================= */
+ ======================================================================= */
 
 	if ((fp = fopen(Ctrl->M.path, "r")) == NULL) {
 		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->M.path);
@@ -306,10 +306,10 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 		free((void *) dstx);
 		if (cerr > 49) return 1;
 	}
-	if (Ctrl->f.index) {
-		if (Ctrl->f.load) {
-			if ((fp = fopen(Ctrl->f.path, "r")) == NULL) {
-				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->f.path);
+	if (Ctrl->I.index) {
+		if (Ctrl->I.load) {
+			if ((fp = fopen(Ctrl->I.path, "r")) == NULL) {
+				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->I.path);
 				return 1;
 			}
 			jaft = 0;
@@ -329,7 +329,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			imoh = jmon;
 		}
 		/* MUST INVESTIGATE IF IT WORTH HAVING AN ARRAY OF f107 LIKE IN THE DST CASE */
-		Ctrl->f.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
+		Ctrl->I.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
 		if (cerr > 49) return 1;
 	}
 	free ((void *) msec);
@@ -488,7 +488,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			}
 		}
 		if (Ctrl->DATA.pred[2]) {
-			fsrf = Ctrl->f.F107 * .01485 + 1.;
+			fsrf = Ctrl->I.F107 * .01485 + 1.;
 			if (ro < rion) {
 				bfield(1, 60, 60, 1, 1, 12, 12, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
 					date, cdip, edip, Ctrl->DATA.alt, dst, dstt, rse, &nu,
@@ -835,7 +835,7 @@ double intf107(int iyrl, int imol, int iyrh, int imoh, int iyr, int imon, int id
 	    mbot = 12;
 	}
     }
-	if (ybot < iyrl || ytop > iyrh || ybot == iyrl && mbot < imol || ytop == iyrh && mtop > imoh) {
+	if (ybot < iyrl || ytop > iyrh || (ybot == iyrl && mbot < imol) || (ytop == iyrh && mtop > imoh)) {
 		fprintf(stderr, "SUBROUTINE INTF107 -- ERROR CODE 50 -- T LIES OUTSIDE OF F10.7 TABLE TIME SPAN -- ABORT\n");
 		f107 = -1.;
 		*cerr = 50;
@@ -1031,8 +1031,7 @@ void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g) 
 }
 
 void mpotent(int nmax, int mmax, int nd, int nz, double cphi, double sphi, double *d, double *z) {
-    int m, n, id, iz, nd2, ii;
-	double d1, d2, d3;
+    int m, n, id, iz, nd2;
 
     /* Parameter adjustments */
     z -= (1 + nz);
