@@ -1,0 +1,48 @@
+#include "common_options.txt"
+.TH MGD77CM4 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+mgd77cm4 \- Evaluate the CM4 magnetic field model
+.SH SYNOPSIS
+\fBmgd77cm4\fP \fINGDC-ids\fP [ OPT(D) ] [ OPT(I)\fIignore\fP ] [ GMT_V_OPT ]
+.SH DESCRIPTION
+\fBmgd77cm4\fP NOT FINISHED YET!!!.
+#include "explain_ncid.txt"
+.SH OPTIONS
+No space between the option flag and the associated arguments.
+.TP
+OPT(D)
+Instead of cruise listings, just show the directory paths currently used in the search.
+.TP
+OPT(I)
+Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
+MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
+be repeated to ignore more than one format.  [Default ignores none].
+#include "explain_-V.txt"
+Reports the total number of cruises found.
+.SH EXAMPLES
+To obtain pathnames for cruises 01010008 and 01010007, run
+.br
+.sp
+\fBmgd77cm4\fP 01010008 01010007
+.br
+.sp
+To obtain pathnames for cruises 01010008 and 01010007, but only if there are MGD77+ version in netCDF, run
+.br
+.sp
+\fBmgd77cm4\fP 01010008 01010007 OPT(Ia) OPT(It)
+.br
+.sp
+To see the list of active directories where MGD77 files might be stored, run
+.br
+.sp
+\fBmgd77cm4\fP OPT(D)
+.SH "SEE ALSO"
+.IR GMT (1)
+.IR mgd77info (1)
+.IR mgd77list (1)
+.IR mgd77manage (1)
+.IR mgd77track (1)
+#include "refs.i"
+The Marine Geophysical Data Exchange Format - "MGD77", see
+\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
+.br
