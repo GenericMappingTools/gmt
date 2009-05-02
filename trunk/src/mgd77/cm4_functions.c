@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.5 2009-05-02 21:39:22 guru Exp $
+ *	$Id: cm4_functions.c,v 1.6 2009-05-02 21:54:33 jluis Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -16,6 +16,7 @@
 
 #define I_DIM(x, y) (((x) > (y)) ? (x) - (y) : 0)
 
+int cm4field(struct CM4_CTRL *Ctrl);
 void ymdtomjd(int yearad, int month, int dayofmonth, int *mjd, int *dayofyear);
 void ydtomjdx(int yearad, int dayofyear, int * mjd, int *month, int *dayofmonth, int *daysinmonth);
 double intdst(int mjdl, int mjdh, int mjdy, int msec, double *dstx, int *cerr);
@@ -157,7 +158,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
       PARAMETER (PBTO_MG=0,PETO_MG=0,PBTO_OR=0,PETO_OR=4)
       PARAMETER (PSTO=2,NXTO=60,MXTO=12,IXTO=2736)
       PARAMETER (NTAY_MG=1,NTAY_OR=1)
- ======================================================================= */
+   ======================================================================= */
 
 	if ((fp = fopen(Ctrl->M.path, "r")) == NULL) {
 		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->M.path);
@@ -184,29 +185,37 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm);
 	gpmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
 	for (k = 0; k < 2; ++k)
-		for (j = 0; j < lsmg; ++j)
+		for (j = 0; j < lsmg; ++j) {
+			n = (j + k * 5) * 1356;
 			for (i = 0; i < lcmg; ++i)
-				fscanf (fp, "%lf", &gpmg[i + (j + k * 5) * 1356]);
+				fscanf (fp, "%lf", &gpmg[i + n]);
+		}
 
 	gsmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
 	for (k = 0; k < 2; ++k)
-		for (j = 0; j < lsmg; ++j)
+		for (j = 0; j < lsmg; ++j) {
+			n = (j + k * 5) * 1356;
 			for (i = 0; i < lcmg; ++i)
-				fscanf (fp, "%lf", &gsmg[i + (j + k * 5) * 1356]);
+				fscanf (fp, "%lf", &gsmg[i + n]);
+		}
 
 	fscanf (fp, "%d %d", &lcsq, &lssq);
 	fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
 	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &hion);
 	gpsq = (double *) calloc((size_t)(2 * lssq * lcsq), sizeof(double));
 	for (k = 0; k < 2; ++k)
-		for (j = 0; j < lssq; ++j)
+		for (j = 0; j < lssq; ++j) {
+			n = (j + k * 5) * 13680;
 			for (i = 0; i < lcsq; ++i)
-				fscanf (fp, "%lf", &gpsq[i + (j + k * 5) * 13680]);
+				fscanf (fp, "%lf", &gpsq[i + n]);
+		}
 
 	gssq = (double *) calloc((size_t)(lssq * lcsq), sizeof(double));
-	for (j = 0; j < lssq; ++j)
+	for (j = 0; j < lssq; ++j) {
+		n = j * 13680;
 		for (i = 0; i < lcsq; ++i)
-			fscanf (fp, "%lf", &gssq[i + j * 13680]);
+			fscanf (fp, "%lf", &gssq[i + n]);
+	}
 
 	fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
 	fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
@@ -215,9 +224,11 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 		gcto_mg = (double *) calloc((size_t)(2 * lrto * lsto * lcto), sizeof(double));
 		for (l = 0; l < 2; ++l)
 			for (k = 0; k < lrto; ++k)
-				for (j = 0; j < lsto; ++j)
+				for (j = 0; j < lsto; ++j) {
+					n = (j + (k + (l << 1)) * 3) * 2736;
 					for (i = 0; i < lcto; ++i)
-						fscanf (fp, "%lf", &gcto_mg[i + (j + (k + (l << 1)) * 3) * 2736]);
+						fscanf (fp, "%lf", &gcto_mg[i + n]);
+				}
 	}
 	else			/* Jump the unused coeffs */
 		for (l = 0; l < 2 * lrto * lsto * lcto; ++l)
@@ -229,9 +240,11 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 	if (Ctrl->DATA.pred[3] && !Ctrl->DATA.pred[4]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
 		gcto_or = (double *) calloc((size_t)(lrto * lsto * lcto), sizeof(double));
 		for (k = 0; k < lrto; ++k)
-			for (j = 0; j < lsto; ++j)
+			for (j = 0; j < lsto; ++j) {
+				n = (j + k * 5) * 13680;
 				for (i = 0; i < lcto; ++i)
-					fscanf (fp, "%lf", &gcto_or[i + (j + k * 5) * 13680]);
+					fscanf (fp, "%lf", &gcto_or[i + n]);
+			}
 	}
 
 	fclose(fp);
@@ -601,9 +614,10 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 				omdl = TRUE;
 				mmdl = 1;
 			}
-			bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm, date, cdip, edip, 0., 
-				dst, dstt, rse, &nt, &mt, &rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, 
-				us, gcto_mg, bc, gcto_mg, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
+			bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
+				date, cdip, edip, 0., dst, dstt, rse, &nt, &mt,
+				&rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gcto_mg, bc, gcto_mg, 
+				pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
 			if (cerr > 49) return 1;
 			frto = rm / ro;
 			frho = (ro - rtay) / rm;
@@ -776,7 +790,7 @@ double intdst(int mjdl, int mjdh, int mjdy, int msec, double *dstx, int *cerr) {
     }
 	if (jbot < mjdl || jtop > mjdh) {
 		*cerr = 50;
-		fprintf(stderr, "SUBROUTINE INTDST -- ERROR CODE 50 -- T LIES OUTSIDE OF DST TABLE TIME SPAN -- ABORT\n");
+		fprintf (stderr, "SUBROUTINE INTDST -- ERROR CODE 50 -- T LIES OUTSIDE OF DST TABLE TIME SPAN -- ABORT\n");
 		dst = -1e12;
 	}
 	else
@@ -836,7 +850,7 @@ double intf107(int iyrl, int imol, int iyrh, int imoh, int iyr, int imon, int id
 	}
     }
 	if (ybot < iyrl || ytop > iyrh || ybot == iyrl && mbot < imol || ytop == iyrh && mtop > imoh) {
-		fprintf(stderr, "SUBROUTINE INTF107 -- ERROR CODE 50 -- T LIES OUTSIDE OF F10.7 TABLE TIME SPAN -- ABORT\n");
+		fprintf (stderr, "SUBROUTINE INTF107 -- ERROR CODE 50 -- T LIES OUTSIDE OF F10.7 TABLE TIME SPAN -- ABORT\n");
 		f107 = -1.;
 		*cerr = 50;
 	}
@@ -1031,8 +1045,7 @@ void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g) 
 }
 
 void mpotent(int nmax, int mmax, int nd, int nz, double cphi, double sphi, double *d, double *z) {
-    int m, n, id, iz, nd2, ii;
-	double d1, d2, d3;
+    int m, n, id, iz, nd2;
 
     /* Parameter adjustments */
     z -= (1 + nz);
@@ -1520,6 +1533,7 @@ void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *
     int m, n, p, ie, ig;
     double cosp, sinp;
 
+    /* Function Body */
     r8vset(1, *ng, 0., &g[0]);
     ie = 0;
     for (p = pmin; p <= pmax; ++p) {
@@ -1615,11 +1629,13 @@ void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, in
 
     /* Function Body */
     if (*rgen == 1) {
-	if (MIN(MIN(MIN(*nmni,*nmxi), *nmne),*nmxe) < 0) {
+	i__1 = MIN(MIN(*nmni,*nmxi), *nmne);
+	if (MIN(i__1,*nmxe) < 0) {
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 50 -- NMNI, NMXI, NMNE, OR NMXE < 0 -- ABORT\n");
 		return;
 	}
-	if (MIN(MIN(MIN(*mmni,*mmxi), *mmne), *mmxe) < 0) {
+	i__1 = MIN(MIN(*mmni,*mmxi), *mmne);
+	if (MIN(i__1,*mmxe) < 0) {
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 51 -- MMNI, MMXI, MMNE, OR MMXE < 0 -- ABORT\n");
 		return;
 	}
@@ -1743,9 +1759,9 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
     if (*rgen > 0) {
 	if (sinthe == 0.) {
 	    if (*grad == 0)
-		fprintf(stderr,"SUBROUTINE BFIELD -- ERROR CODE 1 -- GEOGRAPHIC POLAR POSITION DETECTED, B-PHI INDETERMINABLE -- WARNING\n");
+		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 1 -- GEOGRAPHIC POLAR POSITION DETECTED, B-PHI INDETERMINABLE -- WARNING\n");
 	    else
-		fprintf(stderr,"SUBROUTINE BFIELD -- ERROR CODE 2 -- GEOGRAPHIC POLAR POSITION DETECTED, B-PHI AND\n\t\t\t-- PHI-DERIVATIVE GRADIENT COMPONENTS INDETERMINABLE -- WARNING\n");
+		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 2 -- GEOGRAPHIC POLAR POSITION DETECTED, B-PHI AND\n\t\t\t-- PHI-DERIVATIVE GRADIENT COMPONENTS INDETERMINABLE -- WARNING\n");
 
 	    *phi = 0.;
 	    cscthe = 0.;
@@ -2277,9 +2293,9 @@ void taylor(int nc, int ns, double ta, double tb, int *tdeg, int *u, double *dsd
 	if (n > 0) {
 	    iu = u[i];
 	    dsdt[1] = 1.;
-	    for (j = 1; j <= n; ++j)
+	    for (j = 1; j <= n; ++j) {
 		dsdt[j + 1] = dsdt[j] * dt / (double) j;
-
+	    }
 	    r8vgathp(2, 1, iu, n, &dsdt[1], &dsdc[0]);
 	    r8vgathp(1, 1, nc + iu, n, &dsdt[1], &dsdc[0]);
 	    u[i] += n;
@@ -2356,7 +2372,7 @@ void sbspln_(double *ta, double *tb, int *n, int *k, double *bkpo, double *dtdb,
 }
 
 void tbspln_(double *t, int *n, int *k, double *bkpo, double *dtdb, int *cerr) {
-    int i__, j, l, m, p, y, ik, jk, posb;
+    int i, j, l, m, p, y, ik, jk, posb;
     double difi, difj, delk, temp;
 
     /* Parameter adjustments */
@@ -2396,11 +2412,11 @@ void tbspln_(double *t, int *n, int *k, double *bkpo, double *dtdb, int *cerr) {
 	    }
 	    dtdb[p + 1] = 0.;
 	    ++m;
-	    for (i__ = 2; i__ <= *n; ++i__) {
+	    for (i = 2; i <= *n; ++i) {
 		ik = MIN(m,*k+2);
 		difi = bkpo[ik] - *t;
 		posb = p;
-		for (j = i__; j <= *n; ++j) {
+		for (j = i; j <= *n; ++j) {
 		    jk = MAX(m-j,1);
 		    difj = *t - bkpo[jk];
 		    temp = difj * dtdb[posb] + difi * dtdb[posb + 1];
@@ -2417,7 +2433,7 @@ void tbspln_(double *t, int *n, int *k, double *bkpo, double *dtdb, int *cerr) {
 	    }
 	}
     } else {
-	fprintf (stderr, "SUBROUTINE TBSPLN -- ERROR CODE 54 -- T LIES OUTSIDE OF KNOT DOMAIN -- ABORT\n");
+	fprintf (stderr, "TBSPLN -- ERROR CODE 54 -- T (%f) LIES OUTSIDE OF KNOT DOMAIN [%f; %f] -- ABORT\n", *t, bkpo[1], bkpo[*k + 2]);
 	*cerr = 50;
     }
 }
@@ -2670,7 +2686,9 @@ void fdldeu_(int *k, int *na, int *ia, double *seulx, double *ceulx, double *seu
 	    i += *na;
 	}
     } else {
-	r[0] = r[1] = r[2] = 0.;
+	r[0] = 0.;
+	r[1] = 0.;
+	r[2] = 0.;
 	r[3] = -(*ceuly) * *seulx * *seulz + *seuly * *ceulx;
 	r[4] = -(*seulx) * *ceulz;
 	r[5] = *ceuly * *ceulx + *seuly * *seulz * *seulx;
@@ -2805,9 +2823,13 @@ void tvn_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, do
 	slpz = a[*ia + 2];
 	fdldsl_(k, na, ia, &b[0], &dlda[0]);
 	r[0] = slpx;
-	r[1] = r[2] = r[3] = 0.;
+	r[1] = 0.;
+	r[2] = 0.;
+	r[3] = 0.;
 	r[4] = slpy;
-	r[5] = r[6] = r[7] = 0.;
+	r[5] = 0.;
+	r[6] = 0.;
+	r[7] = 0.;
 	r[8] = slpz;
 	ltrans(1, 1, &b[0], &r[0], &b[0]);
 	ltrans(1, 1, &b[3], &r[0], &b[3]);
