@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.h,v 1.1 2009-05-01 23:06:42 guru Exp $
+ *	$Id: cm4_functions.h,v 1.2 2009-05-02 23:45:11 jluis Exp $
  *
  *
  *  File:	cm4_functions.h
@@ -49,6 +49,7 @@ struct MGD77_CM4 {
 		int pred[6];
 		int n_pts;
 		int n_times;
+		int n_altitudes;
 		int coef;
 		double	gmdl[1];
 		double	bmdl[21];
