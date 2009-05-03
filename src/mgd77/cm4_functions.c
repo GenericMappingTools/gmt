@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.8 2009-05-02 23:51:03 jluis Exp $
+ *	$Id: cm4_functions.c,v 1.9 2009-05-03 07:57:58 guru Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -107,7 +107,7 @@ double d_mod(double x, double y);
 double pow_di(double ap, int bp);
 int i_dnnt(double x);
 
-int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
+int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date) {
 
 	int c__1356 = 1356, c__13680 = 13680;
 	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr, jyr, jf107, cerr = 0;
@@ -157,7 +157,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
       PARAMETER (PBTO_MG=0,PETO_MG=0,PBTO_OR=0,PETO_OR=4)
       PARAMETER (PSTO=2,NXTO=60,MXTO=12,IXTO=2736)
       PARAMETER (NTAY_MG=1,NTAY_OR=1)
-/* ======================================================================= */
+ ======================================================================= */
 
 	if ((fp = fopen(Ctrl->M.path, "r")) == NULL) {
 		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->M.path);
@@ -259,8 +259,8 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 	msec = (int *) calloc((size_t)(Ctrl->DATA.n_times), sizeof(int));
 	mjdy = (int *) calloc((size_t)(Ctrl->DATA.n_times), sizeof(int));
 	for (n = 0; n < Ctrl->DATA.n_times; ++n) {		/* If time is not constant compute the mut array */
-		iyr = (int)(Ctrl->DATA.date[n]);
-		fyr = Ctrl->DATA.date[n] - (double) iyr;
+		iyr = (int)(p_date[n]);
+		fyr = p_date[n] - (double) iyr;
 		doy = fyr * (double) (366 - MIN(1, iyr % 4));
 		idoy = (int) doy;
 		fdoy = doy - (double) idoy;
@@ -318,10 +318,10 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 		free((void *) dstx);
 		if (cerr > 49) return 1;
 	}
-	if (Ctrl->f.index) {
-		if (Ctrl->f.load) {
-			if ((fp = fopen(Ctrl->f.path, "r")) == NULL) {
-				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->f.path);
+	if (Ctrl->I.index) {
+		if (Ctrl->I.load) {
+			if ((fp = fopen(Ctrl->I.path, "r")) == NULL) {
+				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->I.path);
 				return 1;
 			}
 			jaft = 0;
@@ -341,7 +341,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			imoh = jmon;
 		}
 		/* MUST INVESTIGATE IF IT WORTH HAVING AN ARRAY OF f107 LIKE IN THE DST CASE */
-		Ctrl->f.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
+		Ctrl->I.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
 		if (cerr > 49) return 1;
 	}
 	free ((void *) msec);
@@ -358,23 +358,23 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 	for (n = 0; n < Ctrl->DATA.n_pts; ++n) {
 		r8vset(1, 21, 0., &bmdl[0]);
 		if (Ctrl->C.curr) r8vset(1, 12, 0., &Ctrl->DATA.jmdl[0]);
-		clat = (90 - Ctrl->DATA.lat[n]) * D2R;
-		elon = Ctrl->DATA.lon[n] * D2R;
+		clat = (90 - p_lat[n]) * D2R;
+		elon = p_lon[n] * D2R;
 
 		/* See if we are using a constant time or an array */
 		if (Ctrl->DATA.n_times > 1) {
-			date = Ctrl->DATA.date[n];
+			date = p_date[n];
 			dst = Ctrl->D.dst[n];
 			mut_now = mut[n];
 		}
 		else {
-			date = Ctrl->DATA.date[0];
+			date = p_date[0];
 			dst = Ctrl->D.dst[0];
 			mut_now = mut[0];
 		}
 
 		/* See if we are using a constant altitude or an array */
-		alt = (Ctrl->DATA.n_altitudes > 1) ? Ctrl->DATA.alt[n] : Ctrl->DATA.alt[0];
+		alt = (Ctrl->DATA.n_altitudes > 1) ? p_alt[n] : p_alt[0];
 
 		if (Ctrl->DATA.coef) {
 			nout = 1;	nygo = 0;
@@ -503,7 +503,7 @@ int MGD77_cm4field(struct MGD77_CM4 *Ctrl) {
 			}
 		}
 		if (Ctrl->DATA.pred[2]) {
-			fsrf = Ctrl->f.F107 * .01485 + 1.;
+			fsrf = Ctrl->I.F107 * .01485 + 1.;
 			if (ro < rion) {
 				bfield(1, 60, 60, 1, 1, 12, 12, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,
 					date, cdip, edip, alt, dst, dstt, rse, &nu,
@@ -851,7 +851,7 @@ double intf107(int iyrl, int imol, int iyrh, int imoh, int iyr, int imon, int id
 	    mbot = 12;
 	}
     }
-	if (ybot < iyrl || ytop > iyrh || ybot == iyrl && mbot < imol || ytop == iyrh && mtop > imoh) {
+	if (ybot < iyrl || ytop > iyrh || (ybot == iyrl && mbot < imol) || (ytop == iyrh && mtop > imoh)) {
 		fprintf (stderr, "SUBROUTINE INTF107 -- ERROR CODE 50 -- T LIES OUTSIDE OF F10.7 TABLE TIME SPAN -- ABORT\n");
 		f107 = -1.;
 		*cerr = 50;

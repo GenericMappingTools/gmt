@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.h,v 1.2 2009-05-02 23:45:11 jluis Exp $
+ *	$Id: cm4_functions.h,v 1.3 2009-05-03 07:57:58 guru Exp $
  *
  *
  *  File:	cm4_functions.h
@@ -54,7 +54,6 @@ struct MGD77_CM4 {
 		double	gmdl[1];
 		double	bmdl[21];
 		double	jmdl[12];
-		double	*lon, *lat, *date, alt;
 		double	*out_field;
 		double	*out_current;
 	} DATA;
@@ -64,5 +63,5 @@ struct MGD77_CM4 {
 	} S;
 };
 
-int MGD77_cm4field (struct MGD77_CM4 *Ctrl);
+int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date);
 void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4);
