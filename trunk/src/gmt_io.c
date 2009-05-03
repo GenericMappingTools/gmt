@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.178 2009-04-18 00:22:29 guru Exp $
+ *	$Id: gmt_io.c,v 1.179 2009-05-03 23:05:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3179,8 +3179,8 @@ void GMT_free_segment (struct GMT_LINE_SEGMENT *segment)
 	int col;
 	for (col = 0; col < segment->n_columns; col++) GMT_free ((void *) segment->coord[col]);
 	GMT_free ((void *) segment->coord);
-	GMT_free ((void *) segment->min);
-	GMT_free ((void *) segment->max);
+	if (segment->min) GMT_free ((void *) segment->min);
+	if (segment->max) GMT_free ((void *) segment->max);
 	if (segment->label) free ((void *) segment->label);
 	if (segment->header) free ((void *) segment->header);
 	GMT_free ((void *)segment);
