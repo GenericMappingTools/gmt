@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.118 2009-04-16 20:53:57 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.119 2009-05-03 23:05:02 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -1772,3 +1772,30 @@ considers such records to indicate a gap in an otherwise continuous series of po
 and programs can act upon this information, e.g., not to draw a line across the gap or to break the line
 into separate segments.  The alternative setting (\emph{bad}) makes no such interpretation and
 simply reports back how many bad records were skipped during reading.
+
+\section{\gmt\ environment parameters}
+\index{Environment parameters}
+
+\GMT\ relies on several environment parameters, in particular to find data files and program settings.
+\begin{description}
+	\item [\$GMT\_SHAREDIR] points to the \GMT\ share directory where all run-time support files
+	such as coastlines, custom symbols, \PS\ macros, color tables, and much more reside.  If this
+	parameter is not set it defaults to the share sub-directory selected during the \GMT\
+	install process (e.g., your answer to question C.9 on the web install form).  If no selection
+	was made the ultimate default is the share directory under the \GMT\ installation directory.
+	\item [\$GMT\_DATADIR] points to a directory where large and/or widely used data files can
+	be placed.  All \GMT\ programs look in this directory when a file is specified on the
+	command line and it is not present in the current directory.  This allows maintainers to
+	consolidate large data files and to simplify scripting that use these files since the absolute path need not be specified.
+	\item [\$GMT\_USERDIR] points to a directory where the user may place custom configuration files
+	(e.g., an alternate \filename{coastline.conf} file, preferred default settings in \filename{.gmtdefaults4},
+	custom symbols and color palettes, and
+	shorthands for gridfile extensions via \filename{.gmt\_io}).  Users may also place their own
+	data files in this directory as \GMT\ programs will search for files given on the command
+	line in both {\bf \$GMT\_DATADIR} and {\bf \$GMT\_USERDIR}.
+	\item [\$GMT\_TMPDIR] is where \GMT\ will write its state parameters via the three files
+	\filename{.gmtcommands4}, \filename{.gmtdefaults4} and \filename{.gmt\_bb\_info}.  If not set
+	then these files are written to the current directory. See Appendix~\ref{app:P} for more on
+	the use of {\bf \$GMT\_TMPDIR}.
+\end{description}
+	

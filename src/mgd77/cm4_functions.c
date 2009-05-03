@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.9 2009-05-03 07:57:58 guru Exp $
+ *	$Id: cm4_functions.c,v 1.10 2009-05-03 23:05:02 guru Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -357,7 +357,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 	/* LOOP over number of input points (many computations below are useless repeated - room for improvment */
 	for (n = 0; n < Ctrl->DATA.n_pts; ++n) {
 		r8vset(1, 21, 0., &bmdl[0]);
-		if (Ctrl->C.curr) r8vset(1, 12, 0., &Ctrl->DATA.jmdl[0]);
+		if (Ctrl->L.curr) r8vset(1, 12, 0., &Ctrl->DATA.jmdl[0]);
 		clat = (90 - p_lat[n]) * D2R;
 		elon = p_lon[n] * D2R;
 
@@ -489,7 +489,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 			mseason(2, 5, c__1356, dst, tsmg, esmg, gsmg);
 			blsgen(c__1356, c__1356, 3, bc, esmg, hymg);
 			ltrans(1, 1, bc, rlgm, &bmdl[9]);
-			if (Ctrl->C.curr) {
+			if (Ctrl->L.curr) {
 				bc[0] = bc[1] = bc[2] = 0.;
 				jtbelow(0, 5, 11, 6, ro, rm, c__1356, hymg);
 				blsgen(c__1356, c__1356, 3, bc, esmg, hymg);
@@ -529,7 +529,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 				iseason(2, 5, c__13680, fsrf, tssq, essq, gssq);
 				blsgen(c__13680, c__13680, 3, bc, essq, hysq);
 				ltrans(1, 1, bc, rlgm, &bmdl[15]);
-				if (Ctrl->C.curr) {
+				if (Ctrl->L.curr) {
 					bc[0] = bc[1] = bc[2] = 0.;
 					jtabove(0, 4, 60, 12, ro, rion, c__13680, &hysq[41040]);
 					blsgen(c__13680, c__13680, 3, bc, epsq, &hysq[41040]);
@@ -569,7 +569,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 				iseason(2, 5, c__13680, fsrf, tssq, essq, gssq);
 				blsgen(c__13680, c__13680, 3, bc, essq, hysq);
 				ltrans(1, 1, bc, rlgm, &bmdl[15]);
-				if (Ctrl->C.curr) {
+				if (Ctrl->L.curr) {
 					bc[0] = bc[1] = bc[2] = 0.;
 					jtbelow(0, 4, 60, 12, ro, rion, c__13680, hysq);
 					blsgen(c__13680, c__13680, 3, bc, epsq, hysq);
@@ -643,7 +643,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 			if (Ctrl->DATA.coef)
 				getgxf(pbto, peto, 60, 12, &nt, ecto, &Ctrl->DATA.gmdl[nout-1], tdto);
 
-			if (Ctrl->C.curr) {
+			if (Ctrl->L.curr) {
 	        		bc[0] = bc[1] = bc[2] = 0.;
 				jpoloid(pbto, peto, 60, 12, ro, rm, nt, nyto, tdto, hq, hyto);
 				blsgen(nyto, nyto, 1, &bc[2], ecto, &hyto[nyto * 2]);

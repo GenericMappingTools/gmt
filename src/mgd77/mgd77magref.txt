@@ -3,39 +3,107 @@
 .SH NAME
 mgd77cm4 \- Evaluate the CM4 magnetic field model
 .SH SYNOPSIS
-\fBmgd77cm4\fP \fINGDC-ids\fP [ OPT(D) ] [ OPT(I)\fIignore\fP ] [ GMT_V_OPT ]
+\fBmgd77cm4\fP [ \fIinputfile\fP ] [ OPT(A)[\fB+a\fP\fIalt\fI\fB+t\fP\fIdate\fP\fB+y\fP] ] [ OPT(C)\fIcm4file\fP ] 
+[ OPT(D)\fIDstfile\fP ] [ OPT(E)\fIf107file\fP ] [ OPT(F)\fIflags\fP ] [ OPT(G) ] [ GMT_H_OPT ] 
+[ OPT(Q)\fIlon/lat/alt/time\fP ] [ OPT(Sc)|\fBl\fP\fIlow/high\fP ] 
+[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBmgd77cm4\fP NOT FINISHED YET!!!.
-#include "explain_ncid.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
-OPT(D)
-Instead of cruise listings, just show the directory paths currently used in the search.
+\fIinputfile\fP
+Contains the moments in space-time where we want to evaluate CM4.  THe first two columns must contain
+longitude and latitude (however, see OPT(:) for latitude and longitude instead).  Normally, the third
+and fourth columns must contain altitude and time, respectively, but if one or both of these are constant
+for all records they can be supplied via the OPT(A) option instead and are thus not expected in the input
+file.  If no input file is given we read \fIstdin\fP, unless a single point is given with OPT(P).
 .TP
-OPT(I)
-Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
-MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
-be repeated to ignore more than one format.  [Default ignores none].
+OPT(A)
+Adjusts how the input record is interpreted.  Append \fB+a\fP to set a fixed \fIaltitude\fP that should
+apply to all data records [Default expects \fIaltitude\fP to be in the 3rd column of all records].
+.TP
+OPT(C)
+Specify an alternate CM4 coefficient file [umdl.CM4].
+.TP
+OPT(D)
+Specify an alternate file with hourly means of the Dst index [Dst_all.wdc].  Alternatively,
+simply specify a single index to apply for all records.
+.TP
+OPT(E)
+Specify an alternate file with monthly means of absolute F10.7 solar radio flux [F107_mon.plt].  Alternatively,
+simply specify a single flux to apply for all records.
+.TP
+OPT(F)
+Selects output items; \fIflags\fP is a string made up of one or more of these characters:
+.br
+\fBr\fP means output all input columns before adding the items below (all in nTesla).
+.br
+\fBt\fP means list total field.
+.br
+\fBh\fP means list horizontal field.
+.br
+\fBx\fP means list X component.
+.br
+\fBy\fP means list Y component.
+.br
+\fBz\fP means list Z component.
+.br
+\fBd\fP means list declination.
+.br
+\fBi\fP means list inclination.
+.br
+Append one or more number to indicate the requested field contribution(s):
+.br
+\fB1\fP means Main field 1
+.br
+\fB2\fP means Main field 2
+.br
+\fB3\fP Primary Magnetospheric field
+.br
+\fB4\fP Induced Magnetospheric field
+.br
+\fB5\fP Primary ionospheric field
+.br
+\fB6\fP Induced ionospheric field
+.br
+\fB7\fP Toroidal field
+.br
+Appending several numbers will add up the different contributions. For example
+OPT(Ft)/\fB12\fP computes the total field due to Core and Lithospheric sources.
+The data is written out in the order they appear in \fIflags\fP [Default is OPT(Frthxyzdi)/\fB1\fP].
+.TP
+OPT(G)
+Specifies that coordinates are geodetic [geocentric].
+#include "explain_-H.txt"
+.TP
+OPT(Q)
+Evalutes CM4 at the single point \fIlon/lat/alt/time\fP and no input files will be read.
+\fItimefP is assumed to be in ISO \fIdate\fPT\fIclock\fP format unless OPT(A+y) is specified.
+.TP
+OPT(Sc)
+Limits the wavelengths of the core field contribution to the band indicated by the low and high spherical
+harmonic order [1/13].
+.TP
+OPT(Sl)
+Limits the wavelengths of the lithosphere field contribution to the band indicated by the low and high spherical
+harmonic order [14/65].
+.TP
+OPT(U)
+This option is as yet not described.
 #include "explain_-V.txt"
-Reports the total number of cruises found.
+#include "explain_-t.txt"
+#include "explain_-bi.txt"
+[Default is 4 input columns unless OPT(A) is used].
+#include "explain_-bo.txt"
+[Default is reflected by OPT(F)].
+#include "explain_-m.txt"
+.SH TIME SETTINGS
+If binary input files are used then absolute time are stored as time relative to the selected epoch.
+However, since the epoch used is not stored in the data files there can be problems decoding the
+correct time.  The mgd77 supplement uses the Unix time system as its default; thus you should
+make sure that binary data files with time uses the same system (see the GMT default TIME_SYSTEM).
 .SH EXAMPLES
-To obtain pathnames for cruises 01010008 and 01010007, run
-.br
-.sp
-\fBmgd77cm4\fP 01010008 01010007
-.br
-.sp
-To obtain pathnames for cruises 01010008 and 01010007, but only if there are MGD77+ version in netCDF, run
-.br
-.sp
-\fBmgd77cm4\fP 01010008 01010007 OPT(Ia) OPT(It)
-.br
-.sp
-To see the list of active directories where MGD77 files might be stored, run
-.br
-.sp
-\fBmgd77cm4\fP OPT(D)
 .SH "SEE ALSO"
 .IR GMT (1)
 .IR mgd77info (1)
@@ -43,6 +111,6 @@ To see the list of active directories where MGD77 files might be stored, run
 .IR mgd77manage (1)
 .IR mgd77track (1)
 #include "refs.i"
-The Marine Geophysical Data Exchange Format - "MGD77", see
-\fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
+"Comprehensive Modeling of the Geomagnetic Field", see
+\fIhttp://denali.gsfc.nasa.gov/cm/\fP.
 .br
