@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.38 2009-01-16 01:27:09 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.39 2009-05-03 19:46:43 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -24,7 +24,7 @@ REM Microsoft Visual C/c++ tools.  It will build GMT
 REM using DLL libraries.  To make static executables
 REM you must make some edits to the setup below.
 REM
-REM Author: Paul Wessel, 5-DEC-2008
+REM Author: Paul Wessel, 3-MAY-2009
 REM ----------------------------------------------------
 REM
 REM How to build GMT executables under Windows:
@@ -61,7 +61,7 @@ REM
 SET BINDIR="..\bin"
 SET LIBDIR="..\lib"
 SET INCDIR="..\include"
-SET GMT_SHARE_PATH="\"C:\\GMT\\share\""
+SET GMT_SHARE_PATH="\"C:\\programs\\GMT\\share\""
 REM
 REM STEP e: If you WANT TO  use Shewchuk's triangulation
 REM	    routine, you must set TRIANGLE to "yes" or
