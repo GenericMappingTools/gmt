@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.43 2009-03-25 22:23:06 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.44 2009-05-03 19:46:43 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -23,7 +23,7 @@ REM the GMT 4 supplemental programs under WIN32 using
 REM Microsoft Visual C/C++ tools.  Not yet set up for mex.
 REM Note: Optimizing all at /O2 except meca which seems unstable
 REM
-REM Author: Paul Wessel, 26-APR-2008
+REM Author: Paul Wessel, 2-MAY-2009
 REM ----------------------------------------------------
 REM
 REM How to build GMT under Windows:
@@ -110,12 +110,13 @@ cd mgd77
 %CC% %COPT2% /c mgd77.c
 lib /out:mgd77.lib mgd77.obj
 %CC% %COPT% mgd77convert.c mgd77.lib %GMTLIB%
-%CC% %COPT% mgd77info.c	 mgd77.lib %GMTLIB%
-%CC% %COPT% mgd77list.c	 mgd77.lib %GMTLIB%
-%CC% %COPT% mgd77manage.c	 mgd77.lib %GMTLIB%
-%CC% %COPT% mgd77path.c	 mgd77.lib %GMTLIB%
+%CC% %COPT% mgd77info.c mgd77.lib %GMTLIB%
+%CC% %COPT% mgd77list.c mgd77.lib %GMTLIB%
+%CC% %COPT% mgd77manage.c mgd77.lib %GMTLIB%
+%CC% %COPT% mgd77path.c mgd77.lib %GMTLIB%
 %CC% %COPT% mgd77sniffer.c mgd77.lib %GMTLIB%
-%CC% %COPT% mgd77track.c	 mgd77.lib %GMTLIB%
+%CC% %COPT% mgd77track.c mgd77.lib %GMTLIB%
+%CC% %COPT% mgd77cm4.c mgd77.lib %GMTLIB%
 del *.obj
 move mgd77.lib %LIBDIR%
 move *.exe %BINDIR%

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.130 2009-04-15 19:56:03 remko Exp $
+ *	$Id: x2sys.c,v 1.131 2009-05-03 19:46:43 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -351,7 +351,7 @@ void x2sys_set_home (void)
 		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (this) + 1), (size_t)1, "x2sys_set_home");
 		strcpy (X2SYS_HOME, this);
 	}
-	else {
+	else {	/* Default to the x2sys dir under GMT_SHAREDIR */
 		X2SYS_HOME = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_SHAREDIR) + 7), (size_t)1, "x2sys_set_home");
 		sprintf (X2SYS_HOME, "%s%cx2sys", GMT_SHAREDIR, DIR_DELIM);
 	}
