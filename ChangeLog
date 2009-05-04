@@ -1,11 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.494 2009-05-03 23:05:02 guru Exp $
+	$Id: ChangeLog,v 1.495 2009-05-04 23:54:58 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-05-03	pwessel
-	* mgd77/mgd77cm4.c:	New mgd77 program used to evaluate the CM4 comprehensive geomagnetic
-				model, a more sophisticated alternative to IGRF.  Based on a f2c
-				translation of NASA FOrtran code by J. Luis.
+	* mgd77/mgd77magref.c:	New mgd77 program used to evaluate the CM4 comprehensive geomagnetic
+				model, a more sophisticated alternative to IGRF, or IGRF.  Based on
+				a f2c translation of NASA Fortran code by J. Luis.
 
 2009-05-01	pwessel
 	* pslib.c:		Check if input arg eps == NULL before using this pointer
