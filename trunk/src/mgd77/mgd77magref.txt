@@ -1,19 +1,18 @@
 #include "common_options.txt"
-.TH MGD77CM4 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH MGD77MAGREF 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-mgd77cm4 \- Evaluate the CM4 magnetic field model
+mgd77magref \- Evaluate the IGRF or CM4 magnetic field models
 .SH SYNOPSIS
-\fBmgd77cm4\fP [ \fIinputfile\fP ] [ OPT(A)[\fB+a\fP\fIalt\fI\fB+t\fP\fIdate\fP\fB+y\fP] ] [ OPT(C)\fIcm4file\fP ] 
+\fBmgd77magref\fP [ \fIinputfile\fP ] [ OPT(A)[\fB+a\fP\fIalt\fI\fB+t\fP\fIdate\fP\fB+y\fP] ] [ OPT(C)\fIcm4file\fP ] 
 [ OPT(D)\fIDstfile\fP ] [ OPT(E)\fIf107file\fP ] [ OPT(F)\fIflags\fP ] [ OPT(G) ] [ GMT_H_OPT ] 
-[ OPT(Q)\fIlon/lat/alt/time\fP ] [ OPT(Sc)|\fBl\fP\fIlow/high\fP ] 
-[ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
+[ OPT(Sc)|\fBl\fP\fIlow/high\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
-\fBmgd77cm4\fP NOT FINISHED YET!!!.
+\fBmgd77magref\fP NOT FINISHED YET!!!.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
 \fIinputfile\fP
-Contains the moments in space-time where we want to evaluate CM4.  THe first two columns must contain
+Contains the moments in space-time where we want to evaluate the magnetic reference field.  The first two columns must contain
 longitude and latitude (however, see OPT(:) for latitude and longitude instead).  Normally, the third
 and fourth columns must contain altitude and time, respectively, but if one or both of these are constant
 for all records they can be supplied via the OPT(A) option instead and are thus not expected in the input
@@ -22,16 +21,20 @@ file.  If no input file is given we read \fIstdin\fP, unless a single point is g
 OPT(A)
 Adjusts how the input record is interpreted.  Append \fB+a\fP to set a fixed \fIaltitude\fP that should
 apply to all data records [Default expects \fIaltitude\fP to be in the 3rd column of all records].
+Append \fB+t\fP to set a fixed \fItime\fP that should
+apply to all data records [Default expects \fItime\fP to be in the 4th column of all records].
+Finally, append \fB+y\fP to indicate that all times are specified as decimal years [Default is
+ISO \fIdate\fPT\fIcolck\fP format].
 .TP
 OPT(C)
 Specify an alternate CM4 coefficient file [umdl.CM4].
 .TP
 OPT(D)
-Specify an alternate file with hourly means of the Dst index [Dst_all.wdc].  Alternatively,
+Specify an alternate file with hourly means of the Dst index for CM4 [Dst_all.wdc].  Alternatively,
 simply specify a single index to apply for all records.
 .TP
 OPT(E)
-Specify an alternate file with monthly means of absolute F10.7 solar radio flux [F107_mon.plt].  Alternatively,
+Specify an alternate file with monthly means of absolute F10.7 solar radio flux for CM4 [F107_mon.plt].  Alternatively,
 simply specify a single flux to apply for all records.
 .TP
 OPT(F)
@@ -55,9 +58,11 @@ Selects output items; \fIflags\fP is a string made up of one or more of these ch
 .br
 Append one or more number to indicate the requested field contribution(s):
 .br
-\fB1\fP means Main field 1
+\fB0\fP means IGRF field (no combinations allowed)
 .br
-\fB2\fP means Main field 2
+\fB1\fP means Core field
+.br
+\fB2\fP means Lithospheric
 .br
 \fB3\fP Primary Magnetospheric field
 .br
@@ -69,17 +74,14 @@ Append one or more number to indicate the requested field contribution(s):
 .br
 \fB7\fP Toroidal field
 .br
-Appending several numbers will add up the different contributions. For example
+Appending several numbers (1-7) will add up the different contributions. For example
 OPT(Ft)/\fB12\fP computes the total field due to Core and Lithospheric sources.
+Note that 0 (IGRF) cannot be combined with any other CM4 components.
 The data is written out in the order they appear in \fIflags\fP [Default is OPT(Frthxyzdi)/\fB1\fP].
 .TP
 OPT(G)
 Specifies that coordinates are geodetic [geocentric].
 #include "explain_-H.txt"
-.TP
-OPT(Q)
-Evalutes CM4 at the single point \fIlon/lat/alt/time\fP and no input files will be read.
-\fItimefP is assumed to be in ISO \fIdate\fPT\fIclock\fP format unless OPT(A+y) is specified.
 .TP
 OPT(Sc)
 Limits the wavelengths of the core field contribution to the band indicated by the low and high spherical
@@ -114,3 +116,5 @@ make sure that binary data files with time uses the same system (see the GMT def
 "Comprehensive Modeling of the Geomagnetic Field", see
 \fIhttp://denali.gsfc.nasa.gov/cm/\fP.
 .br
+"The International Geomagnetic Reference Field (IGRF)", see
+\fIhttp://www.iugg.org/IAGA/iaga_pages/pubs_prods/igrf.htm\fP.
