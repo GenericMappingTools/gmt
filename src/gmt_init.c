@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.389 2009-04-17 23:42:52 guru Exp $
+ *	$Id: gmt_init.c,v 1.390 2009-05-04 00:52:21 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -952,13 +952,11 @@ void GMT_syntax (char option)
 	}
 }
 
-void GMT_default_error (char option)
-{
+void GMT_default_error (char option) {
 	fprintf (stderr, "%s: GMT SYNTAX ERROR:  Unrecognized option -%c\n", GMT_program, option);
 }
 
-int GMT_sort_options (int argc, char **argv, char *order)
-{
+int GMT_sort_options (int argc, char **argv, char *order) {
 	/* GMT_sort_options reorganizes the arguments on the command line
 	 * according to the order specified in the character string "order"
 	 * All options starting with "-" can be reorganised.
@@ -1810,12 +1808,18 @@ int GMT_setparameter (char *keyword, char *value)
 	BOOLEAN manual, eps, error = FALSE;
 	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], lower_value[BUFSIZ];
 	double dval;
+/*FILE *fp;*/
 
 	if (!value) return (TRUE);		/* value argument missing */
 	strncpy (lower_value, value, (size_t)BUFSIZ);	/* Get a lower case version */
 	GMT_str_tolower (lower_value);
 
 	case_val = GMT_hash_lookup (keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+/*fp = fopen("c:\\lixo_case.txt","w");
+fprintf(fp,"%d\n", case_val);
+fprintf(fp,"%s", value);
+fclose(fp);
+return (error);*/
 
 	switch (case_val) {
 		case GMTCASE_ANNOT_MIN_ANGLE:
@@ -3530,6 +3534,130 @@ int GMT_begin (int argc, char **argv)
 
 	return (argc);
 }
+
+#ifdef MIRONE 
+int GMT_short_begin (int argc, char **argv) {
+	int i, j, n;
+	char *this;
+
+#ifdef DEBUG
+	GMT_memtrack_init (&GMT_mem_keeper);
+#endif
+
+	GMT = (struct GMT_CTRL *)New_GMT_Ctrl ();	/* Allocate and initialize a new common control structure */
+
+	/* Initialize parameters that don'd depend on .gmtdefaults */
+
+	this = CNULL;
+	frame_info.plot = FALSE;
+	project_info.projection = GMT_NO_PROJ;
+	project_info.gave_map_width = 0;
+	project_info.region = TRUE;
+	project_info.compute_scale[0] =  project_info.compute_scale[1] = project_info.compute_scale[2] = FALSE;
+	project_info.x_off_supplied = project_info.y_off_supplied = FALSE;
+	project_info.region_supplied = FALSE;
+	for (j = 0; j < 10; j++) project_info.pars[j] = 0.0;
+	project_info.xmin = project_info.ymin = 0.0;
+	project_info.z_level = DBL_MAX;	/* Will be set in map_setup */
+	project_info.xyz_pos[0] = project_info.xyz_pos[1] = TRUE;
+	for (i = 0; i < 4; i++) project_info.edge[i] = TRUE;
+	for (i = strlen(argv[0]); i >= 0 && argv[0][i] != '/'; i--);
+	GMT_program = &argv[0][i+1];
+	frame_info.check_side = frame_info.horizontal = FALSE;
+	project_info.f_horizon = 90.0;
+	GMT_distance_func = (PFD) GMT_great_circle_dist_km;
+
+	/* Set the gmtdefault parameters from the $HOME/.gmtdefaults4 (if any) */
+
+	/* See if user specified +optional_defaults_file.  If so, assign filename to this and remove option from argv */
+
+	for (i = j = 1; i < argc; i++) {
+		argv[j] = argv[i];
+		if (argv[j][0] == '+' && argv[i][1] && !access (&argv[i][1], R_OK))
+			this = &argv[i][1];
+		else
+			j++;
+	}
+	argc = j;
+
+	GMT_getdefaults (this);
+
+	/* See if user specified -- defaults on the command line [Per Dave Ball's suggestion].
+	 * If found, apply option and remove from argv.  These options only apply to current process. */
+
+	GMT_hash_init (keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
+	for (i = j = 1, n = 0; i < argc; i++) {
+		if (argv[i][0] == '-' && argv[i][1] == '-' && argv[i][2] ) {
+			if ((this = strchr (argv[i], '='))) {	/* Got --PAR=VALUE */
+				this[0] = '\0';
+				n += GMT_setparameter (&argv[i][2], &this[1]);
+			}
+			else				/* Got --PAR */
+				n += GMT_setparameter (&argv[i][2], "TRUE");
+		}
+		else
+			argv[j++] = argv[i];
+	}
+	argc = j;
+	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
+
+	GMT_init_ellipsoid ();	/* Set parameters depending on the ellipsoid */
+
+	GMT_io_init ();		/* Init the table i/o structure */
+
+	GMT_get_time_language (gmtdefs.time_language);
+
+	/* Make sure -b options are parsed first in case filenames are given
+	 * before -b options on the command line.  This would only cause grief
+	 * under WIN32. Also make -J come first and -R before -I, if present.
+	 * We also run -f through in case -: is given.
+	 * Finally, we look for -V so verbose is set prior to testing arguments */
+
+	GMT_sort_options (argc, argv, "VJRIbf:");
+
+	return (argc);
+}
+
+
+void GMT_end_for_mex (int argc, char **argv) {
+	/* Special version to be used in MEXs. */
+
+	int i, j;
+
+	for (i = 0; i < GMT_N_UNIQUE; i++) if (GMT_oldargv[i]) GMT_free ((void *)GMT_oldargv[i]);
+	GMT_free_plot_array ();
+	/* Remove allocated hash structures */
+	GMT_free_hash (GMT_month_hashnode, 12);
+	/*GMT_free_hash (GMT_rgb_hashnode, GMT_N_COLOR_NAMES);*/
+	GMT_free_custom_symbols();
+
+	if (GMT_io.skip_if_NaN) GMT_free ((void *)GMT_io.skip_if_NaN);
+	if (GMT_io.in_col_type) GMT_free ((void *)GMT_io.in_col_type);
+	if (GMT_io.out_col_type) GMT_free ((void *)GMT_io.out_col_type);
+
+	if (project_info.n_x_coeff) GMT_free ((void *)project_info.n_x_coeff);
+	if (project_info.n_y_coeff) GMT_free ((void *)project_info.n_y_coeff);
+	if (project_info.n_iy_coeff) GMT_free ((void *)project_info.n_iy_coeff);
+
+	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) if (GMT_plot_format[i][j]) GMT_free ((void *)GMT_plot_format[i][j]);
+
+	if (GMT_n_colors) {
+		for (i = 0; i < GMT_n_colors; i++) {
+			if (GMT_lut[i].label) GMT_free ((void *)GMT_lut[i].label);
+			if (GMT_lut[i].fill) GMT_free ((void *)GMT_lut[i].fill);
+		}
+		GMT_free ((void *)GMT_lut);
+	}
+	for (i = 0; i < 3; i++) if (GMT_bfn[i].fill) GMT_free ((void *)GMT_bfn[i].fill);
+
+	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
+
+#ifdef DEBUG
+	GMT_memtrack_report (GMT_mem_keeper);
+#endif
+
+}
+#endif		/* endif ifdef MIRONE */
 
 void GMT_end (int argc, char **argv)
 {
