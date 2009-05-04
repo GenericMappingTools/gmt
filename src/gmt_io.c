@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.179 2009-05-03 23:05:02 guru Exp $
+ *	$Id: gmt_io.c,v 1.180 2009-05-04 21:26:19 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -422,7 +422,7 @@ char *GMT_getdatapath (const char *stem, char *path)
 
 char *GMT_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path)
 {
-	/* stem is the prefix of the file, e.g., gmt_lis for gmt_cpt.conf
+	/* stem is the prefix of the file, e.g., gmt_cpt for gmt_cpt.conf
 	 * subdir is an optional subdirectory name in the $GMT_SHAREDIR directory.
 	 * suffix is an optional suffix to append to name
 	 * path is the full path to the file in question
