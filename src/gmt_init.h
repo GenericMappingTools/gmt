@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.78 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_init.h,v 1.79 2009-05-04 00:53:51 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,5 +71,10 @@ EXTERN_MSC int GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, int mo
 EXTERN_MSC void GMT_extract_label (char *line, char *label);
 EXTERN_MSC int GMT_setparameter(char *keyword, char *value);
 EXTERN_MSC void GMT_check_lattice (double *x_inc, double *y_inc, BOOLEAN *pixel, BOOLEAN *active);
+
+#ifdef MIRONE 
+EXTERN_MSC int GMT_short_begin (int argc, char **argv);
+EXTERN_MSC void GMT_end_for_mex (int argc, char **argv);
+#endif
 
 #endif /* GMT_INIT_H */
