@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.55 2009-05-01 23:06:42 guru Exp $
+#	$Id: Makefile,v 1.56 2009-05-04 23:39:32 guru Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -24,7 +24,7 @@ INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 
 PROGS_H		= mgd77.h mgd77defaults.h mgd77_IGF_coeffs.h mgd77sniffer.h mgd77snifferdefaults.h \
 		mgd77magref.h mgd77_codes.h
-PROGS_O		= mgd77convert.o mgd77info.o mgd77list.o mgd77path.o mgd77manage.o mgd77sniffer.o mgd77cm4.o
+PROGS_O		= mgd77convert.o mgd77info.o mgd77list.o mgd77path.o mgd77manage.o mgd77sniffer.o mgd77magref.o
 PROGSPS_O	= mgd77track.o
 MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
 
@@ -105,7 +105,7 @@ mgd77list$(EXE):	mgd77list.o
 mgd77path$(EXE):	mgd77path.o
 mgd77manage$(EXE):	mgd77manage.o
 mgd77sniffer$(EXE):	mgd77sniffer.o
-mgd77cm4$(EXE):		mgd77cm4.o
+mgd77magref$(EXE):	mgd77magref.o
 mgd77track$(EXE):	mgd77track.o
 
 $(PROGS):	$(LIB) $(GMTLIB)
