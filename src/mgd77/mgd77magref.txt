@@ -80,7 +80,7 @@ Note that 0 (IGRF) cannot be combined with any other CM4 components.
 The data is written out in the order they appear in \fIflags\fP [Default is OPT(Frthxyzdi)/\fB1\fP].
 .TP
 OPT(G)
-Specifies that coordinates are geodetic [geocentric].
+Specifies that coordinates are geocentric [geodetic].
 #include "explain_-H.txt"
 .TP
 OPT(Sc)

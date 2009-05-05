@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.221 2009-05-03 23:05:02 guru Exp $
+ *	$Id: mgd77.c,v 1.222 2009-05-05 00:07:12 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -5213,7 +5213,7 @@ void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4)
 	CM4->D.load = TRUE;
 	CM4->I.index = TRUE;
 	CM4->I.load = TRUE;
-	CM4->G.geodetic = FALSE;
+	CM4->G.geodetic = TRUE;
 	CM4->S.nlmf[0] = 1;
 	CM4->S.nlmf[1] = 14;
 	CM4->S.nhmf[0] = 13;
