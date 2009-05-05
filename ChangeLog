@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.495 2009-05-04 23:54:58 guru Exp $
+	$Id: ChangeLog,v 1.496 2009-05-05 02:24:59 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-03	jluis
+	* mgd77/mgd77.c:	Fixed bug in MGD77_igrf10syn routine (mistake done while cleaning the
+				f2c versiom) that resulted in altitude always being on Earth surface
+				when geocentric coords were used.
 
 2009-05-03	pwessel
 	* mgd77/mgd77magref.c:	New mgd77 program used to evaluate the CM4 comprehensive geomagnetic
