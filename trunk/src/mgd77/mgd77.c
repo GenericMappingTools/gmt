@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.222 2009-05-05 00:07:12 guru Exp $
+ *	$Id: mgd77.c,v 1.223 2009-05-05 02:18:15 jluis Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4638,10 +4638,8 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
 		one = ct;
 		ct = ct * cd - st * sd;
 		st = st * cd + one * sd;
-		ratio = 6371.2 / r;
 	}
-	else
-		ratio = 1.0;
+	ratio = 6371.2 / r;
 	rr = ratio * ratio;
 
 	/* computation of Schmidt quasi-normal coefficients p and x(=q) */
