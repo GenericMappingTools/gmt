@@ -7,7 +7,7 @@ mgd77magref \- Evaluate the IGRF or CM4 magnetic field models
 [ OPT(D)\fIDstfile\fP ] [ OPT(E)\fIf107file\fP ] [ OPT(F)\fIflags\fP ] [ OPT(G) ] [ GMT_H_OPT ] 
 [ OPT(Sc)|\fBl\fP\fIlow/high\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
-\fBmgd77magref\fP NOT FINISHED YET!!!.
+\fBmgd77magref\fP will evaluate the IGRF or the CM4 geomagnetic models at the specified locations and times.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
 .TP
@@ -82,6 +82,11 @@ The data is written out in the order they appear in \fIflags\fP [Default is OPT(
 OPT(G)
 Specifies that coordinates are geocentric [geodetic].
 #include "explain_-H.txt"
+#ifdef NOTDONEYET
+.TP
+OPT(L)
+This option is as yet not described.
+#endif
 .TP
 OPT(Sc)
 Limits the wavelengths of the core field contribution to the band indicated by the low and high spherical
@@ -90,9 +95,6 @@ harmonic order [1/13].
 OPT(Sl)
 Limits the wavelengths of the lithosphere field contribution to the band indicated by the low and high spherical
 harmonic order [14/65].
-.TP
-OPT(U)
-This option is as yet not described.
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
