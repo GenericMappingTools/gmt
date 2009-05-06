@@ -1,10 +1,9 @@
-#	$Id: cyclic.cpt,v 1.1 2007-10-01 15:36:21 remko Exp $
+#	$Id: cyclic.cpt,v 1.2 2009-05-06 16:41:16 remko Exp $
 #
 # Cyclic spectrum, spans 360 degrees of hue
 # Designed by Remko Scharroo, Altimetrics LLC
 # COLOR_MODEL = +HSV
-0	0	1	1	180	180	1	1
-180	180	1	1	360	360	1	1
+0	0	1	1	360	360	1	1
 B 0 0 1
 F 0 0 0
 N 0 0 0.75
