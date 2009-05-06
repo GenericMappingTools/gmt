@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.497 2009-05-06 01:52:19 remko Exp $
+	$Id: ChangeLog,v 1.498 2009-05-06 16:25:35 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-05-06	pwessel
+	* *.c,txt,tex:		While remaining backwards compatible, we no longer announce that
+				GMT will search GMT_IMGDIR and GMT_GRIDDIR.  Going forward, we will
+				document the user of GMT_DATADIR and GMT_USERDIR only.
 2009-05-06	remko
 	* pglegend.c:		Allow S record not to have <text>. Until now, when left empty would
 				use whatever <text> was set to in previous record.
