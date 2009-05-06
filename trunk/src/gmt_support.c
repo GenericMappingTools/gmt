@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.396 2009-04-17 23:42:53 guru Exp $
+ *	$Id: gmt_support.c,v 1.397 2009-05-06 16:40:48 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1660,16 +1660,17 @@ int GMT_read_cpt (char *cpt_file)
 			if (gmtdefs.color_model & GMT_READ_HSV) {
 				GMT_hsv_to_rgb (GMT_lut[n].rgb_low, GMT_lut[n].hsv_low);
 				GMT_hsv_to_rgb (GMT_lut[n].rgb_high, GMT_lut[n].hsv_high);
+				for (i = 0; !GMT_continuous && i < 3; i++) if (GMT_lut[n].hsv_low[i] != GMT_lut[n].hsv_high[i]) GMT_continuous = TRUE;
 			}
 			else {
 				GMT_rgb_to_hsv (GMT_lut[n].rgb_low, GMT_lut[n].hsv_low);
 				GMT_rgb_to_hsv (GMT_lut[n].rgb_high, GMT_lut[n].hsv_high);
+				for (i = 0; !GMT_continuous && i < 3; i++) if (GMT_lut[n].rgb_low[i] != GMT_lut[n].rgb_high[i]) GMT_continuous = TRUE;
 			}
 			if (!GMT_is_gray (GMT_lut[n].rgb_low[0],  GMT_lut[n].rgb_low[1],  GMT_lut[n].rgb_low[2]))  GMT_gray = FALSE;
 			if (!GMT_is_gray (GMT_lut[n].rgb_high[0], GMT_lut[n].rgb_high[1], GMT_lut[n].rgb_high[2])) GMT_gray = FALSE;
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_low[0]))  GMT_b_and_w = FALSE;
 			if (GMT_gray && !GMT_is_bw(GMT_lut[n].rgb_high[0])) GMT_b_and_w = FALSE;
-			for (i = 0; !GMT_continuous && i < 3; i++) if (GMT_lut[n].rgb_low[i] != GMT_lut[n].rgb_high[i]) GMT_continuous = TRUE;
 
 			/* Differences used in GMT_get_rgb_from_z */
 			for (i = 0; i < 3; i++) GMT_lut[n].rgb_diff[i] = GMT_lut[n].rgb_high[i] - GMT_lut[n].rgb_low[i];
