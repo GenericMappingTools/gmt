@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.119 2009-05-03 23:05:02 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.120 2009-05-06 16:25:35 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -893,8 +893,6 @@ programs piped together this tells you where the trouble is.
 \index{Record, header \Opt{H}}
 \index{\Opt{H} (header records)}
 \index{GMT\_DATADIR}
-\index{GMT\_GRIDDIR}
-\index{GMT\_IMGDIR}
 
 Most of the programs which expect table data input can read
 either standard input or input in one or several files.
@@ -914,16 +912,16 @@ documentation.
 
 If filenames are given for reading, \GMT\ programs will first look for them in the
 current directory.  If the file is not found, the programs
-will look in three other directories pointed to by environmental
-parameters (if set).  These are \textbf{GMT\_GRIDDIR}, \textbf{GMT\_IMGDIR}, and
-\textbf{GMT\_DATADIR}, and they may be set by the user to point to directories
+will look in two other directories pointed to by environmental
+parameters (if set).  These are \textbf{GMT\_DATADIR} and
+\textbf{GMT\_USERDIR}, and they may be set by the user to point to directories
 that contain data sets of general use.  Normally, the first directory will
-hold gridded data sets accessible via the supplemental program \GMTprog{grdraster}
-whereas the second will hold the binary Mercator data images accessible via
-the supplemental program \GMTprog{img2grd}; see Appendix~\ref{app:A} for information
-about these supplemental programs.  The third directory may hold miscellaneous
-data sets such as lines, points, and text plotable directly with \GMTprog{psxy}
-or \GMTprog{pstext}.  Data sets that the user finds are often needed
+hold data sets of a general nature (tables, grids), although a particular use
+is to make available large grids accessible via the supplemental programs \GMTprog{grdraster}
+or \GMTprog{img2grd}; see Appendix~\ref{app:A} for information
+about these supplemental programs.  The second directory may hold miscellaneous
+data sets more specific to the user; this directory also stores \GMT\ defaults and other
+configuration files.  Data sets that the user finds are often needed
 may be placed in these directories, thus eliminating the need to specify
 a full path to the file.  Program output is always written to the
 current directory unless a full path has been specified.

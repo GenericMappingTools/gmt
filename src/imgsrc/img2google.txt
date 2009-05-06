@@ -16,7 +16,7 @@ use topo.11.1.img.
 \fIimgfile\fP
 An img format bathymetry/topography file such as those created by Sandwell and Smith.  If this
 files does not exist in the current directory and the user has set the environment variable 
-\fB$GMT_IMGDIR\fP, then \fBimg2mercgrd\fP will try to find \fIimgfile\fP in \fB$GMT_IMGDIR\fP.
+\fB$GMT_DATADIR\fP, then \fBimg2mercgrd\fP will try to find \fIimgfile\fP in \fB$GMT_DATADIR\fP.
 .TP
 OPT(A)
 Selects one of 5 altitude modes recognized by Google Earth that determines the altitude (in m) of the

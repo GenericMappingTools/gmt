@@ -9,7 +9,7 @@ grdraster \- extract subregion from a binary raster and write a grid file
 .SH DESCRIPTION
 \fBgrdraster\fP reads a file called \fIgrdraster.info\fP from the current
 working directory, the directories pointed to by the environment variables
-\fB$GMT_USERDIR\fP and \fB$GMT_GRIDDIR\fP, or in \fB$GMT_SHAREDIR\fP/dbase
+\fB$GMT_DATADIR\fP and \fB$GMT_USERDIR\fP, or in \fB$GMT_SHAREDIR\fP/dbase
 (in that order).  The file \fIgrdraster.info\fP defines binary
 arrays of data stored in scan-line format in data files.  Each file is given
 a \fIfilenumber\fP in the info file.  \fBgrdraster\fP figures out how to
