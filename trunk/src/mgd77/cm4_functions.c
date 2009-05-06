@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.10 2009-05-03 23:05:02 guru Exp $
+ *	$Id: cm4_functions.c,v 1.11 2009-05-06 02:49:30 jluis Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -110,13 +110,13 @@ int i_dnnt(double x);
 int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date) {
 
 	int c__1356 = 1356, c__13680 = 13680;
-	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr, jyr, jf107, cerr = 0;
+	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr = 0, jyr, jf107, cerr = 0;
 	int lum1, lum2, lum3, lum4, lum5, lum6, lum7, nsm1, nsm2, lcmf, idim[12], omdl;
 	int lsmf, lpos, lcmg, lsmg, lcsq, lssq, lcto, lsto, lrto, idoy, n_Dst_rows;
-	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd, jdoy, mjdl, mjdh, iyrl, imol, iyrh, imoh;
-	int nout, nygo, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
+	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd, jdoy, mjdl = 0, mjdh = 0, iyrl = 0, imol = 0, iyrh = 0, imoh = 0;
+	int nout = 0, nygo = 0, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
-	double *mut, *dstx, dstt = 0., x, y, z, h, t, dumb, bmdl[21], date, dst, mut_now, alt;
+	double *mut, *dstx = NULL, dstt = 0., x, y, z, h, t, dumb, bmdl[21], jmdl[12], date, dst, mut_now, alt;
 	double bc[28], re, hq[53040], wb[58], ht[17680], xd, yd, rm, xg, ro, rp, yg, zg, zd;
 	double ru, rt, rse[9], doy, fyr, ws[4355], gamf[8840], cego, epch, bkpo[12415];
 	double trig[132], epmg[1356], esmg[1356];
@@ -137,7 +137,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 	double rlgm[15], rrgt[9], tsmg[6], tssq[6], tsto[6], tdmg[12], tdsq[10], tdto[10];
 	double rtay_dw, rtay_or, sinp, fsrf, rtay, frto, frho, thetas, rtay_dk;
 	double cnmp, enmp, omgs, omgd, hion, cpol, epol, ctmp, stmp, cemp, semp, rion, fdoy, clat, elon;
-	double sthe, cthe, psiz, cpsi, spsi, ctgo, stgo, sego, cdip, edip, ctmo, stmo, cemo, semo, taus, taud, cosp;
+	double sthe, cthe, psiz, cpsi, spsi, ctgo, stgo, sego, cdip = 0, edip = 0, ctmo, stmo, cemo, semo, taus = 0, taud = 0, cosp;
 	char line[BUFSIZ];
 
 	FILE *fp;
@@ -357,7 +357,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 	/* LOOP over number of input points (many computations below are useless repeated - room for improvment */
 	for (n = 0; n < Ctrl->DATA.n_pts; ++n) {
 		r8vset(1, 21, 0., &bmdl[0]);
-		if (Ctrl->L.curr) r8vset(1, 12, 0., &Ctrl->DATA.jmdl[0]);
+		if (Ctrl->L.curr) r8vset(1, 12, 0., &jmdl[0]);
 		clat = (90 - p_lat[n]) * D2R;
 		elon = p_lon[n] * D2R;
 
@@ -493,7 +493,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 				bc[0] = bc[1] = bc[2] = 0.;
 				jtbelow(0, 5, 11, 6, ro, rm, c__1356, hymg);
 				blsgen(c__1356, c__1356, 3, bc, esmg, hymg);
-				ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[0]);
+				ltrans(1, 1, bc, rlgm, &jmdl[0]);
 			}
 			if (Ctrl->DATA.coef) {
 				getgxf(0, 5, 11, 6, &js, epmg, &Ctrl->DATA.gmdl[nout-1], tdmg);
@@ -533,11 +533,11 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 					bc[0] = bc[1] = bc[2] = 0.;
 					jtabove(0, 4, 60, 12, ro, rion, c__13680, &hysq[41040]);
 					blsgen(c__13680, c__13680, 3, bc, epsq, &hysq[41040]);
-					ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[3]);
+					ltrans(1, 1, bc, rlgm, &jmdl[3]);
 					bc[0] = bc[1] = bc[2] = 0.;
 					jtbelow(0, 4, 60, 12, ro, rm, c__13680, hysq);
 					blsgen(c__13680, c__13680, 3, bc, essq, hysq);
-					ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[6]);
+					ltrans(1, 1, bc, rlgm, &jmdl[6]);
 				}
 				if (Ctrl->DATA.coef) {
 					getgxf(0, 4, 60, 12, &js, epsq, &Ctrl->DATA.gmdl[nout-1], tdsq);
@@ -573,11 +573,11 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 					bc[0] = bc[1] = bc[2] = 0.;
 					jtbelow(0, 4, 60, 12, ro, rion, c__13680, hysq);
 					blsgen(c__13680, c__13680, 3, bc, epsq, hysq);
-					ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[3]);
+					ltrans(1, 1, bc, rlgm, &jmdl[3]);
 					bc[0] = bc[1] = bc[2] = 0.;
 					jtbcont(0, 4, 60, 12, rion, rm, c__13680, hysq);
 					blsgen(c__13680, c__13680, 3, bc, essq, hysq);
-					ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[6]);
+					ltrans(1, 1, bc, rlgm, &jmdl[6]);
 				}
 				if (Ctrl->DATA.coef) {
 					getgxf(0, 4, 60, 12, &nu, epsq, &Ctrl->DATA.gmdl[nout-1], tdsq);
@@ -653,42 +653,63 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 					tseardr(omdl, 2, ntay, nsto, nyto, frho, tsto, ecto, &gcto_mg[(((mmdl << 1) + 1) * 3 + 1) * 2736 - 27360]);
 
 				blsgen(nyto, nyto, 2, bc, ecto, hyto);
-				ltrans(1, 1, bc, rlgm, &Ctrl->DATA.jmdl[9]);
+				ltrans(1, 1, bc, rlgm, &jmdl[9]);
 			}
 		}
 
 		x = y = z = 0.0;
-		for (k = 0; k < Ctrl->F.n_field_sources; k++) {		/* Sum all field sources */
-			x += bmdl[Ctrl->F.field_sources[k]*3]; 
-			y += bmdl[Ctrl->F.field_sources[k]*3+1]; 
-			z += bmdl[Ctrl->F.field_sources[k]*3+2]; 
+		if (!Ctrl->L.curr) {		/* Magnetic field */
+			for (k = 0; k < Ctrl->F.n_field_sources; k++) {		/* Sum all field sources */
+				x += bmdl[Ctrl->F.field_sources[k]*3]; 
+				y += bmdl[Ctrl->F.field_sources[k]*3+1]; 
+				z += bmdl[Ctrl->F.field_sources[k]*3+2]; 
+			}
+			for (j = 0; j < Ctrl->F.n_field_components; j++) {	/* Loop over vector field components */
+				h = 0.;
+				if (Ctrl->F.field_components[j] == 0) {
+					t = sqrt(x*x + y*y + z*z); 
+					Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = t;
+				}
+				else if (Ctrl->F.field_components[j] == 1) {
+					h = sqrt(x*x + y*y); 
+					Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = h;
+				}
+				else if (Ctrl->F.field_components[j] == 2)
+					Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = x; 
+				else if (Ctrl->F.field_components[j] == 3)
+					Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = y; 
+				else if (Ctrl->F.field_components[j] == 4)
+					Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = z; 
+				else if (Ctrl->F.field_components[j] == 5)
+					Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = atan2(y,x) * R2D; 
+				else if (Ctrl->F.field_components[j] == 6) {
+					if (!h) h = sqrt(x*x + y*y);
+					Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = atan2(z,h) * R2D; 
+				}
+			}
 		}
-		for (j = 0; j < Ctrl->F.n_field_components; j++) {	/* Loop over vector field components */
-			h = 0.;
-			if (Ctrl->F.field_components[j] == 0) {
-				t = sqrt(x*x + y*y + z*z); 
-				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = t;
+		else {				/* Current density field (J) */
+			for (k = 0; k < Ctrl->L.n_curr_sources; k++) {		/* Sum all current sources */
+				x += jmdl[Ctrl->L.curr_sources[k]*3]; 
+				y += jmdl[Ctrl->L.curr_sources[k]*3+1]; 
+				z += jmdl[Ctrl->L.curr_sources[k]*3+2]; 
 			}
-			else if (Ctrl->F.field_components[j] == 1) {
-				h = sqrt(x*x + y*y); 
-				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = h;
-			}
-			else if (Ctrl->F.field_components[j] == 2)
-				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = x; 
-			else if (Ctrl->F.field_components[j] == 3)
-				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = y; 
-			else if (Ctrl->F.field_components[j] == 4)
-				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = z; 
-			else if (Ctrl->F.field_components[j] == 5)
-				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = atan2(y,x) * R2D; 
-			else if (Ctrl->F.field_components[j] == 6) {
-				if (!h) h = sqrt(x*x + y*y);
-				Ctrl->DATA.out_field[n*Ctrl->F.n_field_components+j] = atan2(z,h) * R2D; 
+			for (j = 0; j < Ctrl->L.n_curr_components; j++) {	/* Loop over current components */
+				if (Ctrl->L.curr_components[j] == 0) {
+					t = sqrt(x*x + y*y + z*z); 
+					Ctrl->DATA.out_field[n*Ctrl->L.n_curr_components+j] = t;
+				}
+				else if (Ctrl->L.curr_components[j] == 1)
+					Ctrl->DATA.out_field[n*Ctrl->L.n_curr_components+j] = x; 
+				else if (Ctrl->L.curr_components[j] == 2)
+					Ctrl->DATA.out_field[n*Ctrl->L.n_curr_components+j] = y; 
+				else if (Ctrl->L.curr_components[j] == 3)
+					Ctrl->DATA.out_field[n*Ctrl->L.n_curr_components+j] = z; 
 			}
 		}
 	}
-	for (i = 0; i < 21; i++)		/* This is mostly for testing */
-		Ctrl->DATA.bmdl[i] = bmdl[i]; 
+	for (i = 0; i < 12; i++)		/* This is mostly for testing */
+		Ctrl->DATA.jmdl[i] = jmdl[i]; 
 
 	free ((void *) mut);
 	free ((void *) gpsq);	free ((void *) gssq);	free ((void *) gpmg);
@@ -1724,8 +1745,8 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
 
     /* Local variables */
     int m, n, ic, id, ip, lend, pgen, tgen;
-    double fa, fc, fd, ar, fm, ra, fp, fr, fs, fn, fnm1, fnp1, fnp2, fnfp;
-    double fprr, fdrr, pbppp, pbppr, pbrpp, pbtpp, pbppt, pbtpr, pbrpt, pbtpt, pbrpr, cscth2;
+    double fa, fc, fd, ar, fm, ra, fp, fr, fs, fn, fnm1, fnp1, fnp2, fnfp, fprr, fdrr;
+    double pbppp = 0, pbppr = 0, pbrpp = 0, pbtpp = 0, pbppt = 0, pbtpr = 0, pbrpt = 0, pbtpt = 0, pbrpr = 0, cscth2;
     double cscthe, costhe, cotthe, sinthe, fmfpst;
 
     /* Parameter adjustments */
@@ -1922,8 +1943,8 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
 }
 
 void geocen(int ctyp, double re, double rp, double rm, double h, double clat, double *r, double *theta, double *sinthe, double *costhe) {
-    static int ifirst = 1;
-    double re2, rp2, kappa, rhoew, rhons, costh2, sinth2;
+    int ifirst = 1;
+    double re2 = 0, rp2 = 0, kappa, rhoew, rhons, costh2, sinth2;
 
     *theta = clat;
     *r = rm + h;
@@ -1937,9 +1958,9 @@ void geocen(int ctyp, double re, double rp, double rm, double h, double clat, do
 	}
 	sinth2 = *sinthe * *sinthe;
 	costh2 = *costhe * *costhe;
-	kappa = 1. / sqrt(re2 * sinth2 + rp2 * costh2) + h;
-	rhoew = re2 * kappa;
-	rhons = rp2 * kappa;
+	kappa = 1. / sqrt(re2 * sinth2 + rp2 * costh2);
+	rhoew = re2 * kappa + h;
+	rhons = rp2 * kappa + h;
 	*theta = atan2(rhoew * *sinthe, rhons * *costhe);
 	*r = sqrt(rhoew * rhoew * sinth2 + rhons * rhons * costh2);
 	*sinthe = sin(*theta);
