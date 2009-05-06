@@ -90,5 +90,5 @@ OPT(Jw)[\fIlon0/\fP]\fIscale\fP (Mollweide)
 .sp
 OPT(Jp)[\fBa\fP]\fIscale\fP[\fI/origin\fP][\fBr\fP|\fBz\fP] (Polar coordinates (theta,r))
 .br
-OPT(Jx)\fIx-scale\fP[\fBd|l|p\fP\fIpow\fP\fB|t|T\fP][\fI/y-scale\fP[\fBd|l|p\fP\fIpow\fP\fB|t|T\fP]] (Linear, log, and power scaling)
+OPT(Jx)\fIx-scale\fP[\fBd\fP|\fBl\fP|\fBp\fP\fIpow\fP|\fBt\fP|\fBT\fP][\fI/y-scale\fP[\fBd\fP|\fBl\fP|\fBp\fP\fIpow\fP|\fBt\fP|\fBT\fP]] (Linear, log, and power scaling)
 .br
