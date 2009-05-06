@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.496 2009-05-05 02:24:59 jluis Exp $
+	$Id: ChangeLog,v 1.497 2009-05-06 01:52:19 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-06	remko
+	* pglegend.c:		Allow S record not to have <text>. Until now, when left empty would
+				use whatever <text> was set to in previous record.
+	* pslegend.txt:		Changed accordingly, plus some additional polishing.
 
 2009-05-03	jluis
 	* mgd77/mgd77.c:	Fixed bug in MGD77_igrf10syn routine (mistake done while cleaning the
@@ -20,7 +25,7 @@
 				using the -E...+ mechanism when data were not geographic.
 
 2009-04-29	remko
-	* PSL_proogue.ps:	Changed "bind def" to "def" in function /FS. The "bind def" slowed
+	* PSL_prologue.ps:	Changed "bind def" to "def" in function /FS. The "bind def" slowed
 				things down significantly when there are a lot of color changes.
 	* pslib.c:		Changed accordingly (PSL_prologue version number).
 
