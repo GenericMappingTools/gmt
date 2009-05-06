@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.h,v 1.4 2009-05-03 23:05:02 guru Exp $
+ *	$Id: cm4_functions.h,v 1.5 2009-05-06 02:50:28 jluis Exp $
  *
  *
  *  File:	cm4_functions.h
@@ -17,6 +17,10 @@
 struct MGD77_CM4 {
 	struct L {	/*  */
 		int curr;
+		int curr_components[4];
+		int n_curr_components;
+		int curr_sources[4];
+		int n_curr_sources;
 	} L;
 	struct D {	/*  */
 		int active;
@@ -55,7 +59,6 @@ struct MGD77_CM4 {
 		double	bmdl[21];
 		double	jmdl[12];
 		double	*out_field;
-		double	*out_current;
 	} DATA;
 	struct S {	/*  */
 		int nlmf[2];
