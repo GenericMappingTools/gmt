@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.498 2009-05-06 16:25:35 guru Exp $
+	$Id: ChangeLog,v 1.499 2009-05-06 16:42:01 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-05-06	pwessel
@@ -10,6 +10,10 @@
 	* pglegend.c:		Allow S record not to have <text>. Until now, when left empty would
 				use whatever <text> was set to in previous record.
 	* pslegend.txt:		Changed accordingly, plus some additional polishing.
+	* GMT_sealand.cpt:	Changed hue interval on one line from 0-345 to 360-345 to prevend
+				wrong interpolation.
+	* GMT_cyclic.cpt:	Reduced to one line.
+	* gmt_support.c:	GMT_continuous based on HSV (not RGB) values when read as HSV.
 
 2009-05-03	jluis
 	* mgd77/mgd77.c:	Fixed bug in MGD77_igrf10syn routine (mistake done while cleaning the
