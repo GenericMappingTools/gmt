@@ -1,4 +1,4 @@
-#	$Id: sealand.cpt,v 1.1 2001-09-23 23:11:20 pwessel Exp $
+#	$Id: sealand.cpt,v 1.2 2009-05-06 16:07:00 remko Exp $
 #
 # Colortable for ocean and land with break at sealevel
 # Designed by W.H.F. Smith, NOAA
@@ -18,7 +18,7 @@
 0       60      0.35    1       500     40      0.35    1       L
 500     40      0.35    1       1000    20      0.35    1
 1000    20      0.35    1       1500    0       0.35    1       L
-1500    0       0.35    1       2000    345     0.3     1
+1500    360     0.35    1       2000    345     0.3     1
 2000    345     0.3     1       2500    330     0.25    1       L
 2500    330     0.25    1       3000    315     0.2     1       U
 B       255     0.6     1
