@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.69 2009-02-25 19:30:49 remko Exp $
+ *	$Id: gmt_project.h,v 1.70 2009-05-07 23:08:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -85,7 +85,7 @@
 #define GMT_WINKEL		407
 
 #define GMT_IS_RECT_GRATICULE (project_info.projection <= GMT_MILLER)
-#define GMT_GRID_CLIP_OK (GMT_IS_LINEAR || (GMT_IS_CYLINDRICAL && project_info.projection < GMT_OBLIQUE_MERC) || GMT_IS_CONICAL)
+
 #define GMT_POLE_IS_POINT (project_info.projection >= GMT_LAMBERT && project_info.projection <= GMT_VANGRINTEN)
 
 #define GMT_IS_MAPPING (project_info.degree[0] && project_info.degree[1])	/* TRUE when map projections are used */
@@ -95,8 +95,12 @@
 #define GMT_180_RANGE(s,n) (fabs (fabs((n) - (s)) - 180.0) < GMT_CONV_LIMIT)
 #define GMT_IS_ZERO(x) (fabs (x) < GMT_CONV_LIMIT)
 
+#ifndef D2R
 #define D2R (M_PI / 180.0)
+#endif
+#ifndef R2D
 #define R2D (180.0 / M_PI)
+#endif
 
 /* UTM offsets */
 
