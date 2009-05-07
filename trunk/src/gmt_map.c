@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.218 2009-04-30 19:49:02 guru Exp $
+ *	$Id: gmt_map.c,v 1.219 2009-05-07 19:55:05 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5007,6 +5007,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	}
 	
 	if (jump) return (GMT_wesn_clip_old (lon, lat, n, x, y, total_nx));	/* Must do the old way for now */
+	if (GMT_IS_AZIMUTHAL && project_info.polar) return (GMT_wesn_clip_old (lon, lat, n, x, y, total_nx));	/* Must do the old way for now */
 	
 	/* Here we can try the Sutherland/Hodgman algorithm */
 	
