@@ -1,11 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.500 2009-05-07 19:55:05 guru Exp $
+	$Id: ChangeLog,v 1.501 2009-05-07 23:08:58 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-05-07	pwessel
-	* gmt_map.c:		For polar aspects in azimuthal projections, use old wesn clipper
-				until a more robust Sutherland/Hodgman algorithm with curved
-				boundaries is developed and tested.
+	* gmt_map.c:		For wesn clipping with curved boundaries, needed a more robust
+				Sutherland/Hodgman algorithm that handles curved boundaries.
 2009-05-06	pwessel
 	* *.c,txt,tex:		While remaining backwards compatible, we no longer announce that
 				GMT will search GMT_IMGDIR and GMT_GRIDDIR.  Going forward, we will

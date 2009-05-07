@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.220 2009-05-07 20:07:50 remko Exp $
+ *	$Id: gmt_map.c,v 1.221 2009-05-07 23:08:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -220,6 +220,7 @@ double GMT_left_circle (double y);		/* For circular maps	*/
 double GMT_right_circle (double y);		/* For circular maps	*/
 double GMT_left_ellipse (double y);		/* For elliptical maps	*/
 double GMT_right_ellipse (double y);		/* For elliptical maps	*/
+size_t GMT_inc_memory (void **ptr, size_t n, size_t n_alloc, size_t element_size);
 
 PFL GMT_radial_clip;
 
@@ -4850,13 +4851,15 @@ GMT_LONG GMT_rect_clip_old (double *lon, double *lat, GMT_LONG n, double **x, do
  */
 #define INTERSECTION_COORD(x_curr,y_curr,x_prev,y_prev,border) x_curr + (x_prev - x_curr) * (border - y_curr) / (y_prev - y_curr)
 
-int GMT_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFI inside, PFI outside)
+int GMT_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFI inside, PFI outside, int *cross)
 {	/* Clip against the south or north boundary (i.e., a horizontal line with y = border) */
+	*cross = 0;
 	if (GMT_IS_ZERO (x_prev-x_curr) && GMT_IS_ZERO (y_prev-y_curr)) return (0);	/* Do nothing for duplicates */
 	if (outside (y_prev, border)) {	/* Previous point is outside... */
 		if (outside (y_curr, border)) return 0;	/* ...as is the current point. Do nothing. */
 		/* Here, the line segment intersects the border - return both intersection and inside point */
 		y[0] = border;	x[0] = INTERSECTION_COORD (x_curr, y_curr, x_prev, y_prev, border);
+		*cross = +1;	/* Crossing to the inside */
 		x[1] = x_curr;	y[1] = y_curr;	return (2);
 	}
 	/* Here x_prev is inside */
@@ -4864,16 +4867,19 @@ int GMT_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, dou
 		x[0] = x_curr;	y[0] = y_curr;	return (1);
 	}
 	/* Segment intersects border - return intersection only */
+	*cross = -1;	/* Crossing to the outside */
 	y[0] = border;	x[0] = INTERSECTION_COORD (x_curr, y_curr, x_prev, y_prev, border);	return (1);
 }
 
-int GMT_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFI inside, PFI outside)
+int GMT_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFI inside, PFI outside, int *cross)
 {	/* Clip agains the west or east boundary (i.e., a vertical line with x = border) */
+	*cross = 0;
 	if (GMT_IS_ZERO (x_prev-x_curr) && GMT_IS_ZERO (y_prev-y_curr)) return (0);	/* Do nothing for duplicates */
 	if (outside (x_prev, border)) {	/* Previous point is outside... */
 		if (outside (x_curr, border)) return 0;	/* ...as is the current point. Do nothing. */
 		/* Here, the line segment intersects the border - return both intersection and inside point */
 		x[0] = border;	y[0] = INTERSECTION_COORD (y_curr, x_curr, y_prev, x_prev, border);
+		*cross = +1;	/* Crossing to the inside */
 		x[1] = x_curr;	y[1] = y_curr;	return (2);
 	}
 	/* Here x_prev is inside */
@@ -4881,6 +4887,7 @@ int GMT_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, dou
 		x[0] = x_curr;	y[0] = y_curr;	return (1);
 	}
 	/* Segment intersects border - return intersection only */
+	*cross = -1;	/* Crossing to the outside */
 	x[0] = border;	y[0] = INTERSECTION_COORD (y_curr, x_curr, y_prev, x_prev, border);	return (1);
 }
 
@@ -4890,10 +4897,15 @@ int inside_upper_boundary (double val, double max) {return (val <= max);}
 int outside_lower_boundary (double val, double min) {return (val < min);}
 int outside_upper_boundary (double val, double max) {return (val > max);}
 
+/* GMT_rect_clip is an implementation of the Sutherland/Hodgman algorithm polygon clipping algorithm.
+ * Basically, it compares the polygon to one boundary at the time, and clips the polygon to be inside
+ * that boundary; this is then repeated for all boundaries.  Assumptions here are Cartesian coordinates
+ * so all boundaries are straight lines in x or y. */
+
 GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
 {
 	GMT_LONG i, m, n_alloc;
-	int side, j, np, k, in = 1, out = 0;
+	int side, j, np, k, in = 1, out = 0, cross = 0;
 	BOOLEAN polygon;
 	double *xtmp[2], *ytmp[2], xx[2], yy[2], border[4];
 	PFI clipper[4], inside[4], outside[4];
@@ -4941,7 +4953,7 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 		/* Must ensure we copy the very first point if it is inside the clip rectangle */
 		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
 		for (i = 1; i < n; i++) {	/* For each line segment */
-			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side]);	/* Returns 0, 1, or 2 points */
+			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
 				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
 				if (m == (n_alloc-1)) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
@@ -4982,11 +4994,24 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	return (m);
 }
 
+/* GMT_wesn_clip differs from GMT_rect_clip in that the boundaries of constant lon or lat may end up as
+ * curved lines depending on the map projection.  Thus, if a line crosses the boundary and reenters at
+ * another point on the boundary then the straight line between these crossing points should really
+ * project to a curved boundary segment.  The H-S algorithm was originally rectangular so we got straight
+ * lines.  Here, we check if (1) the particular boundary being tested is curved, and if TRUE then we
+ * keep track of the indices of the exit and entry points in the array, and once a boundary has been
+ * processed we must add more points between the exit and entry pairs to properly handle the curved
+ * segment.  The arrays x_index and x_type stores the index of the exit/entry points and the type
+ * (+1 we enter, -1 we exit).  We then use GMT_map_path to compute the required segments to insert.
+ * P. Wessel, 2--9-05-07
+ */
+
 GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
 {
-	GMT_LONG i, m, n_alloc;
-	int side, j, np, k, in = 1, out = 0;
-	BOOLEAN polygon, jump = FALSE;
+	GMT_LONG i, m, *x_index = NULL;
+	size_t n_alloc, n_x_alloc = GMT_TINY_CHUNK, new_alloc;
+	int side, j, np, k, in = 1, n_cross = 0, out = 0, cross = 0, *x_type = NULL;
+	BOOLEAN polygon, jump = FALSE, curved;
 	double *xtmp[2], *ytmp[2], xx[2], yy[2], border[4];
 	double x1, x2, y1, y2;
 	PFI clipper[4], inside[4], outside[4];
@@ -4999,7 +5024,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 
 	/* Azimuthal polar projections have to be done the old way for the time being */
 
-	if (GMT_IS_AZIMUTHAL && project_info.polar) return (GMT_wesn_clip_old (lon, lat, n, x, y, total_nx));
+/* 	if (GMT_IS_AZIMUTHAL && project_info.polar) return (GMT_wesn_clip_old (lon, lat, n, x, y, total_nx)); */
 
 	/* If there are jumps etc call the old clipper, else we try the new clipper */
 	
@@ -5028,8 +5053,8 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	n_alloc = (GMT_LONG)irint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 
 	for (k = 0; k < 2; k++) {	/* Create a pair of arrays for holding input and output */
-		xtmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
-		ytmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
+		xtmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
+		ytmp[k] = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 	}
 
 	/* Make copy of lon/lat coordinates */
@@ -5037,6 +5062,11 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	memcpy ((void *)xtmp[0], (void *)lon, n*sizeof (double));
 	memcpy ((void *)ytmp[0], (void *)lat, n*sizeof (double));
 	m = n;
+
+	/* Preallocate space for crossing information */
+	
+	x_index = (GMT_LONG *) GMT_memory (VNULL, (size_t)n_x_alloc, sizeof (GMT_LONG), "GMT_wesn_clip");
+	x_type = (int *) GMT_memory (VNULL, (size_t)n_x_alloc, sizeof (int), "GMT_wesn_clip");
 
 #ifdef DEBUG
 	if (dump) {
@@ -5046,36 +5076,104 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	}
 #endif
 	for (side = 0; side < 4; side++) {	/* Must clip polygon against a single border, one border at a time */
-		n = m;	/* Current size of polygon */
-		m = 0;	/* Start with nuthin' */
+		n = m;		/* Current size of polygon */
+		m = 0;		/* Start with nuthin' */
+		n_cross = 0;	/* No crossings so far */
 
+		curved = !((side%2) ? GMT_meridian_straight : GMT_parallel_straight);	/* Is this border straight or curved when projected */
 		i_swap (in, out);	/* Swap what is input and output for clipping against this border */
 		/* Must ensure we copy the very first point if it is inside the clip rectangle */
 		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
 		for (i = 1; i < n; i++) {	/* For each line segment */
-			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side]);	/* Returns 0, 1, or 2 points */
+			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
+			if (cross && curved) {	/* When crossing in/out of a curved boundary we must eventually sample along the curve between crossings */
+				x_index[n_cross] = m;		/* Index of intersection point (which will be copied from xx[0], yy[0] below) */
+				x_type[n_cross] = cross;	/* -1 going out, +1 going in */
+				n_cross++;
+				new_alloc = GMT_inc_memory ((void **)&x_index, (size_t)n_cross, n_x_alloc, sizeof (GMT_LONG));
+				new_alloc = GMT_inc_memory ((void **)&x_type, (size_t)n_cross, n_x_alloc, sizeof (int));
+				n_x_alloc = new_alloc;
+			}
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
 				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
-				if (m == (n_alloc-1)) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
-					n_alloc <<= 1;
-					for (k = 0; k < 2; k++) {
-						xtmp[k] = (double *) GMT_memory ((void *)xtmp[k], (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
-						ytmp[k] = (double *) GMT_memory ((void *)ytmp[k], (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
-					}
+				for (k = 0; k < 2; k++) {
+					new_alloc = GMT_inc_memory ((void **)&xtmp[k], (size_t)m, n_alloc-1, sizeof (double));
+					new_alloc = GMT_inc_memory ((void **)&ytmp[k], (size_t)m, n_alloc-1, sizeof (double));
 				}
-			}
+				n_alloc = new_alloc;
+m			}
 		}
 		if (polygon && GMT_polygon_is_open (xtmp[out], ytmp[out], m)) {	/* Do we need to explicitly close this clipped polygon? */
 			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
+		}
+		if (curved && n_cross) {	/* Must resample between crossing points */
+			double *x_add, *y_add, *x_cpy, *y_cpy;
+			GMT_LONG add, np = 0, last_index = 0;
+			int p, p_next;
+			
+			if (n_cross%2 == 1) {	/* Should not happen with a polygon */
+				fprintf (stderr, "GMT: Error in GMT_wesn_clip: odd number of crossings?");
+			}
+			
+			/* First copy the current polygon */
+			
+			x_cpy = (double *) GMT_memory (CNULL, (size_t)m, sizeof (double), "GMT_wesn_clip");
+			y_cpy = (double *) GMT_memory (CNULL, (size_t)m, sizeof (double), "GMT_wesn_clip");
+			memcpy ((void *)x_cpy, (void *)xtmp[out], (size_t)(m * sizeof (double)));
+			memcpy ((void *)y_cpy, (void *)ytmp[out], (size_t)(m * sizeof (double)));
+			
+			for (p = 0; p < n_cross; p++) {	/* Process each crossing point */
+				if (last_index < x_index[p]) {	/* Copy over segment from were we left off to this crossing point */
+					add = x_index[p] - last_index;
+					for (k = 0; k < 2; k++) {
+						new_alloc = GMT_inc_memory ((void **)&xtmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+						new_alloc = GMT_inc_memory ((void **)&ytmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+					}
+					n_alloc = new_alloc;
+					memcpy ((void *)&xtmp[out][np], (void *)&x_cpy[last_index], (size_t)(add * sizeof (double)));
+					memcpy ((void *)&ytmp[out][np], (void *)&y_cpy[last_index], (size_t)(add * sizeof (double)));
+					np += add;
+					last_index = x_index[p];
+				}
+				if (x_type[p] == -1) {	/* Must add path from this exit to the next entry */
+					p_next = (p == (n_cross-1)) ? 0 : p + 1;	/* index of the next crossing */
+					add = GMT_map_path (x_cpy[x_index[p]], y_cpy[x_index[p]], x_cpy[x_index[p_next]], y_cpy[x_index[p_next]], &x_add, &y_add);
+					for (k = 0; k < 2; k++) {
+						new_alloc = GMT_inc_memory ((void **)&xtmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+						new_alloc = GMT_inc_memory ((void **)&ytmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+					}
+					n_alloc = new_alloc;
+					memcpy ((void *)&xtmp[out][np], (void *)x_add, (size_t)(add * sizeof (double)));
+					memcpy ((void *)&ytmp[out][np], (void *)y_add, (size_t)(add * sizeof (double)));
+					GMT_free ((void *)x_add);	GMT_free ((void *)y_add);
+					np += add;
+					last_index = x_index[p_next];
+				}
+			}
+			if (x_index[0] > 0) {	/* First point was clean inside, must add last connection */
+				add = m - last_index;
+				for (k = 0; k < 2; k++) {
+					new_alloc = GMT_inc_memory ((void **)&xtmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+					new_alloc = GMT_inc_memory ((void **)&ytmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+				}
+				n_alloc = new_alloc;
+				memcpy ((void *)&xtmp[out][np], (void *)&x_cpy[last_index], (size_t)(add * sizeof (double)));
+				memcpy ((void *)&ytmp[out][np], (void *)&y_cpy[last_index], (size_t)(add * sizeof (double)));
+				np += add;
+			}
+			m = np;	/* New total of points */
+			GMT_free ((void *)x_cpy);	GMT_free ((void *)y_cpy);
 		}
 	}
 
 	GMT_free ((void *)xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
 	GMT_free ((void *)ytmp[1]);
+	GMT_free ((void *)x_index);	/* Free the pairs of arrays that holds the crossing info */
+	GMT_free ((void *)x_type);
 
 	if (m) {	/* Reallocate and return the array with the final clipped polygon */
-		xtmp[0] = (double *) GMT_memory ((void *)xtmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
-		ytmp[0] = (double *) GMT_memory ((void *)ytmp[0], (size_t)m, sizeof (double), "GMT_rect_clip");
+		xtmp[0] = (double *) GMT_memory ((void *)xtmp[0], (size_t)m, sizeof (double), "GMT_wesn_clip");
+		ytmp[0] = (double *) GMT_memory ((void *)ytmp[0], (size_t)m, sizeof (double), "GMT_wesn_clip");
 		/* Convert to map coordinates */
 		for (i = 0; i < m; i++) GMT_geo_to_xy (xtmp[0][i], ytmp[0][i], &xtmp[0][i], &ytmp[0][i]);
 		
@@ -5095,6 +5193,18 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	}
 
 	return (m);
+}
+
+size_t GMT_inc_memory (void **ptr, size_t n, size_t n_alloc, size_t element_size)
+{
+	/* Checks to see if we needs (n) exceeds what we have alloced so far (n_alloc).
+	 * If it does, increase n_alloc <<= 1, allocate more memory, and return n_alloc. */
+	
+	if (n <= n_alloc) return (n_alloc);	/* No need to do anything */
+	while (n > n_alloc) n_alloc <<= 1;	/* Increase allocation size */
+	
+	*ptr = (void *) GMT_memory ((void *)(*ptr), n_alloc, element_size, "GMT_inc_memory");
+	return (n_alloc);
 }
 
 GMT_LONG GMT_wesn_clip_old (double *lon, double *lat, GMT_LONG n, double **x, double **y, int *total_nx)
