@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.11 2009-05-06 02:49:30 jluis Exp $
+ *	$Id: cm4_functions.c,v 1.12 2009-05-07 19:10:45 jluis Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -708,8 +708,6 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 			}
 		}
 	}
-	for (i = 0; i < 12; i++)		/* This is mostly for testing */
-		Ctrl->DATA.jmdl[i] = jmdl[i]; 
 
 	free ((void *) mut);
 	free ((void *) gpsq);	free ((void *) gssq);	free ((void *) gpmg);

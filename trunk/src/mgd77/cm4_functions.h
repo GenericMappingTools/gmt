@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.h,v 1.5 2009-05-06 02:50:28 jluis Exp $
+ *	$Id: cm4_functions.h,v 1.6 2009-05-07 19:10:52 jluis Exp $
  *
  *
  *  File:	cm4_functions.h
@@ -56,8 +56,6 @@ struct MGD77_CM4 {
 		int n_altitudes;
 		int coef;
 		double	gmdl[1];
-		double	bmdl[21];
-		double	jmdl[12];
 		double	*out_field;
 	} DATA;
 	struct S {	/*  */
