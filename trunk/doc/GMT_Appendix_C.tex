@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_C.tex,v 1.25 2009-01-09 23:23:44 guru Exp $
+%	$Id: GMT_Appendix_C.tex,v 1.26 2009-05-07 22:11:39 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -17,8 +17,9 @@ Now that you made some nice graphics with \GMT, it is time to add them to a docu
 \begin{itemize}
 \item When creating a document intended for printing (article, dissertation, or poster) it is best to preserve the scalable vector characteristics of the \PS\ file. Many applications can directly incorporate \PS\ in the form of EPS files. Modern programs will often allow the inclusion of PDF files. Either way, the sharpness of lines and fonts will be preserved and can be scaled up or down as required.
 \item When the aim is to display the graphics on a computer screen or present it using a projector, it is wise to convert the \PS\ into a raster format. Although applications like \progname{PowerPoint} can do this for you, you can best take the conversion into your own hands for the best results.
-\end{itemize} 
-This Chapter will give some examples of incorporation of \GMT\ graphics into documents and how to achieve the best quality results.
+\end{itemize}
+A large number of questions to the GMT-Help mailing list are related to these rendering issues, showing that something as seemingly straightforward as incorporating a \PS\ file into a document is a far from trivial exercise.
+This Chapter will show how to include \GMT\ graphics into documents and how to achieve the best quality results.
 
 \section{Making \gmt\ Encapsulated \PS\ Files}
 \label{sec:eps}
@@ -85,13 +86,13 @@ Here are some notorious pitfalls with \progname{ghostscript} (and other renderin
 
 \item[Image compression.] There are \emph{lossy} and \emph{non-lossy} compressions. A compression algorithm is called ``lossy'' when information is lost in the conversion: there is no way back to get the full original. The effect can be seen when there are sharp color transitions in your image: the edges will get blurry in order to allow a more efficient compression. JPEG uses a lossy compression, PNG is non-lossy, and TIFF generally does not use compression at all. We therefore recommend you convert to PNG if you need to rasterize your plot, and leave JPEG to photographs.
 
-\item[Embedded image compression.] When your \GMT\ plot includes objects produced by \GMTprog{grdimage}, \GMTprog{psimage} or \GMTprog{pslegend}, they are seen as ``images''. The default options of \progname{ghostscript} will use a \emph{lossy} compression (similar to JPEG) on those images when converting them to PDF objects. This can be avoided, however, by inhibiting the compression altogether, or using the non-lossy \emph{flate} compression, similar to the one used in the old \progname{compress} program. This compression is fully reversible, so it your image does not suffer any loss.
+\item[Embedded image compression.] When your \GMT\ plot includes objects produced by \GMTprog{grdimage}, \GMTprog{psimage} or \GMTprog{pslegend}, they are seen as ``images''. The default options of \progname{ghostscript} will use a \emph{lossy} compression (similar to JPEG) on those images when converting them to PDF objects. This can be avoided, however, by inhibiting the compression altogether, or using the non-lossy \emph{flate} compression, similar to the one used in the old \progname{compress} program. This compression is fully reversible, so that your image does not suffer any loss.
 
-\item[Auto-rotation.] The \progname{ghostscript} engine has the annoying habit to automatically rotate an image produced with portrait orientation (using the \Opt{P} option) so that the height is always larger than the width. So if you have an image that was printed in portrait mode but happens to have a width larger than height (for example a global map), it would suddenly get rotated. Again, this function needs to be switched off. Apple's \progname{Preview} uses the \progname{ghostscript} engine and suffers from the same annoying habit.
+\item[Auto-rotation.] The \progname{ghostscript} engine has the annoying habit to automatically rotate an image produced with portrait orientation (using the \Opt{P} option) so that the height is always larger than the width. So if you have an image that was printed in portrait mode but happens to have a width larger than height (for example a global map), it would suddenly get rotated. Again, this function needs to be switched off. Apple's \progname{Preview} uses the \progname{ghostscript} engine and suffers from the same annoying habit. Oddly enough, \progname{ghostscript} does not force landscape plots to be ``horizontal''.
 
-\item[Anti-aliasing.] This is not something to worry about when converting to PDF, but certainly when producing raster images (discussed below). \emph{Anti-aliasing} in this context means that the rendering tries to avoid \emph{aliasing}, for example, sampling only the blacks in a black-and-white hachure. It does so by first oversampling the image and then using ``gray-shades'' when a pixel is only partially white or black.
+\item[Anti-aliasing.] This is not something to worry about when converting to PDF, but certainly when producing raster images (discussed below). \emph{Anti-aliasing} in this context means that the rendering tries to avoid \emph{aliasing}, for example, sampling only the blacks in a black-and-white hachure. It does so by first oversampling the image and then using ``gray-shades'' when a target pixel is only partially white or black.
 
-Clearly, this can lead to some unwanted results. First, all edges and lines get blurry and second, the assumption of a white background causes the gray shades to stand out when transferring the image to background with a different color (like the popular blue in \progname{PowerPoint} presentations). A more surprising effect of anti-aliasing is that the seams between tiles that make up the land mask when using \GMTprog{pscoast} will become visible. The anti-aliasing somehow decides to blur the edges of all polygons, even when they are seamlessly connected to other polygons.
+Clearly, this can lead to some unwanted results. First, all edges and lines get blurry and second, the assumption of a white background causes the gray shades to stand out when transferring the image to background with a different color (like the popular sleep-inducing blue in \progname{PowerPoint} presentations). A more surprising effect of anti-aliasing is that the seams between tiles that make up the land mask when using \GMTprog{pscoast} will become visible. The anti-aliasing somehow decides to blur the edges of all polygons, even when they are seamlessly connected to other polygons.
 
 It is therefore wise to overrule the default anti-aliasing option and over-sample the image yourself by choosing a higher resolution.
 
@@ -115,7 +116,7 @@ The \Opt{P} option of \GMTprog{ps2raster} may also come in handy. When you have 
 \index{LaTeX@\LaTeX}
 \index{includegraphics}
 
-All illustrations in this \GMT\ documentation were \GMT-produced \PS\ files. They were converted to PDF files using \GMTprog{ps2raster} and then included into a \LaTeX\ document that was processed with \progname{pdflatex} to create the PDF document you are reading.
+Nearly all illustrations in this \GMT\ documentation were \GMT-produced \PS\ files. They were converted to PDF files using \GMTprog{ps2raster} and then included into a \LaTeX\ document that was processed with \progname{pdflatex} to create the PDF document you are reading.
 
 To add the graphics into the \LaTeX\ document we use the \verb|\includegraphics| command supplied by the \textsf{graphicx} package. In the preamble of your \LaTeX\ document you will need to include the line
 \small
