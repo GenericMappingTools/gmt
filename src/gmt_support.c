@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.398 2009-05-08 01:05:11 guru Exp $
+ *	$Id: gmt_support.c,v 1.399 2009-05-08 13:15:55 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2608,6 +2608,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	int k, bad = 0, pos = 0;
 	BOOLEAN g_set = FALSE;
 	char p[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], c;
+	char *specs;
 
 	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+n|N<dx>[/<dy>]][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
 
@@ -2623,7 +2624,8 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	/* Decode new-style +separated substrings */
 
 	G->nudge_flag = 0;
-	while ((GMT_strtok (&txt[k+1], "+", &pos, p))) {
+	specs = &txt[k+1];
+	while ((GMT_strtok (specs, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Angle specification */
 				if (p[1] == 'p' || p[1] == 'P')	{	/* Line-parallel label */
