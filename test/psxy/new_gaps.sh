@@ -2,6 +2,7 @@
 # Test psxy lines with -g
 . ../functions.sh
 ps=new_gaps.ps
+header "Test plotting line graphs with different gap options"
 cat << EOF >> $$.d
 1	1
 2	1
