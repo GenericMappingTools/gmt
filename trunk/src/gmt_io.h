@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.75 2009-04-17 23:42:53 guru Exp $
+ *	$Id: gmt_io.h,v 1.76 2009-05-08 14:38:23 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -51,12 +51,13 @@
 #define GMT_IO_NAN		8
 #define GMT_IO_GAP		16
 
-#define GMT_REC_IS_NEW_SEGMENT		(GMT_io.status & GMT_IO_SEGMENT_HEADER || GMT_io.status & GMT_IO_NAN)
-#define GMT_REC_IS_LINE_BREAK		(GMT_io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF | GMT_IO_NAN | GMT_IO_GAP))
-#define GMT_REC_IS_EOF			(GMT_io.status & GMT_IO_EOF)
 #define GMT_REC_IS_SEG_HEADER		(GMT_io.status & GMT_IO_SEGMENT_HEADER)
-#define GMT_REC_IS_GAP			(GMT_io.status & GMT_IO_GAP)
 #define GMT_REC_IS_ERROR		(GMT_io.status & GMT_IO_MISMATCH)
+#define GMT_REC_IS_EOF			(GMT_io.status & GMT_IO_EOF)
+#define GMT_REC_IS_NAN			(GMT_io.status & GMT_IO_NAN)
+#define GMT_REC_IS_GAP			(GMT_io.status & GMT_IO_GAP)
+#define GMT_REC_IS_NEW_SEGMENT		(GMT_io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_NAN))
+#define GMT_REC_IS_LINE_BREAK		(GMT_io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF | GMT_IO_NAN | GMT_IO_GAP))
 
 /* Array indices for input/output variables */
 
