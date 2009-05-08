@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.501 2009-05-07 23:08:58 guru Exp $
+	$Id: ChangeLog,v 1.502 2009-05-08 01:05:10 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-05-07	pwessel
 	* gmt_map.c:		For wesn clipping with curved boundaries, needed a more robust
 				Sutherland/Hodgman algorithm that handles curved boundaries.
+	* gmt_io.c:		GMT_DATADIR can now be a list of directories, separated by colons
+				or semi-colons (Windows).
+				
 2009-05-06	pwessel
 	* *.c,txt,tex:		While remaining backwards compatible, we no longer announce that
 				GMT will search GMT_IMGDIR and GMT_GRIDDIR.  Going forward, we will

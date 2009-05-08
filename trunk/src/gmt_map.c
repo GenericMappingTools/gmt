@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.221 2009-05-07 23:08:58 guru Exp $
+ *	$Id: gmt_map.c,v 1.222 2009-05-08 01:05:10 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5101,7 +5101,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 					new_alloc = GMT_inc_memory ((void **)&ytmp[k], (size_t)m, n_alloc-1, sizeof (double));
 				}
 				n_alloc = new_alloc;
-m			}
+			}
 		}
 		if (polygon && GMT_polygon_is_open (xtmp[out], ytmp[out], m)) {	/* Do we need to explicitly close this clipped polygon? */
 			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
