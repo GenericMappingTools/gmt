@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.224 2009-05-08 01:58:27 guru Exp $
+ *	$Id: mgd77.c,v 1.225 2009-05-08 04:17:35 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -5186,13 +5186,16 @@ int MGD77_atoi (char *txt) {
 
 double MGD77_time_to_fyear (double time) {
 	/* Convert GMT time to floating point year for use with IGRF function */
-	struct GMT_gcal cal;		/* Calendar structure needed for IGRF calculation */
+	struct GMT_gcal cal;			/* Calendar structure needed for conversion */
+	GMT_gcal_from_dt (time, &cal);		/* No adjust for TZ; this is GMT UTC time */
+	return (MGD77_cal_to_fyear (&cal));	/* Returns decimal year */
+}
+
+double MGD77_cal_to_fyear (struct GMT_gcal *cal) {
+	/* Convert GMT calendar structure to decimal year for use with IGRF/CM4 function */
 	double n_days;
-	GMT_gcal_from_dt (time, &cal);	/* No adjust for TZ; this is GMT UTC time */
-	n_days = (GMT_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
-	/* Get date as decimal year */
-	time = cal.year + (cal.day_y - 1.0 + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY) / n_days;
-	return (time);
+	n_days = (GMT_is_gleap (cal->year)) ? 366.0 : 365.0;	/* Number of days in this year */
+	return (cal->year + ((cal->day_y - 1.0) + (cal->hour * GMT_HR2SEC_I + cal->min * GMT_MIN2SEC_I + cal->sec) * GMT_SEC2DAY) / n_days);
 }
 
 void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4)
