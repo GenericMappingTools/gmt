@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.199 2009-05-01 17:35:58 guru Exp $
+ *	$Id: pslib.c,v 1.200 2009-05-08 14:52:15 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -394,8 +394,7 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], int flag)
 		PSL->internal.ix = (PS_LONG)irint (x[0]*PSL->internal.scale);
 		PSL->internal.iy = (PS_LONG)irint (y[0]*PSL->internal.scale);
 		fprintf (PSL->internal.fp, "%ld %ld %s\n", PSL->internal.ix, PSL->internal.iy, move);
-		ps_line (&x[1], &y[1], n-1, 0, FALSE, FALSE);	/* Must pass close = FALSE since first point not given ! */
-		fprintf (PSL->internal.fp, "P\n");
+		ps_line (&x[1], &y[1], n-1, 0, FALSE);	/* Must pass close = FALSE since first point not given ! */
 	}
 
 	if (flag & 2) {	/* End path and [optionally] fill */
@@ -975,11 +974,10 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 	 fprintf (PSL->internal.fp, "cleartomark\ncountdictstack exch sub { end } repeat\ngrestore\n");
 }
 
-PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split)
+PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close)
 {
 	/* type:  1 means new anchor point, 2 means stroke line, 3 = both */
 	/* close: TRUE if a closed polygon */
-	/* split: TRUE if we can split line segment into several sections [NOW OBSOLETE] */
 	PS_LONG i, *ix, *iy;
 	int trim = FALSE;
 	char move = 'M';
@@ -1034,9 +1032,9 @@ PS_LONG ps_line (double *x, double *y, PS_LONG n, int type, int close, int split
 }
 
 /* fortran interface */
-void ps_line_ (double *x, double *y, PS_LONG *n, int *type, int *close, int *split)
+void ps_line_ (double *x, double *y, PS_LONG *n, int *type, int *close)
 {
-	ps_line (x, y, *n, *type, *close, *split);
+	ps_line (x, y, *n, *type, *close);
 }
 
 PS_LONG ps_shorten_path (double *x, double *y, PS_LONG n, PS_LONG *ix, PS_LONG *iy)
@@ -1548,7 +1546,7 @@ void ps_polygon (double *x, double *y, PS_LONG n, int rgb[], int outline)
 	/* Draw and optionally fill polygons. */
 
 	ps_setfill (rgb, outline);
-	if (outline >= 0) ps_line (x, y, n, 1, FALSE, FALSE);	/* No stroke or close path yet */
+	if (outline >= 0) ps_line (x, y, n, 1, FALSE);	/* No stroke or close path yet */
 	ps_command ("P fs os");
 
 	if (outline == -1) {
