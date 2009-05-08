@@ -90,6 +90,9 @@ src/mgd77/mgd77sniffer.1
 src/mgd77/mgd77track.c
 src/mgd77/mgd77track.1
 share/mgd77/mgd77_paths.txt
+share/mgd77/Dst_all.wdc
+share/mgd77/F107_mon.plt
+share/mgd77/umdl.CM4
 src/mgg/README.mgg
 src/mgg/binlegs.c
 src/mgg/binlegs.1
