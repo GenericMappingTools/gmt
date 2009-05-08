@@ -1,4 +1,4 @@
-#	$Id: gmt_keywords.d,v 1.15 2009-03-18 18:41:58 guru Exp $
+#	$Id: gmt_keywords.d,v 1.16 2009-05-08 14:44:12 remko Exp $
 #
 # List of all GMT defaults parameters and their case value
 # Some parameters are spelled in two different ways and will
@@ -62,6 +62,7 @@ GRID_CROSS_SIZE_PRIMARY
 GRID_PEN_PRIMARY
 GRID_CROSS_SIZE_SECONDARY
 GRID_FORMAT
+GRIDFILE_FORMAT
 GRID_PEN_SECONDARY
 GRIDFILE_SHORTHAND
 HISTORY

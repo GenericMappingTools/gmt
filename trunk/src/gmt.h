@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.180 2009-04-24 01:39:28 guru Exp $
+ *	$Id: gmt.h,v 1.181 2009-05-08 14:48:05 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -330,9 +330,9 @@ struct GMT_DEFAULTS {
 	double global_x_scale;		/* Scaling of x just before plotting [1] */
 	double global_y_scale;		/* Scaling of y just before plotting [1] */
 	double grid_cross_size[2];	/* Size of primary & secondary gridcrosses.  0 means draw continuous gridlines */
-	char grid_format[GMT_TEXT_LEN];	/* Default grid format */
+	char gridfile_format[GMT_TEXT_LEN];	/* Default grid file format */
 	struct GMT_PEN grid_pen[2];	/* Pen attributes for primary and secondary gridlines [1] */
-	BOOLEAN gridfile_shorthand;	/* Use shorthand suffix notation for embedded formats [FALSE] */
+	BOOLEAN gridfile_shorthand;	/* Use shorthand suffix notation for embedded grid file formats [FALSE] */
 	int header_font;		/* Font for headers [Helvetica] */
 	double header_font_size;	/* Font size for headers in points [36] */
 	double header_offset;		/* Distance between lowermost annotation (or label) and base of plot title [0.1875] */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.119 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.120 2009-05-08 14:49:04 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -275,9 +275,9 @@ int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
 		if (GMT_is_agc_grid (header) >= 0) return (GMT_NOERROR);
 		return (GMT_GRDIO_UNKNOWN_FORMAT);	/* No supported format found */
 	}
-	else {			/* Writing: get format type, scale, offset and missing value from gmtdefs.grid_format */
+	else {			/* Writing: get format type, scale, offset and missing value from gmtdefs.gridfile_format */
 		if (sscanf (header->name, "%[^?]?%s", tmp, header->varname) > 1) strcpy (header->name, tmp);    /* Strip off variable name */
-		sscanf (gmtdefs.grid_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
+		sscanf (gmtdefs.gridfile_format, "%[^/]/%lf/%lf/%lf", code, &header->z_scale_factor, &header->z_add_offset, &header->nan_value);
 		val = GMT_grd_format_decoder (code);
 		if (val < 0) return (val);
 		header->type = val;

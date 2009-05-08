@@ -1,4 +1,4 @@
-#	$Id: gmtdefaults_US.in,v 1.5 2009-04-14 19:20:33 remko Exp $
+#	$Id: gmtdefaults_US.in,v 1.6 2009-05-08 14:44:12 remko Exp $
 #
 #	GMT-SYSTEM @PACKAGE_VERSION@ Defaults file
 #	US Version
@@ -62,6 +62,8 @@ HSV_MAX_VALUE		= 1
 #-------- PostScript Parameters -------------
 CHAR_ENCODING		= Standard+
 DOTS_PR_INCH		= 300
+GLOBAL_X_SCALE		= 1
+GLOBAL_Y_SCALE		= 1
 N_COPIES		= 1
 PS_COLOR		= rgb
 PS_IMAGE_COMPRESS	= lzw
@@ -70,18 +72,16 @@ PS_LINE_CAP		= butt
 PS_LINE_JOIN		= miter
 PS_MITER_LIMIT		= 35
 PS_VERBOSE		= FALSE
-GLOBAL_X_SCALE		= 1
-GLOBAL_Y_SCALE		= 1
 #-------- I/O Format Parameters -------------
 D_FORMAT		= %lg
 FIELD_DELIMITER		= tab
+GRIDFILE_FORMAT		= nf
 GRIDFILE_SHORTHAND	= FALSE
-GRID_FORMAT		= nf
 INPUT_CLOCK_FORMAT	= hh:mm:ss
 INPUT_DATE_FORMAT	= yyyy-mm-dd
 IO_HEADER		= FALSE
-NAN_RECORDS		= pass
 N_HEADER_RECS		= 1
+NAN_RECORDS		= pass
 OUTPUT_CLOCK_FORMAT	= hh:mm:ss
 OUTPUT_DATE_FORMAT	= yyyy-mm-dd
 OUTPUT_DEGREE_FORMAT	= +D
