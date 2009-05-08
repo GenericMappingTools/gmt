@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.109 2009-05-01 23:06:42 guru Exp $
+ *	$Id: mgd77.h,v 1.110 2009-05-08 04:17:35 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -525,6 +525,7 @@ extern double MGD77_Theoretical_Gravity (double lon, double lat, int version);
 extern void MGD77_IGF_text (FILE *fp, int version);
 extern double MGD77_Recalc_Mag_Anomaly_IGRF (double time, double lon, double lat, double obs, BOOLEAN calc_date);
 extern double MGD77_time_to_fyear (double time);
+extern double MGD77_cal_to_fyear (struct GMT_gcal *cal);
 #ifdef USE_CM4 
 extern double MGD77_Calc_CM4 (double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
 extern double MGD77_Recalc_Mag_Anomaly_CM4 (double time, double lon, double lat, double obs, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
