@@ -1,4 +1,4 @@
-/*	$Id: utilstrain.c,v 1.9 2009-01-09 04:02:35 guru Exp $
+/*	$Id: utilstrain.c,v 1.10 2009-05-08 14:51:14 remko Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -403,7 +403,7 @@ void paint_wedge (double x0, double y0, double spin, double spinsig, double ssca
      if(polygon)
          ps_polygon(axe, aye, npoints, rgb, TRUE);
      else	
-         ps_line(axe, aye, npoints, 3, FALSE, FALSE);
+         ps_line(axe, aye, npoints, 3, FALSE);
 
      /*   draw uncertainty wedge */
 
@@ -416,7 +416,7 @@ void paint_wedge (double x0, double y0, double spin, double spinsig, double ssca
      if(epolygon)
          ps_polygon(axe, aye, npoints - 1, ergb, TRUE);
      else	
-         ps_line(axe, aye, npoints - 1, 3, FALSE, FALSE);
+         ps_line(axe, aye, npoints - 1, 3, FALSE);
 }
 
 

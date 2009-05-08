@@ -1,4 +1,4 @@
-/*	$Id: utilvelo.c,v 1.9 2009-01-09 04:02:35 guru Exp $
+/*	$Id: utilvelo.c,v 1.10 2009-05-08 14:51:14 remko Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -227,6 +227,6 @@ void paint_ellipse (double x0, double y0, double angle, double major, double min
      if(polygon)
          ps_polygon(axe, aye, npoints - 2, rgb, outline);
      else	
-         ps_line(axe, aye, npoints - 2, 3, TRUE, FALSE);
+         ps_line(axe, aye, npoints - 2, 3, TRUE);
 
 }
