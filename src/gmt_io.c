@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.181 2009-05-08 01:05:10 guru Exp $
+ *	$Id: gmt_io.c,v 1.182 2009-05-08 03:51:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -831,7 +831,8 @@ BOOLEAN GMT_get_binary_d_input (FILE *fp, int n) {
 
 BOOLEAN GMT_get_binary_d_input_swab (FILE *fp, int n) {
 	/* Reads and swabs the n binary doubles from input */
-	unsigned int i, *ii, jj;
+	int i;
+	unsigned int *ii, jj;
 	if (GMT_get_binary_d_input (fp, n)) return (TRUE);	/* Return immediately if EOF */
 	/* Swab the bytes for each double */
 	for (i = 0; i < n; i++) {
@@ -854,7 +855,8 @@ BOOLEAN GMT_get_binary_f_input (FILE *fp, int n) {
 
 BOOLEAN GMT_get_binary_f_input_swab (FILE *fp, int n) {
 	/* Reads the n binary floats, byte-swabs them, then converts the result to doubles */
-	unsigned i, *ii;
+	int i;
+	unsigned int *ii;
 	static float GMT_f[BUFSIZ];
 	
 	if (GMT_read_binary_f_input (fp, GMT_f, n)) return (TRUE);	/* EOF or came up short */

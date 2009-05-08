@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.14 2009-03-27 23:26:54 guru Exp $
+ *	$Id: sph.c,v 1.15 2009-05-08 03:51:02 guru Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -156,8 +156,8 @@ void stripack_lists (GMT_LONG n, double *x, double *y, double *z, struct STRIPAC
 		
 		/* Adjust Fortran to C indeces */
 		n_alloc = 6 * (n - 2);
-		for (k = 0; k < n_alloc; k++) T->V.listc[k]--;
-		for (k = 0; k < n_alloc; k++) T->V.lptr[k]--;
+		for (k = 0; k < (int)n_alloc; k++) T->V.listc[k]--;
+		for (k = 0; k < (int)n_alloc; k++) T->V.lptr[k]--;
 		for (k = 0; k < n; k++) T->V.lend[k]--;
 	}
 	else {	/* Free things not needed */
