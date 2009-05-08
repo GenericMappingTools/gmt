@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.180 2009-05-04 21:26:19 guru Exp $
+ *	$Id: gmt_io.c,v 1.181 2009-05-08 01:05:10 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -404,9 +404,13 @@ char *GMT_getdatapath (const char *stem, char *path)
 		sprintf (path, "%s%c%s", GMT_USERDIR, DIR_DELIM, stem);
 		if (!access (path, R_OK)) return (path);
 	}
-	if (GMT_DATADIR) {
-		sprintf (path, "%s%c%s", GMT_DATADIR, DIR_DELIM, stem);
-		if (!access (path, R_OK)) return (path);
+	if (GMT_DATADIR) {	/* Examine all directories given in that order */
+		char dir[BUFSIZ];
+		int pos = 0; 
+		while ((GMT_strtok (GMT_DATADIR, PATH_SEPARATOR, &pos, dir))) {
+			sprintf (path, "%s%c%s", dir, DIR_DELIM, stem);
+			if (!access (path, R_OK)) return (path);
+		}
 	}
 	if (GMT_GRIDDIR) {
 		sprintf (path, "%s%c%s", GMT_GRIDDIR, DIR_DELIM, stem);

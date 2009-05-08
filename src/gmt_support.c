@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.397 2009-05-06 16:40:48 remko Exp $
+ *	$Id: gmt_support.c,v 1.398 2009-05-08 01:05:11 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1232,7 +1232,7 @@ double GMT_getradius (char *line)
 int GMT_get_proj3D (char *line, double *az, double *el)
 {
 	int k, s, pos = 0, error = 0;
-	char txt[BUFSIZ], p[GMT_LONG_TEXT], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
+	char p[GMT_LONG_TEXT], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
 	
 	if ((k = sscanf (line, "%lf/%lf", az, el)) < 2) {
 		fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+wlon0/lat0[/z0]][+vx0[cimp]/y0[cimp]]\n", GMT_program, line);
@@ -1247,8 +1247,7 @@ int GMT_get_proj3D (char *line, double *az, double *el)
 	z_project.fixed = TRUE;
 	k++;
 	if (!line[k]) return 0;	/* No specific settings given, we will apply default values in 3D init */
-	strcpy (txt, &line[k]);
-	while ((GMT_strtok (txt, "+", &pos, p))) {
+	while ((GMT_strtok (&line[k], "+", &pos, p))) {
 		switch (p[0]) {
 			case 'v':	/* Specify fixed view point in 2-D projected coordinates */
 				if ((k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b)) != 2) {
@@ -2608,7 +2607,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 {
 	int k, bad = 0, pos = 0;
 	BOOLEAN g_set = FALSE;
-	char txt_cpy[BUFSIZ], p[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], c;
+	char p[BUFSIZ], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], c;
 
 	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+f<font>][+g<fill>][+j<just>][+k<fontcolor>][+l<label>][+n|N<dx>[/<dy>]][+o][+v][+r<min_rc>][+s<size>][+p[<pen>]][+u<unit>][+w<width>][+=<prefix>] strings */
 
@@ -2624,8 +2623,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 	/* Decode new-style +separated substrings */
 
 	G->nudge_flag = 0;
-	strcpy (txt_cpy, &txt[k+1]);
-	while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
+	while ((GMT_strtok (&txt[k+1], "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Angle specification */
 				if (p[1] == 'p' || p[1] == 'P')	{	/* Line-parallel label */
@@ -2942,11 +2940,10 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 		G->no_gap = ((G->just + 2)%4);	/* Don't clip contour if label is not in the way */
 
 	if (G->crossing == GMT_CONTOUR_XLINE) {
-		strcpy (buffer, G->option);
 		G->xp = (struct GMT_TABLE *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_TABLE), GMT_program);
 		G->xp->segment = (struct GMT_LINE_SEGMENT **) GMT_memory (VNULL, n_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 		pos = 0;
-		while ((GMT_strtok (buffer, ",", &pos, p))) {
+		while ((GMT_strtok (G->option, ",", &pos, p))) {
 			G->xp->segment[G->xp->n_segments] = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 			GMT_alloc_segment (G->xp->segment[G->xp->n_segments], (GMT_LONG)2, 2, TRUE);
 			G->xp->segment[G->xp->n_segments]->n_rows = G->xp->segment[G->xp->n_segments]->n_columns = 2;
@@ -6245,6 +6242,7 @@ int GMT_strtok (const char *string, const char *sep, int *pos, char *token)
 	 * Returns 1 if it finds a token and 0 if no more tokens left.
 	 * pos is updated and token is returned.  char *token must point
 	 * to memory of length >= strlen (string).
+	 * string is not changed by GMT_strtok.
 	 */
 
 	int i, j, string_len;
