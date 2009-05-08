@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.390 2009-05-04 00:52:21 jluis Exp $
+ *	$Id: gmt_init.c,v 1.391 2009-05-08 14:45:52 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1856,7 +1856,7 @@ return (error);*/
 		case GMTCASE_ANOT_FONT_SIZE:
 			if (value[0] == '+') GMT_force_resize = TRUE;	/* Turning on autoscaling of font sizes and ticklengths */
 			if (value[0] != '+' && GMT_force_resize) GMT_annot_special = TRUE;	/* gmtset tries to turn off autoscaling - must report saved values but reset this one */
-			dval = atof (value);
+			dval = GMT_convert_units (value, 10+GMT_PT);
 			if (dval > 0.0)
 				gmtdefs.annot_font_size[0] = dval;
 			else
@@ -2050,8 +2050,9 @@ return (error);*/
 			else
 				error = TRUE;
 			break;
+		case GMTCASE_GRIDFILE_FORMAT:
 		case GMTCASE_GRID_FORMAT:
-			strcpy (gmtdefs.grid_format, value);
+			strcpy (gmtdefs.gridfile_format, value);
 			break;
 		case GMTCASE_GRID_PEN_PRIMARY:
 		case GMTCASE_GRID_PEN:
@@ -2074,7 +2075,7 @@ return (error);*/
 				gmtdefs.header_font = ival;
 			break;
 		case GMTCASE_HEADER_FONT_SIZE:
-			dval = atof (value);
+			dval = GMT_convert_units (value, 10+GMT_PT);
 			if (dval > 0.0)
 				save_header_size = gmtdefs.header_font_size = dval;
 			else
@@ -2142,7 +2143,7 @@ return (error);*/
 				gmtdefs.label_font = ival;
 			break;
 		case GMTCASE_LABEL_FONT_SIZE:
-			dval = atof (value);
+			dval = GMT_convert_units (value, 10+GMT_PT);
 			if (dval > 0.0)
 				save_label_size = gmtdefs.label_font_size = dval;
 			else
@@ -2561,7 +2562,7 @@ return (error);*/
 		case GMTCASE_ANOT_FONT_SIZE_SECONDARY:
 		case GMTCASE_ANNOT_FONT2_SIZE:
 		case GMTCASE_ANOT_FONT2_SIZE:
-			dval = atof (value);
+			dval = GMT_convert_units (value, 10+GMT_PT);
 			if (dval > 0.0)
 				save_annot_size[1] = gmtdefs.annot_font_size[1] = dval;
 			else
@@ -2751,6 +2752,8 @@ int GMT_savedefaults (char *file)
 	fprintf (fp, "#-------- PostScript Parameters -------------\n");
 	fprintf (fp, "CHAR_ENCODING\t\t= %s\n", gmtdefs.encoding.name);
 	fprintf (fp, "DOTS_PR_INCH\t\t= %d\n", gmtdefs.dpi);
+	fprintf (fp, "GLOBAL_X_SCALE\t\t= %g\n", gmtdefs.global_x_scale);
+	fprintf (fp, "GLOBAL_Y_SCALE\t\t= %g\n", gmtdefs.global_y_scale);
 	fprintf (fp, "N_COPIES\t\t= %d\n", gmtdefs.n_copies);
 	fprintf (fp, "PS_COLOR\t\t= ");
 	if (gmtdefs.ps_colormode == 0)
@@ -2783,8 +2786,6 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "bevel\n");
 	fprintf (fp, "PS_MITER_LIMIT\t\t= %d\n", gmtdefs.ps_miter_limit);
 	fprintf (fp, "PS_VERBOSE\t\t= %s\n", ft[gmtdefs.ps_verbose]);
-	fprintf (fp, "GLOBAL_X_SCALE\t\t= %g\n", gmtdefs.global_x_scale);
-	fprintf (fp, "GLOBAL_Y_SCALE\t\t= %g\n", gmtdefs.global_y_scale);
 	fprintf (fp, "#-------- I/O Format Parameters -------------\n");
 	fprintf (fp, "D_FORMAT\t\t= %s\n", gmtdefs.d_format);
 	fprintf (fp, "FIELD_DELIMITER\t\t= ");
@@ -2798,17 +2799,17 @@ int GMT_savedefaults (char *file)
 		fprintf (fp, "none\n");
 	else
 		fprintf (fp, "%s\n", gmtdefs.field_delimiter);
+	fprintf (fp, "GRIDFILE_FORMAT\t\t= %s\n", gmtdefs.gridfile_format);
 	fprintf (fp, "GRIDFILE_SHORTHAND\t= %s\n", ft[gmtdefs.gridfile_shorthand]);
-	fprintf (fp, "GRID_FORMAT\t\t= %s\n", gmtdefs.grid_format);
 	fprintf (fp, "INPUT_CLOCK_FORMAT\t= %s\n", gmtdefs.input_clock_format);
 	fprintf (fp, "INPUT_DATE_FORMAT\t= %s\n", gmtdefs.input_date_format);
 	fprintf (fp, "IO_HEADER\t\t= %s\n", ft[gmtdefs.io_header[GMT_IN]]);
+	fprintf (fp, "N_HEADER_RECS\t\t= %d\n", gmtdefs.n_header_recs);
 	fprintf (fp, "NAN_RECORDS\t\t= ");
 	if (gmtdefs.nan_is_gap)
 		fprintf (fp, "pass\n");
 	else
 		fprintf (fp, "skip\n");
-	fprintf (fp, "N_HEADER_RECS\t\t= %d\n", gmtdefs.n_header_recs);
 	fprintf (fp, "OUTPUT_CLOCK_FORMAT\t= %s\n", gmtdefs.output_clock_format);
 	fprintf (fp, "OUTPUT_DATE_FORMAT\t= %s\n", gmtdefs.output_date_format);
 	fprintf (fp, "OUTPUT_DEGREE_FORMAT\t= %s\n", gmtdefs.output_degree_format);
@@ -2948,11 +2949,22 @@ int GMT_getdefpath (int get, char **P)
 
 double GMT_convert_units (char *from, int new_format)
 {
-	/* Converts the input value to new units indicated by new_format */
+	/* Converts the input value to new units indicated by new_format
+	 * If new_format >= 10, then use (new_format - 10) as default unit
+	 * instead of gmtdefs.measure_unit.
+	 */
 
-	int c = 0, len, old_format;
+	int c = 0, len, old_format, save_measure_unit = -1;
 	BOOLEAN have_unit = FALSE;
 	double value;
+
+	/* If new_format >= 10, temporily change gmtdefs.measure_unit */
+
+	if (new_format >= 10) {
+		new_format -= 10;
+		save_measure_unit = gmtdefs.measure_unit;
+		gmtdefs.measure_unit = new_format;
+	}
 
 	if ((len = strlen(from))) {
 		c = from[len-1];
@@ -2968,6 +2980,8 @@ double GMT_convert_units (char *from, int new_format)
 
 	value = atof (from) * GMT_u2u[old_format][new_format];
 	if (have_unit) from[len-1] = c;	/* Put back what we took out temporarily */
+
+	if (save_measure_unit >= 0) gmtdefs.measure_unit = save_measure_unit;	/* Put back default unit */
 
 	return (value);
 
