@@ -1,6 +1,23 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.503 2009-05-08 04:17:35 guru Exp $
+	$Id: ChangeLog,v 1.504 2009-05-08 14:53:32 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-08	remko
+	* gmtconvert.c:		Switch off default NaN treatment when NAN_RECORDS=pass and no
+				multi-segment output is requested.
+	* gmt_init.c:		Renamed GRID_FORMAT to GRIDFILE_FORMAT to avoid confusion with
+				other GRID_* variables which relate to painting grids, and in
+				accordance with GRIDFILE_SHORTHAND.
+				GRID_FORMAT can still be used for backwards compatibility.
+				Allow different units for font sizes. Default remains points.
+				GMT_convert_units: add 10 to new_format to specify it as
+				default unit as well.
+	* gmt_keywords.d, gmt.h, gmt_grdio.h, gmt_globals.h, gmtdefaults.txt, gmtdefaults_??.in:
+				Changed accordingly.
+	* gmtdefaults.txt:	Properly alphabetized entries.
+	* pslib.c:		Removed superfluous writing of "P\n" from ps_clipon.
+				Removed obsolete "split" argument from ps_line().
+	* pslib.h, *.c:		Changed accordingly.
 
 2009-05-07	pwessel
 	* gmt_map.c:		For wesn clipping with curved boundaries, needed a more robust
@@ -14,6 +31,7 @@
 	* *.c,txt,tex:		While remaining backwards compatible, we no longer announce that
 				GMT will search GMT_IMGDIR and GMT_GRIDDIR.  Going forward, we will
 				document the user of GMT_DATADIR and GMT_USERDIR only.
+
 2009-05-06	remko
 	* pglegend.c:		Allow S record not to have <text>. Until now, when left empty would
 				use whatever <text> was set to in previous record.
