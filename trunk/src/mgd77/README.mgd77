@@ -1,11 +1,11 @@
-	$Id: README.mgd77,v 1.16 2008-09-26 15:55:25 guru Exp $
+	$Id: README.mgd77,v 1.17 2009-05-08 01:13:40 guru Exp $
 
 README file for GMT supplemental mgd77 programs.  The mgd77 supplement
 and all its files are distributed under the Gnu Public License.
 
 AUTHORS:	Paul Wessel and Michael Chandler
-DATE:		01-JAN-2008
-VERSION:	1.4
+DATE:		01-MAY-2009
+VERSION:	1.5
 INSTALL INFO:	The mgd77 directory should install under GMT/src
 
 	These programs are intended for use with the marine geophysical
@@ -23,6 +23,7 @@ they do:
 	mgd77list	A data extractor for .mgd77[+] files
 	mgd77info	An information extractor for .mgd77[+] files
 	mgd77path	Gets the full pathnames for .mgd77[+] files
+	mgd77magref	A utility to evaluate geomagnetic reference fields
 	mgd77manage	A utility to manage extra columns in .mgd77+ files
 	mgd77sniffer	A utility for quality control of MGD77 files
 	mgd77track	A track plotter for .mgd77[+] files

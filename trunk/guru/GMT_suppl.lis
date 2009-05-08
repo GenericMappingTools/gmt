@@ -77,6 +77,8 @@ src/mgd77/mgd77info.c
 src/mgd77/mgd77info.1
 src/mgd77/mgd77list.c
 src/mgd77/mgd77list.1
+src/mgd77/mgd77magref.c
+src/mgd77/mgd77magref.1
 src/mgd77/mgd77manage.c
 src/mgd77/mgd77manage.1
 src/mgd77/mgd77path.c
@@ -283,6 +285,7 @@ share/doc/gmt/html/man/psvelo.html
 share/doc/gmt/html/man/mgd77convert.html
 share/doc/gmt/html/man/mgd77info.html
 share/doc/gmt/html/man/mgd77list.html
+share/doc/gmt/html/man/mgd77magref.html
 share/doc/gmt/html/man/mgd77manage.html
 share/doc/gmt/html/man/mgd77path.html
 share/doc/gmt/html/man/mgd77sniffer.html
