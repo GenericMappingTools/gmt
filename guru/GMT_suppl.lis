@@ -66,6 +66,8 @@ src/mgd77/mgd77_IGF_coeffs.h
 src/mgd77/mgd77_codes.h
 src/mgd77/mgd77_functions.c
 src/mgd77/mgd77_functions.h
+src/mgd77/cm4_functions.c
+src/mgd77/cm4_functions.h
 src/mgd77/mgd77.h
 src/mgd77/mgd77_e77.h
 src/mgd77/mgd77_init.h
