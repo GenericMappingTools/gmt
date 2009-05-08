@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.223 2009-05-05 02:18:15 jluis Exp $
+ *	$Id: mgd77.c,v 1.224 2009-05-08 01:58:27 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -5191,7 +5191,7 @@ double MGD77_time_to_fyear (double time) {
 	GMT_gcal_from_dt (time, &cal);	/* No adjust for TZ; this is GMT UTC time */
 	n_days = (GMT_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
 	/* Get date as decimal year */
-	time = cal.year + (cal.day_y - 1.0) / n_days + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY;
+	time = cal.year + (cal.day_y - 1.0 + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY) / n_days;
 	return (time);
 }
 
