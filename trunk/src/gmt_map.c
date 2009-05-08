@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.222 2009-05-08 01:05:10 guru Exp $
+ *	$Id: gmt_map.c,v 1.223 2009-05-08 23:04:35 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5197,7 +5197,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 
 size_t GMT_inc_memory (void **ptr, size_t n, size_t n_alloc, size_t element_size)
 {
-	/* Checks to see if we needs (n) exceeds what we have alloced so far (n_alloc).
+	/* Checks to see if our needs (n) exceed what we have alloced so far (n_alloc).
 	 * If it does, increase n_alloc <<= 1, allocate more memory, and return n_alloc. */
 	
 	if (n <= n_alloc) return (n_alloc);	/* No need to do anything */
