@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.399 2009-05-08 13:15:55 remko Exp $
+ *	$Id: gmt_support.c,v 1.400 2009-05-08 14:46:51 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2752,7 +2752,7 @@ int GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 				break;
 
 			case 's':	/* Font size specification */
-				G->label_font_size = atof (&p[1]);
+				G->label_font_size = GMT_convert_units (&p[1], 10+GMT_PT);
 				if (G->label_font_size <= 0.0) bad++;
 				break;
 
@@ -2916,8 +2916,8 @@ int GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 	step = gmtdefs.line_step / project_info.x_scale / project_info.M_PR_DEG;
 
 	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
-		G->clearance[0] = 0.01 * G->clearance[0] * G->label_font_size / 72.0;
-		G->clearance[1] = 0.01 * G->clearance[1] * G->label_font_size / 72.0;
+		G->clearance[0] = 0.01 * G->clearance[0] * G->label_font_size * GMT_u2u[GMT_PT][GMT_INCH];
+		G->clearance[1] = 0.01 * G->clearance[1] * G->label_font_size * GMT_u2u[GMT_PT][GMT_INCH];
 	}
 	if (G->label_type == 5 && !G->fixed) {	/* Requires fixed file */
 		error++;
