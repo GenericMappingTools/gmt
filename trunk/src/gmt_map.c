@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.225 2009-05-11 19:16:14 guru Exp $
+ *	$Id: gmt_map.c,v 1.226 2009-05-11 20:41:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -220,7 +220,7 @@ double GMT_left_circle (double y);		/* For circular maps	*/
 double GMT_right_circle (double y);		/* For circular maps	*/
 double GMT_left_ellipse (double y);		/* For elliptical maps	*/
 double GMT_right_ellipse (double y);		/* For elliptical maps	*/
-#ifdef NOTUSEDYET
+#ifdef NEWMEMINC
 size_t GMT_inc_memory (void **ptr, size_t n, size_t n_alloc, size_t element_size);
 #endif
 
@@ -5012,6 +5012,9 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 {
 	GMT_LONG i, m, *x_index = NULL;
 	size_t n_alloc, n_x_alloc = GMT_TINY_CHUNK;
+#ifdef NEWMEMINC
+	size_t new_alloc;
+#endif
 	int side, j, np, k, in = 1, n_cross = 0, out = 0, cross = 0, *x_type = NULL;
 	BOOLEAN polygon, jump = FALSE, curved;
 	double *xtmp[2], *ytmp[2], xx[2], yy[2], border[4];
@@ -5092,14 +5095,27 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 				x_index[n_cross] = m;		/* Index of intersection point (which will be copied from xx[0], yy[0] below) */
 				x_type[n_cross] = cross;	/* -1 going out, +1 going in */
 				n_cross++;
+#ifdef NEWMEMINC
+				new_alloc = GMT_inc_memory ((void **)&x_index, (size_t)n_cross, n_x_alloc, sizeof (GMT_LONG));
+				new_alloc = GMT_inc_memory ((void **)&x_type, (size_t)n_cross, n_x_alloc, sizeof (int));
+				n_x_alloc = new_alloc;
+#else
 				if (n_cross == n_x_alloc) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
 					n_x_alloc <<= 1;
 					x_index = (GMT_LONG *) GMT_memory ((void *)x_index, (size_t)n_x_alloc, sizeof (GMT_LONG), "GMT_wesn_clip");
 					x_type = (int *) GMT_memory ((void *)x_index, (size_t)n_x_alloc, sizeof (int), "GMT_wesn_clip");
 				}
+#endif
 			}
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
 				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
+#ifdef NEWMEMINC
+				for (k = 0; k < 2; k++) {
+					new_alloc = GMT_inc_memory ((void **)&xtmp[k], (size_t)m, n_alloc-1, sizeof (double));
+					new_alloc = GMT_inc_memory ((void **)&ytmp[k], (size_t)m, n_alloc-1, sizeof (double));
+				}
+				n_alloc = new_alloc;
+#else
 				if (m == (n_alloc-1)) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
 					n_alloc <<= 1;
 					for (k = 0; k < 2; k++) {
@@ -5107,6 +5123,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 						ytmp[k] = (double *) GMT_memory ((void *)ytmp[k], (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 					}
 				}
+#endif
 			}
 		}
 		if (polygon && GMT_polygon_is_open (xtmp[out], ytmp[out], m)) {	/* Do we need to explicitly close this clipped polygon? */
@@ -5131,6 +5148,13 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 			for (p = 0; p < n_cross; p++) {	/* Process each crossing point */
 				if (last_index < x_index[p]) {	/* Copy over segment from were we left off to this crossing point */
 					add = x_index[p] - last_index;
+#ifdef NEWMEMINC
+					for (k = 0; k < 2; k++) {
+						new_alloc = GMT_inc_memory ((void **)&xtmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+						new_alloc = GMT_inc_memory ((void **)&ytmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+					}
+					n_alloc = new_alloc;
+#else
 					while ((np+add) > n_alloc) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
 						n_alloc <<= 1;
 						for (k = 0; k < 2; k++) {
@@ -5138,6 +5162,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 							ytmp[k] = (double *) GMT_memory ((void *)ytmp[k], (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 						}
 					}
+#endif
 					memcpy ((void *)&xtmp[out][np], (void *)&x_cpy[last_index], (size_t)(add * sizeof (double)));
 					memcpy ((void *)&ytmp[out][np], (void *)&y_cpy[last_index], (size_t)(add * sizeof (double)));
 					np += add;
@@ -5146,6 +5171,13 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 				if (x_type[p] == -1) {	/* Must add path from this exit to the next entry */
 					p_next = (p == (n_cross-1)) ? 0 : p + 1;	/* index of the next crossing */
 					add = GMT_map_path (x_cpy[x_index[p]], y_cpy[x_index[p]], x_cpy[x_index[p_next]], y_cpy[x_index[p_next]], &x_add, &y_add);
+#ifdef NEWMEMINC
+					for (k = 0; k < 2; k++) {
+						new_alloc = GMT_inc_memory ((void **)&xtmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+						new_alloc = GMT_inc_memory ((void **)&ytmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+					}
+					n_alloc = new_alloc;
+#else
 					while ((np+add) > n_alloc) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
 						n_alloc <<= 1;
 						for (k = 0; k < 2; k++) {
@@ -5153,6 +5185,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 							ytmp[k] = (double *) GMT_memory ((void *)ytmp[k], (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 						}
 					}
+#endif
 					memcpy ((void *)&xtmp[out][np], (void *)x_add, (size_t)(add * sizeof (double)));
 					memcpy ((void *)&ytmp[out][np], (void *)y_add, (size_t)(add * sizeof (double)));
 					GMT_free ((void *)x_add);	GMT_free ((void *)y_add);
@@ -5162,6 +5195,13 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 			}
 			if (x_index[0] > 0) {	/* First point was clean inside, must add last connection */
 				add = m - last_index;
+#ifdef NEWMEMINC
+				for (k = 0; k < 2; k++) {
+					new_alloc = GMT_inc_memory ((void **)&xtmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+					new_alloc = GMT_inc_memory ((void **)&ytmp[k], (size_t)(np+add), n_alloc, sizeof (double));
+				}
+				n_alloc = new_alloc;
+#else
 				while ((np+add) > n_alloc) {	/* OK, need more memory (-1 since we always close the polygon at the end) */
 					n_alloc <<= 1;
 					for (k = 0; k < 2; k++) {
@@ -5169,6 +5209,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 						ytmp[k] = (double *) GMT_memory ((void *)ytmp[k], (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 					}
 				}
+#endif
 				memcpy ((void *)&xtmp[out][np], (void *)&x_cpy[last_index], (size_t)(add * sizeof (double)));
 				memcpy ((void *)&ytmp[out][np], (void *)&y_cpy[last_index], (size_t)(add * sizeof (double)));
 				np += add;
@@ -5207,7 +5248,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	return (m);
 }
 
-#ifdef NOTUSEDYET
+#ifdef NEWMEMINC
 size_t GMT_inc_memory (void **ptr, size_t n, size_t n_alloc, size_t element_size)
 {
 	/* Checks to see if our needs (n) exceed what we have alloced so far (n_alloc).
