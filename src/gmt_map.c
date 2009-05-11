@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.223 2009-05-08 23:04:35 guru Exp $
+ *	$Id: gmt_map.c,v 1.224 2009-05-11 19:05:34 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5199,11 +5199,13 @@ size_t GMT_inc_memory (void **ptr, size_t n, size_t n_alloc, size_t element_size
 {
 	/* Checks to see if our needs (n) exceed what we have alloced so far (n_alloc).
 	 * If it does, increase n_alloc <<= 1, allocate more memory, and return n_alloc. */
+	void *new;
 	
 	if (n <= n_alloc) return (n_alloc);	/* No need to do anything */
 	while (n > n_alloc) n_alloc <<= 1;	/* Increase allocation size */
 	
-	*ptr = (void *) GMT_memory ((void *)(*ptr), n_alloc, element_size, "GMT_inc_memory");
+	new = (void *) GMT_memory ((void *)(*ptr), n_alloc, element_size, "GMT_inc_memory");
+	*ptr = new;
 	return (n_alloc);
 }
 
