@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.229 2009-05-12 04:29:33 guru Exp $
+ *	$Id: gmt_map.c,v 1.230 2009-05-12 12:39:04 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1851,7 +1851,8 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 	int error = 0;
 
 	*e = 180.0 + 6.0 * zone_x;	*w = *e - 6.0;
-	if (zone_y == 0) {	/* Latitude range not specified */
+
+	if (zone_y == 0) {	/* Latitude zone is not specified */
 		if (hemi == -1) {
 			*s = -80.0;	*n = 0.0;
 		}
@@ -1861,28 +1862,23 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 		else
 			error = TRUE;
 		return (error);
+	else if (zone_y < 'A' || zone_y > 'Z')
+		error = TRUE;
+	else if (zone_y <= 'B') {
+		*s = -90.0;	*n = -80.0;
+		*e = 180.0 * (zone_y - 'A');
+		*w = *e - 180.0;
 	}
-
-	/* OK, here zone_y has a value */
-
-	if (zone_y <= 'B') {
-		*s = -90.0;	*n = -84.0;
-		*w = 180.0 * (zone_y - 'A' - 1);
-		*e = *w + 180.0;
-	}
-	else if (zone_y <= 'J') {
+	else if (zone_y <= 'I') {	/* I will behave as J */
 		*s = -80.0 + 8.0 * (zone_y - 'C');	*n = *s + 8.0;
 	}
-	else if (project_info.utm_zoney <= 'N') {
-		*s = -80.0 + 8.0 * (zone_y - 'C' - 1);	*n = *s + 8.0;
+	else if (zone_y <= 'O') {	/* O will behave as P */
+		*s = -80.0 + 8.0 * (zone_y - 'D');	*n = *s + 8.0;
 	}
-	else if (project_info.utm_zoney < 'U') {
-		*s = -80.0 + 8.0 * (zone_y - 'C' - 2);	*n = *s + 8.0;
-	}
-	else if (project_info.utm_zoney == 'V') {
-		*s = -80.0 + 8.0 * (zone_y - 'C' - 2);	*n = *s + 8.0;
-		if (zone_x == 31) *e = 3.0;
-		if (zone_x == 32) *w = 3.0;
+	else if (zone_y <= 'W') {
+		*s = -80.0 + 8.0 * (zone_y - 'E');	*n = *s + 8.0;
+		if (zone_y == 'V' && zone_x == 31) *e = 3.0;
+		if (zone_y == 'V' && zone_x == 32) *w = 3.0;
 	}
 	else if (zone_y == 'X') {
 		*s = 72.0;	*n = 84.0;
@@ -1892,13 +1888,11 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 		if (zone_x == 37) *w = 33.0;
 		if (zone_x == 32 || zone_x == 34 || zone_x == 36) error = TRUE;
 	}
-	else if (zone_y >= 'Y') {
+	else	/* Y or Z */
 		*s = 84.0;	*n = 90.0;
-		*w = 180.0 * (zone_y - 'Y' - 1);
-		*e = *w + 180.0;
+		*e = 180.0 * (zone_y - 'Y');
+		*w = *e - 180.0;
 	}
-	else
-		error = TRUE;
 
 	return (error);
 }
