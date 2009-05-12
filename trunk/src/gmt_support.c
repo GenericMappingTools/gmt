@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.402 2009-05-12 04:38:03 guru Exp $
+ *	$Id: gmt_support.c,v 1.403 2009-05-12 19:20:49 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,6 +59,7 @@
  *	GMT_hsv_to_rgb		Convert HSV to RGB
  *	GMT_illuminate		Add illumination effects to rgb
  *	GMT_intpol		1-D interpolation
+ *	GMT_add_memory		Memory management
  *	GMT_memory		Memory allocation/reallocation
  *	GMT_free		Memory deallocation
  *	GMT_non_zero_winding	Finds if a point is inside/outside a polygon
@@ -2577,11 +2578,13 @@ size_t GMT_add_memory (void **ptr, size_t n, size_t n_alloc, size_t element_size
 {
 	/* GMT_add_memory is used to grow arrays that start out small but need to grow
 	 * as more data are read.  There are four different cases:
-	 * n = n_alloc = 0: initial allocation of memory controlled by GMT_min_meminc
-	 * n = 0: 	    initial allocation of memory controlled by specified n_alloc
-	 * n < n_alloc:	    realloc with n_alloc = n (finalize allocation)
-	 * Otherwise:       increment by 50% of previous size, up to GMT_max_meminc.
-	 * For 32-bit systems there are safety-values to avoid overflow.
+	 * n = n_alloc = 0: 	initial allocation of memory, the amount controlled by GMT_min_meminc
+	 * n = 0, n_alloc > 0:  initial allocation of memory, the amount specified by n_alloc
+	 * n < n_alloc:		free up unused memory, with n_alloc = n (finalizes allocation)
+	 * Otherwise:		increment memory by 50% of previous size, up to GMT_max_meminc.
+	 * For 32-bit systems there are safety-values to avoid 32-bit overflow.
+	 * Note that n_alloc refers to the number of items to allocate, not the total memory taken
+	 * up by the allocated items (which is n_alloc * element_size).
 	 */
 	
 	if (n == 0) {		/* First time allocation, use default minimum size unless given */
