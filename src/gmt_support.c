@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.400 2009-05-08 14:46:51 remko Exp $
+ *	$Id: gmt_support.c,v 1.401 2009-05-12 04:29:33 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2571,6 +2571,80 @@ void GMT_free (void *addr)
 	GMT_memtrack_sub (GMT_mem_keeper, fname, line, addr);
 #endif
 	free (addr);
+}
+
+size_t GMT_add_memory (void **ptr, size_t n, size_t n_alloc, size_t element_size)
+{
+	/* GMT_add_memory is used to grow arrays that start out small but need to grow
+	 * as more data is read.  There are four different cases:
+	 * n = n_alloc = 0: initial allocation of memory controlled by GMT_min_meminc
+	 * n = 0: initial allocation of memory controlled by specified n_alloc
+	 * n < n_alloc: realloc with n_alloc = n (finalize allocation)
+	 * Otherwise: increment is set to 50% of previous size, up to GMT_max_meminc.
+	 */
+	
+	if (n == 0) {		/* First time allocation, use default minimum size unless given */
+		if (n_alloc == 0) n_alloc = GMT_min_meminc;
+	}
+	else if (n < n_alloc)	/* Final allocation, set to actual final size */
+		n_alloc = n;
+	else {		/* Compute an increment, but make sure not to exceed size_t limit under 32-bit systems */
+		size_t add;			/* The increment of memory (in items) */
+		double total;			/* Floating-point total memory */
+		BOOLEAN keep_trying = TRUE;	/* Keep increasing until we reach our goal */
+		while (keep_trying && n >= n_alloc) {	/* Must increase the allocation size. We use >= because we need to preallocate before array[n] is accessed */
+			add = MIN (n_alloc/2, GMT_max_meminc);	/* Suggested increment from to 50% rule */
+			if (n_alloc > INT_MAX && sizeof (size_t) == 4) {	/* May potentially ask for too much under 32-bit systems */
+				/* Do the math in double to make sure we do not exceed max unsigned 4-byte int */
+				total = (double)n_alloc + (double)add;
+				if (total > (double)UINT_MAX) {	/* Too much, truncate to maximum possible size */
+					n_alloc = UINT_MAX;	/* Maximum items that can be allocated under 32-bit systems (given enough RAM)... */
+					keep_trying = FALSE;	/* ...and no sense in trying any further. */
+				}
+				else
+					n_alloc += add;		/* Ok to increment for now */
+			}
+			else
+				n_alloc += add;			/* Safe to do the usual addition without fear of overflow */
+		}
+	}
+
+	/* Here n_alloc is set one way or another.  Do the actual allocation */
+	
+	*ptr = GMT_memory (*ptr, n_alloc, element_size, GMT_program);
+	return (n_alloc);
+}
+
+/* Utility functions to reallocate memory for groups of 2, 3, or 4 arrays of same size/type */
+
+size_t GMT_add_memory2 (void **ptr1, void **ptr2, size_t n, size_t n_alloc, size_t element_size)
+{	/* This is used to increment memory for two same-size, same-type arrays (e.g., lon, lat).
+	 * Simply call GMT_add_memory on each pointer, but do not adjust n_alloc until the end */
+	size_t new_size;
+	new_size = GMT_add_memory (ptr1, n, n_alloc, element_size);
+	new_size = GMT_add_memory (ptr2, n, n_alloc, element_size);
+	return (new_size);
+}
+
+size_t GMT_add_memory3 (void **ptr1, void **ptr2, void **ptr3, size_t n, size_t n_alloc, size_t element_size)
+{	/* This is used to increment memory for three same-size, same-type arrays (e.g., x, y, z).
+	 * Simply call GMT_add_memory on each pointer, but do not adjust n_alloc until the end */
+	size_t new_size;
+	new_size = GMT_add_memory (ptr1, n, n_alloc, element_size);
+	new_size = GMT_add_memory (ptr2, n, n_alloc, element_size);
+	new_size = GMT_add_memory (ptr3, n, n_alloc, element_size);
+	return (new_size);
+}
+
+size_t GMT_add_memory4 (void **ptr1, void **ptr2, void **ptr3, void **ptr4, size_t n, size_t n_alloc, size_t element_size)
+{	/* This is used to increment memory for four same-size, same-type arrays (e.g., x, y, z, w).
+	 * Simply call GMT_add_memory on each pointer, but do not adjust n_alloc until the end */
+	size_t new_size;
+	new_size = GMT_add_memory (ptr1, n, n_alloc, element_size);
+	new_size = GMT_add_memory (ptr2, n, n_alloc, element_size);
+	new_size = GMT_add_memory (ptr3, n, n_alloc, element_size);
+	new_size = GMT_add_memory (ptr4, n, n_alloc, element_size);
+	return (new_size);
 }
 
 void GMT_contlabel_init (struct GMT_CONTOUR *G, int mode)

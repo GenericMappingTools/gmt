@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.181 2009-05-08 14:48:05 remko Exp $
+ *	$Id: gmt.h,v 1.182 2009-05-12 04:29:33 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -126,6 +126,9 @@ extern "C" {
 
 #define GMT_CONV_LIMIT	1.0e-8	/* Fairly tight convergence limit or "close to zero" limit */
 #define GMT_SMALL		1.0e-4	/* Needed when results aren't exactly zero but close */
+#define GMT_MIN_MEMINC	2048		/* 2 kb */
+#define GMT_MAX_MEMINC	536870912	/* 512 Mb */
+
 #define GMT_CHUNK	2048
 #define GMT_SMALL_CHUNK	64
 #define GMT_TINY_CHUNK	8
@@ -640,6 +643,12 @@ EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts time
 #include "gmt_stat.h"      	/* extern functions defined in gmt_stat.c */
 #include "gmt_support.h"      	/* extern functions defined in gmt_support.c */
 #include "gmt_vector.h"      	/* extern functions defined in gmt_vector.c */
+
+/* For memory allocation.  These are the initial allocation and max increment used.
+   In between we allocate 50% more than what we have, subject to the max limit.
+*/
+
+EXTERN_MSC size_t GMT_min_meminc, GMT_max_meminc;
 
 #ifdef DEBUG
 #define GMT_memory(array,n,size,program) GMT_memory_func(array,n,size,program,__FILE__,__LINE__)

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.44 2009-04-17 23:42:53 guru Exp $
+ *	$Id: gmt_support.h,v 1.45 2009-05-12 04:29:33 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -91,6 +91,10 @@ EXTERN_MSC void GMT_fourt (float *data, GMT_LONG *nn, int ndim, int ksign, int i
 EXTERN_MSC int GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 EXTERN_MSC int GMT_get_proj3D (char *line, double *az, double *el);
 EXTERN_MSC BOOLEAN GMT_gap_detected (void);
+EXTERN_MSC size_t GMT_add_memory (void **ptr, size_t n, size_t n_alloc, size_t element_size);
+EXTERN_MSC size_t GMT_add_memory2 (void **ptr1, void **ptr2, size_t n, size_t n_alloc, size_t element_size);
+EXTERN_MSC size_t GMT_add_memory3 (void **ptr1, void **ptr2, void **ptr3, size_t n, size_t n_alloc, size_t element_size);
+EXTERN_MSC size_t GMT_add_memory4 (void **ptr1, void **ptr2, void **ptr3, void **ptr4, size_t n, size_t n_alloc, size_t element_size);
 
 #ifdef DEBUG
 EXTERN_MSC void *GMT_memory_func (void *prev_addr, size_t nelem, size_t size, char *progname, char *fname, int line);
