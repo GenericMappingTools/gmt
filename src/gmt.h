@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.182 2009-05-12 04:29:33 guru Exp $
+ *	$Id: gmt.h,v 1.183 2009-05-12 04:38:03 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -125,9 +125,9 @@ extern "C" {
 #endif
 
 #define GMT_CONV_LIMIT	1.0e-8	/* Fairly tight convergence limit or "close to zero" limit */
-#define GMT_SMALL		1.0e-4	/* Needed when results aren't exactly zero but close */
-#define GMT_MIN_MEMINC	2048		/* 2 kb */
-#define GMT_MAX_MEMINC	536870912	/* 512 Mb */
+#define GMT_SMALL	1.0e-4	/* Needed when results aren't exactly zero but close */
+#define GMT_MIN_MEMINC	2048		/* E.g., 16 kb of 8-byte doubles */
+#define GMT_MAX_MEMINC	67108864	/* E.g., 512 Mb of 8-byte doubles */
 
 #define GMT_CHUNK	2048
 #define GMT_SMALL_CHUNK	64
