@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.401 2009-05-12 04:29:33 guru Exp $
+ *	$Id: gmt_support.c,v 1.402 2009-05-12 04:38:03 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2576,11 +2576,12 @@ void GMT_free (void *addr)
 size_t GMT_add_memory (void **ptr, size_t n, size_t n_alloc, size_t element_size)
 {
 	/* GMT_add_memory is used to grow arrays that start out small but need to grow
-	 * as more data is read.  There are four different cases:
+	 * as more data are read.  There are four different cases:
 	 * n = n_alloc = 0: initial allocation of memory controlled by GMT_min_meminc
-	 * n = 0: initial allocation of memory controlled by specified n_alloc
-	 * n < n_alloc: realloc with n_alloc = n (finalize allocation)
-	 * Otherwise: increment is set to 50% of previous size, up to GMT_max_meminc.
+	 * n = 0: 	    initial allocation of memory controlled by specified n_alloc
+	 * n < n_alloc:	    realloc with n_alloc = n (finalize allocation)
+	 * Otherwise:       increment by 50% of previous size, up to GMT_max_meminc.
+	 * For 32-bit systems there are safety-values to avoid overflow.
 	 */
 	
 	if (n == 0) {		/* First time allocation, use default minimum size unless given */
