@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.230 2009-05-12 12:39:04 remko Exp $
+ *	$Id: gmt_map.c,v 1.231 2009-05-12 12:44:23 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1862,6 +1862,7 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 		else
 			error = TRUE;
 		return (error);
+	}
 	else if (zone_y < 'A' || zone_y > 'Z')
 		error = TRUE;
 	else if (zone_y <= 'B') {
@@ -1888,7 +1889,7 @@ int GMT_UTMzone_to_wesn (int zone_x, int zone_y, int hemi, double *w, double *e,
 		if (zone_x == 37) *w = 33.0;
 		if (zone_x == 32 || zone_x == 34 || zone_x == 36) error = TRUE;
 	}
-	else	/* Y or Z */
+	else {	/* Y or Z */
 		*s = 84.0;	*n = 90.0;
 		*e = 180.0 * (zone_y - 'Y');
 		*w = *e - 180.0;
