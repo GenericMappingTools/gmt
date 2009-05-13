@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.70 2009-05-07 23:08:58 guru Exp $
+ *	$Id: gmt_project.h,v 1.71 2009-05-13 21:06:42 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -127,7 +127,7 @@ struct GMT_MAP_PROJECTIONS {
 
 	/* Common projection parameters */
 
-	int projection;			/* Gives the id number for the projection used */
+	GMT_LONG projection;		/* Gives the id number for the projection used */
 
 	BOOLEAN x_off_supplied;		/* Used to set xorigin/yorigin for overlay/final plots */
 	BOOLEAN y_off_supplied;
@@ -158,13 +158,13 @@ struct GMT_MAP_PROJECTIONS {
 	double M_PR_DEG, KM_PR_DEG;	/* Current spherical approximations to convert degrees to dist */
 	double half_ECC, i_half_ECC;	/* 0.5 * ECC and 0.5 / ECC */
 	double one_m_ECC2, i_one_m_ECC2; /* 1.0 - ECC2 and inverse */
-	int gave_map_width;		/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
+	GMT_LONG gave_map_width;	/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
 
 	double f_horizon, rho_max;	/* Azimuthal horizon (deg) and in plot coordinates */
 
 	/* Linear plot parameters */
 
-	int xyz_projection[3];		/* For linear projection, 0 = linear, 1 = log10, 2 = pow */
+	GMT_LONG xyz_projection[3];	/* For linear projection, 0 = linear, 1 = log10, 2 = pow */
 	BOOLEAN xyz_pos[3];		/* TRUE if x,y,z-axis increases in normal positive direction */
 	BOOLEAN compute_scale[3];	/* TRUE if axes lengths were set rather than scales */
 	BOOLEAN degree[3];		/* TRUE if we have linear projection with geographical data */
@@ -195,9 +195,9 @@ struct GMT_MAP_PROJECTIONS {
 	double t_c1, t_c2, t_c3, t_c4;
 	double t_i1, t_i2, t_i3, t_i4, t_i5;
 	double t_r, t_ir;		/* Short for project_info.EQ_RAD * gmtdefs.map_scale_factor and its inverse */
-	int utm_hemisphere;	/* -1 for S, +1 for N, 0 if to be set by -R */
-	int utm_zonex;		/* The longitude component 1-60 */
-	int utm_zoney;		/* The latitude component A-Z */
+	GMT_LONG utm_hemisphere;	/* -1 for S, +1 for N, 0 if to be set by -R */
+	GMT_LONG utm_zonex;		/* The longitude component 1-60 */
+	GMT_LONG utm_zoney;		/* The latitude component A-Z */
 
 	/* Lambert Azimuthal Equal-Area Projection */
 
@@ -277,7 +277,7 @@ struct GMT_MAP_PROJECTIONS {
         double g_xmin, g_xmax;
         double g_ymin, g_ymax;
 
-        int g_debug;
+        GMT_LONG g_debug;
         BOOLEAN g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
 
 	/* Polar (cylindrical) projection */
@@ -313,11 +313,11 @@ struct GMT_MAP_PROJECTIONS {
 #define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? TRUE : FALSE)	/* TRUE for uneven units */
 
 struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
-	int parent;			/* Id of axis this item belongs to (0,1,2) */
-	int id;				/* Id of this item (0-7) */
+	GMT_LONG parent;		/* Id of axis this item belongs to (0,1,2) */
+	GMT_LONG id;			/* Id of this item (0-7) */
 	BOOLEAN active;			/* TRUE if we want to use this item */
 	double interval;		/* Distance between ticks in user units */
-	int flavor;			/* Index into month/day name abbreviation array (0-2) */
+	GMT_LONG flavor;		/* Index into month/day name abbreviation array (0-2) */
 	BOOLEAN upper_case;		/* TRUE if we want upper case text (used with flavor) */
 	char type;			/* One of a, i, A, I, f, F, g, G */
 	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
@@ -325,7 +325,7 @@ struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 
 struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	struct GMT_PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
-	int type;			/* GMT_LINEAR, GMT_LOG10, GMT_POW, or GMT_TIME */
+	GMT_LONG type;			/* GMT_LINEAR, GMT_LOG10, GMT_POW, or GMT_TIME */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	char label[GMT_LONG_TEXT];	/* Label of the axis */
 	char unit[GMT_TEXT_LEN];	/* Axis unit appended to annotations */
@@ -340,7 +340,7 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */
 	BOOLEAN check_side;		/* TRUE if lon and lat annotations should be on x and y axis only */
 	BOOLEAN horizontal;		/* TRUE is S/N annotations should be parallel to axes */
-	int side[5];			/* Which sides to plot. 2 is annot/draw, 1 is draw, 0 is not */
+	GMT_LONG side[5];		/* Which sides to plot. 2 is annot/draw, 1 is draw, 0 is not */
 };
 
 
@@ -357,11 +357,11 @@ struct GMT_THREE_D {
 	double yshrink[3];	/* Same for y-dir */
 	double tilt[3];		/* Slant of characters due to projection */
 	double sign[4];		/* Used to determine direction of tickmarks etc */
-	int quadrant;		/* quadrant we're looking from */
-	int z_axis;		/* Which z-axis to draw. */
-	int k;			/* For drawing-axis. 0 = plot in x dir, 1 in y */
-	int face[3];		/* Tells if this facet has normal in pos direction */
-	int draw[4];		/* axes to draw */
+	GMT_LONG quadrant;	/* quadrant we're looking from */
+	GMT_LONG z_axis;	/* Which z-axis to draw. */
+	GMT_LONG k;		/* For drawing-axis. 0 = plot in x dir, 1 in y */
+	GMT_LONG face[3];	/* Tells if this facet has normal in pos direction */
+	GMT_LONG draw[4];	/* axes to draw */
 	BOOLEAN fixed;		/* TRUE if we want a given point to be fixed in the projection [for animations] */
 	BOOLEAN world_given;	/* TRUE if a fixed world point was given in -E ..+glon/lat/z */
 	BOOLEAN view_given;	/* TRUE if a fixed projected point was given in -E ..+cx0/y0 */
@@ -370,7 +370,7 @@ struct GMT_THREE_D {
 struct GMT_DATUM {	/* Main parameter for a particular datum */
 	double a, b, f, e_squared, ep_squared;
 	double xyz[3];
-	int ellipsoid_id;	/* Ellipsoid GMT ID number */
+	GMT_LONG ellipsoid_id;	/* Ellipsoid GMT ID number */
 };
 
 struct GMT_DATUM_CONV {

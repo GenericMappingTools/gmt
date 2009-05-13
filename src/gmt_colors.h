@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_colors.h,v 1.32 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_colors.h,v 1.33 2009-05-13 21:06:41 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -63,7 +63,7 @@ struct GMT_LUT {
 	double z_low, z_high, i_dz;
 	int rgb_low[3], rgb_high[3], rgb_diff[3];
 	double hsv_low[3], hsv_high[3], hsv_diff[3];
-	int annot;
+	GMT_LONG annot;
 	BOOLEAN skip;
 	struct GMT_FILL *fill;	/* Use by grdview */
 	char *label;	/* For non-number labels */
@@ -80,8 +80,8 @@ EXTERN_MSC struct GMT_HASH GMT_rgb_hashnode[GMT_N_COLOR_NAMES];	/* Used to trans
 
 EXTERN_MSC struct GMT_LUT *GMT_lut;
 EXTERN_MSC struct GMT_BFN_COLOR GMT_bfn[3];
-EXTERN_MSC int GMT_n_colors;
-EXTERN_MSC int GMT_cpt_flags;
+EXTERN_MSC GMT_LONG GMT_n_colors;
+EXTERN_MSC GMT_LONG GMT_cpt_flags;
 EXTERN_MSC BOOLEAN GMT_gray;		/* TRUE if only grayshades are used */
 EXTERN_MSC BOOLEAN GMT_b_and_w;		/* TRUE if only black OR white is used */
 EXTERN_MSC BOOLEAN GMT_continuous;	/* TRUE if colors change continuously within slice */
@@ -90,6 +90,6 @@ EXTERN_MSC BOOLEAN GMT_cpt_skip;	/* TRUE if current z-slice is to be skipped */
 #ifdef GMT_CPT2	
 EXTERN_MSC BOOLEAN GMT_categorical;	/* TRUE if the CPT applies to categorical data */
 #endif
-EXTERN_MSC void GMT_sample_cpt (double z[], int nz, BOOLEAN continuous, BOOLEAN reverse, int log_mode);
+EXTERN_MSC void GMT_sample_cpt (double z[], GMT_LONG nz, BOOLEAN continuous, BOOLEAN reverse, GMT_LONG log_mode);
 
 #endif /* _GMT_COLORS_H */

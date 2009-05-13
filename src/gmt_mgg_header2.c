@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.29 2008-05-06 20:41:18 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.30 2009-05-13 21:06:42 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -168,7 +168,7 @@ static void swap_header(MGG_GRID_HEADER_2 *header)
    for (i = 0; i < GRD98_N_UNUSED; i++) swap_long(&header->unused[i]);
 }
 
-int GMT_is_mgg2_grid (struct GRD_HEADER *header)
+GMT_LONG GMT_is_mgg2_grid (struct GRD_HEADER *header)
 {	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
@@ -188,7 +188,7 @@ int GMT_is_mgg2_grid (struct GRD_HEADER *header)
 	return (header->type);
 }
 
-int mgg2_read_grd_info (struct GRD_HEADER *header)
+GMT_LONG mgg2_read_grd_info (struct GRD_HEADER *header)
 {
 	FILE			*fp = NULL;
 	MGG_GRID_HEADER_2	mggHeader;
@@ -222,11 +222,11 @@ int mgg2_read_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int mgg2_write_grd_info (struct GRD_HEADER *header)
+GMT_LONG mgg2_write_grd_info (struct GRD_HEADER *header)
 {
 	FILE			*fp;
 	MGG_GRID_HEADER_2	mggHeader;
-	int err;
+	GMT_LONG err;
 	
 	if (!strcmp(header->name, "=")) {
 		fp = GMT_stdout;
@@ -245,7 +245,7 @@ int mgg2_write_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int pad[], BOOLEAN complex)
+GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG pad[], BOOLEAN complex)
 {
 	MGG_GRID_HEADER_2	mggHeader;
 	FILE  *fp     = NULL;
@@ -483,7 +483,7 @@ int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, d
 }
 
 	
-int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {
 	MGG_GRID_HEADER_2	mggHeader;
 	int *k;

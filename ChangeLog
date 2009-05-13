@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.505 2009-05-12 12:41:21 remko Exp $
+	$Id: ChangeLog,v 1.506 2009-05-13 21:06:41 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-13	pwessel
+	* *.[ch]:		Moving to use GMT_LONG for almost all integers.
 
 2009-05-12	remko
 	* gmt_map.c (GMT_UTMzone_to_wesn):	Numerous bug fixes: Did not report bad zone

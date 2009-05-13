@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.183 2009-05-12 04:38:03 guru Exp $
+ *	$Id: gmt.h,v 1.184 2009-05-13 21:06:41 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -89,6 +89,11 @@ extern "C" {
 #include <unistd.h>
 #endif
 
+#ifdef __LP64__
+#define ABS(n) labs(n)
+#else
+#define ABS(n) abs(n)
+#endif
 /*--------------------------------------------------------------------
  *			GMT CONSTANTS MACRO DEFINITIONS
  *--------------------------------------------------------------------*/
@@ -272,7 +277,7 @@ typedef long GMT_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 #endif
 typedef int BOOLEAN;		/* BOOLEAN used for logical variables */
 typedef void (*PFV) ();		/* PFV declares a pointer to a function returning void */
-typedef GMT_LONG (*PFL) ();		/* PFI declares a pointer to a function returning an GMT_LONG */
+typedef GMT_LONG (*PFL) ();	/* PFI declares a pointer to a function returning an GMT_LONG */
 typedef int (*PFI) ();		/* PFI declares a pointer to a function returning an int */
 typedef BOOLEAN (*PFB) ();	/* PFB declares a pointer to a function returning a BOOLEAN */
 typedef double (*PFD) ();	/* PFD declares a pointer to a function returning a double */
@@ -312,22 +317,22 @@ struct GMT_DEFAULTS {
 	/* DO NOT MAKE CHANGES HERE WITHOUT CORRESPONDING CHANGES TO gmt_globals.h !!!!!!!!!!!!!!!!!!! */
 	double annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
 	double annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
-	int annot_font[2];		/* Font for primary and secondary annotations [Helvetica] */
+	GMT_LONG annot_font[2];		/* Font for primary and secondary annotations [Helvetica] */
 	double annot_font_size[2];	/* Font size for primary and secondary annotations in points [14,16] */
 	double annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [0.075] */
 	char basemap_axes[5];		/* Which axes to draw and annotate ["WESN"]  */
 	int basemap_frame_rgb[3];	/* Frame color rgb [(0,0,0) = black] */
-	int basemap_type;		/* Fancy (0) or plain (1) [0] */
+	GMT_LONG basemap_type;		/* Fancy (0) or plain (1) [0] */
 	int background_rgb[3];		/* Color of background [0/0/0] */
 	int foreground_rgb[3];		/* Color of foreground [255/255/255] */
 	int nan_rgb[3];			/* Color of NaNs [0/0/0] */
-	int color_image;		/* 0 = Adobe's colorimage, 1 = Tiles, 2 = RGB-separation */
-	int color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2] */
+	GMT_LONG color_image;		/* 0 = Adobe's colorimage, 1 = Tiles, 2 = RGB-separation */
+	GMT_LONG color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2] */
 	char d_format[GMT_TEXT_LEN];	/* Default double output format [%g] */
-	int degree_format;		/* 0 = <0/360/-90/90>, 1 = <-180/180/-90/90>, 2 = <0/180/0/90>
+	GMT_LONG degree_format;		/* 0 = <0/360/-90/90>, 1 = <-180/180/-90/90>, 2 = <0/180/0/90>
 					   3 = 0E/180E/180W/0W/90S/90N> */
-	int dpi;			/* Dots pr. inch plotter resolution [300] */
-	int ellipsoid;			/* Which ellipsoid to use [0 = GRS 80] */
+	GMT_LONG dpi;			/* Dots pr. inch plotter resolution [300] */
+	GMT_LONG ellipsoid;		/* Which ellipsoid to use [0 = GRS 80] */
 	struct GMT_PEN frame_pen;	/* Pen attributes for map boundary [5] */
 	double frame_width;		/* Thickness of fancy map frame [0.075] */
 	double global_x_scale;		/* Scaling of x just before plotting [1] */
@@ -336,42 +341,42 @@ struct GMT_DEFAULTS {
 	char gridfile_format[GMT_TEXT_LEN];	/* Default grid file format */
 	struct GMT_PEN grid_pen[2];	/* Pen attributes for primary and secondary gridlines [1] */
 	BOOLEAN gridfile_shorthand;	/* Use shorthand suffix notation for embedded grid file formats [FALSE] */
-	int header_font;		/* Font for headers [Helvetica] */
+	GMT_LONG header_font;		/* Font for headers [Helvetica] */
 	double header_font_size;	/* Font size for headers in points [36] */
 	double header_offset;		/* Distance between lowermost annotation (or label) and base of plot title [0.1875] */
 	double hsv_min_saturation;	/* For smallest or most negative intensity [1.0] */
 	double hsv_max_saturation;	/* For largest or most positive intensity [0.1] */
 	double hsv_min_value;		/* For smallest or most negative intensity [0.3] */
 	double hsv_max_value;		/* For largest or most positive intensity [1.0] */
-	int interpolant;		/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
+	GMT_LONG interpolant;		/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	BOOLEAN io_header[2];		/* Input & Output data has header records [FALSE, FALSE] */
-	int n_header_recs;		/* number of header records [0] */
-	int label_font;			/* Font for labels [Helvetica] */
+	GMT_LONG n_header_recs;		/* number of header records [0] */
+	GMT_LONG label_font;		/* Font for labels [Helvetica] */
 	double label_font_size;		/* Font size for labels in points [24] */
 	double label_offset;		/* Distance between lowermost annotation and top of label [0.1125] */
 	double line_step;		/* Maximum straight linesegment length for arcuate lines */
 	double map_scale_factor;	/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */
 	double map_scale_height;	/* Height of map scale drawn on a map [0.075] */
-	int measure_unit;		/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
-	int media;			/* Default paper media [25(Letter)] */
+	GMT_LONG measure_unit;		/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
+	GMT_LONG media;			/* Default paper media [25(Letter)] */
 	BOOLEAN nan_is_gap;		/* Determines what NaNs in input records should mean (beyond skipping the record) */
-	int n_copies;			/* Number of copies pr plot [1] */
-	int oblique_annotation;		/* Controls annotations and tick angles etc. [0] */
+	GMT_LONG n_copies;		/* Number of copies pr plot [1] */
+	GMT_LONG oblique_annotation;	/* Controls annotations and tick angles etc. [0] */
 	int page_rgb[3];		/* Color of the page [255/255/255 white] */
 	BOOLEAN portrait;		/* Orientation of page [FALSE = Landscape, TRUE = Portrait] */
 	double paper_width[2];		/* Width and height of paper to plot on in points [Letter or A4] */
 	double polar_cap[2];		/* Latitude of polar cap and delta_lon for gridline spacing [85/90] */
 	BOOLEAN ps_colormode;		/* 2 writes HSV in PostScript, 1 writes CMYK, 0 uses RGB [0] */
-	int ps_compress;		/* Compression of PostScript images: 0 = no, 1 = RLE, 2 = LZW [0] */
+	GMT_LONG ps_compress;		/* Compression of PostScript images: 0 = no, 1 = RLE, 2 = LZW [0] */
 	BOOLEAN ps_heximage;		/* TRUE gives hex ps output image, FALSE gives binary image [TRUE] */
-	int ps_line_cap;		/* butt|round|square [butt] */
-	int ps_line_join;		/* miter|arc|bevel [miter] */
-	int ps_miter_limit;		/* acute angle (degrees) beyond which we do a bevel join [-] */
+	GMT_LONG ps_line_cap;		/* butt|round|square [butt] */
+	GMT_LONG ps_line_join;		/* miter|arc|bevel [miter] */
+	GMT_LONG ps_miter_limit;	/* acute angle (degrees) beyond which we do a bevel join [-] */
 	BOOLEAN ps_verbose;		/* TRUE writes comments in ps output, FALSE gives no comments [TRUE] */
 	double tick_length;		/* Length of tickmarks [0.075] */
 	struct GMT_PEN tick_pen;	/* Pen attributes for tickmarks [2] */
 	BOOLEAN unix_time;		/* Plot time and map projection on map [FALSE] */
-	int unix_time_just;		/* Justification of the GMT timestamp box [1 (BL)] */
+	GMT_LONG unix_time_just;	/* Justification of the GMT timestamp box [1 (BL)] */
 	double unix_time_pos[2];	/* Where to plot timestamp relative to origin */
 	char unix_time_format[GMT_LONG_TEXT];	/* Specify the format for writing time stamps (see strftime) */
 	double vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
@@ -382,11 +387,11 @@ struct GMT_DEFAULTS {
 	double x_origin;		/* x-origin of plot, i.e. where lower left corner plots on paper [1] */
 	double y_origin;		/* y-origin of plot, i.e. where lower left corner plots on paper [1] */
 	BOOLEAN xy_toggle[2];		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE,FALSE] */
-	int y_axis_type;		/* Select y-axis with horizontal (0) or vertical (1) annotations  [0] */
+	GMT_LONG y_axis_type;		/* Select y-axis with horizontal (0) or vertical (1) annotations  [0] */
 	struct ELLIPSOID {	/* Information about a particular ellipsoid */
 		/* Table taken from Snyder "Map projection - a working manual", p 12 Table 1 */
 		char name[GMT_TEXT_LEN];
-		int date;
+		GMT_LONG date;
 		double eq_radius;
 		double flattening;
 	} ref_ellipsoid[GMT_N_ELLIPSOIDS];	/* Ellipsoid parameters */
@@ -409,15 +414,15 @@ struct GMT_DEFAULTS {
 	double time_interval_fraction;	/* How much of a partial interval is needed in order to annotate it */
 	BOOLEAN want_leap_seconds;	/* Do we need to worry about leap seconds? */
 	struct GMT_TIME_SYSTEM time_system;	/* All the information about the selected time system */
-	int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
+	GMT_LONG time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
 	char time_language[GMT_TEXT_LEN];	/* Language file for time support */
-	int Y2K_offset_year;		/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
+	GMT_LONG Y2K_offset_year;		/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
 	char field_delimiter[8];	/* Separator between output ascii data columns [tab] */
 	enum gmt_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } degree_symbol;
 	struct gmt_encoding
 	{
 		char name[GMT_TEXT_LEN];
-		int code[gmt_lastsym]; /* Codes for symbols we print. */
+		GMT_LONG code[gmt_lastsym]; /* Codes for symbols we print. */
 	} encoding;
 	BOOLEAN history;		/* TRUE to pass information via .gmtdefaults4 files */
 };
@@ -434,15 +439,15 @@ struct GMT_PS {	/* Holds the current settings that affect PS generation */
 	BOOLEAN comments;			/* TRUE to write comments to PS file [FALSE] */
 	BOOLEAN clip_on;			/* TRUE if clipping will extend beyond current process */
 	BOOLEAN clip_off;			/* TRUE if we terminate clipping initiated in a prior process */
-	int n_copies;				/* Result of -c [gmtdefs.n_copies] */
-	int colormode;				/* 0 (RGB), 1 (CMYK), 2 (HSV) */
-	int compress;				/* 0 (none), 1 (RLE), 2 (LZW) */
-	int line_cap;				/* 0 (butt), 1 (round), 2 (square) */
-	int line_join;				/* 0 (miter), 1 (round), 2 (bevel) */
-	int miter_limit;			/* 0-180 degrees as whole integer */
-	int dpi;				/* Plotter resolution in dots-per-inch */
+	GMT_LONG n_copies;			/* Result of -c [gmtdefs.n_copies] */
+	GMT_LONG colormode;			/* 0 (RGB), 1 (CMYK), 2 (HSV) */
+	GMT_LONG compress;			/* 0 (none), 1 (RLE), 2 (LZW) */
+	GMT_LONG line_cap;			/* 0 (butt), 1 (round), 2 (square) */
+	GMT_LONG line_join;			/* 0 (miter), 1 (round), 2 (bevel) */
+	GMT_LONG miter_limit;			/* 0-180 degrees as whole integer */
+	GMT_LONG dpi;				/* Plotter resolution in dots-per-inch */
 	int page_rgb[3];			/* Array with Color of page (paper) */
-	int unix_time_just;			/* Justification of the GMT time stamp box */
+	GMT_LONG unix_time_just;		/* Justification of the GMT time stamp box */
 	double paper_width[2];			/* Physical width and height of paper used in points */
 	double x_origin, y_origin;		/* Result of -X -Y [gmtdefs.x|y_origin] */
 	double x_scale, y_scale;		/* Copy of gmtdefs.global_x|y_scale */
@@ -453,15 +458,15 @@ struct GMT_PS {	/* Holds the current settings that affect PS generation */
 
 struct GMT_HASH {	/* Used to related keywords to gmtdefaults entry */
 	struct GMT_HASH *next;
-	int id;
+	GMT_LONG id;
 	char *key;
 };
 
 struct GMT_FILL {	/* Holds fill attributes */
 	BOOLEAN use_pattern;	/* TRUE if pattern rather than rgb is set */
 	int rgb[3];		/* Chosen color if no pattern */
-	int pattern_no;		/* Number of predefined pattern, if set */
-	int dpi;		/* Desired dpi of image building-block */
+	GMT_LONG pattern_no;	/* Number of predefined pattern, if set */
+	GMT_LONG dpi;		/* Desired dpi of image building-block */
 	BOOLEAN inverse;	/* TRUE if 1-bit pattern should be reversed */
 	int f_rgb[3], b_rgb[3];	/* Colors applied to unset and set bits in 1-bit image */
 	char pattern[BUFSIZ];	/* Full filename of user-define raster */
@@ -471,8 +476,8 @@ struct GMT_FILL {	/* Holds fill attributes */
 struct GMT_XINGS {
         double xx[2], yy[2];    /* Cartesian coordinates of intersection with map boundary */
         double angle[2];        /* Angles of intersection */
-        int sides[2];           /* Side id of intersection */
-        int nx;                 /* Number of intersections (1 or 2) */
+        GMT_LONG sides[2];	/* Side id of intersection */
+        GMT_LONG nx;		/* Number of intersections (1 or 2) */
 };
 
 struct GMT_MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
@@ -506,7 +511,7 @@ struct GMT_MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and ps
 	BOOLEAN plot;		/* TRUE if we want to draw the rose */
 	BOOLEAN fancy;		/* TRUE for a fancy map rose */
 	BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
-	int kind;		/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
+	GMT_LONG kind;		/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
 	char label[4][GMT_TEXT_LEN];	/* User-changable labels for W, E, S, N point */
 	char dlabel[GMT_LONG_TEXT];	/* Magnetic declination label */
 };
@@ -524,7 +529,7 @@ EXTERN_MSC struct GMT_CTRL *GMT;
 
 EXTERN_MSC struct GMT_DEFAULTS gmtdefs;
 
-EXTERN_MSC int GMT_N_FONTS;			/* Number of fonts loaded from $GMT_SHAREDIR/pslib */
+EXTERN_MSC GMT_LONG GMT_N_FONTS;		/* Number of fonts loaded from $GMT_SHAREDIR/pslib */
 EXTERN_MSC char *GMT_SHAREDIR;			/* Points to the GMT the shared data files */
 EXTERN_MSC char *GMT_HOMEDIR;			/* Points to the GMT user home directory [~] */
 EXTERN_MSC char *GMT_USERDIR;			/* Points to the GMT user .gmt directory [~/.gmt] */
@@ -552,14 +557,14 @@ EXTERN_MSC int GMT_no_rgb[];
 
 
 EXTERN_MSC FILE *GMT_stdin, *GMT_stdout;
-EXTERN_MSC PFI GMT_input, GMT_output, GMT_input_ascii, GMT_output_ascii;
+EXTERN_MSC PFL GMT_input, GMT_output, GMT_input_ascii, GMT_output_ascii;
 EXTERN_MSC double GMT_curr_rec[BUFSIZ], GMT_prev_rec[BUFSIZ];
-EXTERN_MSC int GMT_n_file_suffix;
-EXTERN_MSC int *GMT_file_id;
+EXTERN_MSC GMT_LONG GMT_n_file_suffix;
+EXTERN_MSC GMT_LONG *GMT_file_id;
 EXTERN_MSC double *GMT_file_scale, *GMT_file_offset, *GMT_file_nan;
 EXTERN_MSC char **GMT_file_suffix;
-EXTERN_MSC int GMT_pad[4];
-EXTERN_MSC int GMT_inc_code[2];	/* For adjusting -R -I */
+EXTERN_MSC GMT_LONG GMT_pad[4];
+EXTERN_MSC GMT_LONG GMT_inc_code[2];	/* For adjusting -R -I */
 EXTERN_MSC void nc_nopipe (char *file);
 
 /*--------------------------------------------------------------------*/
@@ -573,11 +578,11 @@ EXTERN_MSC double *GMT_y_plot;
 EXTERN_MSC int *GMT_pen;			/* Pen (3 = up, 2 = down) for these points */
 EXTERN_MSC GMT_LONG GMT_n_plot;			/* Number of such points */
 EXTERN_MSC GMT_LONG GMT_n_alloc;		/* Current size of allocated arrays */
-EXTERN_MSC int GMT_x_status_new;		/* Tells us what quadrant old and new points are in */
-EXTERN_MSC int GMT_y_status_new;
-EXTERN_MSC int GMT_x_status_old;
-EXTERN_MSC int GMT_y_status_old;
-EXTERN_MSC int GMT_corner;
+EXTERN_MSC GMT_LONG GMT_x_status_new;		/* Tells us what quadrant old and new points are in */
+EXTERN_MSC GMT_LONG GMT_y_status_new;
+EXTERN_MSC GMT_LONG GMT_x_status_old;
+EXTERN_MSC GMT_LONG GMT_y_status_old;
+EXTERN_MSC GMT_LONG GMT_corner;
 EXTERN_MSC BOOLEAN GMT_world_map;		/* TRUE if map has 360 degrees of longitude range */
 EXTERN_MSC BOOLEAN GMT_world_map_tm;		/* TRUE if GMT_TM map is global? */
 EXTERN_MSC BOOLEAN GMT_on_border_is_outside;	/* TRUE if point exactly on the map border should be considered outside */
@@ -585,22 +590,22 @@ EXTERN_MSC double GMT_map_width;		/* Full width of this world map */
 EXTERN_MSC double GMT_map_height;		/* Full height of this world map */
 EXTERN_MSC double GMT_half_map_size;		/* Half width of this world map */
 EXTERN_MSC double GMT_half_map_height;		/* Half height of this world map */
-EXTERN_MSC PFI GMT_outside;			/* pointer to function checking if a lon/lat point is outside map */
-EXTERN_MSC PFI GMT_crossing;			/* pointer to functions returning crossover point at boundary */
-EXTERN_MSC PFI GMT_overlap;			/* pointer to function checking for overlap between 2 regions */
-EXTERN_MSC PFI GMT_map_clip;			/* pointer to functions that clip a polygon to fit inside map */
+EXTERN_MSC PFL GMT_outside;			/* pointer to function checking if a lon/lat point is outside map */
+EXTERN_MSC PFL GMT_crossing;			/* pointer to functions returning crossover point at boundary */
+EXTERN_MSC PFL GMT_overlap;			/* pointer to function checking for overlap between 2 regions */
+EXTERN_MSC PFL GMT_map_clip;			/* pointer to functions that clip a polygon to fit inside map */
 EXTERN_MSC PFD GMT_left_edge, GMT_right_edge;	/* pointer to functions that returns the left,right edge of map */
 EXTERN_MSC PFD GMT_distance_func;		/* pointer to function returning distance between two points points */
 EXTERN_MSC BOOLEAN GMT_z_periodic;		/* TRUE if grid values are 0-360 degrees (phases etc) */
-EXTERN_MSC PFI GMT_wrap_around_check;		/* Does x or y wrap checks */
-EXTERN_MSC PFI GMT_map_jump;			/* TRUE if we jump in x or y */
+EXTERN_MSC PFL GMT_wrap_around_check;		/* Does x or y wrap checks */
+EXTERN_MSC PFL GMT_map_jump;			/* TRUE if we jump in x or y */
 EXTERN_MSC PFB GMT_will_it_wrap;		/* TRUE if consecutive points indicate wrap */
 EXTERN_MSC PFB GMT_this_point_wraps;		/* Used in above */
 EXTERN_MSC PFV GMT_get_crossings;		/* Returns map crossings in x or y */
-EXTERN_MSC PFI GMT_truncate;			/* Truncate polygons agains boundaries */
+EXTERN_MSC PFL GMT_truncate;			/* Truncate polygons agains boundaries */
 EXTERN_MSC BOOLEAN GMT_meridian_straight;	/* TRUE if meridians plot as straight lines */
 EXTERN_MSC BOOLEAN GMT_parallel_straight;	/* TRUE if parallels plot as straight lines */
-EXTERN_MSC int GMT_3D_mode;			/* Determines if we draw fore and/or back 3-D box lines */
+EXTERN_MSC GMT_LONG GMT_3D_mode;		/* Determines if we draw fore and/or back 3-D box lines */
 EXTERN_MSC char *GMT_plot_format[3][2];		/* Keeps the 6 formats for dd:mm:ss plot output */
 EXTERN_MSC GMT_LONG GMT_n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
 EXTERN_MSC GMT_LONG GMT_n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
@@ -614,10 +619,10 @@ EXTERN_MSC double GMT_dlat;			/* Steps taken in latitude along gridlines (gets r
 EXTERN_MSC struct GMT_MAP_PROJECTIONS project_info;
 EXTERN_MSC struct GMT_THREE_D z_project;
 EXTERN_MSC struct GMT_DATUM_CONV GMT_datum;	/*	For datum conversions */
-EXTERN_MSC PFI GMT_forward, GMT_inverse;	/*	Pointers to the selected mapping functions */
-EXTERN_MSC PFI GMT_x_forward, GMT_x_inverse;	/*	Pointers to the selected linear functions */
-EXTERN_MSC PFI GMT_y_forward, GMT_y_inverse;	/*	Pointers to the selected linear functions */
-EXTERN_MSC PFI GMT_z_forward, GMT_z_inverse;	/*	Pointers to the selected linear functions */
+EXTERN_MSC PFL GMT_forward, GMT_inverse;	/*	Pointers to the selected mapping functions */
+EXTERN_MSC PFL GMT_x_forward, GMT_x_inverse;	/*	Pointers to the selected linear functions */
+EXTERN_MSC PFL GMT_y_forward, GMT_y_inverse;	/*	Pointers to the selected linear functions */
+EXTERN_MSC PFL GMT_z_forward, GMT_z_inverse;	/*	Pointers to the selected linear functions */
 EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts timestring to secs */
 
 #include "gmt_common.h"		/* For holding the GMT common option settings */
@@ -648,7 +653,7 @@ EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts time
    In between we allocate 50% more than what we have, subject to the max limit.
 */
 
-EXTERN_MSC size_t GMT_min_meminc, GMT_max_meminc;
+EXTERN_MSC GMT_LONG GMT_min_meminc, GMT_max_meminc;
 
 #ifdef DEBUG
 #define GMT_memory(array,n,size,program) GMT_memory_func(array,n,size,program,__FILE__,__LINE__)

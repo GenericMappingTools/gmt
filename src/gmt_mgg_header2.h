@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.h,v 1.8 2008-04-03 20:01:18 guru Exp $
+/*	$Id: gmt_mgg_header2.h,v 1.9 2009-05-13 21:06:42 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -38,9 +38,9 @@ typedef struct {
 	int    unused[GRD98_N_UNUSED];	/* Unused 4byte ints */
 } MGG_GRID_HEADER_2;
 
-int mgg2_read_grd_info (struct GRD_HEADER *header);
-int mgg2_write_grd_info (struct GRD_HEADER *header);
-int mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
-int mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
+GMT_LONG mgg2_read_grd_info (struct GRD_HEADER *header);
+GMT_LONG mgg2_write_grd_info (struct GRD_HEADER *header);
+GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex);
+GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex);
 
 #endif

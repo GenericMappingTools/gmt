@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.80 2009-03-12 20:28:12 remko Exp $
+ *	$Id: gmt_nc.c,v 1.81 2009-05-13 21:06:42 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,13 +46,13 @@
 #define GMT_CDF_CONVENTION    "COARDS/CF-1.0"	/* grd files are COARDS-compliant */
 #include "gmt.h"
 
-EXTERN_MSC int GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
-int GMT_nc_grd_info (struct GRD_HEADER *header, char job);
+EXTERN_MSC GMT_LONG GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job);
+GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 void GMT_nc_get_units (int ncid, int varid, char *name_units);
 void GMT_nc_put_units (int ncid, int varid, char *name_units);
-void GMT_nc_check_step (int n, double *x, char *varname, char *file);
+void GMT_nc_check_step (GMT_LONG n, double *x, char *varname, char *file);
 
-int GMT_is_nc_grid (struct GRD_HEADER *header)
+GMT_LONG GMT_is_nc_grid (struct GRD_HEADER *header)
 {	/* Returns type 18 (=nf) for new NetCDF grid,
 	   type 10 (=cf) for old NetCDF grids and -1 upon error */
 	int ncid, z_id = -1, j = 0, id = 13, nvars, ndims, err;
@@ -95,24 +95,24 @@ int GMT_is_nc_grid (struct GRD_HEADER *header)
 	return (id);
 }
 
-int GMT_nc_read_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_nc_read_grd_info (struct GRD_HEADER *header)
 {
 	return (GMT_nc_grd_info (header, 'r'));
 }
 
-int GMT_nc_update_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_nc_update_grd_info (struct GRD_HEADER *header)
 {
 	return (GMT_nc_grd_info (header, 'u'));
 }
 
-int GMT_nc_write_grd_info (struct GRD_HEADER *header)
+GMT_LONG GMT_nc_write_grd_info (struct GRD_HEADER *header)
 {
 	return (GMT_nc_grd_info (header, 'w'));
 }
 
-int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
+GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 {
-	int j, err;
+	GMT_LONG j, err;
 	double dummy[2], *xy = VNULL;
 	char varname[GRD_UNIT_LEN], coord[8];
 	nc_type z_type, i_type;
@@ -402,7 +402,7 @@ int GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	return (GMT_NOERROR);
 }
 
-int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -420,7 +420,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	int ncid, ndims;
 	GMT_LONG first_col, last_col, first_row, last_row;
 	GMT_LONG i, j, width_in, width_out, height_in, i_0_out, inc = 1, err;
-	int *k;
+	GMT_LONG *k;
 	size_t ij, kk;	/* To allow 64-bit addressing on 64-bit systems */
 	BOOLEAN check;
 	float *tmp = VNULL;
@@ -498,7 +498,7 @@ int GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e,
 	return (GMT_NOERROR);
 }
 
-int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex)
+GMT_LONG GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0]
@@ -513,7 +513,8 @@ int GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e
 	GMT_LONG first_col, last_col, first_row, last_row;
 	size_t ij;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp_f = VNULL;
-	int *tmp_i = VNULL, *k;
+	int *tmp_i = VNULL;
+	GMT_LONG *k;
 	double limit[2] = {FLT_MIN, FLT_MAX}, value;
 	nc_type z_type;
 
@@ -673,10 +674,10 @@ void GMT_nc_put_units (int ncid, int varid, char *name_units)
 	if (units[0]) nc_put_att_text (ncid, varid, "units", strlen(units), units);
 }
 
-void GMT_nc_check_step (int n, double *x, char *varname, char *file)
+void GMT_nc_check_step (GMT_LONG n, double *x, char *varname, char *file)
 {	/* Check if all steps in range are the same (within 2%) */
 	double step, step_min, step_max;
-	int i;
+	GMT_LONG i;
 	if (n < 2) return;
 	step_min = step_max = x[1]-x[0];
 	for (i = 2; i < n; i++) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.67 2009-01-09 04:02:33 guru Exp $
+ *	$Id: gmt_stat.c,v 1.68 2009-05-13 21:06:42 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -89,24 +89,24 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-int GMT_inc_beta (double a, double b, double x, double *ibeta);
-int GMT_ln_gamma_r (double x, double *lngam);
-int GMT_f_test_new (double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, int iside);
-int GMT_student_t_a (double t, GMT_LONG n, double *prob);
+GMT_LONG GMT_inc_beta (double a, double b, double x, double *ibeta);
+GMT_LONG GMT_ln_gamma_r (double x, double *lngam);
+GMT_LONG GMT_f_test_new (double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, GMT_LONG iside);
+GMT_LONG GMT_student_t_a (double t, GMT_LONG n, double *prob);
 double GMT_ln_gamma (double xx);
 double GMT_cf_beta (double a, double b, double x);
 double GMT_bei (double x);
 double GMT_kei (double x);
 double GMT_ber (double x);
 double GMT_ker (double x);
-double GMT_plm (int l, int m, double x);
+double GMT_plm (GMT_LONG l, GMT_LONG m, double x);
 double GMT_factorial (GMT_LONG n);
 double GMT_i0 (double x);
 double GMT_i1 (double x);
-double GMT_in (int n, double x);
+double GMT_in (GMT_LONG n, double x);
 double GMT_k0 (double x);
 double GMT_k1 (double x);
-double GMT_kn (int n, double x);
+double GMT_kn (GMT_LONG n, double x);
 double GMT_dilog (double x);
 double GMT_ln_gamma (double xx);		/*	Computes natural log of the gamma function	*/
 double GMT_erfinv (double y);
@@ -138,7 +138,7 @@ double GMT_yn (int n, double x);
 void sincos (double a, double *s, double *c);
 #endif
 
-int	GMT_f_test_new (double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, int iside)
+GMT_LONG	GMT_f_test_new (double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, GMT_LONG iside)
 {
 	/* Given chisq1 and chisq2, random variables distributed as chi-square
 		with nu1 and nu2 degrees of freedom, respectively, except that
@@ -189,7 +189,7 @@ int	GMT_f_test_new (double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, do
 }
 
 
-int	GMT_f_test (double chisq1, int nu1, double chisq2, int nu2, double *prob)
+GMT_LONG	GMT_f_test (double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob)
 {
 	/* Routine to compute the probability that
 		two variances are the same.
@@ -241,7 +241,7 @@ int	GMT_f_test (double chisq1, int nu1, double chisq2, int nu2, double *prob)
 	return(0);
 }
 
-int	GMT_sig_f (double chi1, GMT_LONG n1, double chi2, GMT_LONG n2, double level, double *prob)
+GMT_LONG	GMT_sig_f (double chi1, GMT_LONG n1, double chi2, GMT_LONG n2, double level, double *prob)
 {
 	/* Returns TRUE if chi1/n1 significantly less than chi2/n2
 		at the level level.  Returns FALSE if:
@@ -250,7 +250,7 @@ int	GMT_sig_f (double chi1, GMT_LONG n1, double chi2, GMT_LONG n2, double level,
 
 			Changed 12 August 1999 to use GMT_f_test_new()  */
 
-	int	trouble;
+	GMT_LONG	trouble;
 
 	trouble = GMT_f_test_new (chi1, n1, chi2, n2, prob, -1);
 	if (trouble) return(0);
@@ -259,7 +259,7 @@ int	GMT_sig_f (double chi1, GMT_LONG n1, double chi2, GMT_LONG n2, double level,
 
 /* --------- LOWER LEVEL FUNCTIONS ------- */
 
-int	GMT_inc_beta (double a, double b, double x, double *ibeta)
+GMT_LONG	GMT_inc_beta (double a, double b, double x, double *ibeta)
 {
 	double	bt, gama, gamb, gamab;
 
@@ -314,7 +314,7 @@ int	GMT_inc_beta (double a, double b, double x, double *ibeta)
 	return(-1);
 }
 
-int	GMT_ln_gamma_r(double x, double *lngam)
+GMT_LONG	GMT_ln_gamma_r(double x, double *lngam)
 {
 	/* Get natural logrithm of Gamma(x), x > 0.
 		To maintain full accuracy, this
@@ -362,7 +362,7 @@ double	GMT_ln_gamma (double xx)
 	static double	stp = 2.50662827465, half = 0.5, one = 1.0, fpf = 5.5;
 	double	x, tmp, ser;
 
-	int	i;
+	GMT_LONG	i;
 
 	x = xx - one;
 	tmp = x + fpf;
@@ -379,14 +379,14 @@ double	GMT_cf_beta (double a, double b, double x)
 {
 	/* Continued fraction method called by GMT_inc_beta.  */
 
-	static int	itmax = 100;
+	static GMT_LONG	itmax = 100;
 	static double	eps = 3.0e-7;
 
 	double	am = 1.0, bm = 1.0, az = 1.0;
 	double	qab, qap, qam, bz, em, tem, d;
 	double	ap, bp, app, bpp, aold;
 
-	int	m = 0;
+	GMT_LONG	m = 0;
 
 	qab = a + b;
 	qap = a + 1.0;
@@ -422,7 +422,7 @@ void	GMT_gamma_ser (double *gamser, double a, double x, double *gln) {
 	/* Returns the incomplete gamma function P(a,x) by series rep.
 	 * Press et al, gser() */
 
-	int n;
+	GMT_LONG n;
 	double sum, del, ap;
 
 	GMT_ln_gamma_r (a, gln);
@@ -453,7 +453,7 @@ void	GMT_gamma_ser (double *gamser, double a, double x, double *gln) {
 void	GMT_gamma_cf (double *gammcf, double a, double x, double *gln) {
 	/* Returns the incomplete gamma function P(a,x) by continued fraction.
 	 * Press et al, gcf() */
-	int n;
+	GMT_LONG n;
 	double gold = 0.0, g, fac = 1.0, b1 = 1.0;
 	double b0 = 0.0, anf, ana, an, a1, a0 = 1.0;
 
@@ -727,11 +727,11 @@ double GMT_i1 (double x)
 	return (res);
 }
 
-double GMT_in (int n, double x)
+double GMT_in (GMT_LONG n, double x)
 {
 	/* Modified Bessel function In(x) */
 
-	int j, m, IACC = 40;
+	GMT_LONG j, m, IACC = 40;
 	double res, tox, bip, bi, bim;
 	double BIGNO = 1.0e10, BIGNI = 1.0e-10;
 
@@ -797,11 +797,11 @@ double GMT_k1 (double x)
 	return (res);
 }
 
-double GMT_kn (int n, double x)
+double GMT_kn (GMT_LONG n, double x)
 {
 	/* Modified Bessel function Kn(x) */
 
-	int j;
+	GMT_LONG j;
 	double bkm, bk, bkp, tox;
 
 	if (n == 0) return (GMT_k0 (x));
@@ -819,12 +819,12 @@ double GMT_kn (int n, double x)
 	return (bk);
 }
 
-double GMT_plm (int l, int m, double x)
+double GMT_plm (GMT_LONG l, GMT_LONG m, double x)
 {
 	/* Unnormalized associated Legendre polynomial of degree l and order m, including
 	 * Condon-Shortley phase (-1)^m */
 	double fact, pll = 0, pmm, pmmp1, somx2;
-	int i, ll;
+	GMT_LONG i, ll;
 
 	/* x is cosine of colatitude and must be -1 <= x <= +1 */
 	if (fabs(x) > 1.0) {
@@ -860,7 +860,7 @@ double GMT_plm (int l, int m, double x)
 	return (pll);
 }
 
-double GMT_plm_bar (int l, int m, double x, BOOLEAN ortho)
+double GMT_plm_bar (GMT_LONG l, GMT_LONG m, double x, BOOLEAN ortho)
 {
 	/* This function computes the normalized associated Legendre function of x for degree
 	 * l and order m. u must be in the range [-1;1] and 0 <= |m| <= l.
@@ -897,7 +897,7 @@ double GMT_plm_bar (int l, int m, double x, BOOLEAN ortho)
 	 * recursive computation of very high degree and order normalised associated Legendre functions.
 	 * Journal of Geodesy, 76, 279-299, 2002. doi:10.1007/s00190-002-0216-2.
 	 */
-	int i;
+	GMT_LONG i;
 	BOOLEAN csphase = FALSE;
 	double scalef=1.0e280, u, r, pmm, pmm0, pmm1, pmm2;
 
@@ -1130,7 +1130,7 @@ static double q2[5] = {1.872952849923460, 5.279051029514284e-01,
 #if HAVE_ERF == 0
 double GMT_erf (double y)
 {
-	int i, sign = 1;
+	GMT_LONG i, sign = 1;
 	double x, res, xsq, xnum, xden, xi;
 
 	x = y;
@@ -1184,7 +1184,7 @@ double GMT_erf (double y)
 #if HAVE_ERFC == 0
 double GMT_erfc (double y)
 {
-	int i, sign = 1;
+	GMT_LONG i, sign = 1;
 	double x, res, xsq, xnum, xden, xi;
 
 	x = y;
@@ -1241,7 +1241,7 @@ double GMT_erfc (double y)
 
 #if HAVE_STRDUP == 0
 char	*GMT_strdup (const char *s) {
-	int n;
+	GMT_LONG n;
 	char *p;
 
 	n = strlen (s) + 1;
@@ -1281,7 +1281,7 @@ double	GMT_strtod (const char *s, char **ends) {
 
 	char	*t, savechar;
 	double	x = 0.0;
-	int	i, nsign[2], nradix[2], nexp, ndigits, error;
+	GMT_LONG	i, nsign[2], nradix[2], nexp, ndigits, error;
 	BOOLEAN inside = FALSE;
 
 	t = (char *)s;
@@ -1346,7 +1346,7 @@ double	GMT_strtod (const char *s, char **ends) {
 }
 #endif
 
-int     GMT_f_q (double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob)
+GMT_LONG     GMT_f_q (double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob)
 {
 	/* Routine to compute Q(F, nu1, nu2) = 1 - P(F, nu1, nu2), where nu1
 		and nu2 are positive integers, chisq1 and chisq2 are random
@@ -1403,7 +1403,7 @@ int     GMT_f_q (double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, doubl
 	return (0);
 }
 
-int	GMT_student_t_a(double t, GMT_LONG n, double *prob)
+GMT_LONG	GMT_student_t_a(double t, GMT_LONG n, double *prob)
 {
 	/* Probability integral called A(t,n) by Abramowitz &
 	Stegun for the student's t distribution with n degrees
@@ -2128,7 +2128,7 @@ double	GMT_atanh (double x) {
 
 #endif
 
-int GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_initial, double *med)
+GMT_LONG GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_initial, double *med)
 {
 	double	lower_bound, upper_bound, m_guess, t_0, t_1, t_middle;
 	double	lub, glb, xx, temp;
@@ -2237,10 +2237,10 @@ int GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_initia
 	return (iteration);
 }
 
-int GMT_mode (double *x, GMT_LONG n, GMT_LONG j, int sort, int mode_selection, int *n_multiples, double *mode_est)
+GMT_LONG GMT_mode (double *x, GMT_LONG n, GMT_LONG j, GMT_LONG sort, GMT_LONG mode_selection, GMT_LONG *n_multiples, double *mode_est)
 {
 	GMT_LONG	i, istop;
-	int multiplicity;
+	GMT_LONG multiplicity;
 	double	mid_point_sum = 0.0, length, short_length = DBL_MAX, this_mode;
 
 	if (n == 0) return (0);
@@ -2292,7 +2292,7 @@ int GMT_mode (double *x, GMT_LONG n, GMT_LONG j, int sort, int mode_selection, i
 	return (0);
 }
 
-int GMT_mode_f (float *x, GMT_LONG n, GMT_LONG j, int sort, int mode_selection, int *n_multiples, double *mode_est)
+GMT_LONG GMT_mode_f (float *x, GMT_LONG n, GMT_LONG j, GMT_LONG sort, GMT_LONG mode_selection, GMT_LONG *n_multiples, double *mode_est)
 {
 	GMT_LONG	i, istop;
 	GMT_LONG multiplicity;
@@ -2510,7 +2510,7 @@ void GMT_getmad_f_BROKEN (float *x, GMT_LONG n, double location, double *scale)
 	*scale = (n%2) ? (1.4826 * error) : (0.7413 * (error + last_error));
 }
 
-double GMT_extreme (double x[], GMT_LONG n, double x_default, int kind, int way)
+double GMT_extreme (double x[], GMT_LONG n, double x_default, GMT_LONG kind, GMT_LONG way)
 {
 	/* Returns the extreme value in the x array according to:
 	*  kind: -1 means only consider negative values.
@@ -2537,7 +2537,7 @@ double GMT_extreme (double x[], GMT_LONG n, double x_default, int kind, int way)
 	return ((k) ? x_select : x_default);
 }
 
-int GMT_chebyshev (double x, int n, double *t)
+GMT_LONG GMT_chebyshev (double x, GMT_LONG n, double *t)
 {
 	/* Calculates the n'th Chebyshev polynomial at x */
 
@@ -2573,7 +2573,7 @@ int GMT_chebyshev (double x, int n, double *t)
 	return (GMT_NOERROR);
 }
 
-double GMT_corrcoeff (double *x, double *y, GMT_LONG n, int mode)
+double GMT_corrcoeff (double *x, double *y, GMT_LONG n, GMT_LONG mode)
 {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
@@ -2608,7 +2608,7 @@ double GMT_corrcoeff (double *x, double *y, GMT_LONG n, int mode)
 	return (r);
 }
 
-double GMT_corrcoeff_f (float *x, float *y, GMT_LONG n, int mode)
+double GMT_corrcoeff_f (float *x, float *y, GMT_LONG n, GMT_LONG mode)
 {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
@@ -2727,7 +2727,7 @@ double GMT_psi (double zz[], double p[])
 			-0.21026444172410488319e-3, 0.21743961811521264320e-3, -0.16431810653676389022e-3,
 			0.84418223983852743293e-4, -0.26190838401581408670e-4, 0.36899182659531622704e-5};
 	double z[2], g[2], dx[2], dd[2], d[2], n[2], gg[2], f[2], x0, A[2], B[2], C[2], sx, cx, e;
-	int k;
+	GMT_LONG k;
 
 	if (zz[IM] == 0.0 && rint(zz[RE]) == zz[RE] && zz[RE] <= 0.0) {
 		if (p) { p[RE] = GMT_d_NaN; p[IM] = 0.0;}
@@ -2782,7 +2782,7 @@ double GMT_psi (double zz[], double p[])
 #define PV_IM 1
 #define QV_RE 2
 #define QV_IM 3
-void GMT_PvQv (double x, double v_ri[], double pq[], int *iter)
+void GMT_PvQv (double x, double v_ri[], double pq[], GMT_LONG *iter)
 {
 	/* Here, -1 <= x <= +1, v_ri is an imaginary number [r,i], and we return
 	 * the real amd imaginary parts of Pv(x) and Qv(x) in the pq array.

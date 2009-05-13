@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.16 2009-01-09 04:02:35 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.17 2009-05-13 21:06:43 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,8 +47,9 @@ void *get_memory (void *prev_addr, int n, size_t size, char *progname);
 int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp_out;
-	int	n_id, n_out, n, k, verbose = FALSE, *x, *y, *index;
+	int	n_id, n_out, n, k, verbose = FALSE, *index;
 	int	n_tot_in, n_tot_out, n_use, n_read, flip, level, version, greenwich, src;
+	int *x, *y;
 	double	redux, redux2, tolerance = 0.0;
 	struct	GSHHS h;
 	struct	POINT p;

@@ -1,4 +1,4 @@
-/*	$Id: utilvelo.c,v 1.10 2009-05-08 14:51:14 remko Exp $
+/*	$Id: utilvelo.c,v 1.11 2009-05-13 21:06:43 guru Exp $
  *    Copyright (c) 1996-2009 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -140,7 +140,7 @@ void trace_ellipse (double angle, double major, double minor, GMT_LONG npoints, 
     double phi = 0.;
     double sd, cd, s, c;
 
-    int i;
+    GMT_LONG i;
 
     sincos (angle*M_PI/180., &sd, &cd);
 
@@ -204,7 +204,7 @@ void ellipse_convert (double sigx,double sigy,double rho,double conrad,double *e
 }
 
 /********************************************************************/
-void paint_ellipse (double x0, double y0, double angle, double major, double minor, double scale, double t11,double t12,double t21,double t22, int polygon, int rgb[3], BOOLEAN outline)
+void paint_ellipse (double x0, double y0, double angle, double major, double minor, double scale, double t11,double t12,double t21,double t22, GMT_LONG polygon, int rgb[3], BOOLEAN outline)
 
 /* Make an ellipse at center x0,y0  */
 
@@ -213,7 +213,7 @@ void paint_ellipse (double x0, double y0, double angle, double major, double min
 #define NPOINTS 362
 
      GMT_LONG    npoints = NPOINTS;
-     int    i;
+     GMT_LONG    i;
      /* relative to center of ellipse */
      double dxe[NPOINTS],dye[NPOINTS];
      /* absolute paper coordinates */

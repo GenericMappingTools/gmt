@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.h,v 1.43 2009-01-09 04:02:32 guru Exp $
+ *	$Id: gmt_grdio.h,v 1.44 2009-05-13 21:06:41 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -28,33 +28,33 @@
 #ifndef GMT_GRDIO_H
 #define GMT_GRDIO_H
 
-EXTERN_MSC int GMT_grdformats [GMT_N_GRD_FORMATS][2];
+EXTERN_MSC GMT_LONG GMT_grdformats [GMT_N_GRD_FORMATS][2];
 
-EXTERN_MSC int GMT_read_grd_info (char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_update_grd_info (char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_write_grd_info (char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
-EXTERN_MSC int GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, int *pad, BOOLEAN complex);
+EXTERN_MSC GMT_LONG GMT_read_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC GMT_LONG GMT_update_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC GMT_LONG GMT_write_grd_info (char *file, struct GRD_HEADER *header);
+EXTERN_MSC GMT_LONG GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex);
+EXTERN_MSC GMT_LONG GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex);
 
-EXTERN_MSC int GMT_grd_data_size (int format, double *nan_value);
-EXTERN_MSC int GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, GMT_LONG *width, GMT_LONG *height, GMT_LONG *first_col, GMT_LONG *last_col, GMT_LONG *first_row, GMT_LONG *last_row, int **index);
-EXTERN_MSC int GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax);
-EXTERN_MSC int GMT_grd_format_decoder (const char *code);
+EXTERN_MSC GMT_LONG GMT_grd_data_size (GMT_LONG format, double *nan_value);
+EXTERN_MSC GMT_LONG GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, GMT_LONG *width, GMT_LONG *height, GMT_LONG *first_col, GMT_LONG *last_col, GMT_LONG *first_row, GMT_LONG *last_row, GMT_LONG **index);
+EXTERN_MSC GMT_LONG GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header);
+EXTERN_MSC GMT_LONG GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax);
+EXTERN_MSC GMT_LONG GMT_grd_format_decoder (const char *code);
 EXTERN_MSC void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN update);
 EXTERN_MSC void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift);
 EXTERN_MSC void GMT_decode_grd_h_info (char *input, struct GRD_HEADER *h);
-EXTERN_MSC int GMT_grd_RI_verify (struct GRD_HEADER *h, int mode);
-EXTERN_MSC int GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic);
+EXTERN_MSC GMT_LONG GMT_grd_RI_verify (struct GRD_HEADER *h, GMT_LONG mode);
+EXTERN_MSC GMT_LONG GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic);
 EXTERN_MSC BOOLEAN GMT_grd_is_global (struct GRD_HEADER *h);
 
 /* These are pointers to the various functions and are set in GMT_grdio_init() */
 
-EXTERN_MSC PFI GMT_io_readinfo[GMT_N_GRD_FORMATS];
-EXTERN_MSC PFI GMT_io_updateinfo[GMT_N_GRD_FORMATS];
-EXTERN_MSC PFI GMT_io_writeinfo[GMT_N_GRD_FORMATS];
-EXTERN_MSC PFI GMT_io_readgrd[GMT_N_GRD_FORMATS];
-EXTERN_MSC PFI GMT_io_writegrd[GMT_N_GRD_FORMATS];
+EXTERN_MSC PFL GMT_io_readinfo[GMT_N_GRD_FORMATS];
+EXTERN_MSC PFL GMT_io_updateinfo[GMT_N_GRD_FORMATS];
+EXTERN_MSC PFL GMT_io_writeinfo[GMT_N_GRD_FORMATS];
+EXTERN_MSC PFL GMT_io_readgrd[GMT_N_GRD_FORMATS];
+EXTERN_MSC PFL GMT_io_writegrd[GMT_N_GRD_FORMATS];
 
 #include "gmt_customio.h"
 
@@ -69,9 +69,9 @@ struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 };
 
 struct GMT_GRDFILE {
-	int size;		/* Bytes per item */
-	int n_byte;		/* Number of bytes for row */
-	int row;		/* Current row */
+	GMT_LONG size;		/* Bytes per item */
+	GMT_LONG n_byte;	/* Number of bytes for row */
+	GMT_LONG row;		/* Current row */
 	int fid;		/* NetCDF file number */
 	size_t edge[2];		/* Dimension arrays for netCDF files */
 	size_t start[2];	/* same */
@@ -91,14 +91,14 @@ struct GMT_GRDFILE {
 	
 /* Row i/o functions */
 
-EXTERN_MSC int GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode);
+EXTERN_MSC GMT_LONG GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode);
 EXTERN_MSC void GMT_close_grd (struct GMT_GRDFILE *G);
-EXTERN_MSC int GMT_read_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
-EXTERN_MSC int GMT_write_grd_row (struct GMT_GRDFILE *G, int row_no, float *row);
+EXTERN_MSC GMT_LONG GMT_read_grd_row (struct GMT_GRDFILE *G, GMT_LONG row_no, float *row);
+EXTERN_MSC GMT_LONG GMT_write_grd_row (struct GMT_GRDFILE *G, GMT_LONG row_no, float *row);
 
 /* IMG read function */
 
-EXTERN_MSC int GMT_read_img (char *imgfile, struct GRD_HEADER *h, float **grid, double w, double e, double s, double n, double scale, int mode, double lat, BOOLEAN init);
+EXTERN_MSC GMT_LONG GMT_read_img (char *imgfile, struct GRD_HEADER *h, float **grid, double w, double e, double s, double n, double scale, GMT_LONG mode, double lat, BOOLEAN init);
 
 /* Grid container allocation/deallocation routines */
 

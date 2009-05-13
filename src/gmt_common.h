@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_common.h,v 1.15 2009-04-18 00:22:29 guru Exp $
+ *	$Id: gmt_common.h,v 1.16 2009-05-13 21:06:41 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -52,11 +52,11 @@ struct GMT_COMMON {
 	} B;	
 	struct H {	/* [2]  -H[i][<nrecs>] */
 		BOOLEAN active[2];
-		int n_recs;
+		GMT_LONG n_recs;
 	} H;	
 	struct J {	/* [3-4]  -J<params> */
 		BOOLEAN active;
-		int id;
+		GMT_LONG id;
 		double par[6];
 	} J;		
 	struct K {	/* [5]  -K */
@@ -75,7 +75,7 @@ struct GMT_COMMON {
 	} R;
 	struct U {	/* [9]  -U */
 		BOOLEAN active;
-		int just;
+		GMT_LONG just;
 		double x, y;
 		char *label;	
 	} U;
@@ -94,7 +94,7 @@ struct GMT_COMMON {
 	} Y;
 	struct c {	/* [13]  -c */
 		BOOLEAN active;
-		int copies;
+		GMT_LONG copies;
 	} c;
 	struct t {	/* [14]  -:[i|o] */
 		BOOLEAN active;
@@ -105,7 +105,7 @@ struct GMT_COMMON {
 		BOOLEAN binary[2];
 		BOOLEAN sincle[2];
 		BOOLEAN swab[2];
-		int ncol[2];
+		GMT_LONG ncol[2];
 	} b;
 	struct f {	/* [16]  -f[i|o]<col>|<colrange>[t|T|g],.. */
 		BOOLEAN active;
@@ -113,11 +113,11 @@ struct GMT_COMMON {
 	} f;
 	struct g {	/* [17]  -g[+]x|x|y|Y|d|Y<gap>[unit]  */
 		BOOLEAN active;
-		int n_methods;				/* How many different criteria to apply */
-		int n_col;				/* Largest column-number needed to be read */
+		GMT_LONG n_methods;			/* How many different criteria to apply */
+		GMT_LONG n_col;				/* Largest column-number needed to be read */
 		BOOLEAN match_all;			/* If TRUE then all specified criteria must be met to be a gap [default is any of them] */
-		int method[GMT_N_GAP_METHODS];		/* How distances are computed for each criteria */
-		int col[GMT_N_GAP_METHODS];		/* Which column to use (-1 for x,y distance) */
+		GMT_LONG method[GMT_N_GAP_METHODS];	/* How distances are computed for each criteria */
+		GMT_LONG col[GMT_N_GAP_METHODS];	/* Which column to use (-1 for x,y distance) */
 		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
 		PFD get_dist[GMT_N_GAP_METHODS];	/* Pointers to functiosn that compute those distances */
 	} g;
@@ -127,7 +127,7 @@ struct GMT_HIDDEN {
 	/* These are internal parameters that need to be passed around between
 	 * many GMT functions.  Eliminating global variables means passing a
 	 * pointer to this structure instead. */
-	int workinprogress;
+	GMT_LONG workinprogress;
 };
 
 struct GMT_CTRL {

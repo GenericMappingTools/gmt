@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.18 2009-01-23 03:02:00 jluis Exp $
+ *	$Id: gmt_plot.h,v 1.19 2009-05-13 21:06:42 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -76,14 +76,14 @@ struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 	double f_gap;		/* Gap between front symbols in inches */
 	double f_len;		/* Length of front symbols in inches */
 	double f_off;		/* Offset of first symbol from start of front in inches */
-	int f_sense;		/* Draw symbols to left (+1), centered (0), or right (-1) of line */
-	int f_symbol;		/* Which symbol to draw along the front line */
+	GMT_LONG f_sense;	/* Draw symbols to left (+1), centered (0), or right (-1) of line */
+	GMT_LONG f_symbol;	/* Which symbol to draw along the front line */
 };
 
 struct GMT_SYMBOL {
-	int symbol;		/* Symbol id */
-	int n_required;		/* Number of additional columns necessary to decode chosen symbol */
-	int u;			/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
+	GMT_LONG symbol;	/* Symbol id */
+	GMT_LONG n_required;	/* Number of additional columns necessary to decode chosen symbol */
+	GMT_LONG u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */
 	double size_x2;		/* Half size in x */
@@ -93,7 +93,7 @@ struct GMT_SYMBOL {
 	BOOLEAN equal_area;	/* Symbol should be scaled to give same area as circle */
 	BOOLEAN read_size;	/* TRUE when we must read symbol size from file */
 	BOOLEAN shade3D;	/* TRUE when we should simulate shading of 3D symbols cube and column */
-	int font_no;		/* font to use for the -Sl symbol */
+	GMT_LONG font_no;	/* font to use for the -Sl symbol */
 
 	/* These apply to bar symbols */
 
@@ -103,7 +103,7 @@ struct GMT_SYMBOL {
 
 	/* These apply to vectors */
 
-	int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
+	GMT_LONG convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
 	BOOLEAN read_vector;	/* if TRUE must read vector attributes */
 	BOOLEAN shrink;		/* If TRUE, shrink vector attributes for small lengths */
 	double v_norm;		/* shrink when lengths are smaller than this */
@@ -111,7 +111,7 @@ struct GMT_SYMBOL {
 	double v_width;		/* Width of vector stem in inches */
 	double h_length;	/* Length of vector head in inches */
 	double h_width;		/* Width of vector head in inches */
-	int v_just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
+	GMT_LONG v_just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
 	BOOLEAN v_double_heads;		/* If TRUE, Add 8 (|= 8) to outline to specify double-headed vector (FALSE is single-headed) */
 
 	char string[GMT_TEXT_LEN];	/* Character code to plot (could be octal) */
@@ -124,32 +124,32 @@ struct GMT_SYMBOL {
 
 EXTERN_MSC struct GMT_PS GMT_ps;
 
-EXTERN_MSC void GMT_color_image (double x0, double y0, double x_side, double y_side, unsigned char *image, int nx, int ny, int depth);
+EXTERN_MSC void GMT_color_image (double x0, double y0, double x_side, double y_side, unsigned char *image, GMT_LONG nx, GMT_LONG ny, GMT_LONG depth);
 EXTERN_MSC void GMT_draw_map_rose (struct GMT_MAP_ROSE *mr);
 EXTERN_MSC void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms);
 EXTERN_MSC void GMT_echo_command (int argc, char **argv);
 EXTERN_MSC void GMT_fill (double x[], double y[], GMT_LONG n, struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GMT_FILL *F, BOOLEAN outline);
-EXTERN_MSC void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, int outline);
-EXTERN_MSC void GMT_plot_rectangle (double lon, double lat, double z, double width, double height, double azimuth, struct GMT_FILL fill, int outline);
+EXTERN_MSC void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, GMT_LONG outline);
+EXTERN_MSC void GMT_plot_rectangle (double lon, double lat, double z, double width, double height, double azimuth, struct GMT_FILL fill, GMT_LONG outline);
 EXTERN_MSC void GMT_draw_fence (double x[], double y[], double z, GMT_LONG n, struct GMT_FRONTLINE *f, struct GMT_FILL *g, BOOLEAN outline);
 EXTERN_MSC void GMT_grid_clip_off (void);
-EXTERN_MSC void GMT_grid_clip_on (struct GRD_HEADER *h, int rgb[], int flag);
+EXTERN_MSC void GMT_grid_clip_on (struct GRD_HEADER *h, int rgb[], GMT_LONG flag);
 EXTERN_MSC void GMT_linearx_grid (double w, double e, double s, double n, double dval);
 EXTERN_MSC void GMT_map_basemap (void);
 EXTERN_MSC void GMT_map_clip_off (void);
-EXTERN_MSC void GMT_map_clip_on (int rgb[], int flag);
+EXTERN_MSC void GMT_map_clip_on (int rgb[], GMT_LONG flag);
 EXTERN_MSC void GMT_plot_line (double *x, double *y, int *pen, GMT_LONG n);
 EXTERN_MSC void GMT_setpen (struct GMT_PEN *pen);
-EXTERN_MSC void GMT_text3D (double x, double y, double z, double fsize, int fontno, char *text, double angle, int justify, int form);
-EXTERN_MSC void GMT_textbox3D (double x, double y, double z, double size, int font, char *label, double angle, int just, BOOLEAN outline, double dx, double dy, int rgb[]);
-EXTERN_MSC void GMT_timestamp (double x, double y, int justify, char *U_label);
-EXTERN_MSC void GMT_vertical_axis (int mode);
-EXTERN_MSC void GMT_xy_axis (double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, int below, int annotate);
+EXTERN_MSC void GMT_text3D (double x, double y, double z, double fsize, GMT_LONG fontno, char *text, double angle, GMT_LONG justify, GMT_LONG form);
+EXTERN_MSC void GMT_textbox3D (double x, double y, double z, double size, GMT_LONG font, char *label, double angle, GMT_LONG just, BOOLEAN outline, double dx, double dy, int rgb[]);
+EXTERN_MSC void GMT_timestamp (double x, double y, GMT_LONG justify, char *U_label);
+EXTERN_MSC void GMT_vertical_axis (GMT_LONG mode);
+EXTERN_MSC void GMT_xy_axis (double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, GMT_LONG below, GMT_LONG annotate);
 EXTERN_MSC struct EPS *GMT_epsinfo (char *program);
 EXTERN_MSC GMT_LONG *GMT_split_line (double **xx, double **yy, GMT_LONG *nn, BOOLEAN add_crossings);
-EXTERN_MSC int GMT_plotend (void);
-EXTERN_MSC int GMT_plotinit (int argc, char *argv[]);
+EXTERN_MSC GMT_LONG GMT_plotend (void);
+EXTERN_MSC GMT_LONG GMT_plotinit (int argc, char *argv[]);
 EXTERN_MSC void GMT_square (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_circle (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_triangle (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline);
