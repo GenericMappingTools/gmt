@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.36 2009-04-24 01:39:28 guru Exp $
+ *	$Id: gmt_grd.h,v 1.37 2009-05-13 21:06:41 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -47,7 +47,7 @@ struct GRD_HEADER {
 	int ny;				/* Number of rows */
 	int node_offset;		/* 0 for node grids, 1 for pixel grids */
 /* This section is flexible. It is not copied to any grid header */
-	int type;			/* Grid format */
+	GMT_LONG type;			/* Grid format */
 	char name[GMT_LONG_TEXT];	/* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GRD_VARNAME_LEN];	/* NetCDF: variable name */
 	int y_order;			/* NetCDF: 1 if S->N, -1 if N->S */
@@ -100,14 +100,14 @@ struct GRD_HEADER {
  * match the sense of truncation used for x) then we revert to row number increasing down
  * by flipping: j = ny - 1 - j' */
 
-#define GMT_x_to_i(x,x0,dx,off,nx) ((int)irint(((((x) - (x0)) / (dx)) - (off))))
-#define GMT_y_to_j(y,y0,dy,off,ny) ((int)((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off)))))
+#define GMT_x_to_i(x,x0,dx,off,nx) ((GMT_LONG)irint(((((x) - (x0)) / (dx)) - (off))))
+#define GMT_y_to_j(y,y0,dy,off,ny) ((GMT_LONG)((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off)))))
 #define GMT_i_to_x(i,x0,x1,dx,off,nx) (((i) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((i) + (off)) * (dx))
 #define GMT_j_to_y(j,y0,y1,dy,off,ny) (((j) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((j) + (off)) * (dy))
 
 /* These macros calculate the number of nodes in x or y or the increment dx, dy*/
 
-#define GMT_get_n(min,max,inc,off) ((int)irint (((max) - (min)) / (inc)) + 1 - (off))
+#define GMT_get_n(min,max,inc,off) ((GMT_LONG)irint (((max) - (min)) / (inc)) + 1 - (off))
 #define GMT_get_inc(min,max,n,off) (((max) - (min)) / ((n) + (off) - 1))
 
 /* 64-bit-safe macro to return the number of points in the grid given dimensions */

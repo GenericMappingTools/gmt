@@ -1,5 +1,5 @@
 /*
- *	$Id: grdwrite.c,v 1.11 2009-01-09 04:02:35 guru Exp $
+ *	$Id: grdwrite.c,v 1.12 2009-05-13 21:06:43 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -47,7 +47,7 @@ int grdwrite (double z_8[], double x[], double y[], double info[], char *fileout
 /* ny		:	number of y points */
 /* pix		:	1 if pixel reg, 0 if gridline registered */
 
-	int i, j, i2, pad[4], error = 0;
+	GMT_LONG i, j, i2, pad[4], error = 0;
 	float *z_4;           /* real array for output */
 	struct GRD_HEADER grd; 
 

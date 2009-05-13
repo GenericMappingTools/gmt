@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_bcr.h,v 1.18 2009-04-24 01:39:28 guru Exp $
+ *	$Id: gmt_bcr.h,v 1.19 2009-05-13 21:06:41 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -33,18 +33,18 @@
 #define BCR_BICUBIC		3
 
 struct GMT_BCR {	/* Used mostly in gmt_support.c */
-	double	rx_inc;			/* 1.0 / grd.x_inc  */
-	double	ry_inc;			/* 1.0 / grd.y_inc  */
-	double	offset;			/* 0 or 0.5 for grid or pixel registration  */
-	double	threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
-	int	interpolant;		/* Interpolation function used (0, 1, 2, 3) */
-	int	n;			/* Width of the interpolation function */
+	double rx_inc;			/* 1.0 / grd.x_inc  */
+	double ry_inc;			/* 1.0 / grd.y_inc  */
+	double offset;			/* 0 or 0.5 for grid or pixel registration  */
+	double threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
+	GMT_LONG interpolant;		/* Interpolation function used (0, 1, 2, 3) */
+	GMT_LONG n;			/* Width of the interpolation function */
 	GMT_LONG	ioff;		/* Padding on west side of array  */
 	GMT_LONG	joff;		/* Padding on north side of array  */
 	GMT_LONG	mx;		/* Padded array dimension  */
 	GMT_LONG	my;		/* Ditto  */
 };
 
-EXTERN_MSC void GMT_bcr_init (struct GRD_HEADER *grd, int *pad, int bilinear, double threshold, struct GMT_BCR *bcr);
+EXTERN_MSC void GMT_bcr_init (struct GRD_HEADER *grd, GMT_LONG *pad, GMT_LONG bilinear, double threshold, struct GMT_BCR *bcr);
 EXTERN_MSC double GMT_get_bcr_z (struct GRD_HEADER *grd, double xx, double yy, float *data,  struct GMT_EDGEINFO *edgeinfo, struct GMT_BCR *bcr);		/* Compute z(x,y) from bcr structure  */
 #endif /* _GMT_BCR_H */

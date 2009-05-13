@@ -38,7 +38,7 @@
 
 void GMT_lat_swap_init (void);
 double	GMT_lat_swap_quick (double lat, double c[]);
-double	GMT_lat_swap (double lat, int itype);
+double	GMT_lat_swap (double lat, GMT_LONG itype);
 void GMT_scale_eqrad ();
 void GMT_vpolar(double lon0);
 void GMT_vmerc(double lon0, double slat);

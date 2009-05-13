@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.56 2009-02-25 19:37:49 remko Exp $
+ *	$Id: libspotter.c,v 1.57 2009-05-13 21:06:44 guru Exp $
  *
  *   Copyright (c) 1999-2009 by P. Wessel
  *
@@ -1162,7 +1162,7 @@ int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT
 	 */
 
 	GMT_LONG matrix_dim = 3L;
-	int i, j, k, kk = 3, nrots;
+	GMT_LONG i, j, k, kk = 3, nrots;
 	double R[3][3], x[3], y[3], M[3][3], RMt[3][3], Rt[3][3], MRt[3][3], cov[3][3], tmp[3][3], C[9];
 	double z_unit_vector[3], EigenValue[3], EigenVector[9], work1[3], work2[3], x_in_plane[3], y_in_plane[3];
 	double x_comp, y_comp, w;

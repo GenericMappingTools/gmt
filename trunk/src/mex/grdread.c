@@ -1,5 +1,5 @@
 /*
- *	$Id: grdread.c,v 1.12 2009-01-09 04:02:35 guru Exp $
+ *	$Id: grdread.c,v 1.13 2009-05-13 21:06:43 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -35,7 +35,7 @@ int grdread (double z_8[], double info[], char *filein, struct GRD_HEADER *grd)
 {
 	/* info contains xmin, xmax, ymin, ymax, zmin, zmax, node-offset, dx, dy */
 
-	int i, j, pad[4];
+	GMT_LONG i, j, pad[4];
 	float *z_4;          /* real array for output */
 
 	pad[0] = pad[1] = pad[2] = pad[3] = 0;

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.131 2009-05-03 19:46:43 guru Exp $
+ *	$Id: x2sys.c,v 1.132 2009-05-13 21:06:44 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -311,7 +311,8 @@ int x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 	 */
 
 	char line[BUFSIZ], p[BUFSIZ];
-	int i = 0, j, pos = 0;
+	int i = 0, j;
+	GMT_LONG pos = 0;
 
 	strncpy (s->fflags, string, (size_t)BUFSIZ);
 	strncpy (line, string, (size_t)BUFSIZ);	/* Make copy for later use */
@@ -398,7 +399,7 @@ double *x2sys_dummytimes (GMT_LONG n)
 int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
 {
 	int j, k, i, n_read = 0;
-	int pos;
+	GMT_LONG pos;
 	BOOLEAN error = FALSE;
 	char line[BUFSIZ], buffer[GMT_TEXT_LEN], p[BUFSIZ], c;
 	unsigned char u;
@@ -877,7 +878,8 @@ void x2sys_free_list (char **list, int n)
 int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G)
 {
 	char tag_file[BUFSIZ], line[BUFSIZ], p[BUFSIZ], sfile[BUFSIZ], suffix[16], unit[2][2];
-	int geodetic = 0, pos = 0, n, k, dist_flag = 0;
+	int geodetic = 0, n, k, dist_flag = 0;
+	GMT_LONG pos = 0;
 	double dist;
 	BOOLEAN geographic = FALSE, n_given[2] = {FALSE, FALSE}, c_given = FALSE;
 	FILE *fp;
@@ -1403,7 +1405,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 			sscanf (&line[2], "%*s %*s %s %*s %*s %*s %*s %*s %*s %*s %s", kind, txt);	/* Get first column name after lon/x etc */
 			if (strchr (txt, '_')) {	/* A column name with underscore; we thus assume this is the correct record */
 				char ptr[BUFSIZ];
-				int pos = 0, item = 0;
+				GMT_LONG pos = 0, item = 0;
 				no_time = !strcmp (kind, "i_1");	/* No time in this database */
 				if (txt[strlen(txt)-1] == '1') two_values = TRUE;	/* Option -2 was used */
 				while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */

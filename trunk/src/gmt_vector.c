@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.28 2009-04-24 01:39:28 guru Exp $
+ *	$Id: gmt_vector.c,v 1.29 2009-05-13 21:06:42 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -27,7 +27,7 @@
 
 #define MAX_SWEEPS 50
 
-int	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, int *nrots) {
+GMT_LONG	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots) {
 /*
  *
  * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
@@ -280,7 +280,7 @@ int	GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, doubl
 }
 
 #ifdef OBSOLETE
-int	GMT_jacobi_old (double *a, int *n, int *m, double *d, double *v, double *b, double *z, int *nrots)
+GMT_LONG	GMT_jacobi_old (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots)
 /*
  *
  * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
@@ -309,7 +309,7 @@ int	GMT_jacobi_old (double *a, int *n, int *m, double *d, double *v, double *b, 
    	       	/* Returned.  number of Givens rotations performed.  */
 
 {
-	int	ip, iq, nsweeps, i, j, k;
+	GMT_LONG	ip, iq, nsweeps, i, j, k;
 	double	sum, threshold, g, h, t, theta, c, s, tau, p;
 
 
@@ -470,7 +470,7 @@ int	GMT_jacobi_old (double *a, int *n, int *m, double *d, double *v, double *b, 
 }
 #endif
 
-void GMT_gauss (double *a, double *vec, int n_in, int nstore_in, double test, int *ierror, int itriag)
+void GMT_gauss (double *a, double *vec, GMT_LONG n_in, GMT_LONG nstore_in, double test, GMT_LONG *ierror, GMT_LONG itriag)
 {
  
 /* subroutine gauss, by william menke */
@@ -488,7 +488,7 @@ void GMT_gauss (double *a, double *vec, int n_in, int nstore_in, double test, in
 /*                                               multiple systems with same a */
         static GMT_LONG l1;
         GMT_LONG *line, *isub, i = 0, j, k, l, j2, n, nstore;
-	int iet, ieb;
+	GMT_LONG iet, ieb;
         double big, testa, b, sum;
 
         iet=0;  /* initial error flags, one for triagularization*/
@@ -682,7 +682,7 @@ void GMT_cart_to_geo (double *lat, double *lon, double *a, BOOLEAN degrees)
 	}
 }
 
-GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double step, int mode)
+GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double step, GMT_LONG mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
@@ -889,7 +889,7 @@ GMT_LONG GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG nr, GMT_LON
 	return (0);
 }
 
-void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG nerr, int donly) {
+void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG nerr, GMT_LONG donly) {
 
 	/* Given a, a symmetric positive definite matrix of row dimension nr,
 	and size n >= abs(nerr), one uses GMT_chol_dcmp() to attempt to find
