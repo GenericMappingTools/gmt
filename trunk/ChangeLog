@@ -1,14 +1,19 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.506 2009-05-13 21:06:41 guru Exp $
+	$Id: ChangeLog,v 1.507 2009-05-14 17:42:21 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-14	remko
+	* grdinfo.{c,txt}:	Add option -L0 to actually scan data to determine zmin and zmax
+	* gmt_nc.c:		Argument [layer] was not stripped from varname and would end up
+				in output grid.  Set zmin/zmax to NaN when info not in header.
 
 2009-05-13	pwessel
 	* *.[ch]:		Moving to use GMT_LONG for almost all integers.
 
 2009-05-12	remko
 	* gmt_map.c (GMT_UTMzone_to_wesn):	Numerous bug fixes: Did not report bad zone
-				for < A or > Z; Zone A+B reached till 80S not 84S; Zone J
-				wrongly produced value for Zone K; Zone U was not recognised.
+				for < A or > Z; Zones A+B reached till 84S instead of 80S; Zone J
+				wrongly produced value for Zone K; Zones U+W were not recognised;
 				Now also equates Zone O to Zone P (already equated Zone I to J).
 
 2009-05-08	remko
@@ -37,7 +42,7 @@
 	* mgd77manage.c:	---"---
 				
 2009-05-06	pwessel
-	* *.c,txt,tex:		While remaining backwards compatible, we no longer announce that
+	* *.c, *.txt, *.tex:	While remaining backwards compatible, we no longer announce that
 				GMT will search GMT_IMGDIR and GMT_GRIDDIR.  Going forward, we will
 				document the user of GMT_DATADIR and GMT_USERDIR only.
 
@@ -79,8 +84,7 @@
 	* grdinfo.c:		Now tells us in plain text what the grid format is.
 
 2009-04-24	pwessel
-	* gmtconvert.c:		Now has -g option.
-	* mapproject.c:		Now has -g option.
+	* gmtconvert.c, mapproject.c:	Now have -g option.
 	
 2009-04-21	pwessel
 	* ps2raster.c:		Reformatted the -W option to allow for a long list of KML-related
@@ -161,7 +165,7 @@
 				file after mgd77manage -D had been run.
 2009-03-31	remko
 	* gmt_map.c (GMT_get_datum):	Reuse GMT_get_ellipsoid to capture <a>,<inv_f> format.
-	* gmt_init.c:		Changed custom ELLIPSOID format to <a>[,<inv_f|b=<b>|f=<f>].
+	* gmt_init.c:		Changed custom ELLIPSOID format to <a>[,<inv_f>|b=<b>|f=<f>].
 				Properly write out custom ELLIPSOID into .gmtdefaults4.
 
 2009-03-30	pwessel
