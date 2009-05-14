@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.81 2009-05-13 21:06:42 guru Exp $
+ *	$Id: gmt_nc.c,v 1.82 2009-05-14 17:41:30 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -114,29 +114,31 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 {
 	GMT_LONG j, err;
 	double dummy[2], *xy = VNULL;
-	char varname[GRD_UNIT_LEN], coord[8];
-	nc_type z_type, i_type;
+	char dimname[GRD_UNIT_LEN], coord[8];
+	nc_type z_type;
 	double t_value[3];
 
 	/* Dimension ids, variable ids, etc.. */
 	int i, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars, ndims;
 	size_t lens[5], item[2];
 
-	for (i = 0; i < 3; i++) header->t_index[i] = -1, t_value[i] = GMT_d_NaN;
+	for (i = 0; i < 3; i++) t_value[i] = GMT_d_NaN;
 
-	/* Extract layers IDs from variable name, if given */
+	/* If not yet determined, attempt to get the layer IDs from the variable name */
 
-	strcpy (varname, header->varname);
-	if (varname[0]) {
+	if (header->t_index[0] >= 0) { /* Do nothing: already determined */ }
+	else if (!header->varname[0])
+		header->t_index[0] = 0;	/* No varname: use first layer */
+	else {
 		i = 0;
-		while (varname[i] && varname[i] != '(' && varname[i] != '[') i++;
-		if (varname[i] == '(') {
-			sscanf (&varname[i+1], "%lf,%lf,%lf)", &t_value[0], &t_value[1], &t_value[2]);
-			varname[i] = '\0';
+		while (header->varname[i] && header->varname[i] != '(' && header->varname[i] != '[') i++;
+		if (header->varname[i] == '(') {
+			sscanf (&header->varname[i+1], "%lf,%lf,%lf)", &t_value[0], &t_value[1], &t_value[2]);
+			header->varname[i] = '\0';
 		}
-		else if (varname[i] == '[') {
-			sscanf (&varname[i+1], "%d,%d,%d]", &header->t_index[0], &header->t_index[1], &header->t_index[2]);
-			varname[i] = '\0';
+		else if (header->varname[i] == '[') {
+			sscanf (&header->varname[i+1], "%d,%d,%d]", &header->t_index[0], &header->t_index[1], &header->t_index[2]);
+			header->varname[i] = '\0';
 		}
 	}
 
@@ -159,7 +161,7 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		if (!nc_inq_dimid (ncid, "xysize", &i)) return (GMT_cdf_grd_info (ncid, header, job));
 
 		/* Find first 2-dimensional (z) variable or specified variable */
-		if (!varname[0]) {
+		if (!header->varname[0]) {
 			GMT_err_trap (nc_inq_nvars (ncid, &nvars));
 			i = 0;
 			while (i < nvars && z_id < 0) {
@@ -168,7 +170,7 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 				i++;
 			}
 		}
-		else if (nc_inq_varid (ncid, varname, &z_id) == NC_NOERR) {
+		else if (nc_inq_varid (ncid, header->varname, &z_id) == NC_NOERR) {
 			GMT_err_trap (nc_inq_varndims (ncid, z_id, &ndims));
 			if (ndims < 2 || ndims > 5) return (GMT_GRDIO_BAD_DIM);
 		}
@@ -181,10 +183,10 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		GMT_err_trap (nc_inq_vardimid (ncid, z_id, dims));
 		header->type = ((z_type == NC_BYTE) ? 2 : z_type) + 13;
 
-		/* Get the ids of the x and y (and depth and time) variables */
+		/* Get the ids of the x and y (and depth and time) coordinate variables */
 		for (i = 0; i < ndims; i++) {
-			GMT_err_trap (nc_inq_dim (ncid, dims[i], varname, &lens[i]));
-			if (nc_inq_varid (ncid, varname, &ids[i])) ids[i] = -1;
+			GMT_err_trap (nc_inq_dim (ncid, dims[i], dimname, &lens[i]));
+			if (nc_inq_varid (ncid, dimname, &ids[i])) ids[i] = -1;
 		}
 		header->xy_dim[0] = ndims-1;
 		header->xy_dim[1] = ndims-2;
@@ -294,16 +296,10 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
 		if (nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value))
 		    nc_get_att_double (ncid, z_id, "missing_value", &header->nan_value);
-		if (nc_get_att_double (ncid, z_id, "actual_range", dummy) &&
-		    nc_get_att_double (ncid, z_id, "valid_range", dummy)) dummy[0] = 0, dummy [1] = 0;
-
-		/* Limits need to be converted from actual to internal grid units.
-		   In GMT <= 4.2.0 actual_range was erroneously stored in grid units. This
-		   if-statement should catch those cases and leaves them in grid units.
-		*/
-		if (!nc_inq_atttype (ncid, z_id, "actual_range", &i_type) && (i_type == NC_SHORT || i_type == NC_INT) && z_type == i_type)
-			header->z_min = dummy[0], header->z_max = dummy[1];
+		if (nc_get_att_double (ncid, z_id, "actual_range", dummy) && nc_get_att_double (ncid, z_id, "valid_range", dummy))
+			{ /* Leave values to their defaults (NaN) */ }
 		else {
+			/* z-limits need to be converted from actual to internal grid units. */
 			header->z_min = (dummy[0] - header->z_add_offset) / header->z_scale_factor;
 			header->z_max = (dummy[1] - header->z_add_offset) / header->z_scale_factor;
 		}
@@ -350,7 +346,7 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[1]], "actual_range", NC_DOUBLE, (size_t)2, dummy));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
-		if (varname[0] && !strcmp (header->z_units, "z")) strcpy (header->z_units, header->varname);
+		if (header->varname[0] && !strcmp (header->z_units, "z")) strcpy (header->z_units, header->varname);
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		GMT_nc_put_units (ncid, z_id, header->z_units);
