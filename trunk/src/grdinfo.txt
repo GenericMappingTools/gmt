@@ -4,7 +4,7 @@
 grdinfo \- Get information about the contents of a 2-D grid file
 .SH SYNOPSIS
 \fBgrdinfo\fP \fIgrdfiles\fP [ OPT(C) ] [ OPT(F) ] 
-[ OPT(I)[\fIdx\fP[/\fIdy\fP]] ][ OPT(L)[\fB1\fP|\fP2\fP] ] 
+[ OPT(I)[\fIdx\fP[/\fIdy\fP]] ][ OPT(L)[\fB0\fP|\fB1\fP|\fP2\fP] ] 
 [ OPT(M) ] [ OPT(T)\fIdz\fP ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBgrdinfo\fP reads a 2-D binary grid file and reports various statistics for
@@ -37,6 +37,9 @@ Report the min/max of the region to the nearest multiple of \fIdx\fP and \fIdy\f
 and output this in the form OPT(R)\fIw/e/s/n\fP (unless OPT(C) is set).
 To report the actual grid region, select OPT(I-).  If no argument is given
 then we report the grid increment in the form OPT(I)\fIxinc/yinc\fP.
+.TP
+OPT(L0)
+Report range of z after actually scanning the data, not just reporting what the header says.
 .TP
 OPT(L1)
 Report median and L1 scale of z (L1 scale = 1.4826 * Median Absolute Deviation (MAD)).
