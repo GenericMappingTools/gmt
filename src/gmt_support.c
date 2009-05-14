@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.404 2009-05-13 21:06:42 guru Exp $
+ *	$Id: gmt_support.c,v 1.405 2009-05-14 00:51:31 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2607,7 +2607,7 @@ GMT_LONG GMT_add_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t elemen
 		double total;			/* Floating-point total memory */
 		BOOLEAN keep_trying = TRUE;	/* Keep increasing until we reach our goal */
 		while (keep_trying && n >= n_alloc) {	/* Must increase the allocation size. We use >= because we need to preallocate before array[n] is accessed */
-			add = MIN (n_alloc/2, GMT_max_meminc);	/* Suggested increment from to 50% rule */
+			add = MAX (1, MIN (n_alloc/2, GMT_max_meminc));	/* Suggested increment from to 50% rule, but no less than 1 item */
 			if (n_alloc > INT_MAX && sizeof (GMT_LONG) == 4) {	/* May potentially ask for too much under 32-bit systems */
 				/* Do the math in double to make sure we do not exceed max unsigned 4-byte int */
 				total = (double)n_alloc + (double)add;
