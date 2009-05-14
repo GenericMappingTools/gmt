@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.12 2009-05-07 19:10:45 jluis Exp $
+ *	$Id: cm4_functions.c,v 1.13 2009-05-14 01:49:48 jluis Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -281,7 +281,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 			}
 			jaft = 0;
 			n = 0;
-			n_Dst_rows = 16709;	/* Current (28-04-2009) number of lines in Dst_all.wdc file */
+			n_Dst_rows = 18262;	/* Current (13-05-2009) number of lines in Dst_all.wdc file */
 			dstx = (double *) calloc((size_t)(n_Dst_rows * 24), sizeof(double));
 			/* One improvment would be to compute year_min/year_max and retain only the needed data in dstx */
 
@@ -312,7 +312,16 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 		if (Ctrl->DATA.n_times > 1)	/* Need to re-allocate memory for all n_times in dst array */
 			Ctrl->D.dst = (double *) realloc(Ctrl->D.dst, (size_t)(Ctrl->DATA.n_times) * sizeof(double));
 
-		for (n = 0; n < Ctrl->DATA.n_times; ++n)
+		/* Get only one dst first so that we can test (and abort if needed) if date is out of bounds */
+		Ctrl->D.dst[0] = intdst(mjdl, mjdh, mjdy[0], msec[0], dstx, &cerr);
+		if (cerr > 49) {
+			free((void *) dstx);
+			if (Ctrl->DATA.n_times > 1) free((void *) Ctrl->D.dst);
+			return 1;
+		}
+
+
+		for (n = 1; n < Ctrl->DATA.n_times; ++n)
 			Ctrl->D.dst[n] = intdst(mjdl, mjdh, mjdy[n], msec[n], dstx, &cerr);
 
 		free((void *) dstx);
@@ -811,7 +820,7 @@ double intdst(int mjdl, int mjdh, int mjdy, int msec, double *dstx, int *cerr) {
     }
 	if (jbot < mjdl || jtop > mjdh) {
 		*cerr = 50;
-		fprintf (stderr, "SUBROUTINE INTDST -- ERROR CODE 50 -- T LIES OUTSIDE OF DST TABLE TIME SPAN -- ABORT\n");
+		fprintf (stderr, "INTDST -- ERROR: T (%d; %d) LIES OUTSIDE OF DST TABLE TIME SPAN [%d; %d] -- ABORT\n", jbot, jtop, mjdl, mjdh);
 		dst = -1e12;
 	}
 	else
@@ -2454,7 +2463,7 @@ void tbspln_(double *t, int *n, int *k, double *bkpo, double *dtdb, int *cerr) {
 	    }
 	}
     } else {
-	fprintf (stderr, "TBSPLN -- ERROR CODE 54 -- T (%f) LIES OUTSIDE OF KNOT DOMAIN [%f; %f] -- ABORT\n", *t, bkpo[1], bkpo[*k + 2]);
+	fprintf (stderr, "TBSPLN -- ERROR: T (%f) LIES OUTSIDE OF KNOT DOMAIN [%f; %f] -- ABORT\n", *t, bkpo[1], bkpo[*k + 2]);
 	*cerr = 50;
     }
 }
