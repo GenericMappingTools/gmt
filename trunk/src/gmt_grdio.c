@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.121 2009-05-13 21:06:41 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.122 2009-05-14 17:37:15 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -717,10 +717,13 @@ void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN upd
 		header->type			= -1;
 		header->y_order			= 1;
 		header->z_id			= -1;
+		header->z_min			= GMT_d_NaN;
+		header->z_max			= GMT_d_NaN;
 		header->nan_value		= GMT_d_NaN;
 		strcpy (header->x_units, "x");
 		strcpy (header->y_units, "y");
 		strcpy (header->z_units, "z");
+		for (i = 0; i < 3; i++) header->t_index[i] = -1;
 	}
 
 	/* Always update command line history */
