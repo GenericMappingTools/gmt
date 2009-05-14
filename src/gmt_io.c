@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.183 2009-05-13 21:06:41 guru Exp $
+ *	$Id: gmt_io.c,v 1.184 2009-05-14 02:44:11 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -286,7 +286,7 @@ FILE *GMT_nc_fopen (const char *filename, const char *mode)
 		nc_inq_vardimid(GMT_io.ncid, GMT_io.varid[i], &j);
 		nc_inq_dimlen(GMT_io.ncid, j, &n);
 		if (GMT_io.ndim != 0 && GMT_io.ndim != n) {
-			fprintf (stderr, "%s: NetCDF variable %s has different dimension (%ld) from others (%ld)\n", GMT_program, varname, n, GMT_io.ndim);
+			fprintf (stderr, "%s: NetCDF variable %s has different dimension (%ld) from others (%ld)\n", GMT_program, varname, (GMT_LONG)n, (GMT_LONG)GMT_io.ndim);
 			GMT_exit (EXIT_FAILURE);
 		}
 		GMT_io.ndim = n;
