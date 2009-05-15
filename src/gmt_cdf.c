@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.53 2009-05-13 21:06:41 guru Exp $
+ *	$Id: gmt_cdf.c,v 1.54 2009-05-15 08:16:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -257,7 +257,7 @@ GMT_LONG GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 	/* Load data row by row. The data in the file is stored in the same
 	 * "upside down" fashion as within GMT. The first row is the top row */
 
-	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_cdf_read_grd");
+	tmp = (float *) GMT_memory (VNULL, (GMT_LONG)header->nx, sizeof (float), "GMT_cdf_read_grd");
 
 	edge[0] = header->nx;
 	ij = pad[3] * width_out + i_0_out;
@@ -369,7 +369,7 @@ GMT_LONG GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, do
 	/* Store z-variable */
 
 	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-		tmp_f = (float *) GMT_memory (VNULL, (size_t)width_in, sizeof (float), "GMT_cdf_write_grd");
+		tmp_f = (float *) GMT_memory (VNULL, width_in, sizeof (float), "GMT_cdf_write_grd");
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
@@ -392,7 +392,7 @@ GMT_LONG GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, do
 	}
 
 	else {
-		tmp_i = (int *) GMT_memory (VNULL, (size_t)width_in, sizeof (int), "GMT_nc_write_grd");
+		tmp_i = (int *) GMT_memory (VNULL, width_in, sizeof (int), "GMT_nc_write_grd");
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {

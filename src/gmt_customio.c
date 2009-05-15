@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.74 2009-05-13 21:06:41 guru Exp $
+ *	$Id: gmt_customio.c,v 1.75 2009-05-15 08:16:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -418,7 +418,7 @@ GMT_LONG GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	n2 = (GMT_LONG) ceil (header->nx / 2.0) * 2;	/* Sun 8-bit rasters are stored using 16-bit words */
-	tmp = (unsigned char *) GMT_memory (VNULL, (size_t)n2, sizeof (unsigned char), "GMT_ras_read_grd");
+	tmp = (unsigned char *) GMT_memory (VNULL, n2, sizeof (unsigned char), "GMT_ras_read_grd");
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 
@@ -514,7 +514,7 @@ GMT_LONG GMT_ras_write_grd (struct GRD_HEADER *header, float *grid, double w, do
 	h.maplength = 0;
 
 	n2 = (GMT_LONG) ceil (header->nx / 2.0) * 2;
-	tmp = (unsigned char *) GMT_memory (VNULL, (size_t)n2, sizeof (unsigned char), "GMT_ras_write_grd");
+	tmp = (unsigned char *) GMT_memory (VNULL, n2, sizeof (unsigned char), "GMT_ras_write_grd");
 
 	check = !GMT_is_dnan (header->nan_value);
 
@@ -780,7 +780,7 @@ GMT_LONG GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 		i_0_out *= 2;
 		inc = 2;
 	}
-	tmp = (unsigned int *) GMT_memory (VNULL, (size_t)mx, sizeof (unsigned int), "GMT_bit_read_grd");
+	tmp = (unsigned int *) GMT_memory (VNULL, mx, sizeof (unsigned int), "GMT_bit_read_grd");
 
 	if (piping) {	/* Skip data by reading it */
 		for (j = 0; j < first_row; j++) if (GMT_fread ((void *) tmp, sizeof (unsigned int), (size_t)mx, fp) < (size_t)mx) return (GMT_GRDIO_READ_FAILED);
@@ -899,7 +899,7 @@ GMT_LONG GMT_bit_write_grd (struct GRD_HEADER *header, float *grid, double w, do
 	}
 
 	mx = (GMT_LONG) ceil (width_out / 32.0);
-	tmp = (unsigned int *) GMT_memory (VNULL, (size_t)mx, sizeof (unsigned int), "GMT_bit_write_grd");
+	tmp = (unsigned int *) GMT_memory (VNULL, mx, sizeof (unsigned int), "GMT_bit_write_grd");
 
 	i2 = first_col + pad[0];
 	for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, j2++) {
@@ -1092,7 +1092,7 @@ GMT_LONG GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, 
 
 	/* Allocate memory for one row of data (for reading purposes) */
 
-	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, size, "GMT_native_read_grd");
+	tmp = (void *) GMT_memory (VNULL, (GMT_LONG)header->nx, size, "GMT_native_read_grd");
 
 	/* Now deal with skipping */
 
@@ -1227,7 +1227,7 @@ GMT_LONG GMT_native_write_grd (struct GRD_HEADER *header, float *grid, double w,
 
 	/* Allocate memory for one row of data (for writing purposes) */
 
-	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, size, "GMT_native_write_grd");
+	tmp = (void *) GMT_memory (VNULL, (GMT_LONG)header->nx, size, "GMT_native_write_grd");
 
 	i2 = first_col + pad[0];
 	for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, j2++) {
@@ -1571,7 +1571,7 @@ GMT_LONG GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 
 	/* Allocate memory for one row of data (for reading purposes) */
 
-	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, size, "GMT_srf_read_grd");
+	tmp = (void *) GMT_memory (VNULL, (GMT_LONG)header->nx, size, "GMT_srf_read_grd");
 
 	/* Now deal with skipping */
 
@@ -1706,7 +1706,7 @@ GMT_LONG GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, do
 
 	/* Allocate memory for one row of data (for writing purposes) */
 
-	tmp = (void *) GMT_memory (VNULL, (size_t)header->nx, size, "GMT_srf_write_grd");
+	tmp = (void *) GMT_memory (VNULL, (GMT_LONG)header->nx, size, "GMT_srf_write_grd");
 
 	i2 = first_col + pad[0];
 	for (j = 0, j2 = last_row + pad[3]; j < height_out; j++, j2--) {

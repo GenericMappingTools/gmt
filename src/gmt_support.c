@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.406 2009-05-15 01:40:07 guru Exp $
+ *	$Id: gmt_support.c,v 1.407 2009-05-15 08:16:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -59,7 +59,7 @@
  *	GMT_hsv_to_rgb		Convert HSV to RGB
  *	GMT_illuminate		Add illumination effects to rgb
  *	GMT_intpol		1-D interpolation
- *	GMT_add_memory		Memory management
+ *	GMT_alloc_memory		Memory management
  *	GMT_memory		Memory allocation/reallocation
  *	GMT_free		Memory deallocation
  *	GMT_non_zero_winding	Finds if a point is inside/outside a polygon
@@ -2552,6 +2552,9 @@ void *GMT_memory (void *prev_addr, GMT_LONG nelem, size_t size, char *progname)
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			fprintf (stderr, "GMT Fatal Error: %s could not reallocate memory [%.2f %s, n_items = %ld]\n", progname, mem, m_unit[k], nelem);
+#ifdef DEBUG
+			fprintf (stderr, "GMT_memory [realloc] called by %s from file %s on line %ld\n", GMT_program, fname, line);
+#endif
 			GMT_exit (EXIT_FAILURE);
 		}
 	}
@@ -2561,6 +2564,9 @@ void *GMT_memory (void *prev_addr, GMT_LONG nelem, size_t size, char *progname)
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			fprintf (stderr, "GMT Fatal Error: %s could not allocate memory [%.2f %s, n_items = %ld]\n", progname, mem, m_unit[k], nelem);
+#ifdef DEBUG
+			fprintf (stderr, "GMT_memory [calloc] called by %s from file %s on line %ld\n", GMT_program, fname, line);
+#endif
 			GMT_exit (EXIT_FAILURE);
 		}
 	}
@@ -2583,29 +2589,44 @@ void GMT_free (void *addr)
 	free (addr);
 }
 
-GMT_LONG GMT_add_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module)
+#ifdef DEBUG
+GMT_LONG GMT_alloc_memory_func (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module, char *fname, GMT_LONG line)
+#else
+GMT_LONG GMT_alloc_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module)
+#endif
 {
-	/* GMT_add_memory is used to grow an array ptr that start out small but need to grow
-	 * as more data are read.  There are four different cases:
-	 * n = n_alloc = 0: 	initial allocation of memory, the amount controlled by GMT_min_meminc
-	 * n = 0, n_alloc > 0:  initial allocation of memory, the amount specified by n_alloc
-	 * n < n_alloc:		free up unused memory, with n_alloc = n (finalizes allocation)
-	 * Otherwise:		increment memory by 50% of previous size, up to GMT_max_meminc.
+	/* GMT_alloc_memory is used to initialize, grow, and finalize an array allocation in cases
+	 * were more memory is needed as new data are read.  There are three different situations:
+	 * A) Initial allocation of memory:
+	 *	Signaled by passing n_alloc == 0.  This will initialize the pointer to NULL first.
+	 *	Allocation size is controlled by GMT_min_meminc, unless n > 0 which then is used.
+	 * B) Incremental increase in memory:
+	 *	Signaled by passing n >= n_alloc.  The incremental memory is set to 50% of the
+	 *	previous size, but no more than GMT_max_meminc. Note, *ptr[n] is the location
+	 *	of where the next assignment will take place, hence n >= n_alloc is used.
+	 * C) Finalize memory:
+	 *	Signaled by passing n == 0 and n_alloc > 0.  Unused memory beyond n_alloc is freed up.
+	 * You can use GMT_set_meminc to temporarily change GMT_min_mininc and GMT_reset_meminc will
+	 * reset this value to the compilation default.
 	 * For 32-bit systems there are safety-values to avoid 32-bit overflow.
 	 * Note that n_alloc refers to the number of items to allocate, not the total memory taken
 	 * up by the allocated items (which is n_alloc * element_size).
 	 * module is the name of the module requesting the memory (main program or library function).
 	 */
 	
-	if (n == 0) {		/* First time allocation, use default minimum size unless given */
-		if (n_alloc == 0) n_alloc = GMT_min_meminc;
-#ifdef DEBUG
-		if (*ptr) fprintf (stderr, "%s: GMT_add_memory passed non-NULL pointer for n > 0 in %s, line %d\n", module, __FILE__, __LINE__);
-#endif
+	if (n_alloc == 0) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
+		n_alloc = (n == 0) ? GMT_min_meminc : n;
+		*ptr = NULL;	/* Initialize a new pointer to NULL before calling GMT_memory with it */
 	}
-	else if (n < n_alloc)	/* Final allocation, set to actual final size */
-		n_alloc = n;
-	else {		/* Compute an increment, but make sure not to exceed GMT_LONG limit under 32-bit systems */
+	else if (n == 0 && n_alloc > 0)	/* C) Final allocation, set to actual final size */
+		n = n_alloc;		/* Keep the given n_alloc */
+	else if (n < n_alloc)	/* Nothing to do, already has enough memory.  This is a safety valve. */
+		return (n_alloc);
+	else {		/* B) n >= n_alloc: Compute an increment, but make sure not to exceed GMT_LONG limit under 32-bit systems */
+		size_t add;             /* The increment of memory (in items) */
+		add = MAX (GMT_min_meminc, MIN (n_alloc/2, GMT_max_meminc));    /* Suggested increment from 50% rule, but no less than GMT_min_meminc */
+		n_alloc = MIN (add + n_alloc, LONG_MAX);        /* Limit n_alloc to LONG_MAX */
+#if OLDCRAP
 		GMT_LONG add;			/* The increment of memory (in items) */
 		double total;			/* Floating-point total memory */
 		BOOLEAN keep_trying = TRUE;	/* Keep increasing until we reach our goal */
@@ -2624,9 +2645,10 @@ GMT_LONG GMT_add_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t elemen
 			else
 				n_alloc += add;			/* Safe to do the usual addition without fear of overflow */
 		}
+#endif
 	}
 
-	/* Here n_alloc is set one way or another.  Do the actual allocation */
+	/* Here n_alloc is set one way or another.  Do the actual [re]allocation */
 	
 	*ptr = GMT_memory (*ptr, n_alloc, element_size, module);
 	return (n_alloc);
@@ -2634,34 +2656,44 @@ GMT_LONG GMT_add_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t elemen
 
 /* Utility functions to reallocate memory for groups of 2, 3, or 4 arrays of same size/type */
 
-GMT_LONG GMT_add_memory2 (void **ptr1, void **ptr2, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module)
+GMT_LONG GMT_alloc_memory2 (void **ptr1, void **ptr2, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module)
 {	/* This is used to increment memory for two same-size, same-type arrays (e.g., lon, lat).
-	 * Simply call GMT_add_memory on each pointer, but do not adjust n_alloc until the end */
+	 * Simply call GMT_alloc_memory on each pointer, but do not adjust n_alloc until the end */
 	GMT_LONG new_size;
-	new_size = GMT_add_memory (ptr1, n, n_alloc, element_size, module);
-	new_size = GMT_add_memory (ptr2, n, n_alloc, element_size, module);
+	new_size = GMT_alloc_memory (ptr1, n, n_alloc, element_size, module);
+	new_size = GMT_alloc_memory (ptr2, n, n_alloc, element_size, module);
 	return (new_size);
 }
 
-GMT_LONG GMT_add_memory3 (void **ptr1, void **ptr2, void **ptr3, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module)
+GMT_LONG GMT_alloc_memory3 (void **ptr1, void **ptr2, void **ptr3, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module)
 {	/* This is used to increment memory for three same-size, same-type arrays (e.g., x, y, z).
-	 * Simply call GMT_add_memory on each pointer, but do not adjust n_alloc until the end */
+	 * Simply call GMT_alloc_memory on each pointer, but do not adjust n_alloc until the end */
 	GMT_LONG new_size;
-	new_size = GMT_add_memory (ptr1, n, n_alloc, element_size, module);
-	new_size = GMT_add_memory (ptr2, n, n_alloc, element_size, module);
-	new_size = GMT_add_memory (ptr3, n, n_alloc, element_size, module);
+	new_size = GMT_alloc_memory (ptr1, n, n_alloc, element_size, module);
+	new_size = GMT_alloc_memory (ptr2, n, n_alloc, element_size, module);
+	new_size = GMT_alloc_memory (ptr3, n, n_alloc, element_size, module);
 	return (new_size);
 }
 
-GMT_LONG GMT_add_memory4 (void **ptr1, void **ptr2, void **ptr3, void **ptr4, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module)
+GMT_LONG GMT_alloc_memory4 (void **ptr1, void **ptr2, void **ptr3, void **ptr4, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module)
 {	/* This is used to increment memory for four same-size, same-type arrays (e.g., x, y, z, w).
-	 * Simply call GMT_add_memory on each pointer, but do not adjust n_alloc until the end */
+	 * Simply call GMT_alloc_memory on each pointer, but do not adjust n_alloc until the end */
 	GMT_LONG new_size;
-	new_size = GMT_add_memory (ptr1, n, n_alloc, element_size, module);
-	new_size = GMT_add_memory (ptr2, n, n_alloc, element_size, module);
-	new_size = GMT_add_memory (ptr3, n, n_alloc, element_size, module);
-	new_size = GMT_add_memory (ptr4, n, n_alloc, element_size, module);
+	new_size = GMT_alloc_memory (ptr1, n, n_alloc, element_size, module);
+	new_size = GMT_alloc_memory (ptr2, n, n_alloc, element_size, module);
+	new_size = GMT_alloc_memory (ptr3, n, n_alloc, element_size, module);
+	new_size = GMT_alloc_memory (ptr4, n, n_alloc, element_size, module);
 	return (new_size);
+}
+
+void GMT_set_meminc (GMT_LONG increment)
+{	/* Temporarily set the GMT_min_memic to this value; restore with GMT_reset_meminc */
+	GMT_min_meminc = increment;
+}
+
+void GMT_reset_meminc (void)
+{	/* Temporarily set the GMT_min_memic to this value; restore with GMT_reset_meminc */
+	GMT_min_meminc = GMT_MIN_MEMINC;
 }
 
 void GMT_contlabel_init (struct GMT_CONTOUR *G, GMT_LONG mode)
