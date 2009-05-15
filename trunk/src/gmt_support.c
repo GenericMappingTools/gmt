@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.405 2009-05-14 00:51:31 guru Exp $
+ *	$Id: gmt_support.c,v 1.406 2009-05-15 01:40:07 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2599,6 +2599,9 @@ GMT_LONG GMT_add_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t elemen
 	
 	if (n == 0) {		/* First time allocation, use default minimum size unless given */
 		if (n_alloc == 0) n_alloc = GMT_min_meminc;
+#ifdef DEBUG
+		if (*ptr) fprintf (stderr, "%s: GMT_add_memory passed non-NULL pointer for n > 0 in %s, line %d\n", module, __FILE__, __LINE__);
+#endif
 	}
 	else if (n < n_alloc)	/* Final allocation, set to actual final size */
 		n_alloc = n;
