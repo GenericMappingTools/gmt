@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.407 2009-05-15 08:16:21 guru Exp $
+ *	$Id: gmt_support.c,v 1.408 2009-05-15 08:41:26 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2626,6 +2626,7 @@ GMT_LONG GMT_alloc_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t elem
 		size_t add;             /* The increment of memory (in items) */
 		add = MAX (GMT_min_meminc, MIN (n_alloc/2, GMT_max_meminc));    /* Suggested increment from 50% rule, but no less than GMT_min_meminc */
 		n_alloc = MIN (add + n_alloc, LONG_MAX);        /* Limit n_alloc to LONG_MAX */
+		if (n >= n_alloc) n_alloc = n + 1;		/* If still not big enough, set n_alloc to n + 1 */
 #if OLDCRAP
 		GMT_LONG add;			/* The increment of memory (in items) */
 		double total;			/* Floating-point total memory */
