@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.260 2009-05-13 21:06:42 guru Exp $
+ *	$Id: gmt_plot.c,v 1.261 2009-05-15 09:32:23 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -145,7 +145,7 @@ BOOLEAN set_do_seconds (double inc);
 /* Local variables to this file */
 
 GMT_LONG GMT_n_annotations[4] = {0, 0, 0, 0};
-GMT_LONG GMT_alloc_annotations[4] = {GMT_SMALL_CHUNK, GMT_SMALL_CHUNK, GMT_SMALL_CHUNK, GMT_SMALL_CHUNK};
+GMT_LONG GMT_alloc_annotations[4] = {0, 0, 0, 0};
 double *GMT_x_annotation[4], *GMT_y_annotation[4];
 
 /* Get bitmapped 600 dpi GMT glyph for timestamp.  The glyph is a 90 x 220 pixel 1-bit image
@@ -1567,15 +1567,9 @@ BOOLEAN GMT_annot_too_crowded (double x, double y, GMT_LONG side) {
 
 	/* OK to plot and add to list */
 
-	GMT_x_annotation[side][GMT_n_annotations[side]] = x;
-	GMT_y_annotation[side][GMT_n_annotations[side]] = y;
-	GMT_n_annotations[side]++;
+	if (GMT_n_annotations[side] == GMT_alloc_annotations[side]) GMT_alloc_annotations[side] = GMT_alloc_memory2 ((void **)&GMT_x_annotation[side], (void **)&GMT_y_annotation[side], GMT_n_annotations[side], GMT_alloc_annotations[side], sizeof (double), "GMT_annot_too_crowded");
+	GMT_x_annotation[side][GMT_n_annotations[side]] = x;	GMT_y_annotation[side][GMT_n_annotations[side]] = y;	GMT_n_annotations[side]++;
 
-	if (GMT_n_annotations[side] == GMT_alloc_annotations[side]) {
-		GMT_alloc_annotations[side] <<= 1;
-		GMT_x_annotation[side] = (double *) GMT_memory ((void *)GMT_x_annotation[side], (size_t)GMT_alloc_annotations[side], sizeof (double), "GMT_annot_too_crowded");
-		GMT_y_annotation[side] = (double *) GMT_memory ((void *)GMT_y_annotation[side], (size_t)GMT_alloc_annotations[side], sizeof (double), "GMT_annot_too_crowded");
-	}
 	return (FALSE);
 }
 
@@ -2064,10 +2058,6 @@ void GMT_map_basemap (void) {
 
 	if (gmtdefs.oblique_annotation & 2) frame_info.horizontal = 2;
 	if (frame_info.horizontal == 2) gmtdefs.oblique_annotation |= 2;
-	for (i = 0; i < 4; i++) {
-		GMT_x_annotation[i] = (double *) GMT_memory (VNULL, (size_t)GMT_alloc_annotations[i], sizeof (double), "GMT_map_basemap");
-		GMT_y_annotation[i] = (double *) GMT_memory (VNULL, (size_t)GMT_alloc_annotations[i], sizeof (double), "GMT_map_basemap");
-	}
 	if (gmtdefs.basemap_type == GMT_IS_FANCY && !GMT_is_fancy_boundary()) gmtdefs.basemap_type = GMT_IS_PLAIN;
 
 	ps_comment ("Start of basemap");
@@ -2565,8 +2555,7 @@ void GMT_plot_line (double *x, double *y, int *pen, GMT_LONG n)
 	for (j = i + 1, stop = FALSE; !stop && j < n; j++) stop = (pen[j] == PSL_PEN_MOVE || (*GMT_map_jump) (x[j-1], y[j-1], x[j], y[j]));
 	if (!stop) {
 		if (project_info.three_D) {	/* Must project first */
-			xx = (double *) GMT_memory (VNULL, (size_t)(n-i), sizeof (double), "GMT_plot_line");
-			yy = (double *) GMT_memory (VNULL, (size_t)(n-i), sizeof (double), "GMT_plot_line");
+			(void)GMT_alloc_memory2 ((void **)&xx, (void **)&yy, n-i, 0, sizeof (double), "GMT_plot_line");
 			for (j = i; j < n; j++) GMT_xy_do_z_to_xy (x[j], y[j], project_info.z_level, &xx[j], &yy[j]);
 			ps_line (&xx[i], &yy[i], n - i, 3, close);
 			GMT_free ((void *)xx);
@@ -3202,7 +3191,7 @@ void GMT_setpen (struct GMT_PEN *pen)
 }
 
 void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
-	GMT_LONG n = 0, n_alloc = GMT_SMALL_CHUNK, na, i, font_no = gmtdefs.annot_font[0];
+	GMT_LONG n = 0, n_alloc = 0, na, i, font_no = gmtdefs.annot_font[0];
 	BOOLEAN flush = FALSE, this_outline = FALSE;
 	double x, y, *xx, *yy, *xp, *yp, font_size, dim[3];
 	char cmd[GMT_TEXT_LEN], *c;
@@ -3210,9 +3199,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 	struct GMT_FILL *f = VNULL;
 	struct GMT_PEN *p = VNULL;
 
-	xx = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
-	yy = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
-
+	GMT_set_meminc (GMT_SMALL_CHUNK);
 	sprintf (cmd, "Start of symbol %s", symbol->name);
 	ps_comment (cmd);
 	s = symbol->first;
@@ -3224,9 +3211,9 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 		switch (s->action) {
 			case GMT_ACTION_MOVE:
 				if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
-				xx[0] = x;
-				yy[0] = y;
-				n = 1;
+				n = 0;
+				if (n >= n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&xx, (void **)&yy, n, n_alloc, sizeof (double), GMT_program);
+				xx[n] = x;	yy[n] = y;	n++;
 				p = (s->pen)  ? s->pen  : pen;
 				f = (s->fill) ? s->fill : fill;
 				this_outline = (p && p->rgb[0] == -1) ? FALSE : outline;
@@ -3234,31 +3221,18 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 
 			case GMT_ACTION_DRAW:
 				flush = TRUE;
-				if (n >= n_alloc) {
-					n_alloc <<= 1;
-					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
-					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
-				}
-				xx[n] = x;
-				yy[n] = y;
-				n++;
+				if (n >= n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&xx, (void **)&yy, n, n_alloc, sizeof (double), GMT_program);
+				xx[n] = x;	yy[n] = y;	n++;
 				break;
 
 			case GMT_ACTION_ARC:
 				flush = TRUE;
 				na = GMT_get_arc (x, y, 0.5 * s->p[0] * size, s->p[1], s->p[2], &xp, &yp);
 				for (i = 0; i < na; i++) {
-					if (n >= n_alloc) {
-						n_alloc <<= 1;
-						xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), GMT_program);
-						yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), GMT_program);
-					}
-					xx[n] = xp[i];
-					yy[n] = yp[i];
-					n++;
+					if (n >= n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&xx, (void **)&yy, n, n_alloc, sizeof (double), GMT_program);
+					xx[n] = xp[i];	yy[n] = yp[i];	n++;
 				}
-				GMT_free ((void *)xp);
-				GMT_free ((void *)yp);
+				GMT_free ((void *)xp);	GMT_free ((void *)yp);
 				break;
 
 			case GMT_ACTION_CROSS:
@@ -3426,9 +3400,9 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 	if (flush) GMT_flush_symbol_piece (xx, yy, z0, &n, p, f, this_outline, &flush);
 	sprintf (cmd, "End of symbol %s\n", symbol->name);
 	ps_comment (cmd);
+	GMT_reset_meminc ();
 
-	GMT_free ((void *)xx);
-	GMT_free ((void *)yy);
+	GMT_free ((void *)xx);	GMT_free ((void *)yy);
 }
 
 void GMT_flush_symbol_piece (double *x, double *y, double z, GMT_LONG *n, struct GMT_PEN *p, struct GMT_FILL *f, BOOLEAN outline, BOOLEAN *flush) {
@@ -3782,14 +3756,12 @@ void GMT_pie (double x, double y, double z, double size[], struct GMT_FILL *fill
 		double *xp, *yp, *dx, *dy;
 
 		n = GMT_get_arc (x, y, size[0], size[1], size[2], &dx, &dy);
-		xp = (double *) GMT_memory (VNULL, (size_t)(n+1), sizeof (double), GMT_program);
-		yp = (double *) GMT_memory (VNULL, (size_t)(n+1), sizeof (double), GMT_program);
+		(void)GMT_alloc_memory2 ((void **)&xp, (void **)&yp, n+1, 0, sizeof (double), GMT_program);
 
 		xp[0] = x;	yp[0] = y;	/* Start from center */
 		if (project_info.three_D)  GMT_xyz_to_xy (xp[0], yp[0], z, &xp[0], &yp[0]);
 		for (j = 0, i = 1; j < n; j++, i++) {
-			xp[i] = dx[j];
-			yp[i] = dy[j];
+			xp[i] = dx[j];	yp[i] = dy[j];
 			if (project_info.three_D) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		}
 		GMT_fill (xp, yp, (GMT_LONG)i, fill, outline);
@@ -3972,9 +3944,7 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, GMT_LONG mode)
 		else
 			just = G->just;
 		/* Allocate temp space for everything that must be passed to ps_textclip */
-		angle = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
-		xt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
-		yt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+		(void)GMT_alloc_memory3 ((void **)&angle, (void **)&xt, (void **)&yt, m, 0, sizeof (double), GMT_program);
 		txt = (char **) GMT_memory (VNULL, (size_t)m, sizeof (char *), GMT_program);
 		for (i = m = 0; i < G->n_segments; i++) {
 			C = G->segment[i];	/* Pointer to current segment */
@@ -4076,9 +4046,7 @@ void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, GMT_LONG mode)
 
 		if (mode == 0) {	/* Opaque so ps_textclip is called for 1st time here */
 			/* Allocate temp space for everything that must be passed to ps_textclip */
-			angle = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
-			xt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
-			yt = (double *) GMT_memory (VNULL, (size_t)m, sizeof (double), GMT_program);
+			(void)GMT_alloc_memory3 ((void **)&angle, (void **)&xt, (void **)&yt, m, 0, sizeof (double), GMT_program);
 			txt = (char **) GMT_memory (VNULL, (size_t)m, sizeof (char *), GMT_program);
 			for (i = m = 0; i < G->n_segments; i++) {
 				C = G->segment[i];	/* Pointer to current segment */
@@ -4551,8 +4519,7 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 	double delta_azimuth, sin_azimuth, cos_azimuth, sinp, cosp, angle, x, y, x_prime, y_prime, rho, c;
 	double sin_c, cos_c, center, *px, *py;
 
-	px = (double *) GMT_memory (VNULL, (size_t)(GMT_ELLIPSE_APPROX+1), sizeof (double), GMT_program);
-	py = (double *) GMT_memory (VNULL, (size_t)(GMT_ELLIPSE_APPROX+1), sizeof (double), GMT_program);
+	(void)GMT_alloc_memory2 ((void **)&px, (void **)&py, GMT_ELLIPSE_APPROX+1, 0, sizeof (double), GMT_program);
 
 	delta_azimuth = 2.0 * M_PI / GMT_ELLIPSE_APPROX;
 	major *= 1000.0;	minor *= 1000.0;	/* Convert to meters */
