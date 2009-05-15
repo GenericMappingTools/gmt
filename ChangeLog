@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.507 2009-05-14 17:42:21 remko Exp $
+	$Id: ChangeLog,v 1.508 2009-05-15 01:40:07 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-05-14	remko
@@ -13,7 +13,7 @@
 2009-05-12	remko
 	* gmt_map.c (GMT_UTMzone_to_wesn):	Numerous bug fixes: Did not report bad zone
 				for < A or > Z; Zones A+B reached till 84S instead of 80S; Zone J
-				wrongly produced value for Zone K; Zones U+W were not recognised;
+				wrongly produced value for Zone K; Zones U+W were not recognized;
 				Now also equates Zone O to Zone P (already equated Zone I to J).
 
 2009-05-08	remko
@@ -50,14 +50,14 @@
 	* pglegend.c:		Allow S record not to have <text>. Until now, when left empty would
 				use whatever <text> was set to in previous record.
 	* pslegend.txt:		Changed accordingly, plus some additional polishing.
-	* GMT_sealand.cpt:	Changed hue interval on one line from 0-345 to 360-345 to prevend
+	* GMT_sealand.cpt:	Changed hue interval on one line from 0-345 to 360-345 to prevent
 				wrong interpolation.
 	* GMT_cyclic.cpt:	Reduced to one line.
 	* gmt_support.c:	GMT_continuous based on HSV (not RGB) values when read as HSV.
 
 2009-05-03	jluis
 	* mgd77/mgd77.c:	Fixed bug in MGD77_igrf10syn routine (mistake done while cleaning the
-				f2c versiom) that resulted in altitude always being on Earth surface
+				f2c version) that resulted in altitude always being on Earth surface
 				when geocentric coords were used.
 
 2009-05-03	pwessel
@@ -115,7 +115,7 @@
 2009-04-15	remko
 	* gmt_init.c:		Add handling of -M|m by GMT_parse_common_options.
 	* *.c:			Removed call to GMT_multisegment. -M|m now handled as common option.
-				-m is allowed silently. Not mentioned in manpages.
+				-m is allowed silently. Not mentioned in man pages.
 
 2009-04-14	pwessel
 	* mgd77/mgd77list.c:	Added -Fytime which gives decimal absolute year for time output.
