@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.29 2009-05-13 21:06:42 guru Exp $
+ *	$Id: gmt_vector.c,v 1.30 2009-05-15 09:32:23 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -493,10 +493,9 @@ void GMT_gauss (double *a, double *vec, GMT_LONG n_in, GMT_LONG nstore_in, doubl
 
         iet=0;  /* initial error flags, one for triagularization*/
         ieb=0;  /* one for backsolving */
-	n = (GMT_LONG)n_in;
-	nstore = (GMT_LONG)nstore_in;
-	line = (GMT_LONG *) GMT_memory (VNULL, (size_t)n, sizeof (GMT_LONG), "GMT_gauss");
-	isub = (GMT_LONG *) GMT_memory (VNULL, (size_t)n, sizeof (GMT_LONG), "GMT_gauss");
+	n = n_in;
+	nstore = nstore_in;
+	(void)GMT_alloc_memory2 ((void **)&line, (void **)&isub, n, 0, sizeof (GMT_LONG), "GMT_gauss");
 
 /* triangularize the matrix a*/
 /* replacing the zero elements of the triangularized matrix */
@@ -698,7 +697,7 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 	 * inches of map projection.
 	 */
       
-	GMT_LONG i, j, n_tmp, n_step = 0, n_alloc;
+	GMT_LONG i, j, n_tmp, n_step = 0, n_alloc = 0;
 	BOOLEAN meridian;
 	double *lon_tmp, *lat_tmp, *old;
 	double a[3], b[3], x[3], *lon, *lat;
@@ -707,11 +706,8 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 	lon = *a_lon;
 	lat = *a_lat;
 	
-	n_alloc = n;
-	lon_tmp = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-	lat_tmp = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-	
 	GMT_geo_to_cart (lat[0], lon[0], a, TRUE);
+	n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, 1, 0, sizeof (double), "GMT_fix_up_path");
 	lon_tmp[0] = lon[0];	lat_tmp[0] = lat[0];
 	n_tmp = 1;
 	if (step <= 0.0) step = 1.0;
@@ -725,27 +721,19 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 			n_step = irint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
+				if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
 				lat_tmp[n_tmp] = lat[i-1];
 				n_tmp++;
-				if (n_tmp == n_alloc) {
-					n_alloc <<= 1;
-					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-				}
 			}
 			theta = fabs(lat[i]-lat[i-1]);
 			n_step = irint (theta / step);
 			for (j = 0; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
+				if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
 				lon_tmp[n_tmp] = lon[i];
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_tmp++;
-				if (n_tmp == n_alloc) {
-					n_alloc <<= 1;
-					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-				}
 			}
 		}
 
@@ -754,27 +742,19 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 			n_step = irint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
+				if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
 				lon_tmp[n_tmp] = lon[i-1];
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_tmp++;
-				if (n_tmp == n_alloc) {
-					n_alloc <<= 1;
-					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-				}
 			}
 			theta = fabs(lon[i]-lon[i-1]) * cosd(lat[i]);
 			n_step = irint (theta / step);
 			for (j = 0; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
+				if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
 				lat_tmp[n_tmp] = lat[i];
 				n_tmp++;
-				if (n_tmp == n_alloc) {
-					n_alloc <<= 1;
-					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-				}
 			}
 		}
 
@@ -795,6 +775,7 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 				x[1] = a[1] * d + b[1] * c;
 				x[2] = a[2] * d + b[2] * c;
 				GMT_normalize3v (x);
+				if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
 				GMT_cart_to_geo (&lat_tmp[n_tmp], &lon_tmp[n_tmp], x, TRUE);
 				if (meridian)
 					lon_tmp[n_tmp] = minlon;
@@ -803,24 +784,14 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 				else if (lon_tmp[n_tmp] > maxlon)
 					lon_tmp[n_tmp] -= 360.0;
 				n_tmp++;
-				if (n_tmp == n_alloc) {
-					n_alloc <<= 1;
-					lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-					lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-				}
 			}
 		}
+		if (n_tmp == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, n_tmp, n_alloc, sizeof (double), "GMT_fix_up_path");
 		lon_tmp[n_tmp] = lon[i];	lat_tmp[n_tmp] = lat[i];
 		n_tmp++;
-		if (n_tmp == n_alloc) {
-			n_alloc <<= 1;
-			lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-			lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_alloc, sizeof (double), "GMT_fix_up_path");
-		}
 		a[0] = b[0];	a[1] = b[1];	a[2] = b[2];
 	}
-	lon_tmp = (double *) GMT_memory ((void *) lon_tmp, (size_t)n_tmp, sizeof (double), "GMT_fix_up_path");
-	lat_tmp = (double *) GMT_memory ((void *) lat_tmp, (size_t)n_tmp, sizeof (double), "GMT_fix_up_path");
+	n_alloc = GMT_alloc_memory2 ((void **)&lon_tmp, (void **)&lat_tmp, 0, n_tmp, sizeof (double), "GMT_fix_up_path");
 	
 	old = lon;
 	lon = lon_tmp;
