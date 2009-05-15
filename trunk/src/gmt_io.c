@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.184 2009-05-14 02:44:11 guru Exp $
+ *	$Id: gmt_io.c,v 1.185 2009-05-15 08:16:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2119,9 +2119,7 @@ void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S)
 	else {			/* Must cover all the 6 forms of dd[:mm[:ss]][.xxx] */
 		char fmt[GMT_LONG_TEXT];
 
-		for (i = 0; i < 3; i++)
-		  for (j = 0; j < 2; j++)
-		    GMT_plot_format[i][j] = GMT_memory (VNULL, (size_t)GMT_LONG_TEXT, sizeof (char), GMT_program);
+		for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) GMT_plot_format[i][j] = GMT_memory (VNULL, GMT_LONG_TEXT, sizeof (char), GMT_program);
 
 		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
 
@@ -2941,7 +2939,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 			T->segment[seg] = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 			n_read++;
 			if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
-				k = sscanf (&GMT_io.segment_header[1], "%lg", &d);	/* See if we find a number in the header */
+				k = sscanf (&GMT_io.segment_header[1], "%lg", &d);		/* See if we find a number in the header */
 				T->segment[seg]->dist = (k == 1 && dist == 0.0) ? d : dist;	/* If so, assign it to dist, else go with default */
 			}
 			else
@@ -2988,7 +2986,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 			}
 			if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) {
 				if (greenwich && T->segment[seg]->coord[GMT_X][row] > 180.0) T->segment[seg]->coord[GMT_X][row] -= 360.0;
-				if (!greenwich && T->segment[seg]->coord[GMT_X][row] < 0.0) T->segment[seg]->coord[GMT_X][row] += 360.0;
+				if (!greenwich && T->segment[seg]->coord[GMT_X][row] < 0.0)  T->segment[seg]->coord[GMT_X][row] += 360.0;
 			}
 			for (k = 0; k < T->segment[seg]->n_columns; k++) {
 				T->segment[seg]->coord[k][row] = in[k];

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.184 2009-05-13 21:06:41 guru Exp $
+ *	$Id: gmt.h,v 1.185 2009-05-15 08:16:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -656,6 +656,7 @@ EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts time
 EXTERN_MSC GMT_LONG GMT_min_meminc, GMT_max_meminc;
 
 #ifdef DEBUG
+#define GMT_alloc_memory(ptr,n,n_alloc,element_size,module) GMT_alloc_memory_func(ptr,n,n_alloc,element_size,module,__FILE__,__LINE__)
 #define GMT_memory(array,n,size,program) GMT_memory_func(array,n,size,program,__FILE__,__LINE__)
 #define GMT_free(array) GMT_free_func(array,__FILE__,__LINE__)
 extern struct MEMORY_TRACKER *GMT_mem_keeper;

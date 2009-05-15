@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.46 2009-05-13 21:06:42 guru Exp $
+ *	$Id: gmt_support.h,v 1.47 2009-05-15 08:16:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -91,15 +91,18 @@ EXTERN_MSC void GMT_fourt (float *data, GMT_LONG *nn, GMT_LONG ndim, GMT_LONG ks
 EXTERN_MSC GMT_LONG GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 EXTERN_MSC GMT_LONG GMT_get_proj3D (char *line, double *az, double *el);
 EXTERN_MSC BOOLEAN GMT_gap_detected (void);
-EXTERN_MSC GMT_LONG GMT_add_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
-EXTERN_MSC GMT_LONG GMT_add_memory2 (void **ptr1, void **ptr2, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
-EXTERN_MSC GMT_LONG GMT_add_memory3 (void **ptr1, void **ptr2, void **ptr3, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
-EXTERN_MSC GMT_LONG GMT_add_memory4 (void **ptr1, void **ptr2, void **ptr3, void **ptr4, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
+EXTERN_MSC GMT_LONG GMT_alloc_memory2 (void **ptr1, void **ptr2, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
+EXTERN_MSC GMT_LONG GMT_alloc_memory3 (void **ptr1, void **ptr2, void **ptr3, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
+EXTERN_MSC GMT_LONG GMT_alloc_memory4 (void **ptr1, void **ptr2, void **ptr3, void **ptr4, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
+EXTERN_MSC void GMT_set_meminc (GMT_LONG increment);
+EXTERN_MSC void GMT_reset_meminc (void);
 
 #ifdef DEBUG
+EXTERN_MSC GMT_LONG GMT_alloc_memory_func (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module, char *fname, GMT_LONG line);
 EXTERN_MSC void *GMT_memory_func (void *prev_addr, GMT_LONG nelem, size_t size, char *progname, char *fname, GMT_LONG line);
 EXTERN_MSC void GMT_free_func (void *addr, char *fname, GMT_LONG line);
 #else
+EXTERN_MSC GMT_LONG GMT_alloc_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
 EXTERN_MSC void *GMT_memory (void *prev_addr, GMT_LONG nelem, size_t size, char *progname);
 EXTERN_MSC void GMT_free (void *addr);
 #endif

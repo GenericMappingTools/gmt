@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.122 2009-05-14 17:37:15 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.123 2009-05-15 08:16:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -459,7 +459,7 @@ GMT_LONG GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, doubl
 		if ((*last_row - *first_row + 1) > *height) (*first_row)++;
 	}
 
-	k = (GMT_LONG *) GMT_memory (VNULL, (size_t)(*width), sizeof (GMT_LONG), "GMT_grd_prep_io");
+	k = (GMT_LONG *) GMT_memory (VNULL, (*width), sizeof (GMT_LONG), "GMT_grd_prep_io");
 	if (geo) {
 		for (i = 0; i < (*width); i++) {
 			x = *w + (i + half_or_zero) * header->x_inc;
@@ -609,7 +609,7 @@ GMT_LONG GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	else	/* All other */
 		G->n_byte = G->header.nx * G->size;
 
-	G->v_row = (void *) GMT_memory (VNULL, (size_t)G->n_byte, (size_t)1, GMT_program);
+	G->v_row = (void *) GMT_memory (VNULL, G->n_byte, (size_t)1, GMT_program);
 
 	G->row = 0;
 	G->auto_advance = TRUE;	/* Default is to read sequential rows */
@@ -678,7 +678,7 @@ GMT_LONG GMT_write_grd_row (struct GMT_GRDFILE *G, GMT_LONG row_no, float *row)
 
 	size = GMT_grd_data_size (G->header.type, &G->header.nan_value);
 
-	tmp = (void *) GMT_memory (VNULL, (size_t)G->header.nx, (size_t)size, "GMT_write_grd_row");
+	tmp = (void *) GMT_memory (VNULL, (GMT_LONG)G->header.nx, (size_t)size, "GMT_write_grd_row");
 
 	GMT_grd_do_scaling (row, (GMT_LONG)G->header.nx, G->scale, G->offset);
 	for (i = 0; i < G->header.nx; i++) if (GMT_is_fnan (row[i]) && G->check) row[i] = (float)G->header.nan_value;
@@ -749,7 +749,7 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 	GMT_LONG i, j, k, ij, nc, nx1, n_shift, width, n_warn = 0;
 	float *tmp;
 
-	tmp = (float *) GMT_memory (VNULL, (size_t)header->nx, sizeof (float), "GMT_grd_shift");
+	tmp = (float *) GMT_memory (VNULL, (GMT_LONG)header->nx, sizeof (float), "GMT_grd_shift");
 
 	n_shift = irint (shift / header->x_inc);
 	nx1 = header->nx - 1;
@@ -1234,7 +1234,7 @@ GMT_LONG GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, doub
 	grd->nx = GMT_get_n (grd->x_min, grd->x_max, grd->x_inc, grd->node_offset);
 	grd->ny = GMT_get_n (grd->y_min, grd->y_max, grd->y_inc, grd->node_offset);
 	mx = grd->nx + GMT_pad[0] + GMT_pad[2];	my = grd->ny + GMT_pad[1] + GMT_pad[3];
-	*grid = (float *) GMT_memory (VNULL, (size_t)(mx * my), sizeof (float), GMT_program);
+	*grid = (float *) GMT_memory (VNULL, (mx * my), sizeof (float), GMT_program);
 	grd->xy_off = 0.5;
 
 	n_cols = (min == 1) ? GMT_IMG_NLON_1M : GMT_IMG_NLON_2M;		/* Number of columns (10800 or 21600) */
@@ -1243,7 +1243,7 @@ GMT_LONG GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, doub
 	n_skip = (GMT_LONG)floor ((project_info.ymax - grd->y_max) / grd->y_inc);	/* Number of rows clearly above y_max */
 	if (GMT_fseek (fp, (long)(n_skip * n_cols * GMT_IMG_ITEMSIZE), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
-	i2 = (short int *) GMT_memory (VNULL, (size_t)n_cols, sizeof (short int), GMT_program);
+	i2 = (short int *) GMT_memory (VNULL, n_cols, sizeof (short int), GMT_program);
 	for (j = 0; j < grd->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */
 		ij = (j + GMT_pad[3]) * mx + GMT_pad[0];
 		GMT_fread ((void *)i2, sizeof (short int), (size_t)n_cols, fp);
@@ -1275,8 +1275,8 @@ struct GMT_GRID *GMT_create_grid (char *arg)
 {	/* Allocates space for a new grid container.  No space allocated for the float grid itself */
 	struct GMT_GRID * G;
 
-	G = (struct GMT_GRID *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_GRID), arg);
-	G->header = (struct GRD_HEADER *) GMT_memory (VNULL, (size_t)1, sizeof (struct GRD_HEADER), arg);
+	G = (struct GMT_GRID *) GMT_memory (VNULL, (GMT_LONG)1, sizeof (struct GMT_GRID), arg);
+	G->header = (struct GRD_HEADER *) GMT_memory (VNULL, (GMT_LONG)1, sizeof (struct GRD_HEADER), arg);
 
 	return (G);
 }

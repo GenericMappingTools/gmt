@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.392 2009-05-13 21:06:41 guru Exp $
+ *	$Id: gmt_init.c,v 1.393 2009-05-15 08:16:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2621,7 +2621,7 @@ void GMT_putdefaults (char *this_file)	/* Dumps the GMT parameters to file or st
 		GMT_savedefaults (this_file);
 	else if (GMT_TMPDIR) {	/* Write $GMT_TMPDIR/.gmtdefaults4 */
 		char *path = CNULL;
-		path = (char *) GMT_memory (VNULL, (size_t)(strlen (GMT_TMPDIR) + 15), sizeof (char), "GMT");
+		path = (char *) GMT_memory (VNULL, (GMT_LONG)(strlen (GMT_TMPDIR) + 15), sizeof (char), "GMT");
 		sprintf (path, "%s%c.gmtdefaults4", GMT_TMPDIR, DIR_DELIM);
 		GMT_savedefaults (path);
 		GMT_free(path);
@@ -3074,7 +3074,7 @@ void GMT_hash_init (struct GMT_HASH *hashnode, char **keys, GMT_LONG n_hash, GMT
 		entry = GMT_hash (keys[i], n_hash);
 		this = &hashnode[entry];
 		while (this->next) this = this->next;
-		this->next = (struct GMT_HASH *)GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_HASH), GMT_program);
+		this->next = (struct GMT_HASH *)GMT_memory (VNULL, (GMT_LONG)1, sizeof (struct GMT_HASH), GMT_program);
 		this->next->key = keys[i];
 		this->next->id = i;
 	}
@@ -3180,42 +3180,39 @@ GMT_LONG GMT_font_lookup (char *name, struct GMT_FONT *list, GMT_LONG n)
 }
 
 GMT_LONG GMT_load_user_media (void) {	/* Load any user-specified media formats */
-	GMT_LONG n, n_alloc;
+	GMT_LONG n = 0, n_alloc = 0;
 	double w, h;
-	char line[BUFSIZ], media[GMT_TEXT_LEN];
-	FILE *fp;
+	char line[BUFSIZ], file[BUFSIZ], media[GMT_TEXT_LEN];
+	FILE *fp = NULL;
 
-	GMT_getsharepath ("conf", "gmt_custom_media", ".conf", line);
-	if ((fp = fopen (line, "r")) == NULL) return (0);
+	GMT_getsharepath ("conf", "gmt_custom_media", ".conf", file);
+	if ((fp = fopen (file, "r")) == NULL) return (0);
 
-	n_alloc = GMT_TINY_CHUNK;
-	GMT_user_media = (struct GMT_MEDIA *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_MEDIA), GMT_program);
-	GMT_user_media_name = (char **) GMT_memory (VNULL, (size_t)n_alloc, sizeof (char *), GMT_program);
-
-	n = 0;
+	GMT_set_meminc (GMT_TINY_CHUNK);	/* Only allocate a small amount */
 	while (fgets (line, BUFSIZ, fp)) {
-		if (line[0] == '#' || line[0] == '\n') continue;
+		if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and blank lines */
 
-		sscanf (line, "%s %lg %lg", media, &w, &h);
+		if (sscanf (line, "%s %lg %lg", media, &w, &h) != 3) {
+			fprintf (stderr, "%s: Error decoding file %s.  Bad format? [%s]\n", GMT_program, file, line);
+			exit (EXIT_FAILURE);
+		}
 
-		/* Convert string to lower case */
+		GMT_str_tolower (media);	/* Convert string to lower case */
 
-		GMT_str_tolower (media);
-
+		if (n == n_alloc) {
+			(void)GMT_alloc_memory ((void **)&GMT_user_media, n, n_alloc, sizeof (struct GMT_MEDIA), GMT_program);
+			n_alloc = GMT_alloc_memory ((void **)&GMT_user_media_name, n, n_alloc, sizeof (char *), GMT_program);
+		}
 		GMT_user_media_name[n] = strdup (media);
 		GMT_user_media[n].width  = w;
 		GMT_user_media[n].height = h;
 		n++;
-		if (n == n_alloc) {
-			n_alloc <<= 1;
-			GMT_user_media = (struct GMT_MEDIA *) GMT_memory ((void *)GMT_user_media, (size_t)n_alloc, sizeof (struct GMT_MEDIA), GMT_program);
-			GMT_user_media_name = (char **) GMT_memory ((void *)GMT_user_media_name, (size_t)n_alloc, sizeof (char *), GMT_program);
-		}
 	}
 	fclose (fp);
-
-	GMT_user_media = (struct GMT_MEDIA *) GMT_memory ((void *)GMT_user_media, (size_t)n, sizeof (struct GMT_MEDIA), GMT_program);
-	GMT_user_media_name = (char **) GMT_memory ((void *)GMT_user_media_name, (size_t)n, sizeof (char *), GMT_program);
+	
+	(void)GMT_alloc_memory ((void **)&GMT_user_media, 0, n, sizeof (struct GMT_MEDIA), GMT_program);
+	(void)GMT_alloc_memory ((void **)&GMT_user_media_name, 0, n, sizeof (char *), GMT_program);
+	GMT_reset_meminc ();
 
 	return (n);
 }
@@ -3336,50 +3333,43 @@ GMT_LONG GMT_get_time_language (char *name)
 }
 
 void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shorthand notation */
-	GMT_LONG n = 0, n_alloc;
-	char file[BUFSIZ], line[BUFSIZ], a[10], b[20], c[20], d[20], e[20];
-	FILE *fp;
+	GMT_LONG n = 0, n_alloc = 0;
+	char file[BUFSIZ], line[BUFSIZ], a[GMT_TEXT_LEN], b[GMT_TEXT_LEN], c[GMT_TEXT_LEN], d[GMT_TEXT_LEN], e[GMT_TEXT_LEN];
+	FILE *fp = NULL;
 
-	GMT_file_id = NULL;
-	GMT_file_scale = GMT_file_offset = GMT_file_nan = NULL;
-	GMT_file_suffix = NULL;
-	GMT_n_file_suffix = 0;
+	GMT_n_file_suffix = 0;	/* By default there are no shorthands unless .gmt_io is found */
 	
 	if (!GMT_getuserpath (".gmt_io", file)) return;
 	if ((fp = fopen (file, "r")) == NULL) return;
 
-	n_alloc = GMT_SMALL_CHUNK;
-	GMT_file_id = (GMT_LONG *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (GMT_LONG), GMT_program);
-	GMT_file_scale = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
-	GMT_file_offset = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
-	GMT_file_nan = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), GMT_program);
-	GMT_file_suffix = (char **) GMT_memory (VNULL, (size_t)n_alloc, sizeof (char *), GMT_program);
-
+	GMT_set_meminc (GMT_TINY_CHUNK);	/* Only allocate a small amount */
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
-		sscanf (line, "%s %s %s %s %s", a, b, c, d, e);
+		if (sscanf (line, "%s %s %s %s %s", a, b, c, d, e) != 5) {
+			fprintf (stderr, "%s: Error decoding file %s.  Bad format? [%s]\n", GMT_program, file, line);
+			exit (EXIT_FAILURE);
+		}
+		
+		if (n == n_alloc) {
+			(void)GMT_alloc_memory ((void **)&GMT_file_id, n, n_alloc, sizeof (GMT_LONG), GMT_program);
+			(void)GMT_alloc_memory ((void **)&GMT_file_suffix, n, n_alloc, sizeof (char *), GMT_program);
+			n_alloc = GMT_alloc_memory3 ((void **)&GMT_file_scale, (void **)&GMT_file_offset, (void **)&GMT_file_nan, n, n_alloc, sizeof (double), GMT_program);
+		}
+		
 		GMT_file_suffix[n] = strdup (a);
 		GMT_file_id[n] = GMT_grd_format_decoder (b);
 		GMT_file_scale[n] = (strcmp (c, "-")) ? atof (c) : 1.0;
 		GMT_file_offset[n] = (strcmp (d, "-")) ? atof (d) : 0.0;
 		GMT_file_nan[n] = (strcmp (e, "-")) ? atof (e) : GMT_d_NaN;
 		n++;
-		if (n == n_alloc) {
-			n_alloc <<= 1;
-			GMT_file_id = (GMT_LONG *) GMT_memory ((void *)GMT_file_id, (size_t)n_alloc, sizeof (GMT_LONG), GMT_program);
-			GMT_file_scale = (double *) GMT_memory ((void *)GMT_file_scale, (size_t)n_alloc, sizeof (double), GMT_program);
-			GMT_file_offset = (double *) GMT_memory ((void *)GMT_file_offset, (size_t)n_alloc, sizeof (double), GMT_program);
-			GMT_file_nan = (double *) GMT_memory ((void *)GMT_file_nan, (size_t)n_alloc, sizeof (double), GMT_program);
-			GMT_file_suffix = (char **) GMT_memory ((void *)GMT_file_suffix, (size_t)n_alloc, sizeof (char *), GMT_program);
-		}
 	}
 	fclose (fp);
+	
 	GMT_n_file_suffix = n;
-	GMT_file_id = (GMT_LONG *) GMT_memory ((void *)GMT_file_id, (size_t)GMT_n_file_suffix, sizeof (GMT_LONG), GMT_program);
-	GMT_file_scale = (double *) GMT_memory ((void *)GMT_file_scale, (size_t)GMT_n_file_suffix, sizeof (double), GMT_program);
-	GMT_file_offset = (double *) GMT_memory ((void *)GMT_file_offset, (size_t)GMT_n_file_suffix, sizeof (double), GMT_program);
-	GMT_file_nan = (double *) GMT_memory ((void *)GMT_file_nan, (size_t)GMT_n_file_suffix, sizeof (double), GMT_program);
-	GMT_file_suffix = (char **) GMT_memory ((void *)GMT_file_suffix, (size_t)GMT_n_file_suffix, sizeof (char *), GMT_program);
+	GMT_reset_meminc ();
+	(void)GMT_alloc_memory ((void **)&GMT_file_id, 0, n, sizeof (GMT_LONG), GMT_program);
+	(void)GMT_alloc_memory ((void **)&GMT_file_suffix, 0, n, sizeof (char *), GMT_program);
+	(void)GMT_alloc_memory3 ((void **)&GMT_file_scale, (void **)&GMT_file_offset, (void **)&GMT_file_nan, 0, n, sizeof (double), GMT_program);
 }
 
 void GMT_freeshorthand (void) {/* Free memory used by shorthand arrays */
@@ -6184,8 +6174,8 @@ void GMT_verify_encodings () {
 
 GMT_LONG GMT_init_fonts (GMT_LONG *n_fonts)
 {
-	FILE *in;
-	GMT_LONG i = 0, n_GMT_fonts, n_alloc = GMT_SMALL_CHUNK;
+	FILE *in = NULL;
+	GMT_LONG i = 0, n_GMT_fonts, n_alloc = 0;
 	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
 
@@ -6200,20 +6190,16 @@ GMT_LONG GMT_init_fonts (GMT_LONG *n_fonts)
 		GMT_exit (EXIT_FAILURE);
 	}
 
-	GMT_font = (struct GMT_FONT *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (struct GMT_FONT), GMT_program);
-
+	GMT_set_meminc (GMT_SMALL_CHUNK);	/* Only allocate a small amount */
 	while (fgets (buf, BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
+		if (i == n_alloc) n_alloc = GMT_alloc_memory ((void **)&GMT_font, i, n_alloc, sizeof (struct GMT_FONT), GMT_program);
 		if (sscanf (buf, "%s %lf %*d", fullname, &GMT_font[i].height) != 2) {
 			fprintf (stderr, "GMT Fatal Error: Trouble decoding font info for font %ld\n", i);
 			GMT_exit (EXIT_FAILURE);
 		}
 		GMT_font[i].name = strdup (fullname);
 		i++;
-		if (i == n_alloc) {
-			n_alloc <<= 1;
-			GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)n_alloc, sizeof (struct GMT_FONT), GMT_program);
-		}
 	}
 	fclose (in);
 	*n_fonts = n_GMT_fonts = i;
@@ -6229,21 +6215,19 @@ GMT_LONG GMT_init_fonts (GMT_LONG *n_fonts)
 
 		while (fgets (buf, BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
+			if (i == n_alloc) n_alloc = GMT_alloc_memory ((void **)&GMT_font, i, n_alloc, sizeof (struct GMT_FONT), GMT_program);
 			if (sscanf (buf, "%s %lf %*d", fullname, &GMT_font[i].height) != 2) {
 				fprintf (stderr, "GMT Fatal Error: Trouble decoding custom font info for font %ld\n", i - n_GMT_fonts);
 				GMT_exit (EXIT_FAILURE);
 			}
 			GMT_font[i].name = strdup (fullname);
 			i++;
-			if (i == n_alloc) {
-				n_alloc <<= 1;
-				GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)n_alloc, sizeof (struct GMT_FONT), GMT_program);
-			}
 		}
 		fclose (in);
 		*n_fonts = i;
 	}
-	GMT_font = (struct GMT_FONT *) GMT_memory ((void *)GMT_font, (size_t)(*n_fonts), sizeof (struct GMT_FONT), GMT_program);
+	(void)GMT_alloc_memory ((void **)&GMT_font, 0, i, sizeof (struct GMT_FONT), GMT_program);
+	GMT_reset_meminc ();
 	return (GMT_NOERROR);
 }
 
