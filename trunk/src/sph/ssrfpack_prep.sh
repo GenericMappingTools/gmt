@@ -1,11 +1,20 @@
 #!/bin/sh
-#	$Id: ssrfpack_prep.sh,v 1.2 2009-05-16 00:46:08 guru Exp $
+#	$Id: ssrfpack_prep.sh,v 1.3 2009-05-16 02:21:32 guru Exp $
 #
 # Removes print and plot subroutines from ssrfpack FORTRAN code,
 # then replaces error messages with return of error codes that
 # sph can choose to report, then replaces integer/doublereal with
 # int and double.  This lets us compile the f2c-converted code
 # without requiring f2c.h and libf2c.a
+#2879s/^ /C /g
+#2911,2912s/^ /C /g
+#2915s/^ /C /g
+#2928s/^ /C /g
+#2932s/^ /C /g
+#2938s/^ /C /g
+#2943s/^ /C /g
+#2944s/  RETURN/4 RETURN/g
+#2948,2961s/^ /C /g
 
 cat << EOF > $$.sed
 328,330s/^ /C /g
@@ -15,6 +24,7 @@ cat << EOF > $$.sed
 937,940s/^ /C /g
 994,995s/^ /C /g
 1047,1049s/^ /C /g
+2803,2962d
 3106,3113s/^ /C /g
 3246,3248s/^ /C /g
 3325,3327s/^ /C /g
@@ -29,7 +39,6 @@ cat << EOF > $$.sed
 4569,4571s/^ /C /g
 4603,4605s/^ /C /g
 4638,4639s/^ /C /g
-2803,2962d
 EOF
 sed -f $$.sed D773/Src/Sp/src.f > ssrfpack_nowrite.f
 f2c -r8 ssrfpack_nowrite.f
@@ -49,7 +58,7 @@ typedef int integer;
 int speak = 0;
 EOF
 tail +13 ssrfpack_nowrite.c | grep -v "#include" >> ssrfpack_raw.c
-rm -f ssrfpack_nowrite.[cf]
+#rm -f ssrfpack_nowrite.[cf]
 
 cat << EOF > $$.sed
 384iif (speak) fprintf (stderr, "ERROR IN ARCINT -- P1 = %9.6f %9.6f %9.6f   P2 = %9.6f %9.6f %9.6f\\\n", p1[1], p1[2], p1[3], p2[1], p2[2], p2[3]);
@@ -76,5 +85,5 @@ cat << EOF > $$.sed
 5360iif (speak) fprintf (stderr, "DP = %g\\\n", dp);
 EOF
 
-sed -f $$.sed ssrfpack_raw.c > ssrfpack.c
+sed -f $$.sed ssrfpack_raw.c > ssrfpack_nof2c.c
 rm -f $$.sed
