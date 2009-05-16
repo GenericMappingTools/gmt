@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: stripack_prep.sh,v 1.2 2009-05-16 00:46:08 guru Exp $
+#	$Id: stripack_prep.sh,v 1.3 2009-05-16 02:21:32 guru Exp $
 #
 # Removes print and plot subroutines from stripack FORTRAN code,
 # then replaces error messages with return of error codes that
@@ -39,5 +39,5 @@ cat << EOF > $$.sed
 3040ifprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\\\n", nit, ierr);
 EOF
 
-sed -f $$.sed stripack_raw.c > stripack.c
+sed -f $$.sed stripack_raw.c > stripack_nof2c.c
 rm -f $$.sed
