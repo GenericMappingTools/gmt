@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.17 2009-05-16 02:21:32 guru Exp $
+#  $Id: GNUmakefile,v 1.18 2009-05-16 02:59:02 guru Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	
@@ -69,8 +69,11 @@ ssrfpack_nof2c.c:
 		ssrfpack_prep.sh
 		rm -rf src.c 773 # D773
 
-sphinterpolate2:	sphinterpolate.o $(STRILIB2) $(SSRFLIB2) $(SPHLIB)
+sphinterpolate2:	sphinterpolate2.o $(STRILIB2) $(SSRFLIB2) $(SPHLIB)
 	$(CC) $(CFLAGS) $@.o -L.. -lgmt -lpsl $(NC_LIBS) -L. -lsph -lssrfpack2  -lstripack2 $(LIBS) -o $@
+
+sphinterpolate2.o:	sphinterpolate.c
+	$(CC) $(CFLAGS) -I.. sphinterpolate.c -c -o sphinterpolate2.o
 
 #-------------------------------------------------------------------------------
 #	STRILIB2 library

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: ssrfpack_prep.sh,v 1.3 2009-05-16 02:21:32 guru Exp $
+#	$Id: ssrfpack_prep.sh,v 1.4 2009-05-16 02:59:02 guru Exp $
 #
 # Removes print and plot subroutines from ssrfpack FORTRAN code,
 # then replaces error messages with return of error codes that
@@ -55,7 +55,14 @@ typedef int integer;
 
 #define min(x, y) (((x) < (y)) ? (x) : (y))
 #define max(x, y) (((x) > (y)) ? (x) : (y))
+#define abs(x) ((x) >= 0 ? (x) : -(x))
 int speak = 0;
+double d_sign (doublereal *a, doublereal *b)
+{
+	double x;
+	x = (*a >= 0 ? *a : - *a);
+	return (*b >= 0 ? x : -x);
+}
 EOF
 tail +13 ssrfpack_nowrite.c | grep -v "#include" >> ssrfpack_raw.c
 #rm -f ssrfpack_nowrite.[cf]
