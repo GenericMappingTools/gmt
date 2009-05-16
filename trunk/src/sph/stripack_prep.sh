@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: stripack_prep.sh,v 1.3 2009-05-16 02:21:32 guru Exp $
+#	$Id: stripack_prep.sh,v 1.4 2009-05-16 03:01:51 guru Exp $
 #
 # Removes print and plot subroutines from stripack FORTRAN code,
 # then replaces error messages with return of error codes that
@@ -32,7 +32,6 @@ typedef int logical;
 #define TRUE_ 1
 EOF
 tail +13 stripack_nowrite.c | grep -v "#include" >> stripack_raw.c
-rm -f stripack_nowrite.[cf]
 cat << EOF > $$.sed
 2390ifprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\\\n", nit, ierr);
 3031ifprintf (stderr, "*** Error in EDGE:  Invalid triangulation or null triangles on boundary IN1 = %d IN2 = %d\\\n", *in1, *in2);
@@ -40,4 +39,4 @@ cat << EOF > $$.sed
 EOF
 
 sed -f $$.sed stripack_raw.c > stripack_nof2c.c
-rm -f $$.sed
+rm -f $$.sed stripack_raw.c stripack_nowrite.[cf] 
