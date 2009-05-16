@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.15 2009-03-28 02:13:06 guru Exp $
+#  $Id: GNUmakefile,v 1.16 2009-05-16 00:46:07 guru Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	
@@ -40,8 +40,7 @@ stripack.c:
 		mkdir -p D772
 		mv 772 D772
 		(cd D772; sh 772)
-		f2c -r8 D772/Fortran77/Src/Sp/src.f
-		sed -f stripack.sed src.c > stripack.c
+		stripack_prep.sh
 		rm -rf src.c D772
 
 ssrfpack.c:
@@ -49,8 +48,7 @@ ssrfpack.c:
 		mkdir -p D773
 		tail -n +4 773 > D773/773
 		(cd D773; sh 773)
-		f2c -r8 D773/Src/Sp/src.f
-		sed -f ssrfpack.sed src.c > ssrfpack.c
+		ssrfpack_prep.sh
 		rm -rf src.c 773 D773
 
 spotless::

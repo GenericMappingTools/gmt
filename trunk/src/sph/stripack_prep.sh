@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: stripack_prep.sh,v 1.1 2009-05-15 21:17:31 guru Exp $
+#	$Id: stripack_prep.sh,v 1.2 2009-05-16 00:46:08 guru Exp $
 #
 # Removes print and plot subroutines from stripack FORTRAN code,
 # then replaces error messages with return of error codes that
@@ -18,11 +18,26 @@ sed -f $$.sed D772/Fortran77/Src/Sp/src.f > stripack_nowrite.f
 rm -f $$.sed
 f2c -r8 stripack_nowrite.f
 cat << EOF > stripack_raw.c
+/* stripack.c: Translated via f2c then massaged so that f2c include and lib
+ *   are not required to compile and link with sph.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef double doublereal;
 typedef int integer;
 typedef int logical;
 #define FALSE_ 0
 #define TRUE_ 1
 EOF
-grep -v "#include" stripack_nowrite.c >> stripack_raw.c
+tail +13 stripack_nowrite.c | grep -v "#include" >> stripack_raw.c
 rm -f stripack_nowrite.[cf]
+cat << EOF > $$.sed
+2390ifprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\\\n", nit, ierr);
+3031ifprintf (stderr, "*** Error in EDGE:  Invalid triangulation or null triangles on boundary IN1 = %d IN2 = %d\\\n", *in1, *in2);
+3040ifprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\\\n", nit, ierr);
+EOF
+
+sed -f $$.sed stripack_raw.c > stripack.c
+rm -f $$.sed
