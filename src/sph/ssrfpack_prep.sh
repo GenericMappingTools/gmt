@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: ssrfpack_prep.sh,v 1.4 2009-05-16 02:59:02 guru Exp $
+#	$Id: ssrfpack_prep.sh,v 1.5 2009-05-16 03:01:51 guru Exp $
 #
 # Removes print and plot subroutines from ssrfpack FORTRAN code,
 # then replaces error messages with return of error codes that
@@ -65,7 +65,6 @@ double d_sign (doublereal *a, doublereal *b)
 }
 EOF
 tail +13 ssrfpack_nowrite.c | grep -v "#include" >> ssrfpack_raw.c
-#rm -f ssrfpack_nowrite.[cf]
 
 cat << EOF > $$.sed
 384iif (speak) fprintf (stderr, "ERROR IN ARCINT -- P1 = %9.6f %9.6f %9.6f   P2 = %9.6f %9.6f %9.6f\\\n", p1[1], p1[2], p1[3], p2[1], p2[2], p2[3]);
@@ -93,4 +92,4 @@ cat << EOF > $$.sed
 EOF
 
 sed -f $$.sed ssrfpack_raw.c > ssrfpack_nof2c.c
-rm -f $$.sed
+rm -f $$.sed ssrfpack_raw.c rm -f ssrfpack_nowrite.[cf]
