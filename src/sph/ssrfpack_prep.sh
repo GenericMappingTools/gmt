@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: ssrfpack_prep.sh,v 1.1 2009-05-15 21:17:31 guru Exp $
+#	$Id: ssrfpack_prep.sh,v 1.2 2009-05-16 00:46:08 guru Exp $
 #
 # Removes print and plot subroutines from ssrfpack FORTRAN code,
 # then replaces error messages with return of error codes that
@@ -34,8 +34,47 @@ EOF
 sed -f $$.sed D773/Src/Sp/src.f > ssrfpack_nowrite.f
 f2c -r8 ssrfpack_nowrite.f
 cat << EOF > ssrfpack_raw.c
+/* ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
+ *   are not required to compile and link with sph.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef double doublereal;
 typedef int integer;
+
+#define min(x, y) (((x) < (y)) ? (x) : (y))
+#define max(x, y) (((x) > (y)) ? (x) : (y))
+int speak = 0;
 EOF
-grep -v "#include" ssrfpack_nowrite.c >> ssrfpack_raw.c
+tail +13 ssrfpack_nowrite.c | grep -v "#include" >> ssrfpack_raw.c
 rm -f ssrfpack_nowrite.[cf]
+
+cat << EOF > $$.sed
+384iif (speak) fprintf (stderr, "ERROR IN ARCINT -- P1 = %9.6f %9.6f %9.6f   P2 = %9.6f %9.6f %9.6f\\\n", p1[1], p1[2], p1[3], p2[1], p2[2], p2[3]);
+980iif (speak) fprintf (stderr, "GETSIG -- N = %4d TOL = %g\\\n", *n, ftol);
+1011iif (speak) fprintf (stderr, "ARC %d - %d\\\n", n1, n2);
+1103iif (speak) fprintf (stderr, "CONVEXITY -- SIG = %g  F(SIG) = %g  FP(SIG) = %g\\\n", sig, f, fp);
+1170iif (speak) fprintf (stderr, "MONOTONICITY -- DSIG = %g\\\n", dsig);
+1232iif (speak) fprintf (stderr, "%d -- SIG = %g  F = %g\\\n", nit, sig, f);
+3496iif (speak) if (rf < 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  LOWER BOUND = %g\\\n", *n1, *n2, bnd);
+3496iif (speak) if (rf > 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  UPPER BOUND = %g\\\n", *n1, *n2, bnd);
+3668iif (speak) fprintf (stderr, "SIG = %g  SNEG = %g F0 = %g FMAX = %g\\\n", sig, sneg, f0, fmax);
+3761iif (speak) fprintf (stderr, "%d -- SIG = %g  F = %g\\\n", nit, sig, f);
+3807iif (speak) fprintf (stderr, "DSIG = %g\\\n", dsig);
+4025iif (speak) if (rf < 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  LOWER BOUND = %g\\\n", *n1, *n2, bnd);
+4025iif (speak) if (rf > 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  UPPER BOUND = %g\\\n", *n1, *n2, bnd);
+4163iif (speak) fprintf (stderr, "F0 = %g FMAX = %g SIG = %g\\\n", f0, fmax, sig);
+4242iif (speak) fprintf (stderr, "%d -- SIG = %g  F = %g\\\n", nit, sig, f);
+4285iif (speak) fprintf (stderr, "DSIG = %g\\\n", dsig);
+4488iif (speak) fprintf (stderr, "SIG2 -- N1 = %d  N2 = %d\\\n", *n1, *n2);
+4641iif (speak) fprintf (stderr, "%d -- SIG = %g  F = %g  FP = %g\\\n", nit, sig, f, fp);
+5266iif (speak) fprintf (stderr, "SMSURF -- THE CONSTRAINT IS NOT ACTIVE AND THE FITTING FCN IS CONSTANT\\\n");
+5277iif (speak) fprintf (stderr, "SMSURF -- SM = %g  GSTOL = %g  NITMAX = %d  G(0) = %g\\\n", *sm, tol, nitmax, g0);
+5323iif (speak) fprintf (stderr, " %d -- P = %g  G = %g  NIT = %d  DFMAX = %g\\\n", iter, p, g, nit, dfmax);
+5360iif (speak) fprintf (stderr, "DP = %g\\\n", dp);
+EOF
+
+sed -f $$.sed ssrfpack_raw.c > ssrfpack.c
+rm -f $$.sed

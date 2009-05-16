@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.15 2009-05-08 03:51:02 guru Exp $
+ *	$Id: sph.c,v 1.16 2009-05-16 00:46:08 guru Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,7 +48,7 @@ extern int gradg_ (int *, double *, double *, double *, double *, int *, int *, 
 extern int gradl_ (int *, int *, double *, double *, double *, double *, int *, int *, int *, double *, int *);
 extern int intrc0_ (int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *);
 extern int intrc1_ (int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, double *, int *, double *, int *);
-extern int sgprnt_ (int *, int *, int *, int *, int *, double *);
+/* extern int sgprnt_ (int *, int *, int *, int *, int *, double *); */
 extern int smsurf_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, double *, double *, double *, double *, int *, double *, double *, int *);
 extern int unif_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, int *, int *, double *, double *, int *, double *, double *, int *);
 
@@ -299,7 +299,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 				fprintf (stderr, "%s: GETSIG:  %d tension factors altered;  Max change = %g\n", GMT_program, ierror, dsm);
 			}
 			/* write the tension factors to disk (sgprnt). */
-			sgprnt_ (&n4, &lsig, list, lptr, lend, sigma);
+			/* sgprnt_ (&n4, &lsig, list, lptr, lend, sigma); */
 	        }
 	
 		/* compute interpolated values on the uniform grid (unif). */
@@ -347,7 +347,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 					GMT_exit (EXIT_FAILURE);
 				}
 				if (gmtdefs.verbose) fprintf (stderr, "%s: GETSIG (iteration %d):  %d tension factors altered;  Max change = %g\n", GMT_program, iter, ierror, dsm);
-				sgprnt_ (&n4, &lsig, list, lptr, lend, sigma);	/* write the tension factors to disk (sgprnt). */
+				/* sgprnt_ (&n4, &lsig, list, lptr, lend, sigma); */	/* write the tension factors to disk (sgprnt). */
 			}
 		}
 		/* compute interpolated values on the uniform grid (unif). */
@@ -392,7 +392,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 					GMT_exit (EXIT_FAILURE);
 				}
 				if (gmtdefs.verbose) fprintf (stderr, "%s: GETSIG (iteration %d):  %d tension factors altered;  Max change = %g\n", GMT_program, iter, ierror, dsm);
-				sgprnt_ (&n4, &lsig, list, lptr, lend, sigma);	/* write the tension factors to disk (sgprnt). */
+				/* sgprnt_ (&n4, &lsig, list, lptr, lend, sigma); */	/* write the tension factors to disk (sgprnt). */
 			}
 		}
 		/* compute interpolated values on the uniform grid (unif). */
