@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.393 2009-05-15 08:16:21 guru Exp $
+ *	$Id: gmt_init.c,v 1.394 2009-05-16 03:16:26 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6311,7 +6311,7 @@ int getuid (void) {
  * different routes, hence the #ifdefs below
  */
 
-void GMT_setmode (GMT_LONG i_or_o)
+void GMT_setmode (int i_or_o)
 {
 	/* Changes the stream to deal with BINARY rather than TEXT data */
 
