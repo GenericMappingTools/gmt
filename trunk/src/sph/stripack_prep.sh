@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: stripack_prep.sh,v 1.4 2009-05-16 03:01:51 guru Exp $
+#	$Id: stripack_prep.sh,v 1.5 2009-05-17 19:17:05 guru Exp $
 #
 # Removes print and plot subroutines from stripack FORTRAN code,
 # then replaces error messages with return of error codes that
@@ -17,26 +17,48 @@ EOF
 sed -f $$.sed D772/Fortran77/Src/Sp/src.f > stripack_nowrite.f
 rm -f $$.sed
 f2c -r8 stripack_nowrite.f
-cat << EOF > stripack_raw.c
-/* stripack.c: Translated via f2c then massaged so that f2c include and lib
- *   are not required to compile and link with sph.
+cat << EOF > $$.sed
+2392ifprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\\\n", nit, ierr);
+3033ifprintf (stderr, "*** Error in EDGE:  Invalid triangulation or null triangles on boundary IN1 = %d IN2 = %d\\\n", *in1, *in2);
+3042ifprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\\\n", nit, ierr);
+660c\
+    *nt = (nn - 2) << 1;
+2826,2827c\
+	iwk[((i__ - 1) << 1) + 1] = iwk[(i__ << 1) + 1];\
+	iwk[((i__ - 1) << 1) + 2] = iwk[(i__ << 1) + 2];
+2883,2884c\
+	iwk[((i__ + 1) << 1) + 1] = iwk[(i__ << 1) + 1];\
+	iwk[((i__ + 1) << 1) + 2] = iwk[(i__ << 1) + 2];
+2946,2947c\
+	iwk[(i__ << 1) + 1] = iwk[((i__ - 1) << 1) + 1];\
+	iwk[(i__ << 1) + 2] = iwk[((i__ - 1) << 1) + 2];
+2972c\
+	nit = (iwc - 1) << 2;
+2987c\
+	nit = (iwend - iwc) << 2;
+2990c\
+		nit, &iwk[((iwc + 1) << 1) + 1], &ierr);
+5719c\
+    if (*n < 3 || (*nrow != 6 && *nrow != 9)) {
+EOF
+
+cat << EOF > stripack.c
+/* \$Id\$
+ * stripack.c: Translated via f2c then massaged so that f2c include and lib
+ * are not required to compile and link the sph supplement.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 
+#define abs(x) ((x) >= 0 ? (x) : -(x))
+#define FALSE_ 0
+#define TRUE_ 1
+
 typedef double doublereal;
 typedef int integer;
 typedef int logical;
-#define FALSE_ 0
-#define TRUE_ 1
 EOF
-tail +13 stripack_nowrite.c | grep -v "#include" >> stripack_raw.c
-cat << EOF > $$.sed
-2390ifprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\\\n", nit, ierr);
-3031ifprintf (stderr, "*** Error in EDGE:  Invalid triangulation or null triangles on boundary IN1 = %d IN2 = %d\\\n", *in1, *in2);
-3040ifprintf (stderr, "*** Error in OPTIM (called from DELNOD):  NIT = %d, IER = %d ***\\\n", nit, ierr);
-EOF
+sed -f $$.sed stripack_nowrite.c | tail +13 | grep -v "#include" >> stripack.c
 
-sed -f $$.sed stripack_raw.c > stripack_nof2c.c
-rm -f $$.sed stripack_raw.c stripack_nowrite.[cf] 
+rm -f $$.sed stripack_nowrite.[cf] 

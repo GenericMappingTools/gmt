@@ -1,4 +1,4 @@
-#	$Id: README.sph,v 1.1 2009-03-24 22:28:20 myself Exp $
+#	$Id: README.sph,v 1.2 2009-05-17 19:17:05 guru Exp $
 	README for GMT supplement sph.
 
 	Distributed under the GNU Public License (see file ../COPYING)
@@ -11,8 +11,8 @@ This supplement provides convenient GMT-like front end applications
 to the two spherical data manipulation libraries of Robert Renka.
 They basically handle the data i/o, parameter specifications, and
 error checking, and let all the hard work be done by Renka's
-original F77 libraries (translated to C with f2c).  Installation of
-this supplement requires the f2c library and include files.
+original F77 libraries (translated to C with f2c, then massaged
+further so the C code no longer requires the f2c library and include files.
 The programs included are:
 
 sphinterpolate: Performs gridding on a sphere using a variety
@@ -29,8 +29,7 @@ sphdistance: Calculates spherical distances from a set of input lines
 
 These programs depend on GMT libraries as well as the STRIPACK
 and SSRFPACK libraries of Renka.  The latter are written in Fortran
-77 which we translated to C using f2c; they must link with the -lf2c library.
-It is assumed you have this library and the f2c.h include file installed.
+77 which we translated to C using f2c as a starting point.
 
 These programs would not be very useful without Renka's STRIPACK and
 SSRFACK libraries:

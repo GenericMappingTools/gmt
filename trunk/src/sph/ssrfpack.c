@@ -1,22 +1,31 @@
-/* D773/Src/Sp/src.f -- translated by f2c (version 20060506).
-   You must link the resulting object file with libf2c:
-	on Microsoft Windows system, link with libf2c.lib;
-	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
-	or, if you install libf2c.a in a standard place, with -lf2c -lm
-	-- in that order, at the end of the command line, as in
-		cc *.o -lf2c -lm
-	Source for libf2c is in /netlib/f2c/libf2c.zip, e.g.,
+/* $Id: ssrfpack.c,v 1.3 2009-05-17 19:17:05 guru Exp $
+ * ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
+ * are not required to compile and link the sph supplement.
+ */
 
-		http://www.netlib.org/f2c/libf2c.zip
-*/
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "f2c.h"
+#define min(x, y) (((x) < (y)) ? (x) : (y))
+#define max(x, y) (((x) > (y)) ? (x) : (y))
+#define abs(x) ((x) >= 0 ? (x) : -(x))
+
+typedef double doublereal;
+typedef int integer;
+
 extern void sincos (double x, double *s, double *c);
+int dbg_verbose = 0;	/* Set to 1 to get more original verbose output */
+
+double d_sign (doublereal *a, doublereal *b)
+{
+	double x;
+	x = (*a >= 0 ? *a : - *a);
+	return (*b >= 0 ? x : -x);
+}
 
 /* Table of constant values */
 
-static integer c__1 = 1;
-static doublereal c_b43 = 1.;
+static doublereal c_b23 = 1.;
 
 /* Subroutine */ int aplyr_(doublereal *x, doublereal *y, doublereal *z__, 
 	doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy, 
@@ -162,19 +171,9 @@ L1:
 	doublereal *f1, doublereal *f2, doublereal *g1, doublereal *g2, 
 	doublereal *sigma, doublereal *f, doublereal *g, doublereal *gn)
 {
-    /* Initialized data */
-
-    static integer lun = 6;
-
-    /* Format strings */
-    static char fmt_100[] = "(\0021\002,\002ERROR IN ARCINT -- P1 = \002,2(f"
-	    "9.6,\002,  \002),f9.6/1x,19x,\002P2 = \002,2(f9.6,\002,  \002),f"
-	    "9.6)";
 
     /* Builtin functions */
     double sqrt(doublereal), exp(doublereal);
-    integer s_wsfe(cilist *), do_fio(integer *, char *, ftnlen), e_wsfe(void);
-    /* Subroutine */ int s_stop(char *, ftnlen);
 
     /* Local variables */
     static doublereal a, e;
@@ -185,10 +184,6 @@ L1:
     extern doublereal arclen_(doublereal *, doublereal *);
     extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
 	    doublereal *, doublereal *);
-
-    /* Fortran I/O blocks */
-    static cilist io___38 = { 0, 0, 0, fmt_100, 0 };
-
 
 
 /* *********************************************************** */
@@ -401,17 +396,12 @@ L1:
 /* P1 X P2 = 0.  Print an error message and terminate */
 /*   processing. */
 
+/*    2 WRITE (LUN,100) (P1(I),I=1,3), (P2(I),I=1,3) */
+/*  100 FORMAT ('1','ERROR IN ARCINT -- P1 = ',2(F9.6,',  '), */
+/*     .        F9.6/1X,19X,'P2 = ',2(F9.6,',  '),F9.6) */
+if (dbg_verbose) fprintf (stderr, "ERROR IN ARCINT -- P1 = %9.6f %9.6f %9.6f   P2 = %9.6f %9.6f %9.6f\n", p1[1], p1[2], p1[3], p2[1], p2[2], p2[3]);
 L2:
-    io___38.ciunit = lun;
-    s_wsfe(&io___38);
-    for (i__ = 1; i__ <= 3; ++i__) {
-	do_fio(&c__1, (char *)&p1[i__], (ftnlen)sizeof(doublereal));
-    }
-    for (i__ = 1; i__ <= 3; ++i__) {
-	do_fio(&c__1, (char *)&p2[i__], (ftnlen)sizeof(doublereal));
-    }
-    e_wsfe();
-    s_stop("", (ftnlen)0);
+    i__ = 1;
     return 0;
 } /* arcint_ */
 
@@ -802,24 +792,12 @@ doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
     /* Initialized data */
 
     static doublereal sbig = 85.;
-    static integer lun = -1;
-
-    /* Format strings */
-    static char fmt_100[] = "(\0021\002,13x,\002GETSIG -- N =\002,i4,\002, T"
-	    "OL = \002,e10.3//)";
-    static char fmt_110[] = "(/1x,\002ARC\002,i4,\002 -\002,i4)";
-    static char fmt_120[] = "(1x,\002CONVEXITY -- SIG = \002,e15.8,\002, F(S"
-	    "IG) = \002,e15.8/1x,35x,\002FP(SIG) = \002,e15.8)";
-    static char fmt_130[] = "(1x,\002MONOTONICITY -- DSIG = \002,e15.8)";
-    static char fmt_140[] = "(1x,11x,i2,\002 -- SIG = \002,e15.8,\002, F ="
-	    " \002,e15.8)";
 
     /* System generated locals */
     integer i__1, i__2;
     doublereal d__1, d__2;
 
     /* Builtin functions */
-    integer s_wsfe(cilist *), do_fio(integer *, char *, ftnlen), e_wsfe(void);
     double sqrt(doublereal), exp(doublereal), d_sign(doublereal *, doublereal 
 	    *);
 
@@ -842,14 +820,6 @@ doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
     extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
 	    doublereal *, doublereal *);
     extern integer lstptr_(integer *, integer *, integer *, integer *);
-
-    /* Fortran I/O blocks */
-    static cilist io___70 = { 0, 0, 0, fmt_100, 0 };
-    static cilist io___77 = { 0, 0, 0, fmt_110, 0 };
-    static cilist io___102 = { 0, 0, 0, fmt_120, 0 };
-    static cilist io___113 = { 0, 0, 0, fmt_130, 0 };
-    static cilist io___122 = { 0, 0, 0, fmt_140, 0 };
-
 
 
 /* *********************************************************** */
@@ -1024,13 +994,9 @@ L1:
 
 /* Print a heading. */
 
-    if (lun >= 0) {
-	io___70.ciunit = lun;
-	s_wsfe(&io___70);
-	do_fio(&c__1, (char *)&(*n), (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&ftol, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,100) N, FTOL */
+/*  100 FORMAT ('1',13X,'GETSIG -- N =',I4,', TOL = ',E10.3//) */
+if (dbg_verbose) fprintf (stderr, "GETSIG -- N = %4d TOL = %g\n", *n, ftol);
 
 /* Initialize change counter ICNT and maximum change DSM for */
 /*   the loop on arcs. */
@@ -1060,13 +1026,9 @@ L2:
 /*   UNORM = magnitude of P1 X P2, and */
 /*   SIGIN = input SIGMA value. */
 
-	if (lun >= 0) {
-	    io___77.ciunit = lun;
-	    s_wsfe(&io___77);
-	    do_fio(&c__1, (char *)&n1, (ftnlen)sizeof(integer));
-	    do_fio(&c__1, (char *)&n2, (ftnlen)sizeof(integer));
-	    e_wsfe();
-	}
+/*        IF (LUN .GE. 0) WRITE (LUN,110) N1, N2 */
+/*  110   FORMAT (/1X,'ARC',I4,' -',I4) */
+if (dbg_verbose) fprintf (stderr, "ARC %d - %d\n", n1, n2);
 	p1[0] = x[n1];
 	p1[1] = y[n1];
 	p1[2] = z__[n1];
@@ -1103,7 +1065,7 @@ L2:
 /*   property. */
 
 	sig = sbig;
-	if ((d1d2 == 0. && s1 != s2) || (s == 0. && s1 * s2 > 0.)) {
+if ((d1d2 == 0. && s1 != s2) || (s == 0. && s1 * s2 > 0.)) {
 	    goto L8;
 	}
 
@@ -1155,14 +1117,11 @@ L3:
 	}
 
 	f = sig * t1 - tp1;
-	if (lun >= 0) {
-	    io___102.ciunit = lun;
-	    s_wsfe(&io___102);
-	    do_fio(&c__1, (char *)&sig, (ftnlen)sizeof(doublereal));
-	    do_fio(&c__1, (char *)&f, (ftnlen)sizeof(doublereal));
-	    do_fio(&c__1, (char *)&fp, (ftnlen)sizeof(doublereal));
-	    e_wsfe();
-	}
+/*        IF (LUN .GE. 0) WRITE (LUN,120) SIG, F, FP */
+/*  120   FORMAT (1X,'CONVEXITY -- SIG = ',E15.8, */
+/*     .          ', F(SIG) = ',E15.8/1X,35X,'FP(SIG) = ', */
+/*     .          E15.8) */
+if (dbg_verbose) fprintf (stderr, "CONVEXITY -- SIG = %g  F(SIG) = %g  FP(SIG) = %g\n", sig, f, fp);
 	++nit;
 
 /*   Test for convergence. */
@@ -1171,7 +1130,7 @@ L3:
 	    goto L8;
 	}
 	dsig = -f / fp;
-	if (abs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || abs(f) <= rtol)
+if (abs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || abs(f) <= rtol)
 		 {
 	    goto L8;
 	}
@@ -1208,7 +1167,7 @@ L4:
 /*     (SNEG,FNEG), where SG0 and SNEG are defined implicitly */
 /*     by DSIG = SIG - SG0 and DMAX = SIG - SNEG. */
 
-	sgn = d_sign(&c_b43, &s);
+	sgn = d_sign(&c_b23, &s);
 	sig = sbig;
 	fmax = sgn * (sig * s - s1 - s2) / (sig - 2.);
 	if (fmax <= 0.) {
@@ -1228,12 +1187,9 @@ L4:
 
 L5:
 	dsig = -f * dsig / (f - f0);
-	if (lun >= 0) {
-	    io___113.ciunit = lun;
-	    s_wsfe(&io___113);
-	    do_fio(&c__1, (char *)&dsig, (ftnlen)sizeof(doublereal));
-	    e_wsfe();
-	}
+/*        IF (LUN .GE. 0) WRITE (LUN,130) DSIG */
+/*  130   FORMAT (1X,'MONOTONICITY -- DSIG = ',E15.8) */
+if (dbg_verbose) fprintf (stderr, "MONOTONICITY -- DSIG = %g\n", dsig);
 	if (abs(dsig) > abs(dmax__) || dsig * dmax__ > 0.) {
 	    goto L7;
 	}
@@ -1293,19 +1249,15 @@ L5:
 
 L6:
 	++nit;
-	if (lun >= 0) {
-	    io___122.ciunit = lun;
-	    s_wsfe(&io___122);
-	    do_fio(&c__1, (char *)&nit, (ftnlen)sizeof(integer));
-	    do_fio(&c__1, (char *)&sig, (ftnlen)sizeof(doublereal));
-	    do_fio(&c__1, (char *)&f, (ftnlen)sizeof(doublereal));
-	    e_wsfe();
-	}
+/*        IF (LUN .GE. 0) WRITE (LUN,140) NIT, SIG, F */
+/*  140   FORMAT (1X,11X,I2,' -- SIG = ',E15.8,', F = ', */
+/*     .          E15.8) */
+if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
 
 /*   Test for convergence. */
 
 	stol = rtol * sig;
-	if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
+if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
 	    goto L8;
 	}
 	dmax__ += dsig;
@@ -2506,12 +2458,12 @@ doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, doublereal *
     static integer i1, i2, i3, n1, n2;
     static doublereal s12;
     static integer lp;
+static doublereal cos_plat;
     static doublereal sum, ptn1, ptn2;
     extern /* Subroutine */ int trfind_(integer *, doublereal *, integer *, 
 	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
 	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
 	    integer *, integer *);
-    static doublereal cos_plat;
 
 
 /* *********************************************************** */
@@ -2623,10 +2575,7 @@ doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, doublereal *
 
 /* Transform (PLAT,PLON) to Cartesian coordinates. */
 
-    sincos (*plat, &p[2], &cos_plat);
-    sincos (*plon, &p[1], &p[0]);
-    p[0] *= cos_plat;
-    p[1] *= cos_plat;
+sincos (*plat, &p[2], &cos_plat);    sincos (*plon, &p[1], &p[0]);    p[0] *= cos_plat;    p[1] *= cos_plat;
 
 /* Find the vertex indexes of a triangle containing P. */
 
@@ -2958,7 +2907,7 @@ L13:
 
     /* Function Body */
     nn = *n;
-    if (nn < 3 || (*iflgg <= 0 && nn < 7) || *ist < 1 || *ist > nn) {
+if (nn < 3 || (*iflgg <= 0 && nn < 7) || *ist < 1 || *ist > nn) {
 	goto L11;
     }
 
@@ -3386,256 +3335,6 @@ L13:
     return 0;
 } /* setup_ */
 
-/* Subroutine */ int sgprnt_(integer *n, integer *lunit, integer *list, 
-	integer *lptr, integer *lend, doublereal *sigma)
-{
-    /* Initialized data */
-
-    static integer nmax = 9999;
-    static integer nlmax = 58;
-
-    /* Format strings */
-    static char fmt_100[] = "(\0021\002,14x,\002TENSION FACTORS,  N =\002,"
-	    "i5,\002 NODES\002//1x,18x,\002N1\002,5x,\002N2\002,8x,\002TENSION"
-	    "\002//)";
-    static char fmt_110[] = "(1x,16x,i4,3x,i4,5x,f12.8)";
-    static char fmt_120[] = "(1x,16x,i4,3x,i4,5x,f12.8,3x,f12.8,\002 *\002)";
-    static char fmt_130[] = "(\0021\002)";
-    static char fmt_200[] = "(//1x,10x,\002*\002,i5,\002 ERRORS IN SIGMA\002)"
-	    ;
-    static char fmt_140[] = "(//1x,10x,\002NA =\002,i5,\002 ARCS\002)";
-    static char fmt_210[] = "(/1x,10x,\002*** ERROR IN TRIANGULATION --"
-	    " \002,\0023N-NB-3 = \002,i5,\002 ***\002)";
-    static char fmt_220[] = "(1x,10x,\002*** N IS OUT OF RANGE -- NMAX = "
-	    "\002,i4,\002 ***\002)";
-
-    /* System generated locals */
-    integer i__1, i__2;
-
-    /* Builtin functions */
-    integer s_wsfe(cilist *), do_fio(integer *, char *, ftnlen), e_wsfe(void);
-
-    /* Local variables */
-    static integer n1, n2, na, nb, ne, nl, nm1, lp1, lp2, nat;
-    static doublereal sig;
-    static integer lpl, lun;
-    static logical error;
-    extern integer lstptr_(integer *, integer *, integer *, integer *);
-
-    /* Fortran I/O blocks */
-    static cilist io___298 = { 0, 0, 0, fmt_100, 0 };
-    static cilist io___311 = { 0, 0, 0, fmt_110, 0 };
-    static cilist io___312 = { 0, 0, 0, fmt_120, 0 };
-    static cilist io___313 = { 0, 0, 0, fmt_130, 0 };
-    static cilist io___314 = { 0, 0, 0, fmt_200, 0 };
-    static cilist io___315 = { 0, 0, 0, fmt_140, 0 };
-    static cilist io___317 = { 0, 0, 0, fmt_210, 0 };
-    static cilist io___318 = { 0, 0, 0, fmt_220, 0 };
-
-
-
-/* *********************************************************** */
-
-/*                                              From SSRFPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/21/98 */
-
-/*   Given a triangulation of a set of nodes on the unit */
-/* sphere, along with an array of tension factors associated */
-/* with the triangulation arcs, this subroutine prints the */
-/* list of arcs (with tension factors) ordered by endpoint */
-/* nodal indexes.  An arc is identified with its smaller */
-/* endpoint index:  N1-N2, where N1 < N2. */
-
-/*   This routine is identical to the similarly named routine */
-/* in SRFPACK. */
-
-
-/* On input: */
-
-/*       N = Number of nodes in the triangulation.  3 .LE. N */
-/*           .LE. 9999. */
-
-/*       LUNIT = Logical unit for output.  0 .LE. LUNIT .LE. */
-/*               99.  Output is printed on unit 6 if LUNIT is */
-/*               outside its valid range. */
-
-/*       LIST,LPTR,LEND = Data structure defining the trian- */
-/*                        gulation.  Refer to STRIPACK */
-/*                        Subroutine TRMESH. */
-
-/*       SIGMA = Array of length 2*NA = 6*(N-1)-2*NB, where */
-/*               NA and NB are the numbers of arcs and boun- */
-/*               dary nodes, respectively, containing tension */
-/*               factors associated with arcs in one-to-one */
-/*               correspondence with LIST entries.  Note that */
-/*               each arc N1-N2 has two LIST entries and */
-/*               thus, SIGMA(I) and SIGMA(J) should be iden- */
-/*               tical, where LIST(I) = N2 (in the adjacency */
-/*               list for N1) and LIST(J) = N1 (in the list */
-/*               associated with N2).  Both SIGMA(I) and */
-/*               SIGMA(J) are printed if they are not iden- */
-/*               tical. */
-
-/* None of the parameters are altered by this routine. */
-
-/* STRIPACK module required by SGPRNT:  LSTPTR */
-
-/* Intrinsic function called by SGPRNT:  ABS */
-
-/* *********************************************************** */
-
-    /* Parameter adjustments */
-    --lend;
-    --list;
-    --lptr;
-    --sigma;
-
-    /* Function Body */
-
-    lun = *lunit;
-    if (lun < 0 || lun > 99) {
-	lun = 6;
-    }
-
-/* Print a heading, test for invalid N, and initialize coun- */
-/*   ters: */
-
-/* NL = Number of lines printed on the current page */
-/* NA = Number of arcs encountered */
-/* NE = Number of errors in SIGMA encountered */
-/* NB = Number of boundary nodes encountered */
-
-    io___298.ciunit = lun;
-    s_wsfe(&io___298);
-    do_fio(&c__1, (char *)&(*n), (ftnlen)sizeof(integer));
-    e_wsfe();
-    if (*n < 3 || *n > nmax) {
-	goto L4;
-    }
-    nl = 6;
-    na = 0;
-    ne = 0;
-    nb = 0;
-
-/* Outer loop on nodes N1.  LPL points to the last neighbor */
-/*   of N1. */
-
-    nm1 = *n - 1;
-    i__1 = nm1;
-    for (n1 = 1; n1 <= i__1; ++n1) {
-	lpl = lend[n1];
-	if (list[lpl] < 0) {
-	    ++nb;
-	}
-	lp1 = lpl;
-
-/* Inner loop on neighbors N2 of N1 such that N1 < N2. */
-
-L1:
-	lp1 = lptr[lp1];
-	n2 = (i__2 = list[lp1], abs(i__2));
-	if (n2 < n1) {
-	    goto L2;
-	}
-	++na;
-	sig = sigma[lp1];
-
-/*   Test for an invalid SIGMA entry. */
-
-	lp2 = lstptr_(&lend[n2], &n1, &list[1], &lptr[1]);
-	error = sigma[lp2] != sig;
-	if (error) {
-	    ++ne;
-	}
-
-/*   Print a line and update the counters. */
-
-	if (! error) {
-	    io___311.ciunit = lun;
-	    s_wsfe(&io___311);
-	    do_fio(&c__1, (char *)&n1, (ftnlen)sizeof(integer));
-	    do_fio(&c__1, (char *)&n2, (ftnlen)sizeof(integer));
-	    do_fio(&c__1, (char *)&sig, (ftnlen)sizeof(doublereal));
-	    e_wsfe();
-	}
-	if (error) {
-	    io___312.ciunit = lun;
-	    s_wsfe(&io___312);
-	    do_fio(&c__1, (char *)&n1, (ftnlen)sizeof(integer));
-	    do_fio(&c__1, (char *)&n2, (ftnlen)sizeof(integer));
-	    do_fio(&c__1, (char *)&sig, (ftnlen)sizeof(doublereal));
-	    do_fio(&c__1, (char *)&sigma[lp2], (ftnlen)sizeof(doublereal));
-	    e_wsfe();
-	}
-	++nl;
-	if (nl >= nlmax) {
-	    io___313.ciunit = lun;
-	    s_wsfe(&io___313);
-	    e_wsfe();
-	    nl = 1;
-	}
-
-/* Bottom of loop on neighbors N2 of N1. */
-
-L2:
-	if (lp1 != lpl) {
-	    goto L1;
-	}
-/* L3: */
-    }
-    lpl = lend[*n];
-    if (list[lpl] < 0) {
-	++nb;
-    }
-
-/* Test for errors in SIGMA. */
-
-    if (ne > 0) {
-	io___314.ciunit = lun;
-	s_wsfe(&io___314);
-	do_fio(&c__1, (char *)&ne, (ftnlen)sizeof(integer));
-	e_wsfe();
-    }
-
-/* Print NA and test for an invalid triangulation. */
-
-    io___315.ciunit = lun;
-    s_wsfe(&io___315);
-    do_fio(&c__1, (char *)&na, (ftnlen)sizeof(integer));
-    e_wsfe();
-    if (nb != 0) {
-	nat = nm1 * 3 - nb;
-    } else {
-	nat = *n * 3 - 6;
-    }
-    if (nat != na) {
-	io___317.ciunit = lun;
-	s_wsfe(&io___317);
-	do_fio(&c__1, (char *)&nat, (ftnlen)sizeof(integer));
-	e_wsfe();
-    }
-    return 0;
-
-/* N is outside its valid range. */
-
-L4:
-    io___318.ciunit = lun;
-    s_wsfe(&io___318);
-    do_fio(&c__1, (char *)&nmax, (ftnlen)sizeof(integer));
-    e_wsfe();
-    return 0;
-
-/* Print formats: */
-
-
-/* Error messages: */
-
-} /* sgprnt_ */
-
 doublereal sig0_(integer *n1, integer *n2, integer *n, doublereal *x, 
 	doublereal *y, doublereal *z__, doublereal *h__, integer *list, 
 	integer *lptr, integer *lend, doublereal *grad, integer *iflgb, 
@@ -3645,25 +3344,12 @@ doublereal sig0_(integer *n1, integer *n2, integer *n, doublereal *x,
     /* Initialized data */
 
     static doublereal sbig = 85.;
-    static integer lun = -1;
-
-    /* Format strings */
-    static char fmt_100[] = "(//1x,\002SIG0 -- N1 =\002,i4,\002, N2 =\002,"
-	    "i4,\002, LOWER BOUND = \002,e15.8)";
-    static char fmt_110[] = "(//1x,\002SIG0 -- N1 =\002,i4,\002, N2 =\002,"
-	    "i4,\002, UPPER BOUND = \002,e15.8)";
-    static char fmt_120[] = "(1x,8x,\002SIG = \002,e15.8,\002, SNEG = \002,e"
-	    "15.8/1x,9x,\002F0 = \002,e15.8,\002, FMAX = \002,e15.8/)";
-    static char fmt_130[] = "(1x,3x,i2,\002 -- SIG = \002,e15.8,\002, F ="
-	    " \002,e15.8)";
-    static char fmt_140[] = "(1x,8x,\002DSIG = \002,e15.8)";
 
     /* System generated locals */
     integer i__1;
     doublereal ret_val, d__1, d__2, d__3, d__4, d__5, d__6;
 
     /* Builtin functions */
-    integer s_wsfe(cilist *), do_fio(integer *, char *, ftnlen), e_wsfe(void);
     double sqrt(doublereal), d_sign(doublereal *, doublereal *), exp(
 	    doublereal), log(doublereal);
 
@@ -3682,14 +3368,6 @@ doublereal sig0_(integer *n1, integer *n2, integer *n, doublereal *x,
     static doublereal coshmm;
     extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
 	    doublereal *, doublereal *);
-
-    /* Fortran I/O blocks */
-    static cilist io___323 = { 0, 0, 0, fmt_100, 0 };
-    static cilist io___324 = { 0, 0, 0, fmt_110, 0 };
-    static cilist io___349 = { 0, 0, 0, fmt_120, 0 };
-    static cilist io___376 = { 0, 0, 0, fmt_130, 0 };
-    static cilist io___379 = { 0, 0, 0, fmt_140, 0 };
-
 
 
 /* *********************************************************** */
@@ -3830,22 +3508,16 @@ doublereal sig0_(integer *n1, integer *n2, integer *n, doublereal *x,
 
 /* Print a heading. */
 
-    if (lun >= 0 && rf < 0.) {
-	io___323.ciunit = lun;
-	s_wsfe(&io___323);
-	do_fio(&c__1, (char *)&(*n1), (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&(*n2), (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&bnd, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
-    if (lun >= 0 && rf > 0.) {
-	io___324.ciunit = lun;
-	s_wsfe(&io___324);
-	do_fio(&c__1, (char *)&(*n1), (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&(*n2), (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&bnd, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0  .AND.  RF .LT. 0.) WRITE (LUN,100) N1, */
+/*     .                                   N2, BND */
+/*      IF (LUN .GE. 0  .AND.  RF .GT. 0.) WRITE (LUN,110) N1, */
+/*     .                                   N2, BND */
+/*  100 FORMAT (//1X,'SIG0 -- N1 =',I4,', N2 =',I4, */
+/*     .        ', LOWER BOUND = ',E15.8) */
+/*  110 FORMAT (//1X,'SIG0 -- N1 =',I4,', N2 =',I4, */
+/*     .        ', UPPER BOUND = ',E15.8) */
+if (dbg_verbose) if (rf < 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  LOWER BOUND = %g\n", *n1, *n2, bnd);
+if (dbg_verbose) if (rf > 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  UPPER BOUND = %g\n", *n1, *n2, bnd);
 
 /* Test for errors and store local parameters. */
 
@@ -3916,7 +3588,7 @@ L4:
     h1 = h__[*n1];
     h2 = h__[*n2];
     *ier = -3;
-    if ((rf < 0. && min(h1,h2) < bnd) || (rf > 0. && bnd < max(h1,h2))) {
+if ((rf < 0. && min(h1,h2) < bnd) || (rf > 0. && bnd < max(h1,h2))) {
 	goto L11;
     }
 
@@ -3930,7 +3602,7 @@ L4:
 	    n2 * 3 + 3] * p1[2]) / unorm;
     *ier = 1;
     sig = sbig;
-    if ((h1 == bnd && rf * s1 > 0.) || (h2 == bnd && rf * s2 < 0.)) {
+if ((h1 == bnd && rf * s1 > 0.) || (h2 == bnd && rf * s2 < 0.)) {
 	goto L10;
     }
 
@@ -4015,15 +3687,10 @@ L4:
     sig = max(d__1,d__2) / t;
     dmax__ = sig * (1. - t / fmax);
     sneg = sig - dmax__;
-    if (lun >= 0) {
-	io___349.ciunit = lun;
-	s_wsfe(&io___349);
-	do_fio(&c__1, (char *)&sig, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&sneg, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&f0, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&fmax, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,120) SIG, SNEG, F0, FMAX */
+/*  120 FORMAT (1X,8X,'SIG = ',E15.8,', SNEG = ',E15.8/ */
+/*     .        1X,9X,'F0 = ',E15.8,', FMAX = ',E15.8/) */
+if (dbg_verbose) fprintf (stderr, "SIG = %g  SNEG = %g F0 = %g FMAX = %g\n", sig, sneg, f0, fmax);
     dsig = sig;
     fneg = fmax;
     d2 = s2 - s;
@@ -4114,14 +3781,10 @@ L6:
 
 L7:
     ++nit;
-    if (lun >= 0) {
-	io___376.ciunit = lun;
-	s_wsfe(&io___376);
-	do_fio(&c__1, (char *)&nit, (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&sig, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&f, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,130) NIT, SIG, F */
+/*  130 FORMAT (1X,3X,I2,' -- SIG = ',E15.8,', F = ', */
+/*     .        E15.8) */
+if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
     if (f0 * f < 0.) {
 
 /*   F0*F < 0.  Update (SNEG,FNEG) to (SG0,F0) so that F and */
@@ -4142,7 +3805,7 @@ L7:
 /*   Test for convergence. */
 
     stol = rtol * sig;
-    if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
+if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
 	goto L10;
     }
 
@@ -4166,12 +3829,9 @@ L8:
 
 L9:
     dsig = -f * dsig / (f - f0);
-    if (lun >= 0) {
-	io___379.ciunit = lun;
-	s_wsfe(&io___379);
-	do_fio(&c__1, (char *)&dsig, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,140) DSIG */
+/*  140 FORMAT (1X,8X,'DSIG = ',E15.8) */
+if (dbg_verbose) fprintf (stderr, "DSIG = %g\n", dsig);
     if (abs(dsig) > abs(dmax__) || dsig * dmax__ > 0.) {
 	goto L8;
     }
@@ -4218,25 +3878,12 @@ doublereal sig1_(integer *n1, integer *n2, integer *n, doublereal *x,
     /* Initialized data */
 
     static doublereal sbig = 85.;
-    static integer lun = -1;
-
-    /* Format strings */
-    static char fmt_100[] = "(//1x,\002SIG1 -- N1 =\002,i4,\002, N2 =\002,"
-	    "i4,\002, LOWER BOUND = \002,e15.8)";
-    static char fmt_110[] = "(//1x,\002SIG1 -- N1 =\002,i4,\002, N2 =\002,"
-	    "i4,\002, UPPER BOUND = \002,e15.8)";
-    static char fmt_120[] = "(1x,9x,\002F0 = \002,e15.8,\002, FMAX = \002,e1"
-	    "5.8/1x,8x,\002SIG = \002,e15.8/)";
-    static char fmt_130[] = "(1x,3x,i2,\002 -- SIG = \002,e15.8,\002, F ="
-	    " \002,e15.8)";
-    static char fmt_140[] = "(1x,8x,\002DSIG = \002,e15.8)";
 
     /* System generated locals */
     integer i__1;
     doublereal ret_val, d__1, d__2;
 
     /* Builtin functions */
-    integer s_wsfe(cilist *), do_fio(integer *, char *, ftnlen), e_wsfe(void);
     double sqrt(doublereal), exp(doublereal), d_sign(doublereal *, doublereal 
 	    *);
 
@@ -4254,14 +3901,6 @@ doublereal sig1_(integer *n1, integer *n2, integer *n, doublereal *x,
     static doublereal coshmm;
     extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
 	    doublereal *, doublereal *);
-
-    /* Fortran I/O blocks */
-    static cilist io___384 = { 0, 0, 0, fmt_100, 0 };
-    static cilist io___385 = { 0, 0, 0, fmt_110, 0 };
-    static cilist io___405 = { 0, 0, 0, fmt_120, 0 };
-    static cilist io___428 = { 0, 0, 0, fmt_130, 0 };
-    static cilist io___431 = { 0, 0, 0, fmt_140, 0 };
-
 
 
 /* *********************************************************** */
@@ -4403,22 +4042,16 @@ doublereal sig1_(integer *n1, integer *n2, integer *n, doublereal *x,
 
 /* Print a heading. */
 
-    if (lun >= 0 && rf < 0.) {
-	io___384.ciunit = lun;
-	s_wsfe(&io___384);
-	do_fio(&c__1, (char *)&(*n1), (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&(*n2), (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&bnd, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
-    if (lun >= 0 && rf > 0.) {
-	io___385.ciunit = lun;
-	s_wsfe(&io___385);
-	do_fio(&c__1, (char *)&(*n1), (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&(*n2), (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&bnd, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0  .AND.  RF .LT. 0.) WRITE (LUN,100) N1, */
+/*     .                                   N2, BND */
+/*      IF (LUN .GE. 0  .AND.  RF .GT. 0.) WRITE (LUN,110) N1, */
+/*     .                                   N2, BND */
+/*  100 FORMAT (//1X,'SIG1 -- N1 =',I4,', N2 =',I4, */
+/*     .        ', LOWER BOUND = ',E15.8) */
+/*  110 FORMAT (//1X,'SIG1 -- N1 =',I4,', N2 =',I4, */
+/*     .        ', UPPER BOUND = ',E15.8) */
+if (dbg_verbose) if (rf < 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  LOWER BOUND = %g\n", *n1, *n2, bnd);
+if (dbg_verbose) if (rf > 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  UPPER BOUND = %g\n", *n1, *n2, bnd);
 
 /* Test for errors and store local parameters. */
 
@@ -4500,7 +4133,7 @@ L4:
     d__1 = min(s1,s2);
 /* Computing MAX */
     d__2 = max(s1,s2);
-    if ((rf < 0. && min(d__1,s) < bnd) || (rf > 0. && bnd < max(d__2,s))) {
+if ((rf < 0. && min(d__1,s) < bnd) || (rf > 0. && bnd < max(d__2,s))) {
 	goto L11;
     }
 
@@ -4554,14 +4187,10 @@ L4:
 
     fmax = (bnd - s / al) * rf;
     sig = 2. - a0 / ((al * bnd - s) * 3.);
-    if (lun >= 0) {
-	io___405.ciunit = lun;
-	s_wsfe(&io___405);
-	do_fio(&c__1, (char *)&f0, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&fmax, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&sig, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,120) F0, FMAX, SIG */
+/*  120 FORMAT (1X,9X,'F0 = ',E15.8,', FMAX = ',E15.8/ */
+/*     .        1X,8X,'SIG = ',E15.8/) */
+if (dbg_verbose) fprintf (stderr, "F0 = %g FMAX = %g SIG = %g\n", f0, fmax, sig);
     d__1 = sig * exp(-sig) + .5;
     if (store_(&d__1) == .5) {
 	goto L10;
@@ -4638,14 +4267,10 @@ L6:
 /*   Update the number of iterations NIT. */
 
     ++nit;
-    if (lun >= 0) {
-	io___428.ciunit = lun;
-	s_wsfe(&io___428);
-	do_fio(&c__1, (char *)&nit, (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&sig, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&f, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,130) NIT, SIG, F */
+/*  130 FORMAT (1X,3X,I2,' -- SIG = ',E15.8,', F = ', */
+/*     .        E15.8) */
+if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
     if (f0 * f < 0.) {
 
 /*   F0*F < 0.  Update (SNEG,FNEG) to (SG0,F0) so that F */
@@ -4667,7 +4292,7 @@ L6:
 /*   Test for convergence. */
 
     stol = rtol * sig;
-    if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
+if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
 	goto L10;
     }
     if (f0 * f < 0. || abs(f) < abs(f0)) {
@@ -4687,12 +4312,9 @@ L7:
 
 L8:
     dsig = -f * dsig / (f - f0);
-    if (lun >= 0) {
-	io___431.ciunit = lun;
-	s_wsfe(&io___431);
-	do_fio(&c__1, (char *)&dsig, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,140) DSIG */
+/*  140 FORMAT (1X,8X,'DSIG = ',E15.8) */
+if (dbg_verbose) fprintf (stderr, "DSIG = %g\n", dsig);
     if (abs(dsig) > abs(dmax__) || dsig * dmax__ > 0.) {
 	goto L7;
     }
@@ -4738,20 +4360,12 @@ doublereal sig2_(integer *n1, integer *n2, integer *n, doublereal *x,
     /* Initialized data */
 
     static doublereal sbig = 85.;
-    static integer lun = -1;
-
-    /* Format strings */
-    static char fmt_100[] = "(//1x,\002SIG2 -- N1 =\002,i4,\002, N2 =\002,i4)"
-	    ;
-    static char fmt_110[] = "(1x,3x,i2,\002 -- SIG = \002,e15.8,\002, F ="
-	    " \002,e15.8/1x,31x,\002FP = \002,e15.8)";
 
     /* System generated locals */
     integer i__1;
     doublereal ret_val, d__1, d__2;
 
     /* Builtin functions */
-    integer s_wsfe(cilist *), do_fio(integer *, char *, ftnlen), e_wsfe(void);
     double sqrt(doublereal), exp(doublereal);
 
     /* Local variables */
@@ -4765,11 +4379,6 @@ doublereal sig2_(integer *n1, integer *n2, integer *n, doublereal *x,
     extern doublereal arclen_(doublereal *, doublereal *);
     extern /* Subroutine */ int snhcsh_(doublereal *, doublereal *, 
 	    doublereal *, doublereal *);
-
-    /* Fortran I/O blocks */
-    static cilist io___434 = { 0, 0, 0, fmt_100, 0 };
-    static cilist io___461 = { 0, 0, 0, fmt_110, 0 };
-
 
 
 /* *********************************************************** */
@@ -4907,13 +4516,9 @@ doublereal sig2_(integer *n1, integer *n2, integer *n, doublereal *x,
 
 /* Print a heading. */
 
-    if (lun >= 0) {
-	io___434.ciunit = lun;
-	s_wsfe(&io___434);
-	do_fio(&c__1, (char *)&(*n1), (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&(*n2), (ftnlen)sizeof(integer));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,100) N1, N2 */
+/*  100 FORMAT (//1X,'SIG2 -- N1 =',I4,', N2 =',I4) */
+if (dbg_verbose) fprintf (stderr, "SIG2 -- N1 = %d  N2 = %d\n", *n1, *n2);
 
 /* Test for errors and set local parameters. */
 
@@ -5064,15 +4669,10 @@ L6:
 /*   Update the number of iterations NIT. */
 
     ++nit;
-    if (lun >= 0) {
-	io___461.ciunit = lun;
-	s_wsfe(&io___461);
-	do_fio(&c__1, (char *)&nit, (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&sig, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&f, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&fp, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,110) NIT, SIG, F, FP */
+/*  110 FORMAT (1X,3X,I2,' -- SIG = ',E15.8,', F = ', */
+/*     .        E15.8/1X,31X,'FP = ',E15.8) */
+if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g  FP = %g\n", nit, sig, f, fp);
 
 /*   Test for convergence. */
 
@@ -5080,7 +4680,7 @@ L6:
 	goto L10;
     }
     dsig = -f / fp;
-    if (abs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
+if (abs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
 	goto L10;
     }
 
@@ -5442,23 +5042,12 @@ L7:
     static integer itmax = 50;
     static integer nitmax = 40;
 
-    /* Format strings */
-    static char fmt_100[] = "(///1x,\002SMSURF -- THE CONSTRAINT IS NOT"
-	    " \002,\002ACTIVE AND THE FITTING FCN IS CONSTANT.\002)";
-    static char fmt_110[] = "(///1x,\002SMSURF -- SM = \002,e10.4,\002, GSTO"
-	    "L = \002,e7.1,\002, NITMAX = \002,i2,\002, G(0) = \002,e15.8)";
-    static char fmt_120[] = "(/1x,i2,\002 -- P = \002,e15.8,\002, G = \002,e"
-	    "15.8,\002, NIT = \002,i2,\002, DFMAX = \002,e12.6)";
-    static char fmt_130[] = "(1x,5x,\002DP = \002,e15.8)";
-
     /* System generated locals */
     integer i__1;
     doublereal d__1;
 
     /* Builtin functions */
-    integer s_wsfe(cilist *), e_wsfe(void);
     double sqrt(doublereal);
-    integer do_fio(integer *, char *, ftnlen);
 
     /* Local variables */
     static doublereal c__, g;
@@ -5474,13 +5063,6 @@ L7:
 	    doublereal *, doublereal *, integer *, integer *, integer *, 
 	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
 	    doublereal *, doublereal *, doublereal *, integer *);
-
-    /* Fortran I/O blocks */
-    static cilist io___536 = { 0, 0, 0, fmt_100, 0 };
-    static cilist io___539 = { 0, 0, 0, fmt_110, 0 };
-    static cilist io___548 = { 0, 0, 0, fmt_120, 0 };
-    static cilist io___550 = { 0, 0, 0, fmt_130, 0 };
-
 
 
 /* *********************************************************** */
@@ -5713,11 +5295,10 @@ L7:
 /* The constraint is satisfied by a constant function. */
 
 	*ier = 1;
-	if (lun >= 0) {
-	    io___536.ciunit = lun;
-	    s_wsfe(&io___536);
-	    e_wsfe();
-	}
+/*        IF (LUN .GE. 0) WRITE (LUN,100) */
+/*  100   FORMAT (///1X,'SMSURF -- THE CONSTRAINT IS NOT ', */
+/*     .          'ACTIVE AND THE FITTING FCN IS CONSTANT.') */
+if (dbg_verbose) fprintf (stderr, "SMSURF -- THE CONSTRAINT IS NOT ACTIVE AND THE FITTING FCN IS CONSTANT\n");
 	return 0;
     }
 
@@ -5726,15 +5307,10 @@ L7:
     *ier = 0;
     s = 1. / sqrt(*sm);
     g0 = 1. / sqrt(q2) - s;
-    if (lun >= 0) {
-	io___539.ciunit = lun;
-	s_wsfe(&io___539);
-	do_fio(&c__1, (char *)&(*sm), (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&tol, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&nitmax, (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&g0, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,110) SM, TOL, NITMAX, G0 */
+/*  110 FORMAT (///1X,'SMSURF -- SM = ',E10.4,', GSTOL = ', */
+/*     .        E7.1,', NITMAX = ',I2,', G(0) = ',E15.8) */
+if (dbg_verbose) fprintf (stderr, "SMSURF -- SM = %g  GSTOL = %g  NITMAX = %d  G(0) = %g\n", *sm, tol, nitmax, g0);
 
 /* G(P) is strictly increasing and concave, and G(0) .LT. 0. */
 /*   Initialize parameters for the secant method.  The method */
@@ -5778,16 +5354,10 @@ L3:
     }
     g = 1. / sqrt(q2) - s;
     ++iter;
-    if (lun >= 0) {
-	io___548.ciunit = lun;
-	s_wsfe(&io___548);
-	do_fio(&c__1, (char *)&iter, (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&p, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&g, (ftnlen)sizeof(doublereal));
-	do_fio(&c__1, (char *)&nit, (ftnlen)sizeof(integer));
-	do_fio(&c__1, (char *)&dfmax, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,120) ITER, P, G, NIT, DFMAX */
+/*  120 FORMAT (/1X,I2,' -- P = ',E15.8,', G = ',E15.8, */
+/*     .        ', NIT = ',I2,', DFMAX = ',E12.6) */
+if (dbg_verbose) fprintf (stderr, " %d -- P = %g  G = %g  NIT = %d  DFMAX = %g\n", iter, p, g, nit, dfmax);
 
 /*   Test for convergence. */
 
@@ -5823,12 +5393,9 @@ L3:
 
 L5:
     dp = -g * dp / (g - g0);
-    if (lun >= 0) {
-	io___550.ciunit = lun;
-	s_wsfe(&io___550);
-	do_fio(&c__1, (char *)&dp, (ftnlen)sizeof(doublereal));
-	e_wsfe();
-    }
+/*      IF (LUN .GE. 0) WRITE (LUN,130) DP */
+/*  130 FORMAT (1X,5X,'DP = ',E15.8) */
+if (dbg_verbose) fprintf (stderr, "DP = %g\n", dp);
     if (abs(dp) > abs(dmax__)) {
 
 /*   G0*G .GT. 0 and the new estimate would be outside of the */
