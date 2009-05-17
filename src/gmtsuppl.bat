@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.45 2009-05-08 01:13:40 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.46 2009-05-17 19:39:05 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -23,7 +23,7 @@ REM the GMT 4 supplemental programs under WIN32 using
 REM Microsoft Visual C/C++ tools.  Not yet set up for mex.
 REM Note: Optimizing all at /O2 except meca which seems unstable
 REM
-REM Author: Paul Wessel, 2-MAY-2009
+REM Author: Paul Wessel, 17-MAY-2009
 REM ----------------------------------------------------
 REM
 REM How to build GMT under Windows:
@@ -178,9 +178,9 @@ IF %CHOICE%=="dynamic" %CC% %COPT% %DLL_NETCDF% /FD /ML /DDLL_EXPORT /c sph.c
 IF %CHOICE%=="dynamic" LINK %LOPT% /out:sph.dll /implib:sph.lib sph.obj %GMTLIB%
 IF %CHOICE%=="static"  %CC% %COPT% %DLL_NETCDF% /DDLL_EXPORT /c sph.c
 IF %CHOICE%=="static"  lib /out:sph.lib sph.obj
-%CC% %COPT% sphtriangulate.c sph.lib vcf2c.lib %GMTLIB%
-%CC% %COPT% sphdistance.c    sph.lib vcf2c.lib %GMTLIB%
-%CC% %COPT% sphinterpolate.c sph.lib vcf2c.lib %GMTLIB%
+%CC% %COPT% sphtriangulate.c sph.lib %GMTLIB%
+%CC% %COPT% sphdistance.c    sph.lib %GMTLIB%
+%CC% %COPT% sphinterpolate.c sph.lib %GMTLIB%
 del *.obj
 IF %CHOICE%=="dynamic" move sph.dll %BINDIR%
 IF %CHOICE%=="dynamic" move sph.exp %LIBDIR%
