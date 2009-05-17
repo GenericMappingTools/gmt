@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.13 2009-05-14 01:49:48 jluis Exp $
+ *	$Id: cm4_functions.c,v 1.14 2009-05-17 00:00:39 jluis Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -117,11 +117,16 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 	int nout = 0, nygo = 0, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
 	double *mut, *dstx = NULL, dstt = 0., x, y, z, h, t, dumb, bmdl[21], jmdl[12], date, dst, mut_now, alt;
-	double bc[28], re, hq[53040], wb[58], ht[17680], xd, yd, rm, xg, ro, rp, yg, zg, zd;
-	double ru, rt, rse[9], doy, fyr, ws[4355], gamf[8840], cego, epch, bkpo[12415];
-	double trig[132], epmg[1356], esmg[1356];
-	double f107x[1200];	/* was [100][12] */
-	double hymg[8136];	/* was [1356][6] */
+	double re, xd, yd, rm, xg, ro, rp, yg, zg, zd;
+	double bc[29], wb[58], trig[132], ru, rt, rse[9], doy, fyr, cego, epch;
+	double rlgm[15], rrgt[9], tsmg[6], tssq[6], tsto[6], tdmg[12], tdsq[10], tdto[10];
+	double rtay_dw, rtay_or, sinp, fsrf, rtay, frto, frho, thetas, rtay_dk;
+	double cnmp, enmp, omgs, omgd, hion, cpol, epol, ctmp, stmp, cemp, semp, rion, fdoy, clat, elon;
+	double sthe, cthe, psiz, cpsi, spsi, ctgo, stgo, sego, cdip = 0, edip = 0, ctmo, stmo, cemo, semo, taus = 0, taud = 0, cosp;
+	double *hq, *ht, *pleg, *rcur;			/* was hq[53040], ht[17680], pleg[4422], rcur[9104] */
+	double *bkpo, *ws, *gamf, *epmg, *esmg;		/* was bkpo[12415], ws[4355], gamf[8840], epmg[1356], esmg[1356] */
+	double *f107x;		/* was [100][12] */
+	double *hymg;		/* was [1356][6] */
 	double *gcto_or = NULL;	/* was [13680][5][2] */ 
 	double *gcto_mg = NULL;	/* was [2736][3][2][2] */ 
 	double *gpsq;		/* was [13680][5][2] */
@@ -133,11 +138,6 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 	double *essq;		/* was [13680] */
 	double *ecto;		/* was [16416] */
 	double *hyto;		/* was [49248] */
-	double pleg[4422], rcur[9104];
-	double rlgm[15], rrgt[9], tsmg[6], tssq[6], tsto[6], tdmg[12], tdsq[10], tdto[10];
-	double rtay_dw, rtay_or, sinp, fsrf, rtay, frto, frho, thetas, rtay_dk;
-	double cnmp, enmp, omgs, omgd, hion, cpol, epol, ctmp, stmp, cemp, semp, rion, fdoy, clat, elon;
-	double sthe, cthe, psiz, cpsi, spsi, ctgo, stgo, sego, cdip = 0, edip = 0, ctmo, stmo, cemo, semo, taus = 0, taud = 0, cosp;
 	char line[BUFSIZ];
 
 	FILE *fp;
@@ -158,6 +158,10 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
       PARAMETER (PSTO=2,NXTO=60,MXTO=12,IXTO=2736)
       PARAMETER (NTAY_MG=1,NTAY_OR=1)
  ======================================================================= */
+
+	bkpo = (double *) calloc((size_t)(12415), sizeof(double));
+	gamf = (double *) calloc((size_t)(8840), sizeof(double));
+	f107x = (double *) calloc((size_t)(1200), sizeof(double));
 
 	if ((fp = fopen(Ctrl->M.path, "r")) == NULL) {
 		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->M.path);
@@ -356,12 +360,20 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 	free ((void *) msec);
 	free ((void *) mjdy);
 
-	/* Most oddly those had to be declared "static" on Windows otherwise ... BOOM */
+	/* On Windows, either this or declare them as "static", otherwise ... BOOM */
 	hysq = (double *) calloc((size_t)(82080), sizeof(double));
 	epsq = (double *) calloc((size_t)(13680), sizeof(double));
 	essq = (double *) calloc((size_t)(13680), sizeof(double));
 	ecto = (double *) calloc((size_t)(16416), sizeof(double));
 	hyto = (double *) calloc((size_t)(49248), sizeof(double));
+	hq = (double *) calloc((size_t)(53040), sizeof(double));
+	ht = (double *) calloc((size_t)(17680), sizeof(double));
+	ws = (double *) calloc((size_t)(4355), sizeof(double));
+	epmg = (double *) calloc((size_t)(1356), sizeof(double));
+	esmg = (double *) calloc((size_t)(1356), sizeof(double));
+	hymg = (double *) calloc((size_t)(8136), sizeof(double));
+	pleg = (double *) calloc((size_t)(4422), sizeof(double));
+	rcur = (double *) calloc((size_t)(9104), sizeof(double));
 
 	/* LOOP over number of input points (many computations below are useless repeated - room for improvment */
 	for (n = 0; n < Ctrl->DATA.n_pts; ++n) {
@@ -722,6 +734,10 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 	free ((void *) gpsq);	free ((void *) gssq);	free ((void *) gpmg);
 	free ((void *) gsmg);	free ((void *) hysq);	free ((void *) epsq);
 	free ((void *) essq);	free ((void *) ecto);	free ((void *) hyto);
+	free ((void *) hq);	free ((void *) ht);	free ((void *) bkpo);
+	free ((void *) ws);	free ((void *) gamf);	free ((void *) epmg);
+	free ((void *) esmg);	free ((void *) hymg);	free ((void *) f107x);
+	free ((void *) pleg);	free ((void *) rcur);
 	if (gcto_or) free((void *) gcto_or);
 	if (gcto_mg) free((void *) gcto_mg);
 	return 0;
