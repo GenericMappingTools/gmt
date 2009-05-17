@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.14 2009-05-17 00:00:39 jluis Exp $
+ *	$Id: cm4_functions.c,v 1.15 2009-05-17 01:52:08 jluis Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -253,10 +253,8 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 	fclose(fp);
 	cpol = cnmp * D2R;
 	epol = enmp * D2R;
-	ctmp = cos(cpol);
-	stmp = sin(cpol);
-	cemp = cos(epol);
-	semp = sin(epol);
+	sincos(cpol, &stmp, &ctmp);
+	sincos(epol, &semp, &cemp);
 	rion = rm + hion;
 
 	mut = (double *) calloc((size_t)(Ctrl->DATA.n_times), sizeof(double));
@@ -451,13 +449,12 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 				geocen(csys, re, rp, rm, alt, clat, &ro, &thetas, &sthe, &cthe);
 
 			psiz = thetas - clat;
-			cpsi = cos(psiz);
-			spsi = sin(psiz);
+			sincos(psiz, &spsi, &cpsi);
 			rlgm[0] = -cpsi;	rlgm[3] = 0.;	rlgm[6] = spsi;
 			rlgm[1] = 0.;		rlgm[4] = 1.;	rlgm[7] = 0.;
 			rlgm[2] = -spsi;	rlgm[5] = 0.;	rlgm[8] = -cpsi;
-			ctgo = cos(thetas);	stgo = sin(thetas);
-			cego = cos(elon);	sego = sin(elon);
+			sincos(thetas, &stgo, &ctgo);
+			sincos(elon, &sego, &cego);
 			rrgt[0] = ctgo * cego;	rrgt[3] = -sego;	rrgt[6] = stgo * cego;
 			rrgt[1] = ctgo * sego;	rrgt[4] = cego;		rrgt[7] = stgo * sego;
 			rrgt[2] = -stgo;	rrgt[5] = 0.;		rrgt[8] = ctgo;
@@ -476,8 +473,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 			edip = atan2(yd, xd);
 			ctmo = zd;
 			stmo = sin(cdip);
-			cemo = cos(edip);
-			semo = sin(edip);
+			sincos(edip, &semo, &cemo);
 			rrgt[0] = -cemo * ctmo;	rrgt[3] = -semo * ctmo;	rrgt[6] = stmo;
 			rrgt[1] = -semo;	rrgt[4] = cemo;		rrgt[7] = 0.;
 			rrgt[2] = -cemo * stmo; rrgt[5] = -semo * stmo; rrgt[8] = -ctmo;
@@ -907,23 +903,20 @@ double intf107(int iyrl, int imol, int iyrh, int imoh, int iyr, int imon, int id
 }
 
 double getmut2(double thenmp, double phinmp, int iyear, int iday, int msec) {
-    double gst, cth0, the0, phi0, sth0, eadj, sdec, cphd, sphd, cths, thes, phis, eopp, gmts, sths, slong, srasn;
+	double gst, cth0, the0, phi0, sth0, eadj, sdec, cphd, sphd, cths, thes, phis, eopp, gmts, sths, slong, srasn;
 
-    the0 = thenmp * D2R;
-    phi0 = phinmp * D2R;
-    cth0 = cos(the0);
-    sth0 = sin(the0);
-    gmts = (double) (msec) * 1e-3;
-    sun2(iyear, iday, gmts, &gst, &slong, &srasn, &sdec);
-    thes = (90. - sdec) * D2R;
-    cths = cos(thes);
-    sths = sin(thes);
-    phis = (srasn - gst) * D2R;
-    cphd = cos(phis - phi0);
-    sphd = sin(phis - phi0);
-    eopp = sths * sphd;
-    eadj = cth0 * sths * cphd - sth0 * cths;
-    return (12. - atan2(eopp, eadj) * R2D / 15.);
+	the0 = thenmp * D2R;
+	phi0 = phinmp * D2R;
+	sincos(the0, &sth0, &cth0);
+	gmts = (double) (msec) * 1e-3;
+	sun2(iyear, iday, gmts, &gst, &slong, &srasn, &sdec);
+	thes = (90. - sdec) * D2R;
+	sincos(thes, &sths, &cths);
+	phis = (srasn - gst) * D2R;
+	sincos(phis - phi0, &sphd, &cphd);
+	eopp = sths * sphd;
+	eadj = cth0 * sths * cphd - sth0 * cths;
+	return (12. - atan2(eopp, eadj) * R2D / 15.);
 }
 
 void sun2(int iyr, int iday, double secs, double *gst, double *slong, double *srasn, double *sdec) {
@@ -1971,8 +1964,9 @@ void geocen(int ctyp, double re, double rp, double rm, double h, double clat, do
 
     *theta = clat;
     *r = rm + h;
-    *sinthe = sin(*theta);
-    *costhe = cos(*theta);
+    /* *sinthe = sin(*theta);
+    *costhe = cos(*theta);*/
+	sincos(*theta, sinthe, costhe);
     if (ctyp == 0) {
 	if (ifirst == 1) {
 	    ifirst = 0;
@@ -1986,8 +1980,9 @@ void geocen(int ctyp, double re, double rp, double rm, double h, double clat, do
 	rhons = rp2 * kappa + h;
 	*theta = atan2(rhoew * *sinthe, rhons * *costhe);
 	*r = sqrt(rhoew * rhoew * sinth2 + rhons * rhons * costh2);
-	*sinthe = sin(*theta);
-	*costhe = cos(*theta);
+	/* *sinthe = sin(*theta);
+	*costhe = cos(*theta); */
+	sincos(*theta, sinthe, costhe);
     }
 }
 
@@ -2222,11 +2217,9 @@ void trigmp(int mmax, double phi, double *t) {
 }
 
 void tdc(int grad, int nc, double clat, double theta, double *dldc, double *r) {
-    double psi, cpsi, spsi;
+    double cpsi, spsi;
 
-    psi = theta - clat;
-    spsi = sin(psi);
-    cpsi = cos(psi);
+	sincos(theta - clat, &spsi, &cpsi);
     r[0] = -cpsi;
     r[1] = 0.;
     r[2] = -spsi;
@@ -2594,8 +2587,8 @@ void tec(int grad, int k, int nc, double *theta, double *phi, double *b, double 
     if (k >= 1) {
 	sinthe = sin(*theta);
 	costhe = cos(*theta);
-	sphi = sin(*phi);
-	cphi = cos(*phi);
+	sincos(*theta, &sinthe, &costhe);
+	sincos(*phi, &sphi, &cphi);
 	r[0] = -costhe * cphi;
 	r[1] = -sphi;
 	r[2] = -sinthe * cphi;
@@ -2672,12 +2665,9 @@ void tms(int grad, int k, int nc, int na, int ia, double *a, double *b, double *
 	eulx = a[ia];
 	euly = a[ia + 1];
 	eulz = a[ia + 2];
-	seulx = sin(eulx);
-	ceulx = cos(eulx);
-	seuly = sin(euly);
-	ceuly = cos(euly);
-	seulz = sin(eulz);
-	ceulz = cos(eulz);
+	sincos(eulx, &seulx, &ceulx);
+	sincos(euly, &seuly, &ceuly);
+	sincos(eulz, &seulz, &ceulz);
 	fdldeu_(&k, &na, &ia, &seulx, &ceulx, &seuly, &ceuly, &seulz, &ceulz, &r[0], &b[1], &dlda[0]);
 	r[0] = ceuly * ceulz;
 	r[1] = -seulz;
@@ -2776,12 +2766,9 @@ void tnm_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, do
 	chix = a[*ia];
 	chiy = a[*ia + 1];
 	chiz = a[*ia + 2];
-	schix = sin(chix);
-	cchix = cos(chix);
-	schiy = sin(chiy);
-	cchiy = cos(chiy);
-	schiz = sin(chiz);
-	cchiz = cos(chiz);
+	sincos(chix, &schix, &cchix);
+	sincos(chiy, &schiy, &cchiy);
+	sincos(chiz, &schiz, &cchiz);
 	fdldno_(k, na, ia, &schix, &cchix, &schiy, &cchiy, &schiz, &cchiz, &r[0], &b[0], &dlda[0]);
 	r[0] = 1.;
 	r[1] = 0.;
@@ -3051,7 +3038,7 @@ void i8vset(int abeg, int alen, int s, int *a) {
 
     /* Function Body */
     aadr = abeg;
-    for (i = 1; i <= alen; ++i)
+    for (i = 0; i < alen; ++i)
 	a[aadr++] = s;
 }
 
@@ -3094,7 +3081,7 @@ void i8vcum(int abas, int abeg, int alen, int *a) {
     aprv = a[abeg];
     a[abeg] = abas;
     aadr = abeg + 1;
-    for (i = 1; i <= alen - 1; ++i) {
+    for (i = 0; i < alen - 1; ++i) {
 	acur = a[aadr];
 	a[aadr] = a[aadr - 1] + aprv;
 	aprv = acur;
@@ -3110,7 +3097,7 @@ void i8vdel(int abas, int abeg, int alen, int *a) {
 
     aprv = abas;
     aadr = abeg;
-    for (i = 1; i <= alen; ++i) {
+    for (i = 0; i < alen; ++i) {
 	acur = a[aadr];
 	a[aadr] = acur - aprv;
 	aprv = acur;
@@ -3156,7 +3143,7 @@ double r8ssum_(int *abeg, int *alen, double *a) {
     /* Function Body */
     ret_val = 0.;
     aadr = *abeg;
-    for (i = 1; i <= *alen; ++i) {
+    for (i = 0; i < *alen; ++i) {
 	ret_val += a[aadr];
 	++aadr;
     }
@@ -3193,7 +3180,7 @@ void r8vsub(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double
     aadr = abeg;
     badr = bbeg;
     cadr = cbeg;
-    for (i = 1; i <= vlen; ++i)
+    for (i = 0; i < vlen; ++i)
 	c[cadr++] = b[badr++] - a[aadr++];
 }
 
@@ -3233,7 +3220,7 @@ void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
     --q;
 
     qadr = qbeg;
-    for (i = 1; i <= qlen; ++i)
+    for (i = 0; i < qlen; ++i)
 	a[q[qadr++]] = s;
 
 }
@@ -3247,7 +3234,7 @@ void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b) {
 
     aadr = abeg;
     badr = bbeg;
-    for (i = 1; i <= vlen; ++i)
+    for (i = 0; i < vlen; ++i)
 	b[badr++] += s * a[aadr++];
 }
 
@@ -3262,7 +3249,7 @@ void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, doubl
     aadr = abeg;
     badr = bbeg;
     cadr = cbeg;
-    for (i = 1; i <= vlen; ++i)
+    for (i = 0; i < vlen; ++i)
 	c[cadr++] += s * a[aadr++] * b[badr++];
 }
 
