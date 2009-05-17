@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.54 2009-04-14 20:03:55 remko Exp $
+#  $Id: GNUmakefile,v 1.55 2009-05-17 19:30:14 guru Exp $
 #
 #		 Guru makefile for GMT Version 4
 #			GNU make compatible
@@ -171,7 +171,7 @@ else
 $(FILES):	guru/gmtguru.macros configure config.sub config.guess $(addsuffix .in,$(FILES))
 		rm -f config.cache config.log config.status
 		./configure $(GMT_SHARED_LIBS) $(GMT_US) $(GMT_TRIANGLE) $(GMT_DEBUG) $(GMT_DIST) $(GMT_EXDIST) \
-		$(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL) $(GMT_F2C) $(GMT_OTHER)
+		$(GMT_NETCDF) $(GMT_SITE) $(GMT_MATLAB) $(GMT_64) $(GMT_UNIVERSAL) $(GMT_OTHER)
 endif
 
 configure:	configure.ac

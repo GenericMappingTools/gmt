@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.509 2009-05-17 01:59:37 jluis Exp $
+	$Id: ChangeLog,v 1.510 2009-05-17 19:30:14 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-17	pwessel
+	* sph:			No longer requires the f2c include and library to install.
+	* configure.ac:		Removed the code that looked for the f2c library.
 
 2009-05-17	jluis
 	* gmt_notunix.h:	Declare HAVE_SINCOS 1 when #ifdef __INTEL_COMPILER (the Intel

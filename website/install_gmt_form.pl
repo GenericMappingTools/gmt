@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.39 2009-04-24 03:36:29 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.40 2009-05-17 19:30:14 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -84,7 +84,6 @@ $get_xgrid	= $gmt_form{'checkbox_xgrid'};
 $matlab_dir	= $gmt_form{'matlab_dir'};
 $mex_mdir	= $gmt_form{'mex_mdir'};
 $mex_xdir	= $gmt_form{'mex_xdir'};
-$f2c_dir	= $gmt_form{'f2c_dir'};
 $delete		= $gmt_form{'checkbox_delete'};
 $run		= $gmt_form{'checkbox_run'};
 
@@ -104,7 +103,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.39 $, on
+# Processed by install_gmt_form.pl $Revision: 1.40 $, on
 #
 #	$now
 #
@@ -440,14 +439,6 @@ if ($mex_mdir ne "") {
 }
 if ($mex_xdir ne "") {
 	print FILE "MEX_XDIR=", $mex_xdir, "\n";
-}
-
-print FILE "#---------------------------------------------\n";
-print FILE "#	F2C SECTION\n";
-print FILE "#---------------------------------------------\n";
-
-if ($f2c_dir ne "") {
-	print FILE "F2CDIR=", $f2c_dir, "\n";
 }
 
 close (FILE);
