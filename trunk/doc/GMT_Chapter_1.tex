@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.116 2009-05-15 01:40:07 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.117 2009-05-17 19:30:14 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -40,8 +40,8 @@ This is another significant update of the official distribution and hence it has
 and program enhancements.  We have added a new supplement ({\bf sph}) which
 offers interpolation, triangulation (Delaunay and Voronoi), and distance calculations on a 
 spherical surface.  The hard work is done by the original effort of Robert Renka who developed
-the Fortran-77 SSRFPACK and STRIPACK libraries; these are here supplied via a \progname{f2c}
-translation and require the \progname{f2c} library and include file to be installed.
+the Fortran-77 SSRFPACK and STRIPACK libraries; these are here supplied via a \progname{f2c}-assisted
+translation.
 The {\bf imgsrc} supplement has a new Bourne script \GMTprog{img2google}, which simplifies
 making Google Earth tiles from Sandwell and Smith bathymetry. The {\bf mgd77} supplement
 has a new program \GMTprog{mgd77magref}, which is used to evaluate either the CM4 comprehensive geomagnetic
@@ -65,7 +65,7 @@ meaning {\it semi-major axis}, b={\it semi-minor axis}, f = {\it flattening}, or
 added parameters for the Moon and planets (IAU2000).
 
 Finally, our configure script continues to evolve and now better supports installation on 64-bit systems and
-can automatically detect where netCDF and f2c exists on your system.
+can automatically detect if and where netCDF exists on your system.
 
 Here is the list of bug corrections:
 \begin{description}

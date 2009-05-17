@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.56 2009-04-24 18:20:57 guru Exp $
-AC_REVISION($Revision: 1.56 $)
+dnl $Id: configure.ac,v 1.57 2009-05-17 19:30:14 guru Exp $
+AC_REVISION($Revision: 1.57 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -60,8 +60,6 @@ AC_SUBST(LD_OPT)
 AC_SUBST(LDFLAGS)
 AC_SUBST(NETCDF_LIB)
 AC_SUBST(NETCDF_INC)
-AC_SUBST(F2C_LIB)
-AC_SUBST(F2C_INC)
 AC_SUBST(DOCDATE)
 AC_SUBST(DOCYEAR)
 AC_SUBST(MANDATE)
@@ -90,7 +88,6 @@ AC_ARG_ENABLE(matlab,   [  --enable-matlab=dir     Build GMT-matlab interface, g
 AC_ARG_ENABLE(octave,   [  --enable-octave=dir     Build GMT-octave interface, give directory with Octave distribution [[auto]] (disables Matlab interface)])
 AC_ARG_ENABLE(mex_mdir, [  --enable-mex-mdir=dir   Directory in which to install GMT-octave/Matlab .m files [[auto]]])
 AC_ARG_ENABLE(mex_xdir, [  --enable-mex-xdir=dir   Directory in which to install GMT-octave/Matlab mex files [[auto]]])
-AC_ARG_ENABLE(f2c,      [  --enable-f2c=dir        Directory with f2c lib and include [[auto]]])
 AC_ARG_ENABLE(debug,    [  --enable-debug          Compile for debugging instead of optimizing code])
 AC_ARG_ENABLE(devdebug, [  --enable-devdebug       Extra debugging for developers])
 AC_ARG_ENABLE(shared,   [  --enable-shared         Build shared (dynamic) GMT libraries instead of static])
@@ -106,8 +103,6 @@ AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid 
 AC_ARG_ENABLE(sph,      [  --disable-sph           Disable compilation of sph supplement which requires f2c library])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
-AC_ARG_VAR(F2C_INC,Location of F2C headers (compile-time))
-AC_ARG_VAR(F2C_LIB,Location of F2C library (compile-time))
 dnl
 dnl -----------------------------------------------------------------
 dnl Check for ar, csh/bash, ld, awk, and ranlib
@@ -441,37 +436,6 @@ fi
 AC_MSG_RESULT($NETCDF_LIB)
 if test ! -d $NETCDF_LIB; then
 	AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
-fi
-dnl
-dnl -----------------------------------------------------------------
-dnl Allow user to set --enable-f2c to set f2c dir
-dnl But only check these if --disable-sph has not been set
-dnl -----------------------------------------------------------------
-dnl
-if test "X$enable_f2c" = "X" || test "X$enable_f2c" = "Xyes" ; then
-	AC_PATH_PROG([F2C], [f2c], [/usr/local/bin/f2c])
-	F2C=`dirname $F2C`
-	F2C=`dirname $F2C`
-else
-	F2C=$enable_f2c
-fi
-AC_MSG_CHECKING(for f2c include directory)
-if test "X$F2C_INC" = "X"; then
-	F2C_INC=$F2C/include
-fi
-AC_MSG_RESULT($F2C_INC)
-if test ! -f $F2C_INC/f2c.h; then
-	enable_sph=no
-	AC_MSG_WARN([[f2c.h can not be found in $F2C_INC... sph compilation disabled]])
-fi
-AC_MSG_CHECKING(for f2c library directory)
-if test "X$F2C_LIB" = "X"; then
-	F2C_LIB=$F2C/lib
-fi
-AC_MSG_RESULT($F2C_LIB)
-if test ! -d $F2C_LIB; then
-	enable_sph=no
-	AC_MSG_WARN([[No such directory: $F2C_LIB... sph compilation disabled]])
 fi
 dnl
 dnl -----------------------------------------------------------------

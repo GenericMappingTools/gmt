@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.69 2009-04-24 03:36:29 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.70 2009-05-17 19:30:14 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.69 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.70 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -316,7 +316,7 @@ separate from where the smaller files reside.  The selections below are only use
 <INPUT TYPE="checkbox" NAME="checkbox_mgg"  CHECKED> MGG: Programs for making, managing, and plotting *.gmt data<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_misc"  CHECKED> MISC: Manipulate PostScript, create bit-patterns, extract netCDF columns<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_segyprogs"  CHECKED> SEGYPROGS: Plot SEGY seismic data files<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_sph"  CHECKED> SPH: Spherical triangulation and gridding (REQUIRES f2c lib/include file)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_sph"  CHECKED> SPH: Spherical triangulation, Voronoi construction and interpolation<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_spotter"  CHECKED> SPOTTER: Plate tectonic backtracking and hotspotting<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED> X2SYS: Track intersection (crossover) tools (REQUIRES MGG and MGD77)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_x_system"  CHECKED> X_SYSTEM: MGG-specific Track intersection (crossover) tools (REQUIRES MGG)<BR>
@@ -337,17 +337,9 @@ you must have permission to create these directories (if they don't exist) and w
 then it is assumed that octave is already in your executable path, in particular that the utilities mkoctfile and octave-config
 can be found when configure is run</I>.
 
-<HR><B>12. Additional information for SPH:</B><BR>
-<BR>
-If you selected to install the SPH supplement, please enter the directory which contains the lib and include directories
-for the f2c (Fortran-to-C translator) files: <INPUT NAME="f2c_dir" TYPE="text" SIZE="30" VALUE="/usr/local"><BR>
-<I>Note: You can leave the path blank if $F2CHOME is defined in your environment and points to the correct directory.
-If the include and lib directories for f2c are in difference places you should instead leave this field blank and
-set the two environment variables $F2C_INC and $F2C_LIB prior to running the install script.</I>.
-
 <!--  GMT COMPLETION SELECTION  -->
 
-<HR><B>13. Complete the operation:<BR>
+<HR><B>12. Complete the operation:<BR>
 
 </B><INPUT TYPE="checkbox" NAME="checkbox_delete" > Delete all archives upon successful installation<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_run"  CHECKED> Run all example scripts (assumes doc tar archive was chosen above)<BR>

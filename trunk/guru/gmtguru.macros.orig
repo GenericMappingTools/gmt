@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#	$Id: gmtguru.macros.orig,v 1.59 2009-03-27 01:32:25 remko Exp $
+#	$Id: gmtguru.macros.orig,v 1.60 2009-05-17 19:30:14 guru Exp $
 #
 #	Original GMT Guru Makefile Macro for the main GNUmakefile
 #	Gurus should make a file gmtguru.macros to overrule any setting below.
@@ -31,7 +31,6 @@ GMT_US		= --enable-US		# --enable-US for inch; empty for cm
 GMT_TRIANGLE	= --enable-triangle	# --enable-triangle for Shewchuk's triangulation; empty for Watson's
 GMT_DEBUG	= --enable-debug	# --enable-debug will use -g; else -O with compiler
 GMT_NETCDF	=# --enable-netcdf=$(NETCDFHOME)	# Change if your netcdf can not be found automatically
-GMT_F2C		=# --enable-libf2c=$(F2CHOME)	# Change if your f2c can not be found automatically
 GMT_SITE	=# --enable-update=ftp.soest.hawaii.edu	# Specify your nearest GMT ftp mirror
 GMT_MATLAB	=# --enable-matlab=$(MATLAB)	# To compile the mex supplement for Matlab
 GMT_OCTAVE	=# --enable-octave=yes	# To compile the mex supplement for Octave

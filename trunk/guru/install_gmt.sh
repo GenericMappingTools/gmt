@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.144 2009-04-24 03:36:29 guru Exp $
+#	$Id: install_gmt.sh,v 1.145 2009-05-17 19:30:14 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -469,7 +469,7 @@ mgd77:     Programs for handling MGD77 data files
 mgg:       Programs for making, managing, and plotting .gmt files
 misc:      Digitize or stitch line segments, read netCDF 1-D tables, and more
 segyprogs: Plot SEGY seismic data files
-sph:       Spherical triangulation and gridding (REQUIRES f2c library/include file)
+sph:       Spherical triangulation, Voronoi construction and interpolation
 spotter:   Plate tectonic backtracking and hotspotting
 x2sys:     New (Generic) Track intersection (crossover) tools
 x_system:  Old (MGG-specific) Track intersection (crossover) tools
@@ -524,12 +524,6 @@ EOF
 		echo "Hit return for default paths or provide the alternative paths for matlab/Octave files:" >&2
 		mex_mdir=`get_def_answer "Enter Install directory for .m functions" ""`
 		mex_xdir=`get_def_answer "Enter Install directory for .mex functions" ""`	
-	fi
-	if [ "$GMT_suppl_sph" = "y" ]; then
-		echo " " >&2
-		echo "The sph supplement requires the f2c include and library." >&2
-		echo "Specify top directory (e.g., /usr/local) or leave blank if you have defined F2C_INC and F2C_LIB." >&2
-		F2CDIR=`get_def_answer "Enter f2c top directory" "$F2CDIR"`
 	fi
 fi
 
@@ -641,10 +635,6 @@ GMT_delete=$GMT_delete
 MATDIR=$MATDIR
 mex_mdir=$mex_mdir
 mex_xdir=$mex_xdir
-#---------------------------------------------
-#       F2C SECTION
-#---------------------------------------------
-F2CDIR=$F2CDIR
 EOF
 
 echo "Session parameters written to file $file" >&2
@@ -1185,11 +1175,6 @@ if [ ! x"$mex_xdir" = x ]; then	# mex_xdir is set
 else
 	enable_mex_xdir=
 fi
-if [ ! x"$F2CDIR" = x ]; then	# F2CDIR is set
-	enable_f2c=--enable-f2c=$F2CDIR
-else
-	enable_f2c=
-fi
 
 #--------------------------------------------------------------------------------
 #	GMT installation commences here
@@ -1220,13 +1205,13 @@ cat << EOF >&2
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_f2c
+  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir
 EOF
 
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_f2c
+  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir
 
 if [ -f .gmtconfigure ]; then
 	cat .gmtconfigure
