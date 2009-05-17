@@ -1,10 +1,10 @@
-#	$Id: Makefile,v 1.12 2009-03-27 22:54:47 guru Exp $
+#	$Id: Makefile,v 1.13 2009-05-17 19:17:05 guru Exp $
 #
 #		Makefile for GMT supplement sph
 #
 #	Author:	Paul Wessel, SOEST, U. of Hawaii
 #
-#	Date:	12-MAR-2009
+#	Date:	17-MAY-2009
 #
 
 #-------------------------------------------------------------------------------
@@ -14,8 +14,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-INCLUDES = -I$(srcdir) -I$(NETCDF_INC) -I$(F2C_INC)
-F2CLIB	= -L$(F2C_LIB) -lf2c
+INCLUDES = -I$(srcdir) -I$(NETCDF_INC)
 
 CODE_C		= sphtriangulate.c sphdistance.c sphinterpolate.c
 MAN1		= $(CODE_C:.c=.1)
@@ -94,4 +93,4 @@ spotless::	clean
 #-------------------------------------------------------------------------------
 
 $(CODE):	$(CODE_O) $(STRILIB) $(SSRFLIB) $(SPHLIB)
-	$(CC) $(CFLAGS) $@.o -L.. -lgmt -lpsl $(NC_LIBS) -L. -lsph -lssrfpack  -lstripack $(F2CLIB) $(LIBS) -o $@
+	$(CC) $(CFLAGS) $@.o -L.. -lgmt -lpsl $(NC_LIBS) -L. -lsph -lssrfpack  -lstripack $(LIBS) -o $@

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.16 2009-05-16 00:46:08 guru Exp $
+ *	$Id: sph.c,v 1.17 2009-05-17 19:17:05 guru Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -48,11 +48,8 @@ extern int gradg_ (int *, double *, double *, double *, double *, int *, int *, 
 extern int gradl_ (int *, int *, double *, double *, double *, double *, int *, int *, int *, double *, int *);
 extern int intrc0_ (int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *);
 extern int intrc1_ (int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, double *, int *, double *, int *);
-/* extern int sgprnt_ (int *, int *, int *, int *, int *, double *); */
 extern int smsurf_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, double *, double *, double *, double *, int *, double *, double *, int *);
 extern int unif_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, int *, int *, double *, double *, int *, double *, double *, int *);
-
-int MAIN__ () { return(0);}	/* Seems needed under Linux when libf2c is a shared library */
 
 void stripack_lists (GMT_LONG n, double *x, double *y, double *z, struct STRIPACK *T)
 {
@@ -231,8 +228,7 @@ int compare_arc (const void *p1, const void *p2)
 void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f)
 {
 	int ierror, n4, nm, k, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs;
-	int plus = 1, minus = -1, lsig = 4;
-	int *list = NULL, *lptr = NULL, *lend = NULL;
+	int plus = 1, minus = -1;
 	double *sigma = NULL, *grad = NULL, *plon = NULL, *plat = NULL;
 	double tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
@@ -295,11 +291,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 				fprintf (stderr, "%s: Error in GETSIG:  IER = %d\n", GMT_program, ierror);
 				GMT_exit (EXIT_FAILURE);
 			}
-			if (gmtdefs.verbose) {
-				fprintf (stderr, "%s: GETSIG:  %d tension factors altered;  Max change = %g\n", GMT_program, ierror, dsm);
-			}
-			/* write the tension factors to disk (sgprnt). */
-			/* sgprnt_ (&n4, &lsig, list, lptr, lend, sigma); */
+			if (gmtdefs.verbose) fprintf (stderr, "%s: GETSIG:  %d tension factors altered;  Max change = %g\n", GMT_program, ierror, dsm);
 	        }
 	
 		/* compute interpolated values on the uniform grid (unif). */
@@ -347,7 +339,6 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 					GMT_exit (EXIT_FAILURE);
 				}
 				if (gmtdefs.verbose) fprintf (stderr, "%s: GETSIG (iteration %d):  %d tension factors altered;  Max change = %g\n", GMT_program, iter, ierror, dsm);
-				/* sgprnt_ (&n4, &lsig, list, lptr, lend, sigma); */	/* write the tension factors to disk (sgprnt). */
 			}
 		}
 		/* compute interpolated values on the uniform grid (unif). */
@@ -392,7 +383,6 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 					GMT_exit (EXIT_FAILURE);
 				}
 				if (gmtdefs.verbose) fprintf (stderr, "%s: GETSIG (iteration %d):  %d tension factors altered;  Max change = %g\n", GMT_program, iter, ierror, dsm);
-				/* sgprnt_ (&n4, &lsig, list, lptr, lend, sigma); */	/* write the tension factors to disk (sgprnt). */
 			}
 		}
 		/* compute interpolated values on the uniform grid (unif). */
