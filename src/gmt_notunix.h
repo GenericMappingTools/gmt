@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.26 2009-05-08 01:05:10 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.27 2009-05-17 01:53:41 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -91,7 +91,11 @@
 #define HAVE_ERFC 0
 #define HAVE_STRDUP 1
 #define HAVE_STRTOD 1
+#ifdef __INTEL_COMPILER 
+#define HAVE_SINCOS 1
+#else
 #define HAVE_SINCOS 0
+#endif
 #define HAVE_ALPHASINCOS 0
 #define WORDS_BIGENDIAN 0
 
