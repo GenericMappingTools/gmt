@@ -1,12 +1,14 @@
-/* $Id: stripack.c,v 1.3 2009-05-17 19:17:05 guru Exp $
+/* $Id: stripack.c,v 1.4 2009-05-18 20:51:00 guru Exp $
  * stripack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-#define abs(x) ((x) >= 0 ? (x) : -(x))
+#define abs(x) fabs(x)
+
 #define FALSE_ 0
 #define TRUE_ 1
 

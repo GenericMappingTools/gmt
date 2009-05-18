@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: ssrfpack_prep.sh,v 1.6 2009-05-17 19:17:05 guru Exp $
+#	$Id: ssrfpack_prep.sh,v 1.7 2009-05-18 20:51:00 guru Exp $
 #
 # Removes print and plot subroutines from ssrfpack FORTRAN code,
 # then replaces error messages with return of error codes that
@@ -102,10 +102,15 @@ cat << EOF > ssrfpack.c
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
+#ifndef min
 #define min(x, y) (((x) < (y)) ? (x) : (y))
+#endif
+#ifndef max
 #define max(x, y) (((x) > (y)) ? (x) : (y))
-#define abs(x) ((x) >= 0 ? (x) : -(x))
+#endif
+#define abs(x) fabs(x)
 
 typedef double doublereal;
 typedef int integer;

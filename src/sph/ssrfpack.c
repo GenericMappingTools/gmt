@@ -1,10 +1,11 @@
-/* $Id: ssrfpack.c,v 1.4 2009-05-17 22:07:38 jluis Exp $
+/* $Id: ssrfpack.c,v 1.5 2009-05-18 20:51:00 guru Exp $
  * ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #ifndef min
 #define min(x, y) (((x) < (y)) ? (x) : (y))
@@ -12,7 +13,7 @@
 #ifndef max
 #define max(x, y) (((x) > (y)) ? (x) : (y))
 #endif
-#define abs(x) ((x) >= 0 ? (x) : -(x))
+#define abs(x) fabs(x)
 
 typedef double doublereal;
 typedef int integer;
