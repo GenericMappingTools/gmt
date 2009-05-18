@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.13 2009-05-17 19:17:05 guru Exp $
+#	$Id: Makefile,v 1.14 2009-05-18 22:51:59 guru Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -17,18 +17,17 @@ include $(GMTSRCDIR)gmtalldeps.macros
 INCLUDES = -I$(srcdir) -I$(NETCDF_INC)
 
 CODE_C		= sphtriangulate.c sphdistance.c sphinterpolate.c
+LIB_C		= sph.c
 MAN1		= $(CODE_C:.c=.1)
 SCRIPTS		= sph_ex_1.sh sph_ex_2.sh sph_ex_3.sh sph_ex_4.sh
-STRILIB		= libstripack.a
-SSRFLIB		= libssrfpack.a
 SPHLIB		= libsph.a
 #-------------------------------------------------------------------------------
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
 CODE_O	= ${CODE_C:.c=.o}
-
 CODE	= ${CODE_C:.c=}
+LIB_O	= ${LIB_C:.c=.o}
 
 all:		$(CODE)
 
@@ -57,40 +56,21 @@ ex:		$(SCRIPTS)
 		done
 		
 #-------------------------------------------------------------------------------
-#	STRILIB library
-#-------------------------------------------------------------------------------
-
-library:	$(STRILIB) $(SSRFLIB)
-
-$(STRILIB):	stripack.o
-#		g95 -c -O stripack.f90
-		$(AR) cvr libstripack.a stripack.o
-		$(RANLIB) libstripack.a
-
-#-------------------------------------------------------------------------------
-#	SSRFLIB library
-#-------------------------------------------------------------------------------
-
-$(SSRFLIB):	ssrfpack.o
-		$(AR) cvr libssrfpack.a ssrfpack.o
-		$(RANLIB) libssrfpack.a
-
-#-------------------------------------------------------------------------------
 #       sph library
 #-------------------------------------------------------------------------------
 
-$(SPHLIB):	sph.o
+$(SPHLIB):	$(LIB_O)
 	$(AR) cvr $@ $?
 	$(RANLIB) $@
 
 sph.o:	sph.c sph.h $(GMT_H)
 
 spotless::	clean
-	rm -rf $(STRILIB) $(SSRFLIB) $(SPHLIB)
+	rm -rf $(SPHLIB)
 	
 #-------------------------------------------------------------------------------
 #	program dependencies
 #-------------------------------------------------------------------------------
 
-$(CODE):	$(CODE_O) $(STRILIB) $(SSRFLIB) $(SPHLIB)
-	$(CC) $(CFLAGS) $@.o -L.. -lgmt -lpsl $(NC_LIBS) -L. -lsph -lssrfpack  -lstripack $(LIBS) -o $@
+$(CODE):	$(CODE_O) $(SPHLIB)
+	$(CC) $(CFLAGS) $@.o -L.. -lgmt -lpsl $(NC_LIBS) -L. -lsph $(LIBS) -o $@
