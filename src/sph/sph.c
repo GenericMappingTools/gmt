@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.17 2009-05-17 19:17:05 guru Exp $
+ *	$Id: sph.c,v 1.18 2009-05-18 22:51:59 guru Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -36,20 +36,35 @@
 #include "gmt.h"
 #include "sph.h"
 
+typedef double doublereal;
+typedef int integer;
+typedef int logical;
+
+#ifndef min
+#define min(x, y) (((x) < (y)) ? (x) : (y))
+#endif
+#ifndef max
+#define max(x, y) (((x) > (y)) ? (x) : (y))
+#endif
+#define abs(x) fabs(x)
+#define FALSE_ 0
+#define TRUE_ 1
+
+int dbg_verbose = 0;	/* Set to 1 to get more original verbose output */
 
 /* STRIPACK FORTRAN SUBROUTINES PROTOTYPES */
-extern int trmesh_ (int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, double *, int *);
-extern int trlist_ (int *, int *, int *, int *, int *, int *, int *, int *);
-extern int crlist_ (int *, int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, int *);
-extern double areas_ (double *, double *, double *);
+int trmesh_ (int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, double *, int *);
+int trlist_ (int *, int *, int *, int *, int *, int *, int *, int *);
+int crlist_ (int *, int *, double *, double *, double *, int *, int *, int *, int *, int *, int *, int *, double *, double *, double *, double *, int *);
+double areas_ (double *, double *, double *);
 /* SSRFPACK FORTRAN SUBROUTINES PROTOTYPES */
-extern int getsig_ (int *, double *, double *, double *, double *, int *, int *, int *, double *, double *, double *, double *, int *);
-extern int gradg_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, double *, double *, int *);
-extern int gradl_ (int *, int *, double *, double *, double *, double *, int *, int *, int *, double *, int *);
-extern int intrc0_ (int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *);
-extern int intrc1_ (int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, double *, int *, double *, int *);
-extern int smsurf_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, double *, double *, double *, double *, int *, double *, double *, int *);
-extern int unif_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, int *, int *, double *, double *, int *, double *, double *, int *);
+int getsig_ (int *, double *, double *, double *, double *, int *, int *, int *, double *, double *, double *, double *, int *);
+int gradg_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, double *, double *, int *);
+int gradl_ (int *, int *, double *, double *, double *, double *, int *, int *, int *, double *, int *);
+int intrc0_ (int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *);
+int intrc1_ (int *, double *, double *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, double *, int *, double *, int *);
+int smsurf_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, double *, double *, double *, double *, int *, double *, double *, int *);
+int unif_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, int *, int *, double *, double *, int *, double *, double *, int *);
 
 void stripack_lists (GMT_LONG n, double *x, double *y, double *z, struct STRIPACK *T)
 {
@@ -403,3 +418,7 @@ void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int 
 	if (sigma) GMT_free ((void *)sigma);
 	if (grad) GMT_free ((void *)grad);
 }
+
+#include "stripack.c"
+
+#include "ssrfpack.c"

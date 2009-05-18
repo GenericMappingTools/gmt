@@ -1,20 +1,7 @@
-/* $Id: stripack.c,v 1.4 2009-05-18 20:51:00 guru Exp $
+/* $Id: stripack.c,v 1.5 2009-05-18 22:51:59 guru Exp $
  * stripack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-#define abs(x) fabs(x)
-
-#define FALSE_ 0
-#define TRUE_ 1
-
-typedef double doublereal;
-typedef int integer;
-typedef int logical;
 
 /* Common Block Declarations */
 

@@ -1,25 +1,7 @@
-/* $Id: ssrfpack.c,v 1.5 2009-05-18 20:51:00 guru Exp $
+/* $Id: ssrfpack.c,v 1.6 2009-05-18 22:51:59 guru Exp $
  * ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-#ifndef min
-#define min(x, y) (((x) < (y)) ? (x) : (y))
-#endif
-#ifndef max
-#define max(x, y) (((x) > (y)) ? (x) : (y))
-#endif
-#define abs(x) fabs(x)
-
-typedef double doublereal;
-typedef int integer;
-
-extern void sincos (double x, double *s, double *c);
-int dbg_verbose = 0;	/* Set to 1 to get more original verbose output */
 
 double d_sign (doublereal *a, doublereal *b)
 {
