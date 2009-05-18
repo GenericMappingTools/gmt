@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: stripack_prep.sh,v 1.5 2009-05-17 19:17:05 guru Exp $
+#	$Id: stripack_prep.sh,v 1.6 2009-05-18 20:51:00 guru Exp $
 #
 # Removes print and plot subroutines from stripack FORTRAN code,
 # then replaces error messages with return of error codes that
@@ -50,8 +50,9 @@ cat << EOF > stripack.c
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-#define abs(x) ((x) >= 0 ? (x) : -(x))
+#define abs(x) fabs(x)
 #define FALSE_ 0
 #define TRUE_ 1
 
