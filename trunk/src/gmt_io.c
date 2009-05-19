@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.185 2009-05-15 08:16:21 guru Exp $
+ *	$Id: gmt_io.c,v 1.186 2009-05-19 20:20:53 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2866,7 +2866,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 	char open_mode[4], file[BUFSIZ];
 	BOOLEAN save, ascii, close_file = FALSE, no_segments;
 	GMT_LONG n_fields, n_expected_fields, k;
-	GMT_LONG n_read = 0, seg = -1, n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, row = 0;
+	GMT_LONG n_read = 0, seg = -1, n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, row = 0, col;
 	double d, *in;
 	FILE *fp;
 	struct GMT_TABLE *T;
@@ -3057,6 +3057,17 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 	T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory ((void *)T->segment, (size_t)seg, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 	T->n_segments = seg;
 	T->n_columns = T->segment[0]->n_columns;
+	/* Determine table min,max values */
+	T->min = (double *) GMT_memory (VNULL, T->n_columns, sizeof (double), GMT_program);
+	T->max = (double *) GMT_memory (VNULL, T->n_columns, sizeof (double), GMT_program);
+	for (col = 0; col < T->n_columns; col++) {T->min[col] = DBL_MAX; T->max[col] = -DBL_MAX;}
+	for (seg = 0; seg < T->n_segments; seg++) {
+		for (col = 0; col < T->n_columns; col++) {
+			T->min[col] = MIN (T->min[col], T->segment[seg]->min[col]);
+			T->max[col] = MAX (T->max[col], T->segment[seg]->max[col]);
+		}
+		if (T->segment[seg]->pole) {T->min[GMT_X] = 0.0; T->max[GMT_X] = 360.0;}
+	}
 
 	*table = T;
 
@@ -3173,6 +3184,8 @@ void GMT_free_table (struct GMT_TABLE *table)
 	GMT_LONG seg;
 	for (seg = 0; seg < table->n_segments; seg++) GMT_free_segment (table->segment[seg]);
 	GMT_free ((void *)table->segment);
+	GMT_free ((void *)table->min);
+	GMT_free ((void *)table->max);
 	GMT_free ((void *)table);
 }
 
