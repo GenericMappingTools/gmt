@@ -31,15 +31,9 @@ struct STRPACK_ARC {
 	int begin, end;
 };
 
-EXTERN_MSC void stripack_lists (GMT_LONG n, double *x, double *y, double *z, struct STRIPACK *T);
+EXTERN_MSC void stripack_lists (GMT_LONG n, double *x, double *y, double *z, BOOLEAN verbose, struct STRIPACK *T);
 EXTERN_MSC double stripack_areas (double *V1, double *V2, double *V3);
 EXTERN_MSC void cart_to_geo (GMT_LONG n, double *x, double *y, double *z, double *lon, double *lat);
 EXTERN_MSC int compare_arc (const void *p1, const void *p2);
 EXTERN_MSC void geo_to_cart (double alat, double alon, double *a, int rads);
-EXTERN_MSC void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f);
-
-#ifdef G95
-/* If linking via g95 instead we need to use these start/stop functions */
-void g95_runtime_start (int argc, char *argv[]);
-void g95_runtime_stop ();
-#endif
+EXTERN_MSC void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, BOOLEAN vartens, BOOLEAN verbose, struct GRD_HEADER *h, double *f);
