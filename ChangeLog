@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.510 2009-05-17 19:30:14 guru Exp $
+	$Id: ChangeLog,v 1.511 2009-05-19 11:21:05 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-19	remko
+	* grd2xyz.c:		Fixed checking East boundary (bug introduced 2008-03-05).
 
 2009-05-17	pwessel
 	* sph:			No longer requires the f2c include and library to install.
@@ -8,7 +11,7 @@
 
 2009-05-17	jluis
 	* gmt_notunix.h:	Declare HAVE_SINCOS 1 when #ifdef __INTEL_COMPILER (the Intel
-				compiler also provide a sincos function)
+				compiler also provides a sincos function)
 	* mgd77/mgd77magref.c:	Use sincos()
 
 2009-05-14	remko
