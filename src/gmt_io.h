@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.77 2009-05-13 21:06:42 guru Exp $
+ *	$Id: gmt_io.h,v 1.78 2009-05-19 20:20:53 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -262,6 +262,8 @@ struct GMT_TABLE {	/* To hold an array of line segment structures and header inf
 	GMT_LONG n_segments;			/* Number of segments in the array */
 	GMT_LONG n_records;			/* Total number of data records across all segments */
 	GMT_LONG n_columns;			/* Number of columns (fields) in each record */
+	double *min;				/* Minimum coordinate for each column */
+	double *max;				/* Maximum coordinate for each column */
 	struct GMT_LINE_SEGMENT **segment;	/* Pointer to array of segments */
 };
 
