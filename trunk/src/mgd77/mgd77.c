@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.226 2009-05-13 21:06:43 guru Exp $
+ *	$Id: mgd77.c,v 1.227 2009-05-19 03:23:33 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -745,7 +745,7 @@ void MGD77_Verify_Header (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE 
 	
 	H->errors[TOTAL] = H->errors[WARN] = H->errors[ERR] = 0;
 	
-	P = (F->original) ? H->mgd77[MGD77_ORIG] : H->mgd77[MGD77_REVISED];
+	P = (F->original || F->format != MGD77_FORMAT_CDF) ? H->mgd77[MGD77_ORIG] : H->mgd77[MGD77_REVISED];
 	
 	if (!H->meta.verified) {
 		fprintf (stderr, "%s: ERROR: MGD77_Verify_Header called before MGD77_Verify_Prep\n", GMT_program);
@@ -1612,7 +1612,7 @@ int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct M
 	int i, err, use;
 	char *MGD77_header[MGD77_N_HEADER_RECORDS];
 	
-	use = (F->original) ? MGD77_ORIG : MGD77_REVISED;
+	use = (F->original || F->format != MGD77_FORMAT_CDF) ? MGD77_ORIG : MGD77_REVISED;
 	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) MGD77_header[i] = (char *)GMT_memory (VNULL, (size_t)(MGD77_HEADER_LENGTH + 1), sizeof (char), GMT_program);
 	if ((err = MGD77_Decode_Header (H->mgd77[use], MGD77_header, MGD77_TO_HEADER))) return (err);	/* Encode individual header attributes in the text headers */
 
@@ -3166,7 +3166,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	
 	/* Put attributes header, author, title and history */
 	
-	use = (F->original) ? MGD77_ORIG : MGD77_REVISED;
+	use = (F->original || F->format != MGD77_FORMAT_CDF) ? MGD77_ORIG : MGD77_REVISED;
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Conventions", strlen (MGD77_CDF_CONVENTION) + 1, (const char *)MGD77_CDF_CONVENTION));
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Version",     strlen(MGD77_CDF_VERSION), (const char *)MGD77_CDF_VERSION));
 	MGD77_nc_status (nc_put_att_text (F->nc_id, NC_GLOBAL, "Author",      strlen (H->author), H->author));
