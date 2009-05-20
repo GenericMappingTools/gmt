@@ -1,4 +1,4 @@
-	$Id: README.misc,v 1.10 2009-05-19 20:17:14 guru Exp $
+	$Id: README.misc,v 1.11 2009-05-20 03:51:46 guru Exp $
 
 Distributed under the GNU Public License (see file ../COPYING)
 
@@ -9,6 +9,7 @@ that may come in handy for some users.
 	gmtdigitize - Digitize and project coordinates from dititizer
 	gmtdp - Line reduction using the Douglas-Peucker algorithm
 	gmtstitch - Assemble polygons from line segments
+	kml2gmt - Extract GMT tables from Google Earth KML files
 	makepattern - create Sun rasterfiles from patterns
 	psmageplot - blow up plots over several pages
 	nc2xy - convert 1-D netCDF files to ASCII
@@ -29,6 +30,9 @@ gmtstitch reads one or more files (including multisegment files)
 and attempts to connect segments whose endpoints are within a
 specified separation threshold.  Useful for connecting digitized
 lines back to a complete whole. [P Wessel]
+
+kml2gmt reverses the process of gmt2kml and lets you extract GMT
+data from KML files, perhaps after editing the KML files in GE.
 
 makepattern can read the user's Sun 1-bit raster files or
 Sun icon files (of the type used for patterns in GMT3.0)

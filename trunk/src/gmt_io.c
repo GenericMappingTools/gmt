@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.186 2009-05-19 20:20:53 guru Exp $
+ *	$Id: gmt_io.c,v 1.187 2009-05-20 03:51:46 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2865,7 +2865,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 
 	char open_mode[4], file[BUFSIZ];
 	BOOLEAN save, ascii, close_file = FALSE, no_segments;
-	GMT_LONG n_fields, n_expected_fields, k;
+	GMT_LONG n_fields, n_expected_fields, k, i;
 	GMT_LONG n_read = 0, seg = -1, n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, row = 0, col;
 	double d, *in;
 	FILE *fp;
@@ -2954,10 +2954,19 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF; get out of this loop */
 		if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
 			char buffer[BUFSIZ], *t;
-			if ((t = strstr (GMT_io.segment_header, " -L")) || (t = strstr (GMT_io.segment_header, "\t-L")))	/* Set specified label */
-				strcpy (buffer, &t[3]);
+			memset ((void *)buffer, 0, BUFSIZ);
+			if ((t = strstr (GMT_io.segment_header, " -L")) || (t = strstr (GMT_io.segment_header, "\t-L"))) {	/* Set specified label */
+				i = 3;
+				if (t[i] == '\"') {	/* Quoted string, find terminal quote */
+					for (k = 4; k < strlen(t) && t[k] != '\"'; k++);
+					t[k] = '\0';
+					i++;
+				}
+				strcpy (buffer, &t[i]);
+			}
 			else
 				sscanf (&GMT_io.segment_header[1], "%s", buffer);
+			GMT_chop (buffer);
 			if (strlen (buffer)) {
 				T->segment[seg]->label = strdup (buffer);
 			}
