@@ -5,7 +5,7 @@ psclip \- To set up polygonal clip paths
 .SH SYNOPSIS
 \fBpsclip\fP \fIxyfiles\fP GMT_J_OPT GMT_Rgeo_OPT 
 [ GMT_B_OPT ] [ OPT(E)\fIazim\fP/\fIelev\fP ] [ GMT_K_OPT ] [ OPT(N) ] 
-[ GMT_O_OPT ] [ GMT_P_OPT ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
+[ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(S) ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_Y_OPT ] 
 [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT] [ GMT_t_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_mo_OPT ]
 .br
 .sp
@@ -41,6 +41,11 @@ OPT(N)
 Invert the sense of what is inside and outside, i.e., use the outside of the polygons for clipping.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
+.TP
+OPT(S)
+Rather than read any input files, simply turn on clipping for the current map region.  Ignores
+OPT(B) and cannot be used with OPT(N).  Basically, OPT(S) is a convenient way to run \fBpsclip\fP with
+the arguments \dev\null OPT(N) (or, under Windows, NUL OPT(N)).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
