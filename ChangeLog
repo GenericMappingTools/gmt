@@ -1,10 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.512 2009-05-19 20:20:53 guru Exp $
+	$Id: ChangeLog,v 1.513 2009-05-20 03:51:46 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-05-19	pwessel
 	* misc/gmt2kml.c:	New program in the misc supplement that converts GMT table
 				data to KML format for Google Earth.
+	* misc/kml2gmt.c:	New programs that extracts GMT data tables from Google Earth
+						KML files, perhaps after editing the latter in GE.
 
 2009-05-19	remko
 	* grd2xyz.c:		Fixed checking East boundary (bug introduced 2008-03-05).

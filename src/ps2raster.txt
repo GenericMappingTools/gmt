@@ -102,7 +102,7 @@ Append \fB+t\fP\fItitle\fP to set the document title [GMT KML Document],
 \fB+n\fP\fIlayername\fP to set the layer name, and \fB+a\fP\fI/altmode\fP[\fIaltitude\fP] to
 select one of 5 altitude modes recognized by Google Earth that determines the altitude (in m) of the
 image: \fBG\fP clamped to the ground, \fBg\fP append altitude relative to ground, \fBa\fP append absolute
-altitude, \fBs\fP append altitude relative to seafloor, and \fBS]fP clamp it to the seafloor.
+altitude, \fBs\fP append altitude relative to seafloor, and \fBS\fP clamp it to the seafloor.
 Control visibility of the layer with the \fB+l\fP\fIminLOD/maxLOD\fP and \fB+f\fP\fIminfade/maxfade\fP
 options.  FInally, if you plan to leave the image itself on a server and only distribute the KML,
 use \fB+u\fP\fIURL\fP to prepend the URL to the image reference.
