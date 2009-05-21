@@ -1,0 +1,25 @@
+#include "common_options.txt"
+.TH GMTLOGO 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+gmtlogo \- Adding a GMT graphics logo overlay to an illustration
+.SH SYNOPSIS
+\fBgmtlogo\fP \fIdx\fP \fIdy\fP [ OPT(G)\fIfill\fP ] [ OPT(W)[\fIpen\fP] ] >> \fIplot.ps\fP
+.SH DESCRIPTION
+This scrips appends the \fBGMT\fP logo to an "open" PostScript file.
+The logo is 2 inches wide and 1 inch high and will be positioned with the lower left corner
+at the position (\fIdx\fP,\fIdy\fP) relative to the current plot origin.
+.SH OPTIONS
+.TP 
+OPT(G)
+Select color or pattern for filling the underlying box [Default is no fill].
+(See SPECIFYING FILL below).
+.TP
+OPT(W)
+Set pen attributes for the outline of the box [Default is no outline].
+(See SPECIFYING PENS below).
+#include "explain_pen.txt"
+#include "explain_fill.txt"
+#include "explain_color.txt"
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR psimage (1)
