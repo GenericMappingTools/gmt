@@ -811,4 +811,5 @@ If you have typographical errors in your \.gmtdefaults4 file(s), a warning messa
 issued, and the \fBGMT\fP defaults for the affected parameters will be used.
 .SH "SEE ALSO"
 .IR GMT (1),
+.IR gmtget (1),
 .IR gmtset (1)
