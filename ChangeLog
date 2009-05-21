@@ -1,10 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.514 2009-05-20 20:10:34 guru Exp $
+	$Id: ChangeLog,v 1.515 2009-05-21 00:13:23 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-05-20	pwessel
-	* psclip.c:		New option -S that turns on map region clipping without any
-				input data files.  SHorthand for -N /dev/null.
+	* psclip.c:		New option -T that turns on map region clipping without any
+				input data files.  Shorthand for -N /dev/null.
 2009-05-19	pwessel
 	* misc/gmt2kml.c:	New program in the misc supplement that converts GMT table
 				data to KML format for Google Earth.
