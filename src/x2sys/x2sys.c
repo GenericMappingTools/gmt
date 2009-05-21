@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.132 2009-05-13 21:06:44 guru Exp $
+ *	$Id: x2sys.c,v 1.133 2009-05-21 04:18:36 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -841,6 +841,7 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 	char **p, line[BUFSIZ], name[GMT_TEXT_LEN];
 	FILE *fp;
 
+	*list = NULL;	*nf = 0;
 	if ((fp = x2sys_fopen (file, "r")) == NULL) {
   		fprintf (stderr, "x2sys_read_list : Cannot find track list file %s in either current or X2SYS_HOME directories\n", file);
 		return (GMT_GRDIO_FILE_NOT_FOUND);
@@ -863,6 +864,46 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 	p = (char **) GMT_memory ((void *)p, (size_t)n, sizeof (char *), "x2sys_read_list");
 
 	*list = p;
+	*nf = n;
+
+	return (X2SYS_NOERROR);
+}
+
+int x2sys_read_weights (char *file, char ***list, double **weights, int *nf)
+{
+	int n_alloc = GMT_CHUNK, n = 0;
+	char **p, line[BUFSIZ], name[GMT_TEXT_LEN];
+	double *W, this_w;
+	FILE *fp;
+
+	*list = NULL;	*weights = NULL, *nf = 0;
+	if ((fp = x2sys_fopen (file, "r")) == NULL) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Quietly return if no file is found since name may be a weight */
+	
+	p = (char **) GMT_memory (VNULL, (size_t)n_alloc, sizeof (char *), "x2sys_read_weights");
+	W = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "x2sys_read_weights");
+
+	while (fgets (line, BUFSIZ, fp)) {
+		GMT_chop (line);	/* Remove trailing CR or LF */
+		if (sscanf (line, "%s %lg", name, &this_w) != 2) {
+	 		fprintf (stderr, "x2sys_read_weights : Error parsing file %s near line %d\n", file, n);
+			return (GMT_GRDIO_FILE_NOT_FOUND);
+			
+		}
+		p[n] = strdup (name);
+		W[n] = this_w;
+		n++;
+		if (n == n_alloc) {
+			n_alloc <<= 1;
+			p = (char **) GMT_memory ((void *)p, (size_t)n_alloc, sizeof (char *), "x2sys_read_weights");
+		}
+	}
+	fclose (fp);
+
+	p = (char **) GMT_memory ((void *)p, (size_t)n, sizeof (char *), "x2sys_read_weights");
+	W = (double *) GMT_memory ((void *)W, (size_t)n_alloc, sizeof (double), "x2sys_read_weights");
+
+	*list = p;
+	*weights = W;
 	*nf = n;
 
 	return (X2SYS_NOERROR);

@@ -3,7 +3,7 @@
 .SH NAME
 x2sys_solve \- Determine systematic corrections from crossovers
 .SH SYNOPSIS
-\fBx2sys_solve\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP OPT(E)\fImode\fP [ \fICOE_list.d\fP ] [ GMT_V_OPT ] [ GMT_bi_OPT ]
+\fBx2sys_solve\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP OPT(E)\fImode\fP [ \fICOE_list.d\fP ] [ GMT_V_OPT ] [ OPT(W) ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
 \fBx2sys_solve\fP will use the supplied crossover information to
 solve for systematic corrections that can then be applied per track
@@ -45,6 +45,10 @@ Name of file with the required crossover columns as produced by \fBx2sys_list\fP
 first two columns are expected to hold the integer track IDs; otherwise we expect
 those columns to hold the text string names of the two tracks.
 #include "explain_-V.txt"
+.TP
+OPT(W)
+Means that each input records has an extra column with the composite weight for each crossover record.  These
+are used to obtain a weighted least squares solution [no weights].
 #include "explain_-bi.txt"
 .SH EXAMPLES
 To fit a simple bias offset to faa for all tracks under the MGD77 tag, try

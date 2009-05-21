@@ -1,15 +1,19 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.515 2009-05-21 00:13:23 guru Exp $
+	$Id: ChangeLog,v 1.516 2009-05-21 04:18:35 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-05-20	pwessel
 	* psclip.c:		New option -T that turns on map region clipping without any
 				input data files.  Shorthand for -N /dev/null.
+	* x2sys/x2sys_list.c:	Can now accept list of weights for each track and output the
+				composite weight for each crossover.
+	* x2sys/x2sys_solve.c:	Option -W means an extra column with crossover weight.
+	
 2009-05-19	pwessel
 	* misc/gmt2kml.c:	New program in the misc supplement that converts GMT table
 				data to KML format for Google Earth.
 	* misc/kml2gmt.c:	New programs that extracts GMT data tables from Google Earth
-						KML files, perhaps after editing the latter in GE.
+				KML files, perhaps after editing the latter in GE.
 
 2009-05-19	remko
 	* grd2xyz.c:		Fixed checking East boundary (bug introduced 2008-03-05).
