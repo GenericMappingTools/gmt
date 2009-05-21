@@ -1,0 +1,37 @@
+#include "common_options.txt"
+.TH GMTGET 1 MANDATE GMT_STRING "Generic Mapping Tools"
+#define TOL_SI		0.025\fBc\fP
+#define LEN_1_SI	0.2\fBc\fP
+#define LEN_2_SI	2\fBc\fP
+#define LEN_3_SI	25\fBc\fP
+#define LEN_4_SI	15\fBc\fP
+#define LEN_5_SI	0.3\fBc\fP
+#define LEN_6_SI	0.5\fBc\fP
+#define DEF_XY_SI	2.5\fBc\fP
+#define CODE_SI		ISOLatin1+
+#define PAPER_SI	A4
+#define TOL_US		0.01\fBi\fP
+#define LEN_1_US	0.075\fBi\fP
+#define LEN_2_US	0.75\fBi\fP
+#define LEN_3_US	9\fBi\fP
+#define LEN_4_US	6\fBi\fP
+#define LEN_5_US	0.1125\fBi\fP
+#define LEN_6_US	0.1875\fBi\fP
+#define DEF_XY_US	1\fBi\fP
+#define CODE_US		Standard+
+#define PAPER_US	Letter
+.SH NAME
+gmtget \- To list a single \fBGMT\fP parameter
+.SH SYNOPSIS
+\fBgmtget\fP \fIPARAMETER\fP
+.SH DESCRIPTION
+\fBgmtget\fP will list the value of a single \fBGMT\fP default parameter.
+.SH EXAMPLE
+To list the value of the parameter PS_VERBOSE:
+.br
+.sp
+\fBgmtget\fP PS_VERBOSE
+.SH "SEE ALSO"
+.IR GMT (1),
+.IR gmtdefaults (1),
+.IR gmtset (1)
