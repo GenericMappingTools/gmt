@@ -5,7 +5,7 @@ x2sys_list \- Output a subset of crossovers from data base
 .SH SYNOPSIS
 \fBx2sys_list\fP OPT(C)\fIcolumn\fP OPT(T)\fITAG\fP [ \fIcoedbase.txt\fP ] [ OPT(A)\fIasymm_max\fP ] 
 [ OPT(F)\fIacdhiInNtTvxyz\fP ] [ OPT(I)[\fIlist\fP] [ OPT(L)[\fIcorrtable\fP] ] [ OPT(N)\fInx_min\fP ] 
-[ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
+[ OPT(Qe)|\fBi\fP ] [ GMT_Rgeo_OPT ] [ OPT(S)\fItrack\fP ] [ GMT_V_OPT ] [ OPT(W)[\fIlist\fP] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
 .SH DESCRIPTION
 \fBx2sys_list\fP will read the crossover ASCII data base \fIcoedbase.txt\fP (or \fIstdin\fP)
 and extract a subset of the crossovers based on the other arguments.  The output may be
@@ -29,7 +29,7 @@ of crossovers that falls in the left or right half of the range.  Symmetric dist
 to zero.  If specified, we exclude tracks whose asymmetry exceeds the specify cutoff in absolute value [1, i.e., include all].
 .TP
 OPT(F)
-Specify your desired output using any combination of \fIacdhiInNtTvxyz\fP, in any order.  Do not use space between
+Specify your desired output using any combination of \fIacdhiInNtTvwxyz\fP, in any order.  Do not use space between
 the letters, and note your selection is case-sensitive.  The output will be ASCII (or binary, see OPT(bo)) columns of values.
 Description of codes: \fBa\fP is the angle (< 90) defined by the crossing tracks,
 \fBc\fP is crossover value of chosen observation (see OPT(C)),
@@ -42,6 +42,7 @@ Description of codes: \fBa\fP is the angle (< 90) defined by the crossing tracks
 \fBt\fP is time along track in \fIdate\fP\fBT\fP\fIclock\fP format (NaN if not available),
 \fBT\fP is elapsed time since start of track along track (NaN if not available),
 \fBv\fP is speed along track,
+\fBw\fP is the composite weight,
 \fBx\fP is \fIx\fP-coordinate (or longitude),
 \fBy\fP is \fIy\fP-coordinate (or latitude), and
 \fBz\fP is observed value (see OPT(C)) along track.
@@ -74,6 +75,11 @@ OPT(S)
 Name of a single track.  If given we restrict output to those crossovers involving this track [Default
 output is crossovers involving any track pair].
 #include "explain_-V.txt"
+.TP
+OPT(W)
+Name of ASCII file with a list of track names and their relative weights (one track per record) that should be
+used to calculate the composite crossover weight (output code \fBw\fP above).
+[Default sets weights to 1].
 #include "explain_-bo.txt"
 .TP
 OPT(m)
