@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.516 2009-05-21 04:18:35 guru Exp $
+	$Id: ChangeLog,v 1.517 2009-05-21 15:16:36 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-21	remko
+	* bin/*:		Removed bin directory from CVS.
+	* gmtlogo, gmtget, psbbox.sh:	Moved to src directory. Created manuals for them.
+	* gmtpatch.sh:		Moved to main directory.
 
 2009-05-20	pwessel
 	* psclip.c:		New option -T that turns on map region clipping without any
