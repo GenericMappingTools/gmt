@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.187 2009-05-20 03:51:46 guru Exp $
+ *	$Id: gmt_io.c,v 1.188 2009-05-22 02:41:40 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1185,6 +1185,7 @@ void GMT_write_segmentheader (FILE *fp, GMT_LONG n)
 	 * ASCII header is expected to contain newline (\n) */
 
 	GMT_LONG i;
+	if (!GMT_io.multi_segments[GMT_OUT]) return;	/* No output segments requested */
 	if (GMT_io.binary[GMT_OUT])
 		for (i = 0; i < n; i++) GMT_output (fp, 1, &GMT_d_NaN);
 	else if (GMT_io.segment_header[0] == '\0')	/* Most likely binary input with NaN-headers */
