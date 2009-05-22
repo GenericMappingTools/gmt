@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.517 2009-05-21 15:16:36 remko Exp $
+	$Id: ChangeLog,v 1.518 2009-05-22 02:41:40 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-05-21	pwessel
+	* gmt_io.c:		When -mi is set there should be no multisegment headers on output
+					but there was no if-test to check for that.
+					
 2009-05-21	remko
 	* bin/*:		Removed bin directory from CVS.
 	* gmtlogo, gmtget, psbbox.sh:	Moved to src directory. Created manuals for them.
