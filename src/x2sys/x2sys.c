@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.133 2009-05-21 04:18:36 guru Exp $
+ *	$Id: x2sys.c,v 1.134 2009-05-23 01:12:23 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1489,6 +1489,10 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 	n_pairs = *nx = 0;
 	while (more) {	/* Read dbase until EOF */
 		GMT_chop (line);	/* Get rid of [CR]LF */
+		if (line[0] == '#') {	/* Skip a comment lines */
+			while (fgets (line, BUFSIZ, fp) && line[0] == '#');	/* Skip header recs */
+			continue;	/* Return to top of while loop */
+		}
 		n_items = sscanf (&line[2], "%s %d %s %d %s %s", trk[0], &year[0], trk[1], &year[1], info[0], info[1]);
 		for (i = 0; i < (int)strlen (trk[0]); i++) if (trk[0][i] == '.') trk[0][i] = '\0';
 		for (i = 0; i < (int)strlen (trk[1]); i++) if (trk[1][i] == '.') trk[1][i] = '\0';
@@ -1539,7 +1543,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 			P[p].year[k] = year[k];
 			if (n_items == 4)	/* Old format with no start/dist stuff */
 				P[p].start[k] = P[p].stop[k] = dist[k] = GMT_d_NaN;
-			else if (!strcmp (start[k], "NaN"))	/* No time for this track */
+			else if (!strcmp (start[k], "NaN") || !strcmp (stop[k], "NaN"))	/* No time for this track */
 				P[p].start[k] = P[p].stop[k] = GMT_d_NaN;
 			else {
 				if (GMT_verify_expectations (GMT_IS_ABSTIME, GMT_scanf (start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
@@ -1561,7 +1565,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 		n_alloc_x = GMT_SMALL_CHUNK;
 		P[p].COE = (struct X2SYS_COE *) GMT_memory (VNULL, (size_t)n_alloc_x, sizeof (struct X2SYS_COE), GMT_program);
 		k = 0;
-		while ((t = fgets (line, BUFSIZ, fp)) && line[0] != '>') {	/* As long as we are reading data records */
+		while ((t = fgets (line, BUFSIZ, fp)) && !(line[0] == '>' || line[0] == '#')) {	/* As long as we are reading data records */
 			GMT_chop (line);	/* Get rid of [CR]LF */
 			sscanf (line, fmt, x_txt, y_txt, t_txt[0], t_txt[1], d_txt[0], d_txt[1], h_txt[0], h_txt[1], v_txt[0], v_txt[1], z_txt[0], z_txt[1]);
 			if (GMT_scanf (x_txt, GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT_d_NaN;
