@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.518 2009-05-22 02:41:40 guru Exp $
+	$Id: ChangeLog,v 1.519 2009-05-24 05:47:09 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-23	pwessel
+	* mgd77/mgd77manage.c:	Now uses GMT_read_img to handle *.img files; earlier it could
+				not handle the latest +-80 degree lats.
 
 2009-05-21	pwessel
 	* gmt_io.c:		When -mi is set there should be no multisegment headers on output
