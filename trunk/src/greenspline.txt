@@ -126,7 +126,7 @@ Note that all tension values are expected to be normalized tension in the range 
 (\fBt\fP) Continuous curvature spline in tension [\fIWessel and Bercovici\fP, 1998]; append
 \fItension\fP[/\fIscale\fP] with \fItension\fP in the 0\-1 range and optionally supply a length scale [Default is the average grid spacing].
 The next is a 2-D or 3-D spline:
-(\fBg\fP) Regularized spline in tension [\fIMitasova and Mitas\fP, 1993]; again, append \fItension\fP and optional \fIscale\fP.
+(\fBr\fP) Regularized spline in tension [\fIMitasova and Mitas\fP, 1993]; again, append \fItension\fP and optional \fIscale\fP.
 The last two are spherical surface splines and both imply OPT(D)4 OPT(fg):
 (\fBp\fP) Minimum curvature spline [\fIParker\fP, 1994],
 (\fBq\fP) Continuous curvature spline in tension [\fIWessel and Becker\fP, 2008]; append \fItension\fP.
