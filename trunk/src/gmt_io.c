@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.188 2009-05-22 02:41:40 guru Exp $
+ *	$Id: gmt_io.c,v 1.189 2009-05-24 03:09:53 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2918,19 +2918,19 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 		GMT_exit (EXIT_FAILURE);
 	}
 
-	/* Allocate the Table structure */
-
-	T = (struct GMT_TABLE *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_TABLE), GMT_program);
-	T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory (VNULL, (size_t)n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
-
 	save = GMT_io.multi_segments[GMT_IN];	/* Must set this to TRUE temporarily since GMT_input uses GMT_io.multi_segments when reading */
 	GMT_io.multi_segments[GMT_IN] = TRUE;
 
 	n_fields = GMT_input (fp, &n_expected_fields, &in);
 	if (GMT_io.status & GMT_IO_EOF) {
-		fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
-		GMT_exit (EXIT_FAILURE);
+		if (gmtdefs.verbose) fprintf (stderr, "%s: File %s is empty!\n", GMT_program, file);
+		return (GMT_IO_EOF);
 	}
+	/* Allocate the Table structure */
+
+	T = (struct GMT_TABLE *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_TABLE), GMT_program);
+	T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory (VNULL, (size_t)n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
+
 	no_segments = (!(GMT_io.status & GMT_IO_SEGMENT_HEADER));	/* Not a multi-segment file.  We then assume file has only one segment */
 
 	while (n_fields >= 0 && !(GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
