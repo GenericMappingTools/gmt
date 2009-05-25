@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.15 2009-05-17 01:52:08 jluis Exp $
+ *	$Id: cm4_functions.c,v 1.16 2009-05-25 18:59:52 jluis Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -11,6 +11,17 @@
  *		
  *  Version:	1.0
  *  Revised:	1-MAY-2009
+ * 
+ * 
+ *  NOTES:	The original Fortran code written by Terry Sabaka can be found at 
+ *        	denali.gsfc.nasa.gov/cm/cm4field.f
+ *        	This C version is a bit more limited (it doesn't allow computing the 
+ *        	source coefficients - the GMDL array in original) and was striped of 
+ *        	the long help/comments section. Many of those comments make no sense 
+ *        	here since we changed the subroutine interface. With regard to this point, 
+ *        	a substantial difference is that all is need is one single call to the 
+ *        	function (with location arrays transmitted in input), and all selected 
+ *        	field sources contribution add up to the final result.
  * 
  *-------------------------------------------------------------------------*/
 
