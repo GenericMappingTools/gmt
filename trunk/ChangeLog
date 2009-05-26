@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.519 2009-05-24 05:47:09 guru Exp $
+	$Id: ChangeLog,v 1.520 2009-05-26 01:46:35 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-25	pwessel
+	* greenspline.c:	Calculation of nz layers were off by one, leaving out the
+				penultimate layer.
 
 2009-05-23	pwessel
 	* mgd77/mgd77manage.c:	Now uses GMT_read_img to handle *.img files; earlier it could
