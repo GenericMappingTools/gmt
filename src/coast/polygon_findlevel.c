@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.14 2008-07-04 03:04:09 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.15 2009-05-27 04:35:42 guru Exp $
  */
 #include "wvs.h"
 
@@ -53,6 +53,10 @@ int main (int argc, char **argv) {
 			exit(-1);
 		}
 		blob[n_id].x0 = p.x;	/* Pick any point on the polygon */
+		if (p.x < 0) {
+			fprintf (stderr, "x0 is actually neg %d. Stop; fix the problem\n", n_id);
+			exit (-1);
+		}
 		blob[n_id].y0 = p.y;
 		blob[n_id].n_inside = 0;
 		blob[n_id].reverse = 0;
@@ -173,48 +177,47 @@ int main (int argc, char **argv) {
 			lat[k] = p.y;
 		}
 		n = blob[id1].h.n;
+		/* Here lon,lat goes from -180 to +359.99999 and is continuous (no jumps) */
 		
 		west1 = blob[id1].h.west;	east1 = blob[id1].h.east;
-		if (blob[id1].h.greenwich) {
-			west1 += 360.0;
-			east1 += 360.0;
-		}
 		
 		for (id2 = 0; id2 < n_id; id2++) {
 			
 			if (fabs (blob[id2].h.east - blob[id2].h.west) == 360.0) continue;	/* But skip Antarctica */
-			if (id1 == id2) continue;	/* Skip self testing */
+			if (id1 == id2) continue;		/* Skip self testing */
 			if (blob[id2].h.source == -1) continue;	/* Marked for deletion */
 			
 			/* First perform simple tests based on min/max coordinates */
 			
-			if ( (blob[id2].h.south > blob[id1].h.north) || (blob[id2].h.north < blob[id1].h.south)) continue;
+			if ( (blob[id2].h.south > blob[id1].h.north) || (blob[id2].h.north < blob[id1].h.south)) continue;	/* Lat checks are unique */
+			
+			/* OK, do longitude checks, carefully */
 			
 			west2 = blob[id2].h.west;	east2 = blob[id2].h.east;
-			off = 0.0;
-			if (blob[id2].h.greenwich) {
-				west2 += 360.0;
-				east2 += 360.0;
-				off = M360;
+			
+			while (west2 > east1) {	/* Wind region 2 way to the left of region 1 */
+				east2 -= 360.0;
+				west2 -= 360.0;
 			}
-			while (east2 < west1) {
+			while (east2 < west1) {	/* Adjust id2 range to match (if possible) the id1 range */
 				east2 += 360.0;
 				west2 += 360.0;
-				off += M360;
 			}
-			if ((west2 > east1) || (east2 < west1)) continue;	/* Clearly not overlapping */
+			if (west2 > east1) continue;	/* Clearly not overlapping */
 			
 			/* Must compare with polygon boundaries */
 			
-			if (fast && id1 == 0) {	/* Eurasia, first do quick coarse test */
-				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, ieur_o[0], ieur_o[1], N_EUR_O);
+			x0 = blob[id2].x0 * 1.0e-6;	/* This is in 0-360 range */
+			ix0 = x0 * MILL;
+			if (fast && id1 == 0) {	/* Eurasia, first do quick coarse test.  Note: ieur_o is in 350/555 range */
+				while (ix0 < EUR_O_MIN_X) ix0 += M360;	/* Make sure we are EUR_O range */
+				intest = non_zero_winding2 (ix0, blob[id2].y0, ieur_o[0], ieur_o[1], N_EUR_O);
 				if (!intest) continue;
 				
 				/* So point is inside crude outside. Now check if it is inside crude inside */
 				
-				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, ieur_i[0], ieur_i[1], N_EUR_I);
-
-				if (!intest) intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, iafr_i[0], iafr_i[1], N_AFR_I);
+				intest = non_zero_winding2 (ix0, blob[id2].y0, ieur_i[0], ieur_i[1], N_EUR_I);
+				if (!intest) intest = non_zero_winding2 (ix0, blob[id2].y0, iafr_i[0], iafr_i[1], N_AFR_I);
 
 				if (intest == 2) {	/* way inside, set levels */
 					blob[id2].inside[blob[id2].n_inside] = id1;
@@ -228,15 +231,15 @@ int main (int argc, char **argv) {
 				/* If not, we fall down to the _real_ test */
 			}
 			else if (fast && id1 == 1) {	/* Americas, first do quick test */
-				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, iam_o[0], iam_o[1], N_AM_O);
+				while (ix0 < AM_O_MIN_X) ix0 += M360;	/* Make sure we are AM_O range */
+				intest = non_zero_winding2 (ix0, blob[id2].y0, iam_o[0], iam_o[1], N_AM_O);
 				if (!intest) continue;
 
-				
 				/* So point is inside crude outside. Now check if it is inside crude inside */
 				
-				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, isam_i[0], isam_i[1], N_SAM_I);
+				intest = non_zero_winding2 (ix0, blob[id2].y0, isam_i[0], isam_i[1], N_SAM_I);
 
-				if (!intest) intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, inam_i[0], inam_i[1], N_NAM_I);
+				if (!intest) intest = non_zero_winding2 (ix0, blob[id2].y0, inam_i[0], inam_i[1], N_NAM_I);
 
 				if (intest == 2) {	/* way inside, set levels */
 					blob[id2].inside[blob[id2].n_inside] = id1;
@@ -250,12 +253,13 @@ int main (int argc, char **argv) {
 				/* If not, we fall down to the _real_ test */
 			}
 			else if (fast && id1 == 3) {	/* Australia, first do quick test */
-				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, iaus_o[0], iaus_o[1], N_AUS_O);
+				while (ix0 < AUS_O_MIN_X) ix0 += M360;	/* Make sure we are AUS_O range */
+				intest = non_zero_winding2 (ix0, blob[id2].y0, iaus_o[0], iaus_o[1], N_AUS_O);
 				if (!intest) continue;
 				
 				/* So point is inside crude outside. Now check if it is inside crude inside */
 				
-				intest = non_zero_winding2 (blob[id2].x0 + off, blob[id2].y0, iaus_i[0], iaus_i[1], N_AUS_I);
+				intest = non_zero_winding2 (ix0, blob[id2].y0, iaus_i[0], iaus_i[1], N_AUS_I);
 
 				if (intest == 2) {	/* way inside, set levels */
 					blob[id2].inside[blob[id2].n_inside] = id1;
@@ -271,20 +275,14 @@ int main (int argc, char **argv) {
 			
 			/* Here we need to perform complete inside test */
 			
-			x0 = blob[id2].x0 * 1.0e-6;
-			if (id1 == 0 && x0 > blob[id1].h.east)
-				x0 -= 360.0;
-			else if (id1 > 0 && blob[id1].h.greenwich && x0 > 180.0)
-				x0 -= 360.0;
-			else if (!blob[id1].h.greenwich && x0 < 0.0)
-				x0 += 360.0;
-			
-			if (!(lon[0] == lon[n-1] && lat[0] == lat[n-1])) {
+			x0 -= 720.0;	/* Go way far left */
+			while (x0 < blob[id1].h.west) x0 += 360.0;	/* March east until we exceed west */
+			ix0 = x0 * MILL;
+			if (!(lon[0] == lon[n-1] && lat[0] == lat[n-1])) {	/* Close the polygon if no already */
 				lon[n] = lon[0];
 				lat[n] = lat[0];
 				n++;
 			}
-			ix0 = x0 * MILL;
 			intest = non_zero_winding2 (ix0, blob[id2].y0, lon, lat, n);
 			
 			if (!intest) continue;	/* Not inside */
