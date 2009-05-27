@@ -1,17 +1,20 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.520 2009-05-26 01:46:35 guru Exp $
+	$Id: ChangeLog,v 1.521 2009-05-27 00:22:50 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-05-26	pwessel
+	* gmtconvert.c:	With -S, did not report the number of output segments.
+	
 2009-05-25	pwessel
 	* greenspline.c:	Calculation of nz layers were off by one, leaving out the
 				penultimate layer.
 
 2009-05-23	pwessel
 	* mgd77/mgd77manage.c:	Now uses GMT_read_img to handle *.img files; earlier it could
-				not handle the latest +-80 degree lats.
+				not handle the latest +-80 degree lats.  Also passed wrong filename variable.
 
 2009-05-21	pwessel
-	* gmt_io.c:		When -mi is set there should be no multisegment headers on output
+	* gmt_io.c:		When only -mi is set there should be no multisegment headers on output
 					but there was no if-test to check for that.
 					
 2009-05-21	remko
@@ -2428,7 +2431,7 @@
 	* makecpt.c:		SEGV if no -C given (should automatically select rainbow).
 
 2006-10-24
-	* ex??/*.nc:		Replaced grids in old GMT format with COARDS NetCDF gridsi (float and short int).
+	* ex??/*.nc:		Replaced grids in old GMT format with COARDS NetCDF grids (float and short int).
 	* doc/scripts/*.nc:	---"---
 	* tutorial/*.nc:	---"---
 	* doc/*.tex:		Replaced old pen attributes by new comma-separated format and use color names.

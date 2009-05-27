@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.123 2009-05-15 08:16:21 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.124 2009-05-27 00:22:51 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1145,20 +1145,6 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 		}
 	}
 }
-
-#define GMT_IMG_MINLON		0.0
-#define GMT_IMG_MAXLON		360.0
-#define GMT_IMG_MINLAT_72	-72.0059773539
-#define GMT_IMG_MAXLAT_72	+72.0059773539
-#define GMT_IMG_MINLAT_80	-80.738
-#define GMT_IMG_MAXLAT_80	+80.738
-#define GMT_IMG_NLON_1M		21600	/* At 1 min resolution */
-#define GMT_IMG_NLON_2M		10800	/* At 2 min resolution */
-#define GMT_IMG_NLAT_1M_72	12672	/* At 1 min resolution */
-#define GMT_IMG_NLAT_1M_80	17280	/* At 1 min resolution */
-#define GMT_IMG_NLAT_2M_72	6336	/* At 1 min resolution */
-#define GMT_IMG_NLAT_2M_80	8640	/* At 1 min resolution */
-#define GMT_IMG_ITEMSIZE	2	/* Size of 2 byte short ints */
 
 GMT_LONG GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w, double e, double s, double n, double scale, GMT_LONG mode, double lat, BOOLEAN init)
 {

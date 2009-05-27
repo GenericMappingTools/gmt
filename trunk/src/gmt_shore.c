@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.40 2009-05-13 21:06:42 guru Exp $
+ *	$Id: gmt_shore.c,v 1.41 2009-05-27 00:22:51 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -273,7 +273,7 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c, double min_area, GM
 	/* First tally how many useful segments */
 
 	for (s = i = 0; i < c->bin_nseg[b]; i++) {
-		if (cut_area > 0 && seg_area[i] < cut_area) continue;
+		if (cut_area > 0 && abs(seg_area[i]) < cut_area) continue;	/* Use abs() since double-lined-river lakes have negative area */
 		if (((seg_info[i] >> 6) & 7) < min_level) continue;
 		if (((seg_info[i] >> 6) & 7) > max_level) continue;
 		seg_area[s] = seg_area[i];

@@ -72,8 +72,8 @@ bicubic interpolation (however, see OPT(Q)).  Append name of a GMT grid file.
 .br
 .sp
 \fBi\fP Sample a Sandwell/Smith Mercator *.img grid along the track given by the MGD77+ file using
-bicubic interpolation (however, see OPT(Q)).  Append the gridded data scale (typically 1 or 0.1),
-the IMG file mode (0-3), and finally the img grid filename.  The modes stand for the following:
+bicubic interpolation (however, see OPT(Q)).  Append the img grid filename, followed by the comma-separated data scale (typically 1 or 0.1),
+the IMG file mode (0-3), and optionally the img grid max latitude [80.738].  The modes stand for the following:
 (0) Img files with no constraint code, returns data at all points, (1) Img file with constraints coded,
 return data at all points, (2) Img file with constraints coded, return data only at constrained points
 and NaN elsewhere, and (3) Img file with constraints coded, return 1 at constraints and 0 elsewhere.
