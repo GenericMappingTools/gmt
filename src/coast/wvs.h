@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.4 2009-05-27 04:35:42 guru Exp $
+ *	$Id: wvs.h,v 1.5 2009-05-27 06:35:54 guru Exp $
  */
 /* wvs.h
  *
@@ -63,6 +63,7 @@ struct GMT3_POLY {
 	int datelon;    /* 180 for all except eurasia (270) */
 	int checked[2]; /* TRUE if polygon has been crossover checked with all peers */
 	int source;     /* 0 = CIA WDBII, 1 = WVS */
+	int parent;     /* -1 if top level 1, else id of polygon containing this polygon */
 	double west, east, south, north;
 	double area;    /* Area of polygon */
 };
