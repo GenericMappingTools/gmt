@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.10 2009-02-25 12:36:29 remko Exp $
+ *	$Id: polygon_xover.c,v 1.11 2009-05-27 23:45:47 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -55,6 +55,7 @@ int main (int argc, char **argv)
 			P[n_id].lon[i] = p.x * 1e-6;
 			P[n_id].lat[i] = p.y * 1e-6;
 		}
+		/* lon,lat is now -180/+270 and continuous */
 		if (n_id == ANTARCTICA){	/* Special r,theta conversion */
 			for (i = 0; i < P[n_id].h.n; i++) {
 				sincosd (P[n_id].lon[i], &s, &c);
@@ -145,7 +146,7 @@ int main (int argc, char **argv)
 
 				/* GMT_non_zero_winding returns 2 if inside, 1 if on line, and 0 if outside */
 			
-				if (np_o) {	/* Check if outside the current crude polgon first */
+				if (np_o) {	/* Check if outside the current crude polygon first */
 					for (i = in = 0; i < P[id2].h.n; i++) in += GMT_non_zero_winding (P[id2].lon[i] + x_shift, P[id2].lat[i], lon_o, lat_o, np_o);
 					if (in == 0) continue;	/* Polygon id2 completely outside the "outside" polygon */
 				}

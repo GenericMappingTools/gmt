@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.15 2008-07-16 19:55:40 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.16 2009-05-27 23:45:46 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
 			n_c_problems++;
 		}
 		if (report_mismatch && !(ixmin == w && ixmax == e && iymin == s && iymax == n)) {
-			printf ("%d\twesn mismatch\n", h.id);
+			printf ("%d\twesn mismatch.  Should be %.6f/%.6f/%.6f/%.6f\n", h.id, 1e-6 * ixmin, 1e-6 * ixmax, 1e-6 * iymin, 1e-6 * iymax);
 			n_r_problems++;
 		}
 		this_n = (ANTARCTICA) ? h.n - 1 : h.n;
@@ -98,7 +98,7 @@ int main (int argc, char **argv)
 			nx -= end;
 
 			if (nx) {
-				for (i = 0; i < nx; i++) printf ("%d\t%d\t%10.5f\t%9.5f\n", h.id, (int)floor(XC.xnode[0][i]), XC.x[i], XC.y[i]);
+				for (i = 0; i < nx; i++) printf ("P = %d\tnode = %d\t%10.5f\t%9.5f\n", h.id, (int)floor(XC.xnode[0][i]), XC.x[i], XC.y[i]);
 				n_x_problems++;
 			}
 			if (found) GMT_x_free (&XC);
