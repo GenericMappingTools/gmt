@@ -5,7 +5,7 @@ gmtconvert \- Converts, Pastes, and/or Extracts columns from ASCII and binary 1-
 .SH SYNOPSIS
 \fBgmtconvert\fP [ \fIinputfiles\fP ] [ OPT(A) ] [ OPT(D)[\fItemplate\fP] ] [ OPT(E)[\fBf\fP|\fBl\fP] ] 
 [ OPT(F)\fIcols\fP ] [ GMT_H_OPT ] [ OPT(L) ] [ OPT(I) ] [ OPT(N) ] 
-[ OPT(S)\fI"search string"\fP) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] 
+[ OPT(S)[\fB~\fP]\fI"search string"\fP) ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] 
 [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
 \fBgmtconvert\fP reads its standard input [or inputfiles] and writes out
@@ -52,7 +52,8 @@ OPT(N)
 Do not write records that only contain NaNs in every field [Default writes all records].
 .TP
 OPT(S)
-Only output those segments whose header record contains the specified text string [Default output all segments].
+Only output those segments whose header record contains the specified text string.  To reverse the search,
+i.e., to output segments whose headers do \fInot\fP contain the specified pattern, use OPT(S~) [Default output all segments].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-bi.txt"

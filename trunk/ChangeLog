@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.521 2009-05-27 00:22:50 guru Exp $
+	$Id: ChangeLog,v 1.522 2009-05-27 04:35:42 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-05-26	pwessel
-	* gmtconvert.c:	With -S, did not report the number of output segments.
+	* gmtconvert.c:	With -S, did not report the number of output segments.  Now allows
+				-S~<pattern> which reports segments whose header does NOT contain pattern.
 	
 2009-05-25	pwessel
 	* greenspline.c:	Calculation of nz layers were off by one, leaving out the

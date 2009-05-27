@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.3 2007-05-09 00:30:57 pwessel Exp $
+ *	$Id: wvs.h,v 1.4 2009-05-27 04:35:42 guru Exp $
  */
 /* wvs.h
  *
@@ -76,6 +76,9 @@ extern int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path);
 extern void area_init ();
 
 #ifndef COASTLIB
+#define EUR_O_MIN_X (340 * MILL)
+#define AM_O_MIN_X  (190 * MILL)
+#define AUS_O_MIN_X (110 * MILL)
 int ieur_o[2][N_EUR_O] = {
 {340,
 340,
