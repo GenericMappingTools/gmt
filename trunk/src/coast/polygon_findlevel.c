@@ -1,10 +1,10 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.15 2009-05-27 04:35:42 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.16 2009-05-27 06:35:54 guru Exp $
  */
 #include "wvs.h"
 
-
-#define ANTARCTICA 34	/* Current id of Antarctica in sorted list */
+#define EUR_ID	0
+#define AM_ID	1
 
 struct BLOB {
 	struct GMT3_POLY h;
@@ -20,7 +20,7 @@ struct LONGPAIR *pp;
 
 int main (int argc, char **argv) {
 	int i, j, k, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, n_of_this[6];
-	int n_reset = 0, old, bad = 0, ix0, off, set, fast = 0;
+	int n_reset = 0, old, bad = 0, ix0, off, set, fast = 0, AUS_ID;
 	double x0, west1, west2, east1, east2, size;
 	FILE *fp, *fp2, *fpx;
 	struct LONGPAIR p;
@@ -29,11 +29,12 @@ int main (int argc, char **argv) {
 	if (argc == 1) {
 		fprintf (stderr, "usage: polygon_findlevel final_polygons.b revised_final_dbase.b [-s]\n");
 		fprintf (stderr, "Note 1: assumes poly # 0,1,2 are Eurasia, Americas,Australia (unless -s)\n");
+		fprintf (stderr, "  -s will set Australia ID = 4 (for crude)\n");
 		fprintf (stderr, "Note 2: Will recalculate areas unless areas.lis already exists\n");
 		exit (EXIT_FAILURE);
 	}
 
-	fast = (argc != 4);
+	AUS_ID = (argc == 4) ? 4 : 3;
 
 	fpx = fopen ("still_bad.lis", "w");
 	
@@ -209,7 +210,7 @@ int main (int argc, char **argv) {
 			
 			x0 = blob[id2].x0 * 1.0e-6;	/* This is in 0-360 range */
 			ix0 = x0 * MILL;
-			if (fast && id1 == 0) {	/* Eurasia, first do quick coarse test.  Note: ieur_o is in 350/555 range */
+			if (fast && id1 == EUR_ID) {	/* Eurasia, first do quick coarse test.  Note: ieur_o is in 350/555 range */
 				while (ix0 < EUR_O_MIN_X) ix0 += M360;	/* Make sure we are EUR_O range */
 				intest = non_zero_winding2 (ix0, blob[id2].y0, ieur_o[0], ieur_o[1], N_EUR_O);
 				if (!intest) continue;
@@ -230,7 +231,7 @@ int main (int argc, char **argv) {
 				}
 				/* If not, we fall down to the _real_ test */
 			}
-			else if (fast && id1 == 1) {	/* Americas, first do quick test */
+			else if (fast && id1 == AM_ID) {	/* Americas, first do quick test */
 				while (ix0 < AM_O_MIN_X) ix0 += M360;	/* Make sure we are AM_O range */
 				intest = non_zero_winding2 (ix0, blob[id2].y0, iam_o[0], iam_o[1], N_AM_O);
 				if (!intest) continue;
@@ -252,7 +253,7 @@ int main (int argc, char **argv) {
 				}
 				/* If not, we fall down to the _real_ test */
 			}
-			else if (fast && id1 == 3) {	/* Australia, first do quick test */
+			else if (fast && id1 == AUS_ID) {	/* Australia, first do quick test */
 				while (ix0 < AUS_O_MIN_X) ix0 += M360;	/* Make sure we are AUS_O range */
 				intest = non_zero_winding2 (ix0, blob[id2].y0, iaus_o[0], iaus_o[1], N_AUS_O);
 				if (!intest) continue;
@@ -384,7 +385,8 @@ int main (int argc, char **argv) {
 	
 	fp = fopen ("hierarchy.lis", "w");
 	for (id = 0; id < n_id; id++) {
-		fprintf (fp, "%d: Level %d :", blob[id].h.id, blob[id].n_inside+1);
+		if (blob[id].n_inside == 0) continue;
+		fprintf (fp, "%d\tLevel-%d:", blob[id].h.id, blob[id].n_inside+1);
 		for (i = 0; i < blob[id].n_inside; i++) fprintf (fp, "\t%d", blob[id].inside[i]);
 		fprintf (fp, "\n");
 	}
