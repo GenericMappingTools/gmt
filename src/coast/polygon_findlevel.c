@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.16 2009-05-27 06:35:54 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.17 2009-05-28 20:37:03 guru Exp $
  */
 #include "wvs.h"
 
@@ -20,7 +20,7 @@ struct LONGPAIR *pp;
 
 int main (int argc, char **argv) {
 	int i, j, k, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, n_of_this[6];
-	int n_reset = 0, old, bad = 0, ix0, off, set, fast = 0, AUS_ID;
+	int n_reset = 0, old, bad = 0, ix0, set, fast = 0, AUS_ID;
 	double x0, west1, west2, east1, east2, size;
 	FILE *fp, *fp2, *fpx;
 	struct LONGPAIR p;
