@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.525 2009-05-28 11:34:02 remko Exp $
+	$Id: ChangeLog,v 1.526 2009-05-28 19:29:46 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-05-28	remko
-	* gmtselect.c:		Removed just_copy_record since it impedes on reformatting (like
-				gmtconvert) of times data, etc. Disallow -H for netCDF input files.
+	* gmtselect.c:		Switches off just_copy_record when using netCDF I/O. Otherwise no
+				output was produced. Unfortunately does not yet take into account
+				that using -fit and -foT would require reformatting.
 
 2009-05-27	pwessel
 	* misc/gmtstitch.c:	Did not read standard input if no files were given.
