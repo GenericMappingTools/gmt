@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.394 2009-05-16 03:16:26 guru Exp $
+ *	$Id: gmt_init.c,v 1.395 2009-05-28 23:43:04 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3842,7 +3842,7 @@ void GMT_set_home (void)
 GMT_LONG GMT_history (int argc, char ** argv)
 {
 	GMT_LONG i, j, k;
-	BOOLEAN need_xy = FALSE, overlay = FALSE, found_old, found_new, done = FALSE, new_unique = FALSE;
+	BOOLEAN need_xy = FALSE, overlay = FALSE, found_old, found_new, done = FALSE, new_unique = FALSE, new_file = FALSE;
 	char line[BUFSIZ], hfile[BUFSIZ], cwd[BUFSIZ];
 	char *newargv[GMT_N_UNIQUE], *new_j = CNULL, *old_j = CNULL;
 	FILE *fp;	/* For .gmtcommands4 file */
@@ -3885,7 +3885,7 @@ GMT_LONG GMT_history (int argc, char ** argv)
 			fprintf (stderr, "GMT Warning: Could not create %s [permission problem?]\n", hfile);
 			return (GMT_NOERROR);
 		}
-		done = TRUE;
+		done = new_file = TRUE;
 	}
 	else if ((fp = fopen (hfile, "r+")) == NULL) {
 		fprintf (stderr, "GMT Warning: Could not update %s [permission problem?]\n", hfile);
@@ -4063,6 +4063,9 @@ GMT_LONG GMT_history (int argc, char ** argv)
 #endif
 
 	fclose (fp);
+
+	if (!new_unique && new_file)	/* Remove the .gmtcommands4 file because it's empty */
+		remove (fp);
 
 	return (GMT_NOERROR);
 }
