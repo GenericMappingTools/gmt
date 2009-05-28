@@ -1,10 +1,10 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.15 2009-05-28 03:21:53 guru Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.16 2009-05-28 21:17:29 guru Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
  *	We also enforce writing of positive longitudes (0-360) * 1e6
- *	Now excludes the extra duplicate in Antarctica.
+ *	Now excludes the extra duplicate point in Antarctica.
  */
 
 #include "wvs.h"
@@ -14,7 +14,7 @@
 int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	k, version = GSHHS_DATA_VERSION, lines = 0, np;
+	int	k, version = GSHHS_DATA_VERSION, lines = 0, np, q = 0;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
 	struct GSHHS gshhs_header;
@@ -54,17 +54,18 @@ int main (int argc, char **argv)
 		gshhs_header.unused	= swabi4 ((unsigned int)gshhs_header.unused);
 #endif
 		fwrite((char *)&gshhs_header, sizeof (struct GSHHS), 1, stdout) ;
-		for (k = 0; k < np; k++) {
+		for (k = 0; k < h.n; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
 				fprintf (stderr,"polygon_to_gshhs:  ERROR  reading file %s.\n", argv[1]);
 				exit (EXIT_FAILURE);
 			}
 			if (p.x < 0) p.x += M360;
-			if (pol_fwrite (&p, 1, stdout) != 1) {
+			if (k < np && pol_fwrite (&p, 1, stdout) != 1) {
 				fprintf (stderr,"polygon_to_gshhs:  ERROR  writing to stdout.\n");
 				exit (EXIT_FAILURE);
 			}
 		}
+		q++;
 	}
 		
 	fclose (fp_in);
