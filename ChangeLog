@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.523 2009-05-28 01:42:31 guru Exp $
+	$Id: ChangeLog,v 1.524 2009-05-28 03:21:53 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-05-27	pwessel
+	* misc/gmtstitch.c:	Did not read standard input if no files were given.
+	
 2009-05-26	pwessel
 	* gmtconvert.c:	With -S, did not report the number of output segments.  Now allows
 				-S~<pattern> which reports segments whose header does NOT contain pattern.

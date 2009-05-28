@@ -1,9 +1,10 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.14 2007-12-20 16:51:42 guru Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.15 2009-05-28 03:21:53 guru Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
  *	We also enforce writing of positive longitudes (0-360) * 1e6
+ *	Now excludes the extra duplicate in Antarctica.
  */
 
 #include "wvs.h"
@@ -13,7 +14,7 @@
 int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	k, version = GSHHS_DATA_VERSION, lines = 0;
+	int	k, version = GSHHS_DATA_VERSION, lines = 0, np;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
 	struct GSHHS gshhs_header;
@@ -35,6 +36,10 @@ int main (int argc, char **argv)
 		gshhs_header.n		= h.n;
 		gshhs_header.area	= (lines) ? 0 : irint (10.0 * h.area);
 		gshhs_header.flag	= h.level + (version << 8) + (h.greenwich << 16) + (h.source << 24);
+		gshhs_header.parent	= h.parent;
+		gshhs_header.unused	= 0;
+		if ((gshhs_header.east - gshhs_header.west) == M360) gshhs_header.n--;	/* Antarctica, drop the duplicated point for GSHHS */
+		np = gshhs_header.n;
 #if WORDS_BIGENDIAN == 0
 		/* Must swap header explicitly on little-endian machines */
 		gshhs_header.west	= swabi4 ((unsigned int)gshhs_header.west);
@@ -45,9 +50,11 @@ int main (int argc, char **argv)
 		gshhs_header.n		= swabi4 ((unsigned int)gshhs_header.n);
 		gshhs_header.area	= swabi4 ((unsigned int)gshhs_header.area);
 		gshhs_header.flag	= swabi4 ((unsigned int)gshhs_header.flag);
+		gshhs_header.parent	= swabi4 ((unsigned int)gshhs_header.parent);
+		gshhs_header.unused	= swabi4 ((unsigned int)gshhs_header.unused);
 #endif
 		fwrite((char *)&gshhs_header, sizeof (struct GSHHS), 1, stdout) ;
-		for (k = 0; k < h.n; k++) {
+		for (k = 0; k < np; k++) {
 			if (pol_fread (&p, 1, fp_in) != 1) {
 				fprintf (stderr,"polygon_to_gshhs:  ERROR  reading file %s.\n", argv[1]);
 				exit (EXIT_FAILURE);
