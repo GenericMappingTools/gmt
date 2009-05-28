@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.11 2009-05-27 23:45:47 guru Exp $
+ *	$Id: polygon_xover.c,v 1.12 2009-05-28 08:19:35 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -34,7 +34,10 @@ int main (int argc, char **argv)
 
 	/* Open file and read everything into memory */
 	
-	fp = fopen(argv[1], "r");
+	if ((fp = fopen(argv[1], "r")) == NULL) {
+		fprintf(stderr,"polygon_xover: Could not open file %s\n", argv[1]);
+		exit(-1);
+	}
 	verbose = (argc == 3);
 	n_id = 0;
 	while (pol_readheader (&P[n_id].h, fp) == 1) {
