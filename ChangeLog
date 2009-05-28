@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.526 2009-05-28 19:29:46 remko Exp $
+	$Id: ChangeLog,v 1.527 2009-05-28 23:45:57 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-29	jluis
+	* gmt_init.c:		Do not create empty .gmtcommands4 files
 
 2009-05-28	remko
 	* gmtselect.c:		Switches off just_copy_record when using netCDF I/O. Otherwise no
