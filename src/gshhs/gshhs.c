@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.24 2009-04-18 03:26:53 guru Exp $
+/*	$Id: gshhs.c,v 1.25 2009-05-28 02:42:29 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -36,7 +36,8 @@
 int main (int argc, char **argv)
 {
 	double w, e, s, n, area, lon, lat;
-	char source, kind[2] = {'P', 'L'}, c = '>', *file = NULL, *name[2] = {"polygon", "line"};
+	char source, kind[2] = {'P', 'L'}, c = '>', *file = NULL;
+	char *name[2] = {"polygon", "line"}, parent[8];
 	FILE *fp = NULL;
 	int k, line, max_east = 270000000, info, single, error, ID, n_read, flip;
 	int  OK, level, version, greenwich, src, msformat = 0;
@@ -98,6 +99,8 @@ int main (int argc, char **argv)
 			h.north = swabi4 ((unsigned int)h.north);
 			h.area  = swabi4 ((unsigned int)h.area);
 			h.flag  = swabi4 ((unsigned int)h.flag);
+			h.parent  = swabi4 ((unsigned int)h.parent);
+			h.unused  = swabi4 ((unsigned int)h.unused);
 		}
 		level = h.flag & 255;
 		version = (h.flag >> 8) & 255;
@@ -114,7 +117,14 @@ int main (int argc, char **argv)
 		OK = (!single || h.id == ID);
 		
 		if (!msformat) c = kind[line];
-		if (OK) printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", c, h.id, h.n, level, source, area, w, e, s, n);
+		if (OK) {
+			if (line)
+				printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", c, h.id, h.n, level, source, area, w, e, s, n);
+			else {
+				(h.parent == -1) ? sprintf (parent, "-") : sprintf (parent, "%6d", h.parent);
+				printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f %s\n", c, h.id, h.n, level, source, area, w, e, s, n, parent);
+			}
+		}
 
 		if (info || !OK) {	/* Skip data, only want headers */
 			fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
