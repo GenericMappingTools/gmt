@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.24 2009-04-06 02:14:42 guru Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.25 2009-05-28 19:22:02 jluis Exp $
 #
 #	Author:		P. Wessel
 #	Date:		2005-OCT-14
@@ -112,7 +112,7 @@ while read name rec item size check; do
 		# The next line gives "      Parameter_Name :Value".  This format is deliberate in that we may want to
 		# use awk -F: to separate out the parameter ($1) and the value ($2). Remember Value could be a sentence with spaces!
 		echo "	word[0] = P->$name;" >> $$.3
-		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}%c\", F->NGDC_id, \"$name\", word, EOL);" >> $$.3
+		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s : ${fmt}%c\", F->NGDC_id, \"$name\", word, EOL);" >> $$.3
 		echo "	for (i = 0; i < 2; i++) H[$key].ptr[i] = ${cast}${pre}P[i]->$name;" >> $$.7
 	else
 		echo "	$REV = MGD77_Get_Param (F, "\"$name\"", ${cast}${pre}P[0]->$name, ${cast}${pre}P[1]->$name);" >> mgd77_functions.c
@@ -120,7 +120,7 @@ while read name rec item size check; do
 		echo "	(void) nc_del_att (F->nc_id, NC_GLOBAL, "\"${name}_REVISED\"");" >> $$.5
 		# The next line gives "      Parameter_Name :Value".  This format is deliberate in that we may want to
 		# use awk -F: to separate out the parameter ($1) and the value ($2). Remember Value could be a sentence with spaces!
-		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s :${fmt}%c\", F->NGDC_id, \"$name\", P->$name, EOL);" >> $$.3
+		echo "	if (F->Want_Header_Item[$key]) printf (\"%s %44s : ${fmt}%c\", F->NGDC_id, \"$name\", P->$name, EOL);" >> $$.3
 		echo "	for (i = 0; i < 2; i++) H[$key].ptr[i] = ${cast}${pre}P[i]->$name;" >> $$.7
 	fi
 	if [ $check = "Y" ]; then
