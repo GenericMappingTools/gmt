@@ -53,7 +53,8 @@ Do not write records that only contain NaNs in every field [Default writes all r
 .TP
 OPT(S)
 Only output those segments whose header record contains the specified text string.  To reverse the search,
-i.e., to output segments whose headers do \fInot\fP contain the specified pattern, use OPT(S~) [Default output all segments].
+i.e., to output segments whose headers do \fInot\fP contain the specified pattern, use OPT(S~).
+Should your pattern happen to start with ~ you need to escape this character with a backslash \ [Default output all segments].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-bi.txt"

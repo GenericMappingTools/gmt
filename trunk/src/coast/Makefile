@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.41 2008-07-03 20:23:21 guru Exp $
+#	$Id: Makefile,v 1.42 2009-05-28 01:42:31 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -30,9 +30,9 @@ include $(GMTSRCDIR)gmtalldeps.macros
 
 INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 DEFINES		= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
-PREV_VERSION	= 4.2
-VERSION		= 4.3
-# These are the values to use for the next GMT version 4.3.2
+PREV_VERSION	= 4.3
+VERSION		= 4.4
+# These are the values to use for the next GMT version 4.4.1
 GSHHS_DATA_VERSION	= 1.11
 GSHHS_PROG_VERSION	= 1.11
 
