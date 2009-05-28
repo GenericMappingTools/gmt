@@ -1,6 +1,6 @@
 function fixcoast (id1,idfix)
 % FIXCOAST
-%	$Id: fixcoast.m,v 1.4 2009-05-27 23:45:46 guru Exp $
+%	$Id: fixcoast.m,v 1.5 2009-05-28 08:19:35 guru Exp $
 %
 % Give the id of the polygon to be fixed.  The polygon.id
 % file will be overwritten with the changed polygon,  Optionally,
@@ -48,8 +48,8 @@ while (hit == 0)   % Until a key is pressed
         x1(k(1)) = x0;
         y1(k(1)) = y0;
     elseif (key == 3)
-        x1 = [ x1(1:min(k)) x0 x1(max(k):n) ];
-        y1 = [ y1(1:min(k)) y0 y1(max(k):n) ];
+        x1 = [ x1(1:min(k)); x0; x1(max(k):n) ];
+        y1 = [ y1(1:min(k)); y0; y1(max(k):n) ];
         end
     set (pl, 'XData', x1, 'YData', y1);
     set (pp, 'XData', x1, 'YData', y1);
@@ -59,7 +59,7 @@ while (hit == 0)   % Until a key is pressed
 end
 file = ['polygon.' num2str(id1) '.new'];
 fp = fopen (file, 'wt');
-A = [ x1'; y1'];
+A = [ x1'; y1']
 fprintf (fp, '%.6f\t%.6f\n', A);
 fclose (fp);
 
