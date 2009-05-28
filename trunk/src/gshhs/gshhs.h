@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.20 2009-01-09 04:02:35 guru Exp $
+/*	$Id: gshhs.h,v 1.21 2009-05-28 02:42:30 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -28,6 +28,9 @@
  *			  For use with version 1.6 of GSHHS which now has WDBII
  *			  borders and rivers.
  *	03-JUL-2008.  PW: Version 1.11. New -I<id> option to pull out a single pol
+ *	27-MAY-2009.  PW: Version 1.12. Now includes parent polygon ID in header.
+ *			  as well as a spare 4-byte integer for later use.
+ *			  Header is now 40 bytes (all 4-byte integers)
  */
 
 #ifndef _GSHHS
@@ -50,8 +53,8 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHS_DATA_VERSION	6	/* For v1.5 data set */
-#define GSHHS_PROG_VERSION	"1.11"
+#define GSHHS_DATA_VERSION	7	/* For v1.5 data set */
+#define GSHHS_PROG_VERSION	"1.12"
 
 #define GSHHS_SCL	1.0e-6	/* Convert micro-degrees to degrees */
 
@@ -71,6 +74,8 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	 */
 	int west, east, south, north;	/* min/max extent in micro-degrees */
 	int area;			/* Area of polygon in 1/10 km^2 */
+	int parent;			/* Id of parent polygon that encloses this pollygon (-1 if none) */
+	int unused;			/* Presently not used */
 };
 
 struct	POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte integer format */

@@ -3,6 +3,12 @@
 Global Self-consistent Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../COPYING)
 
+Version 1.12 Jun 1, 2009
+This version include a revised GSHHS data format in which the
+polygon ID of the parent (that contains this polygon) is given
+(or -1 if none).  The header structure has thus increased by
+two integer items.
+
 Version 1.11 Feb 15, 2009
 This version adds the -I<id> option go gshhs so that a single
 polygon can be extracted.
