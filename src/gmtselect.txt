@@ -104,6 +104,15 @@ is absolute time then remember to supply OPT(f)2T.
 The OPT(m) option make sure that segment headers in the input files are copied to output, but it has no effect
 on the data selection. Selection is always done point by point, not by segment.
 #include "explain_precision.txt"
+.br
+This note applies to ASCII output only in combination with binary or netCDF input or the OPT(:) option.
+See also the note below.
+.SH NOTE ON PROCESSING ASCII INPUT RECORDS
+Unless you are using the OPT(:) option, selected ASCII input records are copied verbatim to output.
+That means that options like OPT(foT) and settings like \fBD_FORMAT\fP and \fBOUTPUT_DEGREE_FORMAT\fP
+will not have any effect on the output.
+On the other hand, it allows selecting records with diverse content, including character strings, quoted
+or not, comments, and other non-numerical content.
 .SH NOTE ON DISTANCES
 If options OPT(C) or OPT(L) are selected then distances are Cartesian and in user units;
 use OPT(fg) to imply spherical distances in km and geographical (lon, lat) coordinates.
