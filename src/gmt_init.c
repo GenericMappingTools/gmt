@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.395 2009-05-28 23:43:04 jluis Exp $
+ *	$Id: gmt_init.c,v 1.396 2009-05-29 00:30:43 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4064,8 +4064,7 @@ GMT_LONG GMT_history (int argc, char ** argv)
 
 	fclose (fp);
 
-	if (!new_unique && new_file)	/* Remove the .gmtcommands4 file because it's empty */
-		remove (fp);
+	if (!new_unique && new_file) remove(hfile);	/* Remove the .gmtcommands4 file because it's empty */
 
 	return (GMT_NOERROR);
 }
