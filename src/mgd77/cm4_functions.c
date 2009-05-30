@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.16 2009-05-25 18:59:52 jluis Exp $
+ *	$Id: cm4_functions.c,v 1.17 2009-05-30 15:59:35 jluis Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -13,7 +13,9 @@
  *  Revised:	1-MAY-2009
  * 
  * 
- *  NOTES:	The original Fortran code written by Terry Sabaka can be found at 
+ *  NOTES:	The original Fortran code written by Terry Sabaka from
+ *		- Planetary Geodynamics Lab at Goddard Space Flight Center -
+ *		can be found at 
  *        	denali.gsfc.nasa.gov/cm/cm4field.f
  *        	This C version is a bit more limited (it doesn't allow computing the 
  *        	source coefficients - the GMDL array in original) and was striped of 
