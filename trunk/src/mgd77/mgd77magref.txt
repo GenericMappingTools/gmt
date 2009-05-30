@@ -16,7 +16,11 @@ Contains the moments in space-time where we want to evaluate the magnetic refere
 longitude and latitude (however, see OPT(:) for latitude and longitude instead).  Normally, the third
 and fourth columns must contain altitude and time, respectively, but if one or both of these are constant
 for all records they can be supplied via the OPT(A) option instead and are thus not expected in the input
-file.  If no input file is given we read \fIstdin\fP, unless a single point is given with OPT(P).
+file. If no input file is given we read \fIstdin\fP.
+A note about the CM4 validity domain. The core field of CM4 is valid from 1960-2002.5 but the ionospheric and 
+magnetospheric fields are computed after the \fIDst\fP and \fIF10.7\fP coefficient files. We extended here those coefficient 
+files up to 2006, which means that one can compute external contributions up until 2006 but the Secular Variation 
+will be biased (non reliable).
 .TP
 OPT(A)
 Adjusts how the input record is interpreted.  Append \fB+a\fP to set a fixed \fIaltitude\fP that should
@@ -82,11 +86,30 @@ The data is written out in the order they appear in \fIflags\fP [Default is OPT(
 OPT(G)
 Specifies that coordinates are geocentric [geodetic].
 #include "explain_-H.txt"
-#ifdef NOTDONEYET
 .TP
 OPT(L)
-This option is as yet not described.
-#endif
+Computes J field vectors from certain external sources.
+.br
+\fBr\fP means output all input columns before adding the items below (all in Ampers/m).
+.br
+\fBt\fP means list magnitude field.
+.br
+\fBx\fP means list X component.
+.br
+\fBy\fP means list Y component.
+.br
+\fBz\fP means list Z or current function Psi.
+.br
+Append a number to indicate the requested J contribution:
+.br
+\fB1\fP means Induced Magnetospheric field. 
+.br
+\fB2\fP means Primary ionospheric field. 
+.br
+\fB2\fP means Induced ionospheric field. 
+.br
+\fB1\fP means Poloidal field. 
+.br
 .TP
 OPT(Sc)
 Limits the wavelengths of the core field contribution to the band indicated by the low and high spherical
@@ -108,6 +131,19 @@ However, since the epoch used is not stored in the data files there can be probl
 correct time.  The mgd77 supplement uses the Unix time system as its default; thus you should
 make sure that binary data files with time uses the same system (see the GMT default TIME_SYSTEM).
 .SH EXAMPLES
+To get the CM4 Total field, Declination and Inclination due to all but lithospheric and toroidal field 
+at a one point location and decimal time 2000.0, try
+.br
+.sp
+echo -28 38 0 2000.0 | \fBmgd77magref\fP OPT(A)+y OPT(F)tdi/13456
+.br
+.sp
+To do the same as above but at noon (Universal Time) of first May 2001, try
+.br
+.sp
+echo -28 38 0 2001-05-01T12:00:00 | \fBmgd77magref\fP OPT(F)tdi/13456
+.br
+.sp
 .SH "SEE ALSO"
 .IR GMT (1)
 .IR mgd77info (1)
