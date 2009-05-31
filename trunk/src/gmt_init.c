@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.396 2009-05-29 00:30:43 remko Exp $
+ *	$Id: gmt_init.c,v 1.397 2009-05-31 20:48:04 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1223,7 +1223,7 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 		case 'M':
 			fprintf (stderr, "%s: Option -M is deprecated (but is processed correctly).  Please use -m instead\n", GMT_program);
 		case 'm':
-			GMT_multisegment (&item[2]);
+			GMT_parse_m_option (&item[2]);
 			break;
 			
 		default:	/* Should never get here, but... */
@@ -1232,6 +1232,10 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			break;
 	}
 
+	/* -g gap checking implies -mo if not already set */
+	
+	if (GMT->common->g.active) GMT_io.multi_segments[GMT_OUT] = TRUE;
+	
 	/* First check that -X -Y was done correctly */
 
 	if ((project_info.x_off_supplied && project_info.y_off_supplied) && GMT_x_abs != GMT_y_abs) {

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.189 2009-05-24 03:09:53 guru Exp $
+ *	$Id: gmt_io.c,v 1.190 2009-05-31 20:48:04 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -33,7 +33,7 @@
  *	GMT_fclose:		Close a file
  *	GMT_io_init:		Init GMT_IO structure
  *	GMT_parse_b_option:	Decode the -b switch
- *	GMT_multisegment:	Decode the -m switch
+ *	GMT_parse_m_option:	Decode the -m switch
  *	GMT_write_segmentheader	Write header record for multisegment files
  *	GMT_ascii_input:	Decode ascii input record
  *	GMT_scanf:		Robust scanf function with optional dd:mm:ss conversion
@@ -604,7 +604,7 @@ GMT_LONG GMT_parse_b_option (char *text)
 	return (error);
 }
 
-void GMT_multisegment (char *text)
+void GMT_parse_m_option (char *text)
 {
 	/* Turns multisegment on and sets flag, if given.
 	 * flag is only used for ASCII data sets.
@@ -664,11 +664,17 @@ GMT_LONG GMT_ascii_input (FILE *fp, GMT_LONG *n, double **ptr)
 			return (-1);
 		}
 
-		if (GMT_io.multi_segments[GMT_IN] && line[0] == GMT_io.EOF_flag[GMT_IN]) {	/* Got a multisegment header, take action and return */
-			GMT_io.status = GMT_IO_SEGMENT_HEADER;
-			GMT_io.seg_no++;
-			strcpy (GMT_io.segment_header, line);
-			return (0);
+		if (line[0] == GMT_io.EOF_flag[GMT_IN]) {	/* Got a multisegment header, take action and return */
+			if (GMT_io.multi_segments[GMT_IN]) {
+				GMT_io.status = GMT_IO_SEGMENT_HEADER;
+				GMT_io.seg_no++;
+				strcpy (GMT_io.segment_header, line);
+				return (0);
+			}
+			else {
+				fprintf (stderr, "%s: ERROR: Input file seems to be in multiple segment format but the -m switch is not set.\n", GMT_program);
+				GMT_exit (EXIT_FAILURE);
+			}
 		}
 
 		/* Normal data record */
@@ -736,7 +742,6 @@ GMT_LONG GMT_set_gap () {	/* Data gaps are special since there is no multiple-se
 	GMT_io.status = GMT_IO_GAP;
 	GMT_io.seg_no++;
 	sprintf (GMT_io.segment_header, "%c Data gap detected\n", GMT_io.EOF_flag[GMT_IN]);
-	GMT_io.pt_no = 0;
 	return (0);
 }
 

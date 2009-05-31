@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.78 2009-05-19 20:20:53 guru Exp $
+ *	$Id: gmt_io.h,v 1.79 2009-05-31 20:48:04 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -110,7 +110,7 @@ EXTERN_MSC int GMT_access (const char *filename, int mode);		/* access wrapper *
 EXTERN_MSC void GMT_io_init (void);					/* Initialize pointers */
 EXTERN_MSC GMT_LONG GMT_parse_b_option (char *text);				/* Decode -b option and set parameters */
 EXTERN_MSC GMT_LONG GMT_parse_f_option (char *text);				/* Decode -f option and set parameters */
-EXTERN_MSC void GMT_multisegment (char *text);				/* Decode -M option */
+EXTERN_MSC void GMT_parse_m_option (char *text);				/* Decode -m option */
 EXTERN_MSC void GMT_write_segmentheader (FILE *fp, GMT_LONG n);		/* Write multisegment header back out */
 EXTERN_MSC GMT_LONG GMT_scanf (char *p, GMT_LONG expectation, double *val);	/* Convert strings to double, handling special formats [Data records only ] */
 EXTERN_MSC GMT_LONG GMT_scanf_arg (char *p, GMT_LONG expectation, double *val);	/* Convert strings to double, handling special formats [ command line only ] */
