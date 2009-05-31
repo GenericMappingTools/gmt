@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: legend.sh,v 1.12 2009-05-31 20:27:43 remko Exp $
+#	$Id: legend.sh,v 1.13 2009-05-31 23:18:16 remko Exp $
 #
 # Testing pslegend capabilities
 
@@ -30,9 +30,9 @@ V 0 1p
 N 1
 D 0.2i 1p
 I SOEST_block4.ras 3i CT
-G -0.35i
+G 0.05i
 M 5 5 600+u f
-G 0.1i
+G 0.05i
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 G 0.1i
 T Let us just try some simple text that can go on a few lines.
