@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.527 2009-05-28 23:45:57 jluis Exp $
+	$Id: ChangeLog,v 1.528 2009-05-31 20:30:19 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-31	pwessel
+	* gmt_io.c:		Option -g must force -mo; fixed bug that reset point number in segment.
+	* misc/gmtstitch.c:	Added -L option to write out segment-link information.
 
 2009-05-29	jluis
 	* gmt_init.c:		Do not create empty .gmtcommands4 files
