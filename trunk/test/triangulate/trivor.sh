@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: trivor.sh,v 1.2 2009-04-17 00:31:30 remko Exp $
+#	$Id: trivor.sh,v 1.3 2009-05-31 23:23:57 remko Exp $
 #
 # Test Delauney and Voronoi for Cartesian data
 
@@ -18,7 +18,7 @@ cat << EOF > nodes.xy
 5.27815	1.15172
 EOF
 ps=trivor.ps
-triangulate nodes.xy -m | psxy -R0/10/0/10 -JX6 -P -K -W0.25p.red > trivor.ps
+triangulate nodes.xy -m | psxy -m -R0/10/0/10 -JX6 -P -K -W0.25p.red > trivor.ps
 psxy -R -J -O -B2g1 -Sc0.2 -Gwhite -W0.25p nodes.xy -K >> trivor.ps
 awk '{printf "%s %s 8 0 0 CM %d\n", $1, $2, NR-1}' nodes.xy | pstext -R -J -O -K >> trivor.ps
 triangulate nodes.xy -m -Q -R0/10/0/10 | psxy -R0/10/0/10 -J -O -K -W1p -m >> trivor.ps
