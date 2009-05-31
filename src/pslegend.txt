@@ -87,12 +87,14 @@ correct fault or vector length and will be stripped before passing the arguments
 .TP
 \fB>\fP \fIparagraph-mode-header-for-pstext\fP
 Start a new text paragraph by specifying all the parameters needed (see \fBpstext \-m\fP description).  Note that
-\fBpslegend\fP knows what all those values should be, so normally you can leave the entire record (after >) blank.
+\fBpslegend\fP knows what all those values should be, so normally you can leave the entire record (after >) blank or
+leave it out all together.
 If you need to set at least one of the parameters directly, you must specify all and set the ones you want to leave
 at their default value to \fB-\fP.
 .TP
 \fBT\fP \fIparagraph-text\fP
-One or more of these \fBT\fP records with text must follow after the \fB>\fP record.
+One or more of these \fBT\fP records with text. To specify special positioning and typesetting arrangements,
+use a \fB>\fP record first.
 .TP
 \fBV\fP \fIoffset pen\fP
 The \fBV\fP record draws a vertical line between columns (if more than one) using the selected \fIpen\fP
