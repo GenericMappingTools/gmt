@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.528 2009-05-31 20:30:19 guru Exp $
+	$Id: ChangeLog,v 1.529 2009-05-31 23:24:34 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-05-31	remko
+	* pslegend.c:		> record no longer needed before T; T, L, S, H alignment harmonised;
+				I, M spacing improved.
 
 2009-05-31	pwessel
 	* gmt_io.c:		Option -g must force -mo; fixed bug that reset point number in segment.
