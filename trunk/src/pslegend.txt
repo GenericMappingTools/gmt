@@ -6,7 +6,7 @@
 pslegend \- To plot a map legend
 .SH SYNOPSIS
 \fBpslegend\fP \fItextfile\fP OPT(D)[\fBx\fP]\fIlon\fP/\fIlat\fP/\fIwidth\fP/\fIheight\fP/\fIjust\fP GMT_J_OPT 
-GMT_Rgeo_OPT [ OPT(C)\fIdx\fP/\fIdy\fP ] [ OPT(F) ] 
+GMT_Rgeo_OPT [ GMT_B_OPT ] [ OPT(C)\fIdx\fP/\fIdy\fP ] [ OPT(F) ] 
 [ OPT(G)\fIfill\fP ] [ GMT_K_OPT ] [ OPT(L)\fIspacing\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(S)[\fIscript\fP] ] [ GMT_U_OPT ] [ GMT_V_OPT ] [ GMT_X_OPT ] [ GMT_c_OPT ]
 [ GMT_Y_OPT ]
@@ -47,15 +47,18 @@ units from the frame sides, and is drawn using the specified \fIpen\fP.
 The \fBG\fP record specifies a vertical gap of the given length. 
 In addition to the standard units (\fBi\fP, \fBc\fP, \fBp\fP) you may use \fBl\fP for lines.
 .TP
-\fBH\fP \fIfontsize font Header\fP
+\fBH\fP \fIfontsize\fP|\fB-\fP \fIfont\fP|\fB-\fP header\fP
 The \fBH\fP record plots a centered text string using the specified font parameters.
+Use \fB-\fP to default to \fBHEADER_FONT_SIZE\fP and \fBHEADER_FONT\fP.
 .TP
 \fBI\fP \fIimagefile width justification\fP
 Place an EPS or Sun raster image in the legend justified relative to the current point.  The
 image \fIwidth\fP determines the size of the image on the page.
 .TP
-\fBL\fP \fIfontsize font justification Label\fP
-The \fBL\fP record plots a (L)eft, (C)entered, or (R)ight-justified text string within a column using the specified font parameters.
+\fBL\fP \fIfontsize\fP|\fB-\fP \fIfont\fP|\fB-\fP justification label\fP
+The \fBL\fP record plots a (L)eft, (C)entered, or (R)ight-justified text string within a column using
+the specified font parameters.
+Use \fB-\fP to default to \fBLABEL_FONT_SIZE\fP and \fBLABEL_FONT\fP.
 .TP
 \fBM\fP \fIslon\fP|\fB-\fP \fIslat length\fP \fBf\fP|\fBp\fP [ OPT(R)\fIw/e/s/n\fP OPT(J)\fIparam\fP ]
 Place a map scale in the legend.  Specify \fIslon slat\fP, the point on the map where the scale applies (\fIslon\fP
@@ -78,12 +81,24 @@ labels (\fBL\fP).
 \fBS\fP \fIdx1 symbol size fill pen\fP [ \fIdx2 text\fP ]
 Plots the selected symbol with specified size, fill, and outline (see \fBpsxy\fP).
 The symbol is centered at \fIdx1\fP from the left margin of the column,
-with the explanatory text starting \fIdx2\fP from the margin.
+with the optional explanatory \fItext\fP starting \fIdx2\fP from the margin, printed with fontsize
+\fBANNOT_FONT_SIZE_PRIMARY\fP and font \fBANNOT_FONT_PRIMARY\fP.
 Use \fB-\fP if no \fIfill\fP or outline (\fIpen\fP) is required.
 When plotting just a symbol, without text, \fIdx2\fP and \fItext\fP can be omitted.
 Two \fBpsxy\fP symbols require special attention: front (f) and vector (v).  You must prepend
 the length of the desired item to the rest of the symbol argument; this will be used internally to set the
 correct fault or vector length and will be stripped before passing the arguments to \fBpsxy\fP.
+.TP
+\fBT\fP \fIparagraph-text\fP
+One or more of these \fBT\fP records with \fIparagraph-text\fP printed with fontsize
+\fBANNOT_FONT_SIZE_PRIMARY\fP and font \fBANNOT_FONT_PRIMARY\fP (aligned and wrapped).
+To specify special positioning and typesetting arrangements, or to enter a paragraph break, use the
+optional \fB>\fP record.
+.TP
+\fBV\fP \fIoffset pen\fP
+The \fBV\fP record draws a vertical line between columns (if more than one) using the selected \fIpen\fP
+(See SPECIFYING PENS below).
+\fIoffset\fP is analogous to the offset for the \fBD\fP records but in the vertical direction.
 .TP
 \fB>\fP \fIparagraph-mode-header-for-pstext\fP
 Start a new text paragraph by specifying all the parameters needed (see \fBpstext \-m\fP description).  Note that
@@ -91,15 +106,6 @@ Start a new text paragraph by specifying all the parameters needed (see \fBpstex
 leave it out all together.
 If you need to set at least one of the parameters directly, you must specify all and set the ones you want to leave
 at their default value to \fB-\fP.
-.TP
-\fBT\fP \fIparagraph-text\fP
-One or more of these \fBT\fP records with text. To specify special positioning and typesetting arrangements,
-use a \fB>\fP record first.
-.TP
-\fBV\fP \fIoffset pen\fP
-The \fBV\fP record draws a vertical line between columns (if more than one) using the selected \fIpen\fP
-(See SPECIFYING PENS below).
-\fIoffset\fP is analogous to the offset for the \fBD\fP records but in the vertical direction.
 .RE
 .br
 .TP
@@ -111,6 +117,7 @@ in projected units (i.e., inches or cm), use OPT(Dx).
 #include "explain_-R.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
+#include "explain_-B_short.txt"
 .TP
 OPT(C)
 Sets the clearance between the legend frame and the internal items [CLEARENCE_SI (or CLEARENCE_US)].
@@ -142,21 +149,20 @@ to standard output, or optionally to the file \fIscript\fP.
 To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br
 .sp
-\fBpslegend\fP OPT(R)-10/10/-10/10 OPT(JM)4i OPT(G)255 \-D0/0/4i/3i/BL << EOF >> map.ps
+\fBpslegend\fP OPT(R)-10/10/-10/10 OPT(JM)6i OPT(G)azure1 OPT(Dx)0.5i/0.5i/5i/3.3i/BL
+OPT(C)0.1i/0.1i OPT(L)1.2 OPT(F) OPT(B)5f1 << EOF >> map.ps
 .br
 \# Legend test for pslegend
 .br
 \# G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
 .br
-\# H is header, L is label, S is symbol, > & T is paragraph text
+\# H is header, L is label, S is symbol, T is paragraph text, M is map scale.
 .br
 \#
 .br
-G -0.15i
+G -0.1i
 .br
 H 24 Times-Roman My Map Legend
-.br
-G 0.05i
 .br
 D 0.2i 1p
 .br
@@ -166,13 +172,17 @@ V 0 1p
 .br
 S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
 .br
-S 0.1i t 0.15i yellow 0.25p 0.3i This triangle is yellow
+S 0.1i e 0.15i 255/255/0 0.25p 0.3i This ellipse is yellow
 .br
-S 0.1i h 0.15i green 0.25p 0.3i This hexagon is green
+S 0.1i w 0.15i 0/255/0 0.25p 0.3i This wedge is green
 .br
-S 0.1i d 0.15i blue 0.25p 0.3i This diamond is blue
+S 0.1i f 0.25i/-1/0.075ilb 0/0/255 0.25p 0.3i This is a fault
 .br
 S 0.1i - 0.15i - 0.25tap 0.3i A contour
+.br
+S 0.1i v 0.25i/0.02i/0.06i/0.05i 255/0/255 0.25p 0.3i This is a vector
+.br
+S 0.1i i 0.15i 0/255/255 0.25p 0.3i This triangle is boring
 .br
 V 0 1p
 .br
@@ -180,23 +190,22 @@ D 0.2i 1p
 .br
 N 1
 .br
-I SOEST_logo.ras 3 CT
+I SOEST_logo.ras 3i CT
 .br
+G 0.05i
+.br
+M 5 5 600+u f
+.br
+G 0.05i
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 .br
-G 0.5i
-.br
->
+G 0.1i
 .br
 T Let us just try some simple text that can go on a few lines.
 .br
 T There is no easy way to predetermine how many lines will be required,
 .br
-T so we may need to adjust the box height to get the right size.
-.br
-G -0.3i
-.br
-M 5 5 1000:km:l f
+T so we may have to adjust the box height to get the right size box.
 .br
 EOF
 .br
@@ -210,6 +219,7 @@ number of percent signs.  This only applies to text inside a script or that othe
 is processed by DOS.  Data files that are opened and read by \fBpslegend\fP do not need such duplication.
 .SH "SEE ALSO"
 .IR GMT (1),
+.IR gmtdefaults (1),
 .IR psbasemap (1),
 .IR pstext (1),
 .IR psxy (1)
