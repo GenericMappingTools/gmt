@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: legend.sh,v 1.13 2009-05-31 23:18:16 remko Exp $
+#	$Id: legend.sh,v 1.14 2009-06-02 14:08:48 remko Exp $
 #
 # Testing pslegend capabilities
 
@@ -7,12 +7,12 @@
 header "Test pslegend and its various items"
 
 ps=legend.ps
+makecpt -Cpanoply -T-8/8/1 > $$.cpt
 gmtset ANNOT_FONT_SIZE_PRIMARY 12p
-psbasemap -R0/10/0/15 -JM6i -P -B5f1 -K > $ps
-cat << EOF > $$.d
+pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i/5i/3.8i/BL -C0.1i/0.1i -Gazure1 -L1.2 -F -B5f1 > $ps <<EOF
 # Legend test for pslegend
-# G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
-# H is header, L is label, S is symbol, T is paragraph text
+# G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
+# H is header, L is label, S is symbol, T is paragraph text, M is map scale, B is colorbar.
 #
 G -0.1i
 H 24 Times-Roman My Map Legend
@@ -29,18 +29,19 @@ S 0.1i i 0.15i 0/255/255 0.25p 0.3i This triangle is boring
 V 0 1p
 N 1
 D 0.2i 1p
+M 5 5 600+u f
+G 0.05i
 I SOEST_block4.ras 3i CT
 G 0.05i
-M 5 5 600+u f
+B $$.cpt 0.2i 0.2i
 G 0.05i
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 G 0.1i
 T Let us just try some simple text that can go on a few lines.
-T There is no way to predetermine how many lines may be required,
+T There is no easy way to predetermine how many lines may be required,
 T so we may have to adjust the height to get the right size box.
 EOF
-pslegend $$.d -R -JM -O -D0.5/0.5/5i/3.3i/LB -C0.1i/0.1i -G240/240/255 -L1.2 -F >> $ps
 
-rm -f $$.d
+rm -f $$.cpt
 
 pscmp

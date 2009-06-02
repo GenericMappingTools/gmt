@@ -39,8 +39,9 @@ The \fBC\fP record specifies the color with which the remaining text is to be pr
 \fItextcolor\fP can be in the form \fIr/g/b\fP, \fIc/m/y/k\fP, or a named color.
 .TP
 \fBD\fP \fIoffset pen\fP
-The \fBD\fP record results in a horizontal line across the legend.  The line starts and stops \fIoffset\fP
-units from the frame sides, and is drawn using the specified \fIpen\fP.
+The \fBD\fP record results in a horizontal line with specified \fIpen\fP across the legend with one quarter of
+the line spacing left blank above and below the line.  Two gaps of \fIoffset\fP units are left blank between
+the horizontal line and the left and right frame sides.
 (See SPECIFYING PENS below).
 .TP
 \fBG\fP \fIgap\fP
@@ -190,11 +191,15 @@ D 0.2i 1p
 .br
 N 1
 .br
+M 5 5 600+u f
+.br
+G 0.05i
+.br
 I SOEST_logo.ras 3i CT
 .br
 G 0.05i
 .br
-M 5 5 600+u f
+B colors.cpt 0.2i 0.2i
 .br
 G 0.05i
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
