@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.1 2009-06-04 00:01:38 guru Exp $
+ * $Id: dimfilter.c,v 1.2 2009-06-04 01:45:54 guru Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -32,7 +32,7 @@ int main (int argc, char **argv)
 	GMT_LONG	nx_out, ny_out, nx_fil, ny_fil, *n_in_median, n_nan = 0;
 	GMT_LONG	x_half_width, y_half_width, j_origin, i_out, j_out, wsize = 0;
 	GMT_LONG	i_in, j_in, ii, jj, i, j, ij_in, ij_out, ij_wt, effort_level, k, s, n = 0;
-	GMT_LONG	distance_flag, filter_type, filter2_type, n_sectors = 1, one_or_zero = 1;
+	GMT_LONG	distance_flag, filter_type, filter2_type, n_sectors = 1, n_sectors_2, one_or_zero = 1;
 	GMT_LONG GMT_mode_selection = 0, GMT_n_multiples = 0;
 	
 	FILE *ip;
@@ -40,7 +40,7 @@ int main (int argc, char **argv)
 	double err_workarray[50], err_min, err_max, err_null_median=0.0, err_median, err_mad, err_depth, err_mean, err_sum;
    	BOOLEAN dimerr=FALSE;
 	
-	BOOLEAN	error, new_range, new_increment, fast_way, shift = FALSE, slow, slow2, toggle = FALSE;
+	BOOLEAN	error, new_range, new_increment, fast_way, shift = FALSE, slow, slow2, toggle = FALSE, corridor = FALSE;
 #ifdef OBSOLETE	
 	BOOLEAN do_scale = FALSE, trend = FALSE, first_time = TRUE;
 #endif
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 	double	west_new, east_new, south_new, north_new, dx_new, dy_new, offset;
 	double	filter_width, x_scale, y_scale, x_width, y_width, angle, z = 0.0;
 	double	x_out, y_out, *wt_sum, *value, last_median, this_median, last_median2 = 0.0, this_median2, xincnew2, yincnew2;
-	double	z_min, z_max, z2_min = 0.0, z2_max = 0.0, wx = 0.0;
+	double	z_min, z_max, z2_min = 0.0, z2_max = 0.0, wx = 0.0, *c_x, *c_y, d;
 	double	xincold2, yincold2, y_shift = 0.0, x_fix = 0.0, y_fix = 0.0;
 #ifdef DEBUG
 	double x_debug[5];
@@ -163,6 +163,9 @@ fout2 = NULL;
 					trend = TRUE;
 					break;
 #endif					
+				case 'C':
+					corridor = TRUE;
+					break;
 				case 'D':
 					distance_flag = atoi(&argv[i][2]);
 					break;
@@ -442,24 +445,34 @@ fout2 = NULL;
 			set_weight_matrix (nx_fil, ny_fil, y_out, north_new, south_new, h.x_inc, h.y_inc, filter_width, filter_type, distance_flag, x_fix, y_fix, shift);
 		}
 
+		if (corridor) {	/* Use fixed-width diagonal corridors instead of bow-ties */
+			c_x = (double *) GMT_memory (VNULL, (size_t)(n_sectors/2), sizeof(double), GMT_program);
+			c_y = (double *) GMT_memory (VNULL, (size_t)(n_sectors/2), sizeof(double), GMT_program);
+			n_sectors_2 = n_sectors / 2;
+			for (i = 0; i < n_sectors_2; i++) {
+				angle = (i + 0.5) * (M_PI/n_sectors_2);	/* Angle of central diameter of each corridor */
+				sincos (angle, &c_y[i], &c_x[i]);	/* Unit vector of diameter */
+			}
+		}
+		else {
 		/* SCAN: Precalculate which sector each point belongs to */
-		
-		sector = (short int **) GMT_memory (VNULL, (size_t)(ny_fil), sizeof(short int *), GMT_program);
+			sector = (short int **) GMT_memory (VNULL, (size_t)(ny_fil), sizeof(short int *), GMT_program);
+			for (jj = 0; jj < ny_fil; jj++) sector[jj] = (short int *) GMT_memory (VNULL, (size_t)(nx_fil), sizeof(short int), GMT_program);
+			for (jj = -y_half_width; jj <= y_half_width; jj++) {	/* This double loop visits all nodes in the square centered on an output node */
+				j = y_half_width + jj;
+				for (ii = -x_half_width; ii <= x_half_width; ii++) {	/* (ii, jj) is local coordinates relative center (0,0) */
+					i = x_half_width + ii;
+					/* We are doing "bow-ties" and not wedges here */
+					angle = atan2 ((double)jj, (double)ii);				/* Returns angle in -PI,+PI range */
+					if (angle < 0.0) angle += M_PI;					/* Flip to complimentary sector in 0-PI range */
+					sector[j][i] = (int) rint ((n_sectors * angle) / M_PI);		/* Convert to sector id 0-<n_sectors-1> */
+					if (sector[j][i] == n_sectors) sector[j][i] = 0;		/* Ensure that exact PI is set to 0 */
+				}
+			}
+		}
 		n_in_median = (GMT_LONG *) GMT_memory (VNULL, (size_t)(n_sectors), sizeof(GMT_LONG), GMT_program);
 		value = (double *) GMT_memory (VNULL, (size_t)(n_sectors), sizeof(double), GMT_program);
 		wt_sum = (double *) GMT_memory (VNULL, (size_t)(n_sectors), sizeof(double), GMT_program);
-		for (jj = 0; jj < ny_fil; jj++) sector[jj] = (short int *) GMT_memory (VNULL, (size_t)(nx_fil), sizeof(short int), GMT_program);
-		for (jj = -y_half_width; jj <= y_half_width; jj++) {	/* This double loop visits all nodes in the square centered on an output node */
-			j = y_half_width + jj;
-			for (ii = -x_half_width; ii <= x_half_width; ii++) {	/* (ii, jj) is local coordinates relative center (0,0) */
-				i = x_half_width + ii;
-				/* We are doing "bow-ties" and not wedges here */
-				angle = atan2 ((double)jj, (double)ii);				/* Returns angle in -PI,+PI range */
-				if (angle < 0.0) angle += M_PI;					/* Flip to complimentary sector in 0-PI range */
-				sector[j][i] = (int) rint ((n_sectors * angle) / M_PI);		/* Convert to sector id 0-<n_sectors-1> */
-				if (sector[j][i] == n_sectors) sector[j][i] = 0;		/* Ensure that exact PI is set to 0 */
-			}
-		}
 				
 		for (j_out = 0; j_out < ny_out; j_out++) {
 		
@@ -502,7 +515,53 @@ fout2 = NULL;
 						if (GMT_is_fnan (input[ij_in])) continue;
 						
 						/* Get here when point is usable  */
-						if (ii == 0 && jj == 0) {	/* Center point belongs to all sectors */
+						
+						if (corridor) {	/* Point can belong to several corridors */
+							for (s = 0; s < n_sectors_2; s++) {
+								d = sqrt (c_y[s] * ii + c_x[s] * jj);	/* Perpendicular distance to central diameter, in nodes */
+								if (d > y_half_width) continue;	/* Outside this corridor */
+								if (slow) {
+									work_array[s][n_in_median[s]] = input[ij_in];
+	#ifdef OBSOLETE												
+									if (do_scale) work_array2[n++] = input[ij_in];
+	#endif							
+	#ifdef DEBUG
+									if (n_in_median[s] < 5) x_debug[n_in_median[s]] = ii;
+									if (n_in_median[s] < 5) y_debug[n_in_median[s]] = jj;
+									if (n_in_median[s] < 5) z_debug[n_in_median[s]] = input[ij_in];
+	#endif
+	#ifdef OBSOLETE					
+									if (trend) {	/* Sum up required terms to solve for slope and intercepts of planar trend */
+									xx[s][n_in_median[s]] = ii;
+										yy[s][n_in_median[s]] = jj;
+										Sx += ii;
+										Sy += jj;
+										Sz += input[ij_in];
+										Sxx += ii * ii;
+										Syy += jj * jj;
+										Sxy += ii * jj;
+										Sxz += ii * input[ij_in];
+										Syz += jj * input[ij_in];
+										S++;
+									}
+		#endif							
+									n_in_median[s]++;
+								}
+								else {
+									wx = input[ij_in] * weight[ij_wt];
+									value[s] += wx;
+									wt_sum[s] += weight[ij_wt];
+		#ifdef OBSOLETE												
+									if (do_scale) {
+										Sxx += wx * input[ij_in];
+										Sw += weight[ij_wt];
+										n++;
+									}
+		#endif							
+								}
+							}
+						}
+						else if (ii == 0 && jj == 0) {	/* Center point belongs to all sectors */
 							if (slow) {	/* Must store copy in all work arrays */
 								for (s = 0; s < n_sectors; s++) {
 									work_array[s][n_in_median[s]] = input[ij_in];
