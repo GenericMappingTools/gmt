@@ -1,10 +1,12 @@
-	$Id: README.misc,v 1.11 2009-05-20 03:51:46 guru Exp $
+	$Id: README.misc,v 1.12 2009-06-04 00:01:38 guru Exp $
 
 Distributed under the GNU Public License (see file ../COPYING)
 
 This directory contains some miscellaneous programs
 that may come in handy for some users.
 
+	dimfilter - Filtering of 2-D gridded data and
+	   assisting in calculation of MAD error envelope
 	gmt2kml - Convert GMT tables to KML files for Google Earth
 	gmtdigitize - Digitize and project coordinates from dititizer
 	gmtdp - Line reduction using the Douglas-Peucker algorithm
@@ -13,6 +15,11 @@ that may come in handy for some users.
 	makepattern - create Sun rasterfiles from patterns
 	psmageplot - blow up plots over several pages
 	nc2xy - convert 1-D netCDF files to ASCII
+
+dimfilter derives from grdfilter but allows for directional filtering
+of grids (*).  The dim.template.sh is a skeleton shell script that can
+be used to set up a complete DiM analysis, including the MAD analysis.
+[S-S Kim and P Wessel]
 
 gmt2kml reads a GMT table file and creates KML output for either
 points, lines, or polygons.
@@ -44,3 +51,9 @@ tiling. [P Wessel]
 
 nc2xy lists the contents of 1-D netCDF files as columns
 in ASCII format. Output is send to standard output. [R Scharroo]
+
+(*) For details about the method, see:
+
+Kim, S.-S., and Wessel, P. (2008), Directional Median Filtering
+for Regional-Residual Separation of Bathymetry, Geochem. Geophys. Geosyst.,
+9(Q03005), doi:10.1029/2007GC001850. 
