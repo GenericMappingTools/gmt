@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.531 2009-06-04 07:42:34 guru Exp $
+	$Id: ChangeLog,v 1.532 2009-06-04 07:43:27 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-06-03	pwessel
 	* mgd77/mgd77.c:	Converting files from netCDF to MGD77 where time = NaN gave junk records.
+	* misc/dimfilter.c:	New program that does directional spatial filtering.
 
 2009-06-02	remko
 	* pslegend.c:		> record no longer needed before T; T, L, S, H alignment harmonised;
