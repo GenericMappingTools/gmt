@@ -124,6 +124,9 @@ share/mgg/carter.d
 share/mgg/gmtfile_paths
 src/misc/README.misc
 src/misc/makefile
+src/misc/dimfilter.c
+src/misc/dimfilter.1
+src/misc/dim.template.sh
 src/misc/gmt2kml.c
 src/misc/gmt2kml.1
 src/misc/gmtdigitize.c
@@ -309,6 +312,7 @@ share/doc/gmt/html/man/gmtlist.html
 share/doc/gmt/html/man/gmtpath.html
 share/doc/gmt/html/man/gmttrack.html
 share/doc/gmt/html/man/mgd77togmt.html
+share/doc/gmt/html/man/dimfilter.html
 share/doc/gmt/html/man/gmt2kml.html
 share/doc/gmt/html/man/gmtdigitize.html
 share/doc/gmt/html/man/gmtdp.html
