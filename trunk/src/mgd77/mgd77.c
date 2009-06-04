@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.227 2009-05-19 03:23:33 guru Exp $
+ *	$Id: mgd77.c,v 1.228 2009-06-04 01:11:46 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1843,12 +1843,16 @@ int MGD77_Write_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 		if (make_ymdhm) {	/* Split time into yyyy, mm, dd, hh, mm.xxx */
 			MGD77Record.time = values[col[MGD77_TIME]][rec];
 			tz = (GMT_is_dnan (MGD77Record.number[MGD77_TZ])) ? 0.0 : MGD77Record.number[MGD77_TZ];
-			GMT_gcal_from_dt (MGD77Record.time - tz * 3600.0, &cal);	/* Adjust for TZ to get local calendar */
-			MGD77Record.number[MGD77_YEAR]  = cal.year;
-			MGD77Record.number[MGD77_MONTH] = cal.month;
-			MGD77Record.number[MGD77_DAY]   = cal.day_m;
-			MGD77Record.number[MGD77_HOUR]  = cal.hour;
-			MGD77Record.number[MGD77_MIN]   = cal.min + cal.sec / 60.0;
+			if (GMT_is_dnan (MGD77Record.time))	/* No time, set all parts to NaN */
+				MGD77Record.number[MGD77_YEAR] = MGD77Record.number[MGD77_MONTH] = MGD77Record.number[MGD77_DAY] = MGD77Record.number[MGD77_HOUR] = MGD77Record.number[MGD77_MIN] = GMT_d_NaN;
+			else {
+				GMT_gcal_from_dt (MGD77Record.time - tz * 3600.0, &cal);	/* Adjust for TZ to get local calendar */
+				MGD77Record.number[MGD77_YEAR]  = cal.year;
+				MGD77Record.number[MGD77_MONTH] = cal.month;
+				MGD77Record.number[MGD77_DAY]   = cal.day_m;
+				MGD77Record.number[MGD77_HOUR]  = cal.hour;
+				MGD77Record.number[MGD77_MIN]   = cal.min + cal.sec / 60.0;
+			}
 		}
 		for (id = MGD77_N_NUMBER_FIELDS; id < MGD77_N_DATA_FIELDS; id++) {
 			k = id - MGD77_N_NUMBER_FIELDS;
