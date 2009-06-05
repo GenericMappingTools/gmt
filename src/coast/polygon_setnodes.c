@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.7 2009-02-25 12:36:29 remko Exp $
+ *	$Id: polygon_setnodes.c,v 1.8 2009-06-05 00:25:12 guru Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -13,7 +13,6 @@
  
 #include "wvs.h"
 
-int full = TRUE;
 
 struct BLOB {
 	struct GMT3_POLY h;
@@ -29,16 +28,15 @@ float *grd;
 int main (int argc, char **argv)
 {
 	int i, j, k, n_id, pos, n_nodes, id, intest, n, nx_minus_1, ix0, off, iy0, slow = 0;
-	int iblon, iblat, ij, i0, i1, j0, j1, ii;
+	int iblon, iblat, ij, i0, i1, j0, j1, ii, full;
 	double west, east, blon, blat, x0, y0, w, iw, slon, clon, r0;
 	FILE *fp;
 	struct LONGPAIR p;
 	
-	if (argc < 4 || argc > 5) {
-		fprintf (stderr, "usage: polygon_setnodes final_dbase.b bin_width nodegrdfile [-s]\n");
+	if (argc != 4) {
+		fprintf (stderr, "usage: polygon_setnodes final_dbase.b bin_width nodegrdfile\n");
 		exit (EXIT_FAILURE);
 	}
-	full = (argc != 4);
 
 	argc = GMT_begin (argc, argv);
 	
@@ -89,7 +87,8 @@ int main (int argc, char **argv)
 
 	lon = (int *) GMT_memory (VNULL, N_LONGEST, sizeof(int), "polygon_setnodes");
 	lat = (int *) GMT_memory (VNULL, N_LONGEST, sizeof(int), "polygon_setnodes");
-	
+	full = (blob[0].h.n > 1000000);	/* TRUE for full resolution */
+	full = FALSE;
 	fprintf (stderr, "Start inside testing (Antarctica == %d)\n\n", ANTARCTICA);
 	
 	for (id = 0; id < n_id; id++) {	/* For all anchor polygons */

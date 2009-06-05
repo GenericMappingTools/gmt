@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.16 2009-05-28 21:17:29 guru Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.17 2009-06-05 00:25:12 guru Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
@@ -37,7 +37,7 @@ int main (int argc, char **argv)
 		gshhs_header.area	= (lines) ? 0 : irint (10.0 * h.area);
 		gshhs_header.flag	= h.level + (version << 8) + (h.greenwich << 16) + (h.source << 24);
 		gshhs_header.parent	= h.parent;
-		gshhs_header.unused	= 0;
+		gshhs_header.river	= h.river;
 		if ((gshhs_header.east - gshhs_header.west) == M360) gshhs_header.n--;	/* Antarctica, drop the duplicated point for GSHHS */
 		np = gshhs_header.n;
 #if WORDS_BIGENDIAN == 0
@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 		gshhs_header.area	= swabi4 ((unsigned int)gshhs_header.area);
 		gshhs_header.flag	= swabi4 ((unsigned int)gshhs_header.flag);
 		gshhs_header.parent	= swabi4 ((unsigned int)gshhs_header.parent);
-		gshhs_header.unused	= swabi4 ((unsigned int)gshhs_header.unused);
+		gshhs_header.river	= swabi4 ((unsigned int)gshhs_header.river);
 #endif
 		fwrite((char *)&gshhs_header, sizeof (struct GSHHS), 1, stdout) ;
 		for (k = 0; k < h.n; k++) {
@@ -60,7 +60,7 @@ int main (int argc, char **argv)
 				exit (EXIT_FAILURE);
 			}
 			if (p.x < 0) p.x += M360;
-			if (k < np && pol_fwrite (&p, 1, stdout) != 1) {
+			if (k < np && pol_fwrite2 (&p, 1, stdout) != 1) {
 				fprintf (stderr,"polygon_to_gshhs:  ERROR  writing to stdout.\n");
 				exit (EXIT_FAILURE);
 			}

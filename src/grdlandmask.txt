@@ -3,8 +3,7 @@
 .SH NAME
 grdlandmask \- Create "wet-dry" mask grid file from shoreline data base.
 .SH SYNOPSIS
-\fBgrdlandmask\fP OPT(G)\fImask_grd_file\fP] GMT_I_OPT 
-GMT_Rgeo_OPT [ OPT(A)\fImin_area\fP[/\fImin_level/max_level\fP] ] 
+\fBgrdlandmask\fP OPT(G)\fImask_grd_file\fP] GMT_I_OPT GMT_Rgeo_OPT [ GMT_A_OPT ] 
 [ OPT(D)\fIresolution\fP[\fB+\fP] ] [ OPT(F) ] [ OPT(N)\fImaskvalues\fP[\fBo\fP] ] 
 [ GMT_V_OPT ]
 .SH DESCRIPTION
@@ -56,6 +55,7 @@ To make a 1x1 degree global grid with the hierarchical levels of the nodes based
 .br
 .sp
 \fBgrdlandmask\fP OPT(R)0/360/-90/90 OPT(Dl) OPT(I)1 OPT(N)0/1/2/3/4 OPT(G)levels.grd OPT(V)
+#include "explain_gshhs.txt"
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdmath (1),

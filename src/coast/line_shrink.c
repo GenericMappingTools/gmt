@@ -1,5 +1,5 @@
 /*
- *	$Id: line_shrink.c,v 1.3 2006-04-10 04:53:48 pwessel Exp $
+ *	$Id: line_shrink.c,v 1.4 2009-06-05 00:25:11 guru Exp $
  */
 /* 
  * line_shrink applies the Douglas-Peucker algorithm to simplify a line
@@ -84,9 +84,9 @@ int main (int argc, char **argv)
 		n_id++;
 	}
 		
-	free ((char *)x);	
-	free ((char *)y);	
-	free ((char *)index);	
+	free ((void *)x);	
+	free ((void *)y);	
+	free ((void *)index);	
 		
 	fclose (fp_in);
 	fclose (fp_out);

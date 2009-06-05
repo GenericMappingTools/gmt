@@ -3,11 +3,15 @@
 Global Self-consistent Hierarchical High-resolution Shorelines
 Distributed under the GNU Public License (see file ../COPYING)
 
-Version 1.12 Jun 1, 2009
+Version Jun 1, 2009
 This version include a revised GSHHS data format in which the
 polygon ID of the parent (that contains this polygon) is given
-(or -1 if none).  The header structure has thus increased by
-two integer items.
+(or -1 if none).  We also keep track if a lake is a river-lake
+or a regular lake.  The header structure has thus increased by
+two integer items.  The GSHHS data set is version 1.11; from
+now on we will no longer give version number for the gshhs
+supplement programs since it leads to confusion with the
+GSHHS data version numbers...
 
 Version 1.11 Feb 15, 2009
 This version adds the -I<id> option go gshhs so that a single

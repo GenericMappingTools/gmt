@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.5 2009-05-27 06:35:54 guru Exp $
+ *	$Id: wvs.h,v 1.6 2009-06-05 00:25:12 guru Exp $
  */
 /* wvs.h
  *
@@ -64,6 +64,7 @@ struct GMT3_POLY {
 	int checked[2]; /* TRUE if polygon has been crossover checked with all peers */
 	int source;     /* 0 = CIA WDBII, 1 = WVS */
 	int parent;     /* -1 if top level 1, else id of polygon containing this polygon */
+	int river;     /* 1 if this is level2 and river-lake  */
 	double west, east, south, north;
 	double area;    /* Area of polygon */
 };
@@ -72,6 +73,10 @@ extern int pol_readheader (struct GMT3_POLY *h, FILE *fp);
 extern int pol_writeheader (struct GMT3_POLY *h, FILE *fp);
 extern int pol_fread (struct LONGPAIR *p, size_t n_items, FILE *fp);
 extern int pol_fwrite (struct LONGPAIR *p, size_t n_items, FILE *fp);
+extern int pol_readheader2 (struct GMT3_POLY *h, FILE *fp);
+extern int pol_writeheader2 (struct GMT3_POLY *h, FILE *fp);
+extern int pol_fread2 (struct LONGPAIR *p, size_t n_items, FILE *fp);
+extern int pol_fwrite2 (struct LONGPAIR *p, size_t n_items, FILE *fp);
 extern double area_size (double x[], double y[], int n, int *sign);
 extern int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path);
 extern void area_init ();

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.41 2009-05-27 00:22:51 guru Exp $
+ *	$Id: gmt_shore.c,v 1.42 2009-06-05 00:25:11 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -42,6 +42,7 @@
  *
  */
 
+#define RIVERLAKE	5	/* Fill array id for riverlakes */
 
 GMT_LONG GMT_copy_to_shore_path (double *lon, double *lat, struct GMT_SHORE *s, GMT_LONG id);
 GMT_LONG GMT_shore_get_first_entry (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG *side);
@@ -59,6 +60,15 @@ int GMT_shore_desc_sort(const void *a, const void *b);
 char *GMT_shore_getpathname (char *name, char *path);
 void GMT_shore_check (BOOLEAN ok[5]);
 GMT_LONG GMT_res_to_int (char res);
+
+void GMT_set_levels (char *info, struct GMT_SHORE_SELECT *I)
+{	/* Decode GMT's -A option for coastline levels */
+	int n;
+	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
+	if (n == 1) I->low = 0, I->high = GMT_MAX_GSHHS_LEVEL;
+	if (strstr (info, "+l"))  I->flag = GMT_NO_RIVERLAKES;
+	if (strstr (info, "+r"))  I->flag = GMT_NO_LAKES;
+}
 
 GMT_LONG GMT_set_resolution (char *res, char opt)
 {
@@ -130,7 +140,7 @@ char GMT_shore_adjust_res (char res) {	/* Returns the highest available resoluti
 	return ((k == -1) ? res : type[k]);	/* Return the chosen resolution */
 }
 
-GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s, double n) {	/* res: Resolution (f, h, i, l, c */
+GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s, double n, struct GMT_SHORE_SELECT *info) {	/* res: Resolution (f, h, i, l, c */
 	GMT_LONG i, nb, idiv, iw, ie, is, in, this_south, this_west, err;
 	short *stmp;
 	int *itmp;
@@ -164,6 +174,8 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
 	GMT_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
+	c->version[0] = '\0';
+	(void) nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version);
 
 	/* Get global variables */
 
@@ -176,6 +188,10 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
         GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
         GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
 
+	c->min_area = info->area;	/* Limit the features */
+	c->min_level = info->low;	
+	c->max_level = info->high;	
+	c->flag = info->flag;
 
 	c->scale = (c->bin_size / 60.0) / 65535.0;
 	c->bsize = c->bin_size / 60.0;
@@ -229,7 +245,7 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c, double min_area, GMT_LONG min_level, GMT_LONG max_level)
+GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 /* b: index number into c->bins */
 /* min_area: Polygons with area less than this are ignored */
 /* min_level: Polygons with lower levels are ignored */
@@ -237,13 +253,13 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c, double min_area, GM
 {
 	size_t start[1], count[1];
 	int *seg_area, *seg_info, *seg_start;
-	GMT_LONG s, i, err, cut_area;
+	GMT_LONG s, i, err, cut_area, level;
 	double w, e, dx;
-	
-	c->node_level[0] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 9) & 7, max_level);
-	c->node_level[1] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 6) & 7, max_level);
-	c->node_level[2] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 3) & 7, max_level);
-	c->node_level[3] = (unsigned char)MIN ((unsigned short)c->bin_info[b] & 7, max_level);
+		
+	c->node_level[0] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 9) & 7, c->max_level);
+	c->node_level[1] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 6) & 7, c->max_level);
+	c->node_level[2] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 3) & 7, c->max_level);
+	c->node_level[3] = (unsigned char)MIN ((unsigned short)c->bin_info[b] & 7, c->max_level);
 	dx = c->bin_size / 60.0;
 	c->lon_sw = (c->bins[b] % c->bin_nx) * dx;
 	c->lat_sw = 90.0 - ((c->bins[b] / c->bin_nx) + 1) * dx;
@@ -258,7 +274,7 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c, double min_area, GM
 
 	if (c->bin_nseg[b] == 0) return (GMT_NOERROR);
 	
-	cut_area = irint (10.0 * min_area);
+	cut_area = irint (10.0 * c->min_area);
 	start[0] = c->bin_firstseg[b];
 	count[0] = c->bin_nseg[b];
 	
@@ -274,8 +290,11 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c, double min_area, GM
 
 	for (s = i = 0; i < c->bin_nseg[b]; i++) {
 		if (cut_area > 0 && abs(seg_area[i]) < cut_area) continue;	/* Use abs() since double-lined-river lakes have negative area */
-		if (((seg_info[i] >> 6) & 7) < min_level) continue;
-		if (((seg_info[i] >> 6) & 7) > max_level) continue;
+		level = ((seg_info[i] >> 6) & 7);
+		if (level < c->min_level) continue;
+		if (level > c->max_level) continue;
+		if (level == 2 && seg_area[i] < 0 && c->flag == GMT_NO_RIVERLAKES) continue;
+		if (level == 2 && seg_area[i] > 0 && c->flag == GMT_NO_LAKES) continue;
 		seg_area[s] = seg_area[i];
 		seg_info[s] = seg_info[i];
 		seg_start[s] = seg_start[i];
@@ -297,6 +316,7 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c, double min_area, GM
 		c->seg[s].n = (seg_info[s] >> 9);
 		c->seg[s].entry = (seg_info[s] >> 3) & 7;
 		c->seg[s].exit = seg_info[s] & 7;
+		c->seg[s].fid = (seg_area[s] < 0) ? RIVERLAKE : c->seg[s].level;
 		c->seg[s].dx = (short *) GMT_memory (VNULL, (size_t)c->seg[s].n, sizeof (short), "GMT_get_shore_bin");
 		c->seg[s].dy = (short *) GMT_memory (VNULL, (size_t)c->seg[s].n, sizeof (short), "GMT_get_shore_bin");
 		start[0] = seg_start[s];
@@ -353,6 +373,8 @@ GMT_LONG GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e
 	GMT_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
+	c->version[0] = '\0';
+	(void) nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version);
 
 	/* Get global variables */
 
@@ -472,7 +494,7 @@ GMT_LONG GMT_get_br_bin (GMT_LONG b, struct GMT_BR *c, GMT_LONG *level, GMT_LONG
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG first_level, BOOLEAN assemble, BOOLEAN shift, double west, double east, struct GMT_GSHHS_POL **pol)
+GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, BOOLEAN assemble, BOOLEAN shift, double west, double east, struct GMT_GSHHS_POL **pol)
                 
                      
 /* assemble: TRUE if polygons is needed */
@@ -482,7 +504,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG first_l
 {
 	struct GMT_GSHHS_POL *p;
 	GMT_LONG start_side, next_side, id, P = 0, more, p_alloc, wet_or_dry, use_this_level, high_seg_level = GMT_MAX_GSHHS_LEVEL;
-	GMT_LONG n_alloc, cid, nid, add, first_pos, entry_pos, n, low_level, high_level, nseg_at_level[GMT_MAX_GSHHS_LEVEL+1];
+	GMT_LONG n_alloc, cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GMT_MAX_GSHHS_LEVEL+1];
 	BOOLEAN completely_inside;
 	double *xtmp, *ytmp, plon, plat;
 	
@@ -495,6 +517,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG first_l
 			p[id].lat = (double *) GMT_memory (VNULL, (size_t)c->seg[id].n, sizeof (double), "GMT_assemble_shore");
 			p[id].n = GMT_copy_to_shore_path (p[id].lon, p[id].lat, c, id);
 			p[id].level = c->seg[id].level;
+			p[id].fid = c->seg[id].fid;
 			p[id].interior = FALSE;
 			GMT_shore_path_shift2 (p[id].lon, p[id].lat, p[id].n, west, east, c->leftmost_bin);
 		}
@@ -516,7 +539,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG first_l
 	}
 	
 	wet_or_dry = (dir == 1) ? 1 : 0;
-	use_this_level = (high_level%2 == wet_or_dry && high_level >= first_level);
+	use_this_level = (high_level%2 == wet_or_dry && high_level >= c->min_level);
 
 	if (c->ns == 0 && !use_this_level) return (0);	/* No polygons for this bin */
 	
@@ -534,6 +557,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG first_l
 	if (completely_inside && use_this_level) {	/* Must include path of this bin outline as first polygon */
 		p[0].n = GMT_graticule_path (&p[0].lon, &p[0].lat, dir, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
 		p[0].level = c->node_level[0];	/* Any corner will do */
+		p[0].fid = p[0].level;	/* Assumes no riverlake is that big to contain an entire bin */
 		p[0].interior = FALSE;
 		P = 1;
 	}		
@@ -546,6 +570,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG first_l
 		next_side = c->seg[id].exit;
 		
 		n_alloc = c->seg[id].n;
+		fid = c->seg[id].fid;
 		p[P].lon = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_assemble_shore");
 		p[P].lat = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "GMT_assemble_shore");
 		n = GMT_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
@@ -601,6 +626,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG first_l
 		p[P].n = n;
 		p[P].interior = FALSE;
 		p[P].level = (dir == 1) ? 2 * ((low_level - 1) / 2) + 1: 2 * (low_level/2);
+		p[P].fid = (p[P].level == 2 && fid == RIVERLAKE) ? RIVERLAKE : p[P].level;	/* Not sure about this yet */
 		P++;
 		if (P == p_alloc) {
 			p_alloc <<= 1;
@@ -619,6 +645,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG first_l
 		p[P].n = GMT_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
 		p[P].interior = TRUE;
 		p[P].level = c->seg[id].level;
+		p[P].fid = c->seg[id].fid;
 		P++;
 		if (P == p_alloc) {
 			p_alloc <<= 1;
@@ -774,6 +801,7 @@ GMT_LONG GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, GMT_LONG np, BOOLEAN s
 			p[np_new].n = n_alloc;
 			p[np_new].interior = p[k].interior;
 			p[np_new].level = p[k].level;
+			p[np_new].fid = p[k].fid;
 			np_new++;
 		}
 		else {

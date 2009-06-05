@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_id.c,v 1.3 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_id.c,v 1.4 2009-06-05 00:25:12 guru Exp $
  */
 /* 
  *
@@ -16,7 +16,7 @@ struct GMT3_POLY h;
 int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	id, k;
+	int	id = 0, k;
 	struct	LONGPAIR p;
 	double x0, y0, d_min, d, dx, dy;
         

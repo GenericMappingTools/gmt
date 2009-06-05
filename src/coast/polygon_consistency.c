@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.16 2009-05-27 23:45:46 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.17 2009-06-05 00:25:12 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -13,8 +13,10 @@ double lon[N_LONGEST], lat[N_LONGEST];
 int main (int argc, char **argv)
 {
 	FILE	*fp;
-	int	i, n_id, this_n, nd, nx, n_x_problems, n_s_problems, n_c_problems, n_r_problems, n_d_problems, n_a_problems, ix0, iy0, report_mismatch;
-	int w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x, last_y, ant_trouble = 0, found, A, B, end, n_adjust = 0, left, right;
+	int	i, n_id, this_n, nd, nx, n_x_problems, n_s_problems, n_c_problems, n_r_problems;
+	int	n_d_problems, n_a_problems, ix0 = 0, iy0 = 0, report_mismatch = 0;
+	int	w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x = 0, last_y = 0;
+	int	ant_trouble = 0, found, A, B, end, n_adjust = 0, left, right;
 	struct GMT_XSEGMENT *ylist;
 	struct GMT_XOVER XC;
 	struct GMT3_POLY h;
@@ -38,6 +40,8 @@ int main (int argc, char **argv)
 		if (ANTARCTICA) {
 			if (h.south > -90.0) ant_trouble = TRUE;
 		}
+		if (h.area < 0 && h.level != 2) fprintf (stderr, "Pol %d has negative area and is level %d\n", h.id, h.level);
+		if (h.river && h.level != 2) fprintf (stderr, "Pol %d is a riverlake but level is %d\n", h.id, h.level);
 		ixmin = iymin = M360;
 		ixmax = iymax = -M360;
 		w = irint (h.west * 1e6);
@@ -49,6 +53,8 @@ int main (int argc, char **argv)
 				fprintf(stderr,"polygon_consistency:  ERROR  reading file.\n");
 				exit(-1);
 			}
+			if (p.x < 0 || p.x > M360) fprintf (stderr, "Pol %d, point %d: x outside range [%g]\n", h.id, i, p.x*1e-6);
+			if (p.y < -M90 || p.y > M90) fprintf (stderr, "Pol %d, point %d: y outside range [%g]\n", h.id, i, p.y*1e-6);
 			if (h.greenwich && p.x > h.datelon) p.x -= M360;
 			if (i == 0) {
 				ix0 = p.x;

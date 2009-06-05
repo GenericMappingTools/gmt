@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs_crosscheck.c,v 1.6 2007-03-27 20:52:18 pwessel Exp $
+ *	$Id: wvs_crosscheck.c,v 1.7 2009-06-05 00:25:12 guru Exp $
  */
 /*  */
    
@@ -15,7 +15,7 @@ int no[N_LONGEST];
 int main (int argc, char **argv) {
 	int id = 0, i, nn = 0, k, nx, j, cut, nx_tot = 0, n_bad = 0, max_n = 0, max_id = 0, end, A, B, n_found;
 	int start, stop, report, n_fatal = 0, n_too_much = 0, special, update = FALSE;
-	FILE *fp, *fp_out;
+	FILE *fp, *fp_out = NULL;
 	
 	if (argc < 2 || argc > 3) {
 		fprintf (stderr, "usage: wvs_crosscheck coast.base [newbase]\n");

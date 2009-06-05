@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_update.c,v 1.4 2007-08-11 04:22:07 guru Exp $
+ *	$Id: polygon_update.c,v 1.5 2009-06-05 00:25:12 guru Exp $
  */
 /* 
  *
@@ -16,7 +16,7 @@ int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp_out, *fp_bad, *fp_fix, *fp;
 	int	i, j, found, k, n_id, nfix, nbad, n_pol_in = 0, n_pol_out = 0, reverse = 0;
-	int	n_alloc, n_pt_in = 0, n_pt_out = 0, sign, full = 0, get_area;
+	int	n_alloc = 0, n_pt_in = 0, n_pt_out = 0, sign, full = 0, get_area;
 	double x, y, size;
 	double *flon = NULL, *flat = NULL;
 	char file[80], line[512];

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.17 2009-05-28 20:37:03 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.18 2009-06-05 00:25:12 guru Exp $
  */
 #include "wvs.h"
 
@@ -20,33 +20,37 @@ struct LONGPAIR *pp;
 
 int main (int argc, char **argv) {
 	int i, j, k, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, n_of_this[6];
-	int n_reset = 0, old, bad = 0, ix0, set, fast = 0, AUS_ID;
-	double x0, west1, west2, east1, east2, size;
+	int n_reset = 0, old, bad = 0, ix0, set, fast = 0, AUS_ID = -1, force;
+	double x0, west1, west2, east1, east2, size, f;
 	FILE *fp, *fp2, *fpx;
 	struct LONGPAIR p;
-	char line[80];
+	char line[80], olds[32], news[32];
 	
 	if (argc == 1) {
-		fprintf (stderr, "usage: polygon_findlevel final_polygons.b revised_final_dbase.b [-s]\n");
-		fprintf (stderr, "Note 1: assumes poly # 0,1,2 are Eurasia, Americas,Australia (unless -s)\n");
-		fprintf (stderr, "  -s will set Australia ID = 4 (for crude)\n");
-		fprintf (stderr, "Note 2: Will recalculate areas unless areas.lis already exists\n");
+		fprintf (stderr, "usage: polygon_findlevel final_polygons.b revised_final_dbase.b [-f]\n");
+		fprintf (stderr, "  -f will force calculation of areas.  Otherwise we will only\n");
+		fprintf (stderr, "     recalculate areas if areas.lis does not exists\n");
 		exit (EXIT_FAILURE);
 	}
-
-	AUS_ID = (argc == 4) ? 4 : 3;
-
+	force = (argc == 4);
 	fpx = fopen ("still_bad.lis", "w");
 	
 	for (i = 0; i < 6; i++) n_of_this[i] = 0;
 	fprintf (stderr, "Read headers\n");
-	fp = fopen (argv[1], "r");
+	if ((fp = fopen (argv[1], "r")) == NULL) {
+		fprintf (stderr, "polygon_findlevel: Cannot open file %s\n", argv[1]);
+		exit (EXIT_FAILURE);
+	}
 	
 	/* Reset ids as we go along */
 	
 	n_id = pos = 0;
 	while (pol_readheader (&blob[n_id].h, fp) == 1) {
-		if (fabs (blob[n_id].h.east - blob[n_id].h.west) == 360.0) blob[n_id].h.south = -90.0;	/* Antarctica */
+		if (fabs (blob[n_id].h.east - blob[n_id].h.west) == 360.0) {
+			blob[n_id].h.south = -90.0;	/* Antarctica */
+			AUS_ID = n_id;
+		}
+
 		pos += sizeof (struct GMT3_POLY);
 		blob[n_id].start = pos;
 		if (pol_fread (&p, 1, fp) != 1) {
@@ -68,7 +72,8 @@ int main (int argc, char **argv) {
 		n_id++;
 	}
 	
-	if ((fp2 = fopen ("areas.lis", "r")) != NULL) {	/* Read areas etc */
+	if (!force && (fp2 = fopen ("areas.lis", "r")) != NULL) {	/* Read areas etc */
+		fprintf (stderr, "\n\nRead previous area and direction of polygons from areas.lis\n");
 		for (i = 0; i < n_id; i++) {
 			fgets (line, 80, fp2);
 			sscanf (line, "%d %lf", &j, &size);
@@ -107,9 +112,15 @@ int main (int argc, char **argv) {
 				flat[k] = p.y * 1.0e-6;
 			}
 			size = 1.0e-6 * area_size (flon, flat, blob[id].h.n, &sign); /* in km^2 */
+			sprintf (olds, "%.12g", blob[id].h.area);
+			sprintf (news, "%.12g", size);
+			if (blob[id].h.area > 0.0 && size > 0.0) {
+				f = fabs ((size / blob[id].h.area) - 1.0)*1e6;	/* ppm change */
+				if (f > 5.0) fprintf (stderr, "Polygon %d has changed size by > 5 ppm (%.1f) [Area: old %s vs new %s]\n", blob[id].h.id, f, olds, news);
+			}
+			fprintf (fp2, "%d\t%g\t%g\n", id, size * sign, blob[id].h.area);
 			blob[id].h.area = size;
 			blob[id].reverse = sign + 1;
-			fprintf (fp2, "%d\t%g\n", id, size * sign);
 		}
 
 		free ((void *)flon);
@@ -372,7 +383,7 @@ int main (int argc, char **argv) {
 			exit(-1);
 		}
 		if (blob[id].reverse) {	/* Reverse polygon */
-			fprintf (fpx, "Reversed polygon %d\n", id);
+			fprintf (stderr, "Reversing polygon %d\n", id);
 			for (j = blob[id].h.n - 1; j >= 0; j--) pol_fwrite (&pp[j], 1, fp2);
 		}
 		else

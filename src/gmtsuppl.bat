@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.47 2009-05-21 04:19:20 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.48 2009-06-05 00:25:11 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -150,6 +150,7 @@ ECHO STEP 8: Make misc
 REM ----------------------------------------------------
 cd misc
 REM %CC% %COPT% gmtdigitize.c %GMTLIB%
+%CC% %COPT% dimfilter.c %GMTLIB%
 %CC% %COPT% gmt2kml.c %GMTLIB%
 %CC% %COPT% kml2gmt.c %GMTLIB%
 %CC% %COPT% gmtstitch.c %GMTLIB%

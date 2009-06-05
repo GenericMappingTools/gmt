@@ -1,5 +1,5 @@
 /*
- *	$Id: string_check_subs.c,v 1.5 2009-02-25 12:36:29 remko Exp $
+ *	$Id: string_check_subs.c,v 1.6 2009-06-05 00:25:12 guru Exp $
  */
 /* string_check_subs.c
  * Subroutines for testing WVS string quality.
@@ -408,7 +408,7 @@ int new_stringcheck (struct LONGPAIR p[], int *n, double x[], double y[], int id
 	}
 
 	if (nx) {
-		int start, stop, cut, k, j;
+		int start, stop, cut = 0, k, j;
 		
 		pp = (struct FLAGPAIR *) GMT_memory (CNULL, *n, sizeof (struct FLAGPAIR), "string_check");
 		for (i = 0; i < *n; i++) {	/* Copy to work array */

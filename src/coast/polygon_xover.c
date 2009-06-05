@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.12 2009-05-28 08:19:35 guru Exp $
+ *	$Id: polygon_xover.c,v 1.13 2009-06-05 00:25:12 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -19,7 +19,7 @@ int nothing_in_common (struct GMT3_POLY *h1, struct GMT3_POLY *h2, double *shift
 int main (int argc, char **argv)
 {
 	FILE	*fp;
-	int	i, n_id, id1, id2, nx, nx_tot, ANTARCTICA, verbose, full;
+	int	i, n_id, id1, id2, nx, nx_tot, ANTARCTICA = -1, verbose, full;
 	int np_o, np_i1, np_i2, in;
 	double x_shift = 0.0, lon_o[N_EUR_O+1], lat_o[N_EUR_O+1], lon_i1[N_EUR_I+1], lat_i1[N_EUR_I+1];
 	double lon_i2[N_EUR_I+1], lat_i2[N_EUR_I+1], r, theta, c, s, *X, *Y;
@@ -80,6 +80,8 @@ int main (int argc, char **argv)
 	
 	nx_tot = 0;
 	for (id1 = 0; id1 < n_id; id1++) {
+		if (id1 == 0) continue;
+		
 		GMT_init_track (P[id1].lat, P[id1].h.n, &ylist1);
 		if (full && id1 == 0) {	/* Eurafrica */
 			for (i = 0; i < N_EUR_O; i++) lon_o[i] = ieur_o[0][i] - 360.0;
@@ -132,6 +134,7 @@ int main (int argc, char **argv)
 			np_o = np_i1 = np_i2 = 0;
 			
 		for (id2 = MAX (4, id1 + 1); id2 < n_id; id2++) {	/* Dont start earlier than 4 since no point comparing Eur to Americas */
+			/* if (P[id2].h.id != 15) continue; */
 			if (id1 == ANTARCTICA) {	/* Must compare using r,theta */
 				if (P[id2].h.south > P[id1].h.north) continue;	/* Too far north */
 				X = (double *) GMT_memory (VNULL, P[id2].h.n, sizeof (double), "polygon_xover");

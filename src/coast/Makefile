@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.44 2009-05-28 21:17:29 guru Exp $
+#	$Id: Makefile,v 1.45 2009-06-05 00:25:12 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -30,7 +30,7 @@ include $(GMTSRCDIR)gmtalldeps.macros
 
 INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 DEFINES		= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
-PREV_VERSION	= 4.3
+PREV_VERSION	= 1.10
 VERSION		= 4.4
 # These are the values to use for the next GMT version 4.4.1
 GSHHS_DATA_VERSION	= 1.11
@@ -60,7 +60,7 @@ PROGS_O	= border_to_bins.o ciaman_fix.o line_shrink.o linemaker.o swap.o \
 	  polygon_findlevel2.o polygon_fix.o polygon_fixlevel.o polygon_get.o \
 	  polygon_id.o polygon_merge.o polygon_report.o polygon_restore.o  segment_restore.o \
 	  polygon_set.o polygon_setnodes.o polygon_setwesn.o polygon_shrink.o \
-	  polygon_sort.o polygon_stats.o polygon_to_bins.o polygon_to_gshhs.o \
+	  polygon_sort.o polygon_stats.o polygon_to_bins.o polygon_to_gshhs.o  polygon_hierarchy.o \
 	  polygon_update.o polygon_xover.o read_wvs.o river_fix.o segment_clean.o \
 	  segment_connect.o segment_dump.o segment_final_dump.o segment_report.o \
 	  shoremaker.o wvs_crosscheck.o wvs_segment_dump.o wvs_segment_restore2.o
@@ -95,9 +95,9 @@ set_new:
 		cp -f res_?/binned_*_?.cdf $(rootdir)/share/coast
 		
 set_old:
-		cd $(rootdir); tar xvjf ftp/GMT$(PREV_VERSION)_coast.tar.bz2
-		cd $(rootdir); tar xvjf ftp/GMT$(PREV_VERSION)_high.tar.bz2
-		cd $(rootdir); tar xvjf ftp/GMT$(PREV_VERSION)_full.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_coast.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_high.tar.bz2
+		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_full.tar.bz2
 		
 delete:		
 		\rm res_?/binned_*_?.bin res_?/binned_*_?.seg res_?/binned_*_?.pt

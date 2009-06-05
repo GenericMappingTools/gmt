@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract_all.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_extract_all.c,v 1.3 2009-06-05 00:25:12 guru Exp $
  */
 /* 
  *
@@ -16,7 +16,7 @@ int main (int argc, char **argv)
 {
 	FILE	*fp_in, *fp;
 	int	i, n_id, k, pos, subset = 0;
-	double w, e, s , n, x, y;
+	double w = 0.0, e = 0.0, s = 0.0 , n = 0.0, x, y;
 	struct	LONGPAIR p;
 	char file[80];
         

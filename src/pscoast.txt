@@ -8,16 +8,16 @@
 pscoast \- To plot land-masses, water-masses, coastlines, borders, and rivers
 .SH SYNOPSIS
 \fBpscoast\fP GMT_J_OPT GMT_Rgeo_OPT 
-[ OPT(A)\fImin_area\fP[\fI/min_level/max_level\fP] ] [ GMT_B_OPT ] [ OPT(C)\fIfill\fP ] [ OPT(D)\fIresolution\fP[\fB+\fP] ] 
-[ GMT_E_OPT ] [ OPT(G)\fIfill\fP|\fBc\fP ] 
+[ GMT_A_OPT ] [ GMT_B_OPT ] [ OPT(C)[\fBl\fP|\fBr\fP/]\fIfill\fP ] 
+[ OPT(D)\fIresolution\fP[\fB+\fP] ] [ GMT_E_OPT ] [ OPT(G)\fIfill\fP|\fBc\fP ] 
 [ OPT(I)\fIriver\fP[/\fIpen\fP] ] [ GMT_Jz_OPT ] [ GMT_K_OPT ] 
 [ GMT_SCALE ] [ GMT_O_OPT ] [ OPT(N)\fIborder\fP[/\fIpen\fP] ] [ GMT_O_OPT ] 
 [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)\fIfill\fP|\fBc\fP ] [ GMT_TROSE ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
-[ OPT(W)\fIpen\fP ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
+[ OPT(W)[\fIlevel\fP/]\fIpen\fP ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)\fIzlevel\fP ] [ GMT_c_OPT ] [ GMT_bo_OPT ] [ GMT_mo_OPT ]
 .SH DESCRIPTION
 \fBpscoast\fP plots grayshaded, colored, or textured land-masses [or water-masses] on maps and [optionally]
 draws coastlines, rivers, and political boundaries.  Alternatively, it can (1) issue clip paths that will
-contain all land or all water areas, or (2) dump the data to an ASCII table.  The datafiles come in 5 different resolutions:
+contain all land or all water areas, or (2) dump the data to an ASCII table.  The data files come in 5 different resolutions:
 (\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, and (\fBc\fP)rude.  The full resolution files amount to more than 55 Mb
 of data and provide great detail; for maps of larger geographical extent it is more economical to use
 one of the other resolutions.  If the user selects to paint the land-areas and does not specify fill of
@@ -31,11 +31,15 @@ No space between the option flag and the associated arguments.
 .TP
 OPT(A)
 Features with an area smaller than \fImin_area\fP in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP
-will not be plotted [Default is 0/0/4 (all features)]. See DATABASE INFORMATION below for more details.
+will not be plotted.  Level 2 (lakes) contains regular lakes and wide river bodies which we normally include as lakes; append \fB+r\fP to just get
+river-lakes or \fB+l\fP to just get regular lakes. [Default is 0/0/4 (all features)].
+See GSHHS INFORMATION below for more details.
 #include "explain_-B_short.txt"
 .TP
 OPT(C)
-Set the shade, color, or pattern for lakes  [Default is the fill chosen for "wet" areas (OPT(S))].
+Set the shade, color, or pattern for lakes and river-lakes  [Default is the fill chosen for "wet" areas (OPT(S))].
+Optionally, specify separate fills by prepending \fBl\fP/ for lakes and \fBr\fP/ for river-lakes, repeating
+the OPT(C) option as needed.
 (See SPECIFYING FILL below).
 .TP
 OPT(D)
@@ -119,8 +123,12 @@ or use OPT(Sc) for clipping [Default is no fill].
 #include "explain_-V.txt"
 .TP
 OPT(W)
-Draw coastlines [Default is no coastlines].  Append pen attributes  [Defaults:
-width = 1, color = black, texture = solid].
+Draw shorelines [Default is no shorelines].  Append pen attributes  [Defaults:
+width = 1, color = black, texture = solid] which apply to all four levels.  To set
+the pen for each level differently, prepend \fIlevel\fP/, where \fIlevel\fP is 1-4
+and represent coastline, lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
+Repeat OPT(W) as needed.  When specific level pens are set, those not listed will not
+be drawn [Default draws all levels; but see OPT(A)].
 (See SPECIFYING PENS below).
 #include "explain_-XY.txt"
 .TP
@@ -160,25 +168,13 @@ seen over land, using a Mercator map at scale LEN_1 inch/degree, use
 \fBgrdimage\fP SCALE_M1 etopo5.grd OPT(C)colors.cpt OPT(O) OPT(K) >> africa.ps
 .br
 \fBpscoast\fP OPT(Q) OPT(O) >> africa.ps
-.SH DATABASE INFORMATION
-The coastline database is GSHHS which is compiled from two sources: World Vector Shorelines (WVS) and CIA World Data Bank II (WDBII).
-In particular, all level-1 polygons (ocean-land boundary) are derived from the more accurate WVS while all higher level polygons
-(level 2-4, representing land/lake, lake/island-in-lake, and island-in-lake/lake-in-island-in-lake boundaries) are
-taken from WDBII.  Much processing has taken place to convert WVS and WDBII data into usable form for \fBGMT\fP:
-assembling closed polygons from line segments, checking for duplicates, and correcting for crossings between
-polygons.  The area of each polygon has been determined so that the user
-may choose not to draw features smaller than a minimum area (see OPT(A)); one may also limit the highest hierarchical level of
-polygons to be included (4 is the maximum).  The 4 lower-resolution databases were derived from the full resolution
-database using the Douglas-Peucker line-simplification algorithm.  The classification of rivers and borders follow
-that of the WDBII.  See the \fBGMT\fP Cookbook and Technical Reference Appendix K for
-further details.
-.br
 .sp
 \fBpscoast\fP will first look for coastline files in directory \fB$GMT_SHAREDIR\fP/coast
 If the desired file is not found, it will look for the file
 \fB$GMT_SHAREDIR\fP/coastline.conf.  This file may contain any number of records that
 each holds the full pathname of an alternative directory.  Comment lines (#) and blank lines
 are allowed.  The desired file is then sought for in the alternate directories.
+#include "explain_gshhs.txt"
 .SH BUGS
 The options to fill (OPT(C) OPT(G) OPT(S)) may not always work if the Azimuthal equidistant projection is
 chosen (OPT(Je)|\fBE\fP).  If the antipole of the projection is in the oceans it will most likely work.
