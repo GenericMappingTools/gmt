@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.45 2009-06-05 00:25:12 guru Exp $
+#	$Id: Makefile,v 1.46 2009-06-05 04:10:16 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -59,8 +59,8 @@ PROGS_O	= border_to_bins.o ciaman_fix.o line_shrink.o linemaker.o swap.o \
 	  polygon_extract_all.o polygon_final_info.o polygon_findarea.o polygon_findlevel.o \
 	  polygon_findlevel2.o polygon_fix.o polygon_fixlevel.o polygon_get.o \
 	  polygon_id.o polygon_merge.o polygon_report.o polygon_restore.o  segment_restore.o \
-	  polygon_set.o polygon_setnodes.o polygon_setwesn.o polygon_shrink.o \
-	  polygon_sort.o polygon_stats.o polygon_to_bins.o polygon_to_gshhs.o  polygon_hierarchy.o \
+	  polygon_set.o polygon_setnodes.o polygon_setwesn.o polygon_shrink.o polygon_match.o\
+	  polygon_sort.o polygon_stats.o polygon_to_bins.o polygon_to_gshhs.o polygon_hierarchy.o \
 	  polygon_update.o polygon_xover.o read_wvs.o river_fix.o segment_clean.o \
 	  segment_connect.o segment_dump.o segment_final_dump.o segment_report.o \
 	  shoremaker.o wvs_crosscheck.o wvs_segment_dump.o wvs_segment_restore2.o
