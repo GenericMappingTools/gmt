@@ -1,13 +1,29 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.532 2009-06-04 07:43:27 guru Exp $
+	$Id: ChangeLog,v 1.533 2009-06-05 00:25:11 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-06-03	pwessel
+	* pscoast.c:		-C[l|r/]<fill> offers to paint river-lakes separately from lakes.
+						The -A option can be used to exclude riverlakes or lakes for level 2.
+						-W now allows different pens for the 4 levels of lines.
+	* explain_gshhs.txt	New include file for man pages for programs using GSHHS.
+	* gmtselect.c:		Same upgrade to -A option as pscoast
+	* grdlandmask.c:	Same upgrade to -A option as pscoast
+	* gmt_init.c:		New function GMT_GSHHS_syntax to explain -A option for three programs.
+	* gmt_shore.c:		Now looks for a version attribute in the GSHHS file that is reported
+						when pscoast -Vl is used.  New treatment of riverlakes as special lakes.
+	* gshhs/gshhs.*:	Header structure format for GSHHS 1.11 has changed to include two new
+						integers: parent (the id of the containing polygon, or -1), and river
+						(1 if a lake is a riverlake, 0 otherwise).
+	* GSHHS*:			New version 1.11 that fixes the problem with permanent rivers introduced
+						after GMT 4.2.0.  Also corrects gross errors near the mouth of the
+						Amazon river.  GMT works with either GSHHS 1.11 or earlier but any
+						option pertaining to riverlakes are ignored with older versions.
 	* mgd77/mgd77.c:	Converting files from netCDF to MGD77 where time = NaN gave junk records.
-	* misc/dimfilter.c:	New program that does directional spatial filtering.
+	* misc/dimfilter.c:	New program for directional spatial filtering.
 
 2009-06-02	remko
-	* pslegend.c:		> record no longer needed before T; T, L, S, H alignment harmonised;
+	* pslegend.c:		> record no longer needed before T; T, L, S, H alignment harmonized;
 				I, M, B spacing improved; -B option added.
 	* pslegend.txt:		Updated example conform test/pslegend/legend.sh; added info on which
 				font(size)s are used; added -B option.

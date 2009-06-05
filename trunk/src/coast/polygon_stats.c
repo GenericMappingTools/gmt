@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_stats.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_stats.c,v 1.3 2009-06-05 00:25:12 guru Exp $
  */
 /* 
  *	polygon_stats finds the average point spacing
@@ -12,11 +12,11 @@
 int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	n = 0, k, nk[12], i_max;
+	int	n = 0, k, nk[12], i_max = 0;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
 	double ds, sum = 0.0, sum2 = 0.0, x0, x1, y0, y1;
-	double ds_min, ds_max, dx;
+	double ds_min = 0.0, ds_max = 0.0, dx;
         
 	if (argc == 1) {
 		fprintf(stderr,"usage:  polygon_stats polygons.b\n");

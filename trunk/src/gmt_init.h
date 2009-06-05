@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.80 2009-05-13 21:06:41 guru Exp $
+ *	$Id: gmt_init.h,v 1.81 2009-06-05 00:25:11 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -49,6 +49,7 @@ EXTERN_MSC void GMT_cont_syntax (GMT_LONG indent, GMT_LONG kind);
 EXTERN_MSC void GMT_default_error (char option);
 EXTERN_MSC void GMT_end (int argc, char **argv);
 EXTERN_MSC void GMT_explain_option (char option);
+EXTERN_MSC void GMT_GSHHS_syntax (char option, char *string);
 EXTERN_MSC void GMT_mapscale_syntax (char option, char *string);
 EXTERN_MSC void GMT_maprose_syntax (char option, char *string);
 EXTERN_MSC void GMT_fill_syntax (char option, char *string);

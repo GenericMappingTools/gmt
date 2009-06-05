@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel2.c,v 1.7 2007-05-09 00:30:57 pwessel Exp $
+ *	$Id: polygon_findlevel2.c,v 1.8 2009-06-05 00:25:12 guru Exp $
  */
 #include "wvs.h"
 
@@ -18,7 +18,7 @@ struct LONGPAIR *pp;
 int debug = 1;
 
 int main (int argc, char **argv) {
-	int i, j, k, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, n_of_this[10];
+	int i, j, k, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n = 0, n_of_this[10];
 	int n_reset = 0, old, bad = 0, ix0, off, set, n_yikes = 0, n_id1, not_read;
 	double x0, west1, west2, east1, east2, size, val;
 	FILE *fp, *fp2, *fp3, *fpx, *fp_in;

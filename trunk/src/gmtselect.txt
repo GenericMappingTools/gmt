@@ -3,7 +3,7 @@
 .SH NAME
 gmtselect \- Select data subsets based on multiple spatial criteria 
 .SH SYNOPSIS
-\fBgmtselect\fP [ \fIinfiles\fP ] [ OPT(A)\fImin_area\fP[/\fImin_level/max_level\fP] ] 
+\fBgmtselect\fP [ \fIinfiles\fP ] [ GMT_A_OPT ] 
 [ OPT(C)[\fBf\fP]\fIdist/ptfile\fP ] [ OPT(D)\fIresolution\fP[\fB+\fP] ] [ OPT(F)\fIpolygonfile\fP ] 
 [ GMT_H_OPT ] [ OPT(I)[\fBcflrs\fP] ] [ GMT_J_OPT ] [ OPT(L)[\fBp\fP]\fIdist/linefile\fP ] 
 [ OPT(N)\fImaskvalues\fP[\fBo\fP] ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ OPT(Z)\fImin/max\fP] ] 
@@ -152,6 +152,7 @@ To return all points in stations.d that are within 5 cm of the point in origin.d
 .br
 .sp
 \fBgmtselect\fP stations.d OPT(F)origin.d OPT(R)20/50/-10/20 OPT(JM)20c > subset2
+#include "explain_gshhs.txt"
 .SH "SEE ALSO"
 .IR gmtdefaults (1),
 .IR GMT (1),

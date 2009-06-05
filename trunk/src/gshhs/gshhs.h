@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.22 2009-05-28 21:17:29 guru Exp $
+/*	$Id: gshhs.h,v 1.23 2009-06-05 00:25:12 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -39,6 +39,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <math.h>
 
 #ifdef WIN32
@@ -75,7 +76,7 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	int west, east, south, north;	/* min/max extent in micro-degrees */
 	int area;			/* Area of polygon in 1/10 km^2 */
 	int parent;			/* Id of parent polygon that encloses this pollygon (-1 if none) */
-	int unused;			/* Presently not used */
+	int river;			/* Set to 1 if level = 2 and this is a riverlake */
 };
 
 struct	POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte integer format */

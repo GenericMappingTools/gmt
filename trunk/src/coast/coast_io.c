@@ -1,15 +1,50 @@
 /*
- *	$Id: coast_io.c,v 1.6 2009-05-28 03:21:53 guru Exp $
+ *	$Id: coast_io.c,v 1.7 2009-06-05 00:25:11 guru Exp $
  */
 #define COASTLIB 1
 #include "wvs.h"
+
+/* These two are local native versions */
+
+int pol_readheader (struct GMT3_POLY *h, FILE *fp)
+{
+	int n;
+	n = fread ((void *)h, sizeof (struct GMT3_POLY), 1, fp);
+	return (n);
+}
+
+int pol_writeheader (struct GMT3_POLY *h, FILE *fp)
+{
+	int n;
+	n = fwrite ((void *)h, sizeof (struct GMT3_POLY), 1, fp);
+	return (n);
+}
+
+int pol_fread (struct LONGPAIR *p, size_t n_items, FILE *fp)
+{
+	int n;
+
+	n = fread ((void *)p, sizeof (struct LONGPAIR), n_items, fp);
+	return (n);
+}
+
+int pol_fwrite (struct LONGPAIR *p, size_t n_items, FILE *fp)
+{
+	int n;
+	n = fwrite ((void *)p, sizeof (struct LONGPAIR), n_items, fp);
+	return (n);
+}
+
+/* Down here lies the ones we use to build the GSHHS distribution files
+ * which must be BIGENDIAN.  Only polygon_to_gshhs.c uses these directly
+*/
 
 #if WORDS_BIGENDIAN == 0
 void swab_polheader (struct GMT3_POLY *h);
 void swab_polpoints (struct LONGPAIR *p, int n);
 #endif
 
-int pol_readheader (struct GMT3_POLY *h, FILE *fp)
+int pol_readheader2 (struct GMT3_POLY *h, FILE *fp)
 {
 	int n;
 	n = fread ((void *)h, sizeof (struct GMT3_POLY), 1, fp);
@@ -19,7 +54,7 @@ int pol_readheader (struct GMT3_POLY *h, FILE *fp)
 	return (n);
 }
 
-int pol_writeheader (struct GMT3_POLY *h, FILE *fp)
+int pol_writeheader2 (struct GMT3_POLY *h, FILE *fp)
 {
 	int n;
 	struct GMT3_POLY *use_h;
@@ -35,7 +70,7 @@ int pol_writeheader (struct GMT3_POLY *h, FILE *fp)
 	return (n);
 }
 
-int pol_fread (struct LONGPAIR *p, size_t n_items, FILE *fp)
+int pol_fread2 (struct LONGPAIR *p, size_t n_items, FILE *fp)
 {
 	int n;
 
@@ -46,7 +81,7 @@ int pol_fread (struct LONGPAIR *p, size_t n_items, FILE *fp)
 	return (n);
 }
 
-int pol_fwrite (struct LONGPAIR *p, size_t n_items, FILE *fp)
+int pol_fwrite2 (struct LONGPAIR *p, size_t n_items, FILE *fp)
 {
 	int n;
 #if WORDS_BIGENDIAN == 0

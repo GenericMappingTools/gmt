@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_synopsis.h,v 1.11 2009-04-18 03:32:49 guru Exp $
+ *	$Id: gmt_synopsis.h,v 1.12 2009-06-05 00:25:11 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,6 +71,9 @@
 
 /* Options for pseudo perspective views */
 #define GMT_E_OPT       "-E<azim>/<elev>[+w<lon>/<lat>[<z>][+v<x0>/<y0>]"
+
+/* Options for coastline extraction  */
+#define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+r|l]"
 
 /* Used in tools that sets grdheader information via a -D option */
 

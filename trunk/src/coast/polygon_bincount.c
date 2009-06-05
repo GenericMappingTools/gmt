@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_bincount.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_bincount.c,v 1.3 2009-06-05 00:25:12 guru Exp $
  */
 /* 
  *	polygon_bincount calculates # points pr bin
@@ -10,7 +10,7 @@
 int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	k, i, j, iw, nbins, *bin, *tmp, bwidth;
+	int	k, i, j = 0, iw, nbins, *bin, *tmp, bwidth;
 	double w;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;

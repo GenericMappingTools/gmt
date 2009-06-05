@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.2 2009-06-04 01:45:54 guru Exp $
+ * $Id: dimfilter.c,v 1.3 2009-06-05 00:25:12 guru Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -201,7 +201,7 @@ fout2 = NULL;
 		fprintf (stderr, "%s %s - Directional filtering of 2-D grdfiles in the Space domain\n\n", GMT_program, GMT_VERSION);
 		fprintf(stderr,"usage: %s input_file -D<distance_flag> -F<type><filter_width>\n", GMT_program);
 		fprintf(stderr,"\t-G<output_file> -N<type><n_sectors> [-I<xinc>[m|c][/<yinc>[m|c]] ]\n");
-		fprintf(stderr,"\t[-R<west/east/south/north>] [-T] [-V] [-Q<cols>]\n");
+		fprintf(stderr,"\t[-Q<cols>] [-R<west/east/south/north>] [-T] [-V]\n");
 		
 		if (GMT_give_synopsis_and_exit) exit (EXIT_FAILURE);
 		
@@ -226,15 +226,15 @@ fout2 = NULL;
 		fprintf(stderr,"\t-I for new Increment of output grid; enter xinc, optionally xinc/yinc.\n");
 		fprintf(stderr,"\t   Default is yinc = xinc.  Append an m [or c] to xinc or yinc to indicate minutes [or seconds];\n");
 		fprintf(stderr,"\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
+		fprintf(stderr,"\t-Q is for the error analysis mode and requires the total number of depth columns in the input file.\n");
+		fprintf(stderr, "\t-R for new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 #ifdef OBSOLETE							
 		fprintf(stderr,"\t-S sets output name for standard error grdfile and implies that we will compute a 2nd grid with\n");
 		fprintf(stderr,"\t   a statistical measure of deviations from the average value.  For the convolution filters this\n");
 		fprintf(stderr,"\t   yields the standard deviation while for the median/mode filters we use MAD\n");
 #endif		
 		fprintf(stderr, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration]\n");
-		fprintf(stderr, "\t-R for new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 		GMT_explain_option ('V');
-		fprintf(stderr,"\t-Q is for the error analysis mode and requires the total number of depth columns in the input file.\n");
 		exit (EXIT_FAILURE);
 	}
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.397 2009-05-31 20:48:04 guru Exp $
+ *	$Id: gmt_init.c,v 1.398 2009-06-05 00:25:11 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -735,6 +735,15 @@ void GMT_mapscale_syntax (char option, char *string)
 	fprintf (stderr, "\t   By default, the label is set to the distance unit and placed on top [+jt].  Use the +l<label>\n");
 	fprintf (stderr, "\t   and +j<just> mechanisms to specify another label and placement (t,b,l,r).  +u sets the label as a unit.\n");
 	fprintf (stderr, "\t   Append +p<pen> and/or +f<fill> to draw/paint a rectangle behind the scale [no rectangle]\n");
+}
+
+void GMT_GSHHS_syntax (char option, char *string)
+{
+	if (string[0] == ' ') fprintf (stderr, "%s: GMT SYNTAX ERROR -%c option.  Correct syntax:\n", GMT_program, option);
+	fprintf (stderr, "\t-%c %s\n", option, string);
+	fprintf (stderr, "\t   Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels\n");
+	fprintf (stderr, "\t   will be skipped [0/4 (4 means lake inside island inside lake)].\n");
+	fprintf (stderr, "\t   Append +r to only get riverlakes from level 2, or +l to only get lakes [both].\n");
 }
 
 void GMT_maprose_syntax (char option, char *string)

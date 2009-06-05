@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.21 2009-05-28 02:42:30 guru Exp $
+/*	$Id: gshhstograss.c,v 1.22 2009-06-05 00:25:12 guru Exp $
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
@@ -219,7 +219,7 @@ int main (int argc, char **argv)
 			h.area = swabi4 ((unsigned int)h.area);
 			h.flag = swabi4 ((unsigned int)h.flag);
 			h.parent  = swabi4 ((unsigned int)h.parent);
-			h.unused  = swabi4 ((unsigned int)h.unused);
+			h.river  = swabi4 ((unsigned int)h.river);
 		}
 		level = h.flag & 255;
 		version = (h.flag >> 8) & 255;

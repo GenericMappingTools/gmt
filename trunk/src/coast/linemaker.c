@@ -1,5 +1,5 @@
 /*
- *	$Id: linemaker.c,v 1.10 2009-01-26 14:10:41 guru Exp $
+ *	$Id: linemaker.c,v 1.11 2009-06-05 00:25:11 guru Exp $
  */
 /*
  *
@@ -41,9 +41,10 @@ struct GMT3_BIN_HEADER {
 
 int main (int argc, char **argv)
 {
-	int i, dims, counts[16];
+	int i, dims, kind, counts[16];
 	int *bin_firstseg, *seg_start;
 	short *bin_nseg, *seg_n, *seg_level, *pt_dx, *pt_dy;
+	char *name[2] = {"Political boundaries", "Rivers"};
 	
 	size_t start, count;
 	
@@ -53,27 +54,29 @@ int main (int argc, char **argv)
 	
 	argc = GMT_begin (argc, argv);
 
-	if (argc != 2) {
-		fprintf (stderr, "usage: linemaker shore_prefix\n");
-		exit (-1);
+	if (argc < 2) {
+		fprintf (stderr, "usage: linemaker line_prefix [b|r]\n");
+		fprintf (stderr, "	b = border, r = river [b]\n");
+		exit (EXIT_FAILURE);
 	}
 	
 	prefix = argv[1];
+	kind = (argc == 3 && argv[2][0] == 'r') ? 1 : 0;
 	
 	sprintf (file, "%s.bin", prefix);
 	if ((fp_bin = fopen (file, "rb")) == NULL) {
-		fprintf (stderr, "linemaker:  Cannot open shore bin file %s\n", file);
-		exit (-1);
+		fprintf (stderr, "linemaker:  Cannot open %s bin file %s\n", name[kind], file);
+		exit (EXIT_FAILURE);
 	}
 	sprintf (file, "%s.seg", prefix);
 	if ((fp_seg = fopen (file, "rb")) == NULL) {
-		fprintf (stderr, "linemaker:  Cannot open shore seg file %s\n", file);
-		exit (-1);
+		fprintf (stderr, "linemaker:  Cannot open %s seg file %s\n", name[kind], file);
+		exit (EXIT_FAILURE);
 	}
 	sprintf (file, "%s.pt", prefix);
 	if ((fp_pt = fopen (file, "rb")) == NULL) {
-		fprintf (stderr, "linemaker:  Cannot open shore point file %s\n", file);
-		exit (-1);
+		fprintf (stderr, "linemaker:  Cannot open %s point file %s\n", name[kind], file);
+		exit (EXIT_FAILURE);
 	}
 		
 	sprintf (file, "%s.cdf", prefix);
@@ -85,7 +88,7 @@ int main (int argc, char **argv)
 
 	if (fread ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), (size_t)1, fp_bin) != 1) {
 		fprintf (stderr, "linemaker:  Error reading file header\n");
-		exit (-1);
+		exit (EXIT_FAILURE);
 	}
 	
 	s.bin_size = file_head.bsize;
@@ -102,7 +105,7 @@ int main (int argc, char **argv)
 	
 		if (fread ((void *)&bin_head, sizeof (struct GMT3_BIN_HEADER), (size_t)1, fp_bin) != 1) {
 			fprintf (stderr, "linemaker:  Error reading bin header %d\n", i);
-			exit (-1);
+			exit (EXIT_FAILURE);
 		}
 		
 		bin_firstseg[i] = bin_head.first_seg_id;
@@ -121,13 +124,13 @@ int main (int argc, char **argv)
 	
 		if (fread ((void *)&seg_head, sizeof (struct SEGMENT_HEADER), (size_t)1, fp_seg) != 1) {
 			fprintf (stderr, "linemaker:  Error reading seg header %d\n", i);
-			exit (-1);
+			exit (EXIT_FAILURE);
 		}
 		
 		seg_n[i] = seg_head.n;
 		counts[seg_head.level]++;
-		/* Note: levels 5 have already been reset to 1 by lines_to_bins */
-		switch (seg_head.level) {	/* Reset level info to go 1-10 */
+		switch (seg_head.level) {	/* Reset level info to go 0-10 */
+			case 0:
 			case 1:
 			case 2:
 			case 3:
@@ -208,13 +211,15 @@ int main (int argc, char **argv)
 
 	/* assign attributes */
 	
-	strcpy (s.title, "Political boundaries derived from CIA WDB-II data");
-	sprintf (s.source, "Processed by Paul Wessel and Walter H. F. Smith, 1994-%d, GSHHS v%s", YEAR, DVER);
+	sprintf (s.title, "%s derived from CIA WDB-II data", name[kind]);
+	sprintf (s.source, "Processed by Paul Wessel and Walter H. F. Smith, 1994-%d", YEAR);
+	sprintf (s.version, "%s", DVER);
 
 	GMT_err_fail (nc_put_att_text (s.cdfid, s.pt_dx_id, "units", strlen(s.units), s.units), file);
 	GMT_err_fail (nc_put_att_text (s.cdfid, s.pt_dy_id, "units", strlen(s.units), s.units), file);
 	GMT_err_fail (nc_put_att_text (s.cdfid, NC_GLOBAL, "title", strlen(s.title), s.title), file);
 	GMT_err_fail (nc_put_att_text (s.cdfid, NC_GLOBAL, "source", strlen(s.source), s.source), file);
+	GMT_err_fail (nc_put_att_text (s.cdfid, NC_GLOBAL, "version", strlen(s.version), s.version), file);
 
 	/* leave define mode */
 	
@@ -259,5 +264,5 @@ int main (int argc, char **argv)
 	
 	GMT_end (argc, argv);
 	
-	exit (0);
+	exit (EXIT_SUCCESS);
 }

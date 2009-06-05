@@ -1,5 +1,5 @@
 /*
- *	$Id: read_wvs.c,v 1.5 2006-10-30 04:19:03 pwessel Exp $
+ *	$Id: read_wvs.c,v 1.6 2009-06-05 00:25:12 guru Exp $
  */
 /***************************************************************************/
 /*WDBPLTC.C-reads and plots compressed coastlines                          */
@@ -177,7 +177,7 @@ double slatd, slatm, nlatd, nlatm, wlond, wlonm, elond, elonm, scale;
   void nxtrec(), movpos(), pltpro();
 
   short ioff, i, j, col, go, stop, inc, slat, nlat, wlon, elon, segcnt,
-    rank, cont, cnt, gap, latsec, lonsec;
+    rank = 0, cont, cnt, gap, latsec, lonsec;
     long latoff, lonoff, conbyt;
   char eflag, first;
   double todeg, lat=0., lon=0.;

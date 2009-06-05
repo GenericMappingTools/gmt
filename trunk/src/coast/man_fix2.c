@@ -1,5 +1,5 @@
 /*
- *	$Id: man_fix2.c,v 1.4 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: man_fix2.c,v 1.5 2009-06-05 00:25:12 guru Exp $
  */
 #include "wvs.h"
 
@@ -13,7 +13,7 @@ struct BURP {
 } x[1040];
 
 int main (int argc, char **argv) {
-	int i = 0, j, k, n_id, id, np, ncut = 0, sort_on_np();
+	int i = 0, j, k, n_id, id, np = 0, ncut = 0, sort_on_np();
 	int go[2];
 	int w, e, s, n;
 	FILE *fp, *fp_bad, *fp_in, *fp_fix, *fpj;

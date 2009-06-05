@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.18 2009-05-28 02:42:30 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.19 2009-06-05 00:25:12 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -94,7 +94,7 @@ int main (int argc, char **argv)
 			h.area  = swabi4 ((unsigned int)h.area);
 			h.flag   = swabi4 ((unsigned int)h.flag);
 			h.parent  = swabi4 ((unsigned int)h.parent);
-			h.unused  = swabi4 ((unsigned int)h.unused);
+			h.river  = swabi4 ((unsigned int)h.river);
 		}
 		level = h.flag && 255;
 		version = (h.flag >> 8) & 255;

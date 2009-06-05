@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.10 2008-12-09 17:45:22 guru Exp $
+ *	$Id: polygon_to_bins.c,v 1.11 2009-06-05 00:25:12 guru Exp $
  */
 #include "wvs.h"
 
@@ -57,7 +57,7 @@ int main (int argc, char **argv) {
 	
 	int i, k, kk, test_long, nn, np, j, n_alloc, start_i, i_x_1, i_x_2, i_y_1, i_y_2, nbins, b;
 	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod;
-	int x_x_c, x_y_c, y_x_c, y_y_c, last_x_bin, x_x_index, i_x_3, i_y_3, x_origin, y_origin;
+	int x_x_c = 0, x_y_c = 0, y_x_c = 0, y_y_c = 0, last_x_bin, x_x_index, i_x_3, i_y_3, x_origin, y_origin;
 	int noise, se, ne, nw, zero, one, two, three, ij, n, comp_segments(), skip = 0, BSIZE, BIN_NX, BIN_NY, B_WIDTH;
 	int n_id = 0,  n_corner = 0, jump = 0, add = 0, n_seg = 0, ns, nclose = 0, n_x_exact = 0, n_y_exact = 0;
 	
@@ -102,6 +102,9 @@ int main (int argc, char **argv) {
 	
 	/* Allocate bin array  */
 	
+#ifdef DEBUG
+	GMT_memtrack_off (GMT_mem_keeper);
+#endif
 	bin = (struct BIN *) GMT_memory(VNULL, nbins, sizeof(struct BIN), "polygon_to_bins");
 
 	last_x_bin = BIN_NX - 1;
@@ -111,8 +114,14 @@ int main (int argc, char **argv) {
 		n_id++;
 		n_init += h.n;
 
-		if (h.id%100 == 0) fprintf (stderr,"polygon_to_bins:  Binning polygon %d\r", h.id);
-		
+		/*if (h.id%100 == 0) { */
+		if (h.id%1 == 0) {
+			fprintf (stderr,"polygon_to_bins:  Binning polygon %d\r", h.id);
+			k = 0;
+		}
+		if (h.id == 1046) {
+			k = 0;
+		}
 		n_alloc = h.n + 1;
 		ix = (int *) GMT_memory (VNULL, n_alloc, sizeof (int), "polygon_to_bins");
 		iy = (int *) GMT_memory (VNULL, n_alloc, sizeof (int), "polygon_to_bins");
@@ -327,6 +336,7 @@ int main (int argc, char **argv) {
 			s->entry = 4;
 			s->exit = 4;
 			s->p_area = rint (h.area * 10.0);	/* Store area in 1/10 of 1 km^2 */
+			if (h.river) s->p_area = -s->p_area;	/* River-lakes are marked by negative area */
 			s->p = (struct SHORT_PAIR *)GMT_memory(VNULL, s->n, sizeof(struct SHORT_PAIR), "polygon_to_bins");
 			for (k = 0; k < s->n; k++) {
 				/* Don't forget that this modulo calculation for DX doesn't work when you have a right/top edge (this wont happen for this polygon though !!!   */
@@ -403,6 +413,7 @@ int main (int argc, char **argv) {
 				else
 					s->exit = (i_y_2 == i_y_3) ? 0 : 2;
 				s->p_area = rint (h.area * 10.0);	/* Store area in 1/10 of 1 km^2 */
+				if (h.river) s->p_area = -s->p_area;	/* River-lakes are marked by negative area */
 
 				/* Write from last_i through i, inclusive, into this bin:  */
 				
@@ -588,6 +599,9 @@ int main (int argc, char **argv) {
 	if (nclose) fprintf (stderr, "polygon_to_bins: %d polygons not closed?\n", nclose);
 	if (skip) fprintf (stderr, "polygon_to_bins: %d polygons with 2 points only on same side removed\n", skip);
 		
+#ifdef DEBUG
+	GMT_memtrack_on (GMT_mem_keeper);
+#endif
 	exit (0);
 }
 

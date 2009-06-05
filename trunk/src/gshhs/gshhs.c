@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.25 2009-05-28 02:42:29 guru Exp $
+/*	$Id: gshhs.c,v 1.26 2009-06-05 00:25:12 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -19,6 +19,8 @@
  *		1.7 11-NOV-2006: Fixed bug in computing level (&& vs &)
  *		1.8 31-MAR-2007: Updated to deal with latest GSHHS database (1.5)
  *		1.9 27-AUG-2007: Handle line data as well as polygon data
+ *		1.12 30-MAY-2009: Now contains information on parent polygon and
+ *			a flag to tell if a lake is a riverlake.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -100,7 +102,7 @@ int main (int argc, char **argv)
 			h.area  = swabi4 ((unsigned int)h.area);
 			h.flag  = swabi4 ((unsigned int)h.flag);
 			h.parent  = swabi4 ((unsigned int)h.parent);
-			h.unused  = swabi4 ((unsigned int)h.unused);
+			h.river  = swabi4 ((unsigned int)h.river);
 		}
 		level = h.flag & 255;
 		version = (h.flag >> 8) & 255;
@@ -111,6 +113,7 @@ int main (int argc, char **argv)
 		s = h.south * GSHHS_SCL;
 		n = h.north * GSHHS_SCL;
 		source = (src == 1) ? 'W' : 'C';	/* Either WVS or CIA (WDBII) pedigree */
+		if (h.river) source = tolower ((int)source);
 		line = (h.area) ? 0 : 1;		/* Either Polygon (0) or Line (1) (if no area) */
 		area = 0.1 * h.area;			/* Now im km^2 */
 

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract.c,v 1.8 2007-03-12 19:52:26 remko Exp $
+ *	$Id: polygon_extract.c,v 1.9 2009-06-05 00:25:12 guru Exp $
  */
 /* 
  *
@@ -14,7 +14,7 @@ struct CHECK {
 
 int main (int argc, char **argv)
 {
-	FILE	*fp_in, *fp;
+	FILE	*fp_in, *fp = NULL;
 	int	i, j, id, n_id, k, pos, start = 2, multi = FALSE, bin = FALSE, individual = FALSE;
 	struct	LONGPAIR p;
 	char file[80];
