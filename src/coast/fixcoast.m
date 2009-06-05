@@ -1,18 +1,22 @@
 function fixcoast (id1,idfix)
 % FIXCOAST
-%	$Id: fixcoast.m,v 1.6 2009-06-05 00:25:11 guru Exp $
+%	$Id: fixcoast.m,v 1.7 2009-06-05 06:09:12 guru Exp $
 %
-% Give the id of the polygon to be fixed.  The polygon.id
-% file will be overwritten with the changed polygon,  Optionally,
-% Give a second id; that polygon is just plotted for reference.
+% Give the id of the polygon to be fixed.  A file polygon.id.new
+% will be create with the new, modified polygon,  Optionally,
+% give a second id; that polygon is just plotted for reference.
 %
 % The following click-types are supported:
-%   L = Delete nearest point
-%   M = Move the nearest point to clicked point
-%   R = Insert the clicked point bewteen the two nearest points
-%   <space> = ends the editing and saves file
+%   d = Delete nearest point (or Left mouse click)
+%   i = Insert new point between 2 nearest (or Right mouse click)
+%   m = move point
+%   z = allow zoom level to be changed
+%   r = reverse direction of polygon
+%   q = ends the editing and saves file
 
-% Remember that polygons are closed so x(n) == x(1)
+% Remember that all polygons are closed so x(n) == x(1)
+
+% Read in one (or two) polygons
 file1 = ['polygon.' num2str(id1)];
 load (file1)
 x1 = polygon(:,1);
@@ -23,16 +27,16 @@ if (nargin == 2)
 	x2 = polygon(:,1);
 	y2 = polygon(:,2);
 end
+% Plot in figure 1 polygon 1 as green line with blue circles at points
 figure(1)
 clf
 pl = plot (x1, y1, 'g-');
 hold on
 grid on
 pp = plot (x1, y1, '.');
+% Plot polygon 2 as black line with black circles at points
 if (nargin == 2)
 	plot (x2, y2, 'k-');
-end
-if (nargin == 2)
 	plot (x2, y2, 'k.');
 end
 title ('Zoom in if you need to - then hit return to continue')
@@ -40,7 +44,7 @@ pause
 title ('Click to start editing - hit q to quit')
 ok=1;
 while (ok == 1)   % Until we press q
-    title ('Point and type d to delete, m to select for move, i to insert, z for zoom, q to quit')
+    title ('Point and type d to delete, m to select for move, i to insert, z for zoom, r to reverse direction, q to quit')
     [x0, y0, key] = ginput(1);
     n = length(x1);
     numbers = 1:n;
@@ -70,12 +74,17 @@ while (ok == 1)   % Until we press q
         if (abs(k(1)-k(2)) == 1)    % Consecutive neighbors
             x1 = [ x1(1:min(k)); x0; x1(max(k):n) ];
             y1 = [ y1(1:min(k)); y0; y1(max(k):n) ];
-        elseif (abs(k(1)-k(2)) == (n-2))    % Cut across end
+        elseif (abs(k(1)-k(2)) == (n-2))    % Cut across beginning/end
             x1 = [ x1(1:n1); x0; x1(1) ];
             y1 = [ y1(1:n1); y0; y1(1) ];
         end
     elseif (key == 'z') % Zoom
         title ('Zoom in if you need to - then hit return to continue')
+        pause
+    elseif (key == 'r') % Reverse direction
+	x1 = flipud (x1);
+	y1 = flipud (y1);
+        title ('Polygon was reversed - hit return to continue')
         pause
     elseif (key == 'q') % QUIT
         ok = 0;
@@ -85,6 +94,7 @@ while (ok == 1)   % Until we press q
     title ('Click to start editing - hit any key to quit')
     drawnow
 end
+% Save modified polygon to new file
 file = ['polygon.' num2str(id1) '.new'];
 fp = fopen (file, 'wt');
 A = [ x1'; y1'];
@@ -94,6 +104,7 @@ title (['Done.  Revised file saved to ' file])
 
 function pair = find_near (x, y, x0, y0)
 % Return the id's of the two nearest points
+% Quick flat-earth distances used
 r = abs ((x - x0).*cosd(0.5*(y+y0)) + sqrt(-1).*(y - y0));
 [rsort, i] = sort (r);
 pair = i(1:2);
