@@ -1,6 +1,10 @@
 /*
- *	$Id: polygon_match.c,v 1.1 2009-06-05 04:10:16 guru Exp $
+ * $Id: polygon_match.c,v 1.2 2009-06-05 04:28:32 guru Exp $
  * Compares the enw and old *.b files and looks for differences.
+ * Currently set up for old using the previous GMT3_POLY structure
+ * with endian swabbing while the new has the new structure and no
+ * sswabbing.  To use this program in the future may need to change
+ * that part.
  */
 #include "wvs.h"
 
@@ -40,6 +44,7 @@ int main (int argc, char **argv) {
 	int i, j, n_A = 0, n_B = 0, id1, id2, dx, go, ix_shift, in, n, j0;
 	double x_shift = 0.0, f;
 	char file[BUFSIZ], alarm[32];
+	BOOLEAN report_area;
 	FILE *fp;
 	struct POLYGON_NEW *new_P = NULL;
 	struct POLYGON_OLD *old_P = NULL;
@@ -47,10 +52,11 @@ int main (int argc, char **argv) {
 	argc = GMT_begin (argc, argv);
 	
 	if (argc == 1) {
-		fprintf (stderr, "usage: polygon_match new.b old.b\n");
+		fprintf (stderr, "usage: polygon_match new.b old.b [-A]\n");
+		fprintf (stderr, "	-A Do not report area mismatches\n");
 		exit (EXIT_FAILURE);
 	}
-	
+	report_area = (argc == 4 && !strcmp (argv[3], "-A")) ? FALSE : TRUE;
 #ifdef DEBUG
 	GMT_memtrack_off (GMT_mem_keeper);
 #endif
@@ -169,7 +175,7 @@ int main (int argc, char **argv) {
 			old_P[id2].brother = id1;
 			memset ((void *)alarm, 0, 32);
 			if (new_P[id1].h.id != old_P[id2].h.id) strcat (alarm, " I");			/* I = Id mismatch */
-			if (new_P[id1].h.n != old_P[id2].h.n) strcat (alarm, " #");			/* # = n mismatch */
+			if (new_P[id1].h.n != old_P[id2].h.n) strcat (alarm, " #");			/* # = number of points mismatch */
 			if (new_P[id1].h.greenwich != old_P[id2].h.greenwich) strcat (alarm, " G");	/* G = greenwich mismatch */
 			if (new_P[id1].h.level != old_P[id2].h.level) strcat (alarm, " L");		/* L = level mismatch */
 			if (new_P[id1].h.datelon != old_P[id2].h.datelon) strcat (alarm, " D");		/* D = datelon mismatch */
@@ -180,18 +186,19 @@ int main (int argc, char **argv) {
 			if (new_P[id1].h.east != old_P[id2].h.east) strcat (alarm, " E");		/* E = East mismatch */
 			if (new_P[id1].h.south != old_P[id2].h.south) strcat (alarm, " S");		/* S = South mismatch */
 			if (new_P[id1].h.north != old_P[id2].h.north) strcat (alarm, " N");		/* N = North mismatch */
-			if (new_P[id1].h.area > 0.0 && old_P[id2].h.area > 0.0) {
+			if (report_area && new_P[id1].h.area > 0.0 && old_P[id2].h.area > 0.0) {
 				f = fabs ((new_P[id1].h.area / old_P[id2].h.area) - 1.0) * 1e6;	/* ppm change */
 				if (f >= 1.0) strcat (alarm, " A");					/* A = area mismatch exceeding 1 ppm */
 			}
+			if (new_P[id1].h.river) strcat (alarm, " R");					/* R = Riverlake marking */
 			if (new_P[id1].h.n == old_P[id2].h.n && n == 1) {	/* Same number of points and matched one first point, will need to check additional points */
-				for (i = n = j0 = 0; n == i && i < new_P[id1].h.n; i++) {	/* For all points on A polygon */
+				for (i = n = j0 = 0; n == i && i < new_P[id1].h.n; i++) {		/* For all points on A polygon */
 					for (j = j0, go = TRUE; go && j < old_P[id2].h.n; j++) {	/* For all points on the B polygon */
-						if (new_P[id1].p[i].y != old_P[id2].p[j].y) continue;	/* No match */
+						if (new_P[id1].p[i].y != old_P[id2].p[j].y) continue;	/* Cannot match */
 						dx = new_P[id1].p[i].x - old_P[id2].p[j].x;
-						if (!(dx == 0 || dx == M360 || dx == -M360)) continue;	/* No match */
-						go = FALSE;	/* Found a match so stop the inner loop */
-						if (j0 == i) j0++;	/* Move j-start up one since we are done with first point */
+						if (!(dx == 0 || dx == M360 || dx == -M360)) continue;	/* Cannot match */
+						go = FALSE;						/* Found a match so stop the inner loop */
+						if (j == j0 && j == i) j0++;	/* Move j-start up one since we are done with first point */
 					}
 					if (!go) n++;		/* n increments when a matching point is found for point i */
 				}
@@ -203,13 +210,13 @@ int main (int argc, char **argv) {
 		}
 	}
 	
-	/* Free all polygons */
+	/* Free all polygons and report if something is missing */
 	for (id1 = 0; id1 < n_A; id1++) {
-		if (new_P[id1].brother == NOT_PRESENT) printf ("New %d not in old\n", id1);
+		if (new_P[id1].brother == NOT_PRESENT) printf ("New %d not in old file\n", id1);
 		GMT_free ((void *)new_P[id1].p);
 	}
 	for (id2 = 0; id2 < n_B; id2++) {
-		if (old_P[id2].brother == NOT_PRESENT) printf ("Old %d not in new\n", id2);
+		if (old_P[id2].brother == NOT_PRESENT) printf ("Old %d not in new file\n", id2);
 		GMT_free ((void *)old_P[id2].p);
 	}
 	GMT_free ((void *)new_P);
