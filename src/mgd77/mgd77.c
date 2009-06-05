@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.228 2009-06-04 01:11:46 guru Exp $
+ *	$Id: mgd77.c,v 1.229 2009-06-05 01:24:40 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2586,8 +2586,8 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
 	
 	int compare_L (const void *p1, const void *p2);
-	int i, j, k, n = 0, flist = 0, length;
-	BOOLEAN all;
+	int i, j, k, n = 0, flist = 0, n_dig, length;
+	BOOLEAN all, NGDC_ID_likely;
 	size_t n_alloc = 0;
 	char **L = NULL, *d_name, line[BUFSIZ], this_arg[BUFSIZ];
 #ifdef WIN32
@@ -2636,14 +2636,18 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 			this_arg[i] = '\0';
 		}
 		length = (all) ? 0 : strlen (this_arg);		/* length == 0 means get all */
-		if (length == 8) {	/* Full NGDC ID length, append to list */
+		/* Test to determine if we are given NGDC IDs (2-,4-,8-char integer tags) or an arbitrary survey name */
+		for (i = n_dig = 0; i < strlen (this_arg); i++) if (isdigit((int)this_arg[i])) n_dig++;
+		NGDC_ID_likely = ((n_dig == strlen (this_arg)) && (n_dig == 2 || n_dig == 4 || n_dig == 8));	/* All integers: 2 = agency, 4 = agency+vessel, 8 = single cruise */
+
+		if (!NGDC_ID_likely || length == 8) {	/* Either a custom cruise name OR a full 8-integer NGDC ID, append name to list */
 			if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
-			L[n] = (char *)GMT_memory (VNULL, (size_t)9, sizeof (char), "MGD77_Path_Expand");
+			L[n] = (char *)GMT_memory (VNULL, (size_t)(length+1), sizeof (char), "MGD77_Path_Expand");
 			strcpy (L[n++], this_arg);
 			continue;
 		}
 		/* Here we have either <agency> or <agency><vessel> code or blank for all */	
-		for (i = 0; i < F->n_MGD77_paths; i++) {	/* Examine all directories */
+		for (i = 0; NGDC_ID_likely && i < F->n_MGD77_paths; i++) {	/* Examine all directories */
 #ifdef WIN32
 			/* We simulate Unix opendir/readdir/closedir by listing the directory to a temp file */
 			sprintf (line, "dir /b %s > .tmpdir", F->MGD77_datadir[i]);
