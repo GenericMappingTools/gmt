@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_hierarchy.c,v 1.1 2009-06-05 04:10:16 guru Exp $
+ *	$Id: polygon_hierarchy.c,v 1.2 2009-06-06 10:49:23 guru Exp $
  * Determines the polygon ID in the full resolution that corresponds to
  * the lower-resolution polygons.
  */
@@ -97,29 +97,26 @@ int main (int argc, char **argv) {
 	
 	for (id1 = 0; id1 < n_id[FULL]; id1++) {	/* For all full resolution polygons */
 	
-		/* if (id1%10 == 0) fprintf (stderr, "Polygon %d\r", id1); */
-
-		fprintf (stderr, "Full polygon %7d res f", id1);
+		fprintf (stderr, "Full polygon %7d res f", P[FULL][id1].h.id);
 		for (res = 1; res < 5; res++) {	/* For each of the lower resolutions */
 			fprintf (stderr, "-%c", kind[res]);
 			for (id2 = 0; link[res][id1] == NOT_PRESENT && id2 < n_id[res]; id2++) {
-				/* fprintf (stderr, "Full polygon %7d res %c: %7d\r", id1, kind[res], id2); */
 			
 				if (P[res][id2].father >= 0) continue;	/* Already determined the father polygon */
 				if (nothing_in_common (&P[FULL][id1].h, &P[res][id2].h, &x_shift)) continue;	/* No area in common */
 				ix_shift = irint (x_shift) * MILL;
 			
-				if (id1 == 0) {	/* Check if a point (any point, really) is outside the current crude outside AFREUR polygon */
+				if (P[FULL][id1].h.id == 0) {	/* Check if a point (any point, really) is outside the current crude outside AFREUR polygon */
 					if ((in = non_zero_winding2 (P[res][id2].p[0].x + ix_shift, P[res][id2].p[0].y, ieur_o[0], ieur_o[1], N_EUR_O)) == 0) continue;	/* Polygon id2 completely outside the "outside" polygon */
 					if ((in = non_zero_winding2 (P[res][id2].p[0].x + ix_shift, P[res][id2].p[0].y, iafr_i[0], iafr_i[1], N_AFR_I)) == 2) continue;	/* Polygon id2 completely outside the "outside" polygon */
 					if ((in = non_zero_winding2 (P[res][id2].p[0].x + ix_shift, P[res][id2].p[0].y, ieur_i[0], ieur_i[1], N_EUR_I)) == 2) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
 				}
-				else if (id1 == 1) {	/* Check if inside the first of possibly two crude polgons */
+				else if (P[FULL][id1].h.id == 1) {	/* Check if inside the first of possibly two crude polgons */
 					if ((in = non_zero_winding2 (P[res][id2].p[0].x + ix_shift, P[res][id2].p[0].y, iam_o[0],  iam_o[1],  N_AM_O))  == 0) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
 					if ((in = non_zero_winding2 (P[res][id2].p[0].x + ix_shift, P[res][id2].p[0].y, inam_i[0], inam_i[1], N_NAM_I)) == 2) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
 					if ((in = non_zero_winding2 (P[res][id2].p[0].x + ix_shift, P[res][id2].p[0].y, isam_i[0], isam_i[1], N_SAM_I)) == 2) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
 				}
-				else if (id1 == 3) {	/* Check if inside the 2nd crude polgon */
+				else if (P[FULL][id1].h.id == 3) {	/* Check if inside the 2nd crude polgon */
 					if ((in = non_zero_winding2 (P[res][id2].p[0].x + ix_shift, P[res][id2].p[0].y, iaus_o[0], iaus_o[1], N_AUS_O)) == 0) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
 					if ((in = non_zero_winding2 (P[res][id2].p[0].x + ix_shift, P[res][id2].p[0].y, iaus_i[0], iaus_i[1], N_AUS_I)) == 2) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
 				}
@@ -132,10 +129,9 @@ int main (int argc, char **argv) {
 				}
 				if (go) continue;	/* Pol id1 not found in this resolution */
 				/* OK, found a match, set father nad link to end id2 loop */
-				P[res][id2].father = id1;
-				link[res][id1] = id2;
+				P[res][id2].father = P[FULL][id1].h.id;
+				link[res][id1] = P[res][id2].h.id;
 			}
-			/* fprintf (stderr, "\n"); */
 		}
 		fprintf (stderr, "\n");
 	}
@@ -147,7 +143,7 @@ int main (int argc, char **argv) {
 		exit (EXIT_FAILURE);
 	}
 	for (id1 = 0; id1 < n_id[FULL]; id1++) {
-		fprintf (fp, "%d", id1);
+		fprintf (fp, "%d", P[FULL][id1].h.id);
 		for (res = 1; res < 5; res++) fprintf (fp, "\t%d", link[res][id1]);
 		fprintf (fp, "\t%g\t%d\t%d\n", P[FULL][id1].h.area, P[FULL][id1].h.parent, P[FULL][id1].h.river);
 	}

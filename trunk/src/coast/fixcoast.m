@@ -1,6 +1,6 @@
 function fixcoast (id1,idfix)
 % FIXCOAST
-%	$Id: fixcoast.m,v 1.7 2009-06-05 06:09:12 guru Exp $
+%	$Id: fixcoast.m,v 1.8 2009-06-06 10:49:23 guru Exp $
 %
 % Give the id of the polygon to be fixed.  A file polygon.id.new
 % will be create with the new, modified polygon,  Optionally,
@@ -43,8 +43,9 @@ title ('Zoom in if you need to - then hit return to continue')
 pause
 title ('Click to start editing - hit q to quit')
 ok=1;
+fmt = '%.6f';
 while (ok == 1)   % Until we press q
-    title ('Point and type d to delete, m to select for move, i to insert, z for zoom, r to reverse direction, q to quit')
+    title ('Point and type d to delete, m to select for move, i to insert, n for pt #, z for zoom, r to reverse direction, q to quit')
     [x0, y0, key] = ginput(1);
     n = length(x1);
     numbers = 1:n;
@@ -70,6 +71,12 @@ while (ok == 1)   % Until we press q
             x1(n) = x0;
             y1(n) = y0;
         end
+    elseif (key == 'n')   % FIND POINT #
+        title ('Click on point to determine point number and location')
+        [x0, y0, key] = ginput(1);
+	k = find_near (x1(1:n1), y1(1:n1), x0, y0);
+	k = k(1);
+	disp (['Point number ' int2str(k) ' at lon = ' num2str(x1(k),fmt) ' lat = ' num2str(y1(k),fmt) ]);
     elseif (key == 'i' || key == 3)   % INSERT POINT
         if (abs(k(1)-k(2)) == 1)    % Consecutive neighbors
             x1 = [ x1(1:min(k)); x0; x1(max(k):n) ];
