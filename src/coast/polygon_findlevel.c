@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.18 2009-06-05 00:25:12 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.19 2009-06-06 10:49:23 guru Exp $
  */
 #include "wvs.h"
 
@@ -20,11 +20,11 @@ struct LONGPAIR *pp;
 
 int main (int argc, char **argv) {
 	int i, j, k, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, n_of_this[6];
-	int n_reset = 0, old, bad = 0, ix0, set, fast = 0, AUS_ID = -1, force;
+	int n_reset = 0, old, bad = 0, ix0, set, fast = 0, AUS_ID = 3, ANT_ID = -1, force, full = 0;
 	double x0, west1, west2, east1, east2, size, f;
-	FILE *fp, *fp2, *fpx;
+	FILE *fp, *fp2 = NULL, *fpx, *fpr;
 	struct LONGPAIR p;
-	char line[80], olds[32], news[32];
+	char olds[32], news[32];
 	
 	if (argc == 1) {
 		fprintf (stderr, "usage: polygon_findlevel final_polygons.b revised_final_dbase.b [-f]\n");
@@ -42,13 +42,13 @@ int main (int argc, char **argv) {
 		exit (EXIT_FAILURE);
 	}
 	
-	/* Reset ids as we go along */
+	/* Keep existing ids */
 	
 	n_id = pos = 0;
 	while (pol_readheader (&blob[n_id].h, fp) == 1) {
 		if (fabs (blob[n_id].h.east - blob[n_id].h.west) == 360.0) {
 			blob[n_id].h.south = -90.0;	/* Antarctica */
-			AUS_ID = n_id;
+			ANT_ID = blob[n_id].h.id;
 		}
 
 		pos += sizeof (struct GMT3_POLY);
@@ -67,66 +67,49 @@ int main (int argc, char **argv) {
 		blob[n_id].reverse = 0;
 		fseek (fp, (blob[n_id].h.n - 1) * sizeof(struct LONGPAIR), 1);
 		pos += blob[n_id].h.n * sizeof(struct LONGPAIR);
-		blob[n_id].h.id = n_id;
 		if (blob[n_id].h.n < 3) blob[n_id].h.source = -1;
 		n_id++;
 	}
+	full = (blob[0].h.n > 1000000);
+	AUS_ID = (blob[0].h.n > 2000) ? 3 : 4;
+	fprintf (stderr, "\n\nFind area and direction of polygons\n");
+
+	area_init ();
+
+	flon = (double *) GMT_memory (CNULL, blob[0].h.n, sizeof(double), "polygon_findlevel");
+	flat = (double *) GMT_memory (CNULL, blob[0].h.n, sizeof(double), "polygon_findlevel");
+
+	if (full) fp2 = fopen ("areas.lis", "w");
+
+	for (id = 0; id < n_id; id++) {
 	
-	if (!force && (fp2 = fopen ("areas.lis", "r")) != NULL) {	/* Read areas etc */
-		fprintf (stderr, "\n\nRead previous area and direction of polygons from areas.lis\n");
-		for (i = 0; i < n_id; i++) {
-			fgets (line, 80, fp2);
-			sscanf (line, "%d %lf", &j, &size);
-			sign = (size < 0.0) ? -1 : 1;
-			blob[i].reverse = sign + 1;
-			blob[i].h.area = fabs(size);
-			if (i != j) {
-				fprintf (stderr, "Error reading areas\n");
-				exit (EXIT_FAILURE);
-			}
-		}
-	}
-	else {
-
-		fprintf (stderr, "\n\nFind area and direction of polygons\n");
-
-		area_init ();
-
-		flon = (double *) GMT_memory (CNULL, blob[0].h.n, sizeof(double), "polygon_findlevel");
-		flat = (double *) GMT_memory (CNULL, blob[0].h.n, sizeof(double), "polygon_findlevel");
-
-		fp2 = fopen ("areas.lis", "w");
-	
-		for (id = 0; id < n_id; id++) {
+		if (blob[id].h.source == -1) continue;	/* Marked for deletion */
 		
-			if (blob[id].h.source == -1) continue;	/* Marked for deletion */
-			
-			fseek (fp, (long)blob[id].start, 0);
-			for (k = 0; k < blob[id].h.n; k++) {
-				if (pol_fread (&p, 1, fp) != 1) {
-					fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
-					exit(-1);
-				}
-				if (blob[id].h.greenwich && p.x > blob[id].h.datelon) p.x -= M360;
-				flon[k] = p.x * 1.0e-6;
-				flat[k] = p.y * 1.0e-6;
+		fseek (fp, (long)blob[id].start, 0);
+		for (k = 0; k < blob[id].h.n; k++) {
+			if (pol_fread (&p, 1, fp) != 1) {
+				fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
+				exit(-1);
 			}
-			size = 1.0e-6 * area_size (flon, flat, blob[id].h.n, &sign); /* in km^2 */
-			sprintf (olds, "%.12g", blob[id].h.area);
-			sprintf (news, "%.12g", size);
-			if (blob[id].h.area > 0.0 && size > 0.0) {
-				f = fabs ((size / blob[id].h.area) - 1.0)*1e6;	/* ppm change */
-				if (f > 5.0) fprintf (stderr, "Polygon %d has changed size by > 5 ppm (%.1f) [Area: old %s vs new %s]\n", blob[id].h.id, f, olds, news);
-			}
-			fprintf (fp2, "%d\t%g\t%g\n", id, size * sign, blob[id].h.area);
-			blob[id].h.area = size;
-			blob[id].reverse = sign + 1;
+			if (blob[id].h.greenwich && p.x > blob[id].h.datelon) p.x -= M360;
+			flon[k] = p.x * 1.0e-6;
+			flat[k] = p.y * 1.0e-6;
 		}
-
-		free ((void *)flon);
-		free ((void *)flat);
+		size = 1.0e-6 * area_size (flon, flat, blob[id].h.n, &sign); /* in km^2 */
+		sprintf (olds, "%.12g", blob[id].h.area);
+		sprintf (news, "%.12g", size);
+		if (full && blob[id].h.area > 0.0 && size > 0.0) {
+			f = fabs ((size / blob[id].h.area) - 1.0)*1e6;	/* ppm change */
+			if (f > 5.0) fprintf (stderr, "Polygon %d has changed size by > 5 ppm (%.1f) [Area: old %s vs new %s]\n", blob[id].h.id, f, olds, news);
+		}
+		if (full) fprintf (fp2, "%d\t%g\t%g\n", blob[id].h.id, size * sign, blob[id].h.area);
+		blob[id].h.area = size;
+		blob[id].reverse = sign + 1;
 	}
-	fclose (fp2);
+
+	free ((void *)flon);
+	free ((void *)flat);
+	if (full) fclose (fp2);
 	
 	lon = (int *) GMT_memory (CNULL, N_LONGEST, sizeof(int), "polygon_findlevel");
 	lat = (int *) GMT_memory (CNULL, N_LONGEST, sizeof(int), "polygon_findlevel");
@@ -196,7 +179,7 @@ int main (int argc, char **argv) {
 		for (id2 = 0; id2 < n_id; id2++) {
 			
 			if (fabs (blob[id2].h.east - blob[id2].h.west) == 360.0) continue;	/* But skip Antarctica */
-			if (id1 == id2) continue;		/* Skip self testing */
+			if (blob[id1].h.id == blob[id2].h.id) continue;		/* Skip self testing */
 			if (blob[id2].h.source == -1) continue;	/* Marked for deletion */
 			
 			/* First perform simple tests based on min/max coordinates */
@@ -221,7 +204,7 @@ int main (int argc, char **argv) {
 			
 			x0 = blob[id2].x0 * 1.0e-6;	/* This is in 0-360 range */
 			ix0 = x0 * MILL;
-			if (fast && id1 == EUR_ID) {	/* Eurasia, first do quick coarse test.  Note: ieur_o is in 350/555 range */
+			if (fast && blob[id1].h.id == EUR_ID) {	/* Eurasia, first do quick coarse test.  Note: ieur_o is in 350/555 range */
 				while (ix0 < EUR_O_MIN_X) ix0 += M360;	/* Make sure we are EUR_O range */
 				intest = non_zero_winding2 (ix0, blob[id2].y0, ieur_o[0], ieur_o[1], N_EUR_O);
 				if (!intest) continue;
@@ -232,7 +215,7 @@ int main (int argc, char **argv) {
 				if (!intest) intest = non_zero_winding2 (ix0, blob[id2].y0, iafr_i[0], iafr_i[1], N_AFR_I);
 
 				if (intest == 2) {	/* way inside, set levels */
-					blob[id2].inside[blob[id2].n_inside] = id1;
+					blob[id2].inside[blob[id2].n_inside] = blob[id1].h.id;
 					blob[id2].n_inside++;
 					if (blob[id2].n_inside == 6) {
 						fprintf (stderr, "You're fucked again!\n");
@@ -242,7 +225,7 @@ int main (int argc, char **argv) {
 				}
 				/* If not, we fall down to the _real_ test */
 			}
-			else if (fast && id1 == AM_ID) {	/* Americas, first do quick test */
+			else if (fast && blob[id1].h.id == AM_ID) {	/* Americas, first do quick test */
 				while (ix0 < AM_O_MIN_X) ix0 += M360;	/* Make sure we are AM_O range */
 				intest = non_zero_winding2 (ix0, blob[id2].y0, iam_o[0], iam_o[1], N_AM_O);
 				if (!intest) continue;
@@ -254,7 +237,7 @@ int main (int argc, char **argv) {
 				if (!intest) intest = non_zero_winding2 (ix0, blob[id2].y0, inam_i[0], inam_i[1], N_NAM_I);
 
 				if (intest == 2) {	/* way inside, set levels */
-					blob[id2].inside[blob[id2].n_inside] = id1;
+					blob[id2].inside[blob[id2].n_inside] = blob[id1].h.id;
 					blob[id2].n_inside++;
 					if (blob[id2].n_inside == 6) {
 						fprintf (stderr, "You're fucked again!\n");
@@ -264,7 +247,7 @@ int main (int argc, char **argv) {
 				}
 				/* If not, we fall down to the _real_ test */
 			}
-			else if (fast && id1 == AUS_ID) {	/* Australia, first do quick test */
+			else if (fast && blob[id1].h.id == AUS_ID) {	/* Australia, first do quick test */
 				while (ix0 < AUS_O_MIN_X) ix0 += M360;	/* Make sure we are AUS_O range */
 				intest = non_zero_winding2 (ix0, blob[id2].y0, iaus_o[0], iaus_o[1], N_AUS_O);
 				if (!intest) continue;
@@ -274,7 +257,7 @@ int main (int argc, char **argv) {
 				intest = non_zero_winding2 (ix0, blob[id2].y0, iaus_i[0], iaus_i[1], N_AUS_I);
 
 				if (intest == 2) {	/* way inside, set levels */
-					blob[id2].inside[blob[id2].n_inside] = id1;
+					blob[id2].inside[blob[id2].n_inside] = blob[id1].h.id;
 					blob[id2].n_inside++;
 					if (blob[id2].n_inside == 6) {
 						fprintf (stderr, "You're fucked again!\n");
@@ -301,12 +284,12 @@ int main (int argc, char **argv) {
 			if (intest == 1) {	/* Should not happen - duplicate polygon? */
 				set = FALSE;
 				if (blob[id1].h.source == 0 && blob[id2].h.source == 0 && blob[id1].h.n == blob[id2].h.n) { /* duplicate */
-					fprintf (fpx, "%d is duplicate of %d, %d removed\n", id2, id1, id2);
+					fprintf (fpx, "%d is duplicate of %d, %d removed\n", id2, blob[id1].h.id, blob[id2].h.id);
 					set = TRUE;
 				}
 				else {
-					fprintf (stderr, "Point on edge!, ids = %d and %d\n", id1, id2);
-					fprintf (fpx, "Point on edge!, ids = %d and %d\n", id1, id2);
+					fprintf (stderr, "Point on edge!, ids = %d and %d\n", blob[id1].h.id, blob[id2].h.id);
+					fprintf (fpx, "Point on edge!, ids = %d and %d\n", blob[id1].h.id, blob[id2].h.id);
 					bad++;
 				}
 				if (set) blob[id2].h.source = -1;
@@ -314,7 +297,7 @@ int main (int argc, char **argv) {
 			
 			/* OK, here id2 is inside id1 */
 			
-			blob[id2].inside[blob[id2].n_inside] = id1;
+			blob[id2].inside[blob[id2].n_inside] = blob[id1].h.id;
 			blob[id2].n_inside++;
 			if (blob[id2].n_inside == 6) {
 				fprintf (stderr, "You're fucked again!\n");
@@ -334,6 +317,7 @@ int main (int argc, char **argv) {
 	
 	fprintf (stderr, "Check for need to reverse polygons\n");
 	
+	fpr = fopen ("levels.lis", "w");
 	max_level = idmax = 0;
 	for (id = 0; id < n_id; id++) {
 		if (blob[id].h.source == -1) continue;	/* Marked for deletion */
@@ -341,6 +325,7 @@ int main (int argc, char **argv) {
 		blob[id].h.level = blob[id].n_inside + 1;
 		if (old > 0 && old != blob[id].h.level) {
 			fprintf (stderr, "Reset polygon %d level from %d to %d\n", blob[id].h.id, old, blob[id].h.level);
+			fprintf (fpr, "Reset polygon %d level from %d to %d\n", blob[id].h.id, old, blob[id].h.level);
 			n_reset++;
 		}
 		n_of_this[blob[id].h.level]++;
@@ -358,9 +343,10 @@ int main (int argc, char **argv) {
 			blob[id].reverse = 0;
 			
 	}
+	fclose (fpr);
 	
 	fprintf (fpx, "%d polygons had their presumed level reset\n", n_reset);
-	fprintf (fpx, "max_level = %d for polygon %d (%d", max_level, idmax, idmax);
+	fprintf (fpx, "max_level = %d for polygon %d (%d", max_level, blob[idmax].h.id, blob[idmax].h.id);
 	for (i = 0; i < blob[idmax].n_inside; i++) fprintf (fpx, "-%d", blob[idmax].inside[i]);
 	fprintf (fpx, ")\n");
 	for (i = 1; i <= max_level; i++) fprintf (fpx, "Level%d: %d polygons\n", i, n_of_this[i]);
@@ -375,7 +361,6 @@ int main (int argc, char **argv) {
 	fp2 = fopen (argv[2], "w");
 	for (id = i = 0; id < n_id; id++) {
 		if (blob[id].h.source == -1) continue;
-		blob[id].h.id = i;
 		pol_writeheader (&blob[id].h, fp2);
 		fseek (fp, (long)blob[id].start, 0);
 		if (pol_fread (pp, blob[id].h.n, fp) != blob[id].h.n) {
@@ -383,7 +368,7 @@ int main (int argc, char **argv) {
 			exit(-1);
 		}
 		if (blob[id].reverse) {	/* Reverse polygon */
-			fprintf (stderr, "Reversing polygon %d\n", id);
+			fprintf (stderr, "Reversing polygon %d\n", blob[id].h.id);
 			for (j = blob[id].h.n - 1; j >= 0; j--) pol_fwrite (&pp[j], 1, fp2);
 		}
 		else
