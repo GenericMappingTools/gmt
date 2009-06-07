@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.534 2009-06-07 21:34:20 remko Exp $
+	$Id: ChangeLog,v 1.535 2009-06-07 22:47:36 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-07	jluis
+	* mgd77/mgd77info.c:	Use of both printf() and internal functions that write to GMT_stdout
+				seams to be incompatible on Windows. Now always use fprintf (GMT_stdout, ...)
+	* mgd77/mgd77.c:	Open ascii files with fopen (and not GMT_fopen) because they are written
+				with fprintf(F->fp, ...) and Windows, again, gets lost.
 
 2009-06-07	remko
 	* gmt_grdio.c:		Fixed bug in GMT_grd_setregion: longitudes were limited inward
