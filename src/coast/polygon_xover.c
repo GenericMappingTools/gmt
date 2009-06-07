@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.13 2009-06-05 00:25:12 guru Exp $
+ *	$Id: polygon_xover.c,v 1.14 2009-06-07 18:25:40 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -19,7 +19,7 @@ int nothing_in_common (struct GMT3_POLY *h1, struct GMT3_POLY *h2, double *shift
 int main (int argc, char **argv)
 {
 	FILE	*fp;
-	int	i, n_id, id1, id2, nx, nx_tot, ANTARCTICA = -1, verbose, full;
+	int	i, n_id, id1, id2, nx, nx_tot, ANTARCTICA = -1, AUS = 3, verbose, full;
 	int np_o, np_i1, np_i2, in;
 	double x_shift = 0.0, lon_o[N_EUR_O+1], lat_o[N_EUR_O+1], lon_i1[N_EUR_I+1], lat_i1[N_EUR_I+1];
 	double lon_i2[N_EUR_I+1], lat_i2[N_EUR_I+1], r, theta, c, s, *X, *Y;
@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 	while (pol_readheader (&P[n_id].h, fp) == 1) {
 		P[n_id].lon = (double *) GMT_memory (VNULL, P[n_id].h.n, sizeof (double), "polygon_xover");
 		P[n_id].lat = (double *) GMT_memory (VNULL, P[n_id].h.n, sizeof (double), "polygon_xover");
-		if (fabs (P[n_id].h.east - P[n_id].h.west) == 360.0) ANTARCTICA = n_id;
+		if (fabs (P[n_id].h.east - P[n_id].h.west) == 360.0) ANTARCTICA = P[n_id].h.id;
 		if (P[n_id].h.east < 0.0 && P[n_id].h.west< 0.0) {
 			fprintf (stderr, "Pol %d has negative w/e values.  Run polygon_fixnegwesn\n", P[n_id].h.id);
 			exit(-1);
@@ -71,7 +71,7 @@ int main (int argc, char **argv)
 		n_id++;
 	}
 	fclose(fp);
-
+	if (P[0].h.n < 2000) AUS = 4;	/* For crude set */
 	if (verbose) fprintf (stderr, "polygon_xover: Found %d polygons\n", n_id);
 	
 	/* Now do double do-loop to find all xovers */
@@ -83,7 +83,7 @@ int main (int argc, char **argv)
 		if (id1 == 0) continue;
 		
 		GMT_init_track (P[id1].lat, P[id1].h.n, &ylist1);
-		if (full && id1 == 0) {	/* Eurafrica */
+		if (full && P[id1].h.id == 0) {	/* Eurafrica */
 			for (i = 0; i < N_EUR_O; i++) lon_o[i] = ieur_o[0][i] - 360.0;
 			for (i = 0; i < N_EUR_O; i++) lat_o[i] = ieur_o[1][i];
 			lon_o[i] = lon_o[0];
@@ -100,7 +100,7 @@ int main (int argc, char **argv)
 			lat_i2[i] = lat_i2[0];
 			np_i2 = N_AFR_I + 1;
 		}
-		else if (full && id1 == 1) {	/* Americas */
+		else if (full && P[id1].h.id == 1) {	/* Americas */
 			for (i = 0; i < N_AM_O; i++) lon_o[i] = iam_o[0][i];
 			for (i = 0; i < N_AM_O; i++) lat_o[i] = iam_o[1][i];
 			lon_o[i] = lon_o[0];
@@ -117,7 +117,7 @@ int main (int argc, char **argv)
 			lat_i2[i] = lat_i2[0];
 			np_i2 = N_SAM_I + 1;
 		}
-		else if (full && id1 == 3) {	/* Australia */
+		else if (full && P[id1].h.id == AUS) {	/* Australia */
 			for (i = 0; i < N_AUS_O; i++) lon_o[i] = iaus_o[0][i];
 			for (i = 0; i < N_AUS_O; i++) lat_o[i] = iaus_o[1][i];
 			lon_o[i] = lon_o[0];
@@ -135,7 +135,7 @@ int main (int argc, char **argv)
 			
 		for (id2 = MAX (4, id1 + 1); id2 < n_id; id2++) {	/* Dont start earlier than 4 since no point comparing Eur to Americas */
 			/* if (P[id2].h.id != 15) continue; */
-			if (id1 == ANTARCTICA) {	/* Must compare using r,theta */
+			if (P[id1].h.id == ANTARCTICA) {	/* Must compare using r,theta */
 				if (P[id2].h.south > P[id1].h.north) continue;	/* Too far north */
 				X = (double *) GMT_memory (VNULL, P[id2].h.n, sizeof (double), "polygon_xover");
 				Y = (double *) GMT_memory (VNULL, P[id2].h.n, sizeof (double), "polygon_xover");
