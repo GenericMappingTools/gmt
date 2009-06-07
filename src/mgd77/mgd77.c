@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.230 2009-06-05 02:26:37 guru Exp $
+ *	$Id: mgd77.c,v 1.231 2009-06-07 22:36:35 jluis Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -310,7 +310,7 @@ int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD
 	
 	/* For netCDF format we do not open file - this is done differently later */
 	
-	if (F->format != MGD77_FORMAT_CDF && (F->fp = GMT_fopen (F->path, mode)) == NULL) {
+	if (F->format != MGD77_FORMAT_CDF && (F->fp = fopen (F->path, mode)) == NULL) {
 		fprintf (stderr, "%s: Could not open %s\n", GMT_program, F->path);
 		return (MGD77_ERROR_OPEN_FILE);
 	}
@@ -335,7 +335,7 @@ int MGD77_Close_File (struct MGD77_CONTROL *F)  /* Closes a MGD77[+] file */
 		case MGD77_FORMAT_M77:	/* These are accessed by file pointer */
 		case MGD77_FORMAT_TBL:
 			if (!F->fp) return (MGD77_NO_ERROR);	/* No file open */
-			error = GMT_fclose (F->fp);
+			error = fclose (F->fp);
 			break;
 		case MGD77_FORMAT_CDF:	/* netCDF file is accessed by ID*/
 			MGD77_nc_status (nc_close (F->nc_id));
@@ -2756,6 +2756,7 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 		else
 			return (MGD77_FILE_NOT_FOUND);	/* Hard path did not work */
 	}
+	
 	
 	switch (((has_suffix == MGD77_NOT_SET) ? MGD77_FORMAT_ANY : has_suffix)) {
 		case MGD77_FORMAT_M77:		/* Look for MGD77 ASCII files only */
