@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.231 2009-06-07 22:36:35 jluis Exp $
+ *	$Id: mgd77.c,v 1.232 2009-06-09 22:45:00 jluis Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -309,12 +309,19 @@ int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD
 		return (MGD77_UNKNOWN_MODE);
 	
 	/* For netCDF format we do not open file - this is done differently later */
-	
-	if (F->format != MGD77_FORMAT_CDF && (F->fp = fopen (F->path, mode)) == NULL) {
-		fprintf (stderr, "%s: Could not open %s\n", GMT_program, F->path);
-		return (MGD77_ERROR_OPEN_FILE);
-	}
 
+	if (F->format != MGD77_FORMAT_CDF) {		/* The complication below is due to Windows shits. */
+		if (mode[0] == 'w')
+			F->fp = fopen (F->path, mode);		/* Open with fopen because file is writen with fprintf() */
+		else
+			F->fp = GMT_fopen (F->path, mode);	/* Open with GMT_fopen because file is accessed with GMT_??? */
+
+		if (F->fp == NULL) {
+			fprintf (stderr, "%s: Could not open %s\n", GMT_program, F->path);
+			return (MGD77_ERROR_OPEN_FILE);
+		}
+	}
+	
 	/* Strip out Prefix and store in control structure */
 	
 	start = stop = MGD77_NOT_SET;
