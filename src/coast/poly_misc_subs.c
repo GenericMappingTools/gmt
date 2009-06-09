@@ -1,11 +1,92 @@
 /*
- *	$Id: poly_misc_subs.c,v 1.2 2008-03-05 02:11:58 guru Exp $
+ *	$Id: poly_misc_subs.c,v 1.3 2009-06-09 02:26:02 guru Exp $
  *
  * Contains misc functions used by polygon* executables
  */
  
 #define COASTLIB 1
 #include "wvs.h"
+
+void crude_init (double *X[N_CONTINENTS][2], double *Y[N_CONTINENTS][2], int N[N_CONTINENTS][2])
+{
+	/* Reads the five crude continent outlines into X,Y */
+	int c, i, t;
+	char *dir, line[BUFSIZ], *cont[N_CONTINENTS] = {"eur", "afr", "nam", "sam", "ant", "aus"}, *type[2] = {"out", "in"};
+	double *x, *y;
+	FILE *fp;
+	
+	if ((dir = getenv("GMTHOME")) == CNULL) {	/* GMTHOME was not set */
+		fprintf (stderr, "coast: Please set GMTHOME first\n");
+		exit (EXIT_FAILURE);
+	}
+	for (c = 0; c < N_CONTINENTS; c++) {	/* For each continent */
+		for (t = 0; t < 2; t++) {	/* For both outside and inside polygons */
+			sprintf (line, "%s/src/coast/crude_%s_%s.txt", dir, cont[c], type[t]);
+			if ((fp = fopen (line, "r")) == NULL) {
+				fprintf (stderr, "coast: Cannot open %s\n", line);
+				exit (EXIT_FAILURE);
+			}
+			x = (double *) GMT_memory (NULL, 100, sizeof (double), "coast");
+			y = (double *) GMT_memory (NULL, 100, sizeof (double), "coast");
+			i = 0;
+			while (fgets (line, BUFSIZ, fp)) {
+				if (line[0] == '#') continue;
+				sscanf (line, "%lf %lf", &x[i], &y[i]);
+				i++;
+			}
+			fclose (fp);
+			x = (double *) GMT_memory ((void *)x, i, sizeof (double), "coast");
+			y = (double *) GMT_memory ((void *)y, i, sizeof (double), "coast");
+			N[c][t] = i;
+			X[c][t] = x;
+			Y[c][t] = y;
+		}
+	}
+}
+
+void crude_free (double *X[N_CONTINENTS][2], double *Y[N_CONTINENTS][2], int N[N_CONTINENTS][2])
+{
+	int c, t;
+	for (c = 0; c < N_CONTINENTS; c++) {	/* For each continent */
+		for (t = 0; t < 2; t++) {	/* For both outside and inside polygons */
+			GMT_free ((void *)X[c][t]);
+			GMT_free ((void *)Y[c][t]);
+		}
+	}
+}
+
+void crude_init_int (int *IX[N_CONTINENTS][2], int *IY[N_CONTINENTS][2], int N[N_CONTINENTS][2], int scale)
+{
+	/* Reads the five crude continent outlines into X,Y integer arrays */
+	int c, i, t, *ix, *iy;
+	double *X[N_CONTINENTS][2], *Y[N_CONTINENTS][2];
+	
+	crude_init (X, Y, N);
+	for (c = 0; c < N_CONTINENTS; c++) {	/* For each continent */
+		for (t = 0; t < 2; t++) {	/* For both outside and inside polygons */
+			ix = (int *) GMT_memory (NULL, N[c][t], sizeof (int), "coast");
+			iy = (int *) GMT_memory (NULL, N[c][t], sizeof (int), "coast");
+			for (i = 0; i < N[c][t]; i++) {
+				ix[i] = irint (X[c][t][i]) * scale;
+				iy[i] = irint (Y[c][t][i]) * scale;
+			}
+			IX[c][t] = ix;
+			IY[c][t] = iy;
+		}
+	}
+	crude_free (X, Y, N);
+}
+
+void crude_free_int (int *IX[N_CONTINENTS][2], int *IY[N_CONTINENTS][2], int N[N_CONTINENTS][2])
+{
+	int c, t;
+	for (c = 0; c < 5; c++) {	/* For each continent */
+		for (t = 0; t < 2; t++) {	/* For both outside and inside polygons */
+			GMT_free ((void *)IX[c][t]);
+			GMT_free ((void *)IY[c][t]);
+		}
+	}
+}
 
 void area_init ()
 {	/* Initializes GMT projection parameters to the -JA settings */
@@ -263,4 +344,18 @@ int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path)
 		return(2);
 	else
 		return(0);
+}
+
+int nothing_in_common (struct GMT3_POLY *hi, struct GMT3_POLY *hj, double *shift)
+{	/* Returns TRUE of the two rectangular areas do not overlap.
+	 * Also sets shift to -360,0,+360 as the amount to adjust longitudes */
+	double w, e;
+
+	if (hi->north < hj->south || hi->south > hj->north) return (TRUE);
+
+	w = hj->west - 360.0;	e = hj->east - 360.0;
+	*shift = -360.0;
+	while (e < hi->west) e += 360.0, w += 360.0, (*shift) += 360.0;
+	if (w > hi->east) return (TRUE);
+	return (FALSE);
 }

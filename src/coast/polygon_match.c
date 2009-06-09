@@ -1,5 +1,5 @@
 /*
- * $Id: polygon_match.c,v 1.2 2009-06-05 04:28:32 guru Exp $
+ * $Id: polygon_match.c,v 1.3 2009-06-09 02:26:02 guru Exp $
  * Compares the enw and old *.b files and looks for differences.
  * Currently set up for old using the previous GMT3_POLY structure
  * with endian swabbing while the new has the new structure and no
@@ -34,14 +34,15 @@ struct POLYGON_OLD {
 	int brother;	/* Id of matching polygon */
 };
 
-int nothing_in_common (struct GMT3_POLY *hi, struct GMT3_POLY_OLD *hj, double *shift);
 int pol_readheader_old (struct GMT3_POLY_OLD *h, FILE *fp);
 #if WORDS_BIGENDIAN == 0
 void swab_polheader_old (struct GMT3_POLY_OLD *h);
 #endif
+int nothing_in_common2 (struct GMT3_POLY *hi, struct GMT3_POLY_OLD *hj, double *shift);
 
 int main (int argc, char **argv) {
-	int i, j, n_A = 0, n_B = 0, id1, id2, dx, go, ix_shift, in, n, j0;
+	int i, j, n_A = 0, n_B = 0, id1, id2, dx, go, ix_shift, c, in, cont_no_1, n, j0;
+	int *IX[N_CONTINENTS][2], *IY[N_CONTINENTS][2], N[N_CONTINENTS][2];
 	double x_shift = 0.0, f;
 	char file[BUFSIZ], alarm[32];
 	BOOLEAN report_area;
@@ -102,64 +103,26 @@ int main (int argc, char **argv) {
 	
 	/* Scale crude polygons by 1e6 to match the data scale */
 	
-	for (i = 0; i < N_EUR_O; i++) {
-		ieur_o[0][i] = (ieur_o[0][i] - 360) * MILL;
-		ieur_o[1][i] *= MILL;
-	}
-	for (i = 0; i < N_EUR_I; i++) {
-		ieur_i[0][i] = (ieur_i[0][i] - 360) * MILL;
-		ieur_i[1][i] *= MILL;
-	}
-	for (i = 0; i < N_AFR_I; i++) {
-		iafr_i[0][i] = (iafr_i[0][i] - 360) * MILL;
-		iafr_i[1][i] *= MILL;
-	}
-	for (i = 0; i < N_AM_O; i++) {
-		iam_o[0][i] *= MILL;
-		iam_o[1][i] *= MILL;
-	}
-	for (i = 0; i < N_SAM_I; i++) {
-		isam_i[0][i] *= MILL;
-		isam_i[1][i] *= MILL;
-	}
-	for (i = 0; i < N_NAM_I; i++) {
-		inam_i[0][i] *= MILL;
-		inam_i[1][i] *= MILL;
-	}
-	for (i = 0; i < N_AUS_O; i++) {
-		iaus_o[0][i] *= MILL;
-		iaus_o[1][i] *= MILL;
-	}
-	for (i = 0; i < N_AUS_I; i++) {
-		iaus_i[0][i] *= MILL;
-		iaus_i[1][i] *= MILL;
-	}
+	crude_init_int (IX, IY, N, MILL);
 
 	fprintf (stderr, "Start comparisons\n\n");
 	
 	for (id1 = 0; id1 < n_A; id1++) {	/* For all polygons in the new file*/
 	
 		/* if (id1%10 == 0) fprintf (stderr, "Polygon %d\r", id1); */
+		cont_no_1 = (new_P[id1].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
 
 		for (id2 = 0; new_P[id1].brother == NOT_PRESENT && id2 < n_B; id2++) {	/* For all polygons in the old file*/
 			if (old_P[id2].brother >= 0) continue;	/* Already determined to match another polygon */
-			if (nothing_in_common (&new_P[id1].h, &old_P[id2].h, &x_shift)) continue;	/* No area in common */
+			if (nothing_in_common2 (&new_P[id1].h, &old_P[id2].h, &x_shift)) continue;	/* No area in common */
 			ix_shift = irint (x_shift) * MILL;
 		
-			if (id1 == 0) {	/* Check if a point (any point, really) is outside the current crude outside AFREUR polygon */
-				if ((in = non_zero_winding2 (old_P[id2].p[0].x + ix_shift, old_P[id2].p[0].y, ieur_o[0], ieur_o[1], N_EUR_O)) == 0) continue;	/* Polygon id2 completely outside the "outside" polygon */
-				if ((in = non_zero_winding2 (old_P[id2].p[0].x + ix_shift, old_P[id2].p[0].y, iafr_i[0], iafr_i[1], N_AFR_I)) == 2) continue;	/* Polygon id2 completely outside the "outside" polygon */
-				if ((in = non_zero_winding2 (old_P[id2].p[0].x + ix_shift, old_P[id2].p[0].y, ieur_i[0], ieur_i[1], N_EUR_I)) == 2) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
+			if (cont_no_1 > 0 && cont_no_1 != ANTARCTICA ) {	/* Any continent other than Antarctica */
+				c = cont_no_1 - 1;
+				if ((in = non_zero_winding2 (old_P[id2].p[0].x + ix_shift, old_P[id2].p[0].y, IX[c][OUTSIDE], IY[c][OUTSIDE], N[c][OUTSIDE])) == 0) continue;	/* Polygon id2 completely outside the "outside" polygon */
+				if ((in = non_zero_winding2 (old_P[id2].p[0].x + ix_shift, old_P[id2].p[0].y, IX[c][INSIDE], IY[c][INSIDE], N[c][INSIDE])) == 2) continue;	/* Polygon id2 completely inside the "inside" polygon */
 			}
-			else if (id1 == 1) {	/* Check if inside the first of possibly two crude polgons */
-				if ((in = non_zero_winding2 (old_P[id2].p[0].x + ix_shift, old_P[id2].p[0].y, iam_o[0],  iam_o[1],  N_AM_O))  == 0) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
-				if ((in = non_zero_winding2 (old_P[id2].p[0].x + ix_shift, old_P[id2].p[0].y, inam_i[0], inam_i[1], N_NAM_I)) == 2) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
-				if ((in = non_zero_winding2 (old_P[id2].p[0].x + ix_shift, old_P[id2].p[0].y, isam_i[0], isam_i[1], N_SAM_I)) == 2) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
-			}
-			else if (id1 == 3) {	/* Check if inside the 2nd crude polgon */
-				if ((in = non_zero_winding2 (old_P[id2].p[0].x + ix_shift, old_P[id2].p[0].y, iaus_o[0], iaus_o[1], N_AUS_O)) == 0) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
-				if ((in = non_zero_winding2 (old_P[id2].p[0].x + ix_shift, old_P[id2].p[0].y, iaus_i[0], iaus_i[1], N_AUS_I)) == 2) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
-			}
+			/* Here we must check points */
 			for (i = n = 0, go = TRUE; go && i < new_P[id1].h.n; i++) {	/* For all points on A polygon */
 				for (j = 0; go && j < old_P[id2].h.n; j++, n++) {		/* For all points on the B polygon */
 					if (new_P[id1].p[i].y != old_P[id2].p[j].y) continue;	/* Not a match */
@@ -221,6 +184,7 @@ int main (int argc, char **argv) {
 	}
 	GMT_free ((void *)new_P);
 	GMT_free ((void *)old_P);
+	crude_free_int (IX, IY, N);
 	
 #ifdef DEBUG
 	GMT_memtrack_on (GMT_mem_keeper);
@@ -276,8 +240,10 @@ void swab_polheader_old (struct GMT3_POLY_OLD *h)
 }
 #endif
 
-int nothing_in_common (struct GMT3_POLY *hi, struct GMT3_POLY_OLD *hj, double *shift)
-{
+
+int nothing_in_common2 (struct GMT3_POLY *hi, struct GMT3_POLY_OLD *hj, double *shift)
+{	/* Returns TRUE of the two rectangular areas do not overlap.
+	 * Also sets shift to -360,0,+360 as the amount to adjust longitudes */
 	double w, e;
 
 	if (hi->north < hj->south || hi->south > hj->north) return (TRUE);

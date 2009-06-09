@@ -1,10 +1,7 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.19 2009-06-06 10:49:23 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.20 2009-06-09 02:26:02 guru Exp $
  */
 #include "wvs.h"
-
-#define EUR_ID	0
-#define AM_ID	1
 
 struct BLOB {
 	struct GMT3_POLY h;
@@ -19,9 +16,10 @@ double *flon, *flat;
 struct LONGPAIR *pp;
 
 int main (int argc, char **argv) {
-	int i, j, k, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, n_of_this[6];
-	int n_reset = 0, old, bad = 0, ix0, set, fast = 0, AUS_ID = 3, ANT_ID = -1, force, full = 0;
-	double x0, west1, west2, east1, east2, size, f;
+	int i, j, k, c, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, cont_no_1, cont_no_2, n_of_this[6];
+	int n_reset = 0, old, bad = 0, ix0, set, fast = 0, force, full = 0, eur_id = 0;
+	int *IX[N_CONTINENTS][2], *IY[N_CONTINENTS][2], N[N_CONTINENTS][2];
+	double size, f, x_shift;
 	FILE *fp, *fp2 = NULL, *fpx, *fpr;
 	struct LONGPAIR p;
 	char olds[32], news[32];
@@ -46,10 +44,8 @@ int main (int argc, char **argv) {
 	
 	n_id = pos = 0;
 	while (pol_readheader (&blob[n_id].h, fp) == 1) {
-		if (fabs (blob[n_id].h.east - blob[n_id].h.west) == 360.0) {
-			blob[n_id].h.south = -90.0;	/* Antarctica */
-			ANT_ID = blob[n_id].h.id;
-		}
+		cont_no_1 = (blob[n_id].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
+		if (cont_no_1 == EURASIA) eur_id = n_id;	/* blob with Eurasia */
 
 		pos += sizeof (struct GMT3_POLY);
 		blob[n_id].start = pos;
@@ -57,27 +53,25 @@ int main (int argc, char **argv) {
 			fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
 			exit(-1);
 		}
-		blob[n_id].x0 = p.x;	/* Pick any point on the polygon */
+		blob[n_id].x0 = p.x;	/* Pick first point on the polygon */
 		if (p.x < 0) {
 			fprintf (stderr, "x0 is actually neg %d. Stop; fix the problem\n", n_id);
 			exit (-1);
 		}
 		blob[n_id].y0 = p.y;
-		blob[n_id].n_inside = 0;
-		blob[n_id].reverse = 0;
+		blob[n_id].n_inside = blob[n_id].reverse = 0;
 		fseek (fp, (blob[n_id].h.n - 1) * sizeof(struct LONGPAIR), 1);
 		pos += blob[n_id].h.n * sizeof(struct LONGPAIR);
 		if (blob[n_id].h.n < 3) blob[n_id].h.source = -1;
 		n_id++;
 	}
-	full = (blob[0].h.n > 1000000);
-	AUS_ID = (blob[0].h.n > 2000) ? 3 : 4;
+	full = (blob[eur_id].h.n > 1000000);	/* Only the full resolution has more than 1 mill points for EURASIA polygon */
 	fprintf (stderr, "\n\nFind area and direction of polygons\n");
 
 	area_init ();
 
-	flon = (double *) GMT_memory (CNULL, blob[0].h.n, sizeof(double), "polygon_findlevel");
-	flat = (double *) GMT_memory (CNULL, blob[0].h.n, sizeof(double), "polygon_findlevel");
+	flon = (double *) GMT_memory (CNULL, blob[eur_id].h.n, sizeof(double), "polygon_findlevel");
+	flat = (double *) GMT_memory (CNULL, blob[eur_id].h.n, sizeof(double), "polygon_findlevel");
 
 	if (full) fp2 = fopen ("areas.lis", "w");
 
@@ -102,7 +96,7 @@ int main (int argc, char **argv) {
 			f = fabs ((size / blob[id].h.area) - 1.0)*1e6;	/* ppm change */
 			if (f > 5.0) fprintf (stderr, "Polygon %d has changed size by > 5 ppm (%.1f) [Area: old %s vs new %s]\n", blob[id].h.id, f, olds, news);
 		}
-		if (full) fprintf (fp2, "%d\t%g\t%g\n", blob[id].h.id, size * sign, blob[id].h.area);
+		if (full) fprintf (fp2, "%d\t%.12g\t%.12g\n", blob[id].h.id, size * sign, blob[id].h.area);
 		blob[id].h.area = size;
 		blob[id].reverse = sign + 1;
 	}
@@ -116,38 +110,7 @@ int main (int argc, char **argv) {
 	
 	/* Scale crude polygons by 1e6 to match the data scale */
 	
-	for (i = 0; i < N_EUR_O; i++) {
-		ieur_o[0][i] *= MILL;
-		ieur_o[1][i] *= MILL;
-	}
-	for (i = 0; i < N_EUR_I; i++) {
-		ieur_i[0][i] *= MILL;
-		ieur_i[1][i] *= MILL;
-	}
-	for (i = 0; i < N_AFR_I; i++) {
-		iafr_i[0][i] *= MILL;
-		iafr_i[1][i] *= MILL;
-	}
-	for (i = 0; i < N_AM_O; i++) {
-		iam_o[0][i] *= MILL;
-		iam_o[1][i] *= MILL;
-	}
-	for (i = 0; i < N_SAM_I; i++) {
-		isam_i[0][i] *= MILL;
-		isam_i[1][i] *= MILL;
-	}
-	for (i = 0; i < N_NAM_I; i++) {
-		inam_i[0][i] *= MILL;
-		inam_i[1][i] *= MILL;
-	}
-	for (i = 0; i < N_AUS_O; i++) {
-		iaus_o[0][i] *= MILL;
-		iaus_o[1][i] *= MILL;
-	}
-	for (i = 0; i < N_AUS_I; i++) {
-		iaus_i[0][i] *= MILL;
-		iaus_i[1][i] *= MILL;
-	}
+	crude_init_int (IX, IY, N, MILL);
 	
 	/* Test everything except Antarctica which has no lakes */
 	
@@ -157,7 +120,8 @@ int main (int argc, char **argv) {
 	
 		if (blob[id1].h.source == -1) continue;	/* Marked for deletion */
 		
-		if (fabs (blob[id1].h.east - blob[id1].h.west) == 360.0) continue;	/* But skip Antarctica since there are no lakes in the data set */
+		cont_no_1 = (blob[id1].h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
+		if (cont_no_1 == ANTARCTICA) continue;	/* But skip Antarctica since there are no lakes in the data set */
 		
 		if (id1%10 == 0) fprintf (stderr, "Polygon %d\r", id1);
 
@@ -174,45 +138,28 @@ int main (int argc, char **argv) {
 		n = blob[id1].h.n;
 		/* Here lon,lat goes from -180 to +359.99999 and is continuous (no jumps) */
 		
-		west1 = blob[id1].h.west;	east1 = blob[id1].h.east;
-		
 		for (id2 = 0; id2 < n_id; id2++) {
 			
-			if (fabs (blob[id2].h.east - blob[id2].h.west) == 360.0) continue;	/* But skip Antarctica */
-			if (blob[id1].h.id == blob[id2].h.id) continue;		/* Skip self testing */
-			if (blob[id2].h.source == -1) continue;	/* Marked for deletion */
+			if (blob[id2].h.source == -1) continue;		/* Marked for deletion */
+			cont_no_2 = (blob[id2].h.river >> 8);		/* Get continent number 1-6 (0 if not a continent) */
+			if (cont_no_2) continue;			/* But skip continents since they cannot contain each other */
+			if (blob[id1].h.id == blob[id2].h.id) continue;	/* Skip self testing */
+			if (blob[id2].h.id == 25)
+				ix0 = 0;
 			
-			/* First perform simple tests based on min/max coordinates */
-			
-			if ( (blob[id2].h.south > blob[id1].h.north) || (blob[id2].h.north < blob[id1].h.south)) continue;	/* Lat checks are unique */
-			
-			/* OK, do longitude checks, carefully */
-			
-			west2 = blob[id2].h.west;	east2 = blob[id2].h.east;
-			
-			while (west2 > east1) {	/* Wind region 2 way to the left of region 1 */
-				east2 -= 360.0;
-				west2 -= 360.0;
-			}
-			while (east2 < west1) {	/* Adjust id2 range to match (if possible) the id1 range */
-				east2 += 360.0;
-				west2 += 360.0;
-			}
-			if (west2 > east1) continue;	/* Clearly not overlapping */
-			
+			if (nothing_in_common (&blob[id1].h, &blob[id2].h, &x_shift)) continue;	/* No area in common */
+
 			/* Must compare with polygon boundaries */
 			
-			x0 = blob[id2].x0 * 1.0e-6;	/* This is in 0-360 range */
-			ix0 = x0 * MILL;
-			if (fast && blob[id1].h.id == EUR_ID) {	/* Eurasia, first do quick coarse test.  Note: ieur_o is in 350/555 range */
-				while (ix0 < EUR_O_MIN_X) ix0 += M360;	/* Make sure we are EUR_O range */
-				intest = non_zero_winding2 (ix0, blob[id2].y0, ieur_o[0], ieur_o[1], N_EUR_O);
-				if (!intest) continue;
+			ix0 = blob[id2].x0 + (x_shift * MILL);
+			if (full && cont_no_1 > 0 && cont_no_1 != ANTARCTICA) {	/* Use course outlines to determine if id2 is inside/outside a continent */
+				c = cont_no_1 - 1;
+				intest = non_zero_winding2 (ix0, blob[id2].y0, IX[c][OUTSIDE], IY[c][OUTSIDE], N[c][OUTSIDE]);
+				if (!intest) continue;	/* id2 is outside this crude continent outline */
 				
-				/* So point is inside crude outside. Now check if it is inside crude inside */
+				/* Now check if it is inside crude inside */
 				
-				intest = non_zero_winding2 (ix0, blob[id2].y0, ieur_i[0], ieur_i[1], N_EUR_I);
-				if (!intest) intest = non_zero_winding2 (ix0, blob[id2].y0, iafr_i[0], iafr_i[1], N_AFR_I);
+				intest = non_zero_winding2 (ix0, blob[id2].y0, IX[c][INSIDE], IY[c][INSIDE], N[c][INSIDE]);
 
 				if (intest == 2) {	/* way inside, set levels */
 					blob[id2].inside[blob[id2].n_inside] = blob[id1].h.id;
@@ -223,57 +170,12 @@ int main (int argc, char **argv) {
 					}
 					continue;
 				}
-				/* If not, we fall down to the _real_ test */
-			}
-			else if (fast && blob[id1].h.id == AM_ID) {	/* Americas, first do quick test */
-				while (ix0 < AM_O_MIN_X) ix0 += M360;	/* Make sure we are AM_O range */
-				intest = non_zero_winding2 (ix0, blob[id2].y0, iam_o[0], iam_o[1], N_AM_O);
-				if (!intest) continue;
-
-				/* So point is inside crude outside. Now check if it is inside crude inside */
-				
-				intest = non_zero_winding2 (ix0, blob[id2].y0, isam_i[0], isam_i[1], N_SAM_I);
-
-				if (!intest) intest = non_zero_winding2 (ix0, blob[id2].y0, inam_i[0], inam_i[1], N_NAM_I);
-
-				if (intest == 2) {	/* way inside, set levels */
-					blob[id2].inside[blob[id2].n_inside] = blob[id1].h.id;
-					blob[id2].n_inside++;
-					if (blob[id2].n_inside == 6) {
-						fprintf (stderr, "You're fucked again!\n");
-						exit (EXIT_FAILURE);
-					}
-					continue;
-				}
-				/* If not, we fall down to the _real_ test */
-			}
-			else if (fast && blob[id1].h.id == AUS_ID) {	/* Australia, first do quick test */
-				while (ix0 < AUS_O_MIN_X) ix0 += M360;	/* Make sure we are AUS_O range */
-				intest = non_zero_winding2 (ix0, blob[id2].y0, iaus_o[0], iaus_o[1], N_AUS_O);
-				if (!intest) continue;
-				
-				/* So point is inside crude outside. Now check if it is inside crude inside */
-				
-				intest = non_zero_winding2 (ix0, blob[id2].y0, iaus_i[0], iaus_i[1], N_AUS_I);
-
-				if (intest == 2) {	/* way inside, set levels */
-					blob[id2].inside[blob[id2].n_inside] = blob[id1].h.id;
-					blob[id2].n_inside++;
-					if (blob[id2].n_inside == 6) {
-						fprintf (stderr, "You're fucked again!\n");
-						exit (EXIT_FAILURE);
-					}
-					continue;
-				}
-				/* If not, we fall down to the _real_ test */
+				/* If not, we are between the two crude representations we fall down to the _real_ test using actual outlines */
 			}
 			
 			/* Here we need to perform complete inside test */
 			
-			x0 -= 720.0;	/* Go way far left */
-			while (x0 < blob[id1].h.west) x0 += 360.0;	/* March east until we exceed west */
-			ix0 = x0 * MILL;
-			if (!(lon[0] == lon[n-1] && lat[0] == lat[n-1])) {	/* Close the polygon if no already */
+			if (!(lon[0] == lon[n-1] && lat[0] == lat[n-1])) {	/* Close the polygon if not already */
 				lon[n] = lon[0];
 				lat[n] = lat[0];
 				n++;
@@ -308,6 +210,7 @@ int main (int argc, char **argv) {
 		
 	free ((void *)lon);
 	free ((void *)lat);
+	crude_free_int (IX, IY, N);
 
 	fprintf (stderr, "\nFound %d bad cases\n", bad);
 	

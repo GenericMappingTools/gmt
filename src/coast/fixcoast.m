@@ -1,15 +1,17 @@
-function fixcoast (id1,idfix)
+function fixcoast (id1,fixids)
 % FIXCOAST
-%	$Id: fixcoast.m,v 1.8 2009-06-06 10:49:23 guru Exp $
+%	$Id: fixcoast.m,v 1.9 2009-06-09 02:26:02 guru Exp $
 %
 % Give the id of the polygon to be fixed.  A file polygon.id.new
 % will be create with the new, modified polygon,  Optionally,
-% give a second id; that polygon is just plotted for reference.
+% give a second id (or array with ids); those polygon are just
+% plotted for reference.
 %
 % The following click-types are supported:
 %   d = Delete nearest point (or Left mouse click)
 %   i = Insert new point between 2 nearest (or Right mouse click)
 %   m = move point
+%   n = Report point number and coordinates
 %   z = allow zoom level to be changed
 %   r = reverse direction of polygon
 %   q = ends the editing and saves file
@@ -21,12 +23,7 @@ file1 = ['polygon.' num2str(id1)];
 load (file1)
 x1 = polygon(:,1);
 y1 = polygon(:,2);
-if (nargin == 2)
-	file2 = ['polygon.' num2str(idfix)];
-	load (file2)
-	x2 = polygon(:,1);
-	y2 = polygon(:,2);
-end
+
 % Plot in figure 1 polygon 1 as green line with blue circles at points
 figure(1)
 clf
@@ -34,10 +31,17 @@ pl = plot (x1, y1, 'g-');
 hold on
 grid on
 pp = plot (x1, y1, '.');
-% Plot polygon 2 as black line with black circles at points
 if (nargin == 2)
-	plot (x2, y2, 'k-');
-	plot (x2, y2, 'k.');
+% Plot polygon 2 as black line with black circles at points
+    n_ids = length (fixids);
+    for i=1:n_ids
+        file2 = ['polygon.' num2str(fixids(i))];
+        load (file2)
+        x2 = polygon(:,1);
+        y2 = polygon(:,2);
+    	plot (x2, y2, 'k-');
+        plot (x2, y2, 'k.');
+    end
 end
 title ('Zoom in if you need to - then hit return to continue')
 pause
@@ -110,8 +114,26 @@ fclose (fp);
 title (['Done.  Revised file saved to ' file])
 
 function pair = find_near (x, y, x0, y0)
-% Return the id's of the two nearest points
+% Return the id's of the two nearest consecutive points
 % Quick flat-earth distances used
 r = abs ((x - x0).*cosd(0.5*(y+y0)) + sqrt(-1).*(y - y0));
 [rsort, i] = sort (r);
-pair = i(1:2);
+pair(1) = i(1);
+n = length(x);
+if (i(1) == 1)  % First point
+    left = n-1;
+    right = 2;
+elseif (i(1) == n)  % Last point
+    left = n-1;
+    right = 2;
+else
+    left = i(1) - 1;
+    right = i(1) + 1;
+end
+if (r(left) < r(right))
+    pair(2) = left;
+else
+    pair(2) = right;
+end
+
+

@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.6 2009-06-05 00:25:12 guru Exp $
+ *	$Id: wvs.h,v 1.7 2009-06-09 02:26:02 guru Exp $
  */
 /* wvs.h
  *
@@ -18,6 +18,18 @@
 #define M90   90000000
 #define MILL   1000000
 
+#define N_CONTINENTS	6
+
+#define EURASIA		1
+#define AFRICA		2
+#define NAMERICA	3
+#define SAMERICA	4
+#define ANTARCTICA	5
+#define AUSTRALIA	6
+
+#define OUTSIDE		0
+#define INSIDE		1
+
 #define N_EUR_O	43	/* # of points in various polygons */
 #define N_EUR_I	59
 #define N_AFR_I	15
@@ -28,8 +40,6 @@
 #define N_AUS_I	15
 
 typedef unsigned short ushort;
-extern int Douglas_Peucker (double x_source[], double y_source[], int n_source, double band, int index[]);
-extern int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[]);
 
 struct	LONGPAIR {
 	int	x;
@@ -64,7 +74,7 @@ struct GMT3_POLY {
 	int checked[2]; /* TRUE if polygon has been crossover checked with all peers */
 	int source;     /* 0 = CIA WDBII, 1 = WVS */
 	int parent;     /* -1 if top level 1, else id of polygon containing this polygon */
-	int river;     /* 1 if this is level2 and river-lake  */
+	int river;     /* 1 if this is level2 and river-lake, also contains cont# << 8 */
 	double west, east, south, north;
 	double area;    /* Area of polygon */
 };
@@ -80,6 +90,13 @@ extern int pol_fwrite2 (struct LONGPAIR *p, size_t n_items, FILE *fp);
 extern double area_size (double x[], double y[], int n, int *sign);
 extern int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path);
 extern void area_init ();
+extern int Douglas_Peucker (double x_source[], double y_source[], int n_source, double band, int index[]);
+extern int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[]);
+void crude_init (double *X[N_CONTINENTS][2], double *Y[N_CONTINENTS][2], int N[N_CONTINENTS][2]);
+void crude_free (double *X[N_CONTINENTS][2], double *Y[N_CONTINENTS][2], int N[N_CONTINENTS][2]);
+void crude_init_int (int *IX[N_CONTINENTS][2], int *IY[N_CONTINENTS][2], int N[N_CONTINENTS][2], int scale);
+void crude_free_int (int *IX[N_CONTINENTS][2], int *IY[N_CONTINENTS][2], int N[N_CONTINENTS][2]);
+int nothing_in_common (struct GMT3_POLY *hi, struct GMT3_POLY *hj, double *shift);
 
 #ifndef COASTLIB
 #define EUR_O_MIN_X (340 * MILL)
