@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_final_info.c,v 1.4 2007-08-27 19:02:26 guru Exp $
+ *	$Id: polygon_final_info.c,v 1.5 2009-06-09 02:26:02 guru Exp $
  */
 /* polygon_final_info wvs_polygon_file.b
  *
@@ -32,7 +32,7 @@ int main (int argc, char **argv)
 		}
 		
 		if (src == -1 || h.source == src)
-			printf ("%d\t%d\t%d\t%d\t%10.5f\t%10.5f\t%9.5f\t%9.5f\t%g\n", h.id, h.n, h.level, h.source, h.west, h.east, h.south, h.north, h.area);
+			printf ("%d\t%d\t%d\t%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.12g\n", h.id, h.n, h.level, h.source, h.west, h.east, h.south, h.north, h.area);
 		id++;
 		np += h.n;
 	}

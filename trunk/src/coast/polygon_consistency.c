@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.17 2009-06-05 00:25:12 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.18 2009-06-09 02:26:02 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -14,8 +14,8 @@ int main (int argc, char **argv)
 {
 	FILE	*fp;
 	int	i, n_id, this_n, nd, nx, n_x_problems, n_s_problems, n_c_problems, n_r_problems;
-	int	n_d_problems, n_a_problems, ix0 = 0, iy0 = 0, report_mismatch = 0;
-	int	w, e, s, n, ixmin, ixmax, iymin, iymax, ANTARCTICA, last_x = 0, last_y = 0;
+	int	n_d_problems, n_a_problems, ix0 = 0, iy0 = 0, report_mismatch = 0, cont_no;
+	int	w, e, s, n, ixmin, ixmax, iymin, iymax, last_x = 0, last_y = 0;
 	int	ant_trouble = 0, found, A, B, end, n_adjust = 0, left, right;
 	struct GMT_XSEGMENT *ylist;
 	struct GMT_XOVER XC;
@@ -36,8 +36,8 @@ int main (int argc, char **argv)
 		if (h.id == 13401)
 			w = 0;
 	
-		ANTARCTICA = (fabs (h.east - h.west) == 360.0);
-		if (ANTARCTICA) {
+		cont_no = (h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
+		if (cont_no == ANTARCTICA) {
 			if (h.south > -90.0) ant_trouble = TRUE;
 		}
 		if (h.area < 0 && h.level != 2) fprintf (stderr, "Pol %d has negative area and is level %d\n", h.id, h.level);

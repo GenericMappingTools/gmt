@@ -1,0 +1,17 @@
+# Crude representation of a closed polygon containing S America
+-73	13
+-80	10
+-82	0
+-82	-11
+-74	-20
+-76	-39
+-77	-55
+-63	-57
+-61	-53
+-64	-46
+-45	-29
+-34	-18
+-33	-3
+-51	7
+-62	12
+-73	13
