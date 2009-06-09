@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.20 2009-06-09 02:26:02 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.21 2009-06-09 02:59:35 guru Exp $
  */
 #include "wvs.h"
 
@@ -144,7 +144,7 @@ int main (int argc, char **argv) {
 			cont_no_2 = (blob[id2].h.river >> 8);		/* Get continent number 1-6 (0 if not a continent) */
 			if (cont_no_2) continue;			/* But skip continents since they cannot contain each other */
 			if (blob[id1].h.id == blob[id2].h.id) continue;	/* Skip self testing */
-			if (blob[id2].h.id == 25)
+			if (blob[id2].h.id == 180534)
 				ix0 = 0;
 			
 			if (nothing_in_common (&blob[id1].h, &blob[id2].h, &x_shift)) continue;	/* No area in common */
