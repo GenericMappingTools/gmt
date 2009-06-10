@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.17 2009-06-10 05:14:41 guru Exp $
+ *	$Id: polygon_xover.c,v 1.18 2009-06-10 20:04:44 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -17,8 +17,8 @@ struct POLYGON {
 int main (int argc, char **argv)
 {
 	FILE	*fp;
-	int i, n_id, id1, id2, nx, nx_tot, verbose, cnt, full, in, eur_id = 0, cont_no, N[5][2];
-	double x_shift = 0.0, r, theta, c, s, *X, *Y, *CX[5][2], *CY[5][2];
+	int i, n_id, id1, id2, nx, nx_tot, verbose, cnt, full, in, eur_id = 0, cont_no, N[N_CONTINENTS][2];
+	double x_shift = 0.0, *X, *Y, *CX[N_CONTINENTS][2], *CY[N_CONTINENTS][2];
 	struct GMT_XSEGMENT *ylist1, *ylist2;
 	struct GMT_XOVER XC;
 	struct LONGPAIR p;
@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 			fprintf (stderr, "Pol %d has negative w/e values.  Run polygon_fixnegwesn\n", P[n_id].h.id);
 			exit(-1);
 		}
-		cont_no = (P[n_id].h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
+		cont_no = WVS_continent (P[n_id].h);	/* Get continent number 1-6 (0 if not a continent) */
 		if (cont_no == EURASIA) eur_id = n_id;	/* blob with Eurasia */
 
 		for (i = 0; i < P[n_id].h.n; i++) {
@@ -52,17 +52,12 @@ int main (int argc, char **argv)
 				exit(-1);
 			}
 			if (P[n_id].h.greenwich && p.x > P[n_id].h.datelon) p.x -= M360;
-			P[n_id].lon[i] = p.x * 1e-6;
-			P[n_id].lat[i] = p.y * 1e-6;
+			P[n_id].lon[i] = p.x * I_MILL;
+			P[n_id].lat[i] = p.y * I_MILL;
 		}
 		/* lon,lat is now -180/+270 and continuous */
 		if (cont_no == ANTARCTICA) {	/* Special r,theta conversion */
-			for (i = 0; i < P[n_id].h.n; i++) {
-				sincosd (P[n_id].lon[i], &s, &c);
-				r = P[n_id].lat[i] + 90.0;	/* So r = 0 is S pole */
-				P[n_id].lon[i] = r * c;
-				P[n_id].lat[i] = r * s;
-			}
+			for (i = 0; i < P[n_id].h.n; i++) xy2rtheta (&P[n_id].lon[i], &P[n_id].lat[i]);
 		}
 
 		n_id++;
@@ -78,21 +73,18 @@ int main (int argc, char **argv)
 	
 	nx_tot = 0;
 	for (id1 = 0; id1 < n_id; id1++) {
-		if (id1 == 0) continue;
-		cont_no = (P[id1].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
+		cont_no = WVS_continent (P[id1].h);	/* Get continent number 1-6 (0 if not a continent) */
 		
 		GMT_init_track (P[id1].lat, P[id1].h.n, &ylist1);
 			
 		for (id2 = MAX (N_CONTINENTS, id1 + 1); id2 < n_id; id2++) {	/* Dont start earlier than N_CONTINENTS since no point comparing continents */
-			if (cont_no == ANTARCTICA) {	/* Must compare using r,theta */
-				if (P[id2].h.south > P[id1].h.north) continue;	/* Too far north */
+			if (cont_no == ANTARCTICA) {	/* Must compare to id1 polygon (Antarctica) using r,theta */
+				if (P[id2].h.south > P[id1].h.north) continue;	/* Too far north to matter */
 				X = (double *) GMT_memory (VNULL, P[id2].h.n, sizeof (double), "polygon_xover");
 				Y = (double *) GMT_memory (VNULL, P[id2].h.n, sizeof (double), "polygon_xover");
-				for (i = 0; i < P[id2].h.n; i++) {
-					sincosd (P[id2].lon[i], &s, &c);
-					r = P[id2].lat[i] + 90.0;	/* So r = 0 is S pole */
-					X[i] = r * c;
-					Y[i] = r * s;
+				for (i = 0; i < P[id2].h.n; i++) {	/* Special r,theta conversion */
+					X[i] = P[id2].lon[i];	Y[i] = P[id2].lat[i];
+					xy2rtheta (&X[i], &Y[i]);
 				}
 			}
 			else {	/* Regular Cartesian testing */
@@ -108,6 +100,7 @@ int main (int argc, char **argv)
 					for (i = in = 0; i < P[id2].h.n; i++) in += GMT_non_zero_winding (P[id2].lon[i] + x_shift, P[id2].lat[i], CX[cnt][INSIDE], CY[cnt][INSIDE], N[cnt][INSIDE]);
 					if (in == (2 * P[id2].h.n)) continue;	/* Polygon id2 completely inside the "inside" polygon 1 */
 				}
+				/* Crude test were inconclusive; now do full test with actual polygons */
 				X = P[id2].lon;
 				Y = P[id2].lat;
 				if (!GMT_IS_ZERO (x_shift)) for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] += x_shift;
@@ -121,14 +114,8 @@ int main (int argc, char **argv)
 
 			nx = GMT_crossover (P[id1].lon, P[id1].lat, NULL, ylist1, P[id1].h.n, X, Y, NULL, ylist2, P[id2].h.n, FALSE, &XC);
 			GMT_free ((void *)ylist2);
-			if (id1 == ANTARCTICA) {	/* Undo projection for crossover results */
-				for (i = 0; i < nx; i++) {
-					r = hypot (XC.x[i], XC.y[i]);
-					theta = atan2d (XC.y[i], XC.x[i]);
-					if (theta < 0.0) theta += 360.0;
-					XC.x[i] = theta;
-					XC.y[i] = r - 90.0;
-				}
+			if (cont_no == ANTARCTICA) {	/* Undo projection for crossover results */
+				for (i = 0; i < nx; i++) rtheta2xy (&XC.x[i], &XC.y[i]);
 				GMT_free ((void *)X);
 				GMT_free ((void *)Y);
 			}
@@ -147,5 +134,5 @@ int main (int argc, char **argv)
 	
 	if (verbose) fprintf (stderr, "\npolygon_xover: %d external crossovers\n", nx_tot);
 
-	exit(0);
+	exit (EXIT_SUCCESS);
 }

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.10 2009-06-10 05:09:39 guru Exp $
+ *	$Id: polygon_setnodes.c,v 1.11 2009-06-10 20:04:44 guru Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -21,7 +21,6 @@ struct BLOB {
 
 int *lon, *lat;
 int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path);
-void xy2rtheta (int *lon, int *lat);
 
 struct GRD_HEADER grdh;
 float *grd;
@@ -29,7 +28,7 @@ int main (int argc, char **argv)
 {
 	int i, j, k, n_id, pos, n_nodes, id, intest, n, nx_minus_1, ix0, off, iy0, slow = 0;
 	int iblon, iblat, ij, i0, i1, j0, j1, ii, full, cont_no, c;
-	int *IX[5][2], *IY[5][2], N[5][2];
+	int *IX[N_CONTINENTS][2], *IY[N_CONTINENTS][2], N[N_CONTINENTS][2];
 	double west, east, blon, blat, x0, w, iw;
 	FILE *fp;
 	struct LONGPAIR p;
@@ -96,7 +95,7 @@ int main (int argc, char **argv)
 
 	for (id = 0; id < n_id; id++) {	/* For all anchor polygons */
 	
-		cont_no = (blob[id].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
+		cont_no = WVS_continent (blob[id].h);	/* Get continent number 1-6 (0 if not a continent) */
 
 		slow = (w <= 2.0 && cont_no);
 		
@@ -123,7 +122,7 @@ int main (int argc, char **argv)
 		}
 		
 		if (cont_no == ANTARCTICA) {	/* Antarctica : Switch to polar coordinates r, theta */
-			for (i = 0; i < n; i++) xy2rtheta (&lon[i], &lat[i]);
+			for (i = 0; i < n; i++) xy2rtheta_int (&lon[i], &lat[i]);
 		}
 
 		j0 = ceil ((90.0 - blob[id].h.north) * iw);
@@ -183,7 +182,7 @@ int main (int argc, char **argv)
 				if (cont_no == ANTARCTICA) {	/* Do r-theta projection */
 					ix0 = iblon;
 					iy0 = iblat;
-					xy2rtheta (&ix0, &iy0);
+					xy2rtheta_int (&ix0, &iy0);
 				}
 				else {
 					x0 = blon;
@@ -229,14 +228,3 @@ int main (int argc, char **argv)
 	
 	exit (EXIT_SUCCESS);
 }	
-
-void xy2rtheta (int *lon, int *lat)
-{	/* Just convert lon lat to a polar coordinate system */
-	double slon, clon, r0;
-	sincosd (1e-6 * (*lon), &slon, &clon);
-	r0 = 90.0 + (1e-6 * (*lat));
-	clon *= r0;
-	slon *= r0;
-	*lon = irint (clon * MILL);
-	*lat = irint (slon * MILL);
-}
