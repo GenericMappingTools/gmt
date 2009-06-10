@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.535 2009-06-07 22:47:36 jluis Exp $
+	$Id: ChangeLog,v 1.536 2009-06-10 05:10:45 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-09	pwessel
+	* misc/gmtdp.c:		With -m, did not write the correct multisegment header from input.
 
 2009-06-07	jluis
 	* mgd77/mgd77info.c:	Use of both printf() and internal functions that write to GMT_stdout
