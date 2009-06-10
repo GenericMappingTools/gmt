@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.18 2009-06-09 02:26:02 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.19 2009-06-10 05:09:38 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -41,7 +41,7 @@ int main (int argc, char **argv)
 			if (h.south > -90.0) ant_trouble = TRUE;
 		}
 		if (h.area < 0 && h.level != 2) fprintf (stderr, "Pol %d has negative area and is level %d\n", h.id, h.level);
-		if (h.river && h.level != 2) fprintf (stderr, "Pol %d is a riverlake but level is %d\n", h.id, h.level);
+		if ((h.river & 1) && h.level != 2) fprintf (stderr, "Pol %d is a riverlake but level is %d\n", h.id, h.level);
 		ixmin = iymin = M360;
 		ixmax = iymax = -M360;
 		w = irint (h.west * 1e6);
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
 		}
 		
 		if (nd) n_d_problems++;
-		if (ANTARCTICA) iymin = -M90;
+		if (cont_no == ANTARCTICA) iymin = -M90;
 		if (! (p.x == ix0 && p.y == iy0)) {
 			printf ("%d\tnot closed\n", h.id);
 			n_c_problems++;
@@ -84,7 +84,7 @@ int main (int argc, char **argv)
 			printf ("%d\twesn mismatch.  Should be %.6f/%.6f/%.6f/%.6f\n", h.id, 1e-6 * ixmin, 1e-6 * ixmax, 1e-6 * iymin, 1e-6 * iymax);
 			n_r_problems++;
 		}
-		this_n = (ANTARCTICA) ? h.n - 1 : h.n;
+		this_n = (cont_no == ANTARCTICA) ? h.n - 1 : h.n;
 		GMT_init_track (lat, this_n, &ylist);
 		if (!GMT_IS_ZERO (h.east - h.west)) {
 			nx = found = GMT_crossover (lon, lat, NULL, ylist, this_n, lon, lat, NULL, ylist, this_n, TRUE, &XC);

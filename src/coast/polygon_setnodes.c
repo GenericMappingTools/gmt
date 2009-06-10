@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.9 2009-06-09 02:26:02 guru Exp $
+ *	$Id: polygon_setnodes.c,v 1.10 2009-06-10 05:09:39 guru Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -21,6 +21,7 @@ struct BLOB {
 
 int *lon, *lat;
 int non_zero_winding2 (int xp, int yp, int *x, int *y, int n_path);
+void xy2rtheta (int *lon, int *lat);
 
 struct GRD_HEADER grdh;
 float *grd;
@@ -29,7 +30,7 @@ int main (int argc, char **argv)
 	int i, j, k, n_id, pos, n_nodes, id, intest, n, nx_minus_1, ix0, off, iy0, slow = 0;
 	int iblon, iblat, ij, i0, i1, j0, j1, ii, full, cont_no, c;
 	int *IX[5][2], *IY[5][2], N[5][2];
-	double west, east, blon, blat, x0, y0, w, iw, slon, clon, r0;
+	double west, east, blon, blat, x0, w, iw;
 	FILE *fp;
 	struct LONGPAIR p;
 	
@@ -95,7 +96,7 @@ int main (int argc, char **argv)
 
 	for (id = 0; id < n_id; id++) {	/* For all anchor polygons */
 	
-		cont_no = (blob[n_id].h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
+		cont_no = (blob[id].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
 
 		slow = (w <= 2.0 && cont_no);
 		
@@ -122,14 +123,7 @@ int main (int argc, char **argv)
 		}
 		
 		if (cont_no == ANTARCTICA) {	/* Antarctica : Switch to polar coordinates r, theta */
-			for (i = 0; i < n; i++) {
-				sincosd (1e-6 * lon[i], &slon, &clon);
-				r0 = 90.0 + (1e-6 * lat[i]);
-				x0 = r0 * clon;
-				y0 = r0 * slon;
-				lon[i] = irint (x0 * 1e6);
-				lat[i] = irint (y0 * 1e6);
-			}
+			for (i = 0; i < n; i++) xy2rtheta (&lon[i], &lat[i]);
 		}
 
 		j0 = ceil ((90.0 - blob[id].h.north) * iw);
@@ -187,18 +181,15 @@ int main (int argc, char **argv)
 				}
 
 				if (cont_no == ANTARCTICA) {	/* Do r-theta projection */
-					sincosd (blon, &slon, &clon);
-					r0 = 90.0 + blat;
-					x0 = r0 * clon;
-					y0 = r0 * slon;
-					ix0 = irint (x0 * MILL);
-					iy0 = irint (y0 * MILL);
+					ix0 = iblon;
+					iy0 = iblat;
+					xy2rtheta (&ix0, &iy0);
 				}
 				else {
 					x0 = blon;
 					if (cont_no == EURASIA && x0 > blob[id].h.east)
 						x0 -= 360.0;
-					else if (id > 0 && blob[id].h.greenwich && x0 > 180.0)
+					else if (cont_no != EURASIA && blob[id].h.greenwich && x0 > 180.0)
 						x0 -= 360.0;
 					else if (!blob[id].h.greenwich && x0 < 0.0)
 						x0 += 360.0;
@@ -238,3 +229,14 @@ int main (int argc, char **argv)
 	
 	exit (EXIT_SUCCESS);
 }	
+
+void xy2rtheta (int *lon, int *lat)
+{	/* Just convert lon lat to a polar coordinate system */
+	double slon, clon, r0;
+	sincosd (1e-6 * (*lon), &slon, &clon);
+	r0 = 90.0 + (1e-6 * (*lat));
+	clon *= r0;
+	slon *= r0;
+	*lon = irint (clon * MILL);
+	*lat = irint (slon * MILL);
+}
