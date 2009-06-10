@@ -93,6 +93,13 @@ The option OPT(To) is no longer supported.
 #include "explain_-c.txt"
 #include "explain_-f.txt"
 #include "explain_grd_input.txt"
+.SH IMAGING GRIDS WITH NANS
+Be aware that if your input grid contains patches of NaNs, these patches can become larger
+as a consequence of the resampling that must take place with most map projections.  Because
+\fBgrdimage\fP uses the \fIPostScript\fP colorimage operator, for most non-linear projections
+we must resample your grid onto an equidistant rectangular lattice.  If you find that the NaN
+areas are not treated adequately, consider (a) use a linear projection, or (b) use
+\fBgrdview \-Ts\fP instead.
 .SH EXAMPLES
 To gray-shade the file hawaii_grav.grd with shades given in shades.cpt on a Lambert map
 at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks:

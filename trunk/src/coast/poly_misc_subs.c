@@ -1,5 +1,5 @@
 /*
- *	$Id: poly_misc_subs.c,v 1.3 2009-06-09 02:26:02 guru Exp $
+ *	$Id: poly_misc_subs.c,v 1.4 2009-06-10 20:04:44 guru Exp $
  *
  * Contains misc functions used by polygon* executables
  */
@@ -358,4 +358,33 @@ int nothing_in_common (struct GMT3_POLY *hi, struct GMT3_POLY *hj, double *shift
 	while (e < hi->west) e += 360.0, w += 360.0, (*shift) += 360.0;
 	if (w > hi->east) return (TRUE);
 	return (FALSE);
+}
+
+void xy2rtheta (double *lon, double *lat)
+{	/* Just convert lon lat to a polar coordinate system */
+	double slon, clon, r0;
+	sincosd (*lon, &slon, &clon);
+	r0 = 90.0 + (*lat);
+	*lon = clon * r0;
+	*lat = slon * r0;
+}
+
+void xy2rtheta_int (int *ilon, int *ilat)
+{	/* Just convert lon lat to a polar coordinate system */
+	double lon, lat;
+	lon = (*ilon) * 1e-6;
+	lat = (*ilat) * 1e-6;
+	xy2rtheta (&lon, &lat);
+	*ilon = irint (lon * MILL);
+	*ilat = irint (lat * MILL);
+}
+
+void rtheta2xy (double *lon, double *lat)
+{	/* Reverse the r-theta projection */
+	double r, theta;
+	r = hypot (*lon, *lat);
+	theta = atan2d (*lat, *lon);
+	if (theta < 0.0) theta += 360.0;
+	*lon = theta;
+	*lat = r - 90.0;
 }
