@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.21 2009-06-09 02:59:35 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.22 2009-06-10 05:09:38 guru Exp $
  */
 #include "wvs.h"
 
@@ -17,7 +17,7 @@ struct LONGPAIR *pp;
 
 int main (int argc, char **argv) {
 	int i, j, k, c, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, cont_no_1, cont_no_2, n_of_this[6];
-	int n_reset = 0, old, bad = 0, ix0, set, fast = 0, force, full = 0, eur_id = 0;
+	int n_reset = 0, old, bad = 0, ix0, set, force, full = 0, eur_id = 0, parent, *id2k;
 	int *IX[N_CONTINENTS][2], *IY[N_CONTINENTS][2], N[N_CONTINENTS][2];
 	double size, f, x_shift;
 	FILE *fp, *fp2 = NULL, *fpx, *fpr;
@@ -53,11 +53,12 @@ int main (int argc, char **argv) {
 			fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
 			exit(-1);
 		}
-		blob[n_id].x0 = p.x;	/* Pick first point on the polygon */
 		if (p.x < 0) {
 			fprintf (stderr, "x0 is actually neg %d. Stop; fix the problem\n", n_id);
 			exit (-1);
 		}
+		if (blob[n_id].h.greenwich && p.x > blob[n_id].h.datelon) p.x -= M360;
+		blob[n_id].x0 = p.x;	/* Pick first point on the polygon, with x0 bracketed by header w/e */
 		blob[n_id].y0 = p.y;
 		blob[n_id].n_inside = blob[n_id].reverse = 0;
 		fseek (fp, (blob[n_id].h.n - 1) * sizeof(struct LONGPAIR), 1);
@@ -72,11 +73,12 @@ int main (int argc, char **argv) {
 
 	flon = (double *) GMT_memory (CNULL, blob[eur_id].h.n, sizeof(double), "polygon_findlevel");
 	flat = (double *) GMT_memory (CNULL, blob[eur_id].h.n, sizeof(double), "polygon_findlevel");
+	id2k = (int *) GMT_memory (CNULL, n_id, sizeof(int), "polygon_findlevel");
 
 	if (full) fp2 = fopen ("areas.lis", "w");
 
 	for (id = 0; id < n_id; id++) {
-	
+		id2k[blob[id].h.id] = id;
 		if (blob[id].h.source == -1) continue;	/* Marked for deletion */
 		
 		fseek (fp, (long)blob[id].start, 0);
@@ -96,8 +98,10 @@ int main (int argc, char **argv) {
 			f = fabs ((size / blob[id].h.area) - 1.0)*1e6;	/* ppm change */
 			if (f > 5.0) fprintf (stderr, "Polygon %d has changed size by > 5 ppm (%.1f) [Area: old %s vs new %s]\n", blob[id].h.id, f, olds, news);
 		}
-		if (full) fprintf (fp2, "%d\t%.12g\t%.12g\n", blob[id].h.id, size * sign, blob[id].h.area);
-		blob[id].h.area = size;
+		if (full) {
+			fprintf (fp2, "%d\t%.12g\t%.12g\n", blob[id].h.id, size * sign, blob[id].h.area);
+			blob[id].h.area = size;
+		}
 		blob[id].reverse = sign + 1;
 	}
 
@@ -117,7 +121,6 @@ int main (int argc, char **argv) {
 	fprintf (stderr, "Start inside testing\n\n");
 	
 	for (id1 = 0; id1 < n_id; id1++) {	/* For all anchor polygons */
-	
 		if (blob[id1].h.source == -1) continue;	/* Marked for deletion */
 		
 		cont_no_1 = (blob[id1].h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
@@ -136,7 +139,7 @@ int main (int argc, char **argv) {
 			lat[k] = p.y;
 		}
 		n = blob[id1].h.n;
-		/* Here lon,lat goes from -180 to +359.99999 and is continuous (no jumps) */
+		/* Here lon,lat goes from -180 to +359.99999 and is continuous (no jumps), and limited by w/e */
 		
 		for (id2 = 0; id2 < n_id; id2++) {
 			
@@ -144,8 +147,6 @@ int main (int argc, char **argv) {
 			cont_no_2 = (blob[id2].h.river >> 8);		/* Get continent number 1-6 (0 if not a continent) */
 			if (cont_no_2) continue;			/* But skip continents since they cannot contain each other */
 			if (blob[id1].h.id == blob[id2].h.id) continue;	/* Skip self testing */
-			if (blob[id2].h.id == 180534)
-				ix0 = 0;
 			
 			if (nothing_in_common (&blob[id1].h, &blob[id2].h, &x_shift)) continue;	/* No area in common */
 
@@ -232,6 +233,8 @@ int main (int argc, char **argv) {
 			n_reset++;
 		}
 		n_of_this[blob[id].h.level]++;
+		old = blob[id].h.parent;
+		if (blob[id].n_inside)
 		
 		if (blob[id].h.level > max_level) {
 			max_level = blob[id].h.level;
@@ -246,6 +249,34 @@ int main (int argc, char **argv) {
 			blob[id].reverse = 0;
 			
 	}
+	fclose (fpr);
+	/* Determine parent IDs */
+	
+	fpr = fopen ("parents.lis", "w");
+	fprintf (stderr, "Determine parenthood\n");
+	for (id1 = 0; id1 < n_id; id1++) {	/* See which polygon contains this polygon */
+		fprintf (stderr, "Id = %d\r", id1);
+		if (blob[id1].h.source == -1) continue;		/* Marked for deletion */
+		if (blob[id1].h.level == 1) {			/* Highest level cannot have a parent */
+			parent = blob[id1].h.parent;
+			blob[id1].h.parent = -1;
+			if (parent != blob[id1].h.parent) fprintf (stderr, "Reset level 1 polygon %d parent from %d to -1\n", blob[id1].h.id, blob[id1].h.parent);
+			continue;
+		}
+		parent = -1;	/* OK, level > 1.  We now look through the list of polygons that contain id1 */
+		for (i = 0; parent == -1 && i < blob[id1].n_inside; i++) {	/* For each of the polygon that polygon id1 is contained by */
+			k = id2k[blob[id1].inside[i]];	/* Get the index to this id */
+			if ((blob[id1].h.level - blob[k].h.level) == 1) {
+				parent = blob[id1].inside[i]; /* Found the polygon one level up */
+			}
+		}
+		if (parent == -1) fprintf (stderr, "ERROR: Polygon %d has no parent!\n", blob[id1].h.id);
+		if (parent != blob[id1].h.parent) fprintf (stderr, "Reset polygon %d parent from %d to %d\n", blob[id1].h.id, blob[id1].h.parent, parent);
+		blob[id1].h.parent = parent;
+		if (parent != -1) fprintf (fpr, "%d is parent of %d\n", blob[id1].h.parent, blob[id1].h.id);
+		if ((blob[id1].h.river & 1) && blob[id1].h.parent == -1) fprintf (stderr, "River polygon %d has no parent!\n", blob[id1].h.id);
+	}
+	fprintf (stderr, "Id = %d\n", id1);
 	fclose (fpr);
 	
 	fprintf (fpx, "%d polygons had their presumed level reset\n", n_reset);
@@ -291,6 +322,7 @@ int main (int argc, char **argv) {
 	}
 	fclose (fp);
 	free ((void *)pp);
+	free ((void *)id2k);
 	
 	exit (EXIT_SUCCESS);
 }	

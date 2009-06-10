@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.15 2009-06-09 02:26:02 guru Exp $
+ *	$Id: polygon_xover.c,v 1.16 2009-06-10 05:09:39 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -17,7 +17,7 @@ struct POLYGON {
 int main (int argc, char **argv)
 {
 	FILE	*fp;
-	int i, n_id, id1, id2, nx, nx_tot, verbose, cnt, full, fast, in, eur_id = 0, cont_no, N[5][2];
+	int i, n_id, id1, id2, nx, nx_tot, verbose, cnt, full, in, eur_id = 0, cont_no, N[5][2];
 	double x_shift = 0.0, r, theta, c, s, *X, *Y, *CX[5][2], *CY[5][2];
 	struct GMT_XSEGMENT *ylist1, *ylist2;
 	struct GMT_XOVER XC;
@@ -101,7 +101,7 @@ int main (int argc, char **argv)
 
 				/* GMT_non_zero_winding returns 2 if inside, 1 if on line, and 0 if outside */
 			
-				if (fast && cont_no) {	/* Use course outlines to determine if id2 is inside/outside a continent */
+				if (full && cont_no) {	/* Use course outlines to determine if id2 is inside/outside a continent */
 					cnt = cont_no - 1;
 					for (i = in = 0; i < P[id2].h.n; i++) in += GMT_non_zero_winding (P[id2].lon[i] + x_shift, P[id2].lat[i], CX[cnt][OUTSIDE], CY[cnt][OUTSIDE], N[cnt][OUTSIDE]);
 					if (in == 0) continue;	/* Polygon id2 completely outside the "outside" polygon */

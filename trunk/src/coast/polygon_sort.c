@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sort.c,v 1.3 2009-06-09 02:26:02 guru Exp $
+ *	$Id: polygon_sort.c,v 1.4 2009-06-10 05:09:39 guru Exp $
  */
 /* polygon_sorts writes out final data in decreasing order (# points)
  *
@@ -20,7 +20,7 @@ int main (int argc, char **argv)
 {
 	FILE	*fp, *fp_out;
 	int	id, n_id, do_n, do_a, pos, k, sign, comp_blobs_a(), comp_blobs_n();
-	double *flon, *flat;
+	double *flon = NULL, *flat = NULL;
 	struct LONGPAIR pp;
 
 	if (argc < 3) {
@@ -93,7 +93,7 @@ int main (int argc, char **argv)
 		}
 		
 		hin.id = id;
-		if (do_a) hin.area = fabs(hh[id].h.area);
+		if (do_a || hh[id].h.area == 0.0) hin.area = fabs(hh[id].h.area);
 		
 		if (pol_writeheader (&hin, fp_out) != 1) {
 			fprintf (stderr, "polygon_sort: Failed writing header\n");
