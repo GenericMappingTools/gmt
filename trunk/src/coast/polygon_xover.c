@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.16 2009-06-10 05:09:39 guru Exp $
+ *	$Id: polygon_xover.c,v 1.17 2009-06-10 05:14:41 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -79,11 +79,11 @@ int main (int argc, char **argv)
 	nx_tot = 0;
 	for (id1 = 0; id1 < n_id; id1++) {
 		if (id1 == 0) continue;
-		cont_no = (P[id1].h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
+		cont_no = (P[id1].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
 		
 		GMT_init_track (P[id1].lat, P[id1].h.n, &ylist1);
 			
-		for (id2 = MAX (6, id1 + 1); id2 < n_id; id2++) {	/* Dont start earlier than 4 since no point comparing continents */
+		for (id2 = MAX (N_CONTINENTS, id1 + 1); id2 < n_id; id2++) {	/* Dont start earlier than N_CONTINENTS since no point comparing continents */
 			if (cont_no == ANTARCTICA) {	/* Must compare using r,theta */
 				if (P[id2].h.south > P[id1].h.north) continue;	/* Too far north */
 				X = (double *) GMT_memory (VNULL, P[id2].h.n, sizeof (double), "polygon_xover");
@@ -101,7 +101,7 @@ int main (int argc, char **argv)
 
 				/* GMT_non_zero_winding returns 2 if inside, 1 if on line, and 0 if outside */
 			
-				if (full && cont_no) {	/* Use course outlines to determine if id2 is inside/outside a continent */
+				if (full && cont_no) {	/* Use coarse outlines to determine if id2 is inside/outside a continent */
 					cnt = cont_no - 1;
 					for (i = in = 0; i < P[id2].h.n; i++) in += GMT_non_zero_winding (P[id2].lon[i] + x_shift, P[id2].lat[i], CX[cnt][OUTSIDE], CY[cnt][OUTSIDE], N[cnt][OUTSIDE]);
 					if (in == 0) continue;	/* Polygon id2 completely outside the "outside" polygon */
@@ -132,7 +132,7 @@ int main (int argc, char **argv)
 				GMT_free ((void *)X);
 				GMT_free ((void *)Y);
 			}
-			else if (!GMT_IS_ZERO (x_shift)) {
+			else if (!GMT_IS_ZERO (x_shift)) {	/* Undo longitude adjustment */
 				for (i = 0; i < P[id2].h.n; i++) P[id2].lon[i] -= x_shift;
 			}
 			if (nx) {
