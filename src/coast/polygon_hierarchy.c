@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_hierarchy.c,v 1.3 2009-06-09 02:26:02 guru Exp $
+ *	$Id: polygon_hierarchy.c,v 1.4 2009-06-11 05:42:09 guru Exp $
  * Determines the polygon ID in the full resolution that corresponds to
  * the lower-resolution polygons.
  */
@@ -106,7 +106,8 @@ int main (int argc, char **argv) {
 	for (id1 = 0; id1 < n_id[FULL]; id1++) {
 		fprintf (fp, "%d", P[FULL][id1].h.id);
 		for (res = 1; res < 5; res++) fprintf (fp, "\t%d", link[res][id1]);
-		fprintf (fp, "\t%g\t%d\t%d\n", P[FULL][id1].h.area, P[FULL][id1].h.parent, P[FULL][id1].h.river);
+		fprintf (fp, "\t%g\t%d\t%d\t%.6f\t%.6f\t%.6f\t%.6f\t%d\n", P[FULL][id1].h.area, P[FULL][id1].h.parent, P[FULL][id1].h.river, \
+		P[FULL][id1].h.west, P[FULL][id1].h.east, P[FULL][id1].h.south, P[FULL][id1].h.north, P[FULL][id1].h.source);
 	}
 	fclose (fp);
 	

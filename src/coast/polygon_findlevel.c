@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.22 2009-06-10 05:09:38 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.23 2009-06-11 05:42:09 guru Exp $
  */
 #include "wvs.h"
 
@@ -57,7 +57,7 @@ int main (int argc, char **argv) {
 			fprintf (stderr, "x0 is actually neg %d. Stop; fix the problem\n", n_id);
 			exit (-1);
 		}
-		if (blob[n_id].h.greenwich && p.x > blob[n_id].h.datelon) p.x -= M360;
+		if ((blob[n_id].h.greenwich & 1) && p.x > blob[n_id].h.datelon) p.x -= M360;
 		blob[n_id].x0 = p.x;	/* Pick first point on the polygon, with x0 bracketed by header w/e */
 		blob[n_id].y0 = p.y;
 		blob[n_id].n_inside = blob[n_id].reverse = 0;
@@ -87,7 +87,7 @@ int main (int argc, char **argv) {
 				fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
 				exit(-1);
 			}
-			if (blob[id].h.greenwich && p.x > blob[id].h.datelon) p.x -= M360;
+			if ((blob[id].h.greenwich & 1) && p.x > blob[id].h.datelon) p.x -= M360;
 			flon[k] = p.x * 1.0e-6;
 			flat[k] = p.y * 1.0e-6;
 		}
@@ -134,7 +134,7 @@ int main (int argc, char **argv) {
 				fprintf(stderr,"polygon_findlevel:  ERROR  reading file.\n");
 				exit(-1);
 			}
-			if (blob[id1].h.greenwich && p.x > blob[id1].h.datelon) p.x -= M360;
+			if ((blob[id1].h.greenwich & 1) && p.x > blob[id1].h.datelon) p.x -= M360;
 			lon[k] = p.x;
 			lat[k] = p.y;
 		}

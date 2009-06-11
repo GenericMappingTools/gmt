@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_stats.c,v 1.3 2009-06-05 00:25:12 guru Exp $
+ *	$Id: polygon_stats.c,v 1.4 2009-06-11 05:42:09 guru Exp $
  */
 /* 
  *	polygon_stats finds the average point spacing
@@ -37,7 +37,7 @@ int main (int argc, char **argv)
 			fprintf(stderr,"polygon_stats:  ERROR  reading file.\n");
 			exit(-1);
 		}
-		if (h.greenwich && p.x > h.datelon) p.x -= M360;
+		if ((h.greenwich & 1) && p.x > h.datelon) p.x -= M360;
 		x1 = 1.0e-6 * p.x;
 		y1 = 1.0e-6 * p.y;
 		for (k = 1; k < h.n; k++) {
@@ -47,7 +47,7 @@ int main (int argc, char **argv)
 				fprintf(stderr,"polygon_stats:  ERROR  reading file.\n");
 				exit(-1);
 			}
-			if (h.greenwich && p.x > h.datelon) p.x -= M360;
+			if ((h.greenwich & 1) && p.x > h.datelon) p.x -= M360;
 			x1 = 1.0e-6 * p.x;
 			y1 = 1.0e-6 * p.y;
 			dx = fabs(x1 - x0);

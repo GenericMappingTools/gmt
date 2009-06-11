@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_checkarea.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_checkarea.c,v 1.3 2009-06-11 05:42:09 guru Exp $
  */
 /* 
  *
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 				fprintf(stderr,"polygon_checkarea:  ERROR  reading file.\n");
 				exit(-1);
 			}
-			if (h3.greenwich && p.x > h3.datelon) p.x -= M360;
+			if ((h3.greenwich & 1) && p.x > h3.datelon) p.x -= M360;
 			x += p.x;
 			y += p.y;
 		}

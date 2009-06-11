@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract2.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_extract2.c,v 1.3 2009-06-11 05:42:09 guru Exp $
  */
 /* 
  *
@@ -59,7 +59,7 @@ int main (int argc, char **argv)
 	fp = fopen (file, "w");
 		
 	fseek (fp_in, poly[i].pos, 0);
-	if (poly[i].h.greenwich && w > poly[i].h.datelon) w -= M360, e -= M360;
+	if ((poly[i].h.greenwich & 1) && w > poly[i].h.datelon) w -= M360, e -= M360;
 		
 	for (k = 0; k < poly[i].h.n; k++) {
 		if (pol_fread (&p, 1, fp_in) != 1) {
@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 			exit(-1);
 		}
 		if (p.y < s || p.y > n) continue;
-		if (poly[i].h.greenwich && p.x > poly[i].h.datelon) p.x -= M360;
+		if ((poly[i].h.greenwich & 1) && p.x > poly[i].h.datelon) p.x -= M360;
 		if (p.x < w || p.x > e) continue;
 		
 		/* fprintf (fp, "%d\t%d\n", p.x, p.y); */

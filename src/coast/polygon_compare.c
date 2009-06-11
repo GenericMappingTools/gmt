@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_compare.c,v 1.1 2008-03-05 01:45:30 guru Exp $
+ *	$Id: polygon_compare.c,v 1.2 2009-06-11 05:42:09 guru Exp $
  */
 /* 
  *
@@ -42,7 +42,7 @@ int main (int argc, char **argv)
 			fprintf (stderr, "polygon_compare: headers N for polygon %d differ\n", ha.id);
 			nh_bad++;
 		}
-		if (! (ha.greenwich == hb.greenwich)) {
+		if (! ((ha.greenwich & 1) == (hb.greenwich & 1))) {
 			fprintf (stderr, "polygon_compare: headers G for polygon %d differ\n", ha.id);
 			nh_bad++;
 		}

@@ -1,5 +1,5 @@
 /*
- * $Id: polygon_match.c,v 1.3 2009-06-09 02:26:02 guru Exp $
+ * $Id: polygon_match.c,v 1.4 2009-06-11 05:42:09 guru Exp $
  * Compares the enw and old *.b files and looks for differences.
  * Currently set up for old using the previous GMT3_POLY structure
  * with endian swabbing while the new has the new structure and no
@@ -139,7 +139,7 @@ int main (int argc, char **argv) {
 			memset ((void *)alarm, 0, 32);
 			if (new_P[id1].h.id != old_P[id2].h.id) strcat (alarm, " I");			/* I = Id mismatch */
 			if (new_P[id1].h.n != old_P[id2].h.n) strcat (alarm, " #");			/* # = number of points mismatch */
-			if (new_P[id1].h.greenwich != old_P[id2].h.greenwich) strcat (alarm, " G");	/* G = greenwich mismatch */
+			if ((new_P[id1].h.greenwich & 1) != (old_P[id2].h.greenwich & 1)) strcat (alarm, " G");	/* G = greenwich mismatch */
 			if (new_P[id1].h.level != old_P[id2].h.level) strcat (alarm, " L");		/* L = level mismatch */
 			if (new_P[id1].h.datelon != old_P[id2].h.datelon) strcat (alarm, " D");		/* D = datelon mismatch */
 			if (new_P[id1].h.checked[0] != old_P[id2].h.checked[0]) strcat (alarm, " 1");	/* 1 = checked[0] mismatch */

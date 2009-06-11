@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.11 2009-06-10 20:04:44 guru Exp $
+ *	$Id: polygon_setnodes.c,v 1.12 2009-06-11 05:42:09 guru Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -109,14 +109,14 @@ int main (int argc, char **argv)
 				fprintf(stderr,"polygon_setnodes:  ERROR  reading file.\n");
 				exit (EXIT_FAILURE);
 			}
-			if (blob[id].h.greenwich && p.x > blob[id].h.datelon) p.x -= M360;
+			if ((blob[id].h.greenwich & 1) && p.x > blob[id].h.datelon) p.x -= M360;
 			lon[k] = p.x;
 			lat[k] = p.y;
 		}
 		n = blob[id].h.n;
 		
 		west = blob[id].h.west;	east = blob[id].h.east;
-		if (blob[id].h.greenwich) {
+		if (blob[id].h.greenwich & 1) {
 			west += 360.0;
 			east += 360.0;
 		}
@@ -188,9 +188,9 @@ int main (int argc, char **argv)
 					x0 = blon;
 					if (cont_no == EURASIA && x0 > blob[id].h.east)
 						x0 -= 360.0;
-					else if (cont_no != EURASIA && blob[id].h.greenwich && x0 > 180.0)
+					else if (cont_no != EURASIA && (blob[id].h.greenwich & 1) && x0 > 180.0)
 						x0 -= 360.0;
-					else if (!blob[id].h.greenwich && x0 < 0.0)
+					else if (!(blob[id].h.greenwich & 1) && x0 < 0.0)
 						x0 += 360.0;
 					ix0 = x0 * MILL;
 					iy0 = iblat;
