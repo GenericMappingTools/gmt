@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_hierarchy.c,v 1.4 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_hierarchy.c,v 1.5 2009-06-11 21:07:58 guru Exp $
  * Determines the polygon ID in the full resolution that corresponds to
  * the lower-resolution polygons.
  */
@@ -15,7 +15,7 @@ struct POLYGON {
 } P[5][N_POLY];
 
 int main (int argc, char **argv) {
-	int i, j, n_id[5], id1, id2, dx, res, go, ix_shift, c, in, cont_no_1, cont_no_2, *link[5];
+	int i, j, n_id[5], id1, id2, dx, res, go, ix_shift, c, in, cont_no_1, cont_no_2, *link[5], *level[5];
 	int *IX[N_CONTINENTS][2], *IY[N_CONTINENTS][2], N[N_CONTINENTS][2];
 	double x_shift = 0.0;
 	char *kind = "fhilc", file[BUFSIZ];
@@ -54,6 +54,7 @@ int main (int argc, char **argv) {
 	
 	for (res = 1; res < 5; res++) {	/* Initialize all parents to NONE */
 		link[res] = (int *) GMT_memory (VNULL, n_id[FULL], sizeof (int), "polygon_hierarchy");
+		level[res] = (int *) GMT_memory (VNULL, n_id[FULL], sizeof (int), "polygon_hierarchy");
 		for (id1 = 0; id1 < n_id[FULL]; id1++) link[res][id1] = NOT_PRESENT;
 	}
 	
@@ -92,6 +93,7 @@ int main (int argc, char **argv) {
 				/* OK, found a match, set father nad link to end id2 loop */
 				P[res][id2].father = P[FULL][id1].h.id;
 				link[res][id1] = P[res][id2].h.id;
+				level[res][id1] = P[res][id2].h.level;
 			}
 		}
 		fprintf (stderr, "\n");
@@ -104,8 +106,8 @@ int main (int argc, char **argv) {
 		exit (EXIT_FAILURE);
 	}
 	for (id1 = 0; id1 < n_id[FULL]; id1++) {
-		fprintf (fp, "%d", P[FULL][id1].h.id);
-		for (res = 1; res < 5; res++) fprintf (fp, "\t%d", link[res][id1]);
+		fprintf (fp, "%d-%d", P[FULL][id1].h.id, P[FULL][id1].h.level);
+		for (res = 1; res < 5; res++) fprintf (fp, "\t%d-%d", link[res][id1], level[res][id1]);
 		fprintf (fp, "\t%g\t%d\t%d\t%.6f\t%.6f\t%.6f\t%.6f\t%d\n", P[FULL][id1].h.area, P[FULL][id1].h.parent, P[FULL][id1].h.river, \
 		P[FULL][id1].h.west, P[FULL][id1].h.east, P[FULL][id1].h.south, P[FULL][id1].h.north, P[FULL][id1].h.source);
 	}
@@ -116,6 +118,7 @@ int main (int argc, char **argv) {
 		for (id1 = 0; id1 < n_id[res]; id1++) GMT_free ((void *)P[res][id1].p);
 	}
 	for (res = 1; res < 5; res++) GMT_free ((void*)link[res]);
+	for (res = 1; res < 5; res++) GMT_free ((void*)level[res]);
 	crude_free_int (IX, IY, N);
 	
 #ifdef DEBUG
