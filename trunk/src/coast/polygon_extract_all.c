@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_extract_all.c,v 1.3 2009-06-05 00:25:12 guru Exp $
+ *	$Id: polygon_extract_all.c,v 1.4 2009-06-11 05:42:09 guru Exp $
  */
 /* 
  *
@@ -61,7 +61,7 @@ int main (int argc, char **argv)
 				fprintf(stderr,"polygon_extract:  ERROR  reading file.\n");
 				exit(-1);
 			}
-			if (poly[i].h.greenwich && p.x > poly[i].h.datelon) p.x -= M360;
+			if ((poly[i].h.greenwich & 1) && p.x > poly[i].h.datelon) p.x -= M360;
 			
 			/* fprintf (fp, "%d\t%d\n", p.x, p.y); */
 			x = 1.0e-6*p.x;

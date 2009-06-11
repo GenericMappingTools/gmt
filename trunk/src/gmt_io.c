@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.190 2009-05-31 20:48:04 guru Exp $
+ *	$Id: gmt_io.c,v 1.191 2009-06-11 05:42:09 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2934,6 +2934,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 	/* Allocate the Table structure */
 
 	T = (struct GMT_TABLE *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_TABLE), GMT_program);
+	T->file = strdup (file);
 	T->segment = (struct GMT_LINE_SEGMENT **) GMT_memory (VNULL, (size_t)n_seg_alloc, sizeof (struct GMT_LINE_SEGMENT *), GMT_program);
 
 	no_segments = (!(GMT_io.status & GMT_IO_SEGMENT_HEADER));	/* Not a multi-segment file.  We then assume file has only one segment */
@@ -3201,6 +3202,7 @@ void GMT_free_table (struct GMT_TABLE *table)
 	GMT_free ((void *)table->segment);
 	GMT_free ((void *)table->min);
 	GMT_free ((void *)table->max);
+	free ((void *)table->file);
 	GMT_free ((void *)table);
 }
 

@@ -1,5 +1,5 @@
 /*
- *	$Id: man_fix2.c,v 1.5 2009-06-05 00:25:12 guru Exp $
+ *	$Id: man_fix2.c,v 1.6 2009-06-11 05:42:09 guru Exp $
  */
 #include "wvs.h"
 
@@ -55,7 +55,7 @@ int main (int argc, char **argv) {
 					exit(-1);
 				}
 				if (p.y < s || p.y > n) continue;
-				if (poly[id].h.greenwich && p.x > poly[id].h.datelon) p.x -= M360;
+				if ((poly[id].h.greenwich & 1) && p.x > poly[id].h.datelon) p.x -= M360;
 				if (p.x < w || p.x > e) continue;
 			
 				fprintf (fp, "%d\t%d\n", p.x, p.y);

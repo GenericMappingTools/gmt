@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findarea.c,v 1.1 2007-05-09 00:30:57 pwessel Exp $
+ *	$Id: polygon_findarea.c,v 1.2 2009-06-11 05:42:09 guru Exp $
  * Based on polygon_findlevel but limited to just compute polygon areas.
  */
 #include "wvs.h"
@@ -43,7 +43,7 @@ int main (int argc, char **argv) {
 				fprintf(stderr,"polygon_findarea:  ERROR  reading file.\n");
 				exit(-1);
 			}
-			if (h.greenwich && p.x > h.datelon) p.x -= M360;
+			if ((h.greenwich & 1) && p.x > h.datelon) p.x -= M360;
 			flon[k] = p.x * 1.0e-6;
 			flat[k] = p.y * 1.0e-6;
 		}

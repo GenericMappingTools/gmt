@@ -1,5 +1,5 @@
 /*
- *	$Id: line_shrink.c,v 1.4 2009-06-05 00:25:11 guru Exp $
+ *	$Id: line_shrink.c,v 1.5 2009-06-11 05:42:09 guru Exp $
  */
 /* 
  * line_shrink applies the Douglas-Peucker algorithm to simplify a line
@@ -52,7 +52,7 @@ int main (int argc, char **argv)
 			y[k] = p.y;
 		}
 
-		if (h.greenwich) for (k = 0; k < h.n; k++) if (x[k] > 180000000) x[k] -= 360000000;
+		if (h.greenwich & 1) for (k = 0; k < h.n; k++) if (x[k] > 180000000) x[k] -= 360000000;
 		n_tot_in += h.n;
 
 		n = Douglas_Peucker_i (x, y, h.n, tolerance, index);
@@ -68,7 +68,7 @@ int main (int argc, char **argv)
 			for (k = 0; k < n; k++) {
 				p.x = x[index[k]];
 				p.y = y[index[k]];
-				if (h.greenwich && p.x < 0) p.x += 360000000;
+				if ((h.greenwich & 1) && p.x < 0) p.x += 360000000;
 				if (pol_fwrite (&p, 1, fp_out) != 1) {
 					fprintf(stderr,"line_shrink:  ERROR  writing file.\n");
 					exit(-1);

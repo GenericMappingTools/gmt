@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.19 2009-06-10 05:09:38 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.20 2009-06-11 05:42:09 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -55,7 +55,7 @@ int main (int argc, char **argv)
 			}
 			if (p.x < 0 || p.x > M360) fprintf (stderr, "Pol %d, point %d: x outside range [%g]\n", h.id, i, p.x*1e-6);
 			if (p.y < -M90 || p.y > M90) fprintf (stderr, "Pol %d, point %d: y outside range [%g]\n", h.id, i, p.y*1e-6);
-			if (h.greenwich && p.x > h.datelon) p.x -= M360;
+			if ((h.greenwich & 1) && p.x > h.datelon) p.x -= M360;
 			if (i == 0) {
 				ix0 = p.x;
 				iy0 = p.y;

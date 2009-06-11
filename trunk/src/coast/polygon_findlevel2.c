@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel2.c,v 1.8 2009-06-05 00:25:12 guru Exp $
+ *	$Id: polygon_findlevel2.c,v 1.9 2009-06-11 05:42:09 guru Exp $
  */
 #include "wvs.h"
 
@@ -108,7 +108,7 @@ int main (int argc, char **argv) {
 					fprintf(stderr,"polygon_findlevel2:  ERROR  reading file.\n");
 					exit(-1);
 				}
-				if (blob[id].h.greenwich && p.x > blob[id].h.datelon) p.x -= M360;
+				if ((blob[id].h.greenwich & 1) && p.x > blob[id].h.datelon) p.x -= M360;
 				flon[k] = p.x * 1.0e-6;
 				flat[k] = p.y * 1.0e-6;
 			}
@@ -152,7 +152,7 @@ int main (int argc, char **argv) {
 		not_read = TRUE;
 		
 		west1 = blob[id1].h.west;	east1 = blob[id1].h.east;
-		if (blob[id1].h.greenwich) {
+		if (blob[id1].h.greenwich & 1) {
 			west1 += 360.0;
 			east1 += 360.0;
 		}
@@ -171,7 +171,7 @@ int main (int argc, char **argv) {
 			
 			west2 = blob[id2].h.west;	east2 = blob[id2].h.east;
 			off = 0.0;
-			if (blob[id2].h.greenwich) {
+			if (blob[id2].h.greenwich & 1) {
 				west2 += 360.0;
 				east2 += 360.0;
 				off = M360;
@@ -266,7 +266,7 @@ int main (int argc, char **argv) {
 						fprintf(stderr,"polygon_findlevel2:  ERROR  reading file.\n");
 						exit(-1);
 					}
-					if (blob[id1].h.greenwich && p.x > blob[id1].h.datelon) p.x -= M360;
+					if ((blob[id1].h.greenwich & 1) && p.x > blob[id1].h.datelon) p.x -= M360;
 					lon[k] = p.x;
 					lat[k] = p.y;
 				}
@@ -277,9 +277,9 @@ int main (int argc, char **argv) {
 			x0 = blob[id2].x0 * 1.0e-6;
 			if (id1 == 0 && x0 > blob[id1].h.east)
 				x0 -= 360.0;
-			else if (id1 > 0 && blob[id1].h.greenwich && x0 > 180.0)
+			else if (id1 > 0 && (blob[id1].h.greenwich & 1) && x0 > 180.0)
 				x0 -= 360.0;
-			else if (!blob[id1].h.greenwich && x0 < 0.0)
+			else if (!(blob[id1].h.greenwich & 1) && x0 < 0.0)
 				x0 += 360.0;
 			
 			if (!(lon[0] == lon[n-1] && lat[0] == lat[n-1])) {

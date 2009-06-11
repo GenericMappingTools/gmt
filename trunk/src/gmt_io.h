@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.79 2009-05-31 20:48:04 guru Exp $
+ *	$Id: gmt_io.h,v 1.80 2009-06-11 05:42:09 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -258,6 +258,7 @@ struct GMT_LINE_SEGMENT {		/* For holding multisegment lines in memory */
 
 struct GMT_TABLE {	/* To hold an array of line segment structures and header information in one container */
 	GMT_LONG n_headers;			/* Number of file header records (0 if no header) */
+	char *file;				/* Name of file header or source */
 	char **header;				/* Array with all file header records, if any) */
 	GMT_LONG n_segments;			/* Number of segments in the array */
 	GMT_LONG n_records;			/* Total number of data records across all segments */

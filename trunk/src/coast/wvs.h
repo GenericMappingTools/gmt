@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.8 2009-06-10 20:04:44 guru Exp $
+ *	$Id: wvs.h,v 1.9 2009-06-11 05:42:09 guru Exp $
  */
 /* wvs.h
  *
@@ -59,10 +59,13 @@ struct	SEG_HEADER {
 	struct LONGPAIR	last;	/* Last point in string  */
 };
 
+/* Note: Sibling number means which full resolution polygon matches a DP-reduced polygon in the h-i-l-c datasets.
+  For res = f the sibling number is not set, obviously. */
+
 struct GMT3_POLY {
 	int id;
 	int n;
-	int greenwich;  /* Greenwich is TRUE if Greenwich is crossed */
+	int greenwich;  /* (greenwich & 1) is TRUE if Greenwich is crossed; (greenwich >> 1) is the sibling id for lower resolutions */
 	int level;      /* -1 undecided, 0 ocean, 1 land, 2 lake, 3 island_in_lake, etc */
 	int datelon;    /* 180 for all except eurasia (270) */
 	int checked[2]; /* TRUE if polygon has been crossover checked with all peers */

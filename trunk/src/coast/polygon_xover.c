@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.18 2009-06-10 20:04:44 guru Exp $
+ *	$Id: polygon_xover.c,v 1.19 2009-06-11 05:42:09 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 				fprintf(stderr,"polygon_xover:  ERROR  reading file.\n");
 				exit(-1);
 			}
-			if (P[n_id].h.greenwich && p.x > P[n_id].h.datelon) p.x -= M360;
+			if ((P[n_id].h.greenwich & 1) && p.x > P[n_id].h.datelon) p.x -= M360;
 			P[n_id].lon[i] = p.x * I_MILL;
 			P[n_id].lat[i] = p.y * I_MILL;
 		}

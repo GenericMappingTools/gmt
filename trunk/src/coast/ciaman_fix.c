@@ -1,5 +1,5 @@
 /*
- *	$Id: ciaman_fix.c,v 1.4 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: ciaman_fix.c,v 1.5 2009-06-11 05:42:09 guru Exp $
  */
 #include "wvs.h"
 
@@ -166,7 +166,7 @@ int main (int argc, char **argv) {
 				exit(-1);
 			}
 			if (p.y > in || p.y < is) continue;
-			if (poly[id].h.greenwich && p.x > poly[id].h.datelon) p.x -= M360;
+			if ((poly[id].h.greenwich & 1) && p.x > poly[id].h.datelon) p.x -= M360;
 			if (p.x > ie || p.x < iw) continue;
 			
 			fprintf (fp, "%d\t%d\n", p.x, p.y);
@@ -185,7 +185,7 @@ int main (int argc, char **argv) {
 				fprintf(stderr,"ciaman_fix:  ERROR  reading file.\n");
 				exit(-1);
 			}
-			if (poly[id2].h.greenwich && p.x > poly[id2].h.datelon) p.x -= M360;
+			if ((poly[id2].h.greenwich & 1) && p.x > poly[id2].h.datelon) p.x -= M360;
 			
 			fprintf (fp, "%d\t%d\n", p.x, p.y);
 		}

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sort.c,v 1.4 2009-06-10 05:09:39 guru Exp $
+ *	$Id: polygon_sort.c,v 1.5 2009-06-11 05:42:09 guru Exp $
  */
 /* polygon_sorts writes out final data in decreasing order (# points)
  *
@@ -54,7 +54,7 @@ int main (int argc, char **argv)
 				exit(-1);
 			}
 			if (do_a) {
-				if (hin.greenwich && pp.x > hin.datelon) pp.x -= M360;
+				if ((hin.greenwich & 1) && pp.x > hin.datelon) pp.x -= M360;
 				flon[k] = pp.x * 1.0e-6;
 				flat[k] = pp.y * 1.0e-6;
 			}

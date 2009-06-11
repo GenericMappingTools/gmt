@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setwesn.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_setwesn.c,v 1.3 2009-06-11 05:42:09 guru Exp $
  */
 /* polygon_setwesn updates the wesn info
  *
@@ -31,7 +31,7 @@ int main (int argc, char **argv)
 		}
 		for (i = 0; i < h.n; i++) {
 			ix = p[i].x;
-			if (h.greenwich && ix > h.datelon) ix -= M360;
+			if ((h.greenwich & 1) && ix > h.datelon) ix -= M360;
 			if (ix < ixmin) ixmin = ix;
 			if (ix > ixmax) ixmax = ix;
 			if (p[i].y < iymin) iymin = p[i].y;

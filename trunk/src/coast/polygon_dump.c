@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_dump.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: polygon_dump.c,v 1.3 2009-06-11 05:42:09 guru Exp $
  */
 /* 
  *	polygon_dump makes a multisegment ascii-file of entire dbase
@@ -42,7 +42,7 @@ int main (int argc, char **argv)
 				fprintf(stderr,"polygon_dump:  ERROR  reading file.\n");
 				exit(-1);
 			}
-			if (h.greenwich && p.x > h.datelon) p.x -= M360;
+			if ((h.greenwich & 1) && p.x > h.datelon) p.x -= M360;
 			
 			fprintf (fp, "%g\t%g\n", 1.0e-6 * p.x, 1.0e-6 * p.y);
 		}
