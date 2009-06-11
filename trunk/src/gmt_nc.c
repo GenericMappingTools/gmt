@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.82 2009-05-14 17:41:30 remko Exp $
+ *	$Id: gmt_nc.c,v 1.83 2009-06-11 23:39:52 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -269,14 +269,10 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[1]], xy))) GMT_nc_check_step (header->ny, xy, header->y_units, header->name);
 		if (!nc_get_att_double (ncid, ids[header->xy_dim[1]], "actual_range", dummy))
 			header->y_min = dummy[0], header->y_max = dummy[1];
-		else if (!j) {
+		else if (!j)
 			header->y_min = xy[0], header->y_max = xy[header->ny-1];
-			header->node_offset = 0;
-		}
-		else {
+		else
 			header->y_min = 0.0, header->y_max = (double) header->ny-1;
-			header->node_offset = 0;
-		}
 		/* Check for reverse order of y-coordinate */
 		if (header->y_min > header->y_max) {
 			header->y_order = -1;
@@ -332,7 +328,7 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 		if (header->command[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(header->command), header->command));
 		if (header->remark[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
-		GMT_err_trap (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, (size_t)1, &header->node_offset));
+		if (header->node_offset) GMT_err_trap (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, (size_t)1, &header->node_offset));
 
 		/* Define x variable */
 		GMT_nc_put_units (ncid, ids[header->xy_dim[0]], header->x_units);
