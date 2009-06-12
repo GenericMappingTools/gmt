@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.26 2009-06-05 00:25:12 guru Exp $
+/*	$Id: gshhs.c,v 1.27 2009-06-12 02:42:35 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -19,7 +19,7 @@
  *		1.7 11-NOV-2006: Fixed bug in computing level (&& vs &)
  *		1.8 31-MAR-2007: Updated to deal with latest GSHHS database (1.5)
  *		1.9 27-AUG-2007: Handle line data as well as polygon data
- *		1.12 30-MAY-2009: Now contains information on parent polygon and
+ *		1.12 30-MAY-2009: Now contains information on container polygon and
  *			a flag to tell if a lake is a riverlake.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,10 +39,10 @@ int main (int argc, char **argv)
 {
 	double w, e, s, n, area, lon, lat;
 	char source, kind[2] = {'P', 'L'}, c = '>', *file = NULL;
-	char *name[2] = {"polygon", "line"}, parent[8];
+	char *name[2] = {"polygon", "line"}, container[8], ancestor[8];
 	FILE *fp = NULL;
 	int k, line, max_east = 270000000, info, single, error, ID, n_read, flip;
-	int  OK, level, version, greenwich, src, msformat = 0;
+	int  OK, level, version, greenwich, river, src, msformat = 0;
 	struct	POINT p;
 	struct GSHHS h;
         
@@ -101,19 +101,20 @@ int main (int argc, char **argv)
 			h.north = swabi4 ((unsigned int)h.north);
 			h.area  = swabi4 ((unsigned int)h.area);
 			h.flag  = swabi4 ((unsigned int)h.flag);
-			h.parent  = swabi4 ((unsigned int)h.parent);
-			h.river  = swabi4 ((unsigned int)h.river);
+			h.container  = swabi4 ((unsigned int)h.container);
+			h.ancestor  = swabi4 ((unsigned int)h.ancestor);
 		}
 		level = h.flag & 255;
 		version = (h.flag >> 8) & 255;
-		greenwich = (h.flag >> 16) & 255;
-		src = (h.flag >> 24) & 255;
+		greenwich = (h.flag >> 16) & 1;
+		src = (h.flag >> 24) & 1;
+		river = (h.flag >> 25) & 1;
 		w = h.west  * GSHHS_SCL;	/* Convert from microdegrees to degrees */
 		e = h.east  * GSHHS_SCL;
 		s = h.south * GSHHS_SCL;
 		n = h.north * GSHHS_SCL;
 		source = (src == 1) ? 'W' : 'C';	/* Either WVS or CIA (WDBII) pedigree */
-		if (h.river) source = tolower ((int)source);
+		if (river) source = tolower ((int)source);
 		line = (h.area) ? 0 : 1;		/* Either Polygon (0) or Line (1) (if no area) */
 		area = 0.1 * h.area;			/* Now im km^2 */
 
@@ -124,8 +125,9 @@ int main (int argc, char **argv)
 			if (line)
 				printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", c, h.id, h.n, level, source, area, w, e, s, n);
 			else {
-				(h.parent == -1) ? sprintf (parent, "-") : sprintf (parent, "%6d", h.parent);
-				printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f %s\n", c, h.id, h.n, level, source, area, w, e, s, n, parent);
+				(h.container == -1) ? sprintf (container, "-") : sprintf (container, "%6d", h.container);
+				(h.ancestor == -1) ? sprintf (ancestor, "-") : sprintf (ancestor, "%6d", h.ancestor);
+				printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f %s\n", c, h.id, h.n, level, source, area, w, e, s, n, container, ancestor);
 			}
 		}
 

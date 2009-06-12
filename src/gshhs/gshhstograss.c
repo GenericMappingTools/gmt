@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.22 2009-06-05 00:25:12 guru Exp $
+/*	$Id: gshhstograss.c,v 1.23 2009-06-12 02:42:35 guru Exp $
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 	static char *slevel[] = { "unknown" , "land" , "lake" , "island in lake" , "pond in island in lake"};
 	int shore_levels = 5;
 	FILE	*fp = NULL, *ascii_fp = NULL, *att1_fp = NULL, *att2_fp = NULL;
-	int k, max = 270000000, flip, n_read, level, version, greenwich, src, shorelines;
+	int k, max = 270000000, flip, n_read, level, version, greenwich, src, river, shorelines;
 	struct POINT p;
 	struct GSHHS h;
 	int max_id=0;
@@ -218,13 +218,14 @@ int main (int argc, char **argv)
 			h.north = swabi4 ((unsigned int)h.north);
 			h.area = swabi4 ((unsigned int)h.area);
 			h.flag = swabi4 ((unsigned int)h.flag);
-			h.parent  = swabi4 ((unsigned int)h.parent);
-			h.river  = swabi4 ((unsigned int)h.river);
+			h.container  = swabi4 ((unsigned int)h.container);
+			h.ancestor  = swabi4 ((unsigned int)h.ancestor);
 		}
 		level = h.flag & 255;
 		version = (h.flag >> 8) & 255;
-		greenwich = (h.flag >> 16) & 255;
-		src = (h.flag >> 24) & 255;
+		greenwich = (h.flag >> 16) & 1;
+		src = (h.flag >> 24) & 1;
+		river = (h.flag >> 25) & 1;
 		w = h.west * GSHHS_SCL;
 		e = h.east * GSHHS_SCL;
 		s = h.south * GSHHS_SCL;
