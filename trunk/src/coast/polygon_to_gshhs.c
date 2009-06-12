@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.18 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.19 2009-06-12 02:42:35 guru Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
@@ -35,9 +35,9 @@ int main (int argc, char **argv)
 		gshhs_header.id		= h.id;
 		gshhs_header.n		= h.n;
 		gshhs_header.area	= (lines) ? 0 : irint (10.0 * h.area);
-		gshhs_header.flag	= h.level + (version << 8) + ((h.greenwich & 1) << 16) + (h.source << 24);
-		gshhs_header.parent	= h.parent;
-		gshhs_header.river	= h.river;
+		gshhs_header.flag	= h.level + (version << 8) + ((h.greenwich & 1) << 16) + (h.source << 24) + (h.river << 25);
+		gshhs_header.container	= h.parent;
+		gshhs_header.ancestor	= h.greenwich >> 1;
 		if ((gshhs_header.east - gshhs_header.west) == M360) gshhs_header.n--;	/* Antarctica, drop the duplicated point for GSHHS */
 		np = gshhs_header.n;
 #if WORDS_BIGENDIAN == 0
@@ -50,8 +50,8 @@ int main (int argc, char **argv)
 		gshhs_header.n		= swabi4 ((unsigned int)gshhs_header.n);
 		gshhs_header.area	= swabi4 ((unsigned int)gshhs_header.area);
 		gshhs_header.flag	= swabi4 ((unsigned int)gshhs_header.flag);
-		gshhs_header.parent	= swabi4 ((unsigned int)gshhs_header.parent);
-		gshhs_header.river	= swabi4 ((unsigned int)gshhs_header.river);
+		gshhs_header.container	= swabi4 ((unsigned int)gshhs_header.container);
+		gshhs_header.ancestor	= swabi4 ((unsigned int)gshhs_header.ancestor);
 #endif
 		fwrite((char *)&gshhs_header, sizeof (struct GSHHS), 1, stdout) ;
 		for (k = 0; k < h.n; k++) {
