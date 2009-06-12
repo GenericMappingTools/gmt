@@ -1,4 +1,5 @@
 # Crude representation of a closed polygon containing Antarctica
+# $Id: crude_ant_out.txt,v 1.2 2009-06-12 01:22:29 guru Exp $
 -9	-68
 6	-67
 25	-67

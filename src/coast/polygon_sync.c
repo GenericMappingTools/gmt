@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sync.c,v 1.1 2009-06-11 21:07:58 guru Exp $
+ *	$Id: polygon_sync.c,v 1.2 2009-06-12 01:22:29 guru Exp $
  * Based on output of polygon_hierarchy, update the h-i-l-c files with
  * meta data from the full set.
  */
@@ -14,7 +14,7 @@ struct POLYGON {
 } P[5][N_POLY];
 
 int main (int argc, char **argv) {
-	int i, n_id[5], id1, id2, res, father, *link[5], *level[5];
+	int i, n_id[5], id1, id2, res, father, error = 0, *link[5], *level[5];
 	char *kind = "fhilc", file[BUFSIZ], T[5][64], line[BUFSIZ];
 	FILE *fp;
 	
@@ -49,7 +49,7 @@ int main (int argc, char **argv) {
 		fclose (fp);
 	}
 	
-	for (res = 1; res < 5; res++) {	/* Initialize all parents to NONE */
+	for (res = 0; res < 5; res++) {	/* Initialize all parents to NONE */
 		link[res] = (int *) GMT_memory (VNULL, n_id[FULL], sizeof (int), "polygon_hierarchy");
 		level[res] = (int *) GMT_memory (VNULL, n_id[FULL], sizeof (int), "polygon_hierarchy");
 		for (id1 = 0; id1 < n_id[FULL]; id1++) link[res][id1] = NOT_PRESENT;
@@ -63,15 +63,22 @@ int main (int argc, char **argv) {
 		fgets (line, BUFSIZ, fp);
 		sscanf (line, "%s %s %s %s %s", T[0], T[1], T[2], T[3], T[4]);
 		for (res = 0; res < 5; res++) {
-			for (i = 0; i < strlen(T[res]); i++) if (T[res][i] == '-') T[res][i] = ' ';
+			for (i = 1; i < strlen(T[res]); i++) if (T[res][i] == '-') T[res][i] = ' ';
 			sscanf (T[res], "%d %d", &link[res][id1], &level[res][id1]);
 			if (res > 0 && link[res][id1] >= 0 && level[res][id1] != level[FULL][id1]) {
 				fprintf (stderr, "ERROR: Siblings of pol %d differ in levels\n", link[FULL][id1]);
-				exit (-1);
+				error++;
+				printf ("%s", line);
+			}
+			if (res > 0 && link[res][id1] >= 0 && link[res-1][id1] == -1) {
+				fprintf (stderr, "ERROR: Siblings of pol %d missing in a higher resolution\n", link[FULL][id1]);
+				error++;
+				printf ("%s", line);
 			}
 		}
 		
 	}
+	if (error) exit (-1);
 	
 	for (res = 1; res < 5; res++) {
 		strcpy (file, argv[1]);	/* Get full file and replace _f with _<res> */
