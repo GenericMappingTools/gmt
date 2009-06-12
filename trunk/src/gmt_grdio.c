@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.126 2009-06-12 02:03:40 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.127 2009-06-12 15:17:27 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -409,8 +409,11 @@ GMT_LONG GMT_grd_RI_verify (struct GRD_HEADER *h, GMT_LONG mode)
 
 GMT_LONG GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, double *s, double *n, GMT_LONG *width, GMT_LONG *height, GMT_LONG *first_col, GMT_LONG *last_col, GMT_LONG *first_row, GMT_LONG *last_row, GMT_LONG **index)
 {
-	/* Determines which rows and columns to extract, and if it is
-	 * a grid that is periodic and wraps around and returns indices. */
+	/* Determines which rows and columns to extract to extract from a grid, based on w,e,s,n.
+	 * This routine first rounds the w,e,s,n boundaries to the nearest gridlines or pixels,
+	 * then determines the first and last columns and rows, and the width and height of the subset (in cells).
+	 * The routine also returns and array of the x-indices in the source grid to be used in the target (subset) grid.
+	 */
 
 	GMT_LONG one_or_zero, i, *k;
 	BOOLEAN geo = FALSE;
@@ -437,7 +440,7 @@ GMT_LONG GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, doubl
 
 		one_or_zero = (header->node_offset) ? 0 : 1;
 
-		/* Make sure w,e,s,n are proper multiples of dx,dy away from w, s */
+		/* Make sure w,e,s,n are proper multiples of x_inc,y_inc away from x_min,y_min */
 
 		GMT_err_pass (GMT_adjust_loose_wesn (w, e, s, n, header), header->name);
 
@@ -452,20 +455,22 @@ GMT_LONG GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, doubl
 		*last_col  = (GMT_LONG)ceil  ((*e - header->x_min) / header->x_inc - small) - 1 + one_or_zero;
 		*first_row = (GMT_LONG)floor ((header->y_max - *n) / header->y_inc + small);
 		*last_row  = (GMT_LONG)ceil  ((header->y_max - *s) / header->y_inc - small) - 1 + one_or_zero;
-
+#if 0
 		if ((*last_col - *first_col + 1) > *width) (*last_col)--;
 		if ((*last_row - *first_row + 1) > *height) (*last_row)--;
 		if ((*last_col - *first_col + 1) > *width) (*first_col)++;
 		if ((*last_row - *first_row + 1) > *height) (*first_row)++;
+#endif
 	}
 
-	k = (GMT_LONG *) GMT_memory (VNULL, (*width), sizeof (GMT_LONG), "GMT_grd_prep_io");
+	k = (GMT_LONG *) GMT_memory (VNULL, *width, sizeof (GMT_LONG), "GMT_grd_prep_io");
 	if (geo) {
+		small = 0.1 * header->x_inc;
 		for (i = 0; i < (*width); i++) {
-			x = *w + (i + half_or_zero) * header->x_inc;
-			if ((header->x_min - x) / header->x_inc > small)
+			x = GMT_i_to_x (i, *w, *e, header->x_inc, half_or_zero, *width);
+			if (header->x_min - x > small)
 				x += 360.0;
-			else if ((x - header->x_max) / header->x_inc > small)
+			else if (x - header->x_max > small)
 				x -= 360.0;
 			k[i] = GMT_x_to_i (x, header->x_min, header->x_inc, half_or_zero, header->nx);
 		}
@@ -825,11 +830,17 @@ BOOLEAN GMT_grd_is_global (struct GRD_HEADER *h)
 
 GMT_LONG GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax, int interpolant)
 {
-	/* GMT_grd_setregion determines what wesn should be passed to GMT_read_grd.
-	 * It does so by using project_info.w,e,s,n which have been set correctly
-	 * by map_setup.
+	/* GMT_grd_setregion determines what w,e,s,n should be passed to GMT_read_grd.
+	 * It does so by using project_info.w,e,s,n which have been set correctly by map_setup.
 	 * Use interpolant to indicate if (and how) the grid is interpolated after this call.
 	 * This determines possible extension of the grid to allow interpolation (without padding).
+	 *
+	 * Here are some considerations about the boundary we need to match, assuming the grid is gridline oriented:
+	 * - When the output is to become pixels, the outermost point has to be beyond 0.5 cells inside the region
+	 * - When linear interpolation is needed afterwards, the outermost point needs to be on the region edge or beyond
+	 * - When the grid is pixel oriented, the limits need to go outward by another 0.5 cells
+	 * - When the region is global, do not extend the longitudes outward (otherwise you create wrap-around issues)
+	 * So to determine the boundary, we go inward from there.
 	 */
 
 	BOOLEAN grid_global;
@@ -838,13 +849,6 @@ GMT_LONG GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, do
 	/* First make an educated guess whether the grid and region are geographical and global */
 	grid_global = GMT_grd_is_global (h);
 
-	/* Here are some considerations about the boundary we need to match, assuming the grid is gridline oriented:
-	   - When the output is to become pixels, the outermost point has to be beyond 0.5 cells inside the region
-	   - When linear interpolation is needed afterwards, the outermost point needs to be on the region edge or beyond
-	   - When the grid is pixel oriented, the limits need to go outward by another 0.5 cells
-	   - When the region is global, do not extend the longitudes outward (otherwise you create wrap-around issues)
-	   So to determine the boundary, we go inward from there.
-	*/
 	switch (interpolant) {
 		case BCR_BILINEAR:
 			off = 0.0;
@@ -935,7 +939,13 @@ GMT_LONG GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, do
 
 GMT_LONG GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, struct GRD_HEADER *header)
 {
-	/* Used to ensure that sloppy w,e,s,n values are rounded to the gridlines or pixels in the referenced grid. */
+	/* Used to ensure that sloppy w,e,s,n values are rounded to the gridlines or pixels in the referenced grid.
+	 * Upon entry, the boundaries w,e,s,n are given as a rough approximation of the actual subset needed.
+	 * The routine will limit the boundaries to the grids region and round w,e,s,n to the nearest gridline or
+	 * pixel boundaries (depending on the grid orientation).
+	 * Warnings are produced when the w,e,s,n boundaries are adjusted, so this routine is currently not
+	 * intended to throw just any values at it (although one could).
+	 */
 	
 	BOOLEAN global, error = FALSE;
 	double half_or_zero, val, dx, small;
