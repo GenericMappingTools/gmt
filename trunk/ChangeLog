@@ -1,6 +1,20 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.536 2009-06-10 05:10:45 guru Exp $
+	$Id: ChangeLog,v 1.537 2009-06-12 02:09:49 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-11	remko
+	* gmt_nc.c:		No longer write node_offset = 0 to file (not essential, only confusing).
+	* gmt_grdio.c:		GMT_grd_setregion now includes "interpolant" argument: this ensures
+				enough padding (if available) from the input grid and no blank edges
+				on left and/or right side of the map.
+				More appropriate coding of GMT_grd_shift.
+				GMT_adjust_loose_wesn now includes test on data domain (moved from main
+				programs calling it).
+	* gmt_support.c:	GMT_RI_prepare recoded. Possibly safer. Need to investigate if it can
+				be skipped when nx and ny already set.
+	* grd2xyz.c:		Area check moved to GMT_adjust_loose_wesn.
+	* grdvector.c, grdrotater.c, grdview.c, grdcontour.c, grdimage.c:
+				Extra argument in GMT_grd_setregion. No more subset checks needed.
 
 2009-06-09	pwessel
 	* misc/gmtdp.c:		With -m, did not write the correct multisegment header from input.
