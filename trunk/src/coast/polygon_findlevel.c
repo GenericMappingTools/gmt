@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.23 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.24 2009-06-12 01:22:29 guru Exp $
  */
 #include "wvs.h"
 
@@ -122,7 +122,9 @@ int main (int argc, char **argv) {
 	
 	for (id1 = 0; id1 < n_id; id1++) {	/* For all anchor polygons */
 		if (blob[id1].h.source == -1) continue;	/* Marked for deletion */
-		
+#ifdef TEST
+		if (blob[id1].h.id != 0) continue;	/* Looking for 0 */
+#endif
 		cont_no_1 = (blob[id1].h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
 		if (cont_no_1 == ANTARCTICA) continue;	/* But skip Antarctica since there are no lakes in the data set */
 		
@@ -143,6 +145,9 @@ int main (int argc, char **argv) {
 		
 		for (id2 = 0; id2 < n_id; id2++) {
 			
+#ifdef TEST
+			if (blob[id2].h.id != 799) continue;	/* Looking for 799 */
+#endif
 			if (blob[id2].h.source == -1) continue;		/* Marked for deletion */
 			cont_no_2 = (blob[id2].h.river >> 8);		/* Get continent number 1-6 (0 if not a continent) */
 			if (cont_no_2) continue;			/* But skip continents since they cannot contain each other */
