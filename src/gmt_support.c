@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.409 2009-05-15 09:32:23 guru Exp $
+ *	$Id: gmt_support.c,v 1.410 2009-06-12 02:00:43 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1280,30 +1280,32 @@ GMT_LONG GMT_get_proj3D (char *line, double *az, double *el)
 
 void GMT_RI_prepare (struct GRD_HEADER *h)
 {
+	/* This routine adjusts the grid header. It computes the correct nx, ny, x_inc and y_inc,
+	   based on user input of the -I option and the current settings of x_min, x_max, y_min, y_max and node_offset.
+	   On output the grid boundaries are always gridline or pixel oriented, depending on node_offset.
+	   The routine is not run when nx and ny are already set.
+	*/
 	int one_or_zero;
-	double s = 1.0, f, m_pr_degree;
-
-	/* May have to adjust -R -I depending on how GMT_inc_code was set */
-
+	double s;
+#if 0
+	if (h->nx > 0 && h->ny > 0) {
+		fprintf (stderr, "%s: GMT_RI_prepare called without need. Skipped.\n", GMT_program);
+		return;
+	}
+#endif
 	one_or_zero = !h->node_offset;
-	m_pr_degree = project_info.M_PR_DEG;
 	h->xy_off = 0.5 * h->node_offset;	/* Use to calculate mean location of block */
 
 	/* XINC AND XMIN/XMAX CHECK FIRST */
 
-	if (GMT_inc_code[0] == 0) {	/* Standard -R -I given, just set nx */
-		h->nx = GMT_get_n (h->x_min, h->x_max, h->x_inc, h->node_offset);
-	}
-	else if (GMT_inc_code[0] & GMT_INC_IS_NNODES) {	/* Got nx */
-		h->nx = irint (h->x_inc);
-		h->x_inc = GMT_get_inc (h->x_min, h->x_max, h->nx, h->node_offset);
+	/* Adjust x_inc */
+
+	if (GMT_inc_code[0] & GMT_INC_IS_NNODES) {	/* Got nx */
+		h->x_inc = GMT_get_inc (h->x_min, h->x_max, irint(h->x_inc), h->node_offset);
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Given nx implies x_inc = %g\n", GMT_program, h->x_inc);
 	}
-	else {	/* Got funny units */
+	else if (GMT_inc_code[0] & GMT_INC_UNITS) {	/* Got funny units */
 		switch (GMT_inc_code[0] & GMT_INC_UNITS) {
-			case GMT_INC_IS_M:	/* Meter */
-				s = 1.0;
-				break;
 			case GMT_INC_IS_KM:	/* km */
 				s = 1000.0;
 				break;
@@ -1313,52 +1315,48 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 			case GMT_INC_IS_NMILES:	/* nmiles */
 				s = METERS_IN_A_NAUTICAL_MILE;
 				break;
+			case GMT_INC_IS_M:	/* Meter */
+			default:
+				s = 1.0;
+				break;
 		}
-		if (GMT_inc_code[0] & GMT_INC_IS_EXACT && !(GMT_inc_code[0] & GMT_INC_UNITS)) {
-			f = m_pr_degree = 1.0;
-		}
-		else
-			f = cosd (0.5 * (h->y_max + h->y_min));	/* Latitude scaling of E-W distances */
-
-		h->x_inc = h->x_inc * s / (m_pr_degree * f);
+		h->x_inc = s / (project_info.M_PR_DEG * cosd (0.5 * (h->x_min + h->x_max)));	/* Latitude scaling of E-W distances */
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies x_inc = %g\n", GMT_program, h->x_inc);
-		h->nx = GMT_get_n (h->x_min, h->x_max, h->x_inc, h->node_offset);
 	}
-	if (GMT_inc_code[0] & GMT_INC_IS_EXACT) {	/* Want to keep dx exactly as given; adjust x_max accordingly */
+	if (!(GMT_inc_code[0] & (GMT_INC_IS_NNODES | GMT_INC_IS_EXACT))) {	/* Adjust x_inc to exactly fit west/east */
+		s = h->x_max - h->x_min;
+		h->nx = irint (s / h->x_inc);
+		s /= h->nx;
+		h->nx += one_or_zero;
+		if (fabs (s - h->x_inc) > 0.0) {
+			h->x_inc = s;
+			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies x_inc = %g\n", GMT_program, h->x_inc);
+		}
+	}
+
+	/* Determine nx */
+
+	h->nx = GMT_get_n (h->x_min, h->x_max, h->x_inc, h->node_offset);
+
+	if (GMT_inc_code[0] & GMT_INC_IS_EXACT) {	/* Want to keep x_inc exactly as given; adjust x_max accordingly */
 		s = (h->x_max - h->x_min) - h->x_inc * (h->nx - one_or_zero);
 		if (fabs (s) > 0.0) {
 			h->x_max -= s;
 			if (gmtdefs.verbose) fprintf (stderr, "%s: x_max adjusted to %g\n", GMT_program, h->x_max);
 		}
 	}
-	else if (!(GMT_inc_code[0] & GMT_INC_IS_NNODES)) {	/* Adjust x_inc to exactly fit west/east */
-		s = h->x_max - h->x_min;
-		h->nx = irint (s / h->x_inc);
-		f = s / h->nx;
-		h->nx += one_or_zero;
-		if (fabs (f - h->x_inc) > 0.0) {
-			h->x_inc = f;
-			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies x_inc = %g\n", GMT_program, h->x_inc);
-		}
-	}
 
 	/* YINC AND YMIN/YMAX CHECK SECOND */
-	s = 1.0;	/* s was used above with a different purpose */
 
-	if (GMT_inc_code[1] == 0) {	/* Standard -R -I given, just set ny */
-		h->ny = GMT_get_n (h->y_min, h->y_max, h->y_inc, h->node_offset);
-	}
-	else if (GMT_inc_code[1] & GMT_INC_IS_NNODES) {	/* Got ny */
-		h->ny = irint (h->y_inc);
-		h->y_inc = GMT_get_inc (h->y_min, h->y_max, h->ny, h->node_offset);
+	/* Adjust y_inc */
+
+	if (GMT_inc_code[1] & GMT_INC_IS_NNODES) {	/* Got ny */
+		h->y_inc = GMT_get_inc (h->y_min, h->y_max, irint(h->y_inc), h->node_offset);
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Given ny implies y_inc = %g\n", GMT_program, h->y_inc);
 		return;
 	}
-	else {	/* Got funny units */
+	else if (GMT_inc_code[1] & GMT_INC_UNITS) {	/* Got funny units */
 		switch (GMT_inc_code[1] & GMT_INC_UNITS) {
-			case GMT_INC_IS_M:	/* Meter */
-				s = 1.0;
-				break;
 			case GMT_INC_IS_KM:	/* km */
 				s = 1000.0;
 				break;
@@ -1368,33 +1366,34 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 			case GMT_INC_IS_NMILES:	/* nmiles */
 				s = METERS_IN_A_NAUTICAL_MILE;
 				break;
+			case GMT_INC_IS_M:	/* Meter */
+			default:
+				s = 1.0;
+				break;
 		}
-		if (GMT_inc_code[1] & GMT_INC_IS_EXACT && !(GMT_inc_code[1] & GMT_INC_UNITS))
-			m_pr_degree = 1.0;
-
-		else	/* m_pr_degree might have been reset to 1 in the XINC ... case */
-			m_pr_degree = project_info.M_PR_DEG;
-
-		h->y_inc = (h->y_inc == 0.0) ? h->x_inc : h->y_inc * s / m_pr_degree;
+		h->y_inc = (h->y_inc == 0.0) ? h->x_inc : h->y_inc * s / project_info.M_PR_DEG;
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Distance to degree conversion implies y_inc = %g\n", GMT_program, h->y_inc);
-		h->ny = GMT_get_n (h->y_min, h->y_max, h->y_inc, h->node_offset);
+	}
+	if (!(GMT_inc_code[1] & (GMT_INC_IS_NNODES | GMT_INC_IS_EXACT))) {	/* Adjust y_inc to exactly fit south/north */
+		s = h->y_max - h->y_min;
+		h->ny = irint (s / h->y_inc);
+		s /= h->ny;
+		h->ny += one_or_zero;
+		if (fabs (s - h->y_inc) > 0.0) {
+			h->y_inc = s;
+			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies y_inc = %g\n", GMT_program, h->y_inc);
+		}
 	}
 
-	if (GMT_inc_code[1] & GMT_INC_IS_EXACT) {	/* Want to keep dy exactly as given; adjust y_max accordingly */
+	/* Determine ny */
+
+	h->ny = GMT_get_n (h->y_min, h->y_max, h->y_inc, h->node_offset);
+
+	if (GMT_inc_code[1] & GMT_INC_IS_EXACT) {	/* Want to keep y_inc exactly as given; adjust y_max accordingly */
 		s = (h->y_max - h->y_min) - h->y_inc * (h->ny - one_or_zero);
 		if (fabs (s) > 0.0) {
 			h->y_max -= s;
 			if (gmtdefs.verbose) fprintf (stderr, "%s: y_max adjusted to %g\n", GMT_program, h->y_max);
-		}
-	}
-	else if (!(GMT_inc_code[1] & GMT_INC_IS_NNODES)) {	/* Adjust y_inc to exactly fit south/north */
-		s = h->y_max - h->y_min;
-		h->ny = irint (s / h->y_inc);
-		f = s / h->ny;
-		h->ny += one_or_zero;
-		if (fabs (f - h->y_inc) > 0.0) {
-			h->y_inc = f;
-			if (gmtdefs.verbose) fprintf (stderr, "%s: Given domain implies y_inc = %g\n", GMT_program, h->y_inc);
 		}
 	}
 }
@@ -5360,7 +5359,7 @@ GMT_LONG GMT_voronoi (double *x_in, double *y_in, GMT_LONG n, double *we, double
  *
  * Periodicities assume that the min,max are compatible with the inc;
  * that is, (x_max - x_min)modulo(x_inc) ~= 0.0 within precision tolerances,
- * and similarly for y.  It is assumed that this is OK and that gmt_grd_RI_verify
+ * and similarly for y.  It is assumed that this is OK and that GMT_grd_RI_verify
  * was called during read grd and found to be OK.
  *
  * In the geographical case, if x_max - x_min < 360 we will use the default
@@ -5580,7 +5579,7 @@ GMT_LONG GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo,
 			}
 			if (bok > 0) fprintf (stderr, "%s: Warning: Inconsistent grid values at North pole.\n", GMT_program);
 		}
-
+	
 		if (edgeinfo->gs) {
 			bok = 0;
 			if (GMT_is_fnan (a[js + iw])) {
@@ -5764,8 +5763,8 @@ GMT_LONG GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo,
 				j2p = jni1;	/* constraint for jno2  */
 			}
 			else {
-				j1p = jni1;	/* constraint for jno1  */
-				j2p = jni1 + mx;	/* constraint for jno2  */
+			j1p = jni1;		/* constraint for jno1  */
+			j2p = jni1 + mx;	/* constraint for jno2  */
 			}
 			for (i = iwo2; i <= ieo2; i++) {
 				i180 = pad[0] + ((i + nxp2)%edgeinfo->nxp);
@@ -5811,8 +5810,8 @@ GMT_LONG GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo,
 				j2p = jsi1;	/* constraint for jso2  */
 			}
 			else {
-				j1p = jsi1;	/* constraint for jso1  */
-				j2p = jsi1 - mx;	/* constraint for jso2  */
+			j1p = jsi1;		/* constraint for jso1  */
+			j2p = jsi1 - mx;	/* constraint for jso2  */
 			}
 			for (i = iwo2; i <= ieo2; i++) {
 				i180 = pad[0] + ((i + nxp2)%edgeinfo->nxp);
@@ -5958,19 +5957,16 @@ void GMT_set_xy_domain (double wesn_extended[], struct GRD_HEADER *h)
 	/* Sets the domain boundaries to be used to determine if x,y coordinates
 	 * are outside the domain of a grid.  If gridline-registered then the
 	 * domain is extended by 0.5 the grid interval.  Note that points with
-	 * x == x_max and y = y_max are considered inside.
+	 * x == x_max and y == y_max are considered inside.
 	 */
 
-	off = 0.5 - h->xy_off;
-	if (GMT_io.in_col_type[0] == GMT_IS_LON && GMT_360_RANGE (h->x_max, h->x_min)) {	/* Global longitude range */
-		wesn_extended[0] = h->x_min;	wesn_extended[1] = h->x_max;
-	}
-	else {
-		wesn_extended[0] = h->x_min - off * h->x_inc;	wesn_extended[1] = h->x_max + off * h->x_inc;
-	}
+	off = 0.5 * (1 - h->node_offset);
+	if (GMT_io.in_col_type[0] == GMT_IS_LON && GMT_360_RANGE (h->x_max, h->x_min))	/* Global longitude range */
+		wesn_extended[0] = h->x_min, wesn_extended[1] = h->x_max;
+	else
+		wesn_extended[0] = h->x_min - off * h->x_inc, wesn_extended[1] = h->x_max + off * h->x_inc;
 	/* Latitudes can be extended provided we are not at the poles */
-	wesn_extended[2] = h->y_min - off * h->y_inc;
-	wesn_extended[3] = h->y_max + off * h->y_inc;
+	wesn_extended[2] = h->y_min - off * h->y_inc, wesn_extended[3] = h->y_max + off * h->y_inc;
 	if (GMT_io.in_col_type[1] == GMT_IS_LAT) {
 		if (wesn_extended[2] < -90.0) wesn_extended[2] = -90.0;
 		if (wesn_extended[3] > +90.0) wesn_extended[3] = +90.0;
@@ -6273,7 +6269,7 @@ BOOLEAN GMT_gap_detected (void)
 	
 GMT_LONG GMT_minmaxinc_verify (double min, double max, double inc, double slop)
 {
-	double checkval, range;
+	double range;
 
 	/* Check for how compatible inc is with the range max - min.
 	   We will tolerate a fractional sloppiness <= slop.  The
@@ -6286,10 +6282,11 @@ GMT_LONG GMT_minmaxinc_verify (double min, double max, double inc, double slop)
 
 	if (inc <= 0.0) return (3);
 
-	if ((range = (max - min)) < 0.0) return (2);
+	range = max - min;
+	if (range < 0.0) return (2);
 
-	checkval = (fmod (max - min, inc)) / inc;
-	if (checkval > slop && checkval < (1.0 - slop)) return 1;
+	range = (fmod (range / inc, 1.0));
+	if (range > slop && range < (1.0 - slop)) return (1);
 	return 0;
 }
 
