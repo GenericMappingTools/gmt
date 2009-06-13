@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_final_info.c,v 1.5 2009-06-09 02:26:02 guru Exp $
+ *	$Id: polygon_final_info.c,v 1.6 2009-06-13 20:12:34 guru Exp $
  */
 /* polygon_final_info wvs_polygon_file.b
  *
@@ -24,7 +24,7 @@ int main (int argc, char **argv)
 	fp = fopen(argv[1], "r");
 	
 	id = 0;
-	printf ("#ID\tN\tlevel\tsource\twest\t\teast\t\tsouth\t\tnorth\t\tarea\n");
+	printf ("#ID\tN\tlevel\tsource\tgreenw?\twest\t\teast\t\tsouth\t\tnorth\t\tarea\tcontainer\tancestor\n");
 	while (pol_readheader (&h, fp) == 1) {
 		if (fseek (fp, (long) (h.n * sizeof (struct LONGPAIR)), SEEK_CUR)) {
 			fprintf (stderr, "polygon_final_info: Failed seeking ahead\n");
@@ -32,7 +32,7 @@ int main (int argc, char **argv)
 		}
 		
 		if (src == -1 || h.source == src)
-			printf ("%d\t%d\t%d\t%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.12g\n", h.id, h.n, h.level, h.source, h.west, h.east, h.south, h.north, h.area);
+			printf ("%d\t%d\t%d\t%d\t%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.12g\t%d\t%d\n", h.id, h.n, h.level, h.source, h.greenwich & 1, h.west, h.east, h.south, h.north, h.area, h.parent, h.greenwich >> 1);
 		id++;
 		np += h.n;
 	}
