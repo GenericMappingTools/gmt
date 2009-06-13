@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.20 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.21 2009-06-13 00:04:53 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -145,8 +145,13 @@ int main (int argc, char **argv)
 		n_id++;
 	}
 	
-	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s. %d has closure problems. %d has crossing problems. %d has region problems. %d has duplicate points. %d has non-area excursions. %d has zero-angle excursions\n",
-		n_id, argv[1], n_c_problems, n_x_problems, n_r_problems, n_d_problems, n_s_problems, n_a_problems);
+	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s\n", n_id, argv[1]);
+	if (n_c_problems) fprintf (stderr, "%d has closure problems.\n", n_c_problems);
+	if (n_x_problems) fprintf (stderr, "%d has crossing problems.\n", n_x_problems);
+	if (n_r_problems) fprintf (stderr, "%d has region problems.\n", n_r_problems);
+	if (n_d_problems) fprintf (stderr, "%d has duplicate points.\n", n_d_problems);
+	if (n_s_problems) fprintf (stderr, "%d has non-area excursions.\n", n_s_problems);
+	if (n_a_problems) fprintf (stderr, "%d has zero-angle excursions\n", n_a_problems);
 	if (ant_trouble) fprintf (stderr, "polygon_consistency: Antarctica polygon has wrong south border\n");
 	if (n_adjust) fprintf (stderr, "polygon_consistency: Skipped %d crossovers involving duplicate end points (polygon closure)\n", n_adjust);
 	

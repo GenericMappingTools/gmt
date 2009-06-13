@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_xover.c,v 1.19 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_xover.c,v 1.20 2009-06-13 00:04:53 guru Exp $
  */
 /* polygon_xover checks for propoer closure and crossings
  * within polygons
@@ -73,11 +73,17 @@ int main (int argc, char **argv)
 	
 	nx_tot = 0;
 	for (id1 = 0; id1 < n_id; id1++) {
+#ifdef TEST
+		if (P[id1].h.id != 3) continue;
+#endif
 		cont_no = WVS_continent (P[id1].h);	/* Get continent number 1-6 (0 if not a continent) */
 		
 		GMT_init_track (P[id1].lat, P[id1].h.n, &ylist1);
 			
 		for (id2 = MAX (N_CONTINENTS, id1 + 1); id2 < n_id; id2++) {	/* Dont start earlier than N_CONTINENTS since no point comparing continents */
+#ifdef TEST
+			if (P[id2].h.id != 187083) continue;
+#endif
 			if (cont_no == ANTARCTICA) {	/* Must compare to id1 polygon (Antarctica) using r,theta */
 				if (P[id2].h.south > P[id1].h.north) continue;	/* Too far north to matter */
 				X = (double *) GMT_memory (VNULL, P[id2].h.n, sizeof (double), "polygon_xover");

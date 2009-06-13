@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sync.c,v 1.2 2009-06-12 01:22:29 guru Exp $
+ *	$Id: polygon_sync.c,v 1.3 2009-06-13 00:04:53 guru Exp $
  * Based on output of polygon_hierarchy, update the h-i-l-c files with
  * meta data from the full set.
  */
@@ -15,7 +15,7 @@ struct POLYGON {
 
 int main (int argc, char **argv) {
 	int i, n_id[5], id1, id2, res, father, error = 0, *link[5], *level[5];
-	char *kind = "fhilc", file[BUFSIZ], T[5][64], line[BUFSIZ];
+	char *kind = "fhilc", file[BUFSIZ], line[BUFSIZ];
 	FILE *fp;
 	
 	argc = GMT_begin (argc, argv);
@@ -61,10 +61,8 @@ int main (int argc, char **argv) {
 	}
 	for (id1 = 0; id1 < n_id[FULL]; id1++) {
 		fgets (line, BUFSIZ, fp);
-		sscanf (line, "%s %s %s %s %s", T[0], T[1], T[2], T[3], T[4]);
+		sscanf (line, "%d %d %d %d %d %d %d %d %d %d ", &link[0][id1], &level[0][id1], &link[1][id1], &level[1][id1], &link[2][id1], &level[2][id1], &link[3][id1], &level[3][id1], &link[4][id1], &level[4][id1]);
 		for (res = 0; res < 5; res++) {
-			for (i = 1; i < strlen(T[res]); i++) if (T[res][i] == '-') T[res][i] = ' ';
-			sscanf (T[res], "%d %d", &link[res][id1], &level[res][id1]);
 			if (res > 0 && link[res][id1] >= 0 && level[res][id1] != level[FULL][id1]) {
 				fprintf (stderr, "ERROR: Siblings of pol %d differ in levels\n", link[FULL][id1]);
 				error++;
@@ -81,6 +79,26 @@ int main (int argc, char **argv) {
 	if (error) exit (-1);
 	
 	for (res = 1; res < 5; res++) {
+		fprintf (stderr, "Test links for res %c\n", kind[res]);
+		for (id2 = 0; id2 < n_id[res]; id2++) {
+			if (id2 < N_CONTINENTS)
+				father = id2;
+			else {
+				for (id1 = N_CONTINENTS, father = -1; id1 < n_id[FULL] && father == -1; id1++) if (link[res][id1] == id2) father = id1;	/* Get id to full version */
+			}
+			if (father == -1) {
+				printf ("ERROR: Cannot find father of %c id = %d!\n", kind[res], id2);
+				error++;
+			}
+			else if (P[res][id2].h.river != P[FULL][father].h.river) {
+				printf ("ERROR: Sibling of river pol %d has wrong river value (%d) for %c id = %d\n", father, P[res][id2].h.river, kind[res], id2);
+				error++;
+			}
+		}
+	}
+	if (error) exit (-1);
+
+	for (res = 1; res < 5; res++) {
 		strcpy (file, argv[1]);	/* Get full file and replace _f with _<res> */
 		for (i = 1; res > 0 && i < strlen(file); i++) if (file[i] == 'f' && file[i-1] == '_') file[i] = kind[res];
 		fprintf (stderr, "Write new file %s\n", file);
@@ -89,9 +107,19 @@ int main (int argc, char **argv) {
 			exit (EXIT_FAILURE);
 		}
 		for (id2 = 0; id2 < n_id[res]; id2++) {
-			for (id1 = 0, father = -1; id1 < n_id[FULL] && father == -1; id1++) if (link[res][id1] == id2) father = id1;	/* Get id to full version */
-			P[res][id2].h.area = P[FULL][id1].h.area;
-			P[res][id2].h.greenwich += (P[FULL][id1].h.id << 1);
+			if (id2 < N_CONTINENTS)
+				father = id2;
+			else {
+				for (id1 = N_CONTINENTS, father = -1; id1 < n_id[FULL] && father == -1; id1++) if (link[res][id1] == id2) father = id1;	/* Get id to full version */
+			}
+			P[res][id2].h.area = P[FULL][father].h.area;
+			P[res][id2].h.west = P[FULL][father].h.west;
+			P[res][id2].h.east = P[FULL][father].h.east;
+			P[res][id2].h.south = P[FULL][father].h.south;
+			P[res][id2].h.north = P[FULL][father].h.north;
+			P[res][id2].h.datelon = P[FULL][father].h.datelon;
+			P[res][id2].h.source = P[FULL][father].h.source;
+			P[res][id2].h.greenwich += (P[FULL][father].h.id << 1);
 			pol_writeheader (&P[res][id2].h, fp);
 			if (pol_fwrite (P[res][id2].p, P[res][id2].h.n, fp) != P[res][id2].h.n) {
 				fprintf(stderr,"polygon_xover:  ERROR  writing %d points from file %s.\n", P[res][id2].h.n, file);
