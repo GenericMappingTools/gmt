@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.50 2009-06-11 21:07:58 guru Exp $
+#	$Id: Makefile,v 1.51 2009-06-13 00:04:53 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -52,7 +52,7 @@ include coast.dep
 
 PROGS_H	= shore.h wvs.h
 
-PROGS_O	= border_to_bins.o ciaman_fix.o line_shrink.o linemaker.o swap.o \
+PROGS_O	= border_to_bins.o ciaman_fix.o line_shrink.o linemaker.o swap.o polygon_close.o  \
 	  lines_to_bins.o man_fix.o man_fix2.o polygon_bincount.o gshhs_to_polygon.o \
 	  polygon_checkarea.o polygon_consistency.o polygon_deldups.o polygon_compare.o \
 	  polygon_dump.o polygon_extract.o polygon_extract2.o polygon_fixnegwesn.o \

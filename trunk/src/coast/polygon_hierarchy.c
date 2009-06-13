@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_hierarchy.c,v 1.6 2009-06-12 02:42:35 guru Exp $
+ *	$Id: polygon_hierarchy.c,v 1.7 2009-06-13 00:04:53 guru Exp $
  * Determines the polygon ID in the full resolution that corresponds to
  * the lower-resolution polygons.
  */
@@ -56,6 +56,7 @@ int main (int argc, char **argv) {
 		link[res] = (int *) GMT_memory (VNULL, n_id[FULL], sizeof (int), "polygon_hierarchy");
 		level[res] = (int *) GMT_memory (VNULL, n_id[FULL], sizeof (int), "polygon_hierarchy");
 		for (id1 = 0; id1 < n_id[FULL]; id1++) link[res][id1] = NOT_PRESENT;
+		for (id1 = 0; id1 < N_CONTINENTS; id1++) level[res][id1] = 1;	/* Since not set in loop below */
 	}
 	
 	/* Scale crude polygons by 1e6 to match the data scale */
