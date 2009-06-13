@@ -2,7 +2,7 @@
 
 int main (int argc, char **argv) {
 	FILE *fp1, *fp2;
-	int i, j, n1 = 0, n2 = 0, i0, j0;
+	int i, j, n1 = 0, n2 = 0, i0 = 0, j0 = 0;
 	char line[BUFSIZ];
 	double x1[10000], x2[10000], y1[10000], y2[10000], d, dmin = DBL_MAX;
 	
