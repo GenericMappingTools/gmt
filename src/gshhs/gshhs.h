@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.24 2009-06-12 02:42:35 guru Exp $
+/*	$Id: gshhs.h,v 1.25 2009-06-13 00:19:04 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -28,8 +28,8 @@
  *			  For use with version 1.6 of GSHHS which now has WDBII
  *			  borders and rivers.
  *	03-JUL-2008.  PW: Version 1.11. New -I<id> option to pull out a single pol
- *	27-MAY-2009.  PW: Version 1.12. Now includes parent polygon ID in header.
- *			  as well as a spare 4-byte integer for later use.
+ *	27-MAY-2009.  PW: Version 1.12. Now includes container polygon ID in header.
+ *			  as well as an ancestor ID. Works on GSHHS 2.0 data.
  *			  Header is now 40 bytes (all 4-byte integers)
  */
 
@@ -54,8 +54,8 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHS_DATA_VERSION	7	/* For v1.5 data set */
-#define GSHHS_PROG_VERSION	"1.11"
+#define GSHHS_DATA_VERSION	7	/* For v2.0 data set */
+#define GSHHS_PROG_VERSION	"1.12"
 
 #define GSHHS_SCL	1.0e-6	/* Convert micro-degrees to degrees */
 
@@ -64,9 +64,9 @@
 #define swabi4(i4) (((i4) >> 24) + (((i4) >> 8) & 65280) + (((i4) & 65280) << 8) + (((i4) & 255) << 24))
 
 struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines */
-	int id;				/* Unique polygon id number, starting at 0 */
-	int n;				/* Number of points in this polygon */
-	int flag;			/* = level + version << 8 + greenwich << 16 + source << 24 */
+	int id;		/* Unique polygon id number, starting at 0 */
+	int n;		/* Number of points in this polygon */
+	int flag;	/* = level + version << 8 + greenwich << 16 + source << 24 */
 	/* flag contains 5 items, as follows:
 	 * low byte:	level = flag & 255: Values: 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake
 	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 4 for GSHHS version 1.4
@@ -75,9 +75,9 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lakea and level = 2
 	 */
 	int west, east, south, north;	/* min/max extent in micro-degrees */
-	int area;			/* Area of polygon in 1/10 km^2 */
-	int container;			/* Id of container polygon that encloses this polygon (-1 if none) */
-	int ancestor;			/* Id of ancestor polygon in the full resolution set that was the source of this polygon (-1 if none) */
+	int area;	/* Area of polygon in 1/10 km^2 */
+	int container;	/* Id of container polygon that encloses this polygon (-1 if none) */
+	int ancestor;	/* Id of ancestor polygon in the full resolution set that was the source of this polygon (-1 if none) */
 };
 
 struct	POINT {	/* Each lon, lat pair is stored in micro-degrees in 4-byte integer format */
