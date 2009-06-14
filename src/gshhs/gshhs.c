@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.27 2009-06-12 02:42:35 guru Exp $
+/*	$Id: gshhs.c,v 1.28 2009-06-14 02:25:55 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -6,7 +6,7 @@
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
  * CREATED:	JAN. 28, 1996
- * PURPOSE:	To extract ASCII data from binary shoreline data
+ * PURPOSE:	To extract ASCII data from the binary GSHHS shoreline data
  *		as described in the 1996 Wessel & Smith JGR Data Analysis Note.
  * VERSION:	1.1 (Byte flipping added)
  *		1.2 18-MAY-1999:
@@ -19,8 +19,11 @@
  *		1.7 11-NOV-2006: Fixed bug in computing level (&& vs &)
  *		1.8 31-MAR-2007: Updated to deal with latest GSHHS database (1.5)
  *		1.9 27-AUG-2007: Handle line data as well as polygon data
- *		1.12 30-MAY-2009: Now contains information on container polygon and
- *			a flag to tell if a lake is a riverlake.
+ *		1.10 15-FEB-2008: Updated to deal with latest GSHHS database (1.6)
+ *		1.12 15-JUN-2009: Now contains information on container polygon,
+ *				the polygons ancestor in the full resolution, and
+ *				a flag to tell if a lake is a riverlake.
+ *				Updated to deal with latest GSHHS database (2.0)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -74,7 +77,7 @@ int main (int argc, char **argv)
 		error++;
 	}
 	if (argc == 1 || error) {
-		fprintf (stderr, "gshhs v. %s ASCII export tool\n", GSHHS_PROG_VERSION);
+		fprintf (stderr, "gshhs %s - ASCII export of GSHHS %s data\n", GSHHS_PROG_VERSION, GSHHS_DATA_VERSION);
 		fprintf (stderr, "usage:  gshhs gshhs_[f|h|i|l|c].b [-I<id>] [-L] [-M] > ascii.dat\n");
 		fprintf (stderr, "-L will only list headers (no data output)\n");
 		fprintf (stderr, "-I only output data for polygon number <id> [Default is all polygons]\n");
@@ -89,7 +92,7 @@ int main (int argc, char **argv)
 		
 	n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
 	version = (h.flag >> 8) & 255;
-	flip = (version != GSHHS_DATA_VERSION);	/* Take as sign that byte-swabbing is needed */
+	flip = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 	
 	while (n_read == 1) {
 		if (flip) {
@@ -104,19 +107,19 @@ int main (int argc, char **argv)
 			h.container  = swabi4 ((unsigned int)h.container);
 			h.ancestor  = swabi4 ((unsigned int)h.ancestor);
 		}
-		level = h.flag & 255;
-		version = (h.flag >> 8) & 255;
-		greenwich = (h.flag >> 16) & 1;
-		src = (h.flag >> 24) & 1;
-		river = (h.flag >> 25) & 1;
-		w = h.west  * GSHHS_SCL;	/* Convert from microdegrees to degrees */
+		level = h.flag & 255;				/* Level is 1-4 */
+		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
+		greenwich = (h.flag >> 16) & 1;			/* Greenwich is 0 or 1 */
+		src = (h.flag >> 24) & 1;			/* Greenwich is 0 (WDBII) or 1 (WVS) */
+		river = (h.flag >> 25) & 1;			/* River is 0 (not river) or 1 (is river) */
+		w = h.west  * GSHHS_SCL;			/* Convert from microdegrees to degrees */
 		e = h.east  * GSHHS_SCL;
 		s = h.south * GSHHS_SCL;
 		n = h.north * GSHHS_SCL;
-		source = (src == 1) ? 'W' : 'C';	/* Either WVS or CIA (WDBII) pedigree */
-		if (river) source = tolower ((int)source);
-		line = (h.area) ? 0 : 1;		/* Either Polygon (0) or Line (1) (if no area) */
-		area = 0.1 * h.area;			/* Now im km^2 */
+		source = (src == 1) ? 'W' : 'C';		/* Either WVS or CIA (WDBII) pedigree */
+		if (river) source = tolower ((int)source);	/* Lower case c means river-lake */
+		line = (h.area) ? 0 : 1;			/* Either Polygon (0) or Line (1) (if no area) */
+		area = 0.1 * h.area;				/* Now im km^2 */
 
 		OK = (!single || h.id == ID);
 		
@@ -151,7 +154,7 @@ int main (int argc, char **argv)
 				printf ("%11.6f%11.6f\n", lon, lat);
 			}
 		}
-		max_east = 180000000;	/* Only Eurasiafrica needs 270 */
+		max_east = 180000000;	/* Only Eurasia needs 270 */
 		n_read = fread((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
 	}
 		

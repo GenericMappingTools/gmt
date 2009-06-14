@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.25 2009-06-13 00:19:04 guru Exp $
+/*	$Id: gshhs.h,v 1.26 2009-06-14 02:25:55 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -54,7 +54,8 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHS_DATA_VERSION	7	/* For v2.0 data set */
+#define GSHHS_DATA_RELEASE	7	/* For v2.0 data set */
+#define GSHHS_DATA_VERSION	"2.0"	/* For v2.0 data set */
 #define GSHHS_PROG_VERSION	"1.12"
 
 #define GSHHS_SCL	1.0e-6	/* Convert micro-degrees to degrees */
@@ -66,13 +67,13 @@
 struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines */
 	int id;		/* Unique polygon id number, starting at 0 */
 	int n;		/* Number of points in this polygon */
-	int flag;	/* = level + version << 8 + greenwich << 16 + source << 24 */
+	int flag;	/* = level + version << 8 + greenwich << 16 + source << 24 + river << 25 */
 	/* flag contains 5 items, as follows:
 	 * low byte:	level = flag & 255: Values: 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake
-	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 4 for GSHHS version 1.4
-	 * 3rd byte:	greenwich = (flag >> 16) & 255: Values: Greenwich is 1 if Greenwich is crossed
+	 * 2nd byte:	version = (flag >> 8) & 255: Values: Should be 7 for GSHHS release 7
+	 * 3rd byte:	greenwich = (flag >> 16) & 1: Values: Greenwich is 1 if Greenwich is crossed
 	 * 4th byte:	source = (flag >> 24) & 1: Values: 0 = CIA WDBII, 1 = WVS
-	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lakea and level = 2
+	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lake and level = 2
 	 */
 	int west, east, south, north;	/* min/max extent in micro-degrees */
 	int area;	/* Area of polygon in 1/10 km^2 */

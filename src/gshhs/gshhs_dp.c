@@ -1,4 +1,4 @@
-/*	$Id: gshhs_dp.c,v 1.20 2009-06-12 02:42:35 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.21 2009-06-14 02:25:55 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -57,7 +57,7 @@ int main (int argc, char **argv)
 	int Douglas_Peucker_i (int x_source[], int y_source[], int n_source, double band, int index[]);
 	
 	if (argc < 2 || !(argc == 4 || argc == 5)) {
-		fprintf (stderr, "gshhs_dp v. %s Line reduction using the Douglas-Peucker algorithm\n\n", GSHHS_PROG_VERSION);
+		fprintf (stderr, "gshhs_dp %s - Line reduction of GSHHS %s using the Douglas-Peucker algorithm\n\n", GSHHS_PROG_VERSION, GSHHS_DATA_VERSION);
 		fprintf (stderr, "usage:  gshhs_dp input.b tolerance output.b [-v]\n");
 		fprintf (stderr, "\ttolerance is maximum mismatch in km\n");
 		fprintf (stderr, "\t-v will run in verbose mode and report shrinkage\n");
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
 	
 	n_read = fread ((void *)&h, sizeof (struct GSHHS), (size_t)1, fp_in);
 	version = (h.flag >> 8) & 255;
-	flip = (version != GSHHS_DATA_VERSION);	/* Take as sign that byte-swabbing is needed */
+	flip = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 	
 	while (n_read == 1) {
 	

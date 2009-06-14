@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.398 2009-06-05 00:25:11 guru Exp $
+ *	$Id: gmt_init.c,v 1.399 2009-06-14 02:25:55 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4300,7 +4300,7 @@ GMT_LONG GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
 			continue;
 		}
 		/* Decode interval, get pointer to next segment */
-		if ((val = strtod (t, &s)) < 0.0) {			/* Interval must be >= 0 */
+		if ((val = strtod (t, &s)) < 0.0 && project_info.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
 			error = 3;
 			continue;
 		}
@@ -4364,7 +4364,7 @@ GMT_LONG GMT_decode_tinfo (char *in, struct GMT_PLOT_AXIS *A) {
 				fprintf (stderr, "%s: ERROR: Interval missing from -B string component %s\n", GMT_program, in);
 				break;
 			case 3:
-				fprintf (stderr, "%s: ERROR: Negative intervaln -B string component %s\n", GMT_program, in);
+				fprintf (stderr, "%s: ERROR: Negative interval in -B string component %s\n", GMT_program, in);
 				break;
 			default:
 				break;
@@ -4544,6 +4544,7 @@ GMT_LONG GMT_parse_B_option (char *in) {
 	if (!frame_info.plot) {	/* First time we initialize stuff */
 		for (i = 0; i < 3; i++) {
 			memset ((void *)&frame_info.axis[i], 0, sizeof (struct GMT_PLOT_AXIS));
+			frame_info.axis[i].id = i;
 			for (j = 0; j < 8; j++) {
 				frame_info.axis[i].item[j].parent = i;
 				frame_info.axis[i].item[j].id = j;

@@ -13,7 +13,7 @@ where hierarchical levels for coastline polygons go from 1 (shoreline) to 4 (lak
 island inside lake inside land).  Source is either W (World Vector Shoreline) or C (CIA World
 Data Bank II); lower case is used if a lake is a river-lake. The \fIwest east south north\fP is the enclosing rectangle, area the polygon
 area in km^2, container is the ID of the polygon that contains this polygon (-1 if none),
-and ancestor is the ID of the polygon in the full resolution set that was reduced to this polygon (-1 if full resolution).
+and ancestor is the ID of the polygon in the full resolution set that was reduced to yield this polygon (-1 if full resolution).
 .TP
 \fIbinaryfile.b\fP
 GSHHS or WDBII binary data file as distributed with the GSHHS data supplement.  Any of the

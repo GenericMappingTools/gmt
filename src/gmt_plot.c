@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.261 2009-05-15 09:32:23 guru Exp $
+ *	$Id: gmt_plot.c,v 1.262 2009-06-14 02:25:55 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1594,7 +1594,7 @@ void GMT_map_gridlines (double w, double e, double s, double n)
 
 		if (project_info.xyz_projection[0] == GMT_TIME && dx > 0.0)
 			GMT_timex_grid (w, e, s, n, item[k]);
-		else if (dx > 0.0 && project_info.xyz_projection[0] == GMT_LOG10)
+		else if (fabs(dx) > 0.0 && project_info.xyz_projection[0] == GMT_LOG10)
 			GMT_logx_grid (w, e, s, n, dx);
 		else if (dx > 0.0 && project_info.xyz_projection[0] == GMT_POW)
 			GMT_powx_grid (w, e, s, n, dx);
@@ -1603,7 +1603,7 @@ void GMT_map_gridlines (double w, double e, double s, double n)
 
 		if (project_info.xyz_projection[1] == GMT_TIME && dy > 0.0)
 			GMT_timey_grid (w, e, s, n, item[k]);
-		else if (dy > 0.0 && project_info.xyz_projection[1] == GMT_LOG10)
+		else if (fabs(dy) > 0.0 && project_info.xyz_projection[1] == GMT_LOG10)
 			GMT_logy_grid (w, e, s, n, dy);
 		else if (dy > 0.0 && project_info.xyz_projection[1] == GMT_POW)
 			GMT_powy_grid (w, e, s, n, dy);

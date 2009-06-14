@@ -1,4 +1,4 @@
-/*	$Id: gshhstograss.c,v 1.23 2009-06-12 02:42:35 guru Exp $
+/*	$Id: gshhstograss.c,v 1.24 2009-06-14 02:25:55 guru Exp $
 *
 * PROGRAM:   gshhstograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
@@ -205,7 +205,7 @@ int main (int argc, char **argv)
 	/* read lines from binary gshhs database */
 	n_read = fread((void *)&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
 	version = (h.flag >> 8) & 255;
-	flip = (version != GSHHS_DATA_VERSION);	/* Take as sign that byte-swabbing is needed */
+	flip = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 
 	while (n_read == 1) {
 

@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_gshhs.c,v 1.19 2009-06-12 02:42:35 guru Exp $
+ *	$Id: polygon_to_gshhs.c,v 1.20 2009-06-14 02:25:55 guru Exp $
  * 
  *	read polygon.b format and write a GSHHS file to stdout
  *	For version 1.4 we standardize GSHHS header to only use 4-byte ints.
@@ -14,7 +14,7 @@
 int main (int argc, char **argv)
 {
 	FILE	*fp_in;
-	int	k, version = GSHHS_DATA_VERSION, lines = 0, np, q = 0;
+	int	k, version = GSHHS_DATA_RELEASE, lines = 0, np, q = 0;
 	struct	LONGPAIR p;
 	struct GMT3_POLY h;
 	struct GSHHS gshhs_header;
