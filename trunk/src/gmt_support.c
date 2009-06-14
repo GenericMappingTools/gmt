@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.410 2009-06-12 02:00:43 remko Exp $
+ *	$Id: gmt_support.c,v 1.411 2009-06-14 02:25:55 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7436,9 +7436,17 @@ GMT_LONG GMT_log_array (double min, double max, double delta, double **array)
 
 	/* Because min and max may be tiny values (e.g., 10^-20) we must do all calculations on the log10 (value) */
 
-	if (delta <= 0.0) return (0);
-	val = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "GMT_log_array");
+	if (GMT_IS_ZERO (delta)) return (0);
+	log10_min = d_log10 (min);
+	log10_max = d_log10 (max);
 
+	if (delta < 0) {	/* Coarser than every magnitude */
+		n = GMT_linear_array (log10_min, log10_max, fabs (delta), 0.0, array);
+		for (i = 0; i < n; i++) (*array)[i] = pow (10.0, (*array)[i]);
+		return (n);
+	}
+	
+	val = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "GMT_log_array");
 	test = irint (fabs (delta)) - 1;
 	if (test == 1) {
 		tvals[0] = 0.0;	/* = log10 (1.0) */
@@ -7456,8 +7464,6 @@ GMT_LONG GMT_log_array (double min, double max, double delta, double **array)
 		test = 0;
 	}
 
-	log10_min = d_log10 (min);
-	log10_max = d_log10 (max);
 	start_log = irint (floor (log10_min));
 	val[0] = (double)start_log;
 	i = 1;	/* Because val[0] is initially set to be a power or ten (i = 0), so next should be 1 */
