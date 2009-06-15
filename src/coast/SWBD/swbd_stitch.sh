@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.4 2009-06-15 20:18:55 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.5 2009-06-15 20:21:13 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -118,20 +118,22 @@ fi
 if [ $combine -eq 1 ]; then
 #	See if the new batch of open segments may be combinable with those already in the file
 	for type in c l r; do
-		mkdir -p pol
-		gmtstitch -fg -T0 -Dpol/srtm_pol_%8.8d_%c.txt -L -m SWBD_open_${type}.d --D_FORMAT=%.6f
-		rm -f SWBD_open_${type}.d
-		(ls pol/srtm_pol_*_O.txt > t.lis) 2> /dev/null
-		while read file; do
-			echo "> $type segment" >> SWBD_open_${type}.d
-			cat $file >> SWBD_open_${type}.d
-		done < t.lis
-		(ls pol/srtm_pol_*_C.txt > t.lis) 2> /dev/null
-		while read file; do
-			echo "> $type polygon" >> SWBD_closed_${type}.d
-			cat $file >> SWBD_closed_${type}.d
-		done < t.lis
-		rm -rf pol t.lis
+		if [ -f SWBD_open_${type}.d ]; then
+			mkdir -p pol
+			gmtstitch -fg -T0 -Dpol/srtm_pol_%8.8d_%c.txt -L -m SWBD_open_${type}.d --D_FORMAT=%.6f
+			rm -f SWBD_open_${type}.d
+			(ls pol/srtm_pol_*_O.txt > t.lis) 2> /dev/null
+			while read file; do
+				echo "> $type segment" >> SWBD_open_${type}.d
+				cat $file >> SWBD_open_${type}.d
+			done < t.lis
+			(ls pol/srtm_pol_*_C.txt > t.lis) 2> /dev/null
+			while read file; do
+				echo "> $type polygon" >> SWBD_closed_${type}.d
+				cat $file >> SWBD_closed_${type}.d
+			done < t.lis
+			rm -rf pol t.lis
+		fi
 		nc=0
 		no=0
 		if [ -f SWBD_closed_${type}.d ]; then
