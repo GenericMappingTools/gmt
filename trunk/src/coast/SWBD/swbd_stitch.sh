@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.5 2009-06-15 20:21:13 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.6 2009-06-15 23:32:08 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -64,7 +64,7 @@ if [ $list -eq 1 ]; then
 		done
 		w=$e
 	done
-	rm -rf raw
+	rm -rf raw_[clr]
 fi
 #-----------------------------------------------
 if [ $extract -eq 1 ]; then
@@ -96,6 +96,7 @@ if [ $stitch -eq 1 ]; then
 		gmtpoly -T -m -fg -R$w/$e/$s/$n raw_l/$name.gmt --D_FORMAT=%.6f >> SWBD.raw_l.d
 		gmtpoly -T -m -fg -R$w/$e/$s/$n raw_r/$name.gmt --D_FORMAT=%.6f >> SWBD.raw_r.d
 	done < files.lis
+	rm -rf raw_[clr]
 #	Stitch together those segments that form closed polygons (coast, lakes, rivers separately)
 	for type in c l r; do
 		if [ -f SWBD.raw_${type}.d ]; then
@@ -111,7 +112,7 @@ if [ $stitch -eq 1 ]; then
 				echo "> $type polygon" >> SWBD_closed_${type}.d
 				cat $file >> SWBD_closed_${type}.d
 			done < t.lis
-			rm -rf pol raw SWBD.raw_${type}.d t.lis
+			rm -rf pol SWBD.raw_${type}.d t.lis
 		fi
 	done
 fi
@@ -145,4 +146,5 @@ if [ $combine -eq 1 ]; then
 		echo "$WEST/$EAST/$SOUTH/$NORTH : Closed $type polygons: $nc Open $type polygons: $no"
 	done
 fi
+rm -f links.d files.d
 cd ..
