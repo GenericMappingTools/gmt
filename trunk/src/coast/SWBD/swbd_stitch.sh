@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.3 2009-06-15 20:15:49 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.4 2009-06-15 20:18:55 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -132,8 +132,14 @@ if [ $combine -eq 1 ]; then
 			cat $file >> SWBD_closed_${type}.d
 		done < t.lis
 		rm -rf pol t.lis
-		nc=`grep '^>' SWBD_closed_${type}.d | wc -l`
-		no=`grep '^>' SWBD_open_${type}.d | wc -l`
+		nc=0
+		no=0
+		if [ -f SWBD_closed_${type}.d ]; then
+			nc=`grep '^>' SWBD_closed_${type}.d | wc -l`
+		fi
+		if [ -f SWBD_open_${type}.d ]; then
+			no=`grep '^>' SWBD_open_${type}.d | wc -l`
+		fi
 		echo "$WEST/$EAST/$SOUTH/$NORTH : Closed $type polygons: $nc Open $type polygons: $no"
 	done
 fi
