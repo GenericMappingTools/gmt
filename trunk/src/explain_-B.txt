@@ -40,8 +40,9 @@ that for 3-D views the title, if given, will be suppressed.)
 For non-geographical projections:
 Give negative scale (in OPT(Jx)) or axis length (in OPT(JX)) to change the direction
 of increasing coordinates (i.e., to make the y-axis positive down).  For log10 axes:  Annotations
-can be specified in one of three ways:  (1) \fIstride\fP can be 1, 2, or 3.  Annotations will then
-occur at 1, 1\-2\-5, or 1\-2\-3\-4\-...\-9, respectively.  This option can also be used for
+can be specified in one of three ways:  (1) \fIstride\fP can be 1, 2, 3, or -\fIn\fP.  Annotations will then
+occur at 1, 1\-2\-5, or 1\-2\-3\-4\-...\-9, respectively; for -\fIn\fP we annotate every \fIn\fP't magnitude.
+This option can also be used for
 the frame and grid intervals.  (2) An \fBl\fP is appended to the \fItickinfo\fP string.
 Then, log10 of the tick value is plotted at every integer log10 value.  (3) A \fBp\fP is appended
 to the \fItickinfo\fP string.  Then, annotations appear as 10 raised to log10 of the tick value.

@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.121 2009-05-08 01:05:10 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.122 2009-06-15 18:15:34 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -490,8 +490,9 @@ Due to the logarithmic nature of annotation spacings, the \emph{stride} paramete
 meanings.  The following concerns are specific to log axes:
 
 \begin{enumerate}
-\item \emph{stride} must be 1, 2, or 3.  Annotations/ticks will
+\item \emph{stride} must be 1, 2, 3, or a negative integer $-n$.  Annotations/ticks will
 then occur at 1, 1--2--5, or 1,2,3,4,...,9, respectively, for each magnitude range.
+For $-n$ the annotations will take place every {\it n}'th magnitude.
 
 \item Append \textbf{l} to \emph{stride}. Then, log$_{10}$ of the annotation
 is plotted at every integer log$_{10}$ value (e.g., $x = 100$ will be annotated as ``2'')
