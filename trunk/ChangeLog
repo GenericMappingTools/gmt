@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.538 2009-06-15 18:15:34 guru Exp $
+	$Id: ChangeLog,v 1.539 2009-06-15 20:15:48 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-06-15	pwessel
 	* gmt_init.c:		Allow negative integer interval (-n) for annotating log axis; this means
 				annotate every n'th power of 10.
+	* misc/gmtstitch.c:	Now honors -V properly.
 				
 2009-06-11	remko
 	* gmt_nc.c:		No longer write node_offset = 0 to file (not essential, only confusing).
