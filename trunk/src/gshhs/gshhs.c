@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.28 2009-06-14 02:25:55 guru Exp $
+/*	$Id: gshhs.c,v 1.29 2009-06-15 22:53:50 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -130,7 +130,7 @@ int main (int argc, char **argv)
 			else {
 				(h.container == -1) ? sprintf (container, "-") : sprintf (container, "%6d", h.container);
 				(h.ancestor == -1) ? sprintf (ancestor, "-") : sprintf (ancestor, "%6d", h.ancestor);
-				printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f %s\n", c, h.id, h.n, level, source, area, w, e, s, n, container, ancestor);
+				printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f %s %s\n", c, h.id, h.n, level, source, area, w, e, s, n, container, ancestor);
 			}
 		}
 
@@ -149,7 +149,7 @@ int main (int argc, char **argv)
 					p.y = swabi4 ((unsigned int)p.y);
 				}
 				lon = p.x * GSHHS_SCL;
-				if (greenwich && p.x > max_east) lon -= 360.0;
+				if ((greenwich && p.x > max_east) || (h.west > 180000000)) lon -= 360.0;
 				lat = p.y * GSHHS_SCL;
 				printf ("%11.6f%11.6f\n", lon, lat);
 			}
