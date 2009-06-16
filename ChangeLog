@@ -1,14 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.540 2009-06-16 01:22:56 remko Exp $
+	$Id: ChangeLog,v 1.541 2009-06-16 14:43:05 remko Exp $
 -----------------------------------------------------------------------------------------
 
-2009-06-15	remko
+2009-06-16	remko
 	* gmt2kml.{c,txt}:	Removed altitude argument of -E (had no purpose). Set default pen to 1,
 				as specified.  Changed -AA to -Aa, inline with -Ag and -As.
 				Altitude argument of -A becomes default altitude.  Fixed error with -Gn.
 				Always write linestyle and polygon style (need for extrusion).
 				Moved <extrude> and <altitudeMode> within <feature></feature>.
 				Write out <gx:altitudeMode> when required.
+				Removed -AG, -AS; use -Ag0, -As0 instead.
+				Removed -F<capital>, altitude mode is now fully controlled by -A.
+				Put set of points in a folder automatically.
+				Label linesegments automatically.  Improved documentation.
 
 2009-06-15	pwessel
 	* gmt_init.c:		Allow negative integer interval (-n) for annotating log axis; this means
