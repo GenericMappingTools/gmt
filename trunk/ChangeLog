@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.541 2009-06-16 14:43:05 remko Exp $
+	$Id: ChangeLog,v 1.542 2009-06-16 19:35:34 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-06-16	pwessel
+* gmt2kml.{c,txt}:		-T now takes title and optionally folder name.  WHen -O or -K is used
+				we always group features into folders and each folder has their own
+				style settings.
+	
 2009-06-16	remko
 	* gmt2kml.{c,txt}:	Removed altitude argument of -E (had no purpose). Set default pen to 1,
 				as specified.  Changed -AA to -Aa, inline with -Ag and -As.
