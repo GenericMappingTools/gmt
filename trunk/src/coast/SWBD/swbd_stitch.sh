@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.6 2009-06-15 23:32:08 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.7 2009-06-16 19:08:14 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -92,9 +92,9 @@ if [ $stitch -eq 1 ]; then
 		e=`expr $w + 1`
 		s=`echo $name | awk '{if (substr($1,5,1) == "s") {printf "-%d\n", substr($1, 6, 2)} else {printf "%d\n", substr($1, 6, 2)}}'`
 		n=`expr $s + 1`
-		gmtpoly -T -m -fg -R$w/$e/$s/$n raw_c/$name.gmt --D_FORMAT=%.6f >> SWBD.raw_c.d
-		gmtpoly -T -m -fg -R$w/$e/$s/$n raw_l/$name.gmt --D_FORMAT=%.6f >> SWBD.raw_l.d
-		gmtpoly -T -m -fg -R$w/$e/$s/$n raw_r/$name.gmt --D_FORMAT=%.6f >> SWBD.raw_r.d
+		for type in c l r; do
+			gmtpoly -L0/1e-8/1.4e-4 -m -fg -R$w/$e/$s/$n raw_${type}/$name.gmt --D_FORMAT=%.6f >> SWBD.raw_${type}.d
+		done
 	done < files.lis
 	rm -rf raw_[clr]
 #	Stitch together those segments that form closed polygons (coast, lakes, rivers separately)
