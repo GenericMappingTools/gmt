@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.58 2009-06-13 00:19:04 guru Exp $
-AC_REVISION($Revision: 1.58 $)
+dnl $Id: configure.ac,v 1.59 2009-06-16 20:50:55 guru Exp $
+AC_REVISION($Revision: 1.59 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -66,6 +66,9 @@ AC_SUBST(MANDATE)
 AC_SUBST(FTPSITE)
 AC_SUBST(GSHHS_VERSION)
 AC_SUBST(CVS_VERSION)
+AC_SUBST(GMT_MAJOR_VERSION)
+AC_SUBST(GMT_MINOR_VERSION)
+AC_SUBST(GMT_RELEASE_VERSION)
 AC_SUBST(LIBEXT)
 AC_SUBST(SL)
 AC_SUBST(SL_VERSION)
@@ -156,6 +159,9 @@ dnl
 rootdir=`pwd`
 LIB_VERSION=`echo $PACKAGE_VERSION | cut -d' ' -f1`
 LIB_MAJOR_VERSION=`echo $PACKAGE_VERSION | cut -c-1`
+GMT_MAJOR_VERSION=`echo $PACKAGE_VERSION |  cut -c1`
+GMT_MINOR_VERSION=`echo $PACKAGE_VERSION |  cut -c3`
+GMT_RELEASE_VERSION=`echo $PACKAGE_VERSION |  cut -c5`
 #if test -d "CVS" ; then
 #	PACKAGE_VERSION="$PACKAGE_VERSION (CVS \"__DATE__\" \"__TIME__\")"
 #fi
