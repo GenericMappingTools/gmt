@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.7 2009-06-11 05:04:46 guru Exp $
+#  $Id: GNUmakefile,v 1.8 2009-06-17 22:44:03 guru Exp $
 #
 #	Guru Makefile for GMT Version 4.x misc directory
 #	
@@ -22,3 +22,4 @@ include ../manpages.mk
 gmtpoly$(EXE):	$(GMTLIB) gmtpoly.o
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
+		$(INSTALL) $@ $(bindir)
