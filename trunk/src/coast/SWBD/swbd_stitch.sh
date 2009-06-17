@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.8 2009-06-17 01:21:50 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.9 2009-06-17 03:11:33 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -11,6 +11,11 @@
 # placed on the multisegment header record instead of comment records
 # follwoing the segment header.  We then use the SWBD codes to separate
 # coastlines, lakes, and rivers so we can process them separately.
+# We seek to remove portions of thetile outline that has been added to
+# many features by looking for horizontal or vertical line segments that
+# occur along the w/e/s/n borders exceeding a minimum length.  We allow
+# some play here: ~1 arc sec deviation from w/e/s/n, in dx and dy, and use
+# 0 meter as limit.
 #
 # SWBD codes:
 #	BA040 Coastline
@@ -93,7 +98,7 @@ if [ $stitch -eq 1 ]; then
 		s=`echo $name | awk '{if (substr($1,5,1) == "s") {printf "-%d\n", substr($1, 6, 2)} else {printf "%d\n", substr($1, 6, 2)}}'`
 		n=`expr $s + 1`
 		for type in c l r; do
-			gmtpoly -L0/1e-8/1.4e-4 -m -fg -R$w/$e/$s/$n raw_${type}/$name.gmt --D_FORMAT=%.6f >> SWBD.raw_${type}.d
+			gmtpoly -L0/2.8e-4/2.8e-4 -m -fg -R$w/$e/$s/$n raw_${type}/$name.gmt --D_FORMAT=%.6f >> SWBD.raw_${type}.d
 		done
 	done < files.lis
 	rm -rf raw_[clr]
