@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.7 2009-06-16 19:08:14 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.8 2009-06-17 01:21:50 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -100,19 +100,19 @@ if [ $stitch -eq 1 ]; then
 #	Stitch together those segments that form closed polygons (coast, lakes, rivers separately)
 	for type in c l r; do
 		if [ -f SWBD.raw_${type}.d ]; then
-			mkdir -p pol
-			gmtstitch -fg -T0 -Dpol/srtm_pol_%8.8d_%c.txt -L -m SWBD.raw_${type}.d --D_FORMAT=%.6f
-			(ls pol/srtm_pol_*_O.txt > t.lis) 2> /dev/null
+			mkdir -p pol_${type}
+			gmtstitch -fg -T0 -Dpol_${type}/srtm_pol_%8.8d_%c.txt -L -m SWBD.raw_${type}.d --D_FORMAT=%.6f
+			(ls pol_${type}/srtm_pol_*_O.txt > t.lis) 2> /dev/null
 			while read file; do
 				echo "> $type segment" >> SWBD_open_${type}.d
 				cat $file >> SWBD_open_${type}.d
 			done < t.lis
-			(ls pol/srtm_pol_*_C.txt > t.lis) 2> /dev/null
+			(ls pol_${type}/srtm_pol_*_C.txt > t.lis) 2> /dev/null
 			while read file; do
 				echo "> $type polygon" >> SWBD_closed_${type}.d
 				cat $file >> SWBD_closed_${type}.d
 			done < t.lis
-			rm -rf pol SWBD.raw_${type}.d t.lis
+			rm -rf pol_${type} SWBD.raw_${type}.d t.lis
 		fi
 	done
 fi
@@ -120,20 +120,20 @@ if [ $combine -eq 1 ]; then
 #	See if the new batch of open segments may be combinable with those already in the file
 	for type in c l r; do
 		if [ -f SWBD_open_${type}.d ]; then
-			mkdir -p pol
-			gmtstitch -fg -T0 -Dpol/srtm_pol_%8.8d_%c.txt -L -m SWBD_open_${type}.d --D_FORMAT=%.6f
+			mkdir -p polc_${type}
+			gmtstitch -fg -T0 -Dpolc_${type}/srtm_pol_%8.8d_%c.txt -L -m SWBD_open_${type}.d --D_FORMAT=%.6f
 			rm -f SWBD_open_${type}.d
-			(ls pol/srtm_pol_*_O.txt > t.lis) 2> /dev/null
+			(ls polc_${type}/srtm_pol_*_O.txt > t.lis) 2> /dev/null
 			while read file; do
 				echo "> $type segment" >> SWBD_open_${type}.d
 				cat $file >> SWBD_open_${type}.d
 			done < t.lis
-			(ls pol/srtm_pol_*_C.txt > t.lis) 2> /dev/null
+			(ls polc_${type}/srtm_pol_*_C.txt > t.lis) 2> /dev/null
 			while read file; do
 				echo "> $type polygon" >> SWBD_closed_${type}.d
 				cat $file >> SWBD_closed_${type}.d
 			done < t.lis
-			rm -rf pol t.lis
+			rm -rf polc_${type} t.lis
 		fi
 		nc=0
 		no=0

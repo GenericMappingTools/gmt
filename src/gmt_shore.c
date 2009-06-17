@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.42 2009-06-05 00:25:11 guru Exp $
+ *	$Id: gmt_shore.c,v 1.43 2009-06-17 01:21:50 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -190,7 +190,7 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
 
 	c->min_area = info->area;	/* Limit the features */
 	c->min_level = info->low;	
-	c->max_level = info->high;	
+	c->max_level = (info->low == info->high && info->high == 0) ? GMT_MAX_GSHHS_LEVEL : info->high;	/* Default to all if not set */
 	c->flag = info->flag;
 
 	c->scale = (c->bin_size / 60.0) / 65535.0;
