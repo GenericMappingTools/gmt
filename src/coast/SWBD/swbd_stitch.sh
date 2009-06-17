@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.9 2009-06-17 03:11:33 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.10 2009-06-17 03:30:21 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -70,6 +70,8 @@ if [ $list -eq 1 ]; then
 		w=$e
 	done
 	rm -rf raw_[clr]
+#	nf=`wc -l files.lis`
+#	echo "Found zip files : $nf"
 fi
 #-----------------------------------------------
 if [ $extract -eq 1 ]; then
@@ -123,6 +125,8 @@ if [ $stitch -eq 1 ]; then
 fi
 if [ $combine -eq 1 ]; then
 #	See if the new batch of open segments may be combinable with those already in the file
+	closed=""
+	open=""
 	for type in c l r; do
 		if [ -f SWBD_open_${type}.d ]; then
 			mkdir -p polc_${type}
@@ -148,8 +152,10 @@ if [ $combine -eq 1 ]; then
 		if [ -f SWBD_open_${type}.d ]; then
 			no=`grep '^>' SWBD_open_${type}.d | wc -l`
 		fi
-		echo "$WEST/$EAST/$SOUTH/$NORTH : Closed $type polygons: $nc Open $type polygons: $no"
+		closed="$closed $nc"
+		open="$open $no"
 	done
+	echo "$WEST/$EAST/$SOUTH/$NORTH : C L R polygons Closed: $closed Open: $open"
 fi
 rm -f links.d files.d
 cd ..
