@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.47 2009-05-15 08:16:21 guru Exp $
+ *	$Id: gmt_support.h,v 1.48 2009-06-17 01:12:31 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -45,6 +45,8 @@ EXTERN_MSC GMT_LONG GMT_voronoi (double *x_in, double *y_in, GMT_LONG n, double 
 EXTERN_MSC GMT_LONG GMT_flip_justify (GMT_LONG justify);
 EXTERN_MSC GMT_LONG GMT_get_dist_scale (char c, double *d_scale, GMT_LONG *proj_type, PFD *distance_func);
 EXTERN_MSC GMT_LONG GMT_get_format (double interval, char *unit, char *prefix, char *format);
+EXTERN_MSC GMT_LONG GMT_get_index (double value);
+EXTERN_MSC void GMT_get_rgb_lookup (GMT_LONG index, double value, int *rgb);
 EXTERN_MSC GMT_LONG GMT_get_rgb_from_z (double value, int *rgb);
 EXTERN_MSC GMT_LONG GMT_get_fill_from_z (double value, struct GMT_FILL *fill);
 EXTERN_MSC GMT_LONG GMT_getfill (char *line, struct GMT_FILL *fill);
