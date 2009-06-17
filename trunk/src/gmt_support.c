@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.412 2009-06-17 01:12:31 remko Exp $
+ *	$Id: gmt_support.c,v 1.413 2009-06-17 16:26:03 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -142,7 +142,6 @@ void GMT_near_zero_roundoff_fixer_upper (double *ww, GMT_LONG axis);
 #endif
 BOOLEAN GMT_gethsv (char *line, double hsv[]);
 void GMT_cmyk_to_hsv (double hsv[], double cmyk[]);
-void get_rgb_lookup (GMT_LONG index, double value, int *rgb);
 
 double *GMT_x2sys_Y;
 
@@ -2102,7 +2101,7 @@ GMT_LONG GMT_get_fill_from_z (double value, struct GMT_FILL *fill)
 	else if (index < 0 && (f = GMT_bfn[index+3].fill))
 		memcpy ((void *)fill, (void *)f, sizeof (struct GMT_FILL));
 	else {
-		get_rgb_lookup (index, value, fill->rgb);
+		GMT_get_rgb_lookup (index, value, fill->rgb);
 		fill->use_pattern = FALSE;
 	}
 	return (index);
