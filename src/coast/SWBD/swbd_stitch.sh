@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.13 2009-06-17 22:42:36 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.14 2009-06-17 23:48:08 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -100,8 +100,6 @@ if [ $stitch -eq 1 ]; then
 		n=`expr $s + 1`
 		for type in c l r; do
 			gmtpoly -L0/2.8e-4/2.8e-4 -m -fg -R$w/$e/$s/$n raw_${type}/$name.gmt --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D >> SWBD.raw_${type}.d
-			echo stopper
-			read
 		done
 	done < files.lis
 	rm -rf raw_[clr]
