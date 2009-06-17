@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.399 2009-06-14 02:25:55 guru Exp $
+ *	$Id: gmt_init.c,v 1.400 2009-06-17 14:08:44 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3477,8 +3477,6 @@ GMT_LONG GMT_begin (int argc, char **argv)
 	}
 	argc = j;
 
-	GMT_history (argc, argv);	/* Process and store command shorthands */
-
 	GMT_getdefaults (this);
 
 	/* See if user specified -- defaults on the command line [Per Dave Ball's suggestion].
@@ -3500,6 +3498,8 @@ GMT_LONG GMT_begin (int argc, char **argv)
 	argc = j;
 	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
 	if (n) fprintf (stderr, "%s:  %ld conversion errors from command-line default override settings!\n", GMT_program, n);
+
+	GMT_history (argc, argv);	/* Process and store command shorthands */
 
 	GMT_PS_init ();		/* Init the PostScript-related parameters */
 
