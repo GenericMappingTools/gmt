@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.11 2009-06-17 07:09:47 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.12 2009-06-17 22:09:04 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -39,7 +39,7 @@ filename () {	# w,s
 	fi
         printf "%s%3.3d%s%2.2d?\n" "$x" $w "$y" $s
 }
-DIR=/home/gmt1/data/misc/SWBD
+DIR=$GMT_DATADIR/SWBD
 WEST=$1
 EAST=$2
 SOUTH=$3
@@ -78,9 +78,8 @@ if [ $extract -eq 1 ]; then
 #	Extract info from the zipped shapefiles and separate into coast, lakes, and river files
 	mkdir -p raw_c raw_l raw_r
 	while read file; do
-		cp -f $file .
 		name=`basename $file '.zip'`
-		unzip -q $name.zip
+		unzip -q $file
 		ogr2ogr -f "GMT" $name.d $name.shp
 		rearranger < $name.gmt > tmp
 		gmtconvert -m -fg -S"BA040" -F0,1 --D_FORMAT=%.6f tmp > raw_c/$name.gmt
@@ -150,8 +149,9 @@ if [ $combine -eq 1 ]; then
 		fi
 		closed="$closed $nc"
 		open="$open $no"
+		mv links.d links_${type}.d
 	done
 	printf "%17s : C L R polygons Closed: %s Open: %s\n"  "$WEST/$EAST/$SOUTH/$NORTH" "$closed" "$open"
 fi
-rm -f links.d files.d
+rm -f files.d
 cd ..
