@@ -1,13 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.542 2009-06-16 19:35:34 guru Exp $
+	$Id: ChangeLog,v 1.543 2009-06-17 01:13:36 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-06-16	pwessel
-* gmt2kml.{c,txt}:		-T now takes title and optionally folder name.  WHen -O or -K is used
+	* gmt2kml.{c,txt}:	-T now takes title and optionally folder name.  When -O or -K is used
 				we always group features into folders and each folder has their own
 				style settings.
 	
 2009-06-16	remko
+	* gmtmath.c:		Fixed bug: tried to free memory that was not allocated.
+	* gmt_io.c:		Allow specifying both -mi and -mo.
 	* gmt2kml.{c,txt}:	Removed altitude argument of -E (had no purpose). Set default pen to 1,
 				as specified.  Changed -AA to -Aa, inline with -Ag and -As.
 				Altitude argument of -A becomes default altitude.  Fixed error with -Gn.
@@ -18,6 +20,9 @@
 				Removed -F<capital>, altitude mode is now fully controlled by -A.
 				Put set of points in a folder automatically.
 				Label linesegments automatically.  Improved documentation.
+				Renamed option -L to -R, which now also performs data screening.
+				Renamed option -C to -L. Added -C option to color icons by value.
+				Added option to scale altitude values.
 
 2009-06-15	pwessel
 	* gmt_init.c:		Allow negative integer interval (-n) for annotating log axis; this means
