@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.191 2009-06-11 05:42:09 guru Exp $
+ *	$Id: gmt_io.c,v 1.192 2009-06-17 01:07:33 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -610,25 +610,20 @@ void GMT_parse_m_option (char *text)
 	 * flag is only used for ASCII data sets.
 	 * GMT 4.1.2: Added possibility separate settings for input and output */
 
-	if (text && text[0]) {
-		GMT_io.multi_segments[GMT_IN] = GMT_io.multi_segments[GMT_OUT] = FALSE;
-		switch (text[0]) {
-			case 'i':	/* -m for input files only */
-				GMT_io.multi_segments[GMT_IN] = TRUE;
-				if (text[1]) GMT_io.EOF_flag[GMT_IN] = text[1];
-				break;
-			case 'o':	/* -m for output files only */
-				GMT_io.multi_segments[GMT_OUT] = TRUE;
-				if (text[1]) GMT_io.EOF_flag[GMT_OUT] = text[1];
-				break;
-			default:	/* Applies to both input and output */
-				GMT_io.multi_segments[GMT_IN] = GMT_io.multi_segments[GMT_OUT] = TRUE;
-				if (text[0]) GMT_io.EOF_flag[GMT_IN] = GMT_io.EOF_flag[GMT_OUT] = text[0];
-				break;
-		}
+	switch (text[0]) {
+		case 'i':	/* -m for input files only */
+			GMT_io.multi_segments[GMT_IN] = TRUE;
+			if (text[1]) GMT_io.EOF_flag[GMT_IN] = text[1];
+			break;
+		case 'o':	/* -m for output files only */
+			GMT_io.multi_segments[GMT_OUT] = TRUE;
+			if (text[1]) GMT_io.EOF_flag[GMT_OUT] = text[1];
+			break;
+		default:	/* Applies to both input and output */
+			GMT_io.multi_segments[GMT_IN] = GMT_io.multi_segments[GMT_OUT] = TRUE;
+			if (text[0]) GMT_io.EOF_flag[GMT_IN] = GMT_io.EOF_flag[GMT_OUT] = text[0];
+			break;
 	}
-	else
-		GMT_io.multi_segments[GMT_IN] = GMT_io.multi_segments[GMT_OUT] = TRUE;
 }
 
 GMT_LONG GMT_ascii_input (FILE *fp, GMT_LONG *n, double **ptr)
@@ -2942,8 +2937,10 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 	while (n_fields >= 0 && !(GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		while (no_segments || (GMT_io.status & GMT_IO_SEGMENT_HEADER && !(GMT_io.status & GMT_IO_EOF))) {
 			/* To use different line-distances for each segment, place the distance in the segment header */
-			if (seg == -1 || T->segment[seg]->n_rows > 0) seg++;	/* Only advance segment if last had any points or was the first one */
-			T->segment[seg] = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+			if (seg == -1 || T->segment[seg]->n_rows > 0) {
+				seg++;	/* Only advance segment if last had any points or was the first one */
+				T->segment[seg] = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
+			}
 			n_read++;
 			if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
 				k = sscanf (&GMT_io.segment_header[1], "%lg", &d);		/* See if we find a number in the header */
