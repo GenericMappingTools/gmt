@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.14 2009-06-17 23:48:08 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.15 2009-06-17 23:51:58 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -138,6 +138,7 @@ if [ $combine -eq 1 ]; then
 				cat $file >> SWBD_closed_${type}.d
 			done < list_${type}_C.lis
 			rm -rf polc_${type} list_${type}_[CO].lis
+			mv links.d links_${type}.d
 		fi
 		nc=0
 		no=0
@@ -149,7 +150,6 @@ if [ $combine -eq 1 ]; then
 		fi
 		closed="$closed $nc"
 		open="$open $no"
-		mv links.d links_${type}.d
 	done
 	printf "%17s : C L R polygons Closed: %s Open: %s\n"  "$WEST/$EAST/$SOUTH/$NORTH" "$closed" "$open"
 fi
