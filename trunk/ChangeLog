@@ -1,6 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.543 2009-06-17 01:13:36 remko Exp $
+	$Id: ChangeLog,v 1.544 2009-06-17 14:41:28 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-17	remko
+	* gmt_init.c (GMT_begin):	GMT_history should come AFTER reading defaults, otherwise
+				there is no way to switch it off.
+	* gmt2kml.c:		Option -R becomes -Ra (otherwise takes it from .gmtcommands4).
+				Default folder name now "%s Features", where %s is feature type.
+				No longer produces empty segments (when all data out of bounds).
+				Create folder per input file (except standard input).
+				Ignore -C option when plotting lines or polygons.
+	* gmt2kml.txt:		Added example of document hierarchy.
 
 2009-06-16	pwessel
 	* gmt2kml.{c,txt}:	-T now takes title and optionally folder name.  When -O or -K is used
@@ -16,13 +26,14 @@
 				Always write linestyle and polygon style (need for extrusion).
 				Moved <extrude> and <altitudeMode> within <feature></feature>.
 				Write out <gx:altitudeMode> when required.
-				Removed -AG, -AS; use -Ag0, -As0 instead.
+				Removed -AG, -AS; use -Ag0, -As0 instead. Allow vertical scaling.
 				Removed -F<capital>, altitude mode is now fully controlled by -A.
 				Put set of points in a folder automatically.
 				Label linesegments automatically.  Improved documentation.
 				Renamed option -L to -R, which now also performs data screening.
 				Renamed option -C to -L. Added -C option to color icons by value.
 				Added option to scale altitude values.
+				Made to work with binary and netCDF files.
 
 2009-06-15	pwessel
 	* gmt_init.c:		Allow negative integer interval (-n) for annotating log axis; this means
