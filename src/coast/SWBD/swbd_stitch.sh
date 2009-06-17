@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.10 2009-06-17 03:30:21 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.11 2009-06-17 07:09:47 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -108,18 +108,16 @@ if [ $stitch -eq 1 ]; then
 	for type in c l r; do
 		if [ -f SWBD.raw_${type}.d ]; then
 			mkdir -p pol_${type}
-			gmtstitch -fg -T0 -Dpol_${type}/srtm_pol_%8.8d_%c.txt -L -m SWBD.raw_${type}.d --D_FORMAT=%.6f
-			(ls pol_${type}/srtm_pol_*_O.txt > t.lis) 2> /dev/null
+			gmtstitch -fg -T0 -Dpol_${type}/srtm_pol_%c_%8.8d.txt -L -m SWBD.raw_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f
 			while read file; do
 				echo "> $type segment" >> SWBD_open_${type}.d
 				cat $file >> SWBD_open_${type}.d
-			done < t.lis
-			(ls pol_${type}/srtm_pol_*_C.txt > t.lis) 2> /dev/null
+			done < list_${type}_O.lis
 			while read file; do
 				echo "> $type polygon" >> SWBD_closed_${type}.d
 				cat $file >> SWBD_closed_${type}.d
-			done < t.lis
-			rm -rf pol_${type} SWBD.raw_${type}.d t.lis
+			done < list_${type}_C.lis
+			rm -rf pol_${type} SWBD.raw_${type}.d list_${type}_[CO].lis
 		fi
 	done
 fi
@@ -130,19 +128,17 @@ if [ $combine -eq 1 ]; then
 	for type in c l r; do
 		if [ -f SWBD_open_${type}.d ]; then
 			mkdir -p polc_${type}
-			gmtstitch -fg -T0 -Dpolc_${type}/srtm_pol_%8.8d_%c.txt -L -m SWBD_open_${type}.d --D_FORMAT=%.6f
+			gmtstitch -fg -T0 -Dpolc_${type}/srtm_pol_%c_%8.8d.txt -L -m SWBD_open_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f
 			rm -f SWBD_open_${type}.d
-			(ls polc_${type}/srtm_pol_*_O.txt > t.lis) 2> /dev/null
 			while read file; do
 				echo "> $type segment" >> SWBD_open_${type}.d
 				cat $file >> SWBD_open_${type}.d
-			done < t.lis
-			(ls polc_${type}/srtm_pol_*_C.txt > t.lis) 2> /dev/null
+			done < list_${type}_O.lis
 			while read file; do
 				echo "> $type polygon" >> SWBD_closed_${type}.d
 				cat $file >> SWBD_closed_${type}.d
-			done < t.lis
-			rm -rf polc_${type} t.lis
+			done < list_${type}_C.lis
+			rm -rf polc_${type} list_${type}_[CO].lis
 		fi
 		nc=0
 		no=0
@@ -155,7 +151,7 @@ if [ $combine -eq 1 ]; then
 		closed="$closed $nc"
 		open="$open $no"
 	done
-	echo "$WEST/$EAST/$SOUTH/$NORTH : C L R polygons Closed: $closed Open: $open"
+	printf "%17s : C L R polygons Closed: %s Open: %s\n"  "$WEST/$EAST/$SOUTH/$NORTH" "$closed" "$open"
 fi
 rm -f links.d files.d
 cd ..
