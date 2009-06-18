@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.544 2009-06-17 14:41:28 remko Exp $
+	$Id: ChangeLog,v 1.545 2009-06-18 08:38:18 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-06-17	pwessel
+	* grdfft.c:		Now also has Butterworth filter.
+	
 2009-06-17	remko
 	* gmt_init.c (GMT_begin):	GMT_history should come AFTER reading defaults, otherwise
 				there is no way to switch it off.
