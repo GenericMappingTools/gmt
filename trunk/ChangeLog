@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.546 2009-06-18 19:16:56 guru Exp $
+	$Id: ChangeLog,v 1.547 2009-06-18 23:02:15 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-06-18	pwessel
 	* misc/gmtstitch.c:	Enhanced -T option to eliminate connections when the 2nd closest
-				pair is too close.
+				pair is too close.  Also added -C option to simply separate the
+				open from the closed polygons (no stitching).
 
 2009-06-17	pwessel
 	* grdfft.c:		Now also has Butterworth band-pass filter.
