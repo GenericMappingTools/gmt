@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.233 2009-05-15 08:16:21 guru Exp $
+ *	$Id: gmt_map.c,v 1.234 2009-06-18 01:45:16 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1542,7 +1542,7 @@ GMT_LONG GMT_map_init_oblique (void) {
 	/* Here we have pole and origin */
 
 	/* Get forward pole and origin vectors FP, FC */
-	GMT_geo_to_cart (p_y, p_x, project_info.o_FP, TRUE);
+	GMT_geo_to_cart (project_info.o_pole_lat, project_info.o_pole_lon, project_info.o_FP, TRUE);
 	GMT_geo_to_cart (o_y, o_x, P, TRUE);	/* P points to origin  */
 	GMT_cross3v (project_info.o_FP, P, project_info.o_FC);
 	GMT_normalize3v (project_info.o_FC);
