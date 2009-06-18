@@ -5,7 +5,7 @@ psmeca \- Plot focal mechanisms on maps
 .SH SYNOPSIS
 .br
 psmeca \fIfiles\fP GMT_J_OPT GMT_Rgeo_OPT
-[ GMT_B_OPT ] [ OPT(C)\fIpen\fP ] [ OPT(D)\fIdepmin\fP/\fIdepmax\fP ]
+[ GMT_B_OPT ] [ OPT(C)[\fIpen\fP][\fBP\fP\fIpointsize\fP] ] [ OPT(D)\fIdepmin\fP/\fIdepmax\fP ]
 [ OPT(E)\fIfill\fP] [ OPT(G)\fIfill\fP] [ GMT_H_OPT ]
 [ GMT_K_OPT ] [ OPT(L)[\fIpen\fP] ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ]
 [ GMT_P_OPT ] 
@@ -197,7 +197,7 @@ Text string to appear above the beach ball (optional).
 No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
-OPT(C)[\fIpen\fP][\fIpointsize\fP]
+OPT(C)[\fIpen\fP][\fBP\fP\fIpointsize\fP]
 Offsets focal mechanisms to the longitude, latitude specified in the last
 two columns of the input file before the (optional) text string.  A small
 circle is plotted at the initial location and a line connects the beachball
