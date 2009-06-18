@@ -1,9 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.545 2009-06-18 08:38:18 guru Exp $
+	$Id: ChangeLog,v 1.546 2009-06-18 19:16:56 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-06-18	pwessel
+	* misc/gmtstitch.c:	Enhanced -T option to eliminate connections when the 2nd closest
+				pair is too close.
+
 2009-06-17	pwessel
-	* grdfft.c:		Now also has Butterworth filter.
+	* grdfft.c:		Now also has Butterworth band-pass filter.
 	
 2009-06-17	remko
 	* gmt_init.c (GMT_begin):	GMT_history should come AFTER reading defaults, otherwise
