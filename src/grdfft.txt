@@ -46,17 +46,21 @@ Append \fBw\fP to write wavelength instead of frequency.
 .TP
 OPT(F)
 Filter the data.  Place \fBx\fP or \fBy\fP immediately after OPT(F) to filter \fIx\fP or \fIy\fP direction only; default is isotropic.
-Choose between a cosine-tapered band-pass or a Gaussian band-pass filter.
-Cosine-taper: Specify four wavelengths in correct units (see OPT(M)) to design a bandpass filter: wavelengths greater than 
+Choose between a cosine-tapered band-pass, a Gaussian band-pass filter, or a Butterworth band-pass filter.
+Cosine-taper: Specify four wavelengths \fIlc\fP/\fIlp\fP/\fIhp\fP/\fIhc\fP in correct units (see OPT(M)) to design a bandpass filter: wavelengths greater than 
 \fIlc\fP or less than \fIhc\fP will be cut, wavelengths greater than \fIlp\fP and less than \fIhp\fP will be 
 passed, and wavelengths in between will be cosine-tapered.  E.g., OPT(F)1000000/250000/50000/10000 OPT(M) 
 will bandpass, cutting wavelengths > 1000 km and < 10 km, passing wavelengths between 250 km and 50 km.  To make 
 a highpass or lowpass filter, give hyphens (-) for \fIhp\fP/\fIhc\fP or \fIlc\fP/\fIlp\fP.  E.g., OPT(Fx)-/-/50/10 
 will lowpass \fIx\fP, passing wavelengths > 50 and rejecting wavelengths < 10.  OPT(Fy)1000/250/-/- will highpass \fIy\fP, 
-passing wavelengths < 250 and rejecting wavelengths > 1000.  Gaussian band-pass: Append two wavelengths in correct units
+passing wavelengths < 250 and rejecting wavelengths > 1000.  Gaussian band-pass: Append \fIlo\fP/\fIhi\fP, the two wavelengths in correct units
 (see OPT(M)) to design a bandpass filter.  At the given wavelengths the Gaussian filter weights will be 0.5. To make
 a highpass or lowpass filter, give a hyphen (-) for the \fIhi\fP or \fIlo\fP wavelength, respectively.  E.g., OPT(F)-/30
 will lowpass the data using a Gaussian filter with half-weight at 30, while OPT(F)400/- will highpass the data.
+Butterworth band-pass: Append \fIlo\fP/\fIhi\fP/\fIorder\fP, the two wavelengths in correct units
+(see OPT(M)) and the filter order (an integer) to design a bandpass filter.  At the given wavelengths the Butterworth filter weights will be 0.5. To make
+a highpass or lowpass filter, give a hyphen (-) for the \fIhi\fP or \fIlo\fP wavelength, respectively.  E.g., OPT(F)-/30/2
+will lowpass the data using a Butterworth filter with exponent 2, with half-weight at 30, while OPT(F)400/-/2 will highpass the data.
 .TP
 OPT(I)
 Integrate the field, i.e., compute integral_over_z (field * dz).  This is equivalent to divide by kr
