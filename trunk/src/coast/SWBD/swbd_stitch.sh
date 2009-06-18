@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.15 2009-06-17 23:51:58 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.16 2009-06-18 03:15:07 guru Exp $
 #
 # Usage: swbd_stitch.sh w e s n JOBDIR
 #
@@ -16,6 +16,8 @@
 # occur along the w/e/s/n borders exceeding a minimum length.  We allow
 # some play here: ~1 arc sec deviation from w/e/s/n, in dx and dy, and use
 # 0 meter as limit.
+# For stitching pieces we start off with a conservative 50 meter gap. This
+# should tie in most of those segments off by ~ 1-2 arc sec (~30-60 meters).
 #
 # SWBD codes:
 #	BA040 Coastline
@@ -107,7 +109,7 @@ if [ $stitch -eq 1 ]; then
 	for type in c l r; do
 		if [ -f SWBD.raw_${type}.d ]; then
 			mkdir -p pol_${type}
-			gmtstitch -fg -T0 -Dpol_${type}/srtm_pol_%c_%8.8d.txt -L -m SWBD.raw_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D
+			gmtstitch -fg -T0.05k -Dpol_${type}/srtm_pol_%c_%8.8d.txt -L -m SWBD.raw_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D
 			while read file; do
 				echo "> $type segment" >> SWBD_open_${type}.d
 				cat $file >> SWBD_open_${type}.d
@@ -127,7 +129,7 @@ if [ $combine -eq 1 ]; then
 	for type in c l r; do
 		if [ -f SWBD_open_${type}.d ]; then
 			mkdir -p polc_${type}
-			gmtstitch -fg -T0 -Dpolc_${type}/srtm_pol_%c_%8.8d.txt -L -m SWBD_open_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D
+			gmtstitch -fg -T0.05k -Dpolc_${type}/srtm_pol_%c_%8.8d.txt -L -m SWBD_open_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D
 			rm -f SWBD_open_${type}.d
 			while read file; do
 				echo "> $type segment" >> SWBD_open_${type}.d
