@@ -1,17 +1,19 @@
 #include <stdio.h>
 #include <string.h>
-/* $Id: rearranger.c,v 1.2 2009-06-17 01:21:50 guru Exp $
+/* $Id: rearranger.c,v 1.3 2009-06-18 23:02:15 guru Exp $
  * Puts new GMT/GIS extra comments onto the segment header line for easy parsing
+* If an argument is given it is added to the multisegment headers
  */
-main () {
-	char line[BUFSIZ], feature[BUFSIZ], *s;
-	int hold = 0;
-	
+int main (int argc, char **argv) {
+	char line[BUFSIZ], feature[BUFSIZ], *s, *ID = NULL;
+	int hold = 0, seg_no = 0;
+	if (argc == 2) ID = argv[1];	/* Passed a filename ID to write to all segment headers */
 	while (fgets (line, BUFSIZ, stdin)) {
 		line[strlen(line)-1] = '\0';	/* Cut off \n */
 		if (line[0] == '>') {	/* New segment */
 			hold = 1;
 			printf ("%s", line);
+			if (ID) printf (" -L%s-%d", ID, seg_no++);
 		}
 		else if (line[0] == '#') {	/* Add comments to segment line */
 			if ((s = strstr (line, "@D"))) {

@@ -1,8 +1,8 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_stitch.sh,v 1.16 2009-06-18 03:15:07 guru Exp $
+#	$Id: swbd_stitch.sh,v 1.17 2009-06-18 23:02:15 guru Exp $
 #
-# Usage: swbd_stitch.sh w e s n JOBDIR
+# Usage: swbd_stitch.sh w e s n TILE
 #
 # This script accepts w/e/s/n and a job dir as the first 5 arguments and
 # looks for SWBD files in a specified DIR.  The *.zip files are then unzipped
@@ -16,8 +16,9 @@
 # occur along the w/e/s/n borders exceeding a minimum length.  We allow
 # some play here: ~1 arc sec deviation from w/e/s/n, in dx and dy, and use
 # 0 meter as limit.
-# For stitching pieces we start off with a conservative 50 meter gap. This
+# For stitching pieces we start off with a 100 meter gap. This
 # should tie in most of those segments off by ~ 1-2 arc sec (~30-60 meters).
+# However, we only do this tie if the 2nd closest match is at least 500 m away.
 #
 # SWBD codes:
 #	BA040 Coastline
@@ -46,14 +47,14 @@ WEST=$1
 EAST=$2
 SOUTH=$3
 NORTH=$4
-JOBDIR=$5
+TILE=$5
 list=1
 extract=1
 stitch=1
-combine=1
+combine=0
 
-mkdir -p $JOBDIR
-cd $JOBDIR
+mkdir -p $TILE
+cd $TILE
 
 if [ $list -eq 1 ]; then
 #	Create a list (files.lis) of the zip files found inside this region
@@ -83,7 +84,7 @@ if [ $extract -eq 1 ]; then
 		name=`basename $file '.zip'`
 		unzip -q $file
 		ogr2ogr -f "GMT" $name.d $name.shp
-		rearranger < $name.gmt > tmp
+		rearranger $name < $name.gmt > tmp
 		gmtconvert -m -fg -S"BA040" -F0,1 --D_FORMAT=%.8f --OUTPUT_DEGREE_FORMAT=D tmp > raw_c/$name.gmt
 		gmtconvert -m -fg -S"BH080" -F0,1 --D_FORMAT=%.8f --OUTPUT_DEGREE_FORMAT=D tmp > raw_l/$name.gmt
 		gmtconvert -m -fg -S"BH140" -F0,1 --D_FORMAT=%.8f --OUTPUT_DEGREE_FORMAT=D tmp > raw_r/$name.gmt
@@ -105,50 +106,56 @@ if [ $stitch -eq 1 ]; then
 		done
 	done < files.lis
 	rm -rf raw_[clr]
-#	Stitch together those segments that form closed polygons (coast, lakes, rivers separately)
+#	Separate out those segments that already form closed polygons (coast, lakes, rivers separately)
+	closed=""
+	open=""
 	for type in c l r; do
 		if [ -f SWBD.raw_${type}.d ]; then
-			mkdir -p pol_${type}
-			gmtstitch -fg -T0.05k -Dpol_${type}/srtm_pol_%c_%8.8d.txt -L -m SWBD.raw_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D
-			while read file; do
-				echo "> $type segment" >> SWBD_open_${type}.d
-				cat $file >> SWBD_open_${type}.d
-			done < list_${type}_O.lis
-			while read file; do
-				echo "> $type polygon" >> SWBD_closed_${type}.d
-				cat $file >> SWBD_closed_${type}.d
-			done < list_${type}_C.lis
-			rm -rf pol_${type} SWBD.raw_${type}.d list_${type}_[CO].lis
+			rm -f closed
+			gmtstitch -fg -Cclosed -m SWBD.raw_${type}.d --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D > open
+			nc=0
+			if [ -f closed ]; then
+				cat closed >> SWBD_${TILE}_closed_${type}.d
+				nc=`grep '^>' closed | wc -l`
+			fi
+			cat open >> SWBD_${TILE}_open_${type}.d
+			no=`grep '^>' open | wc -l`
+			rm -f open closed SWBD.raw_${type}.d
+			closed="$closed $nc"
+			open="$open $no"
+		else
+			closed="$closed        -"
+			open="$open        -"
 		fi
 	done
+	printf "%17s : C L R polygons Closed: %s Open: %s\n"  "$WEST/$EAST/$SOUTH/$NORTH" "$closed" "$open"
 fi
+
 if [ $combine -eq 1 ]; then
 #	See if the new batch of open segments may be combinable with those already in the file
 	closed=""
 	open=""
 	for type in c l r; do
-		if [ -f SWBD_open_${type}.d ]; then
+		if [ -f SWBD_${TILE}_open_${type}.d ]; then
 			mkdir -p polc_${type}
-			gmtstitch -fg -T0.05k -Dpolc_${type}/srtm_pol_%c_%8.8d.txt -L -m SWBD_open_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D
-			rm -f SWBD_open_${type}.d
+			gmtstitch -fg -T100e/500 -Dpolc_${type}/srtm_pol_%c_%8.8d.txt -L -m SWBD_${TILE}_open_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D
+			rm -f SWBD_${TILE}_open_${type}.d
 			while read file; do
-				echo "> $type segment" >> SWBD_open_${type}.d
-				cat $file >> SWBD_open_${type}.d
+				cat $file >> SWBD_${TILE}_open_${type}.d
 			done < list_${type}_O.lis
 			while read file; do
-				echo "> $type polygon" >> SWBD_closed_${type}.d
-				cat $file >> SWBD_closed_${type}.d
+				cat $file >> SWBD_${TILE}_closed_${type}.d
 			done < list_${type}_C.lis
 			rm -rf polc_${type} list_${type}_[CO].lis
 			mv links.d links_${type}.d
 		fi
 		nc=0
 		no=0
-		if [ -f SWBD_closed_${type}.d ]; then
-			nc=`grep '^>' SWBD_closed_${type}.d | wc -l`
+		if [ -f SWBD_${TILE}_closed_${type}.d ]; then
+			nc=`grep '^>' SWBD_${TILE}_closed_${type}.d | wc -l`
 		fi
-		if [ -f SWBD_open_${type}.d ]; then
-			no=`grep '^>' SWBD_open_${type}.d | wc -l`
+		if [ -f SWBD_${TILE}_open_${type}.d ]; then
+			no=`grep '^>' SWBD_${TILE}_open_${type}.d | wc -l`
 		fi
 		closed="$closed $nc"
 		open="$open $no"
