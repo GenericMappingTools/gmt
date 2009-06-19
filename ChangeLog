@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.547 2009-06-18 23:02:15 guru Exp $
+	$Id: ChangeLog,v 1.548 2009-06-19 22:14:16 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-06-19	pwessel
+	* gmt_globals.h:	Change default ascii format to %.12g to avoid loss of precision.
+				Changed default for OUTPUT_DEGREE_FORMAT to D (-180/180) so it
+				is the same as that for PLOT_DEGREE_FORMAT.
 2009-06-18	pwessel
 	* misc/gmtstitch.c:	Enhanced -T option to eliminate connections when the 2nd closest
 				pair is too close.  Also added -C option to simply separate the
