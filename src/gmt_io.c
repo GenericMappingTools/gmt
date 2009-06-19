@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.192 2009-06-17 01:07:33 remko Exp $
+ *	$Id: gmt_io.c,v 1.193 2009-06-19 08:58:19 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -312,9 +312,10 @@ FILE *GMT_nc_fopen (const char *filename, const char *mode)
 			if (GMT_get_time_system (units, &time_system) || GMT_init_time_system_structure (&time_system))
 				fprintf (stderr, "%s: Warning: Time units [%s] in NetCDF file not recognised, defaulting to gmtdefaults.\n", GMT_program, units);
 			/* Determine scale between data and internal time system, as well as the offset (in internal units) */
-			GMT_io.scale_factor[i] = time_system.scale * gmtdefs.time_system.i_scale;
-			GMT_io.add_offset[i] = (time_system.rata_die - gmtdefs.time_system.rata_die) + (time_system.epoch_t0 - gmtdefs.time_system.epoch_t0);
-			GMT_io.add_offset[i] *= GMT_DAY2SEC_F * gmtdefs.time_system.i_scale;
+			GMT_io.scale_factor[i] = GMT_io.scale_factor[i] * time_system.scale * gmtdefs.time_system.i_scale;
+			GMT_io.add_offset[i] *= time_system.scale;	/* Offset in seconds */
+			GMT_io.add_offset[i] += GMT_DAY2SEC_F * ((time_system.rata_die - gmtdefs.time_system.rata_die) + (time_system.epoch_t0 - gmtdefs.time_system.epoch_t0));
+			GMT_io.add_offset[i] *= gmtdefs.time_system.i_scale;	/* Offset in internal time units */
 		}
 		else if (GMT_io.in_col_type[i] == GMT_IS_UNKNOWN)
 			GMT_io.in_col_type[i] = GMT_IS_FLOAT;
