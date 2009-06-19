@@ -1,6 +1,6 @@
 #!/bin/sh
 # Make coastline polygons from SRTM's SWBD files
-#	$Id: swbd_separate.sh,v 1.1 2009-06-19 02:38:24 guru Exp $
+#	$Id: swbd_separate.sh,v 1.2 2009-06-19 22:14:17 guru Exp $
 #
 # Usage: swbd_separate.sh w e s n TILE
 #
@@ -49,7 +49,6 @@ TILE=$5
 list=1
 extract=1
 stitch=1
-combine=0
 
 mkdir -p $TILE
 cd $TILE
@@ -125,38 +124,6 @@ if [ $stitch -eq 1 ]; then
 			closed="$closed        -"
 			open="$open        -"
 		fi
-	done
-	printf "%17s : C L R polygons Closed: %s Open: %s\n"  "$WEST/$EAST/$SOUTH/$NORTH" "$closed" "$open"
-fi
-
-if [ $combine -eq 1 ]; then
-#	See if the new batch of open segments may be combinable with those already in the file
-	closed=""
-	open=""
-	for type in c l r; do
-		if [ -f SWBD_${TILE}_open_${type}.d ]; then
-			mkdir -p polc_${type}
-			gmtstitch -fg -T100e/500 -Dpolc_${type}/srtm_pol_%c_%8.8d.txt -L -m SWBD_${TILE}_open_${type}.d -Qlist_${type}_%c.lis --D_FORMAT=%.6f --OUTPUT_DEGREE_FORMAT=D
-			rm -f SWBD_${TILE}_open_${type}.d
-			while read file; do
-				cat $file >> SWBD_${TILE}_open_${type}.d
-			done < list_${type}_O.lis
-			while read file; do
-				cat $file >> SWBD_${TILE}_closed_${type}.d
-			done < list_${type}_C.lis
-			rm -rf polc_${type} list_${type}_[CO].lis
-			mv links.d links_${type}.d
-		fi
-		nc=0
-		no=0
-		if [ -f SWBD_${TILE}_closed_${type}.d ]; then
-			nc=`grep '^>' SWBD_${TILE}_closed_${type}.d | wc -l`
-		fi
-		if [ -f SWBD_${TILE}_open_${type}.d ]; then
-			no=`grep '^>' SWBD_${TILE}_open_${type}.d | wc -l`
-		fi
-		closed="$closed $nc"
-		open="$open $no"
 	done
 	printf "%17s : C L R polygons Closed: %s Open: %s\n"  "$WEST/$EAST/$SOUTH/$NORTH" "$closed" "$open"
 fi

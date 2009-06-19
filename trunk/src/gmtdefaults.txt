@@ -219,7 +219,7 @@ Give a red/green/blue triplet, with each element in the 0\-255 range. [128/128/1
 .TP
 .B D_FORMAT
 Output format (C language printf syntax) to be used when printing double precision floating point numbers.
-For geographic coordinates, see \fBOUTPUT_DEGREE_FORMAT\fP. [%g].
+For geographic coordinates, see \fBOUTPUT_DEGREE_FORMAT\fP. [%.12g].
 .TP
 .B DEGREE_SYMBOL
 Determines what symbol is used to plot the degree symbol on geographic map annotations.  Choose between
