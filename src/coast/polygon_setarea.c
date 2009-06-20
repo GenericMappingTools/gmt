@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setarea.c,v 1.1 2009-06-20 23:52:39 guru Exp $
+ *	$Id: polygon_setarea.c,v 1.2 2009-06-20 23:55:29 guru Exp $
  * Updates polygon areas for the resolution.
  */
 #include "wvs.h"
@@ -35,9 +35,9 @@ int main (int argc, char **argv) {
 			exit(-1);
 		}
 		for (k = 0; k < h.n; k++) {
-			x = ((h.greenwich & 1) && p[k].x > h.datelon) ? p[i].x - M360 : p[i].x;
+			x = ((h.greenwich & 1) && p[k].x > h.datelon) ? p[k].x - M360 : p[k].x;
 			flon[k] = x * 1.0e-6;
-			flat[k] = p[i].y * 1.0e-6;
+			flat[k] = p[k].y * 1.0e-6;
 		}
 		h.area_res = 1.0e-6 * area_size (flon, flat, h.n, &sign); /* in km^2 */
 		if(pol_writeheader (&h, fp_out) != 1) {
