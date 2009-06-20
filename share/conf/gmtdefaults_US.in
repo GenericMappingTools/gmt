@@ -1,4 +1,4 @@
-#	$Id: gmtdefaults_US.in,v 1.6 2009-05-08 14:44:12 remko Exp $
+#	$Id: gmtdefaults_US.in,v 1.7 2009-06-20 19:23:53 guru Exp $
 #
 #	GMT-SYSTEM @PACKAGE_VERSION@ Defaults file
 #	US Version
@@ -73,7 +73,7 @@ PS_LINE_JOIN		= miter
 PS_MITER_LIMIT		= 35
 PS_VERBOSE		= FALSE
 #-------- I/O Format Parameters -------------
-D_FORMAT		= %lg
+D_FORMAT		= %.12lg
 FIELD_DELIMITER		= tab
 GRIDFILE_FORMAT		= nf
 GRIDFILE_SHORTHAND	= FALSE
@@ -84,7 +84,7 @@ N_HEADER_RECS		= 1
 NAN_RECORDS		= pass
 OUTPUT_CLOCK_FORMAT	= hh:mm:ss
 OUTPUT_DATE_FORMAT	= yyyy-mm-dd
-OUTPUT_DEGREE_FORMAT	= +D
+OUTPUT_DEGREE_FORMAT	= D
 XY_TOGGLE		= FALSE
 #-------- Projection Parameters -------------
 ELLIPSOID		= WGS-84
