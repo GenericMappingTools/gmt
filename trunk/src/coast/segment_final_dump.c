@@ -1,5 +1,5 @@
 /*
- *	$Id: segment_final_dump.c,v 1.2 2006-04-01 10:00:42 pwessel Exp $
+ *	$Id: segment_final_dump.c,v 1.3 2009-06-20 23:30:19 guru Exp $
  */
 /* segment_final_dump <wvs_polygon_file.b> wvs_polygons.b
  *
@@ -42,7 +42,6 @@ if (id == 1160)
 		h3.level = hin.rank;
 		ranks[hin.rank]++;
 		h3.source = 0;
-		h3.checked[0] = h3.checked[1] = 0;
 		h3.area = 0.0;
 		
 		for (i = 1, greenwich = FALSE; !greenwich && i < h3.n; i++) if (abs (p[i].x - p[i-1].x) > 180000000)

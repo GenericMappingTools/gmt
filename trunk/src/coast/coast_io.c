@@ -1,5 +1,5 @@
 /*
- *	$Id: coast_io.c,v 1.7 2009-06-05 00:25:11 guru Exp $
+ *	$Id: coast_io.c,v 1.8 2009-06-20 23:30:19 guru Exp $
  */
 #define COASTLIB 1
 #include "wvs.h"
@@ -101,10 +101,10 @@ void swab_polheader (struct GMT3_POLY *h)
 	h->greenwich = GMT_swab4 (h->greenwich);
 	h->level = GMT_swab4 (h->level);
 	h->datelon = GMT_swab4 (h->datelon);
-	h->checked[0] = GMT_swab4 (h->checked[0]);
-	h->checked[1] = GMT_swab4 (h->checked[1]);
 	h->source = GMT_swab4 (h->source);
 	h->parent = GMT_swab4 (h->parent);
+	h->ancestor = GMT_swab4 (h->ancestor);
+	h->river = GMT_swab4 (h->river);
 	i = (unsigned int *)&h->west;
 	j = GMT_swab4 (i[0]);
 	i[0] = GMT_swab4 (i[1]);
@@ -122,6 +122,10 @@ void swab_polheader (struct GMT3_POLY *h)
 	i[0] = GMT_swab4 (i[1]);
 	i[1] = j;
 	i = (unsigned int *)&h->area;
+	j = GMT_swab4 (i[0]);
+	i[0] = GMT_swab4 (i[1]);
+	i[1] = j;
+	i = (unsigned int *)&h->area_res;
 	j = GMT_swab4 (i[0]);
 	i[0] = GMT_swab4 (i[1]);
 	i[1] = j;
