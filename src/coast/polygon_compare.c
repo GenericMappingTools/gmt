@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_compare.c,v 1.2 2009-06-11 05:42:09 guru Exp $
+ *	$Id: polygon_compare.c,v 1.3 2009-06-20 23:30:19 guru Exp $
  */
 /* 
  *
@@ -54,12 +54,16 @@ int main (int argc, char **argv)
 			fprintf (stderr, "polygon_compare: headers E for polygon %d differ\n", ha.id);
 			nh_bad++;
 		}
-		if (! (ha.checked[0] == hb.checked[0] && ha.checked[1] == hb.checked[1])) {
-			fprintf (stderr, "polygon_compare: headers X for polygon %d differ\n", ha.id);
-			nh_bad++;
-		}
 		if (! (ha.source == hb.source)) {
 			fprintf (stderr, "polygon_compare: headers S for polygon %d differ\n", ha.id);
+			nh_bad++;
+		}
+		if (! (ha.parent == hb.parent)) {
+			fprintf (stderr, "polygon_compare: headers P for polygon %d differ\n", ha.id);
+			nh_bad++;
+		}
+		if (! (ha.ancestor == hb.ancestor)) {
+			fprintf (stderr, "polygon_compare: headers F for polygon %d differ\n", ha.id);
 			nh_bad++;
 		}
 		if (fabs (ha.west - hb.west) > NOISE) {
@@ -84,6 +88,14 @@ int main (int argc, char **argv)
 		}
 		if (ha.area == 0.0) {
 			fprintf (stderr, "polygon_compare: headers A for polygon %d is zero\n", ha.id);
+			nh_bad++;
+		}
+		if ((f = fabs ((ha.area_res - hb.area_res)/ha.area_res)) > NOISE) {
+			fprintf (stderr, "polygon_compare: headers B for polygon %d differ\n", ha.id);
+			nh_bad++;
+		}
+		if (ha.area_res == 0.0) {
+			fprintf (stderr, "polygon_compare: headers B for polygon %d is zero\n", ha.id);
 			nh_bad++;
 		}
 		if (pol_fread (pa, ha.n, fp_a) != ha.n) {

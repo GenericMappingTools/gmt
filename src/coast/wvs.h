@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.9 2009-06-11 05:42:09 guru Exp $
+ *	$Id: wvs.h,v 1.10 2009-06-20 23:30:19 guru Exp $
  */
 /* wvs.h
  *
@@ -65,15 +65,16 @@ struct	SEG_HEADER {
 struct GMT3_POLY {
 	int id;
 	int n;
-	int greenwich;  /* (greenwich & 1) is TRUE if Greenwich is crossed; (greenwich >> 1) is the sibling id for lower resolutions */
+	int greenwich;	/* (greenwich & 1) is TRUE if Greenwich is crossed */
 	int level;      /* -1 undecided, 0 ocean, 1 land, 2 lake, 3 island_in_lake, etc */
 	int datelon;    /* 180 for all except eurasia (270) */
-	int checked[2]; /* TRUE if polygon has been crossover checked with all peers */
 	int source;     /* 0 = CIA WDBII, 1 = WVS */
 	int parent;     /* -1 if top level 1, else id of polygon containing this polygon */
-	int river;     /* 1 if this is level2 and river-lake, also contains cont# << 8 */
-	double west, east, south, north;
-	double area;    /* Area of polygon */
+	int ancestor;	/* The sibling id for lower resolutions */
+	int river;	/* 1 if this is level2 and river-lake, also contains cont# << 8 */
+	double west, east, south, north;	/* Bounding box */
+	double area;		/* Area of polygon measured at full resolution */
+	double area_res;	/* Area of polygon at the present resololution */
 };
 
 extern int pol_readheader (struct GMT3_POLY *h, FILE *fp);

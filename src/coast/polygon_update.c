@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_update.c,v 1.6 2009-06-12 01:22:29 guru Exp $
+ *	$Id: polygon_update.c,v 1.7 2009-06-20 23:30:19 guru Exp $
  */
 /* 
  *
@@ -125,8 +125,6 @@ int main (int argc, char **argv)
 			exit (-1);
 		}
 
-		h.checked[0] = h.checked[1] = 1;
-		
 		/* Write out */
 		
 		if (pol_writeheader (&h, fp_out) != 1) {
