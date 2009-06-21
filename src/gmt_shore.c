@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.44 2009-06-21 01:21:04 guru Exp $
+ *	$Id: gmt_shore.c,v 1.45 2009-06-21 03:55:05 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -68,7 +68,7 @@ void GMT_set_levels (char *info, struct GMT_SHORE_SELECT *I)
 	if (strstr (info, "+l"))  I->flag = GMT_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GMT_NO_LAKES;
 	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
-		I->fraction = irint (1e6 * atoi (&p[2]));	/* Convert to integer microfraction */
+		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert to integer microfraction */
 	}
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 1) I->low = 0, I->high = GMT_MAX_GSHHS_LEVEL;
