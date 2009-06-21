@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: manpages.mk,v 1.6 2008-02-22 02:59:42 remko Exp $
+#  $Id: manpages.mk,v 1.7 2009-06-21 07:04:07 guru Exp $
 #
 #	GNUmakefile to create manpages for GMT Version 4.x
 #	
@@ -19,13 +19,13 @@ DEP3=$(MAN3:.3=.dep)
 DEP5=$(MAN5:.5=.dep)
 
 ifeq "$(strip $(GMTSRCDIR))" ""
-    INCDIR=.
+	INCDIR=.
 else
-    INCDIR=$(GMTSRCDIR)
+	INCDIR=$(GMTSRCDIR)
 endif
 
 ifneq "$(MAKECMDGOALS)" "spotless"
-    include $(DEP1) $(DEP3) $(DEP5)
+	include $(DEP1) $(DEP3) $(DEP5)
 endif
 
 %.1 %.3 %.5:		%.txt
