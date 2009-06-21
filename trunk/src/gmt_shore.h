@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.23 2009-06-05 00:25:11 guru Exp $
+ *	$Id: gmt_shore.h,v 1.24 2009-06-21 01:21:04 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -45,6 +45,7 @@ struct GMT_SHORE_SELECT {	/* Information on levels and min area to use */
 	int low;	/* Lowest hierarchical level to use [0] */
 	int high;	/* Highest hierarchical level to use [4] */
 	int flag;	/* 1 = no riverlakes from level 2; 2 = only riverlakes from level 2 */
+	int fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
 	double area;	/* Area of smallest geographical feature to include [0] */
 };
 
@@ -57,6 +58,7 @@ struct GMT_SHORE {
 	GMT_LONG min_level;	/* Lowest level to include */
 	GMT_LONG max_level;	/* Highest level to include */
 	GMT_LONG flag;		/* If riverlakes or lakes are to be excluded */
+	GMT_LONG fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
 	double min_area;	/* Smallest feature to include */
 	double scale;		/* Multiplier to convert dx, dy back to dlon, dlat in degrees */
 	
@@ -109,6 +111,7 @@ struct GMT_SHORE {
 	
 	int seg_info_id;	/* Id for variable seg_info */
 	int seg_area_id;	/* Id for variable seg_area */
+	int seg_frac_id;	/* Id for variable seg_frac */
 	int seg_start_id;	/* Id for variable seg_start */
 	
 	int pt_dx_id;		/* Id for variable pt_dx */

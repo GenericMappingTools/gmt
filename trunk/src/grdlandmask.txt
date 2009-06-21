@@ -20,10 +20,7 @@ Name of resulting output mask grid file.
 #include "explain_-I.txt"
 #include "explain_-Rgeo.txt"
 .SH OPTIONS
-.TP
-OPT(A)
-Features with an area smaller than \fImin_area\fP in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP
-will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the \fBpscoast\fP man-pages for more details.
+#include "explain_-A.txt"
 .TP
 OPT(D)
 Selects the resolution of the data set to use ((\fBf\fP)ull, (\fBh\fP)igh, (\fBi\fP)ntermediate, (\fBl\fP)ow, or (\fBc\fP)rude).  The

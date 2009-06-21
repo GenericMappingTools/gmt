@@ -1,7 +1,8 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.11 2009-06-05 00:25:12 guru Exp $
+ *	$Id: polygon_to_bins.c,v 1.12 2009-06-21 01:21:04 guru Exp $
  */
 #include "wvs.h"
+#include "shore.h"
 
 #define GSHHS_MAX_DELTA 65535		/* Largest value to store in a ushort, used as largest dx or dy in bin  */
 
@@ -12,40 +13,9 @@ struct BIN {
 	struct SEGMENT *current_seg;
 } *bin;
 
-struct SEGMENT {
-	int level;
-	int n;
-	int entry, exit;		/* 4 for a poly completely inside bin; else w,e,s,n = 3,1,0,2  */
-	int p_area;			/* Area of polygon this segment belongs to (in 0.1 * km^2) */
-	struct SEGMENT *next_seg;
-	struct SHORT_PAIR *p;		/* A chain of x,y points is tacked on here  */
-};
-
-struct SHORT_PAIR {
-	ushort	dx;	/* Relative distance from SW corner of bin, units of B_WIDTH/GSHHS_MAX_DELTA  */
-	ushort	dy;
-};
-
-struct SEGMENT_HEADER {
-	int info;		/* Combination of n, entry, exit, level */
-	int p_area;		/* Polygon from which this segment belongs */
-	int first_p;		/* Id of first point */
-} seg_head;
-
-struct GMT3_FILE_HEADER {
-	int n_bins;		/* Number of blocks */
-	int n_points;		/* Total number of points */
-	int bsize;		/* Bin size in minutes */
-	int nx_bins;		/* # of bins in 0-360 */
-	int ny_bins;		/* # of bins in -90 - +90 */
-	int n_segments;		/* Total number of segments */
-} file_head;	
-
-struct GMT3_BIN_HEADER {
-	int first_seg_id;
-	short n_segments;
-	short node_levels;	/* Stores the level of the four corner */
-} *bin_head;	
+struct SEGMENT_HEADER seg_head;
+struct GMT3_FILE_HEADER file_head;	
+struct GMT3_BIN_HEADER *bin_head;	
 
 int *ix, *iy;
 int *xx, *yy;
@@ -337,6 +307,7 @@ int main (int argc, char **argv) {
 			s->exit = 4;
 			s->p_area = rint (h.area * 10.0);	/* Store area in 1/10 of 1 km^2 */
 			if (h.river) s->p_area = -s->p_area;	/* River-lakes are marked by negative area */
+			s->p_area_fraction = irint (1e6 * h.area_res / h.area);	/* 1e6 * fraction of full-resolution polygon area */
 			s->p = (struct SHORT_PAIR *)GMT_memory(VNULL, s->n, sizeof(struct SHORT_PAIR), "polygon_to_bins");
 			for (k = 0; k < s->n; k++) {
 				/* Don't forget that this modulo calculation for DX doesn't work when you have a right/top edge (this wont happen for this polygon though !!!   */
@@ -414,6 +385,7 @@ int main (int argc, char **argv) {
 					s->exit = (i_y_2 == i_y_3) ? 0 : 2;
 				s->p_area = rint (h.area * 10.0);	/* Store area in 1/10 of 1 km^2 */
 				if (h.river) s->p_area = -s->p_area;	/* River-lakes are marked by negative area */
+				s->p_area_fraction = irint (1e6 * h.area_res / h.area);	/* 1e6 * fraction of full-resolution polygon area */
 
 				/* Write from last_i through i, inclusive, into this bin:  */
 				
@@ -568,6 +540,7 @@ int main (int argc, char **argv) {
 		for (i = 0; i < n; i++) {
 			seg_head.first_p = np;
 			seg_head.p_area = ss[i]->p_area;
+			seg_head.p_area_fraction = ss[i]->p_area_fraction;
 			seg_head.info = (ss[i]->n << 9) + (ss[i]->level << 6) + (ss[i]->entry << 3) + ss[i]->exit;
 			if (fwrite ((void *)&seg_head, sizeof (struct SEGMENT_HEADER), 1, fp_seg) != 1) {
 				fprintf (stderr, "polygon_to_bins: Error writing a string header for bin # %d\n", b);

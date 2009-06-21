@@ -28,12 +28,7 @@ will be transparent.  A map projection must be supplied.  The \fIPostScript\fP c
 #include "explain_-Rgeo.txt"
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-.TP
-OPT(A)
-Features with an area smaller than \fImin_area\fP in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP
-will not be plotted.  Level 2 (lakes) contains regular lakes and wide river bodies which we normally include as lakes; append \fB+r\fP to just get
-river-lakes or \fB+l\fP to just get regular lakes. [Default is 0/0/4 (all features)].
-See GSHHS INFORMATION below for more details.
+#include "explain_-A.txt"
 #include "explain_-B_short.txt"
 .TP
 OPT(C)

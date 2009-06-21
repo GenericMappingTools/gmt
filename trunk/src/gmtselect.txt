@@ -22,11 +22,8 @@ See option OPT(:) on how to read (latitude,longitude) files.
 ASCII (or binary, see OPT(b)) data file(s) to be operated on.  If not given, standard input is read.
 .SH OPTIONS
 No space between the option flag and the associated arguments.
-.TP
-OPT(A)
-Ignored unless OPT(N) is set.  Geographical features with an area smaller than \fImin_area\fP
-in km^2 or of hierarchical level that is lower than \fImin_level\fP or higher than \fImax_level\fP
-will be ignored [Default is 0/4 (all features)]. See DATABASE INFORMATION in the \fBpscoast\fP man-pages for more details.
+#include "explain_-A.txt"
+Ignored unless OPT(N) is set.
 .TP
 OPT(C)
 Pass all records whose location is within \fIdist\fP of any of the points in the ASCII file \fIptfile\fP.

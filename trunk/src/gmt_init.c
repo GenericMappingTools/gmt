@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.400 2009-06-17 14:08:44 remko Exp $
+ *	$Id: gmt_init.c,v 1.401 2009-06-21 01:21:03 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -744,6 +744,7 @@ void GMT_GSHHS_syntax (char option, char *string)
 	fprintf (stderr, "\t   Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels\n");
 	fprintf (stderr, "\t   will be skipped [0/4 (4 means lake inside island inside lake)].\n");
 	fprintf (stderr, "\t   Append +r to only get riverlakes from level 2, or +l to only get lakes [both].\n");
+	fprintf (stderr, "\t   Append +p<percent> to exclude features whose size is < <percent>%% of the full-resolution feature [use all].\n");
 }
 
 void GMT_maprose_syntax (char option, char *string)

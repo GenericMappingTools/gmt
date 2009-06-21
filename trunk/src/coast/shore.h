@@ -1,20 +1,22 @@
 /*
- *	$Id: shore.h,v 1.2 2006-04-10 04:43:31 pwessel Exp $
+ *	$Id: shore.h,v 1.3 2009-06-21 01:21:04 guru Exp $
  */
+#ifndef _WVS_H_
 #define MILL (1000000)
 #define GSHHS_MAX_DELTA 65535				/* Largest value to store in a ushort, used as largest dx or dy in bin  */
 #define M360 360000000
 #define M180 180000000
 #define M90   90000000
-#define N_POLY	189000
 
 typedef unsigned short ushort;
+#endif
 
 struct SEGMENT {
 	int level;
 	int n;
 	int entry, exit;		/* 4 for a poly completely inside bin; else w,e,s,n = 3,1,0,2  */
 	int p_area;			/* Area of polygon this segment belongs to (in 0.1 * km^2) */
+	int p_area_fraction;		/* Percent of full-resolution area for this resolution [100 for full] */
 	struct SEGMENT *next_seg;
 	struct SHORT_PAIR *p;		/* A chain of x,y points is tacked on here  */
 };
@@ -27,6 +29,7 @@ struct SHORT_PAIR {
 struct SEGMENT_HEADER {
 	int info;		/* Combination of n, entry, exit, level */
 	int p_area;		/* Polygon from which this segment belongs */
+	int p_area_fraction;	/* Percent of full-resolution area for this resolution [100 for full] */
 	int first_p;		/* Id of first point */
 };
 

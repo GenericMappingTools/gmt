@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.43 2009-06-17 01:21:50 guru Exp $
+ *	$Id: gmt_shore.c,v 1.44 2009-06-21 01:21:04 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -64,10 +64,14 @@ GMT_LONG GMT_res_to_int (char res);
 void GMT_set_levels (char *info, struct GMT_SHORE_SELECT *I)
 {	/* Decode GMT's -A option for coastline levels */
 	int n;
-	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
-	if (n == 1) I->low = 0, I->high = GMT_MAX_GSHHS_LEVEL;
+	char *p = NULL;
 	if (strstr (info, "+l"))  I->flag = GMT_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GMT_NO_LAKES;
+	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
+		I->fraction = irint (1e6 * atoi (&p[2]));	/* Convert to integer microfraction */
+	}
+	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
+	if (n == 1) I->low = 0, I->high = GMT_MAX_GSHHS_LEVEL;
 }
 
 GMT_LONG GMT_set_resolution (char *res, char opt)
@@ -169,6 +173,8 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
         GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
+	c->seg_frac_id = -1;	/* In case we use old GSHHS which does not have this ID */
+        nc_inq_varid (c->cdfid, "Micro_fraction_of_full_resolution_area", &c->seg_frac_id);
 
 	/* Get attributes */
 	GMT_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
@@ -192,6 +198,7 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
 	c->min_level = info->low;	
 	c->max_level = (info->low == info->high && info->high == 0) ? GMT_MAX_GSHHS_LEVEL : info->high;	/* Default to all if not set */
 	c->flag = info->flag;
+	c->fraction = (c->seg_frac_id != -1) ? info->fraction : 0;	/* Cannot request fraction on old GSHHS files */
 
 	c->scale = (c->bin_size / 60.0) / 65535.0;
 	c->bsize = c->bin_size / 60.0;
@@ -252,7 +259,7 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 /* max_level: Polygons with higher levels are ignored */
 {
 	size_t start[1], count[1];
-	int *seg_area, *seg_info, *seg_start;
+	int *seg_area, *seg_frac = NULL, *seg_info, *seg_start;
 	GMT_LONG s, i, err, cut_area, level;
 	double w, e, dx;
 		
@@ -281,14 +288,17 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 	seg_area = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
 	seg_info = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
 	seg_start = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
+	if (c->fraction) seg_frac = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
 
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_area_id, start, count, seg_area));
         GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_info_id, start, count, seg_info));
         GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
+	if (c->fraction) GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_frac_id, start, count, seg_frac));
 
 	/* First tally how many useful segments */
 
 	for (s = i = 0; i < c->bin_nseg[b]; i++) {
+		if (c->fraction && seg_frac[i] < c->fraction) continue;	/* Area of this feature is too small relative to its original size */
 		if (cut_area > 0 && abs(seg_area[i]) < cut_area) continue;	/* Use abs() since double-lined-river lakes have negative area */
 		level = ((seg_info[i] >> 6) & 7);
 		if (level < c->min_level) continue;
@@ -306,6 +316,7 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 		GMT_free ((void *) seg_info);	
 		GMT_free ((void *) seg_area);	
 		GMT_free ((void *) seg_start);
+		if (c->fraction) GMT_free ((void *) seg_frac);
 		return (GMT_NOERROR);
 	}
 
@@ -328,6 +339,7 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 	GMT_free ((void *) seg_info);	
 	GMT_free ((void *) seg_area);	
 	GMT_free ((void *) seg_start);	
+	if (c->fraction) GMT_free ((void *) seg_frac);
 
 	return (GMT_NOERROR);
 }

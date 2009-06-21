@@ -1,5 +1,5 @@
 /*
- *	$Id: shoremaker.c,v 1.9 2009-06-05 00:25:12 guru Exp $
+ *	$Id: shoremaker.c,v 1.10 2009-06-21 01:21:04 guru Exp $
  */
 /*
  *
@@ -17,7 +17,7 @@
 int main (int argc, char **argv) {
 	int i, dims;
 	size_t start, count;
-	int *bin_firstseg, *seg_info, *seg_area, *seg_start;
+	int *bin_firstseg, *seg_info, *seg_area, *seg_frac, *seg_start;
 	short *bin_info, *bin_nseg, *pt_dx, *pt_dy;
 	char file[512], *prefix;
 	FILE *fp_bin, *fp_seg, *fp_pt;
@@ -91,6 +91,7 @@ int main (int argc, char **argv) {
 
 	seg_info  = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
 	seg_area  = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
+	seg_frac  = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
 	seg_start = (int *) GMT_memory (CNULL, s.n_seg, sizeof (int), "shoremaker");
 
 	for (i = 0; i < s.n_seg; i++) {
@@ -102,6 +103,7 @@ int main (int argc, char **argv) {
 		
 		seg_info[i] = seg_head.info;
 		seg_area[i] = seg_head.p_area;
+		seg_frac[i] = seg_head.p_area_fraction;
 		seg_start[i] = seg_head.first_p;
 	}
 	
@@ -150,6 +152,7 @@ int main (int argc, char **argv) {
 	GMT_err_fail (nc_def_dim (s.cdfid, "Dimension_of_segment_arrays", s.n_seg, &dims), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", NC_INT, (size_t)1, &dims, &s.seg_info_id), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "Ten_times_the_km_squared_area_of_the_parent_polygon_of_a_segment", NC_INT, (size_t)1, &dims, &s.seg_area_id), file);
+	GMT_err_fail (nc_def_var (s.cdfid, "Micro_fraction_of_full_resolution_area", NC_INT, (size_t)1, &dims, &s.seg_frac_id), file);
 	GMT_err_fail (nc_def_var (s.cdfid, "Id_of_first_point_in_a_segment", NC_INT, (size_t)1, &dims, &s.seg_start_id), file);
 
 	GMT_err_fail (nc_def_dim (s.cdfid, "Dimension_of_point_arrays", s.n_pt, &dims), file);
@@ -191,6 +194,7 @@ int main (int argc, char **argv) {
 				
         GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_info_id, &start, &count, seg_info), file);
         GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_area_id, &start, &count, seg_area), file);
+        GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_frac_id, &start, &count, seg_frac), file);
         GMT_err_fail (nc_put_vara_int(s.cdfid, s.seg_start_id, &start, &count, seg_start), file);
 				
 	count = s.n_pt;
@@ -206,6 +210,7 @@ int main (int argc, char **argv) {
 	
 	GMT_free ((void *)seg_info);
 	GMT_free ((void *)seg_area);
+	GMT_free ((void *)seg_frac);
 	GMT_free ((void *)seg_start);
 	
 	GMT_free ((void *)pt_dx);
