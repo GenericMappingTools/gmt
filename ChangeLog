@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.548 2009-06-19 22:14:16 guru Exp $
+	$Id: ChangeLog,v 1.549 2009-06-21 01:21:03 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-20	pwessel
+	* gmt_shore.c:		Added support for the +p<percent> modifier to limit features whose
+				area is less the <percent> of the corresponding full-resolution polygon
 
 2009-06-19	pwessel
 	* gmt_globals.h:	Change default ascii format to %.12g to avoid loss of precision.

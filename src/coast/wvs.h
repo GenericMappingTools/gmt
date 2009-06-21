@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.10 2009-06-20 23:30:19 guru Exp $
+ *	$Id: wvs.h,v 1.11 2009-06-21 01:21:04 guru Exp $
  */
 /* wvs.h
  *
@@ -8,7 +8,7 @@
 
 #include "gmt.h"
 #define _GMT_
-
+#define _WVS_H_
 #define WVSDIR "/Users/pwessel/GMTdev/GMT/src/coast"
 
 #define N_LONGEST     1450000         /* 1435084 to be exact */
