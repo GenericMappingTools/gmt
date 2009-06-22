@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.549 2009-06-21 01:21:03 guru Exp $
+	$Id: ChangeLog,v 1.550 2009-06-22 07:46:23 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-21	pwessel
+	* gmt_support.c:	Given -I601+/601+ the y_inc was not treated correctly
 
 2009-06-20	pwessel
 	* gmt_shore.c:		Added support for the +p<percent> modifier to limit features whose

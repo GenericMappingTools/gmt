@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.413 2009-06-17 16:26:03 remko Exp $
+ *	$Id: gmt_support.c,v 1.414 2009-06-22 07:46:23 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1352,7 +1352,6 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 	if (GMT_inc_code[1] & GMT_INC_IS_NNODES) {	/* Got ny */
 		h->y_inc = GMT_get_inc (h->y_min, h->y_max, irint(h->y_inc), h->node_offset);
 		if (gmtdefs.verbose) fprintf (stderr, "%s: Given ny implies y_inc = %g\n", GMT_program, h->y_inc);
-		return;
 	}
 	else if (GMT_inc_code[1] & GMT_INC_UNITS) {	/* Got funny units */
 		switch (GMT_inc_code[1] & GMT_INC_UNITS) {
