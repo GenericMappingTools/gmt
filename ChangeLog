@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.551 2009-06-23 19:42:18 guru Exp $
+	$Id: ChangeLog,v 1.552 2009-06-23 20:26:58 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-06-23	pwessel
 	* mgd77/mgd77manage.c:	-AE will ignore the verification status and process e77 anyway.
+	* mgd77/mgd77path.c:	Added -P- to just list the IDs and not the full paths
 
 2009-06-21	pwessel
 	* gmt_support.c:	Given -I601+/601+ the y_inc was not treated correctly

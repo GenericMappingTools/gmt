@@ -3,7 +3,7 @@
 .SH NAME
 mgd77path \- Get full pathname for MGD77 files
 .SH SYNOPSIS
-\fBmgd77path\fP \fINGDC-ids\fP [ OPT(D) ] [ OPT(I)\fIignore\fP ] [ GMT_V_OPT ]
+\fBmgd77path\fP \fINGDC-ids\fP [ OPT(D) ] [ OPT(I)\fIignore\fP ] [ OPT(P)[\fB-\fP] ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBmgd77path\fP returns the full pathname to one or more MGD77 files. The pathname returned for a given
 cruise may change with time due to reshuffling of disks/subdirectories.
@@ -18,6 +18,10 @@ OPT(I)
 Ignore certain data file formats from consideration. Append \fBa|c|t\fP to ignore
 MGD77 ASCII, MGD77+ netCDF, or plain tab-separated ASCII table files, respectively. The option may
 be repeated to ignore more than one format.  [Default ignores none].
+.TP
+OPT(P)
+Display the full path to each cruise [Default].  Optionally, append \fB-\fP which will list
+just the cruise IDs instead.
 #include "explain_-V.txt"
 Reports the total number of cruises found.
 .SH EXAMPLES
