@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.233 2009-06-23 19:54:58 guru Exp $
+ *	$Id: mgd77.c,v 1.234 2009-06-23 20:26:58 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2603,6 +2603,10 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	DIR *dir;
 	struct dirent *entry;
 #endif
+#ifdef DEBUG
+	/* Since the sorting throws this machinery off */
+	GMT_memtrack_off (GMT_mem_keeper);
+#endif
 	
 	for (j = 1; j < argc; j++) {	/* First count the number of cruise arguments, if any */
 		if (argv[j][0] == '-') continue;	/* Skip command line options */
@@ -2710,6 +2714,9 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	
 	if (n != (int)n_alloc) L = (char **)GMT_memory ((void *)L, (size_t)n, sizeof (char *), "MGD77_Path_Expand");
 	*list = L;
+#ifdef DEBUG
+	GMT_memtrack_on (GMT_mem_keeper);
+#endif
 	return (n);
 }
 
@@ -2718,8 +2725,15 @@ void MGD77_Path_Free (int n, char **list)
 	int i;
 	if (n == 0) return;
 	
+#ifdef DEBUG
+	/* Since the sorting throws this machinery off */
+	GMT_memtrack_off (GMT_mem_keeper);
+#endif
 	for (i = 0; i < n; i++) GMT_free ((void *)list[i]);
 	GMT_free ((void *)list);
+#ifdef DEBUG
+	GMT_memtrack_on (GMT_mem_keeper);
+#endif
 }
 
 int compare_L (const void *p1, const void *p2)
