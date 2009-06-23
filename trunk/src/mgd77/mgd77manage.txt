@@ -3,7 +3,7 @@
 .SH NAME
 mgd77manage \- Manage extra columns in MGD77+ files
 .SH SYNOPSIS
-\fBmgd77manage\fP \fINGDC-ids\fP [ OPT(A)[\fB+\fP]\fBa\fP|\fBc\fP|\fBd\fP|\fBD\fP|\fBe\fP|\fBg\fP|\fBi\fP|\fBn\fP|\fBt\fP|\fBT\fP\fIfileinfo\fP ] 
+\fBmgd77manage\fP \fINGDC-ids\fP [ OPT(A)[\fB+\fP]\fBa\fP|\fBc\fP|\fBd\fP|\fBD\fP|\fBe\fP|\fBE\fP|\fBg\fP|\fBi\fP|\fBn\fP|\fBt\fP|\fBT\fP\fIfileinfo\fP ] 
 [ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] [ OPT(D)\fIabbrev1,abbrev2,...\fP ] [ OPT(E)\fIempty\fP ] [ OPT(F) ] 
 [ OPT(I)\fIabbrev\fP/\fIname\fP/\fIunit\fP/\fBt\fP/\fIscale\fP/\fIoffset\fP/\fIcomment\fP ] [ OPT(Ne)|\fBk\fP|\fBm\fP|\fBn\fP ] 
 [ OPT(Q)[\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP][[\fB/\fP]\fIthreshold\fP] ] [ GMT_V_OPT ] [ GMT_bi_OPT ]
@@ -65,6 +65,8 @@ Only records marked Y will be porcessed.  You can override this behavior by appe
 \fBh\fP will ignore all header corrections, \fBf\fP will ignore all fixed systematic trend corrections, 
 \fBn\fP, \fBv\fP, and \fBs\fP will ignore bitflags pertaining to navigation, data values, and data slopes,
 respectively.  Use OPT(A+e) to replace any existing E77 corrections in the file with the new values.
+Finally, e77 corrections will not be applied if the E77 file has not been verified.  Use OPT(AE) to ignore
+the verification status.
 .br
 .sp
 \fBg\fP Sample a GMT geographic (lon, lat) grid along the track given by the MGD77+ file using
