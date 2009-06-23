@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.22 2009-06-23 23:21:45 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.23 2009-06-23 23:36:50 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -13,8 +13,8 @@ double lon[N_LONGEST], lat[N_LONGEST];
 int main (int argc, char **argv)
 {
 	FILE	*fp;
-	int	i, n_id, this_n, nd, nx, n_x_problems, n_s_problems, n_c_problems, n_r_problems;
-	int	n_d_problems, n_a_problems, ix0 = 0, iy0 = 0, report_mismatch = 0, cont_no;
+	int	i, n_id, this_n, nd, nx, n_x_problems, n_s_problems, n_c_problems, n_r_problems, n_b_problems;
+	int	n_d_problems, n_a_problems, n_p_problems, ix0 = 0, iy0 = 0, report_mismatch = 0, cont_no;
 	int	w, e, s, n, ixmin, ixmax, iymin, iymax, last_x = 0, last_y = 0;
 	int	ant_trouble = 0, found, A, B, end, n_adjust = 0, left, right;
 	struct GMT_XSEGMENT *ylist;
@@ -30,7 +30,7 @@ int main (int argc, char **argv)
 
 	fp = fopen(argv[1], "r");
 	
-	n_id = n_c_problems = n_x_problems = n_r_problems = n_d_problems = n_s_problems = n_a_problems = 0;
+	n_id = n_c_problems = n_x_problems = n_r_problems = n_d_problems = n_s_problems = n_a_problems = n_b_problems = n_p_problems = 0;
 	while (pol_readheader (&h, fp) == 1) {
 		if (n_id == 0 && h.n > 1000000) report_mismatch = 1;
 		if (h.id == 13401)
@@ -42,6 +42,14 @@ int main (int argc, char **argv)
 		}
 		if (h.area < 0 && h.level != 2) fprintf (stderr, "Pol %d has negative area and is level %d\n", h.id, h.level);
 		if ((h.river & 1) && h.level != 2) fprintf (stderr, "Pol %d is a riverlake but level is %d\n", h.id, h.level);
+		if (GMT_IS_ZERO (h.area_res)) {
+			fprintf (stderr, "Pol %d has zero resolution area\n", h.id);
+			n_b_problems++;
+		}
+		if ((h.area_res / fabs(h.area)) < 0.001) {	/* Less than 0.1% of original area */
+			fprintf (stderr, "Pol %d has < 0.1%% of full resolution area\n", h.id);
+			n_p_problems++;
+		}
 		ixmin = iymin = M360;
 		ixmax = iymax = -M360;
 		w = irint (h.west * 1e6);
@@ -147,6 +155,8 @@ int main (int argc, char **argv)
 	}
 	
 	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s\n", n_id, argv[1]);
+	if (n_b_problems) fprintf (stderr, "%d has no area.\n", n_b_problems);
+	if (n_p_problems) fprintf (stderr, "%d has < 0.1%% of full area.\n", n_p_problems);
 	if (n_c_problems) fprintf (stderr, "%d has closure problems.\n", n_c_problems);
 	if (n_x_problems) fprintf (stderr, "%d has crossing problems.\n", n_x_problems);
 	if (n_r_problems) fprintf (stderr, "%d has region problems.\n", n_r_problems);
