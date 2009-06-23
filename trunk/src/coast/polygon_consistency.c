@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.21 2009-06-13 00:04:53 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.22 2009-06-23 23:21:45 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -21,7 +21,7 @@ int main (int argc, char **argv)
 	struct GMT_XOVER XC;
 	struct GMT3_POLY h;
 	struct LONGPAIR p;
-	double dx1, dx2, dy1, dy2, off;
+	double dx1, dx2, dy1, dy2, off, cos_a;
 
 	if (argc != 2) {
 		fprintf(stderr,"usage:  polygon_consistency wvs_polygons.b > report.lis\n");
@@ -135,8 +135,9 @@ int main (int argc, char **argv)
 					n_a_problems++;
 				}
 			}
-			else if ((dx1*dx2) > 0.0 && (dy1*dy2) > 0.0) {	/* Possible alignment, must check angles */
-				if (fabs (dy1 * dx2 / (dx1 * dy2)) == 1.0) {
+			else {
+				cos_a = (dx1 * dx2 + dy1 * dy2) / (hypot (dx1, dy1) * hypot (dx2, dy2));	/* Normalized dot product of vectors from center node to the 2 neightbors */
+				if (GMT_IS_ZERO (fabs (1.0 - cos_a))) {
 					printf ("%d\tZero-angle excursion on line %d-%d-%d\n", h.id, left, i, right);
 					n_a_problems++;
 				}
