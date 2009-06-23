@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.232 2009-06-09 22:45:00 jluis Exp $
+ *	$Id: mgd77.c,v 1.233 2009-06-23 19:54:58 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2633,26 +2633,33 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	}
 
 	for (j = 1; j < argc; j++) {
-		if (!all && argv[j][0] == '-') continue;	/* Skip command line options, except first time if all */
-		/* Strip off any extension in case a user gave 12345678.mgd77 */
-		for (i = strlen (argv[j])-1; i >= 0 && argv[j][i] != '.'; i--);;	/* Wind back to last period (or get i == -1) */
-		if (i == -1) 
-			strcpy (this_arg, argv[j]);
+		if (all) {	/* We only enters the loop once to process all */
+			length = 0;		/* length == 0 means get all */
+			NGDC_ID_likely = TRUE;
+		}
 		else {
-			strncpy (this_arg, argv[j], i);
-			this_arg[i] = '\0';
-		}
-		length = (all) ? 0 : strlen (this_arg);		/* length == 0 means get all */
-		/* Test to determine if we are given NGDC IDs (2-,4-,8-char integer tags) or an arbitrary survey name */
-		for (i = n_dig = 0; i < strlen (this_arg); i++) if (isdigit((int)this_arg[i])) n_dig++;
-		NGDC_ID_likely = ((n_dig == strlen (this_arg)) && (n_dig == 2 || n_dig == 4 || n_dig == 8));	/* All integers: 2 = agency, 4 = agency+vessel, 8 = single cruise */
+			if (argv[j][0] == '-') continue;	/* Skip command line options, except first time if all */
+			/* Strip off any extension in case a user gave 12345678.mgd77 */
+			for (i = strlen (argv[j])-1; i >= 0 && argv[j][i] != '.'; i--);;	/* Wind back to last period (or get i == -1) */
+			if (i == -1) 
+				strcpy (this_arg, argv[j]);
+			else {
+				strncpy (this_arg, argv[j], i);
+				this_arg[i] = '\0';
+			}
+			length = strlen (this_arg);
+			/* Test to determine if we are given NGDC IDs (2-,4-,8-char integer tags) or an arbitrary survey name */
+			for (i = n_dig = 0; i < strlen (this_arg); i++) if (isdigit((int)this_arg[i])) n_dig++;
+			NGDC_ID_likely = ((n_dig == strlen (this_arg)) && (n_dig == 2 || n_dig == 4 || n_dig == 8));	/* All integers: 2 = agency, 4 = agency+vessel, 8 = single cruise */
 
-		if (!NGDC_ID_likely || length == 8) {	/* Either a custom cruise name OR a full 8-integer NGDC ID, append name to list */
-			if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
-			L[n] = (char *)GMT_memory (VNULL, (size_t)(length+1), sizeof (char), "MGD77_Path_Expand");
-			strcpy (L[n++], this_arg);
-			continue;
+			if (!NGDC_ID_likely || length == 8) {	/* Either a custom cruise name OR a full 8-integer NGDC ID, append name to list */
+				if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
+				L[n] = (char *)GMT_memory (VNULL, (size_t)(length+1), sizeof (char), "MGD77_Path_Expand");
+				strcpy (L[n++], this_arg);
+				continue;
+			}
 		}
+		
 		/* Here we have either <agency> or <agency><vessel> code or blank for all */	
 		for (i = 0; NGDC_ID_likely && i < F->n_MGD77_paths; i++) {	/* Examine all directories */
 #ifdef WIN32
