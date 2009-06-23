@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.24 2009-06-23 23:38:18 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.25 2009-06-23 23:58:16 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -9,6 +9,7 @@
 #include "wvs.h"
 
 double lon[N_LONGEST], lat[N_LONGEST];
+#define P_LIMIT 0.001
 
 int main (int argc, char **argv)
 {
@@ -46,8 +47,8 @@ int main (int argc, char **argv)
 			fprintf (stderr, "Pol %d has zero resolution area\n", h.id);
 			n_b_problems++;
 		}
-		if ((h.area_res / fabs(h.area)) < 0.0001) {	/* Less than 0.01% of original area */
-			fprintf (stderr, "Pol %d has < 0.01%% of full resolution area\n", h.id);
+		if ((h.area_res / fabs(h.area)) < P_LIMIT) {	/* Less than 0.01% of original area */
+			fprintf (stderr, "Pol %d has < %g %% of full resolution area\n", h.id, 100.0 * P_LIMIT);
 			n_p_problems++;
 		}
 		ixmin = iymin = M360;
@@ -144,8 +145,10 @@ int main (int argc, char **argv)
 				}
 			}
 			else {
+				double t;
 				cos_a = (dx1 * dx2 + dy1 * dy2) / (hypot (dx1, dy1) * hypot (dx2, dy2));	/* Normalized dot product of vectors from center node to the 2 neightbors */
-				if (GMT_IS_ZERO (fabs (1.0 - cos_a))) {
+				t = 1.0 - cos_a;
+				if (GMT_IS_ZERO (fabs (t))) {
 					printf ("%d\tZero-angle excursion on line %d-%d-%d\n", h.id, left, i, right);
 					n_a_problems++;
 				}
@@ -156,7 +159,7 @@ int main (int argc, char **argv)
 	
 	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s\n", n_id, argv[1]);
 	if (n_b_problems) fprintf (stderr, "%d has no area.\n", n_b_problems);
-	if (n_p_problems) fprintf (stderr, "%d has < 0.01%% of full area.\n", n_p_problems);
+	if (n_p_problems) fprintf (stderr, "%d has < %g %% of full area.\n", n_p_problems, 100.0 * P_LIMIT);
 	if (n_c_problems) fprintf (stderr, "%d has closure problems.\n", n_c_problems);
 	if (n_x_problems) fprintf (stderr, "%d has crossing problems.\n", n_x_problems);
 	if (n_r_problems) fprintf (stderr, "%d has region problems.\n", n_r_problems);
