@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_consistency.c,v 1.23 2009-06-23 23:36:50 guru Exp $
+ *	$Id: polygon_consistency.c,v 1.24 2009-06-23 23:38:18 guru Exp $
  */
 /* polygon_consistency checks for propoer closure and crossings
  * within polygons
@@ -46,8 +46,8 @@ int main (int argc, char **argv)
 			fprintf (stderr, "Pol %d has zero resolution area\n", h.id);
 			n_b_problems++;
 		}
-		if ((h.area_res / fabs(h.area)) < 0.001) {	/* Less than 0.1% of original area */
-			fprintf (stderr, "Pol %d has < 0.1%% of full resolution area\n", h.id);
+		if ((h.area_res / fabs(h.area)) < 0.0001) {	/* Less than 0.01% of original area */
+			fprintf (stderr, "Pol %d has < 0.01%% of full resolution area\n", h.id);
 			n_p_problems++;
 		}
 		ixmin = iymin = M360;
@@ -156,7 +156,7 @@ int main (int argc, char **argv)
 	
 	fprintf (stderr, "polygon_consistency: Got %d polygons from file %s\n", n_id, argv[1]);
 	if (n_b_problems) fprintf (stderr, "%d has no area.\n", n_b_problems);
-	if (n_p_problems) fprintf (stderr, "%d has < 0.1%% of full area.\n", n_p_problems);
+	if (n_p_problems) fprintf (stderr, "%d has < 0.01%% of full area.\n", n_p_problems);
 	if (n_c_problems) fprintf (stderr, "%d has closure problems.\n", n_c_problems);
 	if (n_x_problems) fprintf (stderr, "%d has crossing problems.\n", n_x_problems);
 	if (n_r_problems) fprintf (stderr, "%d has region problems.\n", n_r_problems);
