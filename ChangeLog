@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.552 2009-06-23 20:26:58 guru Exp $
+	$Id: ChangeLog,v 1.553 2009-06-24 17:58:38 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-24	jluis
+	* ps2raster.c:		Do not crash if a name with extension is given to -F (rip the extension)
 
 2009-06-23	pwessel
 	* mgd77/mgd77manage.c:	-AE will ignore the verification status and process e77 anyway.
