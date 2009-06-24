@@ -228,6 +228,8 @@ src/x2sys/x2sys_init.c
 src/x2sys/x2sys_init.1
 src/x2sys/x2sys_put.c
 src/x2sys/x2sys_put.1
+src/x2sys/x2sys_merge.c
+src/x2sys/x2sys_merge.1
 src/x2sys/makefile
 share/x2sys/geo.def
 share/x2sys/geoz.def
