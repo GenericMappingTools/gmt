@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.553 2009-06-24 17:58:38 jluis Exp $
+	$Id: ChangeLog,v 1.554 2009-06-24 19:50:49 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-24	pwessel
+	* ps2raster.c:		Exceeded memory allocation for out_file.  Now in static memory.
 
 2009-06-24	jluis
 	* ps2raster.c:		Do not crash if a name with extension is given to -F (rip the extension)
