@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.234 2009-06-23 20:26:58 guru Exp $
+ *	$Id: mgd77.c,v 1.235 2009-06-24 20:27:19 jluis Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -310,16 +310,9 @@ int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD
 	
 	/* For netCDF format we do not open file - this is done differently later */
 
-	if (F->format != MGD77_FORMAT_CDF) {		/* The complication below is due to Windows shits. */
-		if (mode[0] == 'w')
-			F->fp = fopen (F->path, mode);		/* Open with fopen because file is writen with fprintf() */
-		else
-			F->fp = GMT_fopen (F->path, mode);	/* Open with GMT_fopen because file is accessed with GMT_??? */
-
-		if (F->fp == NULL) {
-			fprintf (stderr, "%s: Could not open %s\n", GMT_program, F->path);
-			return (MGD77_ERROR_OPEN_FILE);
-		}
+	if (F->format != MGD77_FORMAT_CDF && (F->fp = fopen (F->path, mode)) == NULL) {
+		fprintf (stderr, "%s: Could not open %s\n", GMT_program, F->path);
+		return (MGD77_ERROR_OPEN_FILE);
 	}
 	
 	/* Strip out Prefix and store in control structure */
@@ -500,24 +493,24 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 		/* Count number of records by counting number of new line characters. The non-Windows solution does not work here
 		   because the '\r' characters which are present on Win terminated EOLs are apparently stripped by the stdio and 
 		   so if we cannt find their traces (!!!) */
-		while ( (c = GMT_fgetc( F->fp )) != EOF ) {
+		while ( (c = fgetc( F->fp )) != EOF ) {
 			if (c == '\n') n++;
 		}
 		H->n_records = n - 24;					/* 24 is the header size */
-		GMT_rewind (F->fp);					/* Go back to beginning of file */
+		rewind (F->fp);					/* Go back to beginning of file */
 #else
 
 		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
-		GMT_fgets (line, BUFSIZ, F->fp);
-		GMT_rewind (F->fp);					/* Go back to beginning of file */
+		fgets (line, BUFSIZ, F->fp);
+		rewind (F->fp);					/* Go back to beginning of file */
 		n_eols = (line[strlen(line)-1] == '\n' && line[strlen(line)-2] == '\r') ? 2 : 1; 
 		H->n_records = irint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + n_eols))) / (double)(MGD77_RECORD_LENGTH + n_eols));
 #endif
 	}
 	else {
 		/* Since we do not know the number of records, we must quickly count lines */
-		while (GMT_fgets (line, BUFSIZ, F->fp)) if (line[0] != '#') H->n_records++;	/* Count every line except comments  */
-		GMT_rewind (F->fp);					/* Go back to beginning of file */
+		while (fgets (line, BUFSIZ, F->fp)) if (line[0] != '#') H->n_records++;	/* Count every line except comments  */
+		rewind (F->fp);					/* Go back to beginning of file */
 		H->n_records -= MGD77_N_HEADER_RECORDS;			/* Adjust for the 24 records in the header block */
 	}
 	
@@ -527,7 +520,7 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 		MGD77_header[sequence] = (char *)GMT_memory (VNULL, (size_t)(MGD77_HEADER_LENGTH + 1), sizeof (char), GMT_program);
 		if ((err = MGD77_Read_Header_Sequence (F->fp, MGD77_header[sequence], sequence+1))) return (err);
 	}
-	if (F->format == MGD77_FORMAT_TBL) GMT_fgets (line, BUFSIZ, F->fp);			/* Skip the column header for tables */
+	if (F->format == MGD77_FORMAT_TBL) fgets (line, BUFSIZ, F->fp);			/* Skip the column header for tables */
 	
 	for (i = 0; i < 2; i++) H->mgd77[i] = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, (size_t)1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
 	
@@ -1886,7 +1879,7 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	BOOLEAN may_convert;
 	double secs, tz;
 
-	if (!(GMT_fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
+	if (!(fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
 
 	if (!(line[0] == '3' || line[0] == '5')) return (MGD77_NO_DATA_REC);			/* Only process data records */
 
@@ -1961,7 +1954,7 @@ int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	char line[BUFSIZ], p[BUFSIZ];
 	double tz, secs;
 
-	if (!(GMT_fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
+	if (!(fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
 	GMT_chop (line);	/* Get rid of CR or LF */
 
 	MGD77Record->bit_pattern = 0;
@@ -2088,14 +2081,14 @@ int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq)
 	int got;
 	
 	if (seq == 1) {	/* Check for MGD77 file header */
-		got = GMT_fgetc (fp);		/* Read the first character from the file stream */
-		GMT_ungetc (got, fp);		/* Put the character back on the stream */
+		got = fgetc (fp);		/* Read the first character from the file stream */
+		ungetc (got, fp);		/* Put the character back on the stream */
 		if (! (got == '4' || got == '1')) {	/* 4 means pre-Y2K header/file */
 			fprintf (stderr, "MGD77_Read_Header: No header record present\n");
 			return (MGD77_NO_HEADER_REC);
 		}
 	}
-	if (GMT_fgets (record, MGD77_RECORD_LENGTH, fp) == NULL) {
+	if (fgets (record, MGD77_RECORD_LENGTH, fp) == NULL) {
 		fprintf (stderr, "MGD77_Read_Header: Failure to read header sequence %2.2d\n", seq);
 		return (MGD77_ERROR_READ_HEADER_ASC);
 	}
@@ -2111,7 +2104,7 @@ int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq)
 
 int MGD77_Read_Data_Sequence (FILE *fp, char *record)
 {
-	if (GMT_fgets (record, MGD77_RECORD_LENGTH, fp)) return (1);
+	if (fgets (record, MGD77_RECORD_LENGTH, fp)) return (1);
 	return (MGD77_NO_ERROR);
 }
 
