@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.554 2009-06-24 19:50:49 guru Exp $
+	$Id: ChangeLog,v 1.555 2009-06-24 21:38:51 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-24	jluis
+	* x2sys/x2sys_merge.c:	New program to merge updated COEs table into a main COE table database
+	* mgd77/mgd77.c:	Do not use any GMT_XXX to access ascii files on creation/writting so that
+				it can work on Windows as well (improvment on 2009-06-07 changes).
 
 2009-06-24	pwessel
 	* ps2raster.c:		Exceeded memory allocation for out_file.  Now in static memory.
@@ -68,7 +73,7 @@
 	* gmt_init.c:		Allow negative integer interval (-n) for annotating log axis; this means
 				annotate every n'th power of 10.
 	* misc/gmtstitch.c:	Now honors -V properly.
-				
+
 2009-06-11	remko
 	* gmt_nc.c:		No longer write node_offset = 0 to file (not essential, only confusing).
 	* gmt_grdio.c:		GMT_grd_setregion now includes "interpolant" argument: this ensures
