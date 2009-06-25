@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.26 2009-06-14 02:25:55 guru Exp $
+/*	$Id: gshhs.h,v 1.27 2009-06-25 22:23:38 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -28,9 +28,10 @@
  *			  For use with version 1.6 of GSHHS which now has WDBII
  *			  borders and rivers.
  *	03-JUL-2008.  PW: Version 1.11. New -I<id> option to pull out a single pol
- *	27-MAY-2009.  PW: Version 1.12. Now includes container polygon ID in header.
- *			  as well as an ancestor ID. Works on GSHHS 2.0 data.
- *			  Header is now 40 bytes (all 4-byte integers)
+ *	27-MAY-2009.  PW: Version 1.12. Now includes container polygon ID in header,
+ *			  an ancestor ID, and area of the reduced polygon. Works on
+ *			  GSHHS 2.0 data.
+ *			  Header is now 44 bytes (all 4-byte integers)
  */
 
 #ifndef _GSHHS
@@ -77,6 +78,7 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	 */
 	int west, east, south, north;	/* min/max extent in micro-degrees */
 	int area;	/* Area of polygon in 1/10 km^2 */
+	int area_full;	/* Area of original full-resolution polygon in 1/10 km^2 */
 	int container;	/* Id of container polygon that encloses this polygon (-1 if none) */
 	int ancestor;	/* Id of ancestor polygon in the full resolution set that was the source of this polygon (-1 if none) */
 };
