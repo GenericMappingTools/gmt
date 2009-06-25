@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.49 2009-05-21 04:18:36 guru Exp $
+ *	$Id: x2sys.h,v 1.50 2009-06-25 03:25:07 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -279,7 +279,7 @@ extern struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, int id_no,
 extern struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag);
 extern int x2sys_bix_read_tracks (struct X2SYS_INFO *s, struct X2SYS_BIX *B, int mode, int *ID);
 extern int x2sys_bix_read_index (struct X2SYS_INFO *s, struct X2SYS_BIX *B, BOOLEAN swap);
-extern int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B, int *ID);
+extern int x2sys_bix_get_ij (double x, double y, GMT_LONG *i, GMT_LONG *j, struct X2SYS_BIX *B, GMT_LONG *ID);
 
 extern void x2sys_path_init (struct X2SYS_INFO *s);
 extern int x2sys_get_data_path (char *track_path, char *track, char *suffix);
