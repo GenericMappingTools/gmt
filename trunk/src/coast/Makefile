@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.54 2009-06-20 23:53:07 guru Exp $
+#	$Id: Makefile,v 1.55 2009-06-25 22:36:20 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -123,12 +123,16 @@ build-gshhs:
 # Make archive targets:
 
 tar-gshhs:
-		tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs/*_[clihf].b
+		cp GSHHS+WDBII/README.TXT gshhs
+		tar cvjf gshhs_$(GSHHS_DATA_VERSION).tbz gshhs/*_[clihf].b gshhs/README.TXT
+		rm -f gshhs/README.TXT
 		cd $(rootdir)/src; \
 		tar cvjf gshhs_$(GSHHS_PROG_VERSION)_src.tbz gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 
 zip-gshhs:
-		zip -r -9 -q gshhs_$(GSHHS_DATA_VERSION).zip gshhs/*_[clihf].b
+		cp GSHHS+WDBII/README.TXT gshhs
+		zip -r -9 -q gshhs_$(GSHHS_DATA_VERSION).zip gshhs/*_[clihf].b gshhs/README.TXT
+		rm -f gshhs/README.TXT
 		cd $(rootdir)/src; \
 		zip -r -9 -q -l gshhs_$(GSHHS_PROG_VERSION)_src.zip gshhs/{gshhs.c,gshhs.h,gshhs_dp.c,gshhstograss.c,makefile,README.gshhs}
 		mv $(rootdir)/src/gshhs_$(GSHHS_PROG_VERSION)_src.zip .
