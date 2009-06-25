@@ -1,4 +1,4 @@
-/*	$Id: gshhs.c,v 1.29 2009-06-15 22:53:50 guru Exp $
+/*	$Id: gshhs.c,v 1.30 2009-06-25 22:28:44 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -40,7 +40,7 @@
 
 int main (int argc, char **argv)
 {
-	double w, e, s, n, area, lon, lat;
+	double w, e, s, n, area, f_area, lon, lat;
 	char source, kind[2] = {'P', 'L'}, c = '>', *file = NULL;
 	char *name[2] = {"polygon", "line"}, container[8], ancestor[8];
 	FILE *fp = NULL;
@@ -103,6 +103,7 @@ int main (int argc, char **argv)
 			h.south = swabi4 ((unsigned int)h.south);
 			h.north = swabi4 ((unsigned int)h.north);
 			h.area  = swabi4 ((unsigned int)h.area);
+			h.area_full  = swabi4 ((unsigned int)h.area_full);
 			h.flag  = swabi4 ((unsigned int)h.flag);
 			h.container  = swabi4 ((unsigned int)h.container);
 			h.ancestor  = swabi4 ((unsigned int)h.ancestor);
@@ -120,17 +121,18 @@ int main (int argc, char **argv)
 		if (river) source = tolower ((int)source);	/* Lower case c means river-lake */
 		line = (h.area) ? 0 : 1;			/* Either Polygon (0) or Line (1) (if no area) */
 		area = 0.1 * h.area;				/* Now im km^2 */
+		f_area = 0.1 * h.area_full;				/* Now im km^2 */
 
 		OK = (!single || h.id == ID);
 		
 		if (!msformat) c = kind[line];
 		if (OK) {
 			if (line)
-				printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f\n", c, h.id, h.n, level, source, area, w, e, s, n);
+				printf ("%c %6d%8d%2d%2c%10.5f%10.5f%10.5f%10.5f\n", c, h.id, h.n, level, source, w, e, s, n);
 			else {
 				(h.container == -1) ? sprintf (container, "-") : sprintf (container, "%6d", h.container);
 				(h.ancestor == -1) ? sprintf (ancestor, "-") : sprintf (ancestor, "%6d", h.ancestor);
-				printf ("%c %6d%8d%2d%2c%13.3f%10.5f%10.5f%10.5f%10.5f %s %s\n", c, h.id, h.n, level, source, area, w, e, s, n, container, ancestor);
+				printf ("%c %6d%8d%2d%2c%13.3f%13.3f%10.5f%10.5f%10.5f%10.5f %s %s\n", c, h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
 			}
 		}
 
