@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.134 2009-05-23 01:12:23 guru Exp $
+ *	$Id: x2sys.c,v 1.135 2009-06-25 03:25:07 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -1186,7 +1186,7 @@ int x2sys_bix_read_index (struct X2SYS_INFO *S, struct X2SYS_BIX *B, BOOLEAN swa
 	/* Reads the binned index file which is native binary and thus swab is an issue */
 	char index_file[BUFSIZ], index_path[BUFSIZ];
 	FILE *fbin;
-	int index = 0, no_of_tracks, i, id, flag;
+	int index = 0, flag, no_of_tracks, id, i;
 
 	sprintf (index_file, "%s%c%s_index.b", S->TAG, DIR_DELIM, S->TAG);
 	x2sys_path (index_file, index_path);
@@ -1227,13 +1227,13 @@ int x2sys_bix_read_index (struct X2SYS_INFO *S, struct X2SYS_BIX *B, BOOLEAN swa
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B, int *ID)
+int x2sys_bix_get_ij (double x, double y, GMT_LONG *i, GMT_LONG *j, struct X2SYS_BIX *B, GMT_LONG *ID)
 {
-	int index = 0;
+	GMT_LONG index = 0;
 
 	*j = (y == B->y_max) ? B->ny_bin - 1 : (int)floor ((y - B->y_min) * B->i_bin_y);
 	if ((*j) < 0 || (*j) >= B->ny_bin) {
-		fprintf (stderr, "x2sys_binlist: j (%d) outside range implied by -R -I! [0-%d>\n", *j, B->ny_bin);
+		fprintf (stderr, "x2sys_binlist: j (%ld) outside range implied by -R -I! [0-%d>\n", *j, B->ny_bin);
 		return (X2SYS_BIX_BAD_J);
 	}
 	*i = (x == B->x_max) ? B->nx_bin - 1 : (int)floor ((x - B->x_min)  * B->i_bin_x);
@@ -1242,12 +1242,12 @@ int x2sys_bix_get_ij (double x, double y, int *i, int *j, struct X2SYS_BIX *B, i
 		while (*i >= B->nx_bin) *i -= B->nx_bin;
 	}
 	if ((*i) < 0 || (*i) >= B->nx_bin) {
-		fprintf (stderr, "x2sys_binlist: i (%d) outside range implied by -R -I! [0-%d>\n", *i, B->nx_bin);
+		fprintf (stderr, "x2sys_binlist: i (%ld) outside range implied by -R -I! [0-%d>\n", *i, B->nx_bin);
 		return (X2SYS_BIX_BAD_I);
 	}
 	index = (*j) * B->nx_bin + (*i);
 	if (index < 0 || index >= B->nm_bin) {
-		fprintf (stderr, "x2sys_binlist: Index (%d) outside range implied by -R -I! [0-%ld>\n", index, B->nm_bin);
+		fprintf (stderr, "x2sys_binlist: Index (%ld) outside range implied by -R -I! [0-%ld>\n", index, B->nm_bin);
 		return (X2SYS_BIX_BAD_IJ);
 	}
 
