@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.556 2009-06-26 04:05:54 guru Exp $
+	$Id: ChangeLog,v 1.557 2009-06-26 22:57:20 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-06-25	pwessel
 	* gmt_grdio.c:		Change for reasonable x/y range if units has the words "longitude"
 				or "latitude" before concluding we have geodetic coordinates.
+	* gmt_support.c:	The modifier :<radius>[unit] to the -G option in grdcontour for
+				the placement of contour labels is now +r<radius>[unit] since the
+				colon interfered with ddd:mm:ss coordinates.
 
 2009-06-24	jluis
 	* x2sys/x2sys_merge.c:	New program to merge updated COEs table into a main COE table database
