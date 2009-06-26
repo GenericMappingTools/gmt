@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.127 2009-06-12 15:17:27 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.128 2009-06-26 04:05:54 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1118,12 +1118,12 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 		/* Change name of variable and unit to lower case for comparison */
 		GMT_str_tolower (string[i]);
 
-		if (!strncmp (string[i], "longitude", (size_t)9) || strstr (string[i], "degrees_e")) {
+		if ((!strncmp (string[i], "longitude", (size_t)9) || strstr (string[i], "degrees_e")) && (header->x_min > -360.0 && header->x_max <= 360.0)) {
 			/* Input data type is longitude */
 			GMT_io.in_col_type[i] = GMT_IS_LON;
 			project_info.degree[i] = TRUE;
 		}
-		else if (!strncmp (string[i], "latitude", (size_t)8) || strstr (string[i], "degrees_n")) {
+		else if ((!strncmp (string[i], "latitude", (size_t)8) || strstr (string[i], "degrees_n")) && (header->x_min >= -90.0 && header->x_max <= 90.0)) {
 			/* Input data type is latitude */
 			GMT_io.in_col_type[i] = GMT_IS_LAT;
 			project_info.degree[i] = TRUE;
