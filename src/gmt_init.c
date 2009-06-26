@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.401 2009-06-21 01:21:03 guru Exp $
+ *	$Id: gmt_init.c,v 1.402 2009-06-26 22:57:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -671,7 +671,7 @@ void GMT_cont_syntax (GMT_LONG indent, GMT_LONG kind)
 	fprintf (stderr, "%s   Append /<min_dist> to enforce a minimum distance between successive labels [0]\n", pad);
 	fprintf (stderr, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places labels at the intersections\n", pad);
 	fprintf (stderr, "%s   between the %ss and the lines in <xfile.d>.  X: Resample the lines first.\n", pad, type[kind]);
-	fprintf (stderr, "%s   For all options, append :<radius>[unit] to specify minimum radial separation between labels [0]\n", pad);
+	fprintf (stderr, "%s   For all options, append +r<radius>[unit] to specify minimum radial separation between labels [0]\n", pad);
 }
 
 void GMT_inc_syntax (char option, GMT_LONG error)

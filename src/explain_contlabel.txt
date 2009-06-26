@@ -48,5 +48,5 @@ Reads the multi-segment file \fIxfile.d\fP and places labels at the intersection
 between the LINETYPE and the lines in\fIxfile.d\fP.  GFLAG\fBX\fP will resample the lines first along
 great-circle arcs.
 .RE
-In addition, you may optionally append :\fIradius\fP[c|i|m|p] to set a minimum label separation in the
+In addition, you may optionally append \fB+r\fP\fIradius\fP[c|i|m|p] to set a minimum label separation in the
 x-y plane [no limitation].

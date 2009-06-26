@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.414 2009-06-22 07:46:23 guru Exp $
+ *	$Id: gmt_support.c,v 1.415 2009-06-26 22:57:21 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2930,16 +2930,15 @@ GMT_LONG GMT_contlabel_specs_old (char *txt, struct GMT_CONTOUR *G)
 GMT_LONG GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 {
 	/* Interpret the contour-label information string and set structure items */
-	GMT_LONG k, j = 0, colon = 0, error = 0;
-	char txt_a[GMT_LONG_TEXT], c;
+	GMT_LONG k, j = 0, error = 0;
+	char txt_a[GMT_LONG_TEXT], c, *p;
 
 	L->spacing = FALSE;	/* Turn off the default since we gave an option */
 	strcpy (L->option, &txt[1]);	 /* May need to process L->option later after -R,-J have been set */
-	for (colon = 0; txt[colon] && txt[colon] != ':'; colon++);	/* Search for :<isolate_radius>[unit] setting */
-	if (txt[colon] == ':') {	/* Want to isolate labels by given radius */
-		txt[colon] = '\0';	/* Temporarily chop off the :<radius> part */
+	if ((p = strstr (txt, "+r"))) {	/* Want to isolate labels by given radius */
+		*p = '\0';	/* Temporarily chop off the +r<radius> part */
 		L->isolate = TRUE;
-		L->label_isolation = GMT_convert_units (&txt[colon+1], GMT_INCH);
+		L->label_isolation = GMT_convert_units (&p[2], GMT_INCH);
 	}
 
 	L->flag = flag;
@@ -3015,7 +3014,7 @@ GMT_LONG GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			}
 			break;
 	}
-	if (L->isolate) txt[colon] = ':';	/* Replace the : from earlier */
+	if (L->isolate) *p = '+';	/* Replace the + from earlier */
 
 	return (error);
 }
