@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.415 2009-06-26 22:57:21 guru Exp $
+ *	$Id: gmt_support.c,v 1.416 2009-06-27 21:04:47 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4620,6 +4620,7 @@ int GMT_comp_int_asc (const void *p_1, const void *p_2)
 GMT_LONG GMT_get_format (double interval, char *unit, char *prefix, char *format)
 {
 	GMT_LONG i, j, ndec = 0;
+	BOOLEAN general = FALSE;
 	char text[BUFSIZ];
 
 	if (strchr (gmtdefs.d_format, 'g')) {	/* General format requested */
@@ -4636,6 +4637,8 @@ GMT_LONG GMT_get_format (double interval, char *unit, char *prefix, char *format
 				if (ndec < 0) ndec = 0;	/* since a positive exponent could give -ve answer */
 			}
 		}
+		general = TRUE;
+		strcpy (format, gmtdefs.d_format);
 	}
 
 	if (unit && unit[0]) {	/* Must append the unit string */
@@ -4664,7 +4667,7 @@ GMT_LONG GMT_get_format (double interval, char *unit, char *prefix, char *format
 	}
 	else if (ndec > 0)
 		sprintf (format, "%%.%ldf", ndec);
-	else {	/* Pull ndec from given format if .<precision> is given */
+	else if (!general) {	/* Pull ndec from given format if .<precision> is given */
 		for (i = 0, j = -1; j == -1 && gmtdefs.d_format[i]; i++) if (gmtdefs.d_format[i] == '.') j = i;
 		if (j > -1) ndec = atoi (&gmtdefs.d_format[j+1]);
 		strcpy (format, gmtdefs.d_format);
