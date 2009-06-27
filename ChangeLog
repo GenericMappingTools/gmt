@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.557 2009-06-26 22:57:20 guru Exp $
+	$Id: ChangeLog,v 1.558 2009-06-27 02:37:06 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-27	remko
+	* gmt_init.c (GMT_history):	No longer remove supposedly empty .gmtcommands4 file.
+				Could have been written to by piped GMT command. Now create/write
+				only when new matter is to be written.
 
 2009-06-25	pwessel
 	* gmt_grdio.c:		Change for reasonable x/y range if units has the words "longitude"
