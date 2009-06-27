@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.119 2009-06-04 00:17:27 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.120 2009-06-27 22:45:19 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -34,7 +34,7 @@ will be distinguished by being completely restructured so as to allow developers
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
 
-\subsection{Overview of \gmt\ 4.4.1 [June-1, 2009]}
+\subsection{Overview of \gmt\ 4.5.0 [July-1, 2009]}
 
 This is another significant update of the official distribution and hence it has a mix of bug fixes
 and program enhancements.  We have added a new supplement ({\bf sph}) which
@@ -48,6 +48,7 @@ has a new program \GMTprog{mgd77magref}, which is used to evaluate either the CM
 model, a more sophisticated alternative to IGRF, or the IGRF. The {\bf misc} supplement has received
 two new tools (\GMTprog{gmt2kml} and \GMTprog{kml2gmt}) that simplify the presentation of \GMT\ data
 in Google Earth, and one (\GMTprog{dimfilter}) that offers directional spatial filtering of grids.
+The {\bf x2sys} supplement has a new tool (\GMTprog{x2sys\_merge}) to merge updated COEs table into a main COE table database.
 Finally, \GMTprog{ps2raster.c} has evolved further and can now be used to create simple KML files for Google Earth.
 
 A major new enhancement is the global option \Opt{g}, which is used to determine if excessive spacing
@@ -66,12 +67,21 @@ where b or f could both be zero.  If file does not exist, attempt to read name a
 meaning {\it semi-major axis}, b={\it semi-minor axis}, f = {\it flattening}, or {\it inverse flattening}.  We have also
 added parameters for the Moon and planets (IAU2000).
 
+This release of \GMT\ coincides with the release 2.0 of GSHHS, the coastline data used by \GMT.  In addition to
+general improvements to the data, we have expanded the \Opt{A} option that controls the limits on what features
+to extract.  New modifiers allow users to exclude ``river-lakes'' and any feature whose area is less than a
+fraction of the original full resolution feature.
+
 Finally, our configure script continues to evolve and now better supports installation on 64-bit systems and
 can automatically detect if and where netCDF exists on your system.
 
 Here is the list of bug corrections:
 \begin{description}
 	\item [\GMTprog{gmt\_customio.c}]: In \GMTfunc{GMT\_ras\_read\_grd\_info}, wrong size was passed to fread.
+	\item [\GMTprog{gmt\_grdio.c}]: Fixed bug in \GMTfunc{GMT\_grd\_setregion}: longitudes were limited inward
+		instead of outward. Caused white-space left and right in \GMTprog{grdimage}.
+	\item [\GMTprog{gmt\_init.c}]: No longer remove supposedly empty \filename{.gmtcommands4} file.
+		Could have been written to by piped \GMT\ command. Now create/write only when new matter is to be written.
 	\item [\GMTprog{gmt\_io.c}]: When only \Opt{mi} is set there should be no multisegment headers on output.
 		yet there was no if-test to check for that.
 	\item [\GMTprog{gmt\_map.c}]: Fixed serious bug in \GMTfunc{GMT\_az\_backaz\_flatearth}: incorrectly
@@ -90,10 +100,17 @@ Here is the list of bug corrections:
 	\item [\GMTprog{gmt\_support.c}]: Exceeded array bounds in \GMTfunc{GMT\_read\_cpt} for hsv conversion.
 		The 3-D view \Opt{E} option used in many programs (such as \GMTprog{psxyz}) could not handle exponential notations.
 		Determining of a color scale is continuous should be based on HSV (not RGB) values when read as HSV.
+		The modifier :{\it radius}[unit] to the \Opt{G} option in \GMTprog{grdcontour} for
+		the placement of contour labels is now {\bf +r}{\it radius}[unit] since the colon interfered with ddd:mm:ss coordinates.
+		Given \Opt{I}601+/601+ the y-increment was not processed correctly.
 	\item [\GMTprog{blockmean.c}]: Gave bogus usage about number of input columns when \Opt{E} is set
 		but \Opt{E} only affects output.  Same for  \GMTprog{blockmedian.c} and \GMTprog{blockmode.c}.
+	\item [\GMTprog{gmtconvert.c}]: With \Opt{S}, did not report the number of output segments.
+	\item [\GMTprog{gmtmath.c}]: Tried to free memory that was not allocated.
 	\item [\GMTprog{grdgradient.c}]: For geographic grids, make sure N and S pole only has a single value on output.
+	\item [\GMTprog{greenspline.c}]: Calculation of nz layers was off by one, leaving out the penultimate layer.
 	\item [\GMTprog{grdmath.c}]: The {\bf PDIST} operator did not handle binary input files (as {\bf LDIST} does).
+	\item [\GMTprog{ps2raster.c}]: Exceeded memory allocation for out\_file.  Now in static memory.
 	\item [\GMTprog{pscoast.c}]: Produce at least ``S V'' when the clippath is empty.
 	\item [\GMTprog{psclip.c}]: Produce at least ``S V'' when the clippath is empty.
 	\item [\GMTprog{gshhs/gshhs.c}]: Checked wrong variable to test if a file was given on the command line.
@@ -101,7 +118,9 @@ Here is the list of bug corrections:
 	\item [\GMTprog{mgd77/mgd77.c}]: Was failing to read Windows terminated ASCII files.
 		Fixed bug in \GMTfunc{MGD77\_igrf10syn} routine (mistake done while cleaning the
 		\progname{f2c} version) that resulted in altitude always being on Earth surface
-		when geocentric coordinates were used.
+		when geocentric coordinates were used.  Do not use any \GMT\ i/o-functions to access ascii files on
+		creation/writing so that it can work under Windows as well.
+		Converting files from netCDF to MGD77 where time = NaN gave junk records.
 	\item [\GMTprog{mgd77/mgd77list.c}]: Used GMT\_LONG in \GMTfunc{memset} for an array allocated as int.
 		Used wrong time for IGRF calculation; worst case situation was off by 1 year.
 	\item [\GMTprog{mgd77/mgd77manage.c}]: The \Opt{D} option would remove original attributes.  Now
@@ -110,6 +129,7 @@ Here is the list of bug corrections:
 		file after \GMTprog{mgd77manage} \Opt{D} had been run.
 		Used wrong time for IGRF calculation; worst case situation was off by 1 year.
 		Now uses \GMTfunc{GMT\_read\_img} to handle *.img files; earlier the inline code would fail on the new extended img files.
+	\item [\GMTprog{misc/gmtstitch.c}]: Did not read standard input if no files were given.  Now honors \Opt{V} properly.
 	\item [\GMTprog{x2sys/x2sys.c}]: Wrong array argument passed for correction aux values.
 	\item [\GMTprog{x2sys/x2sys\_cross.c}]: Removed the \Opt{F} option which was not honored anyway.
 	\item [\GMTprog{x2sys/x2sys\_init.c}]: Now properly copies the *.def file to the TAG dir.
@@ -127,40 +147,57 @@ Here is a list of the recent enhancement to various programs:
 		programs the NaNs in input record will act as indicators of
 		data gaps for continuous lines.  If ``skip'' we report them
 		as bad records.  In both cases the records are skipped.
+		Allow negative integer interval (-n) for annotating log axis; this means annotate every n'th power of 10.
 	\item \GMTprog{gmt\_nc.c} will properly handle netCDF that have LatLon = 0, 1: flip x and y.
+	\item \GMTprog{gmt\_shore.c} Added support for the {\bf+p}{\it percent} modifier to limit features whose
+		area is less {\it percent} of the corresponding full-resolution polygon.
 	\item \GMTprog{gmt\_support.c} enables \GMTfunc{GMT\_intpol} to handle NaNs by treating them as segment
 		boundaries.  Rely on Shewchuk's triangle function to get Voronoi output.
 	\item \GMTprog{blockmedian.c} now returns the quantile(x), quantile(y) location when \Opt{T} is used.
 		Added \Opt{Eb} to get box-and-whisker output (0. 25, 50, 75, and 100\% quantiles).
+	\item \GMTprog{gmtconvert.c} now allows \Opt{S}$\sim$pattern which reports segments whose header does NOT contain pattern.
+		Should pattern actually start with $\sim$ we escape it with $\backslash\sim$pattern.
 	\item \GMTprog{gmtselect.c} can now handle dateTclock strings in \Opt{Z} when used with
 		data whose 3rd column contains time.
 	\item \GMTprog{gmtmath.c} added {\bf MOD} function (remainder after floored division,
 		Knuth style). This is in contrast to {\bf FMOD} which gives the remainder after (horror) truncated division.
+	\item \GMTprog{gmtselect.c} Same upgrade to \Opt{A} option as \GMTprog{pscoast}.
 	\item \GMTprog{grdcut.c} has new option \Opt{Z} which is used to determine a rectangular subregion
 		so that the rejected area have values entirely outside the given z-range.
+	\item \GMTprog{grdfft.c} now also has a Butterworth band-pass filter.
 	\item \GMTprog{grdinfo.c} will now use plain text (and not code) to report the file format used.
 		Add option \Opt{L}0 to actually scan data to determine {\it zmin} and {\it zmax}.
+	\item \GMTprog{grdlandmask.c} Same upgrade to \Opt{A} option as \GMTprog{pscoast}.
 	\item \GMTprog{grdmath.c} added {\bf MOD} function (remainder after floored division).
 	\item \GMTprog{ps2raster.c} takes \Opt{W+k} to create a simple KML file for Google Earth.  Several
 		other modifiers help to populate the KML file.
 	\item \GMTprog{psclip.c} has a new option \Opt{T} that turns on map region clipping without any
 		input data files; it is a shorthand for \Opt{N} \filename{/dev/null}.
+	\item \GMTprog{pscoast.c} has enhanced \Opt{C}[{\bf l}$|${\bf r}/]{it fill} offers to paint river-lakes separately from lakes.
+		The \Opt{A} option can be used to exclude river-lakes or lakes for level 2.
+		\Opt{W} now allows different pens for the 4 levels of shorelines.
 	\item \GMTprog{pglegend.c} allows {\bf S} record not to have {\it text}. Until now, when left empty would
-		use whatever {\it text} was set to in previous record.
+		use whatever {\it text} was set to in previous record.  The $>$ record no longer needed before T;
+		T, L, S, H alignment harmonized; I, M, B spacing improved; \Opt{B} option added.
 	\item \GMTprog{psxy.c} added \Opt{g} to break lines into segments based on gap criteria.
 	\item \GMTprog{psxyz.c} added \Opt{g} to break lines into segments based on gap criteria.
 	\item \GMTprog{triangulate.c} has new option \Opt{Q} to generate Voronoi polygon edges.
 	\item \GMTprog{mgd77/mgd77convert.c} allows users to give file.ext on command line.
 	\item \GMTprog{mgd77/mgd77list.c} can now take \Opt{DA} and \Opt{DB} which, in the presence of time = NaN,
 		will not output such records [\Opt{Da}$|${\bf b} will].  Also clarified the ranges implied by \Opt{D} and \Opt{S}.
-	\item \GMTprog{mgd77/mgd77list.c} added -Fytime which gives decimal absolute year for time output.
+		Added \Opt{F}ytime which gives decimal absolute year for time output.
+	\item \GMTprog{mgd77/mgd77manage.c} added \Opt{AE} to ignore the verification status and process e77 anyway.
+	\item \GMTprog{mgd77/mgd77path.c} added \Opt{P-} to just list the IDs and not the full paths.
 	\item \GMTprog{mgd77/mgd77track.c} added \Opt{Gt}$|${\bf d}{\it gap} to recognize gaps in tracks based on
-			distance or time between successive points.
+		distance or time between successive points.
 	\item \GMTprog{mgg/mgd77togmt.c} added new \Opt{T} and \Opt{W} options to store total field and account for the
 		magnetometer tow distance. Also tries to get info from header file.
-	\item [\GMTprog{x2sys/x2sys\_list.c}]: 	Can now accept list of weights for each track and output the
+	\item \GMTprog{misc/gmtstitch.c} has enhanced \Opt{T} option to eliminate connections when the 2nd closest
+		pair is too close.  Also added \Opt{C} option to simply separate the open from the closed polygons (no stitching).
+		Added \Opt{L} option to write out segment-link information.
+	\item \GMTprog{x2sys/x2sys\_list.c} can now accept list of weights for each track and output the
 			composite weight for each crossover.
-	\item [\GMTprog{x2sys/x2sys\_solve.c}]: Option \Opt{W} means an extra column with crossover weight.
+	\item \GMTprog{x2sys/x2sys\_solve.c} has option \Opt{W} means an extra column with crossover weight.
 \end{enumerate}
 
 % 4.4.0
