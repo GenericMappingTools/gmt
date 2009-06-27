@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.402 2009-06-26 22:57:21 guru Exp $
+ *	$Id: gmt_init.c,v 1.403 2009-06-27 02:21:31 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -161,6 +161,8 @@ double GMT_xy_map_dist (GMT_LONG col);
 double GMT_xy_deg_dist (GMT_LONG col);
 double GMT_xy_true_dist (GMT_LONG col);
 double GMT_xy_cart_dist (GMT_LONG col);
+void GMT_file_lock (int fd, struct flock *lock);
+void GMT_file_unlock (int fd, struct flock *lock);
 
 /* Local variables to gmt_init.c */
 
@@ -3856,13 +3858,12 @@ void GMT_set_home (void)
 GMT_LONG GMT_history (int argc, char ** argv)
 {
 	GMT_LONG i, j, k;
-	BOOLEAN need_xy = FALSE, overlay = FALSE, found_old, found_new, done = FALSE, new_unique = FALSE, new_file = FALSE;
+	BOOLEAN need_xy = FALSE, overlay = FALSE, found_old, found_new, done = FALSE, new_unique = FALSE;
 	char line[BUFSIZ], hfile[BUFSIZ], cwd[BUFSIZ];
 	char *newargv[GMT_N_UNIQUE], *new_j = CNULL, *old_j = CNULL;
 	FILE *fp;	/* For .gmtcommands4 file */
 #ifndef NO_LOCK
 	struct flock lock;
-	int fd;
 #endif
 
 	if (!gmtdefs.history) return (GMT_NOERROR);	/* .gmtcommands4 mechanism has been disabled */
@@ -3894,58 +3895,41 @@ GMT_LONG GMT_history (int argc, char ** argv)
 	else	/* Try home directory instead */
 		sprintf (hfile, "%s%c.gmtcommands4", GMT_HOMEDIR, DIR_DELIM);
 
-	if (access (hfile, R_OK)) {    /* No .gmtcommands4 file in chosen directory, try to make one */
-		if ((fp = fopen (hfile, "w")) == NULL) {
-			fprintf (stderr, "GMT Warning: Could not create %s [permission problem?]\n", hfile);
-			return (GMT_NOERROR);
-		}
-		done = new_file = TRUE;
-	}
-	else if ((fp = fopen (hfile, "r+")) == NULL) {
-		fprintf (stderr, "GMT Warning: Could not update %s [permission problem?]\n", hfile);
-		return (GMT_NOERROR);
-	}
-
-	/* When we get here the file exists */
-
-#ifndef NO_LOCK
-	/* now set exclusive lock */
-
-	lock.l_type = F_WRLCK;		/* Lock for [exclusive] reading/writing */
-	lock.l_whence = SEEK_SET;	/* These three apply lock to entire file */
-	lock.l_start = lock.l_len = 0;
-
-	fd = fileno (fp);	/* Get file descriptor */
-
-	if (fcntl (fd, F_SETLKW, &lock)) {	/* Will wait for file to be ready for reading */
-		fprintf (stderr, "%s: Error returned by fcntl [F_WRLCK]\n", GMT_program);
-		GMT_exit (EXIT_FAILURE);
-	}
-#endif
-
-	/* Get the common arguments and copy them to array GMT_oldargv */
-
-	/* PS!  GMT_oldarg? must remain global and not freed until GMT_end - otherwise argv will point to junk */
-
 	GMT_oldargc = 0;
 	for (i = 0; i < GMT_N_UNIQUE; i++) GMT_oldargv[i] = CNULL;
 
-	while (!done && fgets (line, BUFSIZ, fp)) {
+	if ((fp = fopen (hfile, "r+")) != NULL) {
 
-		if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments or blank lines */
-		if (!strncmp (line, "EOF", (size_t)3)) {	/* Logical end of .gmtcommands4 file */
-			done = TRUE;
-			continue;
+		/* When we get here the file exists */
+#ifndef NO_LOCK
+		GMT_file_lock (fileno(fp), &lock);
+#endif
+		/* Get the common arguments and copy them to array GMT_oldargv */
+		/* PS!  GMT_oldarg? must remain global and not freed until GMT_end - otherwise argv will point to junk */
+
+		while (!done && fgets (line, BUFSIZ, fp)) {
+
+			if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments or blank lines */
+			if (!strncmp (line, "EOF", (size_t)3)) {	/* Logical end of .gmtcommands4 file */
+				done = TRUE;
+				continue;
+			}
+			if (line[0] != '-') continue;	/* Possibly reading old .gmtcommands4 format or junk */
+			line[strlen(line)-1] = 0;
+			GMT_oldargv[GMT_oldargc] = strdup (line);
+			if (GMT_oldargv[GMT_oldargc][1] == 'j') old_j = GMT_oldargv[GMT_oldargc];
+			GMT_oldargc++;
+			if (GMT_oldargc > GMT_N_UNIQUE) {
+				fprintf (stderr, "GMT Fatal Error: Failed while decoding common arguments\n");
+				GMT_exit (EXIT_FAILURE);
+			}
 		}
-		if (line[0] != '-') continue;	/* Possibly reading old .gmtcommands4 format or junk */
-		line[strlen(line)-1] = 0;
-		GMT_oldargv[GMT_oldargc] = strdup (line);
-		if (GMT_oldargv[GMT_oldargc][1] == 'j') old_j = GMT_oldargv[GMT_oldargc];
-		GMT_oldargc++;
-		if (GMT_oldargc > GMT_N_UNIQUE) {
-			fprintf (stderr, "GMT Fatal Error: Failed while decoding common arguments\n");
-			GMT_exit (EXIT_FAILURE);
-		}
+
+		/* Close the file */
+#ifndef NO_LOCK
+		GMT_file_unlock (fileno(fp), &lock);
+#endif
+		fclose (fp);
 	}
 
 	/* See if (1) We need abs/rel shift and (2) if we have an overlay */
@@ -4006,10 +3990,6 @@ GMT_LONG GMT_history (int argc, char ** argv)
 		if (argv[i][1] == 'j') argv[i][1] = 'J';	/* Reset to upper case */
 	}
 
-	/* Ok, now update history, first rewind file pointer */
-
-	rewind (fp);
-
 	/* Loop over GMT_unique_option parameters to determine if common arguments changed */
 
 	for (i = 0; i < GMT_N_UNIQUE; i++) {
@@ -4055,33 +4035,63 @@ GMT_LONG GMT_history (int argc, char ** argv)
 
 	/* Only write to .gmtcommands4 file if something changed */
 
-	if (new_unique) {
-		fprintf (fp, "# GMT common arguments shelf\n");
-		for (i = 0; i < GMT_N_UNIQUE; i++) {
-			if (newargv[i]) fprintf (fp, "%s\n", newargv[i]);
+	if (!new_unique) return (GMT_NOERROR);
+
+	if (access (hfile, R_OK)) {    /* No .gmtcommands4 file in chosen directory, try to make one */
+		if ((fp = fopen (hfile, "w")) == NULL) {
+			fprintf (stderr, "GMT Warning: Could not create %s [permission problem?]\n", hfile);
+			return (GMT_NOERROR);
 		}
-		if (new_j) fprintf (fp, "-j%s\n", &new_j[2]);
-		fprintf (fp, "EOF\n");	/* Logical end of file marker (since old file may be longer) */
-		fflush (fp);		/* To ensure all is written when lock is released */
 	}
-
+	else if ((fp = fopen (hfile, "r+")) == NULL) {
+		fprintf (stderr, "GMT Warning: Could not update %s [permission problem?]\n", hfile);
+		return (GMT_NOERROR);
+	}
 #ifndef NO_LOCK
-	lock.l_type = F_UNLCK;		/* Release lock and close file */
-	lock.l_whence = SEEK_SET;	/* These three apply lock to entire file */
-	lock.l_start = lock.l_len = 0;
-
-	if (fcntl (fd, F_SETLK, &lock)) {
-		fprintf (stderr, "%s: Error returned by fcntl [F_UNLCK]\n", GMT_program);
-		GMT_exit (EXIT_FAILURE);
-	}
+	GMT_file_lock(fileno(fp), &lock);
 #endif
 
-	fclose (fp);
+	fprintf (fp, "# GMT common arguments shelf\n");
+	for (i = 0; i < GMT_N_UNIQUE; i++) {
+		if (newargv[i]) fprintf (fp, "%s\n", newargv[i]);
+	}
+	if (new_j) fprintf (fp, "-j%s\n", &new_j[2]);
+	fprintf (fp, "EOF\n");	/* Logical end of file marker (since old file may be longer) */
 
-	if (!new_unique && new_file) remove(hfile);	/* Remove the .gmtcommands4 file because it's empty */
+	fflush (fp);		/* To ensure all is written when lock is released */
+#ifndef NO_LOCK
+	GMT_file_unlock(fileno(fp), &lock);
+#endif
+	fclose (fp);
 
 	return (GMT_NOERROR);
 }
+
+#ifndef NO_LOCK
+void GMT_file_lock (int fd, struct flock *lock)
+{
+	lock->l_type = F_WRLCK;		/* Lock for [exclusive] reading/writing */
+	lock->l_whence = SEEK_SET;	/* These three apply lock to entire file */
+	lock->l_start = lock->l_len = 0;
+
+	if (fcntl (fd, F_SETLKW, lock)) {	/* Will wait for file to be ready for reading */
+		fprintf (stderr, "%s: Error returned by fcntl [F_WRLCK]\n", GMT_program);
+		GMT_exit (EXIT_FAILURE);
+	}
+}
+
+void GMT_file_unlock (int fd, struct flock *lock)
+{
+	lock->l_type = F_UNLCK;		/* Release lock and close file */
+	lock->l_whence = SEEK_SET;	/* These three apply lock to entire file */
+	lock->l_start = lock->l_len = 0;
+
+	if (fcntl (fd, F_SETLK, lock)) {
+		fprintf (stderr, "%s: Error returned by fcntl [F_UNLCK]\n", GMT_program);
+		GMT_exit (EXIT_FAILURE);
+	}
+}
+#endif
 
 void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
 
