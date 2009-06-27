@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.558 2009-06-27 02:37:06 remko Exp $
+	$Id: ChangeLog,v 1.559 2009-06-27 22:45:19 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-06-27	remko
@@ -16,8 +16,8 @@
 
 2009-06-24	jluis
 	* x2sys/x2sys_merge.c:	New program to merge updated COEs table into a main COE table database
-	* mgd77/mgd77.c:	Do not use any GMT_XXX to access ascii files on creation/writting so that
-				it can work on Windows as well (improvment on 2009-06-07 changes).
+	* mgd77/mgd77.c:	Do not use any GMT_XXX to access ascii files on creation/writing so that
+				it can work on Windows as well (improvement on 2009-06-07 changes).
 
 2009-06-24	pwessel
 	* ps2raster.c:		Exceeded memory allocation for out_file.  Now in static memory.
@@ -75,7 +75,7 @@
 				Removed -AG, -AS; use -Ag0, -As0 instead. Allow vertical scaling.
 				Removed -F<capital>, altitude mode is now fully controlled by -A.
 				Put set of points in a folder automatically.
-				Label linesegments automatically.  Improved documentation.
+				Label line segments automatically.  Improved documentation.
 				Renamed option -L to -R, which now also performs data screening.
 				Renamed option -C to -L. Added -C option to color icons by value.
 				Added option to scale altitude values.
@@ -160,7 +160,7 @@
 				Should pattern actually start with ~ we escape it with \~pattern.
 
 2009-05-25	pwessel
-	* greenspline.c:	Calculation of nz layers were off by one, leaving out the
+	* greenspline.c:	Calculation of nz layers was off by one, leaving out the
 				penultimate layer.
 
 2009-05-23	pwessel
