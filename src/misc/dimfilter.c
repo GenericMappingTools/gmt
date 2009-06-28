@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.3 2009-06-05 00:25:12 guru Exp $
+ * $Id: dimfilter.c,v 1.4 2009-06-28 23:00:14 jluis Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -877,10 +877,10 @@ fout2 = NULL;
 
 		  /* calculate MEDIAN and MAD for each row */      
 		  GMT_median (err_workarray, err_cols, err_min, err_max, err_null_median, &err_median);
-		  err_workarray[0]=abs(err_workarray[0]-err_median);
+		  err_workarray[0]=fabs(err_workarray[0]-err_median);
 		  err_min=err_max=err_workarray[0];
 		  for (i=1; i < err_cols; i++) {
-			 err_workarray[i]=abs(err_workarray[i]-err_median);
+			 err_workarray[i]=fabs(err_workarray[i]-err_median);
 		 if (err_workarray[i] < err_min) err_min=err_workarray[i];
 		 if (err_workarray[i] > err_max) err_max=err_workarray[i];	 
 		  }      
