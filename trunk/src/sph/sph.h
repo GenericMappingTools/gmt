@@ -1,3 +1,22 @@
+/*--------------------------------------------------------------------
+ *	$Id: sph.h,v 1.10 2009-06-28 19:36:56 guru Exp $
+ *
+ *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
+ *	See COPYING file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; version 2 of the License.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Contact info: gmt.soest.hawaii.edu
+ *--------------------------------------------------------------------*/
+/* Include file for sph supplement */
+
 #define DELAUNAY	0
 #define VORONOI		1
 #define INTERPOLATE	2
@@ -10,10 +29,10 @@ struct STRIPACK_DELAUNAY {	/* Information about Delaunay triangulation */
 };
 
 struct STRIPACK_VORONOI {	/* Information about Voronoi polygons */
-	double *lon, *lat;	/* Voronoi polygon vertices */
+	double *lon, *lat;		/* Voronoi polygon vertices */
 	int n;				/* Number of boundary nodes for Voronoi */
 	int *lend, *listc, *lptr;	/* Voronoi vertex lists and pointers */
-	int *list;		/* Additional list from trmesh */		
+	int *list;			/* Additional list from trmesh */		
 };
 
 struct STRIPACK_INTERPOLATE {	/* Information about triangles */
