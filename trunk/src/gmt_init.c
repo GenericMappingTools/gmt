@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.403 2009-06-27 02:21:31 remko Exp $
+ *	$Id: gmt_init.c,v 1.404 2009-06-28 23:17:02 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2996,7 +2996,7 @@ double GMT_convert_units (char *from, GMT_LONG new_format)
 		fprintf (stderr, "%s: Warning: %s not a valid number and may not be decoded properly.\n", GMT_program, from);
 
 	value = atof (from) * GMT_u2u[old_format][new_format];
-	if (have_unit) from[len-1] = c;	/* Put back what we took out temporarily */
+	if (have_unit) from[len-1] = (char)c;	/* Put back what we took out temporarily */
 
 	if (save_measure_unit >= 0) gmtdefs.measure_unit = save_measure_unit;	/* Put back default unit */
 
@@ -3569,7 +3569,11 @@ GMT_LONG GMT_short_begin (int argc, char **argv) {
 
 	/* Initialize parameters that don'd depend on .gmtdefaults */
 
+	GMT_set_home ();
+
 	this = CNULL;
+	GMT_make_fnan (GMT_f_NaN);
+	GMT_make_dnan (GMT_d_NaN);
 	frame_info.plot = FALSE;
 	project_info.projection = GMT_NO_PROJ;
 	project_info.gave_map_width = 0;
@@ -4602,7 +4606,7 @@ GMT_LONG GMT_parse_B_option (char *in) {
 		for (i = 0; i < 2; i++) {
 			if (GMT_io.in_col_type[i] & GMT_IS_GEO && frame_info.axis[i].unit[0] == 0) {
 				frame_info.axis[i].unit[0] = '-';
-				frame_info.axis[i].unit[1] = gmtdefs.encoding.code[gmtdefs.degree_symbol];
+				frame_info.axis[i].unit[1] = (char)gmtdefs.encoding.code[gmtdefs.degree_symbol];
 				frame_info.axis[i].unit[2] = '\0';
 			}
 		}
