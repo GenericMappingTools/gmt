@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.193 2009-06-19 08:58:19 remko Exp $
+ *	$Id: gmt_io.c,v 1.194 2009-06-28 22:43:08 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2111,8 +2111,8 @@ void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S)
 		      sprintf (S->y_format, "%s", gmtdefs.d_format);
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* But we want the degree symbol appended */
-			S->x_format[len] = gmtdefs.encoding.code[gmtdefs.degree_symbol];
-			S->y_format[len] = gmtdefs.encoding.code[gmtdefs.degree_symbol];
+			S->x_format[len] = (char)gmtdefs.encoding.code[gmtdefs.degree_symbol];
+			S->y_format[len] = (char)gmtdefs.encoding.code[gmtdefs.degree_symbol];
 			S->x_format[len+1] = S->y_format[len+1] = '\0';
 		}
 		strcat (S->x_format, "%c");
