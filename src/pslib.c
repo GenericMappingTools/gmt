@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.202 2009-06-28 22:34:55 jluis Exp $
+ *	$Id: pslib.c,v 1.203 2009-06-29 18:40:47 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3915,7 +3915,7 @@ void ps_rle_decode (struct imageinfo *h, unsigned char **in)
 
 		if (col == width) {
 			if (h->depth == 1) out[width-1] &= mask;
-			if (odd) out[i++] = (unsigned char)count = 0;
+			if (odd) out[i++] = count = 0;
 			col = 0;
 		}
 	}
