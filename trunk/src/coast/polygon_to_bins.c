@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.12 2009-06-21 01:21:04 guru Exp $
+ *	$Id: polygon_to_bins.c,v 1.13 2009-06-29 22:58:21 guru Exp $
  */
 #include "wvs.h"
 #include "shore.h"
@@ -306,7 +306,7 @@ int main (int argc, char **argv) {
 			s->entry = 4;
 			s->exit = 4;
 			s->p_area = rint (h.area * 10.0);	/* Store area in 1/10 of 1 km^2 */
-			if (h.river) s->p_area = -s->p_area;	/* River-lakes are marked by negative area */
+			if (h.river & 1) s->p_area = -s->p_area;	/* River-lakes are marked by negative area */
 			s->p_area_fraction = irint (1e6 * h.area_res / h.area);	/* 1e6 * fraction of full-resolution polygon area */
 			s->p = (struct SHORT_PAIR *)GMT_memory(VNULL, s->n, sizeof(struct SHORT_PAIR), "polygon_to_bins");
 			for (k = 0; k < s->n; k++) {
@@ -384,7 +384,7 @@ int main (int argc, char **argv) {
 				else
 					s->exit = (i_y_2 == i_y_3) ? 0 : 2;
 				s->p_area = rint (h.area * 10.0);	/* Store area in 1/10 of 1 km^2 */
-				if (h.river) s->p_area = -s->p_area;	/* River-lakes are marked by negative area */
+				if (h.river & 1) s->p_area = -s->p_area;	/* River-lakes are marked by negative area */
 				s->p_area_fraction = irint (1e6 * h.area_res / h.area);	/* 1e6 * fraction of full-resolution polygon area */
 
 				/* Write from last_i through i, inclusive, into this bin:  */
