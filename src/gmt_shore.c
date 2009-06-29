@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.46 2009-06-28 22:47:36 jluis Exp $
+ *	$Id: gmt_shore.c,v 1.47 2009-06-29 23:54:00 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -546,7 +546,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, BOOLEAN assemble
 	
 	if (c->ns == 0) for (n = 0; n < 4; n++) high_seg_level = MIN (c->node_level[n], high_seg_level);	/* Initialize to lowest when there are no segments */
 	for (n = high_level = 0; n < 4; n++) {
-		c->node_level[n] = (unsigned char)MIN (c->node_level[n], high_seg_level);
+		c->node_level[n] = MIN (c->node_level[n], high_seg_level);
 		high_level = MAX (c->node_level[n], high_level);
 	}
 	
@@ -1005,15 +1005,15 @@ void shore_prepare_sides (struct GMT_SHORE *c, GMT_LONG dir)
 	for (i = c->n_entries = 0; i < 4; i++) {	/* Allocate memory and add corners */
 		c->side[i] = (struct GSHHS_SIDE *) GMT_memory (VNULL, (size_t)c->nside[i], sizeof (struct GSHHS_SIDE), "shore_prepare_sides");
 		c->side[i][0].pos = (dir == 1) ? GSHHS_MAX_DELTA : 0;
-		c->side[i][0].id = (unsigned char)(i - 4);
+		c->side[i][0].id = i - 4;
 		c->n_entries += c->nside[i] - 1;
 	}
 		
 	for (s = 0; s < c->ns; s++) {	/* Add entry points */
 		/* if (c->seg[s].level > 2 || (i = c->seg[s].entry) == 4) continue; */
 		if ((i = c->seg[s].entry) == 4) continue;
-		c->side[i][n[i]].pos = (unsigned char)GMT_shore_get_position (i, c->seg[s].dx[0], c->seg[s].dy[0]);
-		c->side[i][n[i]].id = (unsigned char)s;
+		c->side[i][n[i]].pos = GMT_shore_get_position (i, c->seg[s].dx[0], c->seg[s].dy[0]);
+		c->side[i][n[i]].id = s;
 		n[i]++;
 	}
 	

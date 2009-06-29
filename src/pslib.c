@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.203 2009-06-29 18:40:47 jluis Exp $
+ *	$Id: pslib.c,v 1.204 2009-06-29 23:54:00 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3719,7 +3719,7 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, PS_LONG nx, PS_LONG ny, 
 	for (i = 0; i < npixels; i++) {
 		for (j = 0; j < colormap->ncolors; j++)
 			if (colormap->colors[j][0] == buffer[0] && colormap->colors[j][1] == buffer[1] && colormap->colors[j][2] == buffer[2]) {
-				image->buffer[i] = (unsigned char)j;
+				image->buffer[i] = j;
 				break;
 			}
 
@@ -3731,7 +3731,7 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, PS_LONG nx, PS_LONG ny, 
 				if (PSL->internal.verbose) fprintf (stderr, "pslib: Too many colors to make colormap - using 24-bit direct color instead.\n");
 				return (NULL);
 			}
-			image->buffer[i] = (unsigned char)j;
+			image->buffer[i] = j;
 			colormap->colors[j][0] = buffer[0];
 			colormap->colors[j][1] = buffer[1];
 			colormap->colors[j][2] = buffer[2];
