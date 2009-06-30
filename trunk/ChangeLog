@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.559 2009-06-27 22:45:19 guru Exp $
+	$Id: ChangeLog,v 1.560 2009-06-30 17:50:37 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-06-30	pwessel
+	* grdfilter.c:		Toggle -T was not processed correctly if -Rgridfile was given.
 
 2009-06-27	remko
 	* gmt_init.c (GMT_history):	No longer remove supposedly empty .gmtcommands4 file.
