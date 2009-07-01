@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.236 2009-07-01 06:20:37 guru Exp $
+ *	$Id: mgd77.c,v 1.237 2009-07-01 07:02:47 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2167,7 +2167,7 @@ void MGD77_Init (struct MGD77_CONTROL *F)
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = TRUE;	/* TRUE means we will apply correction factors (if present) when reading data */
 	GMT_get_time_system ("unix", &(F->unix));						/* MGD77+ uses GMT's Unix time epoch */
 	GMT_init_time_system_structure (&(F->unix));
-	if (!strcmp (F->unix.epoch, gmtdefs.time_system.epoch)) F->adjust_time = TRUE;	/* Since MGD77+ uses unix time we must convert to new epoch */
+	if (strcmp (F->unix.epoch, gmtdefs.time_system.epoch)) F->adjust_time = TRUE;	/* Since MGD77+ uses unix time we must convert to new epoch */
 	memset ((void *)mgd77_range, 0, (size_t)(MGD77_N_DATA_EXTENDED * sizeof (struct MGD77_LIMITS)));
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
 	if ((pw = getpwuid (getuid ())) != NULL) {
@@ -3439,7 +3439,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		else {
 			values = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
 			if (F->adjust_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Change epoch */
-				for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = (values[rec] + (F->unix.rata_die - gmtdefs.time_system.rata_die) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale + gmtdefs.time_system.epoch_t0;
+				for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = (values[rec] + (F->unix.rata_die - gmtdefs.time_system.rata_die - gmtdefs.time_system.epoch_t0) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale;
 			}
 			S->values[col] = (void *)values;
 			S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
@@ -3679,7 +3679,7 @@ int MGD77_Read_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H,
 			MGD77_do_scale_offset_after_read (&dvals[n_val], (GMT_LONG)1, H->info[c].col[id].factor, H->info[c].col[id].offset, MGD77_NaN_val[H->info[c].col[id].type]);
 			n_val++;
 		}
-		if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = (dvals[n_val] + (F->unix.rata_die - gmtdefs.time_system.rata_die) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale + gmtdefs.time_system.epoch_t0;
+		if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = (dvals[n_val] + (F->unix.rata_die - gmtdefs.time_system.rata_die - gmtdefs.time_system.epoch_t0) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale;
 	}
 	return (MGD77_NO_ERROR);
 }
