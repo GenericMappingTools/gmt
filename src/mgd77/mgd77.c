@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.235 2009-06-24 20:27:19 jluis Exp $
+ *	$Id: mgd77.c,v 1.236 2009-07-01 06:20:37 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1937,7 +1937,7 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 		rata_die = GMT_rd_from_gymd (yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
-		MGD77Record->time = GMT_rdc2dt (rata_die, secs);	/* This gives GMT Unix time in seconds */
+		MGD77Record->time = GMT_rdc2dt (rata_die, secs);	/* This gives GMT time in selected epoch and units */
 		MGD77Record->bit_pattern |= MGD77_this_bit[MGD77_TIME];	/* Turn on this bit */
 	}
 	else	/* Not present or incomplete, assign NaN */
@@ -1981,7 +1981,7 @@ int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 		rata_die = GMT_rd_from_gymd (yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
-		MGD77Record->time = GMT_rdc2dt (rata_die, secs);	/* This gives GMT Unix time in seconds */
+		MGD77Record->time = GMT_rdc2dt (rata_die, secs);	/* This gives GMT time in selected epoch and units */
 		MGD77Record->bit_pattern |= MGD77_this_bit[MGD77_TIME];	/* Turn on this bit */
 	}
 	else	/* Not present or incomplete, assign NaN */
@@ -2165,8 +2165,9 @@ void MGD77_Init (struct MGD77_CONTROL *F)
 	MGD77_Init_Columns (F, NULL);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = TRUE;		/* TRUE means programs will use error bitflags (if present) when returning data */
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = TRUE;	/* TRUE means we will apply correction factors (if present) when reading data */
-	GMT_get_time_system ("unix", &gmtdefs.time_system);				/* MGD77+ uses GMT's Unix time epoch */
-	GMT_init_time_system_structure (&gmtdefs.time_system);
+	GMT_get_time_system ("unix", &(F->unix));						/* MGD77+ uses GMT's Unix time epoch */
+	GMT_init_time_system_structure (&(F->unix));
+	if (!strcmp (F->unix.epoch, gmtdefs.time_system.epoch)) F->adjust_time = TRUE;	/* Since MGD77+ uses unix time we must convert to new epoch */
 	memset ((void *)mgd77_range, 0, (size_t)(MGD77_N_DATA_EXTENDED * sizeof (struct MGD77_LIMITS)));
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
 	if ((pw = getpwuid (getuid ())) != NULL) {
@@ -3437,6 +3438,9 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		}
 		else {
 			values = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
+			if (F->adjust_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Change epoch */
+				for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = (values[rec] + (F->unix.rata_die - gmtdefs.time_system.rata_die) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale + gmtdefs.time_system.epoch_t0;
+			}
 			S->values[col] = (void *)values;
 			S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
 		}
@@ -3675,6 +3679,7 @@ int MGD77_Read_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H,
 			MGD77_do_scale_offset_after_read (&dvals[n_val], (GMT_LONG)1, H->info[c].col[id].factor, H->info[c].col[id].offset, MGD77_NaN_val[H->info[c].col[id].type]);
 			n_val++;
 		}
+		if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = (dvals[n_val] + (F->unix.rata_die - gmtdefs.time_system.rata_die) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale + gmtdefs.time_system.epoch_t0;
 	}
 	return (MGD77_NO_ERROR);
 }
