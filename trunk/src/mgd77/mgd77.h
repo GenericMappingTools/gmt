@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.110 2009-05-08 04:17:35 guru Exp $
+ *	$Id: mgd77.h,v 1.111 2009-07-01 06:20:37 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -406,6 +406,8 @@ struct MGD77_CONTROL {
 	int format;					/* 0 if any file format, 1 if MGD77, and 2 if netCDF, 3 if ascii table */
 	/* Format-related issues */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
+	struct GMT_TIME_SYSTEM unix;			/* All the information about the Unix time system */
+	BOOLEAN adjust_time;				/* TRUE if GMT time-system is NOT unix */
 	/* Data use information */
 	BOOLEAN original;				/* TRUE means we want original not revised header attributes */
 	BOOLEAN Want_Header_Item[MGD77_N_HEADER_ITEMS];	/* TRUE means print this header item if dump is selected */

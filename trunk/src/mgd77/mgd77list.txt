@@ -46,8 +46,7 @@ Choose between Absolute calendar time (\fBatime\fP, the default) in the format d
 parameters \fBOUTPUT_DATE_FORMAT\fP and \fBOUTPUT_CLOCK_FORMAT\fP, Relative time (\fBrtime\fP)
 in the format dictated by the GMT parameters \fBD_FORMAT\fP and \fBTIME_SYSTEM\fP (or
 \fBTIME_EPOCH\fP and \fBTIME_UNIT\fP)), or Fractional year (\fBytime\fP) in the format
-dictated by \fBD_FORMAT\fP.  Note that if OPT(b) is used then absolute time is written as seconds
-since 1970 (i.e., you must select \fBTIME_SYSTEM\fP UNIX to process this data further).
+dictated by \fBD_FORMAT\fP.
 .TP
 .B lon
 Longitude in the format dictated by the GMT parameter \fBOUTPUT_DEGREE_FORMAT\fP.
