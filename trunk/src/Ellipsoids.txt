@@ -1,4 +1,4 @@
-#	$Id: Ellipsoids.txt,v 1.10 2009-03-31 15:13:24 remko Exp $
+#	$Id: Ellipsoids.txt,v 1.11 2009-07-02 03:28:35 remko Exp $
 #
 # This is the core listing of supported ellipsoids in GMT map projections.
 # Please adhere to the format.
@@ -14,6 +14,7 @@ OSU91A			1991 6378136.3		298.25722	: Ohio State University
 OSU86F			1986 6378136.2		298.25722	: Ohio State University
 Engelis			1985 6378136.05		298.2566	: Goddard Earth Models
 SGS-85			1985 6378136.0		298.257		: Soviet Geodetic System
+TOPEX			1990 6378136.3		298.257		: United States Naval Observatory
 MERIT-83		1983 6378137.0		298.257		: United States Naval Observatory
 GRS-80			1980 6378137.0		298.257222101	: International Geodetic Reference System
 Hughes-1980		1980 6378273.0		298.2794	: Hughes Aircraft Company for DMSP SSM/I grid products
