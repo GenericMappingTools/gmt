@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.240 2009-07-02 08:00:51 guru Exp $
+ *	$Id: mgd77.c,v 1.241 2009-07-02 18:52:07 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2599,7 +2599,11 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 #endif
 #ifdef DEBUG
 	/* Since the sorting throws this machinery off */
-	GMT_memtrack_off (GMT_mem_keeper);
+	BOOLEAN change = FALSE;
+	if (GMT_mem_keeper->active) {
+		GMT_memtrack_off (GMT_mem_keeper);
+		change = TRUE;
+	}
 #endif
 	
 	for (j = 1; j < argc; j++) {	/* First count the number of cruise arguments, if any */
@@ -2709,7 +2713,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	if (n != (int)n_alloc) L = (char **)GMT_memory ((void *)L, (size_t)n, sizeof (char *), "MGD77_Path_Expand");
 	*list = L;
 #ifdef DEBUG
-	GMT_memtrack_on (GMT_mem_keeper);
+	if (change) GMT_memtrack_on (GMT_mem_keeper);
 #endif
 	return (n);
 }
@@ -2717,16 +2721,22 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 void MGD77_Path_Free (int n, char **list)
 {	/* Free list of cruise IDs */
 	int i;
+#ifdef DEBUG
+	BOOLEAN change = FALSE;
+#endif
 	if (n == 0) return;
 	
 #ifdef DEBUG
 	/* Since the sorting throws this machinery off */
-	GMT_memtrack_off (GMT_mem_keeper);
+	if (GMT_mem_keeper->active) {
+		GMT_memtrack_off (GMT_mem_keeper);
+		change = TRUE;
+	}
 #endif
 	for (i = 0; i < n; i++) GMT_free ((void *)list[i]);
 	GMT_free ((void *)list);
 #ifdef DEBUG
-	GMT_memtrack_on (GMT_mem_keeper);
+	if (change) GMT_memtrack_on (GMT_mem_keeper);
 #endif
 }
 
