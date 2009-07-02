@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.25 2009-05-28 19:22:02 jluis Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.26 2009-07-02 04:24:56 guru Exp $
 #
 #	Author:		P. Wessel
 #	Date:		2005-OCT-14
@@ -55,6 +55,7 @@ void MGD77_Read_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARA
 	 * look for revised parameters and fall back on the original if no revision is found. */
 	
 	struct MGD77_HEADER_LOOKUP *L;
+	int i;
 	
 	L = MGD77_Header_Lookup;
 	
@@ -134,6 +135,8 @@ done < $$.1
 
 n_names=`cat $$.6 | wc -l | awk '{printf "%d\n", $1}'`
 cat << EOF >> mgd77_functions.c
+
+	for (i = 0, F->revised = FALSE; !F->revised && i < MGD77_N_HEADER_PARAMS; i++) if (L[i].revised) F->revised = TRUE;
 }
 
 void MGD77_Write_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS **P)

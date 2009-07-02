@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.112 2009-07-02 01:54:53 guru Exp $
+ *	$Id: mgd77.h,v 1.113 2009-07-02 04:24:56 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -410,6 +410,7 @@ struct MGD77_CONTROL {
 	BOOLEAN adjust_time;				/* TRUE if GMT time-system is NOT unix */
 	/* Data use information */
 	BOOLEAN original;				/* TRUE means we want original not revised header attributes */
+	BOOLEAN revised;				/* TRUE means we are working on a MGD77+ file with revised header attributes */
 	BOOLEAN Want_Header_Item[MGD77_N_HEADER_ITEMS];	/* TRUE means print this header item if dump is selected */
 	BOOLEAN use_flags[MGD77_N_SETS];		/* TRUE means programs will use error bitflags (if present) when returning data */
 	BOOLEAN use_corrections[MGD77_N_SETS];		/* TRUE means we will apply correction factors (if present) when reading data */
