@@ -4,7 +4,7 @@
 mgd77list \- A data-extractor for MGD77[+] files
 .SH SYNOPSIS
 \fBmgd77list\fP \fINGDC-ids\fP OPT(F)\fIcolumns\fP[,\fIlogic\fP][:\fIbittests\fP] 
-[ OPT(A)[\fB+\fP]\fBc\fP|\fBd\fP|\fBf\fP|\fBm\fP\fIcode\fP ] [ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] 
+[ OPT(A)[\fB+\fP]\fBc\fP|\fBd\fP|\fBf\fP|\fBm\fP|\fBt\fP\fIcode\fP ] [ OPT(C)\fBf\fP|\fBg\fP|\fBe\fP ] 
 [ OPT(D)\fBA\fP|\fBa\fP\fIstartdate\fP ] [ OPT(D)\fBB\fP|\fBb\fP\fIstopdate\fP ] [ OPT(E) ] [ OPT(Ga)\fIstartrec\fP ] [ OPT(Gb)\fIstoprec\fP ] 
 [ GMT_H_OPT ] [ OPT(I)\fIignore\fP ] [ OPT(L)[\fIcorrtable\fP] ] 
 [ OPT(Nd)|\fBs\fP\fIunit\fP ] [ OPT(Q)\fBa\fP|\fBv\fP\fImin\fP/\fImax\fP ] [ GMT_Rgeo_OPT ] [ OPT(Sa)\fIstartdist\fP[unit] ] 
@@ -210,6 +210,8 @@ OPT(Ac)2 which only uses \fBtwt\fP.  In all cases, if any of the values
 required by an adjustment procedure is NaN then the result will be NaN.
 This is also true if the original anomaly is NaN.  Specify OPT(A+) to
 recalculate anomalies even if the anomaly in the file is NaN.
+Additionally, you can use OPT(At) to create fake times for cruises that
+has no time; these are based on distances and cruise duration.
 .TP
 OPT(Ac)
 Determines how the \fBcarter\fP correction term is calculated.  Below, 
