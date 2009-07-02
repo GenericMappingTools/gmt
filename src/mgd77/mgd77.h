@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.111 2009-07-01 06:20:37 guru Exp $
+ *	$Id: mgd77.h,v 1.112 2009-07-02 01:54:53 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -528,6 +528,7 @@ extern void MGD77_IGF_text (FILE *fp, int version);
 extern double MGD77_Recalc_Mag_Anomaly_IGRF (double time, double lon, double lat, double obs, BOOLEAN calc_date);
 extern double MGD77_time_to_fyear (double time);
 extern double MGD77_cal_to_fyear (struct GMT_gcal *cal);
+extern BOOLEAN MGD77_fake_times (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, GMT_LONG nrec);
 #ifdef USE_CM4 
 extern double MGD77_Calc_CM4 (double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
 extern double MGD77_Recalc_Mag_Anomaly_CM4 (double time, double lon, double lat, double obs, BOOLEAN calc_date, struct MGD77_CM4 *CM4);

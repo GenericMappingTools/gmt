@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.237 2009-07-01 07:02:47 guru Exp $
+ *	$Id: mgd77.c,v 1.238 2009-07-02 01:54:53 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -5233,6 +5233,32 @@ double MGD77_cal_to_fyear (struct GMT_gcal *cal) {
 	double n_days;
 	n_days = (GMT_is_gleap (cal->year)) ? 366.0 : 365.0;	/* Number of days in this year */
 	return (cal->year + ((cal->day_y - 1.0) + (cal->hour * GMT_HR2SEC_I + cal->min * GMT_MIN2SEC_I + cal->sec) * GMT_SEC2DAY) / n_days);
+}
+
+BOOLEAN MGD77_fake_times (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, GMT_LONG nrec)
+{
+	/* Create fake times by using distances and constant speed during cruise */
+	double *dist, t[2], slowness;
+	GMT_LONG i;
+	int yy[2], mm[2], dd[2], rata_die, use;
+	use = (F->original || F->format != MGD77_FORMAT_CDF) ? MGD77_ORIG : MGD77_REVISED;
+	yy[0] = (H->mgd77[use]->Survey_Departure_Year[0] || !strncmp (H->mgd77[use]->Survey_Departure_Year, ALL_BLANKS, (size_t)4)) ? 0 : atoi (H->mgd77[use]->Survey_Departure_Year);
+	yy[1] = (H->mgd77[use]->Survey_Arrival_Year[0] || !strncmp (H->mgd77[use]->Survey_Arrival_Year, ALL_BLANKS, (size_t)4)) ? 0 : atoi (H->mgd77[use]->Survey_Arrival_Year);
+	mm[0] = (H->mgd77[use]->Survey_Departure_Month[0] || !strncmp (H->mgd77[use]->Survey_Departure_Month, ALL_BLANKS, (size_t)2)) ? 1 : atoi (H->mgd77[use]->Survey_Departure_Month);
+	mm[1] = (H->mgd77[use]->Survey_Arrival_Month[0] || !strncmp (H->mgd77[use]->Survey_Arrival_Month, ALL_BLANKS, (size_t)2)) ? 1 : atoi (H->mgd77[use]->Survey_Arrival_Month);
+	dd[0] = (H->mgd77[use]->Survey_Departure_Day[0] || !strncmp (H->mgd77[use]->Survey_Departure_Day, ALL_BLANKS, (size_t)2)) ? 1 : atoi (H->mgd77[use]->Survey_Departure_Day);
+	dd[1] = (H->mgd77[use]->Survey_Arrival_Day[0] || !strncmp (H->mgd77[use]->Survey_Arrival_Day, ALL_BLANKS, (size_t)2)) ? 1 : atoi (H->mgd77[use]->Survey_Arrival_Day);
+	if (yy[0] == 0 || yy[1] == 0) return (FALSE);	/* Withouts year we cannot do anything */
+	for (i = 0; i < 2; i++) {
+		rata_die = GMT_rd_from_gymd (yy[i], mm[i], dd[i]);
+		t[i] = GMT_rdc2dt (rata_die, 0.0);
+	}
+	if (t[1] <= t[0]) return (FALSE);	/* Bad times */
+	GMT_err_fail (GMT_distances (lon, lat, nrec, 1.0, 1, &dist), "");	/* Get flat-earth distance in meters */
+	slowness = (t[1] - t[0]) / dist[nrec-1];				/* Inverse average speed */
+	for (i = 0; i < nrec; i++) times[i] = t[0] + slowness * dist[i];	/* Fake time prediction */
+	GMT_free ((void *)dist);
+	return (TRUE);
 }
 
 void MGD77_CM4_init (struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4)

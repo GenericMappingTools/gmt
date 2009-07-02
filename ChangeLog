@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.561 2009-07-01 06:20:37 guru Exp $
+	$Id: ChangeLog,v 1.562 2009-07-02 01:54:53 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-07-01	pwessel
+	* mgd77/mgd77sniffer.c:	Did not reset the E(77) structure between cruises.
 
 2009-06-30	pwessel
 	* grdfilter.c:		Toggle -T was not processed correctly if -Rgridfile was given.
