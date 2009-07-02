@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.h,v 1.29 2009-05-13 21:06:41 guru Exp $
+ *	$Id: gmt_calclock.h,v 1.30 2009-07-02 08:00:51 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -73,6 +73,7 @@ struct GMT_TRUNCATE_TIME {		/* Used when TIME_IS_INTERVAL is not OFF */
 
 EXTERN_MSC double GMT_rdc2dt (GMT_cal_rd rd, double secs);
 EXTERN_MSC void GMT_dt2rdc (double t, GMT_cal_rd *rd, double *s);
+EXTERN_MSC GMT_LONG splitinteger(double value, GMT_LONG epsilon, double *doublepart);
 EXTERN_MSC GMT_LONG GMT_cal_imod (GMT_LONG x, GMT_LONG y);
 EXTERN_MSC GMT_cal_rd GMT_kday_on_or_before (GMT_cal_rd date, GMT_LONG kday);
 EXTERN_MSC GMT_cal_rd GMT_kday_after (GMT_cal_rd date, GMT_LONG kday);

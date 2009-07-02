@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.239 2009-07-02 04:24:56 guru Exp $
+ *	$Id: mgd77.c,v 1.240 2009-07-02 08:00:51 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1937,7 +1937,7 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 		rata_die = GMT_rd_from_gymd (yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
-		MGD77Record->time = GMT_rdc2dt (rata_die, secs);	/* This gives GMT time in selected epoch and units */
+		MGD77Record->time = MGD77_rdc2dt (F, rata_die, secs);	/* This gives GMT time in unix time */
 		MGD77Record->bit_pattern |= MGD77_this_bit[MGD77_TIME];	/* Turn on this bit */
 	}
 	else	/* Not present or incomplete, assign NaN */
@@ -1981,7 +1981,7 @@ int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 		rata_die = GMT_rd_from_gymd (yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
-		MGD77Record->time = GMT_rdc2dt (rata_die, secs);	/* This gives GMT time in selected epoch and units */
+		MGD77Record->time = MGD77_rdc2dt (F, rata_die, secs);	/* This gives GMT time in unix time */
 		MGD77Record->bit_pattern |= MGD77_this_bit[MGD77_TIME];	/* Turn on this bit */
 	}
 	else	/* Not present or incomplete, assign NaN */
@@ -3438,9 +3438,11 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		}
 		else {
 			values = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
+#if 0
 			if (F->adjust_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Change epoch */
-				for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = (values[rec] + (F->unix.rata_die - gmtdefs.time_system.rata_die - gmtdefs.time_system.epoch_t0) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale;
+				for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = MGD77_adjust_time (F, values[rec]);
 			}
+#endif
 			S->values[col] = (void *)values;
 			S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
 		}
@@ -3679,7 +3681,7 @@ int MGD77_Read_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H,
 			MGD77_do_scale_offset_after_read (&dvals[n_val], (GMT_LONG)1, H->info[c].col[id].factor, H->info[c].col[id].offset, MGD77_NaN_val[H->info[c].col[id].type]);
 			n_val++;
 		}
-		if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = (dvals[n_val] + (F->unix.rata_die - gmtdefs.time_system.rata_die - gmtdefs.time_system.epoch_t0) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale;
+		/* if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = MGD77_adjust_time (F, dvals[n_val]); */
 	}
 	return (MGD77_NO_ERROR);
 }
@@ -5235,6 +5237,30 @@ double MGD77_cal_to_fyear (struct GMT_gcal *cal) {
 	return (cal->year + ((cal->day_y - 1.0) + (cal->hour * GMT_HR2SEC_I + cal->min * GMT_MIN2SEC_I + cal->sec) * GMT_SEC2DAY) / n_days);
 }
 
+double MGD77_adjust_time (struct MGD77_CONTROL *F, double unix_time) {
+	return ((unix_time + (F->unix.rata_die - gmtdefs.time_system.rata_die - gmtdefs.time_system.epoch_t0) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale);
+}
+
+double MGD77_rdc2dt (struct MGD77_CONTROL *F, GMT_cal_rd rd, double secs) {
+/*	Given rata die rd and double seconds, return 
+	time in secs relative to unix epoch  */
+	double f_days;
+	f_days = (rd - F->unix.rata_die - F->unix.epoch_t0);
+	return ((f_days * GMT_DAY2SEC_F  + secs) * F->unix.i_scale);
+}
+
+void	MGD77_dt2rdc (struct MGD77_CONTROL *F, double t, GMT_cal_rd *rd, double *s) {
+
+	GMT_LONG i;
+
+/*	Given time in sec relative to unix epoc, load rata die of this day
+	in rd and the seconds since the start of that day in s.  */
+	double t_sec;
+	t_sec = (t * F->unix.scale + F->unix.epoch_t0 * GMT_DAY2SEC_F);
+	i = splitinteger(t_sec, 86400, s) + F->unix.rata_die;
+	*rd = (GMT_cal_rd)(i);
+}
+
 BOOLEAN MGD77_fake_times (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, GMT_LONG nrec)
 {
 	/* Create fake times by using distances and constant speed during cruise */
@@ -5251,7 +5277,7 @@ BOOLEAN MGD77_fake_times (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, doubl
 	if (yy[0] == 0 || yy[1] == 0) return (FALSE);	/* Withouts year we cannot do anything */
 	for (i = 0; i < 2; i++) {
 		rata_die = GMT_rd_from_gymd (yy[i], mm[i], dd[i]);
-		t[i] = GMT_rdc2dt (rata_die, 0.0);
+		t[i] = MGD77_rdc2dt (F, rata_die, 0.0);
 	}
 	if (t[1] <= t[0]) return (FALSE);	/* Bad times */
 	GMT_err_fail (GMT_distances (lon, lat, nrec, 1.0, 1, &dist), "");	/* Get flat-earth distance in meters */
