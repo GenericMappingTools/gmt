@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.241 2009-07-02 18:52:07 guru Exp $
+ *	$Id: mgd77.c,v 1.242 2009-07-03 07:30:16 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2165,9 +2165,9 @@ void MGD77_Init (struct MGD77_CONTROL *F)
 	MGD77_Init_Columns (F, NULL);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = TRUE;		/* TRUE means programs will use error bitflags (if present) when returning data */
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = TRUE;	/* TRUE means we will apply correction factors (if present) when reading data */
-	GMT_get_time_system ("unix", &(F->unix));						/* MGD77+ uses GMT's Unix time epoch */
-	GMT_init_time_system_structure (&(F->unix));
-	if (strcmp (F->unix.epoch, gmtdefs.time_system.epoch)) F->adjust_time = TRUE;	/* Since MGD77+ uses unix time we must convert to new epoch */
+	GMT_get_time_system ("unix", &(F->utime));						/* MGD77+ uses GMT's Unix time epoch */
+	GMT_init_time_system_structure (&(F->utime));
+	if (strcmp (F->utime.epoch, gmtdefs.time_system.epoch)) F->adjust_time = TRUE;	/* Since MGD77+ uses unix time we must convert to new epoch */
 	memset ((void *)mgd77_range, 0, (size_t)(MGD77_N_DATA_EXTENDED * sizeof (struct MGD77_LIMITS)));
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
 	if ((pw = getpwuid (getuid ())) != NULL) {
@@ -5248,15 +5248,15 @@ double MGD77_cal_to_fyear (struct GMT_gcal *cal) {
 }
 
 double MGD77_adjust_time (struct MGD77_CONTROL *F, double unix_time) {
-	return ((unix_time + (F->unix.rata_die - gmtdefs.time_system.rata_die - gmtdefs.time_system.epoch_t0) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale);
+	return ((unix_time + (F->utime.rata_die - gmtdefs.time_system.rata_die - gmtdefs.time_system.epoch_t0) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale);
 }
 
 double MGD77_rdc2dt (struct MGD77_CONTROL *F, GMT_cal_rd rd, double secs) {
 /*	Given rata die rd and double seconds, return 
 	time in secs relative to unix epoch  */
 	double f_days;
-	f_days = (rd - F->unix.rata_die - F->unix.epoch_t0);
-	return ((f_days * GMT_DAY2SEC_F  + secs) * F->unix.i_scale);
+	f_days = (rd - F->utime.rata_die - F->utime.epoch_t0);
+	return ((f_days * GMT_DAY2SEC_F  + secs) * F->utime.i_scale);
 }
 
 void	MGD77_dt2rdc (struct MGD77_CONTROL *F, double t, GMT_cal_rd *rd, double *s) {
@@ -5266,8 +5266,8 @@ void	MGD77_dt2rdc (struct MGD77_CONTROL *F, double t, GMT_cal_rd *rd, double *s)
 /*	Given time in sec relative to unix epoc, load rata die of this day
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
-	t_sec = (t * F->unix.scale + F->unix.epoch_t0 * GMT_DAY2SEC_F);
-	i = splitinteger(t_sec, 86400, s) + F->unix.rata_die;
+	t_sec = (t * F->utime.scale + F->utime.epoch_t0 * GMT_DAY2SEC_F);
+	i = splitinteger(t_sec, 86400, s) + F->utime.rata_die;
 	*rd = (GMT_cal_rd)(i);
 }
 
