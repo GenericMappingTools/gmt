@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.564 2009-07-02 04:24:55 guru Exp $
+	$Id: ChangeLog,v 1.565 2009-07-04 19:12:16 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-07-04	jluis
+	* gmtsuppl.bat:		Add x2sys_list x2sys_report x2sys_solve & x2sys_merge to the x2sys section
 
 2009-07-02	remko
 	* Ellipsoids.txt:	Added TOPEX ellipsoid
