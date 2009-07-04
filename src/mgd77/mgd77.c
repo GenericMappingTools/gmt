@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.242 2009-07-03 07:30:16 guru Exp $
+ *	$Id: mgd77.c,v 1.243 2009-07-04 05:45:22 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3450,7 +3450,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			values = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
 #if 0
 			if (F->adjust_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Change epoch */
-				for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = MGD77_adjust_time (F, values[rec]);
+				for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = MGD77_utime2time (F, values[rec]);
 			}
 #endif
 			S->values[col] = (void *)values;
@@ -3691,7 +3691,7 @@ int MGD77_Read_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H,
 			MGD77_do_scale_offset_after_read (&dvals[n_val], (GMT_LONG)1, H->info[c].col[id].factor, H->info[c].col[id].offset, MGD77_NaN_val[H->info[c].col[id].type]);
 			n_val++;
 		}
-		/* if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = MGD77_adjust_time (F, dvals[n_val]); */
+		/* if (F->adjust_time && H->info[c].col[id].var_id == NCPOS_TIME) dvals[n_val] = MGD77_utime2time (F, dvals[n_val]); */
 	}
 	return (MGD77_NO_ERROR);
 }
@@ -5247,8 +5247,12 @@ double MGD77_cal_to_fyear (struct GMT_gcal *cal) {
 	return (cal->year + ((cal->day_y - 1.0) + (cal->hour * GMT_HR2SEC_I + cal->min * GMT_MIN2SEC_I + cal->sec) * GMT_SEC2DAY) / n_days);
 }
 
-double MGD77_adjust_time (struct MGD77_CONTROL *F, double unix_time) {
+double MGD77_utime2time (struct MGD77_CONTROL *F, double unix_time) {
 	return ((unix_time + (F->utime.rata_die - gmtdefs.time_system.rata_die - gmtdefs.time_system.epoch_t0) * GMT_DAY2SEC_F) * gmtdefs.time_system.i_scale);
+}
+
+double MGD77_time2utime (struct MGD77_CONTROL *F, double gmt_time) {
+	return (gmt_time * gmtdefs.time_system.scale - (F->utime.rata_die - gmtdefs.time_system.rata_die - gmtdefs.time_system.epoch_t0) * GMT_DAY2SEC_F);
 }
 
 double MGD77_rdc2dt (struct MGD77_CONTROL *F, GMT_cal_rd rd, double secs) {
