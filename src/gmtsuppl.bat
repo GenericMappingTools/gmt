@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtsuppl.bat,v 1.48 2009-06-05 00:25:11 guru Exp $
+REM	$Id: gmtsuppl.bat,v 1.49 2009-07-04 19:05:37 jluis Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -222,6 +222,10 @@ lib /out:x2sys.lib x2sys.obj
 %CC% %COPT% /I..\mgd77 /I..\mgg x2sys_get.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
 %CC% %COPT% /I..\mgd77 /I..\mgg x2sys_init.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
 %CC% %COPT% /I..\mgd77 /I..\mgg x2sys_put.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+%CC% %COPT% /I..\mgd77 /I..\mgg x2sys_list.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+%CC% %COPT% /I..\mgd77 /I..\mgg x2sys_report.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+%CC% %COPT% /I..\mgd77 /I..\mgg x2sys_solve.c  x2sys.lib %LIBDIR%\mgd77.lib %LIBDIR%\gmt_mgg.lib %GMTLIB%
+%CC% %COPT% x2sys_merge.c  x2sys.lib %GMTLIB%
 del *.obj
 move x2sys.lib %LIBDIR%
 move *.exe %BINDIR%
