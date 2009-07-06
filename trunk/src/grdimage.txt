@@ -75,9 +75,7 @@ Do not clip the image at the map boundary (only relevant for non-rectangular map
 .TP
 OPT(Q)
 Make grid nodes with z = NaN transparent, using the colormasking feature in \fIPostScript\fP Level 3
-(the PS device must support PS Level 3).  All nodes that maps to the same color as the NaN color
-will be transparent, hence you should make sure your cpt table does not contain the NaN color in
-the other slices.
+(the PS device must support PS Level 3).
 #include "explain_-R.txt"
 You may ask for a larger \fIw/e/s/n\fP region to have more room between the image and the axes.
 A smaller region than specified in the grid file will result in a subset of the grid
