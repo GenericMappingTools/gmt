@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.566 2009-07-06 06:46:57 guru Exp $
+	$Id: ChangeLog,v 1.567 2009-07-07 17:09:27 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-07-07	remko
+	* gmt_support.c (GMT_RI_prepare):	Fixed bug: when x_inc in km, m, etc,
+				value was ignored (always 1).
 
 2009-07-05	pwessel
 	* grdimage.c:		For -Q we now make sure the NaN-color is unique.
