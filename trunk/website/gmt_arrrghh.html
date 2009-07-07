@@ -1,8 +1,18 @@
 <HTML>
-<!--  $Id: gmt_arrrghh.html,v 1.24 2009-02-18 00:23:07 guru Exp $  -->
+<!--  $Id: gmt_arrrghh.html,v 1.25 2009-07-07 21:57:17 guru Exp $  -->
 <TITLE>GMT Incompatibilities Notes</title>
 <BODY bgcolor="#ffffff">
 <CENTER><H2>GMT Incompatibilities Notes</CENTER></H2><P>
+<HR>
+<H3><CENTER>15-JUL-2009: GMT Version 4.5.0 Released</H3></CENTER>
+4.5.0 scripts are for the most part fully backward compatible with 4.4.0.  One
+exception is the modifier :<I>radius</I>[unit] to the <B>-G</B> option in grdcontour for
+the placement of contour labels.  This is now +r<I>radius</I>[unit] since the
+colon interfered poorly with ddd:mm:ss coordinates.  Also, we have now made -180/+180
+the default output range for geographic coordinates (it used to be 0-360).  You can change
+this by editing the OUTPUT_DEGREE_FORMAT setting.  For a list of all the new
+capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
+page.
 <HR>
 <H3><CENTER>15-FEB-2009: GMT Version 4.4.0 Released</H3></CENTER>
 4.4.0 scripts are for the most part fully backward compatible with 4.3.1.  One
@@ -10,7 +20,7 @@ exception is the map scale option <B>-L</B> in psbasemap and pscoast which
 had difficulties parsing ddd:mm:ss coordinates in the presence of the optional
 :label: modifier.  Also, we have now made -180/+180 the default annotation range
 for geographic maps (it used to be 0-360).  You can change this by editing the
-PLOT_DEGREE_FORMAT.  For a list of all the new
+PLOT_DEGREE_FORMAT setting.  For a list of all the new
 capabilities and enhancements, see the <A HREF="gmt_releases.html">RELEASES</A>
 page.
 <HR>
