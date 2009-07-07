@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.416 2009-06-27 21:04:47 guru Exp $
+ *	$Id: gmt_support.c,v 1.417 2009-07-07 00:58:29 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5442,14 +5442,15 @@ GMT_LONG GMT_boundcond_param_prep (struct GRD_HEADER *h, struct GMT_EDGEINFO *ed
 
 	double	xtest;
 
-	if (edgeinfo->gn || GMT_grd_is_global(h)) {
-		/* User has requested geographical conditions.  */
-		if ( (h->x_max - h->x_min) < (360.0 - GMT_SMALL * h->x_inc) ) {
-			fprintf (stderr, "%s: Warning: x range too small; g boundary condition ignored.\n", GMT_program);
-			edgeinfo->nxp = edgeinfo->nyp = 0;
-			edgeinfo->gn  = edgeinfo->gs = FALSE;
-			return (GMT_NOERROR);
-		}
+	if (edgeinfo->gn && !GMT_grd_is_global(h)) {
+		/* User has requested geographical conditions, but grid is not global */
+		fprintf (stderr, "%s: Warning: x range too small; g boundary condition ignored.\n", GMT_program);
+		edgeinfo->nxp = edgeinfo->nyp = 0;
+		edgeinfo->gn  = edgeinfo->gs = FALSE;
+		return (GMT_NOERROR);
+	}
+
+	if (GMT_grd_is_global(h)) {	/* Grid is truly global */
 		xtest = fmod (180.0, h->x_inc) / h->x_inc;
 		/* xtest should be within GMT_SMALL of zero or of one.  */
 		if ( xtest > GMT_SMALL && xtest < (1.0 - GMT_SMALL) ) {
