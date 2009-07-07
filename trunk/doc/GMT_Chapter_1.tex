@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.120 2009-06-27 22:45:19 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.121 2009-07-07 21:47:54 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -34,7 +34,7 @@ will be distinguished by being completely restructured so as to allow developers
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
 
-\subsection{Overview of \gmt\ 4.5.0 [July-1, 2009]}
+\subsection{Overview of \gmt\ 4.5.0 [July-15, 2009]}
 
 This is another significant update of the official distribution and hence it has a mix of bug fixes
 and program enhancements.  We have added a new supplement ({\bf sph}) which
@@ -65,7 +65,7 @@ key columns (such as longitude, latitude) should constitute a line break or bad 
 We have revised how ellipsoids are specified.  When importing an ellipsoid file, we allow a,b,f as ellipsoid parameters,
 where b or f could both be zero.  If file does not exist, attempt to read name as a[/[b=$|$f=]f],
 meaning {\it semi-major axis}, b={\it semi-minor axis}, f = {\it flattening}, or {\it inverse flattening}.  We have also
-added parameters for the Moon and planets (IAU2000).
+added parameters for the TOPEX ellipsoid and for the Moon and planets (IAU2000).
 
 This release of \GMT\ coincides with the release 2.0 of GSHHS, the coastline data used by \GMT.  In addition to
 general improvements to the data, we have expanded the \Opt{A} option that controls the limits on what features
@@ -103,12 +103,15 @@ Here is the list of bug corrections:
 		The modifier :{\it radius}[unit] to the \Opt{G} option in \GMTprog{grdcontour} for
 		the placement of contour labels is now {\bf +r}{\it radius}[unit] since the colon interfered with ddd:mm:ss coordinates.
 		Given \Opt{I}601+/601+ the y-increment was not processed correctly.
+		Fixed bug  when {\it x\_inc} in km, m, etc, the value was ignored (always 1).
 	\item [\GMTprog{blockmean.c}]: Gave bogus usage about number of input columns when \Opt{E} is set
 		but \Opt{E} only affects output.  Same for  \GMTprog{blockmedian.c} and \GMTprog{blockmode.c}.
 	\item [\GMTprog{gmtconvert.c}]: With \Opt{S}, did not report the number of output segments.
 	\item [\GMTprog{gmtmath.c}]: Tried to free memory that was not allocated.
+	\item [\GMTprog{grdfilter.c}]: Toggle \Opt{T} was not processed correctly if \Opt{R}{\it gridfile} was given.
 	\item [\GMTprog{grdgradient.c}]: For geographic grids, make sure N and S pole only has a single value on output.
 	\item [\GMTprog{greenspline.c}]: Calculation of nz layers was off by one, leaving out the penultimate layer.
+	\item [\GMTprog{grdimage.c}]: We now make sure the NaN color is unique when \Opt{Q} is used.
 	\item [\GMTprog{grdmath.c}]: The {\bf PDIST} operator did not handle binary input files (as {\bf LDIST} does).
 	\item [\GMTprog{ps2raster.c}]: Exceeded memory allocation for out\_file.  Now in static memory.
 	\item [\GMTprog{pscoast.c}]: Produce at least ``S V'' when the clippath is empty.
@@ -129,6 +132,7 @@ Here is the list of bug corrections:
 		file after \GMTprog{mgd77manage} \Opt{D} had been run.
 		Used wrong time for IGRF calculation; worst case situation was off by 1 year.
 		Now uses \GMTfunc{GMT\_read\_img} to handle *.img files; earlier the inline code would fail on the new extended img files.
+	\item [\GMTprog{mgd77/mgd77sniffer.c}]: Did not reset the E77 structure between cruises.
 	\item [\GMTprog{misc/gmtstitch.c}]: Did not read standard input if no files were given.  Now honors \Opt{V} properly.
 	\item [\GMTprog{x2sys/x2sys.c}]: Wrong array argument passed for correction aux values.
 	\item [\GMTprog{x2sys/x2sys\_cross.c}]: Removed the \Opt{F} option which was not honored anyway.
@@ -186,6 +190,8 @@ Here is a list of the recent enhancement to various programs:
 	\item \GMTprog{mgd77/mgd77list.c} can now take \Opt{DA} and \Opt{DB} which, in the presence of time = NaN,
 		will not output such records [\Opt{Da}$|${\bf b} will].  Also clarified the ranges implied by \Opt{D} and \Opt{S}.
 		Added \Opt{F}ytime which gives decimal absolute year for time output.
+		Modifier \Opt{At} added which attempts to create fake cruise times
+		based on header information and distance along track.
 	\item \GMTprog{mgd77/mgd77manage.c} added \Opt{AE} to ignore the verification status and process e77 anyway.
 	\item \GMTprog{mgd77/mgd77path.c} added \Opt{P-} to just list the IDs and not the full paths.
 	\item \GMTprog{mgd77/mgd77track.c} added \Opt{Gt}$|${\bf d}{\it gap} to recognize gaps in tracks based on

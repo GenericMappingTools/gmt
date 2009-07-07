@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.567 2009-07-07 17:09:27 remko Exp $
+	$Id: ChangeLog,v 1.568 2009-07-07 21:47:54 guru Exp $
 -----------------------------------------------------------------------------------------
 
+-----------------------------------------------------------------------------------------
+2009-07-10
+	* GMT 4.5.0 finalized and released
+-----------------------------------------------------------------------------------------
 2009-07-07	remko
 	* gmt_support.c (GMT_RI_prepare):	Fixed bug: when x_inc in km, m, etc,
 				value was ignored (always 1).
@@ -16,7 +20,7 @@
 	* Ellipsoids.txt:	Added TOPEX ellipsoid
 
 2009-07-01	pwessel
-	* mgd77/mgd77sniffer.c:	Did not reset the E(77) structure between cruises.
+	* mgd77/mgd77sniffer.c:	Did not reset the E77 structure between cruises.
 	* mgd77/mgd77list.c:	Modifier -At added which attempts to create fake cruise times
 				based on header information and distance along track.
 
