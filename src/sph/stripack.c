@@ -1,4 +1,4 @@
-/* $Id: stripack.c,v 1.5 2009-05-18 22:51:59 guru Exp $
+/* $Id: stripack.c,v 1.6 2009-07-07 01:30:05 remko Exp $
  * stripack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -3285,7 +3285,7 @@ logical inside_(doublereal *p, integer *lv, doublereal *xv, doublereal *yv,
 
     /* System generated locals */
     integer i__1;
-    logical ret_val;
+    logical ret_val = FALSE_;
 
     /* Builtin functions */
     double sqrt(doublereal);
@@ -3374,8 +3374,7 @@ logical inside_(doublereal *p, integer *lv, doublereal *xv, doublereal *yv,
 /* On output: */
 
 /*       INSIDE = TRUE if and only if P lies inside R unless */
-/*                IER .NE. 0, in which case the value is not */
-/*                altered. */
+/*                IER .NE. 0, in which case INSIDE = FALSE */
 
 /*       IER = Error indicator: */
 /*             IER = 0 if no errors were encountered. */
