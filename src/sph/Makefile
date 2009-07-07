@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.14 2009-05-18 22:51:59 guru Exp $
+#	$Id: Makefile,v 1.15 2009-07-07 01:29:44 remko Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -63,7 +63,7 @@ $(SPHLIB):	$(LIB_O)
 	$(AR) cvr $@ $?
 	$(RANLIB) $@
 
-sph.o:	sph.c sph.h $(GMT_H)
+sph.o:	sph.c sph.h stripack.c ssrfpack.c $(GMT_H)
 
 spotless::	clean
 	rm -rf $(SPHLIB)
