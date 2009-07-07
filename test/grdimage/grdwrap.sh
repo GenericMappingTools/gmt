@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-#	$Id: grdwrap.sh,v 1.4 2007-11-15 04:20:42 remko Exp $
+#	$Id: grdwrap.sh,v 1.5 2009-07-07 00:59:18 remko Exp $
 
 . ../functions.sh
-header "Test grdimage for wrapping of global"
+header "Test grdimage for wrapping of global grid"
 
 ps=grdwrap.ps
 grdmath -Rg -I1 X SIND Y COSD MUL = t.grd=ns/0.0001
