@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.243 2009-07-04 05:45:22 guru Exp $
+ *	$Id: mgd77.c,v 1.244 2009-07-07 08:17:21 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1336,16 +1336,12 @@ void MGD77_Verify_Prep (struct MGD77_CONTROL *F, struct MGD77_DATASET *D)
 	C->n = irint (ymax);
 	
 	if (!GMT_is_fnan (values[0][0])) {	/* We have time - obtain yyyy/mm/dd of departure and arrival days */
-		GMT_cal_rd rd;
-		double s;
 		struct GMT_gcal CAL;
-		GMT_dt2rdc (values[0][0], &rd, &s);
-		GMT_gcal_from_rd (rd, &CAL);
+		MGD77_gcal_from_dt (F, values[0][0], &CAL);
 		C->Departure[0] = CAL.year;
 		C->Departure[1] = CAL.month;
 		C->Departure[2] = CAL.day_m;
-		GMT_dt2rdc (values[0][D->H.n_records-1], &rd, &s);
-		GMT_gcal_from_rd (rd, &CAL);
+		MGD77_gcal_from_dt (F, values[0][D->H.n_records-1], &CAL);
 		C->Arrival[0] = CAL.year;
 		C->Arrival[1] = CAL.month;
 		C->Arrival[2] = CAL.day_m;
@@ -1846,7 +1842,7 @@ int MGD77_Write_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 			if (GMT_is_dnan (MGD77Record.time))	/* No time, set all parts to NaN */
 				MGD77Record.number[MGD77_YEAR] = MGD77Record.number[MGD77_MONTH] = MGD77Record.number[MGD77_DAY] = MGD77Record.number[MGD77_HOUR] = MGD77Record.number[MGD77_MIN] = GMT_d_NaN;
 			else {
-				GMT_gcal_from_dt (MGD77Record.time - tz * 3600.0, &cal);	/* Adjust for TZ to get local calendar */
+				MGD77_gcal_from_dt (F, MGD77Record.time - tz * 3600.0, &cal);	/* Adjust for TZ to get local calendar */
 				MGD77Record.number[MGD77_YEAR]  = cal.year;
 				MGD77Record.number[MGD77_MONTH] = cal.month;
 				MGD77Record.number[MGD77_DAY]   = cal.day_m;
@@ -3568,7 +3564,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			values = (double *)S->values[E.col[E77_CORR_FIELD_MAG]];		/* Output mag */
 			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
 				if (GMT_is_dnan (values[rec])) continue;	/* Do not recalc mag if originally flagged as a NaN */
-				values[rec] = MGD77_Recalc_Mag_Anomaly_IGRF (E.aux[E77_AUX_FIELD_TIME][rec], E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], E.aux[E77_AUX_FIELD_MTF1][rec], TRUE);
+				values[rec] = MGD77_Recalc_Mag_Anomaly_IGRF (F, E.aux[E77_AUX_FIELD_TIME][rec], E.aux[E77_AUX_FIELD_LON][rec], E.aux[E77_AUX_FIELD_LAT][rec], E.aux[E77_AUX_FIELD_MTF1][rec], TRUE);
 			}
 		}
 		
@@ -4837,7 +4833,7 @@ double MGD77_Theoretical_Gravity (double lon, double lat, int version)
 	return (g);
 }
 
-double MGD77_Recalc_Mag_Anomaly_IGRF (double time, double lon, double lat, double obs, BOOLEAN calc_date)
+double MGD77_Recalc_Mag_Anomaly_IGRF (struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, BOOLEAN calc_date)
 {	/* Compute the recalculated magnetic anomaly using IGRF.  Pass time either as a GMT time in secs
 	 * and set calc_date to TRUE or pass the floating point year that is needed by IGRF function. */
 	double IGRF[7];	/* The 7 components returned */
@@ -4845,7 +4841,7 @@ double MGD77_Recalc_Mag_Anomaly_IGRF (double time, double lon, double lat, doubl
 	
 	if (GMT_is_dnan (time) || GMT_is_dnan (lon) || GMT_is_dnan (lat) || GMT_is_dnan (obs)) return (GMT_d_NaN);
 	
-	if (calc_date) time = MGD77_time_to_fyear (time);	/* Need to convert time to floating-point year */
+	if (calc_date) time = MGD77_time_to_fyear (F, time);	/* Need to convert time to floating-point year */
 	val = obs - ((MGD77_igrf10syn (0, time, 1, 0.0, lon, lat, IGRF)) ? GMT_d_NaN : IGRF[MGD77_IGRF_F]);
 	
 	return (val);
@@ -4859,12 +4855,12 @@ void MGD77_CM4_end (struct MGD77_CM4 *CM4)
 	for (i = 0; i < 3; i++) free ((void *) CM4->path[i]);
 }
 
-double MGD77_Calc_CM4 (double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4)
+double MGD77_Calc_CM4 (struct MGD77_CONTROL *F, double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4)
 {
 	/* New code goes here */
 	if (GMT_is_dnan (time) || GMT_is_dnan (lon) || GMT_is_dnan (lat)) return (GMT_d_NaN);
 	
-	if (calc_date) time = MGD77_time_to_fyear (time);	/* Need to convert time to floating-point year */
+	if (calc_date) time = MGD77_time_to_fyear (F, time);	/* Need to convert time to floating-point year */
 	return (0.0);
 }
 
@@ -5233,10 +5229,10 @@ int MGD77_atoi (char *txt) {
 	return (atoi (txt));
 }
 
-double MGD77_time_to_fyear (double time) {
+double MGD77_time_to_fyear (struct MGD77_CONTROL *F, double time) {
 	/* Convert GMT time to floating point year for use with IGRF function */
 	struct GMT_gcal cal;			/* Calendar structure needed for conversion */
-	GMT_gcal_from_dt (time, &cal);		/* No adjust for TZ; this is GMT UTC time */
+	MGD77_gcal_from_dt (F, time, &cal);		/* No adjust for TZ; this is GMT UTC time */
 	return (MGD77_cal_to_fyear (&cal));	/* Returns decimal year */
 }
 
@@ -5273,6 +5269,28 @@ void	MGD77_dt2rdc (struct MGD77_CONTROL *F, double t, GMT_cal_rd *rd, double *s)
 	t_sec = (t * F->utime.scale + F->utime.epoch_t0 * GMT_DAY2SEC_F);
 	i = splitinteger(t_sec, 86400, s) + F->utime.rata_die;
 	*rd = (GMT_cal_rd)(i);
+}
+
+
+void	MGD77_gcal_from_dt (struct MGD77_CONTROL *F, double t, struct GMT_gcal *cal) {
+
+	/* Given time in internal units, load cal and clock info
+		in cal.
+		Note: uses 0 through 23 for hours (no am/pm inside here).
+		Note: does not yet deal w/ leap seconds; modulo math here.
+	*/
+
+	GMT_cal_rd rd;
+	double	x;
+	GMT_LONG i;
+
+	MGD77_dt2rdc (F, t, &rd, &x);
+	GMT_gcal_from_rd (rd, cal);
+	/* split double seconds and integer time */
+	i = splitinteger(x, 60, &cal->sec);
+	cal->hour = i/60;
+	cal->min  = i%60;
+	return;
 }
 
 BOOLEAN MGD77_fake_times (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, GMT_LONG nrec)

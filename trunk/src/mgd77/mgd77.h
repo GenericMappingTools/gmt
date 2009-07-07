@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.116 2009-07-04 05:45:22 guru Exp $
+ *	$Id: mgd77.h,v 1.117 2009-07-07 08:17:21 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -526,17 +526,19 @@ extern double MGD77_carter_correction (double lon, double lat, double twt_in_mse
 extern int MGD77_igrf10syn (int isv, double date, int itype, double alt, double lon, double lat, double *out);
 extern double MGD77_Theoretical_Gravity (double lon, double lat, int version);
 extern void MGD77_IGF_text (FILE *fp, int version);
-extern double MGD77_Recalc_Mag_Anomaly_IGRF (double time, double lon, double lat, double obs, BOOLEAN calc_date);
-extern double MGD77_time_to_fyear (double time);
+extern double MGD77_Recalc_Mag_Anomaly_IGRF (struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, BOOLEAN calc_date);
+extern double MGD77_time_to_fyear (struct MGD77_CONTROL *F, double time);
 extern double MGD77_cal_to_fyear (struct GMT_gcal *cal);
 extern BOOLEAN MGD77_fake_times (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, GMT_LONG nrec);
 extern double MGD77_utime2time (struct MGD77_CONTROL *F, double unix_time);
 extern double MGD77_time2utime (struct MGD77_CONTROL *F, double gmt_time);
 extern double MGD77_rdc2dt (struct MGD77_CONTROL *F, GMT_cal_rd rd, double secs);
 extern void MGD77_dt2rdc (struct MGD77_CONTROL *F, double t, GMT_cal_rd *rd, double *s);
+extern void MGD77_gcal_from_dt (struct MGD77_CONTROL *F, double t, struct GMT_gcal *cal);
+
 #ifdef USE_CM4 
-extern double MGD77_Calc_CM4 (double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
-extern double MGD77_Recalc_Mag_Anomaly_CM4 (double time, double lon, double lat, double obs, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
+extern double MGD77_Calc_CM4 (struct MGD77_CONTROL *F, double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
+extern double MGD77_Recalc_Mag_Anomaly_CM4 (struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
 extern void MGD77_CM4_end (struct MGD77_CM4 *CM4);
 #endif
 
