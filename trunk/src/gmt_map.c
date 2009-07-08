@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.234 2009-06-18 01:45:16 guru Exp $
+ *	$Id: gmt_map.c,v 1.235 2009-07-08 21:41:40 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4954,7 +4954,7 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx)
 {
 	GMT_LONG i, m, new_n, *x_index = NULL, *x_type = NULL;
-	size_t n_alloc, n_x_alloc;
+	GMT_LONG n_alloc, n_x_alloc;
 	GMT_LONG side, j, np, in = 1, n_cross = 0, out = 0, cross = 0;
 	BOOLEAN polygon, jump = FALSE, curved;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];

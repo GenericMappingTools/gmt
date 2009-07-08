@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.195 2009-06-29 23:54:00 guru Exp $
+ *	$Id: gmt_io.c,v 1.196 2009-07-08 21:41:40 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2111,8 +2111,8 @@ void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S)
 		      sprintf (S->y_format, "%s", gmtdefs.d_format);
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* But we want the degree symbol appended */
-			S->x_format[len] = gmtdefs.encoding.code[gmtdefs.degree_symbol];
-			S->y_format[len] = gmtdefs.encoding.code[gmtdefs.degree_symbol];
+			S->x_format[len] = (char)gmtdefs.encoding.code[gmtdefs.degree_symbol];
+			S->y_format[len] = (char)gmtdefs.encoding.code[gmtdefs.degree_symbol];
 			S->x_format[len+1] = S->y_format[len+1] = '\0';
 		}
 		strcat (S->x_format, "%c");
@@ -2963,7 +2963,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 			if ((t = strstr (GMT_io.segment_header, " -L")) || (t = strstr (GMT_io.segment_header, "\t-L"))) {	/* Set specified label */
 				i = 3;
 				if (t[i] == '\"') {	/* Quoted string, find terminal quote */
-					for (k = 4; k < strlen(t) && t[k] != '\"'; k++);
+					for (k = 4; k < (int)strlen(t) && t[k] != '\"'; k++);
 					t[k] = '\0';
 					i++;
 				}

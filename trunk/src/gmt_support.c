@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.418 2009-07-07 17:09:27 remko Exp $
+ *	$Id: gmt_support.c,v 1.419 2009-07-08 21:41:40 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1198,7 +1198,8 @@ GMT_LONG GMT_getincn (char *line, double inc[], GMT_LONG n)
 
 double GMT_getradius (char *line)
 {
-	GMT_LONG last, save = 0;
+	GMT_LONG last;
+	char save = 0;
 	double radius, scale = 1.0;
 
 	/* Dechipers a single radius argument */
