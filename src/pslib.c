@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.204 2009-06-29 23:54:00 guru Exp $
+ *	$Id: pslib.c,v 1.205 2009-07-08 21:41:40 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2542,7 +2542,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 			i1 = (PS_LONG) (c - clean);
 
 			if (i1 > i0) word[k++] = add_word_part (&clean[i0], i1 - i0, font, font_size, sub, super, small, under, NO_SPACE, rgb);
-			if ((size_t)k == n_alloc) {
+			if (k == n_alloc) {
 				n_alloc <<= 1;
 				word = (struct GMT_WORD **) ps_memory ((void *)word, n_alloc, sizeof (struct GMT_WORD *));
 			}
@@ -2567,7 +2567,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 							word[k++] = add_word_part (&clean[i1], (PS_LONG)1, font, font_size, sub, super, small, under, COMPOSITE_1, rgb);
 							i1++;
 						}
-						if ((size_t)k == n_alloc) {
+						if (k == n_alloc) {
 							n_alloc <<= 1;
 							word = (struct GMT_WORD **) ps_memory ((void *)word, n_alloc, sizeof (struct GMT_WORD *));
 						}
@@ -2581,7 +2581,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 						}
 						if (!clean[i1]) word[k]->flag++;	/* New word after this composite */
 						k++;
-						if ((size_t)k == n_alloc) {
+						if (k == n_alloc) {
 							n_alloc <<= 1;
 							word = (struct GMT_WORD **) ps_memory ((void *)word, n_alloc, sizeof (struct GMT_WORD *));
 						}
@@ -2675,7 +2675,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 						after = (clean[j]) ? NO_SPACE : 1;
 						plain_word = TRUE;
 						word[k++] = add_word_part (&clean[i1], j-i1, font, font_size, sub, super, small, under, after, rgb);
-						if ((size_t)k == n_alloc) {
+						if (k == n_alloc) {
 							n_alloc <<= 1;
 							word = (struct GMT_WORD **) ps_memory ((void *)word, n_alloc, sizeof (struct GMT_WORD *));
 						}
@@ -2694,7 +2694,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 		}
 		else {	/* Plain word, no worries */
 			word[k++] = add_word_part (clean, (PS_LONG)0, font, font_size, sub, super, small, under, ONE_SPACE, rgb);
-			if ((size_t)k == n_alloc) {
+			if (k == n_alloc) {
 				n_alloc <<= 1;
 				word = (struct GMT_WORD **) ps_memory ((void *)word, n_alloc, sizeof (struct GMT_WORD *));
 			}
@@ -3719,7 +3719,7 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, PS_LONG nx, PS_LONG ny, 
 	for (i = 0; i < npixels; i++) {
 		for (j = 0; j < colormap->ncolors; j++)
 			if (colormap->colors[j][0] == buffer[0] && colormap->colors[j][1] == buffer[1] && colormap->colors[j][2] == buffer[2]) {
-				image->buffer[i] = j;
+				image->buffer[i] = (unsigned char)j;
 				break;
 			}
 
@@ -3731,7 +3731,7 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, PS_LONG nx, PS_LONG ny, 
 				if (PSL->internal.verbose) fprintf (stderr, "pslib: Too many colors to make colormap - using 24-bit direct color instead.\n");
 				return (NULL);
 			}
-			image->buffer[i] = j;
+			image->buffer[i] = (unsigned char)j;
 			colormap->colors[j][0] = buffer[0];
 			colormap->colors[j][1] = buffer[1];
 			colormap->colors[j][2] = buffer[2];
@@ -3915,7 +3915,7 @@ void ps_rle_decode (struct imageinfo *h, unsigned char **in)
 
 		if (col == width) {
 			if (h->depth == 1) out[width-1] &= mask;
-			if (odd) out[i++] = count = 0;
+			if (odd) {out[i++] = 0; count = 0;}
 			col = 0;
 		}
 	}

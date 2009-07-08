@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.47 2009-06-29 23:54:00 guru Exp $
+ *	$Id: gmt_shore.c,v 1.48 2009-07-08 21:41:40 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -546,7 +546,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, BOOLEAN assemble
 	
 	if (c->ns == 0) for (n = 0; n < 4; n++) high_seg_level = MIN (c->node_level[n], high_seg_level);	/* Initialize to lowest when there are no segments */
 	for (n = high_level = 0; n < 4; n++) {
-		c->node_level[n] = MIN (c->node_level[n], high_seg_level);
+		c->node_level[n] = (unsigned char)MIN (c->node_level[n], high_seg_level);
 		high_level = MAX (c->node_level[n], high_level);
 	}
 	
@@ -1012,8 +1012,8 @@ void shore_prepare_sides (struct GMT_SHORE *c, GMT_LONG dir)
 	for (s = 0; s < c->ns; s++) {	/* Add entry points */
 		/* if (c->seg[s].level > 2 || (i = c->seg[s].entry) == 4) continue; */
 		if ((i = c->seg[s].entry) == 4) continue;
-		c->side[i][n[i]].pos = GMT_shore_get_position (i, c->seg[s].dx[0], c->seg[s].dy[0]);
-		c->side[i][n[i]].id = s;
+		c->side[i][n[i]].pos = (unsigned short)GMT_shore_get_position (i, c->seg[s].dx[0], c->seg[s].dy[0]);
+		c->side[i][n[i]].id = (short)s;
 		n[i]++;
 	}
 	

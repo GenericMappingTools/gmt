@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.405 2009-06-29 23:53:59 guru Exp $
+ *	$Id: gmt_init.c,v 1.406 2009-07-08 21:41:39 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2996,7 +2996,7 @@ double GMT_convert_units (char *from, GMT_LONG new_format)
 		fprintf (stderr, "%s: Warning: %s not a valid number and may not be decoded properly.\n", GMT_program, from);
 
 	value = atof (from) * GMT_u2u[old_format][new_format];
-	if (have_unit) from[len-1] = c;	/* Put back what we took out temporarily */
+	if (have_unit) from[len-1] = (char)c;	/* Put back what we took out temporarily */
 
 	if (save_measure_unit >= 0) gmtdefs.measure_unit = save_measure_unit;	/* Put back default unit */
 
@@ -4602,7 +4602,7 @@ GMT_LONG GMT_parse_B_option (char *in) {
 		for (i = 0; i < 2; i++) {
 			if (GMT_io.in_col_type[i] & GMT_IS_GEO && frame_info.axis[i].unit[0] == 0) {
 				frame_info.axis[i].unit[0] = '-';
-				frame_info.axis[i].unit[1] = gmtdefs.encoding.code[gmtdefs.degree_symbol];
+				frame_info.axis[i].unit[1] = (char)gmtdefs.encoding.code[gmtdefs.degree_symbol];
 				frame_info.axis[i].unit[2] = '\0';
 			}
 		}

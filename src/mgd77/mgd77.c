@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.244 2009-07-07 08:17:21 guru Exp $
+ *	$Id: mgd77.c,v 1.245 2009-07-08 21:41:40 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2647,8 +2647,8 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 			}
 			length = strlen (this_arg);
 			/* Test to determine if we are given NGDC IDs (2-,4-,8-char integer tags) or an arbitrary survey name */
-			for (i = n_dig = 0; i < strlen (this_arg); i++) if (isdigit((int)this_arg[i])) n_dig++;
-			NGDC_ID_likely = ((n_dig == strlen (this_arg)) && (n_dig == 2 || n_dig == 4 || n_dig == 8));	/* All integers: 2 = agency, 4 = agency+vessel, 8 = single cruise */
+			for (i = n_dig = 0; i < (int)strlen (this_arg); i++) if (isdigit((int)this_arg[i])) n_dig++;
+			NGDC_ID_likely = ((n_dig == (int)strlen (this_arg)) && (n_dig == 2 || n_dig == 4 || n_dig == 8));	/* All integers: 2 = agency, 4 = agency+vessel, 8 = single cruise */
 
 			if (!NGDC_ID_likely || length == 8) {	/* Either a custom cruise name OR a full 8-integer NGDC ID, append name to list */
 				if (n == (int)n_alloc) L = (char **)GMT_memory ((void *)L, n_alloc += GMT_CHUNK, sizeof (char *), "MGD77_Path_Expand");
