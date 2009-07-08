@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.4 2009-06-28 23:00:14 jluis Exp $
+ * $Id: dimfilter.c,v 1.5 2009-07-08 20:08:37 guru Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -27,12 +27,12 @@ double	*weight, deg2km;
 
 int main (int argc, char **argv)
 {
-	short int **sector;
+	short int **sector = NULL;
 	
 	GMT_LONG	nx_out, ny_out, nx_fil, ny_fil, *n_in_median, n_nan = 0;
 	GMT_LONG	x_half_width, y_half_width, j_origin, i_out, j_out, wsize = 0;
 	GMT_LONG	i_in, j_in, ii, jj, i, j, ij_in, ij_out, ij_wt, effort_level, k, s, n = 0;
-	GMT_LONG	distance_flag, filter_type, filter2_type, n_sectors = 1, n_sectors_2, one_or_zero = 1;
+	GMT_LONG	distance_flag, filter_type, filter2_type, n_sectors = 1, n_sectors_2 = 0, one_or_zero = 1;
 	GMT_LONG GMT_mode_selection = 0, GMT_n_multiples = 0;
 	
 	FILE *ip;
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 	double	west_new, east_new, south_new, north_new, dx_new, dy_new, offset;
 	double	filter_width, x_scale, y_scale, x_width, y_width, angle, z = 0.0;
 	double	x_out, y_out, *wt_sum, *value, last_median, this_median, last_median2 = 0.0, this_median2, xincnew2, yincnew2;
-	double	z_min, z_max, z2_min = 0.0, z2_max = 0.0, wx = 0.0, *c_x, *c_y, d;
+	double	z_min, z_max, z2_min = 0.0, z2_max = 0.0, wx = 0.0, *c_x = NULL, *c_y = NULL, d;
 	double	xincold2, yincold2, y_shift = 0.0, x_fix = 0.0, y_fix = 0.0;
 #ifdef DEBUG
 	double x_debug[5];
@@ -64,10 +64,10 @@ int main (int argc, char **argv)
 	double intercept = 0.0, slope_x = 0.0, slope_y = 0.0, inv_D;
 	char *fout2 = CNULL;
 #endif	
-	double	**work_array;
+	double	**work_array = NULL;
 	GMT_LONG	*i_origin;
 	float	*input, *output;
-	double	*x_shift;
+	double	*x_shift = NULL;
 
 	#ifdef OBSOLETE
 	double	*work_array2;			
