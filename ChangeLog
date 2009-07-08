@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.569 2009-07-08 01:43:16 guru Exp $
+	$Id: ChangeLog,v 1.570 2009-07-08 20:58:37 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2009-07-10
 	* GMT 4.5.0 finalized and released
 -----------------------------------------------------------------------------------------
+
+2009-07-08	remko
+	* psscale.c:		When using -A on vertical scale bar, annotation was left not right aligned.
+
 2009-07-07	pwessel
 	* gmt_plot.c:		The polar cap on gridlines needed to be reversed for r-theta (polar) maps
 
