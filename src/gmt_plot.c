@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.263 2009-07-08 01:43:17 guru Exp $
+ *	$Id: gmt_plot.c,v 1.264 2009-07-08 20:08:36 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -609,7 +609,7 @@ void GMT_define_baselines ()
 
 void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 {
-	double *x, ys, yn, p_cap = 0.0, cap_start, cap_stop;
+	double *x, ys, yn, p_cap = 0.0, cap_start = 0.0, cap_stop = 0.0;
 	GMT_LONG i, nx;
 	BOOLEAN cap = FALSE;
 
