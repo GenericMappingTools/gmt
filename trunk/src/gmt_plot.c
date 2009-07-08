@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.264 2009-07-08 20:08:36 guru Exp $
+ *	$Id: gmt_plot.c,v 1.265 2009-07-08 22:02:12 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -609,22 +609,24 @@ void GMT_define_baselines ()
 
 void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 {
-	double *x, ys, yn, p_cap = 0.0, cap_start = 0.0, cap_stop = 0.0;
+	double *x, ys, yn, p_cap = 0.0, cap_start[2] = {0.0, 0.0}, cap_stop[2] = {0.0, 0.0};
 	GMT_LONG i, nx;
 	BOOLEAN cap = FALSE;
 
 	if (GMT_POLE_IS_POINT) {	/* Might have two separate domains of gridlines */
-		if (project_info.projection == GMT_POLAR) {	/* Different for polar graphys since "lat" = 0 is at the center */
-			ys = cap_stop = p_cap = 90.0 - gmtdefs.polar_cap[0];
+		if (project_info.projection == GMT_POLAR) {	/* Different for polar graphs since "lat" = 0 is at the center */
+			ys = cap_stop[0] = cap_stop[1] = p_cap = 90.0 - gmtdefs.polar_cap[0];
 			yn = n;
-			cap_start = 0.0;
+			cap_start[0] = cap_start[1] = 0.0;
 		}
 		else {
 			p_cap = gmtdefs.polar_cap[0];
 			ys = MAX (s, -p_cap);
 			yn = MIN (n, p_cap);
-			cap_start = (s < -p_cap) ? s : p_cap;
-			cap_stop  = (s < -p_cap) ? -p_cap : n;
+			cap_start[0] = s;
+			cap_stop[0]  = -p_cap ;
+			cap_start[1] = p_cap;
+			cap_stop[1]  = n;
 		}
 		cap = !GMT_IS_ZERO (gmtdefs.polar_cap[0] - 90.0);
 	}
@@ -640,12 +642,12 @@ void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 		nx = 0;
 		if (s < -gmtdefs.polar_cap[0]) {	/* Must draw some or all of the S polar cap */
 			nx = GMT_linear_array (w, e, gmtdefs.polar_cap[1], frame_info.axis[0].phase, &x);
-			for (i = 0; i < nx; i++) GMT_map_lonline (x[i], cap_start, cap_stop);
+			for (i = 0; i < nx; i++) GMT_map_lonline (x[i], cap_start[0], cap_stop[0]);
 			GMT_map_latline (-p_cap, w, e);
 		}
 		if (n > gmtdefs.polar_cap[0]) {	/* Must draw some or all of the N polar cap */
 			if (nx == 0) nx = GMT_linear_array (w, e, gmtdefs.polar_cap[1], frame_info.axis[0].phase, &x);
-			for (i = 0; i < nx; i++) GMT_map_lonline (x[i], cap_start, cap_stop);
+			for (i = 0; i < nx; i++) GMT_map_lonline (x[i], cap_start[1], cap_stop[1]);
 			GMT_map_latline (p_cap, w, e);
 		}
 		if (nx) GMT_free ((void *)x);
