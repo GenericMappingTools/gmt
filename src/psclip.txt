@@ -45,7 +45,7 @@ Invert the sense of what is inside and outside, i.e., use the outside of the pol
 OPT(T)
 Rather than read any input files, simply turn on clipping for the current map region.  Ignores
 OPT(B) and cannot be used with OPT(N).  Basically, OPT(T) is a convenient way to run \fBpsclip\fP with
-the arguments \dev\null OPT(N) (or, under Windows, NUL OPT(N)).
+the arguments /dev/null OPT(N) (or, under Windows, NUL OPT(N)).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
