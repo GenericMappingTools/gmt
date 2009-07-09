@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.205 2009-07-08 21:41:40 guru Exp $
+ *	$Id: pslib.c,v 1.206 2009-07-09 11:39:46 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -359,7 +359,9 @@ void ps_circle_ (double *x, double *y, double *size, int *rgb, PS_LONG *outline)
 	 ps_circle (*x, *y, *size, rgb, *outline);
 }
 
-void ps_clipoff (void) {
+void ps_clipoff (void)
+{
+	/* Return to original clipping path */
 	fprintf (PSL->internal.fp, "S U\n");
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Clipping is currently OFF\n");
 	PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = -1;	/* Reset to -1 so ps_setpaint will update the current paint */
@@ -374,11 +376,14 @@ void ps_clipoff_ (void) {
 
 void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], PS_LONG flag)
 {
-	/* Path length */
-	/* Optional paint (-1 to avoid paint) */
-	/* combo of 1 | 2. 1 = Start, 2 = end */
 	/* Any plotting outside the path defined by x,y will be clipped.
-	   use clipoff to restore the original clipping path. */
+	 * use ps_clipoff to restore the original clipping path.
+	 * n    : number of x,y pairs (i.e. path length)
+	 * rgb  : optional paint (use rgb[0] < 0 to avoid paint)
+	 * flag : 1 = start new clipping path (more follows)
+	 *        2 = end clipping path (this is the last segment)
+	 *        3 = this is the complete clipping path (start to end)
+	 */
 
 	PS_LONG pmode;
 	char move[7];
