@@ -35,6 +35,7 @@ The \fIPostScript\fP code is written to standard output.
 .TP
 \fIfiles\fP
 List one or more file-names. If no files are given, \fBpsxy\fP will read standard input.
+Use OPT(T) to ignore all input files, including standard input (see below).
 #include "explain_-J_short.txt"
 #include "explain_-R.txt"
 .SH OPTIONS
@@ -192,7 +193,7 @@ OPT(Sp)
 .TP
 OPT(Sq)
 \fBq\fPuoted line, i.e., lines with annotations such as contours.
-Append [\fBd|f|n|l|x\fP]\fIinfo\fP[:\fIlabelinfo\fP].
+Append [\fBd\fP|\fBD\fP|\fBf\fP|\fBl\fP|\fBL\fP|\fBn\fP|\fBx\fP|\fBX\fP]\fIinfo\fP[:\fIlabelinfo\fP].
 #include "explain_contlabel.txt"
 .sp
 .RS
@@ -242,6 +243,12 @@ cross (x).  \fIsize\fP is diameter of circumscribing circle.
 .TP
 OPT(Sy)
 y-dash (|).  \fIsize\fP is the length of a short vertical line segment.
+.TP
+OPT(T)
+Ignore all input files, including standard input. This is the same as specifying /dev/null (or NUL for
+Windows users) as input file. Use this to activate only the options that are not related to plotting
+of lines or symbols, such as \fBpsxy\fP OPT(R) OPT(J) OPT(O) OPT(T) to terminate a sequence of
+\fBGMT\fP plotting commands without producing any plotting output.
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 .TP
