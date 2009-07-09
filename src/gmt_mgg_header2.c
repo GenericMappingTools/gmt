@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.30 2009-05-13 21:06:42 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.31 2009-07-09 04:55:13 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -252,6 +252,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 	int  *tLong  = NULL;
 	short *tShort = NULL;
 	char  *tChar  = NULL;
+	float *tFloat = NULL;
 	GMT_LONG first_col, last_col, first_row, last_row, one_or_zero;
 	GMT_LONG j, j2, width_in, height_in, i_0_out, inc = 1;
 	GMT_LONG i, kk, ij, nm, width_out;
@@ -280,14 +281,20 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 		tLong  = (int *) GMT_memory (CNULL, (size_t)nm, sizeof (int), "mgg_read_grd");
 		tShort = (short *) tLong;
 		tChar  = (char *) tLong;
+		tFloat  = (float *) tLong;
 
-		if (GMT_fread ((void *)tLong, (size_t)mggHeader.numType, (size_t)nm, fp) != (size_t)nm) return (GMT_GRDIO_READ_FAILED);
+		if (GMT_fread ((void *)tLong, (size_t)abs(mggHeader.numType), (size_t)nm, fp) != (size_t)nm) return (GMT_GRDIO_READ_FAILED);
 		for (i = 0; i < nm; i++) {
 			/* 4-byte values */
 			if (mggHeader.numType == sizeof(int)) {
-                swap_long(&tLong[i]);
+				swap_long(&tLong[i]);
 				if (tLong[i] == mggHeader.nanValue) grid[i] = GMT_f_NaN;
 				else grid[i] = (float) tLong[i] / (float) mggHeader.precision;
+			}
+
+			else if (mggHeader.numType == -sizeof(float)) {
+				swap_long(&tLong[i]);
+				grid[i] = tFloat[i] / (float) mggHeader.precision;
 			}
 
 			/* 2-byte values */
@@ -349,6 +356,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 		tLong  = (int *) GMT_memory (CNULL, (size_t)header->nx, sizeof (int), "mgg_read_grd");
 		tShort = (short *)tLong;
 		tChar  = (char *)tLong;
+		tFloat  = (float *)tLong;
 
 		k = (int *) GMT_memory (CNULL, (size_t)width_in, sizeof (int), "mgg_read_grd");
 		
@@ -364,15 +372,15 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 		}
 		if (piping)	{ /* Skip data by reading it */
 			for (j = 0; j < first_row; j++) {
-				if (GMT_fread ((void *) tLong, (size_t)mggHeader.numType, (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
+				if (GMT_fread ((void *) tLong, (size_t)abs(mggHeader.numType), (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 			}
 		} else { /* Simply seek by it */
-			long_offset = (long)(first_row * header->nx * mggHeader.numType);
+			long_offset = (long)(first_row * header->nx * abs(mggHeader.numType));
 			if (GMT_fseek (fp, long_offset, 1)) return (GMT_GRDIO_SEEK_FAILED);
 		}
 		
 		for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-			if (GMT_fread ((void *) tLong, (size_t)mggHeader.numType, (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
+			if (GMT_fread ((void *) tLong, (size_t)abs(mggHeader.numType), (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 			
 			ij = (j2 + pad[3]) * width_out + i_0_out;
 			for (i = 0; i < width_in; i++) {
@@ -381,6 +389,10 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 					swap_long(&tLong[k[i]]);
 					if (tLong[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tLong[k[i]] / (float) mggHeader.precision;
+				}
+				else if (mggHeader.numType == -sizeof(float)) {
+					swap_long(&tLong[k[i]]);
+					grid[kk] = tFloat[k[i]] / (float) mggHeader.precision;
 				}
 				
 				else if (mggHeader.numType == sizeof(short)) {
@@ -401,7 +413,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 		}
 		if (piping)	{ /* Skip data by reading it */
 			for (j = last_row + 1; j < header->ny; j++) {
-				if (GMT_fread ((void *) tLong, (size_t)mggHeader.numType, (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
+				if (GMT_fread ((void *) tLong, (size_t)abs(mggHeader.numType), (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 			}
 		}
 			
@@ -411,19 +423,20 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 		tLong = (int *) GMT_memory (CNULL, (size_t)header->nx, sizeof (int), "mgg_read_grd");
 		tShort = (short *) tLong;
 		tChar  = (char *) tLong;
+		tFloat  = (float *)tLong;
 
 		if (piping)	{ /* Skip data by reading it */
 			for (j = 0; j < first_row; j++) {
-				if (GMT_fread ((void *) tLong, (size_t)mggHeader.numType, (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
+				if (GMT_fread ((void *) tLong, (size_t)abs(mggHeader.numType), (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 			}
 		} else {/* Simply seek by it */
-			long_offset = (long) (first_row * header->nx * mggHeader.numType);
+			long_offset = (long) (first_row * header->nx * abs(mggHeader.numType));
 			if (GMT_fseek (fp, long_offset, 1)) return (GMT_GRDIO_SEEK_FAILED);
 		}
 		
 		for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 			ij = (j2 + pad[3]) * width_out + i_0_out;
-			if (GMT_fread ((void *) tLong, (size_t)mggHeader.numType, (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
+			if (GMT_fread ((void *) tLong, (size_t)abs(mggHeader.numType), (size_t)header->nx, fp) != (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 			
 			for (i = 0; i < width_in; i++) {
 				kk = ij+i;
@@ -432,6 +445,10 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 					swap_long(&tLong[first_col + i]);
 					if (tLong[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float)tLong[first_col + i] / (float) mggHeader.precision;
+				}
+				else if (mggHeader.numType == -sizeof(float)) {
+					swap_long(&tLong[first_col + i]);
+					grid[kk] = tFloat[first_col + i] / (float) mggHeader.precision;
 				}
 				
 				/* 2-byte values */
@@ -455,7 +472,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 
 		if (piping)	{/* Skip data by reading it */
 			for (j = last_row + 1; j < header->ny; j++) {
-				if (GMT_fread ((void *) tLong, (size_t)mggHeader.numType, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
+				if (GMT_fread ((void *) tLong, (size_t)abs(mggHeader.numType), (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 			}
 		}
 	}
@@ -498,6 +515,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 	int  *tLong;
 	short *tShort;
 	char  *tChar;
+	float *tFloat;
 	FILE *fp;
 	
 	if (complex) return (GMT_GRDIO_GRD98_COMPLEX);
@@ -526,12 +544,17 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 		tLong  = (int *) GMT_memory (CNULL, (size_t)nm, sizeof (int), "mgg_write_grd");
 		tShort = (short*)tLong;
 		tChar  = (char*)tLong;
+		tFloat  = (float*)tLong;
 		
 		for (i = 0; i < nm; i++) {
 			if (GMT_is_fnan (grid[i])) {
 				if (mggHeader.numType == sizeof(int)) {
-			       tLong[i]  = mggHeader.nanValue;
-			       swap_long(&tLong[i]);
+					tLong[i]  = mggHeader.nanValue;
+					swap_long(&tLong[i]);
+				}
+				else if (mggHeader.numType == -sizeof(float)) {
+					tFloat[i]  = mggHeader.nanValue;
+					swap_long(&tLong[i]);
 				} else if (mggHeader.numType == sizeof(short)) {
 					tShort[i] = (short)mggHeader.nanValue;
 					swap_word(&tShort[i]);
@@ -545,6 +568,10 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 
 				if (mggHeader.numType == sizeof(int)) {
 					tLong[i] = (int)rint((double)grid[i] * mggHeader.precision);
+					swap_long(&tLong[i]);
+				}
+				else if (mggHeader.numType == -sizeof(float)) {
+					tFloat[i] = grid[i] * mggHeader.precision;
 					swap_long(&tLong[i]);
 				}
 				
@@ -562,7 +589,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 				}
 			}
 		}
-		if (GMT_fwrite (tLong, (size_t)mggHeader.numType, (size_t)nm, fp) != (size_t)nm) return (GMT_GRDIO_WRITE_FAILED);
+		if (GMT_fwrite (tLong, (size_t)abs(mggHeader.numType), (size_t)nm, fp) != (size_t)nm) return (GMT_GRDIO_WRITE_FAILED);
 		GMT_free ((void *)tLong);
 		return (GMT_NOERROR);
 	}
@@ -619,7 +646,8 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 
 	tLong  = (int *) GMT_memory (CNULL, (size_t)width_in, sizeof (int), "mgg_write_grd");
 	tShort = (short *) tLong;
-	tChar  = (char *)  tLong;
+	tChar  = (char *) tLong;
+	tFloat  = (float *) tLong;
 	
 	if (geo) {
 		k = (int *) GMT_memory (CNULL, (size_t)width_out, sizeof (int), "mgg_write_grd");
@@ -641,6 +669,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 				kk = ij+k[i];
 				if (GMT_is_fnan (grid[kk])) {
 					if (mggHeader.numType == sizeof(int))       tLong[i]  = mggHeader.nanValue;
+					else if (mggHeader.numType == -sizeof(float))       tFloat[i]  = mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(short)) tShort[i] = (short)mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(char))  tChar[i] = (char)mggHeader.nanValue;
 					else {
@@ -651,6 +680,9 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 
 					if (mggHeader.numType == sizeof(int)) {
 						tLong[i] = (int)rint ((double)grid[kk] * mggHeader.precision);
+					}
+					else if (mggHeader.numType -sizeof(float)) {
+						tFloat[i] = grid[kk] * mggHeader.precision;
 					}
 					
 					else if (mggHeader.numType == sizeof(short)) {
@@ -665,10 +697,10 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 						return (GMT_GRDIO_UNKNOWN_TYPE);
 					}
 				}
-				if (mggHeader.numType == sizeof(int)) swap_long(&tLong[i]);
+				if (abs(mggHeader.numType) == sizeof(int)) swap_long(&tLong[i]);
 				else if (mggHeader.numType == sizeof(short)) swap_word(&tShort[i]);
 			}
-			GMT_fwrite ((void *)tLong, (size_t)mggHeader.numType, (size_t)width_out, fp);
+			GMT_fwrite ((void *)tLong, (size_t)abs(mggHeader.numType), (size_t)width_out, fp);
 		}
 		GMT_free ((void *)k);
 	}
@@ -680,6 +712,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 				kk = ij+i;
 				if (GMT_is_fnan (grid[kk])) {
 					if (mggHeader.numType == sizeof(int))       tLong[i]  = mggHeader.nanValue;
+					else if (mggHeader.numType == -sizeof(float))  tFloat[i]  = mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(short)) tShort[i] = (short)mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(char))  tChar[i] = (char)mggHeader.nanValue;
 					else {
@@ -689,6 +722,9 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 					if (grid[kk] > -0.1 && grid[kk] < 0) grid[kk] = (float)(-0.1);
 					if (mggHeader.numType == sizeof(int)) {
 						tLong[i] = (int) rint ((double)grid[kk] * mggHeader.precision);
+					}
+					else if (mggHeader.numType == -sizeof(float)) {
+						tFloat[i] = grid[kk] * mggHeader.precision;
 					}
 					
 					else if (mggHeader.numType == sizeof(short)) {
@@ -703,10 +739,10 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 						return (GMT_GRDIO_UNKNOWN_TYPE);
 					}
 				}
-				if (mggHeader.numType == sizeof(int)) swap_long(&tLong[i]);
+				if (abs(mggHeader.numType) == sizeof(int)) swap_long(&tLong[i]);
 				else if (mggHeader.numType == sizeof(short)) swap_word(&tShort[i]);
 			}
-			GMT_fwrite ((void *)tLong, (size_t)mggHeader.numType, (size_t)width_out, fp);
+			GMT_fwrite ((void *)tLong, (size_t)abs(mggHeader.numType), (size_t)width_out, fp);
 		}
 	}
 	if (fp != GMT_stdout) GMT_fclose (fp);
