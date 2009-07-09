@@ -1,11 +1,19 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.571 2009-07-09 00:38:23 guru Exp $
+	$Id: ChangeLog,v 1.572 2009-07-09 13:15:41 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2009-07-10
 	* GMT 4.5.0 finalized and released
 -----------------------------------------------------------------------------------------
+
+2009-07-09	remko
+	* psclip.c:		Produce warning when using -B in combination with -N or -T.
+				Better reuse of code.
+	* psclip.txt:		Explained even-odd rule.
+	* psxy.{c,txt}:		Added -T option. Equivalent to adding /dev/null (or NUL on Windows).
+	* pslegend.c, anim01.sh:	Make use of new psxy -T option.
+
 2009-07-08	pwessel
 	* sph/sphtriangulate.c:	Must turn -mo on when -T is selected.
 
