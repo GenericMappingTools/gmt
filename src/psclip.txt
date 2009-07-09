@@ -13,8 +13,13 @@ psclip \- To set up polygonal clip paths
 .SH DESCRIPTION
 \fBpsclip\fP reads (x,y) file(s) [or standard input] and draws polygons that are
 activated as clipping paths.  Several files may be read to create complex paths
-consisting of several non-connecting segments.  As an option (OPT(N)), the user
-may choose to reverse the sense of what is the inside and outside of the paths.
+consisting of several non-connecting segments.
+Only marks that are subsequently drawn inside the clipping path will be shown. To determine what is inside or
+outside the clipping path, \fBpsclip\fP uses the even-odd rule. When a ray drawn from any point, regardless of
+direction, crosses the clipping path segments an odd number of times, the point is inside the clipping path.
+If the number is even, the point is outside.
+The OPT(N) option, reverses the sense of what is the inside and outside of the paths by plotting a clipping
+path along the map boundary.
 After subsequent plotting, which will be clipped against these paths, the clipping
 may be deactivated by running \fBpsclip\fP a second time with the OPT(C) option only.
 .TP
@@ -38,14 +43,15 @@ Sets the viewpoint's azimuth and elevation [180/90].\"'
 #include "explain_-K.txt"
 .TP
 OPT(N)
-Invert the sense of what is inside and outside, i.e., use the outside of the polygons for clipping.
+Invert the sense of what is inside and outside. For example, when using a single path, this means that
+only points outside that path will be shown. Cannot be used together with OPT(B).
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP
 OPT(T)
-Rather than read any input files, simply turn on clipping for the current map region.  Ignores
-OPT(B) and cannot be used with OPT(N).  Basically, OPT(T) is a convenient way to run \fBpsclip\fP with
-the arguments /dev/null OPT(N) (or, under Windows, NUL OPT(N)).
+Rather than read any input files, simply turn on clipping for the current map region.
+Basically, OPT(T) is a convenient way to run \fBpsclip\fP with
+the arguments OPT(N) /dev/null (or, under Windows, OPT(N) NUL). Cannot be used together with OPT(B).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
 #include "explain_-XY.txt"
