@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.32 2009-07-09 04:57:40 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.33 2009-07-09 18:36:23 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -294,7 +294,8 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 
 			else if (mggHeader.numType == -sizeof(float)) {
 				swap_long(&tLong[i]);
-				grid[i] = tFloat[i];
+				if (tLong[i] == mggHeader.nanValue) grid[i] = GMT_f_NaN;
+				else grid[i] = tFloat[i];
 			}
 
 			/* 2-byte values */
@@ -392,7 +393,8 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 				}
 				else if (mggHeader.numType == -sizeof(float)) {
 					swap_long(&tLong[k[i]]);
-					grid[kk] = tFloat[k[i]];
+					if (tLong[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
+					else grid[kk] = tFloat[k[i]];
 				}
 				
 				else if (mggHeader.numType == sizeof(short)) {
@@ -448,7 +450,8 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 				}
 				else if (mggHeader.numType == -sizeof(float)) {
 					swap_long(&tLong[first_col + i]);
-					grid[kk] = tFloat[first_col + i];
+					if (tLong[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
+					else grid[kk] = tFloat[first_col + i];
 				}
 				
 				/* 2-byte values */
