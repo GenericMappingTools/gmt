@@ -1,4 +1,4 @@
-/* $Id: stripack.c,v 1.6 2009-07-07 01:30:05 remko Exp $
+/* $Id: stripack.c,v 1.7 2009-07-09 00:35:29 guru Exp $
  * stripack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -5313,7 +5313,7 @@ L4:
 /* P is left of or on arcs N0->NB for all neighbors NB */
 /*   of N0.  Test for P = +/-N0. */
 
-    d__2 = (d__1 = x[n0] * xp + y[n0] * yp + z__[n0] * zp, abs(d__1));
+    d__2 = (d__1 = x[n0] * xp + y[n0] * yp + z__[n0] * zp, fabs(d__1));
     if (store_(&d__2) < 1. - eps * 4.) {
 
 /*   All points are collinear iff P Left NB->N0 for all */
