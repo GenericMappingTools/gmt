@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.33 2009-07-09 18:36:23 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.34 2009-07-09 22:43:22 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -118,7 +118,7 @@ static void MGG2_2GMT(MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 
 static void swap_word(void* ptr)
 {
-#ifdef GMTSWAP
+#if WORDS_BIGENDIAN == 0
    unsigned char *tmp = ptr;
    unsigned char a = tmp[0];
    tmp[0] = tmp[1];
@@ -128,7 +128,7 @@ static void swap_word(void* ptr)
 
 static void swap_long(void *ptr)
 {
-#ifdef GMTSWAP
+#if WORDS_BIGENDIAN == 0
    unsigned char *tmp = ptr;
    unsigned char a = tmp[0];
    tmp[0] = tmp[3];
