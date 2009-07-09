@@ -1,6 +1,6 @@
 #!/bin/sh
 #               GMT ANIMATION 01
-#               $Id: anim_01.sh,v 1.2 2009-02-23 01:19:22 remko Exp $
+#               $Id: anim_01.sh,v 1.3 2009-07-09 12:51:54 remko Exp $
 #
 # Purpose:      Make web page with simple animated GIF of sine function
 # GMT progs:    gmtset, gmtmath, psbasemap, pstext, psxy, ps2raster
@@ -41,7 +41,7 @@ while [ $frame -le $n_frames ]; do
 	echo $angle $sin | psxy -R -J -O -K -Sc0.1i -Gred >> $$.ps
 	echo $angle | awk '{printf "0 1.6 14 0 1 LT a = %3.3d\n", $1}' \
 		| pstext -R -J -O -K -N -Dj0.1i/0.05i >> $$.ps
-	psxy -R -J -O /dev/null >> $$.ps
+	psxy -R -J -O -T >> $$.ps
 	if [ $# -eq 0 ]; then
 		mv $$.ps $name.ps
 		gmt_cleanup .gmt
