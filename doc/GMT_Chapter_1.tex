@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.121 2009-07-07 21:47:54 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.122 2009-07-09 13:15:41 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -183,7 +183,8 @@ Here is a list of the recent enhancement to various programs:
 	\item \GMTprog{pglegend.c} allows {\bf S} record not to have {\it text}. Until now, when left empty would
 		use whatever {\it text} was set to in previous record.  The $>$ record no longer needed before T;
 		T, L, S, H alignment harmonized; I, M, B spacing improved; \Opt{B} option added.
-	\item \GMTprog{psxy.c} added \Opt{g} to break lines into segments based on gap criteria.
+	\item \GMTprog{psxy.c} added \Opt{g} to break lines into segments based on gap criteria;
+		added \Opt{T} to be a shorthand for reading no input, where we used \filename{/dev/null} before.
 	\item \GMTprog{psxyz.c} added \Opt{g} to break lines into segments based on gap criteria.
 	\item \GMTprog{triangulate.c} has new option \Opt{Q} to generate Voronoi polygon edges.
 	\item \GMTprog{mgd77/mgd77convert.c} allows users to give file.ext on command line.
