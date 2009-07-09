@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.122 2009-07-09 13:15:41 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.123 2009-07-09 13:35:09 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -114,8 +114,10 @@ Here is the list of bug corrections:
 	\item [\GMTprog{grdimage.c}]: We now make sure the NaN color is unique when \Opt{Q} is used.
 	\item [\GMTprog{grdmath.c}]: The {\bf PDIST} operator did not handle binary input files (as {\bf LDIST} does).
 	\item [\GMTprog{ps2raster.c}]: Exceeded memory allocation for out\_file.  Now in static memory.
-	\item [\GMTprog{pscoast.c}]: Produce at least ``S V'' when the clippath is empty.
 	\item [\GMTprog{psclip.c}]: Produce at least ``S V'' when the clippath is empty.
+	\item [\GMTprog{pscoast.c}]: Produce at least ``S V'' when the clippath is empty.
+	\item [\GMTprog{psscale.c}]: When using \Opt{A} with a vertical color bar, the annotations where left-
+	in stead of right-aligned.
 	\item [\GMTprog{gshhs/gshhs.c}]: Checked wrong variable to test if a file was given on the command line.
 	\item [\GMTprog{meca/util\_meca.c}]: Needed to convert the output from \GMTfunc{d\_atan2} to degrees.
 	\item [\GMTprog{mgd77/mgd77.c}]: Was failing to read Windows terminated ASCII files.
