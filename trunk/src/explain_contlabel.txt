@@ -12,7 +12,7 @@ The required argument controls the placement of labels along the LINETYPE.
 Choose among five controlling algorithms:
 .RS
 .TP
-GFLAG\fBd\fP\fIdist\fP[c|i|m|p] or GFLAG\fBD\fP\fIdist\fP[d|e|k|m|n]
+GFLAG\fBd\fP\fIdist\fP[\fBc\fP|\fBi\fP|\fBm\fP|\fBp\fP] or GFLAG\fBD\fP\fIdist\fP[\fBd\fP|\fBe\fP|\fBk\fP|\fBm\fP|\fBn\fP]
 For lower case \fBd\fP, give distances between labels on the plot in your preferred measurement unit
 \fBc\fP (cm), \fBi\fP (inch), \fBm\fP (meter), or \fBp\fP (points), while for upper case \fBD\fP, specify
 distances in map units and append the unit; choose among \fBe\fP (m), \fBk\fP (km), \fBm\fP (mile), \fBn\fP
@@ -47,6 +47,7 @@ GFLAG\fBx|X\fP\fIxfile.d\fP
 Reads the multi-segment file \fIxfile.d\fP and places labels at the intersections
 between the LINETYPE and the lines in\fIxfile.d\fP.  GFLAG\fBX\fP will resample the lines first along
 great-circle arcs.
-.RE
-In addition, you may optionally append \fB+r\fP\fIradius\fP[c|i|m|p] to set a minimum label separation in the
+.P
+In addition, you may optionally append \fB+r\fP\fIradius\fP[\fBc\fP|\fBi\fP|\fBm\fP|\fBp\fP] to set a minimum label separation in the
 x-y plane [no limitation].
+.RE
