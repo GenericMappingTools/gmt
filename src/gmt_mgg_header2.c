@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.31 2009-07-09 04:55:13 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.32 2009-07-09 04:57:40 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -294,7 +294,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 
 			else if (mggHeader.numType == -sizeof(float)) {
 				swap_long(&tLong[i]);
-				grid[i] = tFloat[i] / (float) mggHeader.precision;
+				grid[i] = tFloat[i];
 			}
 
 			/* 2-byte values */
@@ -392,7 +392,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 				}
 				else if (mggHeader.numType == -sizeof(float)) {
 					swap_long(&tLong[k[i]]);
-					grid[kk] = tFloat[k[i]] / (float) mggHeader.precision;
+					grid[kk] = tFloat[k[i]];
 				}
 				
 				else if (mggHeader.numType == sizeof(short)) {
@@ -448,7 +448,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 				}
 				else if (mggHeader.numType == -sizeof(float)) {
 					swap_long(&tLong[first_col + i]);
-					grid[kk] = tFloat[first_col + i] / (float) mggHeader.precision;
+					grid[kk] = tFloat[first_col + i];
 				}
 				
 				/* 2-byte values */
@@ -571,7 +571,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 					swap_long(&tLong[i]);
 				}
 				else if (mggHeader.numType == -sizeof(float)) {
-					tFloat[i] = grid[i] * mggHeader.precision;
+					tFloat[i] = grid[i];
 					swap_long(&tLong[i]);
 				}
 				
@@ -682,7 +682,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 						tLong[i] = (int)rint ((double)grid[kk] * mggHeader.precision);
 					}
 					else if (mggHeader.numType -sizeof(float)) {
-						tFloat[i] = grid[kk] * mggHeader.precision;
+						tFloat[i] = grid[kk];
 					}
 					
 					else if (mggHeader.numType == sizeof(short)) {
@@ -724,7 +724,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 						tLong[i] = (int) rint ((double)grid[kk] * mggHeader.precision);
 					}
 					else if (mggHeader.numType == -sizeof(float)) {
-						tFloat[i] = grid[kk] * mggHeader.precision;
+						tFloat[i] = grid[kk];
 					}
 					
 					else if (mggHeader.numType == sizeof(short)) {
