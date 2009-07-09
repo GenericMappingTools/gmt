@@ -1,4 +1,4 @@
-/* $Id: ssrfpack.c,v 1.7 2009-07-09 00:35:29 guru Exp $
+/* $Id: ssrfpack.c,v 1.8 2009-07-09 00:35:55 guru Exp $
  * ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -322,7 +322,7 @@ L1:
 
 /* Test the range of SIGMA. */
 
-    sig = ffabs(*sigma);
+    sig = fabs(*sigma);
     if (sig < 1e-9) {
 
 /* Hermite cubic interpolation. */
