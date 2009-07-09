@@ -1,4 +1,4 @@
-/* $Id: ssrfpack.c,v 1.6 2009-05-18 22:51:59 guru Exp $
+/* $Id: ssrfpack.c,v 1.7 2009-07-09 00:35:29 guru Exp $
  * ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
  */
@@ -322,7 +322,7 @@ L1:
 
 /* Test the range of SIGMA. */
 
-    sig = abs(*sigma);
+    sig = ffabs(*sigma);
     if (sig < 1e-9) {
 
 /* Hermite cubic interpolation. */
@@ -969,7 +969,7 @@ doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
 /* Compute an absolute tolerance FTOL = abs(TOL) and a */
 /*   relative tolerance RTOL = 100*Macheps. */
 
-    ftol = abs(*tol);
+    ftol = fabs(*tol);
     rtol = 1.;
 L1:
     rtol /= 2.;
@@ -1117,7 +1117,7 @@ if (dbg_verbose) fprintf (stderr, "CONVEXITY -- SIG = %g  F(SIG) = %g  FP(SIG) =
 	    goto L8;
 	}
 	dsig = -f / fp;
-if (abs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || abs(f) <= rtol)
+if (fabs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || fabs(f) <= rtol)
 		 {
 	    goto L8;
 	}
@@ -1177,14 +1177,14 @@ L5:
 /*        IF (LUN .GE. 0) WRITE (LUN,130) DSIG */
 /*  130   FORMAT (1X,'MONOTONICITY -- DSIG = ',E15.8) */
 if (dbg_verbose) fprintf (stderr, "MONOTONICITY -- DSIG = %g\n", dsig);
-	if (abs(dsig) > abs(dmax__) || dsig * dmax__ > 0.) {
+	if (fabs(dsig) > fabs(dmax__) || dsig * dmax__ > 0.) {
 	    goto L7;
 	}
 
 /*   Restrict the step-size such that abs(DSIG) .GE. STOL/2. */
 /*     Note that DSIG and DMAX have opposite signs. */
 
-	if (abs(dsig) < stol / 2.) {
+	if (fabs(dsig) < stol / 2.) {
 	    d__1 = stol / 2.;
 	    dsig = -d_sign(&d__1, &dmax__);
 	}
@@ -1244,11 +1244,11 @@ if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
 /*   Test for convergence. */
 
 	stol = rtol * sig;
-if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
+if (fabs(dmax__) <= stol || (f >= 0. && f <= ftol) || fabs(f) <= rtol) {
 	    goto L8;
 	}
 	dmax__ += dsig;
-	if (f0 * f > 0. && abs(f) >= abs(f0)) {
+	if (f0 * f > 0. && fabs(f) >= fabs(f0)) {
 	    goto L7;
 	}
 	if (f0 * f <= 0.) {
@@ -1262,7 +1262,7 @@ if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
 	    t2 = fneg;
 	    dmax__ = dsig;
 	    fneg = f0;
-	    if (abs(dsig) > abs(t1) && abs(f) < abs(t2)) {
+	    if (fabs(dsig) > fabs(t1) && fabs(f) < fabs(t2)) {
 
 		dsig = t1;
 		f0 = t2;
@@ -1389,7 +1389,7 @@ L12:
 
     aa = *a;
     bb = *b;
-    if (abs(aa) > abs(bb)) {
+    if (fabs(aa) > fabs(bb)) {
 
 /* ABS(A) > ABS(B). */
 
@@ -2156,9 +2156,9 @@ L6:
 
 L8:
 /* Computing MIN */
-    d__1 = abs(a[0]), d__2 = abs(a[7]), d__1 = min(d__1,d__2), d__2 = abs(a[
-	    14]), d__1 = min(d__1,d__2), d__2 = abs(a[21]), d__1 = min(d__1,
-	    d__2), d__2 = abs(a[28]);
+    d__1 = fabs(a[0]), d__2 = fabs(a[7]), d__1 = min(d__1,d__2), d__2 = fabs(a[
+	    14]), d__1 = min(d__1,d__2), d__2 = fabs(a[21]), d__1 = min(d__1,
+	    d__2), d__2 = fabs(a[28]);
     dmin__ = min(d__1,d__2);
     if (dmin__ >= dtol) {
 	goto L12;
@@ -2202,7 +2202,7 @@ L8:
 /*   ill-conditioning. */
 
 /* Computing MIN */
-    d__1 = abs(a[21]), d__2 = abs(a[28]);
+    d__1 = fabs(a[21]), d__2 = fabs(a[28]);
     dmin__ = min(d__1,d__2);
     if (dmin__ < dtol) {
 	goto L14;
@@ -2393,7 +2393,7 @@ doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, doublereal *
 
 /* Test the range of SIGMA. */
 
-    sig = abs(*sigma);
+    sig = fabs(*sigma);
     if (sig < 1e-9) {
 
 /* Hermite cubic interpolation: */
@@ -3511,7 +3511,7 @@ if (dbg_verbose) if (rf > 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  UPPER
     *ier = -1;
 /* Computing MAX */
     i__1 = max(*n1,*n2);
-    if (min(*n1,*n2) < 1 || *n1 == *n2 || max(i__1,3) > *n || abs(rf) != 1.) {
+    if (min(*n1,*n2) < 1 || *n1 == *n2 || max(i__1,3) > *n || fabs(rf) != 1.) {
 	goto L11;
     }
     *ier = -2;
@@ -3663,14 +3663,14 @@ if ((h1 == bnd && rf * s1 > 0.) || (h2 == bnd && rf * s2 < 0.)) {
 
 /* Computing MAX */
 /* Computing MIN */
-    d__5 = (d__1 = h1 - bnd, abs(d__1)), d__6 = (d__2 = h2 - bnd, abs(d__2));
+    d__5 = (d__1 = h1 - bnd, fabs(d__1)), d__6 = (d__2 = h2 - bnd, fabs(d__2));
     d__3 = .001, d__4 = min(d__5,d__6);
     fmax = max(d__3,d__4);
 /* Computing MAX */
-    d__3 = (d__1 = h1 - bnd, abs(d__1)), d__4 = (d__2 = h2 - bnd, abs(d__2));
+    d__3 = (d__1 = h1 - bnd, fabs(d__1)), d__4 = (d__2 = h2 - bnd, fabs(d__2));
     t = max(d__3,d__4);
 /* Computing MAX */
-    d__1 = abs(s1), d__2 = abs(s2);
+    d__1 = fabs(s1), d__2 = fabs(s2);
     sig = max(d__1,d__2) / t;
     dmax__ = sig * (1. - t / fmax);
     sneg = sig - dmax__;
@@ -3687,7 +3687,7 @@ if (dbg_verbose) fprintf (stderr, "SIG = %g  SNEG = %g F0 = %g FMAX = %g\n", sig
 /* Compute an absolute tolerance FTOL = abs(TOL) and a */
 /*   relative tolerance RTOL = 100*Macheps. */
 
-    ftol = abs(*tol);
+    ftol = fabs(*tol);
     rtol = 1.;
 L5:
     rtol /= 2.;
@@ -3782,7 +3782,7 @@ if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
 	t2 = fneg;
 	dmax__ = dsig;
 	fneg = f0;
-	if (abs(dsig) > abs(t1)) {
+	if (fabs(dsig) > fabs(t1)) {
 
 	    dsig = t1;
 	    f0 = t2;
@@ -3792,7 +3792,7 @@ if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
 /*   Test for convergence. */
 
     stol = rtol * sig;
-if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
+if (fabs(dmax__) <= stol || (f >= 0. && f <= ftol) || fabs(f) <= rtol) {
 	goto L10;
     }
 
@@ -3819,14 +3819,14 @@ L9:
 /*      IF (LUN .GE. 0) WRITE (LUN,140) DSIG */
 /*  140 FORMAT (1X,8X,'DSIG = ',E15.8) */
 if (dbg_verbose) fprintf (stderr, "DSIG = %g\n", dsig);
-    if (abs(dsig) > abs(dmax__) || dsig * dmax__ > 0.) {
+    if (fabs(dsig) > fabs(dmax__) || dsig * dmax__ > 0.) {
 	goto L8;
     }
 
 /*   Restrict the step-size such that abs(DSIG) .GE. STOL/2. */
 /*     Note that DSIG and DMAX have opposite signs. */
 
-    if (abs(dsig) < stol / 2.) {
+    if (fabs(dsig) < stol / 2.) {
 	d__1 = stol / 2.;
 	dsig = -d_sign(&d__1, &dmax__);
     }
@@ -4045,7 +4045,7 @@ if (dbg_verbose) if (rf > 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  UPPER
     *ier = -1;
 /* Computing MAX */
     i__1 = max(*n1,*n2);
-    if (min(*n1,*n2) < 1 || *n1 == *n2 || max(i__1,3) > *n || abs(rf) != 1.) {
+    if (min(*n1,*n2) < 1 || *n1 == *n2 || max(i__1,3) > *n || fabs(rf) != 1.) {
 	goto L11;
     }
     *ier = -2;
@@ -4193,7 +4193,7 @@ if (dbg_verbose) fprintf (stderr, "F0 = %g FMAX = %g SIG = %g\n", f0, fmax, sig)
 /* Compute an absolute tolerance FTOL = abs(TOL), and a */
 /*   relative tolerance RTOL = 100*Macheps. */
 
-    ftol = abs(*tol);
+    ftol = fabs(*tol);
     rtol = 1.;
 L5:
     rtol /= 2.;
@@ -4269,7 +4269,7 @@ if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
 	t2 = fneg;
 	dmax__ = dsig;
 	fneg = f0;
-	if (abs(dsig) > abs(t1) && abs(f) < abs(t2)) {
+	if (fabs(dsig) > fabs(t1) && fabs(f) < fabs(t2)) {
 
 	    dsig = t1;
 	    f0 = t2;
@@ -4279,10 +4279,10 @@ if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
 /*   Test for convergence. */
 
     stol = rtol * sig;
-if (abs(dmax__) <= stol || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
+if (fabs(dmax__) <= stol || (f >= 0. && f <= ftol) || fabs(f) <= rtol) {
 	goto L10;
     }
-    if (f0 * f < 0. || abs(f) < abs(f0)) {
+    if (f0 * f < 0. || fabs(f) < fabs(f0)) {
 	goto L8;
     }
 
@@ -4302,14 +4302,14 @@ L8:
 /*      IF (LUN .GE. 0) WRITE (LUN,140) DSIG */
 /*  140 FORMAT (1X,8X,'DSIG = ',E15.8) */
 if (dbg_verbose) fprintf (stderr, "DSIG = %g\n", dsig);
-    if (abs(dsig) > abs(dmax__) || dsig * dmax__ > 0.) {
+    if (fabs(dsig) > fabs(dmax__) || dsig * dmax__ > 0.) {
 	goto L7;
     }
 
 /*   Restrict the step-size such that abs(DSIG) .GE. STOL/2. */
 /*     Note that DSIG and DMAX have opposite signs. */
 
-    if (abs(dsig) < stol / 2.) {
+    if (fabs(dsig) < stol / 2.) {
 	d__1 = stol / 2.;
 	dsig = -d_sign(&d__1, &dmax__);
     }
@@ -4619,7 +4619,7 @@ L4:
 /*   Compute an absolute tolerance FTOL = abs(TOL) and a */
 /*     relative tolerance RTOL = 100*Macheps. */
 
-    ftol = abs(*tol);
+    ftol = fabs(*tol);
     rtol = 1.;
 L5:
     rtol /= 2.;
@@ -4667,7 +4667,7 @@ if (dbg_verbose) fprintf (stderr, "%d -- SIG = %g  F = %g  FP = %g\n", nit, sig,
 	goto L10;
     }
     dsig = -f / fp;
-if (abs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || abs(f) <= rtol) {
+if (fabs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || fabs(f) <= rtol) {
 	goto L10;
     }
 
@@ -4967,7 +4967,7 @@ L2:
 	grad[k * 3 + 3] = g3 + dgk[2];
 	f[k] = fk + df;
 /* Computing MAX */
-	d__1 = dfmx, d__2 = abs(df) / (abs(fk) + 1.);
+	d__1 = dfmx, d__2 = fabs(df) / (fabs(fk) + 1.);
 	dfmx = max(d__1,d__2);
 /* L3: */
     }
@@ -5383,7 +5383,7 @@ L5:
 /*      IF (LUN .GE. 0) WRITE (LUN,130) DP */
 /*  130 FORMAT (1X,5X,'DP = ',E15.8) */
 if (dbg_verbose) fprintf (stderr, "DP = %g\n", dp);
-    if (abs(dp) > abs(dmax__)) {
+    if (fabs(dp) > fabs(dmax__)) {
 
 /*   G0*G .GT. 0 and the new estimate would be outside of the */
 /*     bracketing interval of length ABS(DMAX).  Reset */
@@ -5459,7 +5459,7 @@ if (dbg_verbose) fprintf (stderr, "DP = %g\n", dp);
 /* *********************************************************** */
 
 
-    ax = abs(*x);
+    ax = fabs(*x);
     xs = ax * ax;
     if (ax <= .5) {
 

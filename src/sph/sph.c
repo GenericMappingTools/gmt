@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.19 2009-05-19 03:36:48 guru Exp $
+ *	$Id: sph.c,v 1.20 2009-07-09 00:35:29 guru Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -46,7 +46,6 @@ typedef int logical;
 #ifndef max
 #define max(x, y) (((x) > (y)) ? (x) : (y))
 #endif
-#define abs(x) fabs(x)
 #define FALSE_ 0
 #define TRUE_ 1
 #define MODULE "libsph 1.0"
