@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.37 2009-02-16 02:08:17 guru Exp $
+#  $Id: Makefile,v 1.38 2009-07-10 04:59:43 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -166,6 +166,7 @@ update-ftp-live:
 	rm -f gmt_server_job.sh
 
 update-gshhs-live:
+	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/*GSHHS*'
 	scp ../ftp/GSHHS*.bz2  $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/GSHHS*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	echo "cd $(LIVEFTPDIR)" > gmt_server_job.sh
@@ -206,6 +207,7 @@ update-ftp-test:
 	rm -f gmt_server_job.sh
 
 update-gshhs-test:
+	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/*GSHHS*'
 	scp ../ftp/GSHHS*.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/GSHHS*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
@@ -241,6 +243,7 @@ update-ftp-local:
 	done
 
 update-gshhs-local:
+	rm -rf ftp/GSHHS*
 	cp -f ../ftp/GSHHS*.bz2 ftp
 	cp -f ../ftp/GSHHS*.exe ftp/windows
 	for p in coast high full; do \
