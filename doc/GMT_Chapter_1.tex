@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.123 2009-07-09 13:35:09 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.124 2009-07-10 02:25:29 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -93,6 +93,8 @@ Here is the list of bug corrections:
 		for $<$ A or $>$ Z; Zones A+B reached till 84S instead of 80S; Zone J
 		wrongly produced value for Zone K; Zones U+W were not recognized;
 		Now also equates Zone O to Zone P (already equated Zone I to J).
+	\item [\GMTprog{gmt\_mgg\_header2.c}]: There was no support for (a) floating point grids and (b) swapping happened based
+		on machine byte order and not based on actual file byte order.
 	\item [\GMTprog{gmt\_nc.c}]:  Argument [layer] was not stripped from varname and would end up
 		in output grid.  Set {\it zmin/zmax} to NaN when info not in header.
 	\item [\GMTprog{gmt\_plot.c}]: Crashed when using time labels in 3D plot.
