@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.406 2009-07-08 21:41:39 guru Exp $
+ *	$Id: gmt_init.c,v 1.407 2009-07-10 22:09:57 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1858,10 +1858,7 @@ return (error);*/
 		case GMTCASE_ANOT_FONT_PRIMARY:
 		case GMTCASE_ANNOT_FONT:
 		case GMTCASE_ANOT_FONT:
-			if (value[0] >= '0' && value[0] <= '9')
-				ival = atoi (value);
-			else
-				ival = GMT_font_lookup (value, GMT_font, GMT_N_FONTS);
+			ival = GMT_font_lookup (value, GMT_font, GMT_N_FONTS);
 			if (ival < 0 || ival >= GMT_N_FONTS)
 				error = TRUE;
 			else
@@ -2082,10 +2079,7 @@ return (error);*/
 			error = true_false_or_error (lower_value, &gmtdefs.gridfile_shorthand);
 			break;
 		case GMTCASE_HEADER_FONT:
-			if (value[0] >= '0' && value[0] <= '9')
-				ival = atoi (value);
-			else
-				ival = GMT_font_lookup (value, GMT_font, GMT_N_FONTS);
+			ival = GMT_font_lookup (value, GMT_font, GMT_N_FONTS);
 			if (ival < 0 || ival >= GMT_N_FONTS)
 				error = TRUE;
 			else
@@ -2150,10 +2144,7 @@ return (error);*/
 				gmtdefs.n_header_recs = ival;
 			break;
 		case GMTCASE_LABEL_FONT:
-			if (value[0] >= '0' && value[0] <= '9')
-				ival = atoi (value);
-			else
-				ival = GMT_font_lookup (value, GMT_font, GMT_N_FONTS);
+			ival = GMT_font_lookup (value, GMT_font, GMT_N_FONTS);
 			if (ival < 0 || ival >= GMT_N_FONTS)
 				error = TRUE;
 			else
@@ -2566,10 +2557,7 @@ return (error);*/
 		case GMTCASE_ANOT_FONT_SECONDARY:
 		case GMTCASE_ANNOT_FONT2:
 		case GMTCASE_ANOT_FONT2:
-			if (value[0] >= '0' && value[0] <= '9')
-				ival = atoi (value);
-			else
-				ival = GMT_font_lookup (value, GMT_font, GMT_N_FONTS);
+			ival = GMT_font_lookup (value, GMT_font, GMT_N_FONTS);
 			if (ival < 0 || ival >= GMT_N_FONTS)
 				error = TRUE;
 			else
@@ -3191,6 +3179,7 @@ GMT_LONG GMT_font_lookup (char *name, struct GMT_FONT *list, GMT_LONG n)
 {
 	GMT_LONG i;
 
+	if (name[0] >= '0' && name[0] <= '9') return (atoi (name));
 	for (i = 0; i < n && strcmp (name, list[i].name); i++);
 	return (i);
 }
@@ -5384,10 +5373,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 		if ((c = strchr (text_cp, '%'))) {	/* Gave font name or number, too */
 			*c = ' ';	/* Make the % a space */
 			c++;		/* Go to next character */
-			if (c[0] >= '0' && c[0] <= '9')	/* Gave a font # */
-				p->font_no = atoi (c);
-			else
-				p->font_no = GMT_font_lookup (c, GMT_font, GMT_N_FONTS);
+			p->font_no = GMT_font_lookup (c, GMT_font, GMT_N_FONTS);
 			if (p->font_no >= GMT_N_FONTS) {
 				fprintf (stderr, "%s: -Sl contains bad font (set to %s (0))\n", GMT_program, GMT_font[gmtdefs.annot_font[0]].name);
 				p->font_no = gmtdefs.annot_font[0];
