@@ -8,7 +8,7 @@
 .SH NAME
 psscale \- Plot gray scale or color scale on maps
 .SH SYNOPSIS
-\fBpsscale\fP OPT(D)\fIxpos\fP/\fIypos\fP/\fIlength\fP/\fIwidth\fP[\fBh\fP] [ OPT(A)[\fBa\fP|\fBl\fP] ] [ GMT_B_OPT ] 
+\fBpsscale\fP OPT(D)\fIxpos\fP/\fIypos\fP/\fIlength\fP/\fIwidth\fP[\fBh\fP] [ OPT(A)[\fBa\fP|\fBl\fP|\fBc\fP] ] [ GMT_B_OPT ] 
 [ OPT(C)\fIcpt_file\fP ] [ OPT(E)[\fBb\fP|\fBf\fP][\fIlength\fP] ] [ OPT(I)[\fImax_intens\fP|\fIlow_i\fP/\fIhigh_i\fP] ] 
 [ GMT_K_OPT ] [ OPT(L)[\fBi\fP][\fIgap\fP] ] [ OPT(M) ] 
 [ OPT(N)\fIdpi\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
@@ -34,16 +34,13 @@ OPT(A)
 Place annotations and labels above (instead of below) horizontal scalebars and to the left
 (instead of the right) of vertical scalebars.
 Append \fBa\fP or \fBl\fP to move only the annotations or the label to the other side.
+Append \fBc\fP if you want to print a vertical label as a column of characters (does not work with special characters).
 .TP
 OPT(B)
 Set annotation, tick, and gridline interval for the colorbar.  The
 x-axis label will plot beneath a horizontal bar (or vertically
 to the right of a vertical bar), except when using OPT(A).
-As an option, use the y-axis label to
-plot the data unit to the right of a horizontal bar (and above a vertical bar).
-Note that since vertical labels will be plotted as a column
-of individual characters, no octal escape characters embedded in the label are allowed.
-Text with such characters will be plotted horizontally (along the length of the color scale).
+As an option, use the y-axis label to plot the data unit to the right of a horizontal bar (and above a vertical bar).
 If OPT(B) is omitted, or no annotation intervals are provided, the default is to annotate
 every color level based on the numerical entries in the cpt file
 (which may be overridden by ULB flags in the cpt file).
