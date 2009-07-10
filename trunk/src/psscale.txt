@@ -8,7 +8,7 @@
 .SH NAME
 psscale \- Plot gray scale or color scale on maps
 .SH SYNOPSIS
-\fBpsscale\fP OPT(D)\fIxpos\fP/\fIypos\fP/\fIlength\fP/\fIwidth\fP[\fBh\fP] [ OPT(A) ] [ GMT_B_OPT ] 
+\fBpsscale\fP OPT(D)\fIxpos\fP/\fIypos\fP/\fIlength\fP/\fIwidth\fP[\fBh\fP] [ OPT(A)[\fBa\fP|\fBl\fP] ] [ GMT_B_OPT ] 
 [ OPT(C)\fIcpt_file\fP ] [ OPT(E)[\fBb\fP|\fBf\fP][\fIlength\fP] ] [ OPT(I)[\fImax_intens\fP|\fIlow_i\fP/\fIhigh_i\fP] ] 
 [ GMT_K_OPT ] [ OPT(L)[\fBi\fP][\fIgap\fP] ] [ OPT(M) ] 
 [ OPT(N)\fIdpi\fP ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
@@ -31,27 +31,29 @@ Append \fIh\fP to get a horizontal scale [Default is vertical].
 No space between the option flag and the associated arguments.
 .TP
 OPT(A)
-Place annotations above (instead of below) horizontal scalebars and to the left
+Place annotations and labels above (instead of below) horizontal scalebars and to the left
 (instead of the right) of vertical scalebars.
+Append \fBa\fP or \fBl\fP to move only the annotations or the label to the other side.
 .TP
 OPT(B)
 Set annotation, tick, and gridline interval for the colorbar.  The
-xaxis label will plot beneath a horizontal bar (or vertically
-to the right of a vertical bar).  As an option, use the yaxis label to
+x-axis label will plot beneath a horizontal bar (or vertically
+to the right of a vertical bar), except when using OPT(A).
+As an option, use the y-axis label to
 plot the data unit to the right of a horizontal bar (and above a vertical bar).
-If no values are provided, the default is to annotate
-every color level (which may be overridden by ULB flags in the cpt file).
 Note that since vertical labels will be plotted as a column
 of individual characters, no octal escape characters embedded in the label are allowed.
-Text with such characters will be plotted horizontally (relative to the color scale).
-By default, labels are generated from the numerical entries.  To specify custom text
-labels for intervals, you must append ;\fIlabel\fP to each z-slice in the cpt file.
+Text with such characters will be plotted horizontally (along the length of the color scale).
+If OPT(B) is omitted, or no annotation intervals are provided, the default is to annotate
+every color level based on the numerical entries in the cpt file
+(which may be overridden by ULB flags in the cpt file).
+To specify custom text annotations for intervals, you must append ;\fIannotation\fP to each z-slice in the cpt file.
 .TP
 OPT(C)
 \fIcpt_file\fP is the color palette file to be used.
 By default all color changes are annotated.  To use a subset, add an extra column to the
 cpt-file with a L, U, or B to annotate Lower, Upper, or Both color segment boundaries (but see OPT(B)).
-If not given, \fBpsscale\fP will read stdin.  As for \fBgrdview\fP, \fBpsscale\fP can understand
+If not given, \fBpsscale\fP will read stdin.  Like \fBgrdview\fP, \fBpsscale\fP can understand
 pattern specifications in the cpt file.
 .TP
 OPT(E)
