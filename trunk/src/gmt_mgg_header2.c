@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.34 2009-07-09 22:43:22 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.35 2009-07-10 02:02:27 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -17,6 +17,8 @@
 #define SEC_PER_MIN		60.0
 #define SEC_PER_DEG		(SEC_PER_MIN * MIN_PER_DEG)
 #define BYTE_SIZE
+
+int swap_header (MGG_GRID_HEADER_2 *header);
 
 static double dms2degrees(int deg, int min, int sec)
 {
@@ -118,17 +120,14 @@ static void MGG2_2GMT(MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 
 static void swap_word(void* ptr)
 {
-#if WORDS_BIGENDIAN == 0
    unsigned char *tmp = ptr;
    unsigned char a = tmp[0];
    tmp[0] = tmp[1];
    tmp[1] = a;
-#endif
 }
 
-static void swap_long(void *ptr)
+static void swap_long (void *ptr)
 {
-#if WORDS_BIGENDIAN == 0
    unsigned char *tmp = ptr;
    unsigned char a = tmp[0];
    tmp[0] = tmp[3];
@@ -137,41 +136,48 @@ static void swap_long(void *ptr)
    a = tmp[1];
    tmp[1] = tmp[2];
    tmp[2] = a;
-#endif
 }
 
-static void swap_header(MGG_GRID_HEADER_2 *header)
+int swap_header (MGG_GRID_HEADER_2 *header)
 {
-   int i;
-   swap_long(&header->version);
-   swap_long(&header->length);
-   swap_long(&header->dataType);
-   swap_long(&header->latDeg);
-   swap_long(&header->latMin);
-   swap_long(&header->latSec);
-   swap_long(&header->latSpacing);
-   swap_long(&header->latNumCells);
-   swap_long(&header->lonDeg);
-   swap_long(&header->lonMin);
-   swap_long(&header->lonSec);
-   swap_long(&header->lonSpacing);
-   swap_long(&header->lonNumCells);
-   swap_long(&header->minValue);
-   swap_long(&header->maxValue);
-   swap_long(&header->gridRadius);
-   swap_long(&header->precision);
-   swap_long(&header->nanValue);
-   swap_long(&header->numType);
-   swap_long(&header->waterDatum);
-   swap_long(&header->dataLimit);
-   swap_long(&header->cellRegistration);
-   for (i = 0; i < GRD98_N_UNUSED; i++) swap_long(&header->unused[i]);
+	int i, version;
+	/* Determine if swapping is needed */
+	if (header->version == (MGG_MAGIC_NUM + MGG_VERSION)) return (0);	/* Version matches, No need to swap */
+	version = header->version;
+	swap_long (&version);
+	if (version != (MGG_MAGIC_NUM + MGG_VERSION)) return (-1);		/* Cannot make sense of header */
+	/* Here we come when we do need to swap */
+	swap_long (&header->version);
+	swap_long (&header->length);
+	swap_long (&header->dataType);
+	swap_long (&header->latDeg);
+	swap_long (&header->latMin);
+	swap_long (&header->latSec);
+	swap_long (&header->latSpacing);
+	swap_long (&header->latNumCells);
+	swap_long (&header->lonDeg);
+	swap_long (&header->lonMin);
+	swap_long (&header->lonSec);
+	swap_long (&header->lonSpacing);
+	swap_long (&header->lonNumCells);
+	swap_long (&header->minValue);
+	swap_long (&header->maxValue);
+	swap_long (&header->gridRadius);
+	swap_long (&header->precision);
+	swap_long (&header->nanValue);
+	swap_long (&header->numType);
+	swap_long (&header->waterDatum);
+	swap_long (&header->dataLimit);
+	swap_long (&header->cellRegistration);
+	for (i = 0; i < GRD98_N_UNUSED; i++) swap_long (&header->unused[i]);
+	return (1);	/* Signal we need to swap the data also */
 }
 
 GMT_LONG GMT_is_mgg2_grid (struct GRD_HEADER *header)
 {	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
+	int ok;
 
 	if (!strcmp(header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if ((fp = GMT_fopen(header->name, GMT_io.r_mode)) == NULL) return (GMT_GRDIO_OPEN_FAILED);
@@ -179,11 +185,11 @@ GMT_LONG GMT_is_mgg2_grid (struct GRD_HEADER *header)
 	memset(&mggHeader, '\0', sizeof(MGG_GRID_HEADER_2));
 	if (GMT_fread(&mggHeader, sizeof(MGG_GRID_HEADER_2), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
 
-	/* Swap header bytes if necessary */
-	swap_header(&mggHeader);
+	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
+	ok = swap_header (&mggHeader);
 
 	/* Check the magic number and size of header */
-	if (mggHeader.version < MGG_MAGIC_NUM + MGG_VERSION) return (-1);	/* Not this kind of file */
+	if (ok == -1) return (-1);	/* Not this kind of file */
 	header->type = GMT_grd_format_decoder ("rf");
 	return (header->type);
 }
@@ -192,6 +198,7 @@ GMT_LONG mgg2_read_grd_info (struct GRD_HEADER *header)
 {
 	FILE			*fp = NULL;
 	MGG_GRID_HEADER_2	mggHeader;
+	int ok;
 
 	if (!strcmp(header->name, "=")) {
 		fp = GMT_stdin;
@@ -201,11 +208,11 @@ GMT_LONG mgg2_read_grd_info (struct GRD_HEADER *header)
 	memset(&mggHeader, '\0', sizeof(MGG_GRID_HEADER_2));
 	if (GMT_fread(&mggHeader, sizeof(MGG_GRID_HEADER_2), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
 
-	/* Swap header bytes if necessary */
-	swap_header(&mggHeader);
+	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
+	ok = swap_header(&mggHeader);
 
 	/* Check the magic number and size of header */
-	if (mggHeader.version < MGG_MAGIC_NUM + MGG_VERSION) {
+	if (ok == -1) {
 		fprintf(stderr, "GMT Fatal Error: Unrecognized header, expected 0x%04X saw 0x%04X\n", MGG_MAGIC_NUM + MGG_VERSION, mggHeader.version);
 		return (GMT_GRDIO_GRD98_BADMAGIC);
 	}
@@ -235,9 +242,6 @@ GMT_LONG mgg2_write_grd_info (struct GRD_HEADER *header)
 	
 	if ((err = GMT2MGG2(header, &mggHeader))) return (err);
 
-	/* Swap header bytes if necessary */
-	swap_header(&mggHeader);
-
 	if (GMT_fwrite (&mggHeader, sizeof(MGG_GRID_HEADER_2), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
@@ -256,7 +260,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 	GMT_LONG first_col, last_col, first_row, last_row, one_or_zero;
 	GMT_LONG j, j2, width_in, height_in, i_0_out, inc = 1;
 	GMT_LONG i, kk, ij, nm, width_out;
-	BOOLEAN piping = FALSE, geo = FALSE;
+	BOOLEAN piping = FALSE, geo = FALSE, swap_all = FALSE;
 	double half_or_zero, x, small;
 	long long_offset;	/* For fseek only */
 	
@@ -268,7 +272,8 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 	}
 	else if ((fp = GMT_fopen (header->name, GMT_io.r_mode)) != NULL) {
 		if (GMT_fread(&mggHeader, sizeof(MGG_GRID_HEADER_2), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
-		swap_header(&mggHeader);
+		swap_all = swap_header(&mggHeader);
+		if (swap_all == -1) return (GMT_GRDIO_GRD98_BADMAGIC);
 		if (mggHeader.numType == 0) mggHeader.numType = sizeof(int);
 	}
 
@@ -287,20 +292,20 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 		for (i = 0; i < nm; i++) {
 			/* 4-byte values */
 			if (mggHeader.numType == sizeof(int)) {
-				swap_long(&tLong[i]);
+				if (swap_all) swap_long (&tLong[i]);
 				if (tLong[i] == mggHeader.nanValue) grid[i] = GMT_f_NaN;
 				else grid[i] = (float) tLong[i] / (float) mggHeader.precision;
 			}
 
 			else if (mggHeader.numType == -sizeof(float)) {
-				swap_long(&tLong[i]);
+				if (swap_all) swap_long (&tLong[i]);
 				if (tLong[i] == mggHeader.nanValue) grid[i] = GMT_f_NaN;
 				else grid[i] = tFloat[i];
 			}
 
 			/* 2-byte values */
 			else if (mggHeader.numType == sizeof(short)) {
-                swap_word(&tShort[i]);
+                		if (swap_all) swap_word(&tShort[i]);
 				if (tShort[i] == mggHeader.nanValue) grid[i] = GMT_f_NaN;
 				else grid[i] = (float) tShort[i] / (float) mggHeader.precision;;
 			}
@@ -387,18 +392,18 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 			for (i = 0; i < width_in; i++) {
 				kk = ij+i*inc;
 				if (mggHeader.numType == sizeof(int)) {
-					swap_long(&tLong[k[i]]);
+					if (swap_all) swap_long (&tLong[k[i]]);
 					if (tLong[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tLong[k[i]] / (float) mggHeader.precision;
 				}
 				else if (mggHeader.numType == -sizeof(float)) {
-					swap_long(&tLong[k[i]]);
+					if (swap_all) swap_long (&tLong[k[i]]);
 					if (tLong[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = tFloat[k[i]];
 				}
 				
 				else if (mggHeader.numType == sizeof(short)) {
-					swap_word(&tShort[k[i]]);
+					if (swap_all) swap_word(&tShort[k[i]]);
 					if (tShort[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tShort[k[i]] / (float) mggHeader.precision;;
 				}
@@ -444,19 +449,19 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 				kk = ij+i;
 				/* 4-byte values */
 				if (mggHeader.numType == sizeof(int)) {
-					swap_long(&tLong[first_col + i]);
+					if (swap_all) swap_long (&tLong[first_col + i]);
 					if (tLong[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float)tLong[first_col + i] / (float) mggHeader.precision;
 				}
 				else if (mggHeader.numType == -sizeof(float)) {
-					swap_long(&tLong[first_col + i]);
+					if (swap_all) swap_long (&tLong[first_col + i]);
 					if (tLong[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = tFloat[first_col + i];
 				}
 				
 				/* 2-byte values */
 				else if (mggHeader.numType == sizeof(short)) {
-					swap_word(&tShort[first_col + i]);
+					if (swap_all) swap_word(&tShort[first_col + i]);
 					if (tShort[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tShort[first_col + i] / (float) mggHeader.precision;;
 				} 
@@ -540,9 +545,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 			header->z_max = MAX (header->z_max, grid[ij]);
 		}
 		if ((err = GMT2MGG2(header, &mggHeader))) return (err);
-		swap_header(&mggHeader);
 		if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
-		swap_header(&mggHeader);
 
 		tLong  = (int *) GMT_memory (CNULL, (size_t)nm, sizeof (int), "mgg_write_grd");
 		tShort = (short*)tLong;
@@ -553,14 +556,11 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 			if (GMT_is_fnan (grid[i])) {
 				if (mggHeader.numType == sizeof(int)) {
 					tLong[i]  = mggHeader.nanValue;
-					swap_long(&tLong[i]);
 				}
 				else if (mggHeader.numType == -sizeof(float)) {
 					tFloat[i]  = mggHeader.nanValue;
-					swap_long(&tLong[i]);
 				} else if (mggHeader.numType == sizeof(short)) {
 					tShort[i] = (short)mggHeader.nanValue;
-					swap_word(&tShort[i]);
 				} else if (mggHeader.numType == sizeof(char)) {
 					tChar[i]  = (char)mggHeader.nanValue;
 				} else {
@@ -571,16 +571,13 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 
 				if (mggHeader.numType == sizeof(int)) {
 					tLong[i] = (int)rint((double)grid[i] * mggHeader.precision);
-					swap_long(&tLong[i]);
 				}
 				else if (mggHeader.numType == -sizeof(float)) {
 					tFloat[i] = grid[i];
-					swap_long(&tLong[i]);
 				}
 				
 				else if (mggHeader.numType == sizeof(short)) {
 					tShort[i] = (short) rint((double)grid[i] * mggHeader.precision);
-					swap_word(&tShort[i]);
 				}
 				
 				else if (mggHeader.numType == sizeof(char)) {
@@ -643,9 +640,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 	
 	/* store header information and array */
 	if ((err = GMT2MGG2(header, &mggHeader))) return (err);;
-	swap_header(&mggHeader);
 	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
-	swap_header(&mggHeader);
 
 	tLong  = (int *) GMT_memory (CNULL, (size_t)width_in, sizeof (int), "mgg_write_grd");
 	tShort = (short *) tLong;
@@ -700,8 +695,6 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 						return (GMT_GRDIO_UNKNOWN_TYPE);
 					}
 				}
-				if (abs(mggHeader.numType) == sizeof(int)) swap_long(&tLong[i]);
-				else if (mggHeader.numType == sizeof(short)) swap_word(&tShort[i]);
 			}
 			GMT_fwrite ((void *)tLong, (size_t)abs(mggHeader.numType), (size_t)width_out, fp);
 		}
@@ -742,8 +735,6 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 						return (GMT_GRDIO_UNKNOWN_TYPE);
 					}
 				}
-				if (abs(mggHeader.numType) == sizeof(int)) swap_long(&tLong[i]);
-				else if (mggHeader.numType == sizeof(short)) swap_word(&tShort[i]);
 			}
 			GMT_fwrite ((void *)tLong, (size_t)abs(mggHeader.numType), (size_t)width_out, fp);
 		}
