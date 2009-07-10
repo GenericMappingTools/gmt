@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.265 2009-07-08 22:02:12 guru Exp $
+ *	$Id: gmt_plot.c,v 1.266 2009-07-10 22:10:23 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3329,10 +3329,7 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 				if ((c = strchr (s->string, '%'))) {	/* Gave font name or number, too */
 					*c = 0;		/* Replace % with the end of string NUL indicator */
 					c++;		/* Go to next character */
-					if (c[0] >= '0' && c[0] <= '9')	/* Gave a font # */
-						font_no = atoi (c);
-					else
-						font_no = GMT_font_lookup (c, GMT_font, GMT_N_FONTS);
+					font_no = GMT_font_lookup (c, GMT_font, GMT_N_FONTS);
 					if (font_no >= GMT_N_FONTS) {
 						fprintf (stderr, "%s: custom symbol subcommand l contains bad font (set to %s (0))\n", GMT_program, GMT_font[gmtdefs.annot_font[0]].name);
 						font_no = gmtdefs.annot_font[0];

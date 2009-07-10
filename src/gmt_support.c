@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.419 2009-07-08 21:41:40 guru Exp $
+ *	$Id: gmt_support.c,v 1.420 2009-07-10 22:10:23 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2781,10 +2781,7 @@ GMT_LONG GMT_contlabel_specs (char *txt, struct GMT_CONTOUR *G)
 
 
 			case 'f':	/* Font specification */
-				if (p[1] >= '0' && p[1] <= '9')
-					k = atoi (&p[1]);
-				else
-					k = GMT_font_lookup (&p[1], GMT_font, GMT_N_FONTS);
+				k = GMT_font_lookup (&p[1], GMT_font, GMT_N_FONTS);
 				if (k < 0 || k >= GMT_N_FONTS)
 					bad++;
 				else
