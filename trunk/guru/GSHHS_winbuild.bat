@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GSHHS_winbuild.bat,v 1.4 2009-07-08 18:54:39 guru Exp $
+REM	$Id: GSHHS_winbuild.bat,v 1.5 2009-07-10 00:03:22 guru Exp $
 REM	Builds installer for GSHHS under Windows
 REM	Paul Wessel with help from Joaquim Luis
 REM
@@ -14,7 +14,8 @@ SET GSHHS=2.0
 
 echo === 1. Get all GSHHS %GSHHS% bzipped tar balls and extract files...
 
-cd C:\
+C:
+cd \
 copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS*high.tar.bz2 C:\
 copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS*full.tar.bz2 C:\
 7z x GSHHS*high.tar.bz2
@@ -28,7 +29,7 @@ echo === 2. Build the GSHHS full/high installer...
 
 iscc /Q C:\GMT\guru\GMTsetup_hfcoast.iss
 
-echo === 3. Place the GMT installers on macnut...
+echo === 3. Place the GSHHS installer on macnut...
 
 copy C:\GMT\ftp\GSHHS*.exe Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp
 
