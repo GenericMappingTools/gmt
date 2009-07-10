@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.573 2009-07-09 22:43:22 guru Exp $
+	$Id: ChangeLog,v 1.574 2009-07-10 00:23:54 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -9,6 +9,9 @@
 
 2009-07-09	pwessel
 	* gmt_mgg_header2.c:	Can now handle float grids, and properly handles byte-order swapping.
+	* segyprogs/pssegy.c:	Casting as long forced 8 rather than 4-byte offsets. Thanx to Adrian Benson.
+	* segyprogs/pssegyz.c:	Casting as long forced 8 rather than 4-byte offsets.
+	* segyprogs/segy2grd.c:	Casting as long forced 8 rather than 4-byte offsets.
 
 2009-07-09	remko
 	* psclip.c:		Produce warning when using -B in combination with -N or -T.
