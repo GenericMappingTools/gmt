@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: psscale.sh,v 1.1 2009-07-10 20:23:11 remko Exp $
+#	$Id: psscale.sh,v 1.2 2009-07-10 22:21:19 remko Exp $
 #
 . ../functions.sh
 
@@ -21,9 +21,9 @@ $psscale -D18/08/8/0.5h -O $2
 }
 
 ps=psscale.ps
-psscale="psscale -E -Ctmp.cpt -B:Range@+@+:/:m:"
-plot -Y0 -K > $ps
-psscale="psscale -E -Ctmp.cpt -B1:Range:/:m:"
+psscale="psscale -E -Ctmp.cpt -B:Range:/:m:"
+plot -Y2 -K > $ps
+psscale="psscale -E -Ctmp.cpt -Ac -B1:Range:/:m:"
 plot "-Y9 -O" >> $ps
 
 rm -f tmp.cpt .gmtcommands4
