@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.124 2009-07-10 02:25:29 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.125 2009-07-10 20:31:55 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -119,7 +119,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{psclip.c}]: Produce at least ``S V'' when the clippath is empty.
 	\item [\GMTprog{pscoast.c}]: Produce at least ``S V'' when the clippath is empty.
 	\item [\GMTprog{psscale.c}]: When using \Opt{A} with a vertical color bar, the annotations where left-
-	in stead of right-aligned.
+		in stead of right-aligned.  When using -A on horizontal bar, the last tick mark would not appear. 
 	\item [\GMTprog{gshhs/gshhs.c}]: Checked wrong variable to test if a file was given on the command line.
 	\item [\GMTprog{meca/util\_meca.c}]: Needed to convert the output from \GMTfunc{d\_atan2} to degrees.
 	\item [\GMTprog{mgd77/mgd77.c}]: Was failing to read Windows terminated ASCII files.
@@ -295,6 +295,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{psscale.c}]: Logarithmic scale did not function properly when scale bar was vertical.
 		When \Opt{I} and \Opt{Li} was used we did not draw box outlines.
 		Did not check if \Opt{D} was not given, and had wrong test for \Opt{E}.
+		Added -Aa and -Al options to move only the annotations or label to the other side of the color bar.
 	\item [\GMTprog{pstext.c}]: We incorrectly removed blank lines but those mark new
 		paragraphs when in \Opt{M} mode.
 	\item [\GMTprog{psxyz.c}]: Did not pick up y-size for column from input data file.

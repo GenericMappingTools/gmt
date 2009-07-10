@@ -1,11 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.575 2009-07-10 02:02:27 guru Exp $
+	$Id: ChangeLog,v 1.576 2009-07-10 20:31:55 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
-2009-07-10
+2009-07-15
 	* GMT 4.5.0 finalized and released
 -----------------------------------------------------------------------------------------
+
+2009-07-10	remko
+	* psscale.c:		Added -Aa and -Al options to move only the annotations or label to the
+				other side of the color bar. When using -A on horizontal bar, the last
+				tick mark would not appear.
 
 2009-07-09	pwessel
 	* gmt_mgg_header2.c:	Can now handle float grids, and properly handles byte-order swapping in input.
