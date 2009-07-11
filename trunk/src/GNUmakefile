@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.81 2009-04-26 20:19:16 guru Exp $
+#  $Id: GNUmakefile,v 1.82 2009-07-11 02:47:49 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -48,8 +48,8 @@ uninstall2-suppl:
 
 # All the files that need to be build before compilation
 
-FILES = gmt_ellipsoids.h gmt_datums.h gmtdefaults.i gmt_grdformats.h grdreformat.h gmt_keywords.h gmt_keycases.h \
-	gmtcolors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h grdinfo.h \
+FILES = gmt_ellipsoids.h gmt_datums.h Ellipsoids.i Fonts.i gmt_grdformats.h grdreformat.h gmt_keywords.h gmt_keycases.h \
+	Colors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h grdinfo.h \
 	gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i \
 	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i grdreformat_man.i
 
@@ -63,10 +63,10 @@ gmt_keywords.h:		gmt_keywords.d
 gmt_keycases.h:		gmt_keywords.d
 			grep -v '^#' gmt_keywords.d | awk '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > $@
 
-# Must create gmtcolors.i, gmt_color_rgb.h and gmt_colornames.h from Colors.txt
+# Must create Colors.i, gmt_color_rgb.h and gmt_colornames.h from Colors.txt
 
-gmtcolors.i:		Colors.txt
-			grep -v '^#' Colors.txt | LANG=C awk '{printf ".br\n%3i %3i %3i\t%s\n", $$1, $$2, $$3, $$4}' > $@
+Colors.i:		Colors.txt
+			grep -v '^#' Colors.txt | LANG=C awk '{printf ".br\n%3i\t%3i\t%3i\t%s\n", $$1, $$2, $$3, $$4}' > $@
 
 gmt_color_rgb.h:	Colors.txt
 			grep -v '^#' Colors.txt | LANG=C awk '{printf "{ %3i, %3i, %3i },\n", $$1, $$2, $$3}' | sed '$$s/},/}/' > $@
@@ -74,19 +74,25 @@ gmt_color_rgb.h:	Colors.txt
 gmt_colornames.h:	Colors.txt
 			grep -v '^#' Colors.txt | LANG=C awk '{printf "\"%s\",\n", $$4}' | sed '$$s/,$$//' > $@
 
-# Must create gmt_ellipsoids.h and gmtdefaults.i from Ellipsoids.txt
+# Must create gmt_ellipsoids.h and Ellipsoids.i from Ellipsoids.txt
 
 gmt_ellipsoids.h:	Ellipsoids.txt
 			grep -v '^#' Ellipsoids.txt | LANG=C awk '{{printf "\t\t{ \"%s\", %d, %s, ", $$1, $$2, $$3}; \
 			if ($$4 == 0) {printf "0.0},\n"} else if ($$4 < 0.5*$$3) {printf "1.0/%s},\n", $$4} else \
 			{printf "1.0-%s/%s},\n", $$4, $$3}} END{printf "\t\t{ \"Custom\", 0, 6371008.7714, 0.0}\n"}' > $@
 
-gmtdefaults.i:		Ellipsoids.txt
+Ellipsoids.i:		Ellipsoids.txt
 			grep -v '^#' Ellipsoids.txt > tmp0.txt
-			awk '{printf "%s\t%d\n", $$1, $$2}' tmp0.txt > tmp1.txt
+			awk '{printf "%s :\n", $$1, $$2}' tmp0.txt > tmp1.txt
 			awk -F: '{print $$2}' tmp0.txt | sed -e 's/^ //g' > tmp2.txt
-			paste tmp1.txt tmp2.txt | awk '{printf "%s\n.br\n", $$0}' > gmtdefaults.i
-			rm -f tmp[012].txt
+			awk '{printf "(%d)\n", $$2}' tmp0.txt > tmp3.txt
+			paste -d' ' tmp[123].txt | awk '{printf ".br\n%s\n", $$0}' > $@
+			rm -f tmp[0123].txt
+
+# Must create Fonts.i from PS_font_info.d
+
+Fonts.i:		../share/pslib/PS_font_info.d
+			grep -v '^#' ../share/pslib/PS_font_info.d | awk '{printf ".br\n\t%i\t%s\n", NR, $$1}' > $@
 
 # Must create gmt_datums.h from Datums.txt
 
