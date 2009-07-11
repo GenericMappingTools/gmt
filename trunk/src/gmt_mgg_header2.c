@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.36 2009-07-11 03:16:30 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.37 2009-07-11 08:07:51 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -260,7 +260,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 	GMT_LONG first_col, last_col, first_row, last_row, one_or_zero;
 	GMT_LONG j, j2, width_in, height_in, i_0_out, inc = 1;
 	GMT_LONG i, kk, ij, nm, width_out;
-	BOOLEAN piping = FALSE, geo = FALSE, swap_all = FALSE;
+	BOOLEAN piping = FALSE, geo = FALSE, swap_all = FALSE, is_float = FALSE;
 	double half_or_zero, x, small;
 	long long_offset;	/* For fseek only */
 	
@@ -281,6 +281,8 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 	
+	is_float = (mggHeader.numType < 0 && abs(mggHeader.numType) == (int)sizeof(float));	/* Float file */
+	
 	if (w == 0.0 && e == 0.0) {	/* Get entire file and return */
 		nm = ((GMT_LONG)header->nx) * ((GMT_LONG)header->ny);
 		tLong  = (int *) GMT_memory (CNULL, (size_t)nm, sizeof (int), "mgg_read_grd");
@@ -297,7 +299,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 				else grid[i] = (float) tLong[i] / (float) mggHeader.precision;
 			}
 
-			else if (mggHeader.numType == -sizeof(float)) {
+			else if (is_float) {
 				if (swap_all) swap_long (&tLong[i]);
 				if (tLong[i] == mggHeader.nanValue) grid[i] = GMT_f_NaN;
 				else grid[i] = tFloat[i];
@@ -396,7 +398,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 					if (tLong[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float) tLong[k[i]] / (float) mggHeader.precision;
 				}
-				else if (mggHeader.numType == -sizeof(float)) {
+				else if (is_float) {
 					if (swap_all) swap_long (&tLong[k[i]]);
 					if (tLong[k[i]] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = tFloat[k[i]];
@@ -453,7 +455,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 					if (tLong[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = (float)tLong[first_col + i] / (float) mggHeader.precision;
 				}
-				else if (mggHeader.numType == -sizeof(float)) {
+				else if (is_float) {
 					if (swap_all) swap_long (&tLong[first_col + i]);
 					if (tLong[first_col + i] == mggHeader.nanValue) grid[kk] = GMT_f_NaN;
 					else grid[kk] = tFloat[first_col + i];
@@ -517,7 +519,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 	GMT_LONG first_col, last_col, first_row, last_row;
 	GMT_LONG i, nm, ij, width_in;
 	
-	BOOLEAN geo = FALSE;
+	BOOLEAN geo = FALSE, is_float = FALSE;
 	double half_or_zero, small, x;
 	
 	int  *tLong;
@@ -533,6 +535,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 	else if ((fp = GMT_fopen (header->name, GMT_io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	
+	is_float = (mggHeader.numType < 0 && abs(mggHeader.numType) == (int)sizeof(float));	/* Float file */
 	if (w == 0.0 && e == 0.0) {	/* Write entire file and return */
 		/* Find min/max of data */
 		
@@ -557,7 +560,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 				if (mggHeader.numType == sizeof(int)) {
 					tLong[i]  = mggHeader.nanValue;
 				}
-				else if (mggHeader.numType == -sizeof(float)) {
+				else if (is_float) {
 					tFloat[i]  = mggHeader.nanValue;
 				} else if (mggHeader.numType == sizeof(short)) {
 					tShort[i] = (short)mggHeader.nanValue;
@@ -572,7 +575,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 				if (mggHeader.numType == sizeof(int)) {
 					tLong[i] = (int)rint((double)grid[i] * mggHeader.precision);
 				}
-				else if (mggHeader.numType == -sizeof(float)) {
+				else if (is_float) {
 					tFloat[i] = grid[i];
 				}
 				
@@ -667,7 +670,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 				kk = ij+k[i];
 				if (GMT_is_fnan (grid[kk])) {
 					if (mggHeader.numType == sizeof(int))       tLong[i]  = mggHeader.nanValue;
-					else if (mggHeader.numType == -sizeof(float))       tFloat[i]  = mggHeader.nanValue;
+					else if (is_float) tFloat[i]  = mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(short)) tShort[i] = (short)mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(char))  tChar[i] = (char)mggHeader.nanValue;
 					else {
@@ -679,7 +682,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 					if (mggHeader.numType == sizeof(int)) {
 						tLong[i] = (int)rint ((double)grid[kk] * mggHeader.precision);
 					}
-					else if (mggHeader.numType -sizeof(float)) {
+					else if (is_float) {
 						tFloat[i] = grid[kk];
 					}
 					
@@ -708,7 +711,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 				kk = ij+i;
 				if (GMT_is_fnan (grid[kk])) {
 					if (mggHeader.numType == sizeof(int))       tLong[i]  = mggHeader.nanValue;
-					else if (mggHeader.numType == -sizeof(float))  tFloat[i]  = mggHeader.nanValue;
+					else if (is_float) tFloat[i]  = mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(short)) tShort[i] = (short)mggHeader.nanValue;
 					else if (mggHeader.numType == sizeof(char))  tChar[i] = (char)mggHeader.nanValue;
 					else {
@@ -719,7 +722,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 					if (mggHeader.numType == sizeof(int)) {
 						tLong[i] = (int) rint ((double)grid[kk] * mggHeader.precision);
 					}
-					else if (mggHeader.numType == -sizeof(float)) {
+					else if (is_float) {
 						tFloat[i] = grid[kk];
 					}
 					
