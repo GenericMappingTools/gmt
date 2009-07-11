@@ -110,7 +110,7 @@ a manual reset of those two settings.
 (C) Run gmtdigitize.  Map scale does not matter; it is computed from the region and plot size.
 .SH "SEE ALSO"
 .IR gmtdefaults (l),
-.IR gmt (l),
-.IR gmtstitch (l)
-.IR mapproject (l)
+.IR GMT (l),
+.IR gmtstitch (l),
+.IR mapproject (l),
 .IR project (l)

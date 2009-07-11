@@ -68,7 +68,7 @@ degrees using a bilinear interpolation, try
 To just see how the outline of the grid large.grd will plot after the same rotation, try
 .br
 .sp
-\fBgrdrotater\fP large.grd OPT(T)67:45W/22:35S/19.6 OPT(V) OPT(S) | psxy OPT(Rg) OPT(JH)180/6i OPT(B)30 OPT(m) OPT(W)0.5\fBpfP | gv -
+\fBgrdrotater\fP large.grd OPT(T)67:45W/22:35S/19.6 OPT(V) OPT(S) | psxy OPT(Rg) OPT(JH)180/6i OPT(B)30 OPT(m) OPT(W)0.5\fBp\fP | gv -
 .br
 .sp
 Let say you have rotated gridA.grd and gridB.grd, restricting each rotation to nodes inside polygons polyA.d and polyB.d, respectively,

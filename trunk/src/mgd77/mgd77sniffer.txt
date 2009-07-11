@@ -452,16 +452,11 @@ To compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2
 \fBmgd77sniffer\fP 08010001 OPT(G)depth,/data/GRIDS/etopo5_hdr.i2 OPT(g)faa,/data/GRIDS/grav.11.2.img,0.1,1
 .br
 .sp
-
-
 .SH "SEE ALSO"
 .IR mgd77list (1),
 .IR mgd77track (1)
 .IR x2sys_init (1)
-.SH REFERENCES
+#include "refs.i"
 The Marine Geophysical Data Exchange Format - "MGD77", see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
 .br
-.sp
-Wessel, P., and W. H. F. Smith, 2006, The Generic Mapping Tools (GMT) version
-4.1.1 Technical Reference & Cookbook, SOEST/NOAA.
