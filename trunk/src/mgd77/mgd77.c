@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.245 2009-07-08 21:41:40 guru Exp $
+ *	$Id: mgd77.c,v 1.246 2009-07-11 03:16:31 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -475,7 +475,7 @@ int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, do
 
 int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77 files */
-	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[BUFSIZ];
+	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[BUFSIZ], *not_used = NULL;
 	int i, sequence, err, n_eols, c, n;
 	struct STAT buf;
 
@@ -501,7 +501,7 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 #else
 
 		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
-		fgets (line, BUFSIZ, F->fp);
+		not_used = fgets (line, BUFSIZ, F->fp);
 		rewind (F->fp);					/* Go back to beginning of file */
 		n_eols = (line[strlen(line)-1] == '\n' && line[strlen(line)-2] == '\r') ? 2 : 1; 
 		H->n_records = irint ((double)(buf.st_size - (MGD77_N_HEADER_RECORDS * (MGD77_HEADER_LENGTH + n_eols))) / (double)(MGD77_RECORD_LENGTH + n_eols));
@@ -520,7 +520,7 @@ int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MG
 		MGD77_header[sequence] = (char *)GMT_memory (VNULL, (size_t)(MGD77_HEADER_LENGTH + 1), sizeof (char), GMT_program);
 		if ((err = MGD77_Read_Header_Sequence (F->fp, MGD77_header[sequence], sequence+1))) return (err);
 	}
-	if (F->format == MGD77_FORMAT_TBL) fgets (line, BUFSIZ, F->fp);			/* Skip the column header for tables */
+	if (F->format == MGD77_FORMAT_TBL) not_used = fgets (line, BUFSIZ, F->fp);			/* Skip the column header for tables */
 	
 	for (i = 0; i < 2; i++) H->mgd77[i] = (struct MGD77_HEADER_PARAMS *) GMT_memory (VNULL, (size_t)1, sizeof (struct MGD77_HEADER_PARAMS), GMT_program);	/* Allocate parameter header */
 	
@@ -3901,7 +3901,7 @@ int MGD77_carter_init (struct MGD77_CARTER *C)
 	and returns 0.  If failure occurs, it returns -1.  */
 
 	FILE *fp = NULL;
-	char buffer [BUFSIZ];
+	char buffer [BUFSIZ], *not_used = NULL;
 	int  i;
 
 	memset ((void *)C, 0, sizeof (struct MGD77_CARTER));
@@ -3914,8 +3914,8 @@ int MGD77_carter_init (struct MGD77_CARTER *C)
                 return (-1);
         }
 
-	for (i = 0; i < 4; i++) fgets (buffer, BUFSIZ, fp);	/* Skip 4 headers */
-	fgets (buffer, BUFSIZ, fp);
+	for (i = 0; i < 4; i++) not_used = fgets (buffer, BUFSIZ, fp);	/* Skip 4 headers */
+	not_used = fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_CORRECTIONS) {
 		fprintf (stderr, "MGD77_carter_init:  Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
@@ -3932,8 +3932,8 @@ int MGD77_carter_init (struct MGD77_CARTER *C)
 
 	/* Read the offset table:  */
 
-	fgets (buffer, BUFSIZ, fp);	/* Skip header */
-	fgets (buffer, BUFSIZ, fp);
+	not_used = fgets (buffer, BUFSIZ, fp);	/* Skip header */
+	not_used = fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_OFFSETS) {
 		fprintf (stderr, "MGD77_carter_init:  Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
@@ -3950,8 +3950,8 @@ int MGD77_carter_init (struct MGD77_CARTER *C)
 
 	/* Read the zone table:  */
 
-	fgets (buffer, BUFSIZ, fp);	/* Skip header */
-	fgets (buffer, BUFSIZ, fp);
+	not_used = fgets (buffer, BUFSIZ, fp);	/* Skip header */
+	not_used = fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_BINS) {
 		fprintf (stderr, "MGD77_carter_init:  Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);

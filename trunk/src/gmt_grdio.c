@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.129 2009-06-27 04:19:47 remko Exp $
+ *	$Id: gmt_grdio.c,v 1.130 2009-07-11 03:16:29 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1249,7 +1249,7 @@ GMT_LONG GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, doub
 	i2 = (short int *) GMT_memory (VNULL, n_cols, sizeof (short int), GMT_program);
 	for (j = 0; j < grd->ny; j++) {	/* Read all the rows, offset by 2 boundary rows and cols */
 		ij = (j + GMT_pad[3]) * mx + GMT_pad[0];
-		GMT_fread ((void *)i2, sizeof (short int), (size_t)n_cols, fp);
+		if (GMT_fread ((void *)i2, sizeof (short int), (size_t)n_cols, fp) != (size_t)n_cols)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		for (i = 0, k = first_i; i < grd->nx; i++) {	/* Process this row's values */
 			switch (mode) {
 				case 0:	/* No encoded track flags, do nothing */

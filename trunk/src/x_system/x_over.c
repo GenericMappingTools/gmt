@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.12 2008-08-14 02:46:38 remko Exp $
+/*	$Id: x_over.c,v 1.13 2009-07-11 03:16:32 guru Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -128,6 +128,7 @@ int main (int argc, char *argv[])
   float h_cross[2];			/* Heading at crossover along each leg */
   float d_factor[3];			/* Scale factors if applicable */
   float last_lon;			/* Used to check if we cross Greenwich */
+  size_t not_used = 0;
 
   FILE *fp;				/* File pointer */
 
@@ -263,24 +264,24 @@ int main (int argc, char *argv[])
     last_sect[leg] = (npoints[leg]%n_pts_pr_blk[leg])/n_pts_pr_sect[leg];
     last_pt[leg] = npoints[leg] - last_blk[leg]*n_pts_pr_blk[leg]
     		   - last_sect[leg]*n_pts_pr_sect[leg];
-    fread((void *)(&ttime[offset[leg]]), (size_t)4, (size_t)1, fp);
-    fread((void *)(&latitude), (size_t)4, (size_t)1, fp);
-    fread((void *)(&longitude), (size_t)4, (size_t)1, fp);
+    not_used = fread((void *)(&ttime[offset[leg]]), (size_t)4, (size_t)1, fp);
+    not_used = fread((void *)(&latitude), (size_t)4, (size_t)1, fp);
+    not_used = fread((void *)(&longitude), (size_t)4, (size_t)1, fp);
     lat[offset[leg]] = (float)(latitude *0.000001);
     lon[offset[leg]] = (float)(longitude *0.000001);
     /* Make sure geodetic longitudes are used */
     if (lon[offset[leg]] < 0.) lon[offset[leg]] += 360.0;
-    fread((void *)gmt[offset[leg]], (size_t)2, (size_t)3, fp);
+    not_used = fread((void *)gmt[offset[leg]], (size_t)2, (size_t)3, fp);
 
     last_lon = lon[offset[leg]];
     for (rec_no = offset[leg] + 1; rec_no < (offset[leg] + npoints[leg]); rec_no++) {
-      fread((void *)(&ttime[rec_no]), (size_t)4, (size_t)1, fp);
-      fread((void *)(&latitude), (size_t)4, (size_t)1, fp);
-      fread((void *)(&longitude), (size_t)4, (size_t)1, fp);
+      not_used = fread((void *)(&ttime[rec_no]), (size_t)4, (size_t)1, fp);
+      not_used = fread((void *)(&latitude), (size_t)4, (size_t)1, fp);
+      not_used = fread((void *)(&longitude), (size_t)4, (size_t)1, fp);
       lat[rec_no] = (float)(latitude *0.000001);
       lon[rec_no] = (float)(longitude *0.000001);
       if (lon[rec_no] < 0.) lon[rec_no] += 360.0;
-      fread((void *)gmt[rec_no], (size_t)2, (size_t)3, fp);
+      not_used = fread((void *)gmt[rec_no], (size_t)2, (size_t)3, fp);
       for (i = 0; i < 3; i++)
         if (!gmt_flag[i] && gmt[rec_no][i] != NODATA) gmt_flag[i] = TRUE;
       if (fabs(lon[rec_no] - last_lon) > 180.0 ) shift_lon = TRUE;

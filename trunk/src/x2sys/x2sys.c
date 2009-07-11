@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.135 2009-06-25 03:25:07 guru Exp $
+ *	$Id: x2sys.c,v 1.136 2009-07-11 03:16:32 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See COPYING file for copying and redistribution conditions.
@@ -125,10 +125,10 @@ int x2sys_fclose (char *fname, FILE *fp)
 void x2sys_skip_header (FILE *fp, struct X2SYS_INFO *s)
 {
 	int i;
-	char line[BUFSIZ];
+	char line[BUFSIZ], *unused = NULL;
 
 	if (s->file_type == X2SYS_ASCII) {	/* ASCII, skip records */
-		for (i = 0; i < s->skip; i++) fgets (line, BUFSIZ, fp);
+		for (i = 0; i < s->skip; i++) unused = fgets (line, BUFSIZ, fp);
 	}
 	else if (s->file_type == X2SYS_BINARY) {			/* Native binary, skip bytes */
 		fseek (fp, (long)s->skip, SEEK_CUR);
@@ -1133,7 +1133,7 @@ int x2sys_bix_read_tracks (struct X2SYS_INFO *S, struct X2SYS_BIX *B, int mode, 
 	/* mode = 0 gives linked list, mode = 1 gives fixed array */
 	int id, flag, last_id = -1;
 	size_t n_alloc = GMT_CHUNK;
-	char track_file[BUFSIZ], track_path[BUFSIZ], line[BUFSIZ], name[BUFSIZ];
+	char track_file[BUFSIZ], track_path[BUFSIZ], line[BUFSIZ], name[BUFSIZ], *unused = NULL;
 	FILE *ftrack;
 	struct X2SYS_BIX_TRACK_INFO *this_info = VNULL;
 
@@ -1150,7 +1150,7 @@ int x2sys_bix_read_tracks (struct X2SYS_INFO *S, struct X2SYS_BIX *B, int mode, 
 	else
 		B->head = this_info = x2sys_bix_make_entry ("-", 0, 0);
 
-	fgets (line, BUFSIZ, ftrack);	/* Skip header record */
+	unused = fgets (line, BUFSIZ, ftrack);	/* Skip header record */
 	while (fgets (line, BUFSIZ, ftrack)) {
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %d %d", name, &id, &flag);
@@ -1187,6 +1187,7 @@ int x2sys_bix_read_index (struct X2SYS_INFO *S, struct X2SYS_BIX *B, BOOLEAN swa
 	char index_file[BUFSIZ], index_path[BUFSIZ];
 	FILE *fbin;
 	int index = 0, flag, no_of_tracks, id, i;
+	size_t not_used = 0;
 
 	sprintf (index_file, "%s%c%s_index.b", S->TAG, DIR_DELIM, S->TAG);
 	x2sys_path (index_file, index_path);
@@ -1201,7 +1202,7 @@ int x2sys_bix_read_index (struct X2SYS_INFO *S, struct X2SYS_BIX *B, BOOLEAN swa
 	B->base = (struct X2SYS_BIX_DATABASE *) GMT_memory (VNULL, (size_t)B->nm_bin, sizeof (struct X2SYS_BIX_DATABASE), X2SYS_program);
 
 	while ((fread ((void *)(&index), sizeof (int), (size_t)1, fbin)) == 1) {
-		fread ((void *)(&no_of_tracks), sizeof (int), (size_t)1, fbin);
+		not_used = fread ((void *)(&no_of_tracks), sizeof (int), (size_t)1, fbin);
 		if (!swap && (index < 0 || no_of_tracks < 0)) swap = TRUE;	/* A negative index or no_of_tracks must mean that swapping is needed */
 		if (swap) {
 			index = GMT_swab4 (index);
@@ -1209,8 +1210,8 @@ int x2sys_bix_read_index (struct X2SYS_INFO *S, struct X2SYS_BIX *B, BOOLEAN swa
 		}
 		B->base[index].first_track = B->base[index].last_track = x2sys_bix_make_track (0, 0);
 		for (i = 0; i < no_of_tracks; i++) {
-			fread ((void *)(&id), sizeof (int), (size_t)1, fbin);
-			fread ((void *)(&flag), sizeof (int), (size_t)1, fbin);
+			not_used = fread ((void *)(&id), sizeof (int), (size_t)1, fbin);
+			not_used = fread ((void *)(&flag), sizeof (int), (size_t)1, fbin);
 			if (swap) {
 				id = GMT_swab4 (id);
 				flag = GMT_swab4 (flag);

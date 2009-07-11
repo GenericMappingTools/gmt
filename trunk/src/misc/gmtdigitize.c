@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.24 2009-04-16 20:53:58 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.25 2009-07-11 03:16:31 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -69,10 +69,10 @@ int main (int argc, char **argv)
 	char *control[4] = {"first", "second", "third", "fourth"};
 	char *corner[4] = {"lower left", "lower right", "upper right", "upper left"};
 	char *name = CNULL, *device = CNULL, *xname[2] = {"longitude", "x-coordinate"};
-	char *yname[2] = {"latitude ", "y-coordinate"};
+	char *yname[2] = {"latitude ", "y-coordinate"}, *not_used = NULL;
 	
 	int i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, n_segments = 0, digunit;
-	int val_pos = 2, key_pos = 2, m_button, LPI = DIG_LPI, type, button;
+	int val_pos = 2, key_pos = 2, m_button, LPI = DIG_LPI, type, button, i_unused = 0;
 	
 	gid_t gid = 0;
 	uid_t uid = 0;
@@ -264,14 +264,14 @@ int main (int argc, char **argv)
 			fprintf (stderr, "\n");
 			for (i = 0; i < 4; i++) {
 				fprintf (stderr, "Please Enter %s of %s point: ", xname[type], control[i]);
-				GMT_fgets (line, BUFSIZ, GMT_stdin);
+				not_used = GMT_fgets (line, BUFSIZ, GMT_stdin);
 				GMT_chop (line);
 				if (!(GMT_scanf (line, GMT_io.in_col_type[0], &LON[i]))) {
 					fprintf (stderr, "%s: Conversion error for %sx [%s]\n", GMT_program, xname[type], line);
 					exit (EXIT_FAILURE);
 				}
 				fprintf (stderr, "Please Enter %s of %s point: ", yname[type], control[i]);
-				GMT_fgets (line, BUFSIZ, GMT_stdin);
+				not_used = GMT_fgets (line, BUFSIZ, GMT_stdin);
 				GMT_chop (line);
 				if (!(GMT_scanf (line, GMT_io.in_col_type[1], &LAT[i]))) {
 					fprintf (stderr, "%s: Conversion error for %s [%s]\n", GMT_program, yname[type], line);
@@ -393,7 +393,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "(Do not start with # - it will be prepended automatically.\n\n");
 		do {
 			fprintf (stderr, "==> Please enter comment records, end with blank line: ");
-			GMT_fgets (line, BUFSIZ, stdin);
+			not_used = GMT_fgets (line, BUFSIZ, stdin);
 			GMT_chop (line);
 			if (line[0] != '\0' && !GMT_io.binary[1]) fprintf (fp, "# %s\n", line);
 		} while (line[0] != '\0');
@@ -419,14 +419,14 @@ int main (int argc, char **argv)
 				if (multi_files) {
 					if (fp) {
 						GMT_fclose (fp);
-						chown (this_file, uid, gid);
+						i_unused = chown (this_file, uid, gid);
 					}
 					fp = next_file (name, n_segments, this_file);
 				}
 
 				if (output_val) {
 					fprintf (stderr, "Enter z-value for next segment: ");
-					GMT_fgets (line, BUFSIZ, GMT_stdin);
+					not_used = GMT_fgets (line, BUFSIZ, GMT_stdin);
 					GMT_chop (line);
 					z_val = atof (line);
 				}
@@ -435,7 +435,7 @@ int main (int argc, char **argv)
 				}
 				else {	/* Ask for what to write out */
 					fprintf (stderr, "Enter segment header: ");
-					GMT_fgets (line, BUFSIZ, GMT_stdin);
+					not_used = GMT_fgets (line, BUFSIZ, GMT_stdin);
 					GMT_chop (line);
 					sprintf (GMT_io.segment_header, "%c %d %s\n", GMT_io.EOF_flag[GMT_OUT], n_segments, line);
 				}
@@ -483,7 +483,7 @@ int main (int argc, char **argv)
 	}
 	if (multi_files && fp) {
 		GMT_fclose (fp);
-		chown (this_file, uid, gid);
+		i_unused = chown (this_file, uid, gid);
 	}
 	
 	if (gmtdefs.verbose && n_read > 0) {

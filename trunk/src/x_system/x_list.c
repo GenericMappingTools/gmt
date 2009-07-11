@@ -1,5 +1,5 @@
 /*
- *	$Id: x_list.c,v 1.9 2008-03-24 08:58:33 guru Exp $
+ *	$Id: x_list.c,v 1.10 2009-07-11 03:16:32 guru Exp $
  *
  * XLIST produces ASCII listings of cross-over info. The xx_base.b-file
  * contains longitude(x), latitude(y), time1(t1), time2(t2),  heading1(h),
@@ -250,7 +250,7 @@ int main (int argc, char *argv[])
 
 	/* Read first record of file containing n_records */
 
-	fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fp);
+	ok = fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fp);
 	ok = fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fp);
 
 

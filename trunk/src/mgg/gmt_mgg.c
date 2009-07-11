@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.20 2009-03-08 01:19:29 jluis Exp $
+ *	$Id: gmt_mgg.c,v 1.21 2009-07-11 03:16:31 guru Exp $
  *
  *    Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -386,7 +386,7 @@ int carter_setup (void)
 	and returns 0.  If failure occurs, it returns -1.  */
 
 	FILE *fp = NULL;
-	char buffer [BUFSIZ];
+	char buffer [BUFSIZ], *not_used = NULL;
 	int  i;
 
 	carter_not_initialized = TRUE;
@@ -399,8 +399,8 @@ int carter_setup (void)
                 return (-1);
         }
 
-	for (i = 0; i < 4; i++) fgets (buffer, BUFSIZ, fp);	/* Skip 4 headers */
-	fgets (buffer, BUFSIZ, fp);
+	for (i = 0; i < 4; i++) not_used = fgets (buffer, BUFSIZ, fp);	/* Skip 4 headers */
+	not_used = fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_CORRECTIONS) {
 		fprintf (stderr, "carter_setup:  Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
@@ -417,8 +417,8 @@ int carter_setup (void)
 
 	/* Read the offset table:  */
 
-	fgets (buffer, BUFSIZ, fp);	/* Skip header */
-	fgets (buffer, BUFSIZ, fp);
+	not_used = fgets (buffer, BUFSIZ, fp);	/* Skip header */
+	not_used = fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_OFFSETS) {
 		fprintf (stderr, "carter_setup:  Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
@@ -435,8 +435,8 @@ int carter_setup (void)
 
 	/* Read the zone table:  */
 
-	fgets (buffer, BUFSIZ, fp);	/* Skip header */
-	fgets (buffer, BUFSIZ, fp);
+	not_used = fgets (buffer, BUFSIZ, fp);	/* Skip header */
+	not_used = fgets (buffer, BUFSIZ, fp);
 
 	if ((i = atoi (buffer)) != N_CARTER_BINS) {
 		fprintf (stderr, "carter_setup:  Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);

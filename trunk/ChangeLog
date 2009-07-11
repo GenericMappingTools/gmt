@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.578 2009-07-11 00:00:14 guru Exp $
+	$Id: ChangeLog,v 1.579 2009-07-11 03:16:29 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -9,6 +9,7 @@
 
 2009-07-10	pwessel
 	* gmt_suppl.html:	Add all the new supplement programs to the HTML doc page.
+	* *.c:			Handle error codes so as to not raise the wrath of Ubuntu
 
 2009-07-10	remko
 	* gmt_init.c:		GMT_font_lookup now understands font numbers too.
