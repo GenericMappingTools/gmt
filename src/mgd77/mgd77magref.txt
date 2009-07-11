@@ -3,7 +3,7 @@
 .SH NAME
 mgd77magref \- Evaluate the IGRF or CM4 magnetic field models
 .SH SYNOPSIS
-\fBmgd77magref\fP [ \fIinputfile\fP ] [ OPT(A)[\fB+a\fP\fIalt\fI\fB+t\fP\fIdate\fP\fB+y\fP] ] [ OPT(C)\fIcm4file\fP ] 
+\fBmgd77magref\fP [ \fIinputfile\fP ] [ OPT(A)[\fB+a\fP\fIalt\fP\fB+t\fP\fIdate\fP\fB+y\fP] ] [ OPT(C)\fIcm4file\fP ] 
 [ OPT(D)\fIDstfile\fP ] [ OPT(E)\fIf107file\fP ] [ OPT(F)\fIflags\fP ] [ OPT(G) ] [ GMT_H_OPT ] 
 [ OPT(Sc)|\fBl\fP\fIlow/high\fP ] [ GMT_V_OPT ] [ GMT_t_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_m_OPT ]
 .SH DESCRIPTION
