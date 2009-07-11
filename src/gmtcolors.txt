@@ -35,9 +35,9 @@ This representation is used by most color printers.
 .SH "LIST OF COLORS"
 The following list contains the named colors that can be used in \fBGMT\fP and their equivalent color codes.
 .sp
-  \fBR   G   B	Name\fP
+\fBR	G	B	Name\fP
 .br
-#include "gmtcolors.i"
+#include "Colors.i"
 .SH "FURTHER INFORMATION"
 For more information on the use of color, read Appendix I of the \fBGMT TECHNICAL REFERENCE AND COOKBOOK\fP.
 .SH "SEE ALSO"
