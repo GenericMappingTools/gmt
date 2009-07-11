@@ -65,6 +65,7 @@ Several parameters take only TRUE or FALSE.
 .B ANNOT_FONT_PRIMARY
 Font used for upper annotations, etc. [Helvetica].  Specify either the font number or
 the font name (case sensitive!).  The 35 available fonts are:
+.sp
 #include "Fonts.i"
 .TP
 .B ANNOT_FONT_SIZE_PRIMARY
