@@ -104,7 +104,7 @@ To upward continue the sea-level magnetic anomalies in the file mag_0.grd to a l
 To transform geoid heights in m (geoid.grd) on a geographical grid to free-air gravity anomalies in mGal:
 .br
 .sp
-\fBgrdfft\fP geoid.grd OPT(Dg )\fP OPT(V) OPT(G)grav.grd
+\fBgrdfft\fP geoid.grd OPT(Dg) OPT(V) OPT(G)grav.grd
 .br
 .sp
 To transform gravity anomalies in mGal (faa.grd) to deflections of the vertical (in micro-radians) in the

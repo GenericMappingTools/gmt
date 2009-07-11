@@ -14,38 +14,38 @@ to the specified file.  Several options may be used to affect the outcome, such 
 estimation or optimize the tension selection to satisfy one of four criteria.
 .TP
 \fIinfiles\fP
-Data files with the (lon, lat, f) coordinates in ASCII (or binary; see \OPT(b)).  If no files are given the standard input is read.
+Data files with the (lon, lat, f) coordinates in ASCII (or binary; see OPT(b)).  If no files are given the standard input is read.
 .SH OPTIONS
 #include "explain_-H.txt"
 #include "explain_-I.txt"
 .TP
-\OPT(Q)
+OPT(Q)
 Specify one of four ways to calculate tension factors to preserve local shape properties or
 satisfy arc constraints [Default is no tension].
 .TP
-\OPT(Q)0
+OPT(Q)0
 Piecewise linear interpolation; no tension is applied.
 .TP
-\OPT(Q)Q1
+OPT(Q)Q1
 Smooth interpolation with local gradient estimates.
 .TP
-\OPT(Q)Q2
+OPT(Q)Q2
 Smooth interpolation with global gradient estimates.  You may optionally append /\fIN\fP/\fIM\fP/\fIU\fP, where
 \fIN\fP is the number of iterations used to converge at solutions for gradients when variable tensions are selected (e.g., OPT(T) only) [3],
 \fIM\fP is the number of Gauss-Seidel iterations used when determining the global gradients [10], and
 \fIU\fP is the maximum change in a gradient at the last iteration [0.01].
 .TP
-\OPT(Q)Q3
+OPT(Q)Q3
 Smoothing.  Optionally append \fI/E/U\fP [/0/0], where
 \fIE\fP is Expected squared error in a typical (scaled) data value, and
 \fIU\fP is Upper bound on  weighted sum of squares of deviations from data.
 #include "explain_-Rgeo.txt"
 .TP
-\OPT(T)
-Use variable tension (ignored with \OPT(Q)0 [constant]
+OPT(T)
+Use variable tension (ignored with OPT(Q)0 [constant]
 #include "explain_-V.txt"
 .TP
-\OPT(Z)
+OPT(Z)
 Before interpolation, scale data by the maximum data range [no scaling].
 #include "explain_-t.txt"
 #include "explain_-bi.txt"

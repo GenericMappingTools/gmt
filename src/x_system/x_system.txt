@@ -98,7 +98,7 @@ described above.
 .SH SEE ALSO
 .IR GMT (1),
 .SH AUTHOR
-Paul Wessel, Lamont-Doherty Geological Observatory, Palisades, NY 10964.
+Paul Wessel, Dept. of Geology and Geophysics, SOEST, University of Hawaii at Manoa.
 Wessel, P. XOVER: A Cross-over Error Detector for Track Data,
 \fIComputers & Geosciences, 15\fP, 333-346.
 .br
