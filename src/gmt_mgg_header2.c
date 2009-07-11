@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.35 2009-07-10 02:02:27 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.36 2009-07-11 03:16:30 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see COPYING for details)
@@ -696,7 +696,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 					}
 				}
 			}
-			GMT_fwrite ((void *)tLong, (size_t)abs(mggHeader.numType), (size_t)width_out, fp);
+			if (GMT_fwrite ((void *)tLong, (size_t)abs(mggHeader.numType), (size_t)width_out, fp) != (size_t)width_out) return (GMT_GRDIO_WRITE_FAILED);
 		}
 		GMT_free ((void *)k);
 	}
@@ -736,7 +736,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 					}
 				}
 			}
-			GMT_fwrite ((void *)tLong, (size_t)abs(mggHeader.numType), (size_t)width_out, fp);
+			if (GMT_fwrite ((void *)tLong, (size_t)abs(mggHeader.numType), (size_t)width_out, fp) != (size_t)width_out) return (GMT_GRDIO_WRITE_FAILED);
 		}
 	}
 	if (fp != GMT_stdout) GMT_fclose (fp);

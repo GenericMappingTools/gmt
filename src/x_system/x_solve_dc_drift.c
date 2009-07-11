@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.10 2008-03-24 08:58:33 guru Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.11 2009-07-11 03:16:32 guru Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -52,8 +52,9 @@ int main (int argc, char **argv)
 	double west = 0.0, east = 360.0, south = -90.0, north = 90.0;
 	GMT_LONG west_i = 0, east_i = 0, south_i = 0, north_i = 0, lon_i;
 	BOOLEAN bin_on = FALSE, asc_on = FALSE, verbose = FALSE;
-	char lfile[80], file[80], header[REC_SIZE], lega[10], legb[10], string[10], filea[80], fileb[80], type[3], line[BUFSIZ];
+	char lfile[80], file[80], header[REC_SIZE], lega[10], legb[10], string[10], filea[80], fileb[80], type[3], line[BUFSIZ], *c_not_used = NULL;
 	FILE *fpl = NULL, *fpb = NULL, *fpi = NULL, *fpbin = NULL, *fpasc = NULL, *fpu = NULL;
+	size_t not_used = 0;
 
 	do_gmt[0] = do_gmt[1] = do_gmt[2] = FALSE;
 	type[0] = 'G';	type[1] = 'M';	type[2] = 'T';
@@ -272,7 +273,7 @@ int main (int argc, char **argv)
 			/* Sum up the statistics for these crossovers */
 
 			for (i = 0; i < n_x; i++) {
-				fread ((void *)&crossover, (size_t)REC_SIZE, (size_t)1, fpb);
+				not_used = fread ((void *)&crossover, (size_t)REC_SIZE, (size_t)1, fpb);
 				if (test_area) { /* Must see if xover is inside the area specified */
 					if (crossover.lat < south_i || crossover.lat > north_i) continue;
 					lon_i = crossover.lon;
@@ -355,7 +356,7 @@ int main (int argc, char **argv)
 
 		if (n_iterations == 0) {
 			printf ("One more iteration?: ");
-			fgets (string, (size_t)10, stdin);
+			c_not_used = fgets (string, (size_t)10, stdin);
 			if (string[0] == 'N' || string[0] == 'n') ok = FALSE;
 		}
 		else if (iteration >= n_iterations)
@@ -380,7 +381,7 @@ int main (int argc, char **argv)
 		else {
 			fpl = fopen(lfile, "w");
 			for (i = 0; i < nlegs; i++)
-				fwrite((char *)&leg[i], (size_t)legsize, (size_t)1, fpl);
+				not_used = fwrite((char *)&leg[i], (size_t)legsize, (size_t)1, fpl);
 			fclose(fpl);
 		}
 	}
@@ -408,7 +409,7 @@ int main (int argc, char **argv)
 				bin.dc_shift_gmt[j] = (float) leg[i].dc_shift_gmt[j];
 				bin.drift_rate_gmt[j] = (float) leg[i].drift_rate_gmt[j];
 			}
-			fwrite ((void *)&bin, (size_t)binsize, (size_t)1, fpbin);
+			not_used = fwrite ((void *)&bin, (size_t)binsize, (size_t)1, fpbin);
 		}
 		if (asc_on) {	/* Use ASCII output format */
 			fprintf (fpasc, "%s\t%d\t%.2f\t%g\t%.2f\t%g\t%.2f\t%g\n",

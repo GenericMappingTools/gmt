@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.407 2009-07-10 22:09:57 remko Exp $
+ *	$Id: gmt_init.c,v 1.408 2009-07-11 03:16:29 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3849,7 +3849,7 @@ GMT_LONG GMT_history (int argc, char ** argv)
 	GMT_LONG i, j, k;
 	BOOLEAN need_xy = FALSE, overlay = FALSE, found_old, found_new, done = FALSE, new_unique = FALSE;
 	char line[BUFSIZ], hfile[BUFSIZ], cwd[BUFSIZ];
-	char *newargv[GMT_N_UNIQUE], *new_j = CNULL, *old_j = CNULL;
+	char *newargv[GMT_N_UNIQUE], *new_j = CNULL, *old_j = CNULL, *not_used = NULL;
 	FILE *fp;	/* For .gmtcommands4 file */
 #ifndef NO_LOCK
 	struct flock lock;
@@ -3876,7 +3876,7 @@ GMT_LONG GMT_history (int argc, char ** argv)
 
 	/* If current directory is writable, use it; else use the home directory */
 
-	(void) getcwd (cwd, (size_t)BUFSIZ);
+	not_used = getcwd (cwd, (size_t)BUFSIZ);
 	if (GMT_TMPDIR)			/* Isolation mode: Use GMT_TMPDIR/.gmtcommands4 */
 		sprintf (hfile, "%s%c.gmtcommands4", GMT_TMPDIR, DIR_DELIM);
 	else if (!access (cwd, W_OK))	/* Current directory is writable */

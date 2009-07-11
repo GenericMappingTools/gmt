@@ -1,4 +1,4 @@
-/* $Id: x_edit.c,v 1.9 2008-05-13 01:07:04 guru Exp $
+/* $Id: x_edit.c,v 1.10 2009-07-11 03:16:32 guru Exp $
  *
  * X E D I T  will allow you to convert crossover tables ascii <--> binary
  *
@@ -16,7 +16,7 @@ int main (int argc, char **argv)
 {
 	FILE *fp = NULL, *fpo = NULL;
 	GMT_LONG i, nlegs, ascii = FALSE, error = FALSE;
-	size_t legsize = sizeof (struct CORR);
+	size_t legsize = sizeof (struct CORR), not_used = 0;
 	char line[BUFSIZ], *name = NULL;
 
 	for (i = 1; i < argc; i++) {
@@ -88,7 +88,7 @@ int main (int argc, char **argv)
 		if (fp != stdin) fclose (fp);
 		nlegs = i;
 		for (i = 0; i < nlegs; i++)
-                    fwrite ((void *)&leg[i], legsize, (size_t)1, fpo);
+                    not_used = fwrite ((void *)&leg[i], legsize, (size_t)1, fpo);
             fclose(fpo);
 	}
 	else {

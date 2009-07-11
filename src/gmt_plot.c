@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.266 2009-07-10 22:10:23 remko Exp $
+ *	$Id: gmt_plot.c,v 1.267 2009-07-11 03:16:30 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4229,7 +4229,7 @@ struct EPS *GMT_epsinfo (char *program)
 {
 	/* Supply info about the EPS file that will be created */
 
-	GMT_LONG fno[6], id, i, n_fonts, last, move_up = FALSE;
+	GMT_LONG fno[6], id, i, n_fonts, last, move_up = FALSE, not_used = 0;
 	double old_x0, old_y0, old_x1, old_y1;
 	double tick_space, frame_space, u_dx, u_dy;
 	double dy, x0, y0, orig_x0 = 0.0, orig_y0 = 0.0;
@@ -4249,7 +4249,7 @@ struct EPS *GMT_epsinfo (char *program)
 	/* First crudely estimate the boundingbox coordinates */
 
 	if (GMT_ps.overlay && (fp = fopen (info, "r")) != NULL) {	/* Must get previous boundingbox values */
-		fscanf (fp, "%d %d %lf %lf %lf %lf %lf %lf\n", &(new->portrait), &(new->clip_level), &orig_x0, &orig_y0, &old_x0, &old_y0, &old_x1, &old_y1);
+		not_used = fscanf (fp, "%d %d %lf %lf %lf %lf %lf %lf\n", &(new->portrait), &(new->clip_level), &orig_x0, &orig_y0, &old_x0, &old_y0, &old_x1, &old_y1);
 		fclose (fp);
 		x0 = orig_x0;
 		y0 = orig_y0;

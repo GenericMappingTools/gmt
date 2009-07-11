@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.10 2008-05-02 00:44:42 guru Exp $
+/*	$Id: x_setup.c,v 1.11 2009-07-11 03:16:32 guru Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -57,6 +57,7 @@ int main (int argc, char *argv[])
 	unsigned char turn_on[8];
 	FILE *fleg, *fbin, *fpl = NULL;
 	BOOLEAN error = FALSE, skip;
+	size_t not_used = 0;
 
 	argc = GMT_begin (argc, argv);
 
@@ -159,13 +160,13 @@ int main (int argc, char *argv[])
 			while (lon < west) lon += 360;
 			if (lon >= east) skip = TRUE;
 		}
-		fread ((void *)&nlegs, (size_t)4, (size_t)1, fbin);
+		not_used = fread ((void *)&nlegs, (size_t)4, (size_t)1, fbin);
 		if (skip) {
 			fseek (fbin, (long int)(nlegs*4), SEEK_CUR);
 			continue;
 		}
 		for (i = 0; i < nlegs; i++) {
-			fread ((void *)&record, (size_t)4, (size_t)1, fbin);
+			not_used = fread ((void *)&record, (size_t)4, (size_t)1, fbin);
 			leg_info[i].gmt = (char )(record & 15);
 			leg_info[i].leg_no = (record >> 4);
 		}

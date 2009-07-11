@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: cm4_functions.c,v 1.17 2009-05-30 15:59:35 jluis Exp $
+ *	$Id: cm4_functions.c,v 1.18 2009-07-11 03:16:31 guru Exp $
  *
  *
  *  File:	cm4_functions.c
@@ -125,7 +125,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 	int c__1356 = 1356, c__13680 = 13680;
 	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr = 0, jyr, jf107, cerr = 0;
 	int lum1, lum2, lum3, lum4, lum5, lum6, lum7, nsm1, nsm2, lcmf, idim[12], omdl;
-	int lsmf, lpos, lcmg, lsmg, lcsq, lssq, lcto, lsto, lrto, idoy, n_Dst_rows;
+	int lsmf, lpos, lcmg, lsmg, lcsq, lssq, lcto, lsto, lrto, idoy, n_Dst_rows, i_unused = 0;
 	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd, jdoy, mjdl = 0, mjdh = 0, iyrl = 0, imol = 0, iyrh = 0, imoh = 0;
 	int nout = 0, nygo = 0, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
@@ -151,7 +151,7 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 	double *essq;		/* was [13680] */
 	double *ecto;		/* was [16416] */
 	double *hyto;		/* was [49248] */
-	char line[BUFSIZ];
+	char line[BUFSIZ], *c_unused = NULL;
 
 	FILE *fp;
 
@@ -181,30 +181,30 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 		return 1;
 	}
 
-	fgets(line, BUFSIZ, fp);
+	c_unused = fgets(line, BUFSIZ, fp);
 	sscanf (line, "%d %d %d", &lsmf, &lpos, &lcmf);
-	fgets(line, BUFSIZ, fp);
+	c_unused = fgets(line, BUFSIZ, fp);
 	sscanf (line, "%d", &lum1);
-	fgets(line, BUFSIZ, fp);
+	c_unused = fgets(line, BUFSIZ, fp);
 	sscanf (line, "%lf %lf %lf %lf", &epch, &re, &rp, &rm);
 	for (j = 0; j < lsmf; ++j)
-		fscanf (fp, "%d", &bord[j]);
+		i_unused = fscanf (fp, "%d", &bord[j]);
 	for (j = 0; j < lsmf; ++j)
-		fscanf (fp, "%d", &bkno[j]);
+		i_unused = fscanf (fp, "%d", &bkno[j]);
 	for (j = 0; j < lpos; ++j)
-		fscanf (fp, "%lf", &bkpo[j]);
+		i_unused = fscanf (fp, "%lf", &bkpo[j]);
 	for (j = 0; j < lcmf; ++j)
-		fscanf (fp, "%lf", &gamf[j]);
+		i_unused = fscanf (fp, "%lf", &gamf[j]);
 
-	fscanf (fp, "%d %d", &lcmg, &lsmg);
-	fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
-	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm);
+	i_unused = fscanf (fp, "%d %d", &lcmg, &lsmg);
+	i_unused = fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
+	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm);
 	gpmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
 	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lsmg; ++j) {
 			n = (j + k * 5) * 1356;
 			for (i = 0; i < lcmg; ++i)
-				fscanf (fp, "%lf", &gpmg[i + n]);
+				i_unused = fscanf (fp, "%lf", &gpmg[i + n]);
 		}
 
 	gsmg = (double *) calloc((size_t)(2 * lsmg * lcmg), sizeof(double));
@@ -212,30 +212,30 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 		for (j = 0; j < lsmg; ++j) {
 			n = (j + k * 5) * 1356;
 			for (i = 0; i < lcmg; ++i)
-				fscanf (fp, "%lf", &gsmg[i + n]);
+				i_unused = fscanf (fp, "%lf", &gsmg[i + n]);
 		}
 
-	fscanf (fp, "%d %d", &lcsq, &lssq);
-	fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
-	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &hion);
+	i_unused = fscanf (fp, "%d %d", &lcsq, &lssq);
+	i_unused = fscanf (fp, "%d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6);
+	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &hion);
 	gpsq = (double *) calloc((size_t)(2 * lssq * lcsq), sizeof(double));
 	for (k = 0; k < 2; ++k)
 		for (j = 0; j < lssq; ++j) {
 			n = (j + k * 5) * 13680;
 			for (i = 0; i < lcsq; ++i)
-				fscanf (fp, "%lf", &gpsq[i + n]);
+				i_unused = fscanf (fp, "%lf", &gpsq[i + n]);
 		}
 
 	gssq = (double *) calloc((size_t)(lssq * lcsq), sizeof(double));
 	for (j = 0; j < lssq; ++j) {
 		n = j * 13680;
 		for (i = 0; i < lcsq; ++i)
-			fscanf (fp, "%lf", &gssq[i + n]);
+			i_unused = fscanf (fp, "%lf", &gssq[i + n]);
 	}
 
-	fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
-	fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
-	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_dw, &rtay_dk);
+	i_unused = fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
+	i_unused = fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
+	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_dw, &rtay_dk);
 	if (Ctrl->DATA.pred[3]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
 		gcto_mg = (double *) calloc((size_t)(2 * lrto * lsto * lcto), sizeof(double));
 		for (l = 0; l < 2; ++l)
@@ -243,23 +243,23 @@ int MGD77_cm4field (struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double
 				for (j = 0; j < lsto; ++j) {
 					n = (j + (k + (l << 1)) * 3) * 2736;
 					for (i = 0; i < lcto; ++i)
-						fscanf (fp, "%lf", &gcto_mg[i + n]);
+						i_unused = fscanf (fp, "%lf", &gcto_mg[i + n]);
 				}
 	}
 	else			/* Jump the unused coeffs */
 		for (l = 0; l < 2 * lrto * lsto * lcto; ++l)
-			fscanf (fp, "%lf", &dumb);
+			i_unused = fscanf (fp, "%lf", &dumb);
 
-	fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
-	fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
-	fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_or);
+	i_unused = fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
+	i_unused = fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
+	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_or);
 	if (Ctrl->DATA.pred[3] && !Ctrl->DATA.pred[4]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
 		gcto_or = (double *) calloc((size_t)(lrto * lsto * lcto), sizeof(double));
 		for (k = 0; k < lrto; ++k)
 			for (j = 0; j < lsto; ++j) {
 				n = (j + k * 5) * 13680;
 				for (i = 0; i < lcto; ++i)
-					fscanf (fp, "%lf", &gcto_or[i + n]);
+					i_unused = fscanf (fp, "%lf", &gcto_or[i + n]);
 			}
 	}
 

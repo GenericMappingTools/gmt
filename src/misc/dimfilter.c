@@ -1,5 +1,5 @@
 /*
- * $Id: dimfilter.c,v 1.5 2009-07-08 20:08:37 guru Exp $
+ * $Id: dimfilter.c,v 1.6 2009-07-11 03:16:31 guru Exp $
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *
@@ -37,6 +37,7 @@ int main (int argc, char **argv)
 	
 	FILE *ip;
 	GMT_LONG err_cols = 0, err_l=1;
+	int not_used = 0;
 	double err_workarray[50], err_min, err_max, err_null_median=0.0, err_median, err_mad, err_depth, err_mean, err_sum;
    	BOOLEAN dimerr=FALSE;
 	
@@ -868,7 +869,7 @@ fout2 = NULL;
 		  err_min=err_max=err_depth;
 		  err_sum += err_depth;
 		  for (i=1; i < err_cols; i++) {
-			 fscanf(ip,"%lf",&err_depth);
+			 not_used = fscanf(ip,"%lf",&err_depth);
 			 err_workarray[i]=err_depth;
 			 err_sum += err_depth;
 		 if (err_depth < err_min) err_min=err_depth;
