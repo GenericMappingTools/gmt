@@ -112,5 +112,6 @@ red foreground), and setting each of 5 by 5 tiles to be 1 cm wide, use
 .sp
 \fBpsimage\fP 1_bit.ras OPT(Gb)brown OPT(Gf)red OPT(N)5 OPT(W)1\fBc\fP > image.ps
 .SH "SEE ALSO"
-.IR GMT (1)
+.IR GMT (1),
+.IR gmtcolors (1),
 .IR psxy (1)

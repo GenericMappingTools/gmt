@@ -214,8 +214,6 @@ T so we may have to adjust the box height to get the right size box.
 .br
 EOF
 .br
-#include "explain_fill.txt"
-#include "explain_color.txt"
 .SH WINDOWS REMARKS
 Note that under Windows, the percent sign (%) is a variable indicator (like $ under Unix).
 To indicate a plain percentage sign in a batch script you need to repeat it (%%);
@@ -224,6 +222,7 @@ number of percent signs.  This only applies to text inside a script or that othe
 is processed by DOS.  Data files that are opened and read by \fBpslegend\fP do not need such duplication.
 .SH "SEE ALSO"
 .IR GMT (1),
+.IR gmtcolors (1),
 .IR gmtdefaults (1),
 .IR psbasemap (1),
 .IR pstext (1),
