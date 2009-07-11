@@ -110,6 +110,7 @@ awk '{ print NR, $0 }' yourdata.xyz | \fBfilter1d\fP OPT(Fb)5 OPT(N)4/0 PAR(D_FO
 and plot this data set instead.
 .SH "SEE ALSO"
 .IR GMT (1),
+.IR gmtcolors (1),
 .IR filter1d (1),
 .IR psbasemap (1),
 .IR splitxyz (1)

@@ -119,5 +119,6 @@ No default radial scale and grid settings for polar histograms.  User must run \
 binned data set.
 .SH "SEE ALSO"
 .IR GMT (1),
+.IR gmtcolors (1),
 .IR gmtdefaults (1),
 .IR pshistogram (1)

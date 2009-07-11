@@ -148,6 +148,7 @@ of the contour coordinates is used to position the label.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmtdefaults (1),
+.IR gmtcolors (1),
 .IR psbasemap (1),
 .IR grdimage (1),
 .IR grdview (1),

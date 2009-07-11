@@ -282,5 +282,6 @@ is set. Also note that plot titles are not plotted if OPT(E) is given.
 The OPT(B) option is somewhat complicated to explain and comprehend.  However, it is fairly simple for
 most applications (see examples).
 .SH "SEE ALSO"
+.IR gmtcolors (1),
 .IR gmtdefaults (1),
 .IR GMT (1)

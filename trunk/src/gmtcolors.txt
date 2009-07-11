@@ -42,6 +42,7 @@ The following list contains the named colors that can be used in \fBGMT\fP and t
 For more information on the use of color, read Appendix I of the \fBGMT TECHNICAL REFERENCE AND COOKBOOK\fP.
 .SH "SEE ALSO"
 .IR gmtdefaults (1),
+.IR gmtlogo (1),
 .IR grdcontour (1),
 .IR grdvector (1),
 .IR grdview (1),

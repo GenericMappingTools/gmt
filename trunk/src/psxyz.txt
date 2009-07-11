@@ -301,5 +301,6 @@ have to post-process the \fIPostScript\fP output with \fBps2raster -A\fP to obta
 the correct BoundingBox.
 .SH "SEE ALSO"
 .IR GMT (1),
+.IR gmtcolors (1),
 .IR psbasemap (1),
 .IR psxy (1)
