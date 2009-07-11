@@ -99,6 +99,6 @@ equal 1 inch, run
 .sp
 .SH "SEE ALSO"
 .IR GMT (1),
-.IR gmtcolors (1),
+.IR gmtcolors (5),
 .IR grdcontour (1),
 .IR psxy (1)

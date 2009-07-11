@@ -91,7 +91,7 @@ The same example but this time we use white tiling:
 \fBpsmask\fP africa_grav.xyg OPT(R)20/40/20/40 OPT(I)5\fBm\fP OPT(JM)10\fBi\fP OPT(T) OPT(O) OPT(K) OPT(G)white > mask.ps
 .SH "SEE ALSO"
 .IR GMT (1),
-.IR gmtcolors (1),
+.IR gmtcolors (5),
 .IR grdmask (1),
 .IR surface (1),
 .IR psbasemap (1),
