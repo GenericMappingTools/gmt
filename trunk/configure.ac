@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.60 2009-07-07 21:47:54 guru Exp $
-AC_REVISION($Revision: 1.60 $)
+dnl $Id: configure.ac,v 1.61 2009-07-11 19:15:08 guru Exp $
+AC_REVISION($Revision: 1.61 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -24,7 +24,7 @@ dnl -----------------------------------------------------------------
 dnl Specify the minimal supplement directories
 dnl -----------------------------------------------------------------
 dnl
-SUPPL="dbase gshhs imgsrc meca mgd77 mgg misc segyprogs spotter x2sys x_system"
+SUPPL="dbase gshhs imgsrc meca mgd77 mgg misc segyprogs sph spotter x2sys x_system"
 dnl
 dnl -----------------------------------------------------------------
 dnl The remainder should need no editing
@@ -103,7 +103,6 @@ AC_ARG_ENABLE(flock,    [  --disable-flock         Disable file locking on .gmtc
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
-AC_ARG_ENABLE(sph,      [  --disable-sph           Disable compilation of sph supplement which requires f2c library])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 dnl
@@ -445,25 +444,6 @@ if test ! -d $NETCDF_LIB; then
 fi
 dnl
 dnl -----------------------------------------------------------------
-dnl Allow user to set --disable-sph for turning off sph compilation
-dnl -----------------------------------------------------------------
-dnl
-AC_MSG_CHECKING(if OK to compile sph)
-if test "X$enable_sph" = "Xno" ; then
-	enable_sph="no"
-else
-	enable_sph="yes"
-fi
-if test ! -d src/sph; then
-	AC_MSG_RESULT([[not available]])
-elif test "X$enable_sph" = "Xno"; then
-	AC_MSG_RESULT([[no]])
-else
-	SUPPL=$SUPPL" sph"
-	AC_MSG_RESULT(yes)
-fi
-dnl
-dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-eps to set EPS as default format
 dnl -----------------------------------------------------------------
 dnl
@@ -727,9 +707,7 @@ if test "$GCC" = "yes"; then		# GNU cc options
 	else
 		CFLAGS="$CFLAGS -pedantic -Wall$GCC_64"
 	fi
-dnl	if test "$enable_shared" = "yes" ; then
-		CFLAGS="$CFLAGS -fPIC"
-dnl	fi
+	CFLAGS="$CFLAGS -fPIC -fno-strict-aliasing"
 elif test "$os" = "SunOS" ; then	# Sun Workshop CC options
 	CFLAGS="$CFLAGS -Xc"
 elif test "$os" = "HP-UX" ; then	# HP cc options
