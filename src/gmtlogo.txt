@@ -22,5 +22,5 @@ Set pen attributes for the outline of the box [Default is no outline].
 #include "explain_color.txt"
 .SH "SEE ALSO"
 .IR GMT (1),
-.IR gmtcolors (1),
+.IR gmtcolors (5),
 .IR psimage (1)

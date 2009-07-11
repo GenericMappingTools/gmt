@@ -155,7 +155,7 @@ have to post-process the \fIPostScript\fP output with epstool or ps2epsi to obta
 a correct BoundingBox.
 .SH "SEE ALSO"
 .IR GMT (1),
-.IR gmtcolors (1),
+.IR gmtcolors (5),
 .IR psbasemap (1),
 .IR pslegend (1),
 .IR psxy (1)

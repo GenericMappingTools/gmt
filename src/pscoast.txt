@@ -199,7 +199,7 @@ CD-ROM.  It is published by the Scientific Committee on Antarctic
 Research, Scott Polar Research Institute, Lensfield Road, Cambridge
 CB2 1ER, United Kingdom.
 .SH "SEE ALSO"
-.IR gmtcolors (1),
+.IR gmtcolors (5),
 .IR gmtdefaults (1),
 .IR GMT (1),
 .IR grdlandmask (1),
