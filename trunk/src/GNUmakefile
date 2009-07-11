@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.82 2009-07-11 02:47:49 remko Exp $
+#  $Id: GNUmakefile,v 1.83 2009-07-11 02:52:03 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -83,7 +83,7 @@ gmt_ellipsoids.h:	Ellipsoids.txt
 
 Ellipsoids.i:		Ellipsoids.txt
 			grep -v '^#' Ellipsoids.txt > tmp0.txt
-			awk '{printf "%s :\n", $$1, $$2}' tmp0.txt > tmp1.txt
+			awk '{printf "\t%s :\n", $$1, $$2}' tmp0.txt > tmp1.txt
 			awk -F: '{print $$2}' tmp0.txt | sed -e 's/^ //g' > tmp2.txt
 			awk '{printf "(%d)\n", $$2}' tmp0.txt > tmp3.txt
 			paste -d' ' tmp[123].txt | awk '{printf ".br\n%s\n", $$0}' > $@
@@ -92,7 +92,7 @@ Ellipsoids.i:		Ellipsoids.txt
 # Must create Fonts.i from PS_font_info.d
 
 Fonts.i:		../share/pslib/PS_font_info.d
-			grep -v '^#' ../share/pslib/PS_font_info.d | awk '{printf ".br\n\t%i\t%s\n", NR, $$1}' > $@
+			grep -v '^#' ../share/pslib/PS_font_info.d | awk '{printf ".br\n\t%i\t%s\n", NR - 1, $$1}' > $@
 
 # Must create gmt_datums.h from Datums.txt
 

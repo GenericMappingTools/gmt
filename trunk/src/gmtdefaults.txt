@@ -65,76 +65,7 @@ Several parameters take only TRUE or FALSE.
 .B ANNOT_FONT_PRIMARY
 Font used for upper annotations, etc. [Helvetica].  Specify either the font number or
 the font name (case sensitive!).  The 35 available fonts are:
-.br
-	0  Helvetica
-.br
-	1  Helvetica-Bold
-.br
-	2  Helvetica-Oblique
-.br
-	3  Helvetica-BoldOblique
-.br
-	4  Times-Roman
-.br
-	5  Times-Bold
-.br
-	6  Times-Italic
-.br
-	7  Times-BoldItalic
-.br
-	8  Courier
-.br
-	9  Courier-Bold
-.br
-	10 Courier-Oblique
-.br
-	11 Courier-BoldOblique
-.br
-	12 Symbol
-.br
-	13 AvantGarde-Book
-.br
-	14 AvantGarde-BookOblique
-.br
-	15 AvantGarde-Demi
-.br
-	16 AvantGarde-DemiOblique
-.br
-	17 Bookman-Demi
-.br
-	18 Bookman-DemiItalic
-.br
-	19 Bookman-Light
-.br
-	20 Bookman-LightItalic
-.br
-	21 Helvetica-Narrow
-.br
-	22 Helvetica-Narrow-Bold
-.br
-	23 Helvetica-Narrow-Oblique
-.br
-	24 Helvetica-Narrow-BoldOblique
-.br
-	25 NewCenturySchlbk-Roman
-.br
-	26 NewCenturySchlbk-Italic
-.br
-	27 NewCenturySchlbk-Bold
-.br
-	28 NewCenturySchlbk-BoldItalic
-.br
-	29 Palatino-Roman
-.br
-	30 Palatino-Italic
-.br
-	31 Palatino-Bold
-.br
-	32 Palatino-BoldItalic
-.br
-	33 ZapfChancery-MediumItalic
-.br
-	34 ZapfDingbats
+#include "Fonts.i"
 .TP
 .B ANNOT_FONT_SIZE_PRIMARY
 Font size (> 0) for map annotations  [14p].
@@ -233,10 +164,9 @@ a Linotype 300 phototypesetter (2470 dpi) will not take advantage of the extra r
 positioning on the page and line thicknesses are still only done in steps of 1/300 inch; of course, text will look smoother)  [300].
 .TP
 .B ELLIPSOID
-The (case sensitive) name of the ellipsoid used for the map projections  [WGS-84].  Choose among
-.br
+The (case sensitive) name of the ellipsoid used for the map projections  [WGS-84].  Choose among:
 .sp
-#include "gmtdefaults.i"
+#include "Ellipsoids.i"
 .sp
 Note that for some global projections, \fBGMT\fP may use a spherical approximation of the
 ellipsoid chosen, setting the flattening to zero, and using a mean radius.
