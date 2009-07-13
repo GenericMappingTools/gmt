@@ -1,10 +1,10 @@
 Package: gshhs-hires
-Version: 1.10
+Version: 2.0
 Revision: 1
 Source:  ftp://ftp.soest.hawaii.edu/gmt/GSHHS%v_high.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/GSHHS%v_full.tar.bz2
-Source-MD5:  ccf1fe0e5231f3e8e3b64140afb7de8d
-Source2-MD5: d029e624dfe8d15685779fa9f84ff78e
+Source-MD5:  d99a4316104fd79b6bd22633009a585c
+Source2-MD5: f660074e3123bed3437296823876b973
 Replaces: gmt-coast
 Recommends: gmt
 SourceDirectory: .
