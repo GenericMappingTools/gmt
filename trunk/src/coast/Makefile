@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.57 2009-07-11 19:15:08 guru Exp $
+#	$Id: Makefile,v 1.58 2009-07-13 19:13:06 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -121,16 +121,20 @@ build-gshhs:
 		polygon_to_gshhs -l wdb/wdb_c_rivers.b > gshhs/wdb_rivers_c.b
 
 shape-gshhs:
-		mkdir -p GSHHS_shp
+		mkdir -p GSHHS_shp GSHHS_shp/f GSHHS_shp/h GSHHS_shp/i GSHHS_shp/l GSHHS_shp/c
 		polygon_to_shape res_f/v${VERSION}_final_f_dbase.b GSHHS_f
 		polygon_to_shape res_h/v${VERSION}_final_h_dbase.b GSHHS_h
 		polygon_to_shape res_i/v${VERSION}_final_i_dbase.b GSHHS_i
 		polygon_to_shape res_l/v${VERSION}_final_l_dbase.b GSHHS_l
 		polygon_to_shape res_c/v${VERSION}_final_c_dbase.b GSHHS_c
-		mv GSHHS_[fhilc]_main/* GSHHS_[fhilc]_isl/* GSHHS_shp
+		mv GSHHS_f_L[1-4]/* GSHHS_shp/f
+		mv GSHHS_h_L[1-4]/* GSHHS_shp/h
+		mv GSHHS_i_L[1-4]/* GSHHS_shp/i
+		mv GSHHS_l_L[1-4]/* GSHHS_shp/l
+		mv GSHHS_c_L[1-4]/* GSHHS_shp/c
 		cp GSHHS+WDBII/README.TXT GSHHS_shp
-		zip -r -v -9 GSHHS_shp_$(GSHHS_PROG_VERSION).zip GSHHS_shp/*
-		rm -rf GSHHS_[fhilc]_main GSHHS_[fhilc]_isl
+		zip -r -q -v -9 GSHHS_shp_$(GSHHS_DATA_VERSION).zip GSHHS_shp/*
+		rm -rf GSHHS_[fhilc]_L[1-4]
 
 # Make archive targets:
 
