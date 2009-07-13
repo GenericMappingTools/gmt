@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.55 2009-05-17 19:30:14 guru Exp $
+#  $Id: GNUmakefile,v 1.56 2009-07-13 00:21:09 guru Exp $
 #
-#		 Guru makefile for GMT Version 4
+#		 Guru makefile for GMT Version 4.*
 #			GNU make compatible
 #
 #	!!! THIS MAKEFILE IS FOR GMT DEVELOPERS ONLY !!!
@@ -50,7 +50,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		30-APR-2008
+#	Date:		12-JUL-2009
 #
 #-------------------------------------------------------------------------------
 #	DEFAULT SETTINGS
