@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.55 2009-02-16 02:08:17 guru Exp $
+#		$Id: README,v 1.56 2009-07-13 00:21:09 guru Exp $
 #
 #	Copyright (c) 1991-2009, P. Wessel & W. H. F. Smith
 #
@@ -406,6 +406,7 @@ Currently, the supplemental archive include the directories:
 	misc	  - psmegaplot, makepattern, gmtdigitize,
 		    gmtstitch, gmtdp, and nc2xy
 	segyprogs - Plotting SEGY seismic data sets.
+	sph	  - Spherical interpolation and triangulation.
 	spotter	  - Plate tectonic & kinematics applications.
 	x2sys	  - Track intersection (crossover) tools.
 	x_system  - Track intersection (crossover) tools (old version).
