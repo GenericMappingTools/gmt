@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.23 2009-07-08 21:41:39 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.24 2009-07-13 00:39:29 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -7,13 +7,12 @@ REM
 REM	Assumptions:
 REM	1. You have run make tar_all
 REM	2. You have placed netcdf in C:\NETCDF
-REM	3. You have placed vcf2c.lib in C:\libf2c
-REM	4. INCLUDE, LIB, PATH have been set so that CL and
+REM	3. INCLUDE, LIB, PATH have been set so that CL and
 REM	   LIB will find the netcdf & f2c includes and librares
-REM	5. HOME and GMTHOME has been set
-REM	6. Inno Setup 5 has been installed and the path
+REM	4. HOME and GMTHOME has been set
+REM	5. Inno Setup 5 has been installed and the path
 REM	   to its command line tool is added to PATH
-REM	7. 7zip has been installed and the path
+REM	6. 7zip has been installed and the path
 REM	   to its command line tool is added to PATH
 
 SET GVER=4.5.0
