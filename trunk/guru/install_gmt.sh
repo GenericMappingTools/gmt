@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.146 2009-07-11 03:42:41 guru Exp $
+#	$Id: install_gmt.sh,v 1.147 2009-07-14 05:09:09 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1334,7 +1334,7 @@ if [ ! x"$GMT_man" = x ]; then
 	echo "Add $GMT_man to MANPATH" >&2
 fi
 if [ ! x"$GMT_doc" = x ]; then
-	echo "Add $GMT_doc/gmt/gmt_services.html as browser bookmark" >&2
+	echo "Add $GMT_doc/html/gmt_services.html as browser bookmark" >&2
 fi
 echo "-----------------------------------------------------------------------" >&2
 rm -f gmt_install.ftp_*
