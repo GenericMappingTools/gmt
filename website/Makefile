@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.38 2009-07-10 04:59:43 guru Exp $
+#  $Id: Makefile,v 1.39 2009-07-14 07:31:13 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -76,8 +76,7 @@ update-version-test:	update-ftp-test update-www-test
 update-version-live:	update-ftp-live update-www-live
 		echo "Both the FTP and WEB sites will be updated automatically."
 		echo "However, the following tasks must be done manually for now:"
-		echo "1. Manually remove old GMT4.* files from $(LIVEFTPDIR)"
-		echo "2. Send email notification to gmt-help, gmt-group, gmt-mirrors, and gmt-team"
+		echo "1. Send email notification to gmt-help, gmt-group, gmt-mirrors, and gmt-team"
 		echo "For more details, see RELEASE.HOWTO"
 
 #---------------------------------------------------------------------------
