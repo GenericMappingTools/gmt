@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.3 2009-07-14 20:57:03 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.4 2009-07-14 22:53:51 guru Exp $
  * 
  *	Reads a polygon file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -19,10 +19,10 @@ struct POLYGON {
 int main (int argc, char **argv)
 {
 	FILE *fp_in, *fp;
-	int n_id = 0, id, k, level, x, ymin = M90, ymax = -M90, hemi;
+	int n_id = 0, id, k, level, x, x0, y0, ymin = M90, ymax = -M90, hemi, first;
 	GMT_LONG np, nx;
 	char file[BUFSIZ], cmd[BUFSIZ], *SRC[2] = {"WDBII", "WVS"}, *H = "EW";
-	double E[2] = {+180.0, 0.0}, W[2] = {0.0, -180.0}, *lon = NULL, *lat = NULL, *xx, *yy;
+	double*lon = NULL, *lat = NULL, *xx, *yy;
 	EXTERN_MSC GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
         
 	argc = GMT_begin (argc, argv);
@@ -77,19 +77,22 @@ int main (int argc, char **argv)
 				for (hemi = 0; hemi < 2; hemi++) {
 					fprintf (fp, "> GSHHS polygon Id = %d-%c Level = %d Area = %.12g\n# @P @D%d-%c|%d|%s|%d|%d|%.12g\n",
 						P[id].h.id, H[hemi], P[id].h.level, P[id].h.area, P[id].h.id, H[hemi], P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, P[id].h.area);
-					for (k = 0; k < P[id].h.n; k++) {	/* Set up lons that go -20 to + 192 */
+					for (k = 0, first = TRUE; k < P[id].h.n; k++) {	/* Set up lons that go -20 to + 192 */
 						if (hemi == 0) {
 							if (P[id].p[k].x > M180) continue;
 							x = P[id].p[k].x;
+							if (first) {x0 = x; y0 = P[id].p[k].y;}
 						}
 						else if (hemi == 1) {
 							if (P[id].p[k].x < M180) continue;
 							x = P[id].p[k].x - M360;
+							if (first) {x0 = x; y0 = P[id].p[k].y;}
 						}
 						fprintf (fp, "%.6f\t%.6f\n", x * I_MILL, P[id].p[k].y * I_MILL);
+						first = FALSE;
 					}
 					x = (hemi == 0) ? 0 : -M180;
-					fprintf (fp, "%.6f\t%.6f\n", x * I_MILL, -90.0);
+					fprintf (fp, "%.6f\t%.6f\n%.6f\t%.6f\n%.6f\t%.6f\n", x * I_MILL, -90.0, x0 * I_MILL, -90.0, x0 * I_MILL, y0 * I_MILL);
 				}
 				
 			}
