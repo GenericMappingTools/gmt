@@ -1,11 +1,14 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.2 2009-07-13 18:49:36 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.3 2009-07-14 20:57:03 guru Exp $
  * 
  *	Reads a polygon file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
  */
 
+#include "gmt.h"
 #include "wvs.h"
+
+#define M270 270000000
 
 struct POLYGON {
 	struct GMT3_POLY h;
@@ -16,9 +19,21 @@ struct POLYGON {
 int main (int argc, char **argv)
 {
 	FILE *fp_in, *fp;
-	int n_id = 0, id, k, level, x, ymin = M90, ymax = -M90;
-	char file[BUFSIZ], cmd[BUFSIZ], *SRC[2] = {"WDBII", "WVS"};
+	int n_id = 0, id, k, level, x, ymin = M90, ymax = -M90, hemi;
+	GMT_LONG np, nx;
+	char file[BUFSIZ], cmd[BUFSIZ], *SRC[2] = {"WDBII", "WVS"}, *H = "EW";
+	double E[2] = {+180.0, 0.0}, W[2] = {0.0, -180.0}, *lon = NULL, *lat = NULL, *xx, *yy;
+	EXTERN_MSC GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
         
+	argc = GMT_begin (argc, argv);
+	
+	/* Set up some GMT variables needed later */
+	project_info.degree[0] = project_info.degree[1] = TRUE;
+	/* Supply dummy linear proj */
+	project_info.projection = project_info.xyz_projection[0] = project_info.xyz_projection[1] = GMT_LINEAR;
+	project_info.pars[0] = project_info.pars[1] = 1.0;
+	GMT_err_fail (GMT_map_setup (-180.0, 180.0, -90.0, 90.0), "");
+	
 	if (argc < 2 || argc > 3) {
 		fprintf (stderr,"usage:  polygon_to_shape file_res.b prefix\n");
 		fprintf (stderr,"	file_res.b is the binary local file with all polygon info for a resolution\n");
@@ -43,23 +58,72 @@ int main (int argc, char **argv)
 	fclose (fp_in);
 	fprintf (stderr, "polygon_to_shape: Found %d polygons\n", n_id);
 
+	GMT_err_fail (GMT_map_setup (-180, 180, -90.0, 90.0), "");
 	for (level = 1; level <= 4; level++) {	/* Make separate files for each level*/
 		sprintf (file, "%s_L%d.gmt", argv[2], level);
 		if ((fp = fopen (file, "w")) == NULL) {
 			fprintf(stderr,"polygon_to_shape:  ERROR  creating file %s.\n", file);
 			exit(-1);
 		}
-		fprintf (fp, "# @VGMT­1.0 @GPOLYGON @NGSHHS_id|GSHHS_level|GSHHS_source|GSHHS_parent_id|GSHHS_sibling_id|GSHHS_area @Tinteger|integer|char|integer|integer|double\n");
-		fprintf (fp, "# @R-180/180/%.6f/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE DATA\n", ymin*I_MILL, ymax*I_MILL);
+		fprintf (fp, "# @VGMT­1.0 @GPOLYGON @Nid|level|source|parent_id|sibling_id|area @Tchar|integer|char|integer|integer|double\n");
+/*		fprintf (fp, "# @R-180/180/%.6f/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE DATA\n", ymin*I_MILL, ymax*I_MILL); */
+		fprintf (fp, "# @R-180/180/-90/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE DATA\n", ymax*I_MILL);
 		for (id = 0; id < n_id; id++) {
 			if (P[id].h.level != level) continue;
 			/* Here we found a polygon of the required level.  Write out polygon tag and info */
 			
-			fprintf (fp, "> GSHHS polygon Id = %d Level = %d Area = %.12g\n# @P @D%d|%d|%s|%d|%d|%.12g\n",
-				P[id].h.id, P[id].h.level, P[id].h.area, P[id].h.id, P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, P[id].h.area);
-			for (k = 0; k < P[id].h.n; k++) {
-				x = (P[id].p[k].x > P[id].h.datelon) ? P[id].p[k].x - M360 : P[id].p[k].x;
-				fprintf (fp, "%.6f\t%.6f\n", x * I_MILL, P[id].p[k].y * I_MILL);
+			if (P[id].h.id == 4) {
+				P[id].h.n--;	/* Skip the duplicate point */
+				for (hemi = 0; hemi < 2; hemi++) {
+					fprintf (fp, "> GSHHS polygon Id = %d-%c Level = %d Area = %.12g\n# @P @D%d-%c|%d|%s|%d|%d|%.12g\n",
+						P[id].h.id, H[hemi], P[id].h.level, P[id].h.area, P[id].h.id, H[hemi], P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, P[id].h.area);
+					for (k = 0; k < P[id].h.n; k++) {	/* Set up lons that go -20 to + 192 */
+						if (hemi == 0) {
+							if (P[id].p[k].x > M180) continue;
+							x = P[id].p[k].x;
+						}
+						else if (hemi == 1) {
+							if (P[id].p[k].x < M180) continue;
+							x = P[id].p[k].x - M360;
+						}
+						fprintf (fp, "%.6f\t%.6f\n", x * I_MILL, P[id].p[k].y * I_MILL);
+					}
+					x = (hemi == 0) ? 0 : -M180;
+					fprintf (fp, "%.6f\t%.6f\n", x * I_MILL, -90.0);
+				}
+				
+			}
+			else if (P[id].h.west < 180.0 && P[id].h.east > 180.0) {	/* Straddles dateline; must split into two parts thanx to GIS brilliance */
+				lon = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
+				lat = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
+				for (k = 0; k < P[id].h.n; k++) {	/* Set up lons that go -20 to + 192 */
+					x = (P[id].p[k].x > M270) ? P[id].p[k].x - M360 : P[id].p[k].x;
+					lon[k] = x * I_MILL;	lat[k] = P[id].p[k].y * I_MILL;
+				}
+				for (hemi = 0; hemi < 2; hemi++) {
+					if ((np = GMT_wesn_clip (lon, lat, P[id].h.n, &xx, &yy, &nx)) == 0) {
+						fprintf (stderr, "%s: Error: Straddling 180 but not two parts?\n", GMT_program);
+						continue;
+					}
+					fprintf (fp, "> GSHHS polygon Id = %d-%c Level = %d Area = %.12g\n# @P @D%d-%c|%d|%s|%d|%d|%.12g\n",
+						P[id].h.id, H[hemi], P[id].h.level, P[id].h.area, P[id].h.id, H[hemi], P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, P[id].h.area);
+					for (k = 0; k < np; k++) GMT_xy_to_geo (&xx[k], &yy[k], xx[k], yy[k]);	/* Undo projection first */
+					fprintf (fp, "%.6f\t%.6f\n", xx[0], yy[0]);
+					for (k = 1; k < np; k++) {
+						if (!( GMT_IS_ZERO(xx[k]-xx[k-1]) && GMT_IS_ZERO(yy[k]-yy[k-1]))) fprintf (fp, "%.6f\t%.6f\n", xx[k], yy[k]);
+					}
+					GMT_free ((void *)xx);	GMT_free ((void *)yy);
+					for (k = 0; k < P[id].h.n; k++) lon[k] -= 360.0;	/* Set up lons that go -360 to -tiny */
+				}
+				GMT_free ((void *)lon);	GMT_free ((void *)lat);
+			}
+			else {	/* No problems, just write as is */
+				fprintf (fp, "> GSHHS polygon Id = %d Level = %d Area = %.12g\n# @P @D%d|%d|%s|%d|%d|%.12g\n",
+					P[id].h.id, P[id].h.level, P[id].h.area, P[id].h.id, P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, P[id].h.area);
+				for (k = 0; k < P[id].h.n; k++) {
+					x = (P[id].p[k].x > P[id].h.datelon) ? P[id].p[k].x - M360 : P[id].p[k].x;
+					fprintf (fp, "%.6f\t%.6f\n", x * I_MILL, P[id].p[k].y * I_MILL);
+				}
 			}
 		}
 		fclose (fp);	/* Done with this set */
@@ -74,6 +138,8 @@ int main (int argc, char **argv)
 		fprintf (stderr, "%d", level);
 	}
 	fprintf (stderr," done\nThe shapefiles will be in directories %s_L[1-4]\n", argv[2]);
+	
+	GMT_end (argc, argv);
 	
 	exit (EXIT_SUCCESS);
 }
