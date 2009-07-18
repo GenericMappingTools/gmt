@@ -503,8 +503,9 @@ Note for r-theta (polar) projection where r = 0 is at the center of the plot the
 the default 85/90 will draw a r = 5 radius circle at the center of the map with less frequent radial lines there.
 .TP
 .B PS_COLOR
-Determines whether \fIPostScript\fP output should use RGB, HSV, or CMYK when specifying color [rgb].
-Note if HSV is selected it does not apply to images which in that case uses RGB.
+Determines whether \fIPostScript\fP output should use RGB, HSV, CMYK, or GRAY when specifying color [rgb].
+Note if HSV is selected it does not apply to images which in that case uses RGB. When selecting GRAY, all
+colors will be converted to gray scale using YIQ (television) conversion.
 .TP
 .B PS_IMAGE_COMPRESS
 Determines if \fIPostScript\fP images are compressed using the Run-Length Encoding scheme (rle),
