@@ -1,9 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.581 2009-07-15 07:30:05 guru Exp $
+	$Id: ChangeLog,v 1.582 2009-07-18 13:37:14 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-07-18	remko
+	* pslib.c, pslib_inc.h:		Added option to reduce all color to gray scale.
+	* gmt_init.c, gmtdefaults.txt:	Added setting PS_COLOR = gray.
 
 2009-07-15	pwessel
 	* grdmask.c:		Free some memory that was ignored.
+
 -----------------------------------------------------------------------------------------
 2009-07-15
 	* GMT 4.5.0 finalized and released

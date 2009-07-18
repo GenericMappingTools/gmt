@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.408 2009-07-11 03:16:29 guru Exp $
+ *	$Id: gmt_init.c,v 1.409 2009-07-18 13:36:49 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2300,6 +2300,8 @@ return (error);*/
 				gmtdefs.ps_colormode = 1;
 			else if (!strcmp (lower_value, "hsv"))
 				gmtdefs.ps_colormode = 2;
+			else if (!strcmp (lower_value, "gray") || !strcmp (lower_value, "grey"))
+				gmtdefs.ps_colormode = 3;
 			else
 				error = TRUE;
 			break;
@@ -2765,8 +2767,10 @@ GMT_LONG GMT_savedefaults (char *file)
 		fprintf (fp, "rgb\n");
 	else if (gmtdefs.ps_colormode == 1)
 		fprintf (fp, "cmyk\n");
-	else
+	else if (gmtdefs.ps_colormode == 2)
 		fprintf (fp, "hsv\n");
+	else
+		fprintf (fp, "gray\n");
 	fprintf (fp, "PS_IMAGE_COMPRESS\t= ");
 	if (gmtdefs.ps_compress == 1)
 		fprintf (fp, "rle\n");
