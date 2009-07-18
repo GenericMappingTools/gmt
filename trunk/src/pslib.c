@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.207 2009-07-11 03:16:31 guru Exp $
+ *	$Id: pslib.c,v 1.208 2009-07-18 13:35:38 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -183,6 +183,7 @@ void init_font_encoding (struct EPS *eps);
 void get_uppercase(char *new, char *old);
 void ps_rle_decode (struct imageinfo *h, unsigned char **in);
 unsigned char *ps_cmyk_encode (PS_LONG *nbytes, unsigned char *input);
+unsigned char *ps_gray_encode (PS_LONG *nbytes, unsigned char *input);
 unsigned char *ps_rle_encode (PS_LONG *nbytes, unsigned char *input);
 unsigned char *ps_lzw_encode (PS_LONG *nbytes, unsigned char *input);
 byte_stream_t ps_lzw_putcode (byte_stream_t stream, short int incode);
@@ -454,10 +455,12 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	urx = (PS_LONG)irint ((x + xsize) * PSL->internal.scale);
 	ury = (PS_LONG)irint ((y + ysize) * PSL->internal.scale);
 
-	id = ((PSL->internal.color_mode & PSL_CMYK) && abs(nbits) == 24) ? 2 : ((abs(nbits) == 24) ? 1 : 0);
-	it = nx < 0 ? 1 : (nbits < 0 ? 2 : 0);	/* Colormask or interpolate */
+	/* Gray scale, CMYK or RGB encoding/colorspace */
+	id = (PSL->internal.color_mode == PSL_GRAY || abs(nbits) < 24) ? 0 : (PSL->internal.color_mode == PSL_CMYK ? 2 : 1);
+	/* Colormask or interpolate */
+	it = nx < 0 ? 1 : (nbits < 0 ? 2 : 0);
 
-	if ((image = ps_makecolormap (buffer, nx, ny, nbits))) {
+	if (PSL->internal.color_mode != PSL_GRAY && (image = ps_makecolormap (buffer, nx, ny, nbits))) {
 		/* Creation of colormap was successful */
 		nbits = ps_bitreduce (image->buffer, nx, ny, image->colormap->ncolors);
 
@@ -475,7 +478,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		ps_free (image);
 	}
 	else {
-		/* Export full RGB or CMYK image */
+		/* Export full gray scale, RGB or CMYK image */
 		nbits = abs(nbits);
 
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of %s Adobe %s image [%ld bit]\n", kind[PSL->internal.ascii], colorspace[id], nbits);
@@ -487,7 +490,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 		}
 		else if (it == 1 && nbits == 8) {	/* Do PS Level 3 image type 4 with colormask */
 			fprintf (PSL->internal.fp, "\n<< /ImageType 4 /MaskColor[%d]", (int)buffer[0]);
-			buffer ++;
+			buffer++;
 		}
 		else		/* Do PS Level 2 image, optionally with interpolation */
 			fprintf (PSL->internal.fp, "\n<< /ImageType %s", type[it]);
@@ -859,7 +862,7 @@ PS_LONG ps_pattern (PS_LONG image_no, char *imagefile, PS_LONG invert, PS_LONG i
 	nx = PSL->internal.pattern[image_no].nx;
 	ny = PSL->internal.pattern[image_no].ny;
 
-	id = (PSL->internal.color_mode & PSL_CMYK) ? 2 : 1;
+	id = (PSL->internal.color_mode == PSL_CMYK) ? 2 : 1;
 	name = (PSL->internal.pattern[image_no].depth == 1 && (f_rgb[0] < 0 || b_rgb[0] < 0)) ? "imagemask" : "image";
 
 	/* When DPI or colors have changed, the /pattern procedure needs to be rewritten */
@@ -1195,7 +1198,7 @@ PS_LONG ps_plotinit_hires (char *plotfile, PS_LONG overlay, PS_LONG mode, double
 		     bit 1 : 0 = be silent, 1 = be verbose
 		     bit 2 : 0 = bin image, 1 = hex image
 		     bit 3 : 0 = rel positions, 1 = abs positions
-		  bit 9-10 : 0 = RGB color, 1 = CMYK color, 2 = HSV color
+		  bit 9-10 : 0 = RGB color, 1 = CMYK color, 2 = HSV color, 3 = Gray scale
 		bits 12-13 : 0 = no compression, 1 = RLE compression, 2 = LZW compression
 		bits 14-15 : (0,1,2) sets the line cap setting
 		bits 16-17 : (0,1,2) sets the line miter setting
@@ -3780,8 +3783,10 @@ void ps_stream_dump (unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbit
 	PSL->internal.length = 0;
 
 	/* Transform RGB stream to CMYK stream */
-	if ((PSL->internal.color_mode & PSL_CMYK) && nbits == 24)
+	if (PSL->internal.color_mode == PSL_CMYK && nbits == 24)
 		buffer1 = ps_cmyk_encode (&nbytes, buffer);
+	else if (PSL->internal.color_mode == PSL_GRAY && nbits == 24)
+		buffer1 = ps_gray_encode (&nbytes, buffer);
 	else
 		buffer1 = buffer;
 
@@ -3940,12 +3945,23 @@ unsigned char *ps_cmyk_encode (PS_LONG *nbytes, unsigned char *input)
 
 	nout = *nbytes / 3 * 4;
 	output = (unsigned char *)ps_memory (VNULL, (size_t)nout, sizeof (unsigned char));
-	out = 0;
 
-	for (in = 0; in < *nbytes; in += 3) {
-		ps_rgb_to_cmyk_char (&input[in], &output[out]);
-		out += 4;
-	}
+	for (in = out = 0; in < *nbytes; out += 4, in += 3) ps_rgb_to_cmyk_char (&input[in], &output[out]);
+	*nbytes = nout;
+	return (output);
+}
+
+unsigned char *ps_gray_encode (PS_LONG *nbytes, unsigned char *input)
+{
+	/* Recode RGB stream as gray-scale stream */
+
+	PS_LONG in, out, nout;
+	unsigned char *output;
+
+	nout = *nbytes / 3;
+	output = (unsigned char *)ps_memory (VNULL, (size_t)nout, sizeof (unsigned char));
+
+	for (in = out = 0; in < *nbytes; out++, in += 3) output[out] = (char) PSL_YIQ ((&input[in]));
 	*nbytes = nout;
 	return (output);
 }
@@ -4112,7 +4128,9 @@ PS_LONG ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 		polarity = 0;
 		if (!PSL_iscolor (f_rgb))
 			fprintf (PSL->internal.fp, " [/Indexed /DeviceGray 0 <%02X>] setcolorspace", f_rgb[0]);
-		else if (PSL->internal.color_mode & PSL_CMYK) {
+		else if (PSL->internal.color_mode == PSL_GRAY)
+			fprintf (PSL->internal.fp, " [/Indexed /DeviceGray 0 <%02X>] setcolorspace", PSL_YIQ(f_rgb));
+		else if (PSL->internal.color_mode == PSL_CMYK) {
 			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
 			fprintf (PSL->internal.fp, " [/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3]);
 		}
@@ -4124,7 +4142,9 @@ PS_LONG ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 		polarity = 1;
 		if (!PSL_iscolor (b_rgb))
 			fprintf (PSL->internal.fp, " [/Indexed /DeviceGray 0 <%02X>] setcolorspace", b_rgb[0]);
-		else if (PSL->internal.color_mode & PSL_CMYK) {
+		else if (PSL->internal.color_mode == PSL_GRAY)
+			fprintf (PSL->internal.fp, " [/Indexed /DeviceGray 0 <%02X>] setcolorspace", PSL_YIQ(b_rgb));
+		else if (PSL->internal.color_mode == PSL_CMYK) {
 			ps_rgb_to_cmyk_int (b_rgb, b_cmyk);
 			fprintf (PSL->internal.fp, " [/Indexed /DeviceCMYK 0 <%02X%02X%02X%02X>] setcolorspace", b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
 		}
@@ -4136,7 +4156,9 @@ PS_LONG ps_bitimage_cmap (int f_rgb[], int b_rgb[])
 		polarity = 2;
 		if (!PSL_iscolor (b_rgb) && !PSL_iscolor (f_rgb))
 			fprintf (PSL->internal.fp, " [/Indexed /DeviceGray 1 <%02X%02X>] setcolorspace", f_rgb[0], b_rgb[0]);
-		else if (PSL->internal.color_mode & PSL_CMYK) {
+		else if (PSL->internal.color_mode == PSL_GRAY)
+			fprintf (PSL->internal.fp, " [/Indexed /DeviceGray 1 <%02X%02X>] setcolorspace", PSL_YIQ(f_rgb), PSL_YIQ(b_rgb));
+		else if (PSL->internal.color_mode == PSL_CMYK) {
 			ps_rgb_to_cmyk_int (f_rgb, f_cmyk);
 			ps_rgb_to_cmyk_int (b_rgb, b_cmyk);
 			fprintf (PSL->internal.fp, " [/Indexed /DeviceCMYK 1 <%02X%02X%02X%02X%02X%02X%02X%02X>] setcolorspace", f_cmyk[0], f_cmyk[1], f_cmyk[2], f_cmyk[3], b_cmyk[0], b_cmyk[1], b_cmyk[2], b_cmyk[3]);
@@ -4432,8 +4454,13 @@ PS_LONG ps_place_color (int rgb[])
 		pmode = 10;
 	}
 	else if (!PSL_iscolor (rgb)) {
-		/* Grey scale */
+		/* Gray scale, since R==G==B */
 		fprintf (PSL->internal.fp, PSL->current.bw_format, rgb[0] * PSL_INV_255);
+		pmode = 2;
+	}
+	else if (PSL->internal.color_mode == PSL_GRAY) {
+		/* Gray scale, forced by user */
+		fprintf (PSL->internal.fp, PSL->current.bw_format, PSL_YIQ(rgb) * PSL_INV_255);
 		pmode = 2;
 	}
 	else if (PSL->internal.color_mode == PSL_RGB) {
@@ -4441,7 +4468,7 @@ PS_LONG ps_place_color (int rgb[])
 		fprintf (PSL->internal.fp, PSL->current.rgb_format, rgb[0] * PSL_INV_255, rgb[1] * PSL_INV_255, rgb[2] * PSL_INV_255);
 		pmode = 4;
 	}
-	else if (PSL->internal.color_mode & PSL_CMYK) {
+	else if (PSL->internal.color_mode == PSL_CMYK) {
 		/* CMYK mode */
 		double cmyk[4];
 		ps_rgb_to_cmyk (rgb, cmyk);
@@ -4532,13 +4559,11 @@ void ps_cmyk_to_rgb (int rgb[], double cmyk[])
 void ps_rgb_to_mono (unsigned char *buffer, struct imageinfo *h)
 {
 	int i, j;
-	unsigned char rgb[3];
 
 	if (h->depth == 24) {
 		for (i = j = 0; i < h->width * h->height; i++, j += 3)
 		{
-			memcpy ((void *)rgb, (void *)&buffer[j], 3 * sizeof(unsigned char));
-			buffer[i] = (unsigned char) PSL_YIQ (rgb);
+			buffer[i] = (unsigned char) PSL_YIQ ((&buffer[j]));
 		}
 		h->depth = 8;
 	}
