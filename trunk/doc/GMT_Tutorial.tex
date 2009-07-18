@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Tutorial.tex,v 1.63 2009-07-10 04:16:49 guru Exp $
+%       $Id: GMT_Tutorial.tex,v 1.64 2009-07-18 03:06:51 remko Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2009.
@@ -532,7 +532,7 @@ We try the following command:
 
 {\small\begin{verbatim}
 pscoast -R-130/-70/24/52 -JB-100/35/33/45/6i -B10g5:."Conic Projection": \
-   -N1/thickest -N2/thinnest -A500 -Ggrey -Wthinnest -P > map.ps
+   -N1/thickest -N2/thinnest -A500 -Ggray -Wthinnest -P > map.ps
 \end{verbatim}
 }
 
@@ -931,7 +931,7 @@ We may now complete our example using the Mercator projection; we throw in a
 map scale out of pure generosity:
 
 {\small\begin{verbatim} 
-pscoast -R130/150/35/50 -JM6i -B5 -P -Ggrey -Lf134/49/42.5/500 -K > map.ps
+pscoast -R130/150/35/50 -JM6i -B5 -P -Ggray -Lf134/49/42.5/500 -K > map.ps
 psxy -R -J -O -Cquakes.cpt quakes.d -Sci -Wthinnest >> map.ps
 \end{verbatim}
 }

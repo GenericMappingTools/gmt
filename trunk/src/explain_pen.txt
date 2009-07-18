@@ -5,5 +5,5 @@ The attributes of lines and symbol outlines as defined by \fIpen\fP is a comma d
 \fIwidth\fP, \fIcolor\fP and \fItexture\fP, each of which is optional.
 \fIwidth\fP can be indicated as a measure (points, centimeters, inches) or as \fBfaint\fP, \fBthin\fP[\fBner\fP|\fBnest\fP],
 \fBthick\fP[\fBer\fP|\fBest\fP], \fBfat\fP[\fBter\fP|\fBtest\fP], or \fBobese\fP.
-\fIcolor\fP specifies a grey shade or color (see SPECIFYING COLOR below).
+\fIcolor\fP specifies a gray shade or color (see SPECIFYING COLOR below).
 \fItexture\fP is a combination of dashes `-' and dots `.'.
