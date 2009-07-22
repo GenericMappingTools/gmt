@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.59 2009-07-14 05:09:10 guru Exp $
+#	$Id: Makefile,v 1.60 2009-07-22 22:23:04 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -31,9 +31,9 @@ include $(GMTSRCDIR)gmtalldeps.macros
 INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 DEFINES		= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
 PREV_VERSION	= 1.10
-# These are the values to use for the next GMT version 4.5.0
+# These are the values to use for the next GMT version 4.5.1
 VERSION			= 4.4
-GSHHS_DATA_VERSION	= 2.0
+GSHHS_DATA_VERSION	= 2.1
 GSHHS_PROG_VERSION	= 1.12
 
 # Douglas-Peucker parameters:

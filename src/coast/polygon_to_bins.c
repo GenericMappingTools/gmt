@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.13 2009-06-29 22:58:21 guru Exp $
+ *	$Id: polygon_to_bins.c,v 1.14 2009-07-22 22:23:04 guru Exp $
  */
 #include "wvs.h"
 #include "shore.h"
@@ -19,6 +19,7 @@ struct GMT3_BIN_HEADER *bin_head;
 
 int *ix, *iy;
 int *xx, *yy;
+int *GSHHS_parent;
 
 void give_bad_message_and_exit (int id, int kind, int pt);
 
@@ -37,7 +38,7 @@ int main (int argc, char **argv) {
 	
 	double rx, ry, SHORT_FACTOR;
 	
-	FILE *fp_in, *fp_pt, *fp_bin, *fp_seg;
+	FILE *fp_in, *fp_pt, *fp_bin, *fp_seg, *fp_par;
 	
 	struct SEGMENT *s, **ss;
 	struct	LONGPAIR p;
@@ -76,14 +77,15 @@ int main (int argc, char **argv) {
 	GMT_memtrack_off (GMT_mem_keeper);
 #endif
 	bin = (struct BIN *) GMT_memory(VNULL, nbins, sizeof(struct BIN), "polygon_to_bins");
-
+	GSHHS_parent = (int *) GMT_memory(VNULL, N_POLY, sizeof(int), "polygon_to_bins");
+	for (i = 0; i < N_POLY; i++) GSHHS_parent[i] = -2;	/* Fill with bad value so we can check later that it got overwritten */
 	last_x_bin = BIN_NX - 1;
 	
 	while (pol_readheader (&h, fp_in) == 1) {
 		
 		n_id++;
 		n_init += h.n;
-
+		GSHHS_parent[h.id] = h.parent;
 		/*if (h.id%100 == 0) { */
 		if (h.id%1 == 0) {
 			fprintf (stderr,"polygon_to_bins:  Binning polygon %d\r", h.id);
@@ -301,6 +303,7 @@ int main (int argc, char **argv) {
 			
 			/* Put level, nps, etc. into this header:  */
 			
+			s->GSHHS_ID = h.id;
 			s->level = h.level;
 			s->n = nn;
 			s->entry = 4;
@@ -372,6 +375,7 @@ int main (int argc, char **argv) {
 				
 				/* Put level, nps, etc. into this header:  */
 				
+				s->GSHHS_ID = h.id;
 				s->level = h.level;
 				s->n = i - last_i + 1;
 				n_seg++;
@@ -458,6 +462,13 @@ int main (int argc, char **argv) {
 	
 	fclose (fp_in);
 	
+	for (i = 0; i < n_id; i++) {
+		if (GSHHS_parent[i] == -2) {
+			fprintf (stderr, "polygon_to_bins: Bad parent (%d) for polygon %d (not present?)\n", GSHHS_parent[i], i);
+			exit (EXIT_FAILURE);
+		}
+	}
+	
 	fprintf (stderr, "\nTotal input and output points: %d %d\n", n_init, n_final);
 	fprintf (stderr, "Total polygons processed: %d\n", n_id);
 	fprintf (stderr, "%d points added as duplicates at crossings\n", add);
@@ -465,6 +476,18 @@ int main (int argc, char **argv) {
 
 	/* Write out */
 	
+	sprintf (file, "%s.par", argv[4]);
+	fp_par = fopen (file, "w");
+	if (fwrite ((void *)&n_id, sizeof (int), 1, fp_par) != 1) {
+		fprintf (stderr, "polygon_to_bins: Error writing # of GSHHS parents\n");
+		exit (EXIT_FAILURE);
+	}
+	if (fwrite ((void *)GSHHS_parent, sizeof (int), n_id, fp_par) != n_id) {
+		fprintf (stderr, "polygon_to_bins: Error writing GSHHS parents\n");
+		exit (EXIT_FAILURE);
+	}
+	fclose (fp_par);
+
 	bin_head = (struct GMT3_BIN_HEADER *) GMT_memory (VNULL, nbins, sizeof (struct GMT3_BIN_HEADER), "polygon_to_bins");
 	
 	GMT_grd_init (&n_head, argc, argv, FALSE);
@@ -538,6 +561,7 @@ int main (int argc, char **argv) {
 		ns += n;
 		
 		for (i = 0; i < n; i++) {
+			seg_head.GSHHS_ID = ss[i]->GSHHS_ID;
 			seg_head.first_p = np;
 			seg_head.p_area = ss[i]->p_area;
 			seg_head.p_area_fraction = ss[i]->p_area_fraction;

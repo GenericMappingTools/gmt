@@ -1,5 +1,5 @@
 /*
- *	$Id: shore.h,v 1.3 2009-06-21 01:21:04 guru Exp $
+ *	$Id: shore.h,v 1.4 2009-07-22 22:23:04 guru Exp $
  */
 #ifndef _WVS_H_
 #define MILL (1000000)
@@ -12,6 +12,8 @@ typedef unsigned short ushort;
 #endif
 
 struct SEGMENT {
+	int GSHHS_ID;		/* Original GSHHS ID for the polygon that this segment is part of */
+	int GSHHS_parent;	/* ID of polygon that the GSHHS_id polygon is contained by (-1 if level == 1) */
 	int level;
 	int n;
 	int entry, exit;		/* 4 for a poly completely inside bin; else w,e,s,n = 3,1,0,2  */
@@ -27,8 +29,10 @@ struct SHORT_PAIR {
 };
 
 struct SEGMENT_HEADER {
+	int GSHHS_ID;		/* Original GSHHS ID for the polygon that this segment is part of */
+	int GSHHS_parent;	/* ID of polygon that the GSHHS_id polygon is contained by (-1 if level == 1) */
 	int info;		/* Combination of n, entry, exit, level */
-	int p_area;		/* Polygon from which this segment belongs */
+	int p_area;		/* Area of polygon from which this segment belongs */
 	int p_area_fraction;	/* Percent of full-resolution area for this resolution [100 for full] */
 	int first_p;		/* Id of first point */
 };
