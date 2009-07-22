@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.24 2009-06-21 01:21:04 guru Exp $
+ *	$Id: gmt_shore.h,v 1.25 2009-07-22 22:23:04 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -71,6 +71,7 @@ struct GMT_SHORE {
 	GMT_LONG nside[4];		/* Number of entries per side, including corner */
 	GMT_LONG n_entries;
 	BOOLEAN leftmost_bin;		/* TRUE if current bin is at left edge of map */
+	BOOLEAN skip_feature;		/* TRUE if GSHHS version > 2.0 and +r or +l is in use */
 	double bsize;			/* Size of square bins in degrees */
 	double lon_sw;			/* Longitude of SW corner */
 	double lat_sw;			/* Latitude of SW corner */
@@ -82,10 +83,12 @@ struct GMT_SHORE {
 	int bin_size;	/* Size of square bins in minutes */
 	int bin_nx;	/* Number of bins in 360 degrees of longitude */
 	int bin_ny;	/* Number of bins in 180 degrees of latitude */
+	int n_poly;		/* Number of polygons present in the data set */
 	int n_bin;		/* Number of bins present in the data set */
 	int n_seg;		/* Number of segments present in the data set */
 	int n_pt;		/* Number of points present in the data set */
 	
+	int *GSHHS_parent;	/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all elvel 1 polygons) */
 	int *bin_firstseg;	/* Array with ids of first segment per bin */
 	short int *bin_info;	/* Array with levels of all 4 nodes per bin */
 	short int *bin_nseg;	/* Array with number of segments per bin */
@@ -102,6 +105,7 @@ struct GMT_SHORE {
 	int bin_size_id;	/* Id for variable bin_size */
 	int bin_nx_id;		/* Id for variable bin_nx */
 	int bin_ny_id;		/* Id for variable bin_ny */
+	int n_poly_id;		/* Id for variable n_bin */
 	int n_bin_id;		/* Id for variable n_bin */
 	int n_seg_id;		/* Id for variable n_seg */
 	int n_pt_id;		/* Id for variable n_pt */
@@ -113,6 +117,8 @@ struct GMT_SHORE {
 	int seg_area_id;	/* Id for variable seg_area */
 	int seg_frac_id;	/* Id for variable seg_frac */
 	int seg_start_id;	/* Id for variable seg_start */
+	int seg_GSHHS_ID_id;	/* Id for variable seg_GSHHS_ID */
+	int GSHHS_parent_id;	/* Id for variable GSHHS_parent */
 	
 	int pt_dx_id;		/* Id for variable pt_dx */
 	int pt_dy_id;		/* Id for variable pt_dy */
