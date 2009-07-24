@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.585 2009-07-24 10:02:30 guru Exp $
+	$Id: ChangeLog,v 1.586 2009-07-24 20:27:02 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-07-24	pwessel
+	* gmt_support.c:	The routine that checks if a points is inside or outside a
+				polar cap had trouble when the points longitude exactly
+				equalled a point on the polygon since round-off would 
+				cause our test to fail.  Now hopefully fool-proof.
 2009-07-23	pwessel
 	* psmask.c:		With -D, the internal di,dj constant was set way too large.
 

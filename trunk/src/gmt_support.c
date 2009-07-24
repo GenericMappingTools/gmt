@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.420 2009-07-10 22:10:23 remko Exp $
+ *	$Id: gmt_support.c,v 1.421 2009-07-24 20:27:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4932,15 +4932,33 @@ GMT_LONG GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINE_SEG
 
 GMT_LONG GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, GMT_LONG count[])
 {	/* Case of a polar cap */
-	GMT_LONG i, in, cut, n_node_hit = 0;
-	double W, E, S, N, lon, lon1, lon2, dlon, x_lat, this_lon, last_lon = 0.0;
+	GMT_LONG i, in, cut;
+	double W, E, S, N, lon, lon1, lon2, dlon, x_lat;
 
-	/* Draw meridian through P and count all the crossings with S */
+	/* Draw meridian through P and count all the crossings with the line segments making up the polar cap S */
 
-	for (i = count[0] = count[1] = 0; i < P->n_rows - 1; i++) {	/* -1, since we now last point repeats the first */
-		in = i + 1;		/* Next point index */
-		lon1 = P->coord[GMT_X][i];	/* Copy the two longitudes since we need to mess with them */
-		lon2 = P->coord[GMT_X][in];
+	for (i = count[0] = count[1] = 0; i < P->n_rows - 1; i++) {	/* -1, since we know last point repeats the first */
+		/* Here lon1 and lon2 are the end points (in longitude) of the current line segment in S.  There are
+		 * four cases to worry about:
+		 * 1) lon equals lon1 (i.e., the meridian through lon goes right through lon1)
+		 * 2) lon equals lon2 (i.e., the meridian through lon goes right through lon2)
+		 * 3) lon lies between lon1 and lon2 and crosses the segment
+		 * 4) none of the above
+		 * Since we want to obtain either ONE or ZERO intersections per segment we will skip to next
+		 * point if case (2) occurs: this avoids counting a crossing twice for consequtive segments.
+		 */
+		
+		/* First deal with case when the longitude of P goes ~right through the second of the line nodes */
+		in = i + 1;			/* Next point index */
+		lon2 = P->coord[GMT_X][in];	/* Copy the second of two longitudes since we may need to mess with them */
+		if (GMT_IS_ZERO (plon - lon2) || GMT_IS_ZERO (fabs(plon - lon2) - 360.0)) continue;	/* Line goes through the 2nd node - ignore */
+		lon1 = P->coord[GMT_X][i];	/* Copy the first of two longitudes since we may need to mess with them */
+		if (GMT_IS_ZERO (plon - lon1) || GMT_IS_ZERO (fabs(plon - lon1) - 360.0)) {		/* Line goes through the 1st node */
+			cut = (P->coord[GMT_Y][i] > plat) ? 0 : 1;					/* node is north (0) or south (1) of P */
+			count[cut]++;
+			continue;
+		}
+		/* OK, not exactly on a node, deal with crossing a line */
 		dlon = lon2 - lon1;
 		if (dlon > 180.0)		/* Jumped across Greenwich going westward */
 			lon2 -= 360.0;
@@ -4954,7 +4972,7 @@ GMT_LONG GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 			W = lon2;
 			E = lon1;
 		}
-		lon = plon;	/* Local copy of plon, below adjusted given the segment lon range */
+		lon = plon;			/* Local copy of plon, below adjusted given the segment lon range */
 		while (lon > W) lon -= 360.0;	/* Make sure we rewind way west for starters */
 		while (lon < W) lon += 360.0;	/* Then make sure we wind to inside the lon range or way east */
 		if (lon > E) continue;	/* Not crossing this segment */
@@ -4974,32 +4992,8 @@ GMT_LONG GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 		x_lat = P->coord[GMT_Y][i] + ((P->coord[GMT_Y][in] - P->coord[GMT_Y][i]) / (lon2 - lon1)) * (lon - lon1);
 		if (GMT_IS_ZERO (x_lat - plat)) return (1);	/* P is on S boundary */
 
-		if (lon == lon1 || lon == lon2) {	/* Special checking for cutting through a node */
-			double dlon_a, dlon_b;
-			n_node_hit++;
-			if (n_node_hit == 2) {	/* Now processed two neighboring segments whose connecting node has lon = our lon */
-				this_lon = (lon == lon1) ? lon2 : lon1;
-				dlon_a = last_lon - lon;
-				if (fabs (dlon_a) > 180.0) dlon_a = copysign ((360.0 - fabs (dlon_a)), -dlon_a);
-				dlon_b = this_lon - lon;
-				if (fabs (dlon_b) > 180.0) dlon_b = copysign ((360.0 - fabs (dlon_b)), -dlon_b);
-				if ((dlon_a * dlon_b) < 0.0) {
-					cut = (x_lat > plat) ? 0 : 1;	/* Cut is north (0) or south (1) of P */
-					count[cut]++;
-				}
-				n_node_hit = 0;
-			}
-			else {	/* Keep track of the longitude of the point away from the node */
-				last_lon = (lon == lon1) ? lon2 : lon1;
-			}
-		}
-		else {
-			cut = (x_lat > plat) ? 0 : 1;	/* Cut is north (0) or south (1) of P */
-			count[cut]++;
-		}
-	}
-	if (n_node_hit == 1) {	/* Fist and last segment connects through a node that equals our lon */
-		fprintf (stderr, "%s: GMT_inonout_sphpol ends with n_node_hit == 1 which should not happen?\n", GMT_program);
+		cut = (x_lat > plat) ? 0 : 1;	/* Cut is north (0) or south (1) of P */
+		count[cut]++;
 	}
 
 	return (0);	/* This means no special cases were detected that warranted an immediate return */
