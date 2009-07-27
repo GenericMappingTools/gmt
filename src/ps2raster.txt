@@ -107,6 +107,23 @@ Control visibility of the layer with the \fB+l\fP\fIminLOD/maxLOD\fP and \fB+f\f
 options.  FInally, if you plan to leave the image itself on a server and only distribute the KML,
 use \fB+u\fP\fIURL\fP to prepend the URL to the image reference.
 See the KML documentation for further explanation (http://code.google.com/apis/kml/documentation/).
+.br
+Further notes on the creation of georeferenced rasters. \fBps2raster\fP can create a georeferenced raster 
+image with a world file OR uses GDAL to convert the GMT \fIPostScript\fP file to geotiff.
+GDAL uses Proj.4 for it's projection library. To provide with the information it needs to do 
+the georeferencing, GMT 4.5 embeds a comment near the start of the \fIPostScript\fP file defining the projection 
+using Proj.4 syntax. Users with pre-GMT v4.5 \fIPostScript\fP files, or even non-GMT ps files, can provide the 
+information \fBps2raster\fP requires by manually editing a line into the \fIPostScript\fP file, prefixed with %%PROJ. 
+.br
+For example the command \fBpscoast\fP OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) --BASEMAP_TYPE=inside > cara.ps 
+.br
+adds this comment line 
+.br
+%%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963 4413389.889 5282821.824 +proj=merc +lon_0=0 +k=-1 +x_0=0 +y_0=0 +a=6378137.0 +b=6356752.314245
+.br
+where 'merc' is the keyword for the coordinate conversion; the 2 to 5th elements contain the map limits, 
+6 to 9th the map limits in projected coordinates and the rest of the line has the regular proj4 string
+for this projection.
 .SH NOTES
 The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently results in loss of details that are
 available in the original \fIPostScript\fP file. Choose a resolution that is large enough for the application that
