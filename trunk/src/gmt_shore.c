@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.49 2009-07-22 22:23:04 guru Exp $
+ *	$Id: gmt_shore.c,v 1.50 2009-08-13 17:58:58 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -288,7 +288,7 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 /* max_level: Polygons with higher levels are ignored */
 {
 	size_t start[1], count[1];
-	int *seg_area, *seg_frac = NULL, *seg_info, *seg_start, *seg_ID;
+	int *seg_area, *seg_frac = NULL, *seg_info, *seg_start, *seg_ID = NULL;
 	BOOLEAN *seg_skip = NULL;
 	GMT_LONG s, i, err, cut_area, level;
 	double w, e, dx;
