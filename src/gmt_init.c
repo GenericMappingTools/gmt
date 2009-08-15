@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.410 2009-08-15 01:31:41 remko Exp $
+ *	$Id: gmt_init.c,v 1.411 2009-08-15 14:14:10 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -358,11 +358,20 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t       Give origin, pole of projection, and scale at oblique equator\n");
 			fprintf (stderr, "\t       Specify region in oblique degrees OR use -R<>r\n");
 
+			fprintf (stderr, "\t   -Jp|P[a]<scale|width>[/<base>][r|z] (Polar (theta,radius))\n");
+			fprintf (stderr, "\t     Linear scaling for polar coordinates.\n");
+			fprintf (stderr, "\t     Optionally append 'a' to -Jp or -JP to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
+			fprintf (stderr, "\t     Give scale in %s/units, and append theta value for angular offset (base) [0]\n", GMT_unit_names[gmtdefs.measure_unit]);
+			fprintf (stderr, "\t     Append r to reverse radial direction (s/n must be in 0-90 range) or z to annotate depths rather than radius [Default]\n");
+
+			fprintf (stderr, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scale|width> ((American) Polyconic)\n");
+			fprintf (stderr, "\t     Give central meridian (opt), reference parallel (opt, default = equator), and scale\n");
+
 			fprintf (stderr, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scale|width> (Equidistant Cylindrical)\n");
 			fprintf (stderr, "\t     Give central meridian (opt), standard parallel (opt), and scale\n");
 			fprintf (stderr, "\t     <lat0> = 61.7 (Min. linear distortion), 50.5 (R. Miller equirectangular),\n");
 			fprintf (stderr, "\t     45 (Gall isographic), 43.5 (Min. continental distortion), 42 (Grafarend & Niermann),\n");
-			fprintf (stderr, "\t     37.5 (Min. overall distortion), 0 (Plate Carree)\n");
+			fprintf (stderr, "\t     37.5 (Min. overall distortion), 0 (Plate Carree, default)\n");
 
 			fprintf (stderr, "\t   -Jr|R[<lon0>/]<scale|width> (Winkel Tripel)\n\t     Give central meridian and scale\n");
 
@@ -384,13 +393,8 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scale|width> (Cylindrical Equal-area)\n");
 			fprintf (stderr, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
-			fprintf (stderr, "\t     <lat0> = 50 (Balthasart), 45 (Gall-Peters), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards),\n\t              37.0666 (Caster), 30 (Behrmann), 0 (Lambert)\n");
-
-			fprintf (stderr, "\t   -Jp|P[a]<scale|width>[/<base>][r|z] (Polar (theta,radius))\n");
-			fprintf (stderr, "\t     Linear scaling for polar coordinates.\n");
-			fprintf (stderr, "\t     Optionally append 'a' to -Jp or -JP to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
-			fprintf (stderr, "\t     Give scale in %s/units, and append theta value for angular offset (base) [0]\n", GMT_unit_names[gmtdefs.measure_unit]);
-			fprintf (stderr, "\t     Append r to reverse radial direction (s/n must be in 0-90 range) or z to annotate depths rather than radius [Default]\n");
+			fprintf (stderr, "\t     <lat0> = 50 (Balthasart), 45 (Gall-Peters), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards),\n");
+			fprintf (stderr, "\t              37.0666 (Caster), 30 (Behrmann), 0 (Lambert, default)\n");
 
 			fprintf (stderr, "\t   -Jx|X<x-scale|width>[/<y-scale|height>] (Linear, log, power scaling)\n");
 			fprintf (stderr, "\t     Scale in %s/units (or 1:xxxx). Optionally, append to <x-scale> and/or <y-scale>:\n", GMT_unit_names[gmtdefs.measure_unit]);
@@ -448,6 +452,8 @@ void GMT_explain_option (char option)
 			fprintf (stderr, "\t      -Jo|O[b]<lon0>/<lat0>/<lon1>/<lat1>/<scale|width>\n");
 			fprintf (stderr, "\t      -Jo|Oc<lon0>/<lat0>/<lonp>/<latp>/<scale|width>\n");
 
+			fprintf (stderr, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scale|width> ((American) Polyconic)\n");
+
 			fprintf (stderr, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scale|width> (Equidistant Cylindrical)\n");
 
 			fprintf (stderr, "\t   -Jr|R[<lon0>/]<scale|width> (Winkel Tripel)\n");
@@ -462,7 +468,7 @@ void GMT_explain_option (char option)
 
 			fprintf (stderr, "\t   -Jw|W<lon0>/<scale|width> (Mollweide)\n");
 
-			fprintf (stderr, "\t   -Jy|Y<lon0>/<lats>/<scale|width> (Cylindrical Equal-area)\n");
+			fprintf (stderr, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scale|width> (Cylindrical Equal-area)\n");
 
 			fprintf (stderr, "\t   -Jp|P[a]<scale|width>[/<origin>][r|z] (Polar [azimuth] (theta,radius))\n");
 
@@ -871,6 +877,10 @@ void GMT_syntax (char option)
 					break;
 				case GMT_WINKEL:
 					fprintf (stderr, "\t-Jr[<lon0>/]<scale> OR -JR[<lon0>/]<width>\n");
+					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
+					break;
+				case GMT_POLYCONIC:
+					fprintf (stderr, "\t-Jpoly/[<lon0>/[<lat0>/]]<scale> OR -JPoly/[<lon0>/[<lat0>/]]<width>\n");
 					fprintf (stderr, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_CYL_EQDIST:

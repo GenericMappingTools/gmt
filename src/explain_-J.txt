@@ -95,8 +95,8 @@ Give the UTM zone (A,B,1-60[C-X],Y,Z)) and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UN
 .br
 Zones: If C-X not given, prepend - or + to enforce southern or northern hemisphere conventions [northern if south > 0].
 .TP
-OPT(Jy)\fIlon0/lat0/scale\fP or OPT(JY)\fIlon0/lat0/width\fP (Cylindrical Equal-Area \fB[E]\fP).
-Give the central meridian \fIlon0\fP, standard parallel \fIlat0\fP, and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+OPT(Jy)[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP or OPT(JY)[\fIlon0/\fP[\fIlat0/\fP]]\fIwidth\fP (Cylindrical Equal-Area \fB[E]\fP).
+Give the central meridian \fIlon0\fP (optional), standard parallel \fIlat0\fP (optional), and \fIscale\fP (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 The standard parallel is typically one of these (but can be any value):
 .RS
 .RS
@@ -112,7 +112,7 @@ The standard parallel is typically one of these (but can be any value):
 .br
 30 - Behrman
 .br
-0 - Lambert
+0 - Lambert (default)
 .RE
 .RE
 .PP
@@ -126,6 +126,10 @@ Give projection center \fIlon0/lat0\fP, two standard parallels \fIlat1/lat2\fP, 
 .TP
 OPT(Jl)\fIlon0/lat0/lat1/lat2/scale\fP or OPT(JL)\fIlon0/lat0/lat1/lat2/width\fP (Lambert \fB[C]\fP)
 Give origin \fIlon0/lat0\fP, two standard parallels \fIlat1/lat2\fP, and \fIscale\fP along these (\fB1:\fP\fIxxxx\fP or UNIT/degree).
+.TP
+OPT(Jpoly)[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP or OPT(JPoly)[\fIlon0/\fP[\fIlat0/\fP]]\fIwidth\fP ((American) Polyconic).
+Give the central meridian \fIlon0\fP (optional), reference parallel \fIlat0\fP (optional, default = equator),
+and \fIscale\fP along central meridian (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .PP
 \fBAZIMUTHAL PROJECTIONS:\fP
 .sp
