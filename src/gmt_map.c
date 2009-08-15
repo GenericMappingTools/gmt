@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.238 2009-08-15 17:48:48 remko Exp $
+ *	$Id: gmt_map.c,v 1.239 2009-08-15 20:12:22 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2949,11 +2949,13 @@ GMT_LONG GMT_map_init_polyconic (void) {
 
 	if (GMT_is_dnan(project_info.pars[0])) project_info.pars[0] = 0.5 * (project_info.w + project_info.e);
 	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
+	if (project_info.s <= -90.0) project_info.edge[0] = FALSE;
+	if (project_info.n >= 90.0) project_info.edge[2] = FALSE;
 	GMT_vpolyconic (project_info.pars[0], project_info.pars[1]);
-	GMT_forward = (PFL) GMT_polyconic;
-	GMT_inverse = (PFL) GMT_ipolyconic;
 	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[2];
+	GMT_forward = (PFL) GMT_polyconic;
+	GMT_inverse = (PFL) GMT_ipolyconic;
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 
 	if (project_info.region) {
@@ -2968,6 +2970,7 @@ GMT_LONG GMT_map_init_polyconic (void) {
 		GMT_map_clip = (PFL) GMT_wesn_clip;
 		GMT_left_edge = (PFD) GMT_left_polyconic;
 		GMT_right_edge = (PFD) GMT_right_polyconic;
+		project_info.polar = TRUE;
 	}
 	else {
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
