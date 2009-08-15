@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.421 2009-07-24 20:27:02 guru Exp $
+ *	$Id: gmt_support.c,v 1.422 2009-08-15 17:48:48 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7997,17 +7997,14 @@ GMT_LONG GMT_prepare_label (double angle, GMT_LONG side, double x, double y, GMT
 	if (!project_info.edge[side]) return -1;		/* Side doesn't exist */
 	if (frame_info.side[side] < 2) return -1;	/* Don't want labels here */
 
-	if (frame_info.check_side == TRUE) {
-		if (type == 0 && side%2) return -1;
-		if (type == 1 && !(side%2)) return -1;
-	}
+	if (frame_info.check_side == TRUE && type != side%2) return -1;
 
 	if (gmtdefs.oblique_annotation & 16 && !(side%2)) angle = -90.0;	/* GMT_get_label_parameters will make this 0 */
 
 	if (angle < 0.0) angle += 360.0;
 
 	set_angle = ((project_info.region && !(GMT_IS_AZIMUTHAL || GMT_IS_CONICAL)) || !project_info.region);
-	if (project_info.region && (project_info.projection == GMT_GENPER || project_info.projection == GMT_GNOMONIC)) set_angle = TRUE;
+	if (project_info.region && (project_info.projection == GMT_GENPER || project_info.projection == GMT_GNOMONIC || project_info.projection == GMT_POLYCONIC)) set_angle = TRUE;
 	if (set_angle) {
 		if (side == 0 && angle < 180.0) angle -= 180.0;
 		if (side == 1 && (angle > 90.0 && angle < 270.0)) angle -= 180.0;
@@ -8021,7 +8018,7 @@ GMT_LONG GMT_prepare_label (double angle, GMT_LONG side, double x, double y, GMT
 
 	if (!set_angle) *justify = GMT_polar_adjust (side, angle, x, y);
 	if (set_angle && project_info.region && project_info.projection == GMT_GNOMONIC) {
-		/* FIx until we write something that works for everything.  This is a global gnomonic map
+		/* Fix until we write something that works for everything.  This is a global gnomonic map
 		 * so it is easy to fix the angles.  We get correct justify and make sure
 		 * the line_angle points away from the boundary */
 		

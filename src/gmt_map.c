@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.237 2009-08-15 01:31:42 remko Exp $
+ *	$Id: gmt_map.c,v 1.238 2009-08-15 17:48:48 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2948,29 +2948,30 @@ GMT_LONG GMT_map_init_polyconic (void) {
 	GMT_set_spherical ();	/* PW: Force spherical for now */
 
 	if (GMT_is_dnan(project_info.pars[0])) project_info.pars[0] = 0.5 * (project_info.w + project_info.e);
-	if (project_info.pars[0] < 0.0) project_info.pars[0] += 360.0;
 	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
-	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
 	GMT_vpolyconic (project_info.pars[0], project_info.pars[1]);
+	GMT_forward = (PFL) GMT_polyconic;
+	GMT_inverse = (PFL) GMT_ipolyconic;
+	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
 	project_info.x_scale = project_info.y_scale = project_info.pars[2];
+	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 
 	if (project_info.region) {
 		y = (project_info.s * project_info.n <= 0.0) ? 0.0 : MIN (fabs(project_info.s), fabs(project_info.n));
-		GMT_polyconic (project_info.w, y, &xmin, &dummy);
-		GMT_polyconic (project_info.e, y, &xmax, &dummy);
-		GMT_polyconic (project_info.central_meridian, project_info.s, &dummy, &ymin);
-		GMT_polyconic (project_info.central_meridian, project_info.n, &dummy, &ymax);
+		(*GMT_forward) (project_info.w, y, &xmin, &dummy);
+		(*GMT_forward) (project_info.e, y, &xmax, &dummy);
+		(*GMT_forward) (project_info.central_meridian, project_info.s, &dummy, &ymin);
+		(*GMT_forward) (project_info.central_meridian, project_info.n, &dummy, &ymax);
 		GMT_outside = (PFL) GMT_wesn_outside;
 		GMT_crossing = (PFL) GMT_wesn_crossing;
 		GMT_overlap = (PFL) GMT_wesn_overlap;
 		GMT_map_clip = (PFL) GMT_wesn_clip;
 		GMT_left_edge = (PFD) GMT_left_polyconic;
 		GMT_right_edge = (PFD) GMT_right_polyconic;
-		frame_info.horizontal = 2;
 	}
 	else {
-		GMT_polyconic (project_info.w, project_info.s, &xmin, &ymin);
-		GMT_polyconic (project_info.e, project_info.n, &xmax, &ymax);
+		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
+		(*GMT_forward) (project_info.e, project_info.n, &xmax, &ymax);
 		GMT_outside = (PFL) GMT_rect_outside;
 		GMT_crossing = (PFL) GMT_rect_crossing;
 		GMT_overlap = (PFL) GMT_rect_overlap;
@@ -2979,11 +2980,9 @@ GMT_LONG GMT_map_init_polyconic (void) {
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
 	}
+
+	frame_info.horizontal = TRUE;
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
-	GMT_forward = (PFL) GMT_polyconic;
-	GMT_inverse = (PFL) GMT_ipolyconic;
-	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
-	GMT_parallel_straight = FALSE;
 
 	return (!project_info.region);
 }
@@ -5944,6 +5943,7 @@ GMT_LONG GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case GMT_TM:
 			case GMT_UTM:
 			case GMT_CASSINI:
+			case GMT_POLYCONIC:
 				np = 2 * (GMT_n_lon_nodes + GMT_n_lat_nodes);
 				break;
 			default:
@@ -5988,6 +5988,7 @@ GMT_LONG GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 			case GMT_TM:
 			case GMT_UTM:
 			case GMT_CASSINI:
+			case GMT_POLYCONIC:
 				for (i = j = 0; i < GMT_n_lon_nodes; i++, j++)	/* South */
 					GMT_geo_to_xy (project_info.w + i * GMT_dlon, project_info.s, &work_x[j], &work_y[j]);
 				for (i = 0; i < GMT_n_lat_nodes; j++, i++)	/* East */
