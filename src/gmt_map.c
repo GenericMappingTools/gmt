@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.236 2009-08-15 01:08:26 remko Exp $
+ *	$Id: gmt_map.c,v 1.237 2009-08-15 01:31:42 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2964,8 +2964,8 @@ GMT_LONG GMT_map_init_polyconic (void) {
 		GMT_crossing = (PFL) GMT_wesn_crossing;
 		GMT_overlap = (PFL) GMT_wesn_overlap;
 		GMT_map_clip = (PFL) GMT_wesn_clip;
-		GMT_left_edge = (PFD) GMT_left_conic;
-		GMT_right_edge = (PFD) GMT_right_conic;
+		GMT_left_edge = (PFD) GMT_left_polyconic;
+		GMT_right_edge = (PFD) GMT_right_polyconic;
 		frame_info.horizontal = 2;
 	}
 	else {
@@ -2979,7 +2979,7 @@ GMT_LONG GMT_map_init_polyconic (void) {
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
 	}
-	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
+	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
 	GMT_forward = (PFL) GMT_polyconic;
 	GMT_inverse = (PFL) GMT_ipolyconic;
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;

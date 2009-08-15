@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.586 2009-07-24 20:27:02 guru Exp $
+	$Id: ChangeLog,v 1.587 2009-08-15 01:31:42 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-08-15	remko
+	* gmt_proj.[ch], gmt_map.c, gmt_init.c:	First stab at introducing polyconic projection.
+				Not documented yet, but seems to work (-JPoly).
 
 2009-07-24	pwessel
 	* gmt_support.c:	The routine that checks if a points is inside or outside a
