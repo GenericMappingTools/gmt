@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.409 2009-07-18 13:36:49 remko Exp $
+ *	$Id: gmt_init.c,v 1.410 2009-08-15 01:31:41 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4645,6 +4645,7 @@ GMT_LONG GMT_project_type (char *args, GMT_LONG *pos, GMT_LONG *width_given)
 	if ((*pos = GMT_strlcmp("omercp/"   , args))) return (GMT_OBLIQUE_MERC_POLE);
 	if ((*pos = GMT_strlcmp("ortho/"    , args))) return (GMT_ORTHO);
 	if ((*pos = GMT_strlcmp("polar/"    , args))) return (GMT_POLAR);
+	if ((*pos = GMT_strlcmp("poly/"     , args))) return (GMT_POLYCONIC);
 	if ((*pos = GMT_strlcmp("robin/"    , args))) return (GMT_ROBINSON);
 	if ((*pos = GMT_strlcmp("sinu/"     , args))) return (GMT_SINUSOIDAL);
 	if ((*pos = GMT_strlcmp("stere/"    , args))) return (GMT_STEREO);
@@ -4988,6 +4989,7 @@ GMT_LONG GMT_parse_J_option (char *args)
 		case GMT_CASSINI:	/* Cassini */
 		case GMT_MERCATOR:	/* Mercator */
 		case GMT_TM:		/* Transverse Mercator */
+		case GMT_POLYCONIC:	/* Polyconic */
 			project_info.pars[0] = GMT_d_NaN;
 			project_info.pars[1] = 0.0;
 			txt_a[0] = txt_b[0] = 0;
@@ -5000,7 +5002,8 @@ GMT_LONG GMT_parse_J_option (char *args)
 			if (txt_a[0]) error += GMT_verify_expectations (GMT_IS_LON, GMT_scanf (txt_a, GMT_IS_LON, &project_info.pars[0]), txt_a);
 			if (txt_b[0]) error += GMT_verify_expectations (GMT_IS_LAT, GMT_scanf (txt_b, GMT_IS_LAT, &project_info.pars[1]), txt_b);
 			error += GMT_scale_or_width (txt_c, &project_info.pars[2]);
-			error += ((project == GMT_CYL_EQ || project == GMT_MERCATOR || project == GMT_TM) && fabs(project_info.pars[1]) >= 90.0);
+			error += ((project == GMT_CYL_EQ || project == GMT_MERCATOR || project == GMT_TM || project == GMT_POLYCONIC)
+				&& fabs(project_info.pars[1]) >= 90.0);
 			error += !(n = n_slashes + 1);
 			break;
 
