@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_project.h,v 1.72 2009-06-14 02:25:55 guru Exp $
+ *	$Id: gmt_project.h,v 1.73 2009-08-15 01:08:26 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -61,6 +61,7 @@
 #define GMT_IS_CONICAL (project_info.projection / 100 == 2)
 #define GMT_ALBERS		200
 #define GMT_ECONIC		201
+#define GMT_POLYCONIC		202
 #define GMT_LAMBERT		250
 
 /* Azimuthal projections tagged 300-399 */

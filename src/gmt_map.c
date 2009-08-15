@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.235 2009-07-08 21:41:40 guru Exp $
+ *	$Id: gmt_map.c,v 1.236 2009-08-15 01:08:26 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -168,9 +168,9 @@ GMT_LONG GMT_map_init_robinson (void);
 GMT_LONG GMT_map_init_sinusoidal (void);
 GMT_LONG GMT_map_init_cassini (void);
 GMT_LONG GMT_map_init_albers (void);
-GMT_LONG GMT_map_init_grGMT_LONGen (void);
-GMT_LONG GMT_map_init_econic (void);
 GMT_LONG GMT_map_init_grinten (void);
+GMT_LONG GMT_map_init_econic (void);
+GMT_LONG GMT_map_init_polyconic (void);
 
 void GMT_wesn_search (double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north);
 GMT_LONG GMT_horizon_search (double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax);
@@ -561,6 +561,10 @@ GMT_LONG GMT_map_setup (double west, double east, double south, double north)
 			search = GMT_map_init_econic ();
 			break;
 
+		case GMT_POLYCONIC:		/* Polyconic */
+			search = GMT_map_init_polyconic ();
+			break;
+
 		default:	/* No projection selected, return to a horrible death */
 			return (GMT_MAP_NO_PROJECTION);
 	}
@@ -698,6 +702,7 @@ GMT_LONG GMT_init_three_D (void) {
 		case GMT_STEREO:
 		case GMT_ALBERS:
 		case GMT_ECONIC:
+		case GMT_POLYCONIC:
 		case GMT_LAMB_AZ_EQ:
 		case GMT_ORTHO:
 		case GMT_GENPER:
@@ -1311,7 +1316,6 @@ GMT_LONG GMT_map_init_cylstereo (void) {
  */
 
 GMT_LONG GMT_map_init_stereo (void) {
-	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, dummy, radius, latg, D = 1.0;
 
 	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
@@ -1394,7 +1398,6 @@ GMT_LONG GMT_map_init_stereo (void) {
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 		frame_info.horizontal = (fabs (project_info.pars[1]) < 30.0 && fabs (project_info.n - project_info.s) < 30.0);
-		search = TRUE;
 	}
 	else {
 		if (project_info.polar) {	/* Polar aspect */
@@ -1436,7 +1439,6 @@ GMT_LONG GMT_map_init_stereo (void) {
 			GMT_map_clip = (PFL) GMT_radial_clip;
 			if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 		}
-		search = FALSE;
 		GMT_left_edge = (PFD) GMT_left_circle;
 		GMT_right_edge = (PFD) GMT_right_circle;
 	}
@@ -1445,7 +1447,7 @@ GMT_LONG GMT_map_init_stereo (void) {
 	project_info.r = 0.5 * project_info.xmax;
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -1453,7 +1455,6 @@ GMT_LONG GMT_map_init_stereo (void) {
  */
 
 GMT_LONG GMT_map_init_lambert (void) {
-	BOOLEAN search;
 	double xmin, xmax, ymin, ymax;
 
 	project_info.GMT_convert_latitudes = GMT_quickconic();
@@ -1481,7 +1482,6 @@ GMT_LONG GMT_map_init_lambert (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 	else {
 		GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);
@@ -1491,7 +1491,6 @@ GMT_LONG GMT_map_init_lambert (void) {
 		GMT_map_clip = (PFL) GMT_wesn_clip;
 		GMT_left_edge = (PFD) GMT_left_conic;
 		GMT_right_edge = (PFD) GMT_right_conic;
-		search = FALSE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[4]);
 	GMT_n_lat_nodes = 2;
@@ -1499,7 +1498,7 @@ GMT_LONG GMT_map_init_lambert (void) {
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 	GMT_meridian_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -1682,7 +1681,6 @@ void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, doubl
  */
 
 GMT_LONG GMT_map_init_tm (void) {
-	BOOLEAN search = FALSE;
 	double xmin, xmax, ymin, ymax, w, e, dummy;
 
 	/* Wrap and truncations are in y, not x for TM */
@@ -1745,7 +1743,6 @@ GMT_LONG GMT_map_init_tm (void) {
 		GMT_right_edge = (PFD) GMT_right_rect;
 		GMT_world_map_tm = GMT_IS_ZERO (project_info.n - project_info.s);
 		GMT_world_map = FALSE;
-		search = FALSE;
 	}
 	else { /* Find min values */
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
@@ -1759,7 +1756,6 @@ GMT_LONG GMT_map_init_tm (void) {
 		frame_info.check_side = TRUE;
 		GMT_world_map_tm = FALSE;
 		GMT_world_map = (fabs (project_info.s - project_info.n) < GMT_SMALL);
-		search = TRUE;
 	}
 
 	frame_info.horizontal = TRUE;
@@ -1767,7 +1763,7 @@ GMT_LONG GMT_map_init_tm (void) {
 
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -1775,7 +1771,6 @@ GMT_LONG GMT_map_init_tm (void) {
  */
 
 GMT_LONG GMT_map_init_utm (void) {
-	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, lon0;
 
 	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 0.9996;	/* Select default map scale for UTM */
@@ -1819,7 +1814,6 @@ GMT_LONG GMT_map_init_utm (void) {
 		GMT_map_clip = (PFL) GMT_wesn_clip;
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
-		search = FALSE;
 	}
 	else {
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
@@ -1831,7 +1825,6 @@ GMT_LONG GMT_map_init_utm (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 
 	frame_info.horizontal = TRUE;
@@ -1840,7 +1833,7 @@ GMT_LONG GMT_map_init_utm (void) {
 
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 
-	return (search);
+	return (!project_info.region);
 }
 
 /* Setting w/e/s/n for a fully qualified UTM zone */
@@ -1903,7 +1896,6 @@ GMT_LONG GMT_UTMzone_to_wesn (GMT_LONG zone_x, GMT_LONG zone_y, GMT_LONG hemi, d
  */
 
 GMT_LONG GMT_map_init_lambeq (void) {
-	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, dummy, radius, D, s, c;
 
 	project_info.Dx = project_info.Dy = 1.0;
@@ -1945,7 +1937,6 @@ GMT_LONG GMT_map_init_lambeq (void) {
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 		frame_info.horizontal = (fabs (project_info.pars[1]) < 30.0 && fabs (project_info.n - project_info.s) < 30.0);
-		search = TRUE;
 	}
 	else {
 		if (project_info.polar) {	/* Polar aspect */
@@ -1987,7 +1978,6 @@ GMT_LONG GMT_map_init_lambeq (void) {
 			GMT_map_clip = (PFL) GMT_radial_clip;
 			if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 		}
-		search = FALSE;
 		GMT_left_edge = (PFD) GMT_left_circle;
 		GMT_right_edge = (PFD) GMT_right_circle;
 	}
@@ -1997,7 +1987,7 @@ GMT_LONG GMT_map_init_lambeq (void) {
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 	if (project_info.polar) GMT_meridian_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2005,7 +1995,6 @@ GMT_LONG GMT_map_init_lambeq (void) {
  */
 
 GMT_LONG GMT_map_init_ortho (void) {
-	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
 	GMT_set_spherical ();	/* PW: Force spherical for now */
@@ -2036,7 +2025,6 @@ GMT_LONG GMT_map_init_ortho (void) {
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 		frame_info.horizontal = (fabs (project_info.pars[1]) < 30.0 && fabs (project_info.n - project_info.s) < 30.0);
-		search = TRUE;
 	}
 	else {
 		if (project_info.polar) {	/* Polar aspect */
@@ -2078,7 +2066,6 @@ GMT_LONG GMT_map_init_ortho (void) {
 			GMT_map_clip = (PFL) GMT_radial_clip;
 			if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 		}
-		search = FALSE;
 		GMT_left_edge = (PFD) GMT_left_circle;
 		GMT_right_edge = (PFD) GMT_right_circle;
 	}
@@ -2088,7 +2075,7 @@ GMT_LONG GMT_map_init_ortho (void) {
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 	if (project_info.polar) GMT_meridian_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2220,7 +2207,6 @@ GMT_LONG GMT_map_init_genper (void) {
  */
 
 GMT_LONG GMT_map_init_gnomonic (void) {
-	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
 	GMT_set_spherical ();	/* PW: Force spherical for now */
@@ -2251,7 +2237,6 @@ GMT_LONG GMT_map_init_gnomonic (void) {
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 		frame_info.horizontal = (fabs (project_info.pars[1]) < 30.0 && fabs (project_info.n - project_info.s) < 30.0);
-		search = TRUE;
 	}
 	else {
 		if (project_info.polar) {	/* Polar aspect */
@@ -2287,7 +2272,6 @@ GMT_LONG GMT_map_init_gnomonic (void) {
 			GMT_map_clip = (PFL) GMT_radial_clip;
 			if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 		}
-		search = FALSE;
 		GMT_left_edge = (PFD) GMT_left_circle;
 		GMT_right_edge = (PFD) GMT_right_circle;
 	}
@@ -2296,7 +2280,7 @@ GMT_LONG GMT_map_init_gnomonic (void) {
 	project_info.r = 0.5 * project_info.xmax;
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2304,7 +2288,6 @@ GMT_LONG GMT_map_init_gnomonic (void) {
  */
 
 GMT_LONG GMT_map_init_azeqdist (void) {
-	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
 	GMT_set_spherical ();	/* PW: Force spherical for now */
@@ -2336,7 +2319,6 @@ GMT_LONG GMT_map_init_azeqdist (void) {
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = !(gmtdefs.oblique_annotation & 1);
 		frame_info.horizontal = (fabs (project_info.pars[1]) < 60.0 && fabs (project_info.n - project_info.s) < 30.0);
-		search = TRUE;
 	}
 	else {
 		if (project_info.polar && (project_info.n - project_info.s) < 180.0) {	/* Polar aspect */
@@ -2367,7 +2349,6 @@ GMT_LONG GMT_map_init_azeqdist (void) {
 			GMT_map_clip = (PFL) GMT_radial_clip;
 			if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 		}
-		search = FALSE;
 		GMT_left_edge = (PFD) GMT_left_circle;
 		GMT_right_edge = (PFD) GMT_right_circle;
 	}
@@ -2377,7 +2358,7 @@ GMT_LONG GMT_map_init_azeqdist (void) {
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 	if (project_info.polar) GMT_meridian_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2385,7 +2366,6 @@ GMT_LONG GMT_map_init_azeqdist (void) {
  */
 
 GMT_LONG GMT_map_init_mollweide (void) {
-	GMT_LONG search;
 	double xmin, xmax, ymin, ymax, y, dummy;
 
 	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
@@ -2414,7 +2394,6 @@ GMT_LONG GMT_map_init_mollweide (void) {
 		GMT_right_edge = (PFD) GMT_right_ellipse;
 		frame_info.horizontal = 2;
 		project_info.polar = TRUE;
-		search = FALSE;
 	}
 	else {
 		GMT_mollweide (project_info.w, project_info.s, &xmin, &ymin);
@@ -2426,7 +2405,6 @@ GMT_LONG GMT_map_init_mollweide (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFL) GMT_mollweide;
@@ -2434,7 +2412,7 @@ GMT_LONG GMT_map_init_mollweide (void) {
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
 }
 
 
@@ -2443,7 +2421,6 @@ GMT_LONG GMT_map_init_mollweide (void) {
  */
 
 GMT_LONG GMT_map_init_hammer (void) {
-	GMT_LONG search;
 	double xmin, xmax, ymin, ymax, x, y, dummy;
 
 	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
@@ -2473,7 +2450,6 @@ GMT_LONG GMT_map_init_hammer (void) {
 		GMT_right_edge = (PFD) GMT_right_ellipse;
 		frame_info.horizontal = 2;
 		project_info.polar = TRUE;
-		search = FALSE;
 	}
 	else {
 		GMT_hammer (project_info.w, project_info.s, &xmin, &ymin);
@@ -2485,13 +2461,12 @@ GMT_LONG GMT_map_init_hammer (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFL) GMT_hammer;
 	GMT_inverse = (PFL) GMT_ihammer;
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2499,7 +2474,6 @@ GMT_LONG GMT_map_init_hammer (void) {
  */
 
 GMT_LONG GMT_map_init_grinten (void) {
-	GMT_LONG search;
 	double xmin, xmax, ymin, ymax, x, y, dummy;
 
 	GMT_set_spherical ();
@@ -2528,7 +2502,6 @@ GMT_LONG GMT_map_init_grinten (void) {
 		GMT_right_edge = (PFD) GMT_right_circle;
 		frame_info.horizontal = 2;
 		project_info.polar = FALSE;
-		search = FALSE;
 	}
 	else {
 		GMT_grinten (project_info.w, project_info.s, &xmin, &ymin);
@@ -2540,14 +2513,13 @@ GMT_LONG GMT_map_init_grinten (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	project_info.r = 0.5 * project_info.xmax;
 	GMT_forward = (PFL) GMT_grinten;
 	GMT_inverse = (PFL) GMT_igrinten;
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2555,7 +2527,6 @@ GMT_LONG GMT_map_init_grinten (void) {
  */
 
 GMT_LONG GMT_map_init_winkel (void) {
-	GMT_LONG search;
 	double xmin, xmax, ymin, ymax, x, y, dummy;
 
 	GMT_set_spherical ();	/* PW: Force spherical for now */
@@ -2581,7 +2552,6 @@ GMT_LONG GMT_map_init_winkel (void) {
 		GMT_left_edge = (PFD) GMT_left_winkel;
 		GMT_right_edge = (PFD) GMT_right_winkel;
 		frame_info.horizontal = 2;
-		search = FALSE;
 	}
 	else {
 		GMT_winkel (project_info.w, project_info.s, &xmin, &ymin);
@@ -2593,13 +2563,12 @@ GMT_LONG GMT_map_init_winkel (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFL) GMT_winkel;
 	GMT_inverse = (PFL) GMT_iwinkel;
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2607,7 +2576,6 @@ GMT_LONG GMT_map_init_winkel (void) {
  */
 
 GMT_LONG GMT_map_init_eckert4 (void) {
-	GMT_LONG search;
 	double xmin, xmax, ymin, ymax, y, dummy;
 
 	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
@@ -2633,7 +2601,6 @@ GMT_LONG GMT_map_init_eckert4 (void) {
 		GMT_left_edge = (PFD) GMT_left_eckert4;
 		GMT_right_edge = (PFD) GMT_right_eckert4;
 		frame_info.horizontal = 2;
-		search = FALSE;
 	}
 	else {
 		GMT_eckert4 (project_info.w, project_info.s, &xmin, &ymin);
@@ -2645,7 +2612,6 @@ GMT_LONG GMT_map_init_eckert4 (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFL) GMT_eckert4;
@@ -2653,7 +2619,7 @@ GMT_LONG GMT_map_init_eckert4 (void) {
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2661,7 +2627,6 @@ GMT_LONG GMT_map_init_eckert4 (void) {
  */
 
 GMT_LONG GMT_map_init_eckert6 (void) {
-	GMT_LONG search;
 	double xmin, xmax, ymin, ymax, y, dummy;
 
 	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
@@ -2687,7 +2652,6 @@ GMT_LONG GMT_map_init_eckert6 (void) {
 		GMT_left_edge = (PFD) GMT_left_eckert6;
 		GMT_right_edge = (PFD) GMT_right_eckert6;
 		frame_info.horizontal = 2;
-		search = FALSE;
 	}
 	else {
 		GMT_eckert6 (project_info.w, project_info.s, &xmin, &ymin);
@@ -2699,7 +2663,6 @@ GMT_LONG GMT_map_init_eckert6 (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFL) GMT_eckert6;
@@ -2707,7 +2670,7 @@ GMT_LONG GMT_map_init_eckert6 (void) {
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2715,7 +2678,6 @@ GMT_LONG GMT_map_init_eckert6 (void) {
  */
 
 GMT_LONG GMT_map_init_robinson (void) {
-	GMT_LONG search;
 	double xmin, xmax, ymin, ymax, y, dummy;
 
 	GMT_set_spherical ();	/* PW: Force spherical for now */
@@ -2740,7 +2702,6 @@ GMT_LONG GMT_map_init_robinson (void) {
 		GMT_left_edge = (PFD) GMT_left_robinson;
 		GMT_right_edge = (PFD) GMT_right_robinson;
 		frame_info.horizontal = 2;
-		search = FALSE;
 	}
 	else {
 		GMT_robinson (project_info.w, project_info.s, &xmin, &ymin);
@@ -2752,7 +2713,6 @@ GMT_LONG GMT_map_init_robinson (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_forward = (PFL) GMT_robinson;
@@ -2760,7 +2720,7 @@ GMT_LONG GMT_map_init_robinson (void) {
 	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
 	GMT_parallel_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2768,7 +2728,6 @@ GMT_LONG GMT_map_init_robinson (void) {
  */
 
 GMT_LONG GMT_map_init_sinusoidal (void) {
-	GMT_LONG search;
 	double xmin, xmax, ymin, ymax, dummy, y;
 
 	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
@@ -2800,7 +2759,6 @@ GMT_LONG GMT_map_init_sinusoidal (void) {
 		GMT_right_edge = (PFD) GMT_right_sinusoidal;
 		frame_info.horizontal = 2;
 		project_info.polar = TRUE;
-		search = FALSE;
 	}
 	else {
 		GMT_sinusoidal (project_info.w, project_info.s, &xmin, &ymin);
@@ -2812,13 +2770,12 @@ GMT_LONG GMT_map_init_sinusoidal (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
 	GMT_parallel_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2826,7 +2783,7 @@ GMT_LONG GMT_map_init_sinusoidal (void) {
  */
 
 GMT_LONG GMT_map_init_cassini (void) {
-	BOOLEAN search, too_big;
+	BOOLEAN too_big;
 	double xmin, xmax, ymin, ymax;
 
 	if (GMT_is_dnan(project_info.pars[0])) project_info.pars[0] = 0.5 * (project_info.w + project_info.e);
@@ -2853,7 +2810,6 @@ GMT_LONG GMT_map_init_cassini (void) {
 		GMT_map_clip = (PFL) GMT_wesn_clip;
 		GMT_left_edge = (PFD) GMT_left_conic;
 		GMT_right_edge = (PFD) GMT_right_conic;
-		search = FALSE;
 	}
 	else {
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
@@ -2865,13 +2821,12 @@ GMT_LONG GMT_map_init_cassini (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 
 	frame_info.horizontal = TRUE;
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[2]);
 
-	return (search);
+	return (!project_info.region);
 }
 
 /*
@@ -2879,7 +2834,6 @@ GMT_LONG GMT_map_init_cassini (void) {
  */
 
 GMT_LONG GMT_map_init_albers (void) {
-	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, dy, az, x1, y1;
 
 	project_info.GMT_convert_latitudes = GMT_quickconic();
@@ -2905,7 +2859,6 @@ GMT_LONG GMT_map_init_albers (void) {
 		GMT_map_clip = (PFL) GMT_wesn_clip;
 		GMT_left_edge = (PFD) GMT_left_conic;
 		GMT_right_edge = (PFD) GMT_right_conic;
-		search = FALSE;
 	}
 	else {
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
@@ -2917,7 +2870,6 @@ GMT_LONG GMT_map_init_albers (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 	frame_info.horizontal = TRUE;
 	GMT_n_lat_nodes = 2;
@@ -2931,7 +2883,7 @@ GMT_LONG GMT_map_init_albers (void) {
 	project_info.c_y0 += dy;
 	GMT_meridian_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
 }
 
 
@@ -2941,7 +2893,6 @@ GMT_LONG GMT_map_init_albers (void) {
 
 
 GMT_LONG GMT_map_init_econic (void) {
-	BOOLEAN search;
 	double xmin, xmax, ymin, ymax, dy, az, x1, y1;
 
 	project_info.GMT_convert_latitudes = !GMT_IS_SPHERICAL;
@@ -2960,7 +2911,6 @@ GMT_LONG GMT_map_init_econic (void) {
 		GMT_map_clip = (PFL) GMT_wesn_clip;
 		GMT_left_edge = (PFD) GMT_left_conic;
 		GMT_right_edge = (PFD) GMT_right_conic;
-		search = FALSE;
 	}
 	else {
 		(*GMT_forward) (project_info.w, project_info.s, &xmin, &ymin);
@@ -2972,7 +2922,6 @@ GMT_LONG GMT_map_init_econic (void) {
 		GMT_left_edge = (PFD) GMT_left_rect;
 		GMT_right_edge = (PFD) GMT_right_rect;
 		frame_info.check_side = TRUE;
-		search = TRUE;
 	}
 	frame_info.horizontal = TRUE;
 	GMT_n_lat_nodes = 2;
@@ -2986,7 +2935,57 @@ GMT_LONG GMT_map_init_econic (void) {
 	project_info.c_y0 += dy;
 	GMT_meridian_straight = TRUE;
 
-	return (search);
+	return (!project_info.region);
+}
+
+/*
+ *	TRANSFORMATION ROUTINES FOR THE POLYCONIC PROJECTION (GMT_POLYCONIC)
+ */
+
+GMT_LONG GMT_map_init_polyconic (void) {
+	double xmin, xmax, ymin, ymax, y, dummy;
+
+	GMT_set_spherical ();	/* PW: Force spherical for now */
+
+	if (GMT_is_dnan(project_info.pars[0])) project_info.pars[0] = 0.5 * (project_info.w + project_info.e);
+	if (project_info.pars[0] < 0.0) project_info.pars[0] += 360.0;
+	GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
+	if (project_info.units_pr_degree) project_info.pars[2] /= project_info.M_PR_DEG;
+	GMT_vpolyconic (project_info.pars[0], project_info.pars[1]);
+	project_info.x_scale = project_info.y_scale = project_info.pars[2];
+
+	if (project_info.region) {
+		y = (project_info.s * project_info.n <= 0.0) ? 0.0 : MIN (fabs(project_info.s), fabs(project_info.n));
+		GMT_polyconic (project_info.w, y, &xmin, &dummy);
+		GMT_polyconic (project_info.e, y, &xmax, &dummy);
+		GMT_polyconic (project_info.central_meridian, project_info.s, &dummy, &ymin);
+		GMT_polyconic (project_info.central_meridian, project_info.n, &dummy, &ymax);
+		GMT_outside = (PFL) GMT_wesn_outside;
+		GMT_crossing = (PFL) GMT_wesn_crossing;
+		GMT_overlap = (PFL) GMT_wesn_overlap;
+		GMT_map_clip = (PFL) GMT_wesn_clip;
+		GMT_left_edge = (PFD) GMT_left_conic;
+		GMT_right_edge = (PFD) GMT_right_conic;
+		frame_info.horizontal = 2;
+	}
+	else {
+		GMT_polyconic (project_info.w, project_info.s, &xmin, &ymin);
+		GMT_polyconic (project_info.e, project_info.n, &xmax, &ymax);
+		GMT_outside = (PFL) GMT_rect_outside;
+		GMT_crossing = (PFL) GMT_rect_crossing;
+		GMT_overlap = (PFL) GMT_rect_overlap;
+		GMT_map_clip = (PFL) GMT_rect_clip;
+		GMT_left_edge = (PFD) GMT_left_rect;
+		GMT_right_edge = (PFD) GMT_right_rect;
+		frame_info.check_side = TRUE;
+	}
+	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[1]);
+	GMT_forward = (PFL) GMT_polyconic;
+	GMT_inverse = (PFL) GMT_ipolyconic;
+	if (gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;
+	GMT_parallel_straight = FALSE;
+
+	return (!project_info.region);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
