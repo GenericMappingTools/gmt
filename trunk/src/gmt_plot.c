@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.267 2009-07-11 03:16:30 guru Exp $
+ *	$Id: gmt_plot.c,v 1.268 2009-08-15 17:48:48 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -318,7 +318,7 @@ struct GMT_PROJ {
 	GMT_LONG id;
 };
 
-#define GMT_N_PROJ4 30
+#define GMT_N_PROJ4 31
 struct GMT_PROJ GMT_proj4[GMT_N_PROJ4] = {
 	{ "aea"      , GMT_ALBERS },
 	{ "aeqd"     , GMT_AZ_EQDIST },
@@ -341,6 +341,7 @@ struct GMT_PROJ GMT_proj4[GMT_N_PROJ4] = {
 	{ "omercp"   , GMT_OBLIQUE_MERC_POLE },
 	{ "ortho"    , GMT_ORTHO },
 	{ "polar"    , GMT_POLAR },
+	{ "poly"     , GMT_POLYCONIC },
 	{ "robin"    , GMT_ROBINSON },
 	{ "sinu"     , GMT_SINUSOIDAL },
 	{ "stere"    , GMT_STEREO },
@@ -1162,7 +1163,6 @@ void GMT_conic_map_boundary (double w, double e, double s, double n)
 
 void GMT_oblmrc_map_boundary (double w, double e, double s, double n)
 {
-
 	GMT_rect_map_boundary (0.0, 0.0, project_info.xmax, project_info.ymax);
 }
 
@@ -1181,12 +1181,10 @@ void GMT_ellipse_map_boundary (double w, double e, double s, double n)
 		frame_info.side[2] = FALSE;
 
 	GMT_wesn_map_boundary (w, e, s, n);
-
 }
 
 void GMT_basic_map_boundary (double w, double e, double s, double n)
 {
-
 	if (!project_info.region) { /* Draw rectangular boundary and return */
 		GMT_rect_map_boundary (0.0, 0.0, project_info.xmax, project_info.ymax);
 		return;
@@ -1463,11 +1461,12 @@ void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angle
 	/* type = 0 for lon and 1 for lat */
 
 	double line_angle, text_angle, div, tick_length, o_len, len, dx, dy, ca, sa, xt1, yt1, zz, tick_x[2], tick_y[2];
-	GMT_LONG i, justify;
+	GMT_LONG i, justify, annot_type;
 	BOOLEAN flip;
 	char cmd[BUFSIZ];
 
 	len = GMT_get_annot_offset (&flip, level);
+	annot_type = 2 << type;		/* 2 = NS, 4 = EW */
 	for (i = 0; i < nx; i++) {
 
 		if (GMT_prepare_label (line_angles[i], sides[i], xx[i], yy[i], type, &line_angle, &text_angle, &justify)) continue;
@@ -1475,9 +1474,7 @@ void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angle
 		sincosd (line_angle, &sa, &ca);
 		tick_length = gmtdefs.tick_length;
 		o_len = len;
-		if ((type == 0 && gmtdefs.oblique_annotation & 2) || (type == 1 && gmtdefs.oblique_annotation & 4)) {
-			o_len = tick_length;
-		}
+		if (gmtdefs.oblique_annotation & annot_type) o_len = tick_length;
 		if (gmtdefs.oblique_annotation & 8) {
 			div = ((sides[i] % 2) ? fabs(ca) : fabs(sa));
 			tick_length /= div;
@@ -1490,9 +1487,11 @@ void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angle
 		GMT_xyz_to_xy (xx[i]+dx, yy[i]+dy, zz, &tick_x[1], &tick_y[1]);
 		xx[i] += o_len * ca;
 		yy[i] += o_len * sa;
-		if ((type == 0 && gmtdefs.oblique_annotation & 2) || (type == 1 && gmtdefs.oblique_annotation & 4)) {
-			if (sides[i] % 2 && gmtdefs.annot_offset[level] > 0.0) xx[i] += (sides[i] == 1) ? gmtdefs.annot_offset[level] : -gmtdefs.annot_offset[level];
-			if (!(sides[i] % 2) && gmtdefs.annot_offset[level] > 0.0) yy[i] += (sides[i] == 2) ? gmtdefs.annot_offset[level] : -gmtdefs.annot_offset[level];
+		if ((gmtdefs.oblique_annotation & annot_type) && gmtdefs.annot_offset[level] > 0.0) {
+			if (sides[i] % 2)
+				xx[i] += (sides[i] == 1) ? gmtdefs.annot_offset[level] : -gmtdefs.annot_offset[level];
+			else
+				yy[i] += (sides[i] == 2) ? gmtdefs.annot_offset[level] : -gmtdefs.annot_offset[level];
 		}
 		GMT_xyz_to_xy (xx[i], yy[i], zz, &xt1, &yt1);
 
@@ -1503,7 +1502,7 @@ void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angle
 
 			upside = (z_project.quadrant == 1 || z_project.quadrant == 4);
 			sincosd (text_angle, &sb, &cb);
-			if (sides[i]%2 == 0 && (justify%2 == 0)) {
+			if (sides[i]%2 == 0 && justify%2 == 0) {
 				if (upside) {
 					k = (sides[i] == 0) ? 2 : 10;
 					text_angle += 180.0;
@@ -2010,6 +2009,7 @@ void GMT_map_boundary (double w, double e, double s, double n)
 		case GMT_ALBERS:
 		case GMT_ECONIC:
 		case GMT_LAMBERT:
+		case GMT_POLYCONIC:
 			GMT_conic_map_boundary (w, e, s, n);
 			break;
 		case GMT_OBLIQUE_MERC:
@@ -4916,6 +4916,10 @@ char *GMT_export2proj4(char *pStrOut) {
 	else if (project_info.projection == GMT_LAMBERT) {
 		sprintf( szProj4, "+proj=lcc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			project_info.pars[2], project_info.pars[3], project_info.pars[1], project_info.pars[0], false_easting, false_northing);
+	}
+	else if (project_info.projection == GMT_POLYCONIC) {
+		sprintf( szProj4, "+proj=poly +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+			project_info.pars[1], project_info.pars[0], false_easting, false_northing);
 	}
 
 	/* Azimuthal projections */
