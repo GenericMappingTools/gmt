@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.49 2009-05-13 21:06:42 guru Exp $
+ *	$Id: gmt_proj.c,v 1.50 2009-08-15 01:08:25 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -77,6 +77,8 @@
 #include "gmt.h"
 #include "gmt_proj.h"
 
+void GMT_iwinkel_sub (double y, double *phi);			/* Used by GMT_{left,right}_winkel */
+void GMT_ipolyconic_sub (double y, double lon, double *x);	/* Used by GMT_{left,right}_polyconic */
 void GMT_check_R_J(double *clon);
 
 void GMT_check_R_J (double *clon)	/* Make sure -R and -J agree for global plots; J given priority */
@@ -2732,7 +2734,7 @@ void GMT_icassini_sph (double *lon, double *lat, double x, double y)
 	*lon = project_info.central_meridian + atand (tx / cD);
 }
 
-/* -JB ALBERS PROJECTION */
+/* -JB ALBERS EQUAL-AREA CONIC PROJECTION */
 
 void GMT_valbers (double lon0, double lat0, double ph1, double ph2)
 {
@@ -2920,4 +2922,111 @@ void GMT_ieconic (double *lon, double *lat, double x, double y)
 	theta = (project_info.d_n < 0.0) ? d_atan2 (-x, y - project_info.d_rho0) : d_atan2 (x, project_info.d_rho0 - y);
 	*lat = (project_info.d_G - rho * project_info.i_EQ_RAD) * R2D;
 	*lon = project_info.central_meridian + theta * project_info.d_i_n;
+}
+
+/* -JPoly POLYCONIC PROJECTION */
+
+void GMT_vpolyconic (double lon0, double lat0)
+{
+	/* Set up Polyconic projection */
+
+	GMT_check_R_J (&lon0);
+	project_info.central_meridian = lon0;
+	project_info.pole = lat0;
+}
+
+void GMT_polyconic (double lon, double lat, double *x, double *y)
+{
+	double sE, cE, sp, cp;
+	/* Convert lon/lat to Polyconic x/y */
+
+	GMT_WIND_LON(lon)	/* Remove central meridian and place lon in -180/+180 range */
+
+	if (GMT_IS_ZERO(lat)) {
+		*x = project_info.EQ_RAD * lon * D2R;
+		*y = project_info.EQ_RAD * (lat - project_info.pole) * D2R;
+	}
+	else {
+		sincosd(lat, &sp, &cp);
+		sincosd(lon * sp, &sE, &cE);
+		cp /= sp;	/* = cot(phi) */
+		*x = project_info.EQ_RAD * cp * sE;
+		*y = project_info.EQ_RAD * ((lat - project_info.pole) * D2R + cp * (1.0 - cE));
+	}
+}
+
+void GMT_ipolyconic (double *lon, double *lat, double x, double y)
+{
+	/* Convert Polyconic x/y to lon/lat */
+
+	double B, phi, phi0, tanp, delta;
+	GMT_LONG n_iter = 0;
+
+	x *= project_info.i_EQ_RAD;
+	y *= project_info.i_EQ_RAD;
+	y += project_info.pole * D2R;
+	if (GMT_IS_ZERO(y)) {
+		*lat = y * R2D + project_info.pole;
+		*lon = x * R2D + project_info.central_meridian;
+	}
+	else {
+		B = x * x + y * y;
+		phi = y;
+		do {
+			phi0 = phi;
+			tanp = tan(phi);
+			phi -= (y * (phi * tanp + 1.0) - phi - 0.5 * (phi * phi + B) * tanp) /
+				((phi - y) / tanp - 1.0);
+			delta = fabs (phi - phi0);
+			n_iter++;
+		}
+		while (delta > GMT_CONV_LIMIT && n_iter < 100);
+		*lat = R2D * phi;
+		*lon = project_info.central_meridian + asind(x * tanp) / sin(phi);
+	}
+}
+
+void GMT_ipolyconic_sub (double y, double lon, double *x)
+{	/* Used in left/right_polyconic only */
+	double E, sp, cp, phi0, phi, delta;
+	GMT_LONG n_iter = 0;
+
+	*x = lon;
+	GMT_WIND_LON(*x);
+	y *= project_info.i_EQ_RAD;
+	y += project_info.pole * D2R;
+	if (GMT_IS_ZERO(y))
+		*x *= project_info.EQ_RAD * D2R;
+	else {
+		phi = y;
+		do {
+			phi0 = phi;
+			sincos (phi, &sp, &cp);
+			E = (*x) * sp;
+			cp /= sp;	/* = cot(phi) */
+			phi = y - cp * (1.0 - cosd(E));
+			delta = fabs (phi - phi0);
+			n_iter++;
+		}
+		while (delta > GMT_CONV_LIMIT && n_iter < 100);
+		*x = project_info.EQ_RAD * cp * sin(E);
+	}
+}
+
+double GMT_left_polyconic (double y)
+{
+	double x;
+	y -= project_info.y0;
+	y *= project_info.i_y_scale;
+	GMT_ipolyconic_sub (y, project_info.w, &x);
+	return (x * project_info.x_scale + project_info.x0);
+}
+
+double GMT_right_polyconic (double y)
+{
+	double x;
+	y -= project_info.y0;
+	y *= project_info.i_y_scale;
+	GMT_ipolyconic_sub (y, project_info.e, &x);
+	return (x * project_info.x_scale + project_info.x0);
 }
