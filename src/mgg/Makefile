@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.28 2008-04-04 17:27:31 remko Exp $
+#	$Id: Makefile,v 1.29 2009-08-17 17:27:29 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -23,12 +23,14 @@ include $(GMTSRCDIR)gmtalldeps.macros
 
 INCLUDES	= -I$(srcdir) -I../x_system -I$(NETCDF_INC)
 
-PROGS_H		= gmt_mgg.h ../x_system/x_system.h
+LIB_O		= gmt_mgg.o
+LIB_H		= gmt_mgg.h carter.h
+LIB		= libgmt_mgg.$(LIBEXT)
+
+PROGS_H		= ../x_system/x_system.h
 PROGS_O		= binlegs.o gmt2bin.o gmt2dat.o dat2gmt.o gmtinfo.o gmtlegs.o gmtlist.o gmtpath.o mgd77togmt.o
 PROGSPS_O	= gmttrack.o
 MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
-
-LIB		= libgmt_mgg.a
 
 #-------------------------------------------------------------------------------
 #	software targets
@@ -38,15 +40,28 @@ all:		$(LIB) $(PROGS) $(PROGSPS)
 
 install:	all
 		$(INSTALL) $(PROGS) $(PROGSPS) $(bindir)
+		if [ ! $(includedir) = $(srcdir) ]; then \
+			$(INSTALL) -d $(includedir); \
+			$(INSTALL) -m 644 $(LIB_H) $(includedir); \
+		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir); \
-			$(INSTALL) -m 644 $(LIB) $(libdir); \
+			$(INSTALL) -m 644 $(LIB:.$(LIBEXT)=.a) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIB) $(libdir); fi \
+		fi
+		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
+			cd $(libdir) ; \
+			\mv -f libgmt_mgg.{$(SL),$(SL_VERSION)} ; \
+			$(LN_S) libgmt_mgg.{$(SL_VERSION),$(SL)} ; \
 		fi
 
 uninstall:
 		cd $(bindir); \rm -f $(PROGS) $(PROGSPS)
+		if [ ! $(includedir) = $(srcdir) ]; then \
+			cd $(includedir); \rm -f $(LIB_H);\
+		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rf -f $(LIB)
+			cd $(libdir); \rm -f libgmt_mgg.{a,$(SL),$(SL_VERSION)}; \
 		fi
 
 install-man:	$(MAN1)
@@ -65,17 +80,22 @@ spotless::	clean
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(PROGS_O):	$(GMT_H) $(PROGS_H)
-$(PROGSPS_O):	$(GMT_H) $(PS_H) $(PROGS_H)
-gmt_mgg.o:	$(PROGS_H) $(GMT_H)
+$(PROGS_O):	$(LIB_H) $(PROGS_H) $(GMT_H)
+$(PROGSPS_O):	$(LIB_H) $(PROGS_H) $(GMT_H) $(PS_H)
+$(LIB_O):	$(LIB_H) $(GMT_H)
 
 #-------------------------------------------------------------------------------
 #	library
 #-------------------------------------------------------------------------------
 
-$(LIB):		gmt_mgg.o
-		$(AR) cvr $@ $?
+.SUFFIXES:	.$(SL)
+
+libgmt_mgg.a:	$(LIB_O)
+		$(AR) cvur $@ $?
 		$(RANLIB) $@
+
+libgmt_mgg.$(SL):	libgmt_mgg.a
+		$(LD) $(LD_OPT) $(LIB_O) -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules
