@@ -1,10 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.588 2009-08-17 16:42:47 remko Exp $
+	$Id: ChangeLog,v 1.589 2009-08-17 17:52:22 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-08-17	remko
 	* gmt_plot.c, GMT_Chapter_{3,6}.tex:	Documentation on -JPoly added.
 	* gmt_map.c:		Made frame and annotation of polyconic work properly.
+	* {x2sys,mgd77,mgg}/makefile:	Solved problems with install/uninstall and missing *.h
+				files in distro.
 
 2009-08-15	remko
 	* gmt_proj.[ch], gmt_map.c, gmt_init.c:	First stab at introducing polyconic projection.
