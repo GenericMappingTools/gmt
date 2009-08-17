@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.56 2009-05-04 23:39:32 guru Exp $
+#	$Id: Makefile,v 1.57 2009-08-17 17:27:46 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -22,15 +22,14 @@ include $(GMTSRCDIR)gmtalldeps.macros
 
 INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
 
-PROGS_H		= mgd77.h mgd77defaults.h mgd77_IGF_coeffs.h mgd77sniffer.h mgd77snifferdefaults.h \
-		mgd77magref.h mgd77_codes.h
+LIB_O		= mgd77.o
+LIB_H		= mgd77.h mgd77_functions.h mgd77defaults.h mgd77_recalc.h cm4_functions.h
+LIB		= libmgd77.$(LIBEXT)
+
+PROGS_H		= mgd77_IGF_coeffs.h mgd77sniffer.h mgd77snifferdefaults.h mgd77magref.h mgd77_codes.h
 PROGS_O		= mgd77convert.o mgd77info.o mgd77list.o mgd77path.o mgd77manage.o mgd77sniffer.o mgd77magref.o
 PROGSPS_O	= mgd77track.o
 MAN1		= $(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
-
-LIB_O		= mgd77.o
-LIB_H		= mgd77.h mgd77_functions.h mgd77defaults.h mgd77_recalc.h cm4_functions.h  cm4_functions.c
-LIB		= libmgd77.$(LIBEXT)
 
 #-------------------------------------------------------------------------------
 #	software targets
@@ -51,17 +50,17 @@ install:	all
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f libmgd77.$(SL) libmgd77.$(SL_VERSION) ; \
-			$(LN_S) libmgd77.$(SL_VERSION) libmgd77.$(SL) ; \
+			\mv -f libmgd77.{$(SL),$(SL_VERSION)} ; \
+			$(LN_S) libmgd77.{$(SL_VERSION),$(SL)} ; \
 		fi
 
 uninstall:
 		cd $(bindir); \rm -f $(PROGS) $(PROGSPS)
 		if [ ! $(includedir) = $(srcdir) ]; then \
-			cd $(includedir); \rm -f $(LIB_H)
+			cd $(includedir); \rm -f $(LIB_H);\
 		fi
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f $(LIB) $(LIB:$(LIBEXT)=.a); \
+			cd $(libdir); \rm -f libmgd77.{a,$(SL),$(SL_VERSION)}; \
 		fi
 
 install-man:	$(MAN1)
@@ -79,9 +78,9 @@ spotless::	clean
 #	object file dependencies
 #-------------------------------------------------------------------------------
 
-$(PROGS_O):	$(PROGS_H) $(GMT_H)
-$(PROGSPS_O):	$(PROGS_H) $(GMT_H) $(PS_H)
-$(LIB_O):	$(LIB_H) $(GMT_H)
+$(PROGS_O):	$(LIB_H) $(PROGS_H) $(GMT_H)
+$(PROGSPS_O):	$(LIB_H) $(PROGS_H) $(GMT_H) $(PS_H)
+$(LIB_O):	$(LIB_H) $(GMT_H) cm4_functions.c
 
 #-------------------------------------------------------------------------------
 #	library
