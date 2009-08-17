@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.38 2009-08-15 20:13:05 remko Exp $
+#	$Id: GNUmakefile,v 1.39 2009-08-17 16:42:47 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -110,7 +110,7 @@ DOCEPS1=scripts/GMT_App_K_1.eps scripts/GMT_App_K_2.eps scripts/GMT_App_K_3.eps 
 	scripts/GMT_gnomonic.eps scripts/GMT_grinten.eps scripts/GMT_hammer.eps \
 	scripts/GMT_lambert_az_hemi.eps scripts/GMT_lambert_az_rect.eps scripts/GMT_lambert_conic.eps \
 	scripts/GMT_mercator.eps scripts/GMT_miller.eps scripts/GMT_mollweide.eps \
-	scripts/GMT_perspective.eps scripts/GMT_obl_merc.eps scripts/GMT_orthographic.eps scripts/GMT_polyconic.eps \
+	scripts/GMT_obl_merc.eps scripts/GMT_orthographic.eps scripts/GMT_perspective.eps scripts/GMT_polyconic.eps \
 	scripts/GMT_robinson.eps scripts/GMT_sinus_int.eps scripts/GMT_sinusoidal.eps \
 	scripts/GMT_stereographic_general.eps scripts/GMT_stereographic_polar.eps \
 	scripts/GMT_stereographic_rect.eps scripts/GMT_stereonets.eps scripts/GMT_transverse_merc.eps \
@@ -142,9 +142,8 @@ DOCTEX= \
 	GMT_Appendix_E.tex GMT_Appendix_F.tex GMT_Appendix_G.tex GMT_Appendix_H.tex GMT_Appendix_I.tex \
 	GMT_Appendix_J.tex GMT_Appendix_K.tex GMT_Appendix_L.tex GMT_Appendix_M.tex GMT_Appendix_N.tex \
 	GMT_Appendix_N_inc.tex GMT_Appendix_O.tex GMT_Appendix_P.tex \
-	GMT_Chapter_1.tex GMT_Chapter_2.tex GMT_Chapter_3.tex GMT_Chapter_4.tex GMT_Chapter_5.1.tex \
-	GMT_Chapter_5.2.tex GMT_Chapter_5.tex GMT_Chapter_6.1.tex GMT_Chapter_6.2.tex GMT_Chapter_6.3.tex \
-	GMT_Chapter_6.4.tex GMT_Chapter_6.tex GMT_Chapter_7.tex GMT_Chapter_8.tex \
+	GMT_Chapter_1.tex GMT_Chapter_2.tex GMT_Chapter_3.tex GMT_Chapter_4.tex GMT_Chapter_5.tex \
+	GMT_Chapter_6.tex GMT_Chapter_7.tex GMT_Chapter_8.tex GMT_Chapter_9.tex \
 	GMT_Frontmatter.tex $(DOCEPS1:.eps=.tex) $(SCRTEX) $(EX_TEX) $(AN_TEX) $(ALLTEX)
 
 all install:	pdf html

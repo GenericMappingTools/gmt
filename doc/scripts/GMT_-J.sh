@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_-J.sh,v 1.7 2009-04-17 00:16:11 remko Exp $
+#	$Id: GMT_-J.sh,v 1.8 2009-08-17 16:42:47 remko Exp $
 #
 
 pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
@@ -10,7 +10,7 @@ pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
 2	1.75	11	0	0	BL	AZIMUTHAL
 3	1.75	11	0	0	BL	THEMATIC
 4	1.75	11	0	0	BL	OTHER
-#
+# Cylindrical
 0	1.35	8	0	0	BL	Basic [E]
 0	1.2	8	0	0	BL	Cassini
 0	1.05	8	0	0	BL	Equidistant
@@ -20,18 +20,19 @@ pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
 0	0.45	8	0	0	BL	Stereographic
 0	0.3 	8	0	0	BL	Transverse Mercator [C]
 0	0.15	8	0	0	BL	UTM [C]
-#
+# Conical
 1.1	1.35	8	0	0	BL	Albers [E]
-1.1	1.2	8	0	0	BL	Lambert [C]
-1.1	1.05	8	0	0	BL	Equidistant
-#
+1.1	1.2	8	0	0	BL	Equidistant
+1.1	1.05	8	0	0	BL	Lambert [C]
+1.1	0.9	8	0	0	BL	Polyconic
+# Azimuthal
 2	1.35	8	0	0	BL	Equidistant
 2	1.2	8	0	0	BL	Gnomonic
 2	1.05	8	0	0	BL	Orthographic
 2	0.9	8	0	0	BL	Perspective
 2	0.75	8	0	0	BL	Lambert [E]
 2	0.6	8	0	0	BL	Stereographic [C]
-#
+# Thematic
 3	1.35	8	0	0	BL	Eckert IV + VI [E]
 3	1.2	8	0	0	BL	Hammer [E]
 3	1.05	8	0	0	BL	Mollweide [E]
@@ -39,7 +40,7 @@ pstext -R0/5/0/3 -Jx1 -P -K << EOF > GMT_-J.ps
 3	0.75	8	0	0	BL	Sinusoidal [E]
 3	0.6	8	0	0	BL	Winkel Tripel
 3	0.45	8	0	0	BL	Van der Grinten
-#
+# Other
 4	1.35	8	0	0	BL	Linear
 4	1.2	8	0	0	BL	Logarithmic
 4	1.05	8	0	0	BL	Exponential
