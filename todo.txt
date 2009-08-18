@@ -1,4 +1,4 @@
-#	$Id: todo.txt,v 1.33 2008-05-02 01:15:43 guru Exp $
+#	$Id: todo.txt,v 1.34 2009-08-18 02:15:40 remko Exp $
 
 List of unresolved bugs and desireable enhancements not yet implemented.
 If you fix or implement any of these please take them off the list and
@@ -14,8 +14,6 @@ pshistogram.c:	Bug using -W with time data
 psxy[z]:	-Sb -So etc with time data; what is size; how to specify months etc.
 		If cpt uses date-clock z-values then automatically set -f2T or -f3T.
 
-nc2xy.c:	Add -H to print header with attribute info?
-
 GMT_time_array:	Should be able to handle phase shift passed from -B
 
 testing:	Need testing of supplements at some point
@@ -30,10 +28,6 @@ gmt_init/plot..	Add TICK_LENGTH_SECONDARY (and _PRIMARY)
 gmt_*.c:	Separate allocation of memory for plot-related things from the
 		core calculation-related things.  E.g., grd2xyz does not need GMT_begin
 		to allocated fonts etc.
-		
-gmt_io.c:	Support netCDF files as column data input. What options to use to
-		achieve this? Would benifit all programs that read and/or write column
-		data.
 
 GIS supplement:	In src/gis, finalize grd2geotiff.c donated from K. Feigl.  Needs work
 		on configure and finding libs.  This supplement should also have Lloyd's
