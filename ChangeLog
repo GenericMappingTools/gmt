@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.589 2009-08-17 17:52:22 remko Exp $
+	$Id: ChangeLog,v 1.590 2009-08-20 18:53:04 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-08-20	remko
+	* pslib.c, pslib_inc.h:	ps_place_color now also adds the "set...color" operator, so
+				that PSL->internal.paint_code could be removed.
 
 2009-08-17	remko
 	* gmt_plot.c, GMT_Chapter_{3,6}.tex:	Documentation on -JPoly added.

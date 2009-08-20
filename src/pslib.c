@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.208 2009-07-18 13:35:38 remko Exp $
+ *	$Id: pslib.c,v 1.209 2009-08-20 18:53:05 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -200,7 +200,7 @@ void ps_rgb_to_cmyk_int (int rgb[], int cmyk[]);
 void ps_rgb_to_cmyk (int rgb[], double cmyk[]);
 void ps_rgb_to_hsv (int rgb[], double hsv[]);
 void ps_cmyk_to_rgb (int rgb[], double cmyk[]);
-PS_LONG ps_place_color (int rgb[]);
+void ps_place_color (int rgb[]);
 void ps_place_setdash (char *pattern, PS_LONG offset);
 void ps_set_length_array (char *param, double *array, PS_LONG n);
 PS_LONG ps_set_xyn_arrays (char *xparam, char *yparam, char *nparam, double *x, double *y, PS_LONG *node, PS_LONG n, PS_LONG m);
@@ -386,7 +386,6 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], PS_LONG flag)
 	 *        3 = this is the complete clipping path (start to end)
 	 */
 
-	PS_LONG pmode;
 	char move[7];
 
 	if (flag & 1) {	/* First segment in (possibly multi-segmented) clip-path */
@@ -407,8 +406,8 @@ void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], PS_LONG flag)
 	if (flag & 2) {	/* End path and [optionally] fill */
 		if (rgb[0] >= 0) {	/* fill is desired */
 			fprintf (PSL->internal.fp, "V ");
-			pmode = ps_place_color (rgb);
-			fprintf (PSL->internal.fp, " %c eofill U ", PSL->internal.paint_code[pmode]);
+			ps_place_color (rgb);
+			fprintf (PSL->internal.fp, " eofill U ");
 		}
 		if (flag & 4)
 			fprintf (PSL->internal.fp, "eoclip\n");
@@ -637,8 +636,6 @@ void ps_segment_ (double *x0, double *y0, double *x1, double *y1)
 
 void ps_setfill (int rgb[], PS_LONG outline)
 {
-	PS_LONG pmode;
-
 	if (rgb[0] == -2)
 		{ /* Skipped, no fill specified */ }
 	else if (PSL->current.fill_rgb[0] == rgb[0] && PSL->current.fill_rgb[1] == rgb[1] && PSL->current.fill_rgb[2] == rgb[2])
@@ -648,8 +645,8 @@ void ps_setfill (int rgb[], PS_LONG outline)
 			ps_command ("FQ");
 		else {
 			fprintf (PSL->internal.fp, "{");
-			pmode = ps_place_color (rgb);
-			fprintf (PSL->internal.fp, " %c} FS\n", PSL->internal.paint_code[pmode]);
+			ps_place_color (rgb);
+			fprintf (PSL->internal.fp, " } FS\n");
 		}
 	}
 
@@ -1212,11 +1209,10 @@ PS_LONG ps_plotinit_hires (char *plotfile, PS_LONG overlay, PS_LONG mode, double
    eps:		structure with Document info.  !! Fortran version (ps_plotinit_) does not have this argument !!
 */
 {
-	PS_LONG i, pmode, manual = FALSE, n_GMT_fonts;
+	PS_LONG i, manual = FALSE, n_GMT_fonts;
 	int no_rgb[3] = {-1, -1, -1};
 	time_t right_now;
 	char openmode[2], *this;
-	char paint_code[12] = {'Q', 'Q', 'A', 'a', 'C', 'c', 'K', 'k', 'H', 'h', 'I', 'i'};
 	double scl;
 
 	/* Allocate PSL control structure */
@@ -1338,11 +1334,10 @@ PS_LONG ps_plotinit_hires (char *plotfile, PS_LONG overlay, PS_LONG mode, double
 	PSL->init.magnify[1] = yscl;
 	PSL->init.origin[1] = yoff;
 	/* Initialize global variables */
-	strcpy (PSL->current.bw_format, "%.3lg");			/* Default format used for grayshade value */
-	strcpy (PSL->current.rgb_format, "%.3lg %.3lg %.3lg");		/* Same, for RGB triplets */
-	strcpy (PSL->current.hsv_format, "%.3lg %.3lg %.3lg");		/* Same, for HSV triplets */
-	strcpy (PSL->current.cmyk_format, "%.3lg %.3lg %.3lg %.3lg");	/* Same, for CMYK quadruples */
-	memcpy ((void *)PSL->internal.paint_code, (void *)paint_code, 12L);
+	strcpy (PSL->current.bw_format, "%.3lg A");			/* Default format used for grayshade value */
+	strcpy (PSL->current.rgb_format, "%.3lg %.3lg %.3lg C");	/* Same, for RGB triplets */
+	strcpy (PSL->current.hsv_format, "%.3lg %.3lg %.3lg H");	/* Same, for HSV triplets */
+	strcpy (PSL->current.cmyk_format, "%.3lg %.3lg %.3lg %.3lg K");	/* Same, for CMYK quadruples */
 
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
@@ -1455,8 +1450,8 @@ PS_LONG ps_plotinit_hires (char *plotfile, PS_LONG overlay, PS_LONG mode, double
 
 		if (!(rgb[0] == rgb[1] && rgb[1] == rgb[2] && rgb[0] == 255)) {	/* Change background color */
 			fprintf (PSL->internal.fp, "clippath ");
-			pmode = ps_place_color (rgb);
-			fprintf (PSL->internal.fp, " %c F N\n", PSL->internal.paint_code[pmode]);
+			ps_place_color (rgb);
+			fprintf (PSL->internal.fp, " F N\n");
 		}
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of pslib header\n\n");
 	}
@@ -1742,10 +1737,10 @@ void ps_setformat (PS_LONG n_decimals)
 	if (n_decimals < 1 || n_decimals > 3)
 		fprintf (stderr, "pslib: Selected decimals for color out of range (%ld), ignored\n", n_decimals);
 	else {
-		sprintf (PSL->current.bw_format, "%%.%ldf", n_decimals);
-		sprintf (PSL->current.rgb_format, "%%.%ldf %%.%ldf %%.%ldf", n_decimals, n_decimals, n_decimals);
-		sprintf (PSL->current.hsv_format, "%%.%ldf %%.%ldf %%.%ldf", n_decimals, n_decimals, n_decimals);
-		sprintf (PSL->current.cmyk_format, "%%.%ldf %%.%ldf %%.%ldf %%.%ldf", n_decimals, n_decimals, n_decimals, n_decimals);
+		sprintf (PSL->current.bw_format, "%%.%ldf A", n_decimals);
+		sprintf (PSL->current.rgb_format, "%%.%ldf %%.%ldf %%.%ldf C", n_decimals, n_decimals, n_decimals);
+		sprintf (PSL->current.hsv_format, "%%.%ldf %%.%ldf %%.%ldf H", n_decimals, n_decimals, n_decimals);
+		sprintf (PSL->current.cmyk_format, "%%.%ldf %%.%ldf %%.%ldf %%.%ldf K", n_decimals, n_decimals, n_decimals, n_decimals);
 	}
 }
 
@@ -1775,14 +1770,12 @@ void ps_setline_ (PS_LONG *linewidth)
 
 void ps_setpaint (int rgb[])
 {
-	PS_LONG pmode;
-
 	if (rgb[0] < 0) return;	/* Some rgb's indicate no fill */
 	if (rgb[0] == PSL->current.rgb[0] && rgb[1] == PSL->current.rgb[1] && rgb[2] == PSL->current.rgb[2]) return;	/* Same color as already set */
 
 	fprintf (PSL->internal.fp, "S ");
-	pmode = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, " %c\n", PSL->internal.paint_code[pmode]);
+	ps_place_color (rgb);
+	fprintf (PSL->internal.fp, "\n");
 
 	/* Update the current color information */
 
@@ -1816,7 +1809,7 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	 *   1       2        3
 	 */
 	char *string, align[3][10] = {"0", "2 div neg", "neg"};
-	PS_LONG i = 0, pmode, j, h_just, v_just, rounded;
+	PS_LONG i = 0, j, h_just, v_just, rounded;
 
 	if (pointsize == 0.0) return;	/* Nothing to do if text has zero size */
 
@@ -1883,8 +1876,8 @@ void ps_textbox (double x, double y, double pointsize, char *text, double angle,
 	}
 	if (rgb[0] >= 0) {	/* Paint the textbox */
 		fprintf (PSL->internal.fp, "V ");
-		pmode = ps_place_color (rgb);
-		fprintf (PSL->internal.fp, " %c F U ", PSL->internal.paint_code[pmode]);
+		ps_place_color (rgb);
+		fprintf (PSL->internal.fp, " F U ");
 	}
 	(outline) ? ps_command ("S U") : ps_command("N U");
 	ps_command ("U");
@@ -2229,11 +2222,11 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, PS
 			strcpy (piece, ptr);
 		}
 		else if (ptr[0] == ';') {	/* Font color change */
-			int pmode, n_scan, rgb[3], error = FALSE;
+			int n_scan, rgb[3], error = FALSE;
 			ptr++;
 			if (ptr[0] == ';') {	/* Reset color */
-				pmode = ps_place_color (PSL->current.rgb);
-				fprintf (PSL->internal.fp, " %c ", PSL->internal.paint_code[pmode]);
+				ps_place_color (PSL->current.rgb);
+				fprintf (PSL->internal.fp, " ");
 			}
 			else {
 				j = 0;
@@ -2257,8 +2250,8 @@ void ps_text (double x, double y, double pointsize, char *text, double angle, PS
 				ptr[j] = ';';
 				while (*ptr != ';') ptr++;
 				if (!error) {
-					pmode = ps_place_color (rgb);
-					fprintf (PSL->internal.fp, " %c ", PSL->internal.paint_code[pmode]);
+					ps_place_color (rgb);
+					fprintf (PSL->internal.fp, " ");
 				}
 			}
 			ptr++;
@@ -2515,7 +2508,7 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 {
 	PS_LONG i, i1, i0, j, k, n, pj;
 	PS_LONG n_scan, color, found, last_k = -1;
-	PS_LONG pmode, error = 0, last_font, after;
+	PS_LONG error = 0, last_font, after;
 	PS_LONG *font_list, *font_unique, n_font_unique, n_rgb_unique;
 	PS_LONG n_alloc, n_items;
 	int last_rgb[3], *rgb_list, *rgb_unique;
@@ -3022,12 +3015,12 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 		}
 		if (draw_box & 2) {	/* Fill */
 			fprintf (PSL->internal.fp, "V ");
-			pmode = ps_place_color (boxfill_rgb);
-			fprintf (PSL->internal.fp, " %c F U ", PSL->internal.paint_code[pmode]);
+			ps_place_color (boxfill_rgb);
+			fprintf (PSL->internal.fp, " F U ");
 		}
 		if (draw_box & 1) {	/* Stroke */
-			pmode = ps_place_color (boxpen_rgb);
-			fprintf (PSL->internal.fp, " %c S\n", PSL->internal.paint_code[pmode]);
+			ps_place_color (boxpen_rgb);
+			fprintf (PSL->internal.fp, " S\n");
 		}
 		else
 			fprintf (PSL->internal.fp, "N\n");
@@ -4187,21 +4180,19 @@ void ps_set_integer (char *param, PS_LONG value)
 
 void ps_define_pen (char *param, PS_LONG width, char *texture, PS_LONG offset, int rgb[])
 {
-	PS_LONG k;
 	/* Function to set line pen attributes */
 	fprintf (PSL->internal.fp, "/%s {", param);
-	k = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, " %c %ld W ", PSL->internal.paint_code[k], width);
+	ps_place_color (rgb);
+	fprintf (PSL->internal.fp, " %ld W ", width);
 	ps_place_setdash (texture, offset);
 	fprintf (PSL->internal.fp, "} def\n");
 }
 
 void ps_define_rgb (char *param, int rgb[])
 {
-	PS_LONG k;
 	fprintf (PSL->internal.fp, "/%s {", param);
-	k = ps_place_color (rgb);
-	fprintf (PSL->internal.fp, " %c} def\n", PSL->internal.paint_code[k]);
+	ps_place_color (rgb);
+	fprintf (PSL->internal.fp, "} def\n");
 }
 
 void ps_set_length_array (char *param, double *array, PS_LONG n)
@@ -4440,49 +4431,39 @@ static void ps_init_fonts (PS_LONG *n_fonts, PS_LONG *n_GMT_fonts)
 	PSL->internal.font = (struct PSL_FONT *) ps_memory ((void *)PSL->internal.font, (size_t)(*n_fonts), sizeof (struct PSL_FONT));
 }
 
-PS_LONG ps_place_color (int rgb[])
+void ps_place_color (int rgb[])
 {
-	PS_LONG pmode;
-
 	if (rgb[0] == -1) {
 		/* Outline only, no color set */
-		pmode = 0;
 	}
 	else if (rgb[0] == -3) {
 		/* Pattern fill */
-		fprintf (PSL->internal.fp, "pattern%d", rgb[1]);
-		pmode = 10;
+		fprintf (PSL->internal.fp, "pattern%d I", rgb[1]);
 	}
 	else if (!PSL_iscolor (rgb)) {
 		/* Gray scale, since R==G==B */
 		fprintf (PSL->internal.fp, PSL->current.bw_format, rgb[0] * PSL_INV_255);
-		pmode = 2;
 	}
 	else if (PSL->internal.color_mode == PSL_GRAY) {
 		/* Gray scale, forced by user */
 		fprintf (PSL->internal.fp, PSL->current.bw_format, PSL_YIQ(rgb) * PSL_INV_255);
-		pmode = 2;
 	}
 	else if (PSL->internal.color_mode == PSL_RGB) {
 		/* Full color, RGB mode */
 		fprintf (PSL->internal.fp, PSL->current.rgb_format, rgb[0] * PSL_INV_255, rgb[1] * PSL_INV_255, rgb[2] * PSL_INV_255);
-		pmode = 4;
 	}
 	else if (PSL->internal.color_mode == PSL_CMYK) {
 		/* CMYK mode */
 		double cmyk[4];
 		ps_rgb_to_cmyk (rgb, cmyk);
 		fprintf (PSL->internal.fp, PSL->current.cmyk_format, cmyk[0], cmyk[1], cmyk[2], cmyk[3]);
-		pmode = 6;
 	}
 	else {
 		/* HSV mode */
 		double hsv[3];
 		ps_rgb_to_hsv (rgb, hsv);
 		fprintf (PSL->internal.fp, PSL->current.hsv_format, hsv[0], hsv[1], hsv[2]);
-		pmode = 8;
 	}
-	return (pmode);
 }
 
 void ps_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[])
