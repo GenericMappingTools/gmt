@@ -1,11 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.591 2009-08-27 13:30:55 jluis Exp $
+	$Id: ChangeLog,v 1.592 2009-08-27 16:01:52 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2009-08-27	jluis
 	* gmt_gdalread.[ch]:	Wrapper function to interface with the GDAL library
 	* grdimage.c:		Modified (with #ifdefs) to allow minimalist images import
 				using GDAL, via the gmt_gdalread function.
+	* gmt_support.c:	Fixed bug in x_inc adjust. It was cosd (0.5 * (h->x_min + h->x_max))
+				Instead of cosd (0.5 * (h->y_min + h->y_max))
 
 2009-08-20	remko
 	* pslib.c, pslib_inc.h:	ps_place_color now also adds the "set...color" operator, so
