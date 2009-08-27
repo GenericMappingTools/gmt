@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.590 2009-08-20 18:53:04 remko Exp $
+	$Id: ChangeLog,v 1.591 2009-08-27 13:30:55 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-08-27	jluis
+	* gmt_gdalread.[ch]:	Wrapper function to interface with the GDAL library
+	* grdimage.c:		Modified (with #ifdefs) to allow minimalist images import
+				using GDAL, via the gmt_gdalread function.
 
 2009-08-20	remko
 	* pslib.c, pslib_inc.h:	ps_place_color now also adds the "set...color" operator, so
