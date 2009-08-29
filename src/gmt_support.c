@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.423 2009-08-27 15:57:09 jluis Exp $
+ *	$Id: gmt_support.c,v 1.424 2009-08-29 20:18:12 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2392,20 +2392,8 @@ GMT_LONG GMT_intpol (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, do
 		dx = x[1] - x[0];
 		if (GMT_is_dnan (y[0])) clean = FALSE;
 		if (dx > 0.0) {
-			int n_consecutive_equals = 1;
-			GMT_LONG old_i = 0;
 			for (i = 2; i < n && err_flag == 0; i++) {
 				if ((x[i] - x[i-1]) <= 0.0) err_flag = i;
-				/*if ((x[i] - x[i-1]) <= 0.0) {
-					if (GMT_IS_ZERO(x[i] - x[i-1])) {	* Add tinny amounts to positions of cuincident points */
-						/*if (i == (old_i + 1)) n_consecutive_equals++;
-						else n_consecutive_equals = 1;
-						x[i] = x[i-1] + 1.0e-10 * n_consecutive_equals;
-						old_i = i;
-					}
-					else
-						err_flag = i; 
-				}*/
 				if (clean && GMT_is_dnan (y[i])) clean = FALSE;
 			}
 		}
@@ -2418,7 +2406,7 @@ GMT_LONG GMT_intpol (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, do
 		}
 
 		if (err_flag) {
-			if (gmtdefs.verbose == 2) fprintf (stderr, "%s: GMT Fatal Error: x-values are not monotonically increasing/decreasing (at record %d)!\n", GMT_program, err_flag);
+			if (gmtdefs.verbose == 2) fprintf (stderr, "%s: GMT Fatal Error: x-values are not monotonically increasing/decreasing (at record %ld)!\n", GMT_program, err_flag);
 			return (err_flag);
 		}
 
