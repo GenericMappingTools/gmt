@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.75 2009-05-15 08:16:21 guru Exp $
+ *	$Id: gmt_customio.c,v 1.76 2009-08-29 20:17:30 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1461,7 +1461,7 @@ GMT_LONG GMT_srf_write_grd_info (struct GRD_HEADER *header)
 	else if ((fp = GMT_fopen (header->name, "rb+")) == NULL && (fp = GMT_fopen (header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
-	strcpy (h.id,"DSBB");
+	strncpy (h.id, "DSBB", (size_t)4);
 	h.nx = (short int)header->nx;	 h.ny = (short int)header->ny;
 	if (header->node_offset) {
 		h.x_min = header->x_min + header->x_inc/2;	 h.x_max = header->x_max - header->x_inc/2;
@@ -1690,7 +1690,7 @@ GMT_LONG GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, do
 
 	/* store header information and array */
 
-	strcpy (h.id,"DSBB");
+	strncpy (h.id, "DSBB", (size_t)4);
 	h.nx = (short int)header->nx;	 h.ny = (short int)header->ny;
 	if (header->node_offset) {
 		h.x_min = header->x_min + header->x_inc/2;	 h.x_max = header->x_max - header->x_inc/2;
