@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.1 2009-08-27 13:22:34 jluis Exp $
+ *	$Id: gmt_gdalread.h,v 1.2 2009-09-03 23:54:52 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -38,6 +38,9 @@ struct GDALREAD_CTRL {
 		int active;
 		char	*jump;
 	} GD_P;
+	struct GD_W {	/* Convert proj4 string into WKT */
+		int active;
+	} GD_W;
 	struct GD_RR {	/* Sub-region in referenced coords */
 		int active;
 		char *region;
@@ -82,7 +85,8 @@ struct GD_CTRL {
 
 	double	hdr[9];
 	double	GeoTransform[6];
-	const char	*ProjectionRef;
+	const char	*ProjectionRefPROJ4;
+	const char	*ProjectionRefWKT;
 	const char	*DriverShortName;
 	const char	*DriverLongName;
 	const char	*ColorInterp;
