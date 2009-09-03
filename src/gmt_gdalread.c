@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.1 2009-08-27 13:22:34 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.2 2009-09-03 23:54:52 jluis Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -105,6 +105,27 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 	/* Open gdal - */
 
 	GDALAllRegister();
+
+	if (prhs->GD_W.active) {
+		OGRSpatialReferenceH  hSRS;
+		char *str;
+		str = Ctrl->ProjectionRefPROJ4;
+
+		hSRS = OSRNewSpatialReference(NULL);
+
+		if( OSRImportFromProj4( hSRS, Ctrl->ProjectionRefPROJ4) == CE_None ) {
+			char	*pszPrettyWkt = NULL;
+			OSRExportToPrettyWkt( hSRS, &pszPrettyWkt, FALSE );
+			Ctrl->ProjectionRefWKT = pszPrettyWkt; 
+		}
+		else {
+			Ctrl->ProjectionRefWKT = CNULL; 
+			fprintf(stderr, "WARNING: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n",Ctrl->ProjectionRefPROJ4);
+		}
+
+		OSRDestroySpatialReference( hSRS );
+		return (GMT_NOERROR);
+	}
 
 	if (metadata_only) {
 		populate_metadata (Ctrl, gdal_filename, correct_bounds, pixel_reg, got_R, 
@@ -367,7 +388,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
  * This routine queries the GDAL raster file for some metadata
  *
  * Fields:
- *    ProjectionRef:  a Proj4 type string describing the projection
+ *    ProjectionRefPROJ4:  a Proj4 type string describing the projection
  *    GeoTransform:
  *        a 6-tuple.  Entries are as follows.
  *            [0] --> top left x
@@ -442,12 +463,23 @@ int populate_metadata (struct GD_CTRL *Ctrl, char *gdal_filename , int correct_b
 		pszProjection = (char *) GDALGetProjectionRef( hDataset );
 
 		hSRS = OSRNewSpatialReference(NULL);
+		/* First in PROJ4 format */
 		if( OSRImportFromWkt( hSRS, &pszProjection) == CE_None ) {
 			OSRExportToProj4( hSRS, &pszResult );
-			Ctrl->ProjectionRef = pszResult; 
+			Ctrl->ProjectionRefPROJ4 = pszResult; 
 		}
 		else
-			Ctrl->ProjectionRef = CNULL; 
+			Ctrl->ProjectionRefPROJ4 = CNULL; 
+
+		/* Now in WKT format */
+		if( OSRImportFromWkt( hSRS, &pszProjection ) == CE_None ) {
+			char	*pszPrettyWkt = NULL;
+			OSRExportToPrettyWkt( hSRS, &pszPrettyWkt, FALSE );
+			Ctrl->ProjectionRefWKT = pszPrettyWkt; 
+			CPLFree( pszPrettyWkt );
+		}
+		else
+			Ctrl->ProjectionRefWKT = CNULL; 
 
 		OSRDestroySpatialReference( hSRS );
 	}
