@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.424 2009-08-29 20:18:12 remko Exp $
+ *	$Id: gmt_support.c,v 1.425 2009-09-04 22:16:54 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2532,12 +2532,17 @@ void *GMT_memory_func (void *prev_addr, GMT_LONG nelem, size_t size, char *progn
 void *GMT_memory (void *prev_addr, GMT_LONG nelem, size_t size, char *progname)
 #endif
 {
+	/* Multi-functional memory allocation subroutine.
+	   If prev_addr is NULL, allocate new memory of nelem elements of size bytes.
+	   	Ignore when nelem == 0.
+	   If prev_addr exists, reallocate the memory to a larger or smaller chunk of nelem elements of size bytes.
+	   	When nelem = 0, free the memory.
+	*/
+
 	void *tmp;
 	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
 	double mem;
 	GMT_LONG k;
-
-	if (nelem == 0) return(VNULL); /* Take care of n = 0 */
 
 	if (nelem < 0) {	/* Probably 32-bit overflow */
 		fprintf (stderr, "GMT Fatal Error: %s requesting negative n_items (%ld) - exceeding 32-bit counting?\n", progname, nelem);
@@ -2545,6 +2550,10 @@ void *GMT_memory (void *prev_addr, GMT_LONG nelem, size_t size, char *progname)
 	}
 
 	if (prev_addr) {
+		if (nelem == 0) { /* Take care of n = 0 */
+			GMT_free ((void *) prev_addr);
+			return (VNULL);
+		}
 		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == VNULL) {
 			mem = (double)(nelem * size);
 			k = 0;
@@ -2557,6 +2566,7 @@ void *GMT_memory (void *prev_addr, GMT_LONG nelem, size_t size, char *progname)
 		}
 	}
 	else {
+		if (nelem == 0) return (VNULL); /* Take care of n = 0 */
 		if ((tmp = calloc ((size_t)nelem, size)) == VNULL) {
 			mem = (double)(nelem * size);
 			k = 0;
@@ -7424,75 +7434,68 @@ GMT_LONG GMT_linear_array (double min, double max, double delta, double phase, d
 
 GMT_LONG GMT_log_array (double min, double max, double delta, double **array)
 {
-	GMT_LONG i, n, nticks, test, n_alloc = GMT_SMALL_CHUNK, start_log;
-	double *val, log10_min, log10_max, tvals[9];
+	GMT_LONG i, n, nticks, n_alloc, log_min, log_max;
+	double *val, log10_min, log10_max, tvals[10];
 
 	/* Because min and max may be tiny values (e.g., 10^-20) we must do all calculations on the log10 (value) */
 
 	if (GMT_IS_ZERO (delta)) return (0);
 	log10_min = d_log10 (min);
 	log10_max = d_log10 (max);
+	log_min = (int) floor (log10_min);
+	log_max = (int) ceil (log10_max);
 
 	if (delta < 0) {	/* Coarser than every magnitude */
 		n = GMT_linear_array (log10_min, log10_max, fabs (delta), 0.0, array);
 		for (i = 0; i < n; i++) (*array)[i] = pow (10.0, (*array)[i]);
 		return (n);
 	}
-	
+
+	tvals[0] = 0.0;	/* Common to all */
+	switch (irint (fabs (delta))) {
+		case 2:	/* Annotate 1, 2, 5, 10 */
+			tvals[1] = d_log10 (2.0);
+			tvals[2] = d_log10 (5.0);
+			tvals[3] = 1.0;
+			nticks = 3;
+			break;
+		case 3:	/* Annotate 1, 2, ..., 8, 9, 10 */
+			nticks = 9;
+			for (i = 1; i <= nticks; i++) tvals[i] = d_log10 ((double)(i + 1));
+			break;
+		default:	/* Annotate just 1 and 10 */
+			nticks = 1;
+			tvals[1] = 1.0;
+	}
+
+	/* Assign memory to array (may be a bit too much) */
+	n_alloc = (log_max - log_min + 1) * nticks + 1;
 	val = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "GMT_log_array");
-	test = irint (fabs (delta)) - 1;
-	if (test == 1) {
-		tvals[0] = 0.0;	/* = log10 (1.0) */
-		tvals[1] = d_log10 (2.0);
-		tvals[2] = d_log10 (5.0);
-		nticks = 3;
-	}
-	else if (test == 2) {
-		nticks = 9;
-		for (i = 0; i < nticks; i++) tvals[i] = d_log10 ((double)(i + 1));
-	}
-	else {
-		tvals[0] = 0.0;
-		nticks = 1;
-		test = 0;
-	}
 
-	start_log = irint (floor (log10_min));
-	val[0] = (double)start_log;
-	i = 1;	/* Because val[0] is initially set to be a power or ten (i = 0), so next should be 1 */
-	while ((log10_min - val[0]) > GMT_SMALL) {
-		if (i < nticks)
-			val[0] = start_log + tvals[i];
-		else {
-			val[0] = ++start_log;
-			i = 0;
-		}
+	/* Find the first logarithm larger than log10_min */
+	i = 0;
+	val[0] = (double) log_min;
+	while (log10_min - val[0] > GMT_SMALL && i < nticks) {
 		i++;
+		val[0] = log_min + tvals[i];
 	}
-	i--;
 
+	/* Find the first logarithm larger than log10_max */
 	n = 0;
-	while ((log10_max - val[n]) > GMT_CONV_LIMIT) {
-		i++;
-		n++;
-		if (n == n_alloc) {
-			n_alloc <<= 1;
-			val = (double *) GMT_memory ((void *)val, n_alloc, sizeof (double), "GMT_log_array");
+	while (val[n] - log10_max < GMT_SMALL) {
+		if (i >= nticks) {
+			i -= nticks;
+			log_min++;
 		}
-
-		if (i < nticks)
-			val[n] = start_log + tvals[i];
-		else {
-			val[n] = ++start_log;
-			i = 0;
-		}
+		i++; n++;
+		val[n] = log_min + tvals[i];
 	}
-	while (n && val[n] > log10_max) n--;	/* In case of over-run */
-	n++;
 
-	for (i = 0; i < n; i++) val[i] = pow (10.0, val[i]);	/* Convert from log10 to values */
-
+	/* val[n] is too large, so we use only the first n, until val[n-1] */
 	val = (double *) GMT_memory ((void *)val, n, sizeof (double), "GMT_log_array");
+
+	/* Convert from log10 to values */
+	for (i = 0; i < n; i++) val[i] = pow (10.0, val[i]);
 
 	*array = val;
 
@@ -7542,12 +7545,10 @@ GMT_LONG GMT_pow_array (double min, double max, double delta, GMT_LONG x_or_y, d
 	tval = start_val;
 	n = 0;
 	while (tval <= end_val) {
-		if (annottype == 2) {
+		if (annottype == 2)
 			(*inv) (&val[n], tval);
-		}
-		else {
+		else
 			val[n] = tval;
-		}
 		tval += delta;
 		n++;
 		if (n == n_alloc) {
