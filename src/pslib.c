@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.209 2009-08-20 18:53:05 remko Exp $
+ *	$Id: pslib.c,v 1.210 2009-09-04 18:48:32 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -646,7 +646,7 @@ void ps_setfill (int rgb[], PS_LONG outline)
 		else {
 			fprintf (PSL->internal.fp, "{");
 			ps_place_color (rgb);
-			fprintf (PSL->internal.fp, " } FS\n");
+			fprintf (PSL->internal.fp, "} FS\n");
 		}
 	}
 
