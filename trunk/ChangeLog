@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.593 2009-09-04 18:55:10 remko Exp $
+	$Id: ChangeLog,v 1.594 2009-09-04 22:17:28 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-09-04	remko
@@ -10,6 +10,9 @@
 				constant argument -1 in 64-bit machines.
 	* gmt_shore.c, psmask.c, gmt.h, gmt_globals.h:	---"---
 	* pscoast.c:		Added mention of debugging options when DEBUG is on.
+	* gmt_support.c:	GMT_log_array: Recoded to avoid 64-bit error (last value was not
+				included).
+				GMT_memory: Now free memory when reallocating memory with size 0.
 
 2009-08-27	jluis
 	* gmt_gdalread.[ch]:	Wrapper function to interface with the GDAL library
