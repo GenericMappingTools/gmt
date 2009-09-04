@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.30 2009-05-13 21:06:42 guru Exp $
+ *	$Id: gmt_map.h,v 1.31 2009-09-04 18:53:36 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -64,6 +64,7 @@ EXTERN_MSC GMT_LONG GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, 
 EXTERN_MSC void GMT_init_ellipsoid (void);
 EXTERN_MSC GMT_LONG GMT_map_setup (double west, double east, double south, double north);
 EXTERN_MSC void GMT_project3D (double x, double y, double z, double *x_out, double *y_out, double *z_out);
+EXTERN_MSC GMT_LONG GMT_truncate (double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_LONG side);
 EXTERN_MSC void GMT_x_to_xx (double x, double *xx);
 EXTERN_MSC void GMT_xx_to_x (double *x, double xx);
 EXTERN_MSC void GMT_xy_do_z_to_xy (double x, double y, double z, double *x_out, double *y_out);

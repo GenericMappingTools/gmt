@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.239 2009-08-15 20:12:22 remko Exp $
+ *	$Id: gmt_map.c,v 1.240 2009-09-04 18:53:13 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -440,7 +440,6 @@ GMT_LONG GMT_map_setup (double west, double east, double south, double north)
 	GMT_will_it_wrap = (PFB) GMT_will_it_wrap_x;
 	GMT_this_point_wraps = (PFB) GMT_this_point_wraps_x;
 	GMT_get_crossings = (PFV) GMT_get_crossings_x;
-	GMT_truncate = (PFL) GMT_truncate_x;
 	GMT_lat_swap_init ();
 
 	/* Use old radial clip function for pscoast and gmtselect; grdlandmask sets -Jx1d so not included */
@@ -1690,7 +1689,6 @@ GMT_LONG GMT_map_init_tm (void) {
 	GMT_will_it_wrap = (PFB) GMT_will_it_wrap_tm;
 	GMT_this_point_wraps = (PFB) GMT_this_point_wraps_tm;
 	GMT_get_crossings = (PFV) GMT_get_crossings_tm;
-	GMT_truncate = (PFL) GMT_truncate_tm;
 
 	if (gmtdefs.map_scale_factor == -1.0) gmtdefs.map_scale_factor = 1.0;	/* Select default map scale for TM */
 	project_info.GMT_convert_latitudes = GMT_quicktm (project_info.pars[0], 10.0);
@@ -3620,26 +3618,35 @@ BOOLEAN GMT_this_point_wraps_tm (double y0, double y1)
 	return ((dy = fabs (y1 - y0)) > GMT_half_map_height);
 }
 
+GMT_LONG GMT_truncate (double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_LONG side)
+{	/* Truncates a wrapping polygon against left or right edge.
+	   (bottom or top edge when projection is TM)
+	   x, y : arrays of plot coordinates
+	   n    : length of the arrays
+	   start: first point of array to consider
+	   side : -1 = left (bottom); +1 = right (top)
+	*/
+
+	if (project_info.projection == GMT_TM)
+		return (GMT_truncate_tm (x, y, n, start, side));
+	else
+		return (GMT_truncate_x (x, y, n, start, side));
+}
+		
 GMT_LONG GMT_truncate_x (double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_LONG l_or_r)
-{	/* Truncates a wrapping polygon agains left or right edge */
+{	/* Truncates a wrapping polygon against left or right edge */
 
 	GMT_LONG i, i1, j, k;
 	double xc[4], yc[4], w_last, w_this;
-	PFD x_on_border;
 
 	/* First initialize variables that differ for left and right truncation */
 
-	if (l_or_r == -1) {	/* Left truncation (-1) */
+	if (l_or_r == -1)	/* Left truncation (-1) */
 		/* Find first point that is left of map center */
-
 		i = (x[start] < GMT_half_map_size) ? start : start - 1;
-		x_on_border = GMT_left_boundary;
-	}
-	else {				/* Right truncation (+1) */
+	else				/* Right truncation (+1) */
 		/* Find first point that is right of map center */
 		i = (x[start] > GMT_half_map_size) ? start : start - 1;
-		x_on_border = GMT_right_boundary;
-	}
 
 	if (!GMT_n_alloc) GMT_get_plot_array ();
 
@@ -3653,15 +3660,18 @@ GMT_LONG GMT_truncate_x (double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_L
 		w_this = GMT_half_map_width (y[i]);
 		if (GMT_this_point_wraps_x (x[i1], x[i], w_last, w_this)) {
 			(*GMT_get_crossings) (xc, yc, x[i1], y[i1], x[i], y[i]);
-			GMT_x_plot[j] = (*x_on_border) (yc[0]);
+			if (l_or_r == -1)
+				GMT_x_plot[j] = GMT_left_boundary (yc[0]);
+			else
+				GMT_x_plot[j] = GMT_right_boundary (yc[0]);
 			GMT_y_plot[j] = yc[0];
 			j++;
 			if (j >= GMT_n_alloc) GMT_get_plot_array ();
 		}
 		if (l_or_r == -1) /* Left */
-			GMT_x_plot[j] = (x[i] >= GMT_half_map_size) ? (*x_on_border) (y[i]) : x[i];
+			GMT_x_plot[j] = (x[i] >= GMT_half_map_size) ? GMT_left_boundary (y[i]) : x[i];
 		else	/* Right */
-			GMT_x_plot[j] = (x[i] < GMT_half_map_size) ? (*x_on_border) (y[i]) : x[i];
+			GMT_x_plot[j] = (x[i] < GMT_half_map_size) ? GMT_right_boundary (y[i]) : x[i];
 		GMT_y_plot[j] = y[i];
 		j++, k++;
 		if (j >= GMT_n_alloc) GMT_get_plot_array ();
@@ -3670,7 +3680,7 @@ GMT_LONG GMT_truncate_x (double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_L
 }
 
 GMT_LONG GMT_truncate_tm (double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_LONG b_or_t)
-{	/* Truncates a wrapping polygon agains bottom or top edge for global TM maps */
+{	/* Truncates a wrapping polygon against bottom or top edge for global TM maps */
 
 	GMT_LONG i, i1, j, k;
 	double xc[4], yc[4], trunc_y;
@@ -4706,7 +4716,7 @@ GMT_LONG GMT_clip_to_map (double *lon, double *lat, GMT_LONG np, double **x, dou
 	else if (out == np) {	/* All points are outside map boundary */
 		np2 = 2 * np;
 #ifdef __LP64__
-	if (labs (out_x) == np2 || labs (out_y) == np2)	/* All points safely outside the region, no part of polygon survives */
+		if (labs (out_x) == np2 || labs (out_y) == np2)	/* All points safely outside the region, no part of polygon survives */
 #else
 		if (abs ((int)out_x) == np2 || abs ((int)out_y) == np2)	/* All points safely outside the region */
 #endif
@@ -4754,7 +4764,6 @@ GMT_LONG GMT_rect_clip_old (double *lon, double *lat, GMT_LONG n, double **x, do
 	GMT_geo_to_xy (lon[0], lat[0], &xx[0], &yy[0]);
 	j += GMT_move_to_rect (xx, yy, j, (GMT_LONG)0);	/* May add 2 points, << n_alloc */
 
-	/* for (i = j = 1; i < n; i++) { */
 	for (i = 1; i < n; i++) {
 		(void) GMT_map_outside (lon[i], lat[i]);
 		nx = 0;
@@ -4827,7 +4836,7 @@ GMT_LONG GMT_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr
 }
 
 GMT_LONG GMT_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, PFI inside, PFI outside, GMT_LONG *cross)
-{	/* Clip agains the west or east boundary (i.e., a vertical line with x = border) */
+{	/* Clip against the west or east boundary (i.e., a vertical line with x = border) */
 	*cross = 0;
 	if (GMT_IS_ZERO (x_prev-x_curr) && GMT_IS_ZERO (y_prev-y_curr)) return (0);	/* Do nothing for duplicates */
 	if (outside (x_prev, border)) {	/* Previous point is outside... */

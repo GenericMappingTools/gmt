@@ -1,6 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.592 2009-08-27 16:01:52 jluis Exp $
+	$Id: ChangeLog,v 1.593 2009-09-04 18:55:10 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-04	remko
+	* gmt_map.[ch]:		Changed GMT_truncate from being a pointer function (PFL)
+				to a regular function that simply calls GMT_truncate_x
+				or GMT_truncate_tm depending on whether projection is TM.
+				This to avoid problems with calling GMT_truncate with
+				constant argument -1 in 64-bit machines.
+	* gmt_shore.c, psmask.c, gmt.h, gmt_globals.h:	---"---
+	* pscoast.c:		Added mention of debugging options when DEBUG is on.
 
 2009-08-27	jluis
 	* gmt_gdalread.[ch]:	Wrapper function to interface with the GDAL library
@@ -498,8 +507,8 @@
 2009-03-28	pwessel
 	* imgsrc/img2google:	Added new script (modified from David Sandwell's prototype)
 				that creates Google Earth overlay tiles from topo.11.1.img
-	* ps2raster.c:	Enhanced -Wg for KML creation that allows user to specify document
-					and layer name and the altitude mode of the image.
+	* ps2raster.c:		Enhanced -Wg for KML creation that allows user to specify document
+				and layer name and the altitude mode of the image.
 
 2009-03-26	pwessel
 	* gmt_support.c:	Exceeded array bounds in GMT_read_cpt for hsv conversion.
