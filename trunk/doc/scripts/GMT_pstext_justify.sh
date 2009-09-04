@@ -1,12 +1,12 @@
 #!/bin/sh
-#	$Id: GMT_pstext_justify.sh,v 1.4 2009-04-17 00:31:29 remko Exp $
+#	$Id: GMT_pstext_justify.sh,v 1.5 2009-09-04 22:02:01 remko Exp $
 #
 
 B=0.2
 M=0.38
 T=0.56
 gmtset GLOBAL_X_SCALE 0.8 GLOBAL_Y_SCALE 0.8
-pstext -R0/3/0/1.5 -Jx1 -P -K -N -C0/0 -Wothin,- << EOF > GMT_pstext_justify.ps
+pstext -R0/3/0/1.5 -Jx1i -P -K -N -C0/0 -Wothin,- << EOF > GMT_pstext_justify.ps
 0	0	36	0	1	LB	My Text
 EOF
 psxy -R -J -O -K -m -N -X-0.1 -Y-0.2 << EOF >> GMT_pstext_justify.ps
@@ -58,12 +58,3 @@ psxy -R -J -O -Sc0.05 << EOF >> GMT_pstext_justify.ps
 1.945	$M
 1.945	$T
 EOF
-
-sed '/%%Trailer/q' GMT_pstext_justify.ps > $$.ps
-cat << EOF >> $$.ps
-%%BoundingBox: 60 20 300 180
-S 0 -255 T 4.16667 4.16667 scale showpage
-
-end
-EOF
-mv -f $$.ps GMT_pstext_justify.ps
