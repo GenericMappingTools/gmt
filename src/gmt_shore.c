@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.50 2009-08-13 17:58:58 remko Exp $
+ *	$Id: gmt_shore.c,v 1.51 2009-09-04 18:53:36 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -842,9 +842,9 @@ GMT_LONG GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, GMT_LONG np, BOOLEAN s
 				
 		if ((*GMT_will_it_wrap) (xtmp, ytmp, n, &start)) {	/* Polygon does indeed wrap */
 				
-			/* First truncate agains left border */
+			/* First truncate against left border */
 						
-			GMT_n_plot = (*GMT_truncate) (xtmp, ytmp, n, start, -1);
+			GMT_n_plot = GMT_truncate (xtmp, ytmp, n, start, -1);
 			n_use = GMT_compact_line (GMT_x_plot, GMT_y_plot, GMT_n_plot, FALSE, 0);
 			if (project_info.three_D) GMT_2D_to_3D (GMT_x_plot, GMT_y_plot, project_info.z_level, GMT_n_plot);
 			close = GMT_polygon_is_open (GMT_x_plot, GMT_y_plot, n_use);
@@ -859,9 +859,9 @@ GMT_LONG GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, GMT_LONG np, BOOLEAN s
 			}
 			p[k].n = n_alloc;
 								
-			/* Then truncate agains right border */
+			/* Then truncate against right border */
 						
-			GMT_n_plot = (*GMT_truncate) (xtmp, ytmp, n, start, +1);
+			GMT_n_plot = GMT_truncate (xtmp, ytmp, n, start, +1);
 			n_use = GMT_compact_line (GMT_x_plot, GMT_y_plot, GMT_n_plot, FALSE, 0);
 			if (project_info.three_D) GMT_2D_to_3D (GMT_x_plot, GMT_y_plot, project_info.z_level, GMT_n_plot);
 			p = (struct GMT_GSHHS_POL *) GMT_memory ((void *)p, (size_t)(np_new + 1), sizeof (struct GMT_GSHHS_POL), GMT_program);

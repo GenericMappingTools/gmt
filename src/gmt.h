@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.185 2009-05-15 08:16:21 guru Exp $
+ *	$Id: gmt.h,v 1.186 2009-09-04 18:54:23 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -602,7 +602,6 @@ EXTERN_MSC PFL GMT_map_jump;			/* TRUE if we jump in x or y */
 EXTERN_MSC PFB GMT_will_it_wrap;		/* TRUE if consecutive points indicate wrap */
 EXTERN_MSC PFB GMT_this_point_wraps;		/* Used in above */
 EXTERN_MSC PFV GMT_get_crossings;		/* Returns map crossings in x or y */
-EXTERN_MSC PFL GMT_truncate;			/* Truncate polygons agains boundaries */
 EXTERN_MSC BOOLEAN GMT_meridian_straight;	/* TRUE if meridians plot as straight lines */
 EXTERN_MSC BOOLEAN GMT_parallel_straight;	/* TRUE if parallels plot as straight lines */
 EXTERN_MSC GMT_LONG GMT_3D_mode;		/* Determines if we draw fore and/or back 3-D box lines */
