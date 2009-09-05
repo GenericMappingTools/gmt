@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.196 2009-07-08 21:41:40 guru Exp $
+ *	$Id: gmt_io.c,v 1.197 2009-09-05 01:31:52 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -3196,6 +3196,7 @@ void GMT_free_dataset (struct GMT_DATASET *data)
 void GMT_free_table (struct GMT_TABLE *table)
 {
 	GMT_LONG seg;
+	if (!table) return;	/* Do not try to free NULL pointer */
 	for (seg = 0; seg < table->n_segments; seg++) GMT_free_segment (table->segment[seg]);
 	GMT_free ((void *)table->segment);
 	GMT_free ((void *)table->min);
@@ -3209,6 +3210,7 @@ void GMT_free_segment (struct GMT_LINE_SEGMENT *segment)
 	/* Free memory allocated by GMT_import_table */
 
 	GMT_LONG col;
+	if (!segment) return;	/* Do not try to free NULL pointer */
 	for (col = 0; col < segment->n_columns; col++) GMT_free ((void *) segment->coord[col]);
 	GMT_free ((void *) segment->coord);
 	if (segment->min) GMT_free ((void *) segment->min);
