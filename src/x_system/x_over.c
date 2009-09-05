@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.13 2009-07-11 03:16:32 guru Exp $
+/*	$Id: x_over.c,v 1.14 2009-09-05 01:14:03 guru Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -532,11 +532,7 @@ int main (int argc, char *argv[])
 		    ym[1][1] = lat[pnt[1]+1];
 		    if (xm[0][1] > xm[1][1]) SWAP(&xm[0][1],&xm[1][1]);
 		    if (ym[0][1] > ym[1][1]) SWAP(&ym[0][1],&ym[1][1]);
-#ifdef __LP64__
-		    delta = labs(pnt[0] - pnt[1]);
-#else
-		    delta = abs(pnt[0] - pnt[1]);
-#endif
+		    delta = GMT_abs(pnt[0] - pnt[1]);
 		    if (over_lap(xm,ym) && delta > 1) {
 		      /* Here we have found a possible crossover. We interpolate to
 		       * find the crossover values for position and time along each

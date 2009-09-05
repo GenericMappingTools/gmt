@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.240 2009-09-04 18:53:13 remko Exp $
+ *	$Id: gmt_map.c,v 1.241 2009-09-05 01:14:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -4715,11 +4715,7 @@ GMT_LONG GMT_clip_to_map (double *lon, double *lat, GMT_LONG np, double **x, dou
 	}
 	else if (out == np) {	/* All points are outside map boundary */
 		np2 = 2 * np;
-#ifdef __LP64__
-		if (labs (out_x) == np2 || labs (out_y) == np2)	/* All points safely outside the region, no part of polygon survives */
-#else
-		if (abs ((int)out_x) == np2 || abs ((int)out_y) == np2)	/* All points safely outside the region */
-#endif
+		if (GMT_abs (out_x) == np2 || GMT_abs (out_y) == np2)	/* All points safely outside the region, no part of polygon survives */
 			n = 0;
 		else {	/* All points are outside, but they are not just to one side so lines _may_ intersect the region */
 			n = (*GMT_map_clip) (lon, lat, np, x, y, &total_nx);

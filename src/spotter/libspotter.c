@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.57 2009-05-13 21:06:44 guru Exp $
+ *	$Id: libspotter.c,v 1.58 2009-09-05 01:14:03 guru Exp $
  *
  *   Copyright (c) 1999-2009 by P. Wessel
  *
@@ -447,13 +447,8 @@ BOOLEAN must_do_track (GMT_LONG sideA[], GMT_LONG sideB[]) {
 	if (sideA[0] == 0 && sideA[1] == 0) return (TRUE);
 	if (sideB[0] == 0 && sideB[1] == 0) return (TRUE);
 	/* Now check if the two points may cut a corner */
-#ifdef __LP64__
-	dx = labs (sideA[0] - sideB[0]);
-	dy = labs (sideA[1] - sideB[1]);
-#else
-	dx = abs (sideA[0] - sideB[0]);
-	dy = abs (sideA[1] - sideB[1]);
-#endif
+	dx = GMT_abs (sideA[0] - sideB[0]);
+	dy = GMT_abs (sideA[1] - sideB[1]);
 	if (dx && dy) return (TRUE);
 	if (dx == 2 || dy == 2) return (TRUE);	/* Could cut across the box */
 	return (FALSE);
@@ -797,13 +792,8 @@ void spotter_add_rotations (struct EULER a[], GMT_LONG n_a, struct EULER b[], GM
 
 	sign_a = (n_a > 0) ? +1.0 : -1.0;
 	sign_b = (n_b > 0) ? +1.0 : -1.0;
-#ifdef __LP64__
-	n_a = labs (n_a);
-	n_b = labs (n_b);
-#else
-	n_a = abs (n_a);
-	n_b = abs (n_b);
-#endif
+	n_a = GMT_abs (n_a);
+	n_b = GMT_abs (n_b);
 	/* Allocate more than we need, must likely */
 
 	t = (double *) GMT_memory (VNULL, (size_t)(n_a + n_b), sizeof (double), "libspotter");
