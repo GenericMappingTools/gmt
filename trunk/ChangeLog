@@ -1,8 +1,8 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.595 2009-09-05 01:14:02 guru Exp $
+	$Id: ChangeLog,v 1.596 2009-09-05 01:34:59 remko Exp $
 -----------------------------------------------------------------------------------------
 
-2009-09-4	pwessel
+2009-09-04	pwessel
 	* gmt.h:		Now has GMT_abs macro that handles abs/labs use
 
 2009-09-04	remko
@@ -15,6 +15,7 @@
 	* pscoast.c:		Added mention of debugging options when DEBUG is on.
 	* gmt_support.c:	GMT_log_array: Recoded to avoid 64-bit error (last value was not
 				included).
+				GMT_pow_array, GMT_log_array: Simplified code.
 				GMT_memory: Now free memory when reallocating memory with size 0.
 
 2009-08-27	jluis
