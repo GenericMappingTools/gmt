@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.186 2009-09-04 18:54:23 remko Exp $
+ *	$Id: gmt.h,v 1.187 2009-09-05 01:14:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -90,9 +90,9 @@ extern "C" {
 #endif
 
 #ifdef __LP64__
-#define ABS(n) labs(n)
+#define GMT_abs(n) labs(n)
 #else
-#define ABS(n) abs(n)
+#define GMT_abs(n) abs(n)
 #endif
 /*--------------------------------------------------------------------
  *			GMT CONSTANTS MACRO DEFINITIONS

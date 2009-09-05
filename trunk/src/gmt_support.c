@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.425 2009-09-04 22:16:54 remko Exp $
+ *	$Id: gmt_support.c,v 1.426 2009-09-05 01:14:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -5869,7 +5869,7 @@ BOOLEAN GMT_y_out_of_bounds (GMT_LONG *j, struct GRD_HEADER *h, struct GMT_EDGEI
 
 	if ((*j) < 0) {	/* Depending on BC's we wrap around or we are above the top of the domain */
 		if (edgeinfo->gn) {	/* N Polar condition - adjust j and set wrap flag */
-			(*j) = ABS (*j) - h->node_offset;
+			(*j) = GMT_abs (*j) - h->node_offset;
 			(*wrap_180) = TRUE;	/* Go "over the pole" */
 		}
 		else if (edgeinfo->nyp) {	/* Periodic in y */

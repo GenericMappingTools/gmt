@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.30 2009-05-15 09:32:23 guru Exp $
+ *	$Id: gmt_vector.c,v 1.31 2009-09-05 01:14:03 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -897,7 +897,7 @@ void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG n
 	
 	GMT_LONG	kbad, i, j, ii, ij, ji, nrp1;
 	
-	kbad = labs((long)nerr) - 1;
+	kbad = GMT_abs(nerr) - 1;
 	nrp1 = nr + 1;
 	
 	for (i = 0, ii = 0; i <= kbad; i++, ii += nrp1) {

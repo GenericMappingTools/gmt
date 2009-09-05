@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.68 2009-05-13 21:06:42 guru Exp $
+ *	$Id: gmt_stat.c,v 1.69 2009-09-05 01:14:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2195,17 +2195,17 @@ GMT_LONG GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_i
 
 		/* Now test counts, watch multiple roots, think even/odd:  */
 
-		if ((labs((long)(n_above - n_below))) <= (long)n_equal) {
+		if ((GMT_abs((n_above - n_below))) <= n_equal) {
 
 			*med = (n_equal) ? m_guess : 0.5 * (lub + glb);
 			finished = TRUE;
 		}
-		else if ((labs ((long)((n_above - n_lub) - (n_below + n_equal)))) < (long)n_lub) {
+		else if ((GMT_abs (((n_above - n_lub) - (n_below + n_equal)))) < n_lub) {
 
 			*med = lub;
 			finished = TRUE;
 		}
-		else if ((labs ((long)((n_below - n_glb) - (n_above + n_equal)))) < (long)n_glb) {
+		else if ((GMT_abs (((n_below - n_glb) - (n_above + n_equal)))) < n_glb) {
 
 			*med = glb;
 			finished = TRUE;

@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.594 2009-09-04 22:17:28 remko Exp $
+	$Id: ChangeLog,v 1.595 2009-09-05 01:14:02 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-4	pwessel
+	* gmt.h:		Now has GMT_abs macro that handles abs/labs use
 
 2009-09-04	remko
 	* gmt_map.[ch]:		Changed GMT_truncate from being a pointer function (PFL)
