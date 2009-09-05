@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.426 2009-09-05 01:14:02 guru Exp $
+ *	$Id: gmt_support.c,v 1.427 2009-09-05 01:33:08 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -7410,22 +7410,34 @@ GMT_LONG GMT_get_dist_scale (char c, double *d_scale, GMT_LONG *proj_type, PFD *
 
 GMT_LONG GMT_linear_array (double min, double max, double delta, double phase, double **array)
 {
-	double first, small, *val;
-	GMT_LONG i, n;
+	/* Create an array of values between min and max, with steps delta and given phase.
+	   Example: min = 0, max = 9, delta = 2, phase = 1
+	   Result: 1, 3, 5, 7, 9
+	*/
+
+	double *val;
+	GMT_LONG first, last, i, n;
 
 	if (delta <= 0.0) return (0);
-	small = GMT_SMALL * delta;
-	first = floor ((min - delta - phase) / delta) * delta + phase;
-	while ((min - first) > small) first += delta;
-	if (first > max) return (0);
 
-	n = irint ((max - first) / delta) + 1;
+	/* Undo the phase and scale by 1/delta */
+	min = (min - phase) / delta;
+	max = (max - phase) / delta;
+
+	/* Look for first value */
+	first = (int) floor (min);
+	while (min - first > GMT_SMALL) first++;
+
+	/* Look for last value */
+	last = (int) ceil (max);
+	while (last - max > GMT_SMALL) last--;
+
+	n = last - first + 1;
+	if (n <= 0) return (0);
+
+	/* Create an array of n equally spaced elements */
 	val = (double *) GMT_memory (VNULL, n, sizeof (double), "GMT_linear_array");
-	for (i = 0; i < n; i++) {
-		val[i] = first + i * delta;
-		if (fabs(val[i] - phase) < small) val[i] = phase;	/* Kill small numbers when phase==0 */
-	}
-	while (n && (val[n-1] - small) > max) n--;	/* In case of over-run */
+	for (i = 0; i < n; i++) val[i] = phase + (first + i) * delta;	/* Rescale to original values */
 
 	*array = val;
 
@@ -7434,19 +7446,19 @@ GMT_LONG GMT_linear_array (double min, double max, double delta, double phase, d
 
 GMT_LONG GMT_log_array (double min, double max, double delta, double **array)
 {
-	GMT_LONG i, n, nticks, n_alloc, log_min, log_max;
-	double *val, log10_min, log10_max, tvals[10];
+	double *val, tvals[10];
+	GMT_LONG first, last, i, n, nticks;
 
 	/* Because min and max may be tiny values (e.g., 10^-20) we must do all calculations on the log10 (value) */
 
 	if (GMT_IS_ZERO (delta)) return (0);
-	log10_min = d_log10 (min);
-	log10_max = d_log10 (max);
-	log_min = (int) floor (log10_min);
-	log_max = (int) ceil (log10_max);
+	min = d_log10 (min);
+	max = d_log10 (max);
+	first = (int) floor (min);
+	last = (int) ceil (max);
 
 	if (delta < 0) {	/* Coarser than every magnitude */
-		n = GMT_linear_array (log10_min, log10_max, fabs (delta), 0.0, array);
+		n = GMT_linear_array (min, max, fabs (delta), 0.0, array);
 		for (i = 0; i < n; i++) (*array)[i] = pow (10.0, (*array)[i]);
 		return (n);
 	}
@@ -7469,26 +7481,26 @@ GMT_LONG GMT_log_array (double min, double max, double delta, double **array)
 	}
 
 	/* Assign memory to array (may be a bit too much) */
-	n_alloc = (log_max - log_min + 1) * nticks + 1;
-	val = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "GMT_log_array");
+	n = (last - first + 1) * nticks + 1;
+	val = (double *) GMT_memory (VNULL, n, sizeof (double), "GMT_log_array");
 
-	/* Find the first logarithm larger than log10_min */
+	/* Find the first logarithm larger than min */
 	i = 0;
-	val[0] = (double) log_min;
-	while (log10_min - val[0] > GMT_SMALL && i < nticks) {
+	val[0] = (double) first;
+	while (min - val[0] > GMT_SMALL && i < nticks) {
 		i++;
-		val[0] = log_min + tvals[i];
+		val[0] = first + tvals[i];
 	}
 
-	/* Find the first logarithm larger than log10_max */
+	/* Find the first logarithm larger than max */
 	n = 0;
-	while (val[n] - log10_max < GMT_SMALL) {
+	while (val[n] - max < GMT_SMALL) {
 		if (i >= nticks) {
 			i -= nticks;
-			log_min++;
+			first++;
 		}
 		i++; n++;
-		val[n] = log_min + tvals[i];
+		val[n] = first + tvals[i];
 	}
 
 	/* val[n] is too large, so we use only the first n, until val[n-1] */
@@ -7504,68 +7516,26 @@ GMT_LONG GMT_log_array (double min, double max, double delta, double **array)
 
 GMT_LONG GMT_pow_array (double min, double max, double delta, GMT_LONG x_or_y, double **array)
 {
-	GMT_LONG annottype, n, n_alloc = GMT_SMALL_CHUNK;
-	double *val, tval, v0, v1, small, start_val, end_val;
-	PFL fwd, inv;
+	double *val, v0, v1;
+	GMT_LONG i, n;
 
 	if (delta <= 0.0) return (0);
-	val = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "GMT_pow_array");
 
-	annottype = (frame_info.axis[x_or_y].type == 2) ? 2 : 0;
+	if (frame_info.axis[x_or_y].type != 2) return (GMT_linear_array (min, max, delta, 0.0, array));
+
 	if (x_or_y == 0) { /* x-axis */
-		fwd = GMT_x_forward;
-		inv = GMT_x_inverse;
+		GMT_x_forward (min, &v0);
+		GMT_x_forward (max, &v1);
+		n = GMT_linear_array (v0, v1, delta, 0.0, &val);
+		for (i = 0; i < n; i++) GMT_x_inverse (&val[i], val[i]);
 	}
 	else {	/* y-axis */
-		fwd = GMT_y_forward;
-		inv = GMT_y_inverse;
+		GMT_y_forward (min, &v0);
+		GMT_y_forward (max, &v1);
+		n = GMT_linear_array (v0, v1, delta, 0.0, &val);
+		for (i = 0; i < n; i++) GMT_y_inverse (&val[i], val[i]);
 	}
-
-	small = GMT_SMALL * delta;
-	if (annottype == 2) {
-		(*fwd) (min, &v0);
-		(*fwd) (max, &v1);
-
-		tval = (delta <= 0.0) ? 0.0 : floor (v0 / delta) * delta;
-		if (fabs (tval - v0) > small) tval += delta;
-		start_val = tval;
-		tval = (delta <= 0.0) ? 0.0 : ceil (v1 / delta) * delta;
-		if (fabs (tval - v1) > small) tval -= delta;
-		end_val = tval;
-	}
-	else {
-		tval = (delta <= 0.0) ? 0.0 : floor (min / delta) * delta;
-		if (fabs (tval - min) > small) tval += delta;
-		start_val = tval;
-		tval = (delta <= 0.0) ? 0.0 : ceil (max / delta) * delta;
-		if (fabs (tval - max) > small) tval -= delta;
-		end_val = tval;
-	}
-
-	tval = start_val;
-	n = 0;
-	while (tval <= end_val) {
-		if (annottype == 2)
-			(*inv) (&val[n], tval);
-		else
-			val[n] = tval;
-		tval += delta;
-		n++;
-		if (n == n_alloc) {
-			n_alloc <<= 1;
-			val = (double *) GMT_memory ((void *)val, n_alloc, sizeof (double), "GMT_pow_array");
-		}
-	}
-	if (annottype == 2) {
-		(*inv) (&tval, max);
-		while (n && val[n-1] > tval) n--;	/* In case of over-run */
-	}
-	else {
-		while (n && val[n-1] > end_val) n--;	/* In case of over-run */
-	}
-
-	val = (double *) GMT_memory ((void *)val, n, sizeof (double), "GMT_log_array");
-
+	
 	*array = val;
 
 	return (n);
