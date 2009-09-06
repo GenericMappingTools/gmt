@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.411 2009-08-15 14:14:10 remko Exp $
+ *	$Id: gmt_init.c,v 1.412 2009-09-06 13:07:25 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1835,18 +1835,12 @@ GMT_LONG GMT_setparameter (char *keyword, char *value)
 	BOOLEAN manual, eps, error = FALSE;
 	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], lower_value[BUFSIZ];
 	double dval;
-/*FILE *fp;*/
 
 	if (!value) return (TRUE);		/* value argument missing */
 	strncpy (lower_value, value, (size_t)BUFSIZ);	/* Get a lower case version */
 	GMT_str_tolower (lower_value);
 
 	case_val = GMT_hash_lookup (keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-/*fp = fopen("c:\\lixo_case.txt","w");
-fprintf(fp,"%d\n", case_val);
-fprintf(fp,"%s", value);
-fclose(fp);
-return (error);*/
 
 	switch (case_val) {
 		case GMTCASE_ANNOT_MIN_ANGLE:
