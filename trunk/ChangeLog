@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.598 2009-09-06 13:41:03 jluis Exp $
+	$Id: ChangeLog,v 1.599 2009-09-06 23:48:06 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-06	pwessel
+	* gmt_customio.c:		Made surfer grid header i/o 64-bit compliant
 
 2009-09-06	jluis
 	* nc2xy.c:		Added -b option (of which only -bo makes sense)
