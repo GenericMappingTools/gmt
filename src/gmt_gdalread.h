@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.2 2009-09-03 23:54:52 jluis Exp $
+ *	$Id: gmt_gdalread.h,v 1.3 2009-09-06 23:18:13 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -85,6 +85,7 @@ struct GD_CTRL {
 
 	double	hdr[9];
 	double	GeoTransform[6];
+	double	nodata;
 	const char	*ProjectionRefPROJ4;
 	const char	*ProjectionRefWKT;
 	const char	*DriverShortName;
