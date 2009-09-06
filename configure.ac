@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.62 2009-07-15 20:38:26 guru Exp $
-AC_REVISION($Revision: 1.62 $)
+dnl $Id: configure.ac,v 1.63 2009-09-06 02:51:04 remko Exp $
+AC_REVISION($Revision: 1.63 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -98,8 +98,8 @@ AC_ARG_ENABLE(triangle, [  --enable-triangle       Use J. Shewchuk's fast, non-G
 AC_ARG_ENABLE(US,       [  --enable-US             Choose US (inch) rather than SI (cm) units as default])
 AC_ARG_ENABLE(eps,      [  --enable-eps            Set Encapsulated PostScript as default output format [[Freeform PS]]])
 AC_ARG_ENABLE(universal,[  --enable-universal      Make universal binaries [[OS X only]]])
-AC_ARG_ENABLE(64,       [  --enable-64             Enable 64-bit compilation if supported])
-AC_ARG_ENABLE(flock,    [  --disable-flock         Disable file locking on .gmtcommands4 file])
+AC_ARG_ENABLE(64,       [  --enable-64             Force 64-bit compilation if supported, use --disable-64 to force 32-bit compilation])
+AC_ARG_ENABLE(flock,    [  --enable-flock          Enable file locking on .gmtcommands4 file (not good on networked drives)])
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
@@ -148,6 +148,7 @@ dnl Get current OS and chip type
 dnl -----------------------------------------------------------------
 dnl
 os=`uname -s`
+osr=`uname -r | cut -d. -f1`
 chip=`uname -p`
 Sun_rev=`uname -r | grep '^5.'`
 dnl
@@ -158,9 +159,9 @@ dnl
 rootdir=`pwd`
 LIB_VERSION=`echo $PACKAGE_VERSION | cut -d' ' -f1`
 LIB_MAJOR_VERSION=`echo $PACKAGE_VERSION | cut -c-1`
-GMT_MAJOR_VERSION=`echo $PACKAGE_VERSION |  cut -c1`
-GMT_MINOR_VERSION=`echo $PACKAGE_VERSION |  cut -c3`
-GMT_RELEASE_VERSION=`echo $PACKAGE_VERSION |  cut -c5`
+GMT_MAJOR_VERSION=`echo $PACKAGE_VERSION | cut -c1`
+GMT_MINOR_VERSION=`echo $PACKAGE_VERSION | cut -c3`
+GMT_RELEASE_VERSION=`echo $PACKAGE_VERSION | cut -c5`
 #if test -d "CVS" ; then
 #	PACKAGE_VERSION="$PACKAGE_VERSION (CVS \"__DATE__\" \"__TIME__\")"
 #fi
@@ -253,7 +254,7 @@ else					# Let configure it out
 	AC_CHECK_FUNC(hypot, AC_DEFINE(HAVE_HYPOT), )
 fi
 dnl -----------------------------------------------------------------
-dnl Find out about byte order
+dnl Find out about byte order and if default compilation is 64-bit
 dnl -----------------------------------------------------------------
 dnl
 AC_C_BIGENDIAN
@@ -273,6 +274,54 @@ if test "X$TXT2MAN" = "X" ; then
 	fi
 fi
 AC_MSG_RESULT($TXT2MAN)
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --enable-64 for turning on 64-bit compilation
+dnl -----------------------------------------------------------------
+dnl
+AC_CHECK_SIZEOF(long)
+AC_MSG_CHECKING(for 64-bit compilation)
+if test "X$enable_64" == "Xyes" ; then
+	GCC_64="-m64"
+	LDFLAGS="$LDFLAGS -m64"
+	if test "X$os" == "XDarwin" && test "$osr"0 -lt 100 ; then
+		# Circumvent qsort bug on OSX prior to Snow Leopard
+		CPPFLAGS="$CPPFLAGS -DGMT_QSORT"
+	fi
+	AC_MSG_RESULT(yes: forcing 64-bit)
+elif test "X$enable_64" == "Xno" ; then
+	GCC_64="-m32"
+	LDFLAGS="$LDFLAGS -m32"
+	AC_MSG_RESULT(no: forcing 32-bit)
+elif test "$ac_cv_sizeof_long" == "8" ; then
+	AC_MSG_RESULT(using default: 64-bit)
+else
+	AC_MSG_RESULT(using default: 32-bit)
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --enable-universal for OS X universal binaries
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(for universal binaries)
+if test "X$os" == "XDarwin" && test "X$enable_universal" == "Xyes" ; then
+	if test "$enable_64" = "yes" ; then
+		ppc=ppc64
+		i386=x86_64
+	else
+		ppc=ppc
+		i386=i386
+	fi
+	OSX_L="-arch $i386 -arch $ppc"
+	GCC_64="$GCC_64 $OSX_L"
+	if test "$chip" = "powerpc" ; then
+		OSX_L="-isysroot /Developer/SDKs/MacOSX10.4u.sdk $OSX_L"
+	fi
+	LDFLAGS="$OSX_L"
+else
+	enable_universal="no"
+fi
+AC_MSG_RESULT($enable_universal)
 dnl
 dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-update to set GMT ftp site for patches
@@ -444,45 +493,16 @@ if test ! -d $NETCDF_LIB; then
 fi
 dnl
 dnl -----------------------------------------------------------------
-dnl Allow user to set --enable-eps to set EPS as default format
-dnl -----------------------------------------------------------------
-dnl
-dnl Message delayed until later
-if test "X$enable_eps" = "Xyes" ; then
-	eps=EPS
-else
-	eps=PS
-fi
-dnl
-dnl -----------------------------------------------------------------
-dnl Allow user to set --disable-flock for turning off file locking
+dnl Allow user to set --enable-flock for turning on file locking
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(for file locking)
-if test "X$enable_flock" != "Xno" ; then
-	enable_flock="yes"
+if test "X$enable_flock" == "Xyes" ; then
+	CPPFLAGS="$CPPFLAGS -DNO_LOCK"
+else
+	enable_flock="no"
 fi
 AC_MSG_RESULT($enable_flock)
-dnl
-dnl -----------------------------------------------------------------
-dnl Allow user to set --enable-64 for turning on 64-bit compilation
-dnl -----------------------------------------------------------------
-dnl
-if test "X$enable_64" != "Xyes" ; then
-	enable_64="no"
-fi
-AC_MSG_CHECKING(for 64-bit compiling)
-AC_MSG_RESULT($enable_64)
-dnl
-dnl -----------------------------------------------------------------
-dnl Allow user to set --enable-universal for OS X universal binaries
-dnl -----------------------------------------------------------------
-dnl
-if test "X$os" != "XDarwin" || test "X$enable_universal" != "Xyes" ; then
-	enable_universal="no"
-fi
-AC_MSG_CHECKING(for universal binaries)
-AC_MSG_RESULT($enable_universal)
 dnl
 dnl -----------------------------------------------------------------
 dnl Allow user to set --disable-mex for turning off mex compilation
@@ -547,7 +567,7 @@ dnl Allow developers to set --enable-devdebug to pass -DDEBUG
 dnl -----------------------------------------------------------------
 dnl
 if test "X$enable_devdebug" = "Xyes" ; then
-	CFLAGS="$CFLAGS -DDEBUG"
+	CPPFLAGS="$CPPFLAGS -DDEBUG"
 fi
 dnl
 dnl -----------------------------------------------------------------
@@ -561,6 +581,32 @@ if test "X$enable_triangle" = "Xyes" ; then
 	TRIANGLE_O=triangle.o
 else
 	AC_MSG_RESULT(no)
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --enable-eps to set EPS as default format
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(for default PostScript format)
+if test "X$enable_eps" = "Xyes" ; then
+	EPS=+
+	AC_MSG_RESULT(EPS)
+else
+	EPS=
+	AC_MSG_RESULT(PS)
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --enable-US for US units
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(for default GMT units)
+if test "$enable_US" = "yes" ; then
+	UNITS=US
+	AC_MSG_RESULT(US (inch))
+else
+	UNITS=SI
+	AC_MSG_RESULT(SI (cm))
 fi
 dnl
 dnl -----------------------------------------------------------------
@@ -586,31 +632,6 @@ if test "$os" = "OS/2" ; then
 	EXE=".exe"
 	CPPFLAGS="$CPPFLAGS -D__EMX__"
 	COMPRESS="lxlite /ML1"
-fi
-dnl
-dnl -----------------------------------------------------------------
-dnl Determine optional CPPFLAGS and LDFLAGS additions for OS X
-dnl -----------------------------------------------------------------
-dnl
-if test "$enable_64" = "yes" ; then
-	OSX_C=" -m64 -DGMT_QSORT"
-	LDFLAGS="$LDFLAGS -m64"
-	GCC_64=" -m64"
-fi
-if test "$enable_universal" = "yes" ; then
-	if test "$enable_64" = "yes" ; then
-		ppc=ppc64
-		i386=x86_64
-	else
-		ppc=ppc
-		i386=i386
-	fi
-	OSX_L=" -arch $i386 -arch $ppc"
-	OSX_C="$OSX_C$OSX_L"
-	if test "$chip" = "powerpc" ; then
-		OSX_L="-isysroot /Developer/SDKs/MacOSX10.4u.sdk$OSX_L"
-	fi
-	LDFLAGS="$OSX_L"
 fi
 dnl
 dnl -----------------------------------------------------------------
@@ -676,7 +697,7 @@ if test "$enable_shared" = "yes" ; then
 		SL=dylib
 		SL_VERSION=$LIB_MAJOR_VERSION.$SL
 		LD='$(CC)'
-		LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version 4.0.0 -current_version '$LIB_VERSION' -dynamiclib'$OSX_L
+		LD_OPT='-flat_namespace -undefined suppress -install_name ${prefix}/lib/$*.'$SL_VERSION' -compatibility_version 4.0.0 -current_version '$LIB_VERSION' -dynamiclib '$OSX_L
 	elif test "$os" = "HP-UX" ; then
 		LD_OPT="-b"
 		SL=sl
@@ -701,11 +722,11 @@ dnl
 AC_MSG_CHECKING(compiler options for GMT)
 if test "$GCC" = "yes"; then		# GNU cc options
 	if test "$chip" = "alpha" ; then	# Alpha PC
-		CFLAGS="$CFLAGS -mieee -Wall$GCC_64"
+		CFLAGS="$CFLAGS -mieee -Wall $GCC_64"
 	elif test "$os" = "Darwin" ; then	# MacOS X
-		CFLAGS="$CFLAGS -pedantic -fno-common -Wall$OSX_C"
+		CFLAGS="$CFLAGS -pedantic -fno-common -Wall $GCC_64"
 	else
-		CFLAGS="$CFLAGS -pedantic -Wall$GCC_64"
+		CFLAGS="$CFLAGS -pedantic -Wall $GCC_64"
 	fi
 	CFLAGS="$CFLAGS -fPIC -fno-strict-aliasing"
 elif test "$os" = "SunOS" ; then	# Sun Workshop CC options
@@ -730,9 +751,6 @@ AC_MSG_CHECKING(compiler preprocessor flags for GMT)
 if test "$os" = "AUX" ; then		# Apple A/UX cc options
 	CPPFLAGS="$CPPFLAGS -Daux"
 fi
-if test "$enable_flock" = "no" ; then
-	CPPFLAGS="$CPPFLAGS -DNO_LOCK"
-fi
 AC_MSG_RESULT($CPPFLAGS)
 dnl
 dnl -----------------------------------------------------------------
@@ -746,27 +764,6 @@ if test "$?" = "0" ; then
 else
 	CFLAGS="$CFLAGS "'$(CPPFLAGS)'
 	AC_MSG_RESULT(yes)
-fi
-dnl
-dnl -----------------------------------------------------------------
-dnl Create share/conf/gmt.conf and set site defaults
-dnl -----------------------------------------------------------------
-dnl
-AC_MSG_CHECKING(for default GMT units)
-if test "$enable_US" = "yes" ; then
-	UNITS=US
-	AC_MSG_RESULT(US (inch))
-else
-	UNITS=SI
-	AC_MSG_RESULT(SI (cm))
-fi
-AC_MSG_CHECKING(for default PostScript format)
-if test "$enable_eps" = "yes" ; then
-	EPS=+
-	AC_MSG_RESULT(EPS)
-else
-	EPS=
-	AC_MSG_RESULT(PS)
 fi
 dnl
 dnl -----------------------------------------------------------------
