@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.76 2009-08-29 20:17:30 remko Exp $
+ *	$Id: gmt_customio.c,v 1.77 2009-09-06 23:39:19 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -1483,8 +1483,13 @@ GMT_LONG GMT_srf_write_grd_info (struct GRD_HEADER *header)
 GMT_LONG GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h)
 {
 	/* Reads the header of a Surfer 6 gridfile */
+	/* if (GMT_fread ((void *)h, sizeof (struct srf_header6), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED); */
 
-	if (GMT_fread ((void *)h, sizeof (struct srf_header6), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED); 
+	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
+	if (GMT_fread ((void *)h->id, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED); 
+	if (GMT_fread ((void *)&h->nx, 2*sizeof (short int), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread ((void *)&h->x_min, sizeof (struct srf_header6) - ((long)&h->x_min - (long)h->id), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+
 	return (GMT_NOERROR);
 }
 
@@ -1499,7 +1504,11 @@ GMT_LONG GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
 
 GMT_LONG GMT_write_srfheader (FILE *fp, struct srf_header6 *h)
 {
-	if (GMT_fwrite ((void *)h, sizeof (struct srf_header6), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_WRITE_FAILED); 
+	/* if (GMT_fwrite ((void *)h, sizeof (struct srf_header6), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_WRITE_FAILED); */
+	/* UPDATE: Because srf_header6 is not 64-bit aligned we must write it in parts */
+	if (GMT_fwrite ((void *)h->id, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED); 
+	if (GMT_fwrite ((void *)&h->nx, 2*sizeof (short int), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite ((void *)&h->x_min, sizeof (struct srf_header6) - ((long)&h->x_min - (long)h->id), (size_t)1, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
 	return (GMT_NOERROR);
 }
 
