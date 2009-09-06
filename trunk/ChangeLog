@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.596 2009-09-05 01:34:59 remko Exp $
+	$Id: ChangeLog,v 1.597 2009-09-06 02:52:53 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-06	remko
+	* configure.ac:		Now use --enable-flock to enable file locking, instead of
+				--disable-flock to disable if.
+				Use --enable-64 to force 64-bit compilation, use --disable-64
+				to force 32-bit compilation. Otherwise use default.
+				Switch -DGMT_QSORT on only for OSX prior to Snow Leopard.
 
 2009-09-04	pwessel
 	* gmt.h:		Now has GMT_abs macro that handles abs/labs use
