@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.2 2009-09-03 23:54:52 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.3 2009-09-06 23:18:13 jluis Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -108,8 +108,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 
 	if (prhs->GD_W.active) {
 		OGRSpatialReferenceH  hSRS;
-		char *str;
-		str = Ctrl->ProjectionRefPROJ4;
+		const char *str = Ctrl->ProjectionRefPROJ4;
 
 		hSRS = OSRNewSpatialReference(NULL);
 
@@ -443,6 +442,7 @@ int populate_metadata (struct GD_CTRL *Ctrl, char *gdal_filename , int correct_b
 	double	tmpdble;		/* temporary value */
 	double	xy_c[2], xy_geo[4][2];	/* Corner coordinates in the local coords system and geogs (if it exists) */
 	double	adfMinMax[2];		/* Dataset Min Max */
+	double	nodata;
 
 	/* ------------------------------------------------------------------------- */
 	/* Open the file (if we can). */
@@ -570,6 +570,15 @@ int populate_metadata (struct GD_CTRL *Ctrl, char *gdal_filename , int correct_b
 		Ctrl->ColorInterp = GDALGetColorInterpretationName( GDALGetRasterColorInterpretation(hBand) );
 	else
 		Ctrl->ColorInterp = strdup ("nikles");
+
+	/* ------------------------------------------------------------------------- */
+	/* Get the first band NoData Value */
+	/* ------------------------------------------------------------------------- */
+	nodata = (double) (GDALGetRasterNoDataValue ( hBand, &status ) );
+	if ( status == 0 ) 
+		Ctrl->nodata = nodata;
+	else
+		Ctrl->nodata = 0;	/* How the hell I set a novalue-nodatavalue ? */
 
 	/* ------------------------------------------------------------------------- */
 	/* Get the Color Map of first band (if any) */
