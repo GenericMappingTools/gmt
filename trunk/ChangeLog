@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.597 2009-09-06 02:52:53 remko Exp $
+	$Id: ChangeLog,v 1.598 2009-09-06 13:41:03 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-06	jluis
+	* nc2xy.c:		Added -b option (of which only -bo makes sense)
 
 2009-09-06	remko
 	* configure.ac:		Now use --enable-flock to enable file locking, instead of
