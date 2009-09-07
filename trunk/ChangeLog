@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.601 2009-09-07 15:26:13 jluis Exp $
+	$Id: ChangeLog,v 1.602 2009-09-07 15:28:23 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2009-09-07	jluis
 	* gmt_customio.[ch]:	Added the optional GDAL interface as format 22
+	* gmtinstall.bat	Now has rules to optionally compile the GDAL interface
 
 2009-09-07	remko
 	* minmax.c:		Bug fix: -EH did not work
