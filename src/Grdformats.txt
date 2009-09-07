@@ -1,4 +1,4 @@
-#       $Id: Grdformats.txt,v 1.3 2008-08-22 12:37:07 remko Exp $
+#       $Id: Grdformats.txt,v 1.4 2009-09-07 15:12:31 jluis Exp $
 #
 # To add new formats, read gmt_customio.c.  Entries must be
 # added in the right group and given unique 2-char code names.
@@ -43,4 +43,5 @@
   6 | sf | Golden Software Surfer format 6 (float)                 |
  20 | sd | Golden Software Surfer format 7 (double, read-only)     |
  21 | af | Atlantic Geoscience Center format AGC (float)           |
+ 22 | gd | Import through GDAL (convert to float) -- NON-STANDARD  |
   - ----------------------------------------------------------------
