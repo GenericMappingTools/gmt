@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.77 2009-09-06 23:39:19 guru Exp $
+ *	$Id: gmt_customio.c,v 1.78 2009-09-07 15:12:31 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -61,6 +61,9 @@
 
 #define GMT_WITH_NO_PS
 #include "gmt.h"
+#ifdef USE_GDAL
+#include "gmt_gdalread.h"
+#endif
 
 GMT_LONG GMT_read_rasheader (FILE *fp, struct rasterfile *h);
 GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h);
@@ -272,6 +275,15 @@ void GMT_grdio_init (void) {
 	GMT_io_writeinfo[id]  = (PFL) GMT_agc_write_grd_info;
 	GMT_io_readgrd[id]    = (PFL) GMT_agc_read_grd;
 	GMT_io_writegrd[id]   = (PFL) GMT_agc_write_grd;
+
+	/* FORMAT # 22: Import via the GDAL interface */
+
+	id = 22;
+	GMT_io_readinfo[id]   = (PFL) GMT_gdal_read_grd_info;
+	GMT_io_updateinfo[id] = (PFL) GMT_gdal_write_grd_info;
+	GMT_io_writeinfo[id]  = (PFL) GMT_gdal_write_grd_info;
+	GMT_io_readgrd[id]    = (PFL) GMT_gdal_read_grd;
+	GMT_io_writegrd[id]   = (PFL) GMT_gdal_write_grd;
 
 	/*
 	 * ----------------------------------------------
@@ -1498,7 +1510,15 @@ GMT_LONG GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
 	/* Reads the header of a Surfer 7 gridfile */
 
 	if (GMT_fseek (fp, 3*sizeof(int), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);	/* skip the first 12 bytes */
-	if (GMT_fread ((void *)h, sizeof (struct srf_header7), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED);
+	/* if (GMT_fread ((void *)h, sizeof (struct srf_header7), (size_t)1, fp) < (size_t)1) return (GMT_GRDIO_READ_FAILED); */
+
+	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
+	if (GMT_fread ((void *)h->id2, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED); 
+	if (GMT_fread ((void *)&h->len_g, 3*sizeof (int), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread ((void *)&h->x_min, 8*sizeof (double), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread ((void *)h->id3, 4*sizeof (char), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED); 
+	if (GMT_fread ((void *)&h->len_d, sizeof (int), (size_t)1, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+
 	return (GMT_NOERROR);
 }
 
@@ -1558,7 +1578,7 @@ GMT_LONG GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 	type = GMT_grdformats[header->type][1];
 	size = GMT_grd_data_size (header->type, &header->nan_value);
 
-	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);;
+	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[0] > 0) width_out += pad[0];
@@ -1573,7 +1593,7 @@ GMT_LONG GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 	}
 	if ( (last_row - first_row + 1) != header->ny) {    /* We have a sub-region */
 		/* Surfer grids are stored starting from Lower Left, which is contrary to
-		   the rest of GMT grids that start at Top Left. So we must do a shift here */
+		   the rest of GMT grids that start at Top Left. So we must do a flip here */
 		first_row = header->ny - height_in - first_row;
 		last_row = first_row + height_in - 1;
 	}
@@ -1729,6 +1749,136 @@ GMT_LONG GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, do
 
 	if (fp != GMT_stdout) GMT_fclose (fp);
 
+	return (GMT_NOERROR);
+}
+
+/*-----------------------------------------------------------
+ * Format # :	22
+ * Type :	Native binary (float) C file
+ * Prefix :	GMT_gdal_
+ * Author :	Joaquim Luis
+ * Date :	06-SEP-2009
+ * 
+ * Purpose:	to access data read trough the GDAL interface
+ * Functions :	GMT_gdal_read_grd_info, GMT_gdal_write_grd_info,
+ *		GMT_gdal_write_grd_info, GMT_gdal_read_grd, GMT_gdal_write_grd
+ *-----------------------------------------------------------*/
+
+GMT_LONG GMT_gdal_read_grd_info (struct GRD_HEADER *header) {
+#ifdef USE_GDAL
+	struct GDALREAD_CTRL *to_gdalread;
+	struct GD_CTRL *from_gdalread;
+
+	if (!strcmp (header->name, "=")) {
+		fprintf (stderr, "Pipes cannot be used within the GDAL interface.\n");
+		return (GMT_GRDIO_OPEN_FAILED);
+	}
+
+	/* Allocate new control structures */
+	to_gdalread = (struct GDALREAD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GDALREAD_CTRL), "New_Gdalread_Ctrl");
+	from_gdalread = (struct GD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GD_CTRL), "New_Gd_Ctrl");
+
+	to_gdalread->GD_M.active = 1;		/* Metadata only */
+	to_gdalread->GD_C.active = 1;		/* Force info in grid registration */
+	if (GMT_gdalread ( header->name, to_gdalread, from_gdalread)) {
+		fprintf (stderr, "ERROR reading file with gdalread.\n");
+		return (GMT_GRDIO_OPEN_FAILED);
+	}
+
+	header->type = 22;
+
+	header->node_offset = 0;	/* Grid node registration */
+	strcpy (header->title, "Grid imported trhough GDAL");
+	header->nx = from_gdalread->RasterXsize;	header->ny = from_gdalread->RasterYsize;
+	header->x_min = from_gdalread->hdr[0];
+	header->x_max = from_gdalread->hdr[1];
+	header->y_min = from_gdalread->hdr[2];
+	header->y_max = from_gdalread->hdr[3];
+	header->z_min = from_gdalread->hdr[4];
+	header->z_max = from_gdalread->hdr[5];
+	header->x_inc = from_gdalread->hdr[7];
+	header->y_inc = from_gdalread->hdr[8];
+	header->z_scale_factor = 1;	header->z_add_offset = 0;
+
+	GMT_free((void *) to_gdalread);
+	GMT_free((void *) from_gdalread);
+#endif
+
+	return (GMT_NOERROR);
+}
+
+GMT_LONG GMT_gdal_write_grd_info (struct GRD_HEADER *header) {
+	return (GMT_NOERROR);
+}
+
+GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex) {
+	/* header:     	grid structure header */
+	/* grid:	array with final grid */
+	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
+	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
+	/* complex:	TRUE if array is to hold real and imaginary parts (read in real only) */
+	/*		Note: The file has only real values, we simply allow space in the array */
+	/*		for imaginary parts when processed by grdfft etc. */
+
+#ifdef USE_GDAL
+	struct GDALREAD_CTRL *to_gdalread;
+	struct GD_CTRL *from_gdalread;
+	GMT_LONG i, j, nm, nBand;
+	char	strR [128]; 
+
+	/* Allocate new control structures */
+	to_gdalread = (struct GDALREAD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GDALREAD_CTRL), "New_Gdalread_Ctrl");
+	from_gdalread = (struct GD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GD_CTRL), "New_Gd_Ctrl");
+
+	to_gdalread->GD_C.active = 1;		/* Force info in grid node registration */
+	if ((w + e + s + n) != 0) {		/* We have a Sub-region demand */
+		to_gdalread->GD_R.active = 1;
+		sprintf(strR, "%.10f/%.10f/%.10f/%.10f", w, e, s, n);
+		to_gdalread->GD_R.region = strR;
+		header->nx = from_gdalread->RasterXsize;
+		header->ny = from_gdalread->RasterYsize;
+		header->x_min = from_gdalread->hdr[0];
+		header->x_max = from_gdalread->hdr[1];
+		header->y_min = from_gdalread->hdr[2];
+		header->y_max = from_gdalread->hdr[3];
+		header->z_min = from_gdalread->hdr[4];
+		header->z_max = from_gdalread->hdr[5];
+	}
+	if (GMT_gdalread ( header->name, to_gdalread, from_gdalread)) {
+		fprintf (stderr, "ERROR reading file with gdalread.\n");
+		return (GMT_GRDIO_OPEN_FAILED);
+	}
+
+	if (from_gdalread->Float.active)
+		grid = from_gdalread->Float.data;
+	else {
+		/* Convert everything else do float */
+		nm = header->nx * header->ny, nBand;
+		nBand = 0;		/* Need a solution to RGB or multiband files */
+		i = nBand * nm;
+		if (from_gdalread->UInt8.active)
+			for (j = 0; j < nm; j++)
+				grid[j] = (float)from_gdalread->UInt8.data[j+i];
+
+		/* Other cases will be implemented later */
+	}
+
+	if (from_gdalread->nodata != 0) {	/* Data has a nodata value */
+		if (!GMT_is_dnan (from_gdalread->nodata)) {
+			for (j = 0; j < nm; j++)
+				if (grid[j] == header->nan_value) grid[j] = GMT_f_NaN;
+		}
+	}
+	header->nan_value = GMT_f_NaN;
+
+	GMT_free((void *) to_gdalread);
+	/* GMT_free((void *) from_gdalread);	Where shall we free this ??? */
+#endif
+
+	return (GMT_NOERROR);
+}
+
+GMT_LONG GMT_gdal_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex) {
 	return (GMT_NOERROR);
 }
 
