@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.40 2009-05-28 19:51:20 jluis Exp $
+REM	$Id: gmtinstall.bat,v 1.41 2009-09-07 15:17:39 jluis Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -74,7 +74,19 @@ REM STEP f: By default, GMT will be built dynamically  If
 REM	    you do NOT want to use Dynamic link libraries
 REM	    (DLL) change CHOICE to "static" here:
 REM
-REM STEP g: Specify your compiler (currently set to MS CL)
+
+REM
+REM STEP g: To optionaly link against the GDAL library you must set
+REM	    GDAL to "yes" and set the right path in GDAL_INC & GDAL_LIB
+SET GDAL="yes"
+SET GDAL_INC=
+SET GDAL_LIB=
+SET USE_GDAL=
+IF %GDAL%=="yes" SET GDAL_INC=C:\programs\GDALtrunk\gdal\include 
+IF %GDAL%=="yes" SET GDAL_LIB=C:\programs\GDALtrunk\gdal\lib\gdal_i.lib 
+IF %GDAL%=="yes" SET USE_GDAL="/DUSE_GDAL"
+
+REM STEP h: Specify your compiler (currently set to MS CL)
 SET CC=CL
 REM SET CC=icl
 
@@ -104,11 +116,12 @@ IF %CHOICE%=="static" lib /out:psl.lib pslib.obj
 REM ----------------------------------------------------
 ECHO STEP 2: Make GMT library
 REM ----------------------------------------------------
-%CC% %COPT% /c %DLL% /DDLL_EXPORT /DMIRONE /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_bcr.c gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_init.c
+%CC% %COPT% /c %DLL% /DDLL_EXPORT /DMIRONE /DUSE_GDAL /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_bcr.c gmt_cdf.c gmt_nc.c gmt_customio.c gmt_grdio.c gmt_init.c
 %CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
 %CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
 IF %TRIANGLE%=="yes" %CC% %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
-IF %CHOICE%=="dynamic" link %LOPT% /out:gmt.dll /implib:gmt.lib gmt_*.obj %TROBJ% psl.lib netcdf.lib setargv.obj
+IF %GDAL%=="yes" %CC% %COPT% /c /I%GDAL_INC% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_gdalread.c
+IF %CHOICE%=="dynamic" link %LOPT% /out:gmt.dll /implib:gmt.lib gmt_*.obj %TROBJ% psl.lib netcdf.lib setargv.obj %GDAL_LIB%
 IF %CHOICE%=="static" lib /out:gmt.lib gmt_*.obj %TROBJ%
 REM ----------------------------------------------------
 ECHO STEP 3: Make GMT programs 
