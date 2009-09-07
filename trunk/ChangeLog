@@ -1,9 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.599 2009-09-06 23:48:06 guru Exp $
+	$Id: ChangeLog,v 1.600 2009-09-07 15:06:00 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2009-09-07	remko
+	* minmax.c:		Bug fix: -EH did not work
+
 2009-09-06	pwessel
-	* gmt_customio.c:		Made surfer grid header i/o 64-bit compliant
+	* gmt_customio.c:	Made surfer grid header i/o 64-bit compliant
 
 2009-09-06	jluis
 	* nc2xy.c:		Added -b option (of which only -bo makes sense)
