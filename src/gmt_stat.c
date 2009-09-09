@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.69 2009-09-05 01:14:02 guru Exp $
+ *	$Id: gmt_stat.c,v 1.70 2009-09-09 23:27:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
- *	See COPYING file for copying and redistribution conditions.
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by

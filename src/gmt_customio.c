@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.78 2009-09-07 15:12:31 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.79 2009-09-09 23:27:01 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
- *	See COPYING file for copying and redistribution conditions.
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,9 +28,8 @@
  * To add another data format:
  *
  *	1. Write the five required routines (see below).
- *	2. increment parameter GMT_N_GRD_FORMATS in file gmt_grdio.h
- *	3. Append another entry in the gmt_customio.h file.
- *	4. Provide another entry in the $GMT_SHAREDIR/conf/gmt_formats.conf file
+ *	2. Place prototypes in the gmt_customio.h file.
+ *	3. Provide another text entry in Grdformats.txt
  *
  * Author:	Paul Wessel
  * Date:	9-SEP-1992

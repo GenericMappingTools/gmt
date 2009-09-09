@@ -1,6 +1,6 @@
 /* MGD-77 Data Record Field Defaults:
  *    Copyright (c) 2005-2009 by P. Wessel and M. T. Chandler *
- *      See COPYING file for copying and redistribution conditions.
+ *      See LICENSE.TXT file for copying and redistribution conditions.
 		   Name,                          Abbrev,     Start,  Length,  FortranCode,   Factor,   readMGD77,   order,   printMGD77,   printVALS,   Not_given    */
 		{ "Data Record Type",                      "drt",         1,	   1,        "int",        1,       "%1d",       1,        "%1d",        NULL,           "9" },
 		{ "Time Zone Correction",                   "tz",        10,	   3,        "int",        1,      "%03d",       3,      "%+03d",        NULL,         "+99" },

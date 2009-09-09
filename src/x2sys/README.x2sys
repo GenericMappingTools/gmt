@@ -1,7 +1,7 @@
-	$Id: README.x2sys,v 1.9 2009-06-24 21:25:32 jluis Exp $
+	$Id: README.x2sys,v 1.10 2009-09-09 23:27:05 guru Exp $
 
 README file for GMT supplemental x2sys programs
-Distributed under the GNU Public License (see file ../COPYING)
+Distributed under the GNU Public License (see file ../LICENSE.TXT)
 
 AUTHOR:		Paul Wessel
 DATE:		15-JUN-2004
