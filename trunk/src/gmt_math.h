@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.26 2009-02-05 04:16:01 remko Exp $
+ *	$Id: gmt_math.h,v 1.27 2009-09-09 23:27:02 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
- *	See COPYING file for copying and redistribution conditions.
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by

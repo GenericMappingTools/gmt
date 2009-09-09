@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_errno.h,v 1.1 2008-05-04 01:48:00 guru Exp $
+ *	$Id: gmtapi_errno.h,v 1.2 2009-09-09 23:27:04 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
- *	See COPYING file for copying and redistribution conditions.
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by

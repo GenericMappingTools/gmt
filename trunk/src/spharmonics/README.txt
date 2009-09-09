@@ -1,7 +1,7 @@
-#	$Id: README.txt,v 1.2 2007-01-31 17:00:03 pwessel Exp $
+#	$Id: README.txt,v 1.3 2009-09-09 23:27:05 guru Exp $
 #
 # This is README for sph supplement
-Distributed under the GNU Public License (see file ../COPYING)
+Distributed under the GNU Public License (see file ../LICENSE.TXT)
 #
 At the moment these programs do nothing - they are skeleton main programs
 that will eventually be used to perform forward and inverse spherical

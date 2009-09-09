@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.56 2009-05-13 21:06:43 guru Exp $
+ *	$Id: pslib.h,v 1.57 2009-09-09 23:27:03 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
- *	See COPYING file for copying and redistribution conditions.
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by

@@ -1,8 +1,8 @@
-	$Id: README.imgsrc,v 1.8 2009-03-28 22:01:49 guru Exp $
+	$Id: README.imgsrc,v 1.9 2009-09-09 23:27:04 guru Exp $
 
 Maintained by: W H F Smith
 All code files are explicitly distributed under the
-GNU Public License, see file COPYING for more details.
+GNU Public License, see file LICENSE.TXT for more details.
 
 ==> CHANGES IN GMT 4.4.1 <==
 

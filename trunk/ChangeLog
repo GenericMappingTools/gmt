@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.604 2009-09-09 06:41:12 guru Exp $
+	$Id: ChangeLog,v 1.605 2009-09-09 23:27:01 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-09	pwessel
+	* Replaced file COPYING with LICENSE.TXT and clarified we are using GPL v2
+	  as displayed in all source files.
 
 2009-09-08	pwessel
 	* mgd77/mgd77magref.c:	Got wrong time as time initialization had changed but

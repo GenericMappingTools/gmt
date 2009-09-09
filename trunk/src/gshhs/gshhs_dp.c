@@ -1,7 +1,7 @@
-/*	$Id: gshhs_dp.c,v 1.21 2009-06-14 02:25:55 guru Exp $
+/*	$Id: gshhs_dp.c,v 1.22 2009-09-09 23:27:04 guru Exp $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
- *	See COPYING file for copying and redistribution conditions.
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  * gshhs_dp applies the Douglas-Peucker algorithm to simplify a line
  * segment given a tolerance.  The algorithm is based on the paper

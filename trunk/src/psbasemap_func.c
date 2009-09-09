@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
- *	$Id: psbasemap_func.c,v 1.14 2008-05-04 02:32:54 guru Exp $
+ *	$Id: psbasemap_func.c,v 1.15 2009-09-09 23:27:04 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
- *	See COPYING file for copying and redistribution conditions.
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by

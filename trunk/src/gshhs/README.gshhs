@@ -1,7 +1,7 @@
 			G S H H S
 
 Global Self-consistent Hierarchical High-resolution Shorelines
-Distributed under the GNU Public License (see file ../COPYING)
+Distributed under the GNU Public License (see file ../LICENSE.TXT)
 
 Version July 1, 2009
 This version include a revised GSHHS data format in which the
@@ -130,7 +130,7 @@ swab'ing is required.  Do no use dd on the data.
 Version 1.3 Nov 8, 1999
 
 Now all code and data files are explicitly distributed under the
-GNU Public License, see file COPYING for more details.
+GNU Public License, see file LICENSE.TXT for more details.
 
 --------------------------------------------------------------
 Version 1.2 May 18, 1999

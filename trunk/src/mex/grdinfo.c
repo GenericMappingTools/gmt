@@ -1,8 +1,8 @@
 /*
- *	$Id: grdinfo.c,v 1.6 2009-01-09 04:02:35 guru Exp $
+ *	$Id: grdinfo.c,v 1.7 2009-09-09 23:27:04 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
- *      See COPYING file for copying and redistribution conditions.
+ *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by

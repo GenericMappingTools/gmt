@@ -1,7 +1,7 @@
-	$Id: README.mgg,v 1.5 2007-09-24 00:38:02 remko Exp $
+	$Id: README.mgg,v 1.6 2009-09-09 23:27:04 guru Exp $
 
 README file for GMT supplemental mgg programs
-Distributed under the GNU Public License (see file ../COPYING)
+Distributed under the GNU Public License (see file ../LICENSE.TXT)
 
 AUTHORS:	Paul Wessel and Walter H. F. Smith
 DATE:		15-MAR-1999

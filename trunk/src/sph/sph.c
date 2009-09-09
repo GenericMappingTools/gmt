@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.20 2009-07-09 00:35:29 guru Exp $
+ *	$Id: sph.c,v 1.21 2009-09-09 23:27:05 guru Exp $
  *
  *	Copyright (c) 2008-2009 by P. Wessel and W. H. F. Smith
- *	See COPYING file for copying and redistribution conditions.
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
