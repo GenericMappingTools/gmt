@@ -1,7 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.602 2009-09-07 15:28:23 jluis Exp $
+	$Id: ChangeLog,v 1.603 2009-09-09 04:31:47 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-09-08	pwessel
+	* mgd77/mgd77magref.c:	Got wrong time as time initialization had changed but
+			not implemented in this program.
+			
 2009-09-07	jluis
 	* gmt_customio.[ch]:	Added the optional GDAL interface as format 22
 	* gmtinstall.bat	Now has rules to optionally compile the GDAL interface
