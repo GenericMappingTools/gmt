@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.197 2009-09-05 01:31:52 remko Exp $
+ *	$Id: gmt_io.c,v 1.198 2009-09-09 04:31:47 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -2943,12 +2943,14 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 				T->segment[seg] = (struct GMT_LINE_SEGMENT *) GMT_memory (VNULL, (size_t)1, sizeof (struct GMT_LINE_SEGMENT), GMT_program);
 			}
 			n_read++;
-			if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
-				k = sscanf (&GMT_io.segment_header[1], "%lg", &d);		/* See if we find a number in the header */
-				T->segment[seg]->dist = (k == 1 && dist == 0.0) ? d : dist;	/* If so, assign it to dist, else go with default */
+			if (!no_segments) {	/* No heder to process */
+				if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
+					k = sscanf (&GMT_io.segment_header[1], "%lg", &d);		/* See if we find a number in the header */
+					T->segment[seg]->dist = (k == 1 && dist == 0.0) ? d : dist;	/* If so, assign it to dist, else go with default */
+				}
+				else
+					T->segment[seg]->dist = dist;					/* For binary files dist must be passed via arguments */
 			}
-			else
-				T->segment[seg]->dist = dist;					/* For binary files dist must be passed via arguments */
 			/* Segment initialization */
 			n_row_alloc = GMT_CHUNK;
 			row = 0;
