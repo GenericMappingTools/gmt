@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.8 2008-04-04 17:27:31 remko Exp $
+#	$Id: Makefile,v 1.9 2009-09-10 16:02:05 remko Exp $
 #	makefile for sph directory
 #
 #-------------------------------------------------------------------------------
@@ -7,7 +7,7 @@
 
 include ../makegmt.macros
 
-INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
+INCLUDES	= -I$(srcdir) $(NETCDF_INC)
 
 PROGS_H		=
 PROGS_O		= grd2sph.o sph2grd.o
@@ -46,5 +46,5 @@ grd2sph$(EXE):	grd2sph.o
 sph2grd$(EXE):	sph2grd.o
 
 $(PROGS):
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(NETCDF_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@

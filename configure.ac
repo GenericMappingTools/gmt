@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.65 2009-09-10 02:23:28 guru Exp $
-AC_REVISION($Revision: 1.65 $)
+dnl $Id: configure.ac,v 1.66 2009-09-10 16:02:06 remko Exp $
+AC_REVISION($Revision: 1.66 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -430,7 +430,7 @@ elif test ! "X$enable_matlab" = "X"; then
 		MATLAB_LIB='mex'
 	fi
 	MEX_LIB="-L$MATLAB/extern/lib/$MATLAB_MEX -l$MATLAB_LIB"
-	MEX_INC=-I$MATLAB/extern/include
+	MEX_INC="-I$MATLAB/extern/include"
 	if test "X$enable_mex_mdir" = "X" || test "X$enable_mdir" = "Xyes" ; then
 		MEX_MDIR=$MATLAB/toolbox/local
 	else
@@ -496,6 +496,8 @@ AC_MSG_RESULT($NETCDF_LIB)
 if test ! -d $NETCDF_LIB; then
 	AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
 fi
+NETCDF_LIB="-L$NETCDF_LIB -lnetcdf"
+NETCDF_INC="-I$NETCDF_INC"
 dnl
 dnl -----------------------------------------------------------------
 dnl Allow user to set --enable-gdal to experimental GDAL support
@@ -527,6 +529,11 @@ if test ! "X$enable_gdal" = "X" ; then
 	if test ! -d $GDAL_LIB; then
 		AC_MSG_WARN([[No such directory: $GDAL_LIB]])
 	fi
+	GDAL_LIB="-L$GDAL_LIB -lnetcdf"
+	GDAL_INC="-I$GDAL_INC"
+else
+	GDAL_LIB=
+	GDAL_INC=
 fi
 dnl
 dnl -----------------------------------------------------------------

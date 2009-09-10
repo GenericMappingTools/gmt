@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.47 2009-09-10 03:34:41 guru Exp $
+#	$Id: Makefile,v 1.48 2009-09-10 16:02:05 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -39,7 +39,7 @@ include makegmt.macros		# GMT-specific settings determined by user & configure
 include gmtalldeps.macros	# Dependencies
 
 DEFINES		= -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
-INCLUDES	= -I$(NETCDF_INC) -I$(GDAL_INC)
+INCLUDES	= $(NETCDF_INC) $(GDAL_INC)
 
 PS		= -lpsl
 GMT		= -lgmt
@@ -204,7 +204,7 @@ libpsl.$(SL):	libpsl.a
 		$(LD) $(LD_OPT) pslib.o $(LIBS) -o $@
 
 libgmt.$(SL):	libgmt.a
-		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 
 libgmtps.$(SL):	libgmtps.a libpsl.$(SL) libgmt.$(SL)
 		$(LD) $(LD_OPT) $(LIBPS_O) libpsl.$(SL) libgmt.$(SL) $(LIBS) -o $@
@@ -280,9 +280,9 @@ triangulate$(EXE):	triangulate.o
 xyz2grd$(EXE):		xyz2grd.o
 
 $(PROGS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(GMTPS) $(PS) $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(GMTPS) $(PS) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@

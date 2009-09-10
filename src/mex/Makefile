@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.13 2009-09-10 02:21:36 guru Exp $
+#		$Id: Makefile,v 1.14 2009-09-10 16:02:06 remko Exp $
 #
 #	Makefile for gmt <--> octave/matlab interface programs
 #	Use with GMT 4.3.0 or later
@@ -17,8 +17,8 @@ include $(GMTSRCDIR)gmtalldeps.macros
 
 .SUFFIXES:	.m .$(MEX_EXT)
 
-GMT     	= -L.. -lgmt $(NC_LIBS) $(GDAL_LIBS)
-FLAGS		= -I$(srcdir) $(MEX_INC) -I$(NETCDF_INC) -I$(GDAL_INC)
+GMT     	= -L.. -lgmt $(NETCDF_LIB) $(GDAL_LIB)
+FLAGS		= -I$(srcdir) $(MEX_INC) $(NETCDF_INC) $(GDAL_INC)
 
 PROGS_M		= grdinfo.m grdread.m grdwrite.m imgread.m
 PROGS_MEX	= grdinfo.$(MEX_EXT) grdread.$(MEX_EXT) grdwrite.$(MEX_EXT)
