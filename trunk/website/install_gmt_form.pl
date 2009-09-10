@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.41 2009-07-08 18:55:56 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.42 2009-09-10 08:32:26 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -38,6 +38,8 @@ $flock		= $gmt_form{'radio_flock'};
 $cdf		= $gmt_form{'radio_netcdf'};
 $ftpmode	= $gmt_form{'radio_ftpmode'};
 $cdf_path	= $gmt_form{'netcdf_dir'};
+$gdal		= $gmt_form{'radio_gdal'};
+$gdal_path	= $gmt_form{'gdal_dir'};
 $site		= $gmt_form{'radio_site'};
 $get_src	= $gmt_form{'checkbox_src'};
 $get_share	= $gmt_form{'checkbox_share'};
@@ -103,7 +105,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.41 $, on
+# Processed by install_gmt_form.pl $Revision: 1.42 $, on
 #
 #	$now
 #
@@ -144,6 +146,17 @@ if ($ftpmode eq "passive") {
 }
 else {
 	print FILE "n\n";
+}
+print FILE "#---------------------------------------------\n";
+print FILE "#	GDAL SECTION\n";
+print FILE "#---------------------------------------------\n";
+if ($gdal eq "yes") {
+	print FILE "use_gdal=y\n";
+	print FILE "gdal_path=", $gdal_path, "\n";
+}
+else {
+	print FILE "use_gdal=n\n";
+	print FILE "gdal_path=\n";	
 }
 print FILE "#---------------------------------------------\n";
 print FILE "#	GMT FTP SECTION\n";

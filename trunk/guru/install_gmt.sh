@@ -1,16 +1,16 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.147 2009-07-14 05:09:09 guru Exp $
+#	$Id: install_gmt.sh,v 1.148 2009-09-10 08:32:26 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	9-Jul-2009
+#	9-Sept-2009
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.3
-VERSION=4.5.0
-GSHHS=2.0
+VERSION=4.5.1
+GSHHS=2.0.1
 GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
@@ -81,9 +81,9 @@ EOF
 cat << EOF > gmt_install.ftp_bzsizes
 1.0
 0.05
-4.1
-8.6
-28.0
+4.2
+9.4
+29.0
 0.8
 24.0
 EOF
@@ -178,6 +178,33 @@ else
 	netcdf_install=n
 fi
 	
+#--------------------------------------------------------------------------------
+#	GDAL SETUP
+#--------------------------------------------------------------------------------
+
+cat << EOF >&2
+
+GMT offers experimental and optional support for other grid formats
+and plotting of geotiffs via GDAL.  To use this option you must already
+have the GDAL library and include files installed.
+
+EOF
+use_gdal=`get_def_answer "Use experimental GDAL grid input in GMT (y/n)" "y"`
+if [ "$use_gdal" = "y" ]; then	# Must get the path
+	cat <<- EOF >&2
+
+	If the dirs include and lib both reside in the same parent directory,
+	you can specify that below.  If not, leave blank and manually set
+	the two environmental parameters GDAL_INC and GDAL_LIB.
+
+	EOF
+	def=${GDALHOME:-/usr/local/gdal}
+	gdal_path=`get_def_answer "Enter directory with GDAL lib and include" "$def"`
+else
+	gdal_path=
+fi
+
+GMT_run_examples=`get_def_answer "Want to test GMT by running the $N_EXAMPLES examples? (y/n)" "y"`
 #--------------------------------------------------------------------------------
 #	GMT FTP SECTION
 #--------------------------------------------------------------------------------
@@ -569,6 +596,11 @@ netcdf_ftp=$netcdf_ftp
 netcdf_install=$netcdf_install
 netcdf_path=$netcdf_path
 passive_ftp=$passive_ftp
+#---------------------------------------------
+#       GDAL SECTION
+#---------------------------------------------
+use_gdal=$use_gdal
+gdal_path=$gdal_path
 #---------------------------------------------
 #       GMT FTP SECTION
 #---------------------------------------------
@@ -1176,6 +1208,18 @@ else
 	enable_mex_xdir=
 fi
 
+# Experimental GDAL support 
+if [ x"$use_gdal" = xyes ]; then	# Try to include GDAL support
+        if [ ! "x$gdal_path" = "x" ]; then	# GDAL parent dir specified
+ 		enable-gdal=--enable-gdal=$gdal_path
+	else
+ 		enable-gdal=--enable-gdal
+        fi
+else
+	enable-gdal=
+fi
+
+
 #--------------------------------------------------------------------------------
 #	GMT installation commences here
 #--------------------------------------------------------------------------------
@@ -1205,13 +1249,13 @@ cat << EOF >&2
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir
+  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_gdal
 EOF
 
 ./configure --prefix=$GMT_prefix --bindir=$GMT_bin --libdir=$GMT_lib --includedir=$GMT_include $enable_us \
   --enable-netcdf=$netcdf_path $enable_matlab $enable_eps $disable_flock $enable_shared $enable_triangle $enable_64 \
   $enable_univ --mandir=$GMT_man --docdir=$GMT_doc --datadir=$GMT_share --enable-update=$ftp_ip \
-  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir
+  $disable_mex $disable_xgrid $disable_sph $enable_mex_mdir $enable_mex_xdir $enable_gdal
 
 if [ -f .gmtconfigure ]; then
 	cat .gmtconfigure
