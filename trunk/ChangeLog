@@ -1,10 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.607 2009-09-10 01:43:51 jluis Exp $
+	$Id: ChangeLog,v 1.608 2009-09-10 01:45:34 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2009-09-10	jluis
 	* mgd77/mgd77magref.c:	It now lets the Core field be computed with the IGRF and added
-				to the atmospheric sources with calculated with CM4. We added
+				to the atmospheric sources calculated with CM4. We added
 				this because the secular variation in CM4 is limited to 2002.5
 				but the "atmospheric coefficients" can be continuously updated
 
