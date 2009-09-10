@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.23 2009-09-10 02:21:36 guru Exp $
+#	$Id: Makefile,v 1.24 2009-09-10 16:02:05 remko Exp $
 #
 #
 #	makefile for imgsrc directory
@@ -11,7 +11,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-INCLUDES	= -I$(srcdir) -I$(NETCDF_INC) -I$(GDAL_INC)
+INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
 PROGS_O		= img2mercgrd.o
 MAN1		= $(PROGS_O:.o=.1) img2grd.1 img2google.1
@@ -50,5 +50,5 @@ $(PROGS_O) gmt_imgsubs.o:	$(GMT_H) gmt_imgsubs.h
 #-------------------------------------------------------------------------------
 
 img2mercgrd$(EXE):	img2mercgrd.o gmt_imgsubs.o $(GMTLIB)
-		$(CC) $(LDFLAGS) img2mercgrd.o gmt_imgsubs.o -L.. -lgmt $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) img2mercgrd.o gmt_imgsubs.o -L.. -lgmt $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@

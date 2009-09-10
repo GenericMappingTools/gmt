@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.611 2009-09-10 15:13:46 remko Exp $
+	$Id: ChangeLog,v 1.612 2009-09-10 16:02:30 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-09-10	remko
@@ -9,6 +9,10 @@
 	* gmt_plot.c, gmtdefaults.txt, gmt.h, gmt_globals.h, gmt_keywords.d:	---"---
 	* psclip.c, pscoast.c:	Replaced booleans GMT_ps.clip_on and GMT_ps.clip_off with single
 				GMT_ps.clip with values -1, 0 or +1.
+	* configure.ac, all makefiles:	Needed to redo the way GDAL_INC and GDAL_LIB are inserted.
+				-I (without anything) of -L (without anything) when GDAL is not
+				enabled makes compiling impossible. So *_LIB and *_INC (also
+				NETCDF) now include the -I and -L/-l flags.
 
 2009-09-10	jluis
 	* mgd77/mgd77magref.c:	It now lets the Core field be computed with the IGRF and added
