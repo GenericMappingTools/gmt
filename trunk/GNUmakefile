@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.57 2009-09-09 23:27:01 guru Exp $
+#  $Id: GNUmakefile,v 1.58 2009-09-10 07:01:34 guru Exp $
 #
 #		 Guru makefile for GMT Version 4.*
 #			GNU make compatible
@@ -264,7 +264,7 @@ tar_coast tar_high tar_full:	ftpdir
 		echo "make GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2"
 		if [ "$(subst tar_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
 			tar -cjf ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2 LICENSE.TXT \
-			share/coast/binned_*_[$$suf].cdf -C src/gshhs README.gshhs
+			share/coast/binned_*_[$$suf].cdf -C src/coast/GSHHS+WDBII README.TXT
 
 #	The tar_win target is for GMT Developers building GMT on a Windows platform without configure
 #	and then building GMT installers with Inno Setup
