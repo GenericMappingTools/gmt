@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.42 2009-09-09 23:27:03 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.43 2009-09-10 02:29:06 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -82,7 +82,7 @@ SET GDAL="yes"
 SET GDAL_INC=
 SET GDAL_LIB=
 SET USE_GDAL=
-IF %GDAL%=="yes" SET GDAL_INC=C:\programs\GDALtrunk\gdal\include 
+IF %GDAL%=="yes" SET GDAL_INC=/IC:\programs\GDALtrunk\gdal\include 
 IF %GDAL%=="yes" SET GDAL_LIB=C:\programs\GDALtrunk\gdal\lib\gdal_i.lib 
 IF %GDAL%=="yes" SET USE_GDAL="/DUSE_GDAL"
 
@@ -102,7 +102,7 @@ SET TR=
 SET TROBJ=
 IF %TRIANGLE%=="yes" SET TR="/DTRIANGLE_D"
 IF %TRIANGLE%=="yes" SET TROBJ=triangle.obj
-SET COPT=/DWIN32 /W3 /O2 /nologo %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT
+SET COPT=/DWIN32 /W3 /O2 /nologo %TR% %DLL_NETCDF% /DDLL_PSL /DDLL_GMT %GDAL_INC%
 SET DLL=/FD /ML
 IF %CHOICE%=="static" SET COPT=/DWIN32 /W3 /O2 /nologo %DLL_NETCDF%
 IF %CHOICE%=="static" SET DLL=
@@ -120,7 +120,6 @@ REM ----------------------------------------------------
 %CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_io.c gmt_map.c gmt_plot.c gmt_proj.c gmt_shore.c
 %CC% %COPT% /c %DLL% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_stat.c gmt_calclock.c gmt_support.c gmt_vector.c
 IF %TRIANGLE%=="yes" %CC% %COPT% /c /DNO_TIMER /DTRILIBRARY /DREDUCED /DCDT_ONLY triangle.c
-IF %GDAL%=="yes" %CC% %COPT% /c /I%GDAL_INC% /DDLL_EXPORT /DGMT_SHARE_PATH=%GMT_SHARE_PATH% gmt_gdalread.c
 IF %CHOICE%=="dynamic" link %LOPT% /out:gmt.dll /implib:gmt.lib gmt_*.obj %TROBJ% psl.lib netcdf.lib setargv.obj %GDAL_LIB%
 IF %CHOICE%=="static" lib /out:gmt.lib gmt_*.obj %TROBJ%
 REM ----------------------------------------------------
