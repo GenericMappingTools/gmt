@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.29 2009-08-17 17:27:29 remko Exp $
+#	$Id: Makefile,v 1.30 2009-09-10 02:21:36 guru Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -21,7 +21,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-INCLUDES	= -I$(srcdir) -I../x_system -I$(NETCDF_INC)
+INCLUDES	= -I$(srcdir) -I../x_system -I$(NETCDF_INC) -I$(GDAL_INC)
 
 LIB_O		= gmt_mgg.o
 LIB_H		= gmt_mgg.h carter.h
@@ -113,9 +113,9 @@ mgd77togmt$(EXE):	mgd77togmt.o
 gmttrack$(EXE):		gmttrack.o
 
 $(PROGS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -lgmt $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -lgmt -lgmtps -lpsl $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg -L.. -lgmt -lgmtps -lpsl $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@

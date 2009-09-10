@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.608 2009-09-10 01:45:34 jluis Exp $
+	$Id: ChangeLog,v 1.609 2009-09-10 02:21:36 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-09-10	jluis
@@ -12,6 +12,8 @@
 	* Replaced file COPYING with LICENSE.TXT and clarified we are using GPL v2
 	  as displayed in all source files.
 	* Updated to GSHHS 2.1 so new pscoast options can work
+	* Added --enable-gdal[=dir] for experimental GDAL grid import functionality
+	  for reading GDAL-supported grids (one band) and plotting of geotiff via grdimage
 
 2009-09-08	pwessel
 	* mgd77/mgd77magref.c:	Got wrong time as time initialization had changed but

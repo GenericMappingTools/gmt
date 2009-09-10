@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.34 2009-06-04 00:01:38 guru Exp $
+#	$Id: Makefile,v 1.35 2009-09-10 02:21:36 guru Exp $
 #	makefile for misc directory
 #
 #-------------------------------------------------------------------------------
@@ -9,7 +9,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
+INCLUDES	= -I$(srcdir) -I$(NETCDF_INC) -I$(GDAL_INC)
 
 PROGS_H		=
 PROGS_O		= dimfilter.o gmt2kml.o kml2gmt.o gmtdigitize.o gmtdp.o gmtstitch.o nc2xy.o psmegaplot.o
@@ -61,9 +61,9 @@ psmegaplot$(EXE):	psmegaplot.o
 makepattern$(EXE):	makepattern.o
 
 $(PROGS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt -lgmtps -lpsl $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt -lgmtps -lpsl $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@

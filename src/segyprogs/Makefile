@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.26 2008-04-04 17:27:31 remko Exp $
+#	$Id: Makefile,v 1.27 2009-09-10 02:21:36 guru Exp $
 #
 # makefile for segyprogs directory
 #
@@ -10,7 +10,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
+INCLUDES	= -I$(srcdir) -I$(NETCDF_INC) -I$(GDAL_INC)
 
 PROGS_H		= segy_io.h segy.h segyreel.h
 PROGS_O		= segy2grd.o
@@ -57,9 +57,9 @@ pssegy$(EXE):	pssegy.o
 segy2grd$(EXE):	segy2grd.o
 
 $(PROGS):	$(GMTLIB) segy_io.o
-		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -lgmt $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(GMTLIB) segy_io.o
-		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -lgmt -lgmtps -lpsl $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -lgmt -lgmtps -lpsl $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@

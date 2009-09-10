@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.79 2009-09-09 23:27:01 guru Exp $
+ *	$Id: gmt_customio.c,v 1.80 2009-09-10 02:21:36 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,9 +60,6 @@
 
 #define GMT_WITH_NO_PS
 #include "gmt.h"
-#ifdef USE_GDAL
-#include "gmt_gdalread.h"
-#endif
 
 GMT_LONG GMT_read_rasheader (FILE *fp, struct rasterfile *h);
 GMT_LONG GMT_write_rasheader (FILE *fp, struct rasterfile *h);
@@ -275,6 +272,7 @@ void GMT_grdio_init (void) {
 	GMT_io_readgrd[id]    = (PFL) GMT_agc_read_grd;
 	GMT_io_writegrd[id]   = (PFL) GMT_agc_write_grd;
 
+#ifdef USE_GDAL
 	/* FORMAT # 22: Import via the GDAL interface */
 
 	id = 22;
@@ -283,7 +281,7 @@ void GMT_grdio_init (void) {
 	GMT_io_writeinfo[id]  = (PFL) GMT_gdal_write_grd_info;
 	GMT_io_readgrd[id]    = (PFL) GMT_gdal_read_grd;
 	GMT_io_writegrd[id]   = (PFL) GMT_gdal_write_grd;
-
+#endif
 	/*
 	 * ----------------------------------------------
 	 * ADD CUSTOM FORMATS BELOW AS THEY ARE NEEDED */
@@ -1751,6 +1749,9 @@ GMT_LONG GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, do
 	return (GMT_NOERROR);
 }
 
+#ifdef USE_GDAL
+#include "gmt_gdalread.c"
+/* Experimental GDAL support */
 /*-----------------------------------------------------------
  * Format # :	22
  * Type :	Native binary (float) C file
@@ -1764,7 +1765,6 @@ GMT_LONG GMT_srf_write_grd (struct GRD_HEADER *header, float *grid, double w, do
  *-----------------------------------------------------------*/
 
 GMT_LONG GMT_gdal_read_grd_info (struct GRD_HEADER *header) {
-#ifdef USE_GDAL
 	struct GDALREAD_CTRL *to_gdalread;
 	struct GD_CTRL *from_gdalread;
 
@@ -1801,7 +1801,6 @@ GMT_LONG GMT_gdal_read_grd_info (struct GRD_HEADER *header) {
 
 	GMT_free((void *) to_gdalread);
 	GMT_free((void *) from_gdalread);
-#endif
 
 	return (GMT_NOERROR);
 }
@@ -1819,7 +1818,6 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 	/*		Note: The file has only real values, we simply allow space in the array */
 	/*		for imaginary parts when processed by grdfft etc. */
 
-#ifdef USE_GDAL
 	struct GDALREAD_CTRL *to_gdalread;
 	struct GD_CTRL *from_gdalread;
 	GMT_LONG i, j, nm, nBand;
@@ -1872,7 +1870,6 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 
 	GMT_free((void *) to_gdalread);
 	/* GMT_free((void *) from_gdalread);	Where shall we free this ??? */
-#endif
 
 	return (GMT_NOERROR);
 }
@@ -1880,6 +1877,7 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 GMT_LONG GMT_gdal_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex) {
 	return (GMT_NOERROR);
 }
+#endif
 
 /* Add custom code here */
 

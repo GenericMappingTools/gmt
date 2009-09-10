@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.63 2009-09-06 02:51:04 remko Exp $
-AC_REVISION($Revision: 1.63 $)
+dnl $Id: configure.ac,v 1.64 2009-09-10 02:21:36 guru Exp $
+AC_REVISION($Revision: 1.64 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -60,6 +60,8 @@ AC_SUBST(LD_OPT)
 AC_SUBST(LDFLAGS)
 AC_SUBST(NETCDF_LIB)
 AC_SUBST(NETCDF_INC)
+AC_SUBST(GDAL_LIB)
+AC_SUBST(GDAL_INC)
 AC_SUBST(DOCDATE)
 AC_SUBST(DOCYEAR)
 AC_SUBST(MANDATE)
@@ -100,11 +102,14 @@ AC_ARG_ENABLE(eps,      [  --enable-eps            Set Encapsulated PostScript a
 AC_ARG_ENABLE(universal,[  --enable-universal      Make universal binaries [[OS X only]]])
 AC_ARG_ENABLE(64,       [  --enable-64             Force 64-bit compilation if supported, use --disable-64 to force 32-bit compilation])
 AC_ARG_ENABLE(flock,    [  --enable-flock          Enable file locking on .gmtcommands4 file (not good on networked drives)])
+AC_ARG_ENABLE(gdal,     [  --enable-gdal           Compile optional, experimental support for grid input via GDAL ])
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
+AC_ARG_VAR(GDAL_INC,Location of GDAL headers (compile-time))
+AC_ARG_VAR(GDAL_LIB,Location of GDAL library (compile-time))
 dnl
 dnl -----------------------------------------------------------------
 dnl Check for ar, csh/bash, ld, awk, and ranlib
@@ -490,6 +495,38 @@ fi
 AC_MSG_RESULT($NETCDF_LIB)
 if test ! -d $NETCDF_LIB; then
 	AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow user to set --enable-gdal to experimental GDAL support
+dnl -----------------------------------------------------------------
+dnl
+if test ! "X$enable_gdal" = "X" ; then
+	AC_MSG_RESULT([Compile experimental support for GDAL input])
+	CPPFLAGS="$CPPFLAGS -DUSE_GDAL"
+	if test "X$enable_gdal" = "X" || test "X$enable_gdal" = "Xyes" ; then
+		AC_PATH_PROG([GDAL], [gdal_translate], [/usr/local/bin/gdal_translate])
+		GDAL=`dirname $GDAL`
+		GDAL=`dirname $GDAL`
+	else
+		GDAL=$enable_gdal
+	fi
+	AC_MSG_CHECKING(for GDAL include directory)
+	if test "X$GDAL_INC" = "X"; then
+		GDAL_INC=$GDAL/include
+	fi
+	AC_MSG_RESULT($GDAL_INC)
+	if test ! -f $GDAL_INC/gdal.h; then
+		AC_MSG_WARN([[gdal.h can not be found in $GDAL_INC]])
+	fi
+	AC_MSG_CHECKING(for GDAL library directory)
+	if test "X$GDAL_LIB" = "X"; then
+		GDAL_LIB=$GDAL/lib
+	fi
+	AC_MSG_RESULT($GDAL_LIB)
+	if test ! -d $GDAL_LIB; then
+		AC_MSG_WARN([[No such directory: $GDAL_LIB]])
+	fi
 fi
 dnl
 dnl -----------------------------------------------------------------

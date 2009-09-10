@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.45 2009-09-09 23:27:03 guru Exp $
+#	$Id: Makefile,v 1.46 2009-09-10 02:21:36 guru Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -204,7 +204,7 @@ libpsl.$(SL):	libpsl.a
 		$(LD) $(LD_OPT) pslib.o $(LIBS) -o $@
 
 libgmt.$(SL):	libgmt.a
-		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) $(NC_LIBS) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 
 libgmtps.$(SL):	libgmtps.a libpsl.$(SL) libgmt.$(SL)
 		$(LD) $(LD_OPT) $(LIBPS_O) libpsl.$(SL) libgmt.$(SL) $(LIBS) -o $@
@@ -280,9 +280,9 @@ triangulate$(EXE):	triangulate.o
 xyz2grd$(EXE):		xyz2grd.o
 
 $(PROGS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(GMTPS) $(PS) $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(GMTPS) $(PS) $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
