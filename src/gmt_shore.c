@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.52 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_shore.c,v 1.53 2009-09-10 07:10:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -190,7 +190,7 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
 	}
 	if (info->flag) {	/* Want to exclude either riverlakes or lakes from the selected data... */
 		if (c->n_poly_id == -1) {	/* ..buty cannot request skipping lake/river features on pre-2.1 GSHHS files */
-			fprintf (stderr, "%s: WARNING: Cannot use +r or +l with pre-2.1 GSHHS files.  Request ignored\n", GMT_program);
+			fprintf (stderr, "%s: WARNING: Cannot use +r or +l with GSHHS 2.0 or earlier files.  Request ignored\n", GMT_program);
 			info->flag = 0;
 			c->skip_feature = FALSE;
 		}
