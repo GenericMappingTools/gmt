@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.606 2009-09-09 23:44:58 guru Exp $
+	$Id: ChangeLog,v 1.607 2009-09-10 01:43:51 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-10	jluis
+	* mgd77/mgd77magref.c:	It now lets the Core field be computed with the IGRF and added
+				to the atmospheric sources with calculated with CM4. We added
+				this because the secular variation in CM4 is limited to 2002.5
+				but the "atmospheric coefficients" can be continuously updated
 
 2009-09-09	pwessel
 	* Replaced file COPYING with LICENSE.TXT and clarified we are using GPL v2
@@ -9,7 +15,7 @@
 
 2009-09-08	pwessel
 	* mgd77/mgd77magref.c:	Got wrong time as time initialization had changed but
-			not implemented in this program.
+				not implemented in this program.
 	* misc/gmt2kml.c:	-T did not handle spaces in titles and folder names
 			
 2009-09-07	jluis
