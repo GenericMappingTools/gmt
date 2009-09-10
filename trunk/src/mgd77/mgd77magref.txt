@@ -18,9 +18,14 @@ and fourth columns must contain altitude and time, respectively, but if one or b
 for all records they can be supplied via the OPT(A) option instead and are thus not expected in the input
 file. If no input file is given we read \fIstdin\fP.
 A note about the CM4 validity domain. The core field of CM4 is valid from 1960-2002.5 but the ionospheric and 
-magnetospheric fields are computed after the \fIDst\fP and \fIF10.7\fP coefficient files. We extended here those coefficient 
-files up to 2006, which means that one can compute external contributions up until 2006 but the Secular Variation 
-will be biased (non reliable).
+magnetospheric fields are computed after the \fIDst\fP and \fIF10.7\fP coefficient files. We extended here 
+those coefficient files up to 2006, which means that one can compute external contributions up until 2006 but 
+the Secular Variation will be biased (non reliable). New indices files may be retrieved 
+from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the \fIDst\fP coefficients) and 
+ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SOLAR_RADIO/FLUX/ (The \fIF10.7\fP index file is a MONTHPLT.ABS). 
+NOTE: since the \fIDst\fP files in the .../DST/ directory are still only up to 2006, for GMT4.5.1 we extended the \fIDst\fP
+till August 2009 by reformating the data in the preliminary file Est_Ist_index_0_mean.pli, which is at  
+ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/
 .TP
 OPT(A)
 Adjusts how the input record is interpreted.  Append \fB+a\fP to set a fixed \fIaltitude\fP that should
@@ -78,9 +83,13 @@ Append one or more number to indicate the requested field contribution(s):
 .br
 \fB7\fP Toroidal field
 .br
+\fB9\fP means Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 0 AND 9.
+.br
 Appending several numbers (1-7) will add up the different contributions. For example
 OPT(Ft)/\fB12\fP computes the total field due to Core and Lithospheric sources.
-Note that 0 (IGRF) cannot be combined with any other CM4 components.
+Two special cases are allowed, wich mix which Core field from IGRF and other sources from CM4.
+OPT(Ft)/\fB934\fP computes Core field due to IGRF plus terms 3 and 4 from CM4 (but you can add others).
+OPT(Ft)/\fB934\fP the same as above but output the field components.
 The data is written out in the order they appear in \fIflags\fP [Default is OPT(Frthxyzdi)/\fB1\fP].
 .TP
 OPT(G)
@@ -106,9 +115,9 @@ Append a number to indicate the requested J contribution:
 .br
 \fB2\fP means Primary ionospheric field. 
 .br
-\fB2\fP means Induced ionospheric field. 
+\fB3\fP means Induced ionospheric field. 
 .br
-\fB1\fP means Poloidal field. 
+\fB4\fP means Poloidal field. 
 .br
 .TP
 OPT(Sc)
