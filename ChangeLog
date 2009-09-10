@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.609 2009-09-10 02:21:36 guru Exp $
+	$Id: ChangeLog,v 1.610 2009-09-10 02:23:28 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-09-10	jluis
@@ -11,7 +11,7 @@
 2009-09-09	pwessel
 	* Replaced file COPYING with LICENSE.TXT and clarified we are using GPL v2
 	  as displayed in all source files.
-	* Updated to GSHHS 2.1 so new pscoast options can work
+	* Updated to GSHHS 2.0.1 so new pscoast options can work
 	* Added --enable-gdal[=dir] for experimental GDAL grid import functionality
 	  for reading GDAL-supported grids (one band) and plotting of geotiff via grdimage
 
@@ -87,7 +87,7 @@
 
 2009-07-22	pwessel
 	* gmt_shore.[ch]:	The -A+r|+l option was premature as more info in the GSHHS
-				netcdf files are needed to properly skip features.  GSHHS 2.1
+				netcdf files are needed to properly skip features.  GSHHS 2.0.1
 				will have this information so pscoast et al need to check
 				for versions before attempting to use any of the +<modifiers>
 2009-07-18	mtchandl
