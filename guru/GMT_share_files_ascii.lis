@@ -1,9 +1,9 @@
-#	$Id: GMT_share_files_ascii.lis,v 1.8 2008-05-01 20:06:24 remko Exp $
+#	$Id: GMT_share_files_ascii.lis,v 1.9 2009-09-10 08:32:26 guru Exp $
 #
 # GMT_share_ascii.lis contains all the ascii files that should go into the
 # GMT_share tar/zip files.  See GMT_share_bin.lis for binary files
 #
-COPYING
+LICENSE.TXT
 share/conf/gmt_custom_symbols.conf
 share/conf/gmt_cpt.conf
 share/conf/gmt_custom_media.conf
