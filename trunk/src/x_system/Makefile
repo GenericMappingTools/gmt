@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.23 2008-04-04 17:27:31 remko Exp $
+#	$Id: Makefile,v 1.24 2009-09-10 02:21:36 guru Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -21,7 +21,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-INCLUDES	= -I$(srcdir) -I../mgg -I$(NETCDF_INC)
+INCLUDES	= -I$(srcdir) -I../mgg -I$(NETCDF_INC) -I$(GDAL_INC)
 
 PROGS_H		= x_system.h
 PROGS_O		= x_edit.o x_init.o x_list.o x_report.o x_remove.o x_solve_dc_drift.o x_update.o
@@ -73,9 +73,9 @@ x_solve_dc_drift$(EXE):	x_solve_dc_drift.o
 x_update$(EXE):		x_update.o
 
 $(PROGS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L../mgg -lgmt_mgg -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L../mgg -lgmt_mgg -L.. -lgmt $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@

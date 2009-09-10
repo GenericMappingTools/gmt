@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.3 2009-09-06 23:18:13 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.4 2009-09-10 02:21:36 guru Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -25,26 +25,20 @@
  *
  */
 
-#define GMT_WITH_NO_PS
 #include "gmt_gdalread.h"
-#include "gmt.h"
-#include "gdal.h"
-#include "ogr_srs_api.h"
-#include "cpl_string.h"
-#include "cpl_conv.h"
 
 int record_geotransform ( char *gdal_filename, GDALDatasetH hDataset, double *adfGeoTransform );
 int populate_metadata (struct GD_CTRL *, char * ,int , int, int, int, int, double, double, double, double, double, double);
 int ReportCorner(GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
 void ComputeRasterMinMax(char *tmp, GDALRasterBandH hBand, double adfMinMax[2], int nXSize, int nYSize, double, double);
-int decode_R (char *item, double *w, double *e, double *s, double *n);
-int check_region (double w, double e, double s, double n);
-int decode_columns (char *txt, int *whichBands, int n_col);
-double ddmmss_to_degree (char *text);
+int gdal_decode_R (char *item, double *w, double *e, double *s, double *n);
+int gdal_check_region (double w, double e, double s, double n);
+int gdal_decode_columns (char *txt, int *whichBands, int n_col);
+double gdal_ddmmss_to_degree (char *text);
 
 int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format;
-	int	bGotNodata, flipud = FALSE, metadata_only = FALSE, got_R = FALSE;
+	int	bGotNodata, metadata_only = FALSE, got_R = FALSE;
 	int	nPixelSize, nBands, i, m, n, nn, nReqBands = 0, got_r = FALSE;
 	int	pixel_reg = FALSE, correct_bounds = FALSE, fliplr = FALSE, error = FALSE;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0, i_x_nXYSize;
@@ -75,7 +69,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 		else
 			nn = atoi(prhs->GD_B.bands);
 		whichBands = calloc(nn, sizeof(int));
-		nReqBands = decode_columns (prhs->GD_B.bands, whichBands, nn);
+		nReqBands = gdal_decode_columns (prhs->GD_B.bands, whichBands, nn);
 	}
 	if (prhs->GD_C.active)
 		correct_bounds = TRUE;
@@ -91,12 +85,12 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 
 	if (prhs->GD_R.active) {
 		got_R = TRUE;
-		error += decode_R (prhs->GD_R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
+		error += gdal_decode_R (prhs->GD_R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
 	}
 
 	if (prhs->GD_r.active) { 		/* Region is given in pixels */
 		got_r = TRUE;
-		error += decode_R (prhs->GD_r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
+		error += gdal_decode_R (prhs->GD_r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
 	}
 
 	if (prhs->GD_P.active)
@@ -108,7 +102,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 
 	if (prhs->GD_W.active) {
 		OGRSpatialReferenceH  hSRS;
-		const char *str = Ctrl->ProjectionRefPROJ4;
+		/* const char *str = Ctrl->ProjectionRefPROJ4; */
 
 		hSRS = OSRNewSpatialReference(NULL);
 
@@ -227,7 +221,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 	n_alloc = nBands * nBufXSize * nBufYSize;
 	switch( GDALGetRasterDataType(hBand) ) {
 		case GDT_Byte:
-			Ctrl->UInt8.data = (char *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (char), "GMT_gdalread");
+			Ctrl->UInt8.data = (unsigned char *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (char), "GMT_gdalread");
 			break;
 		case GDT_Int16:
 			Ctrl->Int16.data = (short int *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (short int), "GMT_gdalread");
@@ -239,12 +233,16 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 			Ctrl->Int32.data = (int *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (int), "GMT_gdalread");
 			break;
 		case GDT_UInt32:
-			Ctrl->UInt32.data = (unsigned int *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (int), "GMT_gdalread");
+			Ctrl->UInt32.data = (int *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (int), "GMT_gdalread");
 			break;
 		case GDT_Float32:
 		case GDT_Float64:
 			Ctrl->Float.data = (float *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (float), "GMT_gdalread");
 			break;
+		default:
+			fprintf (stderr, "gdalread: Unsupported data type\n");
+			break;
+		
 	}
 
 	tmp = calloc(nBufYSize * nBufXSize, nPixelSize);
@@ -748,9 +746,10 @@ int ReportCorner(GDALDatasetH hDataset, double x, double y, double *xy_c, double
             OSRDestroySpatialReference( hProj );
     }
 /*
-/* -------------------------------------------------------------------- */
-/*      Transform to latlong and report.                                */
-/* -------------------------------------------------------------------- */
+ * --------------------------------------------------------------------
+ *      Transform to latlong and report.                                
+ * --------------------------------------------------------------------
+ */
 	if( hTransform != NULL && OCTTransform(hTransform,1,&dfGeoX,&dfGeoY,NULL) )
 		xy_geo[0] = dfGeoX;	xy_geo[1] = dfGeoY;
 
@@ -849,13 +848,16 @@ void ComputeRasterMinMax(char *tmp, GDALRasterBandH hBand, double adfMinMax[2],
 				z_max = MAX(tmpF32[i], z_max);
 			}
 			break;
+		default:
+			fprintf (stderr, "gdalread: Unsupported data type\n");
+			break;
 	}
 	adfMinMax[0] = z_min;
 	adfMinMax[1] = z_max;
 }
 
 /* -------------------------------------------------------------------- */
-int decode_R (char *item, double *w, double *e, double *s, double *n) {
+int gdal_decode_R (char *item, double *w, double *e, double *s, double *n) {
 	char *text, string[BUFSIZ];
 	
 	/* Minimalist code to decode option -R extracted from GMT_get_common_args */
@@ -869,13 +871,13 @@ int decode_R (char *item, double *w, double *e, double *s, double *n) {
 	strcpy (string, &item[2]);
 	text = strtok (string, "/");
 	while (text) {
-		*p[i] = ddmmss_to_degree (text);
+		*p[i] = gdal_ddmmss_to_degree (text);
 		i++;
 		text = strtok (CNULL, "/");
 	}
 	if (item[strlen(item)-1] == 'r')	/* Rectangular box given, but valid here */
 		error++;
-	if (i != 4 || check_region (*p[0], *p[1], *p[2], *p[3]))
+	if (i != 4 || gdal_check_region (*p[0], *p[1], *p[2], *p[3]))
 		error++;
 	w = p[0];	e = p[1];
 	s = p[2];	n = p[3];
@@ -883,13 +885,13 @@ int decode_R (char *item, double *w, double *e, double *s, double *n) {
 }
 
 /* -------------------------------------------------------------------- */
-int check_region (double w, double e, double s, double n) {
+int gdal_check_region (double w, double e, double s, double n) {
 	/* If region is given then we must have w < e and s < n */
 	return ((w >= e || s >= n));
 }
 
 /* -------------------------------------------------------------------- */
-double ddmmss_to_degree (char *text) {
+double gdal_ddmmss_to_degree (char *text) {
 	int i, colons = 0, suffix;
 	double degree, minute, degfrac, second;
 
@@ -910,8 +912,9 @@ double ddmmss_to_degree (char *text) {
 }
 
 /* -------------------------------------------------------------------- */
-int decode_columns (char *txt, int *whichBands, int n_col) {
-	int i, start, stop, pos, n = 0;
+int gdal_decode_columns (char *txt, int *whichBands, int n_col) {
+	int i, start, stop, n = 0;
+	GMT_LONG pos;
 	char p[1024];
 
 	pos = 0;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.4 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_gdalread.h,v 1.5 2009-09-10 02:21:36 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -15,6 +15,11 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
+
+#include "gdal.h"
+#include "ogr_srs_api.h"
+#include "cpl_string.h"
+#include "cpl_conv.h"
 
 /* Structure to control which options are transmited to GMT_gdalread */
 struct GDALREAD_CTRL {

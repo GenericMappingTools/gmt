@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.h,v 1.32 2009-09-09 23:27:01 guru Exp $
+ *	$Id: gmt_customio.h,v 1.33 2009-09-10 02:21:36 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -81,12 +81,14 @@ EXTERN_MSC GMT_LONG GMT_agc_write_grd_info (struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex);
 EXTERN_MSC GMT_LONG GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex);
 
+#ifdef USE_GDAL
 /* Format # 22 */
 EXTERN_MSC GMT_LONG GMT_gdal_read_grd_info (struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_gdal_update_grd_info (struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_gdal_write_grd_info (struct GRD_HEADER *header);
 EXTERN_MSC GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex);
 EXTERN_MSC GMT_LONG GMT_gdal_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex);
+#endif
 
 #define GRD_HEADER_SIZE	892
 

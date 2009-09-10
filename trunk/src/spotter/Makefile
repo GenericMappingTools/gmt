@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.30 2008-04-04 17:27:31 remko Exp $
+#	$Id: Makefile,v 1.31 2009-09-10 02:21:36 guru Exp $
 #
 #		Makefile for GMT spotter supplements
 #
@@ -20,7 +20,7 @@ GMTSRCDIR = ../
 include $(GMTSRCDIR)makegmt.macros
 include $(GMTSRCDIR)gmtalldeps.macros
 
-INCLUDES	= -I$(srcdir) -I$(NETCDF_INC)
+INCLUDES	= -I$(srcdir) -I$(NETCDF_INC) -I$(GDAL_INC)
 
 PROGS_H		= spotter.h
 PROGS_O		= backtracker.o grdrotater.o grdspotter.o hotspotter.o originator.o rotconverter.o
@@ -78,5 +78,5 @@ originator$(EXE):	originator.o
 rotconverter$(EXE):	rotconverter.o
 
 $(PROGS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lspotter -L.. -lgmt $(NC_LIBS) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lspotter -L.. -lgmt $(NC_LIBS) $(GDAL_LIBS) $(LIBS) -o $@
 		$(COMPRESS) $@
