@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.46 2009-09-10 02:21:36 guru Exp $
+#	$Id: Makefile,v 1.47 2009-09-10 03:34:41 guru Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -39,7 +39,7 @@ include makegmt.macros		# GMT-specific settings determined by user & configure
 include gmtalldeps.macros	# Dependencies
 
 DEFINES		= -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
-INCLUDES	= -I$(NETCDF_INC)
+INCLUDES	= -I$(NETCDF_INC) -I$(GDAL_INC)
 
 PS		= -lpsl
 GMT		= -lgmt
