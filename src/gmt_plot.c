@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.270 2009-09-10 15:13:46 remko Exp $
+ *	$Id: gmt_plot.c,v 1.271 2009-09-10 22:19:35 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4200,9 +4200,9 @@ GMT_LONG GMT_plotinit (int argc, char *argv[])
 		free((void *)pstr);
 	}
 
-	/* Set transparency, if requested */
+	/* Set transparency, if requested. Note that /SetTransparency actually sets the opacity, which is (1 - transparency) */
 	if (gmtdefs.transparency[0] | gmtdefs.transparency[1]) {
-		sprintf (cmd, "[ /ca %g /CA %g /BM /Normal /SetTransparency pdfmark\n", 0.01 * gmtdefs.transparency[0], 0.01 * gmtdefs.transparency[1]);
+		sprintf (cmd, "[ /ca %g /CA %g /BM /Normal /SetTransparency pdfmark\n", 1.0 - 0.01 * gmtdefs.transparency[0], 1.0 - 0.01 * gmtdefs.transparency[1]);
 		ps_command (cmd);
 	}
 
@@ -4226,7 +4226,7 @@ GMT_LONG GMT_plotinit (int argc, char *argv[])
 }
 
 GMT_LONG GMT_plotend (void) {
-	if (gmtdefs.transparency[0] | gmtdefs.transparency[1]) ps_command ("[ /ca 0 /CA 0 /BM /Normal /SetTransparency pdfmark\n"); /* Reset transparency, if reqired */
+	if (gmtdefs.transparency[0] | gmtdefs.transparency[1]) ps_command ("[ /ca 1 /CA 1 /BM /Normal /SetTransparency pdfmark\n"); /* Reset transparency to fully opague, if required */
 	ps_plotend (GMT_ps.last_page);
 	return (0);
 }
