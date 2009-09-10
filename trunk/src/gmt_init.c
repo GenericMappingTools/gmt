@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.413 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_init.c,v 1.414 2009-09-10 15:13:46 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2595,6 +2595,13 @@ GMT_LONG GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_HISTORY:
 			error = true_false_or_error (lower_value, &gmtdefs.history);
 			break;
+		case GMTCASE_TRANSPARENCY:
+			i = sscanf (value, "%ld/%ld", &gmtdefs.transparency[0], &gmtdefs.transparency[1]);
+			if (i == 1)
+				gmtdefs.transparency[1] = gmtdefs.transparency[0];
+			else if (i != 2)
+				error = TRUE;
+			break;
 		default:
 			error = TRUE;
 			fprintf (stderr, "%s: GMT SYNTAX ERROR in GMT_setparameter:  Unrecognized keyword %s\n",
@@ -4103,7 +4110,7 @@ void GMT_PS_init (void) {		/* Init the PostScript-related parameters */
 	GMT_ps.last_page = TRUE;			/* Result of not -K [TRUE] */
 	GMT_ps.overlay = FALSE;				/* Result of -O [FALSE] */
 	GMT_ps.comments = gmtdefs.ps_verbose;		/* TRUE to write comments to PS file [FALSE] */
-	GMT_ps.clip_on = GMT_ps.clip_off = FALSE;	/* Used to manage multi-process clipping operations */
+	GMT_ps.clip = 0;				/* Used to manage multi-process clipping operations [0] */
 	GMT_ps.n_copies = gmtdefs.n_copies;		/* Result of -c [gmtdefs.n_copies] */
 	GMT_ps.colormode = gmtdefs.ps_colormode;	/* 0 (RGB), 1 (CMYK), 2 (HSV) */
 	GMT_ps.compress = gmtdefs.ps_compress;		/* 0 (none), 1 (RLE), 2 (LZW) */
