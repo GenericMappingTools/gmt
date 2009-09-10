@@ -1,6 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.610 2009-09-10 02:23:28 guru Exp $
+	$Id: ChangeLog,v 1.611 2009-09-10 15:13:46 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-10	remko
+	* gmt_init.c:		Introduced option to make material transparent using the
+				--TRANSPARENCY setting (or gmtset TRANSPARENCY). Can be viewed
+				with Adobe Distiller (only?).
+	* gmt_plot.c, gmtdefaults.txt, gmt.h, gmt_globals.h, gmt_keywords.d:	---"---
+	* psclip.c, pscoast.c:	Replaced booleans GMT_ps.clip_on and GMT_ps.clip_off with single
+				GMT_ps.clip with values -1, 0 or +1.
 
 2009-09-10	jluis
 	* mgd77/mgd77magref.c:	It now lets the Core field be computed with the IGRF and added
@@ -9,11 +17,12 @@
 				but the "atmospheric coefficients" can be continuously updated
 
 2009-09-09	pwessel
-	* Replaced file COPYING with LICENSE.TXT and clarified we are using GPL v2
-	  as displayed in all source files.
-	* Updated to GSHHS 2.0.1 so new pscoast options can work
-	* Added --enable-gdal[=dir] for experimental GDAL grid import functionality
-	  for reading GDAL-supported grids (one band) and plotting of geotiff via grdimage
+	* LICENSE.TXT:		Replaced file COPYING with LICENSE.TXT and clarified we are
+	  			using GPL v2 as displayed in all source files.
+	* GSHHS*:		Updated to GSHHS 2.0.1 so new pscoast options can work
+	* configure.ac:		Added --enable-gdal[=dir] for experimental GDAL grid import
+				functionality for reading GDAL-supported grids (one band) and
+				plotting of geotiff via grdimage
 
 2009-09-08	pwessel
 	* mgd77/mgd77magref.c:	Got wrong time as time initialization had changed but
@@ -22,7 +31,7 @@
 			
 2009-09-07	jluis
 	* gmt_customio.[ch]:	Added the optional GDAL interface as format 22
-	* gmtinstall.bat	Now has rules to optionally compile the GDAL interface
+	* gmtinstall.bat:	Now has rules to optionally compile the GDAL interface
 
 2009-09-07	remko
 	* minmax.c:		Bug fix: -EH did not work
@@ -90,6 +99,7 @@
 				netcdf files are needed to properly skip features.  GSHHS 2.0.1
 				will have this information so pscoast et al need to check
 				for versions before attempting to use any of the +<modifiers>
+
 2009-07-18	mtchandl
 	* mgd77/mgd77sniffer.c:	Bug in -I option; needed to set bitpattern for bad faa.
 

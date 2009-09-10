@@ -674,6 +674,17 @@ When weeks are indicated on time axes, this parameter determines the first day o
 for Gregorian calendars.  (The ISO weekly calendar always begins weeks with Monday.)
 [Monday (or Sunday)].
 .TP
+.B TRANSPARENCY
+Makes printed material transparent.
+Specify transparency in percent: 0 is opague (normal overlay plotting), 100 is fully transparent (i.e., nothing will show).
+Use either as a pair (\fIstroke\fP/\fIfill\fP) to set the transparency of stroked material (lines) or filled material (polygons) separately,
+or use a single number to set both to the same value  [0].
+.br
+\fBWarning:\fP Most printers and \fIPostScript\fP viewers can not print or will not show transparency. They will simply ignore your attempt to create transparency and
+will plot any material as opague. \fIGhostscript\fP and all its derivatives like \fBps2raster\fP, Apple's \fIPreview\fP and the \fICUPS\fP printing system are
+among those programs incapable of dealing with transparency. If you want to view transparent material you need to use \fIAdobe Distiller\fP, and then
+resave as PDF or \fIPostScript\fP.
+.TP
 .B UNIX_TIME
 (\fB* \-U\fP) Specifies if a UNIX system time stamp should be plotted
 at the lower left corner of the plot  [FALSE].

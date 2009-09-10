@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.269 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_plot.c,v 1.270 2009-09-10 15:13:46 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4151,6 +4151,7 @@ GMT_LONG GMT_plotinit (int argc, char *argv[])
 
 	GMT_LONG PS_bit_settings = 0, k, id;
 	struct EPS *eps;
+	char cmd[BUFSIZ];
 	
 	/* Load all the bits required by ps_plotinit */
 
@@ -4181,7 +4182,7 @@ GMT_LONG GMT_plotinit (int argc, char *argv[])
 	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (GMT_proj4[k].id == project_info.projection) id = k;
 	if (id >= 0) {			/* Valid projection for creating world file info */
 		double Cartesian_m[4];	/* WESN equivalents in projected meters */
-		char cmd[BUFSIZ], *pstr = NULL, proj4name[16];
+		char *pstr = NULL, proj4name[16];
 		Cartesian_m[0] = (project_info.ymin - project_info.y0) * project_info.i_y_scale;
 		Cartesian_m[1] = (project_info.xmax - project_info.x0) * project_info.i_x_scale;
 		Cartesian_m[2] = (project_info.ymax - project_info.y0) * project_info.i_y_scale;
@@ -4197,6 +4198,12 @@ GMT_LONG GMT_plotinit (int argc, char *argv[])
 			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], GMT_export2proj4(pstr));
 		ps_command (cmd);
 		free((void *)pstr);
+	}
+
+	/* Set transparency, if requested */
+	if (gmtdefs.transparency[0] | gmtdefs.transparency[1]) {
+		sprintf (cmd, "[ /ca %g /CA %g /BM /Normal /SetTransparency pdfmark\n", 0.01 * gmtdefs.transparency[0], 0.01 * gmtdefs.transparency[1]);
+		ps_command (cmd);
 	}
 
 	/* If requested, place the timestamp */
@@ -4219,6 +4226,7 @@ GMT_LONG GMT_plotinit (int argc, char *argv[])
 }
 
 GMT_LONG GMT_plotend (void) {
+	if (gmtdefs.transparency[0] | gmtdefs.transparency[1]) ps_command ("[ /ca 0 /CA 0 /BM /Normal /SetTransparency pdfmark\n"); /* Reset transparency, if reqired */
 	ps_plotend (GMT_ps.last_page);
 	return (0);
 }
@@ -4269,8 +4277,9 @@ struct EPS *GMT_epsinfo (char *program)
 		new->portrait = GMT_ps.portrait;
 		new->clip_level = 0;
 	}
-	if (GMT_ps.clip_on)  new->clip_level++;		/* Initiated clipping that will extend beyond this process */
-	if (GMT_ps.clip_off) new->clip_level--;		/* Terminated clipping that was initiated in a prior process */
+
+	/* Lower or increase clip level based on GMT_ps.clip (-1, 0 or +1) */
+	new->clip_level += GMT_ps.clip;
 
 	/* Estimates the bounding box for this overlay */
 

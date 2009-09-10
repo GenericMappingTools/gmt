@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.188 2009-09-09 23:27:01 guru Exp $
+ *	$Id: gmt.h,v 1.189 2009-09-10 15:13:46 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -425,6 +425,7 @@ struct GMT_DEFAULTS {
 		GMT_LONG code[gmt_lastsym]; /* Codes for symbols we print. */
 	} encoding;
 	BOOLEAN history;		/* TRUE to pass information via .gmtdefaults4 files */
+	GMT_LONG transparency[2];	/* Transparency level for strokes and fill */
 };
 
 struct GMT_PS {	/* Holds the current settings that affect PS generation */
@@ -437,8 +438,7 @@ struct GMT_PS {	/* Holds the current settings that affect PS generation */
 	BOOLEAN overlay;			/* Result of -O [FALSE] */
 	BOOLEAN unix_time;			/* Result of -U [gmtdefs.unix_time] */
 	BOOLEAN comments;			/* TRUE to write comments to PS file [FALSE] */
-	BOOLEAN clip_on;			/* TRUE if clipping will extend beyond current process */
-	BOOLEAN clip_off;			/* TRUE if we terminate clipping initiated in a prior process */
+	GMT_LONG clip;				/* +1 if clipping will extend beyond current process, -1 if we terminate clipping */
 	GMT_LONG n_copies;			/* Result of -c [gmtdefs.n_copies] */
 	GMT_LONG colormode;			/* 0 (RGB), 1 (CMYK), 2 (HSV) */
 	GMT_LONG compress;			/* 0 (none), 1 (RLE), 2 (LZW) */
