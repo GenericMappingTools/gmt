@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.127 2009-09-10 04:11:13 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.128 2009-09-10 04:14:53 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -39,7 +39,7 @@ history of the development milestones in the 4.x series.
 This is almost entirely a but-fix release where we address 64-bit incompatibilities and
 rebuild the netcdf GSHHS library to include some attributes from GSHHS that are needed
 by new options in \GMTprog{pscoast}.  Note that GSHHS polygons have not changed (still
-at version 2.0), but we had to update the derived netcdf repackaging used by \GMT to 2.0.1.
+at version 2.0), but we had to update the derived netcdf repackaging used by \GMT\ to 2.0.1.
 However, some enhancements were added as well, most significantly support for the polyconic
 projection (\Opt{JPoly}) and experimental support for grid and image imports via GDAL
 (requires --enable-gdal during configure and properly installed GDAL libraries and include files).
@@ -50,19 +50,19 @@ Here is the list of bug corrections:
 		--disable-flock to disable if.
 		Use --enable-64 to force 64-bit compilation, use --disable-64
 		to force 32-bit compilation. Otherwise use default.
-		Switch -DGMT\_QSORT on only for OSX prior to Snow Leopard as the latter now has
-		a correctly working qsort function under 64-bit.
+		Switch -DGMT\_QSORT is now on only for OSX prior to Snow Leopard as the latter has
+		a correctly working 64-bit qsort function.
 	\item [\GMTprog{gmt\_customio.c}]:	Made surfer grid header i/o 64-bit compliant.
 	\item [\GMTprog{gmt\_map.c}]:	Changed \GMTfunc{GMT\_truncate} from being a pointer function (PFL)
 		to a regular function that simply calls \GMTfunc{GMT\_truncate\_x}
 		or \GMTfunc{GMT\_truncate\_tm} depending on whether projection is TM.
 		This to avoid problems with calling \GMTfunc{GMT\_truncate} with
-		constant argument -1 in 64-bit machines.
+		constant argument -1 in 64-bit machines and thus producing wrapped \GMTprog{pscoast} maps.
 	\item [\GMTprog{gmt\_shore.c}]:	The \Opt{A+r}$|${\bf +l} option was premature as more info in the GSHHS
 	netcdf files were needed to properly skip features. Now working with the revision GSHHS 2.0.1.
 	\item [\GMTprog{gmt\_support.c}]: The routine that checks if a points is inside or outside a
-		polar cap had trouble when the points longitude exactly
-		equalled a point on the polygon since round-off would 
+		polar cap had trouble when a point's longitude exactly
+		equalled one of the polygon points since round-off could 
 		cause our test to fail.
 		Fixed bug in {\it x\_inc} variable as function of latitude.
 		\GMTfunc{GMT\_log\_array} recoded to avoid 64-bit error (last value was not included).
