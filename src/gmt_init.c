@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.415 2009-09-11 15:34:16 remko Exp $
+ *	$Id: gmt_init.c,v 1.416 2009-09-11 18:40:09 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4746,7 +4746,7 @@ GMT_LONG GMT_parse_J_option (char *args)
 
 	last_pos = strlen (args) - 1;	/* Position of last character in this string */
 	last_char = args[last_pos];
-	if (project != GMT_LINEAR) {	/* Avoid having -JXh|v be misinterpreted */
+	if (last_pos > 0) {	/* Avoid having -JXh|v be misinterpreted */
 		switch (last_char) {	/* Check for what kind of width is given (only used if upper case is given below */
 			case 'h':	/* Want map HEIGHT instead */
 				width_given = 2;
@@ -4759,7 +4759,7 @@ GMT_LONG GMT_parse_J_option (char *args)
 				break;
 		}
 	}
-	if (width_given > 1) args[last_pos] = '\0';	/* Temporarily chop off modifier */
+	if (width_given > 1) args[last_pos] = 0;	/* Temporarily chop off modifier */
 
 	for (j = 0; args[j]; j++) if (args[j] == '/') n_slashes++;
 
@@ -4894,7 +4894,9 @@ GMT_LONG GMT_parse_J_option (char *args)
 				project_info.degree[1] = project_info.degree[0];
 				if (GMT_io.in_col_type[0] & GMT_IS_GEO) GMT_io.in_col_type[1] = GMT_IS_LAT;
 			}
-			if (project_info.pars[0] == 0.0 || project_info.pars[1] == 0.0) error = TRUE;
+
+			/* Not both sizes can be zero, but if one is, we will adjust to the scale of the other */
+			if (project_info.pars[0] == 0.0 && project_info.pars[1] == 0.0) error = TRUE;
 			break;
 
 		case GMT_ZAXIS:	/* 3D plot */

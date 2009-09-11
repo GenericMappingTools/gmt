@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.614 2009-09-11 15:34:55 remko Exp $
+	$Id: ChangeLog,v 1.615 2009-09-11 18:40:30 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-09-11	remko
@@ -7,6 +7,8 @@
 	* gmt_init.c:		Let gmtdefaults output TRANSPARENCY and print colors as names
 				if available.
 	* gmt_support.c:	Added GMT_getrgb_index to get index of preset RGB triplets.
+	* gmt_{init,map.c}:	When using -JX, give width or height as 0 and it will adjust to
+				the scale of the other (keeping aspect ratio).
 
 2009-09-10	pwessel
 	* grdcontour.c:		The -L option was not used in limiting contours.
