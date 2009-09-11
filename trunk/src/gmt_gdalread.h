@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.5 2009-09-10 02:21:36 guru Exp $
+ *	$Id: gmt_gdalread.h,v 1.6 2009-09-11 19:45:59 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
