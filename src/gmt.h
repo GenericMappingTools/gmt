@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.189 2009-09-10 15:13:46 remko Exp $
+ *	$Id: gmt.h,v 1.190 2009-09-11 07:02:33 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -624,6 +624,10 @@ EXTERN_MSC PFL GMT_y_forward, GMT_y_inverse;	/*	Pointers to the selected linear 
 EXTERN_MSC PFL GMT_z_forward, GMT_z_inverse;	/*	Pointers to the selected linear functions */
 EXTERN_MSC PFD GMT_scan_time_string;		/*	pointer to functions that converts timestring to secs */
 
+/* Experimental GDAL support */
+#ifdef USE_GDAL
+#include "gmt_gdalread.h"
+#endif
 #include "gmt_common.h"		/* For holding the GMT common option settings */
 #include "gmt_math.h"		/* Machine-dependent macros for non-POSIX math functions */
 #include "gmt_nan.h"		/* Machine-dependent macros for making and testing NaNs */

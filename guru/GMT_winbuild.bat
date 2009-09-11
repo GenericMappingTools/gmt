@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.25 2009-09-10 08:32:26 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.26 2009-09-11 07:02:33 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -21,8 +21,8 @@ echo === 1. Get all GMT%GVER% bzipped tar balls and extract files...
 
 C:
 cd \
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GMT*.tar.bz2 C:\
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS*.tar.bz2 C:\
+copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GMT%GVER%*.tar.bz2 C:\
+copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS2.0.1_*.tar.bz2 C:\
 7z x GMT*.tar.bz2
 7z x GSHHS*.tar.bz2
 7z x GMT*.tar -aoa

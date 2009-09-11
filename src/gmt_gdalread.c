@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.4 2009-09-10 02:21:36 guru Exp $
+ *	$Id: gmt_gdalread.c,v 1.5 2009-09-11 07:02:33 guru Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -24,8 +24,6 @@
  *			The populate_metadata() was modified from mexgdal of John Evans (johnevans@acm.org)
  *
  */
-
-#include "gmt_gdalread.h"
 
 int record_geotransform ( char *gdal_filename, GDALDatasetH hDataset, double *adfGeoTransform );
 int populate_metadata (struct GD_CTRL *, char * ,int , int, int, int, int, double, double, double, double, double, double);
