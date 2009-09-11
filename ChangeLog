@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.612 2009-09-10 16:02:30 remko Exp $
+	$Id: ChangeLog,v 1.613 2009-09-11 10:57:36 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-09-10	pwessel
+	* grdcontour.c:	The -L option was not used in limiting contours.
+	
 2009-09-10	remko
 	* gmt_init.c:		Introduced option to make material transparent using the
 				--TRANSPARENCY setting (or gmtset TRANSPARENCY). Can be viewed
