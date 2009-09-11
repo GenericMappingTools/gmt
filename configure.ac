@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.66 2009-09-10 16:02:06 remko Exp $
-AC_REVISION($Revision: 1.66 $)
+dnl $Id: configure.ac,v 1.67 2009-09-11 02:24:44 guru Exp $
+AC_REVISION($Revision: 1.67 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -529,7 +529,7 @@ if test ! "X$enable_gdal" = "X" ; then
 	if test ! -d $GDAL_LIB; then
 		AC_MSG_WARN([[No such directory: $GDAL_LIB]])
 	fi
-	GDAL_LIB="-L$GDAL_LIB -lnetcdf"
+	GDAL_LIB="-L$GDAL_LIB -lgdal"
 	GDAL_INC="-I$GDAL_INC"
 else
 	GDAL_LIB=
