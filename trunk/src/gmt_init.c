@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.414 2009-09-10 15:13:46 remko Exp $
+ *	$Id: gmt_init.c,v 1.415 2009-09-11 15:34:16 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -163,6 +163,7 @@ double GMT_xy_true_dist (GMT_LONG col);
 double GMT_xy_cart_dist (GMT_LONG col);
 void GMT_file_lock (int fd, struct flock *lock);
 void GMT_file_unlock (int fd, struct flock *lock);
+void GMT_put_colorname (FILE *fp, char *string, int *rgb);
 
 /* Local variables to gmt_init.c */
 
@@ -2666,7 +2667,7 @@ GMT_LONG GMT_savedefaults (char *file)
 
 	fprintf (fp, "#\n#\tGMT-SYSTEM %s Defaults file\n#\n", GMT_VERSION);
 	fprintf (fp, "#-------- Plot Media Parameters -------------\n");
-	fprintf (fp, "PAGE_COLOR\t\t= %d/%d/%d\n", gmtdefs.page_rgb[0], gmtdefs.page_rgb[1], gmtdefs.page_rgb[2]);
+	GMT_put_colorname (fp, "PAGE_COLOR\t\t= ", gmtdefs.page_rgb);
 	fprintf (fp, "PAGE_ORIENTATION\t= %s\n", (gmtdefs.portrait ? "portrait" : "landscape"));
 	fprintf (fp, "PAPER_MEDIA\t\t= ");
 	if (gmtdefs.media == -USER_MEDIA_OFFSET)
@@ -2704,7 +2705,7 @@ GMT_LONG GMT_savedefaults (char *file)
 	fprintf (fp, "Y_AXIS_TYPE\t\t= %s\n", (gmtdefs.y_axis_type == 1 ? "ver_text" : "hor_text"));
 	fprintf (fp, "#-------- Basemap Layout Parameters ---------\n");
 	fprintf (fp, "BASEMAP_AXES\t\t= %s\n", gmtdefs.basemap_axes);
-	fprintf (fp, "BASEMAP_FRAME_RGB\t= %d/%d/%d\n", gmtdefs.basemap_frame_rgb[0], gmtdefs.basemap_frame_rgb[1], gmtdefs.basemap_frame_rgb[2]);
+	GMT_put_colorname (fp, "BASEMAP_FRAME_RGB\t= ", gmtdefs.basemap_frame_rgb);
 	fprintf (fp, "BASEMAP_TYPE\t\t= ");
 	if (gmtdefs.basemap_type == GMT_IS_PLAIN)
 		fprintf (fp, "plain\n");
@@ -2734,21 +2735,9 @@ GMT_LONG GMT_savedefaults (char *file)
 	fprintf (fp, "UNIX_TIME_POS\t\t= %s/%g%c/%g%c\n", GMT_just_string[gmtdefs.unix_time_just], gmtdefs.unix_time_pos[GMT_X] * s, u, gmtdefs.unix_time_pos[GMT_Y] * s, u);
 	fprintf (fp, "UNIX_TIME_FORMAT\t= %s\n", gmtdefs.unix_time_format);
 	fprintf (fp, "#-------- Color System Parameters -----------\n");
-	fprintf (fp, "COLOR_BACKGROUND\t= ");
-	if (gmtdefs.background_rgb[0] == -1)
-		fprintf (fp, "-\n");
-	else
-		fprintf (fp, "%d/%d/%d\n", gmtdefs.background_rgb[0], gmtdefs.background_rgb[1], gmtdefs.background_rgb[2]);
-	fprintf (fp, "COLOR_FOREGROUND\t= ");
-	if (gmtdefs.foreground_rgb[0] == -1)
-		fprintf (fp, "-\n");
-	else
-		fprintf (fp, "%d/%d/%d\n", gmtdefs.foreground_rgb[0], gmtdefs.foreground_rgb[1], gmtdefs.foreground_rgb[2]);
-	fprintf (fp, "COLOR_NAN\t\t= ");
-	if (gmtdefs.nan_rgb[0] == -1)
-		fprintf (fp, "-\n");
-	else
-		fprintf (fp, "%d/%d/%d\n", gmtdefs.nan_rgb[0], gmtdefs.nan_rgb[1], gmtdefs.nan_rgb[2]);
+	GMT_put_colorname (fp, "COLOR_BACKGROUND\t= ", gmtdefs.background_rgb);
+	GMT_put_colorname (fp, "COLOR_FOREGROUND\t= ", gmtdefs.foreground_rgb);
+	GMT_put_colorname (fp, "COLOR_NAN\t\t= ", gmtdefs.nan_rgb);
 	fprintf (fp, "COLOR_IMAGE\t\t= %s\n", (gmtdefs.color_image ? "tiles" : "adobe"));
 	fprintf (fp, "COLOR_MODEL\t\t= ");
 	if (gmtdefs.color_model & GMT_USE_HSV)
@@ -2806,6 +2795,10 @@ GMT_LONG GMT_savedefaults (char *file)
 		fprintf (fp, "bevel\n");
 	fprintf (fp, "PS_MITER_LIMIT\t\t= %ld\n", gmtdefs.ps_miter_limit);
 	fprintf (fp, "PS_VERBOSE\t\t= %s\n", ft[gmtdefs.ps_verbose]);
+	if (gmtdefs.transparency[0] == gmtdefs.transparency[1])
+		fprintf (fp, "TRANSPARENCY\t\t= %ld\n", gmtdefs.transparency[0]);
+	else
+		fprintf (fp, "TRANSPARENCY\t\t= %ld/%ld\n", gmtdefs.transparency[0], gmtdefs.transparency[1]);
 	fprintf (fp, "#-------- I/O Format Parameters -------------\n");
 	fprintf (fp, "D_FORMAT\t\t= %s\n", gmtdefs.d_format);
 	fprintf (fp, "FIELD_DELIMITER\t\t= ");
@@ -2966,6 +2959,24 @@ GMT_LONG GMT_getdefpath (GMT_LONG get, char **P)
 
 	return (GMT_NOERROR);
 }
+
+void GMT_put_colorname (FILE *fp, char *string, int *rgb)
+{
+	/* Write the name (if available) or rr[/gg/bb] corresponding to the RGB triplet */
+
+	GMT_LONG i;
+
+	if (string[0]) fprintf (fp, "%s", string);
+	if (rgb[0] < 0)
+		fprintf (fp, "-\n");
+	else if ((i = GMT_getrgb_index (rgb)) >= 0)
+		fprintf (fp, "%s\n", GMT_color_name[i]);
+	else if (rgb[0] == rgb[1] && rgb[1] == rgb[2])
+		fprintf (fp, "%d\n", rgb[0]);
+	else
+		fprintf (fp, "%d/%d/%d\n", rgb[0], rgb[1], rgb[2]);
+}
+		
 
 double GMT_convert_units (char *from, GMT_LONG new_format)
 {
