@@ -682,8 +682,9 @@ or use a single number to set both to the same value  [0].
 .br
 \fBWarning:\fP Most printers and \fIPostScript\fP viewers can not print or will not show transparency. They will simply ignore your attempt to create transparency and
 will plot any material as opague. \fIGhostscript\fP and all its derivatives like \fBps2raster\fP, Apple's \fIPreview\fP and the \fICUPS\fP printing system are
-among those programs incapable of dealing with transparency. If you want to view transparent material you need to use \fIAdobe Distiller\fP, and then
-resave as PDF or \fIPostScript\fP.
+among those programs incapable of dealing with transparency. If you want to view transparent material you need to use \fIAcrobat Distiller\fP to create a
+PDF file. Note that the settings of \fIAcrobat Distiller\fP need to be changed to make transpancy effective: change /AllowTransparency to true in
+the \.joboptions file.
 .TP
 .B UNIX_TIME
 (\fB* \-U\fP) Specifies if a UNIX system time stamp should be plotted
