@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.80 2009-09-10 02:21:36 guru Exp $
+ *	$Id: gmt_customio.c,v 1.81 2009-09-11 19:36:04 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1828,7 +1828,7 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 	from_gdalread = (struct GD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GD_CTRL), "New_Gd_Ctrl");
 
 	to_gdalread->GD_C.active = 1;		/* Force info in grid node registration */
-	if ((w + e + s + n) != 0) {		/* We have a Sub-region demand */
+	if (w == 0 && e == 0 && s == 0 && n == 0) {	/* We have a Sub-region demand */
 		to_gdalread->GD_R.active = 1;
 		sprintf(strR, "%.10f/%.10f/%.10f/%.10f", w, e, s, n);
 		to_gdalread->GD_R.region = strR;
