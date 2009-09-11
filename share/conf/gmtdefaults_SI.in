@@ -1,10 +1,10 @@
-#	$Id: gmtdefaults_SI.in,v 1.7 2009-06-20 19:23:53 guru Exp $
+#	$Id: gmtdefaults_SI.in,v 1.8 2009-09-11 15:29:45 remko Exp $
 #
 #	GMT-SYSTEM @PACKAGE_VERSION@ Defaults file
 #	SI Version
 #
 #-------- Plot Media Parameters -------------
-PAGE_COLOR		= 255/255/255
+PAGE_COLOR		= white
 PAGE_ORIENTATION	= landscape
 PAPER_MEDIA		= a4@EPS@
 #-------- Basemap Annotation Parameters ------
@@ -30,7 +30,7 @@ PLOT_DEGREE_FORMAT	= ddd:mm:ss
 Y_AXIS_TYPE		= hor_text
 #-------- Basemap Layout Parameters ---------
 BASEMAP_AXES		= WESN
-BASEMAP_FRAME_RGB	= 0/0/0
+BASEMAP_FRAME_RGB	= black
 BASEMAP_TYPE		= fancy
 FRAME_PEN		= 1.25p
 FRAME_WIDTH		= 0.2c
@@ -50,9 +50,9 @@ UNIX_TIME		= FALSE
 UNIX_TIME_POS		= BL/-2c/-2c
 UNIX_TIME_FORMAT	= %Y %b %d %H:%M:%S
 #-------- Color System Parameters -----------
-COLOR_BACKGROUND	= 0/0/0
-COLOR_FOREGROUND	= 255/255/255
-COLOR_NAN		= 128/128/128
+COLOR_BACKGROUND	= black
+COLOR_FOREGROUND	= white
+COLOR_NAN		= 128
 COLOR_IMAGE		= adobe
 COLOR_MODEL		= rgb
 HSV_MIN_SATURATION	= 1
@@ -72,6 +72,7 @@ PS_LINE_CAP		= butt
 PS_LINE_JOIN		= miter
 PS_MITER_LIMIT		= 35
 PS_VERBOSE		= FALSE
+TRANSPARENCY		= 0
 #-------- I/O Format Parameters -------------
 D_FORMAT		= %.12lg
 FIELD_DELIMITER		= tab
