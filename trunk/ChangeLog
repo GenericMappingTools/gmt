@@ -1,9 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.613 2009-09-11 10:57:36 guru Exp $
+	$Id: ChangeLog,v 1.614 2009-09-11 15:34:55 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2009-09-11	remko
+	* gmtdefaults_*.in:	Enter TRANSPARENCY = 0; replaced color triplets by names.
+	* gmt_init.c:		Let gmtdefaults output TRANSPARENCY and print colors as names
+				if available.
+	* gmt_support.c:	Added GMT_getrgb_index to get index of preset RGB triplets.
+
 2009-09-10	pwessel
-	* grdcontour.c:	The -L option was not used in limiting contours.
+	* grdcontour.c:		The -L option was not used in limiting contours.
 	
 2009-09-10	remko
 	* gmt_init.c:		Introduced option to make material transparent using the
