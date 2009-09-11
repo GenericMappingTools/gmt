@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.428 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_support.c,v 1.429 2009-09-11 15:32:04 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -460,6 +460,19 @@ GMT_LONG GMT_char_count (char *txt, char c)
 	GMT_LONG i = 0, n = 0;
 	while (txt[i]) if (txt[i++] == c) n++;
 	return (n);
+}
+
+GMT_LONG GMT_getrgb_index (int rgb[])
+{
+	/* Find the index of preset RGB triplets (those with names)
+	   Return -1 if none found */
+
+	GMT_LONG i;
+
+	for (i = 0; i < GMT_N_COLOR_NAMES; i++) {
+		if (GMT_color_rgb[i][0] == rgb[0] && GMT_color_rgb[i][1] == rgb[1] && GMT_color_rgb[i][2] == rgb[2]) return (i);
+	}
+	return (-1);
 }
 
 BOOLEAN GMT_getrgb (char *line, int rgb[])
@@ -6317,7 +6330,7 @@ void GMT_str_toupper (char *value)
 
 char *GMT_chop_ext (char *string)
 {
-	/* Chops off the extension (the .xxx ) in string and returns it, icluding the leading '.' */
+	/* Chops off the extension (the .xxx ) in string and returns it, including the leading '.' */
 	GMT_LONG i, n, pos_ext = 0;
 	if (!string) return (NULL);	/* NULL pointer */
 	if ((n = (GMT_LONG)strlen (string)) == 0) return (NULL);	/* Empty string */
