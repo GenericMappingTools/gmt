@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.242 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_map.c,v 1.243 2009-09-11 18:40:09 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1023,6 +1023,17 @@ GMT_LONG GMT_map_init_linear (void) {
 
 	if (project_info.compute_scale[0]) project_info.x_scale /= fabs (xmin - xmax);
 	if (project_info.compute_scale[1]) project_info.y_scale /= fabs (ymin - ymax);
+
+	/* If either is zero, adjust width or height to the other */
+
+	if (project_info.x_scale == 0) {
+		project_info.x_scale = project_info.y_scale;
+		project_info.pars[0] = project_info.x_scale * fabs (xmin - xmax);
+	}
+	if (project_info.y_scale == 0) {
+		project_info.y_scale = project_info.x_scale;
+		project_info.pars[1] = project_info.y_scale * fabs (ymin - ymax);
+	}
 
 	/* This is to make sure that when using -J[x|X]...d degrees work as meters */
 
