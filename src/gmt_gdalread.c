@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.6 2009-09-11 19:42:37 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.7 2009-09-12 19:38:31 jluis Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -83,12 +83,19 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 
 	if (prhs->GD_R.active) {
 		got_R = TRUE;
-		error += gdal_decode_R (prhs->GD_R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
+		/*error += gdal_decode_R (prhs->GD_R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);*/
+		error += GMT_parse_common_options (prhs->GD_R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
 	}
 
 	if (prhs->GD_r.active) { 		/* Region is given in pixels */
 		got_r = TRUE;
-		error += gdal_decode_R (prhs->GD_r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
+		/*error += gdal_decode_R (prhs->GD_r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);*/
+		error += GMT_parse_common_options (prhs->GD_r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
+	}
+
+	if (error) {
+		fprintf(stderr, "ERROR: GMT_gdalread failed to extract a Sub-region\n");
+		return (-1);
 	}
 
 	if (prhs->GD_P.active)
