@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.81 2009-09-11 19:36:04 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.82 2009-09-12 19:37:35 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1828,10 +1828,16 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 	from_gdalread = (struct GD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GD_CTRL), "New_Gd_Ctrl");
 
 	to_gdalread->GD_C.active = 1;		/* Force info in grid node registration */
-	if (w == 0 && e == 0 && s == 0 && n == 0) {	/* We have a Sub-region demand */
+	if (w != 0 || e != 0 || s != 0 || n != 0) {	/* We have a Sub-region demand */
 		to_gdalread->GD_R.active = 1;
-		sprintf(strR, "%.10f/%.10f/%.10f/%.10f", w, e, s, n);
+		sprintf(strR, "-R%.10f/%.10f/%.10f/%.10f", w, e, s, n);
 		to_gdalread->GD_R.region = strR;
+	}
+	if (GMT_gdalread ( header->name, to_gdalread, from_gdalread)) {
+		fprintf (stderr, "ERROR reading file with gdalread.\n");
+		return (GMT_GRDIO_OPEN_FAILED);
+	}
+	if (w != 0 || e != 0 || s != 0 || n != 0) {	/* We had a Sub-region demand */
 		header->nx = from_gdalread->RasterXsize;
 		header->ny = from_gdalread->RasterYsize;
 		header->x_min = from_gdalread->hdr[0];
@@ -1840,10 +1846,6 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 		header->y_max = from_gdalread->hdr[3];
 		header->z_min = from_gdalread->hdr[4];
 		header->z_max = from_gdalread->hdr[5];
-	}
-	if (GMT_gdalread ( header->name, to_gdalread, from_gdalread)) {
-		fprintf (stderr, "ERROR reading file with gdalread.\n");
-		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
 	if (from_gdalread->Float.active)
@@ -1870,6 +1872,9 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 
 	GMT_free((void *) to_gdalread);
 	/* GMT_free((void *) from_gdalread);	Where shall we free this ??? */
+
+	if (from_gdalread->UInt8.active)
+		GMT_free ((void *)from_gdalread->UInt8.data);
 
 	return (GMT_NOERROR);
 }
