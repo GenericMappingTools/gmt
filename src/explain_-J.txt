@@ -221,7 +221,8 @@ Give \fIx-scale\fP (\fB1:\fP\fIxxxx\fP or UNIT/x-unit) and/or \fIy-scale\fP (\fB
 specify \fIwidth\fP and/or \fIheight\fP in UNIT.
 \fIy-scale\fP=\fIx-scale\fP if not specified separately and using \fB1:\fP\fIxxxx\fP implies that x-unit and y-unit are in
 meters.
-Use negative scale(s) to reverse the direction of an axis (e.g., to have y be positive down).
+Use negative scale(s) to reverse the direction of an axis (e.g., to have y be positive down). Set
+\fIheight\fP or \fIwidth\fP to 0 to have it recomputed based on the implied scale of the other axis.
 Optionally, append to \fIx-scale\fP, \fIy-scale\fP, \fIwidth\fP or \fIheight\fP one of the following:
 .RS
 .TP

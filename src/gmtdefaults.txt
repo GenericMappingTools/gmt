@@ -676,14 +676,14 @@ for Gregorian calendars.  (The ISO weekly calendar always begins weeks with Mond
 .TP
 .B TRANSPARENCY
 Makes printed material transparent.
-Specify transparency in percent: 0 is opague (normal overlay plotting), 100 is fully transparent (i.e., nothing will show).
+Specify transparency in percent: 0 is opaque (normal overlay plotting), 100 is fully transparent (i.e., nothing will show).
 Use either as a pair (\fIstroke\fP/\fIfill\fP) to set the transparency of stroked material (lines) or filled material (polygons) separately,
 or use a single number to set both to the same value  [0].
 .br
 \fBWarning:\fP Most printers and \fIPostScript\fP viewers can not print or will not show transparency. They will simply ignore your attempt to create transparency and
-will plot any material as opague. \fIGhostscript\fP and all its derivatives like \fBps2raster\fP, Apple's \fIPreview\fP and the \fICUPS\fP printing system are
+will plot any material as opaque. \fIGhostscript\fP and all its derivatives like \fBps2raster\fP, Apple's \fIPreview\fP and the \fICUPS\fP printing system are
 among those programs incapable of dealing with transparency. If you want to view transparent material you need to use \fIAcrobat Distiller\fP to create a
-PDF file. Note that the settings of \fIAcrobat Distiller\fP need to be changed to make transpancy effective: change /AllowTransparency to true in
+PDF file. Note that the settings of \fIAcrobat Distiller\fP need to be changed to make transparency effective: change /AllowTransparency to true in
 the \.joboptions file.
 .TP
 .B UNIX_TIME
