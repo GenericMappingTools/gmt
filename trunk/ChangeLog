@@ -1,7 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.615 2009-09-11 18:40:30 remko Exp $
+	$Id: ChangeLog,v 1.616 2009-09-12 23:52:00 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-09-12	pwessel
+	* spotter:		Failed in 64-bit mode due to variable mismatch:
+	* spotter/backtracker.c:	Needed GMT_LONG variables to be passed to GMT libs
+	* spotter/hotspotter.c:		Needed GMT_LONG variables to be passed to GMT libs
+	* spotter/originator.c:		Needed GMT_LONG variables to be passed to GMT libs
+	
 2009-09-11	remko
 	* gmtdefaults_*.in:	Enter TRANSPARENCY = 0; replaced color triplets by names.
 	* gmt_init.c:		Let gmtdefaults output TRANSPARENCY and print colors as names
