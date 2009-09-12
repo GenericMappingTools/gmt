@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_5.tex,v 1.18 2009-08-17 16:42:47 remko Exp $
+%	$Id: GMT_Chapter_5.tex,v 1.19 2009-09-12 01:28:36 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -112,6 +112,10 @@ positive coordinates be reversed.  For example, when plotting
 depth on the {\it y}-axis it makes more sense to have the positive
 direction downwards.  All that is required to reverse the sense of
 positive direction is to supply a negative scale (or axis length).
+Finally, sometimes it is convenient to specify the width (or height)
+of a map and let the other dimension be computed based on the implied
+scale and the range of the other axis.  To do this, simply specify
+the length to be recomputed as 0.
 
 \subsubsection{Geographic coordinates}
 \label{sec:linear}
