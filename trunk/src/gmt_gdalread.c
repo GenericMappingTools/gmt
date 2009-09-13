@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.7 2009-09-12 19:38:31 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.8 2009-09-13 17:34:17 jluis Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -41,7 +41,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 	int	pixel_reg = FALSE, correct_bounds = FALSE, fliplr = FALSE, error = FALSE;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0, i_x_nXYSize;
 	int	jump = 0, *whichBands = NULL, *mVector;
-	int	n_commas, n_dash;
+	int	n_commas, n_dash, pad = 0;
 	GMT_LONG n_alloc, nXSize = 0, nYSize = 0, nX, nY, nXYSize, nBufXSize, nBufYSize;
 	char	*tmp;
 	float	*tmpF32;
@@ -80,6 +80,9 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 
 	if (prhs->GD_M.active)
 		metadata_only = TRUE;
+
+	if (prhs->p.active)
+		pad = prhs->p.pad;
 
 	if (prhs->GD_R.active) {
 		got_R = TRUE;
@@ -223,7 +226,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 
 	if (nReqBands) nBands = MIN(nBands,nReqBands);	/* If a band selection was made */
 
-	n_alloc = nBands * nBufXSize * nBufYSize;
+	n_alloc = nBands * (nBufXSize + 2*pad) * (nBufYSize + 2*pad);
 	switch( GDALGetRasterDataType(hBand) ) {
 		case GDT_Byte:
 			Ctrl->UInt8.data = (unsigned char *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (char), "GMT_gdalread");
@@ -286,10 +289,11 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 		if (jump) {
 			nXSize = nBufXSize;
 			nYSize = nBufYSize;
-			i_x_nXYSize = i*nXSize*nYSize;		/* We don't need to recompute this everytime */
+			i_x_nXYSize = i*(nXSize+2*pad)*(nYSize+2*pad);		/* We don't need to recompute this everytime */
 		}
 		else
-			i_x_nXYSize = i*nXYSize;
+			i_x_nXYSize= i * (nBufXSize + 2*pad) * (nBufYSize + 2*pad);
+			/*i_x_nXYSize = i*nXYSize;*/
 
 		switch( GDALGetRasterDataType(hBand) ) {
 			case GDT_Byte:
@@ -300,8 +304,13 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 							Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];
 				}
 				else {
-					for (n = 0; n < nXSize*nYSize; n++)
-						Ctrl->UInt8.data[n + i_x_nXYSize] = tmp[n];
+					//for (n = 0; n < nXSize*nYSize; n++)
+						//Ctrl->UInt8.data[n + i_x_nXYSize] = tmp[n];
+					for (m = 0; m < nYSize; m++) {
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
+						for (n = 0; n < nXSize; n++)
+							Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];
+					}
 				}
 				break;
 			case GDT_Int16:
