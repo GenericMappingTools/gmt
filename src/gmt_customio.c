@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.83 2009-09-13 03:13:28 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.84 2009-09-13 13:19:42 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1859,8 +1859,19 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 		if (from_gdalread->UInt8.active)
 			for (j = 0; j < nm; j++)
 				grid[j] = (float)from_gdalread->UInt8.data[j+i];
-
-		/* Other cases will be implemented later */
+		else if (from_gdalread->UInt16.active)
+			for (j = 0; j < nm; j++)
+				grid[j] = (float)from_gdalread->UInt16.data[j+i];
+		else if (from_gdalread->Int16.active)
+			for (j = 0; j < nm; j++)
+				grid[j] = (float)from_gdalread->Int16.data[j+i];
+		else if (from_gdalread->Int32.active)
+			for (j = 0; j < nm; j++)
+				grid[j] = (float)from_gdalread->Int32.data[j+i];
+		else {
+			fprintf (stderr, "ERROR data type not suported with gdalread in gmt_customio.\n");
+			return (GMT_GRDIO_OPEN_FAILED);
+		}
 	}
 
 	if (from_gdalread->nodata != 0) {	/* Data has a nodata value */
@@ -1872,13 +1883,19 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 	header->nan_value = GMT_f_NaN;
 
 	GMT_free((void *) to_gdalread);
-	if (from_gdalread->ColorMap == NULL) 		/* Otherwise we must tell GDAL to free the colormap */
-		GMT_free((void *) from_gdalread);
+	if (from_gdalread->ColorMap == NULL) GMT_free((void *) from_gdalread->ColorMap);
+	GMT_free((void *) from_gdalread);
 
 	if (from_gdalread->UInt8.active)
 		GMT_free ((void *)from_gdalread->UInt8.data);
 	else if (from_gdalread->Float.active)
 		GMT_free ((void *)from_gdalread->Float.data);
+	else if (from_gdalread->UInt16.active)
+		GMT_free ((void *)from_gdalread->UInt16.data);
+	else if (from_gdalread->Int16.active)
+		GMT_free ((void *)from_gdalread->Int16.data);
+	else if (from_gdalread->Int32.active)
+		GMT_free ((void *)from_gdalread->Int32.data);
 
 	return (GMT_NOERROR);
 }
