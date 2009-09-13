@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.8 2009-09-13 17:34:17 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.9 2009-09-13 18:58:33 jluis Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -58,42 +58,42 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 
 	anSrcWin[0] = anSrcWin[1] = anSrcWin[2] = anSrcWin[3] = 0;
 
-	if (prhs->GD_B.active) {		/* We have a selected bands request */
-		for (n = 0, n_commas = 0; prhs->GD_B.bands[n]; n++) if (prhs->GD_B.bands[n] == ',') n_commas = n;
-		for (n = 0, n_dash = 0; prhs->GD_B.bands[n]; n++) if (prhs->GD_B.bands[n] == '-') n_dash = n;
+	if (prhs->B.active) {		/* We have a selected bands request */
+		for (n = 0, n_commas = 0; prhs->B.bands[n]; n++) if (prhs->B.bands[n] == ',') n_commas = n;
+		for (n = 0, n_dash = 0; prhs->B.bands[n]; n++) if (prhs->B.bands[n] == '-') n_dash = n;
 		nn = MAX(n_commas, n_dash);
 		if (nn)
-			nn = atoi(&prhs->GD_B.bands[nn+1]);
+			nn = atoi(&prhs->B.bands[nn+1]);
 		else
-			nn = atoi(prhs->GD_B.bands);
+			nn = atoi(prhs->B.bands);
 		whichBands = calloc(nn, sizeof(int));
-		nReqBands = gdal_decode_columns (prhs->GD_B.bands, whichBands, nn);
+		nReqBands = gdal_decode_columns (prhs->B.bands, whichBands, nn);
 	}
-	if (prhs->GD_C.active)
+	if (prhs->C.active)
 		correct_bounds = TRUE;
 
-	if (prhs->GD_F.active)
+	if (prhs->F.active)
 		pixel_reg = TRUE;
 
-	if (prhs->GD_L.active)
+	if (prhs->L.active)
 		fliplr = TRUE;
 
-	if (prhs->GD_M.active)
+	if (prhs->M.active)
 		metadata_only = TRUE;
 
 	if (prhs->p.active)
 		pad = prhs->p.pad;
 
-	if (prhs->GD_R.active) {
+	if (prhs->R.active) {
 		got_R = TRUE;
-		/*error += gdal_decode_R (prhs->GD_R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);*/
-		error += GMT_parse_common_options (prhs->GD_R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
+		/*error += gdal_decode_R (prhs->R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);*/
+		error += GMT_parse_common_options (prhs->R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
 	}
 
-	if (prhs->GD_r.active) { 		/* Region is given in pixels */
+	if (prhs->r.active) { 		/* Region is given in pixels */
 		got_r = TRUE;
-		/*error += gdal_decode_R (prhs->GD_r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);*/
-		error += GMT_parse_common_options (prhs->GD_r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
+		/*error += gdal_decode_R (prhs->r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);*/
+		error += GMT_parse_common_options (prhs->r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
 	}
 
 	if (error) {
@@ -101,14 +101,14 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 		return (-1);
 	}
 
-	if (prhs->GD_P.active)
-		jump = atoi(prhs->GD_P.jump);
+	if (prhs->P.active)
+		jump = atoi(prhs->P.jump);
 
 	/* Open gdal - */
 
 	GDALAllRegister();
 
-	if (prhs->GD_W.active) {
+	if (prhs->W.active) {
 		OGRSpatialReferenceH  hSRS;
 		/* const char *str = Ctrl->ProjectionRefPROJ4; */
 
@@ -293,7 +293,6 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 		}
 		else
 			i_x_nXYSize= i * (nBufXSize + 2*pad) * (nBufYSize + 2*pad);
-			/*i_x_nXYSize = i*nXYSize;*/
 
 		switch( GDALGetRasterDataType(hBand) ) {
 			case GDT_Byte:
@@ -303,15 +302,12 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 						for (n = nXSize-1; n >= 0; n--)
 							Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];
 				}
-				else {
-					//for (n = 0; n < nXSize*nYSize; n++)
-						//Ctrl->UInt8.data[n + i_x_nXYSize] = tmp[n];
+				else
 					for (m = 0; m < nYSize; m++) {
 						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
 						for (n = 0; n < nXSize; n++)
 							Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];
 					}
-				}
 				break;
 			case GDT_Int16:
 				tmpI16 = (GInt16 *) tmp;
@@ -322,8 +318,11 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 							Ctrl->Int16.data[nn++] = tmpI16[mVector[m]+n];
 				}
 				else {
-					for (n = 0; n < nXSize*nYSize; n++)
-						Ctrl->Int16.data[n + i_x_nXYSize] = tmpI16[n];
+					for (m = 0; m < nYSize; m++) {
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
+						for (n = 0; n < nXSize; n++)
+							Ctrl->Int16.data[nn++] = tmpI16[mVector[m]+n];
+					}
 				}
 				break;
 			case GDT_UInt16:
@@ -335,8 +334,11 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 							Ctrl->UInt16.data[nn++] = tmpUI16[mVector[m]+n];
 				}
 				else {
-					for (n = 0; n < nXSize*nYSize; n++)
-						Ctrl->UInt16.data[n + i_x_nXYSize] = tmpUI16[n];
+					for (m = 0; m < nYSize; m++) {
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
+						for (n = 0; n < nXSize; n++)
+							Ctrl->UInt16.data[nn++] = tmpUI16[mVector[m]+n];
+					}
 				}
 				break;
 			case GDT_Int32:
@@ -348,8 +350,11 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 							Ctrl->Int32.data[nn++] = tmpI32[mVector[m]+n];
 				}
 				else {
-					for (n = 0; n < nXSize*nYSize; n++)
-						Ctrl->Int32.data[n + i_x_nXYSize] = tmpI32[n];
+					for (m = 0; m < nYSize; m++) {
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
+						for (n = 0; n < nXSize; n++)
+							Ctrl->Int32.data[nn++] = tmpI32[mVector[m]+n];
+					}
 				}
 				break;
 			case GDT_UInt32:
@@ -361,21 +366,32 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 							Ctrl->UInt32.data[nn++] = tmpUI32[mVector[m]+n];
 				}
 				else {
-					for (n = 0; n < nXSize*nYSize; n++)
-						Ctrl->UInt32.data[n + i_x_nXYSize] = tmpUI32[n];
+					for (m = 0; m < nYSize; m++) {
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
+						for (n = 0; n < nXSize; n++)
+							Ctrl->UInt32.data[nn++] = tmpUI32[mVector[m]+n];
+					}
 				}
 				break;
 			case GDT_Float32:
 				tmpF32 = (float *) tmp;
 				Ctrl->Float.active = TRUE;
-				for (n = 0; n < nXSize*nYSize; n++)
-					Ctrl->Float.data[n + i_x_nXYSize] = tmpF32[n];
+				/*for (n = 0; n < nXSize*nYSize; n++)
+					Ctrl->Float.data[n + i_x_nXYSize] = tmpF32[n];*/
+				for (m = 0; m < nYSize; m++) {
+					nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
+					for (n = 0; n < nXSize; n++)
+						Ctrl->Float.data[nn++] = tmpF32[mVector[m]+n];
+				}
 				break;
 			case GDT_Float64:	/* For now we don't care about doubles */
 				tmpF64 = (double *) tmp;
 				Ctrl->Float.active = TRUE;
-				for (n = 0; n < nXSize*nYSize; n++)
-					Ctrl->Float.data[n + i_x_nXYSize] = (float)tmpF64[n];
+				for (m = 0; m < nYSize; m++) {
+					nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
+					for (n = 0; n < nXSize; n++)
+						Ctrl->Float.data[nn++] = (float)tmpF64[mVector[m]+n];
+				}
 				break;
 			default:
 				CPLAssert( FALSE );
@@ -384,7 +400,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 
 	free(mVector);
 	free(tmp);
-	if (prhs->GD_B.active) free(whichBands);
+	if (prhs->B.active) free(whichBands);
 
 	GDALClose(hDataset);
 
