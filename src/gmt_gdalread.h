@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.6 2009-09-11 19:45:59 jluis Exp $
+ *	$Id: gmt_gdalread.h,v 1.7 2009-09-13 17:32:33 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -43,6 +43,10 @@ struct GDALREAD_CTRL {
 		int active;
 		char	*jump;
 	} GD_P;
+	struct GD_p {	/* Pad array in output */
+		int active;
+		int pad;
+	} p;
 	struct GD_W {	/* Convert proj4 string into WKT */
 		int active;
 	} GD_W;
