@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.27 2009-09-13 00:52:03 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.28 2009-09-13 13:20:10 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -509,7 +509,7 @@ GMT_LONG get_digitize_raw (GMT_LONG digunit, double *xdig, double *ydig, struct 
 	n--;
 	buffer[n] = 0;
 #ifdef DEBUG
-	fprintf (stderr, "Got %d bytes [%s]\n", n, buffer);
+	fprintf (stderr, "Got %ld bytes [%s]\n", n, buffer);
 #endif
 	for (i = 0; i < n; i++) if (buffer[i] == ',') buffer[i] = ' ';
 	sscanf (buffer, "%ld %ld %c", &ix, &iy, &button);
