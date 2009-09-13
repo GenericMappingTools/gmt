@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.h,v 1.7 2009-09-13 17:32:33 jluis Exp $
+ *	$Id: gmt_gdalread.h,v 1.8 2009-09-13 18:57:48 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -26,38 +26,38 @@ struct GDALREAD_CTRL {
 	struct GD_B {	/* Band selection */
 		int active;
 		char *bands;
-	} GD_B;
+	} B;
 	struct GD_C {	/* correct limits to grid reg */
 		int active;
-	} GD_C;
+	} C;
 	struct GD_F {	/* Force pixel-reg info in ouput 'hdr' field */
 		int active;
-	} GD_F;
+	} F;
 	struct GD_L {	/* Left-Right flip */
 		int active;
-	} GD_L;
+	} L;
 	struct GD_M {	/* Metadata only */
 		int active;
-	} GD_M;
+	} M;
 	struct GD_P {	/* Preview mode */
 		int active;
 		char	*jump;
-	} GD_P;
+	} P;
 	struct GD_p {	/* Pad array in output */
 		int active;
 		int pad;
 	} p;
 	struct GD_W {	/* Convert proj4 string into WKT */
 		int active;
-	} GD_W;
-	struct GD_RR {	/* Sub-region in referenced coords */
+	} W;
+	struct GD_R {	/* Sub-region in referenced coords */
 		int active;
 		char *region;
-	} GD_R;
+	} R;
 	struct GD_r {	/* Sub-region in row/column coords */
 		int active;
 		char *region;
-	} GD_r;
+	} r;
 };
 
 /* Structure with the output data transmited by GMT_gdalread */
