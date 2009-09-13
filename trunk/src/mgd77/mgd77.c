@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.246 2009-07-11 03:16:31 guru Exp $
+ *	$Id: mgd77.c,v 1.247 2009-09-13 00:52:03 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -82,7 +82,7 @@ int MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 int MGD77_Convert_To_New_Format (char *line);
 int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir);
 void MGD77_Place_Text (int dir, char *struct_member, char *header_record, int start_pos, int n_char);
-BOOLEAN MGD77_entry_in_MGD77record (char *name, int *entry);
+BOOLEAN MGD77_entry_in_MGD77record (char *name, GMT_LONG *entry);
 int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises, BOOLEAN sorted);
 double MGD77_Sind (double z);
 double MGD77_Cosd (double z);
@@ -157,7 +157,6 @@ int MGD77_Read_Header_Sequence (FILE *fp, char *record, int seq);
 int MGD77_Read_Data_Sequence (FILE *fp, char *record);
 int MGD77_Write_Header_Record_New (FILE *fp, struct MGD77_HEADER *H, int format);
 void MGD77_Write_Sequence (FILE *fp, int seq);
-int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *set, int *item);
 int get_quadrant (int x, int y);
 int MGD77_Free_Header_Record_asc (struct MGD77_HEADER *H);
 int MGD77_Free_Header_Record_cdf (struct MGD77_HEADER *H);
@@ -1751,7 +1750,7 @@ int MGD77_Read_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 int MGD77_Read_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S)	  /* Will read all MGD77 records in current file */
 {
 	GMT_LONG rec;
-	int k, col, n_txt, n_val, id, err, n_nan_times, entry, mgd77_col[MGD77_SET_COLS], Clength[3] = {8, 5, 6};
+	GMT_LONG k, col, n_txt, n_val, id, err, n_nan_times, entry, mgd77_col[MGD77_SET_COLS], Clength[3] = {8, 5, 6};
 	struct MGD77_DATA_RECORD MGD77Record;
 	double *values[MGD77_N_NUMBER_FIELDS+1];
 	char *text[3];
@@ -2249,7 +2248,7 @@ int MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Having processed -F and read the file's header, we can organize which
 	 * columns must be read and in what order.  If -F was never set we call
 	 * MGD77_Select_All_Columns to select every column for output. */
-	int i, id, set, item;
+	GMT_LONG i, id, set, item;
 	
 	MGD77_Select_All_Columns (F, H);	/* Make sure n_out_columns is set */
 
@@ -2290,9 +2289,9 @@ int MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 	return (MGD77_NO_ERROR);
 }
 
-int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *set, int *item)
+int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, GMT_LONG *set, GMT_LONG *item)
 {
-	int id, c;
+	GMT_LONG id, c;
 	
 	/* Returns the number in the output list AND passes set,item as the entry in H */
 	
@@ -2309,9 +2308,9 @@ int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *set, int *i
 	return (MGD77_NOT_SET);
 }
 
-BOOLEAN MGD77_entry_in_MGD77record (char *name, int *entry)
+BOOLEAN MGD77_entry_in_MGD77record (char *name, GMT_LONG *entry)
 {
-	int i;
+	GMT_LONG i;
 	
 	/* Returns the number in the MGD77 Datarecord number[x] and text[y] arrays */
 
@@ -3110,7 +3109,7 @@ void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 	 * 
 	 */
 	 
-	int i, id, t_id, set, t_set = MGD77_NOT_SET, entry;
+	GMT_LONG i, id, t_id, set, t_set = MGD77_NOT_SET, entry;
 	BOOLEAN crossed_dateline = FALSE, crossed_greenwich = FALSE;
 	char *text;
 	double *values, dx;
@@ -3190,7 +3189,7 @@ int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct M
 	 */
 	
 	int dims[2] = {0, 0}, var_id, time_id;
-	int id, j, k, set, entry, use;
+	GMT_LONG id, j, k, set, entry, use;
 	time_t now;
 	char string[128];
 	FILE *fp_err;
@@ -3401,8 +3400,8 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 {
 	/* Reads the entire data file and applies bitflags and corrections unless they are turned off by calling programs */
 	int nc_id;
-	int i, k, c, id, col;
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
+	GMT_LONG i, k, c, id, col;
 	GMT_LONG rec, rec_in;
 	BOOLEAN apply_bits[MGD77_N_SETS];
 	unsigned int *flags;
