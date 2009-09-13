@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.117 2009-07-07 08:17:21 guru Exp $
+ *	$Id: mgd77.h,v 1.118 2009-09-13 00:52:03 guru Exp $
  * 
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -478,7 +478,7 @@ extern int MGD77_Write_Data_Record (struct MGD77_CONTROL *F, struct MGD77_HEADER
 extern void MGD77_Free (struct MGD77_DATASET *S);									/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
 extern void MGD77_Select_Columns (char *string, struct MGD77_CONTROL *F, int option);					/* Decode the -F option specifying the desired columns */
 extern int MGD77_Get_Column (char *word, struct MGD77_CONTROL *F);							/* Get column number from column name (or -1 if not present) */
-extern int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, int *set, int *item);
+extern int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, GMT_LONG *set, GMT_LONG *item);
 extern void MGD77_List_Header_Items (struct MGD77_CONTROL *F);
 extern int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item);
 extern int MGD77_Get_Set (char *abbrev);										/* Returns 0 if abbrev is in the MGD77 set, else 1 */

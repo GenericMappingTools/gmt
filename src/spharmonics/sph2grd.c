@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.10 2009-09-09 23:27:05 guru Exp $
+ *    $Id: sph2grd.c,v 1.11 2009-09-13 00:52:03 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,7 +60,7 @@ struct SPH2GRD_CTRL {	/* All control options for this program (except common arg
 
 int main (int argc, char **argv)
 {
-	int i, j, ij, n_expected_fields, n_fields, n_files = 0, f_arg, error = 0, n_read = 0;
+	GMT_LONG i, j, ij, n_expected_fields, n_fields, n_files = 0, f_arg, error = 0, n_read = 0;
 	
 	float *grd;
 	
@@ -215,7 +215,7 @@ int main (int argc, char **argv)
 	while ((n_fields = GMT_input (fp, &n_expected_fields, &in)) >= 0 && !(GMT_io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		n_read++;
 		if (GMT_io.status & GMT_IO_MISMATCH) {
-			fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %d\n", GMT_program, n_fields, n_expected_fields, n_read);
+			fprintf (stderr, "%s: Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", GMT_program, n_fields, n_expected_fields, n_read);
 			exit (EXIT_FAILURE);
 		}
 		/* Store coefficients somewhere */
