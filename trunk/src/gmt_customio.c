@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.82 2009-09-12 19:37:35 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.83 2009-09-13 03:13:28 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1848,11 +1848,12 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 		header->z_max = from_gdalread->hdr[5];
 	}
 
+	nm = header->nx * header->ny;
+
 	if (from_gdalread->Float.active)
-		grid = from_gdalread->Float.data;
+		grid = memcpy((void *)grid, (void *)from_gdalread->Float.data, header->nx*header->ny * sizeof(float));
 	else {
 		/* Convert everything else do float */
-		nm = header->nx * header->ny, nBand;
 		nBand = 0;		/* Need a solution to RGB or multiband files */
 		i = nBand * nm;
 		if (from_gdalread->UInt8.active)
@@ -1871,10 +1872,13 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 	header->nan_value = GMT_f_NaN;
 
 	GMT_free((void *) to_gdalread);
-	/* GMT_free((void *) from_gdalread);	Where shall we free this ??? */
+	if (from_gdalread->ColorMap == NULL) 		/* Otherwise we must tell GDAL to free the colormap */
+		GMT_free((void *) from_gdalread);
 
 	if (from_gdalread->UInt8.active)
 		GMT_free ((void *)from_gdalread->UInt8.data);
+	else if (from_gdalread->Float.active)
+		GMT_free ((void *)from_gdalread->Float.data);
 
 	return (GMT_NOERROR);
 }
