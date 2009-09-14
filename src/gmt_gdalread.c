@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.9 2009-09-13 18:58:33 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.10 2009-09-14 17:29:04 jluis Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -29,10 +29,7 @@ int record_geotransform ( char *gdal_filename, GDALDatasetH hDataset, double *ad
 int populate_metadata (struct GD_CTRL *, char * ,int , int, int, int, int, double, double, double, double, double, double);
 int ReportCorner(GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
 void ComputeRasterMinMax(char *tmp, GDALRasterBandH hBand, double adfMinMax[2], int nXSize, int nYSize, double, double);
-int gdal_decode_R (char *item, double *w, double *e, double *s, double *n);
-int gdal_check_region (double w, double e, double s, double n);
 int gdal_decode_columns (char *txt, int *whichBands, int n_col);
-double gdal_ddmmss_to_degree (char *text);
 
 int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format;
@@ -86,13 +83,11 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 
 	if (prhs->R.active) {
 		got_R = TRUE;
-		/*error += gdal_decode_R (prhs->R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);*/
 		error += GMT_parse_common_options (prhs->R.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
 	}
 
 	if (prhs->r.active) { 		/* Region is given in pixels */
 		got_r = TRUE;
-		/*error += gdal_decode_R (prhs->r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);*/
 		error += GMT_parse_common_options (prhs->r.region, &dfULX, &dfLRX, &dfLRY, &dfULY);
 	}
 
@@ -298,9 +293,11 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 			case GDT_Byte:
 				Ctrl->UInt8.active = TRUE;
 				if (fliplr) {
-					for (m = 0, nn = 0 + i_x_nXYSize; m < nYSize; m++)
+					for (m = 0; m < nYSize; m++) {
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
 							Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];
+					}
 				}
 				else
 					for (m = 0; m < nYSize; m++) {
@@ -313,9 +310,11 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 				tmpI16 = (GInt16 *) tmp;
 				Ctrl->Int16.active = TRUE;
 				if (fliplr) {
-					for (m = 0, nn = 0 + i_x_nXYSize; m < nYSize; m++)
+					for (m = 0; m < nYSize; m++) {
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
 							Ctrl->Int16.data[nn++] = tmpI16[mVector[m]+n];
+					}
 				}
 				else {
 					for (m = 0; m < nYSize; m++) {
@@ -329,9 +328,11 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 				tmpUI16 = (GUInt16 *) tmp;
 				Ctrl->UInt16.active = TRUE;
 				if (fliplr) {
-					for (m = 0, nn = 0 + i_x_nXYSize; m < nYSize; m++)
+					for (m = 0; m < nYSize; m++) {
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
 							Ctrl->UInt16.data[nn++] = tmpUI16[mVector[m]+n];
+					}
 				}
 				else {
 					for (m = 0; m < nYSize; m++) {
@@ -345,9 +346,11 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 				tmpI32 = (GInt32 *) tmp;
 				Ctrl->Int32.active = TRUE;
 				if (fliplr) {
-					for (m = 0, nn = 0 + i_x_nXYSize; m < nYSize; m++)
+					for (m = 0; m < nYSize; m++) {
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
 							Ctrl->Int32.data[nn++] = tmpI32[mVector[m]+n];
+					}
 				}
 				else {
 					for (m = 0; m < nYSize; m++) {
@@ -361,9 +364,11 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 				tmpUI32 = (GUInt32 *) tmp;
 				Ctrl->UInt32.active = TRUE;
 				if (fliplr) {
-					for (m = 0, nn = 0 + i_x_nXYSize; m < nYSize; m++)
+					for (m = 0; m < nYSize; m++) {
+						nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;
 						for (n = nXSize-1; n >= 0; n--)
 							Ctrl->UInt32.data[nn++] = tmpUI32[mVector[m]+n];
+					}
 				}
 				else {
 					for (m = 0; m < nYSize; m++) {
@@ -884,61 +889,6 @@ void ComputeRasterMinMax(char *tmp, GDALRasterBandH hBand, double adfMinMax[2],
 	}
 	adfMinMax[0] = z_min;
 	adfMinMax[1] = z_max;
-}
-
-/* -------------------------------------------------------------------- */
-int gdal_decode_R (char *item, double *w, double *e, double *s, double *n) {
-	char *text, string[BUFSIZ];
-	
-	/* Minimalist code to decode option -R extracted from GMT_get_common_args */
-	
-	int i, error = 0;
-	double *p[4];
-	
-	p[0] = w;	p[1] = e;	p[2] = s;	p[3] = n;
-			
-	i = 0;
-	strcpy (string, &item[2]);
-	text = strtok (string, "/");
-	while (text) {
-		*p[i] = gdal_ddmmss_to_degree (text);
-		i++;
-		text = strtok (CNULL, "/");
-	}
-	if (item[strlen(item)-1] == 'r')	/* Rectangular box given, but valid here */
-		error++;
-	if (i != 4 || gdal_check_region (*p[0], *p[1], *p[2], *p[3]))
-		error++;
-	w = p[0];	e = p[1];
-	s = p[2];	n = p[3];
-	return (error);
-}
-
-/* -------------------------------------------------------------------- */
-int gdal_check_region (double w, double e, double s, double n) {
-	/* If region is given then we must have w < e and s < n */
-	return ((w >= e || s >= n));
-}
-
-/* -------------------------------------------------------------------- */
-double gdal_ddmmss_to_degree (char *text) {
-	int i, colons = 0, suffix;
-	double degree, minute, degfrac, second;
-
-	for (i = 0; text[i]; i++) if (text[i] == ':') colons++;
-	suffix = (int)text[i-1];	/* Last character in string */
-	if (colons == 2) {	/* dd:mm:ss format */
-		sscanf (text, "%lf:%lf:%lf", &degree, &minute, &second);
-		degfrac = degree + copysign (minute / 60.0 + second / 3600.0, degree);
-	}
-	else if (colons == 1) {	/* dd:mm format */
-		sscanf (text, "%lf:%lf", &degree, &minute);
-		degfrac = degree + copysign (minute / 60.0, degree);
-	}
-	else
-		degfrac = atof (text);
-	if (suffix == 'W' || suffix == 'w' || suffix == 'S' || suffix == 's') degfrac = -degfrac;	/* Sign was given implicitly */
-	return (degfrac);
 }
 
 /* -------------------------------------------------------------------- */
