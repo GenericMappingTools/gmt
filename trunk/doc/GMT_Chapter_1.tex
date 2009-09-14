@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.129 2009-09-11 02:14:14 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.130 2009-09-14 02:49:09 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -36,13 +36,15 @@ history of the development milestones in the 4.x series.
 
 \subsection{Overview of \gmt\ 4.5.1 [Sept-15, 2009]}
 
-This is almost entirely a but-fix release where we address 64-bit incompatibilities and
-rebuild the netcdf GSHHS library to include some attributes from GSHHS that are needed
-by new options in \GMTprog{pscoast}.  Note that GSHHS polygons have not changed (still
+This is almost entirely a but-fix release where we address several 64-bit incompatibilities and
+rebuild the netcdf GSHHS library to include some attributes from GSHHS that were needed
+by new options in \GMTprog{pscoast} and other programs.  Note that the GSHHS polygons have not changed (still
 at version 2.0), but we had to update the derived netcdf repackaging used by \GMT\ to 2.0.1.
 However, some enhancements were added as well, most significantly support for the polyconic
-projection (\Opt{JPoly}) and experimental support for grid and image imports via GDAL
-(requires --enable-gdal during configure and properly installed GDAL libraries and include files).
+projection (\Opt{JPoly}), experimental support for grid and image imports via GDAL
+(requires --enable-gdal during configure and properly installed GDAL libraries and include files),
+and allowing \Opt{JX}{\it width/height} to recompute a {\it height} given as zero based on the
+{\it width} (or vice versa) and the aspect ratio of the region.
 
 Here is the list of bug corrections:
 \begin{description}
@@ -50,8 +52,8 @@ Here is the list of bug corrections:
 		--disable-flock to disable if.
 		Use --enable-64 to force 64-bit compilation, use --disable-64
 		to force 32-bit compilation. Otherwise use default.
-		Switch -DGMT\_QSORT is now on only for OSX prior to Snow Leopard as the latter has
-		a correctly working 64-bit qsort function.
+		Switch -DGMT\_QSORT is now on only for OS X prior to Snow Leopard as the latter has
+		a correctly working 64-bit \GMTfunc{qsort} function.
 	\item [\GMTprog{gmt\_customio.c}]:	Made surfer grid header i/o 64-bit compliant.
 	\item [\GMTprog{gmt\_map.c}]:	Changed \GMTfunc{GMT\_truncate} from being a pointer function (PFL)
 		to a regular function that simply calls \GMTfunc{GMT\_truncate\_x}
@@ -72,6 +74,8 @@ Here is the list of bug corrections:
 		not implemented in this program.
 	\item [\GMTprog{mgd77/mgd77sniffer.c}]: Bug in \Opt{I} option; needed to set bitpattern for bad faa.
 	\item [\GMTprog{misc/gmt2kml.c}]: Option \Opt{T} did not handle spaces in titles and folder names.
+		Under Windows, the output got scrambled due to DLL hell.
+	\item [\GMTprog{spotter/backtracker.c}]: Failed in 64-bit mode due to variable mismatches.
 \end{description}
 
 Here is a list of the recent enhancement to various programs:
