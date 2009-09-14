@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.616 2009-09-12 23:52:00 guru Exp $
+	$Id: ChangeLog,v 1.617 2009-09-14 01:49:32 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-13	pwessel
+	* misc/gmt2kml.c:	Avoid mixing stdout/GMT_stdout as Windoze is Windoze.
 
 2009-09-12	pwessel
 	* spotter:		Failed in 64-bit mode due to variable mismatch:
