@@ -1,4 +1,4 @@
-# $Id: GMT.spec,v 1.27 2008-01-23 03:52:12 guru Exp $
+# $Id: GMT.spec,v 1.28 2009-09-14 03:24:16 guru Exp $
 # spec file for package GMT (Version 4)
 #
 # Copyright (c) 2004-2008 Dirk Stoecker <gmt@dstoecker.de>.
@@ -206,7 +206,7 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/%_lib/*.so
 %doc README
 %doc CHANGES
-%doc COPYING
+%doc LICENSE.TXT
 
 %files devel
 %defattr(-,root,root)
