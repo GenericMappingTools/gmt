@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.21 2009-02-14 01:11:50 guru Exp $
+#	 $Id: webexamples.sh,v 1.22 2009-09-14 04:03:30 guru Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -184,7 +184,7 @@ while [ $i -le $n_examples ]; do
 #	TMP FIX FOR EX19 SINCE GS IS FUCKED
 	if [ $number -eq 19 ]; then
 		echo "webexamples.sh: Kludge to make Ex 19 pass through buggy gs"
-		grep -v showpage example_${number}.ps | sed '/ scale 0 A/ishowpage' > new.ps
+		grep -v showpage example_${number}.ps | sed -e 's/scale 0 A/scale 0 A showpage/g' > new.ps
 		mv -f new.ps example_${number}.ps
 	fi
 		 

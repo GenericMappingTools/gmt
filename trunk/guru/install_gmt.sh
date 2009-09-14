@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.148 2009-09-10 08:32:26 guru Exp $
+#	$Id: install_gmt.sh,v 1.149 2009-09-14 04:03:30 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1180,7 +1180,7 @@ fi
 if [ "$GMT_64" = "y" ]; then
 	enable_64=--enable-64
 else
-	enable_64=
+	enable_64=--disable-64
 fi
 if [ "$GMT_univ" = "y" ]; then
 	enable_univ=--enable-universal
