@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.85 2009-09-13 18:57:48 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.86 2009-09-14 00:16:00 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1833,6 +1833,11 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 		sprintf(strR, "-R%.10f/%.10f/%.10f/%.10f", w, e, s, n);
 		to_gdalread->R.region = strR;
 	}
+	if (pad[0] > 0) {	/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
+		to_gdalread->p.active = 1;
+		to_gdalread->p.pad = (int)pad[0];
+	}
+
 	if (GMT_gdalread ( header->name, to_gdalread, from_gdalread)) {
 		fprintf (stderr, "ERROR reading file with gdalread.\n");
 		return (GMT_GRDIO_OPEN_FAILED);
