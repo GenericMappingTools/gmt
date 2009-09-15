@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.67 2009-09-11 02:24:44 guru Exp $
-AC_REVISION($Revision: 1.67 $)
+dnl $Id: configure.ac,v 1.68 2009-09-15 07:51:30 guru Exp $
+AC_REVISION($Revision: 1.68 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -14,11 +14,11 @@ dnl Also, fix the MANDATE and DOCDATE values.
 dnl For final version set CVS_VERSION to 0
 dnl
 AC_INIT(GMT, 4.5.1, gmt-help@hawaii.edu)
-MANDATE="15 Sept 2009"
+MANDATE="20 Sept 2009"
 DOCDATE="Sept 2009"
 DOCYEAR="2009"
 GSHHS_VERSION=2.0.1
-CVS_VERSION=1
+CVS_VERSION=0
 dnl
 dnl -----------------------------------------------------------------
 dnl Specify the minimal supplement directories
