@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.44 2009-09-11 07:02:33 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.45 2009-09-15 23:09:07 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -24,7 +24,7 @@ REM Microsoft Visual C/c++ tools.  It will build GMT
 REM using DLL libraries.  To make static executables
 REM you must make some edits to the setup below.
 REM
-REM Author: Paul Wessel, 10-SEPT-2009
+REM Author: Paul Wessel, 15-SEPT-2009
 REM ----------------------------------------------------
 REM
 REM How to build GMT executables under Windows:
@@ -65,7 +65,7 @@ SET GMT_SHARE_PATH="\"C:\\programs\\GMT\\share\""
 REM
 REM STEP e: If you WANT TO  use Shewchuk's triangulation
 REM	    routine, you must set TRIANGLE to "yes" or
-REM	    pass yes as argument to this script:
+REM	    pass tri as 1st argument to this script:
 REM
 SET TRIANGLE="no"
 IF "%1%" == "tri" set TRIANGLE="yes"
@@ -77,8 +77,10 @@ REM
 
 REM
 REM STEP g: To optionaly link against the GDAL library you must set
-REM	    GDAL to "yes" and set the right path in GDAL_INC & GDAL_LIB
-SET GDAL="yes"
+REM	    GDAL to "yes" or pass gdal as 2nd argument to this script
+REM	    Set the right path in GDAL_INC & GDAL_LIB to reflect
+REM	    your FWTools installation.
+IF "%2%" == "gdal" set GDAL="yes"
 SET GDAL_INC=
 SET GDAL_LIB=
 SET USE_GDAL=
