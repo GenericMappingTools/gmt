@@ -1,5 +1,5 @@
 <HTML>
-<!--  $Id: gmt_windows.html,v 1.6 2009-02-16 22:40:00 guru Exp $  -->
+<!--  $Id: gmt_windows.html,v 1.7 2009-09-15 23:22:42 guru Exp $  -->
 <TITLE>GMT for Windows</TITLE>
 <BODY bgcolor="#ffffff">
 <CENTER><H1><IMG SRC="winxp.gif" WIDTH="63" HEIGHT="56" ALIGN=left>GMT for Windows<IMG SRC="vista.jpg" WIDTH="63" HEIGHT="56" ALIGN=right></H1></CENTER>
@@ -15,6 +15,10 @@ data, all documentation in HTML format, and the example batch scripts and test d
 Should you have additional needs for source code or tutorial data sets, etc., you
 may download the complete GMT distribution as bzipped tarballs from any of our GMT <A HREF="gmt_mirrors.html">ftp sites</A>
 and extract the files with a suitable extractor (such as <A HREF="http://sourceforge.net/projects/sevenzip" target="_blank">7-zip</A>).
+<B>EXPERIMENTAL:</B>We also have prepared a Windows installer for GMT that enables the experimental support for GDAL file
+import.  As the GMT executables installed depend on GDAL DLLs from the FWTools project you must first install
+<A HREF="http://home.gdal.org/fwtools/FWTools243.exe">this binary kit</A> and add the path to its binary directory
+to your system PATH.
 <HR>
 <H3>Direct download links for Windows Installers:</H3>
 <OL>
@@ -23,54 +27,56 @@ and extract the files with a suitable extractor (such as <A HREF="http://sourcef
 		<LI><A HREF="ftp://ftp.soest.hawaii.edu/gmt/windows/GMT_basic_install.exe">GMT_basic_install.exe</A> Basic GMT distribution.
 		<LI><A HREF="ftp://ftp.soest.hawaii.edu/gmt/windows/GSHHS_highfull_install.exe">GSHHS_highfull_install.exe</A> High and Full resolution GSHHS coastlines.
 		<LI><A HREF="ftp://ftp.soest.hawaii.edu/gmt/windows/GMT_pdf_install.exe">GMT_pdf_install.exe</A> GMT PDF documentation.
+		<LI><A HREF="ftp://ftp.soest.hawaii.edu/gmt/windows/GMT_gdal_install.exe">GMT_gdal_install.exe</A> Experimental GMT distribution with GDAL support.
 	</UL>
 	<LI>The US 1 Mirror Site (NOAA, Maryland, USA):
 	<UL>
 		<LI><A HREF="ftp://ibis.grdl.noaa.gov/pub/gmt/windows/GMT_basic_install.exe">GMT_basic_install.exe</A> Basic GMT distribution
 		<LI><A HREF="ftp://ibis.grdl.noaa.gov/pub/gmt/windows/GSHHS_highfull_install.exe">GSHHS_highfull_install.exe</A> High and Full resolution GSHHS coastlines
 		<LI><A HREF="ftp://ibis.grdl.noaa.gov/pub/gmt/windows/GMT_pdf_install.exe">GMT_pdf_install.exe</A> GMT PDF documentation.
+		<LI><A HREF="ftp://ibis.grdl.noaa.gov/pub/gmt/windows/GMT_gdal_install.exe">GMT_gdal_install.exe</A> Experimental GMT distribution with GDAL support.
 	</UL>
 	<LI>The US 2 Mirror Site (IRIS, Washington, USA):
 	<UL>
 		<LI><A HREF="ftp://ftp.iris.washington.edu/pub/gmt/windows/GMT_basic_install.exe">GMT_basic_install.exe</A> Basic GMT distribution
 		<LI><A HREF="ftp://ftp.iris.washington.edu/pub/gmt/windows/GSHHS_highfull_install.exe">GSHHS_highfull_install.exe</A> High and Full resolution GSHHS coastlines
 		<LI><A HREF="ftp://ftp.iris.washington.edu/pub/gmt/windows/GMT_pdf_install.exe">GMT_pdf_install.exe</A> GMT PDF documentation.
+		<LI><A HREF="ftp://ftp.iris.washington.edu/pub/gmt/windows/GMT_gdal_install.exe">GMT_gdal_install.exe</A> Experimental GMT distribution with GDAL support.
 	</UL>
 	<LI>The Europe 1 Mirror Site (U of Oslo, Oslo, Norway):
 	<UL>
 		<LI><A HREF="ftp://ftp.geologi.uio.no/pub/gmt/windows/GMT_basic_install.exe">GMT_basic_install.exe</A> Basic GMT distribution
 		<LI><A HREF="ftp://ftp.geologi.uio.no/pub/gmt/windows/GSHHS_highfull_install.exe">GSHHS_highfull_install.exe</A> High and Full resolution GSHHS coastlines
 		<LI><A HREF="ftp://ftp.geologi.uio.no/pub/gmt/windows/GMT_pdf_install.exe">GMT_pdf_install.exe</A> GMT PDF documentation.
-	</UL>
-	<LI>The Europe 2 Mirror Site (Vienna U of Technology, Vienna, Austria):
-	<UL>
-		<LI><A HREF="ftp://d.tuwien.ac.at/gmt/windows/GMT_basic_install.exe">GMT_basic_install.exe</A> Basic GMT distribution
-		<LI><A HREF="ftp://d.tuwien.ac.at/gmt/windows/GSHHS_highfull_install.exe">GSHHS_highfull_install.exe</A> High and Full resolution GSHHS coastlines
-		<LI><A HREF="ftp://d.tuwien.ac.at/gmt/windows/GMT_pdf_install.exe">GMT_pdf_install.exe</A> GMT PDF documentation.
+		<LI><A HREF="ftp://ftp.geologi.uio.no/pub/gmt/windows/GMT_gdal_install.exe">GMT_gdal_install.exe</A> Experimental GMT distribution with GDAL support.
 	</UL>
 	<LI>The Europe 2 Mirror Site (Vienna U of Technology, Vienna, Austria):
 	<UL>
 		<LI><A HREF="ftp://gd.tuwien.ac.at/pub/gmt/windows/GMT_basic_install.exe">GMT_basic_install.exe</A> Basic GMT distribution
 		<LI><A HREF="ftp://gd.tuwien.ac.at/pub/gmt/windows/GSHHS_highfull_install.exe">GSHHS_highfull_install.exe</A> High and Full resolution GSHHS coastlines
 		<LI><A HREF="ftp://gd.tuwien.ac.at/pub/gmt/windows/GMT_pdf_install.exe">GMT_pdf_install.exe</A> GMT PDF documentation.
+		<LI><A HREF="ftp://gd.tuwien.ac.at/pub/gmt/windows/GMT_gdal_install.exe">GMT_gdal_install.exe</A> Experimental GMT distribution with GDAL support.
 	</UL>
 	<LI>The Asia Mirror Site (Tokai U, Shimizu, Japan):
 	<UL>
 		<LI><A HREF="ftp://ftp.scc.u-tokai.ac.jp/pub/gmt/windows/GMT_basic_install.exe">GMT_basic_install.exe</A> Basic GMT distribution
 		<LI><A HREF="ftp://ftp.scc.u-tokai.ac.jp/pub/gmt/windows/GSHHS_highfull_install.exe">GSHHS_highfull_install.exe</A> High and Full resolution GSHHS coastlines
 		<LI><A HREF="ftp://ftp.scc.u-tokai.ac.jp/pub/gmt/windows/GMT_pdf_install.exe">GMT_pdf_install.exe</A> GMT PDF documentation.
+		<LI><A HREF="ftp://ftp.scc.u-tokai.ac.jp/pub/gmt/windows/GMT_gdal_install.exe">GMT_gdal_install.exe</A> Experimental GMT distribution with GDAL support.
 	</UL>
 	<LI>The Australia Mirror Site (U of Sydney, Sydney, Australia):
 	<UL>
 		<LI><A HREF="ftp://mirror.geosci.usyd.edu.au/pub/gmt/windows/GMT_basic_install.exe">GMT_basic_install.exe</A> Basic GMT distribution
 		<LI><A HREF="ftp://mirror.geosci.usyd.edu.au/pub/gmt/windows/GSHHS_highfull_install.exe">GSHHS_highfull_install.exe</A> High and Full resolution GSHHS coastlines
 		<LI><A HREF="ftp://mirror.geosci.usyd.edu.au/pub/gmt/windows/GMT_pdf_install.exe">GMT_pdf_install.exe</A> GMT PDF documentation.
+		<LI><A HREF="ftp://mirror.geosci.usyd.edu.au/pub/gmt/windows/GMT_gdal_install.exe">GMT_gdal_install.exe</A> Experimental GMT distribution with GDAL support.
 	</UL>
 	<LI>The Africa Mirror Site (TENET, South Africa):
 	<UL>
 		<LI><A HREF="ftp://gmt.mirror.ac.za/pub/gmt/windows/GMT_basic_install.exe">GMT_basic_install.exe</A> Basic GMT distribution
 		<LI><A HREF="ftp://gmt.mirror.ac.za/pub/gmt/windows/GSHHS_highfull_install.exe">GSHHS_highfull_install.exe</A> High and Full resolution GSHHS coastlines
 		<LI><A HREF="ftp://gmt.mirror.ac.za/pub/gmt/windows/GMT_pdf_install.exe">GMT_pdf_install.exe</A> GMT PDF documentation.
+		<LI><A HREF="ftp://gmt.mirror.ac.za/pub/gmt/windows/GMT_gdal_install.exe">GMT_gdal_install.exe</A> Experimental GMT distribution with GDAL support.
 	</UL>
 </OL>
 </BODY>
