@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.40 2009-09-05 07:14:06 guru Exp $
+#  $Id: Makefile,v 1.41 2009-09-15 23:22:42 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -21,7 +21,7 @@
 #
 #	Author:	Paul Wessel, SOEST, University of Hawaii
 #
-#	Date:		30-APR-2008
+#	Date:		15-SEPT-2009
 #-------------------------------------------------------------------------------
 #	Default setup
 #-------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ update-ftp-live:
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
-	for p in basic pdf; do \
+	for p in basic gdal pdf; do \
 		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
 		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
 	done
@@ -197,7 +197,7 @@ update-ftp-test:
 		echo "rm -f GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 		echo "$(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2" >> gmt_server_job.sh; \
 	done
-	for p in basic pdf; do \
+	for p in basic gdal pdf; do \
 		echo "rm -f windows/GMT_$${p}_install.exe" >> gmt_server_job.sh; \
 		echo "(cd windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe)" >> gmt_server_job.sh; \
 	done
@@ -237,7 +237,7 @@ update-ftp-local:
 		\rm -f ftp/GMT_$$p.tar.bz2; \
 		(cd ftp; $(LN_S) GMT$(GMT_VERSION)_$$p.tar.bz2 GMT_$$p.tar.bz2); \
 	done
-	for p in basic pdf; do \
+	for p in basic gdal pdf; do \
 		rm -f windows/GMT_$$p_install.exe; \
 		(cd ftp/windows; $(LN_S) GMT$(GMT_VERSION)_$${p}_install.exe GMT_$${p}_install.exe); \
 	done
