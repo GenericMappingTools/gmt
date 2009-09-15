@@ -1,11 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.619 2009-09-15 07:51:30 guru Exp $
+	$Id: ChangeLog,v 1.620 2009-09-15 23:56:42 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2009-09-20
 	* GMT 4.5.1 finalized and released
 -----------------------------------------------------------------------------------------
+2009-09-15	pwessel
+	* x2sys/x2sys_solve.c:	Did not allocate array for weights.
+
 2009-09-13	pwessel
 	* misc/gmt2kml.c:	Avoid mixing stdout/GMT_stdout as Windoze is Windoze.
 	* misc/kml2gmt.c:	Avoid mixing stdout/GMT_stdout as Windoze is Windoze.
