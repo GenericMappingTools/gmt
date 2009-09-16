@@ -1,7 +1,7 @@
 ECHO OFF
 REM ----------------------------------------------------
 REM
-REM	$Id: gmtinstall.bat,v 1.45 2009-09-15 23:09:07 guru Exp $
+REM	$Id: gmtinstall.bat,v 1.46 2009-09-16 02:42:24 guru Exp $
 REM
 REM
 REM	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
@@ -80,6 +80,7 @@ REM STEP g: To optionaly link against the GDAL library you must set
 REM	    GDAL to "yes" or pass gdal as 2nd argument to this script
 REM	    Set the right path in GDAL_INC & GDAL_LIB to reflect
 REM	    your FWTools installation.
+SET GDAL="no"
 IF "%2%" == "gdal" set GDAL="yes"
 SET GDAL_INC=
 SET GDAL_LIB=
