@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.131 2009-09-14 17:35:28 jluis Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.132 2009-09-16 02:08:24 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -70,12 +70,15 @@ Here is the list of bug corrections:
 		\GMTfunc{GMT\_log\_array} recoded to avoid 64-bit error (last value was not included).
 	\item [\GMTprog{minmax.c}]: The \Opt{EH} option did not work.
 	\item [\GMTprog{psmask.c}]: With \Opt{D}, the internal {\it di, dj} constants were set way too large.
+	\item [\GMTprog{pswiggle.c}]: With \Opt{Jx}{\it scale}{\bf d}, distances were not scaled correctly
+		so \Opt{D} failed.
 	\item [\GMTprog{mgd77/mgd77magref.c}]: Got wrong time as time initialization had changed but
 		not implemented in this program.
 	\item [\GMTprog{mgd77/mgd77sniffer.c}]: Bug in \Opt{I} option; needed to set bitpattern for bad faa.
 	\item [\GMTprog{misc/gmt2kml.c}]: Option \Opt{T} did not handle spaces in titles and folder names.
 		Under Windows, the output got scrambled due to DLL hell.
 	\item [\GMTprog{spotter/backtracker.c}]: Failed in 64-bit mode due to variable mismatches.
+	\item [\GMTprog{x2sys/x2sys\_solve.c}]: Did not allocate array for storing weights.
 \end{description}
 
 Here is a list of the recent enhancement to various programs:
