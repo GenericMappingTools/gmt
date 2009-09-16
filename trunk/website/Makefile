@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.41 2009-09-15 23:22:42 guru Exp $
+#  $Id: Makefile,v 1.42 2009-09-16 06:54:04 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -46,10 +46,10 @@ help::
 #!update-www-test	: Update the TEST www server
 #!update-www-local	: Update the local www dir
 #!update-ftp-live	: Update the LIVE ftp server with latest GMT
-#!update-ftp-test	: Update the LIVE ftp server test dir with latest GMT
+#!update-ftp-test	: Update the TEST ftp server test dir with latest GMT
 #!update-ftp-local	: Update the local ftp dir with latest GMT
 #!update-gshhs-live	: Update the LIVE ftp server with latest GSHHS
-#!update-gshhs-test	: Update the LIVE ftp server test dir with latest GSHHS
+#!update-gshhs-test	: Update the TEST ftp server test dir with latest GSHHS
 #!update-gshhs-local	: Update the Update the local ftp with latest GSHHS
 #!clean-ftp		: Empty all local ftp archives
 #!clean-local		: Remove the local ftp and www directories
