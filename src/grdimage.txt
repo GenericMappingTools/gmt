@@ -7,12 +7,12 @@
 .SH NAME
 grdimage \- Create grayshaded or colored image from a 2-D netCDF grid file
 .SH SYNOPSIS
-\fBgrdimage\fP \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP OPT(C)\fIcptfile\fP GMT_J_OPT 
+\fBgrdimage\fP \fIgrd_z\fP | \fIgrd_r grd_g grd_b\fP OPT(C)\fIcptfile\fP OPT(D)\fIimage\fP GMT_J_OPT 
 [ GMT_B_OPT ] [ OPT(Ei)|\fIdpi\fP ] [ OPT(G)[\fBf\fP|\fBb\fP]\fIcolor\fP ] [ OPT(I)\fIintensfile\fP] 
 [ GMT_K_OPT ] [ OPT(M) ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ GMT_Rgeo_OPT ] 
 [ OPT(S)[\fB-\fP]\fBb\fP|\fBc\fP|\fBl\fP|\fBn\fP[\fB/\fP\fIthreshold\fP] ]
 [ OPT(T) ] [ GMT_U_OPT ] [ GMT_V_OPT ] 
-[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ]
+[ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_c_OPT ] [ GMT_f_OPT ] [ OPT(r) ]
 .SH DESCRIPTION
 \fBgrdimage\fP reads one 2-D grid file and produces a gray-shaded (or colored) map by plotting
 rectangles centered on each grid node and assigning them a gray-shade (or color) based on the z-value.
@@ -54,6 +54,13 @@ the projected grid will be of the same size (rows and columns) as the
 input file.  Specify \fBi\fP to use the \fIPostScript\fP
 image operator to interpolate the image at the device resolution.
 .TP
+OPT(D)
+name of a image file to be read via GDAL. Obviously this option will work only with \fBGMT\fP
+versions built with GDAL support. The image can be indexed or true color (RGB) and can
+an url of a remote located file. That is OPT(D)http://www.somewhere.com/image.jpg is a valid syntax.
+Note, however, that to use it this way you must not be blocked by a proxy. If you are, chances 
+are good that it can work by setting the environmental variable http_proxy with the value 'your_proxy:port'
+.TP
 OPT(G)
 This option only applies when the resulting image otherwise would consist
 of only two colors: black (0) and white (255).  If so, this option will
@@ -92,6 +99,12 @@ The option OPT(To) is no longer supported.
 #include "explain_-XY.txt"
 #include "explain_-c.txt"
 #include "explain_-f.txt"
+.TP
+OPT(r)
+When importing an image via GDAL, use the region settings by OPT(R) to reference the image.
+For example, if you have used OPT(Rd) than the image will be assigned the limits of a global
+domain. The interest of this option is that you can project a raw image (an image without 
+referencing coordinates)
 #include "explain_grd_input.txt"
 .SH IMAGING GRIDS WITH NANS
 Be aware that if your input grid contains patches of NaNs, these patches can become larger
@@ -121,6 +134,12 @@ with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
 .br
 .sp
 \fBgrdimage\fP red.grd green.grd blue.grd SCALE2 OPT(B)5 > rgbimage.ps
+.br
+.sp
+When GDAL support is built in: To create a sinusoidal projection of a remotely located Jessica Rabit
+.br
+.sp
+\fBgrdimage\fP -JI15c -Rd -Dhttp://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -r -P > jess.ps
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR gmt2rgb (1),
