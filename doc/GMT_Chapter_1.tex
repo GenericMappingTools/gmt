@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.133 2009-09-16 06:54:04 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.134 2009-09-18 08:01:20 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -79,6 +79,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{misc/gmt2kml.c}]: Option \Opt{T} did not handle spaces in titles and folder names.
 		Under Windows, the output got scrambled due to DLL hell.
 	\item [\GMTprog{spotter/backtracker.c}]: Failed in 64-bit mode due to variable mismatches.
+	\item [\GMTprog{x2sys/x2sys\_get.c}]: The \Opt{L} option failed if list contained file extensions.
 	\item [\GMTprog{x2sys/x2sys\_solve.c}]: Did not allocate array for storing weights.
 \end{description}
 
@@ -89,7 +90,7 @@ Here is a list of the recent enhancement to various programs:
 	\item \GMTprog{gmtset.c} has new default {\bf TRANSPARENCY} = {\it stroke/fill} that can
 	change the PDF transparency for stroked and filled items [Note: Only supported by Adobe Distiller].
 	\item \GMTprog{pslib.c} has added option to reduce all color to gray scale via {\bf PS\_COLOR} = gray.
-	\item \GMTprog{grdimage.c} has optional support that allow a minimalist image import via GDAL.
+	\item \GMTprog{grdimage.c} has optional support that allow single-band image import via GDAL.
 	\item \GMTprog{misc/nc2xy.c} now has \Opt{bo} option.
 	\item \GMTprog{mgd77/mgd77magref.c} can combine IGRF and CM4 computations.
 \end{enumerate}
