@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.58 2009-09-10 07:01:34 guru Exp $
+#  $Id: GNUmakefile,v 1.59 2009-09-18 02:36:50 guru Exp $
 #
 #		 Guru makefile for GMT Version 4.*
 #			GNU make compatible
@@ -231,16 +231,16 @@ ftpdir:
 tar_progs tar_src:	ftpdir
 		echo "make GMT$(GMT_VERSION)_src.tar.bz2"
 		grep -vh '#' guru/GMT_progs_files_{ascii,bin}.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
-		tar -cjf ftp/GMT$(GMT_VERSION)_src.tar.bz2 -C .. -T tmp.lis
+		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_src.tar.bz2 -C .. -T tmp.lis
 		echo "make GMT$(GMT_VERSION)_triangle.tar.bz2"
 		grep -vh '#' guru/GMT_triangle.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
-		tar -cjf ftp/GMT$(GMT_VERSION)_triangle.tar.bz2 -C .. -T tmp.lis
+		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_triangle.tar.bz2 -C .. -T tmp.lis
 		rm -f tmp.lis
 
 tar_share:	ftpdir
 		echo "make GMT$(GMT_VERSION)_share.tar.bz2"
 		grep -vh '#' guru/GMT_share_files_{ascii,bin}.lis | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
-		tar -cjf ftp/GMT$(GMT_VERSION)_share.tar.bz2 -C .. -T tmp.lis
+		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_share.tar.bz2 -C .. -T tmp.lis
 		rm -f tmp.lis
 
 tar_doc:	ftpdir
@@ -249,13 +249,13 @@ tar_doc:	ftpdir
 		ls share/doc/gmt/pdf/GMT_*.pdf | sed -e 's:^:GMT$(GMT_VERSION)/:' | grep -v My_Manpages >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_{animations,examples}.lis >> tmp.lis
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_tutorial.lis >> tmp.lis
-		tar -cjf ftp/GMT$(GMT_VERSION)_doc.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
+		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_doc.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
 		rm -f tmp.lis
 
 tar_suppl:	ftpdir
 		echo "make GMT$(GMT_VERSION)_suppl.tar.bz2"
 		sed -e 's:^:GMT$(GMT_VERSION)/:' guru/GMT_suppl.lis > tmp.lis
-		tar -cjf ftp/GMT$(GMT_VERSION)_suppl.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
+		COPYFILE_DISABLE=true tar -cjf ftp/GMT$(GMT_VERSION)_suppl.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
 		rm -f tmp.lis
 
 #	Note: coastline files now stored relative to share, instead of GMT/share
@@ -263,7 +263,7 @@ tar_suppl:	ftpdir
 tar_coast tar_high tar_full:	ftpdir
 		echo "make GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2"
 		if [ "$(subst tar_,,$@)" == "coast" ]; then suf=cli; else suf=`echo $@|cut -c5`; fi; \
-			tar -cjf ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2 LICENSE.TXT \
+			COPYFILE_DISABLE=true tar -cjf ftp/GSHHS$(GSHHS_VERSION)_$(subst tar_,,$@).tar.bz2 LICENSE.TXT \
 			share/coast/binned_*_[$$suf].cdf -C src/coast/GSHHS+WDBII README.TXT
 
 #	The tar_win target is for GMT Developers building GMT on a Windows platform without configure
@@ -273,7 +273,7 @@ tar_win:	ftpdir
 		echo "make WINGMT$(GMT_VERSION)_win.tar.bz2"
 		ls src/gmt_version.h share/conf/gmt.conf share/conf/gmtdefaults_?? \
 			guru/*.iss guru/*.txt guru/*.bat | sed -e 's:^:GMT$(GMT_VERSION)/:' > tmp.lis
-		tar -cjf ftp/WINGMT$(GMT_VERSION)_win.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
+		COPYFILE_DISABLE=true tar -cjf ftp/WINGMT$(GMT_VERSION)_win.tar.bz2 -C .. -T tmp.lis GMT$(GMT_VERSION)/LICENSE.TXT
 		rm -f tmp.lis
 
 include Makefile

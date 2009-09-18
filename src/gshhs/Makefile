@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.14 2008-04-04 17:27:31 remko Exp $
+#	$Id: Makefile,v 1.15 2009-09-18 02:36:50 guru Exp $
 #
 #	makefile for gshhs directory
 #	Does not depend on GMT src or libraries
@@ -52,5 +52,5 @@ gshhs_dp$(EXE):		gshhs_dp.o
 gshhstograss$(EXE):	gshhstograss.o
 
 $(PROGS):
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
