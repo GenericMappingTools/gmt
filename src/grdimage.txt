@@ -47,13 +47,6 @@ name of the color palette table (for \fIgrd_z\fP only).
 No space between the option flag and the associated arguments.
 #include "explain_-B_short.txt"
 .TP
-OPT(E)
-Sets the resolution of the projected grid that will be created if
-a map projection other than Linear or Mercator was selected.  By default,
-the projected grid will be of the same size (rows and columns) as the
-input file.  Specify \fBi\fP to use the \fIPostScript\fP
-image operator to interpolate the image at the device resolution.
-.TP
 OPT(D)
 Specifies that the grid supplied is an image file to be read via GDAL. Obviously this option will work only with \fBGMT\fP
 versions built with GDAL support. The image can be indexed or true color (RGB) and can
@@ -64,6 +57,13 @@ Append \fBr\fP to use the region specified by OPT(R) to apply to the image.
 For example, if you have used OPT(Rd) then the image will be assigned the limits of a global
 domain. The interest of this mode is that you can project a raw image (an image without 
 referencing coordinates).
+.TP
+OPT(E)
+Sets the resolution of the projected grid that will be created if
+a map projection other than Linear or Mercator was selected.  By default,
+the projected grid will be of the same size (rows and columns) as the
+input file.  Specify \fBi\fP to use the \fIPostScript\fP
+image operator to interpolate the image at the device resolution.
 .TP
 OPT(G)
 This option only applies when the resulting image otherwise would consist
