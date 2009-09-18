@@ -50,7 +50,7 @@ No space between the option flag and the associated arguments.
 OPT(D)
 Specifies that the grid supplied is an image file to be read via GDAL. Obviously this option will work only with \fBGMT\fP
 versions built with GDAL support. The image can be indexed or true color (RGB) and can
-be an URL of a remotely located file. That is OPT(D)http://www.somewhere.com/image.jpg is a valid file syntax.
+be an URL of a remotely located file. That is OPT(D) http://www.somewhere.com/image.jpg is a valid file syntax.
 Note, however, that to use it this way you must not be blocked by a proxy. If you are, chances 
 are good that it can work by setting the environmental variable http_proxy with the value 'your_proxy:port'
 Append \fBr\fP to use the region specified by OPT(R) to apply to the image.
