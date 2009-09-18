@@ -55,9 +55,9 @@ input file.  Specify \fBi\fP to use the \fIPostScript\fP
 image operator to interpolate the image at the device resolution.
 .TP
 OPT(D)
-name of a image file to be read via GDAL. Obviously this option will work only with \fBGMT\fP
+Name of a image file to be read via GDAL. Obviously this option will work only with \fBGMT\fP
 versions built with GDAL support. The image can be indexed or true color (RGB) and can
-an url of a remote located file. That is OPT(D)http://www.somewhere.com/image.jpg is a valid syntax.
+be an URL of a remotely located file. That is OPT(D)http://www.somewhere.com/image.jpg is a valid syntax.
 Note, however, that to use it this way you must not be blocked by a proxy. If you are, chances 
 are good that it can work by setting the environmental variable http_proxy with the value 'your_proxy:port'
 .TP
