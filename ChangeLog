@@ -1,11 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.621 2009-09-16 01:30:11 guru Exp $
+	$Id: ChangeLog,v 1.622 2009-09-18 02:54:20 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2009-09-20
 	* GMT 4.5.1 finalized and released
 -----------------------------------------------------------------------------------------
+2009-09-17	pwessel
+	* x2sys/x2sys_get.c:	The -L option failed if list contained file extensions
 2009-09-15	pwessel
 	* x2sys/x2sys_solve.c:	Did not allocate array for weights.
 	* pswiggle.c:		Incorrectly computed distances with -Jx<scale>d.
