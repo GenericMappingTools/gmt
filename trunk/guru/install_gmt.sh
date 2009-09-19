@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.149 2009-09-14 04:03:30 guru Exp $
+#	$Id: install_gmt.sh,v 1.150 2009-09-19 00:19:09 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -942,27 +942,31 @@ if [ "$netcdf_install" = "y" ]; then
 	fi
 fi
 
-if [ x"$netcdf_path" = x ]; then	# Not explicitly set, must assign it
-	if [ ! x"$NETCDFHOME" = x ]; then	# Good, used an environmental variable for it
-                netcdf_path=$NETCDFHOME
-        elif [ "$netcdf_ftp" = "n" ]; then	# Next, see if it was already installed in $topdir
- 		netcdf_path=$topdir/netcdf-${NETCDF_VERSION}
-		if [ -d $netcdf_path ]; then	# OK, it was there
-			p=	# Dummy for empty branch
-		elif [ -d /usr/local/netcdf/lib ]; then	# No, try some standard places
-      			netcdf_path="/usr/local/netcdf"
-		elif [ -f /sw/lib/libnetcdf.a ]; then	# Mac OSX with fink
-      			netcdf_path="/sw"
-		else
-               		echo "install_gmt: No path for netcdf provided - abort" >&2
-               		echo "install_gmt: netcdf not in /usr/local, /usr/local/netcdf, or /sw" >&2
-			exit
-		fi
-        fi
-	echo "install_gmt: netcdf found in $netcdf_path" >&2
+if [ ! x"$NETCDF_INC" = x ] && [ ! x"$NETCDF_LIB" = x ]; then	# Only set up path if these are not set
+	echo "install_gmt: Using NETCDF_INC=$NETCDF_INC and NETCDF_LIB=$NETCDF_LIB to find netcdf support"
+else
+	if [ x"$netcdf_path" = x ]; then	# Not explicitly set, must assign it
+		if [ ! x"$NETCDFHOME" = x ]; then	# Good, used an environmental variable for it
+	                netcdf_path=$NETCDFHOME
+	        elif [ "$netcdf_ftp" = "n" ]; then	# Next, see if it was already installed in $topdir
+	 		netcdf_path=$topdir/netcdf-${NETCDF_VERSION}
+			if [ -d $netcdf_path ]; then	# OK, it was there
+				p=	# Dummy for empty branch
+			elif [ -d /usr/local/netcdf/lib ]; then	# No, try some standard places
+	      			netcdf_path="/usr/local/netcdf"
+			elif [ -f /sw/lib/libnetcdf.a ]; then	# Mac OSX with fink
+	      			netcdf_path="/sw"
+			else
+	               		echo "install_gmt: No path for netcdf provided - abort" >&2
+	               		echo "install_gmt: netcdf not in /usr/local, /usr/local/netcdf, or /sw" >&2
+				exit
+			fi
+	        fi
+		echo "install_gmt: netcdf found in $netcdf_path" >&2
+	fi
+	NETCDFHOME=$netcdf_path
+	export NETCDFHOME
 fi
-NETCDFHOME=$netcdf_path
-export NETCDFHOME
 
 #--------------------------------------------------------------------------------
 #	GMT FTP SECTION
