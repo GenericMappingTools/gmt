@@ -61,7 +61,7 @@ Uses zip (which must be installed) to create a *.kmz file for easy distribution;
 to delete the KML and PNG file after zipping [No zipping].
 .SH EXAMPLES
 To create a 10x10 degree Google Earth KML tile for the region OPT(R)170/180/20/30 using the default
-\fItopo.11.1.img\fP and output naming convention, try:
+\fItopo.11.1.img\fP and output naming convention, try
 .br
 .sp
 \fBimg2google\fP OPT(R)170/180/20/30
@@ -69,10 +69,10 @@ To create a 10x10 degree Google Earth KML tile for the region OPT(R)170/180/20/3
 .sp
 To make the same tile with the previous
 \fItopo.10.1.img\fP, run in verbose mode, clip so only oceanic areas are visible, name the output oldimage, 
-specify the KML metadata directly (including setting the image altitude to 10 km), and make a single *.kmz file, try:
+specify the KML metadata directly (including setting the image altitude to 10 km), and make a single *.kmz file, try
 .br
 .sp
-\fBimg2google\fP \fItopo.10.1.img\fP OPT(R)170/180/20/30 OPT(A\fBA\fP10000  OPT(C) OPT(G)\fIoldimage\fP
+\fBimg2google\fP \fItopo.10.1.img\fP OPT(R)170/180/20/30 OPT(A)\fBA\fP10000 OPT(C) OPT(G)\fIoldimage\fP
 OPT(N)"My KML title" OPT(T)"My KML title" OPT(U)http://my.server.com/images OPT(V) OPT(Z)
 .br
 .sp
