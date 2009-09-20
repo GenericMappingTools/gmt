@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.58 2009-09-10 06:39:27 guru Exp $
+#		$Id: README,v 1.59 2009-09-20 01:22:03 guru Exp $
 #
 #	Copyright (c) 1991-2009, P. Wessel & W. H. F. Smith
 #
@@ -230,7 +230,7 @@ There are a few GMT-specific options in configure.  They are
 	--enable-triangle	To use J. Shewchuk's fast triangulation
 	--enable-US		To use US (inch) instead of SI (cm) units
 	--enable-eps		Make Encapsulated PostScript by default [Freeform PS]
-	--disable-flock		Do NOT use file locking on .gmtcommands files
+	--enable-flock		Use file locking on .gmtcommands4 files
 	--disable-mex           Disable compilation of mex supplement which requires Matlab or Octave
 	--disable-xgrid         Disable compilation of xgrid supplement which requires X11
 
@@ -262,14 +262,13 @@ then the home directory, and then finally in share).  See the gmtdefaults
 man page for a description of all defaults.
 
 To prevent two GMT processes writing to the same .gmtcommands4 file
-simultaneously (thereby corrupting it), GMT implements the POSIX
+simultaneously (thereby corrupting it), GMT can implement the POSIX
 advisory file locking scheme and sets and releases locks on these
 files.  Under GNU/Linux, this does not work when the files reside
 in directories mounted with NFS.  Since it works with NFS under
 other UNIX systems we suspect this is a [temporary] limitation of GNU
-NSF.  If the file locking gives you trouble you may disable it by
-supplying the --disable-flock flag to configure (or manually add
--DNO_LOCK to CC_OPT in the src/makegmt.macros file)
+NSF.  If you want to activate file locking you may enable it by
+supplying the --enable-flock flag to configure.
 
 GMT can produce either Freeform PostScript (suitable to be sent to
 various printers) or Encapsulated PostScript (suitable to be included
@@ -370,13 +369,13 @@ ____________________
 
 In the directory share/doc/gmt/html you will find html files for online
 browsing of GMT documentation (Cookbook) and manual pages.
-The Documentation also contains the GMT_Tutorial.ps
+The Documentation also contains the GMT_Tutorial.pdf
 file which is a short course in how to use GMT.  It can be
 followed individually or in a lab setting by a group of users.
 While these are available from the main GMT home page in
 Hawaii, users may find it convenient to install these
 pages locally for added speed.  The subdirectories
-contain both HTML and PS versions of the cookbook, and
+contain both HTML and PDF versions of the cookbook, and
 HTML versions of the manual pages.  All users need to do
 is to add a browser bookmark to the top-level file
 share/doc/gmt/html/gmt_services.html.
@@ -388,8 +387,8 @@ To install all documentation in your chosen directory, type
 -----------
 
 Make sure users set their PATH to include the directory containing
-the gmt executables (BINDIR) if this is not a standard directory
-like /usr/local/bin.  You should now be able to run gmt programs.
+the GMT executables (BINDIR) if this is not a standard directory
+like /usr/local/bin.  You should now be able to run GMT programs.
 
 9. GMT supplemental Code
 -------------------------
@@ -453,7 +452,7 @@ src directory using
 Before running programs, there are a few things you should do/know:
 
   - Read carefully the documentation for the gmt system.  This can be
-    found as both PDF and HTML files in the www/gmt/doc directory.
+    found as both PDF and HTML files in the share/doc/gmt directory.
     The successful operation of gmt-programs depends directly on your
     understanding of how gmt "works", its option lists, I/O, and composite
     plot mechanisms.  Then, before running individual gmt programs, read

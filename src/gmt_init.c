@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.416 2009-09-11 18:40:09 remko Exp $
+ *	$Id: gmt_init.c,v 1.417 2009-09-20 01:22:03 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3225,7 +3225,7 @@ GMT_LONG GMT_load_user_media (void) {	/* Load any user-specified media formats *
 
 		if (sscanf (line, "%s %lg %lg", media, &w, &h) != 3) {
 			fprintf (stderr, "%s: Error decoding file %s.  Bad format? [%s]\n", GMT_program, file, line);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 
 		GMT_str_tolower (media);	/* Convert string to lower case */
@@ -3378,7 +3378,7 @@ void GMT_setshorthand (void) {/* Read user's .gmt_io file and initialize shortha
 		if (line[0] == '#' || line[0] == '\n') continue;
 		if (sscanf (line, "%s %s %s %s %s", a, b, c, d, e) != 5) {
 			fprintf (stderr, "%s: Error decoding file %s.  Bad format? [%s]\n", GMT_program, file, line);
-			exit (EXIT_FAILURE);
+			GMT_exit (EXIT_FAILURE);
 		}
 		
 		if (n == n_alloc) {

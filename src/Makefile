@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.48 2009-09-10 16:02:05 remko Exp $
+#	$Id: Makefile,v 1.49 2009-09-20 01:22:03 guru Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -29,7 +29,7 @@
 #	Authors:	Paul Wessel, SOEST, U. of Hawaii
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #
-#	Date:		11-NOV-2006
+#	Date:		20-SEPT-2009
 
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
