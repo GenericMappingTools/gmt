@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.68 2009-09-15 07:51:30 guru Exp $
-AC_REVISION($Revision: 1.68 $)
+dnl $Id: configure.ac,v 1.69 2009-09-20 02:58:37 guru Exp $
+AC_REVISION($Revision: 1.69 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -286,19 +286,19 @@ dnl -----------------------------------------------------------------
 dnl
 AC_CHECK_SIZEOF(long)
 AC_MSG_CHECKING(for 64-bit compilation)
-if test "X$enable_64" == "Xyes" ; then
+if test "X$enable_64" = "Xyes" ; then
 	GCC_64="-m64"
 	LDFLAGS="$LDFLAGS -m64"
-	if test "X$os" == "XDarwin" && test "$osr"0 -lt 100 ; then
+	if test "X$os" = "XDarwin" && test "$osr"0 -lt 100 ; then
 		# Circumvent qsort bug on OSX prior to Snow Leopard
 		CPPFLAGS="$CPPFLAGS -DGMT_QSORT"
 	fi
 	AC_MSG_RESULT(yes: forcing 64-bit)
-elif test "X$enable_64" == "Xno" ; then
+elif test "X$enable_64" = "Xno" ; then
 	GCC_64="-m32"
 	LDFLAGS="$LDFLAGS -m32"
 	AC_MSG_RESULT(no: forcing 32-bit)
-elif test "$ac_cv_sizeof_long" == "8" ; then
+elif test "$ac_cv_sizeof_long" = "8" ; then
 	AC_MSG_RESULT(using default: 64-bit)
 else
 	AC_MSG_RESULT(using default: 32-bit)
@@ -309,7 +309,7 @@ dnl Allow user to set --enable-universal for OS X universal binaries
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(for universal binaries)
-if test "X$os" == "XDarwin" && test "X$enable_universal" == "Xyes" ; then
+if test "X$os" = "XDarwin" && test "X$enable_universal" = "Xyes" ; then
 	if test "$enable_64" = "yes" ; then
 		ppc=ppc64
 		i386=x86_64
@@ -541,7 +541,7 @@ dnl Allow user to set --enable-flock for turning on file locking
 dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(for file locking)
-if test "X$enable_flock" == "Xyes" ; then
+if test "X$enable_flock" = "Xyes" ; then
 	CPPFLAGS="$CPPFLAGS -DNO_LOCK"
 else
 	enable_flock="no"
