@@ -32,6 +32,7 @@
 #define SCALE_L OPT(Jl)45/20/32/45/0.1\fBi\fP
 #define LEN_D   6
 #define SCALE_D OPT(JD)45/20/32/45/6\fBi\fP
+#define SCALE_PC OPT(JPoly)/4\fBi\fP
 #define SCALE_F OPT(JF)-100/40/60/6\fBi\fP
 #define LEN_G   6
 #define SCALE_G1 OPT(JG)125/10/6\fBi\fP
@@ -170,6 +171,11 @@ Yet another basemap of width LEN_D inch for middle Europe may be created by
 .br
 .sp
 \fBpsbasemap\fP OPT(R)0/90/25/55 SCALE_D OPT(B)10\fBg\fP10\fB:.\fP"Equidistant conic"\fB:\fP > econic.ps
+.SS Polyconic
+A basemap for north America may be created by
+.br
+.sp
+\fBpsbasemap\fP OPT(R)-180/-20/0/90 SCALE_PC OPT(B)30\fBg\fP10/10\fBg\fP10\fB:.\fP"Polyconic"\fB:\fP > polyconic.ps
 .SH AZIMUTHAL MAP PROJECTIONS
 .SS Lambert [equal-area]
 A LEN_A-cm-wide global view of the world from the vantage point -80/-30 will give the following basemap:

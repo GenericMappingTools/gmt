@@ -112,7 +112,7 @@ To transform gravity anomalies in mGal (faa.grd) to deflections of the vertical 
 finally scale radians to micro-radians:
 .br
 .sp
-\fBgrdfft\fP faa.grd OPT(Ig )\fP38 OPT(S)1e6 OPT(V) OPT(G)defl_38.grd
+\fBgrdfft\fP faa.grd OPT(Ig)38 OPT(S)1e6 OPT(V) OPT(G)defl_38.grd
 .br
 .sp
 Second vertical derivatives of gravity anomalies are related to the curvature of the field.  We can
