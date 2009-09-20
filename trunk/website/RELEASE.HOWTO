@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.24 2009-09-20 00:28:03 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.25 2009-09-20 01:57:18 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -30,35 +30,36 @@ must ensure you do all the steps listed below:
 3.  Compile and make all to make sure it all works (check examples)
     make site
    
-4.  Tag the release(s), e.g.
-    cvs -q tag Release_2007_10_08_GMT_4_2_1
+4.  In GMT/ftp, update .message, README.GMT, and VERSION
 
-5.  Prepare the archives:
-    make archive >& log
-   
-6.  Determine file sizes of all archives and update these values
-    in guru/install_gmt and website/gmt_install_form.html
-   
-7.  Run GMT_winbuild.bat under Parallels which will build
-    the three Windows installers and place them in GMT/ftp.
-
-8.  In GMT/ftp, update .message, README.GMT, and VERSION
-
-9.  In GMT/website:
+5.  In GMT/website:
     a) Update gmt_arrrghh.html, gmt_faq.html,
        gmt_install_form.html, gmt_news.html, gmt_releases.html
     b) create web examples:
        make web
     c) test the update of ftp and web sites locally:
        make update-version-local
-    c) If OK, update the remote TEST ftp and web sites:
+    d) If OK, update the remote TEST ftp and web sites:
        make update-version-test
        Have team members install from these sites.
-    d) If still OK, update the LIVE ftp and web sites:
-       make update-version-live
-    d) Follow the instructions given by the make update-version call
-   
-10. Send email notifications:
+
+If still good to go:
+
+6.  Tag the release(s), e.g.
+    cvs -q tag Release_2007_10_08_GMT_4_2_1
+
+7.  Prepare the archives:
+    make archive >& log
+
+8.  Determine file sizes of all archives and update these values
+    in guru/install_gmt and website/gmt_install_form.html
+
+9.  Run GMT_winbuild.bat under Parallels which will build
+    the three Windows installers and place them in GMT/ftp.
+
+10. Release the new version with make update-version-live.
+
+11. Send email notifications:
     a) Alert the mirror sites (gmt-mirrors) that a new version has been posted.
     b) Send email to gmt-help and gmt-group with the Announcement.
 
