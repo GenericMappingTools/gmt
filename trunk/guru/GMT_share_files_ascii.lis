@@ -1,4 +1,4 @@
-#	$Id: GMT_share_files_ascii.lis,v 1.9 2009-09-10 08:32:26 guru Exp $
+#	$Id: GMT_share_files_ascii.lis,v 1.10 2009-09-20 00:28:02 guru Exp $
 #
 # GMT_share_ascii.lis contains all the ascii files that should go into the
 # GMT_share tar/zip files.  See GMT_share_bin.lis for binary files
@@ -109,6 +109,10 @@ share/custom/star.def
 share/custom/starp.def
 share/custom/sun.def
 share/custom/triangle.def
+share/custom/trirot1.def
+share/custom/trirot2.def
+share/custom/trirot3.def
+share/custom/trirot4.def
 share/custom/vlens.def
 share/custom/vlozenge.def
 share/custom/vneedle.def

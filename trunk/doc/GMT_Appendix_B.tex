@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_Appendix_B.tex,v 1.35 2009-04-16 19:38:18 guru Exp $
+%       $Id: GMT_Appendix_B.tex,v 1.36 2009-09-20 00:28:02 guru Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2009.
@@ -318,11 +318,15 @@ is the two-dimensional Laplacian operator.
 
 The old style native grid file format that was common in earlier version of \GMT\ is still
 supported, although the use of netCDF\index{grid file!formats!netCDF} files is strongly recommended.
-The file starts with a header containing a number of attributes defining the content.
+The file starts with a header of 892 bytes containing a number of attributes defining the content.
 The \GMTprog{grdedit} utility program will allow you to edit parts of
 the header of an existing grid file.  The attributes listed in Table~\ref{tbl:grdheader}
 are contained within the header record in the order given (except the $z$-array which
-is not part of the header structure, but makes up the rest of the file).
+is not part of the header structure, but makes up the rest of the file). As this header
+was designed long before 64-bit architectures became available, the jump from
+the first three integers to the subsequent doubles in the structure does not occur on a
+16-byte alignment.  While \GMT\ handles the reading of these structures correctly, enterprising
+programmers must take care to read this header correctly (see our code for details).
 
 \begin{table}
 \centering
