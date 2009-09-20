@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.134 2009-09-18 08:01:20 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.135 2009-09-20 00:28:02 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -34,7 +34,7 @@ will be distinguished by being completely restructured so as to allow developers
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
 history of the development milestones in the 4.x series.
 
-\subsection{Overview of \gmt\ 4.5.1 [Sept-15, 2009]}
+\subsection{Overview of \gmt\ 4.5.1 [Sept-20, 2009]}
 
 This is almost entirely a but-fix release where we address several 64-bit incompatibilities and
 rebuild the netcdf GSHHS library to include some attributes from GSHHS that were needed
@@ -51,7 +51,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{configure.ac}]:	Now use --enable-flock to enable file locking, instead of
 		--disable-flock to disable if.
 		Use --enable-64 to force 64-bit compilation, use --disable-64
-		to force 32-bit compilation. Otherwise use default.
+		to force 32-bit compilation; otherwise use default.
 		Switch -DGMT\_QSORT is now on only for OS X prior to Snow Leopard as the latter has
 		a correctly working 64-bit \GMTfunc{qsort} function.
 	\item [\GMTprog{gmt\_customio.c}]:	Made surfer grid header i/o 64-bit compliant.
@@ -86,7 +86,7 @@ Here is the list of bug corrections:
 Here is a list of the recent enhancement to various programs:
 
 \begin{enumerate}
-	\item \GMTprog{gmt\_customio.c} now has optional GDAL read interface as format 22 (code gd).
+	\item \GMTprog{gmt\_customio.c} now has optional GDAL read-only interface as format 22 (code gd).
 	\item \GMTprog{gmtset.c} has new default {\bf TRANSPARENCY} = {\it stroke/fill} that can
 	change the PDF transparency for stroked and filled items [Note: Only supported by Adobe Distiller].
 	\item \GMTprog{pslib.c} has added option to reduce all color to gray scale via {\bf PS\_COLOR} = gray.

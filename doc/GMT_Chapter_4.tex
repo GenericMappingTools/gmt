@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.124 2009-09-18 02:54:20 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.125 2009-09-20 00:28:02 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2009.
@@ -803,7 +803,7 @@ Note: For \Opt{gx} or \Opt{gy} with time data the unit is instead controlled by 
 \index{\Opt{mo} (set output segment data)}
 
 The \Opt{m} option states that the input and output table data will contain special records
-that marks the start of new line segments.  These records are identified by their first
+that marks the start of new line (or polygon) segments.  These records are identified by their first
 character, which can be specified as an argument to \Opt{m} [The default is $>$].
 Append the modifiers {\bf i} or {\bf o} if the option should only apply to input or output,
 respectively.  For binary data a multiple segment header is identified as a data record
@@ -1413,6 +1413,7 @@ temporarily switch to the symbol font, turn on sub- or superscript,
 etc., within words.  These conditions are toggled on/off by the
 escape sequence @\textbf{x}, where \textbf{x} can be one of several types.
 The escape sequences recognized in \GMT\ are listed in Table~\ref{tbl:escape}. 
+Only one level of sub- or superscript is supported.
 Note that under Windows the percent symbol indicates a batch variable,
 hence you must use two percent-signs for each one required in the escape sequence for font switching.
 
@@ -1518,6 +1519,7 @@ In addition, users with some C-programming experience may add
 their own read/write functions and link them with the \GMT\ library
 to extend the number of predefined formats.  Technical information
 on this topic can be found in the source file \filename{gmt\_customio.c}. 
+Users who are considering this approach should contact the \GMT\ team.
 
 \begin{table}[H]
 \centering
@@ -1547,7 +1549,7 @@ rf & GEODAS grid format GRD98 (NGDC)		\\ \hline
 sf & Golden Software Surfer format 6 (float)	\\ \hline
 sd & Golden Software Surfer format 7 (double)	\\ \hline
 af & Atlantic Geoscience Center AGC (float)	\\ \hline
-gd & Import via GDAL [EXPERIMENTAL] (float)	\\ \hline
+gd & Read-only via GDAL [EXPERIMENTAL] (float)	\\ \hline
 \end{tabular}
 \caption{\gmt\ grid file formats.}
 \label{tbl:grdformats}
@@ -1588,7 +1590,7 @@ That means the ``filename'' will begin with
 ``=\emph{ID}\,'' since no \GMT\  netCDF format 
 allow piping (due to the design of netCDF). 
 
-Everything looks more obvious after a few examples: 
+Everything looks clearer after a few examples: 
 
 \begin{enumerate}
 \item To write a native binary float grid file, specify the name as \filename{my\_file.grd=bf}.
@@ -1669,7 +1671,7 @@ to get information on the variable ``slp'' in file \filename{file.nc}, use:
 \end{verbatim}
 Since COARDS-compliant netCDF files are the default, the additional suffix ``=nf'' can be omitted.
 
-In case the named variable is 3-dimensional, \GMT\ will load first (bottom) layer. If another
+In case the named variable is 3-dimensional, \GMT\ will load the first (bottom) layer. If another
 layer is required, either add ``[\emph{index}]'' or ``(\emph{level})'', where \emph{index} is
 the index of the third (depth) variable (starting at 0 for the first layer) and \emph{level}
 is the numerical value of the third (depth) variable associated with the requested layer.
@@ -1758,15 +1760,15 @@ defined by IEEE so that special action can be taken when it is encountered by pr
 In particular, a library function called \texttt{isnan} is used to test if a floating point
 is a NaN.  \GMT\ uses these tests extensively to determine if a value is suitable for plotting
 or processing (if a NaN is used in a calculation the result would become NaN as well).  Data points
-whose value is NaN are not normally plotted (or plotted with the special NaN color given in
+whose values equal NaN are not normally plotted (or plotted with the special NaN color given in
 \filename{.gmtdefaults4}).  Several tools such as \GMTprog{xyz2grd}, \GMTprog{gmtmath}, and
 \GMTprog{grdmath} can convert user data to NaN and vice versa, thus facilitating arbitrary
 masking and clipping of data sets.  Note that a few computers do not have native IEEE hardware
-support.  At this point, this applies to some of the Cray super-computers.  Users on such
+support.  At this point, this applies to some of the older Cray super-computers.  Users on such
 machines may have to adopt the old `-9999.99'' scheme to achieve the desired results.
 
 Data records that contain NaN values for the {\it x} or {\it y} columns (or the {\it z} column
-for cases when 3-D Cartesian data are expected) are always skipped during reading.  However,
+for cases when 3-D Cartesian data are expected) are usually skipped during reading.  However,
 the presence of these bad records can be interpreted in two different ways, and this behavior
 is controlled by the {\bf NAN\_RECORDS} defaults parameter.  The default setting (\emph{gap})
 considers such records to indicate a gap in an otherwise continuous series of points (e.g., a line),
