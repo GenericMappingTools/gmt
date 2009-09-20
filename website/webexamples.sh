@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.22 2009-09-14 04:03:30 guru Exp $
+#	 $Id: webexamples.sh,v 1.23 2009-09-20 03:53:30 guru Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -212,7 +212,7 @@ EOF
 cat << EOF >> gmt_example_${number}.html
 <p>
 <A HREF="job${number}.sh.txt"><IMG SRC="../../gmt_script.gif" ALT="RETURN">View GMT script.</A>
-<A HREF="example_${number}.ps"><IMG SRC="../../gmt_ps.gif" ALT="RETURN">Download PostScript version.</A>
+<A HREF="example_${number}.zip"><IMG SRC="../../gmt_ps.gif" ALT="RETURN">Download zipped PostScript file.</A>
 <A HREF="../../gmt_examples.html"><IMG SRC="../../doc/gmt/html/gmt_back.gif" ALT="RETURN">Back</A>
 </BODY>
 </HTML>
