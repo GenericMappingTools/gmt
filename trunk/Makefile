@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.77 2009-09-09 23:27:01 guru Exp $
+#	$Id: Makefile,v 1.78 2009-09-20 01:22:03 guru Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -55,7 +55,7 @@
 #			Walter H. F. Smith, Lab for Satellite Altimetry, NOAA
 #			The GMT Team
 #
-#	Date:		12-JUL-2009
+#	Date:		20-SEPT-2009
 #-------------------------------------------------------------------------------
 #	Get Default Macros
 #-------------------------------------------------------------------------------
