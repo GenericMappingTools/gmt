@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: build_html.sh,v 1.1 2008-05-12 23:31:33 guru Exp $
+#	$Id: build_html.sh,v 1.2 2009-09-20 04:39:05 guru Exp $
 #
 # Just a helper script to format the controb websites that has lists of 3-column tables of images.
 
@@ -24,3 +24,4 @@ while read a b c; do
 	</tr>
 	EOF
 done < tmp.lis
+rm -f tmp.lis
