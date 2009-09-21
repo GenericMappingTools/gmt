@@ -1,8 +1,8 @@
 Package: gshhs-lores
-Version: 2.0
+Version: 2.0.1
 Revision: 1
 Source: ftp://ftp.soest.hawaii.edu/gmt/GSHHS%v_coast.tar.bz2
-Source-MD5: 23ccee4b943ef1fc35ddc03b91b55521
+Source-MD5: 75a1e1e04b473699eee3a31c89b8dbfa
 SourceDirectory: .
 Replaces: gmt (<= 4.2.0-9999)
 Recommends: gmt
@@ -29,6 +29,6 @@ DescPort: <<
  High-resolution coastlines can be found in the gshhs-hires package.
 <<
 License: GPL
-DocFiles: COPYING README.gshhs
+DocFiles: LICENSE.TXT README.TXT
 Maintainer: Kurt Schwehr <goatbar@users.sourceforge.net>
 Homepage: http://gmt.soest.hawaii.edu/
