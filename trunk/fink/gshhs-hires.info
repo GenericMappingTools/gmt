@@ -1,10 +1,10 @@
 Package: gshhs-hires
-Version: 2.0
+Version: 2.0.1
 Revision: 1
 Source:  ftp://ftp.soest.hawaii.edu/gmt/GSHHS%v_full.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/GSHHS%v_high.tar.bz2
-Source-MD5:  fc5a70acf663c402b3dfc5a951b29244
-Source2-MD5: 930ddfd9d576d75079455df4240b7a3a
+Source-MD5:  dbffea06d9ccf2899a9788dfac99c387
+Source2-MD5: 0e1855e73bb079ab1879dd24895e99e9
 Replaces: gmt-coast
 Recommends: gmt
 SourceDirectory: .
@@ -32,6 +32,6 @@ DescPort: <<
  Standard coastlines can be found in the gshhs-lores package.
 <<
 License: GPL
-DocFiles: COPYING README.gshhs
+DocFiles: LICENSE.TXT README.TXT
 Maintainer: Kurt Schwehr <goatbar@users.sourceforge.net>
 Homepage: http://gmt.soest.hawaii.edu/

@@ -1,16 +1,16 @@
 Package: gmt
-Version: 4.5.0
+Version: 4.5.1
 Revision: 1
 Source:  ftp://ftp.soest.hawaii.edu/gmt/GMT%v_doc.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_share.tar.bz2
 Source3: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_src.tar.bz2
 Source4: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_suppl.tar.bz2
 Source5: ftp://ftp.soest.hawaii.edu/gmt/GMT%v_triangle.tar.bz2
-Source-MD5:  3185bda3a8245d58cadebe77ce8b6062
-Source2-MD5: 773a1e290e127e8de365ef33366d4247
-Source3-MD5: d24e5aad2f6461302ecfef94934f56c0
-Source4-MD5: b04baf4fc08a46ceeda4c0a5ae7dc8d7
-Source5-MD5: edcaa6981972f42e03a4b5f412c0109b
+Source-MD5:  124b2206be03e0d4d8c2bed582a30187
+Source2-MD5: 1380a82348b9fdd0c32474787a90a95f
+Source3-MD5: a0e7b410e8470d6c47bd56830fd1158f
+Source4-MD5: c771a72a7eed44678134ae0b51edd606
+Source5-MD5: d71fc58ee47240afd2a3494341eb5ad8
 
 SourceDirectory: GMT%v
 BuildDepends: netcdf (>= 3.6.2-6)
@@ -30,25 +30,26 @@ SplitOff: <<
   Package: %N-doc
   BuildDependsOnly: True
   Files: share/doc/gmt
-  DocFiles: COPYING
+  DocFiles: LICENSE.TXT
 <<
 SplitOff2: <<
   Package: %N-shlibs
   Files: lib/*.4.dylib
   Shlibs: <<
-    %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.0-1)
-    %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.5.0-1)
-    %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.5.0-1)
-    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.5.0-1)
-    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.5.0-1)
+    %p/lib/libpsl.4.dylib 4.0.0 %n (>= 4.5.1-1)
+    %p/lib/libgmt.4.dylib 4.0.0 %n (>= 4.5.1-1)
+    %p/lib/libgmtps.4.dylib 4.0.0 %n (>= 4.5.1-1)
+    %p/lib/libmgd77.4.dylib 4.0.0 %n (>= 4.5.1-1)
+    %p/lib/libgmt_mgg.4.dylib 4.0.0 %n (>= 4.5.1-1)
+    %p/lib/libx2sys.4.dylib 4.0.0 %n (>= 4.5.1-1)
   <<
-  DocFiles: ChangeLog COPYING README src/README.TRIANGLE src/TRIANGLE.HOWTO
+  DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
 SplitOff3: <<
   Package: %N-dev
   BuildDependsOnly: True
   Files: include lib/*.a lib/*.dylib
-  DocFiles: ChangeLog COPYING README src/README.TRIANGLE src/TRIANGLE.HOWTO
+  DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 <<
 Description: Generic Mapping Tools
 DescDetail: <<
@@ -66,9 +67,9 @@ DescDetail: <<
  gshhs-high: High resolution coastlines
 <<
 DescPort: <<
- Removed xgrid supplementary package so x11 is not required.
+ Removed xgrid supplementary package so X11 is not required.
 <<
 License: GPL, Restrictive/Distributable
-DocFiles: ChangeLog COPYING README src/README.TRIANGLE src/TRIANGLE.HOWTO
+DocFiles: ChangeLog LICENSE.TXT README src/README.TRIANGLE src/TRIANGLE.HOWTO
 Maintainer: Kurt Schwehr <goatbar@users.sourceforge.net>
 Homepage: http://gmt.soest.hawaii.edu/
