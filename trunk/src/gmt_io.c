@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.199 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_io.c,v 1.200 2009-09-23 05:50:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3088,6 +3088,29 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 	*table = T;
 
 	return (0);
+}
+
+BOOLEAN GMT_parse_segment_item (char *in_string, char *pattern, char *out_string)
+{
+	/* Scans the in_string for the occurence of an option switch (e.g, -L) and
+	 * if found, extracts the argument and returns it via out_string.  Function
+	 * return TRUE if the pattern was found and FALSE otherwise.
+	 * out_string must be allocated and have space for the copying */
+	char *t;
+	int i, k;
+	if (!(t = strstr (in_string, pattern))) return (FALSE);	/* Option not present */
+	if ((i = (GMT_LONG)t - (GMT_LONG)in_string - 1) < 0) return (FALSE);	/* No leading space/tab possible */
+	if (!(in_string[i] == ' ' || in_string[i] == '\t')) return (FALSE);	/* No leading space/tab present */
+	i += strlen (pattern) + 1;	/* Position of argument */
+	if (in_string[i] == '\"') {	/* Quoted argument, must find terminal quote */
+		i++;	/* Skip passed first quote */
+		for (k = i; k < strlen (in_string) && in_string[k] != '\"'; k++);	/* Find next quote */
+		strncpy (out_string, &in_string[i], (size_t)(k - i));
+		out_string[k-i] = '\0';	/* Terminate string */
+	}
+	else	/* No quote, just one word */
+		sscanf (&in_string[i], "%s", out_string);
+	return (TRUE);
 }
 
 GMT_LONG GMT_export_table (void *dest, GMT_LONG dest_type, struct GMT_TABLE *table, BOOLEAN use_GMT_io)
