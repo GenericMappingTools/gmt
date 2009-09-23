@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.81 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_io.h,v 1.82 2009-09-23 05:50:58 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -125,6 +125,7 @@ EXTERN_MSC BOOLEAN GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GM
 EXTERN_MSC BOOLEAN GMT_not_numeric (char *text);				/* Rules out _some_ text as possible numerics */
 EXTERN_MSC BOOLEAN GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 EXTERN_MSC GMT_LONG GMT_nc_get_att_text (int ncid, int varid, char *name, char *text, size_t textlen);
+EXTERN_MSC BOOLEAN GMT_parse_segment_item (char *in_string, char *pattern, char *out_string);
 
 /* DO NOT REARRANGE THE ORDER OF ITEMS IN THESE STRUCTURES UNLESS YOU MATCH IT IN gmt_globals.h */
 
