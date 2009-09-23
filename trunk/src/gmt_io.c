@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.200 2009-09-23 05:50:58 guru Exp $
+ *	$Id: gmt_io.c,v 1.201 2009-09-23 06:17:37 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2867,7 +2867,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 
 	char open_mode[4], file[BUFSIZ];
 	BOOLEAN save, ascii, close_file = FALSE, no_segments;
-	GMT_LONG n_fields, n_expected_fields, k, i;
+	GMT_LONG n_fields, n_expected_fields, k;
 	GMT_LONG n_read = 0, seg = -1, n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, row = 0, col;
 	double d, *in;
 	FILE *fp;
@@ -2960,26 +2960,10 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 		}
 		if ((GMT_io.status & GMT_IO_EOF)) continue;	/* At EOF; get out of this loop */
 		if (ascii) {	/* Only ascii files can have info stored in multi-seg header record */
-			char buffer[BUFSIZ], *t;
+			char buffer[BUFSIZ];
 			memset ((void *)buffer, 0, BUFSIZ);
-			if ((t = strstr (GMT_io.segment_header, " -L")) || (t = strstr (GMT_io.segment_header, "\t-L"))) {	/* Set specified label */
-				i = 3;
-				if (t[i] == '\"') {	/* Quoted string, find terminal quote */
-					for (k = 4; k < (int)strlen(t) && t[k] != '\"'; k++);
-					t[k] = '\0';
-					i++;
-				}
-				strcpy (buffer, &t[i]);
-			}
-			else
-				sscanf (&GMT_io.segment_header[1], "%s", buffer);
-			GMT_chop (buffer);
-			if (strlen (buffer)) {
-				T->segment[seg]->label = strdup (buffer);
-			}
-			if (strlen (GMT_io.segment_header)) {
-				T->segment[seg]->header = strdup (GMT_io.segment_header);
-			}
+			if (GMT_parse_segment_item (GMT_io.segment_header, "-L", buffer)) T->segment[seg]->label = strdup (buffer);
+			if (strlen (GMT_io.segment_header)) T->segment[seg]->header = strdup (GMT_io.segment_header);
 		}
 
 		if (poly && T->segment[seg]->n_columns < 2) {
@@ -3098,6 +3082,7 @@ BOOLEAN GMT_parse_segment_item (char *in_string, char *pattern, char *out_string
 	 * out_string must be allocated and have space for the copying */
 	char *t;
 	int i, k;
+	if (!in_string || !pattern) return (FALSE);	/* No string or pattern passed */
 	if (!(t = strstr (in_string, pattern))) return (FALSE);	/* Option not present */
 	if ((i = (GMT_LONG)t - (GMT_LONG)in_string - 1) < 0) return (FALSE);	/* No leading space/tab possible */
 	if (!(in_string[i] == ' ' || in_string[i] == '\t')) return (FALSE);	/* No leading space/tab present */
