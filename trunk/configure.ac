@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.70 2009-09-22 05:47:47 guru Exp $
-AC_REVISION($Revision: 1.70 $)
+dnl $Id: configure.ac,v 1.71 2009-09-24 02:14:09 remko Exp $
+AC_REVISION($Revision: 1.71 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -496,6 +496,7 @@ AC_MSG_RESULT($NETCDF_LIB)
 if test ! -d $NETCDF_LIB; then
 	AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
 fi
+rpath="$NETCDF_LIB"
 NETCDF_LIB="-L$NETCDF_LIB -lnetcdf"
 NETCDF_INC="-I$NETCDF_INC"
 dnl
@@ -529,6 +530,7 @@ if test ! "X$enable_gdal" = "X" ; then
 	if test ! -d $GDAL_LIB; then
 		AC_MSG_WARN([[No such directory: $GDAL_LIB]])
 	fi
+	rpath="$rpath:$GDAL_LIB"
 	GDAL_LIB="-L$GDAL_LIB -lgdal"
 	GDAL_INC="-I$GDAL_INC"
 else
@@ -679,35 +681,7 @@ if test "$os" = "OS/2" ; then
 fi
 dnl
 dnl -----------------------------------------------------------------
-dnl Determine LDFLAGS for this platform
-dnl -----------------------------------------------------------------
-dnl
-AC_MSG_CHECKING(linker options)
-flag=
-if test "X$enable_rpath" = "Xno" ; then
-	flag=
-elif test "$os" = "SunOS" ; then
-	if test "$Sun_rev" = "" ; then
-		flag="-L"
-	else
-		flag="-R,"
-	fi
-elif test "$os" = "Linux" || test "$os" = "FreeBSD" || test "$os" = "NetBSD" || test "$os" = "OSF1" || test "$os" = "IRIX64" ; then
-	flag="-rpath,"
-elif test "$os" = "HP-UX" ; then
-	flag="+b,"
-fi
-if test "X$flag" = "X" ; then
-	flag=
-elif test "$enable_shared" = "yes" ; then
-	LDFLAGS=$LDFLAGS' -Wl,'$flag'$(libdir):$(NETCDF_LIB)'
-else
-	LDFLAGS=$LDFLAGS' -Wl,'$flag'$(NETCDF_LIB)'
-fi
-AC_MSG_RESULT($LDFLAGS)
-dnl
-dnl -----------------------------------------------------------------
-dnl Determine LD_OPT and LDFLAGS for this platform
+dnl Determine LD_OPT for this platform
 dnl -----------------------------------------------------------------
 dnl
 shared_unknown=no
@@ -752,12 +726,37 @@ if test "$enable_shared" = "yes" ; then
 	fi
 fi
 if test "$enable_shared" = "yes" ; then
+	rpath="$rpath"':$(libdir)'
 	AC_MSG_RESULT($LD $LD_OPT)
 	AC_MSG_CHECKING(the file extension for shared libraries)
 	AC_MSG_RESULT($SL)
 else
 	LIBEXT='a'
 fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Determine LDFLAGS for this platform
+dnl -----------------------------------------------------------------
+dnl
+AC_MSG_CHECKING(linker options)
+flag=
+if test "X$enable_rpath" = "Xno" ; then
+	flag=
+elif test "$os" = "SunOS" ; then
+	if test "$Sun_rev" = "" ; then
+		flag="-L"
+	else
+		flag="-R,"
+	fi
+elif test "$os" = "Linux" || test "$os" = "FreeBSD" || test "$os" = "NetBSD" || test "$os" = "OSF1" || test "$os" = "IRIX64" ; then
+	flag="-rpath,"
+elif test "$os" = "HP-UX" ; then
+	flag="+b,"
+fi
+if test "X$flag" != "X" ; then
+	LDFLAGS="$LDFLAGS -Wl,$flag$rpath"
+fi
+AC_MSG_RESULT($LDFLAGS)
 dnl
 dnl -----------------------------------------------------------------
 dnl Determine CFLAGS for this platform
