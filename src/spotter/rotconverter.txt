@@ -4,7 +4,7 @@
 rotconverter \- Manipulate finite and stage rotations 
 .SH SYNOPSIS
 \fBrotconverter\fP [ \fB+\fP|\fB-\fP ] \fIrotA\fP [ \fB+\fP|\fB-\fP \fIrotB\fP ] [ \fB+\fP|\fB-\fP \fIrotC\fP ] ... 
-[ OPT(C)[\fBa\fP|\fBt\fP]] [ OPT(D) ] [ OPT(F)\fIin\fP/\fPout\fP ] [ OPT(N) ] [ OPT(S) ] 
+[ OPT(C)[\fBa\fP|\fBt\fP]] [ OPT(D) ] [ OPT(E)[\fIfact\fP] ] [ OPT(F)\fIin\fP/\fPout\fP ] [ OPT(N) ] [ OPT(S) ] 
 [ OPT(T) ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 \fBrotconverter\fP reads one or more plate motion models (rotations) stored in the
@@ -33,6 +33,9 @@ Append \fBa\fP to indicate opening angles and \fBt\fP to indicate opening rates 
 .TP
 OPT(D)
 Report longitudes use the -180/+180 range [Default is 0/360].
+.TP
+OPT(E)
+Scale opening angles by \fIfact\fP on output.  Requires stage pole output (see OPT(F)).
 .TP
 OPT(F)
 Specify both the input and output format for rotations.  The \fIin\fP and \fIout\fP flags
@@ -72,6 +75,15 @@ To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0, 11.4), 
 .sp
 .br
 which prints out 157.32, -80.44, 11.97.
+.br
+.sp
+To make stage rotations suitable for generating flowlines (fracture zones) from a model
+of relative plate motions PL1-PL2.RPM, assuming symmetric spreading,, try
+.br
+.sp
+\fBrotconverter\fP PL1-PL2.RPM OPT(E) OPT(Ffs) > PL1-PL2_half.RPM
+.br
+\fBrotconverter\fP - PL1-PL2.RPM OPT(E) OPT(Ffs) > PL2-PL1_half.RPM
 .SH "SEE ALSO"
 .IR backtracker (1),
 .IR hotspotter (1),
