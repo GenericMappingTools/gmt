@@ -1,12 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.629 2009-09-25 06:02:57 guru Exp $
+	$Id: ChangeLog,v 1.630 2009-09-25 07:25:38 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-09-25	pwessel
-	* gmtconvert.c:		The -S option failed to actual matches.  The 2009/5/26
+	* gmtconvert.c:		The -S option failed for actual matches; the 2009/5/26
 				change screwed that up.  Now fixed and tested.
 	* spotter/rotconverter.c	New option -E to reduce stage pole opening
-					angles by <fact> [0.5] (to get half-spreading)
+					angles by <fact> [0.5] (to get half-spreading rates)
 
 2009-09-24	pwessel
 	* gmt_grdio.c:		GMT_read_img did not apply swab if little-endian arch.
