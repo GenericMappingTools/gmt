@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grd.h,v 1.39 2009-09-25 01:02:09 guru Exp $
+ *	$Id: gmt_grd.h,v 1.40 2009-09-25 01:02:53 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -118,7 +118,7 @@ struct GRD_HEADER {
  * Use GMT_IJbc when array is padded by BC rows/cols, else use GMT_IJ.  In both cases
  * we pass the column dimension as padding is added by the macro. */
 
-#define GMT_IJbc(row,col,nx,pad) (((GMT_LONG)(row)+(GMT_LONG)(pad))*((GMT_LONG)(nx) + (GMT_LON)(2*(pad)))+(GMT_LONG)(col)+(GMT_LONG)(pad))
+#define GMT_IJbc(row,col,nx,pad) (((GMT_LONG)(row)+(GMT_LONG)(pad))*((GMT_LONG)(nx) + (GMT_LONG)(2*(pad)))+(GMT_LONG)(col)+(GMT_LONG)(pad))
 #define GMT_IJ(row,col,nx) (((GMT_LONG)(row))*((GMT_LONG)(nx))+(GMT_LONG)(col))
 
 /* The GMT_y_is_outside macro returns TRUE if y is outside the given domain.
