@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.630 2009-09-25 07:25:38 guru Exp $
+	$Id: ChangeLog,v 1.631 2009-09-28 00:51:50 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-09-27	pwessel
+	* gmt_init.c:		Bug in the parsing of -Jg<lon>/<lat>/<radius>/<lat>.
+	
 2009-09-25	pwessel
 	* gmtconvert.c:		The -S option failed for actual matches; the 2009/5/26
 				change screwed that up.  Now fixed and tested.

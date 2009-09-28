@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.417 2009-09-20 01:22:03 guru Exp $
+ *	$Id: gmt_init.c,v 1.418 2009-09-28 00:51:50 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5075,7 +5075,7 @@ GMT_LONG GMT_parse_J_option (char *args)
 			}
 			else {	/* Scale entered as radius/lat */
 				if (n_slashes == 3)
-					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_d, txt_e);
 				else if (n_slashes == 4)
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 				if (n == n_slashes + 1) {
