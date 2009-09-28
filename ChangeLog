@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.632 2009-09-28 07:03:53 guru Exp $
+	$Id: ChangeLog,v 1.633 2009-09-28 18:00:25 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-28	jluis
+	* x2sys/x2sys_merge.c:	Improved updating algorithm for detected cases where
+				where it was failing badly.
 
 2009-09-27	pwessel
 	* gmt_init.c:		Bug in the parsing of -Jg<lon>/<lat>/<radius>/<lat>.
