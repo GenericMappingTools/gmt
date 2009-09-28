@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.631 2009-09-28 00:51:50 guru Exp $
+	$Id: ChangeLog,v 1.632 2009-09-28 07:03:53 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-09-27	pwessel
 	* gmt_init.c:		Bug in the parsing of -Jg<lon>/<lat>/<radius>/<lat>.
+	* spotter/backtracker.c	When -L is set, -mo must be turned on automatically
+				even if -m is not set.
 	
 2009-09-25	pwessel
 	* gmtconvert.c:		The -S option failed for actual matches; the 2009/5/26
