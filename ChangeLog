@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.633 2009-09-28 18:00:25 jluis Exp $
+	$Id: ChangeLog,v 1.634 2009-09-30 06:17:50 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-09-29	pwessel
+	* install_gmt:		GDAL setup had bad variable name $enable-gdal that
+				was meant to be $enable_gdal, and a bad if-test.
 
 2009-09-28	jluis
 	* x2sys/x2sys_merge.c:	Improved updating algorithm for detected cases where

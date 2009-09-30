@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.151 2009-09-20 02:26:03 guru Exp $
+#	$Id: install_gmt.sh,v 1.152 2009-09-30 06:17:50 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1215,14 +1215,13 @@ fi
 # Experimental GDAL support 
 if [ x"$use_gdal" = xyes ]; then	# Try to include GDAL support
         if [ ! "x$gdal_path" = "x" ]; then	# GDAL parent dir specified
- 		enable-gdal=--enable-gdal=$gdal_path
+ 		enable_gdal=--enable-gdal=$gdal_path
 	else
- 		enable-gdal=--enable-gdal
+ 		enable_gdal=--enable-gdal
         fi
 else
-	enable-gdal=
+	enable_gdal=
 fi
-
 
 #--------------------------------------------------------------------------------
 #	GMT installation commences here
