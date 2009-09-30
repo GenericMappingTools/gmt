@@ -127,7 +127,7 @@ Give projection center \fIlon0/lat0\fP, two standard parallels \fIlat1/lat2\fP, 
 OPT(Jl)\fIlon0/lat0/lat1/lat2/scale\fP or OPT(JL)\fIlon0/lat0/lat1/lat2/width\fP (Lambert \fB[C]\fP)
 Give origin \fIlon0/lat0\fP, two standard parallels \fIlat1/lat2\fP, and \fIscale\fP along these (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .TP
-OPT(Jpoly)[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP or OPT(JPoly)[\fIlon0/\fP[\fIlat0/\fP]]\fIwidth\fP ((American) Polyconic).
+OPT(Jpoly)/[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP or OPT(JPoly)/[\fIlon0/\fP[\fIlat0/\fP]]\fIwidth\fP ((American) Polyconic).
 Give the central meridian \fIlon0\fP (optional), reference parallel \fIlat0\fP (optional, default = equator),
 and \fIscale\fP along central meridian (\fB1:\fP\fIxxxx\fP or UNIT/degree).
 .PP
