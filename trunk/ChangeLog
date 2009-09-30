@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.634 2009-09-30 06:17:50 guru Exp $
+	$Id: ChangeLog,v 1.635 2009-09-30 23:20:02 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-10-01	remko
+	* explain_-J*.txt:	Added necessary / after -Jpoly
 
 2009-09-29	pwessel
 	* install_gmt:		GDAL setup had bad variable name $enable-gdal that
@@ -12,13 +15,13 @@
 
 2009-09-27	pwessel
 	* gmt_init.c:		Bug in the parsing of -Jg<lon>/<lat>/<radius>/<lat>.
-	* spotter/backtracker.c	When -L is set, -mo must be turned on automatically
-				even if -m is not set.
+	* spotter/backtracker.c:	When -L is set, -mo must be turned on automatically
+					even if -m is not set.
 	
 2009-09-25	pwessel
 	* gmtconvert.c:		The -S option failed for actual matches; the 2009/5/26
 				change screwed that up.  Now fixed and tested.
-	* spotter/rotconverter.c	New option -E to reduce stage pole opening
+	* spotter/rotconverter.c:	New option -E to reduce stage pole opening
 					angles by <fact> [0.5] (to get half-spreading rates)
 
 2009-09-24	pwessel

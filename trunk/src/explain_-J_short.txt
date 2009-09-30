@@ -48,7 +48,7 @@ OPT(Jd)\fIlon0/lat0/lat1/lat2/scale\fP (Conic Equidistant)
 .br
 OPT(Jl)\fIlon0/lat0/lat1/lat2/scale\fP (Lambert Conic Conformal)
 .br
-OPT(Jpoly)[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP ((American) Polyconic)
+OPT(Jpoly)/[\fIlon0/\fP[\fIlat0/\fP]]\fIscale\fP ((American) Polyconic)
 .br
 .sp
 \fBAZIMUTHAL PROJECTIONS:\fP
