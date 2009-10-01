@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.636 2009-10-01 00:04:43 remko Exp $
+	$Id: ChangeLog,v 1.637 2009-10-01 23:29:14 guru Exp $
 -----------------------------------------------------------------------------------------
+
+
+2009-10-01	pwessel
+	* psrose.c:		Needed to set scale to 1 so the bounding box
+				calculations would be correct for EPS output.
 
 2009-10-01	remko
 	* explain_-J*.txt:	Added necessary / after -Jpoly
