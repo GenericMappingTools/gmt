@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.635 2009-09-30 23:20:02 remko Exp $
+	$Id: ChangeLog,v 1.636 2009-10-01 00:04:43 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-10-01	remko
 	* explain_-J*.txt:	Added necessary / after -Jpoly
+	* misc/gmt2kml.c:	Removed rogue \n before </coordinates>\n.
 
 2009-09-29	pwessel
 	* install_gmt:		GDAL setup had bad variable name $enable-gdal that
