@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.39 2009-09-09 23:27:02 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.40 2009-10-05 03:18:09 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
@@ -503,7 +503,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 			header->z_max = MAX (header->z_max, grid[ij]);
 		}
 	}
-	if (fp != stdin) fclose (fp);
+	if (fp != stdin) GMT_fclose (fp);
 	
 	GMT_free ((void *)tLong);
 	return (GMT_NOERROR);
