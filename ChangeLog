@@ -1,6 +1,8 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.638 2009-10-04 00:55:26 guru Exp $
+	$Id: ChangeLog,v 1.639 2009-10-05 02:25:32 guru Exp $
 -----------------------------------------------------------------------------------------
+2009-10-04	pwessel
+	* gmt_init.c:		Opened file with fopen but closed with GMT_fclose.
 
 2009-10-03	pwessel		GMT 5 branch tag set: GMT5_branch
 
