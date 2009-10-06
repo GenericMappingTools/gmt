@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.640 2009-10-05 03:18:09 guru Exp $
+	$Id: ChangeLog,v 1.641 2009-10-06 12:58:50 remko Exp $
 -----------------------------------------------------------------------------------------
+2009-10-06
+	* gmt2kml.c:		Removed additional > in </ExtendedData>>.
+
 2009-10-04	pwessel
 	* gmt_init.c:		Opened file with fopen but closed with GMT_fclose.
 	* gmt_mgg_header2.c:	Opened file with GMT_fopen but closed with fclose.
 
-2009-10-03	pwessel		GMT 5 branch tag set: GMT5_branch
+2009-10-03	pwessel		
+				GMT 5 branch tag set: GMT5_branch
 
 2009-10-01	pwessel
 	* psrose.c:		Needed to set scale to 1 so the bounding box
