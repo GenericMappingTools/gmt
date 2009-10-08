@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.419 2009-10-05 02:25:32 guru Exp $
+ *	$Id: gmt_init.c,v 1.420 2009-10-08 02:11:22 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4821,7 +4821,8 @@ GMT_LONG GMT_parse_J_option (char *args)
 
 			if (k > 0) {	/* For 1:xxxxx  we cannot have /LlTtDdGg modifiers */
 				if (n_slashes) error = TRUE;	/* Cannot have 1:xxx separately for x/y */
-				if (l_pos[0] || l_pos[1] || p_pos[0] || p_pos[1] || t_pos[0] || t_pos[1] || d_pos[0] || d_pos[1]) error = TRUE;
+				/* if (l_pos[0] || l_pos[1] || p_pos[0] || p_pos[1] || t_pos[0] || t_pos[1] || d_pos[0] || d_pos[1]) error = TRUE; */
+				if (l_pos[0] || l_pos[1] || p_pos[0] || p_pos[1]) error = TRUE;
 			}
 
 			/* Distinguish between p for points and p<power> for scaling */
