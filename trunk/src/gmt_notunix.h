@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.29 2009-09-11 07:02:33 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.30 2009-10-10 04:56:32 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -137,6 +137,7 @@ typedef __int64 GMT_LONG;		/* A signed 8-byte integer; otherwise set in gmt.h */
 #endif
 
 #define DIR_DELIM '\\'		/* Backslash as directory delimiter */
+#define PATH_DELIM ';'		/* Win uses ;, Unix uses : */
 #define PATH_SEPARATOR ";"	/* Win uses ;, Unix uses : */
 
 #include <io.h>
@@ -290,6 +291,9 @@ EXTERN_MSC void GMT_setmode (int i_or_o);
 #define DIR_DELIM '/'
 #endif
 
+#ifndef PATH_DELIM
+#define PATH_DELIM ':'		/* Win uses ;, Unix uses : */
+#endif
 #ifndef PATH_SEPARATOR
 #define PATH_SEPARATOR ":"	/* Win uses ;, Unix uses : */
 #endif

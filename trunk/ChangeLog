@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.641 2009-10-06 12:58:50 remko Exp $
+	$Id: ChangeLog,v 1.642 2009-10-10 04:56:32 guru Exp $
 -----------------------------------------------------------------------------------------
+2009-10-09
+	* gmtinit.c:		If GMT_DATADIR was set to a list of colon-separated dirs
+				then then init failed since we tried to check access as
+				if GMT_DATADIR was always a single entity (as in the past).
 2009-10-06
 	* gmt2kml.c:		Removed additional > in </ExtendedData>>.
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.420 2009-10-08 02:11:22 guru Exp $
+ *	$Id: gmt_init.c,v 1.421 2009-10-10 04:56:32 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3835,9 +3835,9 @@ void GMT_set_home (void)
 	/* Determine GMT_DATADIR, GMT_GRIDDIR, GMT_IMGDIR (data directories) */
 
 	if ((this = getenv ("GMT_DATADIR")) != CNULL) {	/* GMT_DATADIR was set */
-		if (access(this,R_OK))
+		if (!strchr (this, PATH_DELIM) && access(this,R_OK))	/* A single directory, but cannot be accessed */
 			GMT_DATADIR = CNULL;
-		else {
+		else {	/* A list of directories */
 			GMT_DATADIR = strdup (this);
 		}
 	}
