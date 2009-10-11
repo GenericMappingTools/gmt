@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.642 2009-10-10 04:56:32 guru Exp $
+	$Id: ChangeLog,v 1.643 2009-10-11 22:04:30 guru Exp $
 -----------------------------------------------------------------------------------------
+2009-10-11
+	* misc/kml2gmt.c:	Mix of fopen and GMT_fclose not good under Windoze
+
 2009-10-09
 	* gmtinit.c:		If GMT_DATADIR was set to a list of colon-separated dirs
 				then then init failed since we tried to check access as
