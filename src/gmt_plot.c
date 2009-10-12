@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.271 2009-09-10 22:19:35 remko Exp $
+ *	$Id: gmt_plot.c,v 1.272 2009-10-12 23:42:13 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4361,7 +4361,7 @@ struct EPS *GMT_epsinfo (char *program)
 	fno[id++] = gmtdefs.annot_font[0];
 	fno[id++] = gmtdefs.annot_font[1];
 
-	qsort ((void *)fno, (size_t)id, sizeof (int), GMT_comp_int_asc);
+	qsort ((void *)fno, (size_t)id, sizeof (GMT_LONG), GMT_comp_int_asc);
 
 	last = -1;
 	for (i = n_fonts = 0; i < id; i++) {

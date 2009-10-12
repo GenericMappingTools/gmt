@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.429 2009-09-11 15:32:04 remko Exp $
+ *	$Id: gmt_support.c,v 1.430 2009-10-12 23:42:14 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4626,10 +4626,10 @@ int GMT_comp_int_asc (const void *p_1, const void *p_2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	int *point_1, *point_2;
+	GMT_LONG *point_1, *point_2;
 
-	point_1 = (int *)p_1;
-	point_2 = (int *)p_2;
+	point_1 = (GMT_LONG *)p_1;
+	point_2 = (GMT_LONG *)p_2;
 	if ( (*point_1) < (*point_2) )
 		return (-1);
 	else if ( (*point_1) > (*point_2) )
