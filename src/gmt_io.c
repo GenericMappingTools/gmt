@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.201 2009-09-23 06:17:37 guru Exp $
+ *	$Id: gmt_io.c,v 1.202 2009-10-14 22:10:38 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2872,7 +2872,7 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 	double d, *in;
 	FILE *fp;
 	struct GMT_TABLE *T;
-	PFL psave = VNULL;
+	PFL psave = NULL;
 
 	if (use_GMT_io) {	/* Use GMT_io settings to determine if input is ascii/binary, else it defaults to ascii */
 		n_expected_fields = (GMT_io.binary[GMT_IN]) ? GMT_io.ncol[GMT_IN] : BUFSIZ;
@@ -3107,7 +3107,7 @@ GMT_LONG GMT_export_table (void *dest, GMT_LONG dest_type, struct GMT_TABLE *tab
 	GMT_LONG row = 0, seg, col;
 	double *out;
 	FILE *fp;
-	PFL psave = VNULL;
+	PFL psave = NULL;
 
 	if (use_GMT_io) {	/* Use GMT_io settings to determine if input is ascii/binary, else it defaults to ascii */
 		strcpy (open_mode, GMT_io.w_mode);
