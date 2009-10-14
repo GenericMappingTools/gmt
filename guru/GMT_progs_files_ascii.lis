@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.65 2009-10-13 23:37:00 guru Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.66 2009-10-14 06:30:30 guru Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_src tar/zip files.  See GMT_progs_files_bin.lis for binary files.
@@ -112,7 +112,6 @@ src/gmtmath.h
 src/gmtlogo
 src/gmtselect.c
 src/gmtset.c
-src/gmtwitch.c
 src/grd2cpt.c
 src/grd2xyz.c
 src/grdblend.c
@@ -187,7 +186,6 @@ src/gmtmath.1
 src/gmtlogo.1
 src/gmtselect.1
 src/gmtset.1
-src/gmtwhich.1
 src/grd2cpt.1
 src/grd2xyz.1
 src/grdblend.1
