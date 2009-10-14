@@ -1,16 +1,22 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.644 2009-10-12 23:42:13 guru Exp $
+	$Id: ChangeLog,v 1.645 2009-10-14 02:16:31 remko Exp $
 -----------------------------------------------------------------------------------------
-2009-10-12
+
+2009-10-14	remko
+	* grdtrend.c:		Explicitly set pstuff[0] = 1 and use it in loops.
+
+2009-10-12	pwessel
 	* gmt_plot.c:		qsort of GMT_LONGs passed ints
-2009-10-11
+
+2009-10-11	pwessel
 	* misc/kml2gmt.c:	Mix of fopen and GMT_fclose not good under Windoze
 
-2009-10-09
+2009-10-09	pwessel
 	* gmtinit.c:		If GMT_DATADIR was set to a list of colon-separated dirs
 				then then init failed since we tried to check access as
 				if GMT_DATADIR was always a single entity (as in the past).
-2009-10-06
+
+2009-10-06	remko
 	* gmt2kml.c:		Removed additional > in </ExtendedData>>.
 
 2009-10-04	pwessel
