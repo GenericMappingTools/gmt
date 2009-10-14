@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.272 2009-10-12 23:42:13 guru Exp $
+ *	$Id: gmt_plot.c,v 1.273 2009-10-14 22:10:38 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1804,7 +1804,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	GMT_LONG do_minutes, do_seconds, move_up, done_Greenwich, done_Dateline, annot, GMT_world_map_save;
 	char label[GMT_LONG_TEXT], cmd[GMT_LONG_TEXT];
 	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual;
-	PFL GMT_outside_save = VNULL;
+	PFL GMT_outside_save = NULL;
 
 	if (!(project_info.degree[0] || project_info.degree[1] || project_info.projection == GMT_POLAR)) return;	/* Annotations and header already done by GMT_linear_map_boundary */
 
