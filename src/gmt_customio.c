@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.86 2009-09-14 00:16:00 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.87 2009-10-15 19:03:52 jluis Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1889,7 +1889,6 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 
 	GMT_free((void *) to_gdalread);
 	if (from_gdalread->ColorMap == NULL) GMT_free((void *) from_gdalread->ColorMap);
-	GMT_free((void *) from_gdalread);
 
 	if (from_gdalread->UInt8.active)
 		GMT_free ((void *)from_gdalread->UInt8.data);
@@ -1901,6 +1900,8 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 		GMT_free ((void *)from_gdalread->Int16.data);
 	else if (from_gdalread->Int32.active)
 		GMT_free ((void *)from_gdalread->Int32.data);
+
+	GMT_free((void *) from_gdalread);
 
 	return (GMT_NOERROR);
 }
