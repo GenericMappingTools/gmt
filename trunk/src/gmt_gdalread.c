@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.10 2009-09-14 17:29:04 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.11 2009-10-15 19:05:06 jluis Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -170,7 +170,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 			anSrcWin[1] = (int) ((dfULY - adfGeoTransform[3]) / adfGeoTransform[5] + 0.001);
 			anSrcWin[2] = (int) ((dfLRX - dfULX) / adfGeoTransform[1] + 0.5);
 			anSrcWin[3] = (int) ((dfLRY - dfULY) / adfGeoTransform[5] + 0.5);
-			if (GDAL_VERSION_NUM <= 1610 && !strcmp(format,"netCDF")) {
+			if (GDAL_VERSION_NUM <= 1700 && !strcmp(format,"netCDF")) {
 				/* PATCH against the never ending GDAL bug of reading netCDF files */
 				anSrcWin[1] = GDALGetRasterYSize(hDataset) - (anSrcWin[1] + anSrcWin[3]) - 1;
 			}
@@ -470,7 +470,6 @@ int populate_metadata (struct GD_CTRL *Ctrl, char *gdal_filename , int correct_b
 	int	i, n_colors;		/* Number of colors in the eventual Color Table */ 
 	int	status;			/* success or failure */
 	int	xSize, ySize, raster_count; /* Dimensions of the dataset */
-	int	bGotMin, bGotMax;	/* To know if driver transmited Min/Max */
 	double 	adfGeoTransform[6];	/* bounds on the dataset */
 	double	tmpdble;		/* temporary value */
 	double	xy_c[2], xy_geo[4][2];	/* Corner coordinates in the local coords system and geogs (if it exists) */
@@ -685,10 +684,7 @@ int populate_metadata (struct GD_CTRL *Ctrl, char *gdal_filename , int correct_b
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
 		if (z_min == 1e50) {		/* We don't know yet the dataset Min/Max */
-			adfMinMax[0] = GDALGetRasterMinimum( hBand, &bGotMin );
-			adfMinMax[1] = GDALGetRasterMaximum( hBand, &bGotMax );
-			if(!(bGotMin && bGotMax))
-				GDALComputeRasterMinMax( hBand, TRUE, adfMinMax );
+			GDALComputeRasterMinMax( hBand, FALSE, adfMinMax );
 			Ctrl->hdr[4] = adfMinMax[0]; 
 			Ctrl->hdr[5] = adfMinMax[1]; 
 		}
