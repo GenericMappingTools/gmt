@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.645 2009-10-14 02:16:31 remko Exp $
+	$Id: ChangeLog,v 1.646 2009-10-15 21:43:12 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2009-10-15	jluis
+	* gmt_customio.c:	Fixed bug resulting from releasing the pointer to from_gdalread
+				structure before its members.
+	* gmt_gdalread.c:	Force computation of min/max since metadata info may be wrong
 
 2009-10-14	remko
 	* grdtrend.c:		Explicitly set pstuff[0] = 1 and use it in loops.
