@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.646 2009-10-15 21:43:12 jluis Exp $
+	$Id: ChangeLog,v 1.647 2009-10-16 06:08:37 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-10-15	pwessel
+	* x2sys.c:		x2sys_pick_fields should NOT reset x_col, y_col, t_col as
+				these indicate which input columns hold x, y, t.
+	* x2sys/x2sys_datalist.c:	Confusion between input order and output order when
+				the -F<list> option was used.
 
 2009-10-15	jluis
 	* gmt_customio.c:	Fixed bug resulting from releasing the pointer to from_gdalread

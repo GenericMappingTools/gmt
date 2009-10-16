@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.137 2009-09-09 23:27:05 guru Exp $
+ *	$Id: x2sys.c,v 1.138 2009-10-16 06:08:38 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -318,7 +318,9 @@ int x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 	strncpy (line, string, (size_t)BUFSIZ);	/* Make copy for later use */
 	memset ((void *)s->use_column, 0, (size_t)(s->n_fields * sizeof (int)));
 
+#if 0
 	s->x_col = s->y_col = s->t_col = -1;	/* Need to reset this to match data order */
+#endif
 	while ((GMT_strtok (line, ",", &pos, p))) {
 		j = 0;
 		while (j < s->n_fields && strcmp (p, s->info[j].name)) j++;
@@ -326,9 +328,11 @@ int x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 			s->out_order[i] = j;
 			s->use_column[j] = 1;
 			/* Reset x,y,t indices */
+#if 0
 			if (!strcmp (s->info[j].name, "x") || !strcmp (s->info[j].name, "lon"))  s->x_col = i;
 			if (!strcmp (s->info[j].name, "y") || !strcmp (s->info[j].name, "lat"))  s->y_col = i;
 			if (!strcmp (s->info[j].name, "t") || !strcmp (s->info[j].name, "time")) s->t_col = i;
+#endif
 		}
 		else {
 			fprintf (stderr, "X2SYS: ERROR: Unknown column name %s\n", p);
