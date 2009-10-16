@@ -1,7 +1,7 @@
 src/dbase/README.dbase
 src/dbase/grdraster.c
 src/dbase/grdraster.1
-src/dbase/makefile
+src/dbase/Makefile
 share/dbase/grdraster.info
 src/gshhs/README.gshhs
 src/gshhs/gshhs.c
@@ -11,7 +11,7 @@ src/gshhs/gshhs_dp.c
 src/gshhs/gshhs_dp.1
 src/gshhs/gshhstograss.c
 src/gshhs/gshhstograss.1
-src/gshhs/makefile
+src/gshhs/Makefile
 src/imgsrc/README.imgsrc
 src/imgsrc/gmt_imgsubs.c
 src/imgsrc/gmt_imgsubs.h
@@ -21,9 +21,9 @@ src/imgsrc/img2grd
 src/imgsrc/img2grd.1
 src/imgsrc/img2google
 src/imgsrc/img2google.1
-src/imgsrc/makefile
+src/imgsrc/Makefile
 src/meca/README.meca
-src/meca/makefile
+src/meca/Makefile
 src/meca/psmeca.c
 src/meca/psmeca.1
 src/meca/pscoupe.c
@@ -56,9 +56,9 @@ src/mex/grdread.m
 src/mex/grdwrite.c
 src/mex/grdwrite.m
 src/mex/imgread.m
-src/mex/makefile
+src/mex/Makefile
 src/mgd77/README.mgd77
-src/mgd77/makefile
+src/mgd77/Makefile
 src/mgd77/mgd77.c
 src/mgd77/mgd77defaults.h
 src/mgd77/mgd77magref.h
@@ -117,13 +117,13 @@ src/mgg/gmtpath.c
 src/mgg/gmtpath.1
 src/mgg/gmttrack.c
 src/mgg/gmttrack.1
-src/mgg/makefile
+src/mgg/Makefile
 src/mgg/mgd77togmt.c
 src/mgg/mgd77togmt.1
 share/mgg/carter.d
 share/mgg/gmtfile_paths
 src/misc/README.misc
-src/misc/makefile
+src/misc/Makefile
 src/misc/dimfilter.c
 src/misc/dimfilter.1
 src/misc/dim.template.sh
@@ -144,8 +144,8 @@ src/misc/nc2xy.1
 src/misc/psmegaplot.c
 src/misc/psmegaplot.1
 src/segyprogs/README.segyprogs
-src/segyprogs/makefile
-src/segyprogs/makefile
+src/segyprogs/Makefile
+src/segyprogs/Makefile
 src/segyprogs/pssegy.c
 src/segyprogs/pssegy.1
 src/segyprogs/pssegyz.c
@@ -175,7 +175,7 @@ src/sph/sph.c
 src/sph/sph.h
 src/sph/stripack.c
 src/sph/ssrfpack.c
-src/sph/makefile
+src/sph/Makefile
 src/sph/sph_ex_1.sh
 src/sph/sph_ex_2.sh
 src/sph/sph_ex_3.sh
@@ -200,7 +200,7 @@ src/spotter/grdspotter.c
 src/spotter/grdspotter.1
 src/spotter/originator.1
 src/spotter/libspotter.c
-src/spotter/makefile
+src/spotter/Makefile
 src/spotter/makespotter.bat
 src/spotter/seamounts.d
 src/spotter/pac_hs.d
@@ -230,7 +230,7 @@ src/x2sys/x2sys_put.c
 src/x2sys/x2sys_put.1
 src/x2sys/x2sys_merge.c
 src/x2sys/x2sys_merge.1
-src/x2sys/makefile
+src/x2sys/Makefile
 share/x2sys/geo.def
 share/x2sys/geoz.def
 share/x2sys/gmt.def
@@ -239,7 +239,7 @@ share/x2sys/mgd77+.def
 share/x2sys/xy.def
 share/x2sys/xyz.def
 src/x_system/README.x_system
-src/x_system/makefile
+src/x_system/Makefile
 src/x_system/x_edit.c
 src/x_system/x_edit.1
 src/x_system/x_init.c
@@ -261,7 +261,7 @@ src/x_system/x_system.1
 src/x_system/x_update.c
 src/x_system/x_update.1
 src/xgrid/README.xgrid
-src/xgrid/makefile
+src/xgrid/Makefile
 src/xgrid/xGridEdit.c
 src/xgrid/xgrid_Canvas.c
 src/xgrid/xgrid_Canvas.h
