@@ -1,4 +1,4 @@
-#	$Id: GMT_progs_files_ascii.lis,v 1.66 2009-10-14 06:30:30 guru Exp $
+#	$Id: GMT_progs_files_ascii.lis,v 1.67 2009-10-16 08:31:27 guru Exp $
 #
 # GMT_progs_files_ascii.lis contains all the ascii files that should go into the
 # GMT_src tar/zip files.  See GMT_progs_files_bin.lis for binary files.
@@ -17,7 +17,7 @@ gmtswitch
 gmtpatch.sh
 install-sh
 Makefile
-src/makefile
+src/Makefile
 src/makegmt.macros.in
 src/gmtalldeps.macros
 src/GMT.in
