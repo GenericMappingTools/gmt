@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.9 2009-09-10 16:02:06 remko Exp $
+#  $Id: GNUmakefile,v 1.10 2009-10-17 22:10:49 remko Exp $
 #
 #	Guru Makefile for GMT Version 4.x misc directory
 #	
@@ -14,7 +14,7 @@
 #	Date:		24-SEP-2007
 #-------------------------------------------------------------------------------
 
-include makefile
+include Makefile
 include ../manpages.mk
 
 # Placing gmtpoly her for now while developing and testing

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.19 2009-05-17 19:17:05 guru Exp $
+#  $Id: GNUmakefile,v 1.20 2009-10-17 22:10:49 remko Exp $
 #
 #	Guru Makefile for GMT Version 4.x sph directory
 #	
@@ -14,7 +14,7 @@
 #	Date:		17-MAY-2009
 #-------------------------------------------------------------------------------
 
-include makefile
+include Makefile
 include $(GMTSRCDIR)manpages.mk
 
 # While f2c is no longer needed I have left these notes on how to make f2c from source

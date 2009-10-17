@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.4 2007-11-14 20:27:29 remko Exp $
+#  $Id: GNUmakefile,v 1.5 2009-10-17 22:10:49 remko Exp $
 #
 #	Guru Makefile for GMT Version 4.x segyprogs directory
 #	
@@ -14,5 +14,5 @@
 #	Date:		24-SEP-2007
 #-------------------------------------------------------------------------------
 
-include makefile
+include Makefile
 include ../manpages.mk

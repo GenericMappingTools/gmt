@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.13 2009-05-01 23:06:41 guru Exp $
+#  $Id: GNUmakefile,v 1.14 2009-10-17 22:10:49 remko Exp $
 #
 #	Guru Makefile for GMT Version 4.x mgd77 directory
 #	
@@ -14,7 +14,7 @@
 #	Date:		07-MAY-2007
 #-------------------------------------------------------------------------------
 
-include makefile
+include Makefile
 include ../manpages.mk
 
 mgd77_functions.h mgd77_functions.c:	mgd77netcdfhelper.sh mgd77_header.txt
