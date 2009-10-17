@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_error.h,v 1.9 2009-09-09 23:27:01 guru Exp $
+ *	$Id: gmt_error.h,v 1.10 2009-10-17 22:10:49 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -83,6 +83,13 @@
 
 /* Definition for an error trap */
 #define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
+
+/* Definition for printing an error message. When DEBUG is on, also print source file and line number. */
+#ifdef DEBUG
+#define GMT_error(text) {fprintf (stderr, "%s:%s:%d: ", GMT_program, __FILE__, __LINE__);fprintf text;}
+#else
+#define GMT_error(text) {fprintf (stderr, "%s: ", GMT_program);fprintf text;}
+#endif
 
 EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
 

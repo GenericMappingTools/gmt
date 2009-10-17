@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.84 2009-07-11 03:04:13 remko Exp $
+#  $Id: GNUmakefile,v 1.85 2009-10-17 22:10:49 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -14,7 +14,7 @@
 #	Date:		29-MAY-2008
 #-------------------------------------------------------------------------------
 
-include makefile
+include Makefile
 
 # To retain binaries for more than one architecture you can 
 # say "make install2" instead of (or in addition to) "make install"
