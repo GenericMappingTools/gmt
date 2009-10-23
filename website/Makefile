@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.45 2009-09-20 04:39:05 guru Exp $
+#  $Id: Makefile,v 1.46 2009-10-23 18:32:37 remko Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -8,7 +8,7 @@
 #
 #	TO BE INSTALLED IN GMT/website and requires GNU make
 #
-#	Requires guru/gmtguru.macros and src/makegmt.macros to be manually set.
+#	Requires guru/gmtguru.macros and src/config.mk to be manually set.
 #	All configure changes are to be made in those files, not here.
 #
 #	To update FTP and WEB live sites with the new version:  make update-version-live
@@ -26,7 +26,7 @@
 #	Default setup
 #-------------------------------------------------------------------------------
 
-include ../src/makegmt.macros		# GMT-specific settings determined by user
+include ../src/config.mk		# GMT-specific settings determined by user
 include gmtsite.macros			# Site-specific settings determined by webmaster
 
 #-------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.36 2009-09-10 16:02:06 remko Exp $
+#	$Id: Makefile,v 1.37 2009-10-23 18:32:37 remko Exp $
 #	makefile for misc directory
 #
 #-------------------------------------------------------------------------------
@@ -6,8 +6,8 @@
 #-------------------------------------------------------------------------------
 
 GMTSRCDIR = ../
-include $(GMTSRCDIR)makegmt.macros
-include $(GMTSRCDIR)gmtalldeps.macros
+include $(GMTSRCDIR)config.mk
+include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
@@ -60,10 +60,10 @@ nc2xy$(EXE):		nc2xy.o
 psmegaplot$(EXE):	psmegaplot.o
 makepattern$(EXE):	makepattern.o
 
-$(PROGS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+$(PROGS):	$(LIBGMT)
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
 
-$(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt -lgmtps -lpsl $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+$(PROGSPS):	$(LIBGMT)
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMTPS_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@

@@ -1,4 +1,4 @@
-#	$Id: GNUmakefile,v 1.39 2009-08-17 16:42:47 remko Exp $
+#	$Id: GNUmakefile,v 1.40 2009-10-23 18:32:37 remko Exp $
 #
 #	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
 #	See COPYING file for copying and redistribution conditions.
@@ -45,7 +45,7 @@
 # 3. If latex complains that it cannot find html.sty you need to run mktexlsr (as admin)
 #
 
-include ../src/makegmt.macros
+include ../src/config.mk
 
 .SUFFIXES:	.eps .pdf .tex .ps .sh
 

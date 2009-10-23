@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.76 2009-09-21 04:06:42 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.77 2009-10-23 18:32:37 remko Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.76 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.77 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -202,7 +202,7 @@ GMT source code archive.</I>
 libraries is significantly reduced executable sizes (50-70% savings in disk space).  The GMT install
 procedure knows how to make shared libraries under Linux, FreeBSD, NetBSD, SunOS, Solaris, HPUX, OSF1,
 OSX, and IRIX.  For other systems capable of generating shared libraries you must manually configure the
-makegmt.macros file.  If you have no preferences or no idea what to do on an unlisted system, select
+config.mk file.  If you have no preferences or no idea what to do on an unlisted system, select
 the default static libraries.</I><BR>
 
 <!--  COMPILER SELECTION  -->

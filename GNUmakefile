@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.59 2009-09-18 02:36:50 guru Exp $
+#  $Id: GNUmakefile,v 1.60 2009-10-23 18:32:37 remko Exp $
 #
 #		 Guru makefile for GMT Version 4.*
 #			GNU make compatible
@@ -147,7 +147,7 @@ webdoc:		;
 # FILES from the CVS-distributed master files:
 #-------------------------------------------------------------------------------
 
-FILES =		src/makegmt.macros share/conf/gmt.conf share/conf/gmtdefaults_SI share/conf/gmtdefaults_US \
+FILES =		src/config.mk share/conf/gmt.conf share/conf/gmtdefaults_SI share/conf/gmtdefaults_US \
 		src/gmt_version.h src/GMT
 
 gmtmacros FILES:		$(FILES)
@@ -157,12 +157,12 @@ animations:	FILES
 fresh:
 		rm -f $(FILES)
 
-config:		src/makegmt.macros
+config:		src/config.mk
 
 guru/gmtguru.macros:
 		touch $@
 
-# When doing spotless or TARGET=spotless, make sure a dummy src/makegmt.macros exists
+# When doing spotless or TARGET=spotless, make sure a dummy src/config.mk exists
 
 ifeq "$(findstring spotless,$(MAKECMDGOALS)$(TARGET))" "spotless"
 $(FILES):
@@ -283,4 +283,4 @@ include Makefile
 #-------------------------------------------------------------------------------
 
 spotless::
-		\rm -rf src/makegmt.macros src/gmt_version.h configure autom4te.cache
+		\rm -rf src/config.mk src/gmt_version.h configure autom4te.cache

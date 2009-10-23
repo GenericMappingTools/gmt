@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.17 2009-09-10 16:02:06 remko Exp $
+#	$Id: Makefile,v 1.18 2009-10-23 18:32:37 remko Exp $
 #
 #		Makefile for GMT supplement sph
 #
@@ -10,9 +10,10 @@
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
+
 GMTSRCDIR = ../
-include $(GMTSRCDIR)makegmt.macros
-include $(GMTSRCDIR)gmtalldeps.macros
+include $(GMTSRCDIR)config.mk
+include $(GMTSRCDIR)common.mk
 
 INCLUDES = -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
@@ -73,4 +74,4 @@ spotless::	clean
 #-------------------------------------------------------------------------------
 
 $(CODE):	$(CODE_O) $(SPHLIB)
-	$(CC) $(CFLAGS) $@.o -L.. -lgmt -lpsl $(NETCDF_LIB) $(GDAL_LIB) -L. -lsph $(LIBS) -o $@
+	$(CC) $(CFLAGS) $@.o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) -L. -lsph $(LIBS) -o $@

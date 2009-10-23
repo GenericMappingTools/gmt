@@ -1,4 +1,4 @@
-	$Id: README.imgsrc,v 1.9 2009-09-09 23:27:04 guru Exp $
+	$Id: README.imgsrc,v 1.10 2009-10-23 18:32:37 remko Exp $
 
 Maintained by: W H F Smith
 All code files are explicitly distributed under the
@@ -85,10 +85,10 @@ img2mercgrd.1:		the img2mercgrd man page.
 These files are intended for installation in a sub-directory below the 
 primary GMT src directory.  If the imgsrc files are placed somewhere 
 else, the user will have to change the paths to "gmt.h" in 
-"gmt_imgsubs.h" and to "-lgmt", "-lpsl", and "makegmt.macros" in 
+"gmt_imgsubs.h" and to "-lgmt", "-lpsl", and "config.mk" in 
 "makefile".
 
-makefile uses "../makegmt.macros" which also control the "make" of 
+makefile uses "../config.mk" which also control the "make" of 
 programs in the primary GMT src directory.
 
 Assuming you have installed the imgsrc files in src/imgsrc within the 

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.85 2009-10-17 22:10:49 remko Exp $
+#  $Id: GNUmakefile,v 1.86 2009-10-23 18:32:37 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -144,14 +144,14 @@ gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i:	make_math.sh gmtmath.c
 grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i:	make_math.sh grdmath.c
 			$(SHELL) make_math.sh grd
 
-# When doing "spotless" make sure at least a dummy makegmt.macros exists.
+# When doing "spotless" make sure at least a dummy config.mk exists.
 
 ifeq "$(MAKECMDGOALS)" "spotless"
-makegmt.macros:
+config.mk:
 			touch $@
 else
-makegmt.macros:		makegmt.macros.in
-			cd ..; $(MAKE) src/makegmt.macros
+config.mk:		config.mk.in
+			cd ..; $(MAKE) src/config.mk
 endif
 
 # Must create manpages before install-man

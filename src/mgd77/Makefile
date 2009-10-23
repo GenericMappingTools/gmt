@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.59 2009-09-10 16:02:06 remko Exp $
+#	$Id: Makefile,v 1.60 2009-10-23 18:32:37 remko Exp $
 #
 #		Makefile for GMT mgd77 supplements
 #
@@ -17,8 +17,8 @@
 #-------------------------------------------------------------------------------
 
 GMTSRCDIR = ../
-include $(GMTSRCDIR)makegmt.macros
-include $(GMTSRCDIR)gmtalldeps.macros
+include $(GMTSRCDIR)config.mk
+include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
@@ -93,7 +93,7 @@ libmgd77.a:	$(LIB_O)
 		$(RANLIB) $@
 
 libmgd77.$(SL):	libmgd77.a
-		$(LD) $(LD_OPT) $(LIB_O) -L.. -lgmt $(NETCDF_LIB) $(LIBS) -o $@
+		$(LD) $(LD_OPT) $(LIB_O) $(GMT_LIB) $(NETCDF_LIB) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules
@@ -107,10 +107,10 @@ mgd77sniffer$(EXE):	mgd77sniffer.o
 mgd77magref$(EXE):	mgd77magref.o
 mgd77track$(EXE):	mgd77track.o
 
-$(PROGS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -lgmt $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+$(PROGS):	$(LIB) $(LIBGMT)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
 
-$(PROGSPS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 -L.. -lgmt -lgmtps -lpsl $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+$(PROGSPS):	$(LIB) $(LIBGMT)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lmgd77 $(GMTPS_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@

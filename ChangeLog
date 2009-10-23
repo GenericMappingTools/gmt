@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.647 2009-10-16 06:08:37 guru Exp $
+	$Id: ChangeLog,v 1.648 2009-10-23 18:36:26 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-10-23	remko
+	* config.mk.in, common.mk: Replaced makegmt.macros by config.mk
+				Replaced gmtalldeps.macros by common.mk
+	* All makefiles:	Improved handling of libs in Makefiles
 
 2009-10-15	pwessel
 	* x2sys.c:		x2sys_pick_fields should NOT reset x_col, y_col, t_col as
