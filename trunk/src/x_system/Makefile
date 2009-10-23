@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.25 2009-09-10 16:02:05 remko Exp $
+#	$Id: Makefile,v 1.26 2009-10-23 18:32:37 remko Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -18,8 +18,8 @@
 #-------------------------------------------------------------------------------
 
 GMTSRCDIR = ../
-include $(GMTSRCDIR)makegmt.macros
-include $(GMTSRCDIR)gmtalldeps.macros
+include $(GMTSRCDIR)config.mk
+include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) -I../mgg $(NETCDF_INC) $(GDAL_INC)
 
@@ -72,10 +72,10 @@ x_setup$(EXE):		x_setup.o
 x_solve_dc_drift$(EXE):	x_solve_dc_drift.o
 x_update$(EXE):		x_update.o
 
-$(PROGS):	$(GMTLIB)
+$(PROGS):	$(LIBGMT)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
 
-$(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L../mgg -lgmt_mgg -L.. -lgmt $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+$(PROGSPS):	$(LIBGMT)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -L../mgg -lgmt_mgg $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@

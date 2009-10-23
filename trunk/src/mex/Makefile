@@ -1,4 +1,4 @@
-#		$Id: Makefile,v 1.14 2009-09-10 16:02:06 remko Exp $
+#		$Id: Makefile,v 1.15 2009-10-23 18:32:37 remko Exp $
 #
 #	Makefile for gmt <--> octave/matlab interface programs
 #	Use with GMT 4.3.0 or later
@@ -12,12 +12,12 @@
 #----------------------------------------------------------------------------
 
 GMTSRCDIR	= ../
-include $(GMTSRCDIR)makegmt.macros
-include $(GMTSRCDIR)gmtalldeps.macros
+include $(GMTSRCDIR)config.mk
+include $(GMTSRCDIR)common.mk
 
 .SUFFIXES:	.m .$(MEX_EXT)
 
-GMT     	= -L.. -lgmt $(NETCDF_LIB) $(GDAL_LIB)
+ALLLIB     	= $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(MEX_LIB)
 FLAGS		= -I$(srcdir) $(MEX_INC) $(NETCDF_INC) $(GDAL_INC)
 
 PROGS_M		= grdinfo.m grdread.m grdwrite.m imgread.m
@@ -66,11 +66,11 @@ clean:
 #	program rules
 #-------------------------------------------------------------------------------
 
-grdinfo.$(MEX_EXT):	$(GMT_H) $(GMTLIB) grdinfo.c grdinfo.m
-		$(MEX_BLD) $(FLAGS) grdinfo.c $(GMT) $(MEX_LIB) 
+grdinfo.$(MEX_EXT):	$(GMT_H) $(LIBGMT) grdinfo.c grdinfo.m
+		$(MEX_BLD) $(FLAGS) grdinfo.c $(ALLLIB)
 
-grdread.$(MEX_EXT):	$(GMT_H) $(GMTLIB) grdread.c grdread.m
-		$(MEX_BLD) $(FLAGS) grdread.c $(GMT) $(MEX_LIB) 
+grdread.$(MEX_EXT):	$(GMT_H) $(LIBGMT) grdread.c grdread.m
+		$(MEX_BLD) $(FLAGS) grdread.c $(ALLLIB)
 
-grdwrite.$(MEX_EXT):	$(GMT_H) $(GMTLIB) grdwrite.c grdwrite.m
-		$(MEX_BLD) $(FLAGS) grdwrite.c $(GMT) $(MEX_LIB)
+grdwrite.$(MEX_EXT):	$(GMT_H) $(LIBGMT) grdwrite.c grdwrite.m
+		$(MEX_BLD) $(FLAGS) grdwrite.c $(ALLLIB)

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.153 2009-09-30 06:18:56 guru Exp $
+#	$Id: install_gmt.sh,v 1.154 2009-10-23 18:32:37 remko Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1231,7 +1231,7 @@ cat << EOF >&2
 
 ---> Begin GMT $VERSION installation <---
 
----> Run configure to create makegmt.macros and gmt_notposix.h
+---> Run configure to create config.mk and gmt_notposix.h
 
 EOF
 
@@ -1239,10 +1239,10 @@ EOF
 
 rm -f config.{cache,log,status}
 
-# Clean out old makegmt.macros etc if present
+# Clean out old config.mk etc if present
 
-if [ -f src/makegmt.macros ]; then
-	echo '---> Clean out old executables, *.o, *.a, and makegmt.macros' >&2
+if [ -f src/config.mk ]; then
+	echo '---> Clean out old executables, *.o, *.a, and config.mk' >&2
 	$GMT_make spotless || exit
 fi
 

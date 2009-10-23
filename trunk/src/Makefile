@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.49 2009-09-20 01:22:03 guru Exp $
+#	$Id: Makefile,v 1.50 2009-10-23 18:32:37 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -35,15 +35,11 @@
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
 
-include makegmt.macros		# GMT-specific settings determined by user & configure
-include gmtalldeps.macros	# Dependencies
+include config.mk	# GMT-specific settings determined by user & configure
+include common.mk	# Dependencies
 
 DEFINES		= -DGMT_SHARE_PATH=\"$(GMT_SHARE_PATH)\" $(TRIANGLE_D)
 INCLUDES	= $(NETCDF_INC) $(GDAL_INC)
-
-PS		= -lpsl
-GMT		= -lgmt
-GMTPS		= -lgmtps
 
 LIB_O		= gmt_bcr.o gmt_calclock.o gmt_cdf.o gmt_customio.o gmt_grdio.o gmt_init.o gmt_io.o \
 		gmt_map.o gmt_nc.o gmt_proj.o gmt_shore.o gmt_stat.o gmt_support.o gmt_vector.o
@@ -64,7 +60,7 @@ PROGSPS_O	= gmt2rgb.o grdcontour.o grdimage.o grdvector.o grdview.o psbasemap.o 
 SCRIPTS		= GMT gmt_shell_functions.sh gmtget gmtlogo isogmt psbbox.sh
 ALLPROGS	= $(SCRIPTS) $(PROGS) $(PROGSPS)
 
-CONFIGS		= makegmt.macros gmt_version.h gmt_notposix.h GMT
+CONFIGS		= config.mk gmt_version.h gmt_notposix.h GMT
 
 MAN1		= GMT.1 gmt_shell_functions.1 gmtget.1 gmtlogo.1 isogmt.1 psbbox.1 \
 		$(PROGS_O:.o=.1) $(PROGSPS_O:.o=.1)
@@ -80,8 +76,8 @@ all:		init $(ALLPROGS)
 init:		gmtmacros gmt_version.h gmt_notposix.h GMT
 		
 gmtmacros:
-		@if [ ! -s makegmt.macros ]; then \
-			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
+		@if [ ! -s config.mk ]; then \
+			echo "src/config.mk is empty - you must rerun configure in the main GMT directory"; \
 			exit 1; \
 		fi
 
@@ -99,8 +95,8 @@ install:	all
 		$(INSTALL) $(ALLPROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir) ; \
-			$(INSTALL) -m 644 $(GMTLIB:.$(LIBEXT)=.a) $(libdir); \
-			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(GMTLIB) $(libdir); fi \
+			$(INSTALL) -m 644 $(LIBGMT:.$(LIBEXT)=.a) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIBGMT) $(libdir); fi \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(includedir) ; \
@@ -108,18 +104,16 @@ install:	all
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			\mv -f libpsl.$(SL) libpsl.$(SL_VERSION); \
-			$(LN_S) libpsl.$(SL_VERSION) libpsl.$(SL); \
-			\mv -f libgmt.$(SL) libgmt.$(SL_VERSION); \
-			$(LN_S) libgmt.$(SL_VERSION) libgmt.$(SL); \
-			\mv -f libgmtps.$(SL) libgmtps.$(SL_VERSION); \
-			$(LN_S) libgmtps.$(SL_VERSION) libgmtps.$(SL); \
+			for lib in $(LIBGMT:.$(LIBEXT)=) ; do\
+				\mv -f $$lib.$(SL) $$lib.$(SL_VERSION); \
+				$(LN_S) $$lib.$(SL_VERSION) $$lib.$(SL); \
+			done; \
 		fi
 
 uninstall:
 		cd $(bindir); \rm -f $(ALLPROGS)
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f $(GMTLIB) $(GMTLIB:.$(LIBEXT)=.a); \
+			cd $(libdir); \rm -f $(LIBGMT) $(LIBGMT:.$(LIBEXT)=.a); \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			cd $(includedir); \rm -f $(GMT_H) $(PS_H) $(PS_I); \
@@ -168,14 +162,14 @@ grd2xyz.o xyz2grd.o:	gmt_parse_z_io.h
 grdreformat.o:	grdreformat.h
 
 # Jonathan Shewchuk's triangulation model (www.cs.cmu.edu/~quake)
-# Only used if TRIANGLE_D and TRIANGLE_O are set in makegmt.macros
+# Only used if TRIANGLE_D and TRIANGLE_O are set in config.mk
 # Please read README.TRIANGLE in this source directory.
 
 triangle.o:	triangle.c triangle.h
 		$(CC) -c $(CFLAGS) -DNO_TIMER -DTRILIBRARY -DREDUCED -DCDT_ONLY $<
 
 # Assembly wrapper for sincos on Dec Alphas
-# Only used if ALPHA_SINCOS_O are set in makegmt.macros
+# Only used if ALPHA_SINCOS_O are set in config.mk
 
 alpha-sincos.o:	alpha-sincos.s
 		$(AS) -o alpha-sincos.o $<
@@ -186,7 +180,7 @@ alpha-sincos.o:	alpha-sincos.s
 
 .SUFFIXES:	.$(SL)
 
-libs:		$(GMTLIB)
+libs:		$(LIBGMT)
 
 libpsl.a:	pslib.o
 		$(AR) cvur $@ $?
@@ -206,8 +200,8 @@ libpsl.$(SL):	libpsl.a
 libgmt.$(SL):	libgmt.a
 		$(LD) $(LD_OPT) $(LIB_O) $(TRIANGLE_O) $(ALPHA_SINCOS_O) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 
-libgmtps.$(SL):	libgmtps.a libpsl.$(SL) libgmt.$(SL)
-		$(LD) $(LD_OPT) $(LIBPS_O) libpsl.$(SL) libgmt.$(SL) $(LIBS) -o $@
+libgmtps.$(SL):	libgmtps.a libgmt.$(SL) libpsl.$(SL)
+		$(LD) $(LD_OPT) $(LIBPS_O) libgmt.$(SL) libpsl.$(SL) $(LIBS) -o $@
 
 #-------------------------------------------------------------------------------
 #	program rules
@@ -279,10 +273,10 @@ trend2d$(EXE):		trend2d.o
 triangulate$(EXE):	triangulate.o
 xyz2grd$(EXE):		xyz2grd.o
 
-$(PROGS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+$(PROGS):	$(LIBGMT)
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
 
-$(PROGSPS):	$(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L. $(GMT) $(GMTPS) $(PS) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+$(PROGSPS):	$(LIBGMT)
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMTPS_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@

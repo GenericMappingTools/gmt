@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.28 2009-09-10 16:02:06 remko Exp $
+#	$Id: Makefile,v 1.29 2009-10-23 18:32:37 remko Exp $
 #
 # makefile for segyprogs directory
 #
@@ -7,8 +7,8 @@
 #-------------------------------------------------------------------------------
 
 GMTSRCDIR = ../
-include $(GMTSRCDIR)makegmt.macros
-include $(GMTSRCDIR)gmtalldeps.macros
+include $(GMTSRCDIR)config.mk
+include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 
@@ -56,10 +56,10 @@ pssegyz$(EXE):	pssegyz.o
 pssegy$(EXE):	pssegy.o
 segy2grd$(EXE):	segy2grd.o
 
-$(PROGS):	$(GMTLIB) segy_io.o
-		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -lgmt $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+$(PROGS):	$(LIBGMT) segy_io.o
+		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
 
-$(PROGSPS):	$(GMTLIB) segy_io.o
-		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o -L.. -lgmt -lgmtps -lpsl $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+$(PROGSPS):	$(LIBGMT) segy_io.o
+		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o $(GMTPS_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@

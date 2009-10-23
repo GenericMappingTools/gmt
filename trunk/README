@@ -1,6 +1,6 @@
 #	Information for installing GMT 4.x
 #
-#		$Id: README,v 1.59 2009-09-20 01:22:03 guru Exp $
+#		$Id: README,v 1.60 2009-10-23 18:32:37 remko Exp $
 #
 #	Copyright (c) 1991-2009, P. Wessel & W. H. F. Smith
 #
@@ -174,7 +174,7 @@ you may order a CD-ROM from Geoware.  See section 15 below for details.
 3. Configure
 ------------
 
-You must first create the files src/makegmt.macros, src/GMT,
+You must first create the files src/config.mk, src/GMT,
 src/isogmt, src/gmt_notposix.h and src/gmt_version.h
 by running the configure script.  If you have several C compilers on your
 system, or using one that is not called cc or gcc, you should first do a
@@ -293,7 +293,7 @@ that this can be changed at any time via the PAPER_MEDIA parameter.
 
 Append any of the options as you see fit.  If configure cannot figure
 out all the required compiler and linker flags it will give you a message
-and you will be asked to edit src/makegmt.macros to set macros manually.
+and you will be asked to edit src/config.mk to set macros manually.
 
 Once this step is completed you may move on to the Makefile section.
 
@@ -318,7 +318,7 @@ cd to where libnetcdf.a is and do
 	\rm -f *.o
 
 (substitute the macros with actual values for your system as listed in the
-makegmt.macros file).  See the linker options for the GMT libraries on how
+config.mk file).  See the linker options for the GMT libraries on how
 to store the run-time path to the shared netCDF library in the executables.
 
 5. Compile/link

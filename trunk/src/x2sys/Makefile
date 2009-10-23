@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.49 2009-09-10 16:02:06 remko Exp $
+#	$Id: Makefile,v 1.50 2009-10-23 18:32:37 remko Exp $
 #
 # makefile for x2sys directory
 #
@@ -7,11 +7,10 @@
 #-------------------------------------------------------------------------------
 
 GMTSRCDIR = ../
-include $(GMTSRCDIR)makegmt.macros
-include $(GMTSRCDIR)gmtalldeps.macros
+include $(GMTSRCDIR)config.mk
+include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) -I../mgg -I../mgd77 $(NETCDF_INC) $(GDAL_INC)
-ALLLIB		= -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg -L.. -lgmt $(LIBS)
 
 LIB_O		= x2sys.o
 LIB_H		= x2sys.h
@@ -100,6 +99,6 @@ x2sys_report$(EXE):	x2sys_report.o
 x2sys_solve$(EXE):	x2sys_solve.o
 x2sys_merge$(EXE):	x2sys_merge.o
 
-$(PROGS):	$(LIB) $(GMTLIB)
-		$(CC) $(LDFLAGS) $(@:.exe=).o -o $@ -L. -lx2sys $(ALLLIB) $(NETCDF_LIB) $(GDAL_LIB)
+$(PROGS):	$(LIB) $(LIBGMT)
+		$(CC) $(LDFLAGS) $(@:.exe=).o -o $@ -L. -lx2sys -L../mgd77 -lmgd77 -L../mgg -lgmt_mgg $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS)
 		$(COMPRESS) $@

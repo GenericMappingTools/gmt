@@ -1,11 +1,13 @@
-#	$Id: Makefile,v 1.9 2009-09-10 16:02:05 remko Exp $
+#	$Id: Makefile,v 1.10 2009-10-23 18:32:37 remko Exp $
 #	makefile for sph directory
 #
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
 #-------------------------------------------------------------------------------
 
-include ../makegmt.macros
+GMTSRCDIR = ../
+include $(GMTSRCDIR)config.mk
+include $(GMTSRCDIR)common.mk
 
 INCLUDES	= -I$(srcdir) $(NETCDF_INC)
 
@@ -46,5 +48,5 @@ grd2sph$(EXE):	grd2sph.o
 sph2grd$(EXE):	sph2grd.o
 
 $(PROGS):
-		$(CC) $(LDFLAGS) $(@:.exe=).o -L.. -lgmt $(NETCDF_LIB) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@

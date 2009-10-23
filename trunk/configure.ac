@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.71 2009-09-24 02:14:09 remko Exp $
-AC_REVISION($Revision: 1.71 $)
+dnl $Id: configure.ac,v 1.72 2009-10-23 18:32:37 remko Exp $
+AC_REVISION($Revision: 1.72 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -245,19 +245,6 @@ AC_CHECK_FUNC(erfc, AC_DEFINE(HAVE_ERFC), )
 AC_CHECK_FUNC(strdup, AC_DEFINE(HAVE_STRDUP), )
 AC_CHECK_FUNC(strtod, AC_DEFINE(HAVE_STRTOD), )
 AC_CHECK_FUNCS([floor getcwd gettimeofday memset modf pow rint sqrt strchr strdup strpbrk strrchr strstr strtol])
-dnl
-dnl -----------------------------------------------------------------
-dnl Override HYPOT under Interix and Cygwin as our function is
-dnl much faster than what configure seems to find.
-dnl -----------------------------------------------------------------
-dnl
-if test "$os" = "Windows_NT" ; then	# Interix
-	AC_DEFINE(HAVE_HYPOT, 0)
-elif test "$CYGWIN" = "yes" ; then	# Cygwin environment
-	AC_DEFINE(HAVE_HYPOT, 0)
-else					# Let configure it out
-	AC_CHECK_FUNC(hypot, AC_DEFINE(HAVE_HYPOT), )
-fi
 dnl -----------------------------------------------------------------
 dnl Find out about byte order and if default compilation is 64-bit
 dnl -----------------------------------------------------------------
@@ -692,7 +679,11 @@ LIBEXT='$(SL)'
 SL_VERSION='$(SL)'
 if test "$enable_shared" = "yes" ; then
 	AC_MSG_CHECKING(how to make a shared object)
-	if test "$os" = "SunOS" ; then
+	if test "X$CYGWIN" = "Xyes" ; then
+		SL=dll.a
+		SL_VERSION=$LIB_MAJOR_VERSION.$SL
+		LD='$(CC)'
+	elif test "$os" = "SunOS" ; then
 		if test "$Sun_rev" = "" ; then	# SunOS
 			LD_OPT="-Bdynamic"
 		else				# Solaris
@@ -720,7 +711,7 @@ if test "$enable_shared" = "yes" ; then
 		LD_OPT="-b"
 		SL=sl
 	else	# Not yet implemented
-		AC_MSG_RESULT(not supported for GMT under $os)
+		AC_MSG_RESULT(not supported for GMT under $os - building static libs instead)
 		enable_shared=no
 		shared_unknown=yes
 	fi
@@ -817,7 +808,7 @@ morefiles=
 if test -f doc/GMT_version.tex.in ; then
 	morefiles=doc/GMT_version.tex
 fi
-AC_OUTPUT(src/makegmt.macros src/GMT src/gmt_version.h src/isogmt share/conf/gmt.conf share/conf/gmtdefaults_SI share/conf/gmtdefaults_US $morefiles)
+AC_OUTPUT(src/config.mk src/GMT src/gmt_version.h src/isogmt share/conf/gmt.conf share/conf/gmtdefaults_SI share/conf/gmtdefaults_US $morefiles)
 dnl
 dnl -----------------------------------------------------------------
 dnl Remove and, if trouble, write the .gmtconfigure file
@@ -834,10 +825,10 @@ can mean that your OS does not support shared libraries at all
 or that the GMT configure script simply does not know how to.
 Therefore, configure has ignored the --enable-shared option.
 However, if shared libraries ARE supported on this system you
-may try edit src/makegmt.macros and manually set the macros
+may try edit src/config.mk and manually set the macros
 CFLAGS, CPPFLAGS, LD_OPT, LDFLAGS, and LIBEXT accordingly.
 Please include the output of uname -a and mail the working
-makegmt.macros to gmt-team@hawaii.edu.  Thanx.
+config.mk to gmt-team@hawaii.edu.  Thanx.
 =============================================================
 EOF
 	cat .gmtconfigure

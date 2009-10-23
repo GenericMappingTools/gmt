@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.78 2009-09-20 01:22:03 guru Exp $
+#	$Id: Makefile,v 1.79 2009-10-23 18:32:37 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,7 +60,7 @@
 #	Get Default Macros
 #-------------------------------------------------------------------------------
 
-include src/makegmt.macros	# GMT-specific settings determined by user & install_gmt
+include src/config.mk	# GMT-specific settings determined by user & install_gmt
 
 #-------------------------------------------------------------------------------
 #	!! STOP EDITING HERE, THE REST IS FIXED !!
@@ -121,8 +121,8 @@ uninstall-suppl:
 		$(MAKE) TARGET=uninstall $(SUPPL)
 
 gmtmacros:
-		@if [ ! -s src/makegmt.macros ]; then \
-			echo "src/makegmt.macros is empty - you must rerun configure in the main GMT directory"; \
+		@if [ ! -s src/config.mk ]; then \
+			echo "src/config.mk is empty - you must rerun configure in the main GMT directory"; \
 			exit 1; \
 		fi
 
