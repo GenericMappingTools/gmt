@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.72 2009-10-23 18:32:37 remko Exp $
-AC_REVISION($Revision: 1.72 $)
+dnl $Id: configure.ac,v 1.73 2009-10-23 20:53:40 remko Exp $
+AC_REVISION($Revision: 1.73 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -683,6 +683,7 @@ if test "$enable_shared" = "yes" ; then
 		SL=dll.a
 		SL_VERSION=$LIB_MAJOR_VERSION.$SL
 		LD='$(CC)'
+		LD_OPT="-shared"
 	elif test "$os" = "SunOS" ; then
 		if test "$Sun_rev" = "" ; then	# SunOS
 			LD_OPT="-Bdynamic"
