@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.211 2009-09-09 23:27:03 guru Exp $
+ *	$Id: pslib.c,v 1.212 2009-10-28 11:15:51 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4278,7 +4278,7 @@ void *ps_memory (void *prev_addr, PS_LONG nelem, size_t size)
 
 void ps_free (void *addr)
 {
-	if (!addr) free (addr);
+	if (addr) free (addr);
 }
 
 int ps_comp_int_asc (const void *p1, const void *p2)
