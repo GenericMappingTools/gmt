@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.648 2009-10-23 18:36:26 remko Exp $
+	$Id: ChangeLog,v 1.649 2009-10-28 11:15:51 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-10-28	remko
+	* pslib.c:		Bug fix: memory never got freed by ps_free.
 
 2009-10-23	remko
 	* config.mk.in, common.mk: Replaced makegmt.macros by config.mk
