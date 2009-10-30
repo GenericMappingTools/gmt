@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.212 2009-10-28 11:15:51 remko Exp $
+ *	$Id: pslib.c,v 1.213 2009-10-30 21:34:03 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -619,13 +619,13 @@ void ps_diamond_ (double *x, double *y, double *diameter, int *rgb, PS_LONG *out
 
 void ps_segment (double x0, double y0, double x1, double y1)
 {	/* Short line segment */
-	PS_LONG ix, iy, dx, dy;
+	PS_LONG ix, iy;
 
 	ix = (PS_LONG)irint (x0 * PSL->internal.scale);
 	iy = (PS_LONG)irint (y0 * PSL->internal.scale);
-	dx = (PS_LONG)irint (x1 * PSL->internal.scale) - ix;
-	dy = (PS_LONG)irint (y1 * PSL->internal.scale) - iy;
-	fprintf (PSL->internal.fp, "%ld %ld M %ld %ld D S\n", ix, iy, dx, dy);
+	PSL->internal.ix = (PS_LONG)irint (x1 * PSL->internal.scale);
+	PSL->internal.iy = (PS_LONG)irint (y1 * PSL->internal.scale);
+	fprintf (PSL->internal.fp, "%ld %ld M %ld %ld D S\n", ix, iy, PSL->internal.ix - ix, PSL->internal.iy - iy);
 }
 
 /* fortran interface */
@@ -1104,21 +1104,29 @@ void ps_plot (double x, double y, int pen)
 {
 	PS_LONG ix, iy, idx, idy;
 
-	ix = (PS_LONG)irint (x*PSL->internal.scale);
-	iy = (PS_LONG)irint (y*PSL->internal.scale);
-	if (abs (pen) == 2) {	/* Convert absolute draw to relative draw */
-		idx = ix - PSL->internal.ix;
-		idy = iy - PSL->internal.iy;
-		if (idx == 0 && idy == 0) return;
+	/* Convert user coordinates to dots */
+	ix = (PS_LONG)irint (x * PSL->internal.scale);
+	iy = (PS_LONG)irint (y * PSL->internal.scale);
+
+	/* Absolute move or absolute draw converted to relative */
+	idx = ix - PSL->internal.ix;
+	idy = iy - PSL->internal.iy;
+
+	if (pen == PSL_PEN_DRAW_AND_STROKE) {
+		/* Always draw-stroke even when displacement is 0 */
+		fprintf (PSL->internal.fp, "%ld %ld D S\n", idx, idy);
+	}
+	else if (pen == PSL_PEN_MOVE) {
+		/* Do this always, even if idx = idy = 0, just to be sure we are where we are supposed to be */
+		fprintf (PSL->internal.fp, "%ld %ld M\n", ix, iy);
+	}
+	else if (idx == 0 && idy == 0)
+		return;
+	else {
+		/* Convert to relative draw to have smaller numbers */
 		fprintf (PSL->internal.fp, "%ld %ld D\n", idx, idy);
 	}
-	else {
-		idx = ix;
-		idy = iy;
-		fprintf (PSL->internal.fp, "%ld %ld M\n", idx, idy);
-	}
-	if (pen == PSL_PEN_DRAW_AND_STROKE) fprintf (PSL->internal.fp, "S\n");
-	PSL->internal.ix = ix;
+	PSL->internal.ix = ix;	/* Update absolute position */
 	PSL->internal.iy = iy;
 }
 
@@ -1528,14 +1536,21 @@ void ps_plotr (double x, double y, int pen)
 {
 	PS_LONG ix, iy;
 
+	/* Convert user coordinates to dots */
 	ix = (PS_LONG)irint (x * PSL->internal.scale);
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
-	if (ix == 0 && iy == 0) return;
-	if (abs (pen) == 2)
-		fprintf (PSL->internal.fp, "%ld %ld D\n", ix, iy);
-	else
+	
+	/* Relative move or relative draw */
+	if (pen == PSL_PEN_DRAW_AND_STROKE) {
+		/* Always draw-stroke even when displacement is 0 */
+		fprintf (PSL->internal.fp, "%ld %ld D S\n", ix, iy);
+	}
+	else if (ix == 0 && iy == 0)
+		return;
+	else if (pen == PSL_PEN_MOVE)
 		fprintf (PSL->internal.fp, "%ld %ld G\n", ix, iy);
-	if (pen == PSL_PEN_DRAW_AND_STROKE) fprintf (PSL->internal.fp, "S\n");
+	else
+		fprintf (PSL->internal.fp, "%ld %ld D\n", ix, iy);
 	PSL->internal.ix += ix;	/* Update absolute position */
 	PSL->internal.iy += iy;
 }
