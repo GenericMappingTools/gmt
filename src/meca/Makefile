@@ -1,4 +1,4 @@
-#       $Id: Makefile,v 1.27 2009-10-23 18:32:37 remko Exp $
+#       $Id: Makefile,v 1.28 2009-10-31 16:00:23 remko Exp $
 #
 #	makefile for meca directory
 #	meca must be installed in the gmt/src directory or
@@ -51,18 +51,18 @@ $(PROGS_O):	$(GMT_H) $(PS_H) meca.h nrutil.h submeca.h utilmeca.h utilstrain.h u
 #	program rules
 #-------------------------------------------------------------------------------
 
-psmeca$(EXE): 	psmeca.o utilmeca.o nrutil.o $(LIBGMT)
+psmeca$(EXE): 	psmeca.o utilmeca.o nrutil.o $(LIBGMTPS)
 		$(CC) $(LDFLAGS) psmeca.o utilmeca.o nrutil.o $(ALLLIB) -o $@
 		$(COMPRESS) $@
 
-pscoupe$(EXE):	pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(LIBGMT)
+pscoupe$(EXE):	pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(LIBGMTPS)
 		$(CC) $(LDFLAGS) pscoupe.o utilmeca.o submeca.o distaz.o nrutil.o $(ALLLIB) -o $@
 		$(COMPRESS) $@
 
-pspolar$(EXE): 	pspolar.o $(LIBGMT)
+pspolar$(EXE): 	pspolar.o $(LIBGMTPS)
 		$(CC) $(LDFLAGS) pspolar.o $(ALLLIB) -o $@
 		$(COMPRESS) $@
 
-psvelo$(EXE):	psvelo.o utilvelo.o utilstrain.o $(LIBGMT)
+psvelo$(EXE):	psvelo.o utilvelo.o utilstrain.o $(LIBGMTPS)
 		$(CC) $(LDFLAGS) psvelo.o utilvelo.o utilstrain.o $(ALLLIB) -o $@
 		$(COMPRESS) $@

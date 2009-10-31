@@ -1,4 +1,4 @@
-#	$Id: common.mk,v 1.2 2009-10-23 18:32:37 remko Exp $
+#	$Id: common.mk,v 1.3 2009-10-31 16:00:23 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -64,7 +64,8 @@ GMT_H	= $(GMTSRCDIR)gmt.h \
 
 PS_H	= $(GMTSRCDIR)pslib.h
 
-LIBGMT	= $(GMTSRCDIR)libpsl.$(LIBEXT) $(GMTSRCDIR)libgmt.$(LIBEXT) $(GMTSRCDIR)libgmtps.$(LIBEXT)
+LIBGMT	= $(GMTSRCDIR)libgmt.$(LIBEXT)
+LIBGMTPS= $(LIBGMT) $(GMTSRCDIR)libgmtps.$(LIBEXT) $(GMTSRCDIR)libpsl.$(LIBEXT)
 
 GMT_LIB	= -L$(GMTSRCDIR). -lgmt
 GMTPS_LIB	= -L$(GMTSRCDIR). -lgmtps -lgmt -lpsl

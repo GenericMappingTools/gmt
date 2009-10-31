@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.32 2009-10-23 18:32:37 remko Exp $
+#	$Id: Makefile,v 1.33 2009-10-31 16:00:23 remko Exp $
 #
 #		Makefile for GMT mgg supplements
 #
@@ -116,6 +116,6 @@ $(PROGS):	$(LIB) $(LIBGMT)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
 
-$(PROGSPS):	$(LIB) $(LIBGMT)
+$(PROGSPS):	$(LIB) $(LIBGMTPS)
 		$(CC) $(LDFLAGS) $(@:.exe=).o -L. -lgmt_mgg $(GMTPS_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
