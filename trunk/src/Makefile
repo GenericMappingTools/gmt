@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.50 2009-10-23 18:32:37 remko Exp $
+#	$Id: Makefile,v 1.51 2009-10-31 16:00:23 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -277,6 +277,6 @@ $(PROGS):	$(LIBGMT)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
 
-$(PROGSPS):	$(LIBGMT)
+$(PROGSPS):	$(LIBGMTPS)
 		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMTPS_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@

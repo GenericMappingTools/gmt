@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.29 2009-10-23 18:32:37 remko Exp $
+#	$Id: Makefile,v 1.30 2009-10-31 16:00:23 remko Exp $
 #
 # makefile for segyprogs directory
 #
@@ -60,6 +60,6 @@ $(PROGS):	$(LIBGMT) segy_io.o
 		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
 
-$(PROGSPS):	$(LIBGMT) segy_io.o
+$(PROGSPS):	$(LIBGMTPS) segy_io.o
 		$(CC) $(LDFLAGS) $(@:.exe=).o segy_io.o $(GMTPS_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
