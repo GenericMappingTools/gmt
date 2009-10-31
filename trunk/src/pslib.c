@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.213 2009-10-30 21:34:03 remko Exp $
+ *	$Id: pslib.c,v 1.214 2009-10-31 15:43:58 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3846,15 +3846,14 @@ void ps_a85_encode (unsigned char quad[], PS_LONG nbytes)
 	 * Special cases:	#00000000 is encoded as z
 	 *			When n < 4, output only n+1 bytes */
 	PS_LONG j;
-	unsigned int n;	/* Was size_t but that fails under 64-bit mode */
+	unsigned int n = 0;	/* Was size_t but that fails under 64-bit mode */
 	unsigned char c[5];
 
 	if (nbytes < 1) return;		/* Ignore empty input */
 	nbytes = MIN (4, nbytes);	/* Limit to first four bytes */
 
-	for (j = nbytes; j < 4; j++) quad[j] = 0;	/* Set truncated bytes to 0 */
-
-	n = (quad[0] << 24) + (quad[1] << 16) + (quad[2] << 8) + quad[3];
+	/* Wrap quad into a 4-byte integer */
+	for (j = 0; j < nbytes; j++) n += quad[j] << (24 - 8*j);
 
 	if (n == 0 && nbytes == 4) {	/* Set the only output byte to "z" */
 		nbytes = 0;
