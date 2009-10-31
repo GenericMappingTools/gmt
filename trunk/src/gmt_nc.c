@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.84 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_nc.c,v 1.85 2009-10-31 04:03:07 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -80,10 +80,9 @@ GMT_LONG GMT_is_nc_grid (struct GRD_HEADER *header)
 	}
 	else {			/* Look for first 2D grid */
 		nc_inq_nvars (ncid, &nvars);
-		while (j < nvars && z_id < 0) {
+		for (j = 0; j < nvars && z_id < 0; j++) {
 			GMT_err_trap (nc_inq_varndims (ncid, j, &ndims));
-			if (ndims == 2) z_id = j;
-			j++;
+			if (ndims >= 2 && ndims <= 5) z_id = j;
 		}
 		if (z_id < 0) return (GMT_GRDIO_NO_2DVAR);
 	}
