@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.649 2009-10-28 11:15:51 remko Exp $
+	$Id: ChangeLog,v 1.650 2009-11-03 00:29:29 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-11-02	pwessel
+	* mapproject.c:		The -S option failed after i/o makeover.
+	
 2009-10-28	remko
 	* pslib.c:		Bug fix: memory never got freed by ps_free.
 
