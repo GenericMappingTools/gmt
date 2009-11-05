@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.51 2009-10-31 16:00:23 remko Exp $
+#	$Id: Makefile,v 1.52 2009-11-05 22:28:26 remko Exp $
 #
 #	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -95,8 +95,8 @@ install:	all
 		$(INSTALL) $(ALLPROGS) $(bindir)
 		if [ ! $(libdir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(libdir) ; \
-			$(INSTALL) -m 644 $(LIBGMT:.$(LIBEXT)=.a) $(libdir); \
-			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIBGMT) $(libdir); fi \
+			$(INSTALL) -m 644 $(LIBGMTPS:.$(LIBEXT)=.a) $(libdir); \
+			if [ ! $(LIBEXT) = a ]; then $(INSTALL) -m 755 $(LIBGMTPS) $(libdir); fi \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			$(INSTALL) -d $(includedir) ; \
@@ -104,7 +104,7 @@ install:	all
 		fi
 		if [ $(LIBEXT) != a ] && [ $(SL) != $(SL_VERSION) ]; then \
 			cd $(libdir) ; \
-			for lib in $(LIBGMT:.$(LIBEXT)=) ; do\
+			for lib in $(LIBGMTPS:.$(LIBEXT)=) ; do\
 				\mv -f $$lib.$(SL) $$lib.$(SL_VERSION); \
 				$(LN_S) $$lib.$(SL_VERSION) $$lib.$(SL); \
 			done; \
@@ -113,7 +113,7 @@ install:	all
 uninstall:
 		cd $(bindir); \rm -f $(ALLPROGS)
 		if [ ! $(libdir) = $(srcdir) ]; then \
-			cd $(libdir); \rm -f $(LIBGMT) $(LIBGMT:.$(LIBEXT)=.a); \
+			cd $(libdir); \rm -f $(LIBGMTPS) $(LIBGMTPS:.$(LIBEXT)=.a); \
 		fi
 		if [ ! $(includedir) = $(srcdir) ]; then \
 			cd $(includedir); \rm -f $(GMT_H) $(PS_H) $(PS_I); \
