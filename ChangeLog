@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.650 2009-11-03 00:29:29 guru Exp $
+	$Id: ChangeLog,v 1.651 2009-11-06 06:48:35 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-11-05	pwessel
+	* imgsrc/img2google:	One gmtmath call did not have -Q
 
 2009-11-02	pwessel
 	* mapproject.c:		The -S option failed after i/o makeover.
