@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.11 2009-06-21 01:21:04 guru Exp $
+ *	$Id: wvs.h,v 1.12 2009-11-06 06:43:01 guru Exp $
  */
 /* wvs.h
  *
@@ -62,7 +62,7 @@ struct	SEG_HEADER {
 /* Note: Sibling number means which full resolution polygon matches a DP-reduced polygon in the h-i-l-c datasets.
   For res = f the sibling number is not set, obviously. */
 
-struct GMT3_POLY {
+struct GMT3_POLY {	/* Now 64-bit aligned */
 	int id;
 	int n;
 	int greenwich;	/* (greenwich & 1) is TRUE if Greenwich is crossed */
@@ -71,7 +71,8 @@ struct GMT3_POLY {
 	int source;     /* 0 = CIA WDBII, 1 = WVS */
 	int parent;     /* -1 if top level 1, else id of polygon containing this polygon */
 	int ancestor;	/* The sibling id for lower resolutions */
-	int river;	/* 1 if this is level2 and river-lake, also contains cont# << 8 */
+	int river;	/* 1 if this is level 2 and river-lake */
+	int continent;	/* Contains cont# */
 	double west, east, south, north;	/* Bounding box */
 	double area;		/* Area of polygon measured at full resolution */
 	double area_res;	/* Area of polygon at the present resololution */
