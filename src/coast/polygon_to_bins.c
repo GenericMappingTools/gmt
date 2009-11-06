@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.14 2009-07-22 22:23:04 guru Exp $
+ *	$Id: polygon_to_bins.c,v 1.15 2009-11-06 06:43:01 guru Exp $
  */
 #include "wvs.h"
 #include "shore.h"
@@ -26,27 +26,27 @@ void give_bad_message_and_exit (int id, int kind, int pt);
 int main (int argc, char **argv) {
 	BOOLEAN first, crossed_x, crossed_y;
 	
-	int i, k, kk, test_long, nn, np, j, n_alloc, start_i, i_x_1, i_x_2, i_y_1, i_y_2, nbins, b;
-	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod;
+	int i, k, kk, test_long, nn, np, j, n_alloc, start_i, i_x_1, i_x_2, i_y_1, i_y_2, nbins, b, *GSHHS_node;
+	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod, n_nodes;
 	int x_x_c = 0, x_y_c = 0, y_x_c = 0, y_y_c = 0, last_x_bin, x_x_index, i_x_3, i_y_3, x_origin, y_origin;
 	int noise, se, ne, nw, zero, one, two, three, ij, n, comp_segments(), skip = 0, BSIZE, BIN_NX, BIN_NY, B_WIDTH;
 	int n_id = 0,  n_corner = 0, jump = 0, add = 0, n_seg = 0, ns, nclose = 0, n_x_exact = 0, n_y_exact = 0;
 	
-	char *node_file = 0, file[512];
+	char *nodelevel_file = NULL, *nodeid_file = NULL, file[512];
 	
 	float *node;
 	
 	double rx, ry, SHORT_FACTOR;
 	
-	FILE *fp_in, *fp_pt, *fp_bin, *fp_seg, *fp_par;
+	FILE *fp_in, *fp_pt, *fp_bin, *fp_seg, *fp_par, *fp_ndid;
 	
 	struct SEGMENT *s, **ss;
 	struct	LONGPAIR p;
 	struct GRD_HEADER n_head;
 	
 		
-	if (argc != 5) {
-		fprintf (stderr, "usage: polygon_to_bins coast.base bsize nodes.grd binned_prefix\n");
+	if (argc != 6) {
+		fprintf (stderr, "usage: polygon_to_bins coast.base bsize nodes.grd nodes.bin binned_prefix\n");
 		fprintf (stderr, "bsize must be 1, 2, 5, 10, or 20 degrees\n");
 		exit (-1);
 	}
@@ -67,7 +67,8 @@ int main (int argc, char **argv) {
 	
 	fp_in = fopen (argv[1], "r");
 	
-	node_file = argv[3];
+	nodelevel_file = argv[3];
+	nodeid_file = argv[4];
 
 	nbins = BIN_NX * BIN_NY;
 	
@@ -476,7 +477,7 @@ int main (int argc, char **argv) {
 
 	/* Write out */
 	
-	sprintf (file, "%s.par", argv[4]);
+	sprintf (file, "%s.par", argv[5]);
 	fp_par = fopen (file, "w");
 	if (fwrite ((void *)&n_id, sizeof (int), 1, fp_par) != 1) {
 		fprintf (stderr, "polygon_to_bins: Error writing # of GSHHS parents\n");
@@ -487,13 +488,36 @@ int main (int argc, char **argv) {
 		exit (EXIT_FAILURE);
 	}
 	fclose (fp_par);
+	sprintf (file, "%s.ndid", argv[5]);
+	fp_ndid = fopen (file, "wb");
+	fp_in = fopen (nodeid_file, "rb");
+	if (fread ((void *)&n_nodes, sizeof (int), 1, fp_in) != 1) {
+		fprintf (stderr, "polygon_to_bins: Error reading # of GSHHS nodes\n");
+		exit (EXIT_FAILURE);
+	}
+	if (fwrite ((void *)&n_nodes, sizeof (int), 1, fp_ndid) != 1) {
+		fprintf (stderr, "polygon_to_bins: Error writing # of GSHHS nodes\n");
+		exit (EXIT_FAILURE);
+	}
+	GSHHS_node = (int *) GMT_memory (VNULL, n_nodes, sizeof(int), "polygon_to_bins");
+	if (fread ((void *)GSHHS_node, sizeof (int), n_nodes, fp_in) != n_nodes) {
+		fprintf (stderr, "polygon_to_bins: Error reading GSHHS nodes\n");
+		exit (EXIT_FAILURE);
+	}
+	if (fwrite ((void *)GSHHS_node, sizeof (int), n_nodes, fp_ndid) != n_nodes) {
+		fprintf (stderr, "polygon_to_bins: Error writing GSHHS nodes\n");
+		exit (EXIT_FAILURE);
+	}
+	fclose (fp_ndid);
+	fclose (fp_in);
+	GMT_free ((void *)GSHHS_node);
 
 	bin_head = (struct GMT3_BIN_HEADER *) GMT_memory (VNULL, nbins, sizeof (struct GMT3_BIN_HEADER), "polygon_to_bins");
 	
 	GMT_grd_init (&n_head, argc, argv, FALSE);
-	GMT_err_fail (GMT_read_grd_info (node_file, &n_head), node_file);
+	GMT_err_fail (GMT_read_grd_info (nodelevel_file, &n_head), nodelevel_file);
 	node = (float *) GMT_memory (VNULL, n_head.nx * n_head.ny, sizeof (float), "polygon_to_bins");
-	GMT_err_fail (GMT_read_grd (node_file, &n_head, node, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), node_file);
+	GMT_err_fail (GMT_read_grd (nodelevel_file, &n_head, node, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), nodelevel_file);
 	se = 1;	ne = 1 - n_head.nx;	nw = -n_head.nx;
 	
 	for (b = file_head.n_segments = 0; b < nbins; b++) {
@@ -516,7 +540,7 @@ int main (int argc, char **argv) {
 	}
 	free ((void *) node);
 	
-	fprintf (stderr, "polygon_to_bins: Start writing file %s\n", argv[4]);
+	fprintf (stderr, "polygon_to_bins: Start writing file %s\n", argv[5]);
 
 	file_head.n_bins = nbins;
 	file_head.n_points = n_final + add - 2*skip;
@@ -524,11 +548,11 @@ int main (int argc, char **argv) {
 	file_head.nx_bins = BIN_NX;
 	file_head.ny_bins = BIN_NY;
 	
-	sprintf (file, "%s.bin", argv[4]);
+	sprintf (file, "%s.bin", argv[5]);
 	fp_bin = fopen (file, "w");
-	sprintf (file, "%s.seg", argv[4]);
+	sprintf (file, "%s.seg", argv[5]);
 	fp_seg = fopen (file, "w");
-	sprintf (file, "%s.pt", argv[4]);
+	sprintf (file, "%s.pt", argv[5]);
 	fp_pt = fopen (file, "w");
 	
 	if (fwrite ((void *)&file_head, sizeof (struct GMT3_FILE_HEADER), 1, fp_bin) != 1) {

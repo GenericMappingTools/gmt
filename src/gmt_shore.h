@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.26 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_shore.h,v 1.27 2009-11-06 06:43:00 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -87,8 +87,10 @@ struct GMT_SHORE {
 	int n_bin;		/* Number of bins present in the data set */
 	int n_seg;		/* Number of segments present in the data set */
 	int n_pt;		/* Number of points present in the data set */
+	int n_nodes;		/* Number of grid nodes present in the data set */
 	
-	int *GSHHS_parent;	/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all elvel 1 polygons) */
+	int *GSHHS_parent;	/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all level 1 polygons) */
+	int *GSHHS_node;	/* Array with ids of the polygon that enclose each node */
 	int *bin_firstseg;	/* Array with ids of first segment per bin */
 	short int *bin_info;	/* Array with levels of all 4 nodes per bin */
 	short int *bin_nseg;	/* Array with number of segments per bin */
@@ -109,6 +111,7 @@ struct GMT_SHORE {
 	int n_bin_id;		/* Id for variable n_bin */
 	int n_seg_id;		/* Id for variable n_seg */
 	int n_pt_id;		/* Id for variable n_pt */
+	int n_node_id;		/* Id for variable n_nodes */
 	int bin_firstseg_id;	/* Id for variable bin_firstseg */
 	int bin_info_id;	/* Id for variable bin_info */
 	int bin_nseg_id;	/* Id for variable bin_nseg */
@@ -119,6 +122,7 @@ struct GMT_SHORE {
 	int seg_start_id;	/* Id for variable seg_start */
 	int seg_GSHHS_ID_id;	/* Id for variable seg_GSHHS_ID */
 	int GSHHS_parent_id;	/* Id for variable GSHHS_parent */
+	int GSHHS_node_id;	/* Id for variable GSHHS_node_id */
 	
 	int pt_dx_id;		/* Id for variable pt_dx */
 	int pt_dy_id;		/* Id for variable pt_dy */
