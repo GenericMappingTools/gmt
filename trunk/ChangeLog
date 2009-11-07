@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.651 2009-11-06 06:48:35 guru Exp $
+	$Id: ChangeLog,v 1.652 2009-11-07 15:15:20 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-11-07	remko
+	* pslib.c:		Ellipse was wrongly dimensioned by semi-major and semi-
+				minor axes, instead of major and minor axes.
 
 2009-11-05	pwessel
 	* imgsrc/img2google:	One gmtmath call did not have -Q
