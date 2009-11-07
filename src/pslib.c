@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.214 2009-10-31 15:43:58 remko Exp $
+ *	$Id: pslib.c,v 1.215 2009-11-07 15:14:25 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -343,15 +343,10 @@ void ps_bitimage_ (double *x, double *y, double *xsize, double *ysize, unsigned 
 
 void ps_circle (double x, double y, double size, int rgb[], PS_LONG outline)
 {
-	PS_LONG ix, iy, ir;
-
 	/* size is assumed to be diameter */
 
-	ix = (PS_LONG)irint (x * PSL->internal.scale);
-	iy = (PS_LONG)irint (y * PSL->internal.scale);
-	ir = (PS_LONG)irint (0.5 * size * PSL->internal.scale);
 	ps_setfill (rgb, outline);
-	fprintf (PSL->internal.fp, "%ld %ld %ld SC\n", ix, iy, ir);
+	fprintf (PSL->internal.fp, "%ld %ld %ld SC\n", (PS_LONG)irint (0.5 * size * PSL->internal.scale), (PS_LONG)irint (x * PSL->internal.scale), (PS_LONG)irint (y * PSL->internal.scale));
 }
 
 /* fortran interface */
@@ -595,7 +590,7 @@ void ps_cross_ (double *x, double *y, double *diameter)
 
 void ps_point (double x, double y, double diameter)
 {     /* Fit inside circle of given diameter; draw using current color */
-	fprintf (PSL->internal.fp, "%ld %ld %ld O\n", (PS_LONG)irint (diameter * PSL->internal.scale), (PS_LONG)irint (x * PSL->internal.scale), (PS_LONG)irint (y * PSL->internal.scale));
+	fprintf (PSL->internal.fp, "%ld %ld %ld O\n", (PS_LONG)irint (0.5 * diameter * PSL->internal.scale), (PS_LONG)irint (x * PSL->internal.scale), (PS_LONG)irint (y * PSL->internal.scale));
 }
 
 /* fortran interface */
@@ -751,12 +746,8 @@ void ps_octagon_ (double *x, double *y, double *diameter, int *rgb, PS_LONG *out
 
 void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[], PS_LONG outline)
 {
-	PS_LONG ix, iy, ir;
-	ix = (PS_LONG)irint (x * PSL->internal.scale);
-	iy = (PS_LONG)irint (y * PSL->internal.scale);
-	ir = (PS_LONG)irint (radius * PSL->internal.scale);
 	ps_setfill (rgb, outline);
-	fprintf (PSL->internal.fp, "%ld %ld %ld %g %g SW\n", ix, iy, ir, az1, az2);
+	fprintf (PSL->internal.fp, "%ld %g %g %ld %ld SW\n", (PS_LONG)irint (radius * PSL->internal.scale), az1, az2, (PS_LONG)irint (x * PSL->internal.scale), (PS_LONG)irint (y * PSL->internal.scale));
 }
 
 /* fortran interface */
@@ -767,16 +758,10 @@ void ps_pie_ (double *x, double *y, double *radius, double *az1, double *az2, in
 
 void ps_ellipse (double x, double y, double angle, double major, double minor, int rgb[], PS_LONG outline)
 {
-	PS_LONG ix, iy, i1, i2;
-
 	/* Feature: Pen thickness also affected by aspect ratio */
 
-	ix = (PS_LONG)irint (x * PSL->internal.scale);
-	iy = (PS_LONG)irint (y * PSL->internal.scale);
-	i1 = (PS_LONG)irint (major * PSL->internal.scale);
-	i2 = (PS_LONG)irint (minor * PSL->internal.scale);
 	ps_setfill (rgb, outline);
-	fprintf (PSL->internal.fp, "%ld %ld %g %ld %ld SE\n", i1, i2, angle, ix, iy);
+	fprintf (PSL->internal.fp, "%ld %ld %g %ld %ld SE\n", (PS_LONG)irint (0.5 * major * PSL->internal.scale), (PS_LONG)irint (0.5 * minor * PSL->internal.scale), angle, (PS_LONG)irint (x * PSL->internal.scale), (PS_LONG)irint (y * PSL->internal.scale));
 }
 
 /* fortran interface */
@@ -1413,7 +1398,7 @@ PS_LONG ps_plotinit_hires (char *plotfile, PS_LONG overlay, PS_LONG mode, double
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.24 ");	/* Version number should match that of PSL_prologue.ps */
+		ps_bulkcopy ("PSL_prologue", "v 1.25 ");	/* Version number should match that of PSL_prologue.ps */
 		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Initialize book-keeping for font encoding and write font macros */

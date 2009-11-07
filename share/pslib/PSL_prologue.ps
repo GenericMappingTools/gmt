@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.24 2009-04-29 13:13:35 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.25 2009-11-07 15:14:25 remko Exp $
 %-	Make sure that the version number matches the one mentioned in pslib.c
 % Begin pslib header
 250 dict begin
@@ -16,7 +16,7 @@
 /K /setcmykcolor #
 /L /lineto #
 /M {stroke moveto}!
-/m {moveto}!
+/m /moveto #
 /N /newpath #
 /P /closepath #
 /R /rotate #
@@ -31,7 +31,7 @@
 /MS {/savematrix matrix currentmatrix def}!
 /MR {savematrix setmatrix}!
 % Point
-/O {M W 0 0 D S}!
+/O {S 3 -1 roll 0 360 arc P F S}!
 % Cross
 /X {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
 % Plus
@@ -51,7 +51,7 @@
 % Box
 /SB {M dup 0 D exch 0 exch D neg 0 D P fs os}!
 % Circle
-/SC {S 0 360 arc P fs os}!
+/SC {S 3 -1 roll 0 360 arc P fs os}!
 % Ellipse
 /SE {S MS T R scale 0 0 1 0 360 arc MR P fs os}!
 % Diamond
@@ -73,7 +73,7 @@
 % Octagon
 /SO {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR P fs os}!
 % Pie Wedge
-/SW {S /a1 exch def /a0 exch def /r exch def /y exch def dup y r a0 a1 arc y L P fs os}!
+/SW {S 2 copy 7 -3 roll arc L P fs os}!
 % To reencode one font with the provided encoding vector
 /PSL_reencode { findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall

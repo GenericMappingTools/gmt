@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: plot_symbols.sh,v 1.10 2009-04-17 00:31:30 remko Exp $
+#	$Id: plot_symbols.sh,v 1.11 2009-11-07 15:14:25 remko Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
@@ -16,7 +16,7 @@ psxy -R0/4/1/6 -Jx1i -P -B0g1 -m -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 3.5	5.5	c
 > Switch to green -Ggreen -W1p
 0.5	4.5	d
-1.5	4.5	90	0.5	0.25	e
+1.5	4.5	90	1	0.5	e
 2.5	4.5	g
 3.5	4.5	h
 > Do pattern # 7 -Gp100/7
