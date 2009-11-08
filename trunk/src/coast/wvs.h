@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.12 2009-11-06 06:43:01 guru Exp $
+ *	$Id: wvs.h,v 1.13 2009-11-08 22:47:07 guru Exp $
  */
 /* wvs.h
  *
@@ -30,8 +30,6 @@
 
 #define OUTSIDE		0
 #define INSIDE		1
-
-#define WVS_continent(h) (h.river >> 8);	/* Get continent number 1-6 (or 0 if not a continent) */
 
 typedef unsigned short ushort;
 
@@ -72,7 +70,7 @@ struct GMT3_POLY {	/* Now 64-bit aligned */
 	int parent;     /* -1 if top level 1, else id of polygon containing this polygon */
 	int ancestor;	/* The sibling id for lower resolutions */
 	int river;	/* 1 if this is level 2 and river-lake */
-	int continent;	/* Contains cont# */
+	int continent;	/* Contains cont# 1-6 (or 0 if not a continent) */
 	double west, east, south, north;	/* Bounding box */
 	double area;		/* Area of polygon measured at full resolution */
 	double area_res;	/* Area of polygon at the present resololution */

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.53 2009-09-10 07:10:58 guru Exp $
+ *	$Id: gmt_shore.c,v 1.54 2009-11-08 22:47:07 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -44,6 +44,8 @@
 
 #define RIVERLAKE	5	/* Fill array id for riverlakes */
 
+#define get_level(arg) (((arg) >> 6) & 7)		/* Extract level from bit mask */
+
 GMT_LONG GMT_copy_to_shore_path (double *lon, double *lat, struct GMT_SHORE *s, GMT_LONG id);
 GMT_LONG GMT_shore_get_first_entry (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG *side);
 GMT_LONG GMT_shore_get_position (GMT_LONG side, short int x, short int y);
@@ -71,6 +73,10 @@ void GMT_set_levels (char *info, struct GMT_SHORE_SELECT *I)
 		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert to integer microfraction */
 	}
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
+	if (n == 0) {
+		fprintf (stderr, "%s: Error in -A: No area given\n", GMT_program);
+		exit (EXIT_FAILURE);
+	}
 	if (n == 1) I->low = 0, I->high = GMT_MAX_GSHHS_LEVEL;
 }
 
@@ -145,7 +151,7 @@ char GMT_shore_adjust_res (char res) {	/* Returns the highest available resoluti
 }
 
 GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s, double n, struct GMT_SHORE_SELECT *info) {	/* res: Resolution (f, h, i, l, c */
-	GMT_LONG i, nb, idiv, iw, ie, is, in, this_south, this_west, err;
+	GMT_LONG i, nb, idiv, iw, ie, is, in, this_south, this_west, err, major, minor, release;
 	short *stmp;
 	int *itmp;
 	size_t start[1], count[1];
@@ -169,41 +175,31 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
         GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin", &c->bin_info_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", &c->seg_info_id));
-        GMT_err_trap (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_the_parent_polygon_of_a_segment", &c->seg_area_id));
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_polygons", &c->GSHHS_area_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
         GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
-	c->seg_frac_id = -1;	/* In case we use old GSHHS which does not have this ID */
-        nc_inq_varid (c->cdfid, "Micro_fraction_of_full_resolution_area", &c->seg_frac_id);
-	c->n_poly_id = -1;	/* In case we use old GSHHS which does not have this ID */
-	nc_inq_varid (c->cdfid, "N_polygons_in_file", &c->n_poly_id);
-	nc_inq_varid (c->cdfid, "Id_of_parent_polygons", &c->GSHHS_parent_id);
-	nc_inq_varid (c->cdfid, "Id_of_GSHHS_ID", &c->seg_GSHHS_ID_id);
+        GMT_err_trap (nc_inq_varid (c->cdfid, "Micro_fraction_of_full_resolution_area", &c->GSHHS_areafrac_id));
+	GMT_err_trap (nc_inq_varid (c->cdfid, "N_polygons_in_file", &c->n_poly_id));
+	GMT_err_trap (nc_inq_varid (c->cdfid, "N_nodes_in_file", &c->n_node_id));
+	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_parent_polygons", &c->GSHHS_parent_id));
+	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_node_polygons", &c->GSHHS_node_id));
+	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_GSHHS_ID", &c->seg_GSHHS_ID_id));
 	
-	if (info->fraction) {	/* Want to exclude polygons that under-represents the original feature... */
-		if (c->seg_frac_id == -1) {	/* ...but cannot request fraction with pre-2.0 GSHHS files */
-			fprintf (stderr, "%s: WARNING: Cannot use +p<percent> with pre-2.0 GSHHS files.  Request ignored\n", GMT_program);
-			c->fraction = 0;
-		}
-		else
-			c->fraction = info->fraction;
-	}
-	if (info->flag) {	/* Want to exclude either riverlakes or lakes from the selected data... */
-		if (c->n_poly_id == -1) {	/* ..buty cannot request skipping lake/river features on pre-2.1 GSHHS files */
-			fprintf (stderr, "%s: WARNING: Cannot use +r or +l with GSHHS 2.0 or earlier files.  Request ignored\n", GMT_program);
-			info->flag = 0;
-			c->skip_feature = FALSE;
-		}
-		else
-			c->skip_feature = TRUE;
-	}
-
 	/* Get attributes */
 	GMT_err_trap (nc_get_att_text (c->cdfid, c->pt_dx_id, "units", c->units));
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
-	c->version[0] = '\0';
-	(void) nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version);
+	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version));
+	sscanf (c->version, "%ld.%ld.%ld", &major, &minor, &release);
+	if (major != 2 || release < 2) {
+		fprintf (stderr, "GSHHS: Version 2.0.2 is needed to use coastlines with GMT 4.5.2\n");
+		fprintf (stderr, "GSHHS: CVS users must get the GSHHS2.0.2 tarballs from\n");
+		fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS2.0.2_coast.tar.bz2\n");
+		fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS2.0.2_high.tar.bz2\n");
+		fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS2.0.2_full.tar.bz2\n");
+		exit (EXIT_FAILURE);
+	}
 
 	/* Get global variables */
 
@@ -216,6 +212,8 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
         GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
         GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
 
+	c->fraction = info->fraction;
+	c->skip_feature = info->flag;
 	c->min_area = info->area;	/* Limit the features */
 	c->min_level = info->low;	
 	c->max_level = (info->low == info->high && info->high == 0) ? GMT_MAX_GSHHS_LEVEL : info->high;	/* Default to all if not set */
@@ -246,14 +244,23 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
 	c->bins = (GMT_LONG *) GMT_memory ((void *)c->bins, (size_t)nb, sizeof (GMT_LONG), "GMT_init_shore");
 	c->nb = nb;
 	
-	/* Get polygon variables if this version has them and they are needed */
+	/* Get polygon variables if they are needed */
 
-	if (c->skip_feature) { 	/* Allocate space for arrays of polygon information */
-	        GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_poly_id, start, &c->n_poly));
-		c->GSHHS_parent = (int *) GMT_memory (VNULL, (size_t)c->n_poly, sizeof (int), "GMT_init_shore");
-		count[0] = c->n_poly;
-		GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_parent_id, start, count, c->GSHHS_parent));
+	GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_poly_id, start, &c->n_poly));
+	count[0] = c->n_poly;
+	c->GSHHS_parent = (int *) GMT_memory (VNULL, (size_t)c->n_poly, sizeof (int), "GMT_init_shore");
+	GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_parent_id, start, count, c->GSHHS_parent));
+	c->GSHHS_area = (int *) GMT_memory (VNULL, (size_t)c->n_poly, sizeof (int), "GMT_init_shore");
+	GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_area_id, start, count, c->GSHHS_area));
+	c->GSHHS_area_fraction = (int *) GMT_memory (VNULL, (size_t)c->n_poly, sizeof (int), "GMT_init_shore");
+	GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_areafrac_id, start, count, c->GSHHS_area_fraction));
+	if (c->min_area > 0.0) {	/* Want to exclude small polygons so we need info about the node polygons */
+	        GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_node_id, start, &c->n_nodes));
+		c->GSHHS_node = (int *) GMT_memory (VNULL, (size_t)c->n_nodes, sizeof (int), "GMT_init_shore");
+		count[0] = c->n_nodes;
+		GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_node_id, start, count, c->GSHHS_node));
 	}
+	
 	/* Get bin variables, then extract only those corresponding to the bins to use */
 
 	/* Allocate space for arrays of bin information */
@@ -288,9 +295,9 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 /* max_level: Polygons with higher levels are ignored */
 {
 	size_t start[1], count[1];
-	int *seg_area, *seg_frac = NULL, *seg_info, *seg_start, *seg_ID = NULL;
+	int *seg_info, *seg_start, *seg_ID;
 	BOOLEAN *seg_skip = NULL;
-	GMT_LONG s, i, err, cut_area, level;
+	GMT_LONG s, i, k, err, cut_area, level, inc[4], ll_node, node, ID;
 	double w, e, dx;
 		
 	c->node_level[0] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 9) & 7, c->max_level);
@@ -312,48 +319,69 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 	if (c->bin_nseg[b] == 0) return (GMT_NOERROR);
 	
 	cut_area = irint (10.0 * c->min_area);
-	start[0] = c->bin_firstseg[b];
-	count[0] = c->bin_nseg[b];
+	ll_node = ((c->bins[b] / c->bin_nx) + 1) * (c->bin_nx + 1) + (c->bins[b] % c->bin_nx);		/* lower-left node in current bin */
+	inc[0] = 0;	inc[1] = 1;	inc[2] = 1 - (c->bin_nx + 1);	inc[3] = -(c->bin_nx + 1);	/* Relative incs to other nodes */
 	
-	seg_skip = (BOOLEAN *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (BOOLEAN), "GMT_get_shore_bin");
-	seg_area = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
+	if (cut_area) {	/* May have to revise the node_level array if the polygon that determined the level is to be skipped */
+		for (k = 0; k < 4; k++) {	/* Visit all four nodes defining this bin, going counter-clockwise from lower-left bin */
+			node = ll_node + inc[k];	/* Current node index */
+			ID = c->GSHHS_node[node];	/* GSHHS Id of the polygon that determined the level of the current node */
+			while (c->node_level[k] && c->GSHHS_area[ID] < cut_area) {	/* Polygon must be skipped and node level reset */
+				ID = c->GSHHS_parent[ID];	/* Pick the parent polygon since that is the next polygon up */
+				c->node_level[k]--;		/* ...and drop down one level to that of the parent polygon */
+			}	/* Keep doing this until the polygon containing the node is "too big to fail" or we are in the ocean */
+		}
+	}
+	
+	/* Here the node_level has been properly set but any polygons to be skipped have not been skipped yet; this happens below */
+	
+	start[0] = c->bin_firstseg[b];	/* Position of first segment in this bin */
+	count[0] = c->bin_nseg[b];	/* Number of segments in this bin */
+	
 	seg_info = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
 	seg_start = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
-	if (c->fraction) seg_frac = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
-	if (c->skip_feature) seg_ID = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
+	seg_ID = (int *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (int), "GMT_get_shore_bin");
 
-	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_area_id, start, count, seg_area));
         GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_info_id, start, count, seg_info));
         GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
-	if (c->fraction) GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_frac_id, start, count, seg_frac));
-	if (c->skip_feature) GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_GSHHS_ID_id, start, count, seg_ID));
+	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_GSHHS_ID_id, start, count, seg_ID));
 
 	/* First tally how many useful segments */
 
+	seg_skip = (BOOLEAN *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (BOOLEAN), "GMT_get_shore_bin");
 	for (i = 0; i < c->bin_nseg[b]; i++) {
-		seg_skip[i] = TRUE;	/* Reset later to FALSE if we pass all tests */
-		if (c->fraction && seg_frac[i] < c->fraction) continue;		/* Area of this feature is too small relative to its original size */
-		if (cut_area > 0 && abs(seg_area[i]) < cut_area) continue;	/* Use abs() since double-lined-river lakes have negative area */
-		level = ((seg_info[i] >> 6) & 7);
+		seg_skip[i] = TRUE;	/* Reset later to FALSE if we pass all the tests to follow next */
+		if (c->GSHHS_area_fraction[seg_ID[i]] < c->fraction) continue;	/* Area of this feature is too small relative to its original size */
+		if (abs(c->GSHHS_area[seg_ID[i]]) < cut_area) continue;		/* Too small. NOTE: Use abs() since double-lined-river lakes have negative area */
+		level = get_level (seg_info[i]);
 		if (level < c->min_level) continue;
 		if (level > c->max_level) continue;
-		if (level == 2 && seg_area[i] < 0 && c->flag == GMT_NO_RIVERLAKES) continue;
-		if (level == 2 && seg_area[i] > 0 && c->flag == GMT_NO_LAKES) continue;
+		if (level == 2 && c->GSHHS_area[seg_ID[i]] < 0 && c->flag == GMT_NO_RIVERLAKES) continue;
+		if (level == 2 && c->GSHHS_area[seg_ID[i]] > 0 && c->flag == GMT_NO_LAKES) continue;
 		seg_skip[i] = FALSE;	/* OK, so this was needed afterall */
 	}
 	if (c->skip_feature) {	/* Must ensure that we skip all features inside a skipped riverlake/lake */
-		int j, i_level, j_level, feature;
+		int j, feature;
 		if (c->flag == GMT_NO_LAKES && c->node_level[0] == c->node_level[1] && c->node_level[2] == c->node_level[3] && c->node_level[0] == c->node_level[3] && c->node_level[0] == 2) {	/* Bin is entirely inside a lake */
 			for (i = 0; i < c->bin_nseg[b]; i++) seg_skip[i] = TRUE;	/* Must skip all segments in the lake */
+			c->node_level[0] = c->node_level[1] = c->node_level[2] = c->node_level[3] = 1;	/* Bin is now entirely inside land */
 		}
-		else {	
-			for (feature = 3; feature <= 4; feature++) {	/* Must check twice; first for islands-in-lakes, then ponds in such islands */
-				for (i = 0; i < c->bin_nseg[b]; i++) {
-					if ((i_level = ((seg_info[i] >> 6) & 7)) != feature) continue;		/* We are looking for levels 3 or 4 here */
-					for (j = 0; j < c->bin_nseg[b]; j++) {
-						if ((j_level = ((seg_info[j] >> 6) & 7)) != (feature-1)) continue;	/* We are looking for the containing polygon here which is one level up */
-						if (c->GSHHS_parent[seg_ID[i]] == seg_ID[j] && seg_skip[j]) {
-							seg_skip[i] = TRUE;	/* This is the parent that is skipped, so must skip this feature too */
+		else {	/* Must find all level 3 and 4 features whose parent is level 2 and has been skipped. Then these level 3/4 features must be skipped too */
+			for (feature = 3; feature <= 4; feature++) {	/* Must check twice; first for islands-in-lakes (3), then ponds in such islands (4) */
+				for (i = 0; i < c->bin_nseg[b]; i++) {	/* Go through entire segment list */
+					if (get_level (seg_info[i]) != feature) continue;		/* We are only looking for levels 3 or 4 here */
+					/* Here segment i is a level 3 (or 4) feature */
+					for (j = 0; j < c->bin_nseg[b]; j++) {	/* Go through entire segment list again */
+						if (get_level (seg_info[j]) != (feature-1)) continue;	/* We are looking for the containing polygon here which is one level up */
+						/* Here segment j is of level 1 higher than segment i (2 or 3) */
+						if (c->GSHHS_parent[seg_ID[i]] == seg_ID[j] && seg_skip[j]) {	/* j is parent of i but j is to be skipped */
+							seg_skip[i] = TRUE;	/* We must therefore skip feature i as well */
+							/* Complication: Check if this feature happened to be a node-level-determining polygon... */
+							for (k = 0; k < 4; k++) {	/* Visit all four nodes defining this bin, going counter-clockwise from lower-left bin */
+								node = ll_node + inc[k];	/* Current node index */
+								ID = c->GSHHS_node[node];	/* GSHHS Id of the polygon that determined the level of the current node */
+								if (seg_ID[i] == ID) c->node_level[k] = 1;	/* Polygon must be skipped and node level reset to land (1) */
+							}
 						}
 					}
 				}
@@ -365,7 +393,6 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 		
 	for (s = i = 0; i < c->bin_nseg[b]; i++) {
 		if (seg_skip[i]) continue;	/* Marked to be skipped */
-		seg_area[s] = seg_area[i];
 		seg_info[s] = seg_info[i];
 		seg_start[s] = seg_start[i];
 		s++;
@@ -375,21 +402,19 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 	if (c->ns == 0) {	/* No useful segments in this bin */
 		GMT_free ((void *) seg_skip);
 		GMT_free ((void *) seg_info);	
-		GMT_free ((void *) seg_area);	
 		GMT_free ((void *) seg_start);
-		if (c->fraction) GMT_free ((void *) seg_frac);
-		if (c->skip_feature) GMT_free ((void *) seg_ID);
+		GMT_free ((void *) seg_ID);
 		return (GMT_NOERROR);
 	}
 
 	c->seg = (struct GMT_SHORE_SEGMENT *) GMT_memory (VNULL, (size_t)c->ns, sizeof (struct GMT_SHORE_SEGMENT), "GMT_get_shore_bin");
 
 	for (s = 0; s < c->ns; s++) {
-		c->seg[s].level = (seg_info[s] >> 6) & 7;
+		c->seg[s].level = get_level (seg_info[s]);
 		c->seg[s].n = (seg_info[s] >> 9);
 		c->seg[s].entry = (seg_info[s] >> 3) & 7;
 		c->seg[s].exit = seg_info[s] & 7;
-		c->seg[s].fid = (seg_area[s] < 0) ? RIVERLAKE : c->seg[s].level;
+		c->seg[s].fid = (c->GSHHS_area[seg_ID[s]] < 0) ? RIVERLAKE : c->seg[s].level;
 		c->seg[s].dx = (short *) GMT_memory (VNULL, (size_t)c->seg[s].n, sizeof (short), "GMT_get_shore_bin");
 		c->seg[s].dy = (short *) GMT_memory (VNULL, (size_t)c->seg[s].n, sizeof (short), "GMT_get_shore_bin");
 		start[0] = seg_start[s];
@@ -400,10 +425,8 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 
 	GMT_free ((void *) seg_skip);
 	GMT_free ((void *) seg_info);	
-	GMT_free ((void *) seg_area);	
 	GMT_free ((void *) seg_start);	
-	if (c->fraction) GMT_free ((void *) seg_frac);
-	if (c->skip_feature) GMT_free ((void *) seg_ID);
+	GMT_free ((void *) seg_ID);
 
 	return (GMT_NOERROR);
 }
@@ -463,7 +486,6 @@ GMT_LONG GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e
         GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_seg_id, start, &c->n_seg));
         GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_pt_id, start, &c->n_pt));
  
-
 	c->scale = (c->bin_size / 60.0) / 65535.0;
 	c->bsize = c->bin_size / 60.0;
 
@@ -708,7 +730,6 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, BOOLEAN assemble
 			p_alloc <<= 1;
 			p = (struct GMT_GSHHS_POL *) GMT_memory ((void *)p, (size_t)p_alloc, sizeof (struct GMT_GSHHS_POL), "GMT_assemble_shore");
 		}
-		
 	}
 	
 	/* Then add all interior polygons, if any */
@@ -780,7 +801,6 @@ void GMT_free_br (struct GMT_BR *c)
 		GMT_free ((void *)c->seg[i].dy);
 	}
 	if (c->ns) GMT_free ((void *)c->seg);
-	
 }
 		
 void GMT_shore_cleanup (struct GMT_SHORE *c)
@@ -789,7 +809,10 @@ void GMT_shore_cleanup (struct GMT_SHORE *c)
 	GMT_free ((void *)c->bin_info);
 	GMT_free ((void *)c->bin_nseg);
 	GMT_free ((void *)c->bin_firstseg);
-	if (c->GSHHS_parent_id != -1) GMT_free ((void *)c->GSHHS_parent);
+	GMT_free ((void *)c->GSHHS_parent);
+	GMT_free ((void *)c->GSHHS_area);
+	GMT_free ((void *)c->GSHHS_area_fraction);
+	GMT_free ((void *)c->GSHHS_node);
 	nc_close (c->cdfid);
 }
 
@@ -799,7 +822,6 @@ void GMT_br_cleanup (struct GMT_BR *c)
 	GMT_free ((void *)c->bin_nseg);
 	GMT_free ((void *)c->bin_firstseg);
         nc_close (c->cdfid);
-	
 }
 
 GMT_LONG GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, GMT_LONG np, BOOLEAN sample, double step, GMT_LONG anti_bin)
