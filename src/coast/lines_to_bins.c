@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.16 2009-06-05 00:25:12 guru Exp $
+ *	$Id: lines_to_bins.c,v 1.17 2009-11-08 22:47:07 guru Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -174,7 +174,7 @@ int main (int argc, char **argv)
 					}
 				}
 			}
-			else if (abs (dy) > B_WIDTH) {	/* Must add intermediate poitns*/
+			else if (abs (dy) > B_WIDTH) {	/* Must add intermediate points */
 				nx = (abs(dx) / B_WIDTH) + 1;
 				ny = (abs(dy) / B_WIDTH) + 1;
 				n = MAX (nx, ny);

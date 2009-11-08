@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.13 2009-11-06 06:43:01 guru Exp $
+ *	$Id: polygon_setnodes.c,v 1.14 2009-11-08 22:47:07 guru Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -99,7 +99,7 @@ int main (int argc, char **argv)
 
 	for (id = 0; id < n_id; id++) {	/* For all anchor polygons */
 	
-		cont_no = WVS_continent (blob[id].h);	/* Get continent number 1-6 (0 if not a continent) */
+		cont_no = blob[id].h.continent;	/* Continent number 1-6 (0 if not a continent) */
 
 		slow = (w <= 2.0 && cont_no);
 		
@@ -244,6 +244,8 @@ int main (int argc, char **argv)
 	free ((void *)lat);
 
 	GMT_err_fail (GMT_write_grd (argv[3], &grdh, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), argv[3]);
+	for (i = 0; i < n_nodes; i++) grd[i] = (float)ID[i];
+	GMT_err_fail (GMT_write_grd ("shit.grd", &grdh, grd, 0.0, 0.0, 0.0, 0.0, GMT_pad, FALSE), "shit.grd");
  	free ((void *)grd);
 	fp = fopen (argv[4], "wb");
 	if (fwrite ((void *)&n_nodes, sizeof (int), 1, fp) != 1) {

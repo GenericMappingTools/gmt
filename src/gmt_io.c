@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.202 2009-10-14 22:10:38 guru Exp $
+ *	$Id: gmt_io.c,v 1.203 2009-11-08 22:47:07 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -474,6 +474,7 @@ int GMT_access (const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
 	char path[BUFSIZ];
 
+	if (!filename || !filename[0]) return (-1);	/* No file given */
 	if (mode == R_OK || mode == F_OK) {
 		/* Look in special directories when reading or just accessing */
 		if (GMT_getdatapath (filename, path)) return (0);

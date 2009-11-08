@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.27 2009-11-06 06:43:00 guru Exp $
+ *	$Id: gmt_shore.h,v 1.28 2009-11-08 22:47:07 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -24,19 +24,19 @@
  *
  * Author:	Paul Wessel
  * Date:	12-AUG-1995
- * Revised:	15-AUG-1998
- * Version:	4.1.x
+ * Revised:	6-NOV-2009
+ * Version:	4.5.2
  */
 
 #include "netcdf.h"
 
-#define GSHHS_MAX_DELTA 65535	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */
+#define GSHHS_MAX_DELTA		65535	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */
 #define GMT_MAX_GSHHS_LEVEL	4	/* Highest hierarchical level of coastlines */
 
 #define GMT_N_BLEVELS		3	/* Number of levels for borders */
 #define GMT_N_RLEVELS		11	/* Number of levels for rivers */
-#define GMT_RIV_INTERMITTENT	5	
-#define GMT_RIV_CANALS		8
+#define GMT_RIV_INTERMITTENT	5	/* Id for intermittent rivers */
+#define GMT_RIV_CANALS		8	/* Id for river canals */
 
 #define GMT_NO_RIVERLAKES	1
 #define GMT_NO_LAKES		2
@@ -49,17 +49,23 @@ struct GMT_SHORE_SELECT {	/* Information on levels and min area to use */
 	double area;	/* Area of smallest geographical feature to include [0] */
 };
 
-struct GMT_SHORE {
+struct GMT_GSHHS_pol {	/* Information pertaining to each GSHHS polygon */
+	int *parent;		/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all level 1 polygons) */
+	int *area;		/* Array with areas in 10*km^2 of the GSHHS polygons */
+	int *area_fraction;	/* Array with micro-fraction fractions of area relative to full res area  */
+};
+
+struct GMT_SHORE {	/* Struct used by pscoast and others */
 
 	/* Global variables that remain fixed for all bins */
 	
 	GMT_LONG nb;		/* Number of bins to use */
 	GMT_LONG *bins;		/* Array with the nb bin numbers to use */
-	GMT_LONG min_level;	/* Lowest level to include */
-	GMT_LONG max_level;	/* Highest level to include */
+	GMT_LONG min_level;	/* Lowest level to include [0] */
+	GMT_LONG max_level;	/* Highest level to include [4] */
 	GMT_LONG flag;		/* If riverlakes or lakes are to be excluded */
 	GMT_LONG fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
-	double min_area;	/* Smallest feature to include */
+	double min_area;	/* Smallest feature to include in km^2 */
 	double scale;		/* Multiplier to convert dx, dy back to dlon, dlat in degrees */
 	
 	/* Variables associated with the current bin */
@@ -80,21 +86,24 @@ struct GMT_SHORE {
 
 	/* Data variables associated with shoreline database */
 	
-	int bin_size;	/* Size of square bins in minutes */
-	int bin_nx;	/* Number of bins in 360 degrees of longitude */
-	int bin_ny;	/* Number of bins in 180 degrees of latitude */
+	int bin_size;		/* Size of square bins in minutes */
+	int bin_nx;		/* Number of bins in 360 degrees of longitude */
+	int bin_ny;		/* Number of bins in 180 degrees of latitude */
 	int n_poly;		/* Number of polygons present in the data set */
 	int n_bin;		/* Number of bins present in the data set */
 	int n_seg;		/* Number of segments present in the data set */
 	int n_pt;		/* Number of points present in the data set */
 	int n_nodes;		/* Number of grid nodes present in the data set */
 	
-	int *GSHHS_parent;	/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all level 1 polygons) */
 	int *GSHHS_node;	/* Array with ids of the polygon that enclose each node */
 	int *bin_firstseg;	/* Array with ids of first segment per bin */
 	short int *bin_info;	/* Array with levels of all 4 nodes per bin */
 	short int *bin_nseg;	/* Array with number of segments per bin */
 	
+	int *GSHHS_parent;		/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all level 1 polygons) */
+	int *GSHHS_area;		/* Array with areas in 10*km^2 of the GSHHS polygons */
+	int *GSHHS_area_fraction;	/* Array with micro-fraction fractions of area relative to full res area  */
+
 	char units[80];		/* Units of lon/lat */
 	char title[80];		/* Title of data set */
 	char source[80];	/* Source of data set */
@@ -117,16 +126,16 @@ struct GMT_SHORE {
 	int bin_nseg_id;	/* Id for variable bin_nseg */
 	
 	int seg_info_id;	/* Id for variable seg_info */
-	int seg_area_id;	/* Id for variable seg_area */
-	int seg_frac_id;	/* Id for variable seg_frac */
 	int seg_start_id;	/* Id for variable seg_start */
 	int seg_GSHHS_ID_id;	/* Id for variable seg_GSHHS_ID */
+	
 	int GSHHS_parent_id;	/* Id for variable GSHHS_parent */
+	int GSHHS_area_id;	/* Id for variable GSHHS_area */
+	int GSHHS_areafrac_id;	/* Id for variable GSHHS_area_fraction */
 	int GSHHS_node_id;	/* Id for variable GSHHS_node_id */
 	
 	int pt_dx_id;		/* Id for variable pt_dx */
 	int pt_dy_id;		/* Id for variable pt_dy */
-	
 };
 
 struct GMT_SHORE_SEGMENT {
@@ -196,7 +205,6 @@ struct GMT_BR {	/* Structure for Borders and Rivers */
 	
 	int pt_dx_id;		/* Id for variable pt_dx */
 	int pt_dy_id;		/* Id for variable pt_dy */
-	
 };
 
 struct GMT_BR_SEGMENT {

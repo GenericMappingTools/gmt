@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.73 2009-10-23 20:53:40 remko Exp $
-AC_REVISION($Revision: 1.73 $)
+dnl $Id: configure.ac,v 1.74 2009-11-08 22:47:07 guru Exp $
+AC_REVISION($Revision: 1.74 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -17,7 +17,7 @@ AC_INIT(GMT, 4.5.2, gmt-help@hawaii.edu)
 MANDATE="1 Jan 2010"
 DOCDATE="Jan 2010"
 DOCYEAR="2010"
-GSHHS_VERSION=2.0.1
+GSHHS_VERSION=2.0.2
 CVS_VERSION=1
 dnl
 dnl -----------------------------------------------------------------

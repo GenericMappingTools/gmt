@@ -1,11 +1,22 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.652 2009-11-07 15:15:20 remko Exp $
+	$Id: ChangeLog,v 1.653 2009-11-08 22:47:06 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-11-08	pwessel
+	* gmt_shore.[ch]:	Changes to accommodate new GSHHS2.0.2 netcdf files
+				which needed more metadata to properly compute the
+				level of tile corners after features where dropped
+				due to size etc.  2.0.2 will be released with GMT 4.5.2
+				but early adopters (CVS) will get a warning with
+				instructions on how to ftp.
+	* grdgradient.c:	Now, -Lg will imply -fg to properly set geographic units
+
+2009-11-07	pwessel
+	* gmt_io.c:		GMT_access did not check for NULL filename
 
 2009-11-07	remko
 	* pslib.c:		Ellipse was wrongly dimensioned by semi-major and semi-
 				minor axes, instead of major and minor axes.
-
 2009-11-05	pwessel
 	* imgsrc/img2google:	One gmtmath call did not have -Q
 

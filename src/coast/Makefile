@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.65 2009-11-06 06:43:00 guru Exp $
+#	$Id: Makefile,v 1.66 2009-11-08 22:47:07 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -100,7 +100,7 @@ set_old:
 		cd $(rootdir); tar xvjf ftp/GSHHS$(PREV_VERSION)_full.tar.bz2
 		
 delete:		
-		\rm res_?/binned_*_?.bin res_?/binned_*_?.seg res_?/binned_*_?.pt
+		\rm res_?/binned_*_?.{bin,seg,pt,pol,ndid}
 
 build-gshhs:
 		mkdir -p gshhs
