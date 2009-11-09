@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.273 2009-10-14 22:10:38 guru Exp $
+ *	$Id: gmt_plot.c,v 1.274 2009-11-09 01:32:00 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3448,7 +3448,7 @@ void GMT_square (double x, double y, double z, double size[], struct GMT_FILL *f
 		S = size[0] * 0.3535533906;
 		xp[0] = xp[3] = x - S;	xp[1] = xp[2] = x + S;
 		yp[0] = yp[1] = y - S;	yp[2] = yp[3] = y + S;
-		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+		for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, (GMT_LONG)4, fill, outline);
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
@@ -3474,7 +3474,7 @@ void GMT_circle (double x, double y, double z, double size[], struct GMT_FILL *f
 			sincos (i * da, &s, &c);
 			xp[i] = x + S * c;
 			yp[i] = y + S * s;
-			if (project_info.three_D) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+			GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		}
 		GMT_fill (xp, yp, (GMT_LONG)GMT_ELLIPSE_APPROX, fill, outline);
 	}
@@ -3497,7 +3497,7 @@ void GMT_triangle (double x, double y, double z, double size[], struct GMT_FILL 
 
 		xp[0] = x - 0.433012701892*size[0];	yp[0] = yp[1] = y - 0.25  * size[0];
 		xp[1] = x + 0.433012701892*size[0];	xp[2] = x; 	yp[2] = y + 0.5 * size[0];
-		if (project_info.three_D) for (i = 0; i < 3; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+		for (i = 0; i < 3; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, (GMT_LONG)3, fill, outline);
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
@@ -3519,7 +3519,7 @@ void GMT_itriangle (double x, double y, double z, double size[], struct GMT_FILL
 
 		xp[0] = x - 0.433012701892*size[0];	yp[0] = yp[1] = y + 0.25 * size[0];
 		xp[1] = x + 0.433012701892*size[0];	xp[2] = x; 	yp[2] = y - 0.5 * size[0];
-		if (project_info.three_D) for (i = 0; i < 3; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+		for (i = 0; i < 3; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, (GMT_LONG)3, fill, outline);
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
@@ -3542,7 +3542,7 @@ void GMT_diamond (double x, double y, double z, double size[], struct GMT_FILL *
 		S = size[0] * 0.5;
 		xp[0] = xp[2] = x;	xp[1] = x - S;	xp[3] = x + S;
 		yp[0] = y - S;	yp[1] = yp[3] = y;	yp[2] = y + S;
-		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+		for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, (GMT_LONG)4, fill, outline);
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
@@ -3570,7 +3570,7 @@ void GMT_hexagon (double x, double y, double z, double size[], struct GMT_FILL *
 		xp[3] = x - S;		yp[3] = y;
 		xp[4] = xp[2];		yp[4] = y - sy;
 		xp[5] = xp[1];		yp[5] = yp[4];
-		if (project_info.three_D) for (i = 0; i < 6; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+		for (i = 0; i < 6; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, (GMT_LONG)6, fill, outline);
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
@@ -3595,7 +3595,7 @@ void GMT_pentagon (double x, double y, double z, double size[], struct GMT_FILL 
 			sincosd (90.0 + i * 72.0, &s, &c);
 			xp[i] = x + S * c;
 			yp[i] = y + S * s;
-			if (project_info.three_D) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+			GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		}
 		GMT_fill (xp, yp, (GMT_LONG)5, fill, outline);
 	}
@@ -3621,7 +3621,7 @@ void GMT_octagon (double x, double y, double z, double size[], struct GMT_FILL *
 			sincosd (22.5 + i * 45.0, &s, &c);
 			xp[i] = x + S * c;
 			yp[i] = y + S * s;
-			if (project_info.three_D) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+			GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		}
 		GMT_fill (xp, yp, (GMT_LONG)8, fill, outline);
 	}
@@ -3648,12 +3648,12 @@ void GMT_star (double x, double y, double z, double size[], struct GMT_FILL *fil
 			sincosd (-54.0 + i * 72.0, &s, &c);
 			xp[k] = x + S * c;
 			yp[k] = y + S * s;
-			if (project_info.three_D) GMT_xyz_to_xy (xp[k], yp[k], z, &xp[k], &yp[k]);
+			GMT_xyz_to_xy (xp[k], yp[k], z, &xp[k], &yp[k]);
 			k++;
 			sincosd (-18.0 + i * 72.0, &s, &c);
 			xp[k] = x + s2 * c;
 			yp[k] = y + s2 * s;
-			if (project_info.three_D) GMT_xyz_to_xy (xp[k], yp[k], z, &xp[k], &yp[k]);
+			GMT_xyz_to_xy (xp[k], yp[k], z, &xp[k], &yp[k]);
 			k++;
 		}
 		GMT_fill (xp, yp, (GMT_LONG)10, fill, outline);
@@ -3678,7 +3678,7 @@ void GMT_plus (double x, double y, double z, double size[], struct GMT_FILL *fil
 		S = size[0] * 0.5;
 		xp[0] = xp[1] = x;	xp[2] = x - S;	xp[3] = x + S;
 		yp[2] = yp[3] = y;	yp[0] = y - S;	yp[1] = y + S;
-		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+		for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		ps_segment (xp[0], yp[0], xp[1], yp[1]);
 		ps_segment (xp[2], yp[2], xp[3], yp[3]);
 	}
@@ -3697,7 +3697,7 @@ void GMT_cross (double x, double y, double z, double size[], struct GMT_FILL *fi
 		S = size[0] * 0.353553391;
 		xp[0] = xp[2] = x - S;	xp[1] = xp[3] = x + S;
 		yp[0] = yp[3] = y - S;	yp[1] = yp[2] = y + S;
-		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+		for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		ps_segment (xp[0], yp[0], xp[1], yp[1]);
 		ps_segment (xp[2], yp[2], xp[3], yp[3]);
 	}
@@ -3715,7 +3715,7 @@ void GMT_rect (double x, double y, double z, double size[], struct GMT_FILL *fil
 
 		xp[0] = xp[3] = x;	xp[1] = xp[2] = x + size[0];
 		yp[0] = yp[1] = y;	yp[2] = yp[3] = y + size[1];
-		if (project_info.three_D) for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+		for (i = 0; i < 4; i++) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		GMT_fill (xp, yp, (GMT_LONG)4, fill, outline);
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
@@ -3743,7 +3743,7 @@ void GMT_ellipse (double x, double y, double z, double size[], struct GMT_FILL *
 			dy = size[2] * s;
 			xp[i] = x + dx * cos_direction - dy * sin_direction;
 			yp[i] = y + dx * sin_direction + dy * cos_direction;
-			if (project_info.three_D) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+			GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		}
 		GMT_fill (xp, yp, (GMT_LONG)GMT_ELLIPSE_APPROX, fill, outline);
 	}
@@ -3768,10 +3768,10 @@ void GMT_pie (double x, double y, double z, double size[], struct GMT_FILL *fill
 		(void)GMT_alloc_memory2 ((void **)&xp, (void **)&yp, n+1, 0, sizeof (double), GMT_program);
 
 		xp[0] = x;	yp[0] = y;	/* Start from center */
-		if (project_info.three_D)  GMT_xyz_to_xy (xp[0], yp[0], z, &xp[0], &yp[0]);
+		GMT_xyz_to_xy (xp[0], yp[0], z, &xp[0], &yp[0]);
 		for (j = 0, i = 1; j < n; j++, i++) {
 			xp[i] = dx[j];	yp[i] = dy[j];
-			if (project_info.three_D) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+			GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		}
 		GMT_fill (xp, yp, (GMT_LONG)i, fill, outline);
 		GMT_free ((void *)xp);
@@ -3804,7 +3804,7 @@ void GMT_rotrect (double x, double y, double z, double size[], struct GMT_FILL *
 			x_prime = x + xp[i] * c - yp[i] * s;
 			y_prime = y + xp[i] * s + yp[i] * c;
 			xp[i] = x_prime;	yp[i] = y_prime;
-			if (project_info.three_D) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
+			GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
 		}
 		GMT_fill (xp, yp, (GMT_LONG)4, fill, outline);
 	}
@@ -3862,7 +3862,7 @@ void GMT_vector (double x0, double y0, double x1, double y1, double z, double ta
 			x = x0 + xp[i] * c - yp[i] * s;	/* Rotate and add actual (x0, y0) origin */
 			y = y0 + xp[i] * s + yp[i] * c;
 			xp[i] = x;	yp[i] = y;
-			if (project_info.three_D) GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);	/* Then do 3-D projection */
+			GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);	/* Then do 3-D projection */
 		}
 		GMT_fill (xp, yp, (GMT_LONG)n, fill, outline);
 	}
