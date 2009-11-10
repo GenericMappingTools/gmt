@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.656 2009-11-10 01:12:12 remko Exp $
+	$Id: ChangeLog,v 1.657 2009-11-10 14:23:34 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2009-11-10	remko
-	* gmt_plot.c:		Get dimensions of 3D ellipse right
+	* gmt_plot.c:		Get dimensions of 3D ellipse right (full, not semi axes)
+	* psxy.c:		plot_?_errorbar incorrectly drew tips at plot boundary
+				when clipping error bars.
 
 2009-11-09	pwessel
 	* x2sys/x2sys_init.c:	Did not accept -m, only old -M
