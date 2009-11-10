@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.654 2009-11-09 01:34:06 guru Exp $
+	$Id: ChangeLog,v 1.655 2009-11-10 00:47:06 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-11-09	pwessel
+	* x2sys/x2sys_init.c:	Did not accept -m, only old -M
 
 2009-11-08	pwessel
 	* gmt_shore.[ch]:	Changes to accommodate new GSHHS2.0.2 netcdf files
