@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.274 2009-11-09 01:32:00 remko Exp $
+ *	$Id: gmt_plot.c,v 1.275 2009-11-10 01:12:13 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3739,8 +3739,8 @@ void GMT_ellipse (double x, double y, double z, double size[], struct GMT_FILL *
 		da = TWO_PI / (GMT_ELLIPSE_APPROX - 1);
 		for (i = 0; i < GMT_ELLIPSE_APPROX; i++) {
 			sincos (i * da, &s, &c);
-			dx = size[1] * c;
-			dy = size[2] * s;
+			dx = 0.5 * size[1] * c;
+			dy = 0.5 * size[2] * s;
 			xp[i] = x + dx * cos_direction - dy * sin_direction;
 			yp[i] = y + dx * sin_direction + dy * cos_direction;
 			GMT_xyz_to_xy (xp[i], yp[i], z, &xp[i], &yp[i]);
@@ -4540,7 +4540,7 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 	(void)GMT_alloc_memory2 ((void **)&px, (void **)&py, GMT_ELLIPSE_APPROX+1, 0, sizeof (double), GMT_program);
 
 	delta_azimuth = 2.0 * M_PI / GMT_ELLIPSE_APPROX;
-	major *= 1000.0;	minor *= 1000.0;	/* Convert to meters */
+	major *= 500.0;	minor *= 500.0;	/* Convert to meters and semi-axes */
 	sincosd (90.0 - azimuth, &sin_azimuth, &cos_azimuth);
 	sincosd (lat, &sinp, &cosp);	/* Set up azimuthal equidistant projection */
 
