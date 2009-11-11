@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77_e77.h,v 1.14 2009-09-09 23:27:04 guru Exp $	
+ *	$Id: mgd77_e77.h,v 1.15 2009-11-11 00:58:05 mtchandl Exp $	
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2009 by P. Wessel and M. T. Chandler
@@ -25,7 +25,7 @@
 
 /* E77 Nav Error Types */
 #define NAV_TIME_OOR         1          /* A */
-#define NAV_TIME_DECR        2          /* B */
+#define NAV_TIME_NONINC      2          /* B */
 #define NAV_HISPD            4          /* C */
 #define NAV_ON_LAND          8          /* D */
 #define NAV_UNDEF           16          /* E */
