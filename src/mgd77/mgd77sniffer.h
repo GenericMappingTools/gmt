@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.36 2009-09-09 23:27:04 guru Exp $	
+ *	$Id: mgd77sniffer.h,v 1.37 2009-11-12 02:13:54 mtchandl Exp $	
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2009 by P. Wessel and M. T. Chandler
@@ -96,7 +96,7 @@ struct MGD77_GRID_INFO {
 	struct GRD_HEADER grdhdr;
 	struct GMT_EDGEINFO edgeinfo;
 	struct GMT_BCR bcr;
-	int one_or_zero, nx, ny, col, sign, g_pts, format, mode, mx, interpolate;
+	int one_or_zero, nx, ny, col, sign, g_pts, format, mode, mx, interpolate, n_nan;
 	double scale, max_lat;
 	char abbrev[8];
 	char fname[32];
