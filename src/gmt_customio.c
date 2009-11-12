@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.87 2009-10-15 19:03:52 jluis Exp $
+ *	$Id: gmt_customio.c,v 1.88 2009-11-12 17:24:32 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1774,8 +1774,8 @@ GMT_LONG GMT_gdal_read_grd_info (struct GRD_HEADER *header) {
 	}
 
 	/* Allocate new control structures */
-	to_gdalread = (struct GDALREAD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GDALREAD_CTRL), "New_Gdalread_Ctrl");
-	from_gdalread = (struct GD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GD_CTRL), "New_Gd_Ctrl");
+	to_gdalread = (struct GDALREAD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GDALREAD_CTRL), "New_gdalread_Ctrl");
+	from_gdalread = (struct GD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GD_CTRL), "New_gd_Ctrl");
 
 	to_gdalread->M.active = 1;		/* Metadata only */
 	to_gdalread->C.active = 1;		/* Force info in grid registration */
@@ -1824,8 +1824,8 @@ GMT_LONG GMT_gdal_read_grd (struct GRD_HEADER *header, float *grid, double w, do
 	char	strR [128]; 
 
 	/* Allocate new control structures */
-	to_gdalread = (struct GDALREAD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GDALREAD_CTRL), "New_Gdalread_Ctrl");
-	from_gdalread = (struct GD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GD_CTRL), "New_Gd_Ctrl");
+	to_gdalread = (struct GDALREAD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GDALREAD_CTRL), "New_gdalread_Ctrl");
+	from_gdalread = (struct GD_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct GD_CTRL), "New_gd_Ctrl");
 
 	to_gdalread->C.active = 1;		/* Force info in grid node registration */
 	if (w != 0 || e != 0 || s != 0 || n != 0) {	/* We have a Sub-region demand */

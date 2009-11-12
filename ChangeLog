@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.657 2009-11-10 14:23:34 remko Exp $
+	$Id: ChangeLog,v 1.658 2009-11-12 17:24:32 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-11-12	remko
+	* *.c:			Renamed {Free,New}_Program_Ctrl to {New,Free}_program_Ctrl
 
 2009-11-10	remko
 	* gmt_plot.c:		Get dimensions of 3D ellipse right (full, not semi axes)

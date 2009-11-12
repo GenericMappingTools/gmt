@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.c,v 1.11 2009-09-09 23:27:01 guru Exp $
+ *    $Id: block_subs.c,v 1.12 2009-11-12 17:24:32 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -60,20 +60,20 @@ int BLK_compare_sub (const void *point_1, const void *point_2, int item)
 }
 
 #if defined(BLOCKMEAN)
-#define NEW New_Blockmean_Ctrl
-#define FREE Free_Blockmean_Ctrl
+#define NEW New_blockmean_Ctrl
+#define FREE Free_blockmean_Ctrl
 #elif defined(BLOCKMEDIAN)
-#define NEW New_Blockmedian_Ctrl
-#define FREE Free_Blockmedian_Ctrl
+#define NEW New_blockmedian_Ctrl
+#define FREE Free_blockmedian_Ctrl
 #else
-#define NEW New_Blockmode_Ctrl
-#define FREE Free_Blockmode_Ctrl
+#define NEW New_blockmode_Ctrl
+#define FREE Free_blockmode_Ctrl
 #endif
 
 void * NEW () {	/* Allocate and initialize a new control structure */
 	struct BLOCK_CTRL *C;
 	
-	C = (struct BLOCK_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct  BLOCK_CTRL), "New_Block_Ctrl");
+	C = (struct BLOCK_CTRL *) GMT_memory (VNULL, (size_t)1, sizeof (struct  BLOCK_CTRL), "New_block_Ctrl");
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 #if defined(BLOCKMEDIAN)

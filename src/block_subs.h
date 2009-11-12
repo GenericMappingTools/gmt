@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.h,v 1.12 2009-09-09 23:27:01 guru Exp $
+ *    $Id: block_subs.h,v 1.13 2009-11-12 17:24:32 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -72,11 +72,11 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 };
 
 #if defined(BLOCKMEAN)
-void *New_Blockmean_Ctrl (), Free_Blockmean_Ctrl (struct BLOCKMEAN_CTRL *C);
+void *New_blockmean_Ctrl (), Free_blockmean_Ctrl (struct BLOCKMEAN_CTRL *C);
 #elif defined(BLOCKMEDIAN)
-void *New_Blockmedian_Ctrl (), Free_Blockmedian_Ctrl (struct BLOCKMEDIAN_CTRL *C);
+void *New_blockmedian_Ctrl (), Free_blockmedian_Ctrl (struct BLOCKMEDIAN_CTRL *C);
 #else
-void *New_Blockmode_Ctrl (), Free_Blockmode_Ctrl (struct BLOCKMODE_CTRL *C);
+void *New_blockmode_Ctrl (), Free_blockmode_Ctrl (struct BLOCKMODE_CTRL *C);
 #endif
 
 #define BLK_X	0

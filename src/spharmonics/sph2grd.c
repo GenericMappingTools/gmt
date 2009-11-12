@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.11 2009-09-13 00:52:03 guru Exp $
+ *    $Id: sph2grd.c,v 1.12 2009-11-12 17:24:35 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -71,11 +71,11 @@ int main (int argc, char **argv)
 	struct GRD_HEADER header;
 	struct SPH2GRD_CTRL *Ctrl;
 
-	void *New_Sph2grd_Ctrl (), Free_Sph2grd_Ctrl (struct SPH2GRD_CTRL *C);
+	void *New_sph2grd_Ctrl (), Free_sph2grd_Ctrl (struct SPH2GRD_CTRL *C);
 
 	argc = GMT_begin (argc, argv);
 
-	Ctrl = (struct SPH2GRD_CTRL *) New_Sph2grd_Ctrl ();		/* Allocate and initialize defaults in a new control structure */
+	Ctrl = (struct SPH2GRD_CTRL *) New_sph2grd_Ctrl ();		/* Allocate and initialize defaults in a new control structure */
 	
 	GMT_grd_init (&header, argc, argv, FALSE);
 
@@ -250,23 +250,23 @@ int main (int argc, char **argv)
 	GMT_free ((void *)grd);
 	GMT_free ((void *)lon);
 	
-	Free_Sph2grd_Ctrl (Ctrl);	/* Deallocate control structure */
+	Free_sph2grd_Ctrl (Ctrl);	/* Deallocate control structure */
 
 	GMT_end (argc, argv);
 
 	exit (EXIT_SUCCESS);
 }
 
-void *New_Sph2grd_Ctrl () {	/* Allocate and initialize a new control structure */
+void *New_sph2grd_Ctrl () {	/* Allocate and initialize a new control structure */
 	struct SPH2GRD_CTRL *C;
 	
-	C = (struct SPH2GRD_CTRL *) GMT_memory (VNULL, 1, sizeof (struct SPH2GRD_CTRL), "New_Sph2grd_Ctrl");
+	C = (struct SPH2GRD_CTRL *) GMT_memory (VNULL, 1, sizeof (struct SPH2GRD_CTRL), "New_sph2grd_Ctrl");
 	
 	C->N.mode = 'm';
 	return ((void *)C);
 }
 
-void Free_Sph2grd_Ctrl (struct SPH2GRD_CTRL *C) {	/* Deallocate control structure */
+void Free_sph2grd_Ctrl (struct SPH2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (C->G.file) GMT_free ((void *)C->G.file);	
 	GMT_free ((void *)C);	
 }
