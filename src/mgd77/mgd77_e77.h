@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77_e77.h,v 1.15 2009-11-11 00:58:05 mtchandl Exp $	
+ *	$Id: mgd77_e77.h,v 1.16 2009-11-13 06:06:38 mtchandl Exp $	
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2009 by P. Wessel and M. T. Chandler
@@ -24,11 +24,12 @@
 #define N_DEFAULT_TYPES      MGD77_N_NUMBER_FIELDS
 
 /* E77 Nav Error Types */
-#define NAV_TIME_OOR         1          /* A */
-#define NAV_TIME_NONINC      2          /* B */
-#define NAV_HISPD            4          /* C */
+#define NAV_TIME_OOR         1          /* A - Time out of range */
+#define NAV_TIME_NONINC      2          /* B - Non-increasing time */
+#define NAV_HISPD            4          /* C - Excessive speed */
 #define NAV_ON_LAND          8          /* D */
 #define NAV_UNDEF           16          /* E */
+#define NAV_TZ_ERROR        32          /* F - Time zone error */
 #define N_NAV_TYPES          6
 
 /* E77 Header Errata Codes */
