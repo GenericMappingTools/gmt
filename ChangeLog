@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.659 2009-11-13 04:21:04 guru Exp $
+	$Id: ChangeLog,v 1.660 2009-11-13 07:45:14 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-11-12	pwessel
 	* fitcircle.c:		Now, -S optionally takes a latitude instead of finding
 				the best-fitting latitude.
+	* mgd77/mgd77manage.c:	Add attribute array of TZ corrections for the few cruises
+				that stored TZ and local time instead of UTC time.
+
 2009-11-12	remko
 	* *.c:			Renamed {Free,New}_Program_Ctrl to {New,Free}_program_Ctrl
 

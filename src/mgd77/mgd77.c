@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.247 2009-09-13 00:52:03 guru Exp $
+ *	$Id: mgd77.c,v 1.248 2009-11-13 07:45:14 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -88,7 +88,7 @@ double MGD77_Sind (double z);
 double MGD77_Cosd (double z);
 double MGD77_Copy (double z);
 int wrong_filler (char *field, int length);
-double *MGD77_Read_Column (int id, size_t start[], size_t count[], double scale, double offset, struct MGD77_COLINFO *col);
+double *MGD77_Read_Column (struct MGD77_HEADER *H, int id, size_t start[], size_t count[], double scale, double offset, struct MGD77_COLINFO *col);
 int MGD77_atoi (char *txt);
 int MGD77_Get_Header_Item (struct MGD77_CONTROL *F, char *item);
 
@@ -3442,7 +3442,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 			S->values[col] = (void *)values;
 		}
 		else {
-			values = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
+			values = MGD77_Read_Column (&(S->H), F->nc_id, start, count, scale, offset, &(S->H.info[c].col[id]));
 #if 0
 			if (F->adjust_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Change epoch */
 				for (rec = 0; rec < (GMT_LONG)count[0]; rec++) values[rec] = MGD77_utime2time (F, values[rec]);
@@ -3526,7 +3526,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 				scale = S->H.info[MGD77_M77_SET].col[nc_id[i]].factor;
 				offset = S->H.info[MGD77_M77_SET].col[nc_id[i]].offset;
 				E.aux[i] = (double *) GMT_memory (VNULL, count[0], sizeof (double), "MGD77_Read_File_cdf");
-				E.aux[i] = MGD77_Read_Column (F->nc_id, start, count, scale, offset, &(S->H.info[MGD77_M77_SET].col[nc_id[i]]));
+				E.aux[i] = MGD77_Read_Column (&(S->H), F->nc_id, start, count, scale, offset, &(S->H.info[MGD77_M77_SET].col[nc_id[i]]));
 				E.needed[i] = 2;	/* So we know which aux columns to deallocate when done */
 			}
 		}
@@ -3646,7 +3646,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 	return (MGD77_NO_ERROR);
 }
 
-double *MGD77_Read_Column (int id, size_t start[], size_t count[], double scale, double offset, struct MGD77_COLINFO *col) {
+double *MGD77_Read_Column (struct MGD77_HEADER *H, int id, size_t start[], size_t count[], double scale, double offset, struct MGD77_COLINFO *col) {
 	/* Reads a single double precision data column, applying the scale/offset as given */
 	double *values;
 	size_t k;
@@ -3661,6 +3661,15 @@ double *MGD77_Read_Column (int id, size_t start[], size_t count[], double scale,
 		MGD77_nc_status (nc_get_vara_double (id, col->var_id, start, count, values));
 		MGD77_do_scale_offset_after_read (values, (GMT_LONG)count[0], scale, offset, MGD77_NaN_val[col->type]);
 	}
+	if (nc_inq_attlen (id, H->info[MGD77_M77_SET].col[0].var_id, "tz_corr", &k) == NC_NOERR) {	/* TZ corrections */
+		/* These correct mistakes in the data when both TZ and UTC jumps and time is actually local time */
+		signed char *tz_corr = NULL;
+		tz_corr = (signed char *)GMT_memory (VNULL, (size_t)H->n_records, sizeof (signed char), GMT_program);
+		MGD77_nc_status (nc_get_att_schar (id, H->info[MGD77_M77_SET].col[0].var_id, "tz_corr", tz_corr));
+		for (k = 0; k < H->n_records; k++) values[k] -= (tz_corr[k] * GMT_HR2SEC_F);
+		GMT_free ((void *)tz_corr);
+	}
+	
 	return (values);
 }
 
