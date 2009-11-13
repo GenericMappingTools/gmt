@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.658 2009-11-12 17:24:32 remko Exp $
+	$Id: ChangeLog,v 1.659 2009-11-13 04:21:04 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-11-12	pwessel
+	* fitcircle.c:		Now, -S optionally takes a latitude instead of finding
+				the best-fitting latitude.
 2009-11-12	remko
 	* *.c:			Renamed {Free,New}_Program_Ctrl to {New,Free}_program_Ctrl
 

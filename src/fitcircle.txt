@@ -3,7 +3,7 @@
 .SH NAME
 fitcircle \- find mean position and pole of best-fit great [or small] circle to points on a sphere.
 .SH SYNOPSIS
-\fBfitcircle\fP [ \fIxyfile\fP ] OPT(L)\fInorm\fP [ GMT_H_OPT ] [ OPT(S) ] [ GMT_V_OPT ] [ GMT_t_OPT ] 
+\fBfitcircle\fP [ \fIxyfile\fP ] OPT(L)\fInorm\fP [ GMT_H_OPT ] [ OPT(S)[\fIlat\fP] ] [ GMT_V_OPT ] [ GMT_t_OPT ] 
 [ GMT_bi_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 \fBfitcircle\fP reads lon,lat [or lat,lon] values from the first two columns on standard input 
@@ -43,7 +43,8 @@ will read from standard input.
 OPT(S)
 Attempt to fit a small circle instead of a great circle.  The pole will be
 constrained to lie on the great circle connecting the pole of the best-fit great circle
-and the mean location of the data.
+and the mean location of the data.  Optionally append the desired fixed latitude of
+the small circle [Default will determine the latitude].
 #include "explain_-V.txt"
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
