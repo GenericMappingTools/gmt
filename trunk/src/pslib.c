@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.215 2009-11-07 15:14:25 remko Exp $
+ *	$Id: pslib.c,v 1.216 2009-11-13 02:04:42 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3991,7 +3991,7 @@ unsigned char *ps_rle_encode (PS_LONG *nbytes, unsigned char *input)
 
 	/* Drop the compression when end result is bigger than original */
 	if (out > in) {
-		if (PSL->internal.verbose) fprintf (stderr, "pslib: RLE inflated %ld to %ld bytes (aborted)\n", in, out);
+		if (PSL->internal.verbose) fprintf (stderr, "pslib: RLE inflated %ld to %ld bytes. No compression done.\n", in, out);
 		ps_free (output);
 		return (NULL);
 	}
@@ -4056,7 +4056,7 @@ unsigned char *ps_lzw_encode (PS_LONG *nbytes, unsigned char *input)
 
 	/* Drop the compression when end result is bigger than original */
 	if (output->nbytes > in) {
-		if (PSL->internal.verbose) fprintf (stderr, "pslib: LZW inflated %ld to %ld bytes (aborted)\n", in, output->nbytes);
+		if (PSL->internal.verbose) fprintf (stderr, "pslib: LZW inflated %ld to %ld bytes. No compression done.\n", in, output->nbytes);
 		ps_free (code);
 		ps_free (output->buffer);
 		ps_free (output);
