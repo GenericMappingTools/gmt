@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.37 2009-11-12 02:13:54 mtchandl Exp $	
+ *	$Id: mgd77sniffer.h,v 1.38 2009-11-13 06:06:38 mtchandl Exp $	
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2009 by P. Wessel and M. T. Chandler
@@ -116,7 +116,8 @@ struct MGD77_SNIFFER_DEFAULTS {
 };
 
 struct MGD77_ERROR {
-	unsigned int flags[6];
+	unsigned int flags[N_ERROR_CLASSES];
+	int utc_offset;
 };
 
 struct MGD77_MAG_RF {
