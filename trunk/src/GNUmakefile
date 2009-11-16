@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.86 2009-10-23 18:32:37 remko Exp $
+#  $Id: GNUmakefile,v 1.87 2009-11-16 15:50:39 remko Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -58,67 +58,67 @@ gmtmacros FILES:	$(FILES)
 # Must create gmt_key*.h from gmt_keywords.d
 
 gmt_keywords.h:		gmt_keywords.d
-			grep -v '^#' gmt_keywords.d | awk '{printf "\"%s\",\n", $$1}' | sed '$$s/,$$//' > $@
+			grep -v '^#' gmt_keywords.d | $(AWK) '{printf "\"%s\",\n", $$1}' | sed '$$s/,$$//' > $@
 
 gmt_keycases.h:		gmt_keywords.d
-			grep -v '^#' gmt_keywords.d | awk '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > $@
+			grep -v '^#' gmt_keywords.d | $(AWK) '{printf "#define GMTCASE_%s\t%d\n", $$1, NR-1}' > $@
 
 # Must create Colors.i, gmt_color_rgb.h and gmt_colornames.h from Colors.txt
 
 Colors.i:		Colors.txt
-			grep -v '^#' Colors.txt | LANG=C awk '{printf ".br\n%3i\t%3i\t%3i\t%s\n", $$1, $$2, $$3, $$4}' > $@
+			grep -v '^#' Colors.txt | LANG=C $(AWK) '{printf ".br\n%3i\t%3i\t%3i\t%s\n", $$1, $$2, $$3, $$4}' > $@
 
 gmt_color_rgb.h:	Colors.txt
-			grep -v '^#' Colors.txt | LANG=C awk '{printf "{ %3i, %3i, %3i },\n", $$1, $$2, $$3}' | sed '$$s/},/}/' > $@
+			grep -v '^#' Colors.txt | LANG=C $(AWK) '{printf "{ %3i, %3i, %3i },\n", $$1, $$2, $$3}' | sed '$$s/},/}/' > $@
 
 gmt_colornames.h:	Colors.txt
-			grep -v '^#' Colors.txt | LANG=C awk '{printf "\"%s\",\n", $$4}' | sed '$$s/,$$//' > $@
+			grep -v '^#' Colors.txt | LANG=C $(AWK) '{printf "\"%s\",\n", $$4}' | sed '$$s/,$$//' > $@
 
 # Must create gmt_ellipsoids.h and Ellipsoids.i from Ellipsoids.txt
 
 gmt_ellipsoids.h:	Ellipsoids.txt
-			grep -v '^#' Ellipsoids.txt | LANG=C awk '{{printf "\t\t{ \"%s\", %d, %s, ", $$1, $$2, $$3}; \
+			grep -v '^#' Ellipsoids.txt | LANG=C $(AWK) '{{printf "\t\t{ \"%s\", %d, %s, ", $$1, $$2, $$3}; \
 			if ($$4 == 0) {printf "0.0},\n"} else if ($$4 < 0.5*$$3) {printf "1.0/%s},\n", $$4} else \
 			{printf "1.0-%s/%s},\n", $$4, $$3}} END{printf "\t\t{ \"Custom\", 0, 6371008.7714, 0.0}\n"}' > $@
 
 Ellipsoids.i:		Ellipsoids.txt
 			grep -v '^#' Ellipsoids.txt > tmp0.txt
-			awk '{printf "%s :\n", $$1, $$2}' tmp0.txt > tmp1.txt
-			awk -F: '{print $$2}' tmp0.txt | sed -e 's/^ //g' > tmp2.txt
-			awk '{printf "(%d)\n", $$2}' tmp0.txt > tmp3.txt
-			paste -d' ' tmp[123].txt | awk '{printf ".br\n%s\n", $$0}' > $@
+			$(AWK) '{printf "%s :\n", $$1, $$2}' tmp0.txt > tmp1.txt
+			$(AWK) -F: '{print $$2}' tmp0.txt | sed -e 's/^ //g' > tmp2.txt
+			$(AWK) '{printf "(%d)\n", $$2}' tmp0.txt > tmp3.txt
+			paste -d' ' tmp[123].txt | $(AWK) '{printf ".br\n%s\n", $$0}' > $@
 			rm -f tmp[0123].txt
 
 # Must create Fonts.i from PS_font_info.d
 
 Fonts.i:		../share/pslib/PS_font_info.d
-			grep -v '^#' ../share/pslib/PS_font_info.d | awk '{printf ".br\n%i\t%s\n", NR - 1, $$1}' > $@
+			grep -v '^#' ../share/pslib/PS_font_info.d | $(AWK) '{printf ".br\n%i\t%s\n", NR - 1, $$1}' > $@
 
 # Must create gmt_datums.h from Datums.txt
 
 gmt_datums.h:		Datums.txt
-			grep -v '^#' Datums.txt | awk -F'	' '{printf "\t\t{ \"%s\", \"%s\", \"%s\", {%s, %s, %s}},\n", $$1, $$2, $$6, $$3, $$4, $$5}' | sed '$$s/},/}/' > $@
+			grep -v '^#' Datums.txt | $(AWK) -F'	' '{printf "\t\t{ \"%s\", \"%s\", \"%s\", {%s, %s, %s}},\n", $$1, $$2, $$6, $$3, $$4, $$5}' | sed '$$s/},/}/' > $@
 
 # Must create gmt_grdformats.h, grdreformat.h, and grdinfo.h from Grdformats.txt
 
 gmt_grdformats.h:	Grdformats.txt
-			(egrep DEFAULT Grdformats.txt ; (egrep -v '#|^  -' Grdformats.txt | sort -n)) | awk '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' | sed '$$s/},/}/' > $@
+			(egrep DEFAULT Grdformats.txt ; (egrep -v '#|^  -' Grdformats.txt | sort -n)) | $(AWK) '{printf "\t{ %c%c%c, %c%c%c },\n", 39, substr($$3,1,1), 39, 39, substr($$3,2,1), 39}' | sed '$$s/},/}/' > $@
 
 grdreformat.h:		Grdformats.txt
-			grep -v '#' Grdformats.txt |  awk '{printf "\t\t\"%s\",\n", substr($$0,5)}'  > tmp0.txt
+			grep -v '#' Grdformats.txt |  $(AWK) '{printf "\t\t\"%s\",\n", substr($$0,5)}'  > tmp0.txt
 			echo "/* grdreformat.h	[Created by src/GNUmakefile] */" > $@
-			wc -l tmp0.txt | awk '{printf "#define N_GRDTXT_LINES %d\n\tchar *grd_formats[N_GRDTXT_LINES] = {\n", $$1}' >> $@
+			wc -l tmp0.txt | $(AWK) '{printf "#define N_GRDTXT_LINES %d\n\tchar *grd_formats[N_GRDTXT_LINES] = {\n", $$1}' >> $@
 			cat tmp0.txt >> $@
 			echo "		};" >> $@
 			rm -f tmp0.txt
 
 grdreformat_man.i:	Grdformats.txt
-			egrep -v '#' Grdformats.txt |  awk '{if ($$3 == "ID") {printf ".sp\n\\fIid\t%s\\fP\n.br\n", substr($$0, 26,length($$0)-27)} else if ($$1 != "-") {printf "\\fB%s\\fP\t%s\n.br\n", $$3, substr($$0,12,length($$0)-13)}}'  > $@
+			egrep -v '#' Grdformats.txt |  $(AWK) '{if ($$3 == "ID") {printf ".sp\n\\fIid\t%s\\fP\n.br\n", substr($$0, 26,length($$0)-27)} else if ($$1 != "-") {printf "\\fB%s\\fP\t%s\n.br\n", $$3, substr($$0,12,length($$0)-13)}}'  > $@
 
 grdinfo.h:		Grdformats.txt
-			grep -v '#' Grdformats.txt |  awk '{if ($$1 != "-") {printf "%d\t\"%s\",\n", $$1-1, substr($$0,12,length($$0)-12)}}' | sort -n -k1 | cut -f2 > tmp0.txt
+			grep -v '#' Grdformats.txt |  $(AWK) '{if ($$1 != "-") {printf "%d\t\"%s\",\n", $$1-1, substr($$0,12,length($$0)-12)}}' | sort -n -k1 | cut -f2 > tmp0.txt
 			echo "/* grdinfo.h	[Created by src/GNUmakefile] */" > $@
-			wc -l tmp0.txt | awk '{printf "#define N_GRD_TYPES %d\nchar *GMT_grd_type[N_GRD_TYPES] = {\n", $$1}' >> $@
+			wc -l tmp0.txt | $(AWK) '{printf "#define N_GRD_TYPES %d\nchar *GMT_grd_type[N_GRD_TYPES] = {\n", $$1}' >> $@
 			cat tmp0.txt >> $@
 			echo "};" >> $@
 			rm -f tmp0.txt
