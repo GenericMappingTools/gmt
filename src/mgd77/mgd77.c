@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.248 2009-11-13 07:45:14 guru Exp $
+ *	$Id: mgd77.c,v 1.249 2009-11-16 03:38:34 guru Exp $
  *
  *    Copyright (c) 2005-2009 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3663,9 +3663,9 @@ double *MGD77_Read_Column (struct MGD77_HEADER *H, int id, size_t start[], size_
 	}
 	if (nc_inq_attlen (id, H->info[MGD77_M77_SET].col[0].var_id, "tz_corr", &k) == NC_NOERR) {	/* TZ corrections */
 		/* These correct mistakes in the data when both TZ and UTC jumps and time is actually local time */
-		signed char *tz_corr = NULL;
-		tz_corr = (signed char *)GMT_memory (VNULL, (size_t)H->n_records, sizeof (signed char), GMT_program);
-		MGD77_nc_status (nc_get_att_schar (id, H->info[MGD77_M77_SET].col[0].var_id, "tz_corr", tz_corr));
+		short *tz_corr = NULL;
+		tz_corr = (short *)GMT_memory (VNULL, (size_t)H->n_records, sizeof (short), GMT_program);
+		MGD77_nc_status (nc_get_att_short (id, H->info[MGD77_M77_SET].col[0].var_id, "tz_corr", tz_corr));
 		for (k = 0; k < H->n_records; k++) values[k] -= (tz_corr[k] * GMT_HR2SEC_F);
 		GMT_free ((void *)tz_corr);
 	}
