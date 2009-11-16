@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: plot_symbols.sh,v 1.11 2009-11-10 01:12:13 remko Exp $
+#	$Id: plot_symbols.sh,v 1.12 2009-11-16 15:49:49 remko Exp $
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 
@@ -40,11 +40,11 @@ psxyz -R0/4/1/6 -Jx1i -P -B0g1 -m -Gred -W0.25p -E155/35 -S1i -X1i -Y1i -K << EO
 > Dual-colored pattern # 12 -Gp100/12:FredBgreen -W3p,orange
 3.5	1.5	0	a
 EOF
-psxyz -R0/4/1/6/0/3 -Jx1i -Jz1i -O -B0g1/0g1/0g1 -m -G0 -W0.25p -E155/35 -S1i -Y4i -Q << EOF >> $ps
-> Blue column -Gblue
-2.5	2.5	2	o
+psxyz -R0/4/1/6/0/3 -Jx1i -Jz1i -O -B0g1/0g1/0g1 -m -G0 -W0.25p -E155/35 -S1i -Y4i << EOF >> $ps
 > Red cube -Gred
 2.5	2.5	3	u
+> Blue column -Gblue
+2.5	2.5	2	o
 EOF
 
 pscmp
