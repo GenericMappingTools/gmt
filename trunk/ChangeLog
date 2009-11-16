@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.661 2009-11-15 23:06:06 jluis Exp $
+	$Id: ChangeLog,v 1.662 2009-11-16 15:53:14 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2009-11-16	remko
+	* psxyz.c:		Fixed bug in distance sorting (also made much simpler).
 
 2009-11-15	jluis
 	* x2sys/x2sys_list.c:	Weights were not written out when names were selected as well,
