@@ -247,7 +247,7 @@ A leading \fB+\fP will use the lookup color (via OPT(C)) for both symbol fill an
 #include "explain_-XY.txt"
 .TP
 OPT(Z)
-For 3-D projections:  Sets the z-level of the basemap [0].
+For 3-D projections:  Sets the z-level of the basemap [lower end of z-range].
 #include "explain_-t.txt"
 #include "explain_-bi.txt"
 [Default is the required number of columns given the chosen settings].
