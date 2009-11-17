@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.275 2009-11-10 01:12:13 remko Exp $
+ *	$Id: gmt_plot.c,v 1.276 2009-11-17 19:22:01 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1460,7 +1460,10 @@ void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angle
 {
 	/* type = 0 for lon and 1 for lat */
 
-	double line_angle, text_angle, div, tick_length, o_len, len, dx, dy, ca, sa, xt1, yt1, zz, tick_x[2], tick_y[2];
+	double line_angle, text_angle, div, tick_length, o_len, len, ca, sa, xt1, yt1, zz;
+#if 0
+	double dx, dy, tick_x[2], tick_y[2];
+#endif
 	GMT_LONG i, justify, annot_type;
 	BOOLEAN flip;
 	char cmd[BUFSIZ];
@@ -1480,11 +1483,13 @@ void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angle
 			tick_length /= div;
 			o_len /= div;
 		}
+		GMT_z_to_zz (project_info.z_level, &zz);
+#if 0
 		dx = tick_length * ca;
 		dy = tick_length * sa;
-		GMT_z_to_zz (project_info.z_level, &zz);
 		GMT_xyz_to_xy (xx[i], yy[i], zz, &tick_x[0], &tick_y[0]);
 		GMT_xyz_to_xy (xx[i]+dx, yy[i]+dy, zz, &tick_x[1], &tick_y[1]);
+#endif
 		xx[i] += o_len * ca;
 		yy[i] += o_len * sa;
 		if ((gmtdefs.oblique_annotation & annot_type) && gmtdefs.annot_offset[level] > 0.0) {
@@ -1559,7 +1564,9 @@ void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angle
 		if (annot) {
 			if (GMT_annot_too_crowded (xt1, yt1, sides[i])) continue;
 			if (flip) justify = GMT_flip_justify (justify);
+#if 0
 			/* ps_line (tick_x, tick_y, 2, 3, FALSE); */
+#endif
 			ps_text (xt1, yt1, gmtdefs.annot_font_size[level], label, text_angle, justify, 0);
 			if (project_info.three_D) ps_command ("/F0 {/Helvetica Y}!"); /* Reset F0 */
 		}
