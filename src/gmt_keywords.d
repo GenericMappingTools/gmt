@@ -1,9 +1,9 @@
-#	$Id: gmt_keywords.d,v 1.18 2009-11-18 04:10:12 guru Exp $
+#	$Id: gmt_keywords.d,v 1.19 2009-11-18 05:07:21 guru Exp $
 #
-# List of all GMT  4defaults parameters and their case value
+# List of all GMT 4 defaults parameters and their case value
 # Some parameters are spelled in two different ways and will
 # be mapped to the same case.  This file is used by the guru makefile
-# to generate gmt_keywords.h and gmt_cases.h.  The first file will
+# to generate gmt_keywords.h and gmt_keycases.h.  The first file will
 # have quoted parameter names for text comparisons, while the latter
 # file will have #define GMT_<parameter> <case> statements for gmt_init.c
 #
