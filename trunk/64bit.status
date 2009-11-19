@@ -1,4 +1,4 @@
-#	$Id: 64bit.status,v 1.4 2008-12-18 06:38:41 guru Exp $
+#	$Id: 64bit.status,v 1.5 2009-11-19 04:18:55 guru Exp $
 #
 # Updated information on how GMT currently supports 64-bit computing
 
@@ -19,5 +19,6 @@ Spring 2008: Fully ported to 64-bit.  We use GMT_LONG for 8-byte integers
 Fall 2008: qsort shown to use two 32-bit variables that cannot handle
 	large arrays.  For now we supply our own GMT_qsort code for OSX
 	when under 64-bit.
-	
-	
+
+Fall 2009: Snow Leopard fixes qsort problem so we must still check for earlier
+	OSX versions.
