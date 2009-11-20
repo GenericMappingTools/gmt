@@ -16,7 +16,7 @@ Specify one of the named colors below. All names are case-insensitive.
 Specify \fBR\fPed, \fBG\fPreen, and \fBB\fPlue levels. Each value is separated by a slash and is in the range from 0 (dark) to 255 (light).
 This representation is used to color monitors.
 .TP
-.B \#RRGGBB
+.B #RRGGBB
 Specify \fBR\fPed, \fBG\fPreen, and \fBB\fPlue levels in the way that it is done in HTML. Use two characters for
 each color channel, ranging from 00 (dark) to FF (light). Upper and lower case are allowed.
 .TP
