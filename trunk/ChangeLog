@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.662 2009-11-16 15:53:14 remko Exp $
+	$Id: ChangeLog,v 1.663 2009-11-24 11:02:56 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-11-23	pwessel
+	* grdlandmask.c:	Round-off and bug caused missing nodes for -F -Rd
 
 2009-11-16	remko
 	* psxyz.c:		Fixed bug in distance sorting (also made much simpler).
