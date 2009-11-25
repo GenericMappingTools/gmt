@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.663 2009-11-24 11:02:56 guru Exp $
+	$Id: ChangeLog,v 1.664 2009-11-25 08:56:50 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-11-24	pwessel
+	* gmt_init.c:		Guard against getting a negative hash value (happened
+				when text was Russian language codes from ru.d)
 2009-11-23	pwessel
 	* grdlandmask.c:	Round-off and bug caused missing nodes for -F -Rd
 
