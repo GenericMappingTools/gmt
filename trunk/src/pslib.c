@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.216 2009-11-13 02:04:42 remko Exp $
+ *	$Id: pslib.c,v 1.217 2009-11-25 14:23:26 remko Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1570,17 +1570,6 @@ void ps_patch (double *x, double *y, PS_LONG np, int rgb[], PS_LONG outline)
 {
 	/* Like ps_polygon but intended for small polygons (< 20 points).  No checking for
 	 * shorter path by calling ps_shorten_path as in ps_polygon.
-	 *
-	 * Thus, the usage is (with xi,yi being absolute coordinate for point i and dxi
-	 * the increment)
-	 * from point i to i+1, and r,g,b in the range 0.0-1.0.  Here, n = np-1.
-	 *
-	 *	        dx_n dy_n ... n x0 y0 qQ	(If rgb[0] < 0 then outline only)
-	 *	      r dx_n dy_n ... n x0 y0 qA	(gray shade; use qa for outline)
-	 *	  r g b dx_n dy_n ... n x0 y0 qC	(rgb; use qc for outline)
-	 *	c m y k dx_n dy_n ... n x0 y0 qK	(cmyk; use qk for outline)
-	 *	  h s v dx_n dy_n ... n x0 y0 qH	(hsv; use qh for outline)
-	 *	pattern dx_n dy_n ... n x0 y0 qI	(pattern fill; use qi for outline)
 	 */
 
 	PS_LONG ix[20], iy[20], i, n, n1;
@@ -1593,7 +1582,7 @@ void ps_patch (double *x, double *y, PS_LONG np, int rgb[], PS_LONG outline)
 	ix[0] = (PS_LONG)irint (x[0] * PSL->internal.scale);	/* Convert inch to absolute pixel position for start of quadrilateral */
 	iy[0] = (PS_LONG)irint (y[0] * PSL->internal.scale);
 
-	for (i = n = 1, n1 = 0; i < (int)np; i++) {	/* Same but check if new point represent a different pixel */
+	for (i = n = 1, n1 = 0; i < np; i++) {	/* Same but check if new point represent a different pixel */
 		ix[n] = (PS_LONG)irint (x[i] * PSL->internal.scale);
 		iy[n] = (PS_LONG)irint (y[i] * PSL->internal.scale);
 		if (ix[n] != ix[n1] || iy[n] != iy[n1]) n++, n1++;
@@ -1602,7 +1591,7 @@ void ps_patch (double *x, double *y, PS_LONG np, int rgb[], PS_LONG outline)
 
 	if (n < 3) return;	/* 2 points or less don't make a polygon */
 
-	ps_setfill (rgb, outline);	/* Returns 0-11 */
+	ps_setfill (rgb, outline);
 
 	n--;
 	n1 = n;
