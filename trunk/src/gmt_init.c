@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.422 2009-11-16 08:08:28 guru Exp $
+ *	$Id: gmt_init.c,v 1.423 2009-11-25 08:56:50 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3114,6 +3114,7 @@ GMT_LONG GMT_hash (char *v, GMT_LONG n_hash)
 {
 	GMT_LONG h;
 	for (h = 0; *v != '\0'; v++) h = (64 * h + (*v)) % n_hash;
+	while (h < 0) h += n_hash;
 	return (h);
 }
 
