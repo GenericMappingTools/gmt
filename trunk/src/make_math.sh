@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: make_math.sh,v 1.11 2009-09-09 23:27:03 guru Exp $
+#	$Id: make_math.sh,v 1.12 2009-11-26 23:39:47 jluis Exp $
 
 # This script puts together Xmath.h, Xmath_def.h, Xmath_explain.h, and Xmath_man.i
 # from Xmath.c.  To be run from the GMT src directory.  X is either grd or gmt.
@@ -22,7 +22,7 @@ year=`date +%Y`
 # First gather operator descriptions from source file
 
 grep "^/\*OPERATOR: " ${prefix}math.c | sort > $$.txt
-n_op=(`cat $$.txt | wc -l`)
+n_op=`cat $$.txt | wc -l`
 
 # Add backward compability
 
