@@ -1,10 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.665 2009-11-26 22:54:55 guru Exp $
+	$Id: ChangeLog,v 1.666 2009-11-26 23:11:39 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-11-26	pwessel
 	* grdcontour.c:		1) -Q should only apply to closed contours
 				2) -T failed to find inside point for oblique projections.
+	* x2sys/x2sys_get.c:	-Q now only lists track names
+
 2009-11-24	pwessel
 	* gmt_init.c:		Guard against getting a negative hash value (happened
 				when text was Russian language codes from ru.d)
