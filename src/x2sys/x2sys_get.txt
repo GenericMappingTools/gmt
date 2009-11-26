@@ -4,7 +4,7 @@
 x2sys_get \- Get track listing from the x2sys track index databases
 .SH SYNOPSIS
 \fBx2sys_get\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(F)\fIflags\fP ] 
-[ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
+[ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ OPT(Q)] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
 .SH DESCRIPTION
 \fBx2sys_get\fP will return the names of the track data files in the x2sys data
 base for this TAG that match the given
@@ -35,6 +35,10 @@ option in \fBx2sys_cross\fP.
 OPT(N)
 Give a comma-separated list of column names (as described in the definition
 file) that must be absent.
+.TP
+OPT(Q)
+Quick mode: Only report the track names.  Default also reports the availability of
+data for each field.
 #include "explain_-Rgeo.txt"
 For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
 the tracks to those that fall at least partly inside the specified domain.
