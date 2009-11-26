@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.11 2009-10-15 19:05:06 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.12 2009-11-26 23:48:22 jluis Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -828,7 +828,7 @@ void ComputeRasterMinMax(char *tmp, GDALRasterBandH hBand, double adfMinMax[2],
 	GInt32	*tmpI32;
 	GUInt32	*tmpUI32;
 	float	*tmpF32;
-	double	dfNoDataValue;
+	double	dfNoDataValue, *tmpF64;
 
         dfNoDataValue = GDALGetRasterNoDataValue(hBand, &bGotNoDataValue);
 	switch( GDALGetRasterDataType(hBand) ) {
@@ -879,8 +879,16 @@ void ComputeRasterMinMax(char *tmp, GDALRasterBandH hBand, double adfMinMax[2],
 				z_max = MAX(tmpF32[i], z_max);
 			}
 			break;
+		case GDT_Float64:
+			tmpF64 = (double *) tmp;
+			for (i = 0; i < nXSize*nYSize; i++) {
+				if( bGotNoDataValue && tmpF64[i] == dfNoDataValue ) continue;
+				z_min = MIN(tmpF64[i], z_min);
+				z_max = MAX(tmpF64[i], z_max);
+			}
+			break;
 		default:
-			fprintf (stderr, "gdalread: Unsupported data type\n");
+			fprintf (stderr, "GMT_gdalread: Unsupported data type\n");
 			break;
 	}
 	adfMinMax[0] = z_min;
