@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.664 2009-11-25 08:56:50 guru Exp $
+	$Id: ChangeLog,v 1.665 2009-11-26 22:54:55 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2009-11-26	pwessel
+	* grdcontour.c:		1) -Q should only apply to closed contours
+				2) -T failed to find inside point for oblique projections.
 2009-11-24	pwessel
 	* gmt_init.c:		Guard against getting a negative hash value (happened
 				when text was Russian language codes from ru.d)
