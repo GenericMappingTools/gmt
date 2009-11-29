@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.668 2009-11-29 04:07:35 guru Exp $
+	$Id: ChangeLog,v 1.669 2009-11-29 04:41:36 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-11-28	pwessel
@@ -8,6 +8,7 @@
 				in AND out columns correspond to x, y, and t.
 	* x2sys/x2sys_datalist.c:	Should now get the correct data columns.
 	* x2sys/x2sys_get.c:		Added -Q[i|e] to be used with -L.
+	* x2sys/x2sys_solve.c:	Added -Z to remove smallest dist/time for -Ed|t
 
 2009-11-26	pwessel
 	* grdcontour.c:		1) -Q should only apply to closed contours
