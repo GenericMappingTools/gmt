@@ -3,8 +3,8 @@
 .SH NAME
 x2sys_get \- Get track listing from the x2sys track index databases
 .SH SYNOPSIS
-\fBx2sys_get\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(F)\fIflags\fP ] 
-[ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ OPT(Q)] [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
+\fBx2sys_get\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(D)] [ OPT(F)\fIflags\fP ] 
+[ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ OPT(Qe)|\fBi\fP ]  [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
 .SH DESCRIPTION
 \fBx2sys_get\fP will return the names of the track data files in the x2sys data
 base for this TAG that match the given
@@ -18,6 +18,10 @@ No space between the option flag and the associated arguments.
 OPT(C)
 Instead of reporting the track names, just output the coordinates of the
 center of each bin that has at least one track with the specified data.
+.TP
+OPT(D)
+Only report the track names [Default adds the availability of
+data for each field].
 .TP
 OPT(F)
 Give a comma-separated list of column names (as described in the definition
@@ -37,8 +41,9 @@ Give a comma-separated list of column names (as described in the definition
 file) that must be absent.
 .TP
 OPT(Q)
-Quick mode: Only report the track names.  Default also reports the availability of
-data for each field.
+Append \fBe\fP for external COEs only, and \fBi\fP for internal
+COEs only [Default is all COEs].  This applies to the crossover setup only
+and requires OPT(L).
 #include "explain_-Rgeo.txt"
 For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
 the tracks to those that fall at least partly inside the specified domain.
