@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.138 2009-10-16 06:08:38 guru Exp $
+ *	$Id: x2sys.c,v 1.139 2009-11-29 03:00:36 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -151,7 +151,7 @@ int x2sys_initialize (char *TAG, char *fname, struct GMT_IO *G,  struct X2SYS_IN
 	X->TAG = strdup (TAG);
 	X->info = (struct X2SYS_DATA_INFO *) GMT_memory (VNULL, n_alloc, sizeof (struct X2SYS_DATA_INFO), "x2sys_initialize");
 	X->file_type = X2SYS_ASCII;
-	X->x_col = X->y_col = X->t_col = -1;
+	X->x_col[GMT_IN] = X->y_col[GMT_IN] = X->t_col[GMT_IN] = -1;
 	X->ms_flag = '>';	/* Default multisegment header flag */
 	sprintf (line, "%s%c%s.def", TAG, DIR_DELIM, fname);
 	X->dist_flag = 0;	/* Cartesian distances */
@@ -212,9 +212,9 @@ int x2sys_initialize (char *TAG, char *fname, struct GMT_IO *G,  struct X2SYS_IN
 		c = (int)yes_no;
 		if (tolower (c) != 'Y') X->info[i].has_nan_proxy = TRUE;
 		if (!(X->info[i].scale == 1.0 && X->info[i].offset == 0.0)) X->info[i].do_scale = TRUE;
-		if (!strcmp (X->info[i].name, "x") || !strcmp (X->info[i].name, "lon"))  X->x_col = i;
-		if (!strcmp (X->info[i].name, "y") || !strcmp (X->info[i].name, "lat"))  X->y_col = i;
-		if (!strcmp (X->info[i].name, "t") || !strcmp (X->info[i].name, "time")) X->t_col = i;
+		if (!strcmp (X->info[i].name, "x") || !strcmp (X->info[i].name, "lon"))  X->x_col[GMT_IN] = i;
+		if (!strcmp (X->info[i].name, "y") || !strcmp (X->info[i].name, "lat"))  X->y_col[GMT_IN] = i;
+		if (!strcmp (X->info[i].name, "t") || !strcmp (X->info[i].name, "time")) X->t_col[GMT_IN] = i;
 		i++;
 		if (i == (int)n_alloc) {
 			n_alloc <<= 1;
@@ -238,8 +238,11 @@ int x2sys_initialize (char *TAG, char *fname, struct GMT_IO *G,  struct X2SYS_IN
 	for (i = 0; i < X->n_fields; i++) {	/* Default is same order and use all columns */
 		X->out_order[i] = i;
 		X->use_column[i] = 1;
-		G->in_col_type[i] = G->out_col_type[i] = (X->x_col == i) ? GMT_IS_LON : ((X->y_col == i) ? GMT_IS_LAT : GMT_IS_UNKNOWN);
+		G->in_col_type[i] = G->out_col_type[i] = (X->x_col[GMT_IN] == i) ? GMT_IS_LON : ((X->y_col[GMT_IN] == i) ? GMT_IS_LAT : GMT_IS_UNKNOWN);
 	}
+	X->x_col[GMT_OUT] = X->x_col[GMT_IN];
+	X->y_col[GMT_OUT] = X->y_col[GMT_IN];
+	X->t_col[GMT_OUT] = X->t_col[GMT_IN];
 	X->n_data_cols = x2sys_n_data_cols (X);
 	X->rec_size = (8 + X->n_data_cols) * sizeof (double);
 
@@ -293,9 +296,9 @@ int x2sys_n_data_cols (struct X2SYS_INFO *s)
 	int i, n = 0;
 
 	for (i = 0; i < s->n_out_columns; i++) {	/* Loop over all possible fields in this data set */
-		if (i == s->x_col) continue;
-		if (i == s->y_col) continue;
-		if (i == s->t_col) continue;
+		if (i == s->x_col[GMT_IN]) continue;
+		if (i == s->y_col[GMT_IN]) continue;
+		if (i == s->t_col[GMT_IN]) continue;
 		n++;	/* Only count data columns */
 	}
 
@@ -318,9 +321,6 @@ int x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 	strncpy (line, string, (size_t)BUFSIZ);	/* Make copy for later use */
 	memset ((void *)s->use_column, 0, (size_t)(s->n_fields * sizeof (int)));
 
-#if 0
-	s->x_col = s->y_col = s->t_col = -1;	/* Need to reset this to match data order */
-#endif
 	while ((GMT_strtok (line, ",", &pos, p))) {
 		j = 0;
 		while (j < s->n_fields && strcmp (p, s->info[j].name)) j++;
@@ -328,11 +328,9 @@ int x2sys_pick_fields (char *string, struct X2SYS_INFO *s)
 			s->out_order[i] = j;
 			s->use_column[j] = 1;
 			/* Reset x,y,t indices */
-#if 0
-			if (!strcmp (s->info[j].name, "x") || !strcmp (s->info[j].name, "lon"))  s->x_col = i;
-			if (!strcmp (s->info[j].name, "y") || !strcmp (s->info[j].name, "lat"))  s->y_col = i;
-			if (!strcmp (s->info[j].name, "t") || !strcmp (s->info[j].name, "time")) s->t_col = i;
-#endif
+			if (j == s->x_col[GMT_IN]) s->x_col[GMT_OUT] = i;
+			if (j == s->y_col[GMT_IN]) s->y_col[GMT_OUT] = i;
+			if (j == s->t_col[GMT_IN]) s->t_col[GMT_OUT] = i;
 		}
 		else {
 			fprintf (stderr, "X2SYS: ERROR: Unknown column name %s\n", p);
@@ -498,7 +496,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 		else if (s->info[i].do_scale)
 			data[i] = data[i] * s->info[i].scale + s->info[i].offset;
 		if (GMT_is_dnan (data[i])) s->info[i].has_nans = TRUE;
-		if (i == s->x_col && s->geographic) GMT_lon_range_adjust (s->geodetic, &data[i]);
+		if (i == s->x_col[GMT_IN] && s->geographic) GMT_lon_range_adjust (s->geodetic, &data[i]);
 	}
 
 	return ((error || n_read != s->n_fields) ? -1 : 0);
@@ -854,6 +852,7 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 	p = (char **) GMT_memory (VNULL, (size_t)n_alloc, sizeof (char *), "x2sys_read_list");
 
 	while (fgets (line, BUFSIZ, fp)) {
+		if (line[0] == '#' || line[0] == '>' || line[0] == '\0') continue;	/* Skip various comments and blank lines */
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s", name);
 		p[n] = strdup (name);
@@ -887,6 +886,7 @@ int x2sys_read_weights (char *file, char ***list, double **weights, int *nf)
 	W = (double *) GMT_memory (VNULL, (size_t)n_alloc, sizeof (double), "x2sys_read_weights");
 
 	while (fgets (line, BUFSIZ, fp)) {
+		if (line[0] == '#' || line[0] == '>' || line[0] == '\0') continue;	/* Skip various comments and blank lines */
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		if (sscanf (line, "%s %lg", name, &this_w) != 2) {
 	 		fprintf (stderr, "x2sys_read_weights : Error parsing file %s near line %d\n", file, n);
@@ -1156,6 +1156,7 @@ int x2sys_bix_read_tracks (struct X2SYS_INFO *S, struct X2SYS_BIX *B, int mode, 
 
 	unused = fgets (line, BUFSIZ, ftrack);	/* Skip header record */
 	while (fgets (line, BUFSIZ, ftrack)) {
+		if (line[0] == '#' || line[0] == '>' || line[0] == '\0') continue;	/* Skip various comments and blank lines */
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %d %d", name, &id, &flag);
 		if (mode == 1) {
@@ -1286,8 +1287,7 @@ void x2sys_path_init (struct X2SYS_INFO *S)
 	}
 
 	while (fgets (line, BUFSIZ, fp) && n_x2sys_paths < MAX_DATA_PATHS) {
-		if (line[0] == '#') continue;	/* Comments */
-		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line */
+		if (line[0] == '#' || line[0] == '>' || line[0] == '\0') continue;	/* Skip various comments and blank lines */
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		x2sys_datadir[n_x2sys_paths] = GMT_memory (VNULL, (size_t)1, (size_t)(strlen (line)+1), "x2sys_path_init");
 #if _WIN32

@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.51 2009-09-09 23:27:05 guru Exp $
+ *	$Id: x2sys.h,v 1.52 2009-11-29 03:00:36 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -125,7 +125,8 @@ struct X2SYS_INFO {
 	int n_out_columns;		/* Number of output columns */
 	int n_data_cols;		/* Number of data columns (other than x,y,t) */
 	size_t rec_size;		/* Number of bytes for a potential x2sys_dbase_*.b file */
-	int x_col, y_col, t_col;	/* Column numbers for x, y, and t */
+	int x_col[2], y_col[2];		/* Column numbers for x, y, for input and output */
+	int t_col[2];			/* Column numbers for t, for input and output */
 	int skip;			/* Number of header records to skip */
 	int flags;			/* Various processing flags for internal use */
 	int *out_order;			/* Array with column number in the order for output */
