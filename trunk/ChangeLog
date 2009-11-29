@@ -1,17 +1,18 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.667 2009-11-29 03:00:36 guru Exp $
+	$Id: ChangeLog,v 1.668 2009-11-29 04:07:35 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-11-28	pwessel
-	* x2sys.c:		Now, various lists can contain header records
-	* x2sys.c:		Added internal book-keeping so we know which
+	* x2sys/x2sys.c:	Now, various lists can contain header records
+	* x2sys/x2sys.c:	Added internal book-keeping so we know which
 				in AND out columns correspond to x, y, and t.
-	* x2sys_datalist.c:	Should now get the correct data columns.
+	* x2sys/x2sys_datalist.c:	Should now get the correct data columns.
+	* x2sys/x2sys_get.c:		Added -Q[i|e] to be used with -L.
 
 2009-11-26	pwessel
 	* grdcontour.c:		1) -Q should only apply to closed contours
 				2) -T failed to find inside point for oblique projections.
-	* x2sys/x2sys_get.c:	-Q now only lists track names
+	* x2sys/x2sys_get.c:	-D now only lists track names
 
 2009-11-24	pwessel
 	* gmt_init.c:		Guard against getting a negative hash value (happened
