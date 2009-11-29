@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.666 2009-11-26 23:11:39 guru Exp $
+	$Id: ChangeLog,v 1.667 2009-11-29 03:00:36 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-11-28	pwessel
+	* x2sys.c:		Now, various lists can contain header records
+	* x2sys.c:		Added internal book-keeping so we know which
+				in AND out columns correspond to x, y, and t.
+	* x2sys_datalist.c:	Should now get the correct data columns.
 
 2009-11-26	pwessel
 	* grdcontour.c:		1) -Q should only apply to closed contours
