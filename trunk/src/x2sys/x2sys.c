@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.139 2009-11-29 03:00:36 guru Exp $
+ *	$Id: x2sys.c,v 1.140 2009-11-30 00:44:04 guru Exp $
  *
  *      Copyright (c) 1999-2009 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -838,8 +838,8 @@ int x2sys_xover_output (FILE *fp, int n, double out[])
 }
 
 int x2sys_read_list (char *file, char ***list, int *nf)
-{
-	int n_alloc = GMT_CHUNK, n = 0;
+{	/* Read a file with track names or track file names; strip off extensions */
+	int n_alloc = GMT_CHUNK, k, dot, n = 0;
 	char **p, line[BUFSIZ], name[GMT_TEXT_LEN];
 	FILE *fp;
 
@@ -855,6 +855,8 @@ int x2sys_read_list (char *file, char ***list, int *nf)
 		if (line[0] == '#' || line[0] == '>' || line[0] == '\0') continue;	/* Skip various comments and blank lines */
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s", name);
+		for (k = strlen(name) - 1, dot = -1; dot == -1 && k >= 0; k--) if (name[k] == '.') dot = k;
+		if (dot > 0) name[dot] = '\0';	/* Chop off extension */
 		p[n] = strdup (name);
 		n++;
 		if (n == n_alloc) {
