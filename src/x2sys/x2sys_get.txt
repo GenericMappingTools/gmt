@@ -3,7 +3,7 @@
 .SH NAME
 x2sys_get \- Get track listing from the x2sys track index databases
 .SH SYNOPSIS
-\fBx2sys_get\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(D)] [ OPT(F)\fIflags\fP ] 
+\fBx2sys_get\fP OPT(T)\fITAG\fP [ OPT(C) ] [ OPT(D)] [ OPT(E)] [ OPT(F)\fIflags\fP ] 
 [ OPT(L)[\fIlist\fP] [ OPT(N)\fIflags\fP ] [ OPT(Qe)|\fBi\fP ]  [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] ] 
 .SH DESCRIPTION
 \fBx2sys_get\fP will return the names of the track data files in the x2sys data
@@ -22,6 +22,9 @@ center of each bin that has at least one track with the specified data.
 OPT(D)
 Only report the track names [Default adds the availability of
 data for each field].
+.TP
+OPT(E)
+Append the file extension to all reported tracks [no extension].
 .TP
 OPT(F)
 Give a comma-separated list of column names (as described in the definition

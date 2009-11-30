@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.669 2009-11-29 04:41:36 guru Exp $
+	$Id: ChangeLog,v 1.670 2009-11-30 00:44:04 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-11-29	pwessel
+	* x2sys/x2sys.c:	Automatically strip off extensions for tracks given
+				via list files.
+	* x2sys/x2sys_get.c:	Added -E to select extensions on output.
 
 2009-11-28	pwessel
 	* x2sys/x2sys.c:	Now, various lists can contain header records
