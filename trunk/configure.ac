@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.74 2009-11-08 22:47:07 guru Exp $
-AC_REVISION($Revision: 1.74 $)
+dnl $Id: configure.ac,v 1.75 2009-12-07 05:21:53 guru Exp $
+AC_REVISION($Revision: 1.75 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -392,7 +392,7 @@ elif test ! "X$enable_matlab" = "X"; then
 	elif test "$os" = "ULTRIX" ; then	# Dec Ultrix
 		MEX_EXT='mexvx'
 	elif test "$os" = "Darwin" ; then	# Mac OS X
-		dir=`ls /Applications | grep MATLAB | head -n 1`
+		dir=`ls -t /Applications | grep MATLAB | head -n 1`
 		if test "X$dir" = "X" ; then
 			MATLAB=NONE
 		else
