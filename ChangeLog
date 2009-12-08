@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.670 2009-11-30 00:44:04 guru Exp $
+	$Id: ChangeLog,v 1.671 2009-12-08 06:28:20 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-12-7	pwessel
+	* grdtrack.c:		The -Z option gave z-values a longitude-formatting
 
 2009-11-29	pwessel
 	* x2sys/x2sys.c:	Automatically strip off extensions for tracks given
