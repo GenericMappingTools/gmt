@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.674 2009-12-09 05:53:33 guru Exp $
+	$Id: ChangeLog,v 1.675 2009-12-09 22:25:10 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-12-8	pwessel
 	* sph/sphinterpolate.c:	Bad index on line 317 went outside array limit.
+				Did not initialize the grid header properly.
+	* sph/sphdistance.c:	Did not initialize the grid header properly.
 	* misc/gmtstitch.c:	NULL segment headers passed to strcpy() and
 				fixed output message when -C and only one segment.
 
