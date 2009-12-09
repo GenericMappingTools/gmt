@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.671 2009-12-08 06:28:20 guru Exp $
+	$Id: ChangeLog,v 1.672 2009-12-09 04:41:24 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-12-8	pwessel
+	* sph/sphinterpolate.c:	Bad index on line 317 went outside array limit.
 
 2009-12-7	pwessel
 	* grdtrack.c:		The -Z option gave z-values a longitude-formatting
