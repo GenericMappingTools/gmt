@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.57 2009-09-09 23:27:03 guru Exp $
+ *	$Id: pslib.h,v 1.58 2009-12-16 16:18:01 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -143,6 +143,7 @@ EXTERN_MSC void ps_hexagon (double x, double y, double side, int rgb[], PS_LONG 
 EXTERN_MSC void ps_image (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbits);
 EXTERN_MSC PS_LONG ps_line (double *x, double *y, PS_LONG n, PS_LONG type, PS_LONG close);
 EXTERN_MSC void ps_itriangle (double x, double y, double side, int rgb[], PS_LONG outline);
+EXTERN_MSC void ps_matharc (double x, double y, double radius, double az1, double az2, double shape, PS_LONG status);
 EXTERN_MSC void ps_octagon (double x, double y, double side, int rgb[], PS_LONG outline);
 EXTERN_MSC void ps_pentagon (double x, double y, double side, int rgb[], PS_LONG outline);
 EXTERN_MSC PS_LONG ps_pattern (PS_LONG image_no, char *imagefile, PS_LONG invert, PS_LONG image_dpi, PS_LONG outline, int f_rgb[], int b_rgb[]);

@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.675 2009-12-09 22:25:10 guru Exp $
+	$Id: ChangeLog,v 1.676 2009-12-16 16:17:59 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2009-12-15	pwessel
+	* gmtdfaults:		Added BASEMAP_TYPE = graph for linear projections to
+				have the axes extended 7.5% with arrow heads.
+	* psxy.c:		New (and final) symbol -Sm for math angle, which lets
+				you draw a circular arc with optional curved arrow
+				heads in one, both, or zero ends.
 
 2009-12-8	pwessel
 	* sph/sphinterpolate.c:	Bad index on line 317 went outside array limit.
