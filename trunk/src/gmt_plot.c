@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.276 2009-11-17 19:22:01 remko Exp $
+ *	$Id: gmt_plot.c,v 1.277 2009-12-16 16:18:00 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -452,6 +452,16 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	ps_comment ("Axis tick marks");
 	GMT_setpen (&gmtdefs.frame_pen);
 	ps_segment (0.0, 0.0, length, 0.0);
+	if (gmtdefs.basemap_type == GMT_IS_GRAPH) {	/* Extend axis 7.5% with an arrow */
+		struct GMT_FILL arrow;
+		double x2, v_w, h_w, h_l;
+		GMT_init_fill (&arrow, gmtdefs.frame_pen.rgb[0], gmtdefs.frame_pen.rgb[1], gmtdefs.frame_pen.rgb[2]);
+		x2 = 1.075 * length;
+		v_w = gmtdefs.frame_pen.width / 72.0;
+		h_w = 5.0 * v_w;
+		h_l = 2 * h_w;
+		GMT_vector (length, 0.0, x2, 0.0, 0.0, v_w, h_l, h_w, gmtdefs.vector_shape, &arrow, FALSE);
+	}
 	GMT_setpen (&gmtdefs.tick_pen);
 
 	rot[0] = (A->item[GMT_ANNOT_UPPER].active && axis == 1 && gmtdefs.y_axis_type == 0) ? 1 : 0;
@@ -2077,6 +2087,7 @@ void GMT_map_basemap (void) {
 
 	if (gmtdefs.oblique_annotation & 2) frame_info.horizontal = 2;
 	if (frame_info.horizontal == 2) gmtdefs.oblique_annotation |= 2;
+	if (gmtdefs.basemap_type == GMT_IS_GRAPH && GMT_IS_MAPPING) gmtdefs.basemap_type = GMT_IS_PLAIN;
 	if (gmtdefs.basemap_type == GMT_IS_FANCY && !GMT_is_fancy_boundary()) gmtdefs.basemap_type = GMT_IS_PLAIN;
 
 	ps_comment ("Start of basemap");
@@ -3793,6 +3804,18 @@ void GMT_pie (double x, double y, double z, double size[], struct GMT_FILL *fill
 	}
 	else
 		ps_pie (x, y, size[0], size[1], size[2], fill->rgb, outline);
+}
+
+void GMT_matharc (double x, double y, double z, double size[], double shape, struct GMT_PEN *pen, GMT_LONG status)
+{
+	/* Plots the math arc symbol */
+
+	if (project_info.three_D) {	/* Must do polygon */
+		x = 0.0;
+	}
+	else {
+		ps_matharc (x, y, size[0], size[1], size[2], shape, status);
+	}
 }
 
 void GMT_rotrect (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)

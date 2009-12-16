@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.423 2009-11-25 08:56:50 guru Exp $
+ *	$Id: gmt_init.c,v 1.424 2009-12-16 16:17:59 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1938,6 +1938,8 @@ GMT_LONG GMT_setparameter (char *keyword, char *value)
 		case GMTCASE_BASEMAP_TYPE:
 			if (!strcmp (lower_value, "plain"))
 				gmtdefs.basemap_type = GMT_IS_PLAIN;
+			else if (!strcmp (lower_value, "graph"))
+				gmtdefs.basemap_type = GMT_IS_GRAPH;
 			else if (!strcmp (lower_value, "fancy"))
 				gmtdefs.basemap_type = GMT_IS_FANCY;
 			else if (!strcmp (lower_value, "fancy+"))
@@ -5380,7 +5382,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 	GMT_LONG decode_error = 0, bset = 0, j, n, k, len, slash = 0, one, colon;
 	BOOLEAN check, old_style;
 	char symbol_type, txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], text_cp[GMT_LONG_TEXT], *c;
-	static char *allowed_symbols[2] = {"-+aAbBCcDdeEfGgHhIijJNnpqrSsTtVvwWxy", "-+aAbCcDdeEfGgHhIijJNnoOpqrSsTtuUVvwWxy"};
+	static char *allowed_symbols[2] = {"-+aAbBCcDdeEfGgHhIijJmNnpqrSsTtVvwWxy", "-+aAbCcDdeEfGgHhIijJmNnoOpqrSsTtuUVvwWxy"};
 	static char *bar_symbols[2] = {"bB", "-bBoOuU"};
 
 	p->n_required = p->convert_angles = 0;
@@ -5496,7 +5498,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 		char s_upper;
 		n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 		s_upper = (char)toupper ((int)symbol_type);
-		if (s_upper == 'F' || s_upper == 'V' || s_upper == 'Q') {	/* "Symbols" that do not take normal symbol size */
+		if (s_upper == 'F' || s_upper == 'V' || s_upper == 'Q' || s_upper == 'M') {	/* "Symbols" that do not take normal symbol size */
 			p->size_y = p->given_size_y = 0.0;
 		}
 		else {
@@ -5673,6 +5675,26 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 				decode_error++;
 			}
 			p->string[k] = 0;
+			break;
+		case 'm':
+			p->symbol = GMT_SYMBOL_MARC;
+			p->n_required = k = 2;
+			switch (text[1]) {	/* Check if f(irst), l(last), b(oth), or none [Default] arrow heads*/
+				case 'f':	/* Input (x,y) refers to vector head (the tip), double heads */
+					p->v_double_heads = 1;
+					break;
+				case 'l':	/* Input (x,y) refers to vector head (the tip), double heads */
+					p->v_double_heads = 2;
+					break;
+				case 'b':	/* Input (x,y) refers to balance point of vector, double heads */
+					p->v_double_heads = 3;
+					break;
+				default:	/* No modifier given, default to tail, single head */
+					p->v_double_heads = 0;
+					k = 1;
+					break;
+			}
+			p->size_x = p->given_size_x = p->size_y = p->given_size_y = GMT_convert_units (&text[k], GMT_INCH);
 			break;
 		case 'N':
 			p->equal_area = TRUE;	/* To equal area of circle with same size */

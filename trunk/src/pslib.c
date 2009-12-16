@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.217 2009-11-25 14:23:26 remko Exp $
+ *	$Id: pslib.c,v 1.218 2009-12-16 16:18:01 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -217,6 +217,7 @@ unsigned char *ps_load_eps (FILE *fp, struct imageinfo *header);
 PS_LONG ps_get_boundingbox (FILE *fp, PS_LONG *llx, PS_LONG *lly, PS_LONG *trx, PS_LONG *try);
 char *ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);
 PS_LONG ps_pattern (PS_LONG image_no, char *imagefile, PS_LONG invert, PS_LONG image_dpi, PS_LONG outline, int f_rgb[], int b_rgb[]);
+void get_origin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2);
 
 #ifdef GMT_QSORT
 /* Need to replace OS X's qsort with one that works for 64-bit data */
@@ -564,6 +565,91 @@ void ps_comment (char *text)
 void ps_comment_ (char *text, int nlen)
 {
 	ps_comment (text);
+}
+
+#define sincosd(a,s,c) sincos ((a)*D2R, s, c)
+
+void ps_matharc (double x, double y, double radius, double az1, double az2, double shape, PS_LONG status)
+{	/* 1 = add arrowhead at az1, 2 = add arrowhead at az2, 3 = at both, 0 no arrows */
+	PS_LONG ix, iy;
+	double p, arc_length, half_width, da, xt, yt, s, c, xr, yr, xl, yl, xo, yo;
+	double angle[2], bo1, bo2, xi, yi, bi1, bi2, xv, yv;
+
+	ix = (PS_LONG)irint (x * PSL->internal.scale);
+	iy = (PS_LONG)irint (y * PSL->internal.scale);
+	fprintf (PSL->internal.fp, "V %ld %ld T\n", ix ,iy);
+	angle[0] = az1;	angle[1] = az2;
+	p = (double)(PSL->current.linewidth) / PSL->init.dpi;	/* Line width in inches */
+	arc_length = 8.0 * p;
+	half_width = 2.5 * p;
+	da = arc_length * 180.0 / (M_PI * radius);	/* Angle corresponding to the arc length */
+
+	if (status & 1) {	/* Add arrow head at start angle */
+		angle[0] += 0.5 * da;
+		ps_setfill (PSL->current.rgb, FALSE);
+		sincosd (az1, &s, &c);
+		xt = radius * c;	yt = radius * s;
+		sincosd (az1 + da, &s, &c);
+		xr = (radius + half_width) * c;	yr = (radius + half_width) * s;
+		xl = (radius - half_width) * c;	yl = (radius - half_width) * s;
+		get_origin (xt, yt, xr, yr, radius, &xo, &yo, &bo1, &bo2);
+		ps_arc (xo, yo, radius, bo1, bo2, 1);		/* Draw the arrow arc from tip to outside flank */
+		get_origin (xt, yt, xl, yl, radius, &xi, &yi, &bi1, &bi2);
+		ps_arc (xi, yi, radius, bi2, bi1, 0);		/* Draw the arrow arc from tip to outside flank */
+		sincosd (az1+da-0.5*da*shape, &s, &c);
+		xv = radius * c - xl;	yv = radius * s - yl;
+		ps_plotr (xv, yv, PSL_PEN_DRAW);
+		ps_command ("P fs os");
+	}
+	if (status & 2) {	/* Add arrow head at end angle */
+		angle[1] -= 0.5 * da;
+		ps_setfill (PSL->current.rgb, FALSE);
+		sincosd (az2, &s, &c);
+		xt = radius * c;	yt = radius * s;
+		sincosd (az2 - da, &s, &c);
+		xr = (radius + half_width) * c;	yr = (radius + half_width) * s;
+		xl = (radius - half_width) * c;	yl = (radius - half_width) * s;
+		get_origin (xt, yt, xr, yr, radius, &xo, &yo, &bo1, &bo2);
+		ps_arc (xo, yo, radius, bo1, bo2, 1);		/* Draw the arrow arc from tip to outside flank */
+		get_origin (xt, yt, xl, yl, radius, &xi, &yi, &bi1, &bi2);
+		ps_arc (xi, yi, radius, bi2, bi1, 0);		/* Draw the arrow arc from tip to outside flank */
+		sincosd (az2-da+0.5*da*shape, &s, &c);
+		xv = radius * c - xl;	yv = radius * s - yl;
+		ps_plotr (xv, yv, PSL_PEN_DRAW);
+		ps_command ("P fs os");
+	}
+	ps_arc (0.0, 0.0, radius, angle[0], angle[1], 3);		/* Draw the arc */
+	fprintf (PSL->internal.fp, "U \n");
+}
+
+void get_origin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2)
+{ /* finds origin so that distance is r to the two points given */
+	double a0, b0, c0, A, B, C, q, sx1, sx2, sy1, sy2, r1, r2;
+
+	a0 = (xt - xr) / (yr - yt);
+	b0 = 0.5 * (xr*xr + yr*yr - xt*xt - yt*yt)/(yr - yt);
+	c0 = b0 - yt;
+	A = 1 + a0*a0;
+	B = 2*(c0*a0 - xt);
+	C = xt*xt - r*r + c0*c0;
+	q = sqrt (B*B - 4*A*C);
+	sx1 = 0.5* (-B + q)/A;
+	sx2 = 0.5* (-B - q)/A;
+	sy1 = b0 + a0 * sx1;
+	sy2 = b0 + a0 * sx2;
+
+	r1 = hypot (sx1, sy1);
+	r2 = hypot (sx2, sy2);
+	if (r1 < r) {
+	    *xo = sx1;
+	    *yo = sy1;
+	}
+	else {
+	    *xo = sx2;
+	    *yo = sy2;
+	}
+	*b1 = R2D * atan2 (yr - *yo, xr - *xo);
+	*b2 = R2D * atan2 (yt - *yo, xt - *xo);
 }
 
 void ps_plus (double x, double y, double diameter)
