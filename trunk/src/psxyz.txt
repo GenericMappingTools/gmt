@@ -162,6 +162,12 @@ Note that the size is only approximate; no individual scaling
 is done for different characters.  Remember to escape special characters like *.  Optionally, you may append %\fIfont\fP
 to select a particular font [Default is \fBANNOT_FONT_PRIMARY\fP].
 .TP
+OPT(Sm)
+\fBm\fPath angle arc, optionally with one or two arrow heads [NOT IMPLEMENTED YET].  The \fIsize\fP is the radius of the arc.
+Start and stop directions (in degrees counter-clockwise from horizontal) for arc
+must be found in columns 3 and 4.  Use OPT(Smf) to add arrow head at first angle, OPT(Sml) for arrow head at last angle, and OPT(Smb) for both
+[Default is no arrow heads].
+.TP
 OPT(Sn)
 pe\fBn\fPtagon.  \fIsize\fP is diameter of circumscribing circle.
 .TP
