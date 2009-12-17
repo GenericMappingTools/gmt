@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.676 2009-12-16 16:17:59 guru Exp $
+	$Id: ChangeLog,v 1.677 2009-12-17 03:19:05 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2009-12-15	pwessel
@@ -8,6 +8,7 @@
 	* psxy.c:		New (and final) symbol -Sm for math angle, which lets
 				you draw a circular arc with optional curved arrow
 				heads in one, both, or zero ends.
+	* psxyz.c:		Same but no arrow heads yet.
 
 2009-12-8	pwessel
 	* sph/sphinterpolate.c:	Bad index on line 317 went outside array limit.

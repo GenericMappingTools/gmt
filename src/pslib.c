@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.218 2009-12-16 16:18:01 guru Exp $
+ *	$Id: pslib.c,v 1.219 2009-12-17 03:19:05 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -571,9 +571,9 @@ void ps_comment_ (char *text, int nlen)
 
 void ps_matharc (double x, double y, double radius, double az1, double az2, double shape, PS_LONG status)
 {	/* 1 = add arrowhead at az1, 2 = add arrowhead at az2, 3 = at both, 0 no arrows */
-	PS_LONG ix, iy;
+	PS_LONG ix, iy, i;
 	double p, arc_length, half_width, da, xt, yt, s, c, xr, yr, xl, yl, xo, yo;
-	double angle[2], bo1, bo2, xi, yi, bi1, bi2, xv, yv;
+	double angle[2], bo1, bo2, xi, yi, bi1, bi2, xv, yv, sign[2] = {+1.0, -1.0};
 
 	ix = (PS_LONG)irint (x * PSL->internal.scale);
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
@@ -584,41 +584,26 @@ void ps_matharc (double x, double y, double radius, double az1, double az2, doub
 	half_width = 2.5 * p;
 	da = arc_length * 180.0 / (M_PI * radius);	/* Angle corresponding to the arc length */
 
-	if (status & 1) {	/* Add arrow head at start angle */
-		angle[0] += 0.5 * da;
-		ps_setfill (PSL->current.rgb, FALSE);
-		sincosd (az1, &s, &c);
-		xt = radius * c;	yt = radius * s;
-		sincosd (az1 + da, &s, &c);
-		xr = (radius + half_width) * c;	yr = (radius + half_width) * s;
-		xl = (radius - half_width) * c;	yl = (radius - half_width) * s;
-		get_origin (xt, yt, xr, yr, radius, &xo, &yo, &bo1, &bo2);
-		ps_arc (xo, yo, radius, bo1, bo2, 1);		/* Draw the arrow arc from tip to outside flank */
-		get_origin (xt, yt, xl, yl, radius, &xi, &yi, &bi1, &bi2);
-		ps_arc (xi, yi, radius, bi2, bi1, 0);		/* Draw the arrow arc from tip to outside flank */
-		sincosd (az1+da-0.5*da*shape, &s, &c);
-		xv = radius * c - xl;	yv = radius * s - yl;
-		ps_plotr (xv, yv, PSL_PEN_DRAW);
-		ps_command ("P fs os");
+	for (i = 0; i < 2; i++) {
+		if (status & (i+1)) {	/* Add arrow head at this angle */
+			ps_setfill (PSL->current.rgb, FALSE);
+			sincosd (angle[i], &s, &c);
+			xt = radius * c;	yt = radius * s;
+			sincosd (angle[i] + sign[i] * da, &s, &c);
+			xr = (radius + half_width) * c;	yr = (radius + half_width) * s;
+			xl = (radius - half_width) * c;	yl = (radius - half_width) * s;
+			get_origin (xt, yt, xr, yr, radius, &xo, &yo, &bo1, &bo2);
+			ps_arc (xo, yo, radius, bo1, bo2, 1);		/* Draw the arrow arc from tip to outside flank */
+			get_origin (xt, yt, xl, yl, radius, &xi, &yi, &bi1, &bi2);
+			ps_arc (xi, yi, radius, bi2, bi1, 0);		/* Draw the arrow arc from tip to outside flank */
+			sincosd (angle[i]+sign[i]*da*(1.0-0.5*shape), &s, &c);
+			xv = radius * c - xl;	yv = radius * s - yl;
+			ps_plotr (xv, yv, PSL_PEN_DRAW);
+			ps_command ("P fs os");
+			angle[i] += 0.5 * sign[i] * da;
+		}
 	}
-	if (status & 2) {	/* Add arrow head at end angle */
-		angle[1] -= 0.5 * da;
-		ps_setfill (PSL->current.rgb, FALSE);
-		sincosd (az2, &s, &c);
-		xt = radius * c;	yt = radius * s;
-		sincosd (az2 - da, &s, &c);
-		xr = (radius + half_width) * c;	yr = (radius + half_width) * s;
-		xl = (radius - half_width) * c;	yl = (radius - half_width) * s;
-		get_origin (xt, yt, xr, yr, radius, &xo, &yo, &bo1, &bo2);
-		ps_arc (xo, yo, radius, bo1, bo2, 1);		/* Draw the arrow arc from tip to outside flank */
-		get_origin (xt, yt, xl, yl, radius, &xi, &yi, &bi1, &bi2);
-		ps_arc (xi, yi, radius, bi2, bi1, 0);		/* Draw the arrow arc from tip to outside flank */
-		sincosd (az2-da+0.5*da*shape, &s, &c);
-		xv = radius * c - xl;	yv = radius * s - yl;
-		ps_plotr (xv, yv, PSL_PEN_DRAW);
-		ps_command ("P fs os");
-	}
-	ps_arc (0.0, 0.0, radius, angle[0], angle[1], 3);		/* Draw the arc */
+	ps_arc (0.0, 0.0, radius, angle[0], angle[1], 3);		/* Draw the (possibly shortened) arc */
 	fprintf (PSL->internal.fp, "U \n");
 }
 

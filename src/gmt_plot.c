@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.277 2009-12-16 16:18:00 guru Exp $
+ *	$Id: gmt_plot.c,v 1.278 2009-12-17 03:19:05 guru Exp $
  *
  *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3810,8 +3810,19 @@ void GMT_matharc (double x, double y, double z, double size[], double shape, str
 {
 	/* Plots the math arc symbol */
 
-	if (project_info.three_D) {	/* Must do polygon */
-		x = 0.0;
+	if (project_info.three_D) {	/* Must do arc [no arrow heads so far] */
+		GMT_LONG j, n;
+		double *xp = NULL, *yp = NULL, dx, dy;
+
+		n = GMT_get_arc (x, y, size[0], size[1], size[2], &xp, &yp);
+
+		for (j = 0; j < n; j++) {
+			dx = xp[j];	dy = yp[j];
+			GMT_xyz_to_xy (dx, dy, z, &xp[j], &yp[j]);
+		}
+		ps_line (xp, yp, (GMT_LONG)n, 3, FALSE);
+		GMT_free ((void *)xp);
+		GMT_free ((void *)yp);
 	}
 	else {
 		ps_matharc (x, y, size[0], size[1], size[2], shape, status);
