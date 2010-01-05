@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.46 2009-10-23 18:32:37 remko Exp $
+#  $Id: Makefile,v 1.47 2010-01-05 03:49:47 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -132,7 +132,7 @@ update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_rel
 		cp -R -f ../share/doc www/gmt
 		rm -rf www/gmt/doc/gmt/examples
 		rm -rf www/gmt/doc/gmt/tutorial
-		for ex in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29; do \
+		for ex in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do \
 			cd www/gmt/examples/ex$$ex; \
 			if [ -f example_$$ex.ps ]; then \
 				zip -r example_$$ex.zip example_$$ex.ps;\

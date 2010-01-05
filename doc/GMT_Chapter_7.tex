@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.63 2010-01-05 01:15:44 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.64 2010-01-05 03:49:47 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -995,7 +995,7 @@ UTM and lon/lat coordinates and consistent use of the same map scale.}
 \section{Gridding spherical surface data using splines}
 \index{Example!Gridding spherical surface data using splines|(}
 
-Finally, we demonstrate how gridding on a spherical surface can be accomplished using Green's functions
+Next, we demonstrate how gridding on a spherical surface can be accomplished using Green's functions
 of surface splines, with or without tension.  Global gridding does not work particularly well in
 Cartesian coordinates hence the chosen approach.  We use \GMTprog{greenspline} to produce a crude
 topography grid for Mars based on radii estimates from the Mariner 9 and Viking Orbiter spacecrafts.
@@ -1015,3 +1015,19 @@ them.
 \GMTexample{29}{Gridding of spherical surface data using Green's function splines.}
  
 \index{Example!Gridding spherical surface data using splines|)}
+
+\section{Trigonometric functions plotted in graph mode}
+\index{Example!Trigonometric functions plotted in graph mode|(}
+
+Finally, we end with a simple mathematical illustration of sine and cosine, highlighting the
+{it graph} mode for linear projections and the new curved vectors for angles.
+
+\script{example_30}
+
+The script simply draws a graph basemap, computes sine and cosine and plots them as lines, then
+indicates on a circle that these quantities are simply the projections of an unit vector on the
+x- and y-axis, at the given angle.
+
+\GMTexample{30}{Trigonometric functions plotted in graph mode.}
+ 
+\index{Example!Trigonometric functions plotted in graph mode|)}
