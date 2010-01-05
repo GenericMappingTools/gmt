@@ -1,8 +1,8 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77magref.h,v 1.13 2009-09-09 23:27:04 guru Exp $	
+ *	$Id: mgd77magref.h,v 1.14 2010-01-05 01:15:48 guru Exp $	
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2005-2009 by P. Wessel and M. T. Chandler
+ *    Copyright (c) 2005-2010 by P. Wessel and M. T. Chandler
  *	File:	mgd77magref.h
  *
  *	MGD77 Magnetic Reference Fields for mgd77sniffer

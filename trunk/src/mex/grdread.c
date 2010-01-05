@@ -1,7 +1,7 @@
 /*
- *	$Id: grdread.c,v 1.14 2009-09-09 23:27:04 guru Exp $
+ *	$Id: grdread.c,v 1.15 2010-01-05 01:15:48 guru Exp $
  *
- *      Copyright (c) 1999-2009 by P. Wessel
+ *      Copyright (c) 1999-2010 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify

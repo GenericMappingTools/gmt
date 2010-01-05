@@ -1,7 +1,21 @@
-/*
- * $Id: dimfilter.c,v 1.6 2009-07-11 03:16:31 guru Exp $
+/*--------------------------------------------------------------------
+ * $Id: dimfilter.c,v 1.7 2010-01-05 01:15:48 guru Exp $
  *
- * dimfilter.c  reads a grdfile and creates filtered grd file
+ *	Copyright (c) 2009-2010 by P. Wessel and Seung-Sep Kim
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; version 2 of the License.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Contact info: gmt.soest.hawaii.edu
+ *--------------------------------------------------------------------*/
+/* dimfilter.c  reads a grdfile and creates filtered grd file
  *
  * user selects primary filter radius, number of sectors, and the secondary filter.
  * The Primary filter determines how we want to filter the raw data. However, instead

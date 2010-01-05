@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.30 2009-10-10 04:56:32 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.31 2010-01-05 01:15:45 guru Exp $
  *
- *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.32 2009-09-09 23:27:02 guru Exp $
+ *	$Id: gmt_vector.c,v 1.33 2010-01-05 01:15:46 guru Exp $
  *
- *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
