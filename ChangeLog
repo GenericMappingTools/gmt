@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.677 2009-12-17 03:19:05 guru Exp $
+	$Id: ChangeLog,v 1.678 2010-01-05 01:15:43 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-01-04	pwessel
+	* spotter/grdrotater.c:	Bug in node index gave no longitudinal variation in rotated
+				grid.
 
 2009-12-15	pwessel
 	* gmtdfaults:		Added BASEMAP_TYPE = graph for linear projections to

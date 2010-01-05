@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.50 2009-09-11 15:32:05 remko Exp $
+ *	$Id: gmt_support.h,v 1.51 2010-01-05 01:15:46 guru Exp $
  *
- *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

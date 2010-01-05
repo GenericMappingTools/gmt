@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.55 2009-11-09 13:52:54 remko Exp $
+ *	$Id: gmt_shore.c,v 1.56 2010-01-05 01:15:45 guru Exp $
  *
- *	Copyright (c) 1991-2009 by P. Wessel and W. H. F. Smith
+ *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: gmt_shell_functions.sh,v 1.5 2008-05-30 04:27:09 guru Exp $
+#	$Id: gmt_shell_functions.sh,v 1.6 2010-01-05 01:15:45 guru Exp $
 #
 # These functions can be used from any sh/bash script by specifying
 # . gmt_shell_functions.sh
