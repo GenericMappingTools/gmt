@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.279 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_plot.c,v 1.280 2010-01-05 23:37:57 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2776,7 +2776,7 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 {
 	GMT_LONG i, j, jj, k, n_a_ticks[9], n_f_ticks[9], unit;
 	int *rgb;
-	double dlon, x1, x2, dummy, a, b, tx, ty, off, f_len, a_len, x_left, bar_length, x_label, y_label;
+	double dlon, x1, x2, y1, y2, a, b, tx, ty, off, f_len, a_len, x_left, bar_length, x_label, y_label;
 	double xx[4], yy[4], bx[4], by[4], zz, base, d_base, width, half, bar_width, dx, dx_f, dx_a;
 	char txt[GMT_LONG_TEXT], *this_label;
 	char label[4][16], units[4][3];
@@ -2829,9 +2829,9 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 
 	dlon = 0.5 * bar_length * 1000.0 / (project_info.M_PR_DEG * cosd (ms->scale_lat));
 
-	GMT_geoz_to_xy (project_info.central_meridian - dlon, ms->scale_lat, project_info.z_level, &x1, &dummy);
-	GMT_geoz_to_xy (project_info.central_meridian + dlon, ms->scale_lat, project_info.z_level, &x2, &dummy);
-	width = x2 - x1;
+	GMT_geoz_to_xy (project_info.central_meridian - dlon, ms->scale_lat, project_info.z_level, &x1, &y1);
+	GMT_geoz_to_xy (project_info.central_meridian + dlon, ms->scale_lat, project_info.z_level, &x2, &y2);
+	width = hypot (x2 - x1, y2 - y1);
 	half = 0.5 * width;
 	a_len = fabs (gmtdefs.map_scale_height);
 	off = a_len + 0.75 * gmtdefs.annot_offset[0];

@@ -1,11 +1,16 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.679 2010-01-05 03:49:47 guru Exp $
+	$Id: ChangeLog,v 1.680 2010-01-05 23:37:57 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-01-05	pwessel
+	* gmt_plot.c:		Calculation of actual width of map scale in pscoast/psbasemap
+				did not anticipate using -E for 3-D perspective and got
+				wrong width sometimes with a negative sign.
 2010-01-04	pwessel
 	* spotter/grdrotater.c:	Bug in node index gave no longitudinal variation in rotated
 				grid.
 	* example 30 added.
+	* borders:		Added the Nunavut province boundary in Canada
 
 2009-12-15	pwessel
 	* gmtdfaults:		Added BASEMAP_TYPE = graph for linear projections to

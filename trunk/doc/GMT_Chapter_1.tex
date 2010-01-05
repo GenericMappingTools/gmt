@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.138 2010-01-05 03:50:39 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.139 2010-01-05 23:37:57 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -41,6 +41,7 @@ for some time after \GMT 5 is released later this year
 This is mostly another bug-fix release, including one that required us to add more meta-data
 to the GSHHS coastline netCDF files.  Therefore, this version requires GSHHS 2.0.2 or higher.
 As was the case for 4.5.1, note that the GSHHS polygons themselves have not changed (still at version 2.0).
+We also added in the relatively recent Nunavut province boundary in Canada.
 However, some enhancements were added as well, most notably a new {\bf graph} frame mode for linear
 projections (to add arrow heads to math axes) and a new symbol in \GMTprog{psxy.c} (to draw a
 circular arrow used to indicate angles); these capabilities are shown in a new and final example 30.
@@ -59,7 +60,8 @@ Here is the list of bug corrections:
 		if GMT\_DATADIR was always a single entity (as in the past). Opened file with \GMTfunc{fopen} but closed with \GMTfunc{GMT\_fclose}.
 		Bug in the parsing of \Opt{Jg}{\it lon/lat/radius/lat}.
 	\item [\GMTprog{gmt\_mgg\_header2}]:	Opened file with \GMTfunc{GMT\_fopen} but closed with \GMTfunc{fclose}.
-	\item [\GMTprog{gmt\_plot.c}]:	\GMTfunc{qsort} of GMT\_LONGs was passed int arrays.
+	\item [\GMTprog{gmt\_plot.c}]:	\GMTfunc{qsort} of GMT\_LONGs was passed int arrays.  The calculation
+		of the actual plot width of a map scale did not account for the effect of a 3-D view angle.
 	\item [\GMTprog{gmt\_shore.c}]:		Changes to accommodate new GSHHS2.0.2 netCDF files
 		which needed more metadata to properly compute the
 		level of tile corners after features where dropped
