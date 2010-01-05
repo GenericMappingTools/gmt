@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.136 2010-01-05 01:15:44 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.137 2010-01-05 03:49:47 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -27,16 +27,99 @@ Please send your comments to
 
 \section{What is new in \gmt\ 4.x?}
 
-\GMT\ 4.x continues to see both development of new features as well as corrections of
-legacy bugs and problems.  It is likely we will continue to do so for a while until we
-reach a stable point from which we can initiate the \GMT\ 5 development branch.  \GMT\ 5
+\GMT\ 4.x has continued to see both development of new features as well as corrections of
+legacy bugs and problems.  However, the \GMT\ 4.5.2 release is the last in the series to
+involve new options and enhancements.  Beginning with \GMT 4.5.3 there will only be bug-fixes
+in the new releases as all development is now focussed on \GMT\ 5; this new series
 will be distinguished by being completely restructured so as to allow developers to call
 high-level \GMT\ processes from a variety of programming environments.  Below is a brief
-history of the development milestones in the 4.x series.
+history of the development milestones in the 4.x series.  We expect to maintain the \GMT 4 series
+for some time after \GMT 5 is released later this year
+
+\subsection{Overview of \gmt\ 4.5.2 [Jan-15, 2010]}
+
+This is mostly another bug-fix release, including one that required us to add more meta-data
+to the GSHHS coastline netCDF files.  Therefore, this version requires GSHHS 2.0.2 or higher.
+As was the case for 4.5.1, note that the GSHHS polygons themselves have not changed (still at version 2.0).
+However, some enhancements were added as well, most notably a new {\bf graph} frame mode for linear
+projections (to add arrow heads to math axes) and a new symbol in \GMTprog{psxy.c} (to draw a
+circular arrow used to indicate angles).
+
+Here is the list of bug corrections:
+\begin{description}
+	\item [\GMTprog{configure}]:	Fixed bug with --rpath.
+	\item [\GMTprog{gmt\_customio.c}]:	Fixed bug resulting from releasing the pointer to from\_gdalread
+		structure before its members.
+	\item [\GMTprog{gmt\_gdalread.c}]:	Force computation of min/max since metadata info may be wrong.
+	\item [\GMTprog{gmt\_grdio.c}]:	\GMTfunc{GMT\_read\_img} did not apply swab if little-endian architecture.
+	\item [\GMTprog{gmt\_io.c}]:	\GMTfunc{GMT\_access} did not check for NULL filename.
+	\item [\GMTprog{gmt\_init.c}]:	Now guards against getting a negative hash value, which happened
+		when text was Russian language codes from ru.d.  If GMT\_DATADIR was set to a list of colon-separated dirs
+		then then init failed since we tried to check access as
+		if GMT\_DATADIR was always a single entity (as in the past). Opened file with \GMTfunc{fopen} but closed with \GMTfunc{GMT\_fclose}.
+		Bug in the parsing of \Opt{Jg}{\it lon/lat/radius/lat}.
+	\item [\GMTprog{gmt\_mgg\_header2}]:	Opened file with \GMTfunc{GMT\_fopen} but closed with \GMTfunc{fclose}.
+	\item [\GMTprog{gmt\_plot.c}]:	\GMTfunc{qsort} of GMT\_LONGs was passed int arrays.
+	\item [\GMTprog{gmt\_shore.c}]:		Changes to accommodate new GSHHS2.0.2 netCDF files
+		which needed more metadata to properly compute the
+		level of tile corners after features where dropped
+		due to size, etc.
+	\item [\GMTprog{gmtconvert.c}]:	The \Opt{S} option failed for actual matches; the 2009/5/26
+		change screwed that up.  Now fixed and tested.
+	\item [\GMTprog{grdcontour.c}]:	The \Opt{Q} option should only apply to closed contours, and
+		\Opt{T} failed to find an inside point for some oblique projections.
+	\item [\GMTprog{grdgradient.c}]:	Now, \Opt{Lg} will imply \Opt{fg} to properly set geographic units.
+		Fixed bug where the gradient at the south pole was not replicated to x = east.
+	\item [\GMTprog{grdlandmask.c}]:	Round-off and bug caused missing nodes for \Opt{F} with \Opt{Rd}.
+	\item [\GMTprog{grdtrack.c}]:	The \Opt{Z} option gave z-values a longitude formatting, including 360-degree wrapping.
+	\item [\GMTprog{pslib.c}]:	Ellipse was wrongly dimensioned by semi-major and semi-
+		minor axes, instead of major and minor axes.  Also, memory never got freed by \GMTfunc{ps\_free}.
+	\item [\GMTprog{mapproject.c}]:	The \Opt{S} option failed after recent i/o makeover.
+	\item [\GMTprog{psrose.c}]:	Needed to set scale to 1 so the bounding box
+		calculations would be correct for EPS output.
+	\item [\GMTprog{psxy.c}]:	Incorrectly drew tips at plot boundary when clipping error bars.
+	\item [\GMTprog{psxyz.c}]:	Fixed bug in distance sorting (also made much simpler).
+	\item [\GMTprog{imgsrc/img2google}]:	One \GMTprog{gmtmath} call did not have the required \Opt{Q}.
+	\item [\GMTprog{mgd77/mgd77sniffer.c}]:	SEGV when an array index was allowed to become -1.
+	\item [\GMTprog{misc/gmt2kml.c}]:	Removed rogue newline before writing coordinates and an additional $>$ in a tag.
+	\item [\GMTprog{misc/gmtstitch.c}]:	NULL segment headers were passed to strcpy() to give SEGV; also
+		fixed output message when \Opt{C} was used and only one segment was present.
+	\item [\GMTprog{misc/kml2gmt.c}]:	Mix of \GMTfunc{fopen} and \GMTfunc{GMT\_fclose} not good under Windoze.
+	\item [\GMTprog{sph/sphinterpolate.c}]:	Bad index on line 317 went outside array limit.  Also did not initialize the grid header properly.
+	\item [\GMTprog{sph/sphdistance.c}]:	Did not initialize the grid header properly.
+	\item [\GMTprog{spotter/backtracker.c}]:	When \Opt{L} is set, \Opt{mo} must be turned on automatically
+		even if \Opt{m} is not set.
+	\item [\GMTprog{spotter/grdrotater.c}]:	Bug in node index resulted in no longitudinal variation in the rotated grid.
+	\item [\GMTprog{x2sys/x2sys\_init.c}]:	Did not accept \Opt{m}, only the old \Opt{M}.
+	\item [\GMTprog{x2sys/x2sys\_datalist.c}]:	Did not retrieve the correct data columns when \Opt{F} was used.
+	\item [\GMTprog{x2sys/x2sys\_list.c}]:	Weights were not written out when names were selected as well, as in \Opt{Fncw}.
+\end{description}
+
+Here is a list of the recent enhancement to various programs:
+
+\begin{enumerate}
+	\item \GMTprog{fitcircle.c} will let \Opt{S} optionally take a latitude instead of finding
+		the best-fitting latitude [Default].
+	\item \GMTprog{gmtdefaults.c} has new BASEMAP\_TYPE = graph option for linear projections that wish to
+		have their axes extended 7.5\%, ending in arrow heads.
+	\item \GMTprog{psxy.c} now has a new symbol \Opt{Sm} option for math angle, which lets
+		user draw a circular arc with optional curved arrow
+		heads at none, one, or both ends.
+	\item \GMTprog{psxyz.c} also has the new symbol \Opt{Sm} option but does not draw the arrow heads yet.
+	\item \GMTprog{mgd77/mgd77manage.c} adds attribute array of TZ corrections for the few cruises
+		that stored TZ and local time instead of UTC time.
+	\item \GMTprog{spotter/rotconverter.c} has new option \Opt{E} to reduce stage pole opening
+		angles by {\it fact} [0.5] (i.e., to get half-spreading rates).
+	\item \GMTprog{x2sys/x2sys.c} now lets x2sys programs automatically strip off extensions for tracks given via list files.
+		Also, various lists can contain header records.
+	\item \GMTprog{x2sys/x2sys\_get.c} has new option \Opt{E} to select extensions on output, and \Opt{Q}[{\bf i$|$e}] to be used with \Opt{L}.
+	Finally, \Opt{D} now only lists track names.
+	\item \GMTprog{x2sys/x2sys\_solve.c} has new option \Opt{Z} to remove smallest dist/time for \Opt{E}{\bf d$|$t}.
+\end{enumerate}
 
 \subsection{Overview of \gmt\ 4.5.1 [Sept-20, 2009]}
 
-This is almost entirely a but-fix release where we address several 64-bit incompatibilities and
+This is almost entirely a bug-fix release where we address several 64-bit incompatibilities and
 rebuild the netcdf GSHHS library to include some attributes from GSHHS that were needed
 by new options in \GMTprog{pscoast} and other programs.  Note that the GSHHS polygons have not changed (still
 at version 2.0), but we had to update the derived netcdf repackaging used by \GMT\ to 2.0.1.

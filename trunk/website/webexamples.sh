@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.23 2009-09-20 03:53:30 guru Exp $
+#	 $Id: webexamples.sh,v 1.24 2010-01-05 03:49:47 guru Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -20,7 +20,7 @@
 #	gmt/examples/example_??_100dpi.png (using ps2raster)
 #-----------------------------------------------------------------------------
 
-n_examples=29
+n_examples=30
 
 GMT050dpi="ps2raster -E50 -Tg -P"
 GMT100dpi="ps2raster -E100 -Tg -P"

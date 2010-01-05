@@ -1,10 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.678 2010-01-05 01:15:43 guru Exp $
+	$Id: ChangeLog,v 1.679 2010-01-05 03:49:47 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-01-04	pwessel
 	* spotter/grdrotater.c:	Bug in node index gave no longitudinal variation in rotated
 				grid.
+	* example 30 added.
 
 2009-12-15	pwessel
 	* gmtdfaults:		Added BASEMAP_TYPE = graph for linear projections to
@@ -124,7 +125,7 @@
 	* misc/kml2gmt.c:	Mix of fopen and GMT_fclose not good under Windoze
 
 2009-10-09	pwessel
-	* gmtinit.c:		If GMT_DATADIR was set to a list of colon-separated dirs
+	* gmt_init.c:		If GMT_DATADIR was set to a list of colon-separated dirs
 				then then init failed since we tried to check access as
 				if GMT_DATADIR was always a single entity (as in the past).
 
