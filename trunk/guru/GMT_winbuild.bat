@@ -1,5 +1,5 @@
 ECHO OFF
-REM	$Id: GMT_winbuild.bat,v 1.28 2009-09-16 03:20:08 guru Exp $
+REM	$Id: GMT_winbuild.bat,v 1.29 2010-01-08 21:35:19 guru Exp $
 REM	Compiles GMT and builds installers under Windows.
 REM	See separate GSHHS_winbuild.bat for GSHHS full+high installer
 REM	Paul Wessel with help from Joaquim Luis
@@ -15,14 +15,15 @@ REM	   to its command line tool is added to PATH
 REM	6. 7zip has been installed and the path
 REM	   to its command line tool is added to PATH
 
-SET GVER=4.5.1
+SET GVER=4.5.2
+SET GSHHS=2.0.2
 
 echo === 1. Get all GMT%GVER% bzipped tar balls and extract files...
 
 C:
 cd \
 copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GMT%GVER%*.tar.bz2 C:\
-copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS2.0.1_*.tar.bz2 C:\
+copy Y:\UH\RESEARCH\PROJECTS\GMTdev\GMT\ftp\GSHHS%GSHHS%_*.tar.bz2 C:\
 7z x GMT*.tar.bz2
 7z x GSHHS*.tar.bz2
 7z x GMT*.tar -aoa
@@ -55,7 +56,7 @@ cd C:\GMT
 echo === 4. Remove all the examples PS files...
 
 cd C:\GMT\share\doc\gmt\examples
-for %%d in (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29) do del ex%%d\*.ps
+for %%d in (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30) do del ex%%d\*.ps
 cd C:\GMT
 
 echo === 5. Build the GMT Basic installer...

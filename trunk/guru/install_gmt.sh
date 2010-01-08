@@ -1,16 +1,16 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.154 2009-10-23 18:32:37 remko Exp $
+#	$Id: install_gmt.sh,v 1.155 2010-01-08 21:35:19 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
 #
 #	Paul Wessel
-#	9-Sept-2009
+#	9-Jan-2010
 #--------------------------------------------------------------------------------
 # GLOBAL VARIABLES
 NETCDF_VERSION=3.6.3
-VERSION=4.5.1
-GSHHS=2.0.1
+VERSION=4.5.2
+GSHHS=2.0.2
 GMT_FTP_TEST=0
 #--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
@@ -1369,6 +1369,10 @@ cat << EOF >&2
 For sh or bash users:
 export NETCDFHOME=$NETCDFHOME
 export PATH=$GMT_bin:\$PATH
+
+Note: if you installed netCDF as a shared library you may have to add
+the path to this library to LD_LIBRARY_PATH or place the library in a
+standard system path [see information on shared library for your OS].
 EOF
 if [ "$GMT_sharedir" != "$GMT_share" ]; then
 	echo export GMT_SHAREDIR=$GMT_sharedir >&2

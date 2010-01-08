@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.77 2009-10-23 18:32:37 remko Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.78 2010-01-08 21:35:19 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.77 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.78 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -262,12 +262,12 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 
 <I><P>
 Note: The installation will install all GMT components in several subdirectories
-under one root directory.  By default, GMT will be installed under GMT4.5.1
+under one root directory.  By default, GMT will be installed under GMT4.5.2
 in the current working directory where install_gmt is run.
 On most Unix systems, however, the preferred location of the root directory will be
 something like /usr/local or /sw, under which the installation will add
 bin, lib, include, share, share/man, and share/doc/gmt, respectively.
-To select another location for the root directory than the default (GMT4.5.1),
+To select another location for the root directory than the default (GMT4.5.2),
 specify it in the first box above, or enter subdirectories individually.
 Only specify alternative directories if you want to place the files elsewhere. 
 <P>

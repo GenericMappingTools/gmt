@@ -1,4 +1,4 @@
-#	$Id: RELEASE.HOWTO,v 1.25 2009-09-20 01:57:18 guru Exp $
+#	$Id: RELEASE.HOWTO,v 1.26 2010-01-08 21:35:19 guru Exp $
 #
 #		FOR 4.x SERIES
 
@@ -34,7 +34,7 @@ must ensure you do all the steps listed below:
 
 5.  In GMT/website:
     a) Update gmt_arrrghh.html, gmt_faq.html,
-       gmt_install_form.html, gmt_news.html, gmt_releases.html
+       gmt_install_form.html, gmt_news.html, gmt_releases_template.html
     b) create web examples:
        make web
     c) test the update of ftp and web sites locally:
@@ -46,7 +46,7 @@ must ensure you do all the steps listed below:
 If still good to go:
 
 6.  Tag the release(s), e.g.
-    cvs -q tag Release_2007_10_08_GMT_4_2_1
+    cvs -q tag Release_2010_01_15_GMT_4_5_2
 
 7.  Prepare the archives:
     make archive >& log
@@ -54,7 +54,7 @@ If still good to go:
 8.  Determine file sizes of all archives and update these values
     in guru/install_gmt and website/gmt_install_form.html
 
-9.  Run GMT_winbuild.bat under Parallels which will build
+9.  Edit the *.iss files and run GMT_winbuild.bat under Parallels which will build
     the three Windows installers and place them in GMT/ftp.
 
 10. Release the new version with make update-version-live.

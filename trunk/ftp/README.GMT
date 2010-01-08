@@ -1,8 +1,8 @@
-	$Id: README.GMT,v 1.30 2009-09-20 02:26:03 guru Exp $
+	$Id: README.GMT,v 1.31 2010-01-08 21:35:19 guru Exp $
 
 Dear potential GMT users-
 
-Version 4.5.1 of GMT has recently been released.
+Version 4.5.2 of GMT has recently been released.
 GMT can be installed under Unix or Windows.
 
 For new installers of GMT under a Unix-like OS:
@@ -19,7 +19,7 @@ you will need are:
 
 GMT_src.tar.bz2		All source code
 GMT_share.tar.bz2	Support run-time files (patterns, cpt)
-GSHHS_coast.tar.bz2	Basic GSHHS 2.0.1 coastlines
+GSHHS_coast.tar.bz2	Basic GSHHS 2.0.2 coastlines
 install_gmt		Bourne shell install script
 
 In addition, you may want
