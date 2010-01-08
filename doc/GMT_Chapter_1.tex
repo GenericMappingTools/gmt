@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.140 2010-01-08 00:00:34 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.141 2010-01-08 21:35:19 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -44,13 +44,13 @@ As was the case for 4.5.1, note that the GSHHS polygons themselves have not chan
 We also added in the relatively recent Nunavut province boundary in Canada.
 However, some enhancements were added as well, most notably a new {\bf graph} frame mode for linear
 projections (to add arrow heads to math axes) and a new symbol in \GMTprog{psxy.c} (to draw a
-circular arrow used to indicate angles); these capabilities are shown in a new and final example 30.
+circular arrow used to indicate angles); these capabilities are demonstrated in a new (and final) example 30.
 
 Here is the list of bug corrections:
 \begin{description}
 	\item [\GMTprog{configure}]:	Fixed bug with --rpath.
 	\item [\GMTprog{gmt\_customio.c}]:	Fixed bug resulting from releasing the pointer to from\_gdalread
-		structure before its members.
+		structure before its members were freed.
 	\item [\GMTprog{gmt\_gdalread.c}]:	Force computation of min/max since metadata info may be wrong.
 	\item [\GMTprog{gmt\_grdio.c}]:	\GMTfunc{GMT\_read\_img} did not apply swab if little-endian architecture.
 	\item [\GMTprog{gmt\_io.c}]:	\GMTfunc{GMT\_access} did not check for NULL filename.
@@ -63,8 +63,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{gmt\_plot.c}]:	\GMTfunc{qsort} of GMT\_LONGs was passed int arrays.  The calculation
 		of the actual plot width of a map scale did not account for the effect of a 3-D view angle.
 	\item [\GMTprog{gmt\_shore.c}]:		Changes to accommodate new GSHHS2.0.2 netCDF files
-		which needed more metadata to properly compute the
-		level of tile corners after features where dropped
+		which needed more metadata to properly compute the level of tile corners after features where dropped
 		due to size, etc.
 	\item [\GMTprog{gmtconvert.c}]:	The \Opt{S} option failed for actual matches; the 2009/5/26
 		change screwed that up.  Now fixed and tested.
@@ -79,7 +78,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{mapproject.c}]:	The \Opt{S} option failed after recent i/o makeover.
 	\item [\GMTprog{psrose.c}]:	Needed to set scale to 1 so the bounding box
 		calculations would be correct for EPS output.
-	\item [\GMTprog{psxy.c}]:	Incorrectly drew tips at plot boundary when clipping error bars.
+	\item [\GMTprog{psxy.c}]:	Incorrectly drew tips at plot boundary when clipping the error bars.
 	\item [\GMTprog{psxyz.c}]:	Fixed bug in distance sorting (also made much simpler).
 	\item [\GMTprog{imgsrc/img2google}]:	One \GMTprog{gmtmath} call did not have the required \Opt{Q}.
 	\item [\GMTprog{mgd77/mgd77sniffer.c}]:	SEGV when an array index was allowed to become -1.
@@ -92,7 +91,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{spotter/backtracker.c}]:	When \Opt{L} is set, \Opt{mo} must be turned on automatically
 		even if \Opt{m} is not set.
 	\item [\GMTprog{spotter/grdrotater.c}]:	Bug in node index resulted in no longitudinal variation in the rotated grid.
-	\item [\GMTprog{x2sys/x2sys\_init.c}]:	Did not accept \Opt{m}, only the old \Opt{M}.
+	\item [\GMTprog{x2sys/x2sys\_init.c}]:	Did not accept \Opt{m}, only the now obsolete \Opt{M}.
 	\item [\GMTprog{x2sys/x2sys\_datalist.c}]:	Did not retrieve the correct data columns when \Opt{F} was used.
 	\item [\GMTprog{x2sys/x2sys\_list.c}]:	Weights were not written out when names were selected as well, as in \Opt{Fncw}.
 \end{description}
@@ -100,18 +99,17 @@ Here is the list of bug corrections:
 Here is a list of the recent enhancement to various programs:
 
 \begin{enumerate}
-	\item \GMTprog{fitcircle.c} will let \Opt{S} optionally take a latitude instead of finding
+	\item \GMTprog{fitcircle.c} will let \Opt{S} optionally take a fixed latitude instead of finding
 		the best-fitting latitude [Default].
-	\item \GMTprog{gmtdefaults.c} has new BASEMAP\_TYPE = graph option for linear projections that wish to
+	\item \GMTprog{gmtdefaults.c} has new {bf BASEMAP\_TYPE} = {\it graph} option for linear projections that wish to
 		have their axes extended 7.5\%, ending in arrow heads.
 	\item \GMTprog{psxy.c} now has a new symbol \Opt{Sm} option for math angle, which lets
-		user draw a circular arc with optional curved arrow
-		heads at none, one, or both ends.
-	\item \GMTprog{psxyz.c} also has the new symbol \Opt{Sm} option but does not draw the arrow heads yet.
+		user draw a circular arc with optional curved arrow heads at neither, one, or both ends.
+	\item \GMTprog{psxyz.c} also has the new symbol \Opt{Sm} option but does not draw the curved arrow heads yet.
 	\item \GMTprog{mgd77/mgd77manage.c} adds attribute array of TZ corrections for the few cruises
 		that stored TZ and local time instead of UTC time.
 	\item \GMTprog{spotter/rotconverter.c} has new option \Opt{E} to reduce stage pole opening
-		angles by {\it fact} [0.5] (i.e., to get half-spreading rates).
+		angles by {\it fact} [0.5] (e.g., to get half-spreading rates).
 	\item \GMTprog{x2sys/x2sys.c} now lets x2sys programs automatically strip off extensions for tracks given via list files.
 		Also, various lists can contain header records.
 	\item \GMTprog{x2sys/x2sys\_get.c} has new option \Opt{E} to select extensions on output, and \Opt{Q}[{\bf i$|$e}] to be used with \Opt{L}.

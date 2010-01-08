@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.42 2009-09-10 08:32:26 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.43 2010-01-08 21:35:20 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -98,14 +98,14 @@ chop($now);
 open (FILE, ">" . $OUT) || die "Sorry, cound not create tmp file\n";
 print FILE <<EOF;
 # This file contains parameters needed by the install script
-# install_gmt for GMT Version 4.5.0.  Give this file
+# install_gmt for GMT Version 4.5.2.  Give this file
 # as the argument to the install_gmt script and the whole
 # installation process can be placed in the background.
 # Default answers will be selected where none is given.
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.42 $, on
+# Processed by install_gmt_form.pl $Revision: 1.43 $, on
 #
 #	$now
 #
