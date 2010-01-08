@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.141 2010-01-08 21:35:19 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.142 2010-01-08 22:12:09 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -56,7 +56,7 @@ Here is the list of bug corrections:
 	\item [\GMTprog{gmt\_io.c}]:	\GMTfunc{GMT\_access} did not check for NULL filename.
 	\item [\GMTprog{gmt\_init.c}]:	Now guards against getting a negative hash value, which happened
 		when text was Russian language codes from ru.d.  If GMT\_DATADIR was set to a list of colon-separated dirs
-		then then init failed since we tried to check access as
+		then init failed since we tried to check access as
 		if GMT\_DATADIR was always a single entity (as in the past). Opened file with \GMTfunc{fopen} but closed with \GMTfunc{GMT\_fclose}.
 		Bug in the parsing of \Opt{Jg}{\it lon/lat/radius/lat}.
 	\item [\GMTprog{gmt\_mgg\_header2}]:	Opened file with \GMTfunc{GMT\_fopen} but closed with \GMTfunc{fclose}.
@@ -101,7 +101,7 @@ Here is a list of the recent enhancement to various programs:
 \begin{enumerate}
 	\item \GMTprog{fitcircle.c} will let \Opt{S} optionally take a fixed latitude instead of finding
 		the best-fitting latitude [Default].
-	\item \GMTprog{gmtdefaults.c} has new {bf BASEMAP\_TYPE} = {\it graph} option for linear projections that wish to
+	\item \GMTprog{gmtdefaults.c} has new {\bf BASEMAP\_TYPE} = {\it graph} option for linear projections that wish to
 		have their axes extended 7.5\%, ending in arrow heads.
 	\item \GMTprog{psxy.c} now has a new symbol \Opt{Sm} option for math angle, which lets
 		user draw a circular arc with optional curved arrow heads at neither, one, or both ends.
