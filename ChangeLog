@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.684 2010-01-09 03:03:38 guru Exp $
+	$Id: ChangeLog,v 1.685 2010-01-09 03:17:33 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -9,7 +9,7 @@
 
 2010-01-08	jluis
 	* gmt_support.c:	Increase the size of the variable that contains the path to
-				a CPT file and the pathname to 256 bytes.
+				a CPT file and the pathname to BUFSIZ bytes.
 
 2010-01-07	pwessel
 	* borders:		Added the Nunavut province boundary in Canada (land only)

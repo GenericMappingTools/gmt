@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.434 2010-01-08 23:57:54 jluis Exp $
+ *	$Id: gmt_support.c,v 1.435 2010-01-09 03:17:34 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1412,8 +1412,7 @@ void GMT_RI_prepare (struct GRD_HEADER *h)
 
 GMT_LONG GMT_set_cpt_path (char *CPT_file, char *table)
 {
-	char stem[GMT_LONG_TEXT];
-	char *l, *ok;
+	char stem[BUFSIZ], *l, *ok;
 
 	/* Try table[.cpt] */
 	strcpy (stem, table);
