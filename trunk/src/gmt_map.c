@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.244 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_map.c,v 1.245 2010-01-09 20:55:30 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5043,7 +5043,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
 		for (i = 1; i < n; i++) {	/* For each line segment */
 			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
-			if (cross && curved) {	/* When crossing in/out of a curved boundary we must eventually sample along the curve between crossings */
+			if (polygon && cross && curved) {	/* When crossing in/out of a curved boundary we must eventually sample along the curve between crossings */
 				x_index[n_cross] = m;		/* Index of intersection point (which will be copied from xx[0], yy[0] below) */
 				x_type[n_cross] = cross;	/* -1 going out, +1 going in */
 				if (++n_cross == n_x_alloc) n_x_alloc = GMT_alloc_memory2 ((void **)&x_index, (void **)&x_type, n_cross, n_x_alloc, sizeof (GMT_LONG), "GMT_wesn_clip");
@@ -5057,7 +5057,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 			if (m == n_alloc) n_alloc = GMT_alloc_memory4 ((void **)&xtmp[0], (void **)&ytmp[0], (void **)&xtmp[1], (void **)&ytmp[1], m, n_alloc, sizeof (double), "GMT_wesn_clip");
 			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
 		}
-		if (curved && n_cross) {	/* Must resample between crossing points */
+		if (polygon && curved && n_cross) {	/* Must resample between crossing points */
 			double *x_add, *y_add, *x_cpy, *y_cpy;
 			GMT_LONG add, np = 0, last_index = 0;
 			GMT_LONG p, p_next;
