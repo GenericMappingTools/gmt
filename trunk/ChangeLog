@@ -1,11 +1,15 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.682 2010-01-08 21:37:32 guru Exp $
+	$Id: ChangeLog,v 1.683 2010-01-09 00:07:38 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
 2010-01-15	pwessel
 	* GMT 4.5.2 finalized and released
 -----------------------------------------------------------------------------------------
+
+2010-01-08	jluis
+	* gmt_support.c:	Increase the size of the variable that contains the path to
+				a CPT file and the pathname to 256 bytes.
 
 2010-01-07	pwessel
 	* borders:		Added the Nunavut province boundary in Canada (land only)
