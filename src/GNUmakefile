@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.87 2009-11-16 15:50:39 remko Exp $
+#  $Id: GNUmakefile,v 1.88 2010-01-09 03:03:39 guru Exp $
 #
 #	GNUmakefile for GMT Version 4.x src directory
 #
@@ -51,7 +51,7 @@ uninstall2-suppl:
 FILES = gmt_ellipsoids.h gmt_datums.h Ellipsoids.i Fonts.i gmt_grdformats.h grdreformat.h gmt_keywords.h gmt_keycases.h \
 	Colors.i gmt_color_rgb.h gmt_colornames.h gmt_dimensions.h grdinfo.h \
 	gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i \
-	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i grdreformat_man.i
+	grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i grdreformat_man.i explain_-I_via_D.txt
 
 gmtmacros FILES:	$(FILES)
 
@@ -143,6 +143,11 @@ gmtmath.h gmtmath_def.h gmtmath_explain.h gmtmath_man.i:	make_math.sh gmtmath.c
 
 grdmath.h grdmath_def.h grdmath_explain.h grdmath_man.i:	make_math.sh grdmath.c
 			$(SHELL) make_math.sh grd
+
+# grdproject uses -D for increments since -I there means inverse.  Build it from explain_-I.txt
+
+explain_-I_via_D.txt:	explain_-I.txt
+			sed -e 's/OPT(I)/OPT(D)/g' explain_-I.txt > explain_-I_via_D.txt
 
 # When doing "spotless" make sure at least a dummy config.mk exists.
 
