@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.143 2010-01-09 03:03:38 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.144 2010-01-09 03:17:33 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -66,7 +66,7 @@ Here is the list of bug corrections:
 		which needed more metadata to properly compute the level of tile corners after features where dropped
 		due to size, etc.
 	\item [\GMTprog{gmt\_support.c}]:	Increase the size of the variable that contains the path to
-		a CPT file and the pathname to 256 bytes
+		a CPT file and the pathname to BUFSIZ bytes.
 	\item [\GMTprog{gmtconvert.c}]:	The \Opt{S} option failed for actual matches; the 2009/5/26
 		change screwed that up.  Now fixed and tested.
 	\item [\GMTprog{grdcontour.c}]:	The \Opt{Q} option should only apply to closed contours, and
