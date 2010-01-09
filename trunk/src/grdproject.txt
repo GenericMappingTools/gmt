@@ -45,9 +45,7 @@ OPT(C)
 Let projected coordinates be relative to projection center [Default is relative to lower left corner].
 Optionally, add offsets in the projected units to be added (or subtracted when OPT(I) is set) to (from)
 the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
-.TP
-OPT(D)
-Set the grid spacing for the new grid.  Append \fBm\fP for minutes, \fBc\fP for seconds.
+#include "explain_-I_via_D.txt"
 .TP
 OPT(E)
 Set the resolution for the new grid in dots per inch.

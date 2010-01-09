@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.683 2010-01-09 00:07:38 jluis Exp $
+	$Id: ChangeLog,v 1.684 2010-01-09 03:03:38 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -13,6 +13,7 @@
 
 2010-01-07	pwessel
 	* borders:		Added the Nunavut province boundary in Canada (land only)
+	* grdproject.txt:	Now has better explanation for -D (same as -I in other progs)
 	
 2010-01-05	pwessel
 	* gmt_plot.c:		Calculation of actual width of map scale in pscoast/psbasemap
