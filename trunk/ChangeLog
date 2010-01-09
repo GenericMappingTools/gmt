@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.685 2010-01-09 03:17:33 guru Exp $
+	$Id: ChangeLog,v 1.686 2010-01-09 03:29:27 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -10,6 +10,7 @@
 2010-01-08	jluis
 	* gmt_support.c:	Increase the size of the variable that contains the path to
 				a CPT file and the pathname to BUFSIZ bytes.
+	* surface.c:		Eliminate 2nd sort when no change in throw_away_unusables.
 
 2010-01-07	pwessel
 	* borders:		Added the Nunavut province boundary in Canada (land only)
