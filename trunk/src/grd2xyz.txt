@@ -3,7 +3,7 @@
 .SH NAME
 grd2xyz \- Converting grid file(s) to ASCII or binary data
 .SH SYNOPSIS
-\fBgrd2xyz\fP \fIgrdfiles\fP [ OPT(E)[\fInodata\fP] ] [ GMT_H_OPT ] [ GMT_Rgeo_OPT ] 
+\fBgrd2xyz\fP \fIgrdfiles\fP [ OPT(E)[\fInodata\fP] ] [ GMT_H_OPT ] [ OPT(N)\fInodata\fP ] [ GMT_Rgeo_OPT ] 
 [ OPT(S)[\fBr\fP] ] [ GMT_V_OPT ] [ OPT(W)[\fIweight\fP] ] [ OPT(Z)[\fIflags\fP] ] 
 [ GMT_bo_OPT ] [ GMT_fo_OPT ]
 .SH DESCRIPTION
@@ -26,6 +26,9 @@ the grid value equals NaN [-9999].  Note that all data values are written as int
 OPT(H)
 Output 1 header record based on information in the first grid file header.
 Ignored if binary output is selected.  [Default is no header].
+.TP
+OPT(N)
+Output this z-value where the latter equals NaN [Default writes NaN].
 #include "explain_-R.txt" 
 Using the OPT(R) option will select a subsection of the grid. If this subsection exceeds the
 boundaries of the grid, only the common region will be output.
