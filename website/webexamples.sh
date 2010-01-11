@@ -1,6 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-#	 $Id: webexamples.sh,v 1.24 2010-01-05 03:49:47 guru Exp $
+#	 $Id: webexamples.sh,v 1.25 2010-01-11 20:56:46 guru Exp $
 #
 #	webexamples.sh - Automatic generation of the GMT examples pages
 #
@@ -146,6 +146,9 @@ surfaces.</A></LI>
 
 <LI>
 <A HREF="examples/ex29/gmt_example_29.html">Spherical surface gridding using Green's functions.</A></LI>
+
+<LI>
+<A HREF="examples/ex30/gmt_example_30.html">A simple math graph with curved arrow.</A></LI>
 </OL>
 </BODY>
 </HTML>
