@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.426 2010-01-11 01:55:16 guru Exp $
+ *	$Id: gmt_init.c,v 1.427 2010-01-11 16:21:55 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3935,7 +3935,6 @@ GMT_LONG GMT_history (int argc, char ** argv)
 				continue;
 			}
 			if (line[0] != '-') continue;	/* Possibly reading old .gmtcommands4 format or junk */
-			line[strlen(line)-1] = 0;
 			GMT_oldargv[GMT_oldargc] = strdup (line);
 			if (GMT_oldargv[GMT_oldargc][1] == 'j') old_j = GMT_oldargv[GMT_oldargc];
 			GMT_oldargc++;
