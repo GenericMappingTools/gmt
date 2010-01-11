@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.220 2010-01-05 01:15:47 guru Exp $
+ *	$Id: pslib.c,v 1.221 2010-01-11 19:27:13 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -567,13 +567,11 @@ void ps_comment_ (char *text, int nlen)
 	ps_comment (text);
 }
 
-#define sincosd(a,s,c) sincos ((a)*D2R, s, c)
-
 void ps_matharc (double x, double y, double radius, double az1, double az2, double shape, PS_LONG status)
 {	/* 1 = add arrowhead at az1, 2 = add arrowhead at az2, 3 = at both, 0 no arrows */
 	PS_LONG ix, iy, i;
 	double p, arc_length, half_width, da, xt, yt, s, c, xr, yr, xl, yl, xo, yo;
-	double angle[2], bo1, bo2, xi, yi, bi1, bi2, xv, yv, sign[2] = {+1.0, -1.0};
+	double angle[2], A, bo1, bo2, xi, yi, bi1, bi2, xv, yv, sign[2] = {+1.0, -1.0};
 
 	ix = (PS_LONG)irint (x * PSL->internal.scale);
 	iy = (PS_LONG)irint (y * PSL->internal.scale);
@@ -587,16 +585,19 @@ void ps_matharc (double x, double y, double radius, double az1, double az2, doub
 	for (i = 0; i < 2; i++) {
 		if (status & (i+1)) {	/* Add arrow head at this angle */
 			ps_setfill (PSL->current.rgb, FALSE);
-			sincosd (angle[i], &s, &c);
+			A = D2R * angle[i];
+			s = sin (A);	c = cos (A);
 			xt = radius * c;	yt = radius * s;
-			sincosd (angle[i] + sign[i] * da, &s, &c);
+			A = D2R * (angle[i] + sign[i] * da);
+			s = sin (A);	c = cos (A);
 			xr = (radius + half_width) * c;	yr = (radius + half_width) * s;
 			xl = (radius - half_width) * c;	yl = (radius - half_width) * s;
 			get_origin (xt, yt, xr, yr, radius, &xo, &yo, &bo1, &bo2);
 			ps_arc (xo, yo, radius, bo1, bo2, 1);		/* Draw the arrow arc from tip to outside flank */
 			get_origin (xt, yt, xl, yl, radius, &xi, &yi, &bi1, &bi2);
 			ps_arc (xi, yi, radius, bi2, bi1, 0);		/* Draw the arrow arc from tip to outside flank */
-			sincosd (angle[i]+sign[i]*da*(1.0-0.5*shape), &s, &c);
+			A = D2R * (angle[i]+sign[i]*da*(1.0-0.5*shape));
+			s = sin (A);	c = cos (A);
 			xv = radius * c - xl;	yv = radius * s - yl;
 			ps_plotr (xv, yv, PSL_PEN_DRAW);
 			ps_command ("P fs os");

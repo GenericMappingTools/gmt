@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.250 2010-01-05 01:15:48 guru Exp $
+ *	$Id: mgd77.c,v 1.251 2010-01-11 19:27:13 guru Exp $
  *
  *    Copyright (c) 2005-2010 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -3666,7 +3666,7 @@ double *MGD77_Read_Column (struct MGD77_HEADER *H, int id, size_t start[], size_
 		short *tz_corr = NULL;
 		tz_corr = (short *)GMT_memory (VNULL, (size_t)H->n_records, sizeof (short), GMT_program);
 		MGD77_nc_status (nc_get_att_short (id, H->info[MGD77_M77_SET].col[0].var_id, "tz_corr", tz_corr));
-		for (k = 0; k < H->n_records; k++) values[k] -= (tz_corr[k] * GMT_HR2SEC_F);
+		for (k = 0; k < (size_t)H->n_records; k++) values[k] -= (tz_corr[k] * GMT_HR2SEC_F);
 		GMT_free ((void *)tz_corr);
 	}
 	
