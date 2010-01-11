@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.204 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_io.c,v 1.205 2010-01-11 19:48:49 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3090,7 +3090,7 @@ BOOLEAN GMT_parse_segment_item (char *in_string, char *pattern, char *out_string
 	i += strlen (pattern) + 1;	/* Position of argument */
 	if (in_string[i] == '\"') {	/* Quoted argument, must find terminal quote */
 		i++;	/* Skip passed first quote */
-		for (k = i; k < strlen (in_string) && in_string[k] != '\"'; k++);	/* Find next quote */
+		for (k = i; k < (int)strlen (in_string) && in_string[k] != '\"'; k++);	/* Find next quote */
 		strncpy (out_string, &in_string[i], (size_t)(k - i));
 		out_string[k-i] = '\0';	/* Terminate string */
 	}
