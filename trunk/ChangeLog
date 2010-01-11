@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.686 2010-01-09 03:29:27 guru Exp $
+	$Id: ChangeLog,v 1.687 2010-01-11 01:55:16 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -7,6 +7,13 @@
 	* GMT 4.5.2 finalized and released
 -----------------------------------------------------------------------------------------
 
+2010-01-10	pwessel
+	* gmt_init.c:		The .gmtcommands4 file was assumed to be in UNIX EOL format.
+				Now we strop off EOL before checking for blank lines etc.
+
+2010-01-09	pwessel
+	* gmt_map.c:		GMT_wesn_clip assumed we always were clipping a polygon when in fact
+				this depends on the application.
 2010-01-08	jluis
 	* gmt_support.c:	Increase the size of the variable that contains the path to
 				a CPT file and the pathname to BUFSIZ bytes.

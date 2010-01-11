@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.425 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_init.c,v 1.426 2010-01-11 01:55:16 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3927,7 +3927,9 @@ GMT_LONG GMT_history (int argc, char ** argv)
 
 		while (!done && fgets (line, BUFSIZ, fp)) {
 
-			if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments or blank lines */
+			if (line[0] == '#') continue;	/* Skip comments lines */
+			GMT_chop (line);		/* Get rid of EOL */
+			if (line[0] == '\0') continue;	/* Skip blank lines */
 			if (!strncmp (line, "EOF", (size_t)3)) {	/* Logical end of .gmtcommands4 file */
 				done = TRUE;
 				continue;
