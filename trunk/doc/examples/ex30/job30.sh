@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 30
-#		$Id: job30.sh,v 1.1 2010-01-05 03:49:47 guru Exp $
+#		$Id: job30.sh,v 1.2 2010-01-11 19:48:49 guru Exp $
 #
 # Purpose:	Show graph mode and math angles
 # GMT progs:	gmtmath, psbasemap, pstext and psxy
@@ -9,7 +9,7 @@
 # Draw generic x-y axes with arrows
 ps=example_30.ps
 
-psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\\232:/1g10:."Two Trigonometric Functions":WS -K \
+psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\\312:/1g10:."Two Trigonometric Functions":WS -K \
 	-U"Example 30 in Cookbook" --BASEMAP_TYPE=graph --VECTOR_SHAPE=0.5 > $ps
 
 # Draw sine an cosine curves
@@ -26,7 +26,7 @@ EOF
 pstext -R -J -O -K -Dj0.05i -N << EOF >> $ps
 360 1 18 0 4 RB x = cos(@%12%a@%%)
 360 0 18 0 4 RB y = sin(@%12%a@%%)
-120 -1.25 14 0 4 LB 120\\232
+120 -1.25 14 0 4 LB 120\\312
 370 -1.35 24 0 12 LT a
 -5 1.85 24 0 4 RT x,y
 EOF
@@ -59,7 +59,7 @@ pstext -R -J -O -K -Dj0.05i << EOF >> $ps
 -0.16666 0 12 0 4 CT x
 -0.3333 0.2888675 12 0 4 RM y
 0.22 0.27 12 -30 12 CB a
--0.33333 0.6 12 30 4 LB 120\\232
+-0.33333 0.6 12 30 4 LB 120\\312
 EOF
 
 echo 0 0 0 120 | psxy -R -J -O -Sml1i -W1p >> $ps
