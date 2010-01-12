@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.688 2010-01-11 16:56:58 guru Exp $
+	$Id: ChangeLog,v 1.689 2010-01-12 06:57:34 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -9,6 +9,8 @@
 
 2010-01-11	pwessel
 	* grd2xyz.c:		Added -N<value> to replace NaNs on output and to match xyz2grd options.
+	* gmt_support.c:	GMT_inonout_sphpol_count could count a tangent touch as a crossing if
+				the tangent point was a node point.
 
 2010-01-10	pwessel
 	* gmt_init.c:		The .gmtcommands4 file was assumed to be in UNIX EOL format.
