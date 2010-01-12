@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.56 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_shore.c,v 1.57 2010-01-12 02:50:58 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -75,7 +75,7 @@ void GMT_set_levels (char *info, struct GMT_SHORE_SELECT *I)
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
 		fprintf (stderr, "%s: Error in -A: No area given\n", GMT_program);
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
 	if (n == 1) I->low = 0, I->high = GMT_MAX_GSHHS_LEVEL;
 }
@@ -174,7 +174,7 @@ GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, doub
 		fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS2.0.2_coast.tar.bz2\n");
 		fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS2.0.2_high.tar.bz2\n");
 		fprintf (stderr, "GSHHS: ftp://ftp.soest.hawaii.edu/pwessel/GSHHS2.0.2_full.tar.bz2\n");
-		exit (EXIT_FAILURE);
+		GMT_exit (EXIT_FAILURE);
 	}
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
         GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "source", c->source));
