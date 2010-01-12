@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.145 2010-01-11 16:56:58 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.146 2010-01-12 18:01:17 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -45,7 +45,9 @@ We also added in the relatively recent Nunavut province boundary in Canada.
 However, some enhancements were added as well, most notably a new {\bf graph} frame mode for linear
 projections (to add arrow heads to math axes) and a new symbol in \GMTprog{psxy.c} (to draw a
 circular arrow used to indicate angles); these capabilities are demonstrated in a new (and final) example 30.
-
+Finally, we fixed the long-standing problem of \GMTprog{psxy} \Opt{SE} requesting major and minor axes but
+actually treating them as if they are semi-axes.  We now consistently expect and use major and minor axes;
+you may thus notice a scaling of two if you continue to give semi-major/minor axes.
 Here is the list of bug corrections:
 \begin{description}
 	\item [\GMTprog{configure}]:	Fixed bug with --rpath.
