@@ -3,8 +3,8 @@ Version: 2.0.2
 Revision: 1
 Source:  ftp://ftp.soest.hawaii.edu/gmt/GSHHS%v_full.tar.bz2
 Source2: ftp://ftp.soest.hawaii.edu/gmt/GSHHS%v_high.tar.bz2
-Source-MD5:  ef2091df5de12205190a72c9f3a6118d
-Source2-MD5: d97e36c652b8cc2cff0f6e15e260cefd
+Source-MD5:  d15b8727b38741ca2a7d777ff72a42d0
+Source2-MD5: f3602576cdad97f513b5baf3ec476f51
 Replaces: gmt-coast
 Recommends: gmt
 SourceDirectory: .
