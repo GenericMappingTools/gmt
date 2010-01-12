@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.155 2010-01-08 21:35:19 guru Exp $
+#	$Id: install_gmt.sh,v 1.156 2010-01-12 18:05:21 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -1306,7 +1306,7 @@ fi
 if [ $write_doc -eq 1 ]; then
 	if [ -d share/doc ]; then
 		$GMT_make install-doc || exit
-		echo "All users should add $GMT_doc/gmt/gmt_services.html to their browser bookmarks" >&2
+		echo "All users should add $GMT_doc/gmt/html/gmt_services.html to their browser bookmarks" >&2
 	fi
 else
 	echo "You do not have write permission to create $GMT_doc" >&2
