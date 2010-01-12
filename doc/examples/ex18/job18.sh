@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 18
-#		$Id: job18.sh,v 1.13 2009-06-27 02:36:47 remko Exp $
+#		$Id: job18.sh,v 1.14 2010-01-12 17:04:23 remko Exp $
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
@@ -25,7 +25,7 @@ grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.grd -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1
 pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> $ps
 psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -B20f10/:mGal: -O -K >> $ps
 $AWK '{print $1, $2, 12, 0, 1, "LB", "Pratt"}' pratt.d | pstext -R -J -O -K -D0.1i/0.1i >> $ps
-$AWK '{print $1, $2, 0, 200, 200}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> $ps
+$AWK '{print $1, $2, 0, 400, 400}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> $ps
 
 # Then draw 10 mGal contours and overlay 50 mGal contour in green
 
@@ -33,7 +33,7 @@ grdcontour AK_gulf_grav.nc -J -C20 -B2f1WSEn -O -K -Y-4.85i \
 	-U/-1.25i/-0.75i/"Example 18 in Cookbook" >> $ps
 grdcontour AK_gulf_grav.nc -J -C10 -L49/51 -O -K -Dsm -Wcthin,green >> $ps
 pscoast -R -J -O -K -Di -Ggray -Wthinnest >> $ps
-$AWK '{print $1, $2, 0, 200, 200}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> $ps
+$AWK '{print $1, $2, 0, 400, 400}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> $ps
 \rm -f sm_*[0-9].xyz	# Only consider closed contours
 
 # Now determine centers of each enclosed seamount > 50 mGal but only plot
