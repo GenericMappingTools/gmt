@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.435 2010-01-09 03:17:34 guru Exp $
+ *	$Id: gmt_support.c,v 1.436 2010-01-12 06:57:34 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4954,7 +4954,7 @@ GMT_LONG GMT_inonout_sphpol (double plon, double plat, const struct GMT_LINE_SEG
 
 GMT_LONG GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, GMT_LONG count[])
 {	/* Case of a polar cap */
-	GMT_LONG i, in, cut;
+	GMT_LONG i, in, ip, cut;
 	double W, E, S, N, lon, lon1, lon2, dlon, x_lat;
 
 	/* Draw meridian through P and count all the crossings with the line segments making up the polar cap S */
@@ -4976,7 +4976,10 @@ GMT_LONG GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 		if (GMT_IS_ZERO (plon - lon2) || GMT_IS_ZERO (fabs(plon - lon2) - 360.0)) continue;	/* Line goes through the 2nd node - ignore */
 		lon1 = P->coord[GMT_X][i];	/* Copy the first of two longitudes since we may need to mess with them */
 		if (GMT_IS_ZERO (plon - lon1) || GMT_IS_ZERO (fabs(plon - lon1) - 360.0)) {		/* Line goes through the 1st node */
-			cut = (P->coord[GMT_Y][i] > plat) ? 0 : 1;					/* node is north (0) or south (1) of P */
+			/* Must check that the two neighboring points are on either side; otherwise it is just a tangent line */
+			ip = (i == 0) ? P->n_rows - 2 : i - 1;	/* Previous point (-2 because last is a duplicate of first) */
+			if ((P->coord[GMT_X][in] >= lon1 && P->coord[GMT_X][ip] >= lon1) || (P->coord[GMT_X][in] <= lon1 && P->coord[GMT_X][ip] <= lon1)) continue;	/* Both on same side */
+			cut = (P->coord[GMT_Y][i] > plat) ? 0 : 1;	/* node is north (0) or south (1) of P */
 			count[cut]++;
 			continue;
 		}
