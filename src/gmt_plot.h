@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.22 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_plot.h,v 1.23 2010-01-13 02:26:09 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -52,7 +52,7 @@
 #define GMT_SYMBOL_CUSTOM	25
 #define GMT_SYMBOL_ROTATERECT	26
 #define GMT_SYMBOL_PLUS		27
-#define GMT_SYMBOL_MARC		28
+#define GMT_SYMBOL_MANGLE	28
 
 #define GMT_SYMBOL_FRONT	-100
 #define GMT_SYMBOL_QUOTED_LINE	-200

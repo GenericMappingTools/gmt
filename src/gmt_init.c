@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.427 2010-01-11 16:21:55 guru Exp $
+ *	$Id: gmt_init.c,v 1.428 2010-01-13 02:26:09 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5678,7 +5678,7 @@ GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mod
 			p->string[k] = 0;
 			break;
 		case 'm':
-			p->symbol = GMT_SYMBOL_MARC;
+			p->symbol = GMT_SYMBOL_MANGLE;
 			p->n_required = k = 2;
 			switch (text[1]) {	/* Check if f(irst), l(last), b(oth), or none [Default] arrow heads*/
 				case 'f':	/* Input (x,y) refers to vector head (the tip), double heads */
