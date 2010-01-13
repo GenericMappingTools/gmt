@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.691 2010-01-13 15:33:43 jluis Exp $
+	$Id: ChangeLog,v 1.692 2010-01-13 20:00:54 remko Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -7,8 +7,11 @@
 	* GMT 4.5.2 finalized and released
 -----------------------------------------------------------------------------------------
 
+2010-01-13	remko
+	* psscale.c:		psscale -Bg now correctly produces gridlines using GRID_PEN_PRIMARY.
+
 2010-01-13	jluis
-	gmtdefaults.c:		Replaced free(..) with GMT_free (..) so Win version doesn't crash
+	* gmtdefaults.c:	Replaced free(..) with GMT_free (..) so Win version doesn't crash
 
 2010-01-12	remko
 	* job18.*, job24.*:	psxy -Se|E now correctly uses major/minor axis (as in documentation)

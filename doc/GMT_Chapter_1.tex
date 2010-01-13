@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.146 2010-01-12 18:01:17 guru Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.147 2010-01-13 20:00:54 remko Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -77,11 +77,12 @@ Here is the list of bug corrections:
 		Fixed bug where the gradient at the south pole was not replicated to x = east.
 	\item [\GMTprog{grdlandmask.c}]:	Round-off and bug caused missing nodes for \Opt{F} with \Opt{Rd}.
 	\item [\GMTprog{grdtrack.c}]:	The \Opt{Z} option gave z-values a longitude formatting, including 360-degree wrapping.
-	\item [\GMTprog{pslib.c}]:	Ellipse was wrongly dimensioned by semi-major and semi-
-		minor axes, instead of major and minor axes.  Also, memory never got freed by \GMTfunc{ps\_free}.
 	\item [\GMTprog{mapproject.c}]:	The \Opt{S} option failed after recent i/o makeover.
+	\item [\GMTprog{pslib.c}]:	Ellipse was wrongly dimensioned by semi-major and semi-minor
+		axes, instead of major and minor axes.  Also, memory never got freed by \GMTfunc{ps\_free}.
 	\item [\GMTprog{psrose.c}]:	Needed to set scale to 1 so the bounding box
 		calculations would be correct for EPS output.
+	\item [\GMTprog{psscale.c}]:	The \Opt{Bg} now correctly produces gridlines using \textbf{GRID\_PEN\_PRIMARY}.
 	\item [\GMTprog{psxy.c}]:	Incorrectly drew tips at plot boundary when clipping the error bars.
 	\item [\GMTprog{psxyz.c}]:	Fixed bug in distance sorting (also made much simpler).
 	\item [\GMTprog{imgsrc/img2google}]:	One \GMTprog{gmtmath} call did not have the required \Opt{Q}.
