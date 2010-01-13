@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: GNUmakefile,v 1.61 2009-10-27 01:14:19 remko Exp $
+#  $Id: GNUmakefile,v 1.62 2010-01-13 22:22:20 guru Exp $
 #
 #		 Guru makefile for GMT Version 4.*
 #			GNU make compatible
@@ -79,6 +79,7 @@ help::
 #!make <target>, where <target> can be:
 #!
 #!update        : Get the latest source via cvs
+#!alltests      : Run all tests and compare to originals
 #!manpages      : Create manpages from text files
 #!usable        : Install-all and run examples & animations
 #!pdfman        : Install PDF version of manpages
