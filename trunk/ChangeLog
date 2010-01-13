@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.692 2010-01-13 20:00:54 remko Exp $
+	$Id: ChangeLog,v 1.693 2010-01-13 20:03:21 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -7,6 +7,9 @@
 	* GMT 4.5.2 finalized and released
 -----------------------------------------------------------------------------------------
 
+2010-01-13	pwessel
+	* gmt_init.c:		The .gmtdefaults4 file was assumed to be in UNIX EOL format.
+				Now we strop off EOL before checking for blank lines etc.
 2010-01-13	remko
 	* psscale.c:		psscale -Bg now correctly produces gridlines using GRID_PEN_PRIMARY.
 

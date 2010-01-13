@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.428 2010-01-13 02:26:09 guru Exp $
+ *	$Id: gmt_init.c,v 1.429 2010-01-13 20:03:21 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1683,7 +1683,8 @@ GMT_LONG GMT_loaddefaults (char *file)
 
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments */
-		if (line[0] == '\n') continue;	/* Skip Blank lines */
+		GMT_chop (line);		/* Get rid of [\r]\n */
+		if (line[0] == '\0') continue;	/* Skip Blank lines */
 
 		keyword[0] = value[0] = '\0';	/* Initialize */
 		sscanf (line, "%s = %[^\n]", keyword, value);
