@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.48 2010-01-11 20:56:46 guru Exp $
+#  $Id: Makefile,v 1.49 2010-01-13 02:43:27 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -218,7 +218,7 @@ update-ftp-test:
 	rm -f gmt_server_job.sh
 
 update-gshhs-test:
-	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/*GSHHS*'
+#	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/*GSHHS*'
 	scp ../ftp/GSHHS*.bz2 $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/GSHHS*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	echo "cd $(LIVEFTPDIR2)" > gmt_server_job.sh
