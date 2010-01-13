@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_1.tex,v 1.147 2010-01-13 20:00:54 remko Exp $
+%	$Id: GMT_Chapter_1.tex,v 1.148 2010-01-13 20:03:21 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -60,7 +60,8 @@ Here is the list of bug corrections:
 		when text was Russian language codes from ru.d.  If GMT\_DATADIR was set to a list of colon-separated dirs
 		then init failed since we tried to check access as
 		if GMT\_DATADIR was always a single entity (as in the past). Opened file with \GMTfunc{fopen} but closed with \GMTfunc{GMT\_fclose}.
-		Bug in the parsing of \Opt{Jg}{\it lon/lat/radius/lat}.
+		Bug in the parsing of \Opt{Jg}{\it lon/lat/radius/lat}.  Both \filename{.gmtdefaults4} and \filename{.gmtcommands4} were
+		assumed to be in UNIX format.  Now we properly chop off Windows \emph{or} Unix end-of-line characters.
 	\item [\GMTprog{gmt\_mgg\_header2}]:	Opened file with \GMTfunc{GMT\_fopen} but closed with \GMTfunc{fclose}.
 	\item [\GMTprog{gmt\_plot.c}]:	\GMTfunc{qsort} of GMT\_LONGs was passed int arrays.  The calculation
 		of the actual plot width of a map scale did not account for the effect of a 3-D view angle.
