@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.26 2009-10-23 18:32:37 remko Exp $
+#	$Id: Makefile,v 1.27 2010-01-14 16:01:21 remko Exp $
 #
 #		Makefile for GMT x_system supplements
 #
@@ -73,7 +73,7 @@ x_solve_dc_drift$(EXE):	x_solve_dc_drift.o
 x_update$(EXE):		x_update.o
 
 $(PROGS):	$(LIBGMT)
-		$(CC) $(LDFLAGS) $(@:.exe=).o $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
+		$(CC) $(LDFLAGS) $(@:.exe=).o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@
 		$(COMPRESS) $@
 
 $(PROGSPS):	$(LIBGMT)
