@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.78 2010-01-08 21:35:19 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.79 2010-01-14 17:55:49 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.78 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.79 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -83,7 +83,7 @@ for more details.</I><BR>
 
 <P>
 <I>Note: GMT passes information about previous GMT command-line options to future GMT commands via a
-hidden file in the current directory (.gmtcommands).  To avoid that this file is updated by more than
+hidden file in the current directory (.gmtcommands4).  To avoid that this file is updated by more than
 one program at the time (e.g., when you connect two or more GMT commands with a pipe) we use POSIX
 advisory file locking on the file.  Unfortunately, some versions of the Network File System (NFS) have
 not implemented file locking properly.  We know this to be the case with Linux pre-2.4 kernels when
@@ -167,8 +167,8 @@ Only if you have some very old ftp client, you may have to resort to active ftp
 <INPUT TYPE="checkbox" NAME="checkbox_share" CHECKED> GMT Shared Data (0.04 Mb, shared run-time files, REQUIRED)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_doc" CHECKED> GMT Documentation (24 Mb, PDF & HTML versions of Cookbook, Tutorial and Man pages, examples)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_suppl" CHECKED> GMT Supplemental Programs (3.9 Mb, see section C.10 below for details)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_coast" CHECKED> GSHHS Low-resolution Coastlines  (4.2 Mb, Basic-resolution (CLI) GSHHS coastlines, REQUIRED)<BR>
-<INPUT TYPE="checkbox" NAME="checkbox_high"> GSHHS High-resolution Coastlines (9.4 Mb)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_coast" CHECKED> GSHHS Low-resolution Coastlines  (4.1 Mb, Basic-resolution (CLI) GSHHS coastlines, REQUIRED)<BR>
+<INPUT TYPE="checkbox" NAME="checkbox_high"> GSHHS High-resolution Coastlines (9.3 Mb)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_full"> GSHHS Full-resolution Coastlines (29.0 Mb)<BR>
 
 <P>
