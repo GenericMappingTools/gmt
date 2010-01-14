@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: libspotter.c,v 1.59 2010-01-05 01:15:49 guru Exp $
+ *	$Id: libspotter.c,v 1.60 2010-01-14 07:15:20 guru Exp $
  *
  *   Copyright (c) 1999-2010 by P. Wessel
  *
@@ -88,7 +88,8 @@ int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in,
 	if (flowline) finite_out = TRUE;	/* Override so we get finite poles for conversion to forward stage poles at the end */
 
 	while (GMT_fgets (buffer, 512, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
-		if (buffer[0] == '#' || buffer[0] == '\n') continue;
+		GMT_chop (buffer);					/* Rid the world of CR/LF */
+		if (buffer[0] == '#' || buffer[0] == '\0') continue;
 
 		if (finite_in) {	/* The minimalist record formats is: lon lat t0 [t1] omega [covar] */
 			nf = sscanf (buffer, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
@@ -215,7 +216,8 @@ int spotter_hotspot_init (char *file, struct HOTSPOT **p)
 	e = (struct HOTSPOT *) GMT_memory (VNULL, n_alloc, sizeof (struct HOTSPOT), "libspotter");
 
 	while (GMT_fgets (buffer, 512, fp) != NULL) {
-		if (buffer[0] == '#' || buffer[0] == '\n') continue;
+		GMT_chop (buffer);					/* Rid the world of CR/LF */
+		if (buffer[0] == '#' || buffer[0] == '\0') continue;
 		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &e[i].id, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
 		if (n == 3) e[i].id = i;	/* Minimal lon, lat, abbrev */
 		if (n >= 10) {

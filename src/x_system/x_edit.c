@@ -1,4 +1,4 @@
-/* $Id: x_edit.c,v 1.10 2009-07-11 03:16:32 guru Exp $
+/* $Id: x_edit.c,v 1.11 2010-01-14 07:15:20 guru Exp $
  *
  * X E D I T  will allow you to convert crossover tables ascii <--> binary
  *
@@ -74,6 +74,7 @@ int main (int argc, char **argv)
 	if (ascii) {
 		i = 0;
 		while (fgets (line, BUFSIZ, fp)) {
+			GMT_chop (line);					/* Rid the world of CR/LF */
 			sscanf (line, "%s %hd %f %f %f %f %f %f",
 			leg[i].name,
 			&leg[i].year,

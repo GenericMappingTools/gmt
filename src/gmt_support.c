@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.436 2010-01-12 06:57:34 guru Exp $
+ *	$Id: gmt_support.c,v 1.437 2010-01-14 07:15:19 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3175,7 +3175,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 		if (n_col == 3) G->f_label = (char **) GMT_memory ((void *)VNULL, n_alloc, sizeof (char *), GMT_program);
 		G->f_n = 0;
 		while (GMT_fgets (buffer, BUFSIZ, fp)) {
-			if (buffer[0] == '#' || buffer[0] == '>' || buffer[0] == '\n') continue;
+			if (buffer[0] == '#' || buffer[0] == '>' || buffer[0] == '\n' || buffer[0] == '\r') continue;
 			len = strlen (buffer);
 			for (i = len - 1; i >= 0 && strchr (" \t,\r\n", (int)buffer[i]); i--);
 			buffer[++i] = '\n';	buffer[++i] = '\0';	/* Now have clean C string with \n\0 at end */
@@ -8492,7 +8492,8 @@ GMT_LONG GMT_init_custom_symbol (char *name, struct GMT_CUSTOM_SYMBOL **S) {
 	head = (struct GMT_CUSTOM_SYMBOL *) GMT_memory (VNULL, 1, sizeof (struct GMT_CUSTOM_SYMBOL), GMT_program);
 	strcpy (head->name, name);
 	while (fgets (buffer, BUFSIZ, fp)) {
-		if (buffer[0] == '#' || buffer[0] == '\n') continue;
+		GMT_chop (buffer);
+		if (buffer[0] == '#' || buffer[0] == '\0') continue;
 
 		nc = sscanf (buffer, "%s %s %s %s %s %s %s", col[0], col[1], col[2], col[3], col[4], col[5], col[6]);
 

@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.693 2010-01-13 20:03:21 guru Exp $
+	$Id: ChangeLog,v 1.694 2010-01-14 07:15:19 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -10,6 +10,8 @@
 2010-01-13	pwessel
 	* gmt_init.c:		The .gmtdefaults4 file was assumed to be in UNIX EOL format.
 				Now we strop off EOL before checking for blank lines etc.
+	* *.c:			Made sure chopping was done consistently in other codes.
+
 2010-01-13	remko
 	* psscale.c:		psscale -Bg now correctly produces gridlines using GRID_PEN_PRIMARY.
 
