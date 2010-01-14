@@ -1,5 +1,5 @@
 REM             GMT EXAMPLE 30
-REM             $Id: job30.bat,v 1.2 2010-01-11 19:48:49 guru Exp $
+REM             $Id: job30.bat,v 1.3 2010-01-14 02:34:35 jluis Exp $
 REM
 REM Purpose:	Show graph mode and math angles
 REM GMT progs:	gmtmath, psbasemap, pstext and psxy
@@ -12,6 +12,8 @@ if exist job30.bat set master=n
 if %master%==y cd ex30
 
 set ps=example_30.ps
+
+gmtset CHAR_ENCODING Standard+  
 
 psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\312:/1g10:."Two Trigonometric Functions":WS -K -U"Example 30 in Cookbook" --BASEMAP_TYPE=graph --VECTOR_SHAPE=0.5 > %ps%
 
@@ -51,7 +53,7 @@ echo -0.3333	0 > tmp
 echo 0	0 >> tmp
 psxy -R -J -O -K -m -W2p tmp >> %ps%
 echo -0.3333	0.57735 > tmp
-echo -0.3333	0 > tmp
+echo -0.3333	0 >> tmp
 psxy -R -J -O -K -m -W2p tmp >> %ps%
 
 echo -0.16666 0 12 0 4 CT x > tmp
