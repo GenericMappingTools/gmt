@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.77 2010-01-08 21:36:19 guru Exp $
-AC_REVISION($Revision: 1.77 $)
+dnl $Id: configure.ac,v 1.78 2010-01-14 16:47:35 guru Exp $
+AC_REVISION($Revision: 1.78 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -106,6 +106,7 @@ AC_ARG_ENABLE(gdal,     [  --enable-gdal           Compile optional, experimenta
 AC_ARG_ENABLE(mex,      [  --disable-mex           Disable compilation of mex supplement which requires Octave/Matlab])
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_ENABLE(xgrid,    [  --disable-xgrid         Disable compilation of xgrid supplement which requires X11])
+AC_ARG_ENABLE(cygloc,   [  --enable-cygloc         Hardwire in LC_LANG=C for Cygwin])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 AC_ARG_VAR(GDAL_INC,Location of GDAL headers (compile-time))
@@ -601,6 +602,14 @@ dnl -----------------------------------------------------------------
 dnl
 if test "X$enable_devdebug" = "Xyes" ; then
 	CPPFLAGS="$CPPFLAGS -DDEBUG"
+fi
+dnl
+dnl -----------------------------------------------------------------
+dnl Allow Cygwin users to set --enable-cygloc to pass -DCYGWIN_LOCALE_TROUBLE
+dnl -----------------------------------------------------------------
+dnl
+if test "X$enable_cygloc" = "Xyes" ; then
+	CPPFLAGS="$CPPFLAGS -DCYGWIN_LOCALE_TROUBLE"
 fi
 dnl
 dnl -----------------------------------------------------------------

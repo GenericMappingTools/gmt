@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.695 2010-01-14 16:38:04 guru Exp $
+	$Id: ChangeLog,v 1.696 2010-01-14 16:47:35 guru Exp $
 -----------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------
@@ -7,6 +7,11 @@
 	* GMT 4.5.2 finalized and released
 -----------------------------------------------------------------------------------------
 
+2010-01-14	pwessel
+	* gmt_init.c:		Added an #ifdef CYGWIN_LOCALE_TROUBLE so that Cygwin users who
+				experience locale issues can compile with -DCYGWIN_LOCALE_TROUBLE
+				until we have a better solution.  This can be set by adding the
+				--enable-cygloc option when running configure.
 2010-01-13	pwessel
 	* gmt_init.c:		The .gmtdefaults4 file was assumed to be in UNIX EOL format.
 				Now we strip off EOL before checking for blank lines etc.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.429 2010-01-13 20:03:21 guru Exp $
+ *	$Id: gmt_init.c,v 1.430 2010-01-14 16:47:35 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -57,6 +57,10 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_globals.h"
+
+#ifdef CYGWIN_LOCALE_TROUBLE	/* Temporary Cygwin locale fix for Joaquim while we monitor the issue */
+#include <locale.h>
+#endif
 
 /*--------------------------------------------------------------------*/
 /* Load parameters from include files */
@@ -3438,6 +3442,10 @@ GMT_LONG GMT_begin (int argc, char **argv)
 
 	GMT_LONG i, j, k, n;
 	char *this;
+
+#ifdef CYGWIN_LOCALE_TROUBLE
+	setlocale (LC_CTYPE, "C.ASCII");
+#endif
 
 #ifdef DEBUG
 	GMT_memtrack_init (&GMT_mem_keeper);
