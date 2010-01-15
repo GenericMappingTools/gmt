@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.157 2010-01-14 17:55:49 guru Exp $
+#	$Id: install_gmt.sh,v 1.158 2010-01-15 21:12:58 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -402,7 +402,12 @@ otherwise just hit return to use the default compiler.
 
 EOF
 GMT_cc=`get_answer "Enter name of C compiler (include path if not in search path)"`
-GMT_64=`get_def_answer "Produce 64-bit executables? (y/n)" "n"`
+answer=`get_def_answer "Hardwire 32 or 64-bit executables? (y/n)" "n"`
+if [ $answer = y ]; then
+	GMT_64=`get_def_answer "Enter bit size (32/64)" "32"`
+else
+	GMT_64=X
+fi
 GMT_univ=`get_def_answer "Produce universal executables (OS X)? (y/n)" "n"`
 
 cat << EOF >&2
@@ -1181,10 +1186,12 @@ else
 	enable_shared=
 fi
 
-if [ "$GMT_64" = "y" ]; then
+if [ "$GMT_64" = "64" ]; then
 	enable_64=--enable-64
-else
+elif [ "$GMT_64" = "32" ]; then
 	enable_64=--disable-64
+else
+	enable_64=
 fi
 if [ "$GMT_univ" = "y" ]; then
 	enable_univ=--enable-universal
