@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#       $Id: install_gmt_form.pl,v 1.43 2010-01-08 21:35:20 guru Exp $
+#       $Id: install_gmt_form.pl,v 1.44 2010-01-15 21:12:58 guru Exp $
 #
 #	Parses the input provided by the install form
 #	(Now in Bourne shell format)
@@ -52,7 +52,7 @@ $use_triangle	= $gmt_form{'radio_triangle'};
 $libtype	= $gmt_form{'radio_link'};
 $cc		= $gmt_form{'cc'};
 $custom_cc	= $gmt_form{'custom_cc'};
-$gmt_64		= $gmt_form{'checkbox_64'};
+$gmt_64		= $gmt_form{'radio_64'};
 $gmt_univ	= $gmt_form{'checkbox_univ'};
 $make		= $gmt_form{'make'};
 $custom_make	= $gmt_form{'custom_make'};
@@ -105,7 +105,7 @@ print FILE <<EOF;
 # You can edit the values, but do not remove definitions!
 #
 # Assembled by gmt_install_form.html, $form_version
-# Processed by install_gmt_form.pl $Revision: 1.43 $, on
+# Processed by install_gmt_form.pl $Revision: 1.44 $, on
 #
 #	$now
 #
@@ -395,13 +395,7 @@ elsif ($k[0] eq "2.") {
 else {
 	print FILE "GMT_cc=", $custom_cc, "\n";
 }
-print FILE "GMT_64=";
-if ($gmt_64 eq "on") {
-	print FILE "y\n";
-}
-else {
-	print FILE "n\n";
-}
+print FILE "GMT_64=", $gmt_64, "\n";
 print FILE "GMT_UNIV=";
 if ($gmt_univ eq "on") {
 	print FILE "y\n";
