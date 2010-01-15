@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.159 2010-01-15 21:25:02 guru Exp $
+#	$Id: install_gmt.sh,v 1.160 2010-01-15 21:39:13 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -410,11 +410,12 @@ not set up to honor either of these settings. The default is
 to compile without sending any 32-bit or 64-bit options to the
 compiler, which generally create 32-bit versions on older systems,
 and 64-bit versions on newer systems, like OS X Snow Leopard.
+
 EOF
 
-answer=`get_answer "Hardwire either 32- or 64-bit executables? (y/n)" "n"`
+answer=`get_def_answer "Explicitly select 32- or 64-bit executables? (y/n)" "n"`
 if [ $answer = y ]; then
-	GMT_64=`get_def_answer "Do you want 64-bit? (y/n) " "y"`
+	GMT_64=`get_def_answer "Force 64-bit? (y/n) " "y"`
 else
 	GMT_64=
 fi
