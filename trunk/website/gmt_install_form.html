@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.80 2010-01-15 21:12:58 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.81 2010-01-15 21:25:02 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.80 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.81 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -223,9 +223,9 @@ directory not in your path, please select "other" and enter the value for CC bel
 Custom C Compiler: <INPUT NAME="custom_cc" TYPE="text" SIZE="30"><BR>
 
 When producing executables:<BR> 
-<INPUT TYPE="radio" VALUE="32" NAME="radio_64"> Force 32-bit (not recommended)<BR>
-<INPUT TYPE="radio" VALUE="64" NAME="radio_64"> Force 64-bit (not recommended)<BR>
-<INPUT TYPE="radio" VALUE="X" NAME="radio_64" CHECKED> Use default (whatever your compiler prefers)<BR>
+<INPUT TYPE="radio" VALUE="n" NAME="radio_64"> Force 32-bit (not recommended)<BR>
+<INPUT TYPE="radio" VALUE="y" NAME="radio_64"> Force 64-bit (not recommended)<BR>
+<INPUT TYPE="radio" VALUE="" NAME="radio_64" CHECKED> Use default (whatever your compiler prefers)<BR>
 For OS X only: <INPUT TYPE="checkbox" NAME="checkbox_univ"> Build universal binaries (OS X)<BR>
 <I>Note: We recommend you let the compiler choose the type of executables.  If you know what you are doing
 you can force a specific type.
