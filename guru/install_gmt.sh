@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.158 2010-01-15 21:12:58 guru Exp $
+#	$Id: install_gmt.sh,v 1.159 2010-01-15 21:25:02 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -402,11 +402,21 @@ otherwise just hit return to use the default compiler.
 
 EOF
 GMT_cc=`get_answer "Enter name of C compiler (include path if not in search path)"`
-answer=`get_def_answer "Hardwire 32 or 64-bit executables? (y/n)" "n"`
+cat << EOF >&2
+
+GMT can be built as 32-bit or 64-bit.  We do not recommend to
+explicitly choose 32-bit or 64-bit, as the netCDF install is
+not set up to honor either of these settings. The default is
+to compile without sending any 32-bit or 64-bit options to the
+compiler, which generally create 32-bit versions on older systems,
+and 64-bit versions on newer systems, like OS X Snow Leopard.
+EOF
+
+answer=`get_answer "Hardwire either 32- or 64-bit executables? (y/n)" "n"`
 if [ $answer = y ]; then
-	GMT_64=`get_def_answer "Enter bit size (32/64)" "32"`
+	GMT_64=`get_def_answer "Do you want 64-bit? (y/n) " "y"`
 else
-	GMT_64=X
+	GMT_64=
 fi
 GMT_univ=`get_def_answer "Produce universal executables (OS X)? (y/n)" "n"`
 
@@ -1186,9 +1196,9 @@ else
 	enable_shared=
 fi
 
-if [ "$GMT_64" = "64" ]; then
+if [ "$GMT_64" = "y" ]; then
 	enable_64=--enable-64
-elif [ "$GMT_64" = "32" ]; then
+elif [ "$GMT_64" = "n" ]; then
 	enable_64=--disable-64
 else
 	enable_64=
