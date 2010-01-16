@@ -58,7 +58,7 @@ Not used with binary data.
 OPT(M)
 Use Map units.  Then x,y are in degrees of longitude, latitude, distances are
 in kilometers, and angles are azimuths.  [Default:  distances are cartesian in same
-units as x,y adn angles are counter-clockwise from horizontal].
+units as x,y and angles are counter-clockwise from horizontal].
 .TP
 OPT(N)
 Create Named output files, writing each segment to a separate file in the working directory 
