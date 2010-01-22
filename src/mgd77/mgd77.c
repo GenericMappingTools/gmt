@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.252 2010-01-21 17:36:38 jluis Exp $
+ *	$Id: mgd77.c,v 1.253 2010-01-22 13:51:59 jluis Exp $
  *
  *    Copyright (c) 2005-2010 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -4230,7 +4230,7 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
   */
 
      struct IGRF {
-	double e_1[];
+	double e_1[3255];
      };
      /* Initialized data */
      static struct IGRF equiv_22 = {
@@ -4655,7 +4655,7 @@ int MGD77_igrf10syn (int isv, double date, int itype, double alt, double elong, 
             0.0,      0.0,     0.0,       0.0,     0.0,      0.0,     0.0, 
             0.0,      0.0,     0.0,       0.0,     0.0,      0.0,     0.0, 
             0.0,      0.0,     0.0,       0.0,     0.0,      0.0,     0.0, 
-            0.0,      0.0,     0.0,       0.0,     0.0,      0.0};
+            0.0,      0.0,     0.0,       0.0,     0.0,      0.0}
 	 };
 #define gh ((double *)&equiv_22)
 
