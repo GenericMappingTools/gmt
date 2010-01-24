@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.699 2010-01-24 18:10:15 jluis Exp $
+	$Id: ChangeLog,v 1.700 2010-01-24 20:35:18 remko Exp $
 -----------------------------------------------------------------------------------------
 
 2010-01-24	jluis
 	* meca/submeca.c:	Replaced calls to d_atan2() by d_atan2d() since the code expects 
 				angles in degrees. Thanks to Dan Scheirer for finding this.  
 	* meca/psmeca.c:	Removed out of place and repeated line to compute size in -a option 
+	* test/meca:		More meca tests added (from src/meca)
 
 2010-01-21	jluis
 	* mgd77/mgd77.c:	Update for 11th generation IGRF - IGRF2010 
