@@ -1,4 +1,4 @@
-/*	$Id: submeca.c,v 1.12 2010-01-05 01:15:48 guru Exp $
+/*	$Id: submeca.c,v 1.13 2010-01-24 17:52:19 jluis Exp $
  *    Copyright (c) 1996-2010 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -83,7 +83,7 @@ void rot_tensor(struct M_TENSOR mt,struct nodal_plane PREF,struct M_TENSOR *mtr)
     mtr->f[5] = s2a*cd*(- mt.f[1] + mt.f[2])/2. + ca*sd*mt.f[3] -
                 sa*sd*mt.f[4] - c2a*cd*mt.f[5];
 }
-
+
 void rot_nodal_plane(struct nodal_plane PLAN,struct nodal_plane PREF,struct nodal_plane *PLANR)
 /*
    Calcule l'azimut, le pendage, le glissement relatifs d'un
@@ -112,7 +112,7 @@ void rot_nodal_plane(struct nodal_plane PLAN,struct nodal_plane PREF,struct noda
 
      cr = - sd * sdfi / sdr;
      sr = (sd * crd * cdfi - cd * srd) / sdr;
-     PLANR->str = d_atan2(sr, cr);
+     PLANR->str = d_atan2d(sr, cr);
      if(cdr < 0.) {
           PLANR->str += PIDEG;
      }
@@ -120,7 +120,7 @@ void rot_nodal_plane(struct nodal_plane PLAN,struct nodal_plane PREF,struct noda
      PLANR->dip = acosd(fabs(cdr));
      cr = cr * (sir * (cd * crd * cdfi + sd * srd) - cor * crd * sdfi) + sr * ( cor * cdfi + sir * cd * sdfi);
      sr = (cor * srd * sdfi + sir * (sd * crd - cd * srd * cdfi)) / sdr;
-     PLANR->rake = d_atan2(sr, cr);
+     PLANR->rake = d_atan2d(sr, cr);
      if(cdr < 0.) {
           PLANR->rake +=  PIDEG;
           if(PLANR->rake > PIDEG)
@@ -182,8 +182,8 @@ void rot_meca(st_me meca,struct nodal_plane PREF,st_me *mecar)
           mecar->moment.mant = meca.moment.mant;
           mecar->moment.exponent = meca.moment.exponent;
 }
-
-
+
+
 GMT_LONG gutm(double lon ,double lat ,double *xutm ,double *yutm,GMT_LONG fuseau)
 {
      double ccc = 6400057.7, eprim = 0.08276528;
@@ -223,7 +223,7 @@ GMT_LONG gutm(double lon ,double lat ,double *xutm ,double *yutm,GMT_LONG fuseau
      *yutm = (0.9996 * (*yutm + arcme)) * 0.001;
      return(fuseau);
 }
-
+
 GMT_LONG dans_coupe(double lon,double lat,double depth,double xlonref,double ylatref,GMT_LONG fuseau,double str,double dip,double p_length,double p_width,double *distance,double *n_dep)
 
 /* if fuseau < 0, cartesian coordinates */
