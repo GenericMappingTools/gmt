@@ -1,10 +1,10 @@
 #!/bin/sh
-#	$Id: psmeca.sh,v 1.1 2009-02-26 03:54:56 remko Exp $
+#	$Id: psmeca.sh,v 1.2 2010-01-24 19:53:51 remko Exp $
 #
 # Check psmeca for plotting beach balls
 
 . ../functions.sh
-header "Test psmeca for plotting focal mechanisms"
+header "Test psmeca for plotting focal mechanisms (5)"
 
 ps=psmeca.ps
 
