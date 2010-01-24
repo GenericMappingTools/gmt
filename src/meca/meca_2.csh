@@ -1,5 +1,5 @@
-#!/bin/csh -xe
-#	$Id: meca_2.csh,v 1.3 2003-04-11 22:57:15 pwessel Exp $
+#!/bin/csh -f
+#	$Id: meca_2.csh,v 1.4 2010-01-24 17:58:07 jluis Exp $
 
 \rm -f .gmtdefaults4
 gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i \
@@ -106,7 +106,7 @@ set c_frame = -R0/350/0/100
 set c_proj = (-JX1.5/-1.5 -P)
 
 psmeca -P -R128/130/10/11.1 \
-     -H1 -a0.2cc -JX2 -Sc0.4 -B1 -Y8.5 -K << EOF >> $plotfile
+     -H1 -a0.2/cc -JX2 -Sc0.4 -B1 -Y8.5 -K << EOF >> $plotfile
 lon   lat  dep str dip rake str dip rake m ex nx ny 
 129.5  10.5  0  0   90   0  90   90 180  1 24  0  0 10km
 128.5  10.5  0  0   45  90 180   45  90  1 24  0  0 40km
