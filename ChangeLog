@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.700 2010-01-24 20:35:18 remko Exp $
+	$Id: ChangeLog,v 1.701 2010-01-26 23:04:58 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-01-26	remko
+	* gmt_plot.c:		Fixed bug in GMT_plot_map_scale that could lead to endless loops
+				when using scales to 100 km or any exact power of 10. Error was
+				limited to 64-bit.
 
 2010-01-24	jluis
 	* meca/submeca.c:	Replaced calls to d_atan2() by d_atan2d() since the code expects 

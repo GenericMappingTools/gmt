@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.280 2010-01-05 23:37:57 guru Exp $
+ *	$Id: gmt_plot.c,v 1.281 2010-01-26 23:04:58 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2847,8 +2847,9 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 		n_a_ticks[4] = n_a_ticks[6] = n_a_ticks[8] = 1;
 		n_a_ticks[0] = n_a_ticks[1] = n_a_ticks[3] = n_a_ticks[7] = 2;
 		n_a_ticks[2] = n_a_ticks[5] = 3;
-		base = pow (10.0, floor (d_log10 (ms->length)));
-		i = irint (ms->length / base) - 1;
+		base = ms->length;
+		while (base >= 10.0) base /= 10.0;
+		i = MAX(0, irint (base) - 1);
 		d_base = ms->length / n_a_ticks[i];
 		dx_f = width / n_f_ticks[i];
 		dx_a = width / n_a_ticks[i];
