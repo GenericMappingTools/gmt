@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.281 2010-01-26 23:04:58 remko Exp $
+ *	$Id: gmt_plot.c,v 1.282 2010-01-27 20:14:33 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2774,23 +2774,16 @@ void GMT_textbox3D (double x, double y, double z, double size, GMT_LONG font, ch
 
 void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 {
-	GMT_LONG i, j, jj, k, n_a_ticks[9], n_f_ticks[9], unit;
+	GMT_LONG i, j, jj, k, unit;
+	GMT_LONG n_f_ticks[10] = {5, 4, 6, 4, 5, 6, 7, 4, 3, 5};
+	GMT_LONG n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
 	int *rgb;
 	double dlon, x1, x2, y1, y2, a, b, tx, ty, off, f_len, a_len, x_left, bar_length, x_label, y_label;
 	double xx[4], yy[4], bx[4], by[4], zz, base, d_base, width, half, bar_width, dx, dx_f, dx_a;
 	char txt[GMT_LONG_TEXT], *this_label;
-	char label[4][16], units[4][3];
+	char *label[4] = {"km", "miles", "nautical miles", "m"}, *units[4] = {"km", "mi", "nm", "m"};
 
 	if (!ms->plot) return;
-
-	strcpy (label[0], "km");
-	strcpy (label[1], "miles");
-	strcpy (label[2], "nautical miles");
-	strcpy (label[3], "m");
-	strcpy (units[0], "km");
-	strcpy (units[1], "mi");
-	strcpy (units[2], "nm");
-	strcpy (units[3], "m");
 
 	if (!GMT_IS_MAPPING) return;	/* Only for geographic projections */
 
@@ -2839,24 +2832,16 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 	GMT_z_to_zz (project_info.z_level, &zz);
 
 	if (ms->fancy) {	/* Fancy scale */
-		n_f_ticks[8] = 3;
-		n_f_ticks[1] = n_f_ticks[3] = n_f_ticks[7] = 4;
-		n_f_ticks[0] = n_f_ticks[4] = 5;
-		n_f_ticks[2] = n_f_ticks[5] = 6;
-		n_f_ticks[6] = 7;
-		n_a_ticks[4] = n_a_ticks[6] = n_a_ticks[8] = 1;
-		n_a_ticks[0] = n_a_ticks[1] = n_a_ticks[3] = n_a_ticks[7] = 2;
-		n_a_ticks[2] = n_a_ticks[5] = 3;
-		base = ms->length;
-		while (base >= 10.0) base /= 10.0;
-		i = MAX(0, irint (base) - 1);
+		j = irint(floor (d_log10 (ms->length / 0.95)));
+		base = pow (10.0, j);
+		i = irint (ms->length / base) - 1;
 		d_base = ms->length / n_a_ticks[i];
 		dx_f = width / n_f_ticks[i];
 		dx_a = width / n_a_ticks[i];
 		bar_width = 0.5 * fabs (gmtdefs.map_scale_height);
 		f_len = 0.75 * fabs (gmtdefs.map_scale_height);
 		if (ms->boxdraw || ms->boxfill) {	/* Draw a rectangle beneath the scale */
-			dx = 0.5 * irint (floor (d_log10 (ms->length))) * 0.4 * (gmtdefs.annot_font_size[0] / 72.0);
+			dx = 0.5 * j * 0.4 * (gmtdefs.annot_font_size[0] / 72.0);
 			if (dx < 0.0) dx = 0.0;
 			xx[0] = xx[3] = x_left - 2.0 * gmtdefs.annot_offset[0] - dx;
 			xx[1] = xx[2] = x_left + width + 2.0 * gmtdefs.annot_offset[0] + dx;
