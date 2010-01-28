@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.701 2010-01-26 23:04:58 remko Exp $
+	$Id: ChangeLog,v 1.702 2010-01-28 20:11:23 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-01-28	pwessel
+	* grdcontour.c:		L or H color for first min/max annotation was not set
+	
 2010-01-26	remko
 	* gmt_plot.c:		Fixed bug in GMT_plot_map_scale that could lead to endless loops
 				when using scales to 100 km or any exact power of 10. Error was
