@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.702 2010-01-28 20:11:23 guru Exp $
+	$Id: ChangeLog,v 1.703 2010-02-01 19:18:51 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-02-01	remko
+	* g??math.c:		Added function SQR (square).
 
 2010-01-28	pwessel
 	* grdcontour.c:		L or H color for first min/max annotation was not set
