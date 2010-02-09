@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.282 2010-01-27 20:14:33 remko Exp $
+ *	$Id: gmt_plot.c,v 1.283 2010-02-09 03:13:39 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1370,7 +1370,13 @@ void GMT_map_latline (double lat, double west, double east)		/* Draws a line of 
 	GMT_n_plot = GMT_geo_to_xy_line (llon, llat, nn);
 	sprintf (text, "Lat = %g", lat);
 	ps_comment (text);
-	GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, GMT_n_plot);
+	if (GMT_parallel_straight) {	/* Simplify to a 2-point straight line */
+		GMT_x_plot[1] = GMT_x_plot[GMT_n_plot-1];
+		GMT_y_plot[1] = GMT_y_plot[GMT_n_plot-1];
+		ps_line (GMT_x_plot, GMT_y_plot, (GMT_LONG)2, 3, FALSE);
+	}
+	else
+		GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, GMT_n_plot);
 
 	GMT_free ((void *)llon);
 	GMT_free ((void *)llat);
@@ -1387,7 +1393,13 @@ void GMT_map_lonline (double lon, double south, double north)	/* Draws a line of
 	GMT_n_plot = GMT_geo_to_xy_line (llon, llat, nn);
 	sprintf (text, "Lon = %g", lon);
 	ps_comment (text);
-	GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, GMT_n_plot);
+	if (GMT_meridian_straight) {	/* Simplify to a 2-point straight line */
+		GMT_x_plot[1] = GMT_x_plot[GMT_n_plot-1];
+		GMT_y_plot[1] = GMT_y_plot[GMT_n_plot-1];
+		ps_line (GMT_x_plot, GMT_y_plot, (GMT_LONG)2, 3, FALSE);
+	}
+	else
+		GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, GMT_n_plot);
 
 	GMT_free ((void *)llon);
 	GMT_free ((void *)llat);

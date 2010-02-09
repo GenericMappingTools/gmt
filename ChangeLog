@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.703 2010-02-01 19:18:51 remko Exp $
+	$Id: ChangeLog,v 1.704 2010-02-09 03:13:39 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-02-08	pwessel
+	* gmt_plot.c:		Parallels that should be straight (e.g., in -JI) would sometimes
+				appear with jump gaps.  Reported by E. Suarez 2/2/2010.
 
 2010-02-01	remko
 	* g??math.c:		Added function SQR (square).
