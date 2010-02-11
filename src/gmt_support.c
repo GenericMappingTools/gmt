@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.437 2010-01-14 07:15:19 guru Exp $
+ *	$Id: gmt_support.c,v 1.438 2010-02-11 01:57:29 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3850,11 +3850,16 @@ void GMT_orient_contour (float *grd, struct GRD_HEADER *h, double *x, double *y,
 
 GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, double y0, GMT_LONG *edge, double **x_array, double **y_array, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG offset, GMT_LONG *i_off, GMT_LONG *j_off, GMT_LONG *k_off, GMT_LONG *p, size_t *bit, GMT_LONG *nan_flag)
 {
-	GMT_LONG side = 0, n = 1, k, k0, n_cuts, k_index[2], kk_opposite, more;
-	GMT_LONG edge_word, edge_bit, m, n_nan, nx, ny, n_alloc;
-	GMT_LONG ij, ij_in, ij0;
+	GMT_LONG n = 1, k, k0, n_cuts, k0_opposite, more;
+	GMT_LONG m, n_nan, nx, ny, n_alloc;
+	GMT_LONG ij, ij_in, edge_word, edge_bit, ij0;
 	float z[5];
+#if 0
+	GMT_LONG side = 0, k_index[2]
 	double xk[4], yk[4], r, dr[2];
+#else
+	double xk[5];
+#endif
 	double west, north, dx, dy, xinc2, yinc2, *xx, *yy;
 
 	west = header->x_min;	north = header->y_max;
@@ -3882,6 +3887,7 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 		for (k = 0; k < 5; k++) z[k] = grd[ij+p[k]];	/* Copy the 4 corners */
 		if (GMT_z_periodic) GMT_setcontjump (z, (GMT_LONG)5);
 
+#if 0
 		for (k = n_nan = 0; k < 4; k++) {	/* Loop over box sides */
 
 			/* Skip where we already have a cut (k == k0) */
@@ -3955,9 +3961,9 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 			n++;
 		}
 		else {	/* Saddle point, we decide to connect to the point nearest previous point */
-			kk_opposite = (k0 + 2) % 4;	/* But it cannot be on opposite side */
+			k0_opposite = (k0 + 2) % 4;	/* But it cannot be on opposite side */
 			for (k = side = 0; k < 4; k++) {
-				if (k == k0 || k == kk_opposite) continue;
+				if (k == k0 || k == k0_opposite) continue;
 				dr[side] = (xx[n-1]-xk[k])*(xx[n-1]-xk[k]) + (yy[n-1]-yk[k])*(yy[n-1]-yk[k]);
 				k_index[side++] = k;
 			}
@@ -3966,6 +3972,84 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 			yy[n] = yk[kk];
 			n++;
 		}
+#else
+
+		for (k = n_nan = 0; k < 4; k++) {	/* Loop over box sides */
+
+			/* Skip if NaN encountered */
+
+			if (GMT_is_fnan (z[k+1]) || GMT_is_fnan (z[k])) {
+				n_nan++;
+				continue;
+			}
+
+			/* Skip if no zero-crossing on this edge */
+
+			if (z[k+1] * z[k] > 0.0) continue;
+
+			/* Save normalized distance along edge from corner k to crossing of edge k */
+
+			xk[k] = z[k] / (z[k] - z[k+1]);
+
+			/* Skip if this is the entry edge of the current box (k == k0) */
+
+			if (k == k0) continue;
+
+			/* Skip if edge already has been used */
+
+			ij0 = GMT_IJ (j + j_off[k], i + i_off[k], nx);
+			edge_word = ij0 / 32 + k_off[k] * offset;
+			edge_bit = ij0 % 32;
+			if (edge[edge_word] & bit[edge_bit]) continue;
+
+			/* Here we have a new crossing */
+
+			kk = k;
+			n_cuts++;
+		}
+		xk[4] = xk[0];
+
+		if (n > m) {	/* Must try to allocate more memory */
+			n_alloc <<= 1;
+			m = n_alloc - 2;
+			xx = (double *) GMT_memory ((void *)xx, n_alloc, sizeof (double), "GMT_trace_contour");
+			yy = (double *) GMT_memory ((void *)yy, n_alloc, sizeof (double), "GMT_trace_contour");
+		}
+		if (n_cuts == 0) {	/* Close interior contour and return */
+			if (ij == ij_in) {	/* Close interior contour */
+				xx[n] = xx[0];
+				yy[n] = yy[0];
+				n++;
+			}
+			more = FALSE;
+			*nan_flag = n_nan;
+			continue;
+		}
+		else if (n_cuts == 3) {	/* Saddle point: Turn to the correct side */
+			k0_opposite = (k0 + 2) % 4;	/* Opposite side */
+			if (xk[k0] + xk[k0_opposite] > xk[k0+1] + xk[k0_opposite+1])
+				kk = (k0 + 1) % 4;
+			else
+				kk = (k0 + 3) % 4;
+		}
+		if (kk == 0) {
+			xx[n] = x0 + xk[0] * dx;
+			yy[n] = y0;
+		}
+		else if (kk == 1) {
+			xx[n] = x0 + dx;
+			yy[n] = y0 + xk[1] * dy;
+		}
+		else if (kk == 2) {
+			xx[n] = x0 + (1.0 - xk[2]) * dx;
+			yy[n] = y0 + dy;
+		}
+		else {
+			xx[n] = x0;
+			yy[n] = y0 + (1.0 - xk[3]) * dy;
+		}
+		n++;
+#endif
 		if (more) {	/* Mark this edge as used */
 			ij0 = GMT_IJ (j + j_off[kk], i + i_off[kk], nx);
 			edge_word = ij0 / 32 + k_off[kk] * offset;

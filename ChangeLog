@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.704 2010-02-09 03:13:39 guru Exp $
+	$Id: ChangeLog,v 1.705 2010-02-11 01:57:29 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-02-11	remko
+	* gmt_support.c:	Improved the way contours on saddle points are produced.
 
 2010-02-08	pwessel
 	* gmt_plot.c:		Parallels that should be straight (e.g., in -JI) would sometimes
