@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.49 2010-01-13 02:43:27 guru Exp $
+#  $Id: Makefile,v 1.50 2010-02-13 05:32:27 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -34,7 +34,7 @@ include gmtsite.macros			# Site-specific settings determined by webmaster
 #-------------------------------------------------------------------------------
 
 help::
-	@grep '^#!' makefile | cut -c3-
+	@grep '^#!' Makefile | cut -c3-
 #!-------------------- MAKE HELP FOR WEBSITE --------------------
 #!
 #!make <target>, where <target> can be:
