@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.706 2010-02-14 00:46:45 guru Exp $
+	$Id: ChangeLog,v 1.707 2010-02-14 16:29:16 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-02-14	remko
+	* gmt_support.c:	Further improved internals of GMT_trace_contour
+	* grdcontour.c:		Reverting change of 2010-01-28 because closing a contour
+				crossing east-to-west or west-to-east also causes lines drawn across
 
 2010-02-13	pwessel
 	* greenspline.c:	Must insist that one of [-R -I], -N, or -T is specified.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.438 2010-02-11 01:57:29 remko Exp $
+ *	$Id: gmt_support.c,v 1.439 2010-02-14 16:29:17 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -100,7 +100,7 @@ struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths of pen
 
 GMT_LONG GMT_polar_adjust(GMT_LONG side, double angle, double x, double y);
 GMT_LONG GMT_start_trace(float first, float second, GMT_LONG *edge, GMT_LONG edge_word, GMT_LONG edge_bit, size_t *bit);
-GMT_LONG GMT_trace_contour(float *grd, struct GRD_HEADER *header, double x0, double y0, GMT_LONG *edge, double **x_array, double **y_array, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG offset, GMT_LONG *i_off, GMT_LONG *j_off, GMT_LONG *k_off, GMT_LONG *p, size_t *bit, GMT_LONG *nan_flag);
+GMT_LONG GMT_trace_contour(float *grd, struct GRD_HEADER *header, double x0, double y0, GMT_LONG *edge, double **x_array, double **y_array, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG offset, size_t *bit, GMT_LONG *nan_flag);
 GMT_LONG GMT_smooth_contour(double **x_in, double **y_in, GMT_LONG n, GMT_LONG sfactor, GMT_LONG stype);
 GMT_LONG GMT_splice_contour(double **x, double **y, GMT_LONG n, double **x2, double **y2, GMT_LONG n2);
 void GMT_orient_contour (float *grd, struct GRD_HEADER *header, double *x, double *y, GMT_LONG n, GMT_LONG orient);
@@ -3500,7 +3500,7 @@ GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_fa
 	BOOLEAN go_on = TRUE;
 	float z[2];
 	double x0, y0, r, west, east, south, north, dx, dy, xinc2, yinc2, *x, *y, *x2, *y2;
-	GMT_LONG p[5], i_off[5], j_off[5], k_off[5], offset;
+	GMT_LONG offset;
 	size_t bit[32];
 
 	nx = header->nx;	ny = header->ny;
@@ -3520,10 +3520,6 @@ GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_fa
 		i0 = 0;
 		j0 = ny - 1;
 	}
-	p[0] = p[4] = 0;	p[1] = 1;	p[2] = 1 - nx;	p[3] = -nx;
-	i_off[0] = i_off[2] = i_off[3] = i_off[4] = 0;	i_off[1] =  1;
-	j_off[0] = j_off[1] = j_off[3] = j_off[4] = 0;	j_off[2] = -1;
-	k_off[0] = k_off[2] = k_off[4] = 0;	k_off[1] = k_off[3] = 1;
 	for (i = 1, bit[0] = 1; i < 32; i++) bit[i] = bit[i-1] << 1;
 
 	switch (*side) {
@@ -3539,7 +3535,7 @@ GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_fa
 					r = z[0] - z[1];
 					x0 = west + (i - z[1]/r)*dx + xinc2;
 					edge[edge_word] |= bit[edge_bit];
-					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 0, offset, i_off, j_off, k_off, p, bit, &nans);
+					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 0, offset, bit, &nans);
 					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
 					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 					go_on = FALSE;
@@ -3566,7 +3562,7 @@ GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_fa
 					r = z[1] - z[0];
 					y0 = north - (j - z[1]/r) * dy - yinc2;
 					edge[edge_word] |= bit[edge_bit];
-					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 1, offset, i_off, j_off, k_off, p, bit, &nans);
+					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 1, offset, bit, &nans);
 					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
 					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 					go_on = FALSE;
@@ -3593,7 +3589,7 @@ GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_fa
 					r = z[1] - z[0];
 					x0 = west + (i - z[0]/r)*dx + xinc2;
 					edge[edge_word] |= bit[edge_bit];
-					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 2, offset, i_off, j_off, k_off, p, bit, &nans);
+					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 2, offset, bit, &nans);
 					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
 					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 					go_on = FALSE;
@@ -3620,7 +3616,7 @@ GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_fa
 					r = z[0] - z[1];
 					y0 = north - (j - z[0] / r) * dy - yinc2;
 					edge[edge_word] |= bit[edge_bit];
-					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 3, offset, i_off, j_off, k_off, p, bit, &nans);
+					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 3, offset, bit, &nans);
 					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
 					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
 					go_on = FALSE;
@@ -3648,11 +3644,11 @@ GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_fa
 						r = z[0] - z[1];
 						x0 = west + i*dx + xinc2;
 						y0 = north - (j - z[0] / r) * dy - yinc2;
-						/* edge[edge_word] |= bit[edge_bit]; */
+						edge[edge_word] |= bit[edge_bit];
 						nans = 0;
-						n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 3, offset, i_off, j_off, k_off, p, bit, &nans);
+						n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 3, offset, bit, &nans);
 						if (nans) {	/* Must trace in other direction, then splice */
-							n2 = GMT_trace_contour (grd, header, x0, y0, edge, &x2, &y2, i-1, j, 1, offset, i_off, j_off, k_off, p, bit, &nans);
+							n2 = GMT_trace_contour (grd, header, x0, y0, edge, &x2, &y2, i-1, j, 1, offset, bit, &nans);
 							n = GMT_splice_contour (&x, &y, n, &x2, &y2, n2);
 							GMT_free ((void *)x2);
 							GMT_free ((void *)y2);
@@ -3689,9 +3685,9 @@ GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_fa
 						y0 = north - j * dy - yinc2;
 						edge[edge_word] |= bit[edge_bit];
 						nans = 0;
-						n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 2, offset, i_off, j_off, k_off, p, bit, &nans);
+						n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 2, offset, bit, &nans);
 						if (nans) {	/* Must trace in other direction, then splice */
-							n2 = GMT_trace_contour (grd, header, x0, y0, edge, &x2, &y2, i-1, j, 0, offset, i_off, j_off, k_off, p, bit, &nans);
+							n2 = GMT_trace_contour (grd, header, x0, y0, edge, &x2, &y2, i-1, j, 0, offset, bit, &nans);
 							n = GMT_splice_contour (&x, &y, n, &x2, &y2, n2);
 							GMT_free ((void *)x2);
 							GMT_free ((void *)y2);
@@ -3848,25 +3844,23 @@ void GMT_orient_contour (float *grd, struct GRD_HEADER *h, double *x, double *y,
 	}
 }
 
-GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, double y0, GMT_LONG *edge, double **x_array, double **y_array, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG offset, GMT_LONG *i_off, GMT_LONG *j_off, GMT_LONG *k_off, GMT_LONG *p, size_t *bit, GMT_LONG *nan_flag)
+GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, double y0, GMT_LONG *edge, double **x_array, double **y_array, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG offset, size_t *bit, GMT_LONG *nan_flag)
 {
-	GMT_LONG n = 1, k, k0, n_cuts, k0_opposite, more;
+	GMT_LONG n = 1, k, k0, n_exits, k0_opposite;
 	GMT_LONG m, n_nan, nx, ny, n_alloc;
-	GMT_LONG ij, ij_in, edge_word, edge_bit, ij0;
+	GMT_LONG ij, ij_in, kk_in, edge_word, edge_bit, ij0;
+	BOOLEAN more;
 	float z[5];
-#if 0
-	GMT_LONG side = 0, k_index[2]
-	double xk[4], yk[4], r, dr[2];
-#else
-	double xk[5];
-#endif
-	double west, north, dx, dy, xinc2, yinc2, *xx, *yy;
+	double xk[5], west, north, dx, dy, xinc2, yinc2, *xx = NULL, *yy = NULL;
+	GMT_LONG p[5];
+	static GMT_LONG i_off[5] = {0, 1, 0, 0, 0}, j_off[5] = {0, 0, -1, 0, 0}, k_off[5] = {0, 1, 0, 1, 0};
 
 	west = header->x_min;	north = header->y_max;
 	dx = header->x_inc;	dy = header->y_inc;
 	nx = header->nx;	ny = header->ny;
 	xinc2 = (header->node_offset) ? 0.5 * dx : 0.0;
 	yinc2 = (header->node_offset) ? 0.5 * dy : 0.0;
+	p[0] = p[4] = 0;	p[1] = 1;	p[2] = 1 - nx;	p[3] = -nx;
 
 	n_alloc = GMT_CHUNK;
 	m = n_alloc - 2;
@@ -3875,106 +3869,29 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 	yy = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "GMT_trace_contour");
 
 	xx[0] = x0;	yy[0] = y0;
-	ij_in = GMT_IJ (j, i, nx) - 1;
+	ij_in = GMT_IJ (j, i, nx);
+	kk_in = kk;
 
 	more = TRUE;
 	do {
 		ij = GMT_IJ (j, i, nx);
+
+		/* If this is the box and edge we started from, explicitly close the polygon and exit */
+
+		if (n > 1 && ij == ij_in && kk == kk_in) {
+			xx[n-1] = xx[0]; yy[n-1] = yy[0];
+			more = FALSE;
+			continue;
+		}
+
 		x0 = west + i * dx + xinc2;
 		y0 = north - j * dy - yinc2;
-		n_cuts = 0;
+		n_exits = 0;
 		k0 = kk;
 		for (k = 0; k < 5; k++) z[k] = grd[ij+p[k]];	/* Copy the 4 corners */
 		if (GMT_z_periodic) GMT_setcontjump (z, (GMT_LONG)5);
 
-#if 0
-		for (k = n_nan = 0; k < 4; k++) {	/* Loop over box sides */
-
-			/* Skip where we already have a cut (k == k0) */
-
-			if (k == k0) continue;
-
-			/* Skip if NAN encountered */
-
-			if (GMT_is_fnan (z[k+1]) || GMT_is_fnan (z[k])) {
-				n_nan++;
-				continue;
-			}
-
-			/* Skip edge already has been used */
-
-			ij0 = GMT_IJ (j + j_off[k], i + i_off[k], nx);
-			edge_word = ij0 / 32 + k_off[k] * offset;
-			edge_bit = ij0 % 32;
-			if (edge[edge_word] & bit[edge_bit]) continue;
-
-			/* Skip if no zero-crossing on this edge */
-
-			if (z[k+1] * z[k] > 0.0) continue;
-
-			/* Here we have a crossing */
-
-			r = z[k+1] - z[k];
-
-			if (k%2) {	/* Cutting a S-N line */
-				if (k == 1) {
-					xk[1] = x0 + dx;
-					yk[1] = y0 - z[k]*dy/r;
-				}
-				else {
-					xk[3] = x0;
-					yk[3] = y0 + (1.0 + z[k]/r)*dy;
-				}
-			}
-			else {	/* Cutting a E-W line */
-				if (k == 0) {
-					xk[0] = x0 - z[k]*dx/r;
-					yk[0] = y0;
-				}
-				else {
-					xk[2] = x0 + (1.0 + z[k]/r)*dx;
-					yk[2] = y0 + dy;
-				}
-			}
-			kk = k;
-			n_cuts++;
-		}
-
-		if (n > m) {	/* Must try to allocate more memory */
-			n_alloc <<= 1;
-			m = n_alloc - 2;
-			xx = (double *) GMT_memory ((void *)xx, n_alloc, sizeof (double), "GMT_trace_contour");
-			yy = (double *) GMT_memory ((void *)yy, n_alloc, sizeof (double), "GMT_trace_contour");
-		}
-		if (n_cuts == 0) {	/* Close interior contour and return */
-			if (ij == ij_in) {	/* Close interior contour */
-				xx[n] = xx[0];
-				yy[n] = yy[0];
-				n++;
-			}
-			more = FALSE;
-			*nan_flag = n_nan;
-		}
-		else if (n_cuts == 1) {	/* Draw a line to this point and keep tracing */
-			xx[n] = xk[kk];
-			yy[n] = yk[kk];
-			n++;
-		}
-		else {	/* Saddle point, we decide to connect to the point nearest previous point */
-			k0_opposite = (k0 + 2) % 4;	/* But it cannot be on opposite side */
-			for (k = side = 0; k < 4; k++) {
-				if (k == k0 || k == k0_opposite) continue;
-				dr[side] = (xx[n-1]-xk[k])*(xx[n-1]-xk[k]) + (yy[n-1]-yk[k])*(yy[n-1]-yk[k]);
-				k_index[side++] = k;
-			}
-			kk = (dr[0] < dr[1]) ? k_index[0] : k_index[1];
-			xx[n] = xk[kk];
-			yy[n] = yk[kk];
-			n++;
-		}
-#else
-
-		for (k = n_nan = 0; k < 4; k++) {	/* Loop over box sides */
+		for (k = n_nan = 0; k < 4; k++) {	/* Loop over box sides and count possible exits */
 
 			/* Skip if NaN encountered */
 
@@ -3995,17 +3912,10 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 
 			if (k == k0) continue;
 
-			/* Skip if edge already has been used */
-
-			ij0 = GMT_IJ (j + j_off[k], i + i_off[k], nx);
-			edge_word = ij0 / 32 + k_off[k] * offset;
-			edge_bit = ij0 % 32;
-			if (edge[edge_word] & bit[edge_bit]) continue;
-
 			/* Here we have a new crossing */
 
 			kk = k;
-			n_cuts++;
+			n_exits++;
 		}
 		xk[4] = xk[0];
 
@@ -4015,17 +3925,20 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 			xx = (double *) GMT_memory ((void *)xx, n_alloc, sizeof (double), "GMT_trace_contour");
 			yy = (double *) GMT_memory ((void *)yy, n_alloc, sizeof (double), "GMT_trace_contour");
 		}
-		if (n_cuts == 0) {	/* Close interior contour and return */
-			if (ij == ij_in) {	/* Close interior contour */
-				xx[n] = xx[0];
-				yy[n] = yy[0];
-				n++;
-			}
+
+		/* These are the possible outcomes of n_exits:
+		   0: No exits. We must have struck a wall of NaNs
+		   1: One exit. Take it!
+		   2: Two exits is not possible!
+		   3: Three exits means we've entered on a saddle point
+		*/
+
+		if (n_exits == 0) {	/* We have hit a field of NaNs, finish contour */
 			more = FALSE;
 			*nan_flag = n_nan;
 			continue;
 		}
-		else if (n_cuts == 3) {	/* Saddle point: Turn to the correct side */
+		else if (n_exits == 3) {	/* Saddle point: Turn to the correct side */
 			k0_opposite = (k0 + 2) % 4;	/* Opposite side */
 			if (xk[k0] + xk[k0_opposite] > xk[k0+1] + xk[k0_opposite+1])
 				kk = (k0 + 1) % 4;
@@ -4049,17 +3962,19 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 			yy[n] = y0 + (1.0 - xk[3]) * dy;
 		}
 		n++;
-#endif
-		if (more) {	/* Mark this edge as used */
-			ij0 = GMT_IJ (j + j_off[kk], i + i_off[kk], nx);
-			edge_word = ij0 / 32 + k_off[kk] * offset;
-			edge_bit = ij0 % 32;
-			edge[edge_word] |= bit[edge_bit];
-		}
+
+		/* Mark the new edge as used */
+
+		ij0 = GMT_IJ (j + j_off[kk], i + i_off[kk], nx);
+		edge_word = ij0 / 32 + k_off[kk] * offset;
+		edge_bit = ij0 % 32;
+		edge[edge_word] |= bit[edge_bit];
 
 		if ((kk == 0 && j == ny - 1) || (kk == 1 && i == nx - 2) ||
-			(kk == 2 && j == 1) || (kk == 3 && i == 0))	/* Going out of grid */
+			(kk == 2 && j == 1) || (kk == 3 && i == 0)) {	/* Going out of grid */
 			more = FALSE;
+			continue;
+		}
 
 		/* Get next box (i,j,kk) */
 
