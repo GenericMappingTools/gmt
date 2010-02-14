@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.283 2010-02-09 03:13:39 guru Exp $
+ *	$Id: gmt_plot.c,v 1.284 2010-02-14 00:46:45 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1373,7 +1373,8 @@ void GMT_map_latline (double lat, double west, double east)		/* Draws a line of 
 	if (GMT_parallel_straight) {	/* Simplify to a 2-point straight line */
 		GMT_x_plot[1] = GMT_x_plot[GMT_n_plot-1];
 		GMT_y_plot[1] = GMT_y_plot[GMT_n_plot-1];
-		ps_line (GMT_x_plot, GMT_y_plot, (GMT_LONG)2, 3, FALSE);
+		GMT_pen[1] = GMT_pen[GMT_n_plot-1];
+		GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, 2);
 	}
 	else
 		GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, GMT_n_plot);
@@ -1396,7 +1397,8 @@ void GMT_map_lonline (double lon, double south, double north)	/* Draws a line of
 	if (GMT_meridian_straight) {	/* Simplify to a 2-point straight line */
 		GMT_x_plot[1] = GMT_x_plot[GMT_n_plot-1];
 		GMT_y_plot[1] = GMT_y_plot[GMT_n_plot-1];
-		ps_line (GMT_x_plot, GMT_y_plot, (GMT_LONG)2, 3, FALSE);
+		GMT_pen[1] = GMT_pen[GMT_n_plot-1];
+		GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, 2);
 	}
 	else
 		GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, GMT_n_plot);
