@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v4.4.1 (CVS Apr 14 2009 14:34:07) Document from pscoast
+%%Title: GMT v4.5.3 (CVS Feb 14 2010 10:15:37) [64-bit] Document from pscoast
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Apr 14 14:41:29 2009
+%%CreationDate: Sun Feb 14 10:21:09 2010
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -28,7 +28,7 @@
 /K /setcmykcolor #
 /L /lineto #
 /M {stroke moveto}!
-/m {moveto}!
+/m /moveto #
 /N /newpath #
 /P /closepath #
 /R /rotate #
@@ -42,10 +42,10 @@
 /FP {true charpath flattenpath}!
 /MS {/savematrix matrix currentmatrix def}!
 /MR {savematrix setmatrix}!
-/O {M W 0 0 D S}!
+/O {S 3 -1 roll 0 360 arc P F S}!
 /X {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
 /x {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
-/FS {/fc exch def /fs {V fc F U}!}!
+/FS {/fc exch def /fs {V fc F U} def}!
 /FQ {/fs {} def}!
 /O0 {/os {N} def}!
 /O1 {/os {S} def}!
@@ -53,7 +53,7 @@
 /SV {0 exch M 0 D D D D D 0 D P fs os}!
 /Sv {0 0 M D D 0 D D D D D 0 D D P fs os}!
 /SB {M dup 0 D exch 0 exch D neg 0 D P fs os}!
-/SC {S 0 360 arc P fs os}!
+/SC {S 3 -1 roll 0 360 arc P fs os}!
 /SE {S MS T R scale 0 0 1 0 360 arc MR P fs os}!
 /SD {M 4 {dup} repeat 0 G neg dup dup D exch D D P fs os}!
 /SR {M MS R dup -2 div 0 G exch dup -2 div 0 exch G exch dup 0 D exch 0 exch D neg 0 D MR P fs os}!
@@ -64,7 +64,7 @@
 /SH {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR P fs os}!
 /SN {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR P fs os}!
 /SO {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR P fs os}!
-/SW {S /a1 exch def /a0 exch def /r exch def /y exch def dup y r a0 a1 arc y L P fs os}!
+/SW {S 2 copy 7 -3 roll arc L P fs os}!
 /PSL_reencode { findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding exch def currentdict end definefont pop
@@ -1127,12 +1127,12 @@ S
 -9 8 D
 -3 1 D
 S
-754 838 M
-2 -1 D
-0 1 D
-S
 741 833 M
 1 0 D
+0 1 D
+S
+754 838 M
+2 -1 D
 0 1 D
 S
 795 810 M
@@ -4641,12 +4641,12 @@ S
 -2 4 D
 2 0 D
 S
+780 1177 M
+0 -1 D
+S
 780 1176 M
 0 -1 D
 1 0 D
-S
-780 1177 M
-0 -1 D
 S
 706 1146 M
 1 1 D
@@ -5354,14 +5354,14 @@ S
 -1 1 D
 -1 -1 D
 S
+629 979 M
+0 2 D
+-1 -1 D
+S
 685 959 M
 0 1 D
 -1 1 D
 -2 -1 D
-S
-629 979 M
-0 2 D
--1 -1 D
 S
 626 980 M
 1 1 D
@@ -5784,6 +5784,18 @@ S
 1 0 D
 -2 -1 D
 S
+673 923 M
+1 1 D
+-1 -1 D
+0 2 D
+-1 0 D
+0 -1 D
+S
+657 926 M
+-1 3 D
+-2 -1 D
+-1 -1 D
+S
 679 922 M
 0 1 D
 -2 3 D
@@ -5798,23 +5810,25 @@ S
 -2 0 D
 3 4 D
 S
-673 923 M
-1 1 D
--1 -1 D
-0 2 D
--1 0 D
-0 -1 D
-S
-657 926 M
--1 3 D
--2 -1 D
--1 -1 D
-S
 661 926 M
 -1 3 D
 -1 -2 D
 0 2 D
 -2 -3 D
+S
+682 960 M
+-3 -2 D
+-1 0 D
+-1 4 D
+S
+626 980 M
+-1 0 D
+0 1 D
+S
+628 980 M
+-1 -1 D
+-2 1 D
+1 0 D
 S
 636 930 M
 0 1 D
@@ -5826,19 +5840,9 @@ S
 -1 1 D
 1 0 D
 S
-628 980 M
--1 -1 D
--2 1 D
-1 0 D
-S
-626 980 M
--1 0 D
-0 1 D
-S
-682 960 M
--3 -2 D
--1 0 D
--1 4 D
+661 925 M
+0 2 D
+0 -2 D
 S
 662 925 M
 0 1 D
@@ -5847,10 +5851,6 @@ S
 671 924 M
 0 1 D
 -2 -1 D
-S
-661 925 M
-0 2 D
-0 -2 D
 S
 602 911 M
 1 -4 D
@@ -6540,33 +6540,33 @@ S
 602 886 M
 -3 0 D
 S
-704 886 M
-2 0 D
-S
-672 924 M
--1 -3 D
-0 3 D
-S
 674 923 M
 -1 0 D
-S
-729 898 M
-0 1 D
-S
-662 925 M
--1 0 D
-S
-626 932 M
--1 -1 D
--1 1 D
 S
 635 930 M
 0 -1 D
 -1 1 D
 S
+729 898 M
+0 1 D
+S
+704 886 M
+2 0 D
+S
 661 925 M
 0 -1 D
 0 2 D
+S
+662 925 M
+-1 0 D
+S
+672 924 M
+-1 -3 D
+0 3 D
+S
+626 932 M
+-1 -1 D
+-1 1 D
 S
 570 860 M
 1 2 D
@@ -7411,29 +7411,29 @@ S
 1 0 D
 2 -1 D
 S
-660 846 M
-0 1 D
-1 -1 D
-S
 573 838 M
 2 3 D
 -2 -8 D
 S
-612 838 M
--1 0 D
+571 851 M
+1 -3 D
 -1 -1 D
-S
-701 886 M
--2 -2 D
-5 2 D
 S
 572 841 M
 4 7 D
 -4 -8 D
 S
-571 851 M
-1 -3 D
+612 838 M
+-1 0 D
 -1 -1 D
+S
+660 846 M
+0 1 D
+1 -1 D
+S
+701 886 M
+-2 -2 D
+5 2 D
 S
 574 832 M
 0 -1 D
@@ -8028,10 +8028,6 @@ S
 0 -2 D
 1 0 D
 S
-703 819 M
--1 1 D
-0 -1 D
-S
 589 778 M
 -1 1 D
 1 -1 D
@@ -8039,16 +8035,20 @@ S
 691 815 M
 -1 0 D
 S
-610 837 M
--2 -2 D
-1 2 D
-S
-661 846 M
-1 0 D
+703 819 M
+-1 1 D
+0 -1 D
 S
 726 858 M
 1 -1 D
 -1 1 D
+S
+661 846 M
+1 0 D
+S
+610 837 M
+-2 -2 D
+1 2 D
 S
 589 777 M
 0 1 D
@@ -8283,12 +8283,12 @@ S
 1 1 D
 -1 0 D
 S
+589 777 M
+0 1 D
+S
 704 820 M
 1 -2 D
 -2 1 D
-S
-589 777 M
-0 1 D
 S
 639 688 M
 1 0 D
@@ -10631,6 +10631,10 @@ S
 1 -1 D
 -2 0 D
 S
+998 578 M
+0 -1 D
+0 1 D
+S
 959 474 M
 0 -1 D
 S
@@ -10641,10 +10645,6 @@ S
 995 585 M
 0 -2 D
 1 -1 D
-S
-998 578 M
-0 -1 D
-0 1 D
 S
 {0.678 0.847 0.902 C} FS
 1117 486 M
@@ -11152,39 +11152,39 @@ S
 3 -3 D
 -5 3 D
 S
+1012 595 M
+-2 -2 D
+0 2 D
+S
 1081 446 M
 2 3 D
 1 -1 D
 1 1 D
 0 -1 D
 S
-1012 595 M
--2 -2 D
-0 2 D
-S
 998 578 M
 0 5 D
 -2 5 D
 -1 -3 D
 S
+996 582 M
+1 0 D
+-1 0 D
+S
 1073 443 M
 -1 0 D
-0 -1 D
-S
-1077 444 M
-0 2 D
 0 -1 D
 S
 1074 443 M
 1 1 D
 S
+1077 444 M
+0 2 D
+0 -1 D
+S
 1047 607 M
 -1 0 D
 0 1 D
-S
-996 582 M
-1 0 D
--1 0 D
 S
 1117 486 M
 -2 1 D
@@ -12700,15 +12700,15 @@ S
 1 1 D
 -2 -4 D
 S
-1094 1320 M
--1 -1 D
--1 0 D
-1 1 D
-S
 1043 1318 M
 2 0 D
 -1 0 D
 0 2 D
+S
+1094 1320 M
+-1 -1 D
+-1 0 D
+1 1 D
 S
 1044 1321 M
 3 2 D
@@ -12961,14 +12961,14 @@ S
 3 6 D
 3 2 D
 S
+1016 1349 M
+-2 -1 D
+-1 2 D
+S
 969 1356 M
 1 0 D
 0 2 D
 -1 1 D
-S
-1016 1349 M
--2 -1 D
--1 2 D
 S
 1044 1320 M
 0 1 D
@@ -14248,12 +14248,12 @@ P fs os
 2 2 D
 -2 -1 D
 S
-656 1285 M
-0 -1 D
--1 -4 D
--3 -3 D
-3 4 D
-0 4 D
+678 1133 M
+2 2 D
+5 2 D
+-1 1 D
+4 -1 D
+6 1 D
 S
 655 1286 M
 -3 1 D
@@ -14262,36 +14262,36 @@ S
 7 1 D
 1 2 D
 S
-678 1133 M
-2 2 D
-5 2 D
--1 1 D
-4 -1 D
-6 1 D
+656 1285 M
+0 -1 D
+-1 -4 D
+-3 -3 D
+3 4 D
+0 4 D
 S
 586 1262 M
 0 -1 D
 1 -1 D
 -2 1 D
 S
-602 1274 M
--6 -6 D
--6 -3 D
+635 1296 M
+-1 0 D
+S
+702 1144 M
+2 2 D
+2 0 D
 S
 639 1299 M
 0 -2 D
 0 2 D
 S
-635 1296 M
--1 0 D
+602 1274 M
+-6 -6 D
+-6 -3 D
 S
 641 1300 M
 1 -2 D
 -1 2 D
-S
-702 1144 M
-2 2 D
-2 0 D
 S
 574 1252 M
 0 -1 D
@@ -15745,13 +15745,13 @@ S
 2 -2 D
 4 5 D
 S
-473 1036 M
-0 -1 D
-0 1 D
-S
 476 1035 M
 -1 -2 D
 -1 3 D
+S
+473 1036 M
+0 -1 D
+0 1 D
 S
 477 1035 M
 -1 -2 D
@@ -16851,22 +16851,22 @@ S
 1 0 D
 3 3 D
 S
+571 855 M
+-1 -1 D
+1 -3 D
+S
+574 831 M
+-1 0 D
+S
+573 833 M
+1 -1 D
+S
 467 886 M
 1 0 D
 S
 570 861 M
 0 -2 D
 0 1 D
-S
-571 855 M
--1 -1 D
-1 -3 D
-S
-573 833 M
-1 -1 D
-S
-574 831 M
--1 0 D
 S
 432 727 M
 0 1 D
@@ -17478,13 +17478,13 @@ S
 2 -1 D
 1 -1 D
 S
-432 727 M
-0 1 D
-2 -7 D
-S
 583 775 M
 -1 1 D
 1 0 D
+S
+432 727 M
+0 1 D
+2 -7 D
 S
 434 720 M
 2 0 D
@@ -18603,12 +18603,12 @@ S
 1 -2 D
 3 -1 D
 S
-588 777 M
-1 0 D
-S
 589 776 M
 -1 0 D
 -1 1 D
+S
+588 777 M
+1 0 D
 S
 553 606 M
 -3 0 D
@@ -19344,19 +19344,19 @@ S
 2 -1 D
 0 -1 D
 S
-579 628 M
--3 0 D
-1 -1 D
--2 0 D
--1 -2 D
-0 -1 D
-S
 555 608 M
 -1 1 D
 -4 -2 D
 2 1 D
 0 -1 D
 1 0 D
+S
+579 628 M
+-3 0 D
+1 -1 D
+-2 0 D
+-1 -2 D
+0 -1 D
 S
 553 606 M
 -3 0 D
@@ -20048,14 +20048,6 @@ S
 -1 -1 D
 -1 0 D
 S
-555 609 M
-3 -2 D
--3 1 D
-S
-574 624 M
-0 -3 D
-0 3 D
-S
 631 582 M
 0 1 D
 1 0 D
@@ -20063,6 +20055,14 @@ S
 547 544 M
 2 1 D
 -1 -2 D
+S
+555 609 M
+3 -2 D
+-3 1 D
+S
+574 624 M
+0 -3 D
+0 3 D
 S
 635 587 M
 0 -1 D
@@ -21599,30 +21599,30 @@ S
 -3 1 D
 4 0 D
 S
-931 407 M
-2 -2 D
-1 1 D
-0 1 D
-S
 886 283 M
 4 5 D
 -2 6 D
 -2 1 D
 S
+931 407 M
+2 -2 D
+1 1 D
+0 1 D
+S
 886 296 M
 1 -1 D
 -1 4 D
 S
-982 343 M
--2 0 D
-2 0 D
+934 407 M
+1 0 D
 S
 986 320 M
 -2 -1 D
 1 2 D
 S
-934 407 M
-1 0 D
+982 343 M
+-2 0 D
+2 0 D
 S
 1082 347 M
 -4 -8 D
@@ -22493,15 +22493,15 @@ S
 2 1 D
 -1 1 D
 S
-1077 445 M
-0 -1 D
-3 1 D
-1 1 D
-S
 1081 350 M
 1 -1 D
 3 1 D
 -3 -3 D
+S
+1077 445 M
+0 -1 D
+3 1 D
+1 1 D
 S
 1074 443 M
 0 -1 D
@@ -25537,9 +25537,9 @@ S
 -1 1 D
 0 -2 D
 S
-464 1240 M
+446 1255 M
 -1 2 D
--5 2 D
+-2 0 D
 S
 453 1249 M
 0 1 D
@@ -25549,9 +25549,9 @@ S
 -1 -1 D
 1 -4 D
 S
-446 1255 M
+464 1240 M
 -1 2 D
--2 0 D
+-5 2 D
 S
 352 1263 M
 3 0 D
@@ -26079,16 +26079,16 @@ S
 2 0 D
 -1 0 D
 S
+453 1249 M
+0 -1 D
+0 1 D
+S
 464 1240 M
 0 -1 D
 0 1 D
 S
 458 1244 M
 -3 3 D
-S
-453 1249 M
-0 -1 D
-0 1 D
 S
 320 1212 M
 -1 -1 D
@@ -27991,12 +27991,12 @@ S
 1 2 D
 -3 -1 D
 S
+345 520 M
+-1 1 D
+S
 344 521 M
 1 0 D
 -1 0 D
-S
-345 520 M
--1 1 D
 S
 548 543 M
 -1 0 D
@@ -32947,17 +32947,17 @@ S
 5 5 D
 -1 4 D
 S
-1414 1515 M
-3 1 D
-3 6 D
+1425 1525 M
+1 -2 D
+1 0 D
 S
 1404 1503 M
 0 1 D
 1 0 D
 S
-1425 1525 M
-1 -2 D
-1 0 D
+1414 1515 M
+3 1 D
+3 6 D
 S
 1421 1523 M
 3 2 D
@@ -37789,6 +37789,58 @@ S
 2 0 D
 -1 1 D
 S
+1442 14 M
+-1 3 D
+-1 1 D
+-5 0 D
+0 2 D
+-4 2 D
+1 0 D
+-2 4 D
+-5 7 D
+0 1 D
+-2 -1 D
+2 0 D
+1 -2 D
+-2 -1 D
+0 -2 D
+-2 1 D
+-1 1 D
+-1 -1 D
+-1 1 D
+-3 -1 D
+-1 6 D
+-4 -5 D
+-9 -2 D
+-1 -1 D
+3 0 D
+-1 -1 D
+0 -1 D
+-3 -2 D
+0 -2 D
+-3 -1 D
+4 7 D
+-6 -6 D
+-2 -1 D
+1 -1 D
+-1 1 D
+0 -4 D
+-1 -2 D
+-2 1 D
+0 -2 D
+7 -13 D
+22 0 D
+4 2 D
+1 1 D
+4 2 D
+1 1 D
+4 2 D
+1 1 D
+2 1 D
+1 1 D
+4 2 D
+1 1 D
+P fs os
 1340 99 M
 2 3 D
 3 1 D
@@ -37849,46 +37901,20 @@ S
 -4 -5 D
 -5 1 D
 0 -3 D
--1 3 D
-1 -3 D
--2 -1 D
-0 -2 D
--2 1 D
--1 1 D
--1 -1 D
--1 1 D
--3 -1 D
--1 6 D
--4 -5 D
--9 -2 D
--1 -1 D
-3 0 D
--1 -1 D
-0 -1 D
--3 -2 D
-0 -2 D
--3 -1 D
-4 7 D
--6 -6 D
--2 -1 D
+4 -5 D
 1 -1 D
--1 1 D
-0 -4 D
--1 -2 D
--2 1 D
-0 -2 D
-7 -13 D
-22 0 D
-1 1 D
-4 2 D
-3 1 D
+1 -3 D
+3 -3 D
+2 -1 D
+3 0 D
+1 -1 D
+1 -3 D
 2 2 D
 4 2 D
 2 2 D
-4 2 D
+6 3 D
 2 2 D
-3 1 D
-2 1 D
+4 2 D
 2 2 D
 2 1 D
 2 2 D
@@ -37896,7 +37922,7 @@ S
 2 2 D
 4 2 D
 2 2 D
-3 1 D
+4 2 D
 2 2 D
 2 1 D
 2 2 D
@@ -37905,11 +37931,7 @@ S
 2 1 D
 2 2 D
 2 1 D
-2 2 D
-2 1 D
-2 2 D
-4 2 D
-2 2 D
+3 3 D
 2 1 D
 2 2 D
 2 1 D
@@ -37919,7 +37941,7 @@ S
 2 1 D
 2 2 D
 2 1 D
-4 4 D
+1 2 D
 2 1 D
 2 2 D
 2 1 D
@@ -37927,13 +37949,12 @@ S
 2 1 D
 2 2 D
 2 1 D
-4 4 D
+1 2 D
 2 1 D
 2 2 D
 2 1 D
 2 2 D
 2 1 D
-2 2 D
 1 2 D
 -127 151 D
 -1 -1 D
@@ -38048,8 +38069,28 @@ P fs os
 -4 -5 D
 -5 1 D
 0 -3 D
--1 3 D
+4 -5 D
+1 -1 D
 1 -3 D
+3 -3 D
+2 -1 D
+3 0 D
+1 -1 D
+1 -3 D
+S
+1442 14 M
+-1 3 D
+-1 1 D
+-5 0 D
+0 2 D
+-4 2 D
+1 0 D
+-2 4 D
+-5 7 D
+0 1 D
+-2 -1 D
+2 0 D
+1 -2 D
 -2 -1 D
 0 -2 D
 -2 1 D
@@ -40549,12 +40590,12 @@ S
 0 4 D
 -3 0 D
 S
-1424 1525 M
-1 0 D
-S
 1425 1528 M
 0 -1 D
 0 2 D
+S
+1424 1525 M
+1 0 D
 S
 1424 1527 M
 -2 0 D
@@ -41606,7 +41647,23 @@ S
 -1 6 D
 -1 1 D
 1 2 D
-2 -1 D
+0 -1 D
+-1 1 D
+-1 -1 D
+-4 -2 D
+-1 -1 D
+-2 -1 D
+-1 -1 D
+-4 -2 D
+-1 -1 D
+-4 -2 D
+-1 -1 D
+-4 -2 D
+35 0 D
+P fs os
+1442 14 M
+1 -1 D
+2 0 D
 6 -7 D
 12 -3 D
 3 -3 D
@@ -41631,21 +41688,12 @@ S
 104 0 D
 -79 94 D
 -1 -2 D
--2 -2 D
 -2 -1 D
 -2 -2 D
 -2 -1 D
 -2 -2 D
 -2 -1 D
--4 -4 D
--2 -1 D
--2 -2 D
--2 -1 D
--2 -2 D
--2 -1 D
--2 -2 D
--2 -1 D
--4 -4 D
+-1 -2 D
 -2 -1 D
 -2 -2 D
 -2 -1 D
@@ -41653,13 +41701,17 @@ S
 -2 -1 D
 -2 -2 D
 -2 -1 D
+-1 -2 D
+-2 -1 D
 -2 -2 D
 -2 -1 D
 -2 -2 D
--4 -2 D
+-2 -1 D
 -2 -2 D
 -2 -1 D
 -2 -2 D
+-2 -1 D
+-3 -3 D
 -2 -1 D
 -2 -2 D
 -2 -1 D
@@ -41668,7 +41720,7 @@ S
 -2 -2 D
 -2 -1 D
 -2 -2 D
--3 -1 D
+-4 -2 D
 -2 -2 D
 -4 -2 D
 -2 -2 D
@@ -41676,25 +41728,17 @@ S
 -2 -2 D
 -2 -1 D
 -2 -2 D
--2 -1 D
--3 -1 D
+-4 -2 D
+-2 -2 D
+-6 -3 D
 -2 -2 D
 -4 -2 D
 -2 -2 D
--4 -2 D
--2 -2 D
--3 -1 D
--4 -2 D
--1 -1 D
-35 0 D
 P fs os
-1454 0 M
--4 3 D
--6 2 D
--1 6 D
--1 1 D
-1 2 D
-2 -1 D
+1442 14 M
+1 -1 D
+1 0 D
+1 0 D
 6 -7 D
 12 -3 D
 3 -3 D
@@ -41716,6 +41760,15 @@ P fs os
 7 -1 D
 7 -4 D
 6 -1 D
+S
+1454 0 M
+-4 3 D
+-6 2 D
+-1 6 D
+-1 1 D
+1 2 D
+0 -1 D
+-1 1 D
 S
 1731 177 M
 -1 0 D
@@ -42098,9 +42151,7 @@ P fs os
 0 807 D
 S
 1772 0 M
--243 243 D
--212 211 D
--376 376 D
+-831 830 D
 S
 1772 886 M
 -808 0 D
@@ -42112,9 +42163,7 @@ S
 0 -808 D
 S
 0 1772 M
-243 -243 D
-211 -212 D
-376 -376 D
+830 -831 D
 S
 0 886 M
 807 0 D
@@ -43964,32 +44013,23 @@ P S
 P S
 S 2 W
 886 0 M
-0 -22 D
-S
+0 -22 D S
 1772 0 M
-16 -16 D
-S
+16 -16 D S
 1772 886 M
-22 0 D
-S
+22 0 D S
 1772 1772 M
-16 16 D
-S
+16 16 D S
 886 1772 M
-0 22 D
-S
+0 22 D S
 0 1772 M
--16 16 D
-S
+-16 16 D S
 0 886 M
--22 0 D
-S
+-22 0 D S
 0 0 M
--16 -16 D
-S
+-16 -16 D S
 886 0 M
-0 -22 D
-S
+0 -22 D S
 0 0 M 58 F0 (0Ê) E /PSL_dim_w exch def FP pathbbox N /PSL_dim_h exch def pop /PSL_dim_d exch def pop
 886 -45 M V 90 R PSL_dim_w neg PSL_dim_h 2 div neg G 58 F0 (0Ê) Z U
 0 0 M 58 F0 (45Ê) E /PSL_dim_w exch def FP pathbbox N /PSL_dim_h exch def pop /PSL_dim_d exch def pop
@@ -44018,7 +44058,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 3.32551 setmiterlimit
 
 %% PostScript produced by:
-%%GMT:  psxy -JS0/90/15c -R315/20/135/20r -W3p/blue -A -M -L -O -K
+%%GMT:  psxy -JS0/90/15c -R315/20/135/20r -W3p/blue -A -m -L -O -K
 %%PROJ: stere 0.00000000 360.00000000 19.90000000 90.00000000 -6306685.935 6306685.935 -6306685.935 6306685.935 +proj=stere +lat_0=90 +lon_0=0 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 S 12 W
 S 0 0 1 C
@@ -44034,7 +44074,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 3.32551 setmiterlimit
 
 %% PostScript produced by:
-%%GMT:  psxy -JS0/90/15c -R315/20/135/20r -W2p -A -M -L -O -K
+%%GMT:  psxy -JS0/90/15c -R315/20/135/20r -W2p -A -m -L -O -K
 %%PROJ: stere 0.00000000 360.00000000 19.90000000 90.00000000 -6306685.935 6306685.935 -6306685.935 6306685.935 +proj=stere +lat_0=90 +lon_0=0 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 S 8 W
 S 0 A
@@ -44050,7 +44090,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 3.32551 setmiterlimit
 
 %% PostScript produced by:
-%%GMT:  psxy -JS0/90/15c -R315/20/135/20r -W2p/100 -A -M -L -O -K
+%%GMT:  psxy -JS0/90/15c -R315/20/135/20r -W2p/100 -A -m -L -O -K
 %%PROJ: stere 0.00000000 360.00000000 19.90000000 90.00000000 -6306685.935 6306685.935 -6306685.935 6306685.935 +proj=stere +lat_0=90 +lon_0=0 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 S 8 W
 S 0.392 A
@@ -44066,7 +44106,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 3.32551 setmiterlimit
 
 %% PostScript produced by:
-%%GMT:  pstext -JS0/90/15c -R315/20/135/20r -O -H -M -N
+%%GMT:  pstext -JS0/90/15c -R315/20/135/20r -O -H -m -N
 %%PROJ: stere 0.00000000 360.00000000 19.90000000 90.00000000 -6306685.935 6306685.935 -6306685.935 6306685.935 +proj=stere +lat_0=90 +lon_0=0 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 S 0 W
 S 0 A
