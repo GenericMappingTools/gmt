@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.705 2010-02-11 01:57:29 remko Exp $
+	$Id: ChangeLog,v 1.706 2010-02-14 00:46:45 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-02-13	pwessel
+	* greenspline.c:	Must insist that one of [-R -I], -N, or -T is specified.
+	
 2010-02-11	remko
 	* gmt_support.c:	Improved the way contours on saddle points are produced.
 
