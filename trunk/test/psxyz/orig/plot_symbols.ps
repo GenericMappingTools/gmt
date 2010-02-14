@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v4.4.1 (CVS Apr 14 2009 14:34:07) Document from psxyz
+%%Title: GMT v4.5.3 (CVS Feb 14 2010 10:15:37) [64-bit] Document from psxyz
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Apr 14 14:41:36 2009
+%%CreationDate: Sun Feb 14 10:21:16 2010
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -28,7 +28,7 @@
 /K /setcmykcolor #
 /L /lineto #
 /M {stroke moveto}!
-/m {moveto}!
+/m /moveto #
 /N /newpath #
 /P /closepath #
 /R /rotate #
@@ -42,10 +42,10 @@
 /FP {true charpath flattenpath}!
 /MS {/savematrix matrix currentmatrix def}!
 /MR {savematrix setmatrix}!
-/O {M W 0 0 D S}!
+/O {S 3 -1 roll 0 360 arc P F S}!
 /X {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
 /x {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
-/FS {/fc exch def /fs {V fc F U}!}!
+/FS {/fc exch def /fs {V fc F U} def}!
 /FQ {/fs {} def}!
 /O0 {/os {N} def}!
 /O1 {/os {S} def}!
@@ -53,7 +53,7 @@
 /SV {0 exch M 0 D D D D D 0 D P fs os}!
 /Sv {0 0 M D D 0 D D D D D 0 D D P fs os}!
 /SB {M dup 0 D exch 0 exch D neg 0 D P fs os}!
-/SC {S 0 360 arc P fs os}!
+/SC {S 3 -1 roll 0 360 arc P fs os}!
 /SE {S MS T R scale 0 0 1 0 360 arc MR P fs os}!
 /SD {M 4 {dup} repeat 0 G neg dup dup D exch D D P fs os}!
 /SR {M MS R dup -2 div 0 G exch dup -2 div 0 exch G exch dup 0 D exch 0 exch D neg 0 D MR P fs os}!
@@ -64,7 +64,7 @@
 /SH {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR P fs os}!
 /SN {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR P fs os}!
 /SO {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR P fs os}!
-/SW {S /a1 exch def /a0 exch def /r exch def /y exch def dup y r a0 a1 arc y L P fs os}!
+/SW {S 2 copy 7 -3 roll arc L P fs os}!
 /PSL_reencode { findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding exch def currentdict end definefont pop
@@ -533,71 +533,43 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 300 300 T
 
 %% PostScript produced by:
-%%GMT:  psxyz -Jx1i -R0/4/1/6 -P -B0g1 -M -Gred -W0.25p -E155/35 -S1i -X1i -Y1i -K
+%%GMT:  psxyz -Jx1i -R0/4/1/6 -P -B0g1 -m -Gred -W0.25p -E155/35 -S1i -X1i -Y1i -K
 %%PROJ: xy 0.00000000 4.00000000 1.00000000 6.00000000 0.000 4.000 1.000 6.000 +xy +a=6378137.000 +b=6356752.314245
 0 290.885 T
 S 0 A
 S 1 W
 0 0 M
-158 195 D
-159 195 D
-158 195 D
-159 195 D
+634 780 D
 S
 272 -73 M
-158 195 D
-159 195 D
-158 195 D
-159 195 D
+634 780 D
 S
 544 -145 M
-158 194 D
-159 195 D
-158 195 D
-159 195 D
+634 779 D
 S
 816 -218 M
-158 195 D
-159 195 D
-158 195 D
-159 195 D
+634 780 D
 S
 1088 -291 M
-158 195 D
-159 195 D
-316 390 D
+633 780 D
 S
 0 0 M
-272 -73 D
-272 -72 D
-544 -146 D
+1088 -291 D
 S
 127 156 M
-272 -73 D
-272 -72 D
-271 -73 D
-272 -73 D
+1087 -291 D
 S
 254 312 M
-271 -73 D
-272 -73 D
-272 -72 D
-272 -73 D
+1087 -291 D
 S
 380 468 M
-544 -146 D
-272 -72 D
-272 -73 D
+1088 -291 D
 S
 507 624 M
-544 -146 D
-272 -72 D
-272 -73 D
+1088 -291 D
 S
 634 780 M
-544 -146 D
-272 -72 D
-271 -73 D
+1087 -291 D
 S
 gsave
 
@@ -605,8 +577,7 @@ gsave
 /F12 {/Symbol findfont [0.938165 0 0.273952 0.611381 0 0] makefont exch scalefont setfont}!
 S 5 W
 0 0 M
-1088 -291 D
-S
+1088 -291 D S
 S 2 W
 /F0 {/Helvetica Y}!
 /F12 {/Symbol Y}!
@@ -618,8 +589,7 @@ gsave
 /F12 {/Symbol findfont [0.938165 0 0.273952 0.611381 0 0] makefont exch scalefont setfont}!
 S 5 W
 1721 489 M
--1087 291 D
-S
+-1087 291 D S
 S 2 W
 /F0 {/Helvetica Y}!
 /F12 {/Symbol Y}!
@@ -631,8 +601,7 @@ gsave
 /F12 {/Symbol findfont [0.669953 0 -0.383627 0.856145 0 0] makefont exch scalefont setfont}!
 S 5 W
 634 780 M
--634 -780 D
-S
+-634 -780 D S
 S 2 W
 /F0 {/Helvetica Y}!
 /F12 {/Symbol Y}!
@@ -644,8 +613,7 @@ gsave
 /F12 {/Symbol findfont [0.669953 0 -0.383627 0.856145 0 0] makefont exch scalefont setfont}!
 S 5 W
 1088 -291 M
-633 780 D
-S
+633 780 D S
 S 2 W
 /F0 {/Helvetica Y}!
 /F12 {/Symbol Y}!
@@ -656,7 +624,6 @@ S V
 1088 -291 D
 633 780 D
 -1087 291 D
-P
 eoclip N
 S 1 W
 S 8 W
@@ -997,71 +964,43 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 0 1200 T
 
 %% PostScript produced by:
-%%GMT:  psxyz -Jx1i -Jz1i -R0/4/1/6/0/3 -O -B0g1/0g1/0g1 -M -G0 -W0.25p -E155/35 -S1i -y4i -Q
+%%GMT:  psxyz -Jx1i -Jz1i -R0/4/1/6/0/3 -O -B0g1/0g1/0g1 -m -G0 -W0.25p -E155/35 -S1i -y4i
 %%PROJ: xy 0.00000000 4.00000000 1.00000000 6.00000000 0.000 4.000 1.000 6.000 +xy +a=6378137.000 +b=6356752.314245
 0 290.885 T
 S 0 A
 S 1 W
 0 0 M
-158 195 D
-159 195 D
-158 195 D
-159 195 D
+634 780 D
 S
 272 -73 M
-158 195 D
-159 195 D
-158 195 D
-159 195 D
+634 780 D
 S
 544 -145 M
-158 194 D
-159 195 D
-158 195 D
-159 195 D
+634 779 D
 S
 816 -218 M
-158 195 D
-159 195 D
-158 195 D
-159 195 D
+634 780 D
 S
 1088 -291 M
-158 195 D
-159 195 D
-316 390 D
+633 780 D
 S
 0 0 M
-272 -73 D
-272 -72 D
-544 -146 D
+1088 -291 D
 S
 127 156 M
-272 -73 D
-272 -72 D
-271 -73 D
-272 -73 D
+1087 -291 D
 S
 254 312 M
-271 -73 D
-272 -73 D
-272 -72 D
-272 -73 D
+1087 -291 D
 S
 380 468 M
-544 -146 D
-272 -72 D
-272 -73 D
+1088 -291 D
 S
 507 624 M
-544 -146 D
-272 -72 D
-272 -73 D
+1088 -291 D
 S
 634 780 M
-544 -146 D
-272 -72 D
-271 -73 D
+1087 -291 D
 S
 gsave
 
@@ -1069,8 +1008,7 @@ gsave
 /F12 {/Symbol findfont [0.938165 0 0.273952 0.611381 0 0] makefont exch scalefont setfont}!
 S 5 W
 0 0 M
-1088 -291 D
-S
+1088 -291 D S
 S 2 W
 /F0 {/Helvetica Y}!
 /F12 {/Symbol Y}!
@@ -1082,8 +1020,7 @@ gsave
 /F12 {/Symbol findfont [0.938165 0 0.273952 0.611381 0 0] makefont exch scalefont setfont}!
 S 5 W
 1721 489 M
--1087 291 D
-S
+-1087 291 D S
 S 2 W
 /F0 {/Helvetica Y}!
 /F12 {/Symbol Y}!
@@ -1095,8 +1032,7 @@ gsave
 /F12 {/Symbol findfont [0.669953 0 -0.383627 0.856145 0 0] makefont exch scalefont setfont}!
 S 5 W
 634 780 M
--634 -780 D
-S
+-634 -780 D S
 S 2 W
 /F0 {/Helvetica Y}!
 /F12 {/Symbol Y}!
@@ -1108,8 +1044,7 @@ gsave
 /F12 {/Symbol findfont [0.669953 0 -0.383627 0.856145 0 0] makefont exch scalefont setfont}!
 S 5 W
 1088 -291 M
-633 780 D
-S
+633 780 D S
 S 2 W
 /F0 {/Helvetica Y}!
 /F12 {/Symbol Y}!
@@ -1135,8 +1070,7 @@ gsave
 /F12 {/Symbol findfont [0.819152 0 0.242404 0.906308 0 0] makefont exch scalefont setfont}!
 S 5 W
 0 0 M
-0 737 D
-S
+0 737 D S
 S 2 W
 /F0 {/Helvetica Y}!
 /F12 {/Symbol Y}!

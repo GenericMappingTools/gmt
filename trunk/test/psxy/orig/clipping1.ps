@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v4.4.0 Document from psxy
+%%Title: GMT v4.5.3 (CVS Feb 14 2010 10:15:37) [64-bit] Document from psxy
 %%Creator: GMT
 %%For: remko
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Feb 15 14:40:13 2009
+%%CreationDate: Sun Feb 14 10:20:54 2010
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -28,7 +28,7 @@
 /K /setcmykcolor #
 /L /lineto #
 /M {stroke moveto}!
-/m {moveto}!
+/m /moveto #
 /N /newpath #
 /P /closepath #
 /R /rotate #
@@ -42,10 +42,10 @@
 /FP {true charpath flattenpath}!
 /MS {/savematrix matrix currentmatrix def}!
 /MR {savematrix setmatrix}!
-/O {M W 0 0 D S}!
+/O {S 3 -1 roll 0 360 arc P F S}!
 /X {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
 /x {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
-/FS {/fc exch def /fs {V fc F U}!}!
+/FS {/fc exch def /fs {V fc F U} def}!
 /FQ {/fs {} def}!
 /O0 {/os {N} def}!
 /O1 {/os {S} def}!
@@ -53,7 +53,7 @@
 /SV {0 exch M 0 D D D D D 0 D P fs os}!
 /Sv {0 0 M D D 0 D D D D D 0 D D P fs os}!
 /SB {M dup 0 D exch 0 exch D neg 0 D P fs os}!
-/SC {S 0 360 arc P fs os}!
+/SC {S 3 -1 roll 0 360 arc P fs os}!
 /SE {S MS T R scale 0 0 1 0 360 arc MR P fs os}!
 /SD {M 4 {dup} repeat 0 G neg dup dup D exch D D P fs os}!
 /SR {M MS R dup -2 div 0 G exch dup -2 div 0 exch G exch dup 0 D exch 0 exch D neg 0 D MR P fs os}!
@@ -64,7 +64,7 @@
 /SH {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR P fs os}!
 /SN {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR P fs os}!
 /SO {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR P fs os}!
-/SW {S /a1 exch def /a0 exch def /r exch def /y exch def dup y r a0 a1 arc y L P fs os}!
+/SW {S 2 copy 7 -3 roll arc L P fs os}!
 /PSL_reencode { findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding exch def currentdict end definefont pop
@@ -529,12 +529,12 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 0 setlinecap
 0 setlinejoin
-10 setmiterlimit
+3.32551 setmiterlimit
 300 225 T
 
 %% PostScript produced by:
 %%GMT:  psxy -JG0/90/4.5i -R-180/180/40/90 clipline1.xy -P -K -B30g10 -Wthick,red -X1i -Y0.75i
-%%PROJ: ortho -180.00000000 180.00000000 40.00000000 90.00000000 -4880475.866 4880475.866 -4880475.866 4880475.866 +unavailable +a=6371008.771 +b=6371008.771400
+%%PROJ: ortho -180.00000000 180.00000000 40.00000000 90.00000000 -4880475.866 4880475.866 -4880475.866 4880475.866 +unavailable +a=6371008.771 +b=6371008.771415
 S 4 W
 S 1 0 0 C
 675 1350 M
@@ -718,205 +718,109 @@ S 1 W
 0 -598 D
 S
 558 1340 M
-21 -122 D
-25 -142 D
-28 -158 D
-30 -167 D
+104 -589 D
 S
 444 1309 M
-42 -116 D
-50 -136 D
-55 -150 D
-58 -160 D
+205 -562 D
 S
 338 1260 M
-61 -107 D
-73 -126 D
-80 -138 D
-85 -147 D
+299 -518 D
 S
 241 1192 M
-79 -95 D
-93 -110 D
-104 -123 D
-109 -130 D
+385 -458 D
 S
 158 1109 M
-95 -79 D
-110 -93 D
-123 -104 D
-130 -109 D
+458 -385 D
 S
 90 1012 M
-107 -61 D
-126 -73 D
-138 -80 D
-147 -85 D
+518 -299 D
 S
 41 906 M
-116 -42 D
-136 -50 D
-150 -55 D
-160 -58 D
+562 -205 D
 S
 10 792 M
-122 -21 D
-142 -25 D
-158 -28 D
-167 -30 D
+589 -104 D
 S
 0 675 M
 598 0 D
 S
 10 558 M
-122 21 D
-142 25 D
-158 28 D
-167 30 D
+589 104 D
 S
 41 444 M
-116 42 D
-136 50 D
-150 55 D
-160 58 D
+562 205 D
 S
 90 338 M
-107 61 D
-126 73 D
-138 80 D
-147 85 D
+518 299 D
 S
 158 241 M
-95 79 D
-110 93 D
-123 104 D
-130 109 D
+458 385 D
 S
 241 158 M
-79 95 D
-93 110 D
-104 123 D
-109 130 D
+385 458 D
 S
 338 90 M
-61 107 D
-73 126 D
-80 138 D
-85 147 D
+299 518 D
 S
 444 41 M
-42 116 D
-50 136 D
-55 150 D
-58 160 D
+205 562 D
 S
 558 10 M
-21 122 D
-25 142 D
-28 158 D
-30 167 D
+104 589 D
 S
 675 0 M
 0 598 D
 S
 792 10 M
--21 122 D
--25 142 D
--28 158 D
--30 167 D
+-104 589 D
 S
 906 41 M
--42 116 D
--50 136 D
--55 150 D
--58 160 D
+-205 562 D
 S
 1012 90 M
--61 107 D
--73 126 D
--80 138 D
--85 147 D
+-299 518 D
 S
 1109 158 M
--79 95 D
--93 110 D
--104 123 D
--109 130 D
+-385 458 D
 S
 1192 241 M
--95 79 D
--110 93 D
--123 104 D
--130 109 D
+-458 385 D
 S
 1260 338 M
--107 61 D
--126 73 D
--138 80 D
--147 85 D
+-518 299 D
 S
 1309 444 M
--116 42 D
--136 50 D
--150 55 D
--160 58 D
+-562 205 D
 S
 1340 558 M
--122 21 D
--142 25 D
--158 28 D
--167 30 D
+-589 104 D
 S
 1350 675 M
 -598 0 D
 S
 1340 792 M
--122 -21 D
--142 -25 D
--158 -28 D
--167 -30 D
+-589 -104 D
 S
 1309 906 M
--116 -42 D
--136 -50 D
--150 -55 D
--160 -58 D
+-562 -205 D
 S
 1260 1012 M
--107 -61 D
--126 -73 D
--138 -80 D
--147 -85 D
+-518 -299 D
 S
 1192 1109 M
--95 -79 D
--110 -93 D
--123 -104 D
--130 -109 D
+-458 -385 D
 S
 1109 1192 M
--79 -95 D
--93 -110 D
--104 -123 D
--109 -130 D
+-385 -458 D
 S
 1012 1260 M
--61 -107 D
--73 -126 D
--80 -138 D
--85 -147 D
+-299 -518 D
 S
 906 1309 M
--42 -116 D
--50 -136 D
--55 -150 D
--58 -160 D
+-205 -562 D
 S
 792 1340 M
--21 -122 D
--25 -142 D
--28 -158 D
--30 -167 D
+-104 -589 D
 S
 675 1350 M
 0 -598 D
@@ -5272,44 +5176,31 @@ P S
 P S
 S 2 W
 675 1350 M
-0 22 D
-S
+0 22 D S
 338 1260 M
--12 19 D
-S
+-12 19 D S
 90 1012 M
--19 12 D
-S
+-19 12 D S
 0 675 M
--22 0 D
-S
+-22 0 D S
 90 338 M
--19 -12 D
-S
+-19 -12 D S
 338 90 M
--12 -19 D
-S
+-12 -19 D S
 675 0 M
-0 -22 D
-S
+0 -22 D S
 1012 90 M
-12 -19 D
-S
+12 -19 D S
 1260 338 M
-19 -12 D
-S
+19 -12 D S
 1350 675 M
-22 0 D
-S
+22 0 D S
 1260 1012 M
-19 12 D
-S
+19 12 D S
 1012 1260 M
-12 19 D
-S
+12 19 D S
 675 1350 M
-0 22 D
-S
+0 22 D S
 0 0 M 58 F0 (-180Ê) E /PSL_dim_w exch def FP pathbbox N /PSL_dim_h exch def pop /PSL_dim_d exch def pop
 675 1395 M V 2.84e-14 R PSL_dim_w 2 div neg 0 G 58 F0 (-180Ê) Z U
 0 0 M 58 F0 (-150Ê) E /PSL_dim_w exch def FP pathbbox N /PSL_dim_h exch def pop /PSL_dim_d exch def pop
@@ -6406,12 +6297,12 @@ S 0 A
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 0 setlinecap
 0 setlinejoin
-10 setmiterlimit
+3.32551 setmiterlimit
 600 1500 T
 
 %% PostScript produced by:
 %%GMT:  psxy -JG0/90/4.5i -R-180/180/0/90 clipline1.xy -O -B30g10 -Wthick,red -x2i -y5i
-%%PROJ: ortho -180.00000000 180.00000000 0.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771400
+%%PROJ: ortho -180.00000000 180.00000000 0.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
 S 4 W
 S 1 0 0 C
 789 1340 M
@@ -6758,205 +6649,109 @@ S 1 W
 0 -616 D
 S
 558 1340 M
-8 -45 D
-23 -130 D
-34 -196 D
-42 -236 D
+107 -607 D
 S
 444 1309 M
-16 -43 D
-45 -123 D
-68 -187 D
-82 -226 D
+211 -579 D
 S
 338 1260 M
-22 -40 D
-66 -114 D
-100 -172 D
-120 -208 D
+308 -534 D
 S
 241 1192 M
-30 -35 D
-84 -101 D
-128 -152 D
-154 -184 D
+396 -472 D
 S
 158 1109 M
-35 -30 D
-101 -84 D
-152 -128 D
-184 -154 D
+472 -396 D
 S
 90 1012 M
-40 -22 D
-114 -66 D
-172 -100 D
-208 -120 D
+534 -308 D
 S
 41 906 M
-43 -16 D
-123 -45 D
-187 -68 D
-226 -82 D
+579 -211 D
 S
 10 792 M
-45 -8 D
-130 -23 D
-196 -34 D
-236 -42 D
+607 -107 D
 S
 0 675 M
 616 0 D
 S
 10 558 M
-45 8 D
-130 23 D
-196 34 D
-236 42 D
+607 107 D
 S
 41 444 M
-43 16 D
-123 45 D
-187 68 D
-226 82 D
+579 211 D
 S
 90 337 M
-40 23 D
-114 66 D
-172 100 D
-208 120 D
+534 309 D
 S
 158 241 M
-35 30 D
-101 84 D
-152 128 D
-184 154 D
+472 396 D
 S
 241 158 M
-30 35 D
-84 101 D
-128 152 D
-154 184 D
+396 472 D
 S
 338 90 M
-22 40 D
-66 114 D
-100 172 D
-120 208 D
+308 534 D
 S
 444 41 M
-16 43 D
-45 123 D
-68 187 D
-82 226 D
+211 579 D
 S
 558 10 M
-8 45 D
-23 130 D
-34 196 D
-42 236 D
+107 607 D
 S
 675 0 M
 0 616 D
 S
 792 10 M
--8 45 D
--23 130 D
--34 196 D
--42 236 D
+-107 607 D
 S
 906 41 M
--16 43 D
--45 123 D
--68 187 D
--82 226 D
+-211 579 D
 S
 1012 90 M
--22 40 D
--66 114 D
--100 172 D
--120 208 D
+-308 534 D
 S
 1109 158 M
--30 35 D
--84 101 D
--128 152 D
--154 184 D
+-396 472 D
 S
 1192 241 M
--35 30 D
--101 84 D
--152 128 D
--184 154 D
+-472 396 D
 S
 1260 337 M
--40 23 D
--114 66 D
--172 100 D
--208 120 D
+-534 309 D
 S
 1309 444 M
--43 16 D
--123 45 D
--187 68 D
--226 82 D
+-579 211 D
 S
 1340 558 M
--45 8 D
--130 23 D
--196 34 D
--236 42 D
+-607 107 D
 S
 1350 675 M
 -616 0 D
 S
 1340 792 M
--45 -8 D
--130 -23 D
--196 -34 D
--236 -42 D
+-607 -107 D
 S
 1309 906 M
--43 -16 D
--123 -45 D
--187 -68 D
--226 -82 D
+-579 -211 D
 S
 1260 1012 M
--40 -22 D
--114 -66 D
--172 -100 D
--208 -120 D
+-534 -308 D
 S
 1192 1109 M
--35 -30 D
--101 -84 D
--152 -128 D
--184 -154 D
+-472 -396 D
 S
 1109 1192 M
--30 -35 D
--84 -101 D
--128 -152 D
--154 -184 D
+-396 -472 D
 S
 1012 1260 M
--22 -40 D
--66 -114 D
--100 -172 D
--120 -208 D
+-308 -534 D
 S
 906 1309 M
--16 -43 D
--45 -123 D
--68 -187 D
--82 -226 D
+-211 -579 D
 S
 792 1340 M
--8 -45 D
--23 -130 D
--34 -196 D
--42 -236 D
+-107 -607 D
 S
 675 1350 M
 0 -616 D
@@ -15149,44 +14944,31 @@ P S
 P S
 S 2 W
 675 1350 M
-0 22 D
-S
+0 22 D S
 338 1260 M
--12 19 D
-S
+-12 19 D S
 90 1012 M
--19 12 D
-S
+-19 12 D S
 0 675 M
--22 0 D
-S
+-22 0 D S
 90 337 M
--19 -11 D
-S
+-19 -11 D S
 338 90 M
--12 -19 D
-S
+-12 -19 D S
 675 0 M
-0 -22 D
-S
+0 -22 D S
 1012 90 M
-12 -19 D
-S
+12 -19 D S
 1260 337 M
-19 -11 D
-S
+19 -11 D S
 1350 675 M
-22 0 D
-S
+22 0 D S
 1260 1012 M
-19 12 D
-S
+19 12 D S
 1012 1260 M
-12 19 D
-S
+12 19 D S
 675 1350 M
-0 22 D
-S
+0 22 D S
 0 0 M 58 F0 (-180Ê) E /PSL_dim_w exch def FP pathbbox N /PSL_dim_h exch def pop /PSL_dim_d exch def pop
 675 1395 M V 5.68e-14 R PSL_dim_w 2 div neg 0 G 58 F0 (-180Ê) Z U
 0 0 M 58 F0 (-150Ê) E /PSL_dim_w exch def FP pathbbox N /PSL_dim_h exch def pop /PSL_dim_d exch def pop
