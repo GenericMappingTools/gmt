@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_contour.h,v 1.47 2010-01-05 01:15:44 guru Exp $
+ *	$Id: gmt_contour.h,v 1.48 2010-02-15 17:13:28 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -29,8 +29,6 @@
 
 #define GMT_CONTOUR_XLINE	1
 #define GMT_CONTOUR_XCURVE	2
-
-#define GMT_LAST_CONTOUR_SIDE	5
 
 struct GMT_XOVER {		/* Structure with info on all track cross-over */
 	double *x;		/* x or Longitude */

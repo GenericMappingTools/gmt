@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.51 2010-01-05 01:15:46 guru Exp $
+ *	$Id: gmt_support.h,v 1.52 2010-02-15 17:13:28 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -38,7 +38,7 @@ EXTERN_MSC BOOLEAN GMT_check_rgb (int *rgb);
 EXTERN_MSC int GMT_comp_double_asc (const void *p_1, const void *p_2);
 EXTERN_MSC int GMT_comp_float_asc (const void *p_1, const void *p_2);
 EXTERN_MSC int GMT_comp_int_asc (const void *p_1, const void *p_2);
-EXTERN_MSC GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, GMT_LONG *side, GMT_LONG *edge, GMT_LONG first, double **x_array, double **y_array);
+EXTERN_MSC GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, GMT_LONG *edge, BOOLEAN *first, double **x, double **y);
 EXTERN_MSC GMT_LONG GMT_cspline (double *x, double *y, GMT_LONG n, double *c);
 EXTERN_MSC GMT_LONG GMT_delaunay (double *x_in, double *y_in, GMT_LONG n, int **link);
 EXTERN_MSC GMT_LONG GMT_voronoi (double *x_in, double *y_in, GMT_LONG n, double *we, double **x_out, double **y_out);

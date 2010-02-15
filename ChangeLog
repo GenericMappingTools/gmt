@@ -1,9 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.707 2010-02-14 16:29:16 remko Exp $
+	$Id: ChangeLog,v 1.708 2010-02-15 17:13:28 remko Exp $
 -----------------------------------------------------------------------------------------
 
+2010-02-15	remko
+	* gmt_support.c:	Further improved internals of GMT_contour, GMT_trace_contour,
+				GMT_splice_contour, significantly reducing amount of code lines.
+				Removed GMT_start_contour. 
+
 2010-02-14	remko
-	* gmt_support.c:	Further improved internals of GMT_trace_contour
 	* grdcontour.c:		Reverting change of 2010-01-28 because closing a contour
 				crossing east-to-west or west-to-east also causes lines drawn across
 

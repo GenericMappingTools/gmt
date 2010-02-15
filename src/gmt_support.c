@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.439 2010-02-14 16:29:17 remko Exp $
+ *	$Id: gmt_support.c,v 1.440 2010-02-15 17:13:28 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -35,7 +35,7 @@
  *	GMT_boundcond_set	Set two rows of padding according to bound cond
  *	GMT_check_rgb		Check rgb for valid range
  *	GMT_chop 		Chops off any CR or LF at end of string
- *	GMT_chop_ext 		Chops off the trailing .xxx (file extension) 
+ *	GMT_chop_ext 		Chops off the trailing .xxx (file extension)
  *	GMT_comp_double_asc	Used when sorting doubles into ascending order [checks for NaN]
  *	GMT_comp_float_asc	Used when sorting floats into ascending order [checks for NaN]
  *	GMT_comp_int_asc	Used when sorting ints into ascending order
@@ -67,7 +67,6 @@
  *	GMT_rgb_to_hsv		Convert RGB to HSV
  *	GMT_sample_cpt		Resamples the current cpt table based on new z-array
  *	GMT_smooth_contour	Use Akima's spline to smooth contour
- *	GMT_start_trace		Subfunction used by GMT_trace_contour
  *	GMT_strlcmp		Compares strings (ignoring case) until first reaches null character
  *	GMT_strtok		Reiterant replacement of strtok
  *	GMT_trace_contour	Function that trace the contours in GMT_contours
@@ -99,10 +98,10 @@ struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths of pen
 };
 
 GMT_LONG GMT_polar_adjust(GMT_LONG side, double angle, double x, double y);
-GMT_LONG GMT_start_trace(float first, float second, GMT_LONG *edge, GMT_LONG edge_word, GMT_LONG edge_bit, size_t *bit);
-GMT_LONG GMT_trace_contour(float *grd, struct GRD_HEADER *header, double x0, double y0, GMT_LONG *edge, double **x_array, double **y_array, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG offset, size_t *bit, GMT_LONG *nan_flag);
+GMT_LONG GMT_trace_contour(float *grd, struct GRD_HEADER *header, BOOLEAN test, GMT_LONG *edge, double **x, double **y, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG offset, size_t *bit, GMT_LONG *nan_flag);
+void GMT_edge_contour (struct GRD_HEADER *header, GMT_LONG i, GMT_LONG j, GMT_LONG kk, double d, double *x, double *y);
 GMT_LONG GMT_smooth_contour(double **x_in, double **y_in, GMT_LONG n, GMT_LONG sfactor, GMT_LONG stype);
-GMT_LONG GMT_splice_contour(double **x, double **y, GMT_LONG n, double **x2, double **y2, GMT_LONG n2);
+GMT_LONG GMT_splice_contour(double **x, double **y, GMT_LONG n, double *x2, double *y2, GMT_LONG n2);
 void GMT_orient_contour (float *grd, struct GRD_HEADER *header, double *x, double *y, GMT_LONG n, GMT_LONG orient);
 void GMT_setcontjump (float *z, GMT_LONG nz);
 void GMT_rgb_to_hsv(int rgb[], double hsv[]);
@@ -1248,7 +1247,7 @@ GMT_LONG GMT_get_proj3D (char *line, double *az, double *el)
 {
 	GMT_LONG k, s, pos = 0, error = 0;
 	char p[GMT_LONG_TEXT], txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT];
-	
+
 	if ((k = sscanf (line, "%lf/%lf", az, el)) < 2) {
 		fprintf (stderr, "%s: Error in -E: (%s)  Syntax is -E<az>/<el>[+wlon0/lat0[/z0]][+vx0[cimp]/y0[cimp]]\n", GMT_program, line);
 		return 1;
@@ -1256,7 +1255,7 @@ GMT_LONG GMT_get_proj3D (char *line, double *az, double *el)
 	for (s = 0; line[s] && line[s] != '/'; s++);	/* Look for position of slash / */
 	for (k = 0; line[k] && line[k] != '+'; k++);	/* Look for +<options> strings */
 	if (!line[k] || k < s) return 0;	/* No + or a = before the slash, so we are done here */
-	
+
 	/* Decode new-style +separated substrings */
 
 	z_project.fixed = TRUE;
@@ -1439,7 +1438,7 @@ GMT_LONG GMT_read_cpt (char *cpt_file)
 	/* Opens and reads a color palette file in RGB, HSV, or CMYK of arbitrary length */
 
 	GMT_LONG n = 0, i, nread, annot, n_alloc = GMT_SMALL_CHUNK, color_model, id;
-#ifdef GMT_CPT2	
+#ifdef GMT_CPT2
 	GMT_LONG n_cat_records = 0;
 #endif
 	long k;
@@ -1461,7 +1460,7 @@ GMT_LONG GMT_read_cpt (char *cpt_file)
 
 	GMT_b_and_w = GMT_gray = TRUE;
 	GMT_continuous = GMT_cpt_pattern = FALSE;
-#ifdef GMT_CPT2	
+#ifdef GMT_CPT2
 	GMT_categorical = FALSE;
 #endif
 	color_model = gmtdefs.color_model;		/* Save the original setting since it may be modified by settings in the CPT file */
@@ -1602,7 +1601,7 @@ GMT_LONG GMT_read_cpt (char *cpt_file)
 			GMT_cpt_pattern = TRUE;
 		}
 		else {							/* Shades, RGB, HSV, or CMYK */
-#ifdef GMT_CPT2	
+#ifdef GMT_CPT2
 			if (nread == 3) {	/* Categorical cpt records with key color label */
 				GMT_lut[n].label = (char *)GMT_memory (VNULL, (GMT_LONG)(strlen (T2) + 1), sizeof (char), GMT_program);
 				strcpy (GMT_lut[n].label, T2);
@@ -1655,7 +1654,7 @@ GMT_LONG GMT_read_cpt (char *cpt_file)
 				sprintf (option, "%s/%s/%s", T5, T6, T7);
 				if (GMT_getrgb (option, GMT_lut[n].rgb_high)) error++;
 			}
-#ifdef GMT_CPT2	
+#ifdef GMT_CPT2
 			if (!GMT_categorical) {
 #endif
 				dz = GMT_lut[n].z_high - GMT_lut[n].z_low;
@@ -1664,9 +1663,9 @@ GMT_LONG GMT_read_cpt (char *cpt_file)
 					GMT_exit (EXIT_FAILURE);
 				}
 				GMT_lut[n].i_dz = 1.0 / dz;
-#ifdef GMT_CPT2	
+#ifdef GMT_CPT2
 			}
-#endif	
+#endif
 			/* Convert HSV to RGB, or vice versa, depending on what was read */
 			if (gmtdefs.color_model & GMT_READ_HSV) {
 				GMT_hsv_to_rgb (GMT_lut[n].rgb_low, GMT_lut[n].hsv_low);
@@ -1707,7 +1706,7 @@ GMT_LONG GMT_read_cpt (char *cpt_file)
 
 	if (fp != GMT_stdin) fclose (fp);
 
-#ifdef GMT_CPT2	
+#ifdef GMT_CPT2
 	if (GMT_categorical && n_cat_records != n) {
 		fprintf (stderr, "%s: GMT Fatal Error: Error when decoding %s as categorical cpt file - aborts!\n", GMT_program, cpt_file);
 		GMT_exit (EXIT_FAILURE);
@@ -1725,7 +1724,7 @@ GMT_LONG GMT_read_cpt (char *cpt_file)
 	GMT_lut = (struct GMT_LUT *) GMT_memory ((void *)GMT_lut, n, sizeof (struct GMT_LUT), "GMT_read_cpt");
 	GMT_n_colors = n;
 
-#ifdef GMT_CPT2	
+#ifdef GMT_CPT2
 	if (GMT_categorical) {	/* Set up fake ranges so CPT is continuous */
 		for (i = 0; i < GMT_n_colors; i++) {
 			if (i == (GMT_n_colors-1)) {
@@ -2424,17 +2423,17 @@ GMT_LONG GMT_intpol (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, do
 
 	}
 
-	if (down) GMT_intpol_reverse (x, u, n, m);	/* Must flip directions temporarily */	
-	
+	if (down) GMT_intpol_reverse (x, u, n, m);	/* Must flip directions temporarily */
+
 	if (clean) {	/* No NaNs to worry about */
 		err_flag = GMT_intpol_sub (x, y, n, m, u, v, mode);
 		if (err_flag != GMT_NOERROR) return (err_flag);
-		if (down) GMT_intpol_reverse (x, u, n, m);	/* Must flip directions back */	
+		if (down) GMT_intpol_reverse (x, u, n, m);	/* Must flip directions back */
 		return (GMT_NOERROR);
 	}
-	
+
 	/* Here input has NaNs so we need to treat it section by section */
-	
+
 	for (i = 0; i < m; i++) v[i] = GMT_d_NaN;	/* Initialize all output to NaN */
 	start_i = start_j = 0;
 	while (start_i < n && GMT_is_dnan (y[start_i])) start_i++;	/* First non-NaN data point */
@@ -2460,7 +2459,7 @@ GMT_LONG GMT_intpol (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u, do
 		while (start_i < n && GMT_is_dnan (y[start_i])) start_i++;	/* Next section's first non-NaN data point */
 	}
 
-	if (down) GMT_intpol_reverse (x, u, n, m);	/* Must flip directions back */	
+	if (down) GMT_intpol_reverse (x, u, n, m);	/* Must flip directions back */
 
 	return (GMT_NOERROR);
 }
@@ -2470,7 +2469,7 @@ GMT_LONG GMT_intpol_sub (double *x, double *y, GMT_LONG n, GMT_LONG m, double *u
 	GMT_LONG i, j;
 	GMT_LONG err_flag = 0;
 	double dx, x_min, x_max, *c = VNULL;
-	
+
 	/* Set minimum and maximum */
 
 	if (mode == 3) {
@@ -2633,7 +2632,7 @@ GMT_LONG GMT_alloc_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t elem
 	 * up by the allocated items (which is n_alloc * element_size).
 	 * module is the name of the module requesting the memory (main program or library function).
 	 */
-	
+
 	if (n_alloc == 0) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
 		n_alloc = (n == 0) ? GMT_min_meminc : n;
 		*ptr = NULL;	/* Initialize a new pointer to NULL before calling GMT_memory with it */
@@ -2647,30 +2646,10 @@ GMT_LONG GMT_alloc_memory (void **ptr, GMT_LONG n, GMT_LONG n_alloc, size_t elem
 		add = MAX (GMT_min_meminc, MIN (n_alloc/2, GMT_max_meminc));    /* Suggested increment from 50% rule, but no less than GMT_min_meminc */
 		n_alloc = MIN (add + n_alloc, LONG_MAX);        /* Limit n_alloc to LONG_MAX */
 		if (n >= n_alloc) n_alloc = n + 1;		/* If still not big enough, set n_alloc to n + 1 */
-#if OLDCRAP
-		GMT_LONG add;			/* The increment of memory (in items) */
-		double total;			/* Floating-point total memory */
-		BOOLEAN keep_trying = TRUE;	/* Keep increasing until we reach our goal */
-		while (keep_trying && n >= n_alloc) {	/* Must increase the allocation size. We use >= because we need to preallocate before array[n] is accessed */
-			add = MAX (1, MIN (n_alloc/2, GMT_max_meminc));	/* Suggested increment from to 50% rule, but no less than 1 item */
-			if (n_alloc > INT_MAX && sizeof (GMT_LONG) == 4) {	/* May potentially ask for too much under 32-bit systems */
-				/* Do the math in double to make sure we do not exceed max unsigned 4-byte int */
-				total = (double)n_alloc + (double)add;
-				if (total > (double)UINT_MAX) {	/* Too much, truncate to maximum possible size */
-					n_alloc = UINT_MAX;	/* Maximum items that can be allocated under 32-bit systems (given enough RAM)... */
-					keep_trying = FALSE;	/* ...and no sense in trying any further. */
-				}
-				else
-					n_alloc += add;		/* Ok to increment for now */
-			}
-			else
-				n_alloc += add;			/* Safe to do the usual addition without fear of overflow */
-		}
-#endif
 	}
 
 	/* Here n_alloc is set one way or another.  Do the actual [re]allocation */
-	
+
 	*ptr = GMT_memory (*ptr, n_alloc, element_size, module);
 	return (n_alloc);
 }
@@ -3385,7 +3364,7 @@ void GMT_contlabel_free (struct GMT_CONTOUR *G)
 	GMT_free ((void *)G->segment);
 	if (G->xp) GMT_free_table (G->xp);
 	if (G->f_n) {	/* Array for fixed points */
-		GMT_free ((void *)G->f_xy[GMT_X]);	
+		GMT_free ((void *)G->f_xy[GMT_X]);
 		GMT_free ((void *)G->f_xy[GMT_Y]);
 		if (G->f_label) {
 			for (i = 0; i < G->f_n; i++) if (G->f_label[i]) GMT_free ((void *)G->f_label[i]);
@@ -3485,7 +3464,7 @@ void GMT_get_radii_of_curvature (double x[], double y[], GMT_LONG n, double r[])
 	r[0] = r[n-1] = DBL_MAX;	/* Boundary conditions has zero curvature at end points so r = inf */
 }
 
-GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, GMT_LONG *side, GMT_LONG *edge, GMT_LONG first, double **x_array, double **y_array)
+GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, GMT_LONG *edge, BOOLEAN *first, double **x, double **y)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
@@ -3494,274 +3473,169 @@ GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_fa
 	 * or lower (orient = -1) than the contour value.
 	 */
 
-	static GMT_LONG i0, j0;
-	GMT_LONG ij, n = 0, n2;
-	GMT_LONG i, j, n_edges, edge_word, edge_bit, nx, ny, nans = 0;
-	BOOLEAN go_on = TRUE;
-	float z[2];
-	double x0, y0, r, west, east, south, north, dx, dy, xinc2, yinc2, *x, *y, *x2, *y2;
-	GMT_LONG offset;
-	size_t bit[32];
+	static GMT_LONG i0, j0, side;
+	GMT_LONG n = 0, n2, i, j, n_edges, nx, ny, nans = 0, offset;
+	double *x2, *y2;
+	static size_t bit[32];
 
 	nx = header->nx;	ny = header->ny;
-	west = header->x_min;	east = header->x_max;
-	south = header->y_min;	north = header->y_max;
-	dx = header->x_inc;	dy = header->y_inc;
-	xinc2 = (header->node_offset) ? 0.5 * dx : 0.0;
-	yinc2 = (header->node_offset) ? 0.5 * dy : 0.0;
-	x = *x_array;	y = *y_array;
 
 	n_edges = ny * (GMT_LONG) ceil (nx / 16.0);
 	offset = n_edges / 2;
 
 	/* Reset edge-flags to zero, if necessary */
-	if (first) {	/* Set i0,j0 for southern boundary */
+	if (*first) {	/* Set i0,j0 for southern boundary */
 		memset ((void *)edge, 0, (size_t)(n_edges * sizeof (GMT_LONG)));
 		i0 = 0;
 		j0 = ny - 1;
+		side = 0;
+		for (i = 1, bit[0] = 1; i < 32; i++) bit[i] = bit[i-1] << 1;
+		*first = FALSE;
 	}
-	for (i = 1, bit[0] = 1; i < 32; i++) bit[i] = bit[i-1] << 1;
 
-	switch (*side) {
-		case 0:	/* Southern boundary */
-			y0 = GMT_j_to_y (header->ny-1, header->y_min, header->y_max, header->y_inc, header->xy_off, header->ny);
-			for (i = i0, j = j0, ij = GMT_IJ (ny-1, i0, nx); go_on && i < nx-1; i++, ij++) {
-				edge_word = ij / 32;
-				edge_bit = ij % 32;
-				z[0] = grd[ij+1];
-				z[1] = grd[ij];
-				if (GMT_z_periodic) GMT_setcontjump (z, (GMT_LONG)2);
-				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
-					r = z[0] - z[1];
-					x0 = west + (i - z[1]/r)*dx + xinc2;
-					edge[edge_word] |= bit[edge_bit];
-					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 0, offset, bit, &nans);
-					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
-					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
-					go_on = FALSE;
+	if (side == 0) {	/* Southern boundary */
+		for (i = i0, j = j0; i < nx-1; i++) {
+			if ((n = GMT_trace_contour (grd, header, TRUE, edge, x, y, i, j, 0, offset, bit, &nans))) {
+				if (orient) GMT_orient_contour (grd, header, *x, *y, n, orient);
+				n = GMT_smooth_contour (x, y, n, smooth_factor, int_scheme);
+				i0 = i + 1;	j0 = j;
+				return (n);
+			}
+		}
+		if (n == 0) {	/* No more crossing of southern boundary, go to next side (east) */
+			i0 = nx - 2;
+			j0 = ny - 1;
+			side++;
+		}
+	}
+
+	if (side == 1) {	/* Eastern boundary */
+		for (i = i0, j = j0; j > 0; j--) {
+			if ((n = GMT_trace_contour (grd, header, TRUE, edge, x, y, i, j, 1, offset, bit, &nans))) {
+				if (orient) GMT_orient_contour (grd, header, *x, *y, n, orient);
+				n = GMT_smooth_contour (x, y, n, smooth_factor, int_scheme);
+				i0 = i;	j0 = j - 1;
+				return (n);
+			}
+		}
+		if (n == 0) {	/* No more crossing of eastern boundary, go to next side (north) */
+			i0 = nx - 2;
+			j0 = 1;
+			side++;
+		}
+	}
+
+	if (side == 2) {	/* Northern boundary */
+		for (i = i0, j = j0; i >= 0; i--) {
+			if ((n = GMT_trace_contour (grd, header, TRUE, edge, x, y, i, j, 2, offset, bit, &nans))) {
+				if (orient) GMT_orient_contour (grd, header, *x, *y, n, orient);
+				n = GMT_smooth_contour (x, y, n, smooth_factor, int_scheme);
+				i0 = i - 1;	j0 = j;
+				return (n);
+			}
+		}
+		if (n == 0) {	/* No more crossing of northern boundary, go to next side (west) */
+			i0 = 0;
+			j0 = 1;
+			side++;
+		}
+	}
+
+	if (side == 3) {	/* Western boundary */
+		for (i = i0, j = j0; j < ny; j++) {
+			if ((n = GMT_trace_contour (grd, header, TRUE, edge, x, y, i, j, 3, offset, bit, &nans))) {
+				if (orient) GMT_orient_contour (grd, header, *x, *y, n, orient);
+				n = GMT_smooth_contour (x, y, n, smooth_factor, int_scheme);
+				i0 = i;	j0 = j + 1;
+				return (n);
+			}
+		}
+		if (n == 0) {	/* No more crossing of western boundary, go to next side (vertical internals) */
+			i0 = 1;
+			j0 = 1;
+			side++;
+		}
+	}
+
+	if (side == 4) {	/* Then loop over interior boxes (vertical edges) */
+		for (j = j0; j < ny; j++) {
+			for (i = i0; i < nx-1; i++) {
+				if ((n = GMT_trace_contour (grd, header, TRUE, edge, x, y, i, j, 3, offset, bit, &nans))) {
+					if (nans && (n2 = GMT_trace_contour (grd, header, FALSE, edge, &x2, &y2, i-1, j, 1, offset, bit, &nans))) {
+						/* Must trace in other direction, then splice */
+						n = GMT_splice_contour (x, y, n, x2, y2, n2);
+						GMT_free ((void *)x2);
+						GMT_free ((void *)y2);
+					}
+					if (orient) GMT_orient_contour (grd, header, *x, *y, n, orient);
+					n = GMT_smooth_contour (x, y, n, smooth_factor, int_scheme);
 					i0 = i + 1;	j0 = j;
+					return (n);
 				}
 			}
-			if (n == 0) {	/* No more crossing of southern boundary, go to next side (east) */
-				i0 = nx - 2;
-				j0 = ny - 1;
-				(*side)++;
-			}
-			break;
-
-		case 1:		/* Eastern boundary */
-
-			x0 = GMT_i_to_x (header->nx-1, header->x_min, header->x_max, header->x_inc, header->xy_off, header->nx);
-			for (j = j0, ij = GMT_IJ (j0 + 1, 0, nx) - 1, i = i0; go_on && j > 0; j--, ij -= nx) {
-				edge_word = ij / 32 + offset;
-				edge_bit = ij % 32;
-				z[0] = grd[ij-nx];
-				z[1] = grd[ij];
-				if (GMT_z_periodic) GMT_setcontjump (z, (GMT_LONG)2);
-				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
-					r = z[1] - z[0];
-					y0 = north - (j - z[1]/r) * dy - yinc2;
-					edge[edge_word] |= bit[edge_bit];
-					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 1, offset, bit, &nans);
-					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
-					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
-					go_on = FALSE;
-					i0 = i;	j0 = j - 1;
-				}
-			}
-			if (n == 0) {	/* No more crossing of eastern boundary, go to next side (north) */
-				i0 = nx - 2;
-				j0 = 1;
-				(*side)++;
-			}
-			break;
-
-		case 2:		/* Northern boundary */
-
-			y0 = GMT_j_to_y (0, header->y_min, header->y_max, header->y_inc, header->xy_off, header->ny);
-			for (i = i0, j = j0, ij = GMT_IJ (0, i0, nx); go_on && i >= 0; i--, ij--) {
-				edge_word = ij / 32;
-				edge_bit = ij % 32;
-				z[0] = grd[ij];
-				z[1] = grd[ij+1];
-				if (GMT_z_periodic) GMT_setcontjump (z, (GMT_LONG)2);
-				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
-					r = z[1] - z[0];
-					x0 = west + (i - z[0]/r)*dx + xinc2;
-					edge[edge_word] |= bit[edge_bit];
-					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 2, offset, bit, &nans);
-					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
-					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
-					go_on = FALSE;
-					i0 = i - 1;	j0 = j;
-				}
-			}
-			if (n == 0) {	/* No more crossing of northern boundary, go to next side (west) */
-				i0 = 0;
-				j0 = 1;
-				(*side)++;
-			}
-			break;
-
-		case 3:		/* Western boundary */
-
-			x0 = GMT_i_to_x (0, header->x_min, header->x_max, header->x_inc, header->xy_off, header->nx);
-			for (j = j0, ij = GMT_IJ (j, 0, nx), i = i0; go_on && j < ny; j++, ij += nx) {
-				edge_word = ij / 32 + offset;
-				edge_bit = ij % 32;
-				z[0] = grd[ij];
-				z[1] = grd[ij-nx];
-				if (GMT_z_periodic) GMT_setcontjump (z, (GMT_LONG)2);
-				if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
-					r = z[0] - z[1];
-					y0 = north - (j - z[0] / r) * dy - yinc2;
-					edge[edge_word] |= bit[edge_bit];
-					n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 3, offset, bit, &nans);
-					if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
-					n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
-					go_on = FALSE;
-					i0 = i;	j0 = j + 1;
-				}
-			}
-			if (n == 0) {	/* No more crossing of western boundary, go to next side (vertical internals) */
-				i0 = 1;
-				j0 = 1;
-				(*side)++;
-			}
-			break;
-
-		case 4:	/* Then loop over interior boxes (vertical edges) */
-
-			for (j = j0; go_on && j < ny; j++) {
-				ij = GMT_IJ (j, i0, nx);
-				for (i = i0; go_on && i < nx-1; i++, ij++) {
-					edge_word = ij / 32 + offset;
-					z[0] = grd[ij];
-					z[1] = grd[ij-nx];
-					edge_bit = ij % 32;
-					if (GMT_z_periodic) GMT_setcontjump (z, (GMT_LONG)2);
-					if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
-						r = z[0] - z[1];
-						x0 = west + i*dx + xinc2;
-						y0 = north - (j - z[0] / r) * dy - yinc2;
-						edge[edge_word] |= bit[edge_bit];
-						nans = 0;
-						n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 3, offset, bit, &nans);
-						if (nans) {	/* Must trace in other direction, then splice */
-							n2 = GMT_trace_contour (grd, header, x0, y0, edge, &x2, &y2, i-1, j, 1, offset, bit, &nans);
-							n = GMT_splice_contour (&x, &y, n, &x2, &y2, n2);
-							GMT_free ((void *)x2);
-							GMT_free ((void *)y2);
-						}
-						if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
-						n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
-						i0 = i + 1;
-						go_on = FALSE;
-						j0 = j;
-					}
-				}
-				if (go_on) i0 = 1;
-			}
-			if (n == 0) {	/* No more crossing of vertical internal edges, go to next side (horizontal internals) */
-				i0 = 0;
-				j0 = 1;
-				(*side)++;
-			}
-			break;
-
-		case 5:	/* Then loop over interior boxes (horizontal edges) */
-
-			for (j = j0; go_on && j < ny; j++) {
-				ij = GMT_IJ (j, i0, nx);
-				for (i = i0; go_on && i < nx-1; i++, ij++) {
-					edge_word = ij / 32;
-					z[0] = grd[ij];
-					z[1] = grd[ij+1];
-					edge_bit = ij % 32;
-					if (GMT_z_periodic) GMT_setcontjump (z, (GMT_LONG)2);
-					if (GMT_start_trace (z[0], z[1], edge, edge_word, edge_bit, bit)) { /* Start tracing contour */
-						r = z[1] - z[0];
-						x0 = west + (i - z[0]/r)*dx + xinc2;
-						y0 = north - j * dy - yinc2;
-						edge[edge_word] |= bit[edge_bit];
-						nans = 0;
-						n = GMT_trace_contour (grd, header, x0, y0, edge, &x, &y, i, j, 2, offset, bit, &nans);
-						if (nans) {	/* Must trace in other direction, then splice */
-							n2 = GMT_trace_contour (grd, header, x0, y0, edge, &x2, &y2, i-1, j, 0, offset, bit, &nans);
-							n = GMT_splice_contour (&x, &y, n, &x2, &y2, n2);
-							GMT_free ((void *)x2);
-							GMT_free ((void *)y2);
-						}
-						if (orient) GMT_orient_contour (grd, header, x, y, n, orient);
-						n = GMT_smooth_contour (&x, &y, n, smooth_factor, int_scheme);
-						i0 = i + 1;
-						go_on = FALSE;
-						j0 = j;
-					}
-				}
-				if (go_on) i0 = 1;
-			}
-			if (n == 0) (*side)++;
-			break;
-
-		default:
-			break;
+			i0 = 1;
+		}
+		if (n == 0) {	/* No more crossing of vertical internal edges, go to next side (horizontal internals) */
+			i0 = 0;
+			j0 = 1;
+			side++;
+		}
 	}
-	*x_array = x;	*y_array = y;
-	return (n);
+
+	if (side == 5) {	/* Then loop over interior boxes (horizontal edges) */
+		for (j = j0; j < ny; j++) {
+			for (i = i0; i < nx-1; i++) {
+				if ((n = GMT_trace_contour (grd, header, TRUE, edge, x, y, i, j, 2, offset, bit, &nans))) {
+					if (nans && (n2 = GMT_trace_contour (grd, header, FALSE, edge, &x2, &y2, i-1, j, 0, offset, bit, &nans))) {
+						/* Must trace in other direction, then splice */
+						n = GMT_splice_contour (x, y, n, x2, y2, n2);
+						GMT_free ((void *)x2);
+						GMT_free ((void *)y2);
+					}
+					if (orient) GMT_orient_contour (grd, header, *x, *y, n, orient);
+					n = GMT_smooth_contour (x, y, n, smooth_factor, int_scheme);
+					i0 = i + 1;	j0 = j;
+					return (n);
+				}
+			}
+			i0 = 1;
+		}
+	}
+
+	/* Nothing found */
+	return (0);
 }
 
-GMT_LONG GMT_start_trace (float first, float second, GMT_LONG *edge, GMT_LONG edge_word, GMT_LONG edge_bit, size_t *bit)
-{
-	/* First make sure we haven't been here before */
-
-	if ( (edge[edge_word] & bit[edge_bit]) ) return (FALSE);
-
-	/* Then make sure both points are real numbers */
-
-	if (GMT_is_fnan (first) ) return (FALSE);
-	if (GMT_is_fnan (second) ) return (FALSE);
-
-	/* Finally return TRUE if values of opposite sign */
-
-	return ( first * second < 0.0);
-}
-
-GMT_LONG GMT_splice_contour (double **x, double **y, GMT_LONG n, double **x2, double **y2, GMT_LONG n2)
+GMT_LONG GMT_splice_contour (double **x, double **y, GMT_LONG n, double *x2, double *y2, GMT_LONG n2)
 {	/* Basically does a "tail -r" on the array x,y and append arrays x2/y2 */
 
 	GMT_LONG i, j, m;
-	double *xtmp, *ytmp, *xa, *ya, *xb, *yb;
+	double *x1, *y1;
 
-	xa = *x;	ya = *y;
-	xb = *x2;	yb = *y2;
+	if (n2 < 2) return (n);		/* Nothing to be done when second piece < 2 points */
 
 	m = n + n2 - 1;	/* Total length since one point is shared */
 
-	/* First copy and reverse first contour piece */
+	/* Make more space */
 
-	xtmp = (double *) GMT_memory (VNULL, n, sizeof (double), "GMT_splice_contour");
-	ytmp = (double *) GMT_memory (VNULL, n, sizeof (double), "GMT_splice_contour");
+	x1 = *x;	y1 = *y;
+	x1 = (double *) GMT_memory ((void *)x1, m, sizeof (double), "GMT_splice_contour");
+	y1 = (double *) GMT_memory ((void *)y1, m, sizeof (double), "GMT_splice_contour");
 
-	memcpy ((void *)xtmp, (void *)xa, (size_t)(n * sizeof (double)));
-	memcpy ((void *)ytmp, (void *)ya, (size_t)(n * sizeof (double)));
+	/* Move first piece to the back */
 
-	xa = (double *) GMT_memory ((void *)xa, m, sizeof (double), "GMT_splice_contour");
-	ya = (double *) GMT_memory ((void *)ya, m, sizeof (double), "GMT_splice_contour");
+	for (i = m-1, j = n-1; j >= 0; j--, i--) {
+		x1[i] = x1[j];	y1[i] = y1[j];
+	}
 
-	for (i = 0; i < n; i++) xa[i] = xtmp[n-i-1];
-	for (i = 0; i < n; i++) ya[i] = ytmp[n-i-1];
+	/* Put second piece, in reverse, in the front */
 
-	/* Then append second piece */
+	for (i = n2-2, j = 1; j < n2; j++, i--) {
+		x1[i] = x2[j];	y1[i] = y2[j];
+	}
 
-	for (j = 1, i = n; j < n2; j++, i++) xa[i] = xb[j];
-	for (j = 1, i = n; j < n2; j++, i++) ya[i] = yb[j];
-
-	GMT_free ((void *)xtmp);
-	GMT_free ((void *)ytmp);
-
-	*x = xa;
-	*y = ya;
+	*x = x1;
+	*y = y1;
 
 	return (m);
 }
@@ -3774,7 +3648,8 @@ void GMT_orient_contour (float *grd, struct GRD_HEADER *h, double *x, double *y,
 	GMT_LONG ij, k, k2;
 	double fx[2], fy[2], dx, dy;
 
-	if (n < 2) return;	/* Cannot work on a single point */
+	if (orient == 0) return;	/* Nothing to be done when no orientation specified */
+	if (n < 2) return;		/* Cannot work on a single point */
 
 	for (k = 0; k < 2; k++) {	/* Calculate fractional node numbers from left/top */
 		fx[k] = (x[k] - h->x_min) / h->x_inc - h->xy_off;
@@ -3844,23 +3719,38 @@ void GMT_orient_contour (float *grd, struct GRD_HEADER *h, double *x, double *y,
 	}
 }
 
-GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, double y0, GMT_LONG *edge, double **x_array, double **y_array, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG offset, size_t *bit, GMT_LONG *nan_flag)
+GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, BOOLEAN test, GMT_LONG *edge, double **x, double **y, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG offset, size_t *bit, GMT_LONG *nan_flag)
 {
 	GMT_LONG n = 1, k, k0, n_exits, k0_opposite;
 	GMT_LONG m, n_nan, nx, ny, n_alloc;
 	GMT_LONG ij, ij_in, kk_in, edge_word, edge_bit, ij0;
 	BOOLEAN more;
 	float z[5];
-	double xk[5], west, north, dx, dy, xinc2, yinc2, *xx = NULL, *yy = NULL;
+	double xk[5], *xx = NULL, *yy = NULL;
 	GMT_LONG p[5];
 	static GMT_LONG i_off[5] = {0, 1, 0, 0, 0}, j_off[5] = {0, 0, -1, 0, 0}, k_off[5] = {0, 1, 0, 1, 0};
 
-	west = header->x_min;	north = header->y_max;
-	dx = header->x_inc;	dy = header->y_inc;
 	nx = header->nx;	ny = header->ny;
-	xinc2 = (header->node_offset) ? 0.5 * dx : 0.0;
-	yinc2 = (header->node_offset) ? 0.5 * dy : 0.0;
 	p[0] = p[4] = 0;	p[1] = 1;	p[2] = 1 - nx;	p[3] = -nx;
+	*nan_flag = 0;
+
+	/* Check if this edge was already used */
+
+	ij0 = GMT_IJ (j + j_off[kk], i + i_off[kk], nx);
+	edge_word = ij0 / 32 + k_off[kk] * offset;
+	edge_bit = ij0 % 32;
+ 	if (test && (edge[edge_word] & bit[edge_bit])) return (0);
+
+	ij_in = GMT_IJ (j, i, nx);
+	kk_in = kk;
+
+	/* First check if contour cuts the starting edge */
+
+	z[0] = grd[ij_in+p[kk]];
+	z[1] = grd[ij_in+p[kk+1]];
+	if (GMT_z_periodic) GMT_setcontjump (z, 2);
+
+	if (!(z[0] * z[1] < 0.0)) return (0);	/* This formulation will also return on NaN */
 
 	n_alloc = GMT_CHUNK;
 	m = n_alloc - 2;
@@ -3868,9 +3758,8 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 	xx = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "GMT_trace_contour");
 	yy = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "GMT_trace_contour");
 
-	xx[0] = x0;	yy[0] = y0;
-	ij_in = GMT_IJ (j, i, nx);
-	kk_in = kk;
+	GMT_edge_contour (header, i, j, kk, z[0] / (z[0] - z[1]), &(xx[0]), &(yy[0]));
+	edge[edge_word] |= bit[edge_bit];
 
 	more = TRUE;
 	do {
@@ -3884,8 +3773,6 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 			continue;
 		}
 
-		x0 = west + i * dx + xinc2;
-		y0 = north - j * dy - yinc2;
 		n_exits = 0;
 		k0 = kk;
 		for (k = 0; k < 5; k++) z[k] = grd[ij+p[k]];	/* Copy the 4 corners */
@@ -3930,7 +3817,7 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 		   0: No exits. We must have struck a wall of NaNs
 		   1: One exit. Take it!
 		   2: Two exits is not possible!
-		   3: Three exits means we've entered on a saddle point
+		   3: Three exits means we have entered on a saddle point
 		*/
 
 		if (n_exits == 0) {	/* We have hit a field of NaNs, finish contour */
@@ -3945,22 +3832,7 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 			else
 				kk = (k0 + 3) % 4;
 		}
-		if (kk == 0) {
-			xx[n] = x0 + xk[0] * dx;
-			yy[n] = y0;
-		}
-		else if (kk == 1) {
-			xx[n] = x0 + dx;
-			yy[n] = y0 + xk[1] * dy;
-		}
-		else if (kk == 2) {
-			xx[n] = x0 + (1.0 - xk[2]) * dx;
-			yy[n] = y0 + dy;
-		}
-		else {
-			xx[n] = x0;
-			yy[n] = y0 + (1.0 - xk[3]) * dy;
-		}
+		GMT_edge_contour (header, i, j, kk, xk[kk], &(xx[n]), &(yy[n]));
 		n++;
 
 		/* Mark the new edge as used */
@@ -3987,8 +3859,28 @@ GMT_LONG GMT_trace_contour (float *grd, struct GRD_HEADER *header, double x0, do
 	xx = (double *) GMT_memory ((void *)xx, n, sizeof (double), "GMT_trace_contour");
 	yy = (double *) GMT_memory ((void *)yy, n, sizeof (double), "GMT_trace_contour");
 
-	*x_array = xx;	*y_array = yy;
+	*x = xx;	*y = yy;
 	return (n);
+}
+
+void GMT_edge_contour (struct GRD_HEADER *header, GMT_LONG i, GMT_LONG j, GMT_LONG kk, double d, double *x, double *y)
+{
+	if (kk == 0) {
+		*x = GMT_i_to_x (i+d, header->x_min, header->x_max, header->x_inc, header->xy_off, header->nx);
+		*y = GMT_j_to_y (j, header->y_min, header->y_max, header->y_inc, header->xy_off, header->ny);
+	}
+	else if (kk == 1) {
+		*x = GMT_i_to_x (i+1, header->x_min, header->x_max, header->x_inc, header->xy_off, header->nx);
+		*y = GMT_j_to_y (j-d, header->y_min, header->y_max, header->y_inc, header->xy_off, header->ny);
+	}
+	else if (kk == 2) {
+		*x = GMT_i_to_x (i+1-d, header->x_min, header->x_max, header->x_inc, header->xy_off, header->nx);
+		*y = GMT_j_to_y (j-1, header->y_min, header->y_max, header->y_inc, header->xy_off, header->ny);
+	}
+	else {
+		*x = GMT_i_to_x (i, header->x_min, header->x_max, header->x_inc, header->xy_off, header->nx);
+		*y = GMT_j_to_y (j-1+d, header->y_min, header->y_max, header->y_inc, header->xy_off, header->ny);
+	}
 }
 
 GMT_LONG GMT_smooth_contour (double **x_in, double **y_in, GMT_LONG n, GMT_LONG sfactor, GMT_LONG stype)
@@ -4968,7 +4860,7 @@ GMT_LONG GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 		 * Since we want to obtain either ONE or ZERO intersections per segment we will skip to next
 		 * point if case (2) occurs: this avoids counting a crossing twice for consequtive segments.
 		 */
-		
+
 		/* First deal with case when the longitude of P goes ~right through the second of the line nodes */
 		in = i + 1;			/* Next point index */
 		lon2 = P->coord[GMT_X][in];	/* Copy the second of two longitudes since we may need to mess with them */
@@ -5127,13 +5019,13 @@ GMT_LONG GMT_voronoi (double *x_in, double *y_in, GMT_LONG n, double *we, double
 	 * all the structures use 4-byte ints (longs are used internally). */
 
 	triangulate ("zIQBv", &In, &Out, &vorOut);
-	
+
 	/* Determine output size for all edges */
-	
+
 	n_edges = vorOut.numberofedges;
  	x_edge = (double *) GMT_memory ((void *)NULL, (2*n_edges), sizeof (double), "GMT_voronoi");
  	y_edge = (double *) GMT_memory ((void *)NULL, (2*n_edges), sizeof (double), "GMT_voronoi");
-	
+
 	for (i = k = 0; i < n_edges; i++, k++) {
 		/* Always start at a Voronoi vertex so j is never -1 */
 		j2 = 2*vorOut.edgelist[k];
@@ -5596,7 +5488,7 @@ GMT_LONG GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo,
 			}
 			if (bok > 0) fprintf (stderr, "%s: Warning: Inconsistent grid values at North pole.\n", GMT_program);
 		}
-	
+
 		if (edgeinfo->gs) {
 			bok = 0;
 			if (GMT_is_fnan (a[js + iw])) {
@@ -6054,7 +5946,7 @@ GMT_LONG GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 		}
 	}
 	ms->length = atof (txt_len);
-	
+
 	if (ms->gave_xy) {	/* Convert user's x/y position to inches */
 		ms->x0 = GMT_convert_units (txt_a, GMT_INCH);
 		ms->y0 = GMT_convert_units (txt_b, GMT_INCH);
@@ -6106,7 +5998,7 @@ GMT_LONG GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 					ms->justify = p[1];
 					if (!(ms->justify == 'l' || ms->justify == 'r' || ms->justify == 't' || ms->justify == 'b')) bad++;
 					break;
-				
+
 				case 'p':	/* Pen specification */
 					if (GMT_getpen (&p[1], &ms->pen)) bad++;
 					ms->boxdraw = TRUE;
@@ -6116,7 +6008,7 @@ GMT_LONG GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 					if (p[1]) strcpy (ms->label, &p[1]);
 					ms->do_label = TRUE;
 					break;
-			
+
 				case 'u':	/* Add units to annotations */
 					ms->unit = TRUE;
 					break;
@@ -6129,13 +6021,13 @@ GMT_LONG GMT_getscale (char *text, struct GMT_MAP_SCALE *ms)
 		error += bad;
 		text[options] = '+';	/* Restore original string */
 	}
-	
+
 	if (error) {
 		fprintf (stderr, "%s: GMT SYNTAX ERROR -L option:  Correct syntax\n", GMT_program);
 		fprintf (stderr, "\t-L[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[m|n|k][+l<label>][+j<just>][+p<pen>][+f<fill>][+u]\n");
-		fprintf (stderr, "\t  Append m, n, or k for miles, nautical miles, or km [Default]\n");	
-		fprintf (stderr, "\t  Justification can be l, r, b, or t [Default]\n");	
-	}	
+		fprintf (stderr, "\t  Append m, n, or k for miles, nautical miles, or km [Default]\n");
+		fprintf (stderr, "\t  Justification can be l, r, b, or t [Default]\n");
+	}
 	ms->plot = TRUE;
 	return (error);
 }
@@ -6275,15 +6167,15 @@ GMT_LONG GMT_getrose (char *text, struct GMT_MAP_ROSE *ms)
 BOOLEAN GMT_gap_detected (void)
 {	/* Determine if two points are "far enough apart" to constitude a data gap and thus "pen up" */
 	GMT_LONG i;
-	
-	if (!GMT->common->g.active || GMT_io.pt_no == 0) return (FALSE);	/* Not active or on first point in a segment */ 
+
+	if (!GMT->common->g.active || GMT_io.pt_no == 0) return (FALSE);	/* Not active or on first point in a segment */
 	/* Here we must determine if any or all of the selected gap criteria [see GMT_set_gap_param] are met */
 	for (i = 0; i < GMT->common->g.n_methods; i++) {	/* Go through each criterion */
 		if ((GMT->common->g.get_dist[i] (GMT->common->g.col[i]) > GMT->common->g.gap[i]) != GMT->common->g.match_all) return (!GMT->common->g.match_all);
 	}
 	return (GMT->common->g.match_all);
 }
-	
+
 GMT_LONG GMT_minmaxinc_verify (double min, double max, double inc, double slop)
 {
 	double range;
@@ -7549,7 +7441,7 @@ GMT_LONG GMT_pow_array (double min, double max, double delta, GMT_LONG x_or_y, d
 		n = GMT_linear_array (v0, v1, delta, 0.0, &val);
 		for (i = 0; i < n; i++) GMT_y_inverse (&val[i], val[i]);
 	}
-	
+
 	*array = val;
 
 	return (n);
@@ -8006,7 +7898,7 @@ GMT_LONG GMT_prepare_label (double angle, GMT_LONG side, double x, double y, GMT
 		/* Fix until we write something that works for everything.  This is a global gnomonic map
 		 * so it is easy to fix the angles.  We get correct justify and make sure
 		 * the line_angle points away from the boundary */
-		
+
 		angle = fmod (2.0 * angle, 360.0) / 2.0;	/* 0-180 range */
 		if (angle > 90.0) angle -= 180.0;
 		*justify = GMT_gnomonic_adjust (side, angle, x, y);
@@ -8029,11 +7921,11 @@ void GMT_get_annot_label (double val, char *label, GMT_LONG do_minutes, GMT_LONG
 	char letter = 0, format[GMT_TEXT_LEN];
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
-	
+
 	if (GMT_plot_calclock.geo.order[1] == -1) do_minutes = FALSE;
 	if (GMT_plot_calclock.geo.order[2] == -1) do_seconds = FALSE;
 	for (k = n_items = 0; k < 3; k++) if (GMT_plot_calclock.geo.order[k] >= 0) n_items++;	/* How many of d, m, and s are requested as integers */
-	
+
 	if (lonlat == 0) {	/* Fix longitudes range first */
 		GMT_lon_range_adjust (GMT_plot_calclock.geo.range, &val);
 	}
@@ -8183,7 +8075,7 @@ GMT_LONG GMT_gnomonic_adjust (GMT_LONG side, double angle, double x, double y)
 	/* This is a kludge until we rewrite the entire justification stuff */
 	BOOLEAN inside;
 	double xp, yp;
-	
+
 	/* Create a point a small step away from (x,y) along the angle baseline
 	 * If it is inside the circle the we want right-justify, else left-justify. */
 	sincosd (angle, &yp, &xp);
@@ -9623,7 +9515,7 @@ void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void
 	/* Called from GMT_memory to update current list of memory allocated */
 	GMT_LONG entry, old;
 	void *use;
-	
+
 	if (!M) return;	/* Not initialized */
 	if (!M->active) return;	/* Not activated */
 	use = (prev_ptr) ? prev_ptr : ptr;
@@ -9656,7 +9548,7 @@ void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void
 void GMT_memtrack_sub (struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void *ptr) {
 	/* Called from GMT_free to remove memory pointer */
 	GMT_LONG entry;
-	
+
 	if (!M) return;	/* Not initialized */
 	if (!M->active) return;	/* Not activated */
 	entry = GMT_memtrack_find (M, ptr);
@@ -9699,7 +9591,7 @@ void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_en
 	GMT_LONG k, u, excess, report;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double tot, GMT_memtrack_mem (GMT_LONG mem, GMT_LONG *unit);
-	
+
 	if (!M) return;	/* Not initialized */
 	if (!M->active) return;	/* Not activated */
 	report = (M->current > 0);
@@ -9718,7 +9610,7 @@ void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_en
 			fprintf (stderr, "%s: Memory not freed first allocated in %s, line %ld is %.3f %s [%ld bytes]\n", GMT_program, M->item[k].name, M->item[k].line, tot, unit[u], M->item[k].size);
 		}
 	}
-	
+
 	free (M->item);
 	free ((void *)M);
 }
@@ -9748,7 +9640,7 @@ void GMT_memtrack_add (struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void
 	struct MEMORY_ITEM *entry;
 	struct MEMORY_ITEM * GMT_treeinsert (struct MEMORY_TRACKER *M, void *addr);
 	struct MEMORY_ITEM * GMT_memtrack_find (struct MEMORY_TRACKER *M, void *addr);
-	
+
 	if (!M) return;	/* Not initialized */
 	if (!M->active) return;	/* Not activated */
 	use = (prev_ptr) ? prev_ptr : ptr;
@@ -9783,7 +9675,7 @@ void GMT_memtrack_sub (struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void
 	struct MEMORY_ITEM *entry;
 	struct MEMORY_ITEM * GMT_memtrack_find (struct MEMORY_TRACKER *M, void *addr);
 	void GMT_treedelete (struct MEMORY_TRACKER *M, void *addr);
-	
+
 	if (!M) return;	/* Not initialized */
 	if (!M->active) return;	/* Not activated */
 	entry = GMT_memtrack_find (M, ptr);
@@ -9805,7 +9697,7 @@ void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_en
 	double tot, GMT_memtrack_mem (GMT_LONG mem, GMT_LONG *unit);
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	void GMT_treeprint (struct MEMORY_TRACKER *M, struct MEMORY_ITEM *x);
-	
+
 	if (!M) return;	/* Not initialized */
 	if (!M->active) return;	/* Not activated */
 	report = (M->current > 0);
@@ -9821,7 +9713,7 @@ void GMT_memtrack_report (struct MEMORY_TRACKER *M) {	/* Called at end of GMT_en
 		if (excess) fprintf (stderr, "%s: Items not properly freed: %ld\n", GMT_program, excess);
 		GMT_treeprint (M, M->list_head->r);
 	}
-	
+
 	free ((void *)M->list_head);
 	free ((void *)M->list_tail);
 	free ((void *)M);
