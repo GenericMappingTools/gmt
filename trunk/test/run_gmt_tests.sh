@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: run_gmt_tests.sh,v 1.13 2009-04-16 16:53:21 remko Exp $
+#	$Id: run_gmt_tests.sh,v 1.14 2010-02-16 15:30:43 remko Exp $
 #
 #	test script for GMT/test directory
 #
@@ -33,8 +33,6 @@ for dir in $dirs; do
 	# Look for Bourne shell scripts
 	list=`ls *.sh 2> /dev/null`
 	for script in $list; do
-		gmtdefaults -Du > .gmtdefaults4
-		gmtset PAPER_MEDIA letter
 		sh $script
 		rm -f .gmtdefaults4 .gmtcommands4
 	done
