@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.9 2009-04-12 15:29:21 remko Exp $
+#	$Id: functions.sh,v 1.10 2010-02-16 15:30:43 remko Exp $
 #
 # Functions to be used with test scripts
 
@@ -34,3 +34,7 @@ passfail () {
         	rm -f fail $1.log $1.png
 	fi
 }
+
+# Make sure to use US system defaults
+gmtdefaults -Du > .gmtdefaults4
+gmtset PAPER_MEDIA letter
