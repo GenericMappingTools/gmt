@@ -1,4 +1,4 @@
-#	$Id: GMT_old_unique_sites.d,v 1.1686 2010-02-16 13:00:05 guru Exp $
+#	$Id: GMT_old_unique_sites.d,v 1.1687 2010-02-17 13:00:06 guru Exp $
 #
 #	This is a list of unique, verified block-averaged locations
 #	of GMT registration sites.  It is obtained
@@ -1295,6 +1295,7 @@
 5	28	324
 20.25	28	1
 40.0833	28	113
+56	28	1
 62	28	37
 76	28	879
 77.0934	28.0932	174
