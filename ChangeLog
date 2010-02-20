@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.708 2010-02-15 17:13:28 remko Exp $
+	$Id: ChangeLog,v 1.709 2010-02-20 20:30:22 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-02-20	jluis
+	* gmt_init.c:		Chop off any eventual EOLs characters that might be in the -R 
+				string as it will happen when it was created by a shell command.
+				We need this so that native Win binaries can be used in Cygwin
 
 2010-02-15	remko
 	* gmt_support.c:	Further improved internals of GMT_contour, GMT_trace_contour,
