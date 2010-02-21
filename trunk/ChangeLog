@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.709 2010-02-20 20:30:22 jluis Exp $
+	$Id: ChangeLog,v 1.710 2010-02-21 18:02:21 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-02-21	jluis
+	* gmt2rgb.c:		Option -G was freeing the output name before it was even allocated.
+				This crashed the Windows binary.
 
 2010-02-20	jluis
 	* gmt_init.c:		Chop off any eventual EOLs characters that might be in the -R 
