@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.710 2010-02-21 18:02:21 jluis Exp $
+	$Id: ChangeLog,v 1.711 2010-02-21 21:24:33 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-02-21	jluis
@@ -7,8 +7,8 @@
 				This crashed the Windows binary.
 
 2010-02-20	jluis
-	* gmt_init.c:		Chop off any eventual EOLs characters that might be in the -R 
-				string as it will happen when it was created by a shell command.
+	* gmt_init.c:		Chop off any eventual EOLs characters that might be in argv
+				strings as it will happen when it was created by a shell command.
 				We need this so that native Win binaries can be used in Cygwin
 
 2010-02-15	remko
