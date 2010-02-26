@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.141 2010-01-05 01:15:49 guru Exp $
+ *	$Id: x2sys.c,v 1.142 2010-02-26 20:06:17 guru Exp $
  *
  *      Copyright (c) 1999-2010 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -504,15 +504,14 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
  
 int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, GMT_LONG *n_rec)
 {
-	/* Reads the entire contents of the file given and returns the
-	 * number of data records.  The data matrix is return in the
-	 * pointer data.
+	/* Reads the the file given and returns the selected columns (or all)
+	 * from all data records.  The data matrix is return in the pointer data.
 	 */
 
 	GMT_LONG i, j;
 	size_t n_alloc;
 	FILE *fp;
-	double **z, *rec;
+	double **z, *field;
 	char path[BUFSIZ];
 
 	if (x2sys_get_data_path (path, fname, s->suffix)) {
@@ -527,29 +526,30 @@ int x2sys_read_file (char *fname, double ***data, struct X2SYS_INFO *s, struct X
 
 	n_alloc = GMT_CHUNK;
 
-	rec = (double *) GMT_memory (VNULL, (size_t)s->n_fields, sizeof (double), "x2sys_read_file");
-	z = (double **) GMT_memory (VNULL, (size_t)s->n_fields, sizeof (double *), "x2sys_read_file");
-	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "x2sys_read_file");
+	field = (double *) GMT_memory (VNULL, (size_t)s->n_fields, sizeof (double), "x2sys_read_file");
+	z = (double **) GMT_memory (VNULL, (size_t)s->n_out_columns, sizeof (double *), "x2sys_read_file");
+	for (i = 0; i < s->n_out_columns; i++) z[i] = (double *) GMT_memory (VNULL, n_alloc, sizeof (double), "x2sys_read_file");
 	p->ms_rec = (GMT_LONG *) GMT_memory (VNULL, n_alloc, sizeof (GMT_LONG), "x2sys_read_file");
 	x2sys_skip_header (fp, s);
 	p->n_segments = (s->multi_segment) ? -1 : 0;	/* So that first increment sets it to 0 */
 
 	j = 0;
-	while (!x2sys_read_record (fp, rec, s, G)) {	/* Gets the next data record */
-		for (i = 0; i < s->n_fields; i++) z[i][j] = rec[i];
+	while (!x2sys_read_record (fp, field, s, G)) {	/* Gets the next data record */
+		/* Only copy the requested fields */
+		for (i = 0; i < s->n_out_columns; i++) z[i][j] = field[s->out_order[i]];
 		if (s->multi_segment && s->ms_next) p->n_segments++;
 		p->ms_rec[j] = p->n_segments;
 		j++;
 		if (j == (GMT_LONG)n_alloc) {	/* Get more */
 			n_alloc <<= 1;
-			for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory ((void *)z[i], n_alloc, sizeof (double), "x2sys_read_file");
+			for (i = 0; i < s->n_out_columns; i++) z[i] = (double *) GMT_memory ((void *)z[i], n_alloc, sizeof (double), "x2sys_read_file");
 			p->ms_rec = (GMT_LONG *) GMT_memory ((void *)p->ms_rec, n_alloc, sizeof (GMT_LONG), "x2sys_read_file");
 		}
 	}
 
 	fclose (fp);
-	GMT_free ((void *)rec);
-	for (i = 0; i < s->n_fields; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)j, sizeof (double), "x2sys_read_file");
+	GMT_free ((void *)field);
+	for (i = 0; i < s->n_out_columns; i++) z[i] = (double *) GMT_memory ((void *)z[i], (size_t)j, sizeof (double), "x2sys_read_file");
 	p->ms_rec = (GMT_LONG *) GMT_memory ((void *)p->ms_rec, (size_t)j, sizeof (GMT_LONG), "x2sys_read_file");
 
 	*data = z;
@@ -574,7 +574,7 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 	GMT_LONG i, j;
 	char path[BUFSIZ];
 	FILE *fp;
-	double **z;
+	double **z, field[6];
 	double NaN, t_off;
 	struct GMTMGG_REC record;
 
@@ -608,7 +608,6 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 	rata_day = GMT_rd_from_gymd (year, 1, 1);	/* Get the rata day for start of cruise year */
 	t_off = GMT_rdc2dt (rata_day, 0.0);		/* Secs to start of day */
 	
-	
 	if (fread ((void *)&n_records, sizeof (int), (size_t)1, fp) != 1) {
 		fprintf (stderr, "x2sys_read_gmtfile: Could not read n_records from %s\n", path);
 		return (GMT_GRDIO_READ_FAILED);
@@ -621,8 +620,8 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	z = (double **) GMT_memory (VNULL, (size_t)6, sizeof (double *), "x2sys_read_gmtfile");
-	for (i = 0; i < 6; i++) z[i] = (double *) GMT_memory (VNULL, (size_t)p->n_rows, sizeof (double), "x2sys_read_gmtfile");
+	z = (double **) GMT_memory (VNULL, (size_t)s->n_out_columns, sizeof (double *), "x2sys_read_gmtfile");
+	for (i = 0; i < s->n_out_columns; i++) z[i] = (double *) GMT_memory (VNULL, (size_t)p->n_rows, sizeof (double), "x2sys_read_gmtfile");
 
 	for (j = 0; j < p->n_rows; j++) {
 
@@ -630,14 +629,15 @@ int x2sys_read_gmtfile (char *fname, double ***data, struct X2SYS_INFO *s, struc
 			fprintf (stderr, "x2sys_read_gmtfile: Could not read record %ld from %s\n", j, path);
 			return (GMT_GRDIO_READ_FAILED);
 		}
-
-		z[0][j] = record.time * gmtdefs.time_system.i_scale + t_off;	/* To get GMT time keeping */
-		z[1][j] = record.lat * MDEG2DEG;
-		z[2][j] = record.lon * MDEG2DEG;
-		z[3][j] = (record.gmt[0] == GMTMGG_NODATA) ? NaN : 0.1 * record.gmt[0];
-		z[4][j] = (record.gmt[1] == GMTMGG_NODATA) ? NaN : record.gmt[1];
-		z[5][j] = (record.gmt[2] == GMTMGG_NODATA) ? NaN : record.gmt[2];
-
+		/* Convert the 6 items to doubles */
+		field[0] = record.time * gmtdefs.time_system.i_scale + t_off;	/* To get GMT time keeping */
+		field[1] = record.lat * MDEG2DEG;
+		field[2] = record.lon * MDEG2DEG;
+		field[3] = (record.gmt[0] == GMTMGG_NODATA) ? NaN : 0.1 * record.gmt[0];
+		field[4] = (record.gmt[1] == GMTMGG_NODATA) ? NaN : record.gmt[1];
+		field[5] = (record.gmt[2] == GMTMGG_NODATA) ? NaN : record.gmt[2];
+		/* Only copy the requested fields */
+		for (i = 0; i < s->n_out_columns; i++) z[i][j] = field[s->out_order[i]];
 	}
 
 	fclose (fp);

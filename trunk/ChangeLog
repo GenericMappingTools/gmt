@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.711 2010-02-21 21:24:33 guru Exp $
+	$Id: ChangeLog,v 1.712 2010-02-26 20:03:53 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-02-26	pwessel
+	* x2sys/x2sys.c:	Reading of data formats .gmt and custom returned all columns and
+				not just the requested columns, causing errors upstream.
+	* x2sys/x2sys_datalist.c:	Check to see if both lon and lat had been requested only
+				checked for longitude (twice).
+	* mgg/mgd77togmt.c:	Now has proper synopsis
 
 2010-02-21	jluis
 	* gmt2rgb.c:		Option -G was freeing the output name before it was even allocated.
