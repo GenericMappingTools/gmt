@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.13 2009-11-08 22:47:07 guru Exp $
+ *	$Id: wvs.h,v 1.14 2010-03-01 21:48:40 guru Exp $
  */
 /* wvs.h
  *
@@ -57,8 +57,8 @@ struct	SEG_HEADER {
 	struct LONGPAIR	last;	/* Last point in string  */
 };
 
-/* Note: Sibling number means which full resolution polygon matches a DP-reduced polygon in the h-i-l-c datasets.
-  For res = f the sibling number is not set, obviously. */
+/* Note: ancestor number means which full resolution polygon matches a DP-reduced polygon in the h-i-l-c datasets.
+  For res = f the ancestor number is not set, obviously. */
 
 struct GMT3_POLY {	/* Now 64-bit aligned */
 	int id;

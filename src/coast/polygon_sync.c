@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_sync.c,v 1.3 2009-06-13 00:04:53 guru Exp $
+ *	$Id: polygon_sync.c,v 1.4 2010-03-01 21:48:40 guru Exp $
  * Based on output of polygon_hierarchy, update the h-i-l-c files with
  * meta data from the full set.
  */
@@ -119,7 +119,7 @@ int main (int argc, char **argv) {
 			P[res][id2].h.north = P[FULL][father].h.north;
 			P[res][id2].h.datelon = P[FULL][father].h.datelon;
 			P[res][id2].h.source = P[FULL][father].h.source;
-			P[res][id2].h.greenwich += (P[FULL][father].h.id << 1);
+			P[res][id2].h.ancestor = P[FULL][father].h.id;
 			pol_writeheader (&P[res][id2].h, fp);
 			if (pol_fwrite (P[res][id2].p, P[res][id2].h.n, fp) != P[res][id2].h.n) {
 				fprintf(stderr,"polygon_xover:  ERROR  writing %d points from file %s.\n", P[res][id2].h.n, file);
