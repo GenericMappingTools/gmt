@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.67 2010-03-01 21:48:39 guru Exp $
+#	$Id: Makefile,v 1.68 2010-03-01 22:05:11 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -32,7 +32,7 @@ INCLUDES	= -I$(srcdir) $(NETCDF_INC) $(GDAL_INC)
 DEFINES		= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
 PREV_VERSION	= 2.0.2
 # These are the values to use for the next GMT version 4.5.3
-VERSION			= 4.4
+VERSION			= 4.5
 GSHHS_DATA_VERSION	= 2.0.3
 GSHHS_PROG_VERSION	= 1.12
 
