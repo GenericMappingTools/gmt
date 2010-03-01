@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.245 2010-01-09 20:55:30 guru Exp $
+ *	$Id: gmt_map.c,v 1.246 2010-03-01 01:56:01 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4968,12 +4968,12 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
  * P. Wessel, 2--9-05-07
  */
 
-GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx)
+GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n_orig, double **x, double **y, GMT_LONG *total_nx)
 {
-	GMT_LONG i, m, new_n, *x_index = NULL, *x_type = NULL;
+	GMT_LONG i, n, m, new_n, *x_index = NULL, *x_type = NULL;
 	GMT_LONG n_alloc, n_x_alloc;
 	GMT_LONG side, j, np, in = 1, n_cross = 0, out = 0, cross = 0;
-	BOOLEAN polygon, jump = FALSE, curved;
+	BOOLEAN polygon, jump = FALSE, curved, periodic = FALSE;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
 	double x1, x2, y1, y2;
 	PFL clipper[4], inside[4], outside[4];
@@ -4982,7 +4982,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	GMT_LONG dump = 0;
 #endif
 	
-	if (n == 0) return (0);
+	if ((n = n_orig) == 0) return (0);
 
 	/* Azimuthal polar projections have to be done the old way for the time being */
 
@@ -4998,6 +4998,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 	}
 	
 	if (jump) return (GMT_wesn_clip_old (lon, lat, n, x, y, total_nx));	/* Must do the old way for now */
+	periodic = GMT_360_RANGE (project_info.w, project_info.e);	/* No point clipping against W and E if periodic map */
 	
 	/* Here we can try the Sutherland/Hodgman algorithm */
 	
@@ -5039,6 +5040,14 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 
 		curved = !((side%2) ? GMT_meridian_straight : GMT_parallel_straight);	/* Is this border straight or curved when projected */
 		i_swap (in, out);	/* Swap what is input and output for clipping against this border */
+		if (side%2 && periodic) {	/* No clipping can take place on w or e border; just copy all and go to next side */
+			m = n;
+			if (m == n_alloc) n_alloc = GMT_alloc_memory4 ((void **)&xtmp[0], (void **)&ytmp[0], (void **)&xtmp[1], (void **)&ytmp[1], m, n_alloc, sizeof (double), "GMT_wesn_clip");
+			memcpy ((void *)xtmp[out], (void *)xtmp[in], (size_t)(m * sizeof (double)));
+			memcpy ((void *)ytmp[out], (void *)ytmp[in], (size_t)(m * sizeof (double)));
+			continue;
+		}
+		
 		/* Must ensure we copy the very first point if it is inside the clip rectangle */
 		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
 		for (i = 1; i < n; i++) {	/* For each line segment */
@@ -5082,8 +5091,16 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 					last_index = x_index[p];
 				}
 				if (x_type[p] == -1) {	/* Must add path from this exit to the next entry */
+					double start_lon, stop_lon;
 					p_next = (p == (n_cross-1)) ? 0 : p + 1;	/* index of the next crossing */
-					add = GMT_map_path (x_cpy[x_index[p]], y_cpy[x_index[p]], x_cpy[x_index[p_next]], y_cpy[x_index[p_next]], &x_add, &y_add);
+					start_lon = x_cpy[x_index[p]];	stop_lon = x_cpy[x_index[p_next]];
+					if (side%2 == 0 && periodic) {	/* Make sure we select the shortest longitude arc */
+						if ((x_cpy[x_index[p_next]] - x_cpy[x_index[p]]) < -180.0)
+							stop_lon += 360.0;
+						else if ((x_cpy[x_index[p_next]] - x_cpy[x_index[p]]) > +180.0)
+							stop_lon -= 360.0;
+					}
+					add = GMT_map_path (start_lon, y_cpy[x_index[p]], stop_lon, y_cpy[x_index[p_next]], &x_add, &y_add);
 					if ((new_n = (np+add)) >= n_alloc) n_alloc = GMT_alloc_memory4 ((void **)&xtmp[0], (void **)&ytmp[0], (void **)&xtmp[1], (void **)&ytmp[1], new_n, n_alloc, sizeof (double), "GMT_wesn_clip");
 					memcpy ((void *)&xtmp[out][np], (void *)x_add, (size_t)(add * sizeof (double)));
 					memcpy ((void *)&ytmp[out][np], (void *)y_add, (size_t)(add * sizeof (double)));

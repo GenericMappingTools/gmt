@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.712 2010-02-26 20:03:53 guru Exp $
+	$Id: ChangeLog,v 1.713 2010-03-01 01:56:01 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-02-28	pwessel
+	* gmt_map.c:		GMT_wesn_clip function would clip polygons even though
+				there were no restrictions on longitudes (w/e = 360).
 
 2010-02-26	pwessel
 	* x2sys/x2sys.c:	Reading of data formats .gmt and custom returned all columns and
