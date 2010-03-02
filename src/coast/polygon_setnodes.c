@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_setnodes.c,v 1.14 2009-11-08 22:47:07 guru Exp $
+ *	$Id: polygon_setnodes.c,v 1.15 2010-03-02 20:21:17 guru Exp $
  */
 /* polygon_setnodes is run on the final polygon file when all polygons
  * have had their level determined.  This program will determine
@@ -76,7 +76,7 @@ int main (int argc, char **argv)
 	
 	n_id = pos = 0;
 	while (pol_readheader (&blob[n_id].h, fp) == 1) {
-		cont_no = (blob[n_id].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
+		cont_no = (blob[n_id].h.continent);	/* Get continent number 1-6 (0 if not a continent) */
 		pos += sizeof (struct GMT3_POLY);
 		blob[n_id].start = pos;
 		if (pol_fread (&p, 1, fp) != 1) {
