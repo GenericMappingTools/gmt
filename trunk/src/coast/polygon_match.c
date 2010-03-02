@@ -1,5 +1,5 @@
 /*
- * $Id: polygon_match.c,v 1.5 2009-06-20 23:30:19 guru Exp $
+ * $Id: polygon_match.c,v 1.6 2010-03-02 20:21:17 guru Exp $
  * Compares the enw and old *.b files and looks for differences.
  * Currently set up for old using the previous GMT3_POLY structure
  * with endian swabbing while the new has the new structure and no
@@ -110,7 +110,7 @@ int main (int argc, char **argv) {
 	for (id1 = 0; id1 < n_A; id1++) {	/* For all polygons in the new file*/
 	
 		/* if (id1%10 == 0) fprintf (stderr, "Polygon %d\r", id1); */
-		cont_no_1 = (new_P[id1].h.river >> 8);	/* Get continent number 1-6 (0 if not a continent) */
+		cont_no_1 = (new_P[id1].h.continent);	/* Get continent number 1-6 (0 if not a continent) */
 
 		for (id2 = 0; new_P[id1].brother == NOT_PRESENT && id2 < n_B; id2++) {	/* For all polygons in the old file*/
 			if (old_P[id2].brother >= 0) continue;	/* Already determined to match another polygon */

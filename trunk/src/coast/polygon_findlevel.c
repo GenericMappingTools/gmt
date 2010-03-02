@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_findlevel.c,v 1.25 2010-03-01 21:48:39 guru Exp $
+ *	$Id: polygon_findlevel.c,v 1.26 2010-03-02 20:21:17 guru Exp $
  *
  * polygon_findlevel reads a binary file with polygons and will determine the
  * hierarchical level of all polygons (i.e., 1 is continent/island, 2 is lake, ...).
@@ -32,7 +32,7 @@ struct LONGPAIR *pp;
 
 int main (int argc, char **argv) {
 	int i, j, k, c, n_id, pos, id, id1, id2, idmax, intest, sign, max_level, n, cont_no_1, cont_no_2, n_of_this[6];
-	int n_reset = 0, old, bad = 0, ix0, set, force, full = 0, eur_id = 0, parent, *id2k = NULL;
+	int n_reset = 0, old, bad = 0, ix0, set, full = 0, eur_id = 0, parent, *id2k = NULL;
 	int *IX[N_CONTINENTS][2], *IY[N_CONTINENTS][2], N[N_CONTINENTS][2];
 	double size, f, x_shift;
 	FILE *fp = NULL, *fp2 = NULL, *fpx = NULL, *fpr = NULL;
@@ -57,7 +57,7 @@ int main (int argc, char **argv) {
 	
 	n_id = pos = 0;
 	while (pol_readheader (&blob[n_id].h, fp) == 1) {
-		cont_no_1 = (blob[n_id].h.river >> 8);		/* Get continent number 1-6 (0 if not a continent) */
+		cont_no_1 = (blob[n_id].h.continent);		/* Get continent number 1-6 (0 if not a continent) */
 		if (cont_no_1 == EURASIA) eur_id = n_id;	/* blob with Eurasia */
 
 		pos += sizeof (struct GMT3_POLY);
@@ -142,7 +142,7 @@ int main (int argc, char **argv) {
 #ifdef TEST
 		if (blob[id1].h.id != 0) continue;	/* Looking for 0 */
 #endif
-		cont_no_1 = (blob[id1].h.river >> 8);	/* Get continent nubmer 1-6 (0 if not a continent) */
+		cont_no_1 = (blob[id1].h.continent);	/* Get continent nubmer 1-6 (0 if not a continent) */
 		if (cont_no_1 == ANTARCTICA) continue;	/* But skip Antarctica since there are no lakes in the data set */
 		
 		if (id1%10 == 0) fprintf (stderr, "Polygon %d\r", id1);
@@ -166,7 +166,7 @@ int main (int argc, char **argv) {
 			if (blob[id2].h.id != 799) continue;	/* Looking for 799 */
 #endif
 			if (blob[id2].h.source == -1) continue;		/* Marked for deletion */
-			cont_no_2 = (blob[id2].h.river >> 8);		/* Get continent number 1-6 (0 if not a continent) */
+			cont_no_2 = (blob[id2].h.continent);		/* Get continent number 1-6 (0 if not a continent) */
 			if (cont_no_2) continue;			/* But skip continents since they cannot contain each other */
 			if (blob[id1].h.id == blob[id2].h.id) continue;	/* Skip self testing */
 			
