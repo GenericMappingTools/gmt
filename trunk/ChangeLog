@@ -1,6 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.713 2010-03-01 01:56:01 guru Exp $
+	$Id: ChangeLog,v 1.714 2010-03-02 18:53:33 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-03-02	pwessel
+	* x2sys/x2sys_get.c:	Added undocumented -d option to dump x2sys_index.b to text
+				to aid in debugging.
+	* mgd77/mgd77.c:	Incorrectly added track list =tracks.lis as another track name
+				after correctly including all the listed tracks. No harm done
+				other than an annoying "Cannot find track =tracks" message.
 
 2010-02-28	pwessel
 	* gmt_map.c:		GMT_wesn_clip function would clip polygons even though

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.253 2010-01-22 13:51:59 jluis Exp $
+ *	$Id: mgd77.c,v 1.254 2010-03-02 18:53:33 guru Exp $
  *
  *    Copyright (c) 2005-2010 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -2637,6 +2637,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 		}
 		else {
 			if (argv[j][0] == '-') continue;	/* Skip command line options, except first time if all */
+			if (argv[j][0] == '=') continue;	/* Already dealt with list of files */
 			/* Strip off any extension in case a user gave 12345678.mgd77 */
 			for (i = strlen (argv[j])-1; i >= 0 && argv[j][i] != '.'; i--);;	/* Wind back to last period (or get i == -1) */
 			if (i == -1) 
