@@ -1,5 +1,5 @@
 /*
- *	$Id: wvs.h,v 1.14 2010-03-01 21:48:40 guru Exp $
+ *	$Id: wvs.h,v 1.15 2010-03-02 22:37:29 guru Exp $
  */
 /* wvs.h
  *
@@ -9,10 +9,9 @@
 #include "gmt.h"
 #define _GMT_
 #define _WVS_H_
-#define WVSDIR "/Users/pwessel/GMTdev/GMT/src/coast"
 
-#define N_LONGEST     1450000         /* 1435084 to be exact */
-#define N_POLY		205000		/* 188281 to be exact */
+#define N_LONGEST     1450000         /* 1435084 to be exact [2.0: No longer true since we split Afreurasia into Africa and Eurasia ] */
+#define N_POLY		205000		/* 188571 to be exact [2.0.3] */
 #define M360 360000000
 #define M180 180000000
 #define M90   90000000
