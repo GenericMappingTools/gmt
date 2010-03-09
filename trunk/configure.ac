@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.80 2010-03-01 21:48:39 guru Exp $
-AC_REVISION($Revision: 1.80 $)
+dnl $Id: configure.ac,v 1.81 2010-03-09 17:33:42 guru Exp $
+AC_REVISION($Revision: 1.81 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -399,6 +399,7 @@ elif test ! "X$enable_matlab" = "X"; then
 		else
 			MATLAB=/Applications/$dir
 		fi
+		MEX_BLD="$MATLAB/bin/mex -DGMT_MATLAB"
 		if test "$chip" = "i386" ; then		#Intel Mac
 			MEX_EXT='mexmaci'
 			MATLAB_MEX='maci'
