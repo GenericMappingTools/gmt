@@ -1,11 +1,14 @@
 #
-#	$Id: functions.sh,v 1.11 2010-03-09 16:51:40 remko Exp $
+#	$Id: functions.sh,v 1.12 2010-03-09 18:55:53 remko Exp $
 #
 # Functions to be used with test scripts
 
 # Print the shell script name and purpose and fill out to 72 characters
+# and make sure to use US system defaults
 header () {
 	printf "%-72s" "$0: $1"
+	gmtdefaults -Du > .gmtdefaults4
+	gmtset PAPER_MEDIA letter
 }
 
 # Compare the ps file with its original. Check $1.ps (if $1 given) or $ps
@@ -36,7 +39,3 @@ passfail () {
 	fi
 	rm -f .gmtdefaults4 .gmtcommands4
 }
-
-# Make sure to use US system defaults
-gmtdefaults -Du > .gmtdefaults4
-gmtset PAPER_MEDIA letter
