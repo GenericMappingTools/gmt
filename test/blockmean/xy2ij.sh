@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: xy2ij.sh,v 1.10 2009-04-17 00:31:30 remko Exp $
+#	$Id: xy2ij.sh,v 1.11 2010-03-09 17:33:42 guru Exp $
 #
 # Test to make sure the (x,y) <--> (i,j) macros work correctly
 # We use -R0/5/0/5 -I1 for pixel and gridline registrations
@@ -55,7 +55,7 @@ header "Test blockmean's (x,y) <--> (i,j) conversions (plot)"
 
 # Connect the original point and the corresponding tile center
 paste pixel_xy.d pixel_ij.d | awk '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \
-	| psxy -R -JX4.5 -P -B1g1WSne -Wdefault -K -m -Y0.5i -X2i > $ps
+	| psxy -R0/5/0/5 -JX4.5 -P -B1g1WSne -Wdefault -K -m -Y0.5i -X2i > $ps
 # Plot and label the points
 psxy -R -J pixel.d -Sc0.125 -Gwhite -Wfaint -O -K -N >> $ps
 awk '{print $1, $2, 8, 0, 0, "CM", $3}' pixel.d | pstext -R -J -O -K -N >> $ps
