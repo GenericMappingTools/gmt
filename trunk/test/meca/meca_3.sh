@@ -1,12 +1,11 @@
 #!/bin/sh
-#	$Id: meca_3.sh,v 1.1 2010-01-24 19:53:51 remko Exp $
+#	$Id: meca_3.sh,v 1.2 2010-03-09 16:51:40 remko Exp $
 
 . ../functions.sh
 header "Test psmeca for plotting focal mechanisms (3)"
 
 ps=meca_3.ps
 
-\rm -f .gmtdefaults4
 gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i X_ORIGIN 2.5c Y_ORIGIN 1.3i HEADER_FONT_SIZE 18p
 
 # this is Harvard CMT for tibethan earthquake (1997)
@@ -86,7 +85,5 @@ pspolar -R -J -D87/35 -M4i -N -Sc0.3i -e -O \
 69 131.7 15 d
 70 114.1 15 c
 EOF
-
-rm -f .gmtdefaults4 .gmtcommands4
 
 pscmp

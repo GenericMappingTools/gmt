@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: meca_1.sh,v 1.1 2010-01-24 19:53:51 remko Exp $
+#	$Id: meca_1.sh,v 1.2 2010-03-09 16:51:40 remko Exp $
 #
 
 . ../functions.sh
@@ -38,7 +38,5 @@ EOF
 
 # hit the beach
 pscoast -O -R -J -W1 -Di >> $ps
-
-rm -f .gmtcommands4
 
 pscmp
