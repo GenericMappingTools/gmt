@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: psmeca.sh,v 1.2 2010-01-24 19:53:51 remko Exp $
+#	$Id: psmeca.sh,v 1.3 2010-03-09 16:51:40 remko Exp $
 #
 # Check psmeca for plotting beach balls
 
@@ -24,7 +24,5 @@ echo 2.0 1.0 0.0 45 45 -90 5 0 0 Normal | psmeca -Sa2.5c -Gblack -R -J -K -O >> 
 
 # Mixed
 echo 3.4 0.6 0.0 10 35 129 5 0 0 Mixed  | psmeca -Sa2.5c -Gblack -R -J -O >> $ps
-
-rm -f .gmtcommands4
 
 pscmp

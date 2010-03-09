@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: meca_2b.sh,v 1.1 2010-01-24 20:30:58 remko Exp $
+#	$Id: meca_2b.sh,v 1.2 2010-03-09 16:51:40 remko Exp $
 
 . ../functions.sh
 header "Test psmeca for plotting focal mechanisms (2b)"
@@ -73,6 +73,6 @@ pstext -X-5i -R0/10/0/15 -Jx1i -O << EOF >> $ps
 3 8.0 20 0 1 1 vertical cross-section
 EOF
 
-rm -f .gmtdefaults4 .gmtcommands4 Aa* Ab*
+rm -f Aa* Ab*
 
 pscmp

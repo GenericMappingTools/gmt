@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: meca_4.sh,v 1.1 2010-01-24 19:53:51 remko Exp $
+#	$Id: meca_4.sh,v 1.2 2010-03-09 16:51:40 remko Exp $
 #
 
 . ../functions.sh
@@ -7,7 +7,6 @@ header "Test psmeca for plotting focal mechanisms (4)"
 
 ps=meca_4.ps
 
-\rm -f .gmtdefaults4
 gmtset MEASURE_UNIT inch TICK_LENGTH 0.075i FRAME_WIDTH 0.1i X_ORIGIN 2.5c Y_ORIGIN 1.3i PAPER_MEDIA A4
 
 #     The example should plot some residual rates of  rotation  in
@@ -68,7 +67,5 @@ psvelo -H2 -Se0.2/0.39/18 -R-10/10/-10/10 -Jx0.2i/0.2i -O -Umeca_4 << EOF >> $ps
    5.     0.    -6.0    4.0     6.0    4.0 -0.300  -6x4
    0.    -5.     6.0   -4.0     6.0    4.0 -0.500  6x-4
 EOF
-
-rm -f .gmtdefaults4 .gmtcommands4
 
 pscmp

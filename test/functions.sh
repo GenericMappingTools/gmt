@@ -1,5 +1,5 @@
 #
-#	$Id: functions.sh,v 1.10 2010-02-16 15:30:43 remko Exp $
+#	$Id: functions.sh,v 1.11 2010-03-09 16:51:40 remko Exp $
 #
 # Functions to be used with test scripts
 
@@ -22,6 +22,7 @@ pscmp () {
         	echo "[FAIL]"
 		echo $f: RMS Error = $rms >> ../fail_count.d
 	fi
+	rm -f .gmtdefaults4 .gmtcommands4
 }
 
 passfail () {
@@ -33,6 +34,7 @@ passfail () {
         	echo "[PASS]"
         	rm -f fail $1.log $1.png
 	fi
+	rm -f .gmtdefaults4 .gmtcommands4
 }
 
 # Make sure to use US system defaults
