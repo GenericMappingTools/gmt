@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.440 2010-02-15 17:13:28 remko Exp $
+ *	$Id: gmt_support.c,v 1.441 2010-03-09 19:44:09 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4861,8 +4861,12 @@ GMT_LONG GMT_inonout_sphpol_count (double plon, double plat, const struct GMT_LI
 		 * point if case (2) occurs: this avoids counting a crossing twice for consequtive segments.
 		 */
 
-		/* First deal with case when the longitude of P goes ~right through the second of the line nodes */
 		in = i + 1;			/* Next point index */
+		/* First skip duplicate consecutive points */
+		/* if (GMT_IS_ZERO (P->coord[GMT_X][i] - P->coord[GMT_X][in]) && GMT_IS_ZERO (P->coord[GMT_Y][i] - P->coord[GMT_Y][in])) continue; */
+		/* First skip segments that have no actual length: consecutive points with both latitudes == -90 or +90 */
+		if (fabs (P->coord[GMT_Y][i]) == 90.0 && GMT_IS_ZERO (P->coord[GMT_Y][i] - P->coord[GMT_Y][in])) continue;
+		/* First deal with case when the longitude of P goes ~right through the second of the line nodes */
 		lon2 = P->coord[GMT_X][in];	/* Copy the second of two longitudes since we may need to mess with them */
 		if (GMT_IS_ZERO (plon - lon2) || GMT_IS_ZERO (fabs(plon - lon2) - 360.0)) continue;	/* Line goes through the 2nd node - ignore */
 		lon1 = P->coord[GMT_X][i];	/* Copy the first of two longitudes since we may need to mess with them */
