@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.716 2010-03-11 01:26:32 guru Exp $
+	$Id: ChangeLog,v 1.717 2010-03-11 14:27:14 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-03-11	remko
+	* ps2raster.c:		End matter did not get parsed when there is no %%Orientation.
 
 2010-03-10	pwessel
 	* gmt_map.c:		Tried to free memory when nothing had been allocated.
-	
+
 2010-03-09	pwessel
 	* pslegend.c:		Uninitialized text string could put garbage in script.
 
