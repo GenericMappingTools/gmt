@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.715 2010-03-09 19:44:09 guru Exp $
+	$Id: ChangeLog,v 1.716 2010-03-11 01:26:32 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-03-10	pwessel
+	* gmt_map.c:		Tried to free memory when nothing had been allocated.
+	
 2010-03-09	pwessel
 	* pslegend.c:		Uninitialized text string could put garbage in script.
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.246 2010-03-01 01:56:01 guru Exp $
+ *	$Id: gmt_map.c,v 1.247 2010-03-11 01:26:32 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -5104,7 +5104,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n_orig, double **x, d
 					if ((new_n = (np+add)) >= n_alloc) n_alloc = GMT_alloc_memory4 ((void **)&xtmp[0], (void **)&ytmp[0], (void **)&xtmp[1], (void **)&ytmp[1], new_n, n_alloc, sizeof (double), "GMT_wesn_clip");
 					memcpy ((void *)&xtmp[out][np], (void *)x_add, (size_t)(add * sizeof (double)));
 					memcpy ((void *)&ytmp[out][np], (void *)y_add, (size_t)(add * sizeof (double)));
-					GMT_free ((void *)x_add);	GMT_free ((void *)y_add);
+					if (add) { GMT_free ((void *)x_add);	GMT_free ((void *)y_add);}
 					np += add;
 					last_index = x_index[p_next];
 				}
