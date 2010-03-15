@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.83 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_io.h,v 1.84 2010-03-15 19:41:24 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -176,6 +176,7 @@ struct GMT_IO {				/* Used to process input data records */
 	BOOLEAN io_header[2];		/* TRUE if input/output data has header records */
 	BOOLEAN skip_bad_records;	/* TRUE if records where x and/or y are NaN or Inf */
 	BOOLEAN give_report;		/* TRUE if functions should report how many bad records were skipped */
+	BOOLEAN skip_duplicates;	/* TRUE if we should ignore duplicate x,y records */
 
 	GMT_LONG file_no;		/* Number of current file */
 	GMT_LONG ncol[2];		/* Number of expected columns of input/output
