@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.718 2010-03-15 19:41:24 guru Exp $
+	$Id: ChangeLog,v 1.719 2010-03-15 20:18:50 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-03-15	pwessel
@@ -10,6 +10,7 @@
 	* gmtselect.c:		Turns skip_duplicates on before reading polygons
 	* grdmask.c:		Turns skip_duplicates on before reading polygons
 	* grdmath.c:		Turns skip_duplicates on before reading polygons
+	* ps2raster.c:		Now checks that all PS files begin with %!PS.
 
 2010-03-11	remko
 	* ps2raster.c:		End matter did not get parsed when there is no %%Orientation.
