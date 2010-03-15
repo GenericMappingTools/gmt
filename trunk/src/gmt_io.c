@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.205 2010-01-11 19:48:49 guru Exp $
+ *	$Id: gmt_io.c,v 1.206 2010-03-15 19:41:24 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -718,6 +718,9 @@ GMT_LONG GMT_ascii_input (FILE *fp, GMT_LONG *n, double **ptr)
 				fprintf (stderr, "%s: (4) Input file in multiple segment format but the -m switch is not set.\n", GMT_program);
 			}
 		}
+		else if (GMT_io.skip_duplicates && GMT_io.pt_no) {	/* Skip duplicate records with same x,y */
+			done = !(GMT_curr_rec[GMT_X] == GMT_prev_rec[GMT_X] && GMT_curr_rec[GMT_Y] == GMT_prev_rec[GMT_Y]);
+		}
 		else
 			done = TRUE;
 	}
@@ -754,9 +757,9 @@ BOOLEAN GMT_is_a_blank_line (char *line) {
 GMT_LONG GMT_n_cols_needed_for_gaps (GMT_LONG n) {
 	GMT_LONG n_use;
 	/* Return the actual items needed (which may be more than n if gap testing demands it) and update previous record */
-	if (!GMT->common->g.active) return (n);	/* No gap checking, n it is */
 	n_use = MAX (n, GMT->common->g.n_col);
 	memcpy ((void *)GMT_prev_rec, (void *)GMT_curr_rec, (size_t)(n_use*sizeof (double)));
+	if (!GMT->common->g.active) return (n);	/* No gap checking, n it is */
 	return (n_use);
 }
 
@@ -771,9 +774,9 @@ GMT_LONG GMT_nc_input (FILE *fp, GMT_LONG *n, double **ptr)
 		fprintf (stderr, "%s: GMT_nc_input is asking for %ld columns, but file has only %d\n", GMT_program, *n, GMT_io.nvars);
 		GMT_io.status = GMT_IO_MISMATCH;
 	}
-	n_use = GMT_n_cols_needed_for_gaps (*n);
 	do {	/* Keep reading until (1) EOF, (2) got a multisegment record, or (3) a valid data record */
 
+		n_use = GMT_n_cols_needed_for_gaps (*n);
 		if (GMT_io.nrec == GMT_io.ndim) {
 			GMT_io.status = GMT_IO_EOF;
 			return (-1);
@@ -801,8 +804,8 @@ GMT_LONG GMT_bin_input (FILE *fp, GMT_LONG *n, double **ptr)
 	GMT_LONG status, n_use;
 
 	GMT_io.status = 0;
-	n_use = GMT_n_cols_needed_for_gaps (*n);
 	do {	/* Keep reading until (1) EOF, (2) got a multisegment record, or (3) a valid data record */
+		n_use = GMT_n_cols_needed_for_gaps (*n);
 		if ((*GMT_read_binary) (fp, n_use)) return (-1);	/* EOF */
 		GMT_io.rec_no++;
 		status = GMT_process_binary_input (n_use);
@@ -918,6 +921,9 @@ GMT_LONG GMT_process_binary_input (GMT_LONG n_read) {
 			fprintf (stderr, "%s: (2) Input file in multiple segment format but the -m switch is not set.\n", GMT_program);
 		}
 		return (2);	/* 2 means skip this record and try again */
+	}
+	else if (GMT_io.skip_duplicates && GMT_io.pt_no) {	/* Skip duplicate records with same x,y */
+		if (GMT_curr_rec[GMT_X] == GMT_prev_rec[GMT_X] && GMT_curr_rec[GMT_Y] == GMT_prev_rec[GMT_Y]) return (2);
 	}
 	if (gmtdefs.xy_toggle[GMT_IN]) d_swap (GMT_curr_rec[GMT_X], GMT_curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT_io.in_col_type[GMT_X] & GMT_IS_GEO) GMT_adjust_periodic ();		/* Must account for periodicity in 360 */
