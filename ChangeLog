@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.719 2010-03-15 20:18:50 guru Exp $
+	$Id: ChangeLog,v 1.720 2010-03-17 20:51:04 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-03-17	pwessel
+	* psxy.c:		The -Sw/W symbols did not handle the azimuth/direction conversions
+				properly.
+	* psxyz.c:		The -Sw/W machinery mistakenly converted angles to radians before
+				passing arguments to the plot functions.
 
 2010-03-15	pwessel
 	* gmt_io.c:		Added GMT_io.skip_duplicates [FALSE] to control if consecutive

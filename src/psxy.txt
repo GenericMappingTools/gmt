@@ -100,6 +100,8 @@ The option does not apply to lines and polygons which are always clipped to the 
 OPT(S)
 Plot symbols.  If present, \fIsize\fP is symbol size in the unit set in \.gmtdefaults4
 (unless \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP is appended).
+If \fIsize\fP is not given it is expected in the third (or 4th if OPT(C) is used) column.  Any
+additional fields are shifted over by one column.
 If the symbol code (see below) is not given it will be read from the last column in the input data;
 this cannot be used in conjunction with OPT(b).  Optionally, append
 \fBc\fP, \fBi\fP, \fBm\fP, \fBp\fP to indicate that the size information in the
