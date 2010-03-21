@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.193 2010-03-21 21:32:55 jluis Exp $
+ *	$Id: gmt.h,v 1.194 2010-03-21 22:02:14 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -89,8 +89,10 @@ extern "C" {
 #include <unistd.h>
 #endif
 
-#if defined(__LP64__) || defined(_WIN64)
+#if defined(__LP64__)
 #define GMT_abs(n) labs(n)
+#elif defined(_WIN64)
+#define GMT_abs(n) _abs64(n)
 #else
 #define GMT_abs(n) abs(n)
 #endif
