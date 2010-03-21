@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.442 2010-03-21 20:16:38 guru Exp $
+ *	$Id: gmt_support.c,v 1.443 2010-03-21 23:44:09 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -244,7 +244,7 @@ const char * GMT_strerror (GMT_LONG err)
 		case GMT_MAP_BAD_MEASURE_UNIT:
 			return "Bad meusurement unit.  Choose among cimp";
 		default:	/* default passes through to NC error */
-			return nc_strerror(err);
+			return nc_strerror ((int)err);
 	}
 }
 
@@ -4043,7 +4043,7 @@ void GMT_hold_contour (double **xxx, double **yyy, GMT_LONG nn, double zval, cha
 	GMT_LONG seg, first, n, *split;
 	double *xs, *ys, *xin, *yin;
 
-	if ((split = GMT_split_line (xxx, yyy, &nn, G->line_type)) == NULL) {	/* Just one long line */
+	if ((split = GMT_split_line (xxx, yyy, &nn, (BOOLEAN)G->line_type)) == NULL) {	/* Just one long line */
 		GMT_hold_contour_sub (xxx, yyy, nn, zval, label, ctype, cangle, closed, G);
 		return;
 	}

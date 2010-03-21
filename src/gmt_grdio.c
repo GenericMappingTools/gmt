@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.134 2010-03-21 20:16:37 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.135 2010-03-21 23:44:09 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -828,7 +828,7 @@ BOOLEAN GMT_grd_is_global (struct GRD_HEADER *h)
 
 #define GMT_region_is_global ((fabs (project_info.e - project_info.w - 360.0) < GMT_SMALL && project_info.degree[0]))
 
-GMT_LONG GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax, int interpolant)
+GMT_LONG GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, double *ymin, double *ymax, GMT_LONG interpolant)
 {
 	/* GMT_grd_setregion determines what w,e,s,n should be passed to GMT_read_grd.
 	 * It does so by using project_info.w,e,s,n which have been set correctly by map_setup.

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.222 2010-03-21 20:16:38 guru Exp $
+ *	$Id: pslib.c,v 1.223 2010-03-21 23:44:09 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -451,7 +451,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	ury = (PS_LONG)irint ((y + ysize) * PSL->internal.scale);
 
 	/* Gray scale, CMYK or RGB encoding/colorspace */
-	id = (PSL->internal.color_mode == PSL_GRAY || abs(nbits) < 24) ? 0 : (PSL->internal.color_mode == PSL_CMYK ? 2 : 1);
+	id = (PSL->internal.color_mode == PSL_GRAY || PSL_abs (nbits) < 24) ? 0 : (PSL->internal.color_mode == PSL_CMYK ? 2 : 1);
 	/* Colormask or interpolate */
 	it = nx < 0 ? 1 : (nbits < 0 ? 2 : 0);
 
@@ -474,7 +474,7 @@ void ps_colorimage (double x, double y, double xsize, double ysize, unsigned cha
 	}
 	else {
 		/* Export full gray scale, RGB or CMYK image */
-		nbits = abs(nbits);
+		nbits = PSL_abs (nbits);
 
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "\n%% Start of %s Adobe %s image [%ld bit]\n", kind[PSL->internal.ascii], colorspace[id], nbits);
 		fprintf (PSL->internal.fp, "V N %ld %ld T %ld %ld scale /Device%s setcolorspace", llx, lly, urx-llx, ury-lly, colorspace[id]);
@@ -515,7 +515,7 @@ void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned c
 	int rgb[3];
 	double x1, x2, y1, y2, dx, dy, noise, noise2;
 
-	nx = abs(nx);
+	nx = PSL_abs (nx);
 	noise = 2.0 / PSL->internal.scale;
 	noise2 = 2.0 * noise;
 	dx = xsize / nx;
@@ -3759,9 +3759,9 @@ indexed_image_t ps_makecolormap (unsigned char *buffer, PS_LONG nx, PS_LONG ny, 
 	colormap_t colormap;
 	indexed_image_t image;
 
-	if (abs(nbits) != 24) return (NULL);		/* We only index into the RGB colorspace. */
+	if (PSL_abs (nbits) != 24) return (NULL);		/* We only index into the RGB colorspace. */
 
-	npixels = abs(nx) * ny;
+	npixels = PSL_abs (nx) * ny;
 
 	colormap = ps_memory (VNULL, (size_t)1, sizeof (*colormap));
 	colormap->ncolors = 0;
@@ -4627,7 +4627,7 @@ PS_LONG ps_bitreduce (unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nco
 
 	/* "Compress" bytes line-by-line. The number of bits per line should be multiple of 8 */
 	out = 0;
-	nx = abs(nx);
+	nx = PSL_abs (nx);
 	nout = (nx * nbits + 7) / 8;
 	for (j = 0; j < ny; j++) {
 		in = j * nx;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.h,v 1.23 2010-01-13 02:26:09 guru Exp $
+ *	$Id: gmt_plot.h,v 1.24 2010-03-21 23:44:09 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -131,8 +131,8 @@ EXTERN_MSC void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms);
 EXTERN_MSC void GMT_echo_command (int argc, char **argv);
 EXTERN_MSC void GMT_fill (double x[], double y[], GMT_LONG n, struct GMT_FILL *fill, BOOLEAN outline);
 EXTERN_MSC void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GMT_FILL *F, BOOLEAN outline);
-EXTERN_MSC void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, GMT_LONG outline);
-EXTERN_MSC void GMT_plot_rectangle (double lon, double lat, double z, double width, double height, double azimuth, struct GMT_FILL fill, GMT_LONG outline);
+EXTERN_MSC void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, BOOLEAN outline);
+EXTERN_MSC void GMT_plot_rectangle (double lon, double lat, double z, double width, double height, double azimuth, struct GMT_FILL fill, BOOLEAN outline);
 EXTERN_MSC void GMT_draw_fence (double x[], double y[], double z, GMT_LONG n, struct GMT_FRONTLINE *f, struct GMT_FILL *g, BOOLEAN outline);
 EXTERN_MSC void GMT_grid_clip_off (void);
 EXTERN_MSC void GMT_grid_clip_on (struct GRD_HEADER *h, int rgb[], GMT_LONG flag);
