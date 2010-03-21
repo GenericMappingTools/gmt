@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.206 2010-03-15 19:41:24 guru Exp $
+ *	$Id: gmt_io.c,v 1.207 2010-03-21 20:16:37 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -508,7 +508,7 @@ void GMT_io_init (void)
 
 	/* Set the Y2K conversion parameters once */
 
-	GMT_Y2K_fix.y2_cutoff = abs (gmtdefs.Y2K_offset_year) % 100;
+	GMT_Y2K_fix.y2_cutoff = GMT_abs (gmtdefs.Y2K_offset_year) % 100;
 	GMT_Y2K_fix.y100 = gmtdefs.Y2K_offset_year - GMT_Y2K_fix.y2_cutoff;
 	GMT_Y2K_fix.y200 = GMT_Y2K_fix.y100 + 100;
 

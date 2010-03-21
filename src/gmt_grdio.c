@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.133 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.134 2010-03-21 20:16:37 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -640,7 +640,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_GRDFILE *G, GMT_LONG row_no, float *row)
 
 	if (GMT_grdformats[G->header.type][0] == 'c') {		/* Get one NetCDF row, old format */
 		if (row_no < 0) {	/* Special seek instruction */
-			G->row = abs (row_no);
+			G->row = GMT_abs (row_no);
 			G->start[0] = G->row * G->edge[0];
 			return (GMT_NOERROR);
 		}
@@ -649,7 +649,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_GRDFILE *G, GMT_LONG row_no, float *row)
 	}
 	else if (GMT_grdformats[G->header.type][0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
 		if (row_no < 0) {	/* Special seek instruction */
-			G->row = abs (row_no);
+			G->row = GMT_abs (row_no);
 			G->start[0] = G->header.ny - 1 - G->row;
 			return (GMT_NOERROR);
 		}
@@ -658,7 +658,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_GRDFILE *G, GMT_LONG row_no, float *row)
 	}
 	else {			/* Get a binary row */
 		if (row_no < 0) {	/* Special seek instruction */
-			G->row = abs (row_no);
+			G->row = GMT_abs (row_no);
 			if (GMT_fseek (G->fp, (long)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 			return (GMT_NOERROR);
 		}

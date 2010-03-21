@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.284 2010-02-14 00:46:45 guru Exp $
+ *	$Id: gmt_plot.c,v 1.285 2010-03-21 20:16:38 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2679,7 +2679,7 @@ void GMT_text3D (double x, double y, double z, double fsize, GMT_LONG fontno, ch
 
 		used_fonts = (GMT_LONG *) GMT_memory (VNULL, (size_t) GMT_N_FONTS, sizeof (GMT_LONG), "GMT_text3D");
 
-		justify = abs (justify);
+		justify = GMT_abs (justify);
 		del_y = 0.5 * fsize * 0.732 * (justify / 4) * GMT_u2u[GMT_PT][GMT_INCH];
 		justify %= 4;
 		sincosd (angle, &sa, &ca);
@@ -2762,7 +2762,7 @@ void GMT_textbox3D (double x, double y, double z, double size, GMT_LONG font, ch
 		w *= (0.81 * h);	/* Approximate half-width of string (inch) */
 		w *= 0.95;		/* Shave off 5 % */
 		/* Determine shift due to justification */
-		just = abs (just);
+		just = GMT_abs (just);
 		yoff = (((just/4) - 1) * h);
 		xoff = (((just-1)%4 - 1) * w);
 		/* OK, get coordinates for text box before rotation and translation */

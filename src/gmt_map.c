@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.247 2010-03-11 01:26:32 guru Exp $
+ *	$Id: gmt_map.c,v 1.248 2010-03-21 20:16:37 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3169,7 +3169,7 @@ GMT_LONG GMT_map_crossing (double lon1, double lat1, double lon2, double lat2, d
 			i_swap (sides[0], sides[1]);
 		}
 	}
-	return (abs(nx));
+	return (GMT_abs(nx));
 }
 
 GMT_LONG GMT_map_outside (double lon, double lat)
@@ -4717,7 +4717,7 @@ GMT_LONG GMT_clip_to_map (double *lon, double *lat, GMT_LONG np, double **x, dou
 		(void) GMT_map_outside (lon[i], lat[i]);
 		out_x += GMT_x_status_new;	/* Completely left of west gives -2 * np, right of east gives + 2 * np */
 		out_y += GMT_y_status_new;	/* Completely below south gives -2 * np, above north gives + 2 * np */
-		out += (abs (GMT_x_status_new) == 2 || abs (GMT_y_status_new) == 2);
+		out += (GMT_abs (GMT_x_status_new) == 2 || GMT_abs (GMT_y_status_new) == 2);
 	}
 	if (out == 0) {		/* All points are inside map boundary; no clipping required */
 		(void)GMT_alloc_memory2 ((void **)&xx, (void **)&yy, np, 0, sizeof (double), "GMT_clip_to_map");
@@ -6970,7 +6970,7 @@ GMT_LONG GMT_distances (double x[], double y[], GMT_LONG n, double scale, GMT_LO
 	double *d, cum_dist = 0.0, inc = 0.0;
 
 	if (dist_flag < 0) {	/* Want increments and not cumulative distances */
-		dist_flag = abs (dist_flag);
+		dist_flag = GMT_abs (dist_flag);
 		cumulative = FALSE;
 	}
 
