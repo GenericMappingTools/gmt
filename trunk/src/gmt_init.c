@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.432 2010-02-21 21:24:33 guru Exp $
+ *	$Id: gmt_init.c,v 1.433 2010-03-21 20:16:37 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3006,7 +3006,7 @@ double GMT_convert_units (char *from, GMT_LONG new_format)
 
 	if ((len = strlen(from))) {
 		c = from[len-1];
-		if ((have_unit = isalpha (c))) from[len-1] = '\0';	/* Temporarily remove unit */
+		if ((have_unit = isalpha ((int)c))) from[len-1] = '\0';	/* Temporarily remove unit */
 	}
 
 	/* So c is either 0 (meaing default unit) or any letter (even junk like z) */

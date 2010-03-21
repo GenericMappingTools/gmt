@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.221 2010-01-11 19:27:13 guru Exp $
+ *	$Id: pslib.c,v 1.222 2010-03-21 20:16:38 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2394,7 +2394,7 @@ void ps_textpath (double x[], double y[], PS_LONG n, PS_LONG node[], double angl
 			for (j = strlen (label[i]) - 1; label[i][j] == ' '; j--) label[i][j] = 0;
 		}
 	}
-	justify =  abs (justify);
+	justify = PSL_abs (justify);
 
 	if (first) {	/* Do this only once */
 		ps_set_integer ("PSL_just", (PS_LONG)justify);
@@ -2471,7 +2471,7 @@ void ps_textclip (double x[], double y[], PS_LONG m, double angle[], char *label
 			for (j = strlen (label[i]) - 1; label[i][j] == ' '; j--) label[i][j] = 0;
 		}
 	}
-	justify =  abs (justify);
+	justify = PSL_abs (justify);
 
 	/* fprintf (PSL->internal.fp, "gsave\n"); */
 	ps_set_integer ("PSL_m", m);
@@ -3832,7 +3832,7 @@ void ps_stream_dump (unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbit
 	char *kind_compress[3] = {"", "/RunLengthDecode filter", "/LZWDecode filter"};
 	char *kind_mask[2] = {"", "mask"};
 
-	nx = abs (nx);
+	nx = PSL_abs (nx);
 	nbytes = ((((PS_LONG)nbits) * ((PS_LONG)(nx))) + 7) / ((PS_LONG)8) * ((PS_LONG)ny);
 	PSL->internal.length = 0;
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.67 2010-01-05 01:15:44 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.68 2010-03-21 20:16:37 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -895,16 +895,16 @@ void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct
 		/* Now undo Y2K fix to make a 2-digit year here if necessary */
 	
 		if (D->day_of_year) {		/* Using the year and day-of-year as date entries */
-			if (D->item_pos[0] != -1) ival[D->item_pos[0]] = (D->Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
+			if (D->item_pos[0] != -1) ival[D->item_pos[0]] = (D->Y2K_year) ? GMT_abs (calendar.year) % 100 : calendar.year;
 			if (D->item_pos[3] != -1) ival[D->item_pos[3]] = calendar.day_y;
 		}
 		else if (D->iso_calendar) {	/* Using ISO year, week and day-of-week entries. Order is fixed to be y-m-d */
-			ival[0] = (D->Y2K_year) ? abs(calendar.iso_y) % 100 : calendar.iso_y;
+			ival[0] = (D->Y2K_year) ? GMT_abs (calendar.iso_y) % 100 : calendar.iso_y;
 			ival[1] = calendar.iso_w;
 			ival[2] = calendar.iso_d;
 		}
 		else {				/* Gregorian calendar entries */
-			if (D->item_pos[0] != -1) ival[D->item_pos[0]] = (D->Y2K_year) ? abs(calendar.year) % 100 : calendar.year;
+			if (D->item_pos[0] != -1) ival[D->item_pos[0]] = (D->Y2K_year) ? GMT_abs (calendar.year) % 100 : calendar.year;
 			if (D->item_pos[1] != -1) ival[D->item_pos[1]] = calendar.month;
 			if (D->item_pos[2] != -1) ival[D->item_pos[2]] = calendar.day_m;
 		}

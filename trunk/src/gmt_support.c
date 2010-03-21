@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.441 2010-03-09 19:44:09 guru Exp $
+ *	$Id: gmt_support.c,v 1.442 2010-03-21 20:16:38 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3177,7 +3177,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CONTOUR *G, double xyz[2][3])
 
 			if (gmtdefs.xy_toggle[GMT_IN]) d_swap (xy[GMT_X], xy[GMT_Y]);				/* Got lat/lon instead of lon/lat */
 			GMT_map_outside (xy[GMT_X], xy[GMT_Y]);
-			if ( abs (GMT_x_status_new) > 1 || abs (GMT_y_status_new) > 1) continue;	/* Outside map region */
+			if (GMT_abs (GMT_x_status_new) > 1 || GMT_abs (GMT_y_status_new) > 1) continue;	/* Outside map region */
 
 			GMT_geo_to_xy (xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][G->f_n], &G->f_xy[GMT_Y][G->f_n]);		/* Project -> xy inches */
 			if (n_col == 3) {	/* The label part if asked for */
@@ -8114,12 +8114,12 @@ double GMT_get_angle (double lon1, double lat1, double lon2, double lat2)
 	else
 		angle = d_atan2d (dy, dx);
 
-	if (abs (GMT_x_status_old) == 2 && abs (GMT_y_status_old) == 2)	/* Last point outside */
+	if (GMT_abs (GMT_x_status_old) == 2 && GMT_abs (GMT_y_status_old) == 2)	/* Last point outside */
 		direction = angle + 180.0;
 	else if (GMT_x_status_old == 0 && GMT_y_status_old == 0)		/* Last point inside */
 		direction = angle;
 	else {
-		if (abs (GMT_x_status_new) == 2 && abs (GMT_y_status_new) == 2)	/* This point outside */
+		if (GMT_abs (GMT_x_status_new) == 2 && GMT_abs (GMT_y_status_new) == 2)	/* This point outside */
 			direction = angle;
 		else if (GMT_x_status_new == 0 && GMT_y_status_new == 0)		/* This point inside */
 			direction = angle + 180.0;
