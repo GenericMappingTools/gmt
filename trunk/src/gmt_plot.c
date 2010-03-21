@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.285 2010-03-21 20:16:38 guru Exp $
+ *	$Id: gmt_plot.c,v 1.286 2010-03-21 23:44:09 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -747,7 +747,8 @@ void GMT_powy_grid (double w, double e, double s, double n, double dval)
 void GMT_fancy_map_boundary (double w, double e, double s, double n)
 {
 	double fwidth;
-	GMT_LONG dual = FALSE, fat_pen, thin_pen;
+	BOOLEAN dual = FALSE;
+	GMT_LONG fat_pen, thin_pen;
 
 	if (gmtdefs.basemap_type == GMT_IS_PLAIN) {	/* Draw plain boundary and return */
 		GMT_wesn_map_boundary (w, e, s, n);
@@ -1832,9 +1833,9 @@ void GMT_map_annotate (double w, double e, double s, double n)
 {
 	double *val, dx[2], dy[2], w2, s2, x, y, del;
 	GMT_LONG i, k, nx, ny, remove[2] = {0,0};
-	GMT_LONG do_minutes, do_seconds, move_up, done_Greenwich, done_Dateline, annot, GMT_world_map_save;
+	GMT_LONG do_minutes, do_seconds, move_up, done_Greenwich, done_Dateline;
 	char label[GMT_LONG_TEXT], cmd[GMT_LONG_TEXT];
-	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual;
+	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual, GMT_world_map_save, annot;
 	PFL GMT_outside_save = NULL;
 
 	if (!(project_info.degree[0] || project_info.degree[1] || project_info.projection == GMT_POLAR)) return;	/* Annotations and header already done by GMT_linear_map_boundary */
@@ -2847,7 +2848,7 @@ void GMT_draw_map_scale (struct GMT_MAP_SCALE *ms)
 
 	if (ms->fancy) {	/* Fancy scale */
 		j = irint(floor (d_log10 (ms->length / 0.95)));
-		base = pow (10.0, j);
+		base = pow (10.0, (double)j);
 		i = irint (ms->length / base) - 1;
 		d_base = ms->length / n_a_ticks[i];
 		dx_f = width / n_f_ticks[i];
@@ -4143,7 +4144,8 @@ void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int 
 
 void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G)
 {
-	GMT_LONG i, k, just, outline;
+	GMT_LONG i, k, just;
+	BOOLEAN outline;
 	double x, y;
 	struct GMT_CONTOUR_LINE *C;
 
@@ -4569,7 +4571,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 	GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, n_new);				/* Separately plot the outline */
 }
 
-void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, GMT_LONG outline)
+void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, BOOLEAN outline)
 {
 	/* GMT_plot_ellipse takes the location, axes (in km), and azimuth of an ellipse
 	   and draws the ellipse using the chosen map projection */
@@ -4626,7 +4628,7 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 	GMT_free ((void *)py);
 }
 
-void GMT_plot_rectangle (double lon, double lat, double z, double width, double height, double azimuth, struct GMT_FILL fill, GMT_LONG outline)
+void GMT_plot_rectangle (double lon, double lat, double z, double width, double height, double azimuth, struct GMT_FILL fill, BOOLEAN outline)
 {
 	/* GMT_plot_rectangle takes the location, axes (in km), and azimuth of a rectangle
 	   and draws the rectangle using the chosen map projection */
