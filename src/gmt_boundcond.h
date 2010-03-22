@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_boundcond.h,v 1.18 2010-01-05 01:15:44 guru Exp $
+ *	$Id: gmt_boundcond.h,v 1.19 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -32,8 +32,8 @@ struct GMT_EDGEINFO {
 	/* Description below is the final outcome after parse and verify */
 	GMT_LONG nxp;	/* if X periodic, nxp > 0 is the period in pixels  */
 	GMT_LONG nyp;	/* if Y periodic, nxp > 0 is the period in pixels  */
-	BOOLEAN	gn;	/* TRUE if top    edge will be set as N pole  */
-	BOOLEAN	gs;	/* TRUE if bottom edge will be set as S pole  */
+	GMT_LONG	gn;	/* TRUE if top    edge will be set as N pole  */
+	GMT_LONG	gs;	/* TRUE if bottom edge will be set as S pole  */
 };
 
 
@@ -51,7 +51,7 @@ EXTERN_MSC GMT_LONG GMT_boundcond_set (struct GRD_HEADER *h, struct GMT_EDGEINFO
 
 /* GMT_?_out_of_bounds will shift i or j according to BC or return TRUE if outside */
 
-EXTERN_MSC BOOLEAN GMT_y_out_of_bounds (GMT_LONG *j, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, BOOLEAN *wrap_180);
-EXTERN_MSC BOOLEAN GMT_x_out_of_bounds (GMT_LONG *i, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, BOOLEAN wrap_180);
+EXTERN_MSC GMT_LONG GMT_y_out_of_bounds (GMT_LONG *j, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, GMT_LONG *wrap_180);
+EXTERN_MSC GMT_LONG GMT_x_out_of_bounds (GMT_LONG *i, struct GRD_HEADER *h, struct GMT_EDGEINFO *edgeinfo, GMT_LONG wrap_180);
 
 #endif /* _GMT_BOUNDCOND_H */

@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77_init.h,v 1.6 2010-01-05 01:15:48 guru Exp $
+ *	$Id: mgd77_init.h,v 1.7 2010-03-22 18:55:47 guru Exp $
  *
  *    Copyright (c) 2005-2010 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -19,6 +19,6 @@
  * 
  *-------------------------------------------------------------------------*/
 
-BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS] = {TRUE, TRUE, TRUE};	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
+GMT_LONG MGD77_format_allowed[MGD77_N_FORMATS] = {TRUE, TRUE, TRUE};	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
 
 char *MGD77_suffix[MGD77_N_FORMATS] = {"mgd77", "nc", "dat"};

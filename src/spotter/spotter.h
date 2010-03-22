@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: spotter.h,v 1.24 2010-01-05 01:15:49 guru Exp $
+ *	$Id: spotter.h,v 1.25 2010-03-22 18:55:47 guru Exp $
  *
  *   Copyright (c) 1999-2010 by P. Wessel
  *
@@ -45,7 +45,7 @@ struct EULER {	/* Structure with info on each Euler (stage) pole */
 	double k_hat;			/* k_hat uncertainty scale */
 	double g;			/* g magnitude scale */
 	double df;			/* Degrees of freedom in the estimate of rotation */
-	BOOLEAN has_cov;		/* TRUE if there is a covariance matrix for this R */
+	GMT_LONG has_cov;		/* TRUE if there is a covariance matrix for this R */
 };
 
 struct FLOWLINE {			/* Structure with the nearest nodes for a single flowline */
@@ -62,7 +62,7 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
         int id;                 /* Hot spot id flag */
 	double radius;		/* Uncertainty radius (in km) for hotspot location */
 	double t_off, t_on;	/* Time interval hotspot was active */
-	BOOLEAN create, fit, plot;	/* TRUE if we want to create, fit, or plot hotspot */
+	GMT_LONG create, fit, plot;	/* TRUE if we want to create, fit, or plot hotspot */
         char name[32];          /* Full name of hotspot */
 	/* Secondary (derived) quantities */
         double x, y, z;         /* Cartesian Current location of hot spot */
@@ -70,15 +70,15 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
 
 /* ANSI-C Function prototypes (see libspotter.c for details): */
 
-EXTERN_MSC int spotter_init (char *file, struct EULER **p, int flowline, BOOLEAN finite_in, BOOLEAN finite_out, double *t_max, BOOLEAN verbose);
+EXTERN_MSC int spotter_init (char *file, struct EULER **p, int flowline, GMT_LONG finite_in, GMT_LONG finite_out, double *t_max, GMT_LONG verbose);
 EXTERN_MSC int spotter_hotspot_init (char *file, struct HOTSPOT **p);
-EXTERN_MSC int spotter_backtrack  (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
-EXTERN_MSC int spotter_forthtrack (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
-EXTERN_MSC void spotter_finite_to_stages (struct EULER p[], GMT_LONG n, BOOLEAN finite_rates, BOOLEAN stage_rates);
-EXTERN_MSC void spotter_stages_to_finite (struct EULER p[], GMT_LONG n, BOOLEAN finite_rates, BOOLEAN stage_rates);
+EXTERN_MSC int spotter_backtrack  (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, GMT_LONG do_time, double wesn[], double **c);
+EXTERN_MSC int spotter_forthtrack (double xp[], double yp[], double tp[], GMT_LONG np, struct EULER p[], GMT_LONG ns, double d_km, double t_zero, GMT_LONG do_time, double wesn[], double **c);
+EXTERN_MSC void spotter_finite_to_stages (struct EULER p[], GMT_LONG n, GMT_LONG finite_rates, GMT_LONG stage_rates);
+EXTERN_MSC void spotter_stages_to_finite (struct EULER p[], GMT_LONG n, GMT_LONG finite_rates, GMT_LONG stage_rates);
 EXTERN_MSC void spotter_add_rotations (struct EULER a[], GMT_LONG n_a, struct EULER b[], GMT_LONG n_b, struct EULER *c[], GMT_LONG *n_c);
 EXTERN_MSC double spotter_t2w (struct EULER a[], GMT_LONG n, double t);
-EXTERN_MSC int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT_LONG np, char conf, BOOLEAN forward, double out[]);
+EXTERN_MSC int spotter_conf_ellipse (double lon, double lat, double t, struct EULER *p, GMT_LONG np, char conf, GMT_LONG forward, double out[]);
 EXTERN_MSC void spotter_matrix_vect_mult (double a[3][3], double b[3], double c[3]);
 EXTERN_MSC void spotter_matrix_transpose (double At[3][3], double A[3][3]);
 EXTERN_MSC void spotter_matrix_add (double A[3][3], double B[3][3], double C[3][3]);

@@ -1,5 +1,5 @@
 /*
- * $Id: polygon_match.c,v 1.6 2010-03-02 20:21:17 guru Exp $
+ * $Id: polygon_match.c,v 1.7 2010-03-22 18:55:46 guru Exp $
  * Compares the enw and old *.b files and looks for differences.
  * Currently set up for old using the previous GMT3_POLY structure
  * with endian swabbing while the new has the new structure and no
@@ -45,7 +45,7 @@ int main (int argc, char **argv) {
 	int *IX[N_CONTINENTS][2], *IY[N_CONTINENTS][2], N[N_CONTINENTS][2];
 	double x_shift = 0.0, f;
 	char file[BUFSIZ], alarm[32];
-	BOOLEAN report_area;
+	GMT_LONG report_area;
 	FILE *fp;
 	struct POLYGON_NEW *new_P = NULL;
 	struct POLYGON_OLD *old_P = NULL;

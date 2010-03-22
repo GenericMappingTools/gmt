@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.29 2010-01-05 01:15:48 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.30 2010-03-22 18:55:47 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -62,8 +62,8 @@ struct GMTDIGITIZE_CTRL {	/* Things needed while digitizing */
 
 int main (int argc, char **argv)
 {
-	BOOLEAN error = FALSE, suppress = FALSE, ok, output_key = FALSE, multi_files;
-	BOOLEAN audible = FALSE, output_val = FALSE, force_4 = FALSE;
+	GMT_LONG error = FALSE, suppress = FALSE, ok, output_key = FALSE, multi_files;
+	GMT_LONG audible = FALSE, output_val = FALSE, force_4 = FALSE;
 	
 	char line[BUFSIZ], format[BUFSIZ], unit_name[80], this_file[BUFSIZ];
 	char *control[4] = {"first", "second", "third", "fourth"};

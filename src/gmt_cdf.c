@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_cdf.c,v 1.56 2010-01-05 01:15:44 guru Exp $
+ *	$Id: gmt_cdf.c,v 1.57 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -211,7 +211,7 @@ GMT_LONG GMT_cdf_grd_info (int ncid, struct GRD_HEADER *header, char job)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
+GMT_LONG GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -232,7 +232,7 @@ GMT_LONG GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 	GMT_LONG i, j, width_in, height_in, i_0_out, inc = 1;
 	GMT_LONG ij, kk, width_out;
 	GMT_LONG *k;
-	BOOLEAN check;
+	GMT_LONG check;
 	float *tmp = VNULL;
 
 	GMT_err_pass (GMT_grd_prep_io (header, &w, &e, &s, &n, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
@@ -291,7 +291,7 @@ GMT_LONG GMT_cdf_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
+GMT_LONG GMT_cdf_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0]

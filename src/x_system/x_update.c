@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.10 2008-05-13 01:07:04 guru Exp $
+/*	$Id: x_update.c,v 1.11 2010-03-22 18:55:47 guru Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -70,8 +70,8 @@ int main (int argc, char *argv[])
 
 	FILE *fp;			/* pointer to crossover file */
 
-	BOOLEAN internal;		/* TRUE if leg1 == leg2 */
-	BOOLEAN error = FALSE, ok, verbose = FALSE, warning = FALSE;
+	GMT_LONG internal;		/* TRUE if leg1 == leg2 */
+	GMT_LONG error = FALSE, ok, verbose = FALSE, warning = FALSE;
 
 	struct LEG *leg1, *leg2 = VNULL;
   

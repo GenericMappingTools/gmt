@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- * $Id: dimfilter.c,v 1.7 2010-01-05 01:15:48 guru Exp $
+ * $Id: dimfilter.c,v 1.8 2010-03-22 18:55:47 guru Exp $
  *
  *	Copyright (c) 2009-2010 by P. Wessel and Seung-Sep Kim
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -53,11 +53,11 @@ int main (int argc, char **argv)
 	GMT_LONG err_cols = 0, err_l=1;
 	int not_used = 0;
 	double err_workarray[50], err_min, err_max, err_null_median=0.0, err_median, err_mad, err_depth, err_mean, err_sum;
-   	BOOLEAN dimerr=FALSE;
+   	GMT_LONG dimerr=FALSE;
 	
-	BOOLEAN	error, new_range, new_increment, fast_way, shift = FALSE, slow, slow2, toggle = FALSE, corridor = FALSE;
+	GMT_LONG	error, new_range, new_increment, fast_way, shift = FALSE, slow, slow2, toggle = FALSE, corridor = FALSE;
 #ifdef OBSOLETE	
-	BOOLEAN do_scale = FALSE, trend = FALSE, first_time = TRUE;
+	GMT_LONG do_scale = FALSE, trend = FALSE, first_time = TRUE;
 #endif
 	
 	double	west_new, east_new, south_new, north_new, dx_new, dy_new, offset;
@@ -99,7 +99,7 @@ int main (int argc, char **argv)
 	};
 	
 	struct	GRD_HEADER h, test_h;
-	void	set_weight_matrix (GMT_LONG nx_f, GMT_LONG ny_f, double y_0, double north, double south, double dx, double dy, double f_wid, GMT_LONG f_flag, GMT_LONG d_flag, double x_off, double y_off, BOOLEAN fast);
+	void	set_weight_matrix (GMT_LONG nx_f, GMT_LONG ny_f, double y_0, double north, double south, double dx, double dy, double f_wid, GMT_LONG f_flag, GMT_LONG d_flag, double x_off, double y_off, GMT_LONG fast);
 
 
 	argc = GMT_begin (argc, argv);
@@ -921,7 +921,7 @@ fout2 = NULL;
 	exit (EXIT_SUCCESS);
 }
 
-void	set_weight_matrix (GMT_LONG nx_f, GMT_LONG ny_f, double y_0, double north, double south, double dx, double dy, double f_wid, GMT_LONG f_flag, GMT_LONG d_flag, double x_off, double y_off, BOOLEAN fast)
+void	set_weight_matrix (GMT_LONG nx_f, GMT_LONG ny_f, double y_0, double north, double south, double dx, double dy, double f_wid, GMT_LONG f_flag, GMT_LONG d_flag, double x_off, double y_off, GMT_LONG fast)
 /* Last two gives offset between output node and 'origin' input node for this window (0,0 for integral grids) */
 /* TRUE when input/output grids are offset by integer values in dx/dy */
    	               

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.119 2010-01-05 01:15:48 guru Exp $
+ *	$Id: mgd77.h,v 1.120 2010-03-22 18:55:47 guru Exp $
  * 
  *    Copyright (c) 2005-2010 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -220,8 +220,8 @@ struct MGD77_COLINFO {
 	char text;		/* length if this is a text string, else 0 */
 	int var_id;		/* netCDF variable ID */
 	int adjust;		/* Column needs some sort of adjustment before data is returned [0 means as is] */
-	BOOLEAN constant;	/* TRUE if column is constant and only 1 row is/should be stored */
-	BOOLEAN present;	/* TRUE if column is present in the file (NaN or otherwise) */
+	GMT_LONG constant;	/* TRUE if column is constant and only 1 row is/should be stored */
+	GMT_LONG present;	/* TRUE if column is present in the file (NaN or otherwise) */
 };
 
 struct MGD77_DATA_INFO {
@@ -231,7 +231,7 @@ struct MGD77_DATA_INFO {
 };
 
 struct MGD77_META {	/* Information about a cruise as derived from navigation data */
-	BOOLEAN verified;	/* TRUE once MGD77_Verify_Prep has been called */
+	GMT_LONG verified;	/* TRUE once MGD77_Verify_Prep has been called */
 	int n_ten_box;		/* Number of 10x10 degree boxes visited by this cruise */
 	int w, e, s, n;		/* Whole degree left/right/bottom/top coordinates */
 	int Departure[3];	/* yyyy, mm, dd of departure */
@@ -249,7 +249,7 @@ struct MGD77_HEADER {
 	GMT_LONG n_records;					/* Number of MGD77 data records found */
 	int n_fields;					/* Number of columns returned */
 	int errors[3];					/* Number of total errors, (warnings, errors) found when reading this header */
-	BOOLEAN no_time;				/* TRUE for those few cruises that have no time values */
+	GMT_LONG no_time;				/* TRUE for those few cruises that have no time values */
 	double PDR_wrap;				/* Non-zero if we must undo PDR wrapping */
 	struct MGD77_DATA_INFO info[MGD77_N_SETS];	/* Info regarding [0] standard MGD77 columns and [1] any extra columns (max 32 each) */
 };
@@ -337,7 +337,7 @@ struct MGD77_DATA_RECORD {	/* See MGD77 Documentation from NGDC for details */
 	double time;				/* Time using current GMT absolute time conventions (J2000 UTC) */
 	char word[MGD77_N_STRING_FIELDS][10];	/* The 3 text strings in MGD77 records */
 	unsigned int bit_pattern;		/* Bit pattern indicating which of the 27 fields are present in current record */
-	BOOLEAN keep_nav;				/* Set to false when navigation is bad */
+	GMT_LONG keep_nav;				/* Set to false when navigation is bad */
 };
 
 struct MGD77_DATASET {	/* Info for an entire MGD77+ data set */
@@ -366,7 +366,7 @@ struct MGD77_CONSTRAINT {
 	char name[MGD77_COL_ABBREV_LEN];	/* Name of data col that is constrained */
 	int col;				/* Number of data col that is constrained */
 	int code;				/* Which test this is */
-	BOOLEAN exact;				/* If TRUE we MUST pass this test */
+	GMT_LONG exact;				/* If TRUE we MUST pass this test */
 	double d_constraint;			/* Value for testing */
 	char c_constraint[GMT_TEXT_LEN];	/* String value for testing */
 	PFB double_test;			/* Pointer to function performing the chosen limit test on a double */
@@ -407,13 +407,13 @@ struct MGD77_CONTROL {
 	/* Format-related issues */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
 	struct GMT_TIME_SYSTEM utime;			/* All the information about the Unix time system */
-	BOOLEAN adjust_time;				/* TRUE if GMT time-system is NOT unix */
+	GMT_LONG adjust_time;				/* TRUE if GMT time-system is NOT unix */
 	/* Data use information */
-	BOOLEAN original;				/* TRUE means we want original not revised header attributes */
-	BOOLEAN revised;				/* TRUE means we are working on a MGD77+ file with revised header attributes */
-	BOOLEAN Want_Header_Item[MGD77_N_HEADER_ITEMS];	/* TRUE means print this header item if dump is selected */
-	BOOLEAN use_flags[MGD77_N_SETS];		/* TRUE means programs will use error bitflags (if present) when returning data */
-	BOOLEAN use_corrections[MGD77_N_SETS];		/* TRUE means we will apply correction factors (if present) when reading data */
+	GMT_LONG original;				/* TRUE means we want original not revised header attributes */
+	GMT_LONG revised;				/* TRUE means we are working on a MGD77+ file with revised header attributes */
+	GMT_LONG Want_Header_Item[MGD77_N_HEADER_ITEMS];	/* TRUE means print this header item if dump is selected */
+	GMT_LONG use_flags[MGD77_N_SETS];		/* TRUE means programs will use error bitflags (if present) when returning data */
+	GMT_LONG use_corrections[MGD77_N_SETS];		/* TRUE means we will apply correction factors (if present) when reading data */
 	struct MGD77_ORDER order[MGD77_MAX_COLS];	/* Gives the output order (set, item) of each desired column */
 	unsigned int bit_pattern[2];			/* 64 bit flags, one for each parameter desired */
 	int n_constraints;				/* Number of constraints specified */
@@ -483,8 +483,8 @@ extern void MGD77_List_Header_Items (struct MGD77_CONTROL *F);
 extern int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item);
 extern int MGD77_Get_Set (char *abbrev);										/* Returns 0 if abbrev is in the MGD77 set, else 1 */
 extern void MGD77_Fatal_Error (int error);										/* Print message for this error and exit */
-extern BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT_LONG rec);				/* Tests if a record passes all specified logical & exact tests */
-extern void MGD77_Apply_Bitflags (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT_LONG rec, BOOLEAN apply_bits[]);	/* Replaces values whose flags are ON with NaNs */
+extern GMT_LONG MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT_LONG rec);				/* Tests if a record passes all specified logical & exact tests */
+extern void MGD77_Apply_Bitflags (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT_LONG rec, GMT_LONG apply_bits[]);	/* Replaces values whose flags are ON with NaNs */
 extern void MGD77_Set_Unit (char *dist, double *scale, int way);							/* Convert appended distance unit to a numerical scale to give meters */
 extern void MGD77_nc_status (int status);										/* Checks for netCDF errors and aborts with error message */
 extern void MGD77_Process_Ignore (char code, char *format);								/* Process the ignre-format option */
@@ -506,8 +506,8 @@ extern int MGD77_Write_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DA
 
 /* These are only for developers */
 
-extern BOOLEAN MGD77_dbl_are_constant (double x[], GMT_LONG n, double limits[]);
-extern BOOLEAN MGD77_txt_are_constant (char *txt, GMT_LONG n, int width);
+extern GMT_LONG MGD77_dbl_are_constant (double x[], GMT_LONG n, double limits[]);
+extern GMT_LONG MGD77_txt_are_constant (char *txt, GMT_LONG n, int width);
 extern int MGD77_do_scale_offset_before_write (double new[], const double x[], GMT_LONG n, double scale, double offset, int type);
 extern void MGD77_select_high_resolution ();
 extern void MGD77_free_plain_mgd77 (struct MGD77_HEADER *H);
@@ -526,10 +526,10 @@ extern double MGD77_carter_correction (double lon, double lat, double twt_in_mse
 extern int MGD77_igrf10syn (int isv, double date, int itype, double alt, double lon, double lat, double *out);
 extern double MGD77_Theoretical_Gravity (double lon, double lat, int version);
 extern void MGD77_IGF_text (FILE *fp, int version);
-extern double MGD77_Recalc_Mag_Anomaly_IGRF (struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, BOOLEAN calc_date);
+extern double MGD77_Recalc_Mag_Anomaly_IGRF (struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, GMT_LONG calc_date);
 extern double MGD77_time_to_fyear (struct MGD77_CONTROL *F, double time);
 extern double MGD77_cal_to_fyear (struct GMT_gcal *cal);
-extern BOOLEAN MGD77_fake_times (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, GMT_LONG nrec);
+extern GMT_LONG MGD77_fake_times (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, GMT_LONG nrec);
 extern double MGD77_utime2time (struct MGD77_CONTROL *F, double unix_time);
 extern double MGD77_time2utime (struct MGD77_CONTROL *F, double gmt_time);
 extern double MGD77_rdc2dt (struct MGD77_CONTROL *F, GMT_cal_rd rd, double secs);
@@ -537,8 +537,8 @@ extern void MGD77_dt2rdc (struct MGD77_CONTROL *F, double t, GMT_cal_rd *rd, dou
 extern void MGD77_gcal_from_dt (struct MGD77_CONTROL *F, double t, struct GMT_gcal *cal);
 
 #ifdef USE_CM4 
-extern double MGD77_Calc_CM4 (struct MGD77_CONTROL *F, double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
-extern double MGD77_Recalc_Mag_Anomaly_CM4 (struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, BOOLEAN calc_date, struct MGD77_CM4 *CM4);
+extern double MGD77_Calc_CM4 (struct MGD77_CONTROL *F, double time, double lon, double lat, GMT_LONG calc_date, struct MGD77_CM4 *CM4);
+extern double MGD77_Recalc_Mag_Anomaly_CM4 (struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, GMT_LONG calc_date, struct MGD77_CM4 *CM4);
 extern void MGD77_CM4_end (struct MGD77_CM4 *CM4);
 #endif
 
@@ -554,7 +554,7 @@ extern double *MGD77_Distances (double x[], double y[], GMT_LONG n, int dist_fla
 extern struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_FIELDS];
 extern double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
 extern char *MGD77_suffix[MGD77_N_FORMATS];
-extern BOOLEAN MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
+extern GMT_LONG MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
 extern double MGD77_Epoch_zero;
 extern int MGD77_pos[MGD77_N_DATA_EXTENDED];
 

@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.720 2010-03-17 20:51:04 guru Exp $
+	$Id: ChangeLog,v 1.721 2010-03-22 18:55:43 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-03-22	pwessel
+	* *.[ch]:		Replaced BOOLEAN typedef by using GMT_LONG instead.
 
 2010-03-17	pwessel
 	* psxy.c:		The -Sw/W symbols did not handle the azimuth/direction conversions

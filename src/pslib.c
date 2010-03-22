@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.223 2010-03-21 23:44:09 guru Exp $
+ *	$Id: pslib.c,v 1.224 2010-03-22 18:55:46 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -895,7 +895,7 @@ PS_LONG ps_pattern (PS_LONG image_no, char *imagefile, PS_LONG invert, PS_LONG i
 	 * Returns image number
 	 */
 
-	BOOLEAN found;
+	PSL_LONG found;
 	PS_LONG i, id, inv, refresh;
 	PS_LONG nx, ny;
 	char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
@@ -969,7 +969,7 @@ PS_LONG ps_pattern_init (PS_LONG image_no, char *imagefile)
 	char name[BUFSIZ], file[BUFSIZ];
 	unsigned char *picture;
 	struct imageinfo h;
-	BOOLEAN found;
+	PSL_LONG found;
 
 	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && PSL->internal.pattern[image_no].status) return (image_no);	/* Already done this */
 
@@ -2573,11 +2573,11 @@ void ps_words (double x, double y, char **text, PS_LONG n_words, double line_spa
 	PS_LONG *font_list, *font_unique, n_font_unique, n_rgb_unique;
 	PS_LONG n_alloc, n_items;
 	int last_rgb[3], *rgb_list, *rgb_unique;
-	BOOLEAN sub, super, small, plain_word = FALSE, under, escape;
+	PSL_LONG sub, super, small, plain_word = FALSE, under, escape;
 	char *c, *clean, test_char;
 	double last_size;
 	struct GMT_WORD **word;
-	struct GMT_WORD *add_word_part (char *word, PS_LONG length, PS_LONG fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, PS_LONG space, int rgb[]);
+	struct GMT_WORD *add_word_part (char *word, PS_LONG length, PS_LONG fontno, double font_size, PSL_LONG sub, PSL_LONG super, PSL_LONG small, PSL_LONG under, PS_LONG space, int rgb[]);
 
 	if (font_size == 0.0) return;	/* Nothing to do if text has zero size */
 
@@ -3109,7 +3109,7 @@ void ps_words_ (double *x, double *y, char **text, PS_LONG *n_words, double *lin
 
 }
 
-struct GMT_WORD *add_word_part (char *word, PS_LONG length, PS_LONG fontno, double font_size, BOOLEAN sub, BOOLEAN super, BOOLEAN small, BOOLEAN under, PS_LONG space, int rgb[])
+struct GMT_WORD *add_word_part (char *word, PS_LONG length, PS_LONG fontno, double font_size, PSL_LONG sub, PSL_LONG super, PSL_LONG small, PSL_LONG under, PS_LONG space, int rgb[])
 {
 	/* For flag: bits 1 and 2 give number of spaces to follow (0, 1, or 2)
 	 * bit 3 == 1 means leading TAB
@@ -3120,7 +3120,7 @@ struct GMT_WORD *add_word_part (char *word, PS_LONG length, PS_LONG fontno, doub
 
 	PS_LONG i = 0;
 	int c;
-	BOOLEAN tab = FALSE;
+	PSL_LONG tab = FALSE;
 	double fs;
 	struct GMT_WORD *new;
 
@@ -4386,7 +4386,7 @@ static void ps_bulkcopy (const char *fname, const char *version)
 	char buf[BUFSIZ];
 	char fullname[BUFSIZ];
 	PS_LONG i, j;
-	BOOLEAN first = TRUE;
+	PSL_LONG first = TRUE;
 
 	ps_getsharepath ("pslib", fname, ".ps", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {

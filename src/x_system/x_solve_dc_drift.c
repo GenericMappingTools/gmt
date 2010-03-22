@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.11 2009-07-11 03:16:32 guru Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.12 2010-03-22 18:55:47 guru Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 	double t_1, t_2, xover, div, drift_inc, dc_inc;
 	double west = 0.0, east = 360.0, south = -90.0, north = 90.0;
 	GMT_LONG west_i = 0, east_i = 0, south_i = 0, north_i = 0, lon_i;
-	BOOLEAN bin_on = FALSE, asc_on = FALSE, verbose = FALSE;
+	GMT_LONG bin_on = FALSE, asc_on = FALSE, verbose = FALSE;
 	char lfile[80], file[80], header[REC_SIZE], lega[10], legb[10], string[10], filea[80], fileb[80], type[3], line[BUFSIZ], *c_not_used = NULL;
 	FILE *fpl = NULL, *fpb = NULL, *fpi = NULL, *fpbin = NULL, *fpasc = NULL, *fpu = NULL;
 	size_t not_used = 0;

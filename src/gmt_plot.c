@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.286 2010-03-21 23:44:09 guru Exp $
+ *	$Id: gmt_plot.c,v 1.287 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -86,16 +86,16 @@
 
 #define GMT_ELLIPSE_APPROX 72
 
-void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angles, char *label, GMT_LONG nx, GMT_LONG type, BOOLEAN annotate, GMT_LONG level);
-void GMT_map_symbol_ew (double lat, char *label, double west, double east, BOOLEAN annotate, GMT_LONG level);
-void GMT_map_symbol_ns (double lon, char *label, double south, double north, BOOLEAN annotate, GMT_LONG level);
-void GMT_get_annot_label (double val, char *label, GMT_LONG do_minutes, GMT_LONG do_seconds, GMT_LONG lonlat, BOOLEAN worldmap);
+void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angles, char *label, GMT_LONG nx, GMT_LONG type, GMT_LONG annotate, GMT_LONG level);
+void GMT_map_symbol_ew (double lat, char *label, double west, double east, GMT_LONG annotate, GMT_LONG level);
+void GMT_map_symbol_ns (double lon, char *label, double south, double north, GMT_LONG annotate, GMT_LONG level);
+void GMT_get_annot_label (double val, char *label, GMT_LONG do_minutes, GMT_LONG do_seconds, GMT_LONG lonlat, GMT_LONG worldmap);
 void GMT_basemap_3D (GMT_LONG mode);
 void GMT_xyz_axis3D (GMT_LONG axis_no, char axis, struct GMT_PLOT_AXIS *A, GMT_LONG annotate);
 GMT_LONG GMT_coordinate_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array);
 GMT_LONG GMT_linear_array (double min, double max, double delta, double phase, double **array);
 GMT_LONG GMT_pow_array (double min, double max, double delta, GMT_LONG x_or_y, double **array);
-GMT_LONG GMT_grid_clip_path (struct GRD_HEADER *h, double **x, double **y, BOOLEAN *donut);
+GMT_LONG GMT_grid_clip_path (struct GRD_HEADER *h, double **x, double **y, GMT_LONG *donut);
 void GMT_wesn_map_boundary (double w, double e, double s, double n);
 void GMT_rect_map_boundary (double x0, double y0, double x1, double y1);
 void GMT_theta_r_map_boundary (double w, double e, double s, double n);
@@ -105,26 +105,26 @@ void GMT_map_tick (double *xx, double *yy, GMT_LONG *sides, double *angles, GMT_
 void GMT_map_lontick (double lon, double south, double north, double len);
 void GMT_map_lattick (double lat, double west, double east, double len);
 GMT_LONG GMT_prepare_label (double angle, GMT_LONG side, double x, double y, GMT_LONG type, double *line_angle, double *text_angle, GMT_LONG *justify);
-BOOLEAN GMT_annot_too_crowded (double x, double y, GMT_LONG side);
-BOOLEAN GMT_is_fancy_boundary (void);
+GMT_LONG GMT_annot_too_crowded (double x, double y, GMT_LONG side);
+GMT_LONG GMT_is_fancy_boundary (void);
 void GMT_coordinate_to_x (double coord, double *x);
 void GMT_coordinate_to_y (double coord, double *y);
 GMT_LONG GMT_time_array (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array);
 void GMT_timex_grid (double w, double e, double s, double n, GMT_LONG item);
 void GMT_timey_grid (double w, double e, double s, double n, GMT_LONG item);
-BOOLEAN GMT_skip_second_annot (GMT_LONG item, double x, double x2[], GMT_LONG n, GMT_LONG primary, GMT_LONG secondary);
+GMT_LONG GMT_skip_second_annot (GMT_LONG item, double x, double x2[], GMT_LONG n, GMT_LONG primary, GMT_LONG secondary);
 double GMT_set_label_offsets (GMT_LONG axis, double val0, double val1, struct GMT_PLOT_AXIS *A, GMT_LONG below, double annot_off[], double *label_off, GMT_LONG *annot_justify, GMT_LONG *label_justify, char *format);
 
 void GMT_map_tickitem (double w, double e, double s, double n, GMT_LONG item);
 void GMT_NaN_pen_up (double x[], double y[], int pen[], GMT_LONG n);
-double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, double latB, GMT_LONG side, BOOLEAN secondary_too);
-double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, double latB, GMT_LONG side, BOOLEAN secondary_too);
-void GMT_rounded_framecorners (double w, double e, double s, double n, double anglew, double anglee, BOOLEAN secondary_too);
+double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, double latB, GMT_LONG side, GMT_LONG secondary_too);
+double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, double latB, GMT_LONG side, GMT_LONG secondary_too);
+void GMT_rounded_framecorners (double w, double e, double s, double n, double anglew, double anglee, GMT_LONG secondary_too);
 void GMT_fancy_frame_offset (double angle, double shift[2]);
 void GMT_fancy_frame_extension (double angle, double extend[2]);
-void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double n, double angle_w, double angle_e, BOOLEAN secondary_too);
-void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n, double radius_s, double radius_n, BOOLEAN secondary_too);
-void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double n, double angle_s, double angle_n, BOOLEAN secondary_too);
+void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double n, double angle_w, double angle_e, GMT_LONG secondary_too);
+void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n, double radius_s, double radius_n, GMT_LONG secondary_too);
+void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double n, double angle_s, double angle_n, GMT_LONG secondary_too);
 void GMT_label_trim (char *label, GMT_LONG stage);
 void GMT_draw_dir_rose (struct GMT_MAP_ROSE *mr);
 void GMT_draw_mag_rose (struct GMT_MAP_ROSE *mr);
@@ -135,12 +135,12 @@ void GMT_contlabel_clippath (struct GMT_CONTOUR *G, GMT_LONG mode);
 void GMT_contlabel_plotlabels (struct GMT_CONTOUR *G, GMT_LONG mode);
 void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int Frgb[]);
 void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G);
-void GMT_flush_symbol_piece (double *x, double *y, double z, GMT_LONG *n, struct GMT_PEN *p, struct GMT_FILL *f, BOOLEAN outline, BOOLEAN *flush);
+void GMT_flush_symbol_piece (double *x, double *y, double z, GMT_LONG *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, GMT_LONG *flush);
 void GMT_define_PS_items (struct GMT_PLOT_AXIS *A, GMT_LONG below, GMT_LONG annotate);
 void GMT_define_baselines ();
 void GMT_geoplot (double lon, double lat, int pen);
 void GMT_geosegment (double lon1, double lat1, double lon2, double lat2);
-BOOLEAN set_do_seconds (double inc);
+GMT_LONG set_do_seconds (double inc);
 
 /* Local variables to this file */
 
@@ -402,10 +402,10 @@ void GMT_xy_axis (double x0, double y0, double length, double val0, double val1,
 	GMT_LONG primary = 0;		/* Axis item number of annotation with largest interval/unit */
 	GMT_LONG secondary = 0;		/* Axis item number of annotation with smallest interval/unit */
 	GMT_LONG axis;			/* Axis id (0 = x, 1 = y) */
-	BOOLEAN is_interval;		/* TRUE when the annotation is interval annotation and not tick annotation */
-	BOOLEAN check_annotation;	/* TRUE is we have two levels of tick annotations that can overprint */
-	BOOLEAN do_annot;		/* TRUE unless we are dealing with Gregorian weeks */
-	BOOLEAN do_tick;		/* TRUE unless we are dealing with bits of weeks */
+	GMT_LONG is_interval;		/* TRUE when the annotation is interval annotation and not tick annotation */
+	GMT_LONG check_annotation;	/* TRUE is we have two levels of tick annotations that can overprint */
+	GMT_LONG do_annot;		/* TRUE unless we are dealing with Gregorian weeks */
+	GMT_LONG do_tick;		/* TRUE unless we are dealing with bits of weeks */
 	double *knots, *knots_p;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double tick_len[6];		/* Ticklengths for each of the 6 axis items */
 	double x, sign, len, t_use;	/* Misc. variables */
@@ -622,7 +622,7 @@ void GMT_linearx_grid (double w, double e, double s, double n, double dval)
 {
 	double *x, ys, yn, p_cap = 0.0, cap_start[2] = {0.0, 0.0}, cap_stop[2] = {0.0, 0.0};
 	GMT_LONG i, nx;
-	BOOLEAN cap = FALSE;
+	GMT_LONG cap = FALSE;
 
 	if (GMT_POLE_IS_POINT) {	/* Might have two separate domains of gridlines */
 		if (project_info.projection == GMT_POLAR) {	/* Different for polar graphs since "lat" = 0 is at the center */
@@ -747,7 +747,7 @@ void GMT_powy_grid (double w, double e, double s, double n, double dval)
 void GMT_fancy_map_boundary (double w, double e, double s, double n)
 {
 	double fwidth;
-	BOOLEAN dual = FALSE;
+	GMT_LONG dual = FALSE;
 	GMT_LONG fat_pen, thin_pen;
 
 	if (gmtdefs.basemap_type == GMT_IS_PLAIN) {	/* Draw plain boundary and return */
@@ -807,11 +807,11 @@ void GMT_fancy_frame_offset (double angle, double shift[2])
 	shift[1] = -gmtdefs.frame_width * c;
 }
 
-void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double n, double angle_w, double angle_e, BOOLEAN secondary_too)
+void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double n, double angle_w, double angle_e, GMT_LONG secondary_too)
 {
 	GMT_LONG i, k, ny, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double dy, s1, val, v1, v2, x1, x2, x3, y1, y2, y3, shift_w[2], shift_e[2], scale[2];
-	BOOLEAN shade, do_it;
+	GMT_LONG shade, do_it;
 
 	scale[0] = (secondary_too) ? 0.5 : 1.0;
 	scale[1] = 1.5;
@@ -852,11 +852,11 @@ void GMT_fancy_frame_straightlat_checkers (double w, double e, double s, double 
 	}
 }
 
-void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double n, double angle_s, double angle_n, BOOLEAN secondary_too)
+void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double n, double angle_s, double angle_n, GMT_LONG secondary_too)
 {
 	GMT_LONG i, k, nx, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
 	double dx, w1, val, v1, v2, x1, x2, x3, y1, y2, y3, shift_s[2], shift_n[2], scale[2];
-	BOOLEAN shade, do_it;
+	GMT_LONG shade, do_it;
 
 	scale[0] = (secondary_too) ? 0.5 : 1.0;
 	scale[1] = 1.5;
@@ -895,10 +895,10 @@ void GMT_fancy_frame_straightlon_checkers (double w, double e, double s, double 
 	}
 }
 
-void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n, double radius_s, double radius_n, BOOLEAN secondary_too)
+void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n, double radius_s, double radius_n, GMT_LONG secondary_too)
 {
 	GMT_LONG i, k, nx, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
-	BOOLEAN shade, do_it;
+	GMT_LONG shade, do_it;
 	double dx, w1, v1, v2, val, x1, x2, y1, y2, az1, az2, dr, scale[2];
 
 	scale[0] = (secondary_too) ? 0.5 : 1.0;
@@ -955,7 +955,7 @@ void GMT_fancy_frame_curvedlon_checkers (double w, double e, double s, double n,
 	}
 }
 
-double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, double latB, GMT_LONG side, BOOLEAN secondary_too)
+double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, double latB, GMT_LONG side, GMT_LONG secondary_too)
 {
 	GMT_LONG k;
 	double scale = 1.0, x[2], y[2], angle, s, c, dx, dy, Ldx, Ldy;
@@ -983,7 +983,7 @@ double GMT_fancy_frame_straight_outline (double lonA, double latA, double lonB, 
 	return (angle);
 }
 
-double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, double latB, GMT_LONG side, BOOLEAN secondary_too)
+double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, double latB, GMT_LONG side, GMT_LONG secondary_too)
 {
 	double scale[2] = {1.0, 1.0}, escl, x1, x2, y1, y2, radius, dr, r_inc, az1, az2, da0, da, width, s;
 
@@ -1022,7 +1022,7 @@ double GMT_fancy_frame_curved_outline (double lonA, double latA, double lonB, do
 	return (radius);
 }
 
-void GMT_rounded_framecorners (double w, double e, double s, double n, double anglew, double anglee, BOOLEAN secondary_too)
+void GMT_rounded_framecorners (double w, double e, double s, double n, double anglew, double anglee, GMT_LONG secondary_too)
 {
 	GMT_LONG k;
 	double x, y, width;
@@ -1065,7 +1065,7 @@ void GMT_rounded_framecorners (double w, double e, double s, double n, double an
 void GMT_polar_map_boundary (double w, double e, double s, double n)
 {
 	GMT_LONG thin_pen, fat_pen;
-	BOOLEAN dual = FALSE;
+	GMT_LONG dual = FALSE;
 	double anglew, anglee, fwidth, radiuss, radiusn;
 
 	if (!project_info.region) { /* Draw rectangular boundary and return */
@@ -1122,7 +1122,7 @@ void GMT_polar_map_boundary (double w, double e, double s, double n)
 void GMT_conic_map_boundary (double w, double e, double s, double n)
 {
 	GMT_LONG thin_pen, fat_pen;
-	BOOLEAN dual = FALSE;
+	GMT_LONG dual = FALSE;
 	double anglew, anglee, fwidth, radiuss, radiusn;
 
 	if (!project_info.region) { /* Draw rectangular boundary and return */
@@ -1461,7 +1461,7 @@ void GMT_map_tick (double *xx, double *yy, GMT_LONG *sides, double *angles, GMT_
 	}
 }
 
-void GMT_map_symbol_ew (double lat, char *label, double west, double east, BOOLEAN annot, GMT_LONG level)
+void GMT_map_symbol_ew (double lat, char *label, double west, double east, GMT_LONG annot, GMT_LONG level)
 {
 	GMT_LONG i, nc;
 	struct GMT_XINGS *xings;
@@ -1471,7 +1471,7 @@ void GMT_map_symbol_ew (double lat, char *label, double west, double east, BOOLE
 	if (nc) GMT_free ((void *)xings);
 }
 
-void GMT_map_symbol_ns (double lon, char *label, double south, double north, BOOLEAN annot, GMT_LONG level)
+void GMT_map_symbol_ns (double lon, char *label, double south, double north, GMT_LONG annot, GMT_LONG level)
 {
 	GMT_LONG i, nc;
 	struct GMT_XINGS *xings;
@@ -1481,7 +1481,7 @@ void GMT_map_symbol_ns (double lon, char *label, double south, double north, BOO
 	if (nc) GMT_free ((void *)xings);
 }
 
-void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angles, char *label, GMT_LONG nx, GMT_LONG type, BOOLEAN annot, GMT_LONG level)
+void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angles, char *label, GMT_LONG nx, GMT_LONG type, GMT_LONG annot, GMT_LONG level)
 {
 	/* type = 0 for lon and 1 for lat */
 
@@ -1490,7 +1490,7 @@ void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angle
 	double dx, dy, tick_x[2], tick_y[2];
 #endif
 	GMT_LONG i, justify, annot_type;
-	BOOLEAN flip;
+	GMT_LONG flip;
 	char cmd[BUFSIZ];
 
 	len = GMT_get_annot_offset (&flip, level);
@@ -1598,7 +1598,7 @@ void GMT_map_symbol (double *xx, double *yy, GMT_LONG *sides, double *line_angle
 	}
 }
 
-BOOLEAN GMT_annot_too_crowded (double x, double y, GMT_LONG side) {
+GMT_LONG GMT_annot_too_crowded (double x, double y, GMT_LONG side) {
 	/* Checks if the proposed annotation is too close to a previously plotted annotation */
 	GMT_LONG i;
 	double d_min;
@@ -1792,7 +1792,7 @@ void GMT_map_tickitem (double w, double e, double s, double n, GMT_LONG item)
 {
 	GMT_LONG i, nx, ny;
 	double dx, dy, *val, len;
-	BOOLEAN do_x, do_y;
+	GMT_LONG do_x, do_y;
 
 	if (! (frame_info.axis[0].item[item].active || frame_info.axis[1].item[item].active)) return;
 
@@ -1835,7 +1835,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	GMT_LONG i, k, nx, ny, remove[2] = {0,0};
 	GMT_LONG do_minutes, do_seconds, move_up, done_Greenwich, done_Dateline;
 	char label[GMT_LONG_TEXT], cmd[GMT_LONG_TEXT];
-	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual, GMT_world_map_save, annot;
+	GMT_LONG full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual, GMT_world_map_save, annot;
 	PFL GMT_outside_save = NULL;
 
 	if (!(project_info.degree[0] || project_info.degree[1] || project_info.projection == GMT_POLAR)) return;	/* Annotations and header already done by GMT_linear_map_boundary */
@@ -2091,7 +2091,7 @@ void GMT_map_boundary (double w, double e, double s, double n)
 
 void GMT_map_basemap (void) {
 	GMT_LONG i;
-	BOOLEAN clip_on = FALSE;
+	GMT_LONG clip_on = FALSE;
 	double w, e, s, n;
 
 	if (!frame_info.plot) return;
@@ -2141,7 +2141,7 @@ void GMT_map_basemap (void) {
 void GMT_basemap_3D (GMT_LONG mode)
 {
 	/* Mode means: 1 = background axis, 2 = foreground axis, 3 = all */
-	BOOLEAN go[4], back;
+	GMT_LONG go[4], back;
 	GMT_LONG i;
 
 	back = (mode % 2);
@@ -2164,7 +2164,7 @@ void GMT_basemap_3D (GMT_LONG mode)
 void GMT_vertical_axis (GMT_LONG mode)
 {
 	/* Mode means: 1 = background axis, 2 = foreground axis, 3 = all */
-	BOOLEAN go[4], fore, back;
+	GMT_LONG go[4], fore, back;
 	GMT_LONG i, j;
 	double xp[2], yp[2], z_annot;
 
@@ -2388,7 +2388,7 @@ void GMT_grid_clip_on (struct GRD_HEADER *h, int rgb[], GMT_LONG flag)
 
 	double *work_x, *work_y;
 	GMT_LONG np;
-	BOOLEAN donut;
+	GMT_LONG donut;
 
 	np = GMT_grid_clip_path (h, &work_x, &work_y, &donut);
 
@@ -2415,7 +2415,7 @@ void GMT_map_clip_on (int rgb[], GMT_LONG flag)
 
 	double *work_x, *work_y;
 	GMT_LONG np;
-	BOOLEAN donut;
+	GMT_LONG donut;
 
 	np = GMT_map_clip_path (&work_x, &work_y, &donut);
 
@@ -2467,7 +2467,7 @@ void GMT_geosegment (double lon1, double lat1, double lon2, double lat2)
 	GMT_geoplot (lon2, lat2, PSL_PEN_DRAW_AND_STROKE);
 }
 
-void GMT_fill (double x[], double y[], GMT_LONG n, struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_fill (double x[], double y[], GMT_LONG n, struct GMT_FILL *fill, GMT_LONG outline)
 {
 	if (!fill)	/* NO fill pointer = no fill */
 		ps_polygon (x, y, n, GMT_no_rgb, outline);
@@ -2744,7 +2744,7 @@ void GMT_text3D (double x, double y, double z, double fsize, GMT_LONG fontno, ch
 	}
 }
 
-void GMT_textbox3D (double x, double y, double z, double size, GMT_LONG font, char *label, double angle, GMT_LONG just, BOOLEAN outline, double dx, double dy, int rgb[])
+void GMT_textbox3D (double x, double y, double z, double size, GMT_LONG font, char *label, double angle, GMT_LONG just, GMT_LONG outline, double dx, double dy, int rgb[])
 {
 	double xoff, yoff;
 	if (project_info.three_D) {
@@ -3221,9 +3221,9 @@ void GMT_setpen (struct GMT_PEN *pen)
 	ps_setpaint (rgb);
 }
 
-void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, BOOLEAN outline) {
+void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, GMT_LONG outline) {
 	GMT_LONG n = 0, n_alloc = 0, na, i, font_no = gmtdefs.annot_font[0];
-	BOOLEAN flush = FALSE, this_outline = FALSE;
+	GMT_LONG flush = FALSE, this_outline = FALSE;
 	double x, y, *xx, *yy, *xp, *yp, font_size, dim[3];
 	char cmd[GMT_TEXT_LEN], *c;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s;
@@ -3433,8 +3433,8 @@ void GMT_draw_custom_symbol (double x0, double y0, double z0, double size, struc
 	GMT_free ((void *)xx);	GMT_free ((void *)yy);
 }
 
-void GMT_flush_symbol_piece (double *x, double *y, double z, GMT_LONG *n, struct GMT_PEN *p, struct GMT_FILL *f, BOOLEAN outline, BOOLEAN *flush) {
-	BOOLEAN draw_outline;
+void GMT_flush_symbol_piece (double *x, double *y, double z, GMT_LONG *n, struct GMT_PEN *p, struct GMT_FILL *f, GMT_LONG outline, GMT_LONG *flush) {
+	GMT_LONG draw_outline;
 
 	draw_outline = (outline && p->rgb[0] != -1) ? TRUE : FALSE;
 	if (draw_outline) GMT_setpen (p);
@@ -3448,7 +3448,7 @@ void GMT_flush_symbol_piece (double *x, double *y, double z, GMT_LONG *n, struct
 
 /* In order to simplify interface to symbol plotting we will use this prototype:
  *
- * void GMT_symbol (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+ * void GMT_symbol (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
  *
  * where size is now a pointer - that way those who need more than one size cane be handled
  * Some symbosl do not use fill etc - for those they are not accessed
@@ -3457,7 +3457,7 @@ void GMT_flush_symbol_piece (double *x, double *y, double z, GMT_LONG *n, struct
 /* These symbols all take the same arguments:
  * SQUARE, CIRCLE, TRIANGLE, INVTRIANGLE, DIAMOND, HEXAGON, PENTAGON, OCTAGON, STAR */
 
-void GMT_square (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_square (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the square symbol */
 
@@ -3479,7 +3479,7 @@ void GMT_square (double x, double y, double z, double size[], struct GMT_FILL *f
 		ps_square (x, y, size[0], fill->rgb, outline);
 }
 
-void GMT_circle (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_circle (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the circle symbol */
 
@@ -3506,7 +3506,7 @@ void GMT_circle (double x, double y, double z, double size[], struct GMT_FILL *f
 		ps_circle (x, y, size[0], fill->rgb, outline);
 }
 
-void GMT_triangle (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_triangle (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the triangle symbol */
 
@@ -3528,7 +3528,7 @@ void GMT_triangle (double x, double y, double z, double size[], struct GMT_FILL 
 		ps_triangle (x, y, size[0], fill->rgb, outline);
 }
 
-void GMT_itriangle (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_itriangle (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the inverted triangle symbol */
 
@@ -3550,7 +3550,7 @@ void GMT_itriangle (double x, double y, double z, double size[], struct GMT_FILL
 		ps_itriangle (x, y, size[0], fill->rgb, outline);
 }
 
-void GMT_diamond (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_diamond (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the diamond symbol */
 
@@ -3573,7 +3573,7 @@ void GMT_diamond (double x, double y, double z, double size[], struct GMT_FILL *
 		ps_diamond (x, y, size[0], fill->rgb, outline);
 }
 
-void GMT_hexagon (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_hexagon (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the hexagon symbol */
 
@@ -3601,7 +3601,7 @@ void GMT_hexagon (double x, double y, double z, double size[], struct GMT_FILL *
 		ps_hexagon (x, y, size[0], fill->rgb, outline);
 }
 
-void GMT_pentagon (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_pentagon (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the pentagon symbol */
 
@@ -3627,7 +3627,7 @@ void GMT_pentagon (double x, double y, double z, double size[], struct GMT_FILL 
 		ps_pentagon (x, y, size[0], fill->rgb, outline);
 }
 
-void GMT_octagon (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_octagon (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the octagon symbol */
 
@@ -3653,7 +3653,7 @@ void GMT_octagon (double x, double y, double z, double size[], struct GMT_FILL *
 		ps_octagon (x, y, size[0], fill->rgb, outline);
 }
 
-void GMT_star (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_star (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the star symbol */
 
@@ -3686,7 +3686,7 @@ void GMT_star (double x, double y, double z, double size[], struct GMT_FILL *fil
 		ps_star (x, y, size[0], fill->rgb, outline);
 }
 
-void GMT_plus (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_plus (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the plus symbol (fill, outline not accessed) */
 
@@ -3705,7 +3705,7 @@ void GMT_plus (double x, double y, double z, double size[], struct GMT_FILL *fil
 		ps_plus (x, y, size[0]);
 }
 
-void GMT_cross (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_cross (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the cross symbol (fill, outline not accessed) */
 
@@ -3724,7 +3724,7 @@ void GMT_cross (double x, double y, double z, double size[], struct GMT_FILL *fi
 		ps_cross (x, y, size[0]);
 }
 
-void GMT_rect (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_rect (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the rect symbol [x,y is lower left corner] */
 
@@ -3746,7 +3746,7 @@ void GMT_rect (double x, double y, double z, double size[], struct GMT_FILL *fil
 		ps_rect (x, y, x + size[0], y + size[1], fill->rgb, outline);
 }
 
-void GMT_ellipse (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_ellipse (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the ellipse symbol */
 
@@ -3775,7 +3775,7 @@ void GMT_ellipse (double x, double y, double z, double size[], struct GMT_FILL *
 		ps_ellipse (x, y, size[0], size[1], size[2], fill->rgb, outline);
 }
 
-void GMT_pie (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_pie (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the pie symbol */
 
@@ -3830,7 +3830,7 @@ void GMT_matharc (double x, double y, double z, double size[], double shape, str
 	}
 }
 
-void GMT_rotrect (double x, double y, double z, double size[], struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_rotrect (double x, double y, double z, double size[], struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the rotated rectangle symbol */
 
@@ -3861,7 +3861,7 @@ void GMT_rotrect (double x, double y, double z, double size[], struct GMT_FILL *
 
 /* Vector takes different kinds of arguments */
 
-void GMT_vector (double x0, double y0, double x1, double y1, double z, double tailwidth, double headlength, double headwidth, double shape, struct GMT_FILL *fill, BOOLEAN outline)
+void GMT_vector (double x0, double y0, double x1, double y1, double z, double tailwidth, double headlength, double headwidth, double shape, struct GMT_FILL *fill, GMT_LONG outline)
 {
 	/* Plots the vector symbol */
 
@@ -4145,7 +4145,7 @@ void GMT_textpath_init (struct GMT_PEN *LP, int Brgb[], struct GMT_PEN *BP, int 
 void GMT_contlabel_plotboxes (struct GMT_CONTOUR *G)
 {
 	GMT_LONG i, k, just;
-	BOOLEAN outline;
+	GMT_LONG outline;
 	double x, y;
 	struct GMT_CONTOUR_LINE *C;
 
@@ -4430,7 +4430,7 @@ struct EPS *GMT_epsinfo (char *program)
 #define JUMP_L 0
 #define JUMP_R 1
 
-void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GMT_FILL *F, BOOLEAN outline)
+void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GMT_FILL *F, GMT_LONG outline)
 {
 	/* When geographic data are plotted, polygons that cross the west map boundary will
 	 * sometimes appear on the area bounded by the east map boundary - they "wrap around".
@@ -4450,7 +4450,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 	 * plot the outline as a path.
 	 */
 
-	BOOLEAN jump;
+	GMT_LONG jump;
 	GMT_LONG i, k, first, n_new, n_orig;
 	GMT_LONG jump_dir = JUMP_L;
 	double *x, *xp, *yp;
@@ -4571,7 +4571,7 @@ void GMT_fill_polygon (double *lon, double *lat, double z, GMT_LONG n, struct GM
 	GMT_plot_line (GMT_x_plot, GMT_y_plot, GMT_pen, n_new);				/* Separately plot the outline */
 }
 
-void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, BOOLEAN outline)
+void GMT_plot_ellipse (double lon, double lat, double z, double major, double minor, double azimuth, struct GMT_FILL fill, GMT_LONG outline)
 {
 	/* GMT_plot_ellipse takes the location, axes (in km), and azimuth of an ellipse
 	   and draws the ellipse using the chosen map projection */
@@ -4628,7 +4628,7 @@ void GMT_plot_ellipse (double lon, double lat, double z, double major, double mi
 	GMT_free ((void *)py);
 }
 
-void GMT_plot_rectangle (double lon, double lat, double z, double width, double height, double azimuth, struct GMT_FILL fill, BOOLEAN outline)
+void GMT_plot_rectangle (double lon, double lat, double z, double width, double height, double azimuth, struct GMT_FILL fill, GMT_LONG outline)
 {
 	/* GMT_plot_rectangle takes the location, axes (in km), and azimuth of a rectangle
 	   and draws the rectangle using the chosen map projection */
@@ -4695,10 +4695,10 @@ void GMT_plot_rectangle (double lon, double lat, double z, double width, double 
 	GMT_rotrect (xp, yp, z, dim, &fill, outline);
 }
 
-void GMT_draw_fence (double x[], double y[], double z, GMT_LONG n, struct GMT_FRONTLINE *f, struct GMT_FILL *g, BOOLEAN outline)
+void GMT_draw_fence (double x[], double y[], double z, GMT_LONG n, struct GMT_FRONTLINE *f, struct GMT_FILL *g, GMT_LONG outline)
 {
 	GMT_LONG i, ngap;
-	BOOLEAN skip;
+	GMT_LONG skip;
 	double *s, xx[4], yy[4], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
 	double gap, x0, y0, xp, yp, len2, len3, cosa, sina, sa, ca, offx, offy, dim[3];
 
@@ -4901,7 +4901,7 @@ void GMT_draw_fence (double x[], double y[], double z, GMT_LONG n, struct GMT_FR
 	GMT_free ((void *)s);
 }
 
-BOOLEAN set_do_seconds (double inc)
+GMT_LONG set_do_seconds (double inc)
 {	/* Determines if seconds are to be labelled based on size of increment */
 	if (GMT_plot_calclock.geo.order[2] == -1) return (FALSE);			/* Seconds not requested by format */
 	if (GMT_plot_calclock.geo.n_sec_decimals > 0) return (TRUE);			/* If asked for ss.xxx annotations */

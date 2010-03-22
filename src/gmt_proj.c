@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_proj.c,v 1.52 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_proj.c,v 1.53 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1594,7 +1594,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 
 	if (project_info.g_debug > 0) {
 		GMT_genper (lonvp, latvp, &xt_vp, &yt_vp);
-		fprintf (stderr, "\nvgenper: polar %d north %d\n", project_info.polar, project_info.north_pole);
+		fprintf (stderr, "\nvgenper: polar %ld north %ld\n", project_info.polar, project_info.north_pole);
 		fprintf (stderr, "vgenper: altitude H %7.1f km P %7.4f\n", H/1000.0, P);
 		fprintf (stderr, "vgenper: azimuth %5.1f tilt %5.1f\n", azimuth, tilt);
 		fprintf (stderr, "vgenper: viewpoint width %5.1f height %5.1f degrees\n", width, height);
@@ -1615,7 +1615,7 @@ void GMT_vgenper (double lon0, double lat0, double altitude, double azimuth, dou
 		fprintf (stderr, "vgenper: gamma %6.3f Omega %6.3f \n", gamma, Omega);
 		fprintf (stderr, "vgenper: viewpoint lon %6.3f lat %6.3f \n", lonvp, latvp);
 		fprintf (stderr, "vgenper: viewpoint xt %6.3f yt %6.3f \n", xt_vp/1000.0, yt_vp/1000.0);
-		fprintf (stderr, "vgenper: user viewpoint %d\n", project_info.g_box);
+		fprintf (stderr, "vgenper: user viewpoint %ld\n", project_info.g_box);
 	}
 
 }

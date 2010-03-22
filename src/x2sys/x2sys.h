@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.h,v 1.53 2010-01-05 01:15:49 guru Exp $
+ *	$Id: x2sys.h,v 1.54 2010-03-22 18:55:47 guru Exp $
  *
  *      Copyright (c) 1999-2010 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -135,10 +135,10 @@ struct X2SYS_INFO {
 	int dist_flag;			/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
 	PFI read_file;			/* Pointer to function that reads this file */
 	int file_type;			/* 0 = ASCII, 1 = native binary, 2 = netCDF */
-	BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
-	BOOLEAN multi_segment;		/* TRUE if there are multiple segments in this file */
-	BOOLEAN geographic;		/* TRUE if x/y data are lon/lat */
-	BOOLEAN ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
+	GMT_LONG ascii_out;		/* TRUE if output should be in ascii */
+	GMT_LONG multi_segment;		/* TRUE if there are multiple segments in this file */
+	GMT_LONG geographic;		/* TRUE if x/y data are lon/lat */
+	GMT_LONG ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
 	char unit[2][2];		/* Units for distance (c = Cartesian, e = meter, k = km, m = miles, n = nautical miles)
 	 				   and speed (c = Cartesian, e = m/s, k = km/hr, m = miles/hr, n = knots) */
 	char ms_flag;			/* Multi-segment header flag */
@@ -155,9 +155,9 @@ struct X2SYS_DATA_INFO {
 	int start_col;		/* For cardformat: starting column */
 	int stop_col;		/* For cardformat: last column */
 	int n_cols;		/* For cardformat: number of columns */
-	BOOLEAN has_nan_proxy;	/* TRUE if there is a special value that indicates NaN */
-	BOOLEAN has_nans;	/* TRUE if there are NaNs in this field */
-	BOOLEAN do_scale;	/* TRUE if scale != 1 or offset != 0 */
+	GMT_LONG has_nan_proxy;	/* TRUE if there is a special value that indicates NaN */
+	GMT_LONG has_nans;	/* TRUE if there are NaNs in this field */
+	GMT_LONG do_scale;	/* TRUE if scale != 1 or offset != 0 */
 	char name[32];		/* Name of this data type */
 	char format[32];	/* Output print format for ascii conversion */
 	char intype;		/* Input data type (cuhilfdaA) */
@@ -261,7 +261,7 @@ extern int x2sys_read_list (char *file, char ***list, int *n);
 extern int x2sys_read_weights (char *file, char ***list, double **weights, int *nf);
 extern void x2sys_free_list (char **list, int n);
 extern int x2sys_find_track (char *name, char **list, int n);
-int x2sys_get_tracknames (int argc, char **argv, char ***tracklist, BOOLEAN *cmdline);
+int x2sys_get_tracknames (int argc, char **argv, char ***tracklist, GMT_LONG *cmdline);
 
 extern double *x2sys_dummytimes (GMT_LONG n);
 
@@ -275,11 +275,11 @@ extern int x2sys_initialize (char *TAG, char *fname, struct GMT_IO *G, struct X2
 extern void x2sys_end (struct X2SYS_INFO *X);
 
 extern int x2sys_set_system (char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
-extern void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc);
+extern void x2sys_bix_init (struct X2SYS_BIX *B, GMT_LONG alloc);
 extern struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (char *name, int id_no, int flag);
 extern struct X2SYS_BIX_TRACK *x2sys_bix_make_track (int id, int flag);
 extern int x2sys_bix_read_tracks (struct X2SYS_INFO *s, struct X2SYS_BIX *B, int mode, int *ID);
-extern int x2sys_bix_read_index (struct X2SYS_INFO *s, struct X2SYS_BIX *B, BOOLEAN swap);
+extern int x2sys_bix_read_index (struct X2SYS_INFO *s, struct X2SYS_BIX *B, GMT_LONG swap);
 extern int x2sys_bix_get_ij (double x, double y, GMT_LONG *i, GMT_LONG *j, struct X2SYS_BIX *B, GMT_LONG *ID);
 
 extern void x2sys_path_init (struct X2SYS_INFO *s);

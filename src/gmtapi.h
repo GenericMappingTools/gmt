@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi.h,v 1.23 2009-09-09 23:27:04 guru Exp $
+ *	$Id: gmtapi.h,v 1.24 2010-03-22 18:55:45 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -66,7 +66,7 @@ struct GMTAPI_CTRL {
 
 struct GMT_OPTION {
 	char option;			/* 1-char command line -<option> (e.g. D in -D) identifying the option (NULL if file) */
-	BOOLEAN common;			/* TRUE if it is one of the common GMT options -R -J etc */
+	GMT_LONG common;			/* TRUE if it is one of the common GMT options -R -J etc */
 	char *arg;			/* If not NULL, contains the argument for this option */
 	struct GMT_OPTION *next;	/* Pointer to next option in a linked list */
 	struct GMT_OPTION *previous;	/* Pointer to previous option in a linked list */

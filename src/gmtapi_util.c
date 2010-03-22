@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmtapi_util.c,v 1.28 2009-09-09 23:27:04 guru Exp $
+ *	$Id: gmtapi_util.c,v 1.29 2010-03-22 18:55:45 guru Exp $
  *
  *	Copyright (c) 1991-2008 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -677,7 +677,7 @@ int GMTAPI_Import_Record (struct GMTAPI_CTRL *API, int io_session, double **reco
 	 * If we reach EOF then we return EOF
 	 */
 
-	BOOLEAN get_next_record = FALSE;
+	GMT_LONG get_next_record = FALSE;
 	int retval = 0, col, n_nan;
 	size_t ij;
 	struct GMTAPI_IO *IO;

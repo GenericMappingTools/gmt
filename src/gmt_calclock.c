@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.68 2010-03-21 20:16:37 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.69 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -35,7 +35,7 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-BOOLEAN want_iso = FALSE;	/* Temporary to test compilation.  Delete this.  */
+GMT_LONG want_iso = FALSE;	/* Temporary to test compilation.  Delete this.  */
 
 /* Functions to assemble/disassemble a continuous
 variable (double) and a calendar day (GMT_cal_rd)
@@ -149,7 +149,7 @@ GMT_cal_rd GMT_nth_kday (GMT_LONG n, GMT_LONG kday, GMT_cal_rd date) {
 
 /* Proleptic Gregorian Calendar operations  */
 
-BOOLEAN	GMT_is_gleap (GMT_LONG gyear) {
+GMT_LONG	GMT_is_gleap (GMT_LONG gyear) {
 /*	Given integer proleptic gregorian calendar year,
 	return TRUE if it is a Gregorian leap year; 
 	else return FALSE.  */
@@ -314,7 +314,7 @@ GMT_LONG	GMT_y2_to_y4_yearfix (GMT_LONG y2) {
 	return (y2 + ((y2 >= GMT_Y2K_fix.y2_cutoff) ? GMT_Y2K_fix.y100 : GMT_Y2K_fix.y200));
 }
 
-BOOLEAN	GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d) {
+GMT_LONG	GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d) {
 
 	/* Check year, month, day values to see if they
 		are an appropriate date in the proleptic
@@ -335,7 +335,7 @@ BOOLEAN	GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d) {
 }
 
 
-BOOLEAN	GMT_iso_ywd_is_bad (GMT_LONG y, GMT_LONG w, GMT_LONG d) {
+GMT_LONG	GMT_iso_ywd_is_bad (GMT_LONG y, GMT_LONG w, GMT_LONG d) {
 
 	/* Check ISO_year, ISO_week_of_year, ISO_day_of_week
 		values to see if they form a probably
@@ -355,7 +355,7 @@ BOOLEAN	GMT_iso_ywd_is_bad (GMT_LONG y, GMT_LONG w, GMT_LONG d) {
 	return (FALSE);
 }
 
-BOOLEAN	GMT_hms_is_bad (GMT_LONG h, GMT_LONG m, double s) {
+GMT_LONG	GMT_hms_is_bad (GMT_LONG h, GMT_LONG m, double s) {
 
 	/* Check range of hours, min, and seconds.
 		Returns TRUE if it appears something is out of range.
@@ -485,7 +485,7 @@ GMT_LONG	GMT_verify_time_step (GMT_LONG step, char unit) {
 }
 
 
-void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN init) {
+void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, GMT_LONG init) {
 
 	/*   
 	
@@ -800,7 +800,7 @@ void	GMT_moment_interval (struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN i
 
 
 
-void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, GMT_LONG step_secs, BOOLEAN init) {
+void	GMT_small_moment_interval (struct GMT_MOMENT_INTERVAL *p, GMT_LONG step_secs, GMT_LONG init) {
 
 	/* Called by GMT_moment_interval ().  Get here when p->stuff[0] is initialized and
 		0 < step_secs <= GMT_DAY2SEC_I.  If init, stuff[0] may need to be truncated.  */
@@ -877,7 +877,7 @@ GMT_LONG	GMT_gmonth_length (GMT_LONG year,  GMT_LONG month) {
 	return (k);
 }
 
-void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, BOOLEAN upper, GMT_LONG kind, double dt)
+void GMT_format_calendar (char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *C, GMT_LONG upper, GMT_LONG kind, double dt)
 {	/* Given the internal time representation dt and the formatting information
 	 * in the D and C structure, write the calendar representation to strings date and clock,
 	 * but skip either string if it is a NULL pointer */
