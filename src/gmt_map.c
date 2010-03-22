@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.249 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_map.c,v 1.250 2010-03-22 23:28:04 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3166,7 +3166,7 @@ GMT_LONG GMT_map_crossing (double lon1, double lat1, double lon2, double lat2, d
 			d_swap (xlat[0], xlat[1]);
 			d_swap (xx[0], xx[1]);
 			d_swap (yy[0], yy[1]);
-			i_swap (sides[0], sides[1]);
+			l_swap (sides[0], sides[1]);
 		}
 	}
 	return (GMT_abs(nx));
@@ -4917,7 +4917,7 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 		n = m;	/* Current size of polygon */
 		m = 0;	/* Start with nuthin' */
 		
-		i_swap (in, out);	/* Swap what is input and output for clipping against this border */
+		l_swap (in, out);	/* Swap what is input and output for clipping against this border */
 		/* Must ensure we copy the very first point if it is inside the clip rectangle */
 		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
 		for (i = 1; i < n; i++) {	/* For each line segment */
@@ -5039,7 +5039,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n_orig, double **x, d
 		n_cross = 0;	/* No crossings so far */
 
 		curved = !((side%2) ? GMT_meridian_straight : GMT_parallel_straight);	/* Is this border straight or curved when projected */
-		i_swap (in, out);	/* Swap what is input and output for clipping against this border */
+		l_swap (in, out);	/* Swap what is input and output for clipping against this border */
 		if (side%2 && periodic) {	/* No clipping can take place on w or e border; just copy all and go to next side */
 			m = n;
 			if (m == n_alloc) n_alloc = GMT_alloc_memory4 ((void **)&xtmp[0], (void **)&ytmp[0], (void **)&xtmp[1], (void **)&ytmp[1], m, n_alloc, sizeof (double), "GMT_wesn_clip");
@@ -5532,7 +5532,7 @@ GMT_LONG GMT_geo_to_xy_line (double *lon, double *lat, GMT_LONG n)
 		}
 		if (nx == 1) {
 			GMT_x_plot[np] = xx[0];	GMT_y_plot[np] = yy[0];
-			GMT_pen[np++] = GMT_pen_status ();
+			GMT_pen[np++] = (int)GMT_pen_status ();
 			if (np == GMT_n_alloc) GMT_get_plot_array ();
 		}
 		else if (nx == 2 && ok) {
@@ -5615,8 +5615,8 @@ GMT_LONG GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_in
 		head->y_inc = GMT_get_inc (head->y_min, head->y_max, head->ny, offset);
 	}
 	else if (dpi > 0) {
-		head->nx = (int)irint ((head->x_max - head->x_min) * dpi) + 1 - offset;
-		head->ny = (int)irint ((head->y_max - head->y_min) * dpi) + 1 - offset;
+		head->nx = (int)(irint ((head->x_max - head->x_min) * dpi) + 1 - offset);
+		head->ny = (int)(irint ((head->y_max - head->y_min) * dpi) + 1 - offset);
 		head->x_inc = GMT_get_inc (head->x_min, head->x_max, head->nx, offset);
 		head->y_inc = GMT_get_inc (head->y_min, head->y_max, head->ny, offset);
 	}
