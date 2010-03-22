@@ -1,9 +1,13 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.721 2010-03-22 18:55:43 guru Exp $
+	$Id: ChangeLog,v 1.722 2010-03-22 20:54:18 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2010-03-22	pwessel
 	* *.[ch]:		Replaced BOOLEAN typedef by using GMT_LONG instead.
+
+2010-03-21	jluis
+	* *.c:			In mains, replaced all occurrences of fprintf (GMT_stdout, ...)  by
+				fprintf (stdout, ...) so that it compiles under VC 2005 and higher.
 
 2010-03-17	pwessel
 	* psxy.c:		The -Sw/W symbols did not handle the azimuth/direction conversions
