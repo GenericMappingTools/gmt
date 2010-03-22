@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.72 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_stat.c,v 1.73 2010-03-22 23:42:28 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -221,13 +221,13 @@ GMT_LONG	GMT_f_test (double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, d
 	}
 	if (chisq1 > chisq2) {
 		f = chisq1/chisq2;
-		df1 = nu1;
-		df2 = nu2;
+		df1 = (double)nu1;
+		df2 = (double)nu2;
 	}
 	else {
 		f = chisq2/chisq1;
-		df1 = nu2;
-		df2 = nu1;
+		df1 = (double)nu2;
+		df2 = (double)nu1;
 	}
 	if (GMT_inc_beta(0.5*df2, 0.5*df1, df2/(df2+df1*f), &p1) ) {
 		fprintf(stderr,"GMT_f_test:  Trouble on 1st GMT_inc_beta call.\n");
@@ -395,7 +395,7 @@ double	GMT_cf_beta (double a, double b, double x)
 
 	do {
 		m++;
-		em = m;
+		em = (double)m;
 		tem = em + em;
 		d = em*(b-m)*x/((qam+tem)*(a+tem));
 		ap = az+d*am;
