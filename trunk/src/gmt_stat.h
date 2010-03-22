@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.h,v 1.14 2010-01-05 01:15:46 guru Exp $
+ *	$Id: gmt_stat.h,v 1.15 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,7 +27,7 @@ EXTERN_MSC double GMT_ber(double x);
 EXTERN_MSC double GMT_kei(double x);
 EXTERN_MSC double GMT_ker(double x);
 EXTERN_MSC double GMT_plm(GMT_LONG l, GMT_LONG m, double x);
-EXTERN_MSC double GMT_plm_bar(GMT_LONG l, GMT_LONG m, double x, BOOLEAN ortho);
+EXTERN_MSC double GMT_plm_bar(GMT_LONG l, GMT_LONG m, double x, GMT_LONG ortho);
 EXTERN_MSC double GMT_factorial(GMT_LONG n);
 EXTERN_MSC double GMT_i0(double x);
 EXTERN_MSC double GMT_i1(double x);

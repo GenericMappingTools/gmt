@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_grdio.c,v 1.135 2010-03-21 23:44:09 guru Exp $
+ *	$Id: gmt_grdio.c,v 1.136 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -140,7 +140,7 @@ GMT_LONG GMT_update_grd_info (char *file, struct GRD_HEADER *header)
 	return ((*GMT_io_updateinfo[header->type]) (header));
 }
 
-GMT_LONG GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
+GMT_LONG GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex)
 {	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 * grid:	array with final grid
@@ -164,7 +164,7 @@ GMT_LONG GMT_read_grd (char *file, struct GRD_HEADER *header, float *grid, doubl
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
+GMT_LONG GMT_write_grd (char *file, struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex)
 {	/* file:	File name
 	 * header:	grid structure header
 	 * grid:	array with final grid
@@ -215,7 +215,7 @@ void GMT_expand_filename (char *file, char *fname)
 		strcpy (fname, file);
 }
 
-GMT_LONG GMT_grd_get_format (char *file, struct GRD_HEADER *header, BOOLEAN magic)
+GMT_LONG GMT_grd_get_format (char *file, struct GRD_HEADER *header, GMT_LONG magic)
 {
 	/* This functions does a couple of things:
 	 * 1. It tries to determine what kind of grid file this is. If a file is openeed for
@@ -416,7 +416,7 @@ GMT_LONG GMT_grd_prep_io (struct GRD_HEADER *header, double *w, double *e, doubl
 	 */
 
 	GMT_LONG one_or_zero, i, *k;
-	BOOLEAN geo = FALSE;
+	GMT_LONG geo = FALSE;
 	double small = 0.1, half_or_zero, x;
 
 	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
@@ -561,7 +561,7 @@ GMT_LONG GMT_open_grd (char *file, struct GMT_GRDFILE *G, char mode)
 	GMT_LONG r_w, err;
 	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
-	BOOLEAN header = TRUE, magic = TRUE;
+	GMT_LONG header = TRUE, magic = TRUE;
 	EXTERN_MSC GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job);
 
 	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
@@ -706,7 +706,7 @@ GMT_LONG GMT_write_grd_row (struct GMT_GRDFILE *G, GMT_LONG row_no, float *row)
 	return (GMT_NOERROR);
 }
 
-void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, BOOLEAN update)
+void GMT_grd_init (struct GRD_HEADER *header, int argc, char **argv, GMT_LONG update)
 {	/* GMT_grd_init initializes a grd header to default values and copies the
 	 * command line to the header variable command.
 	 * update = TRUE if we only want to update command line */
@@ -793,7 +793,7 @@ void GMT_grd_shift (struct GRD_HEADER *header, float *grd, double shift)
 	GMT_free ((void *) tmp);
 }
 
-BOOLEAN GMT_grd_is_global (struct GRD_HEADER *h)
+GMT_LONG GMT_grd_is_global (struct GRD_HEADER *h)
 {	/* Determine if grid could be global */
 
 	if (GMT_io.in_col_type[0] == GMT_IS_LON || project_info.degree[0]) {
@@ -843,7 +843,7 @@ GMT_LONG GMT_grd_setregion (struct GRD_HEADER *h, double *xmin, double *xmax, do
 	 * So to determine the boundary, we go inward from there.
 	 */
 
-	BOOLEAN grid_global;
+	GMT_LONG grid_global;
 	double shift_x, x_range, off;
 
 	/* First make an educated guess whether the grid and region are geographical and global */
@@ -947,7 +947,7 @@ GMT_LONG GMT_adjust_loose_wesn (double *w, double *e, double *s, double *n, stru
 	 * intended to throw just any values at it (although one could).
 	 */
 	
-	BOOLEAN global, error = FALSE;
+	GMT_LONG global, error = FALSE;
 	double half_or_zero, val, dx, small;
 	
 	half_or_zero = (header->node_offset) ? 0.5 : 0.0;
@@ -1163,7 +1163,7 @@ void GMT_grd_get_units (struct GRD_HEADER *header)
 	}
 }
 
-GMT_LONG GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w, double e, double s, double n, double scale, GMT_LONG mode, double lat, BOOLEAN init)
+GMT_LONG GMT_read_img (char *imgfile, struct GRD_HEADER *grd, float **grid, double w, double e, double s, double n, double scale, GMT_LONG mode, double lat, GMT_LONG init)
 {
 	/* Function that reads an entire Sandwell/Smith Mercator grid and stores it like a regular
 	 * GMT grid.  If init is TRUE we also initialize the Mercator projection.  Lat should be 0.0
@@ -1287,7 +1287,7 @@ struct GMT_GRID *GMT_create_grid (char *arg)
 	return (G);
 }
 
-void GMT_destroy_grid (struct GMT_GRID *G, BOOLEAN free_grid)
+void GMT_destroy_grid (struct GMT_GRID *G, GMT_LONG free_grid)
 {
 	if (!G) return;	/* Nothing to deallocate */
 	if (G->data && free_grid) GMT_free ((void *)G->data);

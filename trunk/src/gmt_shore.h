@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.h,v 1.29 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_shore.h,v 1.30 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -76,8 +76,8 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	struct GSHHS_SIDE *side[4];	/* Has position & id for each side exit/entry */
 	GMT_LONG nside[4];		/* Number of entries per side, including corner */
 	GMT_LONG n_entries;
-	BOOLEAN leftmost_bin;		/* TRUE if current bin is at left edge of map */
-	BOOLEAN skip_feature;		/* TRUE if GSHHS version > 2.0 and +r or +l is in use */
+	GMT_LONG leftmost_bin;		/* TRUE if current bin is at left edge of map */
+	GMT_LONG skip_feature;		/* TRUE if GSHHS version > 2.0 and +r or +l is in use */
 	double bsize;			/* Size of square bins in degrees */
 	double lon_sw;			/* Longitude of SW corner */
 	double lat_sw;			/* Latitude of SW corner */
@@ -216,7 +216,7 @@ struct GMT_BR_SEGMENT {
 
 struct GMT_GSHHS_POL {
 	GMT_LONG n;
-	BOOLEAN interior;	/* TRUE if polygon is inside bin */
+	GMT_LONG interior;	/* TRUE if polygon is inside bin */
 	GMT_LONG level;
 	GMT_LONG fid;		/* Fill id; same as level but 5 if riverlake */
 	double *lon;
@@ -235,9 +235,9 @@ EXTERN_MSC void GMT_shore_cleanup (struct GMT_SHORE *c);
 EXTERN_MSC void GMT_br_cleanup (struct GMT_BR *c);
 EXTERN_MSC GMT_LONG GMT_init_shore (char res, struct GMT_SHORE *c, double w, double e, double s, double n, struct GMT_SHORE_SELECT *I);
 EXTERN_MSC GMT_LONG GMT_init_br (char which, char res, struct GMT_BR *c, double w, double e, double s, double n);
-EXTERN_MSC GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, BOOLEAN assemble, BOOLEAN shift, double west, double east, struct GMT_GSHHS_POL **pol);
-EXTERN_MSC GMT_LONG GMT_assemble_br (struct GMT_BR *c, BOOLEAN shift, double edge, struct GMT_GSHHS_POL **pol);
-EXTERN_MSC GMT_LONG GMT_prep_polygons (struct GMT_GSHHS_POL **p, GMT_LONG np, BOOLEAN sample, double step, GMT_LONG anti_bin);
+EXTERN_MSC GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG assemble, GMT_LONG shift, double west, double east, struct GMT_GSHHS_POL **pol);
+EXTERN_MSC GMT_LONG GMT_assemble_br (struct GMT_BR *c, GMT_LONG shift, double edge, struct GMT_GSHHS_POL **pol);
+EXTERN_MSC GMT_LONG GMT_prep_polygons (struct GMT_GSHHS_POL **p, GMT_LONG np, GMT_LONG sample, double step, GMT_LONG anti_bin);
 EXTERN_MSC GMT_LONG GMT_set_resolution (char *res, char opt);
 EXTERN_MSC char GMT_shore_adjust_res (char res);
 

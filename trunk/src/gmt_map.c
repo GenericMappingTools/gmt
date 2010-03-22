@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.248 2010-03-21 20:16:37 guru Exp $
+ *	$Id: gmt_map.c,v 1.249 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -111,8 +111,8 @@
 
 /* ANSI-C Prototypes for functions internal to gmt_map.c */
 
-BOOLEAN GMT_quickconic (void);
-BOOLEAN GMT_quicktm (double lon0, double limit);
+GMT_LONG GMT_quickconic (void);
+GMT_LONG GMT_quicktm (double lon0, double limit);
 void GMT_set_polar (double plat);
 GMT_LONG GMT_ok_xovers (GMT_LONG nx, double x0, double x1, GMT_LONG *sides);
 void GMT_linearxy (double x, double y, double *x_i, double *y_i);	/*	Convert x/y as linear, log10, or power	*/
@@ -179,7 +179,7 @@ GMT_LONG GMT_init_three_D (void);
 void GMT_map_setxy (double xmin, double xmax, double ymin, double ymax);
 void GMT_map_setinfo (double xmin, double xmax, double ymin, double ymax, double scl);
 void GMT_set_spherical (void);
-void GMT_init_project_info (BOOLEAN spherical);
+void GMT_init_project_info (GMT_LONG spherical);
 void GMT_get_origin (double lon1, double lat1, double lon_p, double lat_p, double *lon2, double *lat2);
 void GMT_get_rotate_pole (double lon1, double lat1, double lon2, double lat2);
 void GMT_pole_rotate_forward (double lon, double lat, double *tlon, double *tlat);
@@ -195,10 +195,10 @@ GMT_LONG GMT_move_to_rect (double *x_edge, double *y_edge, GMT_LONG j, GMT_LONG 
 GMT_LONG GMT_move_to_wesn (double *x_edge, double *y_edge, double lon, double lat, double lon_old, double lat_old, GMT_LONG j, GMT_LONG nx);
 GMT_LONG GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides, GMT_LONG *nx);
 GMT_LONG GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides, GMT_LONG *nx);
-BOOLEAN GMT_will_it_wrap_x (double *x, double *y, GMT_LONG n, GMT_LONG *start);
-BOOLEAN GMT_will_it_wrap_tm (double *x, double *y, GMT_LONG n, GMT_LONG *start);
-BOOLEAN GMT_this_point_wraps_x (double x0, double x1, double w_last, double w_this);
-BOOLEAN GMT_this_point_wraps_tm (double y0, double y1);
+GMT_LONG GMT_will_it_wrap_x (double *x, double *y, GMT_LONG n, GMT_LONG *start);
+GMT_LONG GMT_will_it_wrap_tm (double *x, double *y, GMT_LONG n, GMT_LONG *start);
+GMT_LONG GMT_this_point_wraps_x (double x0, double x1, double w_last, double w_this);
+GMT_LONG GMT_this_point_wraps_tm (double y0, double y1);
 GMT_LONG GMT_truncate_x (double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_LONG l_or_r);
 GMT_LONG GMT_truncate_tm (double *x, double *y, GMT_LONG n, GMT_LONG start, GMT_LONG b_or_t);
 void GMT_get_crossings_x (double *xc, double *yc, double x0, double y0, double x1, double y1);
@@ -613,7 +613,7 @@ GMT_LONG GMT_map_setup (double west, double east, double south, double north)
 GMT_LONG GMT_init_three_D (void) {
 	GMT_LONG i, easy;
 	double tilt_angle, x, y, x0, x1, x2, y0, y1, y2, zmin = 0.0, zmax = 0.0;
-	BOOLEAN positive;
+	GMT_LONG positive;
 
 	project_info.three_D = (z_project.view_azimuth != 180.0 || z_project.view_elevation != 90.0);
 	if (project_info.three_D && gmtdefs.basemap_type == GMT_IS_FANCY) gmtdefs.basemap_type = GMT_IS_PLAIN;	/* Only plain frame for 3-D */
@@ -889,7 +889,7 @@ void GMT_zz_to_z (double *z, double zz)
 	(*GMT_z_inverse) (z, zz);
 }
 
-BOOLEAN GMT_geo_to_xy (double lon, double lat, double *x, double *y)
+GMT_LONG GMT_geo_to_xy (double lon, double lat, double *x, double *y)
 {
 	/* Converts lon/lat to x/y using the current projection */
 
@@ -944,7 +944,7 @@ void GMT_project3D (double x, double y, double z, double *x_out, double *y_out, 
  */
 
 GMT_LONG GMT_map_init_linear (void) {
-	BOOLEAN positive;
+	GMT_LONG positive;
 	double xmin, xmax, ymin = 0.0, ymax = 0.0;
 
 	GMT_left_edge = (PFD) GMT_left_rect;
@@ -2092,7 +2092,7 @@ GMT_LONG GMT_map_init_ortho (void) {
  */
 
 GMT_LONG GMT_map_init_genper (void) {
-	BOOLEAN search;
+	GMT_LONG search;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
 	double alt, azimuth, tilt, width, height;
@@ -2120,7 +2120,7 @@ GMT_LONG GMT_map_init_genper (void) {
 		project_info.x_scale = project_info.y_scale = project_info.pars[2];
 
 	if (project_info.g_debug > 1) {
-		fprintf (stderr, "genper: units_pr_degree %d\n", project_info.units_pr_degree);
+		fprintf (stderr, "genper: units_pr_degree %ld\n", project_info.units_pr_degree);
 		fprintf (stderr, "genper: radius %f\n", radius);
 		fprintf (stderr, "genper: scale %f units %f\n", scale, units);
 		fprintf (stderr, "genper: x scale %f y scale %f\n", project_info.x_scale, project_info.y_scale);
@@ -2792,7 +2792,7 @@ GMT_LONG GMT_map_init_sinusoidal (void) {
  */
 
 GMT_LONG GMT_map_init_cassini (void) {
-	BOOLEAN too_big;
+	GMT_LONG too_big;
 	double xmin, xmax, ymin, ymax;
 
 	if (GMT_is_dnan(project_info.pars[0])) project_info.pars[0] = 0.5 * (project_info.w + project_info.e);
@@ -3071,7 +3071,7 @@ void GMT_wesn_search (double xmin, double xmax, double ymin, double ymax, double
 GMT_LONG GMT_horizon_search (double w, double e, double s, double n, double xmin, double xmax, double ymin, double ymax) {
 	double dx, dy, d, x, y, lon, lat;
 	GMT_LONG i, j;
-	BOOLEAN beyond = FALSE;
+	GMT_LONG beyond = FALSE;
 
 	/* Search for extreme original coordinates lon/lat and see if any fall beyond the horizon */
 
@@ -3543,11 +3543,11 @@ double GMT_half_map_width (double y)
 	return (half_width);
 }
 
-BOOLEAN GMT_set_greenwich (GMT_LONG mode)
+GMT_LONG GMT_set_greenwich (GMT_LONG mode)
 {
-	BOOLEAN greenwich = FALSE;
+	GMT_LONG greenwich = FALSE;
 
-	/* Sets the boolean choice greenwich which should be FALSE
+	/* Sets the GMT_LONG choice greenwich which should be FALSE
 	 * for Cartesian coordinates and TRUE if we have data crossing
 	 * Greenwich and it is not a global map
 	 */
@@ -3567,10 +3567,10 @@ BOOLEAN GMT_set_greenwich (GMT_LONG mode)
 	return (greenwich);
 }
 
-BOOLEAN GMT_will_it_wrap_x (double *x, double *y, GMT_LONG n, GMT_LONG *start)
+GMT_LONG GMT_will_it_wrap_x (double *x, double *y, GMT_LONG n, GMT_LONG *start)
 {	/* Determines if a polygon will wrap at edges */
 	GMT_LONG i;
-	BOOLEAN wrap;
+	GMT_LONG wrap;
 	double w_last, w_this;
 
 	if (!GMT_world_map) return (FALSE);
@@ -3585,10 +3585,10 @@ BOOLEAN GMT_will_it_wrap_x (double *x, double *y, GMT_LONG n, GMT_LONG *start)
 	return (wrap);
 }
 
-BOOLEAN GMT_will_it_wrap_tm (double *x, double *y, GMT_LONG n, GMT_LONG *start)
+GMT_LONG GMT_will_it_wrap_tm (double *x, double *y, GMT_LONG n, GMT_LONG *start)
 {	/* Determines if a polygon will wrap at edges for TM global projection */
 	GMT_LONG i;
-	BOOLEAN wrap;
+	GMT_LONG wrap;
 
 	if (!GMT_world_map) return (FALSE);
 
@@ -3599,7 +3599,7 @@ BOOLEAN GMT_will_it_wrap_tm (double *x, double *y, GMT_LONG n, GMT_LONG *start)
 	return (wrap);
 }
 
-BOOLEAN GMT_this_point_wraps_x (double x0, double x1, double w_last, double w_this)
+GMT_LONG GMT_this_point_wraps_x (double x0, double x1, double w_last, double w_this)
 {
 	/* Returns TRUE if the 2 x-points implies a jump at this y-level of the map */
 
@@ -3620,7 +3620,7 @@ BOOLEAN GMT_this_point_wraps_x (double x0, double x1, double w_last, double w_th
 	return ((dx = fabs (x1 - x0)) > w_max && w_min > GMT_SMALL);
 }
 
-BOOLEAN GMT_this_point_wraps_tm (double y0, double y1)
+GMT_LONG GMT_this_point_wraps_tm (double y0, double y1)
 {
 	/* Returns TRUE if the 2 y-points implies a jump at this x-level of the TM map */
 
@@ -4369,7 +4369,7 @@ GMT_LONG GMT_eqdist_crossing (double lon1, double lat1, double lon2, double lat2
 	return (1);
 }
 
-GMT_LONG *GMT_split_line (double **xx, double **yy, GMT_LONG *nn, BOOLEAN add_crossings)
+GMT_LONG *GMT_split_line (double **xx, double **yy, GMT_LONG *nn, GMT_LONG add_crossings)
 {	/* Accepts x/y array for a line in projected inches and looks for
 	 * map jumps.  If found it will insert the boundary crossing points and
 	 * build a split integer array with the nodes of the first point
@@ -4513,7 +4513,7 @@ GMT_LONG GMT_graticule_path (double **x, double **y, GMT_LONG dir, double w, dou
 	}
 
 	if (GMT_io.in_col_type[0] == GMT_IS_LON) {
-		BOOLEAN straddle;
+		GMT_LONG straddle;
 		GMT_LONG i;
 		straddle = (project_info.w < 0.0 && project_info.e > 0.0);
 		for (i = 0; straddle && i < np; i++) {
@@ -4708,7 +4708,7 @@ GMT_LONG GMT_clip_to_map (double *lon, double *lat, GMT_LONG np, double **x, dou
 	 * and returns the number of points to be used for plotting (in x,y units) */
 
 	GMT_LONG i, n, out, out_x, out_y, np2, total_nx = 0;
-	BOOLEAN polygon;
+	GMT_LONG polygon;
 	double *xx, *yy;
 
 	/* First check for trivial cases:  All points outside or all points inside */
@@ -4734,7 +4734,7 @@ GMT_LONG GMT_clip_to_map (double *lon, double *lat, GMT_LONG np, double **x, dou
 			/* Polygons that completely contains the -R region will not generate crossings, just duplicate -R box */
 			if (polygon && n > 0 && total_nx == 0) {	/* No crossings and all points outside means one of two things: */
 				/* Either the polygon contains portions of the -R region including corners or it does not.  We pick the corners and check for insidedness: */
-				BOOLEAN ok = FALSE;
+				GMT_LONG ok = FALSE;
 				if (GMT_non_zero_winding (project_info.w, project_info.s, lon, lat, np)) ok = TRUE;		/* TRUE if inside */
 				if (!ok && GMT_non_zero_winding (project_info.e, project_info.s, lon, lat, np)) ok = TRUE;	/* TRUE if inside */
 				if (!ok && GMT_non_zero_winding (project_info.e, project_info.n, lon, lat, np)) ok = TRUE;	/* TRUE if inside */
@@ -4877,7 +4877,7 @@ GMT_LONG GMT_rect_clip (double *lon, double *lat, GMT_LONG n, double **x, double
 {
 	GMT_LONG i, m, n_alloc = 0;
 	GMT_LONG side, j, np, in = 1, out = 0, cross = 0;
-	BOOLEAN polygon;
+	GMT_LONG polygon;
 	double *xtmp[2], *ytmp[2], xx[2], yy[2], border[4];
 	PFL clipper[4], inside[4], outside[4];
 #ifdef DEBUG
@@ -4973,7 +4973,7 @@ GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n_orig, double **x, d
 	GMT_LONG i, n, m, new_n, *x_index = NULL, *x_type = NULL;
 	GMT_LONG n_alloc, n_x_alloc;
 	GMT_LONG side, j, np, in = 1, n_cross = 0, out = 0, cross = 0;
-	BOOLEAN polygon, jump = FALSE, curved, periodic = FALSE;
+	GMT_LONG polygon, jump = FALSE, curved, periodic = FALSE;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
 	double x1, x2, y1, y2;
 	PFL clipper[4], inside[4], outside[4];
@@ -5324,7 +5324,7 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 {
 	GMT_LONG n = 0, this = FALSE, i, n_alloc = 0, n_arc;
 	GMT_LONG sides[4], nx;
-	BOOLEAN add_boundary = FALSE;
+	GMT_LONG add_boundary = FALSE;
 	double xlon[4], xlat[4], xc[4], yc[4], xr, yr, *xx, *yy, *xarc, *yarc;
 	double end_x[3], end_y[3];
 
@@ -5564,7 +5564,7 @@ GMT_LONG GMT_ok_xovers (GMT_LONG nx, double x0, double x1, GMT_LONG *sides)
 	return (FALSE);
 }
 
-GMT_LONG GMT_compact_line (double *x, double *y, GMT_LONG n, BOOLEAN pen_flag, int *pen)
+GMT_LONG GMT_compact_line (double *x, double *y, GMT_LONG n, GMT_LONG pen_flag, int *pen)
 {	/* TRUE if pen movements is present */
 	/* GMT_compact_line will remove unnecessary points in paths */
 	GMT_LONG i, j;
@@ -5633,7 +5633,7 @@ GMT_LONG GMT_grdproject_init (struct GRD_HEADER *head, double x_inc, double y_in
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, BOOLEAN antialias, GMT_LONG interpolant, double threshold, BOOLEAN inverse)
+GMT_LONG GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struct GRD_HEADER *O, struct GMT_EDGEINFO *edgeinfo, GMT_LONG antialias, GMT_LONG interpolant, double threshold, GMT_LONG inverse)
 {
 	/* Generalized grid projection that deals with both interpolation and averaging effects.
 	 * It assumes that the incoming grid was read with 2 boundary rows/cols so that the bcr
@@ -5654,7 +5654,7 @@ GMT_LONG GMT_grd_project (float *z_in, struct GRD_HEADER *I, float *z_out, struc
 	 * We assume the calling program has initialized the z_out array to any default empty value (NaN etc).
 	 *
 	 * Changed 10-Sep-07 to include the argument "antialias" and "threshold" and
-	 * made "interpolant" an integer (was BOOLEAN bilinear).
+	 * made "interpolant" an integer (was GMT_LONG bilinear).
 	 */
 
 	GMT_LONG i_in, j_in, ij_in, i_out, j_out, ij_out, mx, my;
@@ -5916,7 +5916,7 @@ void GMT_map_setxy (double xmin, double xmax, double ymin, double ymax)
 	project_info.y0 = -ymin * project_info.y_scale;
 }
 
-GMT_LONG GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
+GMT_LONG GMT_map_clip_path (double **x, double **y, GMT_LONG *donut)
 {
 	/* This function returns a clip path corresponding to the
 	 * extent of the map.
@@ -6160,7 +6160,7 @@ GMT_LONG GMT_map_clip_path (double **x, double **y, BOOLEAN *donut)
 	return (np);
 }
 
-BOOLEAN GMT_quickconic (void)
+GMT_LONG GMT_quickconic (void)
 {	/* Returns TRUE if area/scale are large/small enough
 	 * so that we can use spherical equations with authalic
 	 * or conformal latitudes instead of the full ellipsoidal
@@ -6190,7 +6190,7 @@ BOOLEAN GMT_quickconic (void)
 		return (FALSE);
 }
 
-BOOLEAN GMT_quicktm (double lon0, double limit)
+GMT_LONG GMT_quicktm (double lon0, double limit)
 {	/* Returns TRUE if the region chosen is too large for the
 	 * ellipsoidal series to be valid; hence use spherical equations
 	 * with authalic latitudes instead.
@@ -6572,7 +6572,7 @@ void GMT_set_polar (double plat)
 
 /* Datum conversion routines */
 
-void GMT_datum_init (struct GMT_DATUM *from, struct GMT_DATUM *to, BOOLEAN heights)
+void GMT_datum_init (struct GMT_DATUM *from, struct GMT_DATUM *to, GMT_LONG heights)
 {
 	/* Initialize datum conv structures based on the parsed values*/
 
@@ -6726,7 +6726,7 @@ void GMT_ECEF_inverse (double in[], double out[])
 	out[2] = (p / cos_lat) - N;
 }
 
-double GMT_az_backaz_cartesian (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
+double GMT_az_backaz_cartesian (double lonE, double latE, double lonS, double latS, GMT_LONG baz)
 {
 	/* Calculate azimuths or backazimuths.  Cartesian case.
 	 * First point is considered "Event" and second "Station".
@@ -6746,7 +6746,7 @@ double GMT_az_backaz_cartesian (double lonE, double latE, double lonS, double la
 	return (az);
 }
 
-double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
+double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double latS, GMT_LONG baz)
 {
 	/* Calculate azimuths or backazimuths.  Flat earth code.
 	 * First point is considered "Event" and second "Station".
@@ -6768,7 +6768,7 @@ double GMT_az_backaz_flatearth (double lonE, double latE, double lonS, double la
 	return (az);
 }
 
-double GMT_az_backaz_sphere (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
+double GMT_az_backaz_sphere (double lonE, double latE, double lonS, double latS, GMT_LONG baz)
 {
 	/* Calculate azimuths or backazimuths.  Spherical code.
 	 * First point is considered "Event" and second "Station".
@@ -6789,7 +6789,7 @@ double GMT_az_backaz_sphere (double lonE, double latE, double lonS, double latS,
 	return (az);
 }
 
-double GMT_az_backaz_geodesic (double lonE, double latE, double lonS, double latS, BOOLEAN baz)
+double GMT_az_backaz_geodesic (double lonE, double latE, double lonS, double latS, GMT_LONG baz)
 {
 	/* Calculate azimuths or backazimuths for geodesics using geocentric latitudes.
 	 * First point is considered "Event" and second "Station".
@@ -6966,7 +6966,7 @@ double GMT_geodesic_dist_km (double lonS, double latS, double lonE, double latE)
 GMT_LONG GMT_distances (double x[], double y[], GMT_LONG n, double scale, GMT_LONG dist_flag, double **dist)
 {	/* Returns distances in meter; use scale to get other units */
 	GMT_LONG this, prev;
-	BOOLEAN cumulative = TRUE, do_scale, xy_not_NaN;
+	GMT_LONG cumulative = TRUE, do_scale, xy_not_NaN;
 	double *d, cum_dist = 0.0, inc = 0.0;
 
 	if (dist_flag < 0) {	/* Want increments and not cumulative distances */

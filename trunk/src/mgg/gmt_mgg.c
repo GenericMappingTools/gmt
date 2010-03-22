@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_mgg.c,v 1.22 2010-01-05 01:15:48 guru Exp $
+ *	$Id: gmt_mgg.c,v 1.23 2010-03-22 18:55:47 guru Exp $
  *
  *    Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *    See README file for copying and redistribution conditions.
@@ -42,7 +42,7 @@ char *gmtmgg_path[10];	/* Max 10 directories for now */
 int n_gmtmgg_paths = 0;	/* Number of these directories */
 char *MGG_SHAREDIR;	/* Copy of GMT_SHAREDIR (for DLL purposes) */
 
-BOOLEAN MGD77_first_1900 = FALSE, MGD77_first_2000 = FALSE;
+GMT_LONG MGD77_first_1900 = FALSE, MGD77_first_2000 = FALSE;
 
 /* GMT function gmtmgg_date computes the date (hr/mi/sec/dd/mm/yy) based
  * on the total time in seconds since the beginning of first_year.
@@ -240,7 +240,7 @@ int gmtmgg_decode_MGD77 (char *string, int tflag, struct GMTMGG_REC *record, str
 	double tz, fmin;
 	char s_tz[5], s_yr[5], s_mo[3], s_dy[3], s_hr[3], s_mi[6], s_lat[8], s_lon[9];
 	char s_faa[5], s_mag[6], s_top[7], s_top_twt[7];
-	BOOLEAN version_Y2K;
+	GMT_LONG version_Y2K;
 
 	version_Y2K = (string[0] == '5');	/* New format that is Y2K compliant */
 

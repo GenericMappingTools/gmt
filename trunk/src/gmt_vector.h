@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.h,v 1.15 2010-01-05 01:15:46 guru Exp $
+ *	$Id: gmt_vector.h,v 1.16 2010-03-22 18:55:45 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -25,11 +25,11 @@ EXTERN_MSC GMT_LONG GMT_chol_dcmp (double *a, double *d, double *cond, GMT_LONG 
 EXTERN_MSC GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double step, GMT_LONG mode);
 EXTERN_MSC GMT_LONG GMT_jacobi (double *a, GMT_LONG *n, GMT_LONG *m, double *d, double *v, double *b, double *z, GMT_LONG *nrots);
 EXTERN_MSC void GMT_gauss (double *a, double *vec, GMT_LONG n, GMT_LONG nstore, double test, GMT_LONG *ierror, GMT_LONG itriag);
-EXTERN_MSC void GMT_cart_to_geo (double *lat, double *lon, double *a, BOOLEAN degrees);
+EXTERN_MSC void GMT_cart_to_geo (double *lat, double *lon, double *a, GMT_LONG degrees);
 EXTERN_MSC void GMT_chol_recover (double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG nerr, GMT_LONG donly);
 EXTERN_MSC void GMT_chol_solv (double *a, double *x, double *y, GMT_LONG nr, GMT_LONG n);
 EXTERN_MSC void GMT_cross3v (double *a, double *b, double *c);
-EXTERN_MSC void GMT_geo_to_cart (double lat, double lon, double *a, BOOLEAN degrees);
+EXTERN_MSC void GMT_geo_to_cart (double lat, double lon, double *a, GMT_LONG degrees);
 EXTERN_MSC void GMT_normalize3v (double *a);
 
 #endif /* _GMT_VECTOR_H */

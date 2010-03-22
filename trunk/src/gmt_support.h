@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.h,v 1.52 2010-02-15 17:13:28 remko Exp $
+ *	$Id: gmt_support.h,v 1.53 2010-03-22 18:55:45 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -21,24 +21,24 @@
 
 EXTERN_MSC GMT_LONG GMT_err_pass (GMT_LONG err, char *file);
 EXTERN_MSC void GMT_err_fail (GMT_LONG err, char *file);
-EXTERN_MSC GMT_LONG GMT_parse_multisegment_header (char *header, BOOLEAN use_cpt, BOOLEAN *use_fill, struct GMT_FILL *fill, struct GMT_FILL *def_fill,  BOOLEAN *use_pen, struct GMT_PEN *pen, struct GMT_PEN *def_pen, GMT_LONG def_outline);
-EXTERN_MSC BOOLEAN GMT_polygon_is_open (double x[], double y[], GMT_LONG n);
+EXTERN_MSC GMT_LONG GMT_parse_multisegment_header (char *header, GMT_LONG use_cpt, GMT_LONG *use_fill, struct GMT_FILL *fill, struct GMT_FILL *def_fill,  GMT_LONG *use_pen, struct GMT_PEN *pen, struct GMT_PEN *def_pen, GMT_LONG def_outline);
+EXTERN_MSC GMT_LONG GMT_polygon_is_open (double x[], double y[], GMT_LONG n);
 EXTERN_MSC double GMT_cartesian_dist (double x0, double y0, double x1, double y1);
 EXTERN_MSC double GMT_dist_to_point (double lon, double lat, struct GMT_TABLE *T, GMT_LONG *id);
 EXTERN_MSC double GMT_flatearth_dist_km (double x0, double y0, double x1, double y1);
 EXTERN_MSC double GMT_flatearth_dist_meter (double x0, double y0, double x1, double y1);
-EXTERN_MSC double GMT_get_annot_offset (BOOLEAN *flip, GMT_LONG level);
+EXTERN_MSC double GMT_get_annot_offset (GMT_LONG *flip, GMT_LONG level);
 EXTERN_MSC double GMT_get_map_interval (GMT_LONG axis, GMT_LONG item);
 EXTERN_MSC double GMT_getradius (char *line);
 EXTERN_MSC double GMT_great_circle_dist_km (double x0, double y0, double x1, double y1);
 EXTERN_MSC double GMT_great_circle_dist_meter (double x0, double y0, double x1, double y1);
 EXTERN_MSC GMT_LONG GMT_akima (double *x, double *y, GMT_LONG nx, double *c);
 EXTERN_MSC GMT_LONG GMT_annot_pos (double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double coord[], double *pos);
-EXTERN_MSC BOOLEAN GMT_check_rgb (int *rgb);
+EXTERN_MSC GMT_LONG GMT_check_rgb (int *rgb);
 EXTERN_MSC int GMT_comp_double_asc (const void *p_1, const void *p_2);
 EXTERN_MSC int GMT_comp_float_asc (const void *p_1, const void *p_2);
 EXTERN_MSC int GMT_comp_int_asc (const void *p_1, const void *p_2);
-EXTERN_MSC GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, GMT_LONG *edge, BOOLEAN *first, double **x, double **y);
+EXTERN_MSC GMT_LONG GMT_contours (float *grd, struct GRD_HEADER *header, GMT_LONG smooth_factor, GMT_LONG int_scheme, GMT_LONG orient, GMT_LONG *edge, GMT_LONG *first, double **x, double **y);
 EXTERN_MSC GMT_LONG GMT_cspline (double *x, double *y, GMT_LONG n, double *c);
 EXTERN_MSC GMT_LONG GMT_delaunay (double *x_in, double *y_in, GMT_LONG n, int **link);
 EXTERN_MSC GMT_LONG GMT_voronoi (double *x_in, double *y_in, GMT_LONG n, double *we, double **x_out, double **y_out);
@@ -54,7 +54,7 @@ EXTERN_MSC GMT_LONG GMT_getinc (char *line, double *dx, double *dy);
 EXTERN_MSC GMT_LONG GMT_getincn (char *line, double inc[], GMT_LONG n);
 EXTERN_MSC GMT_LONG GMT_getpen (char *line, struct GMT_PEN *pen);
 EXTERN_MSC GMT_LONG GMT_getrgb_index (int *rgb);
-EXTERN_MSC BOOLEAN GMT_getrgb (char *line, int *rgb);
+EXTERN_MSC GMT_LONG GMT_getrgb (char *line, int *rgb);
 EXTERN_MSC void GMT_enforce_rgb_triplets (char *text, GMT_LONG size);
 EXTERN_MSC GMT_LONG GMT_getrose (char *text, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC GMT_LONG GMT_getscale (char *text, struct GMT_MAP_SCALE *ms);
@@ -63,8 +63,8 @@ EXTERN_MSC GMT_LONG GMT_intpol (double *x, double *y, GMT_LONG n, GMT_LONG m, do
 EXTERN_MSC GMT_LONG GMT_just_decode (char *key, GMT_LONG def);
 EXTERN_MSC GMT_LONG GMT_log_array (double min, double max, double delta, double **array);
 EXTERN_MSC GMT_LONG GMT_minmaxinc_verify (double min, double max, double inc, double slop);
-EXTERN_MSC GMT_LONG GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, BOOLEAN return_mindist, double *dist_min, double *x_near, double *y_near);
-EXTERN_MSC GMT_LONG GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, BOOLEAN return_mindist, double *dist_min, double *x_near, double *y_near);
+EXTERN_MSC GMT_LONG GMT_near_a_line_cartesian (double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near);
+EXTERN_MSC GMT_LONG GMT_near_a_line_spherical (double lon, double lat, struct GMT_TABLE *T, GMT_LONG return_mindist, double *dist_min, double *x_near, double *y_near);
 EXTERN_MSC GMT_LONG GMT_near_a_point_spherical (double x, double y, struct GMT_TABLE *T, double dist);
 EXTERN_MSC GMT_LONG GMT_near_a_point_cartesian (double x, double y, struct GMT_TABLE *T, double dist);
 EXTERN_MSC GMT_LONG GMT_get_arc (double x0, double y0, double r, double dir1, double dir2, double **x, double **y);
@@ -76,7 +76,7 @@ EXTERN_MSC GMT_LONG GMT_verify_expectations (GMT_LONG wanted, GMT_LONG got, char
 EXTERN_MSC void GMT_RI_prepare (struct GRD_HEADER *h);
 EXTERN_MSC void GMT_chop (char *string);
 EXTERN_MSC char *GMT_chop_ext (char *string);
-EXTERN_MSC void GMT_dump_contour (double *xx, double *yy, GMT_LONG nn, double cval, GMT_LONG id, BOOLEAN interior, char *file);
+EXTERN_MSC void GMT_dump_contour (double *xx, double *yy, GMT_LONG nn, double cval, GMT_LONG id, GMT_LONG interior, char *file);
 EXTERN_MSC void GMT_get_plot_array (void);
 EXTERN_MSC void GMT_get_primary_annot (struct GMT_PLOT_AXIS *A, GMT_LONG *primary, GMT_LONG *secondary);
 EXTERN_MSC void GMT_illuminate (double intensity, int *rgb);
@@ -93,7 +93,7 @@ EXTERN_MSC char *GMT_convertpen (struct GMT_PEN *pen, GMT_LONG *width, GMT_LONG 
 EXTERN_MSC void GMT_fourt (float *data, GMT_LONG *nn, GMT_LONG ndim, GMT_LONG ksign, GMT_LONG iform, float *work);
 EXTERN_MSC GMT_LONG GMT_get_coordinate_label (char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 EXTERN_MSC GMT_LONG GMT_get_proj3D (char *line, double *az, double *el);
-EXTERN_MSC BOOLEAN GMT_gap_detected (void);
+EXTERN_MSC GMT_LONG GMT_gap_detected (void);
 EXTERN_MSC GMT_LONG GMT_alloc_memory2 (void **ptr1, void **ptr2, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
 EXTERN_MSC GMT_LONG GMT_alloc_memory3 (void **ptr1, void **ptr2, void **ptr3, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
 EXTERN_MSC GMT_LONG GMT_alloc_memory4 (void **ptr1, void **ptr2, void **ptr3, void **ptr4, GMT_LONG n, GMT_LONG n_alloc, size_t element_size, char *module);
@@ -133,8 +133,8 @@ struct MEMORY_ITEM {
 };
 
 struct MEMORY_TRACKER {
-	BOOLEAN active;		/* Normally TRUE but can be changed to focus on just some allocations */
-	BOOLEAN search;		/* Normally TRUE but can be changed to skip searching when we know we add a new item */
+	GMT_LONG active;		/* Normally TRUE but can be changed to focus on just some allocations */
+	GMT_LONG search;		/* Normally TRUE but can be changed to skip searching when we know we add a new item */
 	GMT_LONG n_ptr;		/* Number of unique pointers to allocated memory */
 	GMT_LONG n_allocated;	/* Number of items allocated by GMT_memory */
 	GMT_LONG n_reallocated;	/* Number of items reallocated by GMT_memory */

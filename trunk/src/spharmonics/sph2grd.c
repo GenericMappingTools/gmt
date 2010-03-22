@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: sph2grd.c,v 1.13 2010-01-05 01:15:49 guru Exp $
+ *    $Id: sph2grd.c,v 1.14 2010-03-22 18:55:47 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,34 +27,34 @@
 struct SPH2GRD_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_LONG active;
 		char mode;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_LONG active;
 	} E;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_LONG active;
 	} F;
 	struct G {	/* -G<grdfile> */
-		BOOLEAN active;
+		GMT_LONG active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_LONG active;
 		double xinc, yinc;
 	} I;
 	struct L {	/* -L<lc>/<lp>/<hp>/<hc> or -L<lo>/<hi> */
-		BOOLEAN active;
+		GMT_LONG active;
 		int mode;
 		double lc, lp, hp, hc;
 	} L;
 	struct N {	/* -Ng|m|s */
-		BOOLEAN active;
+		GMT_LONG active;
 		char mode;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_LONG active;
 	} Q;
 };
 

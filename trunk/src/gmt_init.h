@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.h,v 1.83 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_init.h,v 1.84 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -28,9 +28,9 @@
 #ifndef GMT_INIT_H
 #define GMT_INIT_H
 EXTERN_MSC double GMT_convert_units (char *from, GMT_LONG new_format);
-EXTERN_MSC BOOLEAN GMT_is_invalid_number (char *t);
+EXTERN_MSC GMT_LONG GMT_is_invalid_number (char *t);
 EXTERN_MSC GMT_LONG GMT_begin (int argc, char **argv);
-EXTERN_MSC BOOLEAN GMT_check_region (double w, double e, double s, double n);
+EXTERN_MSC GMT_LONG GMT_check_region (double w, double e, double s, double n);
 EXTERN_MSC GMT_LONG GMT_check_scalingopt (char option, char unit, char *unit_name);
 EXTERN_MSC GMT_LONG GMT_font_lookup (char *name, struct GMT_FONT *list, GMT_LONG n);
 EXTERN_MSC GMT_LONG GMT_sort_options (int argc, char **argv, char *order);
@@ -68,10 +68,10 @@ EXTERN_MSC GMT_LONG GMT_set_measure_unit (char unit);
 EXTERN_MSC void GMT_setdefaults (int argc, char **argv);
 EXTERN_MSC void GMT_syntax (char option);
 EXTERN_MSC GMT_LONG GMT_getdefpath (GMT_LONG get, char **path);
-EXTERN_MSC GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mode, BOOLEAN cmd);
+EXTERN_MSC GMT_LONG GMT_parse_symbol_option (char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd);
 EXTERN_MSC void GMT_extract_label (char *line, char *label);
 EXTERN_MSC GMT_LONG GMT_setparameter(char *keyword, char *value);
-EXTERN_MSC void GMT_check_lattice (double *x_inc, double *y_inc, BOOLEAN *pixel, BOOLEAN *active);
+EXTERN_MSC void GMT_check_lattice (double *x_inc, double *y_inc, GMT_LONG *pixel, GMT_LONG *active);
 
 #ifdef MIRONE 
 EXTERN_MSC GMT_LONG GMT_short_begin (int argc, char **argv);

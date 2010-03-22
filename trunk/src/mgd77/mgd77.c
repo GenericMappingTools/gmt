@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.254 2010-03-02 18:53:33 guru Exp $
+ *	$Id: mgd77.c,v 1.255 2010-03-22 18:55:46 guru Exp $
  *
  *    Copyright (c) 2005-2010 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -46,19 +46,19 @@ struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
 void MGD77_Set_Home (struct MGD77_CONTROL *F);
 void MGD77_Init_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 void MGD77_Path_Init (struct MGD77_CONTROL *F);
-BOOLEAN MGD77_lt_test (double value, double limit);
-BOOLEAN MGD77_le_test (double value, double limit);
-BOOLEAN MGD77_eq_test (double value, double limit);
-BOOLEAN MGD77_bit_test (double value, double limit);
-BOOLEAN MGD77_neq_test (double value, double limit);
-BOOLEAN MGD77_gt_test (double value, double limit);
-BOOLEAN MGD77_ge_test (double value, double limit);
-BOOLEAN MGD77_clt_test (char *value, char *match, int len);
-BOOLEAN MGD77_cle_test (char *value, char *match, int len);
-BOOLEAN MGD77_ceq_test (char *value, char *match, int len);
-BOOLEAN MGD77_cneq_test (char *value, char *match, int len);
-BOOLEAN MGD77_cgt_test (char *value, char *match, int len);
-BOOLEAN MGD77_cge_test (char *value, char *match, int len);
+GMT_LONG MGD77_lt_test (double value, double limit);
+GMT_LONG MGD77_le_test (double value, double limit);
+GMT_LONG MGD77_eq_test (double value, double limit);
+GMT_LONG MGD77_bit_test (double value, double limit);
+GMT_LONG MGD77_neq_test (double value, double limit);
+GMT_LONG MGD77_gt_test (double value, double limit);
+GMT_LONG MGD77_ge_test (double value, double limit);
+GMT_LONG MGD77_clt_test (char *value, char *match, int len);
+GMT_LONG MGD77_cle_test (char *value, char *match, int len);
+GMT_LONG MGD77_ceq_test (char *value, char *match, int len);
+GMT_LONG MGD77_cneq_test (char *value, char *match, int len);
+GMT_LONG MGD77_cgt_test (char *value, char *match, int len);
+GMT_LONG MGD77_cge_test (char *value, char *match, int len);
 int MGD77_Read_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 int MGD77_Write_Header_Record_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 int MGD77_Read_Header_Record_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
@@ -69,8 +69,8 @@ int MGD77_Write_Data_Record_cdf (struct MGD77_CONTROL *F, struct MGD77_HEADER *H
 int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	 /* Will read a single tabular MGD77 record */
 int MGD77_Write_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);	 /* Will read a single tabular MGD77 record */
 int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
-BOOLEAN MGD77_txt_are_constant (char *txt, GMT_LONG n, int width);
-BOOLEAN MGD77_dbl_are_constant (double x[], GMT_LONG n, double limits[2]);
+GMT_LONG MGD77_txt_are_constant (char *txt, GMT_LONG n, int width);
+GMT_LONG MGD77_dbl_are_constant (double x[], GMT_LONG n, double limits[2]);
 void MGD77_do_scale_offset_after_read (double x[], GMT_LONG n, double scale, double offset, double nan_val);
 int MGD77_do_scale_offset_before_write (double new[], const double x[], GMT_LONG n, double scale, double offset, int type);
 void MGD77_set_plain_mgd77 (struct MGD77_HEADER *H);
@@ -83,8 +83,8 @@ int MGD77_Order_Columns (struct MGD77_CONTROL *F, struct MGD77_HEADER *H);
 int MGD77_Convert_To_New_Format (char *line);
 int MGD77_Decode_Header (struct MGD77_HEADER_PARAMS *P, char *record[], int dir);
 void MGD77_Place_Text (int dir, char *struct_member, char *header_record, int start_pos, int n_char);
-BOOLEAN MGD77_entry_in_MGD77record (char *name, GMT_LONG *entry);
-int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises, BOOLEAN sorted);
+GMT_LONG MGD77_entry_in_MGD77record (char *name, GMT_LONG *entry);
+int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises, GMT_LONG sorted);
 double MGD77_Sind (double z);
 double MGD77_Cosd (double z);
 double MGD77_Copy (double z);
@@ -1358,7 +1358,7 @@ void MGD77_Place_Text (int dir, char *struct_member, char *header_record, int st
 {	/* Pos refers to position in the Fortran punch card, ranging from 1-80.
 	 * We either copy from header to structure member or the other way. */
 	int i;
-	BOOLEAN strip_trailing_spaces;
+	GMT_LONG strip_trailing_spaces;
 	
 	strip_trailing_spaces = !(dir & 32);
 	dir &= 31;	/* Knock off 32 flag if present */
@@ -1655,7 +1655,7 @@ int MGD77_Select_Header_Item (struct MGD77_CONTROL *F, char *item)
 {
 	int i, id, match, length, pick[MGD77_N_HEADER_ITEMS];
 	
-	memset ((void *)F->Want_Header_Item, 0, MGD77_N_HEADER_ITEMS * sizeof (BOOLEAN));
+	memset ((void *)F->Want_Header_Item, 0, MGD77_N_HEADER_ITEMS * sizeof (GMT_LONG));
 	
 	if (item && item[0] == '-') return 1;	/* Just wants a listing */
 	
@@ -1813,7 +1813,7 @@ int MGD77_Write_Data_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 {
 	GMT_LONG rec;
 	int k, err, col[MGD77_N_DATA_FIELDS+1], id, Clength[3] = {8, 5, 6};
-	BOOLEAN make_ymdhm;
+	GMT_LONG make_ymdhm;
 	struct MGD77_DATA_RECORD MGD77Record;
 	double tz, *values[MGD77_N_DATA_FIELDS+1];
 	char *text[MGD77_N_DATA_FIELDS+1];
@@ -1872,7 +1872,7 @@ int MGD77_Read_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	int len, i, k, nwords, value, yyyy, mm, dd, nconv;
 	GMT_cal_rd rata_die;
 	char line[BUFSIZ], currentField[10];
-	BOOLEAN may_convert;
+	GMT_LONG may_convert;
 	double secs, tz;
 
 	if (!(fgets (line, BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);			/* Try to read one line from the file */
@@ -2309,7 +2309,7 @@ int MGD77_Info_from_Abbrev (char *name, struct MGD77_HEADER *H, GMT_LONG *set, G
 	return (MGD77_NOT_SET);
 }
 
-BOOLEAN MGD77_entry_in_MGD77record (char *name, GMT_LONG *entry)
+GMT_LONG MGD77_entry_in_MGD77record (char *name, GMT_LONG *entry)
 {
 	GMT_LONG i;
 	
@@ -2353,7 +2353,7 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 	char p[BUFSIZ], cstring[BUFSIZ], bstring[BUFSIZ], word[GMT_LONG_TEXT], value[GMT_LONG_TEXT];
 	int i, j, k, constraint, n;
 	GMT_LONG pos;
-	BOOLEAN exact, all_exact;
+	GMT_LONG exact, all_exact;
 
 	/* Special test for keywords mgd77 and all */
 	
@@ -2584,7 +2584,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 	
 	int compare_L (const void *p1, const void *p2);
 	int i, j, k, n = 0, flist = 0, n_dig, length;
-	BOOLEAN all, NGDC_ID_likely;
+	GMT_LONG all, NGDC_ID_likely;
 	size_t n_alloc = 0;
 	char **L = NULL, *d_name, line[BUFSIZ], this_arg[BUFSIZ];
 #ifdef WIN32
@@ -2595,7 +2595,7 @@ int MGD77_Path_Expand (struct MGD77_CONTROL *F, char **argv, int argc, char ***l
 #endif
 #ifdef DEBUG
 	/* Since the sorting throws this machinery off */
-	BOOLEAN change = FALSE;
+	GMT_LONG change = FALSE;
 	if (GMT_mem_keeper->active) {
 		GMT_memtrack_off (GMT_mem_keeper);
 		change = TRUE;
@@ -2719,7 +2719,7 @@ void MGD77_Path_Free (int n, char **list)
 {	/* Free list of cruise IDs */
 	int i;
 #ifdef DEBUG
-	BOOLEAN change = FALSE;
+	GMT_LONG change = FALSE;
 #endif
 	if (n == 0) return;
 	
@@ -2760,7 +2760,7 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 	 *      - append .mgd77 and see if we can find it in listed directories
 	 */
 	int id, fmt, f_start, f_stop, k, has_suffix = MGD77_NOT_SET;
-	BOOLEAN append = FALSE;
+	GMT_LONG append = FALSE;
 	char geo_path[BUFSIZ];
 	
 	for (k = 0; k < MGD77_FORMAT_ANY; k++) {	/* Determine if given track name contains one of the 3 possible extensions */
@@ -2847,7 +2847,7 @@ int MGD77_Get_Path (char *track_path, char *track, struct MGD77_CONTROL *F)
 	return (MGD77_FILE_NOT_FOUND);	/* No luck */
 }
 
-void MGD77_Apply_Bitflags (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT_LONG rec, BOOLEAN apply_bits[])
+void MGD77_Apply_Bitflags (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT_LONG rec, GMT_LONG apply_bits[])
 {
 	int set, i;
 	double *value;
@@ -2863,10 +2863,10 @@ void MGD77_Apply_Bitflags (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT
 	}
 }
 
-BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT_LONG rec)
+GMT_LONG MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT_LONG rec)
 {
 	int i, col, c, id, match, n_passed;
-	BOOLEAN pass;
+	GMT_LONG pass;
 	double *value;
 	char *text;
 	
@@ -2910,7 +2910,7 @@ BOOLEAN MGD77_Pass_Record (struct MGD77_CONTROL *F, struct MGD77_DATASET *S, GMT
 	return (TRUE);	/* We live to fight another day (i.e., record) */
 }
 
-BOOLEAN MGD77_lt_test (double value, double limit)
+GMT_LONG MGD77_lt_test (double value, double limit)
 {
 	/* Test that checks for value < limit */
 	
@@ -2918,7 +2918,7 @@ BOOLEAN MGD77_lt_test (double value, double limit)
 	return (value < limit);
 }
 
-BOOLEAN MGD77_le_test (double value, double limit)
+GMT_LONG MGD77_le_test (double value, double limit)
 {
 	/* Test that checks for value <= limit */
 	
@@ -2926,7 +2926,7 @@ BOOLEAN MGD77_le_test (double value, double limit)
 	return (value <= limit);
 }
 
-BOOLEAN MGD77_eq_test (double value, double limit)
+GMT_LONG MGD77_eq_test (double value, double limit)
 {
 	/* Test that checks for value == limit */
 	
@@ -2935,7 +2935,7 @@ BOOLEAN MGD77_eq_test (double value, double limit)
 	return (value == limit);
 }
 
-BOOLEAN MGD77_bit_test (double value, double limit)
+GMT_LONG MGD77_bit_test (double value, double limit)
 {
 	unsigned int ivalue, ilimit;
 	
@@ -2949,7 +2949,7 @@ BOOLEAN MGD77_bit_test (double value, double limit)
 	return (ivalue & ilimit);			/* TRUE if any of the bits in limit line up with value */
 }
 
-BOOLEAN MGD77_neq_test (double value, double limit)
+GMT_LONG MGD77_neq_test (double value, double limit)
 {
 	/* Test that checks for value != limit */
 	
@@ -2958,7 +2958,7 @@ BOOLEAN MGD77_neq_test (double value, double limit)
 	return (value != limit);
 }
 
-BOOLEAN MGD77_ge_test (double value, double limit)
+GMT_LONG MGD77_ge_test (double value, double limit)
 {
 	/* Test that checks for value >= limit */
 	
@@ -2966,7 +2966,7 @@ BOOLEAN MGD77_ge_test (double value, double limit)
 	return (value >= limit);
 }
 
-BOOLEAN MGD77_gt_test (double value, double limit)
+GMT_LONG MGD77_gt_test (double value, double limit)
 {
 	/* Test that checks for value > limit */
 	
@@ -2974,42 +2974,42 @@ BOOLEAN MGD77_gt_test (double value, double limit)
 	return (value > limit);
 }
 
-BOOLEAN MGD77_clt_test (char *value, char *match, int len)
+GMT_LONG MGD77_clt_test (char *value, char *match, int len)
 {
 	/* Test that checks for value < match for strings */
 	
 	return (strncmp (value, match, (size_t)len) < 0);
 }
 
-BOOLEAN MGD77_cle_test (char *value, char *match, int len)
+GMT_LONG MGD77_cle_test (char *value, char *match, int len)
 {
 	/* Test that checks for value <= match for strings */
 	
 	return (strncmp (value, match, (size_t)len) <= 0);
 }
 
-BOOLEAN MGD77_ceq_test (char *value, char *match, int len)
+GMT_LONG MGD77_ceq_test (char *value, char *match, int len)
 {
 	/* Test that checks for value == match for strings */
 	
 	return (strncmp (value, match, (size_t)len) == 0);
 }
 
-BOOLEAN MGD77_cneq_test (char *value, char *match, int len)
+GMT_LONG MGD77_cneq_test (char *value, char *match, int len)
 {
 	/* Test that checks for value != match for strings */
 	
 	return (strncmp (value, match, (size_t)len) != 0);
 }
 
-BOOLEAN MGD77_cge_test (char *value, char *match, int len)
+GMT_LONG MGD77_cge_test (char *value, char *match, int len)
 {
 	/* Test that checks for value >= match for strings */
 	
 	return (strncmp (value, match, (size_t)len) >= 0);
 }
 
-BOOLEAN MGD77_cgt_test (char *value, char *match, int len)
+GMT_LONG MGD77_cgt_test (char *value, char *match, int len)
 {
 	/* Test that checks for value > match for strings */
 	
@@ -3112,7 +3112,7 @@ void MGD77_Prep_Header_cdf (struct MGD77_CONTROL *F, struct MGD77_DATASET *S)
 	 */
 	 
 	GMT_LONG i, id, t_id, set, t_set = MGD77_NOT_SET, entry;
-	BOOLEAN crossed_dateline = FALSE, crossed_greenwich = FALSE;
+	GMT_LONG crossed_dateline = FALSE, crossed_greenwich = FALSE;
 	char *text;
 	double *values, dx;
 	
@@ -3319,7 +3319,7 @@ int MGD77_Write_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	double *values, *x, *xtmp = NULL, single_val, scale, offset;
 	char *text;
-	BOOLEAN transform, not_allocated = TRUE;
+	GMT_LONG transform, not_allocated = TRUE;
 	FILE *fp_err;
 	
 	count[0] = S->H.n_records;
@@ -3405,7 +3405,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	GMT_LONG i, k, c, id, col;
 	GMT_LONG rec, rec_in;
-	BOOLEAN apply_bits[MGD77_N_SETS];
+	GMT_LONG apply_bits[MGD77_N_SETS];
 	unsigned int *flags;
 	char *text, *flagname[MGD77_N_SETS] = {"MGD77_flags", "CDF_flags"};
 	double scale, offset, *values;
@@ -3535,7 +3535,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 		/* Now E.aux[i] points to the correct array of values for each auxillary column that is needed */
 		
 		if (E.correction_requested[E77_CORR_FIELD_TWT]) {	/* Must correct twt for wraps */
-			BOOLEAN has_prev_twt = FALSE;
+			GMT_LONG has_prev_twt = FALSE;
 			double PDR_wrap_trigger, d_twt, prev_twt = 0.0, twt_pdrwrap_corr = 0.0;
 			PDR_wrap_trigger = 0.5 * S->H.PDR_wrap;	/* Must exceed 50% of wrap to activate unwrapping */
 			for (rec = 0; rec < (GMT_LONG)count[0]; rec++) {	/* Correct every record */
@@ -3592,7 +3592,7 @@ int MGD77_Read_Data_cdf (char *file, struct MGD77_CONTROL *F, struct MGD77_DATAS
 	
 	/* Look for optional bit flags to read and apply */
 	
-	memset ((void *)apply_bits, 0, MGD77_N_SETS * sizeof (BOOLEAN));
+	memset ((void *)apply_bits, 0, MGD77_N_SETS * sizeof (GMT_LONG));
 	for (k = 0; k < MGD77_N_SETS; k++) {
 		if (F->use_flags[k] && nc_inq_varid (F->nc_id, flagname[k], &nc_id) == NC_NOERR) {	/* There are bitflags for this set and we want them */
 			flags = (unsigned int *) GMT_memory (VNULL, count[0], sizeof (unsigned int), "MGD77_Read_File_cdf");
@@ -3763,10 +3763,10 @@ struct MGD77_DATASET *MGD77_Create_Dataset ()
 	return (S);
 }
 
-BOOLEAN MGD77_dbl_are_constant (double x[], GMT_LONG n, double limits[2])
+GMT_LONG MGD77_dbl_are_constant (double x[], GMT_LONG n, double limits[2])
 {	/* Determine if the values in x[] are all the same, and sets actual range limits */
 	GMT_LONG i;
-	BOOLEAN constant = TRUE;
+	GMT_LONG constant = TRUE;
 	double last;
 	
 	limits[0] = limits[1] = x[0];
@@ -3786,7 +3786,7 @@ BOOLEAN MGD77_dbl_are_constant (double x[], GMT_LONG n, double limits[2])
 	return (constant);
 }
 
-BOOLEAN MGD77_txt_are_constant (char *txt, GMT_LONG n, int width)
+GMT_LONG MGD77_txt_are_constant (char *txt, GMT_LONG n, int width)
 {
 	GMT_LONG i = 0;
 	
@@ -3799,7 +3799,7 @@ BOOLEAN MGD77_txt_are_constant (char *txt, GMT_LONG n, int width)
 void MGD77_do_scale_offset_after_read (double x[], GMT_LONG n, double scale, double offset, double nan_val)
 {
 	GMT_LONG k;
-	BOOLEAN check_nan;
+	GMT_LONG check_nan;
 	
 	check_nan = !GMT_is_dnan (nan_val);
 	if (! (scale == 1.0 && offset == 0.0)) {
@@ -4877,7 +4877,7 @@ double MGD77_Theoretical_Gravity (double lon, double lat, int version)
 	return (g);
 }
 
-double MGD77_Recalc_Mag_Anomaly_IGRF (struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, BOOLEAN calc_date)
+double MGD77_Recalc_Mag_Anomaly_IGRF (struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, GMT_LONG calc_date)
 {	/* Compute the recalculated magnetic anomaly using IGRF.  Pass time either as a GMT time in secs
 	 * and set calc_date to TRUE or pass the floating point year that is needed by IGRF function. */
 	double IGRF[7];	/* The 7 components returned */
@@ -4899,7 +4899,7 @@ void MGD77_CM4_end (struct MGD77_CM4 *CM4)
 	for (i = 0; i < 3; i++) free ((void *) CM4->path[i]);
 }
 
-double MGD77_Calc_CM4 (struct MGD77_CONTROL *F, double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4)
+double MGD77_Calc_CM4 (struct MGD77_CONTROL *F, double time, double lon, double lat, GMT_LONG calc_date, struct MGD77_CM4 *CM4)
 {
 	/* New code goes here */
 	if (GMT_is_dnan (time) || GMT_is_dnan (lon) || GMT_is_dnan (lat)) return (GMT_d_NaN);
@@ -4908,7 +4908,7 @@ double MGD77_Calc_CM4 (struct MGD77_CONTROL *F, double time, double lon, double 
 	return (0.0);
 }
 
-double MGD77_Recalc_Mag_Anomaly_CM4 (double time, double lon, double lat, double obs, BOOLEAN calc_date, struct MGD77_CM4 *CM4)
+double MGD77_Recalc_Mag_Anomaly_CM4 (double time, double lon, double lat, double obs, GMT_LONG calc_date, struct MGD77_CM4 *CM4)
 {
 	double val, cm4;
 	
@@ -4933,7 +4933,7 @@ int MGD77_Scan_Corrtable (char *tablefile, char **cruises, int n_cruises, int n_
 
 	int cruise_id, id, n_list = 0, n_alloc = GMT_SMALL_CHUNK;
 	GMT_LONG rec = 0, pos;
-	BOOLEAN sorted, mgd77;
+	GMT_LONG sorted, mgd77;
 	char line[BUFSIZ], name[GMT_TEXT_LEN], factor[GMT_TEXT_LEN], origin[GMT_TEXT_LEN], basis[BUFSIZ];
 	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN], word[BUFSIZ], *p, *f;
 	char **list;
@@ -5025,7 +5025,7 @@ void MGD77_Parse_Corrtable (char *tablefile, char **cruises, int n_cruises, int 
 	
 	int cruise_id, id, i, n_aux;
 	GMT_LONG rec = 0, pos;
-	BOOLEAN sorted, mgd77;
+	GMT_LONG sorted, mgd77;
 	char line[BUFSIZ], name[GMT_TEXT_LEN], factor[GMT_TEXT_LEN], origin[GMT_TEXT_LEN], basis[BUFSIZ];
 	char arguments[BUFSIZ], cruise[GMT_TEXT_LEN], word[BUFSIZ], *p, *f;
 	struct MGD77_CORRTABLE **C_table;
@@ -5234,7 +5234,7 @@ double MGD77_Sind (double z) {
 	return (sind (z));
 }
 
-int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises, BOOLEAN sorted)
+int MGD77_Find_Cruise_ID (char *name, char **cruises, int n_cruises, GMT_LONG sorted)
 {
 	if (!cruises) return (-1);	/* Null pointer passed */
 	
@@ -5337,7 +5337,7 @@ void	MGD77_gcal_from_dt (struct MGD77_CONTROL *F, double t, struct GMT_gcal *cal
 	return;
 }
 
-BOOLEAN MGD77_fake_times (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, GMT_LONG nrec)
+GMT_LONG MGD77_fake_times (struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, GMT_LONG nrec)
 {
 	/* Create fake times by using distances and constant speed during cruise */
 	double *dist, t[2], slowness;

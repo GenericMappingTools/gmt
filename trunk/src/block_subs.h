@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: block_subs.h,v 1.14 2010-01-05 01:15:44 guru Exp $
+ *    $Id: block_subs.h,v 1.15 2010-03-22 18:55:43 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -37,37 +37,37 @@
 
 struct BLOCK_CTRL {	/* All control options for this program (except common args) */
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_LONG active;
 	} C;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_LONG active;
 		int mode;	/* Used in blockmedian to select box-and-whisker output (-Eb) */
 	} E;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_LONG active;
 	} F;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_LONG active;
 		double xinc, yinc;
 	} I;
 #if !defined(BLOCKMEAN)
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_LONG active;
 	} Q;
 #endif
 #if defined(BLOCKMEDIAN)
 	struct T {	/* -T<quantile> */
-		BOOLEAN active;
+		GMT_LONG active;
 		double quantile;
 	} T;
 #endif
 	struct S {	/* -S[w|z] */
-		BOOLEAN active;
+		GMT_LONG active;
 		int mode;
 	} S;
 	struct W {	/* -W[i][o] */
-		BOOLEAN active;
-		BOOLEAN weighted[2];
+		GMT_LONG active;
+		GMT_LONG weighted[2];
 	} W;
 };
 

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_shore.c,v 1.58 2010-01-14 07:15:19 guru Exp $
+ *	$Id: gmt_shore.c,v 1.59 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -54,13 +54,13 @@ GMT_LONG GMT_copy_to_br_path (double *lon, double *lat, struct GMT_BR *s, GMT_LO
 void GMT_shore_to_degree (struct GMT_SHORE *c, short int dx, short int dy, double *lon, double *lat);
 void GMT_shore_pau_sides (struct GMT_SHORE *c);
 void GMT_shore_path_shift (double *lon, double *lat, GMT_LONG n, double edge);
-void GMT_shore_path_shift2 (double *lon, double *lat, GMT_LONG n, double west, double east, BOOLEAN leftmost);
+void GMT_shore_path_shift2 (double *lon, double *lat, GMT_LONG n, double west, double east, GMT_LONG leftmost);
 void GMT_br_to_degree (struct GMT_BR *c, short int dx, short int dy, double *lon, double *lat);
 void shore_prepare_sides(struct GMT_SHORE *c, GMT_LONG dir);
 int GMT_shore_asc_sort (const void *a, const void *b);
 int GMT_shore_desc_sort(const void *a, const void *b);
 char *GMT_shore_getpathname (char *name, char *path);
-void GMT_shore_check (BOOLEAN ok[5]);
+void GMT_shore_check (GMT_LONG ok[5]);
 GMT_LONG GMT_res_to_int (char res);
 
 void GMT_set_levels (char *info, struct GMT_SHORE_SELECT *I)
@@ -112,7 +112,7 @@ GMT_LONG GMT_set_resolution (char *res, char opt)
 	return (base);
 }
 
-void GMT_shore_check (BOOLEAN ok[5])
+void GMT_shore_check (GMT_LONG ok[5])
 /* Sets ok to TRUE for those resolutions available in share for
  * resolution (f, h, i, l, c) */
 {
@@ -141,7 +141,7 @@ GMT_LONG GMT_res_to_int (char res)
 
 char GMT_shore_adjust_res (char res) {	/* Returns the highest available resolution <= to specified resolution */
 	GMT_LONG k, orig;
-	BOOLEAN ok[5];	
+	GMT_LONG ok[5];	
 	char *type = "clihf";
 	(void)GMT_shore_check (ok);		/* See which resolutions we have */
 	k = orig = GMT_res_to_int (res);	/* Get integer value of requested resolution */
@@ -299,7 +299,7 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 {
 	size_t start[1], count[1];
 	int *seg_info, *seg_start, *seg_ID;
-	BOOLEAN *seg_skip = NULL;
+	GMT_LONG *seg_skip = NULL;
 	GMT_LONG s, i, k, err, cut_area, level, inc[4], ll_node, node, ID;
 	double w, e, dx;
 		
@@ -351,7 +351,7 @@ GMT_LONG GMT_get_shore_bin (GMT_LONG b, struct GMT_SHORE *c)
 
 	/* First tally how many useful segments */
 
-	seg_skip = (BOOLEAN *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (BOOLEAN), "GMT_get_shore_bin");
+	seg_skip = (GMT_LONG *) GMT_memory (VNULL, (size_t)c->bin_nseg[b], sizeof (GMT_LONG), "GMT_get_shore_bin");
 	for (i = 0; i < c->bin_nseg[b]; i++) {
 		seg_skip[i] = TRUE;	/* Reset later to FALSE if we pass all the tests to follow next */
 		if (c->GSHHS_area_fraction[seg_ID[i]] < c->fraction) continue;	/* Area of this feature is too small relative to its original size */
@@ -595,7 +595,7 @@ GMT_LONG GMT_get_br_bin (GMT_LONG b, struct GMT_BR *c, GMT_LONG *level, GMT_LONG
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, BOOLEAN assemble, BOOLEAN shift, double west, double east, struct GMT_GSHHS_POL **pol)
+GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, GMT_LONG assemble, GMT_LONG shift, double west, double east, struct GMT_GSHHS_POL **pol)
                 
                      
 /* assemble: TRUE if polygons is needed */
@@ -606,7 +606,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, BOOLEAN assemble
 	struct GMT_GSHHS_POL *p;
 	GMT_LONG start_side, next_side, id, P = 0, more, p_alloc, wet_or_dry, use_this_level, high_seg_level = GMT_MAX_GSHHS_LEVEL;
 	GMT_LONG n_alloc, cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GMT_MAX_GSHHS_LEVEL+1];
-	BOOLEAN completely_inside;
+	GMT_LONG completely_inside;
 	double *xtmp, *ytmp, plon, plat;
 	
 	if (!assemble) {	/* Easy, just need to scale all segments to degrees and return */
@@ -763,7 +763,7 @@ GMT_LONG GMT_assemble_shore (struct GMT_SHORE *c, GMT_LONG dir, BOOLEAN assemble
 	return (P);
 }
 		
-GMT_LONG GMT_assemble_br (struct GMT_BR *c, BOOLEAN shift, double edge, struct GMT_GSHHS_POL **pol)
+GMT_LONG GMT_assemble_br (struct GMT_BR *c, GMT_LONG shift, double edge, struct GMT_GSHHS_POL **pol)
 /* shift: TRUE if longitudes may have to be shifted */
 /* edge: Edge test for shifting */       
 {
@@ -827,7 +827,7 @@ void GMT_br_cleanup (struct GMT_BR *c)
         nc_close (c->cdfid);
 }
 
-GMT_LONG GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, GMT_LONG np, BOOLEAN sample, double step, GMT_LONG anti_bin)
+GMT_LONG GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, GMT_LONG np, GMT_LONG sample, double step, GMT_LONG anti_bin)
 {
 	/* This function will go through each of the polygons and determine
 	 * if the polygon is clipped by the map boundary, and if so if it
@@ -844,7 +844,7 @@ GMT_LONG GMT_prep_polygons (struct GMT_GSHHS_POL **p_old, GMT_LONG np, BOOLEAN s
 	 */
 
 	GMT_LONG k, np_new, n_use, n, start, n_alloc;
-	BOOLEAN close;
+	GMT_LONG close;
 	double *xtmp, *ytmp;
 	struct GMT_GSHHS_POL *p;
 
@@ -1056,7 +1056,7 @@ void GMT_shore_path_shift2old (double *lon, double *lat, GMT_LONG n, double west
 	for (i = 0; i < n; i++) if (lon[i] > east && (lon[i]-360.0) >= west) lon[i] -= 360.0;
 }
 
-void GMT_shore_path_shift2 (double *lon, double *lat, GMT_LONG n, double west, double east, BOOLEAN leftmost)
+void GMT_shore_path_shift2 (double *lon, double *lat, GMT_LONG n, double west, double east, GMT_LONG leftmost)
 {
 	GMT_LONG i;
 	

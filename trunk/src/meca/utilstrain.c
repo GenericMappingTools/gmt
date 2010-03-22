@@ -1,4 +1,4 @@
-/*	$Id: utilstrain.c,v 1.12 2010-01-05 01:15:48 guru Exp $
+/*	$Id: utilstrain.c,v 1.13 2010-03-22 18:55:46 guru Exp $
  *    Copyright (c) 1996-2010 by G. Patau
  *    Distributed under the GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -10,7 +10,7 @@
 #define veclen(x, y) sqrt((x) * (x) + (y) * (y))
 
 /************************************************************************/
-GMT_LONG trace_cross (double slon,double slat,double eps1,double eps2,double theta,double sscale,double v_width,double h_length,double h_width,double vector_shape,BOOLEAN outline,struct GMT_PEN pen)
+GMT_LONG trace_cross (double slon,double slat,double eps1,double eps2,double theta,double sscale,double v_width,double h_length,double h_width,double vector_shape,GMT_LONG outline,struct GMT_PEN pen)
 
      /* make a Strain rate cross at(slat,slon) */
 

@@ -1,5 +1,5 @@
 /*
- *	$Id: lines_to_bins.c,v 1.17 2009-11-08 22:47:07 guru Exp $
+ *	$Id: lines_to_bins.c,v 1.18 2010-03-22 18:55:46 guru Exp $
  */
 /* lines_to_bins will read political boundaries and rivers files and bin
  * the segments similar to polygon_to_bins, except there is no need to
@@ -61,7 +61,7 @@ int die (int id);
 
 int main (int argc, char **argv)
 {
-	BOOLEAN first, crossed_x, crossed_y;
+	GMT_LONG first, crossed_x, crossed_y;
 	
 	int i, k, kk, test_long, nn, np, j, i_x_1, i_x_2, i_y_1, i_y_2, nbins, b, BSIZE, BIN_NX, BIN_NY, B_WIDTH;
 	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod, new = 0;

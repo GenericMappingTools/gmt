@@ -15,7 +15,7 @@ int GMTAPI_Create_Options (int n_args, char *args[], struct GMT_OPTION **list)
 	 * These in turn will be processed by the program-specific parsers
 	 */
 	
-	BOOLEAN first_option = TRUE;	/* So we know to initialize the head of the linked list */
+	GMT_LONG first_option = TRUE;	/* So we know to initialize the head of the linked list */
 	int arg;
 	struct GMT_OPTION *current = NULL, *head, *new;
 	
@@ -248,7 +248,7 @@ int program_parse (struct GMTAPI_CTRL *API, struct PROGRAM_CTRL *CTRL, struct GM
 	 */
 }
 
-void program_usage (struct GMTAPI_CTRL *API, BOOLEAN synopsis_only)
+void program_usage (struct GMTAPI_CTRL *API, GMT_LONG synopsis_only)
 {
 	/* This displays the program synopsis and optionally full usage information.
 	 */

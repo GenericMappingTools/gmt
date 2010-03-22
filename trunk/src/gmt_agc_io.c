@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.23 2009-05-13 21:06:41 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.24 2010-03-22 18:55:44 guru Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ GMT_LONG GMT_agc_write_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
+GMT_LONG GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex)
 {	/* header:     	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
@@ -233,7 +233,7 @@ GMT_LONG GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
+GMT_LONG GMT_agc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex)
 {	/* header:	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0] */

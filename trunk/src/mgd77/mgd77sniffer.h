@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------
- *	$Id: mgd77sniffer.h,v 1.39 2010-01-05 01:15:48 guru Exp $	
+ *	$Id: mgd77sniffer.h,v 1.40 2010-03-22 18:55:47 guru Exp $	
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *    Copyright (c) 2004-2010 by P. Wessel and M. T. Chandler
@@ -128,7 +128,7 @@ struct MGD77_MAG_RF {
 };
 
 /* Local functions */
-void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n, BOOLEAN bilinear, double threshold);
+void read_grid (struct MGD77_GRID_INFO *info, float **grid, double w, double e, double s, double n, GMT_LONG bilinear, double threshold);
 int sample_grid (struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, float *grid, GMT_LONG n_grid, GMT_LONG n);
 void regress_ls (double *x, double *y, GMT_LONG n, double *stat, int col);
 void regress_rls (double *x, double *y, GMT_LONG nvalues, double *stat, int col);

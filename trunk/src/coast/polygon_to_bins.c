@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_bins.c,v 1.16 2009-11-08 22:47:07 guru Exp $
+ *	$Id: polygon_to_bins.c,v 1.17 2010-03-22 18:55:46 guru Exp $
  */
 #include "wvs.h"
 #include "shore.h"
@@ -24,7 +24,7 @@ int *GSHHS_parent;
 void give_bad_message_and_exit (int id, int kind, int pt);
 
 int main (int argc, char **argv) {
-	BOOLEAN first, crossed_x, crossed_y;
+	GMT_LONG first, crossed_x, crossed_y;
 	
 	int i, k, kk, test_long, nn, np, j, n_alloc, start_i, i_x_1, i_x_2, i_y_1, i_y_2, nbins, b;
 	int n_final = 0, n_init = 0, dx_1, dx_2, dx, dy, i_x_1mod, i_y_1mod, last_i, i_x_2mod, i_y_2mod, n_nodes;

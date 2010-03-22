@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grd2sph.c,v 1.11 2010-01-05 01:15:48 guru Exp $
+ *	$Id: grd2sph.c,v 1.12 2010-03-22 18:55:47 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -27,21 +27,21 @@
 
 struct grd2sph_CTRL {
 	struct D {	/* -D<degree> */
-		BOOLEAN active;
+		GMT_LONG active;
 		int max_degree;
 	} D;
 	struct N {	/* -Ng|m|s */
-		BOOLEAN active;
+		GMT_LONG active;
 		char mode;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_LONG active;
 	} Q;
 };
 
 int main (int argc, char **argv)
 {
-	BOOLEAN error = FALSE;
+	GMT_LONG error = FALSE;
 
 	int i, d, o, nm, f_arg = -1, n_files = 0;
 

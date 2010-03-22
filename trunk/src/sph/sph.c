@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.c,v 1.22 2010-01-05 01:15:48 guru Exp $
+ *	$Id: sph.c,v 1.23 2010-03-22 18:55:47 guru Exp $
  *
  *	Copyright (c) 2008-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -66,7 +66,7 @@ int intrc1_ (int *, double *, double *, double *, double *, double *, double *, 
 int smsurf_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, double *, double *, double *, double *, int *, double *, double *, int *);
 int unif_ (int *, double *, double *, double *, double *, int *, int *, int *, int *, double *, int *, int *, int *, double *, double *, int *, double *, double *, int *);
 
-void stripack_lists (GMT_LONG n, double *x, double *y, double *z, BOOLEAN verbose, struct STRIPACK *T)
+void stripack_lists (GMT_LONG n, double *x, double *y, double *z, GMT_LONG verbose, struct STRIPACK *T)
 {
  	/* n, the number of points.
 	 * x, y, z, the arrays with coordinates of points 
@@ -240,7 +240,7 @@ int compare_arc (const void *p1, const void *p2)
 
 /* Functions for spherical surface interpolation */
 
-void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, BOOLEAN vartens, BOOLEAN verbose, struct GRD_HEADER *h, double *f)
+void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, GMT_LONG vartens, GMT_LONG verbose, struct GRD_HEADER *h, double *f)
 {
 	int ierror, n4, nm, k, i, j, n_sig, nxp, ist, ij, iflgs, iter, itgs;
 	int plus = 1, minus = -1;

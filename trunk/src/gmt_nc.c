@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.86 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_nc.c,v 1.87 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -393,7 +393,7 @@ GMT_LONG GMT_nc_grd_info (struct GRD_HEADER *header, char job)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
+GMT_LONG GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -413,7 +413,7 @@ GMT_LONG GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, doub
 	GMT_LONG i, j, width_in, width_out, height_in, i_0_out, inc = 1, err;
 	GMT_LONG *k;
 	size_t ij, kk;	/* To allow 64-bit addressing on 64-bit systems */
-	BOOLEAN check;
+	GMT_LONG check;
 	float *tmp = VNULL;
 
 	/* Check type: is file in old NetCDF format or not at all? */
@@ -489,7 +489,7 @@ GMT_LONG GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, doub
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
+GMT_LONG GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * w,e,s,n:	Sub-region to write out  [Use entire file if 0,0,0,0]

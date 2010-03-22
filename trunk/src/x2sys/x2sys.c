@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.142 2010-02-26 20:06:17 guru Exp $
+ *	$Id: x2sys.c,v 1.143 2010-03-22 18:55:47 guru Exp $
  *
  *      Copyright (c) 1999-2010 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -402,7 +402,7 @@ int x2sys_read_record (FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_
 {
 	int j, k, i, n_read = 0;
 	GMT_LONG pos;
-	BOOLEAN error = FALSE;
+	GMT_LONG error = FALSE;
 	char line[BUFSIZ], buffer[GMT_TEXT_LEN], p[BUFSIZ], c;
 	unsigned char u;
 	short int h;
@@ -928,7 +928,7 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 	int geodetic = 0, n, k, dist_flag = 0;
 	GMT_LONG pos = 0;
 	double dist;
-	BOOLEAN geographic = FALSE, n_given[2] = {FALSE, FALSE}, c_given = FALSE;
+	GMT_LONG geographic = FALSE, n_given[2] = {FALSE, FALSE}, c_given = FALSE;
 	FILE *fp;
 	struct X2SYS_INFO *s;
 	
@@ -1102,7 +1102,7 @@ int x2sys_set_system (char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, str
 	return (X2SYS_NOERROR);
 }
 
-void x2sys_bix_init (struct X2SYS_BIX *B, BOOLEAN alloc)
+void x2sys_bix_init (struct X2SYS_BIX *B, GMT_LONG alloc)
 {
 	B->i_bin_x = 1.0 / B->bin_x;
 	B->i_bin_y = 1.0 / B->bin_y;
@@ -1188,7 +1188,7 @@ int x2sys_bix_read_tracks (struct X2SYS_INFO *S, struct X2SYS_BIX *B, int mode, 
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_bix_read_index (struct X2SYS_INFO *S, struct X2SYS_BIX *B, BOOLEAN swap)
+int x2sys_bix_read_index (struct X2SYS_INFO *S, struct X2SYS_BIX *B, GMT_LONG swap)
 {
 	/* Reads the binned index file which is native binary and thus swab is an issue */
 	char index_file[BUFSIZ], index_path[BUFSIZ];
@@ -1311,7 +1311,7 @@ void x2sys_path_init (struct X2SYS_INFO *S)
 int x2sys_get_data_path (char *track_path, char *track, char *suffix)
 {
 	int id;
-	BOOLEAN add_suffix;
+	GMT_LONG add_suffix;
 	char geo_path[BUFSIZ];
 
 	if (track[0] == '/' || track[1] == ':') {	/* Full path given, just return it */
@@ -1420,7 +1420,7 @@ GMT_LONG x2sys_read_coe_dbase (struct X2SYS_INFO *S, char *dbase, char *ignorefi
 	char stop[2][GMT_TEXT_LEN], info[2][3*GMT_TEXT_LEN], **trk_list, **ignore = NULL, *t = NULL;
 	GMT_LONG p, n_pairs;
 	int i, k, n_alloc_x, n_alloc_p, n_alloc_t, year[2], id[2], n_ignore = 0, n_tracks = 0, n_items, our_item = -1;
-	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
+	GMT_LONG more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
 	double x, m, lon, dist[2], d_val;
 
 	fp = stdin;	/* Default to stdin if dbase is NULL */
@@ -1670,7 +1670,7 @@ int x2sys_find_track (char *name, char **list, int n)
 	return (-1);
 }
 
-int x2sys_get_tracknames (int argc, char **argv, char ***filelist, BOOLEAN *cmdline)
+int x2sys_get_tracknames (int argc, char **argv, char ***filelist, GMT_LONG *cmdline)
 {	/* Return list of track names given on command line or via =list mechanism.
 	 * The names do not have the track extension. */
 	int i, A, list = 0, add_chunk, n_alloc;

@@ -1,4 +1,4 @@
-/*	$Id: gmt_mgg_header2.c,v 1.40 2009-10-05 03:18:09 guru Exp $
+/*	$Id: gmt_mgg_header2.c,v 1.41 2010-03-22 18:55:44 guru Exp $
  *
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
@@ -249,7 +249,7 @@ GMT_LONG mgg2_write_grd_info (struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG pad[], BOOLEAN complex)
+GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG pad[], GMT_LONG complex)
 {
 	MGG_GRID_HEADER_2	mggHeader;
 	FILE  *fp     = NULL;
@@ -260,7 +260,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 	GMT_LONG first_col, last_col, first_row, last_row, one_or_zero;
 	GMT_LONG j, j2, width_in, height_in, i_0_out, inc = 1;
 	GMT_LONG i, kk, ij, nm, width_out;
-	BOOLEAN piping = FALSE, geo = FALSE, swap_all = FALSE, is_float = FALSE;
+	GMT_LONG piping = FALSE, geo = FALSE, swap_all = FALSE, is_float = FALSE;
 	double half_or_zero, x, small;
 	long long_offset;	/* For fseek only */
 	
@@ -510,7 +510,7 @@ GMT_LONG mgg2_read_grd (struct GRD_HEADER *header, float *grid, double w, double
 }
 
 	
-GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, BOOLEAN complex)
+GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, double e, double s, double n, GMT_LONG *pad, GMT_LONG complex)
 {
 	MGG_GRID_HEADER_2	mggHeader;
 	int *k;
@@ -519,7 +519,7 @@ GMT_LONG mgg2_write_grd (struct GRD_HEADER *header, float *grid, double w, doubl
 	GMT_LONG first_col, last_col, first_row, last_row;
 	GMT_LONG i, nm, ij, width_in;
 	
-	BOOLEAN geo = FALSE, is_float = FALSE;
+	GMT_LONG geo = FALSE, is_float = FALSE;
 	double half_or_zero, small, x;
 	
 	int  *tLong;

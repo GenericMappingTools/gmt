@@ -1,4 +1,4 @@
-/*	$Id: x_over.c,v 1.14 2009-09-05 01:14:03 guru Exp $
+/*	$Id: x_over.c,v 1.15 2010-03-22 18:55:47 guru Exp $
  *
  * X_OVER will compute cross-overs between 2 legs (or internal cross-overs
  * if both legs are the same) and write out time,lat,lon,cross-over values,
@@ -54,8 +54,8 @@
 
 typedef int HANDLE;
 
-BOOLEAN over_lap (float xx[2][2], float yy[2][2]);
-BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, double *xvalues, GMT_LONG *pt, float xx[2][2], float yy[2][2]);
+GMT_LONG over_lap (float xx[2][2], float yy[2][2]);
+GMT_LONG find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, double *xvalues, GMT_LONG *pt, float xx[2][2], float yy[2][2]);
 
 static char *oformat = "%9.5f %9.5f %10.1f %10.1f %9.2f %9.2f %9.2f %8.1f %8.1f %8.1f %5.1f %5.1f\n";
 static int ttime[MAXPOINTS];		/* time (in seconds) at each point */
@@ -71,7 +71,7 @@ static float lat[MAXPOINTS];		/* latitude for each point */
 static float lon[MAXPOINTS];		/* longitude for each point */
 				/* Min/max coordinates for pieces of the legs */
 static float grid_section[4][MAXSECT+1][MAXBLOCK][2];
-BOOLEAN gmt_flag[3] = {FALSE, FALSE, FALSE};		/* TRUE (for each data type) if it exists */
+GMT_LONG gmt_flag[3] = {FALSE, FALSE, FALSE};		/* TRUE (for each data type) if it exists */
 
 int main (int argc, char *argv[])
 {
@@ -102,13 +102,13 @@ int main (int argc, char *argv[])
   GMT_LONG leg, sct[2], blk[2], sect, ntot = 0;
   GMT_LONG arg, block, mode, i;		/* Misc. counters */
 
-  BOOLEAN shift_lon = FALSE;	/* TRUE if areas cross datumline */
-  BOOLEAN internal = FALSE;	/* TRUE if leg1 = leg2 */
-  BOOLEAN x_flag;		/* TRUE if crossover is found */
-  BOOLEAN error = FALSE;	/* TRUE for invalid arguments */
-  BOOLEAN verbose = FALSE;	/* Work in silence */
-  BOOLEAN ok;			/* misc. booleans */
-  BOOLEAN first = TRUE;		/* Used to print out header before first xover */
+  GMT_LONG shift_lon = FALSE;	/* TRUE if areas cross datumline */
+  GMT_LONG internal = FALSE;	/* TRUE if leg1 = leg2 */
+  GMT_LONG x_flag;		/* TRUE if crossover is found */
+  GMT_LONG error = FALSE;	/* TRUE for invalid arguments */
+  GMT_LONG verbose = FALSE;	/* Work in silence */
+  GMT_LONG ok;			/* misc. booleans */
+  GMT_LONG first = TRUE;		/* Used to print out header before first xover */
 
   double x_cross, y_cross;	/* Coordinates of crossover */
   double t_old = -1.0e38;	/* Time of previous crossover */
@@ -574,7 +574,7 @@ int main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 }
 
-BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, double *xvalues, GMT_LONG *pt, float xx[2][2], float yy[2][2])
+GMT_LONG find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, double *xvalues, GMT_LONG *pt, float xx[2][2], float yy[2][2])
 {
   double delx[2], dely[2], grad[2], xc0, t_next;
   double delt[2], dx[2][3];
@@ -721,7 +721,7 @@ BOOLEAN find_cross (double *xc, double *yc, double *tc, double *dc, float *hc, d
     return (TRUE);
 }
 
-BOOLEAN over_lap (float xx[2][2], float yy[2][2])		/* Checks if the two areas overlap */
+GMT_LONG over_lap (float xx[2][2], float yy[2][2])		/* Checks if the two areas overlap */
 {
   if (xx[1][0] < xx[0][1] || xx[0][0] > xx[1][1]) return (FALSE);
   if (yy[1][0] < yy[0][1] || yy[0][0] > yy[1][1]) return (FALSE);

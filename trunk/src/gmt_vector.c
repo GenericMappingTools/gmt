@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_vector.c,v 1.33 2010-01-05 01:15:46 guru Exp $
+ *	$Id: gmt_vector.c,v 1.34 2010-03-22 18:55:45 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -647,7 +647,7 @@ void GMT_cross3v (double *a, double *b, double *c)
 	c[2] = a[0] * b[1] - a[1] * b[0];
 }
 
-void GMT_geo_to_cart (double lat, double lon, double *a, BOOLEAN degrees)
+void GMT_geo_to_cart (double lat, double lon, double *a, GMT_LONG degrees)
 {
 	/* Convert geographic latitude and longitude (lat, lon)
 	   to a 3-vector of unit length (a). If degrees = TRUE,
@@ -665,7 +665,7 @@ void GMT_geo_to_cart (double lat, double lon, double *a, BOOLEAN degrees)
 	a[1] = clat * slon;
 }
 
-void GMT_cart_to_geo (double *lat, double *lon, double *a, BOOLEAN degrees)
+void GMT_cart_to_geo (double *lat, double *lon, double *a, GMT_LONG degrees)
 {
 	/* Convert a 3-vector (a) of unit length into geographic
 	   coordinates (lat, lon). If degrees = TRUE, the output coordinates
@@ -698,7 +698,7 @@ GMT_LONG GMT_fix_up_path (double **a_lon, double **a_lat, GMT_LONG n, double ste
 	 */
       
 	GMT_LONG i, j, n_tmp, n_step = 0, n_alloc = 0;
-	BOOLEAN meridian;
+	GMT_LONG meridian;
 	double *lon_tmp, *lat_tmp, *old;
 	double a[3], b[3], x[3], *lon, *lat;
 	double c, d, fraction, theta, minlon, maxlon;

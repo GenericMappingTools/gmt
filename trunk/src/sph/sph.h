@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: sph.h,v 1.12 2010-01-05 01:15:48 guru Exp $
+ *	$Id: sph.h,v 1.13 2010-03-22 18:55:47 guru Exp $
  *
  *	Copyright (c) 2008-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,9 +50,9 @@ struct STRPACK_ARC {
 	int begin, end;
 };
 
-EXTERN_MSC void stripack_lists (GMT_LONG n, double *x, double *y, double *z, BOOLEAN verbose, struct STRIPACK *T);
+EXTERN_MSC void stripack_lists (GMT_LONG n, double *x, double *y, double *z, GMT_LONG verbose, struct STRIPACK *T);
 EXTERN_MSC double stripack_areas (double *V1, double *V2, double *V3);
 EXTERN_MSC void cart_to_geo (GMT_LONG n, double *x, double *y, double *z, double *lon, double *lat);
 EXTERN_MSC int compare_arc (const void *p1, const void *p2);
 EXTERN_MSC void geo_to_cart (double alat, double alon, double *a, int rads);
-EXTERN_MSC void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, BOOLEAN vartens, BOOLEAN verbose, struct GRD_HEADER *h, double *f);
+EXTERN_MSC void ssrfpack_grid (double *x, double *y, double *z, double *w, GMT_LONG n, int mode, double *par, GMT_LONG vartens, GMT_LONG verbose, struct GRD_HEADER *h, double *f);

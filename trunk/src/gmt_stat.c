@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_stat.c,v 1.71 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_stat.c,v 1.72 2010-03-22 18:55:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -860,7 +860,7 @@ double GMT_plm (GMT_LONG l, GMT_LONG m, double x)
 	return (pll);
 }
 
-double GMT_plm_bar (GMT_LONG l, GMT_LONG m, double x, BOOLEAN ortho)
+double GMT_plm_bar (GMT_LONG l, GMT_LONG m, double x, GMT_LONG ortho)
 {
 	/* This function computes the normalized associated Legendre function of x for degree
 	 * l and order m. u must be in the range [-1;1] and 0 <= |m| <= l.
@@ -898,7 +898,7 @@ double GMT_plm_bar (GMT_LONG l, GMT_LONG m, double x, BOOLEAN ortho)
 	 * Journal of Geodesy, 76, 279-299, 2002. doi:10.1007/s00190-002-0216-2.
 	 */
 	GMT_LONG i;
-	BOOLEAN csphase = FALSE;
+	GMT_LONG csphase = FALSE;
 	double scalef=1.0e280, u, r, pmm, pmm0, pmm1, pmm2;
 
 	/* x is cosine of colatitude (sine of latitude) and must be -1 <= x <= +1 */
@@ -1282,7 +1282,7 @@ double	GMT_strtod (const char *s, char **ends) {
 	char	*t, savechar;
 	double	x = 0.0;
 	GMT_LONG	i, nsign[2], nradix[2], nexp, ndigits, error;
-	BOOLEAN inside = FALSE;
+	GMT_LONG inside = FALSE;
 
 	t = (char *)s;
 	i = 0;
@@ -1587,7 +1587,7 @@ double GMT_tcrit (double alpha, double nu)
 	/* Critical values for Student t-distribution */
 
 	GMT_LONG NU;
-	BOOLEAN done;
+	GMT_LONG done;
 	double t_low, t_high, t_mid, p_high, p_mid, p, sign;
 
 	if (alpha > 0.5) {	/* right tail */
@@ -1630,7 +1630,7 @@ double GMT_chi2crit (double alpha, double nu)
 {
 	/* Critical values for Chi^2-distribution */
 
-	BOOLEAN done;
+	GMT_LONG done;
 	double chi2_low, chi2_high, chi2_mid, p_high, p_mid, p;
 
 	p = 1.0 - alpha;
@@ -1666,7 +1666,7 @@ double GMT_Fcrit (double alpha, double nu1, double nu2)
 	/* Critical values for F-distribution */
 
 	GMT_LONG NU1, NU2;
-	BOOLEAN done;
+	GMT_LONG done;
 	double F_low, F_high, F_mid, p_high, p_mid, p, chisq1, chisq2;
 	void F_to_ch1_ch2 (double F, double nu1, double nu2, double *chisq1, double *chisq2);
 
@@ -2134,7 +2134,7 @@ GMT_LONG GMT_median (double *x, GMT_LONG n, double xmin, double xmax, double m_i
 	double	lub, glb, xx, temp;
 	GMT_LONG	i, n_above, n_below, n_equal, n_lub, n_glb, one;	/* These must be signed integers */
 	GMT_LONG	iteration = 0;
-	BOOLEAN	finished = FALSE;
+	GMT_LONG	finished = FALSE;
 
 	if (n == (GMT_LONG)0) {
 		*med = m_initial;
@@ -2788,7 +2788,7 @@ void GMT_PvQv (double x, double v_ri[], double pq[], GMT_LONG *iter)
 	 * the real amd imaginary parts of Pv(x) and Qv(x) in the pq array.
 	 * Based on recipe in An Atlas of Functions */
 
-	BOOLEAN p_set, q_set;
+	GMT_LONG p_set, q_set;
 	double M, L, K, Xn, x2, k, k1, ep, em, sx, cx, fact;
 	double a[2], v[2], vp1[2], G[2], g[2], u[2], t[2], f[2];
 	double R[2], r[2], z[2], s[2], c[2], w[2], tmp[2], X[2], A[2], B[2];
