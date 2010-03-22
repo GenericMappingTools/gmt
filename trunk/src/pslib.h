@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.59 2010-01-05 01:15:47 guru Exp $
+ *	$Id: pslib.h,v 1.60 2010-03-22 19:17:37 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -30,9 +30,9 @@ extern "C" {
 
 #ifndef _PSLIB_INC_H	/* I.e., included by a user application */
 #ifdef _WIN64
-typedef __int64 PS_LONG;		/* A signed 8-byte integer */
+typedef __int64 PSL_LONG;		/* A signed 8-byte integer */
 #else
-typedef long PS_LONG;			/* A signed 4 (or 8-byte for 64-bit) integer */
+typedef long PSL_LONG;			/* A signed 4 (or 8-byte for 64-bit) integer */
 #endif
 
 /* Declaration modifiers for DLL support (MSC et al) */
@@ -120,76 +120,76 @@ struct imageinfo {
 
 /* Public functions */
 
-EXTERN_MSC void ps_arc (double x, double y, double radius, double az1, double az2, PS_LONG status);
-EXTERN_MSC void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, double annotpointsize, PS_LONG side);
-EXTERN_MSC void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG invert, int f_rgb[], int b_rgb[]);
-EXTERN_MSC void ps_circle (double x, double y, double size, int rgb[], PS_LONG outline);
+EXTERN_MSC void ps_arc (double x, double y, double radius, double az1, double az2, PSL_LONG status);
+EXTERN_MSC void ps_axis (double x, double y, double length, double val0, double val1, double annotation_int, char *label, double annotpointsize, PSL_LONG side);
+EXTERN_MSC void ps_bitimage (double x, double y, double xsize, double ysize, unsigned char *buffer, PSL_LONG nx, PSL_LONG ny, PSL_LONG invert, int f_rgb[], int b_rgb[]);
+EXTERN_MSC void ps_circle (double x, double y, double size, int rgb[], PSL_LONG outline);
 EXTERN_MSC void ps_clipoff (void);
-EXTERN_MSC void ps_clipon (double *x, double *y, PS_LONG n, int rgb[], PS_LONG flag);
-EXTERN_MSC void ps_colorimage (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbits);
-EXTERN_MSC void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned char *image, PS_LONG nx, PS_LONG ny);
+EXTERN_MSC void ps_clipon (double *x, double *y, PSL_LONG n, int rgb[], PSL_LONG flag);
+EXTERN_MSC void ps_colorimage (double x, double y, double xsize, double ysize, unsigned char *buffer, PSL_LONG nx, PSL_LONG ny, PSL_LONG nbits);
+EXTERN_MSC void ps_colortiles (double x0, double y0, double xsize, double ysize, unsigned char *image, PSL_LONG nx, PSL_LONG ny);
 EXTERN_MSC void ps_command (char *text);
 EXTERN_MSC void ps_comment (char *text);
 EXTERN_MSC void ps_cross (double x, double y, double size);
-EXTERN_MSC void ps_encode_font (PS_LONG font_no);
+EXTERN_MSC void ps_encode_font (PSL_LONG font_no);
 EXTERN_MSC void ps_dash (double x0, double y0, double x1, double y1);
-EXTERN_MSC void ps_diamond (double x, double y, double side, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_ellipse (double x, double y, double angle, double major, double minor, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG size, PS_LONG nx, PS_LONG ny, PS_LONG ox, PS_LONG oy); 
+EXTERN_MSC void ps_diamond (double x, double y, double side, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_ellipse (double x, double y, double angle, double major, double minor, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char *buffer, PSL_LONG size, PSL_LONG nx, PSL_LONG ny, PSL_LONG ox, PSL_LONG oy); 
 EXTERN_MSC void ps_flush (void);
-EXTERN_MSC void *ps_memory (void *prev_addr, PS_LONG nelem, size_t size);
+EXTERN_MSC void *ps_memory (void *prev_addr, PSL_LONG nelem, size_t size);
 EXTERN_MSC void ps_free (void *addr);
-EXTERN_MSC void ps_hexagon (double x, double y, double side, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_image (double x, double y, double xsize, double ysize, unsigned char *buffer, PS_LONG nx, PS_LONG ny, PS_LONG nbits);
-EXTERN_MSC PS_LONG ps_line (double *x, double *y, PS_LONG n, PS_LONG type, PS_LONG close);
-EXTERN_MSC void ps_itriangle (double x, double y, double side, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_matharc (double x, double y, double radius, double az1, double az2, double shape, PS_LONG status);
-EXTERN_MSC void ps_octagon (double x, double y, double side, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_pentagon (double x, double y, double side, int rgb[], PS_LONG outline);
-EXTERN_MSC PS_LONG ps_pattern (PS_LONG image_no, char *imagefile, PS_LONG invert, PS_LONG image_dpi, PS_LONG outline, int f_rgb[], int b_rgb[]);
-EXTERN_MSC void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[], PS_LONG outline);
+EXTERN_MSC void ps_hexagon (double x, double y, double side, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_image (double x, double y, double xsize, double ysize, unsigned char *buffer, PSL_LONG nx, PSL_LONG ny, PSL_LONG nbits);
+EXTERN_MSC PSL_LONG ps_line (double *x, double *y, PSL_LONG n, PSL_LONG type, PSL_LONG close);
+EXTERN_MSC void ps_itriangle (double x, double y, double side, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_matharc (double x, double y, double radius, double az1, double az2, double shape, PSL_LONG status);
+EXTERN_MSC void ps_octagon (double x, double y, double side, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_pentagon (double x, double y, double side, int rgb[], PSL_LONG outline);
+EXTERN_MSC PSL_LONG ps_pattern (PSL_LONG image_no, char *imagefile, PSL_LONG invert, PSL_LONG image_dpi, PSL_LONG outline, int f_rgb[], int b_rgb[]);
+EXTERN_MSC void ps_pie (double x, double y, double radius, double az1, double az2, int rgb[], PSL_LONG outline);
 EXTERN_MSC void ps_plot (double x, double y, int pen);
-EXTERN_MSC PS_LONG ps_plotinit (char *plotfile, PS_LONG overlay, PS_LONG mode, double xoff, double yoff, double xscl, double yscl, PS_LONG ncopies, PS_LONG dpi, PS_LONG unit, PS_LONG *page_size, int *rgb, const char *encoding, struct EPS *eps);
-EXTERN_MSC PS_LONG ps_plotinit_hires (char *plotfile, PS_LONG overlay, PS_LONG mode, double xoff, double yoff, double xscl, double yscl, PS_LONG ncopies, PS_LONG dpi, PS_LONG unit, double *page_size, int *rgb, const char *encoding, struct EPS *eps);
-EXTERN_MSC void ps_plotend (PS_LONG lastpage);
+EXTERN_MSC PSL_LONG ps_plotinit (char *plotfile, PSL_LONG overlay, PSL_LONG mode, double xoff, double yoff, double xscl, double yscl, PSL_LONG ncopies, PSL_LONG dpi, PSL_LONG unit, PSL_LONG *page_size, int *rgb, const char *encoding, struct EPS *eps);
+EXTERN_MSC PSL_LONG ps_plotinit_hires (char *plotfile, PSL_LONG overlay, PSL_LONG mode, double xoff, double yoff, double xscl, double yscl, PSL_LONG ncopies, PSL_LONG dpi, PSL_LONG unit, double *page_size, int *rgb, const char *encoding, struct EPS *eps);
+EXTERN_MSC void ps_plotend (PSL_LONG lastpage);
 EXTERN_MSC void ps_plotr (double x, double y, int pen);
 EXTERN_MSC void ps_plus (double x, double y, double size);
 EXTERN_MSC void ps_point (double x, double y, double diameter);
-EXTERN_MSC void ps_polygon (double *x, double *y, PS_LONG n, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_rect (double x1, double y1, double x2, double y2, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_rotaterect (double x, double y, double angle, double x_len, double y_len, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_patch (double *x, double *y, PS_LONG np, int rgb[], PS_LONG outline);
+EXTERN_MSC void ps_polygon (double *x, double *y, PSL_LONG n, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_rect (double x1, double y1, double x2, double y2, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_rotaterect (double x, double y, double angle, double x_len, double y_len, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_patch (double *x, double *y, PSL_LONG np, int rgb[], PSL_LONG outline);
 EXTERN_MSC void ps_rotatetrans (double x, double y, double angle);
 EXTERN_MSC void ps_segment (double x0, double y0, double x1, double y1);
-EXTERN_MSC void ps_setdash (char *pattern, PS_LONG offset);
-EXTERN_MSC void ps_setfill (int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_setfont (PS_LONG font_no);
-EXTERN_MSC void ps_setformat (PS_LONG n_decimals);
-EXTERN_MSC void ps_setline (PS_LONG linewidth);
-EXTERN_MSC void ps_setlinecap (PS_LONG cap);
-EXTERN_MSC void ps_setlinejoin (PS_LONG join);
-EXTERN_MSC void ps_setmiterlimit (PS_LONG limit);
+EXTERN_MSC void ps_setdash (char *pattern, PSL_LONG offset);
+EXTERN_MSC void ps_setfill (int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_setfont (PSL_LONG font_no);
+EXTERN_MSC void ps_setformat (PSL_LONG n_decimals);
+EXTERN_MSC void ps_setline (PSL_LONG linewidth);
+EXTERN_MSC void ps_setlinecap (PSL_LONG cap);
+EXTERN_MSC void ps_setlinejoin (PSL_LONG join);
+EXTERN_MSC void ps_setmiterlimit (PSL_LONG limit);
 EXTERN_MSC void ps_setpaint (int rgb[]);
-EXTERN_MSC void ps_square (double x, double y, double side, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_star (double x, double y, double side, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_text (double x, double y, double pointsize, char *text, double angle, PS_LONG justify, PS_LONG form);
-EXTERN_MSC void ps_textbox (double x, double y, double pointsize, char *text, double angle, PS_LONG justify, PS_LONG outline, double dx, double dy, int rgb[]);
-EXTERN_MSC void ps_textpath (double x[], double y[], PS_LONG n, PS_LONG node[], double angle[], char *label[], PS_LONG m, double pointsize, double offset[], PS_LONG justify, PS_LONG form);
-EXTERN_MSC void ps_textclip (double x[], double y[], PS_LONG m, double angle[], char *label[], double pointsize, double offset[], PS_LONG justify, PS_LONG key);
+EXTERN_MSC void ps_square (double x, double y, double side, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_star (double x, double y, double side, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_text (double x, double y, double pointsize, char *text, double angle, PSL_LONG justify, PSL_LONG form);
+EXTERN_MSC void ps_textbox (double x, double y, double pointsize, char *text, double angle, PSL_LONG justify, PSL_LONG outline, double dx, double dy, int rgb[]);
+EXTERN_MSC void ps_textpath (double x[], double y[], PSL_LONG n, PSL_LONG node[], double angle[], char *label[], PSL_LONG m, double pointsize, double offset[], PSL_LONG justify, PSL_LONG form);
+EXTERN_MSC void ps_textclip (double x[], double y[], PSL_LONG m, double angle[], char *label[], double pointsize, double offset[], PSL_LONG justify, PSL_LONG key);
 EXTERN_MSC void ps_transrotate (double x, double y, double angle);
-EXTERN_MSC void ps_triangle (double x, double y, double side, int rgb[], PS_LONG outline);
-EXTERN_MSC void ps_vector (double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], PS_LONG outline);
+EXTERN_MSC void ps_triangle (double x, double y, double side, int rgb[], PSL_LONG outline);
+EXTERN_MSC void ps_vector (double xtail, double ytail, double xtip, double ytip, double tailwidth, double headlength, double headwidth, double headshape, int rgb[], PSL_LONG outline);
 EXTERN_MSC unsigned char *ps_load_image (char *file, struct imageinfo *header);
-EXTERN_MSC void ps_words (double x, double y, char **text, PS_LONG n_words, double line_space, double par_width, PS_LONG par_just, PS_LONG font, double font_size, double angle, int rgb[3], PS_LONG justify, PS_LONG draw_box, double x_off, double y_off, double x_gap, double y_gap, PS_LONG boxpen_width, char *boxpen_texture, PS_LONG boxpen_offset, int boxpen_rgb[], PS_LONG vecpen_width, char *vecpen_texture, PS_LONG vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3]);
-EXTERN_MSC void ps_setline (PS_LONG linewidth);
-EXTERN_MSC void ps_textdim (char *dim, double pointsize, PS_LONG font, char *text);
+EXTERN_MSC void ps_words (double x, double y, char **text, PSL_LONG n_words, double line_space, double par_width, PSL_LONG par_just, PSL_LONG font, double font_size, double angle, int rgb[3], PSL_LONG justify, PSL_LONG draw_box, double x_off, double y_off, double x_gap, double y_gap, PSL_LONG boxpen_width, char *boxpen_texture, PSL_LONG boxpen_offset, int boxpen_rgb[], PSL_LONG vecpen_width, char *vecpen_texture, PSL_LONG vecpen_offset, int vecpen_rgb[], int boxfill_rgb[3]);
+EXTERN_MSC void ps_setline (PSL_LONG linewidth);
+EXTERN_MSC void ps_textdim (char *dim, double pointsize, PSL_LONG font, char *text);
 EXTERN_MSC void ps_set_length (char *param, double value);
 EXTERN_MSC void ps_set_height (char *param, double fontsize);
 EXTERN_MSC void ps_define_rgb (char *param, int rgb[]);
-EXTERN_MSC void ps_define_pen (char *param, PS_LONG width, char *texture, PS_LONG offset, int rgb[]);
+EXTERN_MSC void ps_define_pen (char *param, PSL_LONG width, char *texture, PSL_LONG offset, int rgb[]);
 EXTERN_MSC void ps_rgb_to_mono (unsigned char *buffer, struct imageinfo *h);
-EXTERN_MSC PS_LONG ps_read_rasheader  (FILE *fp, struct imageinfo *h, PS_LONG i0, PS_LONG i1);
-EXTERN_MSC PS_LONG ps_write_rasheader (FILE *fp, struct imageinfo *h, PS_LONG i0, PS_LONG i1);
+EXTERN_MSC PSL_LONG ps_read_rasheader  (FILE *fp, struct imageinfo *h, PSL_LONG i0, PSL_LONG i1);
+EXTERN_MSC PSL_LONG ps_write_rasheader (FILE *fp, struct imageinfo *h, PSL_LONG i0, PSL_LONG i1);
 
 #ifdef __cplusplus
 }
