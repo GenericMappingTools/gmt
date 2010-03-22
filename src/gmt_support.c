@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.444 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_support.c,v 1.445 2010-03-22 23:42:28 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -486,7 +486,7 @@ GMT_LONG GMT_getrgb (char *line, int rgb[])
 		return (FALSE);
 	}
 
-	count = GMT_char_count (line, '/');
+	count = (int)GMT_char_count (line, '/');
 
 	if (count == 3) {	/* c/m/y/k */
 		double cmyk[4];
@@ -510,7 +510,7 @@ GMT_LONG GMT_getrgb (char *line, int rgb[])
 		return (FALSE);
 	}
 
-	hyp   = GMT_char_count (line, '-');
+	hyp   = (int)GMT_char_count (line, '-');
 
 	if (hyp == 2) {	/* h-s-v */
 		double hsv[3];
@@ -527,7 +527,7 @@ GMT_LONG GMT_getrgb (char *line, int rgb[])
 			if (n != 1 || GMT_check_rgb (rgb)) return (TRUE);
 		}
 		else {
-			if ((n = GMT_colorname2index (line)) < 0) {
+			if ((n = (int)GMT_colorname2index (line)) < 0) {
 				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
 				return (TRUE);
 			}
@@ -554,7 +554,7 @@ GMT_LONG GMT_gethsv (char *line, double hsv[])
 		return (FALSE);
 	}
 
-	count = GMT_char_count (line, '/');
+	count = (int)GMT_char_count (line, '/');
 
 	if (count == 3) {	/* c/m/y/k */
 		double cmyk[4];
@@ -577,7 +577,7 @@ GMT_LONG GMT_gethsv (char *line, double hsv[])
 		return (FALSE);
 	}
 
-	hyp   = GMT_char_count (line, '-');
+	hyp   = (int)GMT_char_count (line, '-');
 
 	if (hyp == 2) {	/* h-s-v */
 		n = sscanf (line, "%lf-%lf-%lf", &hsv[0], &hsv[1], &hsv[2]);
@@ -593,7 +593,7 @@ GMT_LONG GMT_gethsv (char *line, double hsv[])
 			GMT_rgb_to_hsv (rgb, hsv);
 		}
 		else {
-			if ((n = GMT_colorname2index (line)) < 0) {
+			if ((n = (int)GMT_colorname2index (line)) < 0) {
 				fprintf (stderr, "%s: Colorname %s not recognized!\n", GMT_program, line);
 				return (TRUE);
 			}
@@ -8043,10 +8043,10 @@ GMT_LONG GMT_polar_adjust (GMT_LONG side, double angle, double x, double y)
 		top = 10;
 		bottom = 2;
 	}
-	if (project_info.projection == GMT_POLAR && project_info.got_azimuths) i_swap (left, right);	/* Because with azimuths we get confused... */
+	if (project_info.projection == GMT_POLAR && project_info.got_azimuths) l_swap (left, right);	/* Because with azimuths we get confused... */
 	if (project_info.projection == GMT_POLAR && project_info.got_elevations) {
-		i_swap (top, bottom);	/* Because with elevations we get confused... */
-		i_swap (left, right);
+		l_swap (top, bottom);	/* Because with elevations we get confused... */
+		l_swap (left, right);
 		low = 2 - low;
 	}
 	if (side%2) {	/* W and E border */
