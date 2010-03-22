@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: mgd77netcdfhelper.sh,v 1.27 2010-01-05 01:15:48 guru Exp $
+#	$Id: mgd77netcdfhelper.sh,v 1.28 2010-03-22 18:59:00 guru Exp $
 #
 #	Author:		P. Wessel
 #	Date:		2005-OCT-14
@@ -31,8 +31,8 @@ struct MGD77_HEADER_LOOKUP {	/* Book-keeping for one header parameter  */
 	GMT_LONG length;	/* Number of bytes to use */
 	int record;		/* Header record number where it occurs (1-24) */
 	int item;		/* Sequential item order in this record (1->) */
-	BOOLEAN check;		/* TRUE if we actually do a test on this item */
-	BOOLEAN revised;	/* TRUE if read in via the _REVISED attribute */
+	GMT_LONG check;		/* TRUE if we actually do a test on this item */
+	GMT_LONG revised;	/* TRUE if read in via the _REVISED attribute */
 	char *ptr[2];		/* Pointers to the corresponding named variable in struct MGD77_HEADER_PARAMS (orig and revised) */
 };
 
@@ -176,9 +176,9 @@ cat << EOF >> mgd77_functions.c
 	(void) nc_del_att (F->nc_id, NC_GLOBAL, "E77");
 }
 
-BOOLEAN MGD77_Get_Param (struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_rev)
+GMT_LONG MGD77_Get_Param (struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_rev)
 {	/* Get a single parameter: original if requested, otherwise check for revised value first */
-	BOOLEAN got_rev = FALSE;
+	GMT_LONG got_rev = FALSE;
 	
 	if (!F->original) {	/* Must look for revised attribute unless explicitly turned off [ e.g, mgd77convert -FC] */
 		char Att[64];
@@ -192,7 +192,7 @@ BOOLEAN MGD77_Get_Param (struct MGD77_CONTROL *F, char *name, char *value_orig, 
 	return (got_rev);
 }
 
-void MGD77_Put_Param (struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, BOOLEAN revised)
+void MGD77_Put_Param (struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, GMT_LONG revised)
 {	/* Function assumes we are in define mode. 
 	 * Place a single parameter in one of several ways:
 	 * revised == 2: Only write the revised attribute [This only happens in mgd77manage where we update a value via -Ae]
@@ -212,8 +212,8 @@ EOF
 cat << EOF >> mgd77_functions.h
 };
 
-BOOLEAN MGD77_Get_Param (struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_revised);
-void MGD77_Put_Param (struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, BOOLEAN revised);
+GMT_LONG MGD77_Get_Param (struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_revised);
+void MGD77_Put_Param (struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, GMT_LONG revised);
 void MGD77_Read_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS **P);
 void MGD77_Dump_Header_Params (struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);
 void MGD77_Reset_Header_Params (struct MGD77_CONTROL *F);
