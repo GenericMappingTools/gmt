@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.h,v 1.60 2010-03-22 19:17:37 guru Exp $
+ *	$Id: pslib.h,v 1.61 2010-03-23 23:33:20 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -28,11 +28,15 @@
 extern "C" {
 #endif
 
-#ifndef _PSLIB_INC_H	/* I.e., included by a user application */
+#ifndef _PSLIB_H
+#define _PSLIB_H
+
 #ifdef _WIN64
 typedef __int64 PSL_LONG;		/* A signed 8-byte integer */
+#define PSL_LONG_MODIFIER "ll"
 #else
 typedef long PSL_LONG;			/* A signed 4 (or 8-byte for 64-bit) integer */
+#define PSL_LONG_MODIFIER "l"
 #endif
 
 /* Declaration modifiers for DLL support (MSC et al) */
@@ -47,13 +51,11 @@ typedef long PSL_LONG;			/* A signed 4 (or 8-byte for 64-bit) integer */
 #define MSC_EXTRA_PSL
 #endif				/* defined(DLL_PSL) */
 
+/* Unless DLL_PSL is defined, EXTERN_MSC is simply extern */
+
 #ifndef EXTERN_MSC
 #define EXTERN_MSC extern MSC_EXTRA_PSL
 #endif
-
-/* So unless DLL_PSL is defined, EXTERN_MSC is simply extern */
-
-#endif	/* _PSLIB_INC_H */
 
 /* Macro for exit since this should be returned when called from Matlab */
 #ifdef DO_NOT_EXIT
@@ -190,6 +192,8 @@ EXTERN_MSC void ps_define_pen (char *param, PSL_LONG width, char *texture, PSL_L
 EXTERN_MSC void ps_rgb_to_mono (unsigned char *buffer, struct imageinfo *h);
 EXTERN_MSC PSL_LONG ps_read_rasheader  (FILE *fp, struct imageinfo *h, PSL_LONG i0, PSL_LONG i1);
 EXTERN_MSC PSL_LONG ps_write_rasheader (FILE *fp, struct imageinfo *h, PSL_LONG i0, PSL_LONG i1);
+
+#endif	/* _PSLIB_H */
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.55 2010-02-17 14:33:58 remko Exp $
+#	$Id: Makefile,v 1.56 2010-03-23 23:33:20 remko Exp $
 #
 #	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
 #	See LICENSE.TXT file for copying and redistribution conditions.
@@ -144,7 +144,7 @@ distclean:	spotless
 
 $(LIB_O) $(PROGS_O):		$(GMT_H)
 $(LIBPS_O) $(PROGSPS_O):	$(GMT_H) $(PS_H)
-pslib.o:	$(PS_H) pslib_inc.h gmt_notunix.h gmt_notposix.h gmt_math.h
+pslib.o:	$(PS_H) gmt_notunix.h gmt_notposix.h gmt_math.h
 
 # Additional unusual dependancies
 

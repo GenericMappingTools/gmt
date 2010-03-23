@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.722 2010-03-22 20:54:18 jluis Exp $
+	$Id: ChangeLog,v 1.723 2010-03-23 23:35:29 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-03-23	remko
+	* pslib.[ch], pslib_inc.h:	Removed pslib_inc.h, now in pslib.c.
+				Removed PRINT_SIZE_T macro. Added GMT_LONG_MODIFIER macro.
+	* gmt.h, gmt_notunix.h:	Removed PRINT_SIZE_T macro. Added GMT_LONG_MODIFIER macro.
+	* grdinfo.c:		Removed PRINT_SIZE_T macro.
 
 2010-03-22	pwessel
 	* *.[ch]:		Replaced BOOLEAN typedef by using GMT_LONG instead.
