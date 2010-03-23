@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_nc.c,v 1.87 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_nc.c,v 1.88 2010-03-23 00:05:42 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -475,8 +475,8 @@ GMT_LONG GMT_nc_read_grd (struct GRD_HEADER *header, float *grid, double w, doub
 		}
 	}
 
-	header->nx = width_in;
-	header->ny = height_in;
+	header->nx = (int)width_in;
+	header->ny = (int)height_in;
 	header->x_min = w;
 	header->x_max = e;
 	header->y_min = s;
@@ -545,8 +545,8 @@ GMT_LONG GMT_nc_write_grd (struct GRD_HEADER *header, float *grid, double w, dou
 	header->x_max = e;
 	header->y_min = s;
 	header->y_max = n;
-	header->nx = width_out;
-	header->ny = height_out;
+	header->nx = (int)width_out;
+	header->ny = (int)height_out;
 
 	/* Write grid header without closing file afterwards */
 
