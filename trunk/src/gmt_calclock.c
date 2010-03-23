@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.69 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.70 2010-03-23 19:44:41 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -325,10 +325,11 @@ GMT_LONG	GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d) {
 	
 	GMT_LONG	k;
 	
+	
 	if (m < 1 || m > 12 || d < 1) return (TRUE);
 	
 	k = GMT_gmonth_length (y, m);	/* Number of day in the specified month */
-	
+
 	if (d > k) return (TRUE);	/* More days than we've got in this month */
 	
 	return (FALSE);
@@ -1046,7 +1047,8 @@ GMT_LONG	GMT_read_clock (char *s, double *t) {
 */
 
 	double	dsec;
-	GMT_LONG	j, k;
+	//GMT_LONG	j, k;
+	int	j, k;
 	char	*cm, *cs;
 	
 	/* Get hours:  */
@@ -1057,7 +1059,8 @@ GMT_LONG	GMT_read_clock (char *s, double *t) {
 		s[k-j] = '\0';
 		cm = &cm[1];	/* Move beyond colon  */
 	}
-	if ( (sscanf(s, "%ld", &k)) != 1) return (-1);
+	//if ( (sscanf(s, "%ld", &k)) != 1) return (-1);
+	if ( (sscanf(s, "%d", &k)) != 1) return (-1);
 	if (k < 0 || k > 24) return (-1);
 	*t = GMT_HR2SEC_I * k;		/* t now has hours (in secs) */
 	
@@ -1070,7 +1073,8 @@ GMT_LONG	GMT_read_clock (char *s, double *t) {
 		cm[k-j] = '\0';
 		cs = &cs[1];
 	}
-	if ( (sscanf(cm, "%ld", &k)) != 1) return (-1);
+	//if ( (sscanf(cm, "%ld", &k)) != 1) return (-1);
+	if ( (sscanf(cm, "%d", &k)) != 1) return (-1);
 	if (k < 0 || k > 59) return (-1);
 	(*t) += GMT_MIN2SEC_I * k;	/* Now add in minutes (in secs) */
 	
@@ -1094,7 +1098,8 @@ GMT_LONG	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 	present then <year>, <j>, <k> are (proleptic
 	gregorian) year, month, day of month.  */
 
-	GMT_LONG	i, j, k, itemp1, itemp2=1, itemp3=1, is_iso=0;
+	//GMT_LONG	i, j, k, itemp1, itemp2=1, itemp3=1, is_iso=0;
+	int	i, j, k, itemp1, itemp2=1, itemp3=1, is_iso=0;
 	char	*cj, *ck = CNULL;
 	
 	/* A period or comma would be wrong for this format:  */
@@ -1115,7 +1120,8 @@ GMT_LONG	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 		s[k-(i+j)] = '\0';
 	}
 	
-	if ( (sscanf (s, "%ld", &itemp1) ) != 1) return (-1);
+	//if ( (sscanf (s, "%ld", &itemp1) ) != 1) return (-1);
+	if ( (sscanf (s, "%d", &itemp1) ) != 1) return (-1);
 	
 	/* A null value of cj is not an error.  We might have
 		had "1985T" passed to a function and it might
@@ -1138,7 +1144,8 @@ GMT_LONG	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 			k = strlen (cj);
 			cj[k-j] = '\0';
 		}
-		if ( (sscanf (cj, "%ld", &itemp2) ) != 1) return (-1);
+		//if ( (sscanf (cj, "%ld", &itemp2) ) != 1) return (-1);
+		if ( (sscanf (cj, "%d", &itemp2) ) != 1) return (-1);
 		if (itemp2 < 1) return (-1);
 		if (is_iso) {
 			if (itemp2 > 53) return (-1);
@@ -1148,7 +1155,8 @@ GMT_LONG	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 		}
 		if (ck) {
 			/* Read it, skipping the leading hyphen.  */
-			if ( (sscanf (&ck[1], "%ld", &itemp3) ) != 1) return (-1);
+			//if ( (sscanf (&ck[1], "%ld", &itemp3) ) != 1) return (-1);
+			if ( (sscanf (&ck[1], "%d", &itemp3) ) != 1) return (-1);
 			if (itemp3 < 1) return (-1);
 			if (is_iso) {
 				if (itemp3 > 7) return (-1);

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.208 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_io.c,v 1.209 2010-03-23 19:44:41 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -202,6 +202,8 @@ void GMT_rewind (FILE *stream)
 {
 	rewind (stream);
 }
+
+void GMT_fflush (FILE *stream) { fflush (stream); }
 
 #endif
 
@@ -2218,8 +2220,10 @@ GMT_LONG GMT_parse_f_option (char *arg)
 	/* Routine will decode the -f[i|o]<col>|<colrange>[t|T|g],... arguments */
 
 	char copy[BUFSIZ], p[BUFSIZ], *c;
-	GMT_LONG i, k = 1, start = -1, stop = -1, ic, pos = 0, code, *col = VNULL;
+	//GMT_LONG i, k = 1, start = -1, stop = -1, ic, pos = 0, code, *col = VNULL;
+	GMT_LONG i, k = 1, ic, pos = 0, code, *col = VNULL;
 	GMT_LONG both_i_and_o = FALSE;
+	int start = -1, stop = -1;
 
 	if (arg[0] == 'i')	/* Apply to input columns only */
 		col = GMT_io.in_col_type;
@@ -2247,7 +2251,8 @@ GMT_LONG GMT_parse_f_option (char *arg)
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((c = strchr (p, '-')))	/* Range of columns given. e.g., 7-9T */
-			sscanf (p, "%ld-%ld", &start, &stop);
+			//sscanf (p, "%ld-%ld", &start, &stop);
+			sscanf (p, "%d-%d", &start, &stop);
 		else if (isdigit ((int)p[0]))	/* Just a single column, e.g., 3t */
 			start = stop = atoi (p);
 		else				/* Just assume it goes column by column */
@@ -2327,7 +2332,7 @@ GMT_LONG	GMT_scanf_clock (char *s, double *val)
 	if (k == 0) return (-1);
 	if (hh < 0 || hh > hh_limit) return (-1);
 
-	x = add_noon + 3600*hh;
+	x = (double)(add_noon + 3600*hh);
 	if (k > 1) {
 		if (mm < 0 || mm > 59) return (-1);
 		x += 60*mm;
@@ -2468,8 +2473,10 @@ GMT_LONG	GMT_scanf_geo (char *s, double *val)
 	char	scopy[GMT_TEXT_LEN], suffix, *p, *p2;
 	double	dd, dm, ds;
 	GMT_LONG	retval = GMT_IS_FLOAT;
-	GMT_LONG	k, id, im, ncolons;
+	//GMT_LONG	k, id, im, ncolons;
+	GMT_LONG	k, ncolons;
 	GMT_LONG	negate = FALSE;
+	int	id, im;
 
 	k = strlen(s);
 	if (k == 0) return (GMT_IS_NAN);
@@ -2541,7 +2548,8 @@ GMT_LONG	GMT_scanf_geo (char *s, double *val)
 			if ( (sscanf(scopy, "%lf", &dd) ) != 1) return (GMT_IS_NAN);
 			break;
 		case 1:
-			if ( (sscanf(scopy, "%ld:%lf", &id, &dm) ) != 2) return (GMT_IS_NAN);
+			//if ( (sscanf(scopy, "%ld:%lf", &id, &dm) ) != 2) return (GMT_IS_NAN);
+			if ( (sscanf(scopy, "%d:%lf", &id, &dm) ) != 2) return (GMT_IS_NAN);
 			dd = dm * GMT_MIN2DEG;
 			if (id < 0) {	/* Negative degrees present, subtract the fractional part */
 				dd = id - dd;
@@ -2554,7 +2562,8 @@ GMT_LONG	GMT_scanf_geo (char *s, double *val)
 			}
 			break;
 		case 2:
-			if ( (sscanf(scopy, "%ld:%ld:%lf", &id, &im, &ds) ) != 3) return (GMT_IS_NAN);
+			//if ( (sscanf(scopy, "%ld:%ld:%lf", &id, &im, &ds) ) != 3) return (GMT_IS_NAN);
+			if ( (sscanf(scopy, "%d:%d:%lf", &id, &im, &ds) ) != 3) return (GMT_IS_NAN);
 			dd = im * GMT_MIN2DEG + ds * GMT_SEC2DEG;
 			if (id < 0) {	/* Negative degrees present, subtract the fractional part */
 				dd = id - dd;
@@ -2753,8 +2762,10 @@ GMT_LONG	GMT_scanf_argtime (char *s, double *t)
 
 	double	ss, x;
 	char 	*pw, *pt;
-	GMT_LONG	hh, mm, j, k, i, dash, ival[3];
-	GMT_LONG negate_year = FALSE, got_yd = FALSE;
+	//GMT_LONG	hh, mm, j, k, i, dash, ival[3];
+	//GMT_LONG negate_year = FALSE, got_yd = FALSE;
+	int	hh, mm, j, k, i, dash, ival[3];
+	int negate_year = FALSE, got_yd = FALSE;
 
 	i = strlen(s)-1;
 	if (s[i] == 't') s[i] = '\0';
@@ -2765,7 +2776,9 @@ GMT_LONG	GMT_scanf_argtime (char *s, double *t)
 	}
 	x = 0.0;	/* x will be the seconds since start of today.  */
 	if (pt[1]) {	/* There is a string following the T:  Decode a clock:  */
-		k = sscanf (&pt[1], "%2ld:%2ld:%lf", &hh, &mm, &ss);
+		//k = sscanf (&pt[1], "%2ld:%2ld:%lf", &hh, &mm, &ss);
+		k = sscanf (&pt[1], "%2d:%2d:%lf", &hh, &mm, &ss);
+
 		if (k == 0) return (GMT_IS_NAN);
 		if (hh < 0 || hh >= 24) return (GMT_IS_NAN);
 		x = GMT_HR2SEC_F * hh;
@@ -2800,10 +2813,11 @@ GMT_LONG	GMT_scanf_argtime (char *s, double *t)
 			/* negative years not allowed in ISO calendar  */
 			return (GMT_IS_NAN);
 		}
-		if ( (j = sscanf(&s[k], "%4ld-W%2ld-%1ld", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
+		//if ( (j = sscanf(&s[k], "%4ld-W%2ld-%1ld", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
+		if ( (j = sscanf(&s[k], "%4d-W%2d-%1d", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
 		for (k = j; k < 3; k++) ival[k] = 1;
-		if (GMT_iso_ywd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
-		*t = GMT_rdc2dt ( GMT_rd_from_iywd (ival[0], ival[1], ival[2]), x);
+		if (GMT_iso_ywd_is_bad ((GMT_LONG)ival[0], (GMT_LONG)ival[1], (GMT_LONG)ival[2]) ) return (GMT_IS_NAN);
+		*t = GMT_rdc2dt ( GMT_rd_from_iywd ((GMT_LONG)ival[0], (GMT_LONG)ival[1], (GMT_LONG)ival[2]), x);
 		return (GMT_IS_ABSTIME);
 	}
 
@@ -2813,21 +2827,23 @@ GMT_LONG	GMT_scanf_argtime (char *s, double *t)
 	got_yd = ((i - dash) == 3 && s[k+i] == 'T');		/* Must have a field of 3-characters between - and T to constitute a valid day-of-year format */
 
 	if (got_yd) {	/* Gregorian yyyy-jjj calendar:  */
-		if ( (j = sscanf(&s[k], "%4ld-%3ld", &ival[0], &ival[1]) ) != 2) return (GMT_IS_NAN);
+		//if ( (j = sscanf(&s[k], "%4ld-%3ld", &ival[0], &ival[1]) ) != 2) return (GMT_IS_NAN);
+		if ( (j = sscanf(&s[k], "%4d-%3d", &ival[0], &ival[1]) ) != 2) return (GMT_IS_NAN);
 		ival[2] = 1;
 	}
 	else {	/* Gregorian yyyy-mm-dd calendar:  */
-		if ( (j = sscanf(&s[k], "%4ld-%2ld-%2ld", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
+		//if ( (j = sscanf(&s[k], "%4ld-%2ld-%2ld", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
+		if ( (j = sscanf(&s[k], "%4d-%2d-%2d", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
 		for (k = j; k < 3; k++) ival[k] = 1;
 	}
 	if (negate_year) ival[0] = -ival[0];
 	if (got_yd) {
 		if (ival[1] < 1 || ival[1] > 366)  return (GMT_IS_NAN);	/* Simple range check on day-of-year (1-366) */
-		*t = GMT_rdc2dt (GMT_rd_from_gymd (ival[0], 1, 1) + ival[1] - 1, x);
+		*t = GMT_rdc2dt (GMT_rd_from_gymd ((GMT_LONG)ival[0], 1, 1) + (GMT_LONG)ival[1] - 1, x);
 	}
 	else {
-		if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
-		*t = GMT_rdc2dt (GMT_rd_from_gymd (ival[0], ival[1], ival[2]), x);
+		if (GMT_g_ymd_is_bad ((GMT_LONG)ival[0], (GMT_LONG)ival[1], (GMT_LONG)ival[2]) ) return (GMT_IS_NAN);
+		*t = GMT_rdc2dt (GMT_rd_from_gymd ((GMT_LONG)ival[0], (GMT_LONG)ival[1], (GMT_LONG)ival[2]), x);
 	}
 
 	return (GMT_IS_ABSTIME);
@@ -3091,9 +3107,9 @@ GMT_LONG GMT_parse_segment_item (char *in_string, char *pattern, char *out_strin
 	int i, k;
 	if (!in_string || !pattern) return (FALSE);	/* No string or pattern passed */
 	if (!(t = strstr (in_string, pattern))) return (FALSE);	/* Option not present */
-	if ((i = (GMT_LONG)t - (GMT_LONG)in_string - 1) < 0) return (FALSE);	/* No leading space/tab possible */
+	if ((i = (int)t - (int)in_string - 1) < 0) return (FALSE);	/* No leading space/tab possible */
 	if (!(in_string[i] == ' ' || in_string[i] == '\t')) return (FALSE);	/* No leading space/tab present */
-	i += strlen (pattern) + 1;	/* Position of argument */
+	i += (int)(strlen (pattern) + 1);	/* Position of argument */
 	if (in_string[i] == '\"') {	/* Quoted argument, must find terminal quote */
 		i++;	/* Skip passed first quote */
 		for (k = i; k < (int)strlen (in_string) && in_string[k] != '\"'; k++);	/* Find next quote */
