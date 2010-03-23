@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.446 2010-03-23 19:44:41 jluis Exp $
+ *	$Id: gmt_support.c,v 1.447 2010-03-23 20:20:11 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -395,8 +395,7 @@ void GMT_init_fill (struct GMT_FILL *fill, int r, int g, int b)
 
 GMT_LONG GMT_getfill (char *line, struct GMT_FILL *fill)
 {
-	//GMT_LONG n, end, pos, i, error = 0;
-	int n, end, pos, i, error = 0;
+	int n, end, pos, i, dpi, error = 0;	/* We use ints, not GMT_LONG, to avoid Windows-64 madness */
 	int fb_rgb[3];
 	char f, word[GMT_LONG_TEXT];
 
@@ -407,8 +406,8 @@ GMT_LONG GMT_getfill (char *line, struct GMT_FILL *fill)
 	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 
 	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
-		//n = sscanf (&line[1], "%ld/%s", &fill->dpi, fill->pattern);
-		n = sscanf (&line[1], "%d/%s", &fill->dpi, fill->pattern);
+		n = sscanf (&line[1], "%d/%s", &dpi, fill->pattern);
+		fill->dpi = (GMT_LONG)dpi;
 		if (n != 2) error = 1;
 		for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++) if (fill->pattern[i] == ':') pos = i;
 		if (pos > -1) fill->pattern[pos] = '\0';
@@ -2933,7 +2932,7 @@ GMT_LONG GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 	/* Interpret the contour-label information string and set structure items */
 	GMT_LONG k, j = 0, error = 0;
 	char txt_a[GMT_LONG_TEXT], c, *p;
-	int ti32_a;
+	int ti32_a;	/* To avoid Wind-64 madness */
 
 	L->spacing = FALSE;	/* Turn off the default since we gave an option */
 	strcpy (L->option, &txt[1]);	 /* May need to process L->option later after -R,-J have been set */
@@ -2956,9 +2955,8 @@ GMT_LONG GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			if (txt[1] == '+') L->number_placement = +1, j = 1;	/* Right label if n = 1 */
 		case 'n':	/* Specify number of labels per segment */
 			L->number = TRUE;
-			//k = sscanf (&txt[1+j], "%ld/%s", &L->n_cont, txt_a);
 			k = sscanf (&txt[1+j], "%d/%s", &ti32_a, txt_a);
-			L->n_cont = ti32_a;
+			L->n_cont = (GMT_LONG)ti32_a;
 			if (k == 2) L->min_dist = GMT_convert_units (txt_a, GMT_INCH);
 			if (L->n_cont == 0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c.  Number of labels must exceed zero\n", GMT_program, L->flag);
