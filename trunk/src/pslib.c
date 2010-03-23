@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.226 2010-03-23 00:27:20 jluis Exp $
+ *	$Id: pslib.c,v 1.227 2010-03-23 02:44:41 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1366,7 +1366,7 @@ PSL_LONG ps_plotinit_hires (char *plotfile, PSL_LONG overlay, PSL_LONG mode, dou
 	PSL->internal.p_height = page_size[1];
 	PSL->current.linewidth = -1;	/* Will be changed by ps_setline */
 	PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = -1;	/* Will be changed by ps_setpaint */
-	PSL->current.fill_rgb[0] = PSL->current.fill_rgb[1] = PSL->current.fill_rgb[2] = (int)PSL->current.outline = -2;	/* Will be changed by ps_setfill */
+	PSL->current.fill_rgb[0] = PSL->current.fill_rgb[1] = PSL->current.fill_rgb[2] = PSL->current.outline = -2;	/* Will be changed by ps_setfill */
 	PSL->internal.scale = (double)dpi;	/* Dots pr. unit resolution of output device */
 	PSL->internal.points_pr_unit = 72.0;
 	if (unit == 0) PSL->internal.points_pr_unit /= 2.54;
@@ -3087,7 +3087,7 @@ void ps_words (double x, double y, char **text, PSL_LONG n_words, double line_sp
 			fprintf (PSL->internal.fp, "N\n");
 		if (boxpen_texture) ps_setdash (CNULL, 0);
 		/* Because inside gsave/grestore we must reset PSL->pen and PSL->current.rgb so that they are set next time */
-		PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = (int)PSL->current.linewidth = -1;
+		PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = PSL->current.linewidth = -1;
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End PSL box beneath text block:\n");
 	}
 	/* Adjust origin so 0,0 is lower left corner of first character on baseline */

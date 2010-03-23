@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.435 2010-03-23 00:01:01 jluis Exp $
+ *	$Id: gmt_init.c,v 1.436 2010-03-23 02:44:41 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1032,7 +1032,7 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 	switch (opt) {
 		case '\0':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option - given more than once\n", GMT_program);
-			processed[opt] = (char)GMT->common->synopsis.active = TRUE;
+			processed[opt] = GMT->common->synopsis.active = TRUE;
 			GMT_give_synopsis_and_exit = TRUE;
 			break;
 
@@ -1086,17 +1086,17 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			break;
 		case 'K':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -K given more than once\n", GMT_program);
-			processed[opt] = (char)GMT->common->K.active = TRUE;
+			processed[opt] = GMT->common->K.active = TRUE;
 			GMT_ps.last_page = FALSE;
 			break;
 		case 'O':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -O given more than once\n", GMT_program);
-			processed[opt] = (char)GMT->common->O.active = TRUE;
+			processed[opt] = GMT->common->O.active = TRUE;
 			GMT_ps.overlay = TRUE;
 			break;
 		case 'P':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -P given more than once\n", GMT_program);
-			processed[opt] = (char)GMT->common->P.active = TRUE;
+			processed[opt] = GMT->common->P.active = TRUE;
 			GMT_ps.portrait = TRUE;
 			break;
 		case 'R':
@@ -1125,7 +1125,7 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			break;
 		case 'V':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -V given more than once\n", GMT_program);
-			processed[opt] = (char)GMT->common->V.active = TRUE;
+			processed[opt] = GMT->common->V.active = TRUE;
 			gmtdefs.verbose = (item[2] == 'l') ? 2 : TRUE;	/* -Vl is long verbose */
 			GMT_ps.verbose = TRUE;
 			break;
@@ -1202,7 +1202,7 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			}
 			break;
 		case 'b':	/* Binary i/o */
-			processed[opt] = (char)GMT->common->b.active = TRUE;
+			processed[opt] = GMT->common->b.active = TRUE;
 			i = GMT_parse_b_option (&item[2]);
 			if (i) GMT_syntax ('b');
 			error += i;
