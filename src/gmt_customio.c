@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_customio.c,v 1.90 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_customio.c,v 1.91 2010-03-23 00:13:13 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -469,8 +469,8 @@ GMT_LONG GMT_ras_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 	if (piping) {	/* Skip data by reading it */
 		for (j = last_row + 1; j < header->ny; j++) if (GMT_fread ((void *) tmp, sizeof (unsigned char), (size_t)n2, fp) < (size_t)n2) return (GMT_GRDIO_READ_FAILED);
 	}
-	header->nx = width_in;
-	header->ny = height_in;
+	header->nx = (int)width_in;
+	header->ny = (int)height_in;
 	header->x_min = w;
 	header->x_max = e;
 	header->y_min = s;
@@ -591,28 +591,28 @@ GMT_LONG GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 
 		switch (i) {
 			case 0:
-				h->magic = value;
+				h->magic = (int)value;
 				break;
 			case 1:
-				h->width = value;
+				h->width = (int)value;
 				break;
 			case 2:
-				h->height = value;
+				h->height = (int)value;
 				break;
 			case 3:
-				h->depth = value;
+				h->depth = (int)value;
 				break;
 			case 4:
-				h->length = value;
+				h->length = (int)value;
 				break;
 			case 5:
-				h->type = value;
+				h->type = (int)value;
 				break;
 			case 6:
-				h->maptype = value;
+				h->maptype = (int)value;
 				break;
 			case 7:
-				h->maplength = value;
+				h->maplength = (int)value;
 				break;
 		}
 	}
@@ -708,7 +708,7 @@ GMT_LONG GMT_is_native_grid (struct GRD_HEADER *header)
 	if (t_head.nx <= 0 || t_head.ny <= 0) return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */
 	nm = ((GMT_LONG)t_head.nx) * ((GMT_LONG)t_head.ny);
 	if (nm <= 0) return (GMT_GRDIO_BAD_VAL);		/* Overflow for nx * ny? */
-	item_size = (buf.st_size - GRD_HEADER_SIZE) / nm;	/* Estimate size of elements */
+	item_size = (double)((buf.st_size - GRD_HEADER_SIZE) / nm);	/* Estimate size of elements */
 	size = irint (item_size);
 	if (!GMT_IS_ZERO(item_size - (double)size)) return (GMT_GRDIO_BAD_VAL);	/* Size not an integer */
 	
@@ -813,8 +813,8 @@ GMT_LONG GMT_bit_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 		for (j = last_row + 1; j < header->ny; j++) if (GMT_fread ((void *) tmp, sizeof (unsigned int), (size_t)mx, fp) < (size_t)mx) return (GMT_GRDIO_READ_FAILED);
 	}
 
-	header->nx = width_in;
-	header->ny = height_in;
+	header->nx = (int)width_in;
+	header->ny = (int)height_in;
 	header->x_min = w;
 	header->x_max = e;
 	header->y_min = s;
@@ -1125,8 +1125,8 @@ GMT_LONG GMT_native_read_grd (struct GRD_HEADER *header, float *grid, double w, 
 		for (j = last_row + 1; j < header->ny; j++) if (GMT_fread (tmp, (size_t)size, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 	}
 
-	header->nx = width_in;
-	header->ny = height_in;
+	header->nx = (int)width_in;
+	header->ny = (int)height_in;
 	header->x_min = w;
 	header->x_max = e;
 	header->y_min = s;
@@ -1621,8 +1621,8 @@ GMT_LONG GMT_srf_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 		for (j = last_row + 1; j < header->ny; j++) if (GMT_fread (tmp, size, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
 	}
 
-	header->nx = width_in;
-	header->ny = height_in;
+	header->nx = (int)width_in;
+	header->ny = (int)height_in;
 	header->x_min = w;
 	header->x_max = e;
 	header->y_min = s;
