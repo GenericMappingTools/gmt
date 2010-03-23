@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.228 2010-03-23 17:09:32 jluis Exp $
+ *	$Id: pslib.c,v 1.229 2010-03-23 23:33:20 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -130,8 +130,185 @@
  *
  */
 
-#include "pslib_inc.h"
+/*  PSL is POSIX COMPLIANT  */
+
+#define _POSIX_SOURCE 1
+
+/*--------------------------------------------------------------------
+ *			SYSTEM HEADER FILES
+ *--------------------------------------------------------------------*/
+
+#include <ctype.h>
+#include <float.h>
+#include <limits.h>
+#include <math.h>
+#include <stddef.h>
+#ifdef __MACHTEN__
+/* Kludge to fix a Machten POSIX bug */
+#include <sys/types.h>
+#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include "pslib.h"
+#include "gmt_notunix.h"
+#include "gmt_math.h"
+
+#ifndef WIN32
+#include <unistd.h>
+#endif
+
+/*--------------------------------------------------------------------
+ *		     STANDARD CONSTANTS MACRO DEFINITIONS
+ *--------------------------------------------------------------------*/
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
+#ifndef M_PI
+#define M_PI            3.14159265358979323846
+#endif
+#ifndef R2D
+#define R2D (180.0/M_PI)
+#endif
+#ifndef D2R
+#define D2R (M_PI/180.0)
+#endif
+#ifndef M_SQRT2
+#define M_SQRT2         1.41421356237309504880
+#endif
+#define VNULL		((void *)NULL)
+#ifndef CNULL
+#define CNULL (char *)NULL
+#endif
+#ifndef MIN
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#endif
+#ifndef MAX
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#endif
+#ifndef irint
+#define irint(x) ((int)rint(x))
+#endif
+
+/*--------------------------------------------------------------------
+ *			PSL CONSTANTS MACRO DEFINITIONS
+ *--------------------------------------------------------------------*/
+
+#define PSL_Version		"4.2"
+#define PSL_SMALL		1.0e-10
+#define PSL_MAX_L1_PATH		1000 	/* Max path length in Level 1 implementations */
+#define PSL_INV_255		(1.0 / 255.0)
+#define PSL_N_PATTERNS		91	/* Current number of predefined patterns + 1, # 91 is user-supplied */
+#define PSL_PAGE_HEIGHT_IN_PTS	842	/* A4 height */
+#define PSL_RGB			0
+#define PSL_CMYK		1
+#define PSL_HSV			2
+#define PSL_GRAY		3
+#define PS_LANGUAGE_LEVEL	2
+
+/*--------------------------------------------------------------------
+ *			PSL FUNCTION MACRO DEFINITIONS
+ *--------------------------------------------------------------------*/
+
+#define PSL_YIQ(rgb) irint (0.299 * (rgb[0]) + 0.587 * (rgb[1]) + 0.114 * (rgb[2]))	/* How B/W TV's convert RGB to Gray */
+#define PSL_iscolor(rgb) (rgb[0] != rgb[1] || rgb[1] != rgb[2])
+
+#if defined(__LP64__)
+#define PSL_abs(n) labs(n)
+#elif defined(_WIN64)
+#define PSL_abs(n) _abs64(n)
+#else
+#define PSL_abs(n) abs(n)
+#endif
+
+/*--------------------------------------------------------------------
+ *			PSL PARAMETERS DEFINITIONS
+ *--------------------------------------------------------------------*/
+
+/* Single, global structure used internally by pslib */
+
+struct PSL {
+	struct INIT {	/* Parameters set by user via ps_plotinit() */
+		char *file;			/* Name of output file (NULL means stdout)	*/
+		char *encoding;			/* The encoding name. e.g. ISO-8859-1		*/
+		PSL_LONG overlay;		/* TRUE skips writing the PS header section	*/
+		PSL_LONG mode;			/* 32 bit-flags, used as follows:
+			bit 0 : 0 = Landscape, 1 = Portrait,
+			bit 1 : 0 = be silent, 1 = be verbose
+			bit 2 : 0 = bin image, 1 = hex image
+			bit 3 : 0 = rel positions, 1 = abs positions
+			bit 9-10 : 0 = RGB color, 1 = CMYK color, 2 = HSV color
+			bits 12-13 : 0 = no compression, 1 = RLE compression, 2 = LZW compression
+			bits 14-15 : (0,1,2) sets the line cap setting
+			bits 16-17 : (0,1,2) sets the line miter setting
+			bits 18-25 : (8 bits) sets the miter limit
+			bit 31 : 0 = write no comments, 1 = write PS comments to PS file	*/
+		PSL_LONG unit;			/* 0 = cm, 1 = inch, 2 = meter			*/
+		PSL_LONG copies;			/* Number of copies for this plot		*/
+		int page_rgb[3];		/* RGB color for background paper [white]	*/
+		double page_size[2];		/* Width and height of paper used in points	*/
+		PSL_LONG dpi;			/* Selected dots per inch			*/
+		double magnify[2];		/* Global scale values [1/1]			*/
+		double origin[2];		/* Origin offset [1/1]				*/
+		struct EPS *eps;		/* structure with Document info			*/
+	} init;
+	struct CURRENT {	/* Variables and settings that changes via ps_* calls */
+		char texture[512];		/* Current setdash pattern			*/
+		char bw_format[8];		/* Format used for grayshade value		*/
+		char rgb_format[64];		/* Same, for RGB color triplets			*/
+		char hsv_format[64];		/* Same, for HSV color triplets	(HSB in PS)	*/
+		char cmyk_format[64];		/* Same, for CMYK color quadruples		*/
+		PSL_LONG font_no;		/* Current font number				*/
+		PSL_LONG linewidth;		/* Current pen thickness			*/
+		int rgb[3];			/* Current paint				*/
+		int fill_rgb[3];		/* Current fill					*/
+		PSL_LONG outline;		/* Current outline				*/
+		PSL_LONG offset;			/* Current setdash offset			*/
+	} current;
+	struct INTERNAL {	/* Variables used internally only */
+		char *SHAREDIR;			/* Pointer to path of directory with pslib subdirectory */
+		char *USERDIR;			/* Pointer to path of directory with user definitions (~/.gmt) */
+		char *user_image[PSL_N_PATTERNS];	/* Name of user patterns		*/
+		PSL_LONG verbose;		/* TRUE for verbose output, FALSE remains quiet	*/
+		PSL_LONG comments;		/* TRUE for writing comments to output, FALSE strips all comments */
+		PSL_LONG landscape;		/* TRUE = Landscape, FALSE = Portrait		*/
+		PSL_LONG text_init;		/* TRUE after PSL_text.ps has been loaded	*/
+		PSL_LONG ascii;			/* TRUE writes images in ascii, FALSE uses binary	*/
+		PSL_LONG absolute;		/* TRUE will reset origin, FALSE means relative position	*/
+		PSL_LONG eps_format;		/* TRUE makes EPS file, FALSE means PS file	*/
+		PSL_LONG N_FONTS;		/* Total no of fonts;  To add more, modify the file CUSTOM_font_info.d */
+		PSL_LONG compress;		/* Compresses images with (1) RLE or (2) LZW or (0) None */
+		PSL_LONG color_mode;		/* 0 = rgb, 1 = cmyk, 2 = hsv (only 1-2 for images)	*/
+		PSL_LONG line_cap;		/* 0, 1, or 2 for butt, round, or square [butt] */
+		PSL_LONG line_join;		/* 0, 1, or 2 for miter, arc, or bevel [miter] */
+		PSL_LONG miter_limit;		/* Acute angle threshold 0-180; 0 means PS default [0] */
+		double bb[4];			/* Boundingbox arguments			*/
+		PSL_LONG ix, iy;			/* Absolute coordinates of last point		*/
+		double p_width;			/* Paper width in points, set in plotinit();	*/
+		double p_height;		/* Paper height in points, set in plotinit();	*/
+		PSL_LONG length;			/* Image row output byte counter		*/
+		PSL_LONG n_userimages;		/* Number of specified custom patterns		*/
+		double scale;			/* Must be set through plotinit();		*/
+		double points_pr_unit;		/* # of points pr measure unit (e.g., 72/inch	*/
+		FILE *fp;			/* PS output file pointer. NULL = stdout	*/
+		struct PSL_FONT {
+			char *name;		/* Name of this font */
+			double height;		/* Height of A for unit fontsize */
+			PSL_LONG encoded;	/* TRUE if we never should reencode this font (e.g. symbols) */
+						/* This is also changed to TRUE after we do reencode a font */
+		} *font;	/* Pointer to array of font structures 		*/
+		struct PSL_PATTERN {
+			PSL_LONG nx, ny;
+			PSL_LONG status, depth, dpi;
+			int f_rgb[3], b_rgb[3];
+		} pattern[PSL_N_PATTERNS*2];
+	} internal;
+} *PSL;
 
 /* Special macros and structure for ps_words */
 
@@ -4321,15 +4498,13 @@ void *ps_memory (void *prev_addr, PSL_LONG nelem, size_t size)
 
 	if (prev_addr) {
 		if ((tmp = realloc ((void *) prev_addr, (size_t)(nelem * size))) == VNULL) {
-			fprintf (stderr, "PSL Fatal Error: Could not reallocate more memory, n = ");
-			PRINT_SIZE_T (stderr, nelem);	fprintf (stderr, "\n");
+			fprintf (stderr, "PSL Fatal Error: Could not reallocate more memory, n = %ld\n", nelem);
 			PS_exit (EXIT_FAILURE);
 		}
 	}
 	else {
 		if ((tmp = calloc ((size_t) nelem, size)) == VNULL) {
-			fprintf (stderr, "PSL Fatal Error: Could not allocate memory, n = ");
-			PRINT_SIZE_T (stderr, nelem);	fprintf (stderr, "\n");
+			fprintf (stderr, "PSL Fatal Error: Could not allocate memory, n = %ld\n", nelem);
 			PS_exit (EXIT_FAILURE);
 		}
 	}
