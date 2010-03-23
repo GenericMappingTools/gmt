@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.434 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_init.c,v 1.435 2010-03-23 00:01:01 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1032,7 +1032,7 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 	switch (opt) {
 		case '\0':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option - given more than once\n", GMT_program);
-			processed[opt] = GMT->common->synopsis.active = TRUE;
+			processed[opt] = (char)GMT->common->synopsis.active = TRUE;
 			GMT_give_synopsis_and_exit = TRUE;
 			break;
 
@@ -1086,17 +1086,17 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			break;
 		case 'K':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -K given more than once\n", GMT_program);
-			processed[opt] = GMT->common->K.active = TRUE;
+			processed[opt] = (char)GMT->common->K.active = TRUE;
 			GMT_ps.last_page = FALSE;
 			break;
 		case 'O':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -O given more than once\n", GMT_program);
-			processed[opt] = GMT->common->O.active = TRUE;
+			processed[opt] = (char)GMT->common->O.active = TRUE;
 			GMT_ps.overlay = TRUE;
 			break;
 		case 'P':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -P given more than once\n", GMT_program);
-			processed[opt] = GMT->common->P.active = TRUE;
+			processed[opt] = (char)GMT->common->P.active = TRUE;
 			GMT_ps.portrait = TRUE;
 			break;
 		case 'R':
@@ -1125,7 +1125,7 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			break;
 		case 'V':
 			if (processed[opt]) fprintf (stderr, "%s: Warning: Option -V given more than once\n", GMT_program);
-			processed[opt] = GMT->common->V.active = TRUE;
+			processed[opt] = (char)GMT->common->V.active = TRUE;
 			gmtdefs.verbose = (item[2] == 'l') ? 2 : TRUE;	/* -Vl is long verbose */
 			GMT_ps.verbose = TRUE;
 			break;
@@ -1202,7 +1202,7 @@ GMT_LONG GMT_parse_common_options (char *item, double *w, double *e, double *s, 
 			}
 			break;
 		case 'b':	/* Binary i/o */
-			processed[opt] = GMT->common->b.active = TRUE;
+			processed[opt] = (char)GMT->common->b.active = TRUE;
 			i = GMT_parse_b_option (&item[2]);
 			if (i) GMT_syntax ('b');
 			error += i;
@@ -1441,16 +1441,16 @@ GMT_LONG GMT_parse_t_option (char *item) {
 	switch (item[2]) {
 		case 'i':	/* Toggle on input data only */
 			gmtdefs.xy_toggle[GMT_IN] = TRUE;
-			i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
+			l_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
 			break;
 		case 'o':	/* Toggle on output data only */
 			gmtdefs.xy_toggle[GMT_OUT] = TRUE;
-			i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
+			l_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
 			break;
 		case '\0':	/* Toggle both input and output data */
 			gmtdefs.xy_toggle[GMT_IN] = gmtdefs.xy_toggle[GMT_OUT] = TRUE;
-			i_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
-			i_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
+			l_swap (GMT_io.in_col_type[0], GMT_io.in_col_type[1]);
+			l_swap (GMT_io.out_col_type[0], GMT_io.out_col_type[1]);
 			break;
 		default:
 			GMT_syntax (':');
@@ -3506,7 +3506,7 @@ GMT_LONG GMT_begin (int argc, char **argv)
 		else
 			j++;
 	}
-	argc = j;
+	argc = (int)j;
 
 	GMT_getdefaults (this);
 
@@ -3526,7 +3526,7 @@ GMT_LONG GMT_begin (int argc, char **argv)
 		else
 			argv[j++] = argv[i];
 	}
-	argc = j;
+	argc = (int)j;
 	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
 	if (n) fprintf (stderr, "%s:  %ld conversion errors from command-line default override settings!\n", GMT_program, n);
 
@@ -3627,7 +3627,7 @@ GMT_LONG GMT_short_begin (int argc, char **argv) {
 		else
 			j++;
 	}
-	argc = j;
+	argc = (int)j;
 
 	GMT_getdefaults (this);
 
@@ -3647,7 +3647,7 @@ GMT_LONG GMT_short_begin (int argc, char **argv) {
 		else
 			argv[j++] = argv[i];
 	}
-	argc = j;
+	argc = (int)j;
 	GMT_free_hash (keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
 
 	GMT_init_ellipsoid ();	/* Set parameters depending on the ellipsoid */
@@ -4584,7 +4584,7 @@ GMT_LONG GMT_parse_B_option (char *in) {
 	if (!frame_info.plot) {	/* First time we initialize stuff */
 		for (i = 0; i < 3; i++) {
 			memset ((void *)&frame_info.axis[i], 0, sizeof (struct GMT_PLOT_AXIS));
-			frame_info.axis[i].id = i;
+			frame_info.axis[i].id = (int)i;
 			for (j = 0; j < 8; j++) {
 				frame_info.axis[i].item[j].parent = i;
 				frame_info.axis[i].item[j].id = j;

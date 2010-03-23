@@ -1,4 +1,4 @@
-/*      $Id: gmt_agc_io.c,v 1.24 2010-03-22 18:55:44 guru Exp $
+/*      $Id: gmt_agc_io.c,v 1.25 2010-03-23 00:03:52 jluis Exp $
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -208,8 +208,8 @@ GMT_LONG GMT_agc_read_grd (struct GRD_HEADER *header, float *grid, double w, dou
 		}
 	}
 
-	header->nx = width_in;
-	header->ny = height_in;
+	header->nx = (int)width_in;
+	header->ny = (int)height_in;
 	header->x_min = w;
 	header->x_max = e;
 	header->y_min = s;
