@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.225 2010-03-22 19:17:37 guru Exp $
+ *	$Id: pslib.c,v 1.226 2010-03-23 00:27:20 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1032,7 +1032,7 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 	fprintf (PSL->internal.fp, "countdictstack\nmark\n/showpage {} def\n");
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Start of imported EPS file\n");
 	fprintf (PSL->internal.fp, "%%%%BeginDocument: psimage.eps\n");
-	unused = fwrite (buffer, (size_t)1, (size_t)size, PSL->internal.fp);
+	unused = (int)fwrite (buffer, (size_t)1, (size_t)size, PSL->internal.fp);
 	fprintf (PSL->internal.fp, "%%%%EndDocument\n");
 	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of imported EPS file\n");
 	fprintf (PSL->internal.fp, "cleartomark\ncountdictstack exch sub { end } repeat\ngrestore\n");
@@ -1366,7 +1366,7 @@ PSL_LONG ps_plotinit_hires (char *plotfile, PSL_LONG overlay, PSL_LONG mode, dou
 	PSL->internal.p_height = page_size[1];
 	PSL->current.linewidth = -1;	/* Will be changed by ps_setline */
 	PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = -1;	/* Will be changed by ps_setpaint */
-	PSL->current.fill_rgb[0] = PSL->current.fill_rgb[1] = PSL->current.fill_rgb[2] = PSL->current.outline = -2;	/* Will be changed by ps_setfill */
+	PSL->current.fill_rgb[0] = PSL->current.fill_rgb[1] = PSL->current.fill_rgb[2] = (int)PSL->current.outline = -2;	/* Will be changed by ps_setfill */
 	PSL->internal.scale = (double)dpi;	/* Dots pr. unit resolution of output device */
 	PSL->internal.points_pr_unit = 72.0;
 	if (unit == 0) PSL->internal.points_pr_unit /= 2.54;
@@ -2806,7 +2806,7 @@ void ps_words (double x, double y, char **text, PSL_LONG n_words, double line_sp
 	for (i = 0; i < (PSL_LONG)n_items; i++) {
 		color = (word[i]->rgb[0] << 16) + (word[i]->rgb[1] << 8) + word[i]->rgb[2];
 		for (j = 0, found = -1; found < 0 && j < n_rgb_unique; j++) if (color == rgb_unique[j]) found = j;
-		word[i]->rgb[0] = found;
+		word[i]->rgb[0] = (int)found;
 	}
 
 	/* Determine list of unique fonts */
@@ -3087,7 +3087,7 @@ void ps_words (double x, double y, char **text, PSL_LONG n_words, double line_sp
 			fprintf (PSL->internal.fp, "N\n");
 		if (boxpen_texture) ps_setdash (CNULL, 0);
 		/* Because inside gsave/grestore we must reset PSL->pen and PSL->current.rgb so that they are set next time */
-		PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = PSL->current.linewidth = -1;
+		PSL->current.rgb[0] = PSL->current.rgb[1] = PSL->current.rgb[2] = (int)PSL->current.linewidth = -1;
 		if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End PSL box beneath text block:\n");
 	}
 	/* Adjust origin so 0,0 is lower left corner of first character on baseline */
@@ -3404,14 +3404,14 @@ unsigned char *ps_load_eps (FILE *fp, struct imageinfo *h)
 {
 	/* ps_load_eps reads an Encapsulated PostScript file */
 
-	PSL_LONG n, p, llx, lly, trx, try, BLOCKSIZE=4096;
+	PSL_LONG n, p, llx, lly, trx, try_, BLOCKSIZE=4096;
 	unsigned char *buffer;
 
-	llx=0; lly=0; trx=720; try=720;
+	llx=0; lly=0; trx=720; try_=720;
 
 	/* Scan for BoundingBox */
 
-	ps_get_boundingbox (fp, &llx, &lly, &trx, &try);
+	ps_get_boundingbox (fp, &llx, &lly, &trx, &try_);
 
 	/* Rewind and load into buffer */
 
@@ -3427,15 +3427,15 @@ unsigned char *ps_load_eps (FILE *fp, struct imageinfo *h)
 
 	/* Fill header struct with appropriate values */
 	h->magic = EPS_MAGIC;
-	h->width = trx - llx;
-	h->height = try - lly;
+	h->width = (int)(trx - llx);
+	h->height = (int)(try_ - lly);
 	h->depth = 0;
-	h->length = n;
+	h->length = (int)n;
 	h->type = 4;
 	h->maptype = RMT_NONE;
 	h->maplength = 0;
-	h->xorigin = llx;
-	h->yorigin = lly;
+	h->xorigin = (int)llx;
+	h->yorigin = (int)lly;
 
 	return (buffer);
 }
@@ -3662,28 +3662,28 @@ PSL_LONG ps_read_rasheader (FILE *fp, struct imageinfo *h, PSL_LONG i0, PSL_LONG
 
 		switch (i) {
 			case 0:
-				h->magic = value;
+				h->magic = (int)value;
 				break;
 			case 1:
-				h->width = value;
+				h->width = (int)value;
 				break;
 			case 2:
-				h->height = value;
+				h->height = (int)value;
 				break;
 			case 3:
-				h->depth = value;
+				h->depth = (int)value;
 				break;
 			case 4:
-				h->length = value;
+				h->length = (int)value;
 				break;
 			case 5:
-				h->type = value;
+				h->type = (int)value;
 				break;
 			case 6:
-				h->maptype = value;
+				h->maptype = (int)value;
 				break;
 			case 7:
-				h->maplength = value;
+				h->maplength = (int)value;
 				break;
 		}
 	}
@@ -4143,13 +4143,13 @@ byte_stream_t ps_lzw_putcode (byte_stream_t stream, short int incode)
 	bit_buffer |= (size_t) incode << (32 - stream->depth - bit_count);
 	bit_count += stream->depth;
 	while (bit_count >= 8) {
-		stream->buffer[stream->nbytes] = bit_buffer >> 24;
+		stream->buffer[stream->nbytes] = (unsigned char)(bit_buffer >> 24);
 		stream->nbytes++;
 		bit_buffer <<= 8;
 		bit_count -= 8;
 	}
 	if (incode == eod) {	/* Flush buffer */
-		stream->buffer[stream->nbytes] = bit_buffer >> 24;
+		stream->buffer[stream->nbytes] = (unsigned char)(bit_buffer >> 24);
 		stream->nbytes++;
 		bit_buffer = 0;
 		bit_count = 0;
