@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.438 2010-03-23 20:20:10 guru Exp $
+ *	$Id: gmt_init.c,v 1.439 2010-03-23 21:15:00 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1837,7 +1837,7 @@ void GMT_backwards_compatibility () {
 GMT_LONG GMT_setparameter (char *keyword, char *value)
 {
 	GMT_LONG i, ival, case_val, pos;
-	int rgb[3], ti32_a, ti32_b;	/* We use 4-byte ints, not GMT_LONG, to avoid Windows-64 madness */
+	int rgb[3];	/* We use 4-byte ints, not GMT_LONG, to avoid Windows-64 madness */
 	GMT_LONG manual, eps, error = FALSE;
 	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], lower_value[BUFSIZ];
 	double dval;
@@ -2486,8 +2486,11 @@ GMT_LONG GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
 			if (value[0] == '+' || value[0] == '-') {	/* OK, gave +<n>u or -<n>u, check for unit */
-				sscanf (&lower_value[1], "%d%c", &ti32_a, &GMT_truncate_time.T.unit);
-				GMT_truncate_time.T.step = (GMT_LONG)ti32_a;
+#ifdef _WIN64
+				sscanf (&lower_value[1], "%d%c", &GMT_truncate_time.T.step, &GMT_truncate_time.T.unit);
+#else
+				sscanf (&lower_value[1], "%ld%c", &GMT_truncate_time.T.step, &GMT_truncate_time.T.unit);
+#endif
 				switch (GMT_truncate_time.T.unit) {
 					case 'y':
 					case 'o':
@@ -2605,8 +2608,11 @@ GMT_LONG GMT_setparameter (char *keyword, char *value)
 			error = true_false_or_error (lower_value, &gmtdefs.history);
 			break;
 		case GMTCASE_TRANSPARENCY:
-			i = sscanf (value, "%d/%d", &ti32_a, &ti32_b);
-			gmtdefs.transparency[0] = (GMT_LONG)ti32_a;	gmtdefs.transparency[1] = (GMT_LONG)ti32_b;
+#ifdef _WIN64
+			i = sscanf (value, "%d/%d", &gmtdefs.transparency[0], &gmtdefs.transparency[1]);
+#else
+			i = sscanf (value, "%ld/%ld", &gmtdefs.transparency[0], &gmtdefs.transparency[1]);
+#endif
 			if (i == 1)
 				gmtdefs.transparency[1] = gmtdefs.transparency[0];
 			else if (i != 2)
@@ -3133,7 +3139,6 @@ GMT_LONG GMT_get_ellipsoid (char *name)
 	FILE *fp;
 	char line[BUFSIZ], path[BUFSIZ];
 	double slop, pol_radius;
-	int ti32_a;
 
 	/* Try to ge ellipsoid from the default list */
 
@@ -3171,8 +3176,11 @@ GMT_LONG GMT_get_ellipsoid (char *name)
 		i = GMT_N_ELLIPSOIDS - 1;
 		while (fgets (line, BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));
 		fclose (fp);
-		n = sscanf (line, "%s %d %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name, &ti32_a, &gmtdefs.ref_ellipsoid[i].eq_radius, &pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
-		gmtdefs.ref_ellipsoid[i].date = (GMT_LONG)ti32_a;
+#ifdef _WIN64
+		n = sscanf (line, "%s %d %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name, &gmtdefs.ref_ellipsoid[i].date, &gmtdefs.ref_ellipsoid[i].eq_radius, &pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
+#else
+		n = sscanf (line, "%s %ld %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name, &gmtdefs.ref_ellipsoid[i].date, &gmtdefs.ref_ellipsoid[i].eq_radius, &pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
+#endif
 		if (n != 5) {
 			fprintf (stderr, "GMT: Error decoding user ellipsoid parameters (%s)\n", line);
 			GMT_exit (EXIT_FAILURE);
