@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.31 2010-01-05 01:15:45 guru Exp $
+ *	$Id: gmt_notunix.h,v 1.32 2010-03-23 23:35:07 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -114,9 +114,6 @@
 #define STAT _stat
 
 typedef int mode_t;		/* mode_t not defined under Windows; assumed a signed 4-byte integer */
-#ifdef _WIN64
-typedef __int64 GMT_LONG;		/* A signed 8-byte integer; otherwise set in gmt.h */
-#endif
 
 /* WIN32 versus _WIN32:
  *

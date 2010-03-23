@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.195 2010-03-22 18:55:43 guru Exp $
+ *	$Id: gmt.h,v 1.196 2010-03-23 23:35:07 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -247,21 +247,6 @@ extern "C" {
 	(((data) << 24) | (((data) << 8) & 0x00ff0000) | \
 	(((data) >> 8) & 0x0000ff00) | ((unsigned int)(data) >> 24))
 
-/* Macro for printing the value of size_t */
-
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-/*
- * This is a C99 compiler, so it supports %zu; no need to cast.
- */
-#define PRINT_SIZE_T(fp,u) fprintf(fp, "%zu", u)
-#else
-/*
- * This is not a C99 compiler; assume size_t is no bigger than
- * unsigned long.
- */
-#define PRINT_SIZE_T(fp,u) fprintf(fp, "%lu", (unsigned long)u)
-#endif
-
 /* Macro for exit since this should be returned when called from Matlab */
 
 #ifdef DO_NOT_EXIT
@@ -274,8 +259,12 @@ extern "C" {
  *			GMT TYPEDEF DEFINITIONS
  *--------------------------------------------------------------------*/
 
-#ifndef _WIN64
+#ifdef _WIN64
+typedef __int64 GMT_LONG;	/* A signed 8-byte integer */
+#define GMT_LONG_MODIFIER "ll"
+#else
 typedef long GMT_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
+#define GMT_LONG_MODIFIER "l"
 #endif
 typedef void (*PFV) ();		/* PFV declares a pointer to a function returning void */
 typedef GMT_LONG (*PFL) ();	/* PFI declares a pointer to a function returning an GMT_LONG */
