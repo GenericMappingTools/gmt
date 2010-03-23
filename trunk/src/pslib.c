@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.227 2010-03-23 02:44:41 guru Exp $
+ *	$Id: pslib.c,v 1.228 2010-03-23 17:09:32 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -214,7 +214,7 @@ void ps_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned
 void ps_colorimage_cmap (double x, double y, double xsize, double ysize, indexed_image_t image, PSL_LONG nx, PSL_LONG ny, PSL_LONG nbits);
 unsigned char *ps_load_raster (FILE *fp, struct imageinfo *header);
 unsigned char *ps_load_eps (FILE *fp, struct imageinfo *header);
-PSL_LONG ps_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *trx, PSL_LONG *try);
+PSL_LONG ps_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *trx, PSL_LONG *try_);
 char *ps_getsharepath (const char *subdir, const char *stem, const char *suffix, char *path);
 PSL_LONG ps_pattern (PSL_LONG image_no, char *imagefile, PSL_LONG invert, PSL_LONG image_dpi, PSL_LONG outline, int f_rgb[], int b_rgb[]);
 void get_origin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2);
@@ -4654,7 +4654,7 @@ PSL_LONG ps_bitreduce (unsigned char *buffer, PSL_LONG nx, PSL_LONG ny, PSL_LONG
 	return (nbits);
 }
 
-PSL_LONG ps_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *trx, PSL_LONG *try)
+PSL_LONG ps_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *trx, PSL_LONG *try_)
 {
 	PSL_LONG nested;
 	char buf[BUFSIZ];
@@ -4663,7 +4663,7 @@ PSL_LONG ps_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *t
 	while (fgets(buf, BUFSIZ, fp) != NULL) {
 		if (!nested && !strncmp(buf, "%%BoundingBox:", (size_t)14)) {
 			if (!strstr(buf, "(atend)")) {
-				if (sscanf(strchr(buf, ':') + 1, "%ld %ld %ld %ld", llx, lly, trx, try) < 4) return 1;
+				if (sscanf(strchr(buf, ':') + 1, "%ld %ld %ld %ld", llx, lly, trx, try_) < 4) return 1;
 				break;
 			}
 		}
@@ -4675,9 +4675,9 @@ PSL_LONG ps_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *t
 		}
 	}
 
-	if (*llx >= *trx || *lly >= *try) {
-		*llx = 0; *trx = 720; *lly = 0; *try = 720;
-		fprintf(stderr, "No proper BoundingBox, defaults assumed: %ld %ld %ld %ld\n", *llx, *lly, *trx, *try);
+	if (*llx >= *trx || *lly >= *try_) {
+		*llx = 0; *trx = 720; *lly = 0; *try_ = 720;
+		fprintf(stderr, "No proper BoundingBox, defaults assumed: %ld %ld %ld %ld\n", *llx, *lly, *trx, *try_);
 		return 1;
 	}
 
