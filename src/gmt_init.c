@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.436 2010-03-23 02:44:41 guru Exp $
+ *	$Id: gmt_init.c,v 1.437 2010-03-23 19:44:41 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1837,7 +1837,7 @@ void GMT_backwards_compatibility () {
 GMT_LONG GMT_setparameter (char *keyword, char *value)
 {
 	GMT_LONG i, ival, case_val, pos;
-	int rgb[3];
+	int rgb[3], ti32_a, ti32_b;
 	GMT_LONG manual, eps, error = FALSE;
 	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], lower_value[BUFSIZ];
 	double dval;
@@ -2486,7 +2486,9 @@ GMT_LONG GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
 			if (value[0] == '+' || value[0] == '-') {	/* OK, gave +<n>u or -<n>u, check for unit */
-				sscanf (&lower_value[1], "%ld%c", &GMT_truncate_time.T.step, &GMT_truncate_time.T.unit);
+				//sscanf (&lower_value[1], "%ld%c", &GMT_truncate_time.T.step, &GMT_truncate_time.T.unit);
+				sscanf (&lower_value[1], "%d%c", &ti32_a, &GMT_truncate_time.T.unit);
+				GMT_truncate_time.T.step = ti32_a;
 				switch (GMT_truncate_time.T.unit) {
 					case 'y':
 					case 'o':
@@ -2604,7 +2606,9 @@ GMT_LONG GMT_setparameter (char *keyword, char *value)
 			error = true_false_or_error (lower_value, &gmtdefs.history);
 			break;
 		case GMTCASE_TRANSPARENCY:
-			i = sscanf (value, "%ld/%ld", &gmtdefs.transparency[0], &gmtdefs.transparency[1]);
+			//i = sscanf (value, "%ld/%ld", &gmtdefs.transparency[0], &gmtdefs.transparency[1]);
+			i = sscanf (value, "%d/%d", &ti32_a, &ti32_b);
+			gmtdefs.transparency[0] = ti32_a;	gmtdefs.transparency[1] = ti32_b;
 			if (i == 1)
 				gmtdefs.transparency[1] = gmtdefs.transparency[0];
 			else if (i != 2)
@@ -3131,6 +3135,7 @@ GMT_LONG GMT_get_ellipsoid (char *name)
 	FILE *fp;
 	char line[BUFSIZ], path[BUFSIZ];
 	double slop, pol_radius;
+	int ti32_a;
 
 	/* Try to ge ellipsoid from the default list */
 
@@ -3168,9 +3173,11 @@ GMT_LONG GMT_get_ellipsoid (char *name)
 		i = GMT_N_ELLIPSOIDS - 1;
 		while (fgets (line, BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));
 		fclose (fp);
-		n = sscanf (line, "%s %ld %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name,
-			&gmtdefs.ref_ellipsoid[i].date, &gmtdefs.ref_ellipsoid[i].eq_radius,
+		//n = sscanf (line, "%s %ld %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name,
+		n = sscanf (line, "%s %d %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name,
+			&ti32_a, &gmtdefs.ref_ellipsoid[i].eq_radius,
 			&pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
+			gmtdefs.ref_ellipsoid[i].date = ti32_a;
 		if (n != 5) {
 			fprintf (stderr, "GMT: Error decoding user ellipsoid parameters (%s)\n", line);
 			GMT_exit (EXIT_FAILURE);
@@ -3321,7 +3328,8 @@ GMT_LONG GMT_get_time_language (char *name)
 {
 	FILE *fp;
 	char file[BUFSIZ], line[BUFSIZ], full[16], abbrev[16], c[16], dwu;
-	GMT_LONG i, nm = 0, nw = 0, nu = 0;
+	//GMT_LONG i, nm = 0, nw = 0, nu = 0;
+	int i, nm = 0, nw = 0, nu = 0;
 
 	GMT_getsharepath ("time", name, ".d", file);
 	if ((fp = fopen (file, "r")) == NULL) {
@@ -3336,7 +3344,8 @@ GMT_LONG GMT_get_time_language (char *name)
 
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
-		sscanf (line, "%c %ld %s %s %s", &dwu, &i, full, abbrev, c);
+		//sscanf (line, "%c %ld %s %s %s", &dwu, &i, full, abbrev, c);
+		sscanf (line, "%c %d %s %s %s", &dwu, &i, full, abbrev, c);
 		if (dwu == 'M') {	/* Month record */
 			strncpy (GMT_time_language.month_name[0][i-1], full, (size_t)16);
 			strncpy (GMT_time_language.month_name[1][i-1], abbrev, (size_t)16);
@@ -6153,7 +6162,8 @@ GMT_LONG GMT_scanf_epoch (char *s, GMT_cal_rd *rata_die, double *t0) {
 	*/
 
 	double ss = 0.0;
-	GMT_LONG i, yy, mo, dd, hh = 0, mm = 0;
+	//GMT_LONG i, yy, mo, dd, hh = 0, mm = 0;
+	int i, yy, mo, dd, hh = 0, mm = 0;
 	GMT_cal_rd rd;
 	char tt[8];
 
@@ -6161,16 +6171,23 @@ GMT_LONG GMT_scanf_epoch (char *s, GMT_cal_rd *rata_die, double *t0) {
 	while (s[i] && s[i] == ' ') i++;
 	if (!(s[i])) return (-1);
 	if (strchr (&s[i], 'W') ) {	/* ISO calendar string, date with or without clock */
-		if (sscanf (&s[i], "%5ld-W%2ld-%1ld%[^0-9:-]%2ld:%2ld:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
-		if (GMT_iso_ywd_is_bad (yy, mo, dd) ) return (-1);
-		rd = GMT_rd_from_iywd (yy, mo, dd);
+		//if (sscanf (&s[i], "%5ld-W%2ld-%1ld%[^0-9:-]%2ld:%2ld:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
+		//if (GMT_iso_ywd_is_bad (yy, mo, dd) ) return (-1);
+		//rd = GMT_rd_from_iywd (yy, mo, dd);
+		if (sscanf (&s[i], "%5d-W%2d-%1d%[^0-9:-]%2d:%2d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
+		if (GMT_iso_ywd_is_bad ((GMT_LONG)yy, (GMT_LONG)mo, (GMT_LONG)dd) ) return (-1);
+		rd = GMT_rd_from_iywd ((GMT_LONG)yy, (GMT_LONG)mo, (GMT_LONG)dd);
 	}
 	else {				/* Gregorian calendar string, date with or without clock */
-		if (sscanf (&s[i], "%5ld-%2ld-%2ld%[^0-9:-]%2ld:%2ld:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
-		if (GMT_g_ymd_is_bad (yy, mo, dd) ) return (-1);
-		rd = GMT_rd_from_gymd (yy, mo, dd);
+		//if (sscanf (&s[i], "%5ld-%2ld-%2ld%[^0-9:-]%2ld:%2ld:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
+		//if (GMT_g_ymd_is_bad (yy, mo, dd) ) return (-1);
+		//rd = GMT_rd_from_gymd (yy, mo, dd);
+		if (sscanf (&s[i], "%5d-%2d-%2d%[^0-9:-]%2d:%2d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
+		if (GMT_g_ymd_is_bad ((GMT_LONG)yy, (GMT_LONG)mo, (GMT_LONG)dd) ) return (-1);
+		rd = GMT_rd_from_gymd ((GMT_LONG)yy, (GMT_LONG)mo, (GMT_LONG)dd);
 	}
-	if (GMT_hms_is_bad (hh, mm, ss)) return (-1);
+	//if (GMT_hms_is_bad (hh, mm, ss)) return (-1);
+	if (GMT_hms_is_bad ((GMT_LONG)hh, (GMT_LONG)mm, ss)) return (-1);
 
 	*rata_die = rd;								/* Rata day number of epoch */
 	*t0 =  (GMT_HR2SEC_F * hh + GMT_MIN2SEC_F * mm + ss) * GMT_SEC2DAY;	/* Fractional day (0<= t0 < 1) since rata_die of epoch */
