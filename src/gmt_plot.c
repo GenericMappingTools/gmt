@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.287 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_plot.c,v 1.288 2010-03-23 00:19:41 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2108,9 +2108,9 @@ void GMT_map_basemap (void) {
 	ps_comment ("Start of basemap");
 	ps_setdash (CNULL, 0);	/* To ensure no dashed pens are set prior */
 
-	if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
+	if (project_info.got_azimuths) l_swap (frame_info.side[1], frame_info.side[3]);	/* Temporary swap to trick justify machinery */
 
-	if (gmtdefs.basemap_type == GMT_IS_INSIDE) {
+	if (gmtdefs.basemap_type == (int)GMT_IS_INSIDE) {
 		GMT_map_clip_on (GMT_no_rgb, 3);	/* Must clip to ensure things are inside */
 		clip_on = TRUE;
 		gmtdefs.basemap_type = GMT_IS_PLAIN;
@@ -2123,7 +2123,7 @@ void GMT_map_basemap (void) {
 
 	GMT_map_annotate (w, e, s, n);
 
-	if (project_info.got_azimuths) i_swap (frame_info.side[1], frame_info.side[3]);	/* Undo swap */
+	if (project_info.got_azimuths) l_swap (frame_info.side[1], frame_info.side[3]);	/* Undo swap */
 
 	GMT_map_boundary (w, e, s, n);
 	if (clip_on) GMT_map_clip_off ();
@@ -2473,7 +2473,7 @@ void GMT_fill (double x[], double y[], GMT_LONG n, struct GMT_FILL *fill, GMT_LO
 		ps_polygon (x, y, n, GMT_no_rgb, outline);
 	else if (fill->use_pattern) {
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_polygon (x, y, n, rgb, outline);
 	}
 	else
@@ -3472,7 +3472,7 @@ void GMT_square (double x, double y, double z, double size[], struct GMT_FILL *f
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_square (x, y, size[0], rgb, outline);
 	}
 	else
@@ -3499,7 +3499,7 @@ void GMT_circle (double x, double y, double z, double size[], struct GMT_FILL *f
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_circle (x, y, size[0], rgb, outline);
 	}
 	else
@@ -3521,7 +3521,7 @@ void GMT_triangle (double x, double y, double z, double size[], struct GMT_FILL 
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_triangle (x, y, size[0], rgb, outline);
 	}
 	else
@@ -3543,7 +3543,7 @@ void GMT_itriangle (double x, double y, double z, double size[], struct GMT_FILL
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_itriangle (x, y, size[0], rgb, outline);
 	}
 	else
@@ -3566,7 +3566,7 @@ void GMT_diamond (double x, double y, double z, double size[], struct GMT_FILL *
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_diamond (x, y, size[0], rgb, outline);
 	}
 	else
@@ -3594,7 +3594,7 @@ void GMT_hexagon (double x, double y, double z, double size[], struct GMT_FILL *
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_hexagon (x, y, size[0], rgb, outline);
 	}
 	else
@@ -3620,7 +3620,7 @@ void GMT_pentagon (double x, double y, double z, double size[], struct GMT_FILL 
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_pentagon (x, y, size[0], rgb, outline);
 	}
 	else
@@ -3646,7 +3646,7 @@ void GMT_octagon (double x, double y, double z, double size[], struct GMT_FILL *
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_octagon (x, y, size[0], rgb, outline);
 	}
 	else
@@ -3679,7 +3679,7 @@ void GMT_star (double x, double y, double z, double size[], struct GMT_FILL *fil
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_star (x, y, size[0], rgb, outline);
 	}
 	else
@@ -3739,7 +3739,7 @@ void GMT_rect (double x, double y, double z, double size[], struct GMT_FILL *fil
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_rect (x, y, x + size[0], y + size[1], rgb, outline);
 	}
 	else
@@ -3768,7 +3768,7 @@ void GMT_ellipse (double x, double y, double z, double size[], struct GMT_FILL *
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_ellipse (x, y, size[0], size[1], size[2], rgb, outline);
 	}
 	else
@@ -3800,7 +3800,7 @@ void GMT_pie (double x, double y, double z, double size[], struct GMT_FILL *fill
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_pie (x, y, size[0], size[1], size[2], rgb, outline);
 	}
 	else
@@ -3852,7 +3852,7 @@ void GMT_rotrect (double x, double y, double z, double size[], struct GMT_FILL *
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_rotaterect (x, y, size[0], size[1], size[2], rgb, outline);
 	}
 	else
@@ -3910,7 +3910,7 @@ void GMT_vector (double x0, double y0, double x1, double y1, double z, double ta
 	}
 	else if (fill && fill->use_pattern) {	/* Setup pattern first */
 		int rgb[3] = {-3, -3, -3};
-		rgb[1] = ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (int)ps_pattern (fill->pattern_no, fill->pattern, fill->inverse, fill->dpi, outline, fill->f_rgb, fill->b_rgb);
 		ps_vector (x0, y0, x1, y1, tailwidth, headlength, headwidth, shape, rgb, outline);
 	}
 	else
@@ -4317,12 +4317,12 @@ struct EPS *GMT_epsinfo (char *program)
 		old_x0 = old_y0 = old_x1 = old_y1 = 0.0;
 		x0 = GMT_ps.x_origin;	/* Always absolute the first time */
 		y0 = GMT_ps.y_origin;
-		new->portrait = GMT_ps.portrait;
+		new->portrait = (int)GMT_ps.portrait;
 		new->clip_level = 0;
 	}
 
 	/* Lower or increase clip level based on GMT_ps.clip (-1, 0 or +1) */
-	new->clip_level += GMT_ps.clip;
+	new->clip_level += (int)GMT_ps.clip;
 
 	/* Estimates the bounding box for this overlay */
 
@@ -4409,7 +4409,7 @@ struct EPS *GMT_epsinfo (char *program)
 	last = -1;
 	for (i = n_fonts = 0; i < id; i++) {
 		if (fno[i] != last) {	/* To avoid duplicates */
-			new->fontno[n_fonts++] = fno[i];
+			new->fontno[n_fonts++] = (int)fno[i];
 			last = fno[i];
 		}
 	}
