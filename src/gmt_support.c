@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.451 2010-03-24 02:36:44 guru Exp $
+ *	$Id: gmt_support.c,v 1.452 2010-03-24 04:06:57 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -395,7 +395,7 @@ void GMT_init_fill (struct GMT_FILL *fill, int r, int g, int b)
 
 GMT_LONG GMT_getfill (char *line, struct GMT_FILL *fill)
 {
-	GMT_LONG n, end, pos, i, dpi, error = 0;
+	GMT_LONG n, end, pos, i, error = 0;
 	int fb_rgb[3];
 	char f, word[GMT_LONG_TEXT];
 
