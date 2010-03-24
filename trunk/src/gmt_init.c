@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.440 2010-03-24 00:42:40 remko Exp $
+ *	$Id: gmt_init.c,v 1.441 2010-03-24 01:11:56 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1836,8 +1836,8 @@ void GMT_backwards_compatibility () {
 
 GMT_LONG GMT_setparameter (char *keyword, char *value)
 {
-	GMT_LONG i, ival, case_val, pos;
-	int rgb[3];	/* We use 4-byte ints, not GMT_LONG, to avoid Windows-64 madness */
+	GMT_LONG i, ival, case_val, pos
+	int rgb[3];
 	GMT_LONG manual, eps, error = FALSE;
 	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], lower_value[BUFSIZ];
 	double dval;
@@ -2604,7 +2604,7 @@ GMT_LONG GMT_setparameter (char *keyword, char *value)
 			error = true_false_or_error (lower_value, &gmtdefs.history);
 			break;
 		case GMTCASE_TRANSPARENCY:
-			i = sscanf (value, "%" GMT_LL "d/%d", &gmtdefs.transparency[0], &gmtdefs.transparency[1]);
+			i = sscanf (value, "%" GMT_LL "d/%" GMT_LL "d", &gmtdefs.transparency[0], &gmtdefs.transparency[1]);
 			if (i == 1)
 				gmtdefs.transparency[1] = gmtdefs.transparency[0];
 			else if (i != 2)
@@ -3319,7 +3319,7 @@ GMT_LONG GMT_get_time_language (char *name)
 {
 	FILE *fp;
 	char file[BUFSIZ], line[BUFSIZ], full[16], abbrev[16], c[16], dwu;
-	int i, nm = 0, nw = 0, nu = 0;	/* We use ints, not GMT_LONG, to avoid Windows-64 madness */
+	GMT_LONG i, nm = 0, nw = 0, nu = 0;
 
 	GMT_getsharepath ("time", name, ".d", file);
 	if ((fp = fopen (file, "r")) == NULL) {
@@ -3334,7 +3334,7 @@ GMT_LONG GMT_get_time_language (char *name)
 
 	while (fgets (line, BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
-		sscanf (line, "%c %d %s %s %s", &dwu, &i, full, abbrev, c);
+		sscanf (line, "%c %" GMT_LL "d %s %s %s", &dwu, &i, full, abbrev, c);
 		if (dwu == 'M') {	/* Month record */
 			strncpy (GMT_time_language.month_name[0][i-1], full, (size_t)16);
 			strncpy (GMT_time_language.month_name[1][i-1], abbrev, (size_t)16);
@@ -6151,7 +6151,7 @@ GMT_LONG GMT_scanf_epoch (char *s, GMT_cal_rd *rata_die, double *t0) {
 	*/
 
 	double ss = 0.0;
-	int i, yy, mo, dd, hh = 0, mm = 0;	/* We use ints, not GMT_LONG, to avoid Windows-64 madness */
+	GMT_LONG i, yy, mo, dd, hh = 0, mm = 0;
 	GMT_cal_rd rd;
 	char tt[8];
 
@@ -6159,16 +6159,16 @@ GMT_LONG GMT_scanf_epoch (char *s, GMT_cal_rd *rata_die, double *t0) {
 	while (s[i] && s[i] == ' ') i++;
 	if (!(s[i])) return (-1);
 	if (strchr (&s[i], 'W') ) {	/* ISO calendar string, date with or without clock */
-		if (sscanf (&s[i], "%5d-W%2d-%1d%[^0-9:-]%2d:%2d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
-		if (GMT_iso_ywd_is_bad ((GMT_LONG)yy, (GMT_LONG)mo, (GMT_LONG)dd) ) return (-1);
-		rd = GMT_rd_from_iywd ((GMT_LONG)yy, (GMT_LONG)mo, (GMT_LONG)dd);
+		if (sscanf (&s[i], "%5" GMT_LL "d-W%2" GMT_LL "d-%1" GMT_LL "d%[^0-9:-]%2" GMT_LL "d:%2" GMT_LL "d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
+		if (GMT_iso_ywd_is_bad (yy, mo, dd) ) return (-1);
+		rd = GMT_rd_from_iywd (yy, mo, dd);
 	}
 	else {				/* Gregorian calendar string, date with or without clock */
-		if (sscanf (&s[i], "%5d-%2d-%2d%[^0-9:-]%2d:%2d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
-		if (GMT_g_ymd_is_bad ((GMT_LONG)yy, (GMT_LONG)mo, (GMT_LONG)dd) ) return (-1);
-		rd = GMT_rd_from_gymd ((GMT_LONG)yy, (GMT_LONG)mo, (GMT_LONG)dd);
+		if (sscanf (&s[i], "%5" GMT_LL "d-%2" GMT_LL "d-%2" GMT_LL "d%[^0-9:-]%2" GMT_LL "d:%2" GMT_LL "d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
+		if (GMT_g_ymd_is_bad (yy, mo, dd) ) return (-1);
+		rd = GMT_rd_from_gymd (yy, mo, dd);
 	}
-	if (GMT_hms_is_bad ((GMT_LONG)hh, (GMT_LONG)mm, ss)) return (-1);
+	if (GMT_hms_is_bad (hh, mm, ss)) return (-1);
 
 	*rata_die = rd;								/* Rata day number of epoch */
 	*t0 =  (GMT_HR2SEC_F * hh + GMT_MIN2SEC_F * mm + ss) * GMT_SEC2DAY;	/* Fractional day (0<= t0 < 1) since rata_die of epoch */

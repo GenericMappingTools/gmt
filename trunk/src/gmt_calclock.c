@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_calclock.c,v 1.71 2010-03-23 20:20:10 guru Exp $
+ *	$Id: gmt_calclock.c,v 1.72 2010-03-24 01:11:56 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1047,7 +1047,7 @@ GMT_LONG	GMT_read_clock (char *s, double *t) {
 */
 
 	double	dsec;
-	int	j, k;	/* We use ints, not GMT_LONG, to avoid Windows 64 madness */
+	GMT_LONG	j, k;
 	char	*cm, *cs;
 	
 	/* Get hours:  */
@@ -1058,7 +1058,7 @@ GMT_LONG	GMT_read_clock (char *s, double *t) {
 		s[k-j] = '\0';
 		cm = &cm[1];	/* Move beyond colon  */
 	}
-	if ( (sscanf(s, "%d", &k)) != 1) return (-1);
+	if ( (sscanf(s, "%" GMT_LL "d", &k)) != 1) return (-1);
 	if (k < 0 || k > 24) return (-1);
 	*t = GMT_HR2SEC_I * k;		/* t now has hours (in secs) */
 	
@@ -1071,7 +1071,7 @@ GMT_LONG	GMT_read_clock (char *s, double *t) {
 		cm[k-j] = '\0';
 		cs = &cs[1];
 	}
-	if ( (sscanf(cm, "%d", &k)) != 1) return (-1);
+	if ( (sscanf(cm, "%" GMT_LL "d", &k)) != 1) return (-1);
 	if (k < 0 || k > 59) return (-1);
 	(*t) += GMT_MIN2SEC_I * k;	/* Now add in minutes (in secs) */
 	
@@ -1095,7 +1095,7 @@ GMT_LONG	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 	present then <year>, <j>, <k> are (proleptic
 	gregorian) year, month, day of month.  */
 
-	int	i, j, k, itemp1, itemp2=1, itemp3=1, is_iso=0;	/* We use ints, not GMT_LONG, to avoid Windows-64 madness */
+	GMT_LONG	i, j, k, itemp1, itemp2=1, itemp3=1, is_iso=0;
 	char	*cj, *ck = CNULL;
 	
 	/* A period or comma would be wrong for this format:  */
@@ -1116,7 +1116,7 @@ GMT_LONG	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 		s[k-(i+j)] = '\0';
 	}
 	
-	if ( (sscanf (s, "%d", &itemp1) ) != 1) return (-1);
+	if ( (sscanf (s, "%" GMT_LL "d", &itemp1) ) != 1) return (-1);
 	
 	/* A null value of cj is not an error.  We might have
 		had "1985T" passed to a function and it might
@@ -1139,7 +1139,7 @@ GMT_LONG	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 			k = strlen (cj);
 			cj[k-j] = '\0';
 		}
-		if ( (sscanf (cj, "%d", &itemp2) ) != 1) return (-1);
+		if ( (sscanf (cj, "%" GMT_LL "d", &itemp2) ) != 1) return (-1);
 		if (itemp2 < 1) return (-1);
 		if (is_iso) {
 			if (itemp2 > 53) return (-1);
@@ -1149,7 +1149,7 @@ GMT_LONG	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 		}
 		if (ck) {
 			/* Read it, skipping the leading hyphen.  */
-			if ( (sscanf (&ck[1], "%d", &itemp3) ) != 1) return (-1);
+			if ( (sscanf (&ck[1], "%" GMT_LL "d", &itemp3) ) != 1) return (-1);
 			if (itemp3 < 1) return (-1);
 			if (is_iso) {
 				if (itemp3 > 7) return (-1);
@@ -1163,12 +1163,10 @@ GMT_LONG	GMT_read_cal (char *s, GMT_cal_rd *rd) {
 	/* Get here when ready to make a rata die out of 3 itemp values,
 		based on value of is_iso:  */
 	
-	if (is_iso) {
+	if (is_iso)
 		*rd = GMT_rd_from_iywd (itemp1, itemp2, itemp3);
-	}
-	else {
+	else
 		*rd = GMT_rd_from_gymd (itemp1, itemp2, itemp3);
-	}
 	return (0);
 }
 
