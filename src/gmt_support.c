@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.449 2010-03-24 00:42:40 remko Exp $
+ *	$Id: gmt_support.c,v 1.450 2010-03-24 01:11:56 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -395,7 +395,7 @@ void GMT_init_fill (struct GMT_FILL *fill, int r, int g, int b)
 
 GMT_LONG GMT_getfill (char *line, struct GMT_FILL *fill)
 {
-	int n, end, pos, i, dpi, error = 0;	/* We use ints, not GMT_LONG, to avoid Windows-64 madness */
+	GMT_LONG n, end, pos, i, dpi, error = 0;
 	int fb_rgb[3];
 	char f, word[GMT_LONG_TEXT];
 
@@ -406,7 +406,7 @@ GMT_LONG GMT_getfill (char *line, struct GMT_FILL *fill)
 	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 
 	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
-		n = sscanf (&line[1], "%d/%s", &dpi, fill->pattern);
+		n = sscanf (&line[1], "%" GMT_LL "d/%s", &dpi, fill->pattern);
 		fill->dpi = (GMT_LONG)dpi;
 		if (n != 2) error = 1;
 		for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++) if (fill->pattern[i] == ':') pos = i;
