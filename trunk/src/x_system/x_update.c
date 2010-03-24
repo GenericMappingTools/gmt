@@ -1,4 +1,4 @@
-/*	$Id: x_update.c,v 1.11 2010-03-22 18:55:47 guru Exp $
+/*	$Id: x_update.c,v 1.12 2010-03-24 02:36:45 guru Exp $
  *
  * XUPDATE will read a xover.d-file that contains a series of crossovers. The first
  * record contains leg1 year1 leg2 year2, and the next n records has all the
@@ -134,7 +134,7 @@ int main (int argc, char *argv[])
 		fprintf(stderr,"x_update : Read error on xx_base.b\n");
 		exit (EXIT_FAILURE);
 	}
-	sscanf (header,"%ld", &n_rec);
+	sscanf (header,"%" GMT_LL "d", &n_rec);
 	fseek (fxb, 0L, SEEK_END);		/* Go to end of file */
 	for (i = 0; i < REC_SIZE; i++) header[i] = ' ';
 
@@ -142,7 +142,7 @@ int main (int argc, char *argv[])
 	leg1 = NULL;
 	nread = fgets (buffer, BUFSIZ, fp);
 	while (nread) {
-		sscanf (buffer,"%s %ld %s %ld",lega, &year1, legb, &year2);
+		sscanf (buffer,"%s %" GMT_LL "d %s %" GMT_LL "d",lega, &year1, legb, &year2);
 		internal = (!strcmp(lega,legb)) ? TRUE : FALSE;
 
 		if (leg1 != NULL && strcmp(leg1->name,lega) == 0)  {

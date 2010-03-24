@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.724 2010-03-24 00:19:43 remko Exp $
+	$Id: ChangeLog,v 1.725 2010-03-24 02:36:43 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-03-23	pwessel
+	* *.c:			Use GMT_LL/PSL_LL to handle 64-bit integers across many OS
 
 2010-03-23	remko
 	* pslib.[ch], pslib_inc.h:	Removed pslib_inc.h, now in pslib.c.

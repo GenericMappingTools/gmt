@@ -1,4 +1,4 @@
-/*	$Id: x_solve_dc_drift.c,v 1.12 2010-03-22 18:55:47 guru Exp $
+/*	$Id: x_solve_dc_drift.c,v 1.13 2010-03-24 02:36:45 guru Exp $
  *
  * x_solve_dc_drift reads the xx_* databases and computes the best
  * fitting drift and dc values using a least squares method.
@@ -237,7 +237,7 @@ int main (int argc, char **argv)
 		fseek (fpb, (long)REC_SIZE, SEEK_SET);
 
 		while (fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fpb) == 1) {
-			sscanf(header, "%s %s %ld",lega, legb, &n_x);
+			sscanf(header, "%s %s %" GMT_LL "d",lega, legb, &n_x);
 			if (!strcmp(lega, legb)) {	/* Internal crossovers, skip this pair */
 				fseek (fpb, (long int)(n_x*REC_SIZE), SEEK_CUR);
 				continue;

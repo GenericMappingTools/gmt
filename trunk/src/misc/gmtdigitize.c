@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *    $Id: gmtdigitize.c,v 1.30 2010-03-22 18:55:47 guru Exp $
+ *    $Id: gmtdigitize.c,v 1.31 2010-03-24 02:36:45 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -512,7 +512,7 @@ GMT_LONG get_digitize_raw (GMT_LONG digunit, double *xdig, double *ydig, struct 
 	fprintf (stderr, "Got %ld bytes [%s]\n", n, buffer);
 #endif
 	for (i = 0; i < n; i++) if (buffer[i] == ',') buffer[i] = ' ';
-	sscanf (buffer, "%ld %ld %c", &ix, &iy, &button);
+	sscanf (buffer, "%" GMT_LL "d %" GMT_LL "d %c", &ix, &iy, &button);
 	
 	*xdig = (double)(ix) * C->INV_LPI;	/* Convert from lines per inch to inches */
 	*ydig = (double)(iy) * C->INV_LPI;
