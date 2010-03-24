@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_support.c,v 1.450 2010-03-24 01:11:56 remko Exp $
+ *	$Id: gmt_support.c,v 1.451 2010-03-24 02:36:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -406,8 +406,7 @@ GMT_LONG GMT_getfill (char *line, struct GMT_FILL *fill)
 	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 
 	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
-		n = sscanf (&line[1], "%" GMT_LL "d/%s", &dpi, fill->pattern);
-		fill->dpi = (GMT_LONG)dpi;
+		n = sscanf (&line[1], "%" GMT_LL "d/%s", &fill->dpi, fill->pattern);
 		if (n != 2) error = 1;
 		for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++) if (fill->pattern[i] == ':') pos = i;
 		if (pos > -1) fill->pattern[pos] = '\0';
@@ -2997,7 +2996,7 @@ GMT_LONG GMT_contlabel_info (char flag, char *txt, struct GMT_CONTOUR *L)
 			break;
 		default:	/* For the old 3.4-style -G<gap>[/<width>] option format */
 			L->spacing = TRUE;
-			k = sscanf (&txt[j], "%[^/]/%ld", txt_a, &L->half_width);
+			k = sscanf (&txt[j], "%[^/]/%" GMT_LL "d", txt_a, &L->half_width);
 			if (k == 0) {
 				fprintf (stderr, "%s: GMT SYNTAX ERROR -%c[d]: Give label spacing\n", GMT_program, L->flag);
 				error++;
@@ -6129,7 +6128,7 @@ GMT_LONG GMT_getrose (char *text, struct GMT_MAP_ROSE *ms)
 		}
 	}
 	else {
-		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%ld", txt_a, txt_b, txt_c, &ms->kind);
+		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%" GMT_LL "d", txt_a, txt_b, txt_c, &ms->kind);
 		if (k == 3) ms->kind = 1;
 		if (k < 3 || k > 4) {	/* Wrong number of parameters */
 			fprintf (stderr, "%s: GMT SYNTAX ERROR -T option:  Correct syntax\n", GMT_program);

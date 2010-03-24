@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.250 2010-03-22 23:28:04 jluis Exp $
+ *	$Id: gmt_map.c,v 1.251 2010-03-24 02:36:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -6629,7 +6629,7 @@ GMT_LONG GMT_set_datum (char *text, struct GMT_DATUM *D)
 	}
 	else {		/* Gave a Datum ID tag [ 0-(GMT_N_DATUMS-1)] */
 		GMT_LONG k;
-		if (sscanf (text, "%ld", &i) != 1) {
+		if (sscanf (text, "%" GMT_LL "d", &i) != 1) {
 			fprintf (stderr, "%s: Malformed or unrecognized <datum> argument (%s)!\n", GMT_program, text);
 			return (-1);
 		}

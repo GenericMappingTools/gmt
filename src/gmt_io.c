@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.211 2010-03-24 01:11:56 remko Exp $
+ *	$Id: gmt_io.c,v 1.212 2010-03-24 02:36:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1950,20 +1950,20 @@ void GMT_clock_C_format (char *form, struct GMT_CLOCK_IO *S, GMT_LONG mode)
 	if (S->order[0] >= 0) {	/* OK, at least hours is needed */
 		char fmt[GMT_LONG_TEXT];
 		if (S->compact)
-			sprintf (S->format, "%%d");
+			sprintf (S->format, "%%" GMT_LL "d");
 		else
-			(mode) ? sprintf (S->format, "%%2.2ld") : sprintf (S->format, "%%2ld");
+			(mode) ? sprintf (S->format, "%%2.2" GMT_LL "d") : sprintf (S->format, "%%2" GMT_LL "d");
 		if (S->order[1] >= 0) {	/* Need minutes too*/
 			if (S->delimiter[0][0]) strcat (S->format, S->delimiter[0]);
-			(mode) ? sprintf (fmt, "%%2.2ld") : sprintf (fmt, "%%2ld");
+			(mode) ? sprintf (fmt, "%%2.2" GMT_LL "d") : sprintf (fmt, "%%2" GMT_LL "d");
 			strcat (S->format, fmt);
 			if (S->order[2] >= 0) {	/* .. and seconds */
 				if (S->delimiter[1][0]) strcat (S->format, S->delimiter[1]);
 				if (mode) {	/* Output format */
-					sprintf (fmt, "%%2.2ld");
+					sprintf (fmt, "%%2.2" GMT_LL "d");
 					strcat (S->format, fmt);
 					if (S->n_sec_decimals) {	/* even add format for fractions of second */
-						sprintf (fmt, ".%%%ld.%ldld", S->n_sec_decimals, S->n_sec_decimals);
+						sprintf (fmt, ".%%%" GMT_LL "d.%" GMT_LL "d" GMT_LL "d", S->n_sec_decimals, S->n_sec_decimals);
 						strcat (S->format, fmt);
 					}
 				}
@@ -2001,11 +2001,11 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, GMT_LONG mode)
 	if (S->item_order[0] >= 0 && S->iso_calendar) {	/* ISO Calendar string: At least Ione item is needed */
 		k = (S->item_order[0] == 0 && !S->Y2K_year) ? ywidth : 2;
 		if (S->mw_text && S->item_order[0] == 1)	/* Prepare for "Week ##" format */
-			sprintf (S->format, "%%s %%2.2ld");
+			sprintf (S->format, "%%s %%2.2" GMT_LL "d");
 		else if (S->compact)			/* Numerical formatting of week or year without leading zeros */
-			sprintf (S->format, "%%ld");
+			sprintf (S->format, "%%" GMT_LL "d");
 		else					/* Numerical formatting of week or year  */
-			(mode) ? sprintf (S->format, "%%%ld.%ldld", k, k) : sprintf (S->format, "%%%ldld", k);
+			(mode) ? sprintf (S->format, "%%%" GMT_LL "d.%" GMT_LL "d" GMT_LL "d", k, k) : sprintf (S->format, "%%%" GMT_LL "d" GMT_LL "d", k);
 		if (S->item_order[1] >= 0) {	/* Need another item */
 			if (S->delimiter[0][0]) strcat (S->format, S->delimiter[0]);
 			if (S->mw_text && S->item_order[0] == 1) {	/* Prepare for "Week ##" format */
@@ -2015,13 +2015,13 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, GMT_LONG mode)
 			else
 				strcat (S->format, "W");
 			if (S->compact)
-				sprintf (fmt, "%%ld");
+				sprintf (fmt, "%%" GMT_LL "d");
 			else
-				(mode) ? sprintf (fmt, "%%2.2ld") : sprintf (fmt, "%%2ld");
+				(mode) ? sprintf (fmt, "%%2.2" GMT_LL "d") : sprintf (fmt, "%%2" GMT_LL "d");
 			strcat (S->format, fmt);
 			if (S->item_order[2] >= 0) {	/* and ISO day of week */
 				if (S->delimiter[1][0]) strcat (S->format, S->delimiter[1]);
-				sprintf (fmt, "%%1ld");
+				sprintf (fmt, "%%1" GMT_LL "d");
 				strcat (S->format, fmt);
 			}
 		}
@@ -2032,9 +2032,9 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, GMT_LONG mode)
 		if (S->mw_text && S->item_order[0] == 1)	/* Prepare for "Monthname" format */
 			(mode == 0) ? sprintf (S->format, "%%[^%s]", S->delimiter[0]) : sprintf (S->format, "%%s");
 		else if (S->compact)			/* Numerical formatting of month or year w/o leading zeros */
-			sprintf (S->format, "%%ld");
+			sprintf (S->format, "%%" GMT_LL "d");
 		else					/* Numerical formatting of month or year */
-			(mode) ? sprintf (S->format, "%%%ld.%ldld", k, k) : sprintf (S->format, "%%%ldld", k);
+			(mode) ? sprintf (S->format, "%%%" GMT_LL "d.%" GMT_LL "d" GMT_LL "d", k, k) : sprintf (S->format, "%%%" GMT_LL "d" GMT_LL "d", k);
 		if (S->item_order[1] >= 0) {	/* Need more items */
 			if (S->delimiter[0][0]) strcat (S->format, S->delimiter[0]);
 			k = (S->item_order[1] == 0 && !S->Y2K_year) ? ywidth : 2;
@@ -2042,9 +2042,9 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, GMT_LONG mode)
 			if (S->mw_text && S->item_order[1] == 1)	/* Prepare for "Monthname" format */
 				(mode == 0) ? sprintf (fmt, "%%[^%s]", S->delimiter[1]) : sprintf (fmt, "%%s");
 			else if (S->compact && !S->Y2K_year)		/* Numerical formatting of month or 4-digit year w/o leading zeros */
-				sprintf (fmt, "%%ld");
+				sprintf (fmt, "%%" GMT_LL "d");
 			else
-				(mode) ? sprintf (fmt, "%%%ld.%ldld", k, k) : sprintf (fmt, "%%%ldld", k);
+				(mode) ? sprintf (fmt, "%%%" GMT_LL "d.%" GMT_LL "d" GMT_LL "d", k, k) : sprintf (fmt, "%%%" GMT_LL "d" GMT_LL "d", k);
 			strcat (S->format, fmt);
 			if (S->item_order[2] >= 0) {	/* .. and even more */
 				if (S->delimiter[1][0]) strcat (S->format, S->delimiter[1]);
@@ -2052,9 +2052,9 @@ void GMT_date_C_format (char *form, struct GMT_DATE_IO *S, GMT_LONG mode)
 				if (S->mw_text && S->item_order[2] == 1)	/* Prepare for "Monthname" format */
 					sprintf (fmt, "%%s");
 				else if (S->compact)			/* Numerical formatting of month or year w/o leading zeros */
-					sprintf (fmt, "%%ld");
+					sprintf (fmt, "%%" GMT_LL "d");
 				else
-					(mode) ? sprintf (fmt, "%%%ld.%ldld", k, k) : sprintf (fmt, "%%%ldld", k);
+					(mode) ? sprintf (fmt, "%%%" GMT_LL "d.%" GMT_LL "d" GMT_LL "d", k, k) : sprintf (fmt, "%%%" GMT_LL "d" GMT_LL "d", k);
 				strcat (S->format, fmt);
 			}
 		}
@@ -2075,24 +2075,24 @@ GMT_LONG GMT_geo_C_format (char *form, struct GMT_GEO_IO *S)
 	}
 	else {			/* Some form of dd:mm:ss */
 		char fmt[GMT_LONG_TEXT];
-		sprintf (S->x_format, "%%3.3ld");
-		sprintf (S->y_format, "%%2.2ld");
+		sprintf (S->x_format, "%%3.3" GMT_LL "d");
+		sprintf (S->y_format, "%%2.2" GMT_LL "d");
 		if (S->order[1] >= 0) {	/* Need minutes too */
 			strcat (S->x_format, S->delimiter[0]);
 			strcat (S->y_format, S->delimiter[0]);
-			sprintf (fmt, "%%2.2ld");
+			sprintf (fmt, "%%2.2" GMT_LL "d");
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
 		}
 		if (S->order[2] >= 0) {	/* .. and seconds */
 			strcat (S->x_format, S->delimiter[1]);
 			strcat (S->y_format, S->delimiter[1]);
-			sprintf (fmt, "%%2.2ld");
+			sprintf (fmt, "%%2.2" GMT_LL "d");
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
 		}
 		if (S->n_sec_decimals) {	/* even add format for fractions of second (or minutes or degrees) */
-			sprintf (fmt, ".%%%ld.%ldld", S->n_sec_decimals, S->n_sec_decimals);
+			sprintf (fmt, ".%%%" GMT_LL "d.%" GMT_LL "d" GMT_LL "d", S->n_sec_decimals, S->n_sec_decimals);
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
 		}
@@ -2136,9 +2136,9 @@ void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S)
 
 		sprintf (GMT_plot_format[0][0], "%%d");		/* ddd */
 		if (S->order[1] == -1 && S->n_sec_decimals > 0) /* ddd.xxx format */
-			sprintf (GMT_plot_format[0][1], "%%ld.%%%ld.%ldld", S->n_sec_decimals, S->n_sec_decimals);
+			sprintf (GMT_plot_format[0][1], "%%" GMT_LL "d.%%%" GMT_LL "d.%" GMT_LL "d" GMT_LL "d", S->n_sec_decimals, S->n_sec_decimals);
 		else						/* ddd format */
-			sprintf (GMT_plot_format[0][1], "%%ld");
+			sprintf (GMT_plot_format[0][1], "%%" GMT_LL "d");
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* But we want the degree symbol appended */
 			sprintf (fmt, "%c", (int)gmtdefs.encoding.code[gmtdefs.degree_symbol]);
@@ -2148,19 +2148,19 @@ void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S)
 
 		/* Level 1: degrees and minutes only. index 0 is integer minutes, index 1 is [possibly] fractional minutes  */
 
-		sprintf (GMT_plot_format[1][0], "%%ld");	/* ddd */
-		sprintf (GMT_plot_format[1][1], "%%ld");
+		sprintf (GMT_plot_format[1][0], "%%" GMT_LL "d");	/* ddd */
+		sprintf (GMT_plot_format[1][1], "%%" GMT_LL "d");
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* We want the degree symbol appended */
 			sprintf (fmt, "%c", (int)gmtdefs.encoding.code[gmtdefs.degree_symbol]);
 			strcat (GMT_plot_format[1][0], fmt);
 			strcat (GMT_plot_format[1][1], fmt);
 		}
-		strcat (GMT_plot_format[1][0], "%2.2ld");
+		strcat (GMT_plot_format[1][0], "%2.2" GMT_LL "d");
 		if (S->order[2] == -1 && S->n_sec_decimals > 0) /* ddd:mm.xxx format */
-			sprintf (fmt, "%%2.2ld.%%%ld.%ldld", S->n_sec_decimals, S->n_sec_decimals);
+			sprintf (fmt, "%%2.2" GMT_LL "d.%%%" GMT_LL "d.%" GMT_LL "d" GMT_LL "d", S->n_sec_decimals, S->n_sec_decimals);
 		else						/* ddd:mm format */
-			sprintf (fmt, "%%2.2ld");
+			sprintf (fmt, "%%2.2" GMT_LL "d");
 		strcat (GMT_plot_format[1][1], fmt);
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* We want the minute symbol appended */
@@ -2174,16 +2174,16 @@ void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S)
 
 		/* Level 2: degrees, minutes, and seconds. index 0 is integer seconds, index 1 is [possibly] fractional seconds  */
 
-		sprintf (GMT_plot_format[2][0], "%%ld");
-		sprintf (GMT_plot_format[2][1], "%%ld");
+		sprintf (GMT_plot_format[2][0], "%%" GMT_LL "d");
+		sprintf (GMT_plot_format[2][1], "%%" GMT_LL "d");
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* We want the degree symbol appended */
 			sprintf (fmt, "%c", (int)gmtdefs.encoding.code[gmtdefs.degree_symbol]);
 			strcat (GMT_plot_format[2][0], fmt);
 			strcat (GMT_plot_format[2][1], fmt);
 		}
-		strcat (GMT_plot_format[2][0], "%2.2ld");
-		strcat (GMT_plot_format[2][1], "%2.2ld");
+		strcat (GMT_plot_format[2][0], "%2.2" GMT_LL "d");
+		strcat (GMT_plot_format[2][1], "%2.2" GMT_LL "d");
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* We want the minute symbol appended */
 			if (gmtdefs.degree_symbol == gmt_colon)
@@ -2193,11 +2193,11 @@ void GMT_plot_C_format (char *form, struct GMT_GEO_IO *S)
 			strcat (GMT_plot_format[2][0], fmt);
 			strcat (GMT_plot_format[2][1], fmt);
 		}
-		strcat (GMT_plot_format[2][0], "%2.2ld");
+		strcat (GMT_plot_format[2][0], "%2.2" GMT_LL "d");
 		if (S->n_sec_decimals > 0)			 /* ddd:mm:ss.xxx format */
-			sprintf (fmt, "%%ld.%%%ld.%ldld", S->n_sec_decimals, S->n_sec_decimals);
+			sprintf (fmt, "%%" GMT_LL "d.%%%" GMT_LL "d.%" GMT_LL "d" GMT_LL "d", S->n_sec_decimals, S->n_sec_decimals);
 		else						/* ddd:mm:ss format */
-			sprintf (fmt, "%%2.2ld");
+			sprintf (fmt, "%%2.2" GMT_LL "d");
 		strcat (GMT_plot_format[2][1], fmt);
 		if (gmtdefs.degree_symbol != gmt_none)
 		{	/* We want the second symbol appended */

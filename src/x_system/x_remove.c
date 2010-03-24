@@ -1,4 +1,4 @@
-/*	$Id: x_remove.c,v 1.7 2008-03-24 08:58:33 guru Exp $
+/*	$Id: x_remove.c,v 1.8 2010-03-24 02:36:45 guru Exp $
  *
  * XREMOVE will read a list of bad legs from a file, and then remove all
  * trace of these files from the x_system data base files. New x_system files
@@ -129,7 +129,7 @@ int main (int argc, char **argv)
 	}
 	ok = fread ((void *)header, (size_t)REC_SIZE, (size_t)1, fpb);
 	while (ok) {
-		sscanf(header, "%s %s %ld",lega, legb, &n_x);
+		sscanf(header, "%s %s %" GMT_LL "d",lega, legb, &n_x);
 		if (findleg (lega) || findleg (legb)) {
 			if (verbose) fprintf (stderr, "xremove: Skipping %s - %s\n", lega, legb);
 			fseek (fpb, (long int)(REC_SIZE*n_x), SEEK_CUR);

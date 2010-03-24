@@ -1,5 +1,5 @@
 /*
- *	$Id: x_list.c,v 1.10 2009-07-11 03:16:32 guru Exp $
+ *	$Id: x_list.c,v 1.11 2010-03-24 02:36:45 guru Exp $
  *
  * XLIST produces ASCII listings of cross-over info. The xx_base.b-file
  * contains longitude(x), latitude(y), time1(t1), time2(t2),  heading1(h),
@@ -307,7 +307,7 @@ int main (int argc, char *argv[])
 	once = (inter && legchoice) || (nlegs_in == 2);
 
 	while (ok) {
-		sscanf(header, "%s %s %ld",lega, legb, &n_x);
+		sscanf(header, "%s %s %" GMT_LL "d",lega, legb, &n_x);
 		internal = !strcmp(lega, legb);
 		skip = FALSE;
 		if ((inter && !internal) || (!inter && internal))

@@ -1,4 +1,4 @@
-/*	$Id: x_setup.c,v 1.12 2010-03-22 18:55:47 guru Exp $
+/*	$Id: x_setup.c,v 1.13 2010-03-24 02:36:45 guru Exp $
  *
  * XSETUP will read the gmtindex files and create a list of
  * pairs of legs that cross the same bin. As an option, the
@@ -119,7 +119,7 @@ int main (int argc, char *argv[])
 
 	i = 0;
 	while (fgets (line, BUFSIZ,fleg)) {
-		sscanf(line,"%s %ld",lname, &no);
+		sscanf(line,"%s %" GMT_LL "d",lname, &no);
 		ptr[no] = make_info (lname, no);
 		legpointer[i] = no;
 		ptr[no]->seq_no = i++;

@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.230 2010-03-24 01:16:32 jluis Exp $
+ *	$Id: pslib.c,v 1.231 2010-03-24 02:36:44 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4621,7 +4621,7 @@ static void ps_init_fonts (PSL_LONG *n_fonts, PSL_LONG *n_GMT_fonts)
 	while (fgets (buf, BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (sscanf (buf, "%s %lf %" PSL_LL "d", fullname, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %d\n", (int)i);
+			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %ld\n", i);
 			PS_exit (EXIT_FAILURE);
 		}
 		PSL->internal.font[i].name = (char *)ps_memory (VNULL, (size_t)(strlen (fullname)+1), sizeof (char));
@@ -4650,9 +4650,8 @@ static void ps_init_fonts (PSL_LONG *n_fonts, PSL_LONG *n_GMT_fonts)
 		while (fgets (buf, BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			PSL->internal.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
-			//if (sscanf (buf, "%s %lf %ld", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
 			if (sscanf (buf, "%s %lf %" PSL_LL "d", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-				fprintf (stderr, "PSL Fatal Error: Trouble decoding custom font info for font %d\n", (int)(i - *n_GMT_fonts));
+				fprintf (stderr, "PSL Fatal Error: Trouble decoding custom font info for font %ld\n", i - *n_GMT_fonts);
 				PS_exit (EXIT_FAILURE);
 			}
 			i++;
