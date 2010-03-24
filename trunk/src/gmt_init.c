@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.441 2010-03-24 01:11:56 remko Exp $
+ *	$Id: gmt_init.c,v 1.442 2010-03-24 02:45:59 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1836,7 +1836,7 @@ void GMT_backwards_compatibility () {
 
 GMT_LONG GMT_setparameter (char *keyword, char *value)
 {
-	GMT_LONG i, ival, case_val, pos
+	GMT_LONG i, ival, case_val, pos;
 	int rgb[3];
 	GMT_LONG manual, eps, error = FALSE;
 	char txt_a[GMT_LONG_TEXT], txt_b[GMT_LONG_TEXT], txt_c[GMT_LONG_TEXT], lower_value[BUFSIZ];
