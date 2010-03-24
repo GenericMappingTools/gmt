@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.197 2010-03-24 00:19:43 remko Exp $
+ *	$Id: gmt.h,v 1.198 2010-03-24 03:50:25 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -259,6 +259,12 @@ extern "C" {
  *			GMT TYPEDEF DEFINITIONS
  *--------------------------------------------------------------------*/
 
+/* Note: Under Windows 64-bit a 64-bit integer is __int64 and when used
+ * with scanf the format must be %lld.  This is not exactly what we call
+ * POSIX-clean where %ld is expected.  Thus, in places where such 64-bit
+ * variables are processed we let the compiler build the actual format
+ * using the GMT_LL string which is either "l" or "ll"
+ */
 #ifdef _WIN64
 typedef __int64 GMT_LONG;	/* A signed 8-byte integer */
 #define GMT_LL "ll"
