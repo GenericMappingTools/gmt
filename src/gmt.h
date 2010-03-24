@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.196 2010-03-23 23:35:07 remko Exp $
+ *	$Id: gmt.h,v 1.197 2010-03-24 00:19:43 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -261,10 +261,10 @@ extern "C" {
 
 #ifdef _WIN64
 typedef __int64 GMT_LONG;	/* A signed 8-byte integer */
-#define GMT_LONG_MODIFIER "ll"
+#define GMT_LL "ll"
 #else
 typedef long GMT_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
-#define GMT_LONG_MODIFIER "l"
+#define GMT_LL "l"
 #endif
 typedef void (*PFV) ();		/* PFV declares a pointer to a function returning void */
 typedef GMT_LONG (*PFL) ();	/* PFI declares a pointer to a function returning an GMT_LONG */
