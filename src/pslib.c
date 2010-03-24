@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.229 2010-03-23 23:33:20 remko Exp $
+ *	$Id: pslib.c,v 1.230 2010-03-24 01:16:32 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -4620,8 +4620,8 @@ static void ps_init_fonts (PSL_LONG *n_fonts, PSL_LONG *n_GMT_fonts)
 
 	while (fgets (buf, BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		if (sscanf (buf, "%s %lf %ld", fullname, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %ld\n", i);
+		if (sscanf (buf, "%s %lf %" PSL_LL "d", fullname, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
+			fprintf (stderr, "PSL Fatal Error: Trouble decoding font info for font %d\n", (int)i);
 			PS_exit (EXIT_FAILURE);
 		}
 		PSL->internal.font[i].name = (char *)ps_memory (VNULL, (size_t)(strlen (fullname)+1), sizeof (char));
@@ -4650,8 +4650,9 @@ static void ps_init_fonts (PSL_LONG *n_fonts, PSL_LONG *n_GMT_fonts)
 		while (fgets (buf, BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			PSL->internal.font[i].name = (char *)ps_memory (VNULL, strlen (buf), sizeof (char));
-			if (sscanf (buf, "%s %lf %ld", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-				fprintf (stderr, "PSL Fatal Error: Trouble decoding custom font info for font %ld\n", i - *n_GMT_fonts);
+			//if (sscanf (buf, "%s %lf %ld", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
+			if (sscanf (buf, "%s %lf %" PSL_LL "d", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
+				fprintf (stderr, "PSL Fatal Error: Trouble decoding custom font info for font %d\n", (int)(i - *n_GMT_fonts));
 				PS_exit (EXIT_FAILURE);
 			}
 			i++;
@@ -4838,7 +4839,7 @@ PSL_LONG ps_get_boundingbox (FILE *fp, PSL_LONG *llx, PSL_LONG *lly, PSL_LONG *t
 	while (fgets(buf, BUFSIZ, fp) != NULL) {
 		if (!nested && !strncmp(buf, "%%BoundingBox:", (size_t)14)) {
 			if (!strstr(buf, "(atend)")) {
-				if (sscanf(strchr(buf, ':') + 1, "%ld %ld %ld %ld", llx, lly, trx, try_) < 4) return 1;
+				if (sscanf(strchr(buf, ':') + 1, "%" PSL_LL "d %" PSL_LL "d %" PSL_LL "d %" PSL_LL "d", llx, lly, trx, try_) < 4) return 1;
 				break;
 			}
 		}
