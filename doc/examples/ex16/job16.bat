@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 16
 REM
-REM		$Id: job16.bat,v 1.9 2007-09-13 00:22:01 remko Exp $
+REM		$Id: job16.bat,v 1.10 2010-03-24 02:54:51 jluis Exp $
 REM
 REM Purpose:	Illustrates interpolation methods using same data as Example 12.
 REM GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate
@@ -33,7 +33,7 @@ grdfilter rawt.grd -Gfiltered.grd -D0 -Fc1
 grdview filtered.grd -R -J -Ba2f1WSne -Cex16.cpt -Qs -O -K -X3.5i >> example_16.ps
 echo 3.25 7 18 0 4 CB triangulate @~\256@~ grdfilter | pstext -R -J -O -K -N >> example_16.ps
 echo 3.2125 7.5 32 0 4 CB Gridding of Data | pstext -R0/10/0/10 -Jx1i -O -K -N -X-3.5i >> example_16.ps
-psscale -D3.21/0.35/5/0.25h -Cex16.cpt -O -U"Example 16 in Cookbook" -Y-0.75i >> example_16.ps
+psscale -D3.21i/0.35i/5i/0.25ih -Cex16.cpt -O -U"Example 16 in Cookbook" -Y-0.75i >> example_16.ps
 del *.grd
 del .gmt*
 if %master%==y cd ..
