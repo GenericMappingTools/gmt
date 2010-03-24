@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.439 2010-03-23 21:15:00 remko Exp $
+ *	$Id: gmt_init.c,v 1.440 2010-03-24 00:42:40 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2486,11 +2486,7 @@ GMT_LONG GMT_setparameter (char *keyword, char *value)
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
 			if (value[0] == '+' || value[0] == '-') {	/* OK, gave +<n>u or -<n>u, check for unit */
-#ifdef _WIN64
-				sscanf (&lower_value[1], "%d%c", &GMT_truncate_time.T.step, &GMT_truncate_time.T.unit);
-#else
-				sscanf (&lower_value[1], "%ld%c", &GMT_truncate_time.T.step, &GMT_truncate_time.T.unit);
-#endif
+				sscanf (&lower_value[1], "%" GMT_LL "d%c", &GMT_truncate_time.T.step, &GMT_truncate_time.T.unit);
 				switch (GMT_truncate_time.T.unit) {
 					case 'y':
 					case 'o':
@@ -2608,11 +2604,7 @@ GMT_LONG GMT_setparameter (char *keyword, char *value)
 			error = true_false_or_error (lower_value, &gmtdefs.history);
 			break;
 		case GMTCASE_TRANSPARENCY:
-#ifdef _WIN64
-			i = sscanf (value, "%d/%d", &gmtdefs.transparency[0], &gmtdefs.transparency[1]);
-#else
-			i = sscanf (value, "%ld/%ld", &gmtdefs.transparency[0], &gmtdefs.transparency[1]);
-#endif
+			i = sscanf (value, "%" GMT_LL "d/%d", &gmtdefs.transparency[0], &gmtdefs.transparency[1]);
 			if (i == 1)
 				gmtdefs.transparency[1] = gmtdefs.transparency[0];
 			else if (i != 2)
@@ -3176,11 +3168,7 @@ GMT_LONG GMT_get_ellipsoid (char *name)
 		i = GMT_N_ELLIPSOIDS - 1;
 		while (fgets (line, BUFSIZ, fp) && (line[0] == '#' || line[0] == '\n'));
 		fclose (fp);
-#ifdef _WIN64
-		n = sscanf (line, "%s %d %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name, &gmtdefs.ref_ellipsoid[i].date, &gmtdefs.ref_ellipsoid[i].eq_radius, &pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
-#else
-		n = sscanf (line, "%s %ld %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name, &gmtdefs.ref_ellipsoid[i].date, &gmtdefs.ref_ellipsoid[i].eq_radius, &pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
-#endif
+		n = sscanf (line, "%s %" GMT_LL "d %lf %lf %lf", gmtdefs.ref_ellipsoid[i].name, &gmtdefs.ref_ellipsoid[i].date, &gmtdefs.ref_ellipsoid[i].eq_radius, &pol_radius, &gmtdefs.ref_ellipsoid[i].flattening);
 		if (n != 5) {
 			fprintf (stderr, "GMT: Error decoding user ellipsoid parameters (%s)\n", line);
 			GMT_exit (EXIT_FAILURE);
