@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.725 2010-03-24 02:36:43 guru Exp $
+	$Id: ChangeLog,v 1.726 2010-03-25 01:18:23 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-03-24	jluis
+	* *.c:			In mains that used GMT_sdout, replaced fprintf (stdout, ...) 
+				by GMT_fputs () because both forms cannot coexist for >= VC 2005
 
 2010-03-23	pwessel
 	* *.c:			Use GMT_LL/PSL_LL to handle 64-bit integers across many OS
