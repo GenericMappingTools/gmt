@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- * $Id: dimfilter.c,v 1.8 2010-03-22 18:55:47 guru Exp $
+ * $Id: dimfilter.c,v 1.9 2010-03-25 00:12:49 jluis Exp $
  *
  *	Copyright (c) 2009-2010 by P. Wessel and Seung-Sep Kim
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 	void	set_weight_matrix (GMT_LONG nx_f, GMT_LONG ny_f, double y_0, double north, double south, double dx, double dy, double f_wid, GMT_LONG f_flag, GMT_LONG d_flag, double x_off, double y_off, GMT_LONG fast);
 
 
-	argc = GMT_begin (argc, argv);
+	argc = (int)GMT_begin (argc, argv);
 	
 	deg2km = 0.001 * 2.0 * M_PI * gmtdefs.ref_ellipsoid[gmtdefs.ellipsoid].eq_radius / 360.0;
 	error = new_range = new_increment = FALSE;
@@ -800,8 +800,8 @@ fout2 = NULL;
 	#endif	
 		if (GMT_n_multiples > 0) fprintf (stderr, "%s: WARNING: %ld multiple modes found\n", GMT_program, GMT_n_multiples);
 		
-		h.nx = nx_out;
-		h.ny = ny_out;
+		h.nx = (int)nx_out;
+		h.ny = (int)ny_out;
 		h.x_min = west_new;
 		h.x_max = east_new;
 		h.y_min = south_new;
