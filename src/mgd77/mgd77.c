@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.256 2010-03-24 23:26:19 jluis Exp $
+ *	$Id: mgd77.c,v 1.257 2010-03-25 01:07:58 jluis Exp $
  *
  *    Copyright (c) 2005-2010 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -1954,7 +1954,7 @@ int MGD77_Read_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECOR
 	GMT_chop (line);	/* Get rid of CR or LF */
 
 	MGD77Record->bit_pattern = 0;
-	for (i = (int)pos = k = nwords = 0; i < MGD77_N_DATA_FIELDS; i++) {
+	for (i = pos = k = nwords = 0; i < MGD77_N_DATA_FIELDS; i++) {
 		if (!GMT_strtok (line, "\t", &pos, p)) return (MGD77_ERROR_READ_ASC_DATA);	/* Premature record end */
 		if (i >= MGD77_ID && i <= MGD77_SSPN) {
 			strcpy (MGD77Record->word[nwords++], p);		/* Just copy text without changing it at all */
@@ -2380,7 +2380,7 @@ void MGD77_Select_Columns (char *arg, struct MGD77_CONTROL *F, int option)
 	if (option & MGD77_RESET_EXACT) F->n_exact = 0;
 	all_exact = (option & MGD77_SET_ALLEXACT);
 
-	i = (int)pos = 0;		/* Start at the first ouput column */
+	i = pos = 0;		/* Start at the first ouput column */
 	while ((GMT_strtok (cstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
 		/* Must check if we need to break this word into flag[=|<=|>=|<|>value] */
 		for (k = constraint = 0; p[k] && constraint == 0; k++) {
