@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.726 2010-03-25 01:18:23 jluis Exp $
+	$Id: ChangeLog,v 1.727 2010-03-26 00:33:45 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-03-25	remko
+	* gmt_io.c:		GMT_is_a_blank_line saw 't' instead of '\t' as whitespace
 
 2010-03-24	jluis
 	* *.c:			In mains that used GMT_sdout, replaced fprintf (stdout, ...) 
