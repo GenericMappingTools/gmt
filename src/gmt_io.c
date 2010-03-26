@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.213 2010-03-24 04:06:56 remko Exp $
+ *	$Id: gmt_io.c,v 1.214 2010-03-26 00:32:17 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -748,10 +748,10 @@ GMT_LONG GMT_set_gap () {	/* Data gaps are special since there is no multiple-se
 }
 
 GMT_LONG GMT_is_a_blank_line (char *line) {
-	/* Returns TRUE if we should skip this line (because it is blank or has comments */
+	/* Returns TRUE if we should skip this line (because it is blank or has comments) */
 	GMT_LONG i = 0;
 	if (line[i] == '#' && GMT_io.EOF_flag[GMT_IN] != '#') return (TRUE);	/* Comment */
-	while (line[i] && (line[i] == ' ' || line[i] == 't')) i++;	/* Wind past leading whitespace */
+	while (line[i] && (line[i] == ' ' || line[i] == '\t')) i++;	/* Wind past leading whitespace */
 	if (line[i] == '\n' || line[i] == '\r') return (TRUE);
 	return (FALSE);
 }
