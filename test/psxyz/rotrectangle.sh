@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: rotrectangle.sh,v 1.8 2007-11-15 04:20:42 remko Exp $
+#	$Id: rotrectangle.sh,v 1.9 2010-03-28 18:27:49 remko Exp $
 #
 # Test that psxyz properly plots rotatable rectangles -Sj and -SJ
 
@@ -7,7 +7,7 @@
 header "Test psxyz and the rotated rectangle option"
 
 # Bottom case tests -SJ with azimuths and dimensions in km
-ps=rect.ps
+ps=rotrectangle.ps
 cat << EOF > $$.rects.d
 -65 15 0 90 500 200
 -70 20 0 0 500 200
