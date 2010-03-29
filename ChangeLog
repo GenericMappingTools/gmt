@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.727 2010-03-26 00:33:45 remko Exp $
+	$Id: ChangeLog,v 1.728 2010-03-29 19:32:26 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-03-29	remko
+	* grdview.c:		Fixed bug in parsing of -W[m|c|f] option when color starts with [m|c|f]
 
 2010-03-25	remko
 	* gmt_io.c:		GMT_is_a_blank_line saw 't' instead of '\t' as whitespace
