@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.728 2010-03-29 19:32:26 remko Exp $
+	$Id: ChangeLog,v 1.729 2010-04-01 00:27:37 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-03-31	remko
+	* configure.ac:		Fixed reversed use off --enable-flock.
+	* gmt_init.c, gmt_notunix.h:	Use -DFLOCK to switch file locking on instead of -DNO_LOCK
+				to switch it off.
 
 2010-03-29	remko
 	* grdview.c:		Fixed bug in parsing of -W[m|c|f] option when color starts with [m|c|f]
