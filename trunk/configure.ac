@@ -1,6 +1,6 @@
 dnl -----------------------------------------------------------------
-dnl $Id: configure.ac,v 1.81 2010-03-09 17:33:42 guru Exp $
-AC_REVISION($Revision: 1.81 $)
+dnl $Id: configure.ac,v 1.82 2010-04-01 00:27:37 remko Exp $
+AC_REVISION($Revision: 1.82 $)
 dnl
 dnl Run GNU autoconf to produce a configure script from this input.
 dnl -----------------------------------------------------------------
@@ -533,7 +533,7 @@ dnl -----------------------------------------------------------------
 dnl
 AC_MSG_CHECKING(for file locking)
 if test "X$enable_flock" = "Xyes" ; then
-	CPPFLAGS="$CPPFLAGS -DNO_LOCK"
+	CPPFLAGS="$CPPFLAGS -DFLOCK"
 else
 	enable_flock="no"
 fi

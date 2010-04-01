@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_notunix.h,v 1.32 2010-03-23 23:35:07 remko Exp $
+ *	$Id: gmt_notunix.h,v 1.33 2010-04-01 00:27:37 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -42,9 +42,10 @@
 #define _GMT_NOTUNIX_H
 
 /* A few general comments:
- * NO_LOCK is undefined unless under EMX and _WIN32 where we do NOT want
- * file locking.  Users who do not want file locking because, say, their
- * NFS does not support it should pass the compiler macro -DNO_LOCK.
+ * FLOCK is a pain. If cannot be used under EMX and _WIN32.
+ * Also, users have problems with file locking because their 
+ * NFS does not support it. Only those who are really sure should
+ * activate -DFLOCK.
  */
 
 
@@ -250,7 +251,7 @@ EXTERN_MSC void GMT_setmode (int i_or_o);
 
 #include <io.h>
 
-#define NO_LOCK		/* Do not support file locking */
+#undef FLOCK		/* Do not support file locking */
 #define SET_IO_MODE	/* Need to force binary i/o upon request */
 #define NO_FCNTL	/* fcntl.h does not exist here */
 #define STAT _stat
@@ -270,7 +271,7 @@ EXTERN_MSC void GMT_setmode (int i_or_o);
  
 #ifdef _WIN32	/* Start of NON-UNIX */
 
-#define NO_LOCK		/* Do not support file locking */
+#undef FLOCK		/* Do not support file locking */
 #define SET_IO_MODE	/* Need to force binary i/o upon request */
 
 EXTERN_MSC void GMT_setmode (int i_or_o);

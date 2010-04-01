@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.442 2010-03-24 02:45:59 jluis Exp $
+ *	$Id: gmt_init.c,v 1.443 2010-04-01 00:27:37 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3888,7 +3888,7 @@ GMT_LONG GMT_history (int argc, char ** argv)
 	char line[BUFSIZ], hfile[BUFSIZ], cwd[BUFSIZ];
 	char *newargv[GMT_N_UNIQUE], *new_j = CNULL, *old_j = CNULL, *not_used = NULL;
 	FILE *fp;	/* For .gmtcommands4 file */
-#ifndef NO_LOCK
+#ifdef FLOCK
 	struct flock lock;
 #endif
 
@@ -3927,7 +3927,7 @@ GMT_LONG GMT_history (int argc, char ** argv)
 	if ((fp = fopen (hfile, "r+")) != NULL) {
 
 		/* When we get here the file exists */
-#ifndef NO_LOCK
+#ifdef FLOCK
 		GMT_file_lock (fileno(fp), &lock);
 #endif
 		/* Get the common arguments and copy them to array GMT_oldargv */
@@ -3953,7 +3953,7 @@ GMT_LONG GMT_history (int argc, char ** argv)
 		}
 
 		/* Close the file */
-#ifndef NO_LOCK
+#ifdef FLOCK
 		GMT_file_unlock (fileno(fp), &lock);
 #endif
 		fclose (fp);
@@ -4074,7 +4074,7 @@ GMT_LONG GMT_history (int argc, char ** argv)
 		fprintf (stderr, "GMT Warning: Could not update %s [permission problem?]\n", hfile);
 		return (GMT_NOERROR);
 	}
-#ifndef NO_LOCK
+#ifdef FLOCK
 	GMT_file_lock(fileno(fp), &lock);
 #endif
 
@@ -4086,7 +4086,7 @@ GMT_LONG GMT_history (int argc, char ** argv)
 	fprintf (fp, "EOF\n");	/* Logical end of file marker (since old file may be longer) */
 
 	fflush (fp);		/* To ensure all is written when lock is released */
-#ifndef NO_LOCK
+#ifdef FLOCK
 	GMT_file_unlock(fileno(fp), &lock);
 #endif
 	fclose (fp);
@@ -4094,7 +4094,7 @@ GMT_LONG GMT_history (int argc, char ** argv)
 	return (GMT_NOERROR);
 }
 
-#ifndef NO_LOCK
+#ifdef FLOCK
 void GMT_file_lock (int fd, struct flock *lock)
 {
 	lock->l_type = F_WRLCK;		/* Lock for [exclusive] reading/writing */
