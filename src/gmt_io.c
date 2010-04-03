@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.214 2010-03-26 00:32:17 remko Exp $
+ *	$Id: gmt_io.c,v 1.215 2010-04-03 02:25:05 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -176,6 +176,11 @@ int GMT_ungetc (int c, FILE *stream)
 int GMT_fputs (const char *str, FILE *stream)
 {
 	return (fputs (str, stream));
+}
+
+int GMT_fputc (const int c, FILE *stream)
+{
+	return (fputc (c, stream));
 }
 
 int GMT_fseek (FILE *stream, long offset, int whence)
