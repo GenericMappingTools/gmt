@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.h,v 1.85 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_io.h,v 1.86 2010-04-03 02:25:05 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -83,6 +83,7 @@ EXTERN_MSC char *GMT_fgets (char *line, int buf, FILE *fp);
 EXTERN_MSC int GMT_fgetc (FILE *stream);
 EXTERN_MSC int GMT_ungetc (int c, FILE *stream);
 EXTERN_MSC int GMT_fputs (const char *line, FILE *fp);
+EXTERN_MSC int GMT_fputc (int c, FILE *fp);
 EXTERN_MSC int GMT_fseek (FILE *stream, long offset, int whence);
 EXTERN_MSC long GMT_ftell (FILE *stream);
 EXTERN_MSC size_t GMT_fread (void * ptr, size_t size, size_t nmemb, FILE *stream);
@@ -94,6 +95,7 @@ EXTERN_MSC void GMT_rewind (FILE *stream);
 #define GMT_fgetc(stream) fgetc(stream)
 #define GMT_ungetc(c, stream) ungetc(c, stream)
 #define GMT_fputs(line,fp) fputs(line,fp)
+#define GMT_fputc(c,fp) fputc(c,fp)
 #define GMT_fseek(stream,offset,whence) fseek(stream,offset,whence)
 #define GMT_ftell(stream) ftell(stream)
 #define GMT_fread(ptr,size,nmemb,stream) fread(ptr,size,nmemb,stream)
