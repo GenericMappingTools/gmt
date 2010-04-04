@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.198 2010-03-24 03:50:25 guru Exp $
+ *	$Id: gmt.h,v 1.199 2010-04-04 01:01:32 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -100,6 +100,7 @@ extern "C" {
  *			GMT CONSTANTS MACRO DEFINITIONS
  *--------------------------------------------------------------------*/
 
+#define BOOLEAN GMT_LONG
 #ifndef TRUE
 #define TRUE 1
 #endif
