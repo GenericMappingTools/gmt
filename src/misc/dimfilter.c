@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- * $Id: dimfilter.c,v 1.9 2010-03-25 00:12:49 jluis Exp $
+ * $Id: dimfilter.c,v 1.10 2010-04-04 01:42:42 guru Exp $
  *
  *	Copyright (c) 2009-2010 by P. Wessel and Seung-Sep Kim
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -43,11 +43,11 @@ int main (int argc, char **argv)
 {
 	short int **sector = NULL;
 	
-	GMT_LONG	nx_out, ny_out, nx_fil, ny_fil, *n_in_median, n_nan = 0;
-	GMT_LONG	x_half_width, y_half_width, j_origin, i_out, j_out, wsize = 0;
-	GMT_LONG	i_in, j_in, ii, jj, i, j, ij_in, ij_out, ij_wt, effort_level, k, s, n = 0;
-	GMT_LONG	distance_flag, filter_type, filter2_type, n_sectors = 1, n_sectors_2 = 0, one_or_zero = 1;
-	GMT_LONG GMT_mode_selection = 0, GMT_n_multiples = 0;
+	GMT_LONG nx_out, ny_out, nx_fil, ny_fil, *n_in_median, n_nan = 0;
+	GMT_LONG x_half_width, y_half_width, j_origin, i_out, j_out, wsize = 0;
+	GMT_LONG i_in, j_in, ii, jj, i, j, ij_in, ij_out, ij_wt, effort_level, k, s, n = 0;
+	GMT_LONG distance_flag, filter_type, filter2_type, n_sectors = 1, n_sectors_2 = 0, one_or_zero = 1;
+	GMT_LONG GMT_mode_selection = 0, GMT_n_multiples = 0, *n_alloc;
 	
 	FILE *ip;
 	GMT_LONG err_cols = 0, err_l=1;
@@ -55,23 +55,23 @@ int main (int argc, char **argv)
 	double err_workarray[50], err_min, err_max, err_null_median=0.0, err_median, err_mad, err_depth, err_mean, err_sum;
    	GMT_LONG dimerr=FALSE;
 	
-	GMT_LONG	error, new_range, new_increment, fast_way, shift = FALSE, slow, slow2, toggle = FALSE, corridor = FALSE;
+	GMT_LONG error, new_range, new_increment, fast_way, shift = FALSE, slow, slow2, toggle = FALSE, corridor = FALSE;
 #ifdef OBSOLETE	
 	GMT_LONG do_scale = FALSE, trend = FALSE, first_time = TRUE;
 #endif
 	
-	double	west_new, east_new, south_new, north_new, dx_new, dy_new, offset;
-	double	filter_width, x_scale, y_scale, x_width, y_width, angle, z = 0.0;
-	double	x_out, y_out, *wt_sum, *value, last_median, this_median, last_median2 = 0.0, this_median2, xincnew2, yincnew2;
-	double	z_min, z_max, z2_min = 0.0, z2_max = 0.0, wx = 0.0, *c_x = NULL, *c_y = NULL, d;
-	double	xincold2, yincold2, y_shift = 0.0, x_fix = 0.0, y_fix = 0.0;
+	double west_new, east_new, south_new, north_new, dx_new, dy_new, offset;
+	double filter_width, x_scale, y_scale, x_width, y_width, angle, z = 0.0;
+	double x_out, y_out, *wt_sum, *value, last_median, this_median, last_median2 = 0.0, this_median2, xincnew2, yincnew2;
+	double z_min, z_max, z2_min = 0.0, z2_max = 0.0, wx = 0.0, *c_x = NULL, *c_y = NULL, d;
+	double xincold2, yincold2, y_shift = 0.0, x_fix = 0.0, y_fix = 0.0;
 #ifdef DEBUG
 	double x_debug[5];
 	double y_debug[5];
 	double z_debug[5];
 #endif
 	
-	char	*fin = CNULL, *fout = CNULL;
+	char *fin = CNULL, *fout = CNULL;
 #ifdef OBSOLETE
 	int n_bad_planes = 0, S = 0;
 	double	Sx = 0.0, Sy = 0.0, Sz = 0.0, Sxx = 0.0, Syy = 0.0, Sxy = 0.0, Sxz = 0.0, Syz = 0.0;
@@ -80,9 +80,9 @@ int main (int argc, char **argv)
 	char *fout2 = CNULL;
 #endif	
 	double	**work_array = NULL;
-	GMT_LONG	*i_origin;
-	float	*input, *output;
-	double	*x_shift = NULL;
+	GMT_LONG *i_origin;
+	float *input, *output;
+	double *x_shift = NULL;
 
 	#ifdef OBSOLETE
 	double	*work_array2;			
@@ -398,8 +398,8 @@ fout2 = NULL;
 		}
 		x_width = filter_width / (h.x_inc * x_scale);
 		y_width = filter_width / (h.y_inc * y_scale);
-		y_half_width = (int) (ceil(y_width) / 2.0);
-		x_half_width = (int) (ceil(x_width) / 2.0);
+		y_half_width = (GMT_LONG) (ceil(y_width) / 2.0);
+		x_half_width = (GMT_LONG) (ceil(x_width) / 2.0);
 
 		nx_fil = 2 * x_half_width + 1;
 		ny_fil = 2 * y_half_width + 1;
@@ -407,6 +407,7 @@ fout2 = NULL;
 
 		if (slow) {	/* SCAN: Now require several work_arrays, one for each sector */
 			work_array = (double **) GMT_memory (VNULL, (size_t)(n_sectors), sizeof(double *), GMT_program);
+			n_alloc = (GMT_LONG *) GMT_memory (VNULL, (size_t)(n_sectors), sizeof(GMT_LONG), GMT_program);
 	#ifdef OBSOLETE							
 			if (do_scale) work_array2 = (double *) GMT_memory (VNULL, (size_t)(2*nx_fil*ny_fil), sizeof(double), GMT_program);
 			if (trend) {
@@ -417,6 +418,7 @@ fout2 = NULL;
 			wsize = 2*nx_fil*ny_fil/n_sectors;	/* Should be enough, watch for messages to the contrary */
 			for (i = 0; i < n_sectors; i++) {
 				work_array[i] = (double *) GMT_memory (VNULL, (size_t)(wsize), sizeof(double), GMT_program);
+				n_alloc[i] = wsize;
 	#ifdef OBSOLETE								
 				if (trend) {
 					xx[i] = (short int *) GMT_memory (VNULL, (size_t)(wsize), sizeof(short int), GMT_program);
@@ -436,7 +438,7 @@ fout2 = NULL;
 		
 		for (i_out = 0; i_out < nx_out; i_out++) {
 			x_out = west_new + i_out * dx_new + xincnew2;
-			i_origin[i_out] = (int)floor(((x_out - h.x_min) / h.x_inc) + offset);
+			i_origin[i_out] = (GMT_LONG)floor(((x_out - h.x_min) / h.x_inc) + offset);
 			if (!fast_way) x_shift[i_out] = x_out - (h.x_min + i_origin[i_out] * h.x_inc + xincold2);
 		}
 		
@@ -480,7 +482,7 @@ fout2 = NULL;
 					/* We are doing "bow-ties" and not wedges here */
 					angle = atan2 ((double)jj, (double)ii);				/* Returns angle in -PI,+PI range */
 					if (angle < 0.0) angle += M_PI;					/* Flip to complimentary sector in 0-PI range */
-					sector[j][i] = (int) rint ((n_sectors * angle) / M_PI);		/* Convert to sector id 0-<n_sectors-1> */
+					sector[j][i] = (GMT_LONG) rint ((n_sectors * angle) / M_PI);		/* Convert to sector id 0-<n_sectors-1> */
 					if (sector[j][i] == n_sectors) sector[j][i] = 0;		/* Ensure that exact PI is set to 0 */
 				}
 			}
@@ -493,7 +495,7 @@ fout2 = NULL;
 		
 			if (gmtdefs.verbose) fprintf (stderr, "%s: Processing output line %ld\r", GMT_program, j_out);
 			y_out = north_new - j_out * dy_new - yincnew2;
-			j_origin = (int)floor(((h.y_max - y_out) / h.y_inc) + offset);
+			j_origin = (GMT_LONG)floor(((h.y_max - y_out) / h.y_inc) + offset);
 			if (effort_level == 2)
 				set_weight_matrix (nx_fil, ny_fil, y_out, north_new, south_new, h.x_inc, h.y_inc, filter_width, filter_type, distance_flag, x_fix, y_fix, shift);
 			if (!fast_way) y_shift = y_out - (h.y_max - j_origin * h.y_inc - yincold2);
@@ -502,7 +504,7 @@ fout2 = NULL;
 			
 				if (effort_level == 3)
 					set_weight_matrix (nx_fil, ny_fil, y_out, north_new, south_new, h.x_inc, h.y_inc, filter_width, filter_type, distance_flag, x_shift[i_out], y_shift, fast_way);
-				memset ((void *)n_in_median, 0, (size_t)(n_sectors * sizeof (int)));
+				memset ((void *)n_in_median, 0, (size_t)(n_sectors * sizeof (GMT_LONG)));
 				memset ((void *)value, 0, (size_t)(n_sectors * sizeof (double)));
 				memset ((void *)wt_sum, 0, (size_t)(n_sectors * sizeof (double)));
 	#ifdef OBSOLETE			
@@ -536,6 +538,10 @@ fout2 = NULL;
 								d = sqrt (c_y[s] * ii + c_x[s] * jj);	/* Perpendicular distance to central diameter, in nodes */
 								if (d > y_half_width) continue;	/* Outside this corridor */
 								if (slow) {
+									if (n_in_median[s] == n_alloc[s]) {
+										n_alloc[s] += wsize;
+										work_array[s] = (double *) GMT_memory ((void *)work_array[s], (size_t)(n_alloc[s]), sizeof(double), GMT_program);
+									}
 									work_array[s][n_in_median[s]] = input[ij_in];
 	#ifdef OBSOLETE												
 									if (do_scale) work_array2[n++] = input[ij_in];
@@ -579,6 +585,10 @@ fout2 = NULL;
 						else if (ii == 0 && jj == 0) {	/* Center point belongs to all sectors */
 							if (slow) {	/* Must store copy in all work arrays */
 								for (s = 0; s < n_sectors; s++) {
+									if (n_in_median[s] == n_alloc[s]) {
+										n_alloc[s] += wsize;
+										work_array[s] = (double *) GMT_memory ((void *)work_array[s], (size_t)(n_alloc[s]), sizeof(double), GMT_program);
+									}
 									work_array[s][n_in_median[s]] = input[ij_in];
 	#ifdef DEBUG
 									if (n_in_median[s] < 5) x_debug[n_in_median[s]] = ii;
@@ -619,6 +629,10 @@ fout2 = NULL;
 							s = sector[jj+y_half_width][ii+x_half_width];	/* Get the sector for this node */
 
 							if (slow) {
+								if (n_in_median[s] == n_alloc[s]) {
+									n_alloc[s] += wsize;
+									work_array[s] = (double *) GMT_memory ((void *)work_array[s], (size_t)(n_alloc[s]), sizeof(double), GMT_program);
+								}
 								work_array[s][n_in_median[s]] = input[ij_in];
 	#ifdef OBSOLETE												
 								if (do_scale) work_array2[n++] = input[ij_in];
@@ -686,7 +700,6 @@ fout2 = NULL;
 					}
 					for (s = k = 0; s < n_sectors; s++) {
 						if (n_in_median[s]) {
-							if (n_in_median[s] >= wsize) fprintf (stderr, "Exceed array size (%ld > %ld)!\n", n_in_median[s], wsize);
 	#ifdef OBSOLETE											
 							if (trend) {
 								z_min = DBL_MAX;
@@ -846,6 +859,7 @@ fout2 = NULL;
 	#endif			
 			}
 			GMT_free ((void *) work_array);
+			GMT_free ((void *) n_alloc);
 	#ifdef OBSOLETE							
 			if (do_scale) GMT_free ((void *) work_array2);
 			if (trend) {
