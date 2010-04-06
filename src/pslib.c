@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.231 2010-03-24 02:36:44 guru Exp $
+ *	$Id: pslib.c,v 1.232 2010-04-06 21:25:56 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1206,13 +1206,11 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 	fprintf (PSL->internal.fp, "V N %g %g T %g %g scale\n", x * PSL->internal.scale, y * PSL->internal.scale, xsize * PSL->internal.scale / nx, ysize * PSL->internal.scale / ny);
 	fprintf (PSL->internal.fp, "%ld %ld T\n", -ox, -oy);
 	fprintf (PSL->internal.fp, "N %ld %ld m %ld %ld L %ld %ld L %ld %ld L P clip N\n", ox, oy, ox+nx, oy, ox+nx, oy+ny, ox, oy+ny);
-	fprintf (PSL->internal.fp, "countdictstack\nmark\n/showpage {} def\n");
-	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% Start of imported EPS file\n");
+	fprintf (PSL->internal.fp, "PSL_eps_begin\n");
 	fprintf (PSL->internal.fp, "%%%%BeginDocument: psimage.eps\n");
 	unused = (int)fwrite (buffer, (size_t)1, (size_t)size, PSL->internal.fp);
 	fprintf (PSL->internal.fp, "%%%%EndDocument\n");
-	if (PSL->internal.comments) fprintf (PSL->internal.fp, "%% End of imported EPS file\n");
-	fprintf (PSL->internal.fp, "cleartomark\ncountdictstack exch sub { end } repeat\ngrestore\n");
+	fprintf (PSL->internal.fp, "PSL_eps_end\n");
 }
 
 PSL_LONG ps_line (double *x, double *y, PSL_LONG n, PSL_LONG type, PSL_LONG close)
@@ -1647,7 +1645,7 @@ PSL_LONG ps_plotinit_hires (char *plotfile, PSL_LONG overlay, PSL_LONG mode, dou
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.25 ");	/* Version number should match that of PSL_prologue.ps */
+		ps_bulkcopy ("PSL_prologue", "v 1.26 ");	/* Version number should match that of PSL_prologue.ps */
 		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Initialize book-keeping for font encoding and write font macros */

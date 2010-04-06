@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.729 2010-04-01 00:27:37 remko Exp $
+	$Id: ChangeLog,v 1.730 2010-04-06 21:25:56 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-04-06	remko
+	 * pslib.c, PSL_prologue.ps:	Improved version of EPS inclusion mechanism
 
 2010-03-31	remko
 	* configure.ac:		Fixed reversed use off --enable-flock.
