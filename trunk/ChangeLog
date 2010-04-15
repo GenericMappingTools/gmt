@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.730 2010-04-06 21:25:56 remko Exp $
+	$Id: ChangeLog,v 1.731 2010-04-15 01:57:56 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-04-14	pwessel
+	* pshistogram.c:	Fixed # of bins bug when a datapoint equaled east.
 
 2010-04-06	remko
 	 * pslib.c, PSL_prologue.ps:	Improved version of EPS inclusion mechanism
