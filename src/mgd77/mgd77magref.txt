@@ -14,7 +14,7 @@ No space between the option flag and the associated arguments.
 \fIinputfile\fP
 Contains the moments in space-time where we want to evaluate the magnetic reference field.  The first two columns must contain
 longitude and latitude (however, see OPT(:) for latitude and longitude instead).  Normally, the third
-and fourth columns must contain altitude and time, respectively, but if one or both of these are constant
+and fourth columns must contain altitude (in km) and time, respectively, but if one or both of these are constant
 for all records they can be supplied via the OPT(A) option instead and are thus not expected in the input
 file. If no input file is given we read \fIstdin\fP.
 A note about the CM4 validity domain. The core field of CM4 is valid from 1960-2002.5 but the ionospheric and 
@@ -28,7 +28,7 @@ till August 2009 by reformating the data in the preliminary file Est_Ist_index_0
 ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/
 .TP
 OPT(A)
-Adjusts how the input record is interpreted.  Append \fB+a\fP to set a fixed \fIaltitude\fP that should
+Adjusts how the input record is interpreted.  Append \fB+a\fP to set a fixed \fIaltitude\fP (in km) that should
 apply to all data records [Default expects \fIaltitude\fP to be in the 3rd column of all records].
 Append \fB+t\fP to set a fixed \fItime\fP that should
 apply to all data records [Default expects \fItime\fP to be in the 4th column of all records].
