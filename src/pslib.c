@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: pslib.c,v 1.232 2010-04-06 21:25:56 remko Exp $
+ *	$Id: pslib.c,v 1.233 2010-04-19 15:44:43 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1203,10 +1203,10 @@ void ps_epsimage (double x, double y, double xsize, double ysize, unsigned char 
 	 * ox,oy:	Coordinates of lower left corner (in pixels)
 	 */
 	int unused = 0;
-	fprintf (PSL->internal.fp, "V N %g %g T %g %g scale\n", x * PSL->internal.scale, y * PSL->internal.scale, xsize * PSL->internal.scale / nx, ysize * PSL->internal.scale / ny);
+	fprintf (PSL->internal.fp, "PSL_eps_begin\n");
+	fprintf (PSL->internal.fp, "%g %g T %g %g scale\n", x * PSL->internal.scale, y * PSL->internal.scale, xsize * PSL->internal.scale / nx, ysize * PSL->internal.scale / ny);
 	fprintf (PSL->internal.fp, "%ld %ld T\n", -ox, -oy);
 	fprintf (PSL->internal.fp, "N %ld %ld m %ld %ld L %ld %ld L %ld %ld L P clip N\n", ox, oy, ox+nx, oy, ox+nx, oy+ny, ox, oy+ny);
-	fprintf (PSL->internal.fp, "PSL_eps_begin\n");
 	fprintf (PSL->internal.fp, "%%%%BeginDocument: psimage.eps\n");
 	unused = (int)fwrite (buffer, (size_t)1, (size_t)size, PSL->internal.fp);
 	fprintf (PSL->internal.fp, "%%%%EndDocument\n");
@@ -1645,7 +1645,7 @@ PSL_LONG ps_plotinit_hires (char *plotfile, PSL_LONG overlay, PSL_LONG mode, dou
 		fprintf (PSL->internal.fp, "%%%%EndComments\n\n");
 
 		fprintf (PSL->internal.fp, "%%%%BeginProlog\n");
-		ps_bulkcopy ("PSL_prologue", "v 1.26 ");	/* Version number should match that of PSL_prologue.ps */
+		ps_bulkcopy ("PSL_prologue", "v 1.27 ");	/* Version number should match that of PSL_prologue.ps */
 		ps_bulkcopy (PSL->init.encoding, "");
 
 		def_font_encoding ();		/* Initialize book-keeping for font encoding and write font macros */

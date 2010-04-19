@@ -1,4 +1,4 @@
-%-	$Id: PSL_prologue.ps,v 1.26 2010-04-06 21:25:56 remko Exp $
+%-	$Id: PSL_prologue.ps,v 1.27 2010-04-19 15:44:43 remko Exp $
 %-	Make sure that the version number matches the one mentioned in pslib.c
 % Begin pslib header
 250 dict begin
@@ -75,14 +75,14 @@
 % Pie Wedge
 /SW {S 2 copy 7 -3 roll arc L P fs os}!
 % To reencode one font with the provided encoding vector
-/PSL_reencode { findfont dup length dict begin
+/PSL_reencode {findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding exch def currentdict end definefont pop
 }!
 /PSL_eps_begin {					% Marks begin of EPSF inclusion
   /PSL_eps_state save def				% Save state for cleanup
-  /dict_count countdictstack def			% Count objects on dict stack
-  /op_count count 1 sub def				% Count objects on operand stack
+  /PSL_dict_count countdictstack def			% Count objects on dict stack
+  /PSL_op_count count 1 sub def				% Count objects on operand stack
   userdict begin					% Push userdict stack
   /showpage {} def					% Deactivate showpage command
   0 setgray 0 setlinecap 1 setlinewidth			% Prepare clean graphics state
@@ -91,7 +91,7 @@
   {pop languagelevel 1 ne {false setstrokeadjust false setoverprint} if} if
 }!
 /PSL_eps_end {						% Marks end of EPSF inclusion
-  count op_count sub {pop} repeat			% Clean up operand stack
-  countdictstack dict_count sub {end} repeat		% Clean up dict stack
+  count PSL_op_count sub {pop} repeat			% Clean up operand stack
+  countdictstack PSL_dict_count sub {end} repeat	% Clean up dict stack
   PSL_eps_state restore					% Restore saved state
 }!
