@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: GMT_App_F.sh,v 1.12 2009-04-17 00:16:11 remko Exp $
+#	$Id: GMT_App_F.sh,v 1.13 2010-04-20 14:43:19 remko Exp $
 #
 #	Makes the octal code charts in Appendix F
 
@@ -193,9 +193,9 @@ EOF
 
 
 gmtset CHAR_ENCODING ISOLatin1+
-# Then for ISOLatin1Encoding+
+# Then for ISOLatin1+
 # First the uncoded ones
-psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:ISOLatin+:N -P -K -m -Gdarkgray -Y0.0 << EOF > GMT_App_F_iso+.ps
+psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:ISOLatin1+:N -P -K -m -Gdarkgray -Y0.0 << EOF > GMT_App_F_iso+.ps
 >
 1	4
 2	4
@@ -207,7 +207,7 @@ psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:ISOLatin+:N -P -K -m -Gdarkgray -Y0.0 << EOF
 2	20
 1	20
 EOF
-#Then highlight ISOLatin1Encoding+ enhancements
+# Then highlight ISOLatin1+ enhancements
 psxy -R -J -O -K -m -Glightgray << EOF >> GMT_App_F_iso+.ps
 >
 2	4
