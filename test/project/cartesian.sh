@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: cartesian.sh,v 1.11 2009-04-17 00:31:30 remko Exp $
+#	$Id: cartesian.sh,v 1.12 2010-04-21 21:16:36 remko Exp $
 #
 # Tests project in Cartesian manipulations
 
@@ -50,7 +50,7 @@ while read az; do
 	while read x y; do
 		makeproj $az $cx $cy $x $y > $$.d
 		psbasemap -R-2/2/-2/2 -JX1.5i -B2g1${Bx}${By} -O -K -Xa$xpos -Ya$ypos >> $ps
-		echo "0 0 $az 0" | psxy -R -J -O -K -SW0.2 -W0.25p -Xa$xpos -Ya$ypos >> $ps
+		echo "0 0 0 $az" | psxy -R -J -O -K -SW0.2 -W0.25p -Xa$xpos -Ya$ypos >> $ps
 		makeaxis $az $cx $cy axes.$$ | psxy -R -J -O -K -m -W1p,red -Xa$xpos -Ya$ypos >> $ps
 		echo "$cx $cy $az 0.75" | psxy -R -J -O -K -SV0.01/0.15/0.1 -Gred -Xa$xpos -Ya$ypos >> $ps
 		echo "$cx $cy $az90 0.75" | psxy -R -J -O -K -SV0.01/0.15/0.1 -Gred -Xa$xpos -Ya$ypos >> $ps
