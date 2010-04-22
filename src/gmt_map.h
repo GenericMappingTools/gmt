@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.h,v 1.34 2010-03-22 18:55:44 guru Exp $
+ *	$Id: gmt_map.h,v 1.35 2010-04-22 17:29:20 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -50,7 +50,6 @@ EXTERN_MSC GMT_LONG GMT_map_clip_path (double **x, double **y, GMT_LONG *donut);
 EXTERN_MSC GMT_LONG GMT_genper_map_clip_path (GMT_LONG np, double *work_x, double *work_y);
 EXTERN_MSC GMT_LONG GMT_map_outside (double lon, double lat);
 EXTERN_MSC GMT_LONG GMT_map_path (double lon1, double lat1, double lon2, double lat2, double **x, double **y);
-EXTERN_MSC GMT_LONG GMT_wesn_outside_np (double lon, double lat);
 EXTERN_MSC void GMT_2D_to_3D (double *x, double *y, double z, GMT_LONG n);
 EXTERN_MSC void GMT_2Dz_to_3D (double *x, double *y, double z, GMT_LONG n);
 EXTERN_MSC void GMT_ECEF_forward (double in[], double out[]);

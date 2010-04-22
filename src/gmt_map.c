@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.251 2010-03-24 02:36:44 guru Exp $
+ *	$Id: gmt_map.c,v 1.252 2010-04-22 17:29:20 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -55,7 +55,6 @@
  *	GMT_map_outside :	Generic function determines if we're outside map boundary
  *	GMT_map_path :		Return latpat or GMT_lonpath
  *	GMT_map_setup :		Initialize map projection
- *	GMT_pen_status :	Determines if pen is up or down
  *	GMT_project3D :		Convert lon/lat/z to xx/yy/zz
  *	GMT_2D_to_3D :		Convert xyz to xy for entire array
  *	GMT_xy_to_geo :		Generic inverse x/y to lon/lat projection
@@ -63,7 +62,6 @@
  *
  * Internal GMT Functions include:
  *
- *	GMT_break_through :		Checks if we cross a map boundary
  *	GMT_get_origin :		Find origin of projection based on pole and 2nd point
  *	GMT_get_rotate_pole :		Find rotation pole based on two points on great circle
  *	GMT_ilinearxy :			Inverse linear projection
@@ -139,7 +137,6 @@ GMT_LONG GMT_wesn_overlap (double lon0, double lat0, double lon1, double lat1);	
 GMT_LONG GMT_rect_overlap (double lon0, double lat0, double lon1, double lat1);		/* Checks if two xy regions overlap */
 GMT_LONG GMT_radial_overlap (double lon0, double lat0, double lon1, double lat1);		/* Currently a dummy routine */
 GMT_LONG GMT_genper_overlap(double lon0, double lat0, double lon1, double lat1);	/* Currently a dummy routine */
-GMT_LONG GMT_break_through  (double x0, double y0, double x1, double y1);
 GMT_LONG GMT_map_crossing  (double lon1, double lat1, double lon2, double lat2, double *xlon, double *xlat, double *xx, double *yy, GMT_LONG *sides);
 
 GMT_LONG GMT_map_init_linear (void);
@@ -440,6 +437,7 @@ GMT_LONG GMT_map_setup (double west, double east, double south, double north)
 	GMT_will_it_wrap = (PFB) GMT_will_it_wrap_x;
 	GMT_this_point_wraps = (PFB) GMT_this_point_wraps_x;
 	GMT_get_crossings = (PFV) GMT_get_crossings_x;
+	GMT_lon_wrap = TRUE;
 	GMT_lat_swap_init ();
 
 	/* Use old radial clip function for pscoast and gmtselect; grdlandmask sets -Jx1d so not included */
@@ -955,6 +953,8 @@ GMT_LONG GMT_map_init_linear (void) {
 		project_info.central_meridian = 0.5 * (project_info.w + project_info.e);
 		GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL);
 	}
+	else
+		GMT_lon_wrap = FALSE;
 	project_info.x_scale = project_info.pars[0];
 	project_info.y_scale = project_info.pars[1];
 	if (project_info.x_scale < 0.0) project_info.xyz_pos[0] = FALSE;	/* User wants x to increase left */
@@ -1104,13 +1104,10 @@ GMT_LONG GMT_map_init_polar (void)
 	GMT_right_edge = (PFD) GMT_right_circle;
 	GMT_forward = (PFL) GMT_polar;
 	GMT_inverse = (PFL) GMT_ipolar;
-	/* GMT_world_map = (fabs (fabs (project_info.e - project_info.w) - 360.0) < GMT_SMALL); */
 	GMT_world_map = FALSE;	/* There is no wrapping around here */
 	GMT_xy_search (&xmin, &xmax, &ymin, &ymax, project_info.w, project_info.e, project_info.s, project_info.n);
 	project_info.x_scale = project_info.y_scale = project_info.pars[0];
 	GMT_map_setinfo (xmin, xmax, ymin, ymax, project_info.pars[0]);
-	/* xmin = ymin = -project_info.n;	xmax = ymax = project_info.n;
-	project_info.x_scale = project_info.y_scale = project_info.pars[0]; */
 	GMT_geo_to_xy (project_info.central_meridian, project_info.pole, &project_info.c_x0, &project_info.c_y0);
 
 	/* project_info.r = 0.5 * project_info.xmax; */
@@ -3145,31 +3142,25 @@ void GMT_xy_search (double *x0, double *x1, double *y0, double *y1, double w0, d
 
 GMT_LONG GMT_map_crossing (double lon1, double lat1, double lon2, double lat2, double *xlon, double *xlat, double *xx, double *yy, GMT_LONG *sides)
 {
-	GMT_LONG nx;
-	GMT_corner = -1;
-	nx = (*GMT_crossing) (lon1, lat1, lon2, lat2, xlon, xlat, xx, yy, sides);
+	/* Check if line segment between (lon1,lat1) and (lon2,lat2) crosses any map boundary.
+	 * If so: create new points xlon[],xlat[] to function as intermediaries as well as their
+	 * projected coordinates xx[],yy[].
+	 * Return value is zero when no crossing was found, otherwise returns 1 or 2.
+	 */
 
-	/* nx may be -2, in which case we don't want to check the order */
-	if (nx == 2) {	/* Must see if crossings are in correct order */
-		double da, db;
-
-		if (GMT_IS_MAPPING) {
-			da = GMT_great_circle_dist (lon1, lat1, xlon[0], xlat[0]);
-			db = GMT_great_circle_dist (lon1, lat1, xlon[1], xlat[1]);
-		}
-		else {
-			da = hypot (lon1 - xlon[0], lat1 - xlat[0]);
-			db = hypot (lon1 - xlon[1], lat1 - xlat[1]);
-		}
-		if (da > db) { /* Must swap */
-			d_swap (xlon[0], xlon[1]);
-			d_swap (xlat[0], xlat[1]);
-			d_swap (xx[0], xx[1]);
-			d_swap (yy[0], yy[1]);
-			l_swap (sides[0], sides[1]);
-		}
+	if (GMT_x_status_old == GMT_x_status_new && GMT_y_status_old == GMT_y_status_new) {
+		/* This is naieve. We could have two points outside with a line drawn between crossing the plotting area. */
+		return (0);
 	}
-	return (GMT_abs(nx));
+	else if ((GMT_x_status_old == 0 && GMT_y_status_old == 0) || (GMT_x_status_new == 0 && GMT_y_status_new == 0)) {
+		/* This is a crossing */
+	}
+	else if (!(*GMT_overlap) (lon1, lat1, lon2, lat2))	/* Less clearcut case, check for overlap */
+		return (0);
+
+	/* Now compute the crossing */
+	GMT_corner = -1;
+	return ((*GMT_crossing) (lon1, lat1, lon2, lat2, xlon, xlat, xx, yy, sides));
 }
 
 GMT_LONG GMT_map_outside (double lon, double lat)
@@ -3179,19 +3170,9 @@ GMT_LONG GMT_map_outside (double lon, double lat)
 	return ((*GMT_outside) (lon, lat));
 }
 
-GMT_LONG GMT_break_through (double x0, double y0, double x1, double y1)
-{
-
-	if (GMT_x_status_old == GMT_x_status_new && GMT_y_status_old == GMT_y_status_new) return (FALSE);
-	if ((GMT_x_status_old == 0 && GMT_y_status_old == 0) || (GMT_x_status_new == 0 && GMT_y_status_new == 0)) return (TRUE);
-
-	/* Less clearcut case, check for overlap */
-
-	return ( (*GMT_overlap) (x0, y0, x1, y1));
-}
-
 GMT_LONG GMT_rect_overlap (double lon0, double lat0, double lon1, double lat1)
 {
+	/* Return true if the projection of either (lon0,lat0) and (lon1,lat1) is inside (not on) the rectangular map boundary */
 	double x0, y0, x1, y1;
 
 	GMT_geo_to_xy (lon0, lat0, &x0, &y0);
@@ -3209,23 +3190,22 @@ GMT_LONG GMT_rect_overlap (double lon0, double lat0, double lon1, double lat1)
 
 GMT_LONG GMT_wesn_overlap (double lon0, double lat0, double lon1, double lat1)
 {
+	/* Return true if either of the points (lon0,lat0) and (lon1,lat1) is inside (not on) the rectangular lon/lat boundaries */
 	if (lon0 > lon1) d_swap (lon0, lon1);
 	if (lat0 > lat1) d_swap (lat0, lat1);
-	/* if (lon1 < project_info.w) { */
-	if ((lon1 - project_info.w) < -GMT_CONV_LIMIT) {
+	if (lon1 - project_info.w < -GMT_CONV_LIMIT) {
 		lon0 += 360.0;
 		lon1 += 360.0;
 	}
-	/* else if (lon0 > project_info.e) { */
-	else if ((lon0 - project_info.e) > GMT_CONV_LIMIT) {
+	else if (lon0 - project_info.e > GMT_CONV_LIMIT) {
 		lon0 -= 360.0;
 		lon1 -= 360.0;
 	}
 	/* if (lon1 < project_info.w || lon0 > project_info.e) return (FALSE);
 	if (lat1 < project_info.s || lat0 > project_info.n) return (FALSE); */
 
-	if ((lon1 - project_info.w) < -GMT_CONV_LIMIT || (lon0 - project_info.e) > GMT_CONV_LIMIT) return (FALSE);
-	if ((lat1 - project_info.s) < -GMT_CONV_LIMIT || (lat0 - project_info.n) > GMT_CONV_LIMIT) return (FALSE);
+	if (lon1 - project_info.w < -GMT_CONV_LIMIT || lon0 - project_info.e > GMT_CONV_LIMIT) return (FALSE);
+	if (lat1 - project_info.s < -GMT_CONV_LIMIT || lat0 - project_info.n > GMT_CONV_LIMIT) return (FALSE);
 	return (TRUE);
 }
 
@@ -3236,53 +3216,32 @@ GMT_LONG GMT_radial_overlap (double lon0, double lat0, double lon1, double lat1)
 
 GMT_LONG GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides, GMT_LONG *nx)
 {
-	GMT_LONG i, wrap = FALSE, skip;
+	GMT_LONG wrap = FALSE, skip;
 	double dx, dy, width, jump, GMT_half_map_width (double y);
 
 	jump = this_x - last_x;
-	/* width = GMT_half_map_width (this_y); */
 	width = MAX (GMT_half_map_width (this_y), GMT_half_map_width (last_y));
 
 	skip = (fabs (jump) < width || (fabs(jump) <= GMT_SMALL || fabs(width) <= GMT_SMALL));
 	dy = this_y - last_y;
 
-	for (i = 0; i < (*nx); i++) {	/* Must check if the crossover found should wrap around */
-		if (skip) continue;
-
+	if (!skip) {	/* Must wrap around */
 		if (jump < (-width)) {	/* Crossed right boundary */
 			dx = this_x + GMT_map_width - last_x;
 			yy[0] = yy[1] = last_y + (GMT_map_width - last_x) * dy / dx;
 			xx[0] = GMT_right_boundary (yy[0]);	xx[1] = GMT_left_boundary (yy[0]);
-			sides[0] = 1;	sides[1] = 3;
+			sides[0] = 1;
 			angle[0] = d_atan2d (dy, dx);
 		}
 		else {	/* Crossed left boundary */
 			dx = last_x + GMT_map_width - this_x;
 			yy[0] = yy[1] = last_y + last_x * dy / dx;
 			xx[0] = GMT_left_boundary (yy[0]);	xx[1] = GMT_right_boundary (yy[0]);
-			sides[0] = 3;	sides[1] = 1;
-			angle[0] = d_atan2d (dy, -dx);
-		}
-		angle[1] = angle[0] + 180.0;
-		if (yy[0] >= 0.0 && yy[0] <= project_info.ymax) wrap = TRUE;
-	}
-
-	if (*nx == 0 && !skip) {	/* Must wrap around */
-		if (jump < (-width)) {	/* Crossed right boundary */
-			dx = this_x + GMT_map_width - last_x;
-			yy[0] = yy[1] = last_y + (GMT_map_width - last_x) * dy / dx;
-			xx[0] = GMT_right_boundary (yy[0]);	xx[1] = GMT_left_boundary (yy[0]);
-			sides[0] = 1;	sides[1] = 3;
-			angle[0] = d_atan2d (dy, dx);
-		}
-		else {	/* Crossed left boundary */
-			dx = last_x + GMT_map_width - this_x;
-			yy[0] = yy[1] = last_y + last_x * dy / dx;
-			xx[0] = GMT_left_boundary (yy[0]);	xx[1] = GMT_right_boundary (yy[0]);
-			sides[0] = 3;	sides[1] = 1;
+			sides[0] = 3;
 			angle[0] = d_atan2d (dy, -dx);
 		}
 		if (yy[0] >= 0.0 && yy[0] <= project_info.ymax) wrap = TRUE;
+		sides[1] = 4 - sides[0];
 		angle[1] = angle[0] + 180.0;
 	}
 
@@ -3801,7 +3760,8 @@ GMT_LONG GMT_great_circle_intersection (double A[], double B[], double C[], doub
 }
 
 /* The *_outside routines return the status of the current point.
- * Status is the sum of x_status and y_status. x_status may be
+ * Status is the sum of x_status and y_status.
+ *	x_status may be
  *	0	w < lon < e
  *	-1	lon == w
  *	1	lon == e
@@ -3818,79 +3778,13 @@ GMT_LONG GMT_great_circle_intersection (double A[], double B[], double C[], doub
 GMT_LONG GMT_wesn_outside (double lon, double lat)
 {
 	/* This version ensures that any point will be considered inside if
-	 * it is off by a multiple of 360 degrees in longitude.  The following
-	 * function does not make that allowance (see comments below) */
+	 * it is off by a multiple of 360 degrees in longitude. 
+	 * This wrapping can be switched off by setting GMT_lon_wrap = FALSE.
+	 */
 
-	while (lon < project_info.w && (lon + 360.0) <= project_info.e) lon += 360.0;
-	while (lon > project_info.e && (lon - 360.0) >= project_info.w) lon -= 360.0;
-
-	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL)
-		GMT_x_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < GMT_SMALL)
-		GMT_x_status_new = 1;
-	else if (lon < project_info.w)
-		GMT_x_status_new = -2;
-	else if (lon > project_info.e)
-		GMT_x_status_new = 2;
-	else
-		GMT_x_status_new = 0;
-
-	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL)
-		GMT_y_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < GMT_SMALL)
-		GMT_y_status_new = 1;
-	else if (lat < project_info.s)
-		GMT_y_status_new = -2;
-	else if (lat > project_info.n)
-		GMT_y_status_new = 2;
-	else
-		GMT_y_status_new = 0;
-
-	return ( !(GMT_x_status_new == 0 && GMT_y_status_new == 0));
-}
-
-GMT_LONG GMT_wesn_outside_np (double lon, double lat)
-{
-	/* This version of GMT_wesn_outside is used when we do not want to
-	 * consider the fact that longitude is periodic.  This is necessary
-	 * when we are making basemaps and may want to ensure that a point is
-	 * slightly outside the border without having it automatically flip by
-	 * 360 degrees in a test such as wesn_outside provides.  The GMT_outside
-	 * pointer will be temporarily set to point to this routine during the
-	 * construction of the basemap and then reset to GMT_wesn_outside */
-
-	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL)
-		GMT_x_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (lon - project_info.e) < GMT_SMALL)
-		GMT_x_status_new = 1;
-	else if (lon < project_info.w)
-		GMT_x_status_new = -2;
-	else if (lon > project_info.e)
-		GMT_x_status_new = 2;
-	else
-		GMT_x_status_new = 0;
-
-	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL)
-		GMT_y_status_new = -1;
-	else if (GMT_on_border_is_outside && fabs (lat - project_info.n) < GMT_SMALL)
-		GMT_y_status_new = 1;
-	else if (lat < project_info.s)
-		GMT_y_status_new = -2;
-	else if (lat > project_info.n)
-		GMT_y_status_new = 2;
-	else
-		GMT_y_status_new = 0;
-
-	return ( !(GMT_x_status_new == 0 && GMT_y_status_new == 0));
-
-}
-
-GMT_LONG GMT_polar_outside (double lon, double lat)
-{
-
-	if (GMT_world_map) {
-		while (lon < project_info.w && (lon + 360.0) < project_info.e) lon += 360.0;
-		while (lon > project_info.e && (lon - 360.0) > project_info.w) lon -= 360.0;
+	if (GMT_lon_wrap) {
+		while (lon < project_info.w && (lon + 360.0) <= project_info.e) lon += 360.0;
+		while (lon > project_info.e && (lon - 360.0) >= project_info.w) lon -= 360.0;
 	}
 
 	if (GMT_on_border_is_outside && fabs (lon - project_info.w) < GMT_SMALL)
@@ -3903,7 +3797,6 @@ GMT_LONG GMT_polar_outside (double lon, double lat)
 		GMT_x_status_new = 2;
 	else
 		GMT_x_status_new = 0;
-	if (!project_info.edge[1]) GMT_x_status_new = 0;	/* 360 degrees, no edge */
 
 	if (GMT_on_border_is_outside && fabs (lat - project_info.s) < GMT_SMALL)
 		GMT_y_status_new = -1;
@@ -3915,11 +3808,19 @@ GMT_LONG GMT_polar_outside (double lon, double lat)
 		GMT_y_status_new = 2;
 	else
 		GMT_y_status_new = 0;
+
+	return (GMT_x_status_new != 0 || GMT_y_status_new != 0);
+}
+
+GMT_LONG GMT_polar_outside (double lon, double lat)
+{
+	GMT_wesn_outside (lon, lat);
+
+	if (!project_info.edge[1]) GMT_x_status_new = 0;	/* 360 degrees, no edge */
 	if (GMT_y_status_new < 0 && !project_info.edge[0]) GMT_y_status_new = 0;	/* South pole enclosed */
 	if (GMT_y_status_new > 0 && !project_info.edge[2]) GMT_y_status_new = 0;	/* North pole enclosed */
 
-	return ( !(GMT_x_status_new == 0 && GMT_y_status_new == 0));
-
+	return (GMT_x_status_new != 0 || GMT_y_status_new != 0);
 }
 
 GMT_LONG GMT_eqdist_outside (double lon, double lat)
@@ -3937,7 +3838,7 @@ GMT_LONG GMT_eqdist_outside (double lon, double lat)
 	}
 	else
 		GMT_x_status_new = GMT_y_status_new = 0;
-	return ( !(GMT_y_status_new == 0));
+	return (GMT_y_status_new != 0);
 }
 
 GMT_LONG GMT_radial_outside (double lon, double lat)
@@ -3954,7 +3855,7 @@ GMT_LONG GMT_radial_outside (double lon, double lat)
 		GMT_y_status_new = -2;
 	else
 		GMT_y_status_new = 0;
-	return ( !(GMT_y_status_new == 0));
+	return (GMT_y_status_new != 0);
 }
 
 GMT_LONG GMT_rect_outside (double lon, double lat)
@@ -3985,8 +3886,7 @@ GMT_LONG GMT_rect_outside (double lon, double lat)
 	else
 		GMT_y_status_new = 0;
 
-	return ( !(GMT_x_status_new == 0 && GMT_y_status_new == 0));
-
+	return (GMT_x_status_new != 0 || GMT_y_status_new != 0);
 }
 
 GMT_LONG GMT_rect_outside2 (double lon, double lat)
@@ -3995,89 +3895,96 @@ GMT_LONG GMT_rect_outside2 (double lon, double lat)
 	return (GMT_rect_outside (lon, lat));	/* Must check if inside box */
 }
 
-GMT_LONG GMT_pen_status (void) {
-	GMT_LONG pen = 3;
-
-	if (GMT_x_status_old == 0 && GMT_y_status_old == 0)
-		pen = 2;
-	else if (GMT_x_status_new == 0 && GMT_y_status_new == 0)
-		pen = 3;
-	return (pen);
-}
-
 GMT_LONG GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, double *clon, double *clat, double *xx, double *yy, GMT_LONG *sides)
 {
-	/* Compute the crossover point(s) on the map boundary for rectangular projections */
-	GMT_LONG n = 0, i;
-	double dlat, dlon, dlon0, dlat0;
-
-	/* Since it may not be obvious which side the line may cross, and since in some cases the two points may be
+	/* Compute the crossover point(s) on the map boundary for rectangular projections.
+	 * Since it may not be obvious which side the line may cross, and since in some cases the two points may be
 	 * entirely outside the region but still cut through it, we first find all possible candidates and then decide
 	 * which ones are valid crossings.  We may find 0, 1, or 2 intersections */
 
-	/* First align the longitudes to the region */
+	GMT_LONG n = 0, i;
+	double d, dlon0, dlat0, x0, y0;
 
-	if (GMT_world_map) {
+	/* If wrapping is allowed: first bring both points between W and E boundaries,
+	 * then move the western-most point east if it is further than 180 degrees away.
+ 	 * This may cause the points to span the eastern boundary */
+
+	if (GMT_lon_wrap) {
 		while (lon0 < project_info.w) lon0 += 360.0;
 		while (lon0 > project_info.e) lon0 -= 360.0;
 		while (lon1 < project_info.w) lon1 += 360.0;
 		while (lon1 > project_info.e) lon1 -= 360.0;
+		if (abs (lon0 - lon1) <= 180.0) { /* Nothing */ }
+		else if (lon0 < lon1)
+			lon0 += 360.0;
+		else
+			lon1 += 360.0;
 	}
-
-	/* Then set 'almost'-corners to corners */
 
 	dlon0 = lon0 - lon1;
 	dlat0 = lat0 - lat1;
-	if (fabs (dlon0) > 180.0) {	/* Adjust lon0 so there is no dateline/Greenwich jump discontinuity */
-		lon0 += copysign (360.0, -dlon0);
-		dlon0 = lon0 - lon1;
-	}
+
+	/* Then set 'almost'-corners to corners */
 	GMT_x_wesn_corner (&lon0);
 	GMT_x_wesn_corner (&lon1);
 	GMT_y_wesn_corner (&lat0);
 	GMT_y_wesn_corner (&lat1);
 
+	/* Crossing South */
 	if ((lat0 >= project_info.s && lat1 <= project_info.s) || (lat1 >= project_info.s && lat0 <= project_info.s)) {
 		sides[n] = 0;
 		clat[n] = project_info.s;
-		dlat = lat0 - lat1;
-		clon[n] = (GMT_IS_ZERO (dlat)) ? lon1 : lon1 + dlon0 * (clat[n] - lat1) / dlat;
+		d = lat0 - lat1;
+		clon[n] = (GMT_IS_ZERO (d)) ? lon1 : lon1 + (lon0 - lon1) * (clat[n] - lat1) / d;
 		GMT_x_wesn_corner (&clon[n]);
-		if (fabs(dlat0) > 0.0 && GMT_lon_inside (clon[n], project_info.w, project_info.e)) n++;
+		if (fabs(d) > 0.0 && GMT_lon_inside (clon[n], project_info.w, project_info.e)) n++;
 	}
+	/* Crossing East */
 	if ((lon0 >= project_info.e && lon1 <= project_info.e) || (lon1 >= project_info.e && lon0 <= project_info.e)) {
 		sides[n] = 1;
 		clon[n] = project_info.e;
-		dlon = lon0 - lon1;
-		clat[n] = (GMT_IS_ZERO (dlon)) ? lat1 : lat1 + (lat0 - lat1) * (clon[n] - lon1) / dlon;
+		d = lon0 - lon1;
+		clat[n] = (GMT_IS_ZERO (d)) ? lat1 : lat1 + (lat0 - lat1) * (clon[n] - lon1) / d;
 		GMT_y_wesn_corner (&clat[n]);
-		if (fabs(dlon0) > 0.0 && clat[n] >= project_info.s && clat[n] <= project_info.n) n++;
+		if (fabs(d) > 0.0 && clat[n] >= project_info.s && clat[n] <= project_info.n) n++;
 	}
+
+	/* Now adjust the longitudes so that they might span the western boundary */
+	if (GMT_lon_wrap && MAX(lon0, lon1) > project_info.e) {
+		lon0 -= 360.0; lon1 -= 360.0;
+		GMT_x_wesn_corner (&lon0);
+		GMT_x_wesn_corner (&lon1);
+	}
+
+	/* Crossing North */
 	if ((lat0 >= project_info.n && lat1 <= project_info.n) || (lat1 >= project_info.n && lat0 <= project_info.n)) {
 		sides[n] = 2;
 		clat[n] = project_info.n;
-		dlat = lat0 - lat1;
-		clon[n] = (GMT_IS_ZERO (dlat)) ? lon1 : lon1 + dlon0 * (clat[n] - lat1) / dlat;
+		d = lat0 - lat1;
+		clon[n] = (GMT_IS_ZERO (d)) ? lon1 : lon1 + (lon0 - lon1) * (clat[n] - lat1) / d;
 		GMT_x_wesn_corner (&clon[n]);
-		if (fabs(dlat0) > 0.0 && GMT_lon_inside (clon[n], project_info.w, project_info.e)) n++;
+		if (fabs(d) > 0.0 && GMT_lon_inside (clon[n], project_info.w, project_info.e)) n++;
 	}
-	if ((lon0 <= project_info.w && lon1 >= project_info.w) || (lon1 <= project_info.w && lon0 >= project_info.w)) {
+	/* Crossing West */
+	if ((lon0 >= project_info.w && lon1 <= project_info.w) || (lon1 >= project_info.w && lon0 <= project_info.w)) {
 		sides[n] = 3;
 		clon[n] = project_info.w;
-		dlon = lon0 - lon1;
-		clat[n] = (GMT_IS_ZERO (dlon)) ? lat1 : lat1 + (lat0 - lat1) * (clon[n] - lon1) / dlon;
+		d = lon0 - lon1;
+		clat[n] = (GMT_IS_ZERO (d)) ? lat1 : lat1 + (lat0 - lat1) * (clon[n] - lon1) / d;
 		GMT_y_wesn_corner (&clat[n]);
-		if (fabs(dlon0) > 0.0 && clat[n] >= project_info.s && clat[n] <= project_info.n) n++;
+		if (fabs(d) > 0.0 && clat[n] >= project_info.s && clat[n] <= project_info.n) n++;
 	}
+
+	if (n == 0) return (0);
 
 	for (i = 0; i < n; i++) {
 		GMT_geo_to_xy (clon[i], clat[i], &xx[i], &yy[i]);
 		if (project_info.projection == GMT_POLAR && sides[i]%2) sides[i] = 4 - sides[i];	/*  toggle 1 <-> 3 */
 	}
 
-	/* Check for corner xover */
+	if (n == 1) return (1);
 
-	if (n < 2) return (n);
+	/* Check for corner xover */
 
 	if (GMT_is_wesn_corner (clon[0], clat[0])) return (1);
 
@@ -4090,19 +3997,30 @@ GMT_LONG GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, 
 		return (1);
 	}
 
-	return (n);
+	/* Sort the two intermediate points into the right order based on projected distances from the first point */
+
+	GMT_geo_to_xy (lon0, lat0, &x0, &y0);
+
+	if (hypot (x0 - xx[1], y0 - yy[1]) < hypot (x0 - xx[0], y0 - yy[0])) {
+		d_swap (clon[0], clon[1]);
+		d_swap (clat[0], clat[1]);
+		d_swap (xx[0], xx[1]);
+		d_swap (yy[0], yy[1]);
+		l_swap (sides[0], sides[1]);
+	}
+
+	return (2);
 }
 
 GMT_LONG GMT_rect_crossing (double lon0, double lat0, double lon1, double lat1, double *clon, double *clat, double *xx, double *yy, GMT_LONG *sides)
 {
-
-	/* Compute the crossover point(s) on the map boundary for rectangular projections */
-	GMT_LONG i, j, n = 0;
-	double x0, x1, y0, y1, d, dx, dy;
-
-	/* Since it may not be obvious which side the line may cross, and since in some cases the two points may be
+	/* Compute the crossover point(s) on the map boundary for rectangular projections
+	 * Since it may not be obvious which side the line may cross, and since in some cases the two points may be
 	 * entirely outside the region but still cut through it, we first find all possible candidates and then decide
 	 * which ones are valid crossings.  We may find 0, 1, or 2 intersections */
+
+	GMT_LONG i, j, n = 0;
+	double x0, x1, y0, y1, d, dx, dy;
 
 	GMT_geo_to_xy (lon0, lat0, &x0, &y0);
 	GMT_geo_to_xy (lon1, lat1, &x1, &y1);
@@ -4122,7 +4040,7 @@ GMT_LONG GMT_rect_crossing (double lon0, double lat0, double lon1, double lat1, 
 		d = y0 - y1;
 		xx[n] = (GMT_IS_ZERO (d)) ? x0 : x1 + (x0 - x1) * (yy[n] - y1) / d;
 		GMT_x_rect_corner (&xx[n]);
-		if (fabs(dy) > 0.0 && xx[n] >= project_info.xmin && xx[n] <= project_info.xmax) n++;
+		if (fabs(d) > 0.0 && xx[n] >= project_info.xmin && xx[n] <= project_info.xmax) n++;
 	}
 	if ((x0 <= project_info.xmax && x1 >= project_info.xmax) || (x1 <= project_info.xmax && x0 >= project_info.xmax)) {
 		sides[n] = 1;
@@ -4130,7 +4048,7 @@ GMT_LONG GMT_rect_crossing (double lon0, double lat0, double lon1, double lat1, 
 		d = x0 - x1;
 		yy[n] = (GMT_IS_ZERO (d)) ? y0 : y1 + (y0 - y1) * (xx[n] - x1) / d;
 		GMT_y_rect_corner (&yy[n]);
-		if (fabs(dx) > 0.0 && yy[n] >= project_info.ymin && yy[n] <= project_info.ymax) n++;
+		if (fabs(d) > 0.0 && yy[n] >= project_info.ymin && yy[n] <= project_info.ymax) n++;
 	}
 	if ((y0 <= project_info.ymax && y1 >= project_info.ymax) || (y1 <= project_info.ymax && y0 >= project_info.ymax)) {
 		sides[n] = 2;
@@ -4138,7 +4056,7 @@ GMT_LONG GMT_rect_crossing (double lon0, double lat0, double lon1, double lat1, 
 		d = y0 - y1;
 		xx[n] = (GMT_IS_ZERO (d)) ? x0 : x1 + (x0 - x1) * (yy[n] - y1) / d;
 		GMT_x_rect_corner (&xx[n]);
-		if (fabs(dy) > 0.0 && xx[n] >= project_info.xmin && xx[n] <= project_info.xmax) n++;
+		if (fabs(d) > 0.0 && xx[n] >= project_info.xmin && xx[n] <= project_info.xmax) n++;
 	}
 	if ((x0 >= project_info.xmin && x1 <= project_info.xmin) || (x1 >= project_info.xmin && x0 <= project_info.xmin)) {
 		sides[n] = 3;
@@ -4148,6 +4066,8 @@ GMT_LONG GMT_rect_crossing (double lon0, double lat0, double lon1, double lat1, 
 		GMT_y_rect_corner (&yy[n]);
 		if (fabs(d) > 0.0 && yy[n] >= project_info.ymin && yy[n] <= project_info.ymax) n++;
 	}
+
+	if (n == 0) return (0);
 
 	/* Eliminate duplicates */
 
@@ -4173,9 +4093,9 @@ GMT_LONG GMT_rect_crossing (double lon0, double lat0, double lon1, double lat1, 
 
 	if (!GMT_IS_MAPPING) return (n);
 
-	/* Check for corner xover */
+	if (n == 1) return (1);
 
-	if (n < 2) return (n);
+	/* Check for corner xover */
 
 	if (GMT_is_rect_corner (xx[0], yy[0])) return (1);
 
@@ -4188,7 +4108,17 @@ GMT_LONG GMT_rect_crossing (double lon0, double lat0, double lon1, double lat1, 
 		return (1);
 	}
 
-	return (n);
+	/* Sort the two intermediate points into the right order based on projected distances from the first point */
+
+	if (hypot (x0 - xx[1], y0 - yy[1]) < hypot (x0 - xx[0], y0 - yy[0])) {
+		d_swap (clon[0], clon[1]);
+		d_swap (clat[0], clat[1]);
+		d_swap (xx[0], xx[1]);
+		d_swap (yy[0], yy[1]);
+		l_swap (sides[0], sides[1]);
+	}
+
+	return (2);
 }
 
 void GMT_x_rect_corner (double *x)
@@ -4333,7 +4263,7 @@ GMT_LONG GMT_ellipse_crossing (double lon1, double lat1, double lon2, double lat
 			GMT_xy_to_geo (&clon[0], &clat[0], xx[0], yy[0]);
 			GMT_xy_to_geo (&clon[1], &clat[1], xx[1], yy[1]);
 		}
-		n = -2;	/* To signal don't change order */
+		n = 2;	/* To signal don't change order */
 	}
 	if (n == 1) for (i = 0; i < n; i++) GMT_geo_to_xy (clon[i], clat[i], &xx[i], &yy[i]);
 	return (n);
@@ -4773,19 +4703,16 @@ GMT_LONG GMT_rect_clip_old (double *lon, double *lat, GMT_LONG n, double **x, do
 
 	for (i = 1; i < n; i++) {
 		(void) GMT_map_outside (lon[i], lat[i]);
-		nx = 0;
-		if (GMT_break_through (lon[i-1], lat[i-1], lon[i], lat[i])) {
-			nx = GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
-			for (k = 0; k < nx; k++) {
-				xx[j] = xc[k];
-				yy[j++] = yc[k];
-				if (j >= (n_alloc-2)) {
-					n_alloc <<= 1;
-					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
-					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
-				}
-				(*total_nx) ++;
+		nx = GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
+		for (k = 0; k < nx; k++) {
+			xx[j] = xc[k];
+			yy[j++] = yc[k];
+			if (j >= (n_alloc-2)) {
+				n_alloc <<= 1;
+				xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
+				yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_rect_clip");
 			}
+			(*total_nx) ++;
 		}
 		GMT_geo_to_xy (lon[i], lat[i], &xx[j], &yy[j]);
 		if (j >= (n_alloc-2)) {
@@ -5167,19 +5094,16 @@ GMT_LONG GMT_wesn_clip_old (double *lon, double *lat, GMT_LONG n, double **x, do
 
 	for (i = 1; i < n; i++) {
 		(void) GMT_map_outside (lon[i], lat[i]);
-		nx = 0;
-		if (GMT_break_through (lon[i-1], lat[i-1], lon[i], lat[i])) {
-			nx = GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
-			for (k = 0; k < nx; k++) {
-				xx[j] = xc[k];
-				yy[j++] = yc[k];
-				if (j >= (n_alloc-2)) {
-					n_alloc <<= 1;
-					xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
-					yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
-				}
-				(*total_nx) ++;
+		nx = GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
+		for (k = 0; k < nx; k++) {
+			xx[j] = xc[k];
+			yy[j++] = yc[k];
+			if (j >= (n_alloc-2)) {
+				n_alloc <<= 1;
+				xx = (double *) GMT_memory ((void *)xx, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
+				yy = (double *) GMT_memory ((void *)yy, (size_t)n_alloc, sizeof (double), "GMT_wesn_clip");
 			}
+			(*total_nx) ++;
 		}
 		if (j >= (n_alloc-2)) {
 			n_alloc <<= 1;
@@ -5340,8 +5264,7 @@ GMT_LONG GMT_radial_clip_new (double *lon, double *lat, GMT_LONG np, double **x,
 	nx = 0;
 	for (i = 1; i < np; i++) {
 		this = GMT_map_outside (lon[i], lat[i]);
-		if (GMT_break_through (lon[i-1], lat[i-1], lon[i], lat[i])) {	/* Crossed map boundary */
-			(void) GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
+		if (GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides)) {	/* Crossed map boundary */
 			if (this) {	/* Crossing boundary and leaving circle: Add exit point to the path */
 				if (n == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&xx, (void **)&yy, n, n_alloc, sizeof (double), "GMT_radial_clip_new");
 				xx[n] = xc[0];	yy[n] = yc[0];	n++;
@@ -5464,8 +5387,7 @@ GMT_LONG GMT_radial_clip_pscoast (double *lon, double *lat, GMT_LONG np, double 
 	}
 	for (i = 1; i < np; i++) {
 		this = GMT_map_outside (lon[i], lat[i]);
-		if (GMT_break_through (lon[i-1], lat[i-1], lon[i], lat[i])) {	/* Crossed map boundary */
-			(void) GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
+		if (GMT_map_crossing (lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides)) {	/* Crossed map boundary */
 			if (n == n_alloc) n_alloc = GMT_alloc_memory2 ((void **)&xx, (void **)&yy, n, n_alloc, sizeof (double), "GMT_radial_clip_pscoast");
 			xx[n] = xc[0];	yy[n] = yc[0];	n++;
 			(*total_nx) ++;
@@ -5505,7 +5427,7 @@ GMT_LONG GMT_lon_inside (double lon, double w, double e)
 GMT_LONG GMT_geo_to_xy_line (double *lon, double *lat, GMT_LONG n)
 {
 	/* Traces the lon/lat array and returns x,y plus appropriate pen moves */
-	GMT_LONG j, np, this, wrap = FALSE, ok = FALSE;
+	GMT_LONG j, np, inside;
 	GMT_LONG sides[4], nx;
 	double xlon[4], xlat[4], xx[4], yy[4];
 	double this_x, this_y, last_x, last_y, dummy[4];
@@ -5520,30 +5442,26 @@ GMT_LONG GMT_geo_to_xy_line (double *lon, double *lat, GMT_LONG n)
 	}
 	for (j = 1; j < n; j++) {
 		GMT_geo_to_xy (lon[j], lat[j], &this_x, &this_y);
-		this = GMT_map_outside (lon[j], lat[j]);
-		nx = 0;
-		if (GMT_break_through (lon[j-1], lat[j-1], lon[j], lat[j]))	{ /* Crossed map boundary */
-			nx = GMT_map_crossing (lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides);
-			ok = GMT_ok_xovers (nx, last_x, this_x, sides);
-		}
-		if (GMT_world_map) {
-			wrap = (*GMT_wrap_around_check) (dummy, last_x, last_y, this_x, this_y, xx, yy, sides, &nx);
-			ok = wrap;
-		}
+		inside = !GMT_map_outside (lon[j], lat[j]);
+		if ((nx = GMT_map_crossing (lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Nothing */ }
+		else if (GMT_world_map)
+			(*GMT_wrap_around_check) (dummy, last_x, last_y, this_x, this_y, xx, yy, sides, &nx);
 		if (nx == 1) {
+			/* fprintf (stderr, "1: %ld %g %g : %g %g : %g %g\n", inside, xlon[0], xlat[0], lon[j-1], lat[j-1], lon[j], lat[j]); */
 			GMT_x_plot[np] = xx[0];	GMT_y_plot[np] = yy[0];
-			GMT_pen[np++] = (int)GMT_pen_status ();
+			GMT_pen[np++] = (inside) ? 3 : 2;
 			if (np == GMT_n_alloc) GMT_get_plot_array ();
 		}
-		else if (nx == 2 && ok) {
+		else if (nx == 2) {
+			/* fprintf (stderr, "2: %ld %g %g %g %g\n", inside, xlon[0], xlat[0], xlon[1], xlat[1]); */
 			GMT_x_plot[np] = xx[0];	GMT_y_plot[np] = yy[0];
-			GMT_pen[np++] = (wrap) ? 2 : 3;
+			GMT_pen[np++] = (inside) ? 2 : 3;
 			if (np == GMT_n_alloc) GMT_get_plot_array ();
 			GMT_x_plot[np] = xx[1];	GMT_y_plot[np] = yy[1];
-			GMT_pen[np++] = (wrap) ? 3 : 2;
+			GMT_pen[np++] = (inside) ? 3 : 2;
 			if (np == GMT_n_alloc) GMT_get_plot_array ();
 		}
-		if (!this) {
+		if (inside) {
 			GMT_x_plot[np] = this_x;	GMT_y_plot[np] = this_y;
 			GMT_pen[np++] = 2;
 			if (np == GMT_n_alloc) GMT_get_plot_array ();
@@ -5552,16 +5470,6 @@ GMT_LONG GMT_geo_to_xy_line (double *lon, double *lat, GMT_LONG n)
 	}
 	if (np) GMT_pen[0] = 3;	/* Sanity override: Gotta start off with new start point */
 	return (np);
-}
-
-GMT_LONG GMT_ok_xovers (GMT_LONG nx, double x0, double x1, GMT_LONG *sides)
-{
-	if (!GMT_IS_MAPPING) return (TRUE);	/* Data is not periodic*/
-	if (GMT_world_map || nx < 2) return (TRUE);
-	if ((sides[0] + sides[1]) == 2) return (TRUE);	/* Crossing in the n-s direction */
-	if (fabs (fabs (x0 - x1) - GMT_map_width) < GMT_SMALL) return (TRUE);
-	if ((sides[0] + sides[1]) != 4) return (TRUE);	/* Not Crossing in the e-w direction */
-	return (FALSE);
 }
 
 GMT_LONG GMT_compact_line (double *x, double *y, GMT_LONG n, GMT_LONG pen_flag, int *pen)
@@ -7034,9 +6942,7 @@ GMT_LONG GMT_map_latcross (double lat, double west, double east, struct GMT_XING
 		lon = (i == GMT_n_lon_nodes) ? east + 2.0 * GMT_SMALL : west + i * GMT_dlon;
 		GMT_map_outside (lon, lat);
 		GMT_geo_to_xy (lon, lat, &this_x, &this_y);
-		nx = 0;
-		if ( GMT_break_through (lon_old, lat, lon, lat)) {	/* Crossed map boundary */
-			nx = GMT_map_crossing (lon_old, lat, lon, lat, xlon, xlat, X[nc].xx, X[nc].yy, X[nc].sides);
+		if ((nx = GMT_map_crossing (lon_old, lat, lon, lat, xlon, xlat, X[nc].xx, X[nc].yy, X[nc].sides))) {
 			if (nx == 1) X[nc].angle[0] = GMT_get_angle (lon_old, lat, lon, lat);
 			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;
 			if (GMT_corner > 0) {
@@ -7045,7 +6951,8 @@ GMT_LONG GMT_map_latcross (double lat, double west, double east, struct GMT_XING
 				GMT_corner = 0;
 			}
 		}
-		if (GMT_world_map) (*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides, &nx);
+		else if (GMT_world_map)
+			(*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides, &nx);
 		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT_map_width) < GMT_SMALL && !GMT_world_map)
 			go = FALSE;
 		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > GMT_SMALL && (gap - GMT_map_height) < GMT_SMALL && !GMT_world_map_tm)
@@ -7092,9 +6999,7 @@ GMT_LONG GMT_map_loncross (double lon, double south, double north, struct GMT_XI
 		lat = (j == GMT_n_lat_nodes) ? north: south + j * GMT_dlat;
 		GMT_map_outside (lon, lat);
 		GMT_geo_to_xy (lon, lat, &this_x, &this_y);
-		nx = 0;
-		if ( GMT_break_through (lon, lat_old, lon, lat)) {	/* Crossed map boundary */
-			nx = GMT_map_crossing (lon, lat_old, lon, lat, xlon, xlat, X[nc].xx, X[nc].yy, X[nc].sides);
+		if ((nx = GMT_map_crossing (lon, lat_old, lon, lat, xlon, xlat, X[nc].xx, X[nc].yy, X[nc].sides))) {
 			if (nx == 1) X[nc].angle[0] = GMT_get_angle (lon, lat_old, lon, lat);
 			if (nx == 2) X[nc].angle[1] = X[nc].angle[0] + 180.0;
 			if (GMT_corner > 0) {
@@ -7102,7 +7007,8 @@ GMT_LONG GMT_map_loncross (double lon, double south, double north, struct GMT_XI
 				GMT_corner = 0;
 			}
 		}
-		if (GMT_world_map) (*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides, &nx);
+		else if (GMT_world_map)
+			(*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides, &nx);
 		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT_map_width) < GMT_SMALL && !GMT_world_map)
 			go = FALSE;
 		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > GMT_SMALL && (gap - GMT_map_height) < GMT_SMALL && !GMT_world_map_tm)
