@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt.h,v 1.199 2010-04-04 01:01:32 guru Exp $
+ *	$Id: gmt.h,v 1.200 2010-04-22 17:29:20 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -582,6 +582,7 @@ EXTERN_MSC GMT_LONG GMT_y_status_old;
 EXTERN_MSC GMT_LONG GMT_corner;
 EXTERN_MSC GMT_LONG GMT_world_map;		/* TRUE if map has 360 degrees of longitude range */
 EXTERN_MSC GMT_LONG GMT_world_map_tm;		/* TRUE if GMT_TM map is global? */
+EXTERN_MSC GMT_LONG GMT_lon_wrap;		/* TRUE if wrapping of longitudes over 360 degrees is allowed */
 EXTERN_MSC GMT_LONG GMT_on_border_is_outside;	/* TRUE if point exactly on the map border should be considered outside */
 EXTERN_MSC double GMT_map_width;		/* Full width of this world map */
 EXTERN_MSC double GMT_map_height;		/* Full height of this world map */

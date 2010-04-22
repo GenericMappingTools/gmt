@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_plot.c,v 1.288 2010-03-23 00:19:41 jluis Exp $
+ *	$Id: gmt_plot.c,v 1.289 2010-04-22 17:29:20 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -1835,13 +1835,13 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	GMT_LONG i, k, nx, ny, remove[2] = {0,0};
 	GMT_LONG do_minutes, do_seconds, move_up, done_Greenwich, done_Dateline;
 	char label[GMT_LONG_TEXT], cmd[GMT_LONG_TEXT];
-	GMT_LONG full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual, GMT_world_map_save, annot;
-	PFL GMT_outside_save = NULL;
+	GMT_LONG full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual, world_map_save, lon_wrap_save, annot;
 
 	if (!(project_info.degree[0] || project_info.degree[1] || project_info.projection == GMT_POLAR)) return;	/* Annotations and header already done by GMT_linear_map_boundary */
 
 	ps_setpaint (gmtdefs.basemap_frame_rgb);
-	GMT_world_map_save = GMT_world_map;
+	world_map_save = GMT_world_map;
+	lon_wrap_save = GMT_lon_wrap;
 
 	if (frame_info.header[0] && !frame_info.plotted_header) {	/* Make plot header for geographic maps*/
 		if (project_info.three_D && GMT_IS_ZERO (project_info.z_scale)) {	/* Only do this if flat 2-D plot */
@@ -1900,7 +1900,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			project_info.projection == GMT_CYL_EQDIST || project_info.projection == GMT_MILLER || project_info.projection == GMT_LINEAR);
 		proj_B = (project_info.projection == GMT_HAMMER || project_info.projection == GMT_MOLLWEIDE ||
 			project_info.projection == GMT_SINUSOIDAL);
-		annot_0_and_360 = (GMT_world_map_save && (proj_A || (!full_lat_range && proj_B)));
+		annot_0_and_360 = (world_map_save && (proj_A || (!full_lat_range && proj_B)));
 	}
 	else
 		dx[0] = dx[1] = 0.0;
@@ -1923,9 +1923,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 	GMT_on_border_is_outside = TRUE;	/* Temporarily, points on the border are outside */
 	if (project_info.region) {
 		GMT_world_map = FALSE;
-		GMT_outside_save = GMT_outside;
-		/* if (project_info.projection != GMT_GENPER) GMT_outside = GMT_wesn_outside_np; */
-		if (!(project_info.projection == GMT_GENPER || project_info.projection == GMT_GNOMONIC)) GMT_outside = GMT_wesn_outside_np;
+		if (!(project_info.projection == GMT_GENPER || project_info.projection == GMT_GNOMONIC)) GMT_lon_wrap = FALSE;
 	}
 
 	w2 = (dx[1] > 0.0) ? floor (w / dx[1]) * dx[1] : 0.0;
@@ -1945,7 +1943,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			for (i = 0; i < nx; i++) {	/* Worry that we do not try to plot 0 and 360 OR -180 and +180 on top of each other */
 				if (GMT_IS_ZERO (val[i])) done_Greenwich = TRUE;		/* OK, want to plot 0 */
 				if (GMT_IS_ZERO (180.0 + val[i])) done_Dateline = TRUE;	/* OK, want to plot -180 */
-				GMT_get_annot_label (val[i], label, do_minutes, do_seconds, 0, GMT_world_map_save);
+				GMT_get_annot_label (val[i], label, do_minutes, do_seconds, 0, world_map_save);
 				/* Only annotate val[i] if
 				 *	(1) projection is such that 0/360 or -180/180 are in different x/y locations, OR
 				 *	(2) Plot 360 if 0 hasn't been plotted, OR
@@ -1989,7 +1987,7 @@ void GMT_map_annotate (double w, double e, double s, double n)
 			}
 			for (i = 0; i < ny; i++) {
 				if ((project_info.polar || project_info.projection == GMT_VANGRINTEN) && GMT_IS_ZERO (fabs (val[i]) - 90.0)) continue;
-				GMT_get_annot_label (tval[i], label, do_minutes, do_seconds, lonlat, GMT_world_map_save);
+				GMT_get_annot_label (tval[i], label, do_minutes, do_seconds, lonlat, world_map_save);
 				annot = TRUE;
 				if (dual && k == 0) {
 					del = fmod (val[i] - s2, dy[1]);
@@ -2010,8 +2008,8 @@ void GMT_map_annotate (double w, double e, double s, double n)
 
 	GMT_on_border_is_outside = FALSE;	/* Reset back to default */
 	if (project_info.region) {
-		GMT_world_map = GMT_world_map_save;
-		GMT_outside = GMT_outside_save;
+		GMT_world_map = world_map_save;
+		GMT_lon_wrap = lon_wrap_save;
 	}
 }
 
