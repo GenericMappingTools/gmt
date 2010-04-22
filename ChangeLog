@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.731 2010-04-15 01:57:56 guru Exp $
+	$Id: ChangeLog,v 1.732 2010-04-22 02:13:47 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-04-21	pwessel
+	* sph/sphtriangulate.c:	Incorrect items for cols 3-4 for -N
 
 2010-04-14	pwessel
 	* pshistogram.c:	Fixed # of bins bug when a datapoint equaled east.
