@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: polar.sh,v 1.2 2009-04-17 00:31:30 remko Exp $
+#	$Id: polar.sh,v 1.3 2010-04-22 19:57:57 remko Exp $
 #
 # Check plotting of boxes in stereographic polar projection
 # Original script by Bruce Raup.
@@ -12,7 +12,7 @@ ps=polar.ps
 pscoast -R315/20/135/20r -JS0/90/15c -Dl -B45g45WESN -A15000 -W0.25p -Slightblue -Gyellow -P -K > $ps
 
 # Pan-Arctic domain
-psxy -R -J -W3p/blue -A -m -L -O -K << END >> $ps
+psxy -R -J -W3p,blue -A -m -L -O -K << END >> $ps
 -222.075 34.3318
 -137.925 34.3318
 -43.708 35.7708
@@ -29,7 +29,7 @@ psxy -R -J -W2p -A -m -L -O -K << END >> $ps
 END
 
 # Hi-Res domain 2
-psxy -R -J -W2p/100 -A -m -L -O -K << END >> $ps
+psxy -R -J -W2p,100 -A -m -L -O -K << END >> $ps
 344.055 71.727
 147.002 84.1946
 86.0915 69.7863
