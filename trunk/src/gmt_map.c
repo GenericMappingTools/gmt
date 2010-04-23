@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.252 2010-04-22 17:29:20 remko Exp $
+ *	$Id: gmt_map.c,v 1.253 2010-04-23 01:03:16 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3253,7 +3253,7 @@ GMT_LONG GMT_wrap_around_check_x (double *angle, double last_x, double last_y, d
 
 GMT_LONG GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides, GMT_LONG *nx)
 {
-	GMT_LONG i, wrap = FALSE, skip;
+	GMT_LONG wrap = FALSE, skip;
 	double dx, dy, width, jump;
 
 	jump = this_y - last_y;
@@ -3262,44 +3262,24 @@ GMT_LONG GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, 
 	skip = ((fabs (jump) < width) || (fabs(jump) <= GMT_SMALL));
 	dx = this_x - last_x;
 
-	for (i = 0; i < (*nx); i++) {	/* Must check if the crossover found should wrap around */
-		if (skip) continue;
-
+	if (!skip) {	/* Must wrap around */
 		if (jump < (-width)) {	/* Crossed top boundary */
 			yy[0] = GMT_map_height;	yy[1] = 0.0;
 			dy = this_y + GMT_map_height - last_y;
 			xx[0] = xx[1] = last_x + (GMT_map_height - last_y) * dx / dy;
-			sides[0] = 2;	sides[1] = 0;
+			sides[0] = 2;
 			angle[0] = d_atan2d (dy, dx);
 		}
 		else {	/* Crossed bottom boundary */
 			yy[0] = 0.0;	yy[1] = GMT_map_height;
 			dy = last_y + GMT_map_height - this_y;
 			xx[0] = xx[1] = last_x + last_y * dx / dy;
-			sides[0] = 0;	sides[1] = 2;
-			angle[0] = d_atan2d (dy, -dx);
-		}
-		angle[1] = angle[0] + 180.0;
-		if (xx[0] >= 0.0 && xx[0] <= project_info.xmax) wrap = TRUE;
-	}
-
-	if (*nx == 0 && !skip) {	/* Must wrap around */
-		if (jump < (-width)) {	/* Crossed top boundary */
-			yy[0] = GMT_map_height;	yy[1] = 0.0;
-			dy = this_y + GMT_map_height - last_y;
-			xx[0] = xx[1] = last_x + (GMT_map_height - last_y) * dx / dy;
-			sides[0] = 2;	sides[1] = 0;
-			angle[0] = d_atan2d (dy, dx);
-		}
-		else {	/* Crossed bottom boundary */
-			yy[0] = 0.0;	yy[1] = GMT_map_height;
-			dy = last_y + GMT_map_height - this_y;
-			xx[0] = xx[1] = last_x + last_y * dx / dy;
-			sides[0] = 0;	sides[1] = 2;
+			sides[0] = 0;
 			angle[0] = d_atan2d (dy, -dx);
 		}
 		if (xx[0] >= 0.0 && xx[0] <= project_info.xmax) wrap = TRUE;
 		angle[1] = angle[0] + 180.0;
+		sides[1] = 2 - sides[0];
 	}
 
 	if (wrap) *nx = 2;
