@@ -1,19 +1,21 @@
 #!/bin/sh
-#	$Id: GMT_utm_zones.sh,v 1.4 2009-04-17 00:16:11 remko Exp $
+#	$Id: GMT_utm_zones.sh,v 1.5 2010-04-23 13:16:45 remko Exp $
 #
 # Makes a plot of the global UTM zone grid including the exceptions near Norway/Spitsbergen
 
-pscoast -Rd -JQ9i -G200 -Dl -A2000 -K -B60f6/0wsNe -K --BASEMAP_TYPE=plain \
+pscoast -Rd -JQ9i -G200 -Dl -A2000 -B60f6/0wsNe -K --BASEMAP_TYPE=plain \
   --PLOT_DEGREE_FORMAT=dddF --HEADER_OFFSET=0.25i --ANNOT_OFFSET=0.15i --HEADER_FONT_SIZE=24 --ANNOT_FONT_SIZE=10 > GMT_utm_zones.ps
 cat << EOF > $$.z.d
 >  Do S pole zone
 -180	-80
+   0	-80
 +180	-80
 >
 0	-90
 0	-80
 >  Do N pole zone
 -180	84
+   0	84
 +180	84
 >
 0	90
@@ -29,7 +31,8 @@ while [ $s -lt 72 ]; do
 	cat <<- EOF >> $$.z.d
 	> Lat = $s
 	-180	$s
-	180	$s
+	   0	$s
+	+180	$s
 	EOF
 	if [ $s -eq 56 ]; then
 		awk '{if ($1 == 6) {print 3} else {print $0}}' $$.x.d > $$.sp.d
@@ -70,7 +73,8 @@ n=84
 cat << EOF >> $$.z.d
 > Lat = $s
 -180	$s
-180	$s
+   0	$s
++180	$s
 EOF
 awk '{if ($1 <=0 || $1 >=42) print $0}' $$.x.d > $$.sp.d
 cat << EOF >> $$.sp.d
@@ -79,7 +83,7 @@ cat << EOF >> $$.sp.d
 33
 EOF
 awk '{printf "> \n%s\t%s\n%s\t%s\n", $1, "'$s'", $1, "'$n'"}' $$.sp.d >> $$.z.d
-psxy -R -J -O -K -W0.5p -m $$.z.d >> GMT_utm_zones.ps
+psxy -R -J -O -K -W0.5p -Ap -m $$.z.d >> GMT_utm_zones.ps
 paste $$.y.d $$.n.d | awk '{printf "180 %s 10 0 1 CM %s\n", $1, $2}' | pstext -R -J -O -K -N -D0.1i/0 >> GMT_utm_zones.ps
 awk '{printf "%s %s 10 0 1 CM %s\n", $1, $2, $3}' << EOF | pstext -R -J -O -K -N >> GMT_utm_zones.ps
 -90	-85	A
