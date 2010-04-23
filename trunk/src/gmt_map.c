@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.253 2010-04-23 01:03:16 remko Exp $
+ *	$Id: gmt_map.c,v 1.254 2010-04-23 13:15:24 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -190,8 +190,8 @@ GMT_LONG GMT_is_wesn_corner (double x, double y);
 GMT_LONG GMT_is_rect_corner (double x, double y);
 GMT_LONG GMT_move_to_rect (double *x_edge, double *y_edge, GMT_LONG j, GMT_LONG nx);
 GMT_LONG GMT_move_to_wesn (double *x_edge, double *y_edge, double lon, double lat, double lon_old, double lat_old, GMT_LONG j, GMT_LONG nx);
-GMT_LONG GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides, GMT_LONG *nx);
-GMT_LONG GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides, GMT_LONG *nx);
+GMT_LONG GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides);
+GMT_LONG GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides);
 GMT_LONG GMT_will_it_wrap_x (double *x, double *y, GMT_LONG n, GMT_LONG *start);
 GMT_LONG GMT_will_it_wrap_tm (double *x, double *y, GMT_LONG n, GMT_LONG *start);
 GMT_LONG GMT_this_point_wraps_x (double x0, double x1, double w_last, double w_this);
@@ -3214,76 +3214,70 @@ GMT_LONG GMT_radial_overlap (double lon0, double lat0, double lon1, double lat1)
 	return (TRUE);
 }
 
-GMT_LONG GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides, GMT_LONG *nx)
+GMT_LONG GMT_wrap_around_check_x (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides)
 {
-	GMT_LONG wrap = FALSE, skip;
 	double dx, dy, width, jump, GMT_half_map_width (double y);
 
 	jump = this_x - last_x;
 	width = MAX (GMT_half_map_width (this_y), GMT_half_map_width (last_y));
 
-	skip = (fabs (jump) < width || (fabs(jump) <= GMT_SMALL || fabs(width) <= GMT_SMALL));
+	if (fabs (jump) - width <= GMT_SMALL || fabs(jump) <= GMT_SMALL) return (0);
 	dy = this_y - last_y;
 
-	if (!skip) {	/* Must wrap around */
-		if (jump < (-width)) {	/* Crossed right boundary */
-			dx = this_x + GMT_map_width - last_x;
-			yy[0] = yy[1] = last_y + (GMT_map_width - last_x) * dy / dx;
-			xx[0] = GMT_right_boundary (yy[0]);	xx[1] = GMT_left_boundary (yy[0]);
-			sides[0] = 1;
-			angle[0] = d_atan2d (dy, dx);
-		}
-		else {	/* Crossed left boundary */
-			dx = last_x + GMT_map_width - this_x;
-			yy[0] = yy[1] = last_y + last_x * dy / dx;
-			xx[0] = GMT_left_boundary (yy[0]);	xx[1] = GMT_right_boundary (yy[0]);
-			sides[0] = 3;
-			angle[0] = d_atan2d (dy, -dx);
-		}
-		if (yy[0] >= 0.0 && yy[0] <= project_info.ymax) wrap = TRUE;
-		sides[1] = 4 - sides[0];
-		angle[1] = angle[0] + 180.0;
+	if (jump < -width) {	/* Crossed right boundary */
+		dx = GMT_map_width + jump;
+		yy[0] = yy[1] = last_y + (GMT_map_width - last_x) * dy / dx;
+		if (yy[0] < 0.0 || yy[0] > project_info.ymax) return (0);
+		xx[0] = GMT_right_boundary (yy[0]);	xx[1] = GMT_left_boundary (yy[0]);
+		sides[0] = 1;
+		angle[0] = d_atan2d (dy, dx);
 	}
+	else {	/* Crossed left boundary */
+		dx = GMT_map_width - jump;
+		yy[0] = yy[1] = last_y + last_x * dy / dx;
+		if (yy[0] < 0.0 || yy[0] > project_info.ymax) return (0);
+		xx[0] = GMT_left_boundary (yy[0]);	xx[1] = GMT_right_boundary (yy[0]);
+		sides[0] = 3;
+		angle[0] = d_atan2d (dy, -dx);
+	}
+	sides[1] = 4 - sides[0];
+	angle[1] = angle[0] + 180.0;
 
-	if (wrap) *nx = 2;
-	return (wrap);
+	return (2);
 }
 
 /* For global TM maps */
 
-GMT_LONG GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides, GMT_LONG *nx)
+GMT_LONG GMT_wrap_around_check_tm (double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides)
 {
-	GMT_LONG wrap = FALSE, skip;
 	double dx, dy, width, jump;
 
 	jump = this_y - last_y;
 	width = 0.5 * GMT_map_height;
 
-	skip = ((fabs (jump) < width) || (fabs(jump) <= GMT_SMALL));
+	if (fabs (jump) - width <= GMT_SMALL || fabs(jump) <= GMT_SMALL) return (0);
 	dx = this_x - last_x;
 
-	if (!skip) {	/* Must wrap around */
-		if (jump < (-width)) {	/* Crossed top boundary */
-			yy[0] = GMT_map_height;	yy[1] = 0.0;
-			dy = this_y + GMT_map_height - last_y;
-			xx[0] = xx[1] = last_x + (GMT_map_height - last_y) * dx / dy;
-			sides[0] = 2;
-			angle[0] = d_atan2d (dy, dx);
-		}
-		else {	/* Crossed bottom boundary */
-			yy[0] = 0.0;	yy[1] = GMT_map_height;
-			dy = last_y + GMT_map_height - this_y;
-			xx[0] = xx[1] = last_x + last_y * dx / dy;
-			sides[0] = 0;
-			angle[0] = d_atan2d (dy, -dx);
-		}
-		if (xx[0] >= 0.0 && xx[0] <= project_info.xmax) wrap = TRUE;
-		angle[1] = angle[0] + 180.0;
-		sides[1] = 2 - sides[0];
+	if (jump < -width) {	/* Crossed top boundary */
+		dy = GMT_map_height + jump;
+		xx[0] = xx[1] = last_x + (GMT_map_height - last_y) * dx / dy;
+		if (xx[0] < 0.0 || xx[0] > project_info.xmax) return (0);
+		yy[0] = GMT_map_height;	yy[1] = 0.0;
+		sides[0] = 2;
+		angle[0] = d_atan2d (dy, dx);
 	}
+	else {	/* Crossed bottom boundary */
+		dy = GMT_map_height - jump;
+		xx[0] = xx[1] = last_x + last_y * dx / dy;
+		if (xx[0] < 0.0 || xx[0] > project_info.xmax) return (0);
+		yy[0] = 0.0;	yy[1] = GMT_map_height;
+		sides[0] = 0;
+		angle[0] = d_atan2d (dy, -dx);
+	}
+	angle[1] = angle[0] + 180.0;
+	sides[1] = 2 - sides[0];
 
-	if (wrap) *nx = 2;
-	return (wrap);
+	return (2);
 }
 
 double GMT_left_ellipse (double y)
@@ -5425,7 +5419,7 @@ GMT_LONG GMT_geo_to_xy_line (double *lon, double *lat, GMT_LONG n)
 		inside = !GMT_map_outside (lon[j], lat[j]);
 		if ((nx = GMT_map_crossing (lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Nothing */ }
 		else if (GMT_world_map)
-			(*GMT_wrap_around_check) (dummy, last_x, last_y, this_x, this_y, xx, yy, sides, &nx);
+			nx = (*GMT_wrap_around_check) (dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
 		if (nx == 1) {
 			/* fprintf (stderr, "1: %ld %g %g : %g %g : %g %g\n", inside, xlon[0], xlat[0], lon[j-1], lat[j-1], lon[j], lat[j]); */
 			GMT_x_plot[np] = xx[0];	GMT_y_plot[np] = yy[0];
@@ -6932,7 +6926,7 @@ GMT_LONG GMT_map_latcross (double lat, double west, double east, struct GMT_XING
 			}
 		}
 		else if (GMT_world_map)
-			(*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides, &nx);
+			nx = (*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides);
 		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT_map_width) < GMT_SMALL && !GMT_world_map)
 			go = FALSE;
 		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > GMT_SMALL && (gap - GMT_map_height) < GMT_SMALL && !GMT_world_map_tm)
@@ -6988,7 +6982,7 @@ GMT_LONG GMT_map_loncross (double lon, double south, double north, struct GMT_XI
 			}
 		}
 		else if (GMT_world_map)
-			(*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides, &nx);
+			nx = (*GMT_wrap_around_check) (X[nc].angle, last_x, last_y, this_x, this_y, X[nc].xx, X[nc].yy, X[nc].sides);
 		if (nx == 2 && (fabs (X[nc].xx[1] - X[nc].xx[0]) - GMT_map_width) < GMT_SMALL && !GMT_world_map)
 			go = FALSE;
 		else if (nx == 2 && (gap = fabs (X[nc].yy[1] - X[nc].yy[0])) > GMT_SMALL && (gap - GMT_map_height) < GMT_SMALL && !GMT_world_map_tm)
