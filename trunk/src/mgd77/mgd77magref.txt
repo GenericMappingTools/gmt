@@ -19,12 +19,12 @@ for all records they can be supplied via the OPT(A) option instead and are thus 
 file. If no input file is given we read \fIstdin\fP.
 A note about the CM4 validity domain. The core field of CM4 is valid from 1960-2002.5 but the ionospheric and 
 magnetospheric fields are computed after the \fIDst\fP and \fIF10.7\fP coefficient files. We extended here 
-those coefficient files up to 2006, which means that one can compute external contributions up until 2006 but 
+those coefficient files up to 2007, which means that one can compute external contributions up until 2007 but 
 the Secular Variation will be biased (non reliable). New indices files may be retrieved 
 from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the \fIDst\fP coefficients) and 
 ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SOLAR_RADIO/FLUX/ (The \fIF10.7\fP index file is a MONTHPLT.ABS). 
-NOTE: since the \fIDst\fP files in the .../DST/ directory are still only up to 2006, for GMT4.5.1 we extended the \fIDst\fP
-till August 2009 by reformating the data in the preliminary file Est_Ist_index_0_mean.pli, which is at  
+NOTE: since the \fIDst\fP files in the .../DST/ directory are still only up to 2007, for GMT4.5.3 we extended the \fIDst\fP
+till April 2010 by reformating the data in the preliminary file Est_Ist_index_0_mean.pli, which is at  
 ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/
 .TP
 OPT(A)
