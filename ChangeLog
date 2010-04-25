@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.733 2010-04-22 17:19:58 remko Exp $
+	$Id: ChangeLog,v 1.734 2010-04-25 00:05:50 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-04-25	pwessel
+	* psxy[z].c:		For -Svs, the 2nd set of coordinates did not consider -:
 
 2010-04-22	remko
 	* gmt_map.c:		Improving map boundary crossing mechanism (first step)
