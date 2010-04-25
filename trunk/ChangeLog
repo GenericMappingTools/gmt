@@ -1,6 +1,14 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.734 2010-04-25 00:05:50 guru Exp $
+	$Id: ChangeLog,v 1.735 2010-04-25 18:06:46 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-04-24	jluis
+	* mgd77/mgd77magref.c:	Fix bug in -A option when using const time in calendar format.
+				(fix by Marcelo Banik)
+	* share/mgd77		Updated F107_mon.plt & Dst_all.wdc  indices files to March/April 2010.
+				In umdl.CM4 file, extended the limit of the 'bkpo' indices from 2010 to 2015.
+				This should make no difference to core field estimation that ends at 2002.5
+				but lets the atmospheric components be computed after 1-Jan-2010. 
 
 2010-04-25	pwessel
 	* psxy[z].c:		For -Svs, the 2nd set of coordinates did not consider -:
