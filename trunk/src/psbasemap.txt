@@ -232,7 +232,7 @@ The Hammer projection is mostly used for global maps and thus the spherical form
 To get a world map centered on Greenwich at a scale of 1:200000000, use
 .br
 .sp
-\fBpsbasemap\fP OPT(Rg) OPT(Jh)180/1:200000000 OPT(B)30\fBg\fP30/15\fBg\fP15\fB:.\fPHammer\fB:\fP > hammer.ps
+\fBpsbasemap\fP OPT(Rd) OPT(Jh)180/1:200000000 OPT(B)30\fBg\fP30/15\fBg\fP15\fB:.\fPHammer\fB:\fP > hammer.ps
 .SS Sinusoidal [equal-area]
 To make a sinusoidal world map centered on Greenwich, with a scale along the equator of LEN_I inch/degree, use
 .br
