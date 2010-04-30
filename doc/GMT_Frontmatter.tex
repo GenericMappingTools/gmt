@@ -1,9 +1,9 @@
 %------------------------------------------
-%       $Id: GMT_Frontmatter.tex,v 1.48 2010-01-08 00:00:34 guru Exp $
+%       $Id: GMT_Frontmatter.tex,v 1.49 2010-04-30 02:50:08 guru Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2010.
-%       Paul Wessel and Walter H. F. Smith
+%       Paul Wessel, Walter H. F. Smith, Remko Scharroo, and Joaquim Luis
 %------------------------------------------
 %
 
@@ -27,7 +27,7 @@ gratefully acknowledges the generous support of the C. H. and I. M.
 Green Foundation for Earth Sciences at the Institute of Geophysics
 and Planetary Physics, Scripps Institution of Oceanography, University
 of California at San Diego.
-\GMT\ versions 3.0--3.4, 4.0--\GMTDOCVERSION\ owe their existence to grants
+\GMT\ versions 3.0--3.4, 4.0--4.5.x, and 5.0.0--\GMTDOCVERSION\ owe their existence to grants
 EAR-93-02272, OCE-95-29431, OCE-00-82552, and OCE-04-52126
 from the National Science Foundation, which we gratefully acknowledge.
 
@@ -42,13 +42,11 @@ Ben Horner-Johnson,
 John Kuhn,
 Angel Li,
 John Lillibridge,
-Joaquim Luis,
 Andrew Macrae,
 Alex Madon,
 Greg Neumann,
 Lloyd Parkes,
 Ameet Raval,
-Remko Scharroo,
 Georg Schwarz,
 Richard Signell,
 Dirk Stoecker,
@@ -61,9 +59,7 @@ advice on how to make \GMT\ portable to DEC, SGI, HP, IBM, Apple and NEXT workst
 Allen Cogbill provided OS/2 patches for EMX;
 John Lillibridge provided the original example 11;
 Hanno von Lom helped resolve early problems with DLL libraries for Win32;
-Jaoquim Luis created the \GMTprog{ps2raster} program;
 Lloyd Parkes enabled indexed color images in \PS;
-Remko Scharroo implemented the \PS\ image compression techniques, the interface for COARDS-compliant netCDF grids, and provided the \GMTprog{nc2xy} program; 
 Kurt Schwehr maintains the \textsf{Fink} packages;
 Wayne Wilson implemented the full general perspective projection;
 and William Yip helped translate \GMT\ to POSIX ANSI C and incorporate netCDF 3.
@@ -71,7 +67,7 @@ The SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided valua
 on Linux, web, and CGI script issues.
 
 \begin{flushright}
-Honolulu, HI and Silver Spring, MD, \GMTDOCDATE
+Honolulu, HI, Silver Spring, MD, \GMTDOCDATE
 \end{flushright}
 \vspace{\baselineskip}
 
@@ -81,8 +77,21 @@ Honolulu, HI and Silver Spring, MD, \GMTDOCDATE
 \includegraphics[height=4cm,bb=0 0 172 138]{fig/Wessel.png} &
 \includegraphics[height=4cm,bb=0 0 538 396]{fig/Smith.png} \\
 \normalsize \htmladdnormallink{\textbf{Dr. P\aa{}l (Paul) Wessel}}{http://www.soest.hawaii.edu/pwessel} &
-\normalsize \htmladdnormallink{\textbf{Dr. Walter H. F. Smith}}{mailto:walter.hf.smith@noaa.gov} \\
+\normalsize \htmladdnormallink{\textbf{Dr. Walter H. F. Smith}}{http://ibis.grdl.noaa.gov/SAT/people/walter.html} \\
 Professor & Geophysicist \\
+\htmladdnormallink{Department of Geology and Geophysics}{http://www.soest.hawaii.edu/GG} &
+\htmladdnormallink{Laboratory for Satellite Altimetry}{http://www.grdl.noaa.gov} \\
+\htmladdnormallink{School of Ocean and Earth Science and Technology}{http://www.soest.hawaii.edu} &
+\htmladdnormallink{National Oceanographic Data Center}{http://www.nodc.noaa.gov} \\
+\htmladdnormallink{University of Hawaii at Manoa}{http://www.hawaii.edu} & \htmladdnormallink{National Oceanic and
+Atmospheric Administration}{http://www.noaa.gov} \\
+\end{tabular}
+\begin{tabular}{l@{\hspace{1cm}}r}
+\includegraphics[height=4cm,bb=0 0 172 138]{fig/Scharroo.png} &
+\includegraphics[height=4cm,bb=0 0 538 396]{fig/Luis.png} \\
+\normalsize \htmladdnormallink{\textbf{Dr. Remko Scharroo}}{http://www.altimetrics.com} &
+\normalsize \htmladdnormallink{\textbf{Dr. Joaquim Luis}}{http://w3.ualg.pt/~jluis/} \\
+Geophysicist & Geophysicist \\
 \htmladdnormallink{Department of Geology and Geophysics}{http://www.soest.hawaii.edu/GG} &
 \htmladdnormallink{Laboratory for Satellite Altimetry}{http://www.grdl.noaa.gov} \\
 \htmladdnormallink{School of Ocean and Earth Science and Technology}{http://www.soest.hawaii.edu} &
