@@ -65,7 +65,7 @@ Set the number of grid nodes in the new grid.
 #include "explain_-R.txt"
 You may ask to project only a subset of the grid by specifying a smaller input \fIw/e/s/n\fP region
 [Default is the region given by the grid file].
-#include "explain_-S.txt"
+#include "explain_-Sint.txt"
 #include "explain_-V.txt"
 #include "explain_grd_inout.txt"
 .SH EXAMPLES
