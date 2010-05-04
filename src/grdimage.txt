@@ -91,7 +91,7 @@ Make grid nodes with z = NaN transparent, using the colormasking feature in \fIP
 You may ask for a larger \fIw/e/s/n\fP region to have more room between the image and the axes.
 A smaller region than specified in the grid file will result in a subset of the grid
 [Default is the region given by the grid file].
-#include "explain_-S.txt"
+#include "explain_-Sint.txt"
 .TP
 OPT(T)
 This option has become OBSOLETE. Use \fBgrdview\fP OPT(T) instead.
