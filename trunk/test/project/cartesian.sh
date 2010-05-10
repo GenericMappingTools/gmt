@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: cartesian.sh,v 1.13 2010-04-30 02:50:08 guru Exp $
+#	$Id: cartesian.sh,v 1.14 2010-05-10 23:10:26 remko Exp $
 #
 # Tests project in Cartesian manipulations
 
@@ -38,7 +38,7 @@ project -N -C$2/$3 -A-$1 -Fpq $4 -m
 }
 
 ps=cartesian.ps
-pstext -R0/8.5/0/11 -Jx1i -P -Xa0 -Ya0 -K  --PS_CHAR_ENCODING=ISOLatin1+ --FONT_TITLE=10p << EOF > $ps
+pstext -R0/8.5/0/11 -Jx1i -P -Xa0 -Ya0 -K  --CHAR_ENCODING=ISOLatin1+ --HEADER_FONT_SIZE=10p << EOF > $ps
 4.25 10.25 14 0 0 CB [x,y] (black dot). 2nd pair is (p,q) and third is (r,s) [plotted as red dot]
 EOF
 ypos=1.25
