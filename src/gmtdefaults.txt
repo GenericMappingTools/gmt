@@ -197,7 +197,7 @@ This setting determines what character will separate ASCII output data columns w
 from tab, space, comma, and none [tab].
 .TP
 .B FRAME_PEN
-Thickness of pen used to draw plain map frame in dpi units or points (append p)  [1.25p].
+Pen attributes used to draw plain map frame in dpi units or points (append p)  [1.25p].
 .TP
 .B FRAME_WIDTH
 Width (> 0) of map borders for fancy map frame [LEN_1_SI (or LEN_1_US)].
@@ -218,10 +218,10 @@ Size (>= 0) of grid cross at secondary lon-lat intersections.  0 means draw cont
 instead [0].
 .TP
 .B GRID_PEN_PRIMARY
-Pen thickness used to draw grid lines in dpi units or points (append p) [0.25p].
+Pen attributes used to draw grid lines in dpi units or points (append p) [0.25p].
 .TP
 .B GRID_PEN_SECONDARY
-Pen thickness used to draw grid lines in dpi units or points (append p) [0.5p].
+Pen attributes used to draw grid lines in dpi units or points (append p) [0.5p].
 .TP
 .B GRIDFILE_FORMAT
 Default file format for grids, with optional scale, offset and invalid value, written as
@@ -550,7 +550,7 @@ The length of a tickmark.  Normally, tickmarks are drawn on the outside of
 the map boundaries.  To select interior tickmarks, use a negative tick_length [LEN_1_SI (or LEN_1_US)].
 .TP
 .B TICK_PEN
-The pen thickness to be used for tickmarks in dpi units or points (append p) [0.5p].
+Pen attributes to be used for tickmarks in dpi units or points (append p) [0.5p].
 .TP
 .B TIME_EPOCH
 Specifies the value of the calendar and clock at the origin (zero point) of relative time units (see \fBTIME_UNIT\fP).
