@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_io.c,v 1.215 2010-04-03 02:25:05 guru Exp $
+ *	$Id: gmt_io.c,v 1.216 2010-05-10 23:12:31 remko Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -2986,12 +2986,13 @@ GMT_LONG GMT_import_table (void *source, GMT_LONG source_type, struct GMT_TABLE 
 		GMT_alloc_segment (T->segment[seg], n_row_alloc, T->segment[seg]->n_columns, TRUE);
 
 		while (! (GMT_io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
+			n_read++;
+
 			if (GMT_io.status & GMT_IO_MISMATCH) {
-				fprintf (stderr, "%s: Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", GMT_program, n_fields, n_expected_fields, n_read);
-				GMT_exit (EXIT_FAILURE);
+				fprintf (stderr, "%s: Mismatch between actual (%ld) and expected (%ld) fields near line %ld (skipped)\n", GMT_program, n_fields, n_expected_fields, n_read);
+				continue;
 			}
 
-			n_read++;
 			if (n_expected_fields < 2) {
 				fprintf (stderr, "%s: Failure to read file %s near line %ld\n", GMT_program, file, n_read);
 				GMT_exit (EXIT_FAILURE);
