@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_gdalread.c,v 1.12 2009-11-26 23:48:22 jluis Exp $
+ *	$Id: gmt_gdalread.c,v 1.13 2010-05-13 16:03:08 jluis Exp $
  *
  *      Coffeeright (c) 2002-2009 by J. Luis
  *
@@ -170,7 +170,7 @@ int GMT_gdalread(char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL
 			anSrcWin[1] = (int) ((dfULY - adfGeoTransform[3]) / adfGeoTransform[5] + 0.001);
 			anSrcWin[2] = (int) ((dfLRX - dfULX) / adfGeoTransform[1] + 0.5);
 			anSrcWin[3] = (int) ((dfLRY - dfULY) / adfGeoTransform[5] + 0.5);
-			if (GDAL_VERSION_NUM <= 1700 && !strcmp(format,"netCDF")) {
+			if (GDAL_VERSION_NUM < 1700 && !strcmp(format,"netCDF")) {
 				/* PATCH against the never ending GDAL bug of reading netCDF files */
 				anSrcWin[1] = GDALGetRasterYSize(hDataset) - (anSrcWin[1] + anSrcWin[3]) - 1;
 			}
