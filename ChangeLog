@@ -1,6 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.735 2010-04-25 18:06:46 jluis Exp $
+	$Id: ChangeLog,v 1.736 2010-05-13 16:11:42 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-05-13	jluis
+	* gmt_gdalread.c:	Limit the patch againsts the GDAL flipud bug on netCDF files 
+				to versions prior than 1.7 
 
 2010-04-24	jluis
 	* mgd77/mgd77magref.c:	Fix bug in -A option when using const time in calendar format.
