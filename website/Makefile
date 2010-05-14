@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-#  $Id: Makefile,v 1.50 2010-02-13 05:32:27 guru Exp $
+#  $Id: Makefile,v 1.51 2010-05-14 17:36:10 guru Exp $
 #
 #		 Guru Makefile for GMT Version 4.x
 #			GNU make compatible
@@ -120,6 +120,7 @@ update-www-test:	update-www-local
 
 update-www-local:	../registration/gmt_usage.jpg gmt_mirrors.html www/gmt/gmt_releases.html www/gmt/examples/ex01/example_01_100dpi.png
 		mkdir -p www/gmt
+		cp -f ../guru/install_gmt.sh www/gmt
 		cp -f gmt.html www/index.html
 		cp -f gmt_*.php gmt_*.html www/gmt
 		rm -f www/gmt/gmt_releases_template.html
@@ -156,9 +157,9 @@ update-ftp-live:
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib $(LIVEFTPDIR)/*GMT* $(LIVEFTPDIR)/install_gmt $(LIVEFTPDIR)/VERSION'
+	ssh $(FTPSERVER) 'rm -rf $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib $(LIVEFTPDIR)/*GMT* $(LIVEFTPDIR)/install_gmt.sh $(LIVEFTPDIR)/VERSION'
 	ssh $(FTPSERVER) mkdir -p $(LIVEFTPDIR)/windows $(LIVEFTPDIR)/contrib
-	scp ../guru/install_gmt $(FTPSERVER):$(LIVEFTPDIR)
+	scp ../guru/install_gmt.sh $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER):$(LIVEFTPDIR)
 	scp ../ftp/GMT*.exe $(FTPSERVER):$(LIVEFTPDIR)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER):$(LIVEFTPDIR)/windows
@@ -197,9 +198,9 @@ update-ftp-test:
 		echo -n "The .message file byte length is over 1300 bytes: "; cat ../ftp/.message | wc -c; \
 		exit; \
 	fi
-#	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib $(LIVEFTPDIR2)/*GMT* $(LIVEFTPDIR2)/install_gmt $(LIVEFTPDIR2)/VERSION'
+#	ssh $(FTPSERVER2) 'rm -rf $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib $(LIVEFTPDIR2)/*GMT* $(LIVEFTPDIR2)/install_gmt.sh $(LIVEFTPDIR2)/VERSION'
 	ssh $(FTPSERVER2) mkdir -p $(LIVEFTPDIR2)/windows $(LIVEFTPDIR2)/contrib
-	scp ../guru/install_gmt $(FTPSERVER2):$(LIVEFTPDIR2)
+	scp ../guru/install_gmt.sh $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION $(FTPSERVER2):$(LIVEFTPDIR2)
 	scp ../ftp/GMT*.exe $(FTPSERVER2):$(LIVEFTPDIR2)/windows
 	scp ../ftp/gawk*.zip $(FTPSERVER2):$(LIVEFTPDIR2)/windows
@@ -240,7 +241,7 @@ update-ftp-local:
 	fi
 	rm -rf ftp
 	mkdir -p ftp/windows ftp/contrib
-	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt > ftp/install_gmt
+	sed -e 'sXpub/gmtXpub/pwessel/gmttestXg' ../guru/install_gmt.sh > ftp/install_gmt.sh
 	cp -f ../ftp/GMT*.bz2 ../ftp/.message ../ftp/README.GMT ../ftp/VERSION ftp
 	cp -f ../ftp/GMT*.exe ftp/windows
 	cp -f ../ftp/gawk*.zip ftp/windows

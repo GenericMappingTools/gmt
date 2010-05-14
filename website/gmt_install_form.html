@@ -1,20 +1,20 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.82 2010-01-15 21:39:13 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.83 2010-05-14 17:36:10 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.82 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.83 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
 operating systems capable of running a Bourne (sh) script. When submitting the completed form,
 you will receive a parameter file (GMTparam.txt) that you may save and use as argument to the
-<b>install_gmt script</b>.  For example, assuming you save the parameter file to GMTparam.txt,
+<b>install_gmt.sh script</b>.  For example, assuming you save the parameter file to GMTparam.txt,
 you can install the GMT package with the command<BR>
 <p>
-sh install_gmt GMTparam.txt<BR>
+sh install_gmt.sh GMTparam.txt<BR>
 <p>
 Output may be redirected to a log file by appending >& install.log (if your login shell
 is csh or tcsh) or appending > install.log 2>&1 (if your login shell is bash or sh).<BR>
@@ -22,11 +22,11 @@ is csh or tcsh) or appending > install.log 2>&1 (if your login shell is bash or 
 Any problems during the install will be noted in the log.  Saving the log messages
 is of course optional.<BR>
 <P>
-<I>Note: You do not have to use this form.  <b>install_gmt</b> can still be run interactively as
+<I>Note: You do not have to use this form.  <b>install_gmt.sh</b> can still be run interactively as
 in previous versions.  However, after a successful install it will write all the parameters
 to a file named by you, and this file can be used for background installs as shown above.</I><BR>
 <P>
-<b>IMPORTANT: Move or remove old GMT*.bz2 files from the current directory before running install_gmt!</b>
+<b>IMPORTANT: Move or remove old GMT*.bz2 files from the current directory before running install_gmt.sh!</b>
 <P>
 <HR>
 <CENTER><H3>A. Basic Requirements: </H3></CENTER>
@@ -36,8 +36,11 @@ to use the version in /usr/xpg4/bin since /usr/bin/sh (and things like /usr/bin/
 and furthermore /usr/bin/awk thinks sin(1) = 1.</LI>
 <LI>You have bzip2 on your system.  If not, use your package manager, or get source code and executables for bzip2
 	from the <A HREF="http://www.bzip.org" target="_blank">bzip2</A> site.</LI>
-<LI>You have write permissions in all directories you specify below.</LI>
-<LI>You have obtained and saved <A HREF="ftp://ftp.soest.hawaii.edu/gmt/install_gmt" target="ftp_window">install_gmt</A>, the GMT install script.</LI>
+<LI>You have write permissions in all directories you specify below.  If you have specified system directories for
+	the install then you may need to run the script using sudo (or as root).</LI>
+<LI>You have obtained and saved <A HREF="install_gmt.sh" target="_blank">install_gmt.sh</A>, the GMT install script.
+   Be aware that some browsers may decide to save the script with a different extension (e.g., .txt) so you may have to
+   rename the file after download.</LI>
 <LI>If you are using Cygwin, check these <A HREF="gmt_cygwin.html" target="_blank">important notes</A> before you proceed.</LI>
 </UL>
 
@@ -270,7 +273,7 @@ Custom make program: <INPUT NAME="custom_make" TYPE="text" SIZE="30"><BR>
 <I><P>
 Note: The installation will install all GMT components in several subdirectories
 under one root directory.  By default, GMT will be installed under GMT4.5.2
-in the current working directory where install_gmt is run.
+in the current working directory where install_gmt.sh is run.
 On most Unix systems, however, the preferred location of the root directory will be
 something like /usr/local or /sw, under which the installation will add
 bin, lib, include, share, share/man, and share/doc/gmt, respectively.
