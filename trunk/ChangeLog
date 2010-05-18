@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.737 2010-05-18 01:34:53 guru Exp $
+	$Id: ChangeLog,v 1.738 2010-05-18 16:46:48 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-05-18	jluis
+	* grdgradient.c:	Let -S work alone without forcing -G
 
 2010-05-13	jluis
 	* gmt_gdalread.c:	Limit the patch against the GDAL flipud bug on netCDF files 
