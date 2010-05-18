@@ -129,7 +129,7 @@ not given.
 .TP
 OPT(S)
 Name of output grid file with scalar magnitudes of gradient vectors.   
-Requires OPT(D).
+Requires OPT(D) but makes OPT(G) optional.
 #include "explain_-V.txt"
 .SH HINTS
 If you don't know what OPT(N) options to use to make an intensity file for\"'
