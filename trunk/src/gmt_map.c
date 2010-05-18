@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_map.c,v 1.254 2010-04-23 13:15:24 remko Exp $
+ *	$Id: gmt_map.c,v 1.255 2010-05-18 17:10:44 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3888,7 +3888,7 @@ GMT_LONG GMT_wesn_crossing (double lon0, double lat0, double lon1, double lat1, 
 		while (lon0 > project_info.e) lon0 -= 360.0;
 		while (lon1 < project_info.w) lon1 += 360.0;
 		while (lon1 > project_info.e) lon1 -= 360.0;
-		if (abs (lon0 - lon1) <= 180.0) { /* Nothing */ }
+		if (fabs (lon0 - lon1) <= 180.0) { /* Nothing */ }
 		else if (lon0 < lon1)
 			lon0 += 360.0;
 		else
