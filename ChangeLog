@@ -1,9 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.736 2010-05-13 16:11:42 jluis Exp $
+	$Id: ChangeLog,v 1.737 2010-05-18 01:34:53 guru Exp $
 -----------------------------------------------------------------------------------------
 
 2010-05-13	jluis
-	* gmt_gdalread.c:	Limit the patch againsts the GDAL flipud bug on netCDF files 
+	* gmt_gdalread.c:	Limit the patch against the GDAL flipud bug on netCDF files 
 				to versions prior than 1.7 
 
 2010-04-24	jluis
@@ -41,7 +41,7 @@
 	* gmt_io.c:		GMT_is_a_blank_line saw 't' instead of '\t' as whitespace
 
 2010-03-24	jluis
-	* *.c:			In mains that used GMT_sdout, replaced fprintf (stdout, ...) 
+	* *.c:			In mains that used GMT_stdout, replaced fprintf (stdout, ...) 
 				by GMT_fputs () because both forms cannot coexist for >= VC 2005
 
 2010-03-23	pwessel
