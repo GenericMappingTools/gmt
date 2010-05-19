@@ -6,7 +6,7 @@
 pswiggle \- Plot anomaly along track on a map
 .SH SYNOPSIS
 \fBpswiggle\fP \fIxyz_files\fP GMT_J_OPT GMT_Rgeo_OPT 
-OPT(Z)\fIscale\fP [ OPT(A)\fIazimuth\fP ] [ GMT_B_OPT ] [ OPT(C)\fIcenter\fP ] [ OPT(D)\fIgap\fP ] 
+OPT(Z)\fIscale\fP [ OPT(A)\fIazimuth\fP ] [ GMT_B_OPT ] [ OPT(C)\fIcenter\fP ] [ OPT(D)[\fBx\fP]\fIgap\fP ] 
 [ GMT_E_OPT ] [ OPT(G)\fIfill\fP ] [ GMT_H_OPT ] [ GMT_Jz_OPT ] 
 [ OPT(I)\fIfix_az\fP ] [ GMT_K_OPT ] [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] 
 [ OPT(S)[\fBx\fP]\fIlon0\fP/\fIlat0\fP/\fIlength\fP[/\fIunits\fP] ] [ OPT(T)\fIpen\fP ] 
@@ -41,8 +41,8 @@ Subtract \fIcenter\fP from the data set before plotting [0].
 .TP
 OPT(D)
 Means there is a data gap if 2 consecutive points are more than \fIgap\fP distance
-units apart.  For longitude/latitude data \fIgap\fP is in km, else it is in the
-user's units.\"'
+units apart.  For geographic map projections the \fIgap\fP is assumed to be in km, else it is in the
+user's units.\"'.  Use OPT(Dx) to specify the gap in projected coordinates (append units \fBc\fP, \fBi\fP, \fBm\fP, or \fBp\fP).
 #include "explain_-E.txt"
 .TP
 OPT(G)
