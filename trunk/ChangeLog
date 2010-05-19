@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.738 2010-05-18 16:46:48 jluis Exp $
+	$Id: ChangeLog,v 1.739 2010-05-19 23:40:15 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-05-19	pwessel
+	* pswiggle.c:		Option -Dx<gap> allows gaps to be in projected distances.
 
 2010-05-18	jluis
 	* grdgradient.c:	Let -S work alone without forcing -G
