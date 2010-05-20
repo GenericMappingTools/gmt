@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.739 2010-05-19 23:40:15 guru Exp $
+	$Id: ChangeLog,v 1.740 2010-05-20 00:32:33 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-05-20	jluis
+	* ps2raster.c:		Print a warning if the converted file was not created, as will
+				happen with some formats (e.g. jpeg) if input PS file was not
+				correctly closed (the -O -K swing).
 
 2010-05-19	pwessel
 	* pswiggle.c:		Option -Dx<gap> allows gaps to be in projected distances.
