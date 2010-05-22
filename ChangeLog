@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.741 2010-05-20 09:54:59 jluis Exp $
+	$Id: ChangeLog,v 1.742 2010-05-22 21:19:49 guru Exp $
 -----------------------------------------------------------------------------------------
 
+2010-05-22	pwessel
+	* GSHHS:		Now version 2.1 which fixes the lack of river-lake metadata
+				in the binary and shapefile release.
 2010-05-20	jluis
 	* ps2raster.c:		Print a warning if the converted file was not created, as will
 				happen with some formats (e.g. jpeg) if input PS file was not
