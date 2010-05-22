@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.4 2009-07-14 22:53:51 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.5 2010-05-22 21:19:50 guru Exp $
  * 
  *	Reads a polygon file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -22,7 +22,7 @@ int main (int argc, char **argv)
 	int n_id = 0, id, k, level, x, x0, y0, ymin = M90, ymax = -M90, hemi, first;
 	GMT_LONG np, nx;
 	char file[BUFSIZ], cmd[BUFSIZ], *SRC[2] = {"WDBII", "WVS"}, *H = "EW";
-	double*lon = NULL, *lat = NULL, *xx, *yy;
+	double area, *lon = NULL, *lat = NULL, *xx, *yy;
 	EXTERN_MSC GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
         
 	argc = GMT_begin (argc, argv);
@@ -71,12 +71,13 @@ int main (int argc, char **argv)
 		for (id = 0; id < n_id; id++) {
 			if (P[id].h.level != level) continue;
 			/* Here we found a polygon of the required level.  Write out polygon tag and info */
-			
+			area = P[id].h.area;
+			if (P[id].h.river) area = -area;	/* Flag river lakes with negative area */
 			if (P[id].h.id == 4) {
 				P[id].h.n--;	/* Skip the duplicate point */
 				for (hemi = 0; hemi < 2; hemi++) {
 					fprintf (fp, "> GSHHS polygon Id = %d-%c Level = %d Area = %.12g\n# @P @D%d-%c|%d|%s|%d|%d|%.12g\n",
-						P[id].h.id, H[hemi], P[id].h.level, P[id].h.area, P[id].h.id, H[hemi], P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, P[id].h.area);
+						P[id].h.id, H[hemi], P[id].h.level, area, P[id].h.id, H[hemi], P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, area);
 					for (k = 0, first = TRUE; k < P[id].h.n; k++) {	/* Set up lons that go -20 to + 192 */
 						if (hemi == 0) {
 							if (P[id].p[k].x > M180) continue;
@@ -109,7 +110,7 @@ int main (int argc, char **argv)
 						continue;
 					}
 					fprintf (fp, "> GSHHS polygon Id = %d-%c Level = %d Area = %.12g\n# @P @D%d-%c|%d|%s|%d|%d|%.12g\n",
-						P[id].h.id, H[hemi], P[id].h.level, P[id].h.area, P[id].h.id, H[hemi], P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, P[id].h.area);
+						P[id].h.id, H[hemi], P[id].h.level, area, P[id].h.id, H[hemi], P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, area);
 					for (k = 0; k < np; k++) GMT_xy_to_geo (&xx[k], &yy[k], xx[k], yy[k]);	/* Undo projection first */
 					fprintf (fp, "%.6f\t%.6f\n", xx[0], yy[0]);
 					for (k = 1; k < np; k++) {
@@ -122,7 +123,7 @@ int main (int argc, char **argv)
 			}
 			else {	/* No problems, just write as is */
 				fprintf (fp, "> GSHHS polygon Id = %d Level = %d Area = %.12g\n# @P @D%d|%d|%s|%d|%d|%.12g\n",
-					P[id].h.id, P[id].h.level, P[id].h.area, P[id].h.id, P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, P[id].h.area);
+					P[id].h.id, P[id].h.level, area, P[id].h.id, P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, area);
 				for (k = 0; k < P[id].h.n; k++) {
 					x = (P[id].p[k].x > P[id].h.datelon) ? P[id].p[k].x - M360 : P[id].p[k].x;
 					fprintf (fp, "%.6f\t%.6f\n", x * I_MILL, P[id].p[k].y * I_MILL);
