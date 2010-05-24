@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.742 2010-05-22 21:19:49 guru Exp $
+	$Id: ChangeLog,v 1.743 2010-05-24 22:30:35 remko Exp $
 -----------------------------------------------------------------------------------------
+
+2010-05-24	remko
+	* gshhs-*.info:		Fink info files updated for GSHHS version 2.1
 
 2010-05-22	pwessel
 	* GSHHS:		Now version 2.1 which fixes the lack of river-lake metadata
@@ -9,23 +12,23 @@
 	* ps2raster.c:		Print a warning if the converted file was not created, as will
 				happen with some formats (e.g. jpeg) if input PS file was not
 				correctly closed (the -O -K swing).
-	* gmtdefaults.c		Call GMT_begin so that all memory allocations/freeing is done 
+	* gmtdefaults.c:	Call GMT_begin so that all memory allocations/freeing is done 
 				inside the dll and no crash on Windows.
 
 2010-05-19	pwessel
 	* pswiggle.c:		Option -Dx<gap> allows gaps to be in projected distances.
 
 2010-05-18	jluis
-	* grdgradient.c:	Let -S work alone without forcing -G
+	* grdgradient.c:	Let -S work alone without forcing -G.
 
 2010-05-13	jluis
 	* gmt_gdalread.c:	Limit the patch against the GDAL flipud bug on netCDF files 
-				to versions prior than 1.7 
+				to versions prior to 1.7.
 
 2010-04-24	jluis
 	* mgd77/mgd77magref.c:	Fix bug in -A option when using const time in calendar format.
 				(fix by Marcelo Banik)
-	* share/mgd77		Updated F107_mon.plt & Dst_all.wdc  indices files to March/April 2010.
+	* share/mgd77:		Updated F107_mon.plt and Dst_all.wdc index files to March/April 2010.
 				In umdl.CM4 file, extended the limit of the 'bkpo' indices from 2010 to 2015.
 				This should make no difference to core field estimation that ends at 2002.5
 				but lets the atmospheric components be computed after 1-Jan-2010. 
@@ -34,7 +37,7 @@
 	* psxy[z].c:		For -Svs, the 2nd set of coordinates did not consider -:
 
 2010-04-22	remko
-	* gmt_map.c:		Improving map boundary crossing mechanism (first step)
+	* gmt_map.c:		Improving map boundary crossing mechanism (first step).
 
 2010-04-21	pwessel
 	* sph/sphtriangulate.c:	Incorrect items for cols 3-4 for -N
@@ -43,7 +46,7 @@
 	* pshistogram.c:	Fixed # of bins bug when a datapoint equaled east.
 
 2010-04-06	remko
-	 * pslib.c, PSL_prologue.ps:	Improved version of EPS inclusion mechanism
+	 * pslib.c, PSL_prologue.ps:	Improved version of EPS inclusion mechanism.
 
 2010-03-31	remko
 	* configure.ac:		Fixed reversed use off --enable-flock.
@@ -54,7 +57,7 @@
 	* grdview.c:		Fixed bug in parsing of -W[m|c|f] option when color starts with [m|c|f]
 
 2010-03-25	remko
-	* gmt_io.c:		GMT_is_a_blank_line saw 't' instead of '\t' as whitespace
+	* gmt_io.c:		GMT_is_a_blank_line saw 't' instead of '\t' as whitespace.
 
 2010-03-24	jluis
 	* *.c:			In mains that used GMT_stdout, replaced fprintf (stdout, ...) 
