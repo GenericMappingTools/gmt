@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.69 2010-05-22 21:19:49 guru Exp $
+#	$Id: Makefile,v 1.70 2010-05-25 01:22:40 guru Exp $
 #
 #		Makefile for GMT coast suite
 #
@@ -33,7 +33,7 @@ DEFINES		= -DDVER=\"$(GSHHS_DATA_VERSION)\" -DYEAR=`date +%Y`
 PREV_VERSION	= 2.0.2
 # These are the values to use for the next GMT version 4.5.3
 VERSION			= 4.5
-GSHHS_DATA_VERSION	= 2.1
+GSHHS_DATA_VERSION	= 2.1.0
 GSHHS_PROG_VERSION	= 1.12
 
 # Douglas-Peucker parameters:
