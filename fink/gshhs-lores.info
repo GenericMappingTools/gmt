@@ -1,8 +1,8 @@
 Package: gshhs-lores
-Version: 2.1
+Version: 2.1.0
 Revision: 1
 Source: ftp://ftp.soest.hawaii.edu/gmt/GSHHS%v_coast.tar.bz2
-Source-MD5: c65738a1c9fdbeb55a7c3656b38f51f0
+Source-MD5: 0372f847d9cdcfa5087cb00cd5e47d6d
 SourceDirectory: .
 Replaces: gmt (<= 4.2.0-9999)
 Recommends: gmt
