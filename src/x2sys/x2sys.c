@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------
- *	$Id: x2sys.c,v 1.143 2010-03-22 18:55:47 guru Exp $
+ *	$Id: x2sys.c,v 1.144 2010-05-25 20:15:29 guru Exp $
  *
  *      Copyright (c) 1999-2010 by P. Wessel
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -1311,8 +1311,8 @@ void x2sys_path_init (struct X2SYS_INFO *S)
 int x2sys_get_data_path (char *track_path, char *track, char *suffix)
 {
 	int id;
-	GMT_LONG add_suffix;
-	char geo_path[BUFSIZ];
+	GMT_LONG add_suffix = FALSE;
+	char geo_path[BUFSIZ], dotsuffix[GMT_TEXT_LEN];
 
 	if (track[0] == '/' || track[1] == ':') {	/* Full path given, just return it */
 		strcpy(track_path, track);
@@ -1321,7 +1321,8 @@ int x2sys_get_data_path (char *track_path, char *track, char *suffix)
 	
 	/* Check if we need to append suffix */
 	
-	add_suffix = strncmp (&track[strlen(track)-strlen(suffix)], suffix, strlen(suffix));	/* Need to add suffix? */
+	sprintf (dotsuffix, ".%s", suffix);
+	add_suffix = strncmp (&track[strlen(track)-strlen(dotsuffix)], dotsuffix, strlen(dotsuffix));	/* Need to add suffix? */
 
 	/* First look in current directory */
 

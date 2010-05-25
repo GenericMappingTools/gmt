@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.743 2010-05-24 22:30:35 remko Exp $
+	$Id: ChangeLog,v 1.744 2010-05-25 20:15:29 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-05-25	pwessel
+	* x2sys/x2sys.c:	Need to include the "." when checking if a suffix is present.
 
 2010-05-24	remko
 	* gshhs-*.info:		Fink info files updated for GSHHS version 2.1
