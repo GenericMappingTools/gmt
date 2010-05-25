@@ -1,5 +1,5 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.5 2010-05-22 21:19:50 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.6 2010-05-25 01:39:53 guru Exp $
  * 
  *	Reads a polygon file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
@@ -66,7 +66,6 @@ int main (int argc, char **argv)
 			exit(-1);
 		}
 		fprintf (fp, "# @VGMT­1.0 @GPOLYGON @Nid|level|source|parent_id|sibling_id|area @Tchar|integer|char|integer|integer|double\n");
-/*		fprintf (fp, "# @R-180/180/%.6f/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE DATA\n", ymin*I_MILL, ymax*I_MILL); */
 		fprintf (fp, "# @R-180/180/-90/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE DATA\n", ymax*I_MILL);
 		for (id = 0; id < n_id; id++) {
 			if (P[id].h.level != level) continue;

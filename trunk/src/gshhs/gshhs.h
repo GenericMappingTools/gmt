@@ -1,4 +1,4 @@
-/*	$Id: gshhs.h,v 1.29 2010-01-05 01:15:47 guru Exp $
+/*	$Id: gshhs.h,v 1.30 2010-05-25 01:39:53 guru Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -32,6 +32,7 @@
  *			  an ancestor ID, and area of the reduced polygon. Works on
  *			  GSHHS 2.0 data.
  *			  Header is now 44 bytes (all 4-byte integers)
+ *	24-MAY-2010.  PW: Data version is now 2.1.0.
  */
 
 #ifndef _GSHHS
@@ -55,8 +56,8 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHS_DATA_RELEASE	7	/* For v2.0 data set */
-#define GSHHS_DATA_VERSION	"2.0"	/* For v2.0 data set */
+#define GSHHS_DATA_RELEASE	8	/* For v2.1.0 data set */
+#define GSHHS_DATA_VERSION	"2.1.0"	/* For v2.1.0 data set */
 #define GSHHS_PROG_VERSION	"1.12"
 
 #define GSHHS_SCL	1.0e-6	/* Convert micro-degrees to degrees */
