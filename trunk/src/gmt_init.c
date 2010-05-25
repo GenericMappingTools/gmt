@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_init.c,v 1.443 2010-04-01 00:27:37 remko Exp $
+ *	$Id: gmt_init.c,v 1.444 2010-05-25 04:39:38 guru Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -3422,6 +3422,12 @@ void GMT_freeshorthand (void) {/* Free memory used by shorthand arrays */
 	GMT_free ((void *)GMT_file_suffix);
 }
 
+void GMT_begin_io ()
+{	/* Do this so we can call this separately in gmtdefaults/gmtset and avoid the wrath of WIN DLL */
+	GMT_stdin  = stdin;
+	GMT_stdout = stdout;
+}
+
 GMT_LONG GMT_begin (int argc, char **argv)
 {
 	/* GMT_begin will merge the command line arguments with the arguments
@@ -3459,9 +3465,7 @@ GMT_LONG GMT_begin (int argc, char **argv)
 
 	/* Initialize parameters that don'd depend on .gmtdefaults */
 
-	GMT_stdin  = stdin;
-	GMT_stdout = stdout;
-
+	GMT_begin_io ();
 	GMT_set_home ();
 
 	GMT_init_fonts (&GMT_N_FONTS);
