@@ -1,6 +1,9 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.744 2010-05-25 20:15:29 guru Exp $
+	$Id: ChangeLog,v 1.745 2010-06-01 01:11:34 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-05-31	pwessel
+	* misc/kml2gmt.c:	Did not allow for optional attributes for tags <PlaceMark> etc.
 
 2010-05-25	pwessel
 	* x2sys/x2sys.c:	Need to include the "." when checking if a suffix is present.
