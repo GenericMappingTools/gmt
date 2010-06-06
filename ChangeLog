@@ -1,12 +1,10 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.746 2010-06-06 15:57:09 jluis Exp $
+	$Id: ChangeLog,v 1.747 2010-06-06 23:31:11 jluis Exp $
 -----------------------------------------------------------------------------------------
 
 2010-06-06	jluis
 	* mgd77/mgd77convert.c:	Fix for the never ending troubles with the dll cross on Windows
-	* gmt_math.h		Replaced the 'extern' n 'extern double strtod(...)' by
-				EXTERN_MSC. This was the cause of MS compiler warnings 
-				"Inconsistent dll linkage"
+	* x2sys/x2sys_list.c:	Implemented -S[+] to print info referent to both cruises 
 
 2010-05-31	pwessel
 	* misc/kml2gmt.c:	Did not allow for optional attributes for tags <PlaceMark> etc.
