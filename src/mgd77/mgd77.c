@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.257 2010-03-25 01:07:58 jluis Exp $
+ *	$Id: mgd77.c,v 1.258 2010-06-06 15:41:06 jluis Exp $
  *
  *    Copyright (c) 2005-2010 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -16,7 +16,6 @@
  *  Revised:	21-JAN-2010	IGRF2010
  * 
  *-------------------------------------------------------------------------*/
-
 
 #include "mgd77.h"
 #include "mgd77_IGF_coeffs.h"
@@ -310,9 +309,19 @@ int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD
 	
 	/* For netCDF format we do not open file - this is done differently later */
 
-	if (F->format != MGD77_FORMAT_CDF && (F->fp = fopen (F->path, mode)) == NULL) {
-		fprintf (stderr, "%s: Could not open %s\n", GMT_program, F->path);
-		return (MGD77_ERROR_OPEN_FILE);
+	//if (F->format != MGD77_FORMAT_CDF && (F->fp = fopen (F->path, mode)) == NULL) {
+	if (F->format != MGD77_FORMAT_CDF) {
+		int error;
+		if (mode[0] == 'r')
+			error = ((F->fp = fopen (F->path, mode)) == NULL);
+		else
+			error = ((F->fp = GMT_fopen (F->path, mode)) == NULL);	/* The tbl format do writings inside gmt.dll, hence the GMT_fopen */
+
+		if (error) {
+			fprintf (stderr, "%s: Could not open %s\n", GMT_program, F->path);
+			return (MGD77_ERROR_OPEN_FILE);
+		}
+		F->rw_mode[0] = mode[0];	/* Save this to know what to do when closing the F->fp pointer */
 	}
 	
 	/* Strip out Prefix and store in control structure */
@@ -335,7 +344,10 @@ int MGD77_Close_File (struct MGD77_CONTROL *F)  /* Closes a MGD77[+] file */
 		case MGD77_FORMAT_M77:	/* These are accessed by file pointer */
 		case MGD77_FORMAT_TBL:
 			if (!F->fp) return (MGD77_NO_ERROR);	/* No file open */
-			error = fclose (F->fp);
+			if (F->rw_mode[0] == 'r')
+				error = fclose (F->fp);
+			else
+				error = GMT_fclose (F->fp);
 			break;
 		case MGD77_FORMAT_CDF:	/* netCDF file is accessed by ID*/
 			MGD77_nc_status (nc_close (F->nc_id));
@@ -401,7 +413,7 @@ int MGD77_Write_Header_Record (char *file, struct MGD77_CONTROL *F, struct MGD77
 			break;
 		case MGD77_FORMAT_TBL:
 			error = MGD77_Write_Header_Record_m77 (file, F, H);
-			fprintf (F->fp, MGD77_COL_ORDER);
+			GMT_fputs (MGD77_COL_ORDER, F->fp);
 			break;
 		case MGD77_FORMAT_CDF:	/* Will read MGD77 headers from a netCDF file */
 			error = MGD77_Write_Header_Record_cdf (file, F, H);
@@ -1613,7 +1625,8 @@ int MGD77_Write_Header_Record_m77 (char *file, struct MGD77_CONTROL *F, struct M
 	if ((err = MGD77_Decode_Header (H->mgd77[use], MGD77_header, MGD77_TO_HEADER))) return (err);	/* Encode individual header attributes in the text headers */
 
 	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) {
-		fprintf (F->fp, "%s\n", MGD77_header[i]);
+		GMT_fputs (MGD77_header[i], F->fp);
+		GMT_fputs ("\n", F->fp);
 		GMT_free ((void *)MGD77_header[i]);
 	}
 
@@ -1798,7 +1811,7 @@ int MGD77_Write_File_asc (char *file, struct MGD77_CONTROL *F, struct MGD77_DATA
 	if (MGD77_Open_File (file, F, MGD77_WRITE_MODE)) return (-1);
 	err = MGD77_Write_Header_Record_m77 (file, F, &S->H);  /* Will write the entire 24-section header structure */
 	if (err) return (err);
-	if (F->format == MGD77_FORMAT_TBL) fprintf (F->fp, MGD77_COL_ORDER);
+	if (F->format == MGD77_FORMAT_TBL) GMT_fputs (MGD77_COL_ORDER, F->fp);
 
 	err = MGD77_Write_Data_asc (file, F, S);	  /* Will write all MGD77 records in current file */
 	if (err) return (err);
@@ -1991,13 +2004,15 @@ int MGD77_Write_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECO
 
 	for (i = nwords = k = 0; i < MGD77_N_DATA_FIELDS; i++) {
 		if (i >= MGD77_ID && i <= MGD77_SSPN) {
-			fprintf (F->fp, "%s", MGD77Record->word[nwords++]);
+			//fprintf (F->fp, "%s", MGD77Record->word[nwords++]);
+			GMT_fputs (MGD77Record->word[nwords++], F->fp);
 		}
 		else
 			GMT_ascii_output_one (F->fp, MGD77Record->number[k++], 2);
-		if (i < (MGD77_N_DATA_FIELDS-1)) fprintf (F->fp, "%s", gmtdefs.field_delimiter);
+		//if (i < (MGD77_N_DATA_FIELDS-1)) fprintf (F->fp, "%s", gmtdefs.field_delimiter);
+		if (i < (MGD77_N_DATA_FIELDS-1)) GMT_fputs (gmtdefs.field_delimiter, F->fp);
 	}
-	fprintf (F->fp, "\n");
+	GMT_fputs ("\n", F->fp);
 	return (MGD77_NO_ERROR);
 }
 
@@ -2006,17 +2021,27 @@ int MGD77_Write_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECO
 int MGD77_Write_Data_Record_m77 (struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	/* Will write a single ASCII MGD77 record */
 {
 	int nwords = 0, nvalues = 0, i;
+	char buffer[BUFSIZ];
 
 	for (i = 0; i < MGD77_N_DATA_FIELDS; i++) {
-		if (i == 1) fprintf (F->fp, mgd77defs[24].printMGD77, MGD77Record->word[nwords++]);
-		else if (i == 24 || i == 25) fprintf (F->fp, mgd77defs[i+1].printMGD77, MGD77Record->word[nwords++]);
+		if (i == 1) sprintf (buffer, mgd77defs[24].printMGD77, MGD77Record->word[nwords++]);
+		else if (i == 24 || i == 25) sprintf (buffer, mgd77defs[i+1].printMGD77, MGD77Record->word[nwords++]);
 		else {
-			if (GMT_is_dnan (MGD77Record->number[nvalues]))	fprintf (F->fp, "%s", mgd77defs[nvalues].not_given);
-			else fprintf (F->fp, mgd77defs[nvalues].printMGD77, irint (MGD77Record->number[nvalues]*mgd77defs[nvalues].factor));
+			if (GMT_is_dnan (MGD77Record->number[nvalues]))	sprintf (buffer, "%s", mgd77defs[nvalues].not_given);
+			else sprintf (buffer, mgd77defs[nvalues].printMGD77, irint (MGD77Record->number[nvalues]*mgd77defs[nvalues].factor));
 			nvalues++;
 		}
+		GMT_fputs (buffer, F->fp);
+
+		/*if (i == 1) fprintf (F->fp, mgd77defs[24].printMGD77, MGD77Record->word[nwords++]);
+		else if (i == 24 || i == 25) fprintf (F->fp, mgd77defs[i+1].printMGD77, MGD77Record->word[nwords++]);
+		else {
+			if (GMT_is_dnan (MGD77Record->number[nvalues]))	GMT_fputs (mgd77defs[nvalues].not_given, F->fp);
+			else fprintf (F->fp, mgd77defs[nvalues].printMGD77, irint (MGD77Record->number[nvalues]*mgd77defs[nvalues].factor));
+			nvalues++;
+		}*/
 	}
-	fprintf (F->fp, "\n");
+	GMT_fputs ("\n", F->fp);
 	return (MGD77_NO_ERROR);
 }
 
