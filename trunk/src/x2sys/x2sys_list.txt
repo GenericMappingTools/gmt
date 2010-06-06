@@ -72,8 +72,10 @@ For Cartesian data just give \fIxmin/xmax/ymin/ymax\fP.  This option limits
 the COEs to those that fall inside the specified domain.
 .TP
 OPT(S)
-Name of a single track.  If given we restrict output to those crossovers involving this track [Default
+Name of a single track. If given we restrict output to those crossovers involving this track [Default
 output is crossovers involving any track pair].
+Prepend a '+' to make it print info relative to both tracks [Default is selected track]. This applies only
+to comon information such as distance, time, heading.
 #include "explain_-V.txt"
 .TP
 OPT(W)
