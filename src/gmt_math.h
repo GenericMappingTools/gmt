@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: gmt_math.h,v 1.29 2010-06-06 15:56:30 jluis Exp $
+ *	$Id: gmt_math.h,v 1.30 2010-06-06 23:19:19 jluis Exp $
  *
  *	Copyright (c) 1991-2010 by P. Wessel and W. H. F. Smith
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -188,7 +188,7 @@ extern char *strdup(const char *s);
 #define strtod(p, e) GMT_strtod(p, e)
 EXTERN_MSC double GMT_strtod(const char *nptr, char **endptr);
 #else
-EXTERN_MSC double strtod(const char *nptr, char **endptr);
+extern double strtod(const char *nptr, char **endptr);
 #endif
 
 /* On Dec Alpha OSF1 there is a sincos with different syntax.
