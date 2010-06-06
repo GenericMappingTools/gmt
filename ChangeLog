@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.745 2010-06-01 01:11:34 guru Exp $
+	$Id: ChangeLog,v 1.746 2010-06-06 15:57:09 jluis Exp $
 -----------------------------------------------------------------------------------------
+
+2010-06-06	jluis
+	* mgd77/mgd77convert.c:	Fix for the never ending troubles with the dll cross on Windows
+	* gmt_math.h		Replaced the 'extern' n 'extern double strtod(...)' by
+				EXTERN_MSC. This was the cause of MS compiler warnings 
+				"Inconsistent dll linkage"
 
 2010-05-31	pwessel
 	* misc/kml2gmt.c:	Did not allow for optional attributes for tags <PlaceMark> etc.
@@ -14,6 +20,7 @@
 2010-05-22	pwessel
 	* GSHHS:		Now version 2.1 which fixes the lack of river-lake metadata
 				in the binary and shapefile release.
+
 2010-05-20	jluis
 	* ps2raster.c:		Print a warning if the converted file was not created, as will
 				happen with some formats (e.g. jpeg) if input PS file was not
