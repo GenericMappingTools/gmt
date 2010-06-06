@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------
- *	$Id: mgd77.h,v 1.120 2010-03-22 18:55:47 guru Exp $
+ *	$Id: mgd77.h,v 1.121 2010-06-06 15:41:06 jluis Exp $
  * 
  *    Copyright (c) 2005-2010 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -404,6 +404,7 @@ struct MGD77_CONTROL {
 	int nc_recid;					/* netCDF ID for dimension of records (time) */
 	GMT_LONG rec_no;					/* Current record to read/write for record-based i/o */
 	int format;					/* 0 if any file format, 1 if MGD77, and 2 if netCDF, 3 if ascii table */
+	char rw_mode[1];				/* 'r' or 'w' for read/write mode. Use this to help with Win dll craziness.
 	/* Format-related issues */
 	int time_format;				/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
 	struct GMT_TIME_SYSTEM utime;			/* All the information about the Unix time system */
