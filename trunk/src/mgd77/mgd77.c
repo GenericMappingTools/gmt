@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- *	$Id: mgd77.c,v 1.258 2010-06-06 15:41:06 jluis Exp $
+ *	$Id: mgd77.c,v 1.259 2010-06-09 14:19:59 remko Exp $
  *
  *    Copyright (c) 2005-2010 by P. Wessel
  *    See README file for copying and redistribution conditions.
@@ -309,7 +309,7 @@ int MGD77_Open_File (char *leg, struct MGD77_CONTROL *F, int rw)  /* Opens a MGD
 	
 	/* For netCDF format we do not open file - this is done differently later */
 
-	//if (F->format != MGD77_FORMAT_CDF && (F->fp = fopen (F->path, mode)) == NULL) {
+	/* if (F->format != MGD77_FORMAT_CDF && (F->fp = fopen (F->path, mode)) == NULL) { */
 	if (F->format != MGD77_FORMAT_CDF) {
 		int error;
 		if (mode[0] == 'r')
@@ -2004,12 +2004,12 @@ int MGD77_Write_Data_Record_tbl (struct MGD77_CONTROL *F, struct MGD77_DATA_RECO
 
 	for (i = nwords = k = 0; i < MGD77_N_DATA_FIELDS; i++) {
 		if (i >= MGD77_ID && i <= MGD77_SSPN) {
-			//fprintf (F->fp, "%s", MGD77Record->word[nwords++]);
+			/* fprintf (F->fp, "%s", MGD77Record->word[nwords++]); */
 			GMT_fputs (MGD77Record->word[nwords++], F->fp);
 		}
 		else
 			GMT_ascii_output_one (F->fp, MGD77Record->number[k++], 2);
-		//if (i < (MGD77_N_DATA_FIELDS-1)) fprintf (F->fp, "%s", gmtdefs.field_delimiter);
+		/* if (i < (MGD77_N_DATA_FIELDS-1)) fprintf (F->fp, "%s", gmtdefs.field_delimiter); */
 		if (i < (MGD77_N_DATA_FIELDS-1)) GMT_fputs (gmtdefs.field_delimiter, F->fp);
 	}
 	GMT_fputs ("\n", F->fp);
