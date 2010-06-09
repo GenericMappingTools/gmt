@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- * $Id: dimfilter.c,v 1.10 2010-04-04 01:42:42 guru Exp $
+ * $Id: dimfilter.c,v 1.11 2010-06-09 14:19:42 remko Exp $
  *
  *	Copyright (c) 2009-2010 by P. Wessel and Seung-Sep Kim
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -47,7 +47,7 @@ int main (int argc, char **argv)
 	GMT_LONG x_half_width, y_half_width, j_origin, i_out, j_out, wsize = 0;
 	GMT_LONG i_in, j_in, ii, jj, i, j, ij_in, ij_out, ij_wt, effort_level, k, s, n = 0;
 	GMT_LONG distance_flag, filter_type, filter2_type, n_sectors = 1, n_sectors_2 = 0, one_or_zero = 1;
-	GMT_LONG GMT_mode_selection = 0, GMT_n_multiples = 0, *n_alloc;
+	GMT_LONG GMT_mode_selection = 0, GMT_n_multiples = 0, *n_alloc = NULL;
 	
 	FILE *ip;
 	GMT_LONG err_cols = 0, err_l=1;
