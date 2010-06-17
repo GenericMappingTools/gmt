@@ -1,6 +1,11 @@
 -----------------------------------------------------------------------------------------
-	$Id: ChangeLog,v 1.747 2010-06-06 23:31:11 jluis Exp $
+	$Id: ChangeLog,v 1.748 2010-06-17 00:18:08 guru Exp $
 -----------------------------------------------------------------------------------------
+
+2010-06-16	pwessel
+	* WDBII:	Based on feedback (and data) from Branislav Mikulas I have added some
+			missing/mangled borders to the WDBII borders, level 1: Syria-Israel,
+			Israel-Jordan, Moldova-Ukraine, and the Eritrea border with Ethiopia.
 
 2010-06-06	jluis
 	* mgd77/mgd77convert.c:	Fix for the never ending troubles with the dll cross on Windows
