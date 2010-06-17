@@ -1,7 +1,7 @@
 /*
- *	$Id: polygon_to_shape.c,v 1.6 2010-05-25 01:39:53 guru Exp $
+ *	$Id: polygon_to_shape.c,v 1.7 2010-06-17 00:55:35 guru Exp $
  * 
- *	Reads a polygon file and creates a multisegment GMT file with
+ *	Reads a polygon (or line) file and creates a multisegment GMT file with
  *	appropriate GIS tags so ogr2ogr can convert it to a shapefile.
  */
 
@@ -19,9 +19,11 @@ struct POLYGON {
 int main (int argc, char **argv)
 {
 	FILE *fp_in, *fp;
-	int n_id = 0, id, k, level, x, x0, y0, ymin = M90, ymax = -M90, hemi, first;
+	int n_id = 0, id, k, level, x, x0, y0, ymin = M90, ymax = -M90, hemi, first, lines = 0, n_levels, river, border;
 	GMT_LONG np, nx;
-	char file[BUFSIZ], cmd[BUFSIZ], *SRC[2] = {"WDBII", "WVS"}, *H = "EW";
+	char file[BUFSIZ], cmd[BUFSIZ], *SRC[2] = {"WDBII", "WVS"}, *H = "EW", *ITEM[3] = {"polygon", "border", "river"};
+	char *header[2] = {"# @VGMT­1.0 @GPOLYGON @Nid|level|source|parent_id|sibling_id|area @Tchar|integer|char|integer|integer|double\n",
+		"# @VGMT­1.0 @GLINESTRING @Nid|level @Tchar|integer\n"};
 	double area, *lon = NULL, *lat = NULL, *xx, *yy;
 	EXTERN_MSC GMT_LONG GMT_wesn_clip (double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
         
@@ -34,14 +36,19 @@ int main (int argc, char **argv)
 	project_info.pars[0] = project_info.pars[1] = 1.0;
 	GMT_err_fail (GMT_map_setup (-180.0, 180.0, -90.0, 90.0), "");
 	
-	if (argc < 2 || argc > 3) {
-		fprintf (stderr,"usage:  polygon_to_shape file_res.b prefix\n");
+	if (argc < 2 || argc > 4) {
+		fprintf (stderr,"usage:  polygon_to_shape file_res.b prefix [-L]\n");
 		fprintf (stderr,"	file_res.b is the binary local file with all polygon info for a resolution\n");
 		fprintf (stderr,"	prefix is used to form the files prefix_L[1-4].gmt\n");
 		fprintf (stderr,"	These are then converted to shapefiles via ogr2ogr\n");
+		fprintf (stderr,"	Append -b if file_res.b is a border line file\n");
+		fprintf (stderr,"	Append -r if file_res.b is a river line file\n");
 		exit (EXIT_FAILURE);
 	}
-	fp_in = fopen(argv[1], "r");
+	border = (argc == 4 && !strcmp (argv[3], "-b"));
+	river  = (argc == 4 && !strcmp (argv[3], "-r"));
+	lines = 2*river + border;	/* Since only one is set to 1 we get 0, 1, or 2 */
+	fp_in = fopen (argv[1], "r");
 		
 	while (pol_readheader (&P[n_id].h, fp_in) == 1) {
 		P[n_id].p = (struct LONGPAIR *) GMT_memory (VNULL, P[n_id].h.n, sizeof (struct LONGPAIR), "polygon_to_shape");
@@ -56,23 +63,24 @@ int main (int argc, char **argv)
 		n_id++;
 	}
 	fclose (fp_in);
-	fprintf (stderr, "polygon_to_shape: Found %d polygons\n", n_id);
-
+	fprintf (stderr, "polygon_to_shape: Found %d %ss\n", n_id, ITEM[lines]);
+	if (lines == 0) ymin = -90000000;	/* Because of Antarctica */
+	n_levels = (lines == 0) ? 4 : 3;
 	GMT_err_fail (GMT_map_setup (-180, 180, -90.0, 90.0), "");
-	for (level = 1; level <= 4; level++) {	/* Make separate files for each level*/
+	for (level = 1; level <= n_levels; level++) {	/* Make separate files for each level*/
 		sprintf (file, "%s_L%d.gmt", argv[2], level);
 		if ((fp = fopen (file, "w")) == NULL) {
 			fprintf(stderr,"polygon_to_shape:  ERROR  creating file %s.\n", file);
 			exit(-1);
 		}
-		fprintf (fp, "# @VGMT­1.0 @GPOLYGON @Nid|level|source|parent_id|sibling_id|area @Tchar|integer|char|integer|integer|double\n");
-		fprintf (fp, "# @R-180/180/-90/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE DATA\n", ymax*I_MILL);
+		fprintf (fp, "%s\n", header[lines]);
+		fprintf (fp, "# @R-180/180/%.6f/%.6f @Jp\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"\n# FEATURE DATA\n", ymin*I_MILL, ymax*I_MILL);
 		for (id = 0; id < n_id; id++) {
 			if (P[id].h.level != level) continue;
 			/* Here we found a polygon of the required level.  Write out polygon tag and info */
 			area = P[id].h.area;
 			if (P[id].h.river) area = -area;	/* Flag river lakes with negative area */
-			if (P[id].h.id == 4) {
+			if (P[id].h.id == 4 && !lines) {
 				P[id].h.n--;	/* Skip the duplicate point */
 				for (hemi = 0; hemi < 2; hemi++) {
 					fprintf (fp, "> GSHHS polygon Id = %d-%c Level = %d Area = %.12g\n# @P @D%d-%c|%d|%s|%d|%d|%.12g\n",
@@ -96,7 +104,7 @@ int main (int argc, char **argv)
 				}
 				
 			}
-			else if (P[id].h.west < 180.0 && P[id].h.east > 180.0) {	/* Straddles dateline; must split into two parts thanx to GIS brilliance */
+			else if (!lines && (P[id].h.west < 180.0 && P[id].h.east > 180.0)) {	/* Straddles dateline; must split into two parts thanx to GIS brilliance */
 				lon = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
 				lat = (double *)GMT_memory (VNULL, sizeof (double), P[id].h.n, GMT_program);
 				for (k = 0; k < P[id].h.n; k++) {	/* Set up lons that go -20 to + 192 */
@@ -121,8 +129,12 @@ int main (int argc, char **argv)
 				GMT_free ((void *)lon);	GMT_free ((void *)lat);
 			}
 			else {	/* No problems, just write as is */
-				fprintf (fp, "> GSHHS polygon Id = %d Level = %d Area = %.12g\n# @P @D%d|%d|%s|%d|%d|%.12g\n",
+				if (lines)
+					fprintf (fp, "> WDBII %s line Id = %d Level = %d\n# @D%d|%d\n", ITEM[lines], P[id].h.id, P[id].h.level, P[id].h.id, P[id].h.level);
+				else {
+					fprintf (fp, "> GSHHS polygon Id = %d Level = %d Area = %.12g\n# @P @D%d|%d|%s|%d|%d|%.12g\n",
 					P[id].h.id, P[id].h.level, area, P[id].h.id, P[id].h.level, SRC[P[id].h.source], P[id].h.parent, P[id].h.ancestor, area);
+				}
 				for (k = 0; k < P[id].h.n; k++) {
 					x = (P[id].p[k].x > P[id].h.datelon) ? P[id].p[k].x - M360 : P[id].p[k].x;
 					fprintf (fp, "%.6f\t%.6f\n", x * I_MILL, P[id].p[k].y * I_MILL);
@@ -135,12 +147,12 @@ int main (int argc, char **argv)
 	for (id = 0; id < n_id; id++) GMT_free ((void *)P[id].p);
 	
 	fprintf (stderr,"Now convert to ESRI Shapefiles: ");
-	for (level = 1; level <= 4; level++) {	/* Make separate files for each level*/
+	for (level = 1; level <= n_levels; level++) {	/* Make separate files for each level*/
 		sprintf (cmd, "ogr2ogr -f \"ESRI Shapefile\" %s_L%d %s_L%d.gmt\n", argv[2], level, argv[2], level);
 		system (cmd);
 		fprintf (stderr, "%d", level);
 	}
-	fprintf (stderr," done\nThe shapefiles will be in directories %s_L[1-4]\n", argv[2]);
+	fprintf (stderr," done\nThe shapefiles will be in directories %s_L[1-%d]\n", argv[2], n_levels);
 	
 	GMT_end (argc, argv);
 	
