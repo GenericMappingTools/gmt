@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 14
-#		$Id: job14.sh,v 1.17 2008-02-22 21:16:42 remko Exp $
+#		$Id: job14.sh,v 1.18 2010-06-21 23:42:55 guru Exp $
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
 # GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project
@@ -25,23 +25,23 @@ $AWK '{printf "%g %s 6 0 0 LM %g\n", $1+0.1, $2, $3}' mean.xyz \
 
 # Then surface and contour the data
 
-surface mean.xyz -R -I1 -Gdata.grd
-grdcontour data.grd -J -B2f1WSne -C25 -A50 -G3i/10 -S4 -O -K -X-3.25i -Y-3.55i >> $ps
+surface mean.xyz -R -I1 -Gdata.nc
+grdcontour data.nc -J -B2f1WSne -C25 -A50 -G3i/10 -S4 -O -K -X-3.25i -Y-3.55i >> $ps
 psxy -R -J mean.xyz -Ss0.05i -Gblack -O -K >> $ps
 
 # Fit bicubic trend to data and compare to gridded surface
 
-grdtrend data.grd -N10 -Ttrend.grd
+grdtrend data.nc -N10 -Ttrend.nc
 project -C0/0 -E7/7 -G0.1 > track
-grdcontour trend.grd -J -B2f1wSne -C25 -A50 -Glct/cb -S4 -O -K -X3.25i >> $ps
+grdcontour trend.nc -J -B2f1wSne -C25 -A50 -Glct/cb -S4 -O -K -X3.25i >> $ps
 psxy -R -J track -Wthick,. -O -K >> $ps
 
 # Sample along diagonal
 
-grdtrack track -Gdata.grd | cut -f3,4 > data.d
-grdtrack track -Gtrend.grd | cut -f3,4 > trend.d
+grdtrack track -Gdata.nc | cut -f3,4 > data.d
+grdtrack track -Gtrend.nc | cut -f3,4 > trend.d
 psxy `minmax data.d trend.d -I0.5/25` -JX6.3i/1.4i data.d -Wthick -O -K -X-3.25i -Y-1.9i \
 	-B1/50WSne >> $ps
 psxy -R -J trend.d -Wthinner,- -O -U"Example 14 in Cookbook" >> $ps
 
-rm -f mean.xyz track *.grd *.d .gmt*
+rm -f mean.xyz track *.nc *.d .gmt*

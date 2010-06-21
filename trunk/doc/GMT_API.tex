@@ -1,5 +1,5 @@
 %------------------------------------------
-%       $Id: GMT_API.tex,v 1.8 2010-01-05 01:15:43 guru Exp $
+%       $Id: GMT_API.tex,v 1.9 2010-06-21 23:42:55 guru Exp $
 %
 %       The GMT Documentation Project
 %       Copyright 2000-2010.
@@ -297,9 +297,9 @@ In the above example we opened an error log file and passed the file pointer as 
 \section{Registering i/o resources}
 \index{GMT@\GMT!Registering i/o resources}
 When using \GMT\ programs, you specify input files on
-the command line or via special program options (e.g., \Opt{I}{\it intensity.grd}) and the output of
+the command line or via special program options (e.g., \Opt{I}{\it intensity.nc}) and the output of
 the programs are either written to standard output (which you can redirect to files or other programs)
-or to files specified by specific program options (e.g., \Opt{G}{\it output.grd}).  However, the
+or to files specified by specific program options (e.g., \Opt{G}{\it output.nc}).  However, the
 \GMT\ API allows you to also specify input (and output) to come from (or go to) open file handles
 or even program memory locations.  Thus, if you want to use data already in program memory you will
 need to register this location with the \GMT\ API control structure.  This is done via a call to

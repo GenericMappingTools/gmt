@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_7.tex,v 1.64 2010-01-05 03:49:47 guru Exp $
+%	$Id: GMT_Chapter_7.tex,v 1.65 2010-06-21 23:42:55 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -59,7 +59,7 @@ Finally, be aware that for practical purposes the output \PS\ file name is store
 
 We want to create two contour maps of the low order geoid
 using the Hammer equal area projection.  Our gridded data
-file is called \filename{osu91a1f\_16.grd} and contains a global 1\DS\ 
+file is called \filename{osu91a1f\_16.nc} and contains a global 1\DS\ 
 by 1\DS\ gridded geoid (we will see how to make gridded
 files later).  We would like to show one map centered on
 Greenwich and one centered on the dateline.  Positive contours
@@ -324,7 +324,7 @@ symbols, including columnar plots.  As a simple demonstration,
 we will convert a gridded netCDF of bathymetry into an
 ASCII $xyz$ table and use the height information to draw a
 2-D histogram in a 3-D perspective view.  Our gridded
-bathymetry file is called \filename{topo.grd} and covers the region
+bathymetry file is called \filename{guinea\_bay.nc} and covers the region
 from 0 to 5 \DS E and 0 to 5 \DS N.  Depth ranges from
 -5000 meter to sea-level.  We produce the Figure~\ref{fig:GMT_example_08} by
 running this script:

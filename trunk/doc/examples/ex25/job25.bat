@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 25
 REM
-REM             $Id: job25.bat,v 1.11 2010-03-24 04:01:08 jluis Exp $
+REM             $Id: job25.bat,v 1.12 2010-06-21 23:42:56 guru Exp $
 REM
 REM Purpose:    Display distribution of antipode types
 REM
@@ -15,21 +15,21 @@ if %master%==y cd ex25
 
 REM Create D minutes global grid with -1 over oceans and +1 over land
 set D=30
-grdlandmask -Rg -I%D%m -Dc -A500 -N-1/1/1/1/1 -F -Gwetdry.grd
+grdlandmask -Rg -I%D%m -Dc -A500 -N-1/1/1/1/1 -F -Gwetdry.nc
 REM Manipulate so -1 means ocean/ocean antipode, +1 = land/land, and 0 elsewhere
-grdmath wetdry.grd DUP 180 ROTX FLIPUD ADD 2 DIV = key.grd
+grdmath wetdry.nc DUP 180 ROTX FLIPUD ADD 2 DIV = key.nc
 REM Calculate percentage area of each type of antipode match.
-grdmath -Rg -I%D%m -F Y COSD 60 %D% DIV 360 MUL DUP MUL PI DIV DIV 100 MUL = scale.grd
-grdmath key.grd -1 EQ 0 NAN scale.grd MUL = tmp.grd
-grd2xyz tmp.grd -S -ZTLa > key.d
+grdmath -Rg -I%D%m -F Y COSD 60 %D% DIV 360 MUL DUP MUL PI DIV DIV 100 MUL = scale.nc
+grdmath key.nc -1 EQ 0 NAN scale.nc MUL = tmp.nc
+grd2xyz tmp.nc -S -ZTLa > key.d
 echo { printf "set ocean=%%d\n", $1} > awk.txt
 gmtmath -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt > script0.bat
-grdmath key.grd 1 EQ 0 NAN scale.grd MUL = tmp.grd
-grd2xyz tmp.grd -S -ZTLa > key.d
+grdmath key.nc 1 EQ 0 NAN scale.nc MUL = tmp.nc
+grd2xyz tmp.nc -S -ZTLa > key.d
 echo { printf "set land=%%d\n", $1} > awk.txt
 gmtmath -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt >> script0.bat
-grdmath key.grd 0 EQ 0 NAN scale.grd MUL = tmp.grd
-grd2xyz tmp.grd -S -ZTLa > key.d
+grdmath key.nc 0 EQ 0 NAN scale.nc MUL = tmp.nc
+grd2xyz tmp.nc -S -ZTLa > key.d
 echo { printf "set mixed=%%d\n", $1} > awk.txt
 gmtmath -Ca -S key.d SUM UPPER RINT = | gawk -f awk.txt >> script0.bat
 REM Generate corresponding color table
@@ -38,7 +38,7 @@ echo -0.5	gray	0.5	gray >> key.cpt
 echo 0.5	red	1.5	red >> key.cpt
 REM Create the final plot and overlay coastlines
 gmtset ANNOT_FONT_SIZE_PRIMARY +10p PLOT_DEGREE_FORMAT dddF
-grdimage key.grd -Sn -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i -U/-0.75i/-0.95i/"Example 25 in Cookbook" > example_25.ps
+grdimage key.nc -Sn -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i -U/-0.75i/-0.95i/"Example 25 in Cookbook" > example_25.ps
 pscoast -R -J -O -K -Wthinnest -Dc -A500 >> example_25.ps
 REM Place an explanatory legend below
 if %master%==n echo off
@@ -51,7 +51,7 @@ echo pslegend -R0/9/0/0.5 -Jx1i/-1i -O -Dx4.5i/0/6i/0.3i/TC -Y-0.2i -Fthick tmp 
 call script1.bat
 call script2.bat >> example_25.ps
 if %master%==n echo on
-del *.grd
+del *.nc
 del key.*
 del tmp
 del awk.txt

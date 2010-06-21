@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 18
 REM
-REM		$Id: job18.bat,v 1.15 2010-01-12 17:04:23 remko Exp $
+REM		$Id: job18.bat,v 1.16 2010-06-21 23:42:55 guru Exp $
 REM
 REM Purpose:	Illustrates volumes of grids inside contours and spatial
 REM		selection of data
@@ -23,8 +23,8 @@ REM First generate gravity image w/ shading, label Pratt, and draw a circle
 REM of radius = 200 km centered on Pratt.
 
 makecpt -Crainbow -T-60/60/10 -Z > grav.cpt
-grdgradient AK_gulf_grav.nc -Nt1 -A45 -GAK_gulf_grav_i.grd
-grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.grd -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i > example_18.ps
+grdgradient AK_gulf_grav.nc -Nt1 -A45 -GAK_gulf_grav_i.nc
+grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i > example_18.ps
 pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> example_18.ps
 psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -B20f10/:mGal: -O -K >> example_18.ps
 echo {print $1, $2, 12, 0, 1, "LB", "Pratt"} > t
@@ -57,25 +57,25 @@ REM Then report the volume and area of these seamounts only
 REM by masking out data outside the 200 km-radius circle
 REM and then evaluate area/volume for the 50 mGal contour
 
-grdmath -R -142.65 56.25 GDIST = mask.grd
-grdclip mask.grd -Sa200/NaN -Sb200/1 -Gmask.grd
-grdmath AK_gulf_grav.nc mask.grd MUL = tmp.grd
+grdmath -R -142.65 56.25 GDIST = mask.nc
+grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
+grdmath AK_gulf_grav.nc mask.nc MUL = tmp.nc
 echo -148.5	52.75 > tmp
 echo -140.5	52.75 >> tmp
 echo -140.5	53.75 >> tmp
 echo -148.5	53.75 >> tmp
 psxy -R -J -A -O -K -L -Wthin -Gwhite tmp >> example_18.ps
 echo {printf "-148 53.08 14 0 1 LM Areas: %%s km@+2@+\n-148 53.42 14 0 1 LM Volumes: %%s km@+2@+\n", $2, $3} > t
-grdvolume tmp.grd -C50 -Sk | gawk -f t | pstext -R -J -O >> example_18.ps
+grdvolume tmp.nc -C50 -Sk | gawk -f t | pstext -R -J -O >> example_18.ps
 
 REM Clean up
 
 del t
 del grav.cpt
 del C*.xyz
-del *_i.grd
-del tmp.grd
-del mask.grd
+del *_i.nc
+del tmp.nc
+del mask.nc
 del pratt.d
 del center*.*
 del .gmt*

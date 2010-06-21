@@ -1,11 +1,11 @@
 #!/bin/sh
-#	$Id: GMT_atan.sh,v 1.7 2009-04-17 00:31:29 remko Exp $
+#	$Id: GMT_atan.sh,v 1.8 2010-06-21 23:42:55 guru Exp $
 #
 
 trap 'rm -f $$.*; exit 1' 1 2 3 15
 
-grdgradient -A45 ../../share/doc/gmt/tutorial/us.nc -N -M -G$$.t.grd
-grd2xyz -Z $$.t.grd > $$.d
+grdgradient -A45 ../../share/doc/gmt/tutorial/us.nc -N -M -G$$.t.nc
+grd2xyz -Z $$.t.nc > $$.d
 pshistogram $$.d -R-0.75/0.75/0/20 -JX1.5/1 -B0.5/5f5WSne -W0.01 -P -K -Gblack -Z1 > GMT_atan.ps
 
 pstext -R -J -O -K << EOF >> GMT_atan.ps
@@ -26,8 +26,8 @@ psxy -R -J -O -K -m -Wthinnest << EOF >> GMT_atan.ps
 0	-1
 0	1
 EOF
-grdgradient -A45 ../../share/doc/gmt/tutorial/us.nc -Nt -M -G$$.tt.grd
-grd2xyz -Z $$.tt.grd > $$.d
+grdgradient -A45 ../../share/doc/gmt/tutorial/us.nc -Nt -M -G$$.tt.nc
+grd2xyz -Z $$.tt.nc > $$.d
 pshistogram $$.d -R-0.75/0.75/0/5 -JX1.5/1 -B0.5/2f1WSne -W0.01 -O  -K -Gblack -X1.85 -Z1 >> GMT_atan.ps
 pstext -R -J -O << EOF >> GMT_atan.ps
 -0.7	4.3	9	0	0	LB	tan@+-1@+ 

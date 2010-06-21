@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Appendix_P.tex,v 1.16 2010-01-05 01:15:44 guru Exp $
+%	$Id: GMT_Appendix_P.tex,v 1.17 2010-06-21 23:42:55 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -35,7 +35,7 @@ The example below shows how \emph{isolation mode} works.
 \label{fig:GMT_App_P_2}
 \end{figure}
 
-The files \filename{.gmtdefaults4} and \filename{.gmtcommands4} are automatically created in the temporary directory \filename{\$GMT\_TMPDIR}. The script is also adjusted such that the temporary grid file \filename{lat.grd} and colormap \filename{lat.cpt} are created in that directory as well. To make things even more easy, \GMT\ now provides a set of handy shell functions in \GMTprog{gmt\_shell\_functions.sh}: simply include that file in the script and the creation and the removal of the temporary directory is reduced to a single command.
+The files \filename{.gmtdefaults4} and \filename{.gmtcommands4} are automatically created in the temporary directory \filename{\$GMT\_TMPDIR}. The script is also adjusted such that the temporary grid file \filename{lat.nc} and colormap \filename{lat.cpt} are created in that directory as well. To make things even more easy, \GMT\ now provides a set of handy shell functions in \GMTprog{gmt\_shell\_functions.sh}: simply include that file in the script and the creation and the removal of the temporary directory is reduced to a single command.
 
 \script{GMT_App_P_2}
 \index{Isolation mode|)}

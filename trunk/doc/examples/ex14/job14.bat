@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 14
 REM
-REM		$Id: job14.bat,v 1.12 2007-09-13 17:28:33 remko Exp $
+REM		$Id: job14.bat,v 1.13 2010-06-21 23:42:55 guru Exp $
 REM
 REM Purpose:	Showing simple gridding, contouring, and resampling along tracks
 REM GMT progs:	gmtset, blockmean, grdcontour, grdtrack, grdtrend, minmax, project, pstext
@@ -21,24 +21,24 @@ psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -B0g1 -X3.25i >> example_14.ps
 psxy -R0/7/0/7 -J -B2f1eSNw mean.xyz -Ss0.05i -Gblack -O -K >> example_14.ps
 gawk "{print $1+0.1, $2, 6, 0, 0, 5, $3}" mean.xyz | pstext -R -J -O -K -Wwhite,o -C0.01i/0.01i -N >> example_14.ps
 REM Then surface and contour the data
-surface mean.xyz -R -I1 -Gdata.grd
-grdcontour data.grd -J -B2f1WSne -C25 -A50 -G3i/10 -S4 -O -K -X-3.25i -Y-3.55i >> example_14.ps
+surface mean.xyz -R -I1 -Gdata.nc
+grdcontour data.nc -J -B2f1WSne -C25 -A50 -G3i/10 -S4 -O -K -X-3.25i -Y-3.55i >> example_14.ps
 psxy -R -J mean.xyz -Ss0.05i -Gblack -O -K >> example_14.ps
 REM Fit bicubic trend to data and compare to gridded surface
-grdtrend data.grd -N10 -Ttrend.grd
-grdcontour trend.grd -J -B2f1wSne -C25 -A50 -G3i/10 -S4 -O -K -X3.25i >> example_14.ps
+grdtrend data.nc -N10 -Ttrend.nc
+grdcontour trend.nc -J -B2f1wSne -C25 -A50 -G3i/10 -S4 -O -K -X3.25i >> example_14.ps
 project -C0/0 -E7/7 -G0.1 > track
 psxy -R -J track -Wthick,. -O -K >> example_14.ps
 REM Sample along diagonal
-grdtrack track -Gdata.grd | gawk "{print $3, $4}" > data.d
-grdtrack track -Gtrend.grd | gawk "{print $3, $4}" > trend.d
+grdtrack track -Gdata.nc | gawk "{print $3, $4}" > data.d
+grdtrack track -Gtrend.nc | gawk "{print $3, $4}" > trend.d
 REM minmax data.d trend.d -I0.5/25
 REM Use result of minmax manually in -R below:
 psxy -R0/10/775/1050 -JX6.3i/1.4i data.d -Wthick -O -K -X-3.25i -Y-1.9i -B1/50WSne >> example_14.ps
 psxy -R -J trend.d -Wthinner,- -O -U"Example 14 in Cookbook" >> example_14.ps
 del mean.xyz
 del track
-del *.grd
+del *.nc
 del *.d
 del .gmt*
 if %master%==y cd ..
