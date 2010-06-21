@@ -1,11 +1,11 @@
 <HTML>
-<!--  $Id: gmt_install_form.html,v 1.83 2010-05-14 17:36:10 guru Exp $  -->
+<!--  $Id: gmt_install_form.html,v 1.84 2010-06-21 23:55:22 guru Exp $  -->
 <HEAD>
 <TITLE>GMT Installation Helper</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff">
 <FORM ACTION="/cgi-bin/install_gmt_form.pl" ENCTYPE="x-www-form-encoded" METHOD="POST">
-<INPUT TYPE="hidden" VALUE="$Revision: 1.83 $" NAME="form_version">
+<INPUT TYPE="hidden" VALUE="$Revision: 1.84 $" NAME="form_version">
 <H2><CENTER>GMT Installation Helper</CENTER></H2>
 </P>
 This page helps you customize the GMT installation procedure under Unix or Unix-like
@@ -345,7 +345,7 @@ separate from where the smaller files reside.  The selections below are only use
 <INPUT TYPE="checkbox" NAME="checkbox_spotter"  CHECKED> SPOTTER: Plate tectonic backtracking and hotspotting<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_x2sys"  CHECKED> X2SYS: Track intersection (crossover) tools (REQUIRES MGG and MGD77)<BR>
 <INPUT TYPE="checkbox" NAME="checkbox_x_system"  CHECKED> X_SYSTEM: MGG-specific Track intersection (crossover) tools (REQUIRES MGG)<BR>
-	<INPUT TYPE="checkbox" NAME="checkbox_xgrid" > XGRID: X11 graphical editor for netCDF-based .grd files (REQUIRES Xlibs)<BR>
+	<INPUT TYPE="checkbox" NAME="checkbox_xgrid" > XGRID: X11 graphical editor for netCDF-based .nc files (REQUIRES Xlibs)<BR>
 
 <P>
 <I>Note: The selected packages will only be installed if you also selected the supplemental tar archive

@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-#	$Id: grdvolume.sh,v 1.8 2008-04-01 14:42:40 remko Exp $
+#	$Id: grdvolume.sh,v 1.9 2010-06-21 23:55:22 guru Exp $
 
 makegrd () {
-xyz2grd -I1 -Gt.grd -Za $1 <<%
+xyz2grd -I1 -Gt.nc -Za $1 <<%
 1
 1
 1
@@ -16,11 +16,11 @@ xyz2grd -I1 -Gt.grd -Za $1 <<%
 %
 echo
 echo xyz2grd $1 \; grdvolume $2 -Sk:
-grdvolume t.grd $2 -Sk
+grdvolume t.nc $2 -Sk
 echo xyz2grd $1 \; grdvolume $2:
-grdvolume t.grd $2
+grdvolume t.nc $2
 echo xyz2grd $1 \; grdvolume $2 -L-1:
-grdvolume t.grd $2 -L-1
+grdvolume t.nc $2 -L-1
 }
 
 testcase () {
@@ -42,6 +42,6 @@ if [ $? != 0 ]; then
 	touch fail
 fi
 
-rm -f t.grd .gmtcommands4 log
+rm -f t.nc .gmtcommands4 log
 
 passfail grdvolume

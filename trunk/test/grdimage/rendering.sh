@@ -1,13 +1,13 @@
 #!/bin/sh
 #
-#	$Id: rendering.sh,v 1.2 2007-11-15 04:20:42 remko Exp $
+#	$Id: rendering.sh,v 1.3 2010-06-21 23:55:22 guru Exp $
 
 ps=rendering.ps
 
 . ../functions.sh
 header "Test grdimage for rendering issues"
 
-xyz2grd -R0/360/0/90 -F -I60/30 -Gt.grd <<%
+xyz2grd -R0/360/0/90 -F -I60/30 -Gt.nc <<%
 #30 45 -1
 90 15 -1
 30 75 0
@@ -30,7 +30,7 @@ xyz2grd -R0/360/0/90 -F -I60/30 -Gt.grd <<%
 %
 
 render () {
-grdimage $VERBOSE -R -JW0/6i -B60/30 t.grd -Ct.cpt -E100 -O -K $*
+grdimage $VERBOSE -R -JW0/6i -B60/30 t.nc -Ct.cpt -E100 -O -K $*
 echo 180 35 16 0 1 BL $1 | pstext -R -J -O -K -N
 }
 
@@ -43,6 +43,6 @@ render -Sb -Y2i >> $ps
 render -Sc -Y2i >> $ps
 psxy -R -J /dev/null -O >> $ps
 
-rm -f t.grd t.cpt .gmtcommands4
+rm -f t.nc t.cpt .gmtcommands4
 
 pscmp

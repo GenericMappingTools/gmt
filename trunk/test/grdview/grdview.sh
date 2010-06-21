@@ -1,16 +1,16 @@
 #!/bin/sh
 #
-#	$Id: grdview.sh,v 1.9 2007-11-15 04:20:42 remko Exp $
+#	$Id: grdview.sh,v 1.10 2010-06-21 23:55:22 guru Exp $
 
 ps=grdview.ps
-grdview=grdview" t.grd -Ct.cpt -JX1i -B1/1WeSn --ANNOT_FONT_SIZE=10p"
-grdcontour=grdcontour" t.grd -Ct.cpt -J -R -O"
+grdview=grdview" t.nc -Ct.cpt -JX1i -B1/1WeSn --ANNOT_FONT_SIZE=10p"
+grdcontour=grdcontour" t.nc -Ct.cpt -J -R -O"
 
 . ../functions.sh
 header "Test grdview for grid and pixel plots"
 
 makegrd () {
-xyz2grd -I1 -Gt.grd $* <<%
+xyz2grd -I1 -Gt.nc $* <<%
 0 0 0.0
 0 1 0.2
 0 2 0.4
@@ -65,6 +65,6 @@ makegrd -R-0.5/2.5/-0.5/2.5 -F
 
 plots "-O -X-12c -Y-4c" " " -F >> $ps
 
-rm -f t.grd t.cpt .gmtcommands4
+rm -f t.nc t.cpt .gmtcommands4
 
 pscmp

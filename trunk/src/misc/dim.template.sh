@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-# $Id: dim.template.sh,v 1.1 2009-06-04 00:01:38 guru Exp $
+# $Id: dim.template.sh,v 1.2 2010-06-21 23:55:21 guru Exp $
 #
 # Seung-Sep Kim, GG/SOEST/UHM
-# $Revision: 1.1 $    $Date: 2009-06-04 00:01:38 $
+# $Revision: 1.2 $    $Date: 2010-06-21 23:55:21 $
 
 # This is a template file showing the steps for DiM-based
 # regional-residual separation
@@ -36,7 +36,7 @@ if [ ! -f $ors ]; then
 		
 	mkdir -p $orsout
 		
-	grdcut $bathy $box -G/tmp/$$.t.grd  # the area of interest
+	grdcut $bathy $box -G/tmp/$$.t.nc  # the area of interest
 	
 	minW= 	# minimum filter width candidate for ORS  (e.g., 60)
 	maxW= 	# maximum filter width candidate for ORS  (e.g., 600)
@@ -47,11 +47,11 @@ if [ ! -f $ors ]; then
 	for width in $STEP
 	do
 		echo "W = $width km"			
-		dimfilter $bathy $box -G/tmp/$$.dim.grd -Fm${width} -D2 -Nl8 # DiM filter
-		grdfilter /tmp/$$.dim.grd -G$orsout/dim.${width}.grd -Fm50 -D2 # smoothing
+		dimfilter $bathy $box -G/tmp/$$.dim.nc -Fm${width} -D2 -Nl8 # DiM filter
+		grdfilter /tmp/$$.dim.nc -G$orsout/dim.${width}.nc -Fm50 -D2 # smoothing
 
-		grdmath /tmp/$$.t.grd $orsout/dim.${width}.grd SUB = /tmp/$$.sd.grd # residual from DiM
-		grdvolume /tmp/$$.sd.grd -Sk -C$level -Vl | awk '{print r,$2,$3,$4}' r=${width} >> $ors  # ORS from DiM
+		grdmath /tmp/$$.t.nc $orsout/dim.${width}.nc SUB = /tmp/$$.sd.nc # residual from DiM
+		grdvolume /tmp/$$.sd.nc -Sk -C$level -Vl | awk '{print r,$2,$3,$4}' r=${width} >> $ors  # ORS from DiM
 	done
 	
 fi
@@ -68,14 +68,14 @@ if [ ! -f $dim ]; then
 	
 	for i in $width
 	do
-		if [ ! -f $orsout/dim.${i}.grd ]; then
+		if [ ! -f $orsout/dim.${i}.nc ]; then
 			echo "filtering W = ${i} km"
-			dimfilter $bathy $box -G/tmp/$$.dim.grd -Fm${i} -D2 -Nl8 # DiM filter
-			grdfilter /tmp/$$.dim.grd -G$orsout/dim.${i}.grd -Fm50 -D2 # smoothing
+			dimfilter $bathy $box -G/tmp/$$.dim.nc -Fm${i} -D2 -Nl8 # DiM filter
+			grdfilter /tmp/$$.dim.nc -G$orsout/dim.${i}.nc -Fm50 -D2 # smoothing
 		fi
 		
 		if [ ! -f $alldepth ]; then
-			grd2xyz -Z $orsout/dim.${i}.grd > /tmp/$$.${i}.depth
+			grd2xyz -Z $orsout/dim.${i}.nc > /tmp/$$.${i}.depth
 		fi
 		
 	done
