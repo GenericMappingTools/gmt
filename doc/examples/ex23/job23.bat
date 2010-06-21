@@ -1,7 +1,7 @@
 REM
 REM             GMT EXAMPLE 23
 REM
-REM             $Id: job23.bat,v 1.14 2007-09-13 17:31:01 remko Exp $
+REM             $Id: job23.bat,v 1.15 2010-06-21 23:42:56 guru Exp $
 REM
 REM Purpose:    Plot distances from Rome and draw shortest paths
 REM
@@ -21,7 +21,7 @@ set name=Rome
 
 REM Calculate distances (km) to all points on a global 1x1 grid
 
-grdmath -Rg -I1 %lon% %lat% SDIST 111.13 MUL = dist.grd
+grdmath -Rg -I1 %lon% %lat% SDIST 111.13 MUL = dist.nc
 
 REM Location info for 5 other cities + label justification
 
@@ -33,7 +33,7 @@ echo 28.20	-25.75	PRETORIA	LM >> cities.d
 
 pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 -B0g30:."Distances from %name% to the World": -K -Dc -Wthinnest > example_23.ps
 
-grdcontour dist.grd -A1000+v+ukm+kwhite -Glz-/z+ -S8 -C500 -O -K -J -Wathin,white -Wcthinnest,white,- >> example_23.ps
+grdcontour dist.nc -A1000+v+ukm+kwhite -Glz-/z+ -S8 -C500 -O -K -J -Wathin,white -Wcthinnest,white,- >> example_23.ps
 
 REM For each of the cities, plot great circle arc to Rome with psxy
 
@@ -63,14 +63,14 @@ echo %lon% %lat% | psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> example_23.ps
 REM Sample the distance grid at the cities and use the distance in km for labels
 
 echo {printf "%%s %%s 12 0 1 CT %%d\n", $1, $2, int($NF+0.5)} > awk.2
-grdtrack -Gdist.grd cities.d | gawk -f awk.2 > pts.d
+grdtrack -Gdist.nc cities.d | gawk -f awk.2 > pts.d
 pstext -R -J -O -D0/-0.2i -N -Wwhite,o -C0.02i/0.02i pts.d >> example_23.ps
 
 REM Clean up after ourselves:
 
 del cities.d
 del pts.d
-del dist.grd
+del dist.nc
 del .gmt*
 del awk.*
 if %master%==y cd ..

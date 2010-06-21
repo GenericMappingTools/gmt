@@ -1,5 +1,5 @@
 %------------------------------------------
-%	$Id: GMT_Chapter_4.tex,v 1.127 2010-01-12 18:05:20 guru Exp $
+%	$Id: GMT_Chapter_4.tex,v 1.128 2010-06-21 23:42:55 guru Exp $
 %
 %	The GMT Documentation Project
 %	Copyright 2000-2010.
@@ -1594,11 +1594,11 @@ allow piping (due to the design of netCDF).
 Everything looks clearer after a few examples: 
 
 \begin{enumerate}
-\item To write a native binary float grid file, specify the name as \filename{my\_file.grd=bf}.
+\item To write a native binary float grid file, specify the name as \filename{my\_file.f4=bf}.
 
 \item To read a native short integer grid file, multiply the data by 10 and then
 add 32000, but first let values that equal 32767 be set to NaN,
-use the filename \filename{my\_file.grd=bs/10/32000/32767}. 
+use the filename \filename{my\_file.i2=bs/10/32000/32767}. 
 
 \item To read a Golden Software ``surfer'' format 6 grid file, just pass the file name,
 e.g., \filename{my\_surferfile.grd}. 

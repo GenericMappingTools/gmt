@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 02
-#		$Id: job02.sh,v 1.14 2009-07-10 22:21:03 remko Exp $
+#		$Id: job02.sh,v 1.15 2010-06-21 23:42:55 guru Exp $
 #
 # Purpose:	Make two color images based gridded data
 # GMT progs:	gmtset, grd2cpt, grdgradient, grdimage, makecpt, psscale, pstext
@@ -13,12 +13,12 @@ grdimage HI_geoid2.nc -R160/20/220/30r -JOc190/25.5/292/69/4.5i -E50 -K -P \
 	-U/-1.25i/-1i/"Example 2 in Cookbook" -B10 -Cg.cpt -X1.5i -Y1.25i > $ps
 psscale -Cg.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -Ac -B2:GEOID:/:m: -E >> $ps
 grd2cpt HI_topo2.nc -Crelief -Z > t.cpt
-grdgradient HI_topo2.nc -A0 -Nt -GHI_topo2_int.grd
-grdimage HI_topo2.nc -IHI_topo2_int.grd -R -J -E50 -B10:."H@#awaiian@# T@#opo and @#G@#eoid:" -O -K \
+grdgradient HI_topo2.nc -A0 -Nt -GHI_topo2_int.nc
+grdimage HI_topo2.nc -IHI_topo2_int.nc -R -J -E50 -B10:."H@#awaiian@# T@#opo and @#G@#eoid:" -O -K \
 	-Ct.cpt -Y4.5i --HEADER_OFFSET=0.5i >> $ps
 psscale -Ct.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -I0.3 -Ac -B2:TOPO:/:km: >> $ps
 pstext -R0/8.5/0/11 -Jx1i -O -N -Y-4.5i >> $ps << END
 -0.4 7.5 30 0.0 1 CB a)
 -0.4 3.0 30 0.0 1 CB b)
 END
-rm -f HI_topo2_int.grd ?.cpt .gmt*
+rm -f HI_topo2_int.nc ?.cpt .gmt*

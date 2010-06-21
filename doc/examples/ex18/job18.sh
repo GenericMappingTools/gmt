@@ -1,6 +1,6 @@
 #!/bin/sh
 #		GMT EXAMPLE 18
-#		$Id: job18.sh,v 1.14 2010-01-12 17:04:23 remko Exp $
+#		$Id: job18.sh,v 1.15 2010-06-21 23:42:55 guru Exp $
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
@@ -20,8 +20,8 @@ echo "-142.65 56.25" > pratt.d
 # of radius = 200 km centered on Pratt.
 
 makecpt -Crainbow -T-60/60/10 -Z > grav.cpt
-grdgradient AK_gulf_grav.nc -Nt1 -A45 -GAK_gulf_grav_i.grd
-grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.grd -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i > $ps
+grdgradient AK_gulf_grav.nc -Nt1 -A45 -GAK_gulf_grav_i.nc
+grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i > $ps
 pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> $ps
 psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -B20f10/:mGal: -O -K >> $ps
 $AWK '{print $1, $2, 12, 0, 1, "LB", "Pratt"}' pratt.d | pstext -R -J -O -K -D0.1i/0.1i >> $ps
@@ -56,11 +56,11 @@ psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.d >> $ps
 # by masking out data outside the 200 km-radius circle
 # and then evaluate area/volume for the 50 mGal contour
 
-grdmath -R `cat pratt.d` GDIST = mask.grd
-grdclip mask.grd -Sa200/NaN -Sb200/1 -Gmask.grd
-grdmath AK_gulf_grav.nc mask.grd MUL = tmp.grd
-area=`grdvolume tmp.grd -C50 -Sk | cut -f2`
-volume=`grdvolume tmp.grd -C50 -Sk | cut -f3`
+grdmath -R `cat pratt.d` GDIST = mask.nc
+grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
+grdmath AK_gulf_grav.nc mask.nc MUL = tmp.nc
+area=`grdvolume tmp.nc -C50 -Sk | cut -f2`
+volume=`grdvolume tmp.nc -C50 -Sk | cut -f3`
 
 psxy -R -J -A -O -K -L -Wthin -Gwhite >> $ps << END
 -148.5	52.75
@@ -75,4 +75,4 @@ END
 
 # Clean up
 
-rm -f grav.cpt sm_*.xyz *_i.grd tmp.grd mask.grd pratt.d center* .gmt*
+rm -f grav.cpt sm_*.xyz *_i.nc tmp.nc mask.nc pratt.d center* .gmt*
