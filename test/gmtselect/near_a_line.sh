@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: near_a_line.sh,v 1.9 2009-04-17 00:31:30 remko Exp $
+#	$Id: near_a_line.sh,v 1.10 2010-06-21 23:55:22 guru Exp $
 #
 # Making sure both forms of "near a line" works:
 # Default (old) behavior is to think of a line as
@@ -16,7 +16,7 @@ header "Test gmtselect's new -L[p] option on given data"
 
 ps=nearline.ps
 # Some test data
-grdmath -R0/5/0/5 -I0.1 0 = $$.grd
+grdmath -R0/5/0/5 -I0.1 0 = $$.nc
 cat << EOF > $$.d
 > line 1
 1 1
@@ -24,7 +24,7 @@ cat << EOF > $$.d
 3 2.8
 3.7 4
 EOF
-grd2xyz $$.grd > $$.xyz
+grd2xyz $$.nc > $$.xyz
 # Do test both with Cartesian and spherical data
 # CARTESIAN DATA: distance D = 1 unit
 D=1
@@ -46,6 +46,6 @@ psxy -R -J -O -K $$.d -m -W1p >> $ps
 psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred $$.xyz -m -X3.75i >> $ps
 gmtselect $$.xyz -Lp${D}/$$.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 psxy -R -J -O $$.d -m -W1p >> $ps
-rm -f $$.grd $$.xyz $$.d
+rm -f $$.nc $$.xyz $$.d
 
 pscmp

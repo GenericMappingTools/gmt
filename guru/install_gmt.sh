@@ -1,5 +1,5 @@
 #!/bin/sh
-#	$Id: install_gmt.sh,v 1.160 2010-01-15 21:39:13 guru Exp $
+#	$Id: install_gmt.sh,v 1.161 2010-06-21 23:55:21 guru Exp $
 #
 #	Automatic installation of GMT
 #	Suitable for the Bourne shell (or compatible)
@@ -516,7 +516,7 @@ sph:       Spherical triangulation, Voronoi construction and interpolation
 spotter:   Plate tectonic backtracking and hotspotting
 x2sys:     New (Generic) Track intersection (crossover) tools
 x_system:  Old (MGG-specific) Track intersection (crossover) tools
-xgrid:     An X11-based graphical editor for netCDF-based .grd files
+xgrid:     An X11-based graphical editor for netCDF-based .nc files
 ------------------------------------------------------------------------------
 
 EOF

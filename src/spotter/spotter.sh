@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: spotter.sh,v 1.1.1.1 2000-12-28 01:23:45 gmt Exp $
+#	$Id: spotter.sh,v 1.2 2010-06-21 23:55:21 guru Exp $
 #
 #	Examples of how to use the SPOTTER package
 #
@@ -51,13 +51,13 @@ tmax=145			# Upper age limit
 dx=10m				# The grid spacing to use
 region=130/260/-66/60		# Our Pacific region
 
-hotspotter $DATA -H -I$dx -R$region -E${POLES} -Gexample_1.grd -V -T -N$tmax
+hotspotter $DATA -H -I$dx -R$region -E${POLES} -Gexample_1.nc -V -T -N$tmax
 
 # Make a suitable color table
 
 makecpt -Chot -T0/3000/300 -Z > t.cpt
 
-grdimage example_1.grd -JM6i -P -K -Ct.cpt -V > example_2.ps
+grdimage example_1.nc -JM6i -P -K -Ct.cpt -V > example_2.ps
 pscoast -R -JM -O -G30/120/30 -A500 -Dl -W0.25p -B20WSne >> example_2.ps
 \rm -f t.cpt loihi.d suiko.d
 echo "Done.  View example_2.ps"
